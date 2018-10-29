@@ -62,6 +62,7 @@ class FileChooserParams;
 }
 
 namespace content {
+class FileSelectListener;
 class FrameTreeNode;
 class InterstitialPage;
 class PageState;
@@ -114,10 +115,14 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                       int32_t line_no,
                                       const base::string16& source_id);
 
-  // Informs the delegate whenever a RenderFrameHost is created.
+  // Called when a RenderFrame for |render_frame_host| is created in the
+  // renderer process. Use |RenderFrameDeleted| to listen for when this
+  // RenderFrame goes away.
   virtual void RenderFrameCreated(RenderFrameHost* render_frame_host) {}
 
-  // Informs the delegate whenever a RenderFrameHost is deleted.
+  // Called when a RenderFrame for |render_frame_host| is deleted or the
+  // renderer process in which it runs it has died. Use |RenderFrameCreated| to
+  // listen for when RenderFrame objects are created.
   virtual void RenderFrameDeleted(RenderFrameHost* render_frame_host) {}
 
   // A context menu should be shown, to be built using the context information
@@ -137,8 +142,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                       IPC::Message* reply_msg) {}
 
   // Called when a file selection is to be done.
-  virtual void RunFileChooser(RenderFrameHost* render_frame_host,
-                              const blink::mojom::FileChooserParams& params) {}
+  // Overrides of this function must call either listener->FileSelected() or
+  // listener->FileSelectionCanceled().
+  virtual void RunFileChooser(
+      RenderFrameHost* render_frame_host,
+      std::unique_ptr<content::FileSelectListener> listener,
+      const blink::mojom::FileChooserParams& params);
 
   // The pending page load was canceled, so the address bar should be updated.
   virtual void DidCancelLoading() {}

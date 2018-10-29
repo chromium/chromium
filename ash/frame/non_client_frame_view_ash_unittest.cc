@@ -7,14 +7,13 @@
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller.h"
-#include "ash/frame/caption_buttons/frame_caption_button.h"
-#include "ash/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "ash/frame/default_frame_header.h"
 #include "ash/frame/header_view.h"
 #include "ash/frame/wide_frame_view.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/ash_layout_constants.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/caption_buttons/frame_caption_button.h"
+#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
+#include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller_test_api.h"
 #include "ash/public/cpp/vector_icons/vector_icons.h"
@@ -29,7 +28,6 @@
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
-#include "base/test/scoped_feature_list.h"
 #include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -53,15 +51,12 @@ namespace ash {
 class NonClientFrameViewAshTestWidgetDelegate
     : public views::WidgetDelegateView {
  public:
-  NonClientFrameViewAshTestWidgetDelegate(
-      mojom::WindowStyle window_style = mojom::WindowStyle::DEFAULT)
-      : window_style_(window_style) {}
+  NonClientFrameViewAshTestWidgetDelegate() = default;
   ~NonClientFrameViewAshTestWidgetDelegate() override = default;
 
   views::NonClientFrameView* CreateNonClientFrameView(
       views::Widget* widget) override {
-    non_client_frame_view_ =
-        new NonClientFrameViewAsh(widget, nullptr, window_style_);
+    non_client_frame_view_ = new NonClientFrameViewAsh(widget);
     return non_client_frame_view_;
   }
 
@@ -80,8 +75,6 @@ class NonClientFrameViewAshTestWidgetDelegate
  private:
   // Not owned.
   NonClientFrameViewAsh* non_client_frame_view_ = nullptr;
-
-  mojom::WindowStyle window_style_;
 
   DISALLOW_COPY_AND_ASSIGN(NonClientFrameViewAshTestWidgetDelegate);
 };
@@ -320,37 +313,6 @@ TEST_F(NonClientFrameViewAshTest, ToggleTabletModeOnMinimizedWindow) {
                test.size_button()->icon_definition_for_test()->name);
 }
 
-// Tests that FrameCaptionButtonContainer has been relaid out in response to
-// tablet mode being toggled.
-TEST_F(NonClientFrameViewAshTest, ToggleTabletModeRelayout) {
-  // In classic Ash, this is covered by
-  // BrowserNonClientFrameViewAshTest.ToggleTabletModeRelayout.
-  if (!::features::IsMultiProcessMash())
-    return;
-
-  NonClientFrameViewAshTestWidgetDelegate* delegate =
-      new NonClientFrameViewAshTestWidgetDelegate(mojom::WindowStyle::BROWSER);
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
-  FrameCaptionButtonContainerView* caption_buttons =
-      delegate->non_client_frame_view()
-          ->GetHeaderView()
-          ->caption_button_container();
-  FrameCaptionButtonContainerView::TestApi test(caption_buttons);
-
-  EXPECT_FALSE(widget->IsMaximized());
-  const gfx::Rect initial = caption_buttons->bounds();
-  ash::TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
-  tablet_mode_controller->EnableTabletModeWindowManager(true);
-  test.EndAnimations();
-  const gfx::Rect during_maximize = caption_buttons->bounds();
-  EXPECT_GT(initial.height(), during_maximize.height());
-  tablet_mode_controller->EnableTabletModeWindowManager(false);
-  test.EndAnimations();
-  const gfx::Rect after_restore = caption_buttons->bounds();
-  EXPECT_EQ(initial, after_restore);
-}
-
 // Verify that when in tablet mode with a maximized window, the height of the
 // header is zero.
 TEST_F(NonClientFrameViewAshTest, FrameHiddenInTabletModeForMaximizedWindows) {
@@ -427,7 +389,7 @@ TEST_F(NonClientFrameViewAshTest, GetPreferredOnScreenHeightInTabletMaximzied) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
   auto* frame_view = static_cast<ash::NonClientFrameViewAsh*>(
       widget->non_client_view()->frame_view());
-  auto* header_view = static_cast<HeaderView*>(frame_view->GetHeaderView());
+  auto* header_view = frame_view->GetHeaderView();
   ASSERT_TRUE(widget->IsMaximized());
   EXPECT_TRUE(header_view->in_immersive_mode());
   static_cast<ImmersiveFullscreenControllerDelegate*>(header_view)
@@ -470,8 +432,7 @@ TEST_F(NonClientFrameViewAshTest, HeaderVisibilityInOverviewMode) {
 }
 
 TEST_F(NonClientFrameViewAshTest, HeaderVisibilityInSplitview) {
-  auto create_widget = [this](
-                           NonClientFrameViewAshTestWidgetDelegate* delegate) {
+  auto create_widget = [](NonClientFrameViewAshTestWidgetDelegate* delegate) {
     std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
     // Windows need to be resizable and maximizable to be used in splitview.
     widget->GetNativeWindow()->SetProperty(
@@ -584,8 +545,7 @@ TEST_F(NonClientFrameViewAshTest, BackButton) {
       delegate->non_client_frame_view();
   non_client_frame_view->SetCaptionButtonModel(std::move(model));
 
-  HeaderView* header_view =
-      static_cast<HeaderView*>(non_client_frame_view->GetHeaderView());
+  HeaderView* header_view = non_client_frame_view->GetHeaderView();
   EXPECT_FALSE(header_view->GetBackButton());
   model_ptr->SetVisible(CAPTION_BUTTON_ICON_BACK, true);
   non_client_frame_view->SizeConstraintsChanged();
@@ -665,8 +625,7 @@ TEST_F(NonClientFrameViewAshTest, CustomButtonModel) {
       delegate->non_client_frame_view();
   non_client_frame_view->SetCaptionButtonModel(std::move(model));
 
-  HeaderView* header_view =
-      static_cast<HeaderView*>(non_client_frame_view->GetHeaderView());
+  HeaderView* header_view = non_client_frame_view->GetHeaderView();
   FrameCaptionButtonContainerView::TestApi test_api(
       header_view->caption_button_container());
 
@@ -738,8 +697,7 @@ TEST_F(NonClientFrameViewAshTest, WideFrame) {
 
   NonClientFrameViewAsh* non_client_frame_view =
       delegate->non_client_frame_view();
-  HeaderView* header_view =
-      static_cast<HeaderView*>(non_client_frame_view->GetHeaderView());
+  HeaderView* header_view = non_client_frame_view->GetHeaderView();
   widget->Maximize();
 
   std::unique_ptr<WideFrameView> wide_frame_view =
@@ -763,7 +721,7 @@ TEST_F(NonClientFrameViewAshTest, WideFrame) {
   EXPECT_TRUE(wide_header_view->should_paint());
 
   // Test immersive.
-  ImmersiveFullscreenController controller;
+  ImmersiveFullscreenController controller(Shell::Get()->immersive_context());
   wide_frame_view->Init(&controller);
   EXPECT_FALSE(wide_header_view->in_immersive_mode());
   EXPECT_FALSE(header_view->in_immersive_mode());
@@ -955,90 +913,12 @@ TEST_P(NonClientFrameViewAshFrameColorTest, WideFrameInitialColor) {
   std::unique_ptr<WideFrameView> wide_frame_view =
       std::make_unique<WideFrameView>(widget.get());
   HeaderView* wide_header_view = wide_frame_view->header_view();
-  DefaultFrameHeader* header =
-      static_cast<DefaultFrameHeader*>(wide_header_view->GetFrameHeader());
+  DefaultFrameHeader* header = wide_header_view->GetFrameHeader();
   EXPECT_EQ(new_active_color, header->active_frame_color_for_testing());
   EXPECT_EQ(new_inactive_color, header->inactive_frame_color_for_testing());
 }
 
 // Run frame color tests with and without custom wm::WindowStateDelegate.
 INSTANTIATE_TEST_CASE_P(, NonClientFrameViewAshFrameColorTest, testing::Bool());
-
-class HomeLauncherNonClientFrameViewAshTest : public AshTestBase {
- public:
-  HomeLauncherNonClientFrameViewAshTest() = default;
-  ~HomeLauncherNonClientFrameViewAshTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        app_list::features::kEnableHomeLauncher);
-    AshTestBase::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HomeLauncherNonClientFrameViewAshTest);
-};
-
-// Tests the visibility of the caption button container when
-// kHideCaptionButtonsInTabletModeKey is set.
-TEST_F(HomeLauncherNonClientFrameViewAshTest,
-       TabletModeBrowserCaptionButtonVisibility) {
-  auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(
-      delegate, kShellWindowId_DefaultContainer, gfx::Rect(100, 0, 400, 500));
-  widget->GetNativeWindow()->SetProperty(kHideCaptionButtonsInTabletModeKey,
-                                         true);
-
-  FrameCaptionButtonContainerView* caption_buttons =
-      delegate->non_client_frame_view()
-          ->GetHeaderView()
-          ->caption_button_container();
-
-  EXPECT_TRUE(caption_buttons->visible());
-  ash::Shell* shell = ash::Shell::Get();
-  ash::TabletModeController* tablet_mode_controller =
-      shell->tablet_mode_controller();
-  tablet_mode_controller->EnableTabletModeWindowManager(true);
-  EXPECT_FALSE(caption_buttons->visible());
-
-  shell->window_selector_controller()->ToggleOverview();
-  EXPECT_FALSE(caption_buttons->visible());
-  shell->window_selector_controller()->ToggleOverview();
-  EXPECT_FALSE(caption_buttons->visible());
-
-  tablet_mode_controller->EnableTabletModeWindowManager(false);
-  EXPECT_TRUE(caption_buttons->visible());
-}
-
-// Tests the visibility of the caption button container when
-// kHideCaptionButtonsInTabletModeKey is not set.
-TEST_F(HomeLauncherNonClientFrameViewAshTest,
-       TabletModeAppCaptionButtonVisibility) {
-  auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(
-      delegate, kShellWindowId_DefaultContainer, gfx::Rect(100, 0, 400, 500));
-
-  FrameCaptionButtonContainerView* caption_buttons =
-      delegate->non_client_frame_view()
-          ->GetHeaderView()
-          ->caption_button_container();
-
-  EXPECT_TRUE(caption_buttons->visible());
-  ash::Shell* shell = ash::Shell::Get();
-  ash::TabletModeController* tablet_mode_controller =
-      shell->tablet_mode_controller();
-  tablet_mode_controller->EnableTabletModeWindowManager(true);
-  EXPECT_TRUE(caption_buttons->visible());
-
-  shell->window_selector_controller()->ToggleOverview();
-  EXPECT_FALSE(caption_buttons->visible());
-  shell->window_selector_controller()->ToggleOverview();
-  EXPECT_TRUE(caption_buttons->visible());
-
-  tablet_mode_controller->EnableTabletModeWindowManager(false);
-  EXPECT_TRUE(caption_buttons->visible());
-}
 
 }  // namespace ash

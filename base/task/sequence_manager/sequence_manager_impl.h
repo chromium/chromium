@@ -28,7 +28,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/enqueue_order.h"
-#include "base/task/sequence_manager/graceful_queue_shutdown_helper.h"
 #include "base/task/sequence_manager/moveable_auto_lock.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -90,7 +89,8 @@ class BASE_EXPORT SequenceManagerImpl
   // MessageLoop. The SequenceManager can be initialized on the current thread
   // and then needs to be bound and initialized on the target thread by calling
   // BindToCurrentThread() and CompleteInitializationOnBoundThread() during the
-  // thread's startup.
+  // thread's startup. If |message_loop| is null then BindToMessageLoop() must
+  // be called instead of CompleteInitializationOnBoundThread.
   //
   // This function should be called only once per MessageLoop.
   static std::unique_ptr<SequenceManagerImpl> CreateUnbound(
@@ -124,6 +124,7 @@ class BASE_EXPORT SequenceManagerImpl
   Optional<PendingTask> TakeTask() override;
   void DidRunTask() override;
   TimeDelta DelayTillNextTask(LazyNow* lazy_now) override;
+  bool HasPendingHighResolutionTasks() override;
 
   // Requests that a task to process work is posted on the main task runner.
   // These tasks are de-duplicated in two buckets: main-thread and all other
@@ -149,8 +150,9 @@ class BASE_EXPORT SequenceManagerImpl
   void UnregisterTaskQueueImpl(
       std::unique_ptr<internal::TaskQueueImpl> task_queue);
 
-  scoped_refptr<internal::GracefulQueueShutdownHelper>
-  GetGracefulQueueShutdownHelper() const;
+  // Schedule a call to UnregisterTaskQueueImpl as soon as it's safe to do so.
+  void ShutdownTaskQueueGracefully(
+      std::unique_ptr<internal::TaskQueueImpl> task_queue);
 
   const scoped_refptr<AssociatedThreadId>& associated_thread() const {
     return associated_thread_;
@@ -191,15 +193,15 @@ class BASE_EXPORT SequenceManagerImpl
   // selector interface is unaware of those.  This struct keeps track off all
   // task related state needed to make pairs of TakeTask() / DidRunTask() work.
   struct ExecutingTask {
-    ExecutingTask(internal::TaskQueueImpl::Task&& task,
+    ExecutingTask(Task&& task,
                   internal::TaskQueueImpl* task_queue,
                   TaskQueue::TaskTiming task_timing)
         : pending_task(std::move(task)),
           task_queue(task_queue),
           task_timing(task_timing),
-          task_type(pending_task.task_type()) {}
+          task_type(pending_task.task_type) {}
 
-    internal::TaskQueueImpl::Task pending_task;
+    Task pending_task;
     internal::TaskQueueImpl* task_queue = nullptr;
     TaskQueue::TaskTiming task_timing;
     // Save task metadata to use in after running a task as |pending_task|
@@ -251,6 +253,7 @@ class BASE_EXPORT SequenceManagerImpl
     std::vector<internal::TaskQueueImpl*> queues_to_reload;
 
     bool task_was_run_on_quiescence_monitored_queue = false;
+    bool nesting_observer_registered_ = false;
 
     // Due to nested runloops more than one task can be executing concurrently.
     std::list<ExecutingTask> task_execution_stack;
@@ -268,7 +271,7 @@ class BASE_EXPORT SequenceManagerImpl
   // Called by the task queue to inform this SequenceManager of a task that's
   // about to be queued. This SequenceManager may use this opportunity to add
   // metadata to |pending_task| before it is moved into the queue.
-  void WillQueueTask(internal::TaskQueueImpl::Task* pending_task);
+  void WillQueueTask(Task* pending_task);
 
   // Delayed Tasks with run_times <= Now() are enqueued onto the work queue and
   // reloads any empty work queues.
@@ -304,11 +307,10 @@ class BASE_EXPORT SequenceManagerImpl
   std::unique_ptr<internal::TaskQueueImpl> CreateTaskQueueImpl(
       const TaskQueue::Spec& spec) override;
 
-  void TakeQueuesToGracefullyShutdownFromHelper();
-
   // Deletes queues marked for deletion and empty queues marked for shutdown.
   void CleanUpQueues();
 
+  bool ShouldRecordTaskTiming(const internal::TaskQueueImpl* task_queue);
   bool ShouldRecordCPUTimeForTask();
 
   // Helper to terminate all scoped trace events to allow starting new ones
@@ -321,9 +323,6 @@ class BASE_EXPORT SequenceManagerImpl
       internal::TaskQueueImpl* task_queue);
 
   scoped_refptr<AssociatedThreadId> associated_thread_;
-
-  const scoped_refptr<internal::GracefulQueueShutdownHelper>
-      graceful_shutdown_helper_;
 
   internal::EnqueueOrder::Generator enqueue_order_generator_;
 

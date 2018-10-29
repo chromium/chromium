@@ -148,7 +148,7 @@ class SimpleIndexTest : public net::TestWithScopedTaskEnvironment,
 
   // Redirect to allow single "friend" declaration in base class.
   bool GetEntryForTesting(uint64_t key, EntryMetadata* metadata) {
-    SimpleIndex::EntrySet::iterator it = index_->entries_set_.find(key);
+    auto it = index_->entries_set_.find(key);
     if (index_->entries_set_.end() == it)
       return false;
     *metadata = it->second;

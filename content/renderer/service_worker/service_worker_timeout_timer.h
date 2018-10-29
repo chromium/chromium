@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -44,6 +45,17 @@ namespace content {
 // Does nothing except calls the abort callbacks upon destruction.
 class CONTENT_EXPORT ServiceWorkerTimeoutTimer {
  public:
+  // A token to keep the timeout timer from going into the idle state if any of
+  // them are alive.
+  class CONTENT_EXPORT StayAwakeToken {
+   public:
+    explicit StayAwakeToken(base::WeakPtr<ServiceWorkerTimeoutTimer> timer);
+    ~StayAwakeToken();
+
+   private:
+    base::WeakPtr<ServiceWorkerTimeoutTimer> timer_;
+  };
+
   explicit ServiceWorkerTimeoutTimer(base::RepeatingClosure idle_callback);
   // For testing.
   ServiceWorkerTimeoutTimer(base::RepeatingClosure idle_callback,
@@ -63,6 +75,10 @@ class CONTENT_EXPORT ServiceWorkerTimeoutTimer {
       base::OnceCallback<void(int /* event_id */)> abort_callback,
       base::TimeDelta timeout);
   void EndEvent(int event_id);
+
+  // Creates a StayAwakeToken to ensure that the idle timer won't be triggered
+  // while any of these are alive.
+  std::unique_ptr<StayAwakeToken> CreateStayAwakeToken();
 
   // Pushes a task which is expected to run after any event starts again to a
   // pending task queue. The tasks will run at the next StartEvent() call.
@@ -99,6 +115,10 @@ class CONTENT_EXPORT ServiceWorkerTimeoutTimer {
   // Triggers idle timer if |zero_idle_timer_delay_| is true. Returns true if
   // the idle callback is called.
   bool MaybeTriggerIdleTimer();
+
+  // Sets the |idle_time_| and maybe calls |idle_callback_| immediately if the
+  // timeout delay is set to zero.
+  void OnNoInflightEvent();
 
   // Returns true if there are running events.
   bool HasInflightEvent() const;
@@ -150,11 +170,16 @@ class CONTENT_EXPORT ServiceWorkerTimeoutTimer {
   // invoke |idle_callback_| when running |pending_tasks_|.
   bool running_pending_tasks_ = false;
 
+  // The number of the living StayAwakeToken. See also class comments.
+  int num_of_stay_awake_tokens_ = 0;
+
   // |timer_| invokes UpdateEventStatus() periodically.
   base::RepeatingTimer timer_;
 
   // |tick_clock_| outlives |this|.
   const base::TickClock* const tick_clock_;
+
+  base::WeakPtrFactory<ServiceWorkerTimeoutTimer> weak_factory_;
 };
 
 }  // namespace content

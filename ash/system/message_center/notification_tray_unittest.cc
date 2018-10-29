@@ -8,15 +8,15 @@
 #include <utility>
 #include <vector>
 
-#include "ash/message_center/message_center_bubble.h"
-#include "ash/message_center/message_center_ui_controller.h"
-#include "ash/message_center/message_center_view.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_popup_alignment_delegate.h"
+#include "ash/system/message_center/message_center_bubble.h"
+#include "ash/system/message_center/message_center_ui_controller.h"
+#include "ash/system/message_center/message_center_view.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"

@@ -47,8 +47,8 @@ class MODULES_EXPORT MediaRecorder final
   MediaStream* stream() const { return stream_.Get(); }
   const String& mimeType() const { return mime_type_; }
   String state() const;
-  unsigned long videoBitsPerSecond() const { return video_bits_per_second_; }
-  unsigned long audioBitsPerSecond() const { return audio_bits_per_second_; }
+  uint32_t videoBitsPerSecond() const { return video_bits_per_second_; }
+  uint32_t audioBitsPerSecond() const { return audio_bits_per_second_; }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(start);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(stop);

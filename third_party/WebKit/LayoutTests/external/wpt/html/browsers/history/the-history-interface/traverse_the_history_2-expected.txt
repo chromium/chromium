@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Multiple history traversals, last would be aborted assert_array_equals: Pages opened during history navigation property 1, expected 3 but got 1
-Harness: the test ran to completion.
-

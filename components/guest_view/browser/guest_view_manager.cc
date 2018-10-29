@@ -44,27 +44,26 @@ class GuestViewManager::EmbedderRenderProcessHostObserver
  public:
   EmbedderRenderProcessHostObserver(
       base::WeakPtr<GuestViewManager> guest_view_manager,
-      int embedder_process_id)
-      : guest_view_manager_(guest_view_manager), id_(embedder_process_id) {
-    RenderProcessHost* rph = RenderProcessHost::FromID(id_);
-    rph->AddObserver(this);
+      RenderProcessHost* host)
+      : guest_view_manager_(guest_view_manager) {
+    DCHECK(host);
+    host->AddObserver(this);
   }
 
-  ~EmbedderRenderProcessHostObserver() override {
-    RenderProcessHost* rph = RenderProcessHost::FromID(id_);
-    if (rph)
-      rph->RemoveObserver(this);
+  void RenderProcessExited(
+      RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override {
+    if (guest_view_manager_)
+      guest_view_manager_->EmbedderProcessDestroyed(host->GetID());
   }
 
   void RenderProcessHostDestroyed(RenderProcessHost* host) override {
-    if (guest_view_manager_)
-      guest_view_manager_->EmbedderProcessDestroyed(id_);
+    host->RemoveObserver(this);
     delete this;
   }
 
  private:
   base::WeakPtr<GuestViewManager> guest_view_manager_;
-  int id_;
 };
 
 GuestViewManager::GuestViewManager(
@@ -76,7 +75,9 @@ GuestViewManager::GuestViewManager(
       delegate_(std::move(delegate)),
       weak_ptr_factory_(this) {}
 
-GuestViewManager::~GuestViewManager() {}
+GuestViewManager::~GuestViewManager() {
+  DCHECK(view_destruction_callback_map_.empty());
+}
 
 // static
 GuestViewManager* GuestViewManager::CreateWithDelegate(
@@ -315,12 +316,10 @@ void GuestViewManager::ViewCreated(int embedder_process_id,
   }
 
   // Register the cleanup callback for when this view is destroyed.
-  RegisterViewDestructionCallback(embedder_process_id,
-                                  view_instance_id,
-                                  base::Bind(view_it->second.cleanup_function,
-                                             context_,
-                                             embedder_process_id,
-                                             view_instance_id));
+  RegisterViewDestructionCallback(
+      embedder_process_id, view_instance_id,
+      base::BindOnce(view_it->second.cleanup_function, context_,
+                     embedder_process_id, view_instance_id));
 }
 
 void GuestViewManager::ViewGarbageCollected(int embedder_process_id,
@@ -334,16 +333,16 @@ void GuestViewManager::CallViewDestructionCallbacks(int embedder_process_id,
   auto embedder_it = view_destruction_callback_map_.find(embedder_process_id);
   if (embedder_it == view_destruction_callback_map_.end())
     return;
-  CallbacksForEachViewID& callbacks_for_embedder = embedder_it->second;
+  auto& callbacks_for_embedder = embedder_it->second;
 
   // If |view_instance_id| is guest_view::kInstanceIDNone, then all callbacks
   // for this embedder should be called.
   if (view_instance_id == kInstanceIDNone) {
     // Call all callbacks for the embedder with ID |embedder_process_id|.
     for (auto& view_pair : callbacks_for_embedder) {
-      Callbacks& callbacks_for_view = view_pair.second;
+      auto& callbacks_for_view = view_pair.second;
       for (auto& callback : callbacks_for_view)
-        callback.Run();
+        std::move(callback).Run();
     }
     view_destruction_callback_map_.erase(embedder_it);
     return;
@@ -354,9 +353,9 @@ void GuestViewManager::CallViewDestructionCallbacks(int embedder_process_id,
   auto view_it = callbacks_for_embedder.find(view_instance_id);
   if (view_it == callbacks_for_embedder.end())
     return;
-  Callbacks& callbacks_for_view = view_it->second;
+  auto& callbacks_for_view = view_it->second;
   for (auto& callback : callbacks_for_view)
-    callback.Run();
+    std::move(callback).Run();
   callbacks_for_embedder.erase(view_it);
 }
 
@@ -386,17 +385,24 @@ void GuestViewManager::RegisterGuestViewTypes() {
 void GuestViewManager::RegisterViewDestructionCallback(
     int embedder_process_id,
     int view_instance_id,
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   // When an embedder is registered for the first time, create an observer to
   // watch for its destruction.
   if (!embedders_observed_.count(embedder_process_id)) {
+    RenderProcessHost* rph = RenderProcessHost::FromID(embedder_process_id);
+    // The RenderProcessHost may already be gone.
+    if (!rph) {
+      std::move(callback).Run();
+      return;
+    }
+
     embedders_observed_.insert(embedder_process_id);
-    /*new EmbedderRenderProcessHostObserver(weak_ptr_factory_.GetWeakPtr(),
-      embedder_process_id);*/
+    // EmbedderRenderProcessHostObserver owns itself.
+    new EmbedderRenderProcessHostObserver(weak_ptr_factory_.GetWeakPtr(), rph);
   }
 
   view_destruction_callback_map_[embedder_process_id][view_instance_id]
-      .push_back(callback);
+      .push_back(std::move(callback));
 }
 
 bool GuestViewManager::IsGuestAvailableToContext(GuestViewBase* guest) {

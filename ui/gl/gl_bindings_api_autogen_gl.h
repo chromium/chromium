@@ -119,7 +119,6 @@ void glColorMaskFn(GLboolean red,
                    GLboolean blue,
                    GLboolean alpha) override;
 void glCompileShaderFn(GLuint shader) override;
-void glCompressedCopyTextureCHROMIUMFn(GLuint sourceId, GLuint destId) override;
 void glCompressedTexImage2DFn(GLenum target,
                               GLint level,
                               GLenum internalformat,

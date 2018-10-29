@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<style>
+@keyframes spin {
+  0% { transform: rotate(20deg); }
+  100% { transform: none; }
+}
+
+@keyframes opac {
+  0% { opacity: 1.0; }
+  100% { opacity: 0.2; }
+}
+
+.animate1 {
+  animation: opac 0s;
+  animation-fill-mode: both;
+}
+
+.animate2 {
+  animation: spin 0s;
+  animation-fill-mode: both;
+}
+
+.animate3 {
+  animation: spin 0s, opac 0s;
+  animation-fill-mode: both, none;
+}
+
+.animate4 {
+  animation: spin 0s, opac 0s;
+  animation-fill-mode: none, both;
+}
+
+.target {
+  width: 10px;
+  height: 10px;
+  background: red;
+}
+
+.positioned {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 10px;
+  width: 10px;
+  background: lime;
+}
+</style>
+<div id="target1" class="animate1 target">
+  <div class="positioned"></div>
+</div>
+<div id="target2" class="animate2 target">
+  <div class="positioned"></div>
+</div>
+<div id="target3" class="animate3 target">
+  <div class="positioned"></div>
+</div>
+<div id="target4" class="animate4 target">
+  <div class="positioned"></div>
+</div>
+</html>

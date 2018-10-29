@@ -2,7 +2,6 @@ This test checks that the Overwrite mode is: 1) not exposed to JavaScript 2) que
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.queryCommandSupported('OverWrite') is false
 PASS document.queryCommandState('OverWrite') is false
 PASS successfullyParsed is true

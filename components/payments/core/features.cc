@@ -11,9 +11,6 @@ const base::Feature kReturnGooglePayInBasicCard{
     "ReturnGooglePayInBasicCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_IOS)
-const base::Feature kWebPayments{"WebPayments",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kWebPaymentsNativeApps{"WebPaymentsNativeApps",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif

@@ -67,6 +67,14 @@ std::unique_ptr<net::HttpRequestHeaders> CreateNetHttpRequestHeaders(
   return request_headers;
 }
 
+url::Origin AsUrlOrigin(const SecurityOrigin& origin) {
+  // "file:" origin is treated like an opaque unique origin when
+  // allow-file-access-from-files is not specified. Such origin is not
+  // opaque (i.e., IsOpaque() returns false) but still serializes to
+  // "null".
+  return origin.ToString() == "null" ? url::Origin() : origin.ToUrlOrigin();
+}
+
 }  // namespace
 
 namespace CORS {
@@ -77,15 +85,12 @@ base::Optional<network::CORSErrorStatus> CheckAccess(
     const HTTPHeaderMap& response_header,
     network::mojom::FetchCredentialsMode credentials_mode,
     const SecurityOrigin& origin) {
-  std::unique_ptr<SecurityOrigin::PrivilegeData> privilege =
-      origin.CreatePrivilegeData();
   return network::cors::CheckAccess(
       response_url, response_status_code,
       GetHeaderValue(response_header, HTTPNames::Access_Control_Allow_Origin),
       GetHeaderValue(response_header,
                      HTTPNames::Access_Control_Allow_Credentials),
-      credentials_mode, origin.ToUrlOrigin(),
-      !privilege->block_local_access_from_local_origin_);
+      credentials_mode, AsUrlOrigin(origin));
 }
 
 base::Optional<network::CORSErrorStatus> CheckPreflightAccess(
@@ -94,15 +99,12 @@ base::Optional<network::CORSErrorStatus> CheckPreflightAccess(
     const HTTPHeaderMap& response_header,
     network::mojom::FetchCredentialsMode actual_credentials_mode,
     const SecurityOrigin& origin) {
-  std::unique_ptr<SecurityOrigin::PrivilegeData> privilege =
-      origin.CreatePrivilegeData();
   return network::cors::CheckPreflightAccess(
       response_url, response_status_code,
       GetHeaderValue(response_header, HTTPNames::Access_Control_Allow_Origin),
       GetHeaderValue(response_header,
                      HTTPNames::Access_Control_Allow_Credentials),
-      actual_credentials_mode, origin.ToUrlOrigin(),
-      !privilege->block_local_access_from_local_origin_);
+      actual_credentials_mode, AsUrlOrigin(origin));
 }
 
 base::Optional<network::CORSErrorStatus> CheckRedirectLocation(
@@ -112,7 +114,7 @@ base::Optional<network::CORSErrorStatus> CheckRedirectLocation(
     CORSFlag cors_flag) {
   base::Optional<url::Origin> origin_to_pass;
   if (origin)
-    origin_to_pass = origin->ToUrlOrigin();
+    origin_to_pass = AsUrlOrigin(*origin);
 
   // Blink-side implementations rewrite the origin instead of setting the
   // tainted flag.
@@ -166,8 +168,10 @@ base::Optional<network::CORSErrorStatus> EnsurePreflightResultAndCacheOnSuccess(
   if (status)
     return status;
 
+  // |is_revalidating| is not needed for blink-side CORS.
+  constexpr bool is_revalidating = false;
   status = result->EnsureAllowedCrossOriginHeaders(
-      *CreateNetHttpRequestHeaders(request_header_map));
+      *CreateNetHttpRequestHeaders(request_header_map), is_revalidating);
   if (status)
     return status;
 
@@ -185,10 +189,12 @@ bool CheckIfRequestCanSkipPreflight(
   DCHECK(!origin.IsNull());
   DCHECK(!method.IsNull());
 
+  // |is_revalidating| is not needed for blink-side CORS.
+  constexpr bool is_revalidating = false;
   return GetPerThreadPreflightCache().CheckIfRequestCanSkipPreflight(
       std::string(origin.Ascii().data()), url, credentials_mode,
       std::string(method.Ascii().data()),
-      *CreateNetHttpRequestHeaders(request_header_map));
+      *CreateNetHttpRequestHeaders(request_header_map), is_revalidating);
 }
 
 network::mojom::FetchResponseType CalculateResponseTainting(
@@ -198,7 +204,7 @@ network::mojom::FetchResponseType CalculateResponseTainting(
     CORSFlag cors_flag) {
   base::Optional<url::Origin> origin_to_pass;
   if (origin)
-    origin_to_pass = origin->ToUrlOrigin();
+    origin_to_pass = AsUrlOrigin(*origin);
   return network::cors::CalculateResponseTainting(
       url, request_mode, origin_to_pass, cors_flag == CORSFlag::Set);
 }
@@ -273,7 +279,11 @@ bool ContainsOnlyCORSSafelistedOrForbiddenHeaders(
     in.push_back(net::HttpRequestHeaders::HeaderKeyValuePair(
         WebString(entry.key).Latin1(), WebString(entry.value).Latin1()));
   }
-  return network::cors::CORSUnsafeNotForbiddenRequestHeaderNames(in).empty();
+  // |is_revalidating| is not needed for blink-side CORS.
+  constexpr bool is_revalidating = false;
+  return network::cors::CORSUnsafeNotForbiddenRequestHeaderNames(
+             in, is_revalidating)
+      .empty();
 }
 
 bool IsOkStatus(int status) {

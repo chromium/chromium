@@ -54,8 +54,8 @@ AuthenticatorSupportedOptions::SetIsPlatformDevice(bool is_platform_device) {
   return *this;
 }
 
-cbor::CBORValue ConvertToCBOR(const AuthenticatorSupportedOptions& options) {
-  cbor::CBORValue::MapValue option_map;
+cbor::Value ConvertToCBOR(const AuthenticatorSupportedOptions& options) {
+  cbor::Value::MapValue option_map;
   option_map.emplace(kResidentKeyMapKey, options.supports_resident_key());
   option_map.emplace(kUserPresenceMapKey, options.user_presence_required());
   option_map.emplace(kPlatformDeviceMapKey, options.is_platform_device());
@@ -88,7 +88,7 @@ cbor::CBORValue ConvertToCBOR(const AuthenticatorSupportedOptions& options) {
       break;
   }
 
-  return cbor::CBORValue(std::move(option_map));
+  return cbor::Value(std::move(option_map));
 }
 
 }  // namespace device

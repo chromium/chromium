@@ -14,7 +14,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/memory/memory_coordinator_client_registry.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
@@ -28,6 +27,7 @@
 #include "content/browser/dom_storage/local_storage_context_mojo.h"
 #include "content/browser/dom_storage/session_storage_context_mojo.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/local_storage_usage_info.h"
@@ -36,6 +36,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "sql/database.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 namespace {
@@ -46,7 +47,7 @@ const char kSessionStorageDirectory[] = "Session Storage";
 void GetLegacyLocalStorageUsage(
     const base::FilePath& directory,
     scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner,
-    const DOMStorageContext::GetLocalStorageUsageCallback& callback) {
+    DOMStorageContext::GetLocalStorageUsageCallback callback) {
   std::vector<LocalStorageUsageInfo> infos;
   base::FileEnumerator enumerator(directory, false,
                                   base::FileEnumerator::FILES);
@@ -61,14 +62,14 @@ void GetLegacyLocalStorageUsage(
       infos.push_back(info);
     }
   }
-  reply_task_runner->PostTask(FROM_HERE,
-                              base::BindOnce(callback, std::move(infos)));
+  reply_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(infos)));
 }
 
 void InvokeLocalStorageUsageCallbackHelper(
-    const DOMStorageContext::GetLocalStorageUsageCallback& callback,
+    DOMStorageContext::GetLocalStorageUsageCallback callback,
     std::unique_ptr<std::vector<LocalStorageUsageInfo>> infos) {
-  callback.Run(*infos);
+  std::move(callback).Run(*infos);
 }
 
 void GetSessionStorageUsageHelper(
@@ -83,13 +84,13 @@ void GetSessionStorageUsageHelper(
 
 void CollectLocalStorageUsage(
     std::vector<LocalStorageUsageInfo>* out_info,
-    base::Closure done_callback,
+    base::OnceClosure done_callback,
     const std::vector<LocalStorageUsageInfo>& in_info) {
   out_info->insert(out_info->end(), in_info.begin(), in_info.end());
   std::move(done_callback).Run();
 }
 
-void GotMojoDeletionCallback(
+void GotMojoCallback(
     scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner,
     base::OnceClosure callback) {
   reply_task_runner->PostTask(FROM_HERE, std::move(callback));
@@ -97,10 +98,10 @@ void GotMojoDeletionCallback(
 
 void GotMojoLocalStorageUsage(
     scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner,
-    const DOMStorageContext::GetLocalStorageUsageCallback& callback,
+    DOMStorageContext::GetLocalStorageUsageCallback callback,
     std::vector<LocalStorageUsageInfo> usage) {
-  reply_task_runner->PostTask(FROM_HERE,
-                              base::BindOnce(callback, std::move(usage)));
+  reply_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(usage)));
 }
 
 void GotMojoSessionStorageUsage(
@@ -147,12 +148,13 @@ DOMStorageContextWrapper::DOMStorageContextWrapper(
     storage_dir = local_partition_path.AppendASCII(kLocalStorageDirectory);
   // TODO(dmurph): Change this to a sequenced task runner after
   // https://crbug.com/809255 is fixed.
-  mojo_task_runner_ = BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+  mojo_task_runner_ =
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO});
   mojo_state_ = new LocalStorageContextMojo(
       mojo_task_runner_, connector, context_->task_runner(),
       legacy_localstorage_path_, storage_dir, special_storage_policy);
 
-  if (base::FeatureList::IsEnabled(features::kMojoSessionStorage)) {
+  if (base::FeatureList::IsEnabled(blink::features::kOnionSoupDOMStorage)) {
     mojo_session_state_ = new SessionStorageContextMojo(
         mojo_task_runner_, connector,
 
@@ -169,13 +171,9 @@ DOMStorageContextWrapper::DOMStorageContextWrapper(
         local_partition_path, std::string(kSessionStorageDirectory));
   }
 
-  if (base::FeatureList::IsEnabled(features::kMemoryCoordinator)) {
-    base::MemoryCoordinatorClientRegistry::GetInstance()->Register(this);
-  } else {
-    memory_pressure_listener_.reset(new base::MemoryPressureListener(
-        base::BindRepeating(&DOMStorageContextWrapper::OnMemoryPressure,
-                            base::Unretained(this))));
-  }
+  memory_pressure_listener_.reset(new base::MemoryPressureListener(
+      base::BindRepeating(&DOMStorageContextWrapper::OnMemoryPressure,
+                          base::Unretained(this))));
 }
 
 DOMStorageContextWrapper::~DOMStorageContextWrapper() {
@@ -185,13 +183,13 @@ DOMStorageContextWrapper::~DOMStorageContextWrapper() {
 }
 
 void DOMStorageContextWrapper::GetLocalStorageUsage(
-    const GetLocalStorageUsageCallback& callback) {
+    GetLocalStorageUsageCallback callback) {
   DCHECK(context_.get());
   auto infos = std::make_unique<std::vector<LocalStorageUsageInfo>>();
   auto* infos_ptr = infos.get();
   base::RepeatingClosure got_local_storage_usage = base::BarrierClosure(
-      2, base::BindOnce(&InvokeLocalStorageUsageCallbackHelper, callback,
-                        std::move(infos)));
+      2, base::BindOnce(&InvokeLocalStorageUsageCallbackHelper,
+                        std::move(callback), std::move(infos)));
   auto collect_callback = base::BindRepeating(
       CollectLocalStorageUsage, infos_ptr, std::move(got_local_storage_usage));
   // base::Unretained is safe here, because the mojo_state_ won't be deleted
@@ -255,11 +253,24 @@ void DOMStorageContextWrapper::DeleteLocalStorage(const GURL& origin,
   // further tasks from being queued.
   mojo_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&LocalStorageContextMojo::DeleteStorage,
-                     base::Unretained(mojo_state_), url::Origin::Create(origin),
-                     base::BindOnce(&GotMojoDeletionCallback,
-                                    base::ThreadTaskRunnerHandle::Get(),
-                                    std::move(callback))));
+      base::BindOnce(
+          &LocalStorageContextMojo::DeleteStorage,
+          base::Unretained(mojo_state_), url::Origin::Create(origin),
+          base::BindOnce(&GotMojoCallback, base::ThreadTaskRunnerHandle::Get(),
+                         std::move(callback))));
+}
+
+void DOMStorageContextWrapper::PerformLocalStorageCleanup(
+    base::OnceClosure callback) {
+  DCHECK(context_.get());
+  DCHECK(callback);
+  mojo_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &LocalStorageContextMojo::PerformCleanup,
+          base::Unretained(mojo_state_),
+          base::BindOnce(&GotMojoCallback, base::ThreadTaskRunnerHandle::Get(),
+                         std::move(callback))));
 }
 
 void DOMStorageContextWrapper::DeleteSessionStorage(
@@ -349,9 +360,6 @@ void DOMStorageContextWrapper::Shutdown() {
   context_->task_runner()->PostShutdownBlockingTask(
       FROM_HERE, DOMStorageTaskRunner::PRIMARY_SEQUENCE,
       base::BindOnce(&DOMStorageContextImpl::Shutdown, context_));
-  if (base::FeatureList::IsEnabled(features::kMemoryCoordinator)) {
-    base::MemoryCoordinatorClientRegistry::GetInstance()->Unregister(this);
-  }
 }
 
 void DOMStorageContextWrapper::Flush() {
@@ -456,10 +464,6 @@ void DOMStorageContextWrapper::OnMemoryPressure(
     purge_option = DOMStorageContextImpl::PURGE_AGGRESSIVE;
   }
   PurgeMemory(purge_option);
-}
-
-void DOMStorageContextWrapper::OnPurgeMemory() {
-  PurgeMemory(DOMStorageContextImpl::PURGE_AGGRESSIVE);
 }
 
 void DOMStorageContextWrapper::PurgeMemory(DOMStorageContextImpl::PurgeOption

@@ -356,6 +356,11 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
               GetWidget()->GetNativeWindow(), preview_left
                                                   ? SplitViewController::LEFT
                                                   : SplitViewController::RIGHT);
+      gfx::Rect work_area_bounds = Shell::Get()
+                                       ->split_view_controller()
+                                       ->GetDisplayWorkAreaBoundsInScreen(
+                                           GetWidget()->GetNativeWindow());
+      preview_area_bounds.set_y(preview_area_bounds.y() - work_area_bounds.y());
       preview_area_bounds.Inset(kHighlightScreenEdgePaddingDp,
                                 kHighlightScreenEdgePaddingDp);
 

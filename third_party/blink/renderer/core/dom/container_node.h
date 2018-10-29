@@ -294,7 +294,7 @@ class CORE_EXPORT ContainerNode : public Node {
   void RebuildNonDistributedChildren();
 
   // -----------------------------------------------------------------------------
-  // Notification of document structure changes (see core/dom/Node.h for more
+  // Notification of document structure changes (see core/dom/node.h for more
   // notification methods)
 
   enum ChildrenChangeType {

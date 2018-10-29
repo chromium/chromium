@@ -91,14 +91,14 @@ void BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon(
     resource_loader_options.request_initiator_context = kWorkerContext;
 
   ResourceRequest resource_request(best_icon_url);
-  resource_request.SetRequestContext(WebURLRequest::kRequestContextImage);
+  resource_request.SetRequestContext(mojom::RequestContextType::IMAGE);
   resource_request.SetPriority(ResourceLoadPriority::kMedium);
-  resource_request.SetRequestorOrigin(execution_context->GetSecurityOrigin());
   resource_request.SetKeepalive(true);
   resource_request.SetFetchRequestMode(
       network::mojom::FetchRequestMode::kNoCORS);
   resource_request.SetFetchCredentialsMode(
       network::mojom::FetchCredentialsMode::kInclude);
+  resource_request.SetSkipServiceWorker(true);
 
   threadable_loader_ =
       new ThreadableLoader(*execution_context, this, resource_loader_options);
@@ -114,10 +114,18 @@ KURL BackgroundFetchIconLoader::PickBestIconForDisplay(
     // Update the src of |icon| to include the base URL in case relative paths
     // were used.
     icon.setSrc(execution_context->CompleteURL(icon.src()));
-    icons.emplace_back(blink::ConvertManifestImageResource(icon));
+    Manifest::ImageResource candidate_icon =
+        blink::ConvertManifestImageResource(icon);
+    // Provide default values for 'purpose' and 'sizes' if they are missing.
+    if (candidate_icon.sizes.empty())
+      candidate_icon.sizes.emplace_back(gfx::Size(0, 0));
+    if (candidate_icon.purpose.empty()) {
+      candidate_icon.purpose.emplace_back(
+          Manifest::ImageResource::Purpose::ANY);
+    }
+    icons.emplace_back(candidate_icon);
   }
 
-  // TODO(crbug.com/868875): Handle cases where `sizes` or `purpose` is empty.
   return KURL(ManifestIconSelector::FindBestMatchingIcon(
       std::move(icons), icon_display_size_pixels_.height, kMinimumIconSizeInPx,
       Manifest::ImageResource::Purpose::ANY));
@@ -154,7 +162,7 @@ void BackgroundFetchIconLoader::DidFinishLoading(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       Platform::Current()->CurrentThread()->GetTaskRunner();
 
-  BackgroundScheduler::PostOnBackgroundThread(
+  background_scheduler::PostOnBackgroundThread(
       FROM_HERE,
       CrossThreadBind(
           &BackgroundFetchIconLoader::DecodeAndResizeImageOnBackgroundThread,
@@ -168,13 +176,10 @@ void BackgroundFetchIconLoader::DecodeAndResizeImageOnBackgroundThread(
   DCHECK(task_runner);
   DCHECK(data);
 
-  // Explicitly pass in the |icon_display_size_pixels_| to benefit from decoders
-  // that have optimizations for partial decoding.
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       std::move(data), /* data_complete= */ true,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::TransformToSRGB(),
-      {icon_display_size_pixels_.width, icon_display_size_pixels_.height});
+      ColorBehavior::TransformToSRGB());
 
   int64_t ideal_to_chosen_icon_size_times_hundred = -1;
   if (decoder) {

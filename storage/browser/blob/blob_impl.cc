@@ -4,8 +4,10 @@
 
 #include "storage/browser/blob/blob_impl.h"
 
+#include <limits>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/disk_cache.h"
@@ -108,7 +110,10 @@ void BlobImpl::ReadRange(uint64_t offset,
                          mojo::ScopedDataPipeProducerHandle handle,
                          blink::mojom::BlobReaderClientPtr client) {
   MojoBlobReader::Create(
-      handle_.get(), net::HttpByteRange::Bounded(offset, offset + length - 1),
+      handle_.get(),
+      (length == std::numeric_limits<uint64_t>::max())
+          ? net::HttpByteRange::RightUnbounded(offset)
+          : net::HttpByteRange::Bounded(offset, offset + length - 1),
       std::make_unique<ReaderDelegate>(std::move(handle), std::move(client)));
 }
 

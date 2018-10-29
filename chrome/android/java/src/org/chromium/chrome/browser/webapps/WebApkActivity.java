@@ -54,8 +54,13 @@ public class WebApkActivity extends WebappActivity {
     }
 
     @Override
-    protected boolean isVerified() {
-        return true;
+    public int getActivityType() {
+        return ActivityType.WEBAPK;
+    }
+
+    @Override
+    public @WebappScopePolicy.Type int scopePolicy() {
+        return WebappScopePolicy.Type.STRICT;
     }
 
     @Override

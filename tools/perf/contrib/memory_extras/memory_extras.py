@@ -73,7 +73,6 @@ class LongRunningMemoryBenchmarkSitesDesktop(memory._MemoryInfra):
   options = {
     'pageset_repeat': 30,
     'use_live_sites': True,
-    'output_formats': ['json']
   }
 
   def CreateStorySet(self, options):

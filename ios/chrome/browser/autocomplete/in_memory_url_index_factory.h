@@ -31,7 +31,7 @@ class InMemoryURLIndexFactory : public BrowserStateKeyedServiceFactory {
 
   // Returns the default factory used to build InMemoryURLIndexs. Can be
   // registered with SetTestingFactory to use real instances during testing.
-  static TestingFactoryFunction GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend struct base::DefaultSingletonTraits<InMemoryURLIndexFactory>;

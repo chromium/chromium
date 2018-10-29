@@ -38,12 +38,12 @@ namespace autofill {
 
 namespace {
 
-void PassRiskData(const base::Callback<void(const std::string&)>& callback,
+void PassRiskData(base::OnceCallback<void(const std::string&)> callback,
                   std::unique_ptr<risk::Fingerprint> fingerprint) {
   std::string proto_data, risk_data;
   fingerprint->SerializeToString(&proto_data);
   base::Base64Encode(proto_data, &risk_data);
-  callback.Run(risk_data);
+  std::move(callback).Run(risk_data);
 }
 
 #if !defined(OS_ANDROID)
@@ -66,10 +66,9 @@ ui::BaseWindow* GetBaseWindowForWebContents(
 
 }  // namespace
 
-void LoadRiskData(
-    uint64_t obfuscated_gaia_id,
-    content::WebContents* web_contents,
-    const base::RepeatingCallback<void(const std::string&)>& callback) {
+void LoadRiskData(uint64_t obfuscated_gaia_id,
+                  content::WebContents* web_contents,
+                  base::OnceCallback<void(const std::string&)> callback) {
   // No easy way to get window bounds on Android, and that signal isn't very
   // useful anyway (given that we're also including the bounds of the web
   // contents).
@@ -96,7 +95,7 @@ void LoadRiskData(
       obfuscated_gaia_id, window_bounds, web_contents,
       version_info::GetVersionNumber(), charset, accept_languages, install_time,
       g_browser_process->GetApplicationLocale(), GetUserAgent(),
-      base::Bind(PassRiskData, callback), connector);
+      base::BindOnce(PassRiskData, std::move(callback)), connector);
 }
 
 }  // namespace autofill

@@ -30,6 +30,15 @@ class CrostiniPackageInstallerService
 
   void NotificationClosed(CrostiniPackageInstallerNotification* notification);
 
+  // The package installer service caches the most recent retrieved package
+  // info, for use in a package install notification.
+  // TODO(timloh): Actually cache the values.
+  void GetLinuxPackageInfo(
+      const std::string& vm_name,
+      const std::string& container_name,
+      const std::string& package_path,
+      CrostiniManager::GetLinuxPackageInfoCallback callback);
+
   // Install a Linux package. If successfully started, a system notification
   // will be used to display further updates.
   void InstallLinuxPackage(
@@ -47,12 +56,19 @@ class CrostiniPackageInstallerService
       const std::string& failure_reason) override;
 
  private:
+  // Wraps the callback provided in GetLinuxPackageInfo().
+  void OnGetLinuxPackageInfo(
+      const std::string& vm_name,
+      const std::string& container_name,
+      CrostiniManager::GetLinuxPackageInfoCallback callback,
+      const LinuxPackageInfo& linux_package_info);
+
   // Wraps the callback provided in InstallLinuxPackage().
   void OnInstallLinuxPackage(
       const std::string& vm_name,
       const std::string& container_name,
       CrostiniManager::InstallLinuxPackageCallback callback,
-      ConciergeClientResult result,
+      CrostiniResult result,
       const std::string& failure_reason);
 
   std::string GetUniqueNotificationId();

@@ -158,7 +158,7 @@ DEFINE_ELEMENT_DATA_TYPE_CASTS(ShareableElementData,
 // UniqueElementData is created when an element needs to mutate its attributes
 // or gains presentation attribute style (ex. width="10"). It does not need to
 // be created to fill in values in the ElementData that are derived from
-// attributes. For example populating the m_inlineStyle from the style attribute
+// attributes. For example populating the inline_style_ from the style attribute
 // doesn't require a UniqueElementData as all elements with the same style
 // attribute will have the same inline style.
 class UniqueElementData final : public ElementData {

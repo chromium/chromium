@@ -2,7 +2,6 @@ crbug.com/344310: crash in WebCore::CSSStyleSheet::sheetLoaded.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

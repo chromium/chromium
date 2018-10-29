@@ -82,7 +82,7 @@ class FileSystemOperationImplWriteTest : public testing::Test {
 
     file_system_context_->operation_runner()->CreateFile(
         URLForPath(virtual_path_), true /* exclusive */,
-        base::Bind(&AssertStatusEq, base::File::FILE_OK));
+        base::BindOnce(&AssertStatusEq, base::File::FILE_OK));
 
     static_cast<TestFileSystemBackend*>(
         file_system_context_->GetFileSystemBackend(kFileSystemType))
@@ -121,13 +121,13 @@ class FileSystemOperationImplWriteTest : public testing::Test {
 
   // Callback function for recording test results.
   FileSystemOperation::WriteCallback RecordWriteCallback() {
-    return base::Bind(&FileSystemOperationImplWriteTest::DidWrite,
-                      weak_factory_.GetWeakPtr());
+    return base::BindRepeating(&FileSystemOperationImplWriteTest::DidWrite,
+                               weak_factory_.GetWeakPtr());
   }
 
   FileSystemOperation::StatusCallback RecordCancelCallback() {
-    return base::Bind(&FileSystemOperationImplWriteTest::DidCancel,
-                      weak_factory_.GetWeakPtr());
+    return base::BindOnce(&FileSystemOperationImplWriteTest::DidCancel,
+                          weak_factory_.GetWeakPtr());
   }
 
   void DidWrite(base::File::Error status, int64_t bytes, bool complete) {
@@ -237,7 +237,7 @@ TEST_F(FileSystemOperationImplWriteTest, TestWriteDir) {
   base::FilePath virtual_dir_path(FILE_PATH_LITERAL("d"));
   file_system_context_->operation_runner()->CreateDirectory(
       URLForPath(virtual_dir_path), true /* exclusive */, false /* recursive */,
-      base::Bind(&AssertStatusEq, base::File::FILE_OK));
+      base::BindOnce(&AssertStatusEq, base::File::FILE_OK));
 
   ScopedTextBlob blob(url_request_context(), "blob:writedir",
                       "It\'ll not be written, too.");
@@ -259,8 +259,9 @@ TEST_F(FileSystemOperationImplWriteTest, TestWriteDir) {
 
 TEST_F(FileSystemOperationImplWriteTest, TestWriteFailureByQuota) {
   ScopedTextBlob blob(url_request_context(), "blob:success", "Hello, world!\n");
-  quota_manager_->SetQuota(
-      kOrigin, FileSystemTypeToQuotaStorageType(kFileSystemType), 10);
+  quota_manager_->SetQuota(url::Origin::Create(kOrigin),
+                           FileSystemTypeToQuotaStorageType(kFileSystemType),
+                           10);
   file_system_context_->operation_runner()->Write(URLForPath(virtual_path_),
                                                   blob.GetBlobDataHandle(), 0,
                                                   RecordWriteCallback());

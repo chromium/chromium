@@ -171,9 +171,9 @@ class MetricsService : public base::HistogramFlattener {
   void PushExternalLog(const std::string& log);
 
   // Updates data usage tracking prefs with the specified values.
-  void UpdateMetricsUsagePrefs(const std::string& service_name,
-                               int message_size,
-                               bool is_cellular);
+  void UpdateMetricsUsagePrefs(int message_size,
+                               bool is_cellular,
+                               bool is_metrics_service_usage);
 
   variations::SyntheticTrialRegistry* synthetic_trial_registry() {
     return &synthetic_trial_registry_;
@@ -308,6 +308,12 @@ class MetricsService : public base::HistogramFlattener {
   // i.e., histograms with the |kUmaStabilityHistogramFlag| flag set.
   void RecordCurrentStabilityHistograms();
 
+  // Handle completion of PrepareProviderMetricsLog which is run as a
+  // background task.
+  void PrepareProviderMetricsLogDone(
+      std::unique_ptr<MetricsLog::IndependentMetricsLoader> loader,
+      bool success);
+
   // Record a single independent profile and associated histogram from
   // metrics providers. If this returns true, one was found and there may
   // be more.
@@ -379,6 +385,9 @@ class MetricsService : public base::HistogramFlattener {
   base::TimeTicks last_updated_time_;
 
   variations::SyntheticTrialRegistry synthetic_trial_registry_;
+
+  // Indicates if loading of independent metrics is currently active.
+  bool independent_loader_active_ = false;
 
   // Redundant marker to check that we completed our shutdown, and set the
   // exited-cleanly bit in the prefs.

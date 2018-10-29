@@ -19,11 +19,27 @@
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 
-namespace media {
+namespace {
+
+void EnsureRunsOnCFRunLoopEnabledThread() {
+  static bool has_checked_cfrunloop_for_video_capture = false;
+  if (!has_checked_cfrunloop_for_video_capture) {
+    base::ScopedCFTypeRef<CFRunLoopMode> mode(
+        CFRunLoopCopyCurrentMode(CFRunLoopGetCurrent()));
+    CHECK(mode != NULL)
+        << "The MacOS video capture code must be run on a CFRunLoop-enabled "
+           "thread";
+    has_checked_cfrunloop_for_video_capture = true;
+  }
+}
 
 // Blacklisted devices are identified by a characteristic trailing substring of
 // uniqueId. At the moment these are just Blackmagic devices.
 const char* kBlacklistedCamerasIdSignature[] = {"-01FDA82C8A9C"};
+
+}  // anonymous namespace
+
+namespace media {
 
 static bool IsDeviceBlacklisted(
     const VideoCaptureDeviceDescriptor& descriptor) {
@@ -52,6 +68,7 @@ std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryMac::CreateDevice(
     const VideoCaptureDeviceDescriptor& descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_NE(descriptor.capture_api, VideoCaptureApi::UNKNOWN);
+  EnsureRunsOnCFRunLoopEnabledThread();
 
   std::unique_ptr<VideoCaptureDevice> capture_device;
   if (descriptor.capture_api == VideoCaptureApi::MACOSX_DECKLINK) {
@@ -70,6 +87,8 @@ std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryMac::CreateDevice(
 void VideoCaptureDeviceFactoryMac::GetDeviceDescriptors(
     VideoCaptureDeviceDescriptors* device_descriptors) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  EnsureRunsOnCFRunLoopEnabledThread();
+
   // Loop through all available devices and add to |device_descriptors|.
   NSDictionary* capture_devices;
   DVLOG(1) << "Enumerating video capture devices using AVFoundation";

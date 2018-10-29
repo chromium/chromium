@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 400x400
-  LayoutSVGRoot {svg} at (0,0) size 400x400
-    LayoutSVGContainer {g} at (125,100) size 75x200
-      LayoutSVGPath {path} at (125,100) size 75x200 [stroke={[type=SOLID] [color=#800000]}] [fill={[type=SOLID] [color=#FF0000]}] [data="M 200 100 C 100 150 100 250 200 300"]
-    LayoutSVGEllipse {circle} at (100,100) size 200x200 [stroke={[type=SOLID] [color=#00FF00]}] [fill={[type=SOLID] [color=#008000]}] [cx=200.00] [cy=200.00] [r=100.00]

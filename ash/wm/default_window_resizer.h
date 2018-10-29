@@ -33,6 +33,7 @@ class ASH_EXPORT DefaultWindowResizer : public WindowResizer {
   void Drag(const gfx::Point& location, int event_flags) override;
   void CompleteDrag() override;
   void RevertDrag() override;
+  void FlingOrSwipe(ui::GestureEvent* event) override;
 
  private:
   explicit DefaultWindowResizer(wm::WindowState* window_state);

@@ -9,6 +9,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model_impl/model_type_store_backend.h"
@@ -147,9 +148,9 @@ class LevelDbWriteBatch : public BlockingModelTypeStoreImpl::WriteBatch {
 
 BlockingModelTypeStoreImpl::BlockingModelTypeStoreImpl(
     ModelType type,
-    ModelTypeStoreBackend* backend)
+    scoped_refptr<ModelTypeStoreBackend> backend)
     : type_(type),
-      backend_(backend),
+      backend_(std::move(backend)),
       data_prefix_(FormatDataPrefix(type)),
       metadata_prefix_(FormatMetaPrefix(type)),
       global_metadata_key_(FormatGlobalMetadataKey(type)) {
@@ -239,6 +240,9 @@ base::Optional<ModelError> BlockingModelTypeStoreImpl::CommitWriteBatch(
   std::unique_ptr<LevelDbWriteBatch> write_batch_impl(
       static_cast<LevelDbWriteBatch*>(write_batch.release()));
   DCHECK_EQ(write_batch_impl->GetModelType(), type_);
+  UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeStoreCommitCount",
+                            ModelTypeToHistogramInt(type_),
+                            static_cast<int>(MODEL_TYPE_COUNT));
   return backend_->WriteModifications(
       LevelDbWriteBatch::ToLevelDbWriteBatch(std::move(write_batch_impl)));
 }

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_replacement.h"
 
 #include <memory>
+
+#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
@@ -33,7 +35,7 @@ TEST(TextCodecReplacement, DecodesToFFFD) {
 
   bool saw_error = false;
   const char kTestCase[] = "hello world";
-  size_t test_case_size = sizeof(kTestCase) - 1;
+  wtf_size_t test_case_size = sizeof(kTestCase) - 1;
 
   const String result =
       codec->Decode(kTestCase, test_case_size, FlushBehavior::kDataEOF,
@@ -49,7 +51,7 @@ TEST(TextCodecReplacement, EncodesToUTF8) {
 
   // "Kanji" in Chinese characters.
   const UChar kTestCase[] = {0x6F22, 0x5B57};
-  size_t test_case_size = arraysize(kTestCase);
+  wtf_size_t test_case_size = base::size(kTestCase);
   CString result =
       codec->Encode(kTestCase, test_case_size, kEntitiesForUnencodables);
 

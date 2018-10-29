@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -136,7 +137,7 @@ bool IDBValueWrapper::WrapIfBiggerThan(unsigned max_bytes) {
   DCHECK(owns_wire_bytes_) << __func__ << " called after TakeWireBytes()";
 #endif  // DCHECK_IS_ON()
 
-  unsigned wire_data_size = wire_data_.size();
+  size_t wire_data_size = wire_data_.size();
   if (wire_data_size <= max_bytes)
     return false;
 
@@ -154,7 +155,8 @@ bool IDBValueWrapper::WrapIfBiggerThan(unsigned max_bytes) {
   wire_data_buffer_.push_back(kVersionTag);
   wire_data_buffer_.push_back(kRequiresProcessingSSVPseudoVersion);
   wire_data_buffer_.push_back(kReplaceWithBlob);
-  IDBValueWrapper::WriteVarInt(wire_data_size, wire_data_buffer_);
+  IDBValueWrapper::WriteVarInt(SafeCast<unsigned>(wire_data_size),
+                               wire_data_buffer_);
   IDBValueWrapper::WriteVarInt(serialized_value_->BlobDataHandles().size(),
                                wire_data_buffer_);
 

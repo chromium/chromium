@@ -27,7 +27,11 @@
   cell.accessibilityTraits = self.accessibilityTraits;
   cell.accessibilityIdentifier = self.accessibilityIdentifier;
   if (!cell.backgroundView) {
-    cell.backgroundColor = styler.tableViewBackgroundColor;
+    if (styler.cellBackgroundColor) {
+      cell.backgroundColor = styler.cellBackgroundColor;
+    } else {
+      cell.backgroundColor = styler.tableViewBackgroundColor;
+    }
   }
   // Since this Cell might get reconfigured while it's being highlighted,
   // re-setting the selectedBackgroundView will interrupt the higlight

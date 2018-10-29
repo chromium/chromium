@@ -36,6 +36,8 @@ class WakeLock final : public EventTargetWithInlineData,
 
   // Called by NavigatorWakeLock to create Screen Wake Lock
   static WakeLock* CreateScreenWakeLock(ScriptState*);
+  // Called by NavigatorWakeLock to create System Wake Lock
+  static WakeLock* CreateSystemWakeLock(ScriptState*);
 
   // Resolves and returns same promise of that particular WakeLockType each time
   ScriptPromise GetPromise(ScriptState*);

@@ -215,7 +215,9 @@ class KeyboardControllerTest : public aura::test::AuraTestBase,
     is_visible_ = is_visible;
     is_visible_number_of_calls_++;
   }
-  void OnKeyboardDisabled() override { keyboard_disabled_ = true; }
+  void OnKeyboardEnabledChanged(bool is_enabled) override {
+    keyboard_disabled_ = !is_enabled;
+  }
   void ClearKeyboardDisabled() { keyboard_disabled_ = false; }
 
   int visible_bounds_number_of_calls() const {

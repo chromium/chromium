@@ -54,8 +54,13 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver {
   // Shows or hides the overlay.
   void Show(bool visible);
 
+  // Update the position and size of toast.
+  void UpdateOverlayBounds();
+
  private:
   friend class ToastManagerTest;
+
+  class ToastDisplayObserver;
 
   // Returns the current bounds of the overlay, which is based on visibility.
   gfx::Rect CalculateOverlayBounds();
@@ -73,6 +78,8 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver {
   const base::Optional<base::string16> dismiss_text_;
   std::unique_ptr<views::Widget> overlay_widget_;
   std::unique_ptr<ToastOverlayView> overlay_view_;
+  std::unique_ptr<ToastDisplayObserver> display_observer_;
+
   gfx::Size widget_size_;
 
   DISALLOW_COPY_AND_ASSIGN(ToastOverlay);

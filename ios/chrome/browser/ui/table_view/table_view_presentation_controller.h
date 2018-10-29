@@ -9,6 +9,18 @@
 
 #import "ios/chrome/browser/ui/table_view/table_view_modal_presenting.h"
 
+namespace {
+
+// Positions on the screen for the presented view controller.
+typedef NS_ENUM(NSInteger, TablePresentationPosition) {
+  // The position will be in the trailing side.
+  TablePresentationPositionTrailing = 0,
+  // The position will be in the leading side.
+  TablePresentationPositionLeading
+};
+
+}  // namespace
+
 @protocol TableViewPresentationControllerDelegate;
 
 @interface TableViewPresentationController
@@ -17,6 +29,10 @@
 // This controller's delegate.
 @property(nonatomic, weak) id<TableViewPresentationControllerDelegate>
     modalDelegate;
+
+// Position of the presented controller relative to the screen. Default is
+// TablePresentationPositionTrailing.
+@property(nonatomic, assign) TablePresentationPosition position;
 
 @end
 

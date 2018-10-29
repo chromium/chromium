@@ -237,10 +237,14 @@ static inline LayoutUnit ColumnLogicalHeightRequirementForLine(
   // satisfy orphans and widows, and that may affect the minimum page height.
   unsigned minimum_line_count =
       std::max<unsigned>(style.Orphans(), style.Widows());
-  const RootInlineBox* first_line = &last_line;
-  for (unsigned i = 1; i < minimum_line_count && first_line->PrevRootBox(); i++)
-    first_line = first_line->PrevRootBox();
-  return last_line.LineBottomWithLeading() - first_line->LineTopWithLeading();
+  const RootInlineBox* line = &last_line;
+  LayoutUnit logical_height_requirement;
+  for (unsigned i = 0; i < minimum_line_count && line; i++) {
+    logical_height_requirement +=
+        line->LineBottomWithLeading() - line->LineTopWithLeading();
+    line = line->PrevRootBox();
+  }
+  return logical_height_requirement;
 }
 
 void InitialColumnHeightFinder::ExamineLine(const RootInlineBox& line) {

@@ -595,7 +595,7 @@ static void DispatchInputEvent(Element* target,
                                InputEvent::EventIsComposing is_composing) {
   if (!target)
     return;
-  // TODO(chongz): Pass appreciate |ranges| after it's defined on spec.
+  // TODO(editing-dev): Pass appreciate |ranges| after it's defined on spec.
   // http://w3c.github.io/editing/input-events.html#dom-inputevent-inputtype
   InputEvent* const input_event =
       InputEvent::CreateInput(input_type, data, is_composing, nullptr);

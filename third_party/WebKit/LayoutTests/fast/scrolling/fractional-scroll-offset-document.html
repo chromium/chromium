@@ -1,48 +1,78 @@
 <!DOCTYPE HTML>
-<body style="width:30000px;height:30000px" onload="runTest()">
-</body>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+<style>
+  body,html {
+    margin: 0;
+    width: 10000px;
+    height: 10000px;
+  }
+</style>
 
-<script src="../../resources/js-test.js"></script>
 <script>
-description("Verifies that document scrolling supports fractional offset.");
+  const scroller = document.scrollingElement;
+  let floatPrecision = 0.00001;
 
-var floatPrecision = 0.00001;
-var useIntegerScrollOffset = true;
-function checkScrollOffset(offset_x, offset_y)
-{
-    if (useIntegerScrollOffset) {
-        offset_x = Math.floor(offset_x);
-        offset_y = Math.floor(offset_y);
-    }
-    shouldBeCloseTo('document.scrollingElement.scrollTop', offset_y, floatPrecision);
-    shouldBeCloseTo('document.scrollingElement.scrollLeft', offset_x, floatPrecision);
-}
+  window.addEventListener('load', async () => {
+    await waitForCompositorCommit();
 
-function scroll()
-{
-    window.scrollTo(0, 0);
-    eventSender.gestureScrollBegin(100.1, 300.2);
-    checkScrollOffset(0, 0);
-    eventSender.gestureScrollUpdate(-20.5, -10.2);
-    checkScrollOffset(20.5, 10.2);
-    eventSender.gestureScrollUpdate(10.9, -20.9);
-    checkScrollOffset(9.6, 31.1);
-    eventSender.gestureScrollUpdate(100.4, 220.9);
-    checkScrollOffset(0.0, 0.0);
-    eventSender.gestureScrollEnd(0, 0);
-}
+    promise_test(async () => {
+      scroller.scrollTop = 0;
+      scroller.scrollLeft = 0;
+      const distance = 5;
+      const x = 400;
+      const y = 300;
+      const precise_deltas = true;
 
-function runTest()
-{
-    if (window.eventSender) {
-      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
-          debug("fractional scroll offset mode");
-          internals.settings.setPreferCompositingToLCDTextEnabled(true);
-          useIntegerScrollOffset = true;
+      if (window.internals) {
+        window.internals.setPageScaleFactor(4);
+        window.internals.setVisualViewportOffset(600, 450);
+        await waitForCompositorCommit();
       }
-      scroll();
-    }
-}
 
+      let expected_scroll = distance / window.visualViewport.scale;
+
+      // If fractional scroll offsets are enabled, the expected scroll offset
+      // should be the actuall fractional distance we scrolled. Otherwise the
+      // offset should be truncated.
+      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
+        assert_not_equals(expected_scroll,
+                          Math.round(expected_scroll),
+                          'Expected scroll should be fractional');
+      } else {
+        expected_scroll = Math.floor(expected_scroll);
+      }
+
+      // Scroll Vertically
+      await smoothScroll(distance,
+                         x, y,
+                         GestureSourceType.TOUCHPAD_INPUT,
+                         'down',
+                         SPEED_INSTANT,
+                         precise_deltas);
+
+      await waitFor(() => { return scroller.scrollTop >= expected_scroll; },
+                    "Didn't scroll to expected value.");
+      await waitForCompositorCommit();
+      assert_approx_equals(scroller.scrollTop, expected_scroll, floatPrecision);
+
+      await waitForCompositorCommit();
+
+      // Scroll Horizontally
+      await smoothScroll(distance,
+                         x, y,
+                         GestureSourceType.TOUCHPAD_INPUT,
+                         'right',
+                         SPEED_INSTANT,
+                         precise_deltas);
+
+      await waitFor(() => { return scroller.scrollLeft >= expected_scroll; },
+                    "Didn't scroll to expected value.");
+
+      await waitForCompositorCommit();
+
+      assert_approx_equals(scroller.scrollLeft, expected_scroll, floatPrecision);
+    }, 'Scrolling while zoomed scroller preserves fractional offsets.');
+  });
 </script>
-</html>

@@ -92,8 +92,7 @@ void ForceSigninVerifier::OnConnectionChanged(
   if (backoff_request_timer_.IsRunning())
     backoff_request_timer_.Stop();
 
-  if (type != network::mojom::ConnectionType::CONNECTION_NONE)
-    SendRequest();
+  SendRequestIfNetworkAvailable(type);
 }
 
 void ForceSigninVerifier::Cancel() {
@@ -108,8 +107,21 @@ bool ForceSigninVerifier::HasTokenBeenVerified() {
 }
 
 void ForceSigninVerifier::SendRequest() {
-  if (!ShouldSendRequest())
+  auto type = network::mojom::ConnectionType::CONNECTION_NONE;
+  if (content::GetNetworkConnectionTracker()->GetConnectionType(
+          &type,
+          base::BindOnce(&ForceSigninVerifier::SendRequestIfNetworkAvailable,
+                         base::Unretained(this)))) {
+    SendRequestIfNetworkAvailable(type);
+  }
+}
+
+void ForceSigninVerifier::SendRequestIfNetworkAvailable(
+    network::mojom::ConnectionType network_type) {
+  if (network_type == network::mojom::ConnectionType::CONNECTION_NONE ||
+      !ShouldSendRequest()) {
     return;
+  }
 
   std::string account_id = signin_manager_->GetAuthenticatedAccountId();
   OAuth2TokenService::ScopeSet oauth2_scopes;
@@ -119,11 +131,7 @@ void ForceSigninVerifier::SendRequest() {
 }
 
 bool ForceSigninVerifier::ShouldSendRequest() {
-  auto type = network::mojom::ConnectionType::CONNECTION_NONE;
-  content::GetNetworkConnectionTracker()->GetConnectionType(&type,
-                                                            base::DoNothing());
   return !has_token_verified_ && access_token_request_.get() == nullptr &&
-         type != network::mojom::ConnectionType::CONNECTION_NONE &&
          signin_manager_->IsAuthenticated();
 }
 

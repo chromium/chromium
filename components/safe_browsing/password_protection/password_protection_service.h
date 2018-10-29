@@ -89,10 +89,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
       LoginReputationClientResponse* verdict,
       const base::Time& receive_time);
 
-  // Migrates cached password reuse verdicts such that verdicts of different
-  // reused password type are cached separately.
-  void MigrateCachedVerdicts();
-
   // Removes all the expired verdicts from cache.
   void CleanUpExpiredVerdicts();
 
@@ -370,6 +366,9 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
       LoginReputationClientRequest::TriggerType trigger_type,
       RequestOutcome reason,
       ReusedPasswordType password_type);
+
+  // Get the content area size of current browsing window.
+  virtual gfx::Size GetCurrentContentAreaSize() const = 0;
 
   // Number of verdict stored for this profile for password on focus pings.
   int stored_verdict_count_password_on_focus_;

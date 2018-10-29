@@ -48,7 +48,7 @@ struct BufferSlice;
 
 class PLATFORM_EXPORT HarfBuzzShaper final {
  public:
-  HarfBuzzShaper(const String&);
+  HarfBuzzShaper(const String& text) : text_(text) {}
 
   // Shape a range, defined by the start and end parameters, of the string
   // supplied to the constructor.

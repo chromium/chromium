@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/media_galleries/media_file_system_context.h"
@@ -28,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/storage_monitor/media_storage_util.h"
 #include "components/storage_monitor/storage_monitor.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_frame_host.h"
@@ -308,9 +310,7 @@ class ExtensionGalleriesHost
     // Extract all the device ids so we can make sure they are attached.
     MediaStorageUtil::DeviceIdSet* device_ids =
         new MediaStorageUtil::DeviceIdSet;
-    for (std::set<MediaGalleryPrefId>::const_iterator id = galleries.begin();
-         id != galleries.end();
-         ++id) {
+    for (auto id = galleries.begin(); id != galleries.end(); ++id) {
       device_ids->insert(galleries_info.find(*id)->second.device_id);
     }
     MediaStorageUtil::FilterAttachedDevices(device_ids, base::Bind(
@@ -336,7 +336,7 @@ class ExtensionGalleriesHost
 
   // Revoke the file system for |id| if this extension has created one for |id|.
   void RevokeGalleryByPrefId(MediaGalleryPrefId id) {
-    PrefIdFsInfoMap::iterator gallery = pref_id_map_.find(id);
+    auto gallery = pref_id_map_.find(id);
     if (gallery == pref_id_map_.end())
       return;
 
@@ -382,9 +382,7 @@ class ExtensionGalleriesHost
       return;
     }
 
-    for (std::set<MediaGalleryPrefId>::const_iterator pref_id_it =
-             galleries.begin();
-         pref_id_it != galleries.end();
+    for (auto pref_id_it = galleries.begin(); pref_id_it != galleries.end();
          ++pref_id_it) {
       const MediaGalleryPrefId& pref_id = *pref_id_it;
       const MediaGalleryPrefInfo& gallery_info =
@@ -466,8 +464,8 @@ class ExtensionGalleriesHost
       rph_refs_.Reset();
       CleanUp();
     }
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            base::BindOnce(std::move(callback), result));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                             base::BindOnce(std::move(callback), result));
   }
 
   std::string GetTransientIdForRemovableDeviceId(const std::string& device_id) {
@@ -554,15 +552,14 @@ void MediaFileSystemRegistry::RegisterMediaFileSystemForExtension(
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   MediaGalleriesPreferences* preferences = GetPreferences(profile);
-  MediaGalleriesPrefInfoMap::const_iterator gallery =
-      preferences->known_galleries().find(pref_id);
+  auto gallery = preferences->known_galleries().find(pref_id);
   MediaGalleryPrefIdSet permitted_galleries =
       preferences->GalleriesForExtension(*extension);
 
   if (gallery == preferences->known_galleries().end() ||
       !base::ContainsKey(permitted_galleries, pref_id)) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(std::move(callback), base::File::FILE_ERROR_NOT_FOUND));
     return;
   }
@@ -611,10 +608,8 @@ void MediaFileSystemRegistry::OnRemovableStorageDetached(
   // a second step.
   std::vector<InvalidatedGalleriesInfo> invalid_galleries_info;
 
-  for (ExtensionGalleriesHostMap::iterator profile_it =
-           extension_hosts_map_.begin();
-       profile_it != extension_hosts_map_.end();
-       ++profile_it) {
+  for (auto profile_it = extension_hosts_map_.begin();
+       profile_it != extension_hosts_map_.end(); ++profile_it) {
     MediaGalleriesPreferences* preferences = GetPreferences(profile_it->first);
     // If |preferences| is not yet initialized, it won't contain any galleries.
     if (!preferences->IsInitialized())
@@ -636,12 +631,11 @@ void MediaFileSystemRegistry::OnRemovableStorageDetached(
   }
 
   for (size_t i = 0; i < invalid_galleries_info.size(); i++) {
-    for (std::set<ExtensionGalleriesHost*>::const_iterator extension_host_it =
+    for (auto extension_host_it =
              invalid_galleries_info[i].extension_hosts.begin();
          extension_host_it != invalid_galleries_info[i].extension_hosts.end();
          ++extension_host_it) {
-      for (std::set<MediaGalleryPrefId>::const_iterator pref_id_it =
-               invalid_galleries_info[i].pref_ids.begin();
+      for (auto pref_id_it = invalid_galleries_info[i].pref_ids.begin();
            pref_id_it != invalid_galleries_info[i].pref_ids.end();
            ++pref_id_it) {
         (*extension_host_it)->RevokeGalleryByPrefId(*pref_id_it);
@@ -672,10 +666,11 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
     ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(fs_name);
 
 #if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_CHROMEOS)
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE, base::Bind(
-        &MTPDeviceMapService::RevokeMTPFileSystem,
-        base::Unretained(MTPDeviceMapService::GetInstance()),
-        fs_name));
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
+        base::Bind(&MTPDeviceMapService::RevokeMTPFileSystem,
+                   base::Unretained(MTPDeviceMapService::GetInstance()),
+                   fs_name));
 #endif
   }
 
@@ -721,8 +716,8 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
         storage::FileSystemMountOption(),
         path);
     CHECK(result);
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::Bind(&MTPDeviceMapService::RegisterMTPFileSystem,
                    base::Unretained(MTPDeviceMapService::GetInstance()),
                    path.value(), fs_name, true /* read only */));
@@ -756,8 +751,7 @@ void MediaFileSystemRegistry::OnPermissionRemoved(
       extension_hosts_map_.find(profile);
   DCHECK(host_map_it != extension_hosts_map_.end());
   const ExtensionHostMap& extension_host_map = host_map_it->second;
-  ExtensionHostMap::const_iterator gallery_host_it =
-      extension_host_map.find(extension_id);
+  auto gallery_host_it = extension_host_map.find(extension_id);
   if (gallery_host_it == extension_host_map.end())
     return;
   gallery_host_it->second->RevokeGalleryByPrefId(pref_id);
@@ -781,8 +775,7 @@ void MediaFileSystemRegistry::OnGalleryRemoved(
   // even delete |extension_host_map| altogether. So do this in two loops to
   // avoid using an invalidated iterator or deleted map.
   std::vector<const extensions::Extension*> extensions;
-  for (ExtensionHostMap::const_iterator it = extension_host_map.begin();
-       it != extension_host_map.end();
+  for (auto it = extension_host_map.begin(); it != extension_host_map.end();
        ++it) {
     extensions.push_back(
         extension_registry->enabled_extensions().GetByID(it->first));
@@ -790,8 +783,7 @@ void MediaFileSystemRegistry::OnGalleryRemoved(
   for (size_t i = 0; i < extensions.size(); ++i) {
     if (!base::ContainsKey(extension_hosts_map_, profile))
       break;
-    ExtensionHostMap::const_iterator gallery_host_it =
-        extension_host_map.find(extensions[i]->id());
+    auto gallery_host_it = extension_host_map.find(extensions[i]->id());
     if (gallery_host_it == extension_host_map.end())
       continue;
     gallery_host_it->second->RevokeGalleryByPrefId(pref_id);
@@ -802,8 +794,7 @@ ExtensionGalleriesHost* MediaFileSystemRegistry::GetExtensionGalleryHost(
     Profile* profile,
     MediaGalleriesPreferences* preferences,
     const std::string& extension_id) {
-  ExtensionGalleriesHostMap::iterator extension_hosts =
-      extension_hosts_map_.find(profile);
+  auto extension_hosts = extension_hosts_map_.find(profile);
   // GetPreferences(), which had to be called because preferences is an
   // argument, ensures that profile is in the map.
   DCHECK(extension_hosts != extension_hosts_map_.end());
@@ -829,8 +820,7 @@ void MediaFileSystemRegistry::OnExtensionGalleriesHostEmpty(
     Profile* profile, const std::string& extension_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  ExtensionGalleriesHostMap::iterator extension_hosts =
-      extension_hosts_map_.find(profile);
+  auto extension_hosts = extension_hosts_map_.find(profile);
   DCHECK(extension_hosts != extension_hosts_map_.end());
   ExtensionHostMap::size_type erase_count =
       extension_hosts->second.erase(extension_id);

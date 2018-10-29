@@ -14,8 +14,10 @@
 #include <vector>
 
 #include "base/strings/utf_offset_string_conversions.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
@@ -23,6 +25,7 @@
 #include "url/gurl.h"
 
 class AutocompleteProvider;
+class OmniboxPedal;
 class SuggestionAnswer;
 class TemplateURL;
 class TemplateURLService;
@@ -116,6 +119,7 @@ struct AutocompleteMatch {
   enum class DocumentType {
     NONE,
     DRIVE_DOCS,
+    DRIVE_FORMS,
     DRIVE_SHEETS,
     DRIVE_SLIDES,
     DRIVE_OTHER
@@ -132,13 +136,14 @@ struct AutocompleteMatch {
   // Converts |type| to a string representation.  Used in logging and debugging.
   AutocompleteMatch& operator=(const AutocompleteMatch& match);
 
+#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
   // Gets the vector icon identifier for the icon to be shown for |type|. If
   // |is_bookmark| is true, returns a bookmark icon rather than what the type
   // would determine.
   static const gfx::VectorIcon& TypeToVectorIcon(Type type,
                                                  bool is_bookmark,
-                                                 bool is_tab_match,
                                                  DocumentType document_type);
+#endif
 
   // Comparison function for determining when one match is better than another.
   static bool MoreRelevant(const AutocompleteMatch& elem1,
@@ -216,22 +221,30 @@ struct AutocompleteMatch {
   // Returns |url| altered by stripping off "www.", converting https protocol
   // to http, and stripping excess query parameters.  These conversions are
   // merely to allow comparisons to remove likely duplicates; these URLs are
-  // not used as actual destination URLs.  If |template_url_service| is not
-  // NULL, it is used to get a template URL corresponding to this match.  If
-  // the match's keyword is known, it can be passed in.  Otherwise, it can be
-  // left empty and the template URL (if any) is determined from the
-  // destination's hostname.  The template URL is used to strip off query args
-  // other than the search terms themselves that would otherwise prevent doing
-  // proper deduping.  |input| is used to decide if the scheme is allowed to
-  // be altered during stripping.  If this URL, minus the scheme and separator,
-  // starts with any the terms in input.terms_prefixed_by_http_or_https(), we
-  // avoid converting an HTTPS scheme to HTTP.  This means URLs that differ
-  // only by these schemes won't be marked as dupes, since the distinction
-  // seems to matter to the user.
-  static GURL GURLToStrippedGURL(const GURL& url,
-                                 const AutocompleteInput& input,
-                                 const TemplateURLService* template_url_service,
-                                 const base::string16& keyword);
+  // not used as actual destination URLs.
+  // - |input| is used to decide if the scheme is allowed to be altered during
+  //   stripping.  If this URL, minus the scheme and separator, starts with any
+  //   the terms in input.terms_prefixed_by_http_or_https(), we avoid converting
+  //   an HTTPS scheme to HTTP.  This means URLs that differ only by these
+  //   schemes won't be marked as dupes, since the distinction seems to matter
+  //   to the user.
+  // - If |template_url_service| is not NULL, it is used to get a template URL
+  //   corresponding to this match, which is used to strip off query args other
+  //   than the search terms themselves that would otherwise prevent doing
+  //   proper deduping.
+  // - If the match's keyword is known, it can be provided in |keyword|.
+  //   Otherwise, it can be left empty and the template URL (if any) is
+  //   determined from the destination's hostname.
+  // - If |additional_query_params| is provided, these will be added to the
+  //   resulting URL in the cases where a template URL is used. This is used to
+  //   distinguish cases such as entity suggestions where the response contains
+  //   additional meaningful parameters beyond the search terms themselves.
+  static GURL GURLToStrippedGURL(
+      const GURL& url,
+      const AutocompleteInput& input,
+      const TemplateURLService* template_url_service,
+      const base::string16& keyword,
+      const std::string& additional_query_params = "");
 
   // Sets the |match_in_scheme|, |match_in_subdomain|, and |match_after_host|
   // flags based on the provided |url| and list of substring |match_positions|.
@@ -302,6 +315,9 @@ struct AutocompleteMatch {
   // Gets the URL for the match image (whether it be an answer or entity). If
   // there isn't an image URL, returns an empty GURL (test with is_empty()).
   GURL ImageUrl() const;
+
+  // Changes properties to make use of the Pedal (e.g. content, URLs...).
+  void ApplyPedal();
 
   // Adds optional information to the |additional_info| dictionary.
   void RecordAdditionalInfo(const std::string& property,
@@ -476,6 +492,10 @@ struct AutocompleteMatch {
   // accesses it must perform any necessary sanity checks before blindly using
   // it!
   base::string16 keyword;
+
+  // Set to a matching pedal if appropriate.  The pedal is not owned, and the
+  // owning OmniboxPedalProvider must outlive this.
+  OmniboxPedal* pedal = nullptr;
 
   // True if this match is from a previous result.
   bool from_previous;

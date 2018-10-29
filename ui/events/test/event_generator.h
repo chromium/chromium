@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_TEST_EVENT_GENERATOR_H_
 #define UI_EVENTS_TEST_EVENT_GENERATOR_H_
 
-#include <list>
 #include <memory>
 #include <vector>
 
@@ -17,10 +16,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
-
-namespace gfx {
-class PointF;
-}
 
 namespace ui {
 class EventSource;
@@ -83,11 +78,6 @@ class EventGeneratorDelegate {
   virtual ui::EventDispatchDetails DispatchKeyEventToIME(EventTarget* target,
                                                          ui::KeyEvent* event)
       WARN_UNUSED_RESULT = 0;
-
-  // Offers the event to pointer watchers on systems that provide them.
-  // Does not consume the event (pointer watchers cannot consume events).
-  virtual void DispatchEventToPointerWatchers(EventTarget* target,
-                                              const PointerEvent& event) {}
 };
 
 // ui::test::EventGenerator is a tool that generates and dispatches events.
@@ -142,9 +132,6 @@ class EventGenerator {
     current_location_ = location;
   }
   const gfx::Point& current_location() const { return current_location_; }
-
-  void set_async(bool async) { async_ = async; }
-  bool async() const { return async_; }
 
   // Events could be dispatched using different methods. The choice is a
   // tradeoff between test robustness and coverage of OS internals that affect
@@ -416,13 +403,6 @@ class EventGenerator {
                       int steps,
                       int num_fingers);
 
-  // Generates scroll sequences of a FlingCancel, Scrolls, FlingStart, sending
-  // scrolls of each of the values in |offsets|.
-  void ScrollSequence(const gfx::Point& start,
-                      const base::TimeDelta& step_delay,
-                      const std::vector<gfx::PointF>& offsets,
-                      int num_fingers);
-
   // Generate a TrackPad "rest" event. That is, a user resting fingers on the
   // trackpad without moving. This may then be followed by a ScrollSequence(),
   // or a CancelTrackpadRest().
@@ -468,13 +448,6 @@ class EventGenerator {
   gfx::Point GetLocationInCurrentRoot() const;
   gfx::Point CenterOfWindow(const EventTarget* window) const;
 
-  void DispatchNextPendingEvent();
-  void DoDispatchEvent(Event* event, bool async);
-
-  // Offers event to pointer watchers (via delegate) if the event is a mouse or
-  // touch event.
-  void MaybeDispatchToPointerWatchers(const Event& event);
-
   std::unique_ptr<EventGeneratorDelegate> delegate_;
   gfx::Point current_location_;
   EventTarget* current_target_ = nullptr;
@@ -482,11 +455,6 @@ class EventGenerator {
   bool grab_ = false;
 
   ui::PointerDetails touch_pointer_details_;
-
-  std::list<std::unique_ptr<Event>> pending_events_;
-
-  // Set to true to cause events to be posted asynchronously.
-  bool async_ = false;
 
   // Whether to skip mapping of coordinates from the root window to a hit window
   // when dispatching events.

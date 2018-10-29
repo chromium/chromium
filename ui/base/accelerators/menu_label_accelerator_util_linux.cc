@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/strings/string_util.h"
-
 namespace {
 
 // Common implementation of ConvertAcceleratorsFromWindowsStyle() and
@@ -49,16 +47,6 @@ std::string ConvertAcceleratorsFromWindowsStyle(const std::string& label) {
 
 std::string RemoveWindowsStyleAccelerators(const std::string& label) {
   return ConvertAmpersandsTo(label, std::string());
-}
-
-// Replaces all ampersands in |label| with two ampersands. This effectively
-// escapes strings for later processing by ConvertAmpersandsTo(), so that
-// ConvertAmpersandsTo(EscapeWindowsStyleAccelerators(x), *) is |x| with
-// underscores doubled, making the string that appears to the user just |x|.
-std::string EscapeWindowsStyleAccelerators(const std::string& label) {
-  std::string ret;
-  base::ReplaceChars(label, "&", "&&", &ret);
-  return ret;
 }
 
 }  // namespace ui

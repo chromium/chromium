@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/ipc/common/android/android_image_reader_utils.h"
@@ -45,6 +46,26 @@ struct FrameAvailableEvent_ImageReader
   ~FrameAvailableEvent_ImageReader() = default;
 };
 
+class ImageReaderGLOwner::ScopedHardwareBufferImpl
+    : public gl::GLImage::ScopedHardwareBuffer {
+ public:
+  ScopedHardwareBufferImpl(scoped_refptr<ImageReaderGLOwner> texture_owner,
+                           AImage* image,
+                           base::android::ScopedHardwareBufferHandle handle,
+                           base::ScopedFD fence_fd)
+      : gl::GLImage::ScopedHardwareBuffer(std::move(handle),
+                                          std::move(fence_fd)),
+        texture_owner_(std::move(texture_owner)),
+        image_(image) {}
+  ~ScopedHardwareBufferImpl() override {
+    texture_owner_->ReleaseRefOnImage(image_);
+  }
+
+ private:
+  scoped_refptr<ImageReaderGLOwner> texture_owner_;
+  AImage* image_;
+};
+
 ImageReaderGLOwner::ImageReaderGLOwner(GLuint texture_id)
     : current_image_(nullptr),
       texture_id_(texture_id),
@@ -54,6 +75,9 @@ ImageReaderGLOwner::ImageReaderGLOwner(GLuint texture_id)
       frame_available_event_(new FrameAvailableEvent_ImageReader()) {
   DCHECK(context_);
   DCHECK(surface_);
+
+  // TODO(khushalsagar): Need plumbing here to select the correct format and
+  // usage for secure media.
 
   // Set the width, height and format to some default value. This parameters
   // are/maybe overriden by the producer sending buffers to this imageReader's
@@ -97,6 +121,7 @@ ImageReaderGLOwner::ImageReaderGLOwner(GLuint texture_id)
 ImageReaderGLOwner::~ImageReaderGLOwner() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(image_reader_);
+  DCHECK_EQ(external_image_refs_.size(), 0u);
 
   // Now we can stop listening to new images.
   loader_.AImageReader_setImageListener(image_reader_, NULL);
@@ -191,19 +216,90 @@ void ImageReaderGLOwner::UpdateTexImage() {
   }
 
   // If we have a new Image, delete the previously acquired image.
-  if (!gpu::DeleteAImageAsync(current_image_, &loader_))
+  if (!MaybeDeleteCurrentImage())
     return;
 
-  // Make the newly acuired image as current image.
+  // Make the newly acquired image as current image.
   current_image_ = image;
+  current_image_fence_ = std::move(scoped_acquire_fence_fd);
+  current_image_bound_ = false;
+
+  // TODO(khushalsagar): This should be on the public API so that we only bind
+  // the texture if we were going to render it without an overlay.
+  EnsureTexImageBound();
+}
+
+void ImageReaderGLOwner::EnsureTexImageBound() {
+  if (current_image_bound_)
+    return;
+
+  base::ScopedFD acquire_fence =
+      base::ScopedFD(HANDLE_EINTR(dup(current_image_fence_.get())));
 
   // Insert an EGL fence and make server wait for image to be available.
-  if (!gpu::InsertEglFenceAndWait(std::move(scoped_acquire_fence_fd)))
+  if (!gpu::InsertEglFenceAndWait(std::move(acquire_fence)))
     return;
 
   // Create EGL image from the AImage and bind it to the texture.
   if (!gpu::CreateAndBindEglImage(current_image_, texture_id_, &loader_))
     return;
+
+  current_image_bound_ = true;
+}
+
+bool ImageReaderGLOwner::MaybeDeleteCurrentImage() {
+  if (!current_image_)
+    return true;
+
+  if (external_image_refs_.count(current_image_) != 0)
+    return true;
+
+  // We should not need a fence if this image was never bound.
+  return gpu::DeleteAImageAsync(current_image_, &loader_);
+}
+
+std::unique_ptr<gl::GLImage::ScopedHardwareBuffer>
+ImageReaderGLOwner::GetAHardwareBuffer() {
+  if (!current_image_)
+    return nullptr;
+
+  AHardwareBuffer* buffer = nullptr;
+  loader_.AImage_getHardwareBuffer(current_image_, &buffer);
+  if (!buffer)
+    return nullptr;
+
+  auto fence_fd = base::ScopedFD(HANDLE_EINTR(dup(current_image_fence_.get())));
+
+  // Add a ref that the caller will release.
+  auto it = external_image_refs_.find(current_image_);
+  if (it == external_image_refs_.end())
+    external_image_refs_[current_image_] = 1;
+  else
+    it->second++;
+
+  return std::make_unique<ScopedHardwareBufferImpl>(
+      this, current_image_,
+      base::android::ScopedHardwareBufferHandle::Create(buffer),
+      std::move(fence_fd));
+}
+
+void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image) {
+  auto it = external_image_refs_.find(image);
+  DCHECK(it != external_image_refs_.end());
+  DCHECK_GT(it->second, 0u);
+  it->second--;
+
+  if (it->second > 0)
+    return;
+  external_image_refs_.erase(it);
+
+  if (image == current_image_)
+    return;
+
+  // No refs on the image. If it is no longer current, delete it. Note that this
+  // can be deleted synchronously here since the caller ensures that any pending
+  // GPU work for the image is finished before marking it for release.
+  loader_.AImage_delete(image);
 }
 
 void ImageReaderGLOwner::GetTransformMatrix(float mtx[]) {

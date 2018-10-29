@@ -7,24 +7,35 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
+#include "ui/base/cocoa/views_hostable.h"
 #include "ui/views/controls/native/native_view_host_wrapper.h"
 #include "ui/views/views_export.h"
 
 namespace ui {
 class LayerOwner;
-}
+class ViewsHostableView;
+}  // namespace ui
 
 namespace views {
 
+class BridgedNativeWidgetHostImpl;
 class NativeViewHost;
 
 // Mac implementation of NativeViewHostWrapper.
-class NativeViewHostMac : public NativeViewHostWrapper {
+class NativeViewHostMac : public NativeViewHostWrapper,
+                          public ui::ViewsHostableView::Host {
  public:
   explicit NativeViewHostMac(NativeViewHost* host);
   ~NativeViewHostMac() override;
 
-  // Overridden from NativeViewHostWrapper:
+  // ViewsHostableView::Host:
+  ui::Layer* GetUiLayer() const override;
+  uint64_t GetViewsFactoryHostId() const override;
+  uint64_t GetNSViewId() const override;
+  id GetAccessibilityElement() const override;
+  void OnHostableViewDestroying() override;
+
+  // NativeViewHostWrapper:
   void AttachNativeView() override;
   void NativeViewDetaching(bool destroyed) override;
   void AddedToWidget() override;
@@ -42,11 +53,19 @@ class NativeViewHostMac : public NativeViewHostWrapper {
   gfx::NativeCursor GetCursor(int x, int y) override;
 
  private:
+  // Return the BridgedNativeWidgetHostImpl for this hosted view.
+  BridgedNativeWidgetHostImpl* GetBridgedNativeWidgetHost() const;
+
   // Our associated NativeViewHost. Owns this.
   NativeViewHost* host_;
 
   // Retain the native view as it may be destroyed at an unpredictable time.
   base::scoped_nsobject<NSView> native_view_;
+
+  // If |native_view| supports the ViewsHostable protocol, then this is the
+  // the corresponding ViewsHostableView interface (which is implemeted only
+  // by WebContents and tests).
+  ui::ViewsHostableView* native_view_hostable_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(NativeViewHostMac);
 };

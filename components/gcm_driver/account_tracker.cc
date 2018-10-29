@@ -45,12 +45,10 @@ void AccountTracker::RemoveObserver(Observer* observer) {
 
 std::vector<AccountIds> AccountTracker::GetAccounts() const {
   const std::string active_account_id =
-      identity_manager_->GetPrimaryAccountInfo().account_id;
+      identity_manager_->GetPrimaryAccountId();
   std::vector<AccountIds> accounts;
 
-  for (std::map<std::string, AccountState>::const_iterator it =
-           accounts_.begin();
-       it != accounts_.end(); ++it) {
+  for (auto it = accounts_.begin(); it != accounts_.end(); ++it) {
     const AccountState& state = it->second;
     bool is_visible = state.is_signed_in && !state.ids.gaia.empty();
 
@@ -82,12 +80,12 @@ void AccountTracker::OnRefreshTokenUpdatedForAccount(
 }
 
 void AccountTracker::OnRefreshTokenRemovedForAccount(
-    const AccountInfo& account_info) {
+    const std::string& account_id) {
   TRACE_EVENT1("identity", "AccountTracker::OnRefreshTokenRemovedForAccount",
-               "account_id", account_info.account_id);
+               "account_id", account_id);
 
-  DVLOG(1) << "REVOKED " << account_info.account_id;
-  UpdateSignInState(account_info.account_id, /*is_signed_in=*/false);
+  DVLOG(1) << "REVOKED " << account_id;
+  UpdateSignInState(account_id, /*is_signed_in=*/false);
 }
 
 void AccountTracker::OnPrimaryAccountSet(
@@ -221,7 +219,7 @@ AccountIdFetcher::~AccountIdFetcher() {
 }
 
 void AccountIdFetcher::Start() {
-  OAuth2TokenService::ScopeSet scopes;
+  identity::ScopeSet scopes;
   scopes.insert("https://www.googleapis.com/auth/userinfo.profile");
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       account_key_, "gaia_account_tracker", scopes,

@@ -27,7 +27,7 @@ class MockWebDocumentSubresourceFilter
 
   // blink::WebDocumentSubresourceFilter:
   LoadPolicy GetLoadPolicy(const blink::WebURL& resource_url,
-                           blink::WebURLRequest::RequestContext) override;
+                           blink::mojom::RequestContextType) override;
   LoadPolicy GetLoadPolicyForWebSocketConnect(
       const blink::WebURL& url) override;
   void ReportDisallowedLoad() override;

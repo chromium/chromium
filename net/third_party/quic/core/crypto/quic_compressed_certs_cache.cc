@@ -17,6 +17,8 @@ inline void hash_combine(uint64_t* seed, const uint64_t& val) {
 
 }  // namespace
 
+const size_t QuicCompressedCertsCache::kQuicCompressedCertsCacheSize = 225;
+
 QuicCompressedCertsCache::UncompressedCerts::UncompressedCerts()
     : chain(nullptr),
       client_common_set_hashes(nullptr),

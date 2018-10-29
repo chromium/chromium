@@ -43,6 +43,7 @@ class DataMessageStanza;
 }  // namespace mcs_proto
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }  // namespace network
 
@@ -72,7 +73,8 @@ class GCMInternalsBuilder {
       base::RepeatingCallback<
           void(network::mojom::ProxyResolvingSocketFactoryRequest)>
           get_socket_factory_callback,
-      GCMStatsRecorder* recorder);
+      GCMStatsRecorder* recorder,
+      network::NetworkConnectionTracker* network_connection_tracker);
 };
 
 // Implements the GCM Client. It is used to coordinate MCS Client (communication
@@ -114,6 +116,7 @@ class GCMClientImpl
           void(network::mojom::ProxyResolvingSocketFactoryRequest)>
           get_socket_factory_callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+      network::NetworkConnectionTracker* network_connection_tracker,
       std::unique_ptr<Encryptor> encryptor,
       GCMClient::Delegate* delegate) override;
   void Start(StartMode start_mode) override;
@@ -373,6 +376,8 @@ class GCMClientImpl
       get_socket_factory_callback_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   // Controls receiving and sending of packets and reliable message queueing.
   // Must be destroyed before |network_session_|.

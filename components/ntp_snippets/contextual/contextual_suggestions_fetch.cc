@@ -196,13 +196,9 @@ const std::string ContextualSuggestionsFetch::GetFetchEndpoint() {
     fetch_endpoint =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             kFetchEndpointUrlKey);
-  } else if (base::FeatureList::IsEnabled(
-                 contextual_suggestions::kContextualSuggestionsButton)) {
-    fetch_endpoint = base::GetFieldTrialParamValueByFeature(
-        kContextualSuggestionsButton, kFetchEndpointUrlKey);
   } else {
     fetch_endpoint = base::GetFieldTrialParamValueByFeature(
-        kContextualSuggestionsBottomSheet, kFetchEndpointUrlKey);
+        kContextualSuggestionsButton, kFetchEndpointUrlKey);
   }
 
   if (!base::StartsWith(fetch_endpoint, "https://",

@@ -93,13 +93,6 @@ class FailingSSLClientSocket : public SSLClientSocket {
     return nullptr;
   }
 
-  Error GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                 TokenBindingType tb_type,
-                                 std::vector<uint8_t>* out) override {
-    NOTREACHED();
-    return ERR_UNEXPECTED;
-  }
-
   crypto::ECPrivateKey* GetChannelIDKey() const override {
     NOTREACHED();
     return nullptr;

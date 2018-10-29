@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 1: Blocked form submission to 'javascript:alert(/FAIL/)' because the form's frame is sandboxed and the 'allow-forms' permission is not set.
+CONSOLE ERROR: Blocked form submission to 'javascript:alert(/FAIL/)' because the form's frame is sandboxed and the 'allow-forms' permission is not set.
 To run this test outside of DumpRenderTree, please disable your popup blocker!
 
 If you change this test, please be sure to change popup-allowed-by-sandbox-is-sandboxed-control.html as well!

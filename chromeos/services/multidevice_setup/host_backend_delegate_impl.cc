@@ -246,26 +246,6 @@ void HostBackendDelegateImpl::AttemptNetworkRequest(bool is_retry) {
       base::BindOnce(&HostBackendDelegateImpl::OnSetSoftwareFeatureStateResult,
                      weak_ptr_factory_.GetWeakPtr(), device_to_set,
                      should_enable));
-
-  // Historical Note: On the GmsCore side, EASY_UNLOCK_HOST is blacklisted from
-  // being automatically disabled when BETTER_TOGETHER_HOST is disabled. This is
-  // done to prevent CryptAuth from losing the enabled status of EasyUnlock on
-  // host devices that have grandfathered-in EasyUnlock support. In order to
-  // disable EasyUnlock, it must be done so explicitly. Therefore, when the user
-  // chooses to manually disable all Better Together features via the "Forget
-  // this device" button in Chrome OS or a comparable method on Android,
-  // EASY_UNLOCK_HOST should be explicitly disabled in addition to
-  // BETTER_TOGETHER_HOST. See https://crbug.com/881612.
-  if (!should_enable) {
-    device_sync_client_->SetSoftwareFeatureState(
-        device_to_set.public_key(),
-        cryptauth::SoftwareFeature::EASY_UNLOCK_HOST, false /* enabled */,
-        false /* is_exclusive */,
-        base::BindOnce(
-            &HostBackendDelegateImpl::OnSetSoftwareFeatureStateResult,
-            weak_ptr_factory_.GetWeakPtr(), device_to_set,
-            false /* attempted_to_enable */));
-  }
 }
 
 void HostBackendDelegateImpl::OnNewDevicesSynced() {

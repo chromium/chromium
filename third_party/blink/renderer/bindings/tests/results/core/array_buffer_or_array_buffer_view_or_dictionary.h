@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef ArrayBufferOrArrayBufferViewOrDictionary_h
-#define ArrayBufferOrArrayBufferViewOrDictionary_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_ARRAY_BUFFER_OR_ARRAY_BUFFER_VIEW_OR_DICTIONARY_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_ARRAY_BUFFER_OR_ARRAY_BUFFER_VIEW_OR_DICTIONARY_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -27,7 +27,7 @@ namespace blink {
 class TestArrayBuffer;
 
 class CORE_EXPORT ArrayBufferOrArrayBufferViewOrDictionary final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   ArrayBufferOrArrayBufferViewOrDictionary();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -104,4 +104,4 @@ struct V8TypeOf<ArrayBufferOrArrayBufferViewOrDictionary> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::ArrayBufferOrArrayBufferViewOrDictionary);
 
-#endif  // ArrayBufferOrArrayBufferViewOrDictionary_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_ARRAY_BUFFER_OR_ARRAY_BUFFER_VIEW_OR_DICTIONARY_H_

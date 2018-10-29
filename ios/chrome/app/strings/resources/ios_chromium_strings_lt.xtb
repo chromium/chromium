@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Gaukite „Google“ išmaniųjų funkcijų projekte „Chromium“</translation>
 <translation id="2730884209570016437">„Chromium“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
 <translation id="2797210818057553964">Tai galite bet kada tinkinti „Chromium“ nustatymuose</translation>
+<translation id="2915596697727466327">„Chromium“ naudoja „Face ID“, kad užtikrintų teisėtą prieigą prie slaptažodžių.</translation>
 <translation id="3256316712990552818">Nukopijuota į „Chromium“</translation>
 <translation id="3413120535237193088">Prisijunkite prie „Chromium“, kad pasiektumėte žymes visuose įrenginiuose.</translation>
 <translation id="3473048256428424907">Įjunkite „Chromium“ QR skaitytuvą</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Čia bus rodomi kituose įrenginiuose atidaryti „Chromium“ skirtukai.</translation>
 <translation id="495292094137889840">Pradėkite naudoti „Chromium“ QR skaitytuvą</translation>
 <translation id="5231355151045086930">Atsijungimas nuo „Chromium“</translation>
-<translation id="5416919929805616771">Mėgaujatės „Chromium“? <ph name="BEGIN_LINK" />Įvertinkite šią programą<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Sveiki, tai „Chromium“</translation>
 <translation id="5945387852661427312">Prisijungiate naudodami <ph name="DOMAIN" /> valdomą paskyrą ir suteikiate jos administratoriui galimybę valdyti jūsų „Chromium“ duomenis. Duomenys bus visam laikui susieti su šia paskyra. Atsijungę nuo „Chromium“ ištrinsite duomenis iš šio įrenginio, bet jie ir toliau bus saugomi „Google“ paskyroje.</translation>
 <translation id="6068866989048414399">„Chromium“ pasl. teikimo sąl.</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Perjungiate sinchronizuojamas paskyras iš <ph name="USER_EMAIL1" /> į <ph name="USER_EMAIL2" />. Esamus „Chromium“ duomenis tvarko <ph name="DOMAIN" />. Tai atlikus bus ištrinti duomenys iš šio įrenginio, bet duomenys liks <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Patarimas: <ph name="BEGIN_LINK" />perkelkite „Chromium“ į doką<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Patogiau naudokitės „Google“ paslaugomis naudodami pagal vietovę pritaikytą „Chromium“.</translation>
-<translation id="8353224596138547809">Ar norite, kad „Chromium“ išsaugotų šios svetainės slaptažodį?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Nustatymus<ph name="END_LINK" /> galima tinkinti bet kuriuo metu. „Google“ gali naudoti jūsų lankomų svetainių turinį, naršyklės sąveikas ir veiklą suasmenindama „Chromium“ ir kitas „Google“ paslaugas, pvz., Vertėją, Paiešką ir skelbimus.</translation>
 <translation id="8586442755830160949">Autorių teisės priklauso „Chromium“ autoriams, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="8809780021347235332">Jei norite išsaugoti vaizdus, palieskite „Nustatymai“ ir leiskite „Chromium“ naudoti jūsų nuotraukas</translation>

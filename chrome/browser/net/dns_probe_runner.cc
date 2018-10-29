@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
@@ -97,9 +99,9 @@ void DnsProbeRunner::RunProbe(const base::Closure& callback) {
     // If the DnsTransactionFactory is NULL, then the DnsConfig is invalid, so
     // the runner can't run a transaction.  Return UNKNOWN asynchronously.
     result_ = UNKNOWN;
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            base::BindOnce(&DnsProbeRunner::CallCallback,
-                                           weak_factory_.GetWeakPtr()));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                             base::BindOnce(&DnsProbeRunner::CallCallback,
+                                            weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -127,9 +129,9 @@ void DnsProbeRunner::OnTransactionComplete(
   result_ = EvaluateResponse(net_error, response);
   transaction_.reset();
 
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&DnsProbeRunner::CallCallback,
-                                         weak_factory_.GetWeakPtr()));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&DnsProbeRunner::CallCallback,
+                                          weak_factory_.GetWeakPtr()));
 }
 
 void DnsProbeRunner::CallCallback() {

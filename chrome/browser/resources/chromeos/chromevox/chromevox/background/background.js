@@ -9,6 +9,7 @@
 goog.provide('cvox.ChromeVoxBackground');
 
 goog.require('ChromeVoxState');
+goog.require('ConsoleTts');
 goog.require('EventStreamLogger');
 goog.require('LogStore');
 goog.require('Msgs');
@@ -21,7 +22,6 @@ goog.require('cvox.ChromeVoxEditableTextBase');
 goog.require('cvox.ChromeVoxPrefs');
 goog.require('cvox.ClassicEarcons');
 goog.require('cvox.CompositeTts');
-goog.require('cvox.ConsoleTts');
 goog.require('cvox.ExtensionBridge');
 goog.require('cvox.InjectedScriptLoader');
 goog.require('cvox.NavBraille');
@@ -131,7 +131,7 @@ cvox.ChromeVoxBackground.prototype.init = function() {
   this.prefs = new cvox.ChromeVoxPrefs();
   cvox.ChromeVoxBackground.readPrefs();
 
-  var consoleTts = cvox.ConsoleTts.getInstance();
+  var consoleTts = ConsoleTts.getInstance();
   consoleTts.setEnabled(this.prefs.getPrefs()['enableSpeechLogging'] == 'true');
 
   LogStore.getInstance();

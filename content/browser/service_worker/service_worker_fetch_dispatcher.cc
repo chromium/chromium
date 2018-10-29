@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
@@ -26,6 +27,7 @@
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/common/service_worker/service_worker.mojom.h"
 #include "content/common/service_worker/service_worker_types.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/browser_side_navigation_policy.h"
 #include "content/public/common/content_features.h"
@@ -182,8 +184,8 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
     if (!worker_id_ || !devtools_enabled_)
       return;
     while (!devtools_callbacks.empty()) {
-      BrowserThread::PostTask(
-          BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
           base::BindOnce(std::move(devtools_callbacks.front()), *worker_id_,
                          devtools_request_id_));
       devtools_callbacks.pop();
@@ -323,25 +325,27 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
   }
 
   // Implements blink::mojom::ServiceWorkerFetchResponseCallback.
-  void OnResponse(blink::mojom::FetchAPIResponsePtr response,
-                  base::TimeTicks dispatch_event_time) override {
+  void OnResponse(
+      blink::mojom::FetchAPIResponsePtr response,
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override {
     HandleResponse(fetch_dispatcher_, version_, fetch_event_id_,
                    std::move(response), nullptr /* body_as_stream */,
-                   FetchEventResult::kGotResponse, dispatch_event_time);
+                   FetchEventResult::kGotResponse, std::move(timing));
   }
   void OnResponseStream(
       blink::mojom::FetchAPIResponsePtr response,
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
-      base::TimeTicks dispatch_event_time) override {
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override {
     HandleResponse(fetch_dispatcher_, version_, fetch_event_id_,
                    std::move(response), std::move(body_as_stream),
-                   FetchEventResult::kGotResponse, dispatch_event_time);
+                   FetchEventResult::kGotResponse, std::move(timing));
   }
-  void OnFallback(base::TimeTicks dispatch_event_time) override {
+  void OnFallback(
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override {
     HandleResponse(fetch_dispatcher_, version_, fetch_event_id_,
                    blink::mojom::FetchAPIResponse::New(),
                    nullptr /* body_as_stream */,
-                   FetchEventResult::kShouldFallback, dispatch_event_time);
+                   FetchEventResult::kShouldFallback, std::move(timing));
   }
 
  private:
@@ -354,16 +358,17 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
       blink::mojom::FetchAPIResponsePtr response,
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
       FetchEventResult fetch_result,
-      base::TimeTicks dispatch_event_time) {
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
     if (!version->FinishRequest(fetch_event_id.value(),
                                 fetch_result == FetchEventResult::kGotResponse,
-                                dispatch_event_time))
+                                timing->dispatch_event_time))
       NOTREACHED() << "Should only receive one reply per event";
     // |fetch_dispatcher| is null if the URLRequest was killed.
     if (!fetch_dispatcher)
       return;
     fetch_dispatcher->DidFinish(fetch_event_id.value(), fetch_result,
-                                std::move(response), std::move(body_as_stream));
+                                std::move(response), std::move(body_as_stream),
+                                std::move(timing));
   }
 
   mojo::Binding<blink::mojom::ServiceWorkerFetchResponseCallback> binding_;
@@ -563,24 +568,27 @@ void ServiceWorkerFetchDispatcher::DidFail(
     blink::ServiceWorkerStatusCode status) {
   DCHECK_NE(blink::ServiceWorkerStatusCode::kOk, status);
   Complete(status, FetchEventResult::kShouldFallback,
-           blink::mojom::FetchAPIResponse::New(), nullptr /* body_as_stream */);
+           blink::mojom::FetchAPIResponse::New(), nullptr /* body_as_stream */,
+           nullptr /* timing */);
 }
 
 void ServiceWorkerFetchDispatcher::DidFinish(
     int request_id,
     FetchEventResult fetch_result,
     blink::mojom::FetchAPIResponsePtr response,
-    blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream) {
+    blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
+    blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
   net_log_.EndEvent(net::NetLogEventType::SERVICE_WORKER_FETCH_EVENT);
   Complete(blink::ServiceWorkerStatusCode::kOk, fetch_result,
-           std::move(response), std::move(body_as_stream));
+           std::move(response), std::move(body_as_stream), std::move(timing));
 }
 
 void ServiceWorkerFetchDispatcher::Complete(
     blink::ServiceWorkerStatusCode status,
     FetchEventResult fetch_result,
     blink::mojom::FetchAPIResponsePtr response,
-    blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream) {
+    blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
+    blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
   DCHECK(fetch_callback_);
 
   did_complete_ = true;
@@ -590,7 +598,7 @@ void ServiceWorkerFetchDispatcher::Complete(
 
   std::move(fetch_callback_)
       .Run(status, fetch_result, std::move(response), std::move(body_as_stream),
-           version_);
+           std::move(timing), version_);
 }
 
 // Non-S13nServiceWorker

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1018939186200882850">element menu</translation>
-<translation id="1020833440720551630">wycisz ścieżkę dźwiękową</translation>
 <translation id="10623998915015855">przycisk przełączania</translation>
 <translation id="1088086359088493902">Sekundy</translation>
 <translation id="1171774979989969504">Wprowadź adres e-mail.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">autorzy</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">baner</translation>
-<translation id="1548116112524424341">wyświetl film w trybie obrazu w obrazie</translation>
 <translation id="1589122976691792535">region</translation>
 <translation id="1591562245178063882">W tym miesiącu</translation>
 <translation id="1637811476055996098">Wybierz pliki</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">siatka drzewa</translation>
 <translation id="1822429046913737220">rano/po południu</translation>
 <translation id="1832974991323546415">odtwarzanie na urządzeniu zdalnym</translation>
-<translation id="1838818994221231429">przełącz z trybu pełnoekranowego na obszar z wycięciem w ekranie</translation>
 <translation id="190587075670221089">usunięcie</translation>
 <translation id="1907737156431278478">przykład</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">Kliknij dwukrotnie z lewej lub prawej, by przewinąć o 10 s</translation>
 <translation id="5631759159893697722">streszczenie</translation>
-<translation id="5641012560118721995">wstrzymaj odtwarzanie</translation>
 <translation id="5643186887447432888">przycisk</translation>
 <translation id="5677946354068040947">więcej opcji</translation>
 <translation id="576709008726043716">wprowadzenie</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="5966707198760109579">Tydzień</translation>
 <translation id="5987525920412732405">przycisk przewijany</translation>
+<translation id="6011459053400940133">suwak głośności</translation>
 <translation id="6015796118275082299">Rok</translation>
 <translation id="6023896073578205740">pole listy</translation>
-<translation id="6101327004457443354">wyłącz wyciszenie ścieżki dźwiękowej</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">miernik</translation>
 <translation id="6166809985690652833">posłowie</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Godziny</translation>
 <translation id="7681220483256441252">indeks</translation>
 <translation id="7720026100085573005">pozostały czas</translation>
-<translation id="7740016676195725605">przestań pokazywać napisy</translation>
 <translation id="7740050170769002709">Treść HTML</translation>
 <translation id="7750228210027921155">Obraz w obrazie</translation>
 <translation id="7789962463072032349">wstrzymaj</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">pole tekstowe wyszukiwania</translation>
 <translation id="8057695513531652401">uwaga</translation>
 <translation id="8105797009065549151">odsyłacz</translation>
-<translation id="8115662671911883373">zacznij pokazywać napisy</translation>
 <translation id="8117451130807776954">W tym tygodniu</translation>
-<translation id="819205353528511139">odtwórz film w trybie pełnoekranowym</translation>
 <translation id="8199524924445686405">rrrr</translation>
 <translation id="8284326494547611709">Napisy</translation>
 <translation id="835897206747267392">Nieprawidłowa wartość.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">sterowanie zdalnym odtwarzaniem</translation>
 <translation id="862370744433916922">podtytuł</translation>
 <translation id="8750798805984357768">Wybierz jedną z opcji.</translation>
-<translation id="8785498733064193001">rozpocznij odtwarzanie</translation>
 <translation id="8808573423886751634">rozdział</translation>
 <translation id="8845239796550121995">Przesyłam na telewizor</translation>
 <translation id="8851136666856101339">główny</translation>

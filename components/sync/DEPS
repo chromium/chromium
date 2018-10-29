@@ -6,7 +6,6 @@ include_rules = [
   # to test.
   "+base",
   "+build",
-  "+components/strings",
   "+components/version_info",
   "+google_apis",
   "+testing",

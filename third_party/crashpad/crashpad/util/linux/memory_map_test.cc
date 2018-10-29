@@ -384,8 +384,12 @@ void ExpectFindFilePossibleMmapStarts(LinuxVMAddress mapping_start,
   EXPECT_EQ(mappings[0], mapping2);
 
   mappings = map.FindFilePossibleMmapStarts(*mapping3);
+#if defined(OS_ANDROID)
+  EXPECT_EQ(mappings.size(), 2u);
+#else
   ASSERT_EQ(mappings.size(), 1u);
   EXPECT_EQ(mappings[0], mapping1);
+#endif
 }
 
 TEST(MemoryMap, FindFilePossibleMmapStarts) {
@@ -430,6 +434,16 @@ TEST(MemoryMap, FindFilePossibleMmapStarts) {
 
     std::vector<const MemoryMap::Mapping*> mappings;
 
+#if defined(OS_ANDROID)
+    mappings = map.FindFilePossibleMmapStarts(*mapping1);
+    EXPECT_EQ(mappings.size(), 1u);
+
+    mappings = map.FindFilePossibleMmapStarts(*mapping2);
+    EXPECT_EQ(mappings.size(), 2u);
+
+    mappings = map.FindFilePossibleMmapStarts(*mapping3);
+    EXPECT_EQ(mappings.size(), 3u);
+#else
     mappings = map.FindFilePossibleMmapStarts(*mapping1);
     ASSERT_EQ(mappings.size(), 1u);
     EXPECT_EQ(mappings[0], mapping1);
@@ -441,6 +455,7 @@ TEST(MemoryMap, FindFilePossibleMmapStarts) {
     mappings = map.FindFilePossibleMmapStarts(*mapping3);
     ASSERT_EQ(mappings.size(), 1u);
     EXPECT_EQ(mappings[0], mapping1);
+#endif
 
 #if defined(ARCH_CPU_64_BITS)
     constexpr bool is_64_bit = true;
@@ -562,27 +577,47 @@ TEST(MemoryMap, FindFilePossibleMmapStarts_MultipleStarts) {
   auto mapping = map.FindMapping(file_mapping0.addr_as<VMAddress>());
   ASSERT_TRUE(mapping);
   auto possible_starts = map.FindFilePossibleMmapStarts(*mapping);
+#if defined(OS_ANDROID)
+  EXPECT_EQ(possible_starts.size(), 1u);
+#else
   EXPECT_EQ(possible_starts.size(), 0u);
+#endif
 
   mapping = map.FindMapping(file_mapping1.addr_as<VMAddress>());
   ASSERT_TRUE(mapping);
   possible_starts = map.FindFilePossibleMmapStarts(*mapping);
+#if defined(OS_ANDROID)
+  EXPECT_EQ(possible_starts.size(), 2u);
+#else
   EXPECT_EQ(possible_starts.size(), 1u);
+#endif
 
   mapping = map.FindMapping(file_mapping2.addr_as<VMAddress>());
   ASSERT_TRUE(mapping);
   possible_starts = map.FindFilePossibleMmapStarts(*mapping);
+#if defined(OS_ANDROID)
+  EXPECT_EQ(possible_starts.size(), 3u);
+#else
   EXPECT_EQ(possible_starts.size(), 2u);
+#endif
 
   mapping = map.FindMapping(file_mapping3.addr_as<VMAddress>());
   ASSERT_TRUE(mapping);
   possible_starts = map.FindFilePossibleMmapStarts(*mapping);
+#if defined(OS_ANDROID)
+  EXPECT_EQ(possible_starts.size(), 4u);
+#else
   EXPECT_EQ(possible_starts.size(), 3u);
+#endif
 
   mapping = map.FindMapping(file_mapping4.addr_as<VMAddress>());
   ASSERT_TRUE(mapping);
   possible_starts = map.FindFilePossibleMmapStarts(*mapping);
+#if defined(OS_ANDROID)
+  EXPECT_EQ(possible_starts.size(), 5u);
+#else
   EXPECT_EQ(possible_starts.size(), 4u);
+#endif
 }
 
 }  // namespace

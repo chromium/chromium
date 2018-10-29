@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x334
-  LayoutBlockFlow {HTML} at (0,0) size 800x334
-    LayoutBlockFlow {BODY} at (8,8) size 784x318
-      LayoutBlockFlow (anonymous) at (0,0) size 784x18
-        LayoutText {#text} at (0,0) size 320x18
-          text run at (0,0) width 320: "There should be a ~2px shadow around the circle."
-      LayoutBlockFlow {DIV} at (0,18) size 300x300

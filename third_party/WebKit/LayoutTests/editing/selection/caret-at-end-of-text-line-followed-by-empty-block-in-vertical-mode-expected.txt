@@ -5,10 +5,10 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS caretRectAtEnd.width is caretRectAtStart.width
 PASS caretRectAtEnd.height is caretRectAtStart.height
 PASS caretRectRightKey.width is caretRectAtEnd.width
 PASS caretRectRightKey.height is caretRectAtEnd.height
 PASS caretRectDownKey.width is caretRectAtEnd.width
 PASS caretRectDownKey.height is caretRectAtEnd.height
-

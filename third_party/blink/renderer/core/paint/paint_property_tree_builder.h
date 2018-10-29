@@ -112,26 +112,18 @@ struct PaintPropertyTreeBuilderFragmentContext {
 };
 
 struct PaintPropertyTreeBuilderContext {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
-  PaintPropertyTreeBuilderContext() = default;
+  PaintPropertyTreeBuilderContext();
 
   Vector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
   const LayoutObject* container_for_absolute_position = nullptr;
   const LayoutObject* container_for_fixed_position = nullptr;
 
-  // True if a change has forced all properties in a subtree to be updated. This
-  // can be set due to paint offset changes or when the structure of the
-  // property tree changes (i.e., a node is added or removed).
-  bool force_subtree_update = false;
-
-  // Whether a clip paint property node appeared, disappeared, or changed
-  // its clip since this variable was last set to false. This is used
-  // to find out whether a clip changed since the last transform update.
-  // Code outside of this class resets clip_changed to false when transforms
-  // change.
-  bool clip_changed = false;
+  // The physical bounding box of all appearances of the repeating table section
+  // in the flow thread or the paged LayoutView.
+  LayoutRect repeating_table_section_bounding_box;
 
 #if DCHECK_IS_ON()
   // When DCHECK_IS_ON() we create PaintPropertyTreeBuilderContext even if not
@@ -146,21 +138,43 @@ struct PaintPropertyTreeBuilderContext {
   // fragment where the object first appears.
   const LayoutTableSection* repeating_table_section = nullptr;
 
+  // Specifies the reason the subtree update was forced. For simplicity, this
+  // only categorizes it into two categories:
+  // - Isolation piercing, meaning that the update is required for subtrees
+  //   under an isolation boundary.
+  // - Isolation blocked, meaning that the recursion can be blocked by
+  //   isolation.
+  enum SubtreeUpdateReason : unsigned {
+    kSubtreeUpdateIsolationPiercing = 1 << 0,
+    kSubtreeUpdateIsolationBlocked = 1 << 1
+  };
+
+  // True if a change has forced all properties in a subtree to be updated. This
+  // can be set due to paint offset changes or when the structure of the
+  // property tree changes (i.e., a node is added or removed).
+  unsigned force_subtree_update_reasons : 2;
+
+  // Note that the next four bitfields are conceptually bool, but are declared
+  // as unsigned in order to be packed in the same word as the above bitfield.
+
+  // Whether a clip paint property node appeared, disappeared, or changed
+  // its clip since this variable was last set to false. This is used
+  // to find out whether a clip changed since the last transform update.
+  // Code outside of this class resets clip_changed to false when transforms
+  // change.
+  unsigned clip_changed : 1;
+
   // When printing, fixed-position objects and their descendants need to repeat
   // in each page.
-  bool is_repeating_fixed_position = false;
+  unsigned is_repeating_fixed_position : 1;
 
   // True if the current subtree is underneath a LayoutSVGHiddenContainer
   // ancestor.
-  bool has_svg_hidden_container_ancestor = false;
-
-  // The physical bounding box of all appearances of the repeating table section
-  // in the flow thread or the paged LayoutView.
-  LayoutRect repeating_table_section_bounding_box;
+  unsigned has_svg_hidden_container_ancestor : 1;
 
   // Whether composited raster invalidation is supported for this object.
   // If not, subtree invalidations occur on every property tree change.
-  bool supports_composited_raster_invalidation = true;
+  unsigned supports_composited_raster_invalidation : 1;
 };
 
 class VisualViewportPaintPropertyTreeBuilder {

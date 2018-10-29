@@ -199,9 +199,8 @@ public class X509Util {
     private static final Object sLock = new Object();
 
     /**
-     * Allow disabling registering the observer and recording histograms for the certificate
-     * changes. Net unit tests do not load native libraries which prevent this to succeed. Moreover,
-     * the system does not allow to interact with the certificate store without user interaction.
+     * Allow disabling recording histograms for the certificate changes. Java unit tests do not load
+     * native libraries which prevent this from succeeding.
      */
     private static boolean sDisableNativeCodeForTest;
 
@@ -268,7 +267,7 @@ public class X509Util {
         if (sTestTrustManager == null) {
             sTestTrustManager = X509Util.createTrustManager(sTestKeyStore);
         }
-        if (!sDisableNativeCodeForTest && sTrustStorageListener == null) {
+        if (sTrustStorageListener == null) {
             sTrustStorageListener = new TrustStorageListener();
             IntentFilter filter = new IntentFilter();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

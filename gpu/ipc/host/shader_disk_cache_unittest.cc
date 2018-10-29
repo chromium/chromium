@@ -5,6 +5,7 @@
 #include "gpu/ipc/host/shader_disk_cache.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_task_environment.h"
 #include "net/base/test_completion_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,6 +16,8 @@ namespace {
 const int kDefaultClientId = 42;
 const char kCacheKey[] = "key";
 const char kCacheValue[] = "cached value";
+const char kCacheKey2[] = "key2";
+const char kCacheValue2[] = "cached value2";
 
 }  // namespace
 
@@ -100,6 +103,41 @@ TEST_F(ShaderDiskCacheTest, SafeToDeleteCacheMidEntryOpen) {
   net::TestCompletionCallback available_cb2;
   int rv2 = cache->SetAvailableCallback(available_cb2.callback());
   ASSERT_EQ(net::OK, available_cb2.GetResult(rv2));
+};
+
+TEST_F(ShaderDiskCacheTest, MultipleLoaderCallbacks) {
+  InitCache();
+
+  // Create a cache and wait for it to open.
+  scoped_refptr<ShaderDiskCache> cache = factory()->Get(kDefaultClientId);
+  ASSERT_TRUE(cache.get() != nullptr);
+  net::TestCompletionCallback available_cb;
+  int rv = cache->SetAvailableCallback(available_cb.callback());
+  ASSERT_EQ(net::OK, available_cb.GetResult(rv));
+  EXPECT_EQ(0, cache->Size());
+
+  // Write two entries, wait for them to complete.
+  const int32_t count = 2;
+  cache->Cache(kCacheKey, kCacheValue);
+  cache->Cache(kCacheKey2, kCacheValue2);
+  net::TestCompletionCallback complete_cb;
+  rv = cache->SetCacheCompleteCallback(complete_cb.callback());
+  ASSERT_EQ(net::OK, complete_cb.GetResult(rv));
+  EXPECT_EQ(count, cache->Size());
+
+  // Close, re-open, and verify that two entries were loaded.
+  cache = nullptr;
+  cache = factory()->Get(kDefaultClientId);
+  ASSERT_TRUE(cache.get() != nullptr);
+  int loaded_calls = 0;
+  cache->set_shader_loaded_callback(base::BindLambdaForTesting(
+      [&loaded_calls](const std::string& key, const std::string& value) {
+        ++loaded_calls;
+      }));
+  net::TestCompletionCallback available_cb2;
+  int rv2 = cache->SetAvailableCallback(available_cb2.callback());
+  ASSERT_EQ(net::OK, available_cb2.GetResult(rv2));
+  EXPECT_EQ(count, loaded_calls);
 };
 
 }  // namespace gpu

@@ -36,6 +36,7 @@
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/installer/setup/install_service_work_item.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/setup/setup_constants.h"
 #include "chrome/installer/setup/setup_util.h"
@@ -427,6 +428,42 @@ void AddMigrateUsageStatsWorkItems(const InstallerState& installer_state,
       installer_state.root_key(), install_static::GetClientStateKeyPath(),
       KEY_WOW64_32KEY, google_update::kRegUsageStatsField,
       static_cast<DWORD>(consent), true);
+}
+
+// Adds work items to register the Elevation Service with Windows. Only for
+// system level installs.
+void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
+                                  WorkItemList* list) {
+  DCHECK(::IsUserAnAdmin());
+  const HKEY root = HKEY_LOCAL_MACHINE;
+
+  if (elevation_service_path.empty()) {
+    LOG(DFATAL) << "The path to elevation_service.exe is invalid.";
+    return;
+  }
+
+  const base::string16 clsid_reg_path = GetElevationServiceClsidRegistryPath();
+  const base::string16 appid_reg_path = GetElevationServiceAppidRegistryPath();
+
+  // Delete any old registrations first, taking into account 32-bit -> 64-bit or
+  // 64-bit -> 32-bit migration.
+  for (const auto& reg_path : {clsid_reg_path, appid_reg_path}) {
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY})
+      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
+  }
+
+  list->AddWorkItem(new InstallServiceWorkItem(
+      install_static::GetElevationServiceName(),
+      install_static::GetElevationServiceDisplayName(),
+      base::CommandLine(elevation_service_path)));
+
+  list->AddCreateRegKeyWorkItem(root, clsid_reg_path, WorkItem::kWow64Default);
+  list->AddSetRegValueWorkItem(root, clsid_reg_path, WorkItem::kWow64Default,
+                               L"AppID", GetElevationServiceGuid(L""), true);
+  list->AddCreateRegKeyWorkItem(root, appid_reg_path, WorkItem::kWow64Default);
+  list->AddSetRegValueWorkItem(root, appid_reg_path, WorkItem::kWow64Default,
+                               L"LocalService",
+                               install_static::GetElevationServiceName(), true);
 }
 
 }  // namespace
@@ -849,6 +886,11 @@ void AddInstallWorkItems(const InstallationState& original_state,
   AddNativeNotificationWorkItems(
       installer_state.root_key(),
       GetNotificationHelperPath(target_path, new_version), install_list);
+
+  if (installer_state.system_install()) {
+    AddElevationServiceWorkItems(
+        GetElevationServicePath(target_path, new_version), install_list);
+  }
 
   InstallUtil::AddUpdateDowngradeVersionItem(
       installer_state.root_key(), current_version, new_version, install_list);

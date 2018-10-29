@@ -58,7 +58,7 @@ ACTION_P(Stop, pipeline) {
 
 ACTION_P(PostStop, pipeline) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::Bind(&Pipeline::Stop, base::Unretained(pipeline)));
+      FROM_HERE, base::BindOnce(&Pipeline::Stop, base::Unretained(pipeline)));
 }
 
 ACTION_P2(SetError, renderer_client, status) {
@@ -73,7 +73,7 @@ ACTION_TEMPLATE(PostCallback,
                 HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_1_VALUE_PARAMS(p0)) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::Bind(std::get<k>(args), p0));
+      FROM_HERE, base::BindOnce(std::get<k>(args), p0));
 }
 
 // TODO(scherkus): even though some filters are initialized on separate

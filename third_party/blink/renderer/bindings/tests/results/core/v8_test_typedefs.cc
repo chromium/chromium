@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -74,7 +74,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestTypedefsV8Internal {
+namespace test_typedefs_v8_internal {
 
 static void uLongLongAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -96,7 +96,7 @@ static void uLongLongAttributeAttributeSetter(v8::Local<v8::Value> v8Value, cons
   ExceptionState exceptionState(isolate, ExceptionState::kSetterContext, "TestTypedefs", "uLongLongAttribute");
 
   // Prepare the value to be set.
-  uint64_t cppValue = NativeValueTraits<IDLUnsignedLongLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState, kNormalConversion);
+  uint64_t cppValue = NativeValueTraits<IDLUnsignedLongLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -123,7 +123,7 @@ static void longWithClampAttributeAttributeSetter(v8::Local<v8::Value> v8Value, 
   ExceptionState exceptionState(isolate, ExceptionState::kSetterContext, "TestTypedefs", "longWithClampAttribute");
 
   // Prepare the value to be set.
-  int32_t cppValue = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState, kClamp);
+  int32_t cppValue = NativeValueTraits<IDLLongClamp>::NativeValue(info.GetIsolate(), v8Value, exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -399,12 +399,12 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
   V8SetReturnValue(info, wrapper);
 }
 
-} // namespace TestTypedefsV8Internal
+}  // namespace test_typedefs_v8_internal
 
 void V8TestTypedefs::uLongLongAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_uLongLongAttribute_Getter");
 
-  TestTypedefsV8Internal::uLongLongAttributeAttributeGetter(info);
+  test_typedefs_v8_internal::uLongLongAttributeAttributeGetter(info);
 }
 
 void V8TestTypedefs::uLongLongAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -412,13 +412,13 @@ void V8TestTypedefs::uLongLongAttributeAttributeSetterCallback(const v8::Functio
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestTypedefsV8Internal::uLongLongAttributeAttributeSetter(v8Value, info);
+  test_typedefs_v8_internal::uLongLongAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestTypedefs::longWithClampAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_longWithClampAttribute_Getter");
 
-  TestTypedefsV8Internal::longWithClampAttributeAttributeGetter(info);
+  test_typedefs_v8_internal::longWithClampAttributeAttributeGetter(info);
 }
 
 void V8TestTypedefs::longWithClampAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -426,7 +426,7 @@ void V8TestTypedefs::longWithClampAttributeAttributeSetterCallback(const v8::Fun
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestTypedefsV8Internal::longWithClampAttributeAttributeSetter(v8Value, info);
+  test_typedefs_v8_internal::longWithClampAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestTypedefs::tAttributeConstructorGetterCallback(v8::Local<v8::Name> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -438,7 +438,7 @@ void V8TestTypedefs::tAttributeConstructorGetterCallback(v8::Local<v8::Name> pro
 void V8TestTypedefs::domStringOrDoubleOrNullAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_domStringOrDoubleOrNullAttribute_Getter");
 
-  TestTypedefsV8Internal::domStringOrDoubleOrNullAttributeAttributeGetter(info);
+  test_typedefs_v8_internal::domStringOrDoubleOrNullAttributeAttributeGetter(info);
 }
 
 void V8TestTypedefs::domStringOrDoubleOrNullAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -446,85 +446,85 @@ void V8TestTypedefs::domStringOrDoubleOrNullAttributeAttributeSetterCallback(con
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestTypedefsV8Internal::domStringOrDoubleOrNullAttributeAttributeSetter(v8Value, info);
+  test_typedefs_v8_internal::domStringOrDoubleOrNullAttributeAttributeSetter(v8Value, info);
 }
 
 void V8TestTypedefs::voidMethodLongSequenceArgMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_voidMethodLongSequenceArg");
 
-  TestTypedefsV8Internal::voidMethodLongSequenceArgMethod(info);
+  test_typedefs_v8_internal::voidMethodLongSequenceArgMethod(info);
 }
 
 void V8TestTypedefs::voidMethodFloatArgStringArgMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_voidMethodFloatArgStringArg");
 
-  TestTypedefsV8Internal::voidMethodFloatArgStringArgMethod(info);
+  test_typedefs_v8_internal::voidMethodFloatArgStringArgMethod(info);
 }
 
 void V8TestTypedefs::voidMethodTestCallbackInterfaceTypeArgMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_voidMethodTestCallbackInterfaceTypeArg");
 
-  TestTypedefsV8Internal::voidMethodTestCallbackInterfaceTypeArgMethod(info);
+  test_typedefs_v8_internal::voidMethodTestCallbackInterfaceTypeArgMethod(info);
 }
 
 void V8TestTypedefs::uLongLongMethodTestInterfaceEmptyTypeSequenceArgMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_uLongLongMethodTestInterfaceEmptyTypeSequenceArg");
 
-  TestTypedefsV8Internal::uLongLongMethodTestInterfaceEmptyTypeSequenceArgMethod(info);
+  test_typedefs_v8_internal::uLongLongMethodTestInterfaceEmptyTypeSequenceArgMethod(info);
 }
 
 void V8TestTypedefs::testInterfaceOrTestInterfaceEmptyMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_testInterfaceOrTestInterfaceEmptyMethod");
 
-  TestTypedefsV8Internal::testInterfaceOrTestInterfaceEmptyMethodMethod(info);
+  test_typedefs_v8_internal::testInterfaceOrTestInterfaceEmptyMethodMethod(info);
 }
 
 void V8TestTypedefs::domStringOrDoubleMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_domStringOrDoubleMethod");
 
-  TestTypedefsV8Internal::domStringOrDoubleMethodMethod(info);
+  test_typedefs_v8_internal::domStringOrDoubleMethodMethod(info);
 }
 
 void V8TestTypedefs::arrayOfStringsMethodArrayOfStringsArgMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_arrayOfStringsMethodArrayOfStringsArg");
 
-  TestTypedefsV8Internal::arrayOfStringsMethodArrayOfStringsArgMethod(info);
+  test_typedefs_v8_internal::arrayOfStringsMethodArrayOfStringsArgMethod(info);
 }
 
 void V8TestTypedefs::methodTakingRecordMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_methodTakingRecord");
 
-  TestTypedefsV8Internal::methodTakingRecordMethod(info);
+  test_typedefs_v8_internal::methodTakingRecordMethod(info);
 }
 
 void V8TestTypedefs::methodTakingOilpanValueRecordMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_methodTakingOilpanValueRecord");
 
-  TestTypedefsV8Internal::methodTakingOilpanValueRecordMethod(info);
+  test_typedefs_v8_internal::methodTakingOilpanValueRecordMethod(info);
 }
 
 void V8TestTypedefs::unionWithRecordMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_unionWithRecordMethod");
 
-  TestTypedefsV8Internal::unionWithRecordMethodMethod(info);
+  test_typedefs_v8_internal::unionWithRecordMethodMethod(info);
 }
 
 void V8TestTypedefs::methodThatReturnsRecordMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_methodThatReturnsRecord");
 
-  TestTypedefsV8Internal::methodThatReturnsRecordMethod(info);
+  test_typedefs_v8_internal::methodThatReturnsRecordMethod(info);
 }
 
 void V8TestTypedefs::voidMethodNestedUnionTypeMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_voidMethodNestedUnionType");
 
-  TestTypedefsV8Internal::voidMethodNestedUnionTypeMethod(info);
+  test_typedefs_v8_internal::voidMethodNestedUnionTypeMethod(info);
 }
 
 void V8TestTypedefs::voidMethodUnionWithTypedefMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestTypedefs_voidMethodUnionWithTypedef");
 
-  TestTypedefsV8Internal::voidMethodUnionWithTypedefMethod(info);
+  test_typedefs_v8_internal::voidMethodUnionWithTypedefMethod(info);
 }
 
 // Suppress warning: global constructors, because AttributeConfiguration is trivial
@@ -575,7 +575,7 @@ void V8TestTypedefs::constructorCallback(const v8::FunctionCallbackInfo<v8::Valu
     return;
   }
 
-  TestTypedefsV8Internal::constructor(info);
+  test_typedefs_v8_internal::constructor(info);
 }
 
 static void installV8TestTypedefsTemplate(

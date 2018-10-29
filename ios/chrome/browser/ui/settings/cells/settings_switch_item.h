@@ -5,13 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_SWITCH_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_SWITCH_ITEM_H_
 
-#import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
-#import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
+#import <UIKit/UIKit.h>
 
-// SettingsSwitchItem is a model class that uses
-// SettingsSwitchCell.
-@interface SettingsSwitchItem : CollectionViewItem
+#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
+// SettingsSwitchItem is a model class that uses SettingsSwitchCell.
+@interface SettingsSwitchItem : TableViewItem
 // The filename for the leading icon.  If empty, no icon will be shown.
 @property(nonatomic, copy) NSString* iconImageName;
 
@@ -27,9 +26,11 @@
 
 @end
 
-// SettingsSwitchCell implements a UICollectionViewCell subclass
-// containing an icon, a text label, and a switch.
-@interface SettingsSwitchCell : MDCCollectionViewCell
+// SettingsSwitchCell implements a UITableViewCell subclass containing an icon,
+// a text label, and a switch.
+// If the preferred content size category is an accessibility category, the
+// switch is displayed below the label. Otherwise, it is on the trailing side.
+@interface SettingsSwitchCell : UITableViewCell
 
 // UILabel corresponding to |text| from the item.
 @property(nonatomic, readonly, strong) UILabel* textLabel;

@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">Не вдалося розпізнати секретний ключ.</translation>
 <translation id="6391538222494443604">Має бути каталог введення.</translation>
 <translation id="641087317769093025">Не вдалося розпакувати розширення</translation>
+<translation id="6413453408918378296">Значок недостатньо видимий: "<ph name="ICON" />".</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> просить надати доступ до одного або кількох ваших пристроїв:</translation>
 <translation id="657064425229075395">Не вдалося завантажити фоновий сценарій "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> від постачальника <ph name="VENDOR_NAME" /> (серійний номер <ph name="SERIAL_NUMBER" />)</translation>

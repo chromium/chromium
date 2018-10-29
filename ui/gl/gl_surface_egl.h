@@ -85,7 +85,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static bool IsCreateContextWebGLCompatabilitySupported();
   static bool IsEGLSurfacelessContextSupported();
   static bool IsEGLContextPrioritySupported();
-  static bool IsDirectCompositionSupported();
+  static bool IsEGLFlexibleSurfaceCompatibilitySupported();
   static bool IsRobustResourceInitSupported();
   static bool IsDisplayTextureShareGroupSupported();
   static bool IsCreateContextClientArraysSupported();
@@ -145,7 +145,6 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
                             bool enable_blend,
                             std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   bool FlipsVertically() const override;
-  bool BuffersFlipped() const override;
   EGLTimestampClient* GetEGLTimestampClient() override;
 
   // EGLTimestampClient implementation.

@@ -180,13 +180,14 @@ class TaskSchedulerWorkerTest : public testing::TestWithParam<size_t> {
       }
 
       // Create a Sequence with TasksPerSequence() Tasks.
-      scoped_refptr<Sequence> sequence(new Sequence);
+      scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(TaskTraits());
       for (size_t i = 0; i < outer_->TasksPerSequence(); ++i) {
         Task task(FROM_HERE,
                   BindOnce(&TaskSchedulerWorkerTest::RunTaskCallback,
                            Unretained(outer_)),
-                  TaskTraits(), TimeDelta());
-        EXPECT_TRUE(outer_->task_tracker_.WillPostTask(&task));
+                  TimeDelta());
+        EXPECT_TRUE(outer_->task_tracker_.WillPostTask(
+            &task, sequence->traits().shutdown_behavior()));
         sequence->PushTask(std::move(task));
       }
 
@@ -440,7 +441,8 @@ class ControllableCleanupDelegate : public SchedulerWorkerDefaultDelegate {
     }
 
     controls_->work_requested_ = true;
-    scoped_refptr<Sequence> sequence(new Sequence);
+    scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(TaskTraits(
+        WithBaseSyncPrimitives(), TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN));
     Task task(
         FROM_HERE,
         BindOnce(
@@ -450,9 +452,9 @@ class ControllableCleanupDelegate : public SchedulerWorkerDefaultDelegate {
             },
             Unretained(&controls_->work_processed_),
             Unretained(&controls_->work_running_)),
-        {WithBaseSyncPrimitives(), TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         TimeDelta());
-    EXPECT_TRUE(task_tracker_->WillPostTask(&task));
+    EXPECT_TRUE(task_tracker_->WillPostTask(
+        &task, sequence->traits().shutdown_behavior()));
     sequence->PushTask(std::move(task));
     sequence =
         task_tracker_->WillScheduleSequence(std::move(sequence), nullptr);

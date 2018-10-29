@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#import "chrome/browser/ui/cocoa/apps/native_app_window_cocoa.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/extension.h"
@@ -514,14 +513,15 @@ const Extension* GetExtensionForNSWindow(NSWindow* window) {
       AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
           [NSApp keyWindow]);
   if (appWindow) {
-    apps::ExtensionAppShimHandler::QuitAppForWindow(appWindow);
+    apps::ExtensionAppShimHandler::Get()->QuitAppForWindow(appWindow);
   } else {
     Browser* browser = chrome::FindBrowserWithWindow([NSApp keyWindow]);
     const Extension* extension =
         apps::ExtensionAppShimHandler::MaybeGetAppForBrowser(browser);
-    if (extension)
-      apps::ExtensionAppShimHandler::QuitHostedAppForWindow(browser->profile(),
-                                                            extension->id());
+    if (extension) {
+      apps::ExtensionAppShimHandler::Get()->QuitHostedAppForWindow(
+          browser->profile(), extension->id());
+    }
   }
 }
 
@@ -530,14 +530,15 @@ const Extension* GetExtensionForNSWindow(NSWindow* window) {
       AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
           [NSApp keyWindow]);
   if (appWindow) {
-    apps::ExtensionAppShimHandler::HideAppForWindow(appWindow);
+    apps::ExtensionAppShimHandler::Get()->HideAppForWindow(appWindow);
   } else {
     Browser* browser = chrome::FindBrowserWithWindow([NSApp keyWindow]);
     const Extension* extension =
         apps::ExtensionAppShimHandler::MaybeGetAppForBrowser(browser);
-    if (extension)
-      apps::ExtensionAppShimHandler::HideHostedApp(browser->profile(),
-                                                   extension->id());
+    if (extension) {
+      apps::ExtensionAppShimHandler::Get()->HideHostedApp(browser->profile(),
+                                                          extension->id());
+    }
   }
 }
 
@@ -546,7 +547,7 @@ const Extension* GetExtensionForNSWindow(NSWindow* window) {
       AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
           [NSApp keyWindow]);
   if (appWindow)
-    apps::ExtensionAppShimHandler::FocusAppForWindow(appWindow);
+    apps::ExtensionAppShimHandler::Get()->FocusAppForWindow(appWindow);
 }
 
 @end

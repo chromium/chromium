@@ -31,14 +31,14 @@ class OpenFileHandle;
 class STORAGE_EXPORT QuotaReservation
     : public base::RefCounted<QuotaReservation> {
  public:
-  using StatusCallback = base::Callback<void(base::File::Error error)>;
+  using StatusCallback = base::OnceCallback<void(base::File::Error error)>;
 
   // Reclaims unused quota and reserves another |size| of quota.  So that the
   // resulting new |remaining_quota_| will be same as |size| as far as available
   // space is enough.  |remaining_quota_| may be less than |size| if there is
   // not enough space available.
   // Invokes |callback| upon completion.
-  void RefreshReservation(int64_t size, const StatusCallback& callback);
+  void RefreshReservation(int64_t size, StatusCallback callback);
 
   // Associates |platform_path| to the QuotaReservation instance.
   // Returns an OpenFileHandle instance that represents a quota managed file.
@@ -76,11 +76,11 @@ class STORAGE_EXPORT QuotaReservation
   static bool AdaptDidUpdateReservedQuota(
       const base::WeakPtr<QuotaReservation>& reservation,
       int64_t previous_size,
-      const StatusCallback& callback,
+      StatusCallback callback,
       base::File::Error error,
       int64_t delta);
   bool DidUpdateReservedQuota(int64_t previous_size,
-                              const StatusCallback& callback,
+                              StatusCallback callback,
                               base::File::Error error,
                               int64_t delta);
 

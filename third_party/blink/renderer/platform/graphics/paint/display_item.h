@@ -29,7 +29,7 @@ class FloatSize;
 enum class PaintPhase;
 
 class PLATFORM_EXPORT DisplayItem {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum {
@@ -166,7 +166,7 @@ class PLATFORM_EXPORT DisplayItem {
 
   // Ids are for matching new DisplayItems with existing DisplayItems.
   struct Id {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
     Id(const DisplayItemClient& client, const Type type, unsigned fragment = 0)
         : client(client), type(type), fragment(fragment) {}
     Id(const Id& id, unsigned fragment)

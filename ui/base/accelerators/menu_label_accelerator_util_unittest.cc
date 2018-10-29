@@ -22,4 +22,30 @@ TEST(MenuLabelAcceleratorTest, GetMnemonic) {
     EXPECT_EQ(GetMnemonic(test.label), test.mneumonic);
 }
 
+TEST(MenuLabelAcceleratorTest, EscapeMenuLabelAmpersands) {
+  static const struct {
+    const char* input;
+    const char* output;
+  } cases[] = {
+      {"nothing", "nothing"},
+      {"foo &bar", "foo &&bar"},
+      {"foo &&bar", "foo &&&&bar"},
+      {"foo &&&bar", "foo &&&&&&bar"},
+      {"&foo bar", "&&foo bar"},
+      {"&&foo bar", "&&&&foo bar"},
+      {"&&&foo bar", "&&&&&&foo bar"},
+      {"&foo &bar", "&&foo &&bar"},
+      {"&&foo &&bar", "&&&&foo &&&&bar"},
+      {"f&o&o ba&r", "f&&o&&o ba&&r"},
+      {"foo_&_bar", "foo_&&_bar"},
+      {"&_foo_bar_&", "&&_foo_bar_&&"},
+  };
+
+  for (const auto& test : cases) {
+    base::string16 in = base::ASCIIToUTF16(test.input);
+    base::string16 out = base::ASCIIToUTF16(test.output);
+    EXPECT_EQ(out, EscapeMenuLabelAmpersands(in));
+  }
+}
+
 }  // namespace ui

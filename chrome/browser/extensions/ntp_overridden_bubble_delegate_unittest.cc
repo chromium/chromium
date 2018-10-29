@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
@@ -48,7 +49,7 @@ TEST_F(NtpOverriddenBubbleDelegateTest, TestAcknowledgeExistingExtensions) {
 
   InitializeEmptyExtensionService();
   ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->SetTestingFactory(
-      profile(), &BuildOverrideRegistrar);
+      profile(), base::BindRepeating(&BuildOverrideRegistrar));
   // We need to trigger the instantiation of the WebUIOverrideRegistrar for
   // it to be constructed, since by default it's not constructed in tests.
   ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(profile());

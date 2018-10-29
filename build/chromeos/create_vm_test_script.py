@@ -51,6 +51,9 @@ def main(args):
   parser.add_argument('--cros-cache')
   parser.add_argument('--board')
   parser.add_argument('--deploy-chrome', action='store_true')
+  parser.add_argument('--suite-name')
+  parser.add_argument('--tast-conditional')
+  parser.add_argument('--tast-tests', action='append')
   args = parser.parse_args(args)
 
   def RelativizePathToScript(path):
@@ -70,6 +73,20 @@ def main(args):
         '--test-exe',
         args.test_exe,
     ])
+  elif args.tast_conditional or args.tast_tests:
+    vm_test_args.extend([
+        'tast',
+        '--suite-name',
+        args.suite_name,
+    ])
+    if args.tast_conditional:
+      vm_test_args.extend([
+          '--conditional',
+          args.tast_conditional,
+      ])
+    else:
+      for t in args.tast_tests:
+        vm_test_args.extend(['-t', t])
   else:
     vm_test_args.append('host-cmd')
     if args.deploy_chrome:

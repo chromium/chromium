@@ -1,4 +1,6 @@
 rootWebArea
 ++genericContainer
 ++++textField name='oranges'
+++++++genericContainer
 ++++textField name='bananas'
+++++++genericContainer

@@ -70,8 +70,7 @@ void RunDictionaryTest(const char* codepage,
   std::string aff_data(base::StringPrintf("SET %s\n", codepage));
 
   std::string dic_data(base::StringPrintf("%" PRIuS "\n", word_list.size()));
-  for (std::map<base::string16, bool>::const_iterator it = word_list.begin();
-       it != word_list.end(); ++it) {
+  for (auto it = word_list.begin(); it != word_list.end(); ++it) {
     std::string encoded_word;
     EXPECT_TRUE(UTF16ToCodepage(it->first,
                                 codepage,

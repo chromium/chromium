@@ -75,16 +75,18 @@ SVGTransformChange LayoutSVGViewportContainer::CalculateLocalTransform() {
   return change_detector.ComputeChange(local_to_parent_transform_);
 }
 
-bool LayoutSVGViewportContainer::NodeAtFloatPoint(
+bool LayoutSVGViewportContainer::NodeAtPoint(
     HitTestResult& result,
-    const FloatPoint& point_in_parent,
+    const HitTestLocation& location_in_parent,
+    const LayoutPoint& accumulated_offset,
     HitTestAction action) {
   // Respect the viewport clip which is in parent coordinates.
   if (SVGLayoutSupport::IsOverflowHidden(*this)) {
-    if (!viewport_.Contains(point_in_parent))
+    if (!location_in_parent.Intersects(viewport_))
       return false;
   }
-  return LayoutSVGContainer::NodeAtFloatPoint(result, point_in_parent, action);
+  return LayoutSVGContainer::NodeAtPoint(result, location_in_parent,
+                                         accumulated_offset, action);
 }
 
 void LayoutSVGViewportContainer::StyleDidChange(

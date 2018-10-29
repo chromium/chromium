@@ -59,7 +59,7 @@ void ChangeEntryIDAndUpdateChildren(BaseWriteTransaction* trans,
     // Get all child entries of the old id.
     Directory::Metahandles children;
     trans->directory()->GetChildHandlesById(trans, old_id, &children);
-    Directory::Metahandles::iterator i = children.begin();
+    auto i = children.begin();
     while (i != children.end()) {
       ModelNeutralMutableEntry child_entry(trans, GET_BY_HANDLE, *i++);
       DCHECK(child_entry.good());

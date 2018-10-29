@@ -17,9 +17,9 @@
 #include "third_party/blink/public/platform/web_vector.h"
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"   // nogncheck
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"  // nogncheck
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"  // nogncheck
 #endif
 
 namespace blink {

@@ -66,9 +66,6 @@ class TabStripController {
   // Closes the tab at the specified index in the model.
   virtual void CloseTab(int index, CloseTabSource source) = 0;
 
-  // Toggles audio muting for the tab at the specified index in the model.
-  virtual void ToggleTabAudioMute(int index) = 0;
-
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,
                                      const gfx::Point& p,

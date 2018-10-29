@@ -20,6 +20,7 @@
     <color name="default_icon_color_white" tools:ignore="UnusedResources">
         @android:color/white
     </color>
+    <color name="hairline_stroke_color" tools:ignore="UnusedResources">@color/modern_grey_300</color>
 
     <!-- Modern color palette -->
     <color name="modern_blue_300">#8AB4F8</color>
@@ -28,7 +29,7 @@
     <color name="modern_grey_100" tools:ignore="UnusedResources">#F1F3F4</color>
     <color name="modern_grey_200" tools:ignore="UnusedResources">#E8EAED</color>
     <color name="modern_grey_300" tools:ignore="UnusedResources">#DADCE0</color>
-    <color name="modern_grey_400">#BDC1C6</color>
+    <color name="modern_grey_400" tools:ignore="UnusedResources">#BDC1C6</color>
     <color name="modern_grey_500" tools:ignore="UnusedResources">#9AA0A6</color>
     <color name="modern_grey_600" tools:ignore="UnusedResources">#80868B</color>
     <color name="modern_grey_700">#5F6368</color>
@@ -36,6 +37,7 @@
     <color name="modern_grey_900">#202124</color>
 
     <color name="black_alpha_38">#61000000</color>
+    <color name="white_alpha_70">#B3FFFFFF</color>
 
     <color name="dropdown_divider_color">#E5E5E5</color>
     <color name="dropdown_dark_divider_color">#C0C0C0</color>

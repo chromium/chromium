@@ -35,7 +35,7 @@ namespace blink {
 
 AnalyserHandler::AnalyserHandler(AudioNode& node, float sample_rate)
     : AudioBasicInspectorHandler(kNodeTypeAnalyser, node, sample_rate, 1) {
-  channel_count_ = 1;
+  channel_count_ = 2;
   Initialize();
 }
 

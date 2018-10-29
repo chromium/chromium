@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
@@ -218,11 +217,9 @@ BrowserActionTestUtilViews::BrowserActionTestUtilViews(
           browser_,
           GetContainer(browser_, main_bar->test_helper_.get()))) {}
 
-#if !defined(OS_MACOSX)
 // static
 std::unique_ptr<BrowserActionTestUtil> BrowserActionTestUtil::Create(
     Browser* browser,
     bool is_real_window) {
   return std::make_unique<BrowserActionTestUtilViews>(browser, is_real_window);
 }
-#endif

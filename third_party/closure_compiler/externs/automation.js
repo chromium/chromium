@@ -43,6 +43,7 @@ chrome.automation.EventType = {
   LIVE_REGION_CREATED: 'liveRegionCreated',
   LIVE_REGION_CHANGED: 'liveRegionChanged',
   LOAD_COMPLETE: 'loadComplete',
+  LOAD_START: 'loadStart',
   LOCATION_CHANGED: 'locationChanged',
   MEDIA_STARTED_PLAYING: 'mediaStartedPlaying',
   MEDIA_STOPPED_PLAYING: 'mediaStoppedPlaying',
@@ -335,9 +336,11 @@ chrome.automation.NameFromType = {
   UNINITIALIZED: 'uninitialized',
   ATTRIBUTE: 'attribute',
   ATTRIBUTE_EXPLICITLY_EMPTY: 'attributeExplicitlyEmpty',
+  CAPTION: 'caption',
   CONTENTS: 'contents',
   PLACEHOLDER: 'placeholder',
   RELATED_ELEMENT: 'relatedElement',
+  TITLE: 'title',
   VALUE: 'value',
 };
 
@@ -829,6 +832,13 @@ chrome.automation.AutomationNode.prototype.scrollYMin;
  * @see https://developer.chrome.com/extensions/automation#type-scrollYMax
  */
 chrome.automation.AutomationNode.prototype.scrollYMax;
+
+/**
+ * Indicates whether this node is scrollable.
+ * @type {(boolean|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-scrollable
+ */
+chrome.automation.AutomationNode.prototype.scrollable;
 
 /**
  * The character index of the start of the selection within this editable text element; -1 if no selection.

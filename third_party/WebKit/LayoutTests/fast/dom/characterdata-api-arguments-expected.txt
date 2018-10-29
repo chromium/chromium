@@ -2,7 +2,6 @@ Tests that the CharacterData API arguments are correctly validated.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS text.data is "abcd"
 PASS text.__proto__.__proto__ is CharacterData.prototype
 PASS text.appendData('efg') did not throw exception.

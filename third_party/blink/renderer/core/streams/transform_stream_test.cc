@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_extras_test_utils.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_operations.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
@@ -466,35 +467,6 @@ TEST_F(TransformStreamTest, SurvivesGarbageCollectionWhenTraced) {
   EXPECT_TRUE(ReadableStreamOperations::IsReadableStream(script_state, readable,
                                                          ASSERT_NO_EXCEPTION)
                   .value_or(false));
-}
-
-// Verify that JS TransformStream is collected when it is not reachable from V8.
-// TODO(ricea): Remove this test when unified garbage collection is introduced,
-// as it will fail.
-#if GTEST_HAS_DEATH_TEST
-#define MAYBE_IsGarbageCollectedWhenNotTraced IsGarbageCollectedWhenNotTraced
-#else
-#define MAYBE_IsGarbageCollectedWhenNotTraced \
-  DISABLED_IsGarbageCollectedWhenNotTraced
-#endif
-TEST_F(TransformStreamTest, MAYBE_IsGarbageCollectedWhenNotTraced) {
-  auto page_holder = DummyPageHolder::Create();
-  Persistent<ScriptState> script_state =
-      ToScriptStateForMainWorld(page_holder->GetDocument().GetFrame());
-  {
-    ScriptState::Scope scope(script_state);
-    Init(new IdentityTransformer(), script_state, ASSERT_NO_EXCEPTION);
-  }
-  Persistent<TransformStream> stream = Stream();
-  ClearHolder();
-  Microtask::PerformCheckpoint(script_state->GetIsolate());
-  script_state->GetIsolate()->RequestGarbageCollectionForTesting(
-      v8::Isolate::kFullGarbageCollection);
-  ScriptState::Scope scope(script_state);
-  // This emits a warning that death tests are unsafe with threads, but it works
-  // anyway. The crash message depends on whether DCHECK is enabled or not, so
-  // the regex it is required to match is empty.
-  EXPECT_DEATH(stream->Readable(script_state, ASSERT_NO_EXCEPTION), "");
 }
 
 }  // namespace

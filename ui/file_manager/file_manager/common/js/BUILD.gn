@@ -3,15 +3,23 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/closure_compiler/js_unit_tests.gni")
 
 # TODO(tapted): This entire folder should move to //ui/file_manager/base.
 visibility = [ "//ui/file_manager/*" ]
 
-js_type_check("closure_compile") {
+group("closure_compile") {
+  testonly = true
+  deps = [
+    ":closure_compile_module",
+    ":test_support_type_check",
+    ":unit_tests_type_check",
+  ]
+}
+
+js_type_check("closure_compile_module") {
   deps = [
     ":async_util",
-    ":closure_compile_externs",
-    ":error_util",
     ":file_type",
     ":files_app_entry_types",
     ":importer_common",
@@ -21,28 +29,42 @@ js_type_check("closure_compile") {
     ":metrics_events",
     ":mock_entry",
     ":progress_center_common",
-    ":unittest_util",
     ":util",
     ":volume_manager_common",
   ]
 }
 
-js_library("closure_compile_externs") {
-  sources = []
-  externs_list = [
-    "../../../externs/background/file_browser_background.js",
-    "../../../externs/background_window.js",
+js_type_check("test_support_type_check") {
+  testonly = true
+  deps = [
+    ":test_importer_common",
+    ":unittest_util",
   ]
 }
 
 js_library("async_util") {
 }
 
-js_library("error_util") {
+js_unittest("async_util_unittest") {
+  deps = [
+    ":async_util",
+    "//ui/file_manager/base/js:test_error_reporting",
+  ]
 }
 
 js_library("files_app_entry_types") {
+  deps = [
+    "../../../externs:file_manager_private",
+  ]
   externs_list = [ "../../../externs/volume_info.js" ]
+}
+
+js_unittest("files_app_entry_types_unittest") {
+  deps = [
+    ":files_app_entry_types",
+    ":volume_manager_common",
+    "//ui/file_manager/base/js:test_error_reporting",
+  ]
 }
 
 js_library("file_type") {
@@ -52,36 +74,75 @@ js_library("file_type") {
   ]
 }
 
+# These importer files actually belong here. Nothing outside the Files app uses
+# them, so restrict visibility. TODO(tapted): Simplify visibility when
+# everything else moves to //ui/file_manager/base.
 js_library("importer_common") {
+  visibility = []
+  visibility = [ "//ui/file_manager/file_manager/*" ]
   deps = [
     ":file_type",
     ":volume_manager_common",
+    "../../../externs:volume_manager",
   ]
   externs_list = [
-    "../../../externs/volume_info_list.js",
-    "../../../externs/volume_manager.js",
+    "//third_party/analytics/externs.js",
+    "../../../externs/background_window.js",
+    "../../../externs/background/file_browser_background.js",
+  ]
+}
+
+js_library("test_importer_common") {
+  testonly = true
+  deps = [
+    ":importer_common",
+    ":unittest_util",
+    "//ui/file_manager/base/js:test_error_reporting",
+  ]
+  visibility = []
+  visibility = [ "//ui/file_manager/file_manager/*" ]
+}
+
+js_unittest("importer_common_unittest") {
+  deps = [
+    ":mock_entry",
+    ":test_importer_common",
+    ":util",
+    "//ui/file_manager/base/js:mock_chrome",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
   ]
 }
 
 js_library("lru_cache") {
 }
 
+js_unittest("lru_cache_unittest") {
+  deps = [
+    ":lru_cache",
+    "//ui/webui/resources/js:webui_resource_test",
+  ]
+}
+
 js_library("metrics") {
+  # |metrics| and |metrics_events| are for analytics. Don't leak this dependency
+  # outside of the core files app.
+  visibility = []
+  visibility = [ "//ui/file_manager/file_manager/*" ]
   deps = [
     ":metrics_base",
     "../../../externs:file_manager_private",
     "//ui/webui/resources/js:assert",
   ]
-  externs_list = [
-    "$externs_path/metrics_private.js",
-    "//third_party/analytics/externs.js",
-  ]
+  externs_list = [ "//third_party/analytics/externs.js" ]
 }
 
 js_library("metrics_base") {
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("metrics_events") {
+  visibility = []
+  visibility = [ "//ui/file_manager/file_manager/*" ]
   deps = [
     ":metrics_base",
   ]
@@ -97,10 +158,14 @@ js_library("mock_entry") {
 js_library("progress_center_common") {
 }
 
-js_library("unittest_util") {
+js_unittest("unittest_util") {
+  # Only files app tests use this util file.
+  visibility = []
+  visibility = [ "//ui/file_manager/file_manager/*" ]
   deps = [
     "//ui/webui/resources/js:webui_resource_test",
   ]
+  externs_list = [ "$externs_path/command_line_private.js" ]
 }
 
 js_library("util") {
@@ -121,8 +186,26 @@ js_library("util") {
   ]
 }
 
+js_unittest("util_unittest") {
+  deps = [
+    ":mock_entry",
+    ":util",
+    "//ui/file_manager/base/js:test_error_reporting",
+  ]
+}
+
 js_library("volume_manager_common") {
   deps = [
     "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_unit_tests("unit_tests") {
+  deps = [
+    ":async_util_unittest",
+    ":files_app_entry_types_unittest",
+    ":importer_common_unittest",
+    ":lru_cache_unittest",
+    ":util_unittest",
   ]
 }

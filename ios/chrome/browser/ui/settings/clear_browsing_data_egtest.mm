@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
-#include "ios/chrome/browser/ui/tools_menu/public/tools_menu_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"

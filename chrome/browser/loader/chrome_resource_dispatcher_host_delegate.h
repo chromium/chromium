@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "content/public/browser/resource_dispatcher_host_delegate.h"
-#include "content/public/common/previews_state.h"
 #include "extensions/buildflags/buildflags.h"
 
 class DownloadRequestLimiter;
@@ -26,10 +25,6 @@ class NavigationData;
 
 namespace net {
 class URLRequest;
-}
-
-namespace previews {
-class PreviewsDecider;
 }
 
 namespace safe_browsing {
@@ -72,12 +67,6 @@ class ChromeResourceDispatcherHostDelegate
                            content::ResourceContext* resource_context,
                            network::ResourceResponse* response) override;
   void RequestComplete(net::URLRequest* url_request) override;
-  // Returns a bitmask of potentially several Previews optimizations at the
-  // start of a navigation.
-  content::PreviewsState DetermineEnabledPreviews(
-      net::URLRequest* url_request,
-      content::ResourceContext* resource_context,
-      content::PreviewsState previews_to_allow) override;
   content::NavigationData* GetNavigationData(
       net::URLRequest* request) const override;
 
@@ -98,14 +87,6 @@ class ChromeResourceDispatcherHostDelegate
     std::string view_id;
   };
 #endif
-
-  // Returns an updated bitmask of Previews for a committed navigation.
-  // The value is updated from |intial_state| considering navigation data
-  // attached to |request|.
-  static content::PreviewsState DetermineCommittedPreviews(
-      const net::URLRequest* request,
-      const previews::PreviewsDecider* previews_decider,
-      content::PreviewsState initial_state);
 
   scoped_refptr<DownloadRequestLimiter> download_request_limiter_;
   scoped_refptr<safe_browsing::SafeBrowsingService> safe_browsing_;

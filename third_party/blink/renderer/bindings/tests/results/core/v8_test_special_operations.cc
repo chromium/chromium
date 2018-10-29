@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -67,7 +67,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestSpecialOperationsV8Internal {
+namespace test_special_operations_v8_internal {
 
 static void namedItemMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
   TestSpecialOperations* impl = V8TestSpecialOperations::ToImpl(info.Holder());
@@ -142,7 +142,7 @@ static void namedPropertyDescriptor(uint32_t index, const v8::PropertyCallbackIn
   // TODO(rakuco): remove this hack once we switch named property handlers to
   // using descriptor and definer callbacks (bug 764633).
   const AtomicString& indexAsName = AtomicString::Number(index);
-  TestSpecialOperationsV8Internal::namedPropertyQuery(indexAsName, info);
+  test_special_operations_v8_internal::namedPropertyQuery(indexAsName, info);
   v8::Local<v8::Value> getterValue = info.GetReturnValue().Get();
   if (!getterValue->IsUndefined()) {
     DCHECK(getterValue->IsInt32());
@@ -170,12 +170,12 @@ static void namedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& i
   V8SetReturnValue(info, ToV8(names, info.Holder(), info.GetIsolate()).As<v8::Array>());
 }
 
-} // namespace TestSpecialOperationsV8Internal
+}  // namespace test_special_operations_v8_internal
 
 void V8TestSpecialOperations::namedItemMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestSpecialOperations_namedItem");
 
-  TestSpecialOperationsV8Internal::namedItemMethod(info);
+  test_special_operations_v8_internal::namedItemMethod(info);
 }
 
 void V8TestSpecialOperations::namedPropertyGetterCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -185,7 +185,7 @@ void V8TestSpecialOperations::namedPropertyGetterCallback(v8::Local<v8::Name> na
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestSpecialOperationsV8Internal::namedPropertyGetter(propertyName, info);
+  test_special_operations_v8_internal::namedPropertyGetter(propertyName, info);
 }
 
 void V8TestSpecialOperations::namedPropertySetterCallback(v8::Local<v8::Name> name, v8::Local<v8::Value> v8Value, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -195,7 +195,7 @@ void V8TestSpecialOperations::namedPropertySetterCallback(v8::Local<v8::Name> na
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestSpecialOperationsV8Internal::namedPropertySetter(propertyName, v8Value, info);
+  test_special_operations_v8_internal::namedPropertySetter(propertyName, v8Value, info);
 }
 
 void V8TestSpecialOperations::namedPropertyQueryCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Integer>& info) {
@@ -205,11 +205,11 @@ void V8TestSpecialOperations::namedPropertyQueryCallback(v8::Local<v8::Name> nam
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestSpecialOperationsV8Internal::namedPropertyQuery(propertyName, info);
+  test_special_operations_v8_internal::namedPropertyQuery(propertyName, info);
 }
 
 void V8TestSpecialOperations::namedPropertyEnumeratorCallback(const v8::PropertyCallbackInfo<v8::Array>& info) {
-  TestSpecialOperationsV8Internal::namedPropertyEnumerator(info);
+  test_special_operations_v8_internal::namedPropertyEnumerator(info);
 }
 
 void V8TestSpecialOperations::indexedPropertyGetterCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -217,17 +217,17 @@ void V8TestSpecialOperations::indexedPropertyGetterCallback(uint32_t index, cons
 
   const AtomicString& propertyName = AtomicString::Number(index);
 
-  TestSpecialOperationsV8Internal::namedPropertyGetter(propertyName, info);
+  test_special_operations_v8_internal::namedPropertyGetter(propertyName, info);
 }
 
 void V8TestSpecialOperations::indexedPropertyDescriptorCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
-  TestSpecialOperationsV8Internal::namedPropertyDescriptor(index, info);
+  test_special_operations_v8_internal::namedPropertyDescriptor(index, info);
 }
 
 void V8TestSpecialOperations::indexedPropertySetterCallback(uint32_t index, v8::Local<v8::Value> v8Value, const v8::PropertyCallbackInfo<v8::Value>& info) {
   const AtomicString& propertyName = AtomicString::Number(index);
 
-  TestSpecialOperationsV8Internal::namedPropertySetter(propertyName, v8Value, info);
+  test_special_operations_v8_internal::namedPropertySetter(propertyName, v8Value, info);
 }
 
 static const V8DOMConfiguration::MethodConfiguration V8TestSpecialOperationsMethods[] = {

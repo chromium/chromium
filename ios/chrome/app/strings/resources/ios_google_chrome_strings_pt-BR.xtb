@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">O Chrome permite que você otimize seu tempo trazendo suas contas para a Web. É possível adicionar ou remover contas nas configurações.</translation>
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
 <translation id="3345341804167540816">Usar o Chrome em qualquer lugar</translation>
-<translation id="3678774398092457402">Quer que o Chrome salve sua senha para este site?</translation>
 <translation id="384394811301901750">O Google Chrome não pode usar a câmera agora</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Você está trocando de contas de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Seus dados já existentes do Chrome são gerenciados por <ph name="DOMAIN" />. Seus dados serão excluídos desse dispositivo, mas permanecerão em <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943">As <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" /> podem ser personalizadas a qualquer momento. O Google pode usar o conteúdo dos sites que você visita, interações do navegador e atividades para personalizar o Chrome e os serviços do Google, como o Tradutor, a Pesquisa e os anúncios.</translation>
 <translation id="5639704535586432836">Abra Ajustes &gt; Privacidade &gt; Câmera &gt; Google Chrome e ative a câmera.</translation>
 <translation id="5642200033778930880">O Google Chrome não pode usar a câmera no modo Visualização dividida</translation>
-<translation id="5703130498371792817">Está gostando do Chrome? <ph name="BEGIN_LINK" />Avalie este app<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Dica do Chrome. Alguns botões agora estão na parte inferior da tela, como "Voltar", "Avançar" e "Pesquisar".</translation>
 <translation id="6036420186814142909">O Google Chrome tem recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Termos de Serviço do Google Chrome</translation>
 <translation id="7165736900384873061">Começar a usar o leitor de QR do Google Chrome</translation>
 <translation id="7172660552945675509">Dica: <ph name="BEGIN_LINK" />mova o Chrome para sua dock<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">O Chrome usa o Face ID para garantir o acesso autorizado às suas senhas.</translation>
 <translation id="7265369419224458312">Acesse as guias que você abriu no seu computador, bem aqui. Basta abrir o Chrome no computador, ir até o menu e selecionar “Fazer login no Google Chrome…”</translation>
 <translation id="728488472449859922">Ativar o leitor de QR do Google Chrome</translation>
 <translation id="7400722733683201933">Sobre o Google Chrome</translation>

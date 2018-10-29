@@ -34,9 +34,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
@@ -97,18 +95,18 @@ class GetRegistrationCallback : public WebServiceWorkerProvider::
       : resolver_(resolver) {}
   ~GetRegistrationCallback() override = default;
 
-  void OnSuccess(
-      std::unique_ptr<WebServiceWorkerRegistration::Handle> handle) override {
+  void OnSuccess(WebServiceWorkerRegistrationObjectInfo info) override {
     if (!resolver_->GetExecutionContext() ||
         resolver_->GetExecutionContext()->IsContextDestroyed())
       return;
-    if (!handle) {
+    if (info.registration_id ==
+        mojom::blink::kInvalidServiceWorkerRegistrationId) {
       // Resolve the promise with undefined.
       resolver_->Resolve();
       return;
     }
-    resolver_->Resolve(ServiceWorkerRegistration::GetOrCreate(
-        resolver_->GetExecutionContext(), std::move(handle)));
+    resolver_->Resolve(
+        ServiceWorkerRegistration::Take(resolver_, std::move(info)));
   }
 
   void OnError(const WebServiceWorkerError& error) override {
@@ -133,14 +131,15 @@ class ServiceWorkerContainer::GetRegistrationForReadyCallback
       : ready_(ready) {}
   ~GetRegistrationForReadyCallback() override = default;
 
-  void OnSuccess(
-      std::unique_ptr<WebServiceWorkerRegistration::Handle> handle) override {
+  void OnSuccess(WebServiceWorkerRegistrationObjectInfo info) override {
     DCHECK_EQ(ready_->GetState(), ReadyProperty::kPending);
 
     if (ready_->GetExecutionContext() &&
         !ready_->GetExecutionContext()->IsContextDestroyed()) {
-      ready_->Resolve(ServiceWorkerRegistration::GetOrCreate(
-          ready_->GetExecutionContext(), std::move(handle)));
+      ready_->Resolve(
+          ServiceWorkerContainerClient::From(
+              To<Document>(ready_->GetExecutionContext()))
+              ->GetOrCreateServiceWorkerRegistration(std::move(info)));
     }
   }
 
@@ -291,7 +290,7 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
   ContentSecurityPolicy* csp = execution_context->GetContentSecurityPolicy();
   if (csp) {
     if (!csp->AllowRequestWithoutIntegrity(
-            WebURLRequest::kRequestContextServiceWorker, script_url) ||
+            mojom::RequestContextType::SERVICE_WORKER, script_url) ||
         !csp->AllowWorkerContextFromSource(
             script_url, ResourceRequest::RedirectStatus::kNoRedirect,
             SecurityViolationReportingPolicy::kReport)) {
@@ -431,11 +430,11 @@ ScriptPromise ServiceWorkerContainer::ready(ScriptState* caller_state) {
 }
 
 void ServiceWorkerContainer::SetController(
-    std::unique_ptr<WebServiceWorker::Handle> handle,
+    WebServiceWorkerObjectInfo info,
     bool should_notify_controller_change) {
   if (!GetExecutionContext())
     return;
-  controller_ = ServiceWorker::From(GetExecutionContext(), std::move(handle));
+  controller_ = ServiceWorker::From(GetExecutionContext(), std::move(info));
   if (controller_) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kServiceWorkerControlledPage);
@@ -445,7 +444,7 @@ void ServiceWorkerContainer::SetController(
 }
 
 void ServiceWorkerContainer::DispatchMessageEvent(
-    std::unique_ptr<WebServiceWorker::Handle> handle,
+    WebServiceWorkerObjectInfo info,
     TransferableMessage message) {
   if (!GetExecutionContext() || !GetExecutionContext()->ExecutingWindow())
     return;
@@ -453,7 +452,7 @@ void ServiceWorkerContainer::DispatchMessageEvent(
   MessagePortArray* ports =
       MessagePort::EntanglePorts(*GetExecutionContext(), std::move(msg.ports));
   ServiceWorker* source =
-      ServiceWorker::From(GetExecutionContext(), std::move(handle));
+      ServiceWorker::From(GetExecutionContext(), std::move(info));
   MessageEvent* event;
   if (!msg.locked_agent_cluster_id ||
       GetExecutionContext()->IsSameAgentCluster(*msg.locked_agent_cluster_id)) {
@@ -491,7 +490,7 @@ ServiceWorkerContainer::ServiceWorkerContainer(
     return;
 
   if (ServiceWorkerContainerClient* client =
-          ServiceWorkerContainerClient::From(execution_context)) {
+          ServiceWorkerContainerClient::From(To<Document>(execution_context))) {
     provider_ = client->Provider();
     if (provider_)
       provider_->SetClient(this);

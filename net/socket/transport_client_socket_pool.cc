@@ -39,8 +39,7 @@ namespace {
 // Returns true iff all addresses in |list| are in the IPv6 family.
 bool AddressListOnlyContainsIPv6(const AddressList& list) {
   DCHECK(!list.empty());
-  for (AddressList::const_iterator iter = list.begin(); iter != list.end();
-       ++iter) {
+  for (auto iter = list.begin(); iter != list.end(); ++iter) {
     if (iter->GetFamily() != ADDRESS_FAMILY_IPV6)
       return false;
   }
@@ -141,7 +140,7 @@ void TransportConnectJob::GetAdditionalErrorState(ClientSocketHandle* handle) {
 
 // static
 void TransportConnectJob::MakeAddressListStartWithIPv4(AddressList* list) {
-  for (AddressList::iterator i = list->begin(); i != list->end(); ++i) {
+  for (auto i = list->begin(); i != list->end(); ++i) {
     if (i->GetFamily() == ADDRESS_FAMILY_IPV4) {
       std::rotate(list->begin(), i, list->end());
       break;

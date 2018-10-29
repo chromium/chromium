@@ -21,6 +21,12 @@
 
 namespace network {
 
+// Defines the type of a callback that will return a NetworkConnectionTracker
+// instance.
+class NetworkConnectionTracker;
+using NetworkConnectionTrackerGetter =
+    base::RepeatingCallback<NetworkConnectionTracker*()>;
+
 // This class subscribes to network change events from
 // network::mojom::NetworkChangeManager and propogates these notifications to
 // its NetworkConnectionObservers registered through
@@ -59,6 +65,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
   // documentation.
   virtual bool GetConnectionType(network::mojom::ConnectionType* type,
                                  ConnectionTypeCallback callback);
+
+  // Returns true if the network is currently in an offline or unknown state.
+  bool IsOffline();
 
   // Returns true if |type| is a cellular connection.
   // Returns false if |type| is CONNECTION_UNKNOWN, and thus, depending on the

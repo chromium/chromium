@@ -82,11 +82,11 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
  private:
   // WebWidget functions
+  void SetLayerTreeView(WebLayerTreeView*) override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) final;
   void BeginFrame(base::TimeTicks last_frame_time) override;
   void UpdateLifecycle(LifecycleUpdate requested_update) override;
-  void UpdateAllLifecyclePhasesAndCompositeForTesting() override;
-  void CompositeWithRasterForTesting() override;
+  void UpdateAllLifecyclePhasesAndCompositeForTesting(bool do_raster) override;
   void WillCloseLayerTreeView() override;
   void PaintContent(cc::PaintCanvas*, const WebRect&) override;
   void Resize(const WebSize&) override;
@@ -97,6 +97,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   bool IsAcceleratedCompositingActive() const override {
     return is_accelerated_compositing_active_;
   }
+  WebURL GetURLForDebugTrace() override;
 
   // PageWidgetEventHandler functions
   WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;
@@ -104,6 +105,9 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void HandleMouseDown(LocalFrame& main_frame, const WebMouseEvent&) override;
   WebInputEventResult HandleMouseWheel(LocalFrame& main_frame,
                                        const WebMouseWheelEvent&) override;
+
+  // This may only be called if page_ is non-null.
+  LocalFrame& MainFrame() const;
 
   bool IsViewportPointInWindow(int x, int y);
 
@@ -113,13 +117,17 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   explicit WebPagePopupImpl(WebWidgetClient*);
   void DestroyPage();
-  void InitializeLayerTreeView();
   void SetRootLayer(cc::Layer*);
 
   WebRect WindowRectInScreen() const;
 
   WebWidgetClient* widget_client_;
   WebViewImpl* web_view_;
+  // WebPagePopupImpl wraps its own Page that renders the content in the popup.
+  // This member is non-null between the call to Initialize() and the call to
+  // ClosePopup(). If page_ is non-null, it is guaranteed to have an attached
+  // main LocalFrame with a corresponding non-null LocalFrameView and non-null
+  // Document.
   Persistent<Page> page_;
   Persistent<PagePopupChromeClient> chrome_client_;
   PagePopupClient* popup_client_;

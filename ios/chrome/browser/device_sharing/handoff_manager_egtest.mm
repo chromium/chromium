@@ -7,7 +7,7 @@
 
 #import "components/handoff/handoff_manager.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

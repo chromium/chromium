@@ -2,6 +2,15 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="101438888985615157">Obróć ekran o 180 stopni</translation>
+<translation id="1016912092715201525">Konfiguruje ustawienie sprawdzania domyślnej przeglądarki w <ph name="PRODUCT_NAME" /> i uniemożliwia użytkownikom jego zmianę.
+
+      Jeśli to ustawienie jest włączone, <ph name="PRODUCT_NAME" /> zawsze podczas uruchamiania się sprawdza, czy jest domyślną przeglądarką, i automatycznie rejestruje się jako domyślna przeglądarka, o ile jest to możliwe.
+
+      Jeśli to ustawienie jest wyłączone, <ph name="PRODUCT_NAME" /> nigdy nie sprawdza, czy jest domyślną przeglądarką, i nie zezwala użytkownikowi zmianę tego ustawienia.
+
+      Jeśli to ustawienie jest nieskonfigurowane, użytkownik może samodzielnie wybrać ustawienia sprawdzania, czy <ph name="PRODUCT_NAME" /> jest domyślną przeglądarką, oraz określić, czy mają się wyświetlać powiadomienia, gdy nią nie jest.
+
+      Uwaga dla administratorów <ph name="MS_WIN_NAME" />: włączenie tego ustawienia daje efekty tylko na komputerach z Windows 7. W przypadku Windows 8 i nowszych trzeba wdrożyć plik „powiązań aplikacji domyślnej” konfigurujący <ph name="PRODUCT_NAME" /> jako aplikację obsługującą protokoły <ph name="HHTPS_PROTOCOL" /> i <ph name="HTTP_PROTOCOL" /> (oraz opcjonalnie protokół <ph name="FTP_PROTOCOL" /> i formaty plików <ph name="HTML_EXTENSION" />, <ph name="HTM_EXTENSION" />, <ph name="PDF_EXTENSION" />, <ph name="SVG_EXTENSION" />, <ph name="WEBP_EXTENSION" /> itd.). Więcej informacji znajdziesz na <ph name="SUPPORT_URL" />.</translation>
 <translation id="1017967144265860778">Zarządzanie energią na ekranie logowania</translation>
 <translation id="1019101089073227242">Ustaw katalog danych użytkownika</translation>
 <translation id="1022361784792428773">Identyfikatory rozszerzeń, których nie może instalować użytkownik (wartość * oznacza wszystkie)</translation>
@@ -15,6 +24,12 @@
       Jeśli zasada jest wyłączona lub nieskonfigurowana, pliki cookie ustawione przez dostawcę tożsamości są przesyłane do profilu użytkownika tylko podczas jego pierwszego logowania na urządzeniu.
 
       Ta zasada dotyczy tylko tych użytkowników, których domena odpowiada domenie rejestracji urządzenia. W przypadku wszystkich pozostałych użytkowników pliki cookie ustawione przez dostawcę tożsamości są przesyłane do profilu użytkownika tylko podczas jego pierwszego logowania na urządzeniu.</translation>
+<translation id="1035385378988781231">Ta zasada określa, czy funkcja Sieciowe udziały plików w <ph name="PRODUCT_NAME" /> będzie używać NTLM do uwierzytelniania.
+
+      Gdy ta zasada ma ustawienie Prawda, połączenia z udziałami SMB będą w razie potrzeby uwierzytelniane przy użyciu NTLM.
+      Gdy zasada ma ustawienie Fałsz, uwierzytelnianie NTLM będzie wyłączone.
+
+      Jeśli zasada nie jest ustawiona, NTLM będzie domyślnie wyłączone dla użytkowników zarządzanych przez firmę, a włączone dla użytkowników niezarządzanych.</translation>
 <translation id="1040446814317236570">Włącz wycinanie elementów adresów URL PAC (na potrzeby https://)</translation>
 <translation id="1044878202534415707">Raportuj statystki sprzętu, np. użycie procesora i pamięci RAM.
 
@@ -92,6 +107,13 @@
       Wartość domyślna to RollbackDisabled.</translation>
 <translation id="1221359380862872747">Załaduj podane URL-e przy logowaniu demonstracyjnym</translation>
 <translation id="1223789468190631420">Włącz Bezpieczne przeglądanie dla zaufanych źródeł</translation>
+<translation id="122899932962115297">Biała lista określająca, które tryby szybkiego odblokowywania mogą być skonfigurowane przez użytkownika i używane do odblokowywania ekranu.
+
+          Wartością zasady jest lista ciągów tekstowych, a poprawne wpisy to „all”, „PIN” i „FINGERPRINT”. Gdy na liście jest wpis „all”, to dla użytkownika dostępne są wszystkie tryby szybkiego odblokowywania, również te, które zostaną dodane w przyszłości. W przeciwnym razie dostępne są tylko tryby wymienione na liście.
+
+          Przykład: aby zezwolić na wszystkie tryby szybkiego odblokowywania, użyj wartości ["all"]. Aby zezwolić tylko na odblokowywanie przy użyciu kodu PIN, użyj ["PIN"]. Aby zezwolić na PIN i odcisk palca, użyj ["PIN", "FINGERPRINT"]. Aby wyłączyć wszystkie tryby szybkiego odblokowywania, użyj [].
+
+          Domyślnie na urządzeniach zarządzanych nie jest dostępny żaden tryb szybkiego odblokowywania.</translation>
 <translation id="123081309365616809">Włącz przesyłanie treści na urządzenie</translation>
 <translation id="1243570869342663665">Ustaw filtrowanie treści dla dorosłych SafeSites.</translation>
 <translation id="1257550411839719984">Ustaw domyślny katalog pobierania</translation>
@@ -140,6 +162,7 @@
 <translation id="1387596372902085462">Czy włączyć zaufanie w starszej infrastrukturze klucza publicznego Symantec Corporation</translation>
 <translation id="1393485621820363363">Włączone drukarki firmowe powiązane z urządzeniami</translation>
 <translation id="1397855852561539316">Adres URL usługi propozycji od domyślnego dostawcy wyszukiwania</translation>
+<translation id="1413936351612032792">Przesyłaj informacje o używaniu aplikacji na Linuxa</translation>
 <translation id="142346659686073702">Zezwalaj użytkownikom z innych domen na używanie Crostini</translation>
 <translation id="1426410128494586442">Tak</translation>
 <translation id="1427655258943162134">Adres IP lub URL serwera proxy</translation>
@@ -457,6 +480,9 @@ Format jest taki sam jak w słowniku NativePrinters. Dodatkowo w przypadku każd
 <translation id="2201555246697292490">Skonfiguruj białą listę wiadomości natywnych</translation>
 <translation id="2204753382813641270">Steruj autoukrywaniem półki</translation>
 <translation id="2208976000652006649">Parametry dla adresów URL wyszukiwania używających POST</translation>
+<translation id="2214880135980649323">Jeśli ta zasada jest włączona, rozszerzenia zainstalowane przez zasady przedsiębiorstwa mogą korzystać z Enterprise Hardware Platform API.
+      Jeśli ta zasada jest wyłączona lub nie jest ustawiona, żadne rozszerzenia nie mogą korzystać z Enterprise Hardware Platform API.
+      Zasada ta obejmuje również rozszerzenia składników, np. rozszerzenie Hangout Services.</translation>
 <translation id="2223598546285729819">Domyślne ustawienie powiadomień</translation>
 <translation id="2231817271680715693">Importuj historię przeglądania z przeglądarki domyślnej przy pierwszym uruchomieniu</translation>
 <translation id="2236488539271255289">Nie zezwalaj żadnej witrynie na tworzenie danych lokalnych</translation>
@@ -483,21 +509,6 @@ Format jest taki sam jak w słowniku NativePrinters. Dodatkowo w przypadku każd
       Pisownię można nadal sprawdzać, korzystając z pobranego słownika. Ta zasada kontroluje tylko używanie usługi internetowej.
 
       Jeśli to ustawienie nie zostanie skonfigurowane, użytkownicy będą mogli wybrać, czy chcą używać usługi sprawdzania pisowni.</translation>
-<translation id="2294283832646774959">Konfiguruje listę drukarek.
-
-      Ta zasada umożliwia administratorom przekazanie konfiguracji drukarek
-      użytkownikom.
-
-      <ph name="PRINTER_DISPLAY_NAME" /> i <ph name="PRINTER_DESCRIPTION" /> to dowolny tekst, który ma ułatwić wybranie drukarki. <ph name="PRINTER_MANUFACTURER" /> i <ph name="PRINTER_MODEL" /> ułatwiają użytkownikom identyfikację drukarki. Oznaczają producenta i model drukarki. <ph name="PRINTER_URI" /> to adres, który powinien być dostępny z komputera klienckiego, zawierający te składniki: <ph name="URI_SCHEME" />, <ph name="URI_PORT" /> i <ph name="URI_QUEUE" />. Opcjonalny składnik to <ph name="PRINTER_UUID" />. Jeśli jest podany, umożliwia usunięcie duplikatów drukarek <ph name="ZEROCONF_DISCOVERY" />.
-
-      Ciąg znaków <ph name="PRINTER_EFFECTIVE_MODEL" /> musi być zgodny z jednym z ciągów oznaczających obsługiwaną drukarkę <ph name="PRODUCT_NAME" />. Zostanie on użyty do zidentyfikowania oraz zainstalowania pliku PPD odpowiedniego dla drukarki. Więcej informacji znajdziesz na https://support.google.com/chrome?p=noncloudprint
-
-      Konfiguracja drukarki jest wykonywana przy jej pierwszym użyciu. Pliki PPD nie są pobierane przed użyciem drukarki. Później często używane pliki PPD są przechowywane w pamięci podręcznej.
-
-      Zasada nie ma wpływu na to, czy użytkownicy mogą konfigurować drukarki na pojedynczych urządzeniach. Jest ona uzupełnieniem konfiguracji drukarek wykonywanej przez poszczególnych użytkowników.
-
-      W przypadku urządzeń zarządzanych Active Directory zasada ta obsługuje rozszerzanie nazwy <ph name="MACHINE_NAME_VARIABLE" /> do nazwy komputera Active Directory lub jej podłańcucha. Jeśli na przykład nazwa komputera to <ph name="MACHINE_NAME_EXAMPLE" />, ciąg <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> zastępowany jest czterema znakami, zaczynając po szóstej pozycji, np. <ph name="MACHINE_NAME_PART_EXAMPLE" />. Pozycja jest liczona od zera.
-      </translation>
 <translation id="2294382669900758280">Odtwarzanie filmów w aplikacjach na Androida nie jest uwzględniane, nawet gdy zasada jest ustawiona na <ph name="TRUE" />.</translation>
 <translation id="2298647742290373702">Skonfiguruj domyślną stronę nowej karty w <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2299220924812062390">Określ listę włączonych wtyczek</translation>
@@ -525,11 +536,11 @@ Format jest taki sam jak w słowniku NativePrinters. Dodatkowo w przypadku każd
       Jeśli pozostanie ono nieokreślone, użytkownik będzie mógł zdecydować, czy chce używać tej funkcji.
 
       Ustawienie zostało usunięte z <ph name="PRODUCT_NAME" /> 29 i nowszych wersji.</translation>
-<translation id="2433412232489478893">Ta zasada określa, czy użytkownicy mogą używać sieciowych magazynów plików w <ph name="PRODUCT_NAME" />.
+<translation id="2433412232489478893">Ta zasada określa, czy użytkownicy mogą używać sieciowych udziałów plików w <ph name="PRODUCT_NAME" />.
 
-      Gdy ta zasada jest nieskonfigurowana lub ma wartość prawda, użytkownicy mogą używać sieciowych magazynów plików.
+      Gdy ta zasada jest nieskonfigurowana lub ma wartość prawda, użytkownicy mogą używać sieciowych udziałów plików.
 
-      Gdy ta zasada ma wartość fałsz, użytkownicy nie mogą używać sieciowych magazynów plików.</translation>
+      Gdy ta zasada ma wartość fałsz, użytkownicy nie mogą używać sieciowych udziałów plików.</translation>
 <translation id="2438609638493026652">Włącza raportowanie do Google najważniejszych zdarzeń podczas instalowania aplikacji na Androida. Zdarzenia są rejestrowane tylko w przypadku aplikacji, których instalacja została spowodowana przez zasadę.
 
       Jeśli zasada ma wartość prawda, zdarzenia będą rejestrowane.
@@ -549,9 +560,6 @@ Format jest taki sam jak w słowniku NativePrinters. Dodatkowo w przypadku każd
       Gdy ta zasada nie jest skonfigurowana lub ma ustawienie „Nie filtruj witryn pod kątem treści dla dorosłych”, witryny nie będą filtrowane.
 
       Gdy ta zasada ma ustawienie „Filtruj witryny najwyższego poziomu pod kątem treści dla dorosłych”, witryny sklasyfikowane jako pornograficzne będą filtrowane.</translation>
-<translation id="2485721741875148980">Jeśli włączysz tę zasadę, użytkownik będzie musiał logować się w <ph name="PRODUCT_NAME" /> przy użyciu swojego profilu, by skorzystać z przeglądarki. Domyślnie wartość zasady BrowserGuestModeEnabled zostanie przy tym ustawiona na fałsz. Pamiętaj, że po włączeniu tej zasady istniejące niepodpisane profile zostaną zablokowane i staną się niedostępne. Więcej informacji znajdziesz w artykule w Centrum pomocy.
-
-      Jeśli nie włączysz tej zasady lub jej nie skonfigurujesz, użytkownik będzie mógł używać przeglądarki bez logowania się w <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2486371469462493753">Wyłącza egzekwowanie wymogów protokołu Certificate Transparency dla wymienionych adresów URL.
 
       Ta zasada umożliwia pominięcie ujawniania przez protokół Certificate Transparency certyfikatów nazw hosta w określonych adresach URL. Dzięki temu certyfikaty, które zostałyby uznane za niezaufane z powodu nieujawnienia publicznego, mogą być nadal używane. Trudniej jest jednak wykryć certyfikaty, które zostały wydane nieprawidłowo.
@@ -573,7 +581,6 @@ Format jest taki sam jak w słowniku NativePrinters. Dodatkowo w przypadku każd
       W przypadku wyłączenia tej opcji użytkownicy nie mogą drukować z <ph name="PRODUCT_NAME" />. Drukowanie jest wyłączone w menu klucza, aplikacjach JavaScript itd. Nadal można drukować z poziomu wtyczek pomijających <ph name="PRODUCT_NAME" /> podczas drukowania. Na przykład menu niektórych aplikacji Flash zawiera opcję drukowania, która nie jest objęta tą zasadą.</translation>
 <translation id="2518231489509538392">Zezwalaj na odtwarzanie dźwięku</translation>
 <translation id="2521581787935130926">Pokaż skróty aplikacji na pasku zakładek</translation>
-<translation id="2529700525201305165">Określ użytkowników, którzy mogą logować się do <ph name="PRODUCT_NAME" /></translation>
 <translation id="2529880111512635313">Konfiguruj listę aplikacji i rozszerzeń, których instalacja jest wymuszana</translation>
 <translation id="253135976343875019">Opóźnienie ostrzeżenia o bezczynności przy zasilaniu sieciowym</translation>
 <translation id="2536525645274582300">Użytkownik decyduje, czy włączyć usługi lokalizacyjne Google</translation>
@@ -608,7 +615,7 @@ Format jest taki sam jak w słowniku NativePrinters. Dodatkowo w przypadku każd
 <translation id="2598508021807251719">Określa języki, w których można wyświetlać <ph name="PRODUCT_OS_NAME" />.
 
       Jeśli ta zasada jest skonfigurowana, użytkownik może skonfigurować wyświetlanie <ph name="PRODUCT_OS_NAME" /> tylko w jednym z języków określonych w tej zasadzie. Jeśli zasada jest nieskonfigurowana lub jest ustawiona na pustą listę, <ph name="PRODUCT_OS_NAME" /> można wyświetlać we wszystkich obsługiwanych językach. Jeśli ustawiona lista zawiera nieprawidłowe wartości, będą one ignorowane. Jeśli użytkownik wcześniej skonfigurował wyświetlanie <ph name="PRODUCT_OS_NAME" /> w języku niedozwolonym przez tę zasadę, język wyświetlania zostanie przełączony na dozwolony po następnym zalogowaniu się użytkownika. Jeśli użytkownik skonfigurował preferowane języki i jeden z nich jest dozwolony przez tę zasadę, <ph name="PRODUCT_OS_NAME" /> przełączy się na ten język. W przeciwnym razie <ph name="PRODUCT_OS_NAME" /> przełączy się na język odpowiadający pierwszej prawidłowej wartości z listy, a jeśli lista zawiera same nieprawidłowe wartości – na język zastępczy (obecnie en-US).</translation>
-<translation id="2604182581880595781">Umożliwia skonfigurowanie zasad związanych z sieciowymi magazynami plików.</translation>
+<translation id="2604182581880595781">Umożliwia skonfigurowanie zasad związanych z sieciowymi udziałami plików.</translation>
 <translation id="2623014935069176671">Poczekaj na początkową aktywność użytkownika</translation>
 <translation id="262740370354162807">Włącz wysyłanie dokumentów do <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2627554163382448569">Udostępnia konfiguracje drukarek firmowych.
@@ -640,6 +647,7 @@ Format jest taki sam jak w słowniku NativePrinters. Dodatkowo w przypadku każd
 
       Jeśli ta zasada pozostanie nieskonfigurowana, synchronizacja SMS-ów będzie domyślnie niedozwolona dla użytkowników zarządzanych i dozwolona dla niezarządzanych.</translation>
 <translation id="2660846099862559570">Nigdy nie używaj serwera proxy</translation>
+<translation id="2672012807430078509">Określa, czy można używać protokołu uwierzytelniania NTLM dla udziałów SMB</translation>
 <translation id="267596348720209223">Pozwala określić kodowania znaków obsługiwane przez dostawcę wyszukiwania. Kodowania są określane za pomocą nazw stron kodowych, np. UTF-8, GB2312 czy ISO-8859-1. Są stosowane w podanej kolejności. Ta zasada jest opcjonalna. Jeśli nie zostanie skonfigurowana, będzie używana wartość domyślna, czyli UTF-8. Zasada ta jest stosowana tylko przy włączonej zasadzie „DefaultSearchProviderEnabled”.</translation>
 <translation id="268577405881275241">Włącz serwer proxy kompresowania danych</translation>
 <translation id="2693108589792503178">Skonfiguruj adres URL do zmiany hasła.</translation>
@@ -692,7 +700,7 @@ Format jest taki sam jak w słowniku NativePrinters. Dodatkowo w przypadku każd
 <translation id="2823870601012066791">Lokalizacja w rejestrze systemu Windows dla klientów <ph name="PRODUCT_OS_NAME" />:</translation>
 <translation id="2824715612115726353">Włącz tryb incognito</translation>
 <translation id="2838830882081735096">Nie zezwalaj na migrację danych ani na działanie ARC</translation>
-<translation id="2839294585867804686">Ustawienia sieciowych magazynów plików</translation>
+<translation id="2839294585867804686">Ustawienia sieciowych udziałów plików</translation>
 <translation id="2840269525054388612">Określa drukarki, z których może korzystać użytkownik.
 
       Ta zasada jest używana tylko wtedy, gdy dla zasady <ph name="DEVICE_PRINTERS_ACCESS_MODE" /> wybrano ustawienie <ph name="PRINTERS_WHITELIST" />.
@@ -710,6 +718,7 @@ Format jest taki sam jak w słowniku NativePrinters. Dodatkowo w przypadku każd
 <translation id="2873651257716068683">Zastępuje domyślny rozmiar drukowanej strony. Jeśli dany rozmiar strony jest niedostępny, zasada jest ignorowana.</translation>
 <translation id="2874209944580848064">Uwaga dotycząca urządzeń z <ph name="PRODUCT_OS_NAME" /> obsługujących aplikacje na Androida:</translation>
 <translation id="2877225735001246144">Wyłącz wyszukiwanie rekordu CNAME podczas negocjowania uwierzytelniania Kerberos</translation>
+<translation id="2890645751406497668">Automatycznie przyznaj tym stronom uprawnienia do łączenia się z urządzeniami USB o podanych identyfikatorach producenta i produktu.</translation>
 <translation id="2892414556511568464">Ogranicza tryb drukowania dwustronnego. Zasada nieskonfigurowana i pusty zbiór są traktowane jako brak ograniczeń.</translation>
 <translation id="2893546967669465276">Wysyłaj dzienniki systemowe na serwer zarządzania</translation>
 <translation id="2899002520262095963">Aplikacje na Androida mogą używać konfiguracji sieci i certyfikatów CA ustawianych przez tę zasadę, ale nie mają dostępu do niektórych opcji konfiguracji.</translation>
@@ -817,6 +826,7 @@ Format jest taki sam jak w słowniku NativePrinters. Dodatkowo w przypadku każd
 
           Pozostawienie tej zasady nieskonfigurowanej pozwoli użytkownikom samodzielnie wybrać ustawienia serwera proxy.</translation>
 <translation id="3205825995289802549">Zmaksymalizuj pierwsze okno wyświetlone przy pierwszym uruchomieniu przeglądarki</translation>
+<translation id="3211426942294667684">Ustawienia logowania w przeglądarce</translation>
 <translation id="3213821784736959823">Określa, czy w <ph name="PRODUCT_NAME" /> jest używany wbudowany klient DNS.
 
       W przypadku włączenia tej opcji będzie używany wbudowany klient DNS (jeśli będzie dostępny).
@@ -873,7 +883,7 @@ Jeśli ta zasada nie zostanie ustawiona, użytkownik może zobaczyć pytanie, cz
           Zobacz również zasady „CookiesBlockedForUrls” i „CookiesSessionOnlyForUrls”. Uwaga: żadne wzorce URL używane w tych trzech zasadach nie mogą pozostawać w konflikcie – nie jest określona zasada, która będzie mieć pierwszeństwo.</translation>
 <translation id="3373364525435227558">Ustawia jeden lub więcej zalecanych języków na potrzeby sesji zarządzanej, spośród których użytkownicy mogą łatwo wybrać jeden język.
 
-      Użytkownik może wybrać język i układ klawiatury przed rozpoczęciem sesji zarządzanej. Domyślnie wszystkie języki obsługiwane w <ph name="PRODUCT_OS_NAME" /> są wymienione w kolejności alfabetycznej. Za pomocą tej zasady możesz przenieść zalecane języki na początek listy.
+      Użytkownik może wybrać język i układ klawiatury przed rozpoczęciem sesji zarządzanej. Domyślnie wszystkie języki obsługiwane w systemie <ph name="PRODUCT_OS_NAME" /> są wymienione w kolejności alfabetycznej. Za pomocą tej zasady możesz przenieść zalecane języki na początek listy.
 
       Jeśli ta zasada jest nieskonfigurowana, wstępnie wybrany będzie bieżący język interfejsu.
 
@@ -885,7 +895,7 @@ Jeśli ta zasada nie zostanie ustawiona, użytkownik może zobaczyć pytanie, cz
 
       Wstępnie wybranym układem klawiatury jest zawsze najpopularniejszy układ dla wstępnie wybranego języka.
 
-      Tę zasadę możesz ustawić tylko jako zalecaną. Za jej pomocą możesz przenieść zalecane języki na początek, ale użytkownicy zawsze mogą wybrać dla swojej sesji dowolny język obsługiwany w <ph name="PRODUCT_OS_NAME" />.
+      Tę zasadę możesz ustawić tylko jako zalecaną. Za jej pomocą możesz przenieść zalecane języki na początek, ale użytkownicy zawsze mogą wybrać dla swojej sesji dowolny język obsługiwany w systemie <ph name="PRODUCT_OS_NAME" />.
       </translation>
 <translation id="3381968327636295719">Używaj domyślnie przeglądarki hosta</translation>
 <translation id="3414260318408232239">Jeśli ta zasada nie jest skonfigurowana, <ph name="PRODUCT_NAME" /> korzysta z domyślnej najniższej wersji TLS, czyli 1.0.
@@ -902,6 +912,7 @@ Jeśli wybierzesz ustawienie „Umiarkowany”, użytkownik może wybrać tylko 
 
 Jeśli nie podasz wartości albo wybierzesz ustawienie „Wyłącz”, stosowanie trybu ograniczonego dostępu w YouTube nie będzie wymuszane przez przeglądarkę <ph name="PRODUCT_NAME" />. Zewnętrzne zasady, np. zasady YouTube, mogą jednak nadal wymuszać stosowanie trybu ograniczonego dostępu.</translation>
 <translation id="3428247105888806363">Włącz przewidywanie działań sieciowych</translation>
+<translation id="3437924696598384725">Zezwól użytkownikowi na zarządzanie połączeniami VPN</translation>
 <translation id="3449886121729668969">Konfiguruje ustawienia serwera proxy dla <ph name="PRODUCT_NAME" />. Będą one też dostępne dla aplikacji ARC.
 
       Zasada nie jest jeszcze gotowa, więc nie należy jej używać.</translation>
@@ -971,6 +982,11 @@ Jeśli nie podasz wartości albo wybierzesz ustawienie „Wyłącz”, stosowani
       Jeśli zasada jest wyłączona, izolacja witryn nie będzie stosowana wprost, a testowe funkcje IsolateOrigins i SitePerProcess będą wyłączone. Użytkownicy będą mogli ręcznie włączyć ustawienie IsolateOrigins.
       Jeśli zasada nie jest skonfigurowana, do ekranu logowania będą stosowane domyślne ustawienia platformy dotyczące izolacji witryn.
       </translation>
+<translation id="3748900290998155147">Określa, czy jest dozwolona blokada uśpienia. Takie żądania mogą być wysyłane przez rozszerzenia (przy użyciu interfejsu API zarządzania energią) oraz aplikacje ARC.
+
+          Jeśli ta zasada ma ustawienie Prawda lub nie jest ustawiona, żądania blokady uśpienia będą respektowane przez mechanizm zarządzania energią.
+
+          Jeśli zasada ma ustawienie Fałsz, żądania blokady uśpienia będą ignorowane.</translation>
 <translation id="3750220015372671395">Blokuj generowanie kluczy w tych witrynach</translation>
 <translation id="3756011779061588474">Zablokuj tryb programisty</translation>
 <translation id="3758089716224084329">Pozwala określić serwer proxy używany przez <ph name="PRODUCT_NAME" /> i uniemożliwia użytkownikom zmianę ustawień serwera proxy.
@@ -1004,7 +1020,11 @@ Jeśli nie podasz wartości albo wybierzesz ustawienie „Wyłącz”, stosowani
 
           Jeśli zasada „EnableMediaRouter” ma wartość fałsz, wartość tej zasady nie ma znaczenia, a ikona na pasku narzędzi jest niewidoczna.</translation>
 <translation id="3788662722837364290">Ustawienia zarządzania energią, gdy użytkownik jest nieaktywny</translation>
-<translation id="3793095274466276777">Pozwala skonfigurować w przeglądarce <ph name="PRODUCT_NAME" /> sprawdzanie przeglądarki domyślnej i uniemożliwia użytkownikom jej zmianę. Jeśli włączysz to ustawienie, <ph name="PRODUCT_NAME" /> zawsze po uruchomieniu będzie sprawdzać, czy jest przeglądarką domyślną, oraz w miarę możliwości automatycznie przypisywać sobie tę rolę. W przypadku wyłączenia ustawienia <ph name="PRODUCT_NAME" /> nigdy nie sprawdza, czy jest przeglądarką domyślną, a opcje umożliwiające użytkownikowi zmianę ustawienia są nieaktywne. Jeśli ustawienie jest nieskonfigurowane, użytkownik może kontrolować funkcję sprawdzania, czy <ph name="PRODUCT_NAME" /> jest przeglądarką domyślną, oraz wyświetlanie odpowiednich powiadomień.</translation>
+<translation id="3790085888761753785">Jeśli to ustawienie jest włączone, użytkownicy mogą logować się na swoje konta przy użyciu funkcji Smart Lock. Jest to bardziej liberalna konfiguracja Smart Lock niż standardowa, która umożliwia tylko odblokowywanie ekranu.
+
+      Jeśli to ustawienie jest wyłączone, użytkownicy nie mogą logować się przy użyciu funkcji Smart Lock.
+
+      Jeśli ta zasada nie jest ustawiona, logowanie się przy użyciu funkcji Smart Lock jest niedozwolone dla użytkowników zarządzanych przez firmę i dozwolone dla użytkowników niezarządzanych.</translation>
 <translation id="379602782757302612">Umożliwia określenie rozszerzeń, których NIE mogą instalować użytkownicy. Rozszerzenia, które są już zainstalowane, po dodaniu do czarnej listy zostaną odinstalowane, a użytkownik nie będzie mógł ich włączyć. Gdy tylko rozszerzenie zostanie usunięte z czarnej listy, zostanie automatycznie włączone ponownie.
 
           Wartość „*” na czarnej liście oznacza dodanie do niej wszystkich rozszerzeń oprócz tych wymienionych na białej liście.
@@ -1088,11 +1108,23 @@ Jeśli ta zasada jest wyłączona, informacje o sesji nie będą przesyłane. Je
       Jeśli zasada pozostanie nieustawiona, <ph name="PRODUCT_NAME" /> będzie używać katalogu domyślnego (zależnego od platformy).
 
       Listę zmiennych, których można użyć, znajdziesz na https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables</translation>
+<translation id="3904459740090265495">Ta zasada kontroluje mechanizm logowania w przeglądarce. Umożliwia określenie, czy użytkownik może zalogować się w <ph name="PRODUCT_NAME" /> przy użyciu swojego konta i używać usług związanych z kontem, na przykład synchronizacji Chrome.
+
+      Jeśli zasada ma wartość „Wyłącz logowanie w przeglądarce”, użytkownik nie może zalogować się w przeglądarce ani używać usług związanych z kontem. Funkcje przeglądarki, takie jak synchronizacja Chrome, będą niedostępne. Jeśli użytkownik był wcześniej zalogowany, a zasada jest wyłączona, użytkownik zostanie wylogowany po najbliższym uruchomieniu Chrome, ale dane z jego profilu lokalnego, takie jak zakładki, hasła itd., zostaną zachowane. Użytkownik nadal będzie mógł logować się w usługach internetowych Google takich jak Gmail i ich używać.
+
+      Jeśli zasada ma wartość „Włącz logowanie w przeglądarce”, użytkownik może zalogować się w przeglądarce i jest logowany w niej automatycznie po zalogowaniu się w usługach internetowych Google takich jak Gmail. Zalogowanie w przeglądarce oznacza, że przeglądarka będzie przechowywać dane z konta użytkownika. Nie oznacza to jednak, że domyślnie włączona zostanie synchronizacja Chrome – użytkownik musi zgodzić się na jej używanie oddzielnie. Włączenie tej zasady uniemożliwi użytkownikowi wyłączenie logowania w przeglądarce w ustawieniach. Do określania dostępności synchronizacji Chrome służy zasada „SyncDisabled”.
+
+      Jeśli zasada ma wartość „Wymuś logowanie w przeglądarce", użytkownikowi wyświetlane jest okno wyboru konta i musi on wybrać konto oraz zalogować się na nie, by używać przeglądarki. Jest to gwarancją, że na kontach zarządzanych będą stosowane i egzekwowane zasady. Domyślnie powoduje to włączenie dla tego konta synchronizacji Chrome – o ile synchronizacja nie została wyłączona przez administratora domeny lub za pomocą zasady „SyncDisabled”. Domyślnie wartość zasady BrowserGuestModeEnabled zostanie ustawiona na fałsz. Uwaga: po włączeniu tej zasady istniejące niepodpisane profile zostaną zablokowane i będą niedostępne. Więcej informacji znajdziesz w tym artykule w Centrum pomocy: https://support.google.com/chrome/a/answer/7572556
+
+      Jeśli zasada jest nieskonfigurowana, użytkownik może samodzielnie włączyć lub wyłączyć logowanie w przeglądarce i korzystać z tej funkcji według własnego uznania.</translation>
 <translation id="3911737181201537215">Ta zasada nie ma żadnego wpływu na zapisywanie w dzienniku przez Androida.</translation>
 <translation id="391531815696899618">Po ustawieniu wartości prawda wyłącza synchronizację Dysku Google w aplikacji Pliki w <ph name="PRODUCT_OS_NAME" />. Żadne dane nie są przesyłane na Dysk Google.
 
           Jeśli nie ustawisz tej zasady lub wybierzesz wartość fałsz, użytkownicy mogą przesyłać pliki na Dysk Google.</translation>
 <translation id="3915395663995367577">Adres URL pliku PAC serwera proxy</translation>
+<translation id="3925020515212192040">Określa listę prekonfigurowanych sieciowych udziałów plików.
+
+      Wartością tej zasady jest lista, której pozycje są obiektami o dwóch składowych: „share_url” i „mode”. „share_url” to URL udziału, a „mode” musi mieć wartość „drop_down”, która wskazuje, że udział „share_url” zostanie dodany do menu wykrywania udziałów.</translation>
 <translation id="3939893074578116847">Wysyłaj pakiety sieciowe do serwera zarządzania w celu monitorowania stanu online,
       by serwer mógł sprawdzić, czy urządzenie jest offline.
 
@@ -1138,6 +1170,7 @@ Zwykle ta zasada jest wyłączona w celu ochrony przed phishingiem. W przypadku 
 
       Uwaga: po ustawieniu dla zasady <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> wartości <ph name="BLOCK_GEOLOCATION_SETTING" /> zasada jest ignorowana, a usługi lokalizacyjne Google zostają wyłączone.</translation>
 <translation id="408029843066770167">Zezwalaj na wysyłanie zapytań do usługi czasu Google</translation>
+<translation id="408076456549153854">Włącz logowanie w przeglądarce</translation>
 <translation id="4088589230932595924">Tryb incognito wymuszany</translation>
 <translation id="4088983553732356374">Pozwala określić, czy witryny mogą tworzyć dane lokalne. Może to być dozwolone lub zabronione dla wszystkich witryn.
 
@@ -1153,11 +1186,6 @@ Zwykle ta zasada jest wyłączona w celu ochrony przed phishingiem. W przypadku 
 
           Wartość tej zasady powinna być określona w milisekundach.</translation>
 <translation id="4105989332710272578">Wyłącz egzekwowanie protokołu Certificate Transparency dla adresów URL z listy</translation>
-<translation id="4111405663956464686">Ostrzeżenie: zasada najwyższej wersji TLS zostanie w całości usunięta z usługi <ph name="PRODUCT_NAME" /> prawdopodobnie w wersji 72 (mniej więcej w styczniu 2019 r.)
-
-      Jeśli ta zasada nie jest skonfigurowana, <ph name="PRODUCT_NAME" /> korzysta z domyślnej najwyższej wersji.
-
-      W przeciwnym razie zasada może mieć jedną z tych wartości: „tls1.2” lub „tls1.3”. Po jej ustawieniu <ph name="PRODUCT_NAME" /> nie używa wersji SSL/TLS wyższych niż określona. Nierozpoznana wartość jest ignorowana.</translation>
 <translation id="4121350739760194865">Zablokuj wyświetlanie promocji aplikacji na stronie Nowa karta</translation>
 <translation id="412697421478384751">Zezwalaj użytkownikom na ustawianie słabych kodów PIN blokady ekranu</translation>
 <translation id="4138655880188755661">Limit czasu</translation>
@@ -1245,6 +1273,7 @@ Zwykle ta zasada jest wyłączona w celu ochrony przed phishingiem. W przypadku 
 <translation id="4377599627073874279">Zezwalaj na wyświetlanie wszelkich grafik we wszystkich witrynach</translation>
 <translation id="437791893267799639">Zasada nie jest skonfigurowana, nie zezwalaj na migrację danych ani na działanie ARC</translation>
 <translation id="4389091865841123886">Konfiguruje zdalne poświadczanie przy użyciu mechanizmu TPM</translation>
+<translation id="4408428864159735559">Lista prekonfigurowanych sieciowych udziałów plików.</translation>
 <translation id="4410236409016356088">Włącz ograniczanie przepustowości sieci</translation>
 <translation id="441217499641439905">Wyłącz Dysk Google w aplikacji Pliki w systemie <ph name="PRODUCT_OS_NAME" /> przy połączeniu komórkowym</translation>
 <translation id="4418726081189202489">Wyłączenie tej zasady spowoduje, że <ph name="PRODUCT_NAME" /> nie będzie okresowo wysyłać zapytań do serwera Google w celu pobrania dokładnej sygnatury czasowej. Zapytania zostaną włączone, jeśli włączysz tę zasadę lub nie skonfigurujesz jej wcale.</translation>
@@ -1317,7 +1346,7 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
           Pełny opis dostępnych ustawień i struktury tej zasady można znaleźć na stronie https://www.chromium.org/administrators/policy-list-3/extension-settings-full
           </translation>
 <translation id="4554651132977135445">Tryb przetwarzania w pętli zasad dotyczących użytkowników</translation>
-<translation id="4554841826517980623">Ta zasada określa, czy funkcja sieciowych magazynów plików w <ph name="PRODUCT_NAME" /> ma używać <ph name="NETBIOS_PROTOCOL" /> do wykrywania udziałów w sieci.
+<translation id="4554841826517980623">Ta zasada określa, czy funkcja sieciowych udziałów plików w <ph name="PRODUCT_NAME" /> ma używać <ph name="NETBIOS_PROTOCOL" /> do wykrywania udziałów w sieci.
       Gdy zasada ma wartość prawda, udziały w sieci będą wykrywane przy użyciu protokołu <ph name="NETBIOS_PROTOCOL" />.
       Gdy zasada ma wartość fałsz, udziały w sieci nie będą wykrywane przy użyciu protokołu <ph name="NETBIOS_PROTOCOL" />.
       Jeśli zasada pozostanie nieskonfigurowana, będzie domyślnie wyłączona dla użytkowników zarządzanych przez firmę i włączona dla użytkowników niezarządzanych.</translation>
@@ -1412,18 +1441,8 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 <translation id="4816674326202173458">Zezwól, by użytkownik korporacyjny miał atrybut główny i drugorzędny (domyślne zachowanie w przypadku niezarządzanych użytkowników)</translation>
 <translation id="4826326557828204741">Czynność, jaka ma zostać podjęta po osiągnięciu opóźnienia bezczynności przy pracy na baterii</translation>
 <translation id="4834526953114077364">Najdłużej nieaktywni użytkownicy, którzy nie logowali się w ciągu ostatnich 3 miesięcy, są usuwani aż do uzyskania odpowiedniej ilości wolnego miejsca</translation>
-<translation id="4838572175671839397">Zawiera wyrażenie regularne służące do określania, którzy użytkownicy mogą logować się w <ph name="PRODUCT_NAME" />.
-
-      Jeśli użytkownik o nazwie niepasującej do tego wzorca spróbuje się zalogować, zostanie wyświetlony odpowiedni komunikat o błędzie.
-
-      Jeśli ta zasada pozostanie nieustawiona lub pusta, każdy użytkownik będzie mógł zalogować się w <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4858735034935305895">Zezwalaj na tryb pełnoekranowy</translation>
 <translation id="4861767323695239729">Skonfiguruj metody wprowadzania dozwolone w sesji użytkownika</translation>
-<translation id="4869787217450099946">Określa, czy jest dozwolona blokada uśpienia ekranu. Blokady takie mogą być żądane przez rozszerzenia poprzez interfejs API zarządzania energią.
-
-          Jeśli ta zasada ma ustawienie Prawda lub nie jest ustawiona, blokada uśpienia ekranu będzie respektowana w celu zarządzania energią.
-
-          Jeśli ma ona ustawienie Fałsz, blokada uśpienia ekranu będzie ignorowana.</translation>
 <translation id="487460824085252184">Przenoś automatycznie bez pytania o zgodę użytkownika.</translation>
 <translation id="4874982543810021567">Blokuj WebUSB w tych witrynach</translation>
 <translation id="4876805738539874299">Najwyższa włączona wersja protokołu SSL</translation>
@@ -1449,6 +1468,7 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 <translation id="4962262530309732070">Jeśli ta zasada jest włączona lub nie jest skonfigurowana, <ph name="PRODUCT_NAME" /> zezwala na dodawanie osób z poziomu menedżera użytkowników.
 
       Jeśli ta zasada jest wyłączona, <ph name="PRODUCT_NAME" /> nie zezwala na tworzenie nowych profili z poziomu menedżera użytkowników.</translation>
+<translation id="4970855112942626932">Wyłącz logowanie w przeglądarce</translation>
 <translation id="4971529314808359013">Umożliwia określenie listy wzorców adresu URL definiujących witryny, dla których <ph name="PRODUCT_NAME" /> automatycznie wybiera certyfikaty klienta, jeśli dana witryna żąda certyfikatu.
 
           Wartość musi być tablicą słowników JSON odwzorowanych na ciąg. Każdy słownik musi mieć postać { "pattern": "$URL_PATTERN", "filter" : $FILTER }, gdzie $URL_PATTERN jest wzorcem ustawiającym zawartość. $FILTER ogranicza certyfikaty klienta, spośród których przeglądarka może dokonać automatycznego wyboru. Niezależnie od filtra wybierane mogą być tylko te certyfikaty, które są zgodne z żądaniem certyfikatu serwera. Jeśli $FILTER ma postać { "ISSUER": { "CN": "$ISSUER_CN" } }, to dodatkowo wybierane będą tylko te certyfikaty klienta, które zostały wydane przez certyfikat z CommonName $ISSUER_CN. Jeśli $FILTER jest pustym słownikiem {}, wybór certyfikatów klienta nie jest dodatkowo ograniczany.
@@ -1481,13 +1501,6 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 <translation id="5130288486815037971">Czy włączone są mechanizmy szyfrowania RC4 w TLS</translation>
 <translation id="5141670636904227950">Ustaw domyślny typ lupy włączony na ekranie logowania</translation>
 <translation id="5142301680741828703">Zawsze renderuj strony we wtyczce <ph name="PRODUCT_FRAME_NAME" /> według następujących wzorców adresów URL</translation>
-<translation id="5147665094011258322">Określa nazwę hosta urządzenia używaną w żądaniach DHCP.
-
-      Jeśli dla tej zasady ustawiono niepusty ciąg znaków, będzie on używany jako nazwa hosta w żądaniach DHCP.
-
-      Ciąg może zawierać zmienne ${ASSET_ID}, ${SERIAL_NUM}, ${MAC_ADDR}. Zanim ciąg zostanie użyty jako nazwa hosta, zmienne będą zastąpione wartościami z urządzenia. Utworzony w ten sposób ciąg musi być prawidłową nazwą hosta (zgodnie z sekcją 3.1 wymogów RFC 1035).
-
-      Jeśli ta zasada nie jest ustawiona lub wartość po zastąpieniu zmiennych nie jest prawidłową nazwą hosta, w żądaniu DHCP nazwa hosta nie zostanie skonfigurowana. </translation>
 <translation id="5148753489738115745">Pozwala określić dodatkowe parametry używane, gdy <ph name="PRODUCT_FRAME_NAME" /> uruchamia <ph name="PRODUCT_NAME" />.
 
           Jeśli ta zasada nie jest ustawiona, używany jest domyślny wiersz polecenia.</translation>
@@ -1553,11 +1566,6 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 
       Jeśli zasada nie jest ustawiona lub jest ustawiona na pusty ciąg lub nieprawidłowy zakres portów, WebRTC może skorzystać z dowolnego lokalnego portu UDP, jaki jest dostępny.</translation>
 <translation id="5290940294294002042">Określ listę wtyczek, które użytkownik może włączyć lub wyłączyć</translation>
-<translation id="5302612588919538756">Ta zasada została wycofana. Zamiast niej możesz użyć SyncDisabled.
-
-      Pozwala użytkownikowi na zalogowanie się w <ph name="PRODUCT_NAME" />.
-
-      Jeśli ustawisz tę zasadę, możesz określić, czy zezwalasz użytkownikowi na logowanie się w <ph name="PRODUCT_NAME" />. Po wyłączeniu tej zasady aplikacje i rozszerzenia, które używają interfejsu API chrome.identity, nie będą działać. Dlatego zamiast niej możesz użyć SyncDisabled.</translation>
 <translation id="5304269353650269372">Określa czas bez wprowadzenia danych przez użytkownika, po którym wyświetlane jest okno dialogowe ostrzeżenia przy zasilaniu z baterii.
 
           Gdy ta zasada jest ustawiona, określa wymagany czas nieaktywności użytkownika przed wyświetleniem w <ph name="PRODUCT_OS_NAME" /> okna dialogowego z ostrzeżeniem informującym, że zostanie wykonana odpowiednia czynność.
@@ -1570,6 +1578,11 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 <translation id="5323128137188992869">Zezwala na przesyłanie treści na urządzenie przy użyciu: <ph name="PRODUCT_NAME" />.
 
           Jeśli ta zasada jest ustawiona na wartość fałsz, użytkownicy nie mogą przesyłać treści na urządzenie. Jeśli jest ustawiona na wartość prawda – mogą to robić. Jeśli ta zasada nie jest ustawiona, użytkownicy nie mogą przesyłać treści na zarejestrowane urządzenia z Chrome OS. Mogą przesyłać treści na urządzenia niezarejestrowane.</translation>
+<translation id="5329007337159326804">Ostrzeżenie: zasada najwyższej wersji TLS zostanie w całości usunięta z <ph name="PRODUCT_NAME" /> około wersji 75 (około czerwca 2019 r.).
+
+      Jeśli ta zasada nie jest skonfigurowana, <ph name="PRODUCT_NAME" /> używa domyślnej najwyższej wersji.
+
+      W przeciwnym razie zasada może mieć jedną z tych wartości: „tls1.2” lub „tls1.3”. Po jej ustawieniu <ph name="PRODUCT_NAME" /> nie używa wersji SSL/TLS wyższych niż określona. Nierozpoznana wartość jest ignorowana.</translation>
 <translation id="5330684698007383292">Zezwalaj <ph name="PRODUCT_FRAME_NAME" /> na obsługę tych typów treści</translation>
 <translation id="5365946944967967336">Pokaż przycisk strony głównej na pasku narzędzi</translation>
 <translation id="5366745336748853475">Umożliwia określenie listy wzorców adresu URL definiujących witryny, dla których jest automatycznie wybierany certyfikat klienta na ekranie logowania w ramce obsługującej proces SAML, jeśli witryna zażąda certyfikatu. Przykładowe użycie to skonfigurowanie certyfikatu dla całego urządzenia, który będzie okazywany dostawcy tożsamości SAML.
@@ -1596,6 +1609,15 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
           W przypadku włączenia tej opcji fizyczne urządzenia wejściowe i wyjściowe hosta będą wyłączane na czas trwania połączenia zdalnego.
 
           Jeśli to ustawienie będzie wyłączone lub nieustawione, zarówno zdalni, jak i lokalni użytkownicy będą mogli korzystać z udostępnianego hosta.</translation>
+<translation id="5396049152026347991">Zezwala użytkownikowi na zarządzanie połączeniami VPN.
+
+      Jeśli ta zasada ma wartość fałsz, wyłączone są wszystkie interfejsy <ph name="PRODUCT_NAME" /> pozwalające użytkownikowi na rozłączanie lub modyfikowanie połączeń VPN.
+
+      Jeśli zasada jest nieskonfigurowana lub ma wartość prawda, użytkownicy mogą rozłączać i modyfikować połączenia VPN.
+
+      Jeśli połączenie VPN jest tworzone przez aplikację VPN, ta zasada nie ma wpływu na interfejs tej aplikacji. Jest zatem możliwe, że użytkownik będzie nadal mógł modyfikować połączenie VPN za pomocą aplikacji.
+
+      Ta zasada jest pomyślana jako uzupełnienie funkcji „Stały VPN”, która pozwala administratorowi włączyć nawiązywanie połączenia VPN podczas uruchamiania urządzenia.</translation>
 <translation id="5405289061476885481">Umożliwia wybranie układów klawiatury dozwolonych na ekranie logowania systemu <ph name="PRODUCT_OS_NAME" />.
 
       Jeśli ta zasada ma ustawioną jako wartość listę identyfikatorów metod wprowadzania, metody te są dostępne na ekranie logowania. Wstępnie wybrana jest pierwsza z nich. Gdy na ekranie logowania jest wybrany profil danego użytkownika, oprócz metod wprowadzania ustawionych w tej zasadzie dostępna jest metoda ostatnio używana przez tego użytkownika. Gdy zasada nie jest skonfigurowana, metody wprowadzania na ekranie logowania odpowiadają ustawieniom regionalnym stosowanym do wyświetlania tego ekranu. Wartości, które nie są prawidłowymi identyfikatorami metod wprowadzania, są ignorowane.</translation>
@@ -1676,6 +1698,11 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
       W przypadku wyłączenia lub nieskonfigurowania tego ustawienia użytkownicy będą mogli korzystać na urządzeniu ze wszystkich obsługiwanych typów pamięci zewnętrznych.</translation>
 <translation id="5697306356229823047">Raportuj użytkowników urządzenia</translation>
 <translation id="570062449808736508">Gdy dla tej zasady zostanie ustawiony ciąg niepusty, komponent WebView będzie odczytywać ograniczenia URL przekazywane przez dostawcę treści o określonej nazwie urzędowej.</translation>
+<translation id="5701714006401683963">Jeśli ta zasada ma wartość fałsz, zarządzana sesja gościa będzie działać tak, jak opisano na https://support.google.com/chrome/a/answer/3017014, czyli jako standardowa „sesja publiczna”.
+
+      Jeśli ta zasada ma wartość prawda lub jest nieskonfigurowana, zarządzania sesja gościa będzie „sesją zarządzaną” i nie będzie objęta wieloma ograniczeniami dotyczącymi „sesji publicznych”.
+
+      Jeśli ta zasada jest ustawiona, użytkownik nie może jej zmienić ani zastąpić.</translation>
 <translation id="5722934961007828462">Gdy to ustawienie jest włączone, <ph name="PRODUCT_NAME" /> zawsze sprawdza, czy zweryfikowane certyfikaty serwera podpisane lokalnie zainstalowanymi certyfikatami CA nie zostały unieważnione.
 
       Jeśli <ph name="PRODUCT_NAME" /> nie może uzyskać informacji o stanie unieważnienia, takie certyfikaty są traktowane jak unieważnione (brak możliwości zignorowania błędu).
@@ -1730,7 +1757,7 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 
           Jeśli zasada pozostanie nieustawiona, po pierwszym wyświetleniu ekranu logowania potwierdzenia głosowe są wyłączone. Użytkownicy mogą je w każdej chwili włączyć lub wyłączyć i ich stan na ekranie logowania jest trwały dla wszystkich użytkowników.</translation>
 <translation id="5868414965372171132">Konfiguracja sieci na poziomie użytkownika</translation>
-<translation id="5879014913445067283">Kontroluje wykrywanie sieciowych magazynów plików za pomocą <ph name="NETBIOS_NAME" /></translation>
+<translation id="5879014913445067283">Kontroluje wykrywanie sieciowych udziałów plików za pomocą <ph name="NETBIOS_NAME" /></translation>
 <translation id="5883015257301027298">Domyślne ustawienie plików cookie</translation>
 <translation id="5887414688706570295">Konfiguruje przedrostek gadżetu TalkGadget, który będzie używany przez hosty zdalnego dostępu, i uniemożliwia użytkownikom jego zmianę.
 
@@ -1840,6 +1867,7 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 
       Jeśli nie skonfigurujesz tej zasady, lista odłączanych urządzeń USB będzie pusta.</translation>
 <translation id="6083631234867522991">Windows (klienty Windows):</translation>
+<translation id="6091233616732024397">Wymuś logowanie w przeglądarce</translation>
 <translation id="6093156968240188330">Umożliwia użytkownikom zdalnym używanie okien z podwyższonym poziomem uprawnień w sesjach pomocy zdalnej</translation>
 <translation id="6095999036251797924">Określa czas, po jakim ekran jest blokowany przy pracy na zasilaniu sieciowym lub bateryjnym, jeśli użytkownik jest nieaktywny.
 
@@ -1912,6 +1940,11 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 <translation id="6368011194414932347">Konfiguruj adres URL strony głównej</translation>
 <translation id="6368403635025849609">Zezwalaj na wykonywanie kodu JavaScript w tych witrynach</translation>
 <translation id="6376659517206731212">Może być obowiązkowa</translation>
+<translation id="6377355597423503887">Ta zasada została wycofana. Zamiast niej możesz użyć BrowserSignin.
+
+      Pozwala użytkownikowi zalogować się w <ph name="PRODUCT_NAME" />.
+
+      Jeśli ustawisz tę zasadę, możesz określić, czy zezwalasz użytkownikowi na logowanie się w <ph name="PRODUCT_NAME" />. Jeśli zasada będzie miała wartość false, aplikacje i rozszerzenia, które używają interfejsu API chrome.identity, nie będą działać. Dlatego zamiast niej możesz użyć SyncDisabled.</translation>
 <translation id="6378076389057087301">Określ, czy aktywność związana z dźwiękiem wpływa na zarządzanie energią</translation>
 <translation id="637934607141010488">Zgłasza listę użytkowników urządzenia, którzy niedawno się zalogowali.
 
@@ -1940,6 +1973,7 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
       Aby określić strony, na których będzie dozwolone uruchamianie treści Flash, zapoznaj się z zasadami „DefaultPluginsSetting”, „PluginsAllowedForUrls” i „PluginsBlockedForUrls”.
 
       Jeśli to ustawienie jest wyłączone lub nie jest określone, treści Flash z innych źródeł oraz treści drobne mogą być blokowane.</translation>
+<translation id="6532769014584932288">Zezwól na blokadę uśpienia</translation>
 <translation id="653608967792832033">Określa, po jakim czasie nieaktywności użytkownika blokowany jest ekran przy zasilaniu z baterii.
 
           Jeśli ta zasada ma wartość większą niż zero, określa czas, przez który użytkownik musi pozostać bezczynny, zanim <ph name="PRODUCT_OS_NAME" /> zablokuje ekran.
@@ -1957,6 +1991,7 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 <translation id="6544897973797372144">Jeśli ta zasada zostanie włączona, a zasada ChromeOsReleaseChannel nie będzie określona, użytkownicy domeny rejestrującej będą mogli zmienić kanał wersji urządzenia. Jeśli ta zasada będzie wyłączona, na urządzeniu zostanie zablokowany ostatnio ustawiony kanał.
 
       Kanał wybrany przez użytkownika zostanie zmieniony przez zasadę ChromeOsReleaseChannel, ale jeśli zasada określa kanał stabilniejszy niż zainstalowany na urządzeniu, kanał zostanie zmieniony, gdy wersja z kanału stabilniejszego będzie miała numer wyższy od wersji zainstalowanej na urządzeniu.</translation>
+<translation id="6553143066970470539">Procent jasności ekranu</translation>
 <translation id="6559057113164934677">Nie pozwalaj żadnym stronom na dostęp do kamery i mikrofonu</translation>
 <translation id="6561396069801924653">Pokaż opcje ułatwień dostępu w menu na pasku zadań</translation>
 <translation id="6565312346072273043">Ustawia domyślny stan funkcji dostępności klawiatury ekranowej na ekranie logowania.
@@ -1990,11 +2025,6 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
       Jeśli ta zasada pozostanie nieustawiona lub lista jest pusta, wszystkie schematy są dostępne w <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6652197835259177259">Ustawienia użytkowników zarządzanych lokalnie</translation>
 <translation id="6658245400435704251">Określa, o ile sekund urządzenie może losowo opóźnić pobranie aktualizacji w stosunku do czasu jej opublikowania na serwerze. Urządzenie może odczekać część tego okresu, licząc w sekundach zegara, a pozostałą część, licząc w testach dostępności aktualizacji. Tak czy inaczej okres opóźnienia jest ograniczony z góry, by urządzenie nigdy nie utknęło w stanie oczekiwania na pobranie aktualizacji.</translation>
-<translation id="6665599130599311250">Jeśli ta zasada ma wartość Fałsz lub nie jest ustawiona, zarządzana sesja gościa będzie działać tak, jak opisano na https://support.google.com/chrome/a/answer/3017014, czyli jako standardowa „sesja publiczna”.
-
-      Jeśli ta zasada ma wartość Prawda, sesja będzie „sesją zarządzaną” i nie będzie objęta wieloma ograniczeniami dotyczącymi „sesji publicznych”.
-
-      Jeśli ta zasada jest ustawiona, użytkownik nie może jej zmienić ani zastąpić.</translation>
 <translation id="6665670272107384733">Określ, jak często użytkownik musi podawać hasło, by używać szybkiego odblokowania</translation>
 <translation id="6681229465468164801">Pozwala utworzyć listę wzorców adresów URL określających witryny, które nie mogą prosić użytkownika o przyznanie dostępu do urządzeń USB.
 
@@ -2010,7 +2040,7 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 
       Zasada <ph name="SYNC_DISABLED_POLICY_NAME" /> powoduje wyłączenie wszystkich synchronizacji danych i zastępuje zasadę RoamingProfileSupportEnabled.</translation>
 <translation id="6731757988219967594">Filtruj witryny najwyższego poziomu (ale nie osadzone elementy iframe) pod kątem treści dla dorosłych</translation>
-<translation id="6734521799274931721">Określa dostępność sieciowych magazynów plików w Chrome OS</translation>
+<translation id="6734521799274931721">Określa dostępność sieciowych udziałów plików w Chrome OS</translation>
 <translation id="6735701345096330595">Wymuś włączenie sprawdzania pisowni</translation>
 <translation id="673699536430961464">To ustawienie pozwala użytkownikom zalogowanym na urządzeniu z <ph name="PRODUCT_OS_NAME" /> przełączać konta Google w obszarze treści okna przeglądarki
 
@@ -2046,6 +2076,13 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 <translation id="6786967369487349613">Ustaw katalog profilu przenośnego</translation>
 <translation id="6810445994095397827">Blokuj kod JavaScript w tych witrynach</translation>
 <translation id="681446116407619279">Obsługiwane schematy uwierzytelniania</translation>
+<translation id="6816212867679667972">Określa nazwę hosta urządzenia używaną w żądaniach DHCP.
+
+      Jeśli wartością tej zasady jest niepusty ciąg znaków, będzie on używany jako nazwa hosta w żądaniach DHCP.
+
+      Ciąg może zawierać zmienne ${ASSET_ID}, ${SERIAL_NUM}, ${MAC_ADDR}, ${MACHINE_NAME}, za które zostaną podstawione wartości z urządzenia przed użyciem ciągu jako nazwy hosta. Utworzony w ten sposób ciąg musi być prawidłową nazwą hosta (zgodnie z sekcją 3.1 specyfikacji RFC 1035).
+
+      Jeśli zasada jest nieskonfigurowana lub ciąg powstały po podstawieniu wartości za zmienne nie jest prawidłową nazwą hosta, żądanie DHCP nie będzie zawierać nazwy hosta. </translation>
 <translation id="6835883744948188639">Wyświetlaj cyklicznie komunikat o tym, że zalecane jest ponowne uruchomienie</translation>
 <translation id="6838056959556423778">Zastępuje reguły wybierania domyślnej drukarki w <ph name="PRODUCT_NAME" />.
 
@@ -2092,25 +2129,6 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 <translation id="6903814433019432303">Ta zasada jest aktywna tylko w trybie sklepu.
 
       Określa zestaw URL-i do załadowania po uruchomieniu sesji demonstracyjnej. Ta zasada zastępuje pozostałe mechanizmy ustawiania początkowego URL-a i dlatego można ją zastosować tylko do sesji niepowiązanej z konkretnym użytkownikiem.</translation>
-<translation id="6908347296939885026">Włącza w <ph name="PRODUCT_NAME" /> ograniczone logowanie w funkcji w G Suite i nie zezwala użytkownikom na zmianę tego ustawienia.
-
-      Jeśli zdefiniujesz to ustawienie, użytkownik będzie mógł uzyskiwać dostęp do Google
-      Apps tylko przy użyciu kont z określonych domen (uwaga: to ustawienie nie działa
-      w przypadku gmail.com/googlemail.com).
-
-      To ustawienie NIE uniemożliwia użytkownikowi logowania się na urządzeniu zarządzanym
-      wymagającym uwierzytelniania Google. Użytkownik nadal może
-      logować się na konta z innych domen, jednak gdy spróbuje na takim koncie
-      otworzyć G Suite, napotka błąd.
-
-      Jeśli pozostawisz to ustawienie puste lub nieskonfigurowane, użytkownik będzie mógł uzyskać dostęp do
-      G Suite z dowolnego konta.
-
-      Ta zasada powoduje, że do wszystkich żądań HTTP i HTTPS wysyłanych do wszystkich domen google.com
-      dołączany jest nagłówek X-GoogApps-Allowed-Domains. Jest to opisane na stronie
-      https://support.google.com/a/answer/1668854
-
-      Użytkownicy nie mogą zmienić ani zastąpić tego ustawienia.</translation>
 <translation id="6908640907898649429">Pozwala skonfigurować domyślnego dostawcę wyszukiwania. Możesz określić domyślnego dostawcę wyszukiwania, z którego usług będzie korzystał ​​użytkownik, lub wyłączyć funkcję wyszukiwarki domyślnej.</translation>
 <translation id="6913068954484253496">Zezwalaj usłudze <ph name="PRODUCT_NAME" /> na łączenie się z urządzeniami przesyłającymi pod wszystkimi adresami IP.</translation>
 <translation id="6915442654606973733">Włącza funkcję ułatwień dostępu w postaci potwierdzeń głosowych.
@@ -2145,6 +2163,13 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 <translation id="6931242315485576290">Wyłącz synchronizację danych z Google</translation>
 <translation id="6936894225179401731">Określa maksymalną liczbę jednoczesnych połączeń z serwerem proxy. Niektóre serwery proxy nie są w stanie obsłużyć dużej liczby jednoczesnych połączeń z tym samym klientem. W takiej sytuacji można rozwiązać problem, ustawiając dla tej zasady mniejszą wartość. Jej wartość powinna być mniejsza niż 100 i większa niż 6. Wartość domyślna wynosi 32. Niektóre aplikacje sieciowe używają wielu połączeń z oczekującymi żądaniami GET, dlatego zmniejszenie wartości tej zasady poniżej wartości 32 może powodować przerwy w działaniu sieci, jeśli zbyt wiele takich aplikacji będzie otwartych. Zmniejszasz wartości domyślne na własne ryzyko. W przypadku nieskonfigurowania tej zasady będzie używana wartość domyślna, czyli 32.</translation>
 <translation id="6943577887654905793">Nazwa ustawienia w systemie macOS/Linux:</translation>
+<translation id="6944167205014013774">Informacje o używaniu aplikacji na Linuxa są wysyłane z powrotem
+      na serwer.
+
+      Jeśli zasada jest wyłączona lub nieskonfigurowana, nie są wysyłane żadne informacje o używaniu aplikacji.
+      Jeśli jest włączona, informacje o używaniu aplikacji są wysyłane.
+
+      Ta zasada ma zastosowanie tylko wtedy, gdy jest włączona obsługa aplikacji na Linuxa.</translation>
 <translation id="69525503251220566">Parametr udostępniający funkcję wyszukiwania obrazem dla domyślnego dostawcy wyszukiwania</translation>
 <translation id="6956272732789158625">Nie zezwalaj na generowanie kluczy w żadnej witrynie</translation>
 <translation id="6965859329738616662">Określa, czy model inteligentnego przyciemniania może opóźniać przyciemnienie ekranu.
@@ -2231,6 +2256,11 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
 <translation id="7167436895080860385">Zezwalaj użytkownikom na pokazywanie haseł w menedżerze haseł (wycofane)</translation>
 <translation id="7173856672248996428">Profil tymczasowy</translation>
 <translation id="717630378807352957">Zezwalaj na wszystkie drukarki z pliku konfiguracji.</translation>
+<translation id="7176721759719212761">Określa, czy jest dozwolona blokada uśpienia ekranu. Takie żądania mogą być wysyłane przez rozszerzenia (przy użyciu interfejsu API zarządzania energią) oraz aplikacje ARC.
+
+          Jeśli ta zasada ma ustawienie Prawda lub nie jest ustawiona, żądania blokady uśpienia ekranu będą respektowane przez mechanizm zarządzania energią, chyba że AllowWakeLocks ma ustawienie Fałsz.
+
+          Jeśli zasada ma ustawienie Fałsz, żądania blokady uśpienia będą traktowane jako zwykłe żądania blokady uśpienia.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="718956142899066210">Typy połączeń dozwolone dla aktualizacji</translation>
 <translation id="7194407337890404814">Nazwa domyślnego dostawcy wyszukiwania</translation>
@@ -2244,6 +2274,11 @@ W przypadku nieskonfigurowania tej zasady użytkownik będzie mógł wybrać, cz
           Automatyczne odtwarzanie jest dozwolone tylko w domenach bezpośrednio wskazanych w zasadzie <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />. Jeśli chcesz zezwolić na automatyczne odtwarzanie we wszystkich witrynach, dodaj do tej listy http://* i https://*.
 
           Jeśli ta zasada nie jest ustawiona, użytkownik może zmienić to ustawienie ręcznie.</translation>
+<translation id="7229975860249300121">Zawiera wyrażenie regularne określające, które konta Google można ustawić jako konta podstawowe przeglądarki w <ph name="PRODUCT_NAME" /> (czyli konta, które można wybrać podczas włączania synchronizacji).
+
+      Gdy użytkownik spróbuje ustawić konto podstawowe przeglądarki o nazwie, która nie pasuje do tego wzorca, wyświetli się odpowiedni komunikat o błędzie.
+
+      Jeśli ta zasada nie jest ustawiona lub pozostaje pusta, użytkownik może ustawić dowolne konto Google jako konto podstawowe przeglądarki w <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Określ minimalną długość kodu PIN blokady ekranu</translation>
 <translation id="7232816984286843471">Gdy zasada ma wartość fałsz, użytkownicy z innych domen nie mogą używać Crostini.
 
@@ -2331,6 +2366,22 @@ Wyniki czyszczenia będą przesyłane do Google, a użytkownik nie będzie pytan
 
       Jeśli nie ustawisz tej zasady, funkcja automatycznego czyszczenia korzysta z domyślnej wbudowanej strategii. Obecnie to „RemoveLRUIfDormant”.</translation>
 <translation id="7336878834592315572">Zachowaj pliki cookie na czas trwania sesji</translation>
+<translation id="7337967786223261174">Konfiguruje listę drukarek.
+
+      Ta zasada umożliwia administratorom skonfigurowanie drukarek
+      dla użytkowników.
+
+      <ph name="PRINTER_DISPLAY_NAME" /> i <ph name="PRINTER_DESCRIPTION" /> to dowolne ciągi znaków, które mają ułatwić wybranie drukarki. <ph name="PRINTER_MANUFACTURER" /> i <ph name="PRINTER_MODEL" /> mają ułatwić użytkownikom zidentyfikowanie drukarki. Wskazują producenta i model drukarki. <ph name="PRINTER_URI" /> to adres drukarki dostępny z komputera klienckiego zawierający <ph name="URI_SCHEME" />, <ph name="URI_PORT" /> i <ph name="URI_QUEUE" />. <ph name="PRINTER_UUID" /> jest elementem opcjonalnym. Jego podanie pozwala usunąć duplikaty drukarek <ph name="ZEROCONF_DISCOVERY" />.
+
+      <ph name="PRINTER_EFFECTIVE_MODEL" /> musi odpowiadać jednemu z ciągów reprezentujących drukarkę obsługiwaną przez <ph name="PRODUCT_NAME" />. Umożliwia znalezienie i zainstalowanie pliku PPD dla danej drukarki. Więcej informacji znajdziesz na https://support.google.com/chrome?p=noncloudprint
+
+      Drukarka jest instalowana podczas jej pierwszego użycia. Dopiero wtedy są pobierane pliki PPD. Później często używane pliki PPD są przechowywane w pamięci podręcznej.
+
+      Ta zasada nie ma wpływu na to, czy użytkownicy mogą konfigurować drukarki na poszczególnych urządzeniach. Ma być uzupełnieniem konfigurowania drukarek przez poszczególnych użytkowników.
+
+      W przypadku urządzeń zarządzanych przez Active Directory ta zasada obsługuje rozwijanie ciągu <ph name="MACHINE_NAME_VARIABLE" /> do nazwy komputera w Active Directory lub części tej nazwy. Jeśli na przykład nazwą komputera jest <ph name="MACHINE_NAME_EXAMPLE" />, to ciąg <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> zostanie zastąpiony przez cztery znaki po 6. miejscu, czyli <ph name="MACHINE_NAME_PART_EXAMPLE" />. Miejsca liczymy od zera.
+      Obsługa ciągu <ph name="MACHINE_NAME_VARIABLE_LOWERCASE" /> (małe litery) została wycofana w wersji M71 i zostanie usunięta w M72.
+      </translation>
 <translation id="7340034977315324840">Zgłoś godziny aktywności urządzenia</translation>
 <translation id="7343497214039883642">Plik konfiguracji drukarek firmowych dla urządzeń</translation>
 <translation id="7349338075015720646">Określa listę witryn internetowych instalowanych dyskretnie, bez interakcji z użytkownikiem, których użytkownik nie może odinstalować ani wyłączyć.
@@ -2381,6 +2432,10 @@ Wyniki czyszczenia będą przesyłane do Google, a użytkownik nie będzie pytan
       </translation>
 <translation id="7511361072385293666">Jeśli ta zasada jest włączona lub nieustawiona, użycie protokołu QUIC w <ph name="PRODUCT_NAME" /> jest dozwolone.
       Jeśli zasada jest wyłączona, użycie protokołu QUIC jest niedozwolone.</translation>
+<translation id="7517845714620372896">Określa procent jasności ekranu.
+          Gdy ta zasada jest ustawiona, początkowa jasność ekranu jest ustawiana na wartość tej zasady, ale użytkownik może ją później zmienić. Wyłączone są funkcje jasności automatycznej.
+          Gdy zasada nie jest ustawiona, nie ma wpływu na ustawienia ekranu wybierane przez użytkownika ani funkcje jasności automatycznej.
+          Wartość zasady musi być określona procentowo w zakresie 0–100.</translation>
 <translation id="7519251620064708155">Zezwalaj na generowanie kluczy w tych witrynach</translation>
 <translation id="7529100000224450960">Umożliwia skonfigurowanie listy wzorcowych URL-i określających witryny, w których mogą być otwierane wyskakujące okienka. Jeśli ta zasada nie zostanie skonfigurowana, dla wszystkich witryn będzie używana globalna wartość domyślna pochodząca z zasady „DefaultPopupsSetting” (jeśli została skonfigurowana) lub z osobistej konfiguracji użytkownika.</translation>
 <translation id="7529144158022474049">Współczynnik rozkładania automatycznych aktualizacji w czasie</translation>
@@ -2485,6 +2540,7 @@ Wyniki czyszczenia będą przesyłane do Google, a użytkownik nie będzie pytan
 
       Rozpoznawane identyfikatory typów połączeń to  „ethernet”, „wifi”, „wimax”, „bluetooth” i „cellular”.</translation>
 <translation id="7763614521440615342">Pokazuj polecane treści na stronie Nowa karta</translation>
+<translation id="7765879851993224640">Zezwala na logowanie przy użyciu funkcji Smart Lock.</translation>
 <translation id="7774768074957326919">Używaj systemowych ustawień serwera proxy</translation>
 <translation id="7775831859772431793">W tym miejscu możesz podać URL serwera proxy.
 
@@ -2594,6 +2650,7 @@ optymalne efekty – izolację i ograniczony wpływ na użytkowników. W tym c
       Gdy wartość zasady zostanie zmieniona na fałsz, będzie dotyczyć uruchamiania nowych maszyn wirtualnych, ale maszyny wirtualne uruchomione wcześniej nie zostaną wyłączone.
       Gdy zasada jest nieskonfigurowana na urządzeniu zarządzanym, nie można na nim uruchamiać maszyn wirtualnych.
       Na urządzeniach niezarządzanych można uruchamiać maszyny wirtualne.</translation>
+<translation id="8001701200415781021">Określa, które konta Google można ustawić jako konta podstawowe przeglądarki w <ph name="PRODUCT_NAME" /></translation>
 <translation id="802147957407376460">Obróć ekran o 0 stopni</translation>
 <translation id="8033913082323846868">Ta zasada została wycofana w M70. Zamiast niej należy używać zasad AutofillAddressEnabled i AutofillCreditCardEnabled.
 
@@ -2746,6 +2803,7 @@ Zalecamy skonfigurowanie zasady w systemie Windows przy użyciu obiektu zasad gr
 <translation id="8359734107661430198">Włącz interfejs API ExampleDeprecatedFeature od 2 września 2008 r.</translation>
 <translation id="8367209241899435947">Włącz Czyszczenie Chrome w Windows</translation>
 <translation id="8369602308428138533">Opóźnienie wyłączenia ekranu przy zasilaniu sieciowym</translation>
+<translation id="8371178326720637170">Umożliwia zarządzanym rozszerzeniom używanie Enterprise Hardware Platform API</translation>
 <translation id="8382184662529825177">Włącz używanie zaświadczania zdalnego do ochrony treści na urządzeniu</translation>
 <translation id="838870586332499308">Włącz dane w roamingu</translation>
 <translation id="8390049129576938611">Wyłącza wewnętrzną przeglądarkę plików PDF w <ph name="PRODUCT_NAME" />. Pliki PDF będą traktowane jako pobrane i użytkownik będzie mógł je otwierać w aplikacji domyślnej.
@@ -2769,6 +2827,26 @@ Zalecamy skonfigurowanie zasady w systemie Windows przy użyciu obiektu zasad gr
 <translation id="8465065632133292531">Parametry dla URL-i dynamicznych używających POST</translation>
 <translation id="847472800012384958">Nie zezwalaj na pokazywanie wyskakujących okienek w żadnej witrynie</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
+<translation id="8483004350080020634">Wycina poufne pod względem prywatności i bezpieczeństwa fragmenty adresów URL https:// przed przekazaniem tych adresów do skryptów PAC (Proxy Auto Config), których <ph name="PRODUCT_NAME" /> używa podczas rozpoznawania serwerów proxy.
+
+      Jeśli ustawisz wartość prawda, funkcja zabezpieczeń zostanie włączona,
+      a fragmenty adresów URL https:// będą usuwane przed przekazaniem
+      tych adresów do skryptów PAC. W ten sposób skrypt PAC nie będzie
+      mógł odczytać danych, które są zwykle chronione przez
+      szyfrowany kanał (np. ścieżki lub zapytania adresu URL).
+
+      Jeśli ustawisz wartość fałsz, funkcja zabezpieczeń zostanie wyłączona,
+      a skrypty PAC będą domyślnie mogły odczytać wszystkie składniki
+      adresu URL https://. Dotyczy to wszystkich skryptów PAC bez względu
+      na ich pochodzenie (w tym te pobrane przez niezabezpieczony kanał
+      lub odkryte w niezabezpieczony sposób przez protokół WPAD).
+
+      Domyślne ustawienie to prawda (włączona funkcja zabezpieczeń).
+
+      Zaleca się ustawienie tej zasady na wartość prawda. Wartość fałsz należy ustawić
+      tylko wtedy, gdy występuje problem ze zgodnością z istniejącymi skryptami PAC.
+
+      Planujemy usunąć tę zasadę w M75.</translation>
 <translation id="8484458986062090479">Pozwala dostosować listę wzorców adresów URL stron, które przeglądarka hosta ma zawsze renderować.
 
           Jeśli nie ustawisz tej zasady, na wszystkich stronach działa domyślny mechanizm renderowania określony przez zasadę ChromeFrameRendererSettings.
@@ -2805,6 +2883,11 @@ Jeśli bieżąca wersja stanie się przestarzała podczas sesji użytkownika, je
 <translation id="8548832052135586762">Ustawia drukowanie tylko kolorowe, tylko monochromatyczne albo brak ograniczenia. Nieskonfigurowanie zasady oznacza brak ograniczenia.</translation>
 <translation id="8549772397068118889">Ostrzegaj przy odwiedzaniu witryn spoza pakietów treści</translation>
 <translation id="8566842294717252664">Ukryj Chrome Web Store na stronie Nowa karta i w menu z aplikacjami</translation>
+<translation id="857369585509260201">Ta zasada została wycofana. Zamiast niej możesz użyć BrowserSignin.
+
+      Jeśli włączysz tę zasadę, użytkownik będzie musiał logować się w <ph name="PRODUCT_NAME" /> przy użyciu swojego profilu, by skorzystać z przeglądarki. Domyślnie wartość zasady BrowserGuestModeEnabled zostanie przy tym ustawiona na fałsz. Pamiętaj, że po włączeniu tej zasady istniejące niepodpisane profile zostaną zablokowane i staną się niedostępne. Więcej informacji znajdziesz w artykule w Centrum pomocy.
+
+      Jeśli ustawisz tę zasadę na fałsz lub jej nie skonfigurujesz, użytkownik będzie mógł używać przeglądarki bez logowania się w <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8586528890725660268">Określa drukarki, z których użytkownik nie może korzystać.
 
       Ta zasada jest używana tylko wtedy, gdy dla zasady <ph name="BULK_PRINTERS_ACCESS_MODE" /> wybrano ustawienie <ph name="PRINTERS_BLACKLIST" />.
@@ -2817,6 +2900,25 @@ Jeśli bieżąca wersja stanie się przestarzała podczas sesji użytkownika, je
       Jeśli zasada nie jest ustawiona lub ma wartość prawda, wszyscy użytkownicy mogą używać ARC (pod warunkiem, że ARC nie jest wyłączone w inny sposób).
 
       Zmiany w tej zasadzie zostaną zastosowane tylko wtedy, gdy ARC nie będzie uruchomione, np. podczas uruchamiania Chrome OS.</translation>
+<translation id="8615400197788843468">Włącza w <ph name="PRODUCT_NAME" /> funkcję ograniczonego logowania w G Suite i uniemożliwia użytkownikom zmianę tego ustawienia.
+
+      Jeśli zdefiniujesz to ustawienie, użytkownik będzie mógł uzyskać dostęp
+      do Google Apps tylko przy użyciu kont z określonych domen (uwaga:
+      aby zezwolić na konta gmail.com/googlemail.com, dodaj do listy domen
+      wpis „consumer_accounts” (bez cudzysłowów)).
+
+      To ustawienie uniemożliwi użytkownikowi zalogowanie się na dodatkowe konto
+      na urządzeniu zarządzanym, na którym wymagane jest uwierzytelnianie Google,
+      jeśli to konto nie znajduje się na tej liście dozwolonych domen.
+
+      Jeśli to ustawienie pozostanie puste/nieskonfigurowane, użytkownik będzie mógł
+      korzystać z G Suite na dowolnym koncie.
+
+      Ta zasada powoduje dodanie nagłówka X-GoogApps-Allowed-Domains do wszystkich
+      żądań HTTP i HTTPS wysyłanych do wszystkich domen google.com, co opisano na
+      https://support.google.com/a/answer/1668854.
+
+      Użytkownicy nie mogą zmienić ani zastąpić tego ustawienia.</translation>
 <translation id="8631434304112909927">do wersji <ph name="UNTIL_VERSION" /></translation>
 <translation id="863319402127182273">W przypadku aplikacji na Androida ta zasada dotyczy tylko wbudowanego aparatu. Gdy zasada jest włączona, aparat jest wyłączony dla wszystkich aplikacji na Androida bez wyjątków.</translation>
 <translation id="8649763579836720255">Urządzenia z Chrome OS mogą używać zaświadczeń zdalnych (zweryfikowanego dostępu), by uzyskać certyfikat Chrome OS CA, który zaświadcza, że urządzenie jest uprawnione do odtwarzania materiałów chronionych. Ten proces obejmuje wysłanie do Chrome OS CA informacji polecających sprzęt, które jednoznacznie identyfikują urządzenie.
@@ -2991,6 +3093,11 @@ Ta zasada określa listę źródeł (adresów URL) lub wzorców nazw hosta
 <translation id="8970205333161758602">Pomiń monit o odinstalowanie <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8976248126101463034">Zezwalaj na uwierzytelnianie Gnubby w przypadku hostów dostępu zdalnego</translation>
 <translation id="8976531594979650914">Użyj domyślnej drukarki systemowej</translation>
+<translation id="898520305112996948">Umożliwia skonfigurowanie listy wzorców adresów URL określających witryny, które automatycznie uzyskają dostęp do urządzenia USB o podanych identyfikatorach producenta i produktu. Aby wartość zasady była prawidłowa, każda pozycja listy musi zawierać listę urządzeń i wzorce adresów URL. Każda pozycja określająca urządzenie może zawierać pole identyfikatora producenta i identyfikatora produktu. Każde pominięcie identyfikatora jest interpretowane jako identyfikator dowolny (symbol wieloznaczny) – jest jeden wyjątek: nie można podać identyfikatora produktu bez identyfikatora producenta (naruszenie tej reguły spowoduje, że zasada będzie nieprawidłowa). Nieprawidłowe wartości zasady są ignorowane.
+
+        Jeśli ta zasada jest nieskonfigurowana, dla wszystkich witryn będzie stosowana globalna wartość domyślna z zasady „DefaultWebUsbGuardSetting” (jeśli ta jest skonfigurowana) albo z konfiguracji użytkownika (w przeciwnym razie).
+
+        Wzorce adresów URL w tej zasadzie nie powinny być w konflikcie z wzorcami skonfigurowanymi w WebUsbBlockedForUrls. W przypadku konfliktu ta zasada ma wyższy priorytet niż WebUsbBlockedForUrls i WebUsbAskForUrls.</translation>
 <translation id="8992176907758534924">Nie zezwalaj na pokazywanie grafik w żadnej witrynie</translation>
 <translation id="9012851181124311976">Konfigurowanie listy adresów URL stron logowania aplikacji firmowych (tylko schematy HTTP i HTTPS). Na tych stronach będzie rejestrowany odcisk cyfrowy hasła służący do wykrywania przypadków użycia tego samego hasła w różnych miejscach.
       Jeśli <ph name="PRODUCT_NAME" /> ma poprawnie rejestrować odciski cyfrowe haseł, strony logowania powinny być zgodne z wytycznymi podanymi na stronie https://www.chromium.org/developers/design-documents/create-amazing-password-forms
@@ -3025,7 +3132,6 @@ Ta zasada określa listę źródeł (adresów URL) lub wzorców nazw hosta
       Rzeczywista możliwość cofnięcia może zależeć też od modelu urządzenia i poprawek usuwających luki krytyczne.</translation>
 <translation id="913195841488580904">Blokuj dostęp do listy adresów URL</translation>
 <translation id="9135033364005346124">Włącz serwer proxy usługi <ph name="CLOUD_PRINT_NAME" /></translation>
-<translation id="9136253551939494882">Biała lista trybów szybkiego odblokowania, które użytkownik może skonfigurować i których może używać do odblokowywania ekranu blokady. Ta wartość to lista ciągów znaków. Poprawne opcje to: "all" (wszystkie) i "PIN" (kod PIN). Opcja "all" oznacza, że użytkownik może korzystać ze wszystkich trybów odblokowania ekranu, także tych, które zostaną wdrożone w przyszłości. W przeciwnym razie dostępne są tylko tryby szybkiego odblokowania znajdujące się na liście. Na przykład aby zezwolić na wszystkie tryby szybkiego odblokowania, użyj ciągu ["all"]. Aby zezwolić tylko na odblokowywanie przy użyciu kodu PIN, użyj ciągu ["PIN"]. Aby wyłączyć wszystkie tryby szybkiego odblokowania, użyj ciągu []. Domyślnie tryby szybkiego odblokowania nie są dostępne na urządzeniach zarządzanych.</translation>
 <translation id="9136399279941091445">Okresy bezczynności, gdy określone zasady dotyczące urządzeń są aktywne</translation>
 <translation id="9147029539363974059">Wysyła dzienniki systemowe na serwer zarządzania, by umożliwić monitorowanie ich przez administratorów.
 

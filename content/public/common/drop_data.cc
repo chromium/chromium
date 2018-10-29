@@ -46,7 +46,7 @@ DropData::Metadata::~Metadata() {}
 
 DropData::DropData()
     : did_originate_from_renderer(false),
-      referrer_policy(blink::kWebReferrerPolicyDefault),
+      referrer_policy(network::mojom::ReferrerPolicy::kDefault),
       key_modifiers(0) {}
 
 DropData::DropData(const DropData& other) = default;

@@ -25,6 +25,7 @@ import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -125,7 +126,7 @@ public class DownloadNotificationService2Test {
         // Download is in-progress.
         mDownloadNotificationService.notifyDownloadProgress(ID1, "test",
                 new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L, true, true,
-                false, null);
+                false, null, null, false);
         mDownloadForegroundServiceManager.onServiceConnected();
 
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
@@ -136,7 +137,7 @@ public class DownloadNotificationService2Test {
 
         // Download is paused.
         mDownloadNotificationService.notifyDownloadPaused(ID1, "test", true /* isResumable*/,
-                false /* isAutoResumable */, true, false, null, false, false,
+                false /* isAutoResumable */, true, false, null, null, false, false, false,
                 PendingState.NOT_PENDING);
 
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
@@ -147,7 +148,7 @@ public class DownloadNotificationService2Test {
         // Download is again in-progress.
         mDownloadNotificationService.notifyDownloadProgress(ID1, "test",
                 new Progress(20, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L, true,
-                true, false, null);
+                true, false, null, null, false);
         mDownloadForegroundServiceManager.onServiceConnected();
 
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
@@ -157,7 +158,7 @@ public class DownloadNotificationService2Test {
 
         // Download is successful.
         mDownloadNotificationService.notifyDownloadSuccessful(
-                ID1, "", "test", 1L, true, true, true, null, "", "", 0);
+                ID1, "", "test", 1L, true, true, true, null, "", false, "", 0);
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
         assertFalse(mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
                 notificationId1));
@@ -172,7 +173,7 @@ public class DownloadNotificationService2Test {
         // Download is in-progress.
         mDownloadNotificationService.notifyDownloadProgress(ID1, "test",
                 new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L, true, true,
-                false, null);
+                false, null, null, false);
         mDownloadForegroundServiceManager.onServiceConnected();
 
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
@@ -183,7 +184,7 @@ public class DownloadNotificationService2Test {
 
         // Download is interrupted and now is pending.
         mDownloadNotificationService.notifyDownloadPaused(ID1, "test", true /* isResumable */,
-                true /* isAutoResumable */, true, false, null, false, false,
+                true /* isAutoResumable */, true, false, null, null, false, false, false,
                 PendingState.PENDING_NETWORK);
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
         assertTrue(mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
@@ -207,7 +208,7 @@ public class DownloadNotificationService2Test {
         // Download is in-progress.
         mDownloadNotificationService.notifyDownloadProgress(ID1, "test",
                 new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L, true, true,
-                false, null);
+                false, null, null, false);
         mDownloadForegroundServiceManager.onServiceConnected();
 
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
@@ -218,7 +219,7 @@ public class DownloadNotificationService2Test {
 
         // Download is interrupted but because it is not resumable, fails.
         mDownloadNotificationService.notifyDownloadPaused(ID1, "test", false /* isResumable*/,
-                true /* isAutoResumable */, true, false, null, false, false,
+                true /* isAutoResumable */, true, false, null, null, false, false, false,
                 PendingState.PENDING_NETWORK);
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
         assertFalse(mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
@@ -230,6 +231,7 @@ public class DownloadNotificationService2Test {
     @SmallTest
     @UiThreadTest
     @Feature({"Download"})
+    @DisabledTest(message = "https://crbug.com/837298")
     public void testResumeAllPendingDownloads() {
         // Queue a few pending downloads.
         mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(

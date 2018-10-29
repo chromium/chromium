@@ -444,6 +444,13 @@ ConsoleTestRunner.waitForRemoteObjectsConsoleMessages = function(callback) {
 /**
  * @return {!Promise}
  */
+ConsoleTestRunner.waitForRemoteObjectsConsoleMessagesPromise = function() {
+  return new Promise(resolve => ConsoleTestRunner.waitForRemoteObjectsConsoleMessages(resolve));
+};
+
+/**
+ * @return {!Promise}
+ */
 ConsoleTestRunner.waitUntilConsoleEditorLoaded = function() {
   let fulfill;
   const promise = new Promise(x => (fulfill = x));

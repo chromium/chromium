@@ -70,7 +70,7 @@ TEST(ChunkStreamTest, FillGap) {
 TEST(ChunkStreamTest, Read) {
   TestChunkStream stream;
   stream.set_eof_pos(25);
-  const unsigned char start_value = 33;
+  constexpr unsigned char start_value = 33;
   unsigned char value = start_value;
   auto chunk_0 = CreateChunkData();
   for (auto& it : *chunk_0) {

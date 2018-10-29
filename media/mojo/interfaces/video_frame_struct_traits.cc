@@ -150,6 +150,11 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
   frame->metadata()->MergeInternalValuesFrom(metadata);
 
+  gfx::ColorSpace color_space;
+  if (!input.ReadColorSpace(&color_space))
+    return false;
+  frame->set_color_space(color_space);
+
   *output = std::move(frame);
   return true;
 }

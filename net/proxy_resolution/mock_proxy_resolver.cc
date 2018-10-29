@@ -62,8 +62,7 @@ int MockAsyncProxyResolver::GetProxyForURL(
 }
 
 void MockAsyncProxyResolver::AddCancelledJob(std::unique_ptr<Job> job) {
-  std::vector<Job*>::iterator it =
-      std::find(pending_jobs_.begin(), pending_jobs_.end(), job.get());
+  auto it = std::find(pending_jobs_.begin(), pending_jobs_.end(), job.get());
   // Because this is called always when RequestImpl is destructed,
   // we need to check if it is still in pending jobs.
   if (it != pending_jobs_.end()) {
@@ -74,8 +73,7 @@ void MockAsyncProxyResolver::AddCancelledJob(std::unique_ptr<Job> job) {
 
 void MockAsyncProxyResolver::RemovePendingJob(Job* job) {
   DCHECK(job);
-  std::vector<Job*>::iterator it =
-      std::find(pending_jobs_.begin(), pending_jobs_.end(), job);
+  auto it = std::find(pending_jobs_.begin(), pending_jobs_.end(), job);
   DCHECK(it != pending_jobs_.end());
   pending_jobs_.erase(it);
 }
@@ -155,7 +153,7 @@ int MockAsyncProxyResolverFactory::CreateProxyResolver(
 }
 
 void MockAsyncProxyResolverFactory::RemovePendingRequest(Request* request) {
-  RequestsList::iterator it =
+  auto it =
       std::find(pending_requests_.begin(), pending_requests_.end(), request);
   DCHECK(it != pending_requests_.end());
   pending_requests_.erase(it);

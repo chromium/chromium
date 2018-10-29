@@ -8,6 +8,10 @@ import("//remoting/host/installer/win/generate_clsids.gni")
 action("remoting_me2me_host_archive") {
   script = "//remoting/host/installer/build-installer-archive.py"
 
+  sources = [
+    "//build/android/gyp/util/build_utils.py",
+  ]
+
   deps = [
     "//remoting/host:remoting_native_messaging_manifests",
     "//remoting/host:remoting_start_host",

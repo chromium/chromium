@@ -7,5 +7,7 @@ Message added: error log
 console-message-wrapper console-error-level
 
 Handling promise
-console-message-wrapper console-info-level
+
+Enable verbose filter
+console-message-wrapper console-verbose-level
 

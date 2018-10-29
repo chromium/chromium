@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/assistant_optin_flow_screen_handler.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/screens/assistant_optin_flow_screen.h"
@@ -26,6 +27,7 @@ constexpr char kJsScreenPath[] = "login.AssistantOptInFlowScreen";
 constexpr char kSkipPressed[] = "skip-pressed";
 constexpr char kNextPressed[] = "next-pressed";
 constexpr char kFlowFinished[] = "flow-finished";
+constexpr char kReloadRequested[] = "reload-requested";
 
 }  // namespace
 
@@ -88,6 +90,8 @@ void AssistantOptInFlowScreenHandler::RegisterMessages() {
       &AssistantOptInFlowScreenHandler::HandleGetMoreScreenShown);
   AddPrefixedCallback("ReadyScreen.screenShown",
                       &AssistantOptInFlowScreenHandler::HandleReadyScreenShown);
+  AddPrefixedCallback("LoadingScreen.timeout",
+                      &AssistantOptInFlowScreenHandler::HandleLoadingTimeout);
   AddPrefixedCallback("hotwordResult",
                       &AssistantOptInFlowScreenHandler::HandleHotwordResult);
   AddPrefixedCallback("flowFinished",
@@ -207,6 +211,7 @@ void AssistantOptInFlowScreenHandler::SendGetSettingsRequest() {
       selector.SerializeAsString(),
       base::BindOnce(&AssistantOptInFlowScreenHandler::OnGetSettingsResponse,
                      weak_factory_.GetWeakPtr()));
+  send_request_time_ = base::TimeTicks::Now();
 }
 
 void AssistantOptInFlowScreenHandler::ReloadContent(const base::Value& dict) {
@@ -220,6 +225,11 @@ void AssistantOptInFlowScreenHandler::AddSettingZippy(const std::string& type,
 
 void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
     const std::string& settings) {
+  const base::TimeDelta time_since_request_sent =
+      base::TimeTicks::Now() - send_request_time_;
+  UMA_HISTOGRAM_TIMES("Assistant.OptInFlow.GetSettingsRequestTime",
+                      time_since_request_sent);
+
   assistant::SettingsUi settings_ui;
   settings_ui.ParseFromString(settings);
 
@@ -329,6 +339,12 @@ void AssistantOptInFlowScreenHandler::HandleValuePropScreenUserAction(
     OnActivityControlOptInResult(false);
   } else if (action == kNextPressed) {
     OnActivityControlOptInResult(true);
+  } else if (action == kReloadRequested) {
+    if (settings_manager_.is_bound()) {
+      SendGetSettingsRequest();
+    } else {
+      LOG(ERROR) << "Settings mojom failed to setup. Check Assistant service.";
+    }
   }
 }
 
@@ -374,6 +390,10 @@ void AssistantOptInFlowScreenHandler::HandleReadyScreenShown() {
   RecordAssistantOptInStatus(READY_SCREEN_SHOWN);
 }
 
+void AssistantOptInFlowScreenHandler::HandleLoadingTimeout() {
+  ++loading_timeout_counter_;
+}
+
 void AssistantOptInFlowScreenHandler::HandleHotwordResult(bool enable_hotword) {
   enable_hotword_ = enable_hotword;
 
@@ -387,6 +407,8 @@ void AssistantOptInFlowScreenHandler::HandleHotwordResult(bool enable_hotword) {
 }
 
 void AssistantOptInFlowScreenHandler::HandleFlowFinished() {
+  UMA_HISTOGRAM_EXACT_LINEAR("Assistant.OptInFlow.LoadingTimeoutCount",
+                             loading_timeout_counter_, 10);
   if (screen_)
     screen_->OnUserAction(kFlowFinished);
   else

@@ -83,8 +83,8 @@ CvcUnmaskViewController::CvcUnmaskViewController(
 CvcUnmaskViewController::~CvcUnmaskViewController() {}
 
 void CvcUnmaskViewController::LoadRiskData(
-    const base::Callback<void(const std::string&)>& callback) {
-  autofill::LoadRiskData(0, web_contents_, callback);
+    base::OnceCallback<void(const std::string&)> callback) {
+  autofill::LoadRiskData(0, web_contents_, std::move(callback));
 }
 
 void CvcUnmaskViewController::ShowUnmaskPrompt(
@@ -217,7 +217,7 @@ void CvcUnmaskViewController::FillContentView(views::View* content_view) {
       credit_card_.network() == autofill::kAmericanExpressCard
           ? IDR_CREDIT_CARD_CVC_HINT_AMEX
           : IDR_CREDIT_CARD_CVC_HINT));
-  cvc_image->SetTooltipText(l10n_util::GetStringUTF16(
+  cvc_image->set_tooltip_text(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION));
   layout->AddView(cvc_image.release());
 

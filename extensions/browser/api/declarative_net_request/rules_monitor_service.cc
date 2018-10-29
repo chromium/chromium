@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/service_manager_connection.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
@@ -168,8 +169,8 @@ class RulesMonitorService::FileSequenceState {
                                  failed_action == LoadFailedAction::kReindex;
 
     if (!reindex_ruleset) {
-      content::BrowserThread::PostTask(
-          content::BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::UI},
           base::BindOnce(std::move(ui_callback), std::move(info),
                          std::move(matcher)));
       return;
@@ -219,8 +220,8 @@ class RulesMonitorService::FileSequenceState {
         "Extensions.DeclarativeNetRequest.RulesetReindexSuccessful",
         reindexing_success);
     if (!reindexing_success) {
-      content::BrowserThread::PostTask(
-          content::BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::UI},
           base::BindOnce(std::move(ui_callback), std::move(info),
                          nullptr /* matcher */));
       return;
@@ -334,8 +335,8 @@ void RulesMonitorService::OnExtensionUnloaded(
 
   base::OnceClosure unload_ruleset_on_io_task = base::BindOnce(
       &UnloadRulesetOnIOThread, extension->id(), base::RetainedRef(info_map_));
-  content::BrowserThread::PostTask(content::BrowserThread::IO, FROM_HERE,
-                                   std::move(unload_ruleset_on_io_task));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                           std::move(unload_ruleset_on_io_task));
 }
 
 void RulesMonitorService::OnRulesetLoaded(
@@ -366,8 +367,8 @@ void RulesMonitorService::OnRulesetLoaded(
   base::OnceClosure load_ruleset_on_io = base::BindOnce(
       &LoadRulesetOnIOThread, info.extension->id(), std::move(matcher),
       std::move(info.allowed_pages), base::RetainedRef(info_map_));
-  content::BrowserThread::PostTask(content::BrowserThread::IO, FROM_HERE,
-                                   std::move(load_ruleset_on_io));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                           std::move(load_ruleset_on_io));
 }
 
 }  // namespace declarative_net_request

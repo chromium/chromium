@@ -174,9 +174,10 @@ html[dir=rtl] .bg-option-img {
 .bg-option-text {
   display: inline-block;
   line-height: normal;
+  max-width: 250px;
   overflow: hidden;
   padding-left: 16px;
-  text-align: center;
+  text-align: left;
   text-overflow: ellipsis;
   vertical-align: middle;
   white-space: nowrap;
@@ -185,6 +186,7 @@ html[dir=rtl] .bg-option-img {
 html[dir=rtl] .bg-option-text {
   padding-left: auto;
   padding-right: 16px;
+  text-align: right;
 }
 
 #bg-sel-menu::backdrop {
@@ -210,19 +212,6 @@ html[dir=rtl] .bg-option-text {
    * scrollbar width on Windows.*/
   width: 517px;
   z-index: 10000;
-}
-
-/* The width here should match that used in customBackgrounds.getNextTile. */
-@media (max-width: 520px) {
-   #bg-sel-menu {
-     width: 352px;
-   }
-}
-
-@media (max-width: 356px) {
-   #bg-sel-menu {
-     width: 188px;
-   }
 }
 
 /* The width is decided by the longest text length plus 16px margin on the
@@ -271,6 +260,7 @@ html[dir=rtl] #bg-sel-tiles {
   background-size: 20px 20px;
   display: none;
   height: 20px;
+  outline: none;
   width: 20px;
 }
 
@@ -279,10 +269,12 @@ html[dir=rtl] #bg-sel-tiles {
   display: none;
   height: 36px;
   margin: 8px 8px 0 16px;
+  outline: none;
   width: 36px;
 }
 
-#bg-sel-back-circle:active {
+#bg-sel-back-circle:active,
+#bg-sel-back-circle:focus {
   background: rgb(218, 220, 224);
   background-position: center;
   background-size: 36px 36px;
@@ -459,7 +451,31 @@ html[dir=rtl] .bg-sel-tile-bg {
   height: 117px;
   margin: 6px 0 0 8px;
   position: relative;
-  width: 156px;
+  /* 8px for the margin on the left */
+  width: calc(33% - 8px);
+}
+
+/* The width here should match that used in customBackgrounds.getTilesWide. */
+@media (max-width: 517px) {
+  #bg-sel-menu {
+    width: 352px;
+  }
+
+  .bg-sel-tile-bg {
+    /* 8px for the margin on the left */
+    width: calc(49.5% - 8px);
+  }
+}
+
+@media (max-width: 356px) {
+  #bg-sel-menu {
+    width: 188px;
+  }
+
+  .bg-sel-tile-bg {
+    /* 8px for the margin on the left */
+    width: calc(99% - 8px);
+  }
 }
 
 .bg-selected {
@@ -507,10 +523,11 @@ html[dir=rtl] .selected-check {
 .bg-sel-tile-title {
   background-color: rgba(32, 33, 36, 0.71);
   bottom: 0;
+  box-sizing: border-box;
   color: #FFF;
   display: inline-block;
   font-size: 13px;
-  height: 24px;
+  height: 32px;
   overflow: hidden;
   padding: 8px 16px 0 16px;
   position: absolute;
@@ -518,7 +535,7 @@ html[dir=rtl] .selected-check {
   user-select: none;
   vertical-align: middle;
   white-space: nowrap;
-  width: 124px;
+  width: 100%;
 }
 
 .bg-selected .bg-sel-tile-title {

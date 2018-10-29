@@ -12,10 +12,9 @@
 #include "base/scoped_observer.h"
 #include "chromeos/dbus/media_analytics_client.h"
 #include "chromeos/dbus/media_perception/media_perception.pb.h"
-#include "chromeos/services/media_perception/public/mojom/connector.mojom.h"
+#include "chromeos/services/media_perception/public/mojom/media_perception_service.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/common/api/media_perception_private.h"
-#include "services/video_capture/public/mojom/device_factory_provider.mojom.h"
 
 namespace extensions {
 
@@ -47,6 +46,10 @@ class MediaPerceptionAPIManager
   static BrowserContextKeyedAPIFactory<MediaPerceptionAPIManager>*
   GetFactoryInstance();
 
+  // Handler for clients of the API requesting a MediaPerception Mojo interface.
+  void ActivateMediaPerception(
+      chromeos::media_perception::mojom::MediaPerceptionRequest request);
+
   // Public functions for MediaPerceptionPrivateAPI implementation.
   void SetAnalyticsComponent(
       const extensions::api::media_perception_private::Component& component,
@@ -66,6 +69,8 @@ class MediaPerceptionAPIManager
 
  private:
   friend class BrowserContextKeyedAPIFactory<MediaPerceptionAPIManager>;
+
+  class MediaPerceptionControllerClient;
 
   // BrowserContextKeyedAPI:
   static const char* service_name() { return "MediaPerceptionAPIManager"; }
@@ -141,6 +146,17 @@ class MediaPerceptionAPIManager
   // component from component updater. If this string is not set, no component
   // is set.
   std::string mount_point_;
+
+  // Pointer to the MediaPerceptionService interface for communicating with the
+  // service over Mojo.
+  chromeos::media_perception::mojom::MediaPerceptionServicePtr
+      media_perception_service_;
+
+  chromeos::media_perception::mojom::MediaPerceptionControllerPtr
+      media_perception_controller_;
+
+  std::unique_ptr<MediaPerceptionControllerClient>
+      media_perception_controller_client_;
 
   ScopedObserver<chromeos::MediaAnalyticsClient, MediaPerceptionAPIManager>
       scoped_observer_;

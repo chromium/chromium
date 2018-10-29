@@ -519,10 +519,9 @@ void GpuServiceImpl::GetVideoMemoryUsageStats(
   std::move(callback).Run(video_memory_usage_stats);
 }
 
-// Currently, this function only supports the Windows platform.
+#if defined(OS_WIN)
 void GpuServiceImpl::GetGpuSupportedRuntimeVersion(
     GetGpuSupportedRuntimeVersionCallback callback) {
-#if defined(OS_WIN)
   if (io_runner_->BelongsToCurrentThread()) {
     auto wrap_callback = WrapCallback(io_runner_, std::move(callback));
     main_runner_->PostTask(
@@ -538,13 +537,13 @@ void GpuServiceImpl::GetGpuSupportedRuntimeVersion(
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   DCHECK(command_line->HasSwitch("disable-gpu-sandbox") || in_host_process());
 
-  gpu::RecordGpuSupportedRuntimeVersionHistograms(&gpu_info_);
-  std::move(callback).Run(gpu_info_);
+  gpu::RecordGpuSupportedRuntimeVersionHistograms(
+      &gpu_info_.dx12_vulkan_version_info);
+  std::move(callback).Run(gpu_info_.dx12_vulkan_version_info);
   if (!in_host_process()) {
     // The unsandboxed GPU process fulfilled its duty. Bye bye.
     ExitProcess();
   }
-#endif
 }
 
 void GpuServiceImpl::RequestCompleteGpuInfo(
@@ -563,16 +562,15 @@ void GpuServiceImpl::RequestCompleteGpuInfo(
       base::BindOnce(
           [](GpuServiceImpl* gpu_service,
              RequestCompleteGpuInfoCallback callback) {
-            std::move(callback).Run(gpu_service->gpu_info_);
-#if defined(OS_WIN)
+            std::move(callback).Run(gpu_service->gpu_info_.dx_diagnostics);
             if (!gpu_service->in_host_process()) {
               // The unsandboxed GPU process fulfilled its duty. Bye bye.
               gpu_service->ExitProcess();
             }
-#endif
           },
           this, std::move(callback))));
 }
+#endif
 
 void GpuServiceImpl::RequestHDRStatus(RequestHDRStatusCallback callback) {
   DCHECK(io_runner_->BelongsToCurrentThread());
@@ -712,8 +710,7 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
       client_id, client_tracing_id, is_gpu_host, cache_shaders_on_disk);
 
   mojo::MessagePipe pipe;
-  gpu_channel->Init(std::make_unique<gpu::SyncChannelFilteredSender>(
-      pipe.handle0.release(), gpu_channel, io_runner_, shutdown_event_));
+  gpu_channel->Init(pipe.handle0.release(), shutdown_event_);
 
   media_gpu_channel_manager_->AddChannel(client_id);
 

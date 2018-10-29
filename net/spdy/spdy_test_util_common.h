@@ -521,16 +521,6 @@ namespace test {
 // Returns a SHA1 HashValue in which each byte has the value |label|.
 HashValue GetTestHashValue(uint8_t label);
 
-// Returns SHA1 pinning header for the of the base64 encoding of
-// GetTestHashValue(|label|).
-std::string GetTestPin(uint8_t label);
-
-// Adds a pin for |host| to |state|.
-void AddPin(TransportSecurityState* state,
-            const std::string& host,
-            uint8_t primary_label,
-            uint8_t backup_label);
-
 // A test implementation of ServerPushDelegate that caches all the pushed
 // request and provides a interface to cancel the push given url.
 class TestServerPushDelegate : public ServerPushDelegate {

@@ -257,8 +257,10 @@ class TestExporter(object):
         footer += '{} {}'.format(WPT_REVISION_FOOTER, cl.current_revision_sha)
 
         if pull_request:
-            self.create_or_update_pr_from_commit(
+            pr_number = self.create_or_update_pr_from_commit(
                 commit, provisional=True, pr_number=pull_request.number, pr_footer=footer)
+            if pr_number is None:
+                return
 
             # TODO(jeffcarp): Turn PullRequest into a class with a .url method
             cl.post_comment((
@@ -272,6 +274,8 @@ class TestExporter(object):
             branch_name = 'chromium-export-cl-{}'.format(cl.number)
             pr_number = self.create_or_update_pr_from_commit(
                 commit, provisional=True, pr_footer=footer, pr_branch_name=branch_name)
+            if pr_number is None:
+                return
 
             cl.post_comment((
                 'Exportable changes to web-platform-tests were detected in this CL '
@@ -307,6 +311,10 @@ class TestExporter(object):
                 description after the commit message.
             pr_branch_name: Optional, the name of the head branch of the PR.
                 If unspecified, the current head branch of the PR will be used.
+
+        Returns:
+            The issue number (an int) of the updated/created PR, or None if no
+            change is made.
         """
         patch = commit.format_patch()
         message = commit.message()

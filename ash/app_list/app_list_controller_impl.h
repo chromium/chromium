@@ -17,6 +17,7 @@
 #include "ash/app_list/presenter/app_list_presenter_impl.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_constants.h"
+#include "ash/public/cpp/assistant/default_voice_interaction_observer.h"
 #include "ash/public/interfaces/app_list.mojom.h"
 #include "ash/public/interfaces/voice_interaction_controller.mojom.h"
 #include "ash/session/session_observer.h"
@@ -56,7 +57,7 @@ class ASH_EXPORT AppListControllerImpl
       public TabletModeObserver,
       public keyboard::KeyboardControllerObserver,
       public WallpaperControllerObserver,
-      public mojom::VoiceInteractionObserver {
+      public DefaultVoiceInteractionObserver {
  public:
   using AppListItemMetadataPtr = mojom::AppListItemMetadataPtr;
   using SearchResultMetadataPtr = mojom::SearchResultMetadataPtr;
@@ -145,6 +146,12 @@ class ASH_EXPORT AppListControllerImpl
     return home_launcher_gesture_handler_.get();
   }
 
+  // Called when a window starts/ends dragging. If we're in tablet mode and home
+  // launcher is enabled, we should hide the home launcher during dragging a
+  // window and reshow it when the drag ends.
+  void OnWindowDragStarted();
+  void OnWindowDragEnded();
+
   // app_list::AppListViewDelegate:
   app_list::AppListModel* GetModel() override;
   app_list::SearchModel* GetSearchModel() override;
@@ -164,6 +171,7 @@ class ASH_EXPORT AppListControllerImpl
                                            int event_flags) override;
   void ViewShown(int64_t display_id) override;
   void ViewClosing() override;
+  void ViewClosed() override;
   void GetWallpaperProminentColors(
       GetWallpaperProminentColorsCallback callback) override;
   void ActivateItem(const std::string& id, int event_flags) override;
@@ -174,9 +182,9 @@ class ASH_EXPORT AppListControllerImpl
                                int event_flags) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
                                 ui::MenuSourceType source_type) override;
-  bool ProcessHomeLauncherGesture(ui::EventType type,
+  bool ProcessHomeLauncherGesture(ui::GestureEvent* event,
                                   const gfx::Point& screen_location) override;
-  bool IsSwipingUpOnShelf() override;
+  bool CanProcessEventsOnApplistViews() override;
   ws::WindowService* GetWindowService() override;
 
   void OnVisibilityChanged(bool visible);
@@ -189,7 +197,7 @@ class ASH_EXPORT AppListControllerImpl
   // ShellObserver:
   void OnOverviewModeStarting() override;
   void OnOverviewModeEnding() override;
-  void OnOverviewModeEndingAnimationComplete() override;
+  void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;
@@ -204,15 +212,9 @@ class ASH_EXPORT AppListControllerImpl
   void OnWallpaperPreviewEnded() override;
 
   // mojom::VoiceInteractionObserver:
-  void OnVoiceInteractionStatusChanged(
-      mojom::VoiceInteractionState state) override {}
   void OnVoiceInteractionSettingsEnabled(bool enabled) override;
-  void OnVoiceInteractionContextEnabled(bool enabled) override {}
-  void OnVoiceInteractionHotwordEnabled(bool enabled) override {}
-  void OnVoiceInteractionSetupCompleted(bool completed) override {}
   void OnAssistantFeatureAllowedChanged(
       mojom::AssistantAllowedState state) override;
-  void OnLocaleChanged(const std::string& locale) override {}
 
   bool onscreen_keyboard_shown() const { return onscreen_keyboard_shown_; }
 
@@ -234,6 +236,8 @@ class ASH_EXPORT AppListControllerImpl
 
   // Update the visibility of Assistant functionality.
   void UpdateAssistantVisibility();
+
+  int64_t GetDisplayIdToShowAppListOn();
 
   ws::WindowService* window_service_;
 
@@ -273,6 +277,9 @@ class ASH_EXPORT AppListControllerImpl
   // Whether the wallpaper is being previewed. The home launcher (if enabled)
   // should be hidden during wallpaper preview.
   bool in_wallpaper_preview_ = false;
+
+  // Whether we're currently in a window dragging process.
+  bool in_window_dragging_ = false;
 
   mojo::Binding<mojom::VoiceInteractionObserver> voice_interaction_binding_;
 

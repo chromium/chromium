@@ -38,8 +38,7 @@ WebstoreStandaloneInstaller::WebstoreStandaloneInstaller(
       install_source_(WebstoreInstaller::INSTALL_SOURCE_INLINE),
       show_user_count_(true),
       average_rating_(0.0),
-      rating_count_(0) {
-}
+      rating_count_(0) {}
 
 void WebstoreStandaloneInstaller::BeginInstall() {
   // Add a ref to keep this alive for WebstoreDataFetcher.
@@ -63,10 +62,7 @@ void WebstoreStandaloneInstaller::BeginInstall() {
   // Use the requesting page as the referrer both since that is more correct
   // (it is the page that caused this request to happen) and so that we can
   // track top sites that trigger inline install requests.
-  webstore_data_fetcher_.reset(
-      new WebstoreDataFetcher(this, GetRequestorURL(), id_));
-
-  webstore_data_fetcher_->SetPostData(GetPostData());
+  webstore_data_fetcher_.reset(new WebstoreDataFetcher(this, GURL(), id_));
 
   webstore_data_fetcher_->Start(
       content::BrowserContext::GetDefaultStoragePartition(profile_)
@@ -155,10 +151,6 @@ WebstoreStandaloneInstaller::GetLocalizedExtensionForDisplay() {
   return localized_extension_for_display_.get();
 }
 
-std::string WebstoreStandaloneInstaller::GetPostData() {
-  return std::string();
-}
-
 void WebstoreStandaloneInstaller::OnManifestParsed() {
   ProceedWithInstallPrompt();
 }
@@ -242,16 +234,6 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
   }
 
   std::string error;
-
-  if (!CheckInlineInstallPermitted(*webstore_data, &error)) {
-    CompleteInstall(webstore_install::NOT_PERMITTED, error);
-    return;
-  }
-
-  if (!CheckRequestorPermitted(*webstore_data, &error)) {
-    CompleteInstall(webstore_install::NOT_PERMITTED, error);
-    return;
-  }
 
   // Manifest, number of users, average rating and rating count are required.
   std::string manifest;

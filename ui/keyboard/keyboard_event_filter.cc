@@ -32,7 +32,7 @@ void KeyboardEventFilter::OnTouchEvent(ui::TouchEvent* event) {
 
 void KeyboardEventFilter::ProcessPointerEvent(ui::LocatedEvent* event) {
   auto* controller = KeyboardController::Get();
-  if (controller->enabled() && controller->HandlePointerEvent(*event))
+  if (controller->IsEnabled() && controller->HandlePointerEvent(*event))
     event->SetHandled();
 }
 

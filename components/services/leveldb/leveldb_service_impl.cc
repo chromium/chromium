@@ -19,6 +19,20 @@
 
 namespace leveldb {
 
+namespace {
+void CreateBinding(std::unique_ptr<LevelDBDatabaseImpl> db,
+                   leveldb::mojom::LevelDBDatabaseAssociatedRequest request) {
+  // The database should be able to close the binding if it gets into an
+  // error condition that can't be recovered.
+  LevelDBDatabaseImpl* impl = db.get();
+  auto binding =
+      mojo::MakeStrongAssociatedBinding(std::move(db), std::move(request));
+  impl->SetCloseBindingClosure(base::BindOnce(
+      &mojo::StrongAssociatedBinding<mojom::LevelDBDatabase>::Close, binding));
+}
+
+}  // namespace
+
 LevelDBServiceImpl::LevelDBServiceImpl(
     scoped_refptr<base::SequencedTaskRunner> file_task_runner)
     : thread_(new LevelDBMojoProxy(std::move(file_task_runner))) {}
@@ -63,10 +77,10 @@ void LevelDBServiceImpl::OpenWithOptions(
   leveldb::Status s = leveldb_env::OpenDB(open_options, dbname, &db);
 
   if (s.ok()) {
-    mojo::MakeStrongAssociatedBinding(
-        std::make_unique<LevelDBDatabaseImpl>(
-            std::move(env_mojo), std::move(db), nullptr, memory_dump_id),
-        std::move(database));
+    CreateBinding(std::make_unique<LevelDBDatabaseImpl>(
+                      std::move(env_mojo), std::move(db), nullptr, open_options,
+                      dbname, memory_dump_id),
+                  std::move(database));
   }
 
   std::move(callback).Run(LeveldbStatusToError(s));
@@ -89,10 +103,10 @@ void LevelDBServiceImpl::OpenInMemory(
   leveldb::Status s = leveldb_env::OpenDB(options, "", &db);
 
   if (s.ok()) {
-    mojo::MakeStrongAssociatedBinding(
-        std::make_unique<LevelDBDatabaseImpl>(std::move(env), std::move(db),
-                                              nullptr, memory_dump_id),
-        std::move(database));
+    CreateBinding(std::make_unique<LevelDBDatabaseImpl>(
+                      std::move(env), std::move(db), nullptr, options,
+                      tracking_name, memory_dump_id),
+                  std::move(database));
   }
 
   std::move(callback).Run(LeveldbStatusToError(s));

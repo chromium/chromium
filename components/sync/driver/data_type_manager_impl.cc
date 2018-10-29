@@ -112,6 +112,23 @@ void DataTypeManagerImpl::ReenableType(ModelType type) {
     return;
 
   DVLOG(1) << "Reenabling " << ModelTypeToString(type);
+  ForceReconfiguration();
+}
+
+void DataTypeManagerImpl::ReadyForStartChanged(ModelType type) {
+  const auto& dtc_iter = controllers_->find(type);
+  if (dtc_iter == controllers_->end())
+    return;
+
+  if (dtc_iter->second->ReadyForStart()) {
+    ForceReconfiguration();
+  } else {
+    // Stop the datatype
+    model_association_manager_.StopDatatype(type, DISABLE_SYNC, SyncError());
+  }
+}
+
+void DataTypeManagerImpl::ForceReconfiguration() {
   needs_reconfigure_ = true;
   last_requested_context_.reason = CONFIGURE_REASON_PROGRAMMATIC;
   ProcessReconfigure();
@@ -303,7 +320,7 @@ void DataTypeManagerImpl::Restart() {
   // If we're performing a "catch up", first stop the model types to ensure the
   // call to Initialize triggers model association.
   if (catch_up_in_progress_)
-    model_association_manager_.Stop(KEEP_METADATA);
+    model_association_manager_.Stop(STOP_SYNC);
   download_started_ = false;
   model_association_manager_.Initialize(
       /*desired_types=*/last_enabled_types_,
@@ -571,14 +588,21 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
   // non-nigori type in the request requires migration, a MIGRATION_DONE
   // response will be sent.
 
-  ModelTypeSet types_to_purge =
-      Difference(ModelTypeSet::All(), downloaded_types_);
-  // Include clean_types in types_to_purge, they are part of
-  // |downloaded_types_|, but still need to be cleared.
-  DCHECK(downloaded_types_.HasAll(clean_types));
-  types_to_purge.PutAll(clean_types);
-  types_to_purge.RemoveAll(inactive_types);
-  types_to_purge.RemoveAll(unready_types);
+  ModelTypeSet types_to_purge;
+  // If we're using in-memory storage, don't clear any old data. The reason is
+  // that if a user temporarily disables Sync, we don't want to wipe (and later
+  // redownload) all their data, just because Sync restarted in transport-only
+  // mode.
+  if (last_requested_context_.storage_option ==
+      ConfigureContext::STORAGE_ON_DISK) {
+    types_to_purge = Difference(ModelTypeSet::All(), downloaded_types_);
+    // Include clean_types in types_to_purge, they are part of
+    // |downloaded_types_|, but still need to be cleared.
+    DCHECK(downloaded_types_.HasAll(clean_types));
+    types_to_purge.PutAll(clean_types);
+    types_to_purge.RemoveAll(inactive_types);
+    types_to_purge.RemoveAll(unready_types);
+  }
 
   // If a type has already been disabled and unapplied or journaled, it will
   // not be part of the |types_to_purge| set, and therefore does not need
@@ -659,7 +683,7 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStart(ModelType type) {
 
 void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
                                                    const SyncError& error) {
-  DataTypeController::TypeMap::const_iterator c_it = controllers_->find(type);
+  auto c_it = controllers_->find(type);
   DCHECK(c_it != controllers_->end());
   // Delegate deactivation to the controller.
   c_it->second->DeactivateDataType(configurer_);
@@ -688,7 +712,7 @@ void DataTypeManagerImpl::OnSingleDataTypeAssociationDone(
     ModelType type,
     const DataTypeAssociationStats& association_stats) {
   DCHECK(!association_types_queue_.empty());
-  DataTypeController::TypeMap::const_iterator c_it = controllers_->find(type);
+  auto c_it = controllers_->find(type);
   DCHECK(c_it != controllers_->end());
   if (c_it->second->state() == DataTypeController::RUNNING) {
     // Delegate activation to the controller.
@@ -794,21 +818,9 @@ void DataTypeManagerImpl::StopImpl(ShutdownReason reason) {
   // Invalidate weak pointer to drop download callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // Leave metadata If we do not disable sync completely.
-  SyncStopMetadataFate metadata_fate = KEEP_METADATA;
-  switch (reason) {
-    case STOP_SYNC:
-      break;
-    case DISABLE_SYNC:
-      metadata_fate = CLEAR_METADATA;
-      break;
-    case BROWSER_SHUTDOWN:
-      break;
-  }
-
   // Stop all data types. This may trigger association callback but the
   // callback will do nothing because state is set to STOPPING above.
-  model_association_manager_.Stop(metadata_fate);
+  model_association_manager_.Stop(reason);
 
   // Individual data type controllers might still be STOPPING, but we don't
   // reflect that in |state_| because, for all practical matters, the manager is

@@ -27,7 +27,6 @@ suite('RuntimeHostPermissions', function() {
     const permissions = {
       simplePermissions: ['permission 1', 'permission 2'],
       hostAccess: HostAccess.ON_CLICK,
-      runtimeHostPermissions: [],
     };
 
     element.set('permissions', permissions);
@@ -52,9 +51,13 @@ suite('RuntimeHostPermissions', function() {
     // Setting the mode to on specific sites should display the runtime hosts
     // list.
     element.set('permissions.hostAccess', HostAccess.ON_SPECIFIC_SITES);
-    element.set(
-        'permissions.runtimeHostPermissions',
-        ['https://example.com', 'https://chromium.org']);
+    element.set('permissions.specificSiteControls', {
+      hasAllHosts: false,
+      hosts: [
+        {host: 'https://example.com', granted: true},
+        {host: 'https://chromium.org', granted: true}
+      ],
+    });
     Polymer.dom.flush();
     expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
     expectTrue(testIsVisible('#hosts'));
@@ -66,7 +69,6 @@ suite('RuntimeHostPermissions', function() {
     const permissions = {
       simplePermissions: ['permission 1', 'permission 2'],
       hostAccess: HostAccess.ON_CLICK,
-      runtimeHostPermissions: [],
     };
 
     element.set('permissions', permissions);
@@ -98,9 +100,7 @@ suite('RuntimeHostPermissions', function() {
 
   test('on select sites cancel', function() {
     const permissions = {
-      simplePermissions: ['permission 1', 'permission 2'],
       hostAccess: HostAccess.ON_CLICK,
-      runtimeHostPermissions: [],
     };
 
     element.permissions = permissions;
@@ -133,7 +133,6 @@ suite('RuntimeHostPermissions', function() {
     const permissions = {
       simplePermissions: ['permission 1', 'permission 2'],
       hostAccess: HostAccess.ON_CLICK,
-      runtimeHostPermissions: [],
     };
 
     element.set('permissions', permissions);
@@ -172,7 +171,13 @@ suite('RuntimeHostPermissions', function() {
     const permissions = {
       simplePermissions: [],
       hostAccess: HostAccess.ON_SPECIFIC_SITES,
-      runtimeHostPermissions: ['http://www.example.com'],
+      specificSiteControls: {
+        hasAllHosts: false,
+        hosts: [
+          {host: 'https://www.example.com/*', granted: true},
+          {host: 'https://*.google.com', granted: false}
+        ],
+      },
     };
 
     element.set('permissions', permissions);
@@ -195,7 +200,13 @@ suite('RuntimeHostPermissions', function() {
     const permissions = {
       simplePermissions: [],
       hostAccess: HostAccess.ON_SPECIFIC_SITES,
-      runtimeHostPermissions: ['https://example.com', 'https://chromium.org'],
+      specificSiteControls: {
+        hasAllHosts: false,
+        hosts: [
+          {host: 'https://example.com', granted: true},
+          {host: 'https://chromium.org', granted: true}
+        ],
+      },
     };
     element.set('permissions', permissions);
     Polymer.dom.flush();
@@ -213,7 +224,7 @@ suite('RuntimeHostPermissions', function() {
     remove.click();
     return delegate.whenCalled('removeRuntimeHostPermission').then((args) => {
       expectEquals(ITEM_ID, args[0] /* id */);
-      expectEquals('https://example.com', args[1] /* site */);
+      expectEquals('https://chromium.org', args[1] /* site */);
       expectFalse(actionMenu.open);
     });
   });
@@ -222,7 +233,13 @@ suite('RuntimeHostPermissions', function() {
     const permissions = {
       simplePermissions: [],
       hostAccess: HostAccess.ON_SPECIFIC_SITES,
-      runtimeHostPermissions: ['https://example.com', 'https://chromium.org'],
+      specificSiteControls: {
+        hasAllHosts: false,
+        hosts: [
+          {host: 'https://example.com', granted: true},
+          {host: 'https://chromium.org', granted: true}
+        ],
+      },
     };
     element.set('permissions', permissions);
     Polymer.dom.flush();
@@ -240,6 +257,6 @@ suite('RuntimeHostPermissions', function() {
     assertTrue(!!dialog);
     expectTrue(dialog.$.dialog.open);
     expectFalse(dialog.updateHostAccess);
-    expectEquals('https://example.com', dialog.currentSite);
+    expectEquals('https://chromium.org', dialog.currentSite);
   });
 });

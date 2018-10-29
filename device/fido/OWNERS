@@ -1,8 +1,23 @@
-reillyg@chromium.org
-jdoerrie@chromium.org
-engedy@chromium.org
+# Webauthn OWNERS
+
+# General, esp chrome/ UI and Android integration.
 kpaulhamus@chromium.org
+
+# General, esp U2F and CTAP2 code.
 hongjunchoi@chromium.org
 
-# TEAM: security-dev@chromium.org
+# TouchID, Windows Hello.
+martinkr@chromium.org
+
+# Bluetooth.
+jdoerrie@chromium.org
+
+# Attestation and legacy U2F implementation.
+agl@chromium.org
+
+# Emeritus; for occasional reviews, esp those in the depths of view & frame
+# lifetimes.
+engedy@chromium.org
+
+# TEAM: identity-dev@chromium.org
 # COMPONENT: Blink>WebAuthentication

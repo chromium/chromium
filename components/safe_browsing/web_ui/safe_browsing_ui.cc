@@ -178,6 +178,7 @@ void WebUIInfoSingleton::UnregisterWebUIInstance(SafeBrowsingUIHandler* webui) {
   if (webui_instances_.empty()) {
     ClearCSBRRsSent();
     ClearClientDownloadRequestsSent();
+    ClearClientDownloadResponsesReceived();
     ClearPGEvents();
     ClearPGPings();
     ClearLogMessages();
@@ -374,6 +375,9 @@ base::Value SerializeReferrer(const ReferrerChainEntry& referrer) {
       break;
     case ReferrerChainEntry::RECENT_NAVIGATION:
       url_type = "RECENT_NAVIGATION";
+      break;
+    case ReferrerChainEntry::REFERRER:
+      url_type = "REFERRER";
       break;
   }
   referrer_dict.SetKey("type", base::Value(url_type));
@@ -823,6 +827,8 @@ base::Value SerializeChromeUserPopulation(
   population_dict.SetKey(
       "is_under_advanced_protection",
       base::Value(population.is_under_advanced_protection()));
+  population_dict.SetKey("is_incognito",
+                         base::Value(population.is_incognito()));
 
   return std::move(population_dict);
 }
@@ -862,6 +868,15 @@ std::string SerializePGPing(const LoginReputationClientRequest& request) {
   request_dict.SetKey("clicked_through_interstitial",
                       base::Value(request.clicked_through_interstitial()));
   request_dict.SetKey("content_type", base::Value(request.content_type()));
+
+  if (request.has_content_area_height()) {
+    request_dict.SetKey("content_area_height",
+                        base::Value(request.content_area_height()));
+  }
+  if (request.has_content_area_width()) {
+    request_dict.SetKey("content_area_width",
+                        base::Value(request.content_area_width()));
+  }
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);

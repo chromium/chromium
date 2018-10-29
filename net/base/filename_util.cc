@@ -74,14 +74,14 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
   std::string host = url.host();
   if (host.empty()) {
     // URL contains no host, the path is the filename. In this case, the path
-    // will probably be preceeded with a slash, as in "/C:/foo.txt", so we
+    // will probably be preceded with a slash, as in "/C:/foo.txt", so we
     // trim out that here.
     path = url.path();
     size_t first_non_slash = path.find_first_not_of("/\\");
     if (first_non_slash != std::string::npos && first_non_slash > 0)
       path.erase(0, first_non_slash);
   } else {
-    // URL contains a host: this means it's UNC. We keep the preceeding slash
+    // URL contains a host: this means it's UNC. We keep the preceding slash
     // on the path.
     path = "\\\\";
     path.append(host);

@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -260,5 +261,14 @@ public abstract class PathUtils {
     @CalledByNative
     public static String getExternalStorageDirectory() {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
+    }
+
+    /**
+     * @ return the path to the base apk.
+     */
+    @SuppressWarnings("unused")
+    @CalledByNative
+    public static String getPathToBaseApk() {
+      return ContextUtils.getApplicationContext().getApplicationInfo().sourceDir;
     }
 }

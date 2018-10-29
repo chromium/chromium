@@ -27,10 +27,10 @@ uint32_t ClientRawMemoryTransferCacheEntry::Id() const {
 
 bool ClientRawMemoryTransferCacheEntry::Serialize(
     base::span<uint8_t> data) const {
-  if (data.size() != data_.size())
+  if (data.size() < data_.size())
     return false;
 
-  memcpy(data.data(), data_.data(), data.size());
+  memcpy(data.data(), data_.data(), data_.size());
   return true;
 }
 

@@ -8,19 +8,35 @@
 #include <memory>
 
 #include "ios/components/io_thread/ios_io_thread.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 class PrefService;
 
-namespace net_log {
-class ChromeNetLog;
-}  // namespace net_log
+namespace net {
+class NetLog;
+}  // namespace net
+
+namespace network {
+class SharedURLLoaderFactory;
+class WeakWrapperSharedURLLoaderFactory;
+}  // namespace network
+
+namespace web {
+class NetworkContextOwner;
+}
 
 // Contains state associated with, initialized and cleaned up on, and
 // primarily used on, the IO thread.
 class IOSChromeIOThread : public io_thread::IOSIOThread {
  public:
-  IOSChromeIOThread(PrefService* local_state, net_log::ChromeNetLog* net_log);
+  IOSChromeIOThread(PrefService* local_state, net::NetLog* net_log);
   ~IOSChromeIOThread() override;
+
+  network::mojom::NetworkContext* GetSystemNetworkContext();
+
+  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory();
+
+  void NetworkTearDown();
 
  protected:
   // io_thread::IOSIOThread overrides
@@ -28,6 +44,13 @@ class IOSChromeIOThread : public io_thread::IOSIOThread {
   std::string GetChannelString() const override;
 
  private:
+  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
+  scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
+      shared_url_loader_factory_;
+
+  network::mojom::NetworkContextPtr network_context_;
+  std::unique_ptr<web::NetworkContextOwner> network_context_owner_;
+
   DISALLOW_COPY_AND_ASSIGN(IOSChromeIOThread);
 };
 

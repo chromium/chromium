@@ -41,7 +41,7 @@ MojoDataPipeReader::~MojoDataPipeReader() {
 
 void MojoDataPipeReader::CompleteCurrentRead() {
   DVLOG(4) << __func__;
-  DCHECK(!done_cb_.is_null());
+  DCHECK(done_cb_);
   current_buffer_size_ = 0;
   std::move(done_cb_).Run(true);
 }
@@ -52,7 +52,7 @@ void MojoDataPipeReader::Read(uint8_t* buffer,
   DVLOG(3) << __func__;
   // Read() can not be called when there is another reading request in process.
   DCHECK(!current_buffer_size_);
-  DCHECK(!done_cb.is_null());
+  DCHECK(done_cb);
   if (!num_bytes) {
     std::move(done_cb).Run(true);
     return;
@@ -116,7 +116,7 @@ void MojoDataPipeReader::OnPipeError(MojoResult result) {
     bytes_read_ = 0;
     current_buffer_ = nullptr;
     current_buffer_size_ = 0;
-    DCHECK(!done_cb_.is_null());
+    DCHECK(done_cb_);
     std::move(done_cb_).Run(false);
   }
 }
@@ -160,7 +160,7 @@ void MojoDataPipeWriter::Write(const uint8_t* buffer,
   DVLOG(3) << __func__;
   // Write() can not be called when another writing request is in process.
   DCHECK(!current_buffer_);
-  DCHECK(!done_cb.is_null());
+  DCHECK(done_cb);
   if (!buffer_size) {
     std::move(done_cb).Run(true);
     return;
@@ -212,7 +212,7 @@ void MojoDataPipeWriter::TryWriteData(MojoResult result) {
 
 void MojoDataPipeWriter::CompleteCurrentWrite() {
   DVLOG(4) << __func__;
-  DCHECK(!done_cb_.is_null());
+  DCHECK(done_cb_);
   current_buffer_ = nullptr;
   std::move(done_cb_).Run(true);
 }
@@ -230,7 +230,7 @@ void MojoDataPipeWriter::OnPipeError(MojoResult result) {
     current_buffer_ = nullptr;
     current_buffer_size_ = 0;
     bytes_written_ = 0;
-    DCHECK(!done_cb_.is_null());
+    DCHECK(done_cb_);
     std::move(done_cb_).Run(false);
   }
 }

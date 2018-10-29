@@ -54,7 +54,7 @@ std::unique_ptr<GlobalMemoryDump> DoGlobalDump() {
   base::RunLoop run_loop;
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDump(
-          {}, base::Bind(
+          {}, base::BindOnce(
                   [](base::Closure quit_closure,
                      std::unique_ptr<GlobalMemoryDump>* out_result,
                      bool success, std::unique_ptr<GlobalMemoryDump> result) {

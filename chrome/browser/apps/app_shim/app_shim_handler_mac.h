@@ -11,6 +11,10 @@
 #include "base/files/file_path.h"
 #include "chrome/common/mac/app_shim_launch.h"
 
+namespace views {
+class BridgeFactoryHost;
+}  // namespace views
+
 namespace apps {
 
 // Registrar, and interface for services that can handle interactions with OSX
@@ -35,6 +39,7 @@ class AppShimHandler {
     // Allows the handler to determine which app this host corresponds to.
     virtual base::FilePath GetProfilePath() const = 0;
     virtual std::string GetAppId() const = 0;
+    virtual views::BridgeFactoryHost* GetViewsBridgeFactoryHost() const = 0;
 
    protected:
     virtual ~Host() {}

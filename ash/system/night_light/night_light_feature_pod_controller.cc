@@ -14,6 +14,8 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -47,11 +49,21 @@ void NightLightFeaturePodController::OnIconPressed() {
   DCHECK(features::IsNightLightEnabled());
   Shell::Get()->night_light_controller()->Toggle();
   UpdateButton();
+
+  if (Shell::Get()->night_light_controller()->GetEnabled()) {
+    base::RecordAction(
+        base::UserMetricsAction("StatusArea_NightLight_Enabled"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("StatusArea_NightLight_Disabled"));
+  }
 }
 
 void NightLightFeaturePodController::OnLabelPressed() {
   DCHECK(features::IsNightLightEnabled());
   if (TrayPopupUtils::CanOpenWebUISettings()) {
+    base::RecordAction(
+        base::UserMetricsAction("StatusArea_NightLight_Settings"));
     Shell::Get()->system_tray_model()->client_ptr()->ShowDisplaySettings();
     tray_controller_->CloseBubble();
   }

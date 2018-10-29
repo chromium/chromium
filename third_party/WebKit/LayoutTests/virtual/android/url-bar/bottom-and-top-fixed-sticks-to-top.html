@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<script>
+  // NOTE: It is important that this test be run with the Android viewport
+  // flags turned on.
+  // Set the browser controls to be 100px and start off showing. Bring them in
+  // fully without causing a resize. i.e. as if the user dragged them into view
+  // but hasn't lifted their finger.
+  // This test verifies that a position: fixed element that has both |top| and
+  // |bottom| properties set sticks to the top of the screen, rather than the
+  // bottom.
+  if (window.internals) {
+    internals.setBrowserControlsShownRatio(1);
+    internals.setBrowserControlsState(100, 0, true);
+    internals.setBrowserControlsShownRatio(0);
+    internals.settings.setHideScrollbars(true);
+  }
+</script>
+<style>
+  html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+  }
+  #cover {
+    width: 100%;
+    /* Must be scrollable to force fixed elements to get a transform node. */
+    height: 200%;
+    background-color: palegreen;
+  }
+  #bottom {
+    position: fixed;
+    right: 0px;
+    width: 200px;
+    top: 0px;
+    bottom: 0px;
+    background-color: coral;
+  }
+</style>
+
+<div id="cover">
+    Test passes if the orange bar's top edge is at the top of the screen.
+</div>
+<div id="bottom"></div>

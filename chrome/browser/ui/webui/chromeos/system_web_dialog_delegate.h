@@ -6,14 +6,16 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYSTEM_WEB_DIALOG_DELEGATE_H_
 
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
 
-// ui::WebDialogDelegate for system Web UI dialogs, e.g. dialogs opened from
-// the ash system tray.
+// ui::WebDialogDelegate for always-on-top system Web UI dialogs, e.g. dialogs
+// opened from the ash system tray. These dialogs are intentionally movable /
+// draggable so that content from other pages can be copy-pasted.
 
 namespace chromeos {
 
@@ -51,11 +53,15 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   static constexpr int kDialogWidth = 512;
   static constexpr int kDialogHeight = 480;
 
+ protected:
+  gfx::NativeWindow dialog_window() const { return dialog_window_; }
+
  private:
   GURL gurl_;
   base::string16 title_;
   content::WebUI* webui_ = nullptr;
   ui::ModalType modal_type_;
+  gfx::NativeWindow dialog_window_;
 
   DISALLOW_COPY_AND_ASSIGN(SystemWebDialogDelegate);
 };

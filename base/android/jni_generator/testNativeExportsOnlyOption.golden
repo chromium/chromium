@@ -118,18 +118,21 @@ static std::atomic<jmethodID>
     g_org_chromium_example_jni_1generator_SampleForTests_testMethodWithParam(nullptr);
 static void Java_SampleForTests_testMethodWithParam(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj, JniIntWrapper iParam) {
+  jclass clazz = org_chromium_example_jni_1generator_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_example_jni_1generator_SampleForTests_clazz(env));
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_example_jni_1generator_SampleForTests_clazz(env),
+          env,
+          clazz,
           "testMethodWithParam",
           "(I)V",
           &g_org_chromium_example_jni_1generator_SampleForTests_testMethodWithParam);
 
      env->CallVoidMethod(obj.obj(),
-          method_id, as_jint(iParam));
-  jni_generator::CheckException(env);
+          call_context.base.method_id, as_jint(iParam));
 }
 
 static std::atomic<jmethodID>
@@ -137,57 +140,66 @@ static std::atomic<jmethodID>
 static base::android::ScopedJavaLocalRef<jstring>
     Java_SampleForTests_testMethodWithParamAndReturn(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj, JniIntWrapper iParam) {
+  jclass clazz = org_chromium_example_jni_1generator_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_example_jni_1generator_SampleForTests_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_example_jni_1generator_SampleForTests_clazz(env),
+          env,
+          clazz,
           "testMethodWithParamAndReturn",
           "(I)Ljava/lang/String;",
           &g_org_chromium_example_jni_1generator_SampleForTests_testMethodWithParamAndReturn);
 
   jstring ret =
       static_cast<jstring>(env->CallObjectMethod(obj.obj(),
-          method_id, as_jint(iParam)));
-  jni_generator::CheckException(env);
+          call_context.base.method_id, as_jint(iParam)));
   return base::android::ScopedJavaLocalRef<jstring>(env, ret);
 }
 
 static std::atomic<jmethodID>
     g_org_chromium_example_jni_1generator_SampleForTests_testStaticMethodWithParam(nullptr);
 static jint Java_SampleForTests_testStaticMethodWithParam(JNIEnv* env, JniIntWrapper iParam) {
-  CHECK_CLAZZ(env, org_chromium_example_jni_1generator_SampleForTests_clazz(env),
+  jclass clazz = org_chromium_example_jni_1generator_SampleForTests_clazz(env);
+  CHECK_CLAZZ(env, clazz,
       org_chromium_example_jni_1generator_SampleForTests_clazz(env), 0);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
-          env, org_chromium_example_jni_1generator_SampleForTests_clazz(env),
+          env,
+          clazz,
           "testStaticMethodWithParam",
           "(I)I",
           &g_org_chromium_example_jni_1generator_SampleForTests_testStaticMethodWithParam);
 
   jint ret =
-      env->CallStaticIntMethod(org_chromium_example_jni_1generator_SampleForTests_clazz(env),
-          method_id, as_jint(iParam));
-  jni_generator::CheckException(env);
+      env->CallStaticIntMethod(clazz,
+          call_context.base.method_id, as_jint(iParam));
   return ret;
 }
 
 static std::atomic<jmethodID>
     g_org_chromium_example_jni_1generator_SampleForTests_testMethodWithNoParam(nullptr);
 static jdouble Java_SampleForTests_testMethodWithNoParam(JNIEnv* env) {
-  CHECK_CLAZZ(env, org_chromium_example_jni_1generator_SampleForTests_clazz(env),
+  jclass clazz = org_chromium_example_jni_1generator_SampleForTests_clazz(env);
+  CHECK_CLAZZ(env, clazz,
       org_chromium_example_jni_1generator_SampleForTests_clazz(env), 0);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
-          env, org_chromium_example_jni_1generator_SampleForTests_clazz(env),
+          env,
+          clazz,
           "testMethodWithNoParam",
           "()D",
           &g_org_chromium_example_jni_1generator_SampleForTests_testMethodWithNoParam);
 
   jdouble ret =
-      env->CallStaticDoubleMethod(org_chromium_example_jni_1generator_SampleForTests_clazz(env),
-          method_id);
-  jni_generator::CheckException(env);
+      env->CallStaticDoubleMethod(clazz,
+          call_context.base.method_id);
   return ret;
 }
 
@@ -195,19 +207,22 @@ static std::atomic<jmethodID>
     g_org_chromium_example_jni_1generator_SampleForTests_testStaticMethodWithNoParam(nullptr);
 static base::android::ScopedJavaLocalRef<jstring>
     Java_SampleForTests_testStaticMethodWithNoParam(JNIEnv* env) {
-  CHECK_CLAZZ(env, org_chromium_example_jni_1generator_SampleForTests_clazz(env),
+  jclass clazz = org_chromium_example_jni_1generator_SampleForTests_clazz(env);
+  CHECK_CLAZZ(env, clazz,
       org_chromium_example_jni_1generator_SampleForTests_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
-          env, org_chromium_example_jni_1generator_SampleForTests_clazz(env),
+          env,
+          clazz,
           "testStaticMethodWithNoParam",
           "()Ljava/lang/String;",
           &g_org_chromium_example_jni_1generator_SampleForTests_testStaticMethodWithNoParam);
 
   jstring ret =
-static_cast<jstring>(env->CallStaticObjectMethod(org_chromium_example_jni_1generator_SampleForTests_clazz(env),
-          method_id));
-  jni_generator::CheckException(env);
+      static_cast<jstring>(env->CallStaticObjectMethod(clazz,
+          call_context.base.method_id));
   return base::android::ScopedJavaLocalRef<jstring>(env, ret);
 }
 

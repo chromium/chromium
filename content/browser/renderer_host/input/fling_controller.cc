@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/input/fling_controller.h"
 
+#include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/input/gesture_event_queue.h"
 #include "content/public/browser/content_browser_client.h"
@@ -42,20 +43,18 @@ namespace content {
 FlingController::Config::Config() {}
 
 FlingController::FlingController(
-    GestureEventQueue* gesture_event_queue,
     FlingControllerEventSenderClient* event_sender_client,
     FlingControllerSchedulerClient* scheduler_client,
     const Config& config)
-    : gesture_event_queue_(gesture_event_queue),
-      event_sender_client_(event_sender_client),
+    : event_sender_client_(event_sender_client),
       scheduler_client_(scheduler_client),
       touchpad_tap_suppression_controller_(
           config.touchpad_tap_suppression_config),
       touchscreen_tap_suppression_controller_(
           config.touchscreen_tap_suppression_config),
       fling_in_progress_(false),
+      clock_(base::DefaultTickClock::GetInstance()),
       weak_ptr_factory_(this) {
-  DCHECK(gesture_event_queue);
   DCHECK(event_sender_client);
   DCHECK(scheduler_client);
 }
@@ -188,14 +187,13 @@ void FlingController::ProcessGestureFlingStart(
       current_fling_parameters_.velocity,
       current_fling_parameters_.source_device,
       current_fling_parameters_.modifiers);
-
   // Wait for BeginFrame to call ProgressFling when
   // SetNeedsBeginFrameForFlingProgress is used to progress flings instead of
   // compositor animation observer (happens on Android WebView).
   if (scheduler_client_->NeedsBeginFrameForFlingProgress())
     ScheduleFlingProgress();
   else
-    ProgressFling(base::TimeTicks::Now());
+    ProgressFling(clock_->NowTicks());
 }
 
 void FlingController::ScheduleFlingProgress() {
@@ -288,7 +286,7 @@ void FlingController::GenerateAndSendWheelEvents(
     blink::WebMouseWheelEvent::Phase phase) {
   MouseWheelEventWithLatencyInfo synthetic_wheel(
       WebInputEvent::kMouseWheel, current_fling_parameters_.modifiers,
-      base::TimeTicks::Now(), ui::LatencyInfo(ui::SourceEventType::WHEEL));
+      clock_->NowTicks(), ui::LatencyInfo(ui::SourceEventType::WHEEL));
   synthetic_wheel.event.delta_x = delta.x();
   synthetic_wheel.event.delta_y = delta.y();
   synthetic_wheel.event.has_precise_scrolling_deltas = true;
@@ -307,7 +305,7 @@ void FlingController::GenerateAndSendGestureScrollEvents(
     WebInputEvent::Type type,
     const gfx::Vector2dF& delta /* = gfx::Vector2dF() */) {
   GestureEventWithLatencyInfo synthetic_gesture(
-      type, current_fling_parameters_.modifiers, base::TimeTicks::Now(),
+      type, current_fling_parameters_.modifiers, clock_->NowTicks(),
       ui::LatencyInfo(ui::SourceEventType::INERTIAL));
   synthetic_gesture.event.SetPositionInWidget(current_fling_parameters_.point);
   synthetic_gesture.event.SetPositionInScreen(
@@ -374,7 +372,6 @@ void FlingController::CancelCurrentFling() {
   fling_curve_.reset();
   has_fling_animation_started_ = false;
   fling_in_progress_ = false;
-  gesture_event_queue_->FlingHasBeenHalted();
 
   // Extract the last event filtered by the fling booster if it exists.
   bool fling_cancellation_is_deferred =

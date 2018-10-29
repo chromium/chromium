@@ -261,7 +261,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   bool IsSelfPaintingLayer() const { return is_self_painting_layer_; }
 
   bool IsTransparent() const {
-    return GetLayoutObject().IsTransparent() ||
+    return GetLayoutObject().StyleRef().HasOpacity() ||
            GetLayoutObject().StyleRef().HasBlendMode() ||
            GetLayoutObject().HasMask();
   }
@@ -531,12 +531,6 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   // Returns nullptr if this PaintLayer is not composited.
   GraphicsLayer* GraphicsLayerBacking(const LayoutObject* = nullptr) const;
 
-  // TODO(yigu): PaintLayerScrollableArea::computeNeedsCompositedScrolling
-  // calls this method to obtain main thread scrolling reasons due to
-  // background paint location. Once the cases get handled on compositor the
-  // parameter "reasons" could be removed.
-  BackgroundPaintLocation GetBackgroundPaintLocation(
-      uint32_t* reasons = nullptr) const;
   // NOTE: If you are using hasCompositedLayerMapping to determine the state of
   // compositing for this layer, (and not just to do bookkeeping related to the
   // mapping like, say, allocating or deallocating a mapping), then you may have
@@ -633,7 +627,6 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
       const;
 
   bool PaintsWithFilters() const;
-  bool PaintsWithBackdropFilters() const;
   FilterEffect* LastFilterEffect() const;
 
   // Maps "forward" to determine which pixels in a destination rect are
@@ -830,9 +823,13 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has_descendant_with_clip_path_;
   }
-  bool HasDescendantWithStickyOrFixed() const {
+  bool HasFixedPositionDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
-    return has_descendant_with_sticky_or_fixed_;
+    return has_fixed_position_descendant_;
+  }
+  bool HasStickyPositionDescendant() const {
+    DCHECK(!needs_descendant_dependent_flags_update_);
+    return has_sticky_position_descendant_;
   }
   bool HasNonContainedAbsolutePositionDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
@@ -1298,7 +1295,8 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   // inputs.
   unsigned has_descendant_with_clip_path_ : 1;
   unsigned has_non_isolated_descendant_with_blend_mode_ : 1;
-  unsigned has_descendant_with_sticky_or_fixed_ : 1;
+  unsigned has_fixed_position_descendant_ : 1;
+  unsigned has_sticky_position_descendant_ : 1;
   unsigned has_non_contained_absolute_position_descendant_ : 1;
 
   unsigned self_painting_status_changed_ : 1;

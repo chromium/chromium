@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/partial_interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/partial_interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -27,7 +27,7 @@
 
 namespace blink {
 
-namespace TestInterface2PartialV8Internal {
+namespace test_interface_2_partial_v8_internal {
 
 static void voidMethodPartial1Method(const v8::FunctionCallbackInfo<v8::Value>& info) {
   TestInterface2* impl = V8TestInterface2::ToImpl(info.Holder());
@@ -61,18 +61,18 @@ static void voidMethodPartial2Method(const v8::FunctionCallbackInfo<v8::Value>& 
   TestInterface2Partial2::voidMethodPartial2(*impl, value);
 }
 
-} // namespace TestInterface2PartialV8Internal
+}  // namespace test_interface_2_partial_v8_internal
 
 void V8TestInterface2Partial::voidMethodPartial1MethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_voidMethodPartial1");
 
-  TestInterface2PartialV8Internal::voidMethodPartial1Method(info);
+  test_interface_2_partial_v8_internal::voidMethodPartial1Method(info);
 }
 
 void V8TestInterface2Partial::voidMethodPartial2MethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_voidMethodPartial2");
 
-  TestInterface2PartialV8Internal::voidMethodPartial2Method(info);
+  test_interface_2_partial_v8_internal::voidMethodPartial2Method(info);
 }
 
 static const V8DOMConfiguration::MethodConfiguration V8TestInterface2Methods[] = {

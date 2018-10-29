@@ -93,7 +93,15 @@ enum SerializationTag {
   //                     namedCurve:uint32_t
   kRTCCertificateTag = 'k',  // length:uint32_t, pemPrivateKey:WebCoreString,
                              // pemCertificate:WebCoreString
-  kVersionTag = 0xFF  // version:uint32_t -> Uses this as the file version.
+  kDetectedBarcodeTag =
+      'B',  // raw_value:WebCoreString, bounding_box:DOMRectReadOnly,
+            // corner_points:Point2D[length] -> DetectedBarcode (ref)
+  kDetectedFaceTag =
+      'F',  // raw_value:WebCoreString, bounding_box:DOMRectReadOnly,
+            // corner_points:Point2D[length] -> DetectedText (ref)
+  kDetectedTextTag = 't',  // bounding_box:DOMRectReadOnly,
+                           // landmarks:Landmark[length] -> DetectedFace (ref)
+  kVersionTag = 0xFF       // version:uint32_t -> Uses this as the file version.
 };
 
 }  // namespace blink

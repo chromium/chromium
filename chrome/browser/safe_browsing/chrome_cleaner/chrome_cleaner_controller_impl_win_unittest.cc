@@ -16,6 +16,7 @@
 #include "base/test/multiprocess_test.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -235,14 +236,16 @@ typedef std::tuple<CleanerProcessStatus,
 // Test fixture that runs a mock Chrome Cleaner process in various
 // configurations and mocks the user's response.
 class ChromeCleanerControllerTest
-    : public testing::TestWithParam<ChromeCleanerControllerTestParams>,
+    : public testing::WithParamInterface<ChromeCleanerControllerTestParams>,
       public ChromeCleanerRunnerTestDelegate,
-      public ChromeCleanerControllerDelegate {
+      public ChromeCleanerControllerDelegate,
+      public extensions::ExtensionServiceTestBase {
  public:
   ChromeCleanerControllerTest() = default;
   ~ChromeCleanerControllerTest() override {}
 
   void SetUp() override {
+    InitializeEmptyExtensionService();
     std::tie(process_status_, crash_point_, uws_found_status_,
              registry_keys_reporting_, extensions_reporting_, user_response_) =
         GetParam();
@@ -436,11 +439,6 @@ class ChromeCleanerControllerTest
   }
 
  protected:
-  // We need this because we need UI and IO threads during tests. The thread
-  // bundle should be the first member of the class so that it will be destroyed
-  // last.
-  content::TestBrowserThreadBundle thread_bundle_;
-
   CleanerProcessStatus process_status_;
   MockChromeCleanerProcess::CrashPoint crash_point_;
   UwsFoundStatus uws_found_status_;
@@ -482,7 +480,8 @@ MULTIPROCESS_TEST_MAIN(MockChromeCleanerProcessMain) {
 }
 
 TEST_P(ChromeCleanerControllerTest, WithMockCleanerProcess) {
-  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal(),
+                                        &testing_local_state_);
   ASSERT_TRUE(profile_manager.SetUp());
 
   constexpr char kTestProfileName1[] = "Test 1";
@@ -524,8 +523,8 @@ TEST_P(ChromeCleanerControllerTest, WithMockCleanerProcess) {
     EXPECT_CALL(mock_observer_, OnInfected(_, _))
         .WillOnce(DoAll(SaveArg<1>(&scanner_results_on_infected),
                         InvokeWithoutArgs([this, profile1]() {
-                          controller_->ReplyWithUserResponse(profile1,
-                                                             user_response_);
+                          controller_->ReplyWithUserResponse(
+                              profile1, service(), user_response_);
                         })));
     // Since logs upload is enabled by default, OnLogsEnabledChanged() will be
     // called only if the user response is kAcceptedWithoutLogs.

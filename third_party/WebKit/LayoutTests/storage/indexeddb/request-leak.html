@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<script src="../../resources/gc.js"></script>
 <script src="../../resources/js-test.js"></script>
 <script src="resources/shared.js"></script>
 <script>
@@ -42,9 +43,10 @@ function onOpen(evt)
         evalAndLog("request.result.leak = request");
         evalAndLog("observer = internals.observeGC(request)");
         evalAndLog("request = null");
-        evalAndLog("gc()");
-        shouldBeTrue("observer.wasCollected");
-        finishJSTest();
+        asyncGC(function () {
+            shouldBeTrue("observer.wasCollected");
+            finishJSTest();
+        });
     };
 }
 

@@ -19,8 +19,7 @@ int DownloadCoreService::NonMaliciousDownloadCountAllProfiles() {
       g_browser_process->profile_manager()->GetLoadedProfiles());
 
   int count = 0;
-  for (std::vector<Profile*>::iterator it = profiles.begin();
-       it < profiles.end(); ++it) {
+  for (auto it = profiles.begin(); it < profiles.end(); ++it) {
     count += DownloadCoreServiceFactory::GetForBrowserContext(*it)
                  ->NonMaliciousDownloadCount();
     if ((*it)->HasOffTheRecordProfile())
@@ -36,8 +35,7 @@ int DownloadCoreService::NonMaliciousDownloadCountAllProfiles() {
 void DownloadCoreService::CancelAllDownloads() {
   std::vector<Profile*> profiles(
       g_browser_process->profile_manager()->GetLoadedProfiles());
-  for (std::vector<Profile*>::iterator it = profiles.begin();
-       it < profiles.end(); ++it) {
+  for (auto it = profiles.begin(); it < profiles.end(); ++it) {
     DownloadCoreService* service =
         DownloadCoreServiceFactory::GetForBrowserContext(*it);
     service->CancelDownloads();

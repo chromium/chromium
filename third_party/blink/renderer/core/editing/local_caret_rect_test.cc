@@ -812,10 +812,11 @@ TEST_P(ParameterizedLocalCaretRectTest, AbsoluteCaretBoundsOfWithShadowDOM) {
   Element* body = GetDocument().body();
   Element* one = body->QuerySelector("#one");
 
-  IntRect bounds_in_dom_tree =
-      AbsoluteCaretBoundsOf(CreateVisiblePosition(Position(one, 0)));
+  IntRect bounds_in_dom_tree = AbsoluteCaretBoundsOf(
+      CreateVisiblePosition(Position(one, 0)).ToPositionWithAffinity());
   IntRect bounds_in_flat_tree =
-      AbsoluteCaretBoundsOf(CreateVisiblePosition(PositionInFlatTree(one, 0)));
+      AbsoluteCaretBoundsOf(CreateVisiblePosition(PositionInFlatTree(one, 0))
+                                .ToPositionWithAffinity());
 
   EXPECT_FALSE(bounds_in_dom_tree.IsEmpty());
   EXPECT_EQ(bounds_in_dom_tree, bounds_in_flat_tree);

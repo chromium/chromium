@@ -52,10 +52,6 @@ void DemoSetupScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-void DemoSetupScreen::OnSetupError(DemoSetupController::DemoSetupError error) {
-  // TODO(mukai): propagate |error| information and change the error message.
-  view_->OnSetupFinished(false, std::string());
-}
 
 void DemoSetupScreen::StartEnrollment() {
   // Demo setup screen is only shown in OOBE.
@@ -66,6 +62,11 @@ void DemoSetupScreen::StartEnrollment() {
                                          weak_ptr_factory_.GetWeakPtr()),
                           base::BindOnce(&DemoSetupScreen::OnSetupError,
                                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DemoSetupScreen::OnSetupError(
+    const DemoSetupController::DemoSetupError& error) {
+  view_->OnSetupFailed(error);
 }
 
 void DemoSetupScreen::OnSetupSuccess() {

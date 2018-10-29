@@ -118,9 +118,10 @@ int main(int argc, char** argv) {
     display::Screen::SetScreenInstance(desktop_screen.get());
 #endif
 
-    views::examples::ShowExamplesWindow(views::examples::QUIT_ON_CLOSE);
+    base::RunLoop run_loop;
+    views::examples::ShowExamplesWindow(run_loop.QuitClosure());
 
-    base::RunLoop().Run();
+    run_loop.Run();
 
     ui::ResourceBundle::CleanupSharedInstance();
   }

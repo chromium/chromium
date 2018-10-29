@@ -150,8 +150,7 @@ bool SandboxOriginDatabase::RepairDatabase(const std::string& db_path) {
   base::FilePath path_each;
   while (!(path_each = file_enum.Next()).empty())
     directories.insert(path_each.BaseName());
-  std::set<base::FilePath>::iterator db_dir_itr =
-      directories.find(base::FilePath(kOriginDatabaseName));
+  auto db_dir_itr = directories.find(base::FilePath(kOriginDatabaseName));
   // Make sure we have the database file in its directory and therefore we are
   // working on the correct path.
   DCHECK(db_dir_itr != directories.end());
@@ -165,7 +164,7 @@ bool SandboxOriginDatabase::RepairDatabase(const std::string& db_path) {
 
   // Delete any obsolete entries from the origins database.
   for (const OriginRecord& record : origins) {
-    std::set<base::FilePath>::iterator dir_itr = directories.find(record.path);
+    auto dir_itr = directories.find(record.path);
     if (dir_itr == directories.end()) {
       if (!RemovePathForOrigin(record.origin)) {
         DropDatabase();

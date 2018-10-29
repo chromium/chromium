@@ -5,7 +5,6 @@
 #include "base/task/task_scheduler/scheduler_worker_stack.h"
 
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_scheduler/scheduler_worker.h"
 #include "base/task/task_scheduler/sequence.h"
@@ -45,15 +44,15 @@ class TaskSchedulerWorkerStackTest : public testing::Test {
  protected:
   void SetUp() override {
     worker_a_ = MakeRefCounted<SchedulerWorker>(
-        ThreadPriority::NORMAL, WrapUnique(new MockSchedulerWorkerDelegate),
+        ThreadPriority::NORMAL, std::make_unique<MockSchedulerWorkerDelegate>(),
         task_tracker_.GetTrackedRef());
     ASSERT_TRUE(worker_a_);
     worker_b_ = MakeRefCounted<SchedulerWorker>(
-        ThreadPriority::NORMAL, WrapUnique(new MockSchedulerWorkerDelegate),
+        ThreadPriority::NORMAL, std::make_unique<MockSchedulerWorkerDelegate>(),
         task_tracker_.GetTrackedRef());
     ASSERT_TRUE(worker_b_);
     worker_c_ = MakeRefCounted<SchedulerWorker>(
-        ThreadPriority::NORMAL, WrapUnique(new MockSchedulerWorkerDelegate),
+        ThreadPriority::NORMAL, std::make_unique<MockSchedulerWorkerDelegate>(),
         task_tracker_.GetTrackedRef());
     ASSERT_TRUE(worker_c_);
   }

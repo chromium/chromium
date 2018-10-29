@@ -22,8 +22,10 @@
 // <include src="oobe_screen_welcome.js">
 // <include src="multi_tap_detector.js">
 // <include src="web_view_helper.js">
+// <include src="demo_mode_test_helper.js">
 
 cr.define('cr.ui.Oobe', function() {
+
   return {
     /**
      * Initializes the OOBE flow.  This will cause all C++ handlers to
@@ -69,6 +71,7 @@ cr.define('cr.ui.Oobe', function() {
       login.DiscoverScreen.register();
       login.MarketingOptInScreen.register();
       login.AssistantOptInFlowScreen.register();
+      login.MultiDeviceSetupScreen.register();
 
       cr.ui.Bubble.decorate($('bubble-persistent'));
       $('bubble-persistent').persistent = true;
@@ -254,10 +257,8 @@ cr.define('cr.ui.Oobe', function() {
       $('virtual-keyboard').checked = data.virtualKeyboardEnabled;
 
       // TODO(katie): Remove this when launching features in OOBE screen.
-      if (!data.enableExperimentalA11yFeatures) {
-        $('select-to-speak-row').setAttribute('hidden', true);
+      if (!data.enableExperimentalA11yFeatures)
         $('docked-magnifier-row').setAttribute('hidden', true);
-      }
 
       $('oobe-welcome-md').a11yStatus = data;
     },

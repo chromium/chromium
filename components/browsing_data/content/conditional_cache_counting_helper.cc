@@ -8,7 +8,9 @@
 
 #include "base/callback.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -79,8 +81,8 @@ void ConditionalCacheCountingHelper::Count(
             begin_time, end_time, storage_partition->GetURLRequestContext(),
             storage_partition->GetMediaURLRequestContext(),
             std::move(result_callback));
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &ConditionalCacheCountingHelper::CountHttpCacheOnIOThread,
             base::Unretained(instance)));
@@ -182,8 +184,8 @@ void ConditionalCacheCountingHelper::DoCountCache(int64_t rv) {
         cache_ = nullptr;
         next_cache_state_ = CacheState::NONE;
         // Notify the UI thread that we are done.
-        BrowserThread::PostTask(
-            BrowserThread::UI, FROM_HERE,
+        base::PostTaskWithTraits(
+            FROM_HERE, {BrowserThread::UI},
             base::BindOnce(&ConditionalCacheCountingHelper::Finished,
                            base::Unretained(this)));
         return;

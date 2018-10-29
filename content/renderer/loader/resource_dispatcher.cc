@@ -281,7 +281,7 @@ ResourceDispatcher::~ResourceDispatcher() {
 
 ResourceDispatcher::PendingRequestInfo*
 ResourceDispatcher::GetPendingRequestInfo(int request_id) {
-  PendingRequestMap::iterator it = pending_requests_.find(request_id);
+  auto it = pending_requests_.find(request_id);
   if (it == pending_requests_.end())
     return nullptr;
   return it->second.get();
@@ -515,6 +515,7 @@ void ResourceDispatcher::OnRequestComplete(
   }
 
   network::URLLoaderCompletionStatus renderer_status(status);
+  // TODO(toyoshim): Consider to convert status.cors_preflight_timing_info here.
   if (status.completion_time.is_null()) {
     // No completion timestamp is provided, leave it as is.
   } else if (request_info->remote_request_start.is_null() ||
@@ -548,7 +549,7 @@ void ResourceDispatcher::OnRequestComplete(
 bool ResourceDispatcher::RemovePendingRequest(
     int request_id,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  PendingRequestMap::iterator it = pending_requests_.find(request_id);
+  auto it = pending_requests_.find(request_id);
   if (it == pending_requests_.end())
     return false;
 
@@ -579,7 +580,7 @@ bool ResourceDispatcher::RemovePendingRequest(
 void ResourceDispatcher::Cancel(
     int request_id,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  PendingRequestMap::iterator it = pending_requests_.find(request_id);
+  auto it = pending_requests_.find(request_id);
   if (it == pending_requests_.end()) {
     DLOG(ERROR) << "unknown request";
     return;
@@ -760,7 +761,7 @@ int ResourceDispatcher::StartAsync(
     pending_requests_[request_id]->url_loader_client =
         std::make_unique<URLLoaderClientImpl>(
             request_id, this, loading_task_runner,
-            true /* bypass_redirect_checks */);
+            true /* bypass_redirect_checks */, request->url);
 
     if (request->resource_type == RESOURCE_TYPE_SHARED_WORKER) {
       // For shared workers, immediately post a task for continuing loading
@@ -782,9 +783,9 @@ int ResourceDispatcher::StartAsync(
     return request_id;
   }
 
-  std::unique_ptr<URLLoaderClientImpl> client(
-      new URLLoaderClientImpl(request_id, this, loading_task_runner,
-                              url_loader_factory->BypassRedirectChecks()));
+  std::unique_ptr<URLLoaderClientImpl> client(new URLLoaderClientImpl(
+      request_id, this, loading_task_runner,
+      url_loader_factory->BypassRedirectChecks(), request->url));
 
   if (pass_response_pipe_to_peer)
     client->SetPassResponsePipeToDispatcher(true);

@@ -11,8 +11,9 @@
     <style include="print-preview-shared cr-shared-style">
       :host {
         display: flex;
-        margin-bottom: 16px;
         padding: 0 20px;
+        --policy-icon-padding: 4px;
+        --policy-icon-size: 20px;
       }
 
       ::slotted([slot=controls]),
@@ -33,30 +34,39 @@
         color: var(--google-grey-900);
         flex: none;
         font-size: 1em;
-        padding-inline-end: 5px;
-        width: 70px;
+        line-height: calc(20/13 * 1em);
+        padding-inline-end: var(--policy-icon-padding);
+        width: calc(75px - var(--policy-icon-padding));
         word-break: break-word;
       }
 
-      :host(.multirow-controls) ::slotted([slot=title]) {
-        justify-content: flex-start;
-        padding-top: 10px;
+      :host([managed]:not([show-policy-on-end])) ::slotted([slot=title]) {
+        width: calc(75px - var(--policy-icon-size)
+                    - var(--policy-icon-padding));
       }
 
-      :host([managed]) ::slotted([slot=title]) {
-        width: 50px;
+      :host([managed][show-policy-on-end]) ::slotted([slot=controls]) {
+        padding-inline-end: var(--policy-icon-padding);
       }
 
       iron-icon {
-        fill: var(--google-grey-600);
-        width: 20px;
+        fill: var(--google-grey-refresh-700);
+        flex: 0;
+        min-width: var(--policy-icon-size);
       }
     </style>
     <slot name="title"></slot>
-    <iron-icon hidden$="[[!managed]]" icon="print-preview:business"
-        alt="" aria-label="$i18n{managedOption}">
-    </iron-icon>
+    <template is="dom-if" if="[[showStartIcon_(showPolicyOnEnd, managed)]]">
+      <iron-icon hidden$="[[!managed]]" icon="print-preview:business"
+          alt="" aria-label="$i18n{managedOption}">
+      </iron-icon>
+    </template>
     <slot name="controls"></slot>
+    <template is="dom-if" if="[[showEndIcon_(showPolicyOnEnd, managed)]]">
+      <iron-icon hidden$="[[!managed]]" icon="print-preview:business"
+          alt="" aria-label="$i18n{managedOption}">
+      </iron-icon>
+    </template>
   </template>
   <script src="settings_section.js"></script>
 </dom-module>

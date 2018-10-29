@@ -57,25 +57,21 @@ class WebRtcTextLogHandler
  public:
   // States used for protecting from function calls made at non-allowed points
   // in time. For example, StartLogging() is only allowed in CLOSED state.
-  // Transitions: SetMetaData():    CLOSED -> CLOSED.
+  // See also comment on |channel_is_closing_| below.
+  // Transitions: SetMetaData():    CLOSED -> CLOSED, or
+  //                                STARTED -> STARTED
   //              StartLogging():   CLOSED -> STARTING.
   //              StartDone():      STARTING -> STARTED.
   //              StopLogging():    STARTED -> STOPPING.
   //              StopDone():       STOPPING -> STOPPED.
-  //              DiscardLog():     STOPPED -> CLOSED or
-  //                                CHANNEL_CLOSING -> CHANNEL_CLOSING.
-  //              ReleaseLog():     STOPPED -> CLOSED. or
-  //                                CHANNEL_CLOSING -> CHANNEL_CLOSING.
-  //              ChannelClosing(): ANY -> CHANNEL_CLOSING.
+  //              DiscardLog():     STOPPED -> CLOSED.
+  //              ReleaseLog():     STOPPED -> CLOSED.
   enum LoggingState {
     CLOSED,           // Logging not started, no log in memory.
     STARTING,         // Start logging is in progress.
     STARTED,          // Logging started.
     STOPPING,         // Stop logging is in progress.
     STOPPED,          // Logging has been stopped, log still open in memory.
-    CHANNEL_CLOSING,  // Renderer is closing. The log (if there is one) can
-                      // still be uploaded, but no new logs can be created and
-                      // and no state transitions can be made.
   };
 
   typedef base::Callback<void(bool, const std::string&)> GenericDoneCallback;
@@ -83,8 +79,15 @@ class WebRtcTextLogHandler
   explicit WebRtcTextLogHandler(int render_process_id);
 
   // Returns the current state of the log. Must be called on the IO thread.
-  LoggingState GetState() const { return logging_state_; }
+  LoggingState GetState() const;
 
+  // Returns true if channel is closing. Must be called on the IO thread.
+  bool GetChannelIsClosing() const;
+
+  // Sets meta data for log uploading. Merged with any already set meta data.
+  // Values for existing keys are overwritten. The meta data already set at log
+  // start is written to the beginning of the log. Meta data set after log start
+  // is written to the log at that time.
   void SetMetaData(std::unique_ptr<MetaDataMap> meta_data,
                    const GenericDoneCallback& callback);
 
@@ -153,11 +156,17 @@ class WebRtcTextLogHandler
   // Should be created by StartLogging().
   std::unique_ptr<MetaDataMap> meta_data_;
 
-  // These are only accessed on the IO thread.
+  // Only accessed on the IO thread.
   GenericDoneCallback stop_callback_;
 
   // Only accessed on the IO thread.
   LoggingState logging_state_;
+
+  // True if renderer is closing. The log (if there is one) can still be
+  // released or discarded (i.e. closed). No new logs can be created. The only
+  // state change possible when channel is closing is from any state to CLOSED.
+  // Can only accessed on the IO thread.
+  bool channel_is_closing_ = false;
 
   // The system time in ms when logging is started. Reset when logging_state_
   // changes to STOPPED.

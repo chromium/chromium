@@ -5,7 +5,7 @@
   <script src="/resources/testharnessreport.js"></script>
   <script src="support/helper.sub.js"></script>
 
-  <meta http-equiv="Content-Security-Policy" content="trusted-types">
+  <meta http-equiv="Content-Security-Policy" content="trusted-types *">
 </head>
 <body>
 <script>
@@ -73,4 +73,14 @@
   test(t => {
     assert_element_accepts_non_trusted_type_explicit_set('a', 'rel', null, 'null');
   }, "a.rel accepts null");
+
+  test(t => {
+    let el = document.createElement('iframe');
+
+    assert_throws(new TypeError(), _ => {
+      el.setAttribute('SrC', INPUTS.URL);
+    });
+
+    assert_equals(el.src, '');
+  }, "`Element.prototype.setAttribute.SrC = string` throws.");
 </script>

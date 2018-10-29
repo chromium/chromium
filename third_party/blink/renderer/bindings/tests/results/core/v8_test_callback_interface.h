@@ -8,9 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-
-#ifndef V8TestCallbackInterface_h
-#define V8TestCallbackInterface_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TEST_CALLBACK_INTERFACE_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TEST_CALLBACK_INTERFACE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
@@ -115,4 +114,4 @@ Persistent<V8TestCallbackInterface> WrapPersistent(V8TestCallbackInterface*) = d
 
 }  // namespace blink
 
-#endif  // V8TestCallbackInterface_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TEST_CALLBACK_INTERFACE_H_

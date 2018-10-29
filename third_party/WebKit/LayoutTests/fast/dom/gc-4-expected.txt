@@ -2,4 +2,6 @@ This test checks for a regression against rdar://problem/4152454 crash in KJS::E
 
 If the test passes, you will see the word "passed" below. Otherwise, it will crash.
 
+
+
 passed

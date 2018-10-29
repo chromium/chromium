@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
-#include "content/browser/devtools/devtools_session.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
@@ -414,8 +414,7 @@ InputHandler::~InputHandler() {
 // static
 std::vector<InputHandler*> InputHandler::ForAgentHost(
     DevToolsAgentHostImpl* host) {
-  return DevToolsSession::HandlersForAgentHost<InputHandler>(
-      host, Input::Metainfo::domainName);
+  return host->HandlersByName<InputHandler>(Input::Metainfo::domainName);
 }
 
 void InputHandler::SetRenderer(int process_host_id,

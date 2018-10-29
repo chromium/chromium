@@ -11,9 +11,20 @@
 
 @protocol FormInputAccessoryConsumer<NSObject>
 
-// Restores the keyboard and its default input accessory view, removing (if
-// necessary) any previously-added custom view.
-- (void)restoreKeyboardView;
+// Removes the animations on the custom keyboard view.
+- (void)removeAnimationsOnKeyboardView;
+
+// Removes the presented keyboard view and the input accessory view. Also clears
+// the references to them, so nothing shows until a new custom view is passed.
+- (void)restoreOriginalKeyboardView;
+
+// Removes the presented keyboard view and the input accessory view until
+// |continueCustomKeyboardView| is called.
+- (void)pauseCustomKeyboardView;
+
+// Adds the previously presented views to the keyboard. If they have not been
+// reset.
+- (void)continueCustomKeyboardView;
 
 // Hides the default input accessory view and replaces it with one that shows
 // |customView| and form navigation controls.

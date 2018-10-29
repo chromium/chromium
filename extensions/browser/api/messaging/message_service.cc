@@ -605,7 +605,7 @@ void MessageService::OpenPort(const PortId& port_id,
   DCHECK(!port_id.is_opener);
 
   ChannelId channel_id = port_id.GetChannelId();
-  MessageChannelMap::iterator it = channels_.find(channel_id);
+  auto it = channels_.find(channel_id);
   if (it == channels_.end())
     return;
 
@@ -634,10 +634,9 @@ void MessageService::ClosePortImpl(const PortId& port_id,
                                    const std::string& error_message) {
   // Note: The channel might be gone already, if the other side closed first.
   ChannelId channel_id = port_id.GetChannelId();
-  MessageChannelMap::iterator it = channels_.find(channel_id);
+  auto it = channels_.find(channel_id);
   if (it == channels_.end()) {
-    PendingLazyBackgroundPageChannelMap::iterator pending =
-        pending_lazy_background_page_channels_.find(channel_id);
+    auto pending = pending_lazy_background_page_channels_.find(channel_id);
     if (pending != pending_lazy_background_page_channels_.end()) {
       lazy_background_task_queue_->AddPendingTask(
           pending->second.first, pending->second.second,
@@ -688,7 +687,7 @@ void MessageService::PostMessage(const PortId& source_port_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ChannelId channel_id = source_port_id.GetChannelId();
-  MessageChannelMap::iterator iter = channels_.find(channel_id);
+  auto iter = channels_.find(channel_id);
   if (iter == channels_.end()) {
     // If this channel is pending, queue up the PostMessage to run once
     // the channel opens.
@@ -704,8 +703,7 @@ void MessageService::EnqueuePendingMessage(const PortId& source_port_id,
                                            const Message& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  PendingChannelMap::iterator pending_for_incognito =
-      pending_incognito_channels_.find(channel_id);
+  auto pending_for_incognito = pending_incognito_channels_.find(channel_id);
   if (pending_for_incognito != pending_incognito_channels_.end()) {
     pending_for_incognito->second.push_back(
         PendingMessage(source_port_id, message));
@@ -716,7 +714,7 @@ void MessageService::EnqueuePendingMessage(const PortId& source_port_id,
         !base::ContainsKey(pending_lazy_background_page_channels_, channel_id));
     return;
   }
-  PendingChannelMap::iterator pending_for_tls_channel_id =
+  auto pending_for_tls_channel_id =
       pending_tls_channel_id_channels_.find(channel_id);
   if (pending_for_tls_channel_id != pending_tls_channel_id_channels_.end()) {
     pending_for_tls_channel_id->second.push_back(
@@ -738,8 +736,7 @@ void MessageService::EnqueuePendingMessageForLazyBackgroundLoad(
     const Message& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  PendingLazyBackgroundPageChannelMap::iterator pending =
-      pending_lazy_background_page_channels_.find(channel_id);
+  auto pending = pending_lazy_background_page_channels_.find(channel_id);
   if (pending != pending_lazy_background_page_channels_.end()) {
     lazy_background_task_queue_->AddPendingTask(
         pending->second.first, pending->second.second,
@@ -803,8 +800,7 @@ void MessageService::OnOpenChannelAllowed(
 
   ChannelId channel_id = params->receiver_port_id.GetChannelId();
 
-  PendingChannelMap::iterator pending_for_incognito =
-      pending_incognito_channels_.find(channel_id);
+  auto pending_for_incognito = pending_incognito_channels_.find(channel_id);
   if (pending_for_incognito == pending_incognito_channels_.end()) {
     NOTREACHED();
     return;
@@ -908,7 +904,7 @@ void MessageService::GotChannelID(std::unique_ptr<OpenChannelParams> params,
   params->tls_channel_id.assign(tls_channel_id);
   ChannelId channel_id = params->receiver_port_id.GetChannelId();
 
-  PendingChannelMap::iterator pending_for_tls_channel_id =
+  auto pending_for_tls_channel_id =
       pending_tls_channel_id_channels_.find(channel_id);
   if (pending_for_tls_channel_id == pending_tls_channel_id_channels_.end()) {
     NOTREACHED();
@@ -977,7 +973,7 @@ void MessageService::DispatchPendingMessages(const PendingMessagesQueue& queue,
                                              const ChannelId& channel_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  MessageChannelMap::iterator channel_iter = channels_.find(channel_id);
+  auto channel_iter = channels_.find(channel_id);
   if (channel_iter != channels_.end()) {
     for (const PendingMessage& message : queue) {
       DispatchMessage(message.first, channel_iter->second.get(),

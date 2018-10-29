@@ -19,6 +19,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "content/public/browser/content_browser_client.h"
@@ -64,7 +65,6 @@ enum class WebRequestResourceType : uint8_t;
 
 class InfoMap;
 class WebRequestEventDetails;
-class WebRequestEventRouterDelegate;
 struct WebRequestInfo;
 class WebRequestRulesRegistry;
 
@@ -470,6 +470,7 @@ class ExtensionWebRequestEventRouter {
 
  private:
   friend class WebRequestAPI;
+  friend class base::NoDestructor<ExtensionWebRequestEventRouter>;
   FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
                            BlockingEventPrecedenceRedirect);
   FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
@@ -704,9 +705,6 @@ class ExtensionWebRequestEventRouter {
   // respective rules registry.
   std::map<RulesRegistryKey,
       scoped_refptr<extensions::WebRequestRulesRegistry> > rules_registries_;
-
-  std::unique_ptr<extensions::WebRequestEventRouterDelegate>
-      web_request_event_router_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionWebRequestEventRouter);
 };

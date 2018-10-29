@@ -234,8 +234,6 @@ Polymer({
     // itself is closed.
     if (e.code == 'Escape' && !hasKeyModifiers(e)) {
       // Don't close the Print Preview dialog if there is a child dialog open.
-      const destinations = this.$.destinationSettings;
-      const advanced = this.$.advancedSettings;
       if (this.openDialogs_.length != 0) {
         // Manually cancel the dialog, since we call preventDefault() to prevent
         // views from closing the Print Preview dialog.
@@ -254,8 +252,8 @@ Polymer({
       return;
     }
 
-    // On Mac, Cmd-. should close the print dialog.
-    if (cr.isMac && e.code == 'Minus' && e.metaKey) {
+    // On Mac, Cmd+Period should close the print dialog.
+    if (cr.isMac && e.code == 'Period' && e.metaKey) {
       this.close_();
       e.preventDefault();
       return;
@@ -265,6 +263,13 @@ Polymer({
     if (e.code == 'KeyP') {
       if ((cr.isMac && e.metaKey && e.altKey && !e.shiftKey && !e.ctrlKey) ||
           (!cr.isMac && e.shiftKey && e.ctrlKey && !e.altKey && !e.metaKey)) {
+        // Don't use system dialog if the link isn't available.
+        const linkContainer = this.$$('print-preview-link-container');
+        if (!linkContainer || !linkContainer.systemDialogLinkAvailable()) {
+          e.preventDefault();
+          return;
+        }
+
         // Don't try to print with system dialog on Windows if the document is
         // not ready, because we send the preview document to the printer on
         // Windows.
@@ -275,10 +280,14 @@ Polymer({
       }
     }
 
-    if (e.code == 'Enter' && this.state == print_preview_new.State.READY) {
+    if ((e.code === 'Enter' || e.code === 'NumpadEnter') &&
+        this.state === print_preview_new.State.READY &&
+        this.openDialogs_.length === 0) {
       const activeElementTag = e.path[0].tagName;
-      if (['BUTTON', 'SELECT', 'A'].includes(activeElementTag))
+      if (['PAPER-BUTTON', 'BUTTON', 'SELECT', 'A', 'CR-CHECKBOX'].includes(
+              activeElementTag)) {
         return;
+      }
 
       this.onPrintRequested_();
       e.preventDefault();
@@ -634,6 +643,11 @@ Polymer({
    * @private
    */
   shouldExpandSettings_: function() {
+    if (this.settingsExpandedByUser_ === undefined ||
+        this.shouldShowMoreSettings_ === undefined) {
+      return false;
+    }
+
     // Expand the settings if the user has requested them expanded or if more
     // settings is not displayed (i.e. less than 6 total settings available).
     return this.settingsExpandedByUser_ || !this.shouldShowMoreSettings_;

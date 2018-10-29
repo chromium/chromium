@@ -9,7 +9,7 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
-#include "chrome/browser/chromeos/login/mojo_version_info_dispatcher.h"
+#include "chrome/browser/chromeos/login/mojo_system_info_dispatcher.h"
 #include "chrome/browser/chromeos/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/chromeos/login/screens/gaia_view.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
@@ -32,8 +32,9 @@ constexpr char kAccelReset[] = "reset";
 
 }  // namespace
 
-LoginDisplayHostMojo::AuthState::AuthState(AccountId account_id,
-                                           AuthenticateUserCallback callback)
+LoginDisplayHostMojo::AuthState::AuthState(
+    AccountId account_id,
+    AuthenticateUserWithPasswordOrPinCallback callback)
     : account_id(account_id), callback(std::move(callback)) {}
 
 LoginDisplayHostMojo::AuthState::~AuthState() = default;
@@ -43,7 +44,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo()
       user_board_view_mojo_(std::make_unique<UserBoardViewMojo>()),
       user_selection_screen_(
           std::make_unique<ChromeUserSelectionScreen>(kLoginDisplay)),
-      version_info_updater_(std::make_unique<MojoVersionInfoDispatcher>()),
+      system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()),
       weak_factory_(this) {
   user_selection_screen_->SetView(user_board_view_mojo_.get());
 
@@ -213,8 +214,7 @@ void LoginDisplayHostMojo::OnStartSignInScreen(
 
   kiosk_updater_.SendKioskApps();
 
-  // Start to request version info.
-  version_info_updater_->StartUpdate();
+  system_info_updater_->StartRequest();
 
   // Update status of add user button in the shelf.
   UpdateAddUserButtonStatus();
@@ -331,11 +331,11 @@ void LoginDisplayHostMojo::OnCancelPasswordChangedFlow() {
   HideOobeDialog();
 }
 
-void LoginDisplayHostMojo::HandleAuthenticateUser(
+void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
     const AccountId& account_id,
     const std::string& password,
     bool authenticated_by_pin,
-    AuthenticateUserCallback callback) {
+    AuthenticateUserWithPasswordOrPinCallback callback) {
   DCHECK_EQ(account_id.GetUserEmail(),
             gaia::SanitizeEmail(account_id.GetUserEmail()));
 
@@ -373,17 +373,26 @@ void LoginDisplayHostMojo::HandleAuthenticateUser(
   existing_user_controller_->Login(user_context, chromeos::SigninSpecifics());
 }
 
-void LoginDisplayHostMojo::HandleAttemptUnlock(const AccountId& account_id) {
+void LoginDisplayHostMojo::HandleAuthenticateUserWithExternalBinary(
+    const AccountId& account_id,
+    AuthenticateUserWithExternalBinaryCallback callback) {
+  // Authenticating with an external binary is not supported for login.
+  std::move(callback).Run(false);
+}
+
+void LoginDisplayHostMojo::HandleEnrollUserWithExternalBinary(
+    EnrollUserWithExternalBinaryCallback callback) {
+  // Enroll in external binary auth system is not supported for login.
+  std::move(callback).Run(false);
+}
+
+void LoginDisplayHostMojo::HandleAuthenticateUserWithEasyUnlock(
+    const AccountId& account_id) {
   user_selection_screen_->AttemptEasyUnlock(account_id);
 }
 
 void LoginDisplayHostMojo::HandleHardlockPod(const AccountId& account_id) {
   user_selection_screen_->HardLockPod(account_id);
-}
-
-void LoginDisplayHostMojo::HandleRecordClickOnLockIcon(
-    const AccountId& account_id) {
-  user_selection_screen_->RecordClickOnLockIcon(account_id);
 }
 
 void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {

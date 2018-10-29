@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 865 PASS, 135 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["forecolor","#0000FF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
 PASS [["forecolor","#0000FF"],["outdent",""]] "foo[]bar": execCommand("forecolor", false, "#0000FF") return value
 PASS [["forecolor","#0000FF"],["outdent",""]] "foo[]bar": execCommand("outdent", false, "") return value
@@ -371,7 +371,7 @@ PASS [["hilitecolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[
 PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar": execCommand("hilitecolor", false, "#00FFFF") return value
 PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["hilitecolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foobar<br></li></ol>"
+PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandState("hilitecolor") before
 FAIL [["hilitecolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("hilitecolor") before assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
@@ -388,7 +388,7 @@ PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "fo
 PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ol>" but got "<ol><li>fooabar<br></li></ol>"
+FAIL [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
 PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 PASS [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 FAIL [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
@@ -449,7 +449,7 @@ PASS [["hilitecolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[
 PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar": execCommand("hilitecolor", false, "#00FFFF") return value
 PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["hilitecolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foobar<br></li></ul>"
+PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("hilitecolor") before
 FAIL [["hilitecolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("hilitecolor") before assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"
@@ -466,7 +466,7 @@ PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "
 PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ul>" but got "<ul><li>fooabar<br></li></ul>"
+FAIL [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
 PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 PASS [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 FAIL [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before assert_equals: Wrong result returned (after color normalization) expected "rgba(0, 0, 0, 0)" but got "rgb(0, 0, 0)"

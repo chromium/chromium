@@ -14,9 +14,10 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/previews/content/hint_cache.h"
 #include "components/previews/content/previews_hints.h"
+#include "components/previews/content/previews_user_data.h"
 #include "components/previews/core/host_filter.h"
-#include "components/previews/core/previews_user_data.h"
 #include "components/url_matcher/url_matcher.h"
+#include "net/nqe/effective_connection_type.h"
 
 class GURL;
 
@@ -48,16 +49,17 @@ class PreviewsHints {
   void Initialize();
 
   // Whether the URL is whitelisted for the given previews type. If so,
-  // |out_inflation_percent| will be populated if meta data available for it.
-  // This first checks the top-level whitelist and, if not whitelisted there,
-  // it will check the HintCache for having a loaded, matching PageHint that
-  // whitelists it.
+  // |out_inflation_percent| and |out_ect_threshold| will be populated if
+  // metadata is available for them. This first checks the top-level whitelist
+  // and, if not whitelisted there, it will check the HintCache for having a
+  // loaded, matching PageHint that whitelists it.
   bool IsWhitelisted(const GURL& url,
                      PreviewsType type,
-                     int* out_inflation_percent);
+                     int* out_inflation_percent,
+                     net::EffectiveConnectionType* out_ect_threshold) const;
 
   // Whether the URL is blacklisted for the given previews type.
-  bool IsBlacklisted(const GURL& url, PreviewsType type);
+  bool IsBlacklisted(const GURL& url, PreviewsType type) const;
 
   // Returns whether |url| may have PageHints and triggers asynchronous load
   // of such hints are not currently available synchronously. |callback| is
@@ -65,10 +67,33 @@ class PreviewsHints {
   bool MaybeLoadOptimizationHints(const GURL& url,
                                   HintLoadedCallback callback) const;
 
+  // Logs UMA for whether the HintCache has a matching Hint and also a matching
+  // PageHint for |url|. Records the client's current |ect| as well. This is
+  // useful for measuring the effectiveness of the page hints provided by Cacao.
+  void LogHintCacheMatch(const GURL& url,
+                         bool is_committed,
+                         net::EffectiveConnectionType ect) const;
+
  private:
   friend class PreviewsHintsTest;
 
   PreviewsHints();
+
+  // Returns whether |url| is whitelisted in |whitelist_|. If it is, then
+  // |out_inflation_percent| will be populated if metadata is available for it.
+  // NOTE: PreviewsType::RESOURCE_LOADING_HINTS cannot be whitelisted at the
+  // top-level.
+  bool IsWhitelistedAtTopLevel(const GURL& url,
+                               PreviewsType type,
+                               int* out_inflation_percent) const;
+  // Returns whether |url| is whitelisted in the page hints contained within
+  // |hint_cache_|. If it is, then |out_inflation_percent| and
+  // |out_ect_threshold| will be populated if metadata is available for them.
+  bool IsWhitelistedInPageHints(
+      const GURL& url,
+      PreviewsType type,
+      int* out_inflation_percent,
+      net::EffectiveConnectionType* out_ect_threshold) const;
 
   // Parses optimization filters from |config| and populates corresponding
   // supported blacklists in this object.

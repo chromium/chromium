@@ -6,7 +6,6 @@
 
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "content/public/renderer/document_state.h"
-#include "content/public/renderer/navigation_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/modules/autofill/web_form_element_observer.h"
 #include "third_party/blink/public/web/modules/autofill/web_form_element_observer_callback.h"

@@ -3,4 +3,5 @@ This tests for a hang when outdenting a list item within a sublist twice.
 one
 two
 three
+
 four

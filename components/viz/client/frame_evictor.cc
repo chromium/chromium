@@ -8,45 +8,32 @@
 
 namespace viz {
 
-FrameEvictor::FrameEvictor(FrameEvictorClient* client)
-    : client_(client), has_frame_(false), visible_(false) {}
+FrameEvictor::FrameEvictor(FrameEvictorClient* client) : client_(client) {}
 
 FrameEvictor::~FrameEvictor() {
-  DiscardedFrame();
+  OnSurfaceDiscarded();
 }
 
-void FrameEvictor::SwappedFrame(bool visible) {
-  visible_ = visible;
-  has_frame_ = true;
-  FrameEvictionManager::GetInstance()->AddFrame(this, visible);
+void FrameEvictor::OnNewSurfaceEmbedded() {
+  has_surface_ = true;
+  FrameEvictionManager::GetInstance()->AddFrame(this, visible_);
 }
 
-void FrameEvictor::DiscardedFrame() {
+void FrameEvictor::OnSurfaceDiscarded() {
   FrameEvictionManager::GetInstance()->RemoveFrame(this);
-  has_frame_ = false;
+  has_surface_ = false;
 }
 
 void FrameEvictor::SetVisible(bool visible) {
   if (visible_ == visible)
     return;
   visible_ = visible;
-  if (has_frame_) {
-    if (visible) {
-      LockFrame();
-    } else {
-      UnlockFrame();
-    }
+  if (has_surface_) {
+    if (visible)
+      FrameEvictionManager::GetInstance()->LockFrame(this);
+    else
+      FrameEvictionManager::GetInstance()->UnlockFrame(this);
   }
-}
-
-void FrameEvictor::LockFrame() {
-  DCHECK(has_frame_);
-  FrameEvictionManager::GetInstance()->LockFrame(this);
-}
-
-void FrameEvictor::UnlockFrame() {
-  DCHECK(has_frame_);
-  FrameEvictionManager::GetInstance()->UnlockFrame(this);
 }
 
 void FrameEvictor::EvictCurrentFrame() {

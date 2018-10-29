@@ -19,6 +19,8 @@ import org.chromium.chrome.browser.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.vr.VrModeObserver;
+import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.widget.ScrimView;
 import org.chromium.chrome.browser.widget.ScrimView.ScrimObserver;
 import org.chromium.chrome.browser.widget.ScrimView.ScrimParams;
@@ -110,10 +112,27 @@ public class BottomSheetController implements ApplicationStatus.ActivityStateLis
             }
 
             @Override
-            public void onCrash(Tab tab, boolean sadTabShown) {
+            public void onCrash(Tab tab) {
                 clearRequestsAndHide();
             }
+
+            @Override
+            public void onDestroyed(Tab tab) {
+                if (mLastActivityTab == tab) mLastActivityTab = null;
+            }
         };
+
+        VrModuleProvider.registerVrModeObserver(new VrModeObserver() {
+            @Override
+            public void onEnterVr() {
+                suppressSheet(StateChangeReason.VR);
+            }
+
+            @Override
+            public void onExitVr() {
+                unsuppressSheet();
+            }
+        });
 
         mTabProvider.addObserverAndTrigger(new HintlessActivityTabObserver() {
             @Override
@@ -212,7 +231,7 @@ public class BottomSheetController implements ApplicationStatus.ActivityStateLis
      */
     private void unsuppressSheet() {
         if (!mIsSuppressed || mTabProvider.getActivityTab() == null || !mWasShownForCurrentTab
-                || isOtherUIObscuring()) {
+                || isOtherUIObscuring() || VrModuleProvider.getDelegate().isInVr()) {
             return;
         }
         mIsSuppressed = false;

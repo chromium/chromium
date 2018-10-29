@@ -14,7 +14,7 @@ namespace simulator {
 // AlarmFactory allows to schedule QuicAlarms using the simulation event queue.
 class AlarmFactory : public QuicAlarmFactory {
  public:
-  AlarmFactory(Simulator* simulator, std::string name);
+  AlarmFactory(Simulator* simulator, QuicString name);
   AlarmFactory(const AlarmFactory&) = delete;
   AlarmFactory& operator=(const AlarmFactory&) = delete;
   ~AlarmFactory() override;
@@ -26,10 +26,10 @@ class AlarmFactory : public QuicAlarmFactory {
 
  private:
   // Automatically generate a name for a new alarm.
-  std::string GetNewAlarmName();
+  QuicString GetNewAlarmName();
 
   Simulator* simulator_;
-  std::string name_;
+  QuicString name_;
   int counter_;
 };
 

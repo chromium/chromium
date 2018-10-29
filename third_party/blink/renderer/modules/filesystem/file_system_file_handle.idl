@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/writable-files/blob/master/EXPLAINER.md
+// https://wicg.github.io/writable-files/#filesystemfilehandle
 [
     RuntimeEnabled=WritableFiles
 ] interface FileSystemFileHandle : FileSystemBaseHandle {

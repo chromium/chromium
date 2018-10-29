@@ -103,16 +103,13 @@ void DeviceCapabilities::Validator::SetPrivateValidatedValue(
 
 DeviceCapabilities::Data::Data()
     : dictionary_(new base::DictionaryValue),
-      json_string_(SerializeToJson(*dictionary_)) {
-  DCHECK(json_string_.get());
-}
+      json_string_(*SerializeToJson(*dictionary_)) {}
 
 DeviceCapabilities::Data::Data(
     std::unique_ptr<const base::DictionaryValue> dictionary)
     : dictionary_(std::move(dictionary)),
-      json_string_(SerializeToJson(*dictionary_)) {
+      json_string_(*SerializeToJson(*dictionary_)) {
   DCHECK(dictionary_.get());
-  DCHECK(json_string_.get());
 }
 
 DeviceCapabilitiesImpl::Data::~Data() {}

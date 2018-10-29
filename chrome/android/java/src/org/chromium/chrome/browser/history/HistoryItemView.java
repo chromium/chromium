@@ -11,6 +11,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -23,14 +24,13 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.util.ViewUtils;
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
-import org.chromium.chrome.browser.widget.TintedImageButton;
 import org.chromium.chrome.browser.widget.selection.SelectableItemView;
 
 /**
  * The SelectableItemView for items displayed in the browsing history UI.
  */
 public class HistoryItemView extends SelectableItemView<HistoryItem> implements LargeIconCallback {
-    private TintedImageButton mRemoveButton;
+    private AppCompatImageButton mRemoveButton;
     private VectorDrawableCompat mBlockedVisitDrawable;
     private View mContentView;
 
@@ -62,7 +62,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
         super.onFinishInflate();
         mIconView.setImageResource(R.drawable.default_favicon);
         mContentView = findViewById(R.id.content);
-        mRemoveButton = (TintedImageButton) findViewById(R.id.remove);
+        mRemoveButton = (AppCompatImageButton) findViewById(R.id.remove);
         mRemoveButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

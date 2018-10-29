@@ -138,8 +138,7 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
 
   FcPatternAddBool(query_pattern.get(), FC_SCALABLE, FcTrue);
 
-  for (std::vector<std::string>::const_iterator it = query.families.begin();
-       it != query.families.end(); ++it) {
+  for (auto it = query.families.begin(); it != query.families.end(); ++it) {
     FcPatternAddString(query_pattern.get(),
         FC_FAMILY, reinterpret_cast<const FcChar8*>(it->c_str()));
   }

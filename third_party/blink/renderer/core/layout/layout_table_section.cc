@@ -209,7 +209,7 @@ static inline void CheckThatVectorIsDOMOrdered(
   DCHECK_GT(cells.size(), 0u);
 
   const LayoutTableCell* previous_cell = cells[0];
-  for (size_t i = 1; i < cells.size(); ++i) {
+  for (wtf_size_t i = 1; i < cells.size(); ++i) {
     const LayoutTableCell* current_cell = cells[i];
     // The check assumes that all cells belong to the same row group.
     DCHECK_EQ(previous_cell->Section(), current_cell->Section());
@@ -1361,6 +1361,22 @@ int LayoutTableSection::PaginationStrutForRow(LayoutTableRow* row,
 }
 
 void LayoutTableSection::ComputeOverflowFromDescendants() {
+  auto old_self_visual_overflow_rect = SelfVisualOverflowRect();
+  overflow_.reset();
+  overflowing_cells_.clear();
+  force_full_paint_ = false;
+
+  ComputeVisualOverflowFromDescendants();
+
+  // Overflow rect contributes to the visual rect, so if it has changed then we
+  // need to signal a possible paint invalidation.
+  if (old_self_visual_overflow_rect != SelfVisualOverflowRect())
+    SetShouldCheckForPaintInvalidation();
+
+  ComputeLayoutOverflowFromDescendants();
+}
+
+void LayoutTableSection::ComputeVisualOverflowFromDescendants() {
   // These 2 variables are used to balance the memory consumption vs the paint
   // time on big sections with overflowing cells:
   // 1. For small sections, don't track overflowing cells because for them the
@@ -1380,15 +1396,12 @@ void LayoutTableSection::ComputeOverflowFromDescendants() {
           ? 0
           : kMaxOverflowingCellRatioForPartialPaint * total_cell_count;
 
-  overflow_.reset();
-  overflowing_cells_.clear();
-  force_full_paint_ = false;
 #if DCHECK_IS_ON()
   bool has_overflowing_cell = false;
 #endif
 
   for (auto* row = FirstRow(); row; row = row->NextRow()) {
-    AddOverflowFromChild(*row);
+    AddVisualOverflowFromChild(*row);
 
     for (auto* cell = row->FirstCell(); cell; cell = cell->NextCell()) {
       // Let the section's self visual overflow cover the cell's whole collapsed
@@ -1427,25 +1440,30 @@ void LayoutTableSection::ComputeOverflowFromDescendants() {
 #endif
 }
 
-bool LayoutTableSection::RecalcOverflowAfterStyleChange() {
-  if (!ChildNeedsOverflowRecalcAfterStyleChange())
+void LayoutTableSection::ComputeLayoutOverflowFromDescendants() {
+  for (auto* row = FirstRow(); row; row = row->NextRow())
+    AddLayoutOverflowFromChild(*row);
+}
+
+bool LayoutTableSection::RecalcOverflow() {
+  if (!ChildNeedsOverflowRecalc())
     return false;
-  ClearChildNeedsOverflowRecalcAfterStyleChange();
+  ChildNeedsOverflowRecalc();
   unsigned total_rows = grid_.size();
   bool children_overflow_changed = false;
   for (unsigned r = 0; r < total_rows; r++) {
     LayoutTableRow* row_layouter = RowLayoutObjectAt(r);
-    if (!row_layouter ||
-        !row_layouter->ChildNeedsOverflowRecalcAfterStyleChange())
+    if (!row_layouter || !row_layouter->ChildNeedsOverflowRecalc())
       continue;
-    row_layouter->ClearChildNeedsOverflowRecalcAfterStyleChange();
+    row_layouter->ClearChildNeedsLayoutOverflowRecalc();
+    row_layouter->ClearChildNeedsVisualOverflowRecalc();
     bool row_children_overflow_changed = false;
     unsigned n_cols = NumCols(r);
     for (unsigned c = 0; c < n_cols; c++) {
       auto* cell = OriginatingCellAt(r, c);
       if (!cell)
         continue;
-      row_children_overflow_changed |= cell->RecalcOverflowAfterStyleChange();
+      row_children_overflow_changed |= cell->RecalcOverflow();
     }
     if (row_children_overflow_changed)
       row_layouter->ComputeOverflow();
@@ -1584,9 +1602,9 @@ void LayoutTableSection::DirtiedRowsAndEffectiveColumns(
 
 CellSpan LayoutTableSection::SpannedRows(const LayoutRect& flipped_rect) const {
   // Find the first row that starts after rect top.
-  unsigned next_row =
+  unsigned next_row = static_cast<unsigned>(
       std::upper_bound(row_pos_.begin(), row_pos_.end(), flipped_rect.Y()) -
-      row_pos_.begin();
+      row_pos_.begin());
 
   // After all rows.
   if (next_row == row_pos_.size())
@@ -1599,9 +1617,10 @@ CellSpan LayoutTableSection::SpannedRows(const LayoutRect& flipped_rect) const {
   if (row_pos_[next_row] >= flipped_rect.MaxY()) {
     end_row = next_row;
   } else {
-    end_row = std::upper_bound(row_pos_.begin() + next_row, row_pos_.end(),
-                               flipped_rect.MaxY()) -
-              row_pos_.begin();
+    end_row = static_cast<unsigned>(
+        std::upper_bound(row_pos_.begin() + next_row, row_pos_.end(),
+                         flipped_rect.MaxY()) -
+        row_pos_.begin());
     if (end_row == row_pos_.size())
       end_row = row_pos_.size() - 1;
   }
@@ -1618,9 +1637,9 @@ CellSpan LayoutTableSection::SpannedEffectiveColumns(
   // wrongly return the cell on the logical top/left.
   // upper_bound on the other hand properly returns the cell on the logical
   // bottom/right, which also matches the behavior of other browsers.
-  unsigned next_column =
+  unsigned next_column = static_cast<unsigned>(
       std::upper_bound(column_pos.begin(), column_pos.end(), flipped_rect.X()) -
-      column_pos.begin();
+      column_pos.begin());
 
   if (next_column == column_pos.size())
     return CellSpan(column_pos.size() - 1,
@@ -1633,9 +1652,10 @@ CellSpan LayoutTableSection::SpannedEffectiveColumns(
   if (column_pos[next_column] >= flipped_rect.MaxX()) {
     end_column = next_column;
   } else {
-    end_column = std::upper_bound(column_pos.begin() + next_column,
-                                  column_pos.end(), flipped_rect.MaxX()) -
-                 column_pos.begin();
+    end_column = static_cast<unsigned>(
+        std::upper_bound(column_pos.begin() + next_column, column_pos.end(),
+                         flipped_rect.MaxX()) -
+        column_pos.begin());
     if (end_column == column_pos.size())
       end_column = column_pos.size() - 1;
   }

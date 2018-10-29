@@ -362,7 +362,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void SetViewportSizeAndScale(
       const gfx::Size& device_viewport_size,
       float device_scale_factor,
-      const viz::LocalSurfaceId& local_surface_id_from_parent);
+      const viz::LocalSurfaceId& local_surface_id_from_parent,
+      base::TimeTicks local_surface_id_allocation_time_from_parent);
 
   void SetViewportVisibleRect(const gfx::Rect& visible_rect);
 
@@ -410,9 +411,13 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // If this LayerTreeHost needs a valid viz::LocalSurfaceId then commits will
   // be deferred until a valid viz::LocalSurfaceId is provided.
   void SetLocalSurfaceIdFromParent(
-      const viz::LocalSurfaceId& local_surface_id_from_parent);
+      const viz::LocalSurfaceId& local_surface_id_from_parent,
+      base::TimeTicks local_surface_id_allocation_time_from_parent);
   const viz::LocalSurfaceId& local_surface_id_from_parent() const {
     return local_surface_id_from_parent_;
+  }
+  base::TimeTicks local_surface_id_allocation_time_from_parent() const {
+    return local_surface_id_allocation_time_from_parent_;
   }
 
   // Requests the allocation of a new LocalSurfaceId on the compositor thread.
@@ -470,8 +475,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void SetElasticOverscrollFromImplSide(gfx::Vector2dF elastic_overscroll);
   gfx::Vector2dF elastic_overscroll() const { return elastic_overscroll_; }
 
-  // Ensures a HUD layer exists if it is needed, and updates the layer bounds.
-  // If a HUD layer exists but is no longer needed, it is destroyed.
+  // Ensures a HUD layer exists if it is needed, and updates the HUD bounds and
+  // position. If a HUD layer exists but is no longer needed, it is destroyed.
   void UpdateHudLayer(bool show_hud_info);
   HeadsUpDisplayLayer* hud_layer() const { return hud_layer_.get(); }
 
@@ -536,6 +541,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Called when the compositor completed page scale animation.
   void DidCompletePageScaleAnimation();
   void ApplyScrollAndScale(ScrollAndScaleSet* info);
+  void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time);
 
   LayerTreeHostClient* client() { return client_; }
 
@@ -646,7 +652,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // free of slow-paths before toggling the flag.
   enum { kNumFramesToConsiderBeforeRemovingSlowPathFlag = 60 };
 
-  void ApplyViewportDeltas(const ScrollAndScaleSet& info);
+  void ApplyViewportChanges(const ScrollAndScaleSet& info);
   void RecordWheelAndTouchScrollingCount(const ScrollAndScaleSet& info);
   void ApplyPageScaleDeltaFromImplSide(float page_scale_delta);
   void InitializeProxy(std::unique_ptr<Proxy> proxy);
@@ -726,6 +732,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool clear_caches_on_next_commit_ = false;
   uint32_t content_source_id_;
   viz::LocalSurfaceId local_surface_id_from_parent_;
+  base::TimeTicks local_surface_id_allocation_time_from_parent_;
   // Used to detect surface invariant violations.
   bool has_pushed_local_surface_id_from_parent_ = false;
   bool new_local_surface_id_request_ = false;

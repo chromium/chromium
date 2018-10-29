@@ -11,7 +11,6 @@
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/extensions/api/automation_internal/automation_event_router.h"
-#include "chromecast/common/extensions_api/automation_api_constants.h"
 #include "chromecast/common/extensions_api/cast_extension_messages.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_context.h"
@@ -116,7 +115,7 @@ void AutomationManagerAura::OnEvent(views::AXAuraObjWrapper* aura_obj,
 }
 
 AutomationManagerAura::AutomationManagerAura()
-    : AXHostDelegate(extensions::api::automation::kDesktopTreeID),
+    : AXHostDelegate(ui::DesktopAXTreeID()),
       enabled_(false),
       processing_events_(false) {}
 
@@ -146,7 +145,7 @@ void AutomationManagerAura::SendEvent(BrowserContext* context,
   processing_events_ = true;
 
   ExtensionMsg_AccessibilityEventBundleParams event_bundle;
-  event_bundle.tree_id = extensions::api::automation::kDesktopTreeID;
+  event_bundle.tree_id = ui::DesktopAXTreeID();
   event_bundle.mouse_location = aura::Env::GetInstance()->last_mouse_location();
 
   ui::AXTreeUpdate update;

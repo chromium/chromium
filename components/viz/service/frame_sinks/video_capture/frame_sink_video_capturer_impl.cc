@@ -47,7 +47,7 @@ constexpr media::VideoPixelFormat
     FrameSinkVideoCapturerImpl::kDefaultPixelFormat;
 
 // static
-constexpr media::ColorSpace FrameSinkVideoCapturerImpl::kDefaultColorSpace;
+constexpr gfx::ColorSpace FrameSinkVideoCapturerImpl::kDefaultColorSpace;
 
 FrameSinkVideoCapturerImpl::FrameSinkVideoCapturerImpl(
     FrameSinkVideoCapturerManager* frame_sink_manager,
@@ -109,7 +109,7 @@ void FrameSinkVideoCapturerImpl::OnTargetWillGoAway() {
 }
 
 void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format,
-                                           media::ColorSpace color_space) {
+                                           const gfx::ColorSpace& color_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool format_changed = false;
@@ -122,16 +122,17 @@ void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format,
     pixel_format_ = format;
   }
 
-  if (color_space == media::COLOR_SPACE_UNSPECIFIED) {
-    color_space = kDefaultColorSpace;
+  gfx::ColorSpace color_space_copy = color_space;
+  if (!color_space_copy.IsValid()) {
+    color_space_copy = kDefaultColorSpace;
   }
   // TODO(crbug/758057): Plumb output color space through to the
   // CopyOutputRequests.
-  if (color_space != media::COLOR_SPACE_HD_REC709) {
+  if (color_space_copy != gfx::ColorSpace::CreateREC709()) {
     LOG(DFATAL) << "Unsupported color space: Only BT.709 is supported.";
   } else {
     format_changed |= (color_space_ != color_space);
-    color_space_ = color_space;
+    color_space_ = color_space_copy;
   }
 
   if (format_changed) {
@@ -499,12 +500,10 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                       frame_metadata.root_scroll_offset.x());
   metadata->SetDouble(VideoFrameMetadata::ROOT_SCROLL_OFFSET_Y,
                       frame_metadata.root_scroll_offset.y());
-#if defined(OS_ANDROID)
   metadata->SetDouble(VideoFrameMetadata::TOP_CONTROLS_HEIGHT,
                       frame_metadata.top_controls_height);
   metadata->SetDouble(VideoFrameMetadata::TOP_CONTROLS_SHOWN_RATIO,
                       frame_metadata.top_controls_shown_ratio);
-#endif  // defined(OS_ANDROID)
 
   oracle_.RecordCapture(utilization);
   const int64_t frame_number = next_capture_frame_number_++;

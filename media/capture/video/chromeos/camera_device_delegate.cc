@@ -133,6 +133,12 @@ class CameraDeviceDelegate::StreamCaptureInterfaceImpl final
     }
   }
 
+  void Flush(base::OnceCallback<void(int32_t)> callback) final {
+    if (camera_device_delegate_) {
+      camera_device_delegate_->Flush(std::move(callback));
+    }
+  }
+
  private:
   const base::WeakPtr<CameraDeviceDelegate> camera_device_delegate_;
 };
@@ -189,7 +195,7 @@ void CameraDeviceDelegate::StopAndDeAllocate(
     // The device delegate is in the process of opening the camera device.
     return;
   }
-  stream_buffer_manager_->StopPreview();
+  stream_buffer_manager_->StopPreview(base::NullCallback());
   device_ops_->Close(
       base::BindOnce(&CameraDeviceDelegate::OnClosed, GetWeakPtr()));
 }
@@ -226,18 +232,17 @@ void CameraDeviceDelegate::GetPhotoState(
     return;
   }
 
-  auto stream_config =
-      stream_buffer_manager_->GetStreamConfiguration(StreamType::kStillCapture);
-  if (stream_config) {
-    photo_state->width->current = stream_config->width;
-    photo_state->width->min = stream_config->width;
-    photo_state->width->max = stream_config->width;
-    photo_state->width->step = 0.0;
-    photo_state->height->current = stream_config->height;
-    photo_state->height->min = stream_config->height;
-    photo_state->height->max = stream_config->height;
-    photo_state->height->step = 0.0;
-  }
+  int32_t max_blob_width = 0, max_blob_height = 0;
+  GetMaxBlobStreamResolution(static_metadata_, &max_blob_width,
+                             &max_blob_height);
+  photo_state->width->current = max_blob_width;
+  photo_state->width->min = max_blob_width;
+  photo_state->width->max = max_blob_width;
+  photo_state->width->step = 0.0;
+  photo_state->height->current = max_blob_height;
+  photo_state->height->min = max_blob_height;
+  photo_state->height->max = max_blob_height;
+  photo_state->height->step = 0.0;
   std::move(callback).Run(std::move(photo_state));
 }
 
@@ -258,7 +263,14 @@ void CameraDeviceDelegate::SetPhotoOptions(
     return;
   }
 
-  std::move(callback).Run(true);
+  if (stream_buffer_manager_->GetStreamNumber() < kMaxConfiguredStreams) {
+    stream_buffer_manager_->StopPreview(
+        base::BindOnce(&CameraDeviceDelegate::OnFlushed, GetWeakPtr()));
+    set_photo_option_callback_ = std::move(callback);
+  } else {
+    set_photo_option_callback_.Reset();
+    std::move(callback).Run(true);
+  }
 }
 
 void CameraDeviceDelegate::SetRotation(int rotation) {
@@ -282,7 +294,7 @@ void CameraDeviceDelegate::OnMojoConnectionError() {
   } else {
     // The Mojo channel terminated unexpectedly.
     if (stream_buffer_manager_) {
-      stream_buffer_manager_->StopPreview();
+      stream_buffer_manager_->StopPreview(base::NullCallback());
     }
     device_context_->SetState(CameraDeviceContext::State::kStopped);
     device_context_->SetErrorState(
@@ -293,6 +305,19 @@ void CameraDeviceDelegate::OnMojoConnectionError() {
     // |device_context_->SetErrorState| above will call StopAndDeAllocate later
     // to handle the class destruction.
   }
+}
+
+void CameraDeviceDelegate::OnFlushed(int32_t result) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  if (result) {
+    device_context_->SetErrorState(
+        media::VideoCaptureError::kCrosHalV3DeviceDelegateFailedToFlush,
+        FROM_HERE,
+        std::string("Flush failed: ") + base::safe_strerror(-result));
+    return;
+  }
+  device_context_->SetState(CameraDeviceContext::State::kInitialized);
+  ConfigureStreams(true);
 }
 
 void CameraDeviceDelegate::OnClosed(int32_t result) {
@@ -426,10 +451,10 @@ void CameraDeviceDelegate::OnInitialized(int32_t result) {
     return;
   }
   device_context_->SetState(CameraDeviceContext::State::kInitialized);
-  ConfigureStreams();
+  ConfigureStreams(false);
 }
 
-void CameraDeviceDelegate::ConfigureStreams() {
+void CameraDeviceDelegate::ConfigureStreams(bool require_photo) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(device_context_->GetState(),
             CameraDeviceContext::State::kInitialized);
@@ -450,31 +475,34 @@ void CameraDeviceDelegate::ConfigureStreams() {
   preview_stream->rotation =
       cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
 
+  cros::mojom::Camera3StreamConfigurationPtr stream_config =
+      cros::mojom::Camera3StreamConfiguration::New();
+  stream_config->streams.push_back(std::move(preview_stream));
+
   // Set up context for still capture stream. We set still capture stream to the
   // JPEG stream configuration with maximum supported resolution.
   // TODO(jcliang): Once we support SetPhotoOptions() the still capture stream
   // should be configured dynamically per the photo options.
-  int32_t max_blob_width = 0, max_blob_height = 0;
-  GetMaxBlobStreamResolution(static_metadata_, &max_blob_width,
-                             &max_blob_height);
+  if (require_photo) {
+    int32_t max_blob_width = 0, max_blob_height = 0;
+    GetMaxBlobStreamResolution(static_metadata_, &max_blob_width,
+                               &max_blob_height);
 
-  cros::mojom::Camera3StreamPtr still_capture_stream =
-      cros::mojom::Camera3Stream::New();
-  still_capture_stream->id = static_cast<uint64_t>(StreamType::kStillCapture);
-  still_capture_stream->stream_type =
-      cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT;
-  still_capture_stream->width = max_blob_width;
-  still_capture_stream->height = max_blob_height;
-  still_capture_stream->format =
-      cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB;
-  still_capture_stream->data_space = 0;
-  still_capture_stream->rotation =
-      cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
+    cros::mojom::Camera3StreamPtr still_capture_stream =
+        cros::mojom::Camera3Stream::New();
+    still_capture_stream->id = static_cast<uint64_t>(StreamType::kStillCapture);
+    still_capture_stream->stream_type =
+        cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT;
+    still_capture_stream->width = max_blob_width;
+    still_capture_stream->height = max_blob_height;
+    still_capture_stream->format =
+        cros::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_BLOB;
+    still_capture_stream->data_space = 0;
+    still_capture_stream->rotation =
+        cros::mojom::Camera3StreamRotation::CAMERA3_STREAM_ROTATION_0;
+    stream_config->streams.push_back(std::move(still_capture_stream));
+  }
 
-  cros::mojom::Camera3StreamConfigurationPtr stream_config =
-      cros::mojom::Camera3StreamConfiguration::New();
-  stream_config->streams.push_back(std::move(preview_stream));
-  stream_config->streams.push_back(std::move(still_capture_stream));
   stream_config->operation_mode = cros::mojom::Camera3StreamConfigurationMode::
       CAMERA3_STREAM_CONFIGURATION_NORMAL_MODE;
   device_ops_->ConfigureStreams(
@@ -502,7 +530,8 @@ void CameraDeviceDelegate::OnConfiguredStreams(
     return;
   }
   if (!updated_config ||
-      updated_config->streams.size() != kMaxConfiguredStreams) {
+      updated_config->streams.size() > kMaxConfiguredStreams ||
+      updated_config->streams.size() < 1) {
     device_context_->SetErrorState(
         media::VideoCaptureError::
             kCrosHalV3DeviceDelegateWrongNumberOfStreamsConfigured,
@@ -569,6 +598,10 @@ void CameraDeviceDelegate::OnConstructedDefaultPreviewRequestSettings(
         base::BindOnce(&CameraDeviceDelegate::ConstructDefaultRequestSettings,
                        GetWeakPtr(), StreamType::kStillCapture));
   }
+
+  if (set_photo_option_callback_) {
+    std::move(set_photo_option_callback_).Run(true);
+  }
 }
 
 void CameraDeviceDelegate::OnConstructedDefaultStillCaptureRequestSettings(
@@ -631,6 +664,11 @@ void CameraDeviceDelegate::ProcessCaptureRequest(
     return;
   }
   device_ops_->ProcessCaptureRequest(std::move(request), std::move(callback));
+}
+
+void CameraDeviceDelegate::Flush(base::OnceCallback<void(int32_t)> callback) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  device_ops_->Flush(std::move(callback));
 }
 
 bool CameraDeviceDelegate::SetPointsOfInterest(

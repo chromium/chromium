@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/task_scheduler/task_scheduler.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/browser_process_sub_thread.h"
@@ -95,6 +96,7 @@ class LoaderDelegateImpl;
 class MediaStreamManager;
 class ResourceDispatcherHostImpl;
 class SaveFileManager;
+class ScreenlockMonitor;
 class ServiceManagerContext;
 class SpeechRecognitionManagerImpl;
 class StartupTaskRunner;
@@ -128,7 +130,9 @@ class CONTENT_EXPORT BrowserMainLoop {
 
   // The TaskScheduler instance must exist but not to be started when building
   // BrowserMainLoop.
-  explicit BrowserMainLoop(const MainFunctionParams& parameters);
+  explicit BrowserMainLoop(
+      const MainFunctionParams& parameters,
+      std::unique_ptr<base::TaskScheduler::ScopedExecutionFence> fence);
   virtual ~BrowserMainLoop();
 
   void Init();
@@ -284,6 +288,15 @@ class CONTENT_EXPORT BrowserMainLoop {
   const base::CommandLine& parsed_command_line_;
   int result_code_;
   bool created_threads_;  // True if the non-UI threads were created.
+  // //content must be initialized single-threaded until
+  // BrowserMainLoop::CreateThreads() as things initialized before it require an
+  // initialize-once happens-before relationship with all eventual content tasks
+  // running on other threads. This ScopedExecutionFence ensures that no tasks
+  // posted to TaskScheduler gets to run before CreateThreads(); satisfying this
+  // requirement even though the TaskScheduler is created and started before
+  // content is entered.
+  std::unique_ptr<base::TaskScheduler::ScopedExecutionFence>
+      scoped_execution_fence_;
 
   // Members initialized in |MainMessageLoopStart()| ---------------------------
   std::unique_ptr<base::MessageLoop> main_message_loop_;
@@ -294,6 +307,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   std::unique_ptr<base::PowerMonitor> power_monitor_;
   std::unique_ptr<base::HighResolutionTimerManager> hi_res_timer_manager_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
+  std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
 
   // Per-process listener for online state changes.
   std::unique_ptr<BrowserOnlineStateObserver> online_state_observer_;

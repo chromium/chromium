@@ -159,6 +159,7 @@ class RendererWindowTreeClient : public ws::mojom::WindowTreeClient,
   void OnWindowOpacityChanged(ws::Id window_id,
                               float old_opacity,
                               float new_opacity) override;
+  void OnWindowDisplayChanged(ws::Id window_id, int64_t display_id) override;
   void OnWindowParentDrawnStateChanged(ws::Id window_id, bool drawn) override;
   void OnWindowSharedPropertyChanged(
       ws::Id window_id,
@@ -168,14 +169,10 @@ class RendererWindowTreeClient : public ws::mojom::WindowTreeClient,
                           ws::Id window_id,
                           int64_t display_id,
                           std::unique_ptr<ui::Event> event,
-                          bool matches_pointer_watcher) override;
-  void OnPointerEventObserved(std::unique_ptr<ui::Event> event,
-                              ws::Id window_id,
-                              int64_t display_id) override;
+                          bool matches_event_observer) override;
+  void OnObservedInputEvent(std::unique_ptr<ui::Event> event) override;
   void OnWindowFocused(ws::Id focused_window_id) override;
   void OnWindowCursorChanged(ws::Id window_id, ui::CursorData cursor) override;
-  void OnWindowSurfaceChanged(ws::Id window_id,
-                              const viz::SurfaceInfo& surface_info) override;
   void OnDragDropStart(const base::flat_map<std::string, std::vector<uint8_t>>&
                            mime_data) override;
   void OnDragEnter(ws::Id window_id,
@@ -203,6 +200,9 @@ class RendererWindowTreeClient : public ws::mojom::WindowTreeClient,
   void RequestClose(ws::Id window_id) override;
   void GetScreenProviderObserver(
       ws::mojom::ScreenProviderObserverAssociatedRequest observer) override;
+  void OnOcclusionStateChanged(
+      ws::Id window_id,
+      ws::mojom::OcclusionState occlusion_state) override;
 
   const int routing_id_;
   ws::Id root_window_id_ = 0u;

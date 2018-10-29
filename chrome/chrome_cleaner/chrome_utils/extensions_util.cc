@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 
@@ -16,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
+#include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -43,7 +45,8 @@ class ParseTasksRemainingCounter
   }
 
   void Increment() {
-    DCHECK(count_ > 0) << "Once decremented to zero, Increment should never be called.";
+    DCHECK(count_ > 0)
+        << "Once decremented to zero, Increment should never be called.";
     count_++;
   }
 
@@ -207,11 +210,8 @@ void GetDefaultExtensionsFromParsedJson(
 
   for (const auto& entry : *default_extensions) {
     base::string16 extension_id = base::UTF8ToUTF16(entry.first);
-    if (std::find(default_extension_whitelist.begin(),
-                  default_extension_whitelist.end(),
-                  extension_id) == default_extension_whitelist.end()) {
+    if (!base::ContainsValue(default_extension_whitelist, extension_id))
       policies->emplace_back(extension_id, extensions_file);
-    }
   }
 }
 

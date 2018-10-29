@@ -19,7 +19,8 @@
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_change_notifier.h"
-#include "net/dns/dns_config_service.h"
+#include "net/dns/dns_config.h"
+#include "net/dns/dns_config_overrides.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_proc.h"
@@ -35,6 +36,8 @@ namespace net {
 class AddressList;
 class DnsClient;
 class IPAddress;
+class MDnsClient;
+class MDnsSocketFactory;
 class NetLog;
 class NetLogWithSource;
 
@@ -171,9 +174,9 @@ class NET_EXPORT HostResolverImpl
   void SetNoIPv6OnWifi(bool no_ipv6_on_wifi) override;
   bool GetNoIPv6OnWifi() override;
 
+  void SetDnsConfigOverrides(const DnsConfigOverrides& overrides) override;
+
   void SetRequestContext(URLRequestContext* request_context) override;
-  void AddDnsOverHttpsServer(std::string uri_template, bool use_post) override;
-  void ClearDnsOverHttpsServers() override;
   const std::vector<DnsConfig::DnsOverHttpsServerConfig>*
   GetDnsOverHttpsServersForTesting() const override;
 
@@ -186,6 +189,12 @@ class NET_EXPORT HostResolverImpl
   // Configures maximum number of Jobs in the queue. Exposed for testing.
   // Only allowed when the queue is empty.
   void SetMaxQueuedJobsForTesting(size_t value);
+
+  void SetMdnsSocketFactoryForTesting(
+      std::unique_ptr<MDnsSocketFactory> socket_factory);
+  void SetMdnsClientForTesting(std::unique_ptr<MDnsClient> client);
+
+  void SetBaseDnsConfigForTesting(const DnsConfig& base_config);
 
  protected:
   // Callback from HaveOnlyLoopbackAddresses probe.
@@ -336,6 +345,7 @@ class NET_EXPORT HostResolverImpl
   void OnDNSChanged() override;
   void OnInitialDNSConfigRead() override;
 
+  DnsConfig GetBaseDnsConfig() const;
   void UpdateDNSConfig(bool config_changed);
 
   // True if have a DnsClient with a valid DnsConfig.
@@ -344,6 +354,8 @@ class NET_EXPORT HostResolverImpl
   // Called when a host name is successfully resolved and DnsTask was run on it
   // and resulted in |net_error|.
   void OnDnsTaskResolve(int net_error);
+
+  MDnsClient* GetOrCreateMdnsClient();
 
   // Allows the tests to catch slots leaking out of the dispatcher.  One
   // HostResolverImpl::Job could occupy multiple PrioritizedDispatcher job
@@ -354,6 +366,11 @@ class NET_EXPORT HostResolverImpl
 
   // Cache of host resolution results.
   std::unique_ptr<HostCache> cache_;
+
+  // Used for multicast DNS tasks. Created on first use using
+  // GetOrCreateMndsClient().
+  std::unique_ptr<MDnsSocketFactory> mdns_socket_factory_;
+  std::unique_ptr<MDnsClient> mdns_client_;
 
   // Map from HostCache::Key to a Job.
   JobMap jobs_;
@@ -375,6 +392,15 @@ class NET_EXPORT HostResolverImpl
   // True if received valid config from |dns_config_service_|. Temporary, used
   // to measure performance of DnsConfigService: http://crbug.com/125599
   bool received_dns_config_;
+
+  // If set, used instead of getting DNS configuration from
+  // NetworkChangeNotifier. Changes sent from NetworkChangeNotifier will also be
+  // ignored and not cancel any pending requests.
+  base::Optional<DnsConfig> test_base_config_;
+
+  // Overrides or adds to DNS configuration read from the system for DnsClient
+  // resolution.
+  DnsConfigOverrides dns_config_overrides_;
 
   // Number of consecutive failures of DnsTask, counted when fallback succeeds.
   unsigned num_dns_failures_;
@@ -401,7 +427,6 @@ class NET_EXPORT HostResolverImpl
   scoped_refptr<base::TaskRunner> proc_task_runner_;
 
   URLRequestContext* url_request_context_;
-  std::vector<DnsConfig::DnsOverHttpsServerConfig> dns_over_https_servers_;
 
   // Shared tick clock, overridden for testing.
   const base::TickClock* tick_clock_;

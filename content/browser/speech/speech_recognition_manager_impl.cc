@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
@@ -22,6 +23,7 @@
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognizer_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -190,7 +192,7 @@ void SpeechRecognitionManagerImpl::FrameDeletionObserver::ContentsObserver::
     RenderFrameDeleted(RenderFrameHost* render_frame_host) {
   auto iters = observed_frames_.equal_range(render_frame_host);
   for (auto it = iters.first; it != iters.second; ++it) {
-    BrowserThread::GetTaskRunnerForThread(BrowserThread::IO)
+    base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})
         ->PostTask(FROM_HERE,
                    base::BindOnce(parent_observer_->frame_deleted_callback_,
                                   it->second));
@@ -297,7 +299,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
 
   // The deletion observer is owned by this class, so it's safe to use
   // Unretained.
-  BrowserThread::GetTaskRunnerForThread(BrowserThread::UI)
+  base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI})
       ->PostTask(
           FROM_HERE,
           base::BindOnce(&SpeechRecognitionManagerImpl::FrameDeletionObserver::
@@ -407,7 +409,7 @@ void SpeechRecognitionManagerImpl::AbortSession(int session_id) {
 
   // The deletion observer is owned by this class, so it's safe to use
   // Unretained.
-  BrowserThread::GetTaskRunnerForThread(BrowserThread::UI)
+  base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI})
       ->PostTask(
           FROM_HERE,
           base::BindOnce(&SpeechRecognitionManagerImpl::FrameDeletionObserver::

@@ -40,8 +40,8 @@ ui::TouchEvent TouchWithTapParams(ui::EventType type,
   ui::TouchEvent event(
       type, gfx::Point(1, 1), base::TimeTicks(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, id, radius_x,
-                         radius_y, pressure),
-      0, rotation_angle);
+                         radius_y, pressure, rotation_angle),
+      0);
   return event;
 }
 

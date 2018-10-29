@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 1: Error: <svg> attribute viewBox: Trailing garbage, "0 0 1 1 1".
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGRect {rect} at (0,0) size 1x1 [fill={[type=SOLID] [color=#FF0000]}] [x=0.00] [y=0.00] [width=1.00] [height=1.00]
-    LayoutSVGText {text} at (10,12) size 291.03x23 contains 1 chunk(s)
-      LayoutSVGInlineText {#text} at (10,12) size 291.03x23
-        chunk 1 text run 1 at (10.00,30.00) startOffset 0 endOffset 36 width 291.04: "There should be no red on this page."

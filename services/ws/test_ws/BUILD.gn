@@ -43,6 +43,7 @@ source_set("lib") {
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
     "//services/ws:lib",
+    "//services/ws:test_support",
     "//services/ws/gpu_host",
     "//services/ws/public/cpp",
     "//services/ws/public/cpp/host",

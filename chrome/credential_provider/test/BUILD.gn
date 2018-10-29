@@ -1,0 +1,38 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+test("gcp_unittests") {
+  sources = [
+    "../gaiacp/gaia_credential_base_unittests.cc",
+    "../gaiacp/gaia_credential_provider_unittests.cc",
+    "../gaiacp/gaia_credential_unittests.cc",
+    "../gaiacp/gcp_utils_unittests.cc",
+    "../gaiacp/reauth_credential_unittests.cc",
+    "com_fakes.cc",
+    "com_fakes.h",
+    "gcp_fakes.cc",
+    "gcp_fakes.h",
+    "gcp_setup_unittests.cc",
+    "gcp_test_main.cc",
+  ]
+
+  deps = [
+    "../gaiacp:common",
+    "../gaiacp:gaiacp_lib",
+    "../gaiacp:version",
+    "../setup:common",
+    "//base",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  data_deps = [
+    "../eventlog:gcp_eventlog_provider",
+    "../gaiacp:gaia1_0",
+    "../setup:gcp_setup",
+  ]
+}

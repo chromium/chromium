@@ -25,7 +25,7 @@ namespace {
 // current connection (like playing a cassette tape) and do not send new range
 // request (like rewind a cassette tape, and continue playing after).
 // Experimentally chosen value.
-const int kChunkCloseDistance = 10;
+constexpr int kChunkCloseDistance = 10;
 
 // Return true if the HTTP response of |loader| is a successful one and loading
 // should continue. 4xx error indicate subsequent requests will fail too.

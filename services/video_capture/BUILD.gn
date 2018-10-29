@@ -49,6 +49,8 @@ source_set("lib") {
     "virtual_device_enabled_device_factory.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//media",
@@ -80,17 +82,11 @@ source_set("tests") {
     "test/fake_device_test.cc",
     "test/fake_device_test.h",
     "test/fake_device_unittest.cc",
-    "test/mock_device.cc",
-    "test/mock_device.h",
-    "test/mock_device_factory.cc",
-    "test/mock_device_factory.h",
     "test/mock_device_test.cc",
     "test/mock_device_test.h",
     "test/mock_device_unittest.cc",
-    "test/mock_producer.cc",
-    "test/mock_producer.h",
-    "test/mock_receiver.cc",
-    "test/mock_receiver.h",
+    "test/mock_devices_changed_observer.cc",
+    "test/mock_devices_changed_observer.h",
     "test/virtual_device_unittest.cc",
     "texture_virtual_device_mojo_adapter_unittest.cc",
   ]
@@ -99,10 +95,12 @@ source_set("tests") {
     ":lib",
     ":video_capture",
     "//base/test:test_support",
+    "//media/capture:test_support",
     "//media/capture/mojom:video_capture",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/cpp:service_test_support",
     "//services/service_manager/public/cpp/test:test_support",
+    "//services/video_capture/public/cpp:mocks",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",

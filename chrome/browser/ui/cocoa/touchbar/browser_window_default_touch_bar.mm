@@ -29,7 +29,6 @@
 #include "components/prefs/pref_member.h"
 #include "components/search_engines/util.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/toolbar/vector_icons.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -469,7 +468,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
 - (void)updateStarredButton {
   const gfx::VectorIcon& icon =
-      isStarred_ ? toolbar::kStarActiveIcon : toolbar::kStarIcon;
+      isStarred_ ? omnibox::kStarActiveIcon : omnibox::kStarIcon;
   SkColor iconColor =
       isStarred_ ? kTouchBarStarActiveColor : kTouchBarDefaultIconColor;
   int tooltipId = isStarred_ ? IDS_TOOLTIP_STARRED : IDS_TOOLTIP_STAR;

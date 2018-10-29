@@ -45,8 +45,7 @@ void WebViewFindHelper::DispatchFindUpdateEvent(bool canceled,
 }
 
 void WebViewFindHelper::EndFindSession(int session_request_id, bool canceled) {
-  FindInfoMap::iterator session_iterator =
-      find_info_map_.find(session_request_id);
+  auto session_iterator = find_info_map_.find(session_request_id);
   DCHECK(session_iterator != find_info_map_.end());
   FindInfo* find_info = session_iterator->second.get();
 
@@ -54,10 +53,8 @@ void WebViewFindHelper::EndFindSession(int session_request_id, bool canceled) {
   find_info->SendResponse(canceled);
 
   // For every subsequent find request of the find session.
-  for (std::vector<base::WeakPtr<WebViewFindHelper::FindInfo> >::iterator i =
-           find_info->find_next_requests_.begin();
-       i != find_info->find_next_requests_.end();
-       ++i) {
+  for (auto i = find_info->find_next_requests_.begin();
+       i != find_info->find_next_requests_.end(); ++i) {
     DCHECK(i->get());
 
     // Do not call callbacks for subsequent find requests that have not been
@@ -148,7 +145,7 @@ void WebViewFindHelper::FindReply(int request_id,
                                   const gfx::Rect& selection_rect,
                                   int active_match_ordinal,
                                   bool final_update) {
-  FindInfoMap::iterator find_iterator = find_info_map_.find(request_id);
+  auto find_iterator = find_info_map_.find(request_id);
 
   // Ignore slow replies to canceled find requests.
   if (find_iterator == find_info_map_.end())

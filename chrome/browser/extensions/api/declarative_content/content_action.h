@@ -60,6 +60,8 @@ class ContentAction {
       const base::Value& json_action,
       std::string* error);
 
+  static void SetAllowInvisibleIconsForTest(bool value);
+
  protected:
   ContentAction();
 };

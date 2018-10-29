@@ -290,4 +290,15 @@ TEST_F(CodecImageTest, ScheduleOverlayPlaneDoesntSendDuplicateHints) {
                           hint2.screen_rect, gfx::RectF(), true, nullptr);
 }
 
+TEST_F(CodecImageTest, GetAHardwareBuffer) {
+  auto i = NewImage(kTextureOwner);
+  EXPECT_EQ(texture_owner_->get_a_hardware_buffer_count, 0);
+  EXPECT_FALSE(i->was_rendered_to_front_buffer());
+
+  EXPECT_CALL(*texture_owner_, UpdateTexImage());
+  i->GetAHardwareBuffer();
+  EXPECT_EQ(texture_owner_->get_a_hardware_buffer_count, 1);
+  EXPECT_TRUE(i->was_rendered_to_front_buffer());
+}
+
 }  // namespace media

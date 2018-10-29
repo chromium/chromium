@@ -81,7 +81,7 @@ class QuicPacketReader {
     // cbuf is used for ancillary data from the kernel on recvmmsg.
     char cbuf[kCmsgSpaceForReadPacket];
     // buf is used for the data read from the kernel on recvmmsg.
-    char buf[kMaxPacketSize];
+    char buf[kMaxV4PacketSize];
   };
   PacketData packets_[kNumPacketsPerReadMmsgCall];
   mmsghdr mmsg_hdr_[kNumPacketsPerReadMmsgCall];

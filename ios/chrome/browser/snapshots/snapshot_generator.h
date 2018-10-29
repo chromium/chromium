@@ -47,16 +47,20 @@ class WebState;
 - (void)retrieveGreySnapshot:(void (^)(UIImage*))callback;
 
 // Invalidates the cached snapshot for the current page, generates and caches
-// a new snapshot. Returns the snapshot with or without the overlayed views
-// (e.g. infobar, voice search button, etc.), and either of the visible frame
-// or of the full screen.
+// a new snapshot. Returns the snapshot with or without the overlaid views
+// (e.g. infobar), and either of the visible frame or of the full screen.
 - (UIImage*)updateSnapshotWithOverlays:(BOOL)shouldAddOverlay
                       visibleFrameOnly:(BOOL)visibleFrameOnly;
 
+// Invalidates the cached snapshot for the current page, generates and caches
+// a new snapshot. Calls |completion| with a snapshot with overlaid views (e.g.
+// infobar) of the visible frame. This method should only be called if the web
+// state has a valid web view.
+- (void)updateWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion;
+
 // Generates a new snapshot for the current page including optional infobars.
-// Returns the snapshot with or without the overlayed views (e.g. infobar,
-// voice search button, etc.), and either of the visible frame or of the full
-// screen.
+// Returns the snapshot with or without the overlaid views (e.g. infobar), and
+// either of the visible frame or of the full screen.
 - (UIImage*)generateSnapshotWithOverlays:(BOOL)shouldAddOverlay
                         visibleFrameOnly:(BOOL)visibleFrameOnly;
 

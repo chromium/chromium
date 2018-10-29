@@ -18,12 +18,12 @@ blink_modules_sources("storage") {
     "storage_area.h",
     "storage_area_map.cc",
     "storage_area_map.h",
+    "storage_controller.cc",
+    "storage_controller.h",
     "storage_event.cc",
     "storage_event.h",
     "storage_namespace.cc",
     "storage_namespace.h",
-    "storage_namespace_controller.cc",
-    "storage_namespace_controller.h",
   ]
 }
 
@@ -32,6 +32,8 @@ jumbo_source_set("unit_tests") {
   sources = [
     "cached_storage_area_test.cc",
     "storage_area_map_test.cc",
+    "storage_controller_test.cc",
+    "storage_namespace_test.cc",
     "testing/fake_area_source.h",
     "testing/mock_storage_area.cc",
     "testing/mock_storage_area.h",

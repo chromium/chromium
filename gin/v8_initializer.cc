@@ -61,15 +61,6 @@ void GetMappedFileData(base::MemoryMappedFile* mapped_file,
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 
-// File handles intentionally never closed. Not using File here because its
-// Windows implementation guards against two instances owning the same
-// PlatformFile (which we allow since we know it is never freed).
-using OpenedFileMap =
-    std::map<const char*,
-             std::pair<base::PlatformFile, base::MemoryMappedFile::Region>>;
-base::LazyInstance<OpenedFileMap>::Leaky g_opened_files =
-    LAZY_INSTANCE_INITIALIZER;
-
 const char kNativesFileName[] = "natives_blob.bin";
 
 #if defined(OS_ANDROID)
@@ -120,21 +111,21 @@ void GetV8FilePath(const char* file_name, base::FilePath* path_out) {
 #endif
 }
 
-bool MapV8File(base::PlatformFile platform_file,
+bool MapV8File(base::File file,
                base::MemoryMappedFile::Region region,
                base::MemoryMappedFile** mmapped_file_out) {
   DCHECK(*mmapped_file_out == NULL);
   std::unique_ptr<base::MemoryMappedFile> mmapped_file(
       new base::MemoryMappedFile());
-  if (mmapped_file->Initialize(base::File(platform_file), region)) {
+  if (mmapped_file->Initialize(std::move(file), region)) {
     *mmapped_file_out = mmapped_file.release();
     return true;
   }
   return false;
 }
 
-base::PlatformFile OpenV8File(const char* file_name,
-                              base::MemoryMappedFile::Region* region_out) {
+base::File OpenV8File(const char* file_name,
+                      base::MemoryMappedFile::Region* region_out) {
   // Re-try logic here is motivated by http://crbug.com/479537
   // for A/V on Windows (https://support.microsoft.com/en-us/kb/316609).
 
@@ -197,20 +188,7 @@ base::PlatformFile OpenV8File(const char* file_name,
   UMA_HISTOGRAM_ENUMERATION("V8.Initializer.OpenV8File.Result",
                             result,
                             OpenV8FileResult::MAX_VALUE);
-  return file.TakePlatformFile();
-}
-
-OpenedFileMap::mapped_type& GetOpenedFile(const char* filename) {
-  OpenedFileMap& opened_files(g_opened_files.Get());
-  auto result = opened_files.emplace(filename, OpenedFileMap::mapped_type());
-  OpenedFileMap::mapped_type& opened_file = result.first->second;
-  bool is_new_file = result.second;
-
-  // If we have no cache, try to open it and cache the result.
-  if (is_new_file)
-    opened_file.first = OpenV8File(filename, &opened_file.second);
-
-  return opened_file;
+  return file;
 }
 
 enum LoadV8FileResult {
@@ -221,16 +199,7 @@ enum LoadV8FileResult {
   V8_LOAD_MAX_VALUE
 };
 
-LoadV8FileResult MapOpenedFile(const OpenedFileMap::mapped_type& file_region,
-                               base::MemoryMappedFile** mmapped_file_out) {
-  if (file_region.first == base::kInvalidPlatformFile)
-    return V8_LOAD_FAILED_OPEN;
-  if (!MapV8File(file_region.first, file_region.second, mmapped_file_out))
-    return V8_LOAD_FAILED_MAP;
-  return V8_LOAD_SUCCESS;
-}
-
-#endif  // defined(V8_USE_EXTERNAL_STATUP_DATA)
+#endif  // defined(V8_USE_EXTERNAL_STARTUP_DATA)
 
 }  // namespace
 
@@ -309,13 +278,10 @@ void V8Initializer::LoadV8Snapshot(V8SnapshotFileType snapshot_file_type) {
     return;
   }
 
-  LoadV8FileResult result =
-      MapOpenedFile(GetOpenedFile(GetSnapshotFileName(snapshot_file_type)),
-                    &g_mapped_snapshot);
-  // V8 can't start up without the source of the natives, but it can
-  // start up (slower) without the snapshot.
-  UMA_HISTOGRAM_ENUMERATION("V8.Initializer.LoadV8Snapshot.Result", result,
-                            V8_LOAD_MAX_VALUE);
+  base::MemoryMappedFile::Region file_region;
+  base::File file =
+      OpenV8File(GetSnapshotFileName(snapshot_file_type), &file_region);
+  LoadV8SnapshotFromFile(std::move(file), &file_region, snapshot_file_type);
 }
 
 // static
@@ -323,65 +289,56 @@ void V8Initializer::LoadV8Natives() {
   if (g_mapped_natives)
     return;
 
-  LoadV8FileResult result = MapOpenedFile(GetOpenedFile(kNativesFileName),
-                                          &g_mapped_natives);
-  if (result != V8_LOAD_SUCCESS) {
-    LOG(FATAL) << "Couldn't mmap v8 natives data file, status code is "
-               << static_cast<int>(result);
-  }
+  base::MemoryMappedFile::Region file_region;
+  base::File file = OpenV8File(kNativesFileName, &file_region);
+  LoadV8NativesFromFile(std::move(file), &file_region);
 }
 
 // static
-void V8Initializer::LoadV8SnapshotFromFD(
-    base::PlatformFile snapshot_pf,
-    int64_t snapshot_offset,
-    int64_t snapshot_size,
+void V8Initializer::LoadV8SnapshotFromFile(
+    base::File snapshot_file,
+    base::MemoryMappedFile::Region* snapshot_file_region,
     V8SnapshotFileType snapshot_file_type) {
   if (g_mapped_snapshot)
     return;
 
-  if (snapshot_pf == base::kInvalidPlatformFile)
+  if (!snapshot_file.IsValid()) {
+    UMA_HISTOGRAM_ENUMERATION("V8.Initializer.LoadV8Snapshot.Result",
+                              V8_LOAD_FAILED_OPEN, V8_LOAD_MAX_VALUE);
     return;
+  }
 
-  base::MemoryMappedFile::Region snapshot_region =
+  base::MemoryMappedFile::Region region =
       base::MemoryMappedFile::Region::kWholeFile;
-  if (snapshot_size != 0 || snapshot_offset != 0) {
-    snapshot_region.offset = snapshot_offset;
-    snapshot_region.size = snapshot_size;
+  if (snapshot_file_region) {
+    region = *snapshot_file_region;
   }
 
   LoadV8FileResult result = V8_LOAD_SUCCESS;
-  if (!MapV8File(snapshot_pf, snapshot_region, &g_mapped_snapshot))
+  if (!MapV8File(std::move(snapshot_file), region, &g_mapped_snapshot))
     result = V8_LOAD_FAILED_MAP;
-  if (result == V8_LOAD_SUCCESS) {
-    g_opened_files.Get()[GetSnapshotFileName(snapshot_file_type)] =
-        std::make_pair(snapshot_pf, snapshot_region);
-  }
   UMA_HISTOGRAM_ENUMERATION("V8.Initializer.LoadV8Snapshot.Result", result,
                             V8_LOAD_MAX_VALUE);
 }
 
 // static
-void V8Initializer::LoadV8NativesFromFD(base::PlatformFile natives_pf,
-                                        int64_t natives_offset,
-                                        int64_t natives_size) {
+void V8Initializer::LoadV8NativesFromFile(
+    base::File natives_file,
+    base::MemoryMappedFile::Region* natives_file_region) {
   if (g_mapped_natives)
     return;
 
-  CHECK_NE(natives_pf, base::kInvalidPlatformFile);
+  CHECK(natives_file.IsValid());
 
-  base::MemoryMappedFile::Region natives_region =
+  base::MemoryMappedFile::Region region =
       base::MemoryMappedFile::Region::kWholeFile;
-  if (natives_size != 0 || natives_offset != 0) {
-    natives_region.offset = natives_offset;
-    natives_region.size = natives_size;
+  if (natives_file_region) {
+    region = *natives_file_region;
   }
 
-  if (!MapV8File(natives_pf, natives_region, &g_mapped_natives)) {
+  if (!MapV8File(std::move(natives_file), region, &g_mapped_natives)) {
     LOG(FATAL) << "Couldn't mmap v8 natives data file";
   }
-  g_opened_files.Get()[kNativesFileName] =
-      std::make_pair(natives_pf, natives_region);
 }
 
 #if defined(OS_ANDROID)

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/profile_sync_test_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -36,7 +37,7 @@ class SyncStartupTrackerTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     mock_pss_ = static_cast<browser_sync::ProfileSyncServiceMock*>(
         ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile_.get(), BuildMockProfileSyncService));
+            profile_.get(), base::BindRepeating(&BuildMockProfileSyncService)));
 
     ON_CALL(*mock_pss_, GetAuthError()).WillByDefault(ReturnRef(no_error_));
     ON_CALL(*mock_pss_, GetRegisteredDataTypes())

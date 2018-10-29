@@ -15,6 +15,10 @@ class OpenUrlDelegate {
 
   // Opens the given URL in the Chrome browser.
   virtual void OpenUrlFromArc(const GURL& url) = 0;
+
+  // Opens the given URL as a web app in the Chrome browser, falling back to
+  // opening as a tab if no installed web app is found.
+  virtual void OpenWebAppFromArc(const GURL& url) = 0;
 };
 
 }  // namespace arc

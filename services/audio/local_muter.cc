@@ -16,10 +16,10 @@ LocalMuter::LocalMuter(LoopbackCoordinator* coordinator,
   DCHECK(coordinator_);
 
   coordinator_->AddObserver(group_id_, this);
-  for (LoopbackGroupMember* member :
-       coordinator_->GetCurrentMembers(group_id_)) {
-    member->StartMuting();
-  }
+  coordinator_->ForEachMemberInGroup(
+      group_id_, base::BindRepeating([](LoopbackGroupMember* member) {
+        member->StartMuting();
+      }));
 
   bindings_.set_connection_error_handler(
       base::BindRepeating(&LocalMuter::OnBindingLost, base::Unretained(this)));
@@ -28,11 +28,10 @@ LocalMuter::LocalMuter(LoopbackCoordinator* coordinator,
 LocalMuter::~LocalMuter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (LoopbackGroupMember* member :
-       coordinator_->GetCurrentMembers(group_id_)) {
-    member->StopMuting();
-  }
-
+  coordinator_->ForEachMemberInGroup(
+      group_id_, base::BindRepeating([](LoopbackGroupMember* member) {
+        member->StopMuting();
+      }));
   coordinator_->RemoveObserver(group_id_, this);
 }
 

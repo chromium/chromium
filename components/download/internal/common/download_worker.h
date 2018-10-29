@@ -8,11 +8,16 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_request_handle_interface.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/url_download_handler.h"
+
+namespace net {
+class URLRequestContextGetter;
+}
 
 namespace download {
 class DownloadURLLoaderFactoryGetter;
@@ -44,9 +49,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadWorker
   int64_t length() const { return length_; }
 
   // Send network request to ask for a download.
-  void SendRequest(std::unique_ptr<DownloadUrlParameters> params,
-                   scoped_refptr<download::DownloadURLLoaderFactoryGetter>
-                       url_loader_factory_getter);
+  void SendRequest(
+      std::unique_ptr<DownloadUrlParameters> params,
+      scoped_refptr<download::DownloadURLLoaderFactoryGetter>
+          url_loader_factory_getter,
+      scoped_refptr<net::URLRequestContextGetter> url_request_context_getter);
 
   // Download operations.
   void Pause();

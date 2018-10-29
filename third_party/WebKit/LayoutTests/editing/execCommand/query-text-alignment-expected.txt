@@ -2,7 +2,6 @@ Tests queryCommandState('justifyCenter'), queryCommandState('justifyFull'), quer
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Caret
 PASS queryCommand('format') returns "" when selecting no selection on of "hello"
 PASS queryCommand('format') returns "left" when selecting first position of "hello"
@@ -35,6 +34,7 @@ PASS queryCommand('format') returns "center" when selecting first position of "<
 PASS queryCommand('format') returns "left" when selecting first position of "<div align="left">hello</div>"
 PASS queryCommand('format') returns "right" when selecting first position of "<div align="right">hello</div>"
 
+
 Tests for win
 PASS queryCommand('format') returns "left" when selecting middle of "<p>hello</p><p>world</p>"
 PASS queryCommand('format') returns "" when selecting middle of "<p align="right">hello</p><p>world</p>"
@@ -48,6 +48,7 @@ PASS queryCommand('format') returns "" when selecting middle of "<div align="rig
 PASS queryCommand('format') returns "" when selecting middle of "<div align="left"><p align="center">world</p>hello</div>"
 PASS queryCommand('format') returns "left" when selecting middle of "<p align="left">hello</p><p>w</p><p align="left">orld</p>"
 PASS queryCommand('format') returns "" when selecting middle of "<p align="justify">hello</p><p>w</p><p align="center">orld</p>"
+
 
 Tests for mac
 PASS queryCommand('format') returns "left" when selecting middle of "<p>hello</p><p>world</p>"

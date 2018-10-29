@@ -2,10 +2,10 @@ This tests mapping of lang/xml:lang to -webkit-locale with dynamic attribute cha
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS localeOfNode('x1') is "\"ko\""
 PASS localeOfNode('x2') is "\"ko\""
 PASS localeOfNode('x3') is "\"ar\""

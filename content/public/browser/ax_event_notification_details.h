@@ -25,7 +25,7 @@ struct CONTENT_EXPORT AXEventNotificationDetails {
   ~AXEventNotificationDetails();
 
   // The unique ID of the accessibility tree this event bundle applies to.
-  int ax_tree_id;
+  ui::AXTreeID ax_tree_id;
 
   // Zero or more updates to the accessibility tree to apply first.
   std::vector<ui::AXTreeUpdate> updates;
@@ -44,7 +44,7 @@ struct CONTENT_EXPORT AXLocationChangeNotificationDetails {
   ~AXLocationChangeNotificationDetails();
 
   int id;
-  int ax_tree_id;
+  ui::AXTreeID ax_tree_id;
   ui::AXRelativeBounds new_location;
 };
 

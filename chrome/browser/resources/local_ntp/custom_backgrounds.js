@@ -71,6 +71,7 @@ customBackgrounds.KEYCODES = {
 customBackgrounds.IDS = {
   ATTRIBUTIONS: 'custom-bg-attr',
   BACK: 'bg-sel-back',
+  BACK_CIRCLE: 'bg-sel-back-circle',
   CANCEL: 'bg-sel-footer-cancel',
   CUSTOM_LINKS_RESTORE_DEFAULT: 'custom-links-restore-default',
   CUSTOM_LINKS_RESTORE_DEFAULT_TEXT: 'custom-links-restore-default-text',
@@ -185,6 +186,13 @@ customBackgrounds.dialogCollectionsSource = customBackgrounds.SOURCES.NONE;
  */
 customBackgrounds.showErrorNotification;
 
+/*
+ * Called when the custom link notification should be hidden.
+ * @type {?Function}
+ * @private
+ */
+customBackgrounds.hideCustomLinkNotification;
+
 /**
  * Alias for document.getElementById.
  * @param {string} id The ID of the element to find.
@@ -197,16 +205,13 @@ function $(id) {
 
 /**
  * Sets the visibility of the settings menu and individual options depending on
- * their respective features and if the user has a theme installed.
- * @param {boolean} hasTheme True if the user has a theme installed.
+ * their respective features.
  */
-customBackgrounds.setMenuVisibility = function(hasTheme) {
+customBackgrounds.setMenuVisibility = function() {
   // Hide the settings menu if:
   // - Custom links and custom backgrounds are not enabled.
-  // - Custom links is not enabled and a theme is installed.
-  if ((!configData.isCustomLinksEnabled &&
-       !configData.isCustomBackgroundsEnabled) ||
-      (!configData.isCustomLinksEnabled && hasTheme)) {
+  if (!configData.isCustomLinksEnabled &&
+      !configData.isCustomBackgroundsEnabled) {
     $(customBackgrounds.IDS.EDIT_BG).hidden = true;
     return;
   }
@@ -221,7 +226,7 @@ customBackgrounds.setMenuVisibility = function(hasTheme) {
 
   // Custom backgrounds is disabled or a theme is installed, hide all custom
   // background options.
-  if (!configData.isCustomBackgroundsEnabled || hasTheme) {
+  if (!configData.isCustomBackgroundsEnabled) {
     $(customBackgrounds.IDS.DEFAULT_WALLPAPERS).hidden = true;
     $(customBackgrounds.IDS.UPLOAD_IMAGE).hidden = true;
     $(customBackgrounds.IDS.RESTORE_DEFAULT).hidden = true;
@@ -371,8 +376,8 @@ customBackgrounds.getTilesWide = function() {
     return 2;
   }
   // Browser window can only fit one column. Should match @media (max-width:
-  // 520px) "#bg-sel-menu" width.
-  else if ($(customBackgrounds.IDS.MENU).offsetWidth < 352) {
+  // 356) "#bg-sel-menu" width.
+  else if ($(customBackgrounds.IDS.MENU).offsetWidth < 356) {
     return 1;
   }
 
@@ -887,10 +892,13 @@ customBackgrounds.networkStateChanged = function(online) {
 /**
  * Initialize the settings menu, custom backgrounds dialogs, and custom links
  * menu items. Set the text and event handlers for the various elements.
- * @param {?Function} showErrorNotification Called when the error notification
- *                    should be displayed
+ * @param {!Function} showErrorNotification Called when the error notification
+ *                    should be displayed.
+ * @param {!Function} hideCustomLinkNotification Called when the custom link
+ *                    notification should be hidden.
  */
-customBackgrounds.init = function(showErrorNotification) {
+customBackgrounds.init = function(
+    showErrorNotification, hideCustomLinkNotification) {
   ntpApiHandle = window.chrome.embeddedSearch.newTabPage;
   let editDialog = $(customBackgrounds.IDS.EDIT_BG_DIALOG);
   let menu = $(customBackgrounds.IDS.MENU);
@@ -901,6 +909,9 @@ customBackgrounds.init = function(showErrorNotification) {
   $(customBackgrounds.IDS.EDIT_BG_GEAR)
       .setAttribute(
           'aria-label', configData.translatedStrings.customizeThisPage);
+
+  $(customBackgrounds.IDS.EDIT_BG_GEAR)
+      .setAttribute('title', configData.translatedStrings.customizeBackground);
 
   // Edit gear icon interaction events.
   let editBackgroundInteraction = function() {
@@ -979,7 +990,7 @@ customBackgrounds.init = function(showErrorNotification) {
   };
 
   if (configData.isCustomLinksEnabled)
-    customBackgrounds.initCustomLinksItems();
+    customBackgrounds.initCustomLinksItems(hideCustomLinkNotification);
   if (configData.isCustomBackgroundsEnabled)
     customBackgrounds.initCustomBackgrounds(showErrorNotification);
 };
@@ -987,8 +998,12 @@ customBackgrounds.init = function(showErrorNotification) {
 /**
  * Initialize custom link items in the settings menu dialog. Set the text
  * and event handlers for the various elements.
+ * @param {!Function} hideCustomLinkNotification Called when the custom link
+ *                    notification should be hidden.
  */
-customBackgrounds.initCustomLinksItems = function() {
+customBackgrounds.initCustomLinksItems = function(hideCustomLinkNotification) {
+  customBackgrounds.hideCustomLinkNotification = hideCustomLinkNotification;
+
   let editDialog = $(customBackgrounds.IDS.EDIT_BG_DIALOG);
   let menu = $(customBackgrounds.IDS.MENU);
 
@@ -998,6 +1013,7 @@ customBackgrounds.initCustomLinksItems = function() {
   // Interactions with the "Restore default shortcuts" option.
   let customLinksRestoreDefaultInteraction = function() {
     editDialog.close();
+    customBackgrounds.hideCustomLinkNotification();
     window.chrome.embeddedSearch.newTabPage.resetCustomLinks();
     ntpApiHandle.logEvent(BACKGROUND_CUSTOMIZATION_LOG_TYPE
                               .NTP_CUSTOMIZE_RESTORE_SHORTCUTS_CLICKED);
@@ -1033,8 +1049,8 @@ customBackgrounds.initCustomLinksItems = function() {
 /**
  * Initialize the settings menu and custom backgrounds dialogs. Set the
  * text and event handlers for the various elements.
- * @param {?Function} showErrorNotification Called when the error notification
- *                    should be displayed
+ * @param {!Function} showErrorNotification Called when the error notification
+ *                    should be displayed.
  */
 customBackgrounds.initCustomBackgrounds = function(showErrorNotification) {
   customBackgrounds.showErrorNotification = showErrorNotification;
@@ -1067,7 +1083,7 @@ customBackgrounds.initCustomBackgrounds = function(showErrorNotification) {
     customBackgrounds.networkStateChanged(false);
   }
 
-  $(customBackgrounds.IDS.BACK)
+  $(customBackgrounds.IDS.BACK_CIRCLE)
       .setAttribute('aria-label', configData.translatedStrings.backLabel);
   $(customBackgrounds.IDS.CANCEL)
       .setAttribute('aria-label', configData.translatedStrings.selectionCancel);
@@ -1218,9 +1234,10 @@ customBackgrounds.initCustomBackgrounds = function(showErrorNotification) {
     customBackgrounds.showCollectionSelectionDialog(
         customBackgrounds.dialogCollectionsSource);
   };
-  $(customBackgrounds.IDS.BACK).onclick = backInteraction;
-  $(customBackgrounds.IDS.BACK).onkeyup = function(event) {
-    if (event.keyCode === customBackgrounds.KEYCODES.ENTER) {
+  $(customBackgrounds.IDS.BACK_CIRCLE).onclick = backInteraction;
+  $(customBackgrounds.IDS.BACK_CIRCLE).onkeyup = function(event) {
+    if (event.keyCode === customBackgrounds.KEYCODES.ENTER ||
+        event.keyCode === customBackgrounds.KEYCODES.SPACE) {
       backInteraction(event);
     }
   };

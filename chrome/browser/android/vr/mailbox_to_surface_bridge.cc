@@ -13,6 +13,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "content/public/browser/android/compositor.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -251,8 +252,8 @@ void MailboxToSurfaceBridge::CreateContextProviderInternal() {
       base::BindRepeating(&MailboxToSurfaceBridge::OnContextAvailableOnUiThread,
                           weak_ptr_factory_.GetWeakPtr());
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(
           [](int surface_handle,
              const content::Compositor::ContextProviderCallback& callback) {

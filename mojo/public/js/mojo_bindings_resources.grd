@@ -13,9 +13,23 @@
   <translations />
   <release seq="1">
     <includes>
-      <include name="IDR_MOJO_BINDINGS_JS"
-               file="${root_gen_dir}\mojo\public\js\mojo_bindings.js"
-               type="BINDATA" use_base_dir="false" compress="gzip" />
+      <include name="IDR_MOJO_MOJO_BINDINGS_JS"
+          file="${root_gen_dir}/mojo/public/js/mojo_bindings.js"
+          use_base_dir="false"
+          type="BINDATA"
+          compress="gzip" />
+      <include name="IDR_MOJO_MOJO_BINDINGS_LITE_JS"
+          file="${root_gen_dir}/mojo/public/js/mojo_bindings_lite.js"
+          use_base_dir="false"
+          type="BINDATA"
+          compress="gzip" />
+      <if expr="is_win or is_macosx or is_linux">
+        <include name="IDR_MOJO_TIME_MOJOM_JS"
+            file="${root_gen_dir}/mojo/public/mojom/base/time.mojom.js"
+            use_base_dir="false"
+            type="BINDATA"
+            compress="gzip" />
+      </if>
     </includes>
   </release>
 </grit>

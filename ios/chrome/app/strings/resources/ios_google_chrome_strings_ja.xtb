@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome ではアカウントがウェブで管理されるので、さまざまな手間を省くことができます。[設定] でアカウントの追加と削除を行うことができます。</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3345341804167540816">Chromeをどこでも使用</translation>
-<translation id="3678774398092457402">Chrome でこのサイトのパスワードを保存しますか？</translation>
 <translation id="384394811301901750">現在 Google Chrome ではカメラを使用できません</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">同期アカウントを <ph name="USER_EMAIL1" /> から <ph name="USER_EMAIL2" /> へ切り替えます。既存の Chrome データは <ph name="DOMAIN" /> で管理されています。データはこのデバイスから削除されますが、<ph name="USER_EMAIL1" /> で保持されます。</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />設定<ph name="END_LINK" />はいつでも変更できます。Google は、Chrome やその他の Google サービス（翻訳、検索、広告など）をカスタマイズする目的で、ユーザーがアクセスしたサイトのコンテンツ、ユーザーの閲覧行動や操作を使用することがあります。</translation>
 <translation id="5639704535586432836">[設定] &gt; [プライバシー] &gt; [カメラ] &gt; [Google Chrome] の順に選択し、カメラをオンにします。</translation>
 <translation id="5642200033778930880">Google Chrome では、分割表示モードでカメラを使用することはできません</translation>
-<translation id="5703130498371792817">Chrome の使用感はいかがですか？<ph name="BEGIN_LINK" />このアプリを評価してください。<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Chrome の使い方のヒント: 戻る、進む、検索など一部のボタンは画面の下部に表示されるようになりました。</translation>
 <translation id="6036420186814142909">Google Chromeには、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Google Chrome 利用規約</translation>
 <translation id="7165736900384873061">Google Chrome の QR スキャナの使用を開始する</translation>
 <translation id="7172660552945675509">ヒント: <ph name="BEGIN_LINK" />Chrome を Dock に移動<ph name="END_LINK" />するとアクセスしやすくなります</translation>
+<translation id="7173660919484573146">Chrome では Face ID の使用により、パスワードへの認証されたアクセスのみが許可されます。</translation>
 <translation id="7265369419224458312">パソコンで開いたタブにこちらからアクセスできます。パソコンでChromeを開き、メニューから[Chromeにログイン]を選択してください。</translation>
 <translation id="728488472449859922">Google Chrome の QR スキャナをオンにする</translation>
 <translation id="7400722733683201933">Google Chrome について</translation>

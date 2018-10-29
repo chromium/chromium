@@ -43,8 +43,8 @@ class {{property_classname}} final : public {{property.namespace_group}} {
     DEFINE_STATIC_LOCAL(const AtomicString, name, ("{{property.name}}"));
     return name;
   }
-  const WTF::String GetJSPropertyName() const override {
-    return WTF::String("{{property_classname[0].lower() + property_classname[1:]}}");
+  const char* GetJSPropertyName() const override {
+    return "{{property_classname[0].lower() + property_classname[1:]}}";
   }
   {% if property.alias_for == None %}
   CSSPropertyID PropertyID() const override { return {{property.property_id}}; }

@@ -48,6 +48,7 @@ CASE 1, original layer tree
     }
   ]
 }
+
 CASE 2, change color of "inner" to red
 {
   "layers": [
@@ -87,7 +88,7 @@ CASE 2, change color of "inner" to red
         {
           "object": "LayoutBlockFlow (positioned) DIV id='inner'",
           "rect": [10, 10, 50, 50],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

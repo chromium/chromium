@@ -2,11 +2,10 @@ This test ensures that we properly reattach collapsed whitespace when sibling st
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS
  spans[spans.length - 1].offsetLeft is >= 400
-
-Item 1 Item 2 Item 3 
+Item 1 Item 2 Item 3

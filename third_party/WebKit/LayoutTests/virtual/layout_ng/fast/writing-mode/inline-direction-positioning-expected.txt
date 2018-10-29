@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-    LayoutNGBlockFlow {BODY} at (8,8) size 784x584
-      LayoutNGBlockFlow {DIV} at (0,0) size 604x104 [border: (2px solid #000000)]
-        LayoutNGBlockFlow {DIV} at (52,2) size 100x100 [bgcolor=#008000]
-      LayoutNGBlockFlow {DIV} at (0,104) size 604x104 [border: (2px solid #000000)]
-        LayoutNGBlockFlow {DIV} at (452,2) size 100x100 [bgcolor=#008000]

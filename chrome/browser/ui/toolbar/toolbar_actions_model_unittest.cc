@@ -348,8 +348,7 @@ bool ToolbarActionsModelUnitTest::ModelHasActionForId(
 
 testing::AssertionResult ToolbarActionsModelUnitTest::AddAndVerifyExtensions(
     const extensions::ExtensionList& extensions) {
-  for (extensions::ExtensionList::const_iterator iter = extensions.begin();
-       iter != extensions.end(); ++iter) {
+  for (auto iter = extensions.begin(); iter != extensions.end(); ++iter) {
     if (!AddExtension(*iter)) {
       return testing::AssertionFailure() << "Failed to install extension: "
                                          << (*iter)->name();

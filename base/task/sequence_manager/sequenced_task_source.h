@@ -16,6 +16,8 @@ namespace internal {
 // Interface to pass tasks to ThreadController.
 class SequencedTaskSource {
  public:
+  virtual ~SequencedTaskSource() = default;
+
   // Returns the next task to run from this source or nullopt if
   // there're no more tasks ready to run. If a task is returned,
   // DidRunTask() must be invoked before the next call to TakeTask().
@@ -28,6 +30,10 @@ class SequencedTaskSource {
   // Returns the delay till the next task or TimeDelta::Max()
   // if there are no tasks left.
   virtual TimeDelta DelayTillNextTask(LazyNow* lazy_now) = 0;
+
+  // Return true if there are any pending tasks in the task source which require
+  // high resolution timing.
+  virtual bool HasPendingHighResolutionTasks() = 0;
 };
 
 }  // namespace internal

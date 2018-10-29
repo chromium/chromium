@@ -29,7 +29,8 @@ namespace test {
 enum ElementAction {
   ELEMENT_ACTION_CLICK,
   ELEMENT_ACTION_FOCUS,
-  ELEMENT_ACTION_SUBMIT
+  ELEMENT_ACTION_SUBMIT,
+  ELEMENT_ACTION_SELECT,
 };
 
 std::unique_ptr<base::Value> ExecuteJavaScript(web::WebState* web_state,
@@ -127,7 +128,14 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
 
   CGFloat scale = [[web_state->GetWebViewProxy() scrollViewProxy] zoomScale];
 
-  return CGRectMake(left * scale, top * scale, width * scale, height * scale);
+  CGRect elementFrame =
+      CGRectMake(left * scale, top * scale, width * scale, height * scale);
+  UIEdgeInsets contentInset =
+      web_state->GetWebViewProxy().scrollViewProxy.contentInset;
+  elementFrame =
+      CGRectOffset(elementFrame, contentInset.left, contentInset.top);
+
+  return elementFrame;
 }
 
 // Returns whether the Javascript action specified by |action| ran on the
@@ -150,6 +158,9 @@ bool RunActionOnWebViewElementWithScript(web::WebState* web_state,
       break;
     case ELEMENT_ACTION_SUBMIT:
       js_action = ".submit();";
+      break;
+    case ELEMENT_ACTION_SELECT:
+      js_action = ".selected = true;";
       break;
   }
   NSString* script = [NSString stringWithFormat:
@@ -231,6 +242,12 @@ bool SubmitWebViewFormWithId(web::WebState* web_state,
                              const std::string& form_id) {
   return RunActionOnWebViewElementWithId(web_state, form_id,
                                          ELEMENT_ACTION_SUBMIT, nil);
+}
+
+bool SelectWebViewElementWithId(web::WebState* web_state,
+                                const std::string& element_id) {
+  return RunActionOnWebViewElementWithId(web_state, element_id,
+                                         ELEMENT_ACTION_SELECT, nil);
 }
 
 }  // namespace test

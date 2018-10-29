@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxDomUtilUnitTest() {}
+function ChromeVoxDomUtilUnitTest() {}
 
-CvoxDomUtilUnitTest.prototype = {
+ChromeVoxDomUtilUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -101,7 +101,7 @@ CvoxDomUtilUnitTest.prototype = {
   },
 };
 
-TEST_F('CvoxDomUtilUnitTest', 'IsVisible', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'IsVisible', function() {
   this.loadDomUtilTestDoc_();
 
   // Simple tests.
@@ -150,7 +150,7 @@ TEST_F('CvoxDomUtilUnitTest', 'IsVisible', function() {
 });
 
 /** Test determining if a node is a leaf node or not. @export */
-TEST_F('CvoxDomUtilUnitTest', 'IsLeafNode', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'IsLeafNode', function() {
   this.loadDomUtilTestDoc_();
 
   var node = $('normal_node');
@@ -180,7 +180,7 @@ TEST_F('CvoxDomUtilUnitTest', 'IsLeafNode', function() {
 });
 
 /** Test determining if a node has content or not. @export */
-TEST_F('CvoxDomUtilUnitTest', 'HasContent', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'HasContent', function() {
   this.loadDomUtilTestDoc_();
 
   var node = $('normal_node');
@@ -220,7 +220,7 @@ TEST_F('CvoxDomUtilUnitTest', 'HasContent', function() {
 });
 
 /** Test getting a node's state. @export */
-TEST_F('CvoxDomUtilUnitTest', 'NodeState', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'NodeState', function() {
   this.loadDomUtilTestDoc_();
   this.appendDoc(function() {/*!
   <input id="state1_enabled">
@@ -271,7 +271,7 @@ TEST_F('CvoxDomUtilUnitTest', 'NodeState', function() {
 });
 
 /** Test finding the next/previous leaf node. @export */
-TEST_F('CvoxDomUtilUnitTest', 'LeafNodeTraversal', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'LeafNodeTraversal', function() {
   this.loadDomUtilTestDoc_();
 
   var node = $('a');
@@ -290,7 +290,7 @@ TEST_F('CvoxDomUtilUnitTest', 'LeafNodeTraversal', function() {
 });
 
 /** Test finding the label for controls. @export */
-TEST_F('CvoxDomUtilUnitTest', 'GetLabel', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'GetLabel', function() {
   this.loadDoc(function() {/*!
     <fieldset id="Fieldset">
     <legend>This is a legend inside a fieldset</legend>
@@ -357,7 +357,7 @@ TEST_F('CvoxDomUtilUnitTest', 'GetLabel', function() {
 });
 
 /** Test finding the label for controls with a more complex setup. @export */
-TEST_F('CvoxDomUtilUnitTest', 'GetLabelComplex', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'GetLabelComplex', function() {
   this.loadDoc(function() {/*!
   <table class="bug-report-table">
   <tbody><tr>
@@ -413,7 +413,7 @@ TEST_F('CvoxDomUtilUnitTest', 'GetLabelComplex', function() {
 
 /**************************************************************/
 
-TEST_F('CvoxDomUtilUnitTest', 'EscapedNames', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'EscapedNames', function() {
   this.loadDoc(function() {/*!
      <p id="en-title" title="&lt;&gt;"></p>
      <p id="en-arialabel" aria-label="&lt;&gt;"></p>
@@ -431,7 +431,7 @@ TEST_F('CvoxDomUtilUnitTest', 'EscapedNames', function() {
 });
 
 /** Test a paragraph with plain text. @export */
-TEST_F('CvoxDomUtilUnitTest', 'SimplePara', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'SimplePara', function() {
   this.loadDoc(function() {/*!
     <p id="simplepara">This is a simple paragraph.</p>
   */});
@@ -441,7 +441,7 @@ TEST_F('CvoxDomUtilUnitTest', 'SimplePara', function() {
 });
 
 /** Test a paragraph with nested tags. @export */
-TEST_F('CvoxDomUtilUnitTest', 'NestedPara', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'NestedPara', function() {
   this.loadDoc(function() {/*!
     <p id="nestedpara">This is a <b>paragraph</b> with <i>nested</i> tags.</p>
   */});
@@ -454,7 +454,7 @@ TEST_F('CvoxDomUtilUnitTest', 'NestedPara', function() {
  * Test a paragraph with nested tags and varying visibility.
  * @export
  */
-TEST_F('CvoxDomUtilUnitTest', 'NestedVisibilityPara', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'NestedVisibilityPara', function() {
   this.loadDoc(function() {/*!
     <style type="text/css">
       #nested_visibility_paragraph { }
@@ -475,7 +475,7 @@ TEST_F('CvoxDomUtilUnitTest', 'NestedVisibilityPara', function() {
 });
 
 /** Test getting text from an IMG node. @export */
-TEST_F('CvoxDomUtilUnitTest', 'Image', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'Image', function() {
   this.loadDoc(function() {/*!
     <img id="img">
     <img id="img_noalt" src="rose.png">
@@ -498,7 +498,7 @@ TEST_F('CvoxDomUtilUnitTest', 'Image', function() {
 });
 
 /** Test getting text from a select box. @export */
-TEST_F('CvoxDomUtilUnitTest', 'Select', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'Select', function() {
   this.loadDoc(function() {/*!
     <select id="select_noneselected">
       <option>Apple</option>
@@ -520,7 +520,7 @@ TEST_F('CvoxDomUtilUnitTest', 'Select', function() {
 });
 
 /** Test whether funky html causes getName to go into infinite loop. */
-TEST_F('CvoxDomUtilUnitTest', 'GetNameInfiniteLoop', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'GetNameInfiniteLoop', function() {
   this.loadDoc(function() {/*!
     <div>
       <label for="a">
@@ -535,7 +535,7 @@ TEST_F('CvoxDomUtilUnitTest', 'GetNameInfiniteLoop', function() {
 });
 
 /** Test getting text from an INPUT control. @export */
-TEST_F('CvoxDomUtilUnitTest', 'Input', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'Input', function() {
   this.loadDoc(function() {/*!
     <form action="">
       <input id="hidden" type="hidden" value="hidden1">
@@ -599,7 +599,7 @@ TEST_F('CvoxDomUtilUnitTest', 'Input', function() {
 
 
 /** Test checking if something is a control. @export */
-TEST_F('CvoxDomUtilUnitTest', 'IsControl', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'IsControl', function() {
   this.loadDoc(function() {/*!
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -1000,7 +1000,7 @@ TEST_F('CvoxDomUtilUnitTest', 'IsControl', function() {
 });
 
 /** Test if something is an ARIA control. @export */
-TEST_F('CvoxDomUtilUnitTest', 'IsAriaControl', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'IsAriaControl', function() {
   this.loadDoc(function() {/*!
   <li id="cb1" role="checkbox" tabindex="0" aria-checked="false"
   aria-describedby="cond desc1">
@@ -1022,7 +1022,7 @@ TEST_F('CvoxDomUtilUnitTest', 'IsAriaControl', function() {
 });
 
 /** Test if something is an focusable. @export */
-TEST_F('CvoxDomUtilUnitTest', 'IsFocusable', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'IsFocusable', function() {
   this.loadDoc(function() {/*!
   <a id="focus_link" href="#">Link</a>
   <a id="focus_anchor">Unfocusable anchor</a>
@@ -1075,7 +1075,7 @@ TEST_F('CvoxDomUtilUnitTest', 'IsFocusable', function() {
 });
 
 /** Some additional tests for getName function. */
-TEST_F('CvoxDomUtilUnitTest', 'GetName', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'GetName', function() {
   this.loadDoc(function() {/*!
   <span id="test-span" aria-labelledby="fake-id">Some text</span>
   <label id="label1">One</label>
@@ -1092,7 +1092,7 @@ TEST_F('CvoxDomUtilUnitTest', 'GetName', function() {
 });
 
 /** Test for getLinkURL. */
-TEST_F('CvoxDomUtilUnitTest', 'GetLinkURL', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'GetLinkURL', function() {
   this.loadDoc(function() {/*!
   <a id="l1" name="nohref">Anchor</a>
   <a id="l2" href="">Empty link</a>
@@ -1116,7 +1116,7 @@ TEST_F('CvoxDomUtilUnitTest', 'GetLinkURL', function() {
 });
 
 /** Test for isDisabled. */
-TEST_F('CvoxDomUtilUnitTest', 'IsDisabled', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'IsDisabled', function() {
   this.loadDoc(function() {/*!
   <input id="button1" type="button" value="Press me!"/>
   <input id="button2" type="button" value="Don't touch me!" disabled/>
@@ -1128,7 +1128,7 @@ TEST_F('CvoxDomUtilUnitTest', 'IsDisabled', function() {
 });
 
 /** Test for a tree with aria-expanded attribute. */
-TEST_F('CvoxDomUtilUnitTest', 'Tree', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'Tree', function() {
   this.loadDoc(function() {/*!
   <div id=":0" role="tree" aria-selected="false" aria-expanded="true"
     aria-level="0" aria-labelledby=":0.label" tabindex="0"
@@ -1188,7 +1188,7 @@ TEST_F('CvoxDomUtilUnitTest', 'Tree', function() {
 });
 
 /** Test for tables with different border specifications */
-TEST_F('CvoxDomUtilUnitTest', 'TableBorders', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'TableBorders', function() {
   this.loadDoc(function() {/*!
   <table id=":0" border="1">
     <tr>
@@ -1289,7 +1289,7 @@ TEST_F('CvoxDomUtilUnitTest', 'TableBorders', function() {
 });
 
 /** Tests for shallowChildlessClone */
-TEST_F('CvoxDomUtilUnitTest', 'ShallowChildlessClone', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'ShallowChildlessClone', function() {
   this.loadDoc(function() {/*!
     <div id='simple'>asdf</div>
     <div id='expectedSimpleClone'>asdf</div>
@@ -1317,7 +1317,7 @@ TEST_F('CvoxDomUtilUnitTest', 'ShallowChildlessClone', function() {
 });
 
 /** Tests for deepClone */
-TEST_F('CvoxDomUtilUnitTest', 'DeepClone', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'DeepClone', function() {
   this.loadDoc(function() {/*!
     <div id='simple'>asdf</div>
   */});
@@ -1332,7 +1332,7 @@ TEST_F('CvoxDomUtilUnitTest', 'DeepClone', function() {
 });
 
 /** Tests for findNode */
-TEST_F('CvoxDomUtilUnitTest', 'FindNode', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'FindNode', function() {
   this.loadDoc(function() {/*!
     <div id="root">
       <p id="a">a</p>
@@ -1345,7 +1345,7 @@ TEST_F('CvoxDomUtilUnitTest', 'FindNode', function() {
 });
 
 /** Tests for getState for a list */
-TEST_F('CvoxDomUtilUnitTest', 'ListLength', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'ListLength', function() {
   this.loadDoc(function() {/*!
     <ul id="ul1">
       <li>A
@@ -1368,7 +1368,7 @@ TEST_F('CvoxDomUtilUnitTest', 'ListLength', function() {
 });
 
 /** Tests for hasLongDesc */
-TEST_F('CvoxDomUtilUnitTest', 'HasLongDesc', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'HasLongDesc', function() {
   this.loadDoc(function() {/*!
     <img id="img0" longdesc="desc.html" src="img0.jpg"></img>
     <img id="img1" src="img1.jpg"></img>
@@ -1381,7 +1381,7 @@ TEST_F('CvoxDomUtilUnitTest', 'HasLongDesc', function() {
 });
 
 /** Tests for various link leaf types. */
-TEST_F('CvoxDomUtilUnitTest', 'LinkLeaf', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'LinkLeaf', function() {
   this.loadDoc(function() {/*!
     <a id='leaf' href='google.com'><strong>Click</strong><div>here</div></a>
     <a id='non-leaf' href='google.com'>Click <h2>here</h2></a>
@@ -1394,7 +1394,7 @@ TEST_F('CvoxDomUtilUnitTest', 'LinkLeaf', function() {
 
 
 /** Test the value and state of a multiple select. */
-TEST_F('CvoxDomUtilUnitTest', 'MultipleSelectValue', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'MultipleSelectValue', function() {
   this.loadDoc(function() {/*!
     <select id='cars' multiple>
       <option value="volvo">Volvo</option>
@@ -1415,7 +1415,7 @@ TEST_F('CvoxDomUtilUnitTest', 'MultipleSelectValue', function() {
  * Absolute positioning of the container is used to avoid the window of the
  * browser being too small to contain the test elements.
  */
-TEST_F('CvoxDomUtilUnitTest', 'ElementToPoint', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'ElementToPoint', function() {
   this.loadDoc(function() {/*!
     <div style="position: absolute; top: 0; left: 0">
       <a id='one' href='#a'>First</a>
@@ -1438,7 +1438,7 @@ TEST_F('CvoxDomUtilUnitTest', 'ElementToPoint', function() {
 });
 
 /** Tests we compute the correct name for hidden aria labelledby nodes. */
-TEST_F('CvoxDomUtilUnitTest', 'HiddenAriaLabelledby', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'HiddenAriaLabelledby', function() {
   this.loadDoc(function() {/*!
     <span id="acc_name" style="display: none">
       hello world!
@@ -1450,7 +1450,7 @@ TEST_F('CvoxDomUtilUnitTest', 'HiddenAriaLabelledby', function() {
 });
 
 /** Tests that we compute the correct state for accesskeys. */
-TEST_F('CvoxDomUtilUnitTest', 'AccessKey', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'AccessKey', function() {
   this.loadDoc(function() {/*!
     <a id='accessKey' href="#f" title="Next page" accesskey="n">Next page</a>
   */});
@@ -1460,7 +1460,7 @@ TEST_F('CvoxDomUtilUnitTest', 'AccessKey', function() {
 
 
 /** Tests that we compute the correct name for ordered listitems. */
-TEST_F('CvoxDomUtilUnitTest', 'OrderedListitem', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'OrderedListitem', function() {
   this.loadDoc(function() {/*!
     <ol id="fruits_ol">
       <li id='ol_li1'>apple
@@ -1497,7 +1497,7 @@ TEST_F('CvoxDomUtilUnitTest', 'OrderedListitem', function() {
 });
 
 /** Tests a node with title, and textContent containing only whitespace. */
-TEST_F('CvoxDomUtilUnitTest', 'TitleOverridesInnerWhitespace', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'TitleOverridesInnerWhitespace', function() {
   this.loadDoc(function() {/*!
     <button id="btn1" title="Remove from Chrome">
       <span class="lid"></span>
@@ -1509,7 +1509,7 @@ TEST_F('CvoxDomUtilUnitTest', 'TitleOverridesInnerWhitespace', function() {
 });
 
 /** Test memoization. **/
-TEST_F('CvoxDomUtilUnitTest', 'Memoization', function() {
+TEST_F('ChromeVoxDomUtilUnitTest', 'Memoization', function() {
   this.loadDoc(function() {/*!
     <div id="container">
     </div>

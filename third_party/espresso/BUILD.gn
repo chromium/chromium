@@ -20,6 +20,9 @@ android_java_prebuilt("espresso_contrib_java") {
   jar_path = "lib/espresso-contrib-release-no-dep.jar"
   deps = [
     ":espresso_core_java",
+    "//third_party/accessibility_test_framework:accessibility_test_framework_java",
+    "//third_party/android_deps:android_support_v4_java",
+    "//third_party/android_deps:com_android_support_design_java",
     "//third_party/guava:guava_android_java",
     "//third_party/hamcrest:hamcrest_core_java",
   ]
@@ -29,10 +32,13 @@ android_java_prebuilt("espresso_core_java") {
   testonly = true
   jar_path = "lib/espresso-core-release-no-dep.jar"
   deps = [
+    ":espresso_idling_java",
     "//third_party/android_deps:android_support_annotations_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",
+    "//third_party/android_support_test_runner:runner_java",
     "//third_party/guava:guava_android_java",
     "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
   ]
 }
 
@@ -45,6 +51,8 @@ android_java_prebuilt("espresso_intents_java") {
   testonly = true
   jar_path = "lib/espresso-intents-release-no-dep.jar"
   deps = [
+    ":espresso_core_java",
+    "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/guava:guava_android_java",
     "//third_party/hamcrest:hamcrest_core_java",
@@ -52,6 +60,8 @@ android_java_prebuilt("espresso_intents_java") {
 }
 
 android_java_prebuilt("espresso_web_java") {
+  # Uses org/ccil/cowan/tagsoup/Parser which isn't in third_party.
+  enable_bytecode_checks = false
   testonly = true
   jar_path = "lib/espresso-web-release-no-dep.jar"
   deps = [

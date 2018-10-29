@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 मिनट पहले}one{# मिनट पहले}other{# मिनट पहले}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 मिनट}one{# मिनट}other{# मिनट}}</translation>
 <translation id="1243314992276662751">अपलोड करें</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">सुझाए गए ऐप्लिकेशन</translation>
 <translation id="1368832886055348810">बाएं से दाएं</translation>
@@ -55,7 +56,7 @@
 <translation id="3087734570205094154">नीचे</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">पुनर्स्थापित करें</translation>
-<translation id="3183922693828471536">यहां तक स्क्रॉल करें</translation>
+<translation id="3183922693828471536">यहां तक स्क्रोल करें</translation>
 <translation id="3234408098842461169">नीचे तीर</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 दिन}one{# दिन}other{# दिन}}</translation>
 <translation id="335581015389089642">बोली</translation>
@@ -77,7 +78,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 माह पहले}one{# माह पहले}other{# माह पहले}}</translation>
 <translation id="4289300219472526559">बोलना प्रारंभ करें</translation>
 <translation id="4316910396681052118">सभी ऐप्लिकेशन</translation>
-<translation id="4588090240171750605">दाएं स्क्रॉल करें</translation>
+<translation id="4588090240171750605">दाएं स्क्रोल करें</translation>
 <translation id="4724120544754982507">सूचना केंद्र, <ph name="UNREAD_NOTIFICATION_COUNT" /> गैर-पढ़ी गई सूचनाएं</translation>
 <translation id="4730374152663651037">अक्सर उपयोग किए गए</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 माह शेष}one{# माह शेष}other{# माह शेष}}</translation>
@@ -111,7 +112,7 @@
 <translation id="6156262341071374681">सभी ऐप्लिकेशन के लिए विस्तृत करें</translation>
 <translation id="6264365405983206840">&amp;सभी को चुनें</translation>
 <translation id="6351032674660237738">ऐप्लिकेशन सुझाव</translation>
-<translation id="6364916375976753737">बाएं स्क्रॉल करें</translation>
+<translation id="6364916375976753737">बाएं स्क्रोल करें</translation>
 <translation id="6394627529324717982">अल्पविराम</translation>
 <translation id="6397363302884558537">बोलना रोकें</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 सेकंड पहले}one{# सेकंड पहले}other{# सेकंड पहले}}</translation>
@@ -153,12 +154,13 @@
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 घंटा पहले}one{# घंटे पहले}other{# घंटे पहले}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 सेकंड शेष}one{# सेकंड शेष}other{# सेकंड शेष}}</translation>
-<translation id="815598010540052116">नीचे स्क्रॉल करें</translation>
+<translation id="815598010540052116">नीचे स्क्रोल करें</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
 <translation id="8245914219290430011">टैब</translation>
+<translation id="8259556432390118667">हेक्स रंग मान</translation>
 <translation id="8328145009876646418">बायां सिरा</translation>
-<translation id="8331626408530291785">ऊपर स्क्रॉल करें</translation>
+<translation id="8331626408530291785">ऊपर स्क्रोल करें</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 वर्ष}one{# वर्ष}other{# वर्ष}}</translation>
 <translation id="838869780401515933">चेक करें</translation>
 <translation id="8393700583063109961">संदेश भेजें</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">सामान्य</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> फ़ोल्डर</translation>
 <translation id="883911313571074303">व्याख्या चित्र</translation>
+<translation id="8841375032071747811">वापस जाएं बटन</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> केबी</translation>
 <translation id="9002566407876343676">खोलें</translation>
 <translation id="9038489124413477075">अनाम फ़ोल्डर</translation>

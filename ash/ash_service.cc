@@ -28,8 +28,8 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
-#include "services/service_manager/embedder/embedded_service_info.h"
 #include "services/service_manager/public/cpp/connector.h"
+#include "services/service_manager/public/cpp/embedded_service_info.h"
 #include "services/service_manager/public/cpp/service_context.h"
 #include "services/ws/gpu_host/gpu_host.h"
 #include "services/ws/host_context_factory.h"
@@ -118,11 +118,10 @@ void AshService::InitForMash() {
   discardable_shared_memory_manager_ =
       std::make_unique<discardable_memory::DiscardableSharedMemoryManager>();
 
-  gpu_host_ = std::make_unique<ws::gpu_host::DefaultGpuHost>(
+  gpu_host_ = std::make_unique<ws::gpu_host::GpuHost>(
       this, context()->connector(), discardable_shared_memory_manager_.get());
 
   host_frame_sink_manager_ = std::make_unique<viz::HostFrameSinkManager>();
-  host_frame_sink_manager_->WillAssignTemporaryReferencesExternally();
   CreateFrameSinkManager();
   io_thread_ = std::make_unique<base::Thread>("IOThread");
   base::Thread::Options thread_options(base::MessageLoop::TYPE_IO, 0);
@@ -148,10 +147,9 @@ void AshService::InitForMash() {
   chromeos::PowerPolicyController::Initialize(
       chromeos::DBusThreadManager::Get()->GetPowerManagerClient());
 
-  // See ChromeBrowserMainPartsChromeos for ordering details.
-  bluez::BluezDBusManager::Initialize(
-      chromeos::DBusThreadManager::Get()->GetSystemBus(),
-      chromeos::DBusThreadManager::Get()->IsUsingFakes());
+  // The initialization matches that in ChromeBrowserMainPartsChromeos.
+
+  bluez::BluezDBusManager::Initialize();
   if (!chromeos::NetworkHandler::IsInitialized()) {
     chromeos::NetworkHandler::Initialize();
     network_handler_initialized_ = true;
@@ -228,17 +226,8 @@ void AshService::CreateFrameSinkManager() {
   viz::mojom::FrameSinkManagerClientRequest frame_sink_manager_client_request =
       mojo::MakeRequest(&frame_sink_manager_client);
 
-  viz::mojom::FrameSinkManagerParamsPtr params =
-      viz::mojom::FrameSinkManagerParams::New();
-  params->restart_id = viz::BeginFrameSource::kNotRestartableId + 1;
-  base::Optional<uint32_t> activation_deadline_in_frames =
-      switches::GetDeadlineToSynchronizeSurfaces();
-  params->use_activation_deadline = activation_deadline_in_frames.has_value();
-  params->activation_deadline_in_frames =
-      activation_deadline_in_frames.value_or(0u);
-  params->frame_sink_manager = std::move(frame_sink_manager_request);
-  params->frame_sink_manager_client = frame_sink_manager_client.PassInterface();
-  gpu_host_->CreateFrameSinkManager(std::move(params));
+  gpu_host_->CreateFrameSinkManager(std::move(frame_sink_manager_request),
+                                    frame_sink_manager_client.PassInterface());
 
   host_frame_sink_manager_->BindAndSetManager(
       std::move(frame_sink_manager_client_request), nullptr /* task_runner */,

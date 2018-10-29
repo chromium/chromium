@@ -29,7 +29,7 @@ class CORE_EXPORT CustomElementReactionQueue final
 
  private:
   HeapVector<Member<CustomElementReaction>, 1> reactions_;
-  size_t index_;
+  wtf_size_t index_;
 
   DISALLOW_COPY_AND_ASSIGN(CustomElementReactionQueue);
 };

@@ -24,6 +24,10 @@ java_prebuilt("guava_java") {
   visibility = [
     "//third_party/auto:*",
     "//third_party/robolectric:*",
+
+    # jni_processor is a build tool even though it's in base.
+    "//base/android/jni_generator:jni_processor",
+    "//base/android/jni_generator:jni_processor__compile_java",
   ]
   jar_path = "lib/guava.jar"
 }

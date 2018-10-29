@@ -278,6 +278,8 @@ bool InferLabelForElementForTesting(const blink::WebFormControlElement& element,
                                     const std::vector<base::char16>& stop_words,
                                     base::string16* label,
                                     FormFieldData::LabelSource* label_source);
+base::string16 InferButtonTitleForTesting(
+    const blink::WebFormElement& form_element);
 
 // Returns form by unique renderer id. Return null element if there is no form
 // with given form renderer id.

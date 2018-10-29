@@ -432,7 +432,7 @@ bool QuicCryptoServerConfig::SetConfigs(
          i != parsed_configs.end(); ++i) {
       QuicReferenceCountedPointer<Config> config = *i;
 
-      ConfigMap::iterator it = configs_.find(config->id);
+      auto it = configs_.find(config->id);
       if (it != configs_.end()) {
         QUIC_LOG(INFO) << "Keeping scid: "
                        << QuicTextUtils::HexEncode(config->id) << " orbit: "
@@ -480,8 +480,7 @@ void QuicCryptoServerConfig::SetSourceAddressTokenKeys(
 void QuicCryptoServerConfig::GetConfigIds(
     std::vector<QuicString>* scids) const {
   QuicReaderMutexLock locked(&configs_lock_);
-  for (ConfigMap::const_iterator it = configs_.begin(); it != configs_.end();
-       ++it) {
+  for (auto it = configs_.begin(); it != configs_.end(); ++it) {
     scids->push_back(it->first);
   }
 }
@@ -632,7 +631,7 @@ class QuicCryptoServerConfig::ProcessClientHelloCallback
       signed_config_->proof = proof;
     }
     config_->ProcessClientHelloAfterGetProof(
-        !ok, std::move(details), *validate_chlo_result_, reject_only_,
+        !ok, std::move(details), validate_chlo_result_, reject_only_,
         connection_id_, client_address_, version_, supported_versions_,
         use_stateless_rejects_, server_designated_connection_id_, clock_, rand_,
         compressed_certs_cache_, params_, signed_config_,
@@ -674,7 +673,8 @@ class QuicCryptoServerConfig::ProcessClientHelloAfterGetProofCallback
       const KeyExchange::Factory& key_exchange_factory,
       std::unique_ptr<CryptoHandshakeMessage> out,
       QuicStringPiece public_value,
-      const ValidateClientHelloResultCallback::Result& validate_chlo_result,
+      QuicReferenceCountedPointer<ValidateClientHelloResultCallback::Result>
+          validate_chlo_result,
       QuicConnectionId connection_id,
       const QuicSocketAddress& client_address,
       const ParsedQuicVersionVector& supported_versions,
@@ -690,7 +690,7 @@ class QuicCryptoServerConfig::ProcessClientHelloAfterGetProofCallback
         key_exchange_factory_(key_exchange_factory),
         out_(std::move(out)),
         public_value_(public_value),
-        validate_chlo_result_(validate_chlo_result),
+        validate_chlo_result_(std::move(validate_chlo_result)),
         connection_id_(connection_id),
         client_address_(client_address),
         supported_versions_(supported_versions),
@@ -705,7 +705,7 @@ class QuicCryptoServerConfig::ProcessClientHelloAfterGetProofCallback
   void Run(bool ok) override {
     config_->ProcessClientHelloAfterCalculateSharedKeys(
         !ok, std::move(proof_source_details_), key_exchange_factory_,
-        std::move(out_), public_value_, validate_chlo_result_, connection_id_,
+        std::move(out_), public_value_, *validate_chlo_result_, connection_id_,
         client_address_, supported_versions_, clock_, rand_, params_,
         signed_config_, requested_config_, primary_config_,
         std::move(done_cb_));
@@ -716,17 +716,18 @@ class QuicCryptoServerConfig::ProcessClientHelloAfterGetProofCallback
   std::unique_ptr<ProofSource::Details> proof_source_details_;
   const KeyExchange::Factory& key_exchange_factory_;
   std::unique_ptr<CryptoHandshakeMessage> out_;
-  QuicStringPiece public_value_;
-  const ValidateClientHelloResultCallback::Result& validate_chlo_result_;
+  QuicString public_value_;
+  QuicReferenceCountedPointer<ValidateClientHelloResultCallback::Result>
+      validate_chlo_result_;
   QuicConnectionId connection_id_;
-  const QuicSocketAddress& client_address_;
-  const ParsedQuicVersionVector& supported_versions_;
+  const QuicSocketAddress client_address_;
+  const ParsedQuicVersionVector supported_versions_;
   const QuicClock* clock_;
   QuicRandom* rand_;
   QuicReferenceCountedPointer<QuicCryptoNegotiatedParameters> params_;
   QuicReferenceCountedPointer<QuicSignedServerConfig> signed_config_;
-  const QuicReferenceCountedPointer<Config>& requested_config_;
-  const QuicReferenceCountedPointer<Config>& primary_config_;
+  const QuicReferenceCountedPointer<Config> requested_config_;
+  const QuicReferenceCountedPointer<Config> primary_config_;
   std::unique_ptr<ProcessClientHelloResultCallback> done_cb_;
 };
 
@@ -836,8 +837,8 @@ void QuicCryptoServerConfig::ProcessClientHello(
   helper.DetachCallback();
   ProcessClientHelloAfterGetProof(
       /* found_error = */ false, /* proof_source_details = */ nullptr,
-      *validate_chlo_result, reject_only, connection_id, client_address,
-      version, supported_versions, use_stateless_rejects,
+      validate_chlo_result, reject_only, connection_id, client_address, version,
+      supported_versions, use_stateless_rejects,
       server_designated_connection_id, clock, rand, compressed_certs_cache,
       params, signed_config, total_framing_overhead, chlo_packet_size,
       requested_config, primary_config, std::move(done_cb));
@@ -846,7 +847,8 @@ void QuicCryptoServerConfig::ProcessClientHello(
 void QuicCryptoServerConfig::ProcessClientHelloAfterGetProof(
     bool found_error,
     std::unique_ptr<ProofSource::Details> proof_source_details,
-    const ValidateClientHelloResultCallback::Result& validate_chlo_result,
+    QuicReferenceCountedPointer<ValidateClientHelloResultCallback::Result>
+        validate_chlo_result,
     bool reject_only,
     QuicConnectionId connection_id,
     const QuicSocketAddress& client_address,
@@ -874,8 +876,8 @@ void QuicCryptoServerConfig::ProcessClientHelloAfterGetProof(
   }
 
   const CryptoHandshakeMessage& client_hello =
-      validate_chlo_result.client_hello;
-  const ClientHelloInfo& info = validate_chlo_result.info;
+      validate_chlo_result->client_hello;
+  const ClientHelloInfo& info = validate_chlo_result->info;
   std::unique_ptr<DiversificationNonce> out_diversification_nonce(
       new DiversificationNonce);
 
@@ -889,7 +891,7 @@ void QuicCryptoServerConfig::ProcessClientHelloAfterGetProof(
   if (!info.reject_reasons.empty() || !requested_config.get()) {
     BuildRejection(version.transport_version, clock->WallNow(), *primary_config,
                    client_hello, info,
-                   validate_chlo_result.cached_network_params,
+                   validate_chlo_result->cached_network_params,
                    use_stateless_rejects, server_designated_connection_id, rand,
                    compressed_certs_cache, params, *signed_config,
                    total_framing_overhead, chlo_packet_size, out.get());
@@ -970,9 +972,9 @@ void QuicCryptoServerConfig::ProcessClientHelloAfterGetProof(
     ProcessClientHelloAfterCalculateSharedKeys(
         found_error, std::move(proof_source_details),
         key_exchange->GetFactory(), std::move(out), public_value,
-        validate_chlo_result, connection_id, client_address, supported_versions,
-        clock, rand, params, signed_config, requested_config, primary_config,
-        std::move(done_cb));
+        *validate_chlo_result, connection_id, client_address,
+        supported_versions, clock, rand, params, signed_config,
+        requested_config, primary_config, std::move(done_cb));
   }
 }
 
@@ -1170,7 +1172,7 @@ QuicCryptoServerConfig::GetConfigWithScid(
   configs_lock_.AssertReaderHeld();
 
   if (!requested_scid.empty()) {
-    ConfigMap::const_iterator it = configs_.find((QuicString(requested_scid)));
+    auto it = configs_.find((QuicString(requested_scid)));
     if (it != configs_.end()) {
       // We'll use the config that the client requested in order to do
       // key-agreement.
@@ -1205,8 +1207,7 @@ void QuicCryptoServerConfig::SelectNewPrimaryConfig(
   std::vector<QuicReferenceCountedPointer<Config>> configs;
   configs.reserve(configs_.size());
 
-  for (ConfigMap::const_iterator it = configs_.begin(); it != configs_.end();
-       ++it) {
+  for (auto it = configs_.begin(); it != configs_.end(); ++it) {
     // TODO(avd) Exclude expired configs?
     configs.push_back(it->second);
   }

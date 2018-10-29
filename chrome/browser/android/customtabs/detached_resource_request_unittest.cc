@@ -228,8 +228,8 @@ class DetachedResourceRequestTest : public ::testing::Test {
 
     DetachedResourceRequest::CreateAndStart(
         browser_context(), url, site_for_cookies, policy, kMotivation,
-        base::BindLambdaForTesting([&](bool success) {
-          EXPECT_TRUE(success);
+        base::BindLambdaForTesting([&](int net_error) {
+          EXPECT_EQ(net::OK, net_error);
           request_completion_waiter.Quit();
         }));
     server_request_waiter.Run();
@@ -260,8 +260,8 @@ TEST_F(DetachedResourceRequestTest, Simple) {
   DetachedResourceRequest::CreateAndStart(
       browser_context(), url, site_for_cookies,
       content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
+      base::BindLambdaForTesting([&](int net_error) {
+        EXPECT_EQ(net::OK, net_error);
         request_completion_waiter.Quit();
       }));
   server_request_waiter.Run();
@@ -285,8 +285,8 @@ TEST_F(DetachedResourceRequestTest, SimpleFailure) {
   DetachedResourceRequest::CreateAndStart(
       browser_context(), url, site_for_cookies,
       content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_FALSE(success);
+      base::BindLambdaForTesting([&](int net_error) {
+        EXPECT_NE(net::OK, net_error);
         request_waiter.Quit();
       }));
   request_waiter.Run();
@@ -389,8 +389,8 @@ TEST_F(DetachedResourceRequestTest, NoContentCanSetCookie) {
   DetachedResourceRequest::CreateAndStart(
       browser_context(), url, site_for_cookies,
       content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
+      base::BindLambdaForTesting([&](int net_error) {
+        EXPECT_EQ(net::OK, net_error);
         request_completion_waiter.Quit();
       }));
 
@@ -450,8 +450,8 @@ TEST_F(DetachedResourceRequestTest, MultipleOrigins) {
   DetachedResourceRequest::CreateAndStart(
       browser_context(), url, site_for_cookies,
       content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
+      base::BindLambdaForTesting([&](int net_error) {
+        EXPECT_EQ(net::OK, net_error);
         detached_request_waiter.Quit();
       }));
   first_request_waiter.Run();
@@ -481,8 +481,8 @@ TEST_F(DetachedResourceRequestTest, ManyRedirects) {
   DetachedResourceRequest::CreateAndStart(
       browser_context(), url, site_for_cookies,
       content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
+      base::BindLambdaForTesting([&](int net_error) {
+        EXPECT_EQ(net::OK, net_error);
         request_waiter.Quit();
       }));
   request_waiter.Run();
@@ -505,8 +505,8 @@ TEST_F(DetachedResourceRequestTest, TooManyRedirects) {
   DetachedResourceRequest::CreateAndStart(
       browser_context(), url, site_for_cookies,
       content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_FALSE(success);
+      base::BindLambdaForTesting([&](int net_error) {
+        EXPECT_EQ(-net::ERR_TOO_MANY_REDIRECTS, net_error);
         request_waiter.Quit();
       }));
   request_waiter.Run();
@@ -534,8 +534,8 @@ TEST_F(DetachedResourceRequestTest, CachedResponse) {
   DetachedResourceRequest::CreateAndStart(
       browser_context(), url, site_for_cookies,
       content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
+      base::BindLambdaForTesting([&](int net_error) {
+        EXPECT_EQ(net::OK, net_error);
         first_request_waiter.Quit();
       }));
   first_request_waiter.Run();
@@ -543,8 +543,8 @@ TEST_F(DetachedResourceRequestTest, CachedResponse) {
   DetachedResourceRequest::CreateAndStart(
       browser_context(), url, site_for_cookies,
       content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
+      base::BindLambdaForTesting([&](int net_error) {
+        EXPECT_EQ(net::OK, net_error);
         second_request_waiter.Quit();
       }));
   second_request_waiter.Run();

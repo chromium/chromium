@@ -20,14 +20,9 @@ class SingleThreadTaskRunner;
 class TickClock;
 }
 
-namespace net {
-class NetLog;
-}
-
 namespace data_reduction_proxy {
 
 class DataReductionProxyConfigurator;
-class DataReductionProxyEventCreator;
 class DataReductionProxyMutableConfigValues;
 class TestDataReductionProxyParams;
 
@@ -39,9 +34,8 @@ class TestDataReductionProxyConfig : public DataReductionProxyConfig {
  public:
   TestDataReductionProxyConfig(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      net::NetLog* net_log,
-      DataReductionProxyConfigurator* configurator,
-      DataReductionProxyEventCreator* event_creator);
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+      DataReductionProxyConfigurator* configurator);
 
   // Creates a |TestDataReductionProxyConfig| with the provided |config_values|.
   // This permits any DataReductionProxyConfigValues to be used (such as
@@ -49,9 +43,8 @@ class TestDataReductionProxyConfig : public DataReductionProxyConfig {
   TestDataReductionProxyConfig(
       std::unique_ptr<DataReductionProxyConfigValues> config_values,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      net::NetLog* net_log,
-      DataReductionProxyConfigurator* configurator,
-      DataReductionProxyEventCreator* event_creator);
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+      DataReductionProxyConfigurator* configurator);
 
   ~TestDataReductionProxyConfig() override;
 
@@ -143,9 +136,8 @@ class MockDataReductionProxyConfig : public TestDataReductionProxyConfig {
   MockDataReductionProxyConfig(
       std::unique_ptr<DataReductionProxyConfigValues> config_values,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      net::NetLog* net_log,
-      DataReductionProxyConfigurator* configurator,
-      DataReductionProxyEventCreator* event_creator);
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+      DataReductionProxyConfigurator* configurator);
   ~MockDataReductionProxyConfig() override;
 
   MOCK_CONST_METHOD2(WasDataReductionProxyUsed,

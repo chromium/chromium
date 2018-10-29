@@ -1,10 +1,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><x-test is="x-a" id="t"></x-test>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script><![CDATA[
-description('Accessing an XML element that looks like a Custom Element ' +
-            'should not crash.');
-shouldBeTrue('document.getElementById("t") instanceof Element');
-
-var successfullyParsed = true;
+test(() => assert_true(document.getElementById("t") instanceof Element),
+     'Accessing an XML element that looks like a Custom Element ' +
+     'should not crash.');
 ]]></script>
 </html>

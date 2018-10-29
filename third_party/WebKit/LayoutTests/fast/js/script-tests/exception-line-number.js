@@ -18,7 +18,7 @@ foo();              // line 11
 // elements back into a comma separated string by simply stringifying the
 // array.  This makes it easier to compare the resultant stack trace info.
 
-result = String(temp.match(/LayoutTests\/[^:]+\:[0-9]+/g));
+result = String(temp.match(/(?:LayoutTests|web_tests)\/[^:]+\:[0-9]+/g));
 
 shouldBe("result", '"LayoutTests/fast/js/script-tests/exception-line-number.js:6,LayoutTests/fast/js/script-tests/exception-line-number.js:11"');
 
@@ -26,7 +26,7 @@ shouldBe("result", '"LayoutTests/fast/js/script-tests/exception-line-number.js:6
 // Test window.onerror:
 
 window.onerror = function(msg, url, line) {
-    url = String(url.match(/LayoutTests\/[^:]+/g));
+    url = String(url.match(/(?:LayoutTests|web_tests)\/[^:]+/g));
     result = url + ':' + line;
     shouldBe("result", '"LayoutTests/fast/js/script-tests/exception-line-number.js:36"');
     return true;  // We handled it.

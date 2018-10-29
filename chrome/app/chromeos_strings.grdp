@@ -17,9 +17,6 @@
   <message name="IDS_WALLPAPER_MANAGER_DELETE_COMMAND_LABEL" desc="Wallpaper delete command label.">
     Delete
   </message>
-  <message name="IDS_WALLPAPER_MANAGER_CUSTOM_CATEGORY_LABEL" desc="Wallpaper category label.">
-    Custom
-  </message>
   <message name="IDS_WALLPAPER_MANAGER_MY_IMAGES_CATEGORY_LABEL" desc="Wallpaper category label, the equivalent of the Custom category on the new wallpaper picker.">
     My Images
   </message>
@@ -41,20 +38,11 @@
   <message name="IDS_WALLPAPER_MANAGER_SHOW_CUSTOM_WALLPAPER_ON_START_WARNING" desc="The string displayed to user when set custom wallpaper.">
     Wallpapers appear on the Sign-in Screen.
   </message>
-  <message name="IDS_WALLPAPER_MANAGER_SURPRISE_ME_LABEL" desc="Wallpaper surprise me checkbox label. If the checkbox is checked, Chrome will automatically change wallpaper to either a random one available in wallpaper picker or a google pushed wallpaper (surprise factor).">
-    Surprise Me
-  </message>
   <message name="IDS_WALLPAPER_MANAGER_DAILY_REFRESH_LABEL" desc="Wallpaper daily refresh checkbox label. It is the equivalent of surprise me on the new wallpaper picker.">
     Daily Refresh
   </message>
-  <message name="IDS_WALLPAPER_MANAGER_ACCESS_FAIL" desc="The string displayed to user when access wallpaper server failed.">
-    Chrome cannot access wallpapers. Please connect to a network.
-  </message>
   <message name="IDS_WALLPAPER_MANAGER_NETWORK_ERROR" desc="The string displayed when user can't use wallpaper picker because they're not connected to the internet.">
     The images are currently not available. Please reconnect to the internet to see wallpaper collections.
-  </message>
-  <message name="IDS_WALLPAPER_MANAGER_DOWNLOAD_FAIL" desc="The string displayed to user when downloading the wallpaper failed.">
-    Chrome cannot download this wallpaper.
   </message>
   <message name="IDS_WALLPAPER_MANAGER_IMAGE_ERROR" desc="The string displayed to user when downloading the wallpaper failed on the new wallpaper picker.">
     There's an error. Please try again by choosing other images.
@@ -135,9 +123,6 @@
   </message>
 
   <!-- MultiDevice setup dialog. -->
-  <message name="IDS_MULTIDEVICE_SETUP_DIALOG_TITLE" desc="Title for the MultiDevice setup dialog, which allows users to enable features which involve communication between multiple devices (e.g., a Chromebook and a phone)." translateable="false">
-    MultiDevice Setup
-  </message>
   <message name="IDS_MULTIDEVICE_SETUP_ACCEPT_LABEL" desc="Label for button to accept conditions and begin MultiDevice setup workflow.">
     Accept &amp; continue
   </message>
@@ -145,13 +130,16 @@
     Try again
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_HEADER" desc="Header for the first page in the multi-device setup flow; the page displays a field in which the user must enter their password to continue.">
-    Set up Better Together
-  </message>
-  <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_ENTER_PASSWORD_LABEL" desc="Message displayed in the multi-device setup flow which asks the user to enter their password.">
     Enter your password
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_ENTER_PASSWORD_LABEL" desc="Default text in the field for user to enter their password.">
+    Password
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_WRONG_PASSWORD_LABEL" desc="Message displayed in the multi-device setup flow when the user has entered an incorrect password.">
     Wrong password
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_BACK_LABEL" desc="Label for button to navigate back in MultiDevice setup workflow.">
+    Back
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_SETUP_FAILED_PAGE_HEADER" desc="Header for failed setup page.">
     Better Together setup couldn't complete
@@ -163,13 +151,13 @@
     All set!
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_SETUP_SUCCEEDED_PAGE_MESSAGE" desc="Message for successful setup page.">
-  Go to <ph name="LINK_BEGIN">&lt;a id="settings-link"&gt;</ph>Settings<ph name="LINK_END">&lt;/a&gt;</ph> to see your options for Better Together
+    Go to <ph name="LINK_BEGIN">&lt;a id="settings-link"&gt;</ph>Settings<ph name="LINK_END">&lt;/a&gt;</ph> to see options for your connected phone
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_HEADER" desc="Header for welcome page.">
-    Better Together
+    Connect to your phone
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE" desc="Summary to tell user that they can share their Android's capabilities with their Chromebook; includes details on specific features that can be used and a link to an information page">
-    Connect your Android phone and Chromebook to text from your computer, share your internet connection, and unlock your Chromebook with your phone.<ph name="FOOTNOTE_POINTER">$1<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$2<ex>https://support.google.com/chromebook/?p=multidevice</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Your Chromebook and Android phone work better together. Connect them so you can text from your computer, share your internet connection, and unlock your Chromebook with your phone.<ph name="FOOTNOTE_POINTER">$1<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$2<ex>https://support.google.com/chromebook/?p=multidevice</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE" desc="Footnote for multi-device feature setup page, which indicates that the exact set of features available to users differs according to the device model used.">
     <ph name="FOOTNOTE_POINTER">$1<ex>*</ex></ph>Features vary by device
@@ -180,8 +168,8 @@
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MULTIPLE_DEVICE_HEADER" desc="Label appearing over a list of Android phones which this Chromebook can connect to.">
     Select a device
   </message>
-  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FEATURE_LIST_HEADER" desc="Header to introduce a list of things Better Together can do.">
-    Turning on Better Together means that it can:
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FEATURE_LIST_HEADER" desc="Header to introduce a list of the features that the user is agreeing to in the multi-device setup.">
+    When you connect your devices, you agree that your Chromebook can:
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AWM_DESCRIPTION" desc="Description of a feature that shows text messages received by the user's phone as notification on their Chromebook and a link to an information page.">
     Send you notifications and default to remembering this computer for Messages. <ph name="LINK_BEGIN">&lt;a href="$1<ex>https://support.google.com/chromebook/?p=messages</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
@@ -270,6 +258,12 @@
   </message>
   <message name="IDS_UPDATE_CANCELLED" desc="Message shown when the update has been cancelled by user">
     Cancelling update...
+  </message>
+  <message name="IDS_UPDATE_OVER_CELLULAR_PROMPT_TITLE" desc="Title for the dialog shown to the user in Chrome OS OOBE before forced auto-update is attempted if the Chrome OS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges.">
+    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> needs an update
+  </message>
+  <message name="IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE" desc="Contens of the dialog shown to the user in Chrome OS OOBE before forced auto-update is attempted if the Chrome OS device is connected to a cellular/metered network. The dialog warns the user that procceeding with OOBE on a mobile network can cause overage charges. The dialog title states that the Chromebook needs an update.">
+    If you download the update over your mobile network, it could result in overage charges.
   </message>
   <message name="IDS_REMORA_CONFIRM_MESSAGE" desc="Remora confirm message on the first OOBE screen">
     Your Hangouts Meet hardware is ready to be set up.
@@ -523,6 +517,8 @@
   <message name="IDS_OOBE_EULA_ACCEPT_AND_CONTINUE_BUTTON_TEXT" desc="Label on a button on the Title of Terms of Service OOBE screen to accept EULA and continue.">
     Accept and continue
   </message>
+
+   <!-- Strings for the OOBE demo setup flow -->
   <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_TITLE" desc="The title of the dialog that allows to choose demo setup preferences.">
     Choose your demo preferences
   </message>
@@ -535,12 +531,135 @@
   <message name="IDS_OOBE_DEMO_SETUP_ERROR_SCREEN_TITLE" desc="The title of the dialog that is shown when demo mode setup failed.">
     Couldn't start demo mode
   </message>
-  <message name="IDS_OOBE_DEMO_SETUP_ERROR_SCREEN_SUBTITLE" desc="The subtitle of the dialog that is shown when demo mode setup failed.">
-    Please try again
-  </message>
   <message name="IDS_OOBE_DEMO_SETUP_ERROR_SCREEN_RETRY_BUTTON_LABEL" desc="The label of the button that is shown on error screen and that retries demo mode setup with the previously chosen configuration.">
     OK
   </message>
+  <!-- Demo setup flow errors -->
+  <message name="IDS_DEMO_SETUP_NO_OFFLINE_RESOURCES_ERROR" desc="Error message shown on demo setup screen when offline demo resources are not available.">
+    Offline demo mode resources unavailable.
+  </message>
+  <message name="IDS_DEMO_SETUP_OFFLINE_POLICY_ERROR" desc="Error message shown on demo setup screen when loading or parsing offline policy failed.">
+    Could not read offline demo mode policy.
+  </message>
+  <message name="IDS_DEMO_SETUP_OFFLINE_STORE_ERROR" desc="Error message shown on demo setup screen when loading or parsing offline policy failed.">
+    Failed to install offline policy on the device.
+  </message>
+  <message name="IDS_DEMO_SETUP_OFFLINE_UNAVAILABLE_ERROR" desc="Error message shown on demo setup screen when offline demo mode is not available on the device.">
+    This device cannot be set up in offline demo mode.
+  </message>
+  <message name="IDS_DEMO_SETUP_COMPONENT_ERROR" desc="Error message shown on demo setup screen when loading online component with demo resources failed.">
+    Could not load online component with demo mode resources.
+  </message>
+  <message name="IDS_DEMO_SETUP_NO_STATE_KEYS_ERROR" desc="Error message shown on demo setup screen when the system failed to determine server-backed state keys.">
+    The system failed to determine device identifiers for this device.
+  </message>
+  <message name="IDS_DEMO_SETUP_ROBOT_ERROR" desc="Error message shown on demo setup screen upon failure to fetch the OAuth2 token for device-level API access.">
+    The system failed to authorize API access for this device.
+  </message>
+  <message name="IDS_DEMO_SETUP_ROBOT_STORE_ERROR" desc="Error message shown on demo setup screen upon failure to store the OAuth2 refresh token for device-level API access.">
+    The system failed to store the long-term API access token for this device.
+  </message>
+  <message name="IDS_DEMO_SETUP_BAD_MODE_ERROR" desc="Error message shown on demo setup screen upon receiving a bad mode on device registration.">
+    The supplied enrollment mode is not supported by this version of the operating system. Please make sure you are running the newest version.
+  </message>
+  <message name="IDS_DEMO_SETUP_CERT_FETCH_ERROR" desc="Error message shown when a registration certificate could not be obtained.">
+    A registration certificate could not be obtained.
+  </message>
+  <message name="IDS_DEMO_SETUP_POLICY_FETCH_ERROR" desc="Error message shown on demo setup screen upon a failed policy fetch.">
+    Error when fetching policy from the server.
+  </message>
+  <message name="IDS_DEMO_SETUP_POLICY_VALIDATION_ERROR" desc="Error message shown on demo setup screen upon a failure to validate downloaded policy.">
+    The policy downloaded from the server is invalid.
+  </message>
+  <message name="IDS_DEMO_SETUP_LOCK_TIMEOUT_ERROR" desc="Error message shown on demo setup screen when the initialization of the lockbox is taking too long.">
+    The initialization of the installation-time attributes has timed out.
+  </message>
+  <message name="IDS_DEMO_SETUP_LOCK_ERROR" desc="Error message shown on demo setup screen upon failure to lock the device mode.">
+    The system failed to establish the device installation-time attributes lock.
+  </message>
+  <message name="IDS_DEMO_SETUP_ALREADY_LOCKED_ERROR" desc="Error message shown on demo setup screen when device is already locked with different domain or mode.">
+    This device was locked to different domain or mode.
+  </message>
+  <message name="IDS_DEMO_SETUP_ONLINE_STORE_ERROR" desc="Error message shown on demo setup screen when the installation of the policy on the device failed.">
+    Failed to install policy on the device.
+  </message>
+  <message name="IDS_DEMO_SETUP_NO_MACHINE_IDENTIFICATION_ERROR" desc="Error message shown on demo setup screen when the system failed to determine the device model or serial number.">
+    The system failed to determine device model or serial number.
+  </message>
+  <message name="IDS_DEMO_SETUP_DM_TOKEN_STORE_ERROR" desc="Error message shown on demo setup screen when the system failed to save some part of the device configuration. e.g. token from the device management server.">
+    The system failed to save device configuration.
+  </message>
+  <message name="IDS_DEMO_SETUP_UNEXPECTED_ERROR" desc="Error message to show shown on demo setup screen when there is an fatal/unexpected error.">
+    Oops! Something went wrong while setting up demo mode.
+  </message>
+  <message name="IDS_DEMO_SETUP_INVALID_REQUEST_ERROR" desc="Error message to show on demo setup screen when request issued to DMServer was invalid.">
+    A problem with demo registration request occurred.
+  </message>
+  <message name="IDS_DEMO_SETUP_NETWORK_ERROR" desc="Error message to show on demo setup screen when network error occurred.">
+    Network error occurred.
+  </message>
+  <message name="IDS_DEMO_SETUP_TEMPORARY_ERROR" desc="Error message to show on demo setup screen when temporary error occurred.">
+    Temporary server error occurred.
+  </message>
+  <message name="IDS_DEMO_SETUP_RESPONSE_ERROR" desc="Error message to show on demo setup screen when management service sent an abnormal HTTP code.">
+    Management service sent HTTP error.
+  </message>
+  <message name="IDS_DEMO_SETUP_RESPONSE_DECODING_ERROR" desc="Error message to show on demo setup screen when decoding management server response failed.">
+    A problem occurred when decoding server response.
+  </message>
+  <message name="IDS_DEMO_SETUP_ACCOUNT_ERROR" desc="Error message to show on demo setup screen when there is a problem with the demo mode account.">
+    A problem with demo mode account occurred.
+  </message>
+  <message name="IDS_DEMO_SETUP_DEVICE_NOT_FOUND_ERROR" desc="Error message to show on demo setup screen when management service could not find the device.">
+    Missing device record.
+  </message>
+  <message name="IDS_DEMO_SETUP_INVALID_DM_TOKEN_ERROR" desc="Error message to show on demo setup screen when device management token is invalid.">
+    Device management token is invalid.
+  </message>
+  <message name="IDS_DEMO_SETUP_INVALID_SERIAL_NUMBER_ERROR" desc="Error message to show on demo setup screen when provided serial number is invalid.">
+    Device serial number is invalid.
+  </message>
+  <message name="IDS_DEMO_SETUP_DEVICE_ID_ERROR" desc="Error message to show on demo setup screen in case of conflicting device id.">
+    Conflicting device identifier.
+  </message>
+  <message name="IDS_DEMO_SETUP_LICENSE_ERROR" desc="Error message to show on demo setup screen when the demo domain has expired or exhausted licenses.">
+    A problem with demo mode device licenses occurred.
+  </message>
+  <message name="IDS_DEMO_SETUP_DEPROVISIONED_ERROR" desc="Error message to show on demo setup screen when enrollment fails because device has been deprovisioned on the server side.">
+    This demo device has been placed into a deprovisioned state.
+  </message>
+  <message name="IDS_DEMO_SETUP_DOMAIN_MISMATCH_ERROR" desc="Error message shown on demo setup screen when the device belongs to the domain different than demo mode.">
+    This device is marked for management by a different domain. Deprovision it from that domain before setting up demo mode.
+  </message>
+  <message name="IDS_DEMO_SETUP_SIGNING_ERROR" desc="Error message shown on demo setup screen when failure to sign request occurred.">
+    Request could not be signed.
+  </message>
+  <message name="IDS_DEMO_SETUP_POLICY_NOT_FOUND_ERROR" desc="Error message shown on demo setup screen when management server failed to find the policy to be applied to the device.">
+    Policy not found.
+  </message>
+  <message name="IDS_DEMO_SETUP_ARC_ERROR" desc="Error message shown when ARC is disabled.">
+    A problem with ARC++ occurred.
+  </message>
+    <!-- Demo setup error recovery suggestions -->
+  <message name="IDS_DEMO_SETUP_RECOVERY_RETRY" desc="Error recovery recommendation to retry demo setup. Shown on demo setup screen.">
+    Please try again.
+  </message>
+  <message name="IDS_DEMO_SETUP_RECOVERY_REBOOT" desc="Error recovery recommendation to reboot and retry demo setup. Shown on demo setup screen.">
+    Please reboot the device and try again.
+  </message>
+  <message name="IDS_DEMO_SETUP_RECOVERY_POWERWASH" desc="Error recovery recommendation to powerwash and retry demo setup. Shown on demo setup screen.">
+    Please powerwash the device and try again.
+  </message>
+  <message name="IDS_DEMO_SETUP_RECOVERY_CHECK_NETWORK" desc="Error recovery recommendation to check network and retry demo setup. Shown on demo setup screen.">
+    Please check your network connection and try again.
+  </message>
+  <message name="IDS_DEMO_SETUP_RECOVERY_OFFLINE_FATAL" desc="Error recovery recommendation to contact support. Shown on demo setup screen.">
+    This device might be only eligible for online demo mode. Please contact your support representative for more details.
+  </message>
+  <message name="IDS_DEMO_SETUP_RECOVERY_FATAL" desc="Error recovery recommendation to contact support. Shown on demo setup screen.">
+    Please retry. If you see this error again please contact your support representative.
+  </message>
+
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE" desc="The title of the dialog that welcomes the user on the first log in, and explains Chrome Sync and privacy options.">
     You're signed in!
   </message>
@@ -650,7 +769,7 @@
     Get <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> tips and updates on Google products and share feedback. Unsubscribe anytime.
   </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_GET_PLAY_UPDATES" desc="A label next to the checkbox that controls user subscription to marketing updates from Google about Google Play Store.">
-    Get the lastest updates and recommendations on Play Store apps
+    Get the latest updates and recommendations on Play Store apps
   </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_GET_CHROMEBOOK_UPDATES" desc="A lablel next to the checkbox that controls user subscription to marketing updates and useful information about the user's Chrome device.">
     Tips and updates on <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
@@ -685,9 +804,6 @@
   <message name="IDS_DISCOVER_PIN_SETUP_SUBTITLE1" desc="A sub-title of the dialog that starts 'PIN-unlock' setup process. Subtitle explains to the user how this feature can be configured.">
     Use a number (PIN) instead of a password to unlock your device. To set your PIN later, go to Settings.
   </message>
-  <message name="IDS_DISCOVER_PIN_SETUP_LEARN_MORE" desc="A label on the link that leads to the help page.">
-    Learn more
-  </message>
   <message name="IDS_DISCOVER_PIN_SETUP_SKIP" desc="A label on the button that interrupts current setup flow.">
     Skip
   </message>
@@ -698,7 +814,19 @@
     Your PIN is added
   </message>
   <message name="IDS_DISCOVER_PIN_SETUP_SUBTITLE3" desc="A sub-title of the dialog that finishes 'PIN-unlock' setup process successfully suggesting how user can use the PIN that they have just set up.">
-    You can use PIN to unlock your device when signed out
+    You can use PIN to unlock your device when you signed out.
+  </message>
+  <message name="IDS_DISCOVER_PIN_SETUP" desc="A label on the button that leads to Pin Unlock feature set up.">
+    Pin setup
+  </message>
+  <message name="IDS_DISCOVER_PIN_SETUP_PASSWORD_TITLE" desc="A title of the dialog that starts 'PIN-unlock' setup process, and asks user to type their password first.">
+    Confirm your password
+  </message>
+  <message name="IDS_DISCOVER_PIN_SETUP_PASSWORD_SUBTITLE" desc="A sub-title of the dialog that starts 'PIN-unlock' setup process, and asks user to type their password first.">
+    Enter your password to configure screen lock and sign-in
+  </message>
+  <message name="IDS_DISCOVER_PIN_SETUP_DONE" desc="Label for the done button on the success screen in 'PIN-unlock' setup dialog.">
+    Done
   </message>
   <message name="IDS_APP_START_NETWORK_WAIT_MESSAGE" desc="Message displayed while installing and/or launching web application in kiosk mode.">
     Waiting for network connection...
@@ -1182,10 +1310,10 @@
     Connection to <ph name="name">$1<ex>Google VPN</ex></ph> has been lost
   </message>
   <message name="IDS_NETWORK_OUT_OF_CREDITS_TITLE" desc="Title for network out of data error notification">
-    Network connection error
+    Couldn't connect
   </message>
   <message name="IDS_NETWORK_OUT_OF_CREDITS_BODY" desc="Message body for network out of data error notification">
-    You may have used up your mobile data allowance. Visit the <ph name="name">$1<ex>GoogleGuest</ex></ph> activation portal to buy more data.
+    You may have used up your mobile data allowance. Visit the <ph name="name">$1<ex>GoogleGuest</ex></ph> activation portal to buy more data
   </message>
   <message name="IDS_NETWORK_UNRECOGNIZED_ERROR" desc="Unrecognized Network error text">
     Unrecognized error: <ph name="desc">$1<ex>ShillErrorString</ex></ph>
@@ -1194,13 +1322,13 @@
     Mobile data activated
   </message>
   <message name="IDS_NETWORK_CELLULAR_ACTIVATED" desc="Text of the cellular activated notification">
-    Congratulations! Your '<ph name="name">$1<ex>Generic Wireless</ex></ph>' data service has been activated and is ready to go.
+    Your '<ph name="name">$1<ex>Generic Wireless</ex></ph>' data service is ready to use
   </message>
   <message name="IDS_NETWORK_ACTIVATION_ERROR_TITLE" desc="Title for network activation error notification">
-    Network activation error
+    Couldn't connect
   </message>
   <message name="IDS_NETWORK_ACTIVATION_NEEDS_CONNECTION" desc="Message when attempting to activate a mobile network that requires a connection">
-    Activation of '<ph name="name">$1<ex>Generic Wireless</ex></ph>' requires a network connection.
+    To activate '<ph name="name">$1<ex>Generic Wireless</ex></ph>' data, first connect to a Wi-Fi network
   </message>
 
   <!-- Strings shown within Tether notifications -->
@@ -1660,529 +1788,6 @@
   <message name="IDS_RENAMING_OF_DEVICE_FINISHED_FAILURE_MESSAGE" desc="Text of notification message which is shown when there are some errors while renaming.">
     Aw, Snap! There was an error during renaming.
   </message>
-
-  <!-- Keyboard overlay UI -->
-  <message name="IDS_KEYBOARD_OVERLAY_TITLE" desc="The title of the keyboard overlay.">
-    Keyboard Overlay
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_INSTRUCTIONS" desc="The instructions for the keyboard overlay.">
-    Hold Control, Alt, Shift, or Search to see keyboard shortcuts for those modifiers.
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_INSTRUCTIONS_LAYOUT2" desc="The instructions for the keyboard overlay when device is using the 2017 keyboard layout.">
-    Hold Control, Alt, Shift, or Launcher to see keyboard shortcuts for those modifiers.
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_INSTRUCTIONS_HIDE" desc="The instruction for hiding the keyboard overlay.">
-    Type Ctrl+Alt+/ or Escape to hide
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ASSISTANT_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'assistant' key.">
-    assistant
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_PLAY_PAUSE_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'play / pause' key.">
-    play / pause
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SYSTEM_MENU_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'system menu' key.">
-    system menu
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_LAUNCHER_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'launcher / search' key.">
-    launcher
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ESC_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'esc' (Escape) key.">
-    esc
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_BACK_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'back' key that when pressed the browser goes back to the previous page in the tab's browsing history.">
-    back
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FORWARD_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'forward' key that when pressed the browser goes forward to the next page in the tab's browsing history.">
-    forward
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_RELOAD_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'reload' key that when pressed the browser reloads the current page.">
-    reload
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FULL_SCREEN_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'full screen' key that when pressed the active window will become full screen.">
-    full screen
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SWITCH_WIN_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'switch window' key that when pressed an overview of all windows will be shown on screen.">
-    switch window
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_BRIGHT_DOWN_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'bright down' key that turns the screen's brightness down.">
-    bright down
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_BRIGHT_UP_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'bright up' key that turns the screen's brightness up.">
-    bright up
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS" desc="The text in the keyboard overlay to explain the shortcut (move active window between displays).">
-    move window to another display
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_MUTE_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'mute' key that mutes the system's sound.">
-    mute
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_VOL_DOWN_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'volume down' key that turns the system's sound volume down.">
-    vol. down
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_VOL_UP_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'volume up' key that turns the system's sound volume up">
-    vol. up
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_POWER_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'power' key.">
-    power
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_BACKSPACE_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'backspace' key.">
-    backspace
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TAB_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'tab' key.">
-    tab
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SEARCH_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'search' key.">
-    search
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ENTER_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'enter' key.">
-    enter
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SHIFT_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'shift' key.">
-    shift
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_CTRL_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'ctrl' key.">
-    ctrl
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ALT_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'alt' key.">
-    alt
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_LEFT_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'left' arrow key.">
-    left
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_RIGHT_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'right' arrow key.">
-    right
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_UP_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'up' arrow key.">
-    up
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_DOWN_KEY_LABEL" desc="The text in the keyboard overlay to show the label of the 'down' arrow key.">
-    down
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_VOICE_INTERACTION" desc="The text in the keyboard overlay for voice interaction shortcut">
-    Start Assistant
-  </message>
-  <!-- BEGIN GENERATED KEYBOARD OVERLAY STRINGS -->
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_LAST_SHELF_ITEM" desc="The text in the keyboard overlay to explain the shortcut (Open the last shelf item).">
-    Last shelf item
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_LAST_TAB" desc="The text in the keyboard overlay to explain the shortcut.">
-    Last tab
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_SHELF_ITEM_1" desc="The text in the keyboard overlay to explain the shortcut (Open the shelf item at the specified position).">
-    Shelf item 1
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_SHELF_ITEM_2" desc="The text in the keyboard overlay to explain the shortcut (Open the shelf item at the specified position).">
-    Shelf item 2
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_SHELF_ITEM_3" desc="The text in the keyboard overlay to explain the shortcut (Open the shelf item at the specified position).">
-    Shelf item 3
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_SHELF_ITEM_4" desc="The text in the keyboard overlay to explain the shortcut (Open the shelf item at the specified position).">
-    Shelf item 4
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_SHELF_ITEM_5" desc="The text in the keyboard overlay to explain the shortcut (Open the shelf item at the specified position).">
-    Shelf item 5
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_SHELF_ITEM_6" desc="The text in the keyboard overlay to explain the shortcut (Open the shelf item at the specified position).">
-    Shelf item 6
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_SHELF_ITEM_7" desc="The text in the keyboard overlay to explain the shortcut (Open the shelf item at the specified position).">
-    Shelf item 7
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_SHELF_ITEM_8" desc="The text in the keyboard overlay to explain the shortcut (Open the shelf item at the specified position).">
-    Shelf item 8
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_NEXT_TAB" desc="The text in the keyboard overlay to explain the shortcut.">
-    Next tab
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_PREVIOUS_TAB" desc="The text in the keyboard overlay to explain the shortcut.">
-    Previous tab
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_TAB_1" desc="The text in the keyboard overlay to explain the shortcut.">
-    Tab 1
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_TAB_2" desc="The text in the keyboard overlay to explain the shortcut.">
-    Tab 2
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_TAB_3" desc="The text in the keyboard overlay to explain the shortcut.">
-    Tab 3
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_TAB_4" desc="The text in the keyboard overlay to explain the shortcut.">
-    Tab 4
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_TAB_5" desc="The text in the keyboard overlay to explain the shortcut.">
-    Tab 5
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_TAB_6" desc="The text in the keyboard overlay to explain the shortcut.">
-    Tab 6
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_TAB_7" desc="The text in the keyboard overlay to explain the shortcut.">
-    Tab 7
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ACTIVATE_TAB_8" desc="The text in the keyboard overlay to explain the shortcut.">
-    Tab 8
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ADD_WWW_AND_COM_AND_OPEN_ADDRESS" desc="The text in the keyboard overlay to explain the shortcut.">
-    Add www. and .com and open address
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_BOOKMARK_ALL_TABS" desc="The text in the keyboard overlay to explain the shortcut.">
-    Bookmark all tabs
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_BOOKMARK_CURRENT_PAGE" desc="The text in the keyboard overlay to explain the shortcut.">
-    Add bookmark
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_BOOKMARK_MANAGER" desc="The text in the keyboard overlay to explain the shortcut (open the bookmark manager).">
-    Bookmark manager
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_CENTER_WINDOW" desc="The text in the keyboard overlay to explain the shortcut (center the window).">
-    Center window
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_CLEAR_BROWSING_DATA_DIALOG" desc="The text in the keyboard overlay to explain the shortcut.">
-    "Clear browsing data" dialog
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_CLOSE_TAB" desc="The text in the keyboard overlay to explain the shortcut.">
-    Close tab
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_CLOSE_WINDOW" desc="The text in the keyboard overlay to explain the shortcut.">
-    Close window
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_CONTEXT_MENU" desc="The text in the keyboard overlay to explain the shortcut.">
-    Context menu
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_COPY" desc="The text in the keyboard overlay to explain the shortcut.">
-    Copy
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_CUT" desc="The text in the keyboard overlay to explain the shortcut.">
-    Cut
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_CYCLE_THROUGH_INPUT_METHODS" desc="The text in the keyboard overlay to explain the shortcut.">
-    Next input method
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_DECREASE_KEY_BRIGHTNESS" desc="The text in the keyboard overlay to explain the shortcut (decrease the keyboard brightness).">
-    Decrease key brightness
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_DELETE" desc="The text in the keyboard overlay to explain the shortcut (Delete).">
-    Delete
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_DELETE_WORD" desc="The text in the keyboard overlay to explain the shortcut.">
-    Delete word
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_DEVELOPER_TOOLS" desc="The text in the keyboard overlay to explain the shortcut.">
-    Developer tools
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_DOCK_WINDOW_LEFT" desc="The text in the keyboard overlay to explain the shortcut (dock the window to the left).">
-    Dock window left
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_DOCK_WINDOW_RIGHT" desc="The text in the keyboard overlay to explain the shortcut (dock the window to the right).">
-    Dock window right
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_DOM_INSPECTOR" desc="The text in the keyboard overlay to explain the shortcut.">
-    DOM inspector
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_DOWNLOADS" desc="The text in the keyboard overlay to explain the shortcut.">
-    Downloads
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_END" desc="The text in the keyboard overlay to explain the shortcut (End).">
-    End
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F1" desc="The text in the keyboard overlay to explain the shortcut (F1).">
-    F1
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F10" desc="The text in the keyboard overlay to explain the shortcut (F10).">
-    F10
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F11" desc="The text in the keyboard overlay to explain the shortcut (F11).">
-    F11
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F12" desc="The text in the keyboard overlay to explain the shortcut (F12).">
-    F12
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F2" desc="The text in the keyboard overlay to explain the shortcut (F2).">
-    F2
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F3" desc="The text in the keyboard overlay to explain the shortcut (F3).">
-    F3
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F4" desc="The text in the keyboard overlay to explain the shortcut (F4).">
-    F4
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F5" desc="The text in the keyboard overlay to explain the shortcut (F5).">
-    F5
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F6" desc="The text in the keyboard overlay to explain the shortcut (F6).">
-    F6
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F7" desc="The text in the keyboard overlay to explain the shortcut (F7).">
-    F7
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F8" desc="The text in the keyboard overlay to explain the shortcut (F8).">
-    F8
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_F9" desc="The text in the keyboard overlay to explain the shortcut (F9).">
-    F9
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FIND_PREVIOUS_TEXT" desc="The text in the keyboard overlay to explain the shortcut.">
-    Find previous text
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FIND_TEXT" desc="The text in the keyboard overlay to explain the shortcut.">
-    Find text
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FIND_TEXT_AGAIN" desc="The text in the keyboard overlay to explain the shortcut.">
-    Find again
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FOCUS_ADDRESS_BAR" desc="The text in the keyboard overlay to explain the shortcut.">
-    Focus address bar
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FOCUS_ADDRESS_BAR_IN_SEARCH_MODE" desc="The text in the keyboard overlay to explain the shortcut.">
-    Focus address bar for search
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FOCUS_BOOKMARKS" desc="The text in the keyboard overlay to explain the shortcut.">
-    Focus bookmarks
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FOCUS_SHELF" desc="The text in the keyboard overlay to explain the shortcut (focus the application shelf).">
-    Focus shelf
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FOCUS_NEXT_PANE" desc="The text in the keyboard overlay to explain the shortcut (switch focus to the next keyboard-accessible pane).">
-    Next pane
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FOCUS_PREVIOUS_PANE" desc="The text in the keyboard overlay to explain the shortcut (switch focus to the previous keyboard-accessible pane).">
-    Previous pane
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_FOCUS_TOOLBAR" desc="The text in the keyboard overlay to explain the shortcut.">
-    Focus toolbar
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_GO_BACK" desc="The text in the keyboard overlay to explain the shortcut.">
-    Go back
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_GO_FORWARD" desc="The text in the keyboard overlay to explain the shortcut.">
-    Go forward
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_HELP" desc="The text in the keyboard overlay to explain the shortcut.">
-    Help
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_HISTORY" desc="The text in the keyboard overlay to explain the shortcut.">
-    History
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_HOME" desc="The text in the keyboard overlay to explain the shortcut (Home).">
-    Home
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_INCREASE_KEY_BRIGHTNESS" desc="The text in the keyboard overlay to explain the shortcut (Increase the keyboard brightness).">
-    Increase key brightness
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_INPUT_UNICODE_CHARACTERS" desc="The text in the keyboard overlay to explain the shortcut.">
-    Input Unicode characters
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_INSERT" desc="The text in the keyboard overlay to explain the shortcut (Insert).">
-    Insert
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_JAVASCRIPT_CONSOLE" desc="The text in the keyboard overlay to explain the shortcut.">
-    JavaScript console
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_LOCK_SCREEN" desc="The text in the keyboard overlay to explain the shortcut (lock the screen).">
-    Lock screen
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_LOCK_SCREEN_OR_POWER_OFF" desc="The text in the keyboard overlay to explain the shortcut.">
-    Lock / power
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_MAGNIFIER_DECREASE_ZOOM" desc="The text in the keyboard overlay to explain the shortcut.">
-    Demagnify
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_MAGNIFIER_INCREASE_ZOOM" desc="The text in the keyboard overlay to explain the shortcut.">
-    Magnify
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_MAXIMIZE_WINDOW" desc="The text in the keyboard overlay to explain the shortcut (maximize or restore the window).">
-    Maximize
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_MINIMIZE_WINDOW" desc="The text in the keyboard overlay to explain the shortcut (minimize the window).">
-    Minimize
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_MIRROR_MONITORS" desc="The text in the keyboard overlay to explain the shortcut (Mirror the monitors).">
-    Mirror monitors
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_NEW_INCOGNITO_WINDOW" desc="The text in the keyboard overlay to explain the shortcut.">
-    New incognito window
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_NEW_TAB" desc="The text in the keyboard overlay to explain the shortcut.">
-    New tab
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_NEW_TERMINAL" desc="The text in the keyboard overlay to explain the shortcut (Open a new terminal tab).">
-    New terminal
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_NEW_WINDOW" desc="The text in the keyboard overlay to explain the shortcut.">
-    New window
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_NEXT_USER" desc="The text in the keyboard overlay to explain the shortcut (Switch to next user).">
-    Next user
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_NEXT_WINDOW" desc="The text in the keyboard overlay to explain the shortcut (go to the next window).">
-    Next window
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_NEXT_WORD" desc="The text in the keyboard overlay to explain the shortcut (move the text cursor to the end of the next word).">
-    Next word
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_OPEN" desc="The text in the keyboard overlay to explain the shortcut (open a file).">
-    Open
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_OPEN_ADDRESS_IN_NEW_TAB" desc="The text in the keyboard overlay to explain the shortcut.">
-    Open in new tab
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_OPEN_FILE_MANAGER" desc="The text in the keyboard overlay to explain the shortcut (Open the file manager).">
-    File manager
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_PAGE_DOWN" desc="The text in the keyboard overlay to explain the shortcut (Page down).">
-    Page down
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_PAGE_UP" desc="The text in the keyboard overlay to explain the shortcut (Page up).">
-    Page up
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_PASTE" desc="The text in the keyboard overlay to explain the shortcut.">
-    Paste
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_PASTE_AS_PLAIN_TEXT" desc="The text in the keyboard overlay to explain the shortcut.">
-    Paste as plain text
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_PREVIOUS_USER" desc="The text in the keyboard overlay to explain the shortcut (Switch to previous user).">
-    Previous user
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_PREVIOUS_WINDOW" desc="The text in the keyboard overlay to explain the shortcut (go to the previous window).">
-    Previous window
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_PREVIOUS_WORD" desc="The text in the keyboard overlay to explain the shortcut (move the text cursor to the start of the previous word).">
-    Previous word
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_PRINT" desc="The text in the keyboard overlay to explain the shortcut.">
-    Print
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_RELOAD_CURRENT_PAGE" desc="The text in the keyboard overlay to explain the shortcut.">
-    Reload
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_RELOAD_BYPASSING_CACHE" desc="The text in the keyboard overlay to explain the shortcut.">
-    Reload bypassing cache
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_REOPEN_LAST_CLOSED_TAB" desc="The text in the keyboard overlay to explain the shortcut.">
-    Reopen last-closed tab
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_REPORT_ISSUE" desc="The text in the keyboard overlay to explain the shortcut (report an issue).">
-    Report issue
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_RESET_SCREEN_ZOOM" desc="The text in the keyboard overlay to explain the shortcut (reset the screen zoom).">
-    Reset screen zoom
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_RESET_ZOOM" desc="The text in the keyboard overlay to explain the shortcut.">
-    Reset zoom
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ROTATE_SCREEN" desc="The text in the keyboard overlay to explain the shortcut (rotate the screen).">
-    Rotate screen
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ROTATE_WINDOW" desc="The text in the keyboard overlay to explain the shortcut (rotate the window).">
-    Rotate window
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SAVE" desc="The text in the keyboard overlay to explain the shortcut (save page as a file).">
-    Save
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SCREENSHOT_REGION" desc="The text in the keyboard overlay to explain the shortcut (take a screenshot of the selected region).">
-    Screenshot region
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SCREENSHOT_WINDOW" desc="The text in the keyboard overlay to explain the shortcut.">
-    Screenshot window
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SCROLL_UP_ONE_PAGE" desc="The text in the keyboard overlay to explain the shortcut.">
-    Scroll up one page
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SELECT_ALL" desc="The text in the keyboard overlay to explain the shortcut.">
-    Select all
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SELECT_PREVIOUS_INPUT_METHOD" desc="The text in the keyboard overlay to explain the shortcut.">
-    Previous input method
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SELECT_WORD_AT_A_TIME" desc="The text in the keyboard overlay to explain the shortcut.">
-    Select "word at a time"
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SHOW_IME_BUBBLE" desc="The text in the keyboard overlay to explain the shortcut (Show the input options menu bubble).">
-    Input options bubble
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SHOW_MESSAGE_CENTER" desc="The text in the keyboard overlay to explain the shortcut (Show the message center).">
-    Message center
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SHOW_STATUS_MENU" desc="The text in the keyboard overlay to explain the shortcut (show the status menu).">
-    Status menu
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SHOW_STYLUS_TOOLS" desc="The text in the keyboard overlay to explain the shortcut (show the stylus tools).">
-    Stylus tools
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SIGN_OUT" desc="The text in the keyboard overlay to explain the shortcut.">
-    Sign out
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SUSPEND" desc="The text in the keyboard overlay to explain the shortcut.">
-    Suspend
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_SWAP_PRIMARY_MONITOR" desc="The text in the keyboard overlay to explain the shortcut (swap primary monitor).">
-    Swap primary monitor
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TAKE_SCREENSHOT" desc="The text in the keyboard overlay to explain the shortcut.">
-    Screenshot
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TASK_MANAGER" desc="The text in the keyboard overlay to explain the shortcut.">
-    Task manager
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TOGGLE_BOOKMARK_BAR" desc="The text in the keyboard overlay to explain the shortcut.">
-    Bookmark bar
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TOGGLE_CAPS_LOCK" desc="The text in the keyboard overlay to explain the shortcut (enable or disable caps lock).">
-    Caps Lock
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_DISABLE_CAPS_LOCK" desc="The text in the keyboard overlay to explain the shortcut (disable caps lock when it's enabled).">
-    Disable Caps Lock
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TOGGLE_CHROMEVOX_SPOKEN_FEEDBACK" desc="The text in the keyboard overlay to explain the shortcut (enable or disable spoken feedback).">
-    ChromeVox (spoken feedback)
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TOGGLE_DICTATION" desc="The text in the keyboard overlay to explain the shortcut (start or stop speak to type).">
-    Dictation
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TOGGLE_DOCKED_MAGNIFIER" desc="The text in the keyboard overlay to explain the shortcut (toggle the Docked Magnifier on/off).">
-    Toggle Docked Magnifier
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TOGGLE_FULLSCREEN_MAGNIFIER" desc="The text in the keyboard overlay to explain the shortcut (toggle the Fullscreen Magnifier on/off).">
-    Toggle Fullscreen Magnifier
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TOGGLE_HIGH_CONTRAST_MODE" desc="The text in the keyboard overlay to explain the shortcut (Toggle high contrast mode).">
-    Toggle High Contrast Mode
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TOGGLE_PROJECTION_TOUCH_HUD" desc="The text in the keyboard overlay to explain the shortcut to show the points where a user interfaces with the touch screen. This would be useful for someone doing a presentation where they need the audience to see the points on the screen that are touched.">
-    Show touch points
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_TOUCH_HUD_MODE_CHANGE" desc="The text in the keyboard overlay to explain the shortcut to change the mode of the debug touch HUD. 'HUD' stands for 'heads-up display'. 'Touch' refers to the touch interface.">
-    Change touch HUD mode
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_UNDO" desc="The text in the keyboard overlay to explain the shortcut.">
-    Undo
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_UNPIN" desc="The text in the keyboard overlay to explain the shortcut.">
-    Unpin
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_VIEW_KEYBOARD_OVERLAY" desc="The text in the keyboard overlay to explain the shortcut.">
-    Keyboard overlay
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_VIEW_SOURCE" desc="The text in the keyboard overlay to explain the shortcut.">
-    View source
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_WORD_MOVE" desc="The text in the keyboard overlay to explain the shortcut.">
-    Word move
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ZOOM_IN" desc="The text in the keyboard overlay to explain the shortcut.">
-    Zoom in
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ZOOM_OUT" desc="The text in the keyboard overlay to explain the shortcut.">
-    Zoom out
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ZOOM_SCREEN_IN" desc="The text in the keyboard overlay to explain the shortcut (zoom in the screen).">
-    Zoom screen in
-  </message>
-  <message name="IDS_KEYBOARD_OVERLAY_ZOOM_SCREEN_OUT" desc="The text in the keyboard overlay to explain the shortcut (zoom out the screen).">
-    Zoom screen out
-  </message>
-  <!-- END GENERATED KEYBOARD OVERLAY STRINGS -->
 
   <message name="IDS_LOGIN_ERROR_WHITELIST" desc="Couldn't sign in because user is not whitelisted by the device owner.">
     You are not authorized to use this device. Please contact the device owner for sign-in permission.
@@ -3008,26 +2613,23 @@
   <message name="IDS_AD_DEVICE_NAME_INPUT_LABEL" desc="Admin-facing. Label for device name input field on the Active Directory domain join screen. User should tell us the name of their device.">
     Chromebook device name
   </message>
-  <message name="IDS_AD_DEVICE_NAME_REGEX_INPUT_LABEL" desc="Admin-facing. Label for device name input field on the Active Directory domain join screen. User should tell us the name of their device.">
-    Chromebook device name (<ph name="REGEX">$1<ex>^DEVICE_\d+$</ex></ph>)
-  </message>
   <message name="IDS_AD_DOMAIN_JOIN_WELCOME_MESSAGE" desc="Admin-facing. Welcome message on the Active Directory domain join screen.">
     Join device to domain
   </message>
   <message name="IDS_AD_MORE_OPTIONS_BUTTON" desc="Admin-facing. Text on the 'More options' button on the Active Directory domain join screen.">
     More options
   </message>
-  <message name="IDS_AD_UNLOCK_CONFIG" desc="Admin-facing. Text on the button which opens 'Enter unlocking password' dialog on the Active Directory domain join screen.">
-    Unlock configuration
+  <message name="IDS_AD_UNLOCK_TITLE_MESSAGE" desc="Admin-facing. Title on the configuration password step on the Active Directory domain join screen.">
+    Get configuration info
   </message>
-  <message name="IDS_AD_UNLOCK_CONFIG_UNLOCK_BUTTON" desc="Admin-facing. Text on the button to use entered password to unlock domain join configuration.">
-    Unlock
+  <message name="IDS_AD_UNLOCK_SUBTITLE_MESSAGE" desc="Admin-facing. Subtitle on the configuration password step on the Active Directory domain join screen.">
+    Enter admin-provided password to get configuration info
   </message>
   <message name="IDS_AD_UNLOCK_CONFIG_PASSWORD" desc="Admin-facing. Label for unlocking password input field on the Active Directory domain join screen.">
-    Password to unlock
+    Enter admin-provided password
   </message>
   <message name="IDS_AD_UNLOCK_INCORRECT_PASSWORD" desc="Admin-facing. Error that is shown when incorrect unlocking password was entered.">
-    Incorrect password
+    Wrong password, try again
   </message>
   <message name="IDS_AD_UNLOCK_PASSWORD_SKIP" desc="Admin-facing. Text on the button which skips entering unlocking password step.">
     Skip
@@ -3071,8 +2673,8 @@
   <message name="IDS_AD_DEVICE_NAME_TOO_LONG" desc="Admin-facing alert message. Admin entered a device name that was too long.">
     The device name is too long. Enter a shorter name to try again.
   </message>
-  <message name="IDS_AD_DEVICE_NAME_DOESNT_MATCH_REGEX" desc="Admin-facing. Alert message about device name does not match regular expression">
-    The device name must match regular expression <ph name="REGEX">$1<ex>^DEVICE_\d+$</ex></ph>.
+  <message name="IDS_AD_DEVICE_NAME_INVALID_FORMAT" desc="Admin-facing. Alert message about device name does not match regular expression">
+    Incorrect format, please try again
   </message>
   <message name="IDS_AD_USER_DENIED_TO_JOIN_DEVICE" desc="Admin-facing alert message. Admin doesn’t have privileges to add devices to the domain. 'Devices' refers to Chromebook computers. 'Domain' is the Windows domain that accounts are registered to.">
     Can't join the domain. Check your account to see if you have sufficient privileges to add devices.
@@ -3098,9 +2700,6 @@
   <!-- User facing strings for Active Directory screens. -->
   <message name="IDS_AD_DOMAIN_AUTH_WELCOME_MESSAGE" desc="Welcome message on the Active Directory Authentication user screen. Include the domain (realm) the device joined to.">
     Sign in to <ph name="REALM">$1<ex>example.com</ex></ph>
-  </message>
-  <message name="IDS_AD_ENROLLMENT_LOGIN_USER" desc="Label for userPrincipalName input field on the Active Directory domain join user screen. Looks like user@example.com where example.com is the realm.">
-    Username (e.g. user@example.com)
   </message>
   <message name="IDS_AD_AUTH_LOGIN_USER" desc="Label for userPrincipalName input field on the Active Directory authentication user screen.">
     Username
@@ -3132,8 +2731,8 @@
   <message name="IDS_AD_PASSWORD_CHANGE_PASSWORDS_MISMATCH_ERROR" desc="Error message in case new password fields does not match on the Active Directory password change dialog.">
     Passwords do not match.
   </message>
-  <message name="IDS_AD_CONFIRM_BUTTON" desc="Text on the 'Confirm' button on the 'More options' dialog.">
-    Confirm
+  <message name="IDS_AD_SAVE_BUTTON" desc="Text on the 'Save' button on the 'More options' dialog.">
+    Save
   </message>
   <message name="IDS_AD_CANCEL_BUTTON" desc="Text on the 'Cancel' button on the 'More options' dialog.">
     Cancel
@@ -3272,19 +2871,7 @@
     Read and write access to <ph name="VOLUME_NAME">$1<ex>FooBar 4GB</ex></ph> has been granted.
   </message>
 
-  <!-- Webstore widget app -->
-  <message name="IDS_WEBSTORE_WIDGET_APP_NAME" desc="App name for Webstore Gallery Widget app. The app shows a filtered list of extensions from Chrome Web Store. Extensions from the list can be installed directly from the app.">
-    Chrome Web Store Gallery
-  </message>
-  <message name="IDS_WEBSTORE_WIDGET_APP_DESC" desc="Description of Chrome Webstore Gallery Widget app.">
-    An app that shows a filtered list of extensions from Chrome Web Store. Extensions in the list can be installed directly from the app.
-  </message>
-  <message name="IDS_WEBSTORE_WIDGET_TITLE_PRINTER_PROVIDERS" desc="Title for Chrome Web Store Gallery Widget which lists all print driver apps from Chrome Web Store for a specific printer.">
-    Select a printer driver app
-  </message>
-  <message name="IDS_WEBSTORE_WIDGET_DEFAULT_ERROR" desc="Default message shown when Chrome Web Store Widget app window content fails to load (e.g. if it fails to load Chrome Web Store Gallery in a webview).">
-    Could not connect to the Chrome Web Store.
-  </message>
+  <!-- Webstore widget -->
   <message name="IDS_WEBSTORE_WIDGET_LOADING_SPINNER_ALT" desc="Alt text for spinner shown in Chrome Web Store Gallery widget while the widget contents is loading. This is the text that will be read by screen reader when the spinner is focused. The string should be translated as a verb.">
     Loading
   </message>
@@ -3519,12 +3106,6 @@
   <message name="IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_RESTART_BUTTON" desc="Label for the button in the notification that navigates the user to sign-out for completing the encryption update step.">
     Sign out &amp; sign back in
   </message>
-  <message name="IDS_ARC_MIGRATE_ENCRYPTION_SUCCESS_TITLE" desc="Title of the toast shown on the first sign-in after the successfully completed migration needed for using Android apps.">
-    OS update successful
-  </message>
-  <message name="IDS_ARC_MIGRATE_ENCRYPTION_SUCCESS_MESSAGE" desc="Message of the toast shown on the first sign-in after the successfully completed migration needed for using Android apps.">
-    You can now use Android apps.
-  </message>
   <message name="IDS_ARC_USB_PERMISSION_TITLE" desc="Titlebar of Android app USB permissions prompt window">
     Confirm USB Permission
   </message>
@@ -3562,16 +3143,16 @@
     Google assistant logo
   </message>
   <message name="IDS_ASSISTANT_HOTWORD_TITLE" desc="Title for assistant hotword optin.">
-    Ok Google
+    "Ok Google"
   </message>
   <message name="IDS_ASSISTANT_HOTWORD_DESC" desc="Description for assistant hotword optin.">
-    Access your Assistant anytime you say "Ok Google" when your device is awake and unlocked.
+    Access your Assistant any time you say "Ok Google" when your screen is on
   </message>
   <message name="IDS_ASSISTANT_SCREEN_CONTEXT_TITLE" desc="Title for assistant screen context optin.">
-    Get info for what's on screen
+    Related info
   </message>
   <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC" desc="Description for assistant screen context optin.">
-    See relevant suggestions from your Assistant related to what's on your screen.
+    Let the Assistant give suggestions based on what's on your screen
   </message>
   <message name="IDS_ASSISTANT_GET_MORE_SCREEN_TITLE" desc="Title for assistant get more screen.">
     Get the most out of your Assistant
@@ -3669,32 +3250,6 @@
 
   <message name="IDS_USB_PRINTER_DISPLAY_NAME_MAKE_OR_MODEL" desc="The display name assigned to USB printers which were automatically configured for the user. This string is used when only one of manufacturer or model strings are present. USB stands for Universal Serial Bus, it indicates how the printer is attached to the computer.">
     <ph name="PRINTER_MAKE_OR_MODEL">$1<ex>OfficeJet 8710</ex></ph> (USB)
-  </message>
-
-  <!-- Unlock Strings -->
-   <message name="IDS_QUICK_UNLOCK_NOTIFICATION_TITLE" desc="The title of the notification for Quick Unlock feature notification.">
-    QU Feature notification title here
-  </message>
-  <message name="IDS_QUICK_UNLOCK_NOTIFICATION_BODY" desc="The body of the notification for Quick Unlock feature notification.">
-    QU Feature notification body goes here. QU Feature notification body goes here. QU Feature notification body goes here. QU Feature notification body goes here. QU Feature notification body goes here.
-  </message>
-  <message name="IDS_FINGERPRINT_NOTIFICATION_TITLE" desc="The title of the notification for fingerprint unlock feature notification.">
-    Enable Fingerprint unlock?
-  </message>
-  <message name="IDS_FINGERPRINT_NOTIFICATION_BODY" desc="The body of the notification for fingerprint unlock feature notification.">
-    Skip the lock screen by just tapping the fingerprint sensor. Click to configure.
-  </message>
-  <message name="IDS_FINGERPRINT_UNLOCK_FEATURE_NOTIFIER_NAME" desc="The name of fingerprint unlock feature notifier that is a system component">
-    Fingerprint Unlock Feature
-  </message>
-  <message name="IDS_PIN_UNLOCK_FEATURE_NOTIFIER_NAME" desc="The name of PIN unlock feature notifier that is a system component">
-    PIN Unlock Feature
-  </message>
-  <message name="IDS_PIN_UNLOCK_MIGRATION_PROMPT" desc="String shown in a notification asking the user to re-enter their PIN so it can be used in sign-in.">
-    Re-enter your PIN to use it to sign in to your device.
-  </message>
-  <message name="IDS_PIN_UNLOCK_MIGRATION_PROMPT_CONTINUE" desc="Continue button in notification prompt.">
-    Continue
   </message>
 
   <message name="IDS_WIFI_SCANNING_MESSAGE" desc="Scanning for wifi networks">
@@ -3807,11 +3362,14 @@
   <message name="IDS_CROSTINI_INSTALLER_START_CONTAINER_MESSAGE" desc="Text shown in the Crostini installer dialog when the container inside the VM is starting">
     This process may take a few minutes. Starting the Linux container.
   </message>
+  <message name="IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_MESSAGE" desc="Text shown in the Crostini installer dialog when the container inside the VM is being set up">
+    This process may take a few minutes. Setting up the Linux container.
+  </message>
   <message name="IDS_CROSTINI_INSTALLER_FETCH_SSH_KEYS_MESSAGE" desc="Text shown in the Crostini installer dialog when fetching ssh keys">
-    This process may take a few minutes. Starting the Linux container.
+    This process may take a few minutes. Setting up the Linux container.
   </message>
   <message name="IDS_CROSTINI_INSTALLER_MOUNT_CONTAINER_MESSAGE" desc="Text shown in the Crostini installer dialog when doing sshfs mount of container">
-    This process may take a few minutes. Starting the Linux container.
+    This process may take a few minutes. Setting up the Linux container.
   </message>
   <message name="IDS_CROSTINI_INSTALLER_RETRY_BUTTON" desc="Retry button of the Crostini installer dialog that starts the install steps again.">
     Retry
@@ -3833,6 +3391,9 @@
   </message>
   <message name="IDS_CROSTINI_INSTALLER_START_CONTAINER_ERROR" desc="Text shown in the Crostini installer dialog when the container fails to start inside the VM">
     The Linux container didn't start. Please try again.
+  </message>
+  <message name="IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_ERROR" desc="Text shown in the Crostini installer dialog when the container fails to be set up inside the VM">
+    The Linux container setup did not complete. Please try again.
   </message>
   <message name="IDS_CROSTINI_INSTALLER_FETCH_SSH_KEYS_ERROR" desc="Text shown in the Crostini installer dialog when there is an error fetching ssh keys">
     Error configuring Linux files. Please try again.
@@ -4098,7 +3659,7 @@
     Smart Lock phone changed. Enter your password to update Smart Lock. Next time, your phone will unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Turn off Smart Lock in Settings.
   </message>
   <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_HARDLOCK_PAIRING_ADDED" desc="Tooltip text shown on a user's lock screen pod when Easy Unlock pairing data is synced on a new Chromebook.">
-    Enter your password to turn on Smart Lock. Next time, your phone will unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Turn off Smart Lock in Settings.
+    Enter your password to enable Smart Lock. Next time, your phone will unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Turn off Smart Lock in Settings.
   </message>
   <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_LOGIN_FAILURE" desc="Tooltip text shown on a user's lock screen when Smart Lock signin attempt fails.">
     Smart Lock couldn’t verify your account. Type your password to enter.
@@ -4107,7 +3668,7 @@
     To set up Smart Lock for Chromebook, Google needs to make sure it’s you—type your password to get started.
   </message>
   <message name="IDS_EASY_UNLOCK_SCREENLOCK_USER_POD_AUTH_VALUE" desc="Message on lock screen user pod shown in place of password field when Easy Unlock is enabled and a phone that can unlock the Chromebook is detected in proximity.">
-    Click your photo
+    Select your photo
   </message>
   <message name="IDS_SMART_LOCK_SPINNER_ACCESSIBILITY_LABEL" desc="Label for the spinner icon used for accessibility purposes. This label is needed because this state does not have a tooltip.">
     Finding your phone
@@ -4145,7 +3706,7 @@
     Place your finger
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_DESCRIPTION" desc="The label that explains the location of the fingerprint sensor on the device.">
-    Touch the sensor with your index finger. It's on the top left of your Chromebook.
+    Touch the sensor with your finger. It's on the edge of your Chromebook.
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_PROGRESS_TITLE" desc="The title of the dialog that shows where the fingerprint sensor is.">
     Lift, then touch again
@@ -4171,9 +3732,6 @@
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_ADD_ANOTHER" desc="In fingerprint setup screen, button label to add another fingerprint.">
     Add another
   </message>
-  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_ADD_FINGERPRINT" desc="In fingerprint setup screen, button label to add fingerprint.">
-    Add fingerprint
-  </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_NEW_FINGERPRINT_DEFAULT_NAME_1" desc="The default name for first newly added fingerprint.">
     Finger 1
   </message>
@@ -4184,7 +3742,7 @@
     Finger 3
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_INSTRUCTION_MOVE_FINGER" desc="Text in the fingerprint setup screen telling users what to move finger to capture the different parts of fingerprint.">
-    Move your index finger slightly to add the different parts of your fingerprint.
+    Move your finger slightly to add the different parts of your fingerprint.
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_INSTRUCTION_TRY_AGAIN" desc="Text in the fingerprint setup screen telling users what to scan their finger again.">
     Try again.
@@ -4239,5 +3797,9 @@
   </message>
   <message name="IDS_POWER_SOURCE_PORT_UNKNOWN" desc="The text referring to the device to charge from, when its port location cannot be determined.">
     USB-C device
+  </message>
+
+  <message name="IDS_SMB_SHARES_ADD_SERVICE_MENU_OPTION" desc="The text displayed in the files app Add New Services menu for the option that allows users to mount a new SMB file share.">
+    SMB file share
   </message>
 </grit-part>

@@ -2,7 +2,6 @@ This tests the handling of the link.crossOrigin attribute
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS 'crossOrigin' in link is true
 PASS link.crossOrigin is null
 PASS link.setAttribute('crossorigin', ''); link.crossOrigin is "anonymous"

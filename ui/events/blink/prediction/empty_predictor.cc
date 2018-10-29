@@ -12,6 +12,10 @@ EmptyPredictor::EmptyPredictor() {
 
 EmptyPredictor::~EmptyPredictor() = default;
 
+const char* EmptyPredictor::GetName() const {
+  return "Empty";
+}
+
 void EmptyPredictor::Reset() {
   last_input_.time_stamp = base::TimeTicks();
 }

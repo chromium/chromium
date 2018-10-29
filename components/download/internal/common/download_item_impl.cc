@@ -53,6 +53,7 @@
 #include "components/download/public/common/download_task_runner.h"
 #include "components/download/public/common/download_ukm_helper.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/download/public/common/download_utils.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -115,7 +116,8 @@ bool IsCancellation(DownloadInterruptReason reason) {
          reason == DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
 }
 
-std::string GetDownloadTypeNames(DownloadItem::DownloadType type) {
+std::string GetDownloadCreationTypeNames(
+    DownloadItem::DownloadCreationType type) {
   switch (type) {
     case DownloadItem::TYPE_ACTIVE_DOWNLOAD:
       return "NEW_DOWNLOAD";
@@ -160,7 +162,7 @@ std::string GetDownloadDangerNames(DownloadDangerType type) {
 class DownloadItemActivatedData
     : public base::trace_event::ConvertableToTraceFormat {
  public:
-  DownloadItemActivatedData(DownloadItem::DownloadType download_type,
+  DownloadItemActivatedData(DownloadItem::DownloadCreationType download_type,
                             uint32_t download_id,
                             std::string original_url,
                             std::string final_url,
@@ -182,7 +184,8 @@ class DownloadItemActivatedData
   void AppendAsTraceFormat(std::string* out) const override {
     out->append("{");
     out->append(base::StringPrintf(
-        "\"type\":\"%s\",", GetDownloadTypeNames(download_type_).c_str()));
+        "\"type\":\"%s\",",
+        GetDownloadCreationTypeNames(download_type_).c_str()));
     out->append(base::StringPrintf("\"id\":\"%d\",", download_id_));
     out->append("\"original_url\":");
     base::EscapeJSONString(original_url_, true, out);
@@ -204,7 +207,7 @@ class DownloadItemActivatedData
   }
 
  private:
-  DownloadItem::DownloadType download_type_;
+  DownloadItem::DownloadCreationType download_type_;
   uint32_t download_id_;
   std::string original_url_;
   std::string final_url_;
@@ -972,6 +975,11 @@ bool DownloadItemImpl::IsParallelDownload() const {
   return is_parallelizable && download::IsParallelDownloadEnabled();
 }
 
+DownloadItem::DownloadCreationType DownloadItemImpl::GetDownloadCreationType()
+    const {
+  return download_type_;
+}
+
 void DownloadItemImpl::OnContentCheckCompleted(DownloadDangerType danger_type,
                                                DownloadInterruptReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1020,8 +1028,8 @@ std::string DownloadItemImpl::DebugString(bool verbose) const {
   // Construct a string of the URL chain.
   std::string url_list("<none>");
   if (!request_info_.url_chain.empty()) {
-    std::vector<GURL>::const_iterator iter = request_info_.url_chain.begin();
-    std::vector<GURL>::const_iterator last = request_info_.url_chain.end();
+    auto iter = request_info_.url_chain.begin();
+    auto last = request_info_.url_chain.end();
     url_list = (*iter).is_valid() ? (*iter).spec() : "<invalid>";
     ++iter;
     for (; verbose && (iter != last); ++iter) {
@@ -1092,83 +1100,8 @@ ResumeMode DownloadItemImpl::GetResumeMode() const {
   bool user_action_required =
       (auto_resume_count_ >= kMaxAutoResumeAttempts || IsPaused());
 
-  switch (last_reason_) {
-    case DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR:
-    case DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT:
-    case DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH:
-      break;
-
-    case DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE:
-    // The server disagreed with the file offset that we sent.
-
-    case DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH:
-    // The file on disk was found to not match the expected hash. Discard and
-    // start from beginning.
-
-    case DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT:
-      // The [possibly persisted] file offset disagreed with the file on disk.
-
-      // The intermediate stub is not usable and the server is responding. Hence
-      // retrying the request from the beginning is likely to work.
-      restart_required = true;
-      break;
-
-    case DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED:
-    case DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED:
-    case DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN:
-    case DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED:
-    case DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE:
-    case DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN:
-    case DOWNLOAD_INTERRUPT_REASON_CRASH:
-      // It is not clear whether attempting a resumption is acceptable at this
-      // time or whether it would work at all. Hence allow the user to retry the
-      // download manually.
-      user_action_required = true;
-      break;
-
-    case DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE:
-      // There was no space. Require user interaction so that the user may, for
-      // example, choose a different location to store the file. Or they may
-      // free up some space on the targret device and retry. But try to reuse
-      // the partial stub.
-      user_action_required = true;
-      break;
-
-    case DOWNLOAD_INTERRUPT_REASON_FILE_FAILED:
-    case DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED:
-    case DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG:
-    case DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE:
-      // Assume the partial stub is unusable. Also it may not be possible to
-      // restart immediately.
-      user_action_required = true;
-      restart_required = true;
-      break;
-
-    case DOWNLOAD_INTERRUPT_REASON_NONE:
-    case DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST:
-    case DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED:
-    case DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT:
-    case DOWNLOAD_INTERRUPT_REASON_USER_CANCELED:
-    case DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED:
-    case DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED:
-    case DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED:
-    case DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM:
-    case DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN:
-    case DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT:
-    case DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE:
-      return ResumeMode::INVALID;
-  }
-
-  if (user_action_required && restart_required)
-    return ResumeMode::USER_RESTART;
-
-  if (restart_required)
-    return ResumeMode::IMMEDIATE_RESTART;
-
-  if (user_action_required)
-    return ResumeMode::USER_CONTINUE;
-
-  return ResumeMode::IMMEDIATE_CONTINUE;
+  return GetDownloadResumeMode(last_reason_, restart_required,
+                               user_action_required);
 }
 
 void DownloadItemImpl::UpdateValidatorsOnResumption(
@@ -1185,8 +1118,7 @@ void DownloadItemImpl::UpdateValidatorsOnResumption(
   //   will be used with the last server that sent them to us.
   // - The redirect chain contains all the servers that were involved in this
   //   download since the initial request, in order.
-  std::vector<GURL>::const_iterator chain_iter =
-      new_create_info.url_chain.begin();
+  auto chain_iter = new_create_info.url_chain.begin();
   if (*chain_iter == request_info_.url_chain.back())
     ++chain_iter;
 
@@ -1355,9 +1287,10 @@ void DownloadItemImpl::SetDelegate(DownloadItemImplDelegate* delegate) {
 // **** Download progression cascade
 
 void DownloadItemImpl::Init(bool active,
-                            DownloadItem::DownloadType download_type) {
+                            DownloadItem::DownloadCreationType download_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  download_type_ = download_type;
   std::string file_name;
   if (download_type == TYPE_HISTORY_IMPORT) {
     // target_path_ works for History and Save As versions.
@@ -2346,7 +2279,7 @@ void DownloadItemImpl::ResumeInterruptedDownload(
   // request will not be dropped if the WebContents (and by extension, the
   // associated renderer) goes away before a response is received.
   std::unique_ptr<DownloadUrlParameters> download_params(
-      new DownloadUrlParameters(GetURL(), nullptr, traffic_annotation));
+      new DownloadUrlParameters(GetURL(), traffic_annotation));
   download_params->set_file_path(GetFullPath());
   if (received_slices_.size() > 0) {
     std::vector<DownloadItem::ReceivedSlice> slices_to_download =

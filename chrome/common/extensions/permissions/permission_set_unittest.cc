@@ -764,7 +764,6 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermission::kGcm);
   skip.insert(APIPermission::kIdle);
   skip.insert(APIPermission::kImeWindowEnabled);
-  skip.insert(APIPermission::kInlineInstallPrivate);
   skip.insert(APIPermission::kIdltest);
   skip.insert(APIPermission::kOverrideEscFullscreen);
   skip.insert(APIPermission::kPointerLock);
@@ -857,7 +856,6 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermission::kResourcesPrivate);
   skip.insert(APIPermission::kRtcPrivate);
   skip.insert(APIPermission::kSafeBrowsingPrivate);
-  skip.insert(APIPermission::kStreamsPrivate);
   skip.insert(APIPermission::kSystemPrivate);
   skip.insert(APIPermission::kTabCaptureForTab);
   skip.insert(APIPermission::kTerminalPrivate);
@@ -893,10 +891,6 @@ TEST(PermissionsTest, PermissionMessages) {
 
   // We already have a generic message for declaring externally_connectable.
   skip.insert(APIPermission::kExternallyConnectableAllUrls);
-
-  // TODO(crbug.com/696822): Implement the permission model for Declarative Net
-  // Request API.
-  skip.insert(APIPermission::kDeclarativeNetRequest);
 
   const PermissionMessageProvider* provider = PermissionMessageProvider::Get();
   PermissionsInfo* info = PermissionsInfo::GetInstance();
@@ -1313,7 +1307,7 @@ TEST(PermissionsTest, GetWarningMessages_PlatformAppHosts) {
 }
 
 testing::AssertionResult ShowsAllHostsWarning(const std::string& pattern) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("TLDWildCardTest").AddPermission(pattern).Build();
 
   return VerifyHasPermissionMessage(

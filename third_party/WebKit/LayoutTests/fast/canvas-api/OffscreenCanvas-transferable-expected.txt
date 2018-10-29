@@ -2,7 +2,6 @@ Test OffscreenCanvas transferable with exception cases.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS offscreenCanvas.width is width
 PASS offscreenCanvas.height is height
 PASS offscreenCanvas.width is 0

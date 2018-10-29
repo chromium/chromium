@@ -16,5 +16,5 @@ HTTP_CONNECTION = keep-alive
 HTTP_HOST = localhost:8080
 HTTP_ORIGIN = http://127.0.0.1:8000
 HTTP_REFERER = http://127.0.0.1:8000/navigation/form-with-enctype-targets-cross-site-frame.html
-HTTP_SEC_METADATA = cause="forced", destination="nested-document", site="cross-site"
+HTTP_SEC_METADATA = cause=forced, destination=nested-document, site=cross-site
 HTTP_UPGRADE_INSECURE_REQUESTS = 1

@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -169,7 +170,12 @@ void ExtensionActionRunner::OnActiveTabPermissionGranted(
 }
 
 void ExtensionActionRunner::OnWebRequestBlocked(const Extension* extension) {
-  web_request_blocked_.insert(extension->id());
+  bool inserted = false;
+  std::tie(std::ignore, inserted) =
+      web_request_blocked_.insert(extension->id());
+  if (inserted)
+    NotifyChange(extension);
+
   if (test_observer_)
     test_observer_->OnBlockedActionAdded();
 }
@@ -272,7 +278,7 @@ void ExtensionActionRunner::RunPendingScriptsForExtension(
   // callbacks adds more entries.
   permitted_extensions_.insert(extension->id());
 
-  PendingScriptMap::iterator iter = pending_scripts_.find(extension->id());
+  auto iter = pending_scripts_.find(extension->id());
   if (iter == pending_scripts_.end())
     return;
 
@@ -530,7 +536,7 @@ void ExtensionActionRunner::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  PendingScriptMap::iterator iter = pending_scripts_.find(extension->id());
+  auto iter = pending_scripts_.find(extension->id());
   if (iter != pending_scripts_.end()) {
     pending_scripts_.erase(iter);
     ExtensionActionAPI::Get(browser_context_)

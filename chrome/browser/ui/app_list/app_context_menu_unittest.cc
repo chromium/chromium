@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -143,7 +144,7 @@ class AppContextMenuTest : public AppListTestBase,
       arc::IconDecodeRequest::DisableSafeDecodingForTesting();
     }
     extensions::MenuManagerFactory::GetInstance()->SetTestingFactory(
-        profile(), MenuManagerFactory);
+        profile(), base::BindRepeating(&MenuManagerFactory));
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     menu_delegate_ = std::make_unique<FakeAppContextMenuDelegate>();
     model_updater_ = std::make_unique<FakeAppListModelUpdater>();

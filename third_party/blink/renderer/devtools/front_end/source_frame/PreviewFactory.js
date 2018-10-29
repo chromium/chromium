@@ -9,10 +9,6 @@ SourceFrame.PreviewFactory = class {
    * @returns {!Promise<?UI.Widget>}
    */
   static async createPreview(provider, mimeType) {
-    const content = await provider.requestContent();
-    if (!content)
-      return new UI.EmptyWidget(Common.UIString('Nothing to preview'));
-
     let resourceType = Common.ResourceType.fromMimeType(mimeType);
     if (resourceType === Common.resourceTypes.Other)
       resourceType = provider.contentType();
@@ -23,6 +19,13 @@ SourceFrame.PreviewFactory = class {
       case Common.resourceTypes.Font:
         return new SourceFrame.FontView(mimeType, provider);
     }
+
+    let content = await provider.requestContent();
+    if (!content)
+      return new UI.EmptyWidget(Common.UIString('Nothing to preview'));
+
+    if (await provider.contentEncoded())
+      content = window.atob(content);
 
     const parsedXML = SourceFrame.XMLView.parseXML(content, mimeType);
     if (parsedXML)

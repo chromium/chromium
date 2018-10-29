@@ -45,8 +45,7 @@ RenderFrameProxyHost* RenderFrameProxyHost::FromID(int process_id,
                                                    int routing_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RoutingIDFrameProxyMap* frames = g_routing_id_frame_proxy_map.Pointer();
-  RoutingIDFrameProxyMap::iterator it = frames->find(
-      RenderFrameProxyHostID(process_id, routing_id));
+  auto it = frames->find(RenderFrameProxyHostID(process_id, routing_id));
   return it == frames->end() ? NULL : it->second;
 }
 
@@ -379,11 +378,6 @@ void RenderFrameProxyHost::OnRouteMessageEvent(
       if (target_is_descendant_of_source) {
         target_rfh->GetRenderWidgetHost()
             ->SynchronizeVisualPropertiesIgnoringPendingAck();
-      }
-
-      if (!source_rfh->frame_tree_node()->IsDescendantOf(
-              target_rfh->frame_tree_node())) {
-        target_rfh->did_receive_post_message_from_non_descendant();
       }
 
       // Ensure that we have a swapped-out RVH and proxy for the source frame

@@ -4,11 +4,11 @@
 #ifndef SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_OS_METRICS_H_
 #define SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_OS_METRICS_H_
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/process/process_handle.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_export.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 namespace heap_profiling {
@@ -17,7 +17,8 @@ FORWARD_DECLARE_TEST(ProfilingJsonExporterTest, MemoryMaps);
 
 namespace memory_instrumentation {
 
-class SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT OSMetrics {
+class COMPONENT_EXPORT(
+    RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION) OSMetrics {
  public:
   static bool FillOSMemoryDump(base::ProcessId pid, mojom::RawOSMemDump* dump);
   static bool FillProcessMemoryMaps(base::ProcessId,

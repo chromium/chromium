@@ -66,7 +66,11 @@ LayoutObject* LayoutNGListMarker::SymbolMarkerLayoutText() const {
 }
 
 String LayoutNGListMarker::TextAlternative() const {
-  return ToLayoutText(FirstChild())->GetText();
+  // Compute from the list item, in the logical order even in RTL, reflecting
+  // speech order.
+  if (LayoutNGListItem* list_item = ListItem())
+    return list_item->MarkerTextWithSuffix();
+  return g_empty_string;
 }
 
 bool LayoutNGListMarker::NeedsOccupyWholeLine() const {

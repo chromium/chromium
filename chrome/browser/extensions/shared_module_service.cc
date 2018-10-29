@@ -50,9 +50,7 @@ SharedModuleService::ImportStatus SharedModuleService::CheckImports(
   // at install time, those locations need to be updated.
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ImportInfoVector& imports = SharedModuleInfo::GetImports(extension);
-  for (ImportInfoVector::const_iterator iter = imports.begin();
-       iter != imports.end();
-       ++iter) {
+  for (auto iter = imports.begin(); iter != imports.end(); ++iter) {
     base::Version version_required(iter->minimum_version);
     const Extension* imported_module =
         registry->GetExtensionById(iter->extension_id,
@@ -170,8 +168,7 @@ void SharedModuleService::PruneSharedModules() {
       shared_modules.push_back(iter->get()->id());
 
     const ImportInfoVector& imports = SharedModuleInfo::GetImports(iter->get());
-    for (ImportInfoVector::const_iterator imports_iter = imports.begin();
-         imports_iter != imports.end();
+    for (auto imports_iter = imports.begin(); imports_iter != imports.end();
          ++imports_iter) {
       used_shared_modules.insert(imports_iter->extension_id);
     }

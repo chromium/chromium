@@ -13,6 +13,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -33,26 +34,37 @@ namespace {
 
 struct PromoStringToIdsMapEntry {
   const char* promo_text_str;
+  // Use |nonlocalized_message| instead of |message_id| if non-NULL.
+  const char* nonlocalized_message;
   int message_id;
 };
 
 // A mapping from a string to a l10n message id.
 const PromoStringToIdsMapEntry kPromoStringToIdsMap[] = {
-    {"appRatingPromo", IDS_IOS_APP_RATING_PROMO_STRING},
-    {"moveToDockTip", IDS_IOS_MOVE_TO_DOCK_TIP},
+    {"testWhatsNewCommand", kTestWhatsNewMessage, 0},
+    {"moveToDockTip", NULL, IDS_IOS_MOVE_TO_DOCK_TIP},
 };
 
 // Returns a localized version of |promo_text| if it has an entry in the
 // |kPromoStringToIdsMap|. If there is no entry, an empty string is returned.
 std::string GetLocalizedPromoText(const std::string& promo_text) {
-  for (size_t i = 0; i < arraysize(kPromoStringToIdsMap); ++i) {
-    if (kPromoStringToIdsMap[i].promo_text_str == promo_text)
-      return l10n_util::GetStringUTF8(kPromoStringToIdsMap[i].message_id);
+  for (size_t i = 0; i < base::size(kPromoStringToIdsMap); ++i) {
+    auto& entry = kPromoStringToIdsMap[i];
+    if (entry.promo_text_str == promo_text) {
+      return entry.nonlocalized_message
+                 ? std::string(entry.nonlocalized_message)
+                 : l10n_util::GetStringUTF8(entry.message_id);
+    }
   }
   return std::string();
 }
 
 }  // namespace
+
+// The What's New promo command for testing.
+const char kTestWhatsNewCommand[] = "testwhatsnew";
+const char kTestWhatsNewMessage[] =
+    "What's New? BEGIN_LINKFind out hereEND_LINK";
 
 NotificationPromoWhatsNew::NotificationPromoWhatsNew(PrefService* local_state)
     : local_state_(local_state),
@@ -65,24 +77,22 @@ bool NotificationPromoWhatsNew::Init() {
   notification_promo_.InitFromVariations();
 
   // Force enable a particular promo if experimental flag is set.
-  experimental_flags::WhatsNewPromoStatus forceEnabled =
-      experimental_flags::GetWhatsNewPromoStatus();
-  if (forceEnabled != experimental_flags::WHATS_NEW_DEFAULT) {
-    switch (forceEnabled) {
-      case experimental_flags::WHATS_NEW_APP_RATING:
-        InjectFakePromo("1", "appRatingPromo", "chrome_command", "ratethisapp",
-                        "", "RateThisAppPromo", "logo");
-        break;
-      case experimental_flags::WHATS_NEW_MOVE_TO_DOCK_TIP:
-        InjectFakePromo(
-            "2", "moveToDockTip", "url", "",
-            "https://support.google.com/chrome/?p=iphone_dock&ios=1",
-            "MoveToDockTipPromo", "logoWithRoundedRectangle");
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
+  switch (experimental_flags::GetWhatsNewPromoStatus()) {
+    case experimental_flags::WHATS_NEW_DEFAULT:
+      // Do nothing. Use default experiment.
+      break;
+    case experimental_flags::WHATS_NEW_TEST_COMMAND_TIP:
+      InjectFakePromo("1", "testWhatsNewCommand", "chrome_command",
+                      kTestWhatsNewCommand, "", "TestWhatsNewCommand", "logo");
+      break;
+    case experimental_flags::WHATS_NEW_MOVE_TO_DOCK_TIP:
+      InjectFakePromo("2", "moveToDockTip", "url", "",
+                      "https://support.google.com/chrome/?p=iphone_dock&ios=1",
+                      "MoveToDockTipPromo", "logoWithRoundedRectangle");
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
 
   notification_promo_.InitFromPrefs();
@@ -195,7 +205,9 @@ bool NotificationPromoWhatsNew::InitFromNotificationPromo() {
     }
   } else if (IsChromeCommandPromo()) {
     notification_promo_.promo_payload()->GetString("command", &command_);
-    if ((command_ != "bookmark") && (command_ != "ratethisapp")) {
+    // There is only one valid command for NTP Promotions, and that is the
+    // test command itself.
+    if (command_ != kTestWhatsNewCommand) {
       return valid_;
     }
   } else {  // If |promo_type_| is not set to URL or Command, return early.

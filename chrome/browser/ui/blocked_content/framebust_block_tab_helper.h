@@ -10,13 +10,19 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
+
+namespace content {
+class NavigationHandle;
+}
 
 // A tab helper that keeps track of blocked Framebusts that happened on each
 // page. Only used for the desktop version of the blocked Framebust UI.
 class FramebustBlockTabHelper
-    : public content::WebContentsUserData<FramebustBlockTabHelper> {
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<FramebustBlockTabHelper> {
  public:
   using ClickCallback = base::OnceCallback<
       void(const GURL&, size_t /* index */, size_t /* total_size */)>;
@@ -61,7 +67,9 @@ class FramebustBlockTabHelper
 
   explicit FramebustBlockTabHelper(content::WebContents* web_contents);
 
-  content::WebContents* web_contents_;
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Remembers all the currently blocked URLs. This is cleared on each
   // navigation.

@@ -74,28 +74,14 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   // signal strength. |result| must not be null. If |observations_count| is not
   // null, then it is set to the number of observations that were available
   // in the observation buffer for computing the percentile.
-  base::Optional<int32_t> GetPercentile(
-      base::TimeTicks begin_timestamp,
-      const base::Optional<int32_t>& current_signal_strength,
-      int percentile,
-      size_t* observations_count) const;
+  base::Optional<int32_t> GetPercentile(base::TimeTicks begin_timestamp,
+                                        int32_t current_signal_strength,
+                                        int percentile,
+                                        size_t* observations_count) const;
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;
   }
-
-  // Computes percentiles separately for each host. Observations without
-  // a host tag are skipped. Only data from the hosts present in |host_filter|
-  // are considered. Observations before |begin_timestamp| are skipped. The
-  // percentile value for each host is returned in |host_keyed_percentiles|. The
-  // number of valid observations for each host used for the computation is
-  // returned in |host_keyed_counts|.
-  void GetPercentileForEachHostWithCounts(
-      base::TimeTicks begin_timestamp,
-      int percentile,
-      const base::Optional<std::set<IPHash>>& host_filter,
-      std::map<IPHash, int32_t>* host_keyed_percentiles,
-      std::map<IPHash, size_t>* host_keyed_counts) const;
 
   // Removes all observations from the buffer whose corresponding entry in
   // |deleted_observation_sources| is set to true. For example, if index 1 and
@@ -114,7 +100,7 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   // at least one observation in the buffer.
   void ComputeWeightedObservations(
       const base::TimeTicks& begin_timestamp,
-      const base::Optional<int32_t>& current_signal_strength,
+      int32_t current_signal_strength,
       std::vector<WeightedObservation>* weighted_observations,
       double* total_weight) const;
 

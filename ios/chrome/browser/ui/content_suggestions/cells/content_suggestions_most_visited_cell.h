@@ -7,14 +7,14 @@
 
 #import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 
-@class FaviconViewNew;
+@class FaviconView;
 
 // Associated cell to display a Most Visited tile based on the suggestion.
 // It displays the favicon for this Most Visited suggestion and its title.
 @interface ContentSuggestionsMostVisitedCell : MDCCollectionViewCell
 
 // FaviconView displaying the favicon.
-@property(nonatomic, strong, readonly, nonnull) FaviconViewNew* faviconView;
+@property(nonatomic, strong, readonly, nonnull) FaviconView* faviconView;
 
 // Title of the Most Visited.
 @property(nonatomic, strong, readonly, nonnull) UILabel* titleLabel;

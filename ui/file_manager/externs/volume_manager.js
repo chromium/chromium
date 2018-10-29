@@ -75,7 +75,7 @@ VolumeManager.prototype.getLocationInfo = function(entry) {};
 /**
  * Adds an event listener to the target.
  * @param {string} type The name of the event.
- * @param {EventListenerType} handler The handler for the event. This is
+ * @param {function(!Event)} handler The handler for the event. This is
  *     called when the event is dispatched.
  */
 VolumeManager.prototype.addEventListener = function(type, handler) {};
@@ -83,7 +83,7 @@ VolumeManager.prototype.addEventListener = function(type, handler) {};
 /**
  * Removes an event listener from the target.
  * @param {string} type The name of the event.
- * @param {EventListenerType} handler The handler for the event.
+ * @param {function(!Event)} handler The handler for the event.
  */
 VolumeManager.prototype.removeEventListener = function(type, handler) {};
 
@@ -112,6 +112,13 @@ VolumeManager.prototype.findByDevicePath = function(devicePath) {};
  *     if the volume is never mounted.
  */
 VolumeManager.prototype.whenVolumeInfoReady = function(volumeId) {};
+
+/**
+ * Obtains the default display root entry.
+ * @param {function(DirectoryEntry)|function(FilesAppDirEntry)} callback
+ * Callback passed the default display root.
+ */
+VolumeManager.prototype.getDefaultDisplayRoot = function(callback) {};
 
 /**
  * Event object which is dispached with 'externally-unmounted' event.

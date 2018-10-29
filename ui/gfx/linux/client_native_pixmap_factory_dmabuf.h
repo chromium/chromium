@@ -10,7 +10,8 @@
 
 namespace gfx {
 
-GFX_EXPORT ClientNativePixmapFactory* CreateClientNativePixmapFactoryDmabuf();
+GFX_EXPORT ClientNativePixmapFactory* CreateClientNativePixmapFactoryDmabuf(
+    bool supports_import_from_dmabuf = false);
 
 }  // namespace gfx
 

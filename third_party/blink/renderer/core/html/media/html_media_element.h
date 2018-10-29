@@ -76,7 +76,6 @@ class TextTrack;
 class TextTrackContainer;
 class TextTrackList;
 class TimeRanges;
-class URLRegistry;
 class VideoTrack;
 class VideoTrackList;
 class WebAudioSourceProvider;
@@ -101,8 +100,6 @@ class CORE_EXPORT HTMLMediaElement
 
   enum class RecordMetricsBehavior { kDoNotRecord, kDoRecord };
 
-  static void SetMediaStreamRegistry(URLRegistry*);
-  static bool IsMediaStreamURL(const String& url);
   static bool IsHLSURL(const KURL&);
 
   // If HTMLMediaElement is using MediaTracks (either placeholder or provided
@@ -204,8 +201,8 @@ class CORE_EXPORT HTMLMediaElement
   void FlingingStopped();
 
   // statistics
-  unsigned webkitAudioDecodedByteCount() const;
-  unsigned webkitVideoDecodedByteCount() const;
+  uint64_t webkitAudioDecodedByteCount() const;
+  uint64_t webkitVideoDecodedByteCount() const;
 
   // media source extensions
   void CloseMediaSource();
@@ -268,11 +265,6 @@ class CORE_EXPORT HTMLMediaElement
   // of one of them here.
   using HTMLElement::GetExecutionContext;
 
-  bool HasSingleSecurityOrigin() const {
-    return GetWebMediaPlayer() ? GetWebMediaPlayer()->HasSingleSecurityOrigin()
-                               : true;
-  }
-
   bool IsFullscreen() const;
   virtual bool UsesOverlayFullscreenVideo() const { return false; }
 
@@ -306,9 +298,8 @@ class CORE_EXPORT HTMLMediaElement
   enum InvalidURLAction { kDoNothing, kComplain };
   bool IsSafeToLoadURL(const KURL&, InvalidURLAction);
 
-  // Checks to see if current media data is CORS-same-origin as the
-  // specified origin.
-  bool IsMediaDataCORSSameOrigin(const SecurityOrigin*) const;
+  // Checks to see if current media data is CORS-same-origin.
+  bool IsMediaDataCORSSameOrigin() const;
 
   // Returns this media element is in a cross-origin frame.
   bool IsInCrossOriginFrame() const;
@@ -560,11 +551,14 @@ class CORE_EXPORT HTMLMediaElement
 
   void OnVisibilityChangedForLazyLoad(bool);
 
+  void OnRemovedFromDocumentTimerFired(TimerBase*);
+
   TaskRunnerTimer<HTMLMediaElement> load_timer_;
   TaskRunnerTimer<HTMLMediaElement> progress_event_timer_;
   TaskRunnerTimer<HTMLMediaElement> playback_progress_timer_;
   TaskRunnerTimer<HTMLMediaElement> audio_tracks_timer_;
   TaskRunnerTimer<HTMLMediaElement> check_viewport_intersection_timer_;
+  TaskRunnerTimer<HTMLMediaElement> removed_from_document_timer_;
 
   Member<TimeRanges> played_time_ranges_;
   Member<EventQueue> async_event_queue_;
@@ -755,8 +749,6 @@ class CORE_EXPORT HTMLMediaElement
   Member<HTMLMediaElementControlsList> controls_list_;
 
   Member<ElementVisibilityObserver> lazy_load_visibility_observer_;
-
-  static URLRegistry* media_stream_registry_;
 };
 
 inline bool IsHTMLMediaElement(const HTMLElement& element) {

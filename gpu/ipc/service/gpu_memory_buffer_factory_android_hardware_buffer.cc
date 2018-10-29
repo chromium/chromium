@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/memory/shared_memory_handle.h"
 #include "build/build_config.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gl/gl_image_ahardwarebuffer.h"
 
 namespace gpu {
@@ -26,13 +27,33 @@ GpuMemoryBufferFactoryAndroidHardwareBuffer::CreateGpuMemoryBuffer(
     gfx::BufferUsage usage,
     int client_id,
     SurfaceHandle surface_handle) {
-  NOTIMPLEMENTED();
-  return gfx::GpuMemoryBufferHandle();
+  if (buffer_map_.find(id) != buffer_map_.end()) {
+    LOG(ERROR) << "Tried to create new GpuMemoryBuffer with an existing id";
+    return gfx::GpuMemoryBufferHandle();
+  }
+
+  auto buffer = GpuMemoryBufferImplAndroidHardwareBuffer::Create(
+      id, size, format, usage, GpuMemoryBufferImpl::DestructionCallback());
+  if (!buffer) {
+    LOG(ERROR) << "Error creating new GpuMemoryBuffer";
+    return gfx::GpuMemoryBufferHandle();
+  }
+  auto handle = buffer->CloneHandle();
+  buffer_map_[id] = std::move(buffer);
+  return handle;
 }
 
 void GpuMemoryBufferFactoryAndroidHardwareBuffer::DestroyGpuMemoryBuffer(
     gfx::GpuMemoryBufferId id,
-    int client_id) {}
+    int client_id) {
+  auto it = buffer_map_.find(id);
+  if (it == buffer_map_.end()) {
+    LOG(ERROR) << "Tried to delete non existent GpuMemoryBuffer";
+    return;
+  }
+
+  buffer_map_.erase(it);
+}
 
 ImageFactory* GpuMemoryBufferFactoryAndroidHardwareBuffer::AsImageFactory() {
   return this;

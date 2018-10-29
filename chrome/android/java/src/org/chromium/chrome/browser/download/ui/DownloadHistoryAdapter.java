@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService.DownloadObserver;
 import org.chromium.chrome.browser.download.DownloadSharedPreferenceHelper;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.download.home.metrics.FileExtensions;
 import org.chromium.chrome.browser.download.home.storage.StorageSummaryProvider;
 import org.chromium.chrome.browser.download.ui.BackendProvider.DownloadDelegate;
 import org.chromium.chrome.browser.download.ui.DownloadHistoryItemWrapper.DownloadItemWrapper;
@@ -36,7 +37,6 @@ import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
-import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.variations.VariationsAssociatedData;
 
@@ -292,8 +292,7 @@ public class DownloadHistoryAdapter
                 if (!isOffTheRecord && wrapper.getFilterType() == DownloadFilter.Type.OTHER) {
                     RecordHistogram.recordEnumeratedHistogram(
                             "Android.DownloadManager.OtherExtensions.InitialCount",
-                            wrapper.getFileExtensionType(),
-                            DownloadHistoryItemWrapper.FileExtension.NUM_ENTRIES);
+                            wrapper.getFileExtensionType(), FileExtensions.Type.NUM_ENTRIES);
                 }
             }
         }
@@ -407,7 +406,7 @@ public class DownloadHistoryAdapter
     @Override
     protected void bindViewHolderForHeaderItem(ViewHolder viewHolder, HeaderItem headerItem) {
         super.bindViewHolderForHeaderItem(viewHolder, headerItem);
-        mSpaceDisplay.onChanged();
+        updateStorageSummary();
     }
 
     /**
@@ -500,7 +499,7 @@ public class DownloadHistoryAdapter
                     if (TextUtils.equals(item.getId(), wrapper.getId())) {
                         view.displayItem(mBackendProvider, existingWrapper);
                         if (item.getDownloadInfo().state() == DownloadState.COMPLETE) {
-                            mSpaceDisplay.onChanged();
+                            updateStorageSummary();
                         }
                     }
                 }
@@ -817,17 +816,34 @@ public class DownloadHistoryAdapter
     }
 
     private void recordOfflineItemCountHistograms() {
-        int[] itemCounts = new int[OfflineItemFilter.FILTER_BOUNDARY];
-        for (DownloadHistoryItemWrapper item : mOfflineItems) {
-            OfflineItemWrapper offlineItem = (OfflineItemWrapper) item;
-            if (offlineItem.isOffTheRecord()) continue;
-            itemCounts[offlineItem.getOfflineItemFilter()]++;
+        int offlinePageCount = 0;
+        int viewedOfflinePageCount = 0;
+        int prefetchedOfflinePageCount = 0;
+        int viewedPrefetchedOfflinePageCount = 0;
+
+        for (DownloadHistoryItemWrapper itemWrapper : mOfflineItems) {
+            if (itemWrapper.isOffTheRecord()) continue;
+            OfflineItemWrapper offlineItemWrapper = (OfflineItemWrapper) itemWrapper;
+            boolean hasBeenViewed = DownloadUtils.isOfflineItemViewed(offlineItemWrapper.getItem());
+            if (offlineItemWrapper.isSuggested()) {
+                prefetchedOfflinePageCount++;
+                if (hasBeenViewed) viewedPrefetchedOfflinePageCount++;
+            } else {
+                offlinePageCount++;
+                if (hasBeenViewed) viewedOfflinePageCount++;
+            }
         }
 
-        // TODO(shaktisahu): UMA for initial counts of offline pages, regular downloads and download
-        // file types and file extensions.
-        RecordHistogram.recordCountHistogram("Android.DownloadManager.InitialCount.OfflinePage",
-                itemCounts[OfflineItemFilter.FILTER_PAGE]);
+        RecordHistogram.recordCountHistogram(
+                "Android.DownloadManager.InitialCount.OfflinePage", offlinePageCount);
+        RecordHistogram.recordCountHistogram(
+                "Android.DownloadManager.InitialCount.Viewed.OfflinePage", viewedOfflinePageCount);
+        RecordHistogram.recordCountHistogram(
+                "Android.DownloadManager.InitialCount.PrefetchedOfflinePage",
+                prefetchedOfflinePageCount);
+        RecordHistogram.recordCountHistogram(
+                "Android.DownloadManager.InitialCount.Viewed.PrefetchedOfflinePage",
+                viewedPrefetchedOfflinePageCount);
     }
 
     @Override
@@ -901,7 +917,7 @@ public class DownloadHistoryAdapter
                     if (TextUtils.equals(item.id.id, view.getItem().getId())) {
                         view.displayItem(mBackendProvider, existingWrapper);
                         if (item.state == OfflineItemState.COMPLETE) {
-                            mSpaceDisplay.onChanged();
+                            updateStorageSummary();
                         }
                     }
                 }
@@ -928,5 +944,12 @@ public class DownloadHistoryAdapter
         }
 
         return mTimeThresholdForRecentBadgeMs;
+    }
+
+    private void updateStorageSummary() {
+        if (mSpaceDisplay != null) mSpaceDisplay.onChanged();
+        if (mStorageSummaryProvider != null) {
+            mStorageSummaryProvider.setUsedStorage(getTotalDownloadSize());
+        }
     }
 }

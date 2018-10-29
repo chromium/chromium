@@ -3,43 +3,37 @@
 <html>
 <head>
     <script>
-        function log(message)
-        {
-            var console = document.getElementById('console');
-            console.appendChild(document.createTextNode(message));
-            console.appendChild(document.createElement('br'));
+        function logFailure(message) {
+          window.top.postMessage(message, "*");
         }
-
+        function done() {
+          window.top.postMessage("DONE", "*");
+        }
         function testXHRDenied()
         {
-            log("Checking that same-origin iframes work.");
             var f = document.getElementById("f");
+            // Check that access to an empty iframe allowed.
             f.contentDocument.body.innerHTML = "Successful write into iframe";
-            log("Doing an XHR to an existing file.");
             xhr = new XMLHttpRequest();
 
-            try {
-                xhr.open("GET", "../xmlhttprequest-no-file-access-expected.txt", false);
-                xhr.send("");
-                log("Bad: XHR didn't throw exception");
-            } catch(e) {
-                log("Exception: " + e.message);
-                try {
-                    var results = window.top.document.getElementById('results');
-                    log("Bad: DOM access didn't throw exception");
-                } catch (e) {
-                    log("Exception: " + e.message);
-                    if (window.testRunner) {
-                        setTimeout("testRunner.notifyDone()", 0);
-                    }
-                }
-            }
+            xhr.open("GET", "../xmlhttprequest-no-file-access-expected.txt");
+            xhr.onload = () => {
+              logFailure("Bad: XHR didn't throw exception");
+              done();
+            };
+            xhr.onerror = (e) => {
+                 try {
+                    window.top.document.body;
+                    logFailure("Bad: DOM access didn't throw exception");
+                 } finally {
+                    done();
+                 }
+            };
+            xhr.send("");
         }
         </script>
     </head>
     <body onload="testXHRDenied()">
     <iframe id="f"></iframe>
-        <p> We're checking we can't read an arbitrary file when we set each file:// URI to have a unique domain. </p>
-        <div id="console"/>
     </body>
 </html>

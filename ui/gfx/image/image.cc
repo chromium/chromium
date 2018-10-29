@@ -123,8 +123,7 @@ class ImageRepPNG : public ImageRep {
   gfx::Size Size() const override {
     // Read the PNG data to get the image size, caching it.
     if (!size_cache_) {
-      for (std::vector<ImagePNGRep>::const_iterator it = image_reps().begin();
-           it != image_reps().end(); ++it) {
+      for (auto it = image_reps().begin(); it != image_reps().end(); ++it) {
         if (it->scale == 1.0f) {
           size_cache_.reset(new gfx::Size(it->Size()));
           return *size_cache_;

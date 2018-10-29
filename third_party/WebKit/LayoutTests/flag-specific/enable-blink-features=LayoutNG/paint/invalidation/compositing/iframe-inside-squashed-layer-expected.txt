@@ -36,12 +36,7 @@
         {
           "object": "NGPhysicalTextFragment 'test1'",
           "rect": [8, 508, 29, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'test1'",
-          "rect": [8, 508, 29, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "LayoutView #document",

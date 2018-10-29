@@ -499,7 +499,7 @@ void PersistentTabRestoreService::Delegate::OnWillSaveCommands() {
     // Write the to_write_count most recently added entries out. The most
     // recently added entry is at the front, so we use a reverse iterator to
     // write in the order the entries were added.
-    Entries::const_reverse_iterator i = entries.rbegin();
+    auto i = entries.rbegin();
     DCHECK(static_cast<size_t>(to_write_count) <= entries.size());
     std::advance(i, entries.size() - static_cast<int>(to_write_count));
     for (; i != entries.rend(); ++i) {
@@ -526,7 +526,7 @@ void PersistentTabRestoreService::Delegate::OnWillSaveCommands() {
 void PersistentTabRestoreService::Delegate::OnClearEntries() {
   // Mark all the tabs as closed so that we don't attempt to restore them.
   const Entries& entries = tab_restore_service_helper_->entries();
-  for (Entries::const_iterator i = entries.begin(); i != entries.end(); ++i)
+  for (auto i = entries.begin(); i != entries.end(); ++i)
     base_session_service_->ScheduleCommand(
         CreateRestoredEntryCommand((*i)->id));
 
@@ -557,9 +557,9 @@ void PersistentTabRestoreService::Delegate::OnRestoreEntryById(
     Entries::const_iterator entry_iterator) {
   size_t index = 0;
   const Entries& entries = tab_restore_service_helper_->entries();
-  for (Entries::const_iterator j = entries.begin();
-       j != entry_iterator && j != entries.end();
-       ++j, ++index) {}
+  for (auto j = entries.begin(); j != entry_iterator && j != entries.end();
+       ++j, ++index) {
+  }
   if (static_cast<int>(index) < entries_to_write_)
     entries_to_write_--;
 

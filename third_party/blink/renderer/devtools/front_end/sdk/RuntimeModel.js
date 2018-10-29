@@ -368,8 +368,8 @@ SDK.RuntimeModel = class extends SDK.SDKModel {
       InspectorFrontendHost.copyText(object.unserializableValue() || object.value);
       return;
     }
-    object.callFunctionJSON(
-        toStringForClipboard, [{value: object.subtype}], InspectorFrontendHost.copyText.bind(InspectorFrontendHost));
+    object.callFunctionJSON(toStringForClipboard, [{value: object.subtype}])
+        .then(InspectorFrontendHost.copyText.bind(InspectorFrontendHost));
 
     /**
      * @param {string} subtype

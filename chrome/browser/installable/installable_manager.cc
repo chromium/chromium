@@ -17,6 +17,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/web_display_mode.h"
@@ -67,6 +68,10 @@ int GetIdealBadgeIconSizeInPx() {
 bool IsContentSecure(content::WebContents* web_contents) {
   if (!web_contents)
     return false;
+
+  // chrome:// URLs are considered secure.
+  if (web_contents->GetVisibleURL().scheme() == content::kChromeUIScheme)
+    return true;
 
   // Whitelist localhost. Check the VisibleURL to match what the
   // SecurityStateTabHelper looks at.

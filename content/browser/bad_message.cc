@@ -9,7 +9,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/post_task.h"
 #include "content/public/browser/browser_message_filter.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 
@@ -54,9 +56,9 @@ void ReceivedBadMessage(int render_process_id, BadMessageReason reason) {
   base::debug::DumpWithoutCrashing();
 
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(&ReceivedBadMessageOnUIThread,
-                                           render_process_id, reason));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(&ReceivedBadMessageOnUIThread,
+                                            render_process_id, reason));
     return;
   }
   ReceivedBadMessageOnUIThread(render_process_id, reason);

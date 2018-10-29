@@ -271,8 +271,7 @@ std::unique_ptr<DeviceInfo> DeviceInfoSyncBridge::GetDeviceInfo(
 std::vector<std::unique_ptr<DeviceInfo>>
 DeviceInfoSyncBridge::GetAllDeviceInfo() const {
   std::vector<std::unique_ptr<DeviceInfo>> list;
-  for (ClientIdToSpecifics::const_iterator iter = all_data_.begin();
-       iter != all_data_.end(); ++iter) {
+  for (auto iter = all_data_.begin(); iter != all_data_.end(); ++iter) {
     list.push_back(SpecificsToModel(*iter->second));
   }
   return list;

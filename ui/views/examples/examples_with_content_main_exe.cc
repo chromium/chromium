@@ -15,11 +15,12 @@
 
 namespace {
 
-void ShowContentExampleWindow(content::BrowserContext* browser_context,
+void ShowContentExampleWindow(ui::ViewsContentClient* views_content_client,
+                              content::BrowserContext* browser_context,
                               gfx::NativeWindow window_context) {
-  views::examples::ShowExamplesWindowWithContent(views::examples::QUIT_ON_CLOSE,
-                                                 browser_context,
-                                                 window_context);
+  views::examples::ShowExamplesWindowWithContent(
+      std::move(views_content_client->quit_closure()), browser_context,
+      window_context);
 
   // These lines serve no purpose other than to introduce an explicit content
   // dependency. If the main executable doesn't have this dependency, the linker
@@ -45,6 +46,7 @@ int main(int argc, const char** argv) {
   ui::ViewsContentClient views_content_client(argc, argv);
 #endif
 
-  views_content_client.set_task(base::Bind(&ShowContentExampleWindow));
+  views_content_client.set_task(base::Bind(
+      &ShowContentExampleWindow, base::Unretained(&views_content_client)));
   return views_content_client.RunMain();
 }

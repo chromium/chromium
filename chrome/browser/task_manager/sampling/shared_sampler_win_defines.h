@@ -8,6 +8,8 @@
 #include <windows.h>
 #include <winternl.h>
 
+#include "build/build_config.h"
+
 namespace task_manager {
 
 // From <wdm.h>
@@ -60,7 +62,7 @@ struct SYSTEM_THREAD_INFORMATION {
   ULONG State;
   KWAIT_REASON WaitReason;
 };
-#if _M_X64
+#if defined(ARCH_CPU_64_BITS)
 static_assert(sizeof(SYSTEM_THREAD_INFORMATION) == 80,
               "Structure size mismatch");
 #else
@@ -94,7 +96,7 @@ struct SYSTEM_PROCESS_INFORMATION {
   IO_COUNTERS IoCounters;
   SYSTEM_THREAD_INFORMATION Threads[1];
 };
-#if _M_X64
+#if defined(ARCH_CPU_64_BITS)
 static_assert(sizeof(SYSTEM_PROCESS_INFORMATION) == 336,
               "Structure size mismatch");
 #else

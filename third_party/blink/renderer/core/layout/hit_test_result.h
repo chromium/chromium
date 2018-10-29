@@ -53,7 +53,7 @@ class Scrollbar;
 enum ListBasedHitTestBehavior { kContinueHitTesting, kStopHitTesting };
 
 class CORE_EXPORT HitTestResult {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   typedef HeapListHashSet<Member<Node>> NodeSet;

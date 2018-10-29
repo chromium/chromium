@@ -4,6 +4,7 @@
 
 #include "base/task/sequence_manager/work_queue.h"
 
+#include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 
 namespace base {
@@ -17,7 +18,7 @@ WorkQueue::WorkQueue(TaskQueueImpl* task_queue,
 
 void WorkQueue::AsValueInto(TimeTicks now,
                             trace_event::TracedValue* state) const {
-  for (const TaskQueueImpl::Task& task : tasks_) {
+  for (const Task& task : tasks_) {
     TaskQueueImpl::TaskAsValueInto(task, now, state);
   }
 }
@@ -27,13 +28,13 @@ WorkQueue::~WorkQueue() {
                             << work_queue_sets_->GetName() << " : " << name_;
 }
 
-const TaskQueueImpl::Task* WorkQueue::GetFrontTask() const {
+const Task* WorkQueue::GetFrontTask() const {
   if (tasks_.empty())
     return nullptr;
   return &tasks_.front();
 }
 
-const TaskQueueImpl::Task* WorkQueue::GetBackTask() const {
+const Task* WorkQueue::GetBackTask() const {
   if (tasks_.empty())
     return nullptr;
   return &tasks_.back();
@@ -60,14 +61,14 @@ bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
   return true;
 }
 
-void WorkQueue::Push(TaskQueueImpl::Task task) {
+void WorkQueue::Push(Task task) {
   bool was_empty = tasks_.empty();
 #ifndef NDEBUG
   DCHECK(task.enqueue_order_set());
 #endif
 
   // Make sure the |enqueue_order()| is monotonically increasing.
-  DCHECK(was_empty || tasks_.rbegin()->enqueue_order() < task.enqueue_order());
+  DCHECK(was_empty || tasks_.back().enqueue_order() < task.enqueue_order());
 
   // Amoritized O(1).
   tasks_.push_back(std::move(task));
@@ -80,7 +81,7 @@ void WorkQueue::Push(TaskQueueImpl::Task task) {
     work_queue_sets_->OnTaskPushedToEmptyQueue(this);
 }
 
-void WorkQueue::PushNonNestableTaskToFront(TaskQueueImpl::Task task) {
+void WorkQueue::PushNonNestableTaskToFront(Task task) {
   DCHECK(task.nestable == Nestable::kNonNestable);
 
   bool was_empty = tasks_.empty();
@@ -90,7 +91,7 @@ void WorkQueue::PushNonNestableTaskToFront(TaskQueueImpl::Task task) {
 #endif
 
   if (!was_empty) {
-    // Make sure the |enqueue_order()| is monotonically increasing.
+    // Make sure the |enqueue_order| is monotonically increasing.
     DCHECK_LE(task.enqueue_order(), tasks_.front().enqueue_order())
         << task_queue_->GetName() << " : " << work_queue_sets_->GetName()
         << " : " << name_;
@@ -126,16 +127,23 @@ void WorkQueue::ReloadEmptyImmediateQueue() {
     work_queue_sets_->OnTaskPushedToEmptyQueue(this);
 }
 
-TaskQueueImpl::Task WorkQueue::TakeTaskFromWorkQueue() {
+Task WorkQueue::TakeTaskFromWorkQueue() {
   DCHECK(work_queue_sets_);
   DCHECK(!tasks_.empty());
 
-  TaskQueueImpl::Task pending_task = std::move(tasks_.front());
+  Task pending_task = std::move(tasks_.front());
   tasks_.pop_front();
   // NB immediate tasks have a different pipeline to delayed ones.
-  if (queue_type_ == QueueType::kImmediate && tasks_.empty()) {
-    // Short-circuit the queue reload so that OnPopQueue does the right thing.
-    task_queue_->ReloadEmptyImmediateQueue(&tasks_);
+  if (tasks_.empty()) {
+    // NB delayed tasks are inserted via Push, no don't need to reload those.
+    if (queue_type_ == QueueType::kImmediate) {
+      // Short-circuit the queue reload so that OnPopQueue does the right
+      // thing.
+      task_queue_->ReloadEmptyImmediateQueue(&tasks_);
+    }
+    // Since the queue is empty, now is a good time to consider reducing it's
+    // capacity if we're wasting memory.
+    tasks_.MaybeShrinkQueue();
   }
 
   // OnPopQueue calls GetFrontTaskEnqueueOrder which checks BlockedByFence() so
@@ -154,10 +162,16 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
     task_removed = true;
   }
   if (task_removed) {
-    // NB immediate tasks have a different pipeline to delayed ones.
-    if (queue_type_ == QueueType::kImmediate && tasks_.empty()) {
-      // Short-circuit the queue reload so that OnPopQueue does the right thing.
-      task_queue_->ReloadEmptyImmediateQueue(&tasks_);
+    if (tasks_.empty()) {
+      // NB delayed tasks are inserted via Push, no don't need to reload those.
+      if (queue_type_ == QueueType::kImmediate) {
+        // Short-circuit the queue reload so that OnPopQueue does the right
+        // thing.
+        task_queue_->ReloadEmptyImmediateQueue(&tasks_);
+      }
+      // Since the queue is empty, now is a good time to consider reducing it's
+      // capacity if we're wasting memory.
+      tasks_.MaybeShrinkQueue();
     }
     work_queue_sets_->OnPopQueue(this);
     task_queue_->TraceQueueSize();
@@ -229,6 +243,10 @@ void WorkQueue::PopTaskForTesting() {
   if (tasks_.empty())
     return;
   tasks_.pop_front();
+}
+
+void WorkQueue::MaybeShrinkQueue() {
+  tasks_.MaybeShrinkQueue();
 }
 
 }  // namespace internal

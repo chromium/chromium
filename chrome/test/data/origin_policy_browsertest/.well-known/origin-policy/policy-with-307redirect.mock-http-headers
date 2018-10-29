@@ -1,0 +1,3 @@
+HTTP/1.0 307 Temporary Redirect
+Location: /.well-known/origin-policy/example-policy
+

@@ -88,10 +88,10 @@ class TestObserver : public ExtensionRegistryObserver {
 
 TEST_F(ExtensionRegistryTest, FillAndClearRegistry) {
   ExtensionRegistry registry(NULL);
-  scoped_refptr<Extension> extension1 = ExtensionBuilder("one").Build();
-  scoped_refptr<Extension> extension2 = ExtensionBuilder("two").Build();
-  scoped_refptr<Extension> extension3 = ExtensionBuilder("three").Build();
-  scoped_refptr<Extension> extension4 = ExtensionBuilder("four").Build();
+  scoped_refptr<const Extension> extension1 = ExtensionBuilder("one").Build();
+  scoped_refptr<const Extension> extension2 = ExtensionBuilder("two").Build();
+  scoped_refptr<const Extension> extension3 = ExtensionBuilder("three").Build();
+  scoped_refptr<const Extension> extension4 = ExtensionBuilder("four").Build();
 
   // All the sets start empty.
   EXPECT_EQ(0u, registry.enabled_extensions().size());
@@ -124,7 +124,7 @@ TEST_F(ExtensionRegistryTest, AddAndRemoveExtensionFromRegistry) {
   ExtensionRegistry registry(NULL);
 
   // Adding an extension works.
-  scoped_refptr<Extension> extension = ExtensionBuilder("Test").Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   EXPECT_TRUE(registry.AddEnabled(extension));
   EXPECT_EQ(1u, registry.enabled_extensions().size());
 
@@ -143,7 +143,7 @@ TEST_F(ExtensionRegistryTest, AddAndRemoveExtensionFromRegistry) {
 
 TEST_F(ExtensionRegistryTest, AddExtensionToRegistryTwice) {
   ExtensionRegistry registry(NULL);
-  scoped_refptr<Extension> extension = ExtensionBuilder("Test").Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
 
   // An extension can exist in two sets at once. It would be nice to eliminate
   // this functionality, but some users of ExtensionRegistry need it.
@@ -163,10 +163,12 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
   EXPECT_FALSE(
       registry.GetExtensionById("id", ExtensionRegistry::EVERYTHING));
 
-  scoped_refptr<Extension> enabled = ExtensionBuilder("enabled").Build();
-  scoped_refptr<Extension> disabled = ExtensionBuilder("disabled").Build();
-  scoped_refptr<Extension> terminated = ExtensionBuilder("terminated").Build();
-  scoped_refptr<Extension> blacklisted =
+  scoped_refptr<const Extension> enabled = ExtensionBuilder("enabled").Build();
+  scoped_refptr<const Extension> disabled =
+      ExtensionBuilder("disabled").Build();
+  scoped_refptr<const Extension> terminated =
+      ExtensionBuilder("terminated").Build();
+  scoped_refptr<const Extension> blacklisted =
       ExtensionBuilder("blacklisted").Build();
 
   // Add an extension to each set.
@@ -275,7 +277,7 @@ TEST_F(ExtensionRegistryTest, Observer) {
 TEST_F(ExtensionRegistryTest, TerminatedExtensionStoredVersion) {
   const std::string kVersionString = "1.2.3.4";
   ExtensionRegistry registry(nullptr);
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(DictionaryBuilder()
                            .Set("name", "Test")

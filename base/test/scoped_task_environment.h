@@ -98,6 +98,22 @@ class ScopedTaskEnvironment {
   // TaskScheduler and the (Thread|Sequenced)TaskRunnerHandle.
   ~ScopedTaskEnvironment();
 
+  class LifetimeObserver {
+   public:
+    virtual ~LifetimeObserver() = default;
+
+    virtual void OnScopedTaskEnvironmentCreated(
+        MainThreadType main_thread_type,
+        scoped_refptr<SingleThreadTaskRunner> task_runner) = 0;
+    virtual void OnScopedTaskEnvironmentDestroyed() = 0;
+  };
+
+  // Set a thread-local observer which will get notifications when
+  // a new ScopedTaskEnvironment is created or destroyed.
+  // This is needed due to peculiarities of Blink initialisation
+  // (Blink is per-test suite and ScopedTaskEnvironment is per-test).
+  static void SetLifetimeObserver(LifetimeObserver* lifetime_observer);
+
   // Returns a TaskRunner that schedules tasks on the main thread.
   scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner();
 

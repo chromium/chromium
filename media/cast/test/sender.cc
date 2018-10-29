@@ -344,9 +344,10 @@ int main(int argc, char** argv) {
                  media::cast::CreateDefaultVideoEncodeMemoryCallback()));
   base::RunLoop().Run();  // Wait for video initialization.
   io_message_loop.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&media::cast::CastSender::InitializeAudio,
-                            base::Unretained(cast_sender.get()), audio_config,
-                            base::Bind(&QuitLoopOnInitializationResult)));
+      FROM_HERE,
+      base::BindOnce(&media::cast::CastSender::InitializeAudio,
+                     base::Unretained(cast_sender.get()), audio_config,
+                     base::BindRepeating(&QuitLoopOnInitializationResult)));
   base::RunLoop().Run();  // Wait for audio initialization.
 
   fake_media_source->Start(cast_sender->audio_frame_input(),

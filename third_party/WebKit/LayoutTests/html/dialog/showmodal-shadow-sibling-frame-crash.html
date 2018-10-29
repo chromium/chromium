@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<template>
+ <custom-dialog></custom-dialog>
+</template>
+<div id=shadow></div>
+<iframe id=sibling></iframe>
+
+<script>
+  async_test(function(test) {
+    let customDialog = Object.create(HTMLElement.prototype);
+
+    customDialog.createdCallback = function() {
+      this.createShadowRoot().innerHTML = '<dialog></dialog>';
+    };
+
+    customDialog.show = function() {
+      this.shadowRoot.querySelector('dialog').showModal();
+    };
+
+    document.registerElement('custom-dialog', {prototype: customDialog});
+
+    onload = test.step_func(() => {
+      const template = document.querySelector('template');
+      const content = document.importNode(template.content, true);
+      const dialog = content.querySelector('custom-dialog');
+      document.querySelector('div').appendChild(dialog);
+      dialog.show();
+      test.done();
+    });
+  }, 'Shadow DOM <dialog>.showModal() on a page with an <iframe> should not crash.');
+</script>

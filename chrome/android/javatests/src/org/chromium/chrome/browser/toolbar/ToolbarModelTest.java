@@ -20,7 +20,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.UrlConstants;
@@ -29,8 +28,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /**
  * Tests for ToolbarModel.
@@ -68,8 +65,7 @@ public class ToolbarModelTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_HIDE_SCHEME_DOMAIN_IN_STEADY_STATE)
-    public void testDisplayAndEditText_DisabledExperiment() throws Exception {
+    public void testDisplayAndEditText() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             TestToolbarModel model = new TestToolbarModel();
             model.mUrl = UrlConstants.NTP_URL;
@@ -81,25 +77,9 @@ public class ToolbarModelTest {
             assertDisplayAndEditText(model, "chrome://about", "chrome://about");
 
             model.mUrl = "https://www.foo.com";
-            model.mDisplayUrl = "foo.com";
+            model.mDisplayUrl = "https://foo.com";
             model.mFullUrl = "https://foo.com";
             assertDisplayAndEditText(model, "https://foo.com", "https://foo.com");
-        });
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_HIDE_SCHEME_DOMAIN_IN_STEADY_STATE)
-    public void testDisplayAndEditText_EnabledExperiment() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            TestToolbarModel model = new TestToolbarModel();
-            model.mUrl = UrlConstants.NTP_URL;
-            assertDisplayAndEditText(model, "", null);
-
-            model.mUrl = "chrome://about";
-            model.mDisplayUrl = "chrome://about";
-            model.mFullUrl = "chrome://about";
-            assertDisplayAndEditText(model, "chrome://about", "chrome://about");
 
             model.mUrl = "https://www.foo.com";
             model.mDisplayUrl = "foo.com";
@@ -138,7 +118,7 @@ public class ToolbarModelTest {
         private String mUrl;
 
         public TestToolbarModel() {
-            super(ContextUtils.getApplicationContext(), null /* bottomSheet */);
+            super(ContextUtils.getApplicationContext());
             initializeWithNative();
 
             Tab tab = new Tab(0, false, null) {

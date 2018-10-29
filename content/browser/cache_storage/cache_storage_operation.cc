@@ -4,7 +4,7 @@
 
 #include "content/browser/cache_storage/cache_storage_operation.h"
 
-#include "content/browser/cache_storage/cache_storage_histogram_macros.h"
+#include "content/browser/cache_storage/cache_storage_histogram_utils.h"
 
 namespace content {
 

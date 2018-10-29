@@ -68,8 +68,7 @@ class RtcpParserTest : public ::testing::Test {
     EXPECT_EQ(FrameId::first() + kAckFrameId,
               parser.cast_message().ack_frame_id);
 
-    MissingFramesAndPacketsMap::const_iterator frame_it =
-        parser.cast_message().missing_frames_and_packets.begin();
+    auto frame_it = parser.cast_message().missing_frames_and_packets.begin();
 
     EXPECT_TRUE(
         frame_it != parser.cast_message().missing_frames_and_packets.end());
@@ -81,7 +80,7 @@ class RtcpParserTest : public ::testing::Test {
         frame_it != parser.cast_message().missing_frames_and_packets.end());
     EXPECT_EQ(FrameId::first() + kFrameIdWithLostPackets, frame_it->first);
     EXPECT_EQ(3UL, frame_it->second.size());
-    PacketIdSet::const_iterator packet_it = frame_it->second.begin();
+    auto packet_it = frame_it->second.begin();
     EXPECT_EQ(kLostPacketId1, *packet_it);
     ++packet_it;
     EXPECT_EQ(kLostPacketId2, *packet_it);
@@ -108,20 +107,16 @@ class RtcpParserTest : public ::testing::Test {
                          const RtcpReceiverLogMessage& expected_receiver_log) {
     EXPECT_TRUE(parser.has_receiver_log());
     EXPECT_EQ(expected_receiver_log.size(), parser.receiver_log().size());
-    RtcpReceiverLogMessage::const_iterator expected_it =
-        expected_receiver_log.begin();
-    RtcpReceiverLogMessage::const_iterator incoming_it =
-        parser.receiver_log().begin();
+    auto expected_it = expected_receiver_log.begin();
+    auto incoming_it = parser.receiver_log().begin();
     for (; incoming_it != parser.receiver_log().end();
          ++incoming_it, ++expected_it) {
       EXPECT_EQ(expected_it->rtp_timestamp_, incoming_it->rtp_timestamp_);
       EXPECT_EQ(expected_it->event_log_messages_.size(),
                 incoming_it->event_log_messages_.size());
 
-      RtcpReceiverEventLogMessages::const_iterator event_incoming_it =
-          incoming_it->event_log_messages_.begin();
-      RtcpReceiverEventLogMessages::const_iterator event_expected_it =
-          expected_it->event_log_messages_.begin();
+      auto event_incoming_it = incoming_it->event_log_messages_.begin();
+      auto event_expected_it = expected_it->event_log_messages_.begin();
       for (; event_incoming_it != incoming_it->event_log_messages_.end();
            ++event_incoming_it, ++event_expected_it) {
         EXPECT_EQ(event_expected_it->type, event_incoming_it->type);

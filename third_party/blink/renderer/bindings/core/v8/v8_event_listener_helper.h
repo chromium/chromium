@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_EVENT_LISTENER_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_EVENT_LISTENER_HELPER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
@@ -51,11 +52,11 @@ class V8EventListenerHelper {
  public:
   CORE_EXPORT static EventListener* GetEventListener(ScriptState*,
                                                      v8::Local<v8::Value>,
-                                                     bool is_attribute,
                                                      ListenerLookupType);
-
-  CORE_EXPORT static EventListener* EnsureErrorHandler(ScriptState*,
-                                                       v8::Local<v8::Value>);
+  CORE_EXPORT static EventListener* GetEventHandler(ScriptState*,
+                                                    v8::Local<v8::Value>,
+                                                    JSEventHandler::HandlerType,
+                                                    ListenerLookupType);
 };
 
 }  // namespace blink

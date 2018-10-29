@@ -79,8 +79,8 @@ class CORE_EXPORT QualifiedName {
       RefCounted<QualifiedNameImpl>::Release();
     }
 
-    // We rely on StringHasher's hashMemory clearing out the top 8 bits when
-    // doing hashing and use one of the bits for the m_isStatic value.
+    // We rely on StringHasher's HashMemory clearing out the top 8 bits when
+    // doing hashing and use one of the bits for the is_static_ value.
     mutable unsigned existing_hash_ : 24;
     unsigned is_static_ : 1;
     const AtomicString prefix_;

@@ -4,14 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 
-#import "ios/chrome/browser/experimental_flags.h"
-#include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
+#include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,9 +16,6 @@
 #endif
 
 namespace {
-// Padding used on the leading and trailing edges of the cell.
-const CGFloat kHorizontalPadding = 16;
-
 // Padding used between the icon and the text labels.
 const CGFloat kIconTrailingPadding = 12;
 
@@ -34,11 +28,6 @@ const CGFloat kIconImageSize = 28;
 
 @implementation SettingsSwitchItem
 
-@synthesize enabled = _enabled;
-@synthesize iconImageName = _iconImageName;
-@synthesize on = _on;
-@synthesize text = _text;
-
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
@@ -48,13 +37,14 @@ const CGFloat kIconImageSize = 28;
   return self;
 }
 
-#pragma mark CollectionViewItem
+#pragma mark TableViewItem
 
-- (void)configureCell:(SettingsSwitchCell*)cell {
-  [super configureCell:cell];
+- (void)configureCell:(SettingsSwitchCell*)cell
+           withStyler:(ChromeTableViewStyler*)styler {
+  [super configureCell:cell withStyler:styler];
   cell.textLabel.text = self.text;
-  cell.switchView.enabled = self.isEnabled;
-  cell.switchView.on = self.isOn;
+  cell.switchView.enabled = self.enabled;
+  cell.switchView.on = self.on;
   cell.textLabel.textColor =
       [SettingsSwitchCell defaultTextColorForState:cell.switchView.state];
 
@@ -68,6 +58,8 @@ const CGFloat kIconImageSize = 28;
 
 @end
 
+#pragma mark - SettingsSwitchCell
+
 @interface SettingsSwitchCell ()
 
 // The image view for the leading icon.
@@ -77,18 +69,26 @@ const CGFloat kIconImageSize = 28;
 @property(nonatomic, strong) NSLayoutConstraint* iconVisibleConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* iconHiddenConstraint;
 
+// Constraints that are used when the preferred content size is an
+// "accessibility" category.
+@property(nonatomic, strong) NSArray* accessibilityConstraints;
+// Constraints that are used when the preferred content size is *not* an
+// "accessibility" category.
+@property(nonatomic, strong) NSArray* standardConstraints;
+
 @end
 
 @implementation SettingsSwitchCell
 
+@synthesize accessibilityConstraints = _accessibilityConstraints;
+@synthesize standardConstraints = _standardConstraints;
 @synthesize iconHiddenConstraint = _iconHiddenConstraint;
-@synthesize iconImageView = _iconImageView;
 @synthesize iconVisibleConstraint = _iconVisibleConstraint;
-@synthesize switchView = _switchView;
 @synthesize textLabel = _textLabel;
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
+- (instancetype)initWithStyle:(UITableViewCellStyle)style
+              reuseIdentifier:(NSString*)reuseIdentifier {
+  self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
     self.isAccessibilityElement = YES;
 
@@ -99,57 +99,71 @@ const CGFloat kIconImageSize = 28;
 
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _textLabel.adjustsFontForContentSizeCategory = YES;
+    _textLabel.textColor = [UIColor blackColor];
     _textLabel.numberOfLines = 0;
     [self.contentView addSubview:_textLabel];
 
     _switchView = [[UISwitch alloc] initWithFrame:CGRectZero];
     _switchView.translatesAutoresizingMaskIntoConstraints = NO;
+    _switchView.onTintColor = UIColorFromRGB(kTableViewSwitchTintColor);
     _switchView.accessibilityHint = l10n_util::GetNSString(
         IDS_IOS_TOGGLE_SETTING_SWITCH_ACCESSIBILITY_HINT);
     [self.contentView addSubview:_switchView];
 
-    // Fonts and colors vary depending on whether UIRefresh is enabled.
-    if (experimental_flags::IsSettingsUIRebootEnabled()) {
-      _textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
-      _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
-      _switchView.onTintColor = UIColorFromRGB(kUIKitSwitchTintColor);
-    } else {
-      _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
-      _textLabel.textColor = [[MDCPalette greyPalette] tint900];
-      _switchView.onTintColor = [[MDCPalette cr_bluePalette] tint500];
-    }
-
-    // Set up the constraints assuming that the icon image is hidden..
+    // Set up the constraints assuming that the icon image is hidden.
     _iconVisibleConstraint = [_textLabel.leadingAnchor
         constraintEqualToAnchor:_iconImageView.trailingAnchor
                        constant:kIconTrailingPadding];
     _iconHiddenConstraint = [_textLabel.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:kHorizontalPadding];
+                       constant:kTableViewHorizontalSpacing];
+
+    _standardConstraints = @[
+      [_switchView.centerYAnchor
+          constraintEqualToAnchor:self.contentView.centerYAnchor],
+      [_textLabel.trailingAnchor
+          constraintLessThanOrEqualToAnchor:_switchView.leadingAnchor
+                                   constant:-kTableViewHorizontalSpacing],
+    ];
+    _accessibilityConstraints = @[
+      [_switchView.topAnchor constraintEqualToAnchor:_textLabel.bottomAnchor
+                                            constant:kVerticalPadding],
+      [_switchView.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor
+                         constant:kTableViewHorizontalSpacing],
+      [_switchView.bottomAnchor
+          constraintEqualToAnchor:self.contentView.bottomAnchor
+                         constant:-kVerticalPadding],
+      [_textLabel.trailingAnchor
+          constraintLessThanOrEqualToAnchor:self.contentView.trailingAnchor
+                                   constant:-kTableViewHorizontalSpacing],
+    ];
 
     [NSLayoutConstraint activateConstraints:@[
       [_iconImageView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:kHorizontalPadding],
+                         constant:kTableViewHorizontalSpacing],
       [_iconImageView.widthAnchor constraintEqualToConstant:kIconImageSize],
       [_iconImageView.heightAnchor constraintEqualToConstant:kIconImageSize],
 
       [_switchView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kHorizontalPadding],
-      [_textLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_switchView.leadingAnchor
-                                   constant:-kHorizontalPadding],
+                         constant:-kTableViewHorizontalSpacing],
 
       [_iconImageView.centerYAnchor
-          constraintEqualToAnchor:self.contentView.centerYAnchor],
-      [_textLabel.centerYAnchor
-          constraintEqualToAnchor:self.contentView.centerYAnchor],
-      [_switchView.centerYAnchor
-          constraintEqualToAnchor:self.contentView.centerYAnchor],
+          constraintEqualToAnchor:_textLabel.centerYAnchor],
 
       _iconHiddenConstraint,
     ]];
+
+    if (ContentSizeCategoryIsAccessibilityCategory(
+            self.traitCollection.preferredContentSizeCategory)) {
+      [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
+    } else {
+      [NSLayoutConstraint activateConstraints:_standardConstraints];
+    }
 
     AddOptionalVerticalPadding(self.contentView, _textLabel, kVerticalPadding);
   }
@@ -157,24 +171,13 @@ const CGFloat kIconImageSize = 28;
 }
 
 + (UIColor*)defaultTextColorForState:(UIControlState)state {
-  if (experimental_flags::IsSettingsUIRebootEnabled()) {
-    return (state & UIControlStateDisabled)
-               ? UIColorFromRGB(kUIKitDetailTextColor)
-               : UIColorFromRGB(kUIKitMainTextColor);
-  } else {
-    MDCPalette* grey = [MDCPalette greyPalette];
-    return (state & UIControlStateDisabled) ? grey.tint500 : grey.tint900;
-  }
+  return (state & UIControlStateDisabled)
+             ? UIColorFromRGB(kSettingsCellsDetailTextColor)
+             : [UIColor blackColor];
 }
 
 - (void)setIconImage:(UIImage*)image {
   BOOL hidden = (image == nil);
-
-  // If the settings reboot is not enabled, the icon must always be hidden.
-  if (!experimental_flags::IsSettingsUIRebootEnabled()) {
-    hidden = YES;
-  }
-
   if (hidden == self.iconImageView.hidden) {
     return;
   }
@@ -190,20 +193,27 @@ const CGFloat kIconImageSize = 28;
   }
 }
 
-// Implement -layoutSubviews as per instructions in documentation for
-// +[MDCCollectionViewCell cr_preferredHeightForWidth:forItem:].
-- (void)layoutSubviews {
-  [super layoutSubviews];
-  // Adjust the text label preferredMaxLayoutWidth when the parent's width
-  // changes, for instance on screen rotation.
-  _textLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.contentView.frame) -
-                                       CGRectGetWidth(_switchView.frame) -
-                                       3 * kHorizontalPadding;
+#pragma mark - UIView
 
-  // Re-layout with the new preferred width to allow the label to adjust its
-  // height.
-  [super layoutSubviews];
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  BOOL isCurrentContentSizeAccessibility =
+      ContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+  if (ContentSizeCategoryIsAccessibilityCategory(
+          previousTraitCollection.preferredContentSizeCategory) !=
+      isCurrentContentSizeAccessibility) {
+    if (isCurrentContentSizeAccessibility) {
+      [NSLayoutConstraint deactivateConstraints:_standardConstraints];
+      [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
+    } else {
+      [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
+      [NSLayoutConstraint activateConstraints:_standardConstraints];
+    }
+  }
 }
+
+#pragma mark - UITableViewCell
 
 - (void)prepareForReuse {
   [super prepareForReuse];
@@ -225,7 +235,7 @@ const CGFloat kIconImageSize = 28;
 }
 
 - (NSString*)accessibilityHint {
-  if (_switchView.isEnabled) {
+  if (_switchView.enabled) {
     return _switchView.accessibilityHint;
   } else {
     return @"";

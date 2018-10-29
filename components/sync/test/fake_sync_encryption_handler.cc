@@ -99,10 +99,8 @@ void FakeSyncEncryptionHandler::RemoveObserver(Observer* observer) {
 }
 
 void FakeSyncEncryptionHandler::SetEncryptionPassphrase(
-    const std::string& passphrase,
-    bool is_explicit) {
-  if (is_explicit)
-    passphrase_type_ = PassphraseType::CUSTOM_PASSPHRASE;
+    const std::string& passphrase) {
+  passphrase_type_ = PassphraseType::CUSTOM_PASSPHRASE;
 }
 
 void FakeSyncEncryptionHandler::SetDecryptionPassphrase(

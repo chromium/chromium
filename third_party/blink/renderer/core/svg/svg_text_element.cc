@@ -25,7 +25,7 @@
 namespace blink {
 
 inline SVGTextElement::SVGTextElement(Document& doc)
-    : SVGTextPositioningElement(SVGNames::textTag, doc) {}
+    : SVGTextPositioningElement(svg_names::kTextTag, doc) {}
 
 DEFINE_NODE_FACTORY(SVGTextElement)
 

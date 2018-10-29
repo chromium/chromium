@@ -24,12 +24,14 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
@@ -43,6 +45,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/web_application_info.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -60,6 +63,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -214,7 +218,25 @@ bool IsBrowserOpen(const Browser* test_browser) {
   return false;
 }
 
-}  // namespace
+enum AppMenuCommandState {
+  kEnabled,
+  kDisabled,
+  kNotPresent,
+};
+
+AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser) {
+  DCHECK(!browser->hosted_app_controller())
+      << "This check only applies to regular browser windows.";
+  auto app_menu_model = std::make_unique<AppMenuModel>(nullptr, browser);
+  app_menu_model->Init();
+  ui::MenuModel* model = app_menu_model.get();
+  int index = -1;
+  if (!app_menu_model->GetModelAndIndexForCommandId(command_id, &model,
+                                                    &index)) {
+    return kNotPresent;
+  }
+  return model->IsEnabledAt(index) ? kEnabled : kDisabled;
+}
 
 class TestAppBannerManagerDesktop : public banners::AppBannerManagerDesktop {
  public:
@@ -230,31 +252,49 @@ class TestAppBannerManagerDesktop : public banners::AppBannerManagerDesktop {
         web_contents->GetUserData(UserDataKey()));
   }
 
-  void WaitForInstallableCheck() {
+  // Returns whether the installable check passed.
+  bool WaitForInstallableCheck() {
     DCHECK(IsExperimentalAppBannersEnabled());
 
-    if (got_data_)
-      return;
-
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
+    if (!installable_.has_value()) {
+      base::RunLoop run_loop;
+      quit_closure_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
+    DCHECK(installable_.has_value());
+    return *installable_;
   }
 
   // AppBannerManager:
+  void OnDidGetManifest(const InstallableData& result) override {
+    AppBannerManagerDesktop::OnDidGetManifest(result);
+
+    // AppBannerManagerDesktop does not call |OnDidPerformInstallableCheck| to
+    // complete the installability check in this case, instead it early exits
+    // with failure.
+    if (result.error_code != NO_ERROR_DETECTED)
+      SetInstallable(false);
+  }
   void OnDidPerformInstallableCheck(const InstallableData& result) override {
     AppBannerManagerDesktop::OnDidPerformInstallableCheck(result);
-    got_data_ = true;
+    SetInstallable(result.error_code == NO_ERROR_DETECTED);
+  }
+
+ private:
+  void SetInstallable(bool installable) {
+    DCHECK(!installable_.has_value());
+    installable_ = installable;
     if (quit_closure_)
       std::move(quit_closure_).Run();
   }
 
- private:
-  bool got_data_ = false;
+  base::Optional<bool> installable_;
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(TestAppBannerManagerDesktop);
 };
+
+}  // namespace
 
 // Parameters are {app_type, desktop_pwa_flag}. |app_type| controls whether it
 // is a Hosted or Bookmark app. |desktop_pwa_flag| enables the
@@ -276,7 +316,6 @@ class HostedAppTest
     std::tie(app_type_, desktop_pwa_flag) = GetParam();
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features = {
-        features::kNetworkPrediction,
         predictors::kSpeculativePreconnectFeature};
     if (desktop_pwa_flag) {
       enabled_features.push_back(features::kDesktopPWAWindowing);
@@ -312,7 +351,25 @@ class HostedAppTest
             : extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(app_);
 
-    // Launch it in a window.
+    LaunchApp();
+  }
+
+  void SetupSystemAppWithURL(const GURL& app_url) {
+    extensions::TestExtensionDir test_app_dir;
+    test_app_dir.WriteManifest(
+        base::StringPrintf(kAppDotComManifest, app_url.spec().c_str()));
+
+    app_ = InstallExtensionWithSourceAndFlags(
+        test_app_dir.UnpackedPath(), 1,
+        extensions::Manifest::EXTERNAL_COMPONENT,
+        extensions::Extension::FROM_BOOKMARK);
+    ASSERT_TRUE(app_);
+
+    LaunchApp();
+  }
+
+  void LaunchApp() {
+    // Launch app in a window.
     app_browser_ = LaunchAppBrowser(app_);
     ASSERT_TRUE(app_browser_);
     ASSERT_TRUE(app_browser_ != browser());
@@ -325,6 +382,16 @@ class HostedAppTest
 
   GURL GetSecureAppURL() {
     return https_server()->GetURL("app.com", "/ssl/google.html");
+  }
+
+  GURL GetInstallableAppURL() {
+    return https_server()->GetURL("/banners/manifest_test_page.html");
+  }
+
+  static const char* GetInstallableAppName() { return "Manifest test app"; }
+
+  GURL GetURLForPath(std::string path) {
+    return https_server_.GetURL("app.com", path);
   }
 
   GURL GetSecureIFrameAppURL() {
@@ -355,6 +422,8 @@ class HostedAppTest
     WebApplicationInfo web_app_info;
     web_app_info.app_url = app_url;
     web_app_info.scope = app_url.GetWithoutFilename();
+    web_app_info.open_as_window = true;
+
     app_ = InstallBookmarkApp(web_app_info);
 
     ui_test_utils::UrlLoadObserver url_observer(
@@ -413,19 +482,6 @@ class HostedAppTest
     EXPECT_EQ(target_url, new_tab->GetLastCommittedURL());
   }
 
-  bool IsOpenInAppWindowOptionPresent(Browser* browser) {
-    DCHECK(!browser->hosted_app_controller())
-        << "This only applies to regular browser windows.";
-    auto model =
-        std::make_unique<AppMenuModel>(&empty_accelerator_provider_, browser);
-    model->Init();
-    for (int i = 0; i < model->GetItemCount(); ++i) {
-      if (model->GetCommandIdAt(i) == IDC_OPEN_IN_PWA_WINDOW)
-        return true;
-    }
-    return false;
-  }
-
   Browser* app_browser_;
   const extensions::Extension* app_;
 
@@ -438,16 +494,6 @@ class HostedAppTest
   }
 
  private:
-  class EmptyAcceleratorProvider : public ui::AcceleratorProvider {
-   public:
-    // Don't handle accelerators.
-    bool GetAcceleratorForCommandId(
-        int command_id,
-        ui::Accelerator* accelerator) const override {
-      return false;
-    }
-  } empty_accelerator_provider_;
-
   base::test::ScopedFeatureList scoped_feature_list_;
   AppType app_type_;
 
@@ -561,23 +607,6 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, WebContentsPrefsOpenInChrome) {
 
   CheckWebContentsDoesNotHaveAppPrefs(
       browser()->tab_strip_model()->GetActiveWebContents());
-}
-
-// Tests that creating bookmark apps is disabled in incognito.
-IN_PROC_BROWSER_TEST_P(HostedAppTest, CreateShortcutDisabledInIncognito) {
-  ASSERT_TRUE(https_server()->Start());
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  Browser* incognito_browser =
-      OpenURLOffTheRecord(profile(), GetSecureAppURL());
-  auto app_menu_model =
-      std::make_unique<AppMenuModel>(nullptr, incognito_browser);
-  app_menu_model->Init();
-  ui::MenuModel* model = app_menu_model.get();
-  int index = -1;
-  ASSERT_TRUE(app_menu_model->GetModelAndIndexForCommandId(
-      IDC_CREATE_HOSTED_APP, &model, &index));
-  EXPECT_FALSE(model->IsEnabledAt(index));
 }
 
 // Check that the location bar is shown correctly.
@@ -696,47 +725,6 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, ShouldShowLocationBarForHTTPSAppHTTPUrl) {
                                  app_url.ReplaceComponents(scheme_http), true);
 }
 
-// Check that location bar is not shown for apps hosted within extensions pages.
-// This simulates a case where the user has manually navigated to a page hosted
-// within an extension, then added it as a bookmark app.
-// Regression test for https://crbug.com/828233.
-IN_PROC_BROWSER_TEST_P(HostedAppTest, ShouldShowLocationBarForExtensionPage) {
-  // Test only applies for bookmark apps.
-  if (app_type() != AppType::BOOKMARK_APP)
-    return;
-
-  // Note: This involves the creation of *two* extensions: The first is a
-  // regular (non-app) extension with a popup page. The second is a bookmark app
-  // created from the popup page URL (allowing the extension's popup page to be
-  // loaded in a window).
-
-  // Install the extension that has the popup page.
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("ui").AppendASCII("browser_action_popup")));
-  base::RunLoop().RunUntilIdle();  // Ensure the extension is fully loaded.
-
-  // Install the bookmark app that links to the extension's popup page.
-  GURL popup_url("chrome-extension://" + last_loaded_extension_id() +
-                 "/popup.html");
-  // TODO(mgiuca): Abstract this logic to share code with InstallPWA (which does
-  // almost the same thing, but also sets a scope).
-  WebApplicationInfo web_app_info;
-  web_app_info.app_url = popup_url;
-  app_ = InstallBookmarkApp(web_app_info);
-
-  ui_test_utils::UrlLoadObserver url_observer(
-      popup_url, content::NotificationService::AllSources());
-  app_browser_ = LaunchAppBrowser(app_);
-  url_observer.Wait();
-
-  CHECK(app_browser_);
-  CHECK(app_browser_ != browser());
-
-  // Navigate to the app's launch page; the location bar should not be visible,
-  // because extensions pages are secure.
-  NavigateAndCheckForLocationBar(app_browser_, popup_url, false);
-}
-
 // Check that the location bar is shown correctly for apps that specify start
 // URLs without the 'www.' prefix.
 IN_PROC_BROWSER_TEST_P(HostedAppTest, ShouldShowLocationBarForAppWithoutWWW) {
@@ -846,38 +834,6 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, SubframeRedirectsToHostedApp) {
   EXPECT_EQ("This page has no title.", result);
 }
 
-IN_PROC_BROWSER_TEST_P(HostedAppTest, BookmarkAppThemeColor) {
-  if (app_type() != AppType::BOOKMARK_APP)
-    return;
-
-  {
-    WebApplicationInfo web_app_info;
-    web_app_info.app_url = GURL(kExampleURL);
-    web_app_info.scope = GURL(kExampleURL);
-    web_app_info.theme_color = SkColorSetA(SK_ColorBLUE, 0xF0);
-    const extensions::Extension* app = InstallBookmarkApp(web_app_info);
-    Browser* app_browser = LaunchAppBrowser(app);
-
-    EXPECT_EQ(web_app::GetAppIdFromApplicationName(app_browser->app_name()),
-              app->id());
-    EXPECT_EQ(SkColorSetA(*web_app_info.theme_color, SK_AlphaOPAQUE),
-              app_browser->hosted_app_controller()->GetThemeColor().value());
-  }
-  {
-    WebApplicationInfo web_app_info;
-    web_app_info.app_url = GURL("http://example.org/2");
-    web_app_info.scope = GURL("http://example.org/");
-    web_app_info.theme_color = base::Optional<SkColor>();
-    const extensions::Extension* app = InstallBookmarkApp(web_app_info);
-    Browser* app_browser = LaunchAppBrowser(app);
-
-    EXPECT_EQ(web_app::GetAppIdFromApplicationName(app_browser->app_name()),
-              app->id());
-    EXPECT_FALSE(
-        app_browser->hosted_app_controller()->GetThemeColor().has_value());
-  }
-}
-
 // Check that no assertions are hit when showing a permission request bubble.
 IN_PROC_BROWSER_TEST_P(HostedAppTest, PermissionBubble) {
   ASSERT_TRUE(https_server()->Start());
@@ -897,29 +853,6 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, PermissionBubble) {
   EXPECT_TRUE(content::ExecuteScript(
       render_frame_host,
       "navigator.geolocation.getCurrentPosition(function(){});"));
-}
-
-// Ensure that hosted app windows with blank titles don't display the URL as a
-// default window title.
-IN_PROC_BROWSER_TEST_P(HostedAppTest, Title) {
-  if (app_type() != AppType::BOOKMARK_APP)
-    return;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("app.site.com", "/empty.html");
-  WebApplicationInfo web_app_info;
-  web_app_info.app_url = url;
-  const extensions::Extension* app = InstallBookmarkApp(web_app_info);
-
-  Browser* app_browser = LaunchAppBrowser(app);
-  content::WebContents* web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
-  content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(base::string16(), app_browser->GetWindowTitleForCurrentTab(false));
-  NavigateToURLAndWait(app_browser, embedded_test_server()->GetURL(
-                                        "app.site.com", "/simple.html"));
-  EXPECT_EQ(base::ASCIIToUTF16("OK"),
-            app_browser->GetWindowTitleForCurrentTab(false));
 }
 
 // Tests that regular Hosted Apps and Bookmark Apps can still load mixed
@@ -963,6 +896,91 @@ IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, PopOutDisabledInIncognito) {
   EXPECT_FALSE(model->IsEnabledAt(index));
 }
 
+// Tests that desktop PWAs open links in the browser.
+IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest,
+                       DesktopPWAsOpenLinksInAppWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDesktopPWAsStayInWindow);
+
+  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  InstallSecurePWA();
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kDesktopPWAsStayInWindow));
+  ASSERT_TRUE(
+      extensions::util::GetInstalledPwaForUrl(profile(), GetSecureAppURL()));
+
+  NavigateToURLAndWait(app_browser_, GetSecureAppURL());
+
+  ASSERT_TRUE(app_browser_->hosted_app_controller());
+
+  NavigateAndCheckForLocationBar(app_browser_, GURL(kExampleURL), true);
+}
+
+// Tests that desktop PWAs open links in the browser.
+IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest,
+                       DesktopPWAsOpenLinksInBrowserWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kDesktopPWAsStayInWindow);
+
+  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  InstallSecurePWA();
+  ASSERT_FALSE(
+      base::FeatureList::IsEnabled(features::kDesktopPWAsStayInWindow));
+  ASSERT_TRUE(
+      extensions::util::GetInstalledPwaForUrl(profile(), GetSecureAppURL()));
+
+  NavigateToURLAndWait(app_browser_, GetSecureAppURL());
+
+  ASSERT_TRUE(app_browser_->hosted_app_controller());
+
+  TestAppActionOpensForegroundTab(
+      base::BindOnce(
+          [](Browser* browser, content::WebContents* app_contents,
+             const GURL& target_url) {
+            content::TestNavigationObserver observer(target_url);
+            observer.StartWatchingNewWebContents();
+
+            std::string script = base::StringPrintf("window.location = '%s';",
+                                                    target_url.spec().c_str());
+            ASSERT_TRUE(content::ExecuteScript(app_contents, script));
+
+            observer.WaitForNavigationFinished();
+          },
+          app_browser_, app_browser_->tab_strip_model()->GetActiveWebContents(),
+          GURL(kExampleURL)),
+      GURL(kExampleURL));
+}
+
+// Test navigating to an out of scope url on the same origin causes the url
+// to be shown to the user.
+IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest,
+                       LocationBarIsVisibleOffScopeOnSameOrigin) {
+  // If the feature for remaining in window is not enabled, the out of scope url
+  // will open in a new tab.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDesktopPWAsStayInWindow);
+
+  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  InstallSecurePWA();
+
+  // Location bar should not be visible in the app.
+  ASSERT_FALSE(app_browser_->hosted_app_controller()->ShouldShowLocationBar());
+
+  // The installed PWA's scope is app.com:{PORT}/ssl,
+  // so app.com:{PORT}/accessibility_fail.html is out of scope.
+  const GURL& out_of_scope = GetURLForPath("/accessibility_fail.html");
+
+  NavigateToURLAndWait(app_browser_, out_of_scope);
+
+  // Location should be visible off scope.
+  ASSERT_TRUE(app_browser_->hosted_app_controller()->ShouldShowLocationBar());
+}
+
 // Tests that PWA menus have an uninstall option.
 IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, UninstallMenuOption) {
   ASSERT_TRUE(https_server()->Start());
@@ -985,6 +1003,91 @@ IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, UninstallMenuOption) {
 #endif  // defined(OS_CHROMEOS)
 }
 
+// Tests that both installing a PWA and creating a shortcut app are disabled for
+// incognito windows.
+IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, ShortcutMenuOptionsInIncognito) {
+  Browser* incognito_browser = CreateIncognitoBrowser(profile());
+  auto* manager = TestAppBannerManagerDesktop::CreateForWebContents(
+      incognito_browser->tab_strip_model()->GetActiveWebContents());
+
+  ASSERT_TRUE(https_server()->Start());
+  NavigateToURLAndWait(incognito_browser, GetSecureAppURL());
+  EXPECT_FALSE(manager->WaitForInstallableCheck());
+
+  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, incognito_browser),
+            kDisabled);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, incognito_browser),
+            kNotPresent);
+}
+
+// Tests that both installing a PWA and creating a shortcut app are available
+// for an installable PWA.
+IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest,
+                       ShortcutMenuOptionsForInstallablePWA) {
+  auto* manager = TestAppBannerManagerDesktop::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  ASSERT_TRUE(https_server()->Start());
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  EXPECT_TRUE(manager->WaitForInstallableCheck());
+
+  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kEnabled);
+}
+
+// Tests that creating a shortcut app but not installing a PWA is available for
+// a non-installable site.
+IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest,
+                       ShortcutMenuOptionsForNonInstallableSite) {
+  auto* manager = TestAppBannerManagerDesktop::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  ASSERT_TRUE(https_server()->Start());
+  NavigateToURLAndWait(browser(), GetMixedContentAppURL());
+  EXPECT_FALSE(manager->WaitForInstallableCheck());
+
+  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kNotPresent);
+}
+
+IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, InstallInstallableSite) {
+  ASSERT_TRUE(https_server()->Start());
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+
+  chrome::SetAutoAcceptPWAInstallDialogForTesting(true);
+  chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
+  const extensions::Extension* app =
+      extensions::TestExtensionRegistryObserver(
+          extensions::ExtensionRegistry::Get(browser()->profile()))
+          .WaitForExtensionInstalled();
+  EXPECT_EQ(app->name(), GetInstallableAppName());
+  chrome::SetAutoAcceptPWAInstallDialogForTesting(false);
+
+  // Installed PWAs should launch in their own window.
+  EXPECT_EQ(extensions::GetLaunchContainer(
+                extensions::ExtensionPrefs::Get(browser()->profile()), app),
+            extensions::LAUNCH_CONTAINER_WINDOW);
+}
+
+IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, CreateShortcutForInstallableSite) {
+  ASSERT_TRUE(https_server()->Start());
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+
+  chrome::SetAutoAcceptBookmarkAppDialogForTesting(true);
+  chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
+  const extensions::Extension* app =
+      extensions::TestExtensionRegistryObserver(
+          extensions::ExtensionRegistry::Get(browser()->profile()))
+          .WaitForExtensionInstalled();
+  EXPECT_EQ(app->name(), GetInstallableAppName());
+  chrome::SetAutoAcceptBookmarkAppDialogForTesting(false);
+
+  // Bookmark apps to PWAs should launch in a tab.
+  EXPECT_EQ(extensions::GetLaunchContainer(
+                extensions::ExtensionPrefs::Get(browser()->profile()), app),
+            extensions::LAUNCH_CONTAINER_TAB);
+}
+
 // Tests that the command for OpenActiveTabInPwaWindow is available for secure
 // pages in an app's scope.
 IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest,
@@ -999,7 +1102,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(tab_contents->GetLastCommittedURL(), GetSecureAppURL());
 
-  EXPECT_TRUE(IsOpenInAppWindowOptionPresent(browser()));
+  EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
+            kEnabled);
 
   Browser* app_browser = ReparentSecureActiveTabIntoPwaWindow(browser());
 
@@ -1013,19 +1117,17 @@ IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, InstallToShelfContainsAppName) {
   auto* manager = TestAppBannerManagerDesktop::CreateForWebContents(
       browser()->tab_strip_model()->GetActiveWebContents());
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL test_url =
-      embedded_test_server()->GetURL("/banners/manifest_test_page.html");
-  NavigateToURLAndWait(browser(), test_url);
+  ASSERT_TRUE(https_server()->Start());
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
 
-  manager->WaitForInstallableCheck();
+  EXPECT_TRUE(manager->WaitForInstallableCheck());
 
   auto app_menu_model = std::make_unique<AppMenuModel>(nullptr, browser());
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
   int index = -1;
-  EXPECT_TRUE(app_menu_model->GetModelAndIndexForCommandId(
-      IDC_CREATE_HOSTED_APP, &model, &index));
+  EXPECT_TRUE(app_menu_model->GetModelAndIndexForCommandId(IDC_INSTALL_PWA,
+                                                           &model, &index));
   EXPECT_EQ(app_menu_model.get(), model);
   EXPECT_EQ(model->GetLabelAt(index),
             base::UTF8ToUTF16("Install Manifest test app\xE2\x80\xA6"));
@@ -1060,7 +1162,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, MixedContentOpenInChrome) {
 
   // The WebContents is just reparented, so mixed content is still not loaded.
   CheckMixedContentFailedToLoad(browser());
-  EXPECT_TRUE(IsOpenInAppWindowOptionPresent(browser()));
+  EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
+            kEnabled);
 
   ui_test_utils::UrlLoadObserver url_observer(
       GetMixedContentAppURL(), content::NotificationService::AllSources());
@@ -1071,7 +1174,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, MixedContentOpenInChrome) {
   // WebContents is no longer in a PWA window.
 
   CheckMixedContentLoaded(browser());
-  EXPECT_FALSE(IsOpenInAppWindowOptionPresent(browser()));
+  EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
+            kNotPresent);
   EXPECT_EQ(ReparentSecureActiveTabIntoPwaWindow(browser()), nullptr);
 }
 
@@ -1091,7 +1195,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest,
 
   // A regular tab should be able to load mixed content.
   CheckMixedContentLoaded(browser());
-  EXPECT_FALSE(IsOpenInAppWindowOptionPresent(browser()));
+  EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
+            kNotPresent);
 
   Browser* app_browser = ReparentWebContentsIntoAppBrowser(tab_contents, app_);
 
@@ -1212,8 +1317,17 @@ IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, UninstallPwaWithWindowMovedToTab) {
             GetSecureAppURL());
 }
 
+// Crashes on Mac 10.12 only.  https://crbug.com/897719
+#if defined(OS_MACOSX)
+#define MAYBE_DesktopPWAsFlagDisabledCreatedForInstalledPwa \
+  DISABLED_DesktopPWAsFlagDisabledCreatedForInstalledPwa
+#else
+#define MAYBE_DesktopPWAsFlagDisabledCreatedForInstalledPwa \
+  DesktopPWAsFlagDisabledCreatedForInstalledPwa
+#endif
+
 IN_PROC_BROWSER_TEST_P(HostedAppTest,
-                       DesktopPWAsFlagDisabledCreatedForInstalledPwa) {
+                       MAYBE_DesktopPWAsFlagDisabledCreatedForInstalledPwa) {
   const extensions::Extension* app;
   {
     base::test::ScopedFeatureList feature_list;
@@ -1282,8 +1396,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, OpenInChrome) {
 
     chrome::ExecuteCommand(app_browser, IDC_OPEN_IN_CHROME);
 
-    // The browser frame is closed next event loop so it's still safe to access
-    // here.
+    // The browser frame is closed next event loop so it's still safe to
+    // access here.
     EXPECT_EQ(0, app_browser->tab_strip_model()->count());
 
     EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -1322,6 +1436,17 @@ IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, AppInfoOpensPageInfo) {
   GetPageInfoDialogCreatedCallbackForTesting().Reset();
 }
 #endif
+
+// Check that the location bar is shown correctly with a System App.
+IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest,
+                       ShouldShowLocationBarForSystemApp) {
+  const GURL app_url(chrome::kChromeUISettingsURL);
+
+  SetupSystemAppWithURL(app_url);
+
+  // Navigate to the app's launch page; the location bar should be hidden.
+  NavigateAndCheckForLocationBar(app_browser_, app_url, false);
+}
 
 IN_PROC_BROWSER_TEST_P(HostedAppPWAOnlyTest, EngagementHistogram) {
   base::HistogramTester histograms;
@@ -1436,8 +1561,7 @@ constexpr const char kHostedAppProcessModelManifest[] =
           } )";
 
 // This set of tests verifies the hosted app process model behavior in various
-// isolation modes. They can be run by default, with --site-per-process, or
-// with --top-document-isolation. In each mode, they contain an isolated origin.
+// isolation modes.
 //
 // Relevant frames in the tests:
 // - |app| - app.site.com/frame_tree/cross_origin_but_same_site_frames.html
@@ -1474,13 +1598,6 @@ class HostedAppProcessModelTest : public HostedAppTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->StartAcceptingConnections();
 
-    // TODO(alexmos): This should also be true for TDI, if
-    // base::FeatureList::IsEnabled(features::kTopDocumentIsolation) is true.
-    // However, we can't do that yet, because
-    // ChromeContentBrowserClientExtensionsPart::
-    // ShouldFrameShareParentSiteInstanceDespiteTopDocumentIsolation() returns
-    // true for all hosted apps and hence forces even cross-site subframes to
-    // be kept in the app process.
     should_swap_for_cross_site_ = content::AreAllSitesIsolatedForTesting();
 
     process_map_ = extensions::ProcessMap::Get(browser()->profile());
@@ -2440,6 +2557,95 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
                             "window.open('', 'bg2').document.body.innerText"));
 }
 
+using BookmarkAppOnlyTest = HostedAppTest;
+
+IN_PROC_BROWSER_TEST_P(BookmarkAppOnlyTest, ThemeColor) {
+  {
+    WebApplicationInfo web_app_info;
+    web_app_info.app_url = GURL(kExampleURL);
+    web_app_info.scope = GURL(kExampleURL);
+    web_app_info.theme_color = SkColorSetA(SK_ColorBLUE, 0xF0);
+    const extensions::Extension* app = InstallBookmarkApp(web_app_info);
+    Browser* app_browser = LaunchAppBrowser(app);
+
+    EXPECT_EQ(web_app::GetAppIdFromApplicationName(app_browser->app_name()),
+              app->id());
+    EXPECT_EQ(SkColorSetA(*web_app_info.theme_color, SK_AlphaOPAQUE),
+              app_browser->hosted_app_controller()->GetThemeColor().value());
+  }
+  {
+    WebApplicationInfo web_app_info;
+    web_app_info.app_url = GURL("http://example.org/2");
+    web_app_info.scope = GURL("http://example.org/");
+    web_app_info.theme_color = base::Optional<SkColor>();
+    const extensions::Extension* app = InstallBookmarkApp(web_app_info);
+    Browser* app_browser = LaunchAppBrowser(app);
+
+    EXPECT_EQ(web_app::GetAppIdFromApplicationName(app_browser->app_name()),
+              app->id());
+    EXPECT_FALSE(
+        app_browser->hosted_app_controller()->GetThemeColor().has_value());
+  }
+}
+
+// Check that location bar is not shown for apps hosted within extensions pages.
+// This simulates a case where the user has manually navigated to a page hosted
+// within an extension, then added it as a bookmark app.
+// Regression test for https://crbug.com/828233.
+IN_PROC_BROWSER_TEST_P(BookmarkAppOnlyTest,
+                       ShouldShowLocationBarForExtensionPage) {
+  // Note: This involves the creation of *two* extensions: The first is a
+  // regular (non-app) extension with a popup page. The second is a bookmark app
+  // created from the popup page URL (allowing the extension's popup page to be
+  // loaded in a window).
+
+  // Install the extension that has the popup page.
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("ui").AppendASCII("browser_action_popup")));
+  base::RunLoop().RunUntilIdle();  // Ensure the extension is fully loaded.
+
+  // Install the bookmark app that links to the extension's popup page.
+  GURL popup_url("chrome-extension://" + last_loaded_extension_id() +
+                 "/popup.html");
+  // TODO(mgiuca): Abstract this logic to share code with InstallPWA (which does
+  // almost the same thing, but also sets a scope).
+  WebApplicationInfo web_app_info;
+  web_app_info.app_url = popup_url;
+  app_ = InstallBookmarkApp(web_app_info);
+
+  ui_test_utils::UrlLoadObserver url_observer(
+      popup_url, content::NotificationService::AllSources());
+  app_browser_ = LaunchAppBrowser(app_);
+  url_observer.Wait();
+
+  CHECK(app_browser_);
+  CHECK(app_browser_ != browser());
+
+  // Navigate to the app's launch page; the location bar should not be visible,
+  // because extensions pages are secure.
+  NavigateAndCheckForLocationBar(app_browser_, popup_url, false);
+}
+
+// Ensure that hosted app windows with blank titles don't display the URL as a
+// default window title.
+IN_PROC_BROWSER_TEST_P(BookmarkAppOnlyTest, Title) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("app.site.com", "/empty.html");
+  WebApplicationInfo web_app_info;
+  web_app_info.app_url = url;
+  const extensions::Extension* app = InstallBookmarkApp(web_app_info);
+
+  Browser* app_browser = LaunchAppBrowser(app);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(base::string16(), app_browser->GetWindowTitleForCurrentTab(false));
+  NavigateToURLAndWait(app_browser, embedded_test_server()->GetURL(
+                                        "app.site.com", "/simple.html"));
+  EXPECT_EQ(base::ASCIIToUTF16("OK"),
+            app_browser->GetWindowTitleForCurrentTab(false));
+}
+
 INSTANTIATE_TEST_CASE_P(/* no prefix */,
                         HostedAppTest,
                         ::testing::Combine(kAppTypeValues, ::testing::Bool()));
@@ -2447,6 +2653,12 @@ INSTANTIATE_TEST_CASE_P(/* no prefix */,
                         HostedAppPWAOnlyTest,
                         ::testing::Values(std::tuple<AppType, bool>{
                             AppType::BOOKMARK_APP, true}));
+INSTANTIATE_TEST_CASE_P(
+    /* no prefix */,
+    BookmarkAppOnlyTest,
+    ::testing::Combine(::testing::Values(AppType::BOOKMARK_APP),
+                       ::testing::Bool()));
+
 INSTANTIATE_TEST_CASE_P(
     /* no prefix */,
     HostedAppProcessModelTest,

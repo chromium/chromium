@@ -62,7 +62,7 @@ class NotificationResourcesLoaderTest : public PageTestBase {
   // Registers a mocked url. When fetched, |fileName| will be loaded from the
   // test data directory.
   KURL RegisterMockedURL(const String& file_name) {
-    KURL registered_url = URLTestHelpers::RegisterMockedURLLoadFromBase(
+    KURL registered_url = url_test_helpers::RegisterMockedURLLoadFromBase(
         kResourcesLoaderBaseUrl,
         test::CoreTestDataPath(kResourcesLoaderBaseDir), file_name,
         "image/png");
@@ -72,7 +72,7 @@ class NotificationResourcesLoaderTest : public PageTestBase {
   // Registers a mocked url that will fail to be fetched, with a 404 error.
   KURL RegisterMockedErrorURL(const String& file_name) {
     KURL url(kResourcesLoaderBaseUrl + file_name);
-    URLTestHelpers::RegisterMockedErrorURLLoad(url);
+    url_test_helpers::RegisterMockedErrorURLLoad(url);
     return url;
   }
 

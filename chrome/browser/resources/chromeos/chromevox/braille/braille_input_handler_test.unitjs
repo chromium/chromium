@@ -430,9 +430,9 @@ function cellsToArray(cells) {
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxBrailleInputHandlerUnitTest() {}
+function ChromeVoxBrailleInputHandlerUnitTest() {}
 
-CvoxBrailleInputHandlerUnitTest.prototype = {
+ChromeVoxBrailleInputHandlerUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -534,7 +534,7 @@ CvoxBrailleInputHandlerUnitTest.prototype = {
   }
 };
 
-TEST_F('CvoxBrailleInputHandlerUnitTest', 'ConnectFromUnknownExtension',
+TEST_F('ChromeVoxBrailleInputHandlerUnitTest', 'ConnectFromUnknownExtension',
   function() {
   this.port.sender.id = 'your unknown friend';
   chrome.runtime.onConnectExternal.getListener()(this.port);
@@ -542,7 +542,7 @@ TEST_F('CvoxBrailleInputHandlerUnitTest', 'ConnectFromUnknownExtension',
 });
 
 
-TEST_F('CvoxBrailleInputHandlerUnitTest', 'NoTranslator', function() {
+TEST_F('ChromeVoxBrailleInputHandlerUnitTest', 'NoTranslator', function() {
   var editor = this.createEditor();
   editor.setContent('blah', 0);
   editor.setActive(true);
@@ -554,7 +554,7 @@ TEST_F('CvoxBrailleInputHandlerUnitTest', 'NoTranslator', function() {
 });
 
 
-TEST_F('CvoxBrailleInputHandlerUnitTest', 'InputUncontracted', function() {
+TEST_F('ChromeVoxBrailleInputHandlerUnitTest', 'InputUncontracted', function() {
   this.translatorManager.setTranslators(this.uncontractedTranslator, null);
   var editor = this.createEditor();
   editor.setActive(true);
@@ -581,7 +581,7 @@ TEST_F('CvoxBrailleInputHandlerUnitTest', 'InputUncontracted', function() {
 });
 
 
-TEST_F('CvoxBrailleInputHandlerUnitTest', 'InputContracted', function() {
+TEST_F('ChromeVoxBrailleInputHandlerUnitTest', 'InputContracted', function() {
   var editor = this.createEditor();
   this.translatorManager.setTranslators(this.contractedTranslator,
                                         this.uncontractedTranslator);
@@ -641,7 +641,7 @@ TEST_F('CvoxBrailleInputHandlerUnitTest', 'InputContracted', function() {
 });
 
 
-TEST_F('CvoxBrailleInputHandlerUnitTest', 'TypingUrlWithContracted',
+TEST_F('ChromeVoxBrailleInputHandlerUnitTest', 'TypingUrlWithContracted',
        function() {
   var editor = this.createEditor();
   this.translatorManager.setTranslators(this.contractedTranslator,
@@ -665,7 +665,7 @@ TEST_F('CvoxBrailleInputHandlerUnitTest', 'TypingUrlWithContracted',
 });
 
 
-TEST_F('CvoxBrailleInputHandlerUnitTest', 'Backspace', function() {
+TEST_F('ChromeVoxBrailleInputHandlerUnitTest', 'Backspace', function() {
   var editor = this.createEditor();
   this.translatorManager.setTranslators(this.contractedTranslator,
                                         this.uncontractedTranslator);
@@ -695,7 +695,7 @@ TEST_F('CvoxBrailleInputHandlerUnitTest', 'Backspace', function() {
 });
 
 
-TEST_F('CvoxBrailleInputHandlerUnitTest', 'KeysImeNotActive', function() {
+TEST_F('ChromeVoxBrailleInputHandlerUnitTest', 'KeysImeNotActive', function() {
   var editor = this.createEditor();
   this.sendKeyEvent('Enter');
   this.sendKeyEvent('ArrowUp');

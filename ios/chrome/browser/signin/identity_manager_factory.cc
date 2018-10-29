@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/signin/profile_oauth2_token_service_factory.h"
 #include "ios/chrome/browser/signin/signin_manager_factory.h"
 #include "services/identity/public/cpp/identity_manager.h"
+#include "services/identity/public/cpp/primary_account_mutator_impl.h"
 
 // Subclass that wraps IdentityManager in a KeyedService (as IdentityManager is
 // a client-side library intended for use by any process, it would be a layering
@@ -33,7 +34,12 @@ class IdentityManagerWrapper : public KeyedService,
             ios::AccountTrackerServiceFactory::GetForBrowserState(
                 browser_state),
             ios::GaiaCookieManagerServiceFactory::GetForBrowserState(
-                browser_state)) {}
+                browser_state),
+            std::make_unique<identity::PrimaryAccountMutatorImpl>(
+                ios::AccountTrackerServiceFactory::GetForBrowserState(
+                    browser_state),
+                ios::SigninManagerFactory::GetForBrowserState(browser_state))) {
+  }
 };
 
 IdentityManagerFactory::IdentityManagerFactory()

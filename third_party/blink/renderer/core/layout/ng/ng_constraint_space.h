@@ -22,6 +22,7 @@
 namespace blink {
 
 class LayoutBox;
+class NGConstraintSpaceBuilder;
 
 enum NGFragmentationType {
   kFragmentNone,
@@ -65,6 +66,8 @@ class CORE_EXPORT NGConstraintSpace final {
     kNumberOfConstraintSpaceFlags = 11
   };
 
+  typedef Vector<NGBaselineRequest, 2> NGBaselineRequestVector;
+
   NGConstraintSpace() {}
   NGConstraintSpace(const NGConstraintSpace&) = default;
   NGConstraintSpace(NGConstraintSpace&&) = default;
@@ -104,11 +107,15 @@ class CORE_EXPORT NGConstraintSpace final {
   // The size to use for percentage resolution for margin/border/padding.
   // They are always get computed relative to the inline size, in the parent
   // writing mode.
-  LayoutUnit PercentageResolutionInlineSizeForParentWritingMode() const;
-
-  // Parent's PercentageResolutionInlineSize().
-  // This is not always available.
-  LayoutUnit ParentPercentageResolutionInlineSize() const;
+  LayoutUnit PercentageResolutionInlineSizeForParentWritingMode() const {
+    if (!IsOrthogonalWritingModeRoot())
+      return PercentageResolutionSize().inline_size;
+    if (PercentageResolutionSize().block_size != NGSizeIndefinite)
+      return PercentageResolutionSize().block_size;
+    // TODO(mstensho): Figure out why we get here. It seems wrong, but we do get
+    // here in some grid layout situations.
+    return LayoutUnit();
+  }
 
   // The available space size.
   // See: https://drafts.csswg.org/css-sizing/#available
@@ -183,7 +190,10 @@ class CORE_EXPORT NGConstraintSpace final {
 
   // If specified a layout should produce a Fragment which fragments at the
   // blockSize if possible.
-  NGFragmentationType BlockFragmentationType() const;
+  NGFragmentationType BlockFragmentationType() const {
+    return static_cast<NGFragmentationType>(
+        block_direction_fragmentation_type_);
+  }
 
   // Return true if this constraint space participates in a fragmentation
   // context.
@@ -272,37 +282,24 @@ class CORE_EXPORT NGConstraintSpace final {
   // child will be canceled out with negative clearance.
   bool ShouldForceClearance() const { return HasFlag(kForceClearance); }
 
-  const Vector<NGBaselineRequest>& BaselineRequests() const {
+  const NGBaselineRequestVector& BaselineRequests() const {
     return baseline_requests_;
   }
 
   bool operator==(const NGConstraintSpace&) const;
-  bool operator!=(const NGConstraintSpace&) const;
+  bool operator!=(const NGConstraintSpace& other) const {
+    return !(*this == other);
+  }
 
   String ToString() const;
 
  private:
   friend class NGConstraintSpaceBuilder;
   // Default constructor.
-  NGConstraintSpace(WritingMode,
-                    TextDirection,
-                    NGLogicalSize available_size,
-                    NGLogicalSize percentage_resolution_size,
-                    NGLogicalSize replace_percentage_resolution_size,
-                    LayoutUnit parent_percentage_resolution_inline_size,
-                    NGPhysicalSize initial_containing_block_size,
-                    LayoutUnit fragmentainer_block_size,
-                    LayoutUnit fragmentainer_space_at_bfc_start,
-                    NGFragmentationType block_direction_fragmentation_type,
-                    NGTableCellChildLayoutPhase,
-                    NGFloatTypes adjoining_floats,
-                    const NGMarginStrut& margin_strut,
-                    const NGBfcOffset& bfc_offset,
-                    const base::Optional<LayoutUnit>& floats_bfc_block_offset,
-                    const NGExclusionSpace& exclusion_space,
-                    LayoutUnit clearance_offset,
-                    Vector<NGBaselineRequest>& baseline_requests,
-                    unsigned flags);
+  // is_new_fc is technically redundant, but simplifies the code here a bit.
+  NGConstraintSpace(WritingMode out_writing_mode,
+                    bool is_new_fc,
+                    NGConstraintSpaceBuilder& builder);
 
   bool HasFlag(ConstraintSpaceFlags mask) const {
     return flags_ & static_cast<unsigned>(mask);
@@ -311,7 +308,6 @@ class CORE_EXPORT NGConstraintSpace final {
   NGLogicalSize available_size_;
   NGLogicalSize percentage_resolution_size_;
   NGLogicalSize replaced_percentage_resolution_size_;
-  LayoutUnit parent_percentage_resolution_inline_size_;
   NGPhysicalSize initial_containing_block_size_;
 
   LayoutUnit fragmentainer_block_size_;
@@ -331,7 +327,7 @@ class CORE_EXPORT NGConstraintSpace final {
   NGExclusionSpace exclusion_space_;
   LayoutUnit clearance_offset_;
 
-  Vector<NGBaselineRequest> baseline_requests_;
+  NGBaselineRequestVector baseline_requests_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream,

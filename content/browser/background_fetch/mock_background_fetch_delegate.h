@@ -31,7 +31,8 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
     TestResponse();
     ~TestResponse();
 
-    bool succeeded_;
+    bool succeeded = false;
+    bool pending = false;
     scoped_refptr<net::HttpResponseHeaders> headers;
     std::string data;
 
@@ -51,6 +52,8 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
                                            const std::string& value);
 
     TestResponseBuilder& SetResponseData(std::string data);
+
+    TestResponseBuilder& MakeIndefinitelyPending();
 
     // Finalizes the builder and invalidates the underlying response.
     std::unique_ptr<TestResponse> Build();

@@ -10,4 +10,3 @@ PASS event.dataTransfer.types contains format "text/plain"
 PASS event.dataTransfer.getData("text/plain") contains "Square"
 
 TEST COMPLETE
-

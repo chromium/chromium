@@ -13,8 +13,7 @@
 std::string ValueStoreChange::ToJson(
     const ValueStoreChangeList& changes) {
   base::DictionaryValue changes_value;
-  for (ValueStoreChangeList::const_iterator it = changes.begin();
-      it != changes.end(); ++it) {
+  for (auto it = changes.cbegin(); it != changes.cend(); ++it) {
     std::unique_ptr<base::DictionaryValue> change_value =
         std::make_unique<base::DictionaryValue>();
     if (it->old_value()) {

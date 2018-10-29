@@ -128,8 +128,8 @@ TEST_F(InputDeviceTest, AddDevices) {
 
 TEST_F(InputDeviceTest, AddDeviceAfterComplete) {
   const ui::InputDevice keyboard1(100, ui::INPUT_DEVICE_INTERNAL, "Keyboard1");
-  const ui::InputDevice keyboard2(200, ui::INPUT_DEVICE_EXTERNAL, "Keyboard2");
-  const ui::InputDevice mouse(300, ui::INPUT_DEVICE_EXTERNAL, "Mouse");
+  const ui::InputDevice keyboard2(200, ui::INPUT_DEVICE_USB, "Keyboard2");
+  const ui::InputDevice mouse(300, ui::INPUT_DEVICE_USB, "Mouse");
 
   TestInputDeviceClient client;
   AddClientAsObserver(&client);

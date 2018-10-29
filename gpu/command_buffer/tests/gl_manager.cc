@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/client/transfer_buffer.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/command_buffer_direct.h"
 #include "gpu/command_buffer/service/context_group.h"
@@ -353,7 +354,8 @@ void GLManager::InitializeWithWorkaroundsImpl(
         translator_cache_.get(), &completeness_cache_, feature_info,
         options.bind_generates_resource, &image_manager_, options.image_factory,
         nullptr /* progress_reporter */, gpu_feature_info,
-        &discardable_manager_);
+        &discardable_manager_, &passthrough_discardable_manager_,
+        &shared_image_manager_);
   }
 
   command_buffer_.reset(new CommandBufferCheckLostContext(
@@ -502,8 +504,7 @@ const Capabilities& GLManager::GetCapabilities() const {
 
 int32_t GLManager::CreateImage(ClientBuffer buffer,
                                size_t width,
-                               size_t height,
-                               unsigned internalformat) {
+                               size_t height) {
   gfx::Size size(width, height);
   scoped_refptr<gl::GLImage> gl_image;
 
@@ -511,6 +512,8 @@ int32_t GLManager::CreateImage(ClientBuffer buffer,
   if (use_iosurface_memory_buffers_) {
     IOSurfaceGpuMemoryBuffer* gpu_memory_buffer =
         IOSurfaceGpuMemoryBuffer::FromClientBuffer(buffer);
+    unsigned internalformat = gpu::InternalFormatForGpuMemoryBufferFormat(
+        gpu_memory_buffer->GetFormat());
     scoped_refptr<gl::GLImageIOSurface> image(
         gl::GLImageIOSurface::Create(size, internalformat));
     if (!image->Initialize(gpu_memory_buffer->iosurface(),
@@ -529,6 +532,8 @@ int32_t GLManager::CreateImage(ClientBuffer buffer,
     if (gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP) {
       gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
       gfx::BufferFormat format = gpu_memory_buffer->GetFormat();
+      unsigned internalformat =
+          gpu::InternalFormatForGpuMemoryBufferFormat(format);
       gl_image = gpu_memory_buffer_factory_->AsImageFactory()
                      ->CreateImageForGpuMemoryBuffer(
                          std::move(handle), size, format, internalformat,
@@ -543,10 +548,12 @@ int32_t GLManager::CreateImage(ClientBuffer buffer,
     GpuMemoryBufferImpl* gpu_memory_buffer =
         GpuMemoryBufferImpl::FromClientBuffer(buffer);
 
+    gfx::BufferFormat format = gpu_memory_buffer->GetFormat();
+    unsigned internalformat =
+        gpu::InternalFormatForGpuMemoryBufferFormat(format);
     scoped_refptr<gl::GLImageRefCountedMemory> image(
         new gl::GLImageRefCountedMemory(size, internalformat));
-    if (!image->Initialize(gpu_memory_buffer->bytes(),
-                           gpu_memory_buffer->GetFormat())) {
+    if (!image->Initialize(gpu_memory_buffer->bytes(), format)) {
       return -1;
     }
     gl_image = image;

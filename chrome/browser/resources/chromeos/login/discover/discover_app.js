@@ -56,3 +56,9 @@ var Oobe = cr.ui.Oobe;
 document.addEventListener('DOMContentLoaded', function() {
   Oobe.initialize();
 });
+
+// In App mode Discover should not exit once last module is completed.
+// It should go back to "Welcome" screen instead.
+$('discoverUI').addEventListener('discover-done', function() {
+  $('discoverUI').onBeforeShow();
+});

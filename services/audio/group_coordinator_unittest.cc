@@ -21,9 +21,17 @@ using testing::_;
 
 namespace audio {
 
+class TestGroupCoordinator : public GroupCoordinator<MockGroupMember> {
+ public:
+  const std::vector<MockGroupMember*>& GetCurrentMembers(
+      const base::UnguessableToken& group_id) const {
+    return GetCurrentMembersUnsafe(group_id);
+  }
+};
+
 namespace {
 
-class MockGroupObserver : public GroupCoordinator<MockGroupMember>::Observer {
+class MockGroupObserver : public TestGroupCoordinator::Observer {
  public:
   MockGroupObserver() = default;
   ~MockGroupObserver() override = default;
@@ -36,7 +44,7 @@ class MockGroupObserver : public GroupCoordinator<MockGroupMember>::Observer {
 };
 
 TEST(GroupCoordinatorTest, NeverUsed) {
-  GroupCoordinator<MockGroupMember> coordinator;
+  TestGroupCoordinator coordinator;
 }
 
 TEST(GroupCoordinatorTest, RegistersMembersInSameGroup) {
@@ -56,7 +64,7 @@ TEST(GroupCoordinatorTest, RegistersMembersInSameGroup) {
   EXPECT_CALL(observer, OnMemberLeftGroup(&member2))
       .InSequence(join_leave_sequence);
 
-  GroupCoordinator<MockGroupMember> coordinator;
+  TestGroupCoordinator coordinator;
   coordinator.AddObserver(group_id, &observer);
   coordinator.RegisterMember(group_id, &member1);
   coordinator.RegisterMember(group_id, &member2);
@@ -103,7 +111,7 @@ TEST(GroupCoordinatorTest, RegistersMembersInDifferentGroups) {
   EXPECT_CALL(observer_b, OnMemberLeftGroup(&member_b_1))
       .InSequence(join_leave_sequence_b);
 
-  GroupCoordinator<MockGroupMember> coordinator;
+  TestGroupCoordinator coordinator;
   coordinator.AddObserver(group_id_a, &observer_a);
   coordinator.AddObserver(group_id_b, &observer_b);
   coordinator.RegisterMember(group_id_a, &member_a_1);
@@ -140,7 +148,7 @@ TEST(GroupCoordinatorTest, TracksMembersWithoutAnObserverPresent) {
   StrictMock<MockGroupMember> member1;
   StrictMock<MockGroupMember> member2;
 
-  GroupCoordinator<MockGroupMember> coordinator;
+  TestGroupCoordinator coordinator;
   coordinator.RegisterMember(group_id, &member1);
   coordinator.RegisterMember(group_id, &member2);
 
@@ -173,7 +181,7 @@ TEST(GroupCoordinatorTest, NotifiesOnlyWhileObserving) {
       .InSequence(join_leave_sequence);
   EXPECT_CALL(observer, OnMemberLeftGroup(&member2)).Times(0);
 
-  GroupCoordinator<MockGroupMember> coordinator;
+  TestGroupCoordinator coordinator;
   coordinator.RegisterMember(group_id, &member1);
   EXPECT_EQ(std::vector<MockGroupMember*>({&member1}),
             coordinator.GetCurrentMembers(group_id));

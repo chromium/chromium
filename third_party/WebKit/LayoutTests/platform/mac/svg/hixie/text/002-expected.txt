@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x400
-  LayoutSVGRoot {svg} at (0,0) size 800x400
-    LayoutSVGText {text} at (10,120) size 459.77x230 contains 1 chunk(s)
-      LayoutSVGInlineText {#text} at (10,120) size 459.77x230
-        chunk 1 text run 1 at (10.00,300.00) startOffset 0 endOffset 4 width 459.77: "PASS"

@@ -153,9 +153,9 @@ void ThreadDebugger::PromiseRejectionRevoked(v8::Local<v8::Context> context,
 
 void ThreadDebugger::beginUserGesture() {
   ExecutionContext* ec = CurrentExecutionContext(isolate_);
-  Document* document = ec && ec->IsDocument() ? ToDocument(ec) : nullptr;
-  user_gesture_indicator_ =
-      Frame::NotifyUserActivation(document ? document->GetFrame() : nullptr);
+  Document* document = DynamicTo<Document>(ec);
+  user_gesture_indicator_ = LocalFrame::NotifyUserActivation(
+      document ? document->GetFrame() : nullptr);
 }
 
 void ThreadDebugger::endUserGesture() {
@@ -375,7 +375,7 @@ void ThreadDebugger::SetMonitorEventsCallback(
   Vector<String> types = NormalizeEventTypes(info);
   EventListener* event_listener = V8EventListenerHelper::GetEventListener(
       ScriptState::Current(info.GetIsolate()),
-      v8::Local<v8::Function>::Cast(info.Data()), false,
+      v8::Local<v8::Function>::Cast(info.Data()),
       enabled ? kListenerFindOrCreate : kListenerFindOnly);
   if (!event_listener)
     return;

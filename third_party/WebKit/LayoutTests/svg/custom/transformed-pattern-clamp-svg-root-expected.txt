@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 200x200
-  LayoutSVGRoot {svg} at (0,0) size 200x200
-    LayoutSVGHiddenContainer {defs} at (0,0) size 0x0
-      LayoutSVGResourceLinearGradient {linearGradient} [id="gradient"] [gradientUnits=objectBoundingBox] [stops=( #FFFFFF@0.00 #FFFFFF@0.50 #008000@0.50 #008000@1.00 )] [start=(0,0)] [end=(0,1)]
-      LayoutSVGResourcePattern {pattern} [id="shot"] [patternUnits=userSpaceOnUse] [patternContentUnits=userSpaceOnUse]
-        LayoutSVGRect {rect} at (0,0) size 400x400 [fill={[type=LINEAR-GRADIENT] [id="gradient"]}] [x=0.00] [y=0.00] [width=400.00] [height=400.00]
-    LayoutSVGRect {rect} at (0,100) size 200x200 [transform={m=((1.00,0.00)(0.00,1.00)) t=(0.00,-100.00)}] [stroke={[type=SOLID] [color=#000000]}] [fill={[type=PATTERN] [id="shot"]}] [x=0.00] [y=100.00] [width=200.00] [height=200.00]

@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"

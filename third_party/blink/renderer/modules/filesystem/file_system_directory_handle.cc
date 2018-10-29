@@ -59,7 +59,8 @@ ScriptPromise FileSystemDirectoryHandle::getSystemDirectory(
       FileSystemCallbacks::Create(
           new FileSystemCallbacks::OnDidOpenFileSystemPromiseImpl(resolver),
           new PromiseErrorCallback(resolver), context,
-          mojom::blink::FileSystemType::kTemporary));
+          mojom::blink::FileSystemType::kTemporary),
+      LocalFileSystem::kAsynchronous);
   return result;
 }
 

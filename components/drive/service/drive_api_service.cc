@@ -18,10 +18,8 @@
 #include "google_apis/drive/base_requests.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/drive_api_requests.h"
-#include "google_apis/drive/drive_switches.h"
 #include "google_apis/drive/files_list_request_runner.h"
 #include "google_apis/drive/request_sender.h"
-#include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using google_apis::AboutResourceCallback;
@@ -225,19 +223,17 @@ void BatchRequestConfigurator::Commit() {
 }
 
 DriveAPIService::DriveAPIService(
-    OAuth2TokenService* oauth2_token_service,
+    identity::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::SequencedTaskRunner* blocking_task_runner,
     const GURL& base_url,
     const GURL& base_thumbnail_url,
     const std::string& custom_user_agent,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
-    : oauth2_token_service_(oauth2_token_service),
+    : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       blocking_task_runner_(blocking_task_runner),
-      url_generator_(base_url,
-                     base_thumbnail_url,
-                     google_apis::GetTeamDrivesIntegrationSwitch()),
+      url_generator_(base_url, base_thumbnail_url),
       custom_user_agent_(custom_user_agent),
       traffic_annotation_(traffic_annotation) {}
 
@@ -256,8 +252,8 @@ void DriveAPIService::Initialize(const std::string& account_id) {
   scopes.push_back(kDriveAppsScope);
 
   sender_ = std::make_unique<RequestSender>(
-      std::make_unique<google_apis::AuthService>(
-          oauth2_token_service_, account_id, url_loader_factory_, scopes),
+      std::make_unique<google_apis::AuthService>(identity_manager_, account_id,
+                                                 url_loader_factory_, scopes),
       url_loader_factory_, blocking_task_runner_.get(), custom_user_agent_,
       traffic_annotation_);
   sender_->auth_service()->AddObserver(this);
@@ -328,11 +324,7 @@ CancelCallback DriveAPIService::GetFileListInDirectory(
   // TODO(yamaguchi): Use FileListScope::CreateForTeamDrive instead of
   // kAllTeamDrives for efficiency. It'll require to add a new parameter to tell
   // which team drive the directory resource belongs to.
-  FilesListCorpora corpora =
-      (google_apis::GetTeamDrivesIntegrationSwitch() ==
-       google_apis::TEAM_DRIVES_INTEGRATION_ENABLED)
-          ? google_apis::FilesListCorpora::ALL_TEAM_DRIVES
-          : google_apis::FilesListCorpora::DEFAULT;
+  FilesListCorpora corpora = google_apis::FilesListCorpora::ALL_TEAM_DRIVES;
 
   // Because children.list method on Drive API v2 returns only the list of
   // children's references, but we need all file resource list.
@@ -356,11 +348,7 @@ CancelCallback DriveAPIService::Search(
   DCHECK(!search_query.empty());
   DCHECK(!callback.is_null());
 
-  FilesListCorpora corpora =
-      (google_apis::GetTeamDrivesIntegrationSwitch() ==
-       google_apis::TEAM_DRIVES_INTEGRATION_ENABLED)
-          ? google_apis::FilesListCorpora::ALL_TEAM_DRIVES
-          : google_apis::FilesListCorpora::DEFAULT;
+  FilesListCorpora corpora = google_apis::FilesListCorpora::ALL_TEAM_DRIVES;
 
   std::string query = util::TranslateQuery(search_query);
   if (!query.empty())
@@ -482,8 +470,7 @@ CancelCallback DriveAPIService::GetFileResource(
   DCHECK(!callback.is_null());
 
   std::unique_ptr<FilesGetRequest> request = std::make_unique<FilesGetRequest>(
-      sender_.get(), url_generator_, google_apis::IsGoogleChromeAPIKeyUsed(),
-      callback);
+      sender_.get(), url_generator_, callback);
   request->set_file_id(resource_id);
   request->set_fields(kFileResourceFields);
   return sender_->StartRequestWithAuthRetry(std::move(request));

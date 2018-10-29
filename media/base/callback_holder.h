@@ -39,19 +39,19 @@ template <typename CB> class CallbackHolder {
   void RunOrHold() {
     DCHECK(held_cb_.is_null());
     if (hold_)
-      held_cb_ = base::ResetAndReturn(&original_cb_);
+      held_cb_ = std::move(original_cb_);
     else
-      base::ResetAndReturn(&original_cb_).Run();
+      std::move(original_cb_).Run();
   }
 
   template <typename... Args>
   void RunOrHold(Args&&... args) {
     DCHECK(held_cb_.is_null());
     if (hold_) {
-      held_cb_ = base::BindOnce(base::ResetAndReturn(&original_cb_),
-                                std::forward<Args>(args)...);
+      held_cb_ =
+          base::BindOnce(std::move(original_cb_), std::forward<Args>(args)...);
     } else {
-      base::ResetAndReturn(&original_cb_).Run(std::forward<Args>(args)...);
+      std::move(original_cb_).Run(std::forward<Args>(args)...);
     }
   }
 
@@ -60,7 +60,7 @@ template <typename CB> class CallbackHolder {
     DCHECK(hold_);
     DCHECK(!held_cb_.is_null());
     hold_ = false;
-    base::ResetAndReturn(&held_cb_).Run();
+    std::move(held_cb_).Run();
   }
 
  private:

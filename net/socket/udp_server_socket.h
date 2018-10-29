@@ -47,6 +47,7 @@ class NET_EXPORT UDPServerSocket : public DatagramServerSocket {
   const NetLogWithSource& NetLog() const override;
   void AllowAddressReuse() override;
   void AllowBroadcast() override;
+  void AllowAddressSharingForMulticast() override;
   int JoinGroup(const IPAddress& group_address) const override;
   int LeaveGroup(const IPAddress& group_address) const override;
   int SetMulticastInterface(uint32_t interface_index) override;
@@ -59,6 +60,7 @@ class NET_EXPORT UDPServerSocket : public DatagramServerSocket {
   UDPSocket socket_;
   bool allow_address_reuse_;
   bool allow_broadcast_;
+  bool allow_address_sharing_for_multicast_;
   DISALLOW_COPY_AND_ASSIGN(UDPServerSocket);
 };
 

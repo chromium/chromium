@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -46,9 +47,9 @@ std::unique_ptr<KeyedService> BuildEventRouter(
   return std::make_unique<extensions::EventRouter>(profile, nullptr);
 }
 
-scoped_refptr<Extension> CreateApp(const std::string& extension_id,
-                                   const std::string& version) {
-  scoped_refptr<Extension> app =
+scoped_refptr<const Extension> CreateApp(const std::string& extension_id,
+                                         const std::string& version) {
+  scoped_refptr<const Extension> app =
       ExtensionBuilder()
           .SetManifest(
               DictionaryBuilder()
@@ -70,10 +71,10 @@ scoped_refptr<Extension> CreateApp(const std::string& extension_id,
   return app;
 }
 
-scoped_refptr<Extension> CreateExtension(const std::string& extension_id,
-                                         const std::string& version,
-                                         bool persistent) {
-  scoped_refptr<Extension> extension =
+scoped_refptr<const Extension> CreateExtension(const std::string& extension_id,
+                                               const std::string& version,
+                                               bool persistent) {
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
               DictionaryBuilder()
@@ -137,7 +138,7 @@ class UpdateInstallGateTest : public testing::Test {
 
     event_router_ = static_cast<EventRouter*>(
         EventRouterFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile_, &BuildEventRouter));
+            profile_, base::BindRepeating(&BuildEventRouter)));
 
     delayer_.reset(new UpdateInstallGate(service_));
 
@@ -150,14 +151,14 @@ class UpdateInstallGateTest : public testing::Test {
   void TearDown() override { profile_manager_->DeleteAllTestingProfiles(); }
 
   void AddExistingExtensions() {
-    scoped_refptr<Extension> app = CreateApp(kAppId, "1.0");
+    scoped_refptr<const Extension> app = CreateApp(kAppId, "1.0");
     registry_->AddEnabled(app);
 
-    scoped_refptr<Extension> persistent =
+    scoped_refptr<const Extension> persistent =
         CreateExtension(kPersistentExtensionId, "1.0", true);
     registry_->AddEnabled(persistent);
 
-    scoped_refptr<Extension> none_persistent =
+    scoped_refptr<const Extension> none_persistent =
         CreateExtension(kNonPersistentExtensionId, "1.0", false);
     registry_->AddEnabled(none_persistent);
   }
@@ -222,9 +223,9 @@ class UpdateInstallGateTest : public testing::Test {
 
   std::unique_ptr<UpdateInstallGate> delayer_;
 
-  scoped_refptr<Extension> new_app_;
-  scoped_refptr<Extension> new_persistent_;
-  scoped_refptr<Extension> new_none_persistent_;
+  scoped_refptr<const Extension> new_app_;
+  scoped_refptr<const Extension> new_persistent_;
+  scoped_refptr<const Extension> new_none_persistent_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdateInstallGateTest);
 };

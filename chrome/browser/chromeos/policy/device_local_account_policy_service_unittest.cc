@@ -28,6 +28,7 @@
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/chromeos_paths.h"
 #include "chromeos/dbus/power_policy_controller.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -133,8 +134,9 @@ DeviceLocalAccountPolicyServiceTestBase::
       account_2_user_id_(GenerateDeviceLocalAccountUserId(
           kAccount2,
           DeviceLocalAccount::TYPE_PUBLIC_SESSION)),
-      cros_settings_(
-          std::make_unique<chromeos::CrosSettings>(&device_settings_service_)),
+      cros_settings_(std::make_unique<chromeos::CrosSettings>(
+          &device_settings_service_,
+          TestingBrowserProcess::GetGlobal()->local_state())),
       extension_cache_task_runner_(new base::TestSimpleTaskRunner) {
   expected_policy_map_.Set(key::kSearchSuggestEnabled, POLICY_LEVEL_MANDATORY,
                            POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,

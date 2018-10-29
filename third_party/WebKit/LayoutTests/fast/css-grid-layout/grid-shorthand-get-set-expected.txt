@@ -2,7 +2,6 @@ This test checks that the 'grid' shorthand is properly parsed and the longhand p
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test getting the longhand values when shorthand is set through CSS.
 PASS window.getComputedStyle(gridWithNone, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(gridWithNone, '').getPropertyValue('grid-template-rows') is "none"
@@ -101,6 +100,7 @@ PASS window.getComputedStyle(gridWithRowsAndAutoFlowAndMultipleAutoTracks, '').g
 PASS window.getComputedStyle(gridWithRowsAndAutoFlowAndMultipleAutoTracks, '').getPropertyValue('grid-auto-columns') is "20px 10px"
 PASS window.getComputedStyle(gridWithRowsAndAutoFlowAndMultipleAutoTracks, '').getPropertyValue('grid-auto-rows') is "auto"
 
+
 Test getting wrong values for 'grid' shorthand through CSS (they should resolve to the default: 'none')
 PASS window.getComputedStyle(gridWithMisplacedAutoColumn, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(gridWithMisplacedAutoColumn, '').getPropertyValue('grid-template-rows') is "none"
@@ -193,6 +193,7 @@ PASS window.getComputedStyle(gridWithExtraIdAfterAutoRow, '').getPropertyValue('
 PASS window.getComputedStyle(gridWithExtraIdAfterAutoRow, '').getPropertyValue('grid-auto-columns') is "auto"
 PASS window.getComputedStyle(gridWithExtraIdAfterAutoRow, '').getPropertyValue('grid-auto-rows') is "auto"
 
+
 Test getting and setting 'grid' shorthand through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "10px"
 PASS element.style.gridTemplateColumns is "10px"
@@ -267,6 +268,7 @@ PASS element.style.gridAutoColumns is "20px"
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-rows') is "auto"
 PASS element.style.gridAutoRows is "initial"
 
+
 Test the initial value
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "none"
@@ -280,6 +282,7 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-template-areas') is 'n
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-flow') is 'row'
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-columns') is 'auto'
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-rows') is 'auto'
+
 
 Test setting grid-template-columns and grid-template-rows back to 'none' through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
@@ -330,6 +333,7 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-auto-columns') is "aut
 PASS element.style.gridAutoColumns is "initial"
 PASS getComputedStyle(element, '').getPropertyValue('grid-auto-rows') is "auto"
 PASS element.style.gridAutoRows is "initial"
+
 
 Test the inherit value does not affect gutter properties (grid-*-gap)
 PASS getComputedStyle(anotherElement, '').getPropertyValue('grid-column-gap') is "normal"

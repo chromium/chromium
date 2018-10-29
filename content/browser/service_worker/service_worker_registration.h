@@ -67,7 +67,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
       base::WeakPtr<ServiceWorkerContextCore> context);
 
   int64_t id() const { return registration_id_; }
-  const GURL& pattern() const { return pattern_; }
+  const GURL& scope() const { return scope_; }
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache() const {
     return update_via_cache_;
   }
@@ -227,7 +227,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
                          scoped_refptr<ServiceWorkerVersion> version,
                          blink::ServiceWorkerStatusCode status);
 
-  const GURL pattern_;
+  const GURL scope_;
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   const int64_t registration_id_;
   bool is_deleted_;

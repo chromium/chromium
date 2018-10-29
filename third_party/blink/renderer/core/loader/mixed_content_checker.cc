@@ -28,14 +28,17 @@
 
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "services/network/public/mojom/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/net/ip_address_space.mojom-blink.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_insecure_request_policy.h"
 #include "third_party/blink/public/platform/web_mixed_content.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -70,90 +73,87 @@ KURL MainResourceUrlForFrame(Frame* frame) {
   return ToLocalFrame(frame)->GetDocument()->Url();
 }
 
-const char* RequestContextName(WebURLRequest::RequestContext context) {
+const char* RequestContextName(mojom::RequestContextType context) {
   switch (context) {
-    case WebURLRequest::kRequestContextAudio:
+    case mojom::RequestContextType::AUDIO:
       return "audio file";
-    case WebURLRequest::kRequestContextBeacon:
+    case mojom::RequestContextType::BEACON:
       return "Beacon endpoint";
-    case WebURLRequest::kRequestContextCSPReport:
+    case mojom::RequestContextType::CSP_REPORT:
       return "Content Security Policy reporting endpoint";
-    case WebURLRequest::kRequestContextDownload:
+    case mojom::RequestContextType::DOWNLOAD:
       return "download";
-    case WebURLRequest::kRequestContextEmbed:
+    case mojom::RequestContextType::EMBED:
       return "plugin resource";
-    case WebURLRequest::kRequestContextEventSource:
+    case mojom::RequestContextType::EVENT_SOURCE:
       return "EventSource endpoint";
-    case WebURLRequest::kRequestContextFavicon:
+    case mojom::RequestContextType::FAVICON:
       return "favicon";
-    case WebURLRequest::kRequestContextFetch:
+    case mojom::RequestContextType::FETCH:
       return "resource";
-    case WebURLRequest::kRequestContextFont:
+    case mojom::RequestContextType::FONT:
       return "font";
-    case WebURLRequest::kRequestContextForm:
+    case mojom::RequestContextType::FORM:
       return "form action";
-    case WebURLRequest::kRequestContextFrame:
+    case mojom::RequestContextType::FRAME:
       return "frame";
-    case WebURLRequest::kRequestContextHyperlink:
+    case mojom::RequestContextType::HYPERLINK:
       return "resource";
-    case WebURLRequest::kRequestContextIframe:
+    case mojom::RequestContextType::IFRAME:
       return "frame";
-    case WebURLRequest::kRequestContextImage:
+    case mojom::RequestContextType::IMAGE:
       return "image";
-    case WebURLRequest::kRequestContextImageSet:
+    case mojom::RequestContextType::IMAGE_SET:
       return "image";
-    case WebURLRequest::kRequestContextImport:
+    case mojom::RequestContextType::IMPORT:
       return "HTML Import";
-    case WebURLRequest::kRequestContextInternal:
+    case mojom::RequestContextType::INTERNAL:
       return "resource";
-    case WebURLRequest::kRequestContextLocation:
+    case mojom::RequestContextType::LOCATION:
       return "resource";
-    case WebURLRequest::kRequestContextManifest:
+    case mojom::RequestContextType::MANIFEST:
       return "manifest";
-    case WebURLRequest::kRequestContextObject:
+    case mojom::RequestContextType::OBJECT:
       return "plugin resource";
-    case WebURLRequest::kRequestContextPing:
+    case mojom::RequestContextType::PING:
       return "hyperlink auditing endpoint";
-    case WebURLRequest::kRequestContextPlugin:
+    case mojom::RequestContextType::PLUGIN:
       return "plugin data";
-    case WebURLRequest::kRequestContextPrefetch:
+    case mojom::RequestContextType::PREFETCH:
       return "prefetch resource";
-    case WebURLRequest::kRequestContextScript:
+    case mojom::RequestContextType::SCRIPT:
       return "script";
-    case WebURLRequest::kRequestContextServiceWorker:
+    case mojom::RequestContextType::SERVICE_WORKER:
       return "Service Worker script";
-    case WebURLRequest::kRequestContextSharedWorker:
+    case mojom::RequestContextType::SHARED_WORKER:
       return "Shared Worker script";
-    case WebURLRequest::kRequestContextStyle:
+    case mojom::RequestContextType::STYLE:
       return "stylesheet";
-    case WebURLRequest::kRequestContextSubresource:
+    case mojom::RequestContextType::SUBRESOURCE:
       return "resource";
-    case WebURLRequest::kRequestContextTrack:
+    case mojom::RequestContextType::TRACK:
       return "Text Track";
-    case WebURLRequest::kRequestContextUnspecified:
+    case mojom::RequestContextType::UNSPECIFIED:
       return "resource";
-    case WebURLRequest::kRequestContextVideo:
+    case mojom::RequestContextType::VIDEO:
       return "video";
-    case WebURLRequest::kRequestContextWorker:
+    case mojom::RequestContextType::WORKER:
       return "Worker script";
-    case WebURLRequest::kRequestContextXMLHttpRequest:
+    case mojom::RequestContextType::XML_HTTP_REQUEST:
       return "XMLHttpRequest endpoint";
-    case WebURLRequest::kRequestContextXSLT:
+    case mojom::RequestContextType::XSLT:
       return "XSLT";
   }
   NOTREACHED();
   return "resource";
 }
 
-// TODO(nhiroki): Consider adding interfaces for Settings/WorkerSettings and
-// ContentSettingsClient/WorkerContentSettingsClient to avoid using C++
-// template.
-template <typename SettingsType, typename SettingsClientType>
+// TODO(nhiroki): Consider adding interfaces for Settings/WorkerSettings
+// to avoid using C++ template.
+template <typename SettingsType>
 bool IsWebSocketAllowedImpl(const BaseFetchContext& fetch_context,
                             SecurityContext* security_context,
-                            const SecurityOrigin* security_origin,
                             SettingsType* settings,
-                            SettingsClientType* settings_client,
                             const KURL& url) {
   fetch_context.CountUsage(WebFeature::kMixedContentPresent);
   fetch_context.CountUsage(WebFeature::kMixedContentWebSocket);
@@ -171,10 +171,7 @@ bool IsWebSocketAllowedImpl(const BaseFetchContext& fetch_context,
       settings->GetStrictMixedContentChecking();
   if (strict_mode)
     return false;
-  bool allowed_per_settings =
-      settings && settings->GetAllowRunningOfInsecureContent();
-  return settings_client->AllowRunningInsecureContent(allowed_per_settings,
-                                                      security_origin, url);
+  return settings && settings->GetAllowRunningOfInsecureContent();
 }
 
 }  // namespace
@@ -275,7 +272,7 @@ Frame* MixedContentChecker::InWhichFrameIsContentMixed(
 ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutFetch(
     const KURL& main_resource_url,
     const KURL& url,
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     bool allowed,
     std::unique_ptr<SourceLocation> source_location) {
   String message = String::Format(
@@ -297,7 +294,7 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutFetch(
 
 // static
 void MixedContentChecker::Count(Frame* frame,
-                                WebURLRequest::RequestContext request_context,
+                                mojom::RequestContextType request_context,
                                 const LocalFrame* source) {
   UseCounter::Count(source, WebFeature::kMixedContentPresent);
 
@@ -315,28 +312,28 @@ void MixedContentChecker::Count(Frame* frame,
 
   WebFeature feature;
   switch (request_context) {
-    case WebURLRequest::kRequestContextAudio:
+    case mojom::RequestContextType::AUDIO:
       feature = WebFeature::kMixedContentAudio;
       break;
-    case WebURLRequest::kRequestContextDownload:
+    case mojom::RequestContextType::DOWNLOAD:
       feature = WebFeature::kMixedContentDownload;
       break;
-    case WebURLRequest::kRequestContextFavicon:
+    case mojom::RequestContextType::FAVICON:
       feature = WebFeature::kMixedContentFavicon;
       break;
-    case WebURLRequest::kRequestContextImage:
+    case mojom::RequestContextType::IMAGE:
       feature = WebFeature::kMixedContentImage;
       break;
-    case WebURLRequest::kRequestContextInternal:
+    case mojom::RequestContextType::INTERNAL:
       feature = WebFeature::kMixedContentInternal;
       break;
-    case WebURLRequest::kRequestContextPlugin:
+    case mojom::RequestContextType::PLUGIN:
       feature = WebFeature::kMixedContentPlugin;
       break;
-    case WebURLRequest::kRequestContextPrefetch:
+    case mojom::RequestContextType::PREFETCH:
       feature = WebFeature::kMixedContentPrefetch;
       break;
-    case WebURLRequest::kRequestContextVideo:
+    case mojom::RequestContextType::VIDEO:
       feature = WebFeature::kMixedContentVideo;
       break;
 
@@ -350,7 +347,7 @@ void MixedContentChecker::Count(Frame* frame,
 // static
 bool MixedContentChecker::ShouldBlockFetch(
     LocalFrame* frame,
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     network::mojom::RequestContextFrameType frame_type,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url,
@@ -375,7 +372,7 @@ bool MixedContentChecker::ShouldBlockFetch(
   // Use the current local frame's client; the embedder doesn't distinguish
   // mixed content signals from different frames on the same page.
   LocalFrameClient* client = frame->Client();
-  ContentSettingsClient* content_settings_client =
+  WebContentSettingsClient* content_settings_client =
       frame->GetContentSettingsClient();
   const SecurityOrigin* security_origin =
       mixed_frame->GetSecurityContext()->GetSecurityOrigin();
@@ -409,7 +406,8 @@ bool MixedContentChecker::ShouldBlockFetch(
     case WebMixedContentContextType::kOptionallyBlockable:
       allowed = !strict_mode;
       if (allowed) {
-        content_settings_client->PassiveInsecureContentFound(url);
+        if (content_settings_client)
+          content_settings_client->PassiveInsecureContentFound(url);
         client->DidDisplayInsecureContent();
       }
       break;
@@ -436,10 +434,13 @@ bool MixedContentChecker::ShouldBlockFetch(
           !strict_mode && settings &&
           (!settings->GetStrictlyBlockBlockableMixedContent() ||
            settings->GetAllowRunningOfInsecureContent());
-      allowed = should_ask_embedder &&
-                content_settings_client->AllowRunningInsecureContent(
-                    settings && settings->GetAllowRunningOfInsecureContent(),
-                    security_origin, url);
+      if (should_ask_embedder) {
+        allowed = settings && settings->GetAllowRunningOfInsecureContent();
+        if (content_settings_client) {
+          allowed = content_settings_client->AllowRunningInsecureContent(
+              allowed, WebSecurityOrigin(security_origin), url);
+        }
+      }
       if (allowed) {
         client->DidRunInsecureContent(security_origin, url);
         UseCounter::Count(frame, WebFeature::kMixedContentBlockableAllowed);
@@ -468,7 +469,7 @@ bool MixedContentChecker::ShouldBlockFetch(
 // static
 bool MixedContentChecker::ShouldBlockFetchOnWorker(
     const WorkerFetchContext& worker_fetch_context,
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url,
     SecurityViolationReportingPolicy reporting_policy,
@@ -558,14 +559,18 @@ bool MixedContentChecker::IsWebSocketAllowed(
   Settings* settings = mixed_frame->GetSettings();
   // Use the current local frame's client; the embedder doesn't distinguish
   // mixed content signals from different frames on the same page.
-  ContentSettingsClient* content_settings_client =
+  WebContentSettingsClient* content_settings_client =
       frame->GetContentSettingsClient();
   SecurityContext* security_context = mixed_frame->GetSecurityContext();
   const SecurityOrigin* security_origin = security_context->GetSecurityOrigin();
 
   bool allowed = IsWebSocketAllowedImpl(frame_fetch_context, security_context,
-                                        security_origin, settings,
-                                        content_settings_client, url);
+                                        settings, url);
+  if (content_settings_client) {
+    allowed = content_settings_client->AllowRunningInsecureContent(
+        allowed, WebSecurityOrigin(security_origin), url);
+  }
+
   if (allowed)
     frame->Client()->DidRunInsecureContent(security_origin, url);
 
@@ -593,8 +598,12 @@ bool MixedContentChecker::IsWebSocketAllowed(
       worker_fetch_context.GetSecurityOrigin();
 
   bool allowed = IsWebSocketAllowedImpl(worker_fetch_context, security_context,
-                                        security_origin, settings,
-                                        content_settings_client, url);
+                                        settings, url);
+  if (content_settings_client) {
+    allowed = content_settings_client->AllowRunningInsecureContent(
+        allowed, security_origin, url);
+  }
+
   if (allowed) {
     worker_fetch_context.GetWebWorkerFetchContext()->DidRunInsecureContent(
         WebSecurityOrigin(security_origin), url);
@@ -642,6 +651,33 @@ bool MixedContentChecker::IsMixedFormAction(
   return true;
 }
 
+bool MixedContentChecker::ShouldAutoupgrade(KURL frame_url,
+                                            WebMixedContentContextType type) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kMixedContentAutoupgrade) ||
+      !frame_url.ProtocolIs("https") ||
+      type == WebMixedContentContextType::kNotMixedContent) {
+    return false;
+  }
+
+  std::string autoupgrade_mode = base::GetFieldTrialParamValueByFeature(
+      blink::features::kMixedContentAutoupgrade,
+      blink::features::kMixedContentAutoupgradeModeParamName);
+
+  if (autoupgrade_mode ==
+      blink::features::kMixedContentAutoupgradeModeBlockable) {
+    return type == WebMixedContentContextType::kBlockable ||
+           type == WebMixedContentContextType::kShouldBeBlockable;
+  }
+  if (autoupgrade_mode ==
+      blink::features::kMixedContentAutoupgradeModeOptionallyBlockable) {
+    return type == WebMixedContentContextType::kOptionallyBlockable;
+  }
+
+  // Otherwise we default to autoupgrading all mixed content.
+  return true;
+}
+
 void MixedContentChecker::CheckMixedPrivatePublic(
     LocalFrame* frame,
     const AtomicString& resource_ip_address) {
@@ -649,7 +685,7 @@ void MixedContentChecker::CheckMixedPrivatePublic(
     return;
 
   // Just count these for the moment, don't block them.
-  if (NetworkUtils::IsReservedIPAddress(resource_ip_address) &&
+  if (network_utils::IsReservedIPAddress(resource_ip_address) &&
       frame->GetDocument()->AddressSpace() == mojom::IPAddressSpace::kPublic) {
     UseCounter::Count(frame->GetDocument(),
                       WebFeature::kMixedContentPrivateHostnameInPublicHostname);
@@ -683,7 +719,7 @@ void MixedContentChecker::HandleCertificateError(
     LocalFrame* frame,
     const ResourceResponse& response,
     network::mojom::RequestContextFrameType frame_type,
-    WebURLRequest::RequestContext request_context) {
+    mojom::RequestContextType request_context) {
   Frame* effective_frame = EffectiveFrameForFrameType(frame, frame_type);
   if (frame_type == network::mojom::RequestContextFrameType::kTopLevel ||
       !effective_frame)
@@ -713,7 +749,7 @@ void MixedContentChecker::MixedContentFound(
     LocalFrame* frame,
     const KURL& main_resource_url,
     const KURL& mixed_content_url,
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     bool was_allowed,
     bool had_redirect,
     std::unique_ptr<SourceLocation> source_location) {

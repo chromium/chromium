@@ -4,11 +4,20 @@
 
 #include "content/browser/service_worker/service_worker_update_checker.h"
 
+#include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_storage.h"
+#include "content/browser/service_worker/service_worker_version.h"
+
 namespace content {
 
 ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
-    std::vector<ServiceWorkerDatabase::ResourceRecord> scripts_to_compare)
-    : scripts_to_compare_(std::move(scripts_to_compare)), weak_factory_(this) {}
+    std::vector<ServiceWorkerDatabase::ResourceRecord> scripts_to_compare,
+    scoped_refptr<ServiceWorkerVersion> version_to_update,
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory)
+    : scripts_to_compare_(std::move(scripts_to_compare)),
+      version_to_update_(std::move(version_to_update)),
+      loader_factory_(std::move(loader_factory)),
+      weak_factory_(this) {}
 
 ServiceWorkerUpdateChecker::~ServiceWorkerUpdateChecker() = default;
 
@@ -45,9 +54,21 @@ void ServiceWorkerUpdateChecker::CheckOneScript() {
   DCHECK_NE(kInvalidServiceWorkerResourceId, script.resource_id)
       << "All the target scripts should be stored in the storage.";
 
+  bool is_main_script = script.url == version_to_update_->script_url();
+  ServiceWorkerStorage* storage = version_to_update_->context()->storage();
+
+  // We need two identical readers for comparing and reading the resource for
+  // |script.resource_id| from the storage.
+  auto compare_reader = storage->CreateResponseReader(script.resource_id);
+  auto copy_reader = storage->CreateResponseReader(script.resource_id);
+
+  auto writer = storage->CreateResponseWriter(storage->NewResourceId());
+
   running_checker_ = std::make_unique<ServiceWorkerSingleScriptUpdateChecker>(
-      script.url, script.resource_id, this);
-  running_checker_->Start();
+      script.url, is_main_script, loader_factory_, std::move(compare_reader),
+      std::move(copy_reader), std::move(writer),
+      base::BindOnce(&ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished,
+                     weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace content

@@ -167,8 +167,7 @@ std::unique_ptr<base::Value> BookmarkCodec::EncodeNode(
 std::unique_ptr<base::Value> BookmarkCodec::EncodeMetaInfo(
     const BookmarkNode::MetaInfoMap& meta_info_map) {
   auto meta_info = std::make_unique<base::DictionaryValue>();
-  for (BookmarkNode::MetaInfoMap::const_iterator it = meta_info_map.begin();
-      it != meta_info_map.end(); ++it) {
+  for (auto it = meta_info_map.begin(); it != meta_info_map.end(); ++it) {
     meta_info->SetKey(it->first, base::Value(it->second));
   }
   return std::move(meta_info);
@@ -435,8 +434,7 @@ bool BookmarkCodec::DecodeMetaInfo(const base::DictionaryValue& value,
   // transaction version to its value, then delete the field.
   if (deserialized_holder) {
     const char kBookmarkTransactionVersionKey[] = "sync.transaction_version";
-    BookmarkNode::MetaInfoMap::iterator it =
-        meta_info_map->find(kBookmarkTransactionVersionKey);
+    auto it = meta_info_map->find(kBookmarkTransactionVersionKey);
     if (it != meta_info_map->end()) {
       base::StringToInt64(it->second, sync_transaction_version);
       meta_info_map->erase(it);

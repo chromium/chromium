@@ -232,7 +232,7 @@ void PepperMediaDeviceManager::OnDeviceOpened(int request_id,
                                               bool success,
                                               const std::string& label,
                                               const MediaStreamDevice& device) {
-  OpenCallbackMap::iterator iter = open_callbacks_.find(request_id);
+  auto iter = open_callbacks_.find(request_id);
   if (iter == open_callbacks_.end()) {
     // The callback may have been unregistered.
     return;

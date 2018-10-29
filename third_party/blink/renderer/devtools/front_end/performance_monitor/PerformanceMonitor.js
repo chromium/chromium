@@ -14,7 +14,7 @@ PerformanceMonitor.PerformanceMonitor = class extends UI.HBox {
     /** @type {!Array<!{timestamp: number, metrics: !Map<string, number>}>} */
     this._metricsBuffer = [];
     /** @const */
-    this._pixelsPerMs = 20 / 1000;
+    this._pixelsPerMs = 10 / 1000;
     /** @const */
     this._pollIntervalMs = 500;
     /** @const */
@@ -144,8 +144,9 @@ PerformanceMonitor.PerformanceMonitor = class extends UI.HBox {
    * @param {!CanvasRenderingContext2D} ctx
    */
   _drawHorizontalGrid(ctx) {
+    const labelDistanceSeconds = 10;
     const lightGray = UI.themeSupport.patchColorText('rgba(0, 0, 0, 0.02)', UI.ThemeSupport.ColorUsage.Foreground);
-    ctx.font = '9px ' + Host.fontFamily();
+    ctx.font = '10px ' + Host.fontFamily();
     ctx.fillStyle = UI.themeSupport.patchColorText('rgba(0, 0, 0, 0.3)', UI.ThemeSupport.ColorUsage.Foreground);
     const currentTime = Date.now() / 1000;
     for (let sec = Math.ceil(currentTime);; --sec) {
@@ -155,9 +156,9 @@ PerformanceMonitor.PerformanceMonitor = class extends UI.HBox {
       ctx.beginPath();
       ctx.moveTo(Math.round(x) + 0.5, 0);
       ctx.lineTo(Math.round(x) + 0.5, this._height);
-      if (sec >= 0 && sec % 5 === 0)
+      if (sec >= 0 && sec % labelDistanceSeconds === 0)
         ctx.fillText(new Date(sec * 1000).toLocaleTimeString(), Math.round(x) + 4, 12);
-      ctx.strokeStyle = sec % 5 ? lightGray : this._gridColor;
+      ctx.strokeStyle = sec % labelDistanceSeconds ? lightGray : this._gridColor;
       ctx.stroke();
     }
   }
@@ -517,13 +518,19 @@ PerformanceMonitor.PerformanceMonitor.MetricIndicator = class {
    * @return {string}
    */
   static _formatNumber(value, info) {
+    if (!PerformanceMonitor.PerformanceMonitor.MetricIndicator._numberFormatter) {
+      PerformanceMonitor.PerformanceMonitor.MetricIndicator._numberFormatter =
+          new Intl.NumberFormat('en-US', {maximumFractionDigits: 1});
+      PerformanceMonitor.PerformanceMonitor.MetricIndicator._percentFormatter =
+          new Intl.NumberFormat('en-US', {maximumFractionDigits: 1, style: 'percent'});
+    }
     switch (info.format) {
       case PerformanceMonitor.PerformanceMonitor.Format.Percent:
-        return value.toLocaleString('en-US', {maximumFractionDigits: 1, style: 'percent'});
+        return PerformanceMonitor.PerformanceMonitor.MetricIndicator._percentFormatter.format(value);
       case PerformanceMonitor.PerformanceMonitor.Format.Bytes:
         return Number.bytesToString(value);
       default:
-        return value.toLocaleString('en-US', {maximumFractionDigits: 1});
+        return PerformanceMonitor.PerformanceMonitor.MetricIndicator._numberFormatter.format(value);
     }
   }
 

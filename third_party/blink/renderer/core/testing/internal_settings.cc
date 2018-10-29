@@ -375,8 +375,8 @@ void InternalSettings::setAvailablePointerTypes(
   pointers.Split(",", false, tokens);
 
   int pointer_types = 0;
-  for (size_t i = 0; i < tokens.size(); ++i) {
-    String token = tokens[i].StripWhiteSpace();
+  for (const String& split_token : tokens) {
+    String token = split_token.StripWhiteSpace();
 
     if (token == "coarse") {
       pointer_types |= kPointerTypeCoarse;
@@ -451,9 +451,8 @@ void InternalSettings::setAvailableHoverTypes(const String& types,
   types.Split(",", false, tokens);
 
   int hover_types = 0;
-  for (size_t i = 0; i < tokens.size(); ++i) {
-    String token = tokens[i].StripWhiteSpace();
-
+  for (const String& split_token : tokens) {
+    String token = split_token.StripWhiteSpace();
     if (token == "none") {
       hover_types |= kHoverTypeNone;
     } else if (token == "hover") {

@@ -1,0 +1,10 @@
+Tests the signed exchange information are available when the prefetch failed.
+
+* http://127.0.0.1:8000/loading/sxg/resources/sxg-invalid-validity-url.sxg
+  failed: true
+  statusCode: 200
+  resourceType: other
+  SignedExchangeInfo
+    Error: {"message":"Validity URL must be same-origin with request URL."}
+    Error: {"message":"Failed to parse SignedExchange header."}
+

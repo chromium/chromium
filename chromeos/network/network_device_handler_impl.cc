@@ -6,12 +6,15 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -31,8 +34,10 @@ namespace chromeos {
 namespace {
 
 std::string GetErrorNameForShillError(const std::string& shill_error_name) {
-  if (shill_error_name == shill::kErrorResultFailure)
+  if (shill_error_name == shill::kErrorResultFailure ||
+      shill_error_name == shill::kErrorResultInvalidArguments) {
     return NetworkDeviceHandler::kErrorFailure;
+  }
   if (shill_error_name == shill::kErrorResultNotSupported)
     return NetworkDeviceHandler::kErrorNotSupported;
   if (shill_error_name == shill::kErrorResultIncorrectPin)
@@ -61,11 +66,8 @@ void HandleShillCallFailure(
     const std::string& shill_error_name,
     const std::string& shill_error_message) {
   network_handler::ShillErrorCallbackFunction(
-      GetErrorNameForShillError(shill_error_name),
-      device_path,
-      error_callback,
-      shill_error_name,
-      shill_error_message);
+      GetErrorNameForShillError(shill_error_name), device_path, error_callback,
+      shill_error_name, shill_error_message);
 }
 
 void IPConfigRefreshCallback(const std::string& ipconfig_path, bool result) {
@@ -82,12 +84,10 @@ void RefreshIPConfigsCallback(
     const std::string& device_path,
     const base::DictionaryValue& properties) {
   const base::ListValue* ip_configs;
-  if (!properties.GetListWithoutPathExpansion(
-          shill::kIPConfigsProperty, &ip_configs)) {
+  if (!properties.GetListWithoutPathExpansion(shill::kIPConfigsProperty,
+                                              &ip_configs)) {
     network_handler::ShillErrorCallbackFunction(
-        "RequestRefreshIPConfigs Failed",
-        device_path,
-        error_callback,
+        "RequestRefreshIPConfigs Failed", device_path, error_callback,
         std::string("Missing ") + shill::kIPConfigsProperty, "");
     return;
   }
@@ -116,10 +116,7 @@ void SetDevicePropertyInternal(
     const network_handler::ErrorCallback& error_callback) {
   NET_LOG(USER) << "Device.SetProperty: " << property_name << " = " << value;
   DBusThreadManager::Get()->GetShillDeviceClient()->SetProperty(
-      dbus::ObjectPath(device_path),
-      property_name,
-      value,
-      callback,
+      dbus::ObjectPath(device_path), property_name, value, callback,
       base::Bind(&HandleShillCallFailure, device_path, error_callback));
 }
 
@@ -139,12 +136,11 @@ void CallPerformTDLSOperation(
     const network_handler::StringResultCallback& callback,
     const network_handler::ErrorCallback& error_callback);
 
-void TDLSSuccessCallback(
-    const std::string& device_path,
-    const TDLSOperationParams& params,
-    const network_handler::StringResultCallback& callback,
-    const network_handler::ErrorCallback& error_callback,
-    const std::string& result) {
+void TDLSSuccessCallback(const std::string& device_path,
+                         const TDLSOperationParams& params,
+                         const network_handler::StringResultCallback& callback,
+                         const network_handler::ErrorCallback& error_callback,
+                         const std::string& result) {
   std::string event_desc = "TDLSSuccessCallback: " + params.operation;
   if (!result.empty())
     event_desc += ": " + result;
@@ -197,13 +193,12 @@ void TDLSSuccessCallback(
       request_delay);
 }
 
-void TDLSErrorCallback(
-    const std::string& device_path,
-    const TDLSOperationParams& params,
-    const network_handler::StringResultCallback& callback,
-    const network_handler::ErrorCallback& error_callback,
-    const std::string& dbus_error_name,
-    const std::string& dbus_error_message) {
+void TDLSErrorCallback(const std::string& device_path,
+                       const TDLSOperationParams& params,
+                       const network_handler::StringResultCallback& callback,
+                       const network_handler::ErrorCallback& error_callback,
+                       const std::string& dbus_error_name,
+                       const std::string& dbus_error_message) {
   // If a Setup operation receives an InProgress error, retry.
   const int kMaxRetries = 5;
   if ((params.operation == shill::kTDLSDiscoverOperation ||
@@ -234,8 +229,9 @@ void TDLSErrorCallback(
     return;
 
   const std::string error_name =
-      dbus_error_name == shill::kErrorResultInProgress ?
-      NetworkDeviceHandler::kErrorTimeout : NetworkDeviceHandler::kErrorUnknown;
+      dbus_error_name == shill::kErrorResultInProgress
+          ? NetworkDeviceHandler::kErrorTimeout
+          : NetworkDeviceHandler::kErrorUnknown;
   const std::string& error_detail = params.ip_or_mac_address;
   std::unique_ptr<base::DictionaryValue> error_data(
       network_handler::CreateDBusErrorData(device_path, error_name,
@@ -253,13 +249,11 @@ void CallPerformTDLSOperation(
   NET_LOG(EVENT) << "CallPerformTDLSOperation: " << params.operation << ": "
                  << device_path;
   DBusThreadManager::Get()->GetShillDeviceClient()->PerformTDLSOperation(
-      dbus::ObjectPath(device_path),
-      params.operation,
-      params.ip_or_mac_address,
-      base::Bind(&TDLSSuccessCallback,
-                 device_path, params, callback, error_callback),
-      base::Bind(&TDLSErrorCallback,
-                 device_path, params, callback, error_callback));
+      dbus::ObjectPath(device_path), params.operation, params.ip_or_mac_address,
+      base::Bind(&TDLSSuccessCallback, device_path, params, callback,
+                 error_callback),
+      base::Bind(&TDLSErrorCallback, device_path, params, callback,
+                 error_callback));
 }
 
 }  // namespace
@@ -275,8 +269,8 @@ void NetworkDeviceHandlerImpl::GetDeviceProperties(
     const network_handler::ErrorCallback& error_callback) const {
   DBusThreadManager::Get()->GetShillDeviceClient()->GetProperties(
       dbus::ObjectPath(device_path),
-      base::Bind(&network_handler::GetPropertiesCallback,
-                 callback, error_callback, device_path));
+      base::Bind(&network_handler::GetPropertiesCallback, callback,
+                 error_callback, device_path));
 }
 
 void NetworkDeviceHandlerImpl::SetDeviceProperty(
@@ -287,31 +281,29 @@ void NetworkDeviceHandlerImpl::SetDeviceProperty(
     const network_handler::ErrorCallback& error_callback) {
   const char* const property_blacklist[] = {
       // Must only be changed by policy/owner through.
-      shill::kCellularAllowRoamingProperty
-  };
+      shill::kCellularAllowRoamingProperty};
 
   for (size_t i = 0; i < arraysize(property_blacklist); ++i) {
     if (property_name == property_blacklist[i]) {
       InvokeErrorCallback(
-          device_path,
-          error_callback,
+          device_path, error_callback,
           "SetDeviceProperty called on blacklisted property " + property_name);
       return;
     }
   }
 
-  SetDevicePropertyInternal(
-      device_path, property_name, value, callback, error_callback);
+  SetDevicePropertyInternal(device_path, property_name, value, callback,
+                            error_callback);
 }
 
 void NetworkDeviceHandlerImpl::RequestRefreshIPConfigs(
     const std::string& device_path,
     const base::Closure& callback,
     const network_handler::ErrorCallback& error_callback) {
-  GetDeviceProperties(device_path,
-                      base::Bind(&RefreshIPConfigsCallback,
-                                 callback, error_callback),
-                      error_callback);
+  GetDeviceProperties(
+      device_path,
+      base::Bind(&RefreshIPConfigsCallback, callback, error_callback),
+      error_callback);
 }
 
 void NetworkDeviceHandlerImpl::RegisterCellularNetwork(
@@ -322,9 +314,7 @@ void NetworkDeviceHandlerImpl::RegisterCellularNetwork(
   NET_LOG(USER) << "Device.RegisterCellularNetwork: " << device_path
                 << " Id: " << network_id;
   DBusThreadManager::Get()->GetShillDeviceClient()->Register(
-      dbus::ObjectPath(device_path),
-      network_id,
-      callback,
+      dbus::ObjectPath(device_path), network_id, callback,
       base::Bind(&HandleShillCallFailure, device_path, error_callback));
 }
 
@@ -336,9 +326,7 @@ void NetworkDeviceHandlerImpl::SetCarrier(
   NET_LOG(USER) << "Device.SetCarrier: " << device_path
                 << " carrier: " << carrier;
   DBusThreadManager::Get()->GetShillDeviceClient()->SetCarrier(
-      dbus::ObjectPath(device_path),
-      carrier,
-      callback,
+      dbus::ObjectPath(device_path), carrier, callback,
       base::Bind(&HandleShillCallFailure, device_path, error_callback));
 }
 
@@ -350,10 +338,7 @@ void NetworkDeviceHandlerImpl::RequirePin(
     const network_handler::ErrorCallback& error_callback) {
   NET_LOG(USER) << "Device.RequirePin: " << device_path << ": " << require_pin;
   DBusThreadManager::Get()->GetShillDeviceClient()->RequirePin(
-      dbus::ObjectPath(device_path),
-      pin,
-      require_pin,
-      callback,
+      dbus::ObjectPath(device_path), pin, require_pin, callback,
       base::Bind(&HandleShillCallFailure, device_path, error_callback));
 }
 
@@ -364,9 +349,7 @@ void NetworkDeviceHandlerImpl::EnterPin(
     const network_handler::ErrorCallback& error_callback) {
   NET_LOG(USER) << "Device.EnterPin: " << device_path;
   DBusThreadManager::Get()->GetShillDeviceClient()->EnterPin(
-      dbus::ObjectPath(device_path),
-      pin,
-      callback,
+      dbus::ObjectPath(device_path), pin, callback,
       base::Bind(&HandleShillCallFailure, device_path, error_callback));
 }
 
@@ -378,10 +361,7 @@ void NetworkDeviceHandlerImpl::UnblockPin(
     const network_handler::ErrorCallback& error_callback) {
   NET_LOG(USER) << "Device.UnblockPin: " << device_path;
   DBusThreadManager::Get()->GetShillDeviceClient()->UnblockPin(
-      dbus::ObjectPath(device_path),
-      puk,
-      new_pin,
-      callback,
+      dbus::ObjectPath(device_path), puk, new_pin, callback,
       base::Bind(&HandleShillCallFailure, device_path, error_callback));
 }
 
@@ -393,10 +373,7 @@ void NetworkDeviceHandlerImpl::ChangePin(
     const network_handler::ErrorCallback& error_callback) {
   NET_LOG(USER) << "Device.ChangePin: " << device_path;
   DBusThreadManager::Get()->GetShillDeviceClient()->ChangePin(
-      dbus::ObjectPath(device_path),
-      old_pin,
-      new_pin,
-      callback,
+      dbus::ObjectPath(device_path), old_pin, new_pin, callback,
       base::Bind(&HandleShillCallFailure, device_path, error_callback));
 }
 
@@ -425,8 +402,8 @@ void NetworkDeviceHandlerImpl::SetWifiTDLSEnabled(
   params.operation =
       enabled ? shill::kTDLSDiscoverOperation : shill::kTDLSTeardownOperation;
   params.ip_or_mac_address = ip_or_mac_address;
-  CallPerformTDLSOperation(
-      device_state->path(), params, callback, error_callback);
+  CallPerformTDLSOperation(device_state->path(), params, callback,
+                           error_callback);
 }
 
 void NetworkDeviceHandlerImpl::GetWifiTDLSStatus(
@@ -440,32 +417,45 @@ void NetworkDeviceHandlerImpl::GetWifiTDLSStatus(
   TDLSOperationParams params;
   params.operation = shill::kTDLSStatusOperation;
   params.ip_or_mac_address = ip_or_mac_address;
-  CallPerformTDLSOperation(
-      device_state->path(), params, callback, error_callback);
+  CallPerformTDLSOperation(device_state->path(), params, callback,
+                           error_callback);
 }
 
 void NetworkDeviceHandlerImpl::AddWifiWakeOnPacketConnection(
-      const net::IPEndPoint& ip_endpoint,
-      const base::Closure& callback,
-      const network_handler::ErrorCallback& error_callback) {
+    const net::IPEndPoint& ip_endpoint,
+    const base::Closure& callback,
+    const network_handler::ErrorCallback& error_callback) {
   const DeviceState* device_state = GetWifiDeviceState(error_callback);
   if (!device_state)
     return;
 
   NET_LOG(USER) << "Device.AddWakeOnWifi: " << device_state->path();
   DBusThreadManager::Get()->GetShillDeviceClient()->AddWakeOnPacketConnection(
-      dbus::ObjectPath(device_state->path()),
-      ip_endpoint,
-      callback,
-      base::Bind(&HandleShillCallFailure,
-                 device_state->path(),
+      dbus::ObjectPath(device_state->path()), ip_endpoint, callback,
+      base::Bind(&HandleShillCallFailure, device_state->path(),
+                 error_callback));
+}
+
+void NetworkDeviceHandlerImpl::AddWifiWakeOnPacketOfTypes(
+    const std::vector<std::string>& types,
+    const base::Closure& callback,
+    const network_handler::ErrorCallback& error_callback) {
+  const DeviceState* device_state = GetWifiDeviceState(error_callback);
+  if (!device_state)
+    return;
+
+  NET_LOG(USER) << "Device.AddWifiWakeOnPacketOfTypes: " << device_state->path()
+                << " Types: " << base::JoinString(types, " ");
+  DBusThreadManager::Get()->GetShillDeviceClient()->AddWakeOnPacketOfTypes(
+      dbus::ObjectPath(device_state->path()), types, callback,
+      base::Bind(&HandleShillCallFailure, device_state->path(),
                  error_callback));
 }
 
 void NetworkDeviceHandlerImpl::RemoveWifiWakeOnPacketConnection(
-      const net::IPEndPoint& ip_endpoint,
-      const base::Closure& callback,
-      const network_handler::ErrorCallback& error_callback) {
+    const net::IPEndPoint& ip_endpoint,
+    const base::Closure& callback,
+    const network_handler::ErrorCallback& error_callback) {
   const DeviceState* device_state = GetWifiDeviceState(error_callback);
   if (!device_state)
     return;
@@ -473,17 +463,32 @@ void NetworkDeviceHandlerImpl::RemoveWifiWakeOnPacketConnection(
   NET_LOG(USER) << "Device.RemoveWakeOnWifi: " << device_state->path();
   DBusThreadManager::Get()
       ->GetShillDeviceClient()
-      ->RemoveWakeOnPacketConnection(dbus::ObjectPath(device_state->path()),
-                                     ip_endpoint,
-                                     callback,
-                                     base::Bind(&HandleShillCallFailure,
-                                                device_state->path(),
-                                                error_callback));
+      ->RemoveWakeOnPacketConnection(
+          dbus::ObjectPath(device_state->path()), ip_endpoint, callback,
+          base::Bind(&HandleShillCallFailure, device_state->path(),
+                     error_callback));
+}
+
+void NetworkDeviceHandlerImpl::RemoveWifiWakeOnPacketOfTypes(
+    const std::vector<std::string>& types,
+    const base::Closure& callback,
+    const network_handler::ErrorCallback& error_callback) {
+  const DeviceState* device_state = GetWifiDeviceState(error_callback);
+  if (!device_state)
+    return;
+
+  NET_LOG(USER) << "Device.RemoveWifiWakeOnPacketOfTypes: "
+                << device_state->path()
+                << " Types: " << base::JoinString(types, " ");
+  DBusThreadManager::Get()->GetShillDeviceClient()->RemoveWakeOnPacketOfTypes(
+      dbus::ObjectPath(device_state->path()), types, callback,
+      base::Bind(&HandleShillCallFailure, device_state->path(),
+                 error_callback));
 }
 
 void NetworkDeviceHandlerImpl::RemoveAllWifiWakeOnPacketConnections(
-      const base::Closure& callback,
-      const network_handler::ErrorCallback& error_callback) {
+    const base::Closure& callback,
+    const network_handler::ErrorCallback& error_callback) {
   const DeviceState* device_state = GetWifiDeviceState(error_callback);
   if (!device_state)
     return;
@@ -491,11 +496,10 @@ void NetworkDeviceHandlerImpl::RemoveAllWifiWakeOnPacketConnections(
   NET_LOG(USER) << "Device.RemoveAllWakeOnWifi: " << device_state->path();
   DBusThreadManager::Get()
       ->GetShillDeviceClient()
-      ->RemoveAllWakeOnPacketConnections(dbus::ObjectPath(device_state->path()),
-                                         callback,
-                                         base::Bind(&HandleShillCallFailure,
-                                                    device_state->path(),
-                                                    error_callback));
+      ->RemoveAllWakeOnPacketConnections(
+          dbus::ObjectPath(device_state->path()), callback,
+          base::Bind(&HandleShillCallFailure, device_state->path(),
+                     error_callback));
 }
 
 void NetworkDeviceHandlerImpl::DeviceListChanged() {
@@ -523,7 +527,7 @@ void NetworkDeviceHandlerImpl::ApplyCellularAllowRoamingToShill() {
     return;
   }
   for (NetworkStateHandler::DeviceStateList::const_iterator it = list.begin();
-      it != list.end(); ++it) {
+       it != list.end(); ++it) {
     const DeviceState* device_state = *it;
     bool current_allow_roaming = device_state->allow_roaming();
 

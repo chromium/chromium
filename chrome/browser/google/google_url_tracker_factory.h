@@ -24,7 +24,7 @@ class GoogleURLTrackerFactory : public BrowserContextKeyedServiceFactory {
   // Returns the default factory used to build GoogleURLTracker. Can be
   // registered with SetTestingFactory to use a real GoogleURLTracker instance
   // for testing.
-  static TestingFactoryFunction GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend struct base::DefaultSingletonTraits<GoogleURLTrackerFactory>;

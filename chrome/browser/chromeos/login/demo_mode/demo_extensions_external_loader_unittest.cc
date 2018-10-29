@@ -22,14 +22,17 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_image_loader_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/notification_service.h"
@@ -140,21 +143,19 @@ class TestExternalProviderVisitor
 class DemoExtensionsExternalLoaderTest : public testing::Test {
  public:
   DemoExtensionsExternalLoaderTest()
-      : test_shared_loader_factory_(
+      : browser_process_platform_part_test_api_(
+            TestingBrowserProcess::GetGlobal()->platform_part()),
+        test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
 
   ~DemoExtensionsExternalLoaderTest() override = default;
 
   void SetUp() override {
+    DBusThreadManager::Initialize();
     DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
 
     ASSERT_TRUE(offline_demo_resources_.CreateUniqueTempDir());
-
-    auto image_loader_client = std::make_unique<FakeImageLoaderClient>();
-    image_loader_client_ = image_loader_client.get();
-    DBusThreadManager::GetSetterForTesting()->SetImageLoaderClient(
-        std::move(image_loader_client));
     session_manager_ = std::make_unique<session_manager::SessionManager>();
 
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
@@ -163,28 +164,40 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
 
   void TearDown() override {
     profile_.reset();
-
-    image_loader_client_ = nullptr;
     DBusThreadManager::Shutdown();
-
     DemoSession::ShutDownIfInitialized();
     DemoSession::ResetDemoConfigForTesting();
+    browser_process_platform_part_test_api_.ShutdownCrosComponentManager();
   }
 
  protected:
   void InitializeSession(bool mount_demo_resources,
                          bool wait_for_offline_resources_load) {
-    if (mount_demo_resources) {
-      image_loader_client_->SetMountPathForComponent(
-          DemoSession::kDemoModeResourcesComponentName,
-          offline_demo_resources_.GetPath());
-    }
+    InitializeCrosComponentManager(mount_demo_resources);
+
     ASSERT_TRUE(DemoSession::StartIfInDemoMode());
 
     if (wait_for_offline_resources_load)
       WaitForOfflineResourcesLoad();
 
     profile_ = std::make_unique<TestingProfile>();
+  }
+
+  void InitializeCrosComponentManager(bool enable_demo_resources) {
+    auto cros_component_manager =
+        std::make_unique<component_updater::FakeCrOSComponentManager>();
+    cros_component_manager->set_supported_components(
+        {DemoSession::kDemoModeResourcesComponentName});
+    if (enable_demo_resources) {
+      cros_component_manager->ResetComponentState(
+          DemoSession::kDemoModeResourcesComponentName,
+          component_updater::FakeCrOSComponentManager::ComponentInfo(
+              component_updater::CrOSComponentManager::Error::NONE,
+              base::FilePath("/dev/null"), offline_demo_resources_.GetPath()));
+    }
+
+    browser_process_platform_part_test_api_.InitializeCrosComponentManager(
+        std::move(cros_component_manager));
   }
 
   void WaitForOfflineResourcesLoad() {
@@ -249,8 +262,7 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
  private:
   content::TestBrowserThreadBundle thread_bundle_;
 
-  // Image loader client injected into, and owned by DBusThreadManager.
-  FakeImageLoaderClient* image_loader_client_ = nullptr;
+  BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
 
   base::ScopedTempDir offline_demo_resources_;
 

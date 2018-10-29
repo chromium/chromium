@@ -1,0 +1,19 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/serial
+
+[
+    Exposed(Window Serial,DedicatedWorker Serial),
+    SecureContext
+] interface Serial : EventTarget {
+    attribute EventHandler onconnect;
+    attribute EventHandler ondisconnect;
+
+    [CallWith=ScriptState, MeasureAs=SerialGetPorts]
+    Promise<sequence<SerialPort>> getPorts();
+
+    [CallWith=ScriptState, MeasureAs=SerialRequestPort, Exposed=Window]
+    Promise<SerialPort> requestPort(SerialPortRequestOptions options);
+};

@@ -61,8 +61,16 @@ IN_PROC_BROWSER_TEST_F(FileManagerUITest, CheckSelect) {
   RunTest("checkselect");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerUITest, Crostini) {
-  RunTest("crostini");
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, CrostiniMount) {
+  RunTest("crostiniMount");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, CrostiniShare) {
+  RunTest("crostiniShare");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerUITest, CrostiniTasks) {
+  RunTest("crostiniTasks");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerUITest, QuickView) {

@@ -32,6 +32,16 @@ struct SiteCharacteristicsPerformanceMeasurement {
   float avg_load_duration_us;
 };
 
+struct SiteCharacteristicsDatabaseSize {
+  // The total number of rows in the database, or -1 if the value is not
+  // available.
+  int64 num_rows;
+
+  // The total size of the database on disk in kilobytes, or -1 if the value
+  // is not available.
+  int64 on_disk_size_kb;
+};
+
 // The data stored for a given origin, this should mirror the
 // SiteCharacteristicsProto structure in site_characteristics.proto.
 struct SiteCharacteristicsDatabaseValue {
@@ -65,14 +75,6 @@ struct SiteCharacteristicsDatabaseEntry {
 
 // Contains information about a specific DB instance.
 struct SiteCharacteristicsDatabase {
-  // The total number of rows in the database, or -1 if the value is not (yet)
-  // available.
-  int64 num_rows;
-
-  // The total size of the database on disk in kilobytes, or -1 if the value
-  // is not (yet) available.
-  int64 on_disk_size_kb;
-
   // Contains the entries requested.
   array<SiteCharacteristicsDatabaseEntry> db_rows;
 };
@@ -141,6 +143,12 @@ interface DiscardsDetailsProvider {
   GetSiteCharacteristicsDatabase(
       array<string> explicitly_requested_origins) =>
           (SiteCharacteristicsDatabase? result);
+
+  // Returns the size of the database in number of rows and kilobytes.
+  // Note that this may be fairly expensive to acquire, and so shouldn't be
+  // called frequently.
+  GetSiteCharacteristicsDatabaseSize() =>
+      (SiteCharacteristicsDatabaseSize? db_size);
 
   // Sets the auto-discardable state of a tab, as specified by its stable
   // |tab_id|, earlier returned by GetTabDiscardsInfo. Invokes a callback when

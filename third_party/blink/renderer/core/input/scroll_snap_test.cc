@@ -115,7 +115,7 @@ void ScrollSnapTest::ScrollUpdate(double x,
   event.data.scroll_update.delta_y = delta_y;
   if (is_in_inertial_phase) {
     event.data.scroll_update.inertial_phase = WebGestureEvent::kMomentumPhase;
-    event.SetTimeStamp(base::TimeTicks());
+    event.SetTimeStamp(Compositor().LastFrameTime());
   }
   event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureScrollEvent(event);
@@ -190,9 +190,8 @@ TEST_F(ScrollSnapTest, AnimateFlingToArriveAtSnapPoint) {
   // Fling with an inertial GSU.
   ScrollUpdate(95, 100, -5, 0, true);
   ScrollEnd(90, 100);
-  Compositor().BeginFrame();
   // Animate halfway through the fling.
-  Compositor().BeginFrame(0.2);
+  Compositor().BeginFrame(0.25);
   ASSERT_GT(scroller->scrollLeft(), 150);
   ASSERT_LT(scroller->scrollLeft(), 180);
   ASSERT_EQ(scroller->scrollTop(), 200);

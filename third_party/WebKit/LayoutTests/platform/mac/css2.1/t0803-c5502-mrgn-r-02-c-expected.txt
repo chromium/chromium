@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600 clip at (0,0) size 800x585 scrollWidth 802
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x66
-  LayoutBlockFlow {HTML} at (0,0) size 800x66
-    LayoutBlockFlow {BODY} at (8,24) size 784x18
-      LayoutBlockFlow {P} at (0,0) size 794x18 [color=#000080]
-        LayoutText {#text} at (0,0) size 291x18
-          text run at (0,0) width 291: "This page should have a horizontal scroll bar."

@@ -10,6 +10,7 @@
 .top-header-bar-strip {
   display: flex;
   justify-content: flex-end;
+  min-height: 0;
   width: 100%;
 }
 
@@ -22,6 +23,7 @@
   flex: 0;
   height: 56px;
   justify-content: flex-end;
+  min-height: 0;
   min-width: 56px;
   overflow: hidden;
   width: 56px;
@@ -36,6 +38,7 @@
   display: flex;
   height: 48px;
   justify-content: flex-end;
+  min-height: 0;
   transition-duration: 300ms;
   transition-property: border-radius, height, width;
   width: 48px;

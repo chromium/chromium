@@ -47,9 +47,8 @@ class WindowTreeClientPrivate {
   // Calls OnEmbed() on the WindowTreeClient.
   void OnEmbed(ws::mojom::WindowTree* window_tree);
 
-  // Simulates |event| matching a pointer watcher on the window server.
-  void CallOnPointerEventObserved(Window* window,
-                                  std::unique_ptr<ui::Event> event);
+  // Simulates |event| matching an event observer on the window server.
+  void CallOnObservedInputEvent(std::unique_ptr<ui::Event> event);
 
   void CallOnCaptureChanged(Window* new_capture, Window* old_capture);
 
@@ -60,7 +59,7 @@ class WindowTreeClientPrivate {
   // Sets the WindowTree.
   void SetTree(ws::mojom::WindowTree* window_tree);
 
-  bool HasPointerWatcher();
+  bool HasEventObserver();
 
   Window* GetWindowByServerId(ws::Id id);
 

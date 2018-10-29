@@ -1,8 +1,8 @@
-CONSOLE WARNING: line 1: The specified value "" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
-CONSOLE WARNING: line 1: The specified value "#ghijkl" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
-CONSOLE WARNING: line 1: The specified value "#112233ff" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
-CONSOLE WARNING: line 1: The specified value "ffccaa" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
-CONSOLE WARNING: line 1: The specified value " #223344 " does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
+CONSOLE WARNING: The specified value "" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
+CONSOLE WARNING: The specified value "#ghijkl" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
+CONSOLE WARNING: The specified value "#112233ff" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
+CONSOLE WARNING: The specified value "ffccaa" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
+CONSOLE WARNING: The specified value " #223344 " does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
 Value sanitization test for input[type=color]
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

@@ -14,9 +14,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/histogram_controller.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/histogram_fetcher.h"
 #include "content/public/common/content_constants.h"
@@ -94,8 +96,7 @@ class HistogramSynchronizer::RequestContext {
   static RequestContext* GetRequestContext(int sequence_number) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    RequestContextMap::iterator it =
-        outstanding_requests_.Get().find(sequence_number);
+    auto it = outstanding_requests_.Get().find(sequence_number);
     if (it == outstanding_requests_.Get().end())
       return nullptr;
 
@@ -110,8 +111,7 @@ class HistogramSynchronizer::RequestContext {
   static void Unregister(int sequence_number) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    RequestContextMap::iterator it =
-        outstanding_requests_.Get().find(sequence_number);
+    auto it = outstanding_requests_.Get().find(sequence_number);
     if (it == outstanding_requests_.Get().end())
       return;
 
@@ -135,7 +135,7 @@ class HistogramSynchronizer::RequestContext {
   static void OnShutdown() {
     // Just in case we have any pending tasks, clear them out.
     while (!outstanding_requests_.Get().empty()) {
-      RequestContextMap::iterator it = outstanding_requests_.Get().begin();
+      auto it = outstanding_requests_.Get().begin();
       delete it->second;
       outstanding_requests_.Get().erase(it);
     }
@@ -189,8 +189,8 @@ HistogramSynchronizer* HistogramSynchronizer::GetInstance() {
 // static
 void HistogramSynchronizer::FetchHistograms() {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&HistogramSynchronizer::FetchHistograms));
     return;
   }
@@ -249,8 +249,8 @@ void HistogramSynchronizer::RegisterAndNotifyAllProcesses(
 
   // Post a task that would be called after waiting for wait_time.  This acts
   // as a watchdog, to cancel the requests for non-responsive processes.
-  BrowserThread::PostDelayedTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostDelayedTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&RequestContext::Unregister, sequence_number), wait_time);
 }
 

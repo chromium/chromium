@@ -37,7 +37,7 @@ class TickClock;
 
 namespace media {
 
-// VideoRendererImpl handles reading from a VideoFrameStream storing the
+// VideoRendererImpl handles reading from a VideoDecoderStream storing the
 // results in a queue of decoded frames and executing a callback when a frame is
 // ready for rendering.
 class MEDIA_EXPORT VideoRendererImpl
@@ -86,8 +86,8 @@ class MEDIA_EXPORT VideoRendererImpl
   void OnFrameDropped() override;
 
  private:
-  // Callback for |video_frame_stream_| initialization.
-  void OnVideoFrameStreamInitialized(bool success);
+  // Callback for |video_decoder_stream_| initialization.
+  void OnVideoDecoderStreamInitialized(bool success);
 
   void FinishInitialization(PipelineStatus status);
   void FinishFlush();
@@ -99,25 +99,25 @@ class MEDIA_EXPORT VideoRendererImpl
   void OnBufferingStateChange(BufferingState state);
   void OnWaitingForDecryptionKey();
 
-  // Called by the VideoFrameStream when a config change occurs. Will notify
+  // Called by the VideoDecoderStream when a config change occurs. Will notify
   // RenderClient of the new config.
   void OnConfigChange(const VideoDecoderConfig& config);
 
-  // Callback for |video_frame_stream_| to deliver decoded video frames and
+  // Callback for |video_decoder_stream_| to deliver decoded video frames and
   // report video decoding status.
-  void FrameReady(VideoFrameStream::Status status,
+  void FrameReady(VideoDecoderStream::Status status,
                   const scoped_refptr<VideoFrame>& frame);
 
   // Helper method for enqueueing a frame to |alogorithm_|.
   void AddReadyFrame_Locked(const scoped_refptr<VideoFrame>& frame);
 
   // Helper method that schedules an asynchronous read from the
-  // |video_frame_stream_| as long as there isn't a pending read and we have
+  // |video_decoder_stream_| as long as there isn't a pending read and we have
   // capacity.
   void AttemptRead_Locked();
 
-  // Called when VideoFrameStream::Reset() completes.
-  void OnVideoFrameStreamResetDone();
+  // Called when VideoDecoderStream::Reset() completes.
+  void OnVideoDecoderStreamResetDone();
 
   // Returns true if the renderer has enough data for playback purposes.
   // Note that having enough data may be due to reaching end of stream.
@@ -206,11 +206,11 @@ class MEDIA_EXPORT VideoRendererImpl
   // Pool of GpuMemoryBuffers and resources used to create hardware frames.
   // Ensure this is destructed after |algorithm_| for optimal memory release
   // when a frames are still held by the compositor. Must be destructed after
-  // |video_frame_stream_| since it holds a callback to the pool.
+  // |video_decoder_stream_| since it holds a callback to the pool.
   std::unique_ptr<GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
 
   // Provides video frames to VideoRendererImpl.
-  std::unique_ptr<VideoFrameStream> video_frame_stream_;
+  std::unique_ptr<VideoDecoderStream> video_decoder_stream_;
 
   MediaLog* media_log_;
 
@@ -248,7 +248,7 @@ class MEDIA_EXPORT VideoRendererImpl
   // CreateVideoDecodersCB.
   CreateVideoDecodersCB create_video_decoders_cb_;
 
-  // Keep track of the outstanding read on the VideoFrameStream. Flushing can
+  // Keep track of the outstanding read on the VideoDecoderStream. Flushing can
   // only complete once the read has completed.
   bool pending_read_;
 

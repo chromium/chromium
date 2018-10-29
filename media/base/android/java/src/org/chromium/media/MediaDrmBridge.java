@@ -21,6 +21,7 @@ import org.chromium.media.MediaDrmSessionManager.SessionInfo;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
@@ -68,6 +69,10 @@ public class MediaDrmBridge {
     private static final String SESSION_SHARING = "sessionSharing";
     private static final String ENABLE = "enable";
     private static final long INVALID_NATIVE_MEDIA_DRM_BRIDGE = 0;
+
+    // Error message returned by MediaDrm functions.
+    private static final String MEDIA_DRM_ERROR_LICENSE_RELEASED =
+            "android.media.MediaDrm.error_neg_2948";
 
     // Scheme UUID for Widevine. See http://dashif.org/identifiers/protection/
     private static final UUID WIDEVINE_UUID =
@@ -905,6 +910,7 @@ public class MediaDrmBridge {
      * Load persistent license from storage.
      */
     @CalledByNative
+    @TargetApi(Build.VERSION_CODES.M)
     private void loadSession(byte[] emeId, final long promiseId) {
         Log.d(TAG, "loadSession()");
         assert !mProvisioningPending;
@@ -926,16 +932,19 @@ public class MediaDrmBridge {
      * Load session back to memory with MediaDrm. Load persistent storage
      * before calling this. It will fail if persistent storage isn't loaded.
      */
+    @TargetApi(Build.VERSION_CODES.M)
     private void loadSessionWithLoadedStorage(SessionId sessionId, final long promiseId) {
         byte[] drmId = null;
         try {
             drmId = openSession();
             if (drmId == null) {
-                onPromiseRejected(promiseId, "Failed to open session to load license");
+                onPromiseRejected(promiseId, "Failed to open session to load license.");
                 return;
             }
 
             mSessionManager.setDrmId(sessionId, drmId);
+            assert Arrays.equals(sessionId.drmId(), drmId);
+            assert mSessionManager.get(sessionId).keyType() == MediaDrm.KEY_TYPE_OFFLINE;
 
             // Defer event handlers until license is loaded.
             assert mSessionEventDeferrer == null;
@@ -944,44 +953,66 @@ public class MediaDrmBridge {
             assert sessionId.keySetId() != null;
             mMediaDrm.restoreKeys(sessionId.drmId(), sessionId.keySetId());
 
-            onPromiseResolvedWithSession(promiseId, sessionId);
-
-            mSessionEventDeferrer.fire();
-            mSessionEventDeferrer = null;
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                onSessionKeysChange(sessionId,
-                        getDummyKeysInfo(MediaDrm.KeyStatus.STATUS_USABLE).toArray(), true, false);
-            }
+            onPersistentLicenseLoaded(sessionId, promiseId);
         } catch (android.media.NotProvisionedException e) {
             // If device isn't provisioned, storage loading should fail.
-            assert false;
+            Log.w(TAG, "Persistent license load fail because origin isn't provisioned.");
+            onPersistentLicenseLoadFail(sessionId, promiseId);
         } catch (java.lang.IllegalStateException e) {
-            // license doesn't exist
-            if (sessionId.drmId() == null) {
-                // TODO(yucliu): Check if the license is released or doesn't exist.
-                onPersistentLicenseNoExist(promiseId);
-                return;
+            assert sessionId.drmId() != null;
+
+            // If persistent license (KEY_TYPE_OFFLINE) is released but we don't receive the ack
+            // from the server, loading the key again will fail. Report success to JS so that
+            // they can release it again.
+            if (e instanceof MediaDrm.MediaDrmStateException) {
+                MediaDrm.MediaDrmStateException stateException =
+                        (MediaDrm.MediaDrmStateException) e;
+                if (stateException.getDiagnosticInfo().equals(MEDIA_DRM_ERROR_LICENSE_RELEASED)) {
+                    Log.w(TAG, "Persistent license is waiting for release ack.");
+                    onPersistentLicenseLoaded(sessionId, promiseId);
+
+                    // Report keystatuseschange event to JS.
+                    onSessionKeysChange(sessionId,
+                            getDummyKeysInfo(MediaDrm.KeyStatus.STATUS_EXPIRED).toArray(),
+                            false /* hasAdditionalUsableKey */, false /* isKeyRelease */);
+                    return;
+                }
             }
 
-            closeSessionNoException(sessionId);
-            mSessionManager.clearPersistentSessionInfo(sessionId, new Callback<Boolean>() {
-                @Override
-                public void onResult(Boolean success) {
-                    if (!success) {
-                        Log.w(TAG, "Failed to clear persistent storage for non-exist license");
-                    }
-
-                    onPersistentLicenseNoExist(promiseId);
-                }
-            });
+            onPersistentLicenseLoadFail(sessionId, promiseId);
         }
+    }
+
+    private void onPersistentLicenseLoaded(SessionId sessionId, long promiseId) {
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+
+        onPromiseResolvedWithSession(promiseId, sessionId);
+
+        assert mSessionEventDeferrer != null;
+        mSessionEventDeferrer.fire();
+        mSessionEventDeferrer = null;
     }
 
     private void onPersistentLicenseNoExist(long promiseId) {
         // Chromium CDM API requires resolve the promise with empty session id for non-exist
         // license. See media/base/content_decryption_module.h LoadSession for more details.
         onPromiseResolvedWithSession(promiseId, SessionId.createNoExistSessionId());
+    }
+
+    // If persistent license load fails, we want to clean the storage and report it to JS as license
+    // doesn't exist.
+    private void onPersistentLicenseLoadFail(SessionId sessionId, final long promiseId) {
+        closeSessionNoException(sessionId);
+        mSessionManager.clearPersistentSessionInfo(sessionId, new Callback<Boolean>() {
+            @Override
+            public void onResult(Boolean success) {
+                if (!success) {
+                    Log.w(TAG, "Failed to clear persistent storage for non-exist license");
+                }
+
+                onPersistentLicenseNoExist(promiseId);
+            }
+        });
     }
 
     /**

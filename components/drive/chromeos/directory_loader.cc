@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/drive/chromeos/change_list_loader_observer.h"
 #include "components/drive/chromeos/change_list_processor.h"
@@ -37,6 +38,9 @@ namespace {
 
 // Minimum changestamp gap required to start loading directory.
 constexpr int kMinimumChangestampGap = 50;
+
+constexpr base::TimeDelta kMinimumPerDirectoryFetchTimeGap =
+    base::TimeDelta::FromSeconds(30);
 
 FileError CheckLocalState(ResourceMetadata* resource_metadata,
                           const base::FilePath& root_entry_path,
@@ -71,7 +75,9 @@ FileError CheckLocalState(ResourceMetadata* resource_metadata,
 
 FileError UpdateStartPageToken(ResourceMetadata* resource_metadata,
                                const DirectoryFetchInfo& directory_fetch_info,
-                               base::FilePath* directory_path) {
+                               base::FilePath* directory_path,
+                               const base::Clock* clock) {
+  DCHECK(clock);
   // Update the directory start page token.
   ResourceEntry directory;
   FileError error = resource_metadata->GetResourceEntryById(
@@ -82,8 +88,14 @@ FileError UpdateStartPageToken(ResourceMetadata* resource_metadata,
   if (!directory.file_info().is_directory())
     return FILE_ERROR_NOT_A_DIRECTORY;
 
-  directory.mutable_directory_specific_info()->set_start_page_token(
+  DirectorySpecificInfo* directory_specific_info =
+      directory.mutable_directory_specific_info();
+
+  directory_specific_info->set_start_page_token(
       directory_fetch_info.start_page_token());
+  directory_specific_info->set_last_read_time_ms(
+      clock->Now().ToDeltaSinceWindowsEpoch().InMilliseconds());
+
   error = resource_metadata->RefreshEntry(directory);
   if (error != FILE_ERROR_OK)
     return error;
@@ -217,7 +229,8 @@ DirectoryLoader::DirectoryLoader(
     StartPageTokenLoader* start_page_token_loader,
     LoaderController* loader_controller,
     const base::FilePath& root_entry_path,
-    const std::string& team_drive_id)
+    const std::string& team_drive_id,
+    const base::Clock* clock)
     : logger_(logger),
       blocking_task_runner_(blocking_task_runner),
       resource_metadata_(resource_metadata),
@@ -227,6 +240,7 @@ DirectoryLoader::DirectoryLoader(
       loader_controller_(loader_controller),
       root_entry_path_(root_entry_path),
       team_drive_id_(team_drive_id),
+      clock_(clock),
       weak_ptr_factory_(this) {}
 
 DirectoryLoader::~DirectoryLoader() = default;
@@ -293,7 +307,8 @@ void DirectoryLoader::ReadDirectoryAfterGetEntry(
 
   DirectoryFetchInfo directory_fetch_info(
       entry->local_id(), entry->resource_id(),
-      entry->directory_specific_info().start_page_token(), root_entry_path_);
+      entry->directory_specific_info().start_page_token(), root_entry_path_,
+      directory_path);
 
   // Register the callback function to be called when it is loaded.
   const std::string& local_id = directory_fetch_info.local_id();
@@ -307,7 +322,7 @@ void DirectoryLoader::ReadDirectoryAfterGetEntry(
 
   root_folder_id_loader_->GetRootFolderId(
       base::Bind(&DirectoryLoader::ReadDirectoryAfterGetRootFolderId,
-                 weak_ptr_factory_.GetWeakPtr(), local_id));
+                 weak_ptr_factory_.GetWeakPtr(), directory_path, local_id));
 }
 
 void DirectoryLoader::ReadDirectoryAfterLoadParent(
@@ -336,6 +351,7 @@ void DirectoryLoader::ReadDirectoryAfterLoadParent(
 }
 
 void DirectoryLoader::ReadDirectoryAfterGetRootFolderId(
+    const base::FilePath& directory_path,
     const std::string& local_id,
     FileError error,
     base::Optional<std::string> root_folder_id) {
@@ -348,12 +364,14 @@ void DirectoryLoader::ReadDirectoryAfterGetRootFolderId(
 
   DCHECK(root_folder_id);
 
-  start_page_token_loader_->GetStartPageToken(base::Bind(
-      &DirectoryLoader::ReadDirectoryAfterGetStartPageToken,
-      weak_ptr_factory_.GetWeakPtr(), local_id, root_folder_id.value()));
+  start_page_token_loader_->GetStartPageToken(
+      base::Bind(&DirectoryLoader::ReadDirectoryAfterGetStartPageToken,
+                 weak_ptr_factory_.GetWeakPtr(), directory_path, local_id,
+                 root_folder_id.value()));
 }
 
 void DirectoryLoader::ReadDirectoryAfterGetStartPageToken(
+    const base::FilePath& directory_path,
     const std::string& local_id,
     const std::string& root_folder_id,
     google_apis::DriveApiErrorCode status,
@@ -377,13 +395,14 @@ void DirectoryLoader::ReadDirectoryAfterGetStartPageToken(
                      team_drive_id_, root_folder_id, local_id, entry,
                      local_start_page_token),
       base::BindOnce(&DirectoryLoader::ReadDirectoryAfterCheckLocalState,
-                     weak_ptr_factory_.GetWeakPtr(),
+                     weak_ptr_factory_.GetWeakPtr(), directory_path,
                      start_page_token->start_page_token(), local_id,
                      root_folder_id, base::Owned(entry),
                      base::Owned(local_start_page_token)));
 }
 
 void DirectoryLoader::ReadDirectoryAfterCheckLocalState(
+    const base::FilePath& directory_path,
     const std::string& remote_start_page_token,
     const std::string& local_id,
     const std::string& root_folder_id,
@@ -409,7 +428,7 @@ void DirectoryLoader::ReadDirectoryAfterCheckLocalState(
 
   DirectoryFetchInfo directory_fetch_info(local_id, entry->resource_id(),
                                           remote_start_page_token,
-                                          root_entry_path_);
+                                          root_entry_path_, directory_path);
 
   int64_t directory_changestamp = 0;
   // The directory_specific_info may be enpty, so default changestamp to 0.
@@ -424,6 +443,26 @@ void DirectoryLoader::ReadDirectoryAfterCheckLocalState(
         directory_start_page_token.c_str());
     LoadDirectoryFromServer(directory_fetch_info, root_folder_id);
     return;
+  }
+
+  // If we haven't finished loading the drive corpus, local_start_page_token
+  // will be empty. In this case we will keep track of the last time we loaded
+  // the directory, and only reload after an appropriate delay.
+  if (local_start_page_token->empty()) {
+    if (entry->directory_specific_info().has_last_read_time_ms()) {
+      base::Time last_read = base::Time::FromDeltaSinceWindowsEpoch(
+          base::TimeDelta::FromMilliseconds(
+              entry->directory_specific_info().last_read_time_ms()));
+      base::TimeDelta elapsed = clock_->Now() - last_read;
+      if (elapsed < kMinimumPerDirectoryFetchTimeGap) {
+        logger_->Log(
+            logging::LOG_INFO,
+            "Skipping read of directory (%s), contents considered fresh.",
+            directory_fetch_info.ToString().c_str());
+        OnDirectoryLoadComplete(local_id, FILE_ERROR_OK);
+        return;
+      }
+    }
   }
 
   int64_t remote_changestamp = 0;
@@ -515,7 +554,7 @@ void DirectoryLoader::OnDirectoryLoadCompleteAfterRead(
 void DirectoryLoader::SendEntries(const std::string& local_id,
                                   const ResourceEntryVector& entries) {
   LoadCallbackMap::iterator it = pending_load_callback_.find(local_id);
-  DCHECK(it != pending_load_callback_.end());
+  DCHECK(it != pending_load_callback_.end()) << "local_id: " << local_id;
 
   for (size_t i = 0; i < it->second.size(); ++i) {
     ReadDirectoryCallbackState* callback_state = &it->second[i];
@@ -596,7 +635,8 @@ void DirectoryLoader::LoadDirectoryFromServerAfterLoad(
   base::PostTaskAndReplyWithResult(
       blocking_task_runner_.get(), FROM_HERE,
       base::Bind(&UpdateStartPageToken, resource_metadata_,
-                 directory_fetch_info, directory_path),
+                 directory_fetch_info, directory_path,
+                 base::Unretained(clock_)),
       base::Bind(
           &DirectoryLoader::LoadDirectoryFromServerAfterUpdateStartPageToken,
           weak_ptr_factory_.GetWeakPtr(), directory_fetch_info,

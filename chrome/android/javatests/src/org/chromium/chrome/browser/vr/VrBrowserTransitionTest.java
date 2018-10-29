@@ -452,7 +452,6 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @LargeTest
-    @CommandLineFlags.Add("enable-features=VrBrowsingNativeAndroidUi")
     public void testExitVrWithPromptDisplayed() throws InterruptedException, TimeoutException {
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
                 VrBrowserTestFramework.getFileUrlForHtmlTestFile("test_navigation_2d_page"),

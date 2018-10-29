@@ -184,7 +184,7 @@ ListIdentifier GetUrlUwsId() {
 std::string GetUmaSuffixForStore(const base::FilePath& file_path) {
   DCHECK_EQ(kStoreSuffix, file_path.BaseName().Extension());
   return base::StringPrintf(
-      ".%" PRIsFP, file_path.BaseName().RemoveExtension().value().c_str());
+      ".%" PRFilePath, file_path.BaseName().RemoveExtension().value().c_str());
 }
 
 StoreAndHashPrefix::StoreAndHashPrefix(ListIdentifier list_id,

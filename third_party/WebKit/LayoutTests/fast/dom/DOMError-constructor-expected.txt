@@ -2,7 +2,6 @@ Tests that DOMError is constructible.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS error = new DOMError('NotFoundError', 'This item was not found.') did not throw exception.
 PASS error.name is "NotFoundError"
 PASS error.message is "This item was not found."

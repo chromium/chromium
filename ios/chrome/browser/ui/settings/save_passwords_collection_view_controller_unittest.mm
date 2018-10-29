@@ -60,8 +60,9 @@ class SavePasswordsCollectionViewControllerTest
     CollectionViewControllerTest::SetUp();
     IOSChromePasswordStoreFactory::GetInstance()->SetTestingFactory(
         chrome_browser_state_.get(),
-        &password_manager::BuildPasswordStore<web::BrowserState,
-                                              MockPasswordStore>);
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<web::BrowserState,
+                                                  MockPasswordStore>));
     CreateController();
   }
 

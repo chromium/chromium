@@ -2,7 +2,6 @@ Tests that scrolling an element to a specific point successfully scrolls the mai
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 5000-pixel box
 Target
 5000-pixel box

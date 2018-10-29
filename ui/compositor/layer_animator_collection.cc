@@ -46,9 +46,7 @@ bool LayerAnimatorCollection::HasActiveAnimators() const {
 void LayerAnimatorCollection::OnAnimationStep(base::TimeTicks now) {
   last_tick_time_ = now;
   std::set<scoped_refptr<LayerAnimator> > list = animators_;
-  for (std::set<scoped_refptr<LayerAnimator> >::iterator iter = list.begin();
-       iter != list.end();
-       ++iter) {
+  for (auto iter = list.begin(); iter != list.end(); ++iter) {
     // Make sure the animator is still valid.
     if (animators_.count(*iter) > 0)
       (*iter)->Step(now);

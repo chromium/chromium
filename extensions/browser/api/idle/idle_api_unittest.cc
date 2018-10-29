@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "extensions/browser/api/idle/idle_api_constants.h"
 #include "extensions/browser/api/idle/idle_manager.h"
@@ -133,8 +134,8 @@ class IdleTest : public ApiUnitTest {
 void IdleTest::SetUp() {
   ApiUnitTest::SetUp();
 
-  IdleManagerFactory::GetInstance()->SetTestingFactory(browser_context(),
-                                                       &IdleManagerTestFactory);
+  IdleManagerFactory::GetInstance()->SetTestingFactory(
+      browser_context(), base::BindRepeating(&IdleManagerTestFactory));
   idle_manager_ = IdleManagerFactory::GetForBrowserContext(browser_context());
 
   idle_provider_ = new TestIdleProvider();

@@ -35,7 +35,6 @@
 #include "components/security_state/core/security_state.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/renderer/document_state.h"
-#include "content/public/renderer/navigation_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -572,7 +571,7 @@ void AnnotateFormsAndFieldsWithSignatures(WebLocalFrame* frame,
 
 // Returns true iff there is a password field in |frame|.
 bool HasPasswordField(const WebLocalFrame& frame) {
-  CR_DEFINE_STATIC_LOCAL(WebString, kPassword, ("password"));
+  static base::NoDestructor<WebString> kPassword("password");
 
   const WebElementCollection elements = frame.GetDocument().All();
   for (WebElement element = elements.FirstItem(); !element.IsNull();
@@ -580,7 +579,7 @@ bool HasPasswordField(const WebLocalFrame& frame) {
     if (element.IsFormControlElement()) {
       const WebFormControlElement& control =
           element.To<WebFormControlElement>();
-      if (control.FormControlTypeForAutofill() == kPassword)
+      if (control.FormControlTypeForAutofill() == *kPassword)
         return true;
     }
   }
@@ -620,22 +619,6 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
   }
 
   return WebInputElement();
-}
-
-PasswordForm::SubmissionIndicatorEvent ToSubmissionIndicatorEvent(
-    SubmissionSource source) {
-  switch (source) {
-    case SubmissionSource::FRAME_DETACHED:
-      return PasswordForm::SubmissionIndicatorEvent::FRAME_DETACHED;
-    case SubmissionSource::SAME_DOCUMENT_NAVIGATION:
-      return PasswordForm::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
-    case SubmissionSource::XHR_SUCCEEDED:
-      return PasswordForm::SubmissionIndicatorEvent::XHR_SUCCEEDED;
-    case SubmissionSource::DOM_MUTATION_AFTER_XHR:
-      return PasswordForm::SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR;
-    default:
-      return PasswordForm::SubmissionIndicatorEvent::NONE;
-  }
 }
 
 WebInputElement ConvertToWebInput(const WebFormControlElement& element) {
@@ -756,14 +739,17 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
   WebInputElement mutable_element = element;  // We need a non-const.
   mutable_element.SetAutofillState(WebAutofillState::kNotFilled);
 
-  WebInputToPasswordInfoMap::iterator iter =
-      web_input_to_password_info_.find(element);
+  auto iter = web_input_to_password_info_.find(element);
   if (iter != web_input_to_password_info_.end()) {
     iter->second.password_was_edited_last = false;
   }
 
   // Show the popup with the list of available usernames.
   return ShowSuggestions(element, false, false);
+}
+
+void PasswordAutofillAgent::DidEndTextFieldEditing() {
+  focus_state_notifier_.FocusedInputChanged(false, false);
 }
 
 void PasswordAutofillAgent::UpdateStateForTextChange(
@@ -780,7 +766,7 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
   ProvisionallySavePassword(element.Form(), element, RESTRICTION_NONE);
 
   if (element.IsPasswordFieldForAutofill()) {
-    PasswordToLoginMap::iterator iter = password_to_username_.find(element);
+    auto iter = password_to_username_.find(element);
     if (iter != password_to_username_.end()) {
       web_input_to_password_info_[iter->second].password_was_edited_last = true;
       // Note that the suggested value of |mutable_element| was reset when its
@@ -954,8 +940,7 @@ bool PasswordAutofillAgent::FindPasswordInfoForElement(
 
     *password_element = element;
 
-    WebInputToPasswordInfoMap::iterator iter =
-        web_input_to_password_info_.find(element);
+    auto iter = web_input_to_password_info_.find(element);
     if (iter == web_input_to_password_info_.end()) {
       PasswordToLoginMap::const_iterator password_iter =
           password_to_username_.find(element);
@@ -979,8 +964,7 @@ bool PasswordAutofillAgent::FindPasswordInfoForElement(
     // Otherwise |username_element| has been set above.
   }
 
-  WebInputToPasswordInfoMap::iterator iter =
-      web_input_to_password_info_.find(*username_element);
+  auto iter = web_input_to_password_info_.find(*username_element);
   if (iter == web_input_to_password_info_.end())
     return false;
 
@@ -1091,7 +1075,8 @@ bool PasswordAutofillAgent::FrameCanAccessPasswordManager() {
   // about:blank or about:srcdoc frames should not be allowed to use password
   // manager.  See https://crbug.com/756587.
   WebLocalFrame* frame = render_frame()->GetWebFrame();
-  if (frame->GetDocument().Url().ProtocolIs(url::kAboutScheme))
+  blink::WebURL url = frame->GetDocument().Url();
+  if (!url.ProtocolIs(url::kHttpScheme) && !url.ProtocolIs(url::kHttpsScheme))
     return false;
   return frame->GetSecurityOrigin().CanAccessPasswordManager();
 }
@@ -1360,32 +1345,6 @@ void PasswordAutofillAgent::OnWillSubmitForm(const WebFormElement& form) {
   }
 }
 
-void PasswordAutofillAgent::FocusedNodeChanged(const blink::WebNode& node) {
-  focused_input_element_.Reset();
-
-  if (node.IsNull() ||          // |node| is null <==> focus outside of frame.
-      !node.IsElementNode()) {  // Not a valid WebElement.
-    focus_state_notifier_.FocusedInputChanged(
-        /*is_fillable=*/false, /*is_password_field=*/false);
-    return;
-  }
-
-  WebElement web_element = node.ToConst<WebElement>();
-  const WebInputElement* input = ToWebInputElement(&web_element);
-  if (!input) {
-    focus_state_notifier_.FocusedInputChanged(
-        /*is_fillable=*/false, /*is_password_field=*/false);
-    return;  // If the node isn't an element, don't even try to convert.
-  }
-  bool is_password = false;
-  bool is_fillable = input->IsTextField() && IsElementEditable(*input);
-  if (is_fillable) {
-    focused_input_element_ = *input;
-    is_password = focused_input_element_.IsPasswordFieldForAutofill();
-  }
-  focus_state_notifier_.FocusedInputChanged(is_fillable, is_password);
-}
-
 void PasswordAutofillAgent::OnDestruct() {
   binding_.Close();
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
@@ -1570,9 +1529,28 @@ void PasswordAutofillAgent::GetFillableElementFromFormData(
 }
 
 void PasswordAutofillAgent::FocusedNodeHasChanged(const blink::WebNode& node) {
-  if (node.IsNull() || !node.IsElementNode())
+  focused_input_element_.Reset();
+  if (node.IsNull() || !node.IsElementNode()) {  // Not a valid WebElement.
+    focus_state_notifier_.FocusedInputChanged(
+        /*is_fillable=*/false, /*is_password_field=*/false);
     return;
-  const WebElement web_element = node.ToConst<WebElement>();
+  }
+
+  WebElement web_element = node.ToConst<WebElement>();
+  const WebInputElement* input = ToWebInputElement(&web_element);
+  if (!input) {
+    focus_state_notifier_.FocusedInputChanged(
+        /*is_fillable=*/false, /*is_password_field=*/false);
+    return;  // If the node isn't an element, don't even try to convert.
+  }
+  bool is_password = false;
+  bool is_fillable = input->IsTextField() && IsElementEditable(*input);
+  if (is_fillable) {
+    focused_input_element_ = *input;
+    is_password = focused_input_element_.IsPasswordFieldForAutofill();
+  }
+  focus_state_notifier_.FocusedInputChanged(is_fillable, is_password);
+
   if (!web_element.IsFormControlElement())
     return;
   const WebFormControlElement control_element =

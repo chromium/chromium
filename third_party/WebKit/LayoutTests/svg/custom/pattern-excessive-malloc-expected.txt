@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGHiddenContainer {defs} at (0,0) size 0x0
-      LayoutSVGResourcePattern {pattern} [id="pattern"] [patternUnits=userSpaceOnUse] [patternContentUnits=userSpaceOnUse]
-        LayoutSVGRect {rect} at (0,0) size 33554428x33554428 [fill={[type=SOLID] [color=#FF0000]}] [x=0.00] [y=0.00] [width=33554428.00] [height=33554428.00]
-    LayoutSVGRect {rect} at (10,300) size 100x100 [fill={[type=PATTERN] [id="pattern"]}] [x=10.00] [y=300.00] [width=100.00] [height=100.00]

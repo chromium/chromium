@@ -37,7 +37,7 @@ class STORAGE_EXPORT FileSystemFileUtil {
   // It will be implemented by each subclass such as FileSystemFileEnumerator.
   class STORAGE_EXPORT AbstractFileEnumerator {
    public:
-    virtual ~AbstractFileEnumerator() {}
+    virtual ~AbstractFileEnumerator() = default;
 
     // Returns an empty string if there are no more results.
     virtual base::FilePath Next() = 0;
@@ -59,7 +59,7 @@ class STORAGE_EXPORT FileSystemFileUtil {
     bool IsDirectory() override;
   };
 
-  virtual ~FileSystemFileUtil() {}
+  virtual ~FileSystemFileUtil() = default;
 
   // Creates or opens a file with the given flags.
   // See header comments for AsyncFileUtil::CreateOrOpen() for more details.

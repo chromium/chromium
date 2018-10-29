@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 
+#import <MobileCoreServices/MobileCoreServices.h>
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
 
@@ -406,6 +407,8 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
     [viewController.delegate downloadManagerViewController:viewController
                           presentOpenInMenuWithLayoutGuide:guide];
   }
+  ASSERT_NSEQ((__bridge NSString*)kUTTypeHTML,
+              document_interaction_controller.UTI);
   ASSERT_TRUE(document_interaction_controller.presentedOpenInMenu);
   ASSERT_TRUE(CGRectEqualToRect(
       CGRectZero, document_interaction_controller.presentedOpenInMenu.rect));

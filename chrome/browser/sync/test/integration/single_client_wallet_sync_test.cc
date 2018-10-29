@@ -9,6 +9,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -43,7 +45,7 @@ ACTION_P(QuitMessageLoop, loop) {
   loop->Quit();
 }
 
-// Constands for the credit card.
+// Constants for the credit card.
 const char kDefaultCardID[] = "wallet card ID";
 const int kDefaultCardExpMonth = 8;
 const int kDefaultCardExpYear = 2087;
@@ -66,6 +68,9 @@ const char kDefaultPhone[] = "1.800.555.1234";
 const char kDefaultSortingCode[] = "CEDEX";
 const char kDefaultDependentLocality[] = "DepLoc";
 const char kDefaultLanguageCode[] = "en";
+
+// Constants for PaymentsCustomerData.
+const char kDefaultCustomerID[] = "deadbeef";
 
 const char kLocalGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kDifferentBillingAddressId[] = "another address entity ID";
@@ -176,6 +181,18 @@ std::vector<std::unique_ptr<AutofillProfile>> GetServerProfiles(
   return std::move(consumer.result());
 }
 
+#if !defined(OS_CHROMEOS)
+std::unique_ptr<autofill::PaymentsCustomerData> GetPaymentsCustomerData(
+    scoped_refptr<autofill::AutofillWebDataService> service) {
+  AutofillWebDataServiceConsumer<
+      std::unique_ptr<autofill::PaymentsCustomerData>>
+      consumer;
+  service->GetPaymentsCustomerData(&consumer);
+  consumer.Wait();
+  return std::move(consumer.result());
+}
+#endif
+
 sync_pb::SyncEntity CreateDefaultSyncWalletCard() {
   sync_pb::SyncEntity entity;
   entity.set_name(kDefaultCardID);
@@ -206,11 +223,34 @@ sync_pb::SyncEntity CreateSyncWalletCard(const std::string& name,
   sync_pb::SyncEntity result = CreateDefaultSyncWalletCard();
   result.set_name(name);
   result.set_id_string(name);
-  result.mutable_specifics()
-      ->mutable_autofill_wallet()
-      ->mutable_masked_card()
-      ->set_last_four(last_four);
+  sync_pb::WalletMaskedCreditCard* credit_card = result.mutable_specifics()
+                                                     ->mutable_autofill_wallet()
+                                                     ->mutable_masked_card();
+  credit_card->set_last_four(last_four);
+  credit_card->set_id(name);
   return result;
+}
+
+sync_pb::SyncEntity CreateSyncPaymentsCustomerData(
+    const std::string& customer_id) {
+  sync_pb::SyncEntity entity;
+  entity.set_name(customer_id);
+  entity.set_id_string(customer_id);
+  entity.set_version(0);  // Will be overridden by the fake server.
+  entity.set_ctime(12345);
+  entity.set_mtime(12345);
+  sync_pb::AutofillWalletSpecifics* wallet_specifics =
+      entity.mutable_specifics()->mutable_autofill_wallet();
+  wallet_specifics->set_type(sync_pb::AutofillWalletSpecifics::CUSTOMER_DATA);
+
+  sync_pb::PaymentsCustomerData* customer_data =
+      wallet_specifics->mutable_customer_data();
+  customer_data->set_id(customer_id);
+  return entity;
+}
+
+sync_pb::SyncEntity CreateDefaultSyncPaymentsCustomerData() {
+  return CreateSyncPaymentsCustomerData(kDefaultCustomerID);
 }
 
 CreditCard GetDefaultCreditCard() {
@@ -262,10 +302,10 @@ sync_pb::SyncEntity CreateSyncWalletAddress(const std::string& name,
   sync_pb::SyncEntity result = CreateDefaultSyncWalletAddress();
   result.set_name(name);
   result.set_id_string(name);
-  result.mutable_specifics()
-      ->mutable_autofill_wallet()
-      ->mutable_address()
-      ->set_company_name(company);
+  sync_pb::WalletPostalAddress* wallet_address =
+      result.mutable_specifics()->mutable_autofill_wallet()->mutable_address();
+  wallet_address->set_id(name);
+  wallet_address->set_company_name(company);
   return result;
 }
 
@@ -369,6 +409,13 @@ class SingleClientWalletSyncTest : public UssSwitchToggler, public SyncTest {
     pdm->RemoveObserver(&personal_data_observer_);
   }
 
+  void WaitForNumberOfCards(autofill::PersonalDataManager* pdm,
+                            size_t expected_count) {
+    while (pdm->GetCreditCards().size() != expected_count) {
+      WaitForOnPersonalDataChanged(/*should_trigger_refresh=*/false, pdm);
+    }
+  }
+
   PersonalDataLoadedObserverMock personal_data_observer_;
 
  private:
@@ -387,7 +434,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, EnabledByDefault) {
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, DownloadProfileStorage) {
-  base::test::ScopedFeatureList feature_list;
   InitWithFeatures(/*enabled_features=*/{},
                    /*disabled_features=*/
                    {autofill::features::kAutofillEnableAccountWalletStorage});
@@ -488,20 +534,65 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
 // Wallet data should get cleared from the database when sync is disabled.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnDisableSync) {
   InitWithDefaultFeatures();
-  GetFakeServer()->SetWalletData(
-      {CreateDefaultSyncWalletAddress(), CreateDefaultSyncWalletCard()});
+  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
+                                  CreateDefaultSyncWalletCard(),
+                                  CreateDefaultSyncPaymentsCustomerData()});
   ASSERT_TRUE(SetupSync());
 
-  // Make sure the card is in the DB.
+  // Make sure the data is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<CreditCard*> cards = pdm->GetCreditCards();
-  ASSERT_EQ(1uL, cards.size());
+  EXPECT_EQ(1uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
+
+  // Turn off sync, the data should be gone.
+  GetSyncService(0)->RequestStop(syncer::SyncService::CLEAR_DATA);
+  WaitForNumberOfCards(pdm, 0);
+
+  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(nullptr, pdm->GetPaymentsCustomerData());
+
+  // Turn sync on again, the data should come back.
+  GetSyncService(0)->RequestStart();
+  // RequestStop(CLEAR_DATA) also clears the "first setup complete" flag, so
+  // set it again.
+  GetSyncService(0)->SetFirstSetupComplete();
+  // Wait until Sync restores the card and it arrives at PDM.
+  WaitForNumberOfCards(pdm, 1);
+
+  EXPECT_EQ(1uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
+}
+
+// Wallet data should get cleared from the database when sync is (temporarily)
+// stopped, e.g. due to the Sync feature toggle in Android settings.
+IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnStopSync) {
+  InitWithDefaultFeatures();
+  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
+                                  CreateDefaultSyncWalletCard(),
+                                  CreateDefaultSyncPaymentsCustomerData()});
+  ASSERT_TRUE(SetupSync());
+
+  // Make sure the data is in the DB.
+  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
+  ASSERT_NE(nullptr, pdm);
+  EXPECT_EQ(1uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
 
   // Turn off sync, the card should be gone.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForAllDatatypes());
-  cards = pdm->GetCreditCards();
-  ASSERT_EQ(0uL, cards.size());
+  GetSyncService(0)->RequestStop(syncer::SyncService::KEEP_DATA);
+  WaitForNumberOfCards(pdm, 0);
+
+  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(nullptr, pdm->GetPaymentsCustomerData());
+
+  // Turn sync on again, the data should come back.
+  GetSyncService(0)->RequestStart();
+  // Wait until Sync restores the card and it arrives at PDM.
+  WaitForNumberOfCards(pdm, 1);
+
+  EXPECT_EQ(1uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
 }
 
 // ChromeOS does not sign out, so the test below does not apply.
@@ -509,19 +600,23 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnDisableSync) {
 // Wallet data should get cleared from the database when the user signs out.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnSignOut) {
   InitWithDefaultFeatures();
-  GetFakeServer()->SetWalletData(
-      {CreateDefaultSyncWalletAddress(), CreateDefaultSyncWalletCard()});
+  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
+                                  CreateDefaultSyncWalletCard(),
+                                  CreateDefaultSyncPaymentsCustomerData()});
   ASSERT_TRUE(SetupSync());
 
-  // Make sure the card is in the DB.
+  // Make sure the data is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(1uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
 
-  // Turn off sync, the card should be gone.
+  // Turn off sync, the data should be gone.
   GetClient(0)->SignOutPrimaryAccount();
+  WaitForNumberOfCards(pdm, 0);
 
-  ASSERT_EQ(0uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(nullptr, pdm->GetPaymentsCustomerData());
 }
 #endif  // !defined(OS_CHROMEOS)
 
@@ -530,15 +625,14 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnSignOut) {
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
                        NewSyncDataShouldReplaceExistingData) {
   InitWithDefaultFeatures();
-  sync_pb::SyncEntity first_card =
-      CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001");
-  sync_pb::SyncEntity first_address =
-      CreateSyncWalletAddress(/*name=*/"address-1", /*company=*/"Company-1");
 
-  GetFakeServer()->SetWalletData({first_card, first_address});
+  GetFakeServer()->SetWalletData(
+      {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001"),
+       CreateSyncWalletAddress(/*name=*/"address-1", /*company=*/"Company-1"),
+       CreateDefaultSyncPaymentsCustomerData()});
   ASSERT_TRUE(SetupSync());
 
-  // Make sure the card is in the DB.
+  // Make sure the data is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
   std::vector<CreditCard*> cards = pdm->GetCreditCards();
@@ -548,13 +642,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   ASSERT_EQ(1uL, profiles.size());
   EXPECT_EQ("Company-1", TruncateUTF8(base::UTF16ToUTF8(
                              profiles[0]->GetRawInfo(autofill::COMPANY_NAME))));
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
 
-  sync_pb::SyncEntity new_card =
-      CreateSyncWalletCard(/*name=*/"new-card", /*last_four=*/"0002");
-  sync_pb::SyncEntity new_address =
-      CreateSyncWalletAddress(/*name=*/"new-address", /*company=*/"Company-2");
-
-  GetFakeServer()->SetWalletData({new_card, new_address});
+  // Put some completely new data in the sync server.
+  GetFakeServer()->SetWalletData(
+      {CreateSyncWalletCard(/*name=*/"new-card", /*last_four=*/"0002"),
+       CreateSyncWalletAddress(/*name=*/"new-address", /*company=*/"Company-2"),
+       CreateSyncPaymentsCustomerData(/*customer_id=*/"newid")});
 
   // Constructing the checker captures the current progress marker. Make sure to
   // do that before triggering the fetch.
@@ -572,6 +666,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   ASSERT_EQ(1uL, profiles.size());
   EXPECT_EQ("Company-2", TruncateUTF8(base::UTF16ToUTF8(
                              profiles[0]->GetRawInfo(autofill::COMPANY_NAME))));
+  EXPECT_EQ("newid", pdm->GetPaymentsCustomerData()->customer_id);
 }
 
 // Wallet is not using incremental updates. The server either sends a non-empty
@@ -579,12 +674,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 // set, or (more often) an empty update.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
   InitWithDefaultFeatures();
-  sync_pb::SyncEntity first_card =
-      CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001");
-  sync_pb::SyncEntity first_address =
-      CreateSyncWalletAddress(/*name=*/"address-1", /*company=*/"Company-1");
-
-  GetFakeServer()->SetWalletData({first_card, first_address});
+  GetFakeServer()->SetWalletData(
+      {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001"),
+       CreateSyncWalletAddress(/*name=*/"address-1", /*company=*/"Company-1"),
+       CreateDefaultSyncPaymentsCustomerData()});
   ASSERT_TRUE(SetupSync());
 
   // Make sure the card is in the DB.
@@ -597,6 +690,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
   ASSERT_EQ(1uL, profiles.size());
   EXPECT_EQ("Company-1", TruncateUTF8(base::UTF16ToUTF8(
                              profiles[0]->GetRawInfo(autofill::COMPANY_NAME))));
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
 
   // Do not change anything on the server so that the update forced below is an
   // empty one.
@@ -609,6 +703,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
                            syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
   ASSERT_TRUE(checker.Wait());
 
+  // Refresh the pdm so that it gets cards from autofill table.
+  RefreshAndWaitForOnPersonalDataChanged(pdm);
+
   // Make sure the same data is present on the client.
   cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
@@ -617,26 +714,30 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
   ASSERT_EQ(1uL, profiles.size());
   EXPECT_EQ("Company-1", TruncateUTF8(base::UTF16ToUTF8(
                              profiles[0]->GetRawInfo(autofill::COMPANY_NAME))));
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
 }
 
 // Wallet data should get cleared from the database when the wallet sync type
 // flag is disabled.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnDisableWalletSync) {
   InitWithDefaultFeatures();
-  GetFakeServer()->SetWalletData(
-      {CreateDefaultSyncWalletAddress(), CreateDefaultSyncWalletCard()});
+  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
+                                  CreateDefaultSyncWalletCard(),
+                                  CreateDefaultSyncPaymentsCustomerData()});
   ASSERT_TRUE(SetupSync());
 
-  // Make sure the card is in the DB.
+  // Make sure the data is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<CreditCard*> cards = pdm->GetCreditCards();
-  ASSERT_EQ(1uL, cards.size());
+  EXPECT_EQ(1uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
 
-  // Turn off autofill sync, the card should be gone.
+  // Turn off autofill sync, the data should be gone.
   ASSERT_TRUE(GetClient(0)->DisableSyncForDatatype(syncer::AUTOFILL));
-  cards = pdm->GetCreditCards();
-  ASSERT_EQ(0uL, cards.size());
+  WaitForOnPersonalDataChanged(/*should_trigger_refresh=*/false, pdm);
+
+  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(nullptr, pdm->GetPaymentsCustomerData());
 }
 
 // Wallet data should get cleared from the database when the wallet autofill
@@ -644,22 +745,21 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnDisableWalletSync) {
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
                        ClearOnDisableWalletAutofill) {
   InitWithDefaultFeatures();
-  GetFakeServer()->SetWalletData(
-      {CreateDefaultSyncWalletAddress(), CreateDefaultSyncWalletCard()});
+  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
+                                  CreateDefaultSyncWalletCard(),
+                                  CreateDefaultSyncPaymentsCustomerData()});
   ASSERT_TRUE(SetupSync());
 
-  // Make sure the card is in the DB.
+  // Make sure the card and PaymentsCustomerData are in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<CreditCard*> cards = pdm->GetCreditCards();
-  ASSERT_EQ(1uL, cards.size());
+  EXPECT_EQ(1uL, pdm->GetCreditCards().size());
 
   // Turn off the wallet autofill pref, the card should be gone as a side
   // effect of the wallet data type controller noticing.
   autofill::prefs::SetPaymentsIntegrationEnabled(GetProfile(0)->GetPrefs(),
                                                  false);
-  cards = pdm->GetCreditCards();
-  ASSERT_EQ(0uL, cards.size());
+  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
 }
 
 // Wallet data present on the client should be cleared in favor of the new data
@@ -682,7 +782,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   std::vector<AutofillProfile> client_profiles = {profile};
   autofill_helper::SetServerProfiles(0, client_profiles);
 
-  // Refresh the pdm so that it gets cards from autofill table.
+  // Add PaymentsCustomerData on the client.
+  autofill_helper::SetPaymentsCustomerData(
+      0, autofill::PaymentsCustomerData(/*customer_id=*/kDefaultCustomerID));
+
+  // Refresh the pdm so that it gets data from autofill table.
   RefreshAndWaitForOnPersonalDataChanged(pdm);
 
   // Make sure the card was added correctly.
@@ -696,24 +800,31 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   EXPECT_EQ("JustATest", TruncateUTF8(base::UTF16ToUTF8(
                              profiles[0]->GetRawInfo(autofill::COMPANY_NAME))));
 
+  // Make sure the customer data was added correctly.
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
+
   // Add a new card from the server and sync it down.
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
+  GetFakeServer()->SetWalletData(
+      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData()});
   ASSERT_TRUE(SetupSync());
 
   // The only card present on the client should be the one from the server.
   cards = pdm->GetCreditCards();
-  ASSERT_EQ(1uL, cards.size());
+  EXPECT_EQ(1uL, cards.size());
   EXPECT_EQ(kDefaultCardID, cards[0]->server_id());
 
   // There should be no profile present.
   profiles = pdm->GetServerProfiles();
-  ASSERT_EQ(0uL, profiles.size());
+  EXPECT_EQ(0uL, profiles.size());
+
+  // The PaymentsCustomerData should still be there.
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
 }
 
 // Wallet data present on the client should be cleared in favor of the new data
 // synced down form the server.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
-                       NewWalletProfileRemovesExistingProfileAndCard) {
+                       NewWalletDataRemovesExistingData) {
   InitWithDefaultFeatures();
   ASSERT_TRUE(SetupClients());
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
@@ -730,34 +841,46 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   std::vector<CreditCard> credit_cards = {credit_card};
   autofill_helper::SetServerCreditCards(0, credit_cards);
 
+  // Add PaymentsCustomerData on the client.
+  autofill_helper::SetPaymentsCustomerData(
+      0, autofill::PaymentsCustomerData(/*customer_id=*/kDefaultCustomerID));
+
   // Refresh the pdm so that it gets cards from autofill table.
   RefreshAndWaitForOnPersonalDataChanged(pdm);
 
   // Make sure the profile was added correctly.
   std::vector<AutofillProfile*> profiles = pdm->GetServerProfiles();
-  ASSERT_EQ(1uL, profiles.size());
+  EXPECT_EQ(1uL, profiles.size());
   EXPECT_EQ("JustATest", TruncateUTF8(base::UTF16ToUTF8(
                              profiles[0]->GetRawInfo(autofill::COMPANY_NAME))));
 
   // Make sure the card was added correctly.
   std::vector<CreditCard*> cards = pdm->GetCreditCards();
-  ASSERT_EQ(1uL, cards.size());
+  EXPECT_EQ(1uL, cards.size());
   EXPECT_EQ("a123", cards[0]->server_id());
 
-  // Add a new profile from the server and sync it down.
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress()});
+  // Make sure the customer data was added correctly.
+  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
+
+  // Add a new profile and new customer data from the server and sync them down.
+  GetFakeServer()->SetWalletData(
+      {CreateDefaultSyncWalletAddress(),
+       CreateSyncPaymentsCustomerData(/*customer_id=*/"newid")});
   ASSERT_TRUE(SetupSync());
 
   // The only profile present on the client should be the one from the server.
   profiles = pdm->GetServerProfiles();
-  ASSERT_EQ(1uL, profiles.size());
+  EXPECT_EQ(1uL, profiles.size());
   EXPECT_EQ(kDefaultCompanyName,
             TruncateUTF8(base::UTF16ToUTF8(
                 profiles[0]->GetRawInfo(autofill::COMPANY_NAME))));
 
-  // There should be not card present.
+  // There should be no cards present.
   cards = pdm->GetCreditCards();
-  ASSERT_EQ(0uL, cards.size());
+  EXPECT_EQ(0uL, cards.size());
+
+  // Payments customer data should be updated.
+  EXPECT_EQ("newid", pdm->GetPaymentsCustomerData()->customer_id);
 }
 
 // Tests that a local billing address id set on a card on the client should not
@@ -830,6 +953,336 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ(kDefaultCardID, cards[0]->server_id());
   EXPECT_EQ(kDefaultBillingAddressId, cards[0]->billing_address_id());
+}
+
+class SingleClientWalletSecondaryAccountSyncTest
+    : public SingleClientWalletSyncTest {
+ public:
+  SingleClientWalletSecondaryAccountSyncTest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/{switches::kSyncStandaloneTransport,
+                              switches::kSyncSupportSecondaryAccount,
+                              switches::kSyncUSSAutofillWalletData,
+                              autofill::features::
+                                  kAutofillEnableAccountWalletStorage},
+        /*disabled_features=*/{});
+  }
+  ~SingleClientWalletSecondaryAccountSyncTest() override {}
+
+  void SetUpInProcessBrowserTestFixture() override {
+    fake_gaia_cookie_manager_factory_ =
+        secondary_account_helper::SetUpFakeGaiaCookieManagerService();
+  }
+
+  void SetUpOnMainThread() override {
+#if defined(OS_CHROMEOS)
+    secondary_account_helper::InitNetwork();
+#endif  // defined(OS_CHROMEOS)
+  }
+
+  Profile* profile() { return GetProfile(0); }
+
+ private:
+  base::test::ScopedFeatureList features_;
+
+  secondary_account_helper::ScopedFakeGaiaCookieManagerServiceFactory
+      fake_gaia_cookie_manager_factory_;
+
+  DISALLOW_COPY_AND_ASSIGN(SingleClientWalletSecondaryAccountSyncTest);
+};
+
+// ChromeOS doesn't support changes to the primary account after startup, so
+// these secondary-account-related tests don't apply.
+#if !defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
+                       SwitchesFromAccountToProfileStorageOnSyncOptIn) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  GetPersonalDataManager(0)->OnSyncServiceInitialized(GetSyncService(0));
+
+  GetFakeServer()->SetWalletData(
+      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData()});
+
+  // Set up Sync in transport mode for a non-primary account.
+  secondary_account_helper::SignInSecondaryAccount(profile(), "user@email.com");
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion(
+      /*skip_passphrase_verification=*/false));
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // PersonalDataManager should use (ephemeral) account storage.
+  EXPECT_FALSE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_TRUE(
+      GetPersonalDataManager(0)->IsUsingAccountStorageForServerCardsForTest());
+
+  auto account_data = GetAccountWebDataService(0);
+  ASSERT_NE(nullptr, account_data);
+  auto profile_data = GetProfileWebDataService(0);
+  ASSERT_NE(nullptr, profile_data);
+
+  // Check that the data is stored in the account storage (ephemeral), but not
+  // in the profile storage (persisted).
+  EXPECT_EQ(1U, GetServerCards(account_data).size());
+  EXPECT_EQ(0U, GetServerCards(profile_data).size());
+  EXPECT_NE(nullptr, GetPaymentsCustomerData(account_data).get());
+  EXPECT_EQ(nullptr, GetPaymentsCustomerData(profile_data).get());
+
+  // Simulate the user opting in to full Sync: Make the account primary, and
+  // set first-time setup to complete.
+  secondary_account_helper::MakeAccountPrimary(profile(), "user@email.com");
+  GetSyncService(0)->SetFirstSetupComplete();
+
+  // Wait for Sync to get reconfigured into feature mode.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion(
+      /*skip_passphrase_verification=*/false));
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // PersonalDataManager should have switched to persistent storage.
+  EXPECT_TRUE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_FALSE(
+      GetPersonalDataManager(0)->IsUsingAccountStorageForServerCardsForTest());
+
+  // The data should now be in the profile storage (persisted).
+  EXPECT_EQ(0U, GetServerCards(account_data).size());
+  EXPECT_EQ(1U, GetServerCards(profile_data).size());
+  EXPECT_EQ(nullptr, GetPaymentsCustomerData(account_data).get());
+  EXPECT_NE(nullptr, GetPaymentsCustomerData(profile_data).get());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientWalletSecondaryAccountSyncTest,
+    SwitchesFromAccountToProfileStorageOnSyncOptInWithAdvancedSetup) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  GetPersonalDataManager(0)->OnSyncServiceInitialized(GetSyncService(0));
+
+  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
+
+  // Set up Sync in transport mode for a non-primary account.
+  secondary_account_helper::SignInSecondaryAccount(profile(), "user@email.com");
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion(
+      /*skip_passphrase_verification=*/false));
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // PersonalDataManager should use (ephemeral) account storage.
+  EXPECT_FALSE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_TRUE(
+      GetPersonalDataManager(0)->IsUsingAccountStorageForServerCardsForTest());
+
+  auto account_data = GetAccountWebDataService(0);
+  ASSERT_NE(nullptr, account_data);
+  auto profile_data = GetProfileWebDataService(0);
+  ASSERT_NE(nullptr, profile_data);
+
+  // Check that the card is stored in the account storage (ephemeral), but not
+  // in the profile storage (persisted).
+  EXPECT_EQ(1U, GetServerCards(account_data).size());
+  EXPECT_EQ(0U, GetServerCards(profile_data).size());
+
+  // Simulate the user opting in to full Sync: First, make the account primary.
+  secondary_account_helper::MakeAccountPrimary(profile(), "user@email.com");
+
+  // Now start actually configuring Sync.
+  auto setup_handle = GetSyncService(0)->GetSetupInProgressHandle();
+
+  // Adding a primary account triggers a restart of the Sync engine, so it
+  // should now be initializing again.
+  ASSERT_EQ(syncer::SyncService::TransportState::INITIALIZING,
+            GetSyncService(0)->GetTransportState());
+
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization(
+      /*skip_passphrase_verification=*/false));
+
+  // Since we're still holding on to the setup-in-progress handle, the data
+  // types can't be configured yet.
+  ASSERT_EQ(syncer::SyncService::TransportState::PENDING_DESIRED_CONFIGURATION,
+            GetSyncService(0)->GetTransportState());
+
+  GetSyncService(0)->OnUserChoseDatatypes(
+      /*sync_everything=*/false, syncer::ModelTypeSet(syncer::AUTOFILL));
+
+  // Once the user finishes the setup, we can actually configure.
+  setup_handle.reset();
+  ASSERT_EQ(syncer::SyncService::TransportState::CONFIGURING,
+            GetSyncService(0)->GetTransportState());
+
+  GetSyncService(0)->SetFirstSetupComplete();
+
+  // Wait for Sync to get reconfigured into feature mode.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion(
+      /*skip_passphrase_verification=*/false));
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // PersonalDataManager should have switched to persistent storage.
+  EXPECT_TRUE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_FALSE(
+      GetPersonalDataManager(0)->IsUsingAccountStorageForServerCardsForTest());
+
+  // The card should now be in the profile storage (persisted).
+  EXPECT_EQ(0U, GetServerCards(account_data).size());
+  EXPECT_EQ(1U, GetServerCards(profile_data).size());
+}
+#endif  // !defined(OS_CHROMEOS)
+
+// This tests that switching between Sync-the-feature and
+// Sync-standalone-transport properly migrates server credit cards between the
+// profile (i.e. persisted) and account (i.e. ephemeral) storage.
+// When turning off Sync-the-feature via SyncService::RequestStop, you can
+// specify either KEEP_DATA or CLEAR_DATA. For full coverage, we test all
+// transitions, and each time verify that the card is in the correct storage:
+// 1. Start out in Sync-the-feature mode -> profile storage.
+// 2. RequestStop(KEEP_DATA) -> account storage.
+// 3. Enable Sync-the-feature again -> profile storage.
+// 4. RequestStop(CLEAR_DATA) -> account storage.
+// 5. Enable Sync-the-feature again -> profile storage.
+IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
+                       SwitchesBetweenAccountAndProfileStorageOnTogglingSync) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{switches::kSyncStandaloneTransport,
+                            switches::kSyncUSSAutofillWalletData,
+                            autofill::features::
+                                kAutofillEnableAccountWalletStorage},
+      /*disabled_features=*/{});
+
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  GetPersonalDataManager(0)->OnSyncServiceInitialized(GetSyncService(0));
+
+  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
+
+  // STEP 1. Set up Sync in full feature mode.
+  ASSERT_TRUE(GetClient(0)->SetupSync());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // PersonalDataManager should use the regular persisted (non-account) storage.
+  EXPECT_TRUE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_FALSE(
+      GetPersonalDataManager(0)->IsUsingAccountStorageForServerCardsForTest());
+
+  auto account_data = GetAccountWebDataService(0);
+  ASSERT_NE(nullptr, account_data);
+  auto profile_data = GetProfileWebDataService(0);
+  ASSERT_NE(nullptr, profile_data);
+
+  // Check that the card is stored in the profile storage (persisted), but not
+  // in the account storage (ephemeral).
+  EXPECT_EQ(0U, GetServerCards(account_data).size());
+  EXPECT_EQ(1U, GetServerCards(profile_data).size());
+
+  // STEP 2. Turn off Sync-the-feature temporarily (e.g. the Sync feature toggle
+  // on Android), i.e. leave the Sync data around.
+  GetSyncService(0)->RequestStop(syncer::SyncService::KEEP_DATA);
+
+  // Wait for Sync to get reconfigured into transport mode.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion(
+      /*skip_passphrase_verification=*/false));
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // PersonalDataManager should have switched to ephemeral storage.
+  EXPECT_FALSE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_TRUE(
+      GetPersonalDataManager(0)->IsUsingAccountStorageForServerCardsForTest());
+
+  // The card should now be in the account storage (ephemeral). Note that even
+  // though we specified KEEP_DATA above, the card is *not* in the profile
+  // storage (persisted) anymore, because AUTOFILL_WALLET_DATA is special-cased
+  // to always clear its data when Sync is turned off.
+  EXPECT_EQ(1U, GetServerCards(account_data).size());
+  EXPECT_EQ(0U, GetServerCards(profile_data).size());
+
+  // STEP 3. Turn Sync-the-feature on again.
+  GetSyncService(0)->RequestStart();
+
+  // Wait for Sync to get reconfigured into full feature mode again.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion(
+      /*skip_passphrase_verification=*/false));
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // PersonalDataManager should have switched back to persistent storage.
+  EXPECT_TRUE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_FALSE(
+      GetPersonalDataManager(0)->IsUsingAccountStorageForServerCardsForTest());
+
+  // And the card should be in the profile i.e. persistent storage again.
+  EXPECT_EQ(0U, GetServerCards(account_data).size());
+  EXPECT_EQ(1U, GetServerCards(profile_data).size());
+
+  // STEP 4. Turn off Sync-the-feature again, but this time clear data.
+  GetSyncService(0)->RequestStop(syncer::SyncService::CLEAR_DATA);
+
+  // Wait for Sync to get reconfigured into transport mode.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion(
+      /*skip_passphrase_verification=*/false));
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // PersonalDataManager should have switched to ephemeral storage.
+  EXPECT_FALSE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_TRUE(
+      GetPersonalDataManager(0)->IsUsingAccountStorageForServerCardsForTest());
+
+  // The card should now be in the account storage (ephemeral).
+  EXPECT_EQ(1U, GetServerCards(account_data).size());
+  EXPECT_EQ(0U, GetServerCards(profile_data).size());
+
+  // STEP 5. Turn Sync-the-feature on again.
+  GetSyncService(0)->RequestStart();
+  GetSyncService(0)->SetFirstSetupComplete();
+
+  // Wait for Sync to get reconfigured into full feature mode again.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion(
+      /*skip_passphrase_verification=*/false));
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // PersonalDataManager should have switched back to persistent storage.
+  EXPECT_TRUE(GetPersonalDataManager(0)->IsSyncFeatureEnabled());
+  EXPECT_FALSE(
+      GetPersonalDataManager(0)->IsUsingAccountStorageForServerCardsForTest());
+
+  // And the card should be in the profile i.e. persistent storage again.
+  EXPECT_EQ(0U, GetServerCards(account_data).size());
+  EXPECT_EQ(1U, GetServerCards(profile_data).size());
 }
 
 INSTANTIATE_TEST_CASE_P(USS,

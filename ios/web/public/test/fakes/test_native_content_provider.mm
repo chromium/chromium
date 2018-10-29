@@ -32,13 +32,6 @@
   return nativeContent == _nativeContent.end() ? nil : nativeContent->second;
 }
 
-- (id<CRWNativeContent>)controllerForURL:(const GURL&)URL
-                               withError:(NSError*)error
-                                  isPost:(BOOL)isPost {
-  auto nativeContent = _nativeContent.find(URL);
-  return nativeContent == _nativeContent.end() ? nil : nativeContent->second;
-}
-
 - (CGFloat)nativeContentHeaderHeightForWebState:(web::WebState*)webState {
   return 0;
 }

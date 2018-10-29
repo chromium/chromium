@@ -99,6 +99,10 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   // |demuxer_stream_|.
   void InitializeDecoderConfig();
 
+  // Completes traces for various pending states.
+  void CompletePendingDecrypt(Decryptor::Status status);
+  void CompleteWaitingForDecryptionKey();
+
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   MediaLog* media_log_;

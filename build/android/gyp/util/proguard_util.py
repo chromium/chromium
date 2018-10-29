@@ -51,12 +51,17 @@ class ProguardCmdBuilder(object):
     self._configs = None
     self._config_exclusions = None
     self._outjar = None
+    self._mapping_output = None
     self._verbose = False
     self._disabled_optimizations = []
 
   def outjar(self, path):
     assert self._outjar is None
     self._outjar = path
+
+  def mapping_output(self, path):
+    assert self._mapping_output is None
+    self._mapping_output = path
 
   def mapping(self, path):
     assert self._mapping is None
@@ -124,7 +129,7 @@ class ProguardCmdBuilder(object):
       '-outjars', self._outjar,
       '-printseeds', self._outjar + '.seeds',
       '-printusage', self._outjar + '.usage',
-      '-printmapping', self._outjar + '.mapping',
+      '-printmapping', self._mapping_output,
     ]
 
     if self._verbose:
@@ -156,7 +161,7 @@ class ProguardCmdBuilder(object):
     return [
         self._outjar,
         self._outjar + '.flags',
-        self._outjar + '.mapping',
+        self._mapping_output,
         self._outjar + '.seeds',
         self._outjar + '.usage',
     ]

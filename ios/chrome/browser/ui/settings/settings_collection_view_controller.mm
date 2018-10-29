@@ -17,7 +17,6 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/util.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "components/signin/core/browser/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/feature.h"
@@ -31,7 +30,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
-#include "ios/chrome/browser/signin/signin_manager_factory.h"
+#include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -43,14 +42,14 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/commands/settings_main_page_commands.h"
-#import "ios/chrome/browser/ui/settings/about_chrome_collection_view_controller.h"
+#import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/accounts_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill_credit_card_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill_profile_collection_view_controller.h"
-#import "ios/chrome/browser/ui/settings/bandwidth_management_collection_view_controller.h"
+#import "ios/chrome/browser/ui/settings/bandwidth_management_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/cells/account_signin_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_detail_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_detail_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_text_item.h"
 #import "ios/chrome/browser/ui/settings/content_settings_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services_settings_coordinator.h"
@@ -64,7 +63,7 @@
 #import "ios/chrome/browser/ui/settings/voicesearch_collection_view_controller.h"
 #import "ios/chrome/browser/ui/signin_interaction/public/signin_presenter.h"
 #import "ios/chrome/browser/ui/signin_interaction/signin_interaction_coordinator.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/browser/voice/speech_input_locale_config.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -72,6 +71,7 @@
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_prefs.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -147,44 +147,43 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 NSString* kLogJavascriptKey = @"LogJavascript";
 #endif  // CHROMIUM_BUILD && !defined(NDEBUG)
 
-#pragma mark - SigninObserverBridge Class
+#pragma mark - IdentityObserverBridge Class
 
-class SigninObserverBridge : public SigninManagerBase::Observer {
+class IdentityObserverBridge : public identity::IdentityManager::Observer {
  public:
-  SigninObserverBridge(ios::ChromeBrowserState* browserState,
-                       SettingsCollectionViewController* owner);
-  ~SigninObserverBridge() override {}
+  IdentityObserverBridge(ios::ChromeBrowserState* browserState,
+                         SettingsCollectionViewController* owner);
+  ~IdentityObserverBridge() override {}
 
-  // SigninManagerBase::Observer implementation:
-  void GoogleSigninSucceeded(const std::string& account_id,
-                             const std::string& username) override;
-  void GoogleSignedOut(const std::string& account_id,
-                       const std::string& username) override;
+  // IdentityManager::Observer implementation:
+  void OnPrimaryAccountSet(const AccountInfo& primary_account_info) override;
+  void OnPrimaryAccountCleared(
+      const AccountInfo& previous_primary_account_info) override;
 
  private:
   __weak SettingsCollectionViewController* owner_;
-  ScopedObserver<SigninManager, SigninObserverBridge> observer_;
+  ScopedObserver<identity::IdentityManager, IdentityObserverBridge> observer_;
 };
 
-SigninObserverBridge::SigninObserverBridge(
+IdentityObserverBridge::IdentityObserverBridge(
     ios::ChromeBrowserState* browserState,
     SettingsCollectionViewController* owner)
     : owner_(owner), observer_(this) {
   DCHECK(owner_);
-  SigninManager* signin_manager =
-      ios::SigninManagerFactory::GetForBrowserState(browserState);
-  if (!signin_manager)
+  identity::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
+  if (!identity_manager)
     return;
-  observer_.Add(signin_manager);
+  observer_.Add(identity_manager);
 }
 
-void SigninObserverBridge::GoogleSigninSucceeded(const std::string& account_id,
-                                                 const std::string& username) {
+void IdentityObserverBridge::OnPrimaryAccountSet(
+    const AccountInfo& primary_account_info) {
   [owner_ onSignInStateChanged];
 }
 
-void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
-                                           const std::string& username) {
+void IdentityObserverBridge::OnPrimaryAccountCleared(
+    const AccountInfo& previous_primary_account_info) {
   [owner_ onSignInStateChanged];
 }
 
@@ -205,7 +204,7 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
   // The current browser state that hold the settings. Never off the record.
   ios::ChromeBrowserState* _browserState;  // weak
 
-  std::unique_ptr<SigninObserverBridge> _notificationBridge;
+  std::unique_ptr<IdentityObserverBridge> _notificationBridge;
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
   // Whether the impression of the Signin button has already been recorded.
   BOOL _hasRecordedSigninImpression;
@@ -214,9 +213,9 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
   // PrefBackedBoolean for ArticlesForYou switch.
   PrefBackedBoolean* _articlesEnabled;
   // The item related to the switch for the show suggestions setting.
-  SettingsSwitchItem* _showMemoryDebugToolsItem;
+  LegacySettingsSwitchItem* _showMemoryDebugToolsItem;
   // The item related to the switch for the show suggestions setting.
-  SettingsSwitchItem* _articlesForYouItem;
+  LegacySettingsSwitchItem* _articlesForYouItem;
 
   // Mediator to configure the sign-in promo cell. Also used to received
   // identity update notifications.
@@ -241,11 +240,11 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
   PrefChangeRegistrar _prefChangeRegistrar;
 
   // Updatable Items.
-  SettingsDetailItem* _voiceSearchDetailItem;
-  SettingsDetailItem* _defaultSearchEngineItem;
-  SettingsDetailItem* _savePasswordsDetailItem;
-  SettingsDetailItem* _autoFillProfileDetailItem;
-  SettingsDetailItem* _autoFillCreditCardDetailItem;
+  LegacySettingsDetailItem* _voiceSearchDetailItem;
+  LegacySettingsDetailItem* _defaultSearchEngineItem;
+  LegacySettingsDetailItem* _savePasswordsDetailItem;
+  LegacySettingsDetailItem* _autoFillProfileDetailItem;
+  LegacySettingsDetailItem* _autoFillCreditCardDetailItem;
 
   // YES if the user used at least once the sign-in promo view buttons.
   BOOL _signinStarted;
@@ -283,7 +282,7 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
     _browserState = browserState;
     self.title = l10n_util::GetNSStringWithFixup(IDS_IOS_SETTINGS_TITLE);
     self.collectionViewAccessibilityIdentifier = kSettingsCollectionViewId;
-    _notificationBridge.reset(new SigninObserverBridge(_browserState, self));
+    _notificationBridge.reset(new IdentityObserverBridge(_browserState, self));
     syncer::SyncService* syncService =
         ProfileSyncServiceFactory::GetForBrowserState(_browserState);
     _syncObserverBridge.reset(new SyncObserverBridge(self, syncService));
@@ -416,15 +415,6 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
 
   // Basics section
   [model addSectionWithIdentifier:SectionIdentifierBasics];
-  if (!experimental_flags::IsSettingsUIRebootEnabled()) {
-    SettingsTextItem* basicsHeader =
-        [[SettingsTextItem alloc] initWithType:ItemTypeHeader];
-    basicsHeader.text =
-        l10n_util::GetNSString(IDS_IOS_OPTIONS_GENERAL_TAB_LABEL);
-    basicsHeader.textColor = [[MDCPalette greyPalette] tint500];
-    [model setHeader:basicsHeader
-        forSectionWithIdentifier:SectionIdentifierBasics];
-  }
   [model addItem:[self searchEngineDetailItem]
       toSectionWithIdentifier:SectionIdentifierBasics];
   [model addItem:[self savePasswordsDetailItem]
@@ -436,15 +426,6 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
 
   // Advanced Section
   [model addSectionWithIdentifier:SectionIdentifierAdvanced];
-  if (!experimental_flags::IsSettingsUIRebootEnabled()) {
-    SettingsTextItem* advancedHeader =
-        [[SettingsTextItem alloc] initWithType:ItemTypeHeader];
-    advancedHeader.text =
-        l10n_util::GetNSString(IDS_IOS_OPTIONS_ADVANCED_TAB_LABEL);
-    advancedHeader.textColor = [[MDCPalette greyPalette] tint500];
-    [model setHeader:advancedHeader
-        forSectionWithIdentifier:SectionIdentifierAdvanced];
-  }
   [model addItem:[self voiceSearchDetailItem]
       toSectionWithIdentifier:SectionIdentifierAdvanced];
   [model addItem:[self privacyDetailItem]
@@ -469,14 +450,6 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
   // Debug Section
   if ([self hasDebugSection]) {
     [model addSectionWithIdentifier:SectionIdentifierDebug];
-    if (!experimental_flags::IsSettingsUIRebootEnabled()) {
-      SettingsTextItem* debugHeader =
-          [[SettingsTextItem alloc] initWithType:ItemTypeHeader];
-      debugHeader.text = @"Debug";
-      debugHeader.textColor = [[MDCPalette greyPalette] tint500];
-      [model setHeader:debugHeader
-          forSectionWithIdentifier:SectionIdentifierDebug];
-    }
   }
 
   if (experimental_flags::IsMemoryDebuggingEnabled()) {
@@ -659,8 +632,8 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
                     iconImageName:kSettingsAboutChromeImageName];
 }
 
-- (SettingsSwitchItem*)showMemoryDebugSwitchItem {
-  SettingsSwitchItem* showMemoryDebugSwitchItem =
+- (LegacySettingsSwitchItem*)showMemoryDebugSwitchItem {
+  LegacySettingsSwitchItem* showMemoryDebugSwitchItem =
       [self switchItemWithType:ItemTypeMemoryDebugging
                          title:@"Show memory debug tools"
                  iconImageName:kSettingsDebugImageName
@@ -670,8 +643,8 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
   return showMemoryDebugSwitchItem;
 }
 
-- (SettingsSwitchItem*)articlesForYouSwitchItem {
-  SettingsSwitchItem* articlesForYouSwitchItem =
+- (LegacySettingsSwitchItem*)articlesForYouSwitchItem {
+  LegacySettingsSwitchItem* articlesForYouSwitchItem =
       [self switchItemWithType:ItemTypeArticlesForYou
                          title:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE)
@@ -683,28 +656,28 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
 }
 #if CHROMIUM_BUILD && !defined(NDEBUG)
 
-- (SettingsSwitchItem*)viewSourceSwitchItem {
+- (LegacySettingsSwitchItem*)viewSourceSwitchItem {
   return [self switchItemWithType:ItemTypeViewSource
                             title:@"View source menu"
                     iconImageName:kSettingsDebugImageName
                   withDefaultsKey:kDevViewSourceKey];
 }
 
-- (SettingsSwitchItem*)logJavascriptConsoleSwitchItem {
+- (LegacySettingsSwitchItem*)logJavascriptConsoleSwitchItem {
   return [self switchItemWithType:ItemTypeLogJavascript
                             title:@"Log JS"
                     iconImageName:kSettingsDebugImageName
                   withDefaultsKey:kLogJavascriptKey];
 }
 
-- (SettingsDetailItem*)collectionViewCatalogDetailItem {
+- (LegacySettingsDetailItem*)collectionViewCatalogDetailItem {
   return [self detailItemWithType:ItemTypeCollectionCellCatalog
                              text:@"Collection Cell Catalog"
                        detailText:nil
                     iconImageName:kSettingsDebugImageName];
 }
 
-- (SettingsDetailItem*)tableViewCatalogDetailItem {
+- (LegacySettingsDetailItem*)tableViewCatalogDetailItem {
   return [self detailItemWithType:ItemTypeTableCellCatalog
                              text:@"TableView Cell Catalog"
                        detailText:nil
@@ -725,12 +698,12 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
 
 #pragma mark Item Constructors
 
-- (SettingsDetailItem*)detailItemWithType:(NSInteger)type
-                                     text:(NSString*)text
-                               detailText:(NSString*)detailText
-                            iconImageName:(NSString*)iconImageName {
-  SettingsDetailItem* detailItem =
-      [[SettingsDetailItem alloc] initWithType:type];
+- (LegacySettingsDetailItem*)detailItemWithType:(NSInteger)type
+                                           text:(NSString*)text
+                                     detailText:(NSString*)detailText
+                                  iconImageName:(NSString*)iconImageName {
+  LegacySettingsDetailItem* detailItem =
+      [[LegacySettingsDetailItem alloc] initWithType:type];
   detailItem.text = text;
   detailItem.detailText = detailText;
   detailItem.accessoryType = MDCCollectionViewCellAccessoryDisclosureIndicator;
@@ -740,12 +713,12 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
   return detailItem;
 }
 
-- (SettingsSwitchItem*)switchItemWithType:(NSInteger)type
-                                    title:(NSString*)title
-                            iconImageName:(NSString*)iconImageName
-                          withDefaultsKey:(NSString*)key {
-  SettingsSwitchItem* switchItem =
-      [[SettingsSwitchItem alloc] initWithType:type];
+- (LegacySettingsSwitchItem*)switchItemWithType:(NSInteger)type
+                                          title:(NSString*)title
+                                  iconImageName:(NSString*)iconImageName
+                                withDefaultsKey:(NSString*)key {
+  LegacySettingsSwitchItem* switchItem =
+      [[LegacySettingsSwitchItem alloc] initWithType:type];
   switchItem.text = title;
   switchItem.iconImageName = iconImageName;
   if (key) {
@@ -765,9 +738,9 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
   NSInteger itemType =
       [self.collectionViewModel itemTypeForIndexPath:indexPath];
 
-  if ([cell isKindOfClass:[SettingsDetailCell class]]) {
-    SettingsDetailCell* detailCell =
-        base::mac::ObjCCastStrict<SettingsDetailCell>(cell);
+  if ([cell isKindOfClass:[LegacySettingsDetailCell class]]) {
+    LegacySettingsDetailCell* detailCell =
+        base::mac::ObjCCastStrict<LegacySettingsDetailCell>(cell);
     if (itemType == ItemTypeSavedPasswords) {
       scoped_refptr<password_manager::PasswordStore> passwordStore =
           IOSChromePasswordStoreFactory::GetForBrowserState(
@@ -793,16 +766,16 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
 
   switch (itemType) {
     case ItemTypeMemoryDebugging: {
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      LegacySettingsSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(memorySwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
       break;
     }
     case ItemTypeArticlesForYou: {
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      LegacySettingsSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(articlesForYouSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
@@ -816,8 +789,8 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
     }
     case ItemTypeViewSource: {
 #if CHROMIUM_BUILD && !defined(NDEBUG)
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      LegacySettingsSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(viewSourceSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
@@ -828,8 +801,8 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
     }
     case ItemTypeLogJavascript: {
 #if CHROMIUM_BUILD && !defined(NDEBUG)
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      LegacySettingsSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(logJSSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
@@ -861,7 +834,7 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
   NSInteger itemType =
       [self.collectionViewModel itemTypeForIndexPath:indexPath];
 
-  SettingsRootCollectionViewController* controller;
+  UIViewController<SettingsRootViewControlling>* controller;
 
   switch (itemType) {
     case ItemTypeSignInButton:
@@ -910,11 +883,11 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
           initWithBrowserState:_browserState];
       break;
     case ItemTypeBandwidth:
-      controller = [[BandwidthManagementCollectionViewController alloc]
+      controller = [[BandwidthManagementTableViewController alloc]
           initWithBrowserState:_browserState];
       break;
     case ItemTypeAboutChrome:
-      controller = [[AboutChromeCollectionViewController alloc] init];
+      controller = [[AboutChromeTableViewController alloc] init];
       break;
     case ItemTypeMemoryDebugging:
     case ItemTypeViewSource:
@@ -985,8 +958,8 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
       [self.collectionViewModel indexPathForItemType:ItemTypeMemoryDebugging
                                    sectionIdentifier:SectionIdentifierDebug];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  LegacySettingsSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchItem>(
           [self.collectionViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -999,8 +972,8 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
       [self.collectionViewModel indexPathForItemType:ItemTypeArticlesForYou
                                    sectionIdentifier:SectionIdentifierAdvanced];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  LegacySettingsSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchItem>(
           [self.collectionViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1014,8 +987,8 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
       [self.collectionViewModel indexPathForItemType:ItemTypeViewSource
                                    sectionIdentifier:SectionIdentifierDebug];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  LegacySettingsSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchItem>(
           [self.collectionViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1028,8 +1001,8 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
       [self.collectionViewModel indexPathForItemType:ItemTypeLogJavascript
                                    sectionIdentifier:SectionIdentifierDebug];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  LegacySettingsSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchItem>(
           [self.collectionViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1100,7 +1073,7 @@ void SigninObserverBridge::GoogleSignedOut(const std::string& account_id,
       !IsTransientSyncError(syncSetupService->GetSyncServiceState());
   if (identityAccountItem.shouldDisplayError) {
     identityAccountItem.detailText =
-        GetSyncErrorDescriptionForBrowserState(_browserState);
+        GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
   } else {
     identityAccountItem.detailText =
         syncSetupService->IsSyncEnabled()

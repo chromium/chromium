@@ -36,8 +36,9 @@ id<NSDraggingSource> GetDraggingSource() {
 
 void DragDownloadItem(const download::DownloadItem* download,
                       gfx::Image* icon,
-                      gfx::NativeView view) {
+                      gfx::NativeView native_view) {
   DCHECK_EQ(download::DownloadItem::COMPLETE, download->GetState());
+  NSView* view = native_view.GetNativeNSView();
   NSPoint current_position = [[view window] mouseLocationOutsideOfEventStream];
   current_position =
       [view backingAlignedRect:NSMakeRect(current_position.x,

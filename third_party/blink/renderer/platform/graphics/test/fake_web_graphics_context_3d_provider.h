@@ -52,7 +52,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   void SetLostContextCallback(base::Closure) override {}
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t id)>) override {}
-  cc::ImageDecodeCache* ImageDecodeCache() override {
+  cc::ImageDecodeCache* ImageDecodeCache(SkColorType) override {
     return image_decode_cache_;
   }
 

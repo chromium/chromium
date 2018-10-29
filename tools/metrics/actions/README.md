@@ -14,7 +14,8 @@ enable different analyses.  They're complementary.
 ## Coding (Emitting to User Actions)
 
 Generally you'll want to call `base::RecordAction()`, which is defined in
-[https://cs.chromium.org/chromium/src/base/metrics/user_metrics.h](user_metrics.h).
+[user_metrics.h](https://cs.chromium.org/chromium/src/base/metrics/user_metrics.h).
+
 
 ### Emit at a High-Level, not Deep in the Implementation
 
@@ -97,7 +98,7 @@ actions (see [advice above](#Do-Not-Emit-Redundantly)) and not emitted
 excessively (see [advice above](#Do-Not-Emit-Excessively)).
 
 In addition to testing interactively, you can have unit tests check the number
-of times a user action was emitted.  See [user_action_tester.h](https://cs.chromium.org/chromium/src/base/test/user_action_tester.h)
+of times a user action was emitted.  See [user_action_tester.h](https://cs.chromium.org/chromium/src/base/test/metrics/user_action_tester.h)
 for details.
 
 ## Interpreting the Resulting Data

@@ -6,9 +6,11 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/task/post_task.h"
 #include "components/tracing/common/tracing_messages.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/common/child_process_host_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -28,9 +30,9 @@ void TraceMessageFilter::OnChannelConnected(int32_t peer_pid) {
 
 void TraceMessageFilter::OnChannelClosing() {
   if (has_child_) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(&TraceMessageFilter::Unregister,
-                                           base::RetainedRef(this)));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(&TraceMessageFilter::Unregister,
+                                            base::RetainedRef(this)));
   }
 }
 
@@ -51,8 +53,8 @@ bool TraceMessageFilter::OnMessageReceived(const IPC::Message& message) {
 
 void TraceMessageFilter::OnChildSupportsTracing() {
   has_child_ = true;
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&TraceMessageFilter::Register, base::RetainedRef(this)));
 }
 

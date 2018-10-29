@@ -44,7 +44,7 @@ struct CONTENT_EXPORT ContentSecurityPolicy {
   static bool Allow(const ContentSecurityPolicy& policy,
                     CSPDirective::Name directive,
                     const GURL& url,
-                    bool is_redirect,
+                    bool has_followed_redirect,
                     bool is_response_check,
                     CSPContext* context,
                     const SourceLocation& source_location,

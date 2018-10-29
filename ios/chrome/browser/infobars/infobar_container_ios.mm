@@ -5,45 +5,20 @@
 #include "ios/chrome/browser/infobars/infobar_container_ios.h"
 
 #include <stddef.h>
-#import <UIKit/UIKit.h>
 
 #include "base/logging.h"
 #include "ios/chrome/browser/infobars/infobar.h"
-#include "ios/chrome/browser/infobars/infobar_container_view.h"
-#import "ios/chrome/common/material_timing.h"
+#import "ios/chrome/browser/ui/infobars/infobar_container_consumer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace {
-void SetViewAlphaWithAnimation(UIView* view, float alpha) {
-  CGFloat oldAlpha = [view alpha];
-  if (oldAlpha > 0 && alpha == 0) {
-    [view setUserInteractionEnabled:NO];
-  }
-  [UIView cr_transitionWithView:view
-      duration:ios::material::kDuration3
-      curve:ios::material::CurveEaseInOut
-      options:0
-      animations:^{
-        [view setAlpha:alpha];
-      }
-      completion:^(BOOL) {
-        if (oldAlpha == 0 && alpha > 0) {
-          [view setUserInteractionEnabled:YES];
-        };
-      }];
-}
-}  // namespace
-
 InfoBarContainerIOS::InfoBarContainerIOS(
-    infobars::InfoBarContainer::Delegate* delegate)
-    : InfoBarContainer(delegate), delegate_(delegate) {
+    infobars::InfoBarContainer::Delegate* delegate,
+    id<InfobarContainerConsumer> consumer)
+    : InfoBarContainer(delegate), delegate_(delegate), consumer_(consumer) {
   DCHECK(delegate);
-  container_view_ = [[InfoBarContainerView alloc] init];
-  [container_view_ setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
-                                       UIViewAutoresizingFlexibleTopMargin];
 }
 
 InfoBarContainerIOS::~InfoBarContainerIOS() {
@@ -51,14 +26,10 @@ InfoBarContainerIOS::~InfoBarContainerIOS() {
   RemoveAllInfoBarsForDestruction();
 }
 
-InfoBarContainerView* InfoBarContainerIOS::view() {
-  return container_view_;
-}
-
 void InfoBarContainerIOS::PlatformSpecificAddInfoBar(infobars::InfoBar* infobar,
                                                      size_t position) {
   InfoBarIOS* infobar_ios = static_cast<InfoBarIOS*>(infobar);
-  [container_view_ addInfoBar:infobar_ios position:position];
+  [consumer_ addInfoBar:infobar_ios position:position];
 }
 
 void InfoBarContainerIOS::PlatformSpecificRemoveInfoBar(
@@ -76,14 +47,5 @@ void InfoBarContainerIOS::PlatformSpecificRemoveInfoBar(
 
 void InfoBarContainerIOS::PlatformSpecificInfoBarStateChanged(
     bool is_animating) {
-  [container_view_ setUserInteractionEnabled:!is_animating];
-  [container_view_ setNeedsLayout];
-}
-
-void InfoBarContainerIOS::SuspendInfobars() {
-  SetViewAlphaWithAnimation(container_view_, 0);
-}
-
-void InfoBarContainerIOS::RestoreInfobars() {
-  SetViewAlphaWithAnimation(container_view_, 1);
+  [consumer_ setUserInteractionEnabled:!is_animating];
 }

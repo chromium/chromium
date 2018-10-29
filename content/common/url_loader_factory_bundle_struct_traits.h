@@ -5,6 +5,8 @@
 #ifndef CONTENT_COMMON_URL_LOADER_FACTORY_BUNDLE_STRUCT_TRAITS_H_
 #define CONTENT_COMMON_URL_LOADER_FACTORY_BUNDLE_STRUCT_TRAITS_H_
 
+#include <memory>
+
 #include "content/common/url_loader_factory_bundle.h"
 #include "content/common/url_loader_factory_bundle.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -23,8 +25,11 @@ struct StructTraits<content::mojom::URLLoaderFactoryBundleDataView,
   static network::mojom::URLLoaderFactoryPtrInfo default_factory(
       BundleInfoType& bundle);
 
-  static std::map<std::string, network::mojom::URLLoaderFactoryPtrInfo>
-  factories(BundleInfoType& bundle);
+  static content::URLLoaderFactoryBundleInfo::SchemeMap
+  scheme_specific_factories(BundleInfoType& bundle);
+
+  static content::URLLoaderFactoryBundleInfo::OriginMap
+  initiator_specific_factories(BundleInfoType& bundle);
 
   static bool bypass_redirect_checks(BundleInfoType& bundle);
 

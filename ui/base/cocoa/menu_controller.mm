@@ -16,7 +16,6 @@
 #import "ui/events/event_utils.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
@@ -45,13 +44,23 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
 }  // namespace
 
-NSString* const kMenuControllerMenuWillOpenNotification =
-    @"MenuControllerMenuWillOpen";
-NSString* const kMenuControllerMenuDidCloseNotification =
-    @"MenuControllerMenuDidClose";
-
 // Internal methods.
 @interface MenuControllerCocoa ()
+// Called before the menu is to be displayed to update the state (enabled,
+// radio, etc) of each item in the menu. Also will update the title if the item
+// is marked as "dynamic".
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item;
+
+// Adds the item at |index| in |model| as an NSMenuItem at |index| of |menu|.
+// Associates a submenu if the MenuModel::ItemType is TYPE_SUBMENU.
+- (void)addItemToMenu:(NSMenu*)menu
+              atIndex:(NSInteger)index
+            fromModel:(ui::MenuModel*)model;
+
+// Creates a NSMenu from the given model. If the model has submenus, this can
+// be invoked recursively.
+- (NSMenu*)menuFromModel:(ui::MenuModel*)model;
+
 // Adds a separator item at the given index. As the separator doesn't need
 // anything from the model, this method doesn't need the model index as the
 // other method below does.
@@ -74,6 +83,8 @@ NSString* const kMenuControllerMenuDidCloseNotification =
 @end
 
 @implementation MenuControllerCocoa {
+  ui::MenuModel* model_;  // Weak.
+  base::scoped_nsobject<NSMenu> menu_;
   BOOL useWithPopUpButtonCell_;  // If YES, 0th item is blank
   BOOL isMenuOpen_;
   BOOL postItemSelectedAsTask_;
@@ -84,20 +95,13 @@ NSString* const kMenuControllerMenuDidCloseNotification =
 @synthesize useWithPopUpButtonCell = useWithPopUpButtonCell_;
 @synthesize postItemSelectedAsTask = postItemSelectedAsTask_;
 
-+ (base::string16)elideMenuTitle:(const base::string16&)title
-                         toWidth:(int)width {
-  NSFont* nsfont = [NSFont menuBarFontOfSize:0];  // 0 means "default"
-  return gfx::ElideText(title, gfx::FontList(gfx::Font(nsfont)), width,
-                        gfx::ELIDE_TAIL, gfx::Typesetter::NATIVE);
-}
-
-- (id)init {
+- (instancetype)init {
   self = [super init];
   return self;
 }
 
-- (id)initWithModel:(ui::MenuModel*)model
-    useWithPopUpButtonCell:(BOOL)useWithCell {
+- (instancetype)initWithModel:(ui::MenuModel*)model
+       useWithPopUpButtonCell:(BOOL)useWithCell {
   if ((self = [super init])) {
     model_ = model;
     useWithPopUpButtonCell_ = useWithCell;
@@ -139,11 +143,6 @@ NSString* const kMenuControllerMenuDidCloseNotification =
   return menu;
 }
 
-- (int)maxWidthForMenuModel:(ui::MenuModel*)model
-                 modelIndex:(int)modelIndex {
-  return -1;
-}
-
 - (void)addSeparatorToMenu:(NSMenu*)menu
                    atIndex:(int)index {
   NSMenuItem* separator = [NSMenuItem separatorItem];
@@ -153,12 +152,7 @@ NSString* const kMenuControllerMenuDidCloseNotification =
 - (void)addItemToMenu:(NSMenu*)menu
               atIndex:(NSInteger)index
             fromModel:(ui::MenuModel*)model {
-  base::string16 label16 = model->GetLabelAt(index);
-  int maxWidth = [self maxWidthForMenuModel:model modelIndex:index];
-  if (maxWidth != -1)
-    label16 = [MenuControllerCocoa elideMenuTitle:label16 toWidth:maxWidth];
-
-  NSString* label = l10n_util::FixUpWindowsStyleLabel(label16);
+  NSString* label = l10n_util::FixUpWindowsStyleLabel(model->GetLabelAt(index));
   base::scoped_nsobject<NSMenuItem> item([[ResponsiveNSMenuItem alloc]
       initWithTitle:label
              action:@selector(itemSelected:)
@@ -235,10 +229,8 @@ NSString* const kMenuControllerMenuDidCloseNotification =
     }
     const gfx::FontList* font_list = model->GetLabelFontListAt(modelIndex);
     if (font_list) {
-      NSDictionary *attributes =
-          [NSDictionary dictionaryWithObject:font_list->GetPrimaryFont().
-                                             GetNativeFont()
-                                      forKey:NSFontAttributeName];
+      NSDictionary* attributes =
+          @{NSFontAttributeName : font_list->GetPrimaryFont().GetNativeFont()};
       base::scoped_nsobject<NSAttributedString> title(
           [[NSAttributedString alloc] initWithString:[(id)item title]
                                           attributes:attributes]);
@@ -335,16 +327,10 @@ NSString* const kMenuControllerMenuDidCloseNotification =
 
 - (void)menuWillOpen:(NSMenu*)menu {
   isMenuOpen_ = YES;
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:kMenuControllerMenuWillOpenNotification
-                    object:self];
   model_->MenuWillShow();  // Note: |model_| may trigger -[self dealloc].
 }
 
 - (void)menuDidClose:(NSMenu*)menu {
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:kMenuControllerMenuDidCloseNotification
-                    object:self];
   if (isMenuOpen_) {
     isMenuOpen_ = NO;
     model_->MenuWillClose();  // Note: |model_| may trigger -[self dealloc].

@@ -128,14 +128,13 @@ var DumpCreator = (function() {
      * @private
      */
     onDownloadData_: function() {
-      var dump_object =
-      {
+      var dump_object = {
         'getUserMedia': userMediaRequests,
         'PeerConnections': peerConnectionDataStore,
         'UserAgent': navigator.userAgent,
       };
-      var textBlob = new Blob([JSON.stringify(dump_object, null, ' ')],
-                              {type: 'octet/stream'});
+      var textBlob = new Blob(
+          [JSON.stringify(dump_object, null, ' ')], {type: 'octet/stream'});
       var URL = window.URL.createObjectURL(textBlob);
 
       var anchor = this.root_.getElementsByTagName('a')[0];

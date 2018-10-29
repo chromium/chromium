@@ -28,9 +28,9 @@
 
 namespace blink {
 
-struct TestTable : OpenType::TableBase {
-  OpenType::Fixed version;
-  OpenType::Int16 ascender;
+struct TestTable : open_type::TableBase {
+  open_type::Fixed version;
+  open_type::Int16 ascender;
 
   template <typename T>
   const T* ValidateOffset(const Vector<char>& buffer, uint16_t offset) const {
@@ -40,21 +40,21 @@ struct TestTable : OpenType::TableBase {
 
 TEST(OpenTypeVerticalDataTest, ValidateTableTest) {
   Vector<char> buffer(sizeof(TestTable));
-  const TestTable* table = OpenType::ValidateTable<TestTable>(buffer);
+  const TestTable* table = open_type::ValidateTable<TestTable>(buffer);
   EXPECT_TRUE(table);
 
   buffer = Vector<char>(sizeof(TestTable) - 1);
-  table = OpenType::ValidateTable<TestTable>(buffer);
+  table = open_type::ValidateTable<TestTable>(buffer);
   EXPECT_FALSE(table);
 
   buffer = Vector<char>(sizeof(TestTable) + 1);
-  table = OpenType::ValidateTable<TestTable>(buffer);
+  table = open_type::ValidateTable<TestTable>(buffer);
   EXPECT_TRUE(table);
 }
 
 TEST(OpenTypeVerticalDataTest, ValidateOffsetTest) {
   Vector<char> buffer(sizeof(TestTable));
-  const TestTable* table = OpenType::ValidateTable<TestTable>(buffer);
+  const TestTable* table = open_type::ValidateTable<TestTable>(buffer);
   ASSERT_TRUE(table);
 
   // Test overflow

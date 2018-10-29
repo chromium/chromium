@@ -116,7 +116,7 @@ void GCMAccountTracker::OnAccessTokenFetchCompleteForAccount(
     std::string account_id,
     GoogleServiceAuthError error,
     identity::AccessTokenInfo access_token_info) {
-  AccountInfos::iterator iter = account_infos_.find(account_id);
+  auto iter = account_infos_.find(account_id);
   DCHECK(iter != account_infos_.end());
   if (iter != account_infos_.end()) {
     DCHECK_EQ(GETTING_TOKEN, iter->second.state);
@@ -174,8 +174,7 @@ void GCMAccountTracker::ReportTokens() {
   bool account_removed = false;
   // Stop tracking the accounts, that were removed, as it will be reported to
   // the driver.
-  for (AccountInfos::iterator iter = account_infos_.begin();
-       iter != account_infos_.end();) {
+  for (auto iter = account_infos_.begin(); iter != account_infos_.end();) {
     if (iter->second.state == ACCOUNT_REMOVED) {
       account_removed = true;
       account_infos_.erase(iter++);
@@ -185,8 +184,8 @@ void GCMAccountTracker::ReportTokens() {
   }
 
   std::vector<GCMClient::AccountTokenInfo> account_tokens;
-  for (AccountInfos::iterator iter = account_infos_.begin();
-       iter != account_infos_.end(); ++iter) {
+  for (auto iter = account_infos_.begin(); iter != account_infos_.end();
+       ++iter) {
     if (iter->second.state == TOKEN_PRESENT) {
       GCMClient::AccountTokenInfo token_info;
       token_info.account_id = iter->first;
@@ -213,8 +212,7 @@ void GCMAccountTracker::ReportTokens() {
 }
 
 void GCMAccountTracker::SanitizeTokens() {
-  for (AccountInfos::iterator iter = account_infos_.begin();
-       iter != account_infos_.end();
+  for (auto iter = account_infos_.begin(); iter != account_infos_.end();
        ++iter) {
     if (iter->second.state == TOKEN_PRESENT &&
         iter->second.expiration_time <
@@ -232,8 +230,7 @@ bool GCMAccountTracker::IsTokenReportingRequired() const {
     return true;
 
   bool reporting_required = false;
-  for (AccountInfos::const_iterator iter = account_infos_.begin();
-       iter != account_infos_.end();
+  for (auto iter = account_infos_.begin(); iter != account_infos_.end();
        ++iter) {
     if (iter->second.state == ACCOUNT_REMOVED)
       reporting_required = true;
@@ -244,8 +241,7 @@ bool GCMAccountTracker::IsTokenReportingRequired() const {
 
 bool GCMAccountTracker::IsTokenFetchingRequired() const {
   bool token_needed = false;
-  for (AccountInfos::const_iterator iter = account_infos_.begin();
-       iter != account_infos_.end();
+  for (auto iter = account_infos_.begin(); iter != account_infos_.end();
        ++iter) {
     if (iter->second.state == TOKEN_NEEDED)
       token_needed = true;
@@ -284,8 +280,7 @@ void GCMAccountTracker::GetAllNeededTokens() {
   if (!driver_->IsConnected())
     return;
 
-  for (AccountInfos::iterator iter = account_infos_.begin();
-       iter != account_infos_.end();
+  for (auto iter = account_infos_.begin(); iter != account_infos_.end();
        ++iter) {
     if (iter->second.state == TOKEN_NEEDED)
       GetToken(iter);
@@ -295,7 +290,7 @@ void GCMAccountTracker::GetAllNeededTokens() {
 void GCMAccountTracker::GetToken(AccountInfos::iterator& account_iter) {
   DCHECK_EQ(account_iter->second.state, TOKEN_NEEDED);
 
-  OAuth2TokenService::ScopeSet scopes;
+  identity::ScopeSet scopes;
   scopes.insert(kGCMGroupServerScope);
   scopes.insert(kGCMCheckinServerScope);
 
@@ -318,7 +313,7 @@ void GCMAccountTracker::GetToken(AccountInfos::iterator& account_iter) {
 
 void GCMAccountTracker::OnAccountSignedIn(const AccountIds& ids) {
   DVLOG(1) << "Account signed in: " << ids.email;
-  AccountInfos::iterator iter = account_infos_.find(ids.account_key);
+  auto iter = account_infos_.find(ids.account_key);
   if (iter == account_infos_.end()) {
     DCHECK(!ids.email.empty());
     account_infos_.insert(
@@ -332,7 +327,7 @@ void GCMAccountTracker::OnAccountSignedIn(const AccountIds& ids) {
 
 void GCMAccountTracker::OnAccountSignedOut(const AccountIds& ids) {
   DVLOG(1) << "Account signed out: " << ids.email;
-  AccountInfos::iterator iter = account_infos_.find(ids.account_key);
+  auto iter = account_infos_.find(ids.account_key);
   if (iter == account_infos_.end())
     return;
 

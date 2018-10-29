@@ -1,53 +1,6 @@
 <!-- ================= Events view =================== -->
+<div id=events-view-tab-content class=content-box>
+  The net-internals events viewer and related functionality has been removed.
+  Please use <a href="chrome://net-export">chrome://net-export</a> to save netlogs and the external <a href="https://chromium.googlesource.com/catapult/+/master/netlog_viewer/">catapult netlog_viewer</a> to view them.
+</div>
 
-<!-- Filter Box: This the top bar which contains the search box.  -->
-<div id=events-view-filter-box>
-  <table width=100%>
-    <tr>
-      <td width=1%>
-        <span id=events-view-filter-help-hover class=mouse-over-help-hover>(?)</span>
-      </td>
-      <td width=98%><input type="search" incremental id=events-view-filter-input title="Sort and filter"></td>
-      <td width=1% id=events-view-filter-count>(1 of 34)</td>
-    </tr>
-  </table>
-</div>
-<!-- Inline filter help -->
-<div id=events-view-filter-help class=mouse-over-help>
-  Sort options:
-  <ul>
-    <li>sort:id (default)
-    <li>sort:desc
-    <li>sort:duration
-    <li>sort:type
-    <li>-sort:&lt;option&gt; Reverses sort order
-  </ul>
-
-  Additional filters:
-  <ul>
-    <li>id:#[,#]*
-    <li>type:&lt;type&gt;[,&lt;type&gt;]*
-    <li>is:active
-    <li>is:error
-    <li>-&lt;filter&gt; Inverts a filter.
-  </ul>
-</div>
-<!-- Events Box: This the panel on the left which lists the sources -->
-<div id=events-view-source-list>
-  <table id=events-view-source-list-table cellspacing=0 cellpadding=0 width=100%>
-    <thead>
-      <tr>
-        <td style='border-left:0'><input type=checkbox id=events-view-select-all title="Select all"></td>
-        <td id=events-view-sort-by-id>ID</td>
-        <td id=events-view-sort-by-source>Source Type</td>
-        <td id=events-view-sort-by-description width=99%>Description</td>
-      </tr>
-    </thead>
-    <!-- Events table body: This is where request rows go into -->
-    <tbody id=events-view-source-list-tbody></tbody>
-  </table>
-</div>
-<!-- Splitter Box: This is a handle to resize the vertical divider -->
-<div id=events-view-splitter-box class=vertical-splitter></div>
-<!-- Details box: This is the panel on the right which shows information -->
-<div id=events-view-details-log-box class="event-log content-box"></div>

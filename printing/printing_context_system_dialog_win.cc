@@ -4,9 +4,11 @@
 
 #include "printing/printing_context_system_dialog_win.h"
 
+#include <utility>
+
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "base/message_loop/message_loop_current.h"
+#include "base/stl_util.h"
 #include "printing/backend/win_helper.h"
 #include "printing/print_settings_initializer_win.h"
 #include "skia/ext/skia_utils_win.h"
@@ -55,7 +57,7 @@ void PrintingContextSystemDialogWin::AskUserForSettings(
     ranges[0].nFromPage = 1;
     ranges[0].nToPage = max_pages;
     dialog_options.nPageRanges = 1;
-    dialog_options.nMaxPageRanges = arraysize(ranges);
+    dialog_options.nMaxPageRanges = base::size(ranges);
     dialog_options.nMinPage = 1;
     dialog_options.nMaxPage = max_pages;
     dialog_options.lpPageRanges = ranges;

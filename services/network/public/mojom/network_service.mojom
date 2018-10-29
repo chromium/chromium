@@ -10,6 +10,8 @@ import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
+import "services/network/public/mojom/host_resolver.mojom";
+import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_context.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -98,6 +100,11 @@ interface NetworkServiceClient {
                         url.mojom.Url url,
                         SSLInfo ssl_info,
                         bool fatal) => (int32 net_error);
+
+  // Notification that a trust anchor was used for the given user.
+  [EnableIf=is_chromeos]
+  OnUsedTrustAnchor(string username_hash);
+
   // Called when file uploading was requested.
   // If the process that requested the uploads has permission to read all of
   // the files referenced by |file_paths|, the callback arguments will be
@@ -137,17 +144,13 @@ interface NetworkServiceClient {
                   url.mojom.Url url,
                   string header_value,
                   int32 load_flags) => ();
-};
 
-// An HTTPS server to send DNS queries to, per the DNS Queries over HTTPS spec.
-// spec:  https://tools.ietf.org/html/draft-ietf-doh-dns-over-https-12
- struct DnsOverHttpsServer {
-  // DNS over HTTPS server URI template. Must be HTTPS.
-  string server_template;
-
-  // Whether to use POST to do DNS lookups. Otherwise, GET is used. See spec
-  // for more details.
-  bool use_post = false;
+  // Called on every request completion to update the network traffic annotation
+  // ID, and the total bytes received and sent.
+  // |network_traffic_annotation_id_hash| represents the hash of unique tag that
+  // identifies the annotation of the request.
+  OnDataUseUpdate(int32 network_traffic_annotation_id_hash, int64 recv_bytes,
+                  int64 sent_bytes);
 };
 
 // Values for configuring HTTP authentication that can only be set once.
@@ -222,7 +225,15 @@ interface NetworkService {
   // for more details). Most clients will just be adding a dictionary under
   // the key "clientInfo".
   StartNetLog(mojo_base.mojom.File file,
+              NetLogCaptureMode capture_mode,
               mojo_base.mojom.DictionaryValue constants);
+
+  // Starts logging SSL key material to the |file|. This must be called before
+  // any SSL connections are made. (See |SSLClientSocket::SetSSLKeyLogger()|
+  // for more details).
+  // TODO(crbug.com/841001) This should pass a File which has already been
+  // opened to be sandbox friendly.
+  SetSSLKeyLogFile(mojo_base.mojom.FilePath file);
 
   // Creates a new network context with the given parameters.
   CreateNetworkContext(NetworkContext& context,
@@ -296,6 +307,9 @@ interface NetworkService {
   // this call, will use the same CRLSet.
   UpdateCRLSet(mojo_base.mojom.ReadOnlyBuffer crl_set);
 
+  // Notification that the certificate database has been modified.
+  OnCertDBChanged();
+
   // Sets up OSCrypt for the network service process. Must be called before
   // encrypted cookies can be read or set.
   [EnableIf=needs_crypt_config]
@@ -316,4 +330,8 @@ interface NetworkService {
 
   // Reverts AddCorbExceptionForPlugin.
   RemoveCorbExceptionForPlugin(uint32 process_id);
+
+  // Called on state changes of the Android application.
+  [EnableIf=is_android]
+  OnApplicationStateChange(ApplicationState state);
 };

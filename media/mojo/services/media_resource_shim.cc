@@ -19,7 +19,7 @@ MediaResourceShim::MediaResourceShim(
       streams_ready_(0),
       weak_factory_(this) {
   DCHECK(!streams.empty());
-  DCHECK(!demuxer_ready_cb_.is_null());
+  DCHECK(demuxer_ready_cb_);
 
   for (auto& s : streams) {
     mojom::DemuxerStreamPtr stream(std::move(s));
@@ -32,7 +32,7 @@ MediaResourceShim::MediaResourceShim(
 MediaResourceShim::~MediaResourceShim() = default;
 
 std::vector<DemuxerStream*> MediaResourceShim::GetAllStreams() {
-  DCHECK(demuxer_ready_cb_.is_null());
+  DCHECK(!demuxer_ready_cb_);
   std::vector<DemuxerStream*> result;
   for (auto& stream : streams_)
     result.push_back(stream.get());
@@ -41,7 +41,7 @@ std::vector<DemuxerStream*> MediaResourceShim::GetAllStreams() {
 
 void MediaResourceShim::OnStreamReady() {
   if (++streams_ready_ == streams_.size())
-    base::ResetAndReturn(&demuxer_ready_cb_).Run();
+    std::move(demuxer_ready_cb_).Run();
 }
 
 }  // namespace media

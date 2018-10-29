@@ -46,6 +46,7 @@ class RlzValueStoreChromeOS : public RlzValueStore {
                           char* rlz,
                           size_t rlz_size) override;
   bool ClearAccessPointRlz(AccessPoint access_point) override;
+  bool UpdateExistingAccessPointRlz(const std::string& brand) override;
 
   bool AddProductEvent(Product product, const char* event_rlz) override;
   bool ReadProductEvents(Product product,

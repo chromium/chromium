@@ -6,8 +6,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_task_environment.h"
-#include "services/video_capture/test/mock_device.h"
-#include "services/video_capture/test/mock_receiver.h"
+#include "media/capture/video/mock_device.h"
+#include "services/video_capture/public/cpp/mock_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,7 +24,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
   void SetUp() override {
     mock_receiver_ =
         std::make_unique<MockReceiver>(mojo::MakeRequest(&receiver_));
-    auto mock_device = std::make_unique<MockDevice>();
+    auto mock_device = std::make_unique<media::MockDevice>();
     mock_device_ptr_ = mock_device.get();
     adapter_ = std::make_unique<DeviceMediaToMojoAdapter>(
         std::unique_ptr<service_manager::ServiceContextRef>(),
@@ -40,7 +40,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
   }
 
  protected:
-  MockDevice* mock_device_ptr_;
+  media::MockDevice* mock_device_ptr_;
   std::unique_ptr<DeviceMediaToMojoAdapter> adapter_;
   std::unique_ptr<MockReceiver> mock_receiver_;
   mojom::ReceiverPtr receiver_;

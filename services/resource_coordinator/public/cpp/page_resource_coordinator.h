@@ -14,7 +14,8 @@
 
 namespace resource_coordinator {
 
-class SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT PageResourceCoordinator
+class COMPONENT_EXPORT(SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP)
+    PageResourceCoordinator
     : public ResourceCoordinatorInterface<mojom::PageCoordinationUnitPtr,
                                           mojom::PageCoordinationUnitRequest> {
  public:

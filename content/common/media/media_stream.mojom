@@ -4,12 +4,9 @@
 
 module content.mojom;
 
-// TODO(c.padhi): Add typemapping for MediaStreamDevice,
-// see https://crbug.com/742682.
-// Native struct content::MediaStreamDevice.
-// (see content/public/common/media_stream_request.h)
-[Native]
-struct MediaStreamDevice;
+import "media/capture/mojom/video_capture_types.mojom";
+import "media/mojo/interfaces/audio_parameters.mojom";
+import "media/mojo/interfaces/display_media_information.mojom";
 
 // Types of media streams (see content/public/common/media_stream_request.h).
 enum MediaStreamType {
@@ -41,6 +38,20 @@ enum MediaStreamRequestResult {
   NOT_SUPPORTED,
   FAILED_DUE_TO_SHUTDOWN,
   KILL_SWITCH_ON
+};
+
+// See content/public/common/media_stream_request.h.
+struct MediaStreamDevice {
+  MediaStreamType type;
+  string id;
+  media.mojom.VideoFacingMode video_facing;
+  string? group_id;
+  string? matched_output_device_id;
+  string name;
+  media.mojom.AudioParameters input;
+  int32 session_id;
+  media.mojom.VideoCaptureDeviceDescriptorCameraCalibration? camera_calibration;
+  media.mojom.DisplayMediaInformation? display_media_info;
 };
 
 // See content/common/media/media_stream_controls.h.

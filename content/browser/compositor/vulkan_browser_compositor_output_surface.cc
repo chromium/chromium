@@ -65,7 +65,6 @@ void VulkanBrowserCompositorOutputSurface::BindFramebuffer() {
 }
 
 bool VulkanBrowserCompositorOutputSurface::IsDisplayedAsOverlayPlane() const {
-  NOTIMPLEMENTED();
   return false;
 }
 
@@ -109,8 +108,8 @@ void VulkanBrowserCompositorOutputSurface::SwapBuffers(
   surface_->SwapBuffers();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::Bind(&VulkanBrowserCompositorOutputSurface::SwapBuffersAck,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&VulkanBrowserCompositorOutputSurface::SwapBuffersAck,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VulkanBrowserCompositorOutputSurface::SwapBuffersAck() {

@@ -2,9 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//build/toolchain/toolchain.gni")
+import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//build/util/version.gni")
+import("//components/cronet/native/include/headers.gni")
+import("//components/grpc_support/include/headers.gni")
 import("//testing/test.gni")
+
+declare_args() {
+  # If set to true, this will remove histogram manager to reduce binary size.
+  disable_histogram_support = is_mac || is_win
+}
+
+# Disable histogram support is not allowed on Android.
+assert(!disable_histogram_support || !is_android)
+
+buildflag_header("cronet_buildflags") {
+  header = "cronet_buildflags.h"
+  flags = [ "DISABLE_HISTOGRAM_SUPPORT=$disable_histogram_support" ]
+}
 
 process_version("cronet_version_header") {
   template_file = "//components/cronet/version.h.in"
@@ -40,6 +58,7 @@ source_set("cronet_common") {
     "url_request_context_config.h",
   ]
   deps = [
+    ":cronet_buildflags",
     ":cronet_version_header",
     "//base",
     "//components/metrics:metrics",
@@ -47,6 +66,17 @@ source_set("cronet_common") {
     "//net",
     "//third_party/metrics_proto",
   ]
+
+  if (disable_histogram_support) {
+    sources -= [
+      "histogram_manager.cc",
+      "histogram_manager.h",
+    ]
+    deps -= [
+      "//components/metrics:metrics",
+      "//third_party/metrics_proto",
+    ]
+  }
 }
 
 # Unit tests for Cronet common implementation.
@@ -65,6 +95,10 @@ source_set("cronet_common_unittests") {
     "stale_host_resolver_unittest.cc",
     "url_request_context_config_unittest.cc",
   ]
+
+  if (disable_histogram_support) {
+    sources -= [ "histogram_manager_unittest.cc" ]
+  }
 }
 
 # For platforms on which the native Cronet library is used, build the library,
@@ -82,7 +116,13 @@ if (!is_ios && !is_android) {
     }
   }
 
+  _cronet_shared_lib_name = "cronet.$chrome_version_full"
+  _cronet_shared_lib_file_name =
+      "$shlib_prefix$_cronet_shared_lib_name$shlib_extension"
+
   shared_library("cronet") {
+    output_name = _cronet_shared_lib_name
+
     deps = [
       "//base",
       "//components/cronet:cronet_common",
@@ -97,7 +137,7 @@ if (!is_ios && !is_android) {
     if (is_mac && !is_component_build) {
       ldflags = [
         "-install_name",
-        "@rpath/lib${target_name}.dylib",
+        "@executable_path/$_cronet_shared_lib_file_name",
       ]
       public_configs = [ ":shared_library_public_config" ]
     }
@@ -138,6 +178,105 @@ if (!is_ios && !is_android) {
     sources = [
       "cronet_global_state_stubs.cc",
       "run_all_unittests.cc",
+    ]
+  }
+
+  _package_dir = "$root_out_dir/cronet"
+
+  # Generate LICENSE file by recursively joining all dependent licenses.
+  action("generate_license") {
+    _license_path = "$_package_dir/LICENSE"
+
+    script = "//tools/licenses.py"
+    inputs = [
+      lastchange_file,
+    ]
+    outputs = [
+      _license_path,
+    ]
+    args = [
+      "license_file",
+      rebase_path(_license_path, root_build_dir),
+      "--gn-target",
+      "//components/cronet:cronet",
+      "--gn-out-dir",
+      ".",
+    ]
+  }
+
+  # Copy boiler-plate files into the package.
+  copy("cronet_package_copy") {
+    sources = [
+      "$root_out_dir/$_cronet_shared_lib_file_name",
+      "//AUTHORS",
+      "//chrome/VERSION",
+    ]
+    deps = [
+      ":cronet",
+    ]
+    outputs = [
+      "$_package_dir/{{source_file_part}}",
+    ]
+  }
+
+  # Copy headers.
+  copy("cronet_package_headers") {
+    sources = cronet_native_public_headers + grpc_public_headers
+
+    outputs = [
+      "$_package_dir/include/{{source_file_part}}",
+    ]
+  }
+
+  group("cronet_package") {
+    deps = [
+      ":cronet_package_copy",
+      ":cronet_package_headers",
+      ":generate_license",
+    ]
+  }
+
+  executable("cronet_native_perf_test") {
+    testonly = true
+    sources = [
+      "native/perftest/main.cc",
+      "native/perftest/perf_test.cc",
+    ]
+    deps = [
+      "//base",
+      "//components/cronet",
+      "//components/cronet/native:cronet_native_headers",
+      "//components/cronet/native/test:cronet_native_tests",
+      "//components/cronet/native/test:cronet_native_testutil",
+      "//net:test_support",
+    ]
+  }
+
+  executable("cronet_sample") {
+    testonly = true
+    sources = [
+      "native/sample/main.cc",
+      "native/sample/sample_executor.cc",
+      "native/sample/sample_executor.h",
+      "native/sample/sample_url_request_callback.cc",
+      "native/sample/sample_url_request_callback.h",
+    ]
+    deps = [
+      "//components/cronet",
+      "//components/cronet/native:cronet_native_headers",
+    ]
+    if (is_linux && !is_component_build) {
+      public_configs = [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+    }
+  }
+
+  test("cronet_sample_test") {
+    sources = [
+      "native/sample/test/sample_test.cc",
+    ]
+    deps = [
+      ":cronet_sample",
+      "//testing/gtest:gtest",
     ]
   }
 }

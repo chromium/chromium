@@ -13,7 +13,6 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  public:
   ChromeBrowserMainPartsAndroid(
       const content::MainFunctionParams& parameters,
-      std::unique_ptr<ui::DataPack> data_pack,
       ChromeFeatureListCreator* chrome_feature_list_creator);
   ~ChromeBrowserMainPartsAndroid() override;
 

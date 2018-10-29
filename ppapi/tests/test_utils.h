@@ -16,6 +16,8 @@
 
 namespace pp {
 class NetAddress;
+class URLLoader;
+class URLRequestInfo;
 }
 
 // Timeout to wait for some action to complete.
@@ -83,6 +85,7 @@ class NestedEvent {
 
   // Reset the NestedEvent so it can be used again.
   void Reset();
+
  private:
   void SignalOnMainThread();
   static void SignalThunk(void* async_event, int32_t result);
@@ -94,6 +97,30 @@ class NestedEvent {
   NestedEvent(const NestedEvent&);
   NestedEvent& operator=(const NestedEvent&);
 };
+
+// Returns a callback that does nothing, so can be invoked when the current
+// function is out of scope, unlike TestCompletionCallback.
+pp::CompletionCallback DoNothingCallback();
+
+template <typename OutputT>
+void DeleteStorage(void* user_data, int32_t flags) {
+  typename pp::CompletionCallbackWithOutput<OutputT>::OutputStorageType*
+      storage = reinterpret_cast<typename pp::CompletionCallbackWithOutput<
+          OutputT>::OutputStorageType*>(user_data);
+  delete storage;
+}
+
+// Same as DoNothingCallback(), but with an OutputStorageType, which it deletes
+// when the callback is invoked.
+template <typename OutputT>
+pp::CompletionCallbackWithOutput<OutputT> DoNothingCallbackWithOutput() {
+  typename pp::CompletionCallbackWithOutput<OutputT>::OutputStorageType*
+      storage = new
+      typename pp::CompletionCallbackWithOutput<OutputT>::OutputStorageType();
+  return pp::CompletionCallbackWithOutput<OutputT>(
+      &DeleteStorage<OutputT>, storage, PP_COMPLETIONCALLBACK_FLAG_OPTIONAL,
+      storage);
+}
 
 enum CallbackType { PP_REQUIRED, PP_OPTIONAL, PP_BLOCKING };
 class TestCompletionCallback {
@@ -315,9 +342,21 @@ class ScopedArrayBufferSizeSetter {
   ~ScopedArrayBufferSizeSetter() {
     interface_->SetMinimumArrayBufferSizeForShmem(instance_, 0);
   }
+
  private:
   const PPB_Testing_Private* interface_;
   PP_Instance instance_;
 };
+
+// Opens |request| in |loader| and returns the results of the URLRequest.  The
+// caller may provide the optional |response_body| argument to get the contents
+// of the body of the response to the URLRequest.
+//
+// Returns PP_OK upon success.
+int32_t OpenURLRequest(PP_Instance instance,
+                       pp::URLLoader* loader,
+                       const pp::URLRequestInfo& request,
+                       CallbackType callback_type,
+                       std::string* response_body);
 
 #endif  // PPAPI_TESTS_TEST_UTILS_H_

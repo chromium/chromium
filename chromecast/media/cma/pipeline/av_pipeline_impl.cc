@@ -19,6 +19,7 @@
 #include "chromecast/media/cma/base/cma_logging.h"
 #include "chromecast/media/cma/base/coded_frame_provider.h"
 #include "chromecast/media/cma/base/decoder_buffer_base.h"
+#include "chromecast/media/cma/pipeline/cdm_decryptor.h"
 #include "chromecast/media/cma/pipeline/decrypt_util.h"
 #include "chromecast/public/media/cast_decrypt_config.h"
 #include "media/base/audio_decoder_config.h"
@@ -202,13 +203,6 @@ void AvPipelineImpl::OnNewFrame(
   if (audio_config.IsValidConfig() || video_config.IsValidConfig())
     OnUpdateConfig(buffer->stream_id(), audio_config, video_config);
 
-  if (!decryptor_) {
-    decryptor_ = CreateDecryptor();
-    DCHECK(decryptor_);
-    decryptor_->Init(base::BindRepeating(&AvPipelineImpl::OnBufferDecrypted,
-                                         decrypt_weak_factory_.GetWeakPtr()));
-  }
-
   pending_buffer_ = buffer;
   ProcessPendingBuffer();
 }
@@ -249,10 +243,24 @@ void AvPipelineImpl::ProcessPendingBuffer() {
     }
 
     DCHECK_NE(decrypt_context->GetKeySystem(), KEY_SYSTEM_NONE);
+
+    if (!decryptor_) {
+      decryptor_ = CreateStreamDecryptor(decrypt_context->GetKeySystem());
+      DCHECK(decryptor_);
+      decryptor_->Init(base::BindRepeating(&AvPipelineImpl::OnBufferDecrypted,
+                                           decrypt_weak_factory_.GetWeakPtr()));
+    }
+
     pending_buffer_->set_decrypt_context(std::move(decrypt_context));
   }
 
-  decryptor_->Decrypt(std::move(pending_buffer_));
+  if (decryptor_) {
+    decryptor_->Decrypt(std::move(pending_buffer_));
+    return;
+  }
+
+  DCHECK(ready_buffers_.empty());
+  PushReadyBuffer(std::move(pending_buffer_));
 }
 
 void AvPipelineImpl::PushAllReadyBuffers() {
@@ -429,6 +437,16 @@ void AvPipelineImpl::UpdatePlayableFrames() {
     // The frame is playable: remove it from the list of non playable frames.
     non_playable_frames_.pop_front();
   }
+}
+
+std::unique_ptr<StreamDecryptor> AvPipelineImpl::CreateStreamDecryptor(
+    CastKeySystem key_system) {
+  if (key_system == KEY_SYSTEM_CLEAR_KEY) {
+    // Clear Key only supports clear output.
+    return std::make_unique<CdmDecryptor>(true /* clear_buffer_needed */);
+  }
+
+  return CreateDecryptor();
 }
 
 }  // namespace media

@@ -27,6 +27,7 @@ class TestFormActivityTabHelper {
                               const FormActivityParams& params);
   void DocumentSubmitted(web::WebFrame* sender_frame,
                          const std::string& form_name,
+                         const std::string& form_data,
                          bool has_user_gesture,
                          bool form_in_main_frame);
 

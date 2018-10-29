@@ -327,8 +327,9 @@ class ASH_EXPORT TouchExplorationController
   // fingers in place is a bit harder.
   float GetSplitTapTouchSlop();
 
-  // Convert a gfx::PointF from DIP back to raw screen coordinates.
-  gfx::PointF ConvertDIPToScreenInPixels(const gfx::PointF& location);
+  // Convert a gfx::PointF from DIP back to raw screen coordinates. Origin is
+  // based on its root window host.
+  gfx::PointF ConvertDIPToPixels(const gfx::PointF& location);
 
   enum State {
     // No fingers are down and no events are pending.
@@ -485,7 +486,7 @@ class ASH_EXPORT TouchExplorationController
   // point used when the user double-taps, holds, and drags. This can be
   // set either via touch exploration, or by a call to
   // SetTouchAccessibilityAnchorPoint when focus moves due to something other
-  // than touch exploration.
+  // than touch exploration. Origin of this coordinate is its root window host.
   gfx::PointF anchor_point_dip_;
 
   // The current state of the anchor point.
@@ -517,6 +518,8 @@ class ASH_EXPORT TouchExplorationController
   bool VLOG_on_;
 
   // LocatedEvents within this area should be left alone.
+  // TODO(crbug.com/616793): Multi display support. With this implementation, we
+  // cannot specify display.
   gfx::Rect exclude_bounds_;
 
   // Code that detects a touch-screen gesture to enable or disable
@@ -528,6 +531,8 @@ class ASH_EXPORT TouchExplorationController
   // Any touch exploration that both starts and ends (touch pressed, and
   // released) within this rectangle, triggers a simulated single finger tap at
   // the anchor point on release.
+  // TODO(crbug.com/616793): Multi display support. With this implementation, we
+  // cannot specify display.
   gfx::Rect lift_activation_bounds_;
 
   // Whether or not we've seen a touch press event yet.

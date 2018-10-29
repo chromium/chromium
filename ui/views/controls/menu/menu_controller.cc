@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -61,7 +60,6 @@
 
 using base::TimeDelta;
 using ui::OSExchangeData;
-using MD = ui::MaterialDesignController;
 
 namespace views {
 
@@ -501,6 +499,10 @@ void MenuController::Run(Widget* parent,
 }
 
 void MenuController::Cancel(ExitType type) {
+#if defined(OS_MACOSX)
+  menu_closure_animation_.reset();
+#endif
+
   // If the menu has already been destroyed, no further cancellation is
   // needed.  We especially don't want to set the |exit_type_| to a lesser
   // value.
@@ -1531,7 +1533,7 @@ void MenuController::UpdateInitialLocation(const gfx::Rect& bounds,
 void MenuController::Accept(MenuItemView* item, int event_flags) {
 #if defined(OS_MACOSX)
   menu_closure_animation_ = std::make_unique<MenuClosureAnimationMac>(
-      item,
+      item, item->GetParentMenuItem()->GetSubmenu(),
       base::BindOnce(&MenuController::ReallyAccept, base::Unretained(this),
                      base::Unretained(item), event_flags));
   menu_closure_animation_->Start();
@@ -1788,15 +1790,7 @@ bool MenuController::DoesSubmenuContainLocation(SubmenuView* submenu,
                                                 const gfx::Point& screen_loc) {
   gfx::Point view_loc = screen_loc;
   View::ConvertPointFromScreen(submenu, &view_loc);
-  MenuScrollViewContainer* container = submenu->GetScrollViewContainer();
-  // When the menu has a Bubble border, that area is largely transparent. This
-  // will exclude that region from hit-testing.
-  gfx::Rect content_rect =
-      container->HasBubbleBorder()
-          ? container->ConvertRectToParent(container->GetContentsBounds())
-          : container->bounds();
   gfx::Rect vis_rect = submenu->GetVisibleBounds();
-  vis_rect.Intersect(content_rect);
   return vis_rect.Contains(view_loc);
 }
 
@@ -1855,8 +1849,7 @@ void MenuController::CommitPendingSelection() {
   // Open all the submenus preceeding the last menu item (last menu item is
   // handled next).
   if (new_path.size() > 1) {
-    for (std::vector<MenuItemView*>::iterator i = new_path.begin();
-         i != new_path.end() - 1; ++i) {
+    for (auto i = new_path.begin(); i != new_path.end() - 1; ++i) {
       OpenMenu(*i);
     }
   }
@@ -2043,17 +2036,6 @@ gfx::Rect MenuController::CalculateMenuBounds(MenuItemView* item,
   const gfx::Rect& monitor_bounds = state_.monitor_bounds;
   const gfx::Rect& anchor_bounds = state_.initial_bounds;
 
-  const MenuConfig& menu_config = MenuConfig::instance();
-  // Shadow insets are built into MenuScrollView's preferred size so it must be
-  // compensated for when determining the bounds of menus with a bubble border.
-  const gfx::Insets border_and_shadow_insets =
-      (MD::IsRefreshUi() && !menu_config.use_outer_border)
-          ? BubbleBorder::GetBorderAndShadowInsets(
-                menu_config.ShadowElevationForMenu(this))
-          : gfx::Insets();
-
-  menu_bounds.Inset(border_and_shadow_insets);
-
   // For comboboxes, ensure the menu is at least as wide as the anchor.
   if (is_combobox_)
     menu_bounds.set_width(std::max(menu_bounds.width(), anchor_bounds.width()));
@@ -2070,6 +2052,8 @@ gfx::Rect MenuController::CalculateMenuBounds(MenuItemView* item,
 
   // Assume we can honor prefer_leading.
   *is_leading = prefer_leading;
+
+  const MenuConfig& menu_config = MenuConfig::instance();
 
   if (item->GetParentMenuItem()) {
     // Not the first menu; position it relative to the bounds of its parent menu
@@ -2144,10 +2128,8 @@ gfx::Rect MenuController::CalculateMenuBounds(MenuItemView* item,
     }
 
     // Everything beyond this point requires monitor bounds to be non-empty.
-    if (monitor_bounds.IsEmpty()) {
-      menu_bounds.Inset(-border_and_shadow_insets);
+    if (monitor_bounds.IsEmpty())
       return menu_bounds;
-    }
 
     // If the menu position is below or above the anchor bounds, force it to fit
     // on the screen. Otherwise, try to fit the menu in the following locations:
@@ -2158,7 +2140,14 @@ gfx::Rect MenuController::CalculateMenuBounds(MenuItemView* item,
         item->actual_menu_position() == MenuItemView::POSITION_ABOVE_BOUNDS) {
       // Menu has been drawn below/above the anchor bounds, make sure it fits
       // on the screen in its current location.
+      const int drawn_width = menu_bounds.width();
       menu_bounds.Intersect(monitor_bounds);
+
+      // Do not allow the menu to get narrower. This handles the case where the
+      // menu would have drawn off-screen, but the effective anchor was shifted
+      // at the end of this function. Preserve the width, so it is shifted
+      // again.
+      menu_bounds.set_width(drawn_width);
     } else if (menu_bounds.bottom() <= monitor_bounds.bottom()) {
       // Menu fits below anchor bounds.
       item->set_actual_menu_position(MenuItemView::POSITION_BELOW_BOUNDS);
@@ -2187,6 +2176,7 @@ gfx::Rect MenuController::CalculateMenuBounds(MenuItemView* item,
     }
   }
 
+  // Ensure the menu is not displayed off screen.
   menu_bounds.set_x(
       base::ClampToRange(menu_bounds.x(), monitor_bounds.x(),
                          monitor_bounds.right() - menu_bounds.width()));
@@ -2194,7 +2184,6 @@ gfx::Rect MenuController::CalculateMenuBounds(MenuItemView* item,
       base::ClampToRange(menu_bounds.y(), monitor_bounds.y(),
                          monitor_bounds.bottom() - menu_bounds.height()));
 
-  menu_bounds.Inset(-border_and_shadow_insets);
   return menu_bounds;
 }
 
@@ -2217,7 +2206,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
   // compensated for when determining the bounds of touchable menus.
   const gfx::Insets border_and_shadow_insets =
       BubbleBorder::GetBorderAndShadowInsets(
-          menu_config.ShadowElevationForMenu(this));
+          menu_config.touchable_menu_shadow_elevation);
 
   const gfx::Rect& monitor_bounds = state_.monitor_bounds;
 
@@ -2287,7 +2276,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
           border_and_shadow_insets.bottom() -
           menu_config.touchable_anchor_offset;
       // Align the right of the container with the right of the anchor.
-      if (x + menu_size.width() > monitor_bounds.right()) {
+      if (x + menu_size.width() > monitor_bounds.width()) {
         x = anchor_bounds.right() - menu_size.width() +
             border_and_shadow_insets.right();
       }
@@ -2309,7 +2298,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
             menu_config.touchable_anchor_offset;
       }
       // Align the bottom of the menu to the bottom of the anchor.
-      if (y + menu_size.height() > monitor_bounds.bottom()) {
+      if (y + menu_size.height() > monitor_bounds.height()) {
         y = anchor_bounds.bottom() - menu_size.height() +
             border_and_shadow_insets.bottom();
       }
@@ -2319,13 +2308,13 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
       x = anchor_bounds.right() - border_and_shadow_insets.left() +
           menu_config.touchable_anchor_offset;
       y = anchor_bounds.y() - border_and_shadow_insets.top();
-      if (x + menu_size.width() > monitor_bounds.right()) {
+      if (x + menu_size.width() > monitor_bounds.width()) {
         // Align the right of the menu with the left of the anchor.
         x = anchor_bounds.x() - menu_size.width() +
             border_and_shadow_insets.right() -
             menu_config.touchable_anchor_offset;
       }
-      if (y + menu_size.height() > monitor_bounds.bottom()) {
+      if (y + menu_size.height() > monitor_bounds.height()) {
         // Align the bottom of the menu with the bottom of the anchor.
         y = anchor_bounds.bottom() - menu_size.height() +
             border_and_shadow_insets.bottom();
@@ -2622,7 +2611,18 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
     if (last_part.type != MenuPart::NONE)
       exit_type = EXIT_OUTERMOST;
   }
+#if defined(OS_MACOSX)
+  SubmenuView* target = exit_type == EXIT_ALL
+                            ? source
+                            : state_.item->GetRootMenuItem()->GetSubmenu();
+  menu_closure_animation_ = std::make_unique<MenuClosureAnimationMac>(
+      nullptr, target,
+      base::BindOnce(&MenuController::Cancel, base::Unretained(this),
+                     exit_type));
+  menu_closure_animation_->Start();
+#else
   Cancel(exit_type);
+#endif
 }
 
 void MenuController::SetDropMenuItem(MenuItemView* new_target,

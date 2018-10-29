@@ -13,12 +13,14 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "components/update_client/action_runner.h"
 #include "components/update_client/component_unpacker.h"
 #include "components/update_client/configurator.h"
-#include "components/update_client/protocol_builder.h"
+#include "components/update_client/protocol_serializer.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -159,6 +161,18 @@ void StartInstallOnBlockingTaskRunner(
                                   installer, std::move(callback)));
 }
 
+// Returns a string literal corresponding to the value of the downloader |d|.
+const char* DownloaderToString(CrxDownloader::DownloadMetrics::Downloader d) {
+  switch (d) {
+    case CrxDownloader::DownloadMetrics::kUrlFetcher:
+      return "direct";
+    case CrxDownloader::DownloadMetrics::kBits:
+      return "bits";
+    default:
+      return "unknown";
+  }
+}
+
 }  // namespace
 
 Component::Component(const UpdateContext& update_context, const std::string& id)
@@ -290,8 +304,8 @@ bool Component::CanDoBackgroundDownload() const {
          update_context_.config->EnabledBackgroundDownloader();
 }
 
-void Component::AppendEvent(const std::string& event) {
-  events_.push_back(event);
+void Component::AppendEvent(base::Value event) {
+  events_.push_back(std::move(event));
 }
 
 void Component::NotifyObservers(UpdateClient::Observer::Events event) const {
@@ -310,6 +324,103 @@ base::TimeDelta Component::GetUpdateDuration() const {
   const base::TimeDelta max_update_delay =
       base::TimeDelta::FromSeconds(update_context_.config->UpdateDelay());
   return std::min(update_cost, max_update_delay);
+}
+
+base::Value Component::MakeEventUpdateComplete() const {
+  base::Value event(base::Value::Type::DICTIONARY);
+  event.SetKey("eventtype", base::Value(3));
+  event.SetKey(
+      "eventresult",
+      base::Value(static_cast<int>(state() == ComponentState::kUpdated)));
+  if (error_category() != ErrorCategory::kNone)
+    event.SetKey("errorcat", base::Value(static_cast<int>(error_category())));
+  if (error_code())
+    event.SetKey("errorcode", base::Value(error_code()));
+  if (extra_code1())
+    event.SetKey("extracode1", base::Value(extra_code1()));
+  if (HasDiffUpdate(*this)) {
+    const int diffresult = static_cast<int>(!diff_update_failed());
+    event.SetKey("diffresult", base::Value(diffresult));
+  }
+  if (diff_error_category() != ErrorCategory::kNone) {
+    const int differrorcat = static_cast<int>(diff_error_category());
+    event.SetKey("differrorcat", base::Value(differrorcat));
+  }
+  if (diff_error_code())
+    event.SetKey("differrorcode", base::Value(diff_error_code()));
+  if (diff_extra_code1())
+    event.SetKey("diffextracode1", base::Value(diff_extra_code1()));
+  if (!previous_fp().empty())
+    event.SetKey("previousfp", base::Value(previous_fp()));
+  if (!next_fp().empty())
+    event.SetKey("nextfp", base::Value(next_fp()));
+  DCHECK(previous_version().IsValid());
+  event.SetKey("previousversion", base::Value(previous_version().GetString()));
+  if (next_version().IsValid())
+    event.SetKey("nextversion", base::Value(next_version().GetString()));
+  return event;
+}
+
+base::Value Component::MakeEventDownloadMetrics(
+    const CrxDownloader::DownloadMetrics& dm) const {
+  base::Value event(base::Value::Type::DICTIONARY);
+  event.SetKey("eventtype", base::Value(14));
+  event.SetKey("eventresult", base::Value(static_cast<int>(dm.error == 0)));
+  event.SetKey("downloader", base::Value(DownloaderToString(dm.downloader)));
+  if (dm.error)
+    event.SetKey("errorcode", base::Value(dm.error));
+  event.SetKey("url", base::Value(dm.url.spec()));
+
+  // -1 means that the  byte counts are not known.
+  if (dm.total_bytes != -1)
+    event.SetKey("total", base::Value(base::NumberToString(dm.total_bytes)));
+  if (dm.downloaded_bytes != -1) {
+    event.SetKey("downloaded",
+                 base::Value(base::NumberToString(dm.downloaded_bytes)));
+  }
+  if (dm.download_time_ms) {
+    event.SetKey("download_time_ms",
+                 base::Value(base::NumberToString(dm.download_time_ms)));
+  }
+  DCHECK(previous_version().IsValid());
+  event.SetKey("previousversion", base::Value(previous_version().GetString()));
+  if (next_version().IsValid())
+    event.SetKey("nextversion", base::Value(next_version().GetString()));
+  return event;
+}
+
+base::Value Component::MakeEventUninstalled() const {
+  DCHECK(state() == ComponentState::kUninstalled);
+  base::Value event(base::Value::Type::DICTIONARY);
+  event.SetKey("eventtype", base::Value(4));
+  event.SetKey("eventresult", base::Value(1));
+  if (extra_code1())
+    event.SetKey("extracode1", base::Value(extra_code1()));
+  DCHECK(previous_version().IsValid());
+  event.SetKey("previousversion", base::Value(previous_version().GetString()));
+  DCHECK(next_version().IsValid());
+  event.SetKey("nextversion", base::Value(next_version().GetString()));
+  return event;
+}
+
+base::Value Component::MakeEventActionRun(bool succeeded,
+                                          int error_code,
+                                          int extra_code1) const {
+  base::Value event(base::Value::Type::DICTIONARY);
+  event.SetKey("eventtype", base::Value(42));
+  event.SetKey("eventresult", base::Value(static_cast<int>(succeeded)));
+  if (error_code)
+    event.SetKey("errorcode", base::Value(error_code));
+  if (extra_code1)
+    event.SetKey("extracode1", base::Value(extra_code1));
+  return event;
+}
+
+std::vector<base::Value> Component::GetEvents() const {
+  std::vector<base::Value> events;
+  for (const auto& event : events_)
+    events.push_back(event.Clone());
+  return events;
 }
 
 Component::State::State(Component* component, ComponentState state)
@@ -425,7 +536,7 @@ void Component::StateUpdateError::DoHandle() {
 
   // Create an event only when the server response included an update.
   if (component.IsUpdateAvailable())
-    component.AppendEvent(BuildUpdateCompleteEventElement(component));
+    component.AppendEvent(component.MakeEventUpdateComplete());
 
   EndState();
   component.NotifyObservers(Events::COMPONENT_UPDATE_ERROR);
@@ -537,10 +648,8 @@ void Component::StateDownloadingDiff::DownloadComplete(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   auto& component = Component::State::component();
-
-  for (const auto& metrics : crx_downloader_->download_metrics())
-    component.AppendEvent(
-        BuildDownloadCompleteEventElement(component, metrics));
+  for (const auto& download_metrics : crx_downloader_->download_metrics())
+    component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
 
   crx_downloader_.reset();
 
@@ -605,9 +714,8 @@ void Component::StateDownloading::DownloadComplete(
 
   auto& component = Component::State::component();
 
-  for (const auto& metrics : crx_downloader_->download_metrics())
-    component.AppendEvent(
-        BuildDownloadCompleteEventElement(component, metrics));
+  for (const auto& download_metrics : crx_downloader_->download_metrics())
+    component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
 
   crx_downloader_.reset();
 
@@ -768,7 +876,7 @@ void Component::StateUpdated::DoHandle() {
   component.crx_component_->version = component.next_version_;
   component.crx_component_->fingerprint = component.next_fp_;
 
-  component.AppendEvent(BuildUpdateCompleteEventElement(component));
+  component.AppendEvent(component.MakeEventUpdateComplete());
 
   component.NotifyObservers(Events::COMPONENT_UPDATED);
   EndState();
@@ -789,7 +897,7 @@ void Component::StateUninstalled::DoHandle() {
   auto& component = State::component();
   DCHECK(component.crx_component());
 
-  component.AppendEvent(BuildUninstalledEventElement(component));
+  component.AppendEvent(component.MakeEventUninstalled());
 
   EndState();
 }
@@ -820,7 +928,7 @@ void Component::StateRun::ActionRunComplete(bool succeeded,
   auto& component = State::component();
 
   component.AppendEvent(
-      BuildActionRunEventElement(succeeded, error_code, extra_code1));
+      component.MakeEventActionRun(succeeded, error_code, extra_code1));
   switch (component.previous_state_) {
     case ComponentState::kChecking:
       TransitionState(std::make_unique<StateUpToDate>(&component));

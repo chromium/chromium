@@ -30,20 +30,24 @@ namespace {
 
 class ScopedThreadResumeAfterException {
  public:
-  ScopedThreadResumeAfterException(const zx::thread& thread)
-      : thread_(thread) {}
+  ScopedThreadResumeAfterException(const zx::thread& thread,
+                                   const zx::unowned_port& exception_port)
+      : thread_(thread), exception_port_(exception_port) {}
   ~ScopedThreadResumeAfterException() {
     DCHECK(thread_->is_valid());
     // Resuming with ZX_RESUME_TRY_NEXT chains to the next handler. In normal
     // operation, there won't be another beyond this one, which will result in
     // the kernel terminating the process.
     zx_status_t status =
-        thread_->resume(ZX_RESUME_EXCEPTION | ZX_RESUME_TRY_NEXT);
-    ZX_LOG_IF(ERROR, status != ZX_OK, status) << "zx_task_resume";
+        thread_->resume_from_exception(*exception_port_, ZX_RESUME_TRY_NEXT);
+    ZX_LOG_IF(ERROR, status != ZX_OK, status)
+        << "zx_task_resume_from_exception";
   }
 
  private:
   zx::unowned_thread thread_;
+  const zx::unowned_port& exception_port_;
+
   DISALLOW_COPY_AND_ASSIGN(ScopedThreadResumeAfterException);
 };
 
@@ -63,15 +67,18 @@ CrashReportExceptionHandler::CrashReportExceptionHandler(
 
 CrashReportExceptionHandler::~CrashReportExceptionHandler() {}
 
-bool CrashReportExceptionHandler::HandleException(uint64_t process_id,
-                                                  uint64_t thread_id) {
+bool CrashReportExceptionHandler::HandleException(
+    uint64_t process_id,
+    uint64_t thread_id,
+    const zx::unowned_port& exception_port,
+    UUID* local_report_id) {
   // TODO(scottmg): This function needs to be instrumented with metrics calls,
   // https://crashpad.chromium.org/bug/230.
 
   zx::process process(GetProcessFromKoid(process_id));
   if (!process.is_valid()) {
-    // There's no way to zx_task_resume() the thread if the process retrieval
-    // fails. Assume that the process has been already killed, and bail.
+    // There's no way to resume the thread if the process retrieval fails.
+    // Assume that the process has been already killed, and bail.
     return false;
   }
 
@@ -80,16 +87,19 @@ bool CrashReportExceptionHandler::HandleException(uint64_t process_id,
     return false;
   }
 
-  return HandleExceptionHandles(process, thread);
+  return HandleExceptionHandles(
+      process, thread, exception_port, local_report_id);
 }
 
 bool CrashReportExceptionHandler::HandleExceptionHandles(
     const zx::process& process,
-    const zx::thread& thread) {
+    const zx::thread& thread,
+    const zx::unowned_port& exception_port,
+    UUID* local_report_id) {
   // Now that the thread has been successfully retrieved, it is possible to
-  // correctly call zx_task_resume() to continue exception processing, even if
-  // something else during this function fails.
-  ScopedThreadResumeAfterException resume(thread);
+  // correctly call zx_task_resume_from_exception() to continue exception
+  // processing, even if something else during this function fails.
+  ScopedThreadResumeAfterException resume(thread, exception_port);
 
   ProcessSnapshotFuchsia process_snapshot;
   if (!process_snapshot.Initialize(process)) {
@@ -170,6 +180,9 @@ bool CrashReportExceptionHandler::HandleExceptionHandles(
         database_->FinishedWritingCrashReport(std::move(new_report), &uuid);
     if (database_status != CrashReportDatabase::kNoError) {
       return false;
+    }
+    if (local_report_id != nullptr) {
+      *local_report_id = uuid;
     }
 
     if (upload_thread_) {

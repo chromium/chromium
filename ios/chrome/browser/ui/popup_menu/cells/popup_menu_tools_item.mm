@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/reading_list/number_badge_view.h"
 #import "ios/chrome/browser/ui/reading_list/text_badge_view.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
@@ -27,7 +27,6 @@ const CGFloat kCellHeight = 44;
 const CGFloat kInnerMargin = 11;
 const CGFloat kMargin = 15;
 const CGFloat kTopMargin = 8;
-const CGFloat kTopMarginBadge = 14;
 const CGFloat kMaxHeight = 100;
 NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
     @"kToolsMenuTextBadgeAccessibilityIdentifier";
@@ -72,6 +71,7 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     cell = [[PopupMenuToolsCell alloc] init];
+    [cell registerForContentSizeUpdates];
   });
 
   [self configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
@@ -122,14 +122,21 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
 
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.numberOfLines = 0;
-    _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _titleLabel.font = [self titleFont];
     [_titleLabel
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
     [_titleLabel setContentHuggingPriority:UILayoutPriorityDefaultLow - 1
                                    forAxis:UILayoutConstraintAxisHorizontal];
+    // The compression resistance has to be higher priority than the minimal
+    // height constraint so it can increase the height of the cell to be
+    // displayed on multiple lines.
+    [_titleLabel
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                        forAxis:UILayoutConstraintAxisVertical];
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _titleLabel.adjustsFontForContentSizeCategory = YES;
 
     _imageView = [[UIImageView alloc] init];
     _imageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -148,14 +155,26 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
     [self.contentView addSubview:_numberBadgeView];
     [self.contentView addSubview:_textBadgeView];
 
+    [NSLayoutConstraint activateConstraints:@[
+      [_titleLabel.centerYAnchor
+          constraintEqualToAnchor:self.contentView.centerYAnchor],
+      // Align the center of image with the center of the capital letter of the
+      // first line of the title.
+      [_imageView.centerYAnchor
+          constraintEqualToAnchor:_titleLabel.firstBaselineAnchor
+                         constant:-[self titleFont].capHeight / 2.0],
+      [_numberBadgeView.centerYAnchor
+          constraintEqualToAnchor:_imageView.centerYAnchor],
+      [_textBadgeView.centerYAnchor
+          constraintEqualToAnchor:_imageView.centerYAnchor],
+      [self.contentView.heightAnchor
+          constraintGreaterThanOrEqualToConstant:kCellHeight],
+    ]];
     ApplyVisualConstraintsWithMetrics(
         @[
           @"H:|-(margin)-[image(imageLength)]-(innerMargin)-[label]",
           @"H:[numberBadge]-(margin)-|", @"H:[textBadge]-(margin)-|",
-          @"V:|-(topMargin)-[image(imageLength)]",
-          @"V:|-(topMarginBadge)-[numberBadge]",
-          @"V:|-(topMarginBadge)-[textBadge]",
-          @"V:|-(topMargin)-[label]-(topMargin)-|"
+          @"V:|-(>=topMargin)-[label]-(>=topMargin)-|"
         ],
         @{
           @"image" : _imageView,
@@ -167,18 +186,21 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
           @"margin" : @(kMargin),
           @"innerMargin" : @(kInnerMargin),
           @"topMargin" : @(kTopMargin),
-          @"topMarginBadge" : @(kTopMarginBadge),
           @"imageLength" : @(kImageLength),
         });
 
-    [self.contentView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kCellHeight]
-        .active = YES;
+    // The height constraint is used to have something as small as possible when
+    // calculating the size of the prototype cell.
+    NSLayoutConstraint* heightConstraint =
+        [self.contentView.heightAnchor constraintEqualToConstant:kCellHeight];
+    heightConstraint.priority = UILayoutPriorityDefaultLow;
+
     NSLayoutConstraint* trailingEdge = [_titleLabel.trailingAnchor
         constraintEqualToAnchor:self.contentView.trailingAnchor
                        constant:-kMargin];
     trailingEdge.priority = UILayoutPriorityDefaultHigh - 2;
-    trailingEdge.active = YES;
+    [NSLayoutConstraint
+        activateConstraints:@[ trailingEdge, heightConstraint ]];
 
     self.isAccessibilityElement = YES;
   }
@@ -240,6 +262,18 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
   return UIColorFromRGB(kEnabledDefaultColor);
 }
 
+- (void)registerForContentSizeUpdates {
+  // This is needed because if the cell is static (used for height),
+  // adjustsFontForContentSizeCategory isn't working.
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(preferredContentSizeDidChange:)
+             name:UIContentSizeCategoryDidChangeNotification
+           object:nil];
+}
+
+#pragma mark - UIView
+
 - (void)layoutSubviews {
   [super layoutSubviews];
 
@@ -284,6 +318,16 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
 }
 
 #pragma mark - Private
+
+// Callback when the preferred Content Size change.
+- (void)preferredContentSizeDidChange:(NSNotification*)notification {
+  self.titleLabel.font = [self titleFont];
+}
+
+// Font to be used for the title.
+- (UIFont*)titleFont {
+  return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+}
 
 // Returns the color of the disabled button's title.
 + (UIColor*)disabledColor {

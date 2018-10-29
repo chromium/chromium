@@ -63,7 +63,7 @@ DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
 
   for (const Member<MimeClassInfo>& mime : data->Mimes()) {
     if (mime->Type() == property_name) {
-      size_t index = &mime - &data->Mimes()[0];
+      unsigned index = static_cast<unsigned>(&mime - &data->Mimes()[0]);
       return item(index);
     }
   }
@@ -111,7 +111,8 @@ void DOMMimeTypeArray::UpdatePluginData() {
     if (mime) {
       for (const Member<MimeClassInfo>& mime_info : data->Mimes()) {
         if (mime->type() == mime_info->Type()) {
-          size_t index = &mime_info - &data->Mimes()[0];
+          unsigned index =
+              static_cast<unsigned>(&mime_info - &data->Mimes()[0]);
           dom_mime_types_[index] = mime;
         }
       }

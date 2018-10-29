@@ -27,12 +27,15 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/prefs/pref_service.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -85,7 +88,8 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        download_manager_(&driver_, this) {
+        download_manager_(&driver_, this),
+        pref_service_(test::PrefServiceForTesting()) {
     driver_.SetSharedURLLoaderFactory(test_shared_loader_factory_);
   }
 
@@ -143,6 +147,7 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestAutofillDriver driver_;
   AutofillDownloadManager download_manager_;
+  std::unique_ptr<PrefService> pref_service_;
 };
 
 TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
@@ -243,14 +248,17 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
 
   // Request with id 1.
   EXPECT_TRUE(download_manager_.StartUploadRequest(
-      *(form_structures[0]), true, ServerFieldTypeSet(), std::string(), true));
+      *(form_structures[0]), true, ServerFieldTypeSet(), std::string(), true,
+      pref_service_.get()));
   // Request with id 2.
   EXPECT_TRUE(download_manager_.StartUploadRequest(
-      *(form_structures[1]), false, ServerFieldTypeSet(), std::string(), true));
+      *(form_structures[1]), false, ServerFieldTypeSet(), std::string(), true,
+      pref_service_.get()));
   // Request with id 3. Upload request with a non-empty additional password form
   // signature.
-  EXPECT_TRUE(download_manager_.StartUploadRequest(
-      *(form_structures[2]), false, ServerFieldTypeSet(), "42", true));
+  EXPECT_TRUE(download_manager_.StartUploadRequest(*(form_structures[2]), false,
+                                                   ServerFieldTypeSet(), "42",
+                                                   true, pref_service_.get()));
 
   const char* responses[] = {
       "<autofillqueryresponse>"
@@ -487,10 +495,12 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   form.fields.push_back(field);
 
   auto form_structure = std::make_unique<FormStructure>(form);
+  form_structure->set_submission_source(SubmissionSource::FORM_SUBMISSION);
 
   // Request with id 0.
   EXPECT_TRUE(download_manager_.StartUploadRequest(
-      *form_structure, true, ServerFieldTypeSet(), std::string(), true));
+      *form_structure, true, ServerFieldTypeSet(), std::string(), true,
+      pref_service_.get()));
 
   auto* request = test_url_loader_factory_.GetPendingRequest(0);
 
@@ -532,9 +542,11 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   responses_.pop_front();
 
   // Validate no retry on sending a bad request.
+  form_structure->set_submission_source(SubmissionSource::XHR_SUCCEEDED);
   base::HistogramTester histogram;
   EXPECT_TRUE(download_manager_.StartUploadRequest(
-      *form_structure, true, ServerFieldTypeSet(), std::string(), true));
+      *form_structure, true, ServerFieldTypeSet(), std::string(), true,
+      pref_service_.get()));
   request = test_url_loader_factory_.GetPendingRequest(2);
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
       request,
@@ -755,8 +767,14 @@ class AutofillServerCommunicationTest
   void SetUp() override {
     testing::TestWithParam<ServerCommuncationMode>::SetUp();
 
-    scoped_feature_list_1_.InitAndEnableFeature(
-        features::kAutofillCacheQueryResponses);
+    pref_service_ = test::PrefServiceForTesting();
+
+    scoped_feature_list_1_.InitWithFeatures(
+        // Enabled
+        {features::kAutofillCacheQueryResponses,
+         features::kAutofillUploadThrottling},
+        // Disabled
+        {});
 
     // Setup the server.
     server_.RegisterRequestHandler(
@@ -870,7 +888,7 @@ class AutofillServerCommunicationTest
     AutofillDownloadManager download_manager(driver_.get(), this);
     bool succeeded = download_manager.StartUploadRequest(
         form, form_was_autofilled, available_field_types, login_form_signature,
-        observed_submission);
+        observed_submission, pref_service_.get());
     if (succeeded)
       run_loop_->Run();
     run_loop_.reset();
@@ -888,6 +906,7 @@ class AutofillServerCommunicationTest
   size_t call_count_ = 0;
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<TestAutofillDriver> driver_;
+  std::unique_ptr<PrefService> pref_service_;
 };
 
 }  // namespace
@@ -1041,6 +1060,220 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
 // these tests exercise "enabled" functionality.
 INSTANTIATE_TEST_CASE_P(All,
                         AutofillQueryTest,
+                        ::testing::Values(FINCHED_URL, COMMAND_LINE_URL));
+
+using AutofillUploadTest = AutofillServerCommunicationTest;
+
+TEST_P(AutofillUploadTest, Throttling) {
+  ASSERT_NE(DISABLED, GetParam());
+
+  FormData form;
+  FormFieldData field;
+
+  field.label = ASCIIToUTF16("First Name:");
+  field.name = ASCIIToUTF16("firstname");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  field.label = ASCIIToUTF16("Last Name:");
+  field.name = ASCIIToUTF16("lastname");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  field.label = ASCIIToUTF16("Email:");
+  field.name = ASCIIToUTF16("email");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  AutofillDownloadManager download_manager(driver_.get(), this);
+  FormStructure form_structure(form);
+  for (int i = 0; i < 8; ++i) {
+    SCOPED_TRACE(base::StringPrintf("submission source = %d", i));
+    base::HistogramTester histogram_tester;
+    auto submission_source = static_cast<SubmissionSource>(i);
+    form_structure.set_submission_source(submission_source);
+
+    // The first attempt should succeed.
+    EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
+
+    // The second attempt should always fail.
+    EXPECT_FALSE(SendUploadRequest(form_structure, true, {}, "", true));
+
+    // One upload was not sent.
+    histogram_tester.ExpectBucketCount("Autofill.UploadEvent", 0, 1);
+    histogram_tester.ExpectBucketCount(
+        AutofillMetrics::SubmissionSourceToUploadEventMetric(submission_source),
+        0, 1);
+
+    // One upload was sent.
+    histogram_tester.ExpectBucketCount("Autofill.UploadEvent", 1, 1);
+    histogram_tester.ExpectBucketCount(
+        AutofillMetrics::SubmissionSourceToUploadEventMetric(submission_source),
+        1, 1);
+  }
+}
+
+TEST_P(AutofillUploadTest, ThrottlingDisabled) {
+  ASSERT_NE(DISABLED, GetParam());
+
+  FormData form;
+  FormFieldData field;
+
+  field.label = ASCIIToUTF16("First Name:");
+  field.name = ASCIIToUTF16("firstname");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  field.label = ASCIIToUTF16("Last Name:");
+  field.name = ASCIIToUTF16("lastname");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  field.label = ASCIIToUTF16("Email:");
+  field.name = ASCIIToUTF16("email");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  AutofillDownloadManager download_manager(driver_.get(), this);
+  FormStructure form_structure(form);
+
+  base::test::ScopedFeatureList local_feature;
+  local_feature.InitAndDisableFeature(features::kAutofillUploadThrottling);
+
+  for (int i = 0; i < 8; ++i) {
+    SCOPED_TRACE(base::StringPrintf("submission source = %d", i));
+    base::HistogramTester histogram_tester;
+    auto submission_source = static_cast<SubmissionSource>(i);
+    form_structure.set_submission_source(submission_source);
+
+    // The first attempt should succeed.
+    EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
+
+    // The second attempt should also succeed
+    EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
+
+    // The third attempt should also succeed
+    EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
+
+    // No throttling metrics should be logged.
+    EXPECT_TRUE(histogram_tester.GetAllSamples("Autofill.UploadEvent").empty());
+    EXPECT_TRUE(
+        histogram_tester
+            .GetAllSamples(AutofillMetrics::SubmissionSourceToUploadEventMetric(
+                submission_source))
+            .empty());
+  }
+}
+
+TEST_P(AutofillUploadTest, PeriodicReset) {
+  ASSERT_NE(DISABLED, GetParam());
+
+  FormData form;
+  FormFieldData field;
+
+  field.label = ASCIIToUTF16("First Name:");
+  field.name = ASCIIToUTF16("firstname");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  field.label = ASCIIToUTF16("Last Name:");
+  field.name = ASCIIToUTF16("lastname");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  field.label = ASCIIToUTF16("Email:");
+  field.name = ASCIIToUTF16("email");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  AutofillDownloadManager download_manager(driver_.get(), this);
+  SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
+
+  FormStructure form_structure(form);
+  form_structure.set_submission_source(submission_source);
+
+  base::HistogramTester histogram_tester;
+
+  TestAutofillClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+
+  // The first attempt should succeed.
+  EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
+
+  // Advance the clock, but not past the reset period. The pref won't reset,
+  // so the upload should never be sent.
+  test_clock.Advance(base::TimeDelta::FromDays(27));
+  EXPECT_FALSE(SendUploadRequest(form_structure, true, {}, "", true));
+
+  // Advance the clock beyond the reset period. The pref should bfde reset and
+  // the upload should succeed.
+  test_clock.Advance(base::TimeDelta::FromDays(2));  // Total = 29
+  EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
+
+  // One upload was not sent.
+  histogram_tester.ExpectBucketCount("Autofill.UploadEvent", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      AutofillMetrics::SubmissionSourceToUploadEventMetric(submission_source),
+      0, 1);
+
+  // Two uploads were sent.
+  histogram_tester.ExpectBucketCount("Autofill.UploadEvent", 1, 2);
+  histogram_tester.ExpectBucketCount(
+      AutofillMetrics::SubmissionSourceToUploadEventMetric(submission_source),
+      1, 2);
+}
+
+TEST_P(AutofillUploadTest, ResetOnClearUploadHisotry) {
+  ASSERT_NE(DISABLED, GetParam());
+
+  FormData form;
+  FormFieldData field;
+
+  field.label = ASCIIToUTF16("First Name:");
+  field.name = ASCIIToUTF16("firstname");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  field.label = ASCIIToUTF16("Last Name:");
+  field.name = ASCIIToUTF16("lastname");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  field.label = ASCIIToUTF16("Email:");
+  field.name = ASCIIToUTF16("email");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  AutofillDownloadManager download_manager(driver_.get(), this);
+  SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
+
+  FormStructure form_structure(form);
+  form_structure.set_submission_source(submission_source);
+
+  base::HistogramTester histogram_tester;
+
+  TestAutofillClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+
+  // The first attempt should succeed.
+  EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
+
+  // Clear the upload throttling history.
+  AutofillDownloadManager::ClearUploadHistory(pref_service_.get());
+  EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
+
+  // Two uploads were sent.
+  histogram_tester.ExpectBucketCount("Autofill.UploadEvent", 1, 2);
+  histogram_tester.ExpectBucketCount(
+      AutofillMetrics::SubmissionSourceToUploadEventMetric(submission_source),
+      1, 2);
+}
+
+// Note that we omit DEFAULT_URL from the test params. We don't actually want
+// the tests to hit the production server. We also excluded DISABLED, since
+// these tests exercise "enabled" functionality.
+INSTANTIATE_TEST_CASE_P(All,
+                        AutofillUploadTest,
                         ::testing::Values(FINCHED_URL, COMMAND_LINE_URL));
 
 }  // namespace autofill

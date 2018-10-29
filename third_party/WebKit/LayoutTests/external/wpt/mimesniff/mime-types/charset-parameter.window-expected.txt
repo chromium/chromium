@@ -2,10 +2,10 @@ This is a testharness.js-based test.
 PASS Loading data…
 PASS text/html;charset=gbk
 PASS TEXT/HTML;CHARSET=GBK
-FAIL text/html;charset=gbk( assert_equals: expected "UTF-8" but got "GBK"
+PASS text/html;charset=gbk(
 PASS text/html;x=(;charset=gbk
-FAIL text/html;charset=gbk;charset=windows-1255 assert_equals: expected "GBK" but got "windows-1255"
-FAIL text/html;charset=();charset=GBK assert_equals: expected "UTF-8" but got "GBK"
+PASS text/html;charset=gbk;charset=windows-1255
+PASS text/html;charset=();charset=GBK
 PASS text/html;charset =gbk
 PASS text/html ;charset=gbk
 PASS text/html; charset=gbk
@@ -14,7 +14,7 @@ FAIL text/html;charset= "gbk" assert_equals: expected "UTF-8" but got "GBK"
 PASS text/html;charset='gbk'
 PASS text/html;charset='gbk
 PASS text/html;charset=gbk'
-FAIL text/html;charset=';charset=GBK assert_equals: expected "UTF-8" but got "GBK"
+PASS text/html;charset=';charset=GBK
 PASS text/html;test;charset=gbk
 PASS text/html;test=;charset=gbk
 PASS text/html;';charset=gbk
@@ -22,16 +22,16 @@ PASS text/html;";charset=gbk
 PASS text/html ; ; charset=gbk
 PASS text/html;;;;charset=gbk
 FAIL text/html;charset= ";charset=GBK assert_equals: expected "GBK" but got "UTF-8"
-PASS text/html;charset=";charset=foo";charset=GBK
+FAIL text/html;charset=";charset=foo";charset=GBK assert_equals: expected "GBK" but got "UTF-8"
 PASS text/html;charset="gbk"
 PASS text/html;charset="gbk
 PASS text/html;charset=gbk"
-FAIL text/html;charset=" gbk" assert_equals: expected "GBK" but got "UTF-8"
-FAIL text/html;charset="gbk " assert_equals: expected "GBK" but got "UTF-8"
-FAIL text/html;charset="\ gbk" assert_equals: expected "GBK" but got "UTF-8"
+PASS text/html;charset=" gbk"
+PASS text/html;charset="gbk "
+PASS text/html;charset="\ gbk"
 PASS text/html;charset="\g\b\k"
 PASS text/html;charset="gbk"x
-FAIL text/html;charset="";charset=GBK assert_equals: expected "UTF-8" but got "GBK"
+PASS text/html;charset="";charset=GBK
 PASS text/html;charset=";charset=GBK
 PASS text/html;charset={gbk}
 PASS text/html;0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789=x;charset=gbk

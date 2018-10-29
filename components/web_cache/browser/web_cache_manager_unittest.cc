@@ -226,7 +226,7 @@ TEST_F(WebCacheManagerTest, AttemptTacticTest) {
                             kStats2, &strategy));
   EXPECT_EQ(2U, strategy.size());
 
-  AllocationStrategy::iterator iter = strategy.begin();
+  auto iter = strategy.begin();
   while (iter != strategy.end()) {
     if (iter->first == kRendererID)
       EXPECT_LE(kStats.size, iter->second);
@@ -264,7 +264,7 @@ TEST_F(WebCacheManagerTest, AddToStrategyTest) {
   EXPECT_EQ(2U, strategy.size());
 
   uint64_t total_bytes = 0;
-  AllocationStrategy::iterator iter = strategy.begin();
+  auto iter = strategy.begin();
   while (iter != strategy.end()) {
     total_bytes += iter->second;
 

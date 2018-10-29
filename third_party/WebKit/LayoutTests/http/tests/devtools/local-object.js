@@ -5,7 +5,6 @@
 (async function() {
   TestRunner.addResult(`Tests callFunction on local remote objects.\n`);
 
-
   var object = [6, 28, 496];
   var localObject = SDK.RemoteObject.fromLocalObject(object);
 
@@ -13,9 +12,8 @@
     return this[index];
   }
 
-  function getItemCallback(result) {
-    TestRunner.addResult('getItem(1) result: ' + result);
-  }
+  let result = await localObject.callFunctionJSON(getItem, [{value: 1}]);
+  TestRunner.addResult('getItem(1) result: ' + result);
 
   function compareAndSwap(index, value, newValue) {
     if (this[index] !== value)
@@ -24,27 +22,24 @@
     return 'Done';
   }
 
-  function compareAndSwapCallback(result) {
-    TestRunner.addResult('compareAndSwap(1, 28, 42) result: ' + result.description);
-  }
-
-  function exceptionCallback(result, exceptionDetails) {
-    TestRunner.addResult('compareAndSwap(1, 28, 42) throws exception: ' + !!exceptionDetails);
-  }
+  result = await localObject.callFunction(
+      compareAndSwap, [{value: 1}, {value: 28}, {value: 42}]);
+  TestRunner.addResult(
+      'compareAndSwap(1, 28, 42) result: ' + result.object.description);
+  result = await localObject.callFunction(
+      compareAndSwap, [{value: 1}, {value: 28}, {value: 42}]);
+  TestRunner.addResult(
+      'compareAndSwap(1, 28, 42) throws exception: ' + !!result.wasThrown);
 
   function guessWhat() {
     return 42;
   }
 
-  function guessWhatCallback(result) {
-    TestRunner.addResult('guessWhat() result: ' + result.description);
-  }
+  result = await localObject.callFunction(guessWhat, undefined);
+  TestRunner.addResult('guessWhat() result: ' + result.object.description);
 
-  localObject.callFunctionJSON(getItem, [{value: 1}], getItemCallback);
-  localObject.callFunction(compareAndSwap, [{value: 1}, {value: 28}, {value: 42}], compareAndSwapCallback);
-  localObject.callFunction(compareAndSwap, [{value: 1}, {value: 28}, {value: 42}], exceptionCallback);
-  localObject.callFunction(guessWhat, undefined, guessWhatCallback);
-  localObject.callFunction(compareAndSwap, [{value: 0}, {value: 6}, {value: 7}]);
+  await localObject.callFunction(
+      compareAndSwap, [{value: 0}, {value: 6}, {value: 7}]);
   TestRunner.addResult('Final value of object: [' + object.join(', ') + ']');
   TestRunner.completeTest();
 })();

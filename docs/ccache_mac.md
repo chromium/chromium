@@ -36,8 +36,8 @@ git clone git://git.samba.org/ccache.git cd ccache
 Make sure ccache can be found in your `$PATH`.
 
 You can also just use the current released version of ccache (3.1.8 or 3.1.9)
-and disable the chromium style plugin with `clang_use_chrome_plugins=0` in your
-`GYP_DEFINES`.
+and disable the chromium style plugin with `clang_use_chrome_plugins = false`
+in your args.gn.
 
 ## Use with GN
 

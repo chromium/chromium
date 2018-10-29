@@ -5,8 +5,10 @@
 #include "content/browser/appcache/appcache_navigation_handle.h"
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "content/browser/appcache/appcache_navigation_handle_core.h"
 #include "content/browser/appcache/chrome_appcache_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {
@@ -23,8 +25,8 @@ AppCacheNavigationHandle::AppCacheNavigationHandle(
       core_(std::make_unique<AppCacheNavigationHandleCore>(appcache_service,
                                                            appcache_host_id_)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&AppCacheNavigationHandleCore::Initialize,
                      base::Unretained(core_.get())));
 }

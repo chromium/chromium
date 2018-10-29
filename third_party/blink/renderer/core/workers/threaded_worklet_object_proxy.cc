@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/core/workers/threaded_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/threaded_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 
 namespace blink {
@@ -33,8 +33,7 @@ void ThreadedWorkletObjectProxy::FetchAndInvokeScript(
     scoped_refptr<base::SingleThreadTaskRunner> outside_settings_task_runner,
     WorkletPendingTasks* pending_tasks,
     WorkerThread* worker_thread) {
-  ThreadedWorkletGlobalScope* global_scope =
-      ToThreadedWorkletGlobalScope(worker_thread->GlobalScope());
+  auto* global_scope = To<WorkletGlobalScope>(worker_thread->GlobalScope());
   global_scope->FetchAndInvokeScript(
       module_url_record, credentials_mode,
       new FetchClientSettingsObjectSnapshot(std::move(outside_settings_object)),

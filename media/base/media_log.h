@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/thread_annotations.h"
 #include "media/base/buffering_state.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log_event.h"
@@ -161,7 +162,7 @@ class MEDIA_EXPORT MediaLog {
     base::Lock lock;
 
     // Original media log, or null.
-    MediaLog* media_log = nullptr;
+    MediaLog* media_log GUARDED_BY(lock) = nullptr;
 
    protected:
     friend class base::RefCountedThreadSafe<ParentLogRecord>;
@@ -174,10 +175,6 @@ class MEDIA_EXPORT MediaLog {
   MediaLog(scoped_refptr<ParentLogRecord> parent_log_record);
 
  private:
-  // Return a lock that will be taken during InvalidateLog on the parent log,
-  // and before calls to the *Locked methods.
-  base::Lock& lock() { return parent_log_record_->lock; }
-
   // The underlying media log.
   scoped_refptr<ParentLogRecord> parent_log_record_;
 

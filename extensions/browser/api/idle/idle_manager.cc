@@ -158,7 +158,7 @@ void IdleManager::OnListenerRemoved(const EventListenerInfo& details) {
 
   // During unload the monitor could already have been deleted. No need to do
   // anything in that case.
-  MonitorMap::iterator it = monitors_.find(details.extension_id);
+  auto it = monitors_.find(details.extension_id);
   if (it != monitors_.end()) {
     DCHECK_GT(it->second.listeners, 0);
     // Note: Deliberately leave the listener count as 0 rather than erase()ing
@@ -208,7 +208,7 @@ void IdleManager::SetIdleTimeProviderForTest(
 
 IdleMonitor* IdleManager::GetMonitor(const std::string& extension_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  MonitorMap::iterator it = monitors_.find(extension_id);
+  auto it = monitors_.find(extension_id);
 
   if (it == monitors_.end()) {
     it = monitors_.insert(std::make_pair(extension_id,
@@ -244,8 +244,7 @@ void IdleManager::UpdateIdleStateCallback(int idle_time) {
   // Remember this state for initializing new event listeners.
   last_state_ = IdleTimeToIdleState(locked, idle_time, kDefaultIdleThreshold);
 
-  for (MonitorMap::iterator it = monitors_.begin(); it != monitors_.end();
-       ++it) {
+  for (auto it = monitors_.begin(); it != monitors_.end(); ++it) {
     IdleMonitor& monitor = it->second;
     ui::IdleState new_state =
         IdleTimeToIdleState(locked, idle_time, monitor.threshold);

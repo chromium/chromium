@@ -16,6 +16,8 @@ static_library("content") {
     "previews_optimization_guide.h",
     "previews_ui_service.cc",
     "previews_ui_service.h",
+    "previews_user_data.cc",
+    "previews_user_data.h",
   ]
 
   deps = [
@@ -28,6 +30,7 @@ static_library("content") {
     "//components/variations",
     "//content/public/common",
     "//net",
+    "//services/network:network_service",
   ]
 }
 
@@ -40,6 +43,7 @@ source_set("unit_tests") {
     "previews_hints_unittest.cc",
     "previews_optimization_guide_unittest.cc",
     "previews_ui_service_unittest.cc",
+    "previews_user_data_unittest.cc",
   ]
 
   deps = [
@@ -52,6 +56,8 @@ source_set("unit_tests") {
     "//components/variations",
     "//content/public/common",
     "//net:test_support",
+    "//services/network:network_service",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 }

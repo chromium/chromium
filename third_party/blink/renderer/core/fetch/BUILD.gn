@@ -16,6 +16,8 @@ blink_core_sources("fetch") {
     "bytes_consumer.h",
     "bytes_consumer_for_data_consumer_handle.cc",
     "bytes_consumer_for_data_consumer_handle.h",
+    "data_pipe_bytes_consumer.cc",
+    "data_pipe_bytes_consumer.h",
     "fetch_data_loader.cc",
     "fetch_data_loader.h",
     "fetch_header_list.cc",

@@ -29,15 +29,14 @@ void SessionsHierarchy::AddWindow(const std::multiset<std::string>& tabs) {
 std::string SessionsHierarchy::ToString() const {
   std::stringstream output;
   output << "{";
-  for (WindowContainer::const_iterator window_it = windows_.begin();
-       window_it != windows_.end(); ++window_it) {
+  for (auto window_it = windows_.begin(); window_it != windows_.end();
+       ++window_it) {
     if (window_it != windows_.begin())
       output << ",";
     output << "{";
 
     Window window = *window_it;
-    for (Window::const_iterator tab_it = window.begin(); tab_it != window.end();
-         ++tab_it) {
+    for (auto tab_it = window.begin(); tab_it != window.end(); ++tab_it) {
       if (tab_it != window.begin())
         output << ",";
       output << *tab_it;

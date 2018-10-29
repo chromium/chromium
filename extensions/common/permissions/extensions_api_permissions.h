@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_COMMON_PERMISSIONS_EXTENSIONS_API_PERMISSIONS_H_
 #define EXTENSIONS_COMMON_PERMISSIONS_EXTENSIONS_API_PERMISSIONS_H_
 
-#include <vector>
-
 #include "base/containers/span.h"
 #include "extensions/common/alias.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -15,7 +13,7 @@ namespace extensions {
 namespace api_permissions {
 
 base::span<const APIPermissionInfo::InitInfo> GetPermissionInfos();
-std::vector<Alias> GetPermissionAliases();
+base::span<const Alias> GetPermissionAliases();
 
 }  // namespace api_permissions
 }  // namespace extensions

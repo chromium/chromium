@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/strings/string16.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
@@ -28,10 +29,10 @@
 #include "content/public/common/input_event_ack_state.h"
 #include "content/public/common/screen_info.h"
 #include "content/public/common/widget_type.h"
-#include "ipc/ipc_listener.h"
 #include "services/viz/public/interfaces/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/interfaces/hit_test/hit_test_region_list.mojom.h"
 #include "third_party/blink/public/common/screen_orientation/web_screen_orientation_type.h"
+#include "third_party/blink/public/platform/web_intrinsic_sizing_info.h"
 #include "third_party/blink/public/web/web_text_direction.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/accessibility/ax_tree_id_registry.h"
@@ -49,7 +50,7 @@
 #include "services/ws/public/mojom/window_tree.mojom.h"
 #endif
 
-struct ViewHostMsg_SelectionBounds_Params;
+struct WidgetHostMsg_SelectionBounds_Params;
 
 namespace base {
 class UnguessableToken;
@@ -94,7 +95,6 @@ struct TextInputState;
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
 class CONTENT_EXPORT RenderWidgetHostViewBase
     : public RenderWidgetHostView,
-      public IPC::Listener,
       public RenderFrameMetadataProvider::Observer {
  public:
   using CreateCompositorFrameSinkCallback =
@@ -152,9 +152,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   gfx::PointF TransformRootPointToViewCoordSpace(
       const gfx::PointF& point) override;
 
-  // IPC::Listener implementation:
-  bool OnMessageReceived(const IPC::Message& msg) override;
-
   // RenderFrameMetadataProvider::Observer
   void OnRenderFrameMetadataChangedBeforeActivation(
       const cc::RenderFrameMetadata& metadata) override;
@@ -162,6 +159,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   void OnRenderFrameSubmission() override;
   void OnLocalSurfaceIdChanged(
       const cc::RenderFrameMetadata& metadata) override;
+
+  virtual void UpdateIntrinsicSizingInfo(
+      const blink::WebIntrinsicSizingInfo& sizing_info);
 
   static void CopyMainAndPopupFromSurface(
       base::WeakPtr<RenderWidgetHostImpl> main_host,
@@ -203,8 +203,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata);
 
-  virtual bool IsLocalSurfaceIdAllocationSuppressed() const;
-
   base::WeakPtr<RenderWidgetHostViewBase> GetWeakPtr();
 
   //----------------------------------------------------------------------------
@@ -229,9 +227,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // The size of the view's backing surface in non-DPI-adjusted pixels.
   virtual gfx::Size GetCompositorViewportPixelSize() const;
 
-  // Whether or not Blink's viewport size should be shrunk by the height of the
-  // URL-bar.
-  virtual bool DoBrowserControlsShrinkBlinkSize() const;
+  // Whether or not the renderer's viewport size should be shrunk by the height
+  // of the URL-bar.
+  virtual bool DoBrowserControlsShrinkRendererSize() const;
 
   // The height of the URL-bar browser controls.
   virtual float GetTopControlsHeight() const;
@@ -280,7 +278,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual gfx::Point AccessibilityOriginInScreen(const gfx::Rect& bounds);
   virtual gfx::AcceleratedWidget AccessibilityGetAcceleratedWidget();
   virtual gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible();
-  virtual void SetMainFrameAXTreeID(ui::AXTreeIDRegistry::AXTreeID id) {}
+  virtual void SetMainFrameAXTreeID(ui::AXTreeID id) {}
   // Informs that the focused DOM node has changed.
   virtual void FocusedNodeChanged(bool is_editable_node,
                                   const gfx::Rect& node_bounds_in_screen) {}
@@ -338,6 +336,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // Returns the LocalSurfaceId allocated by the parent client for this view.
   // TODO(fsamuel): Return by const ref.
   virtual const viz::LocalSurfaceId& GetLocalSurfaceId() const = 0;
+
+  // Returns the time at which the viz::LocalSurfaceId was allocated by the
+  // parent client for this view.
+  virtual base::TimeTicks GetLocalSurfaceIdAllocationTime() const;
 
   // When there are multiple RenderWidgetHostViews for a single page, input
   // events need to be targeted to the correct one for handling. The following
@@ -402,6 +404,18 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       gfx::PointF* transformed_point,
       viz::EventSource source = viz::EventSource::ANY);
 
+  // On success, returns true and modifies |*transform| to represent the
+  // transformation mapping a point in the coordinate space of this view
+  // into the coordinate space of the target view.
+  // On Failure, returns false, and leaves |*transform| unchanged.
+  // This function will fail if viz hit testing is not enabled, or if either
+  // this view or the target view has no current FrameSinkId. The latter may
+  // happen if either view is not currently visible in the viewport.
+  // This function is useful if there are multiple points to transform between
+  // the same two views.
+  bool GetTransformToViewCoordSpace(RenderWidgetHostViewBase* target_view,
+                                    gfx::Transform* transform);
+
   // TODO(kenrb, wjmaclean): This is a temporary subclass identifier for
   // RenderWidgetHostViewGuests that is needed for special treatment during
   // input event routing. It can be removed either when RWHVGuests properly
@@ -461,7 +475,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // RenderWidget's window's origin. Focus and anchor bound are represented as
   // gfx::Rect.
   virtual void SelectionBoundsChanged(
-      const ViewHostMsg_SelectionBounds_Params& params);
+      const WidgetHostMsg_SelectionBounds_Params& params);
 
   // Updates the range of the marked text in an IME composition.
   virtual void ImeCompositionRangeChanged(
@@ -615,10 +629,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   ws::mojom::WindowTreeClientPtr GetWindowTreeClientFromRenderer();
 #endif
 
-  // If |event| is a touchpad pinch event for which we've sent a synthetic
-  // wheel event, forward the |event| to the renderer, subject to |ack_result|
-  // which is the ACK result of the synthetic wheel.
-  virtual void ForwardTouchpadPinchIfNecessary(
+  // If |event| is a touchpad pinch or double tap event for which we've sent a
+  // synthetic wheel event, forward the |event| to the renderer, subject to
+  // |ack_result| which is the ACK result of the synthetic wheel.
+  virtual void ForwardTouchpadZoomEventIfNecessary(
       const blink::WebGestureEvent& event,
       InputEventAckState ack_result);
 

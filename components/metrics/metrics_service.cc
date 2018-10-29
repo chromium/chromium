@@ -452,12 +452,12 @@ void MetricsService::PushExternalLog(const std::string& log) {
   log_store()->StoreLog(log, MetricsLog::ONGOING_LOG);
 }
 
-void MetricsService::UpdateMetricsUsagePrefs(const std::string& service_name,
-                                             int message_size,
-                                             bool is_cellular) {
+void MetricsService::UpdateMetricsUsagePrefs(int message_size,
+                                             bool is_cellular,
+                                             bool is_metrics_service_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  reporting_service_.UpdateMetricsUsagePrefs(service_name, message_size,
-                                             is_cellular);
+  reporting_service_.UpdateMetricsUsagePrefs(message_size, is_cellular,
+                                             is_metrics_service_usage);
 }
 
 //------------------------------------------------------------------------------
@@ -869,22 +869,62 @@ void MetricsService::RecordCurrentStabilityHistograms() {
       &histogram_snapshot_manager_);
 }
 
+void MetricsService::PrepareProviderMetricsLogDone(
+    std::unique_ptr<MetricsLog::IndependentMetricsLoader> loader,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(independent_loader_active_);
+  DCHECK(loader);
+
+  if (success) {
+    log_manager_.PauseCurrentLog();
+    log_manager_.BeginLoggingWithLog(loader->ReleaseLog());
+    log_manager_.FinishCurrentLog(log_store());
+    log_manager_.ResumePausedLog();
+  }
+
+  independent_loader_active_ = false;
+}
+
 bool MetricsService::PrepareProviderMetricsLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Create a new log. This will have some defaut values injected in it but
-  // those will be overwritten when an embedded profile is extracted.
-  std::unique_ptr<MetricsLog> log = CreateLog(MetricsLog::INDEPENDENT_LOG);
+  // If something is still pending, stop now and indicate that there is
+  // still work to do.
+  if (independent_loader_active_)
+    return true;
 
+  // Check each provider in turn for data.
   for (auto& provider : delegating_provider_.GetProviders()) {
-    if (log->LoadIndependentMetrics(provider.get())) {
-      log_manager_.PauseCurrentLog();
-      log_manager_.BeginLoggingWithLog(std::move(log));
-      log_manager_.FinishCurrentLog(log_store());
-      log_manager_.ResumePausedLog();
+    if (provider->HasIndependentMetrics()) {
+      // Create a new log. This will have some default values injected in it
+      // but those will be overwritten when an embedded profile is extracted.
+      std::unique_ptr<MetricsLog> log = CreateLog(MetricsLog::INDEPENDENT_LOG);
+
+      // Note that something is happening. This must be set before the
+      // operation is requested in case the loader decides to do everything
+      // immediately rather than as a background task.
+      independent_loader_active_ = true;
+
+      // Give the new log to a loader for management and then run it on the
+      // provider that has something to give. A copy of the pointer is needed
+      // because the unique_ptr may get moved before the value can be used
+      // to call Run().
+      std::unique_ptr<MetricsLog::IndependentMetricsLoader> loader =
+          std::make_unique<MetricsLog::IndependentMetricsLoader>(
+              std::move(log));
+      MetricsLog::IndependentMetricsLoader* loader_ptr = loader.get();
+      loader_ptr->Run(
+          base::BindOnce(&MetricsService::PrepareProviderMetricsLogDone,
+                         self_ptr_factory_.GetWeakPtr(), std::move(loader)),
+          provider.get());
+
+      // Something was found so there may still be more work to do.
       return true;
     }
   }
+
+  // Nothing was found so indicate there is no more work to do.
   return false;
 }
 

@@ -83,6 +83,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
       std::unique_ptr<TCPConnectedSocket> connected_socket,
       mojom::TCPConnectedSocketRequest connected_socket_request);
 
+  TLSSocketFactory* tls_socket_factory() { return &tls_socket_factory_; }
+
  private:
   // TCPServerSocket::Delegate implementation:
   void OnAccept(std::unique_ptr<TCPConnectedSocket> socket,

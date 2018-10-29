@@ -15,12 +15,12 @@
 #include <iosfwd>
 #include <string>
 
+#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
-class GFX_EXPORT Vector2d {
+class GEOMETRY_EXPORT Vector2d {
  public:
   constexpr Vector2d() : x_(0), y_(0) {}
   constexpr Vector2d(int x, int y) : x_(x), y_(y) {}

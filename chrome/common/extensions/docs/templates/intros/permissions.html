@@ -80,6 +80,17 @@ $(ref:Permissions.origins) as long as it has a matching scheme.
         remote debugging protocol
       </a>.
   </tr>
+  {{^is_apps}}
+  <tr id="declarativeNetRequest">
+    <td>
+      <code>"declarativeNetRequest"</code>
+    </td>
+    <td>
+      Grants the extension access to the
+      <a href="declarativeNetRequest">chrome.declarativeNetRequest</a> API.
+    </td>
+  </tr>
+  {{/is_apps}}
   <tr id="devtools">
     <td>
       <code>"devtools"</code>

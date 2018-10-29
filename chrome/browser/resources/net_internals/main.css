@@ -16,29 +16,6 @@ ul {
   padding-left: 2em;
 }
 
-/* This class is used to create the splitter widget in
- * ResizbleVerticalSplitView. */
-.vertical-splitter {
-  border-left: 1px solid #afafaf;
-  cursor: ew-resize;
-  position: absolute;
-  user-select: none;
-  width: 10px;
-}
-
-/* Needs to be wider on touch devices. */
-.touch .vertical-splitter {
-  width: 5mm;
-}
-
-.log-source-entry {
-  margin: 5px;
-}
-
-pre {
-  font-size: 133%;
-}
-
 /* This class should be given to top-level content boxes (like the view's main
  * DIV). It gives them a consistent padding, and makes them scrollable. */
 .content-box {
@@ -54,19 +31,6 @@ pre {
 .content-box h5,
 .content-box h6 {
   margin-left: -10px;
-}
-
-/* Styles for TABLE that uses a thin collapsed border. */
-table.styled-table {
-  border-collapse: collapse;
-}
-
-table.styled-table,
-.styled-table th,
-.styled-table td {
-  border: 1px solid #777;
-  padding-left: 4px;
-  padding-right: 4px;
 }
 
 #tab-list {
@@ -97,43 +61,7 @@ table.styled-table,
   color: black;
 }
 
-.styled-table th {
-  background: rgb(224,236,255);
-}
-
-.styled-table th.title {
-  background: rgb(255,217,217);
-}
-
-/* Styling for event logs. */
-.event-log p {
-  white-space: nowrap;
-}
-
-.event-log h4 {
-  margin: 0;
-}
-
-.event-log a {
-  font-weight: bold;
-  text-decoration: none;
-}
-
 /* Styling for text indicating a potential problem or error state. */
 .warning-text {
   color: rgb(238, 0, 0);
-}
-
-/* Styling for help windows that appear when mousing over an element. */
-.mouse-over-help {
-  background: #EEE;
-  border: 1px solid black;
-  padding: 5px;
-  z-index: 1;
-}
-
-/* Styling for elements that show a help window on mouse over. */
-.mouse-over-help-hover {
-  color: blue;
-  cursor: help;
 }

@@ -2,7 +2,6 @@ Test that canvas elements can't have negative height and/or width.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS checkDefaultWidth() is 300
 PASS checkDefaultHeight() is 150
 FAIL trySettingWidth('abc') should be 300. Was 0.

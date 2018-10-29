@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Dapatkan kecanggihan Google di Chromium</translation>
 <translation id="2730884209570016437">Chromium tidak dapat menggunakan kamera karena sedang digunakan aplikasi lain</translation>
 <translation id="2797210818057553964">Anda dapat menyesuaikan ini kapan saja di Setelan Chromium</translation>
+<translation id="2915596697727466327">Chromium menggunakan Face ID untuk memastikan akses terotorisasi ke sandi Anda.</translation>
 <translation id="3256316712990552818">Disalin ke Chromium</translation>
 <translation id="3413120535237193088">Agar bookmark tersedia di semua perangkat Anda, masuk ke Chromium.</translation>
 <translation id="3473048256428424907">Aktifkan pemindai QR Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Tab yang telah dibuka di Chromium pada perangkat lainnya akan muncul di sini.</translation>
 <translation id="495292094137889840">Mulai gunakan pemindai QR Chromium</translation>
 <translation id="5231355151045086930">Keluar dari Chromium</translation>
-<translation id="5416919929805616771">Suka menggunakan Chromium? <ph name="BEGIN_LINK" />Beri nilai aplikasi ini<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Selamat Datang di Chromium</translation>
 <translation id="5945387852661427312">Anda masuk dengan akun yang dikelola oleh <ph name="DOMAIN" /> dan memberikan kontrol data Chromium kepada administrator. Data Anda akan terikat dengan akun ini secara permanen. Bila Anda keluar dari Chromium, data akan dihapus dari perangkat ini, namun tetap disimpan di Akun Google.</translation>
 <translation id="6068866989048414399">Persyaratan Layanan Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Anda beralih akun sinkronisasi dari <ph name="USER_EMAIL1" /> ke <ph name="USER_EMAIL2" />. Data Chromium Anda yang sudah ada dikelola oleh <ph name="DOMAIN" />. Tindakan ini akan menghapus data dari perangkat, namun data Anda akan tetap tersedia di <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Pindahkan Chromium ke dok<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Dapatkan pengalaman menggunakan Google yang lebih baik di Chromium berdasarkan lokasi Anda.</translation>
-<translation id="8353224596138547809">Ingin Chromium menyimpan sandi untuk situs ini?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" /> dapat disesuaikan kapan saja. Google dapat menggunakan konten di situs yang Anda buka, serta interaksi dan aktivitas browser untuk mempersonalisasi Chromium dan layanan Google seperti Terjemahan, Penelusuran, dan iklan.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
 <translation id="8809780021347235332">Untuk menyimpan gambar, tap Setelan untuk mengizinkan Chromium menggunakan foto Anda</translation>

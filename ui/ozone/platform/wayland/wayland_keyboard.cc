@@ -8,6 +8,7 @@
 
 #include "base/files/scoped_file.h"
 #include "ui/base/ui_features.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -120,9 +121,8 @@ void WaylandKeyboard::Key(void* data,
       key, down, false /*suppress_auto_repeat*/, device_id);
 
   // TODO(tonikitoo,msisov): Handler 'repeat' parameter below.
-  keyboard->DispatchKey(
-      key, down, false /*repeat*/,
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time), device_id);
+  keyboard->DispatchKey(key, down, false /*repeat*/, EventTimeForNow(),
+                        device_id);
 }
 
 void WaylandKeyboard::Modifiers(void* data,

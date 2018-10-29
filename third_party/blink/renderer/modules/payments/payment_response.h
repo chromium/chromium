@@ -20,7 +20,6 @@
 
 namespace blink {
 
-class ExceptionState;
 class PaymentAddress;
 class PaymentStateResolver;
 class PaymentValidationErrors;
@@ -35,21 +34,24 @@ class MODULES_EXPORT PaymentResponse final
   WTF_MAKE_NONCOPYABLE(PaymentResponse);
 
  public:
-  PaymentResponse(ExecutionContext*,
-                  payments::mojom::blink::PaymentResponsePtr,
-                  PaymentAddress* shipping_address_,
-                  PaymentStateResolver*,
-                  const String& requestId);
+  PaymentResponse(ScriptState* script_state,
+                  payments::mojom::blink::PaymentResponsePtr response,
+                  PaymentAddress* shipping_address,
+                  PaymentStateResolver* payment_state_resolver,
+                  const String& request_id);
   ~PaymentResponse() override;
 
-  void Update(payments::mojom::blink::PaymentResponsePtr, PaymentAddress*);
+  void Update(ScriptState* script_state,
+              payments::mojom::blink::PaymentResponsePtr response,
+              PaymentAddress* shipping_address);
   void UpdatePayerDetail(payments::mojom::blink::PayerDetailPtr);
+  void UpdateDetailsFromJSON(ScriptState* script_state, const String& json);
 
   ScriptValue toJSONForBinding(ScriptState*) const;
 
-  const String& requestId() const { return requestId_; }
+  const String& requestId() const { return request_id_; }
   const String& methodName() const { return method_name_; }
-  ScriptValue details(ScriptState*, ExceptionState&) const;
+  ScriptValue details(ScriptState* script_state) const;
   PaymentAddress* shippingAddress() const { return shipping_address_.Get(); }
   const String& shippingOption() const { return shipping_option_; }
   const String& payerName() const { return payer_name_; }
@@ -69,9 +71,9 @@ class MODULES_EXPORT PaymentResponse final
   void Trace(blink::Visitor*) override;
 
  private:
-  String requestId_;
+  String request_id_;
   String method_name_;
-  String stringified_details_;
+  ScriptValue details_;
   Member<PaymentAddress> shipping_address_;
   String shipping_option_;
   String payer_name_;

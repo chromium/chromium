@@ -55,7 +55,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
                        public viz::GpuHostImpl::Delegate {
  public:
   enum GpuProcessKind {
-    GPU_PROCESS_KIND_UNSANDBOXED,
+    GPU_PROCESS_KIND_UNSANDBOXED_NO_GL,  // Unsandboxed, no init GL bindings.
     GPU_PROCESS_KIND_SANDBOXED,
     GPU_PROCESS_KIND_COUNT
   };
@@ -136,7 +136,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   // viz::GpuHostImpl::Delegate:
   gpu::GPUInfo GetGPUInfo() const override;
   gpu::GpuFeatureInfo GetGpuFeatureInfo() const override;
-  void UpdateGpuInfo(
+  void DidInitialize(
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info,
       const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
@@ -201,6 +201,8 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 
   // Time Init started.  Used to log total GPU process startup time to UMA.
   base::TimeTicks init_start_time_;
+
+  int connection_filter_id_;
 
   // The total number of GPU process crashes.
   static base::subtle::Atomic32 gpu_crash_count_;

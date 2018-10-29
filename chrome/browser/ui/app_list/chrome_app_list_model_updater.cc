@@ -376,9 +376,14 @@ void ChromeAppListModelUpdater::ContextMenuItemSelected(const std::string& id,
 syncer::StringOrdinal ChromeAppListModelUpdater::GetFirstAvailablePosition()
     const {
   std::vector<ChromeAppListItem*> top_level_items;
-  for (auto& item : items_) {
-    if (item.second->folder_id().empty())
-      top_level_items.emplace_back(item.second.get());
+  for (auto& entry : items_) {
+    ChromeAppListItem* item = entry.second.get();
+    DCHECK(item->position().IsValid())
+        << "Item with invalid position: id=" << item->id()
+        << ", name=" << item->name() << ", is_folder=" << item->is_folder()
+        << ", is_page_break=" << item->is_page_break();
+    if (item->folder_id().empty() && item->position().IsValid())
+      top_level_items.emplace_back(item);
   }
   return GetFirstAvailablePositionInternal(top_level_items);
 }
@@ -516,7 +521,12 @@ void ChromeAppListModelUpdater::OnFolderDeleted(
 void ChromeAppListModelUpdater::OnItemUpdated(
     ash::mojom::AppListItemMetadataPtr item) {
   ChromeAppListItem* chrome_item = FindItem(item->id);
-  DCHECK(chrome_item);
+
+  // Ignore the item if it does not exist. This happens when a race occurs
+  // between the browser and ash. e.g. An item is removed on browser side while
+  // there is an in-flight OnItemUpdated() call from ash.
+  if (!chrome_item)
+    return;
 
   // Preserve icon once it cannot be modified at ash.
   item->icon = chrome_item->icon();

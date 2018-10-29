@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -75,9 +76,9 @@ WebPushSubscriptionOptions PushSubscriptionOptions::ToWeb(
 PushSubscriptionOptions::PushSubscriptionOptions(
     const WebPushSubscriptionOptions& options)
     : user_visible_only_(options.user_visible_only),
-      application_server_key_(
-          DOMArrayBuffer::Create(options.application_server_key.Latin1().data(),
-                                 options.application_server_key.length())) {}
+      application_server_key_(DOMArrayBuffer::Create(
+          options.application_server_key.Latin1().data(),
+          SafeCast<unsigned>(options.application_server_key.length()))) {}
 
 void PushSubscriptionOptions::Trace(blink::Visitor* visitor) {
   visitor->Trace(application_server_key_);

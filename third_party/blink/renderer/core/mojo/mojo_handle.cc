@@ -61,7 +61,7 @@ MojoResult MojoHandle::writeMessage(
       [](MojoHandle* handle) { return handle->handle_.release().value(); });
 
   const void* bytes = nullptr;
-  uint32_t num_bytes = 0;
+  size_t num_bytes = 0;
   if (buffer.IsArrayBuffer()) {
     DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
     bytes = array->Data();
@@ -119,7 +119,7 @@ void MojoHandle::readMessage(const MojoReadMessageFlags& flags_dict,
   result_dict.setBuffer(buffer);
 
   HeapVector<Member<MojoHandle>> handles(num_handles);
-  for (size_t i = 0; i < num_handles; ++i) {
+  for (uint32_t i = 0; i < num_handles; ++i) {
     handles[i] = MojoHandle::Create(
         mojo::MakeScopedHandle(mojo::Handle(raw_handles[i])));
   }

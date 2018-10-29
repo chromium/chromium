@@ -189,43 +189,6 @@ TEST_F(WinAudioTest, PCMWaveStreamGetAndClose) {
   oas->Close();
 }
 
-// Test that can it be cannot be created with invalid parameters.
-TEST_F(WinAudioTest, SanityOnMakeParams) {
-  ABORT_AUDIO_TEST_IF_NOT(audio_manager_device_info_->HasAudioOutputDevices());
-
-  AudioParameters::Format fmt = AudioParameters::AUDIO_PCM_LINEAR;
-  EXPECT_TRUE(NULL ==
-              audio_manager_->MakeAudioOutputStream(
-                  AudioParameters(fmt, CHANNEL_LAYOUT_UNSUPPORTED, 8000, 256),
-                  std::string(), AudioManager::LogCallback()));
-  EXPECT_TRUE(NULL ==
-              audio_manager_->MakeAudioOutputStream(
-                  AudioParameters(fmt, CHANNEL_LAYOUT_MONO, 1024 * 1024, 256),
-                  std::string(), AudioManager::LogCallback()));
-  EXPECT_TRUE(NULL == audio_manager_->MakeAudioOutputStream(
-                          AudioParameters(fmt, CHANNEL_LAYOUT_STEREO, 0, 256),
-                          std::string(), AudioManager::LogCallback()));
-  EXPECT_TRUE(NULL ==
-              audio_manager_->MakeAudioOutputStream(
-                  AudioParameters(fmt, CHANNEL_LAYOUT_UNSUPPORTED, 8000, 256),
-                  std::string(), AudioManager::LogCallback()));
-  EXPECT_TRUE(NULL ==
-              audio_manager_->MakeAudioOutputStream(
-                  AudioParameters(fmt, CHANNEL_LAYOUT_STEREO, -8000, 256),
-                  std::string(), AudioManager::LogCallback()));
-  EXPECT_TRUE(NULL == audio_manager_->MakeAudioOutputStream(
-                          AudioParameters(fmt, CHANNEL_LAYOUT_MONO, 8000, -100),
-                          std::string(), AudioManager::LogCallback()));
-  EXPECT_TRUE(NULL == audio_manager_->MakeAudioOutputStream(
-                          AudioParameters(fmt, CHANNEL_LAYOUT_MONO, 8000, 0),
-                          std::string(), AudioManager::LogCallback()));
-  EXPECT_TRUE(NULL ==
-              audio_manager_->MakeAudioOutputStream(
-                  AudioParameters(fmt, CHANNEL_LAYOUT_MONO, 8000,
-                                  media::limits::kMaxSamplesPerPacket + 1),
-                  std::string(), AudioManager::LogCallback()));
-}
-
 // Test that it can be opened and closed.
 TEST_F(WinAudioTest, PCMWaveStreamOpenAndClose) {
   ABORT_AUDIO_TEST_IF_NOT(audio_manager_device_info_->HasAudioOutputDevices());
@@ -237,19 +200,6 @@ TEST_F(WinAudioTest, PCMWaveStreamOpenAndClose) {
   ASSERT_TRUE(NULL != oas);
   EXPECT_TRUE(oas->Open());
   oas->Close();
-}
-
-// Test that it has a maximum packet size.
-TEST_F(WinAudioTest, PCMWaveStreamOpenLimit) {
-  ABORT_AUDIO_TEST_IF_NOT(audio_manager_device_info_->HasAudioOutputDevices());
-
-  AudioOutputStream* oas = audio_manager_->MakeAudioOutputStream(
-      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_STEREO,
-                      8000, 1024 * 1024 * 1024),
-      std::string(), AudioManager::LogCallback());
-  EXPECT_TRUE(NULL == oas);
-  if (oas)
-    oas->Close();
 }
 
 // Test potential deadlock situation if the source is slow or blocks for some

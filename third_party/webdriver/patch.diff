@@ -1,24 +1,33 @@
 diff --git a/javascript/atoms/dom.js b/javascript/atoms/dom.js
-index f0a3b84da5..c7a1b05054 100644
+index 78b78e1038..f1d0b424b0 100644
 --- a/javascript/atoms/dom.js
 +++ b/javascript/atoms/dom.js
-@@ -561,14 +561,8 @@ bot.dom.isShown = function(elem, opt_ignoreOpacity) {
-       do {
-         parent = bot.dom.getParentNodeInComposedDom(e);
-         if (parent instanceof ShadowRoot) {
--          if (parent.host.shadowRoot != parent) {
--            // There is a younger shadow root, which will take precedence over
--            // the shadow this element is in, thus this element won't be
--            // displayed.
--            return false;
--          } else {
--            parent = parent.host;
--          }
-+          // For backward compatibility, treat all shadow roots as shown.
-+          return true;
-         } else if (parent && (parent.nodeType == goog.dom.NodeType.DOCUMENT ||
-             parent.nodeType == goog.dom.NodeType.DOCUMENT_FRAGMENT)) {
-           parent = null;
+@@ -587,14 +587,8 @@ bot.dom.isShown = function(elem, opt_ignoreOpacity) {
+     var parent = bot.dom.getParentNodeInComposedDom(e);
+ 
+     if (bot.dom.IS_SHADOW_DOM_ENABLED && (parent instanceof ShadowRoot)) {
+-      if (parent.host.shadowRoot !== parent) {
+-        // There is a younger shadow root, which will take precedence over
+-        // the shadow this element is in, thus this element won't be
+-        // displayed.
+-        return false;
+-      } else {
+-        parent = parent.host;
+-      }
++      // For backward compatibility, treat all shadow roots as shown.
++      return true;
+     }
+ 
+     if (parent && (parent.nodeType == goog.dom.NodeType.DOCUMENT ||
+@@ -602,7 +596,7 @@ bot.dom.isShown = function(elem, opt_ignoreOpacity) {
+       return true;
+     }
+ 
+-    return parent && displayed(parent);
++    return !!parent && displayed(parent);
+   }
+ 
+   return bot.dom.isShown_(elem, !!opt_ignoreOpacity, displayed);
 diff --git a/javascript/atoms/mouse.js b/javascript/atoms/mouse.js
 index 737ed50f62..1bc9e858f5 100644
 --- a/javascript/atoms/mouse.js
@@ -44,24 +53,22 @@ index 737ed50f62..1bc9e858f5 100644
      buttonValueMap[bot.events.EventType.CLICK] = [0, 1, 2, null];
      buttonValueMap[bot.events.EventType.CONTEXTMENU] = [null, null, 2, null];
 diff --git a/javascript/chrome-driver/atoms.js b/javascript/chrome-driver/atoms.js
-index 5cf4416460..b21fea617c 100644
+index 5cf4416460..329390cf1f 100644
 --- a/javascript/chrome-driver/atoms.js
 +++ b/javascript/chrome-driver/atoms.js
-@@ -142,6 +142,12 @@ webdriver.chrome.scrollIntoView_ = function(elem, region, center) {
+@@ -142,6 +142,10 @@ webdriver.chrome.scrollIntoView_ = function(elem, region, center) {
  
    offset = goog.style.getClientPosition(elem);
    var windowSize = goog.dom.getDomHelper(elem).getViewportSize();
-+  // Chrome 61.0.3138 and above uses doc.documentElement, while older
-+  // Chrome uses doc.body. We can't reliably detect Chrome version because
-+  // userAgent string can be overridden, so just call scrollHelper on both.
-+  // TBD(johnchen@chromium.org): Remove doc.body when we stop supporting
-+  // Chrome 61.0.3137.
++  // Chrome uses either doc.documentElement or doc.body, depending on
++  // compatibility settings. For reliability, call scrollHelper on both.
++  // Calling scrollHelper on the wrong object is harmless.
 +  scrollHelper(doc.documentElement, windowSize, offset, region, center);
    scrollHelper(doc.body, windowSize, offset, region, center);
  };
  
 diff --git a/rake-tasks/crazy_fun/mappings/javascript.rb b/rake-tasks/crazy_fun/mappings/javascript.rb
-index 982d36314e..ae0c3e460b 100644
+index 1ac2b2066a..dfa11fbbc2 100644
 --- a/rake-tasks/crazy_fun/mappings/javascript.rb
 +++ b/rake-tasks/crazy_fun/mappings/javascript.rb
 @@ -857,6 +857,8 @@ module Javascript

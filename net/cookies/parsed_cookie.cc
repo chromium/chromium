@@ -217,7 +217,7 @@ bool ParsedCookie::SetPriority(const std::string& priority) {
 
 std::string ParsedCookie::ToCookieLine() const {
   std::string out;
-  for (PairList::const_iterator it = pairs_.begin(); it != pairs_.end(); ++it) {
+  for (auto it = pairs_.begin(); it != pairs_.end(); ++it) {
     if (!out.empty())
       out.append("; ");
     out.append(it->first);

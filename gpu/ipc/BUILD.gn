@@ -15,6 +15,8 @@ component("gl_in_process_context") {
     "gpu_in_process_thread_service.h",
     "in_process_command_buffer.cc",
     "in_process_command_buffer.h",
+    "in_process_gpu_thread_holder.cc",
+    "in_process_gpu_thread_holder.h",
   ]
 
   defines = [ "GL_IN_PROCESS_CONTEXT_IMPLEMENTATION" ]

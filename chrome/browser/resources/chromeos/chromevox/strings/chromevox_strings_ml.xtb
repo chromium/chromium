@@ -151,7 +151,7 @@
 <translation id="2381733276052567791">സംഭാഷണം ഓണാക്കൽ അല്ലെങ്കിൽ ഓഫാക്കൽ മാറ്റുക</translation>
 <translation id="2390264819538553347">അടുത്ത പേജിലേക്ക് പോകാൻ 'എന്റർ' അമർത്തുക; തിരികെ പോകാൻ 'ബാക്ക്‌സ്‌പെയ്‌സ്' അമർത്തുക.</translation>
 <translation id="241124561063364910">അതിനുശേഷം</translation>
-<translation id="2416512023405990736">അൺചെക്കുചെയ്‌ത ഒരു ചെക്ക്‌ ബോക്‌സ്</translation>
+<translation id="2416512023405990736">അൺചെക്ക് ചെയ്‌ത ഒരു ചെക്ക്‌ ബോക്‌സ്</translation>
 <translation id="2417569100218200841">ഉള്ളടക്ക വിവരം</translation>
 <translation id="2417948780551741035">അന്തിമ കുറിപ്പുകൾ</translation>
 <translation id="2421113964388408478">ഇല്ലാതാക്കൽ</translation>
@@ -345,7 +345,7 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{ചോദ്യചിഹ്നം}other{# ചോദ്യചിഹ്നങ്ങൾ}}</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{കാരറ്റ്}other{# കാരറ്റുകൾ}}</translation>
 <translation id="352577523970648069">എഡിറ്റുചെയ്യാവുന്ന ഒരു ടെക്‌സ്‌റ്റ് ഫീൽഡ്</translation>
-<translation id="3568702578574425662"><ph name="NAME" />, ചെക്ക്‌ബോക്സ് ചെക്കുചെയ്‌തിട്ടില്ല</translation>
+<translation id="3568702578574425662"><ph name="NAME" />, ചെക്ക്‌ബോക്സ് ചെക്ക് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="3589661172894441357">പദസഞ്ചയം</translation>
 <translation id="3599054940393788245">ആന്തരിക മാത്ത് അല്ല</translation>
 <translation id="360241989769010433">കടപ്പാട്</translation>
@@ -380,6 +380,7 @@
 <translation id="3914173277599553213">ആവശ്യമായത്</translation>
 <translation id="3914732343065571127">ChromeVox കമാൻഡ് റഫറൻസ്</translation>
 <translation id="3930498801443296724">പുൾക്വോട്ട്</translation>
+<translation id="3941269780691800708">മൗസിന്റെ ചുവടെയുള്ള വാചകം പറയുക.</translation>
 <translation id="3962990492275676168">നിലവിലെ സ്ഥാനത്ത് നിന്ന് വായിക്കാൻ ആരംഭിക്കുക</translation>
 <translation id="4004802134384979325">ചെക്കുചെയ്‌തു</translation>
 <translation id="4006140876663370126">img</translation>
@@ -911,7 +912,7 @@ Chrome ബ്രൗസർ മെനു തുറക്കാൻ, ആൾട്ട
 <translation id="8571096049907249734">ഒന്നിലധികം തിരഞ്ഞെടുക്കൽ</translation>
 <translation id="8584721346566392021">h5</translation>
 <translation id="8587549812518406253">അടുത്ത ലിസ്റ്റ് ഇനം</translation>
-<translation id="860150890330522909"><ph name="NAME" /> ചെക്ക്ബോക്‌സ് ചെക്കുചെയ്‌തു</translation>
+<translation id="860150890330522909"><ph name="NAME" /> ചെക്ക്ബോക്‌സ് ചെക്ക് ചെയ്‌തു</translation>
 <translation id="8603071050456974042">ChromeVox പാനൽ</translation>
 <translation id="8606621670302093223">തീയതി നിയന്ത്രണം</translation>
 <translation id="8631359288236106450">തിരഞ്ഞെടുത്ത <ph name="COUNT" /> ഇനങ്ങൾ</translation>

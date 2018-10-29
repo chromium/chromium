@@ -5,7 +5,7 @@
 'use strict';
 (function () {
   test(function () {
-    assert_exists(window, 'internals');
+    assert_own_property(window, 'internals');
   }, 'This test requires "internals.canHyphenate"');
 
   ['en-us', 'en-gu'].forEach(function (locale) {

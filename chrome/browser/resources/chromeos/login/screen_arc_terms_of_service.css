@@ -70,6 +70,7 @@ html[dir='rtl'] .arc-tos-overlay-close-top {
   display: flex;
   justify-content: flex-end;
   margin: 8px;
+  min-height: 0;
 }
 
 .arc-tos-overlay-close-top:hover {

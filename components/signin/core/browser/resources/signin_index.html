@@ -89,6 +89,26 @@
       </table>
     </div>
   </div>
+  <div id="refresh-token-events">
+    <h2>Refresh token events</h2>
+    <div class="refresh-token-events-section">
+      <table class="signin-details">
+        <tr class="header">
+          <td>Timestamp</td>
+          <td>Accound Id</td>
+          <td>Event type</td>
+          <td>Source</td>
+        </tr>
+        <tr jsselect="refreshTokenEvents">
+          <td jscontent="timestamp"></td>
+          <td jscontent="accountId"></td>
+          <td jscontent="type"></td>
+          <td jscontent="source"></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
   <script src="chrome://resources/js/i18n_template.js"></script>
   <script src="chrome://resources/js/jstemplate_compiled.js"></script>
   <script src="chrome://signin-internals/signin_internals.js"></script>

@@ -75,7 +75,7 @@ class SigninViewControllerDelegateViews : public views::DialogDelegateView,
   void ResizeNativeView(int height) override;
 
   // content::WebContentsDelegate:
-  void HandleKeyboardEvent(
+  bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
 

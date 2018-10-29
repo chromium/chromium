@@ -50,6 +50,7 @@
     <file lang="am" path="translations/android_webapk_strings_am.xtb" />
     <file lang="ar" path="translations/android_webapk_strings_ar.xtb" />
     <file lang="bg" path="translations/android_webapk_strings_bg.xtb" />
+    <file lang="bn" path="translations/android_webapk_strings_bn.xtb" />
     <file lang="ca" path="translations/android_webapk_strings_ca.xtb" />
     <file lang="cs" path="translations/android_webapk_strings_cs.xtb" />
     <file lang="da" path="translations/android_webapk_strings_da.xtb" />
@@ -58,10 +59,12 @@
     <file lang="en-GB" path="translations/android_webapk_strings_en-GB.xtb" />
     <file lang="es" path="translations/android_webapk_strings_es.xtb" />
     <file lang="es-419" path="translations/android_webapk_strings_es-419.xtb" />
+    <file lang="et" path="translations/android_webapk_strings_et.xtb" />
     <file lang="fa" path="translations/android_webapk_strings_fa.xtb" />
     <file lang="fi" path="translations/android_webapk_strings_fi.xtb" />
     <file lang="fil" path="translations/android_webapk_strings_fil.xtb" />
     <file lang="fr" path="translations/android_webapk_strings_fr.xtb" />
+    <file lang="gu" path="translations/android_webapk_strings_gu.xtb" />
     <file lang="hi" path="translations/android_webapk_strings_hi.xtb" />
     <file lang="hr" path="translations/android_webapk_strings_hr.xtb" />
     <file lang="hu" path="translations/android_webapk_strings_hu.xtb" />
@@ -70,8 +73,12 @@
     <file lang="iw" path="translations/android_webapk_strings_iw.xtb" />
     <file lang="ja" path="translations/android_webapk_strings_ja.xtb" />
     <file lang="ko" path="translations/android_webapk_strings_ko.xtb" />
+    <file lang="kn" path="translations/android_webapk_strings_kn.xtb" />
     <file lang="lt" path="translations/android_webapk_strings_lt.xtb" />
     <file lang="lv" path="translations/android_webapk_strings_lv.xtb" />
+    <file lang="ml" path="translations/android_webapk_strings_ml.xtb" />
+    <file lang="mr" path="translations/android_webapk_strings_mr.xtb" />
+    <file lang="ms" path="translations/android_webapk_strings_ms.xtb" />
     <file lang="nl" path="translations/android_webapk_strings_nl.xtb" />
     <file lang="no" path="translations/android_webapk_strings_no.xtb" />
     <file lang="pl" path="translations/android_webapk_strings_pl.xtb" />
@@ -84,6 +91,8 @@
     <file lang="sr" path="translations/android_webapk_strings_sr.xtb" />
     <file lang="sv" path="translations/android_webapk_strings_sv.xtb" />
     <file lang="sw" path="translations/android_webapk_strings_sw.xtb" />
+    <file lang="ta" path="translations/android_webapk_strings_ta.xtb" />
+    <file lang="te" path="translations/android_webapk_strings_te.xtb" />
     <file lang="th" path="translations/android_webapk_strings_th.xtb" />
     <file lang="tr" path="translations/android_webapk_strings_tr.xtb" />
     <file lang="uk" path="translations/android_webapk_strings_uk.xtb" />

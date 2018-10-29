@@ -1161,5 +1161,70 @@ TEST_F(HitTestQueryTest, GetTransformToTarget) {
   EXPECT_EQ(transform_to_d, expected_transform_to_d);
 }
 
+// Region c1 is transparent and on top of e, c2 is a child of e, d1 is a
+// child of c1. Any events outside of d1 should go to either c2 or e instead
+// of being taken by the transparent c1 region.
+//
+//  +e/c1----------+
+//  |              |     Point   maps to
+//  |   +c2-+      |     -----   -------
+//  |   | 1 |      |       1        c2
+//  |   +d1--------|       2        d1
+//  |   | 2        |
+//  |   |          |
+//  +--------------+
+//
+TEST_F(HitTestQueryTest, TransparentOverlayRegions) {
+  FrameSinkId e_id = FrameSinkId(1, 1);
+  FrameSinkId c1_id = FrameSinkId(2, 2);
+  FrameSinkId c2_id = FrameSinkId(3, 3);
+  FrameSinkId d1_id = FrameSinkId(4, 4);
+  gfx::Rect e_bounds_in_e = gfx::Rect(0, 0, 600, 600);
+  gfx::Rect c1_bounds_in_e = gfx::Rect(0, 0, 600, 600);
+  gfx::Rect c2_bounds_in_e = gfx::Rect(0, 0, 200, 100);
+  gfx::Rect d1_bounds_in_c1 = gfx::Rect(0, 0, 400, 300);
+  gfx::Transform transform_e_to_e, transform_e_to_c1, transform_e_to_c2,
+      transform_c1_to_d1;
+  transform_e_to_c2.Translate(-200, -100);
+  transform_c1_to_d1.Translate(-200, -200);
+  active_data_.push_back(AggregatedHitTestRegion(
+      e_id,
+      HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
+      e_bounds_in_e, transform_e_to_e, 3));  // e
+  active_data_.push_back(
+      AggregatedHitTestRegion(c1_id,
+                              HitTestRegionFlags::kHitTestChildSurface |
+                                  HitTestRegionFlags::kHitTestIgnore |
+                                  HitTestRegionFlags::kHitTestMouse,
+                              c1_bounds_in_e, transform_e_to_c1, 1));  // c1
+  active_data_.push_back(AggregatedHitTestRegion(
+      d1_id,
+      HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
+      d1_bounds_in_c1, transform_c1_to_d1, 0));  // d1
+  active_data_.push_back(AggregatedHitTestRegion(
+      c2_id,
+      HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
+      c2_bounds_in_e, transform_e_to_c2, 0));  // c2
+  SendHitTestData();
+
+  // All points are in e's coordinate system when we reach this case.
+  gfx::PointF point1(202, 102);
+  gfx::PointF point2(202, 202);
+
+  Target target1 =
+      hit_test_query().FindTargetForLocation(EventSource::MOUSE, point1);
+  EXPECT_EQ(target1.frame_sink_id, c2_id);
+  EXPECT_EQ(target1.location_in_target, gfx::PointF(2, 2));
+  EXPECT_EQ(target1.flags, HitTestRegionFlags::kHitTestMine |
+                               HitTestRegionFlags::kHitTestMouse);
+
+  Target target2 =
+      hit_test_query().FindTargetForLocation(EventSource::MOUSE, point2);
+  EXPECT_EQ(target2.frame_sink_id, d1_id);
+  EXPECT_EQ(target2.location_in_target, gfx::PointF(2, 2));
+  EXPECT_EQ(target2.flags, HitTestRegionFlags::kHitTestMine |
+                               HitTestRegionFlags::kHitTestMouse);
+}
+
 }  // namespace test
 }  // namespace viz

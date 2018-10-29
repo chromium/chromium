@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
@@ -77,10 +78,8 @@ class ToolbarButton : public views::LabelButton,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
-  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
   SkColor GetInkDropBaseColor() const override;
 
   // views::ContextMenuController:
@@ -97,8 +96,8 @@ class ToolbarButton : public views::LabelButton,
   // Function to show the dropdown menu.
   virtual void ShowDropDownMenu(ui::MenuSourceType source_type);
 
-  // Sets |layout_insets_|, see comment there.
-  void SetLayoutInsets(const gfx::Insets& insets);
+  // Sets |layout_inset_delta_|, see comment there.
+  void SetLayoutInsetDelta(const gfx::Insets& insets);
 
  private:
   friend test::ToolbarButtonTestApi;
@@ -136,11 +135,11 @@ class ToolbarButton : public views::LabelButton,
   // to extend to the full window width.
   int leading_margin_ = 0;
 
-  // Base layout insets (normally GetLayoutInsets(TOOLBAR_BUTTON)) that are used
-  // for the button. This is overridable as AvatarToolbarButton uses smaller
-  // insets to accomodate for a larger avatar avatar icon. |leading_margin_| and
-  // |ink_drop_large_corner_radius()| are also used to calculate final insets.
-  gfx::Insets layout_insets_;
+  // Delta from regular toolbar-button insets. This is necessary for buttons
+  // that use smaller or larger icons than regular ToolbarButton instances.
+  // AvatarToolbarButton for instance uses smaller insets to accommodate for a
+  // larger-than-16dp avatar avatar icon outside of touchable mode.
+  gfx::Insets layout_inset_delta_;
 
   // A highlight color is used to signal error states. When set this color is
   // used as a base for background, text and ink drops. When not set, uses the

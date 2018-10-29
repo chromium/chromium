@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -146,7 +147,8 @@ class UsersPrivateApiTest : public ExtensionApiTest {
       s_test_delegate_ = new TestDelegate(profile());
 
     UsersPrivateDelegateFactory::GetInstance()->SetTestingFactory(
-        profile(), &UsersPrivateApiTest::GetUsersPrivateDelegate);
+        profile(),
+        base::BindRepeating(&UsersPrivateApiTest::GetUsersPrivateDelegate));
     content::RunAllPendingInMessageLoop();
   }
 

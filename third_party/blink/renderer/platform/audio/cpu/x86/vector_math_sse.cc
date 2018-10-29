@@ -11,13 +11,13 @@
 #include <xmmintrin.h>
 
 namespace blink {
-namespace VectorMath {
+namespace vector_math {
 namespace SSE {
 
 using MType = __m128;
 
 }  // namespace SSE
-}  // namespace VectorMath
+}  // namespace vector_math
 }  // namespace blink
 
 #define MM_PS(name) _mm_##name##_ps

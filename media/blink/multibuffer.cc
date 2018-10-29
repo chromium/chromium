@@ -110,7 +110,7 @@ bool MultiBuffer::GlobalLRU::Pruneable() const {
 void MultiBuffer::GlobalLRU::SchedulePrune() {
   if (Pruneable() && !background_pruning_pending_) {
     task_runner_->PostDelayedTask(
-        FROM_HERE, base::Bind(&MultiBuffer::GlobalLRU::PruneTask, this),
+        FROM_HERE, base::BindOnce(&MultiBuffer::GlobalLRU::PruneTask, this),
         base::TimeDelta::FromSeconds(kBlockPruneInterval));
     background_pruning_pending_ = true;
   }

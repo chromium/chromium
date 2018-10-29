@@ -22,16 +22,18 @@ class CodeCacheLoaderImpl : public blink::CodeCacheLoader {
 
   // Fetches code cache corresponding to |url| and returns response in
   // |response_time_out| and |data_out|.  |response_time_out| and |data_out|
-  // cannot be nullptrs.
+  // cannot be nullptrs. This only fetches from the Javascript cache.
   void FetchFromCodeCacheSynchronously(const GURL& url,
                                        base::Time* response_time_out,
                                        std::vector<uint8_t>* data_out) override;
 
-  void FetchFromCodeCache(const GURL& url,
+  void FetchFromCodeCache(blink::mojom::CodeCacheType cache_type,
+                          const GURL& url,
                           FetchCodeCacheCallback callback) override;
 
  private:
-  void FetchFromCodeCacheImpl(const GURL& url,
+  void FetchFromCodeCacheImpl(blink::mojom::CodeCacheType cache_type,
+                              const GURL& url,
                               FetchCodeCacheCallback callback,
                               base::WaitableEvent* event);
 

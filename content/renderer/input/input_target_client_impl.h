@@ -21,7 +21,8 @@ class InputTargetClientImpl : public viz::mojom::InputTargetClient {
   void BindToRequest(viz::mojom::InputTargetClientRequest request);
 
   // viz::mojom::InputTargetClient:
-  void FrameSinkIdAt(const gfx::Point& point,
+  void FrameSinkIdAt(const gfx::PointF& point,
+                     const uint64_t trace_id,
                      FrameSinkIdAtCallback callback) override;
 
  private:

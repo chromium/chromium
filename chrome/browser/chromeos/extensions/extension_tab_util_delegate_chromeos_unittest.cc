@@ -24,7 +24,7 @@ const char kNonWhitelistedId[] = "bogus";
 const char kTestUrl[] = "http://www.foo.bar/baz?key=val";
 const char kFilteredUrl[] = "http://www.foo.bar/";
 
-scoped_refptr<Extension> CreateExtension(const std::string& id) {
+scoped_refptr<const Extension> CreateExtension(const std::string& id) {
   return ExtensionBuilder("test").SetID(id).Build();
 }
 

@@ -20,6 +20,7 @@
 #include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/load_flags.h"
@@ -100,8 +101,8 @@ void TraceCrashServiceUploader::OnSimpleURLLoaderComplete(
         "Uploading failed, response code: " + base::IntToString(response_code);
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(std::move(done_callback_), success, feedback));
   simple_url_loader_.reset();
 }
@@ -115,9 +116,8 @@ void TraceCrashServiceUploader::OnURLLoaderUploadProgress(uint64_t current,
 
   if (progress_callback_.is_null())
     return;
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::Bind(progress_callback_, current, total));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::Bind(progress_callback_, current, total));
 }
 
 void TraceCrashServiceUploader::DoUpload(
@@ -207,8 +207,8 @@ void TraceCrashServiceUploader::DoCompressOnBackgroundThread(
   SetupMultipart(product, version, std::move(metadata), "trace.json.gz",
                  compressed_contents, &post_data);
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&TraceCrashServiceUploader::CreateAndStartURLLoader,
                      base::Unretained(this), upload_url, post_data));
 }
@@ -216,8 +216,8 @@ void TraceCrashServiceUploader::DoCompressOnBackgroundThread(
 void TraceCrashServiceUploader::OnUploadError(
     const std::string& error_message) {
   LOG(ERROR) << error_message;
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(std::move(done_callback_), false, error_message));
 }
 

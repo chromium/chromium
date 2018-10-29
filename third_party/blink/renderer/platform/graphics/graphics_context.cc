@@ -1390,10 +1390,10 @@ sk_sp<SkColorFilter> GraphicsContext::WebCoreColorFilterToSkiaColorFilter(
     case kColorFilterLuminanceToAlpha:
       return SkLumaColorFilter::Make();
     case kColorFilterLinearRGBToSRGB:
-      return InterpolationSpaceUtilities::CreateInterpolationSpaceFilter(
+      return interpolation_space_utilities::CreateInterpolationSpaceFilter(
           kInterpolationSpaceLinear, kInterpolationSpaceSRGB);
     case kColorFilterSRGBToLinearRGB:
-      return InterpolationSpaceUtilities::CreateInterpolationSpaceFilter(
+      return interpolation_space_utilities::CreateInterpolationSpaceFilter(
           kInterpolationSpaceSRGB, kInterpolationSpaceLinear);
     case kColorFilterNone:
       break;

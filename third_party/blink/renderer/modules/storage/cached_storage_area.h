@@ -38,9 +38,10 @@ class MODULES_EXPORT CachedStorageArea
   // should have been registered first by calling RegisterSource.
   class Source : public GarbageCollectedMixin {
    public:
-    virtual ~Source() {}
+    virtual ~Source() = default;
     virtual KURL GetPageUrl() const = 0;
-    virtual void EnqueueStorageEvent(const String& key,
+    // Return 'true' to continue receiving events, and 'false' to stop.
+    virtual bool EnqueueStorageEvent(const String& key,
                                      const String& old_value,
                                      const String& new_value,
                                      const String& url) = 0;
@@ -49,14 +50,26 @@ class MODULES_EXPORT CachedStorageArea
         WebScopedVirtualTimePauser::VirtualTaskDuration duration) = 0;
   };
 
+  // Used to send events to the InspectorDOMStorageAgent.
+  class InspectorEventListener {
+   public:
+    virtual ~InspectorEventListener() = default;
+    virtual void DidDispatchStorageEvent(const SecurityOrigin* origin,
+                                         const String& key,
+                                         const String& old_value,
+                                         const String& new_value) = 0;
+  };
+
   static scoped_refptr<CachedStorageArea> CreateForLocalStorage(
       scoped_refptr<const SecurityOrigin> origin,
       mojo::InterfacePtr<mojom::blink::StorageArea> area,
-      scoped_refptr<base::SingleThreadTaskRunner> ipc_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
+      InspectorEventListener* listener);
   static scoped_refptr<CachedStorageArea> CreateForSessionStorage(
       scoped_refptr<const SecurityOrigin> origin,
       mojo::AssociatedInterfacePtr<mojom::blink::StorageArea> area,
-      scoped_refptr<base::SingleThreadTaskRunner> ipc_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
+      InspectorEventListener* listener);
 
   // These correspond to blink::Storage.
   unsigned GetLength();
@@ -83,11 +96,13 @@ class MODULES_EXPORT CachedStorageArea
  private:
   CachedStorageArea(scoped_refptr<const SecurityOrigin> origin,
                     mojo::InterfacePtr<mojom::blink::StorageArea> area,
-                    scoped_refptr<base::SingleThreadTaskRunner> ipc_runner);
+                    scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
+                    InspectorEventListener* listener);
   CachedStorageArea(
       scoped_refptr<const SecurityOrigin> origin,
       mojo::AssociatedInterfacePtr<mojom::blink::StorageArea> area,
-      scoped_refptr<base::SingleThreadTaskRunner> ipc_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
+      InspectorEventListener* listener);
 
   friend class RefCounted<CachedStorageArea>;
   ~CachedStorageArea() override;
@@ -134,12 +149,19 @@ class MODULES_EXPORT CachedStorageArea
   FormatOption GetKeyFormat() const;
   FormatOption GetValueFormat() const;
 
+  void EnqueueStorageEvent(const String& key,
+                           const String& old_value,
+                           const String& new_value,
+                           const String& url,
+                           const String& storage_area_id);
+
   static String Uint8VectorToString(const Vector<uint8_t>& input,
                                     FormatOption format_option);
   static Vector<uint8_t> StringToUint8Vector(const String& input,
                                              FormatOption format_option);
 
   scoped_refptr<const SecurityOrigin> origin_;
+  InspectorEventListener* inspector_event_listener_;
 
   std::unique_ptr<StorageAreaMap> map_;
 
@@ -158,7 +180,7 @@ class MODULES_EXPORT CachedStorageArea
       mojo_area_associated_ptr_;
   mojo::AssociatedBinding<mojom::blink::StorageAreaObserver> binding_;
 
-  PersistentHeapHashMap<WeakMember<Source>, String> areas_;
+  Persistent<HeapHashMap<WeakMember<Source>, String>> areas_;
 
   base::WeakPtrFactory<CachedStorageArea> weak_factory_;
 

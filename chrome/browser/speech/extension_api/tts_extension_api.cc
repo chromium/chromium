@@ -191,7 +191,7 @@ bool TtsSpeakFunction::RunAsync() {
   UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.HasGender",
                         !gender_str.empty());
 
-  double rate = blink::SpeechSynthesisConstants::kDoublePrefNotSet;
+  double rate = blink::kWebSpeechSynthesisDoublePrefNotSet;
   if (options->HasKey(constants::kRateKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         options->GetDouble(constants::kRateKey, &rate));
@@ -201,7 +201,7 @@ bool TtsSpeakFunction::RunAsync() {
     }
   }
 
-  double pitch = blink::SpeechSynthesisConstants::kDoublePrefNotSet;
+  double pitch = blink::kWebSpeechSynthesisDoublePrefNotSet;
   if (options->HasKey(constants::kPitchKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         options->GetDouble(constants::kPitchKey, &pitch));
@@ -211,7 +211,7 @@ bool TtsSpeakFunction::RunAsync() {
     }
   }
 
-  double volume = blink::SpeechSynthesisConstants::kDoublePrefNotSet;
+  double volume = blink::kWebSpeechSynthesisDoublePrefNotSet;
   if (options->HasKey(constants::kVolumeKey)) {
     EXTENSION_FUNCTION_VALIDATE(
         options->GetDouble(constants::kVolumeKey, &volume));
@@ -325,8 +325,7 @@ ExtensionFunction::ResponseAction TtsGetVoicesFunction::Run() {
       result_voice->SetString(constants::kExtensionIdKey, voice.extension_id);
 
     auto event_types = std::make_unique<base::ListValue>();
-    for (std::set<TtsEventType>::iterator iter = voice.events.begin();
-         iter != voice.events.end(); ++iter) {
+    for (auto iter = voice.events.begin(); iter != voice.events.end(); ++iter) {
       const char* event_name_constant = TtsEventTypeToString(*iter);
       event_types->AppendString(event_name_constant);
     }

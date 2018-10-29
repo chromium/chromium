@@ -11,8 +11,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
+#include "chrome/browser/browsing_data/counters/signin_data_counter.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/browser_sync/profile_sync_service.h"
+#include "components/password_manager/core/browser/test_password_store.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +29,8 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/browsing_data/counters/media_licenses_counter.h"
 #endif
+
+namespace browsing_data_counter_utils {
 
 class BrowsingDataCounterUtilsTest : public testing::Test {
  public:
@@ -109,19 +115,16 @@ TEST_F(BrowsingDataCounterUtilsTest, HostedAppsCounterResult) {
 
   for (const TestCase& test_case : kTestCases) {
     // Split the list of installed apps by commas.
-    std::vector<std::string> apps = base::SplitString(
-        test_case.apps_list, ",",
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string> apps =
+        base::SplitString(test_case.apps_list, ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
 
     // The first two apps in the list are used as examples.
     std::vector<std::string> examples;
-    examples.assign(
-        apps.begin(), apps.begin() + (apps.size() > 2 ? 2 : apps.size()));
+    examples.assign(apps.begin(),
+                    apps.begin() + (apps.size() > 2 ? 2 : apps.size()));
 
-    HostedAppsCounter::HostedAppsResult result(
-        &counter,
-        apps.size(),
-        examples);
+    HostedAppsCounter::HostedAppsResult result(&counter, apps.size(), examples);
 
     base::string16 output =
         GetChromeCounterTextFromResult(&result, GetProfile());
@@ -173,3 +176,52 @@ TEST_F(BrowsingDataCounterUtilsTest, DeleteCookiesBasicWithMediaLicenses) {
       << output;
 }
 #endif
+
+// Tests the output for "Passwords and other sign-in data" on the advanced tab.
+TEST_F(BrowsingDataCounterUtilsTest, DeletePasswordsAndSigninData) {
+  // This test assumes that the strings are served exactly as defined,
+  // i.e. that the locale is set to the default "en".
+  ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
+
+  auto password_store =
+      base::MakeRefCounted<password_manager::TestPasswordStore>();
+
+  // This counter does not really count anything; we just need a reference to
+  // pass to the SigninDataResult ctor.
+  browsing_data::SigninDataCounter counter(
+      password_store, ProfileSyncServiceFactory::GetForProfile(GetProfile()),
+      nullptr);
+
+  const struct TestCase {
+    int num_passwords;
+    int num_webauthn_credentials;
+    bool sync_enabled;
+    std::string expected_output;
+  } kTestCases[] = {
+      {0, 0, false, "None"},
+      {0, 0, true, "None"},
+      {1, 0, false, "1 password"},
+      {1, 0, true, "1 password (synced)"},
+      {2, 0, false, "2 passwords"},
+      {2, 0, true, "2 passwords (synced)"},
+      {0, 1, false, "sign-in data for 1 account"},
+      {0, 1, true, "sign-in data for 1 account"},
+      {0, 2, false, "sign-in data for 2 accounts"},
+      {0, 2, true, "sign-in data for 2 accounts"},
+      {1, 2, false, "1 password; sign-in data for 2 accounts"},
+      {2, 1, false, "2 passwords; sign-in data for 1 account"},
+      {2, 3, true, "2 passwords (synced); sign-in data for 3 accounts"},
+  };
+  for (const auto& test_case : kTestCases) {
+    browsing_data::SigninDataCounter::SigninDataResult result(
+        &counter, test_case.num_passwords, test_case.num_webauthn_credentials,
+        test_case.sync_enabled);
+    std::string output = base::UTF16ToASCII(
+        GetChromeCounterTextFromResult(&result, GetProfile()));
+    EXPECT_EQ(test_case.expected_output, output);
+  }
+
+  password_store->ShutdownOnUIThread();
+}
+
+}  // namespace browsing_data_counter_utils

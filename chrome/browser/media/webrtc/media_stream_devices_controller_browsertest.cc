@@ -403,7 +403,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
             GetContentSettings()->media_stream_selected_video_device());
 }
 
-// Request microphone and camera access. Allow microphone, block camera.
+// Request microphone and camera access. Camera is denied, thus everything
+// must be denied.
 IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
                        RequestMicCamBlockCam) {
   InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
@@ -417,15 +418,16 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
       base::Bind(&MediaStreamDevicesControllerTest::OnMediaStreamResponse,
                  base::Unretained(this)));
 
-  EXPECT_TRUE(GetContentSettings()->IsContentAllowed(
+  EXPECT_FALSE(GetContentSettings()->IsContentAllowed(
       CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC));
-  EXPECT_FALSE(GetContentSettings()->IsContentBlocked(
+  EXPECT_TRUE(GetContentSettings()->IsContentBlocked(
       CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC));
   EXPECT_FALSE(GetContentSettings()->IsContentAllowed(
       CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA));
   EXPECT_TRUE(GetContentSettings()->IsContentBlocked(
       CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA));
   EXPECT_EQ(TabSpecificContentSettings::MICROPHONE_ACCESSED |
+                TabSpecificContentSettings::MICROPHONE_BLOCKED |
                 TabSpecificContentSettings::CAMERA_ACCESSED |
                 TabSpecificContentSettings::CAMERA_BLOCKED,
             GetContentSettings()->GetMicrophoneCameraState());
@@ -439,7 +441,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
             GetContentSettings()->media_stream_selected_video_device());
 }
 
-// Request microphone and camera access. Block microphone, allow camera.
+// Request microphone and camera access. Microphone is denied, thus everything
+// must be denied.
 IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
                        RequestMicCamBlockMic) {
   InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
@@ -457,13 +460,14 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
       CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC));
   EXPECT_TRUE(GetContentSettings()->IsContentBlocked(
       CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC));
-  EXPECT_TRUE(GetContentSettings()->IsContentAllowed(
+  EXPECT_FALSE(GetContentSettings()->IsContentAllowed(
       CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA));
-  EXPECT_FALSE(GetContentSettings()->IsContentBlocked(
+  EXPECT_TRUE(GetContentSettings()->IsContentBlocked(
       CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA));
   EXPECT_EQ(TabSpecificContentSettings::MICROPHONE_ACCESSED |
                 TabSpecificContentSettings::MICROPHONE_BLOCKED |
-                TabSpecificContentSettings::CAMERA_ACCESSED,
+                TabSpecificContentSettings::CAMERA_ACCESSED |
+                TabSpecificContentSettings::CAMERA_BLOCKED,
             GetContentSettings()->GetMicrophoneCameraState());
   EXPECT_EQ(example_audio_id(),
             GetContentSettings()->media_stream_requested_audio_device());
@@ -612,8 +616,12 @@ struct ContentSettingsTestData {
 
   // Whether the infobar should be displayed to request mic/cam for the given
   // content settings inputs.
-  bool ExpectMicInfobar() const { return mic == CONTENT_SETTING_ASK; }
-  bool ExpectCamInfobar() const { return cam == CONTENT_SETTING_ASK; }
+  bool ExpectMicInfobar() const {
+    return mic == CONTENT_SETTING_ASK && cam != CONTENT_SETTING_BLOCK;
+  }
+  bool ExpectCamInfobar() const {
+    return cam == CONTENT_SETTING_ASK && mic != CONTENT_SETTING_BLOCK;
+  }
 
   // Whether or not the mic/cam should be allowed after clicking accept/deny for
   // the given inputs.
@@ -629,7 +637,7 @@ struct ContentSettingsTestData {
   // The expected media stream result after clicking accept/deny for the given
   // inputs.
   content::MediaStreamRequestResult ExpectedMediaStreamResult() const {
-    if (ExpectMicAllowed() || ExpectCamAllowed())
+    if (ExpectMicAllowed() && ExpectCamAllowed())
       return content::MEDIA_DEVICE_OK;
     return content::MEDIA_DEVICE_PERMISSION_DENIED;
   }
@@ -645,6 +653,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest, ContentSettings) {
       {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, false},
       {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW, false},
       {CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, false},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK, false},
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK, false},
 
       // Settings that will result in an infobar. Test both accept and deny.
       {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, false},
@@ -653,14 +663,8 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest, ContentSettings) {
       {CONTENT_SETTING_ASK, CONTENT_SETTING_ASK, false},
       {CONTENT_SETTING_ASK, CONTENT_SETTING_ASK, true},
 
-      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK, false},
-      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK, true},
-
       {CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW, false},
       {CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW, true},
-
-      {CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK, false},
-      {CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK, true},
   };
 
   for (auto& test : tests) {
@@ -696,9 +700,9 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest, ContentSettings) {
     // expected;
     ASSERT_EQ(test.ExpectedMediaStreamResult(), media_stream_result());
     ASSERT_EQ(CheckDevicesListContains(content::MEDIA_DEVICE_AUDIO_CAPTURE),
-              test.ExpectMicAllowed());
+              test.ExpectMicAllowed() && test.ExpectCamAllowed());
     ASSERT_EQ(CheckDevicesListContains(content::MEDIA_DEVICE_VIDEO_CAPTURE),
-              test.ExpectCamAllowed());
+              test.ExpectMicAllowed() && test.ExpectCamAllowed());
   }
 }
 

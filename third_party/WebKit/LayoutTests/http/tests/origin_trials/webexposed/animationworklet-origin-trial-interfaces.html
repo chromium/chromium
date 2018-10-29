@@ -14,7 +14,7 @@ test(t => {
 }, 'AnimationWorklet related interfaces in Origin-Trial enabled document.');
 
 test(t => {
-  assert_exists(CSS, 'animationWorklet');
+  assert_own_property(CSS, 'animationWorklet');
   OriginTrialsHelper.check_properties(this,
       {'WorkletAnimation': ['play', 'cancel', 'playState', 'timeline'],
        'ScrollTimeline': ['scrollSource', 'orientation', 'timeRange'],

@@ -9,9 +9,9 @@
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/clock.h"
 #include "components/drive/chromeos/about_resource_loader.h"
 #include "components/drive/chromeos/about_resource_root_folder_id_loader.h"
 #include "components/drive/chromeos/change_list_loader_observer.h"
@@ -83,11 +83,23 @@ class FakeRootFolderIdLoader : public RootFolderIdLoader {
   const std::string root_folder_id_;
 };
 
+struct DestroyHelper {
+  template <typename T>
+  void operator()(T* object) const {
+    if (object) {
+      object->Destroy();
+    }
+  }
+};
+
 }  // namespace
 
 class DirectoryLoaderTest : public testing::Test {
  protected:
   void SetUp() override {
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
+        base::TestMockTimeTaskRunner::Type::kBoundToThread);
+
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     test_util::RegisterDrivePrefs(pref_service_->registry());
@@ -99,19 +111,18 @@ class DirectoryLoaderTest : public testing::Test {
 
     scheduler_ = std::make_unique<JobScheduler>(
         pref_service_.get(), logger_.get(), drive_service_.get(),
-        base::ThreadTaskRunnerHandle::Get().get(), nullptr);
-    metadata_storage_.reset(new ResourceMetadataStorage(
-        temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get().get()));
+        task_runner_.get(), nullptr);
+    metadata_storage_.reset(
+        new ResourceMetadataStorage(temp_dir_.GetPath(), task_runner_.get()));
     ASSERT_TRUE(metadata_storage_->Initialize());
 
     cache_.reset(new FileCache(metadata_storage_.get(), temp_dir_.GetPath(),
-                               base::ThreadTaskRunnerHandle::Get().get(),
+                               task_runner_.get(),
                                nullptr /* free_disk_space_getter */));
     ASSERT_TRUE(cache_->Initialize());
 
-    metadata_.reset(new ResourceMetadata(
-        metadata_storage_.get(), cache_.get(),
-        base::ThreadTaskRunnerHandle::Get().get()));
+    metadata_.reset(new ResourceMetadata(metadata_storage_.get(), cache_.get(),
+                                         task_runner_.get()));
     ASSERT_EQ(FILE_ERROR_OK, metadata_->Initialize());
 
     about_resource_loader_ =
@@ -122,13 +133,22 @@ class DirectoryLoaderTest : public testing::Test {
         drive::util::kTeamDriveIdDefaultCorpus, scheduler_.get());
     loader_controller_ = std::make_unique<LoaderController>();
     directory_loader_ = std::make_unique<DirectoryLoader>(
-        logger_.get(), base::ThreadTaskRunnerHandle::Get().get(),
-        metadata_.get(), scheduler_.get(), root_folder_id_loader_.get(),
-        start_page_token_loader_.get(), loader_controller_.get(),
-        util::GetDriveMyDriveRootPath(),
-        drive::util::kTeamDriveIdDefaultCorpus);
+        logger_.get(), task_runner_.get(), metadata_.get(), scheduler_.get(),
+        root_folder_id_loader_.get(), start_page_token_loader_.get(),
+        loader_controller_.get(), util::GetDriveMyDriveRootPath(),
+        drive::util::kTeamDriveIdDefaultCorpus, task_runner_->GetMockClock());
   }
 
+  void TearDown() override {
+    // We need to manually reset the objects that implement the Destroy idiom,
+    // that deletes the object on the |task_runner_|. This is simpler than
+    // introducing custom deleters that capture the |task_runner_| and
+    // invoke RunUntilIdle().
+    metadata_.reset();
+    cache_.reset();
+    metadata_storage_.reset();
+    task_runner_->RunUntilIdle();
+  }
   // Adds a new file to the root directory of the service.
   std::unique_ptr<google_apis::FileResource> AddNewFile(
       const std::string& title) {
@@ -141,7 +161,7 @@ class DirectoryLoaderTest : public testing::Test {
         title,
         false,  // shared_with_me
         google_apis::test_util::CreateCopyResultCallback(&error, &entry));
-    base::RunLoop().RunUntilIdle();
+    task_runner_->RunUntilIdle();
     EXPECT_EQ(google_apis::HTTP_CREATED, error);
     return entry;
   }
@@ -175,16 +195,15 @@ class DirectoryLoaderTest : public testing::Test {
                             &local_id));
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<EventLogger> logger_;
   std::unique_ptr<FakeDriveService> drive_service_;
   std::unique_ptr<JobScheduler> scheduler_;
-  std::unique_ptr<ResourceMetadataStorage, test_util::DestroyHelperForTests>
-      metadata_storage_;
-  std::unique_ptr<FileCache, test_util::DestroyHelperForTests> cache_;
-  std::unique_ptr<ResourceMetadata, test_util::DestroyHelperForTests> metadata_;
+  std::unique_ptr<ResourceMetadataStorage, DestroyHelper> metadata_storage_;
+  std::unique_ptr<FileCache, DestroyHelper> cache_;
+  std::unique_ptr<ResourceMetadata, DestroyHelper> metadata_;
   std::unique_ptr<AboutResourceLoader> about_resource_loader_;
   std::unique_ptr<StartPageTokenLoader> start_page_token_loader_;
   std::unique_ptr<LoaderController> loader_controller_;
@@ -202,7 +221,7 @@ TEST_F(DirectoryLoaderTest, ReadDirectory_GrandRoot) {
       util::GetDriveGrandRootPath(),
       base::Bind(&AccumulateReadDirectoryResult, &entries),
       google_apis::test_util::CreateCopyResultCallback(&error));
-  base::RunLoop().RunUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
   EXPECT_EQ(0U, observer.changed_directories().size());
   observer.clear_changed_directories();
@@ -232,7 +251,7 @@ TEST_F(DirectoryLoaderTest, ReadDirectory_MyDrive) {
       util::GetDriveMyDriveRootPath(),
       base::Bind(&AccumulateReadDirectoryResult, &entries),
       google_apis::test_util::CreateCopyResultCallback(&error));
-  base::RunLoop().RunUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
   EXPECT_EQ(1U, observer.changed_directories().count(
       util::GetDriveMyDriveRootPath()));
@@ -250,6 +269,65 @@ TEST_F(DirectoryLoaderTest, ReadDirectory_MyDrive) {
       util::GetDriveMyDriveRootPath().AppendASCII("File 1.txt");
   EXPECT_EQ(FILE_ERROR_OK,
             metadata_->GetResourceEntryByPath(file_path, &entry));
+}
+
+// Ensure that multiple requests in succession do not hit the backend until the
+// time to refresh expires.
+TEST_F(DirectoryLoaderTest, ReadDirectory_MyDriveTimedCache) {
+  TestDirectoryLoaderObserver observer(directory_loader_.get());
+
+  // My Drive does not have resource ID yet.
+  ResourceEntry entry;
+  EXPECT_EQ(FILE_ERROR_OK, metadata_->GetResourceEntryByPath(
+                               util::GetDriveMyDriveRootPath(), &entry));
+  EXPECT_TRUE(entry.resource_id().empty());
+
+  // Load My Drive.
+  FileError error = FILE_ERROR_FAILED;
+  ResourceEntryVector entries;
+  directory_loader_->ReadDirectory(
+      util::GetDriveMyDriveRootPath(),
+      base::Bind(&AccumulateReadDirectoryResult, &entries),
+      google_apis::test_util::CreateCopyResultCallback(&error));
+  task_runner_->RunUntilIdle();
+  EXPECT_EQ(FILE_ERROR_OK, error);
+  EXPECT_EQ(1U, observer.changed_directories().count(
+                    util::GetDriveMyDriveRootPath()));
+
+  // My Drive has resource ID.
+  EXPECT_EQ(FILE_ERROR_OK, metadata_->GetResourceEntryByPath(
+                               util::GetDriveMyDriveRootPath(), &entry));
+  EXPECT_EQ(drive_service_->GetRootResourceId(), entry.resource_id());
+  EXPECT_EQ(drive_service_->start_page_token().start_page_token(),
+            entry.directory_specific_info().start_page_token());
+  EXPECT_TRUE(entry.directory_specific_info().has_last_read_time_ms());
+  int64_t read_time = entry.directory_specific_info().last_read_time_ms();
+
+  // Move forward 1 second, should not cause a new read of the backend.
+  observer.clear_changed_directories();
+  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  directory_loader_->ReadDirectory(
+      util::GetDriveMyDriveRootPath(),
+      base::Bind(&AccumulateReadDirectoryResult, &entries),
+      google_apis::test_util::CreateCopyResultCallback(&error));
+  task_runner_->RunUntilIdle();
+  EXPECT_EQ(FILE_ERROR_OK, error);
+  EXPECT_EQ(FILE_ERROR_OK, metadata_->GetResourceEntryByPath(
+                               util::GetDriveMyDriveRootPath(), &entry));
+  EXPECT_EQ(read_time, entry.directory_specific_info().last_read_time_ms());
+
+  // Move forward 60 seconds, should cause a new read of the backend.
+  observer.clear_changed_directories();
+  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(60));
+  directory_loader_->ReadDirectory(
+      util::GetDriveMyDriveRootPath(),
+      base::Bind(&AccumulateReadDirectoryResult, &entries),
+      google_apis::test_util::CreateCopyResultCallback(&error));
+  task_runner_->RunUntilIdle();
+  EXPECT_EQ(FILE_ERROR_OK, error);
+  EXPECT_EQ(FILE_ERROR_OK, metadata_->GetResourceEntryByPath(
+                               util::GetDriveMyDriveRootPath(), &entry));
+  EXPECT_LT(read_time, entry.directory_specific_info().last_read_time_ms());
 }
 
 TEST_F(DirectoryLoaderTest, ReadDirectory_MultipleCalls) {
@@ -270,7 +348,7 @@ TEST_F(DirectoryLoaderTest, ReadDirectory_MultipleCalls) {
       util::GetDriveGrandRootPath(),
       base::Bind(&AccumulateReadDirectoryResult, &entries2),
       google_apis::test_util::CreateCopyResultCallback(&error2));
-  base::RunLoop().RunUntilIdle();
+  task_runner_->RunUntilIdle();
 
   // Callback is called for each method call.
   EXPECT_EQ(FILE_ERROR_OK, error);
@@ -290,14 +368,14 @@ TEST_F(DirectoryLoaderTest, Lock) {
       util::GetDriveMyDriveRootPath(),
       base::Bind(&AccumulateReadDirectoryResult, &entries),
       google_apis::test_util::CreateCopyResultCallback(&error));
-  base::RunLoop().RunUntilIdle();
+  task_runner_->RunUntilIdle();
 
   // Update is pending due to the lock.
   EXPECT_TRUE(observer.changed_directories().empty());
 
   // Unlock the loader, this should resume the pending udpate.
   lock.reset();
-  base::RunLoop().RunUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(1U, observer.changed_directories().count(
       util::GetDriveMyDriveRootPath()));
 }
@@ -330,7 +408,7 @@ TEST_F(DirectoryLoaderTest, TeamDrive) {
   local_directory_loader->ReadDirectory(
       team_drive_path, base::Bind(&AccumulateReadDirectoryResult, &entries),
       google_apis::test_util::CreateCopyResultCallback(&error));
-  base::RunLoop().RunUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
   EXPECT_EQ(1, drive_service_->start_page_token_load_count());
   EXPECT_EQ(1, drive_service_->directory_load_count());

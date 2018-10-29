@@ -16,7 +16,7 @@
     if (typeof value === 'string' && value.indexOf('/dom-snapshot/') !== -1)
       value = '<value>';
     if (typeof value === 'string' && value.indexOf('file://') !== -1)
-      value = '<string>' + value.substr(value.indexOf("WebKit/"));
+      value = '<string>' + value.replace(/.*(LayoutTests|web_tests)\//, '');
     return value;
   }
 

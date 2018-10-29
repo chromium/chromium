@@ -36,7 +36,7 @@
       <!-- A doodle, if any: its link and image. -->
       <div id="logo-doodle">
         <button id="logo-doodle-button">
-          <img id="logo-doodle-image"></img>
+          <img id="logo-doodle-image" tabindex="-1"></img>
         </button>
         <iframe id="logo-doodle-iframe" scrolling="no"></iframe>
         <!-- A spinner, visible on dark-themed NTPs, prompting the doodle -->
@@ -121,8 +121,8 @@
 
   <dialog id="bg-sel-menu">
     <div id="bg-sel-title-bar">
-    <div id="bg-sel-back-circle">
-      <button id="bg-sel-back" tabindex="0"></button>
+    <div id="bg-sel-back-circle" tabindex="0" role="button">
+      <div id="bg-sel-back"></div>
     </div>
     <div id="bg-sel-title"></div>
     </div>

@@ -22,7 +22,9 @@
 #include "components/webrtc_logging/browser/log_cleanup.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
 #include "components/webrtc_logging/common/partial_circular_buffer.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/interface_request.h"
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_status_code.h"
@@ -30,6 +32,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/zlib/zlib.h"
 
 using content::BrowserThread;
@@ -166,8 +169,8 @@ void WebRtcLogUploader::PrepareMultipartPostData(
     return;
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&WebRtcLogUploader::UploadCompressedLog,
                      base::Unretained(this), upload_done_data,
                      std::move(post_data)));
@@ -186,8 +189,8 @@ void WebRtcLogUploader::UploadStoredLog(
   std::string compressed_log;
   if (!base::ReadFileToString(native_log_path, &compressed_log)) {
     DPLOG(WARNING) << "Could not read WebRTC log file.";
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(upload_data.callback, false, "", "Log doesn't exist."));
     return;
   }
@@ -278,20 +281,21 @@ void WebRtcLogUploader::LoggingStoppedDoStore(
                     pickle.size());
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(done_callback, true, ""));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(done_callback, true, ""));
 
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&WebRtcLogUploader::DecreaseLogCount,
-                                         base::Unretained(this)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&WebRtcLogUploader::DecreaseLogCount,
+                                          base::Unretained(this)));
 }
 
 void WebRtcLogUploader::StartShutdown() {
   DCHECK_CALLED_ON_VALID_THREAD(create_thread_checker_);
 
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&WebRtcLogUploader::ShutdownOnIOThread,
-                                         base::Unretained(this)));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce(&WebRtcLogUploader::ShutdownOnIOThread,
+                     base::Unretained(this)));
 }
 
 void WebRtcLogUploader::OnSimpleLoaderComplete(
@@ -323,6 +327,33 @@ void WebRtcLogUploader::OnSimpleLoaderComplete(
                        report_id));
   }
   NotifyUploadDone(response_code, report_id, upload_done_data);
+}
+
+void WebRtcLogUploader::InitURLLoaderFactoryIfNeeded() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(!shutting_down_);
+
+  if (url_loader_factory_.is_bound())
+    return;
+
+  // Clone UI thread URLLoaderFactory for use on the IO thread.
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(
+          [](network::mojom::URLLoaderFactoryRequest loader_factory_request) {
+            g_browser_process->shared_url_loader_factory()->Clone(
+                std::move(loader_factory_request));
+          },
+          mojo::MakeRequest(&url_loader_factory_)));
+  // Need to set an error handler so that the class will monitor the state of
+  // the Mojo pipe. Without this, an errored out pipe would only be noticed
+  // after the URLLoaderFactory is used, and a request failed as a result.
+  url_loader_factory_.set_connection_error_handler(base::BindOnce(
+      &WebRtcLogUploader::OnFactoryConnectionClosed, base::Unretained(this)));
+}
+
+void WebRtcLogUploader::OnFactoryConnectionClosed() {
+  url_loader_factory_.reset();
 }
 
 void WebRtcLogUploader::SetupMultipart(
@@ -368,7 +399,7 @@ void WebRtcLogUploader::SetupMultipart(
 
   // Add the rtp dumps if they exist.
   base::FilePath rtp_dumps[2] = {incoming_rtp_dump, outgoing_rtp_dump};
-  static const char* kRtpDumpNames[2] = {"rtpdump_recv", "rtpdump_send"};
+  static const char* const kRtpDumpNames[2] = {"rtpdump_recv", "rtpdump_send"};
 
   for (size_t i = 0; i < 2; ++i) {
     if (!rtp_dumps[i].empty() && base::PathExists(rtp_dumps[i])) {
@@ -486,10 +517,9 @@ void WebRtcLogUploader::UploadCompressedLog(
   auto it = pending_uploads_.insert(pending_uploads_.begin(),
                                     std::move(simple_url_loader));
   network::SimpleURLLoader* raw_loader = it->get();
+  InitURLLoaderFactoryIfNeeded();
   raw_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      g_browser_process->system_network_context_manager()
-          ->GetSharedURLLoaderFactory()
-          .get(),
+      url_loader_factory_.get(),
       base::BindOnce(&WebRtcLogUploader::OnSimpleLoaderComplete,
                      base::Unretained(this), std::move(it), upload_done_data));
 }
@@ -505,6 +535,7 @@ void WebRtcLogUploader::ShutdownOnIOThread() {
 
   // Clear the pending uploads list, which will reset all URL loaders.
   pending_uploads_.clear();
+  url_loader_factory_.reset();
   shutting_down_ = true;
 }
 
@@ -603,8 +634,8 @@ void WebRtcLogUploader::NotifyUploadDone(
     int response_code,
     const std::string& report_id,
     const WebRtcLogUploadDoneData& upload_done_data) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&WebRtcLoggingHandlerHost::UploadLogDone,
                      upload_done_data.host));
   if (!upload_done_data.callback.is_null()) {
@@ -614,8 +645,8 @@ void WebRtcLogUploader::NotifyUploadDone(
       error_message = "Uploading failed, response code: " +
                       base::IntToString(response_code);
     }
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(upload_done_data.callback, success,
-                                           report_id, error_message));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(upload_done_data.callback, success,
+                                            report_id, error_message));
   }
 }

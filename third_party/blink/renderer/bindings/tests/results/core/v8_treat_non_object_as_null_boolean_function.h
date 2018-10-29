@@ -8,9 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-
-#ifndef V8TreatNonObjectAsNullBooleanFunction_h
-#define V8TreatNonObjectAsNullBooleanFunction_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TREAT_NON_OBJECT_AS_NULL_BOOLEAN_FUNCTION_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TREAT_NON_OBJECT_AS_NULL_BOOLEAN_FUNCTION_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
@@ -73,4 +72,4 @@ Persistent<V8TreatNonObjectAsNullBooleanFunction> WrapPersistent(V8TreatNonObjec
 
 }  // namespace blink
 
-#endif  // V8TreatNonObjectAsNullBooleanFunction_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TREAT_NON_OBJECT_AS_NULL_BOOLEAN_FUNCTION_H_

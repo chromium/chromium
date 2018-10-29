@@ -556,7 +556,7 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededFailedMount) {
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
   SetOwnerState(false, false);
   ScopedCrosSettingsTestHelper settings_helper(false);
-  settings_helper.ReplaceProvider(kPolicyMissingMitigationMode);
+  settings_helper.ReplaceDeviceSettingsProviderWithStub();
   settings_helper.SetBoolean(kPolicyMissingMitigationMode, true);
 
   // Initialize login state for this test to verify the login state is changed
@@ -606,7 +606,7 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededSuccess) {
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
   SetOwnerState(false, false);
   ScopedCrosSettingsTestHelper settings_helper(false);
-  settings_helper.ReplaceProvider(kPolicyMissingMitigationMode);
+  settings_helper.ReplaceDeviceSettingsProviderWithStub();
   settings_helper.SetBoolean(kPolicyMissingMitigationMode, true);
 
   // Initialize login state for this test to verify the login state is changed

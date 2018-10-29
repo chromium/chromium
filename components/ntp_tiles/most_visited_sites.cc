@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/top_sites.h"
@@ -86,6 +87,37 @@ std::string StripFirstGenericPrefix(const std::string& host) {
 
 bool ShouldShowPopularSites() {
   return base::FeatureList::IsEnabled(kUsePopularSitesSuggestions);
+}
+
+// Generate a short title for Most Visited items before they're converted to
+// custom links.
+base::string16 GenerateShortTitle(const base::string16& title) {
+  // Empty title only happened in the unittests.
+  if (title.empty())
+    return base::string16();
+  std::vector<base::string16> short_title_list =
+      SplitString(title, base::UTF8ToUTF16("-:|;"), base::TRIM_WHITESPACE,
+                  base::SPLIT_WANT_NONEMPTY);
+  // Make sure it doesn't crash when the title only contains spaces.
+  if (short_title_list.empty())
+    return base::string16();
+  base::string16 short_title_front = short_title_list.front();
+  base::string16 short_title_back = short_title_list.back();
+  base::string16 short_title = short_title_front;
+  if (short_title_front != short_title_back) {
+    int words_in_front =
+        SplitString(short_title_front, base::kWhitespaceASCIIAs16,
+                    base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)
+            .size();
+    int words_in_back =
+        SplitString(short_title_back, base::kWhitespaceASCIIAs16,
+                    base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)
+            .size();
+    if (words_in_front >= 3 && words_in_back >= 1 && words_in_back <= 3) {
+      short_title = short_title_back;
+    }
+  }
+  return short_title;
 }
 
 }  // namespace
@@ -212,7 +244,7 @@ void MostVisitedSites::Refresh() {
   suggestions_service_->FetchSuggestionsData();
 }
 
-void MostVisitedSites::RefreshHomepageTile() {
+void MostVisitedSites::RefreshTiles() {
   BuildCurrentTiles();
 }
 
@@ -221,13 +253,14 @@ void MostVisitedSites::InitializeCustomLinks() {
     return;
 
   if (custom_links_->Initialize(current_tiles_.value()))
-    BuildCurrentTiles();
+    custom_links_action_count_ = 0;
 }
 
 void MostVisitedSites::UninitializeCustomLinks() {
   if (!custom_links_ || !custom_links_enabled_)
     return;
 
+  custom_links_action_count_ = -1;
   custom_links_->Uninitialize();
   BuildCurrentTiles();
   Refresh();
@@ -252,9 +285,15 @@ bool MostVisitedSites::AddCustomLink(const GURL& url,
   if (!custom_links_ || !custom_links_enabled_)
     return false;
 
+  // Initialize custom links if they have not been initialized yet.
+  InitializeCustomLinks();
+
   bool success = custom_links_->AddLink(url, title);
-  if (success)
+  if (success) {
+    if (custom_links_action_count_ != -1)
+      custom_links_action_count_++;
     BuildCurrentTiles();
+  }
   return success;
 }
 
@@ -264,9 +303,15 @@ bool MostVisitedSites::UpdateCustomLink(const GURL& url,
   if (!custom_links_ || !custom_links_enabled_)
     return false;
 
+  // Initialize custom links if they have not been initialized yet.
+  InitializeCustomLinks();
+
   bool success = custom_links_->UpdateLink(url, new_url, new_title);
-  if (success)
+  if (success) {
+    if (custom_links_action_count_ != -1)
+      custom_links_action_count_++;
     BuildCurrentTiles();
+  }
   return success;
 }
 
@@ -274,9 +319,15 @@ bool MostVisitedSites::DeleteCustomLink(const GURL& url) {
   if (!custom_links_ || !custom_links_enabled_)
     return false;
 
+  // Initialize custom links if they have not been initialized yet.
+  InitializeCustomLinks();
+
   bool success = custom_links_->DeleteLink(url);
-  if (success)
+  if (success) {
+    if (custom_links_action_count_ != -1)
+      custom_links_action_count_++;
     BuildCurrentTiles();
+  }
   return success;
 }
 
@@ -284,7 +335,11 @@ void MostVisitedSites::UndoCustomLinkAction() {
   if (!custom_links_ || !custom_links_enabled_)
     return;
 
-  if (custom_links_->UndoAction())
+  // If this is undoing the first action after initialization, uninitialize
+  // custom links.
+  if (custom_links_action_count_-- == 1)
+    UninitializeCustomLinks();
+  else if (custom_links_->UndoAction())
     BuildCurrentTiles();
 }
 
@@ -376,7 +431,8 @@ void MostVisitedSites::OnMostVisitedURLsAvailable(
       continue;
 
     NTPTile tile;
-    tile.title = visited.title;
+    tile.title = IsCustomLinksEnabled() ? GenerateShortTitle(visited.title)
+                                        : visited.title;
     tile.url = visited.url;
     tile.source = TileSource::TOP_SITES;
     tile.whitelist_icon_path = GetWhitelistLargeIconPath(visited.url);
@@ -441,7 +497,10 @@ void MostVisitedSites::BuildCurrentTilesGivenSuggestionsProfile(
       continue;
 
     NTPTile tile;
-    tile.title = base::UTF8ToUTF16(suggestion_pb.title());
+    tile.title =
+        IsCustomLinksEnabled()
+            ? GenerateShortTitle(base::UTF8ToUTF16(suggestion_pb.title()))
+            : base::UTF8ToUTF16(suggestion_pb.title());
     tile.url = url;
     tile.source = TileSource::SUGGESTIONS_SERVICE;
     // The title is an aggregation of multiple history entries of one site.

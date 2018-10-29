@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
 #include "content/browser/indexed_db/indexed_db_callbacks.h"
@@ -20,12 +21,12 @@
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr.h"
 #include "mojo/public/cpp/bindings/strong_associated_binding.h"
-#include "net/url_request/url_request_test_util.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -55,6 +56,11 @@ using testing::StrictMock;
 
 namespace content {
 namespace {
+
+// TODO(crbug.com/889590): Replace with common converter.
+url::Origin ToOrigin(const std::string& url) {
+  return url::Origin::Create(GURL(url));
+}
 
 ACTION_TEMPLATE(MoveArg,
                 HAS_1_TEMPLATE_PARAMS(int, k),
@@ -159,7 +165,7 @@ class IndexedDBDispatcherHostTest : public testing::Test {
         quota_manager_(base::MakeRefCounted<MockQuotaManager>(
             false /*is_incognito*/,
             browser_context_.GetPath(),
-            BrowserThread::GetTaskRunnerForThread(BrowserThread::IO),
+            base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}),
             special_storage_policy_)),
         context_impl_(base::MakeRefCounted<IndexedDBContextImpl>(
             CreateAndReturnTempDir(&temp_dir_),
@@ -167,12 +173,11 @@ class IndexedDBDispatcherHostTest : public testing::Test {
             quota_manager_->proxy())),
         host_(new IndexedDBDispatcherHost(
             kFakeProcessId,
-            base::MakeRefCounted<net::TestURLRequestContextGetter>(
-                BrowserThread::GetTaskRunnerForThread(BrowserThread::IO)),
             context_impl_,
             ChromeBlobStorageContext::GetFor(&browser_context_))) {
-    quota_manager_->SetQuota(
-        GURL(kOrigin), blink::mojom::StorageType::kTemporary, kTemporaryQuota);
+    quota_manager_->SetQuota(ToOrigin(kOrigin),
+                             blink::mojom::StorageType::kTemporary,
+                             kTemporaryQuota);
   }
 
   void TearDown() override {
@@ -237,7 +242,7 @@ TEST_F(IndexedDBDispatcherHostTest, CloseAfterUpgrade) {
   const char kObjectStoreName[] = "os";
 
   // Open connection.
-  TestDatabaseConnection connection(url::Origin::Create(GURL(kOrigin)),
+  TestDatabaseConnection connection(ToOrigin(kOrigin),
                                     base::UTF8ToUTF16(kDatabaseName),
                                     kDBVersion, kTransactionId);
 
@@ -319,9 +324,8 @@ TEST_F(IndexedDBDispatcherHostTest, OpenNewConnectionWhileUpgrading) {
   // Open connection 2, but expect that we won't be called back.
   IDBDatabaseAssociatedPtrInfo database_info2;
   IndexedDBDatabaseMetadata metadata2;
-  TestDatabaseConnection connection2(url::Origin::Create(GURL(kOrigin)),
-                                     base::UTF8ToUTF16(kDatabaseName),
-                                     kDBVersion, 0);
+  TestDatabaseConnection connection2(
+      ToOrigin(kOrigin), base::UTF8ToUTF16(kDatabaseName), kDBVersion, 0);
   connection2.Open(idb_mojo_factory_.get());
 
   // Check that we're called in order and the second connection gets it's
@@ -445,7 +449,7 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWithConnection) {
   const int64_t kTransactionId = 1;
 
   // Open connection.
-  TestDatabaseConnection connection(url::Origin::Create(GURL(kOrigin)),
+  TestDatabaseConnection connection(ToOrigin(kOrigin),
                                     base::UTF8ToUTF16(kDatabaseName),
                                     kDBVersion, kTransactionId);
   IndexedDBDatabaseMetadata metadata;
@@ -505,7 +509,7 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWhileDoingTransaction) {
   const char kObjectStoreName[] = "os";
 
   // Open connection.
-  TestDatabaseConnection connection(url::Origin::Create(GURL(kOrigin)),
+  TestDatabaseConnection connection(ToOrigin(kOrigin),
                                     base::UTF8ToUTF16(kDatabaseName),
                                     kDBVersion, kTransactionId);
   IndexedDBDatabaseMetadata metadata;
@@ -570,7 +574,7 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWhileUpgrading) {
   const int64_t kTransactionId = 1;
 
   // Open connection.
-  TestDatabaseConnection connection(url::Origin::Create(GURL(kOrigin)),
+  TestDatabaseConnection connection(ToOrigin(kOrigin),
                                     base::UTF8ToUTF16(kDatabaseName),
                                     kDBVersion, kTransactionId);
   IndexedDBDatabaseMetadata metadata;
@@ -633,7 +637,7 @@ TEST_F(IndexedDBDispatcherHostTest,
   const int64_t kTransactionId = 1;
 
   // Open connection.
-  TestDatabaseConnection connection(url::Origin::Create(GURL(kOrigin)),
+  TestDatabaseConnection connection(ToOrigin(kOrigin),
                                     base::UTF8ToUTF16(kDatabaseName),
                                     kDBVersion, kTransactionId);
   IndexedDBDatabaseMetadata metadata;
@@ -696,7 +700,7 @@ TEST_F(IndexedDBDispatcherHostTest, AbortTransactionsWhileDoingTransaction) {
   const char kObjectStoreName[] = "os";
 
   // Open connection.
-  TestDatabaseConnection connection(url::Origin::Create(GURL(kOrigin)),
+  TestDatabaseConnection connection(ToOrigin(kOrigin),
                                     base::UTF8ToUTF16(kDatabaseName),
                                     kDBVersion, kTransactionId);
   IndexedDBDatabaseMetadata metadata;
@@ -761,7 +765,7 @@ TEST_F(IndexedDBDispatcherHostTest, AbortTransactionsWhileUpgrading) {
   const int64_t kTransactionId = 1;
 
   // Open connection.
-  TestDatabaseConnection connection(url::Origin::Create(GURL(kOrigin)),
+  TestDatabaseConnection connection(ToOrigin(kOrigin),
                                     base::UTF8ToUTF16(kDatabaseName),
                                     kDBVersion, kTransactionId);
   IndexedDBDatabaseMetadata metadata;
@@ -835,7 +839,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBListChanged) {
   context_impl_->AddObserver(&observer);
 
   // Open connection 1.
-  TestDatabaseConnection connection1(url::Origin::Create(GURL(kOrigin)),
+  TestDatabaseConnection connection1(ToOrigin(kOrigin),
                                      base::UTF8ToUTF16(kDatabaseName),
                                      kDBVersion1, kTransactionId1);
   IndexedDBDatabaseMetadata metadata1;
@@ -940,7 +944,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBListChanged) {
   connection2.database->Close();
 
   // Open connection 3.
-  TestDatabaseConnection connection3(url::Origin::Create(GURL(kOrigin)),
+  TestDatabaseConnection connection3(ToOrigin(kOrigin),
                                      base::UTF8ToUTF16(kDatabaseName),
                                      kDBVersion3, kTransactionId3);
   IndexedDBDatabaseMetadata metadata3;
@@ -1069,7 +1073,7 @@ TEST_F(IndexedDBDispatcherHostTest, NotifyIndexedDBContentChanged) {
   connection1.database->Close();
 
   // Open connection 2.
-  TestDatabaseConnection connection2(url::Origin::Create(GURL(kOrigin)),
+  TestDatabaseConnection connection2(ToOrigin(kOrigin),
                                      base::UTF8ToUTF16(kDatabaseName),
                                      kDBVersion2, kTransactionId2);
   IndexedDBDatabaseMetadata metadata2;

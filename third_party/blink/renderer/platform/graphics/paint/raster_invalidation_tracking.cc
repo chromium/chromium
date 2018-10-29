@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
 
 #include "SkImageFilter.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 
 namespace blink {
 
@@ -160,11 +159,11 @@ static bool PixelComponentsDiffer(int c1, int c2) {
   return abs(c1 - c2) > 2;
 }
 
-static bool PMColorsDiffer(SkPMColor p1, SkPMColor p2) {
-  return PixelComponentsDiffer(SkGetPackedA32(p1), SkGetPackedA32(p2)) ||
-         PixelComponentsDiffer(SkGetPackedR32(p1), SkGetPackedR32(p2)) ||
-         PixelComponentsDiffer(SkGetPackedG32(p1), SkGetPackedG32(p2)) ||
-         PixelComponentsDiffer(SkGetPackedB32(p1), SkGetPackedB32(p2));
+static bool PixelsDiffer(SkColor p1, SkColor p2) {
+  return PixelComponentsDiffer(SkColorGetA(p1), SkColorGetA(p2)) ||
+         PixelComponentsDiffer(SkColorGetR(p1), SkColorGetR(p2)) ||
+         PixelComponentsDiffer(SkColorGetG(p1), SkColorGetG(p2)) ||
+         PixelComponentsDiffer(SkColorGetB(p1), SkColorGetB(p2));
 }
 
 void RasterInvalidationTracking::CheckUnderInvalidations(
@@ -216,9 +215,9 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
     int layer_y = bitmap_y + rect.Y();
     for (int bitmap_x = 0; bitmap_x < rect.Width(); ++bitmap_x) {
       int layer_x = bitmap_x + rect.X();
-      SkPMColor old_pixel = *old_bitmap.getAddr32(bitmap_x, bitmap_y);
-      SkPMColor new_pixel = *new_bitmap.getAddr32(bitmap_x, bitmap_y);
-      if (PMColorsDiffer(old_pixel, new_pixel) &&
+      SkColor old_pixel = old_bitmap.getColor(bitmap_x, bitmap_y);
+      SkColor new_pixel = new_bitmap.getColor(bitmap_x, bitmap_y);
+      if (PixelsDiffer(old_pixel, new_pixel) &&
           !invalidation_region.Contains(IntPoint(layer_x, layer_y))) {
         if (mismatching_pixels < kMaxMismatchesToReport) {
           RasterUnderInvalidation under_invalidation = {layer_x, layer_y,

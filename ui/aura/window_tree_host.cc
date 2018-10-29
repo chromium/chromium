@@ -243,7 +243,8 @@ void WindowTreeHost::SetSharedInputMethod(ui::InputMethod* input_method) {
 }
 
 ui::EventDispatchDetails WindowTreeHost::DispatchKeyEventPostIME(
-    ui::KeyEvent* event) {
+    ui::KeyEvent* event,
+    base::OnceCallback<void(bool)> ack_callback) {
   // If dispatch to IME is already disabled we shouldn't reach here.
   DCHECK(!dispatcher_->should_skip_ime());
   dispatcher_->set_skip_ime(true);
@@ -252,6 +253,7 @@ ui::EventDispatchDetails WindowTreeHost::DispatchKeyEventPostIME(
       event_sink()->OnEventFromSource(event);
   if (!dispatch_details.dispatcher_destroyed)
     dispatcher_->set_skip_ime(false);
+  CallDispatchKeyEventPostIMEAck(event, std::move(ack_callback));
   return dispatch_details;
 }
 
@@ -284,6 +286,10 @@ std::unique_ptr<ScopedKeyboardHook> WindowTreeHost::CaptureSystemKeyEvents(
   if (CaptureSystemKeyEventsImpl(std::move(dom_codes)))
     return std::make_unique<ScopedKeyboardHook>(weak_factory_.GetWeakPtr());
   return nullptr;
+}
+
+bool WindowTreeHost::ShouldSendKeyEventToIme() {
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -325,7 +331,8 @@ void WindowTreeHost::DestroyDispatcher() {
 void WindowTreeHost::CreateCompositor(const viz::FrameSinkId& frame_sink_id,
                                       bool force_software_compositor,
                                       bool external_begin_frames_enabled,
-                                      bool are_events_in_pixels) {
+                                      bool are_events_in_pixels,
+                                      const char* trace_environment_name) {
   DCHECK(window()->env());
   Env* env = window()->env();
   ui::ContextFactory* context_factory = env->context_factory();
@@ -335,14 +342,14 @@ void WindowTreeHost::CreateCompositor(const viz::FrameSinkId& frame_sink_id,
   bool enable_surface_synchronization =
       env->mode() == aura::Env::Mode::MUS ||
       features::IsSurfaceSynchronizationEnabled();
-  compositor_.reset(new ui::Compositor(
+  compositor_ = std::make_unique<ui::Compositor>(
       (!context_factory_private || frame_sink_id.is_valid())
           ? frame_sink_id
           : context_factory_private->AllocateFrameSinkId(),
       context_factory, context_factory_private,
       base::ThreadTaskRunnerHandle::Get(), enable_surface_synchronization,
       ui::IsPixelCanvasRecordingEnabled(), external_begin_frames_enabled,
-      force_software_compositor));
+      force_software_compositor, trace_environment_name);
 #if defined(OS_CHROMEOS)
   compositor_->AddObserver(this);
 #endif
@@ -358,7 +365,8 @@ void WindowTreeHost::CreateCompositor(const viz::FrameSinkId& frame_sink_id,
 void WindowTreeHost::InitCompositor() {
   DCHECK(!compositor_->root_layer());
   compositor_->SetScaleAndSize(device_scale_factor_, GetBoundsInPixels().size(),
-                               window()->GetLocalSurfaceId());
+                               window()->GetLocalSurfaceId(),
+                               window()->GetLocalSurfaceIdAllocationTime());
   compositor_->SetRootLayer(window()->layer());
 
   display::Display display =
@@ -383,7 +391,10 @@ void WindowTreeHost::OnHostMovedInPixels(
 
 void WindowTreeHost::OnHostResizedInPixels(
     const gfx::Size& new_size_in_pixels,
-    const viz::LocalSurfaceId& new_local_surface_id) {
+    const viz::LocalSurfaceId& new_local_surface_id,
+    base::TimeTicks new_allocation_time) {
+  // TODO(jonross) Unify all OnHostResizedInPixels to have both
+  // viz::LocalSurfaceId and allocation time as optional parameters.
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window());
   device_scale_factor_ = display.device_scale_factor();
@@ -391,14 +402,16 @@ void WindowTreeHost::OnHostResizedInPixels(
 
   // Allocate a new LocalSurfaceId for the new state.
   auto local_surface_id = new_local_surface_id;
+  auto allocation_time = new_allocation_time;
   if (ShouldAllocateLocalSurfaceId(window()) &&
       !new_local_surface_id.is_valid()) {
     window_->AllocateLocalSurfaceId();
     local_surface_id = window_->GetLocalSurfaceId();
+    allocation_time = window_->GetLocalSurfaceIdAllocationTime();
   }
   ScopedLocalSurfaceIdValidator lsi_validator(window());
   compositor_->SetScaleAndSize(device_scale_factor_, new_size_in_pixels,
-                               local_surface_id);
+                               local_surface_id, allocation_time);
 
   for (WindowTreeHostObserver& observer : observers_)
     observer.OnHostResized(this);
@@ -420,10 +433,6 @@ void WindowTreeHost::OnHostDisplayChanged() {
 void WindowTreeHost::OnHostCloseRequested() {
   for (WindowTreeHostObserver& observer : observers_)
     observer.OnHostCloseRequested(this);
-}
-
-void WindowTreeHost::OnHostActivated() {
-  window()->env()->NotifyHostActivated(this);
 }
 
 void WindowTreeHost::OnHostLostWindowCapture() {

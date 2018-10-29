@@ -9,9 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/files/file.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/print_backend.h"
@@ -123,39 +120,6 @@ bool CupsPrinter::ToPrinterInfo(PrinterBasicInfo* printer_info) const {
   }
 
   return true;
-}
-
-std::string CupsPrinter::GetPPD() const {
-  std::string ppd_contents;
-  const char* printer_name = destination_->name;
-  const char* ppd_path_str = cupsGetPPD2(cups_http_, printer_name);
-  if (!ppd_path_str)
-    return ppd_contents;
-
-  // There is no reliable way right now to detect full and complete PPD
-  // get downloaded. If we reach http timeout, it may simply return
-  // downloaded part as a full response. It might be good enough to check
-  // http->data_remaining or http->_data_remaining, unfortunately http_t
-  // is an internal structure and fields are not exposed in CUPS headers.
-  // httpGetLength or httpGetLength2 returning the full content size.
-  // Comparing file size against that content length might be unreliable
-  // since some http reponses are encoded and content_length > file size.
-  // Let's just check for the obvious CUPS and http errors here.
-  base::FilePath ppd_path(ppd_path_str);
-  ipp_status_t error_code = cupsLastError();
-  int http_error = httpError(cups_http_);
-  if (error_code <= IPP_OK_EVENTS_COMPLETE && http_error == 0) {
-    bool res = base::ReadFileToString(ppd_path, &ppd_contents);
-    if (!res)
-      ppd_contents.clear();
-  } else {
-    LOG(ERROR) << "Error downloading PPD file, name: " << destination_->name
-               << ", CUPS error: " << static_cast<int>(error_code)
-               << ", HTTP error: " << http_error;
-  }
-
-  base::DeleteFile(ppd_path, false);
-  return ppd_contents;
 }
 
 std::string CupsPrinter::GetName() const {

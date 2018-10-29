@@ -21,11 +21,15 @@ static const int32_t kMaxId = 100;
 class AXTestSmallBankUniqueId : public AXUniqueId {
  public:
   AXTestSmallBankUniqueId();
+  ~AXTestSmallBankUniqueId() override;
 
+ private:
   friend class AXUniqueId;
+  DISALLOW_COPY_AND_ASSIGN(AXTestSmallBankUniqueId);
 };
 
 AXTestSmallBankUniqueId::AXTestSmallBankUniqueId() : AXUniqueId(kMaxId) {}
+AXTestSmallBankUniqueId::~AXTestSmallBankUniqueId() = default;
 
 TEST(AXPlatformUniqueIdTest, UnassignedIdsAreReused) {
   // Create a bank of ids that uses up all available ids.

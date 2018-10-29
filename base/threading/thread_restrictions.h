@@ -10,6 +10,90 @@
 #include "base/logging.h"
 #include "base/macros.h"
 
+// -----------------------------------------------------------------------------
+// Usage documentation
+// -----------------------------------------------------------------------------
+//
+// Overview:
+// This file exposes functions to ban and allow certain slow operations
+// on a per-thread basis. To annotate *usage* of such slow operations, refer to
+// scoped_blocking_call.h instead.
+//
+// Specific allowances that can be controlled in this file are:
+// - Blocking call: Refers to any call that causes the calling thread to wait
+//   off-CPU. It includes but is not limited to calls that wait on synchronous
+//   file I/O operations: read or write a file from disk, interact with a pipe
+//   or a socket, rename or delete a file, enumerate files in a directory, etc.
+//   Acquiring a low contention lock is not considered a blocking call.
+//
+// - Waiting on a //base sync primitive: Refers to calling one of these methods:
+//   - base::WaitableEvent::*Wait*
+//   - base::ConditionVariable::*Wait*
+//   - base::Process::WaitForExit*
+//
+// - Long CPU work: Refers to any code that takes more than 100 ms to
+//   run when there is no CPU contention and no hard page faults and therefore,
+//   is not suitable to run on a thread required to keep the browser responsive
+//   (where jank could be visible to the user).
+//
+// The following disallowance functions are offered:
+//  - DisallowBlocking(): Disallows blocking calls on the current thread.
+//  - DisallowBaseSyncPrimitives(): Disallows waiting on a //base sync primitive
+//    on the current thread.
+//  - DisallowUnresponsiveTasks() Disallows blocking calls, waiting on a //base
+//    sync primitive, and long cpu work on the current thread.
+//
+// In addition, scoped-allowance mechanisms are offered to make an exception
+// within a scope for a behavior that is normally disallowed.
+//  - ScopedAllowBlocking(ForTesting): Allows blocking calls.
+//  - ScopedAllowBaseSyncPrimitives(ForTesting)(OutsideBlockingScope): Allow
+//    waiting on a //base sync primitive. The OutsideBlockingScope suffix allows
+//    uses in a scope where blocking is also disallowed.
+//
+// Avoid using allowances outside of unit tests. In unit tests, use allowances
+// with the suffix "ForTesting".
+//
+// Prefer making blocking calls from tasks posted to base::TaskScheduler with
+// base::MayBlock().
+//
+// Instead of waiting on a WaitableEvent or a ConditionVariable, prefer putting
+// the work that should happen after the wait in a continuation callback and
+// post it from where the WaitableEvent or ConditionVariable would have been
+// signaled. If something needs to be scheduled after many tasks have executed,
+// use base::BarrierClosure.
+//
+// On Windows, join processes asynchronously using base::win::ObjectWatcher.
+//
+// Where unavoidable, put ScopedAllow* instances in the narrowest scope possible
+// in the caller making the blocking call but no further down. For example: if a
+// Cleanup() method needs to do a blocking call, document Cleanup() as blocking
+// and add a ScopedAllowBlocking instance in callers that can't avoid making
+// this call from a context where blocking is banned, as such:
+//
+//   void Client::MyMethod() {
+//     (...)
+//     {
+//       // Blocking is okay here because XYZ.
+//       ScopedAllowBlocking allow_blocking;
+//       my_foo_->Cleanup();
+//     }
+//     (...)
+//   }
+//
+//   // This method can block.
+//   void Foo::Cleanup() {
+//     // Do NOT add the ScopedAllowBlocking in Cleanup() directly as that hides
+//     // its blocking nature from unknowing callers and defeats the purpose of
+//     // these checks.
+//     FlushStateToDisk();
+//   }
+//
+// Note: In rare situations where the blocking call is an implementation detail
+// (i.e. the impl makes a call that invokes AssertBlockingAllowed() but it
+// somehow knows that in practice this will not block), it might be okay to hide
+// the ScopedAllowBlocking instance in the impl with a comment explaining why
+// that's okay.
+
 class BrowserProcessImpl;
 class HistogramSynchronizer;
 class NativeBackendKWallet;
@@ -149,6 +233,7 @@ class TaskTracker;
 
 class AdjustOOMScoreHelper;
 class GetAppOutputScopedAllowBaseSyncPrimitives;
+class MessageLoop;
 class SimpleThread;
 class StackSamplingProfiler;
 class Thread;
@@ -163,36 +248,22 @@ class ThreadTestHelper;
   {}
 #endif
 
-// A "blocking call" refers to any call that causes the calling thread to wait
-// off-CPU. It includes but is not limited to calls that wait on synchronous
-// file I/O operations: read or write a file from disk, interact with a pipe or
-// a socket, rename or delete a file, enumerate files in a directory, etc.
-// Acquiring a low contention lock is not considered a blocking call.
+namespace internal {
 
-// Asserts that blocking calls are allowed in the current scope. Prefer using 
-// ScopedBlockingCall instead, which also serves as a precise annotation of the 
-// scope that may/will block.
-//
-// Style tip: It's best if you put AssertBlockingAllowed() checks as close to
-// the blocking call as possible. For example:
-//
-// void ReadFile() {
-//   PreWork();
-//
-//   base::AssertBlockingAllowed();
-//   fopen(...);
-//
-//   PostWork();
-// }
-//
-// void Bar() {
-//   ReadFile();
-// }
-//
-// void Foo() {
-//   Bar();
-// }
+// Asserts that blocking calls are allowed in the current scope. This is an
+// internal call, external code should use ScopedBlockingCall instead, which
+// serves as a precise annotation of the scope that may/will block.
 INLINE_IF_DCHECK_IS_OFF void AssertBlockingAllowed()
+    EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+}  // namespace internal
+
+// Asserts that blocking calls are allowed in the current scope.
+//
+// DEPRECATED: Use ScopedBlockingCall, which serves as a precise annotation of
+// the scope that may/will block.
+// TODO(etiennep): Complete migration and delete this method.
+INLINE_IF_DCHECK_IS_OFF void AssertBlockingAllowedDeprecated()
     EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 // Disallows blocking on the current thread.
@@ -212,40 +283,6 @@ class BASE_EXPORT ScopedDisallowBlocking {
   DISALLOW_COPY_AND_ASSIGN(ScopedDisallowBlocking);
 };
 
-// ScopedAllowBlocking(ForTesting) allow blocking calls within a scope where
-// they are normally disallowed.
-//
-// Avoid using this. Prefer making blocking calls from tasks posted to
-// base::TaskScheduler with base::MayBlock().
-//
-// Where unavoidable, put ScopedAllow* instances in the narrowest scope possible
-// in the caller making the blocking call but no further down. That is: if a
-// Cleanup() method needs to do a blocking call, document Cleanup() as blocking
-// and add a ScopedAllowBlocking instance in callers that can't avoid making
-// this call from a context where blocking is banned, as such:
-//   void Client::MyMethod() {
-//     (...)
-//     {
-//       // Blocking is okay here because XYZ.
-//       ScopedAllowBlocking allow_blocking;
-//       my_foo_->Cleanup();
-//     }
-//     (...)
-//   }
-//
-//   // This method can block.
-//   void Foo::Cleanup() {
-//     // Do NOT add the ScopedAllowBlocking in Cleanup() directly as that hides
-//     // its blocking nature from unknowing callers and defeats the purpose of
-//     // these checks.
-//     FlushStateToDisk();
-//   }
-//
-// Note: In rare situations where the blocking call is an implementation detail
-// (i.e. the impl makes a call that invokes AssertBlockingAllowed() but it
-// somehow knows that in practice this will not block), it might be okay to hide
-// the ScopedAllowBlocking instance in the impl with a comment explaining why
-// that's okay.
 class BASE_EXPORT ScopedAllowBlocking {
  private:
   // This can only be instantiated by friends. Use ScopedAllowBlockingForTesting
@@ -288,29 +325,9 @@ class ScopedAllowBlockingForTesting {
   DISALLOW_COPY_AND_ASSIGN(ScopedAllowBlockingForTesting);
 };
 
-// "Waiting on a //base sync primitive" refers to calling one of these methods:
-// - base::WaitableEvent::*Wait*
-// - base::ConditionVariable::*Wait*
-// - base::Process::WaitForExit*
-
-// Disallows waiting on a //base sync primitive on the current thread.
 INLINE_IF_DCHECK_IS_OFF void DisallowBaseSyncPrimitives()
     EMPTY_BODY_IF_DCHECK_IS_OFF;
 
-// ScopedAllowBaseSyncPrimitives(ForTesting)(OutsideBlockingScope) allow waiting
-// on a //base sync primitive within a scope where this is normally disallowed.
-//
-// Avoid using this.
-//
-// Instead of waiting on a WaitableEvent or a ConditionVariable, put the work
-// that should happen after the wait in a callback and post that callback from
-// where the WaitableEvent or ConditionVariable would have been signaled. If
-// something needs to be scheduled after many tasks have executed, use
-// base::BarrierClosure.
-//
-// On Windows, join processes asynchronously using base::win::ObjectWatcher.
-
-// This can only be used in a scope where blocking is allowed.
 class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
  private:
   // This can only be instantiated by friends. Use
@@ -347,7 +364,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   DISALLOW_COPY_AND_ASSIGN(ScopedAllowBaseSyncPrimitives);
 };
 
-// This can be used in a scope where blocking is disallowed.
 class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
  private:
   // This can only be instantiated by friends. Use
@@ -359,6 +375,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
       ThreadRestrictionsTest,
       ScopedAllowBaseSyncPrimitivesOutsideBlockingScopeResetsState);
   friend class ::KeyStorageLinux;
+  friend class base::MessageLoop;
   friend class content::SynchronousCompositor;
   friend class content::SynchronousCompositorHost;
   friend class content::SynchronousCompositorSyncCallBridge;
@@ -379,8 +396,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   DISALLOW_COPY_AND_ASSIGN(ScopedAllowBaseSyncPrimitivesOutsideBlockingScope);
 };
 
-// This can be used in tests without being a friend of
-// ScopedAllowBaseSyncPrimitives(OutsideBlockingScope).
 class BASE_EXPORT ScopedAllowBaseSyncPrimitivesForTesting {
  public:
   ScopedAllowBaseSyncPrimitivesForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
@@ -406,6 +421,13 @@ INLINE_IF_DCHECK_IS_OFF void ResetThreadRestrictionsForTesting()
     EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 }  // namespace internal
+
+// Asserts that running long CPU work is allowed in the current scope.
+INLINE_IF_DCHECK_IS_OFF void AssertLongCPUWorkAllowed()
+    EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+INLINE_IF_DCHECK_IS_OFF void DisallowUnresponsiveTasks()
+    EMPTY_BODY_IF_DCHECK_IS_OFF;
 
 class BASE_EXPORT ThreadRestrictions {
  public:

@@ -20,14 +20,14 @@ namespace headless {
 
 namespace {
 // Product name for building the default user agent string.
-const char kProductName[] = "HeadlessChrome";
+const char kHeadlessProductName[] = "HeadlessChrome";
 constexpr gfx::Size kDefaultWindowSize(800, 600);
 
 constexpr gfx::FontRenderParams::Hinting kDefaultFontRenderHinting =
     gfx::FontRenderParams::Hinting::HINTING_FULL;
 
 std::string GetProductNameAndVersion() {
-  return std::string(kProductName) + "/" + PRODUCT_VERSION;
+  return std::string(kHeadlessProductName) + "/" + PRODUCT_VERSION;
 }
 }  // namespace
 
@@ -96,11 +96,6 @@ Builder& Builder::SetMessagePump(base::MessagePump* message_pump) {
 Builder& Builder::SetProxyConfig(
     std::unique_ptr<net::ProxyConfig> proxy_config) {
   options_.proxy_config = std::move(proxy_config);
-  return *this;
-}
-
-Builder& Builder::SetHostResolverRules(const std::string& host_resolver_rules) {
-  options_.host_resolver_rules = host_resolver_rules;
   return *this;
 }
 

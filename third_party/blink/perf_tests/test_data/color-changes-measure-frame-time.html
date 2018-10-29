@@ -65,8 +65,8 @@ PerfTestRunner.measureFrameTime({
   iterationCount: 10,
   tracingCategories: 'blink',
   traceEventsToMeasure: [
-    'LocalFrameView::prePaint',
-    'LocalFrameView::paintTree'
+    'LocalFrameView::RunPrePaintLifecyclePhase',
+    'LocalFrameView::RunPaintLifecyclePhase'
   ]
 });
 </script>

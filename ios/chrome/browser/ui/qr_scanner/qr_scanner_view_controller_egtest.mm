@@ -15,15 +15,13 @@
 #import "ios/chrome/browser/ui/browser_view_controller.h"
 #include "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #include "ios/chrome/browser/ui/omnibox/location_bar_delegate.h"
 #include "ios/chrome/browser/ui/qr_scanner/camera_controller.h"
 #include "ios/chrome/browser/ui/qr_scanner/qr_scanner_view.h"
 #include "ios/chrome/browser/ui/qr_scanner/qr_scanner_view_controller.h"
-#import "ios/chrome/browser/ui/toolbar/clean/toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/public/features.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -414,7 +412,6 @@ void TapKeyboardReturnKeyInOmniboxWithText(std::string text) {
     (const GURL&)replacementURL {
   // The specific class to swizzle depends on whether the UIRefresh experiment
   // is enabled.
-  if (IsRefreshLocationBarEnabled()) {
     void (^loadGURLFromLocationBarBlock)(LocationBarCoordinator*, const GURL&,
                                          ui::PageTransition) =
         ^void(LocationBarCoordinator* self, const GURL& url,
@@ -428,21 +425,6 @@ void TapKeyboardReturnKeyInOmniboxWithText(std::string text) {
         new ScopedBlockSwizzler([LocationBarCoordinator class],
                                 @selector(loadGURLFromLocationBar:transition:),
                                 loadGURLFromLocationBarBlock));
-  } else {
-    void (^loadGURLFromLocationBarBlock)(LocationBarLegacyCoordinator*,
-                                         const GURL&, ui::PageTransition) =
-        ^void(LocationBarLegacyCoordinator* self, const GURL& url,
-              ui::PageTransition transition) {
-          web::NavigationManager::WebLoadParams params(replacementURL);
-          params.transition_type = transition;
-          [self.URLLoader loadURLWithParams:params];
-          [self cancelOmniboxEdit];
-        };
-    load_GURL_from_location_bar_swizzler_.reset(
-        new ScopedBlockSwizzler([LocationBarLegacyCoordinator class],
-                                @selector(loadGURLFromLocationBar:transition:),
-                                loadGURLFromLocationBarBlock));
-  }
 }
 
 // Creates a new CameraController mock with camera permission granted if

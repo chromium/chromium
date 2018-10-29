@@ -104,7 +104,7 @@ void HTMLEmbedElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == typeAttr) {
     SetServiceType(params.new_value.LowerASCII());
-    size_t pos = service_type_.Find(";");
+    wtf_size_t pos = service_type_.Find(";");
     if (pos != kNotFound)
       SetServiceType(service_type_.Left(pos));
     if (GetLayoutObject()) {
@@ -140,8 +140,8 @@ void HTMLEmbedElement::ParametersForPlugin(PluginParameters& plugin_params) {
     plugin_params.AppendAttribute(attribute);
 }
 
-// FIXME: This should be unified with HTMLObjectElement::updatePlugin and
-// moved down into HTMLPluginElement.cpp
+// FIXME: This should be unified with HTMLObjectElement::UpdatePlugin and
+// moved down into html_plugin_element.cc
 void HTMLEmbedElement::UpdatePluginInternal() {
   DCHECK(!GetLayoutEmbeddedObject()->ShowsUnavailablePluginIndicator());
   DCHECK(NeedsPluginUpdate());
@@ -150,7 +150,7 @@ void HTMLEmbedElement::UpdatePluginInternal() {
   if (url_.IsEmpty() && service_type_.IsEmpty())
     return;
 
-  // Note these pass m_url and m_serviceType to allow better code sharing with
+  // Note these pass url_ and service_type_ to allow better code sharing with
   // <object> which modifies url and serviceType before calling these.
   if (!AllowedToLoadFrameURL(url_))
     return;
@@ -158,8 +158,8 @@ void HTMLEmbedElement::UpdatePluginInternal() {
   PluginParameters plugin_params;
   ParametersForPlugin(plugin_params);
 
-  // FIXME: Can we not have layoutObject here now that beforeload events are
-  // gone?
+  // FIXME: Can we not have GetLayoutObject() here now that beforeload events
+  // are gone?
   if (!GetLayoutObject())
     return;
 

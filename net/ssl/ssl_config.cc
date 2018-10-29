@@ -8,11 +8,13 @@
 
 namespace net {
 
+// Note these lines must be kept in sync with
+// services/network/public/mojom/ssl_config.mojom.
 const uint16_t kDefaultSSLVersionMin = SSL_PROTOCOL_VERSION_TLS1;
 
 const uint16_t kDefaultSSLVersionMax = SSL_PROTOCOL_VERSION_TLS1_2;
 
-const TLS13Variant kDefaultTLS13Variant = kTLS13VariantDraft23;
+const TLS13Variant kDefaultTLS13Variant = kTLS13VariantFinal;
 
 SSLConfig::CertAndStatus::CertAndStatus() = default;
 SSLConfig::CertAndStatus::CertAndStatus(scoped_refptr<X509Certificate> cert_arg,

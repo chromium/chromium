@@ -8,6 +8,7 @@ typemaps = [
   "//components/arc/common/bluetooth.typemap",
   "//components/arc/common/file_system.typemap",
   "//components/arc/common/gfx.typemap",
+  "//components/arc/common/ime.typemap",
   "//components/arc/common/intent_helper.typemap",
   "//components/arc/common/print.typemap",
   "//components/arc/common/timer.typemap",

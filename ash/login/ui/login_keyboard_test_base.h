@@ -10,10 +10,6 @@
 #include "ash/public/interfaces/login_user_info.mojom.h"
 #include "ash/test/ash_test_base.h"
 
-namespace keyboard {
-class KeyboardController;
-}  // namespace keyboard
-
 namespace ash {
 
 class LoginScreenController;
@@ -59,7 +55,6 @@ class LoginKeyboardTestBase : public AshTestBase {
   void TearDown() override;
 
  private:
-  keyboard::KeyboardController* keyboard_controller_ = nullptr;
   LoginScreenController* login_controller_ = nullptr;
   std::vector<mojom::LoginUserInfoPtr> users_;
 

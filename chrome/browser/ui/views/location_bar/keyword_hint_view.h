@@ -35,7 +35,7 @@ class KeywordHintView : public views::Button {
                   OmniboxTint tint);
   ~KeywordHintView() override;
 
-  void SetKeyword(const base::string16& keyword, SkColor background_color);
+  void SetKeyword(const base::string16& keyword);
 
   // views::View:
   gfx::Insets GetInsets() const override;

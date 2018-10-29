@@ -49,10 +49,14 @@ LevelDBDatabaseImpl::LevelDBDatabaseImpl(
     std::unique_ptr<Env> environment,
     std::unique_ptr<DB> db,
     std::unique_ptr<Cache> cache,
+    const leveldb_env::Options& options,
+    const std::string& name,
     base::Optional<base::trace_event::MemoryAllocatorDumpGuid> memory_dump_id)
     : environment_(std::move(environment)),
       cache_(std::move(cache)),
       db_(std::move(db)),
+      options_(options),
+      name_(name),
       memory_dump_id_(memory_dump_id) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
@@ -90,6 +94,20 @@ void LevelDBDatabaseImpl::DeletePrefixed(const std::vector<uint8_t>& key_prefix,
   if (status.ok())
     status = db_->Write(leveldb::WriteOptions(), &batch);
   std::move(callback).Run(LeveldbStatusToError(status));
+}
+
+void LevelDBDatabaseImpl::RewriteDB(RewriteDBCallback callback) {
+  Status status = leveldb_env::RewriteDB(options_, name_, &db_);
+  std::move(callback).Run(LeveldbStatusToError(status));
+  if (!db_ && close_binding_) {
+    // There is no point in existence without a db_.
+    std::move(close_binding_).Run();
+  }
+}
+
+void LevelDBDatabaseImpl::SetCloseBindingClosure(
+    base::OnceClosure close_binding) {
+  close_binding_ = std::move(close_binding);
 }
 
 void LevelDBDatabaseImpl::Write(

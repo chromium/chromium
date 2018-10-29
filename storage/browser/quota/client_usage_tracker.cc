@@ -16,7 +16,6 @@ namespace storage {
 
 namespace {
 
-using OriginUsageAccumulator = ClientUsageTracker::OriginUsageAccumulator;
 using OriginSetByHost = ClientUsageTracker::OriginSetByHost;
 
 void DidGetHostUsage(UsageCallback callback,
@@ -29,8 +28,8 @@ void DidGetHostUsage(UsageCallback callback,
 
 bool EraseOriginFromOriginSet(OriginSetByHost* origins_by_host,
                               const std::string& host,
-                              const GURL& origin) {
-  OriginSetByHost::iterator found = origins_by_host->find(host);
+                              const url::Origin& origin) {
+  auto found = origins_by_host->find(host);
   if (found == origins_by_host->end())
     return false;
 
@@ -44,8 +43,8 @@ bool EraseOriginFromOriginSet(OriginSetByHost* origins_by_host,
 
 bool OriginSetContainsOrigin(const OriginSetByHost& origins,
                              const std::string& host,
-                             const GURL& origin) {
-  OriginSetByHost::const_iterator itr = origins.find(host);
+                             const url::Origin& origin) {
+  auto itr = origins.find(host);
   return itr != origins.end() && base::ContainsKey(itr->second, origin);
 }
 
@@ -99,13 +98,13 @@ void ClientUsageTracker::GetGlobalLimitedUsage(UsageCallback callback) {
 
   AccumulateInfo* info = new AccumulateInfo;
   info->pending_jobs = non_cached_limited_origins_by_host_.size() + 1;
-  UsageAccumulator accumulator = base::BindRepeating(
+  auto accumulator = base::BindRepeating(
       &ClientUsageTracker::AccumulateLimitedOriginUsage, AsWeakPtr(),
       base::Owned(info), AdaptCallbackForRepeating(std::move(callback)));
 
   for (const auto& host_and_origins : non_cached_limited_origins_by_host_) {
     for (const auto& origin : host_and_origins.second)
-      client_->GetOriginUsage(url::Origin::Create(origin), type_, accumulator);
+      client_->GetOriginUsage(origin, type_, accumulator);
   }
 
   accumulator.Run(global_limited_usage_);
@@ -144,8 +143,9 @@ void ClientUsageTracker::GetHostUsage(const std::string& host,
                      AsWeakPtr(), host));
 }
 
-void ClientUsageTracker::UpdateUsageCache(const GURL& origin, int64_t delta) {
-  std::string host = net::GetHostOrSpecFromURL(origin);
+void ClientUsageTracker::UpdateUsageCache(const url::Origin& origin,
+                                          int64_t delta) {
+  std::string host = net::GetHostOrSpecFromURL(origin.GetURL());
   if (base::ContainsKey(cached_hosts_, host)) {
     if (!IsUsageCacheEnabledForOrigin(origin))
       return;
@@ -192,7 +192,7 @@ void ClientUsageTracker::GetCachedHostsUsage(
 }
 
 void ClientUsageTracker::GetCachedOriginsUsage(
-    std::map<GURL, int64_t>* origin_usage) const {
+    std::map<url::Origin, int64_t>* origin_usage) const {
   DCHECK(origin_usage);
   for (const auto& host_and_usage_map : cached_usage_by_host_) {
     for (const auto& origin_and_usage : host_and_usage_map.second)
@@ -200,7 +200,8 @@ void ClientUsageTracker::GetCachedOriginsUsage(
   }
 }
 
-void ClientUsageTracker::GetCachedOrigins(std::set<GURL>* origins) const {
+void ClientUsageTracker::GetCachedOrigins(
+    std::set<url::Origin>* origins) const {
   DCHECK(origins);
   for (const auto& host_and_usage_map : cached_usage_by_host_) {
     for (const auto& origin_and_usage : host_and_usage_map.second)
@@ -208,16 +209,16 @@ void ClientUsageTracker::GetCachedOrigins(std::set<GURL>* origins) const {
   }
 }
 
-void ClientUsageTracker::SetUsageCacheEnabled(const GURL& origin,
+void ClientUsageTracker::SetUsageCacheEnabled(const url::Origin& origin,
                                               bool enabled) {
-  std::string host = net::GetHostOrSpecFromURL(origin);
+  std::string host = net::GetHostOrSpecFromURL(origin.GetURL());
   if (!enabled) {
     // Erase |origin| from cache and subtract its usage.
-    HostUsageMap::iterator found_host = cached_usage_by_host_.find(host);
+    auto found_host = cached_usage_by_host_.find(host);
     if (found_host != cached_usage_by_host_.end()) {
       UsageMap& cached_usage_for_host = found_host->second;
 
-      UsageMap::iterator found = cached_usage_for_host.find(origin);
+      auto found = cached_usage_for_host.find(origin);
       if (found != cached_usage_for_host.end()) {
         int64_t usage = found->second;
         UpdateUsageCache(origin, -usage);
@@ -262,7 +263,7 @@ void ClientUsageTracker::DidGetOriginsForGlobalUsage(
   OriginSetByHost origins_by_host;
   for (const auto& origin : origins) {
     GURL origin_url = origin.GetURL();
-    origins_by_host[net::GetHostOrSpecFromURL(origin_url)].insert(origin_url);
+    origins_by_host[net::GetHostOrSpecFromURL(origin_url)].insert(origin);
   }
 
   AccumulateInfo* info = new AccumulateInfo;
@@ -272,16 +273,13 @@ void ClientUsageTracker::DidGetOriginsForGlobalUsage(
   // loop).  To avoid this, we add one more pending host as a sentinel and
   // fire the sentinel callback at the end.
   info->pending_jobs = origins_by_host.size() + 1;
-  HostUsageAccumulator accumulator = base::BindRepeating(
+  auto accumulator = base::BindRepeating(
       &ClientUsageTracker::AccumulateHostUsage, AsWeakPtr(), base::Owned(info),
       base::AdaptCallbackForRepeating(std::move(callback)));
 
   for (const auto& host_and_origins : origins_by_host) {
     const std::string& host = host_and_origins.first;
-    const std::set<GURL>& origin_urls = host_and_origins.second;
-    std::set<url::Origin> origins;
-    for (const auto& origin_url : origin_urls)
-      origins.insert(url::Origin::Create(origin_url));
+    const std::set<url::Origin>& origins = host_and_origins.second;
     if (host_usage_accumulators_.Add(host, accumulator))
       GetUsageForOrigins(host, origins);
   }
@@ -323,41 +321,42 @@ void ClientUsageTracker::GetUsageForOrigins(
   // loop).  To avoid this, we add one more pending origin as a sentinel and
   // fire the sentinel callback at the end.
   info->pending_jobs = origins.size() + 1;
-  OriginUsageAccumulator accumulator =
+  auto accumulator =
       base::BindRepeating(&ClientUsageTracker::AccumulateOriginUsage,
                           AsWeakPtr(), base::Owned(info), host);
 
   for (const auto& origin : origins) {
-    GURL origin_url = origin.GetURL();
-    DCHECK_EQ(host, net::GetHostOrSpecFromURL(origin_url));
+    DCHECK_EQ(host, net::GetHostOrSpecFromURL(origin.GetURL()));
 
     int64_t origin_usage = 0;
-    if (GetCachedOriginUsage(origin_url, &origin_usage)) {
-      accumulator.Run(origin_url, origin_usage);
+    if (GetCachedOriginUsage(origin, &origin_usage)) {
+      accumulator.Run(origin, origin_usage);
     } else {
       client_->GetOriginUsage(origin, type_,
-                              base::BindOnce(accumulator, origin_url));
+                              base::BindOnce(accumulator, origin));
     }
   }
 
   // Fire the sentinel as we've now called GetOriginUsage for all clients.
-  accumulator.Run(GURL(), 0);
+  accumulator.Run(base::nullopt, 0);
 }
 
-void ClientUsageTracker::AccumulateOriginUsage(AccumulateInfo* info,
-                                               const std::string& host,
-                                               const GURL& origin,
-                                               int64_t usage) {
-  if (!origin.is_empty()) {
+void ClientUsageTracker::AccumulateOriginUsage(
+    AccumulateInfo* info,
+    const std::string& host,
+    const base::Optional<url::Origin>& origin,
+    int64_t usage) {
+  if (origin.has_value()) {
+    DCHECK(!origin->GetURL().is_empty());
     if (usage < 0)
       usage = 0;
 
-    if (IsStorageUnlimited(origin))
+    if (IsStorageUnlimited(*origin))
       info->unlimited_usage += usage;
     else
       info->limited_usage += usage;
-    if (IsUsageCacheEnabledForOrigin(origin))
-      AddCachedOrigin(origin, usage);
+    if (IsUsageCacheEnabledForOrigin(*origin))
+      AddCachedOrigin(*origin, usage);
   }
   if (--info->pending_jobs)
     return;
@@ -367,7 +366,7 @@ void ClientUsageTracker::AccumulateOriginUsage(AccumulateInfo* info,
       host, info->limited_usage, info->unlimited_usage);
 }
 
-void ClientUsageTracker::DidGetHostUsageAfterUpdate(const GURL& origin,
+void ClientUsageTracker::DidGetHostUsageAfterUpdate(const url::Origin& origin,
                                                     int64_t usage) {
   if (!storage_monitor_)
     return;
@@ -376,11 +375,11 @@ void ClientUsageTracker::DidGetHostUsageAfterUpdate(const GURL& origin,
   storage_monitor_->NotifyUsageChange(filter, 0);
 }
 
-void ClientUsageTracker::AddCachedOrigin(const GURL& origin,
+void ClientUsageTracker::AddCachedOrigin(const url::Origin& origin,
                                          int64_t new_usage) {
   DCHECK(IsUsageCacheEnabledForOrigin(origin));
 
-  std::string host = net::GetHostOrSpecFromURL(origin);
+  std::string host = net::GetHostOrSpecFromURL(origin.GetURL());
   int64_t* usage = &cached_usage_by_host_[host][origin];
   int64_t delta = new_usage - *usage;
   *usage = new_usage;
@@ -396,7 +395,7 @@ void ClientUsageTracker::AddCachedHost(const std::string& host) {
 }
 
 int64_t ClientUsageTracker::GetCachedHostUsage(const std::string& host) const {
-  HostUsageMap::const_iterator found = cached_usage_by_host_.find(host);
+  auto found = cached_usage_by_host_.find(host);
   if (found == cached_usage_by_host_.end())
     return 0;
 
@@ -407,14 +406,14 @@ int64_t ClientUsageTracker::GetCachedHostUsage(const std::string& host) const {
   return usage;
 }
 
-bool ClientUsageTracker::GetCachedOriginUsage(const GURL& origin,
+bool ClientUsageTracker::GetCachedOriginUsage(const url::Origin& origin,
                                               int64_t* usage) const {
-  std::string host = net::GetHostOrSpecFromURL(origin);
-  HostUsageMap::const_iterator found_host = cached_usage_by_host_.find(host);
+  std::string host = net::GetHostOrSpecFromURL(origin.GetURL());
+  auto found_host = cached_usage_by_host_.find(host);
   if (found_host == cached_usage_by_host_.end())
     return false;
 
-  UsageMap::const_iterator found = found_host->second.find(origin);
+  auto found = found_host->second.find(origin);
   if (found == found_host->second.end())
     return false;
 
@@ -424,42 +423,42 @@ bool ClientUsageTracker::GetCachedOriginUsage(const GURL& origin,
 }
 
 bool ClientUsageTracker::IsUsageCacheEnabledForOrigin(
-    const GURL& origin) const {
-  std::string host = net::GetHostOrSpecFromURL(origin);
+    const url::Origin& origin) const {
+  std::string host = net::GetHostOrSpecFromURL(origin.GetURL());
   return !OriginSetContainsOrigin(non_cached_limited_origins_by_host_,
                                   host, origin) &&
       !OriginSetContainsOrigin(non_cached_unlimited_origins_by_host_,
                                host, origin);
 }
 
-void ClientUsageTracker::OnGranted(const GURL& origin,
-                                   int change_flags) {
+void ClientUsageTracker::OnGranted(const GURL& origin_url, int change_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (change_flags & SpecialStoragePolicy::STORAGE_UNLIMITED) {
+    url::Origin origin = url::Origin::Create(origin_url);
     int64_t usage = 0;
     if (GetCachedOriginUsage(origin, &usage)) {
       global_unlimited_usage_ += usage;
       global_limited_usage_ -= usage;
     }
 
-    std::string host = net::GetHostOrSpecFromURL(origin);
+    std::string host = net::GetHostOrSpecFromURL(origin_url);
     if (EraseOriginFromOriginSet(&non_cached_limited_origins_by_host_,
                                  host, origin))
       non_cached_unlimited_origins_by_host_[host].insert(origin);
   }
 }
 
-void ClientUsageTracker::OnRevoked(const GURL& origin,
-                                   int change_flags) {
+void ClientUsageTracker::OnRevoked(const GURL& origin_url, int change_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (change_flags & SpecialStoragePolicy::STORAGE_UNLIMITED) {
+    url::Origin origin = url::Origin::Create(origin_url);
     int64_t usage = 0;
     if (GetCachedOriginUsage(origin, &usage)) {
       global_unlimited_usage_ -= usage;
       global_limited_usage_ += usage;
     }
 
-    std::string host = net::GetHostOrSpecFromURL(origin);
+    std::string host = net::GetHostOrSpecFromURL(origin_url);
     if (EraseOriginFromOriginSet(&non_cached_unlimited_origins_by_host_,
                                  host, origin))
       non_cached_limited_origins_by_host_[host].insert(origin);
@@ -499,11 +498,11 @@ void ClientUsageTracker::UpdateGlobalUsageValue(int64_t* usage_value,
   }
 }
 
-bool ClientUsageTracker::IsStorageUnlimited(const GURL& origin) const {
+bool ClientUsageTracker::IsStorageUnlimited(const url::Origin& origin) const {
   if (type_ == blink::mojom::StorageType::kSyncable)
     return false;
   return special_storage_policy_.get() &&
-         special_storage_policy_->IsStorageUnlimited(origin);
+         special_storage_policy_->IsStorageUnlimited(origin.GetURL());
 }
 
 }  // namespace storage

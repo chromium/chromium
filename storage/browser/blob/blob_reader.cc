@@ -129,7 +129,7 @@ bool BlobReader::has_side_data() const {
   return item.disk_cache_entry()->GetDataSize(disk_cache_side_stream_index) > 0;
 }
 
-BlobReader::Status BlobReader::ReadSideData(const StatusCallback& done) {
+BlobReader::Status BlobReader::ReadSideData(StatusCallback done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!has_side_data())
@@ -142,8 +142,9 @@ BlobReader::Status BlobReader::ReadSideData(const StatusCallback& done) {
   net_error_ = net::OK;
   const int result = item->disk_cache_entry()->ReadData(
       disk_cache_side_stream_index, 0, side_data_.get(), side_data_size,
-      base::Bind(&BlobReader::DidReadDiskCacheEntrySideData,
-                 weak_factory_.GetWeakPtr(), done, side_data_size));
+      base::BindOnce(&BlobReader::DidReadDiskCacheEntrySideData,
+                     weak_factory_.GetWeakPtr(), std::move(done),
+                     side_data_size));
   if (result >= 0) {
     DCHECK_EQ(side_data_size, result);
     return Status::DONE;
@@ -153,7 +154,7 @@ BlobReader::Status BlobReader::ReadSideData(const StatusCallback& done) {
   return ReportError(result);
 }
 
-void BlobReader::DidReadDiskCacheEntrySideData(const StatusCallback& done,
+void BlobReader::DidReadDiskCacheEntrySideData(StatusCallback done,
                                                int expected_size,
                                                int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -161,11 +162,11 @@ void BlobReader::DidReadDiskCacheEntrySideData(const StatusCallback& done,
     DCHECK_EQ(expected_size, result);
     if (result > 0)
       storage::RecordBytesRead(kCacheStorageRecordBytesLabel, result);
-    done.Run(Status::DONE);
+    std::move(done).Run(Status::DONE);
     return;
   }
   side_data_ = nullptr;
-  done.Run(ReportError(result));
+  std::move(done).Run(ReportError(result));
 }
 
 BlobReader::Status BlobReader::SetReadRange(uint64_t offset, uint64_t length) {
@@ -338,7 +339,7 @@ BlobReader::Status BlobReader::CalculateSizeImpl(
     if (!reader)
       return ReportError(net::ERR_FILE_NOT_FOUND);
 
-    int64_t length_output = reader->GetLength(base::Bind(
+    int64_t length_output = reader->GetLength(base::BindOnce(
         &BlobReader::DidGetFileItemLength, weak_factory_.GetWeakPtr(), i));
     if (length_output == net::ERR_IO_PENDING)
       continue;
@@ -547,16 +548,16 @@ BlobReader::Status BlobReader::ReadFileItem(FileStreamReader* reader,
       << "Can't begin IO while another IO operation is pending.";
   DCHECK_GE(read_buf_->BytesRemaining(), bytes_to_read);
   DCHECK(reader);
-  TRACE_EVENT_ASYNC_BEGIN1("Blob", "BlobRequest::ReadFileItem", this, "uuid",
-                           blob_data_->uuid());
   const int result = reader->Read(
       read_buf_.get(), bytes_to_read,
-      base::Bind(&BlobReader::DidReadFile, weak_factory_.GetWeakPtr()));
+      base::BindOnce(&BlobReader::DidReadFile, weak_factory_.GetWeakPtr()));
   if (result >= 0) {
     AdvanceBytesRead(result);
     return Status::DONE;
   }
   if (result == net::ERR_IO_PENDING) {
+    TRACE_EVENT_ASYNC_BEGIN1("Blob", "BlobRequest::ReadFileItem", this, "uuid",
+                             blob_data_->uuid());
     io_pending_ = true;
     return Status::IO_PENDING;
   }
@@ -597,8 +598,6 @@ BlobReader::Status BlobReader::ReadDiskCacheEntryItem(const BlobDataItem& item,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!io_pending_)
       << "Can't begin IO while another IO operation is pending.";
-  TRACE_EVENT_ASYNC_BEGIN1("Blob", "BlobRequest::ReadDiskCacheItem", this,
-                           "uuid", blob_data_->uuid());
   DCHECK_GE(read_buf_->BytesRemaining(), bytes_to_read);
 
   if (!item.disk_cache_entry())
@@ -606,13 +605,15 @@ BlobReader::Status BlobReader::ReadDiskCacheEntryItem(const BlobDataItem& item,
   const int result = item.disk_cache_entry()->ReadData(
       item.disk_cache_stream_index(), item.offset() + current_item_offset_,
       read_buf_.get(), bytes_to_read,
-      base::Bind(&BlobReader::DidReadDiskCacheEntry,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&BlobReader::DidReadDiskCacheEntry,
+                     weak_factory_.GetWeakPtr()));
   if (result >= 0) {
     AdvanceBytesRead(result);
     return Status::DONE;
   }
   if (result == net::ERR_IO_PENDING) {
+    TRACE_EVENT_ASYNC_BEGIN1("Blob", "BlobRequest::ReadDiskCacheItem", this,
+                             "uuid", blob_data_->uuid());
     io_pending_ = true;
     return Status::IO_PENDING;
   }

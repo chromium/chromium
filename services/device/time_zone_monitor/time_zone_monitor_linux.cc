@@ -88,7 +88,7 @@ class TimeZoneMonitorLinuxImpl
   ~TimeZoneMonitorLinuxImpl() { DCHECK(!owner_); }
 
   void StartWatchingOnFileThread() {
-    base::AssertBlockingAllowed();
+    base::AssertBlockingAllowedDeprecated();
     DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
 
     // There is no true standard for where time zone information is actually

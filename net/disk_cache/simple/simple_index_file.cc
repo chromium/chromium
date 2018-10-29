@@ -172,7 +172,7 @@ void ProcessEntryFile(SimpleIndex::EntrySet* entries,
   if (last_used_time.is_null())
     last_used_time = last_modified;
 
-  SimpleIndex::EntrySet::iterator it = entries->find(hash_key);
+  auto it = entries->find(hash_key);
   base::CheckedNumeric<uint32_t> total_entry_size = size;
 
   // Sometimes we see entry sizes here which are nonsense. We can't use them
@@ -518,8 +518,7 @@ std::unique_ptr<base::Pickle> SimpleIndexFile::Serialize(
   std::unique_ptr<base::Pickle> pickle = std::make_unique<SimpleIndexPickle>();
 
   index_metadata.Serialize(pickle.get());
-  for (SimpleIndex::EntrySet::const_iterator it = entries.begin();
-       it != entries.end(); ++it) {
+  for (auto it = entries.begin(); it != entries.end(); ++it) {
     pickle->WriteUInt64(it->first);
     it->second.Serialize(pickle.get());
   }

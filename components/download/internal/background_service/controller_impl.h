@@ -228,6 +228,7 @@ class ControllerImpl : public Controller,
                                const CompletionInfo& completion_info);
   void SendOnDownloadFailed(DownloadClient client_id,
                             const std::string& guid,
+                            const CompletionInfo& completion_info,
                             download::Client::FailureReason reason);
 
   // Schedules a cleanup task in future based on status of entries.

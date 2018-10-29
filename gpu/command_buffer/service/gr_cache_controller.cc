@@ -29,7 +29,7 @@ void GrCacheController::ScheduleGrContextCleanup() {
   if (!purge_gr_cache_cb_.IsCancelled())
     return;
 
-  constexpr int kOldResourceCleanupDelaySeconds = 30;
+  constexpr int kOldResourceCleanupDelaySeconds = 15;
   // Here we ask GrContext to free any resources that haven't been used in
   // a long while even if it is under budget. Below we set a call back to
   // purge all possible GrContext resources if the context itself is not being

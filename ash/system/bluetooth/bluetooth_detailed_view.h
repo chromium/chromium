@@ -36,8 +36,7 @@ class BluetoothDetailedView : public TrayDetailedView {
   void UpdateDeviceScrollList();
   void AppendSameTypeDevicesToScrollList(const BluetoothDeviceList& list,
                                          bool highlight,
-                                         bool checked,
-                                         bool enabled);
+                                         bool checked);
 
   // Returns true if the device with |device_id| is found in |device_list|.
   bool FoundDevice(const std::string& device_id,

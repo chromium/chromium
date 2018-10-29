@@ -2,7 +2,6 @@ Test modification of contents of a range
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Start test 1
 PASS r.startOffset is 0
 PASS r.endOffset is 0

@@ -22,6 +22,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   GeometryMapperTransformCache() = default;
 
   static void ClearCache();
+  bool IsValid() const;
 
   void UpdateIfNeeded(const TransformPaintPropertyNode& node) {
     if (cache_generation_ != s_global_generation)
@@ -29,26 +30,79 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     DCHECK_EQ(cache_generation_, s_global_generation);
   }
 
-  const TransformationMatrix& to_screen() const { return to_screen_; }
-  bool to_screen_is_invertible() const { return to_screen_is_invertible_; }
+  const TransformationMatrix& to_2d_translation_root() const {
+    DCHECK(to_2d_translation_root_.IsIdentityOr2DTranslation());
+    return to_2d_translation_root_;
+  }
+  const TransformationMatrix& from_2d_translation_root() const {
+    DCHECK(from_2d_translation_root_.IsIdentityOr2DTranslation());
+    return from_2d_translation_root_;
+  }
 
+  const TransformPaintPropertyNode* root_of_2d_translation() const {
+    return root_of_2d_translation_;
+  }
+
+  // As screen transform data are used rarely, they are updated only when
+  // needed. This method must be called before calling any screen transform
+  // related getters.
+  void UpdateScreenTransform(const TransformPaintPropertyNode&);
+
+  // These getters must be called after UpdateScreenTransform() when screen
+  // transform data is really needed.
+  const TransformationMatrix& to_screen() const {
+    CheckScreenTransformUpdated();
+    return UNLIKELY(screen_transform_) ? screen_transform_->to_screen
+                                       : to_plane_root();
+  }
   const TransformationMatrix& projection_from_screen() const {
-    return projection_from_screen_;
+    CheckScreenTransformUpdated();
+    return UNLIKELY(screen_transform_)
+               ? screen_transform_->projection_from_screen
+               : from_plane_root();
   }
   bool projection_from_screen_is_valid() const {
-    return projection_from_screen_is_valid_;
+    CheckScreenTransformUpdated();
+    return LIKELY(!screen_transform_) ||
+           screen_transform_->projection_from_screen_is_valid;
   }
 
-  const TransformationMatrix& to_plane_root() const { return to_plane_root_; }
-  const TransformationMatrix& from_plane_root() const {
-    return from_plane_root_;
+  const TransformationMatrix& to_plane_root() const {
+    return UNLIKELY(plane_root_transform_)
+               ? plane_root_transform_->to_plane_root
+               : to_2d_translation_root_;
   }
-  const TransformPaintPropertyNode* plane_root() const { return plane_root_; }
+  const TransformationMatrix& from_plane_root() const {
+    return UNLIKELY(plane_root_transform_)
+               ? plane_root_transform_->from_plane_root
+               : from_2d_translation_root_;
+  }
+  const TransformPaintPropertyNode* plane_root() const {
+    return UNLIKELY(plane_root_transform_) ? plane_root_transform_->plane_root
+                                           : root_of_2d_translation();
+  }
 
  private:
+  friend class GeometryMapperTransformCacheTest;
+
+#if DCHECK_IS_ON()
+  void CheckScreenTransformUpdated() const;
+#else
+  void CheckScreenTransformUpdated() const {}
+#endif
+
   void Update(const TransformPaintPropertyNode&);
 
   static unsigned s_global_generation;
+
+  // The accumulated transform to/from root_of_2d_translation().
+  TransformationMatrix to_2d_translation_root_;
+  TransformationMatrix from_2d_translation_root_;
+
+  // The parent of the root of consecutive identity or 2d translations from the
+  // transform node, or the root of the tree if the whole path from the
+  // transform node to the root contains identity or 2d translations only.
+  const TransformPaintPropertyNode* root_of_2d_translation_;
 
   // The cached values here can be categorized in two logical groups:
   //
@@ -56,7 +110,6 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   // to_screen : The screen matrix of the node, as defined by:
   //   to_screen = (flattens_inherited_transform ?
   //       flatten(parent.to_screen) : parent.to_screen) * local
-  // to_screen_is_invertible : Whether to_screen is invertible.
   // projection_from_screen : Back projection from screen.
   //   projection_from_screen = flatten(to_screen) ^ -1
   //   Undefined if the inverse projection doesn't exist.
@@ -107,14 +160,21 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   //     = flatten(parent.to_screen) * local
   //     = flatten(parent.plane_root.to_screen) * parent.to_plane_root * local
   //     = flatten(plane_root.to_screen) * to_plane_root
-  TransformationMatrix to_screen_;
-  TransformationMatrix projection_from_screen_;
-  TransformationMatrix to_plane_root_;
-  TransformationMatrix from_plane_root_;
-  const TransformPaintPropertyNode* plane_root_ = nullptr;
+  struct PlaneRootTransform {
+    TransformationMatrix to_plane_root;
+    TransformationMatrix from_plane_root;
+    const TransformPaintPropertyNode* plane_root;
+  };
+  std::unique_ptr<PlaneRootTransform> plane_root_transform_;
+
+  struct ScreenTransform {
+    TransformationMatrix to_screen;
+    TransformationMatrix projection_from_screen;
+    bool projection_from_screen_is_valid;
+  };
+  std::unique_ptr<ScreenTransform> screen_transform_;
+
   unsigned cache_generation_ = s_global_generation - 1;
-  unsigned to_screen_is_invertible_ : 1;
-  unsigned projection_from_screen_is_valid_ : 1;
   DISALLOW_COPY_AND_ASSIGN(GeometryMapperTransformCache);
 };
 

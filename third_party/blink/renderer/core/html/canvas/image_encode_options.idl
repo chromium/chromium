@@ -9,7 +9,7 @@ enum ImageColorSpace {
 };
 
 enum ImagePixelFormat {
-    "8-8-8-8", // default
+    "uint8", // default
     "uint16",
 };
 
@@ -17,5 +17,5 @@ dictionary ImageEncodeOptions {
     DOMString type = "image/png";
     unrestricted double quality = 1.0;
     ImageColorSpace colorSpace = "srgb";
-    ImagePixelFormat pixelFormat = "8-8-8-8";
+    ImagePixelFormat pixelFormat = "uint8";
 };

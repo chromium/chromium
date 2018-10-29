@@ -4,6 +4,8 @@
 
 #include "chromeos/dbus/fake_cicerone_client.h"
 
+#include <utility>
+
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace chromeos {
@@ -13,6 +15,11 @@ FakeCiceroneClient::FakeCiceroneClient() {
   launch_container_application_response_.set_success(true);
 
   container_app_icon_response_.Clear();
+
+  get_linux_package_info_response_.Clear();
+  get_linux_package_info_response_.set_success(true);
+  get_linux_package_info_response_.set_package_id("Fake Package;1.0;x86-64");
+  get_linux_package_info_response_.set_summary("A package that is fake");
 
   install_linux_package_response_.Clear();
   install_linux_package_response_.set_status(
@@ -82,6 +89,14 @@ void FakeCiceroneClient::GetContainerAppIcons(
       base::BindOnce(std::move(callback), container_app_icon_response_));
 }
 
+void FakeCiceroneClient::GetLinuxPackageInfo(
+    const vm_tools::cicerone::LinuxPackageInfoRequest& request,
+    DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), get_linux_package_info_response_));
+}
+
 void FakeCiceroneClient::InstallLinuxPackage(
     const vm_tools::cicerone::InstallLinuxPackageRequest& request,
     DBusMethodCallback<vm_tools::cicerone::InstallLinuxPackageResponse>
@@ -110,6 +125,7 @@ void FakeCiceroneClient::CreateLxdContainer(
   signal.set_owner_id(request.owner_id());
   signal.set_vm_name(request.vm_name());
   signal.set_container_name(request.container_name());
+  signal.set_status(lxd_container_created_signal_status_);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&FakeCiceroneClient::NotifyLxdContainerCreated,
                                 base::Unretained(this), std::move(signal)));

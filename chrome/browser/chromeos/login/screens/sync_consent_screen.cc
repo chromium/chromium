@@ -11,6 +11,7 @@
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/pref_names.h"
 #include "components/browser_sync/profile_sync_service.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -33,6 +34,14 @@ browser_sync::ProfileSyncService* GetSyncService(Profile* profile) {
 }
 
 }  // namespace
+
+// static
+void SyncConsentScreen::MaybeLaunchSyncConstentSettings(Profile* profile) {
+  if (profile->GetPrefs()->GetBoolean(prefs::kShowSyncSettingsOnSessionStart)) {
+    profile->GetPrefs()->ClearPref(prefs::kShowSyncSettingsOnSessionStart);
+    chrome::ShowSettingsSubPageForProfile(profile, "syncSetup");
+  }
+}
 
 SyncConsentScreen::SyncConsentScreen(BaseScreenDelegate* base_screen_delegate,
                                      SyncConsentScreenView* view)

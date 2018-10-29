@@ -12,8 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "ios/chrome/browser/application_context.h"
-#include "ios/web/public/network_context_owner.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace base {
 class CommandLine;
@@ -22,7 +20,6 @@ class SequencedTaskRunner;
 
 namespace network {
 class NetworkChangeManager;
-class WeakWrapperSharedURLLoaderFactory;
 }
 
 class ApplicationContextImpl : public ApplicationContext {
@@ -63,7 +60,8 @@ class ApplicationContextImpl : public ApplicationContext {
   ukm::UkmRecorder* GetUkmRecorder() override;
   variations::VariationsService* GetVariationsService() override;
   rappor::RapporServiceImpl* GetRapporServiceImpl() override;
-  net_log::ChromeNetLog* GetNetLog() override;
+  net::NetLog* GetNetLog() override;
+  net_log::NetExportFileWriter* GetNetExportFileWriter() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   IOSChromeIOThread* GetIOSChromeIOThread() override;
   gcm::GCMDriver* GetGCMDriver() override;
@@ -83,7 +81,8 @@ class ApplicationContextImpl : public ApplicationContext {
 
   base::ThreadChecker thread_checker_;
   std::unique_ptr<PrefService> local_state_;
-  std::unique_ptr<net_log::ChromeNetLog> net_log_;
+  std::unique_ptr<net::NetLog> net_log_;
+  std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
   std::unique_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
@@ -95,14 +94,6 @@ class ApplicationContextImpl : public ApplicationContext {
 
   // Sequenced task runner for local state related I/O tasks.
   const scoped_refptr<base::SequencedTaskRunner> local_state_task_runner_;
-
-  network::mojom::NetworkContextPtr network_context_;
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
-  scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
-      shared_url_loader_factory_;
-
-  // Created on the UI thread, destroyed on the IO thread.
-  std::unique_ptr<web::NetworkContextOwner> network_context_owner_;
 
   std::unique_ptr<network::NetworkChangeManager> network_change_manager_;
   std::unique_ptr<network::NetworkConnectionTracker>

@@ -23,12 +23,16 @@ id<GREYAction> LongPressElementForContextMenu(
     web::test::ElementSelector selector,
     bool triggers_context_menu);
 
-// Action to turn the switch of a SettingsSwitchCell to the given |on|
+// Action to turn the switch of a LegacySettingsSwitchCell to the given |on|
 // state.
 id<GREYAction> TurnSettingsSwitchOn(BOOL on);
 
 // Action to turn the switch of a SyncSwitchCell to the given |on| state.
 id<GREYAction> TurnSyncSwitchOn(BOOL on);
+
+// Action to tap a web element with id equal to |element_id| on the current web
+// state.
+id<GREYAction> TapWebElement(const std::string& element_id);
 
 }  // namespace chrome_test_util
 

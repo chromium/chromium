@@ -45,10 +45,11 @@ void CodeCacheLoaderImpl::FetchFromCodeCacheSynchronously(
   // It is Ok to pass |fetch_code_cache_event| with base::Unretained. Since
   // this thread is stalled, the fetch_code_cache_event will be kept alive.
   task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CodeCacheLoaderImpl::FetchFromCodeCacheImpl,
-                     weak_ptr_factory_.GetWeakPtr(), url, std::move(callback),
-                     base::Unretained(&fetch_code_cache_event)));
+      FROM_HERE, base::BindOnce(&CodeCacheLoaderImpl::FetchFromCodeCacheImpl,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                blink::mojom::CodeCacheType::kJavascript, url,
+                                std::move(callback),
+                                base::Unretained(&fetch_code_cache_event)));
 
   // Wait for the fetch from code cache to finish.
   fetch_code_cache_event.Wait();
@@ -58,12 +59,15 @@ void CodeCacheLoaderImpl::FetchFromCodeCacheSynchronously(
   *data_out = data_for_sync_load_;
 }
 
-void CodeCacheLoaderImpl::FetchFromCodeCache(const GURL& url,
-                                             FetchCodeCacheCallback callback) {
-  FetchFromCodeCacheImpl(url, std::move(callback), nullptr);
+void CodeCacheLoaderImpl::FetchFromCodeCache(
+    blink::mojom::CodeCacheType cache_type,
+    const GURL& url,
+    FetchCodeCacheCallback callback) {
+  FetchFromCodeCacheImpl(cache_type, url, std::move(callback), nullptr);
 }
 
 void CodeCacheLoaderImpl::FetchFromCodeCacheImpl(
+    blink::mojom::CodeCacheType cache_type,
     const GURL& gurl,
     FetchCodeCacheCallback callback,
     base::WaitableEvent* fetch_event) {
@@ -71,9 +75,10 @@ void CodeCacheLoaderImpl::FetchFromCodeCacheImpl(
   // fetch_event, because the thread is stalled and it will keep the fetch_event
   // alive.
   blink::Platform::Current()->FetchCachedCode(
-      gurl, base::BindOnce(&CodeCacheLoaderImpl::OnReceiveCachedCode,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           fetch_event));
+      cache_type, gurl,
+      base::BindOnce(&CodeCacheLoaderImpl::OnReceiveCachedCode,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     fetch_event));
 }
 
 void CodeCacheLoaderImpl::OnReceiveCachedCode(

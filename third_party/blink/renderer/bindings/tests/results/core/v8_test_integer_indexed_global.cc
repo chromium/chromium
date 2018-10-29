@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -63,7 +63,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestIntegerIndexedGlobalV8Internal {
+namespace test_integer_indexed_global_v8_internal {
 
 static void lengthAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -85,7 +85,7 @@ static void lengthAttributeSetter(v8::Local<v8::Value> v8Value, const v8::Functi
   ExceptionState exceptionState(isolate, ExceptionState::kSetterContext, "TestIntegerIndexedGlobal", "length");
 
   // Prepare the value to be set.
-  uint64_t cppValue = NativeValueTraits<IDLUnsignedLongLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState, kNormalConversion);
+  uint64_t cppValue = NativeValueTraits<IDLUnsignedLongLong>::NativeValue(info.GetIsolate(), v8Value, exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -133,12 +133,12 @@ static void indexedPropertyDescriptor(uint32_t index, const v8::PropertyCallback
   }
 }
 
-} // namespace TestIntegerIndexedGlobalV8Internal
+}  // namespace test_integer_indexed_global_v8_internal
 
 void V8TestIntegerIndexedGlobal::lengthAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestIntegerIndexedGlobal_length_Getter");
 
-  TestIntegerIndexedGlobalV8Internal::lengthAttributeGetter(info);
+  test_integer_indexed_global_v8_internal::lengthAttributeGetter(info);
 }
 
 void V8TestIntegerIndexedGlobal::lengthAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -146,13 +146,13 @@ void V8TestIntegerIndexedGlobal::lengthAttributeSetterCallback(const v8::Functio
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestIntegerIndexedGlobalV8Internal::lengthAttributeSetter(v8Value, info);
+  test_integer_indexed_global_v8_internal::lengthAttributeSetter(v8Value, info);
 }
 
 void V8TestIntegerIndexedGlobal::voidMethodDocumentMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestIntegerIndexedGlobal_voidMethodDocument");
 
-  TestIntegerIndexedGlobalV8Internal::voidMethodDocumentMethod(info);
+  test_integer_indexed_global_v8_internal::voidMethodDocumentMethod(info);
 }
 
 void V8TestIntegerIndexedGlobal::namedPropertyGetterCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -204,7 +204,7 @@ void V8TestIntegerIndexedGlobal::indexedPropertyGetterCallback(uint32_t index, c
 }
 
 void V8TestIntegerIndexedGlobal::indexedPropertyDescriptorCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
-  TestIntegerIndexedGlobalV8Internal::indexedPropertyDescriptor(index, info);
+  test_integer_indexed_global_v8_internal::indexedPropertyDescriptor(index, info);
 }
 
 void V8TestIntegerIndexedGlobal::indexedPropertySetterCallback(uint32_t index, v8::Local<v8::Value> v8Value, const v8::PropertyCallbackInfo<v8::Value>& info) {

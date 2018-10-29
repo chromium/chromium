@@ -112,7 +112,7 @@ bool AreImagesClose(const gfx::Image& img1,
     float scale = img1_reps[i].scale();
     const gfx::ImageSkiaRep& image_rep2 = image_skia2.GetRepresentation(scale);
     if (image_rep2.scale() != scale ||
-        !AreBitmapsClose(img1_reps[i].sk_bitmap(), image_rep2.sk_bitmap(),
+        !AreBitmapsClose(img1_reps[i].GetBitmap(), image_rep2.GetBitmap(),
                          max_deviation)) {
       return false;
     }

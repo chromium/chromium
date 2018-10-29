@@ -31,6 +31,7 @@ extern const base::Feature kOmniboxReverseAnswers;
 extern const base::Feature kOmniboxTailSuggestions;
 extern const base::Feature kOmniboxTabSwitchSuggestions;
 extern const base::Feature kExperimentalKeywordMode;
+extern const base::Feature kOmniboxPedalSuggestions;
 extern const base::Feature kEnableClipboardProvider;
 extern const base::Feature kSearchProviderWarmUpOnFocus;
 extern const base::Feature kZeroSuggestRedirectToChrome;
@@ -38,7 +39,6 @@ extern const base::Feature kZeroSuggestSwapTitleAndUrl;
 extern const base::Feature kDisplayTitleForCurrentUrl;
 extern const base::Feature kQueryInOmnibox;
 extern const base::Feature kUIExperimentElideSuggestionUrlAfterHost;
-extern const base::Feature kUIExperimentHideSteadyStateUrlSchemeAndSubdomains;
 extern const base::Feature kUIExperimentJogTextfieldOnPopup;
 extern const base::Feature kUIExperimentMaxAutocompleteMatches;
 extern const base::Feature kUIExperimentShowSuggestionFavicons;
@@ -47,6 +47,7 @@ extern const base::Feature kUIExperimentVerticalMargin;
 extern const base::Feature kSpeculativeServiceWorkerStartOnQueryInput;
 extern const base::Feature kBreakWordsAtUnderscores;
 extern const base::Feature kDocumentProvider;
+extern const base::Feature kOmniboxPopupShortcutIconsInZeroState;
 
 }  // namespace omnibox
 
@@ -154,6 +155,13 @@ class OmniboxFieldTrial {
     EMPHASIZE_WHEN_TITLE_MATCHES = 1,
     EMPHASIZE_WHEN_ONLY_TITLE_MATCHES = 2,
     EMPHASIZE_NEVER = 3
+  };
+
+  // These are the discrete possibilities for Pedal behavior.
+  enum class PedalSuggestionMode {
+    NONE,
+    IN_SUGGESTION,
+    DEDICATED,
   };
 
   // ---------------------------------------------------------
@@ -381,11 +389,15 @@ class OmniboxFieldTrial {
   // For the aggressive keyword matching experiment that's part of the bundled
   // omnibox field trial.
 
-  // Returns whether KeywordProvider should consider the registry portion
+  // One function is missing from here to avoid a cyclic dependency
+  // between search_engine and omnibox. In the search_engine component
+  // there is a OmniboxFieldTrialKeywordRequiresRegistry function
+  // that logically should be here.
+  //
+  // It returns whether KeywordProvider should consider the registry portion
   // (e.g., co.uk) of keywords that look like hostnames as an important part of
   // the keyword name for matching purposes.  Returns true if the experiment
   // isn't active.
-  static bool KeywordRequiresRegistry();
 
   // For keywords that look like hostnames, returns whether KeywordProvider
   // should require users to type a prefix of the hostname to match against
@@ -413,35 +425,33 @@ class OmniboxFieldTrial {
   // ---------------------------------------------------------
   // For tab switch suggestions related experiments.
 
-  // Returns true if the rich entities flag and the refresh UI is enabled.
+  // Returns true if the rich entities flag is enabled.
   static bool IsRichEntitySuggestionsEnabled();
 
-  // Returns true if either (the new answer layout flag and the refresh UI) or
-  // the #upcoming-ui-features flag is enabled.
+  // Returns true if either the new answer layout flag or the
+  // #upcoming-ui-features flag is enabled.
   static bool IsNewAnswerLayoutEnabled();
 
-  // Returns true if either (the reverse answers flag and the refresh UI) or
-  // the #upcoming-ui-features flag is enabled.
+  // Returns true if either the reverse answers flag or the
+  // #upcoming-ui-features flag is enabled.
   static bool IsReverseAnswersEnabled();
 
-  // Returns true if either (the tab switch suggestions flag and the refresh UI)
-  // or the #upcoming-ui-features flag is enabled.
+  // Returns true if either the tab switch suggestions flag or the
+  // #upcoming-ui-features flag is enabled.
   static bool IsTabSwitchSuggestionsEnabled();
 
-  // Returns true if either the steady-state elision flag or the
-  // #upcoming-ui-features flag is enabled.
-  static bool IsHideSteadyStateUrlSchemeAndSubdomainsEnabled();
+  // Returns the #omnibox-pedal-suggestions feature's mode parameter as enum.
+  static PedalSuggestionMode GetPedalSuggestionMode();
 
-  // Returns true if the jog textfield flag and refresh UI are both enabled.
+  // Returns true if the jog textfield flag is enabled.
   static bool IsJogTextfieldOnPopupEnabled();
 
   // Returns true if either the show suggestion favicons flag or the
   // #upcoming-ui-features flag is enabled.
   static bool IsShowSuggestionFaviconsEnabled();
 
-  // Returns the size of the vertical margin that should be used in the
-  // suggestion view.
-  static int GetSuggestionVerticalMargin();
+  // Returns true if the experimental keyword mode is enabled.
+  static bool IsExperimentalKeywordModeEnabled();
 
   // ---------------------------------------------------------
   // Clipboard URL suggestions:
@@ -503,6 +513,7 @@ class OmniboxFieldTrial {
   // Parameter names used by UI experiments.
   static const char kUIMaxAutocompleteMatchesParam[];
   static const char kUIVerticalMarginParam[];
+  static const char kPedalSuggestionModeParam[];
 
   // Parameter names used by Zero Suggest Redirect to Chrome.
   static const char kZeroSuggestRedirectToChromeExperimentIdParam[];

@@ -17,12 +17,12 @@
  @private
   NSSize targetSize_;
 }
-- (id)initWithFullScreenContentSize:(NSSize)targetSize;
+- (instancetype)initWithFullScreenContentSize:(NSSize)targetSize;
 @end
 
 @implementation TestNSWindowDelegate
 
-- (id)initWithFullScreenContentSize:(NSSize)targetSize {
+- (instancetype)initWithFullScreenContentSize:(NSSize)targetSize {
   if ((self = [super init])) {
     targetSize_ = targetSize;
   }

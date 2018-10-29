@@ -2,9 +2,9 @@ Tests whether explicitly set caret style is retained on performing text selectio
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS cursorLine1 is cursorLine2
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
  

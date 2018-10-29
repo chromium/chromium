@@ -15,11 +15,12 @@ namespace offline_pages {
 //   tables.
 // * 2: Changes prefetch_items.file_size to have a default value of -1 (instead
 //   of 0).
+// * 3: Add thumbnail_url, favicon_url, snippet, and attribution.
 
 // static
-const int PrefetchStoreSchema::kCurrentVersion = 2;
+constexpr int PrefetchStoreSchema::kCurrentVersion;
 // static
-const int PrefetchStoreSchema::kCompatibleVersion = 1;
+constexpr int PrefetchStoreSchema::kCompatibleVersion;
 
 namespace {
 
@@ -58,47 +59,54 @@ int GetCompatibleVersionNumber(sql::MetaTable* meta_table) {
 // IMPORTANT #1: when making changes to these columns please also reflect them
 // into:
 // - PrefetchItem: update existing fields and all method implementations
-//   (operator=, operator<<, ToString, etc).
+//   (operator==, ToString, etc).
 // - PrefetchItemTest, PrefetchStoreTestUtil: update test related code to cover
 //   the changed set of columns and PrefetchItem members.
 // - MockPrefetchItemGenerator: so that its generated items consider all fields.
-// IMPORTANT #2: the ordering of column types is important in SQLite 3 tables to
-// simplify data retrieval. Columns with fixed length types must come first and
-// variable length types must come later.
+// IMPORTANT #2: Commonly used columns should appear first, as SQLite can stop
+//  reading the row early if later columns are not being read.
 static const char kItemsTableCreationSql[] =
-    "CREATE TABLE IF NOT EXISTS prefetch_items "
     // Fixed length columns come first.
-    "(offline_id INTEGER PRIMARY KEY NOT NULL,"
-    " state INTEGER NOT NULL DEFAULT 0,"
-    " generate_bundle_attempts INTEGER NOT NULL DEFAULT 0,"
-    " get_operation_attempts INTEGER NOT NULL DEFAULT 0,"
-    " download_initiation_attempts INTEGER NOT NULL DEFAULT 0,"
-    " archive_body_length INTEGER_NOT_NULL DEFAULT -1,"
-    " creation_time INTEGER NOT NULL,"
-    " freshness_time INTEGER NOT NULL,"
-    " error_code INTEGER NOT NULL DEFAULT 0,"
-    " file_size INTEGER NOT NULL DEFAULT -1,"
-    // Variable length columns come later.
-    " guid VARCHAR NOT NULL DEFAULT '',"
-    " client_namespace VARCHAR NOT NULL DEFAULT '',"
-    " client_id VARCHAR NOT NULL DEFAULT '',"
-    " requested_url VARCHAR NOT NULL DEFAULT '',"
-    " final_archived_url VARCHAR NOT NULL DEFAULT '',"
-    " operation_name VARCHAR NOT NULL DEFAULT '',"
-    " archive_body_name VARCHAR NOT NULL DEFAULT '',"
-    " title VARCHAR NOT NULL DEFAULT '',"
-    " file_path VARCHAR NOT NULL DEFAULT ''"
-    ")";
+    R"sql(
+CREATE TABLE IF NOT EXISTS prefetch_items(
+offline_id INTEGER PRIMARY KEY NOT NULL,
+state INTEGER NOT NULL DEFAULT 0,
+generate_bundle_attempts INTEGER NOT NULL DEFAULT 0,
+get_operation_attempts INTEGER NOT NULL DEFAULT 0,
+download_initiation_attempts INTEGER NOT NULL DEFAULT 0,
+archive_body_length INTEGER_NOT_NULL DEFAULT -1,
+creation_time INTEGER NOT NULL,
+freshness_time INTEGER NOT NULL,
+error_code INTEGER NOT NULL DEFAULT 0,
+file_size INTEGER NOT NULL DEFAULT -1,
+guid VARCHAR NOT NULL DEFAULT '',
+client_namespace VARCHAR NOT NULL DEFAULT '',
+client_id VARCHAR NOT NULL DEFAULT '',
+requested_url VARCHAR NOT NULL DEFAULT '',
+final_archived_url VARCHAR NOT NULL DEFAULT '',
+operation_name VARCHAR NOT NULL DEFAULT '',
+archive_body_name VARCHAR NOT NULL DEFAULT '',
+title VARCHAR NOT NULL DEFAULT '',
+file_path VARCHAR NOT NULL DEFAULT '',
+thumbnail_url VARCHAR NOT NULL DEFAULT '',
+favicon_url VARCHAR NOT NULL DEFAULT '',
+snippet VARCHAR NOT NULL DEFAULT '',
+attribution VARCHAR NOT NULL DEFAULT ''
+)
+)sql";
 
 bool CreatePrefetchItemsTable(sql::Database* db) {
   return db->Execute(kItemsTableCreationSql);
 }
 
 static const char kQuotaTableCreationSql[] =
-    "CREATE TABLE IF NOT EXISTS prefetch_downloader_quota "
-    "(quota_id INTEGER PRIMARY KEY NOT NULL DEFAULT 1,"
-    " update_time INTEGER NOT NULL,"
-    " available_quota INTEGER NOT NULL DEFAULT 0)";
+    R"sql(
+CREATE TABLE IF NOT EXISTS prefetch_downloader_quota(
+quota_id INTEGER PRIMARY KEY NOT NULL DEFAULT 1,
+update_time INTEGER NOT NULL,
+available_quota INTEGER NOT NULL DEFAULT 0
+)
+)sql";
 
 bool CreatePrefetchQuotaTable(sql::Database* db) {
   return db->Execute(kQuotaTableCreationSql);
@@ -117,49 +125,57 @@ bool CreateLatestSchema(sql::Database* db) {
 }
 
 int MigrateFromVersion1To2(sql::Database* db, sql::MetaTable* meta_table) {
+  // Version 2 simply changes the default value of file_size from 0 to -1.
+  // Because SQLite doesn't support removing or modifying columns, we create
+  // a new table and insert data from the old table.
   const int target_version = 2;
   const int target_compatible_version = 1;
+  // 1. Rename the existing items table.
+  // 2. Create the new items table.
+  // 3. Copy existing rows to the new items table.
+  // 4. Drop the old items table.
   static const char kVersion1ToVersion2MigrationSql[] =
-      // Rename the existing items table.
-      "ALTER TABLE prefetch_items RENAME TO prefetch_items_old; "
-      // Creates the new items table.
-      "CREATE TABLE prefetch_items "
-      "(offline_id INTEGER PRIMARY KEY NOT NULL,"
-      " state INTEGER NOT NULL DEFAULT 0,"
-      " generate_bundle_attempts INTEGER NOT NULL DEFAULT 0,"
-      " get_operation_attempts INTEGER NOT NULL DEFAULT 0,"
-      " download_initiation_attempts INTEGER NOT NULL DEFAULT 0,"
-      " archive_body_length INTEGER_NOT_NULL DEFAULT -1,"
-      " creation_time INTEGER NOT NULL,"
-      " freshness_time INTEGER NOT NULL,"
-      " error_code INTEGER NOT NULL DEFAULT 0,"
-      // Note: default value changed from 0 to -1.
-      " file_size INTEGER NOT NULL DEFAULT -1,"
-      " guid VARCHAR NOT NULL DEFAULT '',"
-      " client_namespace VARCHAR NOT NULL DEFAULT '',"
-      " client_id VARCHAR NOT NULL DEFAULT '',"
-      " requested_url VARCHAR NOT NULL DEFAULT '',"
-      " final_archived_url VARCHAR NOT NULL DEFAULT '',"
-      " operation_name VARCHAR NOT NULL DEFAULT '',"
-      " archive_body_name VARCHAR NOT NULL DEFAULT '',"
-      " title VARCHAR NOT NULL DEFAULT '',"
-      " file_path VARCHAR NOT NULL DEFAULT ''); "
-      // Copy existing rows to the new items table.
-      "INSERT INTO prefetch_items "
-      " (offline_id, state, generate_bundle_attempts, get_operation_attempts,"
-      "  download_initiation_attempts, archive_body_length, creation_time,"
-      "  freshness_time, error_code, file_size, guid, client_namespace,"
-      "  client_id, requested_url, final_archived_url, operation_name,"
-      "  archive_body_name, title, file_path)"
-      " SELECT "
-      "  offline_id, state, generate_bundle_attempts, get_operation_attempts,"
-      "  download_initiation_attempts, archive_body_length, creation_time,"
-      "  freshness_time, error_code, file_size, guid, client_namespace,"
-      "  client_id, requested_url, final_archived_url, operation_name,"
-      "  archive_body_name, title, file_path"
-      " FROM prefetch_items_old; "
-      // Drops the old items table.
-      "DROP TABLE prefetch_items_old; ";
+      R"sql(
+ALTER TABLE prefetch_items RENAME TO prefetch_items_old;
+
+CREATE TABLE prefetch_items(
+offline_id INTEGER PRIMARY KEY NOT NULL,
+state INTEGER NOT NULL DEFAULT 0,
+generate_bundle_attempts INTEGER NOT NULL DEFAULT 0,
+get_operation_attempts INTEGER NOT NULL DEFAULT 0,
+download_initiation_attempts INTEGER NOT NULL DEFAULT 0,
+archive_body_length INTEGER_NOT_NULL DEFAULT -1,
+creation_time INTEGER NOT NULL,
+freshness_time INTEGER NOT NULL,
+error_code INTEGER NOT NULL DEFAULT 0,
+file_size INTEGER NOT NULL DEFAULT -1,
+guid VARCHAR NOT NULL DEFAULT '',
+client_namespace VARCHAR NOT NULL DEFAULT '',
+client_id VARCHAR NOT NULL DEFAULT '',
+requested_url VARCHAR NOT NULL DEFAULT '',
+final_archived_url VARCHAR NOT NULL DEFAULT '',
+operation_name VARCHAR NOT NULL DEFAULT '',
+archive_body_name VARCHAR NOT NULL DEFAULT '',
+title VARCHAR NOT NULL DEFAULT '',
+file_path VARCHAR NOT NULL DEFAULT ''
+);
+
+INSERT INTO prefetch_items
+(offline_id, state, generate_bundle_attempts, get_operation_attempts,
+download_initiation_attempts, archive_body_length, creation_time,
+freshness_time, error_code, file_size, guid, client_namespace,
+client_id, requested_url, final_archived_url, operation_name,
+archive_body_name, title, file_path)
+SELECT
+offline_id, state, generate_bundle_attempts, get_operation_attempts,
+download_initiation_attempts, archive_body_length, creation_time,
+freshness_time, error_code, file_size, guid, client_namespace,
+client_id, requested_url, final_archived_url, operation_name,
+archive_body_name, title, file_path
+FROM prefetch_items_old;
+
+DROP TABLE prefetch_items_old;
+)sql";
 
   sql::Transaction transaction(db);
   if (transaction.Begin() && db->Execute(kVersion1ToVersion2MigrationSql) &&
@@ -172,39 +188,71 @@ int MigrateFromVersion1To2(sql::Database* db, sql::MetaTable* meta_table) {
   return kVersionError;
 }
 
+int MigrateFromVersion2To3(sql::Database* db, sql::MetaTable* meta_table) {
+  const int target_version = 3;
+  const int target_compatible_version = 1;
+  static const char k2To3Sql[] = R"sql(
+ALTER TABLE prefetch_items ADD COLUMN thumbnail_url VARCHAR NOT NULL DEFAULT '';
+ALTER TABLE prefetch_items ADD COLUMN favicon_url VARCHAR NOT NULL DEFAULT '';
+ALTER TABLE prefetch_items ADD COLUMN snippet VARCHAR NOT NULL DEFAULT '';
+ALTER TABLE prefetch_items ADD COLUMN attribution VARCHAR NOT NULL DEFAULT '';
+)sql";
+
+  sql::Transaction transaction(db);
+  if (transaction.Begin() && db->Execute(k2To3Sql) &&
+      SetVersionNumber(meta_table, target_version) &&
+      SetCompatibleVersionNumber(meta_table, target_compatible_version) &&
+      transaction.Commit())
+    return target_version;
+
+  return kVersionError;
+}
+
+// Returns true if the database has previously been initialized to a compatible
+// version.
+bool DatabaseIsValid(sql::Database* db,
+                     sql::MetaTable* meta_table,
+                     int* current_version,
+                     int* compatible_version) {
+  if (!sql::MetaTable::DoesTableExist(db) ||
+      !meta_table->Init(db, PrefetchStoreSchema::kCurrentVersion,
+                        PrefetchStoreSchema::kCompatibleVersion))
+    return false;
+  *compatible_version = GetCompatibleVersionNumber(meta_table);
+  *current_version = GetVersionNumber(meta_table);
+  return  // Sanity checks.
+      *current_version != kVersionError &&
+      *compatible_version != kVersionError && *current_version >= 1 &&
+      *compatible_version >= 1 &&
+      // This can be false when Chrome is downgraded after a db change that's
+      // not backwards-compatible.
+      *compatible_version <= PrefetchStoreSchema::kCurrentVersion;
+}
+
 }  // namespace
 
 // static
 bool PrefetchStoreSchema::CreateOrUpgradeIfNeeded(sql::Database* db) {
-  DCHECK_GE(kCurrentVersion, kCompatibleVersion);
+  // TODO(harringtond): Add UMA to track errors and important actions here.
   DCHECK(db);
-  if (!db)
-    return false;
-
   sql::MetaTable meta_table;
-  if (!meta_table.Init(db, kCurrentVersion, kCompatibleVersion))
-    return false;
-
-  const int compatible_version = GetCompatibleVersionNumber(&meta_table);
-  int current_version = GetVersionNumber(&meta_table);
-  if (current_version == kVersionError || compatible_version == kVersionError)
-    return false;
-  DCHECK_GE(current_version, compatible_version);
-
-  // Stored database version is newer and incompatible with the current running
-  // code (Chrome was downgraded). The DB will never work until Chrome is
-  // re-upgraded.
-  if (compatible_version > kCurrentVersion)
-    return false;
-
-  // Database is already at the latest version or has just been created. Create
-  // any missing tables and return.
-  if (current_version == kCurrentVersion)
-    return CreateLatestSchema(db);
-
-  // Versions 0 and below are unexpected.
-  if (current_version <= 0)
-    return false;
+  int current_version, compatible_version;
+  if (!DatabaseIsValid(db, &meta_table, &current_version,
+                       &compatible_version)) {
+    // Raze the database to get back to a working state. Note that this is
+    // considered dangerous, and may lose data that could be recovered later.
+    // The benefit of this is that we won't be stuck in a bad state. For
+    // prefetch, loss of the data in the database is not terrible: prefetching
+    // is best effort, and the user will get more prefetch suggestions later.
+    if (!db->Raze())
+      return false;
+    sql::Transaction transaction(db);
+    sql::MetaTable new_meta;
+    return transaction.Begin() &&
+           new_meta.Init(db, PrefetchStoreSchema::kCurrentVersion,
+                         PrefetchStoreSchema::kCompatibleVersion) &&
+           CreateLatestSchema(db) && transaction.Commit();
+  }
 
   // Schema upgrade code starts here.
   //
@@ -215,9 +263,11 @@ bool PrefetchStoreSchema::CreateOrUpgradeIfNeeded(sql::Database* db) {
   // should not. For instance, one should never refer to kCurrentVersion or
   // kCompatibleVersion when setting values for the current and compatible
   // versions as these are definitely going to change with each schema change.
-  if (current_version == 1) {
+  if (current_version == 1)
     current_version = MigrateFromVersion1To2(db, &meta_table);
-  }
+
+  if (current_version == 2)
+    current_version = MigrateFromVersion2To3(db, &meta_table);
 
   return current_version == kCurrentVersion;
 }

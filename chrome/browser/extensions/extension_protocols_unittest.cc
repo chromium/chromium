@@ -122,7 +122,7 @@ scoped_refptr<Extension> CreateWebStoreExtension() {
   return extension;
 }
 
-scoped_refptr<Extension> CreateTestResponseHeaderExtension() {
+scoped_refptr<const Extension> CreateTestResponseHeaderExtension() {
   return ExtensionBuilder("An extension with web-accessible resources")
       .SetManifestKey("web_accessible_resources",
                       ListBuilder().Append("test.dat").Build())
@@ -458,7 +458,8 @@ TEST_P(ExtensionProtocolsTest, ResourceRequestResponseHeaders) {
   // Register a non-incognito extension protocol handler.
   SetProtocolHandler(false);
 
-  scoped_refptr<Extension> extension = CreateTestResponseHeaderExtension();
+  scoped_refptr<const Extension> extension =
+      CreateTestResponseHeaderExtension();
   AddExtension(extension, false, false);
 
   {

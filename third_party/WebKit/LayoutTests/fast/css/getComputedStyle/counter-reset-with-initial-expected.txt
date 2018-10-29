@@ -2,7 +2,6 @@ Test that resetting 'counter-reset' and 'counter-increment' with 'initial' works
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Testing resetting 'counter-reset' alone
 PASS window.getComputedStyle(counterReset, null).getPropertyValue("counter-reset") is "c 10"
 PASS window.getComputedStyle(counterReset, null).getPropertyValue("counter-increment") is "none"

@@ -177,16 +177,16 @@ class CONTENT_EXPORT IndexedDBContextImpl : public IndexedDBContext {
   void QueryDiskAndUpdateQuotaUsage(const url::Origin& origin);
   base::Time GetOriginLastModified(const url::Origin& origin);
 
+  // Returns |origin_set_| (this context's in-memory cache of origins with
+  // backing stores); the cache will be primed as needed by checking disk.
   std::set<url::Origin>* GetOriginSet();
-  bool AddToOriginSet(const url::Origin& origin) {
-    return GetOriginSet()->insert(origin).second;
-  }
-  void RemoveFromOriginSet(const url::Origin& origin) {
-    GetOriginSet()->erase(origin);
-  }
 
   scoped_refptr<IndexedDBFactory> factory_;
+
+  // If |data_path_| is empty then this is an incognito session and the backing
+  // store will be held in-memory rather than on-disk.
   base::FilePath data_path_;
+
   // If true, nothing (not even session-only data) should be deleted on exit.
   bool force_keep_session_state_;
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;

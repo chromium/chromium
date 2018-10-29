@@ -170,6 +170,8 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
   // The NetworkChangeNotifier must be created after TaskScheduler because it
   // posts tasks to it.
   network_change_notifier_.reset(net::NetworkChangeNotifier::Create());
+  network_connection_tracker_ =
+      std::make_unique<InProcessNetworkConnectionTracker>();
 
   // Initialize the IO and FILE threads.
   base::Thread::Options options;
@@ -363,7 +365,8 @@ mojo::ScopedMessagePipeHandle ServiceProcess::CreateChannelMessagePipe() {
 cloud_print::CloudPrintProxy* ServiceProcess::GetCloudPrintProxy() {
   if (!cloud_print_proxy_.get()) {
     cloud_print_proxy_.reset(new cloud_print::CloudPrintProxy());
-    cloud_print_proxy_->Initialize(service_prefs_.get(), this);
+    cloud_print_proxy_->Initialize(service_prefs_.get(), this,
+                                   network_connection_tracker_.get());
   }
   return cloud_print_proxy_.get();
 }

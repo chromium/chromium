@@ -108,20 +108,20 @@ class CONTENT_EXPORT ServiceWorkerStorage
       const base::WeakPtr<ServiceWorkerContextCore>& context,
       ServiceWorkerStorage* old_storage);
 
-  // Finds registration for |document_url| or |pattern| or |registration_id|.
+  // Finds registration for |document_url| or |scope| or |registration_id|.
   // The Find methods will find stored and initially installing registrations.
   // Returns blink::ServiceWorkerStatusCode::kOk with non-null
   // registration if registration is found, or returns
   // blink::ServiceWorkerStatusCode::kErrorNotFound if no
-  // matching registration is found.  The FindRegistrationForPattern method is
+  // matching registration is found.  The FindRegistrationForScope method is
   // guaranteed to return asynchronously. However, the methods to find
   // for |document_url| or |registration_id| may complete immediately
   // (the callback may be called prior to the method returning) or
   // asynchronously.
   void FindRegistrationForDocument(const GURL& document_url,
                                    FindRegistrationCallback callback);
-  void FindRegistrationForPattern(const GURL& scope,
-                                  FindRegistrationCallback callback);
+  void FindRegistrationForScope(const GURL& scope,
+                                FindRegistrationCallback callback);
   void FindRegistrationForId(int64_t registration_id,
                              const GURL& origin,
                              FindRegistrationCallback callback);
@@ -375,7 +375,7 @@ class CONTENT_EXPORT ServiceWorkerStorage
       const ServiceWorkerDatabase::RegistrationData& data,
       const ResourceList& resources,
       ServiceWorkerDatabase::Status status);
-  void DidFindRegistrationForPattern(
+  void DidFindRegistrationForScope(
       const GURL& scope,
       FindRegistrationCallback callback,
       const ServiceWorkerDatabase::RegistrationData& data,
@@ -437,7 +437,7 @@ class CONTENT_EXPORT ServiceWorkerStorage
       const ResourceList& resources);
   ServiceWorkerRegistration* FindInstallingRegistrationForDocument(
       const GURL& document_url);
-  ServiceWorkerRegistration* FindInstallingRegistrationForPattern(
+  ServiceWorkerRegistration* FindInstallingRegistrationForScope(
       const GURL& scope);
   ServiceWorkerRegistration* FindInstallingRegistrationForId(
       int64_t registration_id);
@@ -489,7 +489,7 @@ class CONTENT_EXPORT ServiceWorkerStorage
       scoped_refptr<base::SequencedTaskRunner> original_task_runner,
       const GURL& document_url,
       FindInDBCallback callback);
-  static void FindForPatternInDB(
+  static void FindForScopeInDB(
       ServiceWorkerDatabase* database,
       scoped_refptr<base::SequencedTaskRunner> original_task_runner,
       const GURL& scope,

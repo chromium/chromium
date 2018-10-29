@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<title>Plugin starting with TEXT/HTML</title>
+<object data="about:blank" type="text/html"></object>
+<script>
+  var object = document.querySelector("object");
+  window.addEventListener("load", init);
+
+  function init() {
+    let href = window.location.href;
+    const token  = "?test_data=";
+    let query_index = href.indexOf(token);
+    let test_data = null;
+    if (query_index !== -1) {
+      test_data = href.substr(query_index + token.length).split(",");
+    }
+
+    if (test_data) {
+      let test_command =
+          `${test_data[0]}('${test_data.splice(1).join("','")}');`;
+      window.eval(test_command);
+    }
+  }
+
+  // Returns true if |w| is cross-origin with |window|.
+  function is_cross_origin(w) {
+    let result = false;
+    try {
+      w.location.origin;
+    } catch(e) {
+      result = true;
+    }
+    return result;
+  }
+
+  // Navigates <object> to |cross_origin_url|. Then sets the object type to
+  // "text/csv" and triggers a MimeHandlerView creation. The test succeeds if
+  // the MHV extension is loaded.
+  function test_cross_origin_frame(cross_origin_url, csv_url) {
+    object.data = cross_origin_url;
+    object.onload = () => {
+      if (!is_cross_origin(window[0]))
+        return;
+      object.type = "text/csv";
+      object.data = csv_url;
+    };
+  }
+
+  // Navigates the <object> to |cross_origin_url| and after a very short timeout
+  // sets the object type and source to "text/csv". The test succeeds if the
+  // MHV extension is loaded.
+  function test_navigation_race_embedder(cross_origin_url, csv_url) {
+    object.data = cross_origin_url;
+    window.setTimeout(() => {
+      object.type = "text/csv";
+      object.data = csv_url;
+    }, 0);
+  }
+
+  // Navigates the object to some cross-origin content which then navigates it
+  // self to another location passed through the query. After the load event,
+  // the <object> is set to render a MimeHandlerView. This would lead to a
+  // navigation race: the browser will try to navigate the content frame to
+  // 'about:blank' while the cross-process renderer triggers its own navigation.
+  // The test succeeds when the MHV extension is loaded.
+  function test_navigation_race_cross_origin(cross_origin_url,
+                                             other_cross_origin_url,
+                                             csv_url) {
+    object.data = `${cross_origin_url}?next=${other_cross_origin_url}`;
+    object.onload = () => {
+      if (!is_cross_origin(window[0]))
+        return;
+      if (object.data === csv_url)
+        return;
+      object.type = "text/csv";
+      object.data = csv_url;
+    };
+  }
+</script>

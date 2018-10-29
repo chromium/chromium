@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/win/registry.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/install_static/install_util.h"
@@ -18,6 +19,7 @@
 #include "chrome_elf/chrome_elf_constants.h"
 #include "chrome_elf/dll_hash/dll_hash.h"
 #include "components/variations/variations_associated_data.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 #include "services/service_manager/sandbox/features.h"
@@ -112,9 +114,8 @@ void InitializeChromeElf() {
   // Schedule another task to report all successful interceptions later.
   // This time delay should be long enough to catch any dlls that attempt to
   // inject after Chrome has started up.
-  content::BrowserThread::PostDelayedTask(
-      content::BrowserThread::UI,
-      FROM_HERE,
+  base::PostDelayedTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&ReportSuccessfulBlocks),
       base::TimeDelta::FromSeconds(kBlacklistReportingDelaySec));
 

@@ -586,7 +586,15 @@ Tests name sources in images and figures.
       }
     ]
   },
-  "properties": [],
+  "properties": [
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    }
+  ],
   "domNode": "div#link1"
 }
 {

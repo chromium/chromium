@@ -62,6 +62,8 @@ Elements.ComputedStyleWidget = class extends UI.ThrottledWidget {
 
     this._propertiesOutline = new UI.TreeOutlineInShadow();
     this._propertiesOutline.hideOverflow();
+    this._propertiesOutline.setShowSelectionOnKeyboardFocus(true);
+    this._propertiesOutline.setFocusable(true);
     this._propertiesOutline.registerRequiredCSS('elements/computedStyleWidgetTree.css');
     this._propertiesOutline.element.classList.add('monospace', 'computed-properties');
     this.contentElement.appendChild(this._propertiesOutline.element);
@@ -141,6 +143,7 @@ Elements.ComputedStyleWidget = class extends UI.ThrottledWidget {
       const propertyName = treeElement[Elements.ComputedStyleWidget._propertySymbol].name;
       expandedProperties.add(propertyName);
     }
+    const hadFocus = this._propertiesOutline.element.hasFocus();
     this._propertiesOutline.removeChildren();
     this._linkifier.reset();
     const cssModel = this._computedStyleModel.cssModel();
@@ -192,12 +195,13 @@ Elements.ComputedStyleWidget = class extends UI.ThrottledWidget {
       propertyValueElement.appendChild(semicolon);
 
       const treeElement = new UI.TreeElement();
-      treeElement.selectable = false;
       treeElement.title = propertyElement;
       treeElement[Elements.ComputedStyleWidget._propertySymbol] = {name: propertyName, value: propertyValue};
       const isOdd = this._propertiesOutline.rootElement().children().length % 2 === 0;
       treeElement.listItemElement.classList.toggle('odd-row', isOdd);
       this._propertiesOutline.appendChild(treeElement);
+      if (!this._propertiesOutline.selectedTreeElement)
+        treeElement.select(!hadFocus);
 
       const trace = propertyTraces.get(propertyName);
       if (trace) {
@@ -295,7 +299,6 @@ Elements.ComputedStyleWidget = class extends UI.ThrottledWidget {
 
       const traceTreeElement = new UI.TreeElement();
       traceTreeElement.title = trace;
-      traceTreeElement.selectable = false;
       rootTreeElement.appendChild(traceTreeElement);
     }
     return /** @type {!SDK.CSSProperty} */ (activeProperty);

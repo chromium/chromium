@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -24,6 +25,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/notification_registrar.h"
@@ -121,8 +123,8 @@ LoginHandler::LoginHandler(
   // semantics.
   AddRef();  // matched by LoginHandler::ReleaseSoon().
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&LoginHandler::AddObservers, this));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(&LoginHandler::AddObservers, this));
 }
 
 void LoginHandler::OnRequestCancelled() {
@@ -211,11 +213,11 @@ void LoginHandler::SetAuth(const base::string16& username,
   // before they are removed.
   NotifyAuthSupplied(username, password);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&LoginHandler::CloseContentsDeferred, this));
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&LoginHandler::SetAuthDeferred, this, username, password));
 }
 
@@ -323,16 +325,17 @@ void LoginHandler::ReleaseSoon() {
   }
 
   if (!TestAndSetAuthHandled()) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&LoginHandler::CancelAuthDeferred, this));
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&LoginHandler::NotifyAuthCancelled, this, false));
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&LoginHandler::RemoveObservers, this));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(&LoginHandler::RemoveObservers, this));
 
   // Delete this object once all InvokeLaters have been called.
   BrowserThread::ReleaseSoon(BrowserThread::IO, FROM_HERE, this);
@@ -434,16 +437,16 @@ void LoginHandler::DoCancelAuth(bool dismiss_navigation) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     NotifyAuthCancelled(dismiss_navigation);
   } else {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(&LoginHandler::NotifyAuthCancelled,
-                                           this, dismiss_navigation));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(&LoginHandler::NotifyAuthCancelled,
+                                            this, dismiss_navigation));
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&LoginHandler::CloseContentsDeferred, this));
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&LoginHandler::CancelAuthDeferred, this));
 }
 
@@ -736,8 +739,8 @@ scoped_refptr<LoginHandler> CreateLoginPrompt(
     LoginAuthRequiredCallback auth_required_callback) {
   scoped_refptr<LoginHandler> handler = LoginHandler::Create(
       auth_info, web_contents_getter, std::move(auth_required_callback));
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&LoginHandler::LoginDialogCallback, url, request_id,
                      base::RetainedRef(auth_info), std::move(response_headers),
                      base::RetainedRef(handler), is_request_for_main_frame));

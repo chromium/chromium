@@ -311,6 +311,9 @@ extern "C" {
   //    Windows: _msize()
   size_t tc_malloc_size(void* p) PERFTOOLS_NOTHROW
       ATTRIBUTE_SECTION(google_malloc);
+
+  void* tc_malloc_skip_new_handler(size_t size)
+      ATTRIBUTE_SECTION(google_malloc);
 }  // extern "C"
 #endif  // #ifndef _WIN32
 
@@ -723,6 +726,14 @@ class TCMallocImplementation : public MallocExtension {
       return true;
     }
 
+    if (strcmp(name, "generic.total_physical_bytes") == 0) {
+      TCMallocStats stats;
+      ExtractStats(&stats, NULL, NULL, NULL);
+      *value = stats.pageheap.system_bytes + stats.metadata_bytes -
+               stats.pageheap.unmapped_bytes;
+      return true;
+    }
+
     if (strcmp(name, "tcmalloc.slack_bytes") == 0) {
       // Kept for backwards compatibility.  Now defined externally as:
       //    pageheap_free_bytes + pageheap_unmapped_bytes.
@@ -928,13 +939,13 @@ class TCMallocImplementation : public MallocExtension {
   }
 
   virtual void GetFreeListSizes(vector<MallocExtension::FreeListInfo>* v) {
-    static const char* kCentralCacheType = "tcmalloc.central";
-    static const char* kTransferCacheType = "tcmalloc.transfer";
-    static const char* kThreadCacheType = "tcmalloc.thread";
-    static const char* kPageHeapType = "tcmalloc.page";
-    static const char* kPageHeapUnmappedType = "tcmalloc.page_unmapped";
-    static const char* kLargeSpanType = "tcmalloc.large";
-    static const char* kLargeUnmappedSpanType = "tcmalloc.large_unmapped";
+    static const char kCentralCacheType[] = "tcmalloc.central";
+    static const char kTransferCacheType[] = "tcmalloc.transfer";
+    static const char kThreadCacheType[] = "tcmalloc.thread";
+    static const char kPageHeapType[] = "tcmalloc.page";
+    static const char kPageHeapUnmappedType[] = "tcmalloc.page_unmapped";
+    static const char kLargeSpanType[] = "tcmalloc.large";
+    static const char kLargeUnmappedSpanType[] = "tcmalloc.large_unmapped";
 
     v->clear();
 

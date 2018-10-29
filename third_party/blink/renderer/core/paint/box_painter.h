@@ -34,6 +34,14 @@ class BoxPainter {
   void PaintMaskImages(const PaintInfo&, const LayoutRect&);
   void PaintBoxDecorationBackgroundWithRect(const PaintInfo&,
                                             const LayoutRect&);
+
+  // Paint a hit test display item and record hit test data. This should be
+  // called in the background paint phase even if there is no other painted
+  // content.
+  void RecordHitTestData(const PaintInfo&,
+                         const LayoutPoint& paint_offset,
+                         const LayoutRect& paint_rect);
+
  private:
   bool BackgroundIsKnownToBeOpaque(const PaintInfo&);
   void PaintBackground(const PaintInfo&,

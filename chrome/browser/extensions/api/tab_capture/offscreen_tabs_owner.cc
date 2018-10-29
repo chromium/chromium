@@ -101,9 +101,7 @@ void OffscreenTabsOwner::RequestMediaAccessPermission(
 }
 
 void OffscreenTabsOwner::DestroyTab(OffscreenTab* tab) {
-  for (std::vector<std::unique_ptr<OffscreenTab>>::iterator iter =
-           tabs_.begin();
-       iter != tabs_.end(); ++iter) {
+  for (auto iter = tabs_.begin(); iter != tabs_.end(); ++iter) {
     if (iter->get() == tab) {
       tabs_.erase(iter);
       break;

@@ -18,10 +18,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.DiscardableReferencePool.DiscardableReference;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.util.ConversionUtils;
@@ -216,7 +216,7 @@ public class PickerCategoryView extends RelativeLayout
         mDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                executeAction(PhotoPickerListener.Action.CANCEL, null, ACTION_CANCEL);
+                executeAction(PhotoPickerListener.PhotoPickerAction.CANCEL, null, ACTION_CANCEL);
             }
         });
     }
@@ -264,7 +264,7 @@ public class PickerCategoryView extends RelativeLayout
         if (view.getId() == R.id.done) {
             notifyPhotosSelected();
         } else {
-            executeAction(PhotoPickerListener.Action.CANCEL, null, ACTION_CANCEL);
+            executeAction(PhotoPickerListener.PhotoPickerAction.CANCEL, null, ACTION_CANCEL);
         }
     }
 
@@ -320,14 +320,14 @@ public class PickerCategoryView extends RelativeLayout
      * Notifies the listener that the user selected to launch the gallery.
      */
     public void showGallery() {
-        executeAction(PhotoPickerListener.Action.LAUNCH_GALLERY, null, ACTION_BROWSE);
+        executeAction(PhotoPickerListener.PhotoPickerAction.LAUNCH_GALLERY, null, ACTION_BROWSE);
     }
 
     /**
      * Notifies the listener that the user selected to launch the camera intent.
      */
     public void showCamera() {
-        executeAction(PhotoPickerListener.Action.LAUNCH_CAMERA, null, ACTION_NEW_PHOTO);
+        executeAction(PhotoPickerListener.PhotoPickerAction.LAUNCH_CAMERA, null, ACTION_NEW_PHOTO);
     }
 
     /**
@@ -381,7 +381,8 @@ public class PickerCategoryView extends RelativeLayout
             photos[i++] = bitmap.getFilePath();
         }
 
-        executeAction(PhotoPickerListener.Action.PHOTOS_SELECTED, photos, ACTION_PHOTO_PICKED);
+        executeAction(
+                PhotoPickerListener.PhotoPickerAction.PHOTOS_SELECTED, photos, ACTION_PHOTO_PICKED);
     }
 
     /**
@@ -427,7 +428,8 @@ public class PickerCategoryView extends RelativeLayout
      * @param photos The photos that were selected (if any).
      * @param umaId The UMA value to record with the action.
      */
-    private void executeAction(PhotoPickerListener.Action action, String[] photos, int umaId) {
+    private void executeAction(
+            @PhotoPickerListener.PhotoPickerAction int action, String[] photos, int umaId) {
         mListener.onPhotoPickerUserAction(action, photos);
         mDialog.dismiss();
         UiUtils.onPhotoPickerDismissed();

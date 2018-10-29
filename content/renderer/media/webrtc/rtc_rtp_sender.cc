@@ -185,7 +185,8 @@ class RTCRtpSender::RTCRtpSenderInternal
     // webrtc signalling thread.
     DCHECK(main_task_runner_->BelongsToCurrentThread());
     auto dtmf_sender = webrtc_sender_->GetDtmfSender();
-    return std::make_unique<RtcDtmfSenderHandler>(dtmf_sender);
+    return std::make_unique<RtcDtmfSenderHandler>(main_task_runner_,
+                                                  dtmf_sender);
   }
 
   std::unique_ptr<webrtc::RtpParameters> GetParameters() {

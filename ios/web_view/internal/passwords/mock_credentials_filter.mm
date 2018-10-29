@@ -37,7 +37,7 @@ bool MockCredentialsFilter::ShouldSaveEnterprisePasswordHash(
 }
 
 void MockCredentialsFilter::ReportFormLoginSuccess(
-    const password_manager::PasswordFormManager& form_manager) const {}
+    const password_manager::PasswordFormManagerInterface& form_manager) const {}
 
 bool MockCredentialsFilter::IsSyncAccountEmail(
     const std::string& username) const {

@@ -81,12 +81,15 @@ it does not exist).  Look at `src/ios/build/tools/setup-gn.config` for
 available configuration options.
 
 From this point, you can either build from Xcode or from the command line using
-`ninja`. `setup-gn.py` creates sub-directories named
+`autoninja`. `setup-gn.py` creates sub-directories named
 `out/${configuration}-${platform}`, so for a `Debug` build for simulator use:
 
 ```shell
-$ ninja -C out/Debug-iphonesimulator gn_all
+$ autoninja -C out/Debug-iphonesimulator gn_all
 ```
+
+(`autoninja` is a wrapper that automatically provides optimal values for the
+arguments passed to `ninja`.)
 
 Note: you need to run `setup-gn.py` script every time one of the `BUILD.gn`
 file is updated (either by you or after rebasing). If you forget to run it,
@@ -191,7 +194,7 @@ step will fail and will print the bundle identifier of the bundle that could not
 be signed on the command line, e.g.:
 
 ```shell
-$ ninja -C out/Debug-iphoneos ios_web_shell
+$ autoninja -C out/Debug-iphoneos ios_web_shell
 ninja: Entering directory `out/Debug-iphoneos'
 FAILED: ios_web_shell.app/ios_web_shell ios_web_shell.app/_CodeSignature/CodeResources ios_web_shell.app/embedded.mobileprovision
 python ../../build/config/ios/codesign.py code-sign-bundle -t=iphoneos -i=0123456789ABCDEF0123456789ABCDEF01234567 -e=../../build/config/ios/entitlements.plist -b=obj/ios/web/shell/ios_web_shell ios_web_shell.app

@@ -53,7 +53,7 @@ declare_args() {
   # application which consumes the Content Service. Useful primarily for
   # developer testing.
   enable_simple_browser_service_in_process =
-      (use_aura || is_mac) && (is_debug || dcheck_always_on) && !is_chromecast
+      use_aura && (is_debug || dcheck_always_on) && !is_chromecast
   enable_simple_browser_service_out_of_process =
       is_chromeos && (is_debug || dcheck_always_on)
 
@@ -85,7 +85,6 @@ chrome_grit_defines = [
   "enable_printing=$enable_basic_printing",
   "enable_service_discovery=$enable_service_discovery",
   "enable_vr=$enable_vr",
-  "mac_views_browser=$mac_views_browser",
   "safe_browsing_mode=$safe_browsing_mode",
   "optimize_webui=$optimize_webui",
 ]

@@ -79,7 +79,6 @@ BaseBlockingPage::CreateDefaultDisplayOptions(
       false,                 // is_off_the_record
       false,                 // is_unified_consent_enabled
       false,                 // is_extended_reporting
-      false,                 // is_scout
       false,                 // is_sber_policy_managed
       false,                 // kSafeBrowsingProceedAnywayDisabled
       false,                 // should_open_links_in_new_tab
@@ -168,7 +167,7 @@ void BaseBlockingPage::OnDontProceed() {
   // The user does not want to proceed, clear the queued unsafe resources
   // notifications we received while the interstitial was showing.
   UnsafeResourceMap* unsafe_resource_map = GetUnsafeResourcesMap();
-  UnsafeResourceMap::iterator iter = unsafe_resource_map->find(web_contents());
+  auto iter = unsafe_resource_map->find(web_contents());
   if (iter != unsafe_resource_map->end() && !iter->second.empty()) {
     ui_manager_->OnBlockingPageDone(iter->second, false, web_contents(),
                                     main_frame_url_);
@@ -290,8 +289,8 @@ security_interstitials::BaseSafeBrowsingErrorUI::SBInterstitialReason
 BaseBlockingPage::GetInterstitialReason(
     const UnsafeResourceList& unsafe_resources) {
   bool harmful = false;
-  for (UnsafeResourceList::const_iterator iter = unsafe_resources.begin();
-       iter != unsafe_resources.end(); ++iter) {
+  for (auto iter = unsafe_resources.begin(); iter != unsafe_resources.end();
+       ++iter) {
     const BaseUIManager::UnsafeResource& resource = *iter;
     safe_browsing::SBThreatType threat_type = resource.threat_type;
     if (threat_type == SB_THREAT_TYPE_BILLING)

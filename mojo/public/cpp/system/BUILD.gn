@@ -62,6 +62,13 @@ component("system") {
     "wait_set.h",
   ]
 
+  if (is_nacl) {
+    # This file refers to a the base::File::File(path, flags)
+    # constructor which does not exist in nacl builds, and the code
+    # here is unused in nacl builds anyway.
+    sources -= [ "file_data_pipe_producer.cc" ]
+  }
+
   public_deps = [
     "//base",
     "//mojo/public/c/system",

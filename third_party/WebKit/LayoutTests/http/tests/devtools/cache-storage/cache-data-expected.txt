@@ -7,11 +7,15 @@ Dumping CacheStorage tree:
         (cache empty)
     cache: testCache2 - http://127.0.0.1:8000
         (cache empty)
+    cache: testCache3 - http://127.0.0.1:8000
+        (cache empty)
 Dumping CacheStorage tree:
     cache: testCache1 - http://127.0.0.1:8000
-        /1, text/plain, 0
-        /2, text/plain, 0
+        /1, default, text/plain, 0
+        /2, default, text/plain, 0
     cache: testCache2 - http://127.0.0.1:8000
-        /1, text/plain, 0
-        /2, text/plain, 0
+        /1, default, text/plain, 0
+        /2, default, text/plain, 0
+    cache: testCache3 - http://127.0.0.1:8000
+        /devtools/resources/image.png, basic, image/png, 647
 

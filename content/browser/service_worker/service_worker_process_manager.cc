@@ -29,6 +29,7 @@ ServiceWorkerProcessManager::ServiceWorkerProcessManager(
       new_process_id_for_test_(ChildProcessHost::kInvalidUniqueID),
       weak_this_factory_(this) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(browser_context);
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
@@ -82,7 +83,6 @@ bool ServiceWorkerProcessManager::IsShutdown() {
 blink::ServiceWorkerStatusCode
 ServiceWorkerProcessManager::AllocateWorkerProcess(
     int embedded_worker_id,
-    const GURL& pattern,
     const GURL& script_url,
     bool can_use_existing_process,
     AllocatedProcessInfo* out_info) {

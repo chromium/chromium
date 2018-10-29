@@ -1,8 +1,10 @@
 Line 1
 Line 2
+
 Line 3
 
 line 4
+
 line 5
 
 [object HTMLDivElement], [object HTMLDivElement], [object HTMLDivElement], length: 3
@@ -21,4 +23,3 @@ length: 0
 length: 0
 length: 0
 length: 0
-

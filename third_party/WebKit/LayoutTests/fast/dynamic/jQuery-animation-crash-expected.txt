@@ -1,5 +1,3 @@
 Test for bug 25381: jQuery animation crashing Safari.
 
 PASS if didn't crash.
-
-

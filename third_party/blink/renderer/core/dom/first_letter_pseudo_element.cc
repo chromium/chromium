@@ -252,8 +252,9 @@ void FirstLetterPseudoElement::ClearRemainingTextLayoutObject() {
   // first letter, we need to UpdateFirstLetter to render the new first letter
   // or remove the ::first-letter pseudo if there is no text left. Do that as
   // part of a style recalc for this ::first-letter.
-  SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                             StyleChangeReason::kPseudoClass));
+  SetNeedsStyleRecalc(
+      kLocalStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
 }
 
 void FirstLetterPseudoElement::AttachLayoutTree(AttachContext& context) {

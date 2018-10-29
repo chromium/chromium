@@ -112,9 +112,11 @@ class BASE_EXPORT MessagePump {
   virtual void Quit() = 0;
 
   // Schedule a DoWork callback to happen reasonably soon.  Does nothing if a
-  // DoWork callback is already scheduled.  This method may be called from any
-  // thread.  Once this call is made, DoWork should not be "starved" at least
-  // until it returns a value of false.
+  // DoWork callback is already scheduled. Once this call is made, DoWork should
+  // not be "starved" at least until it returns a value of false. Thread-safe
+  // (and callers should avoid holding a Lock at all cost while making this call
+  // as some platforms' priority boosting features have been observed to cause
+  // the caller to get descheduled : https://crbug.com/890978).
   virtual void ScheduleWork() = 0;
 
   // Schedule a DoDelayedWork callback to happen at the specified time,

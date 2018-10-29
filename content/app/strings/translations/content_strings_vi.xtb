@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1018939186200882850">mục menu</translation>
-<translation id="1020833440720551630">tắt tiếng bản âm thanh</translation>
 <translation id="10623998915015855">nút chuyển đổi</translation>
 <translation id="1088086359088493902">Giây</translation>
 <translation id="1171774979989969504">Vui lòng nhập địa chỉ email.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">ghi nhận tác giả</translation>
 <translation id="1342835525016946179">bài viết</translation>
 <translation id="1359897965706325498">biểu ngữ</translation>
-<translation id="1548116112524424341">phát video ở chế độ hình trong hình</translation>
 <translation id="1589122976691792535">khu vực</translation>
 <translation id="1591562245178063882">Tháng này</translation>
 <translation id="1637811476055996098">Chọn tệp</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">lưới dạng cây</translation>
 <translation id="1822429046913737220">SA/CH</translation>
 <translation id="1832974991323546415">phát trên thiết bị từ xa</translation>
-<translation id="1838818994221231429">chuyển từ chế độ toàn màn hình sang màn hình có vết cắt</translation>
 <translation id="190587075670221089">xóa</translation>
 <translation id="1907737156431278478">ví dụ</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">thời gian</translation>
 <translation id="5630795885300617244">Nhấn đúp vào bên trái hoặc phải để bỏ qua sau 10 giây</translation>
 <translation id="5631759159893697722">bản tóm tắt</translation>
-<translation id="5641012560118721995">tạm dừng phát lại</translation>
 <translation id="5643186887447432888">nút</translation>
 <translation id="5677946354068040947">tùy chọn khác</translation>
 <translation id="576709008726043716">giới thiệu</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Đặt lại</translation>
 <translation id="5966707198760109579">Tuần</translation>
 <translation id="5987525920412732405">nút quay tròn</translation>
+<translation id="6011459053400940133">thanh trượt âm lượng</translation>
 <translation id="6015796118275082299">Năm</translation>
 <translation id="6023896073578205740">hộp danh sách</translation>
-<translation id="6101327004457443354">bật tiếng bản âm thanh</translation>
 <translation id="6150588977291308318">danh mục</translation>
 <translation id="6164829606128959761">thước đo</translation>
 <translation id="6166809985690652833">lời bạt</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Giờ</translation>
 <translation id="7681220483256441252">chú dẫn</translation>
 <translation id="7720026100085573005">thời gian còn lại</translation>
-<translation id="7740016676195725605">ngừng hiển thị phụ đề chi tiết</translation>
 <translation id="7740050170769002709">Nội dung HTML</translation>
 <translation id="7750228210027921155">Hình trong hình</translation>
 <translation id="7789962463072032349">tạm dừng</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">trường văn bản tìm kiếm</translation>
 <translation id="8057695513531652401">lưu ý</translation>
 <translation id="8105797009065549151">tham chiếu chú thích</translation>
-<translation id="8115662671911883373">bắt đầu hiển thị phụ đề chi tiết</translation>
 <translation id="8117451130807776954">Tuần này</translation>
-<translation id="819205353528511139">phát phim ở chế độ toàn màn hình</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8284326494547611709">Phụ đề</translation>
 <translation id="835897206747267392">Giá trị không hợp lệ.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">điều khiển phát lại từ xa</translation>
 <translation id="862370744433916922">phụ đề</translation>
 <translation id="8750798805984357768">Vui lòng chọn một trong các tùy chọn sau.</translation>
-<translation id="8785498733064193001">bắt đầu phát lại</translation>
 <translation id="8808573423886751634">chương</translation>
 <translation id="8845239796550121995">Hiện đang truyền tới TV của bạn</translation>
 <translation id="8851136666856101339">chính</translation>

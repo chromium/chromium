@@ -131,7 +131,7 @@ void StereoPanner::PanToTargetValue(const AudioBus* input_bus,
     double gain_l = std::cos(pan_radian);
     double gain_r = std::sin(pan_radian);
 
-    // TODO(rtoy): This can be vectorized using VectorMath::Vsmul
+    // TODO(rtoy): This can be vectorized using vector_math::Vsmul
     while (n--) {
       float input_l = *source_l++;
       *destination_l++ = static_cast<float>(input_l * gain_l);

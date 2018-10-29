@@ -29,7 +29,7 @@ ClientFrameSinkVideoCapturer::~ClientFrameSinkVideoCapturer() {
 }
 
 void ClientFrameSinkVideoCapturer::SetFormat(media::VideoPixelFormat format,
-                                             media::ColorSpace color_space) {
+                                             gfx::ColorSpace color_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   format_.emplace(format, color_space);
@@ -133,7 +133,7 @@ ClientFrameSinkVideoCapturer::CreateOverlay(int32_t stacking_index) {
 
 ClientFrameSinkVideoCapturer::Format::Format(
     media::VideoPixelFormat pixel_format,
-    media::ColorSpace color_space)
+    gfx::ColorSpace color_space)
     : pixel_format(pixel_format), color_space(color_space) {}
 
 ClientFrameSinkVideoCapturer::ResolutionConstraints::ResolutionConstraints(

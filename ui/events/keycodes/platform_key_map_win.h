@@ -44,12 +44,12 @@ class EVENTS_EXPORT PlatformKeyMap {
 
   PlatformKeyMap();
 
-  // TODO(chongz): Expose this function when we need to access separate layout.
-  // Returns the DomKey 'meaning' of |KeyboardCode| in the context of specified
-  // |EventFlags| and stored keyboard layout.
+  // TODO(input-dev): Expose this function when we need to access separate
+  // layout. Returns the DomKey 'meaning' of |KeyboardCode| in the context of
+  // specified |EventFlags| and stored keyboard layout.
   DomKey DomKeyFromKeyboardCodeImpl(KeyboardCode, int* flags) const;
 
-  // TODO(chongz): Expose this function in response to WM_INPUTLANGCHANGE.
+  // TODO(input-dev): Expose this function in response to WM_INPUTLANGCHANGE.
   void UpdateLayout(HKL layout);
 
   HKL keyboard_layout_ = 0;

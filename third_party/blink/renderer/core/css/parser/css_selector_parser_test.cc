@@ -438,24 +438,24 @@ TEST(CSSSelectorParserTest, InvalidPseudoMatchesArguments) {
   }
 }
 
-TEST(CSSSelectorParserTest, InvalidNestingPseudoIS) {
-  // :is() is currently not supported within these pseudo classes as they
-  // currently do not support complex selector arguments (:is() does support
-  // this and the expansion of :is() may provide complex selector arguments to
-  // these pseudo classes). Most of these test cases should eventually be
+TEST(CSSSelectorParserTest, InvalidNestingPseudoWhere) {
+  // :where() is currently not supported within these pseudo classes as they
+  // currently do not support complex selector arguments (:where() does support
+  // this and the expansion of :where() may provide complex selector arguments
+  // to these pseudo classes). Most of these test cases should eventually be
   // removed once they support complex selector arguments.
-  const char* test_cases[] = {":-webkit-any(:is(.a))",
-                              "::cue(:is(.a))",
-                              ":cue(:is(.a))",
-                              ":host(:is(.a))",
-                              ":host-context(:is(.a))",
-                              ":lang(:is(.a))",
-                              ":not(:is(.a))",
-                              ":nth-child(:is(.a))",
-                              ":nth-last-child(:is(.a))",
-                              ":nth-last-of-type(:is(.a))",
-                              ":nth-of-type(:is(.a))",
-                              "::slotted(:is(.a))"};
+  const char* test_cases[] = {":-webkit-any(:where(.a))",
+                              "::cue(:where(.a))",
+                              ":cue(:where(.a))",
+                              ":host(:where(.a))",
+                              ":host-context(:where(.a))",
+                              ":lang(:where(.a))",
+                              ":not(:where(.a))",
+                              ":nth-child(:where(.a))",
+                              ":nth-last-child(:where(.a))",
+                              ":nth-last-of-type(:where(.a))",
+                              ":nth-of-type(:where(.a))",
+                              "::slotted(:where(.a))"};
 
   CSSParserContext* context = CSSParserContext::Create(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);

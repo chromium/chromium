@@ -44,7 +44,7 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/main/browser_view_information.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/net/cookies/cookie_store_ios.h"
 #include "ios/net/cookies/system_cookie_util.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -200,20 +200,16 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         std::max(CGRectGetWidth(screenBounds), CGRectGetHeight(screenBounds));
     _incognitoBlocker = [[UIView alloc]
         initWithFrame:CGRectMake(0, 0, maxDimension, maxDimension)];
-    if (IsUIRefreshPhase1Enabled()) {
-      NSBundle* mainBundle = base::mac::FrameworkBundle();
-      NSArray* topObjects =
-          [mainBundle loadNibNamed:@"LaunchScreen" owner:self options:nil];
-      UIViewController* launchScreenController =
-          base::mac::ObjCCastStrict<UIViewController>([topObjects lastObject]);
-      [_incognitoBlocker addSubview:[launchScreenController view]];
-      [launchScreenController view].autoresizingMask =
-          UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-      _incognitoBlocker.autoresizingMask =
-          UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    } else {
-      InstallBackgroundInView(_incognitoBlocker);
-    }
+    NSBundle* mainBundle = base::mac::FrameworkBundle();
+    NSArray* topObjects =
+        [mainBundle loadNibNamed:@"LaunchScreen" owner:self options:nil];
+    UIViewController* launchScreenController =
+        base::mac::ObjCCastStrict<UIViewController>([topObjects lastObject]);
+    [_incognitoBlocker addSubview:[launchScreenController view]];
+    [launchScreenController view].autoresizingMask =
+        UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    _incognitoBlocker.autoresizingMask =
+        UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [_window addSubview:_incognitoBlocker];
   }
 

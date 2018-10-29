@@ -2,7 +2,6 @@ Test to verify initial values of alignment properties are backward-comaptible wi
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS CSS.supports('align-items', 'normal') is true
 PASS CSS.supports('align-self', 'auto') is true
 PASS CSS.supports('align-content', 'normal') is true

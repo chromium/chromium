@@ -4,12 +4,16 @@
 
 #include "net/dns/dns_response.h"
 
+#include "base/big_endian.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_protocol.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_test_util.h"
+#include "net/dns/dns_util.h"
+#include "net/dns/record_rdata.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -244,6 +248,54 @@ TEST(DnsResponseTest, InitParse) {
   EXPECT_FALSE(parser.ReadRecord(&record));
 }
 
+TEST(DnsResponseTest, InitParseInvalidFlags) {
+  // This includes \0 at the end.
+  const char qname_data[] =
+      "\x0A"
+      "codereview"
+      "\x08"
+      "chromium"
+      "\x03"
+      "org";
+  const base::StringPiece qname(qname_data, sizeof(qname_data));
+  // Compilers want to copy when binding temporary to const &, so must use heap.
+  std::unique_ptr<DnsQuery> query(
+      new DnsQuery(0xcafe, qname, dns_protocol::kTypeA));
+
+  const uint8_t response_data[] = {
+      // Header
+      0xca, 0xfe,  // ID
+      0x01, 0x80,  // RA, no error. Note the absence of the required QR bit.
+      0x00, 0x01,  // 1 question
+      0x00, 0x01,  // 1 RRs (answers)
+      0x00, 0x00,  // 0 authority RRs
+      0x00, 0x00,  // 0 additional RRs
+
+      // Question
+      // This part is echoed back from the respective query.
+      0x0a, 'c', 'o', 'd', 'e', 'r', 'e', 'v', 'i', 'e', 'w', 0x08, 'c', 'h',
+      'r', 'o', 'm', 'i', 'u', 'm', 0x03, 'o', 'r', 'g', 0x00, 0x00,
+      0x01,        // TYPE is A.
+      0x00, 0x01,  // CLASS is IN.
+
+      // Answer 1
+      0xc0, 0x0c,  // NAME is a pointer to name in Question section.
+      0x00, 0x05,  // TYPE is CNAME.
+      0x00, 0x01,  // CLASS is IN.
+      0x00, 0x01,  // TTL (4 bytes) is 20 hours, 47 minutes, 48 seconds.
+      0x24, 0x74, 0x00, 0x12,  // RDLENGTH is 18 bytes.
+      // ghs.l.google.com in DNS format.
+      0x03, 'g', 'h', 's', 0x01, 'l', 0x06, 'g', 'o', 'o', 'g', 'l', 'e', 0x03,
+      'c', 'o', 'm', 0x00,
+  };
+
+  DnsResponse resp;
+  memcpy(resp.io_buffer()->data(), response_data, sizeof(response_data));
+
+  EXPECT_FALSE(resp.InitParse(sizeof(response_data), *query));
+  EXPECT_FALSE(resp.IsValid());
+}
+
 TEST(DnsResponseTest, InitParseWithoutQuery) {
   DnsResponse resp;
   memcpy(resp.io_buffer()->data(), kT0ResponseDatagram,
@@ -314,6 +366,33 @@ TEST(DnsResponseTest, InitParseWithoutQueryNoQuestions) {
 
   EXPECT_TRUE(parser.AtEnd());
   EXPECT_FALSE(parser.ReadRecord(&record));
+}
+
+TEST(DnsResponseTest, InitParseWithoutQueryInvalidFlags) {
+  const uint8_t response_data[] = {
+      // Header
+      0xca, 0xfe,  // ID
+      0x01, 0x80,  // RA, no error. Note the absence of the required QR bit.
+      0x00, 0x00,  // No question
+      0x00, 0x01,  // 2 RRs (answers)
+      0x00, 0x00,  // 0 authority RRs
+      0x00, 0x00,  // 0 additional RRs
+
+      // Answer 1
+      0x0a, 'c', 'o', 'd', 'e', 'r', 'e', 'v', 'i', 'e', 'w', 0x08, 'c', 'h',
+      'r', 'o', 'm', 'i', 'u', 'm', 0x03, 'o', 'r', 'g', 0x00, 0x00,
+      0x01,                    // TYPE is A.
+      0x00, 0x01,              // CLASS is IN.
+      0x00, 0x00,              // TTL (4 bytes) is 53 seconds.
+      0x00, 0x35, 0x00, 0x04,  // RDLENGTH is 4 bytes.
+      0x4a, 0x7d,              // RDATA is the IP: 74.125.95.121
+      0x5f, 0x79,
+  };
+
+  DnsResponse resp;
+  memcpy(resp.io_buffer()->data(), response_data, sizeof(response_data));
+
+  EXPECT_FALSE(resp.InitParseWithoutQuery(sizeof(response_data)));
 }
 
 TEST(DnsResponseTest, InitParseWithoutQueryTwoQuestions) {
@@ -567,6 +646,373 @@ TEST(DnsResponseTest, ParseToAddressListFail) {
     EXPECT_EQ(t.expected_result,
               response.ParseToAddressList(&addr_list, &ttl));
   }
+}
+
+TEST(DnsResponseWriteTest, SingleARecordAnswer) {
+  const char response_data[] = {
+      0x12, 0x34,  // ID
+      0x84, 0x00,  // flags, response with authoritative answer
+      0x00, 0x00,  // number of questions
+      0x00, 0x01,  // number of answer rr
+      0x00, 0x00,  // number of name server rr
+      0x00, 0x00,  // number of additional rr
+      0x03, 'w',  'w',  'w',  0x07, 'e', 'x', 'a',
+      'm',  'p',  'l',  'e',  0x03, 'c', 'o', 'm',
+      0x00,                    // null label
+      0x00, 0x01,              // type A Record
+      0x00, 0x01,              // class IN
+      0x00, 0x00, 0x00, 0x78,  // TTL, 120 seconds
+      0x00, 0x04,              // rdlength, 32 bits
+      0xc0, 0xa8, 0x00, 0x01,  // 192.168.0.1
+  };
+  net::DnsResourceRecord answer;
+  answer.name = "www.example.com";
+  answer.type = dns_protocol::kTypeA;
+  answer.klass = dns_protocol::kClassIN;
+  answer.ttl = 120;  // 120 seconds.
+  answer.rdata = base::StringPiece("\xc0\xa8\x00\x01", 4);
+  std::vector<DnsResourceRecord> answers(1, answer);
+  DnsResponse response(0x1234 /* response_id */, true /* is_authoritative*/,
+                       answers, {} /* additional records */, base::nullopt);
+  ASSERT_NE(nullptr, response.io_buffer());
+  EXPECT_TRUE(response.IsValid());
+  std::string expected_response(response_data, sizeof(response_data));
+  std::string actual_response(response.io_buffer()->data(),
+                              response.io_buffer_size());
+  EXPECT_EQ(expected_response, actual_response);
+}
+
+TEST(DnsResponseWriteTest, SingleARecordAnswerWithFinalDotInName) {
+  const char response_data[] = {
+      0x12, 0x34,  // ID
+      0x84, 0x00,  // flags, response with authoritative answer
+      0x00, 0x00,  // number of questions
+      0x00, 0x01,  // number of answer rr
+      0x00, 0x00,  // number of name server rr
+      0x00, 0x00,  // number of additional rr
+      0x03, 'w',  'w',  'w',  0x07, 'e', 'x', 'a',
+      'm',  'p',  'l',  'e',  0x03, 'c', 'o', 'm',
+      0x00,                    // null label
+      0x00, 0x01,              // type A Record
+      0x00, 0x01,              // class IN
+      0x00, 0x00, 0x00, 0x78,  // TTL, 120 seconds
+      0x00, 0x04,              // rdlength, 32 bits
+      0xc0, 0xa8, 0x00, 0x01,  // 192.168.0.1
+  };
+  net::DnsResourceRecord answer;
+  answer.name = "www.example.com.";  // FQDN with the final dot.
+  answer.type = dns_protocol::kTypeA;
+  answer.klass = dns_protocol::kClassIN;
+  answer.ttl = 120;  // 120 seconds.
+  answer.rdata = base::StringPiece("\xc0\xa8\x00\x01", 4);
+  std::vector<DnsResourceRecord> answers(1, answer);
+  DnsResponse response(0x1234 /* response_id */, true /* is_authoritative*/,
+                       answers, {} /* additional records */, base::nullopt);
+  ASSERT_NE(nullptr, response.io_buffer());
+  EXPECT_TRUE(response.IsValid());
+  std::string expected_response(response_data, sizeof(response_data));
+  std::string actual_response(response.io_buffer()->data(),
+                              response.io_buffer_size());
+  EXPECT_EQ(expected_response, actual_response);
+}
+
+TEST(DnsResponseWriteTest, SingleARecordAnswerWithQuestion) {
+  const char response_data[] = {
+      0x12, 0x34,  // ID
+      0x84, 0x00,  // flags, response with authoritative answer
+      0x00, 0x01,  // number of questions
+      0x00, 0x01,  // number of answer rr
+      0x00, 0x00,  // number of name server rr
+      0x00, 0x00,  // number of additional rr
+      0x03, 'w',  'w',  'w',  0x07, 'e', 'x', 'a',
+      'm',  'p',  'l',  'e',  0x03, 'c', 'o', 'm',
+      0x00,        // null label
+      0x00, 0x01,  // type A Record
+      0x00, 0x01,  // class IN
+      0x03, 'w',  'w',  'w',  0x07, 'e', 'x', 'a',
+      'm',  'p',  'l',  'e',  0x03, 'c', 'o', 'm',
+      0x00,                    // null label
+      0x00, 0x01,              // type A Record
+      0x00, 0x01,              // class IN
+      0x00, 0x00, 0x00, 0x78,  // TTL, 120 seconds
+      0x00, 0x04,              // rdlength, 32 bits
+      0xc0, 0xa8, 0x00, 0x01,  // 192.168.0.1
+  };
+  std::string dotted_name("www.example.com");
+  std::string dns_name;
+  ASSERT_TRUE(DNSDomainFromDot(dotted_name, &dns_name));
+  OptRecordRdata opt_rdata;
+  opt_rdata.AddOpt(OptRecordRdata::Opt(255, "\xde\xad\xbe\xef"));
+  base::Optional<DnsQuery> query;
+  query.emplace(0x1234 /* id */, dns_name, dns_protocol::kTypeA, &opt_rdata);
+  net::DnsResourceRecord answer;
+  answer.name = dotted_name;
+  answer.type = dns_protocol::kTypeA;
+  answer.klass = dns_protocol::kClassIN;
+  answer.ttl = 120;  // 120 seconds.
+  answer.rdata = base::StringPiece("\xc0\xa8\x00\x01", 4);
+  std::vector<DnsResourceRecord> answers(1, answer);
+  DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
+                       {} /* additional records */, query);
+  ASSERT_NE(nullptr, response.io_buffer());
+  EXPECT_TRUE(response.IsValid());
+  std::string expected_response(response_data, sizeof(response_data));
+  std::string actual_response(response.io_buffer()->data(),
+                              response.io_buffer_size());
+  EXPECT_EQ(expected_response, actual_response);
+}
+
+TEST(DnsResponseWriteTest,
+     SingleAnswerWithQuestionConstructedFromSizeInflatedQuery) {
+  const char response_data[] = {
+      0x12, 0x34,  // ID
+      0x84, 0x00,  // flags, response with authoritative answer
+      0x00, 0x01,  // number of questions
+      0x00, 0x01,  // number of answer rr
+      0x00, 0x00,  // number of name server rr
+      0x00, 0x00,  // number of additional rr
+      0x03, 'w',  'w',  'w',  0x07, 'e', 'x', 'a',
+      'm',  'p',  'l',  'e',  0x03, 'c', 'o', 'm',
+      0x00,        // null label
+      0x00, 0x01,  // type A Record
+      0x00, 0x01,  // class IN
+      0x03, 'w',  'w',  'w',  0x07, 'e', 'x', 'a',
+      'm',  'p',  'l',  'e',  0x03, 'c', 'o', 'm',
+      0x00,                    // null label
+      0x00, 0x01,              // type A Record
+      0x00, 0x01,              // class IN
+      0x00, 0x00, 0x00, 0x78,  // TTL, 120 seconds
+      0x00, 0x04,              // rdlength, 32 bits
+      0xc0, 0xa8, 0x00, 0x01,  // 192.168.0.1
+  };
+  std::string dotted_name("www.example.com");
+  std::string dns_name;
+  ASSERT_TRUE(DNSDomainFromDot(dotted_name, &dns_name));
+  size_t buf_size =
+      sizeof(dns_protocol::Header) + dns_name.size() + 2 /* qtype */ +
+      2 /* qclass */ +
+      10 /* extra bytes that inflate the internal buffer of a query */;
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(buf_size);
+  memset(buf->data(), 0, buf->size());
+  base::BigEndianWriter writer(buf->data(), buf_size);
+  writer.WriteU16(0x1234);                              // id
+  writer.WriteU16(0);                                   // flags, is query
+  writer.WriteU16(1);                                   // qdcount
+  writer.WriteU16(0);                                   // ancount
+  writer.WriteU16(0);                                   // nscount
+  writer.WriteU16(0);                                   // arcount
+  writer.WriteBytes(dns_name.data(), dns_name.size());  // qname
+  writer.WriteU16(dns_protocol::kTypeA);                // qtype
+  writer.WriteU16(dns_protocol::kClassIN);              // qclass
+  // buf contains 10 extra zero bytes.
+  base::Optional<DnsQuery> query;
+  query.emplace(buf);
+  query->Parse(buf_size);
+  net::DnsResourceRecord answer;
+  answer.name = dotted_name;
+  answer.type = dns_protocol::kTypeA;
+  answer.klass = dns_protocol::kClassIN;
+  answer.ttl = 120;  // 120 seconds.
+  answer.rdata = base::StringPiece("\xc0\xa8\x00\x01", 4);
+  std::vector<DnsResourceRecord> answers(1, answer);
+  DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
+                       {} /* additional records */, query);
+  ASSERT_NE(nullptr, response.io_buffer());
+  EXPECT_TRUE(response.IsValid());
+  std::string expected_response(response_data, sizeof(response_data));
+  std::string actual_response(response.io_buffer()->data(),
+                              response.io_buffer_size());
+  EXPECT_EQ(expected_response, actual_response);
+}
+
+TEST(DnsResponseWriteTest, SingleQuadARecordAnswer) {
+  const char response_data[] = {
+      0x12, 0x34,  // ID
+      0x84, 0x00,  // flags, response with authoritative answer
+      0x00, 0x00,  // number of questions
+      0x00, 0x01,  // number of answer rr
+      0x00, 0x00,  // number of name server rr
+      0x00, 0x00,  // number of additional rr
+      0x03, 'w',  'w',  'w',  0x07, 'e',  'x',  'a',
+      'm',  'p',  'l',  'e',  0x03, 'c',  'o',  'm',
+      0x00,                                            // null label
+      0x00, 0x1c,                                      // type AAAA Record
+      0x00, 0x01,                                      // class IN
+      0x00, 0x00, 0x00, 0x78,                          // TTL, 120 seconds
+      0x00, 0x10,                                      // rdlength, 128 bits
+      0xfd, 0x12, 0x34, 0x56, 0x78, 0x9a, 0x00, 0x01,  // fd12:3456:789a:1::1
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+  };
+  net::DnsResourceRecord answer;
+  answer.name = "www.example.com";
+  answer.type = dns_protocol::kTypeAAAA;
+  answer.klass = dns_protocol::kClassIN;
+  answer.ttl = 120;  // 120 seconds.
+  answer.rdata = base::StringPiece(
+      "\xfd\x12\x34\x56\x78\x9a\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01", 16);
+  std::vector<DnsResourceRecord> answers(1, answer);
+  DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
+                       {} /* additional records */, base::nullopt);
+  ASSERT_NE(nullptr, response.io_buffer());
+  EXPECT_TRUE(response.IsValid());
+  std::string expected_response(response_data, sizeof(response_data));
+  std::string actual_response(response.io_buffer()->data(),
+                              response.io_buffer_size());
+  EXPECT_EQ(expected_response, actual_response);
+}
+
+TEST(DnsResponseWriteTest,
+     SingleARecordAnswerWithQuestionAndNsecAdditionalRecord) {
+  const char response_data[] = {
+      0x12, 0x34,  // ID
+      0x84, 0x00,  // flags, response with authoritative answer
+      0x00, 0x01,  // number of questions
+      0x00, 0x01,  // number of answer rr
+      0x00, 0x00,  // number of name server rr
+      0x00, 0x01,  // number of additional rr
+      0x03, 'w',  'w',  'w',  0x07, 'e', 'x', 'a',
+      'm',  'p',  'l',  'e',  0x03, 'c', 'o', 'm',
+      0x00,        // null label
+      0x00, 0x01,  // type A Record
+      0x00, 0x01,  // class IN
+      0x03, 'w',  'w',  'w',  0x07, 'e', 'x', 'a',
+      'm',  'p',  'l',  'e',  0x03, 'c', 'o', 'm',
+      0x00,                    // null label
+      0x00, 0x01,              // type A Record
+      0x00, 0x01,              // class IN
+      0x00, 0x00, 0x00, 0x78,  // TTL, 120 seconds
+      0x00, 0x04,              // rdlength, 32 bits
+      0xc0, 0xa8, 0x00, 0x01,  // 192.168.0.1
+      0x03, 'w',  'w',  'w',  0x07, 'e', 'x', 'a',
+      'm',  'p',  'l',  'e',  0x03, 'c', 'o', 'm',
+      0x00,                    // null label
+      0x00, 0x2f,              // type NSEC Record
+      0x00, 0x01,              // class IN
+      0x00, 0x00, 0x00, 0x78,  // TTL, 120 seconds
+      0x00, 0x05,              // rdlength, 5 bytes
+      0xc0, 0x0c,              // pointer to the previous "www.example.com"
+      0x00, 0x01, 0x40,        // type bit map of type A: window block 0, bitmap
+                               // length 1, bitmap with bit 1 set
+  };
+  std::string dotted_name("www.example.com");
+  std::string dns_name;
+  ASSERT_TRUE(DNSDomainFromDot(dotted_name, &dns_name));
+  base::Optional<DnsQuery> query;
+  query.emplace(0x1234 /* id */, dns_name, dns_protocol::kTypeA);
+  net::DnsResourceRecord answer;
+  answer.name = dotted_name;
+  answer.type = dns_protocol::kTypeA;
+  answer.klass = dns_protocol::kClassIN;
+  answer.ttl = 120;  // 120 seconds.
+  answer.rdata = base::StringPiece("\xc0\xa8\x00\x01", 4);
+  std::vector<DnsResourceRecord> answers(1, answer);
+  net::DnsResourceRecord additional_record;
+  additional_record.name = dotted_name;
+  additional_record.type = dns_protocol::kTypeNSEC;
+  additional_record.klass = dns_protocol::kClassIN;
+  additional_record.ttl = 120;  // 120 seconds.
+  // Bitmap for "www.example.com" with type A set.
+  additional_record.rdata = base::StringPiece("\xc0\x0c\x00\x01\x40", 5);
+  std::vector<DnsResourceRecord> additional_records(1, additional_record);
+  DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
+                       additional_records, query);
+  ASSERT_NE(nullptr, response.io_buffer());
+  EXPECT_TRUE(response.IsValid());
+  std::string expected_response(response_data, sizeof(response_data));
+  std::string actual_response(response.io_buffer()->data(),
+                              response.io_buffer_size());
+  EXPECT_EQ(expected_response, actual_response);
+}
+
+TEST(DnsResponseWriteTest, TwoAnswersWithAAndQuadARecords) {
+  const char response_data[] = {
+      0x12, 0x34,  // ID
+      0x84, 0x00,  // flags, response with authoritative answer
+      0x00, 0x00,  // number of questions
+      0x00, 0x02,  // number of answer rr
+      0x00, 0x00,  // number of name server rr
+      0x00, 0x00,  // number of additional rr
+      0x03, 'w',  'w',  'w',  0x07, 'e',  'x',  'a',  'm',  'p', 'l', 'e',
+      0x03, 'c',  'o',  'm',
+      0x00,                    // null label
+      0x00, 0x01,              // type A Record
+      0x00, 0x01,              // class IN
+      0x00, 0x00, 0x00, 0x78,  // TTL, 120 seconds
+      0x00, 0x04,              // rdlength, 32 bits
+      0xc0, 0xa8, 0x00, 0x01,  // 192.168.0.1
+      0x07, 'e',  'x',  'a',  'm',  'p',  'l',  'e',  0x03, 'o', 'r', 'g',
+      0x00,                                            // null label
+      0x00, 0x1c,                                      // type AAAA Record
+      0x00, 0x01,                                      // class IN
+      0x00, 0x00, 0x00, 0x3c,                          // TTL, 60 seconds
+      0x00, 0x10,                                      // rdlength, 128 bits
+      0xfd, 0x12, 0x34, 0x56, 0x78, 0x9a, 0x00, 0x01,  // fd12:3456:789a:1::1
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+  };
+  net::DnsResourceRecord answer1;
+  answer1.name = "www.example.com";
+  answer1.type = dns_protocol::kTypeA;
+  answer1.klass = dns_protocol::kClassIN;
+  answer1.ttl = 120;  // 120 seconds.
+  answer1.rdata = base::StringPiece("\xc0\xa8\x00\x01", 4);
+  net::DnsResourceRecord answer2;
+  answer2.name = "example.org";
+  answer2.type = dns_protocol::kTypeAAAA;
+  answer2.klass = dns_protocol::kClassIN;
+  answer2.ttl = 60;
+  answer2.rdata = base::StringPiece(
+      "\xfd\x12\x34\x56\x78\x9a\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01", 16);
+  std::vector<DnsResourceRecord> answers(2);
+  answers[0] = answer1;
+  answers[1] = answer2;
+  DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
+                       {} /* additional records */, base::nullopt);
+  ASSERT_NE(nullptr, response.io_buffer());
+  EXPECT_TRUE(response.IsValid());
+  std::string expected_response(response_data, sizeof(response_data));
+  std::string actual_response(response.io_buffer()->data(),
+                              response.io_buffer_size());
+  EXPECT_EQ(expected_response, actual_response);
+}
+
+TEST(DnsResponseWriteTest, WrittenResponseCanBeParsed) {
+  std::string dotted_name("www.example.com");
+  net::DnsResourceRecord answer;
+  answer.name = dotted_name;
+  answer.type = dns_protocol::kTypeA;
+  answer.klass = dns_protocol::kClassIN;
+  answer.ttl = 120;  // 120 seconds.
+  answer.rdata = base::StringPiece("\xc0\xa8\x00\x01", 4);
+  std::vector<DnsResourceRecord> answers(1, answer);
+  net::DnsResourceRecord additional_record;
+  additional_record.name = dotted_name;
+  additional_record.type = dns_protocol::kTypeNSEC;
+  additional_record.klass = dns_protocol::kClassIN;
+  additional_record.ttl = 120;  // 120 seconds.
+  additional_record.rdata = base::StringPiece("\xc0\x0c\x00\x01\x04", 5);
+  std::vector<DnsResourceRecord> additional_records(1, additional_record);
+  DnsResponse response(0x1234 /* response_id */, true /* is_authoritative*/,
+                       answers, additional_records, base::nullopt);
+  ASSERT_NE(nullptr, response.io_buffer());
+  EXPECT_TRUE(response.IsValid());
+  EXPECT_EQ(1u, response.answer_count());
+  EXPECT_EQ(1u, response.additional_answer_count());
+  auto parser = response.Parser();
+  net::DnsResourceRecord parsed_record;
+  EXPECT_TRUE(parser.ReadRecord(&parsed_record));
+  // Answer with an A record.
+  EXPECT_EQ(answer.name, parsed_record.name);
+  EXPECT_EQ(answer.type, parsed_record.type);
+  EXPECT_EQ(answer.klass, parsed_record.klass);
+  EXPECT_EQ(answer.ttl, parsed_record.ttl);
+  EXPECT_EQ(answer.rdata, parsed_record.rdata);
+  // Additional NSEC record.
+  EXPECT_TRUE(parser.ReadRecord(&parsed_record));
+  EXPECT_EQ(additional_record.name, parsed_record.name);
+  EXPECT_EQ(additional_record.type, parsed_record.type);
+  EXPECT_EQ(additional_record.klass, parsed_record.klass);
+  EXPECT_EQ(additional_record.ttl, parsed_record.ttl);
+  EXPECT_EQ(additional_record.rdata, parsed_record.rdata);
 }
 
 }  // namespace

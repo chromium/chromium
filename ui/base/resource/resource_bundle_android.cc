@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "jni/ResourceBundle_jni.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/data_pack.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 
@@ -173,21 +174,6 @@ void LoadMainAndroidPackFile(const char* path_within_apk,
         base::File(g_resources_pack_fd), g_resources_pack_region,
         SCALE_FACTOR_NONE);
   }
-}
-
-std::unique_ptr<DataPack> GetDataPackFromPackFile(
-    const char* path_within_apk,
-    const base::FilePath& disk_file_path) {
-  if (LoadFromApkOrFile(path_within_apk, &disk_file_path, &g_resources_pack_fd,
-                        &g_resources_pack_region)) {
-    std::unique_ptr<DataPack> data_pack =
-        std::make_unique<DataPack>(SCALE_FACTOR_NONE);
-    if (data_pack->LoadFromFileRegion(base::File(g_resources_pack_fd),
-                                      g_resources_pack_region)) {
-      return data_pack;
-    }
-  }
-  return nullptr;
 }
 
 int GetMainAndroidPackFd(base::MemoryMappedFile::Region* out_region) {

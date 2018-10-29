@@ -63,16 +63,15 @@ void GamepadPlatformDataFetcherLinux::GetGamepadData(bool) {
 // static
 void GamepadPlatformDataFetcherLinux::UpdateGamepadStrings(
     const std::string& name,
-    const std::string& vendor_id,
-    const std::string& product_id,
+    uint16_t vendor_id,
+    uint16_t product_id,
     bool has_standard_mapping,
     Gamepad* pad) {
   // Set the ID string. The ID contains the device name, vendor and product IDs,
   // and an indication of whether the standard mapping is in use.
-  std::string id =
-      base::StringPrintf("%s (%sVendor: %s Product: %s)", name.c_str(),
-                         has_standard_mapping ? "STANDARD GAMEPAD " : "",
-                         vendor_id.c_str(), product_id.c_str());
+  std::string id = base::StringPrintf(
+      "%s (%sVendor: %04x Product: %04x)", name.c_str(),
+      has_standard_mapping ? "STANDARD GAMEPAD " : "", vendor_id, product_id);
   base::TruncateUTF8ToByteSize(id, Gamepad::kIdLengthCap - 1, &id);
   base::string16 tmp16 = base::UTF8ToUTF16(id);
   memset(pad->id, 0, sizeof(pad->id));

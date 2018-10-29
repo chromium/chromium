@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/metrics/user_metrics_recorder.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller.h"
@@ -168,12 +167,9 @@ class NetworkListView::SectionHeaderRowView : public views::View,
   void InitializeLayout() {
     TrayPopupUtils::ConfigureAsStickyHeader(this);
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    bool show_spacing = features::IsSystemTrayUnifiedEnabled();
-    container_ = TrayPopupUtils::CreateSubHeaderRowView(show_spacing);
-    if (show_spacing) {
-      container_->AddView(TriView::Container::START,
-                          TrayPopupUtils::CreateMainImageView());
-    }
+    container_ = TrayPopupUtils::CreateSubHeaderRowView(true);
+    container_->AddView(TriView::Container::START,
+                        TrayPopupUtils::CreateMainImageView());
     AddChildView(container_);
 
     network_row_title_view_ = new NetworkRowTitleView(title_id_);
@@ -454,20 +450,11 @@ class WifiHeaderRowView : public NetworkListView::SectionHeaderRowView {
     gfx::ImageSkia disabled_image = network_icon::GetImageForNewWifiNetwork(
         SkColorSetA(prominent_color, kDisabledJoinIconAlpha),
         SkColorSetA(prominent_color, kDisabledJoinBadgeAlpha));
-    if (features::IsSystemTrayUnifiedEnabled()) {
-      auto* join_button = new TopShortcutButton(
-          this, vector_icons::kWifiAddIcon, IDS_ASH_STATUS_TRAY_OTHER_WIFI);
-      join_button->SetEnabled(enabled);
-      container()->AddView(TriView::Container::END, join_button);
-      join_button_ = join_button;
-    } else {
-      auto* join_button = new SystemMenuButton(
-          this, normal_image, disabled_image, IDS_ASH_STATUS_TRAY_OTHER_WIFI);
-      join_button->SetInkDropColor(prominent_color);
-      join_button->SetEnabled(enabled);
-      container()->AddView(TriView::Container::END, join_button);
-      join_button_ = join_button;
-    }
+    auto* join_button = new TopShortcutButton(this, vector_icons::kWifiAddIcon,
+                                              IDS_ASH_STATUS_TRAY_OTHER_WIFI);
+    join_button->SetEnabled(enabled);
+    container()->AddView(TriView::Container::END, join_button);
+    join_button_ = join_button;
   }
 
   void ButtonPressed(views::Button* sender, const ui::Event& event) override {
@@ -808,7 +795,7 @@ views::View* NetworkListView::CreatePowerStatusView(const NetworkInfo& info) {
                                    kMenuIconColorDisabled, kMenuIconColor));
 
   // Show the numeric battery percentage on hover.
-  icon->SetTooltipText(base::FormatPercent(network->battery_percentage()));
+  icon->set_tooltip_text(base::FormatPercent(network->battery_percentage()));
 
   return icon;
 }
@@ -838,7 +825,7 @@ views::View* NetworkListView::CreateControlledByExtensionView(
   views::ImageView* controlled_icon = TrayPopupUtils::CreateMainImageView();
   controlled_icon->SetImage(
       gfx::CreateVectorIcon(kCaptivePortalIcon, kMenuIconColor));
-  controlled_icon->SetTooltipText(l10n_util::GetStringFUTF16(
+  controlled_icon->set_tooltip_text(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_EXTENSION_CONTROLLED_WIFI,
       base::UTF8ToUTF16(network->captive_portal_provider()->name)));
   controlled_icon->set_id(VIEW_ID_EXTENSION_CONTROLLED_WIFI);
@@ -965,10 +952,6 @@ TriView* NetworkListView::CreateConnectionWarning() {
   // Set up layout and apply sticky row property.
   TriView* connection_warning = TrayPopupUtils::CreateDefaultRowView();
   TrayPopupUtils::ConfigureAsStickyHeader(connection_warning);
-  if (!features::IsSystemTrayUnifiedEnabled()) {
-    connection_warning->SetBackground(
-        views::CreateSolidBackground(kHeaderBackgroundColor));
-  }
 
   // Set 'info' icon on left side.
   views::ImageView* image_view = TrayPopupUtils::CreateMainImageView();

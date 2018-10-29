@@ -14,70 +14,17 @@
 # Note that some of these tests only fail inconsistently (like with
 # --gtest_repeat=5, but might pass on a single invocation).
 
-# Chrome Desktop failures (Mac, Linux, Windows).
--CrSettingsPeoplePageSyncAccountControlTest.All
--MediaRouterElementsBrowserTest.MediaRouterContainerCastModeList
--MediaRouterElementsBrowserTest.MediaRouterContainerFilterPart1
--MediaRouterElementsBrowserTest.MediaRouterContainerFirstRunFlow
--MediaRouterElementsBrowserTest.MediaRouterContainerSinkList
--MediaRouterElementsBrowserTest.MediaRouterRouteDetails
-
-# Flaky on Windows. See https://crbug.com/881685
-# May also be flaky on Mac/ChromeOS. See https://crbug.com/669227#c10
--MaterialHistoryListTest.All
-
-# Mac only failure. See crbug.com/876990
--CrSettingsPrivacyPageTest.All
-
-# Tests that fail only on official builds.
--CrSettingsIncompatibleApplicationsPageTest.All
-
-# Most of the a11y tests are failing because they use /deep/. Should be
-# addressed as part of crbug.com/860069
--SettingsA11ySignOut.*
-
 # ChromeOS only test failures.
--AudioPlayerBrowserTest.ChangeTracks
--AudioPlayerBrowserTest.ChangeTracksPlayList
--AudioPlayerBrowserTest.ChangeTracksPlayListIcon
--AudioPlayerBrowserTest.ChangeVolumeLevel
--AudioPlayerBrowserTest.OpenAudioOnDownloads
--AudioPlayerBrowserTest.OpenAudioOnDrive
--AudioPlayerBrowserTest.TogglePlayState
--AudioPlayerBrowserTestInGuestMode.OpenAudioOnDownloads
--CrSettingsBluetoothPageTest.All
--CrSettingsCrostiniPageTest.All
--CrSettingsDevicePageTest.DisplayTest
--CrSettingsDevicePageTest.KeyboardTest
--CrSettingsDevicePageTest.PointersTest
--CrSettingsDevicePageTest.PowerTest
--CrSettingsFingerprintProgressArcTest.All
--CrSettingsInternetDetailPageTest.InternetDetailPage
--CrSettingsInternetPageTest.InternetPage
--CrSettingsLanguagesPageTest.AddLanguagesDialog
--CrSettingsLanguagesPageTest.LanguageMenu
--CrSettingsLanguagesPageTest.Spellcheck
--CrSettingsMultidevicePageTest.All
--CrSettingsPeoplePageLockScreenTest.All
--CrSettingsPeoplePageQuickUnlockAuthenticateTest.All
--CrSettingsPeoplePageSetupPinDialogTest.All
+-DemoSetupTest.BackOnArcTermsScreen
+-DemoSetupTest.ClickConnectedNetworkOnNetworkScreen
+-DemoSetupTest.ClickNetworkOnNetworkScreen
 -DemoSetupTest.OfflineSetupFlowError
+-DemoSetupTest.OfflineSetupFlowSuccess
+-DemoSetupTest.OnlineSetupFlowCrosComponentFailure
 -DemoSetupTest.OnlineSetupFlowError
 -DemoSetupTest.OnlineSetupFlowSuccess
 -DemoSetupTest.ShowOfflineSetupOptionOnNetworkList
 -EulaTest.LoadOffline
--OpenAudioFiles/FilesAppBrowserTest.Test/audioOpenDownloads
--OpenAudioFiles/FilesAppBrowserTest.Test/audioOpenDownloads_GuestMode
--OpenAudioFiles/FilesAppBrowserTest.Test/audioOpenDrive
--OpenAudioFiles/FilesAppBrowserTest.Test/audioOpenDrive_DriveFs
--OpenAudioFiles/FilesAppBrowserTest.Test/audioRepeatAllModeMultipleFileDrive
--OpenAudioFiles/FilesAppBrowserTest.Test/audioRepeatAllModeSingleFileDrive
--OpenAudioFiles/FilesAppBrowserTest.Test/audioRepeatOneModeMultipleFileDrive
--OpenAudioFiles/FilesAppBrowserTest.Test/audioRepeatOneModeSingleFileDrive
--TabIndex/FilesAppBrowserTest.Test/tabindexSaveFileDialogDownloads
--TabIndex/FilesAppBrowserTest.Test/tabindexSaveFileDialogDownloads_GuestMode
--TabIndex/FilesAppBrowserTest.Test/tabindexSaveFileDialogDrive
--TabIndex/FilesAppBrowserTest.Test/tabindexSaveFileDialogDrive_DriveFs
 
 # Passing tests
 #
@@ -89,10 +36,7 @@
 # failing tests.
 
 ActiveDirectoryJoinTest.*
-AudioPlayerBrowserTest.ChangeTracksPlayList
-AudioPlayerBrowserTest.ChangeTracksPlayListIcon
-AudioPlayerBrowserTest.ChangeVolumeLevel
-AudioPlayerBrowserTestInGuestMode.*
+AudioPlayerBrowserTest.*
 BluetoothInternalsTest.*
 CertificateViewerModalUITest.*
 CertificateViewerModalUITestAsync.*
@@ -116,6 +60,7 @@ CrElementsPolicyPrefIndicatorTest.*
 CrElementsProfileAvatarSelectorFocusTest.*
 CrElementsProfileAvatarSelectorTest.*
 CrElementsRadioButtonTest.*
+CrElementsRadioGroupTest.*
 CrElementsScrollableBehaviorTest.*
 CrElementsSearchableDropDownTest.*
 CrElementsSliderTest.*
@@ -154,18 +99,17 @@ CrSettingsAnimatedPagesTest.*
 CrSettingsAppearanceFontsPageTest.*
 CrSettingsAppearancePageTest.*
 CrSettingsAutofillSectionTest.*
+CrSettingsBluetoothPageTest.*
 CrSettingsCategoryDefaultSettingTest.*
 CrSettingsCategorySettingExceptionsTest.*
 CrSettingsCertificateManagerTest.*
 CrSettingsChangePasswordPageTest.*
 CrSettingsCheckboxTest.*
 CrSettingsChromeCleanupPageTest.*
+CrSettingsCrostiniPageTest.*
 CrSettingsDateTimePageTest.*
 CrSettingsDefaultBrowserTest.*
-CrSettingsDevicePageTest.DevicePageTest
-CrSettingsDevicePageTest.PointersTest
-CrSettingsDevicePageTest.StylusTest
-CrSettingsDisplaySizeSliderTest.*
+CrSettingsDevicePageTest.*
 CrSettingsDownloadsPageTest.*
 CrSettingsDropdownMenuTest.*
 CrSettingsEditDictionaryPageTest.*
@@ -176,7 +120,10 @@ CrSettingsFingerprintProgressArcTest.*
 CrSettingsFocusRowBehavior.*
 CrSettingsGoogleAssistantPageTest.*
 CrSettingsImportDataDialogTest.*
-CrSettingsLanguagesPageTest.InputMethods
+CrSettingsIncompatibleApplicationsPageTest.*
+CrSettingsInternetDetailPageTest.*
+CrSettingsInternetPageTest.*
+CrSettingsLanguagesPageTest.*
 CrSettingsLanguagesTest.*
 CrSettingsMainPageTest.*
 CrSettingsMenuTest.*
@@ -185,16 +132,21 @@ CrSettingsMultideviceFeatureItemTest.*
 CrSettingsMultideviceFeatureToggleTest.*
 CrSettingsMultidevicePageContainerTest.*
 CrSettingsMultidevicePageTest.*
+CrSettingsMultideviceSubpageTest.*
 CrSettingsNonExistentRouteTest.*
 CrSettingsOnStartupPageTest.*
 CrSettingsPaymentsSectionTest.*
 CrSettingsPeoplePageChangePictureTest.*
 CrSettingsPeoplePageManageProfileTest.*
 CrSettingsPeoplePageSetupPinDialogTest.*
+CrSettingsPeoplePageSyncAccountControlTest.*
+CrSettingsPeoplePageSyncPageTest.*
+CrSettingsPeoplePageTest.*
 CrSettingsPersonalizationOptionsTest.*
 CrSettingsPrefsTest.*
 CrSettingsPrefUtilTest.*
 CrSettingsPrintingPageTest.*
+CrSettingsPrivacyPageTest.*
 CrSettingsProtocolHandlersTest.*
 CrSettingsResetPageTest.*
 CrSettingsResetProfileBannerTest.*
@@ -209,6 +161,8 @@ CrSettingsSiteDataTest.*
 CrSettingsSiteDetailsPermissionTest.*
 CrSettingsSiteDetailsTest.*
 CrSettingsSiteEntryTest.*
+CrSettingsSiteFaviconTest.*
+CrSettingsSiteListEntryTest.*
 CrSettingsSiteListTest.*
 CrSettingsSliderTest.*
 CrSettingsSmbPageTest.*
@@ -237,6 +191,7 @@ FileManagerJsTest.*
 FileManagerPathUtilConvertUrlTest.*
 FileManagerUITest.*
 FileTasksBrowserTest.*
+*/FilesAppBrowserTest.*
 GalleryBrowserTest.*
 GalleryBrowserTestInGuestMode.*
 GalleryJsTest.*
@@ -276,8 +231,7 @@ MaterialHistorySupervisedUserTest.*
 MaterialHistorySyncedTabsTest.*
 MaterialHistoryToolbarTest.*
 MediaEngagementWebUIBrowserTest.*
-MediaRouterElementsBrowserTest.IssueBanner
-MediaRouterElementsBrowserTest.MediaRouterHeader
+MediaRouterElementsBrowserTest.*
 Mock4JSWebUITest.*
 Mock4JSWebUITest.*
 Mock4JSWebUITestFails.*
@@ -285,7 +239,9 @@ MultiDeviceSetupBrowserTest.*
 MultiProfileDriveFileSystemExtensionApiTest.*
 MultiProfileFilesAppBrowserTest.*
 NetInternalsTest.*
+NoBackgroundTasksTest.*
 NTP4WebUITest.*
+OpenAudioFiles/*
 PasswordsAndFormsBrowserTest.*
 PrintPreviewAdvancedDialogTest.*
 PrintPreviewAdvancedItemTest.*
@@ -296,6 +252,7 @@ PrintPreviewDestinationItemTest.*
 PrintPreviewDestinationListTest.*
 PrintPreviewDestinationSearchTest.*
 PrintPreviewHeaderTest.*
+PrintPreviewKeyEventTest.*
 PrintPreviewLinkContainerTest.*
 PrintPreviewModelTest.*
 PrintPreviewNewDestinationSearchTest.*
@@ -311,6 +268,7 @@ PrintPreviewSystemDialogBrowserTest.*
 RestrictedFileSystemExtensionApiTest.*
 SandboxStatusUITest.*
 SettingsA11yManagePasswords.*
+SettingsA11ySignOut.*
 SettingsAccessibilityTest.*
 SettingsAdvancedPageBrowserTest.*
 SettingsAnimationBrowserTest.*

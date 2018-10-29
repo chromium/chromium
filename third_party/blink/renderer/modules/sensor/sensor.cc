@@ -6,6 +6,7 @@
 
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "services/device/public/mojom/sensor.mojom-blink.h"
+#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_error_event.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_provider_proxy.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/platform/layout_test_support.h"
 
 namespace blink {
@@ -22,11 +22,12 @@ namespace blink {
 namespace {
 const double kWaitingIntervalThreshold = 0.01;
 
-bool AreFeaturesEnabled(LocalFrame* frame,
+bool AreFeaturesEnabled(Document* document,
                         const Vector<mojom::FeaturePolicyFeature>& features) {
   return std::all_of(features.begin(), features.end(),
-                     [frame](mojom::FeaturePolicyFeature feature) {
-                       return frame->IsFeatureEnabled(feature);
+                     [document](mojom::FeaturePolicyFeature feature) {
+                       return document->IsFeatureEnabled(
+                           feature, ReportOptions::kReportOnFailure);
                      });
 }
 
@@ -45,9 +46,9 @@ Sensor::Sensor(ExecutionContext* execution_context,
   // [SecureContext] in idl.
   DCHECK(execution_context->IsSecureContext());
   DCHECK(!features.IsEmpty());
-  LocalFrame* frame = ToDocument(execution_context)->GetFrame();
+  Document* document = To<Document>(execution_context);
 
-  if (!frame || !AreFeaturesEnabled(frame, features)) {
+  if (!AreFeaturesEnabled(document, features)) {
     exception_state.ThrowSecurityError(
         "Access to sensor features is disallowed by feature policy");
     return;
@@ -173,7 +174,7 @@ void Sensor::InitSensorProxyIfNeeded() {
   if (sensor_proxy_)
     return;
 
-  Document* document = ToDocument(GetExecutionContext());
+  Document* document = To<Document>(GetExecutionContext());
   if (!document || !document->GetFrame())
     return;
 

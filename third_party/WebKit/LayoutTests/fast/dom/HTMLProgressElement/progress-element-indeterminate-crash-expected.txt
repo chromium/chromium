@@ -1,5 +1,6 @@
 Test for Bug 102459. OK if not crashed.
 
+
 PASS unless crash.
 
 PASS successfullyParsed is true

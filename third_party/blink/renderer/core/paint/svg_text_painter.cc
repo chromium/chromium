@@ -47,8 +47,8 @@ void SVGTextPainter::RecordHitTestData(const PaintInfo& paint_info) {
     return;
 
   auto rect = LayoutRect(layout_svg_text_.VisualRectInLocalSVGCoordinates());
-  HitTestData::RecordTouchActionRect(paint_info.context, layout_svg_text_,
-                                     TouchActionRect(rect, touch_action));
+  HitTestData::RecordHitTestRect(paint_info.context, layout_svg_text_,
+                                 HitTestRect(rect, touch_action));
 }
 
 }  // namespace blink

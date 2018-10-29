@@ -5,12 +5,24 @@
 #ifndef UI_KEYBOARD_CONTAINER_BEHAVIOR_H_
 #define UI_KEYBOARD_CONTAINER_BEHAVIOR_H_
 
-#include "ui/aura/window.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/events/event.h"
+#include "ui/display/display.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/keyboard/container_type.h"
 #include "ui/keyboard/keyboard_export.h"
-#include "ui/wm/core/window_animations.h"
+
+namespace aura {
+class Window;
+}
+
+namespace ui {
+class LocatedEvent;
+class ScopedLayerAnimationSettings;
+}  // namespace ui
+
+namespace wm {
+class ScopedHidingAnimationSettings;
+}
 
 namespace keyboard {
 
@@ -18,7 +30,18 @@ namespace keyboard {
 // within the workspace window.
 class KEYBOARD_EXPORT ContainerBehavior {
  public:
-  virtual ~ContainerBehavior() {}
+  class Delegate {
+   public:
+    virtual ~Delegate() {}
+    virtual gfx::Rect GetBoundsInScreen() const = 0;
+    virtual bool IsKeyboardLocked() const = 0;
+    virtual void MoveKeyboardWindow(const gfx::Rect& new_bounds) = 0;
+    virtual void MoveKeyboardWindowToDisplay(const display::Display& display,
+                                             const gfx::Rect& new_bounds) = 0;
+  };
+
+  explicit ContainerBehavior(Delegate* delegate);
+  virtual ~ContainerBehavior();
 
   // Apply changes to the animation settings to animate the keyboard container
   // showing.
@@ -30,7 +53,7 @@ class KEYBOARD_EXPORT ContainerBehavior {
   // hiding.
   virtual void DoHidingAnimation(
       aura::Window* window,
-      ::wm::ScopedHidingAnimationSettings* animation_settings) = 0;
+      wm::ScopedHidingAnimationSettings* animation_settings) = 0;
 
   // Initialize the starting state of the keyboard container for the showing
   // animation.
@@ -95,6 +118,8 @@ class KEYBOARD_EXPORT ContainerBehavior {
   virtual bool SetDraggableArea(const gfx::Rect& rect) = 0;
 
  protected:
+  Delegate* delegate_;
+
   // The opacity of virtual keyboard container when show animation
   // starts or hide animation finishes. This cannot be zero because we
   // call Show() on the keyboard window before setting the opacity

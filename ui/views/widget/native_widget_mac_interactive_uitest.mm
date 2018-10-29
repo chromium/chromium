@@ -82,7 +82,7 @@ TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
     wait_for_first_active.Wait();
   }
   EXPECT_TRUE(widget->IsActive());
-  EXPECT_TRUE([widget->GetNativeWindow() isKeyWindow]);
+  EXPECT_TRUE([widget->GetNativeWindow().GetNativeNSWindow() isKeyWindow]);
   EXPECT_EQ(1, activation_count_);
   EXPECT_EQ(0, deactivation_count_);
 
@@ -101,7 +101,7 @@ TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
 
   {
     WidgetActivationWaiter wait_for_external_activate(widget, true);
-    [widget->GetNativeWindow() makeKeyAndOrderFront:nil];
+    [widget->GetNativeWindow().GetNativeNSWindow() makeKeyAndOrderFront:nil];
     wait_for_external_activate.Wait();
   }
   EXPECT_TRUE(widget->IsActive());
@@ -118,27 +118,28 @@ TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
 // Test that ShowInactive does not take keyWindow status.
 TEST_P(NativeWidgetMacInteractiveUITest, ShowInactiveIgnoresKeyStatus) {
   Widget* widget = MakeWidget();
+  NSWindow* widget_window = widget->GetNativeWindow().GetNativeNSWindow();
 
   base::scoped_nsobject<WindowedNSNotificationObserver> waiter(
       [[WindowedNSNotificationObserver alloc]
           initForNotification:NSWindowDidBecomeKeyNotification
-                       object:widget->GetNativeWindow()]);
+                       object:widget_window]);
 
   EXPECT_FALSE(widget->IsVisible());
-  EXPECT_FALSE([widget->GetNativeWindow() isVisible]);
+  EXPECT_FALSE([widget_window isVisible]);
   EXPECT_FALSE(widget->IsActive());
-  EXPECT_FALSE([widget->GetNativeWindow() isKeyWindow]);
+  EXPECT_FALSE([widget_window isKeyWindow]);
   widget->ShowInactive();
 
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_TRUE([widget->GetNativeWindow() isVisible]);
+  EXPECT_TRUE([widget_window isVisible]);
   EXPECT_FALSE(widget->IsActive());
-  EXPECT_FALSE([widget->GetNativeWindow() isKeyWindow]);
+  EXPECT_FALSE([widget_window isKeyWindow]);
 
   // If the window were to become active, this would activate it.
   RunPendingMessages();
   EXPECT_FALSE(widget->IsActive());
-  EXPECT_FALSE([widget->GetNativeWindow() isKeyWindow]);
+  EXPECT_FALSE([widget_window isKeyWindow]);
   EXPECT_EQ(0, [waiter notificationCount]);
 
   // Activating the inactive widget should make it key, asynchronously.
@@ -146,7 +147,7 @@ TEST_P(NativeWidgetMacInteractiveUITest, ShowInactiveIgnoresKeyStatus) {
   [waiter wait];
   EXPECT_EQ(1, [waiter notificationCount]);
   EXPECT_TRUE(widget->IsActive());
-  EXPECT_TRUE([widget->GetNativeWindow() isKeyWindow]);
+  EXPECT_TRUE([widget_window isKeyWindow]);
 
   widget->CloseNow();
 }
@@ -155,13 +156,14 @@ namespace {
 
 // Show |widget| and wait for it to become the key window.
 void ShowKeyWindow(Widget* widget) {
+  NSWindow* widget_window = widget->GetNativeWindow().GetNativeNSWindow();
   base::scoped_nsobject<WindowedNSNotificationObserver> waiter(
       [[WindowedNSNotificationObserver alloc]
           initForNotification:NSWindowDidBecomeKeyNotification
-                       object:widget->GetNativeWindow()]);
+                       object:widget_window]);
   widget->Show();
   EXPECT_TRUE([waiter wait]);
-  EXPECT_TRUE([widget->GetNativeWindow() isKeyWindow]);
+  EXPECT_TRUE([widget_window isKeyWindow]);
 }
 
 NSData* ViewAsTIFF(NSView* view) {
@@ -190,7 +192,7 @@ TEST_F(NativeWidgetMacInteractiveUITest, ParentWindowTrafficLights) {
   parent_widget->SetBounds(gfx::Rect(100, 100, 100, 100));
   ShowKeyWindow(parent_widget);
 
-  NSWindow* parent = parent_widget->GetNativeWindow();
+  NSWindow* parent = parent_widget->GetNativeWindow().GetNativeNSWindow();
   EXPECT_TRUE([parent isMainWindow]);
 
   NSButton* button = [parent standardWindowButton:NSWindowCloseButton];
@@ -244,7 +246,8 @@ TEST_F(NativeWidgetMacInteractiveUITest, BubbleDismiss) {
 
   // First, test with LeftMouseDown in the parent window.
   NSEvent* mouse_down = cocoa_test_event_utils::LeftMouseDownAtPointInWindow(
-      NSMakePoint(50, 50), parent_widget->GetNativeWindow());
+      NSMakePoint(50, 50),
+      parent_widget->GetNativeWindow().GetNativeNSWindow());
   [NSApp sendEvent:mouse_down];
   EXPECT_TRUE(bubble_widget->IsClosed());
 
@@ -254,7 +257,8 @@ TEST_F(NativeWidgetMacInteractiveUITest, BubbleDismiss) {
 
   // Test with RightMouseDown in the parent window.
   mouse_down = cocoa_test_event_utils::RightMouseDownAtPointInWindow(
-      NSMakePoint(50, 50), parent_widget->GetNativeWindow());
+      NSMakePoint(50, 50),
+      parent_widget->GetNativeWindow().GetNativeNSWindow());
   [NSApp sendEvent:mouse_down];
   EXPECT_TRUE(bubble_widget->IsClosed());
 
@@ -264,7 +268,8 @@ TEST_F(NativeWidgetMacInteractiveUITest, BubbleDismiss) {
 
   // Test with RightMouseDown in the bubble (bubble should stay open).
   mouse_down = cocoa_test_event_utils::RightMouseDownAtPointInWindow(
-      NSMakePoint(50, 50), bubble_widget->GetNativeWindow());
+      NSMakePoint(50, 50),
+      bubble_widget->GetNativeWindow().GetNativeNSWindow());
   [NSApp sendEvent:mouse_down];
   EXPECT_FALSE(bubble_widget->IsClosed());
   bubble_widget->CloseNow();
@@ -276,7 +281,8 @@ TEST_F(NativeWidgetMacInteractiveUITest, BubbleDismiss) {
   ShowKeyWindow(bubble_widget);
 
   mouse_down = cocoa_test_event_utils::RightMouseDownAtPointInWindow(
-      NSMakePoint(50, 50), parent_widget->GetNativeWindow());
+      NSMakePoint(50, 50),
+      parent_widget->GetNativeWindow().GetNativeNSWindow());
   [NSApp sendEvent:mouse_down];
   EXPECT_FALSE(bubble_widget->IsClosed());
 
@@ -298,8 +304,8 @@ TEST_F(NativeWidgetMacInteractiveUITest, GlobalNSTextInputContextUpdates) {
     widget->Show();
     wait_for_first_active.Wait();
   }
-  EXPECT_TRUE([widget->GetNativeView() inputContext]);
-  EXPECT_EQ([widget->GetNativeView() inputContext],
+  EXPECT_TRUE([widget->GetNativeView().GetNativeNSView() inputContext]);
+  EXPECT_EQ([widget->GetNativeView().GetNativeNSView() inputContext],
             [NSTextInputContext currentInputContext]);
 
   widget->GetContentsView()->RemoveChildView(textfield);
@@ -308,7 +314,7 @@ TEST_F(NativeWidgetMacInteractiveUITest, GlobalNSTextInputContextUpdates) {
   // iteration. We just tore out the inputContext, so ensure the raw, weak
   // global pointer that AppKit likes to keep around has been updated manually.
   EXPECT_EQ(nil, [NSTextInputContext currentInputContext]);
-  EXPECT_FALSE([widget->GetNativeView() inputContext]);
+  EXPECT_FALSE([widget->GetNativeView().GetNativeNSView() inputContext]);
 
   // RemoveChildView() doesn't delete the view.
   delete textfield;

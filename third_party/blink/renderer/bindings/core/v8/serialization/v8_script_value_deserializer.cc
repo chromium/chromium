@@ -419,11 +419,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       return DOMRect::Create(x, y, width, height);
     }
     case kDOMRectReadOnlyTag: {
-      double x = 0, y = 0, width = 0, height = 0;
-      if (!ReadDouble(&x) || !ReadDouble(&y) || !ReadDouble(&width) ||
-          !ReadDouble(&height))
-        return nullptr;
-      return DOMRectReadOnly::Create(x, y, width, height);
+      return ReadDOMRectReadOnly();
     }
     case kDOMQuadTag: {
       DOMPointInit pointInits[4];
@@ -558,6 +554,14 @@ File* V8ScriptValueDeserializer::ReadFileIndex() {
   return File::CreateFromIndexedSerialization(info.FilePath(), info.FileName(),
                                               info.size(), last_modified_ms,
                                               blob_handle);
+}
+
+DOMRectReadOnly* V8ScriptValueDeserializer::ReadDOMRectReadOnly() {
+  double x = 0, y = 0, width = 0, height = 0;
+  if (!ReadDouble(&x) || !ReadDouble(&y) || !ReadDouble(&width) ||
+      !ReadDouble(&height))
+    return nullptr;
+  return DOMRectReadOnly::Create(x, y, width, height);
 }
 
 scoped_refptr<BlobDataHandle>

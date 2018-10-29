@@ -80,10 +80,6 @@ class SigninManagerAndroid : public SigninManagerBase::Observer {
   jboolean IsSignedInOnNative(JNIEnv* env,
                               const base::android::JavaParamRef<jobject>& obj);
 
-  void ProhibitSignout(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj,
-                       jboolean prohibit_signout);
-
   // SigninManagerBase::Observer implementation.
   void GoogleSigninFailed(const GoogleServiceAuthError& error) override;
   void GoogleSigninSucceeded(const std::string& account_id,

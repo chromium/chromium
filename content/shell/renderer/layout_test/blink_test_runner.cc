@@ -26,7 +26,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -66,12 +65,12 @@
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/modules/app_banner/app_banner.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/public/platform/web_point.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -107,7 +106,6 @@ using blink::WebURL;
 using blink::WebURLError;
 using blink::WebURLRequest;
 using blink::WebTestingSupport;
-using blink::WebThread;
 using blink::WebVector;
 using blink::WebView;
 
@@ -516,8 +514,7 @@ bool BlinkTestRunner::CaptureLocalPixelsDump() {
   TRACE_EVENT0("shell", "BlinkTestRunner::CaptureLocalPixelsDump");
   test_runner::WebTestInterfaces* interfaces =
       LayoutTestRenderThreadObserver::GetInstance()->test_interfaces();
-  if (!test_config_->enable_pixel_dumping ||
-      !interfaces->TestRunner()->ShouldGeneratePixelResults() ||
+  if (!interfaces->TestRunner()->ShouldGeneratePixelResults() ||
       interfaces->TestRunner()->ShouldDumpAsAudio()) {
     return false;
   }
@@ -798,13 +795,11 @@ void BlinkTestRunner::OnSetupSecondaryRenderer() {
   test_runner::WebTestInterfaces* interfaces =
       LayoutTestRenderThreadObserver::GetInstance()->test_interfaces();
   interfaces->SetTestIsRunning(true);
-  interfaces->ConfigureForTestWithURL(GURL(), false, false);
   ForceResizeRenderView(render_view(), WebSize(800, 600));
 }
 
 void BlinkTestRunner::ApplyTestConfiguration(
-    mojom::ShellTestConfigurationPtr params,
-    bool initial_application) {
+    mojom::ShellTestConfigurationPtr params) {
   test_runner::WebTestInterfaces* interfaces =
       LayoutTestRenderThreadObserver::GetInstance()->test_interfaces();
 
@@ -814,28 +809,26 @@ void BlinkTestRunner::ApplyTestConfiguration(
   interfaces->SetMainView(render_view()->GetWebView());
 
   interfaces->SetTestIsRunning(true);
-  interfaces->ConfigureForTestWithURL(
-      params->test_url, params->enable_pixel_dumping, initial_application);
+  interfaces->ConfigureForTestWithURL(params->test_url, params->protocol_mode);
 }
 
 void BlinkTestRunner::OnReplicateTestConfiguration(
     mojom::ShellTestConfigurationPtr params) {
-  ApplyTestConfiguration(std::move(params), false /* initial_configuration */);
+  ApplyTestConfiguration(std::move(params));
 }
 
 void BlinkTestRunner::OnSetTestConfiguration(
     mojom::ShellTestConfigurationPtr params) {
   mojom::ShellTestConfigurationPtr local_params = params.Clone();
-  ApplyTestConfiguration(std::move(params), true /* initial_configuration */);
+  ApplyTestConfiguration(std::move(params));
 
   ForceResizeRenderView(render_view(),
                         WebSize(local_params->initial_size.width(),
                                 local_params->initial_size.height()));
 
   // Tests should always start with the browser controls hidden.
-  render_view()->GetWebView()->UpdateBrowserControlsState(
-      cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kHidden,
-      false);
+  render_view()->UpdateBrowserControlsState(
+      BROWSER_CONTROLS_STATE_BOTH, BROWSER_CONTROLS_STATE_HIDDEN, false);
 
   LayoutTestRenderThreadObserver::GetInstance()
       ->test_interfaces()
@@ -893,7 +886,7 @@ scoped_refptr<base::SingleThreadTaskRunner> BlinkTestRunner::GetTaskRunner() {
         render_view()->GetWebView()->MainFrame()->ToWebLocalFrame();
     return main_frame->GetTaskRunner(blink::TaskType::kInternalTest);
   }
-  return Platform::Current()->CurrentThread()->GetTaskRunner();
+  return blink::scheduler::GetSingleThreadTaskRunnerForTesting();
 }
 
 }  // namespace content

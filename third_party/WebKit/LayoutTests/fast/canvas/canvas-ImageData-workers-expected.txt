@@ -2,7 +2,6 @@
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Starting worker: ./resources/canvas-ImageData-workers.js
 PASS [Worker] ImageData is defined.
 PASS [Worker] ImageData.length is 2

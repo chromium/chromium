@@ -2,7 +2,6 @@ Test that XMLSerializer quotes the attribute characters specified in the W3C spe
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS htmlElement.outerHTML is "<div quoteme=\"< > &amp; &quot; ' &nbsp;\"></div>"
 PASS (new XMLSerializer()).serializeToString(xmlElement) is "<div xmlns=\"http://www.w3.org/1999/xhtml\" quoteme=\"&lt; &gt; &amp; &quot; ' \xA0\"></div>"
 PASS successfullyParsed is true

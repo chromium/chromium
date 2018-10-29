@@ -7,13 +7,13 @@
 
 #include <string>
 
-#include "ui/gfx/gfx_export.h"
+#include "ui/gfx/geometry/geometry_export.h"
 
 namespace gfx {
 
 class Vector3dF;
 
-class GFX_EXPORT Quaternion {
+class GEOMETRY_EXPORT Quaternion {
  public:
   constexpr Quaternion() = default;
   constexpr Quaternion(double x, double y, double z, double w)

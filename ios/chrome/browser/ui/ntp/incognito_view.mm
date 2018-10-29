@@ -7,11 +7,11 @@
 #include "components/google/core/common/google_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/ui/rtl_geometry.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_constants.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/url_loader.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
@@ -314,7 +314,11 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  [self updateToolbarMargins];
+}
 
+- (void)safeAreaInsetsDidChange {
+  [super safeAreaInsetsDidChange];
   [self updateToolbarMargins];
 }
 
@@ -340,8 +344,13 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   if (IsRegularXRegularSizeClass(self)) {
     _topToolbarMarginHeight.constant = 0;
   } else {
-    _topToolbarMarginHeight.constant =
-        StatusBarHeight() + kAdaptiveToolbarHeight;
+    CGFloat topInset = 0;
+    if (@available(iOS 11, *)) {
+      topInset = self.safeAreaInsets.top;
+    } else {
+      topInset = StatusBarHeight();
+    }
+    _topToolbarMarginHeight.constant = topInset + kAdaptiveToolbarHeight;
   }
 
   if (IsSplitToolbarMode(self)) {

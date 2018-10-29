@@ -167,23 +167,6 @@ MOCK_METHOD6(PostSubBufferNV,
                         EGLint y,
                         EGLint width,
                         EGLint height));
-MOCK_METHOD2(ProgramCacheGetAttribANGLE,
-             EGLint(EGLDisplay dpy, EGLenum attrib));
-MOCK_METHOD5(ProgramCachePopulateANGLE,
-             void(EGLDisplay dpy,
-                  const void* key,
-                  EGLint keysize,
-                  const void* binary,
-                  EGLint binarysize));
-MOCK_METHOD6(ProgramCacheQueryANGLE,
-             void(EGLDisplay dpy,
-                  EGLint index,
-                  void* key,
-                  EGLint* keysize,
-                  void* binary,
-                  EGLint* binarysize));
-MOCK_METHOD3(ProgramCacheResizeANGLE,
-             EGLint(EGLDisplay dpy, EGLint limit, EGLenum mode));
 MOCK_METHOD0(QueryAPI, EGLenum());
 MOCK_METHOD4(QueryContext,
              EGLBoolean(EGLDisplay dpy,
@@ -215,6 +198,10 @@ MOCK_METHOD4(QuerySurfacePointerANGLE,
 MOCK_METHOD3(ReleaseTexImage,
              EGLBoolean(EGLDisplay dpy, EGLSurface surface, EGLint buffer));
 MOCK_METHOD0(ReleaseThread, EGLBoolean());
+MOCK_METHOD3(SetBlobCacheFuncsANDROID,
+             void(EGLDisplay dpy,
+                  EGLSetBlobFuncANDROID set,
+                  EGLGetBlobFuncANDROID get));
 MOCK_METHOD4(StreamAttribKHR,
              EGLBoolean(EGLDisplay dpy,
                         EGLStreamKHR stream,

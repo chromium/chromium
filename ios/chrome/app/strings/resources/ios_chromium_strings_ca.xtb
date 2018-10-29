@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Gaudeix de les eines intel·ligents de Google a Chromium</translation>
 <translation id="2730884209570016437">Chromium no pot utilitzar la càmera perquè l'està utilitzant una altra aplicació</translation>
 <translation id="2797210818057553964">Pots personalitzar aquesta opció en qualsevol moment des de la configuració de Chromium</translation>
+<translation id="2915596697727466327">Chromium utilitza Face ID per garantir l'accés autoritzat a les contrasenyes.</translation>
 <translation id="3256316712990552818">Copiada a Chromium</translation>
 <translation id="3413120535237193088">Inicia la sessió a Chromium per accedir a les adreces d'interès des de tots els dispositius.</translation>
 <translation id="3473048256428424907">Activa l'escàner QR de Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Les pestanyes que tinguis obertes a Chromium als altres dispositius es mostraran aquí.</translation>
 <translation id="495292094137889840">Comença a utilitzar l'escàner QR de Chromium</translation>
 <translation id="5231355151045086930">Tanca la sessió de Chromium</translation>
-<translation id="5416919929805616771">T'agrada Chromium? <ph name="BEGIN_LINK" />Puntua aquesta aplicació<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Us donem la benvinguda a Chromium</translation>
 <translation id="5945387852661427312">Estàs iniciant la sessió amb un compte gestionat per <ph name="DOMAIN" /> i estàs donant a l'administrador el control de les teves dades de Chromium. Les dades passaran a estar vinculades a aquest compte permanentment. Si tanques la sessió de Chromium, se suprimiran les teves dades d'aquest dispositiu, però continuaran emmagatzemades al teu compte de Google.</translation>
 <translation id="6068866989048414399">Condicions del servei de Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Estàs canviant el compte de sincronització de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> gestiona les teves dades de Chromium. Se suprimiran les teves dades d'aquest dispositiu, però continuaran estant disponibles a <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Consell: <ph name="BEGIN_LINK" />mou Chromium al Dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Compartiu la vostra ubicació per tal de gaudir dels avantatges de Chromium.</translation>
-<translation id="8353224596138547809">Voleu que Chromium desi la vostra contrasenya per a aquest lloc?</translation>
 <translation id="8508544542427105412">La <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> es pot personalitzar en qualsevol moment. Google pot utilitzar contingut dels llocs web que visites, així com l'activitat i les interaccions al navegador per personalitzar Chromium i els serveis de Google, com ara el Traductor, la Cerca i els anuncis.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="8809780021347235332">Per desar imatges, toca Configuració perquè Chromium pugui utilitzar les teves fotos</translation>

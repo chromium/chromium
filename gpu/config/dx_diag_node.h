@@ -19,6 +19,8 @@ struct GPU_EXPORT DxDiagNode {
   DxDiagNode();
   DxDiagNode(const DxDiagNode& other);
   ~DxDiagNode();
+  bool IsEmpty() const;
+
   std::map<std::string, std::string> values;
   std::map<std::string, DxDiagNode> children;
 };

@@ -22,6 +22,7 @@ PASS caret is at 5
 PASS caret is at 4
 PASS caret is at 6
 
+
 Test "נת12":
 PASS caret is at 2
 PASS caret is at 3
@@ -29,12 +30,14 @@ PASS caret is at 4
 PASS caret is at 1
 PASS caret is at 4
 
+
 Test "לשנת":
 PASS caret is at 0
 PASS caret is at 3
 PASS caret is at 2
 PASS caret is at 1
 PASS caret is at 4
+
 
 Test "aקל12יםd":
 PASS caret is at 0
@@ -46,6 +49,7 @@ PASS caret is at 5
 PASS caret is at 2
 PASS caret is at 7
 PASS caret is at 8
+
 
 Test "12קל43ab":
 PASS caret is at 4
@@ -59,6 +63,7 @@ FAIL caret was at 6 but expected to be at 7
 PASS caret is at 7
 PASS caret is at 8
 
+
 Test "abcלשנ":
 PASS caret is at 6
 PASS caret is at 1
@@ -68,9 +73,11 @@ PASS caret is at 5
 PASS caret is at 4
 PASS caret is at 3
 
+
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 
 
 

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 
 namespace blink {
@@ -41,15 +42,13 @@ TEST(FileInputTypeTest, createFileList) {
   FileChooserFileInfoList files;
 
   // Native file.
-  files.push_back(
-      FileChooserFileInfo("/native/path/native-file", "display-name"));
+  files.push_back(CreateFileChooserFileInfoNative("/native/path/native-file",
+                                                  "display-name"));
 
   // Non-native file.
   KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
-  FileMetadata metadata;
-  metadata.length = 64;
-  metadata.modification_time = 1.0 * kMsPerDay + 3;
-  files.push_back(FileChooserFileInfo(url, metadata));
+  files.push_back(CreateFileChooserFileInfoFileSystem(
+      url, base::Time::FromJsTime(1.0 * kMsPerDay + 3), 64));
 
   FileList* list = FileInputType::CreateFileList(files, false);
   ASSERT_TRUE(list);

@@ -62,7 +62,8 @@ class PerfBenchmarkTest(unittest.TestCase):
     benchmark = perf_benchmark.PerfBenchmark()
     options = options_for_unittests.GetCopy()
     options.chrome_root = self._output_dir
-    options.browser_type = "any"
+    if not options.browser_type:
+      options.browser_type = "any"
     possible_browser = browser_finder.FindBrowser(options)
     if possible_browser is None:
       return

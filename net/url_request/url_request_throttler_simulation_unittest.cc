@@ -95,15 +95,11 @@ class DiscreteTimeSimulation {
     TimeTicks start_time = TimeTicks();
     TimeTicks now = start_time;
     while ((now - start_time) <= maximum_simulated_duration) {
-      for (std::vector<Actor*>::iterator it = actors_.begin();
-           it != actors_.end();
-           ++it) {
+      for (auto it = actors_.begin(); it != actors_.end(); ++it) {
         (*it)->AdvanceTime(now);
       }
 
-      for (std::vector<Actor*>::iterator it = actors_.begin();
-           it != actors_.end();
-           ++it) {
+      for (auto it = actors_.begin(); it != actors_.end(); ++it) {
         (*it)->PerformAction();
       }
 

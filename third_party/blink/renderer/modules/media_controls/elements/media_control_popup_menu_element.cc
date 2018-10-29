@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -159,6 +160,11 @@ void MediaControlPopupMenuElement::DefaultEventHandler(Event& event) {
   }
 
   MediaControlDivElement::DefaultEventHandler(event);
+}
+
+bool MediaControlPopupMenuElement::KeepEventInNode(const Event& event) const {
+  return MediaControlsImpl::IsModern() &&
+         MediaControlElementsHelper::IsUserInteractionEvent(event);
 }
 
 void MediaControlPopupMenuElement::RemovedFrom(ContainerNode& container) {

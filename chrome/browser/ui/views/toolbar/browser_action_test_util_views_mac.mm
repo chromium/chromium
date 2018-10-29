@@ -10,7 +10,7 @@
 #import "ui/base/test/windowed_nsnotification_observer.h"
 
 bool BrowserActionTestUtil::WaitForPopup() {
-  NSWindow* window = [GetPopupNativeView() window];
+  NSWindow* window = [GetPopupNativeView().GetNativeNSView() window];
   if (!window)
     return false;
 

@@ -14,7 +14,7 @@ class SVGNumberInterpolationType : public SVGInterpolationType {
  public:
   SVGNumberInterpolationType(const QualifiedName& attribute)
       : SVGInterpolationType(attribute),
-        is_non_negative_(attribute == SVGNames::pathLengthAttr) {}
+        is_non_negative_(attribute == svg_names::kPathLengthAttr) {}
 
  private:
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,

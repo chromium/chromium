@@ -6,18 +6,25 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_COMMAND_HANDLER_LINUX_H_
 
 #include "base/macros.h"
+#include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
 
 class BrowserView;
 
-class BrowserCommandHandlerLinux : public ui::EventHandler {
+class BrowserCommandHandlerLinux : public ui::EventHandler,
+                                   public aura::WindowObserver {
  public:
   explicit BrowserCommandHandlerLinux(BrowserView* browser_view);
   ~BrowserCommandHandlerLinux() override;
 
  private:
+  void RemoveObservers(aura::Window* window);
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
 
   BrowserView* browser_view_;
 

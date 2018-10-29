@@ -403,7 +403,7 @@ struct is_trivially_move_constructible
 
 template <class T>
 struct is_trivially_move_assignable
-    : std::is_move_assignable<SingleUnion<T>>::type {};
+    : absl::is_move_assignable<SingleUnion<T>>::type {};
 
 TEST(VariantTest, NothrowMoveConstructible) {
   // Verify that variant is nothrow move constructible iff its template
@@ -2439,14 +2439,14 @@ TEST(VariantTest, TestMoveConversionViaConvertVariantTo) {
 
 TEST(VariantTest, TestCopyAndMoveTypeTraits) {
   EXPECT_TRUE(std::is_copy_constructible<variant<std::string>>::value);
-  EXPECT_TRUE(std::is_copy_assignable<variant<std::string>>::value);
+  EXPECT_TRUE(absl::is_copy_assignable<variant<std::string>>::value);
   EXPECT_TRUE(std::is_move_constructible<variant<std::string>>::value);
-  EXPECT_TRUE(std::is_move_assignable<variant<std::string>>::value);
+  EXPECT_TRUE(absl::is_move_assignable<variant<std::string>>::value);
   EXPECT_TRUE(std::is_move_constructible<variant<std::unique_ptr<int>>>::value);
-  EXPECT_TRUE(std::is_move_assignable<variant<std::unique_ptr<int>>>::value);
+  EXPECT_TRUE(absl::is_move_assignable<variant<std::unique_ptr<int>>>::value);
   EXPECT_FALSE(
       std::is_copy_constructible<variant<std::unique_ptr<int>>>::value);
-  EXPECT_FALSE(std::is_copy_assignable<variant<std::unique_ptr<int>>>::value);
+  EXPECT_FALSE(absl::is_copy_assignable<variant<std::unique_ptr<int>>>::value);
 
   EXPECT_FALSE(
       absl::is_trivially_copy_constructible<variant<std::string>>::value);

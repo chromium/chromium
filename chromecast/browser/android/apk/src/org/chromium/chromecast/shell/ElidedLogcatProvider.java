@@ -6,9 +6,9 @@ package org.chromium.chromecast.shell;
 
 import android.os.SystemClock;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.Log;
 import org.chromium.base.VisibleForTesting;
+import org.chromium.base.task.AsyncTask;
 
 import java.io.BufferedReader;
 import java.io.IOException;

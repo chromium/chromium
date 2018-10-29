@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -76,22 +76,8 @@ TestArrayBuffer* V8ArrayBuffer::ToImpl(v8::Local<v8::Object> object) {
   // Transfer the ownership of the allocated memory to an ArrayBuffer without
   // copying.
   v8::ArrayBuffer::Contents v8Contents = v8buffer->Externalize();
-  WTF::ArrayBufferContents::AllocationKind kind = WTF::ArrayBufferContents::AllocationKind::kNormal;
-  switch (v8Contents.AllocationMode()) {
-    case v8::ArrayBuffer::Allocator::AllocationMode::kNormal:
-      kind = WTF::ArrayBufferContents::AllocationKind::kNormal;
-      break;
-    case v8::ArrayBuffer::Allocator::AllocationMode::kReservation:
-      kind = WTF::ArrayBufferContents::AllocationKind::kReservation;
-      break;
-    default:
-      NOTREACHED();
-  };
-  WTF::ArrayBufferContents::DataHandle data(v8Contents.AllocationBase(),
-                                            v8Contents.AllocationLength(),
-                                            v8Contents.Data(),
+  WTF::ArrayBufferContents::DataHandle data(v8Contents.Data(),
                                             v8Contents.ByteLength(),
-                                            kind,
                                             v8Contents.Deleter(),
                                             v8Contents.DeleterData());
   WTF::ArrayBufferContents contents(std::move(data), WTF::ArrayBufferContents::kNotShared);

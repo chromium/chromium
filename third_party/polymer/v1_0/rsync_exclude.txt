@@ -28,10 +28,6 @@ package-lock.json
 */site/
 */templates/
 
-# This is downloaded even though it's unused due to http://crbug.com/843701#c1
-# paper-radio-button
-paper-radio-button/
-
 # paper-spinner
 paper-spinner/paper-spinner.html
 

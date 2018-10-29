@@ -1,6 +1,6 @@
 {
   metadata: {
-    namespace: "MediaFeature",
+    namespace: "media_feature_names",
     export: "",
   },
 

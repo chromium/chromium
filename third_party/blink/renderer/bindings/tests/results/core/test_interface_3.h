@@ -8,9 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-
-#ifndef WEB_API_TEST_INTERFACE_3_H
-#define WEB_API_TEST_INTERFACE_3_H
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_TEST_INTERFACE_3_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_TEST_INTERFACE_3_H_
 
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -38,4 +37,4 @@ class TestInterface3 : public blink::GarbageCollected<TestInterface3> {
 
 }  // namespace web
 
-#endif  // WEB_API_TEST_INTERFACE_3_H
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_TEST_INTERFACE_3_H_

@@ -14,16 +14,8 @@ static_library("constrained_window") {
     "native_web_contents_modal_dialog_manager_views.h",
     "native_web_contents_modal_dialog_manager_views_mac.h",
     "native_web_contents_modal_dialog_manager_views_mac.mm",
+    "show_modal_dialog_views.cc",
   ]
-
-  if (is_mac) {
-    sources += [ "show_modal_dialog_cocoa.cc" ]
-    if (mac_views_browser) {
-      sources += [ "show_modal_dialog_views.cc" ]
-    }
-  } else {
-    sources += [ "show_modal_dialog_views.cc" ]
-  }
 
   deps = [
     "//components/guest_view/browser",
@@ -51,10 +43,6 @@ source_set("unit_tests") {
   sources = [
     "constrained_window_views_unittest.cc",
   ]
-
-  if (is_mac) {
-    sources += [ "test_create_native_web_modal_manager_cocoa.cc" ]
-  }
 
   deps = [
     ":constrained_window",

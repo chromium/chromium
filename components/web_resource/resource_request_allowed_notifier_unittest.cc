@@ -6,7 +6,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/web_resource/eula_accepted_notifier.h"
 #include "components/web_resource/resource_request_allowed_notifier_test_util.h"
@@ -14,34 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_resource {
-
-// Override NetworkChangeNotifier to simulate connection type changes for tests.
-class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
- public:
-  TestNetworkChangeNotifier()
-      : connection_type_(net::NetworkChangeNotifier::CONNECTION_UNKNOWN) {}
-
-  // Simulates a change of the connection type to |type|. This will notify any
-  // objects that are NetworkChangeNotifiers.
-  void SimulateNetworkConnectionChange(
-      net::NetworkChangeNotifier::ConnectionType type) {
-    connection_type_ = type;
-    net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
-        connection_type_);
-    base::RunLoop().RunUntilIdle();
-  }
-
- private:
-  ConnectionType GetCurrentConnectionType() const override {
-    return connection_type_;
-  }
-
-  // The currently simulated network connection type. If this is set to
-  // CONNECTION_NONE, then NetworkChangeNotifier::IsOffline will return true.
-  net::NetworkChangeNotifier::ConnectionType connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkChangeNotifier);
-};
 
 // EulaAcceptedNotifier test class that allows mocking the EULA accepted state
 // and issuing simulated notifications.
@@ -74,23 +45,13 @@ enum class ConnectionTrackerResponseMode {
   kAsynchronous,
 };
 
-enum class MigrationState {
-  kEnabled,
-  kDisabled,
-};
-
-struct TestCase {
-  ConnectionTrackerResponseMode response_mode;
-  MigrationState migration_state;
-};
-
 // A test fixture class for ResourceRequestAllowedNotifier tests that require
 // network state simulations. This also acts as the service implementing the
 // ResourceRequestAllowedNotifier::Observer interface.
 class ResourceRequestAllowedNotifierTest
     : public testing::Test,
       public ResourceRequestAllowedNotifier::Observer,
-      public testing::WithParamInterface<TestCase> {
+      public testing::WithParamInterface<ConnectionTrackerResponseMode> {
  public:
   ResourceRequestAllowedNotifierTest()
       : resource_request_allowed_notifier_(
@@ -100,12 +61,9 @@ class ResourceRequestAllowedNotifierTest
         was_notified_(false) {
     auto* tracker = network::TestNetworkConnectionTracker::GetInstance();
     tracker->SetRespondSynchronously(
-        GetParam().response_mode ==
-        ConnectionTrackerResponseMode::kSynchronous);
+        GetParam() == ConnectionTrackerResponseMode::kSynchronous);
     tracker->SetConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
 
-    if (GetParam().migration_state == MigrationState::kEnabled)
-      feature_list_.InitAndEnableFeature(kResourceRequestAllowedMigration);
     resource_request_allowed_notifier_.InitWithEulaAcceptNotifier(
         this, base::WrapUnique(eula_notifier_));
   }
@@ -117,14 +75,9 @@ class ResourceRequestAllowedNotifierTest
   void OnResourceRequestsAllowed() override { was_notified_ = true; }
 
   void SimulateNetworkConnectionChange(network::mojom::ConnectionType type) {
-    if (GetParam().migration_state == MigrationState::kEnabled) {
-      network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-          type);
-      base::RunLoop().RunUntilIdle();
-    } else {
-      network_notifier_.SimulateNetworkConnectionChange(
-          net::NetworkChangeNotifier::ConnectionType(type));
-    }
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        type);
+    base::RunLoop().RunUntilIdle();
   }
 
   // Simulate a resource request from the test service. It returns true if
@@ -166,10 +119,8 @@ class ResourceRequestAllowedNotifierTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::MessageLoopForUI message_loop_;
   TestRequestAllowedNotifier resource_request_allowed_notifier_;
-  TestNetworkChangeNotifier network_notifier_;
   TestingPrefServiceSimple prefs_;
   TestEulaAcceptedNotifier* eula_notifier_;  // Weak, owned by RRAN.
   bool was_notified_;
@@ -178,7 +129,7 @@ class ResourceRequestAllowedNotifierTest
 };
 
 TEST_P(ResourceRequestAllowedNotifierTest, NotifyOnInitialNetworkState) {
-  if (GetParam().response_mode == ConnectionTrackerResponseMode::kSynchronous) {
+  if (GetParam() == ConnectionTrackerResponseMode::kSynchronous) {
     EXPECT_TRUE(SimulateResourceRequest());
   } else {
     EXPECT_FALSE(SimulateResourceRequest());
@@ -347,11 +298,7 @@ TEST_P(ResourceRequestAllowedNotifierTest, NoRequestNoNotifyEula) {
 INSTANTIATE_TEST_CASE_P(
     ,
     ResourceRequestAllowedNotifierTest,
-    testing::Values(TestCase({ConnectionTrackerResponseMode::kSynchronous,
-                              MigrationState::kEnabled}),
-                    TestCase({ConnectionTrackerResponseMode::kAsynchronous,
-                              MigrationState::kEnabled}),
-                    TestCase({ConnectionTrackerResponseMode::kSynchronous,
-                              MigrationState::kDisabled})));
+    testing::Values(ConnectionTrackerResponseMode::kSynchronous,
+                    ConnectionTrackerResponseMode::kAsynchronous));
 
 }  // namespace web_resource

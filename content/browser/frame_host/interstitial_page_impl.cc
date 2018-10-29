@@ -92,7 +92,7 @@ class InterstitialPageImpl::InterstitialPageRVHDelegateView
   void TakeFocus(bool reverse) override;
   int GetTopControlsHeight() const override;
   int GetBottomControlsHeight() const override;
-  bool DoBrowserControlsShrinkBlinkSize() const override;
+  bool DoBrowserControlsShrinkRendererSize() const override;
   virtual void OnFindReply(int request_id,
                            int number_of_matches,
                            const gfx::Rect& selection_rect,
@@ -301,7 +301,7 @@ void InterstitialPageImpl::Hide() {
   bool has_focus = render_view_host_->GetWidget()->GetView() &&
                    render_view_host_->GetWidget()->GetView()->HasFocus();
   render_view_host_ = nullptr;
-  frame_tree_->root()->ResetForNewProcess();
+  frame_tree_->root()->current_frame_host()->ResetChildren();
   controller_->delegate()->DetachInterstitialPage(has_focus);
   // Let's revert to the original title if necessary.
   NavigationEntry* entry = controller_->GetVisibleEntry();
@@ -310,8 +310,7 @@ void InterstitialPageImpl::Hide() {
 
   static_cast<WebContentsImpl*>(web_contents_)->DidChangeVisibleSecurityState();
 
-  InterstitialPageMap::iterator iter =
-      g_web_contents_to_interstitial_page->find(web_contents_);
+  auto iter = g_web_contents_to_interstitial_page->find(web_contents_);
   DCHECK(iter != g_web_contents_to_interstitial_page->end());
   if (iter != g_web_contents_to_interstitial_page->end())
     g_web_contents_to_interstitial_page->erase(iter);
@@ -595,10 +594,9 @@ bool InterstitialPageImpl::PreHandleMouseEvent(
   return false;
 }
 
-void InterstitialPageImpl::HandleKeyboardEvent(
-      const NativeWebKeyboardEvent& event) {
-  if (enabled())
-    render_widget_host_delegate_->HandleKeyboardEvent(event);
+bool InterstitialPageImpl::HandleKeyboardEvent(
+    const NativeWebKeyboardEvent& event) {
+  return enabled() && render_widget_host_delegate_->HandleKeyboardEvent(event);
 }
 
 WebContents* InterstitialPageImpl::web_contents() const {
@@ -1025,14 +1023,14 @@ int InterstitialPageImpl::InterstitialPageRVHDelegateView::
 }
 
 bool InterstitialPageImpl::InterstitialPageRVHDelegateView::
-    DoBrowserControlsShrinkBlinkSize() const {
+    DoBrowserControlsShrinkRendererSize() const {
   if (!interstitial_page_->web_contents())
     return false;
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(interstitial_page_->web_contents());
   if (!web_contents || !web_contents->GetDelegateView())
     return false;
-  return web_contents->GetDelegateView()->DoBrowserControlsShrinkBlinkSize();
+  return web_contents->GetDelegateView()->DoBrowserControlsShrinkRendererSize();
 }
 
 void InterstitialPageImpl::InterstitialPageRVHDelegateView::OnFindReply(

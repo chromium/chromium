@@ -291,8 +291,8 @@ int ScrollbarTheme::ThumbLength(const Scrollbar& scrollbar) {
   int length = round(proportion * track_len);
   length = std::max(length, MinimumThumbLength(scrollbar));
   if (length > track_len)
-    length = 0;  // Once the thumb is below the track length, it just goes away
-                 // (to make more room for the track).
+    length = track_len;  // Once the thumb is below the track length,
+                         // it fills the track.
   return length;
 }
 

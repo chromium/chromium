@@ -5,31 +5,36 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
+scoped_refptr<const NGPhysicalLineBoxFragment>
+NGPhysicalLineBoxFragment::Create(NGLineBoxFragmentBuilder* builder) {
+  // We store the children list inline in the fragment as a flexible
+  // array. Therefore, we need to make sure to allocate enough space for
+  // that array here, which requires a manual allocation + placement new.
+  // The initialization of the array is done by NGPhysicalContainerFragment;
+  // we pass the buffer as a constructor argument.
+  void* data = ::WTF::Partitions::FastMalloc(
+      sizeof(NGPhysicalLineBoxFragment) +
+          builder->children_.size() * sizeof(NGLinkStorage),
+      ::WTF::GetStringWithTypeName<NGPhysicalLineBoxFragment>());
+  new (data) NGPhysicalLineBoxFragment(builder);
+  return base::AdoptRef(static_cast<NGPhysicalLineBoxFragment*>(data));
+}
+
 NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
-    const ComputedStyle& style,
-    NGStyleVariant style_variant,
-    NGPhysicalSize size,
-    Vector<NGLink>& children,
-    const NGPhysicalOffsetRect& contents_ink_overflow,
-    const NGLineHeightMetrics& metrics,
-    TextDirection base_direction,
-    scoped_refptr<NGBreakToken> break_token)
-    : NGPhysicalContainerFragment(nullptr,
-                                  style,
-                                  style_variant,
-                                  size,
+    NGLineBoxFragmentBuilder* builder)
+    : NGPhysicalContainerFragment(builder,
+                                  builder->GetWritingMode(),
+                                  children_,
                                   kFragmentLineBox,
-                                  0,
-                                  children,
-                                  contents_ink_overflow,
-                                  std::move(break_token)),
-      metrics_(metrics) {
-  base_direction_ = static_cast<unsigned>(base_direction);
+                                  0),
+      metrics_(builder->metrics_) {
+  base_direction_ = static_cast<unsigned>(builder->base_direction_);
 }
 
 NGLineHeightMetrics NGPhysicalLineBoxFragment::BaselineMetrics(
@@ -42,6 +47,15 @@ NGLineHeightMetrics NGPhysicalLineBoxFragment::BaselineMetrics(
 
 NGPhysicalOffsetRect NGPhysicalLineBoxFragment::InkOverflow() const {
   return ContentsInkOverflow();
+}
+
+NGPhysicalOffsetRect NGPhysicalLineBoxFragment::ContentsInkOverflow() const {
+  // Cannot be cached, because children might change their self-painting flag.
+  NGPhysicalOffsetRect overflow({}, Size());
+  for (const auto& child : Children()) {
+    child->PropagateContentsInkOverflow(&overflow, child.Offset());
+  }
+  return overflow;
 }
 
 NGPhysicalOffsetRect NGPhysicalLineBoxFragment::ScrollableOverflow(

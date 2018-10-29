@@ -250,8 +250,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
   // Add snapshot data.
   const std::vector<GURL>& urls = snapshot.startup_urls();
   std::string startup_urls;
-  for (std::vector<GURL>::const_iterator i = urls.begin();
-       i != urls.end(); ++i) {
+  for (auto i = urls.begin(); i != urls.end(); ++i) {
     if (!startup_urls.empty())
       startup_urls += ' ';
     startup_urls += i->host();
@@ -317,8 +316,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
   if (snapshot.shortcuts_determined()) {
     base::string16 shortcut_targets;
     const std::vector<ShortcutCommand>& shortcuts = snapshot.shortcuts();
-    for (std::vector<ShortcutCommand>::const_iterator i =
-         shortcuts.begin(); i != shortcuts.end(); ++i) {
+    for (auto i = shortcuts.begin(); i != shortcuts.end(); ++i) {
       if (!shortcut_targets.empty())
         shortcut_targets += base::ASCIIToUTF16("\n");
       shortcut_targets += base::ASCIIToUTF16("chrome.exe ");
@@ -339,8 +337,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
   const ResettableSettingsSnapshot::ExtensionList& extensions =
       snapshot.enabled_extensions();
   std::string extension_names;
-  for (ResettableSettingsSnapshot::ExtensionList::const_iterator i =
-       extensions.begin(); i != extensions.end(); ++i) {
+  for (auto i = extensions.begin(); i != extensions.end(); ++i) {
     if (!extension_names.empty())
       extension_names += '\n';
     extension_names += i->second;

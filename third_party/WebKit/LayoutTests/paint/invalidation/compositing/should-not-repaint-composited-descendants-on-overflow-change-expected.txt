@@ -25,12 +25,6 @@
       "backgroundColor": "#008000"
     },
     {
-      "name": "Ancestor Clipping Layer",
-      "position": [0, 200],
-      "bounds": [200, 200],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow DIV class='composited-child'",
       "position": [0, 200],
       "bounds": [100, 100],
@@ -45,12 +39,6 @@
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",
       "backgroundColor": "#008000"
-    },
-    {
-      "name": "Ancestor Clipping Layer",
-      "position": [0, 200],
-      "bounds": [200, 200],
-      "drawsContent": false
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='composited-child overflow-child'",

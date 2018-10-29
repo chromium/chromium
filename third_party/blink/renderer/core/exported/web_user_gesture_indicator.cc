@@ -38,13 +38,13 @@
 namespace blink {
 
 bool WebUserGestureIndicator::IsProcessingUserGesture(WebLocalFrame* frame) {
-  return Frame::HasTransientUserActivation(
+  return LocalFrame::HasTransientUserActivation(
       frame ? ToWebLocalFrameImpl(frame)->GetFrame() : nullptr);
 }
 
 bool WebUserGestureIndicator::IsProcessingUserGestureThreadSafe(
     WebLocalFrame* frame) {
-  return Frame::HasTransientUserActivation(
+  return LocalFrame::HasTransientUserActivation(
       frame ? ToWebLocalFrameImpl(frame)->GetFrame() : nullptr, true);
 }
 
@@ -54,7 +54,7 @@ bool WebUserGestureIndicator::IsProcessingUserGestureThreadSafe(
 bool WebUserGestureIndicator::ConsumeUserGesture(
     WebLocalFrame* frame,
     UserActivationUpdateSource update_source) {
-  return Frame::ConsumeTransientUserActivation(
+  return LocalFrame::ConsumeTransientUserActivation(
       frame ? ToWebLocalFrameImpl(frame)->GetFrame() : nullptr, true,
       update_source);
 

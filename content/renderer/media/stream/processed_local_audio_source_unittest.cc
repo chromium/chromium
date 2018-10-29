@@ -6,7 +6,7 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "build/build_config.h"
 #include "content/public/renderer/media_stream_audio_sink.h"
 #include "content/renderer/media/audio/mock_audio_device_factory.h"
@@ -144,7 +144,8 @@ class ProcessedLocalAudioSourceTest : public testing::Test {
                             const blink::WebString& result_name) {}
 
  private:
-  base::MessageLoop main_thread_message_loop_;  // Needed for MSAudioProcessor.
+  base::test::ScopedTaskEnvironment
+      task_environment_;  // Needed for MSAudioProcessor.
   MockAudioDeviceFactory mock_audio_device_factory_;
   MockPeerConnectionDependencyFactory mock_dependency_factory_;
   blink::WebMediaStreamSource blink_audio_source_;

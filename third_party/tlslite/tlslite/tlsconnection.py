@@ -1352,8 +1352,16 @@ class TLSConnection(TLSRecordLayer):
             tackExt = TackExtension.create(tacks, activationFlags)
         else:
             tackExt = None
+        serverRandom = getRandomBytes(32)
+        # See https://tools.ietf.org/html/rfc8446#section-4.1.3
+        if settings.simulateTLS13Downgrade:
+            serverRandom = serverRandom[:24] + \
+                bytearray("\x44\x4f\x57\x4e\x47\x52\x44\x01")
+        elif settings.simulateTLS12Downgrade:
+            serverRandom = serverRandom[:24] + \
+                bytearray("\x44\x4f\x57\x4e\x47\x52\x44\x00")
         serverHello = ServerHello()
-        serverHello.create(self.version, getRandomBytes(32), sessionID, \
+        serverHello.create(self.version, serverRandom, sessionID, \
                             cipherSuite, CertificateType.x509, tackExt,
                             alpn_proto_selected,
                             nextProtos)

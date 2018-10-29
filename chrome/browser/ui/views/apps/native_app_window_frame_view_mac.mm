@@ -22,7 +22,7 @@ NativeAppWindowFrameViewMac::~NativeAppWindowFrameViewMac() {
 
 gfx::Rect NativeAppWindowFrameViewMac::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
-  NSWindow* ns_window = GetWidget()->GetNativeWindow();
+  NSWindow* ns_window = GetWidget()->GetNativeWindow().GetNativeNSWindow();
   gfx::Rect window_bounds = gfx::ScreenRectFromNSRect([ns_window
       frameRectForContentRect:gfx::ScreenRectToNSRect(client_bounds)]);
   // Enforce minimum size (1, 1) in case that |client_bounds| is passed with

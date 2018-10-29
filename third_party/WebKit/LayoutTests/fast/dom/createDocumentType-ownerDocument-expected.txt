@@ -2,7 +2,6 @@ Tests that DOMImplementation.createDocumentType() properly sets the node's docum
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS docType.ownerDocument is document
 PASS newDocument = document.implementation.createDocument('', null, docType) did not throw exception.
 PASS newDocument.doctype is docType

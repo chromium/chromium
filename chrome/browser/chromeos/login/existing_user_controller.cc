@@ -17,6 +17,7 @@
 #include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -89,6 +90,7 @@
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -172,8 +174,8 @@ void TransferContextAuthenticationsOnIOThread(
   VLOG(1) << "Main request context populated with authentication data.";
   // Last but not least tell the policy subsystem to refresh now as it might
   // have been stuck until now too.
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   base::BindOnce(&RefreshPoliciesOnUIThread));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(&RefreshPoliciesOnUIThread));
 }
 
 // Record UMA for password login of regular user when Easy sign-in is enabled.
@@ -474,8 +476,8 @@ void ExistingUserController::Observe(
       DCHECK(webview_context_getter.get());
     }
 
-    content::BrowserThread::PostDelayedTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostDelayedTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&TransferContextAuthenticationsOnIOThread,
                        base::RetainedRef(signin_profile_context_getter),
                        base::RetainedRef(webview_context_getter),
@@ -848,8 +850,8 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
       last_login_attempt_account_id_);
   if (failure.reason() == AuthFailure::OWNER_REQUIRED) {
     ShowError(IDS_LOGIN_ERROR_OWNER_REQUIRED, error);
-    content::BrowserThread::PostDelayedTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostDelayedTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(
             &SessionManagerClient::StopSession,
             base::Unretained(
@@ -1526,8 +1528,7 @@ void ExistingUserController::ShowError(int error_id,
 
 void ExistingUserController::SendAccessibilityAlert(
     const std::string& alert_text) {
-  AutomationManagerAura::GetInstance()->HandleAlert(
-      ProfileHelper::GetSigninProfile(), alert_text);
+  AutomationManagerAura::GetInstance()->HandleAlert(alert_text);
 }
 
 void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(

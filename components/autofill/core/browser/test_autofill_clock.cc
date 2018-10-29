@@ -24,4 +24,8 @@ void TestAutofillClock::SetNow(base::Time now) {
   test_clock_.SetNow(now);
 }
 
+void TestAutofillClock::Advance(base::TimeDelta delta) {
+  test_clock_.Advance(delta);
+}
+
 }  // namespace autofill

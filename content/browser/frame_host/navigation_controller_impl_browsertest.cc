@@ -18,6 +18,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
@@ -35,6 +36,7 @@
 #include "content/common/frame_messages.h"
 #include "content/common/page_state_serialization.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_view_host.h"
@@ -983,8 +985,8 @@ IN_PROC_BROWSER_TEST_F(NavigationControllerBrowserTest,
                        ErrorPageReplacement) {
   NavigationController& controller = shell()->web_contents()->GetController();
   GURL error_url = embedded_test_server()->GetURL("/close-socket");
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
@@ -6011,6 +6013,21 @@ IN_PROC_BROWSER_TEST_F(NavigationControllerBrowserTest,
   EXPECT_EQ(0, controller.GetCurrentEntryIndex());
 }
 
+// Make sure that a 304 response to a navigation aborts the navigation.
+IN_PROC_BROWSER_TEST_F(NavigationControllerBrowserTest, NavigateTo304) {
+  // URL that just returns a blank page.
+  GURL initial_url = embedded_test_server()->GetURL("/set-header");
+  // URL that returns a response with a 304 status code.
+  GURL not_modified_url = embedded_test_server()->GetURL("/echo?status=304");
+
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+  EXPECT_EQ(initial_url, shell()->web_contents()->GetVisibleURL());
+
+  // The navigation should be aborted.
+  EXPECT_FALSE(NavigateToURL(shell(), not_modified_url));
+  EXPECT_EQ(initial_url, shell()->web_contents()->GetVisibleURL());
+}
+
 // Ensure that we do not corrupt a NavigationEntry's PageState if two forward
 // navigations compete in different frames.  See https://crbug.com/623319.
 IN_PROC_BROWSER_TEST_F(NavigationControllerBrowserTest,
@@ -6556,8 +6573,9 @@ IN_PROC_BROWSER_TEST_F(NavigationControllerBrowserTest,
 // Tests that inserting a named subframe into the FrameTree clears any
 // previously existing FrameNavigationEntry objects for the same name.
 // See https://crbug.com/628677.
-// Crashes inconsistently on windows only: https://crbug.com/783806.
-#if defined(OS_WIN)
+// Crashes/fails inconsistently on windows and ChromeOS:
+// https://crbug.com/783806.
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
 #define MAYBE_EnsureFrameNavigationEntriesClearedOnMismatch \
   DISABLED_EnsureFrameNavigationEntriesClearedOnMismatch
 #else
@@ -7986,7 +8004,12 @@ IN_PROC_BROWSER_TEST_F(NavigationControllerBrowserTest,
   // Perform a cross-site omnibox navigation.
   prev_host = curr_host;
   prev_spare = curr_spare;
+  RenderProcessHostWatcher prev_host_watcher(
+      prev_host, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
   EXPECT_TRUE(NavigateToURL(shell(), second_url));
+  // Wait until the |prev_host| goes away - this ensures that the spare will be
+  // picked up by subsequent back navigation below.
+  prev_host_watcher.Wait();
   curr_spare = RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
   curr_host = shell()->web_contents()->GetMainFrame()->GetProcess();
   // The cross-site omnibox navigation should swap processes.
@@ -8193,6 +8216,46 @@ IN_PROC_BROWSER_TEST_F(NavigationControllerBrowserTest,
               root->current_frame_host()->GetSiteInstance());
     EXPECT_EQ(NAVIGATION_TYPE_EXISTING_PAGE, capturer.navigation_type());
   }
+}
+
+// history.back() called twice in the renderer process should not make the user
+// navigate back twice.
+// Regression test for https://crbug.com/869710
+IN_PROC_BROWSER_TEST_F(NavigationControllerBrowserTest,
+                       HistoryBackTwiceFromRendererWithoutUserGesture) {
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  GURL url3(embedded_test_server()->GetURL("c.com", "/title3.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  EXPECT_TRUE(NavigateToURL(shell(), url3));
+
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
+      shell(), "history.back(); history.back();"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ(url2, shell()->web_contents()->GetLastCommittedURL());
+}
+
+// history.back() called twice in the renderer process should not make the user
+// navigate back twice. Even with a user gesture.
+// Regression test for https://crbug.com/869710
+IN_PROC_BROWSER_TEST_F(NavigationControllerBrowserTest,
+                       HistoryBackTwiceFromRendererWithUserGesture) {
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  GURL url3(embedded_test_server()->GetURL("c.com", "/title3.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  EXPECT_TRUE(NavigateToURL(shell(), url3));
+
+  EXPECT_TRUE(ExecuteScript(shell(), "history.back(); history.back();"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // TODO(https://crbug.com/869710): This should be url2.
+  EXPECT_EQ(url1, shell()->web_contents()->GetLastCommittedURL());
 }
 
 }  // namespace content

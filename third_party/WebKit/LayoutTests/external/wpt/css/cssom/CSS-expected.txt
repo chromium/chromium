@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS CSS.escape
+PASS CSS.supports, one argument form
+PASS CSS.supports, two argument form
+FAIL CSS.supports, selector function assert_equals: CSS.supports: selector() function accepts a selector expected true but got false
+Harness: the test ran to completion.
+

@@ -35,9 +35,15 @@ class MojoSharedBufferVideoFrame : public VideoFrame {
   // Buffers for the frame are allocated but not initialized. The caller must
   // not make assumptions about the actual underlying sizes, but check the
   // returned VideoFrame instead.
-  static scoped_refptr<MojoSharedBufferVideoFrame> CreateDefaultI420(
+  static scoped_refptr<MojoSharedBufferVideoFrame> CreateDefaultI420ForTesting(
       const gfx::Size& dimensions,
       base::TimeDelta timestamp);
+
+  // Creates a YUV frame backed by shared memory from in-memory YUV frame.
+  // Internally the data from in-memory YUV frame will be copied to a
+  // consecutive block in shared memory. Will return null on failure.
+  static scoped_refptr<MojoSharedBufferVideoFrame> CreateFromYUVFrame(
+      const VideoFrame& frame);
 
   // Creates a MojoSharedBufferVideoFrame that uses the memory in |handle|.
   // This will take ownership of |handle|, so the caller can no longer use it.

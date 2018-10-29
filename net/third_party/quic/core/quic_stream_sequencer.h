@@ -113,7 +113,7 @@ class QUIC_EXPORT_PRIVATE QuicStreamSequencer {
 
   bool level_triggered() const { return level_triggered_; }
 
-  // Returns std::string describing internal state.
+  // Returns string describing internal state.
   const QuicString DebugString() const;
 
  private:

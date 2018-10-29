@@ -32,8 +32,8 @@ class WebServiceWorkerRequestPrivate
   mojom::FetchCacheMode cache_mode_ = mojom::FetchCacheMode::kDefault;
   network::mojom::FetchRedirectMode redirect_mode_ =
       network::mojom::FetchRedirectMode::kFollow;
-  WebURLRequest::RequestContext request_context_ =
-      WebURLRequest::kRequestContextUnspecified;
+  mojom::RequestContextType request_context_ =
+      mojom::RequestContextType::UNSPECIFIED;
   network::mojom::RequestContextFrameType frame_type_ =
       network::mojom::RequestContextFrameType::kNone;
   WebString integrity_;
@@ -145,8 +145,9 @@ scoped_refptr<BlobDataHandle> WebServiceWorkerRequest::GetBlobDataHandle()
   return private_->blob_data_handle;
 }
 
-void WebServiceWorkerRequest::SetReferrer(const WebString& web_referrer,
-                                          WebReferrerPolicy referrer_policy) {
+void WebServiceWorkerRequest::SetReferrer(
+    const WebString& web_referrer,
+    network::mojom::ReferrerPolicy referrer_policy) {
   // WebString doesn't have the distinction between empty and null. We use
   // the null WTFString for referrer.
   DCHECK_EQ(Referrer::NoReferrer(), String());
@@ -160,8 +161,10 @@ WebURL WebServiceWorkerRequest::ReferrerUrl() const {
   return KURL(private_->referrer_.referrer);
 }
 
-WebReferrerPolicy WebServiceWorkerRequest::GetReferrerPolicy() const {
-  return static_cast<WebReferrerPolicy>(private_->referrer_.referrer_policy);
+network::mojom::ReferrerPolicy WebServiceWorkerRequest::GetReferrerPolicy()
+    const {
+  return static_cast<network::mojom::ReferrerPolicy>(
+      private_->referrer_.referrer_policy);
 }
 
 const Referrer& WebServiceWorkerRequest::GetReferrer() const {
@@ -226,12 +229,11 @@ network::mojom::FetchRedirectMode WebServiceWorkerRequest::RedirectMode()
 }
 
 void WebServiceWorkerRequest::SetRequestContext(
-    WebURLRequest::RequestContext request_context) {
+    mojom::RequestContextType request_context) {
   private_->request_context_ = request_context;
 }
 
-WebURLRequest::RequestContext WebServiceWorkerRequest::GetRequestContext()
-    const {
+mojom::RequestContextType WebServiceWorkerRequest::GetRequestContext() const {
   return private_->request_context_;
 }
 

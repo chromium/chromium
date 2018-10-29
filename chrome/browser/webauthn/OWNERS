@@ -1,5 +1,4 @@
-engedy@chromium.org
-kpaulhamus@chromium.org
+file://device/fido/OWNERS
 
-# Component: Blink>WebAuthentication
 # TEAM: identity-dev@chromium.org
+# Component: Blink>WebAuthentication

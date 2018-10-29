@@ -29,8 +29,7 @@ class ChangeRequestsStateTaskTest : public RequestQueueTaskTestBase {
   ~ChangeRequestsStateTaskTest() override = default;
 
   void AddItemsToStore();
-  void ChangeRequestsStateCallback(
-      std::unique_ptr<UpdateRequestsResult> result);
+  void ChangeRequestsStateCallback(UpdateRequestsResult result);
 
   UpdateRequestsResult* last_result() const { return result_.get(); }
 
@@ -57,8 +56,8 @@ void ChangeRequestsStateTaskTest::AddItemsToStore() {
 }
 
 void ChangeRequestsStateTaskTest::ChangeRequestsStateCallback(
-    std::unique_ptr<UpdateRequestsResult> result) {
-  result_ = std::move(result);
+    UpdateRequestsResult result) {
+  result_ = std::make_unique<UpdateRequestsResult>(std::move(result));
 }
 
 void ChangeRequestsStateTaskTest::InitializeStoreDone(bool success) {

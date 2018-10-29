@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
@@ -17,12 +18,15 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
@@ -53,6 +57,7 @@
 #include "components/autofill/core/browser/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/strike_database.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -79,6 +84,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -86,11 +92,12 @@
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_utils.h"
 #include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_store.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/net_buildflags.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "net/url_request/url_request_test_util.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/favicon_size.h"
 
@@ -255,70 +262,59 @@ class RemoveCookieTester {
 
   // Returns true, if the given cookie exists in the cookie store.
   bool ContainsCookie() {
-    scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-        new content::MessageLoopRunner;
-    quit_closure_ = message_loop_runner->QuitClosure();
-    get_cookie_success_ = false;
-    cookie_store_->GetCookieListWithOptionsAsync(
+    bool result = false;
+    base::RunLoop run_loop;
+    cookie_manager_->GetCookieList(
         kOrigin1, net::CookieOptions(),
-        base::BindOnce(&RemoveCookieTester::GetCookieListCallback,
-                       base::Unretained(this)));
-    message_loop_runner->Run();
-    return get_cookie_success_;
+        base::BindLambdaForTesting([&](const net::CookieList& cookie_list) {
+          std::string cookie_line =
+              net::CanonicalCookie::BuildCookieLine(cookie_list);
+          if (cookie_line == "A=1") {
+            result = true;
+          } else {
+            EXPECT_EQ("", cookie_line);
+            result = false;
+          }
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
   }
 
   void AddCookie() {
-    scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-        new content::MessageLoopRunner;
-    quit_closure_ = message_loop_runner->QuitClosure();
-    cookie_store_->SetCookieWithOptionsAsync(
-        kOrigin1, "A=1", net::CookieOptions(),
-        base::BindOnce(&RemoveCookieTester::SetCookieCallback,
-                       base::Unretained(this)));
-    message_loop_runner->Run();
+    base::RunLoop run_loop;
+    auto cookie = net::CanonicalCookie::Create(
+        kOrigin1, "A=1", base::Time::Now(), net::CookieOptions());
+    cookie_manager_->SetCanonicalCookie(
+        *cookie, /*secure_source=*/false, /*modify_http_only=*/false,
+        base::BindLambdaForTesting([&](bool result) {
+          EXPECT_TRUE(result);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
   }
 
  protected:
-  void SetCookieStore(net::CookieStore* cookie_store) {
-    cookie_store_ = cookie_store;
+  void SetCookieManager(network::mojom::CookieManagerPtr cookie_manager) {
+    cookie_manager_ = std::move(cookie_manager);
   }
 
  private:
-  void GetCookieListCallback(const net::CookieList& cookie_list) {
-    std::string cookie_line =
-        net::CanonicalCookie::BuildCookieLine(cookie_list);
-    if (cookie_line == "A=1") {
-      get_cookie_success_ = true;
-    } else {
-      EXPECT_EQ("", cookie_line);
-      get_cookie_success_ = false;
-    }
-    quit_closure_.Run();
-  }
-
-  void SetCookieCallback(bool result) {
-    ASSERT_TRUE(result);
-    quit_closure_.Run();
-  }
-
-  bool get_cookie_success_ = false;
-  base::Closure quit_closure_;
-
-  // CookieStore must out live |this|.
-  net::CookieStore* cookie_store_ = nullptr;
+  network::mojom::CookieManagerPtr cookie_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveCookieTester);
 };
-
-void RunClosureAfterCookiesCleared(const base::Closure& task,
-                                   uint32_t cookies_deleted) {
-  task.Run();
-}
 
 class RemoveSafeBrowsingCookieTester : public RemoveCookieTester {
  public:
   RemoveSafeBrowsingCookieTester()
       : browser_process_(TestingBrowserProcess::GetGlobal()) {
+    system_request_context_getter_ =
+        base::MakeRefCounted<net::TestURLRequestContextGetter>(
+            base::CreateSingleThreadTaskRunnerWithTraits(
+                {content::BrowserThread::IO}));
+    browser_process_->SetSystemRequestContext(
+        system_request_context_getter_.get());
     scoped_refptr<safe_browsing::SafeBrowsingService> sb_service =
         safe_browsing::SafeBrowsingService::CreateSafeBrowsingService();
     browser_process_->SetSafeBrowsingService(sb_service.get());
@@ -328,13 +324,16 @@ class RemoveSafeBrowsingCookieTester : public RemoveCookieTester {
     // Make sure the safe browsing cookie store has no cookies.
     // TODO(mmenke): Is this really needed?
     base::RunLoop run_loop;
-    net::URLRequestContext* request_context =
-        sb_service->url_request_context()->GetURLRequestContext();
-    request_context->cookie_store()->DeleteAllAsync(
-        base::BindOnce(&RunClosureAfterCookiesCleared, run_loop.QuitClosure()));
+    network::mojom::CookieManagerPtr cookie_manager;
+    sb_service->GetNetworkContext()->GetCookieManager(
+        mojo::MakeRequest(&cookie_manager));
+    cookie_manager->DeleteCookies(
+        network::mojom::CookieDeletionFilter::New(),
+        base::BindLambdaForTesting(
+            [&](uint32_t num_deleted) { run_loop.Quit(); }));
     run_loop.Run();
 
-    SetCookieStore(request_context->cookie_store());
+    SetCookieManager(std::move(cookie_manager));
   }
 
   virtual ~RemoveSafeBrowsingCookieTester() {
@@ -345,6 +344,7 @@ class RemoveSafeBrowsingCookieTester : public RemoveCookieTester {
 
  private:
   TestingBrowserProcess* browser_process_;
+  scoped_refptr<net::URLRequestContextGetter> system_request_context_getter_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveSafeBrowsingCookieTester);
 };
@@ -620,7 +620,7 @@ class ClearDomainReliabilityTester {
     // Set and use factory that will attach service stuffed in kludgey struct.
     DomainReliabilityServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile_,
-        &TestingDomainReliabilityServiceFactoryFunction);
+        base::BindRepeating(&TestingDomainReliabilityServiceFactoryFunction));
 
     // Verify and detach kludgey struct.
     EXPECT_EQ(data, profile_->GetUserData(kKey));
@@ -637,9 +637,10 @@ class RemovePasswordsTester {
   explicit RemovePasswordsTester(TestingProfile* testing_profile) {
     PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
         testing_profile,
-        password_manager::BuildPasswordStore<
-            content::BrowserContext,
-            testing::NiceMock<password_manager::MockPasswordStore>>);
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<
+                content::BrowserContext,
+                testing::NiceMock<password_manager::MockPasswordStore>>));
 
     store_ = static_cast<password_manager::MockPasswordStore*>(
         PasswordStoreFactory::GetInstance()
@@ -1044,6 +1045,33 @@ class MockReportingService : public net::ReportingService {
   DISALLOW_COPY_AND_ASSIGN(MockReportingService);
 };
 
+namespace autofill {
+// StrikeDatabaseTester is in the autofill namespace since StrikeDatabase
+// declares it as a friend in the autofill namespace.
+class StrikeDatabaseTester {
+ public:
+  explicit StrikeDatabaseTester(Profile* profile)
+      : strike_database_(
+            autofill::StrikeDatabaseFactory::GetForProfile(profile)) {}
+
+  bool IsEmpty() {
+    int num_keys;
+    base::RunLoop run_loop;
+    strike_database_->LoadKeys(base::BindLambdaForTesting(
+        [&](bool success, std::unique_ptr<std::vector<std::string>> keys) {
+          num_keys = keys.get()->size();
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return (num_keys == 0);
+  }
+
+ private:
+  autofill::StrikeDatabase* strike_database_;
+};
+
+}  // namespace autofill
+
 class ClearReportingCacheTester {
  public:
   ClearReportingCacheTester(TestingProfile* profile, bool create_service)
@@ -1168,7 +1196,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     remover_ = content::BrowserContext::GetBrowsingDataRemover(profile_.get());
 
     ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
-        profile_.get(), &BuildProtocolHandlerRegistry);
+        profile_.get(), base::BindRepeating(&BuildProtocolHandlerRegistry));
 
 #if defined(OS_ANDROID)
     static_cast<ChromeBrowsingDataRemoverDelegate*>(
@@ -1658,6 +1686,30 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalEverything) {
       base::Time(), base::Time::Max(),
       ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA, false);
 
+  EXPECT_EQ(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA,
+            GetRemovalMask());
+  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            GetOriginTypeMask());
+  ASSERT_FALSE(tester.HasProfile());
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       StrikeDatabaseEmptyOnAutofillRemoveEverything) {
+  GetProfile()->CreateWebDataService();
+  RemoveAutofillTester tester(GetProfile());
+
+  ASSERT_FALSE(tester.HasProfile());
+  tester.AddProfilesAndCards();
+  ASSERT_TRUE(tester.HasProfile());
+
+  autofill::StrikeDatabaseTester strike_database_tester(GetProfile());
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA, false);
+
+  // StrikeDatabase should be empty when DATA_TYPE_FORM_DATA browsing data gets
+  // deleted.
+  ASSERT_TRUE(strike_database_tester.IsEmpty());
   EXPECT_EQ(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA,
             GetRemovalMask());
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,

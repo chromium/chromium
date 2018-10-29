@@ -38,6 +38,7 @@
 #include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/server/http_handler.h"
 #include "chrome/test/chromedriver/version.h"
+#include "mojo/core/embedder/embedder.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -50,7 +51,10 @@
 
 namespace {
 
-const int kBufferSize = 100 * 1024 * 1024;  // 100 MB
+// Maximum message size between app and ChromeDriver. Data larger than 150 MB
+// or so can cause crashes in Chrome (https://crbug.com/890854), so there is no
+// need to support messages that are too large.
+const int kBufferSize = 256 * 1024 * 1024;  // 256 MB
 
 typedef base::Callback<
     void(const net::HttpServerRequestInfo&, const HttpResponseSenderFunc&)>
@@ -360,6 +364,8 @@ int main(int argc, char *argv[]) {
         "log verbosely (equivalent to --log-level=ALL)",
         "silent",
         "log nothing (equivalent to --log-level=OFF)",
+        "append-log",
+        "append log file instead of rewriting",
         "replayable",
         "(experimental) log verbosely and don't truncate long "
         "strings so that the log can be replayed.",
@@ -456,6 +462,8 @@ int main(int argc, char *argv[]) {
     printf("Unable to initialize logging. Exiting...\n");
     return 1;
   }
+
+  mojo::core::Init();
 
   base::TaskScheduler::CreateAndStartWithDefaultParams("ChromeDriver");
 

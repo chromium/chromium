@@ -26,6 +26,11 @@ bool GetBrand(std::string* brand);
 // install. Returns false if the information is not available.
 bool GetReactivationBrand(std::string* brand);
 
+// The same as GetBrand() on non-ChromeOS platforms. On ChromeOS, returns a
+// variation of the brand code based on enrollment type.
+// TODO(crbug.com/888725): Rename this to GetBrand and replace the current one.
+bool GetRlzBrand(std::string* brand);
+
 // True if a build is strictly organic, according to its brand code.
 bool IsOrganic(const std::string& brand);
 

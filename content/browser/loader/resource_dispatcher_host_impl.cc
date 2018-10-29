@@ -168,33 +168,6 @@ void AbortRequestBeforeItStarts(
   url_loader_client->OnComplete(status);
 }
 
-// Returns the PreviewsState for enabled previews after requesting it from
-// the delegate. The PreviewsState is a bitmask of potentially several
-// Previews optimizations that are initially enabled for a navigation.
-// If previews_to_allow is set to anything other than PREVIEWS_UNSPECIFIED,
-// it is either the values passed in for a sub-frame to use, or if this is
-// the main frame, it is a limitation on which previews to allow.
-PreviewsState DetermineEnabledPreviews(PreviewsState previews_to_allow,
-                                       ResourceDispatcherHostDelegate* delegate,
-                                       net::URLRequest* request,
-                                       ResourceContext* resource_context,
-                                       bool is_main_frame) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // If previews have already been turned off, or we are inheriting values on a
-  // sub-frame, don't check any further.
-  if (previews_to_allow & PREVIEWS_OFF ||
-      previews_to_allow & PREVIEWS_NO_TRANSFORM || !is_main_frame ||
-      !delegate) {
-    return previews_to_allow;
-  }
-
-  // Get the mask of previews we could apply to the current navigation.
-  PreviewsState previews_state = delegate->DetermineEnabledPreviews(
-      request, resource_context, previews_to_allow);
-
-  return previews_state;
-}
-
 bool ValidatePluginChildId(int plugin_child_id) {
   if (plugin_child_id == ChildProcessHost::kInvalidUniqueID)
     return true;
@@ -373,8 +346,7 @@ void ResourceDispatcherHostImpl::CancelRequestsForContext(
   typedef std::vector<std::unique_ptr<ResourceLoader>> LoaderList;
   LoaderList loaders_to_cancel;
 
-  for (LoaderMap::iterator i = pending_loaders_.begin();
-       i != pending_loaders_.end();) {
+  for (auto i = pending_loaders_.begin(); i != pending_loaders_.end();) {
     ResourceLoader* loader = i->second.get();
     if (loader->GetRequestInfo()->GetContext() == context) {
       loaders_to_cancel.push_back(std::move(i->second));
@@ -389,7 +361,7 @@ void ResourceDispatcherHostImpl::CancelRequestsForContext(
     }
   }
 
-  for (BlockedLoadersMap::iterator i = blocked_loaders_map_.begin();
+  for (auto i = blocked_loaders_map_.begin();
        i != blocked_loaders_map_.end();) {
     BlockedLoadersList* loaders = i->second.get();
     if (loaders->empty()) {
@@ -771,8 +743,7 @@ void ResourceDispatcherHostImpl::BeginRequest(
   // the request needs to be aborted or continued.
   for (net::HttpRequestHeaders::Iterator it(request_data.headers);
        it.GetNext();) {
-    HeaderInterceptorMap::iterator index =
-        http_header_interceptor_map_.find(it.name());
+    auto index = http_header_interceptor_map_.find(it.name());
     if (index != http_header_interceptor_map_.end()) {
       HeaderInterceptorInfo& interceptor_info = index->second;
 
@@ -896,6 +867,11 @@ void ResourceDispatcherHostImpl::ContinuePendingBeginRequest(
   new_request->set_referrer_policy(request_data.referrer_policy);
 
   new_request->SetExtraRequestHeaders(headers);
+  if (!request_data.requested_with.empty()) {
+    // X-Requested-With header must be set here to avoid breaking CORS checks.
+    new_request->SetExtraRequestHeaderByName("X-Requested-With",
+                                             request_data.requested_with, true);
+  }
 
   std::unique_ptr<network::ScopedThrottlingToken> throttling_token =
       network::ScopedThrottlingToken::MaybeCreate(
@@ -1198,7 +1174,7 @@ ResourceRequestInfoImpl* ResourceDispatcherHostImpl::CreateRequestInfo(
       false,     // enable_upload_progress
       false,     // do_not_prompt_for_login
       false,     // keepalive
-      blink::kWebReferrerPolicyDefault,
+      network::mojom::ReferrerPolicy::kDefault,
       false,  // is_prerendering
       context,
       false,           // report_raw_headers
@@ -1276,7 +1252,7 @@ void ResourceDispatcherHostImpl::CancelRequestsForRoute(
 
   // Remove matches.
   for (size_t i = 0; i < matching_requests.size(); ++i) {
-    LoaderMap::iterator iter = pending_loaders_.find(matching_requests[i]);
+    auto iter = pending_loaders_.find(matching_requests[i]);
     // Although every matching request was in pending_requests_ when we built
     // matching_requests, it is normal for a matching request to be not found
     // in pending_requests_ after we have removed some matching requests from
@@ -1315,8 +1291,7 @@ void ResourceDispatcherHostImpl::CancelRequestsForRoute(
 // Cancels the request and removes it from the list.
 void ResourceDispatcherHostImpl::RemovePendingRequest(int child_id,
                                                       int request_id) {
-  LoaderMap::iterator i = pending_loaders_.find(
-      GlobalRequestID(child_id, request_id));
+  auto i = pending_loaders_.find(GlobalRequestID(child_id, request_id));
   if (i == pending_loaders_.end()) {
     NOTREACHED() << "Trying to remove a request that's not here";
     return;
@@ -1355,8 +1330,7 @@ void ResourceDispatcherHostImpl::CancelRequest(int child_id,
 ResourceDispatcherHostImpl::OustandingRequestsStats
 ResourceDispatcherHostImpl::GetOutstandingRequestsStats(
     const ResourceRequestInfoImpl& info) {
-  OutstandingRequestsStatsMap::iterator entry =
-      outstanding_requests_stats_map_.find(info.GetChildID());
+  auto entry = outstanding_requests_stats_map_.find(info.GetChildID());
   OustandingRequestsStats stats = { 0, 0 };
   if (entry != outstanding_requests_stats_map_.end())
     stats = entry->second;
@@ -1505,10 +1479,8 @@ void ResourceDispatcherHostImpl::BeginNavigationRequest(
   headers.AddHeadersFromString(info.begin_params->headers);
 
   std::string accept_value = network::kFrameAcceptHeader;
-  // TODO(https://crbug.com/840704): Decide whether the Accept header should
-  // advertise the state of kSignedHTTPExchangeOriginTrial before starting the
-  // Origin-Trial.
-  if (signed_exchange_utils::IsSignedExchangeHandlingEnabled()) {
+  if (signed_exchange_utils::ShouldAdvertiseAcceptHeader(
+          url::Origin::Create(info.common_params.url))) {
     DCHECK(!accept_value.empty());
     accept_value.append(kAcceptHeaderSignedExchangeSuffix);
   }
@@ -1537,10 +1509,6 @@ void ResourceDispatcherHostImpl::BeginNavigationRequest(
             {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
             .get()));
   }
-
-  PreviewsState previews_state = DetermineEnabledPreviews(
-      info.common_params.previews_state, delegate_, new_request.get(),
-      resource_context, info.is_main_frame);
 
   // Make extra info and read footer (contains request ID).
   //
@@ -1571,7 +1539,7 @@ void ResourceDispatcherHostImpl::BeginNavigationRequest(
       // ContinuePendingBeginRequest.
       info.report_raw_headers,
       true,  // is_async
-      previews_state, info.common_params.post_data,
+      info.common_params.previews_state, info.common_params.post_data,
       // TODO(mek): Currently initiated_in_secure_context is only used for
       // subresource requests, so it doesn't matter what value it gets here.
       // If in the future this changes this should be updated to somehow get a
@@ -2050,8 +2018,7 @@ void ResourceDispatcherHostImpl::CancelBlockedRequestsForRoute(
 void ResourceDispatcherHostImpl::ProcessBlockedRequestsForRoute(
     const GlobalFrameRoutingId& global_routing_id,
     bool cancel_requests) {
-  BlockedLoadersMap::iterator iter =
-      blocked_loaders_map_.find(global_routing_id);
+  auto iter = blocked_loaders_map_.find(global_routing_id);
   if (iter == blocked_loaders_map_.end()) {
     // It's possible to reach here if the renderer crashed while an interstitial
     // page was showing.
@@ -2107,7 +2074,7 @@ ResourceLoader* ResourceDispatcherHostImpl::GetLoader(
     const GlobalRequestID& id) const {
   DCHECK(io_thread_task_runner_->BelongsToCurrentThread());
 
-  LoaderMap::const_iterator i = pending_loaders_.find(id);
+  auto i = pending_loaders_.find(id);
   if (i == pending_loaders_.end())
     return nullptr;
 

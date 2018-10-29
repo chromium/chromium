@@ -92,7 +92,9 @@ volumeManagerUtil.createVolumeInfo = function(volumeMetadata) {
       break;
   }
 
-  console.debug('Requesting file system.');
+  console.debug(
+      'Requesting file system: ' + volumeMetadata.volumeType + ' ' +
+      volumeMetadata.volumeId);
   return util.timeoutPromise(
       new Promise(function(resolve, reject) {
         chrome.fileSystem.requestFileSystem(
@@ -151,8 +153,8 @@ volumeManagerUtil.createVolumeInfo = function(volumeMetadata) {
           fileSystem.root.createReader().readEntries(
               function() { /* do nothing */ },
               function(error) {
-                console.error(
-                    'Triggering full feed fetch is failed: ' +
+                console.warn(
+                    'Triggering full feed fetch has failed: ' +
                     error.name);
               });
         }
@@ -174,10 +176,11 @@ volumeManagerUtil.createVolumeInfo = function(volumeMetadata) {
        * @param {*} error
        */
       function(error) {
-        console.error('Failed to mount a file system: ' +
+        console.warn('Failed to mount a file system: ' +
             volumeMetadata.volumeId + ' because of: ' +
             (error.stack || error));
-        volumeManagerUtil.reportMountError(volumeMetadata, error);
+
+        // TODO(crbug/847729): Report a mount error via UMA.
 
         return new VolumeInfoImpl(
             /** @type {VolumeManagerCommon.VolumeType} */
@@ -193,40 +196,4 @@ volumeManagerUtil.createVolumeInfo = function(volumeMetadata) {
             /** @type {VolumeManagerCommon.FileSystemType} */
             (volumeMetadata.diskFileSystemType), volumeMetadata.iconSet);
       });
-};
-
-/**
- * Reports a mount error to analytics in the form of
- * "mount {errorType} {volumeType}", like
- * "mount timeout(resolveIsolatedEntries) provided:ZipUnpacker".
- * Note that errorType and volumeType must be an element of fixed set of strings
- * to avoid sending dynamic strings to analytics.
- *
- * @param {chrome.fileManagerPrivate.VolumeMetadata} volumeMetadata
- * @param {*} error
- */
-volumeManagerUtil.reportMountError = function(volumeMetadata, error) {
-  var errorType = 'error';
-  if (error instanceof Error) {
-    if (error.message.startsWith(
-        volumeManagerUtil.TIMEOUT_STR_REQUEST_FILE_SYSTEM)) {
-      errorType = volumeManagerUtil.TIMEOUT_STR_REQUEST_FILE_SYSTEM;
-    }
-    if (error.message.startsWith(
-        volumeManagerUtil.TIMEOUT_STR_RESOLVE_ISOLATED_ENTRIES)) {
-      errorType = volumeManagerUtil.TIMEOUT_STR_RESOLVE_ISOLATED_ENTRIES;
-    }
-  }
-  var volumeType = volumeMetadata.volumeType;
-  if (volumeMetadata.volumeType === VolumeManagerCommon.VolumeType.PROVIDED) {
-    volumeType +=
-        ':' + metrics.getFileSystemProviderName(volumeMetadata.providerId);
-  }
-  var description = 'mount ' + errorType + ' ' + volumeType;
-  var fatal =
-      volumeMetadata.volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS ||
-      volumeMetadata.volumeType === VolumeManagerCommon.VolumeType.DRIVE;
-
-  if (window.background && window.background.tracker)
-    window.background.tracker.sendException(description, fatal);
 };

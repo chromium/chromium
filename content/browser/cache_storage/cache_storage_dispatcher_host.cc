@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -20,6 +21,7 @@
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/origin_util.h"
@@ -27,7 +29,6 @@
 #include "third_party/blink/public/platform/modules/cache_storage/cache_storage.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
 
 namespace content {
 
@@ -40,7 +41,7 @@ const int32_t kCachePreservationSeconds = 5;
 
 // TODO(lucmult): Check this before binding.
 bool OriginCanAccessCacheStorage(const url::Origin& origin) {
-  return !origin.unique() && IsOriginSecure(origin.GetURL());
+  return !origin.opaque() && IsOriginSecure(origin.GetURL());
 }
 
 void StopPreservingCache(CacheStorageCacheHandle cache_handle) {}
@@ -211,8 +212,8 @@ CacheStorageDispatcherHost::~CacheStorageDispatcherHost() = default;
 
 void CacheStorageDispatcherHost::Init(CacheStorageContextImpl* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CacheStorageDispatcherHost::CreateCacheListener,
                      base::RetainedRef(this), base::RetainedRef(context)));
 }

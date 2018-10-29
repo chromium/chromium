@@ -19,7 +19,6 @@
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/midi/midi_manager.h"
-#include "media/midi/midi_port_info.h"
 #include "media/midi/midi_service.mojom.h"
 
 namespace midi {
@@ -42,8 +41,8 @@ class CONTENT_EXPORT MidiHost : public BrowserMessageFilter,
 
   // MidiManagerClient implementation.
   void CompleteStartSession(midi::mojom::Result result) override;
-  void AddInputPort(const midi::MidiPortInfo& info) override;
-  void AddOutputPort(const midi::MidiPortInfo& info) override;
+  void AddInputPort(const midi::mojom::PortInfo& info) override;
+  void AddOutputPort(const midi::mojom::PortInfo& info) override;
   void SetInputPortState(uint32_t port, midi::mojom::PortState state) override;
   void SetOutputPortState(uint32_t port, midi::mojom::PortState state) override;
   void ReceiveMidiData(uint32_t port,

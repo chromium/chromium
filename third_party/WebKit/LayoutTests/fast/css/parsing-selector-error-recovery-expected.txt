@@ -1,2 +1,1 @@
 Tests error recovery in CSS selectors.
-

@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
@@ -82,6 +83,7 @@ class UI_BASE_EXPORT Clipboard : public base::ThreadChecker {
     bool Equals(const FormatType& other) const;
 
    private:
+    friend class base::NoDestructor<FormatType>;
     friend class Clipboard;
 
     // Platform-specific glue used internally by the Clipboard class. Each

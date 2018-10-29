@@ -1,0 +1,3 @@
+HTTP/1.0 302 Found
+Location: /.well-known/origin-policy/example-policy
+

@@ -18,6 +18,7 @@ namespace internal {
 // call.
 class PriorityQueue::SequenceAndSortKey {
  public:
+  SequenceAndSortKey() = default;
   SequenceAndSortKey(scoped_refptr<Sequence> sequence,
                      const SequenceSortKey& sort_key)
       : sequence_(std::move(sequence)), sort_key_(sort_key) {
@@ -25,10 +26,10 @@ class PriorityQueue::SequenceAndSortKey {
   }
 
   // Note: while |sequence_| should always be non-null post-move (i.e. we
-  // shouldn't be moving an invalid SequenceAndSortKey around), there can't be a
-  // DCHECK(sequence_) on moves as the Windows STL moves elements on pop instead
-  // of overwriting them: resulting in the move of a SequenceAndSortKey with a
-  // null |sequence_| in Transaction::Pop()'s implementation.
+  // shouldn't be moving an invalid SequenceAndSortKey around), there can't be
+  // a DCHECK(sequence_) on moves as IntrusiveHeap moves elements on pop
+  // instead of overwriting them: resulting in the move of a SequenceAndSortKey
+  // with a null |sequence_| in Transaction::Pop()'s implementation.
   SequenceAndSortKey(SequenceAndSortKey&& other) = default;
   SequenceAndSortKey& operator=(SequenceAndSortKey&& other) = default;
 
@@ -40,14 +41,16 @@ class PriorityQueue::SequenceAndSortKey {
   }
 
   // Compares this SequenceAndSortKey to |other| based on their respective
-  // |sort_key_|.
-  bool operator<(const SequenceAndSortKey& other) const {
-    return sort_key_ < other.sort_key_;
+  // |sort_key_|. Required by IntrusiveHeap.
+  bool operator<=(const SequenceAndSortKey& other) const {
+    return sort_key_ <= other.sort_key_;
   }
-  // Style-guide dictates to define operator> when defining operator< but it's
-  // unused in this case and this isn't a public API. Explicitly delete it so
-  // any errors point here if that ever changes.
-  bool operator>(const SequenceAndSortKey& other) const = delete;
+
+  // Required by IntrusiveHeap.
+  void SetHeapHandle(const HeapHandle& handle) {}
+
+  // Required by IntrusiveHeap.
+  void ClearHeapHandle() {}
 
   const SequenceSortKey& sort_key() const { return sort_key_; }
 
@@ -66,12 +69,13 @@ PriorityQueue::Transaction::~Transaction() = default;
 void PriorityQueue::Transaction::Push(
     scoped_refptr<Sequence> sequence,
     const SequenceSortKey& sequence_sort_key) {
-  outer_queue_->container_.emplace(std::move(sequence), sequence_sort_key);
+  outer_queue_->container_.insert(
+      SequenceAndSortKey(std::move(sequence), sequence_sort_key));
 }
 
 const SequenceSortKey& PriorityQueue::Transaction::PeekSortKey() const {
   DCHECK(!IsEmpty());
-  return outer_queue_->container_.top().sort_key();
+  return outer_queue_->container_.Min().sort_key();
 }
 
 scoped_refptr<Sequence> PriorityQueue::Transaction::PopSequence() {
@@ -79,13 +83,12 @@ scoped_refptr<Sequence> PriorityQueue::Transaction::PopSequence() {
 
   // The const_cast on top() is okay since the SequenceAndSortKey is
   // transactionally being popped from |container_| right after and taking its
-  // Sequence does not alter its sort order (a requirement for the Windows STL's
-  // consistency debug-checks for std::priority_queue::top()).
+  // Sequence does not alter its sort order.
   scoped_refptr<Sequence> sequence =
       const_cast<PriorityQueue::SequenceAndSortKey&>(
-          outer_queue_->container_.top())
+          outer_queue_->container_.Min())
           .take_sequence();
-  outer_queue_->container_.pop();
+  outer_queue_->container_.Pop();
   return sequence;
 }
 

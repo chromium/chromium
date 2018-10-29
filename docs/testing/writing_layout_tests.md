@@ -58,18 +58,26 @@ There are four broad types of layout tests, listed in the order of preference.
   different reference image for each platform that Blink is tested on, and
   the reference images are
   [quite cumbersome to manage](./layout_test_expectations.md). You
-  should only write a pixel test if you cannot use a reference test. By default
-  a pixel test will also dump the layout tree as text output, so they are
-  similar to ...
-* *Layout tree tests*, which output a textual representation of the layout
-  tree, which is the key data structure in Blink's page rendering system. The
-  test passes if the output matches a baseline text file in the repository.
-  Layout tree tests are used as a last resort to test the internal quirks of
-  the implementation, and they should be avoided in favor of one of the earlier
+  should only write a pixel test if you cannot use a reference test.
+* *Text Tests* output pure text which represents the DOM tree, the DOM inner
+  text, internal data structure of Blink like layout tree or graphics layer
+  tree, or any custom text that the text wants to output. The test passes if the
+  output matches a baseline text file in the repository. Text tests outputting
+  internal data structures are used as a last resort to test the internal quirks
+  of the implementation, and they should be avoided in favor of one of other
   options.
+* *Audio tests* output audio results.
+
+*** aside
+A JavaScript test is actually a special kind of text test, but its text
+baseline can be often omitted.
+***
+
+*** aside
+A test can be a reference/pixel test and a text test at the same time.
+***
 
 ## General Principles
-
 
 Tests should be written under the assumption that they will be upstreamed
 to the WPT project. To this end, tests should follow the
@@ -424,13 +432,14 @@ being discussed on
 
 ## Pixel Tests
 
-`testRunner` APIs such as `testRunner.dumpAsTextWithPixelResults()` and
-`testRunner.dumpDragImage()` create an image result that is associated
-with the test. The image result is compared against an image baseline, which is
-an `-expected.png` file associated with the test, and the test passes if the
+A test creates an image result by default unless some `testRunner` API is
+called (e.g. `testRunner.dumpAsText()`, `testRunner.dumpAsLayout()`, see
+[text tests](#text-tests)) to suppress the image result. A test is a
+**pixel test** if it creates an image result but is not a reference test.
+The image result is compared against an image baseline, which is an
+`-expected.png` file associated with the test, and the test passes if the
 image result is identical to the baseline, according to a pixel-by-pixel
-comparison. Tests that have image results (and baselines) are called **pixel
-tests**.
+comparison.
 
 Pixel tests should still follow the principles laid out above. Pixel tests pose
 unique challenges to the desire to have *self-describing* and *cross-platform*
@@ -449,14 +458,11 @@ contain useful guidance. The most relevant pieces of advice are below.
   apply when testing text, text flow, font selection, font fallback, font
   features, or other typographic information.
 
-TODO: Document how to opt out of generating a layout tree when generating
-pixel results.
-
 *** promo
-When using `testRunner.dumpAsTextWithPixelResults()`, the image result
-will always be 800x600px, because test pages are rendered in an 800x600px
-viewport. Pixel tests that do not specifically cover scrolling should fit in an
-800x600px viewport without creating scrollbars.
+The default size of the image result of a pixel test is 800x600px, because test
+pages are rendered in an 800x600px viewport by default. Normally pixel tests
+that do not specifically cover scrolling should fit in an 800x600px viewport
+without creating scrollbars.
 ***
 
 *** promo
@@ -491,34 +497,43 @@ There is also a library at
 [third_party/WebKit/LayoutTests/paint/invalidation/resources/text-based-repaint.js](../../third_party/WebKit/LayoutTests/paint/invalidation/resources/text-based-repaint.js)
 to help with writing paint invalidation and repaint tests.
 
-## Layout tree tests
+### Tests for scrolling animations
 
-A layout tree test renders a web page and produces up to two results, which
-are compared against baseline files:
+Some layout tests need to ensure animations such as middle-click auto-scroll,
+fling, etc. get performed properly. When testing in display compositor pixel
+dump mode (now the standard), the standard behavior for tests is to
+synchronously composite without rastering (to save time). However, animations
+run upon surface activation, which only happens once rasterization is performed.
+Therefore, for these tests, an additional setting needs to be set. Near the
+beginning of these tests, call `setAnimationRequiresRaster()` defined in
+[third_party/WebKit/LayoutTests/resources/compositor-controls.js](../../third_party/WebKit/LayoutTests/resources/compositor-controls.js)
+which will enable full rasterization during the test.
 
-* All tests output a textual representation of Blink's
-  [layout tree](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-tree-construction) (called the render tree on that page),
-  which is compared against an `-expected.txt` text baseline.
-* Some tests also output the image of the rendered page, which is compared
-  against an `-expected.png` image baseline, using the same method as pixel
-  tests.
+## Text tests
 
-Whether you want a pixel test or a layout tree test depends on whether
-you care about the visual image, the details of how that image was
-constructed, or both. It is possible for multiple layout trees to produce
-the same pixel output, so it is important to make it clear in the test
-which outputs you really care about.
+A **text test** outputs text result. The result is compared against a text
+baseline which is an `-expected.txt` file associated with the test, and the
+test passes if the text result is identical to the baseline. A test isn't a
+text test by default until it calls some `testRunner` API to instruct the
+test runner to output text. A text test can be categorized based on what kind of
+information that the text result represents.
 
-TODO: Document the API used by layout tree tests to opt out of producing image
-results.
+### Layout tree test
 
-A layout tree test passes if _all_ of its results match their baselines. Like pixel
-tests, the output of layout tree tests depends on platform-specific details,
-so layout tree tests often require per-platform baselines. Furthermore,
-since the tests obviously depend on the layout tree structure,
-that means that if we change the layout tree you have to rebaseline each
-layout tree test to see if the results are still correct and whether the test
-is still meaningful. There are actually many cases where the layout tree
+If a test calls `testRunner.dumpAsLayout()` or
+`testRunner.dumpAsLayoutWithPixelResults()`, The text result will be a
+textual representation of Blink's
+[layout tree](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-tree-construction)
+(called the render tree on that page) of the main frame of the test page.
+With `testRunner.dumpChildFrames()` the text result will also include layout
+tree of child frames.
+
+Like pixel tests, the output of layout tree tests may depend on
+platform-specific details, so layout tree tests often require per-platform
+baselines. Furthermore, since the tests obviously depend on the layout tree
+structure, that means that if we change the layout tree you have to rebaseline
+each layout tree test to see if the results are still correct and whether the
+test is still meaningful. There are actually many cases where the layout tree
 output is misstated (i.e., wrong), because people didn't want to have to update
 existing baselines and tests. This is really unfortunate and confusing.
 
@@ -528,7 +543,6 @@ combination of the other test types is preferable to a layout tree test.
 Layout tree tests are
 [inherited from WebKit](https://webkit.org/blog/1456/layout-tests-practice/), so
 the repository may have some unfortunate examples of layout tree tests.
-
 
 The following page is an example of a layout tree test.
 
@@ -542,12 +556,13 @@ span::after {
 }
 </style>
 <script src="/resources/ahem.js"></script>
-
+<script>
+  if (window.testRunner)
+    testRunner.dumpAsLayout();
+</script>
 <p><span>Pass if a green PASS appears to the right: </span></p>
 ```
 
-The most important aspects of the example are that the test page does not
-include a testing framework, and that it follows the guidelines for pixel tests.
 The test page produces the text result below.
 
 ```
@@ -575,6 +590,62 @@ guidelines and write reliable layout tree tests!
 WebKit's layout tree is described in
 [a series of posts](https://webkit.org/blog/114/webcore-rendering-i-the-basics/)
 on WebKit's blog. Some of the concepts there still apply to Blink's layout tree.
+
+### Text dump test
+
+If `testRunner.dumpAsText()` or `testRunner.dumpAsTextWithPixelResults()`
+is called from a test, the test will dump the text contents of the main frame
+of the tested page. With `testRunner.dumpChildFrames()` the text
+result will also include text contents of child frames. Actually a JavaScript
+test is a special kind of text dump test which can often omit the text baseline.
+
+A test can override the default text dump by calling
+`testRunner.setCustomTextOutput(string)`. The string parameter can be any
+text that the test wants to output. The [`internals` API](../../third_party/blink/renderer/core/testing/internals.idl]
+provides methods to get textual representations of internal data structures that
+can be used as the parameter of `testRunner.setCustomTextOutput()`.
+
+### Markup dump test
+
+If a test calls `testRunner.dumpAsMarkup()`, the text result will be the DOM
+of the main frame of the test. With `testRunner.dumpChildFrames()` the text
+result will also include DOM of child frames.
+
+## Audio tests
+
+If a test calls `testRunner.setAudioData(array_buffer)`, the test will
+create an audio result. The result will be compared against an audio baseline
+which is an `-expected.wav` file associated with the test, and the test passes
+if the audio result is identical to the baseline.
+
+## Tests that are both pixel/reference tests and text tests
+
+If a test calls `testRunner.dumpAsTextWithPixelResults()` or
+`testRunner.dumpAsLayoutWithPixelResults()`, the test is both a
+pixel/reference test and a text test. It will output both pixel result and text
+result.
+
+For a test that is both a pixel test and a text test, both pixel and text
+results will be compared to baselines, and the test passes if each result match
+the corresponding baseline.
+
+For a test that is both a reference test and a text test, the text baseline is
+optional. If the text baseline doesn't exist, the test will be treated as a
+normal reference test as if it doesn't produce the text output. Otherwise, both
+pixel and text results will be compared to baselines, and the test passes if
+each result match the corresponding baseline.
+
+Many of the [paint invalidation tests](../../third_party/WebKit/LayoutTests/paint/invalidation)
+are of this type. The pixel results (compared against `-expected.png` or
+`-expected.html`) ensure correct rendering, and the text results (compared
+against `-expected.txt`) ensure correct compositing and raster invalidation
+(without unexpected over and under invalidations).
+
+For a layout tree test, whether you want a pixel test and/or a text test depends
+on whether you care about the visual image, the details of how that image was
+constructed, or both. It is possible for multiple layout trees to produce
+the same pixel output, so it is important to make it clear in the test
+which outputs you really care about.
 
 ## Directory Structure
 

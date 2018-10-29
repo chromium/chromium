@@ -15,7 +15,6 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/features.h"
 
 namespace content_settings {
 
@@ -150,19 +149,17 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::PERSISTENT);
 
-  Register(
-      CONTENT_SETTINGS_TYPE_PLUGINS, "plugins",
-      CONTENT_SETTING_DETECT_IMPORTANT_CONTENT, WebsiteSettingsInfo::SYNCABLE,
-      WhitelistedSchemes(kChromeUIScheme, kChromeDevToolsScheme),
-      ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
-                    CONTENT_SETTING_ASK,
-                    CONTENT_SETTING_DETECT_IMPORTANT_CONTENT),
-      WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
-      WebsiteSettingsRegistry::DESKTOP,
-      ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-      base::FeatureList::IsEnabled(features::kEnableEphemeralFlashPermission)
-          ? ContentSettingsInfo::EPHEMERAL
-          : ContentSettingsInfo::PERSISTENT);
+  Register(CONTENT_SETTINGS_TYPE_PLUGINS, "plugins",
+           CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
+           WebsiteSettingsInfo::SYNCABLE,
+           WhitelistedSchemes(kChromeUIScheme, kChromeDevToolsScheme),
+           ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+                         CONTENT_SETTING_ASK,
+                         CONTENT_SETTING_DETECT_IMPORTANT_CONTENT),
+           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
+           WebsiteSettingsRegistry::DESKTOP,
+           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
+           ContentSettingsInfo::EPHEMERAL);
 
   Register(CONTENT_SETTINGS_TYPE_POPUPS, "popups", CONTENT_SETTING_BLOCK,
            WebsiteSettingsInfo::SYNCABLE,

@@ -143,7 +143,7 @@ bool SenderRtcpSession::IncomingRtcpPacket(const uint8_t* data, size_t length) {
 void SenderRtcpSession::OnReceivedDelaySinceLastReport(
     uint32_t last_report,
     uint32_t delay_since_last_report) {
-  RtcpSendTimeMap::iterator it = last_reports_sent_map_.find(last_report);
+  auto it = last_reports_sent_map_.find(last_report);
   if (it == last_reports_sent_map_.end()) {
     return;  // Feedback on another report.
   }
@@ -193,14 +193,14 @@ void SenderRtcpSession::SaveLastSentNtpTime(const base::TimeTicks& now,
 
 bool SenderRtcpSession::DedupeReceiverLog(
     RtcpReceiverLogMessage* receiver_log) {
-  RtcpReceiverLogMessage::iterator i = receiver_log->begin();
+  auto i = receiver_log->begin();
   while (i != receiver_log->end()) {
     RtcpReceiverEventLogMessages* messages = &i->event_log_messages_;
-    RtcpReceiverEventLogMessages::iterator j = messages->begin();
+    auto j = messages->begin();
     while (j != messages->end()) {
       ReceiverEventKey key = GetReceiverEventKey(
           i->rtp_timestamp_, j->event_timestamp, j->type, j->packet_id);
-      RtcpReceiverEventLogMessages::iterator tmp = j;
+      auto tmp = j;
       ++j;
       if (receiver_event_key_set_.insert(key).second) {
         receiver_event_key_queue_.push(key);
@@ -213,7 +213,7 @@ bool SenderRtcpSession::DedupeReceiverLog(
       }
     }
 
-    RtcpReceiverLogMessage::iterator tmp = i;
+    auto tmp = i;
     ++i;
     if (messages->empty()) {
       receiver_log->erase(tmp);

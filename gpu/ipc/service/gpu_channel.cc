@@ -31,12 +31,14 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/service/gles2_command_buffer_stub.h"
@@ -304,39 +306,6 @@ bool GpuChannelMessageFilter::MessageErrorHandler(const IPC::Message& message,
   return true;
 }
 
-// Definitions for constructor and destructor of this interface are needed to
-// avoid MSVC LNK2019.
-FilteredSender::FilteredSender() = default;
-
-FilteredSender::~FilteredSender() = default;
-
-SyncChannelFilteredSender::SyncChannelFilteredSender(
-    IPC::ChannelHandle channel_handle,
-    IPC::Listener* listener,
-    scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-    base::WaitableEvent* shutdown_event)
-    : channel_(IPC::SyncChannel::Create(channel_handle,
-                                        IPC::Channel::MODE_SERVER,
-                                        listener,
-                                        ipc_task_runner,
-                                        base::ThreadTaskRunnerHandle::Get(),
-                                        false,
-                                        shutdown_event)) {}
-
-SyncChannelFilteredSender::~SyncChannelFilteredSender() = default;
-
-bool SyncChannelFilteredSender::Send(IPC::Message* msg) {
-  return channel_->Send(msg);
-}
-
-void SyncChannelFilteredSender::AddFilter(IPC::MessageFilter* filter) {
-  channel_->AddFilter(filter);
-}
-
-void SyncChannelFilteredSender::RemoveFilter(IPC::MessageFilter* filter) {
-  channel_->RemoveFilter(filter);
-}
-
 GpuChannel::GpuChannel(
     GpuChannelManager* gpu_channel_manager,
     Scheduler* scheduler,
@@ -361,29 +330,42 @@ GpuChannel::GpuChannel(
   DCHECK(gpu_channel_manager_);
   DCHECK(client_id_);
   filter_ = new GpuChannelMessageFilter(this, scheduler, task_runner);
+  // SharedImageInterfaceProxy/Stub is a singleton per channel, using a reserved
+  // route.
+  const int32_t shared_image_route_id =
+      static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface);
+  shared_image_stub_ =
+      std::make_unique<SharedImageStub>(this, shared_image_route_id);
+  filter_->AddRoute(shared_image_route_id, shared_image_stub_->sequence());
+  router_.AddRoute(shared_image_route_id, shared_image_stub_.get());
 }
 
 GpuChannel::~GpuChannel() {
   // Clear stubs first because of dependencies.
   stubs_.clear();
 
-  // Destroy filter first so that scheduler gets no more messages.
+  // Destroy filter first to stop posting tasks to scheduler.
   filter_->Destroy();
 
   for (const auto& kv : stream_sequences_)
     scheduler_->DestroySequence(kv.second);
 }
 
-void GpuChannel::Init(std::unique_ptr<FilteredSender> channel) {
-  channel_ = std::move(channel);
-  channel_->AddFilter(filter_.get());
-  // SharedImageInterfaceProxy/Stub is a singleton per channel, using a reserved
-  // route.
-  const int32_t route_id =
-      static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface);
-  shared_image_stub_ = std::make_unique<SharedImageStub>(this, route_id);
-  filter_->AddRoute(route_id, shared_image_stub_->sequence());
-  router_.AddRoute(route_id, shared_image_stub_.get());
+void GpuChannel::Init(IPC::ChannelHandle channel_handle,
+                      base::WaitableEvent* shutdown_event) {
+  sync_channel_ = IPC::SyncChannel::Create(
+      channel_handle, IPC::Channel::MODE_SERVER, this, io_task_runner_.get(),
+      task_runner_.get(), false, shutdown_event);
+  sync_channel_->AddFilter(filter_.get());
+  channel_ = sync_channel_.get();
+}
+
+void GpuChannel::InitForTesting(IPC::Channel* channel) {
+  channel_ = channel;
+  // |channel| is an IPC::TestSink in tests, so don't add the filter to it
+  // because it will forward sent messages back to the filter.
+  // Call OnFilterAdded() to prevent DCHECK failures.
+  filter_->OnFilterAdded(channel);
 }
 
 void GpuChannel::SetUnhandledMessageListener(IPC::Listener* listener) {
@@ -620,11 +602,10 @@ void GpuChannel::OnCreateCommandBuffer(
   }
 
   std::unique_ptr<CommandBufferStub> stub;
+  bool use_passthrough_cmd_decoder =
+      gpu_channel_manager_->gpu_preferences().use_passthrough_cmd_decoder &&
+      gles2::PassthroughCommandDecoderSupported();
 
-  bool supports_oop_rasterization =
-      gpu_channel_manager_->gpu_feature_info()
-          .status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
-      kGpuFeatureStatusEnabled;
   if (init_params.attribs.context_type == CONTEXT_TYPE_WEBGPU) {
     if (!gpu_channel_manager_->gpu_preferences().enable_webgpu) {
       DLOG(ERROR) << "ContextResult::kFatalFailure: WebGPU not enabled";
@@ -633,8 +614,7 @@ void GpuChannel::OnCreateCommandBuffer(
 
     stub = std::make_unique<WebGPUCommandBufferStub>(
         this, init_params, command_buffer_id, sequence_id, stream_id, route_id);
-  } else if (supports_oop_rasterization &&
-             init_params.attribs.enable_oop_rasterization &&
+  } else if (!use_passthrough_cmd_decoder &&
              init_params.attribs.enable_raster_interface &&
              !init_params.attribs.enable_gles2_interface) {
     stub = std::make_unique<RasterCommandBufferStub>(
@@ -712,11 +692,11 @@ void GpuChannel::RemoveFilter(IPC::MessageFilter* filter) {
 
 uint64_t GpuChannel::GetMemoryUsage() const {
   // Collect the unique memory trackers in use by the |stubs_|.
-  base::flat_set<gles2::MemoryTracker*> unique_memory_trackers;
+  base::flat_set<MemoryTracker*> unique_memory_trackers;
   unique_memory_trackers.reserve(stubs_.size());
   uint64_t size = 0;
   for (const auto& kv : stubs_) {
-    gles2::MemoryTracker* tracker = kv.second->GetMemoryTracker();
+    MemoryTracker* tracker = kv.second->GetMemoryTracker();
     if (!unique_memory_trackers.insert(tracker).second) {
       // We already counted that tracker.
       continue;
@@ -732,15 +712,15 @@ scoped_refptr<gl::GLImage> GpuChannel::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
-    uint32_t internalformat,
     SurfaceHandle surface_handle) {
+  unsigned internalformat = gpu::InternalFormatForGpuMemoryBufferFormat(format);
   switch (handle.type) {
     case gfx::SHARED_MEMORY_BUFFER: {
       if (!base::IsValueInRangeForNumericType<size_t>(handle.stride))
         return nullptr;
       scoped_refptr<gl::GLImageSharedMemory> image(
           new gl::GLImageSharedMemory(size, internalformat));
-      if (!image->Initialize(handle.handle, handle.id, format, handle.offset,
+      if (!image->Initialize(handle.region, handle.id, format, handle.offset,
                              handle.stride)) {
         return nullptr;
       }

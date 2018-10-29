@@ -50,7 +50,7 @@ class ReconcileTaskTest : public RequestQueueTaskTestBase {
       bool success,
       std::vector<std::unique_ptr<SavePageRequest>> requests);
 
-  void ReconcileCallback(std::unique_ptr<UpdateRequestsResult> result);
+  void ReconcileCallback(UpdateRequestsResult result);
 
   void QueueRequests(const SavePageRequest& request1,
                      const SavePageRequest& request2);
@@ -87,12 +87,11 @@ void ReconcileTaskTest::GetRequestsCallback(
   found_requests_ = std::move(requests);
 }
 
-void ReconcileTaskTest::ReconcileCallback(
-    std::unique_ptr<UpdateRequestsResult> result) {
+void ReconcileTaskTest::ReconcileCallback(UpdateRequestsResult result) {
   reconcile_called_ = true;
   // Make sure the item in the callback is now AVAILABLE.
   EXPECT_EQ(SavePageRequest::RequestState::AVAILABLE,
-            result->updated_items.at(0).request_state());
+            result.updated_items.at(0).request_state());
 }
 
 // Test helper to queue the two given requests.

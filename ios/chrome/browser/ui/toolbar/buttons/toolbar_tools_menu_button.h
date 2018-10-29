@@ -19,21 +19,11 @@
 // Initializes and returns a newly allocated TintedButton with the specified
 // |frame| and the |style| of the toolbar it belongs to.
 - (instancetype)initWithFrame:(CGRect)frame
-                        style:(ToolbarControllerStyle)style
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-
-// Informs the button that the Tools Menu's visibility is |toolsMenuVisible|.
-// TODO(crbug.com/800266): Remove this method.
-- (void)setToolsMenuIsVisible:(BOOL)toolsMenuVisible;
-
-// Notifies the button should alert user to the presence of reading list unseen
-// items.
-// TODO(crbug.com/800266): Remove this method.
-- (void)setReadingListContainsUnseenItems:(BOOL)readingListContainsUnseenItems;
 
 // Triggers an animation on the button to draw the user's attention to the
 // button.

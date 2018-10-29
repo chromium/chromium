@@ -34,7 +34,8 @@ XRCompositorCommon::XRCompositorCommon()
       main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       presentation_binding_(this),
       frame_data_binding_(this),
-      gamepad_provider_(this) {
+      gamepad_provider_(this),
+      overlay_binding_(this) {
   DCHECK(main_thread_task_runner_);
 }
 
@@ -129,6 +130,16 @@ void XRCompositorCommon::RequestGamepadProvider(
   gamepad_provider_.Bind(std::move(request));
 }
 
+void XRCompositorCommon::RequestOverlay(
+    mojom::ImmersiveOverlayRequest request) {
+  overlay_binding_.Close();
+  overlay_binding_.Bind(std::move(request));
+
+  // WebXR is visible and overlay hidden by default until the overlay overrides
+  // this.
+  SetOverlayAndWebXRVisibility(false, true);
+}
+
 void XRCompositorCommon::UpdateLayerBounds(int16_t frame_id,
                                            const gfx::RectF& left_bounds,
                                            const gfx::RectF& right_bounds,
@@ -211,6 +222,7 @@ void XRCompositorCommon::ExitPresent() {
   // Kill outstanding overlays:
   overlay_visible_ = false;
   delayed_overlay_get_frame_data_callback_.Reset();
+  overlay_binding_.Close();
 
   texture_helper_.SetSourceAndOverlayVisible(false, false);
 
@@ -308,18 +320,18 @@ void XRCompositorCommon::GetControllerDataAndSendFrameData(
 
 void XRCompositorCommon::SubmitOverlayTexture(
     int16_t frame_id,
+    mojo::ScopedHandle texture_handle,
     const gfx::RectF& left_bounds,
     const gfx::RectF& right_bounds,
-    mojo::ScopedHandle texture_handle,
-    base::OnceCallback<void(bool)> present_succeeded) {
+    SubmitOverlayTextureCallback overlay_submit_callback) {
   DCHECK(overlay_visible_);
-  overlay_submit_succeeded_ = std::move(present_succeeded);
+  overlay_submit_callback_ = std::move(overlay_submit_callback);
   if (!pending_frame_) {
     // We may stop presenting while there is a pending SubmitOverlayTexture
     // outstanding.  If we get an overlay submit we weren't expecting, just
     // ignore it.
     DCHECK(!is_presenting_);
-    std::move(overlay_submit_succeeded_).Run(false);
+    std::move(overlay_submit_callback_).Run(false);
     return;
   }
 
@@ -337,7 +349,7 @@ void XRCompositorCommon::SubmitOverlayTexture(
         left_bounds, right_bounds);
     pending_frame_->overlay_submitted_ = true;
   } else {
-    std::move(overlay_submit_succeeded_).Run(false);
+    std::move(overlay_submit_callback_).Run(false);
   }
 
   // Regardless of success - try to composite what we have.
@@ -345,8 +357,8 @@ void XRCompositorCommon::SubmitOverlayTexture(
 #endif
 }
 
-void XRCompositorCommon::RequestOverlayPose(
-    XRFrameDataProvider::GetFrameDataCallback callback) {
+void XRCompositorCommon::RequestNextOverlayPose(
+    RequestNextOverlayPoseCallback callback) {
   // We will only request poses while the overlay is visible.
   DCHECK(overlay_visible_);
 
@@ -355,7 +367,7 @@ void XRCompositorCommon::RequestOverlayPose(
   if (pending_frame_ && pending_frame_->overlay_has_pose_) {
     DCHECK(!delayed_overlay_get_frame_data_callback_);
     delayed_overlay_get_frame_data_callback_ =
-        base::BindOnce(&XRCompositorCommon::RequestOverlayPose,
+        base::BindOnce(&XRCompositorCommon::RequestNextOverlayPose,
                        base::Unretained(this), std::move(callback));
     return;
   }
@@ -430,10 +442,10 @@ void XRCompositorCommon::MaybeCompositeAndSubmit() {
     submit_client_->OnSubmitFrameRendered();
   }
 
-  if (pending_frame_->overlay_submitted_ && overlay_submit_succeeded_) {
+  if (pending_frame_->overlay_submitted_ && overlay_submit_callback_) {
     // Tell the browser/overlay that we are done with its texture so it can be
     // reused.
-    std::move(overlay_submit_succeeded_).Run(copy_successful);
+    std::move(overlay_submit_callback_).Run(copy_successful);
   }
 
   ClearPendingFrame();

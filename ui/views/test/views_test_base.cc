@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/material_design/material_design_controller.h"
-#include "ui/base/test/material_design_controller_test_api.h"
 #include "ui/views/test/platform_test_helper.h"
 
 #if defined(USE_X11)
@@ -68,9 +67,6 @@ bool ViewsTestBase::IsMus() {
 
 void ViewsTestBase::SetUp() {
   testing::Test::SetUp();
-  // ContentTestSuiteBase might have already initialized
-  // MaterialDesignController in unit_tests suite.
-  ui::test::MaterialDesignControllerTestAPI::Uninitialize();
   ui::MaterialDesignController::Initialize();
   setup_called_ = true;
   if (!views_delegate_for_setup_)

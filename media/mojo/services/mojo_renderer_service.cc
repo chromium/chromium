@@ -275,13 +275,13 @@ void MojoRendererService::OnCdmAttached(base::OnceCallback<void(bool)> callback,
 
 void MojoRendererService::InitiateScopedSurfaceRequest(
     InitiateScopedSurfaceRequestCallback callback) {
-  if (initiate_surface_request_cb_.is_null()) {
+  if (!initiate_surface_request_cb_) {
     // |renderer_| is likely not of type MediaPlayerRenderer.
     // This is an unexpected call, and the connection should be closed.
     mojo::ReportBadMessage("Unexpected call to InitiateScopedSurfaceRequest.");
 
     // This may cause |this| to be destructed.
-    DCHECK(!bad_message_cb_.is_null());
+    DCHECK(bad_message_cb_);
     bad_message_cb_.Run();
 
     return;

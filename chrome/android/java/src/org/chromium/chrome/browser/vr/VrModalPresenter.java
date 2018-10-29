@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 
+import org.chromium.chrome.browser.modaldialog.DialogDismissalCause;
 import org.chromium.chrome.browser.modaldialog.ModalDialogManager;
 
 /** The presenter that shows a {@link ModalDialogView} in an Android dialog. */
@@ -42,6 +43,6 @@ public class VrModalPresenter extends ModalDialogManager.Presenter {
     }
 
     public void closeCurrentDialog() {
-        cancelCurrentDialog();
+        dismissCurrentDialog(DialogDismissalCause.UNKNOWN);
     }
 }

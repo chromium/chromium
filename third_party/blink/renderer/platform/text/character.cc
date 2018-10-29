@@ -127,7 +127,7 @@ bool Character::IsHangulSlow(UChar32 character) {
 }
 
 unsigned Character::ExpansionOpportunityCount(const LChar* characters,
-                                              size_t length,
+                                              unsigned length,
                                               TextDirection direction,
                                               bool& is_after_expansion,
                                               const TextJustify text_justify) {
@@ -138,7 +138,7 @@ unsigned Character::ExpansionOpportunityCount(const LChar* characters,
   }
 
   if (direction == TextDirection::kLtr) {
-    for (size_t i = 0; i < length; ++i) {
+    for (unsigned i = 0; i < length; ++i) {
       if (TreatAsSpace(characters[i])) {
         count++;
         is_after_expansion = true;
@@ -147,7 +147,7 @@ unsigned Character::ExpansionOpportunityCount(const LChar* characters,
       }
     }
   } else {
-    for (size_t i = length; i > 0; --i) {
+    for (unsigned i = length; i > 0; --i) {
       if (TreatAsSpace(characters[i - 1])) {
         count++;
         is_after_expansion = true;
@@ -161,13 +161,13 @@ unsigned Character::ExpansionOpportunityCount(const LChar* characters,
 }
 
 unsigned Character::ExpansionOpportunityCount(const UChar* characters,
-                                              size_t length,
+                                              unsigned length,
                                               TextDirection direction,
                                               bool& is_after_expansion,
                                               const TextJustify text_justify) {
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
-    for (size_t i = 0; i < length; ++i) {
+    for (unsigned i = 0; i < length; ++i) {
       UChar32 character = characters[i];
       if (TreatAsSpace(character)) {
         count++;
@@ -190,7 +190,7 @@ unsigned Character::ExpansionOpportunityCount(const UChar* characters,
       is_after_expansion = false;
     }
   } else {
-    for (size_t i = length; i > 0; --i) {
+    for (unsigned i = length; i > 0; --i) {
       UChar32 character = characters[i - 1];
       if (TreatAsSpace(character)) {
         count++;

@@ -99,9 +99,6 @@ VolumeManagerCommon.RootType = {
   // 'Offline'.
   DRIVE_FAKE_ROOT: 'drive_fake_root',
 
-  // 'Add new services' menu item.
-  ADD_NEW_SERVICES_MENU: 'add_new_services_menu',
-
   // Root for crostini 'Linux files'.
   CROSTINI: 'crostini',
 
@@ -144,7 +141,6 @@ VolumeManagerCommon.RootTypesForUMA = [
   VolumeManagerCommon.RootType.MEDIA_VIEW,
   VolumeManagerCommon.RootType.RECENT,
   VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT,
-  VolumeManagerCommon.RootType.ADD_NEW_SERVICES_MENU,
   VolumeManagerCommon.RootType.CROSTINI,
   VolumeManagerCommon.RootType.ANDROID_FILES,
   VolumeManagerCommon.RootType.MY_FILES,

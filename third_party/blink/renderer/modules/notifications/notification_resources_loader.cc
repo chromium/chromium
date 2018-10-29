@@ -29,9 +29,9 @@ void NotificationResourcesLoader::Start(
   DCHECK(!started_);
   started_ = true;
 
-  size_t num_actions = notification_data.actions.has_value()
-                           ? notification_data.actions->size()
-                           : 0;
+  wtf_size_t num_actions = notification_data.actions.has_value()
+                               ? notification_data.actions->size()
+                               : 0;
   pending_request_count_ = 3 /* image, icon, badge */ + num_actions;
 
   // TODO(johnme): ensure image is not loaded when it will not be used.
@@ -50,7 +50,7 @@ void NotificationResourcesLoader::Start(
                       WrapWeakPersistent(this)));
 
   action_icons_.resize(num_actions);
-  for (size_t i = 0; i < num_actions; i++)
+  for (wtf_size_t i = 0; i < num_actions; i++)
     LoadImage(context, NotificationImageLoader::Type::kActionIcon,
               notification_data.actions.value()[i]->icon,
               WTF::Bind(&NotificationResourcesLoader::DidLoadActionIcon,
@@ -109,7 +109,7 @@ void NotificationResourcesLoader::DidLoadBadge(const SkBitmap& image) {
   DidFinishRequest();
 }
 
-void NotificationResourcesLoader::DidLoadActionIcon(size_t action_index,
+void NotificationResourcesLoader::DidLoadActionIcon(wtf_size_t action_index,
                                                     const SkBitmap& image) {
   DCHECK_LT(action_index, action_icons_.size());
 

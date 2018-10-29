@@ -69,17 +69,6 @@ class RenderingStorySet(story.StorySet):
 
       if (platform == platforms.MOBILE and
           story_class.TAGS and
-          story_tags.SYNC_SCROLL in story_class.TAGS):
-        self.AddStory(story_class(
-            page_set=self,
-            shared_page_state_class=shared_page_state_class,
-            name_suffix='_sync_scroll',
-            extra_browser_args=required_args + [
-                '--disable-threaded-scrolling',
-            ]))
-
-      if (platform == platforms.MOBILE and
-          story_class.TAGS and
           story_tags.IMAGE_DECODING in story_class.TAGS):
         self.AddStory(story_class(
             page_set=self,

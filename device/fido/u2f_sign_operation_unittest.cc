@@ -198,6 +198,41 @@ TEST_F(U2fSignOperationTest, MultipleHandles) {
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
+TEST_F(U2fSignOperationTest, MultipleHandlesLengthError) {
+  // One wrong key that responds with key handle length followed by a correct
+  // key.
+  auto request = CreateSignRequest(
+      {fido_parsing_utils::Materialize(test_data::kKeyHandleAlpha),
+       fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+
+  auto device = std::make_unique<MockFidoDevice>();
+  EXPECT_CALL(*device, GetId()).WillRepeatedly(::testing::Return("device"));
+  InSequence s;
+
+  // Wrong key would respond with the key handle length.
+  device->ExpectRequestAndRespondWith(
+      test_data::kU2fCheckOnlySignCommandApduWithKeyAlpha,
+      test_data::kU2fKeyHandleSizeApduResponse);
+  device->ExpectRequestAndRespondWith(
+      test_data::kU2fCheckOnlySignCommandApdu,
+      test_data::kApduEncodedNoErrorSignResponse);
+  device->ExpectRequestAndRespondWith(
+      test_data::kU2fSignCommandApdu,
+      test_data::kApduEncodedNoErrorSignResponse);
+
+  auto u2f_sign = std::make_unique<U2fSignOperation>(
+      device.get(), std::move(request), sign_callback_receiver().callback());
+  u2f_sign->Start();
+
+  sign_callback_receiver().WaitForCallback();
+  EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
+            sign_callback_receiver().status());
+  EXPECT_THAT(sign_callback_receiver().value()->signature(),
+              ::testing::ElementsAreArray(test_data::kU2fSignature));
+  EXPECT_THAT(sign_callback_receiver().value()->raw_credential_id(),
+              ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
+}
+
 // Test that Fake U2F registration is invoked when no credentials in the allowed
 // list are recognized by the device.
 TEST_F(U2fSignOperationTest, FakeEnroll) {

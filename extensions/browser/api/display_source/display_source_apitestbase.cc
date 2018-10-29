@@ -8,7 +8,10 @@
 #include <map>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
@@ -159,7 +162,7 @@ void AdaptMessagePattern(std::size_t key_pos,
 
 void InitMockDisplaySourceConnectionDelegate(content::BrowserContext* profile) {
   DisplaySourceConnectionDelegateFactory::GetInstance()->SetTestingFactory(
-    profile, &CreateMockDelegate);
+      profile, base::BindRepeating(&CreateMockDelegate));
 }
 namespace {
 
@@ -333,10 +336,10 @@ void MockDisplaySourceConnectionDelegate::Connect(
 
   // Bind sink to udp socket at this stage
   // And store udp port to udp_port_ string in order to be used
-  // In a message exchange. Then make a BrowserThread::PostTask
+  // In a message exchange. Then make a base::PostTaskWithTraits
   // on UI thread and call OnSinkConnected() to proceed with the test
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::Bind(&MockDisplaySourceConnectionDelegate::BindToUdpSocket,
                  base::Unretained(this)));
 }
@@ -428,8 +431,8 @@ EnqueueSinkMessage(std::string message) {
     AdaptMessagePattern(found_clientport_key, kClientPortKey, kUdpPortLength,
                         udp_port_, message);
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::Bind(message_received_cb_, message));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::Bind(message_received_cb_, message));
 }
 
 void MockDisplaySourceConnectionDelegate::
@@ -484,10 +487,10 @@ void MockDisplaySourceConnectionDelegate::BindToUdpSocket() {
       udp_port_ = std::to_string(port);
       // When we got an udp socket established and udp port is known
       // Change sink's status to connected and proceed with the test.
-      BrowserThread::PostTask(
-            BrowserThread::UI, FROM_HERE,
-            base::Bind(&MockDisplaySourceConnectionDelegate::OnSinkConnected,
-                       base::Unretained(this)));
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
+          base::Bind(&MockDisplaySourceConnectionDelegate::OnSinkConnected,
+                     base::Unretained(this)));
       break;
     }
   }
@@ -521,8 +524,8 @@ void MockDisplaySourceConnectionDelegate::OnMediaPacketReceived(
     // We received at least one media packet.
     // Test is completed.
     socket_->Close();
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::Bind(&MockDisplaySourceConnectionDelegate::Disconnect,
                    base::Unretained(this), StringCallback()));
     return;

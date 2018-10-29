@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/ui/payments/cells/payments_text_item.h"
 #import "ios/chrome/browser/ui/payments/payment_request_edit_view_controller_actions.h"
 #import "ios/chrome/browser/ui/payments/payment_request_editor_field.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -306,6 +306,7 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
       case EditorFieldTypeTextField: {
         AutofillEditItem* item =
             [[AutofillEditItem alloc] initWithType:ItemTypeTextField];
+        item.useScaledFont = YES;
         item.textFieldName = field.label;
         item.textFieldEnabled = field.enabled;
         item.textFieldValue = field.value;
@@ -336,6 +337,7 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
       case EditorFieldTypeSwitch: {
         CollectionViewSwitchItem* item =
             [[CollectionViewSwitchItem alloc] initWithType:ItemTypeSwitchField];
+        item.useScaledFont = YES;
         item.text = field.label;
         item.on = [field.value boolValue];
         [model addItem:item toSectionWithIdentifier:sectionIdentifier];
@@ -355,6 +357,7 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
   CollectionViewFooterItem* footerItem =
       [[CollectionViewFooterItem alloc] initWithType:ItemTypeFooter];
   footerItem.text = l10n_util::GetNSString(IDS_PAYMENTS_REQUIRED_FIELD_MESSAGE);
+  footerItem.useScaledFont = YES;
   [model addItem:footerItem toSectionWithIdentifier:SectionIdentifierFooter];
 
   // Validate the non-pristine fields, in order to restore the validation errors
@@ -602,9 +605,11 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
           base::mac::ObjCCast<AutofillEditCell>(cell);
       autofillEditCell.textField.delegate = self;
       autofillEditCell.textField.clearButtonMode = UITextFieldViewModeNever;
-      autofillEditCell.textLabel.font = [MDCTypography body2Font];
+      SetUILabelScaledFont(autofillEditCell.textLabel,
+                           [MDCTypography body2Font]);
       autofillEditCell.textLabel.textColor = [[MDCPalette greyPalette] tint900];
-      autofillEditCell.textField.font = [MDCTypography body1Font];
+      SetUITextFieldScaledFont(autofillEditCell.textField,
+                               [MDCTypography body1Font]);
       autofillEditCell.textField.textColor =
           [[MDCPalette cr_bluePalette] tint500];
       break;
@@ -620,7 +625,8 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
     case ItemTypeErrorMessage: {
       PaymentsTextCell* errorMessageCell =
           base::mac::ObjCCastStrict<PaymentsTextCell>(cell);
-      errorMessageCell.textLabel.font = [MDCTypography body1Font];
+      SetUILabelScaledFont(errorMessageCell.textLabel,
+                           [MDCTypography body1Font]);
       errorMessageCell.textLabel.textColor =
           [[MDCPalette cr_redPalette] tint600];
       break;
@@ -628,7 +634,7 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
     case ItemTypeFooter: {
       CollectionViewFooterCell* footerCell =
           base::mac::ObjCCastStrict<CollectionViewFooterCell>(cell);
-      footerCell.textLabel.font = [MDCTypography body2Font];
+      SetUILabelScaledFont(footerCell.textLabel, [MDCTypography body2Font]);
       footerCell.textLabel.textColor = [[MDCPalette greyPalette] tint600];
       footerCell.textLabel.shadowColor = nil;  // No shadow.
       footerCell.horizontalPadding = kFooterCellHorizontalPadding;

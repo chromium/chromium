@@ -9,6 +9,7 @@
 
 #include "base/optional.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_type_info.h"
+#include "net/proxy_resolution/proxy_list.h"
 
 namespace net {
 class ProxyServer;
@@ -41,6 +42,9 @@ class DataReductionProxyConfigValues {
   virtual base::Optional<DataReductionProxyTypeInfo>
   FindConfiguredDataReductionProxy(
       const net::ProxyServer& proxy_server) const = 0;
+
+  // Gets all current and recently configured Data Reduction Proxy servers.
+  virtual net::ProxyList GetAllConfiguredProxies() const = 0;
 };
 
 }  // namespace data_reduction_proxy

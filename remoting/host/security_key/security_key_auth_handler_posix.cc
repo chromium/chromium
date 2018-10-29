@@ -201,7 +201,7 @@ bool SecurityKeyAuthHandlerPosix::IsValidConnectionId(int connection_id) const {
 void SecurityKeyAuthHandlerPosix::SendClientResponse(
     int connection_id,
     const std::string& response) {
-  ActiveSockets::const_iterator iter = GetSocketForConnectionId(connection_id);
+  auto iter = GetSocketForConnectionId(connection_id);
   if (iter != active_sockets_.end()) {
     HOST_DLOG << "Sending client response to socket: " << connection_id;
     iter->second->SendResponse(response);
@@ -214,7 +214,7 @@ void SecurityKeyAuthHandlerPosix::SendClientResponse(
 }
 
 void SecurityKeyAuthHandlerPosix::SendErrorAndCloseConnection(int id) {
-  ActiveSockets::const_iterator iter = GetSocketForConnectionId(id);
+  auto iter = GetSocketForConnectionId(id);
   if (iter != active_sockets_.end()) {
     HOST_DLOG << "Sending error and closing socket: " << id;
     SendErrorAndCloseActiveSocket(iter);

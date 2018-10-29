@@ -32,7 +32,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/rejected_promises.h"
@@ -67,6 +66,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/access_control_status.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_violation_reporting_policy.h"
@@ -262,22 +262,17 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
     return;
   }
 
-  AccessControlStatus access_control_status = kNotSharableCrossOrigin;
-  if (message->IsOpaque())
-    access_control_status = kOpaqueResource;
-  else if (message->IsSharedCrossOrigin())
-    access_control_status = kSharableCrossOrigin;
+  AccessControlStatus access_control_status =
+      message->IsSharedCrossOrigin() ? kSharableCrossOrigin : kOpaqueResource;
 
-  ErrorEvent* event =
-      ErrorEvent::Create(ToCoreStringWithNullCheck(message->Get()),
-                         std::move(location), &script_state->World());
+  ErrorEvent* event = ErrorEvent::Create(
+      ToCoreStringWithNullCheck(message->Get()), std::move(location),
+      ScriptValue::From(script_state, data), &script_state->World());
 
   String message_for_console = ExtractMessageForConsole(isolate, data);
   if (!message_for_console.IsEmpty())
     event->SetUnsanitizedMessage("Uncaught " + message_for_console);
 
-  StoreExceptionForInspector(script_state, event, data,
-                             script_state->GetContext()->Global());
   context->DispatchErrorEvent(event, access_control_status);
 }
 
@@ -311,21 +306,18 @@ void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
     return;
   }
 
-  ErrorEvent* event =
-      ErrorEvent::Create(ToCoreStringWithNullCheck(message->Get()),
-                         std::move(location), &script_state->World());
+  ErrorEvent* event = ErrorEvent::Create(
+      ToCoreStringWithNullCheck(message->Get()), std::move(location),
+      ScriptValue::From(script_state, data), &script_state->World());
 
-  AccessControlStatus cors_status = message->IsSharedCrossOrigin()
-                                        ? kSharableCrossOrigin
-                                        : kNotSharableCrossOrigin;
+  AccessControlStatus access_control_status =
+      message->IsSharedCrossOrigin() ? kSharableCrossOrigin : kOpaqueResource;
 
   // If execution termination has been triggered as part of constructing
   // the error event from the v8::Message, quietly leave.
   if (!isolate->IsExecutionTerminating()) {
-    StoreExceptionForInspector(script_state, event, data,
-                               script_state->GetContext()->Global());
     ExecutionContext::From(script_state)
-        ->DispatchErrorEvent(event, cors_status);
+        ->DispatchErrorEvent(event, access_control_status);
   }
 
   per_isolate_data->SetReportingException(false);
@@ -378,7 +370,7 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
   }
 
   String error_message;
-  AccessControlStatus cors_status = kNotSharableCrossOrigin;
+  AccessControlStatus cors_status = kOpaqueResource;
   std::unique_ptr<SourceLocation> location;
 
   v8::Local<v8::Message> message =
@@ -437,9 +429,8 @@ static void PromiseRejectHandlerInWorker(v8::PromiseRejectMessage data) {
   if (!execution_context)
     return;
 
-  DCHECK(execution_context->IsWorkerGlobalScope());
-  WorkerOrWorkletScriptController* script_controller =
-      ToWorkerGlobalScope(execution_context)->ScriptController();
+  auto* script_controller =
+      To<WorkerGlobalScope>(execution_context)->ScriptController();
   DCHECK(script_controller);
 
   PromiseRejectHandler(data, *script_controller->GetRejectedPromises(),
@@ -482,7 +473,7 @@ static bool WasmCodeGenerationCheckCallbackInMainThread(
     v8::Local<v8::String> source) {
   if (ExecutionContext* execution_context = ToExecutionContext(context)) {
     if (ContentSecurityPolicy* policy =
-            ToDocument(execution_context)->GetContentSecurityPolicy()) {
+            To<Document>(execution_context)->GetContentSecurityPolicy()) {
       v8::String::Value source_str(context->GetIsolate(), source);
       UChar snippet[ContentSecurityPolicy::kMaxSampleLength + 1];
       size_t len = std::min((sizeof(snippet) / sizeof(UChar)) - 1,
@@ -575,7 +566,6 @@ static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
     v8::Local<v8::Context> context,
     v8::Local<v8::ScriptOrModule> v8_referrer,
     v8::Local<v8::String> v8_specifier) {
-  CHECK(RuntimeEnabledFeatures::ModuleScriptsDynamicImportEnabled());
   ScriptState* script_state = ScriptState::From(context);
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -608,7 +598,6 @@ static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
 static void HostGetImportMetaProperties(v8::Local<v8::Context> context,
                                         v8::Local<v8::Module> module,
                                         v8::Local<v8::Object> meta) {
-  CHECK(RuntimeEnabledFeatures::ModuleScriptsImportMetaUrlEnabled());
   ScriptState* script_state = ScriptState::From(context);
   v8::Isolate* isolate = context->GetIsolate();
   v8::HandleScope handle_scope(isolate);
@@ -645,14 +634,9 @@ static void InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetWasmModuleCallback(WasmModuleOverride);
   isolate->SetWasmInstanceCallback(WasmInstanceOverride);
   isolate->SetWasmThreadsEnabledCallback(WasmThreadsEnabledCallback);
-  if (RuntimeEnabledFeatures::ModuleScriptsDynamicImportEnabled()) {
-    isolate->SetHostImportModuleDynamicallyCallback(
-        HostImportModuleDynamically);
-  }
-  if (RuntimeEnabledFeatures::ModuleScriptsImportMetaUrlEnabled()) {
-    isolate->SetHostInitializeImportMetaObjectCallback(
-        HostGetImportMetaProperties);
-  }
+  isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
+  isolate->SetHostInitializeImportMetaObjectCallback(
+      HostGetImportMetaProperties);
 
   V8ContextSnapshot::EnsureInterfaceTemplates(isolate);
 

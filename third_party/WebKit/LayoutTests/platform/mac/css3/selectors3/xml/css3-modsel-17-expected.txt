@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x50
-  LayoutBlockFlow {test} at (0,0) size 800x50
-    LayoutBlockFlow {p} at (0,16) size 800x18
-      LayoutInline {a} at (0,0) size 381x18 [color=#551A8B] [bgcolor=#00FF00]
-        LayoutText {#text} at (0,0) size 381x18
-          text run at (0,0) width 381: "You should see a green background assigned by the anchor."
-      LayoutText {#text} at (0,0) size 0x0

@@ -17,6 +17,7 @@
 #include "components/browser_sync/profile_sync_service.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 
 namespace base {
 class ListValue;
@@ -47,12 +48,14 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // Clears browsing data, called by Javascript.
   void HandleClearBrowsingData(const base::ListValue* value);
 
-
   // Called when a clearing task finished. |webui_callback_id| is provided
   // by the WebUI action that initiated it.
+  // The ScopedSyncedDataDeletion is passed here to ensure that the Sync token
+  // is not invalidated before this function is run.
   void OnClearingTaskFinished(
       const std::string& webui_callback_id,
-      const base::flat_set<browsing_data::BrowsingDataType>& data_types);
+      const base::flat_set<browsing_data::BrowsingDataType>& data_types,
+      std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion);
 
   // Initializes the dialog UI. Called by JavaScript when the DOM is ready.
   void HandleInitialize(const base::ListValue* args);

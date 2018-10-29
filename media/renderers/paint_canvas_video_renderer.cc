@@ -14,6 +14,7 @@
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_builder.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
@@ -40,6 +41,7 @@
 #define LIBYUV_H420_TO_ARGB libyuv::H420ToARGB
 #define LIBYUV_I010_TO_ARGB libyuv::I010ToARGB
 #define LIBYUV_H010_TO_ARGB libyuv::H010ToARGB
+#define LIBYUV_NV12_TO_ARGB libyuv::NV12ToARGB
 #elif SK_R32_SHIFT == 0 && SK_G32_SHIFT == 8 && SK_B32_SHIFT == 16 && \
     SK_A32_SHIFT == 24
 #define LIBYUV_I420_TO_ARGB libyuv::I420ToABGR
@@ -50,6 +52,7 @@
 #define LIBYUV_H420_TO_ARGB libyuv::H420ToABGR
 #define LIBYUV_I010_TO_ARGB libyuv::I010ToABGR
 #define LIBYUV_H010_TO_ARGB libyuv::H010ToABGR
+#define LIBYUV_NV12_TO_ARGB libyuv::NV12ToABGR
 #else
 #error Unexpected Skia ARGB_8888 layout!
 #endif
@@ -275,6 +278,34 @@ void VideoFrameCopyTextureOrSubTexture(gpu::gles2::GLES2Interface* gl,
   }
 }
 
+void OnQueryDone(scoped_refptr<VideoFrame> video_frame,
+                 gpu::gles2::GLES2Interface* gl,
+                 unsigned query_id) {
+  gl->DeleteQueriesEXT(1, &query_id);
+  // |video_frame| is dropped here.
+}
+
+void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
+                               gpu::gles2::GLES2Interface* gl,
+                               gpu::ContextSupport* context_support) {
+  DCHECK(gl);
+  SyncTokenClientImpl client(gl);
+  video_frame->UpdateReleaseSyncToken(&client);
+
+  if (video_frame->metadata()->IsTrue(
+          VideoFrameMetadata::READ_LOCK_FENCES_ENABLED)) {
+    // |video_frame| must be kept alive during read operations.
+    DCHECK(context_support);
+    unsigned query_id = 0;
+    gl->GenQueriesEXT(1, &query_id);
+    DCHECK(query_id);
+    gl->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
+    gl->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
+    context_support->SignalQuery(
+        query_id, base::BindOnce(&OnQueryDone, video_frame, gl, query_id));
+  }
+}
+
 }  // anonymous namespace
 
 // Generates an RGB image from a VideoFrame. Convert YUV to RGB plain on GPU.
@@ -305,8 +336,9 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     return true;
   }
 
-  bool QueryYUV8(SkYUVSizeInfo* sizeInfo,
-                 SkYUVColorSpace* color_space) const override {
+  bool QueryYUVA8(SkYUVASizeInfo* sizeInfo,
+                  SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
+                  SkYUVColorSpace* color_space) const override {
     if (!media::IsYuvPlanar(frame_->format()) ||
         // TODO(rileya): Skia currently doesn't support YUVA conversion. Remove
         // this case once it does. As-is we will fall back on the pure-software
@@ -332,18 +364,40 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
       sizeInfo->fSizes[plane].set(size.width(), size.height());
       sizeInfo->fWidthBytes[plane] = size.width();
     }
+    sizeInfo->fSizes[VideoFrame::kAPlane] = SkISize::MakeEmpty();
+    sizeInfo->fWidthBytes[VideoFrame::kAPlane] = 0;
+
+    indices[SkYUVAIndex::kY_Index] = {VideoFrame::kYPlane, SkColorChannel::kR};
+    indices[SkYUVAIndex::kU_Index] = {VideoFrame::kUPlane, SkColorChannel::kR};
+    indices[SkYUVAIndex::kV_Index] = {VideoFrame::kVPlane, SkColorChannel::kR};
+    indices[SkYUVAIndex::kA_Index] = {-1, SkColorChannel::kR};
 
     return true;
   }
 
-  bool GetYUV8Planes(const SkYUVSizeInfo& sizeInfo,
-                     void* planes[3],
-                     size_t frame_index,
-                     uint32_t lazy_pixel_ref) override {
+  bool GetYUVA8Planes(const SkYUVASizeInfo& sizeInfo,
+                      const SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
+                      void* planes[4],
+                      size_t frame_index,
+                      uint32_t lazy_pixel_ref) override {
     DCHECK_EQ(frame_index, 0u);
 
     media::VideoPixelFormat format = frame_->format();
     DCHECK(media::IsYuvPlanar(format) && format != PIXEL_FORMAT_I420A);
+
+    for (int i = 0; i <= VideoFrame::kVPlane; ++i) {
+      if (sizeInfo.fSizes[i].isEmpty() || !sizeInfo.fWidthBytes[i]) {
+        return false;
+      }
+    }
+    if (!sizeInfo.fSizes[VideoFrame::kAPlane].isEmpty() ||
+        sizeInfo.fWidthBytes[VideoFrame::kAPlane]) {
+      return false;
+    }
+    int numPlanes;
+    if (!SkYUVAIndex::AreValidIndices(indices, &numPlanes) || numPlanes != 3) {
+      return false;
+    }
 
     for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane;
          ++plane) {
@@ -416,7 +470,8 @@ void PaintCanvasVideoRenderer::Paint(
     const gfx::RectF& dest_rect,
     cc::PaintFlags& flags,
     VideoRotation video_rotation,
-    const Context3D& context_3d) {
+    const Context3D& context_3d,
+    gpu::ContextSupport* context_support) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (flags.getAlpha() == 0) {
     return;
@@ -509,22 +564,23 @@ void PaintCanvasVideoRenderer::Paint(
   canvas->flush();
 
   if (video_frame->HasTextures()) {
-    DCHECK(gl);
-    SyncTokenClientImpl client(gl);
-    video_frame->UpdateReleaseSyncToken(&client);
+    // Synchronize |video_frame| with the read operations in UpdateLastImage(),
+    // which are triggered by canvas->flush().
+    SynchronizeVideoFrameRead(video_frame, gl, context_support);
   }
 }
 
 void PaintCanvasVideoRenderer::Copy(
     const scoped_refptr<VideoFrame>& video_frame,
     cc::PaintCanvas* canvas,
-    const Context3D& context_3d) {
+    const Context3D& context_3d,
+    gpu::ContextSupport* context_support) {
   cc::PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kSrc);
   flags.setFilterQuality(kLow_SkFilterQuality);
   Paint(video_frame, canvas,
         gfx::RectF(gfx::SizeF(video_frame->visible_rect().size())), flags,
-        media::VIDEO_ROTATION_0, context_3d);
+        media::VIDEO_ROTATION_0, context_3d, context_support);
 }
 
 namespace {
@@ -857,6 +913,15 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
       break;
 
     case PIXEL_FORMAT_NV12:
+      LIBYUV_NV12_TO_ARGB(video_frame->visible_data(VideoFrame::kYPlane),
+                          video_frame->stride(VideoFrame::kYPlane),
+                          video_frame->visible_data(VideoFrame::kUVPlane),
+                          video_frame->stride(VideoFrame::kUVPlane),
+                          static_cast<uint8_t*>(rgb_pixels), row_bytes,
+                          video_frame->visible_rect().width(),
+                          video_frame->visible_rect().height());
+      break;
+
     case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_UYVY:
     case PIXEL_FORMAT_YUY2:
@@ -866,6 +931,8 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
     case PIXEL_FORMAT_RGB32:
     case PIXEL_FORMAT_MJPEG:
     case PIXEL_FORMAT_MT21:
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_UNKNOWN:
       NOTREACHED() << "Only YUV formats and Y16 are supported, got: "
                    << media::VideoPixelFormatToString(video_frame->format());
@@ -901,14 +968,14 @@ void PaintCanvasVideoRenderer::CopyVideoFrameSingleTextureToGLTexture(
                                     target, texture, internal_format, format,
                                     type, level, premultiply_alpha, flip_y);
   gl->DeleteTextures(1, &source_texture);
-  gl->Flush();
-
-  SyncTokenClientImpl client(gl);
-  video_frame->UpdateReleaseSyncToken(&client);
+  gl->ShallowFlushCHROMIUM();
+  // The caller must call SynchronizeVideoFrameRead() after this operation, but
+  // we can't do that because we don't have the ContextSupport.
 }
 
 bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     const Context3D& context_3d,
+    gpu::ContextSupport* context_support,
     gpu::gles2::GLES2Interface* destination_gl,
     const scoped_refptr<VideoFrame>& video_frame,
     unsigned int target,
@@ -922,7 +989,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(video_frame);
   DCHECK(video_frame->HasTextures());
-  if (video_frame->NumTextures() > 1) {
+  if (video_frame->NumTextures() > 1 ||
+      video_frame->metadata()->IsTrue(
+          VideoFrameMetadata::READ_LOCK_FENCES_ENABLED)) {
     if (!context_3d.gr_context)
       return false;
     if (!UpdateLastImage(video_frame, context_3d))
@@ -936,7 +1005,11 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     if (!backend_texture.getGLTextureInfo(&texture_info))
       return false;
 
+    // Synchronize |video_frame| with the read operations in UpdateLastImage(),
+    // which are triggered by getBackendTexture().
     gpu::gles2::GLES2Interface* canvas_gl = context_3d.gl;
+    SynchronizeVideoFrameRead(video_frame, canvas_gl, context_support);
+
     gpu::MailboxHolder mailbox_holder;
     mailbox_holder.texture_target = texture_info.fTarget;
     canvas_gl->ProduceTextureDirectCHROMIUM(texture_info.fID,
@@ -964,13 +1037,11 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     gpu::SyncToken dest_sync_token;
     destination_gl->GenUnverifiedSyncTokenCHROMIUM(dest_sync_token.GetData());
     canvas_gl->WaitSyncTokenCHROMIUM(dest_sync_token.GetConstData());
-
-    SyncTokenClientImpl client(canvas_gl);
-    video_frame->UpdateReleaseSyncToken(&client);
   } else {
     CopyVideoFrameSingleTextureToGLTexture(
         destination_gl, video_frame.get(), target, texture, internal_format,
         format, type, level, premultiply_alpha, flip_y);
+    SynchronizeVideoFrameRead(video_frame, destination_gl, nullptr);
   }
 
   return true;
@@ -1208,8 +1279,9 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
       return false;
     last_id_ = video_frame->unique_id();
   }
+
+  DCHECK(last_image_);
   last_image_deleting_timer_.Reset();
-  DCHECK(!!last_image_);
   return true;
 }
 

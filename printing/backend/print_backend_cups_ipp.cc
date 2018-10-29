@@ -87,31 +87,6 @@ bool PrintBackendCupsIpp::GetPrinterSemanticCapsAndDefaults(
   return true;
 }
 
-bool PrintBackendCupsIpp::GetPrinterCapsAndDefaults(
-    const std::string& printer_name,
-    PrinterCapsAndDefaults* printer_info) {
-  DCHECK(printer_info);
-
-  // Read the PPD file for Cloud Print.  We don't use PPD anymore otherwise.
-  std::unique_ptr<CupsPrinter> printer(
-      cups_connection_->GetPrinter(printer_name));
-  if (!printer)
-    return false;
-
-  std::string ppd_contents = printer->GetPPD();
-  if (ppd_contents.empty()) {
-    LOG(ERROR) << "CUPS: Failed to get PPD, printer name: " << printer_name;
-    return false;
-  }
-
-  printer_info->printer_capabilities.swap(ppd_contents);
-  printer_info->caps_mime_type = "application/pagemaker";
-  // In CUPS, printer defaults is a part of PPD file. Nothing to upload here.
-  printer_info->printer_defaults.clear();
-  printer_info->defaults_mime_type.clear();
-  return true;
-}
-
 std::string PrintBackendCupsIpp::GetPrinterDriverInfo(
     const std::string& printer_name) {
   std::unique_ptr<CupsPrinter> printer(

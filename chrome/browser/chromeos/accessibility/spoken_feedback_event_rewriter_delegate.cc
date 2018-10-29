@@ -7,6 +7,7 @@
 #include "ash/public/interfaces/constants.mojom.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/accessibility/event_handler_common.h"
+#include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/service_manager_connection.h"
@@ -35,12 +36,23 @@ void SpokenFeedbackEventRewriterDelegate::DispatchKeyEventToChromeVox(
     bool capture) {
   extensions::ExtensionHost* host = chromeos::GetAccessibilityExtensionHost(
       extension_misc::kChromeVoxExtensionId);
+  if (!host)
+    return;
+
   // Listen for any unhandled keyboard events from ChromeVox's background page
   // when capturing keys to reinject.
   host->host_contents()->SetDelegate(capture ? this : nullptr);
 
   // Forward the event to ChromeVox's background page.
   chromeos::ForwardKeyToExtension(*(event->AsKeyEvent()), host);
+}
+
+void SpokenFeedbackEventRewriterDelegate::DispatchMouseEventToChromeVox(
+    std::unique_ptr<ui::Event> event) {
+  if (event->type() == ui::ET_MOUSE_MOVED) {
+    AutomationManagerAura::GetInstance()->HandleEvent(
+        ax::mojom::Event::kMouseMoved);
+  }
 }
 
 bool SpokenFeedbackEventRewriterDelegate::ShouldDispatchKeyEventToChromeVox(
@@ -69,9 +81,9 @@ void SpokenFeedbackEventRewriterDelegate::OnUnhandledSpokenFeedbackEvent(
       std::move(event));
 }
 
-void SpokenFeedbackEventRewriterDelegate::HandleKeyboardEvent(
+bool SpokenFeedbackEventRewriterDelegate::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
-  OnUnhandledSpokenFeedbackEvent(
-      ui::Event::Clone(*static_cast<ui::Event*>(event.os_event)));
+  OnUnhandledSpokenFeedbackEvent(ui::Event::Clone(*event.os_event));
+  return true;
 }

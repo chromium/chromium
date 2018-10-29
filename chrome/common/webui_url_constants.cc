@@ -124,6 +124,7 @@ const char kChromeUIResetPasswordHost[] = "reset-password";
 const char kChromeUIResetPasswordURL[] = "chrome://reset-password/";
 const char kChromeUIRestartHost[] = "restart";
 const char kChromeUIRestartURL[] = "chrome://restart/";
+const char kChromeUISafetyURL[] = "https://g.co/PixelSlate/safety";
 const char kChromeUISettingsHost[] = "settings";
 const char kChromeUISettingsURL[] = "chrome://settings/";
 const char kChromeUISignInInternalsHost[] = "signin-internals";
@@ -206,8 +207,6 @@ const char kChromeUIIntenetDetailDialogURL[] =
     "chrome://internet-detail-dialog/";
 const char kChromeUIInternetConfigDialogHost[] = "internet-config-dialog";
 const char kChromeUIInternetDetailDialogHost[] = "internet-detail-dialog";
-const char kChromeUIKeyboardOverlayHost[] = "keyboardoverlay";
-const char kChromeUIKeyboardOverlayURL[] = "chrome://keyboardoverlay/";
 const char kChromeUILinuxCreditsHost[] = "linux-credits";
 const char kChromeUILinuxCreditsURL[] = "chrome://linux-credits/";
 const char kChromeUIMobileSetupHost[] = "mobilesetup";
@@ -298,9 +297,10 @@ const char kHelpSubPage[] = "help";
 const char kInternetSubPage[] = "internet";
 // 'multidevice/features' is a child of the 'multidevice' route
 const char kConnectedDevicesSubPage[] = "multidevice/features";
+const char kLockScreenSubPage[] = "lockScreen";
 const char kNetworkDetailSubPage[] = "networkDetail";
 const char kPowerSubPage[] = "power";
-const char kSmbSharesPage[] = "smbShares";
+const char kSmbSharesPageAddDialog[] = "smbShares?showAddShare=true";
 const char kStylusSubPage[] = "stylus";
 #else
 const char kCreateProfileSubPage[] = "createProfile";
@@ -399,7 +399,6 @@ const char* const kChromeHostURLs[] = {
     kChromeUICryptohomeHost,
     kChromeUIDriveInternalsHost,
     kChromeUIFirstRunHost,
-    kChromeUIKeyboardOverlayHost,
     kChromeUILinuxCreditsHost,
     kChromeUINetworkHost,
     kChromeUIOobeHost,

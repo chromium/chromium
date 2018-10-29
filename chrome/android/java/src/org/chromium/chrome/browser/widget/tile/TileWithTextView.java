@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.widget.tile;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -14,22 +13,12 @@ import android.widget.TextView;
 
 import org.chromium.chrome.R;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
  * The view for a tile with icon and text.
  *
  * Displays the title of the site beneath a large icon.
  */
 public class TileWithTextView extends FrameLayout {
-    @IntDef({Style.MODERN, Style.MODERN_CONDENSED})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Style {
-        int MODERN = 1;
-        int MODERN_CONDENSED = 2;
-    }
-
     private TextView mTitleView;
     private ImageView mBadgeView;
     protected ImageView mIconView;
@@ -54,18 +43,20 @@ public class TileWithTextView extends FrameLayout {
      * Initializes the view. This should be called immediately after inflation.
      *
      * @param title The title of the tile.
-     * @param url The url of the tile.
      * @param showOfflineBadge Whether to show the offline badge.
      * @param icon The icon to display on the tile.
      * @param titleLines The number of text lines to use for the tile title.
-     * @param tileStyle The visual style of the tile.
      */
-    public void initialize(String title, String url, boolean showOfflineBadge, Drawable icon,
-            int titleLines, @Style int tileStyle) {
-        mTitleView.setLines(titleLines);
-        mTitleView.setText(title);
+    public void initialize(String title, boolean showOfflineBadge, Drawable icon, int titleLines) {
+        setTitle(title, titleLines);
         setOfflineBadgeVisibility(showOfflineBadge);
         setIconDrawable(icon);
+    }
+
+    /** Sets the title text and number lines. */
+    public void setTitle(String title, int titleLines) {
+        mTitleView.setLines(titleLines);
+        mTitleView.setText(title);
     }
 
     /**

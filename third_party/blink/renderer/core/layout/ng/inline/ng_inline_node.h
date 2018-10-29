@@ -15,6 +15,7 @@ namespace blink {
 
 class NGConstraintSpace;
 class NGInlineBreakToken;
+class NGInlineChildLayoutContext;
 class NGInlineItem;
 class NGLayoutResult;
 class NGOffsetMapping;
@@ -36,10 +37,13 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   // True in quirks mode or limited-quirks mode, which require line-height
   // quirks.
   // https://quirks.spec.whatwg.org/#the-line-height-calculation-quirk
-  bool InLineHeightQuirksMode() const;
+  bool InLineHeightQuirksMode() const {
+    return GetDocument().InLineHeightQuirksMode();
+  }
 
   scoped_refptr<NGLayoutResult> Layout(const NGConstraintSpace&,
-                                       NGBreakToken* = nullptr);
+                                       const NGBreakToken*,
+                                       NGInlineChildLayoutContext* context);
 
   // Computes the value of min-content and max-content for this anonymous block
   // box. min-content is the inline size when lines wrap at every break
@@ -49,7 +53,10 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
                                const NGConstraintSpace* = nullptr);
 
   // Instruct to re-compute |PrepareLayout| on the next layout.
-  void InvalidatePrepareLayoutForTest();
+  void InvalidatePrepareLayoutForTest() {
+    GetLayoutBlockFlow()->ResetNGInlineNodeData();
+    DCHECK(!IsPrepareLayoutFinished());
+  }
 
   const NGInlineItemsData& ItemsData(bool is_first_line) const {
     return Data().ItemsData(is_first_line);
@@ -67,7 +74,10 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
 
   // @return if this node can contain the "first formatted line".
   // https://www.w3.org/TR/CSS22/selector.html#first-formatted-line
-  bool CanContainFirstFormattedLine() const;
+  bool CanContainFirstFormattedLine() const {
+    DCHECK(GetLayoutBlockFlow());
+    return GetLayoutBlockFlow()->CanContainFirstFormattedLine();
+  }
 
   void CheckConsistency() const;
 
@@ -94,10 +104,16 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   void ShapeTextForFirstLineIfNeeded(NGInlineNodeData*);
   void AssociateItemsWithInlines(NGInlineNodeData*);
 
-  void ClearAssociatedFragments(NGInlineBreakToken*);
+  void ClearAssociatedFragments(const NGInlineBreakToken*);
 
-  NGInlineNodeData* MutableData();
-  const NGInlineNodeData& Data() const;
+  NGInlineNodeData* MutableData() {
+    return ToLayoutBlockFlow(box_)->GetNGInlineNodeData();
+  }
+  const NGInlineNodeData& Data() const {
+    DCHECK(IsPrepareLayoutFinished() &&
+           !GetLayoutBlockFlow()->NeedsCollectInlines());
+    return *ToLayoutBlockFlow(box_)->GetNGInlineNodeData();
+  }
   const NGInlineNodeData& EnsureData();
 
   friend class NGLineBreakerTest;

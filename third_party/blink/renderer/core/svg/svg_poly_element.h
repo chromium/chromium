@@ -50,8 +50,8 @@ class SVGPolyElement : public SVGGeometryElement {
 };
 
 inline bool IsSVGPolyElement(const SVGElement& element) {
-  return element.HasTagName(SVGNames::polygonTag) ||
-         element.HasTagName(SVGNames::polylineTag);
+  return element.HasTagName(svg_names::kPolygonTag) ||
+         element.HasTagName(svg_names::kPolylineTag);
 }
 
 DEFINE_SVGELEMENT_TYPE_CASTS_WITH_FUNCTION(SVGPolyElement);

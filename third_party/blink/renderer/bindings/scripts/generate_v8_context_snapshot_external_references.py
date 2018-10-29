@@ -29,7 +29,7 @@ INCLUDES = frozenset([
     'third_party/blink/renderer/platform/bindings/v8_private_property.h',
     'v8/include/v8.h'])
 
-TEMPLATE_FILE = 'external_reference_table.cpp.tmpl'
+TEMPLATE_FILE = 'external_reference_table.cc.tmpl'
 
 WHITE_LIST_INTERFACES = frozenset([
     'DOMMatrix',  # crbug.com/733481

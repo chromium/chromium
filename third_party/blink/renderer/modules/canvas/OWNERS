@@ -1,9 +1,8 @@
 fserb@chromium.org
-junov@chromium.org
 # canvas, imagebitmap
 senorblanco@chromium.org
-# OffscreenCanvas
-xlai@chromium.org
+# lowLatency
+mcasas@chromium.org
 
 # TEAM: paint-dev@chromium.org
 # COMPONENT: Blink>Canvas

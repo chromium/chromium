@@ -79,8 +79,7 @@ const gfx::Image* ImageFamily::GetBest(int width, int height) const {
 
 float ImageFamily::GetClosestAspect(float desired_aspect) const {
   // Find the two aspect ratios on either side of |desired_aspect|.
-  std::map<MapKey, gfx::Image>::const_iterator greater_or_equal =
-      map_.lower_bound(MapKey(desired_aspect, 0));
+  auto greater_or_equal = map_.lower_bound(MapKey(desired_aspect, 0));
   // Early exit optimization if there is an exact match.
   if (greater_or_equal != map_.end() &&
       greater_or_equal->first.aspect() == desired_aspect) {
@@ -91,8 +90,7 @@ float ImageFamily::GetClosestAspect(float desired_aspect) const {
   // aspect ratio >= |desired_aspect|, and |less_than| will point to the last
   // image with aspect ratio < |desired_aspect|.
   if (greater_or_equal != map_.begin()) {
-    std::map<MapKey, gfx::Image>::const_iterator less_than =
-        greater_or_equal;
+    auto less_than = greater_or_equal;
     --less_than;
     float thinner_aspect = less_than->first.aspect();
     DCHECK_GT(thinner_aspect, 0.0f);
@@ -148,8 +146,7 @@ gfx::Image ImageFamily::CreateExact(const gfx::Size& size) const {
 const gfx::Image* ImageFamily::GetWithExactAspect(float aspect,
                                                   int width) const {
   // Find the two images of given aspect ratio on either side of |width|.
-  std::map<MapKey, gfx::Image>::const_iterator greater_or_equal =
-      map_.lower_bound(MapKey(aspect, width));
+  auto greater_or_equal = map_.lower_bound(MapKey(aspect, width));
   if (greater_or_equal != map_.end() &&
       greater_or_equal->first.aspect() == aspect) {
     // We have found the smallest image of the same size or greater.
@@ -157,7 +154,7 @@ const gfx::Image* ImageFamily::GetWithExactAspect(float aspect,
   }
 
   DCHECK(greater_or_equal != map_.begin());
-  std::map<MapKey, gfx::Image>::const_iterator less_than = greater_or_equal;
+  auto less_than = greater_or_equal;
   --less_than;
   // This must be true because there must be at least one image with |aspect|.
   DCHECK_EQ(less_than->first.aspect(), aspect);

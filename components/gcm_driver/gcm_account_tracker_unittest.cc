@@ -63,11 +63,10 @@ void VerifyAccountTokens(
     const std::vector<GCMClient::AccountTokenInfo>& expected_tokens,
     const std::vector<GCMClient::AccountTokenInfo>& actual_tokens) {
   EXPECT_EQ(expected_tokens.size(), actual_tokens.size());
-  for (std::vector<GCMClient::AccountTokenInfo>::const_iterator
-           expected_iter = expected_tokens.begin(),
-           actual_iter = actual_tokens.begin();
+  for (auto expected_iter = expected_tokens.begin(),
+            actual_iter = actual_tokens.begin();
        expected_iter != expected_tokens.end() &&
-           actual_iter != actual_tokens.end();
+       actual_iter != actual_tokens.end();
        ++expected_iter, ++actual_iter) {
     EXPECT_EQ(expected_iter->account_id, actual_iter->account_id);
     EXPECT_EQ(expected_iter->email, actual_iter->email);

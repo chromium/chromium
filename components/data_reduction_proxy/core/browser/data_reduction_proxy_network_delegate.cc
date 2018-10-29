@@ -22,6 +22,7 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_io_data.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_request_options.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_util.h"
+#include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/data_reduction_proxy/core/common/lofi_decider.h"
@@ -38,6 +39,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_status.h"
+#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 namespace data_reduction_proxy {
@@ -417,8 +419,6 @@ void DataReductionProxyNetworkDelegate::OnBeforeSendHeadersInternal(
   }
 
   DCHECK(data);
-  data->set_lofi_requested(
-      lofi_decider ? lofi_decider->ShouldRecordLoFiUMA(*request) : false);
   MaybeAddBrotliToAcceptEncodingHeader(proxy_info, headers, *request);
 
   data_reduction_proxy_request_options_->AddRequestHeader(headers, page_id);
@@ -580,7 +580,8 @@ void DataReductionProxyNetworkDelegate::CalculateAndRecordDataUsage(
 
   AccumulateDataUsage(
       data_used, original_size, request_type, mime_type,
-      data_use_measurement::DataUseMeasurement::IsUserRequest(request),
+      data_use_measurement::DataUseMeasurement::IsUserRequest(
+          request.traffic_annotation().unique_id_hash_code),
       data_use_measurement::DataUseMeasurement::GetContentTypeForRequest(
           request),
       request.traffic_annotation().unique_id_hash_code);
@@ -592,6 +593,7 @@ void DataReductionProxyNetworkDelegate::CalculateAndRecordDataUsage(
           ->IsNonContentInitiatedRequest(request)) {
     // Record non-content initiated traffic to the Other bucket for data saver
     // site-breakdown.
+    DCHECK(!base::FeatureList::IsEnabled(network::features::kNetworkService));
     data_reduction_proxy_io_data_->UpdateDataUseForHost(
         data_used, original_size, util::GetSiteBreakdownOtherHostName());
   }
@@ -683,6 +685,11 @@ void DataReductionProxyNetworkDelegate::MaybeAddBrotliToAcceptEncodingHeader(
     net::HttpRequestHeaders* request_headers,
     const net::URLRequest& request) const {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (base::FeatureList::IsEnabled(
+          features::kDataReductionProxyBrotliHoldback)) {
+    return;
+  }
 
   // This method should be called only when the resolved proxy was a data
   // saver proxy.

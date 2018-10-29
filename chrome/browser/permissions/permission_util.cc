@@ -50,6 +50,8 @@ std::string PermissionUtil::GetPermissionString(
       return "ClipboardWrite";
     case CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER:
       return "PaymentHandler";
+    case CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH:
+      return "BackgroundFetch";
     default:
       break;
   }
@@ -122,6 +124,8 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     *out = PermissionType::CLIPBOARD_READ;
   } else if (type == CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER) {
     *out = PermissionType::PAYMENT_HANDLER;
+  } else if (type == CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH) {
+    *out = PermissionType::BACKGROUND_FETCH;
   } else {
     return false;
   }
@@ -145,6 +149,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS:
     case CONTENT_SETTINGS_TYPE_CLIPBOARD_READ:
     case CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER:
+    case CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH:
       return true;
     default:
       return false;

@@ -61,12 +61,6 @@
 -NetInternalsTest.netInternalsTimelineViewZoomOut
 -NetInternalsTest.netInternalsTourTabs
 
-# https://crbug.com/853256
--ClientHintsBrowserTest.ClientHintsLifetimeNotAttachedCookiesBlocked/0
--ClientHintsBrowserTest.ClientHintsLifetimeNotAttachedCookiesBlocked/1
--ClientHintsBrowserTest.ClientHintsNoLifetimeCookiesNotAllowed/0
--ClientHintsBrowserTest.ClientHintsNoLifetimeCookiesNotAllowed/1
-
 # https://crbug.com/816684 Track Page Load Metrics.
 -PageLoadMetricsBrowserTest.LoadingMetricsFailed
 
@@ -109,6 +103,12 @@
 
 # https://crbug.com/721403
 -ContextMenuBrowserTest.DataSaverOpenOrigImageInNewTab
+-DataReductionProxyBrowsertest.UMAMetricsRecorded
+-DataReductionProxyFallbackBrowsertest.FallbackProxyUsedOn500Status
+-DataReductionProxyFallbackBrowsertest.FallbackProxyUsedWhenBlockHeaderSent
+-DataReductionProxyFallbackBrowsertest.FallbackProxyUsedWhenBlockZeroHeaderSent
+-DataReductionProxyFallbackBrowsertest.FallbackProxyUsedWhenBypassHeaderSent
+-DataReductionProxyFallbackBrowsertest.NoProxyUsedWhenBlockOnceHeaderSent
 
 # NOTE: if adding an exclusion for an existing failure (e.g. additional test for
 # feature X that is already not working), please add it beside the existing

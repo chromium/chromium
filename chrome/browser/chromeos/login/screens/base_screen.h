@@ -106,6 +106,12 @@ class BaseScreen {
   // it's work with |outcome|.
   void Finish(ScreenExitCode exit_code);
 
+  // Returns whether the active user is public session user or non-regular
+  // ephemeral user.
+  // TODO(agawronska): Test that there are no wizard screens shown every time
+  // public session launches.
+  bool IsPublicSessionOrEphemeralLogin();
+
   // The method is called each time some key in screen context is
   // updated by JS side. Default implementation does nothing, so
   // subclasses should override it in order to observe updates in

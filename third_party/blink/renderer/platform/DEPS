@@ -22,6 +22,7 @@ include_rules = [
     "+base/message_loop/message_loop.h",
     "+base/metrics/histogram.h",
     "+base/metrics/histogram_base.h",
+    "+base/metrics/histogram_functions.h",
     "+base/metrics/histogram_macros.h",
     "+base/metrics/histogram_samples.h",
     "+base/metrics/sparse_histogram.h",
@@ -79,5 +80,9 @@ specific_include_rules = {
     ],
     "ukm_time_aggregator_test.cc" : [
         "+components/ukm/test_ukm_recorder.h"
+    ],
+    "data_resource_helper.cc" : [
+        "+third_party/zlib/google/compression_utils.h",
+        "+ui/base/resource",
     ],
 }

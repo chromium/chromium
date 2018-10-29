@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/stl_util.h"
+#include "base/task/post_task.h"
 #include "content/browser/payments/payment_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 
 namespace content {
 
@@ -23,8 +25,8 @@ void PaymentAppContextImpl::Init(
   DCHECK(!did_shutdown_on_io_.IsSet());
 #endif
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&PaymentAppContextImpl::CreatePaymentAppDatabaseOnIO, this,
                      service_worker_context));
 }
@@ -36,8 +38,8 @@ void PaymentAppContextImpl::Shutdown() {
   // IO thread. When the last reference to |this| is released, |this| is
   // automatically scheduled for deletion on the UI thread (see
   // content::BrowserThread::DeleteOnUIThread in the header file).
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&PaymentAppContextImpl::ShutdownOnIO, this));
 }
 
@@ -45,8 +47,8 @@ void PaymentAppContextImpl::CreatePaymentManager(
     payments::mojom::PaymentManagerRequest request) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&PaymentAppContextImpl::CreatePaymentManagerOnIO, this,
                      std::move(request)));
 }

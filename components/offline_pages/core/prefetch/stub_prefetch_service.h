@@ -29,7 +29,8 @@ class StubPrefetchService : public PrefetchService {
   PrefetchBackgroundTaskHandler* GetPrefetchBackgroundTaskHandler() override;
   ThumbnailFetcher* GetThumbnailFetcher() override;
   OfflinePageModel* GetOfflinePageModel() override;
-  SuggestedArticlesObserver* GetSuggestedArticlesObserver() override;
+
+  SuggestedArticlesObserver* GetSuggestedArticlesObserverForTesting() override;
 };
 
 }  // namespace offline_pages

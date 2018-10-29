@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{před minutou}few{před # minutami}many{před # minuty}other{před # minutami}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}few{# min}many{# min}other{# min}}</translation>
 <translation id="1243314992276662751">Nahrát</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Klávesa Esc</translation>
 <translation id="1306549533752902673">DOPORUČENÉ APLIKACE</translation>
 <translation id="1368832886055348810">Zleva doprava</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Klávesa PageDown</translation>
 <translation id="8245914219290430011">Tab</translation>
+<translation id="8259556432390118667">Hexadecimální kód barvy</translation>
 <translation id="8328145009876646418">Levý okraj</translation>
 <translation id="8331626408530291785">Posuv nahoru</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 rok}few{# roky}many{# roku}other{# let}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">Výchozí</translation>
 <translation id="8806053966018712535">Složka <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">Přidat k obrázku poznámku</translation>
+<translation id="8841375032071747811">Tlačítko Zpět</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
 <translation id="9002566407876343676">otevřít</translation>
 <translation id="9038489124413477075">Nepojmenovaná složka</translation>

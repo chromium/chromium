@@ -13,6 +13,7 @@
 
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_renderer_sink.h"
@@ -45,9 +46,7 @@ class MEDIA_EXPORT AudioRendererMixer
   void AddErrorCallback(const base::Closure& error_cb);
   void RemoveErrorCallback(const base::Closure& error_cb);
 
-  void set_pause_delay_for_testing(base::TimeDelta delay) {
-    pause_delay_ = delay;
-  }
+  void SetPauseDelayForTesting(base::TimeDelta delay);
 
   OutputDeviceInfo GetOutputDeviceInfo();
 
@@ -85,26 +84,26 @@ class MEDIA_EXPORT AudioRendererMixer
 
   // List of error callbacks used by this mixer.
   typedef std::list<base::Closure> ErrorCallbackList;
-  ErrorCallbackList error_callbacks_;
+  ErrorCallbackList error_callbacks_ GUARDED_BY(lock_);
 
   // Each of these converters mixes inputs with a given sample rate and
   // resamples them to the output sample rate. Inputs not reqiuring resampling
   // go directly to |master_converter_|.
-  AudioConvertersMap converters_;
+  AudioConvertersMap converters_ GUARDED_BY(lock_);
 
   // Master converter which mixes all the outputs from |converters_| as well as
   // mixer inputs that are in the output sample rate.
-  AudioConverter master_converter_;
+  AudioConverter master_converter_ GUARDED_BY(lock_);
 
   // Handles physical stream pause when no inputs are playing.  For latency
   // reasons we don't want to immediately pause the physical stream.
-  base::TimeDelta pause_delay_;
-  base::TimeTicks last_play_time_;
-  bool playing_;
+  base::TimeDelta pause_delay_ GUARDED_BY(lock_);
+  base::TimeTicks last_play_time_ GUARDED_BY(lock_);
+  bool playing_ GUARDED_BY(lock_);
 
   // Tracks the maximum number of simultaneous mixer inputs and logs it into
   // UMA histogram upon the destruction.
-  std::unique_ptr<UMAMaxValueTracker> input_count_tracker_;
+  std::unique_ptr<UMAMaxValueTracker> input_count_tracker_ GUARDED_BY(lock_);
 
   DISALLOW_COPY_AND_ASSIGN(AudioRendererMixer);
 };

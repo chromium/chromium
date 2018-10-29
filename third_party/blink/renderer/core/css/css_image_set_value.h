@@ -56,7 +56,7 @@ class CSSImageSetValue : public CSSValueList {
   String CustomCSSText() const;
 
   struct ImageWithScale {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
     String image_url;
     Referrer referrer;
     float scale_factor;

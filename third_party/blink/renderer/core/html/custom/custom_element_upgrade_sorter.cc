@@ -50,8 +50,8 @@ void CustomElementUpgradeSorter::Add(Element* element) {
     // Create parent-child link between <link rel="import"> and its imported
     // document so that the content of the imported document be visited as if
     // the imported document were inserted in the link element.
-    if (parent->IsDocumentNode()) {
-      Element* link = GetLinkElementForImport(*ToDocument(parent));
+    if (auto* document = DynamicTo<Document>(parent)) {
+      Element* link = GetLinkElementForImport(*document);
       if (!link ||
           AddToParentChildMap(link, parent) == kParentAlreadyExistsInMap)
         break;

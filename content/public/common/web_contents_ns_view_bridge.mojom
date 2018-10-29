@@ -1,0 +1,31 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "ui/gfx/geometry/mojo/geometry.mojom";
+
+// Interface through which a WebContentsViewMac communicates with its NSView in
+// another process.
+interface WebContentsNSViewBridge {
+  // Set this to be a child NSView of the NSView mapped to by
+  // |parent_ns_view_id|. In practice, this NSView will always be from a
+  // views::View.
+  SetParentViewsNSView(uint64 parent_ns_view_id);
+
+  // Un-hide the NSView and set its frame in its window to |bounds_in_window|.
+  Show(gfx.mojom.Rect bounds_in_window);
+
+  // Hide the NSView.
+  Hide();
+
+  // Make the NSView be the first responder for its window.
+  MakeFirstResponder();
+};
+
+// Interface through which the NSView in another process communicates with its
+// owning WebContentsViewMac. This interface has no methods yet, but is included
+// for symmetry and future use.
+interface WebContentsNSViewClient {};
+

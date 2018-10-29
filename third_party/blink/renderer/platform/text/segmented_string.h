@@ -32,7 +32,7 @@ namespace blink {
 class SegmentedString;
 
 class PLATFORM_EXPORT SegmentedSubstring {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   SegmentedSubstring() { data_.string8_ptr = nullptr; }

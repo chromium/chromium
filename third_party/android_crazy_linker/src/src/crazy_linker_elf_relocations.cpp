@@ -52,6 +52,34 @@
 #define DT_ANDROID_RELASZ (DT_LOOS + 5)
 #endif
 
+// Careful: the Android <elf.h> defines these with value corresponding to
+// DT_ANDROID_RELRxx below, so we undefine them, just in case. The DT_RELRxx
+// values corresponds to what lld generates by default with
+// '--pack-dyn-relocs=relr'.
+//
+// For more details, see https://reviews.llvm.org/D48247
+#undef DT_RELR
+#define DT_RELR 0x24
+#undef DT_RELRSZ
+#define DT_RELRSZ 0x23
+#undef DT_RELRENT
+#define DT_RELRENT 0x25
+
+// NOTE: The Android system linker only supports the DT_ANDROID_RELRxx entries
+// but their content is exactly equivalent to the DT_RELRxx ones. One can tell
+// lld to use the Android values with '--use-android-relr-tags'.
+//
+// The crazy linker supports both format, because it's essentially free :)
+#ifndef DT_ANDROID_RELR
+#define DT_ANDROID_RELR 0x6fffe000
+#endif
+#ifndef DT_ANDROID_RELRSZ
+#define DT_ANDROID_RELRSZ 0x6fffe001
+#endif
+#ifndef DT_ANDROID_RELRENT
+#define DT_ANDROID_RELRENT 0x6fffe003
+#endif
+
 // Processor-specific relocation types supported by the linker.
 #ifdef __arm__
 
@@ -183,6 +211,8 @@ RelocationType GetRelocationType(ELF::Word r_type) {
 
 }  // namespace
 
+ElfRelocations::ElfRelocations() = default;
+
 bool ElfRelocations::Init(const ElfView* view, Error* error) {
   // Save these for later.
   phdr_ = view->phdr();
@@ -280,6 +310,26 @@ bool ElfRelocations::Init(const ElfView* view, Error* error) {
              dyn_value);
         android_relocations_size_ = dyn_value;
         break;
+      case DT_RELR:
+      case DT_ANDROID_RELR:
+        RLOG("  DT_RELR\n");
+        relr_.SetAddress(dyn_addr);
+        break;
+      case DT_ANDROID_RELRSZ:
+      case DT_RELRSZ:
+        relr_.SetSize(dyn_value);
+        RLOG("  DT_RELSZ size=%d\n", dyn_value);
+        break;
+      case DT_RELRENT:
+      case DT_ANDROID_RELRENT:
+        if (dyn_value != sizeof(ELF::Relr)) {
+          RLOG("Invalid RELR entry size (%d, expected %d)",
+               static_cast<int>(dyn_value),
+               static_cast<int>(sizeof(ELF::Relr)));
+          *error = "Invalid DT_RELRENT value";
+          return false;
+        }
+        break;
       case DT_PLTGOT:
         // Only used on MIPS currently. Could also be used on other platforms
         // when lazy binding (i.e. RTLD_LAZY) is implemented.
@@ -341,6 +391,8 @@ bool ElfRelocations::ApplyAll(const ElfSymbols* symbols,
 
   if (!ApplyAndroidRelocations(symbols, resolver, error))
     return false;
+
+  relr_.Apply(load_bias_);
 
   if (!ApplyRelocs(reinterpret_cast<rel_t*>(relocations_),
                    relocations_size_ / sizeof(rel_t), symbols, resolver, error))

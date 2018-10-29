@@ -11,45 +11,12 @@
 
 <body>
 <h1 class="i18n" msg="log_title">ChromeVox Log</h1>
-<div id="logFilters">
+<div id="header">
   <button id="clearLog">Clear Log</button>
-  <label>Show: </label>
-  <label>
-    <input id="speechFilter" type="checkbox" class="log-filter"
-           name="speechFilter">
-    <span>speech</span>
-  </label>
-  <label>
-    <input id="earconFilter" type="checkbox" class="log-filter"
-           name="earconFilter">
-    <span>earcon</span>
-  </label>
-  <label>
-    <input id="brailleFilter" type="checkbox" class="log-filter"
-           name="brailleFilter">
-    <span>braille</span>
-  </label>
-  <label>
-    <input id="speechRuleFilter" type="checkbox" class="log-filter"
-           name="speechRuleFilter">
-    <span>speech rule</span>
-  </label>
-  <label>
-    <input id="brailleRuleFilter" type="checkbox" class="log-filter"
-           name="brailleRuleFilter">
-    <span>braille rule</span>
-  </label>
-  <label>
-    <input id="eventFilter" type="checkbox" class="log-filter"
-           name="eventFilter">
-    <span>event</span>
-  </label>
-  <label>
-    <input id="treeFilter" type="checkbox" class="log-filter"
-           name="treeFilter">
-    <span>tree</span>
-  </label>
   <button id="saveLog">Save Log</button>
+  <div id="logFilters">
+    <label>Show: </label>
+  </div>
 </div>
 <div id="logList"></div>
 </body>

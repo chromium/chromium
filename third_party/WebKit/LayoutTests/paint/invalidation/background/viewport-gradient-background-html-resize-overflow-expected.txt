@@ -18,9 +18,9 @@
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [0, 0, 800, 600],
-          "reason": "background on scrolling contents layer"
+          "reason": "background"
         },
         {
           "object": "LayoutBlockFlow HTML",

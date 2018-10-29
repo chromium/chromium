@@ -30,6 +30,9 @@ namespace {
 const char kTypeRegisteredForInvalidation[] =
     "invalidation.registered_for_invalidation";
 
+const char kActiveRegistrationToken[] =
+    "invalidation.active_registration_token";
+
 const char kInvalidationRegistrationScope[] =
     "https://firebaseperusertopics-pa.googleapis.com";
 
@@ -76,6 +79,7 @@ static const net::BackoffEntry::Policy kBackoffPolicy = {
 void PerUserTopicRegistrationManager::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kTypeRegisteredForInvalidation);
+  registry->RegisterStringPref(kActiveRegistrationToken, std::string());
 }
 
 struct PerUserTopicRegistrationManager::RegistrationEntry {
@@ -168,8 +172,7 @@ void PerUserTopicRegistrationManager::UpdateRegisteredTopics(
     const std::string& instance_id_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   token_ = instance_id_token;
-  // TODO(melandory): On change of token registrations
-  // should be re-requested.
+  DropAllSavedRegistrationsOnTokenChange(instance_id_token);
   for (const auto& topic : topics) {
     // If id isn't registered, schedule the registration.
     if (topic_to_private_topic_.find(topic) == topic_to_private_topic_.end()) {
@@ -287,6 +290,14 @@ TopicSet PerUserTopicRegistrationManager::GetRegisteredIds() const {
   return topics;
 }
 
+void PerUserTopicRegistrationManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PerUserTopicRegistrationManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void PerUserTopicRegistrationManager::RequestAccessToken() {
   // TODO(melandory): Implement traffic optimisation.
   // * Before sending request to server ask for access token from identity
@@ -325,17 +336,45 @@ void PerUserTopicRegistrationManager::OnAccessTokenRequestSucceeded(
   // Reset backoff time after successful response.
   request_access_token_backoff_.Reset();
   access_token_ = access_token;
+  NotifySubscriptionChannelStateChange(INVALIDATIONS_ENABLED);
   DoRegistrationUpdate();
 }
 
 void PerUserTopicRegistrationManager::OnAccessTokenRequestFailed(
     GoogleServiceAuthError error) {
   DCHECK_NE(error.state(), GoogleServiceAuthError::NONE);
+  NotifySubscriptionChannelStateChange(INVALIDATION_CREDENTIALS_REJECTED);
   request_access_token_backoff_.InformOfRequest(false);
   request_access_token_retry_timer_.Start(
       FROM_HERE, request_access_token_backoff_.GetTimeUntilRelease(),
       base::BindRepeating(&PerUserTopicRegistrationManager::RequestAccessToken,
                           base::Unretained(this)));
+}
+
+void PerUserTopicRegistrationManager::DropAllSavedRegistrationsOnTokenChange(
+    const std::string& instance_id_token) {
+  std::string current_token = local_state_->GetString(kActiveRegistrationToken);
+  if (current_token.empty()) {
+    local_state_->SetString(kActiveRegistrationToken, instance_id_token);
+    return;
+  }
+  if (current_token == instance_id_token) {
+    return;
+  }
+  local_state_->SetString(kActiveRegistrationToken, instance_id_token);
+  DictionaryPrefUpdate update(local_state_, kTypeRegisteredForInvalidation);
+  for (const auto& topic : topic_to_private_topic_) {
+    update->RemoveKey(topic.first);
+  }
+  topic_to_private_topic_.clear();
+  // TODO(melandory): Figure out if the unsubscribe request should be
+  // sent with the old token.
+}
+
+void PerUserTopicRegistrationManager::NotifySubscriptionChannelStateChange(
+    InvalidatorState invalidator_state) {
+  for (auto& observer : observers_)
+    observer.OnSubscriptionChannelStateChanged(invalidator_state);
 }
 
 }  // namespace syncer

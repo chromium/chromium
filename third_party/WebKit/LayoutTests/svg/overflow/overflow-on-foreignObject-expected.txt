@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 500x500
-  LayoutSVGRoot {svg} at (0,0) size 500x500
-    LayoutSVGForeignObject {foreignObject} at (100,100) size 300x300
-layer at (100,100) size 300x300 scrollWidth 6006 scrollHeight 6006
-  LayoutSVGForeignObject {foreignObject} at (100,100) size 300x300
-layer at (100,100) size 6006x6006 backgroundClip at (100,100) size 300x300 clip at (100,100) size 300x300
-  LayoutBlockFlow (positioned) {html:div} at (0,0) size 6006x6006 [bgcolor=#008000] [border: (3px solid #000000)]

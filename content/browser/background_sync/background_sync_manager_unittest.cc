@@ -50,8 +50,8 @@ namespace {
 using ::testing::Return;
 using ::testing::_;
 
-const char kPattern1[] = "https://example.com/a";
-const char kPattern2[] = "https://example.com/b";
+const char kScope1[] = "https://example.com/a";
+const char kScope2[] = "https://example.com/b";
 const char kScript1[] = "https://example.com/a/script.js";
 const char kScript2[] = "https://example.com/b/script.js";
 
@@ -135,9 +135,9 @@ class BackgroundSyncManagerTest : public testing::Test {
     bool called_1 = false;
     bool called_2 = false;
     blink::mojom::ServiceWorkerRegistrationOptions options1;
-    options1.scope = GURL(kPattern1);
+    options1.scope = GURL(kScope1);
     blink::mojom::ServiceWorkerRegistrationOptions options2;
-    options2.scope = GURL(kPattern2);
+    options2.scope = GURL(kScope2);
     helper_->context()->RegisterServiceWorker(
         GURL(kScript1), options1,
         base::BindOnce(&RegisterServiceWorkerCallback, &called_1,
@@ -154,12 +154,12 @@ class BackgroundSyncManagerTest : public testing::Test {
     // Hang onto the registrations as they need to be "live" when
     // calling BackgroundSyncManager::Register.
     helper_->context_wrapper()->FindReadyRegistrationForId(
-        sw_registration_id_1_, GURL(kPattern1).GetOrigin(),
+        sw_registration_id_1_, GURL(kScope1).GetOrigin(),
         base::BindOnce(FindServiceWorkerRegistrationCallback,
                        &sw_registration_1_));
 
     helper_->context_wrapper()->FindReadyRegistrationForId(
-        sw_registration_id_2_, GURL(kPattern1).GetOrigin(),
+        sw_registration_id_2_, GURL(kScope1).GetOrigin(),
         base::BindOnce(FindServiceWorkerRegistrationCallback,
                        &sw_registration_2_));
     base::RunLoop().RunUntilIdle();
@@ -330,16 +330,16 @@ class BackgroundSyncManagerTest : public testing::Test {
   void UnregisterServiceWorker(uint64_t sw_registration_id) {
     bool called = false;
     helper_->context()->UnregisterServiceWorker(
-        PatternForSWId(sw_registration_id),
+        ScopeForSWId(sw_registration_id),
         base::BindOnce(&UnregisterServiceWorkerCallback, &called));
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(called);
   }
 
-  GURL PatternForSWId(int64_t sw_id) {
+  GURL ScopeForSWId(int64_t sw_id) {
     EXPECT_TRUE(sw_id == sw_registration_id_1_ ||
                 sw_id == sw_registration_id_2_);
-    return sw_id == sw_registration_id_1_ ? GURL(kPattern1) : GURL(kPattern2);
+    return sw_id == sw_registration_id_1_ ? GURL(kScope1) : GURL(kScope2);
   }
 
   void SetupForSyncEvent(
@@ -481,7 +481,7 @@ TEST_F(BackgroundSyncManagerTest, RegisterBadBackend) {
 }
 
 TEST_F(BackgroundSyncManagerTest, RegisterPermissionDenied) {
-  GURL expected_origin = GURL(kPattern1).GetOrigin();
+  GURL expected_origin = GURL(kScope1).GetOrigin();
   MockPermissionManager* mock_permission_manager =
       GetPermissionControllerDelegate();
 
@@ -493,7 +493,7 @@ TEST_F(BackgroundSyncManagerTest, RegisterPermissionDenied) {
 }
 
 TEST_F(BackgroundSyncManagerTest, RegisterPermissionGranted) {
-  GURL expected_origin = GURL(kPattern1).GetOrigin();
+  GURL expected_origin = GURL(kScope1).GetOrigin();
   MockPermissionManager* mock_permission_manager =
       GetPermissionControllerDelegate();
 
@@ -1124,7 +1124,7 @@ TEST_F(BackgroundSyncManagerTest, NotifyBackgroundSyncRegistered) {
   EXPECT_EQ(0, GetController()->registration_count());
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_EQ(1, GetController()->registration_count());
-  EXPECT_EQ(GURL(kPattern1).GetOrigin().spec(),
+  EXPECT_EQ(GURL(kScope1).GetOrigin().spec(),
             GetController()->registration_origin().spec());
 }
 

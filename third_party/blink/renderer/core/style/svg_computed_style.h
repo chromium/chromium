@@ -24,11 +24,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SVG_COMPUTED_STYLE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/data_ref.h"
 #include "third_party/blink/renderer/core/style/svg_computed_style_defs.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/length.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
@@ -241,14 +242,21 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
       misc.Access()->flood_opacity = obj;
   }
 
-  void SetFloodColor(const Color& obj) {
-    if (!(misc->flood_color == obj))
-      misc.Access()->flood_color = obj;
+  void SetFloodColor(const StyleColor& style_color) {
+    if (FloodColor() != style_color) {
+      StyleMiscData* mutable_misc = misc.Access();
+      mutable_misc->flood_color = style_color.Resolve(Color());
+      mutable_misc->flood_color_is_current_color = style_color.IsCurrentColor();
+    }
   }
 
-  void SetLightingColor(const Color& obj) {
-    if (!(misc->lighting_color == obj))
-      misc.Access()->lighting_color = obj;
+  void SetLightingColor(const StyleColor& style_color) {
+    if (LightingColor() != style_color) {
+      StyleMiscData* mutable_misc = misc.Access();
+      mutable_misc->lighting_color = style_color.Resolve(Color());
+      mutable_misc->lighting_color_is_current_color =
+          style_color.IsCurrentColor();
+    }
   }
 
   void SetBaselineShiftValue(const Length& baseline_shift_value) {
@@ -314,8 +322,15 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   float StopOpacity() const { return stops->opacity; }
   const Color& StopColor() const { return stops->color; }
   float FloodOpacity() const { return misc->flood_opacity; }
-  const Color& FloodColor() const { return misc->flood_color; }
-  const Color& LightingColor() const { return misc->lighting_color; }
+  StyleColor FloodColor() const {
+    return misc->flood_color_is_current_color ? StyleColor::CurrentColor()
+                                              : StyleColor(misc->flood_color);
+  }
+  StyleColor LightingColor() const {
+    return misc->lighting_color_is_current_color
+               ? StyleColor::CurrentColor()
+               : StyleColor(misc->lighting_color);
+  }
   const Length& BaselineShiftValue() const {
     return misc->baseline_shift_value;
   }

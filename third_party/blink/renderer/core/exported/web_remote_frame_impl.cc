@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -147,13 +146,14 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     WebFrame* previous_sibling,
     const ParsedFeaturePolicy& container_policy,
     const WebFrameOwnerProperties& frame_owner_properties,
+    FrameOwnerElementType frame_owner_element_type,
     WebFrame* opener) {
   WebLocalFrameImpl* child =
       WebLocalFrameImpl::Create(scope, client, interface_registry, opener);
   InsertAfter(child, previous_sibling);
-  RemoteFrameOwner* owner =
-      RemoteFrameOwner::Create(static_cast<SandboxFlags>(sandbox_flags),
-                               container_policy, frame_owner_properties);
+  RemoteFrameOwner* owner = RemoteFrameOwner::Create(
+      static_cast<SandboxFlags>(sandbox_flags), container_policy,
+      frame_owner_properties, frame_owner_element_type);
   child->InitializeCoreFrame(*GetFrame()->GetPage(), owner, name);
   DCHECK(child->GetFrame());
   return child;
@@ -172,14 +172,15 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
     const WebString& name,
     WebSandboxFlags sandbox_flags,
     const ParsedFeaturePolicy& container_policy,
+    FrameOwnerElementType frame_owner_element_type,
     WebRemoteFrameClient* client,
     WebFrame* opener) {
   WebRemoteFrameImpl* child = WebRemoteFrameImpl::Create(scope, client);
   child->SetOpener(opener);
   AppendChild(child);
-  RemoteFrameOwner* owner =
-      RemoteFrameOwner::Create(static_cast<SandboxFlags>(sandbox_flags),
-                               container_policy, WebFrameOwnerProperties());
+  RemoteFrameOwner* owner = RemoteFrameOwner::Create(
+      static_cast<SandboxFlags>(sandbox_flags), container_policy,
+      WebFrameOwnerProperties(), frame_owner_element_type);
   child->InitializeCoreFrame(*GetFrame()->GetPage(), owner, name);
   return child;
 }
@@ -439,6 +440,15 @@ v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
 
 WebRect WebRemoteFrameImpl::GetCompositingRect() {
   return GetFrame()->View()->GetCompositingRect();
+}
+
+void WebRemoteFrameImpl::RenderFallbackContent() const {
+  // TODO(ekaramad): If the owner renders its own content, then the current
+  // ContentFrame() should detach and free-up the OOPIF process (see
+  // https://crbug.com/850223).
+  auto* owner = frame_->DeprecatedLocalOwner();
+  DCHECK(IsHTMLObjectElement(owner));
+  owner->RenderFallbackContent(frame_);
 }
 
 WebRemoteFrameImpl::WebRemoteFrameImpl(WebTreeScopeType scope,

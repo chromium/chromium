@@ -42,6 +42,16 @@ class OfflineContentAggregator : public OfflineContentProvider,
   OfflineContentAggregator();
   ~OfflineContentAggregator() override;
 
+  // Creates a unique namespace with the given prefix. Should be called to get
+  // the namespace for registration in order to avoid namespace collision.
+  // For normal profile, the prefix itself is returned. For incognito profiles,
+  // an auto-incrementing number is added to the prefix and returned.
+  // Auto-incrementing should be used only for incognito, since for incognito,
+  // data should not be persisted after browser restarts and hence change of
+  // ContentId(s) across restarts will not be an issue.
+  static std::string CreateUniqueNameSpace(const std::string& prefix,
+                                           bool is_off_the_record);
+
   // Registers a provider and associates it with all OfflineItems with
   // |name_space|.  UI actions taken on OfflineItems with |name_space| will be
   // routed to |provider|.  |provider| is expected to only expose OfflineItems

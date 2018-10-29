@@ -21,17 +21,18 @@ namespace views {
 class EventMonitorAura : public EventMonitor {
  public:
   EventMonitorAura(aura::Env* env,
-                   ui::EventHandler* event_handler,
-                   ui::EventTarget* event_target);
+                   ui::EventObserver* event_observer,
+                   ui::EventTarget* event_target,
+                   const std::set<ui::EventType>& types);
   ~EventMonitorAura() override;
 
   // EventMonitor:
   gfx::Point GetLastMouseLocation() override;
 
  private:
-  aura::Env* env_;                   // Weak.
-  ui::EventHandler* event_handler_;  // Weak. Owned by our owner.
-  ui::EventTarget* event_target_;    // Weak.
+  aura::Env* env_;                     // Weak.
+  ui::EventObserver* event_observer_;  // Weak. Owned by our owner.
+  ui::EventTarget* event_target_;      // Weak.
 
   DISALLOW_COPY_AND_ASSIGN(EventMonitorAura);
 };

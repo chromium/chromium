@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/viz/public/interfaces/compositing/frame_sink_id.mojom";
 import "skia/public/interfaces/bitmap.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/mojo/color_space.mojom";
 
 // Provided with each call to FrameSinkVideoConsumer::OnFrameCaptured() so that
 // the consumer can notify the capturer the instant it is done consuming the
@@ -73,7 +74,7 @@ interface FrameSinkVideoCapturer {
   //
   // Default, if never called: PIXEL_FORMAT_I420, COLOR_SPACE_HD_REC709
   SetFormat(media.mojom.VideoPixelFormat format,
-            media.mojom.ColorSpace color_space);
+            gfx.mojom.ColorSpace color_space);
 
   // Specifies the maximum rate of capture in terms of a minimum time period
   // (min_period = 1/max_frame_rate).

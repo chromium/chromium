@@ -275,11 +275,19 @@ Utils.timeLog = function(/**/) {
 
 // Convert an event into a promise. When |event| is fired on |object|,
 // call |func| to handle the event and either resolve or reject the promise.
+// If |func| is not specified, the promise will simply be resolved with the
+// event when the event happens.
 Utils.waitForEvent = function(object, event, func) {
   return new Promise(function(resolve, reject) {
     object.addEventListener(event, function listener(e) {
       object.removeEventListener(event, listener);
-      func(e, resolve, reject);
+      if (func) {
+        func(e, resolve, reject);
+      } else {
+        // No |func| is specified, so simply resolve the promise passing
+        // |event| in case the caller is interested in it.
+        resolve(event);
+      }
     });
   });
 };
@@ -315,4 +323,31 @@ Utils.createSessionToLoad = function(mediaKeys, request) {
       .then(function() {
         return promise;
       });
+};
+
+// Verify that |keyStatuses| contains just the keys in the array |expected|.
+// Each entry specifies the keyId and status expected.
+// Example call: verifyKeyStatuses(mediaKeySession.keyStatuses,
+//   [{keyId: key1, status: 'usable'}, {keyId: key2, status: 'released'}]);
+Utils.verifyKeyStatuses = function(keyStatuses, expected) {
+  // |keyStatuses| should have same size as number of |keys.expected|.
+  if (keyStatuses.size !== expected.length) {
+    Utils.failTest(
+        'keystatuses should have expected size of ' + expected.length +
+        ' but has size ' + keyStatuses.size);
+  }
+
+  // All |expected| should be found.
+  expected.map(function(item) {
+    if (!keyStatuses.has(Utils.convertToUint8Array(item.keyId))) {
+      Utils.failTest('missing keyID ' + item.keyId);
+    }
+    if (keyStatuses.get(Utils.convertToUint8Array(item.keyId)) !==
+        item.status) {
+      Utils.failTest(
+          'keyId ' + item.keyId + ' has status ' +
+          keyStatuses.get(Utils.convertToUint8Array(item.keyId)) +
+          ', expected ' + item.status);
+    }
+  });
 };

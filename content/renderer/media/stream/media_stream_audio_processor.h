@@ -23,6 +23,7 @@
 #include "content/renderer/media/stream/media_stream_audio_processor_options.h"
 #include "content/renderer/media/webrtc/webrtc_audio_device_impl.h"
 #include "media/base/audio_converter.h"
+#include "media/webrtc/audio_delay_stats_reporter.h"
 #include "third_party/webrtc/api/mediastreaminterface.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc/rtc_base/task_queue.h"
@@ -163,6 +164,9 @@ class CONTENT_EXPORT MediaStreamAudioProcessor
   // Cached value for the render delay latency. This member is accessed by
   // both the capture audio thread and the render audio thread.
   base::subtle::Atomic32 render_delay_ms_;
+
+  // For reporting audio delay stats.
+  media::AudioDelayStatsReporter audio_delay_stats_reporter_;
 
   // Low-priority task queue for doing AEC dump recordings. It has to
   // out-live audio_processing_ and be created/destroyed from the same

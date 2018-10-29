@@ -54,6 +54,8 @@ process_version("remoting_version") {
 # stripping code.
 static_library("host") {
   sources = [
+    "action_executor.cc",
+    "action_executor.h",
     "audio_capturer.cc",
     "audio_capturer.h",
     "audio_capturer_chromeos.cc",
@@ -189,6 +191,8 @@ static_library("host") {
     "input_injector_mac.cc",
     "input_injector_win.cc",
     "input_injector_x11.cc",
+    "ipc_action_executor.cc",
+    "ipc_action_executor.h",
     "ipc_audio_capturer.cc",
     "ipc_audio_capturer.h",
     "ipc_constants.cc",

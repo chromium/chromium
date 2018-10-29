@@ -3,7 +3,6 @@ Tests bad inputs to ECDH's deriveBits()
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 deriveBits() without algorithm name or public key...
 error is: TypeError: Algorithm: name: Missing or not a string
 

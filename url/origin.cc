@@ -54,7 +54,7 @@ Origin Origin::Resolve(const GURL& url, const Origin& base_origin) {
   if (url.IsAboutBlank())
     return base_origin;
   Origin result = Origin::Create(url);
-  if (!result.unique())
+  if (!result.opaque())
     return result;
   return base_origin.DeriveNewOpaqueOrigin();
 }
@@ -122,7 +122,7 @@ Origin Origin::CreateOpaqueFromNormalizedPrecursorTuple(
 }
 
 std::string Origin::Serialize() const {
-  if (unique())
+  if (opaque())
     return "null";
 
   if (scheme() == kFileScheme)
@@ -132,7 +132,7 @@ std::string Origin::Serialize() const {
 }
 
 GURL Origin::GetURL() const {
-  if (unique())
+  if (opaque())
     return GURL();
 
   if (scheme() == kFileScheme)
@@ -155,7 +155,7 @@ bool Origin::IsSameOriginWith(const Origin& other) const {
 }
 
 bool Origin::DomainIs(base::StringPiece canonical_domain) const {
-  return !unique() && url::DomainIs(tuple_.host(), canonical_domain);
+  return !opaque() && url::DomainIs(tuple_.host(), canonical_domain);
 }
 
 bool Origin::operator<(const Origin& other) const {
@@ -167,14 +167,14 @@ Origin Origin::DeriveNewOpaqueOrigin() const {
 }
 
 Origin::Origin(SchemeHostPort tuple) : tuple_(std::move(tuple)) {
-  DCHECK(!unique());
+  DCHECK(!opaque());
   DCHECK(!tuple_.IsInvalid());
 }
 
 // Constructs an opaque origin derived from |precursor|.
 Origin::Origin(const Nonce& nonce, SchemeHostPort precursor)
     : tuple_(std::move(precursor)), nonce_(std::move(nonce)) {
-  DCHECK(unique());
+  DCHECK(opaque());
   // |precursor| is retained, but not accessible via scheme()/host()/port().
   DCHECK_EQ("", scheme());
   DCHECK_EQ("", host());
@@ -184,7 +184,7 @@ Origin::Origin(const Nonce& nonce, SchemeHostPort precursor)
 std::ostream& operator<<(std::ostream& out, const url::Origin& origin) {
   out << origin.Serialize();
 
-  if (origin.unique()) {
+  if (origin.opaque()) {
     // For opaque origins, log the nonce and precursor as well. Without this,
     // EXPECT_EQ failures between opaque origins are nearly impossible to
     // understand.

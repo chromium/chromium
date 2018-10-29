@@ -16,6 +16,7 @@
 #include "base/sync_socket.h"
 #include "base/task/post_task.h"
 #include "components/crash/content/browser/crash_dump_manager_android.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_launcher_utils.h"
@@ -153,8 +154,8 @@ void AwBrowserTerminator::OnChildExitAsync(
     crashed = true;
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&OnRenderProcessGoneDetail, info.process_host_id, info.pid,
                      crashed));
 }

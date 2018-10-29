@@ -4,16 +4,16 @@
 
 #include "ui/views/corewm/tooltip_win.h"
 
-#include <winuser.h>
-
 #include "base/debug/stack_trace.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/win/windowsx_shim.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/platform_font_win.h"
 #include "ui/views/corewm/cursor_height_provider_win.h"
 
 namespace views {
@@ -70,7 +70,7 @@ bool TooltipWin::EnsureTooltipWindow() {
     return false;
   }
 
-  l10n_util::AdjustUIFontForWindow(tooltip_hwnd_);
+  MaybeOverrideFont();
 
   SendMessage(tooltip_hwnd_, TTM_ADDTOOL, 0,
               reinterpret_cast<LPARAM>(&toolinfo_));
@@ -96,6 +96,33 @@ void TooltipWin::PositionTooltip() {
                                                display.work_area()));
   SetWindowPos(tooltip_hwnd_, NULL, tooltip_bounds.x(), tooltip_bounds.y(), 0,
                0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+  MaybeOverrideFont();
+}
+
+void TooltipWin::MaybeOverrideFont() {
+  gfx::PlatformFontWin::FontAdjustment font_adjustment;
+  const HFONT old_font = GetWindowFont(tooltip_hwnd_);
+
+  // Determine if we need to override the font.
+  if ((!override_font_ || override_font_->GetNativeFont() != old_font) &&
+      l10n_util::NeedOverrideDefaultUIFont(
+          &font_adjustment.font_family_override, &font_adjustment.font_scale)) {
+    // Determine if we need to regenerate the font.
+    // There are a number of situations under which Windows can replace the
+    // font in a tooltip, but we don't actually need to regenerate our override
+    // font unless the underlying text/DPI scale of the window has changed.
+    const float current_scale =
+        display::win::ScreenWin::GetScaleFactorForHWND(tooltip_hwnd_);
+    if (!override_font_ || current_scale != override_scale_) {
+      override_font_ =
+          gfx::PlatformFontWin::AdjustExistingFont(old_font, font_adjustment);
+      override_scale_ = current_scale;
+    }
+
+    // Override the font in the tooltip.
+    SetWindowFont(tooltip_hwnd_, override_font_->GetNativeFont(), FALSE);
+  }
 }
 
 int TooltipWin::GetMaxWidth(const gfx::Point& location) const {
@@ -116,12 +143,6 @@ void TooltipWin::SetText(aura::Window* window,
   // See comment in header for details on why |location_| is needed.
   location_ = location;
 
-  // Without this we get a flicker of the tooltip appearing at 0x0. Not sure
-  // why.
-  SetWindowPos(tooltip_hwnd_, NULL, 0, 0, 0, 0,
-               SWP_HIDEWINDOW | SWP_NOACTIVATE | SWP_NOMOVE |
-               SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
-
   base::string16 adjusted_text(tooltip_text);
   base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
   toolinfo_.lpszText = const_cast<WCHAR*>(adjusted_text.c_str());
@@ -138,8 +159,6 @@ void TooltipWin::Show() {
 
   SendMessage(tooltip_hwnd_, TTM_TRACKACTIVATE,
               TRUE, reinterpret_cast<LPARAM>(&toolinfo_));
-  SetWindowPos(tooltip_hwnd_, HWND_TOPMOST, 0, 0, 0, 0,
-               SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOSIZE);
 }
 
 void TooltipWin::Hide() {

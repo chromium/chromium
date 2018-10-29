@@ -64,3 +64,20 @@ void RecordDownloadShelfDragEvent(DownloadShelfDragEvent drag_event) {
   UMA_HISTOGRAM_ENUMERATION("Download.Shelf.DragEvent", drag_event,
                             DownloadShelfDragEvent::COUNT);
 }
+
+#if defined(OS_ANDROID)
+void RecordMediaParserEvent(MediaParserEvent event) {
+  UMA_HISTOGRAM_ENUMERATION("Download.MediaParser.Event", event,
+                            MediaParserEvent::kCount);
+}
+
+void RecordMediaMetadataEvent(MediaMetadataEvent event) {
+  UMA_HISTOGRAM_ENUMERATION("Download.MediaMetadata.Event", event,
+                            MediaMetadataEvent::kCount);
+}
+
+void RecordVideoThumbnailEvent(VideoThumbnailEvent event) {
+  UMA_HISTOGRAM_ENUMERATION("Download.VideoThumbnail.Event", event,
+                            VideoThumbnailEvent::kCount);
+}
+#endif

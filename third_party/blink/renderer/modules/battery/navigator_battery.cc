@@ -24,8 +24,8 @@ ScriptPromise NavigatorBattery::getBattery(ScriptState* script_state) {
 
   // Check to see if this request would be blocked according to the Battery
   // Status API specification.
-  if (context->IsDocument()) {
-    LocalFrame* frame = ToDocument(context)->GetFrame();
+  if (auto* document = To<Document>(context)) {
+    LocalFrame* frame = document->GetFrame();
     if (frame) {
       if (!context->IsSecureContext())
         UseCounter::Count(frame, WebFeature::kBatteryStatusInsecureOrigin);

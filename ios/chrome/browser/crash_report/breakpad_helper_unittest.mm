@@ -51,14 +51,19 @@ class BreakpadHelperTest : public PlatformTest {
       breakpad_controller_shared_instance_swizzler_;
 };
 
-TEST_F(BreakpadHelperTest, BrowserState) {
-  // Check that we do not overflow the size of a breakpad record.
+TEST_F(BreakpadHelperTest, CrashReportUserApplicationStateAllKeys) {
+  // Test that the serialized dictionary does not exceed the maximum size of a
+  // single breakpad record. This test should include all keys for
+  // CrashReportUserApplicationState, since the whole dictionary is considered a
+  // single breakpad record.
   breakpad_helper::SetCurrentOrientation(3, 7);
-}
-
-TEST_F(BreakpadHelperTest, HorizontalSizeClass) {
-  // Check that we do not overflow the size of a breakpad record.
   breakpad_helper::SetCurrentHorizontalSizeClass(2);
+  breakpad_helper::SetRegularTabCount(999);
+  breakpad_helper::SetIncognitoTabCount(999);
+  breakpad_helper::SetDestroyingAndRebuildingIncognitoBrowserState(true);
+  breakpad_helper::MediaStreamPlaybackDidStart();
+  breakpad_helper::SetCurrentTabIsPDF(true);
+  breakpad_helper::SetCurrentlySignedIn(true);
 }
 
 TEST_F(BreakpadHelperTest, GetCrashReportCount) {

@@ -36,7 +36,7 @@ def reorder_imports(input_dir, output_dir, architecture):
   # through the Structure, while other data must bet set through
   # the set_bytes_*() methods.
   pe = pefile.PE(input_image, fast_load=True)
-  if architecture == 'x64':
+  if architecture == 'x64' or architecture == 'arm64':
     assert pe.PE_TYPE == pefile.OPTIONAL_HEADER_MAGIC_PE_PLUS
   else:
     assert pe.PE_TYPE == pefile.OPTIONAL_HEADER_MAGIC_PE

@@ -46,7 +46,7 @@ bool SignWithPrivateKey(const base::android::JavaRef<jobject>& private_key_ref,
     return false;
 
   // Write signature to string.
-  JavaByteArrayToByteVector(env, signature_ref.obj(), signature);
+  JavaByteArrayToByteVector(env, signature_ref, signature);
   return true;
 }
 

@@ -96,7 +96,7 @@ void FFmpegAudioDecoder::Initialize(
 void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                 const DecodeCB& decode_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!decode_cb.is_null());
+  DCHECK(decode_cb);
   CHECK_NE(state_, kUninitialized);
   DecodeCB decode_cb_bound = BindToCurrentLoop(decode_cb);
 

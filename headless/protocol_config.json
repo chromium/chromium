@@ -25,11 +25,6 @@
                 "async": ["beginFrame"]
             },
             {
-                "domain": "Network",
-                "include": ["emulateNetworkConditions", "disable"],
-                "include_events": []
-            },
-            {
                 "domain": "Page",
                 "include": ["printToPDF"],
                 "async": ["printToPDF"],

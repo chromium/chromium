@@ -2,4 +2,6 @@ PASS window.getComputedStyle(a).width == window.getComputedStyle(b).width is fal
 PASS successfullyParsed is true
 
 TEST COMPLETE
-TextText
+
+Text
+Text

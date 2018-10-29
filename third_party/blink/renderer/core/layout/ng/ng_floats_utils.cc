@@ -216,7 +216,7 @@ LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(
 
   const auto& fragment = unpositioned_float->layout_result->PhysicalFragment();
   DCHECK(fragment);
-  DCHECK(fragment->BreakToken()->IsFinished());
+  DCHECK(!fragment->BreakToken() || fragment->BreakToken()->IsFinished());
 
   return (NGFragment(parent_space.GetWritingMode(), *fragment).InlineSize() +
           unpositioned_float->margins.InlineSum())
@@ -266,8 +266,11 @@ NGPositionedFloat PositionFloat(
     if (ShouldIgnoreBlockStartMargin(parent_space, unpositioned_float->node,
                                      unpositioned_float->token.get()))
       fragment_margins.block_start = LayoutUnit();
-    if (!layout_result->PhysicalFragment()->BreakToken()->IsFinished())
-      fragment_margins.block_end = LayoutUnit();
+    if (const NGBreakToken* break_token =
+            layout_result->PhysicalFragment()->BreakToken()) {
+      if (!break_token->IsFinished())
+        fragment_margins.block_end = LayoutUnit();
+    }
   }
 
   DCHECK(layout_result->PhysicalFragment());
@@ -306,26 +309,24 @@ NGPositionedFloat PositionFloat(
   return NGPositionedFloat(std::move(layout_result), float_bfc_offset);
 }
 
-const Vector<NGPositionedFloat> PositionFloats(
-    const NGLogicalSize& float_available_size,
-    const NGLogicalSize& float_percentage_size,
-    const NGLogicalSize& float_replaced_percentage_size,
-    const NGBfcOffset& origin_bfc_offset,
-    LayoutUnit parent_bfc_block_offset,
-    NGUnpositionedFloatVector& unpositioned_floats,
-    const NGConstraintSpace& space,
-    NGExclusionSpace* exclusion_space) {
-  Vector<NGPositionedFloat> positioned_floats;
-  positioned_floats.ReserveCapacity(unpositioned_floats.size());
+void PositionFloats(const NGLogicalSize& float_available_size,
+                    const NGLogicalSize& float_percentage_size,
+                    const NGLogicalSize& float_replaced_percentage_size,
+                    const NGBfcOffset& origin_bfc_offset,
+                    LayoutUnit parent_bfc_block_offset,
+                    NGUnpositionedFloatVector& unpositioned_floats,
+                    const NGConstraintSpace& space,
+                    NGExclusionSpace* exclusion_space,
+                    NGPositionedFloatVector* positioned_floats) {
+  positioned_floats->ReserveCapacity(positioned_floats->size() +
+                                     unpositioned_floats.size());
 
   for (NGUnpositionedFloat& unpositioned_float : unpositioned_floats) {
-    positioned_floats.push_back(PositionFloat(
+    positioned_floats->push_back(PositionFloat(
         float_available_size, float_percentage_size,
         float_replaced_percentage_size, origin_bfc_offset,
         parent_bfc_block_offset, &unpositioned_float, space, exclusion_space));
   }
-
-  return positioned_floats;
 }
 
 void AddUnpositionedFloat(NGUnpositionedFloatVector* unpositioned_floats,

@@ -27,12 +27,12 @@ namespace {
 void FindAllHostsOfWebContentsWithAXTreeID(
     AXTreeSourceAura* tree,
     views::AXAuraObjWrapper* node,
-    int target_ax_tree_id,
+    ui::AXTreeID target_ax_tree_id,
     std::vector<views::AXAuraObjWrapper*>* web_hosts) {
   ui::AXNodeData node_data;
   tree->SerializeNode(node, &node_data);
-  if (node_data.GetIntAttribute(ax::mojom::IntAttribute::kChildTreeId) ==
-      target_ax_tree_id) {
+  if (ui::AXTreeID::FromString(node_data.GetStringAttribute(
+          ax::mojom::StringAttribute::kChildTreeId)) == target_ax_tree_id) {
     web_hosts->push_back(node);
   }
 
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
-  manager->Enable(browser()->profile());
+  manager->Enable();
   auto* tree = manager->current_tree_.get();
 
   ui_test_utils::NavigateToURL(
@@ -119,8 +119,8 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
   WaitForAccessibilityTreeToContainNodeWithName(web_contents, "Click me");
 
   auto* frame_host = web_contents->GetMainFrame();
-  int ax_tree_id = frame_host->GetAXTreeID();
-  ASSERT_GT(ax_tree_id, 0);
+  ui::AXTreeID ax_tree_id = frame_host->GetAXTreeID();
+  ASSERT_NE(ax_tree_id, ui::AXTreeIDUnknown());
 
   std::vector<views::AXAuraObjWrapper*> web_hosts;
   FindAllHostsOfWebContentsWithAXTreeID(tree, tree->GetRoot(), ax_tree_id,
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
 IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
                        TransientFocusChangesAreSuppressed) {
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
-  manager->Enable(browser()->profile());
+  manager->Enable();
 
   views::Widget* widget = new views::Widget;
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);

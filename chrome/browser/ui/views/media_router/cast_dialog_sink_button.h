@@ -23,6 +23,9 @@ class CastDialogSinkButton : public HoverButton {
                        int button_tag);
   ~CastDialogSinkButton() override;
 
+  void OverrideStatusText(const base::string16& status_text);
+  void RestoreStatusText();
+
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -33,8 +36,10 @@ class CastDialogSinkButton : public HoverButton {
 
  private:
   UIMediaSink sink_;
+  base::Optional<base::string16> saved_status_text_;
 
   DISALLOW_COPY_AND_ASSIGN(CastDialogSinkButton);
+  FRIEND_TEST_ALL_PREFIXES(CastDialogSinkButtonTest, OverrideStatusText);
 };
 
 }  // namespace media_router

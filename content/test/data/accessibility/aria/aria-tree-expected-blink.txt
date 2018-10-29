@@ -1,11 +1,11 @@
 rootWebArea
 ++tree
-++++treeItem name='Animals ' hierarchicalLevel=1 setSize=2 posInSet=1 checkedState=mixed selected=false
+++++treeItem name='Animals' hierarchicalLevel=1 setSize=2 posInSet=1 checkedState=mixed selected=false
 ++++++link name='Animals'
 ++++++++staticText name='Animals'
 ++++++++++inlineTextBox name='Animals'
 ++++++group
-++++++++treeItem name='Domesticated ' hierarchicalLevel=2 setSize=2 posInSet=1 selected=false
+++++++++treeItem name='Domesticated' hierarchicalLevel=2 setSize=2 posInSet=1 selected=false
 ++++++++++link name='Domesticated'
 ++++++++++++staticText name='Domesticated'
 ++++++++++++++inlineTextBox name='Domesticated'

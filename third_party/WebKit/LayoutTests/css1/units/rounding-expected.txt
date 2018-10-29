@@ -1,5 +1,6 @@
 no gap below
 no gap above
+
 This test checks that floating point rounding doesn't cause misalignment. There should be no gap between the divs.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

@@ -20,6 +20,7 @@
 namespace offline_pages {
 class PrefetchBackgroundTask;
 class PrefetchService;
+class SuggestionsProvider;
 
 // Serves as the entry point for external signals into the prefetching system.
 // It listens to these events, converts them to the appropriate internal tasks
@@ -72,6 +73,15 @@ class PrefetchDispatcher {
   virtual void AddCandidatePrefetchURLs(
       const std::string& name_space,
       const std::vector<PrefetchURL>& prefetch_urls) = 0;
+
+  // Zine/Feed: Only used with Feed.
+  // Called when the set of suggestions provided has changed.
+  virtual void NewSuggestionsAvailable(
+      SuggestionsProvider* suggestions_provider) = 0;
+
+  // Zine/Feed: Only used with Feed.
+  // Removes a suggested URL from the fetch pipeline and offline_pages store.
+  virtual void RemoveSuggestion(const GURL& url) = 0;
 
   // Called when all existing suggestions are no longer considered valid for a
   // given namespace.  The prefetch system should remove any URLs that

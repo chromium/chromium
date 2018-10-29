@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Foundation/Foundation.h>
-
 #ifndef IOS_WEB_VIEW_PUBLIC_CWV_SYNC_CONTROLLER_DATA_SOURCE_H_
 #define IOS_WEB_VIEW_PUBLIC_CWV_SYNC_CONTROLLER_DATA_SOURCE_H_
+
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

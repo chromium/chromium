@@ -11,6 +11,8 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 
 namespace {
 
@@ -23,16 +25,27 @@ const char kUMAProxySecureProxyCheckLatency[] =
 namespace data_reduction_proxy {
 
 SecureProxyChecker::SecureProxyChecker(
-    const scoped_refptr<net::URLRequestContextGetter>&
-        url_request_context_getter)
-    : url_request_context_getter_(url_request_context_getter) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : url_loader_factory_(std::move(url_loader_factory)) {}
 
-void SecureProxyChecker::OnURLFetchComplete(const net::URLFetcher* source) {
-  DCHECK_EQ(source, fetcher_.get());
-  net::URLRequestStatus status = source->GetStatus();
-
+void SecureProxyChecker::OnURLLoadComplete(
+    std::unique_ptr<std::string> response_body) {
   std::string response;
-  source->GetResponseAsString(&response);
+  if (response_body)
+    response = std::move(*response_body);
+
+  int response_code = -1;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
+    response_code = url_loader_->ResponseInfo()->headers->response_code();
+
+  OnURLLoadCompleteOrRedirect(response, url_loader_->NetError(), response_code);
+}
+
+void SecureProxyChecker::OnURLLoadCompleteOrRedirect(
+    const std::string& response,
+    int net_error,
+    int response_code) {
+  url_loader_.reset();
 
   base::TimeDelta secure_proxy_check_latency =
       base::Time::Now() - secure_proxy_check_start_time_;
@@ -41,7 +54,15 @@ void SecureProxyChecker::OnURLFetchComplete(const net::URLFetcher* source) {
                                secure_proxy_check_latency);
   }
 
-  fetcher_callback_.Run(response, status, source->GetResponseCode());
+  fetcher_callback_.Run(response, net_error, response_code);
+}
+
+void SecureProxyChecker::OnURLLoaderRedirect(
+    const net::RedirectInfo& redirect_info,
+    const network::ResourceResponseHead& response_head,
+    std::vector<std::string>* to_be_removed_headers) {
+  OnURLLoadCompleteOrRedirect(std::string(), net::ERR_ABORTED,
+                              redirect_info.status_code);
 }
 
 void SecureProxyChecker::CheckIfSecureProxyIsAllowed(
@@ -70,30 +91,34 @@ void SecureProxyChecker::CheckIfSecureProxyIsAllowed(
                 "it is enabled by installing the Data Saver extension."
               policy_exception_justification: "Not implemented."
             })");
-  fetcher_ =
-      net::URLFetcher::Create(params::GetSecureProxyCheckURL(),
-                              net::URLFetcher::GET, this, traffic_annotation);
-  data_use_measurement::DataUseUserData::AttachToFetcher(
-      fetcher_.get(),
-      data_use_measurement::DataUseUserData::DATA_REDUCTION_PROXY);
-  fetcher_->SetLoadFlags(net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_PROXY |
-                         net::LOAD_DO_NOT_SEND_COOKIES |
-                         net::LOAD_DO_NOT_SAVE_COOKIES);
-  fetcher_->SetRequestContext(url_request_context_getter_.get());
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = params::GetSecureProxyCheckURL();
+  resource_request->load_flags =
+      net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_PROXY |
+      net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 traffic_annotation);
+
   // Configure max retries to be at most kMaxRetries times for 5xx errors.
   static const int kMaxRetries = 5;
-  fetcher_->SetMaxRetriesOn5xx(kMaxRetries);
-  fetcher_->SetAutomaticallyRetryOnNetworkChanges(kMaxRetries);
+  url_loader_->SetRetryOptions(
+      kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+                       network::SimpleURLLoader::RETRY_ON_5XX);
+  // Hook the redirect callback so we can cancel the request.
   // The secure proxy check should not be redirected. Since the secure proxy
   // check will inevitably fail if it gets redirected somewhere else (e.g. by
   // a captive portal), short circuit that by giving up on the secure proxy
   // check if it gets redirected.
-  fetcher_->SetStopOnRedirect(true);
+  url_loader_->SetOnRedirectCallback(base::BindRepeating(
+      &SecureProxyChecker::OnURLLoaderRedirect, base::Unretained(this)));
 
   fetcher_callback_ = fetcher_callback;
-
   secure_proxy_check_start_time_ = base::Time::Now();
-  fetcher_->Start();
+
+  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory_.get(),
+      base::BindOnce(&SecureProxyChecker::OnURLLoadComplete,
+                     base::Unretained(this)));
 }
 
 SecureProxyChecker::~SecureProxyChecker() {}

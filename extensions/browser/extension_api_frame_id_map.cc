@@ -9,6 +9,8 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -228,7 +230,7 @@ void ExtensionApiFrameIdMap::ReceivedFrameDataOnIO(
     const FrameData& cached_frame_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  FrameDataCallbacksMap::iterator map_iter = callbacks_map_.find(key);
+  auto map_iter = callbacks_map_.find(key);
   if (map_iter == callbacks_map_.end()) {
     // Can happen if ReceivedFrameDataOnIO was called after the frame ID was
     // resolved (e.g. via GetFrameDataOnIO), but before PostTaskAndReply
@@ -244,8 +246,8 @@ void ExtensionApiFrameIdMap::ReceivedFrameDataOnIO(
 
   // Note: Extra items can be appended to |callbacks| during this loop if a
   // callback calls GetFrameDataOnIO().
-  for (std::list<FrameDataCallback>::iterator it = callbacks.callbacks.begin();
-       it != callbacks.callbacks.end(); ++it) {
+  for (auto it = callbacks.callbacks.begin(); it != callbacks.callbacks.end();
+       ++it) {
     it->Run(cached_frame_data);
   }
   callbacks_map_.erase(key);
@@ -269,7 +271,7 @@ void ExtensionApiFrameIdMap::GetFrameDataOnIO(
       render_process_id, frame_routing_id, &cached_frame_data);
 
   const RenderFrameIdKey key(render_process_id, frame_routing_id);
-  FrameDataCallbacksMap::iterator map_iter = callbacks_map_.find(key);
+  auto map_iter = callbacks_map_.find(key);
 
   if (did_find_cached_frame_data) {
     // Value already cached, thread hopping is not needed.
@@ -287,8 +289,8 @@ void ExtensionApiFrameIdMap::GetFrameDataOnIO(
   // The key was seen for the first time (or the frame has been removed).
   // Hop to the UI thread to look up the extension API frame ID.
   callbacks_map_[key].callbacks.push_back(callback);
-  content::BrowserThread::PostTaskAndReplyWithResult(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&ExtensionApiFrameIdMap::LookupFrameDataOnUI,
                  base::Unretained(this), key, true /* is_from_io */),
       base::Bind(&ExtensionApiFrameIdMap::ReceivedFrameDataOnIO,
@@ -376,7 +378,7 @@ void ExtensionApiFrameIdMap::UpdateTabAndWindowId(
   }
 
   base::AutoLock lock(frame_data_map_lock_);
-  FrameDataMap::iterator iter = frame_data_map_.find(key);
+  auto iter = frame_data_map_.find(key);
   // The FrameData for |rfh| should have already been initialized.
   DCHECK(iter != frame_data_map_.end());
   iter->second.tab_id = tab_id;
@@ -404,7 +406,7 @@ void ExtensionApiFrameIdMap::OnMainFrameReadyToCommitNavigation(
   const RenderFrameIdKey key(main_frame->GetProcess()->GetID(),
                              main_frame->GetRoutingID());
   base::AutoLock lock(frame_data_map_lock_);
-  FrameDataMap::iterator iter = frame_data_map_.find(key);
+  auto iter = frame_data_map_.find(key);
 
   // We must have already cached the FrameData for this in
   // InitializeRenderFrameHost.
@@ -446,7 +448,7 @@ void ExtensionApiFrameIdMap::OnMainFrameDidFinishNavigation(
   const RenderFrameIdKey key(main_frame->GetProcess()->GetID(),
                              main_frame->GetRoutingID());
   base::AutoLock lock(frame_data_map_lock_);
-  FrameDataMap::iterator iter = frame_data_map_.find(key);
+  auto iter = frame_data_map_.find(key);
 
   // We must have already cached the FrameData for this in
   // InitializeRenderFrameHost.

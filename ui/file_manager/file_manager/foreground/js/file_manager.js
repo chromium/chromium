@@ -517,11 +517,8 @@ FileManager.prototype = /** @struct */ {
     return Promise
         .all([
           this.appStateController_.loadInitialViewOptions(),
-          util.isMyFilesNavigationDisabled(),
         ])
         .then(values => {
-          this.commandLineFlags_['disable-my-files-navigation'] =
-              /** @type {boolean} */ (values[1]);
           metrics.recordInterval('Load.InitSettings');
         });
   };
@@ -1207,11 +1204,9 @@ FileManager.prototype = /** @struct */ {
                 str('RECENT_ROOT_LABEL'), NavigationModelItemType.RECENT,
                 new FakeEntry(
                     str('RECENT_ROOT_LABEL'),
-                    VolumeManagerCommon.RootType.RECENT, true,
+                    VolumeManagerCommon.RootType.RECENT,
                     this.getSourceRestriction_())) :
-            null,
-        null,  // TODO(crbug.com/869252) remove this null.
-        this.commandLineFlags_['disable-my-files-navigation']);
+            null);
     this.setupCrostini_();
     this.ui_.initDirectoryTree(directoryTree);
   };
@@ -1221,18 +1216,25 @@ FileManager.prototype = /** @struct */ {
    * @private
    */
   FileManager.prototype.setupCrostini_ = function() {
-    chrome.fileManagerPrivate.isCrostiniEnabled((enabled) => {
-      this.directoryTree.dataModel.linuxFilesItem = enabled ?
+    chrome.fileManagerPrivate.isCrostiniEnabled((crostiniEnabled) => {
+      // Check for 'crostini-files' cmd line flag.
+      chrome.commandLinePrivate.hasSwitch('crostini-files', (filesEnabled) => {
+        Crostini.IS_CROSTINI_FILES_ENABLED = crostiniEnabled && filesEnabled;
+      });
+
+      // Setup Linux files fake root.
+      this.directoryTree.dataModel.linuxFilesItem = crostiniEnabled ?
           new NavigationModelFakeItem(
               str('LINUX_FILES_ROOT_LABEL'), NavigationModelItemType.CROSTINI,
               new FakeEntry(
                   str('LINUX_FILES_ROOT_LABEL'),
-                  VolumeManagerCommon.RootType.CROSTINI, true)) :
+                  VolumeManagerCommon.RootType.CROSTINI)) :
           null;
+
       // Redraw the tree even if not enabled.  This is required for testing.
       this.directoryTree.redraw(false);
 
-      if (!enabled)
+      if (!crostiniEnabled)
         return;
 
       // Load any existing shared paths.
@@ -1241,7 +1243,6 @@ FileManager.prototype = /** @struct */ {
           Crostini.registerSharedPath(entries[i], assert(this.volumeManager_));
         }
       });
-
     });
   };
 
@@ -1250,30 +1251,29 @@ FileManager.prototype = /** @struct */ {
    * @private
    */
   FileManager.prototype.setupCurrentDirectory_ = function() {
-    var tracker = this.directoryModel_.createDirectoryChangeTracker();
-    var queue = new AsyncUtil.Queue();
+    const tracker = this.directoryModel_.createDirectoryChangeTracker();
+    const queue = new AsyncUtil.Queue();
 
     // Wait until the volume manager is initialized.
-    queue.run(function(callback) {
+    queue.run((callback) => {
       tracker.start();
       this.volumeManager_.ensureInitialized(callback);
-    }.bind(this));
+    });
 
-    var nextCurrentDirEntry;
-    var selectionEntry;
+    let nextCurrentDirEntry;
+    let selectionEntry;
 
     // Resolve the selectionURL to selectionEntry or to currentDirectoryEntry
     // in case of being a display root or a default directory to open files.
-    queue.run(function(callback) {
+    queue.run((callback) => {
       if (!this.launchParams_.selectionURL) {
         callback();
         return;
       }
 
       window.webkitResolveLocalFileSystemURL(
-          this.launchParams_.selectionURL,
-          function(inEntry) {
-            var locationInfo = this.volumeManager_.getLocationInfo(inEntry);
+          this.launchParams_.selectionURL, (inEntry) => {
+            const locationInfo = this.volumeManager_.getLocationInfo(inEntry);
             // If location information is not available, then the volume is
             // no longer (or never) available.
             if (!locationInfo) {
@@ -1299,53 +1299,50 @@ FileManager.prototype = /** @struct */ {
               selectionEntry = inEntry;
 
             callback();
-          }.bind(this), callback);
-    }.bind(this));
+          }, callback);
+    });
     // Resolve the currentDirectoryURL to currentDirectoryEntry (if not done
     // by the previous step).
-    queue.run(function(callback) {
+    queue.run((callback) => {
       if (nextCurrentDirEntry || !this.launchParams_.currentDirectoryURL) {
         callback();
         return;
       }
 
       window.webkitResolveLocalFileSystemURL(
-          this.launchParams_.currentDirectoryURL,
-          function(inEntry) {
-            var locationInfo = this.volumeManager_.getLocationInfo(inEntry);
+          this.launchParams_.currentDirectoryURL, (inEntry) => {
+            const locationInfo = this.volumeManager_.getLocationInfo(inEntry);
             if (!locationInfo) {
               callback();
               return;
             }
             nextCurrentDirEntry = inEntry;
             callback();
-          }.bind(this), callback);
-      // TODO(mtomasz): Implement reopening on special search, when fake
-      // entries are converted to directory providers. crbug.com/433161.
-    }.bind(this));
+          }, callback);
+    });
 
     // If the directory to be changed to is not available, then first fallback
     // to the parent of the selection entry.
-    queue.run(function(callback) {
+    queue.run((callback) => {
       if (nextCurrentDirEntry || !selectionEntry) {
         callback();
         return;
       }
-      selectionEntry.getParent(function(inEntry) {
+      selectionEntry.getParent((inEntry) => {
         nextCurrentDirEntry = inEntry;
         callback();
-      }.bind(this));
-    }.bind(this));
+      });
+    });
 
     // Check if the next current directory is not a virtual directory which is
     // not available in UI. This may happen to shared on Drive.
-    queue.run(function(callback) {
+    queue.run((callback) => {
       if (!nextCurrentDirEntry) {
         callback();
         return;
       }
-      var locationInfo = this.volumeManager_.getLocationInfo(
-          nextCurrentDirEntry);
+      const locationInfo =
+          this.volumeManager_.getLocationInfo(nextCurrentDirEntry);
       // If we can't check, assume that the directory is illegal.
       if (!locationInfo) {
         nextCurrentDirEntry = null;
@@ -1354,19 +1351,21 @@ FileManager.prototype = /** @struct */ {
       }
       // Having root directory of DRIVE_OTHER here should be only for shared
       // with me files. Fallback to Drive root in such case.
-      if (locationInfo.isRootEntry && locationInfo.rootType ===
-              VolumeManagerCommon.RootType.DRIVE_OTHER) {
-        var volumeInfo = this.volumeManager_.getVolumeInfo(nextCurrentDirEntry);
+      if (locationInfo.isRootEntry &&
+          locationInfo.rootType === VolumeManagerCommon.RootType.DRIVE_OTHER) {
+        const volumeInfo =
+            this.volumeManager_.getVolumeInfo(nextCurrentDirEntry);
         if (!volumeInfo) {
           nextCurrentDirEntry = null;
           callback();
           return;
         }
-        volumeInfo.resolveDisplayRoot().then(
-            function(entry) {
+        volumeInfo.resolveDisplayRoot()
+            .then((entry) => {
               nextCurrentDirEntry = entry;
               callback();
-            }).catch(function(error) {
+            })
+            .catch((error) => {
               console.error(error.stack || error);
               nextCurrentDirEntry = null;
               callback();
@@ -1374,25 +1373,25 @@ FileManager.prototype = /** @struct */ {
       } else {
         callback();
       }
-    }.bind(this));
+    });
 
     // If the directory to be changed to is still not resolved, then fallback
     // to the default display root.
-    queue.run(function(callback) {
+    queue.run((callback) => {
       if (nextCurrentDirEntry) {
         callback();
         return;
       }
-      this.volumeManager_.getDefaultDisplayRoot(function(displayRoot) {
+      this.volumeManager_.getDefaultDisplayRoot((displayRoot) => {
         nextCurrentDirEntry = displayRoot;
         callback();
-      }.bind(this));
-    }.bind(this));
+      });
+    });
 
     // If selection failed to be resolved (eg. didn't exist, in case of saving
     // a file, or in case of a fallback of the current directory, then try to
     // resolve again using the target name.
-    queue.run(function(callback) {
+    queue.run((callback) => {
       if (selectionEntry ||
           !nextCurrentDirEntry ||
           !this.launchParams_.targetName) {
@@ -1401,28 +1400,36 @@ FileManager.prototype = /** @struct */ {
       }
       // Try to resolve as a file first. If it fails, then as a directory.
       nextCurrentDirEntry.getFile(
-          this.launchParams_.targetName,
-          {},
-          function(targetEntry) {
+          this.launchParams_.targetName, {},
+          (targetEntry) => {
             selectionEntry = targetEntry;
             callback();
-          }, function() {
+          },
+          () => {
             // Failed to resolve as a file
             nextCurrentDirEntry.getDirectory(
-                this.launchParams_.targetName,
-                {},
-                function(targetEntry) {
+                this.launchParams_.targetName, {},
+                (targetEntry) => {
                   selectionEntry = targetEntry;
                   callback();
-                }, function() {
+                },
+                () => {
                   // Failed to resolve as either file or directory.
                   callback();
                 });
-          }.bind(this));
-    }.bind(this));
+          });
+    });
+
+    // If there is no target select MyFiles by default.
+    queue.run((callback) => {
+      if (!nextCurrentDirEntry)
+        nextCurrentDirEntry = this.directoryTree.dataModel.myFilesModel_.entry;
+
+      callback();
+    });
 
     // Finalize.
-    queue.run(function(callback) {
+    queue.run((callback) => {
       // Check directory change.
       tracker.stop();
       if (tracker.hasChanged) {
@@ -1435,11 +1442,11 @@ FileManager.prototype = /** @struct */ {
           selectionEntry,
           this.launchParams_.targetName);
       callback();
-    }.bind(this));
+    });
   };
 
   /**
-   * @param {!DirectoryEntry} directoryEntry Directory to be opened.
+   * @param {DirectoryEntry} directoryEntry Directory to be opened.
    * @param {Entry=} opt_selectionEntry Entry to be selected.
    * @param {string=} opt_suggestedName Suggested name for a non-existing\
    *     selection.
@@ -1448,38 +1455,18 @@ FileManager.prototype = /** @struct */ {
   FileManager.prototype.finishSetupCurrentDirectory_ = function(
       directoryEntry, opt_selectionEntry, opt_suggestedName) {
     // Open the directory, and select the selection (if passed).
-    this.directoryModel_.changeDirectoryEntry(directoryEntry, function() {
-      if (opt_selectionEntry)
-        this.directoryModel_.selectEntry(opt_selectionEntry);
-    }.bind(this));
+    if (directoryEntry) {
+      this.directoryModel_.changeDirectoryEntry(directoryEntry, function() {
+        if (opt_selectionEntry)
+          this.directoryModel_.selectEntry(opt_selectionEntry);
 
-    if (this.dialogType === DialogType.FULL_PAGE) {
-      // In the FULL_PAGE mode if the restored URL points to a file we might
-      // have to invoke a task after selecting it.
-      if (this.launchParams_.action === 'select')
-        return;
+        this.ui_.addLoadedAttribute();
+      }.bind(this));
+    } else {
+      this.ui_.addLoadedAttribute();
+    }
 
-      var task = null;
-
-      // TODO(mtomasz): Implement remounting archives after crash.
-      //                See: crbug.com/333139
-
-      // If there is a task to be run, run it after the scan is completed.
-      if (task) {
-        var listener = function() {
-          if (!util.isSameEntry(this.directoryModel_.getCurrentDirEntry(),
-                                directoryEntry)) {
-            // Opened on a different URL. Probably fallbacked. Therefore,
-            // do not invoke a task.
-            return;
-          }
-          this.directoryModel_.removeEventListener(
-              'scan-completed', listener);
-          task();
-        }.bind(this);
-        this.directoryModel_.addEventListener('scan-completed', listener);
-      }
-    } else if (this.dialogType === DialogType.SELECT_SAVEAS_FILE) {
+    if (this.dialogType === DialogType.SELECT_SAVEAS_FILE) {
       this.ui_.dialogFooter.filenameInput.value = opt_suggestedName || '';
       this.ui_.dialogFooter.selectTargetNameInFilenameInput();
     }

@@ -13,6 +13,7 @@
 #include "components/signin/core/browser/signin_manager_base.h"
 #include "components/signin/core/browser/signin_metrics.h"
 #include "services/identity/public/cpp/access_token_fetcher.h"
+#include "services/identity/public/cpp/scope_set.h"
 
 #if !defined(OS_CHROMEOS)
 #include "components/signin/core/browser/signin_manager.h"
@@ -34,16 +35,21 @@ namespace file_manager {
 class MultiProfileFilesAppBrowserTest;
 }
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 // Necessary to declare these classes as friends.
 class ArcSupportHostTest;
 class MultiProfileDownloadNotificationTest;
 
 namespace identity {
 
+class PrimaryAccountMutator;
+
 // Gives access to information about the user's Google identities. See
 // ./README.md for detailed documentation.
 class IdentityManager : public SigninManagerBase::Observer,
-                        public ProfileOAuth2TokenService::DiagnosticsClient,
                         public OAuth2TokenService::DiagnosticsObserver,
                         public OAuth2TokenService::Observer,
                         public GaiaCookieManagerService::Observer {
@@ -65,8 +71,10 @@ class IdentityManager : public SigninManagerBase::Observer,
     virtual void OnPrimaryAccountCleared(
         const AccountInfo& previous_primary_account_info) {}
 
-    // TODO(https://crbug/869418): Eventually we might need a callback for
-    // failure to log in to the primary account.
+    // Called when the user attempts but fails to set their primary
+    // account. |error| gives the reason for the failure.
+    virtual void OnPrimaryAccountSigninFailed(
+        const GoogleServiceAuthError& error) {}
 
     // Called when a new refresh token is associated with |account_info|.
     // |is_valid| indicates whether the new refresh token is valid.
@@ -79,18 +87,36 @@ class IdentityManager : public SigninManagerBase::Observer,
         const AccountInfo& account_info,
         bool is_valid) {}
 
-    // Called when the refresh token previously associated with |account_info|
-    // has been removed.
+    // Called when the refresh token previously associated with |account_id|
+    // has been removed. At the time that this callback is invoked, there is
+    // no longer guaranteed to be any AccountInfo associated with
+    // |account_id|.
+    // NOTE: It is not guaranteed that a call to
+    // OnRefreshTokenUpdatedForAccount() has previously occurred for this
+    // account due to corner cases.
+    // TODO(https://crbug.com/884731): Eliminate these corner cases.
     // NOTE: On a signout event, the ordering of this callback wrt the
     // OnPrimaryAccountCleared() callback is undefined.If this lack of ordering
     // is problematic for your use case, please contact blundell@chromium.org.
     virtual void OnRefreshTokenRemovedForAccount(
-        const AccountInfo& account_info) {}
+        const std::string& account_id) {}
+
+    // Called after refresh tokens are loaded.
+    // CAVEAT: On ChromeOS, this callback is not invoked during
+    // startup in all cases. See https://crbug.com/749535, which
+    // details the cases where it's not invoked.
+    virtual void OnRefreshTokensLoaded() {}
 
     // Called whenever the list of Gaia accounts in the cookie jar has changed.
     // |accounts| is ordered by the order of the accounts in the cookie.
     virtual void OnAccountsInCookieUpdated(
         const std::vector<AccountInfo>& accounts) {}
+
+    // Called before a batch of refresh token state changes is started.
+    virtual void OnStartBatchOfRefreshTokenStateChanges() {}
+
+    // Called after a batch of refresh token state chagnes is completed.
+    virtual void OnEndBatchOfRefreshTokenStateChanges() {}
   };
 
   // Observer interface for classes that want to monitor status of various
@@ -104,25 +130,36 @@ class IdentityManager : public SigninManagerBase::Observer,
     DiagnosticsObserver& operator=(const DiagnosticsObserver&) = delete;
 
     // Called when receiving request for access token.
-    virtual void OnAccessTokenRequested(
-        const std::string& account_id,
-        const std::string& consumer_id,
-        const OAuth2TokenService::ScopeSet& scopes) {}
+    virtual void OnAccessTokenRequested(const std::string& account_id,
+                                        const std::string& consumer_id,
+                                        const identity::ScopeSet& scopes) {}
   };
 
-  IdentityManager(SigninManagerBase* signin_manager,
-                  ProfileOAuth2TokenService* token_service,
-                  AccountTrackerService* account_tracker_service,
-                  GaiaCookieManagerService* gaia_cookie_manager_service);
+  IdentityManager(
+      SigninManagerBase* signin_manager,
+      ProfileOAuth2TokenService* token_service,
+      AccountTrackerService* account_tracker_service,
+      GaiaCookieManagerService* gaia_cookie_manager_service,
+      std::unique_ptr<PrimaryAccountMutator> primary_account_mutator);
   ~IdentityManager() override;
 
-  // Provides access to the latest cached information of the user's primary
-  // account.
+  // Provides access to the extended information of the user's primary account.
+  // Returns an empty struct if no such info is available, either because there
+  // is no primary account or because the extended information for the primary
+  // account has been removed (this happens when the refresh token is revoked,
+  // for example).
   AccountInfo GetPrimaryAccountInfo() const;
 
-  // Returns whether the primary account is available, according to the latest
-  // cached information. Simple convenience wrapper over checking whether the
-  // primary account info has a valid account ID.
+  // Provides access to the account ID of the user's primary account. Note that
+  // this may return a valid string even in cases where GetPrimaryAccountInfo()
+  // returns an empty struct, as the extended information for the primary
+  // account is removed on certain events (e.g., when its refresh token is
+  // revoked).
+  const std::string& GetPrimaryAccountId() const;
+
+  // Returns whether the primary account is available. Simple convenience
+  // wrapper over checking whether GetPrimaryAccountId() returns a non-empty
+  // string.
   bool HasPrimaryAccount() const;
 
 // For ChromeOS, mutation of primary account state is not managed externally.
@@ -174,6 +211,21 @@ class IdentityManager : public SigninManagerBase::Observer,
   // Returns true if a refresh token exists for |account_id|.
   bool HasAccountWithRefreshToken(const std::string& account_id) const;
 
+  // Returns true if (a) a refresh token exists for |account_id|, and (b) the
+  // refresh token is in a persistent error state (defined as
+  // GoogleServiceAuthError::IsPersistentError() returning true for the error
+  // returned by GetErrorStateOfRefreshTokenForAccount(account_id)).
+  bool HasAccountWithRefreshTokenInPersistentErrorState(
+      const std::string& account_id) const;
+
+  // Returns the error state of the refresh token associated with |account_id|.
+  // In particular: Returns GoogleServiceAuthError::AuthErrorNone() if either
+  // (a) no refresh token exists for |account_id|, or (b) the refresh token is
+  // not in a persistent error state. Otherwise, returns the last persistent
+  // error that was detected when using the refresh token.
+  GoogleServiceAuthError GetErrorStateOfRefreshTokenForAccount(
+      const std::string& account_id) const;
+
   // Returns true if (a) the primary account exists, and (b) a refresh token
   // exists for the primary account.
   bool HasPrimaryAccountWithRefreshToken() const;
@@ -182,7 +234,17 @@ class IdentityManager : public SigninManagerBase::Observer,
   std::unique_ptr<AccessTokenFetcher> CreateAccessTokenFetcherForAccount(
       const std::string& account_id,
       const std::string& oauth_consumer_name,
-      const OAuth2TokenService::ScopeSet& scopes,
+      const identity::ScopeSet& scopes,
+      AccessTokenFetcher::TokenCallback callback,
+      AccessTokenFetcher::Mode mode);
+
+  // Creates an AccessTokenFetcher given the passed-in information, allowing
+  // to specify a custom |url_loader_factory| as well.
+  std::unique_ptr<AccessTokenFetcher> CreateAccessTokenFetcherForAccount(
+      const std::string& account_id,
+      const std::string& oauth_consumer_name,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const identity::ScopeSet& scopes,
       AccessTokenFetcher::TokenCallback callback,
       AccessTokenFetcher::Mode mode);
 
@@ -191,8 +253,13 @@ class IdentityManager : public SigninManagerBase::Observer,
   // request for |account_id| and |scopes| will fetch a new token from the
   // network. Otherwise, is a no-op.
   void RemoveAccessTokenFromCache(const std::string& account_id,
-                                  const OAuth2TokenService::ScopeSet& scopes,
+                                  const identity::ScopeSet& scopes,
                                   const std::string& access_token);
+
+  // Returns pointer to the object used to change the signed-in state of the
+  // primary account, if supported on the current platform. Otherwise, returns
+  // null.
+  PrimaryAccountMutator* GetPrimaryAccountMutator();
 
   // Methods to register or remove observers.
   void AddObserver(Observer* observer);
@@ -201,11 +268,6 @@ class IdentityManager : public SigninManagerBase::Observer,
   void RemoveDiagnosticsObserver(DiagnosticsObserver* observer);
 
  private:
-  struct PendingTokenAvailableState {
-    AccountInfo account_info;
-    bool refresh_token_is_valid = false;
-  };
-
   // These clients need to call SetPrimaryAccountSynchronouslyForTests().
   friend AccountInfo SetPrimaryAccount(SigninManagerBase* signin_manager,
                                        IdentityManager* identity_manager,
@@ -237,18 +299,22 @@ class IdentityManager : public SigninManagerBase::Observer,
                                       const std::string& email_address,
                                       const std::string& refresh_token);
 
+  // Populates and returns an AccountInfo object corresponding to |account_id|,
+  // which must be an account with a refresh token.
+  AccountInfo GetAccountInfoForAccountWithRefreshToken(
+      std::string account_id) const;
+
   // SigninManagerBase::Observer:
   void GoogleSigninSucceeded(const AccountInfo& account_info) override;
   void GoogleSignedOut(const AccountInfo& account_info) override;
-
-  // ProfileOAuth2TokenService::DiagnosticsClient:
-  void WillFireOnRefreshTokenAvailable(const std::string& account_id,
-                                       bool is_valid) override;
-  void WillFireOnRefreshTokenRevoked(const std::string& account_id) override;
+  void GoogleSigninFailed(const GoogleServiceAuthError& error) override;
 
   // OAuth2TokenService::Observer:
   void OnRefreshTokenAvailable(const std::string& account_id) override;
   void OnRefreshTokenRevoked(const std::string& account_id) override;
+  void OnRefreshTokensLoaded() override;
+  void OnStartBatchChanges() override;
+  void OnEndBatchChanges() override;
 
   // GaiaCookieManagerService::Observer:
   void OnGaiaAccountsInCookieUpdated(
@@ -271,16 +337,9 @@ class IdentityManager : public SigninManagerBase::Observer,
   AccountTrackerService* account_tracker_service_;
   GaiaCookieManagerService* gaia_cookie_manager_service_;
 
-  // The latest (cached) value of the accounts with refresh tokens.
-  using AccountIDToAccountInfoMap = std::map<std::string, AccountInfo>;
-  AccountIDToAccountInfoMap accounts_with_refresh_tokens_;
-
-  // Info that is cached from the PO2TS::DiagnosticsClient callbacks in order to
-  // forward on to the observers of this class in the corresponding
-  // O2TS::Observer callbacks (the information is not directly available at the
-  // time of receiving the O2TS::Observer callbacks).
-  base::Optional<PendingTokenAvailableState> pending_token_available_state_;
-  base::Optional<AccountInfo> pending_token_revoked_info_;
+  // PrimaryAccountMutator instance. May be null if mutation of the primary
+  // account state is not supported on the current platform.
+  std::unique_ptr<PrimaryAccountMutator> primary_account_mutator_;
 
   // Lists of observers.
   // Makes sure lists are empty on destruction.

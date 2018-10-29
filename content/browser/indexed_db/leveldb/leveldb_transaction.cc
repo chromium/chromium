@@ -46,7 +46,7 @@ void LevelDBTransaction::Set(const StringPiece& key,
                              std::string* value,
                              bool deleted) {
   DCHECK(!finished_);
-  DataType::iterator it = data_.find(key);
+  auto it = data_.find(key);
 
   if (it == data_.end()) {
     std::unique_ptr<Record> record = std::make_unique<Record>();

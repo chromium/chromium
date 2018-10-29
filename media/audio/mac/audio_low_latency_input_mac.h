@@ -149,7 +149,7 @@ class MEDIA_EXPORT AUAudioInputStream
   void CloseAudioUnit();
 
   // Reinitializes the AudioUnit to use a new output device.
-  void SwitchVoiceProcessingOutputDevice(AudioDeviceID output_device_id);
+  void ReinitializeVoiceProcessingAudioUnit();
 
   // Adds extra UMA stats when it has been detected that startup failed.
   void AddHistogramsForFailedStartup();

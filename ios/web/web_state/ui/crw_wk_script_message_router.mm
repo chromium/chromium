@@ -5,6 +5,8 @@
 #import "ios/web/web_state/ui/crw_wk_script_message_router.h"
 
 #include "base/logging.h"
+#include "ios/web/navigation/wk_navigation_util.h"
+#import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -82,6 +84,12 @@
 
 - (void)userContentController:(WKUserContentController*)userContentController
       didReceiveScriptMessage:(WKScriptMessage*)message {
+  // Ignore frame registration messages from internal placeholder pages.
+  GURL url = net::GURLWithNSURL(message.frameInfo.request.URL);
+  if (web::wk_navigation_util::IsPlaceholderUrl(url)) {
+    return;
+  }
+
   NSMapTable* webViewToHandlerMap = [_handlers objectForKey:message.name];
   DCHECK(webViewToHandlerMap);
   id handler = [webViewToHandlerMap objectForKey:message.webView];

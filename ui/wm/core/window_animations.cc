@@ -85,10 +85,8 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
     if (window_->parent()) {
       const aura::Window::Windows& transient_children =
           GetTransientChildren(window_);
-      aura::Window::Windows::const_iterator iter =
-          std::find(window_->parent()->children().begin(),
-                    window_->parent()->children().end(),
-                    window_);
+      auto iter = std::find(window_->parent()->children().begin(),
+                            window_->parent()->children().end(), window_);
       DCHECK(iter != window_->parent()->children().end());
       aura::Window* topmost_transient_child = NULL;
       for (++iter; iter != window_->parent()->children().end(); ++iter) {

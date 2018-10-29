@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -192,8 +193,8 @@ WebSocketChannelImpl::WebSocketChannelImpl(
       sent_size_of_top_message_(0),
       location_at_construction_(std::move(location)),
       throttle_passed_(false) {
-  if (execution_context_->IsWorkerGlobalScope())
-    ToWorkerGlobalScope(execution_context_)->EnsureFetcher();
+  if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_))
+    scope->EnsureFetcher();
 }
 
 WebSocketChannelImpl::~WebSocketChannelImpl() {
@@ -428,16 +429,16 @@ WebSocketChannelImpl::Message::Message(unsigned short code,
 void WebSocketChannelImpl::SendInternal(
     WebSocketHandle::MessageType message_type,
     const char* data,
-    size_t total_size,
+    wtf_size_t total_size,
     uint64_t* consumed_buffered_amount) {
   WebSocketHandle::MessageType frame_type =
       sent_size_of_top_message_ ? WebSocketHandle::kMessageTypeContinuation
                                 : message_type;
   DCHECK_GE(total_size, sent_size_of_top_message_);
   // The first cast is safe since the result of min() never exceeds
-  // the range of size_t. The second cast is necessary to compile
+  // the range of wtf_size_t. The second cast is necessary to compile
   // min() on ILP32.
-  size_t size = static_cast<size_t>(
+  wtf_size_t size = static_cast<wtf_size_t>(
       std::min(sending_quota_,
                static_cast<uint64_t>(total_size - sent_size_of_top_message_)));
   bool final = (sent_size_of_top_message_ + size == total_size);
@@ -650,7 +651,7 @@ void WebSocketChannelImpl::DidReceiveData(WebSocketHandle* handle,
       break;
   }
 
-  receiving_message_data_.Append(data, size);
+  receiving_message_data_.Append(data, SafeCast<uint32_t>(size));
   received_data_size_for_flow_control_ += size;
   FlowControlIfNecessary();
   if (!fin) {

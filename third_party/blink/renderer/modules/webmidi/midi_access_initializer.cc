@@ -43,10 +43,10 @@ ScriptPromise MIDIAccessInitializer::Start() {
   ConnectToPermissionService(GetExecutionContext(),
                              mojo::MakeRequest(&permission_service_));
 
-  Document* doc = ToDocumentOrNull(GetExecutionContext());
+  Document& doc = To<Document>(*GetExecutionContext());
   permission_service_->RequestPermission(
       CreateMidiPermissionDescriptor(options_.hasSysex() && options_.sysex()),
-      Frame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr),
+      LocalFrame::HasTransientUserActivation(doc.GetFrame()),
       WTF::Bind(&MIDIAccessInitializer::OnPermissionsUpdated,
                 WrapPersistent(this)));
 

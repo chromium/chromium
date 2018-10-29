@@ -199,11 +199,20 @@ class MessageTransferOperationTest : public testing::Test {
     fake_ble_connection_manager_ = std::make_unique<FakeBleConnectionManager>();
   }
 
-  void SetMultiDeviceApiEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(features::kMultiDeviceApi);
+  void SetMultiDeviceApiState(bool enabled) {
+    if (enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          chromeos::features::kMultiDeviceApi);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::features::kMultiDeviceApi);
+    }
   }
 
-  void ConstructOperation(cryptauth::RemoteDeviceRefList remote_devices) {
+  void ConstructOperation(cryptauth::RemoteDeviceRefList remote_devices,
+                          bool is_multidevice_api_enabled) {
+    SetMultiDeviceApiState(is_multidevice_api_enabled /* enabled */);
+
     test_timer_factory_ = new TestTimerFactory();
 
     if (base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi)) {
@@ -344,9 +353,8 @@ class MessageTransferOperationTest : public testing::Test {
 
 TEST_F(MessageTransferOperationTest,
        MultiDeviceApiEnabled_TestFailedConnection) {
-  SetMultiDeviceApiEnabled();
-
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     true /* is_multidevice_api_enabled */);
   InitializeOperation();
 
   remote_device_to_fake_connection_attempt_map_[test_devices_[0]]
@@ -362,9 +370,8 @@ TEST_F(MessageTransferOperationTest,
 
 TEST_F(MessageTransferOperationTest,
        MultiDeviceApiEnabled_TestSuccessfulConnectionSendAndReceiveMessage) {
-  SetMultiDeviceApiEnabled();
-
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     true /* is_multidevice_api_enabled */);
   InitializeOperation();
 
   // Simulate how subclasses behave after a successful response: unregister the
@@ -405,9 +412,8 @@ TEST_F(MessageTransferOperationTest,
 
 TEST_F(MessageTransferOperationTest,
        MultiDeviceApiEnabled_TestTimesOutBeforeAuthentication) {
-  SetMultiDeviceApiEnabled();
-
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     true /* is_multidevice_api_enabled */);
   InitializeOperation();
 
   GetTimerForDevice(test_devices_[0])->Fire();
@@ -416,9 +422,8 @@ TEST_F(MessageTransferOperationTest,
 
 TEST_F(MessageTransferOperationTest,
        MultiDeviceApiEnabled_TestAuthenticatesButThenTimesOut) {
-  SetMultiDeviceApiEnabled();
-
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     true /* is_multidevice_api_enabled */);
   InitializeOperation();
 
   CreateAuthenticatedChannelForDevice(test_devices_[0]);
@@ -432,11 +437,10 @@ TEST_F(MessageTransferOperationTest,
 
 TEST_F(MessageTransferOperationTest,
        MultiDeviceApiEnabled_TestRepeatedInputDevice) {
-  SetMultiDeviceApiEnabled();
-
   // Construct with two copies of the same device.
   ConstructOperation(
-      cryptauth::RemoteDeviceRefList{test_devices_[0], test_devices_[0]});
+      cryptauth::RemoteDeviceRefList{test_devices_[0], test_devices_[0]},
+      true /* is_multidevice_api_enabled */);
   InitializeOperation();
 
   CreateAuthenticatedChannelForDevice(test_devices_[0]);
@@ -459,9 +463,7 @@ TEST_F(MessageTransferOperationTest,
 }
 
 TEST_F(MessageTransferOperationTest, MultiDeviceApiEnabled_MultipleDevices) {
-  SetMultiDeviceApiEnabled();
-
-  ConstructOperation(test_devices_);
+  ConstructOperation(test_devices_, true /* is_multidevice_api_enabled */);
   InitializeOperation();
 
   for (const auto& remote_device : test_devices_)
@@ -499,7 +501,8 @@ TEST_F(MessageTransferOperationTest, MultiDeviceApiEnabled_MultipleDevices) {
 }
 
 TEST_F(MessageTransferOperationTest, CannotReceiveResponse_RetryLimitReached) {
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -552,7 +555,8 @@ TEST_F(MessageTransferOperationTest, CannotReceiveResponse_RetryLimitReached) {
 
 TEST_F(MessageTransferOperationTest,
        CannotCompleteGattConnection_RetryLimitReached) {
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -570,7 +574,8 @@ TEST_F(MessageTransferOperationTest,
 }
 
 TEST_F(MessageTransferOperationTest, MixedConnectionAttemptFailures) {
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -597,7 +602,8 @@ TEST_F(MessageTransferOperationTest, MixedConnectionAttemptFailures) {
 }
 
 TEST_F(MessageTransferOperationTest, TestFailsThenConnects_Unanswered) {
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -626,7 +632,8 @@ TEST_F(MessageTransferOperationTest, TestFailsThenConnects_Unanswered) {
 }
 
 TEST_F(MessageTransferOperationTest, TestFailsThenConnects_GattError) {
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -660,7 +667,8 @@ TEST_F(MessageTransferOperationTest, TestFailsThenConnects_GattError) {
 
 TEST_F(MessageTransferOperationTest,
        TestSuccessfulConnectionAndReceiveMessage) {
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -689,7 +697,7 @@ TEST_F(MessageTransferOperationTest,
 }
 
 TEST_F(MessageTransferOperationTest, TestDevicesUnregisteredAfterDeletion) {
-  ConstructOperation(test_devices_);
+  ConstructOperation(test_devices_, false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -716,7 +724,8 @@ TEST_F(MessageTransferOperationTest,
        TestSuccessfulConnectionAndReceiveMessage_TimeoutSeconds) {
   const uint32_t kTimeoutSeconds = 90;
 
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -746,7 +755,8 @@ TEST_F(MessageTransferOperationTest,
 }
 
 TEST_F(MessageTransferOperationTest, TestAuthenticatesButTimesOut) {
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -767,7 +777,8 @@ TEST_F(MessageTransferOperationTest, TestAuthenticatesButTimesOut) {
 TEST_F(MessageTransferOperationTest, TestRepeatedInputDevice) {
   // Construct with two copies of the same device.
   ConstructOperation(
-      cryptauth::RemoteDeviceRefList{test_devices_[0], test_devices_[0]});
+      cryptauth::RemoteDeviceRefList{test_devices_[0], test_devices_[0]},
+      false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -794,7 +805,8 @@ TEST_F(MessageTransferOperationTest, TestRepeatedInputDevice) {
 }
 
 TEST_F(MessageTransferOperationTest, TestReceiveEventForOtherDevice) {
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));
@@ -824,7 +836,8 @@ TEST_F(MessageTransferOperationTest, TestReceiveEventForOtherDevice) {
 
 TEST_F(MessageTransferOperationTest,
        TestAlreadyAuthenticatedBeforeInitialization) {
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
 
   // Simulate the authentication of |test_devices_[0]|'s channel before
   // initialization.
@@ -856,7 +869,8 @@ TEST_F(MessageTransferOperationTest,
 
 TEST_F(MessageTransferOperationTest,
        AlreadyAuthenticatedBeforeInitialization_TimesOut) {
-  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]});
+  ConstructOperation(cryptauth::RemoteDeviceRefList{test_devices_[0]},
+                     false /* is_multidevice_api_enabled */);
 
   // Simulate the authentication of |test_devices_[0]|'s channel before
   // initialization.
@@ -882,7 +896,7 @@ TEST_F(MessageTransferOperationTest,
 }
 
 TEST_F(MessageTransferOperationTest, MultipleDevices) {
-  ConstructOperation(test_devices_);
+  ConstructOperation(test_devices_, false /* is_multidevice_api_enabled */);
   InitializeOperation();
   EXPECT_TRUE(fake_ble_connection_manager_->IsRegistered(
       test_devices_[0].GetDeviceId()));

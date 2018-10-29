@@ -163,7 +163,6 @@ ICCProfile ICCProfile::FromDataWithId(const void* data_as_void,
   }
 
   // Insert the profile into all caches.
-  ColorSpace color_space = icc_profile.GetColorSpace();
   if (icc_profile.internals_->id_)
     g_id_to_profile_cache.Get().Put(icc_profile.internals_->id_, icc_profile);
   g_data_to_profile_cache.Get().Put(icc_profile.internals_->data_, icc_profile);

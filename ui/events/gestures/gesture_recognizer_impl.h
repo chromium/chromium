@@ -48,9 +48,10 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   GestureConsumer* GetTargetForLocation(const gfx::PointF& location,
                                         int source_device_id) override;
   void CancelActiveTouchesExcept(GestureConsumer* not_cancelled) override;
-  void TransferEventsTo(GestureConsumer* current_consumer,
-                        GestureConsumer* new_consumer,
-                        ShouldCancelTouches should_cancel_touches) override;
+  void TransferEventsTo(
+      GestureConsumer* current_consumer,
+      GestureConsumer* new_consumer,
+      TransferTouchesBehavior transfer_touches_behavior) override;
   bool GetLastTouchPointForTarget(GestureConsumer* consumer,
                                   gfx::PointF* point) override;
   bool CancelActiveTouches(GestureConsumer* consumer) override;
@@ -64,6 +65,8 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
                                     GestureConsumer* consumer) override;
 
  private:
+  enum ShouldNotifyObservers { kNotifyObservers, kDontNotifyObservers };
+
   // Sets up the target consumer for gestures based on the touch-event.
   void SetupTargets(const TouchEvent& event, GestureConsumer* consumer);
 
@@ -74,6 +77,11 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
                          ui::EventResult result,
                          bool is_source_touch_event_set_non_blocking,
                          GestureConsumer* consumer) override;
+
+  void CancelActiveTouchesExceptImpl(GestureConsumer* not_cancelled,
+                                     ShouldNotifyObservers should_notify);
+  bool CancelActiveTouchesImpl(GestureConsumer* consumer,
+                               ShouldNotifyObservers should_notify);
 
   bool CleanupStateForConsumer(GestureConsumer* consumer) override;
   void AddGestureEventHelper(GestureEventHelper* helper) override;

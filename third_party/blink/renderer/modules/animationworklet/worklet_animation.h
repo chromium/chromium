@@ -66,7 +66,7 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
 
   AnimationTimeline* timeline() { return timeline_; }
   String playState();
-  void play();
+  void play(ExceptionState& exception_state);
   void cancel();
 
   // AnimationEffectOwner implementation:
@@ -88,6 +88,7 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
   // WorkletAnimationBase implementation.
   void Update(TimingUpdateReason) override;
   void UpdateCompositingState() override;
+  void InvalidateCompositingState() override;
 
   // CompositorAnimationClient implementation.
   CompositorAnimation* GetCompositorAnimation() const override {
@@ -128,9 +129,8 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
 
   // Attempts to start the animation on the compositor side, returning true if
   // it succeeds or false otherwise. If false is returned and the animation
-  // cannot be started on main and failure_message was non-null, failure_message
-  // may be filled with an error description.
-  bool StartOnCompositor(String* failure_message);
+  // cannot be started on main.
+  bool StartOnCompositor();
   void StartOnMain();
   bool CheckCanStart(String* failure_message);
   void SetStartTimeToNow();
@@ -155,7 +155,7 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
   Animation::AnimationPlayState last_play_state_;
   // Start time in ms.
   base::Optional<base::TimeDelta> start_time_;
-  base::Optional<base::TimeDelta> local_time_;
+  Vector<base::Optional<base::TimeDelta>> local_times_;
   // We use this to skip updating if current time has not changed since last
   // update.
   base::Optional<base::TimeDelta> last_current_time_;

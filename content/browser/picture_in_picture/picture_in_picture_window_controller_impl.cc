@@ -46,7 +46,8 @@ PictureInPictureWindowControllerImpl::~PictureInPictureWindowControllerImpl() {
     return;
 
   initiator_->SetHasPictureInPictureVideo(false);
-  OnLeavingPictureInPicture(true /* should_pause_video */);
+  OnLeavingPictureInPicture(true /* should_pause_video */,
+                            true /* should_reset_pip_player */);
 }
 
 PictureInPictureWindowControllerImpl::PictureInPictureWindowControllerImpl(
@@ -70,34 +71,26 @@ gfx::Size PictureInPictureWindowControllerImpl::Show() {
   return window_->GetBounds().size();
 }
 
-void PictureInPictureWindowControllerImpl::ClickCustomControl(
-    const std::string& control_id) {
-  DCHECK(window_);
-
-  media_player_id_->render_frame_host->Send(
-      new MediaPlayerDelegateMsg_ClickPictureInPictureControl(
-          media_player_id_->render_frame_host->GetRoutingID(),
-          media_player_id_->delegate_id, control_id));
-}
-
 void PictureInPictureWindowControllerImpl::SetPictureInPictureCustomControls(
     const std::vector<blink::PictureInPictureControlInfo>& controls) {
   DCHECK(window_);
   window_->SetPictureInPictureCustomControls(controls);
 }
 
-void PictureInPictureWindowControllerImpl::Close(bool should_pause_video) {
+void PictureInPictureWindowControllerImpl::Close(bool should_pause_video,
+                                                 bool should_reset_pip_player) {
   if (!window_ || !window_->IsVisible())
     return;
 
   window_->Hide();
-  CloseInternal(should_pause_video);
+  CloseInternal(should_pause_video, should_reset_pip_player);
 }
 
 void PictureInPictureWindowControllerImpl::OnWindowDestroyed() {
   window_ = nullptr;
   embedder_ = nullptr;
-  CloseInternal(true /* should_pause_video */);
+  CloseInternal(true /* should_pause_video */,
+                true /* should_reset_pip_player */);
 }
 
 void PictureInPictureWindowControllerImpl::EmbedSurface(
@@ -129,7 +122,7 @@ OverlayWindow* PictureInPictureWindowControllerImpl::GetWindowForTesting() {
 }
 
 void PictureInPictureWindowControllerImpl::UpdateLayerBounds() {
-  if (window_ && window_->IsVisible()) {
+  if (media_player_id_.has_value() && window_ && window_->IsVisible()) {
     media_web_contents_observer_->OnPictureInPictureWindowResize(
         window_->GetBounds().size());
   }
@@ -186,8 +179,27 @@ bool PictureInPictureWindowControllerImpl::TogglePlayPause() {
   return true;
 }
 
+void PictureInPictureWindowControllerImpl::CustomControlPressed(
+    const std::string& control_id) {
+  DCHECK(window_);
+
+  media_player_id_->render_frame_host->Send(
+      new MediaPlayerDelegateMsg_ClickPictureInPictureControl(
+          media_player_id_->render_frame_host->GetRoutingID(),
+          media_player_id_->delegate_id, control_id));
+}
+
+void PictureInPictureWindowControllerImpl::SetAlwaysHidePlayPauseButton(
+    bool is_visible) {
+  if (!window_)
+    return;
+
+  window_->SetAlwaysHidePlayPauseButton(is_visible);
+}
+
 void PictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
-    bool should_pause_video) {
+    bool should_pause_video,
+    bool should_reset_pip_player) {
   if (IsPlayerActive() && should_pause_video) {
     // Pause the current video so there is only one video playing at a time.
     media_player_id_->render_frame_host->Send(new MediaPlayerDelegateMsg_Pause(
@@ -200,18 +212,21 @@ void PictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
         new MediaPlayerDelegateMsg_EndPictureInPictureMode(
             media_player_id_->render_frame_host->GetRoutingID(),
             media_player_id_->delegate_id));
+    if (should_reset_pip_player)
+      media_web_contents_observer_->ResetPictureInPictureVideoMediaPlayerId();
   }
 }
 
 void PictureInPictureWindowControllerImpl::CloseInternal(
-    bool should_pause_video) {
+    bool should_pause_video,
+    bool should_reset_pip_player) {
   if (initiator_->IsBeingDestroyed())
     return;
 
   surface_id_ = viz::SurfaceId();
 
   initiator_->SetHasPictureInPictureVideo(false);
-  OnLeavingPictureInPicture(should_pause_video);
+  OnLeavingPictureInPicture(should_pause_video, should_reset_pip_player);
 }
 
 void PictureInPictureWindowControllerImpl::EnsureWindow() {

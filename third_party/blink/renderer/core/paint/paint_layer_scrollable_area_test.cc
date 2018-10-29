@@ -45,9 +45,8 @@ class PaintLayerScrollableAreaTest : public RenderingTest {
   }
 
   BackgroundPaintLocation GetBackgroundPaintLocation(const char* element_id) {
-    PaintLayer* paint_layer =
-        ToLayoutBoxModelObject(GetLayoutObjectByElementId(element_id))->Layer();
-    return paint_layer->GetBackgroundPaintLocation();
+    return ToLayoutBoxModelObject(GetLayoutObjectByElementId(element_id))
+        ->GetBackgroundPaintLocation();
   }
 
  private:
@@ -152,6 +151,11 @@ TEST_F(PaintLayerScrollableAreaTest,
         border: 5px solid rgba(0, 0, 0, 0.5);'>
       <div class='spacer'></div>
     </div>
+    <div id='scroller18' class='scroller'
+        style='background: white;
+        border: 5px dashed black;'>
+      <div class='spacer'></div>
+    </div>
   )HTML");
 
   // #scroller1 can paint background into scrolling contents layer even with a
@@ -246,6 +250,13 @@ TEST_F(PaintLayerScrollableAreaTest,
   // be painted in the graphics layer to be under the translucent border.
   EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
             GetBackgroundPaintLocation("scroller17"));
+
+  // #scroller18 can be painted in both layers because the background is a
+  // solid color, it must be because the dashed border reveals the background
+  // underneath it.
+  EXPECT_EQ(
+      kBackgroundPaintInGraphicsLayer | kBackgroundPaintInScrollingContents,
+      GetBackgroundPaintLocation("scroller18"));
 }
 
 TEST_F(PaintLayerScrollableAreaTest, OpaqueContainedLayersPromoted) {
@@ -957,6 +968,38 @@ TEST_F(PaintLayerScrollableAreaTest, IgnoreDelayedScrollOnDestroyedLayer) {
     scroller->SetInlineStyleProperty(CSSPropertyDisplay, CSSValueNone);
     GetDocument().View()->UpdateAllLifecyclePhases();
   }
+}
+
+TEST_F(PaintLayerScrollableAreaTest, ScrollbarMaximum) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #spacer {
+      height: 17.984375px;
+    }
+    #scroller {
+      border-top: 0.328125px solid gray;
+      border-bottom: 0.328125px solid gray;
+      height:149.34375px;
+      width: 100px;
+      overflow-y:auto;
+    }
+    #content {
+      height: 156.578125px;
+    }
+    </style>
+    <div id='spacer'></div>
+    <div id='scroller'>
+      <div id='content'></div>
+    </div>
+  )HTML");
+
+  LayoutBox* scroller = ToLayoutBox(GetLayoutObjectByElementId("scroller"));
+  PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
+  Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
+
+  scrollable_area->ScrollBy(ScrollOffset(0, 1000), kProgrammaticScroll);
+  GetDocument().View()->UpdateAllLifecyclePhases();
+  EXPECT_EQ(scrollbar->CurrentPos(), scrollbar->Maximum());
 }
 
 }  // namespace blink

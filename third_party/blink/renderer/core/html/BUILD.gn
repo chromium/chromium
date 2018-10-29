@@ -564,7 +564,6 @@ blink_core_sources("html") {
     "track/vtt/vtt_token.h",
     "track/vtt/vtt_tokenizer.cc",
     "track/vtt/vtt_tokenizer.h",
-    "void_callback.h",
     "window_name_collection.cc",
     "window_name_collection.h",
   ]

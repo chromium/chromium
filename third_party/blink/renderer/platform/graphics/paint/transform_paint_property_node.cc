@@ -13,9 +13,7 @@ const TransformPaintPropertyNode& TransformPaintPropertyNode::Root() {
       TransformPaintPropertyNode, root,
       base::AdoptRef(new TransformPaintPropertyNode(
           nullptr,
-          State{TransformationMatrix(), FloatPoint3D(), false,
-                BackfaceVisibility::kVisible, 0, CompositingReason::kNone,
-                CompositorElementId(), &ScrollPaintPropertyNode::Root()},
+          State{TransformationMatrix(), &ScrollPaintPropertyNode::Root()},
           true /* is_parent_alias */)));
   return *root;
 }

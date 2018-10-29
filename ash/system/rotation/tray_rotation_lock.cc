@@ -89,7 +89,7 @@ RotationLockDefaultView::RotationLockDefaultView(SystemTrayItem* owner)
 
   Update();
 
-  SetInkDropMode(InkDropHostView::InkDropMode::ON);
+  SetInkDropMode(InkDropMode::ON);
 
   SetVisible(IsTabletModeWindowManagerEnabled());
   Shell::Get()->tablet_mode_controller()->AddObserver(this);

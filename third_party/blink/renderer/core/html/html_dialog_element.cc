@@ -82,9 +82,8 @@ static void SetFocusForDialog(HTMLDialogElement* dialog) {
 }
 
 static void InertSubtreesChanged(Document& document) {
+  // SetIsInert recurses through subframes to propagate the inert bit.
   if (document.GetFrame()) {
-    // SetIsInert recurses through subframes to propagate the inert bit as
-    // needed.
     document.GetFrame()->SetIsInert(document.LocalOwner() &&
                                     document.LocalOwner()->IsInert());
   }
@@ -172,12 +171,13 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   GetDocument().AddToTopLayer(this);
   SetBooleanAttribute(openAttr, true);
 
+  ForceLayoutForCentering();
+
   // Throw away the AX cache first, so the subsequent steps don't have a chance
   // of queuing up AX events on objects that would be invalidated when the cache
   // is thrown away.
   InertSubtreesChanged(GetDocument());
 
-  ForceLayoutForCentering();
   SetFocusForDialog(this);
 }
 

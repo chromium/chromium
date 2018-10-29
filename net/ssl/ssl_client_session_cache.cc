@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/memory_coordinator_client_registry.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -23,12 +22,10 @@ SSLClientSessionCache::SSLClientSessionCache(const Config& config)
       lookups_since_flush_(0) {
   memory_pressure_listener_.reset(new base::MemoryPressureListener(base::Bind(
       &SSLClientSessionCache::OnMemoryPressure, base::Unretained(this))));
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Register(this);
 }
 
 SSLClientSessionCache::~SSLClientSessionCache() {
   Flush();
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Unregister(this);
 }
 
 size_t SSLClientSessionCache::size() const {
@@ -221,10 +218,6 @@ void SSLClientSessionCache::OnMemoryPressure(
       Flush();
       break;
   }
-}
-
-void SSLClientSessionCache::OnPurgeMemory() {
-  Flush();
 }
 
 }  // namespace net

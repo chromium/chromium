@@ -48,27 +48,6 @@ void CondVar::SignalAll() {
   cv_.Broadcast();
 }
 
-void InitOnceImpl(OnceType* once, void (*initializer)()) {
-  OnceType state = base::subtle::Acquire_Load(once);
-  if (state == ONCE_STATE_DONE)
-    return;
-
-  state = base::subtle::NoBarrier_CompareAndSwap(once, ONCE_STATE_UNINITIALIZED,
-                                                 ONCE_STATE_EXECUTING_CLOSURE);
-
-  if (state == ONCE_STATE_UNINITIALIZED) {
-    // We are the first thread, we have to call the closure.
-    (*initializer)();
-    base::subtle::Release_Store(once, ONCE_STATE_DONE);
-  } else {
-    // Another thread is running the closure, wait until completion.
-    while (state == ONCE_STATE_EXECUTING_CLOSURE) {
-      base::PlatformThread::YieldCurrentThread();
-      state = base::subtle::Acquire_Load(once);
-    }
-  }
-}
-
 bool Snappy_Compress(const char* input,
                      size_t input_length,
                      std::string* output) {

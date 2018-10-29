@@ -8,13 +8,6 @@
   await session.protocol.Network.enable();
   await session.protocol.Runtime.enable();
 
-  session.protocol.Network.onRequestWillBeSent(event => {
-    testRunner.log(`request will be sent ${event.params.request.url}`);
-  });
-  session.protocol.Network.onResponseReceived(event => {
-    testRunner.log(`response received ${event.params.response.url}`);
-  });
-
   await dp.Network.setRequestInterception({patterns: [
     {urlPattern: '*', interceptionStage: 'Request'},
     {urlPattern: '*', interceptionStage: 'HeadersReceived'}
@@ -22,7 +15,11 @@
 
   session.evaluate(`fetch('${testRunner.url('../network/resources/simple-iframe.html')}')`);
 
-  const intercepted1 = (await dp.Network.onceRequestIntercepted()).params;
+  const requestInterceptedPromise = dp.Network.onceRequestIntercepted();
+  const requestSent = (await session.protocol.Network.onceRequestWillBeSent()).params.request;
+  testRunner.log(`request will be sent: ${requestSent.url}`);
+
+  const intercepted1 = (await requestInterceptedPromise).params;
   testRunner.log(`intercepted request: ${intercepted1.request.url}`);
 
   dp.Network.continueInterceptedRequest({interceptionId: intercepted1.interceptionId});
@@ -31,6 +28,8 @@
   testRunner.log(`intercepted response: ${intercepted2.request.url} ${intercepted2.responseStatusCode}`);
   dp.Network.continueInterceptedRequest({interceptionId: intercepted2.interceptionId});
 
+  const responseReceived = (await session.protocol.Network.onceResponseReceived()).params.response;
+  testRunner.log(`response received ${responseReceived.url}`);
   await dp.Network.onceLoadingFinished();
   testRunner.completeTest();
 })

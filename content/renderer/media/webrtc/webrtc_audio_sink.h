@@ -40,7 +40,8 @@ class CONTENT_EXPORT WebRtcAudioSink : public MediaStreamAudioSink {
   WebRtcAudioSink(
       const std::string& label,
       scoped_refptr<webrtc::AudioSourceInterface> track_source,
-      scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
   ~WebRtcAudioSink() override;
 
@@ -72,7 +73,8 @@ class CONTENT_EXPORT WebRtcAudioSink : public MediaStreamAudioSink {
    public:
     Adapter(const std::string& label,
             scoped_refptr<webrtc::AudioSourceInterface> source,
-            scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner);
+            scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
+            scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
     base::SingleThreadTaskRunner* signaling_task_runner() const {
       return signaling_task_runner_.get();

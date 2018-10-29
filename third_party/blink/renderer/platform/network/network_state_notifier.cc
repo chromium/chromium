@@ -301,7 +301,7 @@ void NetworkStateNotifier::NotifyObserversOnTaskRunner(
 
   observer_list->iterating = true;
 
-  for (size_t i = 0; i < observer_list->observers.size(); ++i) {
+  for (wtf_size_t i = 0; i < observer_list->observers.size(); ++i) {
     // Observers removed during iteration are zeroed out, skip them.
     if (!observer_list->observers[i])
       continue;
@@ -370,7 +370,7 @@ void NetworkStateNotifier::RemoveObserverFromMap(
     return;
 
   Vector<NetworkStateObserver*>& observers = observer_list->observers;
-  size_t index = observers.Find(observer);
+  wtf_size_t index = observers.Find(observer);
   if (index != kNotFound) {
     observers[index] = 0;
     observer_list->zeroed_observers.push_back(index);
@@ -398,7 +398,7 @@ void NetworkStateNotifier::CollectZeroedObservers(
 
   // If any observers were removed during the iteration they will have
   // 0 values, clean them up.
-  for (size_t i = 0; i < list->zeroed_observers.size(); ++i)
+  for (wtf_size_t i = 0; i < list->zeroed_observers.size(); ++i)
     list->observers.EraseAt(list->zeroed_observers[i]);
 
   list->zeroed_observers.clear();

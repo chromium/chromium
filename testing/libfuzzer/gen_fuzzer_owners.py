@@ -32,6 +32,13 @@ def GetAuthorFromGitBlame(blame_output):
   return None
 
 
+def GetGitCommand():
+  """Returns a git command that does not need to be executed using shell=True.
+  On non-Windows platforms: 'git'. On Windows: 'git.bat'.
+  """
+  return 'git.bat' if sys.platform == 'win32' else 'git'
+
+
 def GetOwnersIfThirdParty(source):
   """Return owners using OWNERS file if in third_party."""
   match_index = source.find(THIRD_PARTY_SEARCH_STRING)
@@ -59,10 +66,11 @@ def GetOwnersForFuzzer(sources):
     return
 
   for source in sources:
-    if not os.path.exists(source):
+    full_source_path = os.path.join(CHROMIUM_SRC_DIR, source)
+    if not os.path.exists(full_source_path):
       continue
 
-    with open(source, 'r') as source_file_handle:
+    with open(full_source_path, 'r') as source_file_handle:
       source_content = source_file_handle.read()
 
     if SubStringExistsIn(
@@ -71,19 +79,21 @@ def GetOwnersForFuzzer(sources):
       # Found the fuzzer source (and not dependency of fuzzer).
 
       git_dir = os.path.join(CHROMIUM_SRC_DIR, '.git')
+      git_command = GetGitCommand()
       is_git_file = bool(subprocess.check_output(
-          ['git', '--git-dir', git_dir, 'ls-files', source]))
+          [git_command, '--git-dir', git_dir, 'ls-files', source],
+          cwd=CHROMIUM_SRC_DIR))
       if not is_git_file:
         # File is not in working tree. Return owners for third_party.
-        return GetOwnersIfThirdParty(source)
+        return GetOwnersIfThirdParty(full_source_path)
 
       # git log --follow and --reverse don't work together and using just
       # --follow is too slow. Make a best estimate with an assumption that
       # the original author has authored line 1 which is usually the
       # copyright line and does not change even with file rename / move.
       blame_output = subprocess.check_output(
-          ['git', '--git-dir', git_dir,
-           'blame', '--porcelain', '-L1,1', source])
+          [git_command, '--git-dir', git_dir, 'blame', '--porcelain', '-L1,1',
+           source], cwd=CHROMIUM_SRC_DIR)
       return GetAuthorFromGitBlame(blame_output)
 
   return None
@@ -94,7 +104,8 @@ def FindGroupsAndDepsInDeps(deps_list, build_dir):
   groups = []
   deps_for_groups = {}
   for deps in deps_list:
-    output = subprocess.check_output([GNPath(), 'desc', build_dir, deps])
+    output = subprocess.check_output(
+        [GNPath(), 'desc', '--fail-on-unused-args', build_dir, deps])
     needle = 'Type: '
     for line in output.splitlines():
       if needle and not line.startswith(needle):
@@ -154,7 +165,7 @@ def GetSourcesFromDeps(deps_list, build_dir):
   all_sources = []
   for deps in full_deps_list:
     output = subprocess.check_output(
-        [GNPath(), 'desc', build_dir, deps, 'sources'])
+        [GNPath(), 'desc', '--fail-on-unused-args', build_dir, deps, 'sources'])
     for source in output.splitlines():
       if source.startswith('//'):
         source = source[2:]

@@ -12,6 +12,7 @@
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
+#include "base/timer/mock_timer.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/services/device_sync/device_sync_impl.h"
 #include "chromeos/services/device_sync/device_sync_service.h"
@@ -282,7 +283,7 @@ class FakeRemoteDeviceProviderFactory
       const std::string& user_private_key) override {
     EXPECT_EQ(fake_cryptauth_device_manager_factory_->instance(),
               device_manager);
-    EXPECT_EQ(identity_manager_->GetPrimaryAccountInfo().account_id, user_id);
+    EXPECT_EQ(identity_manager_->GetPrimaryAccountId(), user_id);
     EXPECT_EQ(fake_cryptauth_enrollment_manager_factory_->instance()
                   ->GetUserPrivateKey(),
               user_private_key);
@@ -384,11 +385,14 @@ class DeviceSyncServiceTest : public testing::Test {
 
   class FakeDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
    public:
-    FakeDeviceSyncImplFactory(std::unique_ptr<FakePrefConnectionDelegate>
-                                  fake_pref_connection_delegate,
-                              base::SimpleTestClock* simple_test_clock)
+    FakeDeviceSyncImplFactory(
+        std::unique_ptr<FakePrefConnectionDelegate>
+            fake_pref_connection_delegate,
+        std::unique_ptr<base::MockOneShotTimer> mock_timer,
+        base::SimpleTestClock* simple_test_clock)
         : fake_pref_connection_delegate_(
               std::move(fake_pref_connection_delegate)),
+          mock_timer_(std::move(mock_timer)),
           simple_test_clock_(simple_test_clock) {}
 
     ~FakeDeviceSyncImplFactory() override = default;
@@ -399,16 +403,17 @@ class DeviceSyncServiceTest : public testing::Test {
         gcm::GCMDriver* gcm_driver,
         service_manager::Connector* connector,
         const cryptauth::GcmDeviceInfoProvider* gcm_device_info_provider,
-        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-        override {
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+        std::unique_ptr<base::OneShotTimer> timer) override {
       return base::WrapUnique(new DeviceSyncImpl(
           identity_manager, gcm_driver, connector, gcm_device_info_provider,
           std::move(url_loader_factory), simple_test_clock_,
-          std::move(fake_pref_connection_delegate_)));
+          std::move(fake_pref_connection_delegate_), std::move(mock_timer_)));
     }
 
    private:
     std::unique_ptr<FakePrefConnectionDelegate> fake_pref_connection_delegate_;
+    std::unique_ptr<base::MockOneShotTimer> mock_timer_;
     base::SimpleTestClock* simple_test_clock_;
   };
 
@@ -474,9 +479,13 @@ class DeviceSyncServiceTest : public testing::Test {
             std::move(test_pref_service));
     fake_pref_connection_delegate_ = fake_pref_connection_delegate.get();
 
+    auto mock_timer = std::make_unique<base::MockOneShotTimer>();
+    mock_timer_ = mock_timer.get();
+
     fake_device_sync_impl_factory_ =
         std::make_unique<FakeDeviceSyncImplFactory>(
-            std::move(fake_pref_connection_delegate), simple_test_clock_.get());
+            std::move(fake_pref_connection_delegate), std::move(mock_timer),
+            simple_test_clock_.get());
     DeviceSyncImpl::Factory::SetInstanceForTesting(
         fake_device_sync_impl_factory_.get());
 
@@ -640,6 +649,8 @@ class DeviceSyncServiceTest : public testing::Test {
   FakePrefConnectionDelegate* fake_pref_connection_delegate() {
     return fake_pref_connection_delegate_;
   }
+
+  base::MockOneShotTimer* mock_timer() { return mock_timer_; }
 
   cryptauth::FakeCryptAuthEnrollmentManager*
   fake_cryptauth_enrollment_manager() {
@@ -913,6 +924,7 @@ class DeviceSyncServiceTest : public testing::Test {
 
   TestingPrefServiceSimple* test_pref_service_;
   FakePrefConnectionDelegate* fake_pref_connection_delegate_;
+  base::MockOneShotTimer* mock_timer_;
   std::unique_ptr<base::SimpleTestClock> simple_test_clock_;
   std::unique_ptr<FakeDeviceSyncImplFactory> fake_device_sync_impl_factory_;
   std::unique_ptr<FakeCryptAuthGCMManagerFactory>
@@ -1101,15 +1113,23 @@ TEST_F(DeviceSyncServiceTest, SyncedDeviceUpdates) {
   EXPECT_EQ(updated_device_list, CallGetSyncedDevices());
 }
 
-TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState) {
+TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState_Success) {
   InitializeServiceSuccessfully();
 
   const auto& set_software_calls =
       fake_software_feature_manager()->set_software_feature_state_calls();
   EXPECT_EQ(0u, set_software_calls.size());
 
-  // Enable BETTER_TOGETHER_HOST for device 0.
-  CallSetSoftwareFeatureState(test_devices()[0].public_key,
+  // Set the BETTER_TOGETHER_HOST field to "supported".
+  cryptauth::RemoteDevice device_for_test = test_devices()[0];
+  device_for_test
+      .software_features[cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST] =
+      cryptauth::SoftwareFeatureState::kSupported;
+  EXPECT_TRUE(CallForceSyncNow());
+  SimulateSync(true /* success */, {device_for_test});
+
+  // Enable BETTER_TOGETHER_HOST for the device.
+  CallSetSoftwareFeatureState(device_for_test.public_key,
                               cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST,
                               true /* enabled */, true /* is_exclusive */);
   EXPECT_EQ(1u, set_software_calls.size());
@@ -1123,29 +1143,98 @@ TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState) {
 
   // Now, invoke the success callback.
   set_software_calls[0]->success_callback.Run();
+
+  // The callback still has not yet been invoked, since a device sync has not
+  // confirmed the feature state change yet.
+  EXPECT_FALSE(GetLastSetSoftwareFeatureStateResponseAndReset());
+
+  // Simulate a sync which includes the device with the correct "enabled" state.
+  device_for_test
+      .software_features[cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST] =
+      cryptauth::SoftwareFeatureState::kEnabled;
   base::RunLoop().RunUntilIdle();
+  SimulateSync(true /* success */, {device_for_test});
+  base::RunLoop().RunUntilIdle();
+
   auto last_response = GetLastSetSoftwareFeatureStateResponseAndReset();
   EXPECT_TRUE(last_response);
   EXPECT_EQ(device_sync::mojom::NetworkRequestResult::kSuccess, *last_response);
+}
 
-  // Disable BETTER_TOGETHER_HOST for device 0.
-  CallSetSoftwareFeatureState(test_devices()[0].public_key,
+TEST_F(DeviceSyncServiceTest,
+       SetSoftwareFeatureState_RequestSucceedsButDoesNotTakeEffect) {
+  InitializeServiceSuccessfully();
+
+  const auto& set_software_calls =
+      fake_software_feature_manager()->set_software_feature_state_calls();
+  EXPECT_EQ(0u, set_software_calls.size());
+
+  // Set the BETTER_TOGETHER_HOST field to "supported".
+  cryptauth::RemoteDevice device_for_test = test_devices()[0];
+  device_for_test
+      .software_features[cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST] =
+      cryptauth::SoftwareFeatureState::kSupported;
+  EXPECT_TRUE(CallForceSyncNow());
+  SimulateSync(true /* success */, {device_for_test});
+
+  // Enable BETTER_TOGETHER_HOST for the device.
+  CallSetSoftwareFeatureState(device_for_test.public_key,
                               cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST,
-                              false /* enabled */, false /* is_exclusive */);
-  EXPECT_EQ(2u, set_software_calls.size());
+                              true /* enabled */, true /* is_exclusive */);
+  EXPECT_EQ(1u, set_software_calls.size());
   EXPECT_EQ(cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST,
-            set_software_calls[1]->software_feature);
-  EXPECT_FALSE(set_software_calls[1]->enabled);
-  EXPECT_FALSE(set_software_calls[1]->is_exclusive);
+            set_software_calls[0]->software_feature);
+  EXPECT_TRUE(set_software_calls[0]->enabled);
+  EXPECT_TRUE(set_software_calls[0]->is_exclusive);
+
+  // The callback has not yet been invoked.
+  EXPECT_FALSE(GetLastSetSoftwareFeatureStateResponseAndReset());
+
+  // Fire the timer, simulating that the updated device metadata did not arrive
+  // in time.
+  mock_timer()->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  auto last_response = GetLastSetSoftwareFeatureStateResponseAndReset();
+  EXPECT_TRUE(last_response);
+  EXPECT_EQ(device_sync::mojom::NetworkRequestResult::
+                kRequestSucceededButUnexpectedResult,
+            *last_response);
+}
+
+TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState_Error) {
+  InitializeServiceSuccessfully();
+
+  const auto& set_software_calls =
+      fake_software_feature_manager()->set_software_feature_state_calls();
+  EXPECT_EQ(0u, set_software_calls.size());
+
+  // Set the BETTER_TOGETHER_HOST field to "supported".
+  cryptauth::RemoteDevice device_for_test = test_devices()[0];
+  device_for_test
+      .software_features[cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST] =
+      cryptauth::SoftwareFeatureState::kSupported;
+  EXPECT_TRUE(CallForceSyncNow());
+  SimulateSync(true /* success */, {device_for_test});
+
+  // Enable BETTER_TOGETHER_HOST for the device.
+  CallSetSoftwareFeatureState(device_for_test.public_key,
+                              cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST,
+                              true /* enabled */, true /* is_exclusive */);
+  ASSERT_EQ(1u, set_software_calls.size());
+  EXPECT_EQ(cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST,
+            set_software_calls[0]->software_feature);
+  EXPECT_TRUE(set_software_calls[0]->enabled);
+  EXPECT_TRUE(set_software_calls[0]->is_exclusive);
 
   // The callback has not yet been invoked.
   EXPECT_FALSE(GetLastSetSoftwareFeatureStateResponseAndReset());
 
   // Now, invoke the error callback.
-  set_software_calls[1]->error_callback.Run(
+  set_software_calls[0]->error_callback.Run(
       cryptauth::NetworkRequestError::kOffline);
   base::RunLoop().RunUntilIdle();
-  last_response = GetLastSetSoftwareFeatureStateResponseAndReset();
+  auto last_response = GetLastSetSoftwareFeatureStateResponseAndReset();
   EXPECT_TRUE(last_response);
   EXPECT_EQ(mojom::NetworkRequestResult::kOffline, *last_response);
 }

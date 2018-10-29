@@ -9,21 +9,18 @@
 #import "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/favicon/core/large_icon_service.h"
 #include "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #include "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_collection_view_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_sink.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_util.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_utils.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/favicon/favicon_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -56,13 +53,6 @@ const CGFloat kFaviconMinWidthHeight = 16;
 // The ListItem factory passed on initialization.
 @property(nonatomic, strong) ReadingListListItemFactory* itemFactory;
 
-// Lazily instantiated.
-@property(nonatomic, strong, readonly)
-    FaviconAttributesProvider* attributesProvider;
-
-@property(nonatomic, assign, readonly)
-    favicon::LargeIconService* largeIconService;
-
 // Favicon Service used for UIRefresh Collections.
 @property(nonatomic, assign, readonly) FaviconLoader* faviconLoader;
 
@@ -74,27 +64,9 @@ const CGFloat kFaviconMinWidthHeight = 16;
 @synthesize model = _model;
 @synthesize shouldMonitorModel = _shouldMonitorModel;
 @synthesize itemFactory = _itemFactory;
-@synthesize attributesProvider = _attributesProvider;
-@synthesize largeIconService = _largeIconService;
 @synthesize faviconLoader = _faviconLoader;
 
 #pragma mark - Public
-
-- (instancetype)initWithModel:(ReadingListModel*)model
-             largeIconService:(favicon::LargeIconService*)largeIconService
-              listItemFactory:(ReadingListListItemFactory*)itemFactory {
-  self = [super init];
-  if (self) {
-    _model = model;
-    _largeIconService = largeIconService;
-    _itemFactory = itemFactory;
-    _shouldMonitorModel = YES;
-
-    // This triggers the callback method. Should be created last.
-    _modelBridge.reset(new ReadingListModelBridge(self, model));
-  }
-  return self;
-}
 
 - (instancetype)initWithModel:(ReadingListModel*)model
                 faviconLoader:(nonnull FaviconLoader*)faviconLoader
@@ -196,17 +168,11 @@ const CGFloat kFaviconMinWidthHeight = 16;
 
         [strongSelf.dataSink itemHasChangedAfterDelay:strongItem];
       };
-  if (self.faviconLoader) {
     FaviconAttributes* cachedAttributes = self.faviconLoader->FaviconForUrl(
         item.faviconPageURL, kFaviconMinWidthHeight, kFaviconWidthHeight,
         /*fallback_to_google_server=*/false, completionBlock);
     DCHECK(cachedAttributes);
     return completionBlock(cachedAttributes);
-  } else {
-    DCHECK(self.attributesProvider);
-    [self.attributesProvider fetchFaviconAttributesForURL:item.faviconPageURL
-                                               completion:completionBlock];
-  }
 }
 
 - (void)beginBatchUpdates {
@@ -220,21 +186,6 @@ const CGFloat kFaviconMinWidthHeight = 16;
 }
 
 #pragma mark - Properties
-
-- (FaviconAttributesProvider*)attributesProvider {
-  if (_attributesProvider) {
-    return _attributesProvider;
-  }
-  DCHECK(self.largeIconService);
-  // Accept any favicon even the smallest ones (16x16) as it is better than the
-  // fallback icon.
-  // Pass 1 as minimum size to avoid empty favicons.
-  _attributesProvider = [[FaviconAttributesProvider alloc]
-      initWithFaviconSize:kFaviconPreferredSize
-           minFaviconSize:1
-         largeIconService:self.largeIconService];
-  return _attributesProvider;
-}
 
 - (void)setDataSink:(id<ReadingListDataSink>)dataSink {
   _dataSink = dataSink;

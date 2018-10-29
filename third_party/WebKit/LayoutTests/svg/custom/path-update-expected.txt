@@ -1,6 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGPath {path} at (5,160) size 100x100 [fill={[type=SOLID] [color=#FF0000]}] [data="M 5 260 C 40 260 60 175 55 160 c -5 15 15 100 50 100 Z"]
-    LayoutSVGRect {rect} at (1,1) size 478x358 [stroke={[type=SOLID] [color=#000000]}] [x=1.00] [y=1.00] [width=478.00] [height=358.00]

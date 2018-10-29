@@ -2,7 +2,6 @@ Tests the serialization of XML namespaces on attributes, as reported in bug 2480
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS doc.documentElement.getAttributeNS(null, "attr1") is "value1"
 PASS doc.documentElement.getAttributeNS("http://www.example.com", "foo") is "bar"
 PASS doc.documentElement.getAttributeNS("http://www.example.com", "foo2") is "bar2"

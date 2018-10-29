@@ -473,11 +473,6 @@ class ServiceWorkerMetrics {
 
   static void RecordRuntime(base::TimeDelta time);
 
-  // Records when an installed service worker imports a script that was not
-  // previously installed.
-  // TODO(falken): Remove after this is deprecated. https://crbug.com/737044
-  static void RecordUninstalledScriptImport(const GURL& url);
-
   // Records the result of starting service worker for a navigation hint.
   static void RecordStartServiceWorkerForNavigationHintResult(
       StartServiceWorkerForNavigationHintResult result);

@@ -7,7 +7,9 @@
 #include <stddef.h>
 
 #include "base/files/file_util.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/test/layouttest_support.h"
@@ -68,7 +70,8 @@ base::TaskRunner* LayoutTestMessageFilter::OverrideTaskRunnerForMessage(
     case LayoutTestHostMsg_InitiateCaptureDump::ID:
     case LayoutTestHostMsg_InspectSecondaryWindow::ID:
     case LayoutTestHostMsg_DeleteAllCookiesForNetworkService::ID:
-      return BrowserThread::GetTaskRunnerForThread(BrowserThread::UI).get();
+      return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI})
+          .get();
   }
   return nullptr;
 }
@@ -217,6 +220,8 @@ void LayoutTestMessageFilter::OnSetPermission(
   } else if (name == "accelerometer" || name == "gyroscope" ||
              name == "magnetometer" || name == "ambient-light-sensor") {
     type = PermissionType::SENSORS;
+  } else if (name == "background-fetch") {
+    type = PermissionType::BACKGROUND_FETCH;
   } else {
     NOTREACHED();
     type = PermissionType::NOTIFICATIONS;

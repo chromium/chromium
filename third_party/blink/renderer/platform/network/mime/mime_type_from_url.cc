@@ -34,7 +34,7 @@ namespace blink {
 
 String MimeTypeFromDataURL(const String& url) {
   DCHECK(ProtocolIs(url, "data"));
-  size_t index = url.find(';');
+  wtf_size_t index = url.find(';');
   if (index == kNotFound)
     index = url.find(',');
   if (index != kNotFound) {

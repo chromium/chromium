@@ -17,7 +17,7 @@ class AccessTokenFetcherAdaptor : public ActiveAccountAccessTokenFetcher {
   AccessTokenFetcherAdaptor(const std::string& active_account_id,
                             const std::string& oauth_consumer_name,
                             identity::IdentityManager* identity_manager,
-                            const OAuth2TokenService::ScopeSet& scopes,
+                            const identity::ScopeSet& scopes,
                             ActiveAccountAccessTokenCallback callback);
   ~AccessTokenFetcherAdaptor() override = default;
 
@@ -37,7 +37,7 @@ AccessTokenFetcherAdaptor::AccessTokenFetcherAdaptor(
     const std::string& active_account_id,
     const std::string& oauth_consumer_name,
     identity::IdentityManager* identity_manager,
-    const OAuth2TokenService::ScopeSet& scopes,
+    const identity::ScopeSet& scopes,
     ActiveAccountAccessTokenCallback callback)
     : callback_(std::move(callback)) {
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
@@ -95,7 +95,7 @@ void ProfileIdentityProvider::SetActiveAccountId(
 std::unique_ptr<ActiveAccountAccessTokenFetcher>
 ProfileIdentityProvider::FetchAccessToken(
     const std::string& oauth_consumer_name,
-    const OAuth2TokenService::ScopeSet& scopes,
+    const identity::ScopeSet& scopes,
     ActiveAccountAccessTokenCallback callback) {
   return std::make_unique<AccessTokenFetcherAdaptor>(
       GetActiveAccountId(), oauth_consumer_name, identity_manager_, scopes,
@@ -103,7 +103,7 @@ ProfileIdentityProvider::FetchAccessToken(
 }
 
 void ProfileIdentityProvider::InvalidateAccessToken(
-    const OAuth2TokenService::ScopeSet& scopes,
+    const identity::ScopeSet& scopes,
     const std::string& access_token) {
   identity_manager_->RemoveAccessTokenFromCache(GetActiveAccountId(), scopes,
                                                 access_token);
@@ -116,8 +116,8 @@ void ProfileIdentityProvider::OnRefreshTokenUpdatedForAccount(
 }
 
 void ProfileIdentityProvider::OnRefreshTokenRemovedForAccount(
-    const AccountInfo& account_info) {
-  ProcessRefreshTokenRemovalForAccount(account_info.account_id);
+    const std::string& account_id) {
+  ProcessRefreshTokenRemovalForAccount(account_id);
 }
 
 }  // namespace invalidation

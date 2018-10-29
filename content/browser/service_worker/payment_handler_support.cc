@@ -4,9 +4,11 @@
 
 #include "content/browser/service_worker/payment_handler_support.h"
 
+#include "base/task/post_task.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -47,16 +49,16 @@ class ShowPaymentHandlerWindowReplier {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (response_callback_) {
       DCHECK(fallback_);
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(std::move(fallback_), std::move(response_callback_)));
     }
   }
 
   void Run(bool success, int render_process_id, int render_frame_id) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(std::move(callback_), std::move(response_callback_),
                        success, render_process_id, render_frame_id));
   }
@@ -97,8 +99,8 @@ void PaymentHandlerSupport::ShowPaymentHandlerWindow(
         response_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(context);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ShowPaymentHandlerWindowOnUI,
                      base::WrapRefCounted(context->wrapper()), url,
                      std::move(callback), std::move(fallback),

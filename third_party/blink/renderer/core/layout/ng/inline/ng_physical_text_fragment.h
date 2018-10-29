@@ -16,6 +16,7 @@
 namespace blink {
 
 struct NGPhysicalOffsetRect;
+class NGTextFragmentBuilder;
 
 enum class AdjustMidCluster;
 
@@ -57,17 +58,7 @@ class CORE_EXPORT NGPhysicalTextFragment final : public NGPhysicalFragment {
     // enough to store.
   };
 
-  NGPhysicalTextFragment(LayoutObject* layout_object,
-                         const ComputedStyle& style,
-                         NGStyleVariant style_variant,
-                         NGTextType text_type,
-                         const String& text,
-                         unsigned start_offset,
-                         unsigned end_offset,
-                         NGPhysicalSize size,
-                         NGLineOrientation line_orientation,
-                         NGTextEndEffect end_effect,
-                         scoped_refptr<const ShapeResult> shape_result);
+  NGPhysicalTextFragment(NGTextFragmentBuilder*);
 
   NGTextType TextType() const { return static_cast<NGTextType>(sub_type_); }
   // True if this is a generated text.
@@ -110,7 +101,7 @@ class CORE_EXPORT NGPhysicalTextFragment final : public NGPhysicalFragment {
 
   // The visual bounding box that includes glpyh bounding box and CSS
   // properties, in local coordinates.
-  NGPhysicalOffsetRect SelfInkOverflow() const;
+  NGPhysicalOffsetRect SelfInkOverflow() const { return self_ink_overflow_; }
 
   NGTextEndEffect EndEffect() const {
     return static_cast<NGTextEndEffect>(end_effect_);
@@ -146,11 +137,26 @@ class CORE_EXPORT NGPhysicalTextFragment final : public NGPhysicalFragment {
       unsigned end_offset) const;
 
  private:
+  // For use by TrimText only
+  NGPhysicalTextFragment(LayoutObject* layout_object,
+                         const ComputedStyle& style,
+                         NGStyleVariant style_variant,
+                         NGTextType text_type,
+                         const String& text,
+                         unsigned start_offset,
+                         unsigned end_offset,
+                         NGPhysicalSize size,
+                         NGLineOrientation line_orientation,
+                         NGTextEndEffect end_effect,
+                         scoped_refptr<const ShapeResult> shape_result);
+
   LayoutUnit InlinePositionForOffset(unsigned offset,
                                      LayoutUnit (*round)(float),
                                      AdjustMidCluster) const;
 
   NGPhysicalOffsetRect ConvertToLocal(const LayoutRect&) const;
+
+  NGPhysicalOffsetRect ComputeSelfInkOverflow() const;
 
   // The text of NGInlineNode; i.e., of a parent block. The text for this
   // fragment is a substring(start_offset_, end_offset_) of this string.
@@ -159,7 +165,7 @@ class CORE_EXPORT NGPhysicalTextFragment final : public NGPhysicalFragment {
   // Start and end offset of the parent block text.
   const unsigned start_offset_;
   const unsigned end_offset_;
-
+  NGPhysicalOffsetRect self_ink_overflow_;
   const scoped_refptr<const ShapeResult> shape_result_;
 
   const unsigned line_orientation_ : 2;  // NGLineOrientation

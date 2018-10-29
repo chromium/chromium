@@ -17,10 +17,12 @@
 #include "ash/shell.h"
 #include "ash/wm/default_window_resizer.h"
 #include "ash/wm/drag_window_resizer.h"
+#include "ash/wm/pip/pip_window_resizer.h"
 #include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "ash/wm/workspace/two_step_edge_cycler.h"
@@ -40,6 +42,9 @@
 #include "ui/wm/core/cursor_manager.h"
 
 namespace {
+
+constexpr double kMinHorizVelocityForWindowSwipe = 1100;
+constexpr double kMinVertVelocityForWindowMinimize = 1000;
 
 // Returns true if |window| can be dragged from the top of the screen in tablet
 // mode.
@@ -113,10 +118,15 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
   // refactor and eliminate chaining.
   std::unique_ptr<WindowResizer> window_resizer;
 
+  if (window_state->IsPip()) {
+    window_state->CreateDragDetails(point_in_parent, window_component, source);
+    window_resizer = std::make_unique<PipWindowResizer>(window_state);
+    return window_resizer;
+  }
+
   if (Shell::Get()
           ->tablet_mode_controller()
-          ->IsTabletModeWindowManagerEnabled() &&
-      !window_state->IsPip()) {
+          ->IsTabletModeWindowManagerEnabled()) {
     if (!CanDragInTabletMode(window, window_component))
       return nullptr;
 
@@ -128,7 +138,7 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
     return window_resizer;
   }
 
-  if (!window_state->IsNormalOrSnapped() && !window_state->IsPip())
+  if (!window_state->IsNormalOrSnapped())
     return nullptr;
 
   int bounds_change =
@@ -540,6 +550,63 @@ void WorkspaceWindowResizer::RevertDrag() {
   }
 }
 
+void WorkspaceWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
+  if (event->type() != ui::ET_SCROLL_FLING_START &&
+      event->type() != ui::ET_GESTURE_SWIPE) {
+    return;
+  }
+
+  if (event->type() == ui::ET_SCROLL_FLING_START) {
+    CompleteDrag();
+
+    if (details().bounds_change != WindowResizer::kBoundsChange_Repositions ||
+        !wm::GetWindowState(GetTarget())->IsNormalOrSnapped()) {
+      return;
+    }
+
+    if (event->details().velocity_y() > kMinVertVelocityForWindowMinimize) {
+      SetWindowStateTypeFromGesture(GetTarget(),
+                                    mojom::WindowStateType::MINIMIZED);
+    } else if (event->details().velocity_y() <
+               -kMinVertVelocityForWindowMinimize) {
+      SetWindowStateTypeFromGesture(GetTarget(),
+                                    mojom::WindowStateType::MAXIMIZED);
+    } else if (event->details().velocity_x() >
+               kMinHorizVelocityForWindowSwipe) {
+      SetWindowStateTypeFromGesture(GetTarget(),
+                                    mojom::WindowStateType::RIGHT_SNAPPED);
+    } else if (event->details().velocity_x() <
+               -kMinHorizVelocityForWindowSwipe) {
+      SetWindowStateTypeFromGesture(GetTarget(),
+                                    mojom::WindowStateType::LEFT_SNAPPED);
+    }
+  } else {
+    DCHECK_EQ(event->type(), ui::ET_GESTURE_SWIPE);
+    DCHECK_GT(event->details().touch_points(), 0);
+    if (event->details().touch_points() == 1)
+      return;
+    if (!wm::GetWindowState(GetTarget())->IsNormalOrSnapped())
+      return;
+
+    CompleteDrag();
+
+    if (event->details().swipe_down()) {
+      SetWindowStateTypeFromGesture(GetTarget(),
+                                    mojom::WindowStateType::MINIMIZED);
+    } else if (event->details().swipe_up()) {
+      SetWindowStateTypeFromGesture(GetTarget(),
+                                    mojom::WindowStateType::MAXIMIZED);
+    } else if (event->details().swipe_right()) {
+      SetWindowStateTypeFromGesture(GetTarget(),
+                                    mojom::WindowStateType::RIGHT_SNAPPED);
+    } else {
+      SetWindowStateTypeFromGesture(GetTarget(),
+                                    mojom::WindowStateType::LEFT_SNAPPED);
+    }
+  }
+  event->StopPropagation();
+}
+
 WorkspaceWindowResizer::WorkspaceWindowResizer(
     wm::WindowState* window_state,
     const std::vector<aura::Window*>& attached_windows)
@@ -589,6 +656,8 @@ WorkspaceWindowResizer::WorkspaceWindowResizer(
     total_available += std::max(min_size, initial_size) - min_size;
   }
   instance = this;
+
+  pre_drag_window_bounds_ = window_state->window()->bounds();
 
   window_state->OnDragStarted(details().window_component);
 }
@@ -1041,6 +1110,46 @@ bool WorkspaceWindowResizer::AreBoundsValidSnappedBounds(
     snapped_bounds.set_x(snapped_bounds.right() - bounds_in_parent.width());
   snapped_bounds.set_width(bounds_in_parent.width());
   return bounds_in_parent == snapped_bounds;
+}
+
+void WorkspaceWindowResizer::SetWindowStateTypeFromGesture(
+    aura::Window* window,
+    mojom::WindowStateType new_state_type) {
+  wm::WindowState* window_state = wm::GetWindowState(window);
+  // TODO(oshima): Move extra logic (set_unminimize_to_restore_bounds,
+  // SetRestoreBoundsInParent) that modifies the window state
+  // into WindowState.
+  switch (new_state_type) {
+    case mojom::WindowStateType::MINIMIZED:
+      if (window_state->CanMinimize()) {
+        window_state->Minimize();
+        window_state->set_unminimize_to_restore_bounds(true);
+        window_state->SetRestoreBoundsInParent(pre_drag_window_bounds_);
+      }
+      break;
+    case mojom::WindowStateType::MAXIMIZED:
+      if (window_state->CanMaximize()) {
+        window_state->SetRestoreBoundsInParent(pre_drag_window_bounds_);
+        window_state->Maximize();
+      }
+      break;
+    case mojom::WindowStateType::LEFT_SNAPPED:
+      if (window_state->CanSnap()) {
+        window_state->SetRestoreBoundsInParent(pre_drag_window_bounds_);
+        const wm::WMEvent event(wm::WM_EVENT_SNAP_LEFT);
+        window_state->OnWMEvent(&event);
+      }
+      break;
+    case mojom::WindowStateType::RIGHT_SNAPPED:
+      if (window_state->CanSnap()) {
+        window_state->SetRestoreBoundsInParent(pre_drag_window_bounds_);
+        const wm::WMEvent event(wm::WM_EVENT_SNAP_RIGHT);
+        window_state->OnWMEvent(&event);
+      }
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace ash

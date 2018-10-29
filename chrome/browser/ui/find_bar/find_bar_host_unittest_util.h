@@ -11,9 +11,6 @@ namespace chrome {
 
 #if defined(TOOLKIT_VIEWS)
 void DisableFindBarAnimationsDuringTesting(bool disable);
-#if defined(OS_MACOSX)
-void DisableFindBarCocoaAnimationsDuringTesting(bool disable);
-#endif
 #else
 static inline void DisableFindBarAnimationsDuringTesting(bool disable) {}
 #endif

@@ -157,6 +157,9 @@ BluetoothAdapterMac::~BluetoothAdapterMac() {
   // disconnect the gatt connection. To make sure they don't use the mac
   // adapter, they should be explicitly destroyed here.
   devices_.clear();
+  // Explicitly clear out delegates, which might outlive the Adapter.
+  [low_energy_peripheral_manager_ setDelegate:nil];
+  [low_energy_central_manager_ setDelegate:nil];
   // Set low_energy_central_manager_ to nil so no devices will try to use it
   // while being destroyed after this method. |devices_| is owned by
   // BluetoothAdapter.

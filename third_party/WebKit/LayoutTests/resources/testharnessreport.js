@@ -302,7 +302,7 @@
                     }
                 }
             }
-            testResults.push(resultLine(test));
+            testResults.push(resultLine(tests[i]));
         }
         return testResults.join('');
     }

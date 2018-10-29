@@ -57,7 +57,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
  private:
   struct TaskInfo;
 
-  static void DidStartWorkerForPatternOnIO(
+  static void DidStartWorkerForScopeOnIO(
       LazyContextTaskQueue::PendingTask task,
       const ExtensionId& extension_id,
       base::WeakPtr<ServiceWorkerTaskQueue> task_queue,
@@ -66,7 +66,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
       int thread_id);
   static void StartServiceWorkerOnIOToRunTask(
       base::WeakPtr<ServiceWorkerTaskQueue> task_queue_weak,
-      const GURL& pattern,
+      const GURL& scope,
       const ExtensionId& extension_id,
       content::ServiceWorkerContext* service_worker_context,
       LazyContextTaskQueue::PendingTask task);
@@ -78,11 +78,11 @@ class ServiceWorkerTaskQueue : public KeyedService,
   void DidUnregisterServiceWorker(const ExtensionId& extension_id,
                                   bool success);
 
-  void DidStartWorkerForPattern(LazyContextTaskQueue::PendingTask task,
-                                const ExtensionId& extension_id,
-                                int64_t version_id,
-                                int process_id,
-                                int thread_id);
+  void DidStartWorkerForScope(LazyContextTaskQueue::PendingTask task,
+                              const ExtensionId& extension_id,
+                              int64_t version_id,
+                              int process_id,
+                              int thread_id);
 
   // Set of extension ids that hasn't completed Service Worker registration.
   std::set<ExtensionId> pending_registrations_;

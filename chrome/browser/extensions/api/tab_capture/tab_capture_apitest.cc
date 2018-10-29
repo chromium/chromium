@@ -221,6 +221,9 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, OffscreenTabEndToEnd) {
 #if defined(OS_MACOSX)
 // Timeout on Mac. crbug.com/864250
 #define MAYBE_OffscreenTabEvilTests DISABLED_OffscreenTabEvilTests
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Flaky on Linux and ChromeOS. crbug.com/895120
+#define MAYBE_OffscreenTabEvilTests DISABLED_OffscreenTabEvilTests
 #else
 #define MAYBE_OffscreenTabEvilTests OffscreenTabEvilTests
 #endif

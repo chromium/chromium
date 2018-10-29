@@ -18,7 +18,7 @@ typedef struct {
 static void TestMediaQuery(MediaQuerySetTestCase test,
                            MediaQuerySet& query_set) {
   StringBuilder output;
-  size_t j = 0;
+  wtf_size_t j = 0;
   while (j < query_set.QueryVector().size()) {
     String query_text = query_set.QueryVector()[j]->CssText();
     output.Append(query_text);

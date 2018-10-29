@@ -123,6 +123,12 @@ void AddDataToPageloadMetrics(const DataReductionProxyData& request_data,
         protobuf_parser::CreateDurationFromTimeDelta(timing.parse_stop.value())
             .release());
   }
+  if (timing.page_end_time) {
+    request->set_allocated_page_end_time(
+        protobuf_parser::CreateDurationFromTimeDelta(
+            timing.page_end_time.value())
+            .release());
+  }
 
   request->set_effective_connection_type(
       protobuf_parser::ProtoEffectiveConnectionTypeFromEffectiveConnectionType(
@@ -130,11 +136,14 @@ void AddDataToPageloadMetrics(const DataReductionProxyData& request_data,
   request->set_connection_type(
       protobuf_parser::ProtoConnectionTypeFromConnectionType(
           request_data.connection_type()));
+  request->set_page_end_reason(timing.page_end_reason);
   request->set_compressed_page_size_bytes(timing.network_bytes);
   request->set_original_page_size_bytes(timing.original_network_bytes);
   request->set_total_page_size_bytes(timing.total_page_size_bytes);
   request->set_cached_fraction(timing.cached_fraction);
   request->set_renderer_memory_usage_kb(timing.renderer_memory_usage_kb);
+  request->set_touch_count(timing.touch_count);
+  request->set_scroll_count(timing.scroll_count);
 
   request->set_renderer_crash_type(crash_type);
 

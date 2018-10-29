@@ -213,16 +213,16 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
     AuthenticationFlowPerformer* strongSelf = weakSelf;
     if (!strongSelf)
       return;
+    [strongSelf alertControllerDidDisappear:weakAlert];
     [[strongSelf delegate]
         didChooseClearDataPolicy:SHOULD_CLEAR_DATA_CLEAR_DATA];
-    [strongSelf alertControllerDidDisappear:weakAlert];
   };
   ProceduralBlock cancelBlock = ^{
     AuthenticationFlowPerformer* strongSelf = weakSelf;
     if (!strongSelf)
       return;
-    [[strongSelf delegate] didChooseCancel];
     [strongSelf alertControllerDidDisappear:weakAlert];
+    [[strongSelf delegate] didChooseCancel];
   };
 
   [_alertCoordinator addItemWithTitle:cancelLabel
@@ -337,15 +337,15 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
     AuthenticationFlowPerformer* strongSelf = weakSelf;
     if (!strongSelf)
       return;
-    [[strongSelf delegate] didAcceptManagedConfirmation];
     [strongSelf alertControllerDidDisappear:weakAlert];
+    [[strongSelf delegate] didAcceptManagedConfirmation];
   };
   ProceduralBlock cancelBlock = ^{
     AuthenticationFlowPerformer* strongSelf = weakSelf;
     if (!strongSelf)
       return;
-    [[strongSelf delegate] didCancelManagedConfirmation];
     [strongSelf alertControllerDidDisappear:weakAlert];
+    [[strongSelf delegate] didCancelManagedConfirmation];
   };
 
   [_alertCoordinator addItemWithTitle:cancelLabel
@@ -368,9 +368,9 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
   __weak AuthenticationFlowPerformer* weakSelf = self;
   __weak AlertCoordinator* weakAlert = _alertCoordinator;
   ProceduralBlock dismissAction = ^{
+    [weakSelf alertControllerDidDisappear:weakAlert];
     if (callback)
       callback();
-    [weakSelf alertControllerDidDisappear:weakAlert];
   };
 
   NSString* okButtonLabel = l10n_util::GetNSString(IDS_OK);

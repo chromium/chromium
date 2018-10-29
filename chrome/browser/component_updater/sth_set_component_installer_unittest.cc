@@ -41,14 +41,15 @@ class StoringSTHObserver : public certificate_transparency::STHObserver {
 
 class STHSetComponentInstallerTest : public PlatformTest {
  public:
-  STHSetComponentInstallerTest() : network_service_(nullptr) {
+  STHSetComponentInstallerTest()
+      : network_service_(std::make_unique<network::NetworkService>(nullptr)) {
     AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
 
-    network_service_.sth_reporter()->RegisterObserver(&observer_);
+    network_service_->sth_reporter()->RegisterObserver(&observer_);
   }
 
   ~STHSetComponentInstallerTest() override {
-    network_service_.sth_reporter()->UnregisterObserver(&observer_);
+    network_service_->sth_reporter()->UnregisterObserver(&observer_);
   }
 
   void SetUp() override {
@@ -57,7 +58,16 @@ class STHSetComponentInstallerTest : public PlatformTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     policy_ = std::make_unique<STHSetComponentInstallerPolicy>();
-    policy_->SetNetworkServiceForTesting(&network_service_);
+    policy_->SetNetworkServiceForTesting(network_service_.get());
+  }
+
+  void SimulateCrash() {
+    network_service_->sth_reporter()->UnregisterObserver(&observer_);
+    observer_.sths.clear();
+    network_service_.reset();
+    network_service_ = std::make_unique<network::NetworkService>(nullptr);
+    network_service_->sth_reporter()->RegisterObserver(&observer_);
+    policy_->SetNetworkServiceForTesting(network_service_.get());
   }
 
   void WriteSTHToFile(const std::string& sth_json,
@@ -92,7 +102,7 @@ class STHSetComponentInstallerTest : public PlatformTest {
  protected:
   content::TestBrowserThreadBundle thread_bundle_;
 
-  network::NetworkService network_service_;
+  std::unique_ptr<network::NetworkService> network_service_;
   StoringSTHObserver observer_;
 
   base::ScopedTempDir temp_dir_;
@@ -158,6 +168,32 @@ TEST_F(STHSetComponentInstallerTest,
 
   LoadSTHs(manifest, sths_dir);
   EXPECT_EQ(0u, observer_.sths.size());
+}
+
+// Tests recovery after network process crashes.
+TEST_F(STHSetComponentInstallerTest, ReconfiguresAfterRestart) {
+  const base::DictionaryValue manifest;
+  const base::FilePath sths_dir(GetSTHsDir());
+  CreateSTHsDir(manifest, sths_dir);
+
+  const std::string good_sth_json = net::ct::GetSampleSTHAsJson();
+  const base::FilePath sth_file =
+      sths_dir.Append(FILE_PATH_LITERAL("616263.sth"));
+  WriteSTHToFile(good_sth_json, sth_file);
+
+  LoadSTHs(manifest, sths_dir);
+
+  const std::string log_id("abc");
+  ASSERT_TRUE(observer_.sths.find(log_id) != observer_.sths.end());
+  const net::ct::SignedTreeHead& sth(observer_.sths[log_id]);
+  EXPECT_EQ(21u, sth.tree_size);
+
+  // Simulate a Network Service crash
+  SimulateCrash();
+  STHSetComponentInstallerPolicy::ReconfigureAfterNetworkRestart();
+  thread_bundle_.RunUntilIdle();
+
+  ASSERT_TRUE(observer_.sths.find(log_id) != observer_.sths.end());
 }
 
 }  // namespace component_updater

@@ -33,11 +33,13 @@ class BubbleDialogDelegateView;
 
 // Represents an inbuilt (as opposed to an extension) page action icon that
 // shows a bubble when clicked.
-// TODO(ellyjones): Convert this to subclass Button.
 class PageActionIconView : public IconLabelBubbleView {
  public:
   class Delegate {
    public:
+    // Gets the color to use for the ink highlight.
+    virtual SkColor GetPageActionInkDropColor() const = 0;
+
     virtual content::WebContents* GetWebContentsForPageActionIconView() = 0;
   };
 
@@ -74,8 +76,6 @@ class PageActionIconView : public IconLabelBubbleView {
   // Returns true if a related bubble is showing.
   bool IsBubbleShowing() const override;
 
-  SkColor GetTextColor() const override;
-
   // Enables or disables the associated command.
   // Returns true if the command is enabled.
   bool SetCommandEnabled(bool enabled) const;
@@ -90,6 +90,7 @@ class PageActionIconView : public IconLabelBubbleView {
   virtual void OnPressed(bool activated) {}
 
   // views::IconLabelBubbleView:
+  SkColor GetTextColor() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool GetTooltipText(const gfx::Point& p,
                       base::string16* tooltip) const override;
@@ -107,8 +108,8 @@ class PageActionIconView : public IconLabelBubbleView {
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
-  SkColor GetInkDropBaseColor() const override;
   std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
+  SkColor GetInkDropBaseColor() const override;
 
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -120,8 +121,10 @@ class PageActionIconView : public IconLabelBubbleView {
   // Gets the given vector icon in the correct color and size based on |active|.
   virtual const gfx::VectorIcon& GetVectorIcon() const = 0;
 
-  // views::View:
+  // IconLabelBubbleView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void OnTouchUiChanged() override;
+  void UpdateBorder() override;
 
   // Updates the icon image after some state has changed.
   void UpdateIconImage();

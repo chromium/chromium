@@ -38,9 +38,7 @@ bool DoesEntryMatchURL(NavigationEntry* entry, const GURL& url) {
   if (entry->GetURL() == url)
     return true;
   const std::vector<GURL>& redirect_chain = entry->GetRedirectChain();
-  for (std::vector<GURL>::const_iterator it = redirect_chain.begin();
-       it != redirect_chain.end();
-       it++) {
+  for (auto it = redirect_chain.begin(); it != redirect_chain.end(); it++) {
     if (*it == url)
       return true;
   }

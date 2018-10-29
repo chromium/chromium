@@ -4,6 +4,7 @@
 
 #include "net/third_party/spdy/core/array_output_buffer.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace spdy {

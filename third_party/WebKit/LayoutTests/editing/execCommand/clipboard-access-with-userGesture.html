@@ -1,17 +1,23 @@
 <!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
 var copyEventSeen;
 var cutEventSeen;
 
 function runTest()
 {
-    if (window.testRunner)
-        testRunner.setJavaScriptCanAccessClipboard(false);
-    else
-        return;
-    clickButton("copy");
-    clickButton("cut");
+    test(() => {
+      assert_own_property(window, 'testRunner');
+      testRunner.setJavaScriptCanAccessClipboard(false);
+      clickButton("copy");
+    }, 'Copy');
+
+    test(() => {
+      assert_own_property(window, 'testRunner');
+      testRunner.setJavaScriptCanAccessClipboard(false);
+      clickButton("cut");
+    }, 'Cut');
 }
 
 function clickButton(id)
@@ -25,15 +31,15 @@ function clickButton(id)
 function onClickCopy()
 {
     copyEventSeen = false;
-    shouldBeTrue("document.execCommand('copy')");
-    shouldBeTrue("copyEventSeen");
+    assert_true(document.execCommand('copy'));
+    assert_true(copyEventSeen);
 }
 
 function onClickCut()
 {
     cutEventSeend = false;
-    shouldBeTrue("document.execCommand('cut')");
-    shouldBeTrue("cutEventSeen");
+    assert_true(document.execCommand('cut'));
+    assert_true(cutEventSeen);
 }
 
 function onCopy()
@@ -46,11 +52,13 @@ function onCut()
     cutEventSeen = true;
 }
 </script>
-<body onload="runTest()" oncopy="onCopy()" oncut="onCut()">
+<body oncopy="onCopy()" oncut="onCut()">
 <p>To manually test, click one of the buttons below. The result should be two 'PASS' events for either button.
 <div>
 <button id="copy" onclick="onClickCopy()">Copy</button>
 <button id="cut" onclick="onClickCut()">Cut</button>
 </div>
-<div id="console"></div>
+<script>
+runTest();
+</script>
 </body>

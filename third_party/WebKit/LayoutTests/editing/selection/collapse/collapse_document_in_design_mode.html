@@ -18,7 +18,7 @@ test(function() {
     assert_equals(selection.focusNode, document, 'DOM focusNode');
     assert_equals(selection.focusOffset, 0, 'DOM focusOffset');
 
-    assert_exists(window, 'internals');
+    assert_own_property(window, 'internals');
     assert_equals(internals.visibleSelectionAnchorNode, anchor, 'Canonicalized anchorNode');
     assert_equals(internals.visibleSelectionAnchorOffset, 0, 'Canonicalized anchorOffset');
     assert_equals(internals.visibleSelectionFocusNode, anchor, 'Canonicalized focusNode');

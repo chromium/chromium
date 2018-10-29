@@ -9,4 +9,5 @@ include_rules = [
   "+content/public/test",
   "+net",
   "+net/test",
+  "+third_party/zlib/google/compression_utils.h",
 ]

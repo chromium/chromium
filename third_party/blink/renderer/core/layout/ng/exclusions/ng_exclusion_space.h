@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_rect.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -31,7 +31,7 @@ class CORE_EXPORT NGExclusionSpaceInternal {
   NGExclusionSpaceInternal(const NGExclusionSpaceInternal&);
   NGExclusionSpaceInternal(NGExclusionSpaceInternal&&) noexcept;
   NGExclusionSpaceInternal& operator=(const NGExclusionSpaceInternal&);
-  NGExclusionSpaceInternal& operator=(NGExclusionSpaceInternal&&);
+  NGExclusionSpaceInternal& operator=(NGExclusionSpaceInternal&&) noexcept;
   ~NGExclusionSpaceInternal() {}
 
   void Add(scoped_refptr<const NGExclusion> exclusion);
@@ -168,7 +168,7 @@ class CORE_EXPORT NGExclusionSpaceInternal {
   // num_exclusions_ is how many exclusions *this* instance of an exclusion
   // space has, which may differ to the number of exclusions in the Vector.
   scoped_refptr<RefVector<scoped_refptr<const NGExclusion>>> exclusions_;
-  size_t num_exclusions_;
+  wtf_size_t num_exclusions_;
   LayoutUnit both_clear_offset_;
 
   // The derived geometry struct, is the data-structure which handles all of the
@@ -270,7 +270,7 @@ class CORE_EXPORT NGExclusionSpaceInternal {
 // The space is mutated simply by adding exclusions, and various information
 // can be queried based on the exclusions.
 class CORE_EXPORT NGExclusionSpace {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   NGExclusionSpace() = default;

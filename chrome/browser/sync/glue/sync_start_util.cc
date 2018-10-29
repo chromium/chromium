@@ -6,11 +6,13 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "components/browser_sync/profile_sync_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {
@@ -41,9 +43,8 @@ void StartSyncOnUIThread(const base::FilePath& profile,
 
 void StartSyncProxy(const base::FilePath& profile,
                     syncer::ModelType type) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::BindOnce(&StartSyncOnUIThread, profile, type));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(&StartSyncOnUIThread, profile, type));
 }
 
 }  // namespace

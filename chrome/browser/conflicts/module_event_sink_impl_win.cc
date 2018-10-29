@@ -134,7 +134,7 @@ void HandleModuleEvent(ModuleDatabase* module_database,
 
   // Forward this to the module database.
   module_database->OnModuleLoad(process_type, module_path, module_size,
-                                module_time_date_stamp, load_address);
+                                module_time_date_stamp);
 }
 
 }  // namespace

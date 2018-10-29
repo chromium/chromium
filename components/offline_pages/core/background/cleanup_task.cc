@@ -81,9 +81,8 @@ void CleanupTask::Prune(
                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CleanupTask::OnRequestsExpired(
-    std::unique_ptr<UpdateRequestsResult> result) {
-  for (const auto& request : result->updated_items) {
+void CleanupTask::OnRequestsExpired(UpdateRequestsResult result) {
+  for (const auto& request : result.updated_items) {
     // Ensure we have an expiration reason for this request.
     auto iter = expired_request_ids_and_reasons_.find(request.request_id());
     if (iter == expired_request_ids_and_reasons_.end()) {

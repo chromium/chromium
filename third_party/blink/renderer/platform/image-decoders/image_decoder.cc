@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
-#include "third_party/blink/renderer/platform/instrumentation/platform_instrumentation.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -156,9 +156,9 @@ ImageFrame* ImageDecoder::DecodeFrameBufferAtIndex(size_t index) {
     return nullptr;
   ImageFrame* frame = &frame_buffer_cache_[index];
   if (frame->GetStatus() != ImageFrame::kFrameComplete) {
-    PlatformInstrumentation::WillDecodeImage(FilenameExtension());
+    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "Decode Image",
+                 "imageType", FilenameExtension().Ascii());
     Decode(index);
-    PlatformInstrumentation::DidDecodeImage();
   }
 
   if (!has_histogrammed_color_space_) {

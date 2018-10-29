@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/dns/dns_client.h"
+#include "net/dns/dns_config.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/host_resolver_impl.h"
 #include "net/http/http_stream_factory_test_util.h"

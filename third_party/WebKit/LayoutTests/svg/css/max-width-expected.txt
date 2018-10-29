@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutSVGRoot {svg} at (0,0) size 100x400
-        LayoutSVGRect {rect} at (0,0) size 400x400 [fill={[type=SOLID] [color=#000000]}] [x=0.00] [y=0.00] [width=400.00] [height=400.00]
-      LayoutText {#text} at (0,0) size 0x0

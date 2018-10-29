@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">Không thể đọc khóa cá nhân.</translation>
 <translation id="6391538222494443604">Thư mục dữ liệu nhập phải tồn tại.</translation>
 <translation id="641087317769093025">Không thể giải nén tiện ích</translation>
+<translation id="6413453408918378296">Biểu tượng này không phải là '<ph name="ICON" />' hiển thị đầy đủ.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" đang yêu cầu quyền truy cập vào một hoặc nhiều thiết bị của bạn:</translation>
 <translation id="657064425229075395">Không thể tải tập lệnh nền '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> của <ph name="VENDOR_NAME" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>

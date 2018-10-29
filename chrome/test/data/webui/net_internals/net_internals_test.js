@@ -21,14 +21,6 @@ GEN('#include ' +
 
 var NetInternalsTest = (function() {
   /**
-   * A shorter poll interval is used for tests, since a few tests wait for
-   * polled values to change.
-   * @type {number}
-   * @const
-   */
-  var TESTING_POLL_INTERVAL_MS = 50;
-
-  /**
    * Private pointer to the currently active test framework.  Needed so static
    * functions can access some of the inner workings of the test framework.
    * @type {NetInternalsTest}
@@ -60,10 +52,6 @@ var NetInternalsTest = (function() {
 
       // Enforce accessibility auditing, but suppress some false positives.
       this.accessibilityIssuesAreErrors = true;
-      // False positive because a unicode character is used to draw a square.
-      // If it was actual text it'd be too low-contrast, but a square is fine.
-      this.accessibilityAuditConfig.ignoreSelectors(
-          'lowContrastElements', '#timeline-view-selection-ul label');
       // False positive because the background color highlights and then
       // fades out with a transition when there's an error.
       this.accessibilityAuditConfig.ignoreSelectors(
@@ -98,38 +86,8 @@ var NetInternalsTest = (function() {
       g_browser.receive = this.continueTest(
           WhenTestDone.EXPECT, BrowserBridge.prototype.receive.bind(g_browser));
 
-      g_browser.setPollInterval(TESTING_POLL_INTERVAL_MS);
-
       var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-
-      // If we've already received the constants, start the tests.
-      if (Constants) {
-        // Stat test asynchronously, to avoid running a nested test function.
-        window.setTimeout(runTest, 0);
-        return;
-      }
-
-      // Otherwise, wait until we do.
-      console.log('Received constants late.');
-
-      /**
-       * Observer that starts the tests once we've received the constants.
-       */
-      function ConstantsObserver() {
-        this.testStarted_ = false;
-      }
-
-      ConstantsObserver.prototype.onReceivedConstants = function() {
-        if (!this.testStarted_) {
-          this.testStarted_ = true;
-          // Stat test asynchronously, to avoid running a nested test function,
-          // and so we don't call any constants observers used by individual
-          // tests.
-          window.setTimeout(runTest, 0);
-        }
-      };
-
-      g_browser.addConstantsObserver(new ConstantsObserver());
+      window.setTimeout(runTest, 0);
     }
   };
 
@@ -295,22 +253,11 @@ var NetInternalsTest = (function() {
      * @type {object.<string, string>}
      */
     var hashToTabIdMap = {
-      capture: CaptureView.TAB_ID,
-      import: ImportView.TAB_ID,
-      proxy: ProxyView.TAB_ID,
       events: EventsView.TAB_ID,
-      timeline: TimelineView.TAB_ID,
+      proxy: ProxyView.TAB_ID,
       dns: DnsView.TAB_ID,
       sockets: SocketsView.TAB_ID,
-      http2: SpdyView.TAB_ID,
-      'alt-svc': AltSvcView.TAB_ID,
-      quic: QuicView.TAB_ID,
-      reporting: ReportingView.TAB_ID,
-      httpCache: HttpCacheView.TAB_ID,
-      modules: ModulesView.TAB_ID,
       hsts: DomainSecurityPolicyView.TAB_ID,
-      prerender: PrerenderView.TAB_ID,
-      bandwidth: BandwidthView.TAB_ID,
       chromeos: CrosView.TAB_ID
     };
 
@@ -601,133 +548,12 @@ var NetInternalsTest = (function() {
   };
 
   /**
-   * A Task that creates an incognito window and only completes once it has
-   * navigated to about:blank.  The waiting is required to avoid reentrancy
-   * issues, since the function to create the incognito browser also waits
-   * for the navigation to complete.  May not be called if there's already an
-   * incognito browser in existence.
-   * @extends {NetInternalsTest.Task}
-   * @constructor
-   */
-  NetInternalsTest.CreateIncognitoBrowserTask = function() {
-    NetInternalsTest.Task.call(this);
-  };
-
-  NetInternalsTest.CreateIncognitoBrowserTask.prototype = {
-    __proto__: NetInternalsTest.Task.prototype,
-
-    /**
-     * Tells the browser process to create an incognito browser, and sets
-     * up a callback to be called on completion.
-     */
-    start: function() {
-      // Reuse the BrowserBridge's callback mechanism, since it's already
-      // wrapped in our test harness.
-      assertEquals(
-          'undefined', typeof g_browser.onIncognitoBrowserCreatedForTest);
-      g_browser.onIncognitoBrowserCreatedForTest =
-          this.onIncognitoBrowserCreatedForTest.bind(this);
-
-      chrome.send('createIncognitoBrowser');
-    },
-
-    /**
-     * Deletes the callback function, and completes the task.
-     */
-    onIncognitoBrowserCreatedForTest: function() {
-      delete g_browser.onIncognitoBrowserCreatedForTest;
-      this.onTaskDone();
-    }
-  };
-
-  /**
-   * Returns a task that closes an incognito window created with the task
-   * above.  May only be called if there's an incognito window created by
-   * the above function that has yet to be closed.  Returns immediately.
-   * @return {Task} Task that closes incognito browser window.
-   */
-  NetInternalsTest.getCloseIncognitoBrowserTask = function() {
-    return new NetInternalsTest.CallFunctionTask(function() {
-      chrome.send('closeIncognitoBrowser');
-    });
-  };
-
-  /**
    * Returns true if a node does not have a 'display' property of 'none'.
    * @param {node}: node The node to check.
    */
   NetInternalsTest.isDisplayed = function(node) {
     var style = getComputedStyle(node);
     return style.getPropertyValue('display') != 'none';
-  };
-
-  /**
-   * Creates a new NetLog source.  Note that the id may conflict with events
-   * received from the browser.
-   * @param {int}: type The source type.
-   * @param {int}: id The source id.
-   * @constructor
-   */
-  NetInternalsTest.Source = function(type, id) {
-    assertNotEquals(getKeyWithValue(EventSourceType, type), '?');
-    assertGE(id, 0);
-    this.type = type;
-    this.id = id;
-  };
-
-  /**
-   * Creates a new NetLog event.
-   * @param {Source}: source The source associated with the event.
-   * @param {int}: type The event id.
-   * @param {int}: time When the event occurred.
-   * @param {int}: phase The event phase.
-   * @param {object}: params The event parameters.  May be null.
-   * @constructor
-   */
-  NetInternalsTest.Event = function(source, type, time, phase, params) {
-    assertNotEquals(getKeyWithValue(EventType, type), '?');
-    assertNotEquals(getKeyWithValue(EventPhase, phase), '?');
-
-    this.source = source;
-    this.phase = phase;
-    this.type = type;
-    this.time = '' + time;
-    this.phase = phase;
-    if (params)
-      this.params = params;
-  };
-
-  /**
-   * Creates a new NetLog begin event.  Parameters are the same as Event,
-   * except there's no |phase| argument.
-   * @see Event
-   */
-  NetInternalsTest.createBeginEvent = function(source, type, time, params) {
-    return new NetInternalsTest.Event(
-        source, type, time, EventPhase.PHASE_BEGIN, params);
-  };
-
-  /**
-   * Creates a new NetLog end event.  Parameters are the same as Event,
-   * except there's no |phase| argument.
-   * @see Event
-   */
-  NetInternalsTest.createEndEvent = function(source, type, time, params) {
-    return new NetInternalsTest.Event(
-        source, type, time, EventPhase.PHASE_END, params);
-  };
-
-  /**
-   * Creates a new NetLog end event matching the given begin event.
-   * @param {Event}: beginEvent The begin event.  Returned event will have the
-   *                 same source and type.
-   * @param {int}: time When the event occurred.
-   * @param {object}: params The event parameters.  May be null.
-   * @see Event
-   */
-  NetInternalsTest.createMatchingEndEvent = function(beginEvent, time, params) {
-    return NetInternalsTest.createEndEvent(
-        beginEvent.source, beginEvent.type, time, params);
   };
 
   /**

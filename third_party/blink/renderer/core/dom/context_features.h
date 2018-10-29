@@ -103,12 +103,12 @@ inline bool ContextFeatures::IsEnabled(Document* document,
 inline void ContextFeatures::UrlDidChange(Document* document) {
   // FIXME: The original code, commented out below, is obviously
   // wrong, but the seemingly correct fix of negating the test to
-  // the more logical 'if (!m_client)' crashes the renderer.
+  // the more logical 'if (!client_)' crashes the renderer.
   // See issue 294180
   //
-  // if (m_client)
-  //     return;
-  // m_client->urlDidChange(document);
+  // if (client_)
+  //   return;
+  // client_->UrlDidChange(document);
 }
 
 }  // namespace blink

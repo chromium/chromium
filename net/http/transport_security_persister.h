@@ -70,32 +70,23 @@ class NET_EXPORT TransportSecurityPersister
   // ImportantFileWriter::DataSerializer:
   //
   // Serializes |transport_security_state_| into |*output|. Returns true if
-  // all STS, PKP, and Expect_CT states were serialized correctly.
+  // all STS and Expect_CT states were serialized correctly.
   //
   // The serialization format is JSON; the JSON represents a dictionary of
   // host:DomainState pairs (host is a string). The DomainState contains
-  // the STS and PKP states and is represented as a dictionary containing
+  // the STS and Expect-CT states and is represented as a dictionary containing
   // the following keys and value types (not all keys will always be
   // present):
   //
   //     "sts_include_subdomains": true|false
-  //     "pkp_include_subdomains": true|false
   //     "created": double
   //     "expiry": double
-  //     "dynamic_spki_hashes_expiry": double
   //     "mode": "default"|"force-https"
   //             legacy value synonyms "strict" = "force-https"
   //                                   "pinning-only" = "default"
   //             legacy value "spdy-only" is unused and ignored
-  //     "static_spki_hashes": list of strings
-  //         legacy key synonym "preloaded_spki_hashes"
-  //     "bad_static_spki_hashes": list of strings
-  //         legacy key synonym "bad_preloaded_spki_hashes"
-  //     "dynamic_spki_hashes": list of strings
-  //     "dynamic_spki_hashes_expiry": double
   //     "report-uri": string
   //     "sts_observed": double
-  //     "pkp_observed": double
   //     "expect_ct": dictionary with keys:
   //         "expect_ct_expiry": double
   //         "expect_ct_observed": double

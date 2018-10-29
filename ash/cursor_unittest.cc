@@ -29,7 +29,7 @@ TEST_F(CursorTest, TopLevel) {
   ui::test::EventGenerator generator(window.get());
   generator.MoveMouseToInHost(50, 50);
   ASSERT_EQ(1U, GetTestWindowTreeClient()->input_events().size());
-  EXPECT_EQ(ui::EventType::ET_POINTER_MOVED,
+  EXPECT_EQ(ui::EventType::ET_MOUSE_MOVED,
             GetTestWindowTreeClient()->PopInputEvent().event->type());
 
   // Check that WindowTree actually sets the cursor.

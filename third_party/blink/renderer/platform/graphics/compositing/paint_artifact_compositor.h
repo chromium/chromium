@@ -35,6 +35,17 @@ class PaintArtifact;
 class SynthesizedClip;
 struct PaintChunk;
 
+class LayerListBuilder {
+ public:
+  void Add(scoped_refptr<cc::Layer>);
+  cc::LayerList Finalize();
+
+ private:
+  // The list becomes invalid once |Finalize| is called.
+  bool list_valid_ = true;
+  cc::LayerList list_;
+};
+
 // Responsible for managing compositing in terms of a PaintArtifact.
 //
 // Owns a subtree of the compositor layer tree, and updates it in response to
@@ -125,8 +136,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   PaintArtifactCompositor(
       base::RepeatingCallback<void(const gfx::ScrollOffset&,
                                    const cc::ElementId&)> scroll_callback);
-
-  void RemoveChildLayers();
 
   // Collects the PaintChunks into groups which will end up in the same
   // cc layer. This is the entry point of the layerization algorithm.

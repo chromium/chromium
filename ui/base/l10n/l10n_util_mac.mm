@@ -75,7 +75,7 @@ void OverrideLocaleWithCocoaLocale() {
   // strings resources vs ICU generated strings).  This also makes the Mac acts
   // like other Chrome platforms.
   NSArray* languageList = [base::mac::OuterBundle() preferredLocalizations];
-  NSString* firstLocale = [languageList objectAtIndex:0];
+  NSString* firstLocale = languageList[0];
   // Mac OS X uses "_" instead of "-", so swap to get a real locale value.
   std::string locale_value =
       [[firstLocale stringByReplacingOccurrencesOfString:@"_"

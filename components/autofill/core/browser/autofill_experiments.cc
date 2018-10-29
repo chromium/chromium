@@ -47,13 +47,15 @@ ForcedFontWeight GetFontWeightFromParam() {
 }  // namespace
 #endif  // defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 
-#if !defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 const base::Feature kAutofillDropdownLayoutExperiment{
     "AutofillDropdownLayout", base::FEATURE_DISABLED_BY_DEFAULT};
 const char kAutofillDropdownLayoutParameterName[] = "variant";
 const char kAutofillDropdownLayoutParameterLeadingIcon[] = "leading-icon";
 const char kAutofillDropdownLayoutParameterTrailingIcon[] = "trailing-icon";
-#endif  // !defined(OS_ANDROID)
+const char kAutofillDropdownLayoutParameterTwoLinesLeadingIcon[] =
+    "two-lines-leading-icon";
+#endif  // defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 
 #if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 const base::Feature kAutofillPrimaryInfoStyleExperiment{
@@ -73,11 +75,9 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
   }
 
   // Check if the upload to Google state is active.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsInteractionsOnAuthError) &&
-      syncer::GetUploadToGoogleState(sync_service,
+  if (syncer::GetUploadToGoogleState(sync_service,
                                      syncer::ModelType::AUTOFILL_WALLET_DATA) !=
-          syncer::UploadState::ACTIVE) {
+      syncer::UploadState::ACTIVE) {
     return false;
   }
 
@@ -194,9 +194,10 @@ ForcedFontWeight GetForcedFontWeight() {
 }
 #endif  // defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 
-#if !defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 ForcedPopupLayoutState GetForcedPopupLayoutState() {
-  if (!base::FeatureList::IsEnabled(kAutofillDropdownLayoutExperiment))
+  if (!base::FeatureList::IsEnabled(
+          autofill::kAutofillDropdownLayoutExperiment))
     return ForcedPopupLayoutState::kDefault;
 
   std::string param = base::GetFieldTrialParamValueByFeature(
@@ -206,12 +207,17 @@ ForcedPopupLayoutState GetForcedPopupLayoutState() {
     return ForcedPopupLayoutState::kLeadingIcon;
   } else if (param == kAutofillDropdownLayoutParameterTrailingIcon) {
     return ForcedPopupLayoutState::kTrailingIcon;
+  } else if (param ==
+             autofill::kAutofillDropdownLayoutParameterTwoLinesLeadingIcon) {
+    return ForcedPopupLayoutState::kTwoLinesLeadingIcon;
+  } else if (param.empty()) {
+    return ForcedPopupLayoutState::kDefault;
   }
 
   // Unknown parameter value.
   NOTREACHED();
   return ForcedPopupLayoutState::kDefault;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 
 }  // namespace autofill

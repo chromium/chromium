@@ -18,7 +18,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   double delay;
   String url;
   blink::ResourceResponse response;
-  size_t end;
+  wtf_size_t end;
   String report_url;
   String failure_reason;
   unsigned failure_position = 0;

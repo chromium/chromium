@@ -1,7 +1,1 @@
 CONSOLE ERROR: line 3: Error: <circle> attribute transform: Unexpected end of attribute. Expected ')', "translate(200,0".
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 200x200
-  LayoutSVGRoot {svg} at (0,0) size 200x200
-    LayoutSVGEllipse {circle} at (0,0) size 200x200 [fill={[type=SOLID] [color=#FF0000]}] [cx=100.00] [cy=100.00] [r=100.00]
-    LayoutSVGEllipse {circle} at (0,0) size 200x200 [fill={[type=SOLID] [color=#008000]}] [cx=100.00] [cy=100.00] [r=100.00]

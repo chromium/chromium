@@ -218,10 +218,12 @@ binding.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setHandleRequest(
-      'sharePathWithCrostini', function(entry, callback) {
-        const url = fileManagerPrivateNatives.GetEntryURL(entry);
-        fileManagerPrivateInternal.sharePathWithCrostini(
-            url, callback);
+      'sharePathsWithCrostini', function(entries, persist, callback) {
+        const urls = entries.map((entry) => {
+          return fileManagerPrivateNatives.GetEntryURL(entry);
+        });
+        fileManagerPrivateInternal.sharePathsWithCrostini(
+            urls, persist, callback);
       });
 
   apiFunctions.setHandleRequest(
@@ -232,6 +234,12 @@ binding.registerCustomHook(function(bindingsAPI) {
                 return GetExternalFileEntry(description);
               }));
             });
+      });
+
+  apiFunctions.setHandleRequest(
+      'getLinuxPackageInfo', function(entry, callback) {
+        var url = fileManagerPrivateNatives.GetEntryURL(entry);
+        fileManagerPrivateInternal.getLinuxPackageInfo(url, callback);
       });
 
   apiFunctions.setHandleRequest('installLinuxPackage', function(

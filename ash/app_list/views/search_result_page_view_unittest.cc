@@ -59,11 +59,13 @@ class SearchResultPageViewTest
 
     // Setting up the feature set.
     if (test_with_answer_card)
-      scoped_feature_list_.InitAndEnableFeature(features::kEnableAnswerCard);
+      scoped_feature_list_.InitAndEnableFeature(
+          app_list_features::kEnableAnswerCard);
     else
-      scoped_feature_list_.InitAndDisableFeature(features::kEnableAnswerCard);
+      scoped_feature_list_.InitAndDisableFeature(
+          app_list_features::kEnableAnswerCard);
 
-    ASSERT_EQ(test_with_answer_card, features::IsAnswerCardEnabled());
+    ASSERT_EQ(test_with_answer_card, app_list_features::IsAnswerCardEnabled());
 
     // Setting up views.
     delegate_ = std::make_unique<AppListTestViewDelegate>();

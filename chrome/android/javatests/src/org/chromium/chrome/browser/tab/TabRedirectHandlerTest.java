@@ -441,6 +441,23 @@ public class TabRedirectHandlerTest {
                 handler.getLastCommittedEntryIndexBeforeStartingNavigation());
     }
 
+    /**
+     * Tests that a client side redirect without a user gesture to an external application does
+     * cause us to leave Chrome, unless the app it would be launching is trusted.
+     */
+    @Test
+    @SmallTest
+    @Feature({"IntentHandling"})
+    public void testClientRedirectWithoutUserGesture() {
+        TabRedirectHandler handler = TabRedirectHandler.create(mContext);
+        handler.updateIntent(sFooIntent);
+        Assert.assertFalse(handler.isOnNavigation());
+
+        handler.updateNewUrlLoading(PageTransition.CLIENT_REDIRECT, false, false, 0, 0);
+        Assert.assertTrue(handler.shouldStayInChrome(true));
+        Assert.assertFalse(handler.shouldStayInChrome(true, true));
+    }
+
     private static class TestPackageManager extends MockPackageManager {
         @Override
         public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {

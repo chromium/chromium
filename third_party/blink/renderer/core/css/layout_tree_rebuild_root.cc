@@ -11,9 +11,16 @@ namespace blink {
 Element& LayoutTreeRebuildRoot::RootElement() const {
   Node* root_node = GetRootNode();
   DCHECK(root_node);
-  if (root_node->NeedsReattachLayoutTree() || !root_node->GetLayoutObject()) {
-    // We need to start from the closest parent which has a LayoutObject to make
-    // WhitespaceAttacher work correctly.
+  // We need to start from the closest non-dirty ancestor which has a
+  // LayoutObject to make WhitespaceAttacher work correctly because text node
+  // siblings of nodes being re-attached needs to be traversed to re-evaluate
+  // the need for a LayoutText. Single roots are typically dirty, but we need an
+  // extra check for IsSingleRoot() because we mark nodes which have siblings
+  // removed with MarkAncestorsWithChildNeedsReattachLayoutTree() in
+  // StyleEngine::MarkForWhitespaceReattachment(). In that case we need to start
+  // from the ancestor to traverse all whitespace siblings.
+  if (IsSingleRoot() || root_node->NeedsReattachLayoutTree() ||
+      !root_node->GetLayoutObject()) {
     do {
       root_node = root_node->GetReattachParent();
     } while (root_node && !root_node->GetLayoutObject());

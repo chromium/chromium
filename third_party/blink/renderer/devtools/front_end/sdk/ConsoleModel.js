@@ -203,7 +203,7 @@ SDK.ConsoleModel = class extends Common.Object {
     if (!exceptionMessage)
       return;
     this._errors--;
-    exceptionMessage.level = SDK.ConsoleMessage.MessageLevel.Info;
+    exceptionMessage.level = SDK.ConsoleMessage.MessageLevel.Verbose;
     this.dispatchEventToListeners(SDK.ConsoleModel.Events.MessageUpdated, exceptionMessage);
   }
 
@@ -376,7 +376,7 @@ SDK.ConsoleModel = class extends Common.Object {
 
     const globalObject = result.object;
     const callFunctionResult =
-        await globalObject.callFunctionPromise(saveVariable, [SDK.RemoteObject.toCallArgument(remoteObject)]);
+        await globalObject.callFunction(saveVariable, [SDK.RemoteObject.toCallArgument(remoteObject)]);
     globalObject.release();
     if (callFunctionResult.wasThrown || !callFunctionResult.object || callFunctionResult.object.type !== 'string') {
       failedToSave(callFunctionResult.object || null);

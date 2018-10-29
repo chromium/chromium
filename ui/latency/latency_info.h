@@ -93,7 +93,7 @@ enum LatencyComponentType {
   LATENCY_COMPONENT_TYPE_LAST = INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT,
 };
 
-enum SourceEventType {
+enum class SourceEventType {
   UNKNOWN,
   WHEEL,
   MOUSE,
@@ -104,7 +104,7 @@ enum SourceEventType {
   TOUCHPAD,
   FRAME,
   OTHER,
-  SOURCE_EVENT_TYPE_LAST = OTHER,
+  LAST = OTHER,
 };
 
 class LatencyInfo {

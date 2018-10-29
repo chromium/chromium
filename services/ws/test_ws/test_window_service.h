@@ -32,6 +32,10 @@ class ContextFactoryPrivate;
 }  // namespace ui
 
 namespace ws {
+
+class HostEventQueue;
+class TestHostEventDispatcher;
+
 namespace test {
 
 // Service implementation that brings up the Window Service on top of aura.
@@ -109,7 +113,7 @@ class TestWindowService : public service_manager::Service,
 
   std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
-  std::unique_ptr<gpu_host::DefaultGpuHost> gpu_host_;
+  std::unique_ptr<gpu_host::GpuHost> gpu_host_;
 
   // For drag and drop code to convert to/from screen coordinates.
   wm::DefaultScreenPositionClient screen_position_client_;
@@ -127,6 +131,10 @@ class TestWindowService : public service_manager::Service,
   // Whether the service is used in process. Not using features because it
   // is used in service_unittests where ui features is not used there.
   bool is_in_process_ = false;
+
+  std::unique_ptr<TestHostEventDispatcher> test_host_event_dispatcher_;
+
+  std::unique_ptr<HostEventQueue> host_event_queue_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWindowService);
 };

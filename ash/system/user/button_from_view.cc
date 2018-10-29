@@ -38,7 +38,7 @@ ButtonFromView::ButtonFromView(views::View* content,
   ink_drop_container_ = new views::InkDropContainerView();
   AddChildView(ink_drop_container_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetInkDropMode(InkDropHostView::InkDropMode::ON);
+  SetInkDropMode(InkDropMode::ON);
   AddChildView(content_);
   // Only make it focusable when we are active/interested in clicks.
   if (listener)

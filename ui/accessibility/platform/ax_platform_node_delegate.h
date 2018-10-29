@@ -118,12 +118,14 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   virtual int GetTableRowCount() const = 0;
   virtual int GetTableColCount() const = 0;
-  virtual std::vector<int32_t> GetColHeaderNodeIds() const = 0;
-  virtual std::vector<int32_t> GetColHeaderNodeIds(int32_t col_index) const = 0;
-  virtual std::vector<int32_t> GetRowHeaderNodeIds() const = 0;
-  virtual std::vector<int32_t> GetRowHeaderNodeIds(int32_t row_index) const = 0;
+  virtual const std::vector<int32_t> GetColHeaderNodeIds() const = 0;
+  virtual const std::vector<int32_t> GetColHeaderNodeIds(
+      int32_t col_index) const = 0;
+  virtual const std::vector<int32_t> GetRowHeaderNodeIds() const = 0;
+  virtual const std::vector<int32_t> GetRowHeaderNodeIds(
+      int32_t row_index) const = 0;
   virtual int32_t GetCellId(int32_t row_index, int32_t col_index) const = 0;
-  virtual int32_t CellIdToIndex(int32_t cell_id) const = 0;
+  virtual int32_t GetTableCellIndex() const = 0;
   virtual int32_t CellIndexToId(int32_t cell_index) const = 0;
 
   //

@@ -31,6 +31,7 @@ list(APPEND BASE_PUBLIC_HEADERS
 
 list(APPEND BASE_INTERNAL_HEADERS
   "internal/atomic_hook.h"
+  "internal/bits.h"
   "internal/cycleclock.h"
   "internal/direct_mmap.h"
   "internal/endian.h"

@@ -162,6 +162,9 @@ struct GPU_EXPORT GpuPreferences {
   // uses the defaults, which are encoded in the GPU process's code.
   uint32_t max_active_webgl_contexts = 0;
 
+  // Enables the use of SurfaceControl for overlays on Android.
+  bool enable_android_surface_control = false;
+
   // ===================================
   // Settings from //ui/gl/gl_switches.h
 
@@ -198,6 +201,7 @@ struct GPU_EXPORT GpuPreferences {
   bool disable_oop_rasterization = false;
 
   bool enable_oop_rasterization_ddl = false;
+  bool enable_raster_to_sk_image = false;
 
   // Start the watchdog suspended, as the app is already backgrounded and won't
   // send a background/suspend signal.

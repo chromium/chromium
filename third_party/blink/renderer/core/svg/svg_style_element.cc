@@ -32,7 +32,7 @@ namespace blink {
 
 inline SVGStyleElement::SVGStyleElement(Document& document,
                                         const CreateElementFlags flags)
-    : SVGElement(SVGNames::styleTag, document),
+    : SVGElement(svg_names::kStyleTag, document),
       StyleElement(&document, flags.IsCreatedByParser()) {}
 
 SVGStyleElement::~SVGStyleElement() = default;
@@ -56,34 +56,34 @@ void SVGStyleElement::setDisabled(bool set_disabled) {
 
 const AtomicString& SVGStyleElement::type() const {
   DEFINE_STATIC_LOCAL(const AtomicString, default_value, ("text/css"));
-  const AtomicString& n = getAttribute(SVGNames::typeAttr);
+  const AtomicString& n = getAttribute(svg_names::kTypeAttr);
   return n.IsNull() ? default_value : n;
 }
 
 void SVGStyleElement::setType(const AtomicString& type) {
-  setAttribute(SVGNames::typeAttr, type);
+  setAttribute(svg_names::kTypeAttr, type);
 }
 
 const AtomicString& SVGStyleElement::media() const {
-  const AtomicString& n = FastGetAttribute(SVGNames::mediaAttr);
-  return n.IsNull() ? MediaTypeNames::all : n;
+  const AtomicString& n = FastGetAttribute(svg_names::kMediaAttr);
+  return n.IsNull() ? media_type_names::kAll : n;
 }
 
 void SVGStyleElement::setMedia(const AtomicString& media) {
-  setAttribute(SVGNames::mediaAttr, media);
+  setAttribute(svg_names::kMediaAttr, media);
 }
 
 String SVGStyleElement::title() const {
-  return FastGetAttribute(SVGNames::titleAttr);
+  return FastGetAttribute(svg_names::kTitleAttr);
 }
 
 void SVGStyleElement::setTitle(const AtomicString& title) {
-  setAttribute(SVGNames::titleAttr, title);
+  setAttribute(svg_names::kTitleAttr, title);
 }
 
 void SVGStyleElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == SVGNames::titleAttr) {
+  if (params.name == svg_names::kTitleAttr) {
     if (sheet_ && IsInDocumentTree())
       sheet_->SetTitle(params.new_value);
 

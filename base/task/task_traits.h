@@ -20,10 +20,13 @@
 
 namespace base {
 
+class PostTaskAndroid;
+
 // Valid priorities supported by the task scheduler. Note: internal algorithms
 // depend on priorities being expressed as a continuous zero-based list from
 // lowest to highest priority. Users of this API shouldn't otherwise care about
 // nor use the underlying values.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.task
 enum class TaskPriority {
   // This will always be equal to the lowest priority available.
   LOWEST = 0,
@@ -123,15 +126,24 @@ struct WithBaseSyncPrimitives {};
 // Describes immutable metadata for a single task or a group of tasks.
 class BASE_EXPORT TaskTraits {
  private:
-  // ValidTrait ensures TaskTraits' constructor only accepts appropriate types.
-  struct ValidTrait {
-    ValidTrait(TaskPriority) {}
-    ValidTrait(TaskShutdownBehavior) {}
-    ValidTrait(MayBlock) {}
-    ValidTrait(WithBaseSyncPrimitives) {}
-  };
+  using TaskPriorityFilter =
+      trait_helpers::EnumTraitFilter<TaskPriority, TaskPriority::USER_VISIBLE>;
+  using MayBlockFilter = trait_helpers::BooleanTraitFilter<MayBlock>;
+  using TaskShutdownBehaviorFilter =
+      trait_helpers::EnumTraitFilter<TaskShutdownBehavior,
+                                     TaskShutdownBehavior::SKIP_ON_SHUTDOWN>;
+  using WithBaseSyncPrimitivesFilter =
+      trait_helpers::BooleanTraitFilter<WithBaseSyncPrimitives>;
 
  public:
+  // ValidTrait ensures TaskTraits' constructor only accepts appropriate types.
+  struct ValidTrait {
+    ValidTrait(TaskPriority);
+    ValidTrait(TaskShutdownBehavior);
+    ValidTrait(MayBlock);
+    ValidTrait(WithBaseSyncPrimitives);
+  };
+
   // Invoking this constructor without arguments produces TaskTraits that are
   // appropriate for tasks that
   //     (1) don't block (ref. MayBlock() and WithBaseSyncPrimitives()),
@@ -153,49 +165,26 @@ class BASE_EXPORT TaskTraits {
   // constexpr base::TaskTraits other_user_visible_may_block_traits = {
   //     base::MayBlock(), base::TaskPriority::USER_VISIBLE};
   template <class... ArgTypes,
-            class CheckArgumentsAreValidBaseTraits = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
+            class CheckArgumentsAreValid = std::enable_if_t<
+                trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value ||
+                trait_helpers::AreValidTraitsForExtension<ArgTypes...>::value>>
   constexpr TaskTraits(ArgTypes... args)
-      : priority_(trait_helpers::GetValueFromArgList(
-            trait_helpers::EnumArgGetter<TaskPriority,
-                                         TaskPriority::USER_VISIBLE>(),
+      : extension_(trait_helpers::GetTaskTraitsExtension(
+            trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>{},
             args...)),
-        shutdown_behavior_(trait_helpers::GetValueFromArgList(
-            trait_helpers::EnumArgGetter<
-                TaskShutdownBehavior,
-                TaskShutdownBehavior::SKIP_ON_SHUTDOWN>(),
-            args...)),
+        priority_(
+            trait_helpers::GetTraitFromArgList<TaskPriorityFilter>(args...)),
+        shutdown_behavior_(
+            trait_helpers::GetTraitFromArgList<TaskShutdownBehaviorFilter>(
+                args...)),
         priority_set_explicitly_(
-            trait_helpers::HasArgOfType<TaskPriority, ArgTypes...>::value),
+            trait_helpers::TraitIsDefined<TaskPriorityFilter>(args...)),
         shutdown_behavior_set_explicitly_(
-            trait_helpers::HasArgOfType<TaskShutdownBehavior,
-                                        ArgTypes...>::value),
-        may_block_(trait_helpers::GetValueFromArgList(
-            trait_helpers::BooleanArgGetter<MayBlock>(),
-            args...)),
-        with_base_sync_primitives_(trait_helpers::GetValueFromArgList(
-            trait_helpers::BooleanArgGetter<WithBaseSyncPrimitives>(),
-            args...)) {}
-
-  // Construct TaskTraits with extension traits. See task_traits_extension.h.
-  template <class... ArgTypes,
-            class AvoidConstructorRedeclaration = void,
-            class CheckArgsContainNonBaseTrait = std::enable_if_t<
-                !trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
-  constexpr TaskTraits(ArgTypes... args)
-      // Select those arguments that are valid base TaskTraits and forward them
-      // to the above constructor via a helper constructor.
-      : TaskTraits(std::forward_as_tuple(args...),
-                   trait_helpers::SelectIndices<
-                       trait_helpers::ValidTraitTester<ValidTrait>::IsValid,
-                       ArgTypes...>{}) {
-    // Select all other arguments and try to create an extension with them.
-    extension_ = MakeTaskTraitsExtensionHelper(
-        std::forward_as_tuple(args...),
-        trait_helpers::SelectIndices<
-            trait_helpers::ValidTraitTester<ValidTrait>::IsInvalid,
-            ArgTypes...>{});
-  }
+            trait_helpers::TraitIsDefined<TaskShutdownBehaviorFilter>(args...)),
+        may_block_(trait_helpers::GetTraitFromArgList<MayBlockFilter>(args...)),
+        with_base_sync_primitives_(
+            trait_helpers::GetTraitFromArgList<WithBaseSyncPrimitivesFilter>(
+                args...)) {}
 
   constexpr TaskTraits(const TaskTraits& other) = default;
   TaskTraits& operator=(const TaskTraits& other) = default;
@@ -260,6 +249,26 @@ class BASE_EXPORT TaskTraits {
   }
 
  private:
+  friend PostTaskAndroid;
+
+  // For use by PostTaskAndroid.
+  TaskTraits(bool priority_set_explicitly,
+             TaskPriority priority,
+             bool shutdown_behavior_set_explicitly,
+             TaskShutdownBehavior shutdown_behavior,
+             bool may_block,
+             bool with_base_sync_primitives,
+             TaskTraitsExtensionStorage extension)
+      : extension_(extension),
+        priority_(priority),
+        shutdown_behavior_(shutdown_behavior),
+        priority_set_explicitly_(priority_set_explicitly),
+        shutdown_behavior_set_explicitly_(shutdown_behavior_set_explicitly),
+        may_block_(may_block),
+        with_base_sync_primitives_(with_base_sync_primitives) {
+    static_assert(sizeof(TaskTraits) == 24, "Keep this constructor up to date");
+  }
+
   constexpr TaskTraits(const TaskTraits& left, const TaskTraits& right)
       : extension_(right.extension_.extension_id !=
                            TaskTraitsExtensionStorage::kInvalidExtensionId
@@ -278,16 +287,6 @@ class BASE_EXPORT TaskTraits {
         may_block_(left.may_block_ || right.may_block_),
         with_base_sync_primitives_(left.with_base_sync_primitives_ ||
                                    right.with_base_sync_primitives_) {}
-
-  // Helper constructor which selects those arguments from |args| that are
-  // indicated by the index_sequence and forwards them to the public
-  // constructor. Due to filtering, the indices may be non-contiguous.
-  template <class... ArgTypes, std::size_t... Indices>
-  constexpr TaskTraits(std::tuple<ArgTypes...> args,
-                       std::index_sequence<Indices...>)
-      : TaskTraits(
-            std::get<Indices>(std::forward<std::tuple<ArgTypes...>>(args))...) {
-  }
 
   // Ordered for packing.
   TaskTraitsExtensionStorage extension_;

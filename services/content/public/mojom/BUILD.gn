@@ -20,6 +20,7 @@ mojom_component("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//services/network/public/mojom:websocket_mojom",
+    "//ui/base/mojo",
     "//ui/gfx/geometry/mojo",
     "//url/mojom:url_mojom_gurl",
   ]

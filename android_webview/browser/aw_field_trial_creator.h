@@ -28,8 +28,6 @@ class AwFieldTrialCreator {
   void SetUpFieldTrials(PrefService* pref_service);
 
  private:
-  void DoSetUpFieldTrials(PrefService* pref_service);
-
   // Stores the seed. VariationsSeedStore keeps a raw pointer to this, so it
   // must persist for the process lifetime. Not persisted accross runs.
   std::unique_ptr<PrefService> local_state_;

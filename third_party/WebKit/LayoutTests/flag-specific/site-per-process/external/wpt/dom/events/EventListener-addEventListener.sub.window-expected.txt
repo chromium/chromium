@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL EventListener.addEventListener doesn't throw when a cross origin object is passed in. Failed to execute 'addEventListener' on 'EventTarget': The callback provided as parameter 2 is a cross origin object.
+Harness: the test ran to completion.
+

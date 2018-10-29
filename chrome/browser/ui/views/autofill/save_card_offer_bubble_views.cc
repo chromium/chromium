@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/save_card_offer_bubble_views.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -19,7 +21,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -28,7 +29,6 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/tooltip_icon.h"
-#include "ui/views/controls/button/blue_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
@@ -49,19 +49,18 @@ SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
     const gfx::Point& anchor_point,
     content::WebContents* web_contents,
     SaveCardBubbleController* controller)
-    : SaveCardBubbleViews(anchor_view, anchor_point, web_contents, controller),
-      web_contents_(web_contents) {}
+    : SaveCardBubbleViews(anchor_view, anchor_point, web_contents, controller) {
+}
 
 views::View* SaveCardOfferBubbleViews::CreateFootnoteView() {
   if (controller()->GetLegalMessageLines().empty())
     return nullptr;
 
-  footnote_view_ =
+  legal_message_view_ =
       new LegalMessageView(controller()->GetLegalMessageLines(), this);
-  footnote_view_->set_id(DialogViewId::FOOTNOTE_VIEW);
 
-  SetFootnoteViewForTesting(footnote_view_);
-  return footnote_view_;
+  InitFootnoteView(legal_message_view_);
+  return legal_message_view_;
 }
 
 bool SaveCardOfferBubbleViews::Accept() {
@@ -101,7 +100,8 @@ void SaveCardOfferBubbleViews::StyledLabelLinkClicked(views::StyledLabel* label,
   if (!controller())
     return;
 
-  footnote_view_->OnLinkClicked(label, range, web_contents_);
+  controller()->OnLegalMessageLinkClicked(
+      legal_message_view_->GetUrlForLink(label, range));
 }
 
 void SaveCardOfferBubbleViews::ContentsChanged(

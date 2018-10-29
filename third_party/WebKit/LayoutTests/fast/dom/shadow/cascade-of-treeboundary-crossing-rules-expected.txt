@@ -3,7 +3,6 @@ Test for casacde of treeboundary crossing rules.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS borderColorOf(getNodeInComposedTree("target")) is "rgb(0, 128, 0)"
 PASS borderColorOf(getNodeInComposedTree("host/target")) is "rgb(0, 128, 0)"
 PASS successfullyParsed is true

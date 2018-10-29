@@ -94,8 +94,6 @@ AuthenticationService::~AuthenticationService() {
 // static
 void AuthenticationService::RegisterPrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(prefs::kSigninSharedAuthenticationUserId,
-                               std::string());
   registry->RegisterBooleanPref(prefs::kSigninShouldPromptForSigninAgain,
                                 false);
   registry->RegisterListPref(prefs::kSigninLastAccounts);

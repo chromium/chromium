@@ -20,6 +20,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
@@ -100,8 +101,7 @@ void WriteCache(const base::FilePath& filename, const base::Pickle* pickle) {
 void RemoveCache(const base::FilePath& filename,
                  const base::Closure& callback) {
   base::DeleteFile(filename, false);
-  content::BrowserThread::PostTask(content::BrowserThread::IO, FROM_HERE,
-                                   callback);
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO}, callback);
 }
 
 void LogCacheQuery(nacl::NaClBrowser::ValidationCacheStatus status) {
@@ -316,9 +316,8 @@ void NaClBrowser::SetProcessGdbDebugStubPort(int process_id, int port) {
   gdb_debug_stub_port_map_[process_id] = port;
   if (port != kGdbDebugStubPortUnknown &&
       !debug_stub_port_listener_.is_null()) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
-        base::BindOnce(debug_stub_port_listener_, port));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                             base::BindOnce(debug_stub_port_listener_, port));
   }
 }
 
@@ -336,7 +335,7 @@ void NaClBrowser::ClearGdbDebugStubPortListenerForTest() {
 int NaClBrowser::GetProcessGdbDebugStubPort(int process_id) {
   // Called from TaskManager TaskGroup impl, on CrBrowserMain.
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  GdbDebugStubPortMap::iterator i = gdb_debug_stub_port_map_.find(process_id);
+  auto i = gdb_debug_stub_port_map_.find(process_id);
   if (i != gdb_debug_stub_port_map_.end()) {
     return i->second;
   }
@@ -419,8 +418,7 @@ void NaClBrowser::CheckWaiting() {
     // re-entrancy problems that could occur if the closure was invoked
     // directly.  For example, this could result in use-after-free of the
     // process host.
-    for (std::vector<base::Closure>::iterator iter = waiting_.begin();
-         iter != waiting_.end(); ++iter) {
+    for (auto iter = waiting_.begin(); iter != waiting_.end(); ++iter) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, *iter);
     }
     waiting_.clear();
@@ -456,7 +454,7 @@ void NaClBrowser::PutFilePath(const base::FilePath& path,
     if (file_token[0] != 0 || file_token[1] != 0) {
       // If the file_token is in use, ask for another number.
       std::string key(reinterpret_cast<char*>(file_token), sizeof(file_token));
-      PathCacheType::iterator iter = path_cache_.Peek(key);
+      auto iter = path_cache_.Peek(key);
       if (iter == path_cache_.end()) {
         path_cache_.Put(key, path);
         *file_token_lo = file_token[0];
@@ -473,7 +471,7 @@ bool NaClBrowser::GetFilePath(uint64_t file_token_lo,
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   uint64_t file_token[2] = {file_token_lo, file_token_hi};
   std::string key(reinterpret_cast<char*>(file_token), sizeof(file_token));
-  PathCacheType::iterator iter = path_cache_.Peek(key);
+  auto iter = path_cache_.Peek(key);
   if (iter == path_cache_.end()) {
     *path = base::FilePath(FILE_PATH_LITERAL(""));
     return false;
@@ -526,8 +524,7 @@ void NaClBrowser::ClearValidationCache(const base::Closure& callback) {
 
   if (validation_cache_file_path_.empty()) {
     // Can't figure out what file to remove, but don't drop the callback.
-    content::BrowserThread::PostTask(content::BrowserThread::IO, FROM_HERE,
-                                     callback);
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO}, callback);
   } else {
     // Delegate the removal of the cache from the filesystem to another thread
     // to avoid blocking the IO thread.

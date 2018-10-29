@@ -13,8 +13,10 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/completion_callback.h"
@@ -77,6 +79,15 @@ void BrowsingDataDatabaseHelper::StartFetching(FetchCallback callback) {
                         identifier, base::UTF16ToUTF8(db),
                         base::UTF16ToUTF8(origin.GetDatabaseDescription(db)),
                         file_info.size, file_info.last_modified));
+                  } else {
+                    // This is an incognito database, so the file is not
+                    // accessible. This browsing data record will not be
+                    // user-visible, but is enumerated by test code, so produce
+                    // a dummy record for testing.
+                    result.push_back(DatabaseInfo(
+                        identifier, base::UTF16ToUTF8(db),
+                        base::UTF16ToUTF8(origin.GetDatabaseDescription(db)), 0,
+                        base::Time()));
                   }
                 }
               }
@@ -161,8 +172,8 @@ void CannedBrowsingDataDatabaseHelper::StartFetching(FetchCallback callback) {
         DatabaseInfo(identifier, info.name, info.description, 0, base::Time()));
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(std::move(callback), result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(std::move(callback), result));
 }
 
 void CannedBrowsingDataDatabaseHelper::DeleteDatabase(
@@ -170,10 +181,8 @@ void CannedBrowsingDataDatabaseHelper::DeleteDatabase(
     const std::string& name) {
   GURL origin =
       storage::DatabaseIdentifier::Parse(origin_identifier).ToOrigin();
-  for (std::set<PendingDatabaseInfo>::iterator it =
-           pending_database_info_.begin();
-       it != pending_database_info_.end();
-       ++it) {
+  for (auto it = pending_database_info_.begin();
+       it != pending_database_info_.end(); ++it) {
     if (it->origin == origin && it->name == name) {
       pending_database_info_.erase(it);
       break;

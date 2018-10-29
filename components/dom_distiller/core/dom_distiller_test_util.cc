@@ -18,8 +18,7 @@ namespace {
 std::vector<ArticleEntry> EntryMapToList(
     const FakeDB<ArticleEntry>::EntryMap& entries) {
   std::vector<ArticleEntry> entry_list;
-  for (FakeDB<ArticleEntry>::EntryMap::const_iterator it = entries.begin();
-       it != entries.end(); ++it) {
+  for (auto it = entries.begin(); it != entries.end(); ++it) {
     entry_list.push_back(it->second);
   }
   return entry_list;
@@ -59,9 +58,7 @@ bool ObserverUpdatesMatcher::MatchAndExplain(
 
 void ObserverUpdatesMatcher::DescribeUpdates(std::ostream* os) const {
   bool start = true;
-  for (std::vector<DomDistillerObserver::ArticleUpdate>::const_iterator i =
-           expected_updates_.begin();
-       i != expected_updates_.end(); ++i) {
+  for (auto i = expected_updates_.begin(); i != expected_updates_.end(); ++i) {
     if (start) {
       start = false;
     } else {

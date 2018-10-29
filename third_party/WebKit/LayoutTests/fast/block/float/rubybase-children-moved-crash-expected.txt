@@ -1,3 +1,1 @@
 crbug.com/681423: Don't clear floats when moving just some of the children of a ruby run. This test passes if it does not crash.
-
- 

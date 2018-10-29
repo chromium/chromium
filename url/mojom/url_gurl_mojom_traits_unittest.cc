@@ -78,17 +78,29 @@ TEST(MojoGURLStructTraitsTest, Basic) {
   Origin output;
   EXPECT_TRUE(proxy->BounceOrigin(non_unique, &output));
   EXPECT_EQ(non_unique, output);
-  EXPECT_FALSE(output.unique());
+  EXPECT_FALSE(output.opaque());
 
-  Origin unique;
-  EXPECT_TRUE(proxy->BounceOrigin(unique, &output));
-  EXPECT_TRUE(output.unique());
+  Origin unique1;
+  Origin unique2 = non_unique.DeriveNewOpaqueOrigin();
+  EXPECT_NE(unique1, unique2);
+  EXPECT_NE(unique2, unique1);
+  EXPECT_NE(unique2, non_unique);
+  EXPECT_TRUE(proxy->BounceOrigin(unique1, &output));
+  EXPECT_TRUE(output.opaque());
+  EXPECT_EQ(unique1, output);
+  Origin output2;
+  EXPECT_TRUE(proxy->BounceOrigin(unique2, &output2));
+  EXPECT_EQ(unique2, output2);
+  EXPECT_NE(unique2, output);
+  EXPECT_NE(unique1, output2);
 
   Origin normalized =
       Origin::CreateFromNormalizedTuple("http", "www.google.com", 80);
+  EXPECT_EQ(normalized, non_unique);
   EXPECT_TRUE(proxy->BounceOrigin(normalized, &output));
   EXPECT_EQ(normalized, output);
-  EXPECT_FALSE(output.unique());
+  EXPECT_EQ(non_unique, output);
+  EXPECT_FALSE(output.opaque());
 }
 
 }  // namespace url

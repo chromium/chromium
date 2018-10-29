@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 நிமிடத்திற்கு முன்பு}other{# நிமிடங்களுக்கு முன்பு}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1நி}other{#நி}}</translation>
 <translation id="1243314992276662751">பதிவேற்று</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">பரிந்துரைக்கப்படும் பயன்பாடுகள்</translation>
 <translation id="1368832886055348810">இடமிருந்து வலம்</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">பக்கத்தின் கீழே</translation>
 <translation id="8245914219290430011">தாவல்</translation>
+<translation id="8259556432390118667">ஹெக்ஸ் வண்ண மதிப்பு</translation>
 <translation id="8328145009876646418">இடதுபுற முனை</translation>
 <translation id="8331626408530291785">மேலே உருட்டு</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 ஆண்டு}other{# ஆண்டுகள்}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">இயல்புநிலை</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> கோப்புறை</translation>
 <translation id="883911313571074303">படத்தைக் குறிப்பிடு</translation>
+<translation id="8841375032071747811">முந்தையது பொத்தான்</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> கி.பை.</translation>
 <translation id="9002566407876343676">திற</translation>
 <translation id="9038489124413477075">பெயரிடப்படாதக் கோப்புறை</translation>

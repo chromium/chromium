@@ -91,7 +91,7 @@ static_assert(std::numeric_limits<int>::digits10 >= kDecimalExponentDigitsMax,
 
 // To avoid incredibly large inputs causing integer overflow for our exponent,
 // we impose an arbitrary but very large limit on the number of significant
-// digits we will accept.  The implementation refuses to match a std::string with
+// digits we will accept.  The implementation refuses to match a string with
 // more consecutive significant mantissa digits than this.
 constexpr int kDecimalDigitLimit = 50000000;
 

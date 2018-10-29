@@ -715,8 +715,7 @@ bool CreateDirectoryAndGetError(const FilePath& full_path,
   }
 
   // Iterate through the parents and create the missing ones.
-  for (std::vector<FilePath>::reverse_iterator i = subpaths.rbegin();
-       i != subpaths.rend(); ++i) {
+  for (auto i = subpaths.rbegin(); i != subpaths.rend(); ++i) {
     if (DirectoryExists(*i))
       continue;
     if (mkdir(i->value().c_str(), 0700) == 0)

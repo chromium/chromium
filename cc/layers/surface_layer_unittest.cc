@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "cc/animation/animation_host.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/surface_layer.h"
@@ -55,8 +56,8 @@ class SurfaceLayerTest : public testing::Test {
     animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::MAIN);
     layer_tree_host_ = FakeLayerTreeHost::Create(
         &fake_client_, &task_graph_runner_, animation_host_.get());
-    layer_tree_host_->SetViewportSizeAndScale(gfx::Size(10, 10), 1.f,
-                                              viz::LocalSurfaceId());
+    layer_tree_host_->SetViewportSizeAndScale(
+        gfx::Size(10, 10), 1.f, viz::LocalSurfaceId(), base::TimeTicks());
     host_impl_.CreatePendingTree();
   }
 
@@ -83,7 +84,7 @@ TEST_F(SurfaceLayerTest, UseExistingDeadlineForNewSurfaceLayer) {
   viz::SurfaceId primary_id(
       kArbitraryFrameSinkId,
       viz::LocalSurfaceId(1, base::UnguessableToken::Create()));
-  layer->SetPrimarySurfaceId(primary_id, DeadlinePolicy::UseExistingDeadline());
+  layer->SetSurfaceId(primary_id, DeadlinePolicy::UseExistingDeadline());
   EXPECT_EQ(0u, layer->deadline_in_frames());
 }
 
@@ -95,7 +96,7 @@ TEST_F(SurfaceLayerTest, UseInfiniteDeadlineForNewSurfaceLayer) {
   viz::SurfaceId primary_id(
       kArbitraryFrameSinkId,
       viz::LocalSurfaceId(1, base::UnguessableToken::Create()));
-  layer->SetPrimarySurfaceId(primary_id, DeadlinePolicy::UseInfiniteDeadline());
+  layer->SetSurfaceId(primary_id, DeadlinePolicy::UseInfiniteDeadline());
   EXPECT_EQ(std::numeric_limits<uint32_t>::max(), layer->deadline_in_frames());
 }
 
@@ -107,14 +108,13 @@ TEST_F(SurfaceLayerTest, ResetDeadlineOnInvalidSurfaceId) {
   viz::SurfaceId primary_id(
       kArbitraryFrameSinkId,
       viz::LocalSurfaceId(1, base::UnguessableToken::Create()));
-  layer->SetPrimarySurfaceId(primary_id,
-                             DeadlinePolicy::UseSpecifiedDeadline(3u));
+  layer->SetSurfaceId(primary_id, DeadlinePolicy::UseSpecifiedDeadline(3u));
   EXPECT_EQ(3u, layer->deadline_in_frames());
 
   // Reset the surface layer to an invalid SurfaceId. Verify that the deadline
   // is reset.
-  layer->SetPrimarySurfaceId(viz::SurfaceId(),
-                             DeadlinePolicy::UseSpecifiedDeadline(3u));
+  layer->SetSurfaceId(viz::SurfaceId(),
+                      DeadlinePolicy::UseSpecifiedDeadline(3u));
   EXPECT_EQ(0u, layer->deadline_in_frames());
 }
 
@@ -126,12 +126,10 @@ TEST_F(SurfaceLayerTest, PushProperties) {
   viz::SurfaceId primary_id(
       kArbitraryFrameSinkId,
       viz::LocalSurfaceId(1, base::UnguessableToken::Create()));
-  layer->SetPrimarySurfaceId(primary_id,
-                             DeadlinePolicy::UseSpecifiedDeadline(1u));
-  layer->SetPrimarySurfaceId(primary_id,
-                             DeadlinePolicy::UseSpecifiedDeadline(2u));
-  layer->SetPrimarySurfaceId(primary_id, DeadlinePolicy::UseExistingDeadline());
-  layer->SetFallbackSurfaceId(primary_id);
+  layer->SetSurfaceId(primary_id, DeadlinePolicy::UseSpecifiedDeadline(1u));
+  layer->SetSurfaceId(primary_id, DeadlinePolicy::UseSpecifiedDeadline(2u));
+  layer->SetSurfaceId(primary_id, DeadlinePolicy::UseExistingDeadline());
+  layer->SetOldestAcceptableFallback(primary_id);
   layer->SetBackgroundColor(SK_ColorBLUE);
   layer->SetStretchContentToFillBounds(true);
 
@@ -164,9 +162,8 @@ TEST_F(SurfaceLayerTest, PushProperties) {
   viz::SurfaceId fallback_id(
       kArbitraryFrameSinkId,
       viz::LocalSurfaceId(2, base::UnguessableToken::Create()));
-  layer->SetFallbackSurfaceId(fallback_id);
-  layer->SetPrimarySurfaceId(fallback_id,
-                             DeadlinePolicy::UseExistingDeadline());
+  layer->SetOldestAcceptableFallback(fallback_id);
+  layer->SetSurfaceId(fallback_id, DeadlinePolicy::UseExistingDeadline());
   layer->SetBackgroundColor(SK_ColorGREEN);
   layer->SetStretchContentToFillBounds(false);
 
@@ -201,17 +198,15 @@ TEST_F(SurfaceLayerTest, CheckSurfaceReferencesForClonedLayer) {
   // animation is done.
   scoped_refptr<SurfaceLayer> layer1 = SurfaceLayer::Create();
   layer1->SetLayerTreeHost(layer_tree_host_.get());
-  layer1->SetPrimarySurfaceId(old_surface_id,
-                              DeadlinePolicy::UseDefaultDeadline());
-  layer1->SetFallbackSurfaceId(old_surface_id);
+  layer1->SetSurfaceId(old_surface_id, DeadlinePolicy::UseDefaultDeadline());
+  layer1->SetOldestAcceptableFallback(old_surface_id);
 
   // This layer will eventually be switched be switched to show the new surface
   // id and will be retained when animation is done.
   scoped_refptr<SurfaceLayer> layer2 = SurfaceLayer::Create();
   layer2->SetLayerTreeHost(layer_tree_host_.get());
-  layer2->SetPrimarySurfaceId(old_surface_id,
-                              DeadlinePolicy::UseDefaultDeadline());
-  layer2->SetFallbackSurfaceId(old_surface_id);
+  layer2->SetSurfaceId(old_surface_id, DeadlinePolicy::UseDefaultDeadline());
+  layer2->SetOldestAcceptableFallback(old_surface_id);
 
   std::unique_ptr<SurfaceLayerImpl> layer_impl1 =
       SurfaceLayerImpl::Create(host_impl_.pending_tree(), layer1->id());
@@ -231,9 +226,8 @@ TEST_F(SurfaceLayerTest, CheckSurfaceReferencesForClonedLayer) {
       viz::LocalSurfaceId(2, base::UnguessableToken::Create()));
 
   // Switch the new layer to use |new_surface_id|.
-  layer2->SetPrimarySurfaceId(new_surface_id,
-                              DeadlinePolicy::UseDefaultDeadline());
-  layer2->SetFallbackSurfaceId(new_surface_id);
+  layer2->SetSurfaceId(new_surface_id, DeadlinePolicy::UseDefaultDeadline());
+  layer2->SetOldestAcceptableFallback(new_surface_id);
 
   SynchronizeTrees();
 
@@ -269,8 +263,8 @@ TEST_F(SurfaceLayerTest, CheckNeedsSurfaceIdsSyncForClonedLayers) {
 
   scoped_refptr<SurfaceLayer> layer1 = SurfaceLayer::Create();
   layer1->SetLayerTreeHost(layer_tree_host_.get());
-  layer1->SetPrimarySurfaceId(surface_id, DeadlinePolicy::UseDefaultDeadline());
-  layer1->SetFallbackSurfaceId(surface_id);
+  layer1->SetSurfaceId(surface_id, DeadlinePolicy::UseDefaultDeadline());
+  layer1->SetOldestAcceptableFallback(surface_id);
 
   // Verify the surface id is in SurfaceLayerIds() and
   // needs_surface_ranges_sync() is true.
@@ -287,8 +281,8 @@ TEST_F(SurfaceLayerTest, CheckNeedsSurfaceIdsSyncForClonedLayers) {
   // Create the second layer that is a clone of the first.
   scoped_refptr<SurfaceLayer> layer2 = SurfaceLayer::Create();
   layer2->SetLayerTreeHost(layer_tree_host_.get());
-  layer2->SetPrimarySurfaceId(surface_id, DeadlinePolicy::UseDefaultDeadline());
-  layer2->SetFallbackSurfaceId(surface_id);
+  layer2->SetSurfaceId(surface_id, DeadlinePolicy::UseDefaultDeadline());
+  layer2->SetOldestAcceptableFallback(surface_id);
 
   // Verify that after creating the second layer with the same surface id that
   // needs_surface_ranges_sync() is still false.

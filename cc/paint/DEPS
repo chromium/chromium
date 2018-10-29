@@ -9,4 +9,7 @@ specific_include_rules = {
   "oop_pixeltest.cc": [
     "+gpu/command_buffer",
   ],
+  "skottie_wrapper.h": [
+    "+third_party/skia",
+  ],
 }

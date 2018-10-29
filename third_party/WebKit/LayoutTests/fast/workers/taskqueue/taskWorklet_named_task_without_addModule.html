@@ -1,0 +1,9 @@
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+promise_test(async t => {
+  promise_rejects(t, new Error("Invalid task"), taskWorklet.postTask("repeat", 2).result);
+});
+</script>
+</body>

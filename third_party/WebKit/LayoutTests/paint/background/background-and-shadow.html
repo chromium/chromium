@@ -27,7 +27,7 @@ function test() {
 
 if (window.testRunner) {
   testRunner.waitUntilDone();
-  testRunner.capturePixelsAsyncThen(test);
+  testRunner.updateAllLifecyclePhasesAndCompositeThen(test);
 } else {
   setTimeout(test, 500);
 }

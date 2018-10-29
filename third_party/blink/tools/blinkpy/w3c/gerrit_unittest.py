@@ -5,6 +5,7 @@
 import unittest
 
 from blinkpy.common.host_mock import MockHost
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive_mock import mock_git_commands
 from blinkpy.w3c.gerrit import GerritCL
 from blinkpy.w3c.gerrit_mock import MockGerritAPI
@@ -70,7 +71,7 @@ class GerritCLTest(unittest.TestCase):
             'revisions': {'1': {
                 'commit_with_footers': 'fake subject',
                 'files': {
-                    'third_party/WebKit/LayoutTests/external/wpt/foo/bar.html': '',
+                    RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
                 }
             }},
             'owner': {'email': 'test@chromium.org'},
@@ -87,7 +88,7 @@ class GerritCLTest(unittest.TestCase):
             'revisions': {'1': {
                 'commit_with_footers': 'fake subject',
                 'files': {
-                    'third_party/WebKit/LayoutTests/foo/bar.html': '',
+                    RELATIVE_WEB_TESTS + 'foo/bar.html': '',
                 }
             }},
             'owner': {'email': 'test@chromium.org'},
@@ -104,7 +105,7 @@ class GerritCLTest(unittest.TestCase):
             'revisions': {'1': {
                 'commit_with_footers': 'fake subject\nNo-Export: true',
                 'files': {
-                    'third_party/WebKit/LayoutTests/external/wpt/foo/bar.html': '',
+                    RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
                 }
             }},
             'owner': {'email': 'test@chromium.org'},
@@ -121,7 +122,7 @@ class GerritCLTest(unittest.TestCase):
             'revisions': {'1': {
                 'commit_with_footers': 'fake subject\nNOEXPORT=true',
                 'files': {
-                    'third_party/WebKit/LayoutTests/external/wpt/foo/bar.html': '',
+                    RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
                 }
             }},
             'owner': {'email': 'test@chromium.org'},
@@ -138,7 +139,7 @@ class GerritCLTest(unittest.TestCase):
             'revisions': {'1': {
                 'commit_with_footers': 'fake subject',
                 'files': {
-                    'third_party/WebKit/LayoutTests/external/wpt/foo/bar.html': '',
+                    RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
                 }
             }},
             'owner': {'email': 'test@chromium.org'},

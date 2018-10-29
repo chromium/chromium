@@ -156,7 +156,7 @@ static bool ParseKeySplines(const String& string,
 void SVGAnimationElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
-  if (name == SVGNames::valuesAttr) {
+  if (name == svg_names::kValuesAttr) {
     if (!ParseValues(params.new_value, values_)) {
       ReportAttributeParsingError(SVGParseStatus::kParsingFailed, name,
                                   params.new_value);
@@ -166,7 +166,7 @@ void SVGAnimationElement::ParseAttribute(
     return;
   }
 
-  if (name == SVGNames::keyTimesAttr) {
+  if (name == svg_names::kKeyTimesAttr) {
     if (!ParseKeyTimes(params.new_value, key_times_, true)) {
       ReportAttributeParsingError(SVGParseStatus::kParsingFailed, name,
                                   params.new_value);
@@ -174,7 +174,7 @@ void SVGAnimationElement::ParseAttribute(
     return;
   }
 
-  if (name == SVGNames::keyPointsAttr) {
+  if (name == svg_names::kKeyPointsAttr) {
     if (IsSVGAnimateMotionElement(*this)) {
       // This is specified to be an animateMotion attribute only but it is
       // simpler to put it here where the other timing calculatations are.
@@ -186,7 +186,7 @@ void SVGAnimationElement::ParseAttribute(
     return;
   }
 
-  if (name == SVGNames::keySplinesAttr) {
+  if (name == svg_names::kKeySplinesAttr) {
     if (!ParseKeySplines(params.new_value, key_splines_)) {
       ReportAttributeParsingError(SVGParseStatus::kParsingFailed, name,
                                   params.new_value);
@@ -194,13 +194,13 @@ void SVGAnimationElement::ParseAttribute(
     return;
   }
 
-  if (name == SVGNames::calcModeAttr) {
+  if (name == svg_names::kCalcModeAttr) {
     SetCalcMode(params.new_value);
     return;
   }
 
-  if (name == SVGNames::fromAttr || name == SVGNames::toAttr ||
-      name == SVGNames::byAttr) {
+  if (name == svg_names::kFromAttr || name == svg_names::kToAttr ||
+      name == svg_names::kByAttr) {
     UpdateAnimationMode();
     return;
   }
@@ -209,12 +209,12 @@ void SVGAnimationElement::ParseAttribute(
 }
 
 void SVGAnimationElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == SVGNames::valuesAttr || attr_name == SVGNames::byAttr ||
-      attr_name == SVGNames::fromAttr || attr_name == SVGNames::toAttr ||
-      attr_name == SVGNames::calcModeAttr ||
-      attr_name == SVGNames::keySplinesAttr ||
-      attr_name == SVGNames::keyPointsAttr ||
-      attr_name == SVGNames::keyTimesAttr) {
+  if (attr_name == svg_names::kValuesAttr || attr_name == svg_names::kByAttr ||
+      attr_name == svg_names::kFromAttr || attr_name == svg_names::kToAttr ||
+      attr_name == svg_names::kCalcModeAttr ||
+      attr_name == svg_names::kKeySplinesAttr ||
+      attr_name == svg_names::kKeyPointsAttr ||
+      attr_name == svg_names::kKeyTimesAttr) {
     AnimationAttributeChanged();
     return;
   }
@@ -272,7 +272,7 @@ void SVGAnimationElement::endElementAt(float offset) {
 
 void SVGAnimationElement::UpdateAnimationMode() {
   // http://www.w3.org/TR/2001/REC-smil-animation-20010904/#AnimFuncValues
-  if (hasAttribute(SVGNames::valuesAttr))
+  if (hasAttribute(svg_names::kValuesAttr))
     SetAnimationMode(kValuesAnimation);
   else if (!ToValue().IsEmpty())
     SetAnimationMode(FromValue().IsEmpty() ? kToAnimation : kFromToAnimation);
@@ -310,26 +310,26 @@ void SVGAnimationElement::SetCalcMode(const AtomicString& calc_mode) {
 }
 
 String SVGAnimationElement::ToValue() const {
-  return FastGetAttribute(SVGNames::toAttr);
+  return FastGetAttribute(svg_names::kToAttr);
 }
 
 String SVGAnimationElement::ByValue() const {
-  return FastGetAttribute(SVGNames::byAttr);
+  return FastGetAttribute(svg_names::kByAttr);
 }
 
 String SVGAnimationElement::FromValue() const {
-  return FastGetAttribute(SVGNames::fromAttr);
+  return FastGetAttribute(svg_names::kFromAttr);
 }
 
 bool SVGAnimationElement::IsAdditive() {
   DEFINE_STATIC_LOCAL(const AtomicString, sum, ("sum"));
-  const AtomicString& value = FastGetAttribute(SVGNames::additiveAttr);
+  const AtomicString& value = FastGetAttribute(svg_names::kAdditiveAttr);
   return value == sum || GetAnimationMode() == kByAnimation;
 }
 
 bool SVGAnimationElement::IsAccumulated() const {
   DEFINE_STATIC_LOCAL(const AtomicString, sum, ("sum"));
-  const AtomicString& value = FastGetAttribute(SVGNames::accumulateAttr);
+  const AtomicString& value = FastGetAttribute(svg_names::kAccumulateAttr);
   return value == sum && GetAnimationMode() != kToAnimation;
 }
 
@@ -524,7 +524,7 @@ void SVGAnimationElement::StartedActiveInterval() {
     return;
 
   // These validations are appropriate for all animation modes.
-  if (FastHasAttribute(SVGNames::keyPointsAttr) &&
+  if (FastHasAttribute(svg_names::kKeyPointsAttr) &&
       key_points_.size() != key_times_.size())
     return;
 
@@ -533,11 +533,11 @@ void SVGAnimationElement::StartedActiveInterval() {
   if (calc_mode == kCalcModeSpline) {
     unsigned splines_count = key_splines_.size();
     if (!splines_count ||
-        (FastHasAttribute(SVGNames::keyPointsAttr) &&
+        (FastHasAttribute(svg_names::kKeyPointsAttr) &&
          key_points_.size() - 1 != splines_count) ||
         (animation_mode == kValuesAnimation &&
          values_.size() - 1 != splines_count) ||
-        (FastHasAttribute(SVGNames::keyTimesAttr) &&
+        (FastHasAttribute(svg_names::kKeyTimesAttr) &&
          key_times_.size() - 1 != splines_count))
       return;
   }
@@ -550,8 +550,8 @@ void SVGAnimationElement::StartedActiveInterval() {
   if ((animation_mode == kFromToAnimation ||
        animation_mode == kFromByAnimation || animation_mode == kToAnimation ||
        animation_mode == kByAnimation) &&
-      (FastHasAttribute(SVGNames::keyPointsAttr) &&
-       FastHasAttribute(SVGNames::keyTimesAttr) &&
+      (FastHasAttribute(svg_names::kKeyPointsAttr) &&
+       FastHasAttribute(svg_names::kKeyTimesAttr) &&
        (key_times_.size() < 2 || key_times_.size() != key_points_.size())))
     return;
   if (animation_mode == kFromToAnimation) {
@@ -569,8 +569,8 @@ void SVGAnimationElement::StartedActiveInterval() {
     animation_valid_ =
         values_.size() >= 1 &&
         (calc_mode == kCalcModePaced ||
-         !FastHasAttribute(SVGNames::keyTimesAttr) ||
-         FastHasAttribute(SVGNames::keyPointsAttr) ||
+         !FastHasAttribute(svg_names::kKeyTimesAttr) ||
+         FastHasAttribute(svg_names::kKeyPointsAttr) ||
          (values_.size() == key_times_.size())) &&
         (calc_mode == kCalcModeDiscrete || !key_times_.size() ||
          key_times_.back() == 1) &&
@@ -578,7 +578,7 @@ void SVGAnimationElement::StartedActiveInterval() {
          ((key_splines_.size() &&
            (key_splines_.size() == values_.size() - 1)) ||
           key_splines_.size() == key_points_.size() - 1)) &&
-        (!FastHasAttribute(SVGNames::keyPointsAttr) ||
+        (!FastHasAttribute(svg_names::kKeyPointsAttr) ||
          (key_times_.size() > 1 && key_times_.size() == key_points_.size()));
     if (animation_valid_)
       animation_valid_ = CalculateToAtEndOfDurationValue(values_.back());
@@ -587,7 +587,7 @@ void SVGAnimationElement::StartedActiveInterval() {
   } else if (animation_mode == kPathAnimation) {
     animation_valid_ =
         calc_mode == kCalcModePaced ||
-        !FastHasAttribute(SVGNames::keyPointsAttr) ||
+        !FastHasAttribute(svg_names::kKeyPointsAttr) ||
         (key_times_.size() > 1 && key_times_.size() == key_points_.size());
   }
 

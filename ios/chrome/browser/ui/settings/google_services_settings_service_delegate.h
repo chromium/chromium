@@ -9,6 +9,17 @@
 typedef NS_ENUM(NSInteger, GoogleServicesSettingsCommandID) {
   // Does nothing.
   GoogleServicesSettingsCommandIDNoOp,
+
+  // Restarts the sign-in authentication flow. Related to error:
+  // SyncSetupService::kSyncServiceUnrecoverableError.
+  GoogleServicesSettingsCommandIDRestartAuthenticationFlow,
+  // Opens the reauth sync dialog. Related to error:
+  // SyncSetupService::kSyncServiceNeedsPassphrase.
+  GoogleServicesSettingsReauthDialogAsSyncIsInAuthError,
+  // Opens the passphrase dialog. Related to error:
+  // SyncSetupService::kSyncServiceNeedsPassphrase.
+  GoogleServicesSettingsCommandIDShowPassphraseDialog,
+
   // Enabble/disable all the Google services.
   GoogleServicesSettingsCommandIDToggleSyncEverything,
 

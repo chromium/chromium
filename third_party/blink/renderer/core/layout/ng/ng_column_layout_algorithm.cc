@@ -65,9 +65,10 @@ LayoutUnit ConstrainColumnBlockSize(LayoutUnit size,
 
 }  // namespace
 
-NGColumnLayoutAlgorithm::NGColumnLayoutAlgorithm(NGBlockNode node,
-                                                 const NGConstraintSpace& space,
-                                                 NGBreakToken* break_token)
+NGColumnLayoutAlgorithm::NGColumnLayoutAlgorithm(
+    NGBlockNode node,
+    const NGConstraintSpace& space,
+    const NGBreakToken* break_token)
     : NGLayoutAlgorithm(node, space, ToNGBlockBreakToken(break_token)) {}
 
 scoped_refptr<NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
@@ -91,7 +92,7 @@ scoped_refptr<NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
       ResolveUsedColumnCount(content_box_size.inline_size, Style());
 
   do {
-    scoped_refptr<NGBlockBreakToken> break_token = BreakToken();
+    scoped_refptr<const NGBlockBreakToken> break_token = BreakToken();
     LayoutUnit intrinsic_block_size;
     LayoutUnit column_inline_offset(border_scrollbar_padding.inline_start);
     int actual_column_count = 0;
@@ -321,6 +322,7 @@ NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstaintSpaceForBalancing(
   space_builder.SetPercentageResolutionSize(column_size);
   space_builder.SetIsNewFormattingContext(true);
   space_builder.SetIsAnonymous(true);
+  space_builder.SetIsIntermediateLayout(true);
 
   return space_builder.ToConstraintSpace(Style().GetWritingMode());
 }

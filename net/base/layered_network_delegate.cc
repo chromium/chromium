@@ -240,14 +240,6 @@ bool LayeredNetworkDelegate::OnCanEnablePrivacyModeInternal(
   return false;
 }
 
-bool LayeredNetworkDelegate::OnAreExperimentalCookieFeaturesEnabled() const {
-  OnAreExperimentalCookieFeaturesEnabledInternal();
-  return nested_network_delegate_->AreExperimentalCookieFeaturesEnabled();
-}
-
-void LayeredNetworkDelegate::OnAreExperimentalCookieFeaturesEnabledInternal()
-    const {}
-
 bool LayeredNetworkDelegate::
     OnCancelURLRequestWithPolicyViolatingReferrerHeader(
         const URLRequest& request,

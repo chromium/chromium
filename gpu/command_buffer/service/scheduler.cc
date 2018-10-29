@@ -10,7 +10,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 
 namespace gpu {

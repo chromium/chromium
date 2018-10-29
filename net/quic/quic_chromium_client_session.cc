@@ -38,7 +38,6 @@
 #include "net/ssl/channel_id_service.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
-#include "net/ssl/token_binding.h"
 #include "net/third_party/quic/core/http/quic_client_promised_info.h"
 #include "net/third_party/quic/core/http/spdy_utils.h"
 #include "net/third_party/quic/platform/api/quic_ptr_util.h"
@@ -56,12 +55,6 @@ const size_t kAdditionalOverheadForIPv6 = 20;
 // connection migration. A new Reader is created every time this endpoint's
 // IP address changes.
 const size_t kMaxReadersPerQuicSession = 5;
-
-// Size of the MRU cache of Token Binding signatures. Since the material being
-// signed is constant and there aren't many keys being used to sign, a fairly
-// small number was chosen, somewhat arbitrarily, and to match
-// SSLClientSocketImpl.
-const size_t kTokenBindingSignatureMapSize = 10;
 
 // Time to wait (in seconds) when no networks are available and
 // migrating sessions need to wait for a new network to connect.
@@ -331,16 +324,6 @@ QuicChromiumClientSession::Handle::GetConnectTiming() {
     return connect_timing_;
 
   return session_->GetConnectTiming();
-}
-
-Error QuicChromiumClientSession::Handle::GetTokenBindingSignature(
-    crypto::ECPrivateKey* key,
-    TokenBindingType tb_type,
-    std::vector<uint8_t>* out) {
-  if (!session_)
-    return ERR_CONNECTION_CLOSED;
-
-  return session_->GetTokenBindingSignature(key, tb_type, out);
 }
 
 void QuicChromiumClientSession::Handle::PopulateNetErrorDetails(
@@ -740,7 +723,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
                                        net_log_)),
       going_away_(false),
       port_migration_detected_(false),
-      token_binding_signatures_(kTokenBindingSignatureMapSize),
       push_delegate_(push_delegate),
       streams_pushed_count_(0),
       streams_pushed_and_claimed_count_(0),
@@ -819,7 +801,6 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
   if (connection()->connected()) {
     // Ensure that the connection is closed by the time the session is
     // destroyed.
-    RecordInternalErrorLocation(quic::QUIC_CHROMIUM_CLIENT_SESSION_DESTRUCTOR);
     connection()->CloseConnection(quic::QUIC_INTERNAL_ERROR,
                                   "session torn down",
                                   quic::ConnectionCloseBehavior::SILENT_CLOSE);
@@ -1041,14 +1022,14 @@ int QuicChromiumClientSession::TryCreateStream(StreamRequest* request) {
 void QuicChromiumClientSession::CancelRequest(StreamRequest* request) {
   // Remove |request| from the queue while preserving the order of the
   // other elements.
-  StreamRequestQueue::iterator it =
+  auto it =
       std::find(stream_requests_.begin(), stream_requests_.end(), request);
   if (it != stream_requests_.end()) {
     it = stream_requests_.erase(it);
   }
 }
 
-bool QuicChromiumClientSession::ShouldCreateOutgoingDynamicStream() {
+bool QuicChromiumClientSession::ShouldCreateOutgoingStream() {
   if (!crypto_stream_->encryption_established()) {
     DVLOG(1) << "Encryption not active so no outgoing stream created.";
     return false;
@@ -1076,8 +1057,14 @@ bool QuicChromiumClientSession::WasConnectionEverUsed() {
 }
 
 QuicChromiumClientStream*
-QuicChromiumClientSession::CreateOutgoingDynamicStream() {
+QuicChromiumClientSession::CreateOutgoingBidirectionalStream() {
   NOTREACHED() << "CreateOutgoingReliableStreamImpl should be called directly";
+  return nullptr;
+}
+
+QuicChromiumClientStream*
+QuicChromiumClientSession::CreateOutgoingUnidirectionalStream() {
+  NOTREACHED() << "Try to create outgoing unidirectional stream";
   return nullptr;
 }
 
@@ -1086,7 +1073,8 @@ QuicChromiumClientSession::CreateOutgoingReliableStreamImpl(
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(connection()->connected());
   QuicChromiumClientStream* stream = new QuicChromiumClientStream(
-      GetNextOutgoingStreamId(), this, net_log_, traffic_annotation);
+      GetNextOutgoingStreamId(), this, quic::BIDIRECTIONAL, net_log_,
+      traffic_annotation);
   ActivateStream(base::WrapUnique(stream));
   ++num_total_streams_;
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.NumOpenStreams",
@@ -1160,6 +1148,27 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
       return false;
   }
 
+  // QUIC-Crypto always uses RSA-PSS or ECDSA with SHA-256.
+  //
+  // TODO(nharper): This will no longer be true in TLS 1.3. This logic, and
+  // likely the rest of this logic, will want some adjustments for QUIC with TLS
+  // 1.3.
+  size_t unused;
+  X509Certificate::PublicKeyType key_type;
+  X509Certificate::GetPublicKeyInfo(ssl_info->cert->cert_buffer(), &unused,
+                                    &key_type);
+  switch (key_type) {
+    case X509Certificate::kPublicKeyTypeRSA:
+      ssl_info->peer_signature_algorithm = SSL_SIGN_RSA_PSS_RSAE_SHA256;
+      break;
+    case X509Certificate::kPublicKeyTypeECDSA:
+      ssl_info->peer_signature_algorithm = SSL_SIGN_ECDSA_SECP256R1_SHA256;
+      break;
+    default:
+      NOTREACHED();
+      return false;
+  }
+
   ssl_info->public_key_hashes = cert_verify_result_->public_key_hashes;
   ssl_info->is_issued_by_known_root =
       cert_verify_result_->is_issued_by_known_root;
@@ -1175,38 +1184,7 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
 
   ssl_info->UpdateCertificateTransparencyInfo(*ct_verify_result_);
 
-  if (crypto_stream_->crypto_negotiated_params().token_binding_key_param ==
-      quic::kTB10) {
-    ssl_info->token_binding_negotiated = true;
-    ssl_info->token_binding_key_param = TB_PARAM_ECDSAP256;
-  }
-
   return true;
-}
-
-Error QuicChromiumClientSession::GetTokenBindingSignature(
-    crypto::ECPrivateKey* key,
-    TokenBindingType tb_type,
-    std::vector<uint8_t>* out) {
-  // The same key will be used across multiple requests to sign the same value,
-  // so the signature is cached.
-  std::string raw_public_key;
-  if (!key->ExportRawPublicKey(&raw_public_key))
-    return ERR_FAILED;
-  TokenBindingSignatureMap::iterator it =
-      token_binding_signatures_.Get(std::make_pair(tb_type, raw_public_key));
-  if (it != token_binding_signatures_.end()) {
-    *out = it->second;
-    return OK;
-  }
-
-  std::string key_material;
-  if (!crypto_stream_->ExportTokenBindingKeyingMaterial(&key_material))
-    return ERR_FAILED;
-  if (!CreateTokenBindingSignature(key_material, tb_type, key, out))
-    return ERR_FAILED;
-  token_binding_signatures_.Put(std::make_pair(tb_type, raw_public_key), *out);
-  return OK;
 }
 
 int QuicChromiumClientSession::CryptoConnect(CompletionOnceCallback callback) {
@@ -1255,10 +1233,10 @@ bool QuicChromiumClientSession::CanPool(const std::string& hostname,
                               hostname);
 }
 
-bool QuicChromiumClientSession::ShouldCreateIncomingDynamicStream(
+bool QuicChromiumClientSession::ShouldCreateIncomingStream(
     quic::QuicStreamId id) {
   if (!connection()->connected()) {
-    LOG(DFATAL) << "ShouldCreateIncomingDynamicStream called when disconnected";
+    LOG(DFATAL) << "ShouldCreateIncomingStream called when disconnected";
     return false;
   }
   if (goaway_received()) {
@@ -1279,9 +1257,9 @@ bool QuicChromiumClientSession::ShouldCreateIncomingDynamicStream(
   return true;
 }
 
-QuicChromiumClientStream*
-QuicChromiumClientSession::CreateIncomingDynamicStream(quic::QuicStreamId id) {
-  if (!ShouldCreateIncomingDynamicStream(id)) {
+QuicChromiumClientStream* QuicChromiumClientSession::CreateIncomingStream(
+    quic::QuicStreamId id) {
+  if (!ShouldCreateIncomingStream(id)) {
     return nullptr;
   }
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -1315,9 +1293,8 @@ QuicChromiumClientSession::CreateIncomingReliableStreamImpl(
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(connection()->connected());
 
-  QuicChromiumClientStream* stream =
-      new QuicChromiumClientStream(id, this, net_log_, traffic_annotation);
-  stream->CloseWriteSide();
+  QuicChromiumClientStream* stream = new QuicChromiumClientStream(
+      id, this, quic::READ_UNIDIRECTIONAL, net_log_, traffic_annotation);
   ActivateStream(base::WrapUnique(stream));
   ++num_total_streams_;
   return stream;
@@ -1434,7 +1411,7 @@ void QuicChromiumClientSession::OnCryptoHandshakeEvent(
           base::TimeTicks::Now() - connect_timing_.dns_end);
     }
 
-    HandleSet::iterator it = handles_.begin();
+    auto it = handles_.begin();
     while (it != handles_.end()) {
       Handle* handle = *it;
       ++it;
@@ -1536,7 +1513,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
       if (GetNumOpenOutgoingStreams() > 0) {
         UMA_HISTOGRAM_BOOLEAN(
             "Net.QuicSession.TimedOutWithOpenStreams.HasUnackedPackets",
-            connection()->sent_packet_manager().HasUnackedPackets());
+            connection()->sent_packet_manager().HasInFlightPackets());
         UMA_HISTOGRAM_COUNTS_1M(
             "Net.QuicSession.TimedOutWithOpenStreams.ConsecutiveRTOCount",
             connection()->sent_packet_manager().GetConsecutiveRtoCount());
@@ -2190,10 +2167,6 @@ void QuicChromiumClientSession::CloseSessionOnError(
     quic::QuicErrorCode quic_error,
     quic::ConnectionCloseBehavior behavior) {
   base::UmaHistogramSparse("Net.QuicSession.CloseSessionOnError", -net_error);
-  if (quic_error == quic::QUIC_INTERNAL_ERROR) {
-    RecordInternalErrorLocation(
-        quic::QUIC_CHROMIUM_CLIENT_SESSION_CLOSE_SESSION_ON_ERROR);
-  }
 
   if (!callback_.is_null()) {
     base::ResetAndReturn(&callback_).Run(net_error);
@@ -2595,8 +2568,7 @@ std::unique_ptr<base::Value> QuicChromiumClientSession::GetInfoAsValue(
   SSLInfo ssl_info;
 
   std::unique_ptr<base::ListValue> alias_list(new base::ListValue());
-  for (std::set<HostPortPair>::const_iterator it = aliases.begin();
-       it != aliases.end(); it++) {
+  for (auto it = aliases.begin(); it != aliases.end(); it++) {
     alias_list->AppendString(it->ToString());
   }
   dict->Set("aliases", std::move(alias_list));

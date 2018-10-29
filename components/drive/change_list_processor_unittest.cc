@@ -24,7 +24,6 @@
 #include "components/drive/file_system_core_util.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "google_apis/drive/drive_api_parser.h"
-#include "google_apis/drive/drive_switches.h"
 #include "google_apis/drive/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -571,6 +570,7 @@ TEST_F(ChangeListProcessorTest, RefreshDirectory) {
             ChangeListProcessor::RefreshDirectory(
                 metadata_.get(),
                 DirectoryFetchInfo(root.local_id(), kRootId, kNewStartpageToken,
+                                   util::GetDriveMyDriveRootPath(),
                                    util::GetDriveMyDriveRootPath()),
                 std::move(change_list), &refreshed_entries));
 
@@ -609,6 +609,7 @@ TEST_F(ChangeListProcessorTest, RefreshDirectory_WrongParentId) {
             ChangeListProcessor::RefreshDirectory(
                 metadata_.get(),
                 DirectoryFetchInfo(root.local_id(), kRootId, kNewStartpageToken,
+                                   util::GetDriveMyDriveRootPath(),
                                    util::GetDriveMyDriveRootPath()),
                 std::move(change_list), &refreshed_entries));
 

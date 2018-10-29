@@ -60,8 +60,11 @@ message ChromeUserPopulation {
   optional ProfileManagementStatus profile_management_status = 5
       [default = UNKNOWN];
 
-  // Indicates if user opted in advanced protection program (a.k.a Titanium).
+  // Indicates if user opted in advanced protection program.
   optional bool is_under_advanced_protection = 6;
+
+  // Indicates if user is in incognito mode.
+  optional bool is_incognito = 7;
 }
 
 message ClientPhishingRequest {
@@ -298,6 +301,14 @@ message LoginReputationClientRequest {
 
   // The MIME type of the page, e.g. "application/pdf".
   optional string content_type = 8;
+
+  // Content area height in DIPs. This field should only be filled for extended
+  // reporting users.
+  optional int32 content_area_height = 9;
+
+  // Content area width in DIPs. This field should only be filled for extended
+  // reporting users.
+  optional int32 content_area_width = 10;
 }
 
 // The message is used for client response for login reputation requests.
@@ -475,7 +486,7 @@ message ClientDownloadRequest {
     INVALID_ZIP = 7;
     // A .dmg, .pkg, etc, that Chrome failed to unpack to the point of finding
     // Mach O's.
-    INVALID_MAC_ARCHIVE = 8;
+    MAC_ARCHIVE_FAILED_PARSING = 8;
     // A download request initiated via PPAPI. Typically the requestor is
     // a Flash applet.
     PPAPI_SAVE_REQUEST = 9;
@@ -649,6 +660,11 @@ message ReferrerChainEntry {
     // chain is empty or partially missing, we will add/append recent navigation
     // events to this list. RECENT_NAVIGATION type is set for these cases.
     RECENT_NAVIGATION = 6;
+
+    // The REFERRER type is used for entries that recede the LANDING_REFERRER in
+    // the referrer chain, when more than two gestures are included in the
+    // referrer chain.
+    REFERRER = 7;
   }
 
   enum NavigationInitiation {

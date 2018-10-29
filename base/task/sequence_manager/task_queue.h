@@ -15,6 +15,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/moveable_auto_lock.h"
+#include "base/task/sequence_manager/tasks.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 
@@ -28,14 +29,21 @@ namespace sequence_manager {
 
 namespace internal {
 struct AssociatedThreadId;
-class GracefulQueueShutdownHelper;
 class SequenceManagerImpl;
 class TaskQueueImpl;
 }  // namespace internal
 
 class TimeDomain;
 
-class BASE_EXPORT TaskQueue : public SingleThreadTaskRunner {
+// TODO(kraynov): Make TaskQueue to actually be an interface for TaskQueueImpl
+// and stop using ref-counting because we're no longer tied to task runner
+// lifecycle and there's no other need for ref-counting either.
+// NOTE: When TaskQueue gets automatically deleted on zero ref-count,
+// TaskQueueImpl gets gracefully shutdown. It means that it doesn't get
+// unregistered immediately and might accept some last minute tasks until
+// SequenceManager will unregister it at some point. It's done to ensure that
+// task queue always gets unregistered on the main thread.
+class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
  public:
   class Observer {
    public:
@@ -52,25 +60,6 @@ class BASE_EXPORT TaskQueue : public SingleThreadTaskRunner {
     // observer about cancellations.
     virtual void OnQueueNextWakeUpChanged(TaskQueue* queue,
                                           TimeTicks next_wake_up) = 0;
-  };
-
-  // A wrapper around OnceClosure with additional metadata to be passed
-  // to PostTask and plumbed until PendingTask is created.
-  struct BASE_EXPORT PostedTask {
-    PostedTask(OnceClosure callback,
-               Location posted_from,
-               TimeDelta delay = TimeDelta(),
-               Nestable nestable = Nestable::kNestable,
-               int task_type = 0);
-    PostedTask(PostedTask&& move_from);
-    PostedTask(const PostedTask& copy_from) = delete;
-    ~PostedTask();
-
-    OnceClosure callback;
-    Location posted_from;
-    TimeDelta delay;
-    Nestable nestable;
-    int task_type;
   };
 
   // Prepare the task queue to get released.
@@ -136,17 +125,6 @@ class BASE_EXPORT TaskQueue : public SingleThreadTaskRunner {
     bool should_monitor_quiescence;
     TimeDomain* time_domain;
     bool should_notify_observers;
-  };
-
-  // Interface to pass per-task metadata to RendererScheduler.
-  class BASE_EXPORT Task : public PendingTask {
-   public:
-    Task(PostedTask posted_task, TimeTicks desired_run_time);
-
-    int task_type() const { return task_type_; }
-
-   private:
-    int task_type_;
   };
 
   // Information about task execution.
@@ -315,29 +293,26 @@ class BASE_EXPORT TaskQueue : public SingleThreadTaskRunner {
 
   // Create a task runner for this TaskQueue which will annotate all
   // posted tasks with the given task type.
+  // May be called on any thread.
+  // NOTE: Task runners don't hold a reference to a TaskQueue, hence,
+  // it's required to retain that reference to prevent automatic graceful
+  // shutdown. Unique ownership of task queues will fix this issue soon.
   scoped_refptr<SingleThreadTaskRunner> CreateTaskRunner(int task_type);
 
-  // TODO(kraynov): Drop this implementation and introduce
-  // GetDefaultTaskRunner() method instead.
-  // SingleThreadTaskRunner implementation:
-  bool RunsTasksInCurrentSequence() const override;
-  bool PostDelayedTask(const Location& from_here,
-                       OnceClosure task,
-                       TimeDelta delay) override;
-  bool PostNonNestableDelayedTask(const Location& from_here,
-                                  OnceClosure task,
-                                  TimeDelta delay) override;
-
-  bool PostTaskWithMetadata(PostedTask task);
+  // Default task runner which doesn't annotate tasks with a task type.
+  scoped_refptr<SingleThreadTaskRunner> task_runner() const {
+    return default_task_runner_;
+  }
 
  protected:
   TaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
             const TaskQueue::Spec& spec);
-  ~TaskQueue() override;
+  virtual ~TaskQueue();
 
   internal::TaskQueueImpl* GetTaskQueueImpl() const { return impl_.get(); }
 
  private:
+  friend class RefCountedThreadSafe<TaskQueue>;
   friend class internal::SequenceManagerImpl;
   friend class internal::TaskQueueImpl;
 
@@ -361,10 +336,8 @@ class BASE_EXPORT TaskQueue : public SingleThreadTaskRunner {
 
   const WeakPtr<internal::SequenceManagerImpl> sequence_manager_;
 
-  const scoped_refptr<internal::GracefulQueueShutdownHelper>
-      graceful_queue_shutdown_helper_;
-
   scoped_refptr<internal::AssociatedThreadId> associated_thread_;
+  scoped_refptr<SingleThreadTaskRunner> default_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(TaskQueue);
 };

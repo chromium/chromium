@@ -47,8 +47,6 @@ const char kBookmarkBarTag[] = "bookmark_bar";
 const char kMobileBookmarksTag[] = "synced_bookmarks";
 const char kOtherBookmarksTag[] = "other_bookmarks";
 
-const char kBookmarksRootId[] = "32904_google_chrome_bookmarks";
-
 // Heuristic to consider two nodes (local and remote) a match for the purpose of
 // merging. Two folders match if they have the same title, two bookmarks match
 // if they have the same title and url. A folder and a bookmark never match.
@@ -128,15 +126,9 @@ BuildUpdatesTreeWithoutTombstonesWithSortedChildren(
     if (update_entity.is_deleted()) {
       continue;
     }
-    // Permanent nodes should be handled differently. They must be added even
-    // if they don't have children associated to them because they are the roots
-    // from which the merge starts.
-    if (update_entity.parent_id == kBookmarksRootId ||
-        update_entity.parent_id == "0") {
-      // Make sure permanent node is added if it doesn't exist already.
-      updates_tree.emplace(&update, std::vector<const UpdateResponseData*>());
-      // No need to associate it with its parent (the root node). We start
-      // merging from permanent nodes.
+    // No need to associate permanent nodes with their parent (the root node).
+    // We start merging from the permanent nodes.
+    if (!update_entity.server_defined_unique_tag.empty()) {
       continue;
     }
     if (!syncer::UniquePosition::FromProto(update_entity.unique_position)
@@ -334,8 +326,8 @@ void BookmarkModelMerger::ProcessLocalCreation(
   }
 
   const bookmarks::BookmarkNode* node = parent->GetChild(index);
-  const sync_pb::EntitySpecifics specifics =
-      CreateSpecificsFromBookmarkNode(node, bookmark_model_);
+  const sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
+      node, bookmark_model_, /*force_favicon_load=*/true);
   bookmark_tracker_->Add(sync_id, node, server_version, creation_time,
                          pos.ToProto(), specifics);
   // Mark the entity that it needs to be committed.

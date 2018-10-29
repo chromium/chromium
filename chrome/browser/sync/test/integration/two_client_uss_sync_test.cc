@@ -398,8 +398,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientUssSyncTest, Encryption) {
   model0->WriteItem(kKey1, kValue1);
   ASSERT_TRUE(DataChecker(model1, kKey1, kValue1).Wait());
 
-  GetSyncService(0)->SetEncryptionPassphrase(kPassphrase,
-                                             syncer::SyncService::EXPLICIT);
+  GetSyncService(0)->SetEncryptionPassphrase(kPassphrase);
   ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
   // Wait for client 1 to know that a passphrase is happening to avoid potential
   // race conditions and make the functionality this case tests more consistent.

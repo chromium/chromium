@@ -9,10 +9,8 @@
 
 #include "base/message_loop/message_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/previews/content/previews_user_data.h"
 #include "content/public/common/previews_state.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/url_request/url_request.h"
-#include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -28,29 +26,36 @@ class PreviewEnabledPreviewsDecider : public PreviewsDecider {
   ~PreviewEnabledPreviewsDecider() override {}
 
   bool ShouldAllowPreviewAtECT(
-      const net::URLRequest& request,
+      PreviewsUserData* previews_data,
+      const GURL& url,
+      bool is_reload,
       PreviewsType type,
       net::EffectiveConnectionType effective_connection_type_threshold,
-      const std::vector<std::string>& host_blacklist_from_server,
-      bool ignore_long_term_black_list_rules) const override {
+      const std::vector<std::string>& host_blacklist_from_finch,
+      bool is_server_preview) const override {
     return IsEnabled(type);
   }
 
-  bool ShouldAllowPreview(const net::URLRequest& request,
+  bool ShouldAllowPreview(PreviewsUserData* previews_data,
+                          const GURL& url,
+                          bool is_reload,
                           PreviewsType type) const override {
-    return ShouldAllowPreviewAtECT(request, type,
+    return ShouldAllowPreviewAtECT(previews_data, url, is_reload, type,
                                    params::GetECTThresholdForPreview(type),
                                    std::vector<std::string>(), false);
   }
 
-  bool IsURLAllowedForPreview(const net::URLRequest& request,
+  bool IsURLAllowedForPreview(PreviewsUserData* previews_data,
+                              const GURL& url,
                               PreviewsType type) const override {
     EXPECT_TRUE(type == PreviewsType::NOSCRIPT ||
                 type == PreviewsType::RESOURCE_LOADING_HINTS);
     return IsEnabled(type);
   }
 
-  void LoadResourceHints(const net::URLRequest& request) override {}
+  void LoadResourceHints(const GURL& url) override {}
+
+  void LogHintCacheMatch(const GURL& url, bool is_committed) const override {}
 
  private:
   bool IsEnabled(PreviewsType type) const {
@@ -87,87 +92,101 @@ class PreviewsContentUtilTest : public testing::Test {
     return &enabled_previews_decider_;
   }
 
-  std::unique_ptr<net::URLRequest> CreateRequest() const {
-    return CreateRequestWithURL(GURL("http://example.com"));
-  }
-
-  std::unique_ptr<net::URLRequest> CreateHttpsRequest() const {
-    return CreateRequestWithURL(GURL("https://secure.example.com"));
-  }
-
-  std::unique_ptr<net::URLRequest> CreateRequestWithURL(const GURL& url) const {
-    return context_.CreateRequest(url, net::DEFAULT_PRIORITY, nullptr,
-                                  TRAFFIC_ANNOTATION_FOR_TESTS);
-  }
-
  protected:
-  // Needed for TestURLRequestContext.
   base::MessageLoopForIO loop_;
 
  private:
   PreviewEnabledPreviewsDecider enabled_previews_decider_;
-  net::TestURLRequestContext context_;
 };
 
 TEST_F(PreviewsContentUtilTest,
-       DetermineEnabledClientPreviewsStatePreviewsDisabled) {
+       DetermineAllowedClientPreviewsStatePreviewsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitFromCommandLine(
       "ClientLoFi,ResourceLoadingHints,NoScriptPreviews" /* enable_features */,
       "Previews" /* disable_features */);
+  PreviewsUserData user_data(1);
   EXPECT_EQ(content::PREVIEWS_UNSPECIFIED,
-            previews::DetermineEnabledClientPreviewsState(
-                *CreateHttpsRequest(), enabled_previews_decider()));
+            previews::DetermineAllowedClientPreviewsState(
+                &user_data, GURL("http://www.google.com"), false, true,
+                enabled_previews_decider()));
   EXPECT_EQ(content::PREVIEWS_UNSPECIFIED,
-            previews::DetermineEnabledClientPreviewsState(
-                *CreateRequest(), enabled_previews_decider()));
-}
-
-TEST_F(PreviewsContentUtilTest, DetermineEnabledClientPreviewsStateClientLoFi) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine("Previews,ClientLoFi", std::string());
-  EXPECT_TRUE(content::CLIENT_LOFI_ON &
-              previews::DetermineEnabledClientPreviewsState(
-                  *CreateHttpsRequest(), enabled_previews_decider()));
-  EXPECT_TRUE(content::CLIENT_LOFI_ON &
-              previews::DetermineEnabledClientPreviewsState(
-                  *CreateRequest(), enabled_previews_decider()));
+            previews::DetermineAllowedClientPreviewsState(
+                &user_data, GURL("http://www.google.com"), false, true,
+                enabled_previews_decider()));
 }
 
 TEST_F(PreviewsContentUtilTest,
-       DetermineEnabledClientPreviewsStateResourceLoadingHints) {
+       DetermineAllowedClientPreviewsStateDataSaverDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "Previews,ClientLoFi,ResourceLoadingHints,NoScriptPreviews",
+      {} /* disable_features */);
+  PreviewsUserData user_data(1);
+  EXPECT_EQ(content::OFFLINE_PAGE_ON | content::CLIENT_LOFI_ON |
+                content::RESOURCE_LOADING_HINTS_ON | content::NOSCRIPT_ON,
+            previews::DetermineAllowedClientPreviewsState(
+                &user_data, GURL("http://www.google.com"), false, true,
+                enabled_previews_decider()));
+  EXPECT_EQ(content::OFFLINE_PAGE_ON,
+            previews::DetermineAllowedClientPreviewsState(
+                &user_data, GURL("http://www.google.com"), false, false,
+                enabled_previews_decider()));
+}
+
+TEST_F(PreviewsContentUtilTest, DetermineAllowedClientPreviewsStateClientLoFi) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine("Previews,ClientLoFi", std::string());
+  PreviewsUserData user_data(1);
+  EXPECT_TRUE(content::CLIENT_LOFI_ON &
+              previews::DetermineAllowedClientPreviewsState(
+                  &user_data, GURL("https://www.google.com"), false, true,
+                  enabled_previews_decider()));
+  EXPECT_TRUE(content::CLIENT_LOFI_ON &
+              previews::DetermineAllowedClientPreviewsState(
+                  &user_data, GURL("http://www.google.com"), false, true,
+                  enabled_previews_decider()));
+}
+
+TEST_F(PreviewsContentUtilTest,
+       DetermineAllowedClientPreviewsStateResourceLoadingHints) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitFromCommandLine("Previews,ResourceLoadingHints",
                                           std::string());
+  PreviewsUserData user_data(1);
   EXPECT_LT(0, content::RESOURCE_LOADING_HINTS_ON &
-                   previews::DetermineEnabledClientPreviewsState(
-                       *CreateHttpsRequest(), enabled_previews_decider()));
+                   previews::DetermineAllowedClientPreviewsState(
+                       &user_data, GURL("https://www.google.com"), false, true,
+                       enabled_previews_decider()));
   EXPECT_LT(0, content::RESOURCE_LOADING_HINTS_ON &
-                   previews::DetermineEnabledClientPreviewsState(
-                       *CreateRequest(), enabled_previews_decider()));
+                   previews::DetermineAllowedClientPreviewsState(
+                       &user_data, GURL("http://www.google.com"), false, true,
+                       enabled_previews_decider()));
 }
 
 TEST_F(PreviewsContentUtilTest,
-       DetermineEnabledClientPreviewsStateNoScriptAndClientLoFi) {
+       DetermineAllowedClientPreviewsStateNoScriptAndClientLoFi) {
   // Enable both Client LoFi and NoScript.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitFromCommandLine(
       "Previews,ClientLoFi,NoScriptPreviews", std::string());
 
+  PreviewsUserData user_data(1);
   // Verify both are enabled.
   EXPECT_TRUE((content::NOSCRIPT_ON | content::CLIENT_LOFI_ON) &
-              previews::DetermineEnabledClientPreviewsState(
-                  *CreateHttpsRequest(), enabled_previews_decider()));
+              previews::DetermineAllowedClientPreviewsState(
+                  &user_data, GURL("https://www.google.com"), false, true,
+                  enabled_previews_decider()));
   EXPECT_TRUE((content::NOSCRIPT_ON | content::CLIENT_LOFI_ON) &
-              previews::DetermineEnabledClientPreviewsState(
-                  *CreateRequest(), enabled_previews_decider()));
+              previews::DetermineAllowedClientPreviewsState(
+                  &user_data, GURL("http://www.google.com"), false, true,
+                  enabled_previews_decider()));
 
   // Verify non-HTTP[S] URL has no previews enabled.
-  std::unique_ptr<net::URLRequest> data_url_request(
-      CreateRequestWithURL(GURL("data://someblob")));
   EXPECT_EQ(content::PREVIEWS_UNSPECIFIED,
-            previews::DetermineEnabledClientPreviewsState(
-                *data_url_request, enabled_previews_decider()));
+            previews::DetermineAllowedClientPreviewsState(
+                &user_data, GURL("data://someblob"), false, true,
+                enabled_previews_decider()));
 }
 
 TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
@@ -175,26 +194,27 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
   scoped_feature_list.InitFromCommandLine(
       "Previews,ClientLoFi,NoScriptPreviews,ResourceLoadingHints",
       std::string());
+  PreviewsUserData user_data(1);
   // Server bits take precedence over NoScript:
   EXPECT_EQ(content::SERVER_LITE_PAGE_ON | content::SERVER_LOFI_ON |
                 content::CLIENT_LOFI_ON,
             previews::DetermineCommittedClientPreviewsState(
-                *CreateHttpsRequest(),
+                &user_data, GURL("https://www.google.com"),
                 content::SERVER_LITE_PAGE_ON | content::SERVER_LOFI_ON |
                     content::CLIENT_LOFI_ON | content::NOSCRIPT_ON,
                 enabled_previews_decider()));
 
   // NoScript has precedence over Client LoFi - kept for committed HTTPS:
-  EXPECT_EQ(
-      content::NOSCRIPT_ON,
-      previews::DetermineCommittedClientPreviewsState(
-          *CreateHttpsRequest(), content::CLIENT_LOFI_ON | content::NOSCRIPT_ON,
-          enabled_previews_decider()));
+  EXPECT_EQ(content::NOSCRIPT_ON,
+            previews::DetermineCommittedClientPreviewsState(
+                &user_data, GURL("https://www.google.com"),
+                content::CLIENT_LOFI_ON | content::NOSCRIPT_ON,
+                enabled_previews_decider()));
 
   // RESOURCE_LOADING_HINTS has precedence over Client LoFi and NoScript.
   EXPECT_EQ(content::RESOURCE_LOADING_HINTS_ON,
             previews::DetermineCommittedClientPreviewsState(
-                *CreateHttpsRequest(),
+                &user_data, GURL("https://www.google.com"),
                 content::CLIENT_LOFI_ON | content::NOSCRIPT_ON |
                     content::RESOURCE_LOADING_HINTS_ON,
                 enabled_previews_decider()));
@@ -202,7 +222,7 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
   // NoScript has precedence over Client LoFi - dropped for committed HTTP:
   EXPECT_EQ(content::PREVIEWS_OFF,
             previews::DetermineCommittedClientPreviewsState(
-                *CreateRequest(),
+                &user_data, GURL("http://www.google.com"),
                 content::CLIENT_LOFI_ON | content::NOSCRIPT_ON |
                     content::RESOURCE_LOADING_HINTS_ON,
                 enabled_previews_decider()));
@@ -210,14 +230,14 @@ TEST_F(PreviewsContentUtilTest, DetermineCommittedClientPreviewsState) {
   // Only Client LoFi:
   EXPECT_EQ(content::CLIENT_LOFI_ON,
             previews::DetermineCommittedClientPreviewsState(
-                *CreateHttpsRequest(), content::CLIENT_LOFI_ON,
-                enabled_previews_decider()));
+                &user_data, GURL("https://www.google.com"),
+                content::CLIENT_LOFI_ON, enabled_previews_decider()));
 
   // Only NoScript:
   EXPECT_EQ(content::NOSCRIPT_ON,
             previews::DetermineCommittedClientPreviewsState(
-                *CreateHttpsRequest(), content::NOSCRIPT_ON,
-                enabled_previews_decider()));
+                &user_data, GURL("https://www.google.com"),
+                content::NOSCRIPT_ON, enabled_previews_decider()));
 }
 
 TEST_F(PreviewsContentUtilTest,
@@ -225,10 +245,11 @@ TEST_F(PreviewsContentUtilTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitFromCommandLine("Previews,ClientLoFi",
                                           "NoScriptPreviews");
+  PreviewsUserData user_data(1);
   // NoScript not allowed at commit time so Client LoFi chosen:
   EXPECT_EQ(content::PREVIEWS_OFF,
             previews::DetermineCommittedClientPreviewsState(
-                *CreateHttpsRequest(),
+                &user_data, GURL("https://www.google.com"),
                 content::CLIENT_LOFI_ON | content::NOSCRIPT_ON |
                     content::RESOURCE_LOADING_HINTS_ON,
                 enabled_previews_decider()));

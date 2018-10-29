@@ -34,10 +34,11 @@ Profiler.CPUProfileView = class extends Profiler.ProfileView {
   constructor(profileHeader) {
     super();
     this._profileHeader = profileHeader;
-    this.profile = profileHeader.profileModel();
-    this.adjustedTotal = this.profile.profileHead.total;
-    this.adjustedTotal -= this.profile.idleNode ? this.profile.idleNode.total : 0;
     this.initialize(new Profiler.CPUProfileView.NodeFormatter(this));
+    const profile = profileHeader.profileModel();
+    this.adjustedTotal = profile.profileHead.total;
+    this.adjustedTotal -= profile.idleNode ? profile.idleNode.total : 0;
+    this.setProfile(profile);
   }
 
   /**
@@ -47,7 +48,7 @@ Profiler.CPUProfileView = class extends Profiler.ProfileView {
     super.wasShown();
     const lineLevelProfile = PerfUI.LineLevelProfile.instance();
     lineLevelProfile.reset();
-    lineLevelProfile.appendCPUProfile(this.profile);
+    lineLevelProfile.appendCPUProfile(this._profileHeader.profileModel());
   }
 
   /**
@@ -70,7 +71,8 @@ Profiler.CPUProfileView = class extends Profiler.ProfileView {
    * @return {!PerfUI.FlameChartDataProvider}
    */
   createFlameChartDataProvider() {
-    return new Profiler.CPUFlameChartDataProvider(this.profile, this._profileHeader._cpuProfilerModel);
+    return new Profiler.CPUFlameChartDataProvider(
+        this._profileHeader.profileModel(), this._profileHeader._cpuProfilerModel);
   }
 };
 
@@ -121,10 +123,10 @@ Profiler.CPUProfileType = class extends Profiler.ProfileType {
    */
   buttonClicked() {
     if (this._recording) {
-      this.stopRecordingProfile();
+      this._stopRecordingProfile();
       return false;
     } else {
-      this.startRecordingProfile();
+      this._startRecordingProfile();
       return true;
     }
   }
@@ -148,7 +150,7 @@ Profiler.CPUProfileType = class extends Profiler.ProfileType {
     this.addProfile(profile);
   }
 
-  startRecordingProfile() {
+  _startRecordingProfile() {
     const cpuProfilerModel = UI.context.flavor(SDK.CPUProfilerModel);
     if (this.profileBeingRecorded() || !cpuProfilerModel)
       return;
@@ -162,7 +164,7 @@ Profiler.CPUProfileType = class extends Profiler.ProfileType {
     Host.userMetrics.actionTaken(Host.UserMetrics.Action.ProfilesCPUProfileTaken);
   }
 
-  async stopRecordingProfile() {
+  async _stopRecordingProfile() {
     this._recording = false;
     if (!this.profileBeingRecorded() || !this.profileBeingRecorded()._cpuProfilerModel)
       return;
@@ -193,7 +195,7 @@ Profiler.CPUProfileType = class extends Profiler.ProfileType {
    * @override
    */
   profileBeingRecordedRemoved() {
-    this.stopRecordingProfile();
+    this._stopRecordingProfile();
   }
 };
 
@@ -272,7 +274,7 @@ Profiler.CPUProfileView.NodeFormatter = class {
    * @return {string}
    */
   formatPercent(value, node) {
-    return node.profileNode === this._profileView.profile.idleNode ? '' : Common.UIString('%.2f\xa0%%', value);
+    return node.profileNode === this._profileView.profile().idleNode ? '' : Common.UIString('%.2f\xa0%%', value);
   }
 
   /**

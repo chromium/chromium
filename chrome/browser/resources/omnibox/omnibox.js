@@ -17,437 +17,147 @@
  * are available, the Javascript formats them and displays them.
  */
 
-(function() {
-/**
- * Register our event handlers.
- */
-function initialize() {
-  $('omnibox-input-form').addEventListener('submit', startOmniboxQuery, false);
-  $('prevent-inline-autocomplete')
-      .addEventListener('change', startOmniboxQuery);
-  $('prefer-keyword').addEventListener('change', startOmniboxQuery);
-  $('page-classification').addEventListener('change', startOmniboxQuery);
-  $('show-details').addEventListener('change', refresh);
-  $('show-incomplete-results').addEventListener('change', refresh);
-  $('show-all-providers').addEventListener('change', refresh);
-}
+(function () {
+  /**
+   * @type {number} the value for cursor position we sent with the most
+   *     recent request.  We need to remember this in order to display it
+   *     in the output; otherwise it's hard or impossible to determine
+   *     from screen captures or print-to-PDFs.
+   */
+  let cursorPosition = -1;
 
-/**
- * @type {OmniboxResultMojo} an array of all autocomplete results we've seen
- *     for this query.  We append to this list once for every call to
- *     handleNewAutocompleteResult.  See omnibox.mojom for details..
- */
-var progressiveAutocompleteResults = [];
-
-/**
- * @type {number} the value for cursor position we sent with the most
- *     recent request.  We need to remember this in order to display it
- *     in the output; otherwise it's hard or impossible to determine
- *     from screen captures or print-to-PDFs.
- */
-var cursorPositionUsed = -1;
-
-/**
- * Extracts the input text from the text field and sends it to the
- * C++ portion of chrome to handle.  The C++ code will iteratively
- * call handleNewAutocompleteResult as results come in.
- */
-function startOmniboxQuery(event) {
-  // First, clear the results of past calls (if any).
-  progressiveAutocompleteResults = [];
-  // Then, call chrome with a five-element list:
-  // - first element: the value in the text box
-  // - second element: the location of the cursor in the text box
-  // - third element: the value of prevent-inline-autocomplete
-  // - forth element: the value of prefer-keyword
-  // - fifth element: the value of page-classification
-  cursorPositionUsed = $('input-text').selectionEnd;
-  browserProxy.startOmniboxQuery(
-      $('input-text').value, cursorPositionUsed,
-      $('prevent-inline-autocomplete').checked, $('prefer-keyword').checked,
-      parseInt($('page-classification').value));
-  // Cancel the submit action.  i.e., don't submit the form.  (We handle
-  // display the results solely with Javascript.)
-  event.preventDefault();
-}
-
-/**
- * Returns a simple object with information about how to display an
- * autocomplete result data field.
- * @param {string} header the label for the top of the column/table.
- * @param {string} urlLabelForHeader the URL that the header should point
- *     to (if non-empty).
- * @param {string} propertyName the name of the property in the autocomplete
- *     result record that we lookup.
- * @param {boolean} displayAlways whether the property should be displayed
- *     regardless of whether we're in detailed mode.
- * @param {string} tooltip a description of the property that will be
- *     presented as a tooltip when the mouse is hovered over the column title.
- * @constructor
- */
-function PresentationInfoRecord(
-    header, url, propertyName, displayAlways, tooltip) {
-  this.header = header;
-  this.urlLabelForHeader = url;
-  this.propertyName = propertyName;
-  this.displayAlways = displayAlways;
-  this.tooltip = tooltip;
-}
-
-/**
- * A constant that's used to decide what autocomplete result
- * properties to output in what order.  This is an array of
- * PresentationInfoRecord() objects; for details see that
- * function.
- * @type {Array<Object>}
- * @const
- */
-var PROPERTY_OUTPUT_ORDER = [
-  new PresentationInfoRecord(
-      'Provider', '', 'providerName', true,
-      'The AutocompleteProvider suggesting this result.'),
-  new PresentationInfoRecord(
-      'Type', '', 'type', true, 'The type of the result.'),
-  new PresentationInfoRecord(
-      'Relevance', '', 'relevance', true,
-      'The result score. Higher is more relevant.'),
-  new PresentationInfoRecord(
-      'Contents', '', 'contents', true,
-      'The text that is presented identifying the result.'),
-  new PresentationInfoRecord(
-      'Can Be Default', '', 'allowedToBeDefaultMatch', false,
-      'A green checkmark indicates that the result can be the default ' +
-          'match (i.e., can be the match that pressing enter in the omnibox ' +
-          'navigates to).'),
-  new PresentationInfoRecord(
-      'Starred', '', 'starred', false,
-      'A green checkmark indicates that the result has been bookmarked.'),
-  new PresentationInfoRecord(
-      'Has tab match', '', 'hasTabMatch', false,
-      'A green checkmark indicates that the result URL matches an open tab.'),
-  new PresentationInfoRecord(
-      'Description', '', 'description', false, 'The page title of the result.'),
-  new PresentationInfoRecord(
-      'URL', '', 'destinationUrl', true, 'The URL for the result.'),
-  new PresentationInfoRecord(
-      'Fill Into Edit', '', 'fillIntoEdit', false,
-      'The text shown in the omnibox when the result is selected.'),
-  new PresentationInfoRecord(
-      'Inline Autocompletion', '', 'inlineAutocompletion', false,
-      'The text shown in the omnibox as a blue highlight selection ' +
-          'following the cursor, if this match is shown inline.'),
-  new PresentationInfoRecord(
-      'Del', '', 'deletable', false,
-      'A green checkmark indicates that the result can be deleted from ' +
-          'the visit history.'),
-  new PresentationInfoRecord('Prev', '', 'fromPrevious', false, ''),
-  new PresentationInfoRecord(
-      'Tran',
-      'http://code.google.com/codesearch#OAMlx_jo-ck/src/content/public/' +
-          'common/page_transition_types.h&exact_package=chromium&l=24',
-      'transition', false, 'How the user got to the result.'),
-  new PresentationInfoRecord(
-      'Done', '', 'providerDone', false,
-      'A green checkmark indicates that the provider is done looking for ' +
-          'more results.'),
-  new PresentationInfoRecord(
-      'Associated Keyword', '', 'associatedKeyword', false,
-      'If non-empty, a "press tab to search" hint will be shown and will ' +
-          'engage this keyword.'),
-  new PresentationInfoRecord(
-      'Keyword', '', 'keyword', false,
-      'The keyword of the search engine to be used.'),
-  new PresentationInfoRecord(
-      'Duplicates', '', 'duplicates', false,
-      'The number of matches that have been marked as duplicates of this ' +
-          'match.'),
-  new PresentationInfoRecord(
-      'Additional Info', '', 'additionalInfo', false,
-      'Provider-specific information about the result.')
-];
-
-/**
- * Returns an HTML Element of type table row that contains the
- * headers we'll use for labeling the columns.  If we're in
- * detailedMode, we use all the headers.  If not, we only use ones
- * marked displayAlways.
- */
-function createAutocompleteResultTableHeader() {
-  var row = document.createElement('tr');
-  var inDetailedMode = $('show-details').checked;
-  for (var i = 0; i < PROPERTY_OUTPUT_ORDER.length; i++) {
-    if (inDetailedMode || PROPERTY_OUTPUT_ORDER[i].displayAlways) {
-      var headerCell = document.createElement('th');
-      if (PROPERTY_OUTPUT_ORDER[i].urlLabelForHeader != '') {
-        // Wrap header text in URL.
-        var linkNode = document.createElement('a');
-        linkNode.href = PROPERTY_OUTPUT_ORDER[i].urlLabelForHeader;
-        linkNode.textContent = PROPERTY_OUTPUT_ORDER[i].header;
-        headerCell.appendChild(linkNode);
-      } else {
-        // Output header text without a URL.
-        headerCell.textContent = PROPERTY_OUTPUT_ORDER[i].header;
-        headerCell.className = 'table-header';
-        headerCell.title = PROPERTY_OUTPUT_ORDER[i].tooltip;
-      }
-      row.appendChild(headerCell);
+  /**
+   * Tracks and aggregates responses from the C++ autocomplete controller.
+   * Typically, the C++ controller returns 3 sets of results per query, unless
+   * a new query is submitted before all 3 responses. OutputController also
+   * triggers appending to and clearing of OmniboxOutput when appropriate (e.g.,
+   * upon receiving a new response or a change in display inputs).
+   */
+  class OutputController {
+    constructor() {
+      /** @private {!Array<mojom.OmniboxResult>} */
+      this.outputResultsGroups_ = [];
     }
-  }
-  return row;
-}
 
-/**
- * @param {AutocompleteMatchMojo} autocompleteSuggestion the particular
- *     autocomplete suggestion we're in the process of displaying.
- * @param {string} propertyName the particular property of the autocomplete
- *     suggestion that should go in this cell.
- * @return {HTMLTableCellElement} that contains the value within this
- *     autocompleteSuggestion associated with propertyName.
- */
-function createCellForPropertyAndRemoveProperty(
-    autocompleteSuggestion, propertyName) {
-  var cell = document.createElement('td');
-  if (propertyName in autocompleteSuggestion) {
-    if (propertyName == 'additionalInfo') {
-      // |additionalInfo| embeds a two-column table of provider-specific data
-      // within this cell. |additionalInfo| is an array of
-      // AutocompleteAdditionalInfo.
-      var additionalInfoTable = document.createElement('table');
-      for (var i = 0; i < autocompleteSuggestion[propertyName].length; i++) {
-        var additionalInfo = autocompleteSuggestion[propertyName][i];
-        var additionalInfoRow = document.createElement('tr');
+    clear() {
+      this.outputResultsGroups_ = [];
+      omniboxOutput.clearOutput();
+    }
 
-        // Set the title (name of property) cell text.
-        var propertyCell = document.createElement('td');
-        propertyCell.textContent = additionalInfo.key + ':';
-        propertyCell.className = 'additional-info-property';
-        additionalInfoRow.appendChild(propertyCell);
+    /*
+     * Adds a new response to the page. If we're not displaying incomplete
+     * results, we clear the page and display only the new result. If we are
+     * displaying incomplete results, then this is more efficient than refresh,
+     * as there's no need to clear and re-add previous results.
+     */
+    /** @param {!mojom.OmniboxResult} response A response from C++ autocomplete controller */
+    add(response) {
+      this.outputResultsGroups_.push(response);
+      if (!omniboxInputs.$$('show-incomplete-results').checked)
+        omniboxOutput.clearOutput();
+      addResultToOutput(
+          this.outputResultsGroups_[this.outputResultsGroups_.length - 1]);
+    }
 
-        // Set the value of the property cell text.
-        var valueCell = document.createElement('td');
-        valueCell.textContent = additionalInfo.value;
-        valueCell.className = 'additional-info-value';
-        additionalInfoRow.appendChild(valueCell);
-
-        additionalInfoTable.appendChild(additionalInfoRow);
-      }
-      cell.appendChild(additionalInfoTable);
-    } else if (typeof autocompleteSuggestion[propertyName] == 'boolean') {
-      // If this is a boolean, display a checkmark or an X instead of
-      // the strings true or false.
-      if (autocompleteSuggestion[propertyName]) {
-        cell.className = 'check-mark';
-        cell.textContent = '✔';
-      } else {
-        cell.className = 'x-mark';
-        cell.textContent = '✗';
-      }
-    } else {
-      var text = String(autocompleteSuggestion[propertyName]);
-      // If it's a URL wrap it in an href.
-      var re = /^(http|https|ftp|chrome|file):\/\//;
-      if (re.test(text)) {
-        var aCell = document.createElement('a');
-        aCell.textContent = text;
-        aCell.href = text;
-        cell.appendChild(aCell);
-      } else {
-        // All other data types (integer, strings, etc.) display their
-        // normal toString() output.
-        cell.textContent = autocompleteSuggestion[propertyName];
+    /*
+     * Refreshes all results. We only display the last (most recent) entry
+     * unless incomplete results is enabled.
+     */
+    refresh() {
+      omniboxOutput.clearOutput();
+      if (omniboxInputs.$$('show-incomplete-results').checked) {
+        this.outputResultsGroups_.forEach(addResultToOutput);
+      } else if (this.outputResultsGroups_.length) {
+        addResultToOutput(
+            this.outputResultsGroups_[this.outputResultsGroups_.length - 1]);
       }
     }
-  }  // else: if propertyName is undefined, we leave the cell blank
-  return cell;
-}
-
-/**
- * Appends a paragraph node containing text to the parent node.
- */
-function addParagraph(parent, text) {
-  var p = document.createElement('p');
-  p.textContent = text;
-  parent.appendChild(p);
-}
-
-/**
- * Appends some human-readable information about the provided
- * autocomplete result to the HTML node with id omnibox-debug-text.
- * The current human-readable form is a few lines about general
- * autocomplete result statistics followed by a table with one line
- * for each autocomplete match.  The input parameter is an OmniboxResultMojo.
- */
-function addResultToOutput(result) {
-  var output = $('omnibox-debug-text');
-  var inDetailedMode = $('show-details').checked;
-  var showIncompleteResults = $('show-incomplete-results').checked;
-  var showPerProviderResults = $('show-all-providers').checked;
-
-  // Output the result-level features in detailed mode and in
-  // show incomplete results mode.  We do the latter because without
-  // these result-level features, one can't make sense of each
-  // batch of results.
-  if (inDetailedMode || showIncompleteResults) {
-    addParagraph(output, `cursor position = ${cursorPositionUsed}`);
-    addParagraph(output, `inferred input type = ${result.type}`);
-    addParagraph(
-        output, `elapsed time = ${result.timeSinceOmniboxStartedMs}ms`);
-    addParagraph(output, `all providers done = ${result.done}`);
-    var p = document.createElement('p');
-    p.textContent = `host = ${result.host}`;
-    // The field isn't actually optional in the mojo object; instead it assumes
-    // failed lookups are not typed hosts.  Fix this to make it optional.
-    // http://crbug.com/863201
-    if ('isTypedHost' in result) {
-      // Only output the isTypedHost information if available.  (It may
-      // be missing if the history database lookup failed.)
-      p.textContent =
-          p.textContent + ` has isTypedHost = ${result.isTypedHost}`;
-    }
-    output.appendChild(p);
   }
 
-  // Combined results go after the lines below.
-  var group = document.createElement('a');
-  group.className = 'group-separator';
-  group.textContent = 'Combined results.';
-  output.appendChild(group);
-
-  // Add combined/merged result table.
-  var p = document.createElement('p');
-  p.appendChild(addResultTableToOutput(result.combinedResults));
-  output.appendChild(p);
-
-  // Move forward only if you want to display per provider results.
-  if (!showPerProviderResults) {
-    return;
+  /**
+   * Appends some human-readable information about the provided
+   * autocomplete result to the HTML node with id omnibox-debug-text.
+   * The current human-readable form is a few lines about general
+   * autocomplete result statistics followed by a table with one line
+   * for each autocomplete match.  The input parameter is an OmniboxResultMojo.
+   */
+  function addResultToOutput(result) {
+    const resultsGroup = new omnibox_output.OutputResultsGroup(result).render(
+        omniboxInputs.$$('show-details').checked,
+        omniboxInputs.$$('show-incomplete-results').checked,
+        omniboxInputs.$$('show-all-providers').checked);
+    omniboxOutput.addOutput(resultsGroup);
   }
 
-  // Individual results go after the lines below.
-  var group = document.createElement('a');
-  group.className = 'group-separator';
-  group.textContent = 'Results for individual providers.';
-  output.appendChild(group);
-
-  // Add the per-provider result tables with labels. We do not append the
-  // combined/merged result table since we already have the per provider
-  // results.
-  for (var i = 0; i < result.resultsByProvider.length; i++) {
-    var providerResults = result.resultsByProvider[i];
-    // If we have no results we do not display anything.
-    if (providerResults.results.length == 0) {
-      continue;
-    }
-    var p = document.createElement('p');
-    p.appendChild(addResultTableToOutput(providerResults.results));
-    output.appendChild(p);
-  }
-}
-
-/**
- * @param {Object} result an array of AutocompleteMatchMojos.
- * @return {HTMLTableCellElement} that is a user-readable HTML
- *     representation of this object.
- */
-function addResultTableToOutput(result) {
-  var inDetailedMode = $('show-details').checked;
-  // Create a table to hold all the autocomplete items.
-  var table = document.createElement('table');
-  table.className = 'autocomplete-results-table';
-  table.appendChild(createAutocompleteResultTableHeader());
-  // Loop over every autocomplete item and add it as a row in the table.
-  for (var i = 0; i < result.length; i++) {
-    var autocompleteSuggestion = result[i];
-    var row = document.createElement('tr');
-    // Loop over all the columns/properties and output either them
-    // all (if we're in detailed mode) or only the ones marked displayAlways.
-    // Keep track of which properties we displayed.
-    var displayedProperties = {};
-    for (var j = 0; j < PROPERTY_OUTPUT_ORDER.length; j++) {
-      if (inDetailedMode || PROPERTY_OUTPUT_ORDER[j].displayAlways) {
-        row.appendChild(createCellForPropertyAndRemoveProperty(
-            autocompleteSuggestion, PROPERTY_OUTPUT_ORDER[j].propertyName));
-        displayedProperties[PROPERTY_OUTPUT_ORDER[j].propertyName] = true;
-      }
+  class BrowserProxy {
+    constructor() {
+      /** @private {!mojom.OmniboxPageHandlerPtr} */
+      this.pagehandlePtr_ = new mojom.OmniboxPageHandlerPtr;
+      Mojo.bindInterface(
+          mojom.OmniboxPageHandler.name,
+          mojo.makeRequest(this.pagehandlePtr_).handle);
+      const client = new mojom.OmniboxPagePtr;
+      // NOTE: Need to keep a global reference to the |binding_| such that it is
+      // not garbage collected, which causes the pipe to close and future calls
+      // from C++ to JS to get dropped.
+      /** @private {!mojo.Binding} */
+      this.binding_ =
+          new mojo.Binding(mojom.OmniboxPage, this, mojo.makeRequest(client));
+      this.pagehandlePtr_.setClientPage(client);
     }
 
-    // Now, if we're in detailed mode, add all the properties that
-    // haven't already been output.  (We know which properties have
-    // already been output because we delete the property when we output
-    // it.  The only way we have properties left at this point if
-    // we're in detailed mode and we're getting back properties
-    // not listed in PROPERTY_OUTPUT_ORDER.  Perhaps someone added
-    // something to the C++ code but didn't bother to update this
-    // Javascript?  In any case, we want to display them.)
-    if (inDetailedMode) {
-      for (var key in autocompleteSuggestion) {
-        if (!displayedProperties[key] &&
-            typeof autocompleteSuggestion[key] != 'function') {
-          var cell = document.createElement('td');
-          cell.textContent = key + '=' + autocompleteSuggestion[key];
-          row.appendChild(cell);
-        }
-      }
+    /**
+     * Extracts the input text from the text field and sends it to the
+     * C++ portion of chrome to handle.  The C++ code will iteratively
+     * call handleNewAutocompleteResult as results come in.
+     */
+    makeRequest(inputString,
+                cursorPosition,
+                preventInlineAutocomplete,
+                preferKeyword,
+                pageClassification) {
+      outputController.clear();
+      // Then, call chrome with a five-element list:
+      // - first element: the value in the text box
+      // - second element: the location of the cursor in the text box
+      // - third element: the value of prevent-inline-autocomplete
+      // - forth element: the value of prefer-keyword
+      // - fifth element: the value of page-classification
+      this.pagehandlePtr_.startOmniboxQuery(
+          inputString,
+          cursorPosition,
+          preventInlineAutocomplete,
+          preferKeyword,
+          pageClassification);
     }
 
-    table.appendChild(row);
-  }
-  return table;
-}
-
-/* Repaints the page based on the contents of the array
- * progressiveAutocompleteResults, which represents consecutive
- * autocomplete results.  We only display the last (most recent)
- * entry unless we're asked to display incomplete results.  For an
- * example of the output, play with chrome://omnibox/
- */
-function refresh() {
-  // Erase whatever is currently being displayed.
-  var output = $('omnibox-debug-text');
-  output.innerHTML = '';
-
-  if (progressiveAutocompleteResults.length > 0) {  // if we have results
-    // Display the results.
-    var showIncompleteResults = $('show-incomplete-results').checked;
-    var startIndex =
-        showIncompleteResults ? 0 : progressiveAutocompleteResults.length - 1;
-    for (var i = startIndex; i < progressiveAutocompleteResults.length; i++) {
-      addResultToOutput(progressiveAutocompleteResults[i]);
+    handleNewAutocompleteResult(response) {
+      outputController.add(response);
     }
   }
-}
 
-// NOTE: Need to keep a global reference to the |pageImpl| such that it is not
-// garbage collected, which causes the pipe to close and future calls from C++
-// to JS to get dropped.
-var pageImpl = null;
-var browserProxy = null;
+  /** @type {BrowserProxy} */
+  const browserProxy = new BrowserProxy();
+  /** @type {OmniboxInputs} */
+  let omniboxInputs;
+  /** @type {omnibox_output.OmniboxOutput} */
+  let omniboxOutput;
+  /** @type {OutputController} */
+  const outputController = new OutputController();
 
-function initializeProxies() {
-  browserProxy = new mojom.OmniboxPageHandlerPtr;
-  Mojo.bindInterface(
-      mojom.OmniboxPageHandler.name, mojo.makeRequest(browserProxy).handle);
-
-  /** @constructor */
-  var OmniboxPageImpl = function(request) {
-    this.binding_ = new mojo.Binding(mojom.OmniboxPage, this, request);
-  };
-
-  OmniboxPageImpl.prototype = {
-    /** @override */
-    handleNewAutocompleteResult: function(result) {
-      progressiveAutocompleteResults.push(result);
-      refresh();
-    },
-  };
-
-  var client = new mojom.OmniboxPagePtr;
-  pageImpl = new OmniboxPageImpl(mojo.makeRequest(client));
-  browserProxy.setClientPage(client);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  initializeProxies();
-  initialize();
-});
+  document.addEventListener('DOMContentLoaded', () => {
+    omniboxInputs = /** @type {!OmniboxInputs} */ ($('omnibox-inputs'));
+    omniboxOutput =
+        /** @type {!omnibox_output.OmniboxOutput} */ ($('omnibox-output'));
+    omniboxInputs.addEventListener('query-inputs-changed', event =>
+        browserProxy.makeRequest(
+            event.detail.inputText,
+            event.detail.cursorPosition,
+            event.detail.preventInlineAutocomplete,
+            event.detail.preferKeyword,
+            event.detail.pageClassification
+        ));
+    omniboxInputs.addEventListener('display-inputs-changed',
+        outputController.refresh.bind(outputController));
+  });
 })();

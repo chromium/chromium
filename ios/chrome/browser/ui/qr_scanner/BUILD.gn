@@ -90,7 +90,6 @@ source_set("eg_tests") {
     "//ios/chrome/browser/ui/location_bar",
     "//ios/chrome/browser/ui/omnibox",
     "//ios/chrome/browser/ui/toolbar",
-    "//ios/chrome/browser/ui/toolbar/clean:toolbar",
     "//ios/chrome/browser/ui/toolbar/public:feature_flags",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/base",

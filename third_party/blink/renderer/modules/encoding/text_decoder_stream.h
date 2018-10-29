@@ -45,20 +45,11 @@ class TextDecoderStream final : public ScriptWrappable {
 
  private:
   class Transformer;
-  static void Noop(ScriptValue);
 
   TextDecoderStream(ScriptState*,
                     const WTF::TextEncoding&,
                     const TextDecoderOptions&,
                     ExceptionState&);
-
-  // We need to keep the wrapper alive in order to make |transform_| alive. We
-  // can create a wrapper in the constructor, but there is a chance that GC
-  // happens after construction happens before the wrapper is connected to the
-  // value returned to the user in the JS world. This function posts a task with
-  // a ScriptPromise containing the wrapper to avoid that.
-  // TODO(ricea): Remove this once the unified GC is available.
-  void RetainWrapperUntilV8WrapperGetReturnedToV8(ScriptState*);
 
   const TraceWrapperMember<TransformStream> transform_;
   const WTF::TextEncoding encoding_;

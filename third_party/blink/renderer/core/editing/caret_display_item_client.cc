@@ -132,11 +132,11 @@ void CaretDisplayItemClient::LayoutBlockWillBeDestroyed(
 void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     const PositionWithAffinity& caret_position) {
   // This method may be called multiple times (e.g. in partial lifecycle
-  // updates) before a paint invalidation. We should save m_previousLayoutBlock
-  // and m_visualRectInPreviousLayoutBlock only if they have not been saved
+  // updates) before a paint invalidation. We should save previous_layout_block_
+  // and visual_rect_in_previous_layout_block only if they have not been saved
   // since the last paint invalidation to ensure the caret painted in the
   // previous paint invalidated block will be invalidated. We don't care about
-  // intermediate changes of layoutBlock because they are not painted.
+  // intermediate changes of LayoutBlock because they are not painted.
   if (!previous_layout_block_) {
     previous_layout_block_ = layout_block_;
     visual_rect_in_previous_layout_block_ = visual_rect_;
@@ -152,7 +152,7 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
       needs_paint_invalidation_ = true;
       if (new_layout_block == previous_layout_block_) {
         // The caret has disappeared and is reappearing in the same block,
-        // since the last paint invalidation. Set m_visualRect as if the caret
+        // since the last paint invalidation. Set visual_rect_ as if the caret
         // has always been there as paint invalidation doesn't care about the
         // intermediate changes.
         visual_rect_ = visual_rect_in_previous_layout_block_;
@@ -223,13 +223,6 @@ void CaretDisplayItemClient::InvalidatePaintInCurrentLayoutBlock(
     if (!local_rect_.IsEmpty()) {
       new_visual_rect = local_rect_;
       context.MapLocalRectToVisualRect(*layout_block_, new_visual_rect);
-
-      if (layout_block_->UsesCompositedScrolling()) {
-        // The caret should use scrolling coordinate space.
-        DCHECK(layout_block_ == context.paint_invalidation_container);
-        new_visual_rect.Move(
-            LayoutSize(layout_block_->ScrolledContentOffset()));
-      }
     }
   } else {
     new_visual_rect = visual_rect_;

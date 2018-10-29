@@ -23,7 +23,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/browser/script_execution_observer.h"
+#include "extensions/browser/script_executor.h"
 #include "extensions/common/dom_action_types.h"
 
 class Profile;
@@ -47,7 +47,6 @@ class ExtensionSystem;
 // each profile.
 //
 class ActivityLog : public BrowserContextKeyedAPI,
-                    public ScriptExecutionObserver,
                     public ExtensionRegistryObserver,
                     public content::NotificationObserver {
  public:
@@ -63,6 +62,14 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // ActivityLog is a KeyedService, so don't instantiate it with
   // the constructor; use GetInstance instead.
   static ActivityLog* GetInstance(content::BrowserContext* context);
+
+  // Invoked when a ContentScript is executed.
+  void OnScriptsExecuted(const content::WebContents* web_contents,
+                         const ExecutingScriptsMap& extension_ids,
+                         const GURL& on_url);
+
+  // Observe tabs.executeScript on the given |executor|.
+  void ObserveScripts(ScriptExecutor* executor);
 
   // Add/remove observer: the activityLogPrivate API only listens when the
   // ActivityLog extension is registered for an event.
@@ -144,12 +151,6 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // Updates cached_consumer_count_ to be active_consumers_ and stores the value
   // in prefs.
   void UpdateCachedConsumerCount();
-
-  // ScriptExecutionObserver implementation.
-  // Fires when a ContentScript is executed.
-  void OnScriptsExecuted(const content::WebContents* web_contents,
-                         const ExecutingScriptsMap& extension_ids,
-                         const GURL& on_url) override;
 
   // At the moment, ActivityLog will use only one policy for summarization.
   // These methods are used to choose and set the most appropriate policy.

@@ -259,9 +259,7 @@ std::unique_ptr<base::DictionaryValue> ProxyConfig::ToValue() const {
 
       auto list = std::make_unique<base::ListValue>();
 
-      for (ProxyBypassRules::RuleList::const_iterator it =
-              bypass.rules().begin();
-           it != bypass.rules().end(); ++it) {
+      for (auto it = bypass.rules().begin(); it != bypass.rules().end(); ++it) {
         list->AppendString((*it)->ToString());
       }
 

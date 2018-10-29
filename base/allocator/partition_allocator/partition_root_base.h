@@ -10,6 +10,8 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/logging.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace internal {
@@ -86,16 +88,20 @@ struct BASE_EXPORT PartitionRootBase {
 ALWAYS_INLINE void* PartitionRootBase::AllocFromBucket(PartitionBucket* bucket,
                                                        int flags,
                                                        size_t size) {
+  bool zero_fill = flags & PartitionAllocZeroFill;
+  bool is_already_zeroed = false;
+
   PartitionPage* page = bucket->active_pages_head;
   // Check that this page is neither full nor freed.
   DCHECK(page->num_allocated_slots >= 0);
   void* ret = page->freelist_head;
   if (LIKELY(ret != 0)) {
-    // If these DCHECKs fire, you probably corrupted memory.
-    // TODO(palmer): See if we can afford to make this a CHECK.
+    // If these DCHECKs fire, you probably corrupted memory. TODO(palmer): See
+    // if we can afford to make these CHECKs.
     DCHECK(PartitionRootBase::IsValidPage(page));
-    // All large allocations must go through the slow path to correctly
-    // update the size metadata.
+
+    // All large allocations must go through the slow path to correctly update
+    // the size metadata.
     DCHECK(page->get_raw_size() == 0);
     internal::PartitionFreelistEntry* new_head =
         internal::PartitionFreelistEntry::Transform(
@@ -103,15 +109,17 @@ ALWAYS_INLINE void* PartitionRootBase::AllocFromBucket(PartitionBucket* bucket,
     page->freelist_head = new_head;
     page->num_allocated_slots++;
   } else {
-    ret = bucket->SlowPathAlloc(this, flags, size);
+    ret = bucket->SlowPathAlloc(this, flags, size, &is_already_zeroed);
     // TODO(palmer): See if we can afford to make this a CHECK.
     DCHECK(!ret ||
            PartitionRootBase::IsValidPage(PartitionPage::FromPointer(ret)));
   }
+
 #if DCHECK_IS_ON()
-  if (!ret)
-    return 0;
-  // Fill the uninitialized pattern, and write the cookies.
+  if (!ret) {
+    return nullptr;
+  }
+
   page = PartitionPage::FromPointer(ret);
   // TODO(ajwong): Can |page->bucket| ever not be |this|? If not, can this just
   // be bucket->slot_size?
@@ -126,11 +134,20 @@ ALWAYS_INLINE void* PartitionRootBase::AllocFromBucket(PartitionBucket* bucket,
   // The value given to the application is actually just after the cookie.
   ret = char_ret + kCookieSize;
 
-  // Debug fill region kUninitializedByte and surround it with 2 cookies.
+  // Fill the region kUninitializedByte or 0, and surround it with 2 cookies.
   PartitionCookieWriteValue(char_ret);
-  memset(ret, kUninitializedByte, no_cookie_size);
+  if (!zero_fill) {
+    memset(ret, kUninitializedByte, no_cookie_size);
+  } else if (!is_already_zeroed) {
+    memset(ret, 0, no_cookie_size);
+  }
   PartitionCookieWriteValue(char_ret + kCookieSize + no_cookie_size);
+#else
+  if (ret && zero_fill && !is_already_zeroed) {
+    memset(ret, 0, size);
+  }
 #endif
+
   return ret;
 }
 

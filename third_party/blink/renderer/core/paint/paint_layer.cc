@@ -85,11 +85,11 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/transform_state.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -163,7 +163,8 @@ PaintLayer::PaintLayer(LayoutBoxModelObject& layout_object)
       previous_paint_phase_descendant_block_backgrounds_was_empty_(false),
       has_descendant_with_clip_path_(false),
       has_non_isolated_descendant_with_blend_mode_(false),
-      has_descendant_with_sticky_or_fixed_(false),
+      has_fixed_position_descendant_(false),
+      has_sticky_position_descendant_(false),
       has_non_contained_absolute_position_descendant_(false),
       self_painting_status_changed_(false),
       filter_on_effect_node_dirty_(false),
@@ -282,15 +283,6 @@ bool PaintLayer::PaintsWithFilters() const {
          GetCompositingState() != kPaintsIntoOwnBacking;
 }
 
-bool PaintLayer::PaintsWithBackdropFilters() const {
-  if (!GetLayoutObject().HasBackdropFilter())
-    return false;
-
-  // https://code.google.com/p/chromium/issues/detail?id=343759
-  DisableCompositingQueryAsserts disabler;
-  return !GetCompositedLayerMapping() ||
-         GetCompositingState() != kPaintsIntoOwnBacking;
-}
 
 LayoutSize PaintLayer::SubpixelAccumulation() const {
   return rare_data_ ? rare_data_->subpixel_accumulation : LayoutSize();
@@ -454,7 +446,7 @@ void PaintLayer::UpdateTransform(const ComputedStyle* old_style,
     return;
   }
 
-  // hasTransform() on the layoutObject is also true when there is
+  // LayoutObject::HasTransformRelatedProperty is also true when there is
   // transform-style: preserve-3d or perspective set, so check style too.
   bool has_transform = GetLayoutObject().HasTransformRelatedProperty() &&
                        new_style.HasTransform();
@@ -711,7 +703,8 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     has_visible_descendant_ = false;
     has_non_isolated_descendant_with_blend_mode_ = false;
     has_descendant_with_clip_path_ = false;
-    has_descendant_with_sticky_or_fixed_ = false;
+    has_fixed_position_descendant_ = false;
+    has_sticky_position_descendant_ = false;
     has_non_contained_absolute_position_descendant_ = false;
     has_self_painting_layer_descendant_ = false;
     is_non_stacked_with_in_flow_stacked_descendant_ = false;
@@ -740,10 +733,12 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       has_descendant_with_clip_path_ |= child->HasDescendantWithClipPath() ||
                                         child->GetLayoutObject().HasClipPath();
 
-      has_descendant_with_sticky_or_fixed_ |=
-          child->HasDescendantWithStickyOrFixed() ||
-          child_style.GetPosition() == EPosition::kSticky ||
+      has_fixed_position_descendant_ |=
+          child->HasFixedPositionDescendant() ||
           child_style.GetPosition() == EPosition::kFixed;
+      has_sticky_position_descendant_ |=
+          child->HasStickyPositionDescendant() ||
+          child_style.GetPosition() == EPosition::kSticky;
 
       if (!can_contain_abs) {
         has_non_contained_absolute_position_descendant_ |=
@@ -2506,7 +2501,8 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   float inverse_zoom = 1 / GetLayoutObject().StyleRef().EffectiveZoom();
   point.Scale(inverse_zoom, inverse_zoom);
   reference_box.Scale(inverse_zoom);
-  return !clipper->HitTestClipContent(reference_box, point);
+  HitTestLocation location(point);
+  return !clipper->HitTestClipContent(reference_box, location);
 }
 
 bool PaintLayer::IntersectsDamageRect(
@@ -2750,25 +2746,6 @@ GraphicsLayer* PaintLayer::GraphicsLayerBacking(const LayoutObject* obj) const {
                  ? GetCompositedLayerMapping()->ScrollingContentsLayer()
                  : GetCompositedLayerMapping()->MainGraphicsLayer();
   }
-}
-
-BackgroundPaintLocation PaintLayer::GetBackgroundPaintLocation(
-    uint32_t* reasons) const {
-  BackgroundPaintLocation location;
-  bool may_have_scrolling_layers_without_scrolling = IsRootLayer();
-  if (!ScrollsOverflow() && !may_have_scrolling_layers_without_scrolling) {
-    location = kBackgroundPaintInGraphicsLayer;
-  } else {
-    // If we care about LCD text, paint root backgrounds into scrolling contents
-    // layer even if style suggests otherwise. (For non-root scrollers, we just
-    // avoid compositing - see PLSA::ComputeNeedsCompositedScrolling.)
-    DCHECK(Compositor());
-    if (IsRootLayer() && !Compositor()->PreferCompositingToLCDTextEnabled())
-      location = kBackgroundPaintInScrollingContents;
-    else
-      location = GetLayoutObject().GetBackgroundPaintLocation(reasons);
-  }
-  return location;
 }
 
 void PaintLayer::EnsureCompositedLayerMapping() {
@@ -3371,7 +3348,7 @@ void PaintLayer::ComputeSelfHitTestRects(
     LayerHitTestRects& rects,
     TouchAction supported_fast_actions) const {
   if (!Size().IsEmpty()) {
-    Vector<TouchActionRect> rect;
+    Vector<HitTestRect> rect;
     TouchAction whitelisted_touch_action =
         GetLayoutObject().StyleRef().GetEffectiveTouchAction() &
         supported_fast_actions;
@@ -3384,25 +3361,25 @@ void PaintLayer::ComputeSelfHitTestRects(
       // composited layer. Skip reporting contents for non-composited layers as
       // they'll get projected to the same layer as the bounding box.
       if (GetCompositingState() != kNotComposited && scrollable_area_) {
-        rect.push_back(TouchActionRect(scrollable_area_->OverflowRect(),
-                                       whitelisted_touch_action));
+        rect.push_back(HitTestRect(scrollable_area_->OverflowRect(),
+                                   whitelisted_touch_action));
       }
 
       rects.Set(this, rect);
       if (const PaintLayer* parent_layer = Parent()) {
         LayerHitTestRects::iterator iter = rects.find(parent_layer);
         if (iter == rects.end()) {
-          rects.insert(parent_layer, Vector<TouchActionRect>())
-              .stored_value->value.push_back(TouchActionRect(
+          rects.insert(parent_layer, Vector<HitTestRect>())
+              .stored_value->value.push_back(HitTestRect(
                   PhysicalBoundingBox(parent_layer), whitelisted_touch_action));
         } else {
-          iter->value.push_back(TouchActionRect(
-              PhysicalBoundingBox(parent_layer), whitelisted_touch_action));
+          iter->value.push_back(HitTestRect(PhysicalBoundingBox(parent_layer),
+                                            whitelisted_touch_action));
         }
       }
     } else {
       rect.push_back(
-          TouchActionRect(LogicalBoundingBox(), whitelisted_touch_action));
+          HitTestRect(LogicalBoundingBox(), whitelisted_touch_action));
       rects.Set(this, rect);
     }
   }

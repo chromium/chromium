@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_text_fragment_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -54,6 +54,11 @@ void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& style,
   metrics.Unite(text_metrics);
 
   include_used_fonts = style.LineHeight().IsNegative();
+}
+
+void NGInlineBoxState::ResetTextMetrics() {
+  metrics = text_metrics = NGLineHeightMetrics();
+  text_top = text_height = LayoutUnit();
 }
 
 void NGInlineBoxState::EnsureTextMetrics(const ComputedStyle& style,
@@ -116,11 +121,12 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
       if (!line_height_quirk)
         box.metrics = box.text_metrics;
       else
-        box.metrics = box.text_metrics = NGLineHeightMetrics();
-      if (box.needs_box_fragment) {
+        box.ResetTextMetrics();
+      if (box.has_start_edge) {
         // Existing box states are wrapped before they were closed, and hence
         // they do not have start edges, unless 'box-decoration-break: clone'.
         box.has_start_edge =
+            box.needs_box_fragment &&
             box.style->BoxDecorationBreak() == EBoxDecorationBreak::kClone;
       }
       DCHECK(box.pending_descendants.IsEmpty());
@@ -151,6 +157,11 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
   DCHECK(item.Style());
   NGInlineBoxState* box = OnOpenTag(*item.Style(), line_box);
   box->item = &item;
+
+  if (item.ShouldCreateBoxFragment()) {
+    box->SetNeedsBoxFragment(
+        ContainingLayoutObjectForAbsolutePositionObjects());
+  }
 
   // Compute box properties regardless of needs_box_fragment since close tag may
   // also set needs_box_fragment.
@@ -219,41 +230,15 @@ void NGInlineLayoutStateStack::EndBoxState(
   // Unite the metrics to the parent box.
   if (position_pending == kPositionNotPending)
     parent_box.metrics.Unite(box->metrics);
-
-  // Create box fragments for parent if the current box has properties (e.g.,
-  // margin) that make it tricky to compute the parent's rects.
-  if (box->ParentNeedsBoxFragment(parent_box))
-    parent_box.SetNeedsBoxFragment(nullptr);
 }
 
 void NGInlineBoxState::SetNeedsBoxFragment(
     const LayoutObject* inline_container) {
-  // Note: inline_container can also be incorrectly passed as null.
-  // when being set for parent_box. This is ok, because inline_container
-  // is already set correctly inside inline_layout_algorithm.
   DCHECK(item);
+  DCHECK(!needs_box_fragment);
   needs_box_fragment = true;
-  // Assign inline_container only if it has not been set.
-  if (!this->inline_container)
-    this->inline_container = inline_container;
-}
-
-bool NGInlineBoxState::ParentNeedsBoxFragment(
-    const NGInlineBoxState& parent) const {
-  if (!parent.item)
-    return false;
-  // Below are the known cases where parent rect may not equal the union of
-  // its child rects.
-  if ((has_start_edge && margin_inline_start) ||
-      (has_end_edge && margin_inline_end))
-    return true;
-  // Inline box height is determined by font metrics, which can be different
-  // from the height of its child atomic inline.
-  if (item && item->Type() == NGInlineItem::kAtomicInline)
-    return true;
-  // Returns true when parent and child boxes have different font metrics, since
-  // they may have different heights and/or locations in block direction.
-  return text_metrics != parent.text_metrics;
+  DCHECK(!this->inline_container);
+  this->inline_container = inline_container;
 }
 
 // Crete a placeholder for a box fragment.
@@ -509,8 +494,8 @@ NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
   const ComputedStyle& style = *item->Style();
   // Because children are already in the visual order, use LTR for the
   // fragment builder so that it should not transform the coordinates for RTL.
-  NGFragmentBuilder box(item->GetLayoutObject(), &style, style.GetWritingMode(),
-                        TextDirection::kLtr);
+  NGBoxFragmentBuilder box(item->GetLayoutObject(), &style,
+                           style.GetWritingMode(), TextDirection::kLtr);
   box.SetBoxType(NGPhysicalFragment::kInlineBox);
   box.SetStyleVariant(item->StyleVariant());
 
@@ -690,5 +675,50 @@ NGLineHeightMetrics NGInlineBoxState::MetricsForTopAndBottomAlign() const {
   }
   return max;
 }
+
+#if DCHECK_IS_ON()
+void NGInlineLayoutStateStack::CheckSame(
+    const NGInlineLayoutStateStack& other) const {
+  // At the beginning of each line, box_data_list_ should be empty.
+  DCHECK_EQ(box_data_list_.size(), 0u);
+  DCHECK_EQ(other.box_data_list_.size(), 0u);
+
+  DCHECK_EQ(stack_.size(), other.stack_.size());
+  for (unsigned i = 0; i < stack_.size(); i++) {
+    stack_[i].CheckSame(other.stack_[i]);
+  }
+}
+
+void NGInlineBoxState::CheckSame(const NGInlineBoxState& other) const {
+  DCHECK_EQ(fragment_start, other.fragment_start);
+  DCHECK_EQ(item, other.item);
+  DCHECK_EQ(style, other.style);
+  DCHECK_EQ(inline_container, other.inline_container);
+
+  DCHECK_EQ(metrics, other.metrics);
+  DCHECK_EQ(text_metrics, other.text_metrics);
+  DCHECK_EQ(text_top, other.text_top);
+  DCHECK_EQ(text_height, other.text_height);
+  if (!text_metrics.IsEmpty()) {
+    // |include_used_fonts| will be computed when computing |text_metrics|.
+    DCHECK_EQ(include_used_fonts, other.include_used_fonts);
+  }
+
+  DCHECK_EQ(needs_box_fragment, other.needs_box_fragment);
+
+  DCHECK_EQ(has_start_edge, other.has_start_edge);
+  // |has_end_edge| may not match because it will be computed in |OnCloseTag|.
+
+  DCHECK_EQ(margin_inline_start, other.margin_inline_start);
+  DCHECK_EQ(margin_inline_end, other.margin_inline_end);
+  DCHECK_EQ(borders, other.borders);
+  DCHECK_EQ(padding, other.padding);
+
+  // At the beginning of each line, box_data_list_pending_descendants should be
+  // empty.
+  DCHECK_EQ(pending_descendants.size(), 0u);
+  DCHECK_EQ(other.pending_descendants.size(), 0u);
+}
+#endif
 
 }  // namespace blink

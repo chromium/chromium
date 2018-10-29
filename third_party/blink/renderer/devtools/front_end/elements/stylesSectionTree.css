@@ -89,7 +89,7 @@
 ol:not(.tree-outline) {
     display: none;
     margin: 0;
-    -webkit-padding-start: 12px;
+    padding-inline-start: 12px;
     list-style: none;
 }
 

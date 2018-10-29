@@ -11,7 +11,9 @@ namespace quic {
 
 class QuicSpdyServerStreamBase : public QuicSpdyStream {
  public:
-  QuicSpdyServerStreamBase(QuicStreamId id, QuicSpdySession* session);
+  QuicSpdyServerStreamBase(QuicStreamId id,
+                           QuicSpdySession* session,
+                           StreamType type);
   QuicSpdyServerStreamBase(const QuicSpdyServerStreamBase&) = delete;
   QuicSpdyServerStreamBase& operator=(const QuicSpdyServerStreamBase&) = delete;
 

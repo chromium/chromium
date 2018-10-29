@@ -69,7 +69,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
   void OnRuleTriggered(const BackgroundTracingRule* triggered_rule,
                        StartedFinalizingCallback callback);
-  void AbortScenario();
+  CONTENT_EXPORT void AbortScenario() override;
   bool HasActiveScenario() override;
 
   void OnStartTracingDone(BackgroundTracingConfigImpl::CategoryPreset preset);

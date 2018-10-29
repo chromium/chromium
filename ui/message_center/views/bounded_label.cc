@@ -199,7 +199,7 @@ void InnerBoundedLabel::SetText(const base::string16& new_text) {
 }
 
 int InnerBoundedLabel::GetTextFlags() {
-  int flags = gfx::Canvas::MULTI_LINE | gfx::Canvas::CHARACTER_BREAK;
+  int flags = gfx::Canvas::MULTI_LINE | gfx::Canvas::CHARACTER_BREAKABLE;
 
   // We can't use subpixel rendering if the background is non-opaque.
   if (SkColorGetA(background_color()) != 0xFF)

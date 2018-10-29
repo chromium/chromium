@@ -2,7 +2,6 @@ Test for proper behavior of Range.insertNode(documentFragment) when startContain
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS r.toString() is "ABC"
 PASS p.childNodes.length is 4
 PASS p.childNodes[0] is t1

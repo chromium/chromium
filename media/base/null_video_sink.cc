@@ -44,8 +44,8 @@ void NullVideoSink::Stop() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   cancelable_worker_.Cancel();
   started_ = false;
-  if (!stop_cb_.is_null())
-    base::ResetAndReturn(&stop_cb_).Run();
+  if (stop_cb_)
+    std::move(stop_cb_).Run();
 }
 
 void NullVideoSink::CallRender() {
@@ -58,7 +58,7 @@ void NullVideoSink::CallRender() {
   DCHECK(new_frame);
   const bool is_new_frame = new_frame != last_frame_;
   last_frame_ = new_frame;
-  if (is_new_frame && !new_frame_cb_.is_null())
+  if (is_new_frame && new_frame_cb_)
     new_frame_cb_.Run(new_frame);
 
   current_render_time_ += interval_;
@@ -93,7 +93,7 @@ void NullVideoSink::PaintSingleFrame(const scoped_refptr<VideoFrame>& frame,
     return;
 
   last_frame_ = frame;
-  if (!new_frame_cb_.is_null())
+  if (new_frame_cb_)
     new_frame_cb_.Run(frame);
 }
 

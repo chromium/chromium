@@ -2,9 +2,9 @@ This tests that items in a NodeList can be retrieved by index.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 text1
 text2
+
 
 PASS div0 == div0s is true
 PASS div0 == div0s_ is false

@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -75,10 +75,6 @@ using extensions::Extension;
 using extensions::ExtensionPrefs;
 using extensions::ExtensionRegistry;
 using extensions::ExtensionSystem;
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-using extensions::ExtensionPrefs;
 #endif
 
 namespace {
@@ -151,7 +147,6 @@ void SupervisedUserService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kSupervisedUserManualURLs);
   registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
                                 SupervisedUserURLFilter::ALLOW);
-  registry->RegisterBooleanPref(prefs::kSupervisedUserCreationAllowed, true);
   registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, true);
   for (const char* pref : kCustodianInfoPrefs) {
     registry->RegisterStringPref(pref, std::string());
@@ -337,17 +332,6 @@ void SupervisedUserService::InitSync(const std::string& refresh_token) {
                                    refresh_token);
 }
 #endif  // !defined(OS_ANDROID)
-
-void SupervisedUserService::AddNavigationBlockedCallback(
-    const NavigationBlockedCallback& callback) {
-  navigation_blocked_callbacks_.push_back(callback);
-}
-
-void SupervisedUserService::DidBlockNavigation(
-    content::WebContents* web_contents) {
-  for (const auto& callback : navigation_blocked_callbacks_)
-    callback.Run(web_contents);
-}
 
 void SupervisedUserService::AddObserver(
     SupervisedUserServiceObserver* observer) {
@@ -735,25 +719,11 @@ void SupervisedUserService::UpdateManualURLs() {
     observer.OnURLFilterChanged();
 }
 
-std::string SupervisedUserService::GetSupervisedUserName() const {
-#if defined(OS_CHROMEOS)
-  // The active user can be NULL in unit tests.
-  if (user_manager::UserManager::Get()->GetActiveUser()) {
-    return base::UTF16ToUTF8(
-        user_manager::UserManager::Get()->GetUserDisplayName(
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId()));
-  }
-  return std::string();
-#else
-  return profile_->GetPrefs()->GetString(prefs::kProfileName);
-#endif
-}
-
 void SupervisedUserService::OnForceSessionSyncChanged() {
   includes_sync_sessions_type_ =
       profile_->GetPrefs()->GetBoolean(prefs::kForceSessionSync);
   ProfileSyncServiceFactory::GetForProfile(profile_)
-      ->ReconfigureDatatypeManager();
+      ->ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
 }
 
 void SupervisedUserService::Shutdown() {

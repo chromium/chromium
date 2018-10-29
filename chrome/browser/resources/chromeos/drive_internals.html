@@ -12,124 +12,147 @@
     <h1>Drive Internals</h1>
     <ul id="toc"></ul>
 
-    <h2 id="connection-status-section">Connection Status</h2>
-    <ul>
-      <li>
-        Status: <span id="connection-status"></span>
-      </li>
-      <li>
-        Has refresh token: <span id="has-refresh-token"></span>
-        <button id="button-clear-refresh-token">clear</button>
-      </li>
-      <li>
-        Has access token: <span id="has-access-token"></span>
-        <button id="button-clear-access-token">clear</button>
-      </li>
-    </ul>
+    <section id="connection-status-section" hidden>
+      <h2>Connection Status</h2>
+      <ul>
+        <li>
+          Status: <span id="connection-status"></span>
+        </li>
+        <li>
+          Has refresh token: <span id="has-refresh-token"></span>
+          <button id="button-clear-refresh-token">clear</button>
+        </li>
+        <li>
+          Has access token: <span id="has-access-token"></span>
+          <button id="button-clear-access-token">clear</button>
+        </li>
+      </ul>
+    </section>
 
-    <h2 id="account-information-section">Account Information</h2>
-    <ul>
-      <li>Remote Changestamp:
-        <span id="account-largest-changestamp-remote"></span>
-      </li>
-      <li>Quota Information: <span id="account-quota-info"></span></li>
-      <li>Root Resource Id: <span id="root-resource-id"></span></li>
-    </ul>
+    <section id="account-information-section" hidden>
+      <h2>Account Information</h2>
+      <ul>
+        <li>Remote Changestamp:
+          <span id="account-largest-changestamp-remote"></span>
+        </li>
+        <li>Quota Information: <span id="account-quota-info"></span></li>
+        <li>Root Resource Id: <span id="root-resource-id"></span></li>
+      </ul>
+    </section>
 
-    <h2 id="local-metadata-section">Local Metadata</h2>
-    <div>
-      <button id="button-reset-drive-filesystem">
-        Clear local data
-      </button>
-      <span id="reset-status-text"></span>
-    </div>
-    <ul>
-      <li>Local Free Space:
-        <span id="local-storage-freespace"></span> MB
-      </li>
-    </ul>
+    <section id="local-metadata-section" hidden>
+      <h2>Local Metadata</h2>
+      <div>
+        <button id="button-reset-drive-filesystem">
+          Clear local data
+        </button>
+        <span id="reset-status-text"></span>
+      </div>
+      <ul>
+        <li>Local Free Space:
+          <span id="local-storage-freespace"></span> MB
+        </li>
+      </ul>
+    </section>
 
-    <h2 id="delta-update-status-section">Delta Update Status</h2>
-    <ul>
-      <li>Push notification is enabled:
-        <span id="push-notification-enabled"></span></li>
-    </ul>
-    <table>
-      <tbody id="delta-update-status">
-        <tr>
-          <th>Source</th>
-          <th>Virtual Path</th>
-          <th>Start Page Token</th>
-          <th>Last Update Check Time</th>
-          <th>Last Update Check Result</th>
-          <th>Refreshing</th>
-        </tr>
-      </tbody>
-    </table>
+    <section id="delta-update-status-section" hidden>
+      <h2>Delta Update Status</h2>
+      <ul>
+        <li>Push notification is enabled:
+          <span id="push-notification-enabled"></span></li>
+      </ul>
+      <table>
+        <tbody id="delta-update-status">
+          <tr>
+            <th>Source</th>
+            <th>Virtual Path</th>
+            <th>Start Page Token</th>
+            <th>Last Update Check Time</th>
+            <th>Last Update Check Result</th>
+            <th>Refreshing</th>
+          </tr>
+        </tbody>
+      </table>
+    </section>
 
-    <h2 id="in-flight-operations-section">In-flight Operations</h2>
-    <table>
-      <tbody id="in-flight-operations-contents">
-        <tr>
-          <th>ID</th>
-          <th>Type</th>
-          <th>File Path</th>
-          <th>State</th>
-          <th>Progress</th>
-        </tr>
-      </tbody>
-    </table>
+    <section id="in-flight-operations-section" hidden>
+      <h2>In-flight Operations</h2>
+      <table>
+        <tbody id="in-flight-operations-contents">
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>File Path</th>
+            <th>State</th>
+            <th>Progress</th>
+          </tr>
+        </tbody>
+      </table>
+    </section>
 
-    <h2 id="file-system-contents-section">File System Contents</h2>
-    <button id="button-show-file-entries">Show</button>
-    <div id="file-system-contents"></div>
+    <section id="file-system-contents-section" hidden>
+      <h2>File System Contents</h2>
+      <button id="button-show-file-entries">Show</button>
+      <div id="file-system-contents"></div>
+    </section>
 
-    <h2 id="path-configurations-section">Path Configurations</h2>
-    <ul id="path-configurations">
-    </ul>
+    <section id="path-configurations-section" hidden>
+      <h2>Path Configurations</h2>
+      <ul id="path-configurations">
+      </ul>
+    </section>
 
-    <h2 id="gcache-contents-section">GCache Contents</h2>
-    <table>
-      <tbody id="gcache-contents">
-        <tr>
-          <th>Path</th>
-          <th>Size</th>
-          <th>Last Modified</th>
-          <th>Permission</th>
-        </tr>
-      </tbody>
-    </table>
+    <section id="drive-related-preferences-section" hidden>
+      <h2>Drive related Preferences</h2>
+      <ul id="drive-related-preferences">
+      </ul>
+    </section>
 
-    <ul>
-      <li>
-        Total Size:
-        <span id="gcache-summary-total-size">(calculating...)</span> MB.
-      </li>
-    </ul>
+    <section id="event-log-section" hidden>
+      <h2>Event Log</h2>
+      <ul id="event-log">
+      </ul>
+    </section>
 
-    <h2 id="cache-contents-section">Cache Contents</h2>
-    <table>
-      <tbody id="cache-contents">
-        <tr>
-          <th>Local ID</th>
-          <th>MD5</th>
-          <th>Present</th>
-          <th>Pinned</th>
-          <th>Dirty</th>
-        </tr>
-      </tbody>
-    </table>
+    <section id="service-log-section" hidden>
+      <h2>Service Log</h2>
+      <ul id="service-log">
+      </ul>
+    </section>
 
-    <h2 id="drive-related-preferences-section">Drive related Preferences</h2>
-    <ul id="drive-related-preferences">
-    </ul>
+    <section id="cache-contents-section" hidden>
+      <h2>Cache Contents</h2>
+      <table>
+        <tbody id="cache-contents">
+          <tr>
+            <th>Local ID</th>
+            <th>MD5</th>
+            <th>Present</th>
+            <th>Pinned</th>
+            <th>Dirty</th>
+          </tr>
+        </tbody>
+      </table>
+    </section>
 
-    <h2 id="event-log-section">Event Log</h2>
-    <ul id="event-log">
-    </ul>
-
-    <h2 id="service-log-section">Service Log</h2>
-    <ul id="service-log">
-    </ul>
+    <section id="gcache-contents-section" hidden>
+      <h2>GCache Contents</h2>
+      <table>
+        <tbody id="gcache-contents">
+          <tr>
+            <th>Path</th>
+            <th>Size</th>
+            <th>Last Modified</th>
+            <th>Permission</th>
+          </tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>
+          Total Size:
+          <span id="gcache-summary-total-size">(calculating...)</span> MB.
+        </li>
+      </ul>
+    </section>
   </body>
 </html>

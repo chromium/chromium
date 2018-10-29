@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_task_environment.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #include "ios/chrome/browser/tabs/tab.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
@@ -24,13 +25,13 @@ class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
   ChromeActivityItemThumbnailGeneratorTest() {
     chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
 
+    delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     CGRect frame = {CGPointZero, CGSizeMake(400, 300)};
-    UIView* view = [[UIView alloc] initWithFrame:frame];
-    view.backgroundColor = [UIColor redColor];
-    test_web_state_.SetView(view);
-
+    delegate_.view = [[UIView alloc] initWithFrame:frame];
+    delegate_.view.backgroundColor = [UIColor redColor];
     SnapshotTabHelper::CreateForWebState(&test_web_state_,
                                          [[NSUUID UUID] UUIDString]);
+    SnapshotTabHelper::FromWebState(&test_web_state_)->SetDelegate(delegate_);
   }
 
   Tab* CreateMockTabForThumbnail(bool incognito) {
@@ -44,6 +45,7 @@ class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
     return tab;
   }
 
+  FakeSnapshotGeneratorDelegate* delegate_ = nil;
   base::test::ScopedTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   web::TestWebState test_web_state_;

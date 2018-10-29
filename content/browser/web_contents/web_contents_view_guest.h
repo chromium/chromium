@@ -68,8 +68,6 @@ class WebContentsViewGuest : public WebContentsView,
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
 #if defined(OS_MACOSX)
-  void SetAllowOtherViews(bool allow) override;
-  bool GetAllowOtherViews() const override;
   bool IsEventTracking() const override;
   void CloseTabAfterEventTracking() override;
 #endif

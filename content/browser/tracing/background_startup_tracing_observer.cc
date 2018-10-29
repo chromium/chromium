@@ -4,8 +4,10 @@
 
 #include "content/browser/tracing/background_startup_tracing_observer.h"
 
+#include "base/task/post_task.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "content/browser/tracing/background_tracing_rule.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -63,8 +65,8 @@ void BackgroundStartupTracingObserver::OnScenarioActivated(
   const BackgroundTracingRule* startup_rule = FindStartupRuleInConfig(*config);
   DCHECK(startup_rule);
   // Post task to avoid reentrancy.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(
           &BackgroundTracingManagerImpl::OnRuleTriggered,
           base::Unretained(BackgroundTracingManagerImpl::GetInstance()),

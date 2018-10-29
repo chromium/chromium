@@ -11,7 +11,7 @@ namespace {
 // Removes |key| from |first|, and |first[key]| from |second|.
 template <typename T>
 void Remove(uint32_t key, T* first, T* second) {
-  typename T::iterator iter = first->find(key);
+  auto iter = first->find(key);
   if (iter == first->end())
     return;
 
@@ -34,7 +34,7 @@ SequentialIDGenerator::~SequentialIDGenerator() {
 }
 
 uint32_t SequentialIDGenerator::GetGeneratedID(uint32_t number) {
-  IDMap::iterator find = number_to_id_.find(number);
+  auto find = number_to_id_.find(number);
   if (find != number_to_id_.end())
     return find->second;
 

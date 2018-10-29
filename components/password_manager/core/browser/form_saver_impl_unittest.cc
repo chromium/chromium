@@ -20,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using autofill::FormFieldData;
 using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 using base::StringPiece;
@@ -528,6 +529,39 @@ TEST_F(FormSaverImplTest, PresaveGeneratedPassword_CloneSurvives) {
   original.reset();
   EXPECT_CALL(*mock_store_, UpdateLoginWithPrimaryKey(_, _));
   clone->PresaveGeneratedPassword(generated);
+}
+
+// Check that on saving the pending form |form_data| is sanitized.
+TEST_F(FormSaverImplTest, FormDataSanitized) {
+  PasswordForm pending = CreatePending("nameofuser", "wordToP4a55");
+  FormFieldData field;
+  field.name = ASCIIToUTF16("name");
+  field.form_control_type = "password";
+  field.value = ASCIIToUTF16("value");
+  field.label = ASCIIToUTF16("label");
+  field.placeholder = ASCIIToUTF16("placeholder");
+  field.id = ASCIIToUTF16("id");
+  field.css_classes = ASCIIToUTF16("css_classes");
+  pending.form_data.fields.push_back(field);
+
+  for (bool presave : {false, true}) {
+    PasswordForm saved;
+    EXPECT_CALL(*mock_store_, AddLogin(_)).WillOnce(SaveArg<0>(&saved));
+    if (presave)
+      form_saver_.PresaveGeneratedPassword(pending);
+    else
+      form_saver_.Save(pending, {});
+
+    ASSERT_EQ(1u, saved.form_data.fields.size());
+    const FormFieldData& saved_field = saved.form_data.fields[0];
+    EXPECT_EQ(ASCIIToUTF16("name"), saved_field.name);
+    EXPECT_EQ("password", saved_field.form_control_type);
+    EXPECT_TRUE(saved_field.value.empty());
+    EXPECT_TRUE(saved_field.label.empty());
+    EXPECT_TRUE(saved_field.placeholder.empty());
+    EXPECT_TRUE(saved_field.id.empty());
+    EXPECT_TRUE(saved_field.css_classes.empty());
+  }
 }
 
 }  // namespace password_manager

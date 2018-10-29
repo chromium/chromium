@@ -35,10 +35,9 @@ class PictureInPictureWindowControllerImpl
 
   // PictureInPictureWindowController:
   CONTENT_EXPORT gfx::Size Show() override;
-  CONTENT_EXPORT void Close(bool should_pause_video) override;
+  CONTENT_EXPORT void Close(bool should_pause_video,
+                            bool should_reset_pip_player) override;
   CONTENT_EXPORT void OnWindowDestroyed() override;
-  CONTENT_EXPORT void ClickCustomControl(
-      const std::string& control_id) override;
   CONTENT_EXPORT void SetPictureInPictureCustomControls(
       const std::vector<blink::PictureInPictureControlInfo>& controls) override;
   CONTENT_EXPORT void EmbedSurface(const viz::SurfaceId& surface_id,
@@ -48,8 +47,11 @@ class PictureInPictureWindowControllerImpl
   CONTENT_EXPORT bool IsPlayerActive() override;
   CONTENT_EXPORT WebContents* GetInitiatorWebContents() override;
   CONTENT_EXPORT bool TogglePlayPause() override;
+  CONTENT_EXPORT void CustomControlPressed(
+      const std::string& control_id) override;
   CONTENT_EXPORT void UpdatePlaybackState(bool is_playing,
                                           bool reached_end_of_stream) override;
+  CONTENT_EXPORT void SetAlwaysHidePlayPauseButton(bool is_visible) override;
 
  private:
   friend class WebContentsUserData<PictureInPictureWindowControllerImpl>;
@@ -60,11 +62,12 @@ class PictureInPictureWindowControllerImpl
       WebContents* initiator);
 
   // Signal to the media player that |this| is leaving Picture-in-Picture mode.
-  void OnLeavingPictureInPicture(bool should_pause_video);
+  void OnLeavingPictureInPicture(bool should_pause_video,
+                                 bool should_reset_pip_player);
 
   // Internal method to set the states after the window was closed, whether via
   // the system or Chromium.
-  void CloseInternal(bool should_pause_video);
+  void CloseInternal(bool should_pause_video, bool should_reset_pip_player);
 
   // Creates a new window if the previous one was destroyed. It can happen
   // because of the system control of the window.

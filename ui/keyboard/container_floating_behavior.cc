@@ -4,14 +4,15 @@
 
 #include "ui/keyboard/container_floating_behavior.h"
 
+#include "ui/aura/window.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/display.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/keyboard/container_type.h"
+#include "ui/keyboard/display_util.h"
 #include "ui/keyboard/drag_descriptor.h"
-#include "ui/keyboard/keyboard_controller.h"
-#include "ui/keyboard/keyboard_ui.h"
+#include "ui/wm/core/window_animations.h"
 
 namespace keyboard {
 
@@ -21,11 +22,10 @@ constexpr int kAnimationDurationMs = 200;
 // Distance the keyboard moves during the animation
 constexpr int kAnimationDistance = 30;
 
-ContainerFloatingBehavior::ContainerFloatingBehavior(
-    KeyboardController* controller) {
-  controller_ = controller;
-}
-ContainerFloatingBehavior::~ContainerFloatingBehavior() {}
+ContainerFloatingBehavior::ContainerFloatingBehavior(Delegate* delegate)
+    : ContainerBehavior(delegate) {}
+
+ContainerFloatingBehavior::~ContainerFloatingBehavior() = default;
 
 ContainerType ContainerFloatingBehavior::GetType() const {
   return ContainerType::FLOATING;
@@ -186,13 +186,9 @@ bool ContainerFloatingBehavior::IsDragHandle(
 bool ContainerFloatingBehavior::HandlePointerEvent(
     const ui::LocatedEvent& event,
     const display::Display& current_display) {
-  // Cannot call UI-backed operations without a KeyboardController
-  DCHECK(controller_);
   auto kb_offset = gfx::Vector2d(event.x(), event.y());
 
-  aura::Window* contents = controller_->GetKeyboardWindow();
-
-  const gfx::Rect& keyboard_bounds_in_screen = contents->GetBoundsInScreen();
+  const gfx::Rect& keyboard_bounds_in_screen = delegate_->GetBoundsInScreen();
 
   // Don't handle events if this runs in a partially initialized state.
   if (keyboard_bounds_in_screen.height() <= 0)
@@ -257,7 +253,7 @@ bool ContainerFloatingBehavior::HandlePointerEvent(
                 current_display, current_drag_location);
 
         if (current_display.id() == new_display.id()) {
-          controller_->MoveKeyboard(new_bounds_in_local);
+          delegate_->MoveKeyboardWindow(new_bounds_in_local);
         } else {
           // Since the keyboard has jumped across screens, cancel the current
           // drag descriptor as though the user has lifted their finger.
@@ -274,10 +270,10 @@ bool ContainerFloatingBehavior::HandlePointerEvent(
           new_bounds_in_local =
               contained_new_bounds_in_screen -
               new_display.bounds().origin().OffsetFromOrigin();
-          controller_->MoveToDisplayWithTransition(new_display,
-                                                   new_bounds_in_local);
+          delegate_->MoveKeyboardWindowToDisplay(new_display,
+                                                 new_bounds_in_local);
         }
-        SavePosition(contents->GetBoundsInScreen(), new_display.size());
+        SavePosition(delegate_->GetBoundsInScreen(), new_display.size());
         return true;
       }
       break;

@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{Пре 1 минут}one{Пре # минут}few{Пре # минута}other{Пре # минута}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 м}one{# м}few{# м}other{# м}}</translation>
 <translation id="1243314992276662751">Отпреми</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">ПРЕПОРУЧЕНЕ АПЛИКАЦИЈЕ</translation>
 <translation id="1368832886055348810">Слева надесно</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Страница надоле</translation>
 <translation id="8245914219290430011">Табулатор</translation>
+<translation id="8259556432390118667">Хексадецимална вредност боје</translation>
 <translation id="8328145009876646418">Лева ивица</translation>
 <translation id="8331626408530291785">Помери нагоре</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 година}one{# година}few{# године}other{# година}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">Подразумевано</translation>
 <translation id="8806053966018712535">Директоријум <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">Додај напомену у слику</translation>
+<translation id="8841375032071747811">Дугме Назад</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="9002566407876343676">отварање</translation>
 <translation id="9038489124413477075">Неименовани директоријум</translation>

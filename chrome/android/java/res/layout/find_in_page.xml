@@ -41,25 +41,25 @@
         android:layout_marginBottom="8dp"
         android:background="#000000"
         android:alpha="0.1" />
-    <org.chromium.chrome.browser.widget.TintedImageButton
+    <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/find_prev_button"
         style="@style/ToolbarButton"
         android:layout_height="match_parent"
         android:src="@drawable/ic_expand_less_black_24dp"
         android:contentDescription="@string/accessibility_find_toolbar_btn_prev"
-        app:chrometint="@color/dark_mode_tint" />
-    <org.chromium.chrome.browser.widget.TintedImageButton
+        app:tint="@color/dark_mode_tint" />
+    <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/find_next_button"
         style="@style/ToolbarButton"
         android:layout_height="match_parent"
         android:src="@drawable/ic_expand_more_black_24dp"
         android:contentDescription="@string/accessibility_find_toolbar_btn_next"
-        app:chrometint="@color/dark_mode_tint" />
-    <org.chromium.chrome.browser.widget.TintedImageButton
+        app:tint="@color/dark_mode_tint" />
+    <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/close_find_button"
         style="@style/ToolbarButton"
         android:layout_height="match_parent"
         android:src="@drawable/btn_close"
         android:contentDescription="@string/close"
-        app:chrometint="@color/dark_mode_tint" />
+        app:tint="@color/dark_mode_tint" />
 </LinearLayout>

@@ -18,9 +18,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Ancestor Clipping Layer",
-      "position": [8, 8],
-      "bounds": [185, 185],
+      "name": "Squashing Containment Layer",
       "drawsContent": false
     },
     {
@@ -38,7 +36,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV id='foo'",
           "rect": [0, 0, 100, 1000],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

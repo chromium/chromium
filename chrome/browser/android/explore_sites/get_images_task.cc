@@ -16,7 +16,8 @@ namespace {
 const char kSelectCategoryImagesSql[] = R"(SELECT favicon
 FROM sites
 LEFT JOIN site_blacklist ON (sites.url = site_blacklist.url)
-WHERE category_id = ? AND NOT removed AND site_blacklist.url IS NULL
+WHERE category_id = ? AND LENGTH(favicon) > 0 AND NOT removed
+AND site_blacklist.url IS NULL
 LIMIT ?;)";
 
 const char kSelectSiteImageSql[] =

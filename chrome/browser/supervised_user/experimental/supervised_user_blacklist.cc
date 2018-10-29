@@ -21,8 +21,7 @@ ReadFromBinaryFileOnFileThread(const base::FilePath& path) {
       new std::vector<SupervisedUserBlacklist::Hash>);
 
   base::MemoryMappedFile file;
-  file.Initialize(path);
-  if (!file.IsValid())
+  if (!file.Initialize(path))
     return host_hashes;
 
   size_t size = file.length();

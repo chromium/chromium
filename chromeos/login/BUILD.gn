@@ -1,0 +1,103 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/rules.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+
+source_set("login") {
+  configs += [ "//chromeos:chromeos_implementation" ]
+  public_deps = [
+    ":challenge_response_key",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//chromeos:authpolicy_proto",
+    "//chromeos:chromeos_constants",
+    "//chromeos:chromeos_export",
+    "//chromeos:cryptohome_proto",
+    "//chromeos:login_event_recorder",
+    "//chromeos/cryptohome",
+    "//chromeos/dbus",
+    "//chromeos/settings:cros_settings_names",
+    "//components/account_id",
+    "//components/device_event_log",
+    "//components/password_manager/core/browser:password_hash_data",
+    "//components/prefs",
+    "//components/user_manager",
+    "//dbus",
+    "//google_apis",
+    "//net",
+    "//skia",
+    "//third_party/icu",
+    "//third_party/protobuf:protobuf_lite",
+    "//url",
+  ]
+  sources = [
+    "auth/auth_attempt_state.cc",
+    "auth/auth_attempt_state.h",
+    "auth/auth_attempt_state_resolver.cc",
+    "auth/auth_attempt_state_resolver.h",
+    "auth/auth_status_consumer.cc",
+    "auth/auth_status_consumer.h",
+    "auth/authenticator.cc",
+    "auth/authenticator.h",
+    "auth/authpolicy_login_helper.cc",
+    "auth/authpolicy_login_helper.h",
+    "auth/cryptohome_authenticator.cc",
+    "auth/cryptohome_authenticator.h",
+    "auth/extended_authenticator.cc",
+    "auth/extended_authenticator.h",
+    "auth/extended_authenticator_impl.cc",
+    "auth/extended_authenticator_impl.h",
+    "auth/key.cc",
+    "auth/key.h",
+    "auth/login_performer.cc",
+    "auth/login_performer.h",
+    "auth/stub_authenticator.cc",
+    "auth/stub_authenticator.h",
+    "auth/test_attempt_state.cc",
+    "auth/test_attempt_state.h",
+    "auth/user_context.cc",
+    "auth/user_context.h",
+    "login_state.cc",
+    "login_state.h",
+  ]
+}
+
+source_set("challenge_response_key") {
+  configs += [ "//chromeos:chromeos_implementation" ]
+  deps = [
+    "//base",
+    "//chromeos:chromeos_export",
+  ]
+  sources = [
+    "auth/challenge_response_key.cc",
+    "auth/challenge_response_key.h",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/linux/dbus" ]
+  testonly = true
+  deps = [
+    ":login",
+    "//base",
+    "//base:i18n",
+    "//chromeos:authpolicy_proto",
+    "//chromeos:chromeos_constants",
+    "//chromeos/dbus",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/icu",
+  ]
+  sources = [
+    "auth/authpolicy_login_helper_unittest.cc",
+    "auth/key_unittest.cc",
+    "login_state_unittest.cc",
+  ]
+}

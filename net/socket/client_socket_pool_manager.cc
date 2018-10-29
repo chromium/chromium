@@ -101,10 +101,6 @@ int InitSocketPoolHelper(ClientSocketPoolManager::SocketGroupType group_type,
   // Other cache-related load flags should not have this effect.
   bool disable_resolver_cache = request_load_flags & LOAD_BYPASS_CACHE;
 
-  int load_flags = request_load_flags;
-  if (session->params().ignore_certificate_errors)
-    load_flags |= LOAD_IGNORE_ALL_CERT_ERRORS;
-
   // Build the string used to uniquely identify connections of this type.
   // Determine the host and port to connect to.
   std::string connection_group = origin_host_port.ToString();
@@ -174,9 +170,10 @@ int InitSocketPoolHelper(ClientSocketPoolManager::SocketGroupType group_type,
             *proxy_host_port, disable_resolver_cache, resolution_callback,
             ssl_combine_connect_and_write_policy);
         // Set ssl_params, and unset proxy_tcp_params
-        ssl_params = new SSLSocketParams(proxy_tcp_params, NULL, NULL,
-                                         *proxy_host_port, ssl_config_for_proxy,
-                                         PRIVACY_MODE_DISABLED, load_flags);
+        ssl_params =
+            new SSLSocketParams(proxy_tcp_params, NULL, NULL, *proxy_host_port,
+                                ssl_config_for_proxy, PRIVACY_MODE_DISABLED,
+                                session->params().ignore_certificate_errors);
         proxy_tcp_params = NULL;
       }
 
@@ -221,7 +218,8 @@ int InitSocketPoolHelper(ClientSocketPoolManager::SocketGroupType group_type,
     }
     scoped_refptr<SSLSocketParams> ssl_params = new SSLSocketParams(
         ssl_tcp_params, socks_params, http_proxy_params, origin_host_port,
-        ssl_config_for_origin, privacy_mode, load_flags);
+        ssl_config_for_origin, privacy_mode,
+        session->params().ignore_certificate_errors);
     SSLClientSocketPool* ssl_pool = NULL;
     if (proxy_info.is_direct()) {
       ssl_pool = session->GetSSLSocketPool(socket_pool_type);

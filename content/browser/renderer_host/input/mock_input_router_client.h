@@ -30,7 +30,6 @@ class MockInputRouterClient : public InputRouterClient,
       const ui::LatencyInfo& latency_info) override;
   void IncrementInFlightEventCount() override;
   void DecrementInFlightEventCount(InputEventAckSource ack_source) override;
-  void OnHasTouchEventHandlers(bool has_handlers) override;
   void DidOverscroll(const ui::DidOverscrollParams& params) override;
   void OnSetWhiteListedTouchAction(cc::TouchAction touch_action) override;
   void DidStartScrollingViewport() override;
@@ -51,7 +50,6 @@ class MockInputRouterClient : public InputRouterClient,
     input_router_ = input_router;
   }
 
-  bool has_touch_handler() const { return has_touch_handler_; }
   void set_filter_state(InputEventAckState filter_state) {
     filter_state_ = filter_state;
   }
@@ -78,7 +76,6 @@ class MockInputRouterClient : public InputRouterClient,
  private:
   InputRouter* input_router_;
   int in_flight_event_count_;
-  bool has_touch_handler_;
 
   InputEventAckState filter_state_;
 

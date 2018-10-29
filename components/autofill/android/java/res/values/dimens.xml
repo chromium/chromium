@@ -14,6 +14,13 @@
 
     <!-- Dimens for refresh UI -->
     <dimen name="autofill_dropdown_refresh_item_height">48dp</dimen>
+    <dimen name="autofill_dropdown_refresh_footer_item_height">40dp</dimen>
+
+    <dimen name="autofill_dropdown_refresh_icon_height">16dp</dimen>
+    <dimen name="autofill_dropdown_refresh_icon_width">38dp</dimen>
+    <dimen name="autofill_dropdown_refresh_footer_icon_height">14dp</dimen>
+
     <dimen name="autofill_dropdown_refresh_horizontal_padding">16dp</dimen>
+    <dimen name="autofill_dropdown_refresh_vertical_padding">12dp</dimen>
     <dimen name="autofill_dropdown_refresh_icon_margin">24dp</dimen>
 </resources>

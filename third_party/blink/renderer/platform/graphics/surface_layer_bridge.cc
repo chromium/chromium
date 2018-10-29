@@ -78,9 +78,9 @@ void SurfaceLayerBridge::OnFirstSurfaceActivation(
 
   current_surface_id_ = surface_info.id();
 
-  surface_layer_->SetPrimarySurfaceId(
-      surface_info.id(), cc::DeadlinePolicy::UseSpecifiedDeadline(0u));
-  surface_layer_->SetFallbackSurfaceId(surface_info.id());
+  surface_layer_->SetSurfaceId(surface_info.id(),
+                               cc::DeadlinePolicy::UseSpecifiedDeadline(0u));
+  surface_layer_->SetOldestAcceptableFallback(surface_info.id());
 
   if (observer_) {
     observer_->OnWebLayerUpdated();
@@ -110,9 +110,9 @@ void SurfaceLayerBridge::ClearSurfaceId() {
   // We reset the Ids if we lose the context_provider (case: GPU process ended)
   // If we destroyed the surface_layer before that point, we need not update
   // the ids.
-  surface_layer_->SetPrimarySurfaceId(viz::SurfaceId(),
-                                      cc::DeadlinePolicy::UseDefaultDeadline());
-  surface_layer_->SetFallbackSurfaceId(viz::SurfaceId());
+  surface_layer_->SetSurfaceId(viz::SurfaceId(),
+                               cc::DeadlinePolicy::UseDefaultDeadline());
+  surface_layer_->SetOldestAcceptableFallback(viz::SurfaceId());
 }
 
 void SurfaceLayerBridge::SetContentsOpaque(bool opaque) {
@@ -133,8 +133,8 @@ void SurfaceLayerBridge::CreateSurfaceLayer() {
       frame_sink_id_,
       parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId());
 
-  surface_layer_->SetPrimarySurfaceId(current_surface_id_,
-                                      cc::DeadlinePolicy::UseDefaultDeadline());
+  surface_layer_->SetSurfaceId(current_surface_id_,
+                               cc::DeadlinePolicy::UseDefaultDeadline());
 
   surface_layer_->SetStretchContentToFillBounds(true);
   surface_layer_->SetIsDrawable(true);
@@ -146,6 +146,10 @@ void SurfaceLayerBridge::CreateSurfaceLayer() {
   // We ignore our opacity until we are sure that we have something to show,
   // as indicated by getting an OnFirstSurfaceActivation call.
   surface_layer_->SetContentsOpaque(false);
+}
+
+base::TimeTicks SurfaceLayerBridge::GetLocalSurfaceIdAllocationTime() const {
+  return parent_local_surface_id_allocator_.allocation_time();
 }
 
 }  // namespace blink

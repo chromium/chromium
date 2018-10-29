@@ -2,7 +2,6 @@ This test verifies that the NavigationTimings don't change after a document.open
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS timing.connectEnd is originalTiming.connectEnd
 PASS timing.connectStart is originalTiming.connectStart
 PASS timing.domComplete is originalTiming.domComplete

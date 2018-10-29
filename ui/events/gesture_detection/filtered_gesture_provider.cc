@@ -64,6 +64,10 @@ void FilteredGestureProvider::OnTouchEventAck(
                                   is_source_touch_event_set_non_blocking);
 }
 
+void FilteredGestureProvider::ResetGestureHandlingState() {
+  gesture_filter_.ResetGestureHandlingState();
+}
+
 void FilteredGestureProvider::ResetDetection() {
   gesture_provider_->ResetDetection();
 }

@@ -166,8 +166,8 @@ String MakeTestData(const char** lines, const NewlineType* breaks, int count) {
   return builder.ToString();
 }
 
-const size_t kBlockSizes[] = {64, 32, 16, 8,  4,  2,  1,  3,
-                              5,  7,  9,  11, 13, 17, 19, 23};
+const wtf_size_t kBlockSizes[] = {64, 32, 16, 8,  4,  2,  1,  3,
+                                  5,  7,  9,  11, 13, 17, 19, 23};
 
 TEST(BufferedLineReaderTest, BufferSizes) {
   const char* lines[] = {"aaaaaaaaaaaaaaaa", "bbbbbbbbbb", "ccccccccccccc", "",
@@ -181,8 +181,8 @@ TEST(BufferedLineReaderTest, BufferSizes) {
   for (size_t k = 0; k < arraysize(kBlockSizes); ++k) {
     size_t line_count = 0;
     BufferedLineReader reader;
-    size_t block_size = kBlockSizes[k];
-    for (size_t i = 0; i < data.length(); i += block_size) {
+    wtf_size_t block_size = kBlockSizes[k];
+    for (wtf_size_t i = 0; i < data.length(); i += block_size) {
       reader.Append(data.Substring(i, block_size));
 
       String line;
@@ -208,8 +208,8 @@ TEST(BufferedLineReaderTest, BufferSizesMixedEndings) {
   for (size_t k = 0; k < arraysize(kBlockSizes); ++k) {
     size_t line_count = 0;
     BufferedLineReader reader;
-    size_t block_size = kBlockSizes[k];
-    for (size_t i = 0; i < data.length(); i += block_size) {
+    wtf_size_t block_size = kBlockSizes[k];
+    for (wtf_size_t i = 0; i < data.length(); i += block_size) {
       reader.Append(data.Substring(i, block_size));
 
       String line;

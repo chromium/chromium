@@ -62,6 +62,9 @@ std::string DumpEvents(AXEventGenerator* generator) {
       case AXEventGenerator::Event::LOAD_COMPLETE:
         event_name = "LOAD_COMPLETE";
         break;
+      case AXEventGenerator::Event::LOAD_START:
+        event_name = "LOAD_START";
+        break;
       case AXEventGenerator::Event::MENU_ITEM_SELECTED:
         event_name = "MENU_ITEM_SELECTED";
         break;
@@ -118,6 +121,7 @@ TEST(AXEventGeneratorTest, LoadCompleteSameTree) {
   initial_state.root_id = 1;
   initial_state.nodes.resize(1);
   initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].location = gfx::RectF(0, 0, 800, 600);
   initial_state.has_tree_data = true;
   AXTree tree(initial_state);
 
@@ -142,10 +146,55 @@ TEST(AXEventGeneratorTest, LoadCompleteNewTree) {
   load_complete_update.root_id = 2;
   load_complete_update.nodes.resize(1);
   load_complete_update.nodes[0].id = 2;
+  load_complete_update.nodes[0].location = gfx::RectF(0, 0, 800, 600);
   load_complete_update.has_tree_data = true;
   load_complete_update.tree_data.loaded = true;
   EXPECT_TRUE(tree.Unserialize(load_complete_update));
   EXPECT_EQ("LOAD_COMPLETE on 2", DumpEvents(&event_generator));
+
+  // Load complete should not be emitted for sizeless roots.
+  load_complete_update.root_id = 3;
+  load_complete_update.nodes.resize(1);
+  load_complete_update.nodes[0].id = 3;
+  load_complete_update.nodes[0].location = gfx::RectF(0, 0, 0, 0);
+  load_complete_update.has_tree_data = true;
+  load_complete_update.tree_data.loaded = true;
+  EXPECT_TRUE(tree.Unserialize(load_complete_update));
+  EXPECT_EQ("", DumpEvents(&event_generator));
+
+  // TODO(accessibility): http://crbug.com/888758
+  // Load complete should not be emitted for chrome-search URLs.
+  load_complete_update.root_id = 4;
+  load_complete_update.nodes.resize(1);
+  load_complete_update.nodes[0].id = 4;
+  load_complete_update.nodes[0].location = gfx::RectF(0, 0, 800, 600);
+  load_complete_update.nodes[0].AddStringAttribute(
+      ax::mojom::StringAttribute::kUrl, "chrome-search://foo");
+  load_complete_update.has_tree_data = true;
+  load_complete_update.tree_data.loaded = true;
+  EXPECT_TRUE(tree.Unserialize(load_complete_update));
+  EXPECT_EQ("LOAD_COMPLETE on 4", DumpEvents(&event_generator));
+}
+
+TEST(AXEventGeneratorTest, LoadStart) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(1);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].location = gfx::RectF(0, 0, 800, 600);
+  initial_state.has_tree_data = true;
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  AXTreeUpdate load_start_update;
+  load_start_update.root_id = 2;
+  load_start_update.nodes.resize(1);
+  load_start_update.nodes[0].id = 2;
+  load_start_update.nodes[0].location = gfx::RectF(0, 0, 800, 600);
+  load_start_update.has_tree_data = true;
+  load_start_update.tree_data.loaded = false;
+  EXPECT_TRUE(tree.Unserialize(load_start_update));
+  EXPECT_EQ("LOAD_START on 2", DumpEvents(&event_generator));
 }
 
 TEST(AXEventGeneratorTest, DocumentSelectionChanged) {

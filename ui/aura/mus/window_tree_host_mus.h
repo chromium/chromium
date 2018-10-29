@@ -85,9 +85,10 @@ class AURA_EXPORT WindowTreeHostMus : public WindowTreeHostPlatform,
 
   // aura::WindowTreeHostPlatform:
   void HideImpl() override;
-  void SetBoundsInPixels(const gfx::Rect& bounds,
-                         const viz::LocalSurfaceId& local_surface_id =
-                             viz::LocalSurfaceId()) override;
+  void SetBoundsInPixels(
+      const gfx::Rect& bounds,
+      const viz::LocalSurfaceId& local_surface_id = viz::LocalSurfaceId(),
+      base::TimeTicks allocation_time = base::TimeTicks()) override;
   void DispatchEvent(ui::Event* event) override;
   void OnClosed() override;
   void OnActivationChanged(bool active) override;

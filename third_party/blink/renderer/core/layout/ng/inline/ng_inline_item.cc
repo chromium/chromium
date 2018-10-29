@@ -73,7 +73,8 @@ NGInlineItem::NGInlineItem(NGInlineItemType type,
       style_variant_(static_cast<unsigned>(NGStyleVariant::kStandard)),
       end_collapse_type_(kNotCollapsible),
       is_end_collapsible_newline_(false),
-      is_symbol_marker_(false) {
+      is_symbol_marker_(false),
+      is_generated_(false) {
   DCHECK_GE(end, start);
   ComputeBoxProperties();
 }
@@ -98,7 +99,8 @@ NGInlineItem::NGInlineItem(const NGInlineItem& other,
       style_variant_(other.style_variant_),
       end_collapse_type_(other.end_collapse_type_),
       is_end_collapsible_newline_(other.is_end_collapsible_newline_),
-      is_symbol_marker_(other.is_symbol_marker_) {
+      is_symbol_marker_(other.is_symbol_marker_),
+      is_generated_(other.is_generated_) {
   DCHECK_GE(end, start);
 }
 

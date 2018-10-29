@@ -68,7 +68,7 @@ TEST_F(StoreKitCoordinatorTest, OpenStorePresentViewController) {
 
 // Tests that when there is a SKStoreProductViewController presented, starting
 // the coordinator doesn't present new view controller.
-TEST_F(StoreKitCoordinatorTest, NoOverlappingPresentedViewControllers) {
+TEST_F(StoreKitCoordinatorTest, NoOverlappingStoreKitsPresented) {
   NSString* kTestITunesItemIdentifier = @"TestITunesItemIdentifier";
   coordinator_.iTunesProductParameters = @{
     SKStoreProductParameterITunesItemIdentifier : kTestITunesItemIdentifier,
@@ -96,4 +96,33 @@ TEST_F(StoreKitCoordinatorTest, NoOverlappingPresentedViewControllers) {
               [base_view_controller_.presentedViewController class]);
   EXPECT_NSNE(presented_controller,
               base_view_controller_.presentedViewController);
+}
+
+// Tests that if the base view controller is presenting any view controller,
+// starting the coordinator doesn't present new view controller.
+TEST_F(StoreKitCoordinatorTest, NoOverlappingPresentedViewControllers) {
+  NSString* kTestITunesItemIdentifier = @"TestITunesItemIdentifier";
+  coordinator_.iTunesProductParameters = @{
+    SKStoreProductParameterITunesItemIdentifier : kTestITunesItemIdentifier,
+  };
+  EXPECT_FALSE(base_view_controller_.presentedViewController);
+  UIViewController* dummy_view_controller = [[UIViewController alloc] init];
+  [base_view_controller_ presentViewController:dummy_view_controller
+                                      animated:NO
+                                    completion:nil];
+  EXPECT_NSEQ(dummy_view_controller,
+              base_view_controller_.presentedViewController);
+
+  [coordinator_ start];
+  // Verify that that presented view controlled is not changed.
+  EXPECT_NSEQ(dummy_view_controller,
+              base_view_controller_.presentedViewController);
+  [coordinator_ stop];
+  EXPECT_FALSE(base_view_controller_.presentedViewController);
+
+  [coordinator_ start];
+  // After reseting the view controller, a new storekit view should be
+  // presented.
+  EXPECT_NSEQ([SKStoreProductViewController class],
+              [base_view_controller_.presentedViewController class]);
 }

@@ -1,4 +1,5 @@
-  
+ 
+
 {
   "layers": [
     {
@@ -42,13 +43,6 @@
       "transform": 4
     },
     {
-      "name": "Child Containment Layer",
-      "position": [59, 59],
-      "bounds": [200, 200],
-      "drawsContent": false,
-      "transform": 4
-    },
-    {
       "name": "LayoutBlockFlow (positioned) DIV class='negative child'",
       "bounds": [50, 50],
       "drawsContent": false,
@@ -56,8 +50,7 @@
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='main box' (foreground) Layer",
-      "position": [59, 59],
-      "bounds": [200, 200],
+      "bounds": [318, 318],
       "transform": 4
     }
   ],

@@ -137,6 +137,9 @@ CreditCard GetVerifiedCreditCard2();
 CreditCard GetMaskedServerCard();
 CreditCard GetMaskedServerCardAmex();
 
+// Returns a full server card full of dummy info.
+CreditCard GetFullServerCard();
+
 // Returns a randomly generated credit card of |record_type|. Note that the
 // card is not guaranteed to be valid/sane from a card validation standpoint.
 CreditCard GetRandomCreditCard(CreditCard::RecordType record_Type);

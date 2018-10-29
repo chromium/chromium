@@ -15,17 +15,20 @@ namespace blink {
 
 Animator::Animator(v8::Isolate* isolate,
                    AnimatorDefinition* definition,
-                   v8::Local<v8::Object> instance)
+                   v8::Local<v8::Value> instance,
+                   int num_effects)
     : definition_(definition),
       instance_(isolate, instance),
-      effect_(new EffectProxy()) {}
+      group_effect_(new WorkletGroupEffectProxy(num_effects)) {
+  DCHECK_GE(num_effects, 1);
+}
 
 Animator::~Animator() = default;
 
 void Animator::Trace(blink::Visitor* visitor) {
   visitor->Trace(definition_);
-  visitor->Trace(effect_);
-  visitor->Trace(instance_.Cast<v8::Value>());
+  visitor->Trace(group_effect_);
+  visitor->Trace(instance_);
 }
 
 bool Animator::Animate(
@@ -34,7 +37,7 @@ bool Animator::Animate(
     AnimationWorkletDispatcherOutput::AnimationState* output) {
   v8::Isolate* isolate = script_state->GetIsolate();
 
-  v8::Local<v8::Object> instance = instance_.NewLocal(isolate);
+  v8::Local<v8::Value> instance = instance_.NewLocal(isolate);
   v8::Local<v8::Function> animate = definition_->AnimateLocal(isolate);
 
   if (IsUndefinedOrNull(instance) || IsUndefinedOrNull(animate))
@@ -46,8 +49,14 @@ bool Animator::Animate(
 
   // Prepare arguments (i.e., current time and effect) and pass them to animate
   // callback.
-  v8::Local<v8::Value> v8_effect =
-      ToV8(effect_, script_state->GetContext()->Global(), isolate);
+  v8::Local<v8::Value> v8_effect;
+  if (group_effect_->getChildren().size() == 1) {
+    v8_effect = ToV8(group_effect_->getChildren()[0],
+                     script_state->GetContext()->Global(), isolate);
+  } else {
+    v8_effect =
+        ToV8(group_effect_, script_state->GetContext()->Global(), isolate);
+  }
 
   v8::Local<v8::Value> v8_current_time =
       ToV8(current_time, script_state->GetContext()->Global(), isolate);
@@ -62,8 +71,17 @@ bool Animator::Animate(
   if (block.HasCaught())
     return false;
 
-  output->local_time = effect_->local_time();
+  output->local_times = GetLocalTimes();
   return true;
+}
+
+std::vector<base::Optional<TimeDelta>> Animator::GetLocalTimes() const {
+  std::vector<base::Optional<TimeDelta>> local_times;
+  local_times.reserve(group_effect_->getChildren().size());
+  for (const auto& effect : group_effect_->getChildren()) {
+    local_times.push_back(effect->local_time());
+  }
+  return local_times;
 }
 
 }  // namespace blink

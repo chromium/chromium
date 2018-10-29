@@ -31,6 +31,27 @@ struct IDLUnsignedLong final : public IDLBaseHelper<uint32_t> {};
 struct IDLLongLong final : public IDLBaseHelper<int64_t> {};
 struct IDLUnsignedLongLong final : public IDLBaseHelper<uint64_t> {};
 
+// [Clamp] Integers
+struct IDLByteClamp final : public IDLBaseHelper<int8_t> {};
+struct IDLOctetClamp final : public IDLBaseHelper<uint8_t> {};
+struct IDLShortClamp final : public IDLBaseHelper<int16_t> {};
+struct IDLUnsignedShortClamp final : public IDLBaseHelper<uint16_t> {};
+struct IDLLongClamp final : public IDLBaseHelper<int32_t> {};
+struct IDLUnsignedLongClamp final : public IDLBaseHelper<uint32_t> {};
+struct IDLLongLongClamp final : public IDLBaseHelper<int64_t> {};
+struct IDLUnsignedLongLongClamp final : public IDLBaseHelper<uint64_t> {};
+
+// [EnforceRange] Integers
+struct IDLByteEnforceRange final : public IDLBaseHelper<int8_t> {};
+struct IDLOctetEnforceRange final : public IDLBaseHelper<uint8_t> {};
+struct IDLShortEnforceRange final : public IDLBaseHelper<int16_t> {};
+struct IDLUnsignedShortEnforceRange final : public IDLBaseHelper<uint16_t> {};
+struct IDLLongEnforceRange final : public IDLBaseHelper<int32_t> {};
+struct IDLUnsignedLongEnforceRange final : public IDLBaseHelper<uint32_t> {};
+struct IDLLongLongEnforceRange final : public IDLBaseHelper<int64_t> {};
+struct IDLUnsignedLongLongEnforceRange final : public IDLBaseHelper<uint64_t> {
+};
+
 // Strings
 // The "Base" classes are always templatized and require users to specify how JS
 // null and/or undefined are supposed to be handled.
@@ -45,6 +66,18 @@ struct IDLUSVStringBase final : public IDLBaseHelper<String> {};
 using IDLByteString = IDLByteStringBase<V8StringResourceMode::kDefaultMode>;
 using IDLString = IDLStringBase<V8StringResourceMode::kDefaultMode>;
 using IDLUSVString = IDLUSVStringBase<V8StringResourceMode::kDefaultMode>;
+
+// Nullable strings
+using IDLByteStringOrNull =
+    IDLByteStringBase<V8StringResourceMode::kTreatNullAndUndefinedAsNullString>;
+using IDLStringOrNull =
+    IDLStringBase<V8StringResourceMode::kTreatNullAndUndefinedAsNullString>;
+using IDLUSVStringOrNull =
+    IDLUSVStringBase<V8StringResourceMode::kTreatNullAndUndefinedAsNullString>;
+
+// [TreatNullAs] Strings
+using IDLStringTreatNullAsEmptyString =
+    IDLStringBase<V8StringResourceMode::kTreatNullAsEmptyString>;
 
 // Double
 struct IDLDouble final : public IDLBaseHelper<double> {};

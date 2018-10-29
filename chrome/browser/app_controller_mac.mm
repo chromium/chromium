@@ -179,7 +179,7 @@ void RecordLastRunAppBundlePath() {
   // real, user-visible app bundle directory. (The alternatives give either the
   // framework's path or the initial app's path, which may be an app mode shim
   // or a unit test.)
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   base::FilePath app_bundle_path =
       chrome::GetVersionedDirectory().DirName().DirName().DirName();
@@ -378,6 +378,12 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
              name:NSWorkspaceWillPowerOffNotification
            object:nil];
 
+  NSMenu* fileMenu = [[[NSApp mainMenu] itemWithTag:IDC_FILE_MENU] submenu];
+  closeTabMenuItem_ = [fileMenu itemWithTag:IDC_CLOSE_TAB];
+  DCHECK(closeTabMenuItem_);
+  closeWindowMenuItem_ = [fileMenu itemWithTag:IDC_CLOSE_WINDOW];
+  DCHECK(closeWindowMenuItem_);
+
   // Set up the command updater for when there are no windows open
   [self initMenuState];
 
@@ -437,7 +443,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 - (void)applicationWillHide:(NSNotification*)notification {
   if (![self isProfileReady])
     return;
-  apps::ExtensionAppShimHandler::OnChromeWillHide();
+  apps::ExtensionAppShimHandler::Get()->OnChromeWillHide();
 }
 
 - (BOOL)tryToTerminateApplication:(NSApplication*)app {
@@ -635,12 +641,11 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // happened during a space change. Now that the change has
   // completed, raise browser windows.
   reopenTime_ = base::TimeTicks();
-  std::set<NSWindow*> browserWindows;
+  std::set<gfx::NativeWindow> browserWindows;
   for (auto* browser : *BrowserList::GetInstance())
     browserWindows.insert(browser->window()->GetNativeWindow());
-  if (!browserWindows.empty()) {
+  if (!browserWindows.empty())
     ui::FocusWindowSetOnCurrentSpace(browserWindows);
-  }
 }
 
 // Called when shutting down or logging out.
@@ -925,9 +930,8 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     return YES;
 
   Browser* browser = chrome::GetLastActiveBrowser();
-  return browser &&
-         [[browser->window()->GetNativeWindow() attachedSheet]
-             isKindOfClass:[NSWindow class]];
+  return browser && [[browser->window()->GetNativeWindow().GetNativeNSWindow()
+                            attachedSheet] isKindOfClass:[NSWindow class]];
 }
 
 // Called to validate menu items when there are no key windows. All the
@@ -1175,7 +1179,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // If there are any, return here. Otherwise, the windows are panels or
   // notifications so we still need to open a new window.
   if (hasVisibleWindows) {
-    std::set<NSWindow*> browserWindows;
+    std::set<gfx::NativeWindow> browserWindows;
     for (auto* browser : *BrowserList::GetInstance()) {
       // When focusing Chrome, don't focus any browser windows associated with
       // a currently running app shim, so ignore them.
@@ -1638,7 +1642,13 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 
 - (BOOL)application:(NSApplication*)application
     continueUserActivity:(NSUserActivity*)userActivity
+#if !defined(MAC_OS_X_VERSION_10_14) || \
+    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_14
       restorationHandler:(void (^)(NSArray*))restorationHandler
+#else
+      restorationHandler:
+          (void (^)(NSArray<id<NSUserActivityRestoring>>*))restorationHandler
+#endif
     API_AVAILABLE(macos(10.10)) {
   if (![userActivity.activityType
           isEqualToString:NSUserActivityTypeBrowsingWeb]) {

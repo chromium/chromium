@@ -19,6 +19,7 @@
 #include "components/nacl/browser/nacl_browser_delegate.h"
 #include "components/nacl/browser/nacl_host_message_filter.h"
 #include "components/nacl/common/nacl_host_messages.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
@@ -101,8 +102,8 @@ void DoOpenPnaclFile(
   // Not all PNaCl files are executable. Only register those that are
   // executable in the NaCl file_path cache.
   if (is_executable) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&DoRegisterOpenedNaClExecutableFile,
                        nacl_host_message_filter, std::move(file_to_open),
                        full_filepath, reply_msg,
@@ -147,8 +148,8 @@ void DoOpenNaClExecutableOnThreadPool(
     if (enable_validation_caching) {
       // This function is running on the blocking pool, but the path needs to be
       // registered in a structure owned by the IO thread.
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(
               &DoRegisterOpenedNaClExecutableFile, nacl_host_message_filter,
               std::move(file), file_path, reply_msg,
@@ -223,8 +224,8 @@ void OpenNaClExecutable(
     bool enable_validation_caching,
     IPC::Message* reply_msg) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&OpenNaClExecutable, nacl_host_message_filter,
                        render_view_id, file_url, enable_validation_caching,
                        reply_msg));

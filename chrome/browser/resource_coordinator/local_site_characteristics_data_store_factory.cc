@@ -84,7 +84,7 @@ KeyedService* LocalSiteCharacteristicsDataStoreFactory::BuildServiceInstanceFor(
     DCHECK(!parent_context->IsOffTheRecord());
     LocalSiteCharacteristicsDataStoreInspector* parent_debug =
         LocalSiteCharacteristicsDataStoreInspector::GetForProfile(
-            Profile::FromBrowserContext(context));
+            Profile::FromBrowserContext(parent_context));
     SiteCharacteristicsDataStore* data_store_for_readers =
         GetExistingDataStoreForContext(parent_context);
     DCHECK(data_store_for_readers);

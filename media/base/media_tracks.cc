@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 
@@ -53,8 +54,8 @@ const AudioDecoderConfig& MediaTracks::getAudioConfig(
   auto it = audio_configs_.find(bytestream_track_id);
   if (it != audio_configs_.end())
     return it->second;
-  static AudioDecoderConfig invalidConfig;
-  return invalidConfig;
+  static base::NoDestructor<AudioDecoderConfig> invalidConfig;
+  return *invalidConfig;
 }
 
 const VideoDecoderConfig& MediaTracks::getVideoConfig(
@@ -62,8 +63,8 @@ const VideoDecoderConfig& MediaTracks::getVideoConfig(
   auto it = video_configs_.find(bytestream_track_id);
   if (it != video_configs_.end())
     return it->second;
-  static VideoDecoderConfig invalidConfig;
-  return invalidConfig;
+  static base::NoDestructor<VideoDecoderConfig> invalidConfig;
+  return *invalidConfig;
 }
 
 }  // namespace media

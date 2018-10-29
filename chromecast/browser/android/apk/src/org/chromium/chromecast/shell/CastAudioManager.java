@@ -52,7 +52,7 @@ public class CastAudioManager {
      *
      *     Observable<AudioFocusLoss> focusLoss = castAudioManager.requestFocusWhen(focusRequest);
      *     // Get an Observable of when focus is taken:
-     *     Observable<Unit> gotFocus = Observable.not(focusLoss);
+     *     Observable<?> gotFocus = Observable.not(focusLoss);
      *     // Get an Observable of when a specific request got focus:
      *     Observable<Both<CastAudioFocusRequest, AudioFocusLoss>> requestLost =
      *             focusRequest.andThen(focusLoss);

@@ -350,12 +350,12 @@ std::unique_ptr<URLFetcher> TestURLFetcherFactory::CreateURLFetcher(
 }
 
 TestURLFetcher* TestURLFetcherFactory::GetFetcherByID(int id) const {
-  Fetchers::const_iterator i = fetchers_.find(id);
+  auto i = fetchers_.find(id);
   return i == fetchers_.end() ? NULL : i->second;
 }
 
 void TestURLFetcherFactory::RemoveFetcherFromMap(int id) {
-  Fetchers::iterator i = fetchers_.find(id);
+  auto i = fetchers_.find(id);
   DCHECK(i != fetchers_.end());
   fetchers_.erase(i);
 }

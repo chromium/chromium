@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL media controls overlay play button narrow assert_false: overlay play button should not be visible expected false got true
-Harness: the test ran to completion.
-

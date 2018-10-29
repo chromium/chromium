@@ -5,16 +5,11 @@
 #ifndef UI_KEYBOARD_CONTAINER_FLOATING_BEHAVIOR_H_
 #define UI_KEYBOARD_CONTAINER_FLOATING_BEHAVIOR_H_
 
-#include "ui/aura/window.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/keyboard/container_behavior.h"
-#include "ui/keyboard/container_type.h"
 #include "ui/keyboard/drag_descriptor.h"
-#include "ui/keyboard/keyboard_controller.h"
 #include "ui/keyboard/keyboard_export.h"
-#include "ui/wm/core/window_animations.h"
 
 namespace keyboard {
 
@@ -23,14 +18,9 @@ namespace keyboard {
 constexpr int kDefaultDistanceFromScreenBottom = 20;
 constexpr int kDefaultDistanceFromScreenRight = 20;
 
-struct KeyboardPosition {
-  double left_padding_allotment_ratio;
-  double top_padding_allotment_ratio;
-};
-
 class KEYBOARD_EXPORT ContainerFloatingBehavior : public ContainerBehavior {
  public:
-  ContainerFloatingBehavior(KeyboardController* controller);
+  explicit ContainerFloatingBehavior(Delegate* delegate);
   ~ContainerFloatingBehavior() override;
 
   // ContainerBehavior overrides
@@ -66,6 +56,11 @@ class KEYBOARD_EXPORT ContainerFloatingBehavior : public ContainerBehavior {
       const gfx::Rect& display_bounds) const;
 
  private:
+  struct KeyboardPosition {
+    double left_padding_allotment_ratio;
+    double top_padding_allotment_ratio;
+  };
+
   // Ensures that the keyboard is neither off the screen nor overlapping an
   // edge.
   gfx::Rect ContainKeyboardToScreenBounds(
@@ -75,15 +70,12 @@ class KEYBOARD_EXPORT ContainerFloatingBehavior : public ContainerBehavior {
   // Saves the current keyboard location for use the next time it is displayed.
   void UpdateLastPoint(const gfx::Point& position);
 
-  KeyboardController* controller_;
-
   // TODO(blakeo): cache the default_position_ on a per-display basis.
-  std::unique_ptr<struct keyboard::KeyboardPosition>
-      default_position_in_screen_ = nullptr;
+  std::unique_ptr<KeyboardPosition> default_position_in_screen_;
 
   // Current state of a cursor drag to move the keyboard, if one exists.
   // Otherwise nullptr.
-  std::unique_ptr<const DragDescriptor> drag_descriptor_ = nullptr;
+  std::unique_ptr<const DragDescriptor> drag_descriptor_;
 
   gfx::Rect draggable_area_ = gfx::Rect();
 };

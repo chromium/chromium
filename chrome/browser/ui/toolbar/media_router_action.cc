@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/media/router/media_router.h"
 #include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/media_router_metrics.h"
@@ -18,12 +19,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/component_toolbar_actions_factory.h"
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
-#include "chrome/browser/ui/toolbar/media_router_action_platform_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/common/media_router/issue.h"
 #include "chrome/common/media_router/media_route.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
@@ -52,9 +53,9 @@ MediaRouterAction::MediaRouterAction(Browser* browser,
       delegate_(nullptr),
       browser_(browser),
       toolbar_actions_bar_(toolbar_actions_bar),
-      platform_delegate_(MediaRouterActionPlatformDelegate::Create(browser)),
       tab_strip_model_observer_(this),
       toolbar_actions_bar_observer_(this),
+      skip_close_overflow_menu_for_testing_(false),
       weak_ptr_factory_(this) {
   DCHECK(browser_);
   DCHECK(toolbar_actions_bar_);
@@ -164,8 +165,8 @@ void MediaRouterAction::OnContextMenuClosed() {
   // destroyed before the command execution.
   // TODO(takumif): Using task sequence to order operations is fragile. Consider
   // other ways to do so when we move the icon to the trusted area.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&MediaRouterAction::DestroyContextMenu,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -179,7 +180,7 @@ bool MediaRouterAction::ExecuteAction(bool by_user) {
   }
 
   GetMediaRouterDialogController()->ShowMediaRouterDialog();
-  if (GetPlatformDelegate()) {
+  if (!skip_close_overflow_menu_for_testing_) {
     // TODO(karandeepb): Instead of checking the return value of
     // CloseOverflowMenuIfOpen, just check
     // ToolbarActionsBar::IsActionVisibleOnMainBar.
@@ -220,10 +221,13 @@ void MediaRouterAction::OnRoutesUpdated(
   MaybeUpdateIcon();
 }
 
-void MediaRouterAction::ActiveTabChanged(content::WebContents* old_contents,
-                                         content::WebContents* new_contents,
-                                         int index,
-                                         int reason) {
+void MediaRouterAction::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (!selection.active_tab_changed() || tab_strip_model->empty())
+    return;
+
   RegisterWithDialogController();
   UpdateDialogState();
 }
@@ -282,10 +286,6 @@ MediaRouterAction::GetMediaRouterDialogController() {
   DCHECK(web_contents);
   return MediaRouterDialogControllerImplBase::GetOrCreateForWebContents(
       web_contents);
-}
-
-MediaRouterActionPlatformDelegate* MediaRouterAction::GetPlatformDelegate() {
-  return platform_delegate_.get();
 }
 
 void MediaRouterAction::MaybeUpdateIcon() {

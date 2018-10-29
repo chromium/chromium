@@ -50,17 +50,16 @@ class TracingControllerImpl : public TracingController,
   CONTENT_EXPORT static TracingControllerImpl* GetInstance();
 
   // Should be called on the UI thread.
-  TracingControllerImpl();
+  CONTENT_EXPORT TracingControllerImpl();
 
   // TracingController implementation.
-  bool GetCategories(const GetCategoriesDoneCallback& callback) override;
+  bool GetCategories(GetCategoriesDoneCallback callback) override;
   bool StartTracing(const base::trace_event::TraceConfig& trace_config,
-                    const StartTracingDoneCallback& callback) override;
+                    StartTracingDoneCallback callback) override;
   bool StopTracing(const scoped_refptr<TraceDataEndpoint>& endpoint) override;
   bool StopTracing(const scoped_refptr<TraceDataEndpoint>& endpoint,
                    const std::string& agent_label) override;
-  bool GetTraceBufferUsage(
-      const GetTraceBufferUsageCallback& callback) override;
+  bool GetTraceBufferUsage(GetTraceBufferUsageCallback callback) override;
   bool IsTracing() const override;
 
   void RegisterTracingUI(TracingUI* tracing_ui);

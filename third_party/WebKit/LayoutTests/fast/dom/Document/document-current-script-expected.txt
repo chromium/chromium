@@ -2,7 +2,6 @@ Test basic usage of document.currentScript
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 <script id="a">
 <script id="b">
 <script id="c">

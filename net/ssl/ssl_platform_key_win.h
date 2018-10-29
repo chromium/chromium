@@ -11,7 +11,7 @@
 #include <NCrypt.h>
 
 #include "base/memory/ref_counted.h"
-#include "crypto/wincrypt_shim.h"
+#include "base/win/wincrypt_shim.h"
 #include "net/base/net_export.h"
 
 namespace net {

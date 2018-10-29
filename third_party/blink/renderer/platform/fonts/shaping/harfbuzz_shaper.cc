@@ -116,7 +116,7 @@ void CheckShapeResultRange(const ShapeResult* result,
 enum ReshapeQueueItemAction { kReshapeQueueNextFont, kReshapeQueueRange };
 
 struct ReshapeQueueItem {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   ReshapeQueueItemAction action_;
   unsigned start_index_;
   unsigned num_characters_;
@@ -148,8 +148,6 @@ class HarfBuzzScopedPtr {
   T* ptr_;
   DestroyFunction destroy_;
 };
-
-HarfBuzzShaper::HarfBuzzShaper(const String& text) : text_(text) {}
 
 using FeaturesVector = Vector<hb_feature_t, 6>;
 struct RangeData {
@@ -774,7 +772,7 @@ class CapsFeatureSettingsScopedOverlay final {
   void OverlayCapsFeatures(FontDescription::FontVariantCaps);
   void PrependCounting(const hb_feature_t&);
   FeaturesVector* features_;
-  size_t count_features_;
+  wtf_size_t count_features_;
 };
 
 CapsFeatureSettingsScopedOverlay::CapsFeatureSettingsScopedOverlay(

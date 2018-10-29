@@ -5,6 +5,8 @@
 import unittest
 
 from blinkpy.common.path_finder import PathFinder
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
+from blinkpy.common.path_finder import TESTS_IN_BLINK
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 
 
@@ -24,7 +26,7 @@ class TestPathFinder(unittest.TestCase):
         finder = PathFinder(MockFileSystem())
         self.assertEqual(
             finder.layout_tests_dir(),
-            '/mock-checkout/third_party/WebKit/LayoutTests')
+            '/mock-checkout/' + RELATIVE_WEB_TESTS[:-1])
 
     def test_layout_tests_dir_with_backslash_sep(self):
         filesystem = MockFileSystem()
@@ -32,9 +34,14 @@ class TestPathFinder(unittest.TestCase):
         filesystem.path_to_module = lambda _: (
             'C:\\mock-checkout\\third_party\\blink\\tools\\blinkpy\\foo.py')
         finder = PathFinder(filesystem)
-        self.assertEqual(
-            finder.layout_tests_dir(),
-            'C:\\mock-checkout\\third_party\\WebKit\\LayoutTests')
+        if TESTS_IN_BLINK:
+            self.assertEqual(
+                finder.layout_tests_dir(),
+                'C:\\mock-checkout\\third_party\\blink\\web_tests')
+        else:
+            self.assertEqual(
+                finder.layout_tests_dir(),
+                'C:\\mock-checkout\\third_party\\WebKit\\LayoutTests')
 
     def test_perf_tests_dir(self):
         finder = PathFinder(MockFileSystem())
@@ -46,7 +53,7 @@ class TestPathFinder(unittest.TestCase):
         finder = PathFinder(MockFileSystem())
         self.assertEqual(
             finder.path_from_layout_tests('external', 'wpt'),
-            '/mock-checkout/third_party/WebKit/LayoutTests/external/wpt')
+            '/mock-checkout/' + RELATIVE_WEB_TESTS + 'external/wpt')
 
     def test_depot_tools_base_not_found(self):
         filesystem = MockFileSystem()

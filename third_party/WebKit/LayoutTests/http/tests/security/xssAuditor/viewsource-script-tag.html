@@ -7,7 +7,7 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
     testRunner.setXSSAuditorEnabled(true);
     testRunner.dumpAsMarkup();
-    testRunner.dumpChildFramesAsMarkup();
+    testRunner.dumpChildFrames();
     testRunner.setViewSourceForFrame('x', true);
     frame.onload = testRunner.notifyDone.bind(testRunner);
 }

@@ -45,7 +45,7 @@ class WTF_EXPORT ArrayBuffer : public RefCounted<ArrayBuffer> {
                                                   unsigned element_byte_size);
   static inline scoped_refptr<ArrayBuffer> Create(ArrayBuffer*);
   static inline scoped_refptr<ArrayBuffer> Create(const void* source,
-                                                  unsigned byte_length);
+                                                  size_t byte_length);
   static inline scoped_refptr<ArrayBuffer> Create(ArrayBufferContents&);
 
   static inline scoped_refptr<ArrayBuffer> CreateOrNull(
@@ -106,20 +106,26 @@ class WTF_EXPORT ArrayBuffer : public RefCounted<ArrayBuffer> {
   inline scoped_refptr<ArrayBuffer> SliceImpl(unsigned begin,
                                               unsigned end) const;
   inline unsigned ClampIndex(int index) const;
-  static inline int ClampValue(int x, int left, int right);
+  static inline unsigned ClampValue(int x, unsigned left, unsigned right);
 
   ArrayBufferContents contents_;
   ArrayBufferView* first_view_;
   bool is_neutered_;
 };
 
-int ArrayBuffer::ClampValue(int x, int left, int right) {
+unsigned ArrayBuffer::ClampValue(int x, unsigned left, unsigned right) {
   DCHECK_LE(left, right);
-  if (x < left)
-    x = left;
-  if (right < x)
-    x = right;
-  return x;
+  unsigned result;
+  if (x < 0)
+    result = left;
+  else
+    result = static_cast<unsigned>(x);
+
+  if (result < left)
+    result = left;
+  if (right < result)
+    result = right;
+  return result;
 }
 
 scoped_refptr<ArrayBuffer> ArrayBuffer::Create(unsigned num_elements,
@@ -136,7 +142,7 @@ scoped_refptr<ArrayBuffer> ArrayBuffer::Create(ArrayBuffer* other) {
 }
 
 scoped_refptr<ArrayBuffer> ArrayBuffer::Create(const void* source,
-                                               unsigned byte_length) {
+                                               size_t byte_length) {
   ArrayBufferContents contents(byte_length, 1, ArrayBufferContents::kNotShared,
                                ArrayBufferContents::kDontInitialize);
   if (UNLIKELY(!contents.Data()))
@@ -260,14 +266,14 @@ scoped_refptr<ArrayBuffer> ArrayBuffer::Slice(int begin) const {
 
 scoped_refptr<ArrayBuffer> ArrayBuffer::SliceImpl(unsigned begin,
                                                   unsigned end) const {
-  unsigned size = begin <= end ? end - begin : 0;
+  size_t size = static_cast<size_t>(begin <= end ? end - begin : 0);
   return ArrayBuffer::Create(static_cast<const char*>(Data()) + begin, size);
 }
 
 unsigned ArrayBuffer::ClampIndex(int index) const {
   unsigned current_length = ByteLength();
   if (index < 0)
-    index = current_length + index;
+    index = static_cast<int>(current_length + index);
   return ClampValue(index, 0, current_length);
 }
 

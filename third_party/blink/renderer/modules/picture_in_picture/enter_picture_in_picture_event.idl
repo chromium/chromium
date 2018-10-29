@@ -1,0 +1,14 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/picture-in-picture/#enterpictureinpictureevent
+[
+    RuntimeEnabled=PictureInPictureAPI,
+    Constructor(DOMString type, EnterPictureInPictureEventInit eventInitDict),
+    Exposed=Window
+]
+interface EnterPictureInPictureEvent : Event {
+    [SameObject] readonly attribute PictureInPictureWindow pictureInPictureWindow;
+};
+

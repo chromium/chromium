@@ -1,0 +1,1 @@
+Blocked access to external URL http://bugzilla.mozilla.org/notfound

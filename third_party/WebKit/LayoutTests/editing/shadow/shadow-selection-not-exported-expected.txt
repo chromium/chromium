@@ -8,6 +8,8 @@ PASS assertNotInShadow(selection.focusNode) is true
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 This test ensures shadow root won't expose to JS layer.
 
 BEFORE

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Same-Origin sharedworker assert_not_equals: Empty Sec-Metadata header. got disallowed value ""
-Harness: the test ran to completion.
-

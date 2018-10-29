@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/feature_promos/bookmark_promo_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/toolbar/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -79,7 +79,7 @@ views::BubbleDialogDelegateView* StarView::GetBubble() const {
 }
 
 const gfx::VectorIcon& StarView::GetVectorIcon() const {
-  return active() ? toolbar::kStarActiveIcon : toolbar::kStarIcon;
+  return active() ? omnibox::kStarActiveIcon : omnibox::kStarIcon;
 }
 
 base::string16 StarView::GetTextForTooltipAndAccessibleName() const {

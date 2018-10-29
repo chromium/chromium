@@ -130,20 +130,7 @@ Elements.StylePropertyTreeElement = class extends UI.TreeElement {
     const swatch = InlineEditor.ColorSwatch.create();
     swatch.setColor(color);
     swatch.setFormat(Common.Color.detectColorFormat(swatch.color()));
-    const swatchIcon = new Elements.ColorSwatchPopoverIcon(this, swatchPopoverHelper, swatch);
-
-    /**
-     * @param {?SDK.CSSModel.ContrastInfo} contrastInfo
-     */
-    function computedCallback(contrastInfo) {
-      swatchIcon.setContrastInfo(contrastInfo);
-    }
-
-    if (Runtime.experiments.isEnabled('colorContrastRatio') && this.property.name === 'color' &&
-        this._parentPane.cssModel() && this.node()) {
-      const cssModel = this._parentPane.cssModel();
-      cssModel.backgroundColorsPromise(this.node().id).then(computedCallback);
-    }
+    this._addColorContrastInfo(new Elements.ColorSwatchPopoverIcon(this, swatchPopoverHelper, swatch));
 
     return swatch;
   }
@@ -175,8 +162,20 @@ Elements.StylePropertyTreeElement = class extends UI.TreeElement {
     swatch.setColor(color);
     swatch.setFormat(Common.Color.detectColorFormat(swatch.color()));
     swatch.setText(text, computedValue);
-    new Elements.ColorSwatchPopoverIcon(this, swatchPopoverHelper, swatch);
+    this._addColorContrastInfo(new Elements.ColorSwatchPopoverIcon(this, swatchPopoverHelper, swatch));
     return swatch;
+  }
+
+  /**
+   * @param {!Elements.ColorSwatchPopoverIcon} swatchIcon
+   */
+  async _addColorContrastInfo(swatchIcon) {
+    if (!Runtime.experiments.isEnabled('colorContrastRatio') || this.property.name !== 'color' ||
+        !this._parentPane.cssModel() || !this.node())
+      return;
+    const cssModel = this._parentPane.cssModel();
+    const contrastInfo = await cssModel.backgroundColorsPromise(this.node().id);
+    swatchIcon.setContrastInfo(contrastInfo);
   }
 
   /**

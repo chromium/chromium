@@ -2,7 +2,6 @@ Support consecutive slash operators for border-image
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS style.getPropertyValue('border-image-slice') is "3"
 PASS style.getPropertyValue('border-image-width') is "1"
 PASS style.getPropertyValue('border-image-outset') is "2"

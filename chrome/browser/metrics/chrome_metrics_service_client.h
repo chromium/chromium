@@ -106,12 +106,6 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
       const base::FilePath& path);
   static void SetIsProcessRunningForTesting(IsProcessRunningFunction func);
 
-  // Persistent browser metrics need to be persisted somewhere. This constant
-  // provides a known string to be used for both the allocator's internal name
-  // and for a file on disk (relative to chrome::DIR_USER_DATA) to which they
-  // can be saved.
-  static const char kBrowserMetricsName[];
-
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceClientTest, IsWebstoreExtension);
 
@@ -193,10 +187,6 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // Whether we registered all notification listeners successfully.
   bool notification_listeners_active_;
-
-  // A queue of tasks for initial metrics gathering. These may be asynchronous
-  // or synchronous.
-  base::circular_deque<base::Closure> initialize_task_queue_;
 
   // Saved callback received from CollectFinalMetricsForLog().
   base::Closure collect_final_metrics_done_callback_;

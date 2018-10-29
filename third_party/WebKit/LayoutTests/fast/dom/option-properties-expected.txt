@@ -5,4 +5,5 @@ If the test passes, you'll see a series of 'PASS' messages below.
 PASS: document.getElementById('sel').options.selectedIndex should be 1 and is.
 PASS: document.getElementById('sel').options[1].selected should be true and is.
 PASS: document.getElementById('sel').options[1].text should be PASS and is.
-
+FAIL
+PASS

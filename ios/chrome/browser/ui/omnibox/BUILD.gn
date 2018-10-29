@@ -6,8 +6,6 @@ source_set("omnibox") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [
-    "location_bar_controller.cc",
-    "location_bar_controller.h",
     "location_bar_delegate.h",
     "omnibox_left_image_consumer.h",
     "web_omnibox_edit_controller.cc",
@@ -61,15 +59,7 @@ source_set("omnibox_internal") {
     "autocomplete_suggestion.h",
     "chrome_omnibox_client_ios.h",
     "chrome_omnibox_client_ios.mm",
-    "clipping_mask_view.h",
-    "clipping_mask_view.mm",
-    "clipping_textfield.h",
-    "clipping_textfield.mm",
-    "clipping_textfield_container.h",
-    "clipping_textfield_container.mm",
     "image_retriever.h",
-    "location_bar_controller_impl.h",
-    "location_bar_controller_impl.mm",
     "omnibox_consumer.h",
     "omnibox_container_view.h",
     "omnibox_container_view.mm",
@@ -148,7 +138,6 @@ source_set("omnibox_internal") {
   ]
   public_deps = [
     "//components/omnibox/browser",
-    "//components/toolbar",
   ]
   libs = [
     "CoreText.framework",
@@ -162,7 +151,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "clipping_textfield_container_unittest.mm",
     "omnibox_text_field_ios_unittest.mm",
   ]
   deps = [

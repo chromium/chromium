@@ -56,7 +56,6 @@ class V0CustomElementRegistrationContext final
   void RegisterElement(Document*,
                        V0CustomElementConstructorBuilder*,
                        const AtomicString& type,
-                       V0CustomElement::NameSet valid_names,
                        ExceptionState&);
 
   Element* CreateCustomTagElement(Document&, const QualifiedName&);

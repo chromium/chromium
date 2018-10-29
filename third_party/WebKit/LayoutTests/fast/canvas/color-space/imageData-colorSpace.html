@@ -25,7 +25,7 @@ function checkColorSettings(colorSettings, colorSpace, storageFormat) {
 function runTest(colorSettings, expectedColorSettings) {
   var canvas = document.createElement("canvas");
   var ctx = canvas.getContext("2d");
-  
+
   imageData = ctx.createImageData(1, 1, colorSettings);
   checkDataTypeAgainstStorageFormat(imageData.dataUnion, colorSettings.storageFormat);
   assert_array_equals(imageData.dataUnion, [0, 0, 0, 0]);
@@ -49,14 +49,18 @@ function runTest(colorSettings, expectedColorSettings) {
 
 var testScenarios = [
 	["Test default color settings: {undefined, undefined} -> {srgb, uint8}", {}, {colorSpace: "srgb", storageFormat: "uint8"}],
-  
+
 	["Test default color space: {undefined, float32} -> {srgb, float32}", {storageFormat: "float32"}, {colorSpace: "srgb", storageFormat: "float32"}],
 	["Test default storage format: {srgb, undefined} -> {srgb, uint8}", {colorSpace: "srgb"}, {colorSpace: "srgb", storageFormat: "uint8"}],
-  
+
 	["Test color settings: {srgb, uint8}", {colorSpace: "srgb", storageFormat: "uint8"}, {colorSpace: "srgb", storageFormat: "uint8"}],
 	["Test color settings: {srgb, uint16}", {colorSpace: "srgb", storageFormat: "uint16"}, {colorSpace: "srgb", storageFormat: "uint16"}],
 	["Test color settings: {srgb, float32}", {colorSpace: "srgb", storageFormat: "float32"}, {colorSpace: "srgb", storageFormat: "float32"}],
-  
+
+  ["Test color settings: {linear-rgb, uint8}", {colorSpace: "linear-rgb", storageFormat: "uint8"}, {colorSpace: "linear-rgb", storageFormat: "uint8"}],
+  ["Test color settings: {linear-rgb, uint16}", {colorSpace: "linear-rgb", storageFormat: "uint16"}, {colorSpace: "linear-rgb", storageFormat: "uint16"}],
+  ["Test color settings: {linear-rgb, float32}", {colorSpace: "linear-rgb", storageFormat: "float32"}, {colorSpace: "linear-rgb", storageFormat: "float32"}],
+
 	["Test color settings: {rec2020, uint8}", {colorSpace: "rec2020", storageFormat: "uint8"}, {colorSpace: "rec2020", storageFormat: "uint8"}],
 	["Test color settings: {rec2020, uint16}", {colorSpace: "rec2020", storageFormat: "uint16"}, {colorSpace: "rec2020", storageFormat: "uint16"}],
 	["Test color settings: {rec2020, float32}", {colorSpace: "rec2020", storageFormat: "float32"}, {colorSpace: "rec2020", storageFormat: "float32"}],

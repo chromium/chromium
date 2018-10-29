@@ -4,12 +4,12 @@
 
 #include "net/third_party/quic/test_tools/simulator/packet_filter.h"
 
-using std::string;
-
 namespace quic {
 namespace simulator {
 
-PacketFilter::PacketFilter(Simulator* simulator, string name, Endpoint* input)
+PacketFilter::PacketFilter(Simulator* simulator,
+                           QuicString name,
+                           Endpoint* input)
     : Endpoint(simulator, name), input_(input) {
   input_->SetTxPort(this);
 }

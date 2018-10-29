@@ -9,7 +9,7 @@ http://neugierig.org/software/chromium/notes/2011/08/static-initializers.html
 # How Static Initializers are Checked
 
 * For Linux and Mac:
-  * The expected count is stored in [//tools/perf_expectations/perf_expectations.json](https://cs.chromium.org/chromium/src/tools/perf_expectations/perf_expectations.json)
+  * The expected count is stored in [//infra/scripts/legacy/scripts/slave/chromium/sizes.py](https://cs.chromium.org/chromium/src/infra/scripts/legacy/scripts/slave/chromium/sizes.py)
 * For Android:
   * The expected count is stored in the build target [//chrome/android:monochrome_static_initializers](https://cs.chromium.org/chromium/src/chrome/android/BUILD.gn)
 

@@ -252,8 +252,5 @@ WebViewImpl.prototype.makeElementFullscreen = function() {
   }, this));
 };
 
-// Implemented when the ChromeWebView API is available.
-WebViewImpl.prototype.maybeSetupContextMenus = function() {};
-
 // Exports.
 exports.$set('WebViewImpl', WebViewImpl);

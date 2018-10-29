@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGRect {rect} at (0,0) size 800x600 [fill={[type=SOLID] [color=#008000]}] [x=0.00] [y=0.00] [width=800.00] [height=600.00]
-    LayoutSVGEllipse {circle} at (46.45,-53.55) size 707.11x707.11 [stroke={[type=SOLID] [color=#0000FF]}] [fill={[type=SOLID] [color=#FF0000]}] [cx=400.00] [cy=300.00] [r=353.55]
-    LayoutSVGEllipse {ellipse} at (0,0) size 800x600 [stroke={[type=SOLID] [color=#0000FF]}] [fill={[type=SOLID] [color=#FF0000]}] [cx=400.00] [cy=300.00] [rx=400.00] [ry=300.00]
-    LayoutSVGPath {line} at (0,0) size 800x600 [stroke={[type=SOLID] [color=#000000] [stroke width=3.00]}] [fill={[type=SOLID] [color=#000000]}] [x1=0.00] [y1=0.00] [x2=800.00] [y2=600.00]

@@ -4,8 +4,6 @@
 
 #include "net/third_party/quic/core/quic_error_codes.h"
 
-#include "base/metrics/histogram_macros.h"
-
 namespace quic {
 
 #define RETURN_STRING_LITERAL(x) \
@@ -144,11 +142,16 @@ const char* QuicErrorCodeToString(QuicErrorCode error) {
     RETURN_STRING_LITERAL(QUIC_MAX_STREAM_ID_DATA);
     RETURN_STRING_LITERAL(QUIC_STREAM_ID_BLOCKED_DATA);
     RETURN_STRING_LITERAL(QUIC_INVALID_NEW_CONNECTION_ID_DATA);
+    RETURN_STRING_LITERAL(QUIC_INVALID_RETIRE_CONNECTION_ID_DATA);
     RETURN_STRING_LITERAL(QUIC_INVALID_STOP_SENDING_FRAME_DATA);
     RETURN_STRING_LITERAL(QUIC_INVALID_PATH_CHALLENGE_DATA);
     RETURN_STRING_LITERAL(QUIC_INVALID_PATH_RESPONSE_DATA);
     RETURN_STRING_LITERAL(QUIC_CONNECTION_MIGRATION_HANDSHAKE_UNCONFIRMED);
     RETURN_STRING_LITERAL(QUIC_INVALID_MESSAGE_DATA);
+    RETURN_STRING_LITERAL(IETF_QUIC_PROTOCOL_VIOLATION);
+    RETURN_STRING_LITERAL(QUIC_INVALID_NEW_TOKEN);
+    RETURN_STRING_LITERAL(QUIC_DATA_RECEIVED_ON_WRITE_UNIDIRECTIONAL_STREAM);
+    RETURN_STRING_LITERAL(QUIC_TRY_TO_WRITE_DATA_ON_READ_UNIDIRECTIONAL_STREAM);
     RETURN_STRING_LITERAL(QUIC_LAST_ERROR);
     // Intentionally have no default case, so we'll break the build
     // if we add errors and don't put them here.
@@ -157,11 +160,6 @@ const char* QuicErrorCodeToString(QuicErrorCode error) {
   // any of the QuicErrorCodes. This can happen when the ConnectionClose
   // frame sent by the peer (attacker) has invalid error code.
   return "INVALID_ERROR_CODE";
-}
-
-void RecordInternalErrorLocation(QuicInternalErrorLocation location) {
-  UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.InternalErrorLocation", location,
-                            INTERNAL_ERROR_LOCATION_MAX);
 }
 
 #undef RETURN_STRING_LITERAL  // undef for jumbo builds

@@ -268,10 +268,8 @@ class PolicyTestCases {
     for (iterator policy = policy_test_cases_.begin();
          policy != policy_test_cases_.end();
          ++policy) {
-      for (PolicyTestCaseVector::const_iterator test_case =
-               policy->second.begin();
-           test_case != policy->second.end();
-           ++test_case) {
+      for (auto test_case = policy->second.begin();
+           test_case != policy->second.end(); ++test_case) {
         delete *test_case;
       }
     }
@@ -394,8 +392,7 @@ IN_PROC_BROWSER_TEST_F(PolicyPrefsTestCoverageTest, AllPoliciesHaveATestCase) {
       ADD_FAILURE() << "Missing policy test case for: " << it.key();
     } else {
       bool has_test_case_for_this_os = false;
-      for (PolicyTestCases::PolicyTestCaseVector::const_iterator test_case =
-               policy->second.begin();
+      for (auto test_case = policy->second.begin();
            test_case != policy->second.end() && !has_test_case_for_this_os;
            ++test_case) {
         has_test_case_for_this_os |= (*test_case)->IsSupported();
@@ -463,13 +460,9 @@ IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, PolicyToPrefsMapping) {
   PrefService* user_prefs = browser()->profile()->GetPrefs();
 
   const PolicyTestCases test_cases;
-  for (PolicyTestCases::iterator policy = test_cases.begin();
-       policy != test_cases.end();
-       ++policy) {
-    for (PolicyTestCases::PolicyTestCaseVector::const_iterator test_case =
-             policy->second.begin();
-         test_case != policy->second.end();
-         ++test_case) {
+  for (auto policy = test_cases.begin(); policy != test_cases.end(); ++policy) {
+    for (auto test_case = policy->second.begin();
+         test_case != policy->second.end(); ++test_case) {
       const auto& pref_mappings = (*test_case)->pref_mappings();
       if (!chrome_schema.GetKnownProperty(policy->first).valid()) {
         // If the policy is supported on this platform according to the test it

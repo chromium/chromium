@@ -23,8 +23,7 @@ Clone the ANGLE git repository.
 > gclient runhooks
 ```
 
-To check ANGLE builds (assumes you ran hooks with GYP\_GENERATORS=ninja) without
-building all of Chromium.
+To check ANGLE builds without building all of Chromium.
 
 ```shell
 ninja -C out\Release libEGL.dll

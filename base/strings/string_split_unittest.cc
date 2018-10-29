@@ -371,15 +371,15 @@ TEST(StringSplitTest, SplitStringAlongWhitespace) {
     { "b\tat",   2, "b",  "at" },
     { "b\t at",  2, "b",  "at" },
   };
-  for (size_t i = 0; i < arraysize(data); ++i) {
-    std::vector<std::string> results = base::SplitString(
-        data[i].input, kWhitespaceASCII, base::KEEP_WHITESPACE,
-        base::SPLIT_WANT_NONEMPTY);
-    ASSERT_EQ(data[i].expected_result_count, results.size());
-    if (data[i].expected_result_count > 0)
-      ASSERT_EQ(data[i].output1, results[0]);
-    if (data[i].expected_result_count > 1)
-      ASSERT_EQ(data[i].output2, results[1]);
+  for (const auto& i : data) {
+    std::vector<std::string> results =
+        base::SplitString(i.input, kWhitespaceASCII, base::KEEP_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    ASSERT_EQ(i.expected_result_count, results.size());
+    if (i.expected_result_count > 0)
+      ASSERT_EQ(i.output1, results[0]);
+    if (i.expected_result_count > 1)
+      ASSERT_EQ(i.output2, results[1]);
   }
 }
 

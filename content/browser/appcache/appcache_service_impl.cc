@@ -321,8 +321,8 @@ void AppCacheServiceImpl::CheckResponseHelper::OnGroupLoaded(
 
   // Verify that we can read the response info and data.
   expected_total_size_ = entry->response_size();
-  response_reader_.reset(
-      service_->storage()->CreateResponseReader(manifest_url_, response_id_));
+  response_reader_ =
+      service_->storage()->CreateResponseReader(manifest_url_, response_id_);
   info_buffer_ = new HttpResponseInfoIOBuffer();
   response_reader_->ReadInfo(
       info_buffer_.get(),

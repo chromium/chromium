@@ -62,7 +62,7 @@ bool TransportSecurityStateTrieEntry::WriteEntry(
   if (entry_->pinset.size()) {
     writer->WriteBit(1);
 
-    NameIDMap::const_iterator pin_id_it = pinsets_map_.find(entry_->pinset);
+    auto pin_id_it = pinsets_map_.find(entry_->pinset);
     if (pin_id_it == pinsets_map_.cend()) {
       return false;
     }
@@ -87,7 +87,7 @@ bool TransportSecurityStateTrieEntry::WriteEntry(
 
   if (entry_->expect_ct) {
     writer->WriteBit(1);
-    NameIDMap::const_iterator expect_ct_report_uri_it =
+    auto expect_ct_report_uri_it =
         expect_ct_report_uri_map_.find(entry_->expect_ct_report_uri);
     if (expect_ct_report_uri_it == expect_ct_report_uri_map_.cend()) {
       return false;

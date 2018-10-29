@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -22,6 +23,7 @@
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/browser/tracing/trace_message_filter.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/tracing_delegate.h"
@@ -343,8 +345,8 @@ BackgroundTracingManagerImpl::GetRuleAbleToTriggerTracing(
 void BackgroundTracingManagerImpl::OnHistogramTrigger(
     const std::string& histogram_name) {
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&BackgroundTracingManagerImpl::OnHistogramTrigger,
                        base::Unretained(this), histogram_name));
     return;
@@ -363,8 +365,8 @@ void BackgroundTracingManagerImpl::TriggerNamedEvent(
     BackgroundTracingManagerImpl::TriggerHandle handle,
     StartedFinalizingCallback callback) {
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&BackgroundTracingManagerImpl::TriggerNamedEvent,
                        base::Unretained(this), handle, std::move(callback)));
     return;
@@ -504,8 +506,8 @@ void BackgroundTracingManagerImpl::StartTracing(
     config.EnableArgumentFilter();
 
   is_tracing_ = TracingControllerImpl::GetInstance()->StartTracing(
-      config, base::Bind(&BackgroundTracingManagerImpl::OnStartTracingDone,
-                         base::Unretained(this), preset));
+      config, base::BindOnce(&BackgroundTracingManagerImpl::OnStartTracingDone,
+                             base::Unretained(this), preset));
   RecordBackgroundTracingMetric(RECORDING_ENABLED);
 }
 
@@ -532,8 +534,8 @@ void BackgroundTracingManagerImpl::OnFinalizeStarted(
 
 void BackgroundTracingManagerImpl::OnFinalizeComplete(bool success) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&BackgroundTracingManagerImpl::OnFinalizeComplete,
                        base::Unretained(this), success));
     return;
@@ -633,7 +635,8 @@ void BackgroundTracingManagerImpl::AbortScenario() {
   config_.reset();
   tracing_timer_.reset();
 
-  content::TracingControllerImpl::GetInstance()->StopTracing(nullptr);
+  if (is_tracing_)
+    content::TracingControllerImpl::GetInstance()->StopTracing(nullptr);
 
   for (auto* observer : background_tracing_observers_)
     observer->OnScenarioAborted();
@@ -652,7 +655,10 @@ TraceConfig BackgroundTracingManagerImpl::GetConfigForCategoryPreset(
           "disabled-by-default-v8.runtime_stats",
           record_mode);
     case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_GPU:
-      return TraceConfig("benchmark,toplevel,gpu", record_mode);
+      return TraceConfig(
+          "benchmark,toplevel,gpu,base,mojom,ipc,"
+          "disabled-by-default-system_stats,disabled-by-default-cpu_profiler",
+          record_mode);
     case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_IPC:
       return TraceConfig("benchmark,toplevel,ipc", record_mode);
     case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP: {
@@ -668,9 +674,8 @@ TraceConfig BackgroundTracingManagerImpl::GetConfigForCategoryPreset(
       return TraceConfig("blink.console,v8", record_mode);
     case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_NAVIGATION: {
       auto config = TraceConfig(
-          "benchmark,toplevel,ipc,base,browser,navigation,omnibox,"
+          "benchmark,toplevel,ipc,base,browser,navigation,omnibox,ui,shutdown,"
           "safe_browsing,task_scheduler,"
-          "disabled-by-default-task_scheduler_diagnostics,"
           "disabled-by-default-system_stats,disabled-by-default-cpu_profiler",
           record_mode);
       // Filter only browser process events.
@@ -679,6 +684,15 @@ TraceConfig BackgroundTracingManagerImpl::GetConfigForCategoryPreset(
       config.SetProcessFilterConfig(process_config);
       return config;
     }
+    case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_RENDERERS:
+      return TraceConfig(
+          "benchmark,toplevel,ipc,base,ui,v8,task_scheduler,renderer,blink,"
+          "blink_gc,"
+          "disabled-by-default-v8.gc,"
+          "disabled-by-default-blink_gc,"
+          "disabled-by-default-renderer.scheduler,"
+          "disabled-by-default-system_stats,disabled-by-default-cpu_profiler",
+          record_mode);
     case BackgroundTracingConfigImpl::CategoryPreset::BLINK_STYLE:
       return TraceConfig("blink_style", record_mode);
 

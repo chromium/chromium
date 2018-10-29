@@ -41,6 +41,7 @@
 #include "chrome/browser/metrics/https_engagement_metrics_provider.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
+#include "chrome/browser/metrics/persistent_histograms.h"
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
 #include "chrome/browser/metrics/sampling_metrics_provider.h"
 #include "chrome/browser/metrics/subprocess_metrics_provider.h"
@@ -86,6 +87,7 @@
 #include "components/sync/device_info/device_count_metrics_provider.h"
 #include "components/ukm/ukm_service.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/histogram_fetcher.h"
 #include "content/public/browser/notification_service.h"
@@ -185,8 +187,7 @@ base::LazyInstance<std::string>::Leaky g_environment_for_crash_reporter;
 #endif  // defined(OS_WIN) || defined(OS_MACOSX)
 
 void RegisterFileMetricsPreferences(PrefRegistrySimple* registry) {
-  metrics::FileMetricsProvider::RegisterPrefs(
-      registry, ChromeMetricsServiceClient::kBrowserMetricsName);
+  metrics::FileMetricsProvider::RegisterPrefs(registry, kBrowserMetricsName);
 
   metrics::FileMetricsProvider::RegisterPrefs(registry,
                                               kCrashpadHistogramAllocatorName);
@@ -249,14 +250,14 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
             ASSOCIATE_INTERNAL_PROFILE_OR_PREVIOUS_RUN,
         file_metrics_provider.get());
 
-    base::FilePath browser_metrics_upload_dir = user_data_dir.AppendASCII(
-        ChromeMetricsServiceClient::kBrowserMetricsName);
+    base::FilePath browser_metrics_upload_dir =
+        user_data_dir.AppendASCII(kBrowserMetricsName);
     if (metrics_reporting_enabled) {
       metrics::FileMetricsProvider::Params browser_metrics_params(
           browser_metrics_upload_dir,
           metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
           metrics::FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE,
-          ChromeMetricsServiceClient::kBrowserMetricsName);
+          kBrowserMetricsName);
       browser_metrics_params.max_dir_kib = kMaxHistogramStorageKiB;
       browser_metrics_params.filter = base::BindRepeating(
           &ChromeMetricsServiceClient::FilterBrowserMetricsFiles);
@@ -395,8 +396,6 @@ bool IsProcessRunning(base::ProcessId pid) {
 }
 
 }  // namespace
-
-const char ChromeMetricsServiceClient::kBrowserMetricsName[] = "BrowserMetrics";
 
 // UKM suffix for field trial recording.
 const char kUKMFieldTrialSuffix[] = "UKM";
@@ -607,8 +606,7 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::NetworkMetricsProvider>(
-          std::make_unique<metrics::NetworkQualityEstimatorProviderImpl>(
-              g_browser_process->io_thread())));
+          std::make_unique<metrics::NetworkQualityEstimatorProviderImpl>()));
 
   // Currently, we configure OmniboxMetricsProvider to not log events to UMA
   // if there is a single incognito session visible. In the future, it may
@@ -729,8 +727,7 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 void ChromeMetricsServiceClient::RegisterUKMProviders() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::NetworkMetricsProvider>(
-          std::make_unique<metrics::NetworkQualityEstimatorProviderImpl>(
-              g_browser_process->io_thread())));
+          std::make_unique<metrics::NetworkQualityEstimatorProviderImpl>()));
 
 #if defined(OS_CHROMEOS)
   ukm_service_->RegisterMetricsProvider(
@@ -800,8 +797,8 @@ void ChromeMetricsServiceClient::OnMemoryDetailCollectionDone() {
 #endif
 
   // Merge histograms from metrics providers into StatisticsRecorder.
-  content::BrowserThread::PostTaskAndReply(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraitsAndReply(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&base::StatisticsRecorder::ImportProvidedHistograms),
       callback);
 
@@ -984,7 +981,7 @@ void ChromeMetricsServiceClient::OnSyncPrefsChanged(bool must_purge) {
     return;
   if (must_purge) {
     ukm_service_->Purge();
-    ukm_service_->ResetClientId();
+    ukm_service_->ResetClientState(ukm::ResetReason::kOnSyncPrefsChanged);
   }
   // Signal service manager to enable/disable UKM based on new state.
   UpdateRunningServices();

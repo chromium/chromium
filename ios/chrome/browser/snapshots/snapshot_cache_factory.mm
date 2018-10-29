@@ -69,9 +69,9 @@ SnapshotCacheFactory* SnapshotCacheFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactoryFunction
+BrowserStateKeyedServiceFactory::TestingFactory
 SnapshotCacheFactory::GetDefaultFactory() {
-  return &BuildSnapshotCacheWrapper;
+  return base::BindRepeating(&BuildSnapshotCacheWrapper);
 }
 
 SnapshotCacheFactory::SnapshotCacheFactory()

@@ -2,7 +2,6 @@ Use descendant invalidation set for :empty pseudo class.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(empty, '').backgroundColor is green
 PASS internals.updateStyleAndReturnAffectedElementCount() is 2
 PASS getComputedStyle(empty, '').backgroundColor is transparent

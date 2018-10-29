@@ -8,5 +8,4 @@ package: chromium/third_party/hamcrest
 description: hamcrest Java library
 data:
   - file: lib/hamcrest-core.jar
-  - file: lib/hamcrest-integration.jar
   - file: lib/hamcrest-library.jar

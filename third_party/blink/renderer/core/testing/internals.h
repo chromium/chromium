@@ -120,7 +120,7 @@ class Internals final : public ScriptWrappable {
   String shadowRootType(const Node*, ExceptionState&) const;
   bool hasShadowInsertionPoint(const Node*, ExceptionState&) const;
   bool hasContentElement(const Node*, ExceptionState&) const;
-  size_t countElementShadow(const Node*, ExceptionState&) const;
+  uint32_t countElementShadow(const Node*, ExceptionState&) const;
   const AtomicString& shadowPseudoId(Element*);
 
   // Animation testing.
@@ -240,28 +240,28 @@ class Internals final : public ScriptWrappable {
   unsigned lengthFromRange(Element* scope, const Range*);
   String rangeAsText(const Range*);
 
-  DOMPoint* touchPositionAdjustedToBestClickableNode(long x,
-                                                     long y,
-                                                     long width,
-                                                     long height,
+  DOMPoint* touchPositionAdjustedToBestClickableNode(int x,
+                                                     int y,
+                                                     int width,
+                                                     int height,
                                                      Document*,
                                                      ExceptionState&);
-  Node* touchNodeAdjustedToBestClickableNode(long x,
-                                             long y,
-                                             long width,
-                                             long height,
+  Node* touchNodeAdjustedToBestClickableNode(int x,
+                                             int y,
+                                             int width,
+                                             int height,
                                              Document*,
                                              ExceptionState&);
-  DOMPoint* touchPositionAdjustedToBestContextMenuNode(long x,
-                                                       long y,
-                                                       long width,
-                                                       long height,
+  DOMPoint* touchPositionAdjustedToBestContextMenuNode(int x,
+                                                       int y,
+                                                       int width,
+                                                       int height,
                                                        Document*,
                                                        ExceptionState&);
-  Node* touchNodeAdjustedToBestContextMenuNode(long x,
-                                               long y,
-                                               long width,
-                                               long height,
+  Node* touchNodeAdjustedToBestContextMenuNode(int x,
+                                               int y,
+                                               int width,
+                                               int height,
                                                Document*,
                                                ExceptionState&);
 
@@ -591,7 +591,7 @@ class Internals final : public ScriptWrappable {
   // LocalFrameView::UpdateLifecyclePhasesInternal).
   unsigned LifecycleUpdateCount() const;
 
-  void DisableIntersectionObserverV2Throttle() const;
+  void DisableIntersectionObserverThrottleDelay() const;
 
   void addEmbedderCustomElementName(const AtomicString& name, ExceptionState&);
 
@@ -603,10 +603,10 @@ class Internals final : public ScriptWrappable {
   DOMRectList* AnnotatedRegions(Document*, bool draggable, ExceptionState&);
   void HitTestRect(HitTestLocation&,
                    HitTestResult&,
-                   long x,
-                   long y,
-                   long width,
-                   long height,
+                   int x,
+                   int y,
+                   int width,
+                   int height,
                    Document*);
 
   DocumentMarker* MarkerAt(Node*,

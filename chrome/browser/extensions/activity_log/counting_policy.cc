@@ -215,7 +215,7 @@ void CountingPolicy::QueueAction(scoped_refptr<Action> action) {
       activity_database()->AdviseFlush(ActivityDatabase::kFlushImmediately);
     queued_actions_date_ = new_date;
 
-    ActionQueue::iterator queued_entry = queued_actions_.find(action);
+    auto queued_entry = queued_actions_.find(action);
     if (queued_entry == queued_actions_.end()) {
       queued_actions_[action] = 1;
     } else {
@@ -284,7 +284,7 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
   locate_str += " ORDER BY time DESC LIMIT 1";
   insert_str += ")";
 
-  for (ActionQueue::iterator i = queue.begin(); i != queue.end(); ++i) {
+  for (auto i = queue.begin(); i != queue.end(); ++i) {
     const Action& action = *i->first;
     int count = i->second;
 

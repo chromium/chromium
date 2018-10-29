@@ -181,8 +181,7 @@ TEST_F(DirectoryCommitContributionTest, PrepareCommit) {
   ASSERT_EQ(3U, ids_for_commit.size());
   {
     syncable::ReadTransaction trans(FROM_HERE, dir());
-    for (std::set<syncable::Id>::iterator it = ids_for_commit.begin();
-         it != ids_for_commit.end(); ++it) {
+    for (auto it = ids_for_commit.begin(); it != ids_for_commit.end(); ++it) {
       SCOPED_TRACE(it->value());
       syncable::Entry entry(&trans, syncable::GET_BY_ID, *it);
       ASSERT_TRUE(entry.good());

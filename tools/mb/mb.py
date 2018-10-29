@@ -1111,7 +1111,6 @@ class MetaBuildWrapper(object):
       cmdline = [
         '../../testing/xvfb.py',
         './' + str(executable) + executable_suffix,
-        '--brave-new-test-launcher',
         '--test-launcher-bot-mode',
         '--asan=%d' % asan,
         '--msan=%d' % msan,
@@ -1122,7 +1121,6 @@ class MetaBuildWrapper(object):
       cmdline = [
           '../../testing/test_env.py',
           './' + str(executable) + executable_suffix,
-          '--brave-new-test-launcher',
           '--test-launcher-bot-mode',
           '--asan=%d' % asan,
           '--msan=%d' % msan,

@@ -63,8 +63,7 @@ void ReconcileTask::Reconcile(
                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ReconcileTask::UpdateCompleted(
-    std::unique_ptr<UpdateRequestsResult> update_result) {
+void ReconcileTask::UpdateCompleted(UpdateRequestsResult update_result) {
   // Send a notification to the UI that these items have updated.
   std::move(callback_).Run(std::move(update_result));
   TaskComplete();

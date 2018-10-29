@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -56,7 +55,8 @@ void SendEvent(NSEvent* ns_event) {
 #define MAYBE_SwitchTabsMac
 #endif
 IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, SwitchTabsMac) {
-  NSWindow* ns_window = browser()->window()->GetNativeWindow();
+  NSWindow* ns_window =
+      browser()->window()->GetNativeWindow().GetNativeNSWindow();
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
   // Set up window with 2 tabs.
@@ -89,7 +89,8 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, SwitchTabsMac) {
 // Test that cmd + left arrow can be used for history navigation.
 IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, HistoryNavigation) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
-  NSWindow* ns_window = browser()->window()->GetNativeWindow();
+  NSWindow* ns_window =
+      browser()->window()->GetNativeWindow().GetNativeNSWindow();
 
   GURL test_url = ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
@@ -125,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, CopyPasteOmnibox) {
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
   ASSERT_TRUE(omnibox_view);
 
-  NSWindow* ns_window = browser()->window()->GetNativeWindow();
+  NSWindow* ns_window =
+      browser()->window()->GetNativeWindow().GetNativeNSWindow();
 
   // Cmd+L focuses the omnibox and selects all the text.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_L,
@@ -167,7 +169,8 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, CopyPasteOmnibox) {
 
 // Tests that the shortcut to reopen a previous tab works.
 IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, ReopenPreviousTab) {
-  NSWindow* ns_window = browser()->window()->GetNativeWindow();
+  NSWindow* ns_window =
+      browser()->window()->GetNativeWindow().GetNativeNSWindow();
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
   // Set up window with 2 tabs.
@@ -206,7 +209,8 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, ReopenPreviousTab) {
 // Checks that manually configured hotkeys in the main menu have higher priority
 // than unconfigurable hotkeys not present in the main menu.
 IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, MenuCommandPriority) {
-  NSWindow* ns_window = browser()->window()->GetNativeWindow();
+  NSWindow* ns_window =
+      browser()->window()->GetNativeWindow().GetNativeNSWindow();
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
   // Set up window with 4 tabs.

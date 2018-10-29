@@ -37,8 +37,6 @@ cast_source_set("cast_media_shlib_common") {
     "cast_media_shlib_common.cc",
   ]
   deps = [
-    "//chromecast/media/cma/backend:for_mixer_audio",
-    "//chromecast/public",
     "//chromecast/public/media",
   ]
 }
@@ -71,5 +69,9 @@ cast_shared_library("libcast_media_1.0_avsync") {
   if (use_alsa) {
     deps += [ "//chromecast/media/cma/backend/alsa:cma_backend_support" ]
     libs = [ "videodecoderformixer" ]
+  }
+
+  if (is_fuchsia) {
+    deps += [ "//chromecast/media/cma/backend:null_video" ]
   }
 }

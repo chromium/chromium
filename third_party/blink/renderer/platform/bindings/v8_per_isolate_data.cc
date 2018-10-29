@@ -32,7 +32,6 @@
 #include "base/time/default_tick_clock.h"
 #include "gin/public/v8_idle_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
@@ -44,6 +43,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
 #include "third_party/blink/renderer/platform/heap/unified_heap_controller.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "v8/include/v8.h"
 
@@ -162,9 +162,16 @@ void V8PerIsolateData::WillBeDestroyed(v8::Isolate* isolate) {
   data->active_script_wrappables_.Clear();
 
   // Detach V8's garbage collector.
+  if (RuntimeEnabledFeatures::HeapUnifiedGarbageCollectionEnabled()) {
+    // Need to finalize an already running garbage collection as otherwise
+    // callbacks are missing and state gets out of sync.
+    ThreadState::Current()->FinishIncrementalMarkingIfRunning(
+        BlinkGC::kHeapPointersOnStack, BlinkGC::kAtomicMarking,
+        BlinkGC::kEagerSweeping, BlinkGC::GCReason::kThreadTerminationGC);
+  }
   isolate->SetEmbedderHeapTracer(nullptr);
   if (data->script_wrappable_visitor_->WrapperTracingInProgress())
-    data->script_wrappable_visitor_->AbortTracing();
+    data->script_wrappable_visitor_->AbortTracingForTermination();
   data->script_wrappable_visitor_.reset();
 }
 

@@ -52,7 +52,7 @@ public class ContextualSuggestionsPreference
 
         mSwitch = (ChromeSwitchPreference) findPreference(PREF_CONTEXTUAL_SUGGESTIONS_SWITCH);
         mEnabledStateMonitor =
-                ChromeApplication.getComponent().getContextualSuggestionsEnabledStateMonitor();
+                ChromeApplication.getComponent().resolveContextualSuggestionsEnabledStateMonitor();
         mEnabledStateMonitor.addObserver(this);
         onSettingsStateChanged(mEnabledStateMonitor.getSettingsEnabled());
         initialize();

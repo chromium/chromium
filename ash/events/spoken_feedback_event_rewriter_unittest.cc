@@ -77,6 +77,11 @@ class TestDelegate : public mojom::SpokenFeedbackEventRewriterDelegate {
       captured_event_count_++;
   }
 
+  void DispatchMouseEventToChromeVox(
+      std::unique_ptr<ui::Event> event) override {
+    recorded_event_count_++;
+  }
+
   // The binding that backs the interface pointer held by the event rewriter.
   mojo::Binding<ash::mojom::SpokenFeedbackEventRewriterDelegate> binding_;
 

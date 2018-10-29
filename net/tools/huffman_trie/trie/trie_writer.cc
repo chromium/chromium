@@ -41,7 +41,7 @@ std::vector<uint8_t> LongestCommonPrefix(ReversedEntries::const_iterator start,
     }
 
     bool ok = true;
-    for (ReversedEntries::const_iterator it = start + 1; it != end; ++it) {
+    for (auto it = start + 1; it != end; ++it) {
       if (i > (*it)->reversed_name.size() ||
           (*it)->reversed_name.at(i) != candidate) {
         ok = false;
@@ -78,7 +78,7 @@ std::vector<uint8_t> ReverseName(const std::string& hostname) {
 void RemovePrefix(size_t length,
                   ReversedEntries::iterator start,
                   ReversedEntries::iterator end) {
-  for (ReversedEntries::iterator it = start; it != end; ++it) {
+  for (auto it = start; it != end; ++it) {
     (*it)->reversed_name.erase((*it)->reversed_name.begin(),
                                (*it)->reversed_name.begin() + length);
   }
@@ -142,7 +142,7 @@ bool TrieWriter::WriteDispatchTables(ReversedEntries::iterator start,
 
   while (start != end) {
     uint8_t candidate = (*start)->reversed_name.at(0);
-    ReversedEntries::iterator sub_entries_end = start + 1;
+    auto sub_entries_end = start + 1;
 
     for (; sub_entries_end != end; sub_entries_end++) {
       if ((*sub_entries_end)->reversed_name.at(0) != candidate) {

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1018939186200882850">item menu</translation>
-<translation id="1020833440720551630">bisukan trek audio</translation>
 <translation id="10623998915015855">tombol beralih</translation>
 <translation id="1088086359088493902">Detik</translation>
 <translation id="1171774979989969504">Masukkan alamat email.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">daftar penghargaan</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">spanduk</translation>
-<translation id="1548116112524424341">memutar video dalam mode picture-in-picture</translation>
 <translation id="1589122976691792535">wilayah</translation>
 <translation id="1591562245178063882">Bulan ini</translation>
 <translation id="1637811476055996098">Pilih File</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">kisi pohon</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">putar di perangkat jarak jauh</translation>
-<translation id="1838818994221231429">mengalihkan layar penuh ke area potongan layar</translation>
 <translation id="190587075670221089">penghapusan</translation>
 <translation id="1907737156431278478">contoh</translation>
 <translation id="1921819250265091946">hh</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">waktu</translation>
 <translation id="5630795885300617244">Tap dua kali ke kiri atau kanan untuk melewati 10 detik</translation>
 <translation id="5631759159893697722">abstrak</translation>
-<translation id="5641012560118721995">jeda pemutaran</translation>
 <translation id="5643186887447432888">tombol</translation>
 <translation id="5677946354068040947">opsi lainnya</translation>
 <translation id="576709008726043716">pendahuluan</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Setel ulang</translation>
 <translation id="5966707198760109579">Minggu</translation>
 <translation id="5987525920412732405">tombol putar</translation>
+<translation id="6011459053400940133">penggeser volume</translation>
 <translation id="6015796118275082299">Tahun</translation>
 <translation id="6023896073578205740">kotak daftar</translation>
-<translation id="6101327004457443354">suarakan trek audio</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">pengukur</translation>
 <translation id="6166809985690652833">penutup</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Jam</translation>
 <translation id="7681220483256441252">indeks</translation>
 <translation id="7720026100085573005">sisa waktu</translation>
-<translation id="7740016676195725605">berhenti menampilkan teks</translation>
 <translation id="7740050170769002709">Konten HTML</translation>
 <translation id="7750228210027921155">Picture-in-picture</translation>
 <translation id="7789962463072032349">jeda</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">bidang teks penelusuran</translation>
 <translation id="8057695513531652401">pemberitahuan</translation>
 <translation id="8105797009065549151">referensi catatan</translation>
-<translation id="8115662671911883373">mulai menampilkan teks</translation>
 <translation id="8117451130807776954">Minggu ini</translation>
-<translation id="819205353528511139">putar film dalam mode layar penuh</translation>
 <translation id="8199524924445686405">tttt</translation>
 <translation id="8284326494547611709">Teks</translation>
 <translation id="835897206747267392">Nilai tidak valid.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">kontrol pemutaran jarak jauh</translation>
 <translation id="862370744433916922">subjudul</translation>
 <translation id="8750798805984357768">Pilih salah satu opsi berikut.</translation>
-<translation id="8785498733064193001">mulai pemutaran</translation>
 <translation id="8808573423886751634">bab</translation>
 <translation id="8845239796550121995">Sekarang sedang mentransmisi ke TV Anda</translation>
 <translation id="8851136666856101339">main</translation>

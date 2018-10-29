@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
-namespace VectorMath {
+namespace vector_math {
 namespace VECTOR_MATH_SIMD_NAMESPACE_NAME {
 
 // This stride is chosen so that the same prepared filter created by
@@ -351,7 +351,7 @@ void Zvmul(const float* real1p,
 }
 
 }  // namespace VECTOR_MATH_SIMD_NAMESPACE_NAME
-}  // namespace VectorMath
+}  // namespace vector_math
 }  // namespace blink
 
 #endif  // defined(ARCH_CPU_X86_FAMILY) && !defined(OS_MACOSX)

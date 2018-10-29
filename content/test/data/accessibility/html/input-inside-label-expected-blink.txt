@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer
+++++checkBox name='foo bar baz' checkedState=false
+++++textField value='bar'
+++++++genericContainer
+++++++++staticText name='bar'
+++++++++++inlineTextBox name='bar'
+++++checkBox name='foo bar baz' checkedState=false
+++++textField value='bar'
+++++++genericContainer
+++++++++staticText name='bar'
+++++++++++inlineTextBox name='bar'

@@ -54,6 +54,8 @@ def _NormalizeCommandLine(options):
     args.extend(('--root', root))
   if options.output:
     args.extend(('--output', os.path.relpath(options.output, _SRC_ROOT)))
+  if options.gn_paths:
+    args.extend(('--gn-paths',))
   for whitelist in sorted(options.whitelists):
     args.extend(('--whitelist', os.path.relpath(whitelist, _SRC_ROOT)))
   args.append(os.path.relpath(options.module, _SRC_ROOT))

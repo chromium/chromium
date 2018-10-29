@@ -11,7 +11,6 @@
 #include "base/values.h"
 #include "net/base/net_errors.h"
 #include "net/dns/dns_client.h"
-#include "net/dns/dns_config_service.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_impl.h"
 
@@ -90,6 +89,12 @@ HostResolver::Options::Options()
       enable_caching(true) {
 }
 
+std::unique_ptr<HostResolver> HostResolver::Factory::CreateResolver(
+    const Options& options,
+    NetLog* net_log) {
+  return CreateSystemResolver(options, net_log);
+}
+
 HostResolver::RequestInfo::RequestInfo(const HostPortPair& host_port_pair)
     : RequestInfo() {
   host_port_pair_ = host_port_pair;
@@ -126,6 +131,12 @@ void HostResolver::SetNoIPv6OnWifi(bool no_ipv6_on_wifi) {
 
 bool HostResolver::GetNoIPv6OnWifi() {
   return false;
+}
+
+void HostResolver::SetDnsConfigOverrides(const DnsConfigOverrides& overrides) {
+  // Should be overridden in any HostResolver implementation where this method
+  // may be called.
+  NOTREACHED();
 }
 
 const std::vector<DnsConfig::DnsOverHttpsServerConfig>*

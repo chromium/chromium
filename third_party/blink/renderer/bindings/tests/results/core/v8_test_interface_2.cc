@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -67,7 +67,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterface2V8Internal {
+namespace test_interface_2_v8_internal {
 
 static void sizeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -88,7 +88,7 @@ static void itemMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
 
   uint32_t index;
-  index = NativeValueTraits<IDLUnsignedLong>::NativeValue(info.GetIsolate(), info[0], exceptionState, kNormalConversion);
+  index = NativeValueTraits<IDLUnsignedLong>::NativeValue(info.GetIsolate(), info[0], exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -111,7 +111,7 @@ static void setItemMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   uint32_t index;
   TestInterfaceEmpty* value;
-  index = NativeValueTraits<IDLUnsignedLong>::NativeValue(info.GetIsolate(), info[0], exceptionState, kNormalConversion);
+  index = NativeValueTraits<IDLUnsignedLong>::NativeValue(info.GetIsolate(), info[0], exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -139,7 +139,7 @@ static void deleteItemMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
 
   uint32_t index;
-  index = NativeValueTraits<IDLUnsignedLong>::NativeValue(info.GetIsolate(), info[0], exceptionState, kNormalConversion);
+  index = NativeValueTraits<IDLUnsignedLong>::NativeValue(info.GetIsolate(), info[0], exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -485,90 +485,90 @@ static void indexedPropertyDeleter(uint32_t index, const v8::PropertyCallbackInf
   V8SetReturnValue(info, result == kDeleteSuccess);
 }
 
-} // namespace TestInterface2V8Internal
+}  // namespace test_interface_2_v8_internal
 
 void V8TestInterface2::sizeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_size_Getter");
 
-  TestInterface2V8Internal::sizeAttributeGetter(info);
+  test_interface_2_v8_internal::sizeAttributeGetter(info);
 }
 
 void V8TestInterface2::itemMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_item");
 
-  TestInterface2V8Internal::itemMethod(info);
+  test_interface_2_v8_internal::itemMethod(info);
 }
 
 void V8TestInterface2::setItemMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_setItem");
 
-  TestInterface2V8Internal::setItemMethod(info);
+  test_interface_2_v8_internal::setItemMethod(info);
 }
 
 void V8TestInterface2::deleteItemMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_deleteItem");
 
-  TestInterface2V8Internal::deleteItemMethod(info);
+  test_interface_2_v8_internal::deleteItemMethod(info);
 }
 
 void V8TestInterface2::namedItemMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_namedItem");
 
-  TestInterface2V8Internal::namedItemMethod(info);
+  test_interface_2_v8_internal::namedItemMethod(info);
 }
 
 void V8TestInterface2::setNamedItemMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_setNamedItem");
 
-  TestInterface2V8Internal::setNamedItemMethod(info);
+  test_interface_2_v8_internal::setNamedItemMethod(info);
 }
 
 void V8TestInterface2::deleteNamedItemMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_deleteNamedItem");
 
-  TestInterface2V8Internal::deleteNamedItemMethod(info);
+  test_interface_2_v8_internal::deleteNamedItemMethod(info);
 }
 
 void V8TestInterface2::stringifierMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_stringifierMethod");
 
-  TestInterface2V8Internal::stringifierMethodMethod(info);
+  test_interface_2_v8_internal::stringifierMethodMethod(info);
 }
 
 void V8TestInterface2::keysMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_keys");
 
-  TestInterface2V8Internal::keysMethod(info);
+  test_interface_2_v8_internal::keysMethod(info);
 }
 
 void V8TestInterface2::entriesMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_entries");
 
-  TestInterface2V8Internal::entriesMethod(info);
+  test_interface_2_v8_internal::entriesMethod(info);
 }
 
 void V8TestInterface2::forEachMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_forEach");
 
-  TestInterface2V8Internal::forEachMethod(info);
+  test_interface_2_v8_internal::forEachMethod(info);
 }
 
 void V8TestInterface2::hasMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_has");
 
-  TestInterface2V8Internal::hasMethod(info);
+  test_interface_2_v8_internal::hasMethod(info);
 }
 
 void V8TestInterface2::toStringMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_toString");
 
-  TestInterface2V8Internal::toStringMethod(info);
+  test_interface_2_v8_internal::toStringMethod(info);
 }
 
 void V8TestInterface2::iteratorMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_iterator");
 
-  TestInterface2V8Internal::iteratorMethod(info);
+  test_interface_2_v8_internal::iteratorMethod(info);
 }
 
 void V8TestInterface2::namedPropertyGetterCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -578,7 +578,7 @@ void V8TestInterface2::namedPropertyGetterCallback(v8::Local<v8::Name> name, con
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestInterface2V8Internal::namedPropertyGetter(propertyName, info);
+  test_interface_2_v8_internal::namedPropertyGetter(propertyName, info);
 }
 
 void V8TestInterface2::namedPropertySetterCallback(v8::Local<v8::Name> name, v8::Local<v8::Value> v8Value, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -588,7 +588,7 @@ void V8TestInterface2::namedPropertySetterCallback(v8::Local<v8::Name> name, v8:
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestInterface2V8Internal::namedPropertySetter(propertyName, v8Value, info);
+  test_interface_2_v8_internal::namedPropertySetter(propertyName, v8Value, info);
 }
 
 void V8TestInterface2::namedPropertyDeleterCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Boolean>& info) {
@@ -596,7 +596,7 @@ void V8TestInterface2::namedPropertyDeleterCallback(v8::Local<v8::Name> name, co
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestInterface2V8Internal::namedPropertyDeleter(propertyName, info);
+  test_interface_2_v8_internal::namedPropertyDeleter(propertyName, info);
 }
 
 void V8TestInterface2::namedPropertyQueryCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Integer>& info) {
@@ -606,29 +606,29 @@ void V8TestInterface2::namedPropertyQueryCallback(v8::Local<v8::Name> name, cons
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestInterface2V8Internal::namedPropertyQuery(propertyName, info);
+  test_interface_2_v8_internal::namedPropertyQuery(propertyName, info);
 }
 
 void V8TestInterface2::namedPropertyEnumeratorCallback(const v8::PropertyCallbackInfo<v8::Array>& info) {
-  TestInterface2V8Internal::namedPropertyEnumerator(info);
+  test_interface_2_v8_internal::namedPropertyEnumerator(info);
 }
 
 void V8TestInterface2::indexedPropertyGetterCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface2_IndexedPropertyGetter");
 
-  TestInterface2V8Internal::indexedPropertyGetter(index, info);
+  test_interface_2_v8_internal::indexedPropertyGetter(index, info);
 }
 
 void V8TestInterface2::indexedPropertyDescriptorCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
-  TestInterface2V8Internal::indexedPropertyDescriptor(index, info);
+  test_interface_2_v8_internal::indexedPropertyDescriptor(index, info);
 }
 
 void V8TestInterface2::indexedPropertySetterCallback(uint32_t index, v8::Local<v8::Value> v8Value, const v8::PropertyCallbackInfo<v8::Value>& info) {
-  TestInterface2V8Internal::indexedPropertySetter(index, v8Value, info);
+  test_interface_2_v8_internal::indexedPropertySetter(index, v8Value, info);
 }
 
 void V8TestInterface2::indexedPropertyDeleterCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Boolean>& info) {
-  TestInterface2V8Internal::indexedPropertyDeleter(index, info);
+  test_interface_2_v8_internal::indexedPropertyDeleter(index, info);
 }
 
 void V8TestInterface2::indexedPropertyDefinerCallback(
@@ -685,7 +685,7 @@ void V8TestInterface2::constructorCallback(const v8::FunctionCallbackInfo<v8::Va
     return;
   }
 
-  TestInterface2V8Internal::constructor(info);
+  test_interface_2_v8_internal::constructor(info);
 }
 
 void V8TestInterface2::installV8TestInterface2Template(

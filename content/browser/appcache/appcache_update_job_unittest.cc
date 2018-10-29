@@ -20,6 +20,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,6 +30,7 @@
 #include "content/browser/appcache/appcache_update_url_loader_request.h"
 #include "content/browser/appcache/mock_appcache_service.h"
 #include "content/browser/url_loader_factory_getter.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -705,15 +707,15 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
         tested_manifest_path_override_(nullptr),
         request_handler_type_(GetParam()),
         thread_bundle_(content::TestBrowserThreadBundle::REAL_IO_THREAD) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&IOThread::Init, base::Unretained(io_thread_.get())));
 
     if (request_handler_type_ == URLLOADER) {
       loader_factory_getter_ = new URLLoaderFactoryGetter();
       feature_list_.InitAndEnableFeature(network::features::kNetworkService);
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(&AppCacheUpdateJobTest::InitializeFactory,
                          base::Unretained(this)));
     }
@@ -724,8 +726,8 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
     // The TestBrowserThreadBundle dtor guarantees that all posted tasks are
     // executed before the IO thread shuts down. It is safe to use the
     // Unretained pointer here.
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&IOThread::CleanUp, base::Unretained(io_thread_.get())));
   }
 
@@ -737,8 +739,8 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
         base::WaitableEvent::ResetPolicy::AUTOMATIC,
         base::WaitableEvent::InitialState::NOT_SIGNALED));
 
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            base::BindOnce(method, base::Unretained(this)));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                             base::BindOnce(method, base::Unretained(this)));
 
     // Wait until task is done before exiting the test.
     event_->Wait();
@@ -752,7 +754,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void StartCacheAttemptTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(), GURL("http://failme"),
@@ -787,7 +789,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void StartUpgradeAttemptTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     {
       MakeService();
@@ -853,7 +855,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void CacheAttemptFetchManifestFailTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(), GURL("http://failme"),
@@ -877,7 +879,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeFetchManifestFailTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(),
@@ -918,7 +920,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void ManifestRedirectTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     if (request_handler_type_ == URLREQUEST) {
       net::URLRequestJobFactoryImpl* new_factory(
@@ -950,7 +952,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void ManifestMissingMimeTypeTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -990,7 +992,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void ManifestNotFoundTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1026,7 +1028,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void ManifestGoneTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1051,7 +1053,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void CacheAttemptNotModifiedTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1076,7 +1078,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeNotModifiedTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1120,7 +1122,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeManifestDataUnchangedTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1131,8 +1133,8 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
     group_->update_job_ = update;
 
     // Create response writer to get a response id.
-    response_writer_.reset(
-        service_->storage()->CreateResponseWriter(group_->manifest_url()));
+    response_writer_ =
+        service_->storage()->CreateResponseWriter(group_->manifest_url());
 
     AppCache* cache = MakeCacheForGroup(1, response_writer_->response_id());
     MockFrontend* frontend1 = MakeMockFrontend();
@@ -1171,7 +1173,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
 
   // See http://code.google.com/p/chromium/issues/detail?id=95101
   void Bug95101Test() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1215,7 +1217,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void BasicCacheAttemptSuccessTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     GURL manifest_url = MockHttpServer::GetMockUrl("files/manifest1");
 
@@ -1246,7 +1248,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
 
   void DownloadInterceptEntriesTest() {
     // Ensures we download intercept entries too.
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
     GURL manifest_url =
         MockHttpServer::GetMockUrl("files/manifest-with-intercept");
     MakeService();
@@ -1273,7 +1275,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void BasicUpgradeSuccessTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1284,8 +1286,8 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
     group_->update_job_ = update;
 
     // Create a response writer to get a response id.
-    response_writer_.reset(
-        service_->storage()->CreateResponseWriter(group_->manifest_url()));
+    response_writer_ =
+        service_->storage()->CreateResponseWriter(group_->manifest_url());
 
     AppCache* cache = MakeCacheForGroup(service_->storage()->NewCacheId(),
                                         response_writer_->response_id());
@@ -1342,7 +1344,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeLoadFromNewestCacheTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1358,8 +1360,8 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
     host->AssociateCompleteCache(cache);
 
     // Give the newest cache an entry that is in storage.
-    response_writer_.reset(
-        service_->storage()->CreateResponseWriter(group_->manifest_url()));
+    response_writer_ =
+        service_->storage()->CreateResponseWriter(group_->manifest_url());
     cache->AddEntry(MockHttpServer::GetMockUrl("files/explicit1"),
                     AppCacheEntry(AppCacheEntry::EXPLICIT,
                                   response_writer_->response_id()));
@@ -1410,7 +1412,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeNoLoadFromNewestCacheTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1426,8 +1428,8 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
     host->AssociateCompleteCache(cache);
 
     // Give the newest cache an entry that is in storage.
-    response_writer_.reset(
-        service_->storage()->CreateResponseWriter(group_->manifest_url()));
+    response_writer_ =
+        service_->storage()->CreateResponseWriter(group_->manifest_url());
     cache->AddEntry(MockHttpServer::GetMockUrl("files/explicit1"),
                     AppCacheEntry(AppCacheEntry::EXPLICIT,
                                   response_writer_->response_id()));
@@ -1476,7 +1478,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeLoadFromNewestCacheVaryHeaderTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1492,8 +1494,8 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
     host->AssociateCompleteCache(cache);
 
     // Give the newest cache an entry that is in storage.
-    response_writer_.reset(
-        service_->storage()->CreateResponseWriter(group_->manifest_url()));
+    response_writer_ =
+        service_->storage()->CreateResponseWriter(group_->manifest_url());
     cache->AddEntry(MockHttpServer::GetMockUrl("files/explicit1"),
                     AppCacheEntry(AppCacheEntry::EXPLICIT,
                                   response_writer_->response_id()));
@@ -1542,7 +1544,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeLoadFromNewestCacheReuseVaryHeaderTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(),
@@ -1558,8 +1560,8 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
     host->AssociateCompleteCache(cache);
 
     // Give the newest cache an entry that is in storage.
-    response_writer_.reset(
-        service_->storage()->CreateResponseWriter(group_->manifest_url()));
+    response_writer_ =
+        service_->storage()->CreateResponseWriter(group_->manifest_url());
     cache->AddEntry(MockHttpServer::GetMockUrl("files/explicit1"),
                     AppCacheEntry(AppCacheEntry::EXPLICIT,
                                   response_writer_->response_id()));
@@ -1612,7 +1614,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeSuccessMergedTypesTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(),
@@ -1670,7 +1672,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void CacheAttemptFailUrlFetchTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(),
@@ -1695,7 +1697,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeFailUrlFetchTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(),
@@ -1740,7 +1742,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeFailMasterUrlFetchTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     tested_manifest_path_override_ = "files/manifest1-with-notmodified";
 
@@ -1853,7 +1855,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void EmptyManifestTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -1902,7 +1904,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void EmptyFileTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(),
@@ -1939,7 +1941,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void RetryRequestTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     // Set some large number of times to return retry.
     // Expect 1 manifest fetch and 3 retries.
@@ -1976,7 +1978,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void RetryNoRetryAfterTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     // Set some large number of times to return retry.
     // Expect 1 manifest fetch and 0 retries.
@@ -2013,7 +2015,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void RetryNonzeroRetryAfterTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     // Set some large number of times to return retry.
     // Expect 1 request and 0 retry attempts.
@@ -2051,7 +2053,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void RetrySuccessTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     // Set 2 as the retry limit (does not exceed the max).
     // Expect 1 manifest fetch, 2 retries, 1 url fetch, 1 manifest refetch.
@@ -2088,7 +2090,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void RetryUrlTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     // Set 1 as the retry limit (does not exceed the max).
     // Expect 1 manifest fetch, 1 url fetch, 1 url retry, 1 manifest refetch.
@@ -2125,7 +2127,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void FailStoreNewestCacheTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     MockAppCacheStorage* storage =
@@ -2154,7 +2156,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeFailStoreNewestCacheTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     MockAppCacheStorage* storage =
@@ -2202,7 +2204,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void MasterEntryFailStoreNewestCacheTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     MockAppCacheStorage* storage =
@@ -2252,7 +2254,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeFailMakeGroupObsoleteTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     MockAppCacheStorage* storage =
@@ -2292,7 +2294,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void MasterEntryFetchManifestFailTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(), GURL("http://failme"), 111);
@@ -2317,7 +2319,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void MasterEntryBadManifestTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(),
@@ -2343,7 +2345,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void MasterEntryManifestNotFoundTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -2372,7 +2374,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void MasterEntryFailUrlFetchTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(),
@@ -2403,7 +2405,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void MasterEntryAllFailTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -2447,7 +2449,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeMasterEntryAllFailTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -2507,7 +2509,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void MasterEntrySomeFailTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -2558,7 +2560,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void UpgradeMasterEntrySomeFailTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -2625,7 +2627,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void MasterEntryNoUpdateTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(service_->storage(),
@@ -2681,7 +2683,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void StartUpdateMidCacheAttemptTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -2776,7 +2778,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void StartUpdateMidNoUpdateTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -2861,7 +2863,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void StartUpdateMidDownloadTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -2960,7 +2962,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void QueueMasterEntryTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     MakeService();
     group_ = new AppCacheGroup(
@@ -3018,7 +3020,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void IfModifiedSinceTestCache() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     if (request_handler_type_ == URLREQUEST) {
       net::URLRequestJobFactoryImpl* new_factory(
@@ -3059,7 +3061,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void IfModifiedTestRefetch() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     if (request_handler_type_ == URLREQUEST) {
       net::URLRequestJobFactoryImpl* new_factory(
@@ -3110,7 +3112,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void IfModifiedTestLastModified() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     if (request_handler_type_ == URLREQUEST) {
       net::URLRequestJobFactoryImpl* new_factory(
@@ -3162,7 +3164,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void IfModifiedSinceUpgradeTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     HttpHeadersRequestTestJob::Initialize("Sat, 29 Oct 1994 19:43:31 GMT",
                                           std::string());
@@ -3185,8 +3187,8 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
     group_->update_job_ = update;
 
     // Give the newest cache a manifest enry that is in storage.
-    response_writer_.reset(
-        service_->storage()->CreateResponseWriter(group_->manifest_url()));
+    response_writer_ =
+        service_->storage()->CreateResponseWriter(group_->manifest_url());
 
     AppCache* cache = MakeCacheForGroup(service_->storage()->NewCacheId(),
                                         response_writer_->response_id());
@@ -3236,7 +3238,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void IfNoneMatchUpgradeTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     HttpHeadersRequestTestJob::Initialize(std::string(), "\"LadeDade\"");
 
@@ -3258,8 +3260,8 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
     group_->update_job_ = update;
 
     // Give the newest cache a manifest enry that is in storage.
-    response_writer_.reset(
-        service_->storage()->CreateResponseWriter(group_->manifest_url()));
+    response_writer_ =
+        service_->storage()->CreateResponseWriter(group_->manifest_url());
 
     AppCache* cache = MakeCacheForGroup(service_->storage()->NewCacheId(),
                                         response_writer_->response_id());
@@ -3309,7 +3311,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void IfNoneMatchRefetchTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     HttpHeadersRequestTestJob::Initialize(std::string(), "\"LadeDade\"");
 
@@ -3360,7 +3362,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void MultipleHeadersRefetchTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     // Verify that code is correct when building multiple extra headers.
     HttpHeadersRequestTestJob::Initialize(
@@ -3414,7 +3416,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void CrossOriginHttpsSuccessTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     GURL manifest_url = MockHttpServer::GetMockHttpsUrl(
         "files/valid_cross_origin_https_manifest");
@@ -3443,7 +3445,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
   }
 
   void CrossOriginHttpsDeniedTest() {
-    ASSERT_TRUE(base::MessageLoopForIO::IsCurrent());
+    ASSERT_TRUE(base::MessageLoopCurrentForIO::IsSet());
 
     GURL manifest_url = MockHttpServer::GetMockHttpsUrl(
         "files/invalid_cross_origin_https_manifest");
@@ -3603,15 +3605,13 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
 
       if (expect_old_cache_) {
         EXPECT_NE(expect_old_cache_, group_->newest_complete_cache());
-        EXPECT_TRUE(group_->old_caches().end() !=
-            std::find(group_->old_caches().begin(),
-                      group_->old_caches().end(), expect_old_cache_));
+        EXPECT_TRUE(
+            base::ContainsValue(group_->old_caches(), expect_old_cache_));
       }
       if (expect_newest_cache_) {
         EXPECT_EQ(expect_newest_cache_, group_->newest_complete_cache());
-        EXPECT_TRUE(group_->old_caches().end() ==
-            std::find(group_->old_caches().begin(),
-                      group_->old_caches().end(), expect_newest_cache_));
+        EXPECT_FALSE(
+            base::ContainsValue(group_->old_caches(), expect_newest_cache_));
       } else {
         // Tests that don't know which newest cache to expect contain updates
         // that succeed (because the update creates a new cache whose pointer
@@ -3628,8 +3628,7 @@ class AppCacheUpdateJobTest : public testing::TestWithParam<RequestHandlerType>,
 
           // Check that any copied entries have the expected response id
           // and that entries that are not copied have a different response id.
-          std::map<GURL, int64_t>::iterator found =
-              expect_response_ids_.find(pair.first);
+          auto found = expect_response_ids_.find(pair.first);
           if (found != expect_response_ids_.end()) {
             EXPECT_EQ(found->second, pair.second.response_id());
           } else if (expect_old_cache_) {

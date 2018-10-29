@@ -122,7 +122,7 @@ Polymer({
 
   /**
    * This function prevents unwanted change of selection of the containing
-   * paper-radio-group, when the user traverses the input with arrow keys.
+   * cr-radio-group, when the user traverses the input with arrow keys.
    * @param {!Event} e
    * @private
    */

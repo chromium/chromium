@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/arc/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
+#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/image_decoder.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_pai_starter.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/chromeos_switches.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
@@ -173,6 +175,22 @@ bool AreAppStatesChanged(const ArcAppListPrefs::AppInfo& info1,
          info1.launchable != info2.launchable;
 }
 
+// We have only fixed icon dimensions for default apps, 32, 48 and 64. If
+// requested dimension does not exist, use bigger one that can be downsized.
+// In case requested dimension is bigger than 64, use largest possible size that
+// can be upsized.
+ArcAppIconDescriptor MapDefaultAppIconDescriptor(
+    const ArcAppIconDescriptor& descriptor) {
+  int default_app_dip_size;
+  if (descriptor.dip_size <= 32)
+    default_app_dip_size = 32;
+  else if (descriptor.dip_size <= 48)
+    default_app_dip_size = 48;
+  else
+    default_app_dip_size = 64;
+  return ArcAppIconDescriptor(default_app_dip_size, descriptor.scale_factor);
+}
+
 // Whether skip install_time for comparing two |AppInfo|.
 bool ignore_compare_app_info_install_time = false;
 
@@ -306,6 +324,7 @@ ArcAppListPrefs::ArcAppListPrefs(
       prefs_(profile->GetPrefs()),
       app_connection_holder_(app_connection_holder),
       weak_ptr_factory_(this) {
+  VLOG(1) << "ARC app list prefs created";
   DCHECK(profile);
   DCHECK(app_connection_holder);
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -318,8 +337,10 @@ ArcAppListPrefs::ArcAppListPrefs(
                               base::Unretained(this)));
 
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
-  if (!arc_session_manager)
+  if (!arc_session_manager) {
+    VLOG(1) << "ARC session manager is not available";
     return;
+  }
 
   DCHECK(arc::IsArcAllowedForProfile(profile));
 
@@ -361,6 +382,8 @@ void ArcAppListPrefs::StartPrefs() {
     arc_session_manager->AddObserver(this);
   }
 
+  VLOG(1) << "Registering host...";
+
   app_connection_holder_->SetHost(this);
   app_connection_holder_->AddObserver(this);
   if (!app_connection_holder_->IsConnected())
@@ -378,7 +401,8 @@ base::FilePath ArcAppListPrefs::MaybeGetIconPathForDefaultApp(
   if (!default_app || default_app->app_path.empty())
     return base::FilePath();
 
-  return default_app->app_path.AppendASCII(descriptor.GetName());
+  return default_app->app_path.AppendASCII(
+      MapDefaultAppIconDescriptor(descriptor).GetName());
 }
 
 base::FilePath ArcAppListPrefs::GetIconPath(
@@ -845,6 +869,8 @@ void ArcAppListPrefs::SetDefaultAppsFilterLevel() {
 }
 
 void ArcAppListPrefs::OnDefaultAppsReady() {
+  VLOG(1) << "Default apps ready";
+
   // Deprecated. Convert uninstalled packages info to hidden default apps and
   // erase pending perf entry afterward.
   // TODO (khmel): Remove in M73
@@ -942,6 +968,7 @@ void ArcAppListPrefs::SimulateDefaultAppAvailabilityTimeoutForTesting() {
 }
 
 void ArcAppListPrefs::OnConnectionReady() {
+  VLOG(1) << "App instance connection is ready.";
   // Note, sync_service_ may be nullptr in testing.
   sync_service_ = arc::ArcPackageSyncableService::Get(profile_);
   is_initialized_ = false;
@@ -951,6 +978,7 @@ void ArcAppListPrefs::OnConnectionReady() {
 }
 
 void ArcAppListPrefs::OnConnectionClosed() {
+  VLOG(1) << "App instance connection is closed.";
   DisableAllApps();
   installing_packages_count_ = 0;
   default_apps_installations_.clear();
@@ -1000,9 +1028,13 @@ void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
                                         const bool launchable) {
   const std::string app_id = shortcut ? GetAppId(package_name, intent_uri)
                                       : GetAppId(package_name, activity);
-  // Do not add Play Store app for Public Session and Kiosk modes.
-  if (app_id == arc::kPlayStoreAppId && arc::IsRobotOrOfflineDemoAccountMode())
+  // TODO(khmel): Use show_in_launcher flag to hide the Play Store app.
+  if (app_id == arc::kPlayStoreAppId &&
+      arc::IsRobotOrOfflineDemoAccountMode() &&
+      !(chromeos::DemoSession::IsDeviceInDemoMode() &&
+        chromeos::switches::ShouldShowPlayStoreInDemoMode())) {
     return;
+  }
 
   std::string updated_name = name;
   // Add "(beta)" string to Play Store. See crbug.com/644576 for details.
@@ -1357,6 +1389,9 @@ std::unordered_set<std::string> ArcAppListPrefs::GetAppsAndShortcutsForPackage(
       prefs_->GetDictionary(arc::prefs::kArcApps);
   for (base::DictionaryValue::Iterator app_it(*apps); !app_it.IsAtEnd();
        app_it.Advance()) {
+    if (!crx_file::id_util::IdIsValid(app_it.key()))
+      continue;
+
     const base::Value* value = &app_it.value();
     const base::DictionaryValue* app;
     if (!value->GetAsDictionary(&app)) {
@@ -1366,7 +1401,7 @@ std::unordered_set<std::string> ArcAppListPrefs::GetAppsAndShortcutsForPackage(
 
     std::string app_package;
     if (!app->GetString(kPackageName, &app_package)) {
-      NOTREACHED();
+      LOG(ERROR) << "App is malformed: " << app_it.key();
       continue;
     }
 

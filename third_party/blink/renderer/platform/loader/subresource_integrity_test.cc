@@ -241,7 +241,8 @@ class SubresourceIntegrityTest : public testing::Test {
       const KURL& url,
       network::mojom::FetchRequestMode request_mode,
       network::mojom::FetchResponseType response_type) {
-    Resource* resource = RawResource::CreateForTest(url, ResourceType::kRaw);
+    Resource* resource = RawResource::CreateForTest(
+        url, SecurityOrigin::CreateUniqueOpaque(), ResourceType::kRaw);
 
     ResourceRequest request;
     request.SetURL(url);

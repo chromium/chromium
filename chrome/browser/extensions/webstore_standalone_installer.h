@@ -20,8 +20,6 @@
 #include "net/url_request/url_fetcher_delegate.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-class GURL;
-
 namespace base {
 class DictionaryValue;
 }
@@ -87,19 +85,10 @@ class WebstoreStandaloneInstaller
 
   // Template Method's hooks to be implemented by subclasses.
 
-  // Gives subclasses an opportunity to provide extra post data in the form of
-  // serialized proto to the webstore data request before sending. The default
-  // implementation returns an empty string.
-  virtual std::string GetPostData();
-
   // Called at certain check points of the workflow to decide whether it makes
   // sense to proceed with installation. A requestor can be a website that
   // initiated an inline installation, or a command line option.
   virtual bool CheckRequestorAlive() const = 0;
-
-  // Requestor's URL, if any. Should be an empty GURL if URL is meaningless
-  // (e.g. for a command line option).
-  virtual const GURL& GetRequestorURL() const = 0;
 
   // Should a new tab be opened after installation to show the newly installed
   // extension's icon?
@@ -119,20 +108,6 @@ class WebstoreStandaloneInstaller
   // no prompt should be shown.
   virtual std::unique_ptr<ExtensionInstallPrompt::Prompt> CreateInstallPrompt()
       const = 0;
-
-  // Perform all necessary checks to make sure inline install is permitted,
-  // e.g. in the extension's properties in the store. The implementation may
-  // choose to ignore such properties.
-  virtual bool CheckInlineInstallPermitted(
-      const base::DictionaryValue& webstore_data,
-      std::string* error) const = 0;
-
-  // Perform all necessary checks to make sure that requestor is allowed to
-  // initiate this install (e.g. that the requestor's URL matches the verified
-  // author's site specified in the extension's properties in the store).
-  virtual bool CheckRequestorPermitted(
-      const base::DictionaryValue& webstore_data,
-      std::string* error) const = 0;
 
   // Will be called after the extension's manifest has been successfully parsed.
   // Subclasses can perform asynchronous checks at this point and call

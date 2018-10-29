@@ -4,10 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/cells/import_data_multiline_detail_item.h"
 
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -62,27 +61,17 @@ const CGFloat kVerticalPadding = 16;
 
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
+    _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
     [contentView addSubview:_textLabel];
 
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _detailTextLabel.numberOfLines = 0;
+    _detailTextLabel.font =
+        [UIFont systemFontOfSize:kUIKitMultilineDetailFontSize];
+    _detailTextLabel.textColor = UIColorFromRGB(kUIKitMultilineDetailTextColor);
     [contentView addSubview:_detailTextLabel];
-
-    // Fonts and colors vary based on the UI reboot experiment.
-    if (experimental_flags::IsSettingsUIRebootEnabled()) {
-      _textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
-      _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
-      _detailTextLabel.font =
-          [UIFont systemFontOfSize:kUIKitMultilineDetailFontSize];
-      _detailTextLabel.textColor =
-          UIColorFromRGB(kUIKitMultilineDetailTextColor);
-    } else {
-      _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
-      _textLabel.textColor = [[MDCPalette greyPalette] tint900];
-      _detailTextLabel.font = [[MDCTypography fontLoader] regularFontOfSize:14];
-      _detailTextLabel.textColor = [[MDCPalette greyPalette] tint500];
-    }
 
     // Set up the constraints.
     [NSLayoutConstraint activateConstraints:@[

@@ -6,6 +6,7 @@
 #define CONTENT_COMMON_RENDER_FRAME_METADATA_STRUCT_TRAITS_H_
 
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "content/common/render_frame_metadata.mojom-shared.h"
@@ -51,6 +52,12 @@ struct StructTraits<content::mojom::RenderFrameMetadataDataView,
   static const base::Optional<viz::LocalSurfaceId>& local_surface_id(
       const cc::RenderFrameMetadata& metadata) {
     return metadata.local_surface_id;
+  }
+
+  static base::Optional<base::TimeTicks>
+  local_surface_id_allocation_time_from_child(
+      const cc::RenderFrameMetadata& metadata) {
+    return metadata.local_surface_id_allocation_time_from_child;
   }
 
   static float page_scale_factor(const cc::RenderFrameMetadata& metadata) {

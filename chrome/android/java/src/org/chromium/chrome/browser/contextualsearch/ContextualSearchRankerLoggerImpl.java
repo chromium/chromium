@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.support.annotation.Nullable;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.VisibleForTesting;
+import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Collections;
@@ -19,6 +21,13 @@ import java.util.Map;
  */
 public class ContextualSearchRankerLoggerImpl implements ContextualSearchInteractionRecorder {
     private static final String TAG = "ContextualSearch";
+
+    @VisibleForTesting
+    static final String UKM_DEV_DATA_TTS_ENABLE = "ukm-dev-data-tts-enable";
+    // These names are appended to the ones in the maps below.
+    // TODO(donnd): remove before the next release.  See https://crbug.com/894568 for details.
+    private static final String LOW_BITS = "LowBits";
+    private static final String HIGH_BITS = "HighBits";
 
     // Names for all our features and labels.
     // Integer values should contain @Feature values only.
@@ -37,6 +46,9 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
         outcomes.put(Feature.OUTCOME_WAS_QUICK_ANSWER_SEEN, "OutcomeWasQuickAnswerSeen");
         // UKM CS v2 outcomes.
         outcomes.put(Feature.OUTCOME_WAS_CARDS_DATA_SHOWN, "OutcomeWasCardsDataShown");
+        // UKM CS v5 features are technically outcomes, since they are logged after inference.
+        outcomes.put(Feature.OUTCOME_DOC_ID, "OutcomeDocId");
+        outcomes.put(Feature.OUTCOME_SNIPPET_HASH, "OutcomeSnippetHash");
         OUTCOMES = Collections.unmodifiableMap(outcomes);
 
         // NOTE: this list needs to be kept in sync with the white list in
@@ -107,6 +119,12 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
     // Integer values should contain @Feature values only.
     private Map<Integer, Object> mFeaturesLoggedForTesting;
     private Map<Integer, Object> mOutcomesLoggedForTesting;
+
+    // Development-only data for this release.  Records encoded data from the server about the text
+    // tapped, which may contain PII, and the search index document ID.
+    // TODO(donnd): remove before the next release.  See https://crbug.com/894568 for details.
+    private long mDocId;
+    private long mSnippetHash;
 
     /**
      * Constructs a Ranker Logger and associated native implementation to write Contextual Search
@@ -194,6 +212,8 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
         mFeaturesToLog = null;
         mBasePageWebContents = null;
         mAssistRankerPrediction = AssistRankerPrediction.UNDETERMINED;
+        mDocId = 0;
+        mSnippetHash = 0;
     }
 
     @Override
@@ -203,6 +223,7 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
                     && !mFeaturesToLog.isEmpty()) {
                 assert mIsLoggingReadyForPage;
                 assert mHasInferenceOccurred;
+                logDevelopmentOutcomes();
                 // Only the outcomes will be present, since we logged inference features at
                 // inference time.
                 for (Map.Entry<Integer, Object> entry : mFeaturesToLog.entrySet()) {
@@ -214,6 +235,34 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
             nativeWriteLogAndReset(mNativePointer);
         }
         reset();
+    }
+
+    @Override
+    public void recordSnippetData(long docId, long snippetHash) {
+        if (!canRecordSensitiveDataToUkm()) return;
+
+        mDocId = docId;
+        mSnippetHash = snippetHash;
+    }
+
+    /**
+     * @return Whether we can record sensitive data to UKM on this channel due to an enabled
+     *         command-line-flag.
+     */
+    private boolean canRecordSensitiveDataToUkm() {
+        if (!CommandLine.getInstance().hasSwitch(UKM_DEV_DATA_TTS_ENABLE)) return false;
+
+        if (ChromeVersionInfo.isBetaBuild() || ChromeVersionInfo.isStableBuild()) return false;
+
+        return true;
+    }
+
+    /** Writes our development-only outcome data. */
+    private void logDevelopmentOutcomes() {
+        if (!canRecordSensitiveDataToUkm() || mDocId == 0 || mSnippetHash == 0) return;
+
+        logInternal(Feature.OUTCOME_DOC_ID, mDocId);
+        logInternal(Feature.OUTCOME_SNIPPET_HASH, mSnippetHash);
     }
 
     /**
@@ -242,9 +291,9 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
         if (value instanceof Boolean) {
             logToNative(feature, ((boolean) value ? 1 : 0));
         } else if (value instanceof Integer) {
-            logToNative(feature, Long.valueOf((int) value));
+            logToNative(feature, (int) value);
         } else if (value instanceof Long) {
-            logToNative(feature, (long) value);
+            logLong(feature, (long) value);
         } else if (value instanceof Character) {
             logToNative(feature, Character.getNumericValue((char) value));
         } else {
@@ -259,10 +308,34 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
      * @param feature The feature to log.
      * @param value The value to log.
      */
-    private void logToNative(@Feature int feature, long value) {
+    private void logToNative(@Feature int feature, int value) {
         String featureName = getFeatureName(feature);
         assert featureName != null : "No Name for feature " + feature;
-        nativeLogLong(mNativePointer, featureName, value);
+        nativeLogInt32(mNativePointer, featureName, value);
+    }
+
+    /**
+     * Logs a {@code Long} value as two separate int32 values, appending to the name to indicate
+     * whether the logged value is the high bits or the low bits.
+     *
+     * @param feature The {@code Feature} to log.  We'll mangle it's name when logging.
+     * @param longValue The {@code Long} value to break up into two ints.
+     */
+    private void logLong(@Feature int feature, long longValue) {
+        String featureName = getFeatureName(feature);
+        nativeLogInt32(mNativePointer, featureName + HIGH_BITS, getHighBits(longValue));
+        nativeLogInt32(mNativePointer, featureName + LOW_BITS, getLowBits(longValue));
+    }
+
+    /** @return the high bits of the given long value as an int32. */
+    private int getHighBits(long longValue) {
+        return (int) (longValue >> 32);
+    }
+
+    /** @return the low bits of the given long value as an int32. */
+    private int getLowBits(long longValue) {
+        // Bitwise AND with the max integer just gets us whatever fits in that int.
+        return (int) longValue & Integer.MAX_VALUE;
     }
 
     /**
@@ -299,8 +372,8 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
     // ============================================================================================
     private native long nativeInit();
     private native void nativeDestroy(long nativeContextualSearchRankerLoggerImpl);
-    private native void nativeLogLong(
-            long nativeContextualSearchRankerLoggerImpl, String featureString, long value);
+    private native void nativeLogInt32(
+            long nativeContextualSearchRankerLoggerImpl, String featureString, int value);
     private native void nativeSetupLoggingAndRanker(
             long nativeContextualSearchRankerLoggerImpl, WebContents basePageWebContents);
     // Returns an AssistRankerPrediction integer value.

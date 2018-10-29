@@ -6,6 +6,8 @@
 
 #include "base/bind.h"
 #include "base/stl_util.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace extensions {
@@ -17,17 +19,11 @@ ExtensionCacheFake::~ExtensionCacheFake() {
 }
 
 void ExtensionCacheFake::Start(const base::Closure& callback) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI,
-      FROM_HERE,
-      callback);
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI}, callback);
 }
 
 void ExtensionCacheFake::Shutdown(const base::Closure& callback) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI,
-      FROM_HERE,
-      callback);
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI}, callback);
 }
 
 void ExtensionCacheFake::AllowCaching(const std::string& id) {
@@ -38,7 +34,7 @@ bool ExtensionCacheFake::GetExtension(const std::string& id,
                                       const std::string& expected_hash,
                                       base::FilePath* file_path,
                                       std::string* version) {
-  Map::iterator it = cache_.find(id);
+  auto it = cache_.find(id);
   if (it == cache_.end()) {
     return false;
   } else {
@@ -58,9 +54,8 @@ void ExtensionCacheFake::PutExtension(const std::string& id,
   if (base::ContainsKey(allowed_extensions_, id)) {
     cache_[id].first = version;
     cache_[id].second = file_path;
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
-        base::BindOnce(callback, file_path, false));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             base::BindOnce(callback, file_path, false));
   } else {
     callback.Run(file_path, true);
   }

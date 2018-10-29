@@ -157,11 +157,11 @@ void TextTrackList::InvalidateTrackIndexesAfterTrack(TextTrack* track) {
     NOTREACHED();
   }
 
-  size_t index = tracks->Find(track);
+  wtf_size_t index = tracks->Find(track);
   if (index == kNotFound)
     return;
 
-  for (size_t i = index; i < tracks->size(); ++i)
+  for (wtf_size_t i = index; i < tracks->size(); ++i)
     tracks->at(i)->InvalidateTrackIndex();
 }
 
@@ -170,7 +170,7 @@ void TextTrackList::Append(TextTrack* track) {
     add_track_tracks_.push_back(track);
   } else if (track->TrackType() == TextTrack::kTrackElement) {
     // Insert tracks added for <track> element in tree order.
-    size_t index = ToLoadableTextTrack(track)->TrackElementIndex();
+    wtf_size_t index = ToLoadableTextTrack(track)->TrackElementIndex();
     element_tracks_.insert(index, track);
   } else if (track->TrackType() == TextTrack::kInBand) {
     inband_tracks_.push_back(track);
@@ -199,7 +199,7 @@ void TextTrackList::Remove(TextTrack* track) {
     NOTREACHED();
   }
 
-  size_t index = tracks->Find(track);
+  wtf_size_t index = tracks->Find(track);
   if (index == kNotFound)
     return;
 

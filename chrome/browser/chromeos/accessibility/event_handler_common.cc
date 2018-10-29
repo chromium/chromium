@@ -11,6 +11,8 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
+#include "third_party/blink/public/platform/web_mouse_event.h"
+#include "ui/events/blink/web_input_event.h"
 
 namespace chromeos {
 
@@ -51,5 +53,34 @@ void ForwardKeyToExtension(const ui::KeyEvent& key_event,
   const content::NativeWebKeyboardEvent web_event(key_event);
   // Don't forward latency info, as these are getting forwarded to an extension.
   rvh->GetWidget()->ForwardKeyboardEvent(web_event);
+}
+
+void ForwardMouseToExtension(const ui::MouseEvent& mouse_event,
+                             extensions::ExtensionHost* host) {
+  if (!host) {
+    VLOG(2) << "Unable to forward mouse to extension";
+    return;
+  }
+
+  content::RenderViewHost* rvh = host->render_view_host();
+  if (!rvh) {
+    VLOG(3) << "Unable to forward mouse to extension";
+    return;
+  }
+
+  if (mouse_event.type() == ui::ET_MOUSE_EXITED) {
+    VLOG(3) << "Couldn't forward unsupported mouse event to extension";
+    return;
+  }
+
+  const blink::WebMouseEvent& web_event = ui::MakeWebMouseEvent(mouse_event);
+
+  if (web_event.GetType() == blink::WebInputEvent::kUndefined) {
+    VLOG(3) << "Couldn't forward unsupported mouse event to extension";
+    return;
+  }
+
+  // Don't forward latency info, as these are getting forwarded to an extension.
+  rvh->GetWidget()->ForwardMouseEvent(web_event);
 }
 }  // namespace chromeos

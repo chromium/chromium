@@ -12,6 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
@@ -47,6 +48,7 @@
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test_utils.h"
@@ -199,8 +201,8 @@ class RequestDeferrer {
 
   void InterceptRequest(const HttpRequest& request) {
     start_event_.Signal();
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&RequestDeferrer::QuitRunnerOnUIThread,
                        base::Unretained(this)));
     blocking_event_.Wait();
@@ -446,8 +448,8 @@ class CookieReader : public base::RefCountedThreadSafe<CookieReader> {
 
   void ReadCookies(Profile* profile) {
     context_ = profile->GetRequestContext();
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&CookieReader::ReadCookiesOnIOThread, this));
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
@@ -476,8 +478,8 @@ class CookieReader : public base::RefCountedThreadSafe<CookieReader> {
 
   void OnGetAllCookiesOnUIThread(const net::CookieList& cookies) {
     cookie_list_ = cookies;
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&CookieReader::OnCookiesReadyOnUIThread, this));
   }
 
@@ -768,10 +770,9 @@ class FakeGoogle {
     std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse());
     if (request_path == kHelloPagePath) {  // Serving "google" page.
       start_event_.Signal();
-      content::BrowserThread::PostTask(
-          content::BrowserThread::UI, FROM_HERE,
-          base::BindOnce(&FakeGoogle::QuitRunnerOnUIThread,
-                         base::Unretained(this)));
+      base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                               base::BindOnce(&FakeGoogle::QuitRunnerOnUIThread,
+                                              base::Unretained(this)));
 
       http_response->set_code(net::HTTP_OK);
       http_response->set_content_type("text/html");

@@ -551,7 +551,7 @@ class SQL_EXPORT Database {
   // official build.
   void AssertIOAllowed() const {
     if (!in_memory_)
-      base::AssertBlockingAllowed();
+      base::AssertBlockingAllowedDeprecated();
   }
 
   // Internal helper for Does*Exist() functions.

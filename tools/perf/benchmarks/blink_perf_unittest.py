@@ -70,7 +70,7 @@ class BlinkPerfTest(page_test_test_case.PageTestTestCase):
     self.assertEquals(len(results.FindAllTraceValues()), 1)
 
     frame_view_prepaints = results.FindAllPageSpecificValuesNamed(
-        'LocalFrameView::prePaint')
+        'LocalFrameView::RunPrePaintLifecyclePhase')
 
     self.assertEquals(len(frame_view_prepaints), 1)
     # color-changes-measure-frame-time.html specifies 9 iterationCount.
@@ -78,7 +78,7 @@ class BlinkPerfTest(page_test_test_case.PageTestTestCase):
     self.assertGreater(frame_view_prepaints[0].GetRepresentativeNumber(), 0.001)
 
     frame_view_painttrees = results.FindAllPageSpecificValuesNamed(
-        'LocalFrameView::paintTree')
+        'LocalFrameView::RunPaintLifecyclePhase')
     self.assertEquals(len(frame_view_painttrees), 1)
     # color-changes-measure-frame-time.html specifies 9 iterationCount.
     self.assertEquals(len(frame_view_painttrees[0].values), 9)

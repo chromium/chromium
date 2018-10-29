@@ -1,9 +1,0 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-mojom = "//third_party/blink/public/platform/referrer.mojom"
-public_headers = [ "//third_party/blink/public/platform/web_referrer_policy.h" ]
-traits_headers =
-    [ "//third_party/blink/public/platform/referrer_policy_enum_traits.h" ]
-type_mappings = [ "blink.mojom.ReferrerPolicy=::blink::WebReferrerPolicy" ]

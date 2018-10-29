@@ -321,7 +321,7 @@ TEST(Symbolize, SymbolizeWithMultipleMaps) {
   }
 }
 
-// Appends std::string(*args->arg) to args->symbol_buf.
+// Appends string(*args->arg) to args->symbol_buf.
 static void DummySymbolDecorator(
     const absl::debugging_internal::SymbolDecoratorArgs *args) {
   std::string *message = static_cast<std::string *>(args->arg);

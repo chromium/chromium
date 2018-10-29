@@ -59,7 +59,8 @@ TEST(SimpleVersionUpgradeTest, FailsToMigrateBackwards) {
   ASSERT_EQ(static_cast<int>(sizeof(data)),
             base::WriteFile(file_name, reinterpret_cast<const char*>(&data),
                             sizeof(data)));
-  EXPECT_FALSE(disk_cache::UpgradeSimpleCacheOnDisk(cache_dir.GetPath()));
+  EXPECT_EQ(disk_cache::SimpleCacheConsistencyResult::kVersionFromTheFuture,
+            disk_cache::UpgradeSimpleCacheOnDisk(cache_dir.GetPath()));
 }
 
 TEST(SimpleVersionUpgradeTest, ExperimentBacktoDefault) {
@@ -79,7 +80,8 @@ TEST(SimpleVersionUpgradeTest, ExperimentBacktoDefault) {
 
   // The cache needs to transition from a deprecated experiment back to not
   // having one.
-  EXPECT_FALSE(disk_cache::UpgradeSimpleCacheOnDisk(cache_dir.GetPath()));
+  EXPECT_EQ(disk_cache::SimpleCacheConsistencyResult::kBadZeroCheck,
+            disk_cache::UpgradeSimpleCacheOnDisk(cache_dir.GetPath()));
 }
 
 TEST(SimpleVersionUpgradeTest, FakeIndexVersionGetsUpdated) {
@@ -95,7 +97,8 @@ TEST(SimpleVersionUpgradeTest, FakeIndexVersionGetsUpdated) {
       base::WriteFile(index_file, file_contents.data(), file_contents.size()));
 
   // Upgrade.
-  ASSERT_TRUE(disk_cache::UpgradeSimpleCacheOnDisk(cache_path));
+  ASSERT_EQ(disk_cache::SimpleCacheConsistencyResult::kOK,
+            disk_cache::UpgradeSimpleCacheOnDisk(cache_path));
 
   // Check that the version in the fake index file is updated.
   std::string new_fake_index_contents;

@@ -126,7 +126,7 @@ class Simulator : public QuicConnectionHelperInterface {
   // For each actor, maintain the time it is scheduled at.  The value for
   // unscheduled actors is QuicTime::Infinite().
   QuicUnorderedMap<Actor*, QuicTime> scheduled_times_;
-  QuicUnorderedSet<std::string> actor_names_;
+  QuicUnorderedSet<QuicString> actor_names_;
 };
 
 template <class TerminationPredicate>

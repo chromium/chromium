@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/user_gesture_indicator.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -181,19 +182,31 @@ void ScriptController::DisableEval(const String& error_message) {
       V8String(GetIsolate(), error_message));
 }
 
-V8Extensions& ScriptController::RegisteredExtensions() {
-  DEFINE_STATIC_LOCAL(V8Extensions, extensions, ());
-  return extensions;
+namespace {
+
+Vector<const char*>& RegisteredExtensionNames() {
+  DEFINE_STATIC_LOCAL(Vector<const char*>, extension_names, ());
+  return extension_names;
 }
 
+}  // namespace
+
 void ScriptController::RegisterExtensionIfNeeded(v8::Extension* extension) {
-  const V8Extensions& extensions = RegisteredExtensions();
-  for (wtf_size_t i = 0; i < extensions.size(); ++i) {
-    if (extensions[i] == extension)
+  for (const auto* extension_name : RegisteredExtensionNames()) {
+    if (!strcmp(extension_name, extension->name()))
       return;
   }
+  RegisteredExtensionNames().push_back(extension->name());
   v8::RegisterExtension(extension);
-  RegisteredExtensions().push_back(extension);
+}
+
+v8::ExtensionConfiguration ScriptController::ExtensionsFor(
+    const ExecutionContext* context) {
+  if (context->ShouldInstallV8Extensions()) {
+    return v8::ExtensionConfiguration(RegisteredExtensionNames().size(),
+                                      RegisteredExtensionNames().data());
+  }
+  return v8::ExtensionConfiguration();
 }
 
 void ScriptController::ClearWindowProxy() {
@@ -251,9 +264,10 @@ bool ScriptController::ExecuteScriptIfJavaScriptURL(const KURL& url,
   // Step 12.9 "Let script be result of creating a classic script given script
   // source, settings, base URL, and the default classic script fetch options."
   // [spec text]
+  // We pass |kSharableCrossOrigin| because |muted errors| is false by default.
   v8::Local<v8::Value> result = EvaluateScriptInMainWorld(
       ScriptSourceCode(script_source, ScriptSourceLocationType::kJavascriptUrl),
-      base_url, kNotSharableCrossOrigin, ScriptFetchOptions(),
+      base_url, kSharableCrossOrigin, ScriptFetchOptions(),
       kDoNotExecuteScriptWhenScriptsDisabled);
 
   // If executing script caused this frame to be removed from the page, we
@@ -285,8 +299,8 @@ void ScriptController::ExecuteScriptInMainWorld(
     ExecuteScriptPolicy policy) {
   v8::HandleScope handle_scope(GetIsolate());
   EvaluateScriptInMainWorld(ScriptSourceCode(script, source_location_type),
-                            KURL(), kNotSharableCrossOrigin,
-                            ScriptFetchOptions(), policy);
+                            KURL(), kOpaqueResource, ScriptFetchOptions(),
+                            policy);
 }
 
 void ScriptController::ExecuteScriptInMainWorld(

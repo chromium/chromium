@@ -6,117 +6,46 @@
 
 #include "base/macros.h"
 #include "base/path_service.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
+#include "net/cookies/cookie_store.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_getter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
-#include "webrunner/browser/frame_impl.h"
+#include "webrunner/browser/test_common.h"
 #include "webrunner/browser/webrunner_browser_test.h"
 #include "webrunner/service/common.h"
 
 namespace webrunner {
 
 using testing::_;
-using testing::AllOf;
 using testing::Field;
 using testing::InvokeWithoutArgs;
-using testing::Mock;
 
 // Use a shorter name for NavigationEvent, because it is
 // referenced frequently in this file.
 using NavigationDetails = chromium::web::NavigationEvent;
 
-const char kPage1Path[] = "/title1.html";
-const char kPage2Path[] = "/title2.html";
-const char kPage1Title[] = "title 1";
-const char kPage2Title[] = "title 2";
-const char kDataUrl[] =
-    "data:text/html;base64,PGI+SGVsbG8sIHdvcmxkLi4uPC9iPg==";
-
-MATCHER(IsSet, "Checks if an optional field is set.") {
-  return !arg.is_null();
-}
-
-// Defines mock methods used by tests to observe NavigationStateChangeEvents
-// and lower-level WebContentsObserver events.
-class MockNavigationObserver : public chromium::web::NavigationEventObserver,
-                               public content::WebContentsObserver {
- public:
-  using content::WebContentsObserver::Observe;
-
-  MockNavigationObserver() = default;
-  ~MockNavigationObserver() override = default;
-
-  // Acknowledges processing of the most recent OnNavigationStateChanged call.
-  void Acknowledge() {
-    DCHECK(navigation_ack_callback_);
-    std::move(navigation_ack_callback_)();
-
-    // Pump the acknowledgement message over IPC.
-    base::RunLoop().RunUntilIdle();
-  }
-
-  MOCK_METHOD1(MockableOnNavigationStateChanged,
-               void(chromium::web::NavigationEvent change));
-
-  // chromium::web::NavigationEventObserver implementation.
-  // Proxies calls to MockableOnNavigationStateChanged(), because GMock does
-  // not work well with fit::Callbacks inside mocked actions.
-  void OnNavigationStateChanged(
-      chromium::web::NavigationEvent change,
-      OnNavigationStateChangedCallback callback) override {
-    MockableOnNavigationStateChanged(std::move(change));
-    navigation_ack_callback_ = std::move(callback);
-  }
-
-  // WebContentsObserver implementation.
-  MOCK_METHOD2(DidFinishLoad,
-               void(content::RenderFrameHost* render_frame_host,
-                    const GURL& validated_url));
-
- private:
-  OnNavigationStateChangedCallback navigation_ack_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNavigationObserver);
-};
-
+// Defines a suite of tests that exercise browser-level configuration and
+// functionality.
 class ContextImplTest : public WebRunnerBrowserTest {
  public:
   ContextImplTest() : navigation_observer_binding_(&navigation_observer_) {}
   ~ContextImplTest() = default;
 
-  MOCK_METHOD1(OnServeHttpRequest,
-               void(const net::test_server::HttpRequest& request));
-
  protected:
+  // Creates a Frame with |navigation_observer_| attached.
   chromium::web::FramePtr CreateFrame() {
-    chromium::web::FramePtr frame;
-    context()->CreateFrame(frame.NewRequest());
-    frame->SetNavigationEventObserver(
-        navigation_observer_binding_.NewBinding());
-    base::RunLoop().RunUntilIdle();
-    return frame;
+    return WebRunnerBrowserTest::CreateFrame(&navigation_observer_);
   }
 
-  // Navigates a |controller| to |url|, blocking until navigation is complete.
-  void CheckLoadUrl(const std::string& url,
-                    const std::string& expected_title,
-                    chromium::web::NavigationController* controller) {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_,
-                MockableOnNavigationStateChanged(testing::AllOf(
-                    Field(&NavigationDetails::title, expected_title),
-                    Field(&NavigationDetails::url, url))))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    controller->LoadUrl(url, nullptr);
-    run_loop.Run();
-    Mock::VerifyAndClearExpectations(this);
-    navigation_observer_.Acknowledge();
-  }
+  // Synchronously gets a list of cookies for this BrowserContext.
+  net::CookieList GetCookies();
 
   void TearDownOnMainThread() override {
     navigation_observer_binding_.Unbind();
@@ -130,451 +59,79 @@ class ContextImplTest : public WebRunnerBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(ContextImplTest);
 };
 
-class WebContentsDeletionObserver : public content::WebContentsObserver {
- public:
-  explicit WebContentsDeletionObserver(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
-
-  MOCK_METHOD1(RenderViewDeleted,
-               void(content::RenderViewHost* render_view_host));
-};
-
-// Verifies that the browser will navigate and generate a navigation observer
-// event when LoadUrl() is called.
-IN_PROC_BROWSER_TEST_F(ContextImplTest, NavigateFrame) {
-  chromium::web::FramePtr frame = CreateFrame();
-
-  chromium::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-
-  CheckLoadUrl(url::kAboutBlankURL, url::kAboutBlankURL, controller.get());
-
-  frame.Unbind();
+void OnCookiesReceived(net::CookieList* output,
+                       base::OnceClosure on_received_cb,
+                       const net::CookieList& cookies) {
+  *output = cookies;
+  std::move(on_received_cb).Run();
 }
 
-IN_PROC_BROWSER_TEST_F(ContextImplTest, NavigateDataFrame) {
-  chromium::web::FramePtr frame = CreateFrame();
-
-  chromium::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-
-  CheckLoadUrl(kDataUrl, kDataUrl, controller.get());
-
-  frame.Unbind();
-}
-
-IN_PROC_BROWSER_TEST_F(ContextImplTest, FrameDeletedBeforeContext) {
-  chromium::web::FramePtr frame = CreateFrame();
-
-  // Process the frame creation message.
-  base::RunLoop().RunUntilIdle();
-
-  FrameImpl* frame_impl = context_impl()->GetFrameImplForTest(&frame);
-  WebContentsDeletionObserver deletion_observer(
-      frame_impl->web_contents_for_test());
-  base::RunLoop run_loop;
-  EXPECT_CALL(deletion_observer, RenderViewDeleted(_))
-      .WillOnce(InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
-
-  chromium::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-  controller->LoadUrl(url::kAboutBlankURL, nullptr);
-
-  frame.Unbind();
-  run_loop.Run();
-
-  // Check that |context| remains bound after the frame is closed.
-  EXPECT_TRUE(context());
-}
-
-IN_PROC_BROWSER_TEST_F(ContextImplTest, ContextDeletedBeforeFrame) {
-  chromium::web::FramePtr frame = CreateFrame();
-  EXPECT_TRUE(frame);
+net::CookieList ContextImplTest::GetCookies() {
+  net::CookieStore* cookie_store =
+      content::BrowserContext::GetDefaultStoragePartition(
+          context_impl()->browser_context_for_test())
+          ->GetURLRequestContext()
+          ->GetURLRequestContext()
+          ->cookie_store();
 
   base::RunLoop run_loop;
-  frame.set_error_handler([&run_loop]() { run_loop.Quit(); });
-  context().Unbind();
+  net::CookieList cookies;
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
+      base::BindOnce(
+          &net::CookieStore::GetAllCookiesAsync, base::Unretained(cookie_store),
+          base::BindOnce(&OnCookiesReceived, base::Unretained(&cookies),
+                         run_loop.QuitClosure())));
   run_loop.Run();
-  EXPECT_FALSE(frame);
+  return cookies;
 }
 
-IN_PROC_BROWSER_TEST_F(ContextImplTest, GoBackAndForward) {
-  chromium::web::FramePtr frame = CreateFrame();
-  chromium::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-
+// Verifies that the BrowserContext has a working cookie store by setting
+// cookies in the content layer and then querying the CookieStore afterward.
+IN_PROC_BROWSER_TEST_F(ContextImplTest, VerifyPersistentCookieStore) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL title1(embedded_test_server()->GetURL(kPage1Path));
-  GURL title2(embedded_test_server()->GetURL(kPage2Path));
-
-  CheckLoadUrl(title1.spec(), kPage1Title, controller.get());
-  CheckLoadUrl(title2.spec(), kPage2Title, controller.get());
-
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_,
-                MockableOnNavigationStateChanged(testing::AllOf(
-                    Field(&NavigationDetails::title, kPage1Title),
-                    Field(&NavigationDetails::url, IsSet()))))
-        .WillOnce(InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
-    controller->GoBack();
-    run_loop.Run();
-    navigation_observer_.Acknowledge();
-  }
-
-  // At the top of the navigation entry list; this should be a no-op.
-  controller->GoBack();
-
-  // Process the navigation request message.
-  base::RunLoop().RunUntilIdle();
-
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_,
-                MockableOnNavigationStateChanged(testing::AllOf(
-                    Field(&NavigationDetails::title, kPage2Title),
-                    Field(&NavigationDetails::url, IsSet()))))
-        .WillOnce(InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
-    controller->GoForward();
-    run_loop.Run();
-    navigation_observer_.Acknowledge();
-  }
-
-  // At the end of the navigation entry list; this should be a no-op.
-  controller->GoForward();
-
-  // Process the navigation request message.
-  base::RunLoop().RunUntilIdle();
-}
-
-IN_PROC_BROWSER_TEST_F(ContextImplTest, ReloadFrame) {
-  chromium::web::FramePtr frame = CreateFrame();
-  chromium::web::NavigationControllerPtr navigation_controller;
-  frame->GetNavigationController(navigation_controller.NewRequest());
-
-  embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
-      &ContextImplTest::OnServeHttpRequest, base::Unretained(this)));
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url(embedded_test_server()->GetURL(kPage1Path));
-
-  EXPECT_CALL(*this, OnServeHttpRequest(_));
-  CheckLoadUrl(url.spec(), kPage1Title, navigation_controller.get());
-
-  navigation_observer_.Observe(
-      context_impl()->GetFrameImplForTest(&frame)->web_contents_.get());
-
-  // Reload with NO_CACHE.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(*this, OnServeHttpRequest(_));
-    EXPECT_CALL(navigation_observer_, DidFinishLoad(_, url))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    navigation_controller->Reload(chromium::web::ReloadType::NO_CACHE);
-    run_loop.Run();
-    Mock::VerifyAndClearExpectations(this);
-    navigation_observer_.Acknowledge();
-  }
-  // Reload with PARTIAL_CACHE.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(*this, OnServeHttpRequest(_));
-    EXPECT_CALL(navigation_observer_, DidFinishLoad(_, url))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    navigation_controller->Reload(chromium::web::ReloadType::PARTIAL_CACHE);
-    run_loop.Run();
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(ContextImplTest, GetVisibleEntry) {
+  GURL cookie_url(embedded_test_server()->GetURL("/set-cookie?foo=bar"));
   chromium::web::FramePtr frame = CreateFrame();
 
-  chromium::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
+  chromium::web::NavigationControllerPtr nav;
+  frame->GetNavigationController(nav.NewRequest());
 
-  // Verify that a Frame returns a null NavigationEntry prior to receiving any
-  // LoadUrl() calls.
   {
     base::RunLoop run_loop;
-    controller->GetVisibleEntry(
-        [&run_loop](std::unique_ptr<chromium::web::NavigationEntry> details) {
-          EXPECT_EQ(nullptr, details.get());
-          run_loop.Quit();
-        });
-    run_loop.Run();
-  }
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL title1(embedded_test_server()->GetURL(kPage1Path));
-  GURL title2(embedded_test_server()->GetURL(kPage2Path));
-
-  // Navigate to a page.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_,
-                MockableOnNavigationStateChanged(testing::AllOf(
-                    Field(&NavigationDetails::title, kPage1Title),
-                    Field(&NavigationDetails::url, IsSet()))))
+    EXPECT_CALL(navigation_observer_, MockableOnNavigationStateChanged(_))
         .WillOnce(testing::InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
-    controller->LoadUrl(title1.spec(), nullptr);
-    run_loop.Run();
-    navigation_observer_.Acknowledge();
-  }
 
-  // Verify that GetVisibleEntry() reflects the new Frame navigation state.
-  {
-    base::RunLoop run_loop;
-    controller->GetVisibleEntry(
-        [&run_loop,
-         &title1](std::unique_ptr<chromium::web::NavigationEntry> details) {
-          EXPECT_TRUE(details);
-          EXPECT_EQ(details->url, title1.spec());
-          EXPECT_EQ(details->title, kPage1Title);
-          run_loop.Quit();
-        });
+    nav->LoadUrl(cookie_url.spec(), nullptr);
     run_loop.Run();
   }
 
-  // Navigate to another page.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_,
-                MockableOnNavigationStateChanged(testing::AllOf(
-                    Field(&NavigationDetails::title, kPage2Title),
-                    Field(&NavigationDetails::url, IsSet()))))
-        .WillOnce(testing::InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
-    controller->LoadUrl(title2.spec(), nullptr);
-    run_loop.Run();
-    navigation_observer_.Acknowledge();
+  auto cookies = GetCookies();
+  bool found = false;
+  for (auto c : cookies) {
+    if (c.Name() == "foo" && c.Value() == "bar") {
+      found = true;
+      break;
+    }
   }
+  EXPECT_TRUE(found);
 
-  // Verify the navigation with GetVisibleEntry().
-  {
-    base::RunLoop run_loop;
-    controller->GetVisibleEntry(
-        [&run_loop,
-         &title2](std::unique_ptr<chromium::web::NavigationEntry> details) {
-          EXPECT_TRUE(details);
-          EXPECT_EQ(details->url, title2.spec());
-          EXPECT_EQ(details->title, kPage2Title);
-          run_loop.Quit();
-        });
-    run_loop.Run();
-  }
-
-  // Navigate back to the first page.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_,
-                MockableOnNavigationStateChanged(testing::AllOf(
-                    Field(&NavigationDetails::title, kPage1Title),
-                    Field(&NavigationDetails::url, IsSet()))))
-        .WillOnce(testing::InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
-    controller->GoBack();
-    run_loop.Run();
-    navigation_observer_.Acknowledge();
-  }
-
-  // Verify the navigation with GetVisibleEntry().
-  {
-    base::RunLoop run_loop;
-    controller->GetVisibleEntry(
-        [&run_loop,
-         &title1](std::unique_ptr<chromium::web::NavigationEntry> details) {
-          EXPECT_TRUE(details);
-          EXPECT_EQ(details->url, title1.spec());
-          EXPECT_EQ(details->title, kPage1Title);
-          run_loop.Quit();
-        });
-    run_loop.Run();
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(ContextImplTest, NoNavigationObserverAttached) {
-  chromium::web::FramePtr frame;
-  context()->CreateFrame(frame.NewRequest());
+  // Check that the cookie persists beyond the lifetime of the Frame by
+  // releasing the Frame and re-querying the CookieStore.
+  frame.Unbind();
   base::RunLoop().RunUntilIdle();
 
-  chromium::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL title1(embedded_test_server()->GetURL(kPage1Path));
-  GURL title2(embedded_test_server()->GetURL(kPage2Path));
-
-  navigation_observer_.Observe(
-      context_impl()->GetFrameImplForTest(&frame)->web_contents_.get());
-
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_, DidFinishLoad(_, title1))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    controller->LoadUrl(title1.spec(), nullptr);
-    run_loop.Run();
+  found = false;
+  for (auto c : cookies) {
+    if (c.Name() == "foo" && c.Value() == "bar") {
+      found = true;
+      break;
+    }
   }
-
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_, DidFinishLoad(_, title2))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    controller->LoadUrl(title2.spec(), nullptr);
-    run_loop.Run();
-  }
+  EXPECT_TRUE(found);
 }
 
-// Verifies that a Frame will handle navigation observer disconnection events
-// gracefully.
-IN_PROC_BROWSER_TEST_F(ContextImplTest, NavigationObserverDisconnected) {
-  chromium::web::FramePtr frame = CreateFrame();
-
-  chromium::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL title1(embedded_test_server()->GetURL(kPage1Path));
-  GURL title2(embedded_test_server()->GetURL(kPage2Path));
-
-  navigation_observer_.Observe(
-      context_impl()->GetFrameImplForTest(&frame)->web_contents_.get());
-
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_, DidFinishLoad(_, title1));
-    EXPECT_CALL(navigation_observer_,
-                MockableOnNavigationStateChanged(testing::AllOf(
-                    Field(&NavigationDetails::title, kPage1Title),
-                    Field(&NavigationDetails::url, IsSet()))))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    controller->LoadUrl(title1.spec(), nullptr);
-    run_loop.Run();
-  }
-
-  // Disconnect the observer & spin the runloop to propagate the disconnection
-  // event over IPC.
-  navigation_observer_binding_.Unbind();
-  base::RunLoop().RunUntilIdle();
-
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_, DidFinishLoad(_, title2))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    controller->LoadUrl(title2.spec(), nullptr);
-    run_loop.Run();
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(ContextImplTest, DISABLED_DelayedNavigationEventAck) {
-  chromium::web::FramePtr frame = CreateFrame();
-
-  chromium::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL title1(embedded_test_server()->GetURL(kPage1Path));
-  GURL title2(embedded_test_server()->GetURL(kPage2Path));
-
-  // Expect an navigation event here, but deliberately postpone acknowledgement
-  // until the end of the test.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_,
-                MockableOnNavigationStateChanged(testing::AllOf(
-                    Field(&NavigationDetails::title, kPage1Title),
-                    Field(&NavigationDetails::url, IsSet()))))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    controller->LoadUrl(title1.spec(), nullptr);
-    run_loop.Run();
-    Mock::VerifyAndClearExpectations(this);
-  }
-
-  // Since we have blocked NavigationEventObserver's flow, we must observe the
-  // WebContents events directly via a test-only seam.
-  navigation_observer_.Observe(
-      context_impl()->GetFrameImplForTest(&frame)->web_contents_.get());
-
-  // Navigate to a second page.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_, DidFinishLoad(_, title2))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    controller->LoadUrl(title2.spec(), nullptr);
-    run_loop.Run();
-    Mock::VerifyAndClearExpectations(this);
-  }
-
-  // Navigate to the first page.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_, DidFinishLoad(_, title1))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    controller->LoadUrl(title1.spec(), nullptr);
-    run_loop.Run();
-    Mock::VerifyAndClearExpectations(this);
-  }
-
-  // Since there was no observable change in navigation state since the last
-  // ack, there should be no more NavigationEvents generated.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_,
-                MockableOnNavigationStateChanged(testing::AllOf(
-                    Field(&NavigationDetails::title, kPage1Title),
-                    Field(&NavigationDetails::url, IsSet()))))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    navigation_observer_.Acknowledge();
-    run_loop.Run();
-  }
-}
-
-// Observes events specific to the Stop() test case.
-struct WebContentsObserverForStop : public content::WebContentsObserver {
-  using content::WebContentsObserver::Observe;
-  MOCK_METHOD1(DidStartNavigation, void(content::NavigationHandle*));
-  MOCK_METHOD0(NavigationStopped, void());
-};
-
-IN_PROC_BROWSER_TEST_F(ContextImplTest, Stop) {
-  chromium::web::FramePtr frame = CreateFrame();
-
-  chromium::web::NavigationControllerPtr controller;
-  frame->GetNavigationController(controller.NewRequest());
-
-  net::test_server::RegisterDefaultHandlers(embedded_test_server());
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Use a request handler that will accept the connection and stall
-  // indefinitely.
-  GURL hung_url(embedded_test_server()->GetURL("/hung"));
-
-  WebContentsObserverForStop observer;
-  observer.Observe(
-      context_impl()->GetFrameImplForTest(&frame)->web_contents_.get());
-
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(observer, DidStartNavigation(_))
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    controller->LoadUrl(hung_url.spec(), nullptr);
-    run_loop.Run();
-    Mock::VerifyAndClearExpectations(this);
-  }
-
-  EXPECT_TRUE(
-      context_impl()->GetFrameImplForTest(&frame)->web_contents_->IsLoading());
-
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(observer, NavigationStopped())
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-    controller->Stop();
-    run_loop.Run();
-    Mock::VerifyAndClearExpectations(this);
-  }
-
-  EXPECT_FALSE(
-      context_impl()->GetFrameImplForTest(&frame)->web_contents_->IsLoading());
-}
-
+// Suite for tests which run the BrowserContext in incognito mode (no data
+// directory).
 class IncognitoContextImplTest : public ContextImplTest {
  public:
   IncognitoContextImplTest() = default;
@@ -597,9 +154,41 @@ IN_PROC_BROWSER_TEST_F(IncognitoContextImplTest, NavigateFrame) {
   chromium::web::NavigationControllerPtr controller;
   frame->GetNavigationController(controller.NewRequest());
 
-  CheckLoadUrl(url::kAboutBlankURL, url::kAboutBlankURL, controller.get());
+  base::RunLoop run_loop;
+  EXPECT_CALL(navigation_observer_,
+              MockableOnNavigationStateChanged(
+                  Field(&NavigationDetails::url, url::kAboutBlankURL)))
+      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  controller->LoadUrl(url::kAboutBlankURL, nullptr);
+  run_loop.Run();
 
   frame.Unbind();
+}
+
+IN_PROC_BROWSER_TEST_F(IncognitoContextImplTest, VerifyInMemoryCookieStore) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL cookie_url(embedded_test_server()->GetURL("/set-cookie?foo=bar"));
+  chromium::web::FramePtr frame = CreateFrame();
+
+  chromium::web::NavigationControllerPtr nav;
+  frame->GetNavigationController(nav.NewRequest());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(navigation_observer_, MockableOnNavigationStateChanged(_))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
+
+  nav->LoadUrl(cookie_url.spec(), nullptr);
+  run_loop.Run();
+
+  auto cookies = GetCookies();
+  bool found = false;
+  for (auto c : cookies) {
+    if (c.Name() == "foo" && c.Value() == "bar") {
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
 }
 
 }  // namespace webrunner

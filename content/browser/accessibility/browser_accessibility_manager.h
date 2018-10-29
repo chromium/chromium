@@ -120,8 +120,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXEventGenerator {
       BrowserAccessibilityDelegate* delegate,
       BrowserAccessibilityFactory* factory = new BrowserAccessibilityFactory());
 
-  static BrowserAccessibilityManager* FromID(
-      ui::AXTreeIDRegistry::AXTreeID ax_tree_id);
+  static BrowserAccessibilityManager* FromID(ui::AXTreeID ax_tree_id);
 
   ~BrowserAccessibilityManager() override;
 
@@ -340,7 +339,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXEventGenerator {
       int end_offset);
 
   // Accessors.
-  ui::AXTreeIDRegistry::AXTreeID ax_tree_id() const { return ax_tree_id_; }
+  ui::AXTreeID ax_tree_id() const { return ax_tree_id_; }
   float device_scale_factor() const { return device_scale_factor_; }
   ui::AXTree* ax_tree() const { return tree_.get(); }
 
@@ -441,7 +440,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXEventGenerator {
   // last object found by an asynchronous hit test. Subsequent hit test
   // requests that remain within this object's bounds will return the same
   // object, but will also trigger a new asynchronous hit test request.
-  int last_hover_ax_tree_id_;
+  ui::AXTreeID last_hover_ax_tree_id_;
   int last_hover_node_id_;
   gfx::Rect last_hover_bounds_;
 
@@ -451,7 +450,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXEventGenerator {
   bool connected_to_parent_tree_node_;
 
   // The global ID of this accessibility tree.
-  ui::AXTreeIDRegistry::AXTreeID ax_tree_id_;
+  ui::AXTreeID ax_tree_id_;
 
   // The device scale factor for the view associated with this frame,
   // cached each time there's any update to the accessibility tree.

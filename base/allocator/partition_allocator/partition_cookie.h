@@ -13,9 +13,9 @@ namespace internal {
 
 #if DCHECK_IS_ON()
 // Handles alignment up to XMM instructions on Intel.
-static const size_t kCookieSize = 16;
+static constexpr size_t kCookieSize = 16;
 
-static const unsigned char kCookieValue[kCookieSize] = {
+static constexpr unsigned char kCookieValue[kCookieSize] = {
     0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE, 0xD0, 0x0D,
     0x13, 0x37, 0xF0, 0x05, 0xBA, 0x11, 0xAB, 0x1E};
 #endif

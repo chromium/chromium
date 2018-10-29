@@ -47,7 +47,7 @@ SpdyAltSvcWireFormat::AlternativeService::AlternativeService(
       host(host),
       port(port),
       max_age(max_age),
-      version(version) {}
+      version(std::move(version)) {}
 
 SpdyAltSvcWireFormat::AlternativeService::~AlternativeService() = default;
 
@@ -264,9 +264,9 @@ SpdyString SpdyAltSvcWireFormat::SerializeHeaderFieldValue(
       }
       value.push_back(c);
     }
-    SpdyStringAppendF(&value, ":%d\"", altsvc.port);
+    value.append(SpdyStrCat(":", altsvc.port, "\""));
     if (altsvc.max_age != 86400) {
-      SpdyStringAppendF(&value, "; ma=%d", altsvc.max_age);
+      value.append(SpdyStrCat("; ma=", altsvc.max_age));
     }
     if (!altsvc.version.empty()) {
       if (is_ietf_format_quic) {
@@ -276,12 +276,12 @@ SpdyString SpdyAltSvcWireFormat::SerializeHeaderFieldValue(
         }
       } else {
         value.append("; v=\"");
-        for (VersionVector::const_iterator it = altsvc.version.begin();
-             it != altsvc.version.end(); ++it) {
+        for (auto it = altsvc.version.begin(); it != altsvc.version.end();
+             ++it) {
           if (it != altsvc.version.begin()) {
             value.append(",");
           }
-          SpdyStringAppendF(&value, "%d", *it);
+          value.append(SpdyStrCat(*it));
         }
         value.append("\"");
       }

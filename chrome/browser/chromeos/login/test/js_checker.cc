@@ -83,6 +83,14 @@ void JSChecker::ExpectNE(const std::string& expression,
   EXPECT_NE(GetString(expression), result) << expression;
 }
 
+void JSChecker::ExpectEQ(const std::string& expression, bool result) {
+  EXPECT_EQ(GetBool(expression), result) << expression;
+}
+
+void JSChecker::ExpectNE(const std::string& expression, bool result) {
+  EXPECT_NE(GetBool(expression), result) << expression;
+}
+
 void JSChecker::GetBoolImpl(const std::string& expression, bool* result) {
   CHECK(web_contents_);
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(

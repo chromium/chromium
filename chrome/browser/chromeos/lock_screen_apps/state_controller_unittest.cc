@@ -85,7 +85,7 @@ std::unique_ptr<arc::ArcSession> ArcSessionFactory() {
   return nullptr;
 }
 
-scoped_refptr<extensions::Extension> CreateTestNoteTakingApp(
+scoped_refptr<const extensions::Extension> CreateTestNoteTakingApp(
     const std::string& app_id) {
   ListBuilder action_handlers;
   action_handlers.Append(DictionaryBuilder()
@@ -972,7 +972,7 @@ TEST_F(LockScreenAppStateTest, NoLockScreenProfile) {
   EXPECT_EQ(TrayActionState::kNotAvailable,
             state_controller()->GetLockScreenNoteState());
 
-  scoped_refptr<extensions::Extension> app =
+  scoped_refptr<const extensions::Extension> app =
       CreateTestNoteTakingApp(kTestAppId);
   extensions::ExtensionSystem::Get(profile())
       ->extension_service()
@@ -1337,7 +1337,7 @@ TEST_F(LockScreenAppStateTest, AppWindowClosedOnNoteTakingAppChange) {
   ASSERT_TRUE(InitializeNoteTakingApp(TrayActionState::kActive,
                                       true /* enable_app_launch */));
 
-  scoped_refptr<extensions::Extension> secondary_app =
+  scoped_refptr<const extensions::Extension> secondary_app =
       CreateTestNoteTakingApp(kSecondaryTestAppId);
   extensions::ExtensionSystem::Get(LockScreenProfile())
       ->extension_service()

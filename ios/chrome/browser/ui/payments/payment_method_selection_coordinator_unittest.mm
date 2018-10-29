@@ -26,8 +26,9 @@ class PaymentRequestPaymentMethodSelectionCoordinatorTest
     : public PaymentRequestUnitTestBase,
       public PlatformTest {
  protected:
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     // Add testing credit cards to the database. Make the less frequently used
     // one incomplete.
@@ -44,7 +45,8 @@ class PaymentRequestPaymentMethodSelectionCoordinatorTest
     CreateTestPaymentRequest();
   }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 };
 
 // Tests that invoking start and stop on the coordinator presents and dismisses

@@ -4,7 +4,7 @@
     "Build is performed with gn+ninja.",
     "If modified, please change chromium.fyi/ios-device-goma-canary-clobber.json too."
   ],
-  "xcode build version": "10a254a",
+  "xcode build version": "10o45e",
   "gn_args": [
     "additional_target_cpus=[ \"arm64\" ]",
     "goma_dir=\"$(goma_dir)\"",

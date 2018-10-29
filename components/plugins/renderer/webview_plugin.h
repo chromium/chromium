@@ -107,7 +107,7 @@ class WebViewPlugin : public blink::WebPlugin,
       blink::WebCursorInfo& cursor_info) override;
 
   void DidReceiveResponse(const blink::WebURLResponse& response) override;
-  void DidReceiveData(const char* data, int data_length) override;
+  void DidReceiveData(const char* data, size_t data_length) override;
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError& error) override;
 
@@ -162,20 +162,20 @@ class WebViewPlugin : public blink::WebPlugin,
     bool AcceptsLoadDrops() override;
     bool CanHandleGestureEvent() override;
     bool CanUpdateLayout() override;
+    blink::WebScreenInfo GetScreenInfo() override;
     blink::WebWidgetClient* WidgetClient() override;
 
     // WebWidgetClient methods:
     void SetToolTipText(const blink::WebString&,
                         blink::WebTextDirection) override;
-    void StartDragging(blink::WebReferrerPolicy,
+    void StartDragging(network::mojom::ReferrerPolicy,
                        const blink::WebDragData&,
                        blink::WebDragOperationsMask,
                        const SkBitmap&,
                        const blink::WebPoint&) override;
-    // TODO(ojan): Remove this override and have this class use a non-null
-    // layerTreeView.
+    // TODO(ojan): Remove this override and have this class give a
+    // LayerTreeView to the WebWidget. Or stop making this a WebView?
     bool AllowsBrokenNullLayerTreeView() const override;
-    blink::WebLayerTreeView* InitializeLayerTreeView() override;
     void DidInvalidateRect(const blink::WebRect&) override;
     void DidChangeCursor(const blink::WebCursorInfo& cursor) override;
     void ScheduleAnimation() override;

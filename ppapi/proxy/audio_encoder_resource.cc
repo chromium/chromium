@@ -18,18 +18,6 @@
 namespace ppapi {
 namespace proxy {
 
-namespace {
-
-void RunCallback(scoped_refptr<TrackedCallback>* callback, int32_t error) {
-  if (TrackedCallback::IsPending(*callback)) {
-    scoped_refptr<TrackedCallback> temp;
-    callback->swap(temp);
-    temp->Run(error);
-  }
-}
-
-}  // namespace
-
 AudioEncoderResource::AudioEncoderResource(Connection connection,
                                            PP_Instance instance)
     : PluginResource(connection, instance),
@@ -205,12 +193,12 @@ void AudioEncoderResource::OnPluginMsgGetSupportedProfilesReply(
   ArrayWriter writer(output);
   if (params.result() != PP_OK || !writer.is_valid() ||
       !writer.StoreVector(profiles)) {
-    RunCallback(&get_supported_profiles_callback_, PP_ERROR_FAILED);
+    SafeRunCallback(&get_supported_profiles_callback_, PP_ERROR_FAILED);
     return;
   }
 
-  RunCallback(&get_supported_profiles_callback_,
-              base::checked_cast<int32_t>(profiles.size()));
+  SafeRunCallback(&get_supported_profiles_callback_,
+                  base::checked_cast<int32_t>(profiles.size()));
 }
 
 void AudioEncoderResource::OnPluginMsgInitializeReply(
@@ -224,7 +212,7 @@ void AudioEncoderResource::OnPluginMsgInitializeReply(
 
   int32_t error = params.result();
   if (error) {
-    RunCallback(&initialize_callback_, error);
+    SafeRunCallback(&initialize_callback_, error);
     return;
   }
 
@@ -234,7 +222,7 @@ void AudioEncoderResource::OnPluginMsgInitializeReply(
       !audio_buffer_manager_.SetBuffers(
           audio_buffer_count, audio_buffer_size,
           std::make_unique<base::SharedMemory>(buffer_handle, false), true)) {
-    RunCallback(&initialize_callback_, PP_ERROR_NOMEMORY);
+    SafeRunCallback(&initialize_callback_, PP_ERROR_NOMEMORY);
     return;
   }
 
@@ -243,7 +231,7 @@ void AudioEncoderResource::OnPluginMsgInitializeReply(
       !bitstream_buffer_manager_.SetBuffers(
           bitstream_buffer_count, bitstream_buffer_size,
           std::make_unique<base::SharedMemory>(buffer_handle, false), false)) {
-    RunCallback(&initialize_callback_, PP_ERROR_NOMEMORY);
+    SafeRunCallback(&initialize_callback_, PP_ERROR_NOMEMORY);
     return;
   }
 
@@ -255,7 +243,7 @@ void AudioEncoderResource::OnPluginMsgInitializeReply(
   number_of_samples_ = number_of_samples;
   initialized_ = true;
 
-  RunCallback(&initialize_callback_, PP_OK);
+  SafeRunCallback(&initialize_callback_, PP_OK);
 }
 
 void AudioEncoderResource::OnPluginMsgEncodeReply(
@@ -273,7 +261,7 @@ void AudioEncoderResource::OnPluginMsgEncodeReply(
 
   scoped_refptr<TrackedCallback> callback = it->second;
   encode_callbacks_.erase(it);
-  RunCallback(&callback, encoder_last_error_);
+  SafeRunCallback(&callback, encoder_last_error_);
 
   audio_buffer_manager_.EnqueueBuffer(buffer_id);
   // If the plugin is waiting for an audio buffer, we can give the one
@@ -301,15 +289,15 @@ void AudioEncoderResource::NotifyError(int32_t error) {
   DCHECK(error);
 
   encoder_last_error_ = error;
-  RunCallback(&get_supported_profiles_callback_, error);
-  RunCallback(&initialize_callback_, error);
-  RunCallback(&get_buffer_callback_, error);
+  SafeRunCallback(&get_supported_profiles_callback_, error);
+  SafeRunCallback(&initialize_callback_, error);
+  SafeRunCallback(&get_buffer_callback_, error);
   get_buffer_data_ = nullptr;
-  RunCallback(&get_bitstream_buffer_callback_, error);
+  SafeRunCallback(&get_bitstream_buffer_callback_, error);
   get_bitstream_buffer_data_ = nullptr;
   for (EncodeMap::iterator it = encode_callbacks_.begin();
        it != encode_callbacks_.end(); ++it)
-    RunCallback(&it->second, error);
+    SafeRunCallback(&it->second, error);
   encode_callbacks_.clear();
 }
 
@@ -329,7 +317,7 @@ void AudioEncoderResource::TryGetAudioBuffer() {
   // Take a reference for the plugin.
   *get_buffer_data_ = resource->GetReference();
   get_buffer_data_ = nullptr;
-  RunCallback(&get_buffer_callback_, PP_OK);
+  SafeRunCallback(&get_buffer_callback_, PP_OK);
 }
 
 void AudioEncoderResource::TryWriteBitstreamBuffer() {
@@ -345,7 +333,7 @@ void AudioEncoderResource::TryWriteBitstreamBuffer() {
   get_bitstream_buffer_data_->buffer = buffer->bitstream.data;
   get_bitstream_buffer_data_->size = buffer->bitstream.data_size;
   get_bitstream_buffer_data_ = nullptr;
-  RunCallback(&get_bitstream_buffer_callback_, PP_OK);
+  SafeRunCallback(&get_bitstream_buffer_callback_, PP_OK);
 }
 
 void AudioEncoderResource::ReleaseBuffers() {

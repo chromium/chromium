@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace blink {
 namespace mojom {
@@ -28,28 +28,11 @@ class WebContents;
 // and allows clients to resume/suspend/stop the managed players.
 class MediaSession : public media_session::mojom::MediaSession {
  public:
-  enum class SuspendType {
-    // Suspended by the system because a transient sound needs to be played.
-    kSystem,
-    // Suspended by the UI.
-    kUI,
-    // Suspended by the page via script or user interaction.
-    kContent,
-  };
-
   // Returns the MediaSession associated to this WebContents. Creates one if
   // none is currently available.
   CONTENT_EXPORT static MediaSession* Get(WebContents* contents);
 
   ~MediaSession() override = default;
-
-  // Resume the media session.
-  // |type| represents the origin of the request.
-  virtual void Resume(SuspendType suspend_type) = 0;
-
-  // Suspend the media session.
-  // |type| represents the origin of the request.
-  virtual void Suspend(SuspendType suspend_type) = 0;
 
   // Stop the media session.
   // |type| represents the origin of the request.
@@ -74,13 +57,41 @@ class MediaSession : public media_session::mojom::MediaSession {
   // Set the volume multiplier applied during ducking.
   virtual void SetDuckingVolumeMultiplier(double multiplier) = 0;
 
+  // media_session.mojom.MediaSession overrides -------------------------------
+
+  // Suspend the media session.
+  // |type| represents the origin of the request.
+  void Suspend(SuspendType suspend_type) override = 0;
+
+  // Resume the media session.
+  // |type| represents the origin of the request.
+  void Resume(SuspendType suspend_type) override = 0;
+
   // Let the media session start ducking such that the volume multiplier is
   // reduced.
-  virtual void StartDucking() = 0;
+  void StartDucking() override = 0;
 
   // Let the media session stop ducking such that the volume multiplier is
   // recovered.
-  virtual void StopDucking() = 0;
+  void StopDucking() override = 0;
+
+  // Returns information about the MediaSession.
+  void GetMediaSessionInfo(GetMediaSessionInfoCallback callback) override = 0;
+
+  // Returns debug information about the MediaSession.
+  void GetDebugInfo(GetDebugInfoCallback callback) override = 0;
+
+  // Adds an observer to listen to events related to this MediaSession.
+  void AddObserver(
+      media_session::mojom::MediaSessionObserverPtr observer) override = 0;
+
+  // Skip to the previous track. If there is no previous track then this will be
+  // a no-op.
+  void PreviousTrack() override = 0;
+
+  // Skip to the next track. If there is no next track then this will be a
+  // no-op.
+  void NextTrack() override = 0;
 
  protected:
   MediaSession() = default;

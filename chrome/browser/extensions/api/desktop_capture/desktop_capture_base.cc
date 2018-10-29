@@ -242,7 +242,7 @@ void DesktopCaptureRequestsRegistry::RemoveRequest(int process_id,
 
 void DesktopCaptureRequestsRegistry::CancelRequest(int process_id,
                                                    int request_id) {
-  RequestsMap::iterator it = requests_.find(RequestId(process_id, request_id));
+  auto it = requests_.find(RequestId(process_id, request_id));
   if (it != requests_.end())
     it->second->Cancel();
 }

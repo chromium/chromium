@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/threading/thread.h"
 #include "content/common/content_export.h"
-#include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
+#include "third_party/webrtc/media/engine/webrtcvideodecoderfactory.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
 namespace webrtc {
@@ -23,7 +23,7 @@ namespace content {
 
 // TODO(wuchengli): add unittest.
 class CONTENT_EXPORT RTCVideoDecoderFactory
-    : public webrtc::VideoDecoderFactory {
+    : public cricket::WebRtcVideoDecoderFactory {
  public:
   explicit RTCVideoDecoderFactory(
       media::GpuVideoAcceleratorFactories* gpu_factories);
@@ -31,14 +31,15 @@ class CONTENT_EXPORT RTCVideoDecoderFactory
 
   // Runs on Chrome_libJingle_WorkerThread. The child thread is blocked while
   // this runs.
-  std::unique_ptr<webrtc::VideoDecoder> CreateVideoDecoder(
-      const webrtc::SdpVideoFormat& format) override;
+  webrtc::VideoDecoder* CreateVideoDecoder(
+      webrtc::VideoCodecType type) override;
 
-  std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
+  // Runs on Chrome_libJingle_WorkerThread. The child thread is blocked while
+  // this runs.
+  void DestroyVideoDecoder(webrtc::VideoDecoder* decoder) override;
 
  private:
   media::GpuVideoAcceleratorFactories* gpu_factories_;
-  std::vector<webrtc::SdpVideoFormat> supported_formats_;
 
   DISALLOW_COPY_AND_ASSIGN(RTCVideoDecoderFactory);
 };

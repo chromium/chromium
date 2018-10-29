@@ -67,6 +67,7 @@ struct SwapBuffersCompleteParams;
 
 namespace raster {
 class GrShaderCache;
+struct RasterDecoderContextState;
 }
 
 // This class provides a thread-safe interface to the global GPU service (for
@@ -122,8 +123,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   const Capabilities& GetCapabilities() const override;
   int32_t CreateImage(ClientBuffer buffer,
                       size_t width,
-                      size_t height,
-                      unsigned internalformat) override;
+                      size_t height) override;
   void DestroyImage(int32_t id) override;
   void SignalQuery(uint32_t query_id, base::OnceClosure callback) override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
@@ -265,7 +265,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
                               gfx::GpuMemoryBufferHandle handle,
                               const gfx::Size& size,
                               gfx::BufferFormat format,
-                              uint32_t internalformat,
                               uint64_t fence_sync);
   void DestroyImageOnGpuThread(int32_t id);
 
@@ -330,7 +329,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   int32_t last_put_offset_ = -1;
   Capabilities capabilities_;
   GpuMemoryBufferManager* gpu_memory_buffer_manager_ = nullptr;
-  int32_t  next_transfer_buffer_id_ = 1;
   uint64_t next_fence_sync_release_ = 1;
   uint64_t flushed_fence_sync_release_ = 0;
   std::vector<SyncToken> next_flush_sync_token_fences_;
@@ -361,6 +359,8 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   };
   base::circular_deque<SwapBufferParams> pending_presented_params_;
   base::circular_deque<SwapBufferParams> pending_swap_completed_params_;
+
+  scoped_refptr<raster::RasterDecoderContextState> context_state_;
 
   base::WeakPtrFactory<InProcessCommandBuffer> client_thread_weak_ptr_factory_;
   base::WeakPtrFactory<InProcessCommandBuffer> gpu_thread_weak_ptr_factory_;

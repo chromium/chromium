@@ -34,7 +34,7 @@ template <typename T,
           TracenessMemberConfiguration tracenessConfiguration =
               TracenessMemberConfiguration::kTraced>
 class MemberBase {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   MemberBase() : raw_(nullptr) { SaveCreationThreadState(); }
@@ -202,7 +202,7 @@ class MemberBase {
 // all Member fields of a live object will be traced marked as live as well.
 template <typename T>
 class Member : public MemberBase<T, TracenessMemberConfiguration::kTraced> {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   typedef MemberBase<T, TracenessMemberConfiguration::kTraced> Parent;
 
  public:
@@ -290,7 +290,7 @@ class Member : public MemberBase<T, TracenessMemberConfiguration::kTraced> {
 // problems with cross-thread references.
 template <typename T>
 class SameThreadCheckedMember : public Member<T> {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   typedef Member<T> Parent;
 
  public:

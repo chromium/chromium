@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -108,7 +109,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
       streaming_->Abort(v8::Local<v8::Value>());
     }
   }
-  Member<BytesConsumer> consumer_;
+  TraceWrapperMember<BytesConsumer> consumer_;
   Member<FetchDataLoader::Client> client_;
   std::shared_ptr<v8::WasmStreaming> streaming_;
   const Member<ScriptState> script_state_;
@@ -205,7 +206,7 @@ class FetchDataLoaderAsWasmModule final : public FetchDataLoader,
       builder_.Abort(v8::Local<v8::Value>());
     }
   }
-  Member<BytesConsumer> consumer_;
+  TraceWrapperMember<BytesConsumer> consumer_;
   Member<FetchDataLoader::Client> client_;
   v8::WasmModuleObjectBuilderStreaming builder_;
   const Member<ScriptState> script_state_;
@@ -425,10 +426,8 @@ void WasmCompileStreamingImpl(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }  // namespace
 
 void WasmResponseExtensions::Initialize(v8::Isolate* isolate) {
-  if (RuntimeEnabledFeatures::WebAssemblyStreamingEnabled()) {
-    isolate->SetWasmCompileStreamingCallback(WasmCompileStreamingImpl);
-    isolate->SetWasmStreamingCallback(StreamFromResponseCallback);
-  }
+  isolate->SetWasmCompileStreamingCallback(WasmCompileStreamingImpl);
+  isolate->SetWasmStreamingCallback(StreamFromResponseCallback);
 }
 
 }  // namespace blink

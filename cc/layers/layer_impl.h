@@ -401,6 +401,12 @@ class CC_EXPORT LayerImpl {
 
   virtual size_t GPUMemoryUsageInBytes() const;
 
+  // Mark a layer on pending tree that needs to push its properties to the
+  // active tree. These properties should not be changed during pending tree
+  // lifetime, and only changed by being pushed from the main thread. There are
+  // two cases where this function needs to be called: when main thread layer
+  // has properties that need to be pushed, or when a new LayerImpl is created
+  // on pending tree when syncing layers from main thread.
   void SetNeedsPushProperties();
 
   virtual void RunMicroBenchmark(MicroBenchmarkImpl* benchmark);
@@ -415,9 +421,9 @@ class CC_EXPORT LayerImpl {
     return contributes_to_drawn_render_surface_;
   }
 
-  bool IsDrawnScrollbar() {
-    return ToScrollbarLayer() && contributes_to_drawn_render_surface_;
-  }
+  bool is_scrollbar() const { return is_scrollbar_; }
+
+  void set_is_scrollbar(bool is_scrollbar) { is_scrollbar_ = is_scrollbar; }
 
   void set_may_contain_video(bool yes) { may_contain_video_ = yes; }
   bool may_contain_video() const { return may_contain_video_; }
@@ -459,6 +465,11 @@ class CC_EXPORT LayerImpl {
 
   // TODO(sunxd): Remove this function and replace it with visitor pattern.
   virtual bool is_surface_layer() const;
+
+  void set_is_rounded_corner_mask(bool rounded) {
+    is_rounded_corner_mask_ = rounded;
+  }
+  bool is_rounded_corner_mask() const { return is_rounded_corner_mask_; }
 
  protected:
   // When |will_always_push_properties| is true, the layer will not itself set
@@ -586,6 +597,7 @@ class CC_EXPORT LayerImpl {
 
   bool has_will_change_transform_hint_ : 1;
   bool needs_push_properties_ : 1;
+  bool is_scrollbar_ : 1;
   bool scrollbars_hidden_ : 1;
 
   // The needs_show_scrollbars_ bit tracks a pending request from Blink to show
@@ -600,6 +612,7 @@ class CC_EXPORT LayerImpl {
   bool raster_even_if_not_drawn_ : 1;
 
   bool has_transform_node_ : 1;
+  bool is_rounded_corner_mask_ : 1;
 
   DISALLOW_COPY_AND_ASSIGN(LayerImpl);
 };

@@ -54,7 +54,10 @@ BrowserMainRunnerImpl* BrowserMainRunnerImpl::Create() {
 }
 
 BrowserMainRunnerImpl::BrowserMainRunnerImpl()
-    : initialization_started_(false), is_shutdown_(false) {}
+    : initialization_started_(false),
+      is_shutdown_(false),
+      scoped_execution_fence_(
+          std::make_unique<base::TaskScheduler::ScopedExecutionFence>()) {}
 
 BrowserMainRunnerImpl::~BrowserMainRunnerImpl() {
   if (initialization_started_ && !is_shutdown_)
@@ -107,7 +110,8 @@ int BrowserMainRunnerImpl::Initialize(const MainFunctionParams& parameters) {
     gfx::win::MaybeInitializeDirectWrite();
 #endif  // OS_WIN
 
-    main_loop_.reset(new BrowserMainLoop(parameters));
+    main_loop_.reset(
+        new BrowserMainLoop(parameters, std::move(scoped_execution_fence_)));
 
     main_loop_->Init();
 

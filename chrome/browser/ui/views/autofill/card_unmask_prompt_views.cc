@@ -403,7 +403,7 @@ void CardUnmaskPromptViews::InitIfNecessary() {
 
   views::ImageView* cvc_image = new views::ImageView();
   cvc_image->SetImage(rb.GetImageSkiaNamed(controller_->GetCvcImageRid()));
-  cvc_image->SetTooltipText(l10n_util::GetStringUTF16(
+  cvc_image->set_tooltip_text(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION));
   input_row_->AddChildView(cvc_image);
   input_container->AddChildView(input_row_);

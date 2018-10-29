@@ -4,19 +4,26 @@
 
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/dictionary_helper.h"
+#include "chrome/browser/sync/test/integration/feature_toggler.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/driver/sync_driver_switches.h"
+
+namespace {
 
 using spellcheck::kMaxSyncableDictionaryWords;
 
-class TwoClientDictionarySyncTest : public SyncTest {
+class TwoClientDictionarySyncTest : public FeatureToggler, public SyncTest {
  public:
-  TwoClientDictionarySyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientDictionarySyncTest()
+      : FeatureToggler(switches::kSyncPseudoUSSDictionary),
+        SyncTest(TWO_CLIENT) {}
   ~TwoClientDictionarySyncTest() override {}
 
   bool TestUsesSelfNotifications() override { return false; }
@@ -25,7 +32,7 @@ class TwoClientDictionarySyncTest : public SyncTest {
   DISALLOW_COPY_AND_ASSIGN(TwoClientDictionarySyncTest);
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   dictionary_helper::LoadDictionaries();
   ASSERT_TRUE(DictionaryMatchChecker().Wait());
@@ -54,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
   ASSERT_EQ(words.size(), dictionary_helper::GetDictionarySize(0));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest,
                        E2E_ENABLED(SimultaneousAdd)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   dictionary_helper::LoadDictionaries();
@@ -66,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
   ASSERT_EQ(1UL, dictionary_helper::GetDictionarySize(0));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest,
                        E2E_ENABLED(SimultaneousRemove)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   dictionary_helper::LoadDictionaries();
@@ -83,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
   ASSERT_EQ(0UL, dictionary_helper::GetDictionarySize(0));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest,
                        E2E_ENABLED(AddDifferentToEach)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   dictionary_helper::LoadDictionaries();
@@ -97,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
             static_cast<int>(dictionary_helper::GetDictionarySize(0)));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest,
                        E2E_ENABLED(RemoveOnAAddOnB)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   dictionary_helper::LoadDictionaries();
@@ -116,9 +123,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
   ASSERT_EQ(1UL, dictionary_helper::GetDictionarySize(0));
 }
 
+// Crash-flaky on win7 (dbg) and win-asan: http://crbug.com/889505
+#if defined(OS_WIN) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
+#define MAYBE_Limit DISABLED_Limit
+#else
+#define MAYBE_Limit Limit
+#endif
 // Tests the case where a client has more words added than the
 // kMaxSyncableDictionaryWords limit.
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, Limit) {
+IN_PROC_BROWSER_TEST_P(TwoClientDictionarySyncTest, MAYBE_Limit) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   dictionary_helper::LoadDictionaries();
   ASSERT_TRUE(DictionaryMatchChecker().Wait());
@@ -162,3 +175,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, Limit) {
   ASSERT_TRUE(
       NumDictionaryEntriesChecker(0, kMaxSyncableDictionaryWords).Wait());
 }
+
+INSTANTIATE_TEST_CASE_P(USS,
+                        TwoClientDictionarySyncTest,
+                        ::testing::Values(false, true));
+
+}  // namespace

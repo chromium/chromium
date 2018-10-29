@@ -9,10 +9,11 @@
 #include <cstdint>
 
 #include "base/macros.h"
-#include "net/base/iovec.h"
 #include "net/third_party/quic/core/quic_error_codes.h"
 #include "net/third_party/quic/core/quic_types.h"
+#include "net/third_party/quic/core/quic_versions.h"
 #include "net/third_party/quic/platform/api/quic_export.h"
+#include "net/third_party/quic/platform/api/quic_iovec.h"
 #include "net/third_party/quic/platform/api/quic_socket_address.h"
 #include "net/third_party/quic/platform/api/quic_string.h"
 #include "net/third_party/quic/platform/api/quic_string_piece.h"
@@ -89,6 +90,23 @@ class QUIC_EXPORT_PRIVATE QuicUtils {
   // Returns true if header with |first_byte| is considered as an IETF QUIC
   // packet header.
   static bool IsIetfPacketHeader(uint8_t first_byte);
+
+  // Returns ID to denote an invalid stream of |version|.
+  static QuicStreamId GetInvalidStreamId(QuicTransportVersion version);
+
+  // Returns crypto stream ID of |version|.
+  static QuicStreamId GetCryptoStreamId(QuicTransportVersion version);
+
+  // Returns headers stream ID of |version|.
+  static QuicStreamId GetHeadersStreamId(QuicTransportVersion version);
+
+  // Returns true if |id| is considered as client initiated stream ID.
+  static bool IsClientInitiatedStreamId(QuicTransportVersion version,
+                                        QuicStreamId id);
+
+  // Returns true if |id| is considered as server initiated stream ID.
+  static bool IsServerInitiatedStreamId(QuicTransportVersion version,
+                                        QuicStreamId id);
 };
 
 }  // namespace quic

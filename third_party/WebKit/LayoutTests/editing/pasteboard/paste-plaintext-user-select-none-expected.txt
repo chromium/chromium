@@ -2,11 +2,12 @@ This tests that you can paste into a plain-text editable area even if the body h
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS sample.textContent is "Test Passed"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 To test manually, copy "Test Passed" into clipboard, and paste in below box.
 
 

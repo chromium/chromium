@@ -61,6 +61,14 @@ const char kShippingMode[] = "shipping";
 const int kCommonNamePrefixRemovalFieldThreshold = 3;
 const int kMinCommonNamePrefixLength = 16;
 
+// Returns true if the scheme given by |url| is one for which autfill is allowed
+// to activate. By default this only returns true for HTTP and HTTPS.
+bool HasAllowedScheme(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS() ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillAllowNonHttpActivation);
+}
+
 // Helper for |EncodeUploadRequest()| that creates a bit field corresponding to
 // |available_field_types| and returns the hex representation as a string.
 std::string EncodeFieldTypes(const ServerFieldTypeSet& available_field_types) {
@@ -329,6 +337,7 @@ void EncodePasswordAttributesVote(
 
 FormStructure::FormStructure(const FormData& form)
     : form_name_(form.name),
+      button_title_(form.button_title),
       submission_event_(PasswordForm::SubmissionIndicatorEvent::NONE),
       source_url_(form.origin),
       target_url_(form.action),
@@ -344,7 +353,6 @@ FormStructure::FormStructure(const FormData& form)
       is_form_tag_(form.is_form_tag),
       is_formless_checkout_(form.is_formless_checkout),
       all_fields_are_passwords_(!form.fields.empty()),
-      is_signin_upload_(false),
       form_parsed_timestamp_(base::TimeTicks::Now()),
       passwords_were_revealed_(false),
       developer_engagement_metrics_(0) {
@@ -431,7 +439,6 @@ bool FormStructure::EncodeUploadRequest(
     const std::string& login_form_signature,
     bool observed_submission,
     AutofillUploadContents* upload) const {
-  DCHECK(ShouldBeUploaded());
   DCHECK(AllTypesCaptured(*this, available_field_types));
 
   upload->set_submission(observed_submission);
@@ -440,13 +447,19 @@ bool FormStructure::EncodeUploadRequest(
   upload->set_autofill_used(form_was_autofilled);
   upload->set_data_present(EncodeFieldTypes(available_field_types));
   upload->set_passwords_revealed(passwords_were_revealed_);
-  if (submission_event_ != PasswordForm::SubmissionIndicatorEvent::NONE) {
-    DCHECK(submission_event_ != PasswordForm::SubmissionIndicatorEvent::
-                                    SUBMISSION_INDICATOR_EVENT_COUNT);
-    upload->set_submission_event(
-        static_cast<AutofillUploadContents_SubmissionIndicatorEvent>(
-            submission_event_));
-  }
+
+  auto triggering_event =
+      (submission_event_ != PasswordForm::SubmissionIndicatorEvent::NONE)
+          ? submission_event_
+          : ToSubmissionIndicatorEvent(submission_source_);
+
+  DCHECK_LT(
+      submission_event_,
+      PasswordForm::SubmissionIndicatorEvent::SUBMISSION_INDICATOR_EVENT_COUNT);
+  upload->set_submission_event(
+      static_cast<AutofillUploadContents_SubmissionIndicatorEvent>(
+          triggering_event));
+
   if (password_attributes_vote_) {
     EncodePasswordAttributesVote(*password_attributes_vote_,
                                  password_length_vote_, upload);
@@ -686,13 +699,17 @@ void FormStructure::UpdateAutofillCount() {
 }
 
 bool FormStructure::ShouldBeParsed() const {
+  // Exclude URLs not on the web via HTTP(S).
+  if (!HasAllowedScheme(source_url_))
+    return false;
+
   size_t min_required_fields =
       std::min({MinRequiredFieldsForHeuristics(), MinRequiredFieldsForQuery(),
                 MinRequiredFieldsForUpload()});
   if (active_field_count() < min_required_fields &&
       (!all_fields_are_passwords() ||
        active_field_count() < kRequiredFieldsForFormsWithOnlyPasswordFields) &&
-      !is_signin_upload_ && !has_author_specified_types_) {
+      !has_author_specified_types_) {
     return false;
   }
 
@@ -714,6 +731,7 @@ bool FormStructure::ShouldBeParsed() const {
 
 bool FormStructure::ShouldRunHeuristics() const {
   return active_field_count() >= MinRequiredFieldsForHeuristics() &&
+         HasAllowedScheme(source_url_) &&
          (is_form_tag_ || is_formless_checkout_ ||
           !base::FeatureList::IsEnabled(
               features::kAutofillRestrictUnownedFieldsToFormlessCheckout));
@@ -726,8 +744,7 @@ bool FormStructure::ShouldBeQueried() const {
 }
 
 bool FormStructure::ShouldBeUploaded() const {
-  return (has_password_field_ ||
-          active_field_count() >= MinRequiredFieldsForUpload()) &&
+  return active_field_count() >= MinRequiredFieldsForUpload() &&
          ShouldBeParsed();
 }
 
@@ -772,7 +789,8 @@ void FormStructure::RetrieveFromCache(
   UpdateAutofillCount();
 
   // Update form parsed timestamp
-  form_parsed_timestamp_ = cached_form.form_parsed_timestamp_;
+  form_parsed_timestamp_ =
+      std::min(form_parsed_timestamp_, cached_form.form_parsed_timestamp_);
 
   // The form signature should match between query and upload requests to the
   // server. On many websites, form elements are dynamically added, removed, or
@@ -871,7 +889,7 @@ void FormStructure::LogQualityMetrics(
       // dynamically added to the DOM.
       if (!load_time.is_null()) {
         // Submission should always chronologically follow form load.
-        DCHECK(submission_time > load_time);
+        DCHECK_GE(submission_time, load_time);
         base::TimeDelta elapsed = submission_time - load_time;
         if (did_autofill_some_possible_fields)
           AutofillMetrics::LogFormFillDurationFromLoadWithAutofill(elapsed);

@@ -1,3 +1,0 @@
-All the replaced elements below should have a solid black outline.
-<video> <canvas> <media>
-<iframe> <embed> <object> <input type=image> <img> 

@@ -36,14 +36,35 @@
       <paper-progress slot="progress" id="checking-progress"
           hidden="[[!checkingForUpdate]]">
       </paper-progress>
-      <div slot="footer" class="flex layout vertical end-justified">
+      <div slot="footer" class="flex layout vertical end-justified center">
         <img class="update-illustration"
-            srcset="images/1x/updating_1x.png 1x,
-                    images/2x/updating_2x.png 2x">
+            srcset="images/1x/updating_1x.svg 1x,
+                    images/2x/updating_2x.svg 2x">
       </div>
     </oobe-dialog>
-    <oobe-dialog hidden="[[checkingForUpdate]]" tabindex="0"
-        aria-live="polite">
+    <oobe-dialog hidden="[[!requiresPermissionForCellular]]" tabindex="0"
+        aria-live="polite" has-buttons>
+      <iron-icon icon="oobe-update:googleg" slot="oobe-icon"></iron-icon>
+      <h1 slot="title">
+          [[i18nRecursive(locale, 'updateOverCellularPromptTitle',
+                          'productName')]]
+      </h1>
+      <div slot="subtitle" class="update-subtitle">
+          [[i18nDynamic(locale, 'updateOverCellularPromptMessage')]]
+      </div>
+      <div slot="footer" class="flex layout vertical end-justified center">
+        <img class="update-illustration"
+            srcset="images/1x/updating_1x.svg 1x,
+                    images/2x/updating_2x.svg 2x">
+      </div>
+      <div slot="bottom-buttons" class="layout horizontal justified">
+        <oobe-back-button inverse on-tap="onBackClicked_"></oobe-back-button>
+        <oobe-next-button inverse on-tap="onNextClicked_"></oobe-next-button>
+      </div>
+    </oobe-dialog>
+    <oobe-dialog hidden="[[hideUpdatingScreen_(checkingForUpdate,
+                                               requiresPermissionForCellular)]]"
+        tabindex="0" aria-live="polite">
       <iron-icon icon="oobe-update:googleg" slot="oobe-icon"></iron-icon>
       <h1 slot="title" i18n-content="updatingScreenTitle"></h1>
       <div slot="subtitle" class="update-subtitle"
@@ -71,9 +92,11 @@
           [[progressMessage]]
         </div>
         <div class="flex"></div>
-        <img class="update-illustration"
-            srcset="images/1x/updating_1x.png 1x,
-                    images/2x/updating_2x.png 2x">
+        <div class="layout vertical end-justified center">
+          <img class="update-illustration"
+              srcset="images/1x/updating_1x.svg 1x,
+                      images/2x/updating_2x.svg 2x">
+        </div>
       </div>
     </oobe-dialog>
   </template>

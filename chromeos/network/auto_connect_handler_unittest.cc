@@ -15,11 +15,11 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_task_environment.h"
-#include "chromeos/cert_loader.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill_profile_client.h"
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
+#include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_profile_handler.h"
@@ -131,8 +131,8 @@ class AutoConnectHandlerTest : public NetworkStateTest {
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot())),
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot()))));
 
-    CertLoader::Initialize();
-    CertLoader::ForceHardwareBackedForTesting();
+    NetworkCertLoader::Initialize();
+    NetworkCertLoader::ForceHardwareBackedForTesting();
 
     DBusThreadManager::Initialize();
 
@@ -185,7 +185,7 @@ class AutoConnectHandlerTest : public NetworkStateTest {
     NetworkStateTest::TearDown();
 
     DBusThreadManager::Shutdown();
-    CertLoader::Shutdown();
+    NetworkCertLoader::Shutdown();
   }
 
  protected:
@@ -198,8 +198,8 @@ class AutoConnectHandlerTest : public NetworkStateTest {
     return GetServiceStringProperty(service_path, shill::kStateProperty);
   }
 
-  void StartCertLoader() {
-    CertLoader::Get()->SetUserNSSDB(test_nsscertdb_.get());
+  void StartNetworkCertLoader() {
+    NetworkCertLoader::Get()->SetUserNSSDB(test_nsscertdb_.get());
     scoped_task_environment_.RunUntilIdle();
   }
 
@@ -347,7 +347,7 @@ TEST_F(AutoConnectHandlerTest, ReconnectOnCertLoading) {
   EXPECT_EQ(shill::kStateIdle, GetServiceState("wifi1"));
 
   // Certificate loading should trigger connecting to the 'best' network.
-  StartCertLoader();
+  StartNetworkCertLoader();
   EXPECT_EQ(shill::kStateIdle, GetServiceState("wifi0"));
   EXPECT_EQ(shill::kStateOnline, GetServiceState("wifi1"));
   EXPECT_EQ(1, test_observer_->num_auto_connect_events());
@@ -365,7 +365,7 @@ TEST_F(AutoConnectHandlerTest, ReconnectOnCertPatternResolved) {
               base::DictionaryValue(),  // no global config
               false);                   // load as device policy
   LoginToRegularUser();
-  StartCertLoader();
+  StartNetworkCertLoader();
   SetupPolicy(kPolicyCertPattern,
               base::DictionaryValue(),  // no global config
               true);                    // load as user policy
@@ -407,7 +407,7 @@ TEST_F(AutoConnectHandlerTest, NoReconnectIfNoCertResolved) {
               base::DictionaryValue(),  // no global config
               false);                   // load as device policy
   LoginToRegularUser();
-  StartCertLoader();
+  StartNetworkCertLoader();
   SetupPolicy(kPolicy,
               base::DictionaryValue(),  // no global config
               true);                    // load as user policy
@@ -438,7 +438,7 @@ TEST_F(AutoConnectHandlerTest, DisconnectOnPolicyLoading) {
   // User login and certificate loading shouldn't trigger any change until the
   // policy is loaded.
   LoginToRegularUser();
-  StartCertLoader();
+  StartNetworkCertLoader();
   EXPECT_EQ(shill::kStateOnline, GetServiceState("wifi0"));
   EXPECT_EQ(shill::kStateIdle, GetServiceState("wifi1"));
 
@@ -471,7 +471,7 @@ TEST_F(AutoConnectHandlerTest,
   // User login and certificate loading shouldn't trigger any change until the
   // policy is loaded.
   LoginToRegularUser();
-  StartCertLoader();
+  StartNetworkCertLoader();
   EXPECT_EQ(shill::kStateOnline, GetServiceState("wifi0"));
   EXPECT_EQ(shill::kStateIdle, GetServiceState("wifi1"));
 
@@ -505,7 +505,7 @@ TEST_F(AutoConnectHandlerTest, ReconnectAfterLogin) {
   // User login and certificate loading shouldn't trigger any change until the
   // policy is loaded.
   LoginToRegularUser();
-  StartCertLoader();
+  StartNetworkCertLoader();
   EXPECT_EQ(shill::kStateOnline, GetServiceState("wifi0"));
   EXPECT_EQ(shill::kStateIdle, GetServiceState("wifi1"));
 
@@ -537,7 +537,7 @@ TEST_F(AutoConnectHandlerTest, ManualConnectAbortsReconnectAfterLogin) {
   // User login and certificate loading shouldn't trigger any change until the
   // policy is loaded.
   LoginToRegularUser();
-  StartCertLoader();
+  StartNetworkCertLoader();
   SetupPolicy(std::string(),            // no network configs
               base::DictionaryValue(),  // no global config
               false);                   // load as device policy
@@ -564,7 +564,7 @@ TEST_F(AutoConnectHandlerTest, DisconnectFromBlacklistedNetwork) {
   EXPECT_FALSE(ConfigureService(kConfigManagedSharedConnectable).empty());
 
   LoginToRegularUser();
-  StartCertLoader();
+  StartNetworkCertLoader();
   EXPECT_EQ(shill::kStateOnline, GetServiceState("wifi0"));
   EXPECT_EQ(shill::kStateIdle, GetServiceState("wifi1"));
   EXPECT_TRUE(DBusThreadManager::Get()
@@ -606,7 +606,7 @@ TEST_F(AutoConnectHandlerTest, AllowOnlyPolicyNetworksToConnectIfAvailable) {
   EXPECT_FALSE(ConfigureService(kConfigManagedSharedConnectable).empty());
 
   LoginToRegularUser();
-  StartCertLoader();
+  StartNetworkCertLoader();
   EXPECT_EQ(shill::kStateOnline, GetServiceState("wifi0"));
   EXPECT_EQ(shill::kStateIdle, GetServiceState("wifi1"));
   EXPECT_TRUE(DBusThreadManager::Get()

@@ -21,6 +21,7 @@ include_rules = [
   "+ui/resources/grit/ui_resources.h",
   "+ui/strings/grit/ui_strings.h",
   "+ui/touch_selection",
+  "+ui/views_bridge_mac",
   "+ui/wm/core",
   "+ui/wm/public",
 

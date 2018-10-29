@@ -7,7 +7,6 @@ openh264_common_include_dirs = [
 ]
 
 openh264_common_sources = [
-  "//third_party/openh264/src/codec/common/inc/WelsCircleQueue.h",
   "//third_party/openh264/src/codec/common/inc/WelsList.h",
   "//third_party/openh264/src/codec/common/inc/WelsLock.h",
   "//third_party/openh264/src/codec/common/inc/WelsTask.h",
@@ -50,7 +49,6 @@ openh264_common_sources = [
   "//third_party/openh264/src/codec/common/src/memory_align.cpp",
   "//third_party/openh264/src/codec/common/src/sad_common.cpp",
   "//third_party/openh264/src/codec/common/src/utils.cpp",
-  "//third_party/openh264/src/codec/common/src/utils.h",
   "//third_party/openh264/src/codec/common/src/welsCodecTrace.cpp",
 ]
 

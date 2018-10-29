@@ -1017,7 +1017,8 @@ MojoResult Core::UnwrapPlatformHandle(
   {
     base::AutoLock lock(handles_->GetLock());
     dispatcher = handles_->GetDispatcher(mojo_handle);
-    if (dispatcher->GetType() != Dispatcher::Type::PLATFORM_HANDLE)
+    if (!dispatcher ||
+        dispatcher->GetType() != Dispatcher::Type::PLATFORM_HANDLE)
       return MOJO_RESULT_INVALID_ARGUMENT;
 
     MojoResult result =

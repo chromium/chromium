@@ -19,12 +19,13 @@ class HistogramSamples;
 // handles the logistics of gathering up available histograms for recording.
 class BASE_EXPORT HistogramFlattener {
  public:
+  virtual ~HistogramFlattener() = default;
+
   virtual void RecordDelta(const HistogramBase& histogram,
                            const HistogramSamples& snapshot) = 0;
 
  protected:
   HistogramFlattener() = default;
-  virtual ~HistogramFlattener() = default;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(HistogramFlattener);

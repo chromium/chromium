@@ -176,7 +176,7 @@ function openFileDialogClickCancelButton(volume, name) {
 function openFileDialogSendEscapeKey(volume, name) {
   const type = {type: 'openFile'};
 
-  const escapeKey = ['#file-list', 'Escape', 'U+001B', false, false, false];
+  const escapeKey = ['#file-list', 'Escape', false, false, false];
   let closer = sendOpenFileDialogKey.bind(null, name, escapeKey);
 
   return createFileEntryPromise(volume)

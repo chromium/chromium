@@ -102,8 +102,7 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   void OnModuleLoad(content::ProcessType process_type,
                     const base::FilePath& module_path,
                     uint32_t module_size,
-                    uint32_t module_time_date_stamp,
-                    uintptr_t module_load_address);
+                    uint32_t module_time_date_stamp);
 
   void OnModuleBlocked(const base::FilePath& module_path,
                        uint32_t module_size,

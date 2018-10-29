@@ -15,14 +15,11 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/experimental_flags.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/ui/main/tab_switcher_mode.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_egtest_util.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_egtest_util.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
-#include "ios/chrome/browser/ui/tools_menu/public/tools_menu_constants.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -79,8 +76,6 @@ id<GREYMatcher> LongPressTipBubble() {
 
 // Opens the TabGrid and then opens a new tab.
 void OpenTabGridAndOpenTab() {
-  DCHECK(IsUIRefreshPhase1Enabled());
-
   id<GREYMatcher> openTabSwitcherMatcher =
       IsIPadIdiom() ? chrome_test_util::TabletTabSwitcherOpenButton()
                     : chrome_test_util::ShowTabsButton();
@@ -99,20 +94,8 @@ void OpenAndCloseTabSwitcher() {
   [[EarlGrey selectElementWithMatcher:openTabSwitcherMatcher]
       performAction:grey_tap()];
 
-  switch (GetTabSwitcherMode()) {
-    case TabSwitcherMode::GRID:
-      [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
-          performAction:grey_tap()];
-      break;
-    case TabSwitcherMode::TABLET_SWITCHER:
-    case TabSwitcherMode::STACK:
-      id<GREYMatcher> closeTabSwitcherMatcher =
-          IsIPadIdiom() ? chrome_test_util::TabletTabSwitcherCloseButton()
-                        : chrome_test_util::ShowTabsButton();
-      [[EarlGrey selectElementWithMatcher:closeTabSwitcherMatcher]
-          performAction:grey_tap()];
-      break;
-  }
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Create a test FeatureEngagementTracker.
@@ -134,7 +117,7 @@ void LoadFeatureEngagementTracker() {
       chrome_test_util::GetOriginalBrowserState();
 
   feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
-      browserState, CreateTestFeatureEngagementTracker);
+      browserState, base::BindRepeating(&CreateTestFeatureEngagementTracker));
 }
 
 // Enables the Badged Reading List help to be triggered for |feature_list|.
@@ -319,15 +302,9 @@ void EnableLongPressTipTriggering(base::test::ScopedFeatureList& feature_list) {
   }
 
   [chrome_test_util::BrowserCommandDispatcherForMainBVC() showReadingList];
-  if (experimental_flags::IsReadingListUIRebootEnabled()) {
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(
-                                     kTableViewNavigationDismissButtonId)]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Done")]
-        performAction:grey_tap()];
-  }
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewNavigationDismissButtonId)]
+      performAction:grey_tap()];
 
   [ChromeEarlGreyUI openToolsMenu];
 

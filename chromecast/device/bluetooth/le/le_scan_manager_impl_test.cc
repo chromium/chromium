@@ -283,5 +283,41 @@ TEST_F(LeScanManagerTest, TestOnNewScanResult) {
   ASSERT_EQ(1, result.rssi);
 }
 
+TEST_F(LeScanManagerTest, TestMaxScanResultEntries) {
+  EXPECT_CALL(mock_observer_, OnNewScanResult(_))
+      .Times(LeScanManagerImpl::kMaxScanResultEntries + 5);
+
+  // Add scan results with different addrs.
+  bluetooth_v2_shlib::LeScanner::ScanResult raw_scan_result;
+  for (int i = 0; i < LeScanManagerImpl::kMaxScanResultEntries + 5; ++i) {
+    uint8_t addr_bit0 = i & 0xFF;
+    uint8_t addr_bit1 = (i & 0xFF00) >> 8;
+    raw_scan_result.addr = {{addr_bit0, addr_bit1, 0xFF, 0xFF, 0xFF, 0xFF}};
+    raw_scan_result.adv_data = {0x03, 0x02, 0x44, 0x44};
+    raw_scan_result.rssi = -i;
+    delegate()->OnScanResult(raw_scan_result);
+  }
+
+  scoped_task_environment_.RunUntilIdle();
+
+  std::vector<LeScanResult> results;
+  // Get asynchronous scan results.
+  le_scan_manager_.GetScanResults(
+      base::BindOnce(&CopyResult<std::vector<LeScanResult>>, &results));
+
+  scoped_task_environment_.RunUntilIdle();
+
+  // First 5 addresses should have been kicked out.
+  ASSERT_EQ(1024u, results.size());
+  bluetooth_v2_shlib::Addr test_addr;
+  for (int i = 0; i < LeScanManagerImpl::kMaxScanResultEntries; ++i) {
+    uint8_t addr_bit0 = (i + 5) & 0xFF;
+    uint8_t addr_bit1 = ((i + 5) & 0xFF00) >> 8;
+    test_addr = {{addr_bit0, addr_bit1, 0xFF, 0xFF, 0xFF, 0xFF}};
+    EXPECT_EQ(test_addr, results[i].addr);
+    EXPECT_EQ(-(i + 5), results[i].rssi);
+  }
+}
+
 }  // namespace bluetooth
 }  // namespace chromecast

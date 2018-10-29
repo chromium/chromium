@@ -38,9 +38,9 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_widget.h"
 #include "content/renderer/render_widget_owner_delegate.h"
-#include "content/renderer/stats_collection_observer.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/public/platform/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -82,15 +82,25 @@ namespace mojom {
 class CreateViewParams;
 }
 
+// RenderViewImpl (the implementation of RenderView) is the renderer process
+// object that owns the blink frame tree.
 //
-// RenderView is an object that manages a WebView object, and provides a
-// communication interface with an embedding application process.
+// Each top-level web container has a frame tree, and thus a RenderViewImpl.
+// Typically such a container is a browser tab, or a tab-less window. It can
+// also be other cases such as a background page or extension.
 //
-// DEPRECATED: RenderViewImpl is being removed as part of the SiteIsolation
-// project. New code should be added to RenderFrameImpl instead.
+// Under site isolation, frames in the main frame's tree may be moved out
+// to a separate frame tree (possibly in another process), leaving remote
+// placeholders behind. Each such frame tree also includes a RenderViewImpl as
+// the owner of it. Thus a tab may have multiple RenderViewImpls, one for the
+// main frame, and one for each other frame tree generated.
 //
-// For context, please see https://crbug.com/467770 and
-// https://www.chromium.org/developers/design-documents/site-isolation.
+// The RenderViewImpl manages a WebView object from blink, which hosts the
+// web page and a blink frame tree. If the main frame (root of the tree) is
+// a local frame for this view, then it also manages a RenderWidget for the
+// main frame.
+//
+// TODO(419087): That RenderWidget should be managed by the main frame itself.
 class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
                                       public blink::WebViewClient,
                                       public RenderWidgetOwnerDelegate,
@@ -144,20 +154,9 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   void AddObserver(RenderViewObserver* observer);
   void RemoveObserver(RenderViewObserver* observer);
 
-  // Returns the StatsCollectionObserver associated with this view, or NULL
-  // if one wasn't created;
-  StatsCollectionObserver* GetStatsCollectionObserver() {
-    return stats_collection_observer_.get();
-  }
-
 #if defined(OS_ANDROID)
   void DismissDateTimeDialog();
 #endif
-
-  bool is_loading() const { return frames_in_progress_ != 0; }
-
-  void FrameDidStartLoading(blink::WebFrame* frame);
-  void FrameDidStopLoading(blink::WebFrame* frame);
 
   // Sets the zoom level and notifies observers.
   void SetZoomLevel(double zoom_level);
@@ -213,7 +212,9 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
                              const blink::WebString& frame_name,
                              blink::WebNavigationPolicy policy,
                              bool suppress_opener,
-                             blink::WebSandboxFlags sandbox_flags) override;
+                             blink::WebSandboxFlags sandbox_flags,
+                             const blink::SessionStorageNamespaceId&
+                                 session_storage_namespace_id) override;
   blink::WebWidget* CreatePopup(blink::WebLocalFrame* creator) override;
   base::StringPiece GetSessionStorageNamespaceId() override;
   void PrintPage(blink::WebLocalFrame* frame) override;
@@ -234,7 +235,7 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   bool CanUpdateLayout() override;
   void DidUpdateMainFrameLayout() override;
   blink::WebString AcceptLanguages() override;
-  void NavigateBackForwardSoon(int offset) override;
+  void NavigateBackForwardSoon(int offset, bool has_user_gesture) override;
   int HistoryBackListCount() override;
   int HistoryForwardListCount() override;
   void ZoomLimitsChanged(double minimum_level, double maximum_level) override;
@@ -245,6 +246,7 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   void DidAutoResize(const blink::WebSize& newSize) override;
   blink::WebRect RootWindowRect() override;
   void DidFocus(blink::WebLocalFrame* calling_frame) override;
+  blink::WebScreenInfo GetScreenInfo() override;
   bool CanHandleGestureEvent() override;
   blink::WebWidgetClient* WidgetClient() override;
 
@@ -267,16 +269,15 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   void SetWebkitPreferences(const WebPreferences& preferences) override;
   blink::WebView* GetWebView() override;
   blink::WebFrameWidget* GetWebFrameWidget() override;
-  bool ShouldDisplayScrollbars(int width, int height) const override;
   bool GetContentStateImmediately() const override;
   void SetEditCommandForNextKeyEvent(const std::string& name,
                                      const std::string& value) override;
   void ClearEditCommands() override;
   const std::string& GetAcceptLanguages() const override;
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
   void UpdateBrowserControlsState(BrowserControlsState constraints,
                                   BrowserControlsState current,
                                   bool animate) override;
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
   virtual void didScrollWithKeyboard(const blink::WebSize& delta);
 #endif
   void ConvertViewportToWindowViaWidget(blink::WebRect* rect) override;
@@ -379,7 +380,6 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   bool RenderWidgetWillHandleMouseEventForWidget(
       const blink::WebMouseEvent& event) override;
   void SetActiveForWidget(bool active) override;
-  void SetBackgroundOpaqueForWidget(bool opaque) override;
   bool SupportsMultipleWindowsForWidget() override;
   void DidHandleGestureEventForWidget(
       const blink::WebGestureEvent& event) override;
@@ -395,7 +395,6 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   void ScrollFocusedNodeIntoViewForWidget() override;
   void DidReceiveSetFocusEventForWidget() override;
   void DidChangeFocusForWidget() override;
-  GURL GetURLForGraphicsContext3DForWidget() override;
   void DidCommitCompositorFrameForWidget() override;
   void DidCompletePageScaleAnimationForWidget() override;
   void ResizeWebWidgetForWidget(
@@ -424,9 +423,6 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   static WindowOpenDisposition NavigationPolicyToDisposition(
       blink::WebNavigationPolicy policy);
 
-  void ApplyWebPreferencesInternal(const WebPreferences& prefs,
-                                   blink::WebView* web_view);
-
   // IPC message handlers ------------------------------------------------------
   //
   // The documentation for these functions should be in
@@ -454,7 +450,6 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   void OnUpdateTargetURLAck();
   void OnUpdateWebPreferences(const WebPreferences& prefs);
   void OnSetPageScale(float page_scale_factor);
-  void OnSelectWordAroundCaret();
   void OnAudioStateChanged(bool is_audio_playing);
   void OnPausePageScheduledTasks(bool paused);
 
@@ -545,17 +540,6 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   // to be called.
   bool needs_preferred_size_update_ = true;
 
-  // If non-empty, and |send_preferred_size_changes_| is true, disable drawing
-  // scroll bars on windows smaller than this size.  Used for windows that the
-  // browser resizes to the size of the content, such as browser action popups.
-  // If a render view is set to the minimum size of its content, webkit may add
-  // scroll bars.  This makes sense for fixed sized windows, but it does not
-  // make sense when the size of the view was chosen to fit the content.
-  // This setting ensures that no scroll bars are drawn.  The size limit exists
-  // because if the view grows beyond a size known to the browser, scroll bars
-  // should be drawn.
-  gfx::Size disable_scrollbars_size_limit_;
-
   // Loading state -------------------------------------------------------------
 
   // Timer used to delay the updating of nav state (see
@@ -577,12 +561,6 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   // processes.  We won't know about them until the next navigation in this
   // process.
   int history_list_length_ = 0;
-
-  // Counter to track how many frames have sent start notifications but not stop
-  // notifications.
-  // TODO(avi): Remove this once FrameDidStartLoading/FrameDidStopLoading are
-  // gone.
-  int frames_in_progress_ = 0;
 
   // UI state ------------------------------------------------------------------
 
@@ -615,11 +593,9 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   // The next target URL we want to send to the browser.
   GURL pending_target_url_;
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
   // Cache the old browser controls state constraints. Used when updating
   // current value only without altering the constraints.
   BrowserControlsState top_controls_constraints_ = BROWSER_CONTROLS_STATE_BOTH;
-#endif
 
   // View ----------------------------------------------------------------------
 
@@ -660,15 +636,11 @@ class CONTENT_EXPORT RenderViewImpl : private RenderWidget,
   // The SessionStorage namespace that we're assigned to has an ID, and that ID
   // is passed to us upon creation.  WebKit asks for this ID upon first use and
   // uses it whenever asking the browser process to allocate new storage areas.
-  std::string session_storage_namespace_id_;
+  blink::SessionStorageNamespaceId session_storage_namespace_id_;
 
   // All the registered observers.  We expect this list to be small, so vector
   // is fine.
   base::ObserverList<RenderViewObserver>::Unchecked observers_;
-
-  // NOTE: stats_collection_observer_ should be the last members because their
-  // constructors call the AddObservers method of RenderViewImpl.
-  std::unique_ptr<StatsCollectionObserver> stats_collection_observer_;
 
   blink::WebScopedVirtualTimePauser history_navigation_virtual_time_pauser_;
 

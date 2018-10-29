@@ -8,7 +8,6 @@
 var NavigationModelItemType = {
   SHORTCUT: 'shortcut',
   VOLUME: 'volume',
-  MENU: 'menu',
   RECENT: 'recent',
   CROSTINI: 'crostini',
   ENTRY_LIST: 'entry-list',
@@ -120,45 +119,6 @@ NavigationModelVolumeItem.prototype = /** @struct */ {
 };
 
 /**
- * Item of NavigationListModel for a menu button.
- *
- * @param {string} label Label on the menu button.
- * @param {string} menu Selector for the menu element.
- * @param {string} icon Name of an icon on the menu button.
- * @constructor
- * @extends {NavigationModelItem}
- * @struct
- */
-function NavigationModelMenuItem(label, menu, icon) {
-  NavigationModelItem.call(this, label, NavigationModelItemType.MENU);
-
-  /**
-   * @private {string}
-   * @const
-   */
-  this.menu_ = menu;
-
-  /**
-   * @private {string}
-   * @const
-   */
-  this.icon_ = icon;
-}
-
-NavigationModelMenuItem.prototype = /** @struct */ {
-  __proto__: NavigationModelItem.prototype,
-  /**
-   * @return {string}
-   */
-  get menu() { return this.menu_; },
-
-  /**
-   * @return {string}
-   */
-  get icon() { return this.icon_; }
-};
-
-/**
  * Item of NavigationListModel for a fake item such as Recent or Linux files.
  *
  * @param {string} label Label on the menu button.
@@ -186,16 +146,11 @@ NavigationModelFakeItem.prototype = /** @struct */ {
  * @param {(!cr.ui.ArrayDataModel|!FolderShortcutsDataModel)} shortcutListModel
  *     The list of folder shortcut.
  * @param {NavigationModelFakeItem} recentModelItem Recent folder.
- * @param {NavigationModelMenuItem} addNewServicesItem Add new services item.
- * @param {boolean=} opt_disableMyFilesNavigation true if should use the new
- *     navigation style, value should come from flag
- *     disable-my-files-navigation.
  * @constructor
  * @extends {cr.EventTarget}
  */
 function NavigationListModel(
-    volumeManager, shortcutListModel, recentModelItem, addNewServicesItem,
-    opt_disableMyFilesNavigation) {
+    volumeManager, shortcutListModel, recentModelItem) {
   cr.EventTarget.call(this);
 
   /**
@@ -223,12 +178,6 @@ function NavigationListModel(
    * @private {NavigationModelFakeItem}
    */
   this.linuxFilesItem_ = null;
-
-  /**
-   * @private {NavigationModelMenuItem}
-   * @const
-   */
-  this.addNewServicesItem_ = addNewServicesItem;
 
   /**
    * NavigationModel for MyFiles, since DirectoryTree expect it to be always the
@@ -280,9 +229,6 @@ function NavigationListModel(
     var volumeInfo = this.volumeManager_.getVolumeInfo(shortcutEntry);
     this.shortcutList_.push(entryToModelItem(shortcutEntry));
   }
-
-  // True if the flag disable-my-files-navigation is enabled.
-  this.disableMyFilesNavigation_ = !!opt_disableMyFilesNavigation;
 
   // Reorder volumes, shortcuts, and optional items for initial display.
   this.reorderNavigationItems_();
@@ -402,13 +348,10 @@ function NavigationListModel(
 NavigationListModel.ZIP_VOLUME_TYPE = '_ZIP_VOLUME_';
 
 /**
- * Extension id that can mount zip files.
+ * Id of the Zip Archiver extension, that can mount zip files.
  * @const
  */
-NavigationListModel.ZIP_EXTENSION_IDS = [
-  'dmboannefpncccogfdikhmhpmdnddgoe',  // ZipArchiver
-  'oedeeodfidgoollimchfdnbmhcpnklnd',  // ZipUnpacker
-];
+NavigationListModel.ZIP_EXTENSION_ID = 'dmboannefpncccogfdikhmhpmdnddgoe';
 
 /**
  * NavigationList inherits cr.EventTarget.
@@ -431,10 +374,6 @@ NavigationListModel.prototype = {
     this.linuxFilesItem_ = item;
     this.reorderNavigationItems_();
   },
-  /** @type {boolean} */
-  get disableMyFilesNavigation() {
-    return this.disableMyFilesNavigation_;
-  }
 };
 
 /**
@@ -443,11 +382,7 @@ NavigationListModel.prototype = {
  * it's disabled it has a flat structure with Linux files after Recent menu.
  */
 NavigationListModel.prototype.reorderNavigationItems_ = function() {
-  if (!this.disableMyFilesNavigation_) {
-    return this.orderAndNestItems_();
-  } else {
-    return this.flatNavigationItems_();
-  }
+  return this.orderAndNestItems_();
 };
 
 /**
@@ -526,8 +461,7 @@ NavigationListModel.prototype.orderAndNestItems_ = function() {
         // splitting them apart from PROVIDED.
         volumeId = volumeList[i].volumeInfo.volumeId;
         providedType = VolumeManagerCommon.VolumeType.PROVIDED;
-        if (NavigationListModel.ZIP_EXTENSION_IDS.some(
-                extension_id => volumeId.includes(extension_id)))
+        if (volumeId.includes(NavigationListModel.ZIP_EXTENSION_ID))
           providedType = NavigationListModel.ZIP_VOLUME_TYPE;
         if (!volumeIndexes[providedType]) {
           volumeIndexes[providedType] = [i];

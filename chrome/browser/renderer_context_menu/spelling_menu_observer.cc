@@ -313,9 +313,7 @@ void SpellingMenuObserver::OnTextCheckComplete(
   if (results.empty()) {
     succeeded_ = false;
   } else {
-    typedef std::vector<SpellCheckResult> SpellCheckResults;
-    for (SpellCheckResults::const_iterator it = results.begin();
-         it != results.end(); ++it) {
+    for (auto it = results.begin(); it != results.end(); ++it) {
       // If there's more than one replacement, we can't automatically apply it
       if (it->replacements.size() == 1)
         result_.replace(it->location, it->length, it->replacements[0]);

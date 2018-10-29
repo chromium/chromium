@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/download/content/factory/download_service_factory.h"
 #include "components/download/public/background_service/clients.h"
@@ -16,6 +17,7 @@
 #include "content/public/browser/background_fetch_description.h"
 #include "content/public/browser/background_fetch_response.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -61,10 +63,15 @@ class LayoutTestBackgroundFetchDelegate::LayoutTestBackgroundFetchDownloadClient
     if (!client_)
       return download::Client::ShouldDownload::ABORT;
 
+    guid_to_response_[guid] =
+        std::make_unique<content::BackgroundFetchResponse>(url_chain,
+                                                           std::move(headers));
+
     client_->OnDownloadStarted(
         guid_to_unique_job_id_mapping_[guid], guid,
-        std::make_unique<content::BackgroundFetchResponse>(url_chain,
-                                                           std::move(headers)));
+        std::make_unique<content::BackgroundFetchResponse>(
+            guid_to_response_[guid]->url_chain,
+            guid_to_response_[guid]->headers));
 
     return download::Client::ShouldDownload::CONTINUE;
   }
@@ -80,6 +87,7 @@ class LayoutTestBackgroundFetchDelegate::LayoutTestBackgroundFetchDownloadClient
   }
 
   void OnDownloadFailed(const std::string& guid,
+                        const download::CompletionInfo& info,
                         download::Client::FailureReason reason) override {
     DCHECK(guid_to_unique_job_id_mapping_.count(guid));
     if (!client_)
@@ -95,7 +103,8 @@ class LayoutTestBackgroundFetchDelegate::LayoutTestBackgroundFetchDownloadClient
             content::BackgroundFetchResult::FailureReason::TIMEDOUT;
         break;
       case download::Client::FailureReason::UNKNOWN:
-        failure_reason = content::BackgroundFetchResult::FailureReason::UNKNOWN;
+        failure_reason =
+            content::BackgroundFetchResult::FailureReason::FETCH_ERROR;
         break;
       case download::Client::FailureReason::ABORTED:
       case download::Client::FailureReason::CANCELLED:
@@ -107,8 +116,9 @@ class LayoutTestBackgroundFetchDelegate::LayoutTestBackgroundFetchDownloadClient
     }
 
     std::unique_ptr<BackgroundFetchResult> result =
-        std::make_unique<BackgroundFetchResult>(base::Time::Now(),
-                                                failure_reason);
+        std::make_unique<BackgroundFetchResult>(
+            std::move(guid_to_response_[guid]), base::Time::Now(),
+            failure_reason);
 
     // Inform the client about the failed |result|. Then remove the mapping as
     // no further communication is expected from the download service.
@@ -116,6 +126,7 @@ class LayoutTestBackgroundFetchDelegate::LayoutTestBackgroundFetchDownloadClient
                                 std::move(result));
 
     guid_to_unique_job_id_mapping_.erase(guid);
+    guid_to_response_.erase(guid);
   }
 
   void OnDownloadSucceeded(const std::string& guid,
@@ -125,9 +136,9 @@ class LayoutTestBackgroundFetchDelegate::LayoutTestBackgroundFetchDownloadClient
       return;
 
     std::unique_ptr<BackgroundFetchResult> result =
-        std::make_unique<BackgroundFetchResult>(base::Time::Now(), info.path,
-                                                info.blob_handle,
-                                                info.bytes_downloaded);
+        std::make_unique<BackgroundFetchResult>(
+            std::move(guid_to_response_[guid]), base::Time::Now(), info.path,
+            info.blob_handle, info.bytes_downloaded);
 
     // Inform the client about the successful |result|. Then remove the mapping
     // as no further communication is expected from the download service.
@@ -135,6 +146,7 @@ class LayoutTestBackgroundFetchDelegate::LayoutTestBackgroundFetchDownloadClient
                                 std::move(result));
 
     guid_to_unique_job_id_mapping_.erase(guid);
+    guid_to_response_.erase(guid);
   }
 
   bool CanServiceRemoveDownloadedFile(const std::string& guid,
@@ -151,6 +163,8 @@ class LayoutTestBackgroundFetchDelegate::LayoutTestBackgroundFetchDownloadClient
  private:
   base::WeakPtr<content::BackgroundFetchDelegate::Client> client_;
   base::flat_map<std::string, std::string> guid_to_unique_job_id_mapping_;
+  base::flat_map<std::string, std::unique_ptr<content::BackgroundFetchResponse>>
+      guid_to_response_;
 
   DISALLOW_COPY_AND_ASSIGN(LayoutTestBackgroundFetchDownloadClient);
 };
@@ -173,7 +187,7 @@ void LayoutTestBackgroundFetchDelegate::GetPermissionForOrigin(
     const ResourceRequestInfo::WebContentsGetter& wc_getter,
     GetPermissionForOriginCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback).Run(true /* has_permission */);
+  std::move(callback).Run(BackgroundFetchPermission::ALLOWED);
 }
 
 void LayoutTestBackgroundFetchDelegate::CreateDownloadJob(
@@ -213,7 +227,8 @@ void LayoutTestBackgroundFetchDelegate::DownloadUrl(
               browser_context_, std::move(clients),
               GetNetworkConnectionTracker(), base::FilePath(),
               BrowserContext::GetBlobStorageContext(browser_context_),
-              BrowserThread::GetTaskRunnerForThread(BrowserThread::IO)));
+              base::CreateSingleThreadTaskRunnerWithTraits(
+                  {BrowserThread::IO})));
     }
   }
 

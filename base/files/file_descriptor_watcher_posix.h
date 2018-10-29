@@ -12,9 +12,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/sequence_checker.h"
+#include "base/single_thread_task_runner.h"
 
 namespace base {
 
@@ -61,11 +61,10 @@ class BASE_EXPORT FileDescriptorWatcher {
 
     // TaskRunner associated with the MessageLoopForIO that watches the file
     // descriptor.
-    const scoped_refptr<SingleThreadTaskRunner>
-        message_loop_for_io_task_runner_;
+    const scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;
 
     // Notified by the MessageLoopForIO associated with
-    // |message_loop_for_io_task_runner_| when the watched file descriptor is
+    // |io_thread_task_runner_| when the watched file descriptor is
     // readable or writable without blocking. Posts a task to run RunCallback()
     // on the sequence on which the Controller was instantiated. When the
     // Controller is deleted, ownership of |watcher_| is transfered to a delete
@@ -82,11 +81,13 @@ class BASE_EXPORT FileDescriptorWatcher {
     DISALLOW_COPY_AND_ASSIGN(Controller);
   };
 
-  // Registers |message_loop_for_io| to watch file descriptors for which
+  // Registers |io_thread_task_runner| to watch file descriptors for which
   // callbacks are registered from the current thread via WatchReadable() or
-  // WatchWritable(). |message_loop_for_io| may run on another thread. The
-  // constructed FileDescriptorWatcher must not outlive |message_loop_for_io|.
-  FileDescriptorWatcher(MessageLoopForIO* message_loop_for_io);
+  // WatchWritable(). |io_thread_task_runner| may run on another thread.
+  // |io_thread_task_runner| must post tasks to a thread which runs
+  // a MessagePumpForIO.
+  explicit FileDescriptorWatcher(
+      scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner);
   ~FileDescriptorWatcher();
 
   // Registers |callback| to be posted on the current sequence when |fd| is
@@ -102,6 +103,12 @@ class BASE_EXPORT FileDescriptorWatcher {
                                                    const Closure& callback);
 
  private:
+  scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner() const {
+    return io_thread_task_runner_;
+  }
+
+  const scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;
+
   DISALLOW_COPY_AND_ASSIGN(FileDescriptorWatcher);
 };
 

@@ -1,0 +1,275 @@
+{
+  "startingURL": "https://jet.com/checkout",
+  "autofillProfile": [
+    {
+      "type": "ADDRESS_HOME_LINE1",
+      "value": "4120 Freidrich Lane"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE2",
+      "value": "Apt 8"
+    },
+    {
+      "type": "ADDRESS_HOME_ZIP",
+      "value": "78744"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "value": "2027"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_MONTH",
+      "value": "05"
+    },
+    {
+      "type": "CREDIT_CARD_NAME_FULL",
+      "value": "Milton Waddams"
+    },
+    {
+      "type": "CREDIT_CARD_NUMBER",
+      "value": "9621327911759602"
+    },
+    {
+      "type": "NAME_FIRST",
+      "value": "Milton"
+    },
+    {
+      "type": "NAME_LAST",
+      "value": "Waddams"
+    },
+    {
+      "type": "PHONE_HOME_CITY_AND_NUMBER",
+      "value": "5125551234"
+    }
+  ],
+  "passwordManagerProfiles": [],
+  "actions": [
+    {
+      "selector": "//input[@id=\"address-first_name\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 1
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Waddams",
+      "selector": "//input[@id=\"address-last_name\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "NAME_LAST",
+      "action_index": 2
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane",
+      "selector": "//input[@id=\"address-street_1\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_LINE1",
+      "action_index": 3
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@id=\"address-street_2\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_LINE2",
+      "action_index": 4
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@id=\"address-zip\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_ZIP",
+      "action_index": 5
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5125551234",
+      "selector": "//input[@id=\"address-phone\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 6
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton",
+      "selector": "//input[@id=\"address-first_name\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "NAME_FIRST",
+      "action_index": 7
+    },
+    {
+      "selector": "//button",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 8
+    },
+    {
+      "selector": "//a[text()=\"Yes, save & continue\"]",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 9
+    },
+    {
+      "url": "https://jet.com/checkout",
+      "context": {
+        "isIframe": false
+      },
+      "type": "loadPage",
+      "action_index": 10
+    },
+    {
+      "selector": "//input[@id=\"payment-number\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 11
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton Waddams",
+      "selector": "//input[@id=\"payment-name\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "CREDIT_CARD_NAME_FULL",
+      "action_index": 12
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "05 / 27",
+      "selector": "//input[@id=\"payment-expiration\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
+      "action_index": 13
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "9621327911759602",
+      "selector": "//input[@id=\"payment-number\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "CREDIT_CARD_NUMBER",
+      "action_index": 14
+    },
+    {
+      "selector": "//span[text()=\"Billing address is same as shipping\"]",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 16
+    },
+    {
+      "selector": "//input[@id=\"payment-first_name\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 17
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Waddams",
+      "selector": "//input[@id=\"payment-last_name\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "NAME_LAST",
+      "action_index": 18
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane",
+      "selector": "//input[@id=\"payment-street_1\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_LINE1",
+      "action_index": 19
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@id=\"payment-street_2\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_LINE2",
+      "action_index": 20
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@id=\"payment-zip\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_ZIP",
+      "action_index": 21
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5125551234",
+      "selector": "//input[@id=\"payment-phone\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 22
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton",
+      "selector": "//input[@id=\"payment-first_name\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "NAME_FIRST",
+      "action_index": 23
+    }
+  ]
+}

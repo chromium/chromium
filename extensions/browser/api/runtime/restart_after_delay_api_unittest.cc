@@ -14,6 +14,7 @@
 #include "extensions/browser/api_unittest.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/browser/test_runtime_api_delegate.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
 
 namespace extensions {
@@ -199,18 +200,10 @@ TEST_F(RestartAfterDelayApiTest, RestartAfterDelayTest) {
 
   // Create another extension and make it attempt to use the api, and expect a
   // failure.
-  std::unique_ptr<base::DictionaryValue> test_extension_value(
-      api_test_utils::ParseDictionary("{\n"
-                                      "  \"name\": \"Test\",\n"
-                                      "  \"version\": \"2.0\",\n"
-                                      "  \"app\": {\n"
-                                      "    \"background\": {\n"
-                                      "      \"scripts\": [\"background.js\"]\n"
-                                      "    }\n"
-                                      "  }\n"
-                                      "}"));
-  scoped_refptr<Extension> test_extension(api_test_utils::CreateExtension(
-      Manifest::INTERNAL, test_extension_value.get(), "id2"));
+  scoped_refptr<const Extension> test_extension =
+      ExtensionBuilder("Another App", ExtensionBuilder::Type::PLATFORM_APP)
+          .SetLocation(Manifest::INTERNAL)
+          .Build();
   RunRestartAfterDelayFunctionForExtention(
       "[5]", test_extension.get(), "Not the first extension to call this API.");
 

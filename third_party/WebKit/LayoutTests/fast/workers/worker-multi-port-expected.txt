@@ -17,4 +17,3 @@ PASS event.ports contains two ports when two ports sent
 PASS event.ports contains two ports when two ports re-sent after error
 
 TEST COMPLETE
-

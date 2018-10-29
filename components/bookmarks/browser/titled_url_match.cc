@@ -19,8 +19,7 @@ TitledUrlMatch::~TitledUrlMatch() {}
 std::vector<size_t> TitledUrlMatch::OffsetsFromMatchPositions(
     const MatchPositions& match_positions) {
   std::vector<size_t> offsets;
-  for (MatchPositions::const_iterator i = match_positions.begin();
-       i != match_positions.end(); ++i) {
+  for (auto i = match_positions.begin(); i != match_positions.end(); ++i) {
     offsets.push_back(i->first);
     offsets.push_back(i->second);
   }
@@ -33,8 +32,8 @@ TitledUrlMatch::MatchPositions TitledUrlMatch::ReplaceOffsetsInMatchPositions(
     const std::vector<size_t>& offsets) {
   DCHECK_EQ(2 * match_positions.size(), offsets.size());
   MatchPositions new_match_positions;
-  std::vector<size_t>::const_iterator offset_iter = offsets.begin();
-  for (MatchPositions::const_iterator match_iter = match_positions.begin();
+  auto offset_iter = offsets.begin();
+  for (auto match_iter = match_positions.begin();
        match_iter != match_positions.end(); ++match_iter, ++offset_iter) {
     const size_t begin = *offset_iter;
     ++offset_iter;

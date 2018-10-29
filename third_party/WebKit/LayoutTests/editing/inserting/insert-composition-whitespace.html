@@ -18,7 +18,7 @@ function assertMarkedText(tagName, compositionText, expected) {
 }
 
 test(() => {
- assert_exists(window, 'textInputController',
+ assert_own_property(window, 'textInputController',
                'this test requires window.textInputController.');
 
   assertMarkedText('div', 'AB', 'AB');

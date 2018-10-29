@@ -36,5 +36,14 @@ Polymer({
   /** @private */
   hasSingleApp_: function(numOfApps) {
     return numOfApps === 1;
-  }
+  },
+
+  /** @private */
+  getDialogTitleA11yString_: function(numOfApps) {
+    if (this.hasSingleApp_(numOfApps)) {
+      return this.i18n('appDownloadingScreenTitleSingular');
+    } else {
+      return this.i18n('appDownloadingScreenTitlePlural', numOfApps);
+    }
+  },
 });

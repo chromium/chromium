@@ -187,7 +187,7 @@ class SearchResultAnswerCardView::SearchAnswerContainerView
     // Default button role is atomic for ChromeVox, so assign a generic
     // container role to allow accessibility focus to get into this view.
     node_data->role = ax::mojom::Role::kGenericContainer;
-    node_data->SetName(accessible_name());
+    node_data->SetName(GetAccessibleName());
   }
 
   void PaintButtonContents(gfx::Canvas* canvas) override {
@@ -239,7 +239,7 @@ int SearchResultAnswerCardView::GetYSize() {
 int SearchResultAnswerCardView::DoUpdate() {
   std::vector<SearchResult*> display_results =
       SearchModel::FilterSearchResultsByDisplayType(
-          results(), ash::SearchResultDisplayType::kCard, 1);
+          results(), ash::SearchResultDisplayType::kCard, /*excludes=*/{}, 1);
 
   const bool have_result = !display_results.empty();
 

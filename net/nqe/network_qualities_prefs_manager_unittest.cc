@@ -10,9 +10,9 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "net/base/network_change_notifier.h"
 #include "net/nqe/effective_connection_type.h"
@@ -32,13 +32,13 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
       : write_count_(0), read_count_(0), value_(new base::DictionaryValue) {}
 
   ~TestPrefDelegate() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     value_->Clear();
     EXPECT_EQ(0U, value_->size());
   }
 
   void SetDictionaryValue(const base::DictionaryValue& value) override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     write_count_++;
     value_.reset(value.DeepCopy());
@@ -46,19 +46,19 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
   }
 
   std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     read_count_++;
     return value_->CreateDeepCopy();
   }
 
   size_t write_count() const {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return write_count_;
   }
 
   size_t read_count() const {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return read_count_;
   }
 
@@ -70,7 +70,7 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
   // Current value of the prefs.
   std::unique_ptr<base::DictionaryValue> value_;
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(TestPrefDelegate);
 };

@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/stl_util.h"
 #include "base/sys_info.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/settings/install_attributes.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
@@ -31,6 +31,9 @@
 #include "chromeos/chromeos_paths.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/image_loader_client.h"
+#include "chromeos/settings/install_attributes.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
@@ -115,6 +118,46 @@ std::string GetHighlightsAppId() {
   return extension_misc::kHighlightsAppId;
 }
 
+// If the current locale is not the default one, ensure it is reverted to the
+// default when demo session restarts (i.e. user-selected locale is only allowed
+// to be used for a single session).
+void RestoreDefaultLocaleForNextSession() {
+  auto* user = user_manager::UserManager::Get()->GetActiveUser();
+  // Tests may not have an active user.
+  if (!user)
+    return;
+  if (!user->is_profile_created()) {
+    user->AddProfileCreatedObserver(
+        base::BindOnce(&RestoreDefaultLocaleForNextSession));
+    return;
+  }
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(profile);
+  const std::string current_locale =
+      profile->GetPrefs()->GetString(language::prefs::kApplicationLocale);
+  if (current_locale.empty()) {
+    LOG(WARNING) << "Current locale read from kApplicationLocale is empty!";
+    return;
+  }
+  const std::string default_locale =
+      g_browser_process->local_state()->GetString(
+          prefs::kDemoModeDefaultLocale);
+  if (default_locale.empty()) {
+    // If the default locale is uninitialized, consider the current locale to be
+    // the default. This is safe because users are not allowed to change the
+    // locale prior to introduction of this code.
+    g_browser_process->local_state()->SetString(prefs::kDemoModeDefaultLocale,
+                                                current_locale);
+    return;
+  }
+  if (current_locale != default_locale) {
+    // If the user has changed the locale, request to change it back (which will
+    // take effect when the session restarts).
+    profile->ChangeAppLocale(default_locale,
+                             Profile::APP_LOCALE_CHANGED_VIA_DEMO_SESSION);
+  }
+}
+
 }  // namespace
 
 // static
@@ -174,6 +217,11 @@ DemoSession::DemoModeConfig DemoSession::GetDemoConfig() {
   bool is_demo_mode = is_demo_device_mode || is_demo_device_domain;
 
   const PrefService* prefs = g_browser_process->local_state();
+
+  // The testing browser process might not have local state.
+  if (!prefs)
+    return DemoModeConfig::kNone;
+
   // Demo mode config preference is set at the end of the demo setup after
   // device is enrolled.
   auto demo_config = DemoModeConfig::kNone;
@@ -261,6 +309,11 @@ bool DemoSession::ShouldDisplayInAppLauncher(const std::string& app_id) {
          app_id != extension_misc::kGeniusAppId;
 }
 
+// static
+void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(prefs::kDemoModeDefaultLocale, std::string());
+}
+
 void DemoSession::EnsureOfflineResourcesLoaded(
     base::OnceClosure load_callback) {
   if (offline_resources_loaded_) {
@@ -337,9 +390,8 @@ bool DemoSession::ShouldIgnorePinPolicy(const std::string& app_id_or_package) {
   if (!net::NetworkChangeNotifier::IsOffline())
     return false;
 
-  return std::find(ignore_pin_policy_offline_apps_.begin(),
-                   ignore_pin_policy_offline_apps_.end(),
-                   app_id_or_package) != ignore_pin_policy_offline_apps_.end();
+  return base::ContainsValue(ignore_pin_policy_offline_apps_,
+                             app_id_or_package);
 }
 
 void DemoSession::SetExtensionsExternalLoader(
@@ -447,6 +499,8 @@ void DemoSession::OnSessionStateChanged() {
       session_manager::SessionState::ACTIVE) {
     return;
   }
+  RestoreDefaultLocaleForNextSession();
+
   if (!offline_enrolled_)
     InstallAppFromUpdateUrl(GetHighlightsAppId());
 

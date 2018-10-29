@@ -38,4 +38,15 @@ jumbo_component("x") {
     "//ui/gfx",
     "//ui/gfx/x",
   ]
+
+  if (!is_chromeos) {
+    sources += [
+      "x11_display_util.cc",
+      "x11_display_util.h",
+    ]
+
+    configs += [ "//build/config/linux:xrandr" ]
+
+    deps += [ "//ui/display/util" ]
+  }
 }

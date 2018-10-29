@@ -14,7 +14,7 @@
 //    draw it to another 2D canvas and read back the pixels.
 //  - Finally, we compare the pixels read from the first 2D canvas with those
 //    read from the final 2D canvas. We expect them to match with some
-//     tolerance.
+//    tolerance.
 
 function testPixels(actualPixels, expectedPixels, testScenario)
 {
@@ -27,7 +27,7 @@ function testPixels(actualPixels, expectedPixels, testScenario)
     // pixels). For a thorough investigation, please see:
     // https://fiddle.skia.org/c/584fbc0b778a32a6cc2ea3ecbf2c6e8e
     if (testScenario.colorSpace == "srgb" &&
-        testScenario.pixelFormat == "8-8-8-8" &&
+        testScenario.pixelFormat == "uint8" &&
         ['linear-rgb', 'rec2020', 'p3'].indexOf(
             testScenario.colorSpaceConversion) > -1)
         tolerance = 8;
@@ -103,14 +103,13 @@ function runTransferFromImageBitmapTest(testScenario) {
 
 function runAllTests() {
     var colorSpaces = [
-        {colorSpace: 'srgb', pixelFormat: '8-8-8-8'},
+        {colorSpace: 'srgb', pixelFormat: 'uint8'},
         {colorSpace: 'srgb', pixelFormat: 'float16'},
+        {colorSpace: 'linear-rgb', pixelFormat: 'float16'},
         {colorSpace: 'rec2020', pixelFormat: 'float16'},
         {colorSpace: 'p3', pixelFormat: 'float16'}
         ];
-    // crbug.com/859102
-//    var alphaValues = [0.5, 1];
-    var alphaValues = [1];
+    var alphaValues = [0.5, 1];
     var colorSpaceConversions = [
         'none', 'default', 'srgb', 'linear-rgb', 'rec2020', 'p3'];
 

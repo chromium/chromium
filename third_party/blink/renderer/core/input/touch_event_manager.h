@@ -35,7 +35,7 @@ class CORE_EXPORT TouchEventManager
 
   void HandleTouchPoint(const WebPointerEvent&,
                         const Vector<WebPointerEvent>&,
-                        const EventHandlingUtil::PointerEventTarget&);
+                        const event_handling_util::PointerEventTarget&);
 
   WebInputEventResult FlushEvents();
 
@@ -79,7 +79,7 @@ class CORE_EXPORT TouchEventManager
   // touch events.
   void UpdateTouchAttributeMapsForPointerDown(
       const WebPointerEvent&,
-      const EventHandlingUtil::PointerEventTarget&);
+      const event_handling_util::PointerEventTarget&);
 
   // This is triggered either by VSync signal to send one touch event per frame
   // accumulating all move events or by discrete events pointerdown/up/cancel.

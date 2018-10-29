@@ -39,7 +39,8 @@ constexpr const double kFractionOfExecutionTimeToSample = 0.02;
 constexpr struct StackSamplingProfiler::SamplingParams kSamplingParams = {
     /* initial_delay= */ base::TimeDelta::FromMilliseconds(0),
     /* samples_per_profile= */ 300,
-    /* sampling_interval= */ base::TimeDelta::FromMilliseconds(100)};
+    /* sampling_interval= */ base::TimeDelta::FromMilliseconds(100),
+    /* keep_consistent_sampling_interval= */ true};
 
 CallStackProfileParams::Process GetProcess() {
   const base::CommandLine* command_line =

@@ -67,6 +67,11 @@ void FakeConciergeClient::StartTerminaVm(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), start_vm_response_));
 
+  if (start_vm_response_.status() != vm_tools::concierge::VM_STATUS_STARTING) {
+    // Don't send the tremplin signal unless the VM was STARTING.
+    return;
+  }
+
   // Trigger CiceroneClient::Observer::NotifyTremplinStartedSignal.
   vm_tools::cicerone::TremplinStartedSignal tremplin_started_signal;
   tremplin_started_signal.set_vm_name(request.name());
@@ -123,7 +128,7 @@ void FakeConciergeClient::InitializeProtoResponses() {
   list_vm_disks_response_.set_success(true);
 
   start_vm_response_.Clear();
-  start_vm_response_.set_success(true);
+  start_vm_response_.set_status(vm_tools::concierge::VM_STATUS_STARTING);
 
   stop_vm_response_.Clear();
   stop_vm_response_.set_success(true);

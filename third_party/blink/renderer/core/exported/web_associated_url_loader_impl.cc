@@ -397,8 +397,11 @@ void WebAssociatedURLLoaderImpl::LoadAsynchronously(
       options_.preflight_policy);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+  // |observer_| can be null if Cancel, DocumentDestroyed or
+  // ClientAdapterDone gets called between creating the loader and
+  // calling LoadAsynchronously.
   if (observer_) {
-    task_runner = ToDocument(observer_->LifecycleContext())
+    task_runner = To<Document>(observer_->LifecycleContext())
                       ->GetTaskRunner(TaskType::kInternalLoading);
   } else {
     task_runner = Platform::Current()->CurrentThread()->GetTaskRunner();
@@ -419,30 +422,31 @@ void WebAssociatedURLLoaderImpl::LoadAsynchronously(
       scoped_refptr<SecurityOrigin> origin =
           SecurityOrigin::CreateUniqueOpaque();
       origin->GrantUniversalAccess();
-      resource_loader_options.security_origin = std::move(origin);
+      new_request.ToMutableResourceRequest().SetRequestorOrigin(origin);
     }
 
     const ResourceRequest& webcore_request = new_request.ToResourceRequest();
-    WebURLRequest::RequestContext context = webcore_request.GetRequestContext();
-    if (context == WebURLRequest::kRequestContextUnspecified) {
+    mojom::RequestContextType context = webcore_request.GetRequestContext();
+    if (context == mojom::RequestContextType::UNSPECIFIED) {
       // TODO(yoav): We load URLs without setting a TargetType (and therefore a
       // request context) in several places in content/
       // (P2PPortAllocatorSession::AllocateLegacyRelaySession, for example).
       // Remove this once those places are patched up.
-      new_request.SetRequestContext(WebURLRequest::kRequestContextInternal);
-    } else if (context == WebURLRequest::kRequestContextVideo) {
+      new_request.SetRequestContext(mojom::RequestContextType::INTERNAL);
+    } else if (context == mojom::RequestContextType::VIDEO) {
       resource_loader_options.initiator_info.name =
           FetchInitiatorTypeNames::video;
-    } else if (context == WebURLRequest::kRequestContextAudio) {
+    } else if (context == mojom::RequestContextType::AUDIO) {
       resource_loader_options.initiator_info.name =
           FetchInitiatorTypeNames::audio;
     }
 
-    Document* document = ToDocument(observer_->LifecycleContext());
-    DCHECK(document);
-    loader_ = new ThreadableLoader(*document, client_adapter_.get(),
-                                   resource_loader_options);
-    loader_->Start(webcore_request);
+    if (observer_) {
+      Document& document = To<Document>(*observer_->LifecycleContext());
+      loader_ = new ThreadableLoader(document, client_adapter_.get(),
+                                     resource_loader_options);
+      loader_->Start(webcore_request);
+    }
   }
 
   if (!loader_) {

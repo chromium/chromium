@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 FAIL GeolocationSensor: sensor is suspended and resumed when focus traverses from to cross-origin frame assert_true: expected true got false
 FAIL GeolocationSensor: sensor is not suspended when focus traverses from to same-origin frame assert_true: expected true got false
+FAIL GeolocationSensor: losing a document's frame with an active sensor does not crash assert_true: expected true got false
 Harness: the test ran to completion.
 

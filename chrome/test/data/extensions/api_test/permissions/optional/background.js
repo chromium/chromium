@@ -103,13 +103,6 @@ chrome.test.getConfig(function(config) {
       }));
     },
 
-    // Nothing should happen if we request permission we already have
-    function requestNoOp() {
-      chrome.permissions.request(
-          {permissions:['management'], origins:['http://a.com/*']},
-          pass(function(granted) { assertTrue(granted); }));
-    },
-
     // We should get an error when requesting permissions that haven't been
     // defined in "optional_permissions".
     function requestNonOptional() {
@@ -142,16 +135,6 @@ chrome.test.getConfig(function(config) {
               assertTrue(checkPermSetsEq(permissionsWithBookmarks,
                                          permissions));
             }));
-      }));
-    },
-
-    // These permissions should be on the granted list because they're on the
-    // extension's default permission list.
-    function requestGrantedPermission() {
-      chrome.permissions.request(
-          {permissions: ['management'], origins: ['http://a.com/*']},
-          pass(function(granted) {
-        assertTrue(granted);
       }));
     },
 
@@ -308,7 +291,7 @@ chrome.test.getConfig(function(config) {
       });
 
       chrome.permissions.request(
-          {permissions: ['bookmarks', 'management']}, pass(function(granted) {
+          {permissions: ['bookmarks']}, pass(function(granted) {
         assertTrue(granted);
         chrome.permissions.remove(
             {permissions: ['bookmarks']}, pass(function() {

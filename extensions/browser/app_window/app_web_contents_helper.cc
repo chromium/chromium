@@ -40,7 +40,9 @@ bool AppWebContentsHelper::ShouldSuppressGestureEvent(
   if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType())) {
     // Only suppress pinch events that cause a scale change. We still
     // allow synthetic wheel events for touchpad pinch to go to the page.
-    return !event.NeedsWheelEvent();
+    return !(event.SourceDevice() ==
+                 blink::WebGestureDevice::kWebGestureDeviceTouchpad &&
+             event.NeedsWheelEvent());
   }
 
   return false;

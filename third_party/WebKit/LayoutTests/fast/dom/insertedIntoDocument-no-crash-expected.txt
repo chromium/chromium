@@ -1,7 +1,7 @@
 This test must not crash.
 
 foo
- <mark>
+<mark>
 <script>f1();</script>
 <xmp>
 foo

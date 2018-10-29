@@ -64,6 +64,24 @@ void AutofillWebDataBackendImpl::RemoveExpiredFormElements() {
            this));
 }
 
+void AutofillWebDataBackendImpl::NotifyOfAutofillProfileChanged(
+    const AutofillProfileChange& change) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+
+  // DB sequence notification.
+  for (auto& db_observer : db_observer_list_)
+    db_observer.AutofillProfileChanged(change);
+}
+
+void AutofillWebDataBackendImpl::NotifyOfCreditCardChanged(
+    const CreditCardChange& change) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+
+  // DB sequence notification.
+  for (auto& db_observer : db_observer_list_)
+    db_observer.CreditCardChanged(change);
+}
+
 void AutofillWebDataBackendImpl::NotifyOfMultipleAutofillChanges() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 

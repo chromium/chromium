@@ -33,7 +33,8 @@ namespace proximity_auth {
 class BluetoothLowEnergyConnectionFinder;
 }
 
-namespace apps {
+namespace chrome_apps {
+namespace api {
 
 class EasyUnlockPrivateConnectionManager;
 
@@ -177,9 +178,11 @@ class EasyUnlockPrivateSetupConnectionSendFunction
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockPrivateSetupConnectionSendFunction);
 };
 
-}  // namespace apps
+}  // namespace api
+}  // namespace chrome_apps
 
 template <>
-void apps::EasyUnlockPrivateAPI::Factory::DeclareFactoryDependencies();
+void chrome_apps::api::EasyUnlockPrivateAPI::Factory::
+    DeclareFactoryDependencies();
 
 #endif  // CHROME_BROWSER_APPS_PLATFORM_APPS_API_EASY_UNLOCK_PRIVATE_EASY_UNLOCK_PRIVATE_API_H_

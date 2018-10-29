@@ -328,7 +328,7 @@ void StorageHandler::OnGetAndroidSize(bool succeeded,
 }
 
 void StorageHandler::UpdateCrostiniSize() {
-  if (!IsCrostiniEnabled(profile_)) {
+  if (!crostini::IsCrostiniEnabled(profile_)) {
     return;
   }
 
@@ -341,7 +341,7 @@ void StorageHandler::UpdateCrostiniSize() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void StorageHandler::OnGetCrostiniSize(crostini::ConciergeClientResult result,
+void StorageHandler::OnGetCrostiniSize(crostini::CrostiniResult result,
                                        int64_t size) {
   updating_crostini_size_ = false;
   FireWebUIListener("storage-crostini-size-changed",

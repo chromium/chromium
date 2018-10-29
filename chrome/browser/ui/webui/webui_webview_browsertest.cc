@@ -242,8 +242,9 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
       base::Value(GetTestUrl("empty.html").spec())));
 }
 
-#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+#if defined(OS_CHROMEOS) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 // TODO(crbug.com/859320) Fails on CrOS dbg with --enable-features=Mash.
+// TODO(crbug.com/893472) Flaky on CrOS ASan LSan
 #define MAYBE_AddContentScriptsWithNewWindowAPI \
   DISABLED_AddContentScriptsWithNewWindowAPI
 #else

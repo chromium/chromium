@@ -57,6 +57,9 @@ void AppBannerManagerDesktop::DidFinishCreatingBookmarkApp(
     SendBannerAccepted();
     AppBannerSettingsHelper::RecordBannerInstallEvent(
         contents, GetAppIdentifier(), AppBannerSettingsHelper::WEB);
+
+    // OnInstall must be called last since it resets Mojo bindings.
+    OnInstall(false /* is_native app */, blink::kWebDisplayModeStandalone);
     return;
   }
 

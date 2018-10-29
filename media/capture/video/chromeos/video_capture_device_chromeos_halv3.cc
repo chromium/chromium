@@ -95,18 +95,18 @@ void VideoCaptureDeviceChromeOSHalv3::TakePhoto(TakePhotoCallback callback) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   DCHECK(camera_device_delegate_);
   camera_device_ipc_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&CameraDeviceDelegate::TakePhoto,
-                            camera_device_delegate_->GetWeakPtr(),
-                            base::Passed(&callback)));
+      FROM_HERE, base::BindOnce(&CameraDeviceDelegate::TakePhoto,
+                                camera_device_delegate_->GetWeakPtr(),
+                                base::Passed(&callback)));
 }
 
 void VideoCaptureDeviceChromeOSHalv3::GetPhotoState(
     GetPhotoStateCallback callback) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   camera_device_ipc_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&CameraDeviceDelegate::GetPhotoState,
-                            camera_device_delegate_->GetWeakPtr(),
-                            base::Passed(&callback)));
+      FROM_HERE, base::BindOnce(&CameraDeviceDelegate::GetPhotoState,
+                                camera_device_delegate_->GetWeakPtr(),
+                                base::Passed(&callback)));
 }
 
 void VideoCaptureDeviceChromeOSHalv3::SetPhotoOptions(
@@ -114,9 +114,10 @@ void VideoCaptureDeviceChromeOSHalv3::SetPhotoOptions(
     SetPhotoOptionsCallback callback) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   camera_device_ipc_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&CameraDeviceDelegate::SetPhotoOptions,
-                            camera_device_delegate_->GetWeakPtr(),
-                            base::Passed(&settings), base::Passed(&callback)));
+      FROM_HERE,
+      base::BindOnce(&CameraDeviceDelegate::SetPhotoOptions,
+                     camera_device_delegate_->GetWeakPtr(),
+                     base::Passed(&settings), base::Passed(&callback)));
 }
 
 void VideoCaptureDeviceChromeOSHalv3::SuspendImminent(
@@ -153,8 +154,9 @@ void VideoCaptureDeviceChromeOSHalv3::OpenDevice() {
                  camera_device_delegate_->GetWeakPtr(), capture_params_,
                  base::Unretained(device_context_.get())));
   camera_device_ipc_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&CameraDeviceDelegate::SetRotation,
-                            camera_device_delegate_->GetWeakPtr(), rotation_));
+      FROM_HERE,
+      base::BindOnce(&CameraDeviceDelegate::SetRotation,
+                     camera_device_delegate_->GetWeakPtr(), rotation_));
 }
 
 void VideoCaptureDeviceChromeOSHalv3::CloseDevice(base::OnceClosure callback) {
@@ -171,13 +173,13 @@ void VideoCaptureDeviceChromeOSHalv3::CloseDevice(base::OnceClosure callback) {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   camera_device_ipc_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&CameraDeviceDelegate::StopAndDeAllocate,
-                            camera_device_delegate_->GetWeakPtr(),
-                            base::Bind(
-                                [](base::WaitableEvent* device_closed) {
-                                  device_closed->Signal();
-                                },
-                                base::Unretained(&device_closed))));
+      FROM_HERE, base::BindOnce(&CameraDeviceDelegate::StopAndDeAllocate,
+                                camera_device_delegate_->GetWeakPtr(),
+                                base::BindOnce(
+                                    [](base::WaitableEvent* device_closed) {
+                                      device_closed->Signal();
+                                    },
+                                    base::Unretained(&device_closed))));
   base::TimeDelta kWaitTimeoutSecs = base::TimeDelta::FromSeconds(3);
   device_closed.TimedWait(kWaitTimeoutSecs);
   if (callback) {

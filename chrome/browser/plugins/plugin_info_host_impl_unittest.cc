@@ -70,8 +70,7 @@ bool FakePluginServiceFilter::IsPluginAvailable(
     const GURL& url,
     const url::Origin& main_frame_origin,
     content::WebPluginInfo* plugin) {
-  std::map<base::FilePath, bool>::iterator it =
-      plugin_state_.find(plugin->path);
+  auto it = plugin_state_.find(plugin->path);
   if (it == plugin_state_.end()) {
     ADD_FAILURE() << "No plugin state for '" << plugin->path.value() << "'";
     return false;

@@ -66,7 +66,7 @@ MatchResult GetMatchResult(const PasswordForm& form,
 
   const bool allow_psl_match = ShouldPSLDomainMatchingApply(
       GetRegistryControlledDomain(GURL(form_digest.signon_realm)));
-  const bool allow_federated_match = !form.federation_origin.unique();
+  const bool allow_federated_match = !form.federation_origin.opaque();
 
   if (allow_psl_match &&
       IsPublicSuffixDomainMatch(form.signon_realm, form_digest.signon_realm))

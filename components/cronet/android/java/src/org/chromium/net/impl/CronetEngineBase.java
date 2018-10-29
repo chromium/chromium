@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 package org.chromium.net.impl;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-
 import static org.chromium.net.UrlRequest.Builder.REQUEST_PRIORITY_HIGHEST;
 import static org.chromium.net.UrlRequest.Builder.REQUEST_PRIORITY_IDLE;
 import static org.chromium.net.UrlRequest.Builder.REQUEST_PRIORITY_LOW;
 import static org.chromium.net.UrlRequest.Builder.REQUEST_PRIORITY_LOWEST;
 import static org.chromium.net.UrlRequest.Builder.REQUEST_PRIORITY_MEDIUM;
+
+import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.ExperimentalBidirectionalStream;

@@ -549,13 +549,31 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   }
 
   // Prefer the color space found by libavcodec if available.
-  ColorSpace color_space = AVColorSpaceToColorSpace(codec_context->colorspace,
-                                                    codec_context->color_range);
-  if (color_space == COLOR_SPACE_UNSPECIFIED) {
-    // Otherwise, assume that SD video is usually Rec.601, and HD is usually
-    // Rec.709.
-    color_space = (natural_size.height() < 720) ? COLOR_SPACE_SD_REC601
-                                                : COLOR_SPACE_HD_REC709;
+  VideoColorSpace color_space =
+      VideoColorSpace(codec_context->color_primaries, codec_context->color_trc,
+                      codec_context->colorspace,
+                      codec_context->color_range == AVCOL_RANGE_JPEG
+                          ? gfx::ColorSpace::RangeID::FULL
+                          : gfx::ColorSpace::RangeID::LIMITED);
+  if (!color_space.IsSpecified()) {
+    // VP9 frames may have color information, but that information cannot
+    // express new color spaces, like HDR. For that reason, color space
+    // information from the container should take precedence over color space
+    // information from the VP9 stream. However, if we infer the color space
+    // based on resolution here, it looks as if it came from the container.
+    // Since this inference causes color shifts and is slated to go away
+    // we just skip it for VP9 and leave the color space undefined, which
+    // will make the VP9 decoder behave correctly..
+    // We also ignore the resolution for AV1, since it's new and it's easy
+    // to make it behave correctly from the get-go.
+    // TODO(hubbe): Skip this inference for all codecs.
+    if (codec_context->codec_id != AV_CODEC_ID_VP9 &&
+        codec_context->codec_id != AV_CODEC_ID_AV1) {
+      // Otherwise, assume that SD video is usually Rec.601, and HD is usually
+      // Rec.709.
+      color_space = (natural_size.height() < 720) ? VideoColorSpace::REC601()
+                                                  : VideoColorSpace::REC709();
+    }
   }
 
   // AVCodecContext occasionally has invalid extra data. See
@@ -571,18 +589,10 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     extra_data.assign(codec_context->extradata,
                       codec_context->extradata + codec_context->extradata_size);
   }
-  config->Initialize(codec, profile, format, color_space, video_rotation,
-                     coded_size, visible_rect, natural_size, extra_data,
-                     GetEncryptionScheme(stream));
-
-  const AVCodecParameters* codec_parameters = stream->codecpar;
-  config->set_color_space_info(VideoColorSpace(
-      codec_parameters->color_primaries, codec_parameters->color_trc,
-      codec_parameters->color_space,
-      codec_parameters->color_range == AVCOL_RANGE_JPEG
-          ? gfx::ColorSpace::RangeID::FULL
-          : gfx::ColorSpace::RangeID::LIMITED));
-
+  config->Initialize(codec, profile, format, COLOR_SPACE_UNSPECIFIED,
+                     video_rotation, coded_size, visible_rect, natural_size,
+                     extra_data, GetEncryptionScheme(stream));
+  config->set_color_space_info(color_space);
   return true;
 }
 
@@ -595,7 +605,7 @@ void VideoDecoderConfigToAVCodecContext(
   codec_context->coded_width = config.coded_size().width();
   codec_context->coded_height = config.coded_size().height();
   codec_context->pix_fmt = VideoPixelFormatToAVPixelFormat(config.format());
-  if (config.color_space() == COLOR_SPACE_JPEG)
+  if (config.color_space_info().range == gfx::ColorSpace::RangeID::FULL)
     codec_context->color_range = AVCOL_RANGE_JPEG;
 
   if (config.extra_data().empty()) {
@@ -762,23 +772,24 @@ AVPixelFormat VideoPixelFormatToAVPixelFormat(VideoPixelFormat video_format) {
   return AV_PIX_FMT_NONE;
 }
 
-ColorSpace AVColorSpaceToColorSpace(AVColorSpace color_space,
-                                    AVColorRange color_range) {
+VideoColorSpace AVColorSpaceToColorSpace(AVColorSpace color_space,
+                                         AVColorRange color_range) {
+  // TODO(hubbe): make this better
   if (color_range == AVCOL_RANGE_JPEG)
-    return COLOR_SPACE_JPEG;
+    return VideoColorSpace::JPEG();
 
   switch (color_space) {
     case AVCOL_SPC_UNSPECIFIED:
       break;
     case AVCOL_SPC_BT709:
-      return COLOR_SPACE_HD_REC709;
+      return VideoColorSpace::REC709();
     case AVCOL_SPC_SMPTE170M:
     case AVCOL_SPC_BT470BG:
-      return COLOR_SPACE_SD_REC601;
+      return VideoColorSpace::REC601();
     default:
       DVLOG(1) << "Unknown AVColorSpace: " << color_space;
   }
-  return COLOR_SPACE_UNSPECIFIED;
+  return VideoColorSpace();
 }
 
 std::string AVErrorToString(int errnum) {

@@ -4,7 +4,7 @@ sky@chromium.org
 tommi@chromium.org
 
 # For download tests support review.
-per-file test_download_http_response.*=file://components/download/OWNERS
+per-file *download*=file://components/download/OWNERS
 
 # For Android-specific changes.
 per-file *android*=file://content/public/test/android/OWNERS

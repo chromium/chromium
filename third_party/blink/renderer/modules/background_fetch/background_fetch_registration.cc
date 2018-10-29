@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_bridge.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_record.h"
-#include "third_party/blink/renderer/modules/background_fetch/background_fetch_settled_fetch.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_query_options.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
@@ -74,14 +73,19 @@ void BackgroundFetchRegistration::Initialize(
       ->AddRegistrationObserver(unique_id_, std::move(observer));
 }
 
-void BackgroundFetchRegistration::OnProgress(uint64_t upload_total,
-                                             uint64_t uploaded,
-                                             uint64_t download_total,
-                                             uint64_t downloaded) {
+void BackgroundFetchRegistration::OnProgress(
+    uint64_t upload_total,
+    uint64_t uploaded,
+    uint64_t download_total,
+    uint64_t downloaded,
+    mojom::BackgroundFetchResult result,
+    mojom::BackgroundFetchFailureReason failure_reason) {
   upload_total_ = upload_total;
   uploaded_ = uploaded;
   download_total_ = download_total;
   downloaded_ = downloaded;
+  result_ = result;
+  failure_reason_ = failure_reason;
 
   ExecutionContext* context = GetExecutionContext();
   if (!context || context->IsContextDestroyed())
@@ -199,25 +203,27 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
   ScriptPromise promise = resolver->Promise();
 
   // Convert |request| to WebServiceWorkerRequest.
-  base::Optional<WebServiceWorkerRequest> request_to_match;
+  base::Optional<WebServiceWorkerRequest> optional_request;
   if (request.has_value()) {
+    WebServiceWorkerRequest request_to_match;
     if (request->IsRequest()) {
       request->GetAsRequest()->PopulateWebServiceWorkerRequest(
-          request_to_match.value());
+          request_to_match);
     } else {
       Request* new_request = Request::Create(
           script_state, request->GetAsUSVString(), exception_state);
       if (exception_state.HadException())
         return ScriptPromise();
-      new_request->PopulateWebServiceWorkerRequest(request_to_match.value());
+      new_request->PopulateWebServiceWorkerRequest(request_to_match);
     }
+    optional_request = request_to_match;
   }
 
   DCHECK(registration_);
 
   BackgroundFetchBridge::From(registration_)
       ->MatchRequests(
-          developer_id_, unique_id_, request_to_match,
+          developer_id_, unique_id_, optional_request,
           std::move(cache_query_params), match_all,
           WTF::Bind(&BackgroundFetchRegistration::DidGetMatchingRequests,
                     WrapPersistent(this), WrapPersistent(resolver), match_all));
@@ -234,19 +240,27 @@ void BackgroundFetchRegistration::DidGetMatchingRequests(
   HeapVector<Member<BackgroundFetchRecord>> to_return;
   to_return.ReserveInitialCapacity(settled_fetches.size());
   for (const auto& fetch : settled_fetches) {
-    if (fetch->response->response_type ==
-        network::mojom::FetchResponseType::kError) {
-      // Resolve with undefined.
-      resolver->Resolve();
-      return;
-    }
-    BackgroundFetchRecord* record = new BackgroundFetchRecord(
-        Request::Create(script_state, fetch->request),
-        Response::Create(script_state, *fetch->response));
-    to_return.push_back(record);
+    Request* request = Request::Create(script_state, fetch->request);
+
+    Response* response = fetch->response
+                             ? Response::Create(script_state, *fetch->response)
+                             : nullptr;
+
+    bool aborted =
+        failure_reason_ ==
+            mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI ||
+        failure_reason_ ==
+            mojom::BackgroundFetchFailureReason::CANCELLED_BY_DEVELOPER;
+
+    to_return.push_back(new BackgroundFetchRecord(request, response, aborted));
   }
 
   if (!return_all) {
+    if (settled_fetches.IsEmpty()) {
+      // Nothing was matched. Resolve with `undefined`.
+      resolver->Resolve();
+      return;
+    }
     DCHECK_EQ(settled_fetches.size(), 1u);
     DCHECK_EQ(to_return.size(), 1u);
     resolver->Resolve(to_return[0]);
@@ -275,6 +289,7 @@ void BackgroundFetchRegistration::DidAbort(
     case mojom::blink::BackgroundFetchError::INVALID_ARGUMENT:
     case mojom::blink::BackgroundFetchError::PERMISSION_DENIED:
     case mojom::blink::BackgroundFetchError::QUOTA_EXCEEDED:
+    case mojom::blink::BackgroundFetchError::REGISTRATION_LIMIT_EXCEEDED:
       // Not applicable for this callback.
       break;
   }

@@ -230,8 +230,7 @@ TEST(StringUtilTest, TruncateUTF8ToByteSize) {
 
 TEST(StringUtilTest, TrimWhitespace) {
   string16 output;  // Allow contents to carry over to next testcase
-  for (size_t i = 0; i < arraysize(trim_cases); ++i) {
-    const trim_case& value = trim_cases[i];
+  for (const auto& value : trim_cases) {
     EXPECT_EQ(value.return_value,
               TrimWhitespace(WideToUTF16(value.input), value.positions,
                              &output));
@@ -249,8 +248,7 @@ TEST(StringUtilTest, TrimWhitespace) {
   EXPECT_EQ(string16(), output);
 
   std::string output_ascii;
-  for (size_t i = 0; i < arraysize(trim_cases_ascii); ++i) {
-    const trim_case_ascii& value = trim_cases_ascii[i];
+  for (const auto& value : trim_cases_ascii) {
     EXPECT_EQ(value.return_value,
               TrimWhitespaceASCII(value.input, value.positions, &output_ascii));
     EXPECT_EQ(value.output, output_ascii);
@@ -284,8 +282,7 @@ static const struct collapse_case {
 };
 
 TEST(StringUtilTest, CollapseWhitespace) {
-  for (size_t i = 0; i < arraysize(collapse_cases); ++i) {
-    const collapse_case& value = collapse_cases[i];
+  for (const auto& value : collapse_cases) {
     EXPECT_EQ(WideToUTF16(value.output),
               CollapseWhitespace(WideToUTF16(value.input), value.trim));
   }
@@ -316,8 +313,7 @@ static const struct collapse_case_ascii {
 };
 
 TEST(StringUtilTest, CollapseWhitespaceASCII) {
-  for (size_t i = 0; i < arraysize(collapse_cases_ascii); ++i) {
-    const collapse_case_ascii& value = collapse_cases_ascii[i];
+  for (const auto& value : collapse_cases_ascii) {
     EXPECT_EQ(value.output, CollapseWhitespaceASCII(value.input, value.trim));
   }
 }
@@ -541,11 +537,9 @@ TEST(StringUtilTest, LowerCaseEqualsASCII) {
     { "FOO", "foo" },
   };
 
-  for (size_t i = 0; i < arraysize(lowercase_cases); ++i) {
-    EXPECT_TRUE(LowerCaseEqualsASCII(ASCIIToUTF16(lowercase_cases[i].src_a),
-                                     lowercase_cases[i].dst));
-    EXPECT_TRUE(LowerCaseEqualsASCII(lowercase_cases[i].src_a,
-                                     lowercase_cases[i].dst));
+  for (const auto& i : lowercase_cases) {
+    EXPECT_TRUE(LowerCaseEqualsASCII(ASCIIToUTF16(i.src_a), i.dst));
+    EXPECT_TRUE(LowerCaseEqualsASCII(i.src_a, i.dst));
   }
 }
 
@@ -578,9 +572,8 @@ TEST(StringUtilTest, FormatBytesUnlocalized) {
     {100LL*1024*1024*1024, "100 GB"},
   };
 
-  for (size_t i = 0; i < arraysize(cases); ++i) {
-    EXPECT_EQ(ASCIIToUTF16(cases[i].expected),
-              FormatBytesUnlocalized(cases[i].bytes));
+  for (const auto& i : cases) {
+    EXPECT_EQ(ASCIIToUTF16(i.expected), FormatBytesUnlocalized(i.bytes));
   }
 }
 TEST(StringUtilTest, ReplaceSubstringsAfterOffset) {
@@ -673,12 +666,12 @@ TEST(StringUtilTest, ReplaceFirstSubstringAfterOffset) {
     {"abababab", 2, "ab", "c", "abcabab"},
   };
 
-  for (size_t i = 0; i < arraysize(cases); i++) {
-    string16 str = ASCIIToUTF16(cases[i].str);
-    ReplaceFirstSubstringAfterOffset(&str, cases[i].start_offset,
-                                     ASCIIToUTF16(cases[i].find_this),
-                                     ASCIIToUTF16(cases[i].replace_with));
-    EXPECT_EQ(ASCIIToUTF16(cases[i].expected), str);
+  for (const auto& i : cases) {
+    string16 str = ASCIIToUTF16(i.str);
+    ReplaceFirstSubstringAfterOffset(&str, i.start_offset,
+                                     ASCIIToUTF16(i.find_this),
+                                     ASCIIToUTF16(i.replace_with));
+    EXPECT_EQ(ASCIIToUTF16(i.expected), str);
   }
 }
 
@@ -1182,8 +1175,8 @@ TEST(StringUtilTest, WprintfFormatPortabilityTest) {
     { L"% 10s", false },
     { L"% 10ls", true }
   };
-  for (size_t i = 0; i < arraysize(cases); ++i)
-    EXPECT_EQ(cases[i].portable, IsWprintfFormatPortable(cases[i].input));
+  for (const auto& i : cases)
+    EXPECT_EQ(i.portable, IsWprintfFormatPortable(i.input));
 }
 
 TEST(StringUtilTest, RemoveChars) {

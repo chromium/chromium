@@ -2,7 +2,6 @@ createElementNS tests from mozilla, attached to webkit bug 16833
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 HTML tests:
 PASS createElementNS(, )
 PASS createElementNS(null, )

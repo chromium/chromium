@@ -107,7 +107,7 @@ void DispatchBeforeInputFromComposition(EventTarget* target,
                                         const String& data) {
   if (!target)
     return;
-  // TODO(chongz): Pass appropriate |ranges| after it's defined on spec.
+  // TODO(editing-dev): Pass appropriate |ranges| after it's defined on spec.
   // http://w3c.github.io/editing/input-events.html#dom-inputevent-inputtype
   InputEvent* before_input_event = InputEvent::CreateBeforeInput(
       input_type, data, InputEvent::kNotCancelable,
@@ -118,8 +118,8 @@ void DispatchBeforeInputFromComposition(EventTarget* target,
 // Used to insert/replace text during composition update and confirm
 // composition.
 // Procedure:
-//   1. Fire 'beforeinput' event for (TODO(chongz): deleted composed text) and
-//      inserted text
+//   1. Fire 'beforeinput' event for (TODO(editing-dev): deleted composed text)
+//      and inserted text
 //   2. Fire 'compositionupdate' event
 //   3. Fire TextEvent and modify DOM
 //   4. Fire 'input' event; dispatched by Editor::AppliedEditing()
@@ -179,9 +179,9 @@ void InsertTextDuringCompositionWithEvents(
                                 composition_type, is_incremental_insertion);
       break;
     case TypingCommand::TextCompositionType::kTextCompositionCancel:
-      // TODO(chongz): Use TypingCommand::insertText after TextEvent was
+      // TODO(editing-dev): Use TypingCommand::insertText after TextEvent was
       // removed. (Removed from spec since 2012)
-      // See TextEvent.idl.
+      // See text_event.idl.
       frame.GetEventHandler().HandleTextInputEvent(text, nullptr,
                                                    kTextEventInputComposition);
       break;
@@ -1156,7 +1156,7 @@ void InputMethodController::ExtendSelectionAndDelete(int before, int after) {
                                    .ComputeVisibleSelectionInDOMTreeDeprecated()
                                    .End() &&
            before <= static_cast<int>(selection_offsets.Start()));
-  // TODO(chongz): Find a way to distinguish Forward and Backward.
+  // TODO(editing-dev): Find a way to distinguish Forward and Backward.
   ignore_result(DeleteSelection());
 }
 

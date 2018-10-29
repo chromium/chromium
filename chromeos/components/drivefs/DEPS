@@ -1,5 +1,6 @@
 include_rules = [
-  "+components/drive/file_errors.h",
+  "+components/drive",
+  "+components/invalidation/impl/fake_invalidation_service.h",
   "+mojo/public",
   "+services/identity/public",
   "+services/service_manager/public",

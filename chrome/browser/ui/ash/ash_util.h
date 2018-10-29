@@ -9,6 +9,10 @@
 
 #include "ui/views/widget/widget.h"
 
+namespace aura {
+class Window;
+}
+
 namespace service_manager {
 class Connector;
 }
@@ -37,6 +41,11 @@ void SetupWidgetInitParamsForContainer(views::Widget::InitParams* params,
 // Returns the connector from ServiceManagerConnection::GetForProcess().
 // May be null in unit tests.
 service_manager::Connector* GetServiceManagerConnector();
+
+// Triggers the window bounce animation inside ash. Handled on the ash side so
+// the window frame is included in the bounce and to avoid sending IPCs for
+// window transform updates.
+void BounceWindow(aura::Window* window);
 
 }  // namespace ash_util
 

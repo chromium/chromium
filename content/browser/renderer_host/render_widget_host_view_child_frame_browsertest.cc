@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameTest,
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameTest, ChildFrameSinkId) {
   // Only when mus hosts viz do we expect a RenderFrameProxy to provide the
   // FrameSinkId.
-  if (!features::IsUsingWindowService())
+  if (!features::IsMultiProcessMash())
     return;
 
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));

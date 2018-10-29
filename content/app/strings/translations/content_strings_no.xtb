@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1018939186200882850">menyelement</translation>
-<translation id="1020833440720551630">slå av lydsporet</translation>
 <translation id="10623998915015855">av/på-knapp</translation>
 <translation id="1088086359088493902">Sekunder</translation>
 <translation id="1171774979989969504">Skriv inn en e-postadresse.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">anerkjennelser</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="1548116112524424341">spill av videoen i bilde-i-bilde-modus</translation>
 <translation id="1589122976691792535">område</translation>
 <translation id="1591562245178063882">Denne måneden</translation>
 <translation id="1637811476055996098">Velg filer</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">trerutenett</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">spill på ekstern enhet</translation>
-<translation id="1838818994221231429">slå av/på fullskjermsvisning av området med skjermutklipp</translation>
 <translation id="190587075670221089">sletting</translation>
 <translation id="1907737156431278478">eksempel</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">Dobbelttrykk på venstre eller høyre side for å hoppe 10 sekunder</translation>
 <translation id="5631759159893697722">abstrakt</translation>
-<translation id="5641012560118721995">stopp avspillingen midlertidig</translation>
 <translation id="5643186887447432888">knapp</translation>
 <translation id="5677946354068040947">flere alternativer</translation>
 <translation id="576709008726043716">innledning</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Tilbakestill</translation>
 <translation id="5966707198760109579">Uke</translation>
 <translation id="5987525920412732405">verdisettingsknapp</translation>
+<translation id="6011459053400940133">glidebryter for volum</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6023896073578205740">listefelt</translation>
-<translation id="6101327004457443354">slå på lydsporet</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">måler</translation>
 <translation id="6166809985690652833">etterord</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Timer</translation>
 <translation id="7681220483256441252">stikkordregister</translation>
 <translation id="7720026100085573005">tid som gjenstår</translation>
-<translation id="7740016676195725605">slå av tekstingen</translation>
 <translation id="7740050170769002709">HTML-innhold</translation>
 <translation id="7750228210027921155">Bilde i bilde</translation>
 <translation id="7789962463072032349">stans midlertidig</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">søketekstfelt</translation>
 <translation id="8057695513531652401">merknad</translation>
 <translation id="8105797009065549151">kommentarreferanse</translation>
-<translation id="8115662671911883373">slå på tekstingen</translation>
 <translation id="8117451130807776954">Denne uken</translation>
-<translation id="819205353528511139">spill av filmen i fullskjermmodus</translation>
 <translation id="8199524924445686405">åååå</translation>
 <translation id="8284326494547611709">Teksting</translation>
 <translation id="835897206747267392">Ugyldig verdi</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">kontrollér ekstern avspilling</translation>
 <translation id="862370744433916922">undertittel</translation>
 <translation id="8750798805984357768">Velg ett av følgende alternativer.</translation>
-<translation id="8785498733064193001">start avspillingen</translation>
 <translation id="8808573423886751634">kapittel</translation>
 <translation id="8845239796550121995">Caster til TV-en nå</translation>
 <translation id="8851136666856101339">main</translation>

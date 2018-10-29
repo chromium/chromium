@@ -93,7 +93,11 @@ TEST(PasswordFormMetricsRecorder, Generation) {
           /*is_main_frame_secure*/ true, &test_ukm_recorder);
       if (test.generation_available)
         recorder->MarkGenerationAvailable();
-      recorder->SetHasGeneratedPassword(test.has_generated_password);
+      if (test.has_generated_password) {
+        recorder->SetGeneratedPasswordStatus(
+            PasswordFormMetricsRecorder::GeneratedPasswordStatus::
+                kPasswordAccepted);
+      }
       switch (test.submission) {
         case PasswordFormMetricsRecorder::kSubmitResultNotSubmitted:
           // Do nothing.

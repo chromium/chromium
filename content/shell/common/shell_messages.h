@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// no-include-guard-because-multiply-included
+#ifndef CONTENT_SHELL_COMMON_SHELL_MESSAGES_H_
+#define CONTENT_SHELL_COMMON_SHELL_MESSAGES_H_
+
 #include <string>
 #include <vector>
 
@@ -70,3 +72,5 @@ IPC_MESSAGE_ROUTED2(ShellViewHostMsg_SendBluetoothManualChooserEvent,
                     std::string /* argument */)
 IPC_MESSAGE_ROUTED1(ShellViewHostMsg_SetPopupBlockingEnabled,
                     bool /* block_popups */)
+
+#endif  // CONTENT_SHELL_COMMON_SHELL_MESSAGES_H_

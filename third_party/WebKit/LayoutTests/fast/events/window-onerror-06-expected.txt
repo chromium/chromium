@@ -10,7 +10,6 @@ Stack Trace:
 Error: Original exception.
     at throwException onerror-test.js:6:11
     at window-onerror-06.html:22:9
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

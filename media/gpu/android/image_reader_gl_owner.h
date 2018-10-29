@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/android_image_reader_compat.h"
+#include "base/containers/flat_map.h"
 #include "media/gpu/android/texture_owner.h"
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_image_ahardwarebuffer.h"
@@ -35,12 +36,23 @@ class MEDIA_GPU_EXPORT ImageReaderGLOwner : public TextureOwner {
   void IgnorePendingRelease() override;
   bool IsExpectingFrameAvailable() override;
   void WaitForFrameAvailable() override;
+  std::unique_ptr<gl::GLImage::ScopedHardwareBuffer> GetAHardwareBuffer()
+      override;
 
  private:
   friend class TextureOwner;
 
+  class ScopedHardwareBufferImpl;
+
   ImageReaderGLOwner(GLuint texture_id);
   ~ImageReaderGLOwner() override;
+
+  // Deletes the current image if it has no pending refs. Returns false on
+  // error.
+  bool MaybeDeleteCurrentImage();
+
+  void EnsureTexImageBound();
+  void ReleaseRefOnImage(AImage* image);
 
   // AImageReader instance
   AImageReader* image_reader_;
@@ -48,8 +60,18 @@ class MEDIA_GPU_EXPORT ImageReaderGLOwner : public TextureOwner {
   // Most recently acquired image using image reader. This works like a cached
   // image until next new image is acquired which overwrites this.
   AImage* current_image_;
+  base::ScopedFD current_image_fence_;
   GLuint texture_id_;
   std::unique_ptr<AImageReader_ImageListener> listener_;
+
+  // Set to true if the current image is bound to |texture_id_|.
+  bool current_image_bound_ = false;
+
+  // A map consisting of pending external refs on an AImage. If an image has any
+  // external refs, it is automatically released once the ref-count is 0 and the
+  // image is no longer current.
+  using AImageRefMap = base::flat_map<AImage*, size_t>;
+  AImageRefMap external_image_refs_;
 
   // reference to the class instance which is used to dynamically
   // load the functions in android libraries at runtime.

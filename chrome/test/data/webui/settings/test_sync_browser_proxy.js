@@ -15,8 +15,10 @@ class TestSyncBrowserProxy extends TestBrowserProxy {
       'setSyncDatatypes',
       'setSyncEncryption',
       'signOut',
+      'pauseSync',
       'startSignIn',
       'startSyncingWithEmail',
+      'unifiedConsentToggleChanged',
     ]);
 
     /** @private {number} */
@@ -41,6 +43,11 @@ class TestSyncBrowserProxy extends TestBrowserProxy {
   /** @override */
   signOut(deleteProfile) {
     this.methodCalled('signOut', deleteProfile);
+  }
+
+  /** @override */
+  pauseSync() {
+    this.methodCalled('pauseSync');
   }
 
   /** @override */
@@ -88,5 +95,10 @@ class TestSyncBrowserProxy extends TestBrowserProxy {
   setSyncEncryption(syncPrefs) {
     this.methodCalled('setSyncEncryption', syncPrefs);
     return Promise.resolve(this.encryptionResponse);
+  }
+
+  /** @override */
+  unifiedConsentToggleChanged(toggleChecked) {
+    this.methodCalled('unifiedConsentToggleChanged', toggleChecked);
   }
 }

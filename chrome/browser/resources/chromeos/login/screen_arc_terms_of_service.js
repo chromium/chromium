@@ -207,7 +207,8 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
 
       if (this.language_ && this.language_ == language && this.countryCode_ &&
           this.countryCode_ == countryCode &&
-          !this.classList.contains('error') && !this.usingOfflineTerms_) {
+          !this.classList.contains('error') && !this.usingOfflineTerms_ &&
+          this.tosContent_) {
         this.enableButtons_(true);
         return;
       }
@@ -252,6 +253,8 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
      */
     setTosForTesting: function(terms) {
       this.tosContent_ = terms;
+      this.usingOfflineTerms_ = true;
+      this.setTermsViewContentLoadedState_();
     },
 
     /**
@@ -333,7 +336,6 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
           this.getElement_('arc-enable-backup-restore').checked;
       var isLocationServiceEnabled =
           this.getElement_('arc-enable-location-service').checked;
-
       chrome.send(
           'arcTermsOfServiceAccept',
           [isBackupRestoreEnabled, isLocationServiceEnabled, this.tosContent_]);
@@ -390,7 +392,14 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
      * @param {string} targetUrl URL to open.
      */
     showUrlOverlay: function(targetUrl) {
-      $('arc-tos-overlay-webview').src = targetUrl;
+      var webView = $('arc-tos-overlay-webview');
+      if (this.usingOfflineTerms_) {
+        const TERMS_URL = 'chrome://terms/arc/privacy_policy';
+        WebViewHelper.loadUrlContentToWebView(
+            webView, TERMS_URL, WebViewHelper.ContentType.PDF);
+      } else {
+        webView.src = targetUrl;
+      }
       $('arc-tos-overlay-webview-container').classList.add('overlay-loading');
       this.showOverlay('arc-overlay-url');
     },
@@ -555,9 +564,10 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
       // If in demo mode fallback to offline Terms of Service copy.
       if (this.isDemoModeSetup_()) {
         this.usingOfflineTerms_ = true;
-        const TERMS_URL = 'chrome://terms/arc';
+        const TERMS_URL = 'chrome://terms/arc/terms';
         var webView = this.getElement_('arc-tos-view');
-        WebViewHelper.loadUrlToWebview(webView, TERMS_URL);
+        WebViewHelper.loadUrlContentToWebView(
+            webView, TERMS_URL, WebViewHelper.ContentType.HTML);
         return;
       }
       this.showError_();

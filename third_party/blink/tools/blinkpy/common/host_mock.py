@@ -79,7 +79,8 @@ class MockHost(MockSystemHost):
             },
             'Fake Test Mac10.12': {
                 'port_name': 'mac-mac10.12',
-                'specifiers': ['Mac10.12', 'Release']
+                'specifiers': ['Mac10.12', 'Release'],
+                'is_try_builder': True,
             },
             'fake_blink_try_linux': {
                 'port_name': 'linux-trusty',
@@ -89,12 +90,6 @@ class MockHost(MockSystemHost):
             'fake_blink_try_win': {
                 'port_name': 'win-win10',
                 'specifiers': ['Win10', 'Release'],
-                'is_try_builder': True,
-            },
-            'fake_mac_cq': {
-                'bucket': 'master.tryserver.chromium.mac',
-                'port_name': 'mac-mac10.12',
-                'specifiers': ['Mac10.12', 'Release'],
                 'is_try_builder': True,
             },
             'android_blink_rel': {

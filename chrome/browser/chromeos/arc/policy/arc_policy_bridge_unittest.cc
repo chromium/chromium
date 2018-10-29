@@ -538,6 +538,15 @@ TEST_F(ArcPolicyBridgeTest, PolicyInstanceManagedTest) {
   GetPoliciesAndVerifyResult("{\"guid\":\"" + instance_guid() + "\"}");
 }
 
+TEST_F(ArcPolicyBridgeTest, VpnConfigAllowedTest) {
+  policy_map().Set(policy::key::kVpnConfigAllowed,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD,
+                   std::make_unique<base::Value>(false), nullptr);
+  GetPoliciesAndVerifyResult("{\"guid\":\"" + instance_guid() +
+                             "\",\"vpnConfigDisabled\":true}");
+}
+
 TEST_P(ArcPolicyBridgeAffiliatedTest, ApkCacheEnabledTest) {
   const std::string apk_cache_enabled_policy(
       "{\"apkCacheEnabled\":true,\"guid\":\"" + instance_guid() + "\"}");

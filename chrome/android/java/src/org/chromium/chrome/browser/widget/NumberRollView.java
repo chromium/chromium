@@ -28,6 +28,7 @@ public class NumberRollView extends FrameLayout {
     private float mNumber;
     private Animator mLastRollAnimator;
     private int mStringId;
+    private int mStringIdForZero;
 
     /**
      * A Property wrapper around the <code>number</code> functionality handled by the
@@ -92,6 +93,14 @@ public class NumberRollView extends FrameLayout {
     }
 
     /**
+     * @param stringIdForZero The id of the string to use for the description when the number is
+     * zero.
+     */
+    public void setStringForZero(int stringIdForZero) {
+        mStringIdForZero = stringIdForZero;
+    }
+
+    /**
      * Gets the current number roll position.
      */
     private float getNumberRoll() {
@@ -109,7 +118,9 @@ public class NumberRollView extends FrameLayout {
         NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
         String newString;
         if (mStringId != 0) {
-            newString = getResources().getQuantityString(mStringId, upNumber, upNumber);
+            newString = upNumber == 0 && mStringIdForZero != 0
+                    ? getResources().getString(mStringIdForZero)
+                    : getResources().getQuantityString(mStringId, upNumber, upNumber);
         } else {
             newString = numberFormatter.format(upNumber);
         }
@@ -118,7 +129,9 @@ public class NumberRollView extends FrameLayout {
         }
 
         if (mStringId != 0) {
-            newString = getResources().getQuantityString(mStringId, downNumber, downNumber);
+            newString = downNumber == 0 && mStringIdForZero != 0
+                    ? getResources().getString(mStringIdForZero)
+                    : getResources().getQuantityString(mStringId, downNumber, downNumber);
         } else {
             newString = numberFormatter.format(downNumber);
         }

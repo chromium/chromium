@@ -78,7 +78,7 @@ class PLATFORM_EXPORT AnimationWorkletMutatorDispatcherImpl final
     DISALLOW_COPY_AND_ASSIGN(AutoSignal);
   };
 
-  // The AnimationWorkletProxyClientImpls are also owned by the WorkerClients
+  // The AnimationWorkletProxyClients are also owned by the WorkerClients
   // dictionary.
   AnimationWorkletMutatorToTaskRunnerMap mutator_map_;
 

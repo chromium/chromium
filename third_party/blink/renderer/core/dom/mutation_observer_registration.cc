@@ -107,7 +107,7 @@ void MutationObserverRegistration::ClearTransientRegistrations() {
 }
 
 void MutationObserverRegistration::Unregister() {
-  // |this| can outlives m_registrationNode.
+  // |this| can outlives registration_node_.
   if (registration_node_)
     registration_node_->UnregisterMutationObserver(this);
   else

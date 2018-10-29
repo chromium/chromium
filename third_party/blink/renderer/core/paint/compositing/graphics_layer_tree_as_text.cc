@@ -45,8 +45,10 @@ void AddTransformJSONProperties(const GraphicsLayer* layer,
   if (!transform.IsIdentity())
     json.SetArray("transform", TransformAsJSONArray(transform));
 
-  if (!transform.IsIdentityOrTranslation())
-    json.SetArray("origin", PointAsJSONArray(layer->TransformOrigin()));
+  if (!transform.IsIdentityOrTranslation()) {
+    json.SetArray("origin",
+                  PointAsJSONArray(FloatPoint3D(layer->TransformOrigin())));
+  }
 
   AddFlattenInheritedTransformJSON(layer, json);
 
@@ -117,9 +119,9 @@ std::unique_ptr<JSONObject> GraphicsLayerAsJSON(
   if (flags & kLayerTreeIncludesDebugInfo)
     json->SetString("client", PointerAsString(&layer->Client()));
 
-  if (layer->BackgroundColor().Alpha()) {
+  if (Color(layer->BackgroundColor()).Alpha()) {
     json->SetString("backgroundColor",
-                    layer->BackgroundColor().NameForLayoutTreeAsText());
+                    Color(layer->BackgroundColor()).NameForLayoutTreeAsText());
   }
 
   if (flags & kOutputAsLayerTree) {

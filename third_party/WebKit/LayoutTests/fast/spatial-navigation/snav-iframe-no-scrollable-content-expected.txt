@@ -19,4 +19,3 @@ PASS gFocusedDocument.activeElement.getAttribute("id") is "7"
 PASS gFocusedDocument.activeElement.getAttribute("id") is "3"
 PASS gFocusedDocument.activeElement.getAttribute("id") is "2"
 PASS gFocusedDocument.activeElement.getAttribute("id") is "1"
-

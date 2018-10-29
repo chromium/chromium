@@ -39,6 +39,11 @@ namespace mock_cr_app {
 
 void RegisterMockCrApp() {
   [MockCrApp sharedApplication];
+
+  // If there was an invocation to NSApp prior to this method, then the NSApp
+  // will not be a MockCrApp, but will instead be an NSApplication.
+  // This is undesirable and we must enforce that this doesn't happen.
+  CHECK([NSApp isKindOfClass:[MockCrApp class]]);
 }
 
 }  // namespace mock_cr_app

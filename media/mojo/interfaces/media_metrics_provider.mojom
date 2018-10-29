@@ -42,6 +42,7 @@ interface MediaMetricsProvider {
   OnError(PipelineStatus status);
 
   // Setters for various one-time lazily generated metrics or properties.
+  SetIsAdMedia();
   SetIsEME();
   SetTimeToMetadata(mojo_base.mojom.TimeDelta elapsed);
   SetTimeToFirstFrame(mojo_base.mojom.TimeDelta elapsed);
@@ -57,4 +58,7 @@ interface MediaMetricsProvider {
 
   // Creates a VideoDecodeStatsRecorder instance.
   AcquireVideoDecodeStatsRecorder(VideoDecodeStatsRecorder& recorder);
+
+  // Reports that bytes have been received by the media player.
+  AddBytesReceived(uint64 bytes_received);
 };

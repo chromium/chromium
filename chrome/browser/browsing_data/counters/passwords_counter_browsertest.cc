@@ -74,8 +74,8 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     base::WaitableEvent waitable_event(
         base::WaitableEvent::ResetPolicy::AUTOMATIC,
         base::WaitableEvent::InitialState::NOT_SIGNALED);
-    store_->ScheduleTask(base::Bind(&base::WaitableEvent::Signal,
-                                    base::Unretained(&waitable_event)));
+    store_->ScheduleTask(base::BindOnce(&base::WaitableEvent::Signal,
+                                        base::Unretained(&waitable_event)));
     waitable_event.Wait();
 
     // At this point, the calculation on DB thread should have finished, and

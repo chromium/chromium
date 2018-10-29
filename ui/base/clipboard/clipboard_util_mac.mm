@@ -150,10 +150,8 @@ bool ClipboardUtil::URLsAndTitlesFromPasteboard(NSPasteboard* pboard,
   if ([bookmarkPairs count] != 2)
     return false;
 
-  NSArray* urlsArr =
-      base::mac::ObjCCast<NSArray>([bookmarkPairs objectAtIndex:0]);
-  NSArray* titlesArr =
-      base::mac::ObjCCast<NSArray>([bookmarkPairs objectAtIndex:1]);
+  NSArray* urlsArr = base::mac::ObjCCast<NSArray>(bookmarkPairs[0]);
+  NSArray* titlesArr = base::mac::ObjCCast<NSArray>(bookmarkPairs[1]);
 
   if (!urlsArr || !titlesArr)
     return false;
@@ -175,6 +173,24 @@ bool ClipboardUtil::URLsAndTitlesFromPasteboard(NSPasteboard* pboard,
   *urls = urlsArr;
   *titles = titlesArr;
   return true;
+}
+
+// static
+NSPasteboard* ClipboardUtil::PasteboardFromType(ui::ClipboardType type) {
+  NSString* type_string = nil;
+  switch (type) {
+    case ui::CLIPBOARD_TYPE_COPY_PASTE:
+      type_string = NSGeneralPboard;
+      break;
+    case ui::CLIPBOARD_TYPE_DRAG:
+      type_string = NSDragPboard;
+      break;
+    case ui::CLIPBOARD_TYPE_SELECTION:
+      NOTREACHED();
+      break;
+  }
+
+  return [NSPasteboard pasteboardWithName:type_string];
 }
 
 }  // namespace ui

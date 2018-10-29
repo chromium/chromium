@@ -25,11 +25,21 @@
         margin-top: -1em;
       }
 
+      .highlight-suffix {
+        font-weight: bold;
+      }
+
     </style>
     <div id="title" class="secondary">[[title]]</div>
     <ul class="secondary">
       <template is="dom-repeat" items="[[initialItems_]]">
-        <li class="visible-item">[[item]]</li>
+        <li class="visible-item">
+          <span>[[item.text]]</span><!--
+       --><span class="highlight-suffix"
+                hidden="[[!hasHighlightSuffix_(item)]]"><!--
+         -->[[item.highlightSuffix]]
+          </span>
+        </li>
       </template>
       <li id="more-items-link" hidden="[[expanded_]]" on-click="expandList_">
         [[moreItemsLinkText_]]
@@ -44,7 +54,13 @@
          expected action. -->
     <ul id="remaining-list" hidden="[[!expanded_]]" class="secondary">
       <template is="dom-repeat" items="[[remainingItems_]]">
-        <li class$="[[remainingItemsClass_(expanded_)]]">[[item]]</li>
+        <li class$="[[remainingItemsClass_(expanded_)]]">
+          <span>[[item.text]]</span><!--
+       --><span class="highlight-suffix"
+                hidden="[[!hasHighlightSuffix_(item)]]"><!--
+         -->[[item.highlightSuffix]]
+          </span>
+        </li>
       </template>
     </ul>
   </template>

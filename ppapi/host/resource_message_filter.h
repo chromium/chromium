@@ -51,8 +51,10 @@ struct PPAPI_HOST_EXPORT ResourceMessageFilterDeleteTraits {
 //  protected:
 //   scoped_refptr<base::TaskRunner> OverrideTaskRunnerForMessage(
 //       const IPC::Message& message) override {
-//     if (message.type() == MyMessage::ID)
-//       return BrowserThread::GetTaskRunnerForThread(BrowserThread::UI);
+//     if (message.type() == MyMessage::ID) {
+//       return base::CreateSingleThreadTaskRunnerWithTraits(
+//           {BrowserThread::UI});
+//     }
 //     return NULL;
 //   }
 //

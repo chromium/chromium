@@ -1,0 +1,33 @@
+rootWebArea
+++genericContainer
+++++checkBox name='Test 1: Flash the screen 2 times.' checkedState=false
+++++popUpButton collapsed value='2'
+++++++menuListPopup invisible
+++++++++menuListOption invisible name='1' selected=false
+++++++++menuListOption name='2' selected=true
+++++++++menuListOption invisible name='3' selected=false
+++genericContainer
+++++checkBox name='Test 2: Flash the screen 2 times.' checkedState=false
+++++listBox activedescendantId=listBoxOption
+++++++listBoxOption name='1' selected=false
+++++++listBoxOption name='2' selected=true
+++++++listBoxOption name='3' selected=false
+++genericContainer
+++++checkBox name='Test 3: Flash the screen two times.' checkedState=false
+++++popUpButton collapsed value='two'
+++++++menuListPopup invisible
+++++++++menuListOption invisible name='1' selected=false
+++++++++menuListOption name='two' selected=true
+++++++++menuListOption invisible name='3' selected=false
+++genericContainer
+++++checkBox name='Test 4: Flash the screen two times.' checkedState=false
+++++listBox activedescendantId=listBoxOption
+++++++listBoxOption name='1' selected=false
+++++++listBoxOption name='two' selected=true
+++++++listBoxOption name='3' selected=false
+++genericContainer
+++++checkBox name='Test 5: Flash the screen two 3 times.' checkedState=false
+++++listBox multiselectable activedescendantId=listBoxOption
+++++++listBoxOption name='1' selected=false
+++++++listBoxOption name='two' selected=true
+++++++listBoxOption name='3' selected=true

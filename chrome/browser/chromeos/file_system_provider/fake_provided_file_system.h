@@ -8,13 +8,13 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/macros.h"
-#include "base/memory/linked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -163,7 +163,7 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
   base::WeakPtr<ProvidedFileSystemInterface> GetWeakPtr() override;
 
  private:
-  typedef std::map<base::FilePath, linked_ptr<FakeEntry>> Entries;
+  using Entries = std::map<base::FilePath, std::unique_ptr<FakeEntry>>;
 
   // Utility function for posting a task which can be aborted by calling the
   // returned callback.

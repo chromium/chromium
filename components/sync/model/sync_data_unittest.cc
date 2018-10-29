@@ -10,6 +10,7 @@
 #include "base/message_loop/message_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/syncable/base_node.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using std::string;
@@ -62,6 +63,16 @@ TEST_F(SyncDataTest, CreateRemoteData) {
   EXPECT_TRUE(data.IsValid());
   EXPECT_FALSE(data.IsLocal());
   EXPECT_EQ(kId, SyncDataRemote(data).GetId());
+  EXPECT_EQ(kLastModifiedTime, SyncDataRemote(data).GetModifiedTime());
+  EXPECT_TRUE(data.GetSpecifics().has_preference());
+}
+
+TEST_F(SyncDataTest, CreateRemoteDataWithInvalidId) {
+  specifics.mutable_preference();
+  SyncData data =
+      SyncData::CreateRemoteData(kInvalidId, specifics, kLastModifiedTime);
+  EXPECT_TRUE(data.IsValid());
+  EXPECT_FALSE(data.IsLocal());
   EXPECT_EQ(kLastModifiedTime, SyncDataRemote(data).GetModifiedTime());
   EXPECT_TRUE(data.GetSpecifics().has_preference());
 }

@@ -122,8 +122,7 @@ void AwContentsClientBridgeTest::TestCertType(
   ScopedJavaLocalRef<jobjectArray> key_types =
       Java_MockAwContentsClientBridge_getKeyTypes(env_, jbridge_);
   std::vector<std::string> vec;
-  base::android::AppendJavaStringArrayToStringVector(env_, key_types.obj(),
-                                                     &vec);
+  base::android::AppendJavaStringArrayToStringVector(env_, key_types, &vec);
   EXPECT_EQ(1u, vec.size());
   EXPECT_EQ(expected_name, vec[0]);
 }

@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/permissions/chooser_context_base.h"
+#include "chrome/browser/usb/usb_policy_allowed_devices.h"
 #include "device/usb/mojo/device_manager_impl.h"
 #include "device/usb/public/mojom/device_manager.mojom.h"
 #include "mojo/public/cpp/bindings/associated_binding.h"
@@ -28,8 +29,8 @@ class UsbChooserContext : public ChooserContextBase,
 
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnDeviceAdded(device::mojom::UsbDeviceInfoPtr);
-    virtual void OnDeviceRemoved(device::mojom::UsbDeviceInfoPtr);
+    virtual void OnDeviceAdded(const device::mojom::UsbDeviceInfo&);
+    virtual void OnDeviceRemoved(const device::mojom::UsbDeviceInfo&);
     virtual void OnDeviceManagerConnectionError();
   };
 
@@ -55,10 +56,6 @@ class UsbChooserContext : public ChooserContextBase,
                            const GURL& embedding_origin,
                            const device::mojom::UsbDeviceInfo& device_info);
 
-  bool HasDevicePermission(const GURL& requesting_origin,
-                           const GURL& embedding_origin,
-                           scoped_refptr<const device::UsbDevice> device);
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -70,7 +67,8 @@ class UsbChooserContext : public ChooserContextBase,
 
   base::WeakPtr<UsbChooserContext> AsWeakPtr();
 
-  void DestroyDeviceManagerForTesting();
+  void SetDeviceManagerForTesting(
+      device::mojom::UsbDeviceManagerPtr fake_device_manager);
 
  private:
   // ChooserContextBase implementation.
@@ -83,14 +81,13 @@ class UsbChooserContext : public ChooserContextBase,
 
   void OnDeviceManagerConnectionError();
   void EnsureConnectionWithDeviceManager();
+  void SetUpDeviceManagerConnection();
 
   bool is_incognito_;
   std::map<std::pair<GURL, GURL>, std::set<std::string>> ephemeral_devices_;
   std::map<std::string, base::DictionaryValue> ephemeral_dicts_;
 
-  // TODO(donna.wu@intel.com): Have the Device Service own this instance in the
-  // near future.
-  std::unique_ptr<device::usb::DeviceManagerImpl> device_manager_instance_;
+  std::unique_ptr<UsbPolicyAllowedDevices> usb_policy_allowed_devices_;
 
   // Connection to |device_manager_instance_|.
   device::mojom::UsbDeviceManagerPtr device_manager_;

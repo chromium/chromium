@@ -1,0 +1,13 @@
+{
+  "short_name": "Discover",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "chrome://oobe/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/discover",
+  "theme_color": "#FFFFFF"
+}

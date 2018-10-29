@@ -15,16 +15,10 @@
         "amazon_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "amazon_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "analog_clock_svg": {
             "DEFAULT": "rendering_mobile_002.wprgo"
         },
         "androidpolice_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "androidpolice_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "animometer_webgl": {
@@ -39,16 +33,10 @@
         "baidu_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "baidu_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "basic_stream": {
             "DEFAULT": "rendering_mobile_019.wprgo"
         },
         "bing_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "bing_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "blob": {
@@ -63,13 +51,7 @@
         "blogspot_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "blogspot_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "boingboing_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "boingboing_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "booking.com_2018": {
@@ -81,16 +63,10 @@
         "booking.com_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "booking.com_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "camera_to_webgl": {
             "DEFAULT": "rendering_mobile_026.wprgo"
         },
         "capitolvolkswagen_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "capitolvolkswagen_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "card_expansion": {
@@ -129,16 +105,10 @@
         "cnn_article_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "cnn_article_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "cnn_desktop_gpu_raster_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
         },
         "cnn_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "cnn_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "cnn_pathological_2018": {
@@ -156,13 +126,7 @@
         "deviantart_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "deviantart_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "digg_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "digg_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "dynamic_cube_map": {
@@ -180,9 +144,6 @@
         "ebay_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "ebay_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "ebay_scroll_2018": {
             "DEFAULT": "rendering_mobile_016.wprgo"
         },
@@ -198,9 +159,6 @@
         "espn_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "espn_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "espn_pathological_2018": {
             "DEFAULT": "rendering_mobile_025.wprgo"
         },
@@ -213,9 +171,6 @@
         "facebook_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "facebook_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "famo_us_twitter_demo": {
             "DEFAULT": "rendering_mobile_019.wprgo"
         },
@@ -226,9 +181,6 @@
             "DEFAULT": "rendering_mobile_016.wprgo"
         },
         "forecast.io_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "forecast.io_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "geo_apis": {
@@ -261,16 +213,10 @@
         "google_image_search_mobile_2018": {
             "DEFAULT": "rendering_mobile_015.wprgo"
         },
-        "google_image_search_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_015.wprgo"
-        },
         "google_news_ios": {
             "DEFAULT": "rendering_mobile_019.wprgo"
         },
         "google_news_mobile_2018": {
-            "DEFAULT": "rendering_mobile_013.wprgo"
-        },
-        "google_news_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_013.wprgo"
         },
         "google_plus_2018": {
@@ -282,9 +228,6 @@
         "google_plus_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "google_plus_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "google_web_search_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
         },
@@ -294,13 +237,7 @@
         "google_web_search_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "google_web_search_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "gsp.ro_mobile_2018": {
-            "DEFAULT": "rendering_mobile_014.wprgo"
-        },
-        "gsp.ro_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_014.wprgo"
         },
         "guardian_pathological_2018": {
@@ -357,9 +294,6 @@
         "linkedin_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "linkedin_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "linkedin_pathological_2018": {
             "DEFAULT": "rendering_mobile_025.wprgo"
         },
@@ -411,9 +345,6 @@
         "mlb_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "mlb_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "mobile_news_sandbox": {
             "DEFAULT": "rendering_mobile_019.wprgo"
         },
@@ -426,6 +357,72 @@
         "motion_mark_focus": {
             "DEFAULT": "rendering_mobile_002.wprgo"
         },
+        "motionmark_anim_design_15": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_anim_focus_25": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_anim_images_50": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_anim_leaves_250": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_anim_multiply_175": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_anim_suits_125": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_composited_transforms_125": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_css_bouncing_blend_circles_25": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_css_bouncing_circles_250": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_css_bouncing_clipped_rects_100": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_css_bouncing_filter_circles_15": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_css_bouncing_gradient_circles_250": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_css_bouncing_svg_images_50": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_css_bouncing_tagged_images_225": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_dom_particles_svg_masks_25": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_focus_20_15": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_html_leaves_20_50": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_svg_bouncing_circles_250": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_svg_bouncing_clipped_rects_100": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_svg_bouncing_gradient_circles_200": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_svg_bouncing_png_images_200": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
+        "motionmark_svg_bouncing_svg_images_50": {
+            "DEFAULT": "rendering_mobile_f7f3ea1d6e.wprgo"
+        },
         "new_tilings": {
             "DEFAULT": "rendering_mobile_010.wprgo"
         },
@@ -436,9 +433,6 @@
             "DEFAULT": "rendering_mobile_016.wprgo"
         },
         "nytimes_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "nytimes_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "nytimes_scroll_2018": {
@@ -489,9 +483,6 @@
         "pinterest_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "pinterest_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "polymer_topeka": {
             "DEFAULT": "rendering_mobile_024.wprgo"
         },
@@ -499,9 +490,6 @@
             "DEFAULT": "rendering_mobile_025.wprgo"
         },
         "reddit_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "reddit_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "runway": {
@@ -513,13 +501,7 @@
         "sfgate_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "sfgate_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "slashdot_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "slashdot_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "smash_cat": {
@@ -546,19 +528,10 @@
         "techcrunch_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "techcrunch_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "theverge_article_mobile_2018": {
             "DEFAULT": "rendering_mobile_012.wprgo"
         },
-        "theverge_article_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_012.wprgo"
-        },
         "theverge_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "theverge_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "twitch_2018": {
@@ -576,13 +549,7 @@
         "twitter_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "twitter_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "usatoday_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "usatoday_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "vertical_expansion": {
@@ -594,16 +561,10 @@
         "wikipedia_delayed_scroll_start_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "wikipedia_delayed_scroll_start_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "wikipedia_desktop_gpu_raster_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
         },
         "wikipedia_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "wikipedia_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "wordpress_2018": {
@@ -615,13 +576,7 @@
         "wordpress_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "wordpress_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "worldjournal_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "worldjournal_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "wow_wiki_pathological_2018": {
@@ -630,13 +585,7 @@
         "wowwiki_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "wowwiki_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "wsj_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "wsj_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "yahoo_answers_2018": {
@@ -648,9 +597,6 @@
         "yahoo_answers_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "yahoo_answers_mobile_sync_scroll_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
         "yahoo_news_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
         },
@@ -658,9 +604,6 @@
             "DEFAULT": "rendering_mobile_000.wprgo"
         },
         "yahoo_news_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "yahoo_news_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "yahoo_sports_2018": {
@@ -679,9 +622,6 @@
             "DEFAULT": "rendering_mobile_000.wprgo"
         },
         "youtube_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
-        },
-        "youtube_mobile_sync_scroll_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
         "zdnet_pathological_2018": {

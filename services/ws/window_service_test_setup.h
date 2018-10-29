@@ -22,6 +22,8 @@ class ScopedCaptureClient;
 
 namespace ws {
 
+class HostEventQueue;
+class TestHostEventDispatcher;
 class WindowService;
 class WindowTree;
 class WindowTreeTestHelper;
@@ -38,6 +40,11 @@ class WindowServiceTestSetup {
   // details.
   std::unique_ptr<EmbeddingHelper> CreateEmbedding(aura::Window* embed_root,
                                                    uint32_t flags = 0);
+
+  void set_ack_events_immediately(bool value) {
+    ack_events_immediately_ = value;
+  }
+  bool ack_events_immediately() const { return ack_events_immediately_; }
 
   aura::Window* root() { return aura_test_helper_.root_window(); }
   TestWindowServiceDelegate* delegate() { return &delegate_; }
@@ -57,6 +64,8 @@ class WindowServiceTestSetup {
 
   aura::test::AuraTestHelper* aura_test_helper() { return &aura_test_helper_; }
 
+  HostEventQueue* host_event_queue() { return host_event_queue_.get(); }
+
  private:
   base::test::ScopedTaskEnvironment task_environment_{
       base::test::ScopedTaskEnvironment::MainThreadType::UI};
@@ -65,9 +74,14 @@ class WindowServiceTestSetup {
   std::unique_ptr<wm::ScopedCaptureClient> scoped_capture_client_;
   TestWindowServiceDelegate delegate_;
   std::unique_ptr<WindowService> service_;
+  std::unique_ptr<TestHostEventDispatcher> host_event_dispatcher_;
+  std::unique_ptr<HostEventQueue> host_event_queue_;
   TestWindowTreeClient window_tree_client_;
   std::unique_ptr<WindowTree> window_tree_;
   std::unique_ptr<WindowTreeTestHelper> window_tree_test_helper_;
+
+  // If true, any events that are sent to clients are acked immediately.
+  bool ack_events_immediately_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(WindowServiceTestSetup);
 };

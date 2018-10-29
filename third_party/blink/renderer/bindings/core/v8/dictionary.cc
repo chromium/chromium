@@ -95,13 +95,16 @@ bool Dictionary::Get(v8::Local<v8::Value> key,
   if (dictionary_object_.IsEmpty())
     return false;
 
-  if (!V8CallBoolean(dictionary_object_->Has(V8Context(), key)))
-    return false;
-
-  // Swallow a possible exception in v8::Object::Get().
+  // Swallow possible exceptions in v8::Object::Get() and Has().
   // TODO(bashi,yukishiino): Should rethrow the exception.
   // http://crbug.com/666661
   v8::TryCatch try_catch(GetIsolate());
+
+  bool has_property;
+  if (!dictionary_object_->Has(V8Context(), key).To(&has_property) ||
+      !has_property)
+    return false;
+
   return dictionary_object_->Get(V8Context(), key).ToLocal(&result);
 }
 

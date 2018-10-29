@@ -52,6 +52,7 @@
   display: flex;
   height: 28px;
   justify-content: flex-end;
+  min-height: 0;
   padding-right: 34px;  /* Double the padding of .step */
   position: absolute;
   width: 100%;
@@ -87,6 +88,7 @@ html[dir=rtl] .step-controls {
   display: flex;
   justify-content: center;
   left: 0;
+  min-height: 0;
   position: absolute;
   right: 0;
   top: 0;

@@ -16,12 +16,34 @@ import java.lang.reflect.Proxy;
  */
 public class BoundaryInterfaceReflectionUtil {
     /**
+     * Check if an object is an instance of {@code className}, resolving {@code className} in
+     * the object's own ClassLoader. This is useful when {@code obj} may have been created in a
+     * ClassLoader other than the current one (in which case {@code obj instanceof Foo} would fail
+     * but {@code instanceOfInOwnClassLoader(obj, "Foo")} may succeed).
+     */
+    public static boolean instanceOfInOwnClassLoader(Object obj, String className) {
+        try {
+            ClassLoader loader = obj.getClass().getClassLoader();
+            // We intentionally set initialize = false because instanceof shouldn't trigger
+            // static initialization.
+            Class<?> clazz = Class.forName(className, false, loader);
+            return clazz.isInstance(obj);
+        } catch (ClassNotFoundException e) {
+            // If className is not in the ClassLoader, then this cannot be an instance.
+            return false;
+        }
+    }
+
+    /**
      * Utility method for fetching a method from {@param delegateLoader}, with the same signature
      * (package + class + method name + parameters) as a given method defined in another
      * classloader.
      */
     public static Method dupeMethod(Method method, ClassLoader delegateLoader)
             throws ClassNotFoundException, NoSuchMethodException {
+        // We're converting one type to another. This is analogous to instantiating the type on the
+        // other side of the Boundary, so it makes sense to perform static initialization if it
+        // hasn't already happened (initialize = true).
         Class<?> declaringClass =
                 Class.forName(method.getDeclaringClass().getName(), true, delegateLoader);
         // We do not need to convert parameter types across ClassLoaders because we never pass

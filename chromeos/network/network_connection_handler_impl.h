@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_IMPL_H_
 #define CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_IMPL_H_
 
-#include "chromeos/cert_loader.h"
 #include "chromeos/chromeos_export.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/login/login_state.h"
+#include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
@@ -18,7 +18,7 @@ namespace chromeos {
 class CHROMEOS_EXPORT NetworkConnectionHandlerImpl
     : public NetworkConnectionHandler,
       public LoginState::Observer,
-      public CertLoader::Observer,
+      public NetworkCertLoader::Observer,
       public NetworkStateHandlerObserver,
       public base::SupportsWeakPtr<NetworkConnectionHandlerImpl> {
  public:
@@ -45,7 +45,7 @@ class CHROMEOS_EXPORT NetworkConnectionHandlerImpl
   // LoginState::Observer
   void LoggedInStateChanged() override;
 
-  // CertLoader::Observer
+  // NetworkCertLoader::Observer
   void OnCertificatesLoaded(
       const net::ScopedCERTCertificateList& cert_list) override;
 
@@ -139,7 +139,7 @@ class CHROMEOS_EXPORT NetworkConnectionHandlerImpl
                                     const base::Closure& success_callback);
 
   // Local references to the associated handler instances.
-  CertLoader* cert_loader_;
+  NetworkCertLoader* network_cert_loader_;
   NetworkStateHandler* network_state_handler_;
   NetworkConfigurationHandler* configuration_handler_;
   ManagedNetworkConfigurationHandler* managed_configuration_handler_;

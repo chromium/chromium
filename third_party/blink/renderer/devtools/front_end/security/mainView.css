@@ -132,7 +132,7 @@
     display: flex;
     white-space: nowrap;
     border: none;
-    color: #8c8c8c;
+    color: rgb(90, 90, 90);
 }
 
 .security-explanation-text {
@@ -153,7 +153,7 @@
 }
 
 .security-explanation-title {
-    color: rgb(90, 90, 90);
+    color: rgb(48, 57, 66);
     margin-top: 1px;
     margin-bottom: 8px;
 }
@@ -172,4 +172,12 @@
 
 .security-mixed-content {
     margin-top: 8px;
+}
+
+.security-explanation-recommendations {
+    padding-inline-start: 16px;
+}
+
+.security-explanation-recommendations > li {
+    margin-bottom: 4px;
 }

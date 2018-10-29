@@ -921,7 +921,7 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
             result += "Platform_App";
           } else if (app == arc_support_host_->id()) {
             result += "Play Store";
-          } else if (app == kCrostiniTerminalId) {
+          } else if (app == crostini::kCrostiniTerminalId) {
             result += "Terminal";
           } else {
             bool arc_app_found = false;
@@ -4146,9 +4146,12 @@ TEST_P(ChromeLauncherControllerArcDefaultAppsTest, DefaultApps) {
 
   // Wait for real app icon image is decoded and set for shelf item.
   shelf_controller->GetLastItemImage();
-  // Should have only one update that guarantees default icon was not set in
+  // Should have only one update for newly created window with no-icon set plus
+  // update for each scale factor. That guarantees default icon was not set in
   // between.
-  EXPECT_EQ(update_count_before_launch + 1, shelf_controller->updated_count());
+  EXPECT_EQ(
+      update_count_before_launch + 1 + ui::GetSupportedScaleFactors().size(),
+      shelf_controller->updated_count());
 }
 
 TEST_P(ChromeLauncherControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
@@ -4638,7 +4641,7 @@ TEST_F(ChromeLauncherControllerDemoModeTest, PinnedAppsOffline) {
 TEST_F(ChromeLauncherControllerTest, CrostiniTerminalPinUnpin) {
   InitLauncherController();
 
-  const std::string app_id = kCrostiniTerminalId;
+  const std::string app_id = crostini::kCrostiniTerminalId;
   EXPECT_FALSE(launcher_controller_->IsAppPinned(app_id));
 
   // Load pinned Terminal from prefs without Crostini UI being allowed

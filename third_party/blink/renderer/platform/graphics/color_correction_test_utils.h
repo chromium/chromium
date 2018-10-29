@@ -9,8 +9,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/third_party/skcms/skcms.h"
 
 namespace blink {
 
@@ -31,17 +31,34 @@ enum UnpremulRoundTripTolerance {
   kUnpremulRoundTripTolerance,
 };
 
+enum ColorSpaceConversion {
+  kColorSpaceConversion_None,
+  kColorSpaceConversion_Default,
+  kColorSpaceConversion_Preserve,
+  kColorSpaceConversion_SRGB,
+  kColorSpaceConversion_LinearRGB,
+  kColorSpaceConversion_P3,
+  kColorSpaceConversion_Rec2020,
+  kColorSpaceConversion_Last = kColorSpaceConversion_Rec2020,
+};
+
 class ColorCorrectionTestUtils {
  public:
+  // ImageBitmap color space conversion test utils
   static sk_sp<SkColorSpace> ColorSpinSkColorSpace();
+  static sk_sp<SkColorSpace> ColorSpaceConversionToSkColorSpace(
+      ColorSpaceConversion conversion);
+  static String ColorSpaceConversionToString(
+      ColorSpaceConversion color_space_conversion);
 
   static void CompareColorCorrectedPixels(
       const void* actual_pixels,
       const void* expected_pixels,
       int num_pixels,
       PixelFormat pixel_format,
-      PixelsAlphaMultiply alpha_multiplied,
-      UnpremulRoundTripTolerance premul_unpremul_tolerance);
+      PixelsAlphaMultiply alpha_multiplied = kAlphaUnmultiplied,
+      UnpremulRoundTripTolerance premul_unpremul_tolerance =
+          kUnpremulRoundTripTolerance);
 
   static bool ConvertPixelsToColorSpaceAndPixelFormatForTest(
       void* src_data,
@@ -53,15 +70,13 @@ class ColorCorrectionTestUtils {
       std::unique_ptr<uint8_t[]>& converted_pixels,
       PixelFormat pixel_format_for_f16_canvas);
 
-  static bool MatchColorSpace(SkColorSpace* src_color_space,
-                              SkColorSpace* dst_color_space,
-                              float xyz_d50_component_tolerance);
+  static bool MatchColorSpace(sk_sp<SkColorSpace> src_color_space,
+                              sk_sp<SkColorSpace> dst_color_space);
 
   static bool MatchSkImages(sk_sp<SkImage> src_image,
                             sk_sp<SkImage> dst_image,
                             unsigned uint8_tolerance,
                             float f16_tolerance,
-                            float xyz_d50_component_tolerance,
                             bool compare_alpha);
 
  private:

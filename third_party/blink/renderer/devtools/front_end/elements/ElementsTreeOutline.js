@@ -531,7 +531,7 @@ Elements.ElementsTreeOutline = class extends UI.TreeOutline {
       show: async popover => {
         const listItem = link.enclosingNodeOrSelfWithNodeName('li');
         const node = /** @type {!Elements.ElementsTreeElement} */ (listItem.treeElement).node();
-        const precomputedFeatures = await this._loadDimensionsForNode(node);
+        const precomputedFeatures = await Components.ImagePreview.loadDimensionsForNode(node);
         const preview = await Components.ImagePreview.build(
             node.domModel().target(), link[Elements.ElementsTreeElement.HrefSymbol], true, precomputedFeatures);
         if (preview)
@@ -539,39 +539,6 @@ Elements.ElementsTreeOutline = class extends UI.TreeOutline {
         return !!preview;
       }
     };
-  }
-
-  /**
-   * @param {!SDK.DOMNode} node
-   * @return {!Promise<!Object|undefined>}
-   */
-  async _loadDimensionsForNode(node) {
-    if (!node.nodeName() || node.nodeName().toLowerCase() !== 'img')
-      return;
-
-    const object = await node.resolveToObject('');
-
-    if (!object)
-      return;
-
-    const promise = object.callFunctionJSONPromise(features, undefined);
-    object.release();
-    return promise;
-
-    /**
-     * @return {!{offsetWidth: number, offsetHeight: number, naturalWidth: number, naturalHeight: number, currentSrc: (string|undefined)}}
-     * @suppressReceiverCheck
-     * @this {!Element}
-     */
-    function features() {
-      return {
-        offsetWidth: this.offsetWidth,
-        offsetHeight: this.offsetHeight,
-        naturalWidth: this.naturalWidth,
-        naturalHeight: this.naturalHeight,
-        currentSrc: this.currentSrc
-      };
-    }
   }
 
   _onmousedown(event) {
@@ -909,10 +876,9 @@ Elements.ElementsTreeOutline = class extends UI.TreeOutline {
     if (!object)
       return;
 
-    const result = object.callFunction(toggleClassAndInjectStyleRule, [{value: pseudoType}, {value: !hidden}]);
+    await object.callFunction(toggleClassAndInjectStyleRule, [{value: pseudoType}, {value: !hidden}]);
     object.release();
     node.setMarker('hidden-marker', hidden ? null : true);
-    return result;
 
     /**
      * @param {?string} pseudoType

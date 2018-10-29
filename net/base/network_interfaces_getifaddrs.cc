@@ -214,7 +214,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
     return false;
 
   // getifaddrs() may require IO operations.
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   ifaddrs* interfaces;
   if (getifaddrs(&interfaces) < 0) {

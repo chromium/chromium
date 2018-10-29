@@ -160,7 +160,6 @@ to see a full list of options. A few of the most useful options are below:
 | `--debug`                   | Run the debug build of the test shell (default is release). Equivalent to `-t Debug` |
 | `--nocheck-sys-deps`        | Don't check system dependencies; this allows faster iteration. |
 | `--verbose`                 |	Produce more verbose output, including a list of tests that pass. |
-| `--no-pixel-tests`          | Disable the pixel-to-pixel PNG comparisons and image checksums for tests that don't call `testRunner.dumpAsText()` |
 | `--reset-results`           |	Overwrite the current baselines (`-expected.{png|txt|wav}` files) with actual results, or create new baselines if there are no existing baselines. |
 | `--renderer-startup-dialog` | Bring up a modal dialog before running the test, useful for attaching a debugger. |
 | `--fully-parallel`          | Run tests in parallel using as many child processes as the system has cores. |

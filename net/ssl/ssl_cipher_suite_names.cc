@@ -43,6 +43,17 @@ int ObsoleteSSLStatusForCipherSuite(uint16_t cipher_suite) {
   return obsolete_ssl;
 }
 
+int ObsoleteSSLStatusForSignature(uint16_t signature_algorithm) {
+  switch (signature_algorithm) {
+    case SSL_SIGN_ECDSA_SHA1:
+    case SSL_SIGN_RSA_PKCS1_MD5_SHA1:
+    case SSL_SIGN_RSA_PKCS1_SHA1:
+      return OBSOLETE_SSL_MASK_SIGNATURE;
+    default:
+      return OBSOLETE_SSL_NONE;
+  }
+}
+
 }  // namespace
 
 void SSLCipherSuiteToStrings(const char** key_exchange_str,
@@ -161,7 +172,7 @@ bool ParseSSLCipherString(const std::string& cipher_string,
   return false;
 }
 
-int ObsoleteSSLStatus(int connection_status) {
+int ObsoleteSSLStatus(int connection_status, uint16_t signature_algorithm) {
   int obsolete_ssl = OBSOLETE_SSL_NONE;
 
   int ssl_version = SSLConnectionStatusToVersion(connection_status);
@@ -169,6 +180,8 @@ int ObsoleteSSLStatus(int connection_status) {
 
   uint16_t cipher_suite = SSLConnectionStatusToCipherSuite(connection_status);
   obsolete_ssl |= ObsoleteSSLStatusForCipherSuite(cipher_suite);
+
+  obsolete_ssl |= ObsoleteSSLStatusForSignature(signature_algorithm);
 
   return obsolete_ssl;
 }

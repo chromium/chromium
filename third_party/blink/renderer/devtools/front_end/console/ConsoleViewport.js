@@ -171,16 +171,21 @@ Console.ConsoleViewport = class {
   _onKeyDown(event) {
     if (UI.isEditing() || !this._itemCount || event.shiftKey)
       return;
+    let isArrowUp = false;
     switch (event.key) {
       case 'ArrowUp':
-        this._virtualSelectedIndex--;
-        if (this._virtualSelectedIndex < 0)
-          this._virtualSelectedIndex = this._itemCount - 1;
+        if (this._virtualSelectedIndex > 0) {
+          isArrowUp = true;
+          this._virtualSelectedIndex--;
+        } else {
+          return;
+        }
         break;
       case 'ArrowDown':
-        this._virtualSelectedIndex++;
-        if (this._virtualSelectedIndex >= this._itemCount)
-          this._virtualSelectedIndex = 0;
+        if (this._virtualSelectedIndex < this._itemCount - 1)
+          this._virtualSelectedIndex++;
+        else
+          return;
         break;
       case 'Home':
         this._virtualSelectedIndex = 0;
@@ -193,20 +198,27 @@ Console.ConsoleViewport = class {
     }
     event.consume(true);
     this.scrollItemIntoView(this._virtualSelectedIndex);
-    this._updateFocusedItem();
+    this._updateFocusedItem(isArrowUp);
   }
 
-  _updateFocusedItem() {
+  /**
+   * @param {boolean=} focusLastChild
+   */
+  _updateFocusedItem(focusLastChild) {
     const selectedElement = this.renderedElementAt(this._virtualSelectedIndex);
     const changed = this._lastSelectedElement !== selectedElement;
     const containerHasFocus = this._contentElement === this.element.ownerDocument.deepActiveElement();
     if (this._lastSelectedElement && changed)
       this._lastSelectedElement.classList.remove('console-selected');
-    if (selectedElement && (changed || containerHasFocus)) {
+    if (selectedElement && (changed || containerHasFocus) && this.element.hasFocus()) {
       selectedElement.classList.add('console-selected');
       // Do not focus the message if something within holds focus (e.g. object).
-      if (!selectedElement.hasFocus())
-        focusWithoutScroll(selectedElement);
+      if (!selectedElement.hasFocus()) {
+        if (focusLastChild)
+          this._renderedItems[this._virtualSelectedIndex - this._firstActiveIndex].focusLastChildOrSelf();
+        else
+          focusWithoutScroll(selectedElement);
+      }
     }
     if (this._itemCount && !this._contentElement.hasFocus())
       this._contentElement.tabIndex = 0;

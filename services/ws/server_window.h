@@ -84,6 +84,13 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) ServerWindow {
 
   void SetHitTestInsets(const gfx::Insets& mouse, const gfx::Insets& touch);
 
+  void set_attached_frame_sink_id(const viz::FrameSinkId& id) {
+    attached_frame_sink_id_ = id;
+  }
+  const viz::FrameSinkId& attached_frame_sink_id() const {
+    return attached_frame_sink_id_;
+  }
+
   void SetCaptureOwner(WindowTree* owner);
   WindowTree* capture_owner() const { return capture_owner_; }
 
@@ -198,6 +205,9 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) ServerWindow {
 
   // Set to true once AttachCompositorFrameSink() has been called.
   bool attached_compositor_frame_sink_ = false;
+
+  // FrameSinkId set by way of mojom::WindowTree::AttachFrameSinkId().
+  viz::FrameSinkId attached_frame_sink_id_;
 
   DISALLOW_COPY_AND_ASSIGN(ServerWindow);
 };

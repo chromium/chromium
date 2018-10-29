@@ -7,6 +7,7 @@ import unittest
 
 from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.host_mock import MockHost
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive_mock import mock_git_commands
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
@@ -14,13 +15,15 @@ from blinkpy.w3c.import_notifier import ImportNotifier, TestFailure
 from blinkpy.w3c.wpt_expectations_updater import UMBRELLA_BUG
 
 
+MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
+
 class ImportNotifierTest(unittest.TestCase):
 
     def setUp(self):
         self.host = MockHost()
         # Mock a virtual test suite at virtual/gpu/external/wpt/foo.
         self.host.filesystem = MockFileSystem({
-            '/mock-checkout/third_party/WebKit/LayoutTests/VirtualTestSuites':
+            MOCK_WEB_TESTS + 'VirtualTestSuites':
             '[{"prefix": "gpu", "base": "external/wpt/foo", "args": ["--foo"]}]'
         })
         self.git = self.host.git()
@@ -29,16 +32,16 @@ class ImportNotifierTest(unittest.TestCase):
 
     def test_find_changed_baselines_of_tests(self):
         changed_files = [
-            'third_party/WebKit/LayoutTests/external/wpt/foo/bar.html',
-            'third_party/WebKit/LayoutTests/external/wpt/foo/bar-expected.txt',
-            'third_party/WebKit/LayoutTests/platform/linux/external/wpt/foo/bar-expected.txt',
-            'third_party/WebKit/LayoutTests/external/wpt/random_stuff.html',
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html',
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt',
+            RELATIVE_WEB_TESTS + 'platform/linux/external/wpt/foo/bar-expected.txt',
+            RELATIVE_WEB_TESTS + 'external/wpt/random_stuff.html',
         ]
         self.git.changed_files = lambda: changed_files
         self.assertEqual(self.notifier.find_changed_baselines_of_tests(['external/wpt/foo/bar.html']),
                          {'external/wpt/foo/bar.html': [
-                             'third_party/WebKit/LayoutTests/external/wpt/foo/bar-expected.txt',
-                             'third_party/WebKit/LayoutTests/platform/linux/external/wpt/foo/bar-expected.txt',
+                             RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt',
+                             RELATIVE_WEB_TESTS + 'platform/linux/external/wpt/foo/bar-expected.txt',
                          ]})
 
         self.assertEqual(self.notifier.find_changed_baselines_of_tests(set()), {})
@@ -83,12 +86,12 @@ class ImportNotifierTest(unittest.TestCase):
 
     def test_examine_baseline_changes(self):
         self.host.filesystem.write_text_file(
-            '/mock-checkout/third_party/WebKit/LayoutTests/external/wpt/foo/OWNERS',
+            MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS',
             'test@chromium.org'
         )
         changed_test_baselines = {'external/wpt/foo/bar.html': [
-            'third_party/WebKit/LayoutTests/external/wpt/foo/bar-expected.txt',
-            'third_party/WebKit/LayoutTests/platform/linux/external/wpt/foo/bar-expected.txt',
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt',
+            RELATIVE_WEB_TESTS + 'platform/linux/external/wpt/foo/bar-expected.txt',
         ]}
         gerrit_url_with_ps = 'https://crrev.com/c/12345/3/'
         self.notifier.more_failures_in_baseline = lambda _: True
@@ -98,17 +101,17 @@ class ImportNotifierTest(unittest.TestCase):
             self.notifier.new_failures_by_directory,
             {'external/wpt/foo': [
                 TestFailure(TestFailure.BASELINE_CHANGE, 'external/wpt/foo/bar.html',
-                            baseline_path='third_party/WebKit/LayoutTests/external/wpt/foo/bar-expected.txt',
+                            baseline_path=RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt',
                             gerrit_url_with_ps=gerrit_url_with_ps),
                 TestFailure(TestFailure.BASELINE_CHANGE, 'external/wpt/foo/bar.html',
-                            baseline_path='third_party/WebKit/LayoutTests/platform/linux/external/wpt/foo/bar-expected.txt',
+                            baseline_path=RELATIVE_WEB_TESTS + 'platform/linux/external/wpt/foo/bar-expected.txt',
                             gerrit_url_with_ps=gerrit_url_with_ps),
             ]}
         )
 
     def test_examine_new_test_expectations(self):
         self.host.filesystem.write_text_file(
-            '/mock-checkout/third_party/WebKit/LayoutTests/external/wpt/foo/OWNERS',
+            MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS',
             'test@chromium.org'
         )
         test_expectations = {'external/wpt/foo/bar.html': [
@@ -142,14 +145,14 @@ class ImportNotifierTest(unittest.TestCase):
 
         self.local_wpt.is_commit_affecting_directory = _is_commit_affecting_directory
         self.assertEqual(
-            self.notifier.format_commit_list(imported_commits, '/mock-checkout/third_party/WebKit/LayoutTests/external/wpt/foo'),
+            self.notifier.format_commit_list(imported_commits, MOCK_WEB_TESTS + 'external/wpt/foo'),
             u'Subject 1: https://github.com/web-platform-tests/wpt/commit/SHA1 [affecting this directory]\n'
             u'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ: https://github.com/web-platform-tests/wpt/commit/SHA2\n'
         )
 
     def test_find_owned_directory_non_virtual(self):
         self.host.filesystem.write_text_file(
-            '/mock-checkout/third_party/WebKit/LayoutTests/external/wpt/foo/OWNERS',
+            MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS',
             'test@chromium.org'
         )
         self.assertEqual(self.notifier.find_owned_directory('external/wpt/foo/bar.html'), 'external/wpt/foo')
@@ -157,20 +160,20 @@ class ImportNotifierTest(unittest.TestCase):
 
     def test_find_owned_directory_virtual(self):
         self.host.filesystem.write_text_file(
-            '/mock-checkout/third_party/WebKit/LayoutTests/external/wpt/foo/OWNERS',
+            MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS',
             'test@chromium.org'
         )
         self.assertEqual(self.notifier.find_owned_directory('virtual/gpu/external/wpt/foo/bar.html'), 'external/wpt/foo')
 
     def test_create_bugs_from_new_failures(self):
         self.host.filesystem.write_text_file(
-            '/mock-checkout/third_party/WebKit/LayoutTests/external/wpt/foo/OWNERS',
+            MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS',
             '# COMPONENT: Blink>Infra>Ecosystem\n'
             '# WPT-NOTIFY: true\n'
             'foolip@chromium.org\n'
         )
         self.host.filesystem.write_text_file(
-            '/mock-checkout/third_party/WebKit/LayoutTests/external/wpt/bar/OWNERS',
+            MOCK_WEB_TESTS + 'external/wpt/bar/OWNERS',
             'test@chromium.org'
         )
         self.notifier.new_failures_by_directory = {
@@ -202,19 +205,19 @@ class TestFailureTest(unittest.TestCase):
     def test_test_failure_to_str_baseline_change(self):
         failure = TestFailure(
             TestFailure.BASELINE_CHANGE, 'external/wpt/foo/bar.html',
-            baseline_path='third_party/WebKit/LayoutTests/external/wpt/foo/bar-expected.txt',
+            baseline_path=RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt',
             gerrit_url_with_ps='https://crrev.com/c/12345/3/')
         self.assertEqual(str(failure),
-                         'external/wpt/foo/bar.html new failing tests: https://crrev.com/c/12345/3/'
-                         'third_party/WebKit/LayoutTests/external/wpt/foo/bar-expected.txt')
+                         'external/wpt/foo/bar.html new failing tests: https://crrev.com/c/12345/3/' +
+                         RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt')
 
         platform_failure = TestFailure(
             TestFailure.BASELINE_CHANGE, 'external/wpt/foo/bar.html',
-            baseline_path='third_party/WebKit/LayoutTests/platform/linux/external/wpt/foo/bar-expected.txt',
+            baseline_path=RELATIVE_WEB_TESTS + 'platform/linux/external/wpt/foo/bar-expected.txt',
             gerrit_url_with_ps='https://crrev.com/c/12345/3/')
         self.assertEqual(str(platform_failure),
-                         '[ Linux ] external/wpt/foo/bar.html new failing tests: https://crrev.com/c/12345/3/'
-                         'third_party/WebKit/LayoutTests/platform/linux/external/wpt/foo/bar-expected.txt')
+                         '[ Linux ] external/wpt/foo/bar.html new failing tests: https://crrev.com/c/12345/3/' +
+                         RELATIVE_WEB_TESTS + 'platform/linux/external/wpt/foo/bar-expected.txt')
 
     def test_test_failure_to_str_new_expectation(self):
         failure = TestFailure(

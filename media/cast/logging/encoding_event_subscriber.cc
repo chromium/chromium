@@ -72,7 +72,7 @@ void EncodingEventSubscriber::OnReceiveFrameEvent(
   AggregatedFrameEvent* event_proto_ptr = nullptr;
 
   // Look up existing entry. If not found, create a new entry and add to map.
-  FrameEventMap::iterator it = frame_event_map_.find(relative_rtp_timestamp);
+  auto it = frame_event_map_.find(relative_rtp_timestamp);
   if (it == frame_event_map_.end()) {
     if (!ShouldCreateNewProto(lower_32_bits))
       return;
@@ -147,8 +147,7 @@ void EncodingEventSubscriber::OnReceivePacketEvent(
   const RtpTimeDelta relative_rtp_timestamp =
       GetRelativeRtpTimestamp(packet_event.rtp_timestamp);
   uint32_t lower_32_bits = relative_rtp_timestamp.lower_32_bits();
-  PacketEventMap::iterator it =
-      packet_event_map_.find(relative_rtp_timestamp);
+  auto it = packet_event_map_.find(relative_rtp_timestamp);
   BasePacketEvent* base_packet_event_proto = nullptr;
 
   // Look up existing entry. If not found, create a new entry and add to map.
@@ -259,7 +258,7 @@ void EncodingEventSubscriber::GetEventsAndReset(LogMetadata* metadata,
 void EncodingEventSubscriber::TransferFrameEvents(size_t max_num_entries) {
   DCHECK(frame_event_map_.size() >= max_num_entries);
 
-  FrameEventMap::iterator it = frame_event_map_.begin();
+  auto it = frame_event_map_.begin();
   for (size_t i = 0;
        i < max_num_entries && it != frame_event_map_.end();
        i++, ++it) {
@@ -270,7 +269,7 @@ void EncodingEventSubscriber::TransferFrameEvents(size_t max_num_entries) {
 }
 
 void EncodingEventSubscriber::TransferPacketEvents(size_t max_num_entries) {
-  PacketEventMap::iterator it = packet_event_map_.begin();
+  auto it = packet_event_map_.begin();
   for (size_t i = 0;
        i < max_num_entries && it != packet_event_map_.end();
        i++, ++it) {

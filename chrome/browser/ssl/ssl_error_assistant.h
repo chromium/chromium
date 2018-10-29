@@ -88,11 +88,18 @@ class SSLErrorAssistant {
   void SetErrorAssistantProto(
       std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig> proto);
 
+  // Returns the SSL error assistant config stored in the resource bundle. This
+  // function is thread-safe and can safely be called multiple times.
+  static std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig>
+  GetErrorAssistantProtoFromResourceBundle();
+
   // Testing methods:
   void ResetForTesting();
   int GetErrorAssistantProtoVersionIdForTesting() const;
 
  private:
+  void EnsureInitialized();
+
   // SPKI hashes belonging to certs treated as captive portals. Null until the
   // first time ShouldDisplayCaptiveProtalInterstitial() or
   // SetErrorAssistantProto() is called.

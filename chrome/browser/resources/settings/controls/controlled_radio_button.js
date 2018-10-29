@@ -10,39 +10,14 @@ Polymer({
     CrRadioButtonBehavior,
   ],
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      computed: 'computeDisabled_(pref.*)',
-      reflectToAttribute: true,
-      observer: 'disabledChanged_',
-    },
+  observers: [
+    'updateDisabled_(pref.enforcement)',
+  ],
 
-    name: {
-      type: String,
-      notify: true,
-    },
-  },
-
-  /**
-   * @return {boolean} Whether the button is disabled.
-   * @private
-   */
-  computeDisabled_: function() {
-    return this.pref.enforcement == chrome.settingsPrivate.Enforcement.ENFORCED;
-  },
-
-  /**
-   * @param {boolean} current
-   * @param {boolean} previous
-   * @private
-   */
-  disabledChanged_: function(current, previous) {
-    if (previous === undefined && !this.disabled)
-      return;
-
-    this.setAttribute('tabindex', this.disabled ? -1 : 0);
-    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+  /** @private */
+  updateDisabled_: function() {
+    this.disabled =
+        this.pref.enforcement == chrome.settingsPrivate.Enforcement.ENFORCED;
   },
 
   /**

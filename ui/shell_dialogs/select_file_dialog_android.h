@@ -34,6 +34,11 @@ class SelectFileDialogImpl : public SelectFileDialog {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& java_object);
 
+  void OnContactsSelected(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_object,
+      const base::android::JavaParamRef<jstring>& contacts);
+
   // From SelectFileDialog
   bool IsRunning(gfx::NativeWindow) const override;
   void ListenerDestroyed() override;

@@ -40,14 +40,16 @@ void FormActivityObserverBridge::FormActivityRegistered(
 void FormActivityObserverBridge::DocumentSubmitted(web::WebState* web_state,
                                                    web::WebFrame* sender_frame,
                                                    const std::string& form_name,
+                                                   const std::string& form_data,
                                                    bool has_user_gesture,
                                                    bool form_in_main_frame) {
   DCHECK_EQ(web_state, web_state_);
   if ([owner_ respondsToSelector:@selector
-              (webState:didSubmitDocumentWithFormNamed:hasUserGesture
+              (webState:didSubmitDocumentWithFormNamed:withData:hasUserGesture
                           :formInMainFrame:inFrame:)]) {
     [owner_ webState:web_state
         didSubmitDocumentWithFormNamed:form_name
+                              withData:form_data
                         hasUserGesture:has_user_gesture
                        formInMainFrame:form_in_main_frame
                                inFrame:sender_frame];

@@ -7,6 +7,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/view_properties.h"
 
 namespace {
 
@@ -79,6 +80,11 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
   paint.setStrokeWidth(PlatformStyle::kFocusHaloThickness);
 
   SkPath path = path_;
+  if (path.isEmpty()) {
+    SkPath* highlight_path = parent()->GetProperty(kHighlightPathKey);
+    if (highlight_path)
+      path = *highlight_path;
+  }
   if (path.isEmpty())
     path.addRect(RectToSkRect(parent()->GetLocalBounds()));
 

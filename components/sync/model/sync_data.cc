@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <utility>
 
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,14 +40,16 @@ void SyncData::ImmutableSyncEntityTraits::Swap(sync_pb::SyncEntity* t1,
   t1->Swap(t2);
 }
 
-SyncData::SyncData() : id_(kInvalidId), is_valid_(false) {}
+SyncData::SyncData() : id_(kInvalidId), is_local_(false), is_valid_(false) {}
 
-SyncData::SyncData(int64_t id,
+SyncData::SyncData(bool is_local,
+                   int64_t id,
                    sync_pb::SyncEntity* entity,
                    const base::Time& remote_modification_time)
     : id_(id),
       remote_modification_time_(remote_modification_time),
       immutable_entity_(entity),
+      is_local_(is_local),
       is_valid_(true) {}
 
 SyncData::SyncData(const SyncData& other) = default;
@@ -69,20 +72,18 @@ SyncData SyncData::CreateLocalData(const std::string& sync_tag,
   entity.set_client_defined_unique_tag(sync_tag);
   entity.set_non_unique_name(non_unique_title);
   entity.mutable_specifics()->CopyFrom(specifics);
-  return SyncData(kInvalidId, &entity, base::Time());
+  return SyncData(/*is_local=*/true, kInvalidId, &entity, base::Time());
 }
 
 // Static.
-SyncData SyncData::CreateRemoteData(
-    int64_t id,
-    const sync_pb::EntitySpecifics& specifics,
-    const base::Time& modification_time,
-    const std::string& client_tag_hash) {
-  DCHECK_NE(id, kInvalidId);
+SyncData SyncData::CreateRemoteData(int64_t id,
+                                    sync_pb::EntitySpecifics specifics,
+                                    base::Time modification_time,
+                                    std::string client_tag_hash) {
   sync_pb::SyncEntity entity;
-  entity.mutable_specifics()->CopyFrom(specifics);
-  entity.set_client_defined_unique_tag(client_tag_hash);
-  return SyncData(id, &entity, modification_time);
+  *entity.mutable_specifics() = std::move(specifics);
+  entity.set_client_defined_unique_tag(std::move(client_tag_hash));
+  return SyncData(/*is_local=*/false, id, &entity, modification_time);
 }
 
 bool SyncData::IsValid() const {
@@ -104,7 +105,7 @@ const std::string& SyncData::GetTitle() const {
 }
 
 bool SyncData::IsLocal() const {
-  return id_ == kInvalidId;
+  return is_local_;
 }
 
 std::string SyncData::ToString() const {
@@ -125,7 +126,7 @@ std::string SyncData::ToString() const {
   }
 
   SyncDataRemote sync_data_remote(*this);
-  std::string id = base::Int64ToString(sync_data_remote.GetId());
+  std::string id = base::Int64ToString(sync_data_remote.id_);
   return "{ isLocal: false, type: " + type + ", specifics: " + specifics +
          ", id: " + id + "}";
 }
@@ -156,6 +157,8 @@ const base::Time& SyncDataRemote::GetModifiedTime() const {
 }
 
 int64_t SyncDataRemote::GetId() const {
+  DCHECK(!IsLocal());
+  DCHECK_NE(id_, kInvalidId);
   return id_;
 }
 
@@ -166,8 +169,7 @@ const std::string& SyncDataRemote::GetClientTagHash() const {
   // cases, where this is the hashed tag value. The original tag is not sent to
   // the server so we wouldn't be able to set this value anyways. The only way
   // to recreate an un-hashed tag is for the service to do so with a specifics.
-  // Should only be used by sessions, see crbug.com/604657.
-  DCHECK_EQ(SESSIONS, GetDataType());
+  DCHECK(!immutable_entity_.Get().client_defined_unique_tag().empty());
   return immutable_entity_.Get().client_defined_unique_tag();
 }
 

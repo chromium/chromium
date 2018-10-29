@@ -167,7 +167,7 @@ class WTF_EXPORT BitVector {
   }
 
   class WTF_EXPORT OutOfLineBits {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     size_t NumBits() const { return num_bits_; }

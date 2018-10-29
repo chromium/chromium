@@ -318,7 +318,8 @@ FakeBluetoothDeviceClient::FakeBluetoothDeviceClient()
       connection_rssi_(kUnkownPower),
       transmit_power_(kUnkownPower),
       max_transmit_power_(kUnkownPower),
-      delay_start_discovery_(false) {
+      delay_start_discovery_(false),
+      should_leave_connections_pending_(false) {
   std::unique_ptr<Properties> properties(new Properties(
       base::Bind(&FakeBluetoothDeviceClient::OnPropertyChanged,
                  base::Unretained(this), dbus::ObjectPath(kPairedDevicePath))));
@@ -366,6 +367,10 @@ FakeBluetoothDeviceClient::FakeBluetoothDeviceClient()
 }
 
 FakeBluetoothDeviceClient::~FakeBluetoothDeviceClient() = default;
+
+void FakeBluetoothDeviceClient::LeaveConnectionsPending() {
+  should_leave_connections_pending_ = true;
+}
 
 void FakeBluetoothDeviceClient::Init(
     dbus::Bus* bus,
@@ -417,6 +422,9 @@ void FakeBluetoothDeviceClient::Connect(const dbus::ObjectPath& object_path,
     callback.Run();
     return;
   }
+
+  if (should_leave_connections_pending_)
+    return;
 
   if (properties->paired.value() != true &&
       object_path != dbus::ObjectPath(kConnectUnpairablePath) &&
@@ -1109,7 +1117,7 @@ FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries() const {
 void FakeBluetoothDeviceClient::RemoveDevice(
     const dbus::ObjectPath& adapter_path,
     const dbus::ObjectPath& device_path) {
-  std::vector<dbus::ObjectPath>::iterator listiter =
+  auto listiter =
       std::find(device_list_.begin(), device_list_.end(), device_path);
   if (listiter == device_list_.end())
     return;

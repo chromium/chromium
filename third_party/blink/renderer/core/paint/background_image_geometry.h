@@ -26,7 +26,7 @@ class ComputedStyle;
 class ImageResourceObserver;
 
 class BackgroundImageGeometry {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // Constructor for LayoutView where the coordinate space is different.

@@ -13,6 +13,7 @@ group("proto_lite") {
 
 proto_library("proto") {
   sources = [
+    "action.proto",
     "audio.proto",
     "control.proto",
     "event.proto",

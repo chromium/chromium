@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/shell.h"
-#include "ash/wm/window_util.h"
+#include "ash/shell.h"           // mash-ok
+#include "ash/wm/window_util.h"  // mash-ok
 #include "base/logging.h"
 #include "ui/base/ime/ime_bridge.h"
 #include "ui/base/ui_base_features.h"
@@ -40,8 +40,8 @@ void CandidateWindowControllerImpl::InitCandidateWindowView() {
     return;
 
   gfx::NativeView parent = nullptr;
-  // TODO(crbug.com/756059): Mash support. Candidate window might appear on the
-  // wrong display in SingleProcessMash.
+
+  // NOTE: CandidateWindowView takes care of the mash (window-service) case.
   if (!features::IsUsingWindowService()) {
     aura::Window* active_window = ash::wm::GetActiveWindow();
     parent = ash::Shell::GetContainer(

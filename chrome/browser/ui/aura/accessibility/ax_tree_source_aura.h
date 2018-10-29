@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/ui/aura/accessibility/ax_root_obj_wrapper.h"
+#include "ui/views/accessibility/ax_root_obj_wrapper.h"
 #include "ui/views/accessibility/ax_tree_source_views.h"
 
 // This class exposes the views hierarchy as an accessibility tree permitting

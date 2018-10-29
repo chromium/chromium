@@ -139,6 +139,8 @@ MockFramerVisitor::MockFramerVisitor() {
 
   ON_CALL(*this, OnStreamFrame(_)).WillByDefault(testing::Return(true));
 
+  ON_CALL(*this, OnCryptoFrame(_)).WillByDefault(testing::Return(true));
+
   ON_CALL(*this, OnStopWaitingFrame(_)).WillByDefault(testing::Return(true));
 
   ON_CALL(*this, OnPaddingFrame(_)).WillByDefault(testing::Return(true));
@@ -189,14 +191,26 @@ bool NoOpFramerVisitor::OnStreamFrame(const QuicStreamFrame& frame) {
   return true;
 }
 
+bool NoOpFramerVisitor::OnCryptoFrame(const QuicCryptoFrame& frame) {
+  return true;
+}
+
 bool NoOpFramerVisitor::OnAckFrameStart(QuicPacketNumber largest_acked,
                                         QuicTime::Delta ack_delay_time) {
   return true;
 }
 
 bool NoOpFramerVisitor::OnAckRange(QuicPacketNumber start,
-                                   QuicPacketNumber end,
-                                   bool last_range) {
+                                   QuicPacketNumber end) {
+  return true;
+}
+
+bool NoOpFramerVisitor::OnAckTimestamp(QuicPacketNumber packet_number,
+                                       QuicTime timestamp) {
+  return true;
+}
+
+bool NoOpFramerVisitor::OnAckFrameEnd(QuicPacketNumber start) {
   return true;
 }
 
@@ -228,6 +242,15 @@ bool NoOpFramerVisitor::OnApplicationCloseFrame(
 
 bool NoOpFramerVisitor::OnNewConnectionIdFrame(
     const QuicNewConnectionIdFrame& frame) {
+  return true;
+}
+
+bool NoOpFramerVisitor::OnRetireConnectionIdFrame(
+    const QuicRetireConnectionIdFrame& frame) {
+  return true;
+}
+
+bool NoOpFramerVisitor::OnNewTokenFrame(const QuicNewTokenFrame& frame) {
   return true;
 }
 
@@ -322,7 +345,7 @@ MockQuicConnection::MockQuicConnection(MockQuicConnectionHelper* helper,
                          helper,
                          alarm_factory,
                          perspective,
-                         AllSupportedVersions()) {}
+                         ParsedVersionOfIndex(CurrentSupportedVersions(), 0)) {}
 
 MockQuicConnection::MockQuicConnection(QuicSocketAddress address,
                                        MockQuicConnectionHelper* helper,
@@ -333,7 +356,7 @@ MockQuicConnection::MockQuicConnection(QuicSocketAddress address,
                          helper,
                          alarm_factory,
                          perspective,
-                         AllSupportedVersions()) {}
+                         ParsedVersionOfIndex(CurrentSupportedVersions(), 0)) {}
 
 MockQuicConnection::MockQuicConnection(QuicConnectionId connection_id,
                                        MockQuicConnectionHelper* helper,
@@ -344,7 +367,7 @@ MockQuicConnection::MockQuicConnection(QuicConnectionId connection_id,
                          helper,
                          alarm_factory,
                          perspective,
-                         CurrentSupportedVersions()) {}
+                         ParsedVersionOfIndex(CurrentSupportedVersions(), 0)) {}
 
 MockQuicConnection::MockQuicConnection(
     MockQuicConnectionHelper* helper,
@@ -420,7 +443,10 @@ MockQuicSession::MockQuicSession(QuicConnection* connection)
 
 MockQuicSession::MockQuicSession(QuicConnection* connection,
                                  bool create_mock_crypto_stream)
-    : QuicSession(connection, nullptr, DefaultQuicConfig()) {
+    : QuicSession(connection,
+                  nullptr,
+                  DefaultQuicConfig(),
+                  CurrentSupportedVersions()) {
   if (create_mock_crypto_stream) {
     crypto_stream_ = QuicMakeUnique<MockQuicCryptoStream>(this);
   }
@@ -492,7 +518,10 @@ MockQuicSpdySession::MockQuicSpdySession(QuicConnection* connection)
 
 MockQuicSpdySession::MockQuicSpdySession(QuicConnection* connection,
                                          bool create_mock_crypto_stream)
-    : QuicSpdySession(connection, nullptr, DefaultQuicConfig()) {
+    : QuicSpdySession(connection,
+                      nullptr,
+                      DefaultQuicConfig(),
+                      connection->supported_versions()) {
   if (create_mock_crypto_stream) {
     crypto_stream_ = QuicMakeUnique<MockQuicCryptoStream>(this);
   }
@@ -530,9 +559,11 @@ size_t MockQuicSpdySession::WriteHeaders(
 TestQuicSpdyServerSession::TestQuicSpdyServerSession(
     QuicConnection* connection,
     const QuicConfig& config,
+    const ParsedQuicVersionVector& supported_versions,
     const QuicCryptoServerConfig* crypto_config,
     QuicCompressedCertsCache* compressed_certs_cache)
     : QuicServerSessionBase(config,
+                            supported_versions,
                             connection,
                             &visitor_,
                             &helper_,
@@ -783,7 +814,12 @@ QuicEncryptedPacket* ConstructEncryptedPacket(
   header.reset_flag = reset_flag;
   header.packet_number_length = packet_number_length;
   header.packet_number = packet_number;
-  QuicFrame frame(QuicStreamFrame(1, false, 0, QuicStringPiece(data)));
+  QuicFrame frame(QuicStreamFrame(
+      QuicUtils::GetCryptoStreamId(
+          versions != nullptr
+              ? (*versions)[0].transport_version
+              : CurrentSupportedVersions()[0].transport_version),
+      false, 0, QuicStringPiece(data)));
   QuicFrames frames;
   frames.push_back(frame);
   QuicFramer framer(
@@ -1022,11 +1058,12 @@ void CreateServerSessionForTest(
       << "Connections must start at non-zero times, otherwise the "
       << "strike-register will be unhappy.";
 
-  *server_connection = new PacketSavingConnection(
-      helper, alarm_factory, Perspective::IS_SERVER, supported_versions);
+  *server_connection =
+      new PacketSavingConnection(helper, alarm_factory, Perspective::IS_SERVER,
+                                 ParsedVersionOfIndex(supported_versions, 0));
   *server_session = new TestQuicSpdyServerSession(
-      *server_connection, DefaultQuicConfig(), server_crypto_config,
-      compressed_certs_cache);
+      *server_connection, DefaultQuicConfig(), supported_versions,
+      server_crypto_config, compressed_certs_cache);
 
   // We advance the clock initially because the default time is zero and the
   // strike register worries that we've just overflowed a uint32_t time.

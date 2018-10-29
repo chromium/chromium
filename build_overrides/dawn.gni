@@ -1,0 +1,11 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# The paths to Dawn's dependencies
+dawn_glfw_dir = "//third_party/glfw/src"
+dawn_jinja2_dir = "//third_party/jinja2"
+dawn_googletest_dir = "//third_party/googletest/src"
+dawn_shaderc_dir = "//third_party/shaderc/src"
+dawn_spirv_cross_dir = "//third_party/spirv-cross/spirv-cross"
+dawn_spirv_tools_dir = "//third_party/SPIRV-Tools/src"

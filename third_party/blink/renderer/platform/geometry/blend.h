@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_point.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -16,7 +16,7 @@
 namespace blink {
 
 inline int Blend(int from, int to, double progress) {
-  return lround(from + (to - from) * progress);
+  return static_cast<int>(lround(from + (to - from) * progress));
 }
 
 // For unsigned types.

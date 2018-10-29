@@ -16,6 +16,8 @@
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+@class CWVSyncController;
+
 // iOS WebView specific signin client.
 class IOSWebViewSigninClient : public SigninClient,
                                public SigninErrorController::Observer {
@@ -46,6 +48,9 @@ class IOSWebViewSigninClient : public SigninClient,
       content_settings::Observer* observer) override;
   void RemoveContentSettingsObserver(
       content_settings::Observer* observer) override;
+  void PreSignOut(
+      base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
+      signin_metrics::ProfileSignout signout_source_metric) override;
   void DelayNetworkCall(const base::Closure& callback) override;
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
@@ -56,6 +61,10 @@ class IOSWebViewSigninClient : public SigninClient,
 
   // SigninErrorController::Observer implementation.
   void OnErrorChanged() override;
+
+  // CWVSyncController setter/getter.
+  void SetSyncController(CWVSyncController* sync_controller);
+  CWVSyncController* GetSyncController() const;
 
  private:
   // Helper to delay callbacks until connection becomes online again.
@@ -70,6 +79,10 @@ class IOSWebViewSigninClient : public SigninClient,
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // Used to add and remove content settings observers.
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
+  // Used by WebViewProfileOAuth2TokenServiceIOSProviderImpl to fetch access
+  // tokens. Also used to notify of signout events. Held weak so this class
+  // does not determine |sync_controller_|'s lifetime.
+  __weak CWVSyncController* sync_controller_ = nil;
 
   DISALLOW_COPY_AND_ASSIGN(IOSWebViewSigninClient);
 };

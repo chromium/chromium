@@ -440,15 +440,6 @@ void WebContentDecryptionModuleSessionImpl::Remove(
   DCHECK(!session_id_.empty());
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  // TODO(http://crbug.com/616166). Once all supported CDMs allow remove() on
-  // temporary sessions, remove this code.
-  if (!is_persistent_session_ && !IsClearKey(adapter_->GetKeySystem())) {
-    result.CompleteWithError(
-        blink::kWebContentDecryptionModuleExceptionTypeError, 0,
-        "remove() on temporary sessions is not supported by this key system.");
-    return;
-  }
-
   adapter_->RemoveSession(
       session_id_,
       std::unique_ptr<SimpleCdmPromise>(new CdmResultPromise<>(

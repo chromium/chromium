@@ -5,6 +5,7 @@
 #include "webrunner/browser/webrunner_browser_test.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "webrunner/browser/webrunner_browser_context.h"
 #include "webrunner/browser/webrunner_browser_main_parts.h"
 #include "webrunner/browser/webrunner_content_browser_client.h"
@@ -26,6 +27,7 @@ void WebRunnerBrowserTest::PreRunTestOnMainThread() {
   ZX_DCHECK(result == ZX_OK, result) << "Context::Bind";
   g_context_channel = ZX_HANDLE_INVALID;
 
+  net::test_server::RegisterDefaultHandlers(embedded_test_server());
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "webrunner/browser/test/data");
 }
@@ -33,6 +35,29 @@ void WebRunnerBrowserTest::PreRunTestOnMainThread() {
 void WebRunnerBrowserTest::PostRunTestOnMainThread() {
   // Unbind the Context while the message loops are still alive.
   context_.Unbind();
+}
+
+void WebRunnerBrowserTest::TearDownOnMainThread() {
+  navigation_observer_bindings_.CloseAll();
+}
+
+chromium::web::FramePtr WebRunnerBrowserTest::CreateFrame(
+    chromium::web::NavigationEventObserver* observer) {
+  chromium::web::FramePtr frame;
+  context_->CreateFrame(frame.NewRequest());
+
+  if (observer) {
+    fidl::InterfaceRequest<chromium::web::NavigationEventObserver>
+        observer_request;
+    frame->SetNavigationEventObserver(
+        navigation_observer_bindings_.AddBinding(observer));
+  }
+
+  // Pump the messages so that the caller can use the Frame instance
+  // immediately after this function returns.
+  base::RunLoop().RunUntilIdle();
+
+  return frame;
 }
 
 // static

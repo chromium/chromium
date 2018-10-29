@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.explore_sites.ExploreSitesCategoryCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/explore_sites_category_padding"
+    android:paddingTop="@dimen/explore_sites_category_padding" >
+
+    <TextView
+        android:id="@+id/category_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/BlackTitle2"
+        android:minHeight="@dimen/explore_sites_category_title_height"
+        tools:text="Category" />
+
+    <org.chromium.chrome.browser.suggestions.TileGridLayout
+        android:id="@+id/category_sites"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:columnCount="4"
+        android:columnOrderPreserved="true"
+        android:paddingTop="@dimen/explore_sites_category_title_spacing" />
+
+</org.chromium.chrome.browser.explore_sites.ExploreSitesCategoryCardView>

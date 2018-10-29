@@ -233,6 +233,9 @@ class ASH_EXPORT WindowSelectorItem : public views::ButtonListener,
   // the shadow is hidden.
   void SetShadowBounds(base::Optional<gfx::Rect> bounds_in_screen);
 
+  // Show or hide the mask and shadow on this window item.
+  void UpdateMaskAndShadow(bool show);
+
   // Changes the opacity of all the windows the item owns.
   void SetOpacity(float opacity);
   float GetOpacity();

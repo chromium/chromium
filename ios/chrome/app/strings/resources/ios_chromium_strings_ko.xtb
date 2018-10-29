@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Chromium에서 더욱 스마트한 Google을 사용하세요</translation>
 <translation id="2730884209570016437">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chromium에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="2797210818057553964">Chromium 설정에서 언제든지 맞춤설정할 수 있습니다.</translation>
+<translation id="2915596697727466327">Chromium은 얼굴 ID를 사용하여 승인된 사용자만 비밀번호에 액세스할 수 있도록 합니다.</translation>
 <translation id="3256316712990552818">Chromium에 복사됨</translation>
 <translation id="3413120535237193088">어느 기기에서나 내 북마크를 사용하려면 Chromium에 로그인하세요.</translation>
 <translation id="3473048256428424907">Chromium QR 스캐너 사용 설정</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">다른 기기의 Chromium에서 연 탭이 여기에 표시됩니다.</translation>
 <translation id="495292094137889840">Chromium QR 스캐너 사용 시작</translation>
 <translation id="5231355151045086930">Chromium에서 로그아웃</translation>
-<translation id="5416919929805616771">Chromium 사용 후기를 들려주세요. <ph name="BEGIN_LINK" />앱 평가하기<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chromium 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chromium에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="6068866989048414399">Chromium 서비스 약관</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chromium 데이터는 <ph name="DOMAIN" />에서 관리됩니다. 이 기기에서는 데이터가 삭제되지만 <ph name="USER_EMAIL1" />에 계속해서 데이터가 보관됩니다.</translation>
 <translation id="8175055321229419309">도움말: <ph name="BEGIN_LINK" />Chromium을 내 Dock에 추가하세요.<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">위치 정보를 기반으로 Chromium에서 더 좋은 Google 서비스를 제공할 수 있습니다.</translation>
-<translation id="8353224596138547809">Chromium이 이 사이트에서 비밀번호를 저장하도록 하시겠습니까?</translation>
 <translation id="8508544542427105412">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />을 변경할 수 있습니다. Google에서 Chromium 및 번역, 검색과 같은 기타 Google 서비스, 광고를 맞춤설정하기 위해 사용자가 방문한 사이트의 콘텐츠, 탐색 활동, 상호작용 기록을 사용할 수 있습니다.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8809780021347235332">이미지를 저장하려면 설정을 탭하여 Chromium에 사진 사용 권한을 부여하세요.</translation>

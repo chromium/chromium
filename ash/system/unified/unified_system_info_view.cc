@@ -112,6 +112,7 @@ void DateView::Update() {
   label_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_DATE, FormatDayOfWeek(now), FormatDate(now)));
   SetAccessibleName(TimeFormatFriendlyDateAndTime(now));
+  label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
@@ -219,6 +220,9 @@ void BatteryView::Update() {
   percentage_->SetVisible(!percentage_text.empty());
   separator_->SetVisible(!percentage_text.empty() && !status_text.empty());
   status_->SetVisible(!status_text.empty());
+
+  percentage_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+  status_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
 void BatteryView::ConfigureLabel(views::Label* label) {

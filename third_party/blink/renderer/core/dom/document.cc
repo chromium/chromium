@@ -46,6 +46,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/ukm.mojom-blink.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_prerendering_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/html_script_element_or_svg_script_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -135,11 +136,12 @@
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_resize_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_scroll_event.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
+#include "third_party/blink/renderer/core/feature_policy/document_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/dom_timer.h"
 #include "third_party/blink/renderer/core/frame/dom_visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
+#include "third_party/blink/renderer/core/frame/feature_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/history.h"
 #include "third_party/blink/renderer/core/frame/intervention.h"
@@ -148,6 +150,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
+#include "third_party/blink/renderer/core/frame/report.h"
+#include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
@@ -233,7 +237,6 @@
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/policy/document_policy.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_controller.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
@@ -262,11 +265,11 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/date_components.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/histogram.h"
 #include "third_party/blink/renderer/platform/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/language.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -289,8 +292,7 @@
 #include "third_party/blink/renderer/platform/wtf/time.h"
 
 #ifndef NDEBUG
-using WeakDocumentSet =
-    blink::PersistentHeapHashSet<blink::WeakMember<blink::Document>>;
+using WeakDocumentSet = blink::HeapHashSet<blink::WeakMember<blink::Document>>;
 static WeakDocumentSet& liveDocumentSet();
 #endif
 
@@ -530,7 +532,7 @@ static void RunAutofocusTask(ExecutionContext* context) {
   if (!context)
     return;
 
-  Document* document = ToDocument(context);
+  Document* document = To<Document>(context);
   if (Element* element = document->AutofocusElement()) {
     document->SetAutofocusElement(nullptr);
     element->focus();
@@ -561,7 +563,7 @@ class Document::NetworkStateObserver final
   void OnLineStateChange(bool on_line) override {
     AtomicString event_name =
         on_line ? EventTypeNames::online : EventTypeNames::offline;
-    Document* document = ToDocument(GetExecutionContext());
+    Document* document = To<Document>(GetExecutionContext());
     if (!document->domWindow())
       return;
     document->domWindow()->DispatchEvent(*Event::Create(event_name));
@@ -699,7 +701,9 @@ Document::Document(const DocumentInit& initializer,
 #endif
       needs_to_record_ukm_outlive_time_(false),
       viewport_data_(new ViewportData(*this)),
-      agent_cluster_id_(base::UnguessableToken::Create()) {
+      agent_cluster_id_(base::UnguessableToken::Create()),
+      parsed_feature_policies_(
+          static_cast<int>(mojom::FeaturePolicyFeature::kMaxValue) + 1) {
   if (frame_) {
     DCHECK(frame_->GetPage());
     ProvideContextFeaturesToDocumentFrom(*this, *frame_->GetPage());
@@ -745,9 +749,9 @@ Document::Document(const DocumentInit& initializer,
 
   lifecycle_.AdvanceTo(DocumentLifecycle::kInactive);
 
-  // Since CSSFontSelector requires Document::m_fetcher and StyleEngine owns
-  // CSSFontSelector, need to initialize m_styleEngine after initializing
-  // m_fetcher.
+  // Since CSSFontSelector requires Document::fetcher_ and StyleEngine owns
+  // CSSFontSelector, need to initialize style_engine_ after initializing
+  // fetcher_.
   style_engine_ = StyleEngine::Create(*this);
 
   // The parent's parser should be suspended together with all the other
@@ -850,6 +854,10 @@ Location* Document::location() const {
   return domWindow()->location();
 }
 
+bool Document::ShouldInstallV8Extensions() const {
+  return frame_->Client()->AllowScriptExtensions();
+}
+
 void Document::ChildrenChanged(const ChildrenChange& change) {
   ContainerNode::ChildrenChanged(change);
   document_element_ = ElementTraversal::FirstWithin(*this);
@@ -901,7 +909,7 @@ Element* Document::CreateRawElement(const QualifiedName& qname,
         element = HTMLUnknownElement::Create(qname, *this);
     }
     saw_elements_in_known_namespaces_ = true;
-  } else if (qname.NamespaceURI() == SVGNames::svgNamespaceURI) {
+  } else if (qname.NamespaceURI() == svg_names::kNamespaceURI) {
     element = SVGElementFactory::Create(qname.LocalName(), *this, flags);
     if (!element)
       element = SVGUnknownElement::Create(qname, *this);
@@ -948,31 +956,27 @@ Element* Document::CreateElementForBinding(const AtomicString& name,
   return Element::Create(QualifiedName(g_null_atom, name, g_null_atom), this);
 }
 
-String GetTypeExtension(Document* document,
-                        const StringOrDictionary& string_or_options,
-                        ExceptionState& exception_state) {
+AtomicString GetTypeExtension(Document* document,
+                              const StringOrDictionary& string_or_options,
+                              ExceptionState& exception_state) {
   if (string_or_options.IsNull())
-    return String();
+    return AtomicString();
 
   if (string_or_options.IsString()) {
     UseCounter::Count(document,
                       WebFeature::kDocumentCreateElement2ndArgStringHandling);
-    return string_or_options.GetAsString();
+    return AtomicString(string_or_options.GetAsString());
   }
 
   if (string_or_options.IsDictionary()) {
     Dictionary dict = string_or_options.GetAsDictionary();
-    ElementCreationOptions impl;
-    V8ElementCreationOptions::ToImpl(dict.GetIsolate(), dict.V8Value(), impl,
-                                     exception_state);
-    if (exception_state.HadException())
-      return String();
-
-    if (impl.hasIs())
-      return impl.is();
+    v8::Local<v8::Value> value;
+    if (dict.HasProperty("is", exception_state) && dict.Get("is", value)) {
+      return ToCoreAtomicString(v8::Local<v8::String>::Cast(value));
+    }
   }
 
-  return String();
+  return AtomicString();
 }
 
 // https://dom.spec.whatwg.org/#dom-document-createelement
@@ -1006,7 +1010,7 @@ Element* Document::CreateElementForBinding(
 
   // 3.
   const AtomicString& is =
-      AtomicString(GetTypeExtension(this, string_or_options, exception_state));
+      GetTypeExtension(this, string_or_options, exception_state);
 
   // 5. Let element be the result of creating an element given ...
   Element* element =
@@ -1081,7 +1085,7 @@ Element* Document::createElementNS(const AtomicString& namespace_uri,
 
   // 2.
   const AtomicString& is =
-      AtomicString(GetTypeExtension(this, string_or_options, exception_state));
+      GetTypeExtension(this, string_or_options, exception_state);
 
   if (!IsValidElementName(this, qualified_name)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidCharacterError,
@@ -1141,10 +1145,31 @@ ScriptPromise Document::createCSSStyleSheet(ScriptState* script_state,
   // at once here because CSS parsing is done synchronously on the main thread.
   // TODO(rakina): Find a way to improve this.
   CSSStyleSheet* sheet = CSSStyleSheet::Create(*this, options, exception_state);
-  sheet->SetText(text);
+  sheet->SetText(text, true /* allow_import_rules */, exception_state);
   sheet->SetAssociatedDocument(this);
   return ScriptPromise::Cast(script_state,
                              ScriptValue::From(script_state, sheet));
+}
+
+CSSStyleSheet* Document::createCSSStyleSheetSync(
+    ScriptState* script_state,
+    const String& text,
+    ExceptionState& exception_state) {
+  return Document::createCSSStyleSheetSync(
+      script_state, text, CSSStyleSheetInit(), exception_state);
+}
+
+CSSStyleSheet* Document::createCSSStyleSheetSync(
+    ScriptState* script_state,
+    const String& text,
+    const CSSStyleSheetInit& options,
+    ExceptionState& exception_state) {
+  CSSStyleSheet* sheet = CSSStyleSheet::Create(*this, options, exception_state);
+  sheet->SetText(text, false /* allow_import_rules */, exception_state);
+  if (exception_state.HadException())
+    return nullptr;
+  sheet->SetAssociatedDocument(this);
+  return sheet;
 }
 
 CSSStyleSheet* Document::createEmptyCSSStyleSheet(
@@ -1166,8 +1191,7 @@ CSSStyleSheet* Document::createEmptyCSSStyleSheet(
 ScriptValue Document::registerElement(ScriptState* script_state,
                                       const AtomicString& name,
                                       const ElementRegistrationOptions& options,
-                                      ExceptionState& exception_state,
-                                      V0CustomElement::NameSet valid_names) {
+                                      ExceptionState& exception_state) {
   if (!RegistrationContext()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -1184,7 +1208,7 @@ ScriptValue Document::registerElement(ScriptState* script_state,
 
   V0CustomElementConstructorBuilder constructor_builder(script_state, options);
   RegistrationContext()->RegisterElement(this, &constructor_builder, name,
-                                         valid_names, exception_state);
+                                         exception_state);
   return constructor_builder.BindingsReturnValue();
 }
 
@@ -1401,7 +1425,7 @@ bool Document::HasValidNamespaceForElements(const QualifiedName& q_name) {
     return false;
   // createElementNS("http://www.example.com", "xml:lang")
   if (q_name.Prefix() == g_xml_atom &&
-      q_name.NamespaceURI() != XMLNames::xmlNamespaceURI)
+      q_name.NamespaceURI() != xml_names::kNamespaceURI)
     return false;
 
   // Required by DOM Level 3 Core and unspecified by DOM Level 2 Core:
@@ -1410,8 +1434,8 @@ bool Document::HasValidNamespaceForElements(const QualifiedName& q_name) {
   // createElementNS(null, "xmlns:bar"), createElementNS(null, "xmlns")
   if (q_name.Prefix() == g_xmlns_atom ||
       (q_name.Prefix().IsEmpty() && q_name.LocalName() == g_xmlns_atom))
-    return q_name.NamespaceURI() == XMLNSNames::xmlnsNamespaceURI;
-  return q_name.NamespaceURI() != XMLNSNames::xmlnsNamespaceURI;
+    return q_name.NamespaceURI() == xmlns_names::kNamespaceURI;
+  return q_name.NamespaceURI() != xmlns_names::kNamespaceURI;
 }
 
 bool Document::HasValidNamespaceForAttributes(const QualifiedName& q_name) {
@@ -1478,7 +1502,7 @@ void Document::SetContentLanguage(const AtomicString& language) {
 
   // Document's style depends on the content language.
   SetNeedsStyleRecalc(kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                               StyleChangeReason::kLanguage));
+                                               style_change_reason::kLanguage));
 }
 
 void Document::setXMLVersion(const String& version,
@@ -1971,7 +1995,8 @@ void Document::SetupFontBuilder(ComputedStyle& document_style) {
 
 void Document::PropagateStyleToViewport() {
   DCHECK(InStyleRecalc());
-  DCHECK(documentElement());
+  if (!documentElement())
+    return;
 
   HTMLElement* body = this->body();
 
@@ -1993,67 +2018,70 @@ void Document::PropagateStyleToViewport() {
   // http://www.w3.org/TR/css3-background/#body-background
   // <html> root element with no background steals background from its first
   // <body> child.
-  // Also see LayoutBoxModelObject::backgroundStolenForBeingBody()
-  if (IsHTMLHtmlElement(documentElement()) && IsHTMLBodyElement(body) &&
-      !background_style->HasBackground())
+  // Also see LayoutBoxModelObject::BackgroundTransfersToView()
+  if (IsHTMLHtmlElement(documentElement()) &&
+      document_element_style->Display() != EDisplay::kNone &&
+      IsHTMLBodyElement(body) && !background_style->HasBackground()) {
     background_style = body_style;
-
-  Color background_color =
-      background_style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
-  FillLayer background_layers = background_style->BackgroundLayers();
-  for (auto* current_layer = &background_layers; current_layer;
-       current_layer = current_layer->Next()) {
-    // http://www.w3.org/TR/css3-background/#root-background
-    // The root element background always have painting area of the whole
-    // canvas.
-    current_layer->SetClip(EFillBox::kBorder);
-
-    // The root element doesn't scroll. It always propagates its layout overflow
-    // to the viewport. Positioning background against either box is equivalent
-    // to positioning against the scrolled box of the viewport.
-    if (current_layer->Attachment() == EFillAttachment::kScroll)
-      current_layer->SetAttachment(EFillAttachment::kLocal);
   }
-  EImageRendering image_rendering = background_style->ImageRendering();
+
+  Color background_color = Color::kTransparent;
+  FillLayer background_layers(EFillLayerType::kBackground, true);
+  EImageRendering image_rendering = EImageRendering::kAuto;
+
+  if (background_style->Display() != EDisplay::kNone) {
+    background_color = background_style->VisitedDependentColor(
+        GetCSSPropertyBackgroundColor());
+    background_layers = background_style->BackgroundLayers();
+    for (auto* current_layer = &background_layers; current_layer;
+         current_layer = current_layer->Next()) {
+      // http://www.w3.org/TR/css3-background/#root-background
+      // The root element background always have painting area of the whole
+      // canvas.
+      current_layer->SetClip(EFillBox::kBorder);
+
+      // The root element doesn't scroll. It always propagates its layout
+      // overflow to the viewport. Positioning background against either box is
+      // equivalent to positioning against the scrolled box of the viewport.
+      if (current_layer->Attachment() == EFillAttachment::kScroll)
+        current_layer->SetAttachment(EFillAttachment::kLocal);
+    }
+    image_rendering = background_style->ImageRendering();
+  }
 
   const ComputedStyle* overflow_style = nullptr;
-  if (Element* element = ViewportDefiningElement(document_element_style)) {
-    if (element == body) {
-      overflow_style = body_style;
-    } else {
-      DCHECK_EQ(element, documentElement());
-      overflow_style = document_element_style;
+  Element* viewport_element = ViewportDefiningElement();
+  DCHECK(viewport_element);
+  if (viewport_element == body) {
+    overflow_style = body_style;
+  } else {
+    DCHECK_EQ(viewport_element, documentElement());
+    overflow_style = document_element_style;
 
-      // The body element has its own scrolling box, independent from the
-      // viewport.  This is a bit of a weird edge case in the CSS spec that we
-      // might want to try to eliminate some day (eg. for ScrollTopLeftInterop -
-      // see http://crbug.com/157855).
-      if (body_style && !body_style->IsOverflowVisible())
-        UseCounter::Count(*this, WebFeature::kBodyScrollsInAdditionToViewport);
-    }
+    // The body element has its own scrolling box, independent from the
+    // viewport.  This is a bit of a weird edge case in the CSS spec that we
+    // might want to try to eliminate some day (eg. for ScrollTopLeftInterop -
+    // see http://crbug.com/157855).
+    if (body_style && !body_style->IsOverflowVisible())
+      UseCounter::Count(*this, WebFeature::kBodyScrollsInAdditionToViewport);
   }
+  DCHECK(overflow_style);
 
-  EOverflowAnchor overflow_anchor = EOverflowAnchor::kAuto;
-  EOverflow overflow_x = EOverflow::kAuto;
-  EOverflow overflow_y = EOverflow::kAuto;
-  GapLength column_gap;
-  if (overflow_style) {
-    overflow_anchor = overflow_style->OverflowAnchor();
-    overflow_x = overflow_style->OverflowX();
-    overflow_y = overflow_style->OverflowY();
-    // Visible overflow on the viewport is meaningless, and the spec says to
-    // treat it as 'auto':
-    if (overflow_x == EOverflow::kVisible)
-      overflow_x = EOverflow::kAuto;
-    if (overflow_y == EOverflow::kVisible)
-      overflow_y = EOverflow::kAuto;
-    if (overflow_anchor == EOverflowAnchor::kVisible)
-      overflow_anchor = EOverflowAnchor::kAuto;
-    // Column-gap is (ab)used by the current paged overflow implementation (in
-    // lack of other ways to specify gaps between pages), so we have to
-    // propagate it too.
-    column_gap = overflow_style->ColumnGap();
-  }
+  EOverflowAnchor overflow_anchor = overflow_style->OverflowAnchor();
+  EOverflow overflow_x = overflow_style->OverflowX();
+  EOverflow overflow_y = overflow_style->OverflowY();
+  // Visible overflow on the viewport is meaningless, and the spec says to
+  // treat it as 'auto':
+  if (overflow_x == EOverflow::kVisible)
+    overflow_x = EOverflow::kAuto;
+  if (overflow_y == EOverflow::kVisible)
+    overflow_y = EOverflow::kAuto;
+  if (overflow_anchor == EOverflowAnchor::kVisible)
+    overflow_anchor = EOverflowAnchor::kAuto;
+  // Column-gap is (ab)used by the current paged overflow implementation (in
+  // lack of other ways to specify gaps between pages), so we have to
+  // propagate it too.
+  GapLength column_gap = overflow_style->ColumnGap();
 
   ScrollSnapType snap_type = overflow_style->GetScrollSnapType();
   ScrollBehavior scroll_behavior = document_element_style->GetScrollBehavior();
@@ -2098,6 +2126,7 @@ void Document::PropagateStyleToViewport() {
     scoped_refptr<ComputedStyle> new_style =
         ComputedStyle::Clone(viewport_style);
     new_style->SetWritingMode(root_writing_mode);
+    new_style->UpdateFontOrientation();
     new_style->SetDirection(root_direction);
     new_style->SetBackgroundColor(background_color);
     new_style->AccessBackgroundLayers() = background_layers;
@@ -2171,11 +2200,10 @@ void Document::UpdateStyleAndLayoutTree() {
   if (View()->ShouldThrottleRendering())
     return;
 
-  if (RuntimeEnabledFeatures::IncrementalShadowDOMEnabled()) {
-    // RecalcSlotAssignments should be done before checking
-    // NeedsLayoutTreeUpdate().
-    GetSlotAssignmentEngine().RecalcSlotAssignments();
-  }
+  // RecalcSlotAssignments should be done before checking
+  // NeedsLayoutTreeUpdate().
+  GetSlotAssignmentEngine().RecalcSlotAssignments();
+
 #if DCHECK_IS_ON()
   NestingLevelIncrementer slot_assignment_recalc_forbidden_scope(
       slot_assignment_recalc_forbidden_recursion_depth_);
@@ -2213,7 +2241,6 @@ void Document::UpdateStyleAndLayoutTree() {
   EvaluateMediaQueryListIfNeeded();
   UpdateUseShadowTreesIfNeeded();
 
-  // For V0 Shadow DOM or V1 Shadow DOM without IncrementalShadowDOM
   UpdateDistributionForLegacyDistributedNodes();
 
   UpdateActiveStyle();
@@ -2318,7 +2345,6 @@ void Document::UpdateStyle() {
         ViewportDefiningElementDidChange();
     }
     GetStyleEngine().MarkForWhitespaceReattachment();
-    PropagateStyleToViewport();
     if (document_element->NeedsReattachLayoutTree() ||
         document_element->ChildNeedsReattachLayoutTree()) {
       TRACE_EVENT0("blink,blink_style", "Document::rebuildLayoutTree");
@@ -2329,12 +2355,12 @@ void Document::UpdateStyle() {
     }
   }
   GetStyleEngine().ClearWhitespaceReattachSet();
-
-  View()->UpdateCountersAfterStyleChange();
-  GetLayoutView()->RecalcOverflowAfterStyleChange();
-
   ClearChildNeedsStyleRecalc();
   ClearChildNeedsReattachLayoutTree();
+
+  PropagateStyleToViewport();
+  View()->UpdateCountersAfterStyleChange();
+  GetLayoutView()->RecalcOverflow();
 
   DCHECK(!NeedsStyleRecalc());
   DCHECK(!ChildNeedsStyleRecalc());
@@ -2457,6 +2483,9 @@ void Document::UpdateStyleAndLayout() {
   if (Lifecycle().GetState() < DocumentLifecycle::kLayoutClean)
     Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
 
+  if (AXObjectCache* cache = ExistingAXObjectCache())
+    cache->ProcessUpdatesAfterLayout(*this);
+
   if (LocalFrameView* frame_view_anchored = View())
     frame_view_anchored->PerformScrollAnchoringAdjustments();
 }
@@ -2549,7 +2578,7 @@ void Document::UpdateStyleAndLayoutTreeIgnorePendingStylesheets() {
       // but here we need up-to-date style immediately.
       SetNeedsStyleRecalc(kSubtreeStyleChange,
                           StyleChangeReasonForTracing::Create(
-                              StyleChangeReason::kCleanupPlaceholderStyles));
+                              style_change_reason::kCleanupPlaceholderStyles));
     }
   }
   UpdateStyleAndLayoutTree();
@@ -2557,11 +2586,18 @@ void Document::UpdateStyleAndLayoutTreeIgnorePendingStylesheets() {
 
 void Document::UpdateStyleAndLayoutIgnorePendingStylesheets(
     Document::RunPostLayoutTasks run_post_layout_tasks) {
+  LocalFrameView* local_view = View();
+  if (local_view)
+    local_view->WillStartForcedLayout();
   UpdateStyleAndLayoutTreeIgnorePendingStylesheets();
   UpdateStyleAndLayout();
 
-  if (run_post_layout_tasks == kRunPostLayoutTasksSynchronously && View())
-    View()->FlushAnyPendingPostLayoutTasks();
+  if (local_view) {
+    if (run_post_layout_tasks == kRunPostLayoutTasksSynchronously)
+      local_view->FlushAnyPendingPostLayoutTasks();
+
+    local_view->DidFinishForcedLayout();
+  }
 }
 
 scoped_refptr<ComputedStyle>
@@ -2743,6 +2779,8 @@ void Document::Initialize() {
 }
 
 void Document::Shutdown() {
+  if (num_canvases_ > 0)
+    UMA_HISTOGRAM_COUNTS_100("Blink.Canvas.NumCanvasesPerPage", num_canvases_);
   TRACE_EVENT0("blink", "Document::shutdown");
   CHECK(!frame_ || frame_->Tree().ChildCount() == 0);
   if (!IsActive())
@@ -2978,8 +3016,8 @@ void Document::ClearAXObjectCache() {
 AXObjectCache* Document::ExistingAXObjectCache() const {
   auto& cache_owner = AXObjectCacheOwner();
 
-  // If the layoutObject is gone then we are in the process of destruction.
-  // This method will be called before m_frame = nullptr.
+  // If the LayoutView is gone then we are in the process of destruction.
+  // This method will be called before frame_ = nullptr.
   if (!cache_owner.GetLayoutView())
     return nullptr;
 
@@ -3294,8 +3332,7 @@ HTMLHeadElement* Document::head() const {
   return Traversal<HTMLHeadElement>::FirstChild(*de);
 }
 
-Element* Document::ViewportDefiningElement(
-    const ComputedStyle* root_style) const {
+Element* Document::ViewportDefiningElement() const {
   // If a BODY element sets non-visible overflow, it is to be propagated to the
   // viewport, as long as the following conditions are all met:
   // (1) The root element is HTML.
@@ -3307,11 +3344,9 @@ Element* Document::ViewportDefiningElement(
   Element* body_element = body();
   if (!root_element)
     return nullptr;
-  if (!root_style) {
-    root_style = root_element->GetComputedStyle();
-    if (!root_style)
-      return nullptr;
-  }
+  const ComputedStyle* root_style = root_element->GetComputedStyle();
+  if (!root_style)
+    return nullptr;
   if (body_element && root_style->IsOverflowVisible() &&
       IsHTMLHtmlElement(*root_element))
     return body_element;
@@ -3564,6 +3599,7 @@ bool Document::CheckCompletedInternal() {
 
 bool Document::DispatchBeforeUnloadEvent(ChromeClient& chrome_client,
                                          bool is_reload,
+                                         bool auto_cancel,
                                          bool& did_allow_navigation) {
   if (!dom_window_)
     return true;
@@ -3594,6 +3630,7 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient& chrome_client,
     kNoDialogNoUserGesture,
     kNoDialogMultipleConfirmationForNavigation,
     kShowDialog,
+    kNoDialogAutoCancelTrue,
     kDialogEnumMax
   };
   DEFINE_STATIC_LOCAL(EnumerationHistogram, beforeunload_dialog_histogram,
@@ -3623,6 +3660,15 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient& chrome_client,
     Intervention::GenerateReport(frame_, "BeforeUnloadMultiple", message);
     return true;
   }
+
+  // If |auto_cancel| is set then do not ask the |chrome_client| to display a
+  // modal dialog. Simply indicate that the navigation should not proceed.
+  if (auto_cancel) {
+    beforeunload_dialog_histogram.Count(kNoDialogAutoCancelTrue);
+    did_allow_navigation = false;
+    return false;
+  }
+
   String text = before_unload_event.returnValue();
   beforeunload_dialog_histogram.Count(
       BeforeUnloadDialogHistogramEnum::kShowDialog);
@@ -3999,8 +4045,7 @@ void Document::UpdateBaseURL() {
   // DOM 3 Core: When the Document supports the feature "HTML" [DOM Level 2
   // HTML], the base URI is computed using first the value of the href attribute
   // of the HTML BASE element if any, and the value of the documentURI attribute
-  // from the Document interface otherwise (which we store, preparsed, in
-  // m_url).
+  // from the Document interface otherwise (which we store, preparsed, in url_).
   if (!base_element_url_.IsEmpty())
     base_url_ = base_element_url_;
   else if (!base_url_override_.IsEmpty())
@@ -4552,7 +4597,7 @@ void Document::StyleResolverMayHaveChanged() {
   if (HasNodesWithPlaceholderStyle()) {
     SetNeedsStyleRecalc(kSubtreeStyleChange,
                         StyleChangeReasonForTracing::Create(
-                            StyleChangeReason::kCleanupPlaceholderStyles));
+                            style_change_reason::kCleanupPlaceholderStyles));
   }
 
   if (DidLayoutWithPendingStylesheets() &&
@@ -4832,6 +4877,7 @@ Element* Document::SequentialFocusNavigationStartingPoint(
     return focused_element_.Get();
   if (!sequential_focus_navigation_starting_point_)
     return nullptr;
+  DCHECK(sequential_focus_navigation_starting_point_->IsConnected());
   if (!sequential_focus_navigation_starting_point_->collapsed()) {
     Node* node = sequential_focus_navigation_starting_point_->startContainer();
     DCHECK_EQ(node,
@@ -4859,11 +4905,25 @@ Element* Document::SequentialFocusNavigationStartingPoint(
   // document tree.
   if (Node* next_node =
           sequential_focus_navigation_starting_point_->FirstNode()) {
-    if (type == kWebFocusTypeForward)
-      return ElementTraversal::Previous(*next_node);
+    if (next_node->IsShadowRoot())
+      return next_node->OwnerShadowHost();
+    // TODO(tkent): Using FlatTreeTraversal is inconsistent with
+    // FocusController. Ideally we should find backward/forward focusable
+    // elements before the starting point is disconnected. crbug.com/606582
+    if (type == kWebFocusTypeForward) {
+      Node* previous = next_node;
+      do {
+        previous = FlatTreeTraversal::Previous(*previous);
+      } while (previous && !previous->IsElementNode());
+      return ToElement(previous);
+    }
     if (next_node->IsElementNode())
       return ToElement(next_node);
-    return ElementTraversal::Next(*next_node);
+    Node* next = next_node;
+    do {
+      next = FlatTreeTraversal::Next(*next);
+    } while (next && !next->IsElementNode());
+    return ToElement(next);
   }
   return nullptr;
 }
@@ -4944,8 +5004,11 @@ void Document::DidMoveTreeToNewDocument(const Node& root) {
 
 void Document::NodeChildrenWillBeRemoved(ContainerNode& container) {
   EventDispatchForbiddenScope assert_no_event_dispatch;
-  for (Range* range : ranges_)
+  for (Range* range : ranges_) {
     range->NodeChildrenWillBeRemoved(container);
+    if (range == sequential_focus_navigation_starting_point_)
+      range->FixupRemovedChildrenAcrossShadowBoundary(container);
+  }
 
   for (NodeIterator* ni : node_iterators_) {
     for (Node& n : NodeTraversal::ChildrenOf(container))
@@ -4964,8 +5027,11 @@ void Document::NodeWillBeRemoved(Node& n) {
   for (NodeIterator* ni : node_iterators_)
     ni->NodeWillBeRemoved(n);
 
-  for (Range* range : ranges_)
+  for (Range* range : ranges_) {
     range->NodeWillBeRemoved(n);
+    if (range == sequential_focus_navigation_starting_point_)
+      range->FixupRemovedNodeAcrossShadowBoundary(n);
+  }
 
   NotifyNodeWillBeRemoved(n);
 
@@ -5699,7 +5765,7 @@ void Document::SetEncodingData(const DocumentEncodingData& new_data) {
   if (title_element_ && Encoding() != new_data.Encoding() &&
       !ElementTraversal::FirstWithin(*title_element_) &&
       Encoding() == Latin1Encoding() &&
-      title_element_->textContent().ContainsOnlyLatin1()) {
+      title_element_->textContent().ContainsOnlyLatin1OrEmpty()) {
     CString original_bytes = title_element_->textContent().Latin1();
     std::unique_ptr<TextCodec> codec = NewTextCodec(new_data.Encoding());
     String correctly_decoded_title =
@@ -5719,7 +5785,7 @@ void Document::SetEncodingData(const DocumentEncodingData& new_data) {
     visually_ordered_ = should_use_visual_ordering;
     SetNeedsStyleRecalc(kSubtreeStyleChange,
                         StyleChangeReasonForTracing::Create(
-                            StyleChangeReason::kVisuallyOrdered));
+                            style_change_reason::kVisuallyOrdered));
   }
 }
 
@@ -5844,7 +5910,7 @@ void Document::setDesignMode(const String& value) {
                              ? kNeedsReattachStyleChange
                              : kSubtreeStyleChange;
   SetNeedsStyleRecalc(type, StyleChangeReasonForTracing::Create(
-                                StyleChangeReason::kDesignMode));
+                                style_change_reason::kDesignMode));
 }
 
 Document* Document::ParentDocument() const {
@@ -6219,9 +6285,8 @@ bool Document::AllowedToUseDynamicMarkUpInsertion(
   if (!RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled()) {
     return true;
   }
-  if (!frame_ ||
-      frame_->IsFeatureEnabled(mojom::FeaturePolicyFeature::kDocumentWrite,
-                               ReportOptions::kReportOnFailure)) {
+  if (!frame_ || IsFeatureEnabled(mojom::FeaturePolicyFeature::kDocumentWrite,
+                                  ReportOptions::kReportOnFailure)) {
     return true;
   }
 
@@ -6290,7 +6355,7 @@ void Document::InitSecurityContext(const DocumentInit& initializer) {
       AddInsecureNavigationUpgrade(to_upgrade);
   }
 
-  ContentSecurityPolicy* policy_to_inherit = nullptr;
+  const ContentSecurityPolicy* policy_to_inherit = nullptr;
 
   if (IsSandboxed(kSandboxOrigin)) {
     cookie_url_ = url_;
@@ -6348,7 +6413,8 @@ void Document::InitSecurityContext(const DocumentInit& initializer) {
     SetContentSecurityPolicy(
         ImportsController()->Master()->GetContentSecurityPolicy());
   } else {
-    InitContentSecurityPolicy(nullptr, policy_to_inherit);
+    InitContentSecurityPolicy(nullptr, policy_to_inherit,
+                              initializer.PreviousDocumentCSP());
   }
 
   if (Settings* settings = initializer.GetSettings()) {
@@ -6411,7 +6477,8 @@ void Document::InitSecureContextState() {
 // will attempt to copy over the policy
 void Document::InitContentSecurityPolicy(
     ContentSecurityPolicy* csp,
-    const ContentSecurityPolicy* policy_to_inherit) {
+    const ContentSecurityPolicy* policy_to_inherit,
+    const ContentSecurityPolicy* previous_document_csp) {
   SetContentSecurityPolicy(csp ? csp : ContentSecurityPolicy::Create());
 
   GetContentSecurityPolicy()->BindToExecutionContext(this);
@@ -6427,19 +6494,30 @@ void Document::InitContentSecurityPolicy(
   // 'DocumentLoader::ensureWriter' that it might make sense to combine them.
   if (policy_to_inherit) {
     GetContentSecurityPolicy()->CopyStateFrom(policy_to_inherit);
-  } else if (frame_) {
-    Frame* inherit_from = frame_->Tree().Parent() ? frame_->Tree().Parent()
-                                                  : frame_->Client()->Opener();
-    if (inherit_from && frame_ != inherit_from) {
-      DCHECK(inherit_from->GetSecurityContext() &&
-             inherit_from->GetSecurityContext()->GetContentSecurityPolicy());
-      policy_to_inherit =
-          inherit_from->GetSecurityContext()->GetContentSecurityPolicy();
-      if (url_.IsEmpty() || url_.ProtocolIsAbout() || url_.ProtocolIsData() ||
-          url_.ProtocolIs("blob") || url_.ProtocolIs("filesystem")) {
-        GetContentSecurityPolicy()->CopyStateFrom(policy_to_inherit);
+  } else {
+    if (frame_) {
+      Frame* inherit_from = frame_->Tree().Parent()
+                                ? frame_->Tree().Parent()
+                                : frame_->Client()->Opener();
+      if (inherit_from && frame_ != inherit_from) {
+        DCHECK(inherit_from->GetSecurityContext() &&
+               inherit_from->GetSecurityContext()->GetContentSecurityPolicy());
+        policy_to_inherit =
+            inherit_from->GetSecurityContext()->GetContentSecurityPolicy();
       }
     }
+
+    // If we don't have an opener or parent, inherit from the previous
+    // document CSP.
+    if (!policy_to_inherit)
+      policy_to_inherit = previous_document_csp;
+
+    // We should inherit the relevant CSP if the document is loaded using
+    // a local-scheme url.
+    if (policy_to_inherit &&
+        (url_.IsEmpty() || url_.ProtocolIsAbout() || url_.ProtocolIsData() ||
+         url_.ProtocolIs("blob") || url_.ProtocolIs("filesystem")))
+      GetContentSecurityPolicy()->CopyStateFrom(policy_to_inherit);
   }
   // Plugin documents inherit their parent/opener's 'plugin-types' directive
   // regardless of URL.
@@ -6474,20 +6552,20 @@ bool Document::CanExecuteScripts(ReasonForCallingCanExecuteScripts reason) {
     return false;
   }
 
-  ContentSettingsClient* settings_client =
-      GetFrame()->GetContentSettingsClient();
-  if (!settings_client)
+  // No scripting on a detached frame.
+  if (!GetFrame()->Client())
     return false;
+
+  WebContentSettingsClient* settings_client =
+      GetFrame()->GetContentSettingsClient();
 
   Settings* settings = GetFrame()->GetSettings();
-  if (!settings_client->AllowScript(settings && settings->GetScriptEnabled())) {
-    if (reason == kAboutToExecuteScript)
-      settings_client->DidNotAllowScript();
-
-    return false;
-  }
-
-  return true;
+  bool script_enabled = settings && settings->GetScriptEnabled();
+  if (settings_client)
+    script_enabled = settings_client->AllowScript(script_enabled);
+  if (!script_enabled && reason == kAboutToExecuteScript && settings_client)
+    settings_client->DidNotAllowScript();
+  return script_enabled;
 }
 
 bool Document::IsRenderingReady() const {
@@ -6570,7 +6648,7 @@ void Document::AttachRange(Range* range) {
 }
 
 void Document::DetachRange(Range* range) {
-  // We don't ASSERT m_ranges.contains(range) to allow us to call this
+  // We don't DCHECK ranges_.contains(range) to allow us to call this
   // unconditionally to fix: https://bugs.webkit.org/show_bug.cgi?id=26044
   ranges_.erase(range);
 }
@@ -7323,7 +7401,7 @@ void Document::SetShadowCascadeOrder(ShadowCascadeOrder order) {
       order == ShadowCascadeOrder::kShadowCascadeV1) {
     SetNeedsStyleRecalc(
         kSubtreeStyleChange,
-        StyleChangeReasonForTracing::Create(StyleChangeReason::kShadow));
+        StyleChangeReasonForTracing::Create(style_change_reason::kShadow));
     UseCounter::Count(*this, WebFeature::kMixedShadowRootV0AndV1);
   }
 
@@ -7571,7 +7649,8 @@ void Document::NavigateLocalAdsFrames() {
     if (child->IsLocalFrame()) {
       if (ToLocalFrame(child)->IsAdSubframe()) {
         ToLocalFrame(child)->Navigate(
-            FrameLoadRequest(this, ResourceRequest(BlankURL())));
+            FrameLoadRequest(this, ResourceRequest(BlankURL())),
+            WebFrameLoadType::kStandard);
       }
     }
     // TODO(yuzus): Once AdsTracker for remote frames is implemented and OOPIF
@@ -7588,8 +7667,7 @@ SlotAssignmentEngine& Document::GetSlotAssignmentEngine() {
 bool Document::IsSlotAssignmentOrLegacyDistributionDirty() {
   if (ChildNeedsDistributionRecalc())
     return true;
-  if (RuntimeEnabledFeatures::IncrementalShadowDOMEnabled() &&
-      GetSlotAssignmentEngine().HasPendingSlotAssignmentRecalc()) {
+  if (GetSlotAssignmentEngine().HasPendingSlotAssignmentRecalc()) {
     return true;
   }
   return false;
@@ -7607,14 +7685,79 @@ LazyLoadImageObserver& Document::EnsureLazyLoadImageObserver() {
   return *lazy_load_image_observer_;
 }
 
+void Document::ReportFeaturePolicyViolation(mojom::FeaturePolicyFeature feature,
+                                            const String& message) const {
+  if (!RuntimeEnabledFeatures::FeaturePolicyReportingEnabled())
+    return;
+  LocalFrame* frame = GetFrame();
+  if (!frame)
+    return;
+  const String& feature_name = GetNameForFeature(feature);
+  FeaturePolicyViolationReportBody* body = new FeaturePolicyViolationReportBody(
+      feature_name, "Feature policy violation", SourceLocation::Capture());
+  Report* report = new Report("feature-policy", Url().GetString(), body);
+  ReportingContext::From(this)->QueueReport(report);
+
+  bool is_null;
+  int line_number = body->lineNumber(is_null);
+  line_number = is_null ? 0 : line_number;
+  int column_number = body->columnNumber(is_null);
+  column_number = is_null ? 0 : column_number;
+
+  // Send the feature policy violation report to the Reporting API.
+  frame->GetReportingService()->QueueFeaturePolicyViolationReport(
+      Url(), feature_name, "Feature policy violation", body->sourceFile(),
+      line_number, column_number);
+  frame->Console().AddMessage(ConsoleMessage::Create(
+      kViolationMessageSource, kErrorMessageLevel,
+      (message.IsEmpty() ? ("Feature policy violation: " + feature_name +
+                            " is not allowed in this document.")
+                         : message)));
+}
+
+void Document::IncrementNumberOfCanvases() {
+  num_canvases_++;
+}
+
+void Document::SendViolationReport(
+    mojom::blink::CSPViolationParamsPtr violation_params) {
+  std::unique_ptr<SourceLocation> source_location = SourceLocation::Create(
+      violation_params->source_location->url,
+      violation_params->source_location->line_number,
+      violation_params->source_location->column_number, nullptr);
+
+  Vector<String> report_endpoints;
+  for (const WebString& end_point : violation_params->report_endpoints)
+    report_endpoints.push_back(end_point);
+
+  AddConsoleMessage(ConsoleMessage::Create(kSecurityMessageSource,
+                                           kErrorMessageLevel,
+                                           violation_params->console_message));
+  GetContentSecurityPolicy()->ReportViolation(
+      violation_params->directive,
+      ContentSecurityPolicy::GetDirectiveType(
+          violation_params->effective_directive),
+      violation_params->console_message, KURL(violation_params->blocked_url),
+      report_endpoints, violation_params->use_reporting_api,
+      violation_params->header,
+      static_cast<ContentSecurityPolicyHeaderType>(
+          violation_params->disposition),
+      ContentSecurityPolicy::ViolationType::kURLViolation,
+      std::move(source_location), nullptr /* LocalFrame */,
+      violation_params->after_redirect ? RedirectStatus::kFollowedRedirect
+                                       : RedirectStatus::kNoRedirect,
+      nullptr /* Element */);
+}
+
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;
 
 }  // namespace blink
 
 #ifndef NDEBUG
 static WeakDocumentSet& liveDocumentSet() {
-  DEFINE_STATIC_LOCAL(WeakDocumentSet, set, ());
-  return set;
+  DEFINE_STATIC_LOCAL(blink::Persistent<WeakDocumentSet>, set,
+                      (new WeakDocumentSet));
+  return *set;
 }
 
 void showLiveDocumentInstances() {

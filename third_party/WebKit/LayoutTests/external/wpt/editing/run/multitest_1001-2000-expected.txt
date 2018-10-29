@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 779 PASS, 221 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 782 PASS, 218 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL [["italic",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") after assert_equals: Wrong result returned expected "" but got "false"
 PASS [["italic",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
 PASS [["italic",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
@@ -49,7 +49,7 @@ PASS [["italic",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryC
 PASS [["italic",""],["insertunorderedlist",""]] "foo[]bar": execCommand("italic", false, "") return value
 PASS [["italic",""],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["italic",""],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["italic",""],["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foobar<br></li></ul>"
+PASS [["italic",""],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["italic",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("italic") before
 PASS [["italic",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("italic") before
 FAIL [["italic",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("italic") before assert_equals: Wrong result returned expected "" but got "false"
@@ -66,7 +66,7 @@ PASS [["italic",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": e
 PASS [["italic",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["italic",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["italic",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["italic",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<i>a</i>bar</li></ul>" but got "<ul><li>fooabar<br></li></ul>"
+FAIL [["italic",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<i>a</i>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
 PASS [["italic",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("italic") before
 PASS [["italic",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("italic") before
 FAIL [["italic",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("italic") before assert_equals: Wrong result returned expected "" but got "false"
@@ -611,7 +611,7 @@ PASS [["strikethrough",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar"
 PASS [["strikethrough",""],["insertorderedlist",""]] "foo[]bar": execCommand("strikethrough", false, "") return value
 PASS [["strikethrough",""],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["strikethrough",""],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["strikethrough",""],["insertorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foobar<br></li></ol>"
+PASS [["strikethrough",""],["insertorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["strikethrough",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("strikethrough") before
 PASS [["strikethrough",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("strikethrough") before
 FAIL [["strikethrough",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("strikethrough") before assert_equals: Wrong result returned expected "" but got "false"
@@ -628,7 +628,7 @@ PASS [["strikethrough",""],["insertorderedlist",""],["inserttext","a"]] "foo[]ba
 PASS [["strikethrough",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["strikethrough",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["strikethrough",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["strikethrough",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<s>a</s>bar</li></ol>" but got "<ol><li>fooabar<br></li></ol>"
+FAIL [["strikethrough",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<s>a</s>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
 PASS [["strikethrough",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("strikethrough") before
 PASS [["strikethrough",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("strikethrough") before
 FAIL [["strikethrough",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("strikethrough") before assert_equals: Wrong result returned expected "" but got "false"
@@ -689,7 +689,7 @@ PASS [["strikethrough",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar"
 PASS [["strikethrough",""],["insertunorderedlist",""]] "foo[]bar": execCommand("strikethrough", false, "") return value
 PASS [["strikethrough",""],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["strikethrough",""],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["strikethrough",""],["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foobar<br></li></ul>"
+PASS [["strikethrough",""],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["strikethrough",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("strikethrough") before
 PASS [["strikethrough",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("strikethrough") before
 FAIL [["strikethrough",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("strikethrough") before assert_equals: Wrong result returned expected "" but got "false"
@@ -706,7 +706,7 @@ PASS [["strikethrough",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]
 PASS [["strikethrough",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["strikethrough",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["strikethrough",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["strikethrough",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<s>a</s>bar</li></ul>" but got "<ul><li>fooabar<br></li></ul>"
+FAIL [["strikethrough",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<s>a</s>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
 PASS [["strikethrough",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("strikethrough") before
 PASS [["strikethrough",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("strikethrough") before
 FAIL [["strikethrough",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("strikethrough") before assert_equals: Wrong result returned expected "" but got "false"

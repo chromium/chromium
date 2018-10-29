@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor.h"
 
+#include "ash/public/cpp/app_list/app_list_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
+#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 using testing::Pair;
 using testing::FloatEq;
@@ -75,8 +79,8 @@ TEST_F(SerializedMrfuAppLaunchPredictorTest, ToProto) {
   predictor.Train(kTarget1);
   predictor.Train(kTarget2);
 
-  EXPECT_EQ(predictor.ToProto().SerializeAsString(),
-            proto_.SerializeAsString());
+  // Check predictor.ToProto() is the same as proto_.
+  EXPECT_TRUE(EquivToProtoLite(predictor.ToProto(), proto_));
 }
 
 TEST_F(SerializedMrfuAppLaunchPredictorTest, FromProto) {
@@ -100,6 +104,8 @@ class HourAppLaunchPredictorTest : public testing::Test {
     }
   }
 
+  base::ScopedMockClockOverride time_;
+
  private:
   // Advances time to be 0am next Sunday.
   void AdvanceToNextLocalSunday() {
@@ -115,7 +121,6 @@ class HourAppLaunchPredictorTest : public testing::Test {
     CHECK_EQ(now.hour, 0);
   }
 
-  base::ScopedMockClockOverride time_;
 };
 
 // Checks HourAppLaunchPredictor::GetBin returns the right bin index for given
@@ -151,6 +156,7 @@ TEST_F(HourAppLaunchPredictorTest, GetTheRightBin) {
 // Checks the apps are ranked based on frequency in a single bin.
 TEST_F(HourAppLaunchPredictorTest, RankFromSingleBin) {
   HourAppLaunchPredictor predictor;
+  const auto& weights = HourAppLaunchPredictor::BinWeightsFromFlagOrDefault();
 
   // Create a model that trained on kTarget1 3 times, and kTarget2 2 times.
   SetLocalTime(1, 10);
@@ -172,14 +178,16 @@ TEST_F(HourAppLaunchPredictorTest, RankFromSingleBin) {
 
   SetLocalTime(1, 10);
   EXPECT_THAT(predictor.Rank(),
-              UnorderedElementsAre(Pair(kTarget1, FloatEq(0.6 * 0.6)),
-                                   Pair(kTarget2, FloatEq(0.6 * 0.4))));
+              UnorderedElementsAre(Pair(kTarget1, FloatEq(weights[0] * 0.6)),
+                                   Pair(kTarget2, FloatEq(weights[0] * 0.4))));
 }
 
 // Checks the apps are ranked based on linearly combined scores from adjacent
 // bins.
 TEST_F(HourAppLaunchPredictorTest, RankFromMultipleBin) {
   HourAppLaunchPredictor predictor;
+  const auto& weights = HourAppLaunchPredictor::BinWeightsFromFlagOrDefault();
+
   // For bin 10
   SetLocalTime(1, 10);
   predictor.Train(kTarget1);
@@ -208,15 +216,101 @@ TEST_F(HourAppLaunchPredictorTest, RankFromMultipleBin) {
   EXPECT_THAT(
       predictor.Rank(),
       UnorderedElementsAre(
-          Pair(kTarget1, FloatEq(0.6 * 2.0 / 3.0 + 0.15 * 0.5)),
-          Pair(kTarget2, FloatEq(0.6 * 1.0 / 3.0 + 0.15 * 0.5 + 0.05 * 1.0))));
+          Pair(kTarget1, FloatEq(weights[0] * 2.0 / 3.0 + weights[1] * 0.5)),
+          Pair(kTarget2, FloatEq(weights[0] * 1.0 / 3.0 + weights[1] * 0.5 +
+                                 weights[2] * 1.0))));
 
   // Check weekends.
   SetLocalTime(0, 9);
   EXPECT_THAT(
       predictor.Rank(),
-      UnorderedElementsAre(Pair(kTarget1, FloatEq(0.15 * 1.0 / 2.0)),
-                           Pair(kTarget2, FloatEq(0.15 * 1.0 / 2.0 + 0.05))));
+      UnorderedElementsAre(
+          Pair(kTarget1, FloatEq(weights[1] * 1.0 / 2.0)),
+          Pair(kTarget2, FloatEq(weights[1] * 1.0 / 2.0 + weights[2]))));
+}
+
+// Check the default weights are set correctly.
+TEST_F(HourAppLaunchPredictorTest, CheckDefaultWeights) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      app_list_features::kEnableAppSearchResultRanker);
+
+  EXPECT_THAT(HourAppLaunchPredictor::BinWeightsFromFlagOrDefault(),
+              ElementsAre(FloatEq(0.6), FloatEq(0.15), FloatEq(0.05),
+                          FloatEq(0.05), FloatEq(0.15)));
+}
+
+// Checks that the weights are set from flag correctly.
+TEST_F(HourAppLaunchPredictorTest, SetWeightsFromFlag) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      app_list_features::kEnableAppSearchResultRanker,
+      {{"weight_1_hour_later_bin", "0.1"},
+       {"weight_2_hour_later_bin", "0.2"},
+       {"weight_2_hour_earlier_bin", "0.22"},
+       {"weight_1_hour_earlier_bin", "0.23"}});
+
+  HourAppLaunchPredictor predictor;
+  const auto& weights = HourAppLaunchPredictor::BinWeightsFromFlagOrDefault();
+
+  EXPECT_THAT(weights, ElementsAre(FloatEq(0.25), FloatEq(0.1), FloatEq(0.2),
+                                   FloatEq(0.22), FloatEq(0.23)));
+
+  // For bin 0
+  SetLocalTime(1, 0);
+  predictor.Train(kTarget1);
+  predictor.Train(kTarget1);
+  predictor.Train(kTarget2);
+
+  // For bin 1
+  SetLocalTime(1, 1);
+  predictor.Train(kTarget1);
+  predictor.Train(kTarget2);
+
+  SetLocalTime(1, 0);
+  EXPECT_THAT(
+      predictor.Rank(),
+      UnorderedElementsAre(
+          Pair(kTarget1, FloatEq(weights[0] * 2.0 / 3.0 + weights[1] * 0.5)),
+          Pair(kTarget2, FloatEq(weights[0] * 1.0 / 3.0 + weights[1] * 0.5))));
+}
+
+// Checks FromProto applies decay correctly.
+TEST_F(HourAppLaunchPredictorTest, FromProtoDecay) {
+  HourAppLaunchPredictor predictor;
+  const int bin = predictor.GetBin();
+  const int frequency1 = 11;
+  const int frequency2 = 1;
+
+  AppLaunchPredictorProto proto;
+  auto& frequency_table = (*proto.mutable_hour_app_launch_predictor()
+                                ->mutable_binned_frequency_table())[bin];
+  (*frequency_table.mutable_frequency())[kTarget1] = frequency1;
+  (*frequency_table.mutable_frequency())[kTarget2] = frequency2;
+  frequency_table.set_total_counts(frequency1 + frequency2);
+
+  // FromProto will not decay since last_decay_timestamp is not set.
+  predictor.FromProto(proto);
+  proto.mutable_hour_app_launch_predictor()->set_last_decay_timestamp(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InDays());
+  EXPECT_TRUE(EquivToProtoLite(predictor.ToProto(), proto));
+
+  // FromProto will not decay since last_decay_timestamp is within 7 days.
+  time_.Advance(base::TimeDelta::FromDays(6));
+  predictor.FromProto(proto);
+  EXPECT_TRUE(EquivToProtoLite(predictor.ToProto(), proto));
+
+  // FromProto will decay since last_decay_timestamp is over 7 days.
+  time_.Advance(base::TimeDelta::FromDays(2));
+  predictor.FromProto(proto);
+  const int new_frequency1 =
+      static_cast<int>(frequency1 * HourAppLaunchPredictor::kWeeklyDecayCoeff);
+  frequency_table.mutable_frequency()->clear();
+  (*frequency_table.mutable_frequency())[kTarget1] = new_frequency1;
+  frequency_table.set_total_counts(new_frequency1);
+  proto.mutable_hour_app_launch_predictor()->set_last_decay_timestamp(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InDays());
+  EXPECT_TRUE(EquivToProtoLite(predictor.ToProto(), proto));
 }
 
 }  // namespace app_list

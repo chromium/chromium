@@ -40,7 +40,7 @@ scoped_refptr<SharedBuffer> ReadFile(const char* name) {
   }
 
   file.seekg(0, std::ios::end);
-  int file_size = file.tellg();
+  std::streampos file_size = file.tellg();
   file.seekg(0, std::ios::beg);
 
   if (!file || file_size <= 0) {
@@ -48,7 +48,12 @@ scoped_refptr<SharedBuffer> ReadFile(const char* name) {
     exit(2);
   }
 
-  Vector<char> buffer(file_size);
+  if (file_size > std::numeric_limits<wtf_size_t>::max()) {
+    fprintf(stderr, "File size too large %s\n", name);
+    exit(2);
+  }
+
+  Vector<char> buffer(static_cast<wtf_size_t>(file_size));
   if (!file.read(buffer.data(), file_size)) {
     fprintf(stderr, "Error reading file %s\n", name);
     exit(2);

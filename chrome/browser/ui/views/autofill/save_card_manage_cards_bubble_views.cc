@@ -35,7 +35,7 @@ views::View* SaveCardManageCardsBubbleViews::CreateFootnoteView() {
   if (!controller()->ShouldShowSignInPromo())
     return nullptr;
 
-  views::View* footnote_view_ = nullptr;
+  views::View* promo_view = nullptr;
 
   Profile* profile = controller()->GetProfile();
   sync_promo_delegate_ =
@@ -44,7 +44,7 @@ views::View* SaveCardManageCardsBubbleViews::CreateFootnoteView() {
           signin_metrics::AccessPoint::ACCESS_POINT_MANAGE_CARDS_BUBBLE);
   if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    footnote_view_ = new DiceBubbleSyncPromoView(
+    promo_view = new DiceBubbleSyncPromoView(
         profile, sync_promo_delegate_.get(),
         signin_metrics::AccessPoint::ACCESS_POINT_MANAGE_CARDS_BUBBLE,
         IDS_AUTOFILL_SIGNIN_PROMO_MESSAGE, IDS_AUTOFILL_SYNC_PROMO_MESSAGE,
@@ -53,15 +53,15 @@ views::View* SaveCardManageCardsBubbleViews::CreateFootnoteView() {
     NOTREACHED();
 #endif
   } else {
-    footnote_view_ = new BubbleSyncPromoView(
+    promo_view = new BubbleSyncPromoView(
         sync_promo_delegate_.get(),
         signin_metrics::AccessPoint::ACCESS_POINT_MANAGE_CARDS_BUBBLE,
         IDS_AUTOFILL_SIGNIN_PROMO_LINK_DICE_DISABLED,
         IDS_AUTOFILL_SIGNIN_PROMO_MESSAGE_DICE_DISABLED);
   }
 
-  SetFootnoteViewForTesting(footnote_view_);
-  return footnote_view_;
+  InitFootnoteView(promo_view);
+  return promo_view;
 }
 
 views::View* SaveCardManageCardsBubbleViews::CreateExtraView() {

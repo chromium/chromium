@@ -22,6 +22,7 @@
 #include "net/cert/test_root_certs.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/transport_security_state.h"
+#include "net/http/transport_security_state_test_util.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
@@ -41,9 +42,11 @@
 namespace content {
 namespace {
 
+#ifndef STATIC_ASSERT_ENUM
 #define STATIC_ASSERT_ENUM(a, b)                            \
   static_assert(static_cast<int>(a) == static_cast<int>(b), \
                 "mismatching enums: " #a)
+#endif
 
 STATIC_ASSERT_ENUM(network::mojom::ResolverType::kResolverTypeFail,
                    net::RuleBasedHostResolverProc::Rule::kResolverTypeFail);
@@ -85,6 +88,10 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
           network::mojom::ResolverType::kResolverTypeFail) {
         test_host_resolver_.host_resolver()->AddSimulatedFailure(
             rule->host_pattern);
+      } else if (rule->resolver_type ==
+                 network::mojom::ResolverType::kResolverTypeIPLiteral) {
+        test_host_resolver_.host_resolver()->AddIPLiteralRule(
+            rule->host_pattern, rule->replacement, std::string());
       } else {
         test_host_resolver_.host_resolver()->AddRule(rule->host_pattern,
                                                      rule->replacement);
@@ -152,6 +159,19 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run();
   }
 
+  void SetTransportSecurityStateSource(
+      uint16_t reporting_port,
+      SetTransportSecurityStateSourceCallback callback) override {
+    if (reporting_port) {
+      transport_security_state_source_ =
+          std::make_unique<net::ScopedTransportSecurityStateSource>(
+              reporting_port);
+    } else {
+      transport_security_state_source_.reset();
+    }
+    std::move(callback).Run();
+  }
+
   void CrashOnResolveHost(const std::string& host) override {
     network::HostResolver::SetResolveHostCallbackForTesting(
         base::BindRepeating(CrashResolveHost, host));
@@ -176,6 +196,8 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   mojo::BindingSet<network::mojom::NetworkServiceTest> bindings_;
   TestHostResolver test_host_resolver_;
   std::unique_ptr<net::MockCertVerifier> mock_cert_verifier_;
+  std::unique_ptr<net::ScopedTransportSecurityStateSource>
+      transport_security_state_source_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkServiceTestImpl);
 };
@@ -204,13 +226,16 @@ void NetworkServiceTestHelper::RegisterNetworkBinders(
 #if defined(OS_ANDROID)
     base::InitAndroidTestPaths(base::android::GetIsolatedTestRoot());
 #endif
-    net::EmbeddedTestServer::RegisterTestCerts();
-    net::SpawnedTestServer::RegisterTestCerts();
 
-    // Also add the QUIC test certificate.
-    net::TestRootCerts* root_certs = net::TestRootCerts::GetInstance();
-    root_certs->AddFromFile(
-        net::GetTestCertsDirectory().AppendASCII("quic-root.pem"));
+    if (!command_line->HasSwitch(switches::kDisableTestCerts)) {
+      net::EmbeddedTestServer::RegisterTestCerts();
+      net::SpawnedTestServer::RegisterTestCerts();
+
+      // Also add the QUIC test certificate.
+      net::TestRootCerts* root_certs = net::TestRootCerts::GetInstance();
+      root_certs->AddFromFile(
+          net::GetTestCertsDirectory().AppendASCII("quic-root.pem"));
+    }
   }
 }
 

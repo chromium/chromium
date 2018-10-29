@@ -251,7 +251,7 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
   }
 
  protected:
-  void CreateRenderProcessForExtension(extensions::Extension* extension) {
+  void CreateRenderProcessForExtension(const extensions::Extension* extension) {
     std::unique_ptr<content::MockRenderProcessHostFactory> rph_factory(
         new content::MockRenderProcessHostFactory());
     scoped_refptr<content::SiteInstance> site_instance(
@@ -310,7 +310,7 @@ TEST_F(RendererFreezerTestWithExtensions, DoesNotFreezeGcmExtensionRenderers) {
   Init();
 
   // First build the GCM extension.
-  scoped_refptr<extensions::Extension> gcm_app =
+  scoped_refptr<const extensions::Extension> gcm_app =
       extensions::ExtensionBuilder()
           .SetManifest(
               extensions::DictionaryBuilder()
@@ -346,7 +346,7 @@ TEST_F(RendererFreezerTestWithExtensions, FreezesNonGcmExtensionRenderers) {
   Init();
 
   // First build the extension.
-  scoped_refptr<extensions::Extension> background_app =
+  scoped_refptr<const extensions::Extension> background_app =
       extensions::ExtensionBuilder()
           .SetManifest(
               extensions::DictionaryBuilder()

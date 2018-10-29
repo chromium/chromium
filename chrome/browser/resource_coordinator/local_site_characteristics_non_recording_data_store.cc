@@ -62,19 +62,22 @@ LocalSiteCharacteristicsNonRecordingDataStore::GetAllInMemoryOrigins() {
 
 void LocalSiteCharacteristicsNonRecordingDataStore::GetDatabaseSize(
     DatabaseSizeCallback on_have_data) {
-  if (!data_store_inspector_)
+  if (!data_store_inspector_) {
     std::move(on_have_data).Run(base::nullopt, base::nullopt);
+    return;
+  }
 
   data_store_inspector_->GetDatabaseSize(std::move(on_have_data));
 }
 
-bool LocalSiteCharacteristicsNonRecordingDataStore::GetaDataForOrigin(
+bool LocalSiteCharacteristicsNonRecordingDataStore::GetDataForOrigin(
     const url::Origin& origin,
+    bool* is_dirty,
     std::unique_ptr<SiteCharacteristicsProto>* data) {
   if (!data_store_inspector_)
     return false;
 
-  return data_store_inspector_->GetaDataForOrigin(origin, data);
+  return data_store_inspector_->GetDataForOrigin(origin, is_dirty, data);
 }
 
 SiteCharacteristicsDataStore*

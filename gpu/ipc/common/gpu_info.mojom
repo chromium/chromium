@@ -77,6 +77,7 @@ struct VideoEncodeAcceleratorSupportedProfile {
 };
 
 // gpu::OverlayFormat
+[EnableIf=is_win]
 enum OverlayFormat {
   BGRA,
   YUY2,
@@ -84,9 +85,19 @@ enum OverlayFormat {
 };
 
 // gpu::OverlayCapability
+[EnableIf=is_win]
 struct OverlayCapability {
   OverlayFormat format;
   bool is_scaling_supported;
+};
+
+// gpu::Dx12VulkanVersionInfo
+[EnableIf=is_win]
+struct Dx12VulkanVersionInfo {
+  bool supports_dx12;
+  bool supports_vulkan;
+  uint32 d3d12_feature_level;
+  uint32 vulkan_version;
 };
 
 // Corresponds to |gpu::GPUInfo| in gpu/config/gpu_info.h
@@ -115,22 +126,16 @@ struct GpuInfo {
   bool in_process_gpu;
   bool passthrough_cmd_decoder;
   bool can_support_threaded_texture_mailbox;
+
   [EnableIf=is_win]
-  bool direct_composition;
-  [EnableIf=is_win]
-  bool supports_overlays;
+  bool direct_composition_overlays;
   [EnableIf=is_win]
   array<OverlayCapability> overlay_capabilities;
   [EnableIf=is_win]
   DxDiagNode dx_diagnostics;
   [EnableIf=is_win]
-  bool supports_dx12;
-  [EnableIf=is_win]
-  bool supports_vulkan;
-  [EnableIf=is_win]
-  uint32 d3d12_feature_level;
-  [EnableIf=is_win]
-  uint32 vulkan_version;
+  Dx12VulkanVersionInfo dx12_vulkan_version_info;
+
   VideoDecodeAcceleratorCapabilities video_decode_accelerator_capabilities;
   array<VideoEncodeAcceleratorSupportedProfile>
     video_encode_accelerator_supported_profiles;

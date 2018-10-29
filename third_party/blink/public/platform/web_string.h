@@ -40,7 +40,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"  // nogncheck
 #endif
 
 namespace WTF {

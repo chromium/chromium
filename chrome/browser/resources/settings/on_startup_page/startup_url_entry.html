@@ -3,11 +3,11 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/html/icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="startup_urls_page_browser_proxy.html">
 <link rel="import" href="../focus_row_behavior.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="../site_favicon.html">
 
 <dom-module id="settings-startup-url-entry">
   <template>
@@ -17,9 +17,7 @@
       }
     </style>
     <div class="list-item" focus-row-container>
-      <div class="favicon-image"
-          style="background-image: [[getIconSet_(model.url)]]">
-      </div>
+      <site-favicon url="[[model.url]]"></site-favicon>
       <div class="middle hide-overflow">
         <div class="text-elide">[[model.title]]</div>
         <div class="text-elide secondary">[[model.url]]</div>

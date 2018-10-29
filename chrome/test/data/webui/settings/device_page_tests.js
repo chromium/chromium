@@ -18,7 +18,7 @@ cr.define('device_page_tests', function() {
    * @implements {settings.DevicePageBrowserProxy}
    */
   function TestDevicePageBrowserProxy() {
-    this.keyboardShortcutsOverlayShown_ = 0;
+    this.keyboardShortcutViewerShown_ = 0;
     this.updatePowerStatusCalled_ = 0;
     this.requestPowerManagementSettingsCalled_ = 0;
     this.requestNoteTakingApps_ = 0;
@@ -48,8 +48,8 @@ cr.define('device_page_tests', function() {
     initializeKeyboard: function() {},
 
     /** override */
-    showKeyboardShortcutsOverlay: function() {
-      this.keyboardShortcutsOverlayShown_++;
+    showKeyboardShortcutViewer: function() {
+      this.keyboardShortcutViewerShown_++;
     },
 
     /** @override */
@@ -530,7 +530,7 @@ cr.define('device_page_tests', function() {
         const slider = assert(pointersPage.$$('#mouse settings-slider'));
         expectEquals(4, slider.pref.value);
         MockInteractions.pressAndReleaseKeyOn(
-            slider.$$('cr-slider').$$('#slider'), 37 /* left */);
+            slider.$$('cr-slider'), 37, [], 'ArrowLeft');
         expectEquals(3, devicePage.prefs.settings.mouse.sensitivity2.value);
 
         pointersPage.set('prefs.settings.mouse.sensitivity2.value', 5);
@@ -546,7 +546,7 @@ cr.define('device_page_tests', function() {
         const slider = assert(pointersPage.$$('#touchpad settings-slider'));
         expectEquals(3, slider.pref.value);
         MockInteractions.pressAndReleaseKeyOn(
-            slider.$$('cr-slider').$$('#slider'), 39 /* right */);
+            slider.$$('cr-slider'), 39 /* right */, [], 'ArrowRight');
         expectEquals(4, devicePage.prefs.settings.touchpad.sensitivity2.value);
 
         pointersPage.set('prefs.settings.touchpad.sensitivity2.value', 2);
@@ -592,10 +592,10 @@ cr.define('device_page_tests', function() {
         PolymerTest.flushTasks();
         expectNaturalScrollValue(pointersPage, false);
 
-        triggerKeyEvents(naturalScrollOn, 'Enter', 'Enter');
-        PolymerTest.flushTasks();
-        expectNaturalScrollValue(pointersPage, true);
-
+        pointersPage.$$('settings-radio-group').selected = '';
+        const falseRadio = pointersPage.$$('cr-radio-button[name="false"]');
+        assertTrue(!!falseRadio);
+        assertFalse(falseRadio.checked);
         triggerKeyEvents(naturalScrollOff, 'Space', ' ');
         PolymerTest.flushTasks();
         expectNaturalScrollValue(pointersPage, false);
@@ -610,15 +610,17 @@ cr.define('device_page_tests', function() {
             expectFalse(!!keyboardPage.$$('#capsLockKey'));
             expectFalse(!!keyboardPage.$$('#diamondKey'));
 
-            // Pretend the diamond key is available.
+            // Pretend the diamond key is available, and no internal keyboard.
             let keyboardParams = {
               'showCapsLock': false,
               'showDiamondKey': true,
               'showExternalMetaKey': false,
               'showAppleCommandKey': false,
+              'hasInternalKeyboard': false,
             };
             cr.webUIListenerCallback('show-keys-changed', keyboardParams);
             Polymer.dom.flush();
+            expectFalse(!!keyboardPage.$$('#internalSearchKey'));
             expectFalse(!!keyboardPage.$$('#capsLockKey'));
             expectTrue(!!keyboardPage.$$('#diamondKey'));
             expectFalse(!!keyboardPage.$$('#externalMetaKey'));
@@ -628,6 +630,7 @@ cr.define('device_page_tests', function() {
             keyboardParams['showCapsLock'] = true;
             cr.webUIListenerCallback('show-keys-changed', keyboardParams);
             Polymer.dom.flush();
+            expectFalse(!!keyboardPage.$$('#internalSearchKey'));
             expectTrue(!!keyboardPage.$$('#capsLockKey'));
             expectTrue(!!keyboardPage.$$('#diamondKey'));
             expectFalse(!!keyboardPage.$$('#externalMetaKey'));
@@ -637,6 +640,7 @@ cr.define('device_page_tests', function() {
             keyboardParams['showExternalMetaKey'] = true;
             cr.webUIListenerCallback('show-keys-changed', keyboardParams);
             Polymer.dom.flush();
+            expectFalse(!!keyboardPage.$$('#internalSearchKey'));
             expectTrue(!!keyboardPage.$$('#capsLockKey'));
             expectTrue(!!keyboardPage.$$('#diamondKey'));
             expectTrue(!!keyboardPage.$$('#externalMetaKey'));
@@ -646,6 +650,17 @@ cr.define('device_page_tests', function() {
             keyboardParams['showAppleCommandKey'] = true;
             cr.webUIListenerCallback('show-keys-changed', keyboardParams);
             Polymer.dom.flush();
+            expectFalse(!!keyboardPage.$$('#internalSearchKey'));
+            expectTrue(!!keyboardPage.$$('#capsLockKey'));
+            expectTrue(!!keyboardPage.$$('#diamondKey'));
+            expectTrue(!!keyboardPage.$$('#externalMetaKey'));
+            expectTrue(!!keyboardPage.$$('#externalCommandKey'));
+
+            // Add an internal keyboard.
+            keyboardParams['hasInternalKeyboard'] = true;
+            cr.webUIListenerCallback('show-keys-changed', keyboardParams);
+            Polymer.dom.flush();
+            expectTrue(!!keyboardPage.$$('#internalSearchKey'));
             expectTrue(!!keyboardPage.$$('#capsLockKey'));
             expectTrue(!!keyboardPage.$$('#diamondKey'));
             expectTrue(!!keyboardPage.$$('#externalMetaKey'));
@@ -661,13 +676,11 @@ cr.define('device_page_tests', function() {
             // Test interaction with the settings-slider's underlying
             // paper-slider.
             MockInteractions.pressAndReleaseKeyOn(
-                keyboardPage.$$('#delaySlider').$$('cr-slider').$$('#slider'),
-                37 /* left */);
+                keyboardPage.$$('#delaySlider').$$('cr-slider'), 37 /* left */,
+                [], 'ArrowLeft');
             MockInteractions.pressAndReleaseKeyOn(
-                keyboardPage.$$('#repeatRateSlider')
-                    .$$('cr-slider')
-                    .$$('#slider'),
-                39 /* right */);
+                keyboardPage.$$('#repeatRateSlider').$$('cr-slider'), 39, [],
+                'ArrowRight');
             const language = devicePage.prefs.settings.language;
             expectEquals(1000, language.xkb_auto_repeat_delay_r2.value);
             expectEquals(300, language.xkb_auto_repeat_interval_r2.value);
@@ -695,12 +708,12 @@ cr.define('device_page_tests', function() {
                 false);
             expectFalse(collapse.opened);
 
-            // Test keyboard shortcut overlay button.
-            keyboardPage.$$('#keyboardOverlay').click();
+            // Test keyboard shortcut viewer button.
+            keyboardPage.$$('#keyboardShortcutViewer').click();
             expectEquals(
                 1,
                 settings.DevicePageBrowserProxyImpl.getInstance()
-                    .keyboardShortcutsOverlayShown_);
+                    .keyboardShortcutViewerShown_);
           });
     });
 
@@ -719,7 +732,7 @@ cr.define('device_page_tests', function() {
             width: 1920,
             height: 1080,
           },
-          availableDisplayZoomFactors: [1],
+          availableDisplayZoomFactors: [1, 1.25, 1.5, 2],
         };
         fakeSystemDisplay.addDisplayForTest(display);
       };
@@ -833,6 +846,25 @@ cr.define('device_page_tests', function() {
             expectTrue(displayPage.displays[0].isPrimary);
             expectTrue(displayPage.showMirror_(false, displayPage.displays));
             expectTrue(displayPage.isMirrored_(displayPage.displays));
+
+            // Ensure that the zoom value remains unchanged while draggging.
+            function pointerEvent(eventType, ratio) {
+              const crSlider = displayPage.$.displaySizeSlider.$.slider;
+              const rect = crSlider.$.barContainer.getBoundingClientRect();
+              crSlider.dispatchEvent(new PointerEvent(eventType, {
+                buttons: 1,
+                pointerId: 1,
+                clientX: rect.left + (ratio * rect.width),
+              }));
+            }
+
+            expectEquals(1, displayPage.selectedZoomPref_.value);
+            pointerEvent('pointerdown', .6);
+            expectEquals(1, displayPage.selectedZoomPref_.value);
+            pointerEvent('pointermove', .3);
+            expectEquals(1, displayPage.selectedZoomPref_.value);
+            pointerEvent('pointerup', 0);
+            expectEquals(1.25, displayPage.selectedZoomPref_.value);
           });
     });
 

@@ -37,19 +37,22 @@
            selector:@selector(onWindowWillStartLiveResize:)
                name:NSWindowWillStartLiveResizeNotification
              object:static_cast<ui::BaseWindow*>(nativeAppWindow)
-                        ->GetNativeWindow()];
+                        ->GetNativeWindow()
+                        .GetNativeNSWindow()];
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(onWindowWillExitFullScreen:)
                name:NSWindowWillExitFullScreenNotification
              object:static_cast<ui::BaseWindow*>(nativeAppWindow)
-                        ->GetNativeWindow()];
+                        ->GetNativeWindow()
+                        .GetNativeNSWindow()];
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(onWindowDidExitFullScreen:)
                name:NSWindowDidExitFullScreenNotification
              object:static_cast<ui::BaseWindow*>(nativeAppWindow)
-                        ->GetNativeWindow()];
+                        ->GetNativeWindow()
+                        .GetNativeNSWindow()];
   }
   return self;
 }
@@ -95,8 +98,10 @@ ChromeNativeAppWindowViewsMac::~ChromeNativeAppWindowViewsMac() {
 }
 
 void ChromeNativeAppWindowViewsMac::OnWindowWillStartLiveResize() {
-  if (!NSWindowIsMaximized(GetNativeWindow()) && !in_fullscreen_transition_)
-    bounds_before_maximize_ = [GetNativeWindow() frame];
+  if (!NSWindowIsMaximized(GetNativeWindow().GetNativeNSWindow()) &&
+      !in_fullscreen_transition_) {
+    bounds_before_maximize_ = [GetNativeWindow().GetNativeNSWindow() frame];
+  }
 }
 
 void ChromeNativeAppWindowViewsMac::OnWindowWillExitFullScreen() {
@@ -130,11 +135,11 @@ ChromeNativeAppWindowViewsMac::CreateNonStandardAppFrame() {
 
 bool ChromeNativeAppWindowViewsMac::IsMaximized() const {
   return !IsMinimized() && !IsFullscreen() &&
-         NSWindowIsMaximized(GetNativeWindow());
+         NSWindowIsMaximized(GetNativeWindow().GetNativeNSWindow());
 }
 
 gfx::Rect ChromeNativeAppWindowViewsMac::GetRestoredBounds() const {
-  if (NSWindowIsMaximized(GetNativeWindow()))
+  if (NSWindowIsMaximized(GetNativeWindow().GetNativeNSWindow()))
     return gfx::ScreenRectFromNSRect(bounds_before_maximize_);
 
   return ChromeNativeAppWindowViews::GetRestoredBounds();
@@ -161,7 +166,7 @@ void ChromeNativeAppWindowViewsMac::Maximize() {
   if (IsFullscreen())
     return;
 
-  NSWindow* window = GetNativeWindow();
+  NSWindow* window = GetNativeWindow().GetNativeNSWindow();
   if (!NSWindowIsMaximized(window))
     [window setFrame:[[window screen] visibleFrame] display:YES animate:YES];
 
@@ -170,7 +175,7 @@ void ChromeNativeAppWindowViewsMac::Maximize() {
 }
 
 void ChromeNativeAppWindowViewsMac::Restore() {
-  NSWindow* window = GetNativeWindow();
+  NSWindow* window = GetNativeWindow().GetNativeNSWindow();
   if (NSWindowIsMaximized(window))
     [window setFrame:bounds_before_maximize_ display:YES animate:YES];
 
@@ -178,7 +183,7 @@ void ChromeNativeAppWindowViewsMac::Restore() {
 }
 
 void ChromeNativeAppWindowViewsMac::FlashFrame(bool flash) {
-  apps::ExtensionAppShimHandler::RequestUserAttentionForWindow(
+  apps::ExtensionAppShimHandler::Get()->RequestUserAttentionForWindow(
       app_window(), flash ? apps::APP_SHIM_ATTENTION_CRITICAL
                           : apps::APP_SHIM_ATTENTION_CANCEL);
 }
@@ -201,7 +206,7 @@ void ChromeNativeAppWindowViewsMac::HideWithApp() {
 
 void ChromeNativeAppWindowViewsMac::UnhideWithoutActivation() {
   if (is_hidden_with_app_) {
-    apps::ExtensionAppShimHandler::UnhideWithoutActivationForWindow(
+    apps::ExtensionAppShimHandler::Get()->UnhideWithoutActivationForWindow(
         app_window());
     is_hidden_with_app_ = false;
   }

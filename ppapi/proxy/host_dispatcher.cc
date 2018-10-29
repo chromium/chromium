@@ -21,8 +21,8 @@ namespace proxy {
 
 namespace {
 
-typedef std::map<PP_Instance, HostDispatcher*> InstanceToDispatcherMap;
-InstanceToDispatcherMap* g_instance_to_dispatcher = NULL;
+typedef std::map<PP_Instance, HostDispatcher*> InstanceToHostDispatcherMap;
+InstanceToHostDispatcherMap* g_instance_to_host_dispatcher = NULL;
 
 typedef std::map<PP_Module, HostDispatcher*> ModuleToDispatcherMap;
 ModuleToDispatcherMap* g_module_to_dispatcher = NULL;
@@ -101,11 +101,11 @@ bool HostDispatcher::InitHostWithChannel(
 
 // static
 HostDispatcher* HostDispatcher::GetForInstance(PP_Instance instance) {
-  if (!g_instance_to_dispatcher)
+  if (!g_instance_to_host_dispatcher)
     return NULL;
-  InstanceToDispatcherMap::iterator found = g_instance_to_dispatcher->find(
-      instance);
-  if (found == g_instance_to_dispatcher->end())
+  InstanceToHostDispatcherMap::iterator found =
+      g_instance_to_host_dispatcher->find(instance);
+  if (found == g_instance_to_host_dispatcher->end())
     return NULL;
   return found->second;
 }
@@ -113,19 +113,19 @@ HostDispatcher* HostDispatcher::GetForInstance(PP_Instance instance) {
 // static
 void HostDispatcher::SetForInstance(PP_Instance instance,
                                     HostDispatcher* dispatcher) {
-  if (!g_instance_to_dispatcher)
-    g_instance_to_dispatcher = new InstanceToDispatcherMap;
-  (*g_instance_to_dispatcher)[instance] = dispatcher;
+  if (!g_instance_to_host_dispatcher)
+    g_instance_to_host_dispatcher = new InstanceToHostDispatcherMap;
+  (*g_instance_to_host_dispatcher)[instance] = dispatcher;
 }
 
 // static
 void HostDispatcher::RemoveForInstance(PP_Instance instance) {
-  if (!g_instance_to_dispatcher)
+  if (!g_instance_to_host_dispatcher)
     return;
-  InstanceToDispatcherMap::iterator found = g_instance_to_dispatcher->find(
-      instance);
-  if (found != g_instance_to_dispatcher->end())
-    g_instance_to_dispatcher->erase(found);
+  InstanceToHostDispatcherMap::iterator found =
+      g_instance_to_host_dispatcher->find(instance);
+  if (found != g_instance_to_host_dispatcher->end())
+    g_instance_to_host_dispatcher->erase(found);
 }
 
 bool HostDispatcher::IsPlugin() const {

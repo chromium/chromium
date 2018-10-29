@@ -8,6 +8,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/thread_annotations.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "content/common/input/sync_compositor_messages.h"
 #include "content/public/browser/android/synchronous_compositor.h"
@@ -114,7 +115,8 @@ class SynchronousCompositorSyncCallBridge
                                       viz::CompositorFrameMetadata metadata);
 
   // Signal all waiters for closure. Callee must host a lock to |lock_|.
-  void SignalRemoteClosedToAllWaitersOnIOThread();
+  void SignalRemoteClosedToAllWaitersOnIOThread()
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   using FrameFutureQueue =
       base::circular_deque<scoped_refptr<SynchronousCompositor::FrameFuture>>;
@@ -129,11 +131,11 @@ class SynchronousCompositorSyncCallBridge
 
   // Shared variables between the IO thread and UI thread.
   base::Lock lock_;
-  FrameFutureQueue frame_futures_;
-  bool begin_frame_response_valid_ = false;
-  SyncCompositorCommonRendererParams last_render_params_;
-  base::ConditionVariable begin_frame_condition_;
-  RemoteState remote_state_ = RemoteState::INIT;
+  FrameFutureQueue frame_futures_ GUARDED_BY(lock_);
+  bool begin_frame_response_valid_ GUARDED_BY(lock_) = false;
+  SyncCompositorCommonRendererParams last_render_params_ GUARDED_BY(lock_);
+  base::ConditionVariable begin_frame_condition_ GUARDED_BY(lock_);
+  RemoteState remote_state_ GUARDED_BY(lock_) = RemoteState::INIT;
 
   DISALLOW_COPY_AND_ASSIGN(SynchronousCompositorSyncCallBridge);
 };

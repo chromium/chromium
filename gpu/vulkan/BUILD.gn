@@ -48,6 +48,10 @@ if (enable_vulkan) {
       "//ui/gfx",
     ]
 
+    if (use_x11) {
+      deps += [ "//third_party/angle/third_party/vulkan-validation-layers:vulkan_validation_layers" ]
+    }
+
     data_deps = []
     if (is_fuchsia) {
       data_deps += [ "//third_party/fuchsia-sdk:vulkan_layers" ]

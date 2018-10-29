@@ -1,8 +1,10 @@
 Tests the we properly report url fragment in network requests
-Intercepted URL: http://127.0.0.1:8000/devtools/network/resources/resource.php fragment: undefined
+Request will be sent: http://127.0.0.1:8000/devtools/network/resources/empty.html fragment: #ref
+Intercepted URL: http://127.0.0.1:8000/devtools/network/resources/empty.html fragment: #ref
 Request will be sent: http://127.0.0.1:8000/devtools/network/resources/resource.php fragment: undefined
-Intercepted URL: http://127.0.0.1:8000/devtools/network/resources/resource.php fragment: #ref
+Intercepted URL: http://127.0.0.1:8000/devtools/network/resources/resource.php fragment: undefined
 Request will be sent: http://127.0.0.1:8000/devtools/network/resources/resource.php fragment: #ref
-Intercepted URL: http://127.0.0.1:8000/devtools/network/resources/resource.php fragment: #
+Intercepted URL: http://127.0.0.1:8000/devtools/network/resources/resource.php fragment: #ref
 Request will be sent: http://127.0.0.1:8000/devtools/network/resources/resource.php fragment: #
+Intercepted URL: http://127.0.0.1:8000/devtools/network/resources/resource.php fragment: #
 

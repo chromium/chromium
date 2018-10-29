@@ -1078,6 +1078,11 @@ static void FillPNGSamplesSourcePixels(std::vector<PNGSample>& png_samples) {
   // Color components of opaque and transparent 16 bit PNG, read with libpng
   // in BigEndian and scaled to [0,1]. The values are read from non-interlaced
   // samples, but used for both interlaced and non-interlaced test cases.
+  // The sample pngs were all created by color converting the 8 bit sRGB source
+  // in Adobe Photoshop 18. The only exception is e-sRGB test case, for which
+  // Adobe software created a non-matching color profile (see crbug.com/874939).
+  // Hence, SkEncoder was used to generate the e-sRGB file (see the skia fiddle
+  // here: https://fiddle.skia.org/c/17beedfd66dac1ec930f0c414c50f847).
   static const std::vector<float> source_pixels_opaque_srgb = {
       0.4986953536, 0.5826657511, 0.7013199054, 1,   // Top left pixel
       0.907988098,  0.8309605554, 0.492011902,  1,   // Top right pixel
@@ -1094,10 +1099,10 @@ static void FillPNGSamplesSourcePixels(std::vector<PNGSample>& png_samples) {
       0.772121767,  0.9671625849, 0.973510338,  1,   // Bottom left pixel
       0.9118944076, 0.9645685512, 0.9110704204, 1};  // Bottom right pixel
   static const std::vector<float> source_pixels_opaque_e_srgb = {
-      0.6414435035, 0.6857862211, 0.747005417,  1,   // Top left pixel
-      0.877347982,  0.8382848859, 0.6494087129, 1,   // Top right pixel
-      0.735194934,  0.9353933013, 0.9374380102, 1,   // Bottom left pixel
-      0.9209277485, 0.9575799191, 0.9264515145, 1};  // Bottom right pixel
+      0.6977539062, 0.5839843750, 0.4978027344, 1,   // Top left pixel
+      0.4899902344, 0.8310546875, 0.9096679688, 1,   // Top right pixel
+      0.9760742188, 0.9721679688, 0.6230468750, 1,   // Bottom left pixel
+      0.9057617188, 0.9643554688, 0.8940429688, 1};  // Bottom right pixel
   static const std::vector<float> source_pixels_opaque_prophoto = {
       0.5032883192, 0.5191271839, 0.6309147784, 1,   // Top left pixel
       0.8184176394, 0.8002899214, 0.5526970321, 1,   // Top right pixel
@@ -1125,10 +1130,10 @@ static void FillPNGSamplesSourcePixels(std::vector<PNGSample>& png_samples) {
       0.4302738994, 0.9179064622, 0.933806363,  0.4,   // Bottom left pixel
       0.5595330739, 0.8228122377, 0.5554436561, 0.2};  // Bottom right pixel
   static const std::vector<float> source_pixels_transparent_e_srgb = {
-      0.5517814908, 0.6072327764, 0.6837415122, 0.8,   // Top left pixel
-      0.7955901427, 0.7304646372, 0.4156557565, 0.6,   // Top right pixel
-      0.3380178531, 0.8385290303, 0.8435950256, 0.4,   // Bottom left pixel
-      0.6046997787, 0.7879606317, 0.6323186084, 0.2};  // Bottom right pixel
+      0.6230468750, 0.4782714844, 0.3723144531, 0.8,   // Top left pixel
+      0.1528320312, 0.7172851562, 0.8466796875, 0.6,   // Top right pixel
+      0.9409179688, 0.9331054688, 0.0588073730, 0.4,   // Bottom left pixel
+      0.5253906250, 0.8310546875, 0.4743652344, 0.2};  // Bottom right pixel
   static const std::vector<float> source_pixels_transparent_prophoto = {
       0.379064622,  0.3988708324, 0.5386282139, 0.8,   // Top left pixel
       0.6973525597, 0.6671396963, 0.2544289311, 0.6,   // Top right pixel
@@ -1174,10 +1179,8 @@ static void FillPNGSamplesSourcePixels(std::vector<PNGSample>& png_samples) {
 static std::vector<PNGSample> GetPNGSamplesInfo(bool include_8bit_pngs) {
   std::vector<PNGSample> png_samples;
   std::vector<String> interlace_status = {"", "_interlaced"};
-  // TODO(zakerinasab) https://crbug.com/874939:
-  // e-sRGB decodes fine to 8888, but fails to decode to F16, hence not tested.
-  std::vector<String> color_spaces = {"sRGB", "AdobeRGB", "DisplayP3",
-                                      "ProPhoto", "Rec2020"};
+  std::vector<String> color_spaces = {"sRGB",   "AdobeRGB", "DisplayP3",
+                                      "e-sRGB", "ProPhoto", "Rec2020"};
   std::vector<String> alpha_status = {"_opaque", "_transparent"};
 
   for (String color_space : color_spaces) {

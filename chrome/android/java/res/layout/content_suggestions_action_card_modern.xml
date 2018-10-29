@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/content_suggestions_action_modern_margin_top" >
 
-    <Button
+    <org.chromium.ui.widget.ButtonCompat
         style="@style/SuggestionCardAction"
         android:id="@+id/action_button"
         android:layout_width="wrap_content"

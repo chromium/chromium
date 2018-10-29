@@ -26,7 +26,7 @@ SharedWorkerContentSettingsProxyImpl::~SharedWorkerContentSettingsProxyImpl() =
 void SharedWorkerContentSettingsProxyImpl::AllowIndexedDB(
     const base::string16& name,
     AllowIndexedDBCallback callback) {
-  if (!origin_.unique()) {
+  if (!origin_.opaque()) {
     owner_->AllowIndexedDB(origin_.GetURL(), name, std::move(callback));
   } else {
     std::move(callback).Run(false);
@@ -35,7 +35,7 @@ void SharedWorkerContentSettingsProxyImpl::AllowIndexedDB(
 
 void SharedWorkerContentSettingsProxyImpl::RequestFileSystemAccessSync(
     RequestFileSystemAccessSyncCallback callback) {
-  if (!origin_.unique()) {
+  if (!origin_.opaque()) {
     owner_->AllowFileSystem(origin_.GetURL(), std::move(callback));
   } else {
     std::move(callback).Run(false);

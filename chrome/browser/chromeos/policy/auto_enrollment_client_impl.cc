@@ -111,6 +111,9 @@ std::string ConvertInitialEnrollmentMode(
     case em::DeviceInitialEnrollmentStateResponse::
         INITIAL_ENROLLMENT_MODE_ENROLLMENT_ENFORCED:
       return kDeviceStateRestoreModeReEnrollmentEnforced;
+    case em::DeviceInitialEnrollmentStateResponse::
+        INITIAL_ENROLLMENT_MODE_ZERO_TOUCH_ENFORCED:
+      return kDeviceStateRestoreModeReEnrollmentZeroTouch;
   }
 }
 

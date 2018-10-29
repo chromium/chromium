@@ -135,7 +135,7 @@ bool PaymentsValidators::IsValidAddressErrorsFormat(
 
 // static
 bool PaymentsValidators::IsValidPayerErrorsFormat(
-    const mojom::PayerErrorFieldsPtr& errors,
+    const mojom::PayerErrorsPtr& errors,
     std::string* optional_error_message) {
   return errors &&
          IsValidErrorMsgFormat(errors->email, optional_error_message) &&

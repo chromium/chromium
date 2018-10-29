@@ -214,6 +214,11 @@ TEST_F(ImageDocumentTest, ImageCenteredWithoutForceZeroLayoutHeight) {
   EXPECT_EQ(50, ImageHeight());
 }
 
+TEST_F(ImageDocumentTest, DomInteractive) {
+  CreateDocument(25, 30);
+  EXPECT_FALSE(GetDocument().GetTiming().DomInteractive().is_null());
+}
+
 #if defined(OS_ANDROID)
 #define MAYBE(test) DISABLED_##test
 #else
@@ -348,14 +353,10 @@ TEST_F(ImageDocumentViewportTest, ZoomForDSFScaleImage) {
 
 // Tests that with zoom factor for device scale factor, image with different
 // size fit in the viewport correctly.
-TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSFSmallerThanView) {
+TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSF) {
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
-
-  // Viewport is 100px (px == CSS pixels) width and height.
-  WebView().SetZoomFactorForDeviceScaleFactor(2.f);
-  WebView().Resize(IntSize(200, 200));
 
   Vector<unsigned char> jpeg = JpegImage();
   Vector<char> data = Vector<char>();
@@ -364,8 +365,11 @@ TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSFSmallerThanView) {
 
   HTMLImageElement* img = GetDocument().ImageElement();
 
+  WebView().SetZoomFactorForDeviceScaleFactor(2.f);
+
   // Image smaller then webview size, visual viewport is not zoomed, and image
   // will be centered in the viewport.
+  WebView().Resize(IntSize(200, 200));
   Compositor().BeginFrame();
   EXPECT_EQ(50u, img->width());
   EXPECT_EQ(50u, img->height());
@@ -376,25 +380,10 @@ TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSFSmallerThanView) {
   DOMRect* rect = img->getBoundingClientRect();
   EXPECT_EQ(25, rect->x());
   EXPECT_EQ(25, rect->y());
-}
-
-TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSFLargerThanView) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  SimRequest request("https://example.com/test.jpg", "image/jpeg");
-  LoadURL("https://example.com/test.jpg");
-
-  WebView().SetZoomFactorForDeviceScaleFactor(2.f);
-  WebView().Resize(IntSize(50, 50));
-
-  Vector<unsigned char> jpeg = JpegImage();
-  Vector<char> data = Vector<char>();
-  data.Append(jpeg.data(), jpeg.size());
-  request.Complete(data);
-
-  HTMLImageElement* img = GetDocument().ImageElement();
 
   // Image wider than webview size, image should fill the visual viewport, and
   // visual viewport zoom out to 0.5.
+  WebView().Resize(IntSize(50, 50));
   Compositor().BeginFrame();
   EXPECT_EQ(50u, img->width());
   EXPECT_EQ(50u, img->height());
@@ -402,27 +391,10 @@ TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSFLargerThanView) {
   EXPECT_EQ(0.5f, GetVisualViewport().Scale());
   EXPECT_EQ(50, GetVisualViewport().Width());
   EXPECT_EQ(50, GetVisualViewport().Height());
-}
 
-TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSFMuchLargerThanView) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  SimRequest request("https://example.com/test.jpg", "image/jpeg");
-  LoadURL("https://example.com/test.jpg");
-
-  WebView().SetZoomFactorForDeviceScaleFactor(2.f);
-  WebView().Resize(IntSize(4, 20));
-
-  Vector<unsigned char> jpeg = JpegImage();
-  Vector<char> data = Vector<char>();
-  data.Append(jpeg.data(), jpeg.size());
-  request.Complete(data);
-
-  HTMLImageElement* img = GetDocument().ImageElement();
-
-  // Image wider than webview size, image should fill the visual viewport, and
-  // visual viewport zoom out to 0.5.
   // When image is more than 10X wider than webview, shrink the image to fit the
   // width of the screen.
+  WebView().Resize(IntSize(4, 20));
   Compositor().BeginFrame();
   EXPECT_EQ(20u, img->width());
   EXPECT_EQ(20u, img->height());
@@ -430,7 +402,7 @@ TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSFMuchLargerThanView) {
   EXPECT_EQ(0.1f, GetVisualViewport().Scale());
   EXPECT_EQ(20, GetVisualViewport().Width());
   EXPECT_EQ(100, GetVisualViewport().Height());
-  DOMRect* rect = img->getBoundingClientRect();
+  rect = img->getBoundingClientRect();
   EXPECT_EQ(0, rect->x());
   EXPECT_EQ(40, rect->y());
 }

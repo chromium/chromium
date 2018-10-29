@@ -80,6 +80,8 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
       render_frame_metadata_observer_client_binding_;
   mojom::RenderFrameMetadataObserverPtr render_frame_metadata_observer_ptr_;
 
+  base::Optional<bool> pending_report_all_frame_submission_;
+
   base::WeakPtrFactory<RenderFrameMetadataProviderImpl> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataProviderImpl);

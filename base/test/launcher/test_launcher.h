@@ -40,6 +40,9 @@ extern const char kGTestRunDisabledTestsFlag[];
 extern const char kGTestOutputFlag[];
 extern const char kGTestShuffleFlag[];
 extern const char kGTestRandomSeedFlag[];
+extern const char kIsolatedScriptRunDisabledTestsFlag[];
+extern const char kIsolatedScriptTestFilterFlag[];
+extern const char kIsolatedScriptTestRepeatFlag[];
 
 // Interface for use with LaunchTests that abstracts away exact details
 // which tests and how are run.

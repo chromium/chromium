@@ -25,11 +25,12 @@ extern const char kNTPSuggestionsNamespace[];
 extern const char kSuggestedArticlesNamespace[];
 extern const char kBrowserActionsNamespace[];
 extern const char kLivePageSharingNamespace[];
+extern const char kAutoAsyncNamespace[];
 
 // Enum of namespaces used by metric collection.
 // See OfflinePagesNamespaceEnumeration in enums.xml for histogram usages.
 // Changes to this enum should be in sync with the changes to the namespace
-// constants above.
+// constants above and with the metrics enum.
 enum class OfflinePagesNamespaceEnumeration {
   DEFAULT = 0,
   BOOKMARK = 1,
@@ -41,10 +42,8 @@ enum class OfflinePagesNamespaceEnumeration {
   SUGGESTED_ARTICLES = 7,
   BROWSER_ACTIONS = 8,
   LIVE_PAGE_SHARING = 9,
-  // NOTE: always keep this entry at the end. Add new result types only
-  // immediately above this line. Make sure to update the corresponding
-  // histogram enum accordingly.
-  RESULT_COUNT,
+  ASYNC_AUTO_LOADING = 10,
+  kMaxValue = ASYNC_AUTO_LOADING,
 };
 
 }  // namespace offline_pages

@@ -86,11 +86,6 @@ class HoverButton : public views::MenuButton, public views::MenuButtonListener {
     auto_compute_tooltip_ = auto_compute_tooltip;
   }
 
-  // Sets the view to be highlighted when the button is hovered. If this
-  // function is not called, |this| will be used. This function can be used e.g.
-  // when siblings in the parent view have to be highlighted as well.
-  void SetHighlightingView(views::View* highlighting_view);
-
  protected:
   // views::MenuButtonListener:
   void OnMenuButtonClicked(MenuButton* source,
@@ -100,15 +95,8 @@ class HoverButton : public views::MenuButton, public views::MenuButtonListener {
   // views::MenuButton:
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
   void StateChanged(ButtonState old_state) override;
-  bool ShouldUseFloodFillInkDrop() const override;
-
-  // views::InkDropHostView:
   SkColor GetInkDropBaseColor() const override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
-
-  // views::View:
   void Layout() override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -135,9 +123,6 @@ class HoverButton : public views::MenuButton, public views::MenuButtonListener {
   // Whether this |HoverButton|'s accessible name and tooltip should be computed
   // from the |title_| and |subtitle_| text.
   bool auto_compute_tooltip_ = true;
-
-  // View that gets highlighted when this button is hovered.
-  views::View* highlighting_view_ = this;
 
   // Listener to be called when button is clicked.
   views::ButtonListener* listener_;

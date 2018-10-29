@@ -70,10 +70,6 @@ class VIEWS_EXPORT PlatformStyle {
   // dragging but available to do so.
   static const bool kTextfieldUsesDragCursorWhenDraggable;
 
-  // Whether bookmarks in the bookmarks bar are elided [and show elipses at the
-  // tail] or fade out.
-  static const bool kShouldElideBookmarksInBookmarksBar;
-
   // The thickness and inset amount of focus ring halos.
   static const float kFocusHaloThickness;
   static const float kFocusHaloInset;
@@ -82,6 +78,9 @@ class VIEWS_EXPORT PlatformStyle {
   // decorations) UI elements should use a focus ring, rather than show
   // hover state on focus.
   static const bool kPreferFocusRings;
+
+  // Whether controls in inactive widgets appear disabled.
+  static const bool kInactiveWidgetControlsAppearDisabled;
 
   // Creates the default scrollbar for the given orientation.
   static std::unique_ptr<ScrollBar> CreateScrollBar(bool is_horizontal);

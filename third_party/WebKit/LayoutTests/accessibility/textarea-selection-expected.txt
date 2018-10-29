@@ -2,7 +2,6 @@ This tests that text selection is reported correctly for textarea elements.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS textareaAccessible.selectionStart is 0
 PASS textareaAccessible.selectionEnd is 25
 PASS textareaAccessible.selectionStartLineNumber is 0
@@ -46,4 +45,5 @@ PASS emptyTextareaAccessible.selectionEndLineNumber is 0
 PASS successfullyParsed is true
 
 TEST COMPLETE
-  
+
+ 

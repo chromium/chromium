@@ -2,7 +2,6 @@ createAttirbuteNS tests adapted from createElementNS tests attached to webkit bu
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS createAttributeNS(undefined, undefined)
 PASS createAttributeNS(null, undefined)
 PASS createAttributeNS(undefined, null)

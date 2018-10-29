@@ -226,8 +226,11 @@ cr.define('chrome.sync.about_tab', function() {
     $('request-start').addEventListener('click', function(event) {
       chrome.sync.requestStart();
     });
-    $('request-stop').addEventListener('click', function(event) {
-      chrome.sync.requestStop();
+    $('request-stop-keep-data').addEventListener('click', function(event) {
+      chrome.sync.requestStopKeepData();
+    });
+    $('request-stop-clear-data').addEventListener('click', function(event) {
+      chrome.sync.requestStopClearData();
     });
 
     // Register to receive a stream of event notifications.

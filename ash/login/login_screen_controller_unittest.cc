@@ -6,7 +6,6 @@
 
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller.h"
@@ -38,11 +37,7 @@ bool IsSystemTrayForWindowVisible(WindowType index) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   RootWindowController* controller =
       RootWindowController::ForWindow(root_windows[index]);
-  return features::IsSystemTrayUnifiedEnabled()
-             ? controller->GetStatusAreaWidget()
-                   ->unified_system_tray()
-                   ->visible()
-             : controller->GetSystemTray()->visible();
+  return controller->GetStatusAreaWidget()->unified_system_tray()->visible();
 }
 
 TEST_F(LoginScreenControllerTest, RequestAuthentication) {
@@ -54,10 +49,11 @@ TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   std::string password = "password";
   // Verify AuthenticateUser mojo call is run with the same account id, a
   // (hashed) password, and the correct PIN state.
-  EXPECT_CALL(*client, AuthenticateUser_(id, password, false, _));
+  EXPECT_CALL(*client,
+              AuthenticateUserWithPasswordOrPin_(id, password, false, _));
   base::Optional<bool> callback_result;
   base::RunLoop run_loop1;
-  controller->AuthenticateUser(
+  controller->AuthenticateUserWithPasswordOrPin(
       id, password, false,
       base::BindLambdaForTesting([&](base::Optional<bool> did_auth) {
         callback_result = did_auth;
@@ -74,9 +70,9 @@ TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   EXPECT_TRUE(prefs->FindPreference(prefs::kQuickUnlockPinSalt));
 
   std::string pin = "123456";
-  EXPECT_CALL(*client, AuthenticateUser_(id, pin, true, _));
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(id, pin, true, _));
   base::RunLoop run_loop2;
-  controller->AuthenticateUser(
+  controller->AuthenticateUserWithPasswordOrPin(
       id, pin, true,
       base::BindLambdaForTesting([&](base::Optional<bool> did_auth) {
         callback_result = did_auth;
@@ -95,18 +91,13 @@ TEST_F(LoginScreenControllerTest, RequestEasyUnlock) {
   AccountId id = AccountId::FromUserEmail("user1@test.com");
 
   // Verify AttemptUnlock mojo call is run with the same account id.
-  EXPECT_CALL(*client, AttemptUnlock(id));
-  controller->AttemptUnlock(id);
+  EXPECT_CALL(*client, AuthenticateUserWithEasyUnlock(id));
+  controller->AuthenticateUserWithEasyUnlock(id);
   base::RunLoop().RunUntilIdle();
 
   // Verify HardlockPod mojo call is run with the same account id.
   EXPECT_CALL(*client, HardlockPod(id));
   controller->HardlockPod(id);
-  base::RunLoop().RunUntilIdle();
-
-  // Verify RecordClickOnLockIcon mojo call is run with the same account id.
-  EXPECT_CALL(*client, RecordClickOnLockIcon(id));
-  controller->RecordClickOnLockIcon(id);
   base::RunLoop().RunUntilIdle();
 }
 

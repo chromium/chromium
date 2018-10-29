@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_JS"
+      file="${mojom_root}/chromeos/services/device_sync/public/mojom/device_sync.mojom.js"
+      use_base_dir="false"
+      type="BINDATA"
+      compress="gzip" />
+  <include name="IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_JS"
+      file="${mojom_root}/chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.js"
+      use_base_dir="false"
+      type="BINDATA"
+      compress="gzip" />
+  <include name="IDR_MULTIDEVICE_MULTIDEVICE_SETUP_CONSTANTS_MOJOM_JS"
+      file="${mojom_root}/chromeos/services/multidevice_setup/public/mojom/constants.mojom.js"
+      use_base_dir="false"
+      type="BINDATA"
+      compress="gzip" />
+</grit-part>

@@ -14,9 +14,9 @@ namespace blink {
 using device::mojom::blink::GamepadHapticsManager;
 
 GamepadDispatcher& GamepadDispatcher::Instance() {
-  DEFINE_STATIC_LOCAL(GamepadDispatcher, gamepad_dispatcher,
+  DEFINE_STATIC_LOCAL(Persistent<GamepadDispatcher>, gamepad_dispatcher,
                       (new GamepadDispatcher));
-  return gamepad_dispatcher;
+  return *gamepad_dispatcher;
 }
 
 void GamepadDispatcher::SampleGamepads(device::Gamepads& gamepads) {

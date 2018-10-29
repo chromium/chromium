@@ -4,10 +4,10 @@ Exceptions thrown in javascript URLs should not propagate to the main script.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS caughtException is false
 PASS caughtException is false
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

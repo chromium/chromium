@@ -2,7 +2,6 @@ Test various valid name for elements according to the definition of DOM Level 2.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.createElement('0ascii') threw exception InvalidCharacterError: Failed to execute 'createElement' on 'Document': The tag name provided ('0ascii') is not a valid name..
 PASS document.createElement('.Ascii') threw exception InvalidCharacterError: Failed to execute 'createElement' on 'Document': The tag name provided ('.Ascii') is not a valid name..
 PASS document.createElement('-Ascii') threw exception InvalidCharacterError: Failed to execute 'createElement' on 'Document': The tag name provided ('-Ascii') is not a valid name..

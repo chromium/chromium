@@ -10,7 +10,6 @@ import("//build/config/android/extract_unwind_tables.gni")
 import("//build/config/compiler/compiler.gni")
 import("//chrome/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
-import("//third_party/leakcanary/config.gni")
 import("channel.gni")
 
 declare_args() {
@@ -21,7 +20,6 @@ declare_args() {
 default_chrome_public_jinja_variables = [
   "channel=$android_channel",
   "enable_arcore=$enable_arcore",
-  "enable_leakcanary=$enable_leakcanary",
   "enable_vr=$enable_vr",
 ]
 
@@ -95,18 +93,21 @@ template("chrome_public_common_apk_or_module_tmpl") {
 
   target(_target_type, target_name) {
     forward_variables_from(invoker, "*")
-    exclude_xxxhdpi = true
 
-    # Use zh-TW strings for zh-HK (https://crbug.com/780847).
-    support_zh_hk = true
+    resource_blacklist_regex = "[/-]xxxhdpi[/-]"
 
-    # Whitelist rationale in https://crbug.com/691733.
-    xxxhdpi_whitelist = [
+    # Exception rationale in https://crbug.com/691733.
+    resource_blacklist_exceptions = [
       "*shadow*",  # Combination of gradient & transparency cause pixelation.
       "*.9.*",  # Most nine-patches contain shadows.
       "*ic_file_download_white*",  # Bottom edge seems misaligned.
       "*ic_lock.*",  # Bottom edge seems misaligned.
     ]
+
+    # Use zh-TW strings for zh-HK (https://crbug.com/780847).
+    support_zh_hk = true
+
+    optimize_resources = true
 
     if (defined(shared_libraries) && shared_libraries != []) {
       _native_lib_file =
@@ -171,6 +172,8 @@ template("chrome_public_common_apk_or_module_tmpl") {
     }
     if (_target_type == "android_apk") {
       command_line_flags_file = "chrome-command-line"
+    } else {
+      deps += [ "//chrome/android:bundle_canary_java" ]
     }
     product_version_resources_dep = "//chrome/android:product_version_resources"
 
@@ -179,7 +182,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
       deps += [ ":$_unwind_asset" ]
     }
 
-    if (enable_vr && _target_type == "android_apk") {
+    if (enable_vr && (_target_type == "android_apk" || !modularize_vr)) {
       deps += [ "//chrome/browser/android/vr:java" ]
     }
   }
@@ -194,25 +197,40 @@ template("monochrome_public_common_apk_or_module_tmpl") {
     _enable_multidex = is_java_debug || multidex_in_release
   }
   chrome_public_common_apk_or_module_tmpl(target_name) {
-    # Always build 64-bit //android_webview:monochrome because Chrome runs
-    # in 32-bit mode.
-    if (android_64bit_target_cpu) {
-      shared_libraries = [ "//android_webview:monochrome" ]
+    if (!defined(invoker.use_trichrome_library) ||
+        !invoker.use_trichrome_library) {
+      # Always build 64-bit //android_webview:monochrome because Chrome runs
+      # in 32-bit mode.
+      if (android_64bit_target_cpu) {
+        shared_libraries = [ "//android_webview:monochrome" ]
+      } else {
+        shared_libraries = [ "//chrome/android:monochrome" ]
+      }
+      if (android_64bit_target_cpu && build_apk_secondary_abi) {
+        secondary_abi_shared_libraries =
+            [ "//chrome/android:monochrome_secondary_abi_lib" ]
+      }
     } else {
-      shared_libraries = [ "//chrome/android:monochrome" ]
-    }
-    if (android_64bit_target_cpu && build_apk_secondary_abi) {
-      secondary_abi_shared_libraries =
-          [ "//chrome/android:monochrome_secondary_abi_lib" ]
+      # Include a 32-bit placeholder library to ensure that Chrome runs in
+      # 32-bit mode.
+      if (android_64bit_target_cpu) {
+        # We don't want to be 64-bit, only include a placeholder for secondary.
+        secondary_native_lib_placeholders = [ "libdummy.so" ]
+      } else {
+        native_lib_placeholders = [ "libdummy.so" ]
+      }
     }
 
     alternative_android_sdk_dep = webview_framework_dep
     app_as_shared_lib = true
     use_chromium_linker = false
-    requires_sdk_api_level_23 = true
+    min_sdk_version = 24
 
     # Webview supports all locales (has no omitted ones).
     aapt_locale_whitelist = locales
+
+    # Resources config for blocklisting resource names from obfuscation
+    resources_config_path = "//android_webview/aapt2.config"
 
     if (!defined(invoker.target_type) || invoker.target_type == "android_apk") {
       # Incremental install doesn't work for monochrome. See crbug.com/663492.
@@ -269,7 +287,7 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       deps += [ "//chrome/browser/android/vr:java" ]
     }
 
-    if (invoker.target_type == "android_apk") {
+    if (invoker.target_type == "android_apk" || !modularize_ar) {
       if (enable_arcore) {
         deps += [ "//third_party/arcore-android-sdk:libdynamite_client_java" ]
       }

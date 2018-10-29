@@ -14,7 +14,7 @@
     }
   ],
   "lang": "en",
-  "start_url": "index.html",
+  "start_url": "viewer.html",
   "background_color": "#fff",
   "display": "standalone",
   "scope": "./",

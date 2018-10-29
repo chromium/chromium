@@ -25,7 +25,7 @@
 @synthesize screensaverRunning = screensaverRunning_;
 @synthesize screenLocked = screenLocked_;
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     NSDistributedNotificationCenter* distCenter =
           [NSDistributedNotificationCenter defaultCenter];

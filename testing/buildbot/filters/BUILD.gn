@@ -35,7 +35,6 @@ source_set("browser_tests_filters") {
     "//testing/buildbot/filters/mojo.fyi.network_browser_tests.filter",
     "//testing/buildbot/filters/webui_polymer2_browser_tests.filter",
     "//testing/buildbot/filters/webrtc_functional.browser_tests.filter",
-    "//testing/buildbot/filters/webrtc_perf.browser_tests.filter",
   ]
 }
 
@@ -68,6 +67,7 @@ source_set("content_browsertests_filters") {
 
   data = [
     "//testing/buildbot/filters/cast-linux.content_browsertests.filter",
+    "//testing/buildbot/filters/chromeos.single_process_mash.content_browsertests.filter",
     "//testing/buildbot/filters/mojo.fyi.network_content_browsertests.filter",
   ]
 }
@@ -94,6 +94,8 @@ source_set("interactive_ui_tests_filters") {
   testonly = true
 
   data = [
+    "//testing/buildbot/filters/chromeos.single_process_mash.interactive_ui_tests.filter",
+    "//testing/buildbot/filters/mojo.fyi.chromeos.network_interactive_ui_tests.filter",
     "//testing/buildbot/filters/webui_polymer2_interactive_ui_tests.filter",
   ]
 }

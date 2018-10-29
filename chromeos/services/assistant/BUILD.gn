@@ -75,20 +75,15 @@ source_set("lib") {
       "//chromeos/resources",
       "//chromeos/services/assistant/public/proto",
       "//chromeos/strings",
-      "//libassistant/contrib/core",
-      "//libassistant/contrib/platform/audio",
       "//libassistant/shared/internal_api/c:api_wrappers_entrypoint",
       "//libassistant/shared/public",
       "//libassistant/shared/public:export",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
       "//ui/base",
     ]
 
     libs = [ "$root_out_dir/libassistant.so" ]
-
-    include_dirs = [
-      "//libassistant/contrib",
-      "//libassistant/shared",
-    ]
   }
 }
 

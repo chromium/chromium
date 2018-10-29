@@ -153,10 +153,9 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       }
       return script;
     }
-    case v8::ScriptCompiler::kProduceCodeCache:
-    case v8::ScriptCompiler::kProduceFullCodeCache:
-    case v8::ScriptCompiler::kProduceParserCache:
-    case v8::ScriptCompiler::kConsumeParserCache:
+    // TODO(v8:8252): Remove the default case once deprecated options are
+    // removed from v8::ScriptCompiler::CompileOptions.
+    default:
       NOTREACHED();
       break;
   }
@@ -254,7 +253,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
     ExecutionContext* context) {
   DCHECK(!script.IsEmpty());
   ScopedFrameBlamer frame_blamer(
-      context->IsDocument() ? ToDocument(context)->GetFrame() : nullptr);
+      IsA<Document>(context) ? To<Document>(context)->GetFrame() : nullptr);
 
   v8::Local<v8::Value> script_name =
       script->GetUnboundScript()->GetScriptName();
@@ -278,10 +277,14 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
     v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
     v8::MicrotasksScope microtasks_scope(isolate,
                                          v8::MicrotasksScope::kRunMicrotasks);
+    v8::Local<v8::String> script_url;
+    if (!script_name->ToString(isolate->GetCurrentContext())
+             .ToLocal(&script_url))
+      return result;
+
     // ToCoreString here should be zero copy due to externalized string
     // unpacked.
-    String script_url = ToCoreString(script_name->ToString(isolate));
-    probe::ExecuteScript probe(context, script_url);
+    probe::ExecuteScript probe(context, ToCoreString(script_url));
     result = script->Run(isolate->GetCurrentContext());
   }
 
@@ -371,7 +374,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
     v8::Local<v8::Value> args[],
     v8::Isolate* isolate) {
   LocalFrame* frame =
-      context->IsDocument() ? ToDocument(context)->GetFrame() : nullptr;
+      IsA<Document>(context) ? To<Document>(context)->GetFrame() : nullptr;
   ScopedFrameBlamer frame_blamer(frame);
   TRACE_EVENT0("v8", "v8.callFunction");
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);

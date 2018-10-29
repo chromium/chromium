@@ -14,7 +14,7 @@ AXWebArea
 ++AXHeading AXTitle='Level 5' AXValue='5'
 ++++AXStaticText AXValue='Level 5'
 ++AXOutline
-++++AXRow AXSubrole=AXOutlineRow AXTitle='Tree item at level 1 ' AXDisclosing='1' AXDisclosureLevel='0'
+++++AXRow AXSubrole=AXOutlineRow AXTitle='Tree item at level 1' AXDisclosing='1' AXDisclosureLevel='0'
 ++++++AXStaticText AXValue='Tree item at level 1'
 ++++++AXGroup
 ++++++++AXRow AXSubrole=AXOutlineRow AXTitle='Tree item at level 2' AXDisclosing='0' AXDisclosureLevel='1'

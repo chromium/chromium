@@ -103,11 +103,14 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
     browser_tab_strip_tracker_.Init();
   }
 
-  void ActiveTabChanged(content::WebContents* old_contents,
-                        content::WebContents* new_contents,
-                        int index,
-                        int reason) override {
-    if (new_contents->GetURL() == landing_page_) {
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (tab_strip_model->empty() || !selection.active_tab_changed())
+      return;
+
+    if (selection.new_contents->GetURL() == landing_page_) {
       // If the disposition is not already set, go ahead and set it.
       if (disposition_ == WEBUSB_NOTIFICATION_CLOSED)
         disposition_ = WEBUSB_NOTIFICATION_CLOSED_MANUAL_NAVIGATION;

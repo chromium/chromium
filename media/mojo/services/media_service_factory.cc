@@ -32,13 +32,14 @@ std::unique_ptr<service_manager::Service> CreateMediaService() {
 std::unique_ptr<service_manager::Service> CreateGpuMediaService(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
     AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
     CdmProxyFactoryCB cdm_proxy_factory_cb) {
   return std::unique_ptr<service_manager::Service>(
       new MediaService(std::make_unique<GpuMojoMediaClient>(
-          gpu_preferences, gpu_workarounds, task_runner,
+          gpu_preferences, gpu_workarounds, gpu_feature_info, task_runner,
           media_gpu_channel_manager, std::move(android_overlay_factory_cb),
           std::move(cdm_proxy_factory_cb))));
 }

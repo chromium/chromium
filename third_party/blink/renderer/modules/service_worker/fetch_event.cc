@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/fetch/bytes_consumer_for_data_consumer_handle.h"
+#include "third_party/blink/renderer/core/fetch/data_pipe_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/core/frame/use_counter.h"
@@ -107,21 +107,22 @@ FetchEvent::~FetchEvent() = default;
 void FetchEvent::OnNavigationPreloadResponse(
     ScriptState* script_state,
     std::unique_ptr<WebURLResponse> response,
-    std::unique_ptr<WebDataConsumerHandle> data_consume_handle) {
+    mojo::ScopedDataPipeConsumerHandle data_pipe) {
   if (!script_state->ContextIsValid())
     return;
   DCHECK(preload_response_property_);
   DCHECK(!preload_response_);
   ScriptState::Scope scope(script_state);
   preload_response_ = std::move(response);
+  if (data_pipe.is_valid()) {
+    data_pipe_consumer_ = new DataPipeBytesConsumer(
+        ExecutionContext::From(script_state), std::move(data_pipe));
+  }
   // TODO(ricea): Verify that this response can't be aborted from JS.
   FetchResponseData* response_data =
-      data_consume_handle
+      data_pipe_consumer_
           ? FetchResponseData::CreateWithBuffer(new BodyStreamBuffer(
-                script_state,
-                new BytesConsumerForDataConsumerHandle(
-                    ExecutionContext::From(script_state),
-                    std::move(data_consume_handle)),
+                script_state, data_pipe_consumer_,
                 new AbortSignal(ExecutionContext::From(script_state))))
           : FetchResponseData::Create();
   Vector<KURL> url_list(1);
@@ -137,7 +138,7 @@ void FetchEvent::OnNavigationPreloadResponse(
     response_data->HeaderList()->Append(header.key, header.value);
   }
   FetchResponseData* tainted_response =
-      NetworkUtils::IsRedirectResponseCode(preload_response_->HttpStatusCode())
+      network_utils::IsRedirectResponseCode(preload_response_->HttpStatusCode())
           ? response_data->CreateOpaqueRedirectFilteredResponse()
           : response_data->CreateBasicFilteredResponse();
   preload_response_property_->Resolve(
@@ -149,6 +150,10 @@ void FetchEvent::OnNavigationPreloadError(
     std::unique_ptr<WebServiceWorkerError> error) {
   if (!script_state->ContextIsValid())
     return;
+  if (data_pipe_consumer_) {
+    data_pipe_consumer_->SignalError();
+    data_pipe_consumer_ = nullptr;
+  }
   DCHECK(preload_response_property_);
   if (preload_response_property_->GetState() !=
       PreloadResponseProperty::kPending) {
@@ -165,6 +170,10 @@ void FetchEvent::OnNavigationPreloadComplete(
     int64_t encoded_body_length,
     int64_t decoded_body_length) {
   DCHECK(preload_response_);
+  if (data_pipe_consumer_) {
+    data_pipe_consumer_->SignalComplete();
+    data_pipe_consumer_ = nullptr;
+  }
   std::unique_ptr<WebURLResponse> response = std::move(preload_response_);
   ResourceResponse resource_response = response->ToResourceResponse();
   resource_response.SetEncodedDataLength(encoded_data_length);
@@ -188,6 +197,7 @@ void FetchEvent::Trace(blink::Visitor* visitor) {
   visitor->Trace(observer_);
   visitor->Trace(request_);
   visitor->Trace(preload_response_property_);
+  visitor->Trace(data_pipe_consumer_);
   ExtendableEvent::Trace(visitor);
   ContextClient::Trace(visitor);
 }

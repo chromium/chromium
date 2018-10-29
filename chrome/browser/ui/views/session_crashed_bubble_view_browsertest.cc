@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "ui/base/ui_features.h"
 #include "ui/views/view.h"
@@ -25,10 +24,6 @@ class SessionCrashedBubbleViewTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     gfx::Rect anchor_rect = gfx::Rect();
     views::View* anchor_view = nullptr;
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-    if (views_mode_controller::IsViewsBrowserCocoa())
-      anchor_rect = bubble_anchor_util::GetAppMenuAnchorRectCocoa(browser());
-#endif
     if (anchor_rect == gfx::Rect()) {
       anchor_view = BrowserView::GetBrowserViewForBrowser(browser())
                         ->toolbar()

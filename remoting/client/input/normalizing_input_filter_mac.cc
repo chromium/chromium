@@ -71,8 +71,7 @@ void NormalizingInputFilterMac::InjectKeyEvent(
 }
 
 void NormalizingInputFilterMac::GenerateKeyupEvents() {
-  for (KeyPressedMap::iterator i = key_pressed_map_.begin();
-       i != key_pressed_map_.end(); ++i) {
+  for (auto i = key_pressed_map_.begin(); i != key_pressed_map_.end(); ++i) {
     // The generated key up event will have the same key code and lock states
     // as the original key down event.
     protocol::KeyEvent event = i->second;

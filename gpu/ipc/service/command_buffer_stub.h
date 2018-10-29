@@ -102,7 +102,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void OnRescheduleAfterFinished() override;
   void ScheduleGrContextCleanup() override;
 
-  gles2::MemoryTracker* GetMemoryTracker() const;
+  MemoryTracker* GetMemoryTracker() const;
 
   // Whether this command buffer can currently handle IPC messages.
   bool IsScheduled();
@@ -137,7 +137,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
                                size_t url_hash,
                                GpuChannel* channel);
 
-  std::unique_ptr<gles2::MemoryTracker> CreateMemoryTracker(
+  std::unique_ptr<MemoryTracker> CreateMemoryTracker(
       const GPUCreateCommandBufferConfig init_params) const;
 
   // Must be called during Initialize(). Takes ownership to co-ordinate

@@ -12,16 +12,16 @@
 
 void RefcountedBrowserContextKeyedServiceFactory::SetTestingFactory(
     content::BrowserContext* context,
-    TestingFactoryFunction testing_factory) {
+    TestingFactory testing_factory) {
   RefcountedKeyedServiceFactory::TestingFactory wrapped_factory;
   if (testing_factory) {
     wrapped_factory = base::BindRepeating(
-        [](TestingFactoryFunction testing_factory,
+        [](const TestingFactory& testing_factory,
            base::SupportsUserData* context) {
-          return testing_factory(
+          return testing_factory.Run(
               static_cast<content::BrowserContext*>(context));
         },
-        testing_factory);
+        std::move(testing_factory));
   }
   RefcountedKeyedServiceFactory::SetTestingFactory(context,
                                                    std::move(wrapped_factory));
@@ -30,19 +30,16 @@ void RefcountedBrowserContextKeyedServiceFactory::SetTestingFactory(
 scoped_refptr<RefcountedKeyedService>
 RefcountedBrowserContextKeyedServiceFactory::SetTestingFactoryAndUse(
     content::BrowserContext* context,
-    TestingFactoryFunction testing_factory) {
-  RefcountedKeyedServiceFactory::TestingFactory wrapped_factory;
-  if (testing_factory) {
-    wrapped_factory = base::BindRepeating(
-        [](TestingFactoryFunction testing_factory,
-           base::SupportsUserData* context) {
-          return testing_factory(
-              static_cast<content::BrowserContext*>(context));
-        },
-        testing_factory);
-  }
+    TestingFactory testing_factory) {
+  DCHECK(testing_factory);
   return RefcountedKeyedServiceFactory::SetTestingFactoryAndUse(
-      context, std::move(wrapped_factory));
+      context, base::BindRepeating(
+                   [](const TestingFactory& testing_factory,
+                      base::SupportsUserData* context) {
+                     return testing_factory.Run(
+                         static_cast<content::BrowserContext*>(context));
+                   },
+                   std::move(testing_factory)));
 }
 
 RefcountedBrowserContextKeyedServiceFactory::

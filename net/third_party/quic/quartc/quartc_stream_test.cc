@@ -31,7 +31,10 @@ class MockQuicSession : public QuicSession {
   MockQuicSession(QuicConnection* connection,
                   const QuicConfig& config,
                   QuicString* write_buffer)
-      : QuicSession(connection, nullptr /*visitor*/, config),
+      : QuicSession(connection,
+                    nullptr /*visitor*/,
+                    config,
+                    CurrentSupportedVersions()),
         write_buffer_(write_buffer) {}
 
   ~MockQuicSession() override {}
@@ -58,11 +61,9 @@ class MockQuicSession : public QuicSession {
     return QuicConsumedData(write_length, state != StreamSendingState::NO_FIN);
   }
 
-  QuartcStream* CreateIncomingDynamicStream(QuicStreamId id) override {
+  QuartcStream* CreateIncomingStream(QuicStreamId id) override {
     return nullptr;
   }
-
-  QuartcStream* CreateOutgoingDynamicStream() override { return nullptr; }
 
   const QuicCryptoStream* GetCryptoStream() const override { return nullptr; }
   QuicCryptoStream* GetMutableCryptoStream() override { return nullptr; }
@@ -185,8 +186,8 @@ class QuartcStreamTest : public QuicTest, public QuicConnectionHelperInterface {
     connection_ = QuicMakeUnique<QuicConnection>(
         0, QuicSocketAddress(ip, 0), this /*QuicConnectionHelperInterface*/,
         alarm_factory_.get(), new DummyPacketWriter(), owns_writer, perspective,
-        CurrentSupportedVersions());
-
+        ParsedVersionOfIndex(CurrentSupportedVersions(), 0));
+    clock_.AdvanceTime(QuicTime::Delta::FromSeconds(1));
     session_ = QuicMakeUnique<MockQuicSession>(connection_.get(), QuicConfig(),
                                                &write_buffer_);
     mock_stream_delegate_ =

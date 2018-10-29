@@ -316,7 +316,7 @@ InProcessContextFactory::SharedMainThreadContextProvider() {
 }
 
 void InProcessContextFactory::RemoveCompositor(Compositor* compositor) {
-  PerCompositorDataMap::iterator it = per_compositor_data_.find(compositor);
+  auto it = per_compositor_data_.find(compositor);
   if (it == per_compositor_data_.end())
     return;
   PerCompositorData* data = it->second.get();

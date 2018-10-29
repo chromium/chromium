@@ -36,12 +36,12 @@ class FakeArcWindowDelegate : public ArcMetricsService::ArcWindowDelegate {
   FakeArcWindowDelegate() = default;
   ~FakeArcWindowDelegate() override = default;
 
-  bool IsActiveArcAppWindow(const aura::Window* window) const override {
+  bool IsArcAppWindow(const aura::Window* window) const override {
     return focused_window_id_ == arc_window_id_;
   }
 
-  void RegisterFocusChangeObserver() override {}
-  void UnregisterFocusChangeObserver() override {}
+  void RegisterActivationChangeObserver() override {}
+  void UnregisterActivationChangeObserver() override {}
 
   std::unique_ptr<aura::Window> CreateFakeArcWindow() {
     const int id = next_id_++;
@@ -322,7 +322,9 @@ TEST_F(ArcMetricsServiceTest, RecordArcWindowFocusAction) {
   base::HistogramTester tester;
   fake_arc_window_delegate()->FocusWindow(fake_arc_window());
 
-  service()->OnWindowFocused(fake_arc_window(), nullptr);
+  service()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
+      fake_arc_window(), nullptr);
 
   tester.ExpectBucketCount(
       "Arc.UserInteraction",
@@ -334,14 +336,18 @@ TEST_F(ArcMetricsServiceTest, RecordNothingNonArcWindowFocusAction) {
 
   // Focus an ARC window once so that the histogram is created.
   fake_arc_window_delegate()->FocusWindow(fake_arc_window());
-  service()->OnWindowFocused(fake_arc_window(), nullptr);
+  service()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
+      fake_arc_window(), nullptr);
   tester.ExpectBucketCount(
       "Arc.UserInteraction",
       static_cast<int>(UserInteractionType::APP_CONTENT_WINDOW_INTERACTION), 1);
 
   // Focusing a non-ARC window should not increase the bucket count.
   fake_arc_window_delegate()->FocusWindow(fake_non_arc_window());
-  service()->OnWindowFocused(fake_non_arc_window(), nullptr);
+  service()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
+      fake_non_arc_window(), nullptr);
 
   tester.ExpectBucketCount(
       "Arc.UserInteraction",

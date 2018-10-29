@@ -22,9 +22,13 @@ namespace content {
 class WebContents;
 }
 
+namespace web_app {
+class WebAppDataRetriever;
+enum class InstallResultCode;
+}
+
 namespace extensions {
 
-class BookmarkAppDataRetriever;
 class BookmarkAppHelper;
 class BookmarkAppInstaller;
 class Extension;
@@ -33,19 +37,12 @@ class Extension;
 // or WebApplicationInfo. Can only be called from the UI thread.
 class BookmarkAppInstallationTask {
  public:
-  // TODO(nigeltao): fold this into web_app::InstallResultCode.
-  enum class ResultCode {
-    kSuccess,
-    kGetWebApplicationInfoFailed,
-    kInstallationFailed,
-  };
-
   struct Result {
-    Result(ResultCode code, base::Optional<std::string> app_id);
+    Result(web_app::InstallResultCode code, base::Optional<std::string> app_id);
     Result(Result&&);
     ~Result();
 
-    const ResultCode code;
+    const web_app::InstallResultCode code;
     const base::Optional<std::string> app_id;
 
     DISALLOW_COPY_AND_ASSIGN(Result);
@@ -81,11 +78,11 @@ class BookmarkAppInstallationTask {
   void SetBookmarkAppHelperFactoryForTesting(
       BookmarkAppHelperFactory helper_factory);
   void SetDataRetrieverForTesting(
-      std::unique_ptr<BookmarkAppDataRetriever> data_retriever);
+      std::unique_ptr<web_app::WebAppDataRetriever> data_retriever);
   void SetInstallerForTesting(std::unique_ptr<BookmarkAppInstaller> installer);
 
  protected:
-  BookmarkAppDataRetriever& data_retriever() { return *data_retriever_; }
+  web_app::WebAppDataRetriever& data_retriever() { return *data_retriever_; }
   BookmarkAppInstaller& installer() { return *installer_; }
 
  private:
@@ -106,7 +103,7 @@ class BookmarkAppInstallationTask {
   std::unique_ptr<BookmarkAppHelper> helper_;
   BookmarkAppHelperFactory helper_factory_;
 
-  std::unique_ptr<BookmarkAppDataRetriever> data_retriever_;
+  std::unique_ptr<web_app::WebAppDataRetriever> data_retriever_;
   std::unique_ptr<BookmarkAppInstaller> installer_;
 
   base::WeakPtrFactory<BookmarkAppInstallationTask> weak_ptr_factory_{this};

@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome saves you time by bringing your accounts to the web. You can add or remove accounts in Settings.</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
-<translation id="3678774398092457402">Do you want Chrome to save your password for this site?</translation>
 <translation id="384394811301901750">Google Chrome can't use your camera at the moment.</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chrome data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> can be customised at any time. Google may use content on sites that you visit, as well as browsing activity and interactions, to personalise Chrome and Google services such as Translate, Search and ads.</translation>
 <translation id="5639704535586432836">Open Settings &gt; Privacy &gt; Camera &gt; Google Chrome and turn on the camera.</translation>
 <translation id="5642200033778930880">Google Chrome can't use your camera in Split View mode</translation>
-<translation id="5703130498371792817">Enjoying Chrome? <ph name="BEGIN_LINK" />Rate this app<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Chrome tip. Some buttons are now at the bottom of your screen, such as Back, Forward and Search.</translation>
 <translation id="6036420186814142909">Google Chrome has features that help you manage your internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Google Chrome Terms of Service</translation>
 <translation id="7165736900384873061">Start Using Google Chrome QR Scanner</translation>
 <translation id="7172660552945675509">Tip: <ph name="BEGIN_LINK" />Move Chrome to your dock<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome uses Face ID to ensure authorised access to your passwords.</translation>
 <translation id="7265369419224458312">Access the tabs that you have open on your computer, right here. Just open Chrome on your computer, go to the menu, and select “Sign in to Chrome…”</translation>
 <translation id="728488472449859922">Turn on Google Chrome QR Scanner</translation>
 <translation id="7400722733683201933">About Google Chrome</translation>

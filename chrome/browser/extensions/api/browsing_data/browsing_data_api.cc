@@ -13,12 +13,17 @@
 
 #include "base/values.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
+#include "content/public/browser/browser_task_traits.h"
 
 #include "base/task/post_task.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/plugins/plugin_data_remover_helper.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
+#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -123,6 +128,16 @@ bool IsRemovalPermitted(int removal_mask, PrefService* prefs) {
   return true;
 }
 
+// Returns true if Sync is currently running (i.e. enabled and not in error).
+bool IsSyncRunning(Profile* profile) {
+  browser_sync::ProfileSyncService* sync_service =
+      ProfileSyncServiceFactory::GetForProfile(profile);
+  SigninManagerBase* signin_manager =
+      SigninManagerFactory::GetForProfile(profile);
+  sync_ui_util::MessageType sync_status =
+      sync_ui_util::GetStatus(profile, sync_service, *signin_manager);
+  return sync_status == sync_ui_util::SYNCED;
+}
 }  // namespace
 
 bool BrowsingDataSettingsFunction::isDataTypeSelected(
@@ -253,11 +268,9 @@ BrowsingDataRemoverFunction::BrowsingDataRemoverFunction() : observer_(this) {}
 
 void BrowsingDataRemoverFunction::OnBrowsingDataRemoverDone() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
+  synced_data_deletion_.reset();
   observer_.RemoveAll();
-
   this->SendResponse(true);
-
   Release();  // Balanced in RunAsync.
 }
 
@@ -316,21 +329,34 @@ bool BrowsingDataRemoverFunction::RunAsync() {
 
 BrowsingDataRemoverFunction::~BrowsingDataRemoverFunction() {}
 
+bool BrowsingDataRemoverFunction::IsPauseSyncAllowed() {
+  return true;
+}
+
 void BrowsingDataRemoverFunction::CheckRemovingPluginDataSupported(
     scoped_refptr<PluginPrefs> plugin_prefs) {
   if (!PluginDataRemoverHelper::IsSupported(plugin_prefs.get()))
     removal_mask_ &= ~ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PLUGIN_DATA;
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&BrowsingDataRemoverFunction::StartRemoving, this));
 }
 
 void BrowsingDataRemoverFunction::StartRemoving() {
+  Profile* profile = GetProfile();
   content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(GetProfile());
+      content::BrowserContext::GetBrowsingDataRemover(profile);
+
   // Add a ref (Balanced in OnBrowsingDataRemoverDone)
   AddRef();
+
+  // Prevent Sync from being paused, if required.
+  DCHECK(!synced_data_deletion_);
+  if (!IsPauseSyncAllowed() && IsSyncRunning(profile)) {
+    synced_data_deletion_ = AccountReconcilorFactory::GetForProfile(profile)
+                                ->GetScopedSyncDataDeletion();
+  }
 
   // Create a BrowsingDataRemover, set the current object as an observer (so
   // that we're notified after removal) and call remove() with the arguments
@@ -416,6 +442,10 @@ bool BrowsingDataRemoveFunction::GetRemovalMask(int* removal_mask) {
   }
 
   return true;
+}
+
+bool BrowsingDataRemoveFunction::IsPauseSyncAllowed() {
+  return false;
 }
 
 bool BrowsingDataRemoveAppcacheFunction::GetRemovalMask(int* removal_mask) {

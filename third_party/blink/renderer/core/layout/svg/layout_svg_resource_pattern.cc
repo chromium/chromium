@@ -48,11 +48,12 @@ struct PatternData {
 LayoutSVGResourcePattern::LayoutSVGResourcePattern(SVGPatternElement* node)
     : LayoutSVGResourcePaintServer(node),
       should_collect_pattern_attributes_(true),
-      attributes_wrapper_(PatternAttributesWrapper::Create()) {}
+      attributes_wrapper_(PatternAttributesWrapper::Create()),
+      pattern_map_(new PatternMap) {}
 
 void LayoutSVGResourcePattern::RemoveAllClientsFromCache(
     bool mark_for_invalidation) {
-  pattern_map_.clear();
+  pattern_map_->clear();
   should_collect_pattern_attributes_ = true;
   MarkAllClientsForInvalidation(
       mark_for_invalidation ? SVGResourceClient::kPaintInvalidation
@@ -61,10 +62,10 @@ void LayoutSVGResourcePattern::RemoveAllClientsFromCache(
 
 bool LayoutSVGResourcePattern::RemoveClientFromCache(
     SVGResourceClient& client) {
-  auto entry = pattern_map_.find(&client);
-  if (entry == pattern_map_.end())
+  auto entry = pattern_map_->find(&client);
+  if (entry == pattern_map_->end())
     return false;
-  pattern_map_.erase(entry);
+  pattern_map_->erase(entry);
   return true;
 }
 
@@ -77,10 +78,10 @@ PatternData* LayoutSVGResourcePattern::PatternForClient(
   // invalidation (painting animated images may trigger layout invals which
   // delete our map entry). Hopefully that will be addressed at some point, and
   // then we can optimize the lookup.
-  if (PatternData* current_data = pattern_map_.at(&client))
+  if (PatternData* current_data = pattern_map_->at(&client))
     return current_data;
 
-  return pattern_map_.Set(&client, BuildPatternData(object_bounding_box))
+  return pattern_map_->Set(&client, BuildPatternData(object_bounding_box))
       .stored_value->value.get();
 }
 

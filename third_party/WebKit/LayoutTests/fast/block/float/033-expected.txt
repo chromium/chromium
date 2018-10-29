@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600 clip at (0,0) size 785x600 scrollHeight 2008
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 785x2008 backgroundClip at (0,0) size 785x600 clip at (0,0) size 785x600
-  LayoutBlockFlow {HTML} at (0,0) size 785x2008
-    LayoutBlockFlow {BODY} at (8,8) size 769x584
-layer at (477,8) size 300x2000 backgroundClip at (477,8) size 300x592 clip at (477,8) size 300x592
-  LayoutBlockFlow (floating) {DIV} at (469,0) size 300x2000
-    LayoutBlockFlow {DIV} at (0,0) size 300x2000 [bgcolor=#0000FF]

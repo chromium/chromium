@@ -25,7 +25,8 @@ class FakeConnectionEstablisher : public ConnectionEstablisher {
  private:
   // ConnectionEstablisher:
   void EstablishConnection(
-      content::ServiceWorkerContext* service_worker_context_) override;
+      content::ServiceWorkerContext* service_worker_context_,
+      ConnectionMode connection_mode) override;
 
   std::vector<content::ServiceWorkerContext*> establish_connection_calls_;
   DISALLOW_COPY_AND_ASSIGN(FakeConnectionEstablisher);

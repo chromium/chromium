@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/interfaces/compositing/begin_frame_args.mojom";
 import "services/viz/public/interfaces/compositing/frame_deadline.mojom";
 import "services/viz/public/interfaces/compositing/selection.mojom";
@@ -42,11 +43,11 @@ struct CompositorFrameMetadata {
   [EnableIf=is_android]
   bool root_overflow_y_hidden;
 
-  [EnableIf=is_android]
   float top_controls_height;
 
-  [EnableIf=is_android]
   float top_controls_shown_ratio;
+
+  mojo_base.mojom.TimeTicks local_surface_id_allocation_time;
 
   [EnableIf=is_android]
   float bottom_controls_height;

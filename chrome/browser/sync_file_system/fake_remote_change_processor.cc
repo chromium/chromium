@@ -37,12 +37,12 @@ void FakeRemoteChangeProcessor::PrepareForProcessRemoteChange(
         SYNC_FILE_TYPE_DIRECTORY, 0, base::Time::Now());
   }
 
-  URLToFileMetadata::iterator found_metadata = local_file_metadata_.find(url);
+  auto found_metadata = local_file_metadata_.find(url);
   if (found_metadata != local_file_metadata_.end())
     local_metadata = found_metadata->second;
 
   // Override |local_metadata| by applied changes.
-  URLToFileChangesMap::iterator found = applied_changes_.find(url);
+  auto found = applied_changes_.find(url);
   if (found != applied_changes_.end()) {
     DCHECK(!found->second.empty());
     const FileChange& applied_change = found->second.back();
@@ -55,7 +55,7 @@ void FakeRemoteChangeProcessor::PrepareForProcessRemoteChange(
   }
 
   FileChangeList change_list;
-  URLToFileChangeList::iterator found_list = local_changes_.find(url);
+  auto found_list = local_changes_.find(url);
   if (found_list != local_changes_.end())
     change_list = found_list->second;
 
@@ -77,8 +77,7 @@ void FakeRemoteChangeProcessor::ApplyRemoteChange(
     if (!ancestor_url.is_valid())
       break;
 
-    URLToFileChangeList::iterator found_list =
-        local_changes_.find(ancestor_url);
+    auto found_list = local_changes_.find(ancestor_url);
     if (found_list != local_changes_.end()) {
       const FileChange& local_change = found_list->second.back();
       if (local_change.IsAddOrUpdate() &&
@@ -145,7 +144,7 @@ void FakeRemoteChangeProcessor::VerifyConsistency(
   for (URLToFileChangesMap::const_iterator itr = applied_changes_.begin();
        itr != applied_changes_.end(); ++itr) {
     const storage::FileSystemURL& url = itr->first;
-    URLToFileChangesMap::const_iterator found = expected_changes.find(url);
+    auto found = expected_changes.find(url);
     if (found == expected_changes.end()) {
       EXPECT_TRUE(found != expected_changes.end())
           << "Change not expected for " << url.DebugString();

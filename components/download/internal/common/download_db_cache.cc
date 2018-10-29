@@ -7,7 +7,6 @@
 #include "components/download/database/download_db.h"
 #include "components/download/database/download_db_conversions.h"
 #include "components/download/database/download_db_entry.h"
-#include "components/download/database/in_progress/download_entry.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_utils.h"
@@ -96,12 +95,12 @@ UkmInfo GetUkmInfo(base::Optional<DownloadDBEntry> entry) {
   return UkmInfo(DownloadSource::UNKNOWN, GetUniqueDownloadId());
 }
 
-void CleanUpInProgressEntry(DownloadDBEntry& entry) {
-  if (!entry.download_info)
+void CleanUpInProgressEntry(DownloadDBEntry* entry) {
+  if (!entry->download_info)
     return;
 
   base::Optional<InProgressInfo>& in_progress_info =
-      entry.download_info->in_progress_info;
+      entry->download_info->in_progress_info;
   if (!in_progress_info)
     return;
 
@@ -129,15 +128,14 @@ DownloadDBCache::DownloadDBCache(std::unique_ptr<DownloadDB> download_db)
 
 DownloadDBCache::~DownloadDBCache() = default;
 
-void DownloadDBCache::Initialize(const std::vector<DownloadEntry>& entries,
-                                 InitializeCallback callback) {
+void DownloadDBCache::Initialize(InitializeCallback callback) {
   // TODO(qinmin): migrate all the data from InProgressCache into
   // |download_db_|.
   if (!initialized_) {
     RecordInProgressDBCount(kInitializationCount);
-    download_db_->Initialize(base::BindOnce(
-        &DownloadDBCache::OnDownloadDBInitialized, weak_factory_.GetWeakPtr(),
-        entries, std::move(callback)));
+    download_db_->Initialize(
+        base::BindOnce(&DownloadDBCache::OnDownloadDBInitialized,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
 
@@ -230,12 +228,10 @@ void DownloadDBCache::OnDownloadRemoved(DownloadItem* download) {
 }
 
 void DownloadDBCache::OnDownloadDBInitialized(
-    const std::vector<DownloadEntry>& entries,
     InitializeCallback callback,
     bool success) {
   if (success) {
     RecordInProgressDBCount(kInitializationSucceededCount);
-    MigrateFromInProgressCache(entries);
     download_db_->LoadEntries(
         base::BindOnce(&DownloadDBCache::OnDownloadDBEntriesLoaded,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -253,8 +249,14 @@ void DownloadDBCache::OnDownloadDBEntriesLoaded(
   initialized_ = success;
   RecordInProgressDBCount(success ? kLoadSucceededCount : kLoadFailedCount);
   for (auto& entry : *entries) {
-    CleanUpInProgressEntry(entry);
-    entries_[entry.download_info->guid] = entry;
+    // If the entry is from the metadata cache migration, just remove it from
+    // DB as the data is not being cleaned up properly.
+    if (entry.download_info->id < 0) {
+      RemoveEntry(entry.download_info->guid);
+    } else {
+      CleanUpInProgressEntry(&entry);
+      entries_[entry.download_info->guid] = entry;
+    }
   }
   std::move(callback).Run(success, std::move(entries));
 }
@@ -262,27 +264,6 @@ void DownloadDBCache::OnDownloadDBEntriesLoaded(
 void DownloadDBCache::SetTimerTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   update_timer_.SetTaskRunner(task_runner);
-}
-
-void DownloadDBCache::MigrateFromInProgressCache(
-    const std::vector<DownloadEntry>& entries) {
-  if (entries.empty())
-    return;
-  RecordInProgressDBCount(kCacheMigrationCount);
-  std::vector<DownloadDBEntry> db_entries;
-  for (const auto& entry : entries) {
-    DCHECK(entries_.find(entry.guid) == entries_.end());
-    db_entries.emplace_back(
-        DownloadDBConversions::DownloadDBEntryFromDownloadEntry(entry));
-  }
-  download_db_->AddOrReplaceEntries(
-      db_entries, base::BindOnce(&DownloadDBCache::OnInProgressCacheMigrated,
-                                 weak_factory_.GetWeakPtr()));
-}
-
-void DownloadDBCache::OnInProgressCacheMigrated(bool success) {
-  RecordInProgressDBCount(success ? kCacheMigrationSucceededCount
-                                  : kCacheMigrationFailedCount);
 }
 
 }  //  namespace download

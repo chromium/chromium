@@ -178,9 +178,7 @@ aura::Window* BaseFocusRules::GetNextActivatableWindow(
   const aura::Window::Windows& siblings = ignore->parent()->children();
   DCHECK(!siblings.empty());
 
-  for (aura::Window::Windows::const_reverse_iterator rit = siblings.rbegin();
-       rit != siblings.rend();
-       ++rit) {
+  for (auto rit = siblings.rbegin(); rit != siblings.rend(); ++rit) {
     aura::Window* cur = *rit;
     if (cur == ignore)
       continue;

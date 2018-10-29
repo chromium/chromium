@@ -34,9 +34,10 @@
 #include <memory>
 #include "base/time/time.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/cpp/cors/preflight_timing_info.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data_consumer_handle.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 
 namespace blink {
@@ -58,7 +59,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
       const WebURL& new_url,
       const WebURL& new_site_for_cookies,
       const WebString& new_referrer,
-      WebReferrerPolicy new_referrer_policy,
+      network::mojom::ReferrerPolicy new_referrer_policy,
       const WebString& new_method,
       const WebURLResponse& passed_redirect_response,
       bool& report_raw_headers) {
@@ -107,11 +108,13 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
   // will be generated in devtools console if this flag is set to true.
   // TODO(crbug.com/798625): use different callback for subresources
   // with responses blocked due to document protection.
-  virtual void DidFinishLoading(base::TimeTicks finish_time,
-                                int64_t total_encoded_data_length,
-                                int64_t total_encoded_body_length,
-                                int64_t total_decoded_body_length,
-                                bool should_report_corb_blocking) {}
+  virtual void DidFinishLoading(
+      base::TimeTicks finish_time,
+      int64_t total_encoded_data_length,
+      int64_t total_encoded_body_length,
+      int64_t total_decoded_body_length,
+      bool should_report_corb_blocking,
+      const std::vector<network::cors::PreflightTimingInfo>&) {}
 
   // Called when the load completes with an error.
   // |total_encoded_data_length| may be equal to kUnknownEncodedDataLength.

@@ -274,7 +274,7 @@ class CHROMEOS_EXPORT CryptohomeAuthenticator
 
   // When |remove_user_data_on_failure_| is set, we delay calling
   // consumer_->OnAuthFailure() until we removed the user cryptohome.
-  const AuthFailure* delayed_login_failure_;
+  AuthFailure delayed_login_failure_;
 
   DISALLOW_COPY_AND_ASSIGN(CryptohomeAuthenticator);
 };

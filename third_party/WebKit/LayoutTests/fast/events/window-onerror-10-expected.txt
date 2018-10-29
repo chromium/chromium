@@ -8,9 +8,7 @@ Stack Trace:
 Error: Inline exception.
     at throwException onerror-test.js:6:11
     at window-onerror-10.html:22:9
-
 Returning 'true': the error should not be reported in the console as an unhandled exception.
-
 
 
 window.onerror: "Uncaught Error: exception in onload" at onerror-test.js (Line: 6, Column: 5)
@@ -18,9 +16,7 @@ Stack Trace:
 Error: exception in onload
     at throwException onerror-test.js:6:11
     at onload window-onerror-10.html:11:205
-
 Returning 'true': the error should not be reported in the console as an unhandled exception.
-
 
 
 window.onerror: "Uncaught Error: exception in setTimeout" at onerror-test.js (Line: 6, Column: 5)
@@ -28,7 +24,6 @@ Stack Trace:
 Error: exception in setTimeout
     at throwException onerror-test.js:6:11
     at window-onerror-10.html:11:155
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

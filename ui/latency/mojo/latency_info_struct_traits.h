@@ -5,7 +5,6 @@
 #ifndef UI_LATENCY_MOJO_LATENCY_INFO_STRUCT_TRAITS_H_
 #define UI_LATENCY_MOJO_LATENCY_INFO_STRUCT_TRAITS_H_
 
-#include "ui/gfx/geometry/mojo/geometry_struct_traits.h"
 #include "ui/latency/latency_info.h"
 #include "ui/latency/mojo/latency_info.mojom-shared.h"
 
@@ -16,7 +15,7 @@ static_assert(static_cast<int>(ui::mojom::LatencyComponentType::kMaxValue) ==
               "Enum size mismatch");
 
 static_assert(static_cast<int>(ui::mojom::SourceEventType::kMaxValue) ==
-                  static_cast<int>(ui::SOURCE_EVENT_TYPE_LAST),
+                  static_cast<int>(ui::SourceEventType::LAST),
               "Enum size mismatch");
 
 template <>

@@ -25,7 +25,7 @@ cr.define('cr.ui', function() {
    *   focusable  focusable  focusable
    *
    * @constructor
-   * @implements {cr.ui.FocusRow.Delegate}
+   * @implements {cr.ui.FocusRowDelegate}
    */
   function FocusGrid() {
     /** @type {!Array<!cr.ui.FocusRow>} */

@@ -18,9 +18,10 @@
 #import "ios/chrome/browser/autofill/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory_mediator.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/web/public/navigation_manager.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
+#include "ios/web/public/test/test_web_thread_bundle.h"
 #import "ios/web/public/web_state/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state/web_state.h"
 #import "testing/gtest_mac.h"
@@ -37,7 +38,7 @@
 
 @property(weak, nonatomic, readonly) FormSuggestion* suggestion;
 @property(weak, nonatomic, readonly) NSString* formName;
-@property(weak, nonatomic, readonly) NSString* fieldName;
+@property(weak, nonatomic, readonly) NSString* fieldIdentifier;
 @property(weak, nonatomic, readonly) NSString* frameID;
 @property(nonatomic, assign) BOOL selected;
 @property(nonatomic, assign) BOOL askedIfSuggestionsAvailable;
@@ -50,7 +51,6 @@
 @implementation TestSuggestionProvider {
   NSArray* _suggestions;
   NSString* _formName;
-  NSString* _fieldName;
   NSString* _fieldIdentifier;
   NSString* _frameID;
   FormSuggestion* _suggestion;
@@ -71,8 +71,8 @@
   return _formName;
 }
 
-- (NSString*)fieldName {
-  return _fieldName;
+- (NSString*)fieldIdentifier {
+  return _fieldIdentifier;
 }
 
 - (NSString*)frameID {
@@ -84,7 +84,6 @@
 }
 
 - (void)checkIfSuggestionsAvailableForForm:(NSString*)formName
-                                 fieldName:(NSString*)fieldName
                            fieldIdentifier:(NSString*)fieldIdentifier
                                  fieldType:(NSString*)fieldType
                                       type:(NSString*)type
@@ -100,7 +99,6 @@
 }
 
 - (void)retrieveSuggestionsForForm:(NSString*)formName
-                         fieldName:(NSString*)fieldName
                    fieldIdentifier:(NSString*)fieldIdentifier
                          fieldType:(NSString*)fieldType
                               type:(NSString*)type
@@ -113,17 +111,15 @@
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
-                  fieldName:(NSString*)fieldName
-            fieldIdentifier:(NSString*)fieldIdentifier
                        form:(NSString*)formName
+            fieldIdentifier:(NSString*)fieldIdentifier
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
   self.selected = YES;
   _suggestion = suggestion;
   _formName = [formName copy];
-  _fieldName = [fieldName copy];
-  _frameID = [frameID copy];
   _fieldIdentifier = [fieldIdentifier copy];
+  _frameID = [frameID copy];
   completion();
 }
 
@@ -208,7 +204,7 @@ class FormSuggestionControllerTest : public PlatformTest {
         [view removeFromSuperview];
       }
     };
-    [[[mock_consumer_ stub] andDo:mockRestore] restoreKeyboardView];
+    [[[mock_consumer_ stub] andDo:mockRestore] restoreOriginalKeyboardView];
 
     accessory_mediator_ =
         [[FormInputAccessoryMediator alloc] initWithConsumer:mock_consumer_
@@ -234,6 +230,9 @@ class FormSuggestionControllerTest : public PlatformTest {
 
   // Accessory view controller.
   FormInputAccessoryMediator* accessory_mediator_;
+
+  // The associated test Web Threads.
+  web::TestWebThreadBundle thread_bundle_;
 
   // The fake WebState to simulate navigation and JavaScript events.
   web::TestWebState test_web_state_;
@@ -272,7 +271,6 @@ TEST_F(FormSuggestionControllerTest,
   // Trigger form activity, which should set up the suggestions view.
   autofill::FormActivityParams params;
   params.form_name = "form";
-  params.field_name = "field";
   params.field_identifier = "field_id";
   params.field_type = "text";
   params.type = "type";
@@ -292,7 +290,6 @@ TEST_F(FormSuggestionControllerTest,
 TEST_F(FormSuggestionControllerTest, FormActivityBlurShouldBeIgnored) {
   autofill::FormActivityParams params;
   params.form_name = "form";
-  params.field_name = "field";
   params.field_identifier = "field_id";
   params.field_type = "text";
   params.type = "blur";  // blur!
@@ -311,7 +308,6 @@ TEST_F(FormSuggestionControllerTest,
   test_web_state_.SetCurrentURL(GURL("http://foo.com"));
   autofill::FormActivityParams params;
   params.form_name = "form";
-  params.field_name = "field";
   params.field_identifier = "field_id";
   params.field_type = "text";
   params.type = "type";
@@ -341,7 +337,6 @@ TEST_F(FormSuggestionControllerTest,
 
   autofill::FormActivityParams params;
   params.form_name = "form";
-  params.field_name = "field";
   params.field_identifier = "field_id";
   params.field_type = "text";
   params.type = "type";
@@ -392,7 +387,6 @@ TEST_F(FormSuggestionControllerTest,
 
   autofill::FormActivityParams params;
   params.form_name = "form";
-  params.field_name = "field";
   params.field_identifier = "field_id";
   params.field_type = "text";
   params.type = "type";
@@ -433,7 +427,6 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   test_web_state_.SetCurrentURL(GURL("http://foo.com"));
   autofill::FormActivityParams params;
   params.form_name = "form";
-  params.field_name = "field";
   params.field_identifier = "field_id";
   params.field_type = "text";
   params.type = "type";
@@ -447,7 +440,7 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   [suggestion_controller_ didSelectSuggestion:suggestions[0]];
   EXPECT_TRUE([provider selected]);
   EXPECT_NSEQ(@"form", [provider formName]);
-  EXPECT_NSEQ(@"field", [provider fieldName]);
+  EXPECT_NSEQ(@"field_id", [provider fieldIdentifier]);
   EXPECT_NSEQ(@"frame_id", [provider frameID]);
   EXPECT_NSEQ(suggestions[0], [provider suggestion]);
 }

@@ -46,8 +46,8 @@ class FingerprintStorageTestApi {
       quick_unlock::FingerprintStorage* fingerprint_storage)
       : fingerprint_storage_(fingerprint_storage) {}
 
-  bool IsFingerprintAuthenticationAvailable() const {
-    return fingerprint_storage_->IsFingerprintAuthenticationAvailable();
+  bool IsFingerprintAvailable() const {
+    return fingerprint_storage_->IsFingerprintAvailable();
   }
 
  private:
@@ -90,14 +90,14 @@ TEST_F(FingerprintStorageUnitTest, AuthenticationUnAvailable) {
   EXPECT_TRUE(fingerprint_storage->HasRecord());
   EXPECT_EQ(0, fingerprint_storage->unlock_attempt_count());
 
-  EXPECT_TRUE(test_api.IsFingerprintAuthenticationAvailable());
+  EXPECT_TRUE(test_api.IsFingerprintAvailable());
 
   // No fingerprint records registered makes fingerprint authentication
   // unavailable.
   SetRecords(0);
-  EXPECT_FALSE(test_api.IsFingerprintAuthenticationAvailable());
+  EXPECT_FALSE(test_api.IsFingerprintAvailable());
   SetRecords(1);
-  EXPECT_TRUE(test_api.IsFingerprintAuthenticationAvailable());
+  EXPECT_TRUE(test_api.IsFingerprintAvailable());
 
   // Too many authentication attempts make fingerprint authentication
   // unavailable.
@@ -105,9 +105,9 @@ TEST_F(FingerprintStorageUnitTest, AuthenticationUnAvailable) {
        ++i) {
     fingerprint_storage->AddUnlockAttempt();
   }
-  EXPECT_FALSE(test_api.IsFingerprintAuthenticationAvailable());
+  EXPECT_FALSE(test_api.IsFingerprintAvailable());
   fingerprint_storage->ResetUnlockAttemptCount();
-  EXPECT_TRUE(test_api.IsFingerprintAuthenticationAvailable());
+  EXPECT_TRUE(test_api.IsFingerprintAvailable());
 }
 
 }  // namespace chromeos

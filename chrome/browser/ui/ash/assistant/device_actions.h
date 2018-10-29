@@ -19,6 +19,7 @@ class DeviceActions : public chromeos::assistant::mojom::DeviceActions {
   void GetScreenBrightnessLevel(
       GetScreenBrightnessLevelCallback callback) override;
   void SetScreenBrightnessLevel(double level, bool gradual) override;
+  void SetNightLightEnabled(bool enabled) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DeviceActions);

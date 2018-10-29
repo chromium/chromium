@@ -24,7 +24,7 @@ jint JNI_DOMUtils_GetTopControlsShrinkBlinkHeight(
   // Android obtains the top control size via WebContentsDelegate.
   WebContentsDelegate* delegate = web_contents->GetDelegate();
   float scale = web_contents->GetNativeView()->GetDipScale();
-  return delegate && delegate->DoBrowserControlsShrinkBlinkSize()
+  return delegate && delegate->DoBrowserControlsShrinkRendererSize(web_contents)
              ? delegate->GetTopControlsHeight() * scale
              : 0;
 }

@@ -96,7 +96,7 @@ void InfoMap::RemoveExtension(const std::string& extension_id,
 }
 
 base::Time InfoMap::GetInstallTime(const std::string& extension_id) const {
-  ExtraDataMap::const_iterator iter = extra_data_.find(extension_id);
+  auto iter = extra_data_.find(extension_id);
   if (iter != extra_data_.end())
     return iter->second.install_time;
   return base::Time();
@@ -104,7 +104,7 @@ base::Time InfoMap::GetInstallTime(const std::string& extension_id) const {
 
 bool InfoMap::IsIncognitoEnabled(const std::string& extension_id) const {
   // Keep in sync with duplicate in extensions/browser/process_manager.cc.
-  ExtraDataMap::const_iterator iter = extra_data_.find(extension_id);
+  auto iter = extra_data_.find(extension_id);
   if (iter != extra_data_.end())
     return iter->second.incognito_enabled;
   return false;
@@ -217,14 +217,14 @@ const declarative_net_request::RulesetManager* InfoMap::GetRulesetManager()
 void InfoMap::SetNotificationsDisabled(
     const std::string& extension_id,
     bool notifications_disabled) {
-  ExtraDataMap::iterator iter = extra_data_.find(extension_id);
+  auto iter = extra_data_.find(extension_id);
   if (iter != extra_data_.end())
     iter->second.notifications_disabled = notifications_disabled;
 }
 
 bool InfoMap::AreNotificationsDisabled(
     const std::string& extension_id) const {
-  ExtraDataMap::const_iterator iter = extra_data_.find(extension_id);
+  auto iter = extra_data_.find(extension_id);
   if (iter != extra_data_.end())
     return iter->second.notifications_disabled;
   return false;

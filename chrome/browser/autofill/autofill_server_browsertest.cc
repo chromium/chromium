@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -124,11 +126,27 @@ class WindowedNetworkObserver {
 
 class AutofillServerTest : public InProcessBrowserTest  {
  public:
+  void SetUp() override {
+    // Enable data-url support.
+    // TODO(crbug.com/894428) - fix this suite to use the embedded test server
+    // instead of data urls.
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillAllowNonHttpActivation);
+
+    // Note that features MUST be enabled/disabled before continuing with
+    // SetUp(); otherwise, the feature state doesn't propagate to the test
+    // browser instance.
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Enable finch experiment for sending field metadata.
     command_line->AppendSwitchASCII(
         ::switches::kForceFieldTrials, "AutofillFieldMetadata/Enabled/");
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Regression test for http://crbug.com/177419
@@ -189,6 +207,8 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   upload.set_action_signature(15724779818122431245U);
   upload.set_form_name("test_form");
   upload.set_passwords_revealed(false);
+  upload.set_submission_event(
+      AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
 
   test::FillUploadField(upload.add_field(), 2594484045U, "one", "text", nullptr,
                         2U);

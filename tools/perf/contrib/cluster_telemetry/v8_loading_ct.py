@@ -7,24 +7,17 @@ from telemetry.web_perf import timeline_based_measurement
 
 # pylint: disable=protected-access
 class V8LoadingClusterTelemetry(loading_base_ct._LoadingBaseClusterTelemetry):
-
   @classmethod
-  def AddBenchmarkCommandLineArgs(cls, parser):
-    super(V8LoadingClusterTelemetry, cls).AddBenchmarkCommandLineArgs(parser)
-    parser.add_option('--enable-rcs', action='store_true', default=False,
-        help='Enable expensive V8 Runtime Call Stats metrics.')
+  def Name(cls):
+    return 'v8.loading.cluster_telemetry'
 
   @classmethod
   def ShouldAddValue(cls, name, from_first_story_run):
     del from_first_story_run  # unused
     return v8_browsing.V8BrowsingShouldAddValue(name)
 
-  @classmethod
-  def Name(cls):
-    return 'v8.loading.cluster_telemetry'
-
   def CreateCoreTimelineBasedMeasurementOptions(self):
     options = timeline_based_measurement.Options()
     v8_browsing.AugmentOptionsForV8BrowsingMetrics(options,
-        enable_runtime_call_stats=options.enable_rcs)
+        enable_runtime_call_stats=False)
     return options

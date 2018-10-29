@@ -9,6 +9,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/event_monitor.h"
 
@@ -59,6 +60,7 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
 
+  // views::BubbleDialogDelegateView:
   gfx::Rect GetAnchorBoundsInScreen() const override;
 
   // If the bubble is not anchored to a view, places the bubble in the top right
@@ -71,15 +73,14 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   // The class listens for WebContentsView events and closes the bubble. Useful
   // for bubbles that do not start out focused but need to close when the user
   // interacts with the web view.
-  class WebContentMouseHandler : public ui::EventHandler {
+  class WebContentMouseHandler : public ui::EventObserver {
    public:
     WebContentMouseHandler(LocationBarBubbleDelegateView* bubble,
                            content::WebContents* web_contents);
     ~WebContentMouseHandler() override;
 
-    void OnKeyEvent(ui::KeyEvent* event) override;
-    void OnMouseEvent(ui::MouseEvent* event) override;
-    void OnTouchEvent(ui::TouchEvent* event) override;
+    // ui::EventObserver:
+    void OnEvent(const ui::Event& event) override;
 
    private:
     LocationBarBubbleDelegateView* bubble_;

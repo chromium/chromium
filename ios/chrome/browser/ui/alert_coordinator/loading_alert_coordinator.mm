@@ -10,7 +10,7 @@
 #import "base/mac/scoped_block.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/material_components/activity_indicator.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/ActivityIndicator/src/MaterialActivityIndicator.h"
 #import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"

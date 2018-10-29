@@ -1409,7 +1409,7 @@ TEST_F(LayerTreeHostCommonTest, RenderSurfaceListForTransparentChild) {
 }
 
 TEST_F(LayerTreeHostCommonTest,
-       RenderSurfaceListForTransparentChildWithBackgroundFilter) {
+       RenderSurfaceListForTransparentChildWithBackdropFilter) {
   LayerImpl* root = root_layer_for_testing();
   LayerImpl* render_surface1 = AddChild<LayerImpl>(root);
   LayerImpl* child = AddChild<LayerImpl>(render_surface1);
@@ -1421,7 +1421,7 @@ TEST_F(LayerTreeHostCommonTest,
   render_surface1->SetDrawsContent(true);
   FilterOperations filters;
   filters.Append(FilterOperation::CreateBlurFilter(1.5f));
-  render_surface1->test_properties()->background_filters = filters;
+  render_surface1->test_properties()->backdrop_filters = filters;
   child->SetBounds(gfx::Size(10, 10));
   child->SetDrawsContent(true);
   root->layer_tree_impl()->SetElementIdsForTesting();
@@ -1434,7 +1434,7 @@ TEST_F(LayerTreeHostCommonTest,
     LayerTreeHostCommon::CalculateDrawPropertiesForTesting(&inputs);
     EXPECT_EQ(2U, render_surface_list.size());
   }
-  // The layer is fully transparent, but has a background filter, so it
+  // The layer is fully transparent, but has a backdrop filter, so it
   // shouldn't be skipped and should be drawn.
   ASSERT_TRUE(GetRenderSurface(root));
   EXPECT_EQ(1, GetRenderSurface(root)->num_contributors());

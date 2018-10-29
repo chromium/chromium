@@ -27,7 +27,7 @@ PerformanceElementTiming::PerformanceElementTiming(
 PerformanceElementTiming::~PerformanceElementTiming() = default;
 
 AtomicString PerformanceElementTiming::entryType() const {
-  return PerformanceEntryNames::element;
+  return performance_entry_names::kElement;
 }
 
 PerformanceEntryType PerformanceElementTiming::EntryTypeEnum() const {

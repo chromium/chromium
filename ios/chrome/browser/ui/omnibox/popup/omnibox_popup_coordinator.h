@@ -11,11 +11,13 @@
 
 @class CommandDispatcher;
 @protocol OmniboxPopupPositioner;
+@protocol OmniboxFocuser;
 class OmniboxPopupViewIOS;
 
 namespace ios {
 class ChromeBrowserState;
 }
+class WebStateList;
 
 // Coordinator for the Omnibox Popup.
 @interface OmniboxPopupCoordinator : NSObject
@@ -34,9 +36,18 @@ class ChromeBrowserState;
 @property(nonatomic, assign, readonly) BOOL isOpen;
 // The dispatcher for this view controller.
 @property(nonatomic, readwrite, weak) CommandDispatcher* dispatcher;
+// The web state list this coordinator is handling.
+@property(nonatomic, assign) WebStateList* webStateList;
 
 - (void)start;
 - (void)stop;
+
+// Opens the popup immediately. It's auto-sized to fit the suggestions.
+- (void)openPopup;
+
+// Closes the popup immediately.
+- (void)closePopup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_COORDINATOR_H_

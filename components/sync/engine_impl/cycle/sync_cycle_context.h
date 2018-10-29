@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/sync/engine_impl/cycle/debug_info_getter.h"
 #include "components/sync/engine_impl/model_type_registry.h"

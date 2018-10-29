@@ -77,8 +77,7 @@ scoped_refptr<const Extension> AddExtensionWithIdAndPermissions(
   manifest.SetInteger("manifest_version", 2);
 
   std::unique_ptr<base::ListValue> permissions(new base::ListValue());
-  for (std::set<std::string>::const_iterator it = permissions_set.begin();
-      it != permissions_set.end(); ++it) {
+  for (auto it = permissions_set.cbegin(); it != permissions_set.cend(); ++it) {
     permissions->AppendString(*it);
   }
   manifest.Set("permissions", std::move(permissions));
@@ -115,8 +114,7 @@ scoped_refptr<const Extension> AddExtensionWithIdAndPermissions(
   // the test discards the referenced to the returned extension.
   ExtensionRegistry::Get(context)->AddEnabled(extension);
 
-  for (std::set<std::string>::const_iterator it = permissions_set.begin();
-      it != permissions_set.end(); ++it) {
+  for (auto it = permissions_set.cbegin(); it != permissions_set.cend(); ++it) {
     DCHECK(extension->permissions_data()->HasAPIPermission(*it));
   }
 

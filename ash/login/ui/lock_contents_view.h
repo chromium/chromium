@@ -84,7 +84,7 @@ class ASH_EXPORT LockContentsView
     LoginBubble* auth_error_bubble() const;
     LoginBubble* detachable_base_error_bubble() const;
     LoginBubble* warning_banner_bubble() const;
-    views::View* dev_channel_info() const;
+    views::View* system_info() const;
     LoginExpandedPublicAccountView* expanded_view() const;
     views::View* main_view() const;
 
@@ -101,9 +101,10 @@ class ASH_EXPORT LockContentsView
   };
 
   enum class AcceleratorAction {
-    kShowFeedback,
     kFocusNextUser,
     kFocusPreviousUser,
+    kShowSystemInfo,
+    kShowFeedback,
     kShowResetScreen,
   };
 
@@ -141,6 +142,10 @@ class ASH_EXPORT LockContentsView
   void OnUsersChanged(
       const std::vector<mojom::LoginUserInfoPtr>& users) override;
   void OnPinEnabledForUserChanged(const AccountId& user, bool enabled) override;
+  void OnFingerprintStateChanged(const AccountId& account_id,
+                                 mojom::FingerprintState state) override;
+  void OnFingerprintAuthResult(const AccountId& account_id,
+                               bool success) override;
   void OnAuthEnabledForUserChanged(
       const AccountId& user,
       bool enabled,
@@ -154,9 +159,10 @@ class ASH_EXPORT LockContentsView
       const mojom::EasyUnlockIconOptionsPtr& icon) override;
   void OnShowWarningBanner(const base::string16& message) override;
   void OnHideWarningBanner() override;
-  void OnDevChannelInfoChanged(const std::string& os_version_label_text,
-                               const std::string& enterprise_info_text,
-                               const std::string& bluetooth_name) override;
+  void OnSystemInfoChanged(bool show,
+                           const std::string& os_version_label_text,
+                           const std::string& enterprise_info_text,
+                           const std::string& bluetooth_name) override;
   void OnPublicSessionDisplayNameChanged(
       const AccountId& account_id,
       const std::string& display_name) override;
@@ -171,9 +177,6 @@ class ASH_EXPORT LockContentsView
       const std::vector<mojom::InputMethodItemPtr>& keyboard_layouts) override;
   void OnDetachableBasePairingStatusChanged(
       DetachableBasePairingStatus pairing_status) override;
-  void OnFingerprintUnlockStateChanged(
-      const AccountId& account_id,
-      mojom::FingerprintUnlockState state) override;
 
   // SystemTrayFocusObserver:
   void OnFocusLeavingSystemTray(bool reverse) override;
@@ -210,7 +213,7 @@ class ASH_EXPORT LockContentsView
     bool force_online_sign_in = false;
     bool disable_auth = false;
     mojom::EasyUnlockIconOptionsPtr easy_unlock_state;
-    mojom::FingerprintUnlockState fingerprint_state;
+    mojom::FingerprintState fingerprint_state;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(UserState);
@@ -347,7 +350,7 @@ class ASH_EXPORT LockContentsView
   LoginBigUserView* opt_secondary_big_view_ = nullptr;
   ScrollableUsersListView* users_list_ = nullptr;
 
-  // View that contains the note action button and the dev channel info labels,
+  // View that contains the note action button and the system info labels,
   // placed on the top right corner of the screen without affecting layout of
   // other views.
   views::View* top_header_ = nullptr;
@@ -355,9 +358,8 @@ class ASH_EXPORT LockContentsView
   // View for launching a note taking action handler from the lock screen.
   NoteActionLaunchButton* note_action_ = nullptr;
 
-  // View for showing the version, enterprise and bluetooth info in dev and
-  // canary channels.
-  views::View* dev_channel_info_ = nullptr;
+  // View for showing the version, enterprise and bluetooth info.
+  views::View* system_info_ = nullptr;
 
   // Contains authentication user and the additional user views.
   NonAccessibleView* main_view_ = nullptr;

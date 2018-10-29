@@ -217,4 +217,36 @@ TEST_F(PageCoordinationUnitImplTest, IsLoading) {
   EXPECT_EQ(0u, loading);
 }
 
+TEST_F(PageCoordinationUnitImplTest, OnAllFramesInPageFrozen) {
+  const int64_t kRunning =
+      static_cast<int64_t>(mojom::LifecycleState::kRunning);
+  const int64_t kFrozen = static_cast<int64_t>(mojom::LifecycleState::kFrozen);
+
+  MockSinglePageWithMultipleProcessesCoordinationUnitGraph cu_graph(
+      coordination_unit_graph());
+
+  EXPECT_EQ(kRunning, cu_graph.page->GetPropertyOrDefault(
+                          mojom::PropertyType::kLifecycleState, kRunning));
+
+  // 1/2 frames in the page is frozen. Expect the page to still be running.
+  cu_graph.frame->SetLifecycleState(mojom::LifecycleState::kFrozen);
+  EXPECT_EQ(kRunning, cu_graph.page->GetPropertyOrDefault(
+                          mojom::PropertyType::kLifecycleState, kRunning));
+
+  // 2/2 frames in the process are frozen. We expect the page to be frozen.
+  cu_graph.child_frame->SetLifecycleState(mojom::LifecycleState::kFrozen);
+  EXPECT_EQ(kFrozen, cu_graph.page->GetPropertyOrDefault(
+                         mojom::PropertyType::kLifecycleState, kRunning));
+
+  // Unfreeze a frame and expect the page to be running again.
+  cu_graph.frame->SetLifecycleState(mojom::LifecycleState::kRunning);
+  EXPECT_EQ(kRunning, cu_graph.page->GetPropertyOrDefault(
+                          mojom::PropertyType::kLifecycleState, kRunning));
+
+  // Refreeze that frame and expect the page to be frozen again.
+  cu_graph.frame->SetLifecycleState(mojom::LifecycleState::kFrozen);
+  EXPECT_EQ(kFrozen, cu_graph.page->GetPropertyOrDefault(
+                         mojom::PropertyType::kLifecycleState, kRunning));
+}
+
 }  // namespace resource_coordinator

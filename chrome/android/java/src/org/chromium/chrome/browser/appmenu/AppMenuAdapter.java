@@ -11,6 +11,7 @@ import android.animation.ObjectAnimator;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
 import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatImageButton;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,9 +22,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.widget.TintedImageButton;
 import org.chromium.chrome.browser.widget.ViewHighlighter;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -196,13 +197,8 @@ class AppMenuAdapter extends BaseAdapter {
                     holder = (CustomMenuItemViewHolder) convertView.getTag();
                 }
                 setupStandardMenuItemViewHolder(holder, convertView, item);
-                String summary = UpdateMenuItemHelper.getInstance().getMenuItemSummaryText(
-                        mInflater.getContext());
-                if (TextUtils.isEmpty(summary)) {
-                    holder.summary.setVisibility(View.GONE);
-                } else {
-                    holder.summary.setText(summary);
-                }
+                UpdateMenuItemHelper.getInstance().decorateMenuItemViews(
+                        mInflater.getContext(), holder.text, holder.image, holder.summary);
                 break;
             }
             case MenuItemType.THREE_BUTTON:
@@ -227,7 +223,7 @@ class AppMenuAdapter extends BaseAdapter {
                     holder = new TitleButtonMenuItemViewHolder();
                     holder.title = (TextView) convertView.findViewById(R.id.title);
                     holder.checkbox = (AppMenuItemIcon) convertView.findViewById(R.id.checkbox);
-                    holder.button = (TintedImageButton) convertView.findViewById(R.id.button);
+                    holder.button = (AppCompatImageButton) convertView.findViewById(R.id.button);
                     holder.button.setTag(
                             R.id.menu_item_original_background, holder.button.getBackground());
 
@@ -288,13 +284,13 @@ class AppMenuAdapter extends BaseAdapter {
 
         // The checkbox must be tinted to make Android consistently style it across OS versions.
         // http://crbug.com/571445
-        button.setTint(
+        ApiCompatibilityUtils.setImageTintList(button,
                 AppCompatResources.getColorStateList(button.getContext(), R.color.checkbox_tint));
 
         setupMenuButton(button, item);
     }
 
-    private void setupImageButton(TintedImageButton button, final MenuItem item) {
+    private void setupImageButton(AppCompatImageButton button, final MenuItem item) {
         // Store and recover the level of image as button.setimageDrawable
         // resets drawable to default level.
         int currentLevel = item.getIcon().getLevel();
@@ -302,8 +298,9 @@ class AppMenuAdapter extends BaseAdapter {
         item.getIcon().setLevel(currentLevel);
 
         if (item.isChecked()) {
-            button.setTint(AppCompatResources.getColorStateList(
-                    button.getContext(), R.color.blue_mode_tint));
+            ApiCompatibilityUtils.setImageTintList(button,
+                    AppCompatResources.getColorStateList(
+                            button.getContext(), R.color.blue_mode_tint));
         }
 
         setupMenuButton(button, item);
@@ -438,8 +435,8 @@ class AppMenuAdapter extends BaseAdapter {
 
             // Save references to all the buttons.
             for (int i = 0; i < numItems; i++) {
-                TintedImageButton view =
-                        (TintedImageButton) convertView.findViewById(BUTTON_IDS[i]);
+                AppCompatImageButton view =
+                        (AppCompatImageButton) convertView.findViewById(BUTTON_IDS[i]);
                 holder.buttons[i] = view;
                 holder.buttons[i].setTag(
                         R.id.menu_item_original_background, holder.buttons[i].getBackground());
@@ -475,16 +472,16 @@ class AppMenuAdapter extends BaseAdapter {
     }
 
     private static class RowItemViewHolder {
-        public TintedImageButton[] buttons;
+        public AppCompatImageButton[] buttons;
 
         RowItemViewHolder(int numButtons) {
-            buttons = new TintedImageButton[numButtons];
+            buttons = new AppCompatImageButton[numButtons];
         }
     }
 
     static class TitleButtonMenuItemViewHolder {
         public TextView title;
         public AppMenuItemIcon checkbox;
-        public TintedImageButton button;
+        public AppCompatImageButton button;
     }
 }

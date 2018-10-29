@@ -18,8 +18,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -45,7 +45,7 @@ LeveldbValueStore::LeveldbValueStore(const std::string& uma_client_name,
 }
 
 LeveldbValueStore::~LeveldbValueStore() {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
@@ -75,8 +75,6 @@ ValueStore::ReadResult LeveldbValueStore::Get(const std::string& key) {
 
 ValueStore::ReadResult LeveldbValueStore::Get(
     const std::vector<std::string>& keys) {
-  base::AssertBlockingAllowed();
-
   Status status = EnsureDbIsOpen();
   if (!status.ok())
     return ReadResult(std::move(status));
@@ -96,8 +94,6 @@ ValueStore::ReadResult LeveldbValueStore::Get(
 }
 
 ValueStore::ReadResult LeveldbValueStore::Get() {
-  base::AssertBlockingAllowed();
-
   Status status = EnsureDbIsOpen();
   if (!status.ok())
     return ReadResult(std::move(status));
@@ -130,8 +126,6 @@ ValueStore::ReadResult LeveldbValueStore::Get() {
 ValueStore::WriteResult LeveldbValueStore::Set(WriteOptions options,
                                                const std::string& key,
                                                const base::Value& value) {
-  base::AssertBlockingAllowed();
-
   Status status = EnsureDbIsOpen();
   if (!status.ok())
     return WriteResult(std::move(status));
@@ -150,8 +144,6 @@ ValueStore::WriteResult LeveldbValueStore::Set(WriteOptions options,
 ValueStore::WriteResult LeveldbValueStore::Set(
     WriteOptions options,
     const base::DictionaryValue& settings) {
-  base::AssertBlockingAllowed();
-
   Status status = EnsureDbIsOpen();
   if (!status.ok())
     return WriteResult(std::move(status));
@@ -173,14 +165,11 @@ ValueStore::WriteResult LeveldbValueStore::Set(
 }
 
 ValueStore::WriteResult LeveldbValueStore::Remove(const std::string& key) {
-  base::AssertBlockingAllowed();
   return Remove(std::vector<std::string>(1, key));
 }
 
 ValueStore::WriteResult LeveldbValueStore::Remove(
     const std::vector<std::string>& keys) {
-  base::AssertBlockingAllowed();
-
   Status status = EnsureDbIsOpen();
   if (!status.ok())
     return WriteResult(std::move(status));
@@ -209,8 +198,6 @@ ValueStore::WriteResult LeveldbValueStore::Remove(
 }
 
 ValueStore::WriteResult LeveldbValueStore::Clear() {
-  base::AssertBlockingAllowed();
-
   std::unique_ptr<ValueStoreChangeList> changes(new ValueStoreChangeList());
 
   ReadResult read_result = Get();
@@ -240,8 +227,6 @@ bool LeveldbValueStore::WriteToDbForTest(leveldb::WriteBatch* batch) {
 bool LeveldbValueStore::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  base::AssertBlockingAllowed();
-
   // Return true so that the provider is not disabled.
   if (!db())
     return true;

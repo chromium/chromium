@@ -69,13 +69,13 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
   if (!cache_item)
     return nullptr;
 
-  size_t size = properties.size();
+  wtf_size_t size = properties.size();
   if (size != cache_item->matched_properties.size())
     return nullptr;
   if (cache_item->computed_style->InsideLink() !=
       style_resolver_state.Style()->InsideLink())
     return nullptr;
-  for (size_t i = 0; i < size; ++i) {
+  for (wtf_size_t i = 0; i < size; ++i) {
     if (properties[i] != cache_item->matched_properties[i])
       return nullptr;
   }
@@ -120,10 +120,14 @@ void MatchedPropertiesCache::ClearViewportDependent() {
 }
 
 bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
-  // unique() styles are not cacheable.
-  if (style.Unique())
+  // Content property with attr() values depend on the attribute value of the
+  // originating element, thus we cannot cache based on the matched properties
+  // because the value of content is retrieved from the attribute at apply time.
+  if (style.HasAttrContent())
     return false;
   if (style.Zoom() != ComputedStyleInitialValues::InitialZoom())
+    return false;
+  if (style.TextAutosizingMultiplier() != 1)
     return false;
   if (style.GetWritingMode() !=
           ComputedStyleInitialValues::InitialWritingMode() ||
@@ -141,8 +145,6 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   const ComputedStyle& parent_style = *state.ParentStyle();
 
   if (!IsStyleCacheable(style))
-    return false;
-  if (style.StyleType() != kPseudoIdNone && parent_style.Unique())
     return false;
   // The cache assumes static knowledge about which properties are inherited.
   // Without a flat tree parent, StyleBuilder::ApplyProperty will not

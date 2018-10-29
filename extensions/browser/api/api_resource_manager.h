@@ -14,7 +14,9 @@
 #include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "base/task/post_task.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -49,7 +51,7 @@ struct NamedThreadTraits {
   }
 
   static scoped_refptr<base::SequencedTaskRunner> GetSequencedTaskRunner() {
-    return content::BrowserThread::GetTaskRunnerForThread(T::kThreadId);
+    return base::CreateSingleThreadTaskRunnerWithTraits({T::kThreadId});
   }
 };
 

@@ -36,6 +36,7 @@ running:
 |Linux MSan \[[*](#MSan)\] | `tools/mb/mb.py gen -m chromium.fyi -b 'Libfuzzer Upload Linux MSan' out/Directory` |
 |Linux UBSan \[[*](#UBSan)\]| `tools/mb/mb.py gen -m chromium.fyi -b 'Libfuzzer Upload Linux UBSan' out/Directory` |
 |Mac ASan | `tools/mb/mb.py gen -m chromium.fyi -b 'Libfuzzer Upload Mac ASan' out/Directory` |
+|Windows ASan | `tools/mb/mb.py gen -m chromium.fyi -b 'Libfuzzer Upload Windows ASan' out/Directory` |
 
 
 ### Linux
@@ -52,7 +53,7 @@ Configuration example:
 
 ```bash
 # With address sanitizer
-gn gen out/libfuzzer '--args=use_libfuzzer=true is_asan=true enable_nacl=false' --check
+gn gen out/libfuzzer '--args=use_libfuzzer=true is_asan=true' --check
 ```
 
 ### Mac
@@ -62,8 +63,25 @@ Mac is supported by libFuzzer with `is_asan` configuration.
 Configuration example:
 
 ```bash
-gn gen out/libfuzzer '--args=use_libfuzzer=true is_asan=true enable_nacl=false mac_deployment_target="10.7"' --check
+gn gen out/libfuzzer '--args=use_libfuzzer=true is_asan=true mac_deployment_target="10.7"' --check
 ```
+
+### Windows
+
+Windows is supported by libFuzzer with `is_asan` configuration.
+
+Configuration example:
+
+```bash
+gn gen out/libfuzzer '--args=use_libfuzzer=true is_asan=true is_debug=false is_component_build=false' --check
+```
+
+On Windows you must use `is_component_build=true` as libFuzzer does not support
+component builds on Windows. If you are using `is_asan=true` then you must use
+`is_debug=false` as ASan does not support debug builds on Windows.
+You may also want to consider using `symbol_level=1` which will reduce build
+size by reducing symbol level to the level necessary for libFuzzer (useful
+if building many fuzz targets).
 
 ## fuzzer_test GN Template
 

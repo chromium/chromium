@@ -12,6 +12,7 @@ mojom("mojom") {
     "ax_host.mojom",
     "ax_node_data.mojom",
     "ax_tree_data.mojom",
+    "ax_tree_id.mojom",
     "ax_tree_update.mojom",
   ]
 

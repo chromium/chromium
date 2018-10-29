@@ -33,8 +33,6 @@
 #include "components/cryptauth/secure_message_delegate_impl.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/profile_oauth2_token_service.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/version_info/version_info.h"
 #include "ui/gfx/geometry/rect.h"
@@ -167,7 +165,7 @@ cryptauth::DeviceClassifier ChromeCryptAuthService::GetDeviceClassifier() {
 }
 
 std::string ChromeCryptAuthService::GetAccountId() {
-  return identity_manager_->GetPrimaryAccountInfo().account_id;
+  return identity_manager_->GetPrimaryAccountId();
 }
 
 std::unique_ptr<cryptauth::CryptAuthClientFactory>

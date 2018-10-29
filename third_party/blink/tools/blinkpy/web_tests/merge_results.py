@@ -548,7 +548,6 @@ class JSONTestResultsMerger(JSONMerger):
             ':has_pretty_patch$',
             ':has_wdiff$',
             ':path_delimiter$',
-            ':pixel_tests_enabled$',
             ':random_order_seed$',
             ':version$',
         ]

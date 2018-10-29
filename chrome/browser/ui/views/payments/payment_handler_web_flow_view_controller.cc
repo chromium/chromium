@@ -21,6 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
@@ -241,7 +242,9 @@ void PaymentHandlerWebFlowViewController::VisibleSecurityStateChanged(
   DCHECK(source == web_contents());
   // IsSslCertificateValid checks security_state::SecurityInfo.security_level
   // which reflects security state.
-  if (!SslValidityChecker::IsSslCertificateValid(source)) {
+  // Allow localhost for test.
+  if (!SslValidityChecker::IsSslCertificateValid(source) &&
+      !net::IsLocalhost(source->GetLastCommittedURL())) {
     WarnIfPossible(
         "Opened payment handler window's visible security state changed for "
         "url " +
@@ -289,11 +292,14 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
        !navigation_handle->GetURL().IsAboutBlank()) ||
       !SslValidityChecker::IsSslCertificateValid(
           navigation_handle->GetWebContents())) {
-    WarnIfPossible(
-        "Opened payment handler window has an insecure navigation to url " +
-        navigation_handle->GetURL().spec());
-    AbortPayment();
-    return;
+    // Allow localhost for test.
+    if (!net::IsLocalhost(navigation_handle->GetURL())) {
+      WarnIfPossible(
+          "Opened payment handler window has an insecure navigation to url " +
+          navigation_handle->GetURL().spec());
+      AbortPayment();
+      return;
+    }
   }
 
   if (first_navigation_complete_callback_) {

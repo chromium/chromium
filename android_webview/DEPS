@@ -25,6 +25,7 @@ include_rules = [
   "+jni",
   # Only this one header in media which doesn't depend on anything else.
   "+media/media_buildflags.h",
+  "+mojo/public/cpp/bindings",
   "+net",
   "+services/network/public/cpp",
   "+services/preferences/tracked",

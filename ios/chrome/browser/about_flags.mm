@@ -15,8 +15,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/sys_info.h"
@@ -30,12 +30,14 @@
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/flags_ui/flags_storage.h"
 #include "components/flags_ui/flags_ui_switches.h"
+#include "components/invalidation/impl/invalidation_switches.h"
 #include "components/ntp_tiles/switches.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/payments/core/features.h"
 #include "components/search_provider_logos/switches.h"
 #include "components/security_state/core/features.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_driver_switches.h"
@@ -47,12 +49,11 @@
 #include "ios/chrome/browser/ios_chrome_flag_descriptions.h"
 #include "ios/chrome/browser/itunes_urls/itunes_urls_flag.h"
 #include "ios/chrome/browser/mailto/features.h"
+#include "ios/chrome/browser/search_engines/feature_flags.h"
 #include "ios/chrome/browser/signin/feature_flags.h"
 #include "ios/chrome/browser/ssl/captive_portal_features.h"
 #include "ios/chrome/browser/ui/external_search/features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
-#import "ios/chrome/browser/ui/history/features.h"
-#include "ios/chrome/browser/ui/main/main_feature_flags.h"
 #import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -93,16 +94,16 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureVariation kMarkHttpAsFeatureVariations[] = {
     {"(mark as actively dangerous)", kMarkHttpAsDangerous,
-     arraysize(kMarkHttpAsDangerous), nullptr},
+     base::size(kMarkHttpAsDangerous), nullptr},
     {"(mark with a Not Secure warning)", kMarkHttpAsWarning,
-     arraysize(kMarkHttpAsWarning), nullptr},
+     base::size(kMarkHttpAsWarning), nullptr},
     {"(mark with a Not Secure warning and dangerous on form edits)",
      kMarkHttpAsWarningAndDangerousOnFormEdits,
-     arraysize(kMarkHttpAsWarningAndDangerousOnFormEdits), nullptr},
+     base::size(kMarkHttpAsWarningAndDangerousOnFormEdits), nullptr},
     {"(mark with a Not Secure warning and dangerous on passwords and credit "
      "card fields)",
      kMarkHttpAsWarningAndDangerousOnPasswordsAndCreditCards,
-     arraysize(kMarkHttpAsWarningAndDangerousOnPasswordsAndCreditCards),
+     base::size(kMarkHttpAsWarningAndDangerousOnPasswordsAndCreditCards),
      nullptr}};
 
 const FeatureEntry::Choice kUseDdljsonApiChoices[] = {
@@ -130,6 +131,24 @@ const FeatureEntry::Choice kAutofillIOSDelayBetweenFieldsChoices[] = {
     {"500", autofill::switches::kAutofillIOSDelayBetweenFields, "500"},
     {"1000", autofill::switches::kAutofillIOSDelayBetweenFields, "1000"},
 };
+
+const FeatureEntry::FeatureParam kIconForSearchButtonGrey[] = {
+    {kIconForSearchButtonFeatureParameterName,
+     kIconForSearchButtonParameterGrey}};
+const FeatureEntry::FeatureParam kIconForSearchButtonColorful[] = {
+    {kIconForSearchButtonFeatureParameterName,
+     kIconForSearchButtonParameterColorful}};
+const FeatureEntry::FeatureParam kIconForSearchButtonMagnifying[] = {
+    {kIconForSearchButtonFeatureParameterName,
+     kIconForSearchButtonParameterMagnifying}};
+
+const FeatureEntry::FeatureVariation kIconForSearchButtonVariations[] = {
+    {"Grey search engine logo", kIconForSearchButtonGrey,
+     base::size(kIconForSearchButtonGrey), nullptr},
+    {"Colorful search engine logo", kIconForSearchButtonColorful,
+     base::size(kIconForSearchButtonColorful), nullptr},
+    {"Magnifying glass", kIconForSearchButtonMagnifying,
+     base::size(kIconForSearchButtonMagnifying), nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -161,12 +180,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          security_state::features::kMarkHttpAsFeature,
          kMarkHttpAsFeatureVariations,
          "MarkHttpAs")},
-    {"web-payments", flag_descriptions::kWebPaymentsName,
-     flag_descriptions::kWebPaymentsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(payments::features::kWebPayments)},
-    {"web-payments-native-apps", flag_descriptions::kWebPaymentsNativeAppsName,
-     flag_descriptions::kWebPaymentsNativeAppsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(payments::features::kWebPaymentsNativeApps)},
     {"ios-captive-portal-metrics", flag_descriptions::kCaptivePortalMetricsName,
      flag_descriptions::kCaptivePortalMetricsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kCaptivePortalMetrics)},
@@ -185,28 +198,20 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxUIElideSuggestionUrlAfterHostDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kUIExperimentElideSuggestionUrlAfterHost)},
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
     {"drag_and_drop", flag_descriptions::kDragAndDropName,
      flag_descriptions::kDragAndDropDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDragAndDrop)},
-#endif
-    {"tab_switcher_presents_bvc",
-     flag_descriptions::kTabSwitcherPresentsBVCName,
-     flag_descriptions::kTabSwitcherPresentsBVCDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabSwitcherPresentsBVC)},
     {"external-search", flag_descriptions::kExternalSearchName,
      flag_descriptions::kExternalSearchDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kExternalSearch)},
-    {"history-batch-updates-filter",
-     flag_descriptions::kHistoryBatchUpdatesFilterName,
-     flag_descriptions::kHistoryBatchUpdatesFilterDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kHistoryBatchUpdatesFilter)},
+    {"ignores-viewport-scale-limits",
+     flag_descriptions::kIgnoresViewportScaleLimitsName,
+     flag_descriptions::kIgnoresViewportScaleLimitsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kIgnoresViewportScaleLimits)},
     {"slim-navigation-manager", flag_descriptions::kSlimNavigationManagerName,
      flag_descriptions::kSlimNavigationManagerDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kSlimNavigationManager)},
-    {"web-error-pages", flag_descriptions::kWebErrorPagesName,
-     flag_descriptions::kWebErrorPagesDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::features::kWebErrorPages)},
     {"memex-tab-switcher", flag_descriptions::kMemexTabSwitcherName,
      flag_descriptions::kMemexTabSwitcherDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kMemexTabSwitcher)},
@@ -231,14 +236,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpstreamUseGooglePayBrandingOnMobile)},
-    {"enable-autofill-credit-card-upload-update-prompt-explanation",
+    {"enable-autofill-save-credit-card-uses-strike-system",
+     flag_descriptions::kEnableAutofillSaveCreditCardUsesStrikeSystemName,
      flag_descriptions::
-         kEnableAutofillCreditCardUploadUpdatePromptExplanationName,
-     flag_descriptions::
-         kEnableAutofillCreditCardUploadUpdatePromptExplanationDescription,
+         kEnableAutofillSaveCreditCardUsesStrikeSystemDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUpstreamUpdatePromptExplanation)},
+         autofill::features::kAutofillSaveCreditCardUsesStrikeSystem)},
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, flags_ui::kOsIos,
      SINGLE_VALUE_TYPE_AND_VALUE(
@@ -261,11 +265,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillIOSDelayBetweenFieldsName,
      flag_descriptions::kAutofillIOSDelayBetweenFieldsDescription,
      flags_ui::kOsIos, MULTI_VALUE_TYPE(kAutofillIOSDelayBetweenFieldsChoices)},
-    {"autofill-ios-iframe-support",
-     flag_descriptions::kAutofillEnableIFrameSupportOniOSName,
-     flag_descriptions::kAutofillEnableIFrameSupportOniOSDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableIFrameSupportOniOS)},
     {"mailto-handling-google-ui",
      flag_descriptions::kMailtoHandlingWithGoogleUIName,
      flag_descriptions::kMailtoHandlingWithGoogleUIDescription,
@@ -384,15 +383,44 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"toolbar-container", flag_descriptions::kToolbarContainerName,
      flag_descriptions::kToolbarContainerDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(toolbar_container::kToolbarContainerEnabled)},
-    {"omnibox-popup-shortcuts", flag_descriptions::kOmniboxPopupShortcutsName,
-     flag_descriptions::kOmniboxPopupShortcutsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kOmniboxPopupShortcuts)},
+    {"omnibox-popup-shortcuts",
+     flag_descriptions::kOmniboxPopupShortcutIconsInZeroStateName,
+     flag_descriptions::kOmniboxPopupShortcutIconsInZeroStateDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxPopupShortcutIconsInZeroState)},
     {"sso-with-wkwebview", flag_descriptions::kSSOWithWKWebViewName,
      flag_descriptions::kSSOWithWKWebViewDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSSOWithWKWebView)},
     {"wk-web-view-snapshots", flag_descriptions::kWKWebViewSnapshotsName,
      flag_descriptions::kWKWebViewSnapshotsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kWKWebViewSnapshots)},
+    {"custom-search-engines", flag_descriptions::kCustomSearchEnginesName,
+     flag_descriptions::kCustomSearchEnginesDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kCustomSearchEngines)},
+    {"use-multilogin-endpoint", flag_descriptions::kUseMultiloginEndpointName,
+     flag_descriptions::kUseMultiloginEndpointDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kUseMultiloginEndpoint)},
+    {"closing-last-incognito-tab",
+     flag_descriptions::kClosingLastIncognitoTabName,
+     flag_descriptions::kClosingLastIncognitoTabDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kClosingLastIncognitoTab)},
+    {"omnibox-tab-switch-suggestions",
+     flag_descriptions::kOmniboxTabSwitchSuggestionsName,
+     flag_descriptions::kOmniboxTabSwitchSuggestionsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxTabSwitchSuggestions)},
+    {"fcm-invalidations", flag_descriptions::kFCMInvalidationsName,
+     flag_descriptions::kFCMInvalidationsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(invalidation::switches::kFCMInvalidations)},
+    {"browser-container-contains-ntp",
+     flag_descriptions::kBrowserContainerContainsNTPName,
+     flag_descriptions::kBrowserContainerContainsNTPDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kBrowserContainerContainsNTP)},
+    {"search-icon-toggle", flag_descriptions::kSearchIconToggleName,
+     flag_descriptions::kSearchIconToggleDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIconForSearchButtonFeature,
+                                    kIconForSearchButtonVariations,
+                                    "ToggleSearchButtonIcon")},
 };
 
 // Add all switches from experimental flags to |command_line|.
@@ -456,7 +484,7 @@ bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
 class FlagsStateSingleton {
  public:
   FlagsStateSingleton()
-      : flags_state_(kFeatureEntries, arraysize(kFeatureEntries)) {}
+      : flags_state_(kFeatureEntries, base::size(kFeatureEntries)) {}
   ~FlagsStateSingleton() {}
 
   static FlagsStateSingleton* GetInstance() {
@@ -512,7 +540,7 @@ void ResetAllFlags(flags_ui::FlagsStorage* flags_storage) {
 namespace testing {
 
 const flags_ui::FeatureEntry* GetFeatureEntries(size_t* count) {
-  *count = arraysize(kFeatureEntries);
+  *count = base::size(kFeatureEntries);
   return kFeatureEntries;
 }
 

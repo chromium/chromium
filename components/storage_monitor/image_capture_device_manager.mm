@@ -48,7 +48,7 @@ storage_monitor::ImageCaptureDeviceManager* g_image_capture_device_manager =
 
 @implementation ImageCaptureDeviceManagerImpl
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     cameras_.reset([[NSMutableArray alloc] init]);
     notifications_ = NULL;

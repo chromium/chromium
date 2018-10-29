@@ -21,28 +21,20 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_network_delegate.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_request_options.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_util.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_event_storage_delegate.h"
 #include "components/data_reduction_proxy/core/common/lofi_decider.h"
 #include "components/data_reduction_proxy/core/common/lofi_ui_service.h"
 #include "components/data_reduction_proxy/core/common/resource_type_provider.h"
 #include "components/data_use_measurement/core/data_use_user_data.h"
-
-namespace base {
-class Value;
-}
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace net {
-class NetLog;
 class URLRequestContextGetter;
 class URLRequestInterceptor;
 }
 
 namespace network {
 class NetworkConnectionTracker;
-}
-
-namespace previews {
-class PreviewsDecider;
+class SharedURLLoaderFactoryInfo;
 }
 
 namespace data_reduction_proxy {
@@ -51,20 +43,19 @@ class DataReductionProxyBypassStats;
 class DataReductionProxyConfig;
 class DataReductionProxyConfigServiceClient;
 class DataReductionProxyConfigurator;
-class DataReductionProxyEventCreator;
+class DataReductionProxyServer;
 class DataReductionProxyService;
 class NetworkPropertiesManager;
 
 // Contains and initializes all Data Reduction Proxy objects that operate on
 // the IO thread.
-class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
+class DataReductionProxyIOData {
  public:
   // Constructs a DataReductionProxyIOData object. |enabled| sets the initial
   // state of the Data Reduction Proxy.
   DataReductionProxyIOData(
       Client client,
       PrefService* prefs,
-      net::NetLog* net_log,
       network::NetworkConnectionTracker* network_connection_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
@@ -107,12 +98,10 @@ class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
   // Applies a serialized Data Reduction Proxy configuration.
   void SetDataReductionProxyConfiguration(const std::string& serialized_config);
 
-  // Returns true when server previews should be activated. When server previews
-  // are active, URL requests are modified to request low fidelity versions of
-  // the resources.|previews_decider| is a non-null object that determines
-  // eligibility of showing the preview based on past opt outs.
-  bool ShouldAcceptServerPreview(const net::URLRequest& request,
-                                 previews::PreviewsDecider* previews_decider);
+  // When triggering previews, prevent long term black list rules. Overridden in
+  // testing.
+  virtual void SetIgnoreLongTermBlackListRules(
+      bool ignore_long_term_black_list_rules);
 
   // Bridge methods to safely call to the UI thread objects.
   void UpdateDataUseForHost(int64_t network_bytes,
@@ -127,16 +116,6 @@ class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
       bool is_user_traffic,
       data_use_measurement::DataUseUserData::DataUseContentType content_type,
       int32_t service_hash_code);
-
-  // Overrides of DataReductionProxyEventStorageDelegate. Bridges to the UI
-  // thread objects.
-  void AddEvent(std::unique_ptr<base::Value> event) override;
-  void AddEnabledEvent(std::unique_ptr<base::Value> event,
-                       bool enabled) override;
-  void AddEventAndSecureProxyCheckState(std::unique_ptr<base::Value> event,
-                                        SecureProxyCheckState state) override;
-  void AddAndSetLastBypassEvent(std::unique_ptr<base::Value> event,
-                                int64_t expiration_ticks) override;
 
   // Returns true if the Data Reduction Proxy is enabled and false otherwise.
   bool IsEnabled() const;
@@ -166,6 +145,11 @@ class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
   // Returns the current estimate of the effective connection type.
   net::EffectiveConnectionType GetEffectiveConnectionType() const;
 
+  // Binds to a config client that can be used to update Data Reduction Proxy
+  // settings when the network service is enabled.
+  void SetCustomProxyConfigClient(
+      network::mojom::CustomProxyConfigClientPtrInfo config_client_info);
+
   // Various accessor methods.
   DataReductionProxyConfigurator* configurator() const {
     return configurator_.get();
@@ -173,10 +157,6 @@ class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
 
   DataReductionProxyConfig* config() const {
     return config_.get();
-  }
-
-  DataReductionProxyEventCreator* event_creator() const {
-    return event_creator_.get();
   }
 
   DataReductionProxyRequestOptions* request_options() const {
@@ -189,10 +169,6 @@ class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
 
   net::ProxyDelegate* proxy_delegate() const {
     return proxy_delegate_.get();
-  }
-
-  net::NetLog* net_log() {
-    return net_log_;
   }
 
   const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner() const {
@@ -263,6 +239,18 @@ class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
   // storage.
   void StoreSerializedConfig(const std::string& serialized_config);
 
+  // Creates a config using |proxies_for_http| that can be sent to the
+  // NetworkContext.
+  network::mojom::CustomProxyConfigPtr CreateCustomProxyConfig(
+      const std::vector<DataReductionProxyServer>& proxies_for_http) const;
+
+  // Called when the list of proxies changes.
+  void OnProxyConfigUpdated();
+
+  // Should be called whenever there is a possible change to the custom proxy
+  // config.
+  void UpdateCustomProxyConfig();
+
   // The type of Data Reduction Proxy client.
   const Client client_;
 
@@ -277,9 +265,6 @@ class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
 
   // Handles getting the content type of a request.
   std::unique_ptr<ResourceTypeProvider> resource_type_provider_;
-
-  // Creates Data Reduction Proxy-related events for logging.
-  std::unique_ptr<DataReductionProxyEventCreator> event_creator_;
 
   // Setter of the Data Reduction Proxy-specific proxy configuration.
   std::unique_ptr<DataReductionProxyConfigurator> configurator_;
@@ -300,9 +285,6 @@ class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
   // Requests new Data Reduction Proxy configurations from a remote service.
   std::unique_ptr<DataReductionProxyConfigServiceClient> config_client_;
 
-  // A net log.
-  net::NetLog* net_log_;
-
   // Watches for network connection changes.
   network::NetworkConnectionTracker* network_connection_tracker_;
 
@@ -320,9 +302,8 @@ class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
   // The net::URLRequestContextGetter used for making URL requests.
   net::URLRequestContextGetter* url_request_context_getter_;
 
-  // A net::URLRequestContextGetter used for making secure proxy checks. It
-  // does not use alternate protocols.
-  scoped_refptr<net::URLRequestContextGetter> basic_url_request_context_getter_;
+  // The network::SharedURLLoaderFactoryInfo used for making URL requests.
+  std::unique_ptr<network::SharedURLLoaderFactoryInfo> url_loader_factory_info_;
 
   // The production channel of this build.
   const std::string channel_;
@@ -334,6 +315,8 @@ class DataReductionProxyIOData : public DataReductionProxyEventStorageDelegate {
 
   // Current estimate of the effective connection type.
   net::EffectiveConnectionType effective_connection_type_;
+
+  network::mojom::CustomProxyConfigClientPtr proxy_config_client_;
 
   base::WeakPtrFactory<DataReductionProxyIOData> weak_factory_;
 

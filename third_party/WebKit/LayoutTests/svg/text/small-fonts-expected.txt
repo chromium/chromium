@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGContainer {g} at (0,-0.28) size 6.03x0.34 [transform={m=((1.00,0.00)(0.00,1.00)) t=(2.25,2.75)}]
-      LayoutSVGText {text} at (0,-0.28) size 6.03x0.34 contains 1 chunk(s)
-        LayoutSVGInlineText {#text} at (0,-0.28) size 6.03x0.34
-          chunk 1 text run 1 at (0.00,0.00) startOffset 0 endOffset 45 width 6.05: "Passes if text is visible and not extra huge."

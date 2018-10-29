@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -48,6 +50,7 @@ namespace extensions {
 namespace {
 
 constexpr char kInDevModeKey[] = "inDevMode";
+constexpr char kShowActivityLogKey[] = "showActivityLog";
 constexpr char kLoadTimeClassesKey[] = "loadTimeClasses";
 
 struct LocalizedString {
@@ -255,6 +258,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(bool in_dev_mode) {
     {"toolbarUpdatingToast", IDS_MD_EXTENSIONS_TOOLBAR_UPDATING_TOAST},
     {"updateRequiredByPolicy",
      IDS_MD_EXTENSIONS_DISABLED_UPDATE_REQUIRED_BY_POLICY},
+    {"viewActivityLog", IDS_EXTENSIONS_ACTIVITY_LOG},
     {"viewBackgroundPage", IDS_EXTENSIONS_BACKGROUND_PAGE},
     {"viewIncognito", IDS_EXTENSIONS_VIEW_INCOGNITO},
     {"viewInactive", IDS_EXTENSIONS_VIEW_INACTIVE},
@@ -314,8 +318,10 @@ content::WebUIDataSource* CreateMdExtensionsSource(bool in_dev_mode) {
           IDS_MD_EXTENSIONS_HOST_PERMISSIONS_LEARN_MORE,
           base::ASCIIToUTF16(
               chrome_extension_constants::kRuntimeHostPermissionsHelpURL)));
-
   source->AddBoolean(kInDevModeKey, in_dev_mode);
+  source->AddBoolean(kShowActivityLogKey,
+                     base::CommandLine::ForCurrentProcess()->HasSwitch(
+                         ::switches::kEnableExtensionActivityLogging));
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
 
 #if BUILDFLAG(OPTIMIZE_WEBUI)

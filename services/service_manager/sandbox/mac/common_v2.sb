@@ -74,9 +74,16 @@
 (allow process-exec (path (param executable-path)))
 (allow file-read* (path (param executable-path)))
 
-(allow mach-lookup (global-name (string-append (param bundle-id)
-                                               ".rohitfork."
-                                               (param browser-pid))))
+; The browser exposes Mach services at "bundle-id.service-name.browser-pid".
+; This macro is a helper for doing the string concatenation.
+(define (browser-service-name service-name)
+  (global-name (string-append (param bundle-id)
+                              "." service-name "."
+                              (param browser-pid))))
+
+(allow mach-lookup
+  (browser-service-name "FieldTrialMemoryServer")
+  (browser-service-name "rohitfork"))
 
 ; Allow realpath() to work.
 (allow file-read-metadata (subpath "/"))

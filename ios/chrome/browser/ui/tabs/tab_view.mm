@@ -15,9 +15,9 @@
 #include "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
-#include "ios/chrome/browser/ui/rtl_geometry.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/highlight_button.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -48,7 +48,6 @@ const CGFloat kFaviconVerticalOffset = 2.0;
 const CGFloat kTabStripLineMargin = 2.5;
 const CGFloat kTabStripLineHeight = 0.5;
 const CGFloat kCloseButtonHorizontalShift = 19;
-const CGFloat kCloseButtonHorizontalShiftLegacy = 15;
 const CGFloat kCloseButtonVerticalShift = 4.0;
 const CGFloat kTitleLeftMargin = 8.0;
 const CGFloat kTitleRightMargin = 0.0;
@@ -87,9 +86,7 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
 
   MDCActivityIndicator* _activityIndicator;
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
   API_AVAILABLE(ios(11.0)) DropAndNavigateInteraction* _dropInteraction;
-#endif
 }
 @end
 
@@ -146,7 +143,6 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
                   action:@selector(tabWasTapped)
         forControlEvents:UIControlEventTouchUpInside];
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
     if (DragAndDropIsEnabled()) {
       if (@available(iOS 11, *)) {
         _dropInteraction =
@@ -154,7 +150,6 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
         [self addInteraction:_dropInteraction];
       }
     }
-#endif
   }
   return self;
 }
@@ -355,16 +350,12 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
     @"V:[title(==titleHeight)]",
   ];
 
-  CGFloat closeButtonHorizontalShift = IsUIRefreshPhase1Enabled()
-                                           ? kCloseButtonHorizontalShift
-                                           : kCloseButtonHorizontalShiftLegacy;
   CGFloat faviconLeftInset = kFaviconLeftInset;
   CGFloat faviconVerticalOffset = kFaviconVerticalOffset;
-  CGFloat closeButtonVerticalShift = kCloseButtonVerticalShift;
   NSDictionary* metrics = @{
     @"closeButtonSize" : @(kCloseButtonSize),
-    @"closeButtonHorizontalShift" : @(closeButtonHorizontalShift),
-    @"closeButtonVerticalShift" : @(closeButtonVerticalShift),
+    @"closeButtonHorizontalShift" : @(kCloseButtonHorizontalShift),
+    @"closeButtonVerticalShift" : @(kCloseButtonVerticalShift),
     @"titleLeftMargin" : @(kTitleLeftMargin),
     @"titleRightMargin" : @(kTitleRightMargin),
     @"titleHeight" : @(kFaviconSize),
@@ -387,10 +378,9 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
 
 - (void)updateBackgroundImage:(BOOL)selected {
   NSString* state = (selected ? @"foreground" : @"background");
-  NSString* refresh = (IsUIRefreshPhase1Enabled() ? @"" : @"_legacy");
   NSString* incognito = _incognitoStyle ? @"incognito_" : @"";
-  NSString* imageName = [NSString
-      stringWithFormat:@"tabstrip_%@%@_tab%@", incognito, state, refresh];
+  NSString* imageName =
+      [NSString stringWithFormat:@"tabstrip_%@%@_tab", incognito, state];
   CGFloat leftInset = kTabBackgroundLeftCapInset;
   UIImage* backgroundImage =
       StretchableImageFromUIImage([UIImage imageNamed:imageName], leftInset, 0);

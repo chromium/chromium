@@ -31,10 +31,10 @@ row head
 row head
 row head
 col head
+
 Check whether column and row headers are reported correctly
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS table.rowHeaderAtIndex(0).isEqual(table.cellForColumnAndRow(0, 1)) is true
 PASS table.rowHeaderAtIndex(1).isEqual(table.cellForColumnAndRow(0, 2)) is true

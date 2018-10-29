@@ -93,14 +93,14 @@ void SubframeNavigationFilteringThrottle::OnCalculatedLoadPolicy(
 
   if (policy == LoadPolicy::DISALLOW) {
     if (parent_frame_filter_->activation_state().enable_logging) {
-      std::ostringstream oss(kDisallowSubframeConsoleMessagePrefix);
-      oss << navigation_handle()->GetURL();
-      oss << kDisallowSubframeConsoleMessageSuffix;
+      std::string console_message = base::StringPrintf(
+          kDisallowSubframeConsoleMessageFormat,
+          navigation_handle()->GetURL().possibly_invalid_spec().c_str());
       navigation_handle()
           ->GetWebContents()
           ->GetMainFrame()
           ->AddMessageToConsole(content::CONSOLE_MESSAGE_LEVEL_ERROR,
-                                oss.str());
+                                console_message);
     }
 
     parent_frame_filter_->ReportDisallowedLoad();

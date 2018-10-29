@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1018939186200882850">meniu elementas</translation>
-<translation id="1020833440720551630">nutildyti garso įrašo takelį</translation>
 <translation id="10623998915015855">perjungimo mygtukas</translation>
 <translation id="1088086359088493902">Sekundės</translation>
 <translation id="1171774979989969504">Įveskite el. pašto adresą.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">titrai</translation>
 <translation id="1342835525016946179">artikelis</translation>
 <translation id="1359897965706325498">reklamjuostė</translation>
-<translation id="1548116112524424341">leisti vaizdo įrašą vaizdo vaizde režimu</translation>
 <translation id="1589122976691792535">regionas</translation>
 <translation id="1591562245178063882">Šis mėnuo</translation>
 <translation id="1637811476055996098">Pasirinkti failus</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">medžio tinklelis</translation>
 <translation id="1822429046913737220">iki pietų / po pietų</translation>
 <translation id="1832974991323546415">leisti naudojant nuotolinį įrenginį</translation>
-<translation id="1838818994221231429">perjungti visą ekraną į ekrano išpjovos zoną</translation>
 <translation id="190587075670221089">trynimas</translation>
 <translation id="1907737156431278478">pavyzdys</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">Dukart palieskite kairėn arba dešinėn, kad praleistumėte 10 sek.</translation>
 <translation id="5631759159893697722">santrauka</translation>
-<translation id="5641012560118721995">pristabdyti atkūrimą</translation>
 <translation id="5643186887447432888">mygtukas</translation>
 <translation id="5677946354068040947">daugiau parinkčių</translation>
 <translation id="576709008726043716">įžanga</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
 <translation id="5966707198760109579">Savaitė</translation>
 <translation id="5987525920412732405">sukimo mygtukas</translation>
+<translation id="6011459053400940133">garsumo šliaužiklis</translation>
 <translation id="6015796118275082299">Metai</translation>
 <translation id="6023896073578205740">sąrašo laukelis</translation>
-<translation id="6101327004457443354">įjungti garso įrašo takelio garsą</translation>
 <translation id="6150588977291308318">bibliografija</translation>
 <translation id="6164829606128959761">matuoklis</translation>
 <translation id="6166809985690652833">baigiamasis žodis</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Valandos</translation>
 <translation id="7681220483256441252">rodyklė</translation>
 <translation id="7720026100085573005">likęs laikas</translation>
-<translation id="7740016676195725605">nebepateikti subtitrų</translation>
 <translation id="7740050170769002709">HTML turinys</translation>
 <translation id="7750228210027921155">Vaizdas vaizde</translation>
 <translation id="7789962463072032349">pristabdyti</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">paieškos teksto laukas</translation>
 <translation id="8057695513531652401">pranešimas</translation>
 <translation id="8105797009065549151">pastabos nuoroda</translation>
-<translation id="8115662671911883373">pateikti subtitrus</translation>
 <translation id="8117451130807776954">Ši savaitė</translation>
-<translation id="819205353528511139">paleisti filmą viso ekrano režimu</translation>
 <translation id="8199524924445686405">mmmm</translation>
 <translation id="8284326494547611709">Subtitrai</translation>
 <translation id="835897206747267392">Neteisinga vertė.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">valdyti nuotolinį atkūrimą</translation>
 <translation id="862370744433916922">paantraštė</translation>
 <translation id="8750798805984357768">Pasirinkite vieną iš šių parinkčių.</translation>
-<translation id="8785498733064193001">pradėti atkūrimą</translation>
 <translation id="8808573423886751634">skyrius</translation>
 <translation id="8845239796550121995">Dabar perduodama į TV</translation>
 <translation id="8851136666856101339">main</translation>

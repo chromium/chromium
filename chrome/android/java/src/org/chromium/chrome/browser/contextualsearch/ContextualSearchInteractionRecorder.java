@@ -72,6 +72,9 @@ public interface ContextualSearchInteractionRecorder {
         int QUICK_ACTION_IMPRESSIONS_COUNT = 29;
         int QUICK_ACTIONS_TAKEN_COUNT = 30;
         int QUICK_ACTIONS_IGNORED_COUNT = 31;
+        // UKM CS v5 features (see go/ukm-cs-5, go/ukm-dev-data).
+        int OUTCOME_DOC_ID = 32;
+        int OUTCOME_SNIPPET_HASH = 33;
     }
 
     /**
@@ -134,4 +137,15 @@ public interface ContextualSearchInteractionRecorder {
      * additional {@link #logFeature} or {@link #logOutcome} calls.
      */
     void writeLogAndReset();
+
+    /**
+     * Records data about the user-viewed document and the associated document in the Search Index
+     * obtained from the server.  This data is for development purposes only, and may contain
+     * encrypted PII.
+     * TODO(donnd): remove before the next release.  See https://crbug.com/894568 for details.
+     *
+     * @param docId The canonical doc ID for this document when located in the Search Index, or 0.
+     * @param snippetHash The hash of a section of text near the word that the user tapped, or 0.
+     */
+    void recordSnippetData(long docId, long snippetHash);
 }

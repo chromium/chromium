@@ -1,10 +1,11 @@
-/// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
@@ -88,11 +89,11 @@ bool ManagementApiUnitTest::RunFunction(
 void ManagementApiUnitTest::SetUp() {
   ExtensionServiceTestBase::SetUp();
   InitializeEmptyExtensionService();
-  ManagementAPI::GetFactoryInstance()->SetTestingFactory(profile(),
-                                                         &BuildManagementApi);
+  ManagementAPI::GetFactoryInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(&BuildManagementApi));
 
-  EventRouterFactory::GetInstance()->SetTestingFactory(profile(),
-                                                       &BuildEventRouter);
+  EventRouterFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(&BuildEventRouter));
 
   browser_window_.reset(new TestBrowserWindow());
   Browser::CreateParams params(profile(), true);

@@ -7,10 +7,13 @@ Tragically we cannot have any actual Java Applets referenced here because when D
 Applets length is currently 0
 
 
+
 Applets length is currently 0
 
 Nothing here!
+
 Applets length is currently 0
+
 
 
 Applets length is currently 0

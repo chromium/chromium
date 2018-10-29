@@ -90,7 +90,7 @@ bool MediaQuerySet::Add(const String& query_string) {
 
   // If comparing with any of the media queries in the collection of media
   // queries returns true terminate these steps.
-  for (size_t i = 0; i < queries_.size(); ++i) {
+  for (wtf_size_t i = 0; i < queries_.size(); ++i) {
     MediaQuery& query = *queries_[i];
     if (query == *new_query)
       return false;
@@ -117,7 +117,7 @@ bool MediaQuerySet::Remove(const String& query_string_to_remove) {
   // Remove any media query from the collection of media queries for which
   // comparing with the media query returns true.
   bool found = false;
-  for (size_t i = 0; i < queries_.size(); ++i) {
+  for (wtf_size_t i = 0; i < queries_.size(); ++i) {
     MediaQuery& query = *queries_[i];
     if (query == *new_query) {
       queries_.EraseAt(i);
@@ -139,7 +139,7 @@ String MediaQuerySet::MediaText() const {
   StringBuilder text;
 
   bool first = true;
-  for (size_t i = 0; i < queries_.size(); ++i) {
+  for (wtf_size_t i = 0; i < queries_.size(); ++i) {
     if (!first)
       text.Append(", ");
     else

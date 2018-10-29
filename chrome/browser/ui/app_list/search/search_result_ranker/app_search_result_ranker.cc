@@ -25,6 +25,9 @@ std::unique_ptr<AppLaunchPredictor> CreatePredictor(
   if (predictor_name == MrfuAppLaunchPredictor::kPredictorName)
     return std::make_unique<MrfuAppLaunchPredictor>();
 
+  if (predictor_name == SerializedMrfuAppLaunchPredictor::kPredictorName)
+    return std::make_unique<SerializedMrfuAppLaunchPredictor>();
+
   if (predictor_name == HourAppLaunchPredictor::kPredictorName)
     return std::make_unique<HourAppLaunchPredictor>();
 
@@ -38,7 +41,7 @@ std::unique_ptr<AppLaunchPredictor> CreatePredictor(
 // Save |proto| to |predictor_filename|.
 void SaveToDiskOnWorkerThread(const base::FilePath& predictor_filename,
                               const AppLaunchPredictorProto& proto) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   std::string proto_str;
   if (!proto.SerializeToString(&proto_str))
@@ -52,7 +55,7 @@ void SaveToDiskOnWorkerThread(const base::FilePath& predictor_filename,
 std::unique_ptr<AppLaunchPredictor> LoadPredictorFromDiskOnWorkerThread(
     const base::FilePath& predictor_filename,
     const std::string predictor_name) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   // Loads proto string from local disk.
   std::string proto_str;
@@ -79,10 +82,11 @@ AppSearchResultRanker::AppSearchResultRanker(const base::FilePath& profile_path,
     : predictor_filename_(
           profile_path.AppendASCII(kAppLaunchPredictorFilename)),
       weak_factory_(this) {
-  if (!features::IsAppSearchResultRankerEnabled())
+  if (!app_list_features::IsAppSearchResultRankerEnabled())
     return;
 
-  predictor_ = CreatePredictor(features::AppSearchResultRankerPredictorName());
+  predictor_ =
+      CreatePredictor(app_list_features::AppSearchResultRankerPredictorName());
 
   // MrfuAppLaunchPredictor doesn't have materialization, so no loading from
   // local disk.

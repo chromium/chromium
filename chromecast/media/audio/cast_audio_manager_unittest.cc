@@ -62,7 +62,6 @@ int OnMoreData(base::TimeDelta delay,
 
 namespace chromecast {
 namespace media {
-namespace {
 
 class CastAudioManagerTest : public testing::Test {
  public:
@@ -111,13 +110,14 @@ class CastAudioManagerTest : public testing::Test {
     }
 
     mock_backend_factory_ = std::make_unique<MockCmaBackendFactory>();
-    audio_manager_ = std::make_unique<CastAudioManager>(
+    audio_manager_ = base::WrapUnique(new CastAudioManager(
         std::make_unique<::media::TestAudioThread>(), &fake_audio_log_factory_,
         base::BindRepeating(&CastAudioManagerTest::GetCmaBackendFactory,
                             base::Unretained(this)),
         scoped_task_environment_.GetMainThreadTaskRunner(),
         scoped_task_environment_.GetMainThreadTaskRunner(), connector_.get(),
-        use_mixer);
+        use_mixer, true /* force_use_cma_backend_for_output*/
+        ));
     // A few AudioManager implementations post initialization tasks to
     // audio thread. Flush the thread to ensure that |audio_manager_| is
     // initialized and ready to use before returning from this function.
@@ -226,6 +226,5 @@ TEST_F(CastAudioManagerTest, CanMakeMixerStream) {
   stream->Close();
 }
 
-}  // namespace
 }  // namespace media
 }  // namespace chromecast

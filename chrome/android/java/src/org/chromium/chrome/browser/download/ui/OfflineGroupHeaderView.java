@@ -8,17 +8,18 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatImageView;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.ui.DownloadHistoryAdapter.SubsectionHeader;
 import org.chromium.chrome.browser.download.ui.DownloadItemSelectionDelegate.SubsectionHeaderSelectionObserver;
 import org.chromium.chrome.browser.widget.DateDividedAdapter.TimedItem;
-import org.chromium.chrome.browser.widget.TintedImageView;
 import org.chromium.chrome.browser.widget.selection.SelectableItemView;
 import org.chromium.chrome.download.R;
 
@@ -39,7 +40,7 @@ public class OfflineGroupHeaderView
 
     private TextView mDescriptionTextView;
     private ImageView mExpandImage;
-    private TintedImageView mIconImageView;
+    private AppCompatImageView mIconImageView;
 
     public OfflineGroupHeaderView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -54,7 +55,7 @@ public class OfflineGroupHeaderView
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mIconImageView = (TintedImageView) findViewById(R.id.icon_view);
+        mIconImageView = (AppCompatImageView) findViewById(R.id.icon_view);
         mDescriptionTextView = (TextView) findViewById(R.id.description);
         mExpandImage = (ImageView) findViewById(R.id.expand_icon);
     }
@@ -116,7 +117,7 @@ public class OfflineGroupHeaderView
                     getResources().getInteger(R.integer.list_item_level_selected));
 
             mIconImageView.setImageDrawable(mCheckDrawable);
-            mIconImageView.setTint(mCheckedIconForegroundColorList);
+            ApiCompatibilityUtils.setImageTintList(mIconImageView, mCheckedIconForegroundColorList);
             mCheckDrawable.start();
         } else {
             mIconImageView.setBackgroundResource(mIconBackgroundResId);
@@ -124,7 +125,7 @@ public class OfflineGroupHeaderView
                     getResources().getInteger(R.integer.list_item_level_default));
 
             mIconImageView.setImageResource(R.drawable.ic_chrome);
-            mIconImageView.setTint(mIconForegroundColorList);
+            ApiCompatibilityUtils.setImageTintList(mIconImageView, mIconForegroundColorList);
         }
     }
 

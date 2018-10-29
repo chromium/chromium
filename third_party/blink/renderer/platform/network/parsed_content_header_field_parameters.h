@@ -19,7 +19,7 @@ class HeaderFieldTokenizer;
 // them. It is used internally by ParsedContent* classes.
 // FIXME: add support for comments.
 class PLATFORM_EXPORT ParsedContentHeaderFieldParameters final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   struct NameValue {

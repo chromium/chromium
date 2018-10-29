@@ -11,25 +11,33 @@
 namespace gfx {
 
 // Returns the smallest Rect that encloses the given RectF.
-GFX_EXPORT Rect ToEnclosingRect(const RectF& rect);
+GEOMETRY_EXPORT Rect ToEnclosingRect(const RectF& rect);
+
+// Similar to ToEnclosingRect(), but for each edge, if the distance between the
+// edge and the nearest integer grid is smaller than |error|, the edge is
+// snapped to the integer grid. Unlike ToNearestRect() which only accepts
+// integer rect with or without floating point error, this function also accepts
+// non-integer rect.
+GEOMETRY_EXPORT Rect ToEnclosingRectIgnoringError(const RectF& rect,
+                                                  float error);
 
 // Returns the largest Rect that is enclosed by the given RectF.
-GFX_EXPORT Rect ToEnclosedRect(const RectF& rect);
+GEOMETRY_EXPORT Rect ToEnclosedRect(const RectF& rect);
 
 // Returns the Rect after snapping the corners of the RectF to an integer grid.
 // This should only be used when the RectF you provide is expected to be an
 // integer rect with floating point error. If it is an arbitrary RectF, then
 // you should use a different method.
-GFX_EXPORT Rect ToNearestRect(const RectF& rect);
+GEOMETRY_EXPORT Rect ToNearestRect(const RectF& rect);
 
 // Returns true if the Rect produced after snapping the corners of the RectF
 // to an integer grid is withing |distance|.
-GFX_EXPORT bool IsNearestRectWithinDistance(
-    const gfx::RectF& rect, float distance);
+GEOMETRY_EXPORT bool IsNearestRectWithinDistance(const gfx::RectF& rect,
+                                                 float distance);
 
 // Returns a Rect obtained by flooring the values of the given RectF.
 // Please prefer the previous two functions in new code.
-GFX_EXPORT Rect ToFlooredRectDeprecated(const RectF& rect);
+GEOMETRY_EXPORT Rect ToFlooredRectDeprecated(const RectF& rect);
 
 }  // namespace gfx
 

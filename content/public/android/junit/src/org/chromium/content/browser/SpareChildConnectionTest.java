@@ -4,10 +4,6 @@
 
 package org.chromium.content.browser;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.os.Bundle;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -15,6 +11,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.os.Bundle;
 
 import org.junit.After;
 import org.junit.Before;

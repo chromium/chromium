@@ -71,6 +71,7 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final
   void ResumeAfterDownload() override;
   void AddMessageToConsole(const WebConsoleMessage&) override;
   void BindDevToolsAgent(
+      mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
       mojo::ScopedInterfaceEndpointHandle devtools_agent_request) override;
 
   void PostMessageToPageInspector(int session_id, const WTF::String&);

@@ -27,10 +27,6 @@ namespace content {
 class PageNavigator;
 }
 
-namespace download {
-class DownloadItem;
-}
-
 namespace views {
 class ImageButton;
 class MdTextButton;
@@ -63,8 +59,6 @@ class DownloadShelfView : public views::AccessiblePaneView,
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
-  void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
 
   // gfx::AnimationDelegate.
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -95,8 +89,12 @@ class DownloadShelfView : public views::AccessiblePaneView,
   void ConfigureButtonForTheme(views::MdTextButton* button);
 
  protected:
+  // views::View:
+  void AddedToWidget() override;
+  void OnThemeChanged() override;
+
   // DownloadShelf:
-  void DoAddDownload(download::DownloadItem* download) override;
+  void DoAddDownload(DownloadUIModel::DownloadUIModelPtr download) override;
   void DoOpen() override;
   void DoClose(CloseReason reason) override;
   void DoHide() override;
@@ -145,9 +143,6 @@ class DownloadShelfView : public views::AccessiblePaneView,
 
   // Called on theme change.
   void UpdateColorsFromTheme();
-
-  // views::View:
-  void OnThemeChanged() override;
 
   // Called when the "close shelf" animation ended.
   void Closed();

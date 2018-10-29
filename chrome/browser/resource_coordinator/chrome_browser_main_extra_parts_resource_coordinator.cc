@@ -20,9 +20,6 @@ ChromeBrowserMainExtraPartsResourceCoordinator::
 void ChromeBrowserMainExtraPartsResourceCoordinator::
     ServiceManagerConnectionStarted(
         content::ServiceManagerConnection* connection) {
-  if (!resource_coordinator::IsResourceCoordinatorEnabled())
-    return;
-
   process_resource_coordinator_ =
       std::make_unique<resource_coordinator::ProcessResourceCoordinator>(
           connection->GetConnector());

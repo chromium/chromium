@@ -207,6 +207,7 @@ class BreakingContext {
   bool at_start_;
   bool ignoring_spaces_;
   bool current_character_is_space_;
+  bool single_leading_space_;
   bool applied_start_width_;
   bool include_end_width_;
   bool auto_wrap_;
@@ -377,6 +378,8 @@ inline void BreakingContext::InitializeForCurrentObject() {
   // pre-wrap">text <span><span> text</span>' does not collapse.
   if (collapse_white_space_ && !ComputedStyle::CollapseWhiteSpace(last_ws_))
     current_character_is_space_ = false;
+
+  single_leading_space_ = false;
 }
 
 inline void BreakingContext::Increment() {
@@ -695,9 +698,9 @@ ALWAYS_INLINE void BreakingContext::SetCurrentCharacterIsSpace(UChar c) {
 }
 
 inline float FirstPositiveWidth(const WordMeasurements& word_measurements) {
-  for (size_t i = 0; i < word_measurements.size(); ++i) {
-    if (word_measurements[i].width > 0)
-      return word_measurements[i].width;
+  for (const WordMeasurement& word_measurement : word_measurements) {
+    if (word_measurement.width > 0)
+      return word_measurement.width;
   }
   return 0;
 }
@@ -835,7 +838,8 @@ ALWAYS_INLINE bool BreakingContext::RewindToFirstMidWordBreak(
                           collapse_white_space_);
   // If the first break opportunity doesn't fit, and if there's a break
   // opportunity in previous runs, break at the opportunity.
-  if (!width_.FitsOnLine(width) && width_.CommittedWidth())
+  if (!width_.FitsOnLine(width) &&
+      (width_.CommittedWidth() || single_leading_space_))
     return false;
   return RewindToMidWordBreak(word_measurement, end, width);
 }
@@ -1042,6 +1046,15 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
     bool previous_character_is_space = current_character_is_space_;
     UChar c = current_.Current();
     SetCurrentCharacterIsSpace(c);
+
+    // Auto-wrapping text should not wrap in the middle of a word if it has
+    // an opportunity to break at a leading white-space.
+    // TODO (jfernandez): This change is questionable, but it's required to
+    // achieve the expected behavior for 'break-word' (cases 2.1 and 2.2), while
+    // keeping current behavior for 'break-all' (cases 4.1 and 4.2)
+    // https://github.com/w3c/csswg-drafts/issues/2907
+    if (single_leading_space_)
+      can_break_mid_word = break_all;
 
     if (!collapse_white_space_ || !current_character_is_space_) {
       line_info_.SetEmpty(false);
@@ -1346,9 +1359,12 @@ inline void BreakingContext::PrepareForNextCharacter(
     start_of_ignored_spaces_.SetOffset(current_.Offset());
   }
   if (!current_character_is_space_ && previous_character_is_space) {
-    if (auto_wrap_ && current_style_->BreakOnlyAfterWhiteSpace())
+    if (auto_wrap_ && current_style_->BreakOnlyAfterWhiteSpace()) {
       line_break_.MoveTo(current_.GetLineLayoutItem(), current_.Offset(),
                          current_.NextBreakablePosition());
+      if (current_.Offset() == 1)
+        single_leading_space_ = true;
+    }
   }
   if (collapse_white_space_ && current_character_is_space_ && !ignoring_spaces_)
     trailing_objects_.SetTrailingWhitespace(

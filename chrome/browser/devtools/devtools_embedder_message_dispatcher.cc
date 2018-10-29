@@ -119,7 +119,7 @@ class DispatcherImpl : public DevToolsEmbedderMessageDispatcher {
   bool Dispatch(const DispatchCallback& callback,
                 const std::string& method,
                 const base::ListValue* params) override {
-    HandlerMap::iterator it = handlers_.find(method);
+    auto it = handlers_.find(method);
     return it != handlers_.end() && it->second.Run(callback, *params);
   }
 

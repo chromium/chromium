@@ -10,7 +10,6 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/util/animation_util.h"
 #include "ash/assistant/util/views_util.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -35,7 +34,7 @@ namespace ash {
 namespace {
 
 // Appearance.
-constexpr int kIconSizeDip = 20;
+constexpr int kIconSizeDip = 24;
 constexpr int kButtonSizeDip = 32;
 constexpr int kPreferredHeightDip = 48;
 
@@ -235,6 +234,23 @@ void DialogPlate::RequestFocus() {
                ->input_modality());
 }
 
+views::View* DialogPlate::FindFirstFocusableView() {
+  InputModality input_modality = assistant_controller_->interaction_controller()
+                                     ->model()
+                                     ->input_modality();
+
+  // The first focusable view depends entirely on current input modality.
+  switch (input_modality) {
+    case InputModality::kKeyboard:
+      return textfield_;
+    case InputModality::kVoice:
+      return animated_voice_input_toggle_;
+    case InputModality::kStylus:
+      // Default views::FocusSearch behavior is acceptable.
+      return nullptr;
+  }
+}
+
 void DialogPlate::InitLayout() {
   constexpr int kRightPaddingDip = 8;
 
@@ -262,7 +278,7 @@ void DialogPlate::InitLayout() {
 
   // Settings.
   settings_button_ = assistant::util::CreateImageButton(
-      this, kNotificationSettingsIcon, kButtonSizeDip, kIconSizeDip,
+      this, kSettingsIcon, kButtonSizeDip, kIconSizeDip,
       IDS_ASH_ASSISTANT_DIALOG_PLATE_SETTINGS_ACCNAME, gfx::kGoogleGrey600);
   settings_button_->set_id(static_cast<int>(DialogPlateButtonId::kSettings));
   AddChildView(settings_button_);
@@ -328,7 +344,7 @@ void DialogPlate::InitVoiceLayoutContainer() {
   voice_layout_container_->layer()->SetFillsBoundsOpaquely(false);
   voice_layout_container_->layer()->SetOpacity(0.f);
 
-  constexpr int kLeftPaddingDip = 4;
+  constexpr int kLeftPaddingDip = 8;
   views::BoxLayout* layout_manager = voice_layout_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -386,7 +402,6 @@ bool DialogPlate::OnAnimationEnded(
   InputModality input_modality = assistant_controller_->interaction_controller()
                                      ->model()
                                      ->input_modality();
-  SetFocus(input_modality);
 
   switch (input_modality) {
     case InputModality::kKeyboard:
@@ -402,6 +417,8 @@ bool DialogPlate::OnAnimationEnded(
       break;
   }
 
+  SetFocus(input_modality);
+
   // We return false so that the animation observer will not destroy itself.
   return false;
 }
@@ -412,10 +429,17 @@ void DialogPlate::SetFocus(InputModality input_modality) {
       textfield_->RequestFocus();
       break;
     case InputModality::kVoice:
-      animated_voice_input_toggle_->RequestFocus();
-      break;
     case InputModality::kStylus:
-      // No action necessary.
+      // When not using |kKeyboard| input modality we need to explicitly clear
+      // focus if the focused view is |textfield_| or |voice_input_toggle_| to
+      // prevent it from being read by ChromeVox. Clearing focus also allows
+      // AssistantContainerView's focus traversal to be reset.
+      views::FocusManager* focus_manager = GetFocusManager();
+      if (focus_manager &&
+          (focus_manager->GetFocusedView() == textfield_ ||
+           focus_manager->GetFocusedView() == voice_input_toggle_)) {
+        focus_manager->ClearFocus();
+      }
       break;
   }
 }

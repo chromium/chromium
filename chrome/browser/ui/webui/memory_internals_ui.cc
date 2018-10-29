@@ -17,6 +17,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiling_host/profiling_process_host.h"
@@ -28,6 +29,7 @@
 #include "components/heap_profiling/supervisor.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
@@ -204,8 +206,8 @@ void MemoryInternalsDOMHandler::HandleRequestProcessList(
     const base::ListValue* args) {
   // This is called on the UI thread, the child process iterator must run on
   // the IO thread, while the render process iterator must run on the UI thread.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&MemoryInternalsDOMHandler::GetChildProcessesOnIOThread,
                  weak_factory_.GetWeakPtr()));
 }
@@ -291,8 +293,8 @@ void MemoryInternalsDOMHandler::GetChildProcessesOnIOThread(
     }
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&MemoryInternalsDOMHandler::GetProfiledPids, dom_handler,
                      std::move(result)));
 }
@@ -305,8 +307,8 @@ void MemoryInternalsDOMHandler::GetProfiledPids(
 
   // The supervisor hasn't started, so return an empty list.
   if (!supervisor->HasStarted()) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&MemoryInternalsDOMHandler::ReturnProcessListOnUIThread,
                        weak_factory_.GetWeakPtr(), std::move(children),
                        std::vector<base::ProcessId>()));

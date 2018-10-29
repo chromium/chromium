@@ -141,13 +141,6 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     device_is_modified = true;
   }
 
-  if (device().input.sample_rate() % 100 != 0) {
-    // We cannot have 10 ms buffers with this sample rate, so audio processing
-    // won't work. Try another one.
-    modified_device.input.set_sample_rate(16000);
-    device_is_modified = true;
-  }
-
   if (device_is_modified)
     SetDevice(modified_device);
 
@@ -184,7 +177,8 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   // Verify that the reported input channel configuration is supported.
   if (channel_layout != media::CHANNEL_LAYOUT_MONO &&
       channel_layout != media::CHANNEL_LAYOUT_STEREO &&
-      channel_layout != media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
+      channel_layout != media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC &&
+      channel_layout != media::CHANNEL_LAYOUT_DISCRETE) {
     WebRtcLogMessage(base::StringPrintf(
         "ProcessedLocalAudioSource::EnsureSourceIsStarted() fails "
         " because the input channel layout (%d) is not supported.",
@@ -210,6 +204,11 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
                                 channel_layout, device().input.sample_rate(),
                                 device().input.sample_rate() / 100);
   params.set_effects(device().input.effects());
+  if (channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
+    DCHECK_LE(device().input.channels(), 2);
+    params.set_channels_for_discrete(device().input.channels());
+  }
+  DVLOG(1) << params.AsHumanReadableString();
   DCHECK(params.IsValid());
   media::AudioSourceParameters source_params(device().session_id);
   const bool use_remote_apm =

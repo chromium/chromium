@@ -15,6 +15,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.util.SadTabRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
@@ -29,12 +30,16 @@ public class ShareMenuActionHandlerTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
+    @Rule
+    public final SadTabRule mSadTabRule = new SadTabRule();
+
     @Test
     @SmallTest
     public void testShouldFetchCanonicalUrl() throws ExecutionException {
         MockTab mockTab = ThreadUtils.runOnUiThreadBlocking(() -> { return new MockTab(); });
         MockWebContents mockWebContents = new MockWebContents();
         MockRenderFrameHost mockRenderFrameHost = new MockRenderFrameHost();
+        mSadTabRule.setTab(mockTab);
 
         // Null webContents:
         Assert.assertFalse(ShareMenuActionHandler.shouldFetchCanonicalUrl(mockTab));
@@ -58,9 +63,9 @@ public class ShareMenuActionHandlerTest {
         mockTab.isShowingInterstitialPage = false;
 
         // Disabled if showing sad tab page.
-        mockTab.isShowingSadTab = true;
+        mSadTabRule.show(true);
         Assert.assertFalse(ShareMenuActionHandler.shouldFetchCanonicalUrl(mockTab));
-        mockTab.isShowingSadTab = false;
+        mSadTabRule.show(false);
     }
 
     @Test
@@ -99,7 +104,6 @@ public class ShareMenuActionHandlerTest {
         public String url;
         public boolean isShowingErrorPage;
         public boolean isShowingInterstitialPage;
-        public boolean isShowingSadTab;
 
         public MockTab() {
             super(INVALID_TAB_ID, false, null);
@@ -123,11 +127,6 @@ public class ShareMenuActionHandlerTest {
         @Override
         public boolean isShowingInterstitialPage() {
             return isShowingInterstitialPage;
-        }
-
-        @Override
-        public boolean isShowingSadTab() {
-            return isShowingSadTab;
         }
     }
 }

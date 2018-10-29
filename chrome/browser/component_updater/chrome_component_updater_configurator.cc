@@ -25,6 +25,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/protocol_handler.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/service_manager_connection.h"
@@ -73,6 +74,8 @@ class ChromeConfigurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::vector<uint8_t> GetRunActionKeyHash() const override;
   std::string GetAppGuid() const override;
+  std::unique_ptr<update_client::ProtocolHandlerFactory>
+  GetProtocolHandlerFactory() const override;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
@@ -219,6 +222,11 @@ std::string ChromeConfigurator::GetAppGuid() const {
 #else
   return configurator_impl_.GetAppGuid();
 #endif
+}
+
+std::unique_ptr<update_client::ProtocolHandlerFactory>
+ChromeConfigurator::GetProtocolHandlerFactory() const {
+  return configurator_impl_.GetProtocolHandlerFactory();
 }
 
 }  // namespace

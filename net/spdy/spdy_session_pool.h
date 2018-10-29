@@ -46,6 +46,7 @@ class HostResolver;
 class HttpServerProperties;
 class HttpStreamRequest;
 class NetLogWithSource;
+class NetworkQualityEstimator;
 class SpdySession;
 class TransportSecurityState;
 
@@ -78,7 +79,8 @@ class NET_EXPORT SpdySessionPool
       size_t session_max_recv_window_size,
       const spdy::SettingsMap& initial_settings,
       const base::Optional<GreasedHttp2Frame>& greased_http2_frame,
-      SpdySessionPool::TimeFunc time_func);
+      SpdySessionPool::TimeFunc time_func,
+      NetworkQualityEstimator* network_quality_estimator);
   ~SpdySessionPool() override;
 
   // In the functions below, a session is "available" if this pool has
@@ -206,6 +208,11 @@ class NET_EXPORT SpdySessionPool
   // not have a SpdySessionKey.
   void RemoveRequestFromSpdySessionRequestMap(HttpStreamRequest* request);
 
+  void set_network_quality_estimator(
+      NetworkQualityEstimator* network_quality_estimator) {
+    network_quality_estimator_ = network_quality_estimator;
+  }
+
  private:
   friend class SpdySessionPoolPeer;  // For testing.
 
@@ -301,6 +308,8 @@ class NET_EXPORT SpdySessionPool
 
   TimeFunc time_func_;
   ServerPushDelegate* push_delegate_;
+
+  NetworkQualityEstimator* network_quality_estimator_;
 
   DISALLOW_COPY_AND_ASSIGN(SpdySessionPool);
 };

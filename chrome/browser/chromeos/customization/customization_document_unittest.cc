@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
@@ -381,10 +382,11 @@ TEST_F(ServicesCustomizationDocumentTest, DefaultApps) {
   extensions::ExternalLoader* loader = doc->CreateExternalLoader(profile.get());
   EXPECT_TRUE(loader);
 
-  app_list::AppListSyncableServiceFactory::GetInstance()->
-      SetTestingFactoryAndUse(
+  app_list::AppListSyncableServiceFactory::GetInstance()
+      ->SetTestingFactoryAndUse(
           profile.get(),
-          &app_list::AppListSyncableServiceFactory::BuildInstanceFor);
+          base::BindRepeating(
+              &app_list::AppListSyncableServiceFactory::BuildInstanceFor));
 
   MockExternalProviderVisitor visitor;
   auto provider = std::make_unique<extensions::ExternalProviderImpl>(

@@ -116,6 +116,9 @@ class ASH_EXPORT SessionController : public mojom::SessionController {
   // Returns true if the current user is a child account.
   bool IsUserChild() const;
 
+  // Returns true if the current user is a public account.
+  bool IsUserPublicAccount() const;
+
   // Returns the type of the current user, or empty if there is no current user
   // logged in.
   base::Optional<user_manager::UserType> GetUserType() const;
@@ -294,7 +297,7 @@ class ASH_EXPORT SessionController : public mojom::SessionController {
   // OnSigninScreenPrefServiceInitialized().
   bool on_active_user_prefs_changed_notify_deferred_ = false;
 
-  base::ObserverList<ash::SessionObserver>::Unchecked observers_;
+  base::ObserverList<SessionObserver> observers_;
 
   service_manager::Connector* const connector_;
 

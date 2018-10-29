@@ -7,10 +7,6 @@
 
 #include "content/common/content_export.h"
 
-namespace IPC {
-class Message;
-}
-
 namespace blink {
 class WebMouseEvent;
 }
@@ -28,15 +24,26 @@ struct NativeWebKeyboardEvent;
 //  and http://crbug.com/478281.
 class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
  public:
-  // The RenderWidgetHost received an IPC message. Return true if this delegate
-  // handles it.
-  virtual bool OnMessageReceived(const IPC::Message& msg) = 0;
-
   // The RenderWidgetHost has been initialized.
   virtual void RenderWidgetDidInit() = 0;
 
+  // The RenderWidget was closed. Only swapped-in RenderWidgets receive this.
+  virtual void RenderWidgetDidClose() = 0;
+
+  // The RenderWidget was closed while in a swapped out state. Used to
+  // notify the swapped in render widget to close, which will result in a
+  // RenderWidgetDidClose() on the swapped in widget eventually.
+  virtual void RenderWidgetNeedsToRouteCloseEvent() = 0;
+
   // The RenderWidgetHost will be setting its loading state.
   virtual void RenderWidgetWillSetIsLoading(bool is_loading) = 0;
+
+  // The RenderWidget finished the first visually non-empty paint.
+  virtual void RenderWidgetDidFirstVisuallyNonEmptyPaint() = 0;
+
+  // The RenderWidget has issued a draw command, signaling the widget
+  // has been visually updated.
+  virtual void RenderWidgetDidCommitAndDrawCompositorFrame() = 0;
 
   // The RenderWidgetHost got the focus.
   virtual void RenderWidgetGotFocus() = 0;

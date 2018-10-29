@@ -5,6 +5,6 @@
 // https://w3c.github.io/payment-request/#dom-paymentvalidationerrors
 
 dictionary PaymentValidationErrors {
-    PayerErrorFields payer;
+    PayerErrors payer;
     AddressErrors shippingAddress;
 };

@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">Échec de lecture de la clé privée</translation>
 <translation id="6391538222494443604">Le répertoire d'extensions est obligatoire.</translation>
 <translation id="641087317769093025">Impossible de décompresser l'extension.</translation>
+<translation id="6413453408918378296">L'icône <ph name="ICON" /> n'est pas suffisamment visible.</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> demande l'accès à un ou plusieurs de vos appareils :</translation>
 <translation id="657064425229075395">Impossible de charger le script d'arrière-plan "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /> (numéro de série <ph name="SERIAL_NUMBER" />)</translation>

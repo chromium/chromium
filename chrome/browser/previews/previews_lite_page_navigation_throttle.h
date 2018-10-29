@@ -11,7 +11,24 @@
 
 namespace content {
 struct OpenURLParams;
+class BrowserContext;
 }
+
+// If the given URL is a LitePage Preview URL, this returns true but does not
+// change the |url|. This will set |update_virtual_url_with_url| on
+// NavigationEntry so that |HandlePreviewsLitePageURLRewriteReverse| is called
+// when the navigation finishes.
+// Note: This means the virtual URL will not be set during the navigation load.
+// This is handled separately in UI on Android.
+bool HandlePreviewsLitePageURLRewrite(GURL* url,
+                                      content::BrowserContext* browser_context);
+
+// Handles translating the given Lite Page URL to the original URL. Returns true
+// if the given |url| was a preview, otherwise returns false and does not change
+// |url|.
+bool HandlePreviewsLitePageURLRewriteReverse(
+    GURL* url,
+    content::BrowserContext* browser_context);
 
 // This class does the actual decision making about when to serve a Lite Page
 // Server Preview, and the legwork to trigger the Preview navigation. When a
@@ -26,7 +43,8 @@ class PreviewsLitePageNavigationThrottle : public content::NavigationThrottle {
     kPathSuffixBlacklisted = 0,
     kNavigationToPreviewsDomain = 1,
     kNavigationToPrivateDomain = 2,
-    kMaxValue = kNavigationToPrivateDomain,
+    kHostBlacklisted = 3,
+    kMaxValue = kHostBlacklisted,
   };
 
   // Reasons that a navigation is not eligible for this preview. This enum must
@@ -37,21 +55,42 @@ class PreviewsLitePageNavigationThrottle : public content::NavigationThrottle {
     kHttpPost = 1,
     kSubframeNavigation = 2,
     kServerUnavailable = 3,
-    kMaxValue = kServerUnavailable,
+    kInfoBarNotSeen = 4,
+    kNetworkNotSlow = 5,
+    kLoadOriginalReload = 6,
+    kMaxValue = kLoadOriginalReload,
   };
 
   // The response type from the previews server. This enum must
   // remain synchronized with the enum |PreviewsServerLitePageServerResponse| in
   // metrics/histograms/enums.xml.
   enum class ServerResponse {
+    // A preview was served (HTTP 200).
     kOk = 0,
+
+    // The client was redirected to another page (HTTP 307).
     kRedirect = 1,
+
+    // The requested preview was not available (HTTP 307).
     kPreviewUnavailable = 2,
+
+    // The previews server is not available (HTTP 503).
     kServiceUnavailable = 3,
+
+    // The previews server responded with some other HTTP code.
     kOther = 4,
+
+    // There was some network error and we did not get a response from the
+    // previews server.
     kFailed = 5,
+
+    // The previews server did not respond after a timeout.
     kTimeout = 6,
-    kMaxValue = kTimeout,
+
+    // The previews server rejected our authentication (HTTP 403).
+    kAuthFailure = 7,
+
+    kMaxValue = kAuthFailure,
   };
 
   PreviewsLitePageNavigationThrottle(

@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGText {text} at (50,59) size 709.39x223 contains 1 chunk(s)
-      LayoutSVGInlineText {#text} at (50,59) size 709.39x223
-        chunk 1 text run 1 at (50.00,240.00) startOffset 0 endOffset 2 width 159.40: "\x{D835}\x{DC9E}"
-        chunk 1 text run 1 at (600.00,240.00) startOffset 0 endOffset 2 width 159.40: "\x{D835}\x{DC9E}"

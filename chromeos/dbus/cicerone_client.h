@@ -101,6 +101,13 @@ class CHROMEOS_EXPORT CiceroneClient : public DBusClient {
       DBusMethodCallback<vm_tools::cicerone::ContainerAppIconResponse>
           callback) = 0;
 
+  // Gets information about a Linux package file inside a container.
+  // |callback| is called after the method call finishes.
+  virtual void GetLinuxPackageInfo(
+      const vm_tools::cicerone::LinuxPackageInfoRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse>
+          callback) = 0;
+
   // Installs a package inside the container.
   // |callback| is called after the method call finishes.
   virtual void InstallLinuxPackage(

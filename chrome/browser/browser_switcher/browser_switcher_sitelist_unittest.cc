@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
+#include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,6 +36,7 @@ class BrowserSwitcherSitelistTest : public testing::Test {
     sitelist_ = std::make_unique<BrowserSwitcherSitelistImpl>(&prefs_);
   }
 
+  PrefService* prefs() { return &prefs_; }
   BrowserSwitcherSitelist* sitelist() { return sitelist_.get(); }
 
  private:
@@ -132,6 +134,61 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldMatchAnySchema) {
   EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("https://reddit.com/r/funny")));
   EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("http://reddit.com/r/pics")));
   EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("https://reddit.com/r/pics")));
+}
+
+TEST_F(BrowserSwitcherSitelistTest, ShouldPickUpPrefChanges) {
+  Initialize({}, {});
+  prefs()->Set(prefs::kUrlList, StringArrayToValue({"example.com"}));
+  prefs()->Set(prefs::kUrlGreylist, StringArrayToValue({"foo.example.com"}));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://example.com/")));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://bar.example.com/")));
+  EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("http://foo.example.com/")));
+  EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("http://google.com/")));
+}
+
+TEST_F(BrowserSwitcherSitelistTest, SetIeemSitelist) {
+  Initialize({}, {});
+  ParsedXml ieem;
+  ieem.sitelist = {"example.com"};
+  ieem.greylist = {"foo.example.com"};
+  sitelist()->SetIeemSitelist(std::move(ieem));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://example.com/")));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://bar.example.com/")));
+  EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("http://foo.example.com/")));
+  EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("http://google.com/")));
+}
+
+TEST_F(BrowserSwitcherSitelistTest, SetExternalSitelist) {
+  Initialize({}, {});
+  ParsedXml external;
+  external.sitelist = {"example.com"};
+  external.greylist = {"foo.example.com"};
+  sitelist()->SetExternalSitelist(std::move(external));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://example.com/")));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://bar.example.com/")));
+  EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("http://foo.example.com/")));
+  EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("http://google.com/")));
+}
+
+TEST_F(BrowserSwitcherSitelistTest, All3Sources) {
+  Initialize({"google.com"}, {"mail.google.com"});
+  ParsedXml ieem;
+  ieem.sitelist = {"example.com"};
+  ieem.greylist = {"foo.example.com"};
+  sitelist()->SetIeemSitelist(std::move(ieem));
+  ParsedXml external;
+  external.sitelist = {"yahoo.com"};
+  external.greylist = {"finance.yahoo.com"};
+  sitelist()->SetExternalSitelist(std::move(external));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://google.com/")));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://drive.google.com/")));
+  EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("http://mail.google.com/")));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://example.com/")));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://bar.example.com/")));
+  EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("http://foo.example.com/")));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://yahoo.com/")));
+  EXPECT_TRUE(sitelist()->ShouldSwitch(GURL("http://news.yahoo.com/")));
+  EXPECT_FALSE(sitelist()->ShouldSwitch(GURL("http://finance.yahoo.com/")));
 }
 
 }  // namespace browser_switcher

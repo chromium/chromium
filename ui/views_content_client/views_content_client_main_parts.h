@@ -10,6 +10,10 @@
 #include "base/macros.h"
 #include "content/public/browser/browser_main_parts.h"
 
+namespace base {
+class RunLoop;
+}
+
 namespace content {
 class ShellBrowserContext;
 struct MainFunctionParams;
@@ -56,6 +60,8 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
   std::unique_ptr<views::ViewsDelegate> views_delegate_;
 
   ViewsContentClient* views_content_client_;
+
+  std::unique_ptr<base::RunLoop> run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainParts);
 };

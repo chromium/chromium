@@ -2,7 +2,6 @@ Test tab-size measurements.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS pxTabLength is pxExpected
 PASS emTabLength is emExpected
 PASS intTabLength is intExpected

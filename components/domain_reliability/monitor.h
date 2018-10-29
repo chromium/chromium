@@ -28,10 +28,10 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
-#include "net/base/network_change_notifier.h"
 #include "net/http/http_response_info.h"
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_status.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace base {
 class Value;
@@ -48,7 +48,7 @@ namespace domain_reliability {
 // The top-level object that measures requests and hands off the measurements
 // to the proper |DomainReliabilityContext|.
 class DOMAIN_RELIABILITY_EXPORT DomainReliabilityMonitor
-    : public net::NetworkChangeNotifier::NetworkChangeObserver,
+    : public network::NetworkConnectionTracker::NetworkConnectionObserver,
       DomainReliabilityContext::Factory {
  public:
   // Creates a Monitor. |local_state_pref_service| must live on |pref_thread|
@@ -114,9 +114,8 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityMonitor
   // |SetDiscardUploads|.
   void OnCompleted(net::URLRequest* request, bool started);
 
-  // net::NetworkChangeNotifier::NetworkChangeObserver implementation:
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override;
+  // NetworkConnectionTracker::NetworkConnectionObserver implementation:
+  void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // Called to remove browsing data for origins matched by |origin_filter|.
   // With CLEAR_BEACONS, leaves contexts in place but clears beacons (which
@@ -197,6 +196,8 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityMonitor
 
   scoped_refptr<base::SingleThreadTaskRunner> pref_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
+
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   bool moved_to_network_thread_;
   bool discard_uploads_set_;

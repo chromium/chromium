@@ -23,6 +23,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
+#include "chrome/browser/metrics/persistent_histograms.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -293,8 +294,7 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
 
     // Create the upload dir. Note that ASSERT macros won't fail in SetUp,
     // hence the use of CHECK.
-    upload_dir_ =
-        user_dir.AppendASCII(ChromeMetricsServiceClient::kBrowserMetricsName);
+    upload_dir_ = user_dir.AppendASCII(kBrowserMetricsName);
     CHECK(!base::PathExists(upload_dir_));
     CHECK(base::CreateDirectory(upload_dir_));
 

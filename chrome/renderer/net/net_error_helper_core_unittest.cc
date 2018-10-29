@@ -2114,6 +2114,27 @@ TEST_F(NetErrorHelperCoreAutoReloadTest, StopsOnOtherLoadStart) {
   EXPECT_EQ(0, core()->auto_reload_count());
 }
 
+// This is a regression test for http://crbug.com/881208.
+TEST_F(NetErrorHelperCoreAutoReloadTest, StopsOnErrorLoadCommit) {
+  DoErrorLoad(net::ERR_CONNECTION_RESET);
+  EXPECT_TRUE(timer()->IsRunning());
+
+  // Simulate manually reloading the error page while the timer is still
+  // running.
+  std::string html;
+  core()->PrepareErrorPage(
+      NetErrorHelperCore::MAIN_FRAME,
+      NetErrorForURL(net::ERR_CONNECTION_RESET, GURL(kFailedUrl)),
+      false /* is_failed_post */, false /* is_ignoring_cache */, &html);
+
+  core()->OnStartLoad(NetErrorHelperCore::MAIN_FRAME,
+                      NetErrorHelperCore::ERROR_PAGE);
+  EXPECT_FALSE(timer()->IsRunning());
+  core()->OnCommitLoad(NetErrorHelperCore::MAIN_FRAME, error_url());
+  core()->OnFinishLoad(NetErrorHelperCore::MAIN_FRAME);
+  EXPECT_TRUE(timer()->IsRunning());
+}
+
 TEST_F(NetErrorHelperCoreAutoReloadTest, ResetsCountOnSuccess) {
   DoErrorLoad(net::ERR_CONNECTION_RESET);
   base::TimeDelta delay = timer()->GetCurrentDelay();
@@ -2616,8 +2637,7 @@ std::vector<chrome::mojom::AvailableOfflineContentPtr> TestAvailableContent() {
   std::vector<chrome::mojom::AvailableOfflineContentPtr> content;
   content.push_back(chrome::mojom::AvailableOfflineContent::New(
       "ID", "name_space", "title", "snippet", "date_modified", "attribution",
-      GURL(kDataURI),
-      chrome::mojom::AvailableContentType::kPrefetchedUnopenedPage));
+      GURL(kDataURI), chrome::mojom::AvailableContentType::kPrefetchedPage));
   content.push_back(chrome::mojom::AvailableOfflineContent::New(
       "ID2", "name_space2", "title2", "snippet2", "date_modified2",
       "attribution2", GURL(kDataURI),
@@ -2641,7 +2661,7 @@ class FakeAvailableOfflineContentProvider
   void Summarize(SummarizeCallback callback) override {
     auto summary = chrome::mojom::AvailableOfflineContentSummary::New();
     if (return_content_) {
-      summary->total_items = 2;
+      summary->total_items = 3;
       summary->has_offline_page = true;
       summary->has_prefetched_page = true;
     }
@@ -2650,7 +2670,7 @@ class FakeAvailableOfflineContentProvider
 
   MOCK_METHOD2(LaunchItem,
                void(const std::string& item_ID, const std::string& name_space));
-  MOCK_METHOD0(LaunchDownloadsPage, void());
+  MOCK_METHOD1(LaunchDownloadsPage, void(bool open_prefetched_articles_tab));
 
   void AddBinding(mojo::ScopedMessagePipeHandle handle) {
     bindings_.AddBinding(this,
@@ -2697,27 +2717,29 @@ TEST_F(NetErrorHelperCoreAvailableOfflineContentTest, ListAvailableContent) {
   DoErrorLoad(net::ERR_INTERNET_DISCONNECTED);
   task_environment()->RunUntilIdle();
   // Note: content_type is an AvailableContentType enum value.
-  // Below, 0=kPrefetchedUnopenedPage and 3=kOtherPage.
+  // Below, 0=kPrefetchedPage and 3=kOtherPage. The base64 encoded values
+  // represent the encoded versions of the values returned by
+  // |TestAvailableContent|.
   std::string want_json = R"([
       {
         "ID": "ID",
-        "attribution": "attribution",
+        "attribution_base64": "YXR0cmlidXRpb24=",
         "content_type": 0,
         "date_modified": "date_modified",
         "name_space": "name_space",
-        "snippet": "snippet",
+        "snippet_base64": "c25pcHBldA==",
         "thumbnail_data_uri": "data:image/png;base64,abc",
-        "title": "title"
+        "title_base64": "dGl0bGU="
       },
       {
         "ID": "ID2",
-        "attribution": "attribution2",
+        "attribution_base64": "YXR0cmlidXRpb24y",
         "content_type": 3,
         "date_modified": "date_modified2",
         "name_space": "name_space2",
-        "snippet": "snippet2",
+        "snippet_base64": "c25pcHBldDI=",
         "thumbnail_data_uri": "data:image/png;base64,abc",
-        "title": "title2"
+        "title_base64": "dGl0bGUy"
       }
     ])";
   base::ReplaceChars(want_json, base::kWhitespaceASCII, "", &want_json);
@@ -2727,7 +2749,7 @@ TEST_F(NetErrorHelperCoreAvailableOfflineContentTest, ListAvailableContent) {
                                      2);
   histogram_tester_.ExpectBucketCount(
       "Net.ErrorPageCounts.SuggestionPresented",
-      chrome::mojom::AvailableContentType::kPrefetchedUnopenedPage, 1);
+      chrome::mojom::AvailableContentType::kPrefetchedPage, 1);
   histogram_tester_.ExpectBucketCount(
       "Net.ErrorPageCounts.SuggestionPresented",
       chrome::mojom::AvailableContentType::kOtherPage, 1);
@@ -2738,7 +2760,7 @@ TEST_F(NetErrorHelperCoreAvailableOfflineContentTest, ListAvailableContent) {
   core()->LaunchOfflineItem("ID", "name_space");
   histogram_tester_.ExpectBucketCount(
       "Net.ErrorPageCounts.SuggestionPresented",
-      chrome::mojom::AvailableContentType::kPrefetchedUnopenedPage, 1);
+      chrome::mojom::AvailableContentType::kPrefetchedPage, 1);
   histogram_tester_.ExpectBucketCount(
       "Net.ErrorPageCounts",
       error_page::NETWORK_ERROR_PAGE_OFFLINE_SUGGESTION_CLICKED, 1);
@@ -2772,7 +2794,7 @@ TEST_F(NetErrorHelperCoreAvailableOfflineContentTest, SummaryAvailableContent) {
     "has_offline_page": true,
     "has_prefetched_page": true,
     "has_video": false,
-    "total_items": 2
+    "total_items": 3
   })";
   base::ReplaceChars(want_json, base::kWhitespaceASCII, "", &want_json);
   EXPECT_EQ(want_json, offline_content_summary_json());

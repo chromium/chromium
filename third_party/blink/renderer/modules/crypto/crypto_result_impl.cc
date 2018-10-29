@@ -181,12 +181,16 @@ void CryptoResultImpl::CompleteWithJson(const char* utf8_data,
     return;
 
   ScriptState* script_state = resolver_->GetScriptState();
+  v8::Isolate* isolate = script_state->GetIsolate();
   ScriptState::Scope scope(script_state);
 
+  // Crashes if longer than v8::String::kMaxLength.
   v8::Local<v8::String> json_string =
-      V8StringFromUtf8(script_state->GetIsolate(), utf8_data, length);
+      v8::String::NewFromUtf8(isolate, utf8_data, v8::NewStringType::kNormal,
+                              length)
+          .ToLocalChecked();
 
-  v8::TryCatch exception_catcher(script_state->GetIsolate());
+  v8::TryCatch exception_catcher(isolate);
   v8::Local<v8::Value> json_dictionary;
   if (v8::JSON::Parse(script_state->GetContext(), json_string)
           .ToLocal(&json_dictionary))

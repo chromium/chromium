@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
@@ -41,6 +42,7 @@
 #include "components/safe_browsing/db/database_manager.h"
 #include "components/safe_browsing/ping_manager.h"
 #include "components/safe_browsing/triggers/trigger_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/resource_request_info.h"
@@ -62,6 +64,7 @@
 #endif
 
 using content::BrowserThread;
+using content::NonNestable;
 
 namespace safe_browsing {
 
@@ -191,8 +194,8 @@ void SafeBrowsingService::ShutDown() {
   // |url_request_context_getter_| to delete it, so need to shut it down first,
   // which will cancel any requests that are currently using it, and prevent
   // new requests from using it as well.
-  BrowserThread::PostNonNestableTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO, NonNestable()},
       base::BindOnce(&SafeBrowsingURLRequestContextGetter::ServiceShuttingDown,
                      url_request_context_getter_));
 
@@ -248,8 +251,8 @@ scoped_refptr<network::SharedURLLoaderFactory>
 SafeBrowsingService::GetURLLoaderFactoryOnIOThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!shared_url_loader_factory_on_io_) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&SafeBrowsingService::CreateURLLoaderFactoryForIO, this,
                        MakeRequest(&url_loader_factory_on_io_)));
     shared_url_loader_factory_on_io_ =
@@ -314,8 +317,8 @@ void SafeBrowsingService::OnResourceRequest(const net::URLRequest* request) {
                request->url().spec());
 
   ResourceRequestInfo info = ResourceRequestDetector::GetRequestInfo(request);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&SafeBrowsingService::ProcessResourceRequest, this, info));
 #endif
 }
@@ -400,16 +403,16 @@ void SafeBrowsingService::Start() {
         PingManager::Create(GetURLLoaderFactory(), GetV4ProtocolConfig());
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SafeBrowsingService::StartOnIOThread, this));
 }
 
 void SafeBrowsingService::Stop(bool shutdown) {
   ping_manager_.reset();
   ui_manager_->Stop(shutdown);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SafeBrowsingService::StopOnIOThread, this, shutdown));
 }
 
@@ -541,8 +544,10 @@ network::mojom::NetworkContextParamsPtr
 SafeBrowsingService::CreateNetworkContextParams() {
   auto params = g_browser_process->system_network_context_manager()
                     ->CreateDefaultNetworkContextParams();
-  if (!proxy_config_monitor_)
-    proxy_config_monitor_ = std::make_unique<ProxyConfigMonitor>();
+  if (!proxy_config_monitor_) {
+    proxy_config_monitor_ =
+        std::make_unique<ProxyConfigMonitor>(g_browser_process->local_state());
+  }
   proxy_config_monitor_->AddToNetworkContextParams(params.get());
   return params;
 }

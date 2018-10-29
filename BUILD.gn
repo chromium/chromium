@@ -147,8 +147,6 @@ group("gn_all") {
       "//third_party/pdfium/samples:pdfium_test",
       "//third_party/webrtc/rtc_tools:frame_analyzer",
       "//tools/perf/clear_system_cache",
-      "//tools/traffic_annotation/auditor:traffic_annotation_auditor",
-      "//tools/traffic_annotation/auditor:traffic_annotation_auditor_unittests",
       "//ui/accessibility:accessibility_unittests",
       "//ui/accessibility/extensions",
     ]
@@ -216,7 +214,10 @@ group("gn_all") {
   } else if (is_ios) {
     deps += [ "//ios:all" ]
   } else if (is_fuchsia) {
-    deps += [ ":d8_fuchsia" ]
+    deps += [
+      ":d8_fuchsia",
+      "build/fuchsia/fidlgen_js:fidlgen_js_unittests",
+    ]
   }
 
   deps += root_extra_deps
@@ -264,6 +265,20 @@ group("gn_all") {
 
   if (use_x11 || ozone_platform_x11) {
     deps += [ "//tools/xdisplaycheck" ]
+  }
+
+  if (is_win) {
+    deps += [
+      "//chrome/credential_provider",
+      "//chrome/credential_provider/test:gcp_unittests",
+    ]
+  }
+
+  if (is_win || is_linux) {
+    deps += [
+      "//tools/traffic_annotation/auditor:traffic_annotation_auditor",
+      "//tools/traffic_annotation/auditor:traffic_annotation_auditor_unittests",
+    ]
   }
 
   if (is_mac) {
@@ -371,6 +386,7 @@ group("gn_all") {
       "//ash:ash_unittests",
       "//ash/app_list:app_list_demo",
       "//ash/app_list:app_list_unittests",
+      "//chrome/browser/resources/chromeos/zip_archiver/cpp:ziparchiver_unittests",
       "//chromeos:chromeos_unittests",
       "//chromeos/components:chromeos_components_unittests",
       "//chromeos/components/proximity_auth:proximity_auth_unittests",
@@ -546,7 +562,6 @@ group("gn_all") {
     deps += [
       "//third_party/breakpad:crash_inspector",
       "//third_party/breakpad:dump_syms",
-      "//third_party/molokocacao",
     ]
     deps -= [
       # Mojo in GN contains some things which are never compiled in GYP on Mac,
@@ -691,8 +706,8 @@ group("gn_all") {
     }
   }
 
-  if ((is_linux && !is_chromeos && !is_chromecast) || (is_win && use_drfuzz) ||
-      (use_libfuzzer && is_mac)) {
+  if ((is_linux && !is_chromeos && !is_chromecast) ||
+      (is_win && (use_drfuzz || use_libfuzzer)) || (use_libfuzzer && is_mac)) {
     deps += [
       "//testing/libfuzzer/fuzzers",
       "//testing/libfuzzer/tests:libfuzzer_tests",
@@ -723,7 +738,10 @@ group("gn_all") {
       deps += [ "//chrome/browser/vr/testapp:vr_testapp" ]
     }
     if (is_android) {
-      deps += [ "//tools/perf/contrib/vr_benchmarks:vr_perf_tests" ]
+      deps += [
+        "//chrome/browser/android/vr:vr_android_unittests",
+        "//tools/perf/contrib/vr_benchmarks:vr_perf_tests",
+      ]
     }
   }
 
@@ -736,6 +754,7 @@ group("gn_all") {
       "//webrunner:archive_sources",
       "//webrunner:webrunner_unittests",
       "//webrunner/net_http:http_pkg",
+      "//webrunner/net_http:http_service_tests",
     ]
   }
 
@@ -843,6 +862,9 @@ if (is_chromeos) {
         "//media/gpu:video_encode_accelerator_unittest",
       ]
     }
+    if (use_vaapi) {
+      deps += [ "//media/gpu:jpeg_encode_accelerator_unittest" ]
+    }
   }
 }
 
@@ -905,6 +927,7 @@ if (!is_ios) {
     testonly = true
     data_deps = [
       ":layout_test_data_mojo_bindings",
+      ":layout_test_data_mojo_bindings_lite",
       "//content/shell:content_shell",
       "//content/test:mojo_layouttest_bindings_js_data_deps",
       "//device/bluetooth/public/mojom:fake_bluetooth_interfaces_js_data_deps",
@@ -994,6 +1017,22 @@ if (!is_ios) {
 
     deps = [
       "//mojo/public/js:bindings",
+    ]
+  }
+
+  copy("layout_test_data_mojo_bindings_lite") {
+    testonly = true
+
+    sources = [
+      "$root_gen_dir/mojo/public/js/mojo_bindings_lite.js",
+    ]
+
+    outputs = [
+      "$root_gen_dir/layout_test_data/mojo/public/js/mojo_bindings_lite.js",
+    ]
+
+    deps = [
+      "//mojo/public/js:bindings_lite",
     ]
   }
 
@@ -1154,6 +1193,7 @@ template("assert_valid_out_dir") {
 
 if (closure_compile) {
   group("webui_closure_compile") {
+    testonly = true
     data_deps = [
       "chrome/browser/resources:closure_compile",
       "content/browser/resources:closure_compile",
@@ -1164,10 +1204,6 @@ if (closure_compile) {
     }
     if (is_android) {
       data_deps += [ "components/offline_pages/resources:closure_compile" ]
-    }
-    if (is_win && is_chrome_branded) {
-      # TODO(scottchen): uncomment after fixing closure compile deps for NUX.
-      #      data_deps += [ "components/nux/resources:closure_compile" ]
     }
   }
 }

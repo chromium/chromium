@@ -74,11 +74,6 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
   // cases, like when installing a theme. See DownloadShelf::AddDownload().
   SetVisible(false);
 
-  mouse_watcher_.set_notify_on_exit_time(
-      base::TimeDelta::FromMilliseconds(kNotifyOnExitTimeMS));
-  set_id(VIEW_ID_DOWNLOAD_SHELF);
-  parent->AddChildView(this);
-
   show_all_view_ = views::MdTextButton::Create(
       this, l10n_util::GetStringUTF16(IDS_SHOW_ALL_DOWNLOADS));
   AddChildView(show_all_view_);
@@ -96,6 +91,11 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_DOWNLOADS_BAR));
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+
+  mouse_watcher_.set_notify_on_exit_time(
+      base::TimeDelta::FromMilliseconds(kNotifyOnExitTimeMS));
+  set_id(VIEW_ID_DOWNLOAD_SHELF);
+  parent->AddChildView(this);
 }
 
 DownloadShelfView::~DownloadShelfView() {
@@ -119,9 +119,10 @@ void DownloadShelfView::AddDownloadView(DownloadItemView* view) {
   new_item_animation_.Show();
 }
 
-void DownloadShelfView::DoAddDownload(DownloadItem* download) {
-  AddDownloadView(new DownloadItemView(
-      std::make_unique<DownloadItemModel>(download), this, accessible_alert_));
+void DownloadShelfView::DoAddDownload(
+    DownloadUIModel::DownloadUIModelPtr download) {
+  AddDownloadView(
+      new DownloadItemView(std::move(download), this, accessible_alert_));
 }
 
 void DownloadShelfView::MouseMovedOutOfHost() {
@@ -277,13 +278,6 @@ void DownloadShelfView::Layout() {
   }
 }
 
-void DownloadShelfView::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
-  View::ViewHierarchyChanged(details);
-  if (details.is_add)
-    UpdateColorsFromTheme();
-}
-
 bool DownloadShelfView::CanFitFirstDownloadItem() {
   if (download_views_.empty())
     return true;
@@ -308,8 +302,7 @@ void DownloadShelfView::UpdateColorsFromTheme() {
   if (!GetThemeProvider())
     return;
 
-  if (show_all_view_)
-    ConfigureButtonForTheme(show_all_view_);
+  ConfigureButtonForTheme(show_all_view_);
 
   SetBackground(views::CreateSolidBackground(
       GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR)));
@@ -317,6 +310,10 @@ void DownloadShelfView::UpdateColorsFromTheme() {
   views::SetImageFromVectorIcon(
       close_button_, vector_icons::kCloseRoundedIcon,
       DownloadItemView::GetTextColorForThemeProvider(GetThemeProvider()));
+}
+
+void DownloadShelfView::AddedToWidget() {
+  UpdateColorsFromTheme();
 }
 
 void DownloadShelfView::OnThemeChanged() {
@@ -393,6 +390,16 @@ void DownloadShelfView::Closed() {
       ++i;
     }
   }
+
+  // If we had keyboard focus, calling SetVisible(false) causes keyboard focus
+  // to be completely lost. To prevent this, we focus another view: the web
+  // contents. TODO(collinbaker): https://crbug.com/846466 Fix
+  // AccessiblePaneView::SetVisible or FocusManager to make this unnecessary.
+  auto* focus_manager = GetFocusManager();
+  if (focus_manager && Contains(focus_manager->GetFocusedView())) {
+    get_parent()->contents_web_view()->RequestFocus();
+  }
+
   SetVisible(false);
 }
 

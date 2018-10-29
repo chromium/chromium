@@ -3,7 +3,6 @@ Tests for ShadowRoot JS APIs. Can only run within DRT
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.ShadowRoot is defined.
 PASS new window.ShadowRoot(document.createElement('div')) threw exception TypeError: Illegal constructor.
 PASS shadowRoot instanceof window.ShadowRoot is true

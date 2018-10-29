@@ -57,7 +57,9 @@ CrSettingsFocusRowBehavior.prototype = {
 
   /** @override */
   extraLibraries: CrSettingsInteractiveUITest.prototype.extraLibraries.concat([
+    ROOT_PATH + 'ui/webui/resources/js/util.js',
     'focus_row_behavior_test.js',
+    'test_util.js',
   ]),
 };
 

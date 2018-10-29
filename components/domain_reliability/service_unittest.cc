@@ -7,10 +7,12 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/monitor.h"
 #include "components/domain_reliability/test_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
@@ -140,11 +142,11 @@ class DomainReliabilityServiceTest : public testing::Test {
       : upload_reporter_string_("test"),
         permission_manager_(new TestPermissionManager()) {
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner =
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::UI);
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::UI});
     scoped_refptr<base::SingleThreadTaskRunner> network_task_runner =
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::IO);
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::IO});
     url_request_context_getter_ =
         new net::TestURLRequestContextGetter(network_task_runner);
     browser_context_.SetPermissionControllerDelegate(
@@ -153,6 +155,8 @@ class DomainReliabilityServiceTest : public testing::Test {
         upload_reporter_string_, &browser_context_));
     monitor_ = service_->CreateMonitor(ui_task_runner, network_task_runner);
     monitor_->MoveToNetworkThread();
+    // Let the NetworkConnectionTracker registration complete.
+    thread_bundle_.RunUntilIdle();
     monitor_->InitURLRequestContext(url_request_context_getter_);
     monitor_->SetDiscardUploads(true);
   }

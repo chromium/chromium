@@ -14,11 +14,10 @@ MockBrowsingDataQuotaHelper::MockBrowsingDataQuotaHelper(Profile* profile)
 
 MockBrowsingDataQuotaHelper::~MockBrowsingDataQuotaHelper() {}
 
-void MockBrowsingDataQuotaHelper::StartFetching(
-    const FetchResultCallback& callback) {
+void MockBrowsingDataQuotaHelper::StartFetching(FetchResultCallback callback) {
   ASSERT_FALSE(callback.is_null());
   ASSERT_TRUE(callback_.is_null());
-  callback_ = callback;
+  callback_ = std::move(callback);
 }
 
 void MockBrowsingDataQuotaHelper::RevokeHostQuota(const std::string& host) {
@@ -41,7 +40,6 @@ void MockBrowsingDataQuotaHelper::AddQuotaSamples() {
 }
 
 void MockBrowsingDataQuotaHelper::Notify() {
-  callback_.Run(response_);
-  callback_.Reset();
+  std::move(callback_).Run(response_);
   response_.clear();
 }

@@ -306,7 +306,7 @@ gfx::ImageSkia GetBookmarkFolderIcon(SkColor text_color) {
                                             .CopyImageSkia());
   return *image.get();
 #else
-  return GetFolderIcon(ui::MaterialDesignController::IsTouchOptimizedUiEnabled()
+  return GetFolderIcon(ui::MaterialDesignController::touch_ui()
                            ? vector_icons::kFolderTouchIcon
                            : vector_icons::kFolderIcon,
                        text_color);
@@ -318,7 +318,7 @@ gfx::ImageSkia GetBookmarkManagedFolderIcon(SkColor text_color) {
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       IDR_BOOKMARK_BAR_FOLDER_MANAGED);
 #else
-  return GetFolderIcon(ui::MaterialDesignController::IsTouchOptimizedUiEnabled()
+  return GetFolderIcon(ui::MaterialDesignController::touch_ui()
                            ? vector_icons::kFolderManagedTouchIcon
                            : vector_icons::kFolderManagedIcon,
                        text_color);

@@ -49,7 +49,6 @@ PASS cursor.extra is 456
 finalRequestSuccess():
 PASS cursor.key is "key2"
 cursor = null
-gc()
 PASS cursorRequestObservation.wasCollected is true
 PASS cursorObservation.wasCollected is true
 PASS successfullyParsed is true

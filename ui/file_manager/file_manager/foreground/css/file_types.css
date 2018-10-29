@@ -442,12 +442,6 @@ cr-menu-item[command='#install-new-extension'] .icon.start {
       url(../images/files/ui/2x/store.png) 2x);
 }
 
-.tree-row [menu-button-icon='add-new-services'] {
-  background-image: -webkit-image-set(
-      url(../images/volumes/add.png) 1x,
-      url(../images/volumes/2x/add.png) 2x);
-}
-
 [root-type-icon='recent'] {
   background-image: -webkit-image-set(
       url(../images/volumes/recent.png) 1x,

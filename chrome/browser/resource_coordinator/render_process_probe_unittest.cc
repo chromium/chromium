@@ -5,7 +5,9 @@
 #include "chrome/browser/resource_coordinator/render_process_probe.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
+#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
@@ -52,8 +54,8 @@ void TestingRenderProcessProbe::RegisterRenderProcesses() {
 void TestingRenderProcessProbe::StartMemoryMeasurement(
     base::TimeTicks collection_start_time) {
   // Post the stored results to the completion function.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&TestingRenderProcessProbe::
                          ProcessGlobalMemoryDumpAndDispatchOnIOThread,
                      base::Unretained(this), collection_start_time,

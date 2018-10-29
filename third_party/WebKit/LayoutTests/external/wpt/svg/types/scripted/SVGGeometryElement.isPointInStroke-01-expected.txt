@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+FAIL SVGGeometryElement.prototype.isPointInStroke, no arguments. Failed to execute 'isPointInStroke' on 'SVGGeometryElement': 1 argument required, but only 0 present.
+PASS SVGGeometryElement.prototype.isPointInStroke, non-finite argument.
+PASS SVGGeometryElement.prototype.isPointInStroke, functional test.
+PASS SVGGeometryElement.prototype.isPointInStroke, 'stroke-dasharray'.
+PASS SVGGeometryElement.prototype.isPointInStroke, 'stroke-dashoffset'.
+PASS SVGGeometryElement.prototype.isPointInStroke, 'stroke-miterlimit'.
+PASS SVGGeometryElement.prototype.isPointInStroke, 'stroke-linejoin'.
+PASS SVGGeometryElement.prototype.isPointInStroke, 'stroke-linecap'.
+PASS SVGGeometryElement.prototype.isPointInStroke, 'pathLength'.
+PASS SVGGeometryElement.prototype.isPointInStroke, 'vector-effect'.
+PASS SVGGeometryElement.prototype.isPointInStroke, 'visibility' and 'pointer-events' have no effect.
+Harness: the test ran to completion.
+

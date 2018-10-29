@@ -13,7 +13,7 @@ class ProgressBar;
 }  // namespace views
 
 namespace crostini {
-enum class ConciergeClientResult;
+enum class CrostiniResult;
 }  // namespace crostini
 
 class Profile;
@@ -55,7 +55,7 @@ class CrostiniUninstallerView : public views::DialogDelegateView {
   ~CrostiniUninstallerView() override;
 
   void HandleError(const base::string16& error_message);
-  void UninstallCrostiniFinished(crostini::ConciergeClientResult result);
+  void UninstallCrostiniFinished(crostini::CrostiniResult result);
   void RecordUninstallResultHistogram(UninstallResult result);
 
   State state_ = State::PROMPT;

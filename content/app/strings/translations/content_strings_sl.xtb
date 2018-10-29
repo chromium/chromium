@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1018939186200882850">menijski element</translation>
-<translation id="1020833440720551630">izklop zvoka za zvočni posnetek</translation>
 <translation id="10623998915015855">preklopni gumb</translation>
 <translation id="1088086359088493902">Sekunde</translation>
 <translation id="1171774979989969504">Vnesite e-poštni naslov</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">seznam sodelujočih</translation>
 <translation id="1342835525016946179">člnk</translation>
 <translation id="1359897965706325498">pasica</translation>
-<translation id="1548116112524424341">predvajanje videoposnetkov v načinu slike v sliki</translation>
 <translation id="1589122976691792535">območje</translation>
 <translation id="1591562245178063882">Ta mesec</translation>
 <translation id="1637811476055996098">Izberi datoteke</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">drevesna mreža</translation>
 <translation id="1822429046913737220">Dopoldne/popoldne</translation>
 <translation id="1832974991323546415">predvajanje v oddaljeni napravi</translation>
-<translation id="1838818994221231429">preklop celozaslonskega načina na območje zareze zaslona</translation>
 <translation id="190587075670221089">brisanje</translation>
 <translation id="1907737156431278478">primer</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">čas</translation>
 <translation id="5630795885300617244">Dvakrat se dotaknite levo ali desno, da preskočite 10 s</translation>
 <translation id="5631759159893697722">izvleček</translation>
-<translation id="5641012560118721995">začasna ustavitev predvajanja</translation>
 <translation id="5643186887447432888">gumb</translation>
 <translation id="5677946354068040947">več možnosti</translation>
 <translation id="576709008726043716">uvod</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Ponastavi</translation>
 <translation id="5966707198760109579">Teden</translation>
 <translation id="5987525920412732405">pomikalnik</translation>
+<translation id="6011459053400940133">drsnik za glasnost</translation>
 <translation id="6015796118275082299">Leto</translation>
 <translation id="6023896073578205740">polje s seznamom</translation>
-<translation id="6101327004457443354">vklop zvoka za zvočni posnetek</translation>
 <translation id="6150588977291308318">bibliografija</translation>
 <translation id="6164829606128959761">merilnik</translation>
 <translation id="6166809985690652833">spremna beseda</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Ure</translation>
 <translation id="7681220483256441252">kazalo</translation>
 <translation id="7720026100085573005">preostali čas</translation>
-<translation id="7740016676195725605">ustavitev prikazovanja podnapisov</translation>
 <translation id="7740050170769002709">Vsebina HTML</translation>
 <translation id="7750228210027921155">Slika v sliki</translation>
 <translation id="7789962463072032349">premor</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">besedilno polje za iskanje</translation>
 <translation id="8057695513531652401">kritika</translation>
 <translation id="8105797009065549151">sklicevanje na opombo</translation>
-<translation id="8115662671911883373">začetek predvajanja podnapisov</translation>
 <translation id="8117451130807776954">Ta teden</translation>
-<translation id="819205353528511139">predvajanje filma v celozaslonskem načinu</translation>
 <translation id="8199524924445686405">llll</translation>
 <translation id="8284326494547611709">Napisi</translation>
 <translation id="835897206747267392">Neveljavna vrednost.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">upravljanje oddaljenega predvajanja</translation>
 <translation id="862370744433916922">podnaslov</translation>
 <translation id="8750798805984357768">Izberite eno od teh možnosti.</translation>
-<translation id="8785498733064193001">začetek predvajanja</translation>
 <translation id="8808573423886751634">poglavje</translation>
 <translation id="8845239796550121995">Predvajanje na televizorju</translation>
 <translation id="8851136666856101339">glavn</translation>

@@ -327,8 +327,8 @@ TEST_F(LayoutObjectTest, MutableForPaintingClearPaintFlags) {
   EXPECT_TRUE(object->MayNeedPaintInvalidationAnimatedBackgroundImage());
   object->SetShouldInvalidateSelection();
   EXPECT_TRUE(object->ShouldInvalidateSelection());
-  object->SetBackgroundChangedSinceLastPaintInvalidation();
-  EXPECT_TRUE(object->BackgroundChangedSinceLastPaintInvalidation());
+  object->SetBackgroundNeedsFullPaintInvalidation();
+  EXPECT_TRUE(object->BackgroundNeedsFullPaintInvalidation());
   object->SetNeedsPaintPropertyUpdate();
   EXPECT_TRUE(object->NeedsPaintPropertyUpdate());
   EXPECT_TRUE(object->Parent()->DescendantNeedsPaintPropertyUpdate());
@@ -343,22 +343,23 @@ TEST_F(LayoutObjectTest, MutableForPaintingClearPaintFlags) {
   EXPECT_FALSE(object->SubtreeShouldCheckForPaintInvalidation());
   EXPECT_FALSE(object->MayNeedPaintInvalidationAnimatedBackgroundImage());
   EXPECT_FALSE(object->ShouldInvalidateSelection());
-  EXPECT_FALSE(object->BackgroundChangedSinceLastPaintInvalidation());
+  EXPECT_FALSE(object->BackgroundNeedsFullPaintInvalidation());
   EXPECT_FALSE(object->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(object->DescendantNeedsPaintPropertyUpdate());
 }
 
-TEST_F(LayoutObjectTest, SubtreeNeedsForcedPaintPropertyUpdate) {
+TEST_F(LayoutObjectTest, SubtreePaintPropertyUpdateReasons) {
   LayoutObject* object = GetDocument().body()->GetLayoutObject();
-  object->SetSubtreeNeedsForcedPaintPropertyUpdate();
-  EXPECT_TRUE(object->SubtreeNeedsForcedPaintPropertyUpdate());
+  object->AddSubtreePaintPropertyUpdateReason(
+      SubtreePaintPropertyUpdateReason::kFragmentsChanged);
+  EXPECT_TRUE(object->SubtreePaintPropertyUpdateReasons());
   EXPECT_TRUE(object->NeedsPaintPropertyUpdate());
   EXPECT_TRUE(object->Parent()->DescendantNeedsPaintPropertyUpdate());
 
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPrePaint);
   object->GetMutableForPainting().ClearPaintFlags();
 
-  EXPECT_FALSE(object->SubtreeNeedsForcedPaintPropertyUpdate());
+  EXPECT_FALSE(object->SubtreePaintPropertyUpdateReasons());
   EXPECT_FALSE(object->NeedsPaintPropertyUpdate());
 }
 
@@ -370,55 +371,60 @@ TEST_F(LayoutObjectTest, NeedsPaintOffsetAndVisualRectUpdate) {
   EXPECT_TRUE(object->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(object->NeedsPaintOffsetAndVisualRectUpdate());
   EXPECT_TRUE(parent->ShouldCheckForPaintInvalidation());
-  EXPECT_TRUE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_FALSE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_TRUE(parent->DescendantNeedsPaintOffsetAndVisualRectUpdate());
   object->ClearPaintInvalidationFlags();
   EXPECT_FALSE(object->ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(object->NeedsPaintOffsetAndVisualRectUpdate());
   parent->ClearPaintInvalidationFlags();
   EXPECT_FALSE(parent->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_FALSE(parent->DescendantNeedsPaintOffsetAndVisualRectUpdate());
 
   object->SetShouldCheckForPaintInvalidation();
   EXPECT_TRUE(object->ShouldCheckForPaintInvalidation());
   EXPECT_TRUE(object->NeedsPaintOffsetAndVisualRectUpdate());
   EXPECT_TRUE(parent->ShouldCheckForPaintInvalidation());
-  EXPECT_TRUE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_FALSE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_TRUE(parent->DescendantNeedsPaintOffsetAndVisualRectUpdate());
   object->ClearPaintInvalidationFlags();
   EXPECT_FALSE(object->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(object->NeedsPaintOffsetAndVisualRectUpdate());
   parent->ClearPaintInvalidationFlags();
   EXPECT_FALSE(parent->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_FALSE(parent->DescendantNeedsPaintOffsetAndVisualRectUpdate());
 
   object->SetShouldDoFullPaintInvalidationWithoutGeometryChange();
   EXPECT_TRUE(object->ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(object->NeedsPaintOffsetAndVisualRectUpdate());
   EXPECT_TRUE(parent->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_FALSE(parent->DescendantNeedsPaintOffsetAndVisualRectUpdate());
   object->SetShouldCheckForPaintInvalidation();
   EXPECT_TRUE(object->NeedsPaintOffsetAndVisualRectUpdate());
-  EXPECT_TRUE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_TRUE(parent->DescendantNeedsPaintOffsetAndVisualRectUpdate());
   object->ClearPaintInvalidationFlags();
   EXPECT_FALSE(object->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(object->NeedsPaintOffsetAndVisualRectUpdate());
   parent->ClearPaintInvalidationFlags();
   EXPECT_FALSE(parent->ShouldCheckForPaintInvalidation());
-  EXPECT_FALSE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_FALSE(parent->DescendantNeedsPaintOffsetAndVisualRectUpdate());
 
   object->SetShouldCheckForPaintInvalidationWithoutGeometryChange();
   EXPECT_TRUE(object->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(object->NeedsPaintOffsetAndVisualRectUpdate());
   EXPECT_TRUE(parent->ShouldCheckForPaintInvalidation());
-  EXPECT_FALSE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_FALSE(parent->DescendantNeedsPaintOffsetAndVisualRectUpdate());
   object->SetShouldCheckForPaintInvalidation();
   EXPECT_TRUE(object->NeedsPaintOffsetAndVisualRectUpdate());
-  EXPECT_TRUE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_TRUE(parent->DescendantNeedsPaintOffsetAndVisualRectUpdate());
   object->ClearPaintInvalidationFlags();
   EXPECT_FALSE(object->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(object->NeedsPaintOffsetAndVisualRectUpdate());
   parent->ClearPaintInvalidationFlags();
   EXPECT_FALSE(parent->ShouldCheckForPaintInvalidation());
-  EXPECT_FALSE(parent->NeedsPaintOffsetAndVisualRectUpdate());
+  EXPECT_FALSE(parent->DescendantNeedsPaintOffsetAndVisualRectUpdate());
 }
 
 TEST_F(LayoutObjectTest, AssociatedLayoutObjectOfFirstLetterPunctuations) {
@@ -782,6 +788,23 @@ TEST_F(LayoutObjectTest, HasDistortingVisualEffects) {
   outer = GetDocument().getElementById("bad-transform");
   inner = outer->QuerySelector(".inner");
   ASSERT_TRUE(inner->GetLayoutObject()->HasDistortingVisualEffects());
+}
+
+TEST_F(LayoutObjectTest, DistortingVisualEffectsUnaliases) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="opacity: 0.2;">
+      <div style="width: 100px height:100px; contain: paint">
+        <div id="child"
+             style="position: relative; width: 100px; height:100px;"></div>
+      </div>
+    </div>
+  )HTML");
+
+  const auto* child = GetDocument().getElementById("child");
+  const auto* object = child->GetLayoutObject();
+  // This should pass and not DCHECK if the nodes are unaliased correctly.
+  EXPECT_TRUE(object->HasDistortingVisualEffects());
+  EXPECT_TRUE(object->HasNonZeroEffectiveOpacity());
 }
 
 class LayoutObjectSimTest : public SimTest {

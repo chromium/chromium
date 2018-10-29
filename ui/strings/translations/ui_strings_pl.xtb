@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{minutę temu}few{# minuty temu}many{# minut temu}other{# minuty temu}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}few{# min}many{# min}other{# min}}</translation>
 <translation id="1243314992276662751">Prześlij</translation>
+<translation id="1269641567813814718">Windows</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">POLECANE APLIKACJE</translation>
 <translation id="1368832886055348810">Od lewej do prawej</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Strona w dół</translation>
 <translation id="8245914219290430011">Tab</translation>
+<translation id="8259556432390118667">Wartość szesnastkowego kodu koloru</translation>
 <translation id="8328145009876646418">Krawędź po lewej</translation>
 <translation id="8331626408530291785">Przewiń w górę</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 rok}few{# lata}many{# lat}other{# roku}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">Domyślny</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">Dodaj notatkę na grafice</translation>
+<translation id="8841375032071747811">Przycisk Wstecz</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
 <translation id="9002566407876343676">otwórz</translation>
 <translation id="9038489124413477075">Folder bez nazwy</translation>

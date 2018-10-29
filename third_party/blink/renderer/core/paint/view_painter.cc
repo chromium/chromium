@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -31,6 +32,24 @@ void ViewPainter::Paint(const PaintInfo& paint_info) {
 }
 
 void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
+  PaintBoxDecorationBackgroundInternal(paint_info);
+  if (RuntimeEnabledFeatures::PaintTouchActionRectsEnabled()) {
+    BoxPainter(layout_view_)
+        .RecordHitTestData(paint_info, LayoutPoint(),
+                           layout_view_.BorderBoxRect());
+  }
+}
+
+void ViewPainter::PaintBoxDecorationBackgroundInternal(
+    const PaintInfo& paint_info) {
+  // Paint the background if we're visible and this block has a box decoration
+  // (background, border, appearance, or box shadow).
+  const ComputedStyle& style = layout_view_.StyleRef();
+  if (style.Visibility() != EVisibility::kVisible ||
+      !layout_view_.HasBoxDecorationBackground()) {
+    return;
+  }
+
   if (paint_info.SkipRootBackground())
     return;
 
@@ -50,8 +69,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   GraphicsContext& context = paint_info.context;
 
   // The background rect always includes at least the visible content size.
-  IntRect background_rect(
-      PixelSnappedIntRect(layout_view_.OverflowClipRect(LayoutPoint())));
+  IntRect background_rect(PixelSnappedIntRect(layout_view_.BackgroundRect()));
 
   // When printing, paint the entire unclipped scrolling content area.
   if (paint_info.IsPrinting())
@@ -70,7 +88,8 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
     // object_paint_properties.h for details.
     document_rect.MoveBy(layout_view_.ScrollOrigin());
     background_rect.Unite(document_rect);
-    display_item_client = layout_view_.Layer()->GraphicsLayerBacking();
+    display_item_client = &layout_view_.GetScrollableArea()
+                               ->GetScrollingBackgroundDisplayItemClient();
     scoped_scroll_property.emplace(
         paint_info.context.GetPaintController(),
         layout_view_.FirstFragment().ContentsProperties(), *display_item_client,

@@ -250,7 +250,7 @@ void HTMLTrackElement::DidCompleteLoad(LoadStatus status) {
   // track element. This task must use the DOM manipulation task source.
   //
   // (Note: We don't "queue a task" here because this method will only be called
-  // from a timer - m_loadTimer or TextTrackLoader::m_cueLoadTimer - which
+  // from a timer - load_timer_ or TextTrackLoader::cue_load_timer_ - which
   // should be a reasonable, and hopefully non-observable, approximation of the
   // spec text. I.e we could consider this to be run from the "networking task
   // source".)

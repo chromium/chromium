@@ -94,7 +94,7 @@ void OpenWithMenu::ModelChanged(const std::vector<LinkHandlerInfo>& handlers) {
       proxy_->UpdateMenuItem(command_id, true, false, more_apps_label_);
     } else if (it == handlers_.end()) {
       // Hide the menu or submenu parent.
-      proxy_->UpdateMenuItem(command_id, false, true, base::EmptyString16());
+      proxy_->UpdateMenuItem(command_id, false, true, base::string16());
     } else {
       // Update the menu with the new model.
       const base::string16 label = l10n_util::GetStringFUTF16(
@@ -123,14 +123,14 @@ void OpenWithMenu::AddPlaceholderItems(RenderViewContextMenuProxy* proxy,
   for (int i = 0; i < kNumSubMenuCommands; ++i) {
     const int command_id =
         IDC_CONTENT_CONTEXT_OPEN_WITH1 + kNumMainMenuCommands + i;
-    submenu->AddItem(command_id, base::EmptyString16());
+    submenu->AddItem(command_id, base::string16());
   }
   int command_id;
   for (int i = 0; i < kNumMainMenuCommands - 1; ++i) {
     command_id = IDC_CONTENT_CONTEXT_OPEN_WITH1 + i;
-    proxy->AddMenuItem(command_id, base::EmptyString16());
+    proxy->AddMenuItem(command_id, base::string16());
   }
-  proxy->AddSubMenu(++command_id, base::EmptyString16(), submenu);
+  proxy->AddSubMenu(++command_id, base::string16(), submenu);
 }
 
 std::pair<OpenWithMenu::HandlerMap, int> OpenWithMenu::BuildHandlersMap(

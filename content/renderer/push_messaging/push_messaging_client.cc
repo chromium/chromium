@@ -15,13 +15,11 @@
 #include "content/public/common/service_names.mojom.h"
 #include "content/renderer/push_messaging/push_provider.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/service_worker/web_service_worker_registration_impl.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "third_party/blink/public/platform/modules/push_messaging/web_push_error.h"
 #include "third_party/blink/public/platform/modules/push_messaging/web_push_subscription.h"
 #include "third_party/blink/public/platform/modules/push_messaging/web_push_subscription_options.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -45,11 +43,10 @@ void PushMessagingClient::OnDestruct() {
 }
 
 void PushMessagingClient::Subscribe(
-    blink::WebServiceWorkerRegistration* service_worker_registration,
+    int64_t service_worker_registration_id,
     const blink::WebPushSubscriptionOptions& options,
     bool user_gesture,
     std::unique_ptr<blink::WebPushSubscriptionCallbacks> callbacks) {
-  DCHECK(service_worker_registration);
   DCHECK(callbacks);
 
   // If a developer provided an application server key in |options|, skip
@@ -59,7 +56,7 @@ void PushMessagingClient::Subscribe(
         ->GetManifestManager()
         .RequestManifest(base::BindOnce(&PushMessagingClient::DidGetManifest,
                                         base::Unretained(this),
-                                        service_worker_registration, options,
+                                        service_worker_registration_id, options,
                                         user_gesture, std::move(callbacks)));
   } else {
     PushSubscriptionOptions content_options;
@@ -67,13 +64,13 @@ void PushMessagingClient::Subscribe(
     // Just treat the server key as a string of bytes and pass it to the push
     // service.
     content_options.sender_info = options.application_server_key.Latin1();
-    DoSubscribe(service_worker_registration, content_options, user_gesture,
+    DoSubscribe(service_worker_registration_id, content_options, user_gesture,
                 std::move(callbacks));
   }
 }
 
 void PushMessagingClient::DidGetManifest(
-    blink::WebServiceWorkerRegistration* service_worker_registration,
+    int64_t service_worker_registration_id,
     const blink::WebPushSubscriptionOptions& options,
     bool user_gesture,
     std::unique_ptr<blink::WebPushSubscriptionCallbacks> callbacks,
@@ -95,20 +92,15 @@ void PushMessagingClient::DidGetManifest(
         base::UTF16ToUTF8(manifest.gcm_sender_id.string());
   }
 
-  DoSubscribe(service_worker_registration, content_options, user_gesture,
+  DoSubscribe(service_worker_registration_id, content_options, user_gesture,
               std::move(callbacks));
 }
 
 void PushMessagingClient::DoSubscribe(
-    blink::WebServiceWorkerRegistration* service_worker_registration,
+    int64_t service_worker_registration_id,
     const PushSubscriptionOptions& options,
     bool user_gesture,
     std::unique_ptr<blink::WebPushSubscriptionCallbacks> callbacks) {
-  int64_t service_worker_registration_id =
-      static_cast<WebServiceWorkerRegistrationImpl*>(
-          service_worker_registration)
-          ->RegistrationId();
-
   if (options.sender_info.empty()) {
     DidSubscribe(std::move(callbacks),
                  mojom::PushRegistrationStatus::NO_SENDER_ID, base::nullopt,

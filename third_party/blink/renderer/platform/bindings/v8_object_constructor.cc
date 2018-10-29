@@ -102,11 +102,6 @@ v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
     CHECK(prototype_value->IsObject());
 
     prototype_object = prototype_value.As<v8::Object>();
-    if (prototype_object->InternalFieldCount() ==
-        kV8PrototypeInternalFieldcount) {
-      prototype_object->SetAlignedPointerInInternalField(
-          kV8PrototypeTypeIndex, const_cast<WrapperTypeInfo*>(type));
-    }
   }
 
   if (creation_mode == CreationMode::kInstallConditionalFeatures) {

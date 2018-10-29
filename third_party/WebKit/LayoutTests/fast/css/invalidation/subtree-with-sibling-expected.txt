@@ -2,7 +2,6 @@ A subtree invalidation should not invalidation sibling forest
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(c1Spans[0]).backgroundColor is transparent
 PASS getComputedStyle(c1Spans[1]).backgroundColor is transparent
 PASS getComputedStyle(c2Spans[0]).backgroundColor is transparent
@@ -16,6 +15,6 @@ PASS getComputedStyle(c2Spans[1]).backgroundColor is green
 PASS successfullyParsed is true
 
 TEST COMPLETE
-This text should be green This text should be green
-This text should be green This text should be green
 
+This text should be green This text should be green
+This text should be green This text should be green

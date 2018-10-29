@@ -22,7 +22,7 @@ class PrintManager : public content::WebContentsObserver {
 
 #if defined(OS_ANDROID)
   // TODO(timvolodine): consider introducing PrintManagerAndroid (crbug/500960)
-  using PdfWritingDoneCallback = base::Callback<void(int, int)>;
+  using PdfWritingDoneCallback = base::Callback<void(int /* page count */)>;
 
   void PdfWritingDone(int page_count);
 

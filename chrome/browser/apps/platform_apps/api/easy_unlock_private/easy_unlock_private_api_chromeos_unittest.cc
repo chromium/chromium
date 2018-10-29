@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "chrome/browser/apps/platform_apps/api/easy_unlock_private/easy_unlock_private_connection_manager.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "components/cryptauth/fake_connection.h"
@@ -19,7 +20,8 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
 
-namespace apps {
+namespace chrome_apps {
+namespace api {
 namespace {
 
 using cryptauth::FakeConnection;
@@ -61,8 +63,9 @@ class EasyUnlockPrivateApiTest : public extensions::ExtensionApiUnittest {
     ExtensionApiUnittest::SetUp();
 
     EasyUnlockPrivateConnectionResourceManager::GetFactoryInstance()
-        ->SetTestingFactoryAndUse(browser()->profile(),
-                                  ApiResourceManagerTestFactory);
+        ->SetTestingFactoryAndUse(
+            browser()->profile(),
+            base::BindRepeating(&ApiResourceManagerTestFactory));
   }
 };
 
@@ -111,4 +114,5 @@ TEST_F(EasyUnlockPrivateApiTest, ExtensionUnloaded) {
 }
 
 }  // namespace
-}  // namespace apps
+}  // namespace api
+}  // namespace chrome_apps

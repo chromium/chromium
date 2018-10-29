@@ -38,13 +38,13 @@
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_detail_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_detail_item.h"
 #import "ios/chrome/browser/ui/settings/cells/table_view_clear_browsing_data_item.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -503,8 +503,8 @@ actionSheetCoordinatorWithDataTypesToRemove:
 - (ListItem*)timeRangeItem {
   ListItem* timeRangeItem;
   if (self.listType == ClearBrowsingDataListType::kListTypeCollectionView) {
-    SettingsDetailItem* collectionTimeRangeItem =
-        [[SettingsDetailItem alloc] initWithType:ItemTypeTimeRange];
+    LegacySettingsDetailItem* collectionTimeRangeItem =
+        [[LegacySettingsDetailItem alloc] initWithType:ItemTypeTimeRange];
     collectionTimeRangeItem.text = l10n_util::GetNSString(
         IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE);
     NSString* detailText = [TimeRangeSelectorCollectionViewController

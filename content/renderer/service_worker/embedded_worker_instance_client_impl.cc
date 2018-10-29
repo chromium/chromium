@@ -108,9 +108,10 @@ void EmbeddedWorkerInstanceClientImpl::AddMessageToConsole(
 }
 
 void EmbeddedWorkerInstanceClientImpl::BindDevToolsAgent(
+    blink::mojom::DevToolsAgentHostAssociatedPtrInfo host,
     blink::mojom::DevToolsAgentAssociatedRequest request) {
   DCHECK(worker_);
-  worker_->BindDevToolsAgent(request.PassHandle());
+  worker_->BindDevToolsAgent(host.PassHandle(), request.PassHandle());
 }
 
 EmbeddedWorkerInstanceClientImpl::EmbeddedWorkerInstanceClientImpl(

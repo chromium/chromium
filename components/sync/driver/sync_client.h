@@ -39,7 +39,7 @@ class InvalidationService;
 }  // namespace invalidation
 
 namespace sync_sessions {
-class SyncSessionsClient;
+class SessionSyncService;
 }  // namespace sync_sessions
 
 namespace syncer {
@@ -76,10 +76,11 @@ class SyncClient {
   virtual bookmarks::BookmarkModel* GetBookmarkModel() = 0;
   virtual favicon::FaviconService* GetFaviconService() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;
+  virtual sync_sessions::SessionSyncService* GetSessionSyncService() = 0;
   virtual bool HasPasswordStore() = 0;
 
   // Returns a vector with all supported datatypes and their controllers.
-  // TODO(crbug.com/681921): Remove |local_device_info_provider| once the
+  // TODO(crbug.com/895455): Remove |local_device_info_provider| once the
   // migration to USS is completed.
   virtual DataTypeController::TypeVector CreateDataTypeControllers(
       LocalDeviceInfoProvider* local_device_info_provider) = 0;
@@ -92,7 +93,6 @@ class SyncClient {
   virtual BookmarkUndoService* GetBookmarkUndoServiceIfExists() = 0;
   virtual invalidation::InvalidationService* GetInvalidationService() = 0;
   virtual scoped_refptr<ExtensionsActivity> GetExtensionsActivity() = 0;
-  virtual sync_sessions::SyncSessionsClient* GetSyncSessionsClient() = 0;
 
   // Returns a weak pointer to the syncable service specified by |type|.
   // Weak pointer may be unset if service is already destroyed.

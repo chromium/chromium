@@ -45,8 +45,11 @@ void QpackDecoder::ProgressiveDecoder::Decode(QuicStringPiece data) {
       case State::kVarintDone:
         DoVarintDone();
         break;
-      case State::kNameString:
-        bytes_consumed = DoNameString(data);
+      case State::kReadName:
+        bytes_consumed = DoReadName(data);
+        break;
+      case State::kDecodeName:
+        DoDecodeName();
         break;
       case State::kValueLengthStart:
         bytes_consumed = DoValueLengthStart(data);
@@ -57,8 +60,11 @@ void QpackDecoder::ProgressiveDecoder::Decode(QuicStringPiece data) {
       case State::kValueLengthDone:
         DoValueLengthDone();
         break;
-      case State::kValueString:
-        bytes_consumed = DoValueString(data);
+      case State::kReadValue:
+        bytes_consumed = DoReadValue(data);
+        break;
+      case State::kDecodeValue:
+        DoDecodeValue();
         break;
       case State::kDone:
         DoDone();
@@ -76,7 +82,8 @@ void QpackDecoder::ProgressiveDecoder::Decode(QuicStringPiece data) {
 
     // Stop processing if no more data but next state would require it.
     if (data.empty() && (state_ != State::kVarintDone) &&
-        (state_ != State::kValueLengthDone) && (state_ != State::kDone)) {
+        (state_ != State::kDecodeName) && (state_ != State::kValueLengthDone) &&
+        (state_ != State::kDecodeValue) && (state_ != State::kDone)) {
       return;
     }
   }
@@ -187,10 +194,17 @@ size_t QpackDecoder::ProgressiveDecoder::DoVarintResume(QuicStringPiece data) {
 
 void QpackDecoder::ProgressiveDecoder::DoVarintDone() {
   if (literal_name_) {
+    // TODO(bnc): Impose a sensible limit on length to avoid memory exhaustion
+    // attacks.
     name_length_ = varint_decoder_.value();
     name_.clear();
     name_.reserve(name_length_);
-    state_ = State::kNameString;
+    // Do not handle empty names differently.  (They are probably forbidden by
+    // higher layers, but it is not enforced in this class.)  If there is no
+    // more data to read, then processing stalls, but the instruction is not
+    // complete without the value, so OnHeaderDecoded() could not be called yet
+    // anyway.
+    state_ = State::kReadName;
     return;
   }
 
@@ -212,17 +226,23 @@ void QpackDecoder::ProgressiveDecoder::DoVarintDone() {
   state_ = State::kStart;
 }
 
-size_t QpackDecoder::ProgressiveDecoder::DoNameString(QuicStringPiece data) {
+size_t QpackDecoder::ProgressiveDecoder::DoReadName(QuicStringPiece data) {
   DCHECK(!data.empty());
+  // |name_length_| might be zero.
   DCHECK_LE(name_.size(), name_length_);
 
   size_t bytes_consumed = std::min(name_length_ - name_.size(), data.size());
   name_.append(data.data(), bytes_consumed);
 
-  if (name_.size() < name_length_) {
-    return bytes_consumed;
+  DCHECK_LE(name_.size(), name_length_);
+  if (name_.size() == name_length_) {
+    state_ = State::kDecodeName;
   }
 
+  return bytes_consumed;
+}
+
+void QpackDecoder::ProgressiveDecoder::DoDecodeName() {
   DCHECK_EQ(name_.size(), name_length_);
 
   if (is_huffman_) {
@@ -232,13 +252,12 @@ size_t QpackDecoder::ProgressiveDecoder::DoNameString(QuicStringPiece data) {
     huffman_decoder_.Decode(name_, &decoded_name);
     if (!huffman_decoder_.InputProperlyTerminated()) {
       OnError("Error in Huffman-encoded name.");
-      return bytes_consumed;
+      return;
     }
     name_ = decoded_name;
   }
 
   state_ = State::kValueLengthStart;
-  return bytes_consumed;
 }
 
 size_t QpackDecoder::ProgressiveDecoder::DoValueLengthStart(
@@ -291,28 +310,38 @@ size_t QpackDecoder::ProgressiveDecoder::DoValueLengthResume(
 
 void QpackDecoder::ProgressiveDecoder::DoValueLengthDone() {
   value_.clear();
+  // TODO(bnc): Impose a sensible limit on length to avoid memory exhaustion
+  // attacks.
   value_length_ = varint_decoder_.value();
 
+  // If value is empty, skip DoReadValue() and DoDecodeValue() and jump directly
+  // to DoDone().  This is so that OnHeaderDecoded() is called even if there is
+  // no more data.
   if (value_length_ == 0) {
     state_ = State::kDone;
     return;
   }
 
   value_.reserve(value_length_);
-  state_ = State::kValueString;
+  state_ = State::kReadValue;
 }
 
-size_t QpackDecoder::ProgressiveDecoder::DoValueString(QuicStringPiece data) {
+size_t QpackDecoder::ProgressiveDecoder::DoReadValue(QuicStringPiece data) {
   DCHECK(!data.empty());
+  DCHECK_LT(0u, value_length_);
   DCHECK_LT(value_.size(), value_length_);
 
   size_t bytes_consumed = std::min(value_length_ - value_.size(), data.size());
   value_.append(data.data(), bytes_consumed);
 
-  if (value_.size() < value_length_) {
-    return bytes_consumed;
+  DCHECK_LE(value_.size(), value_length_);
+  if (value_.size() == value_length_) {
+    state_ = State::kDecodeValue;
   }
+  return bytes_consumed;
+}
 
+void QpackDecoder::ProgressiveDecoder::DoDecodeValue() {
   DCHECK_EQ(value_.size(), value_length_);
 
   if (is_huffman_) {
@@ -322,13 +351,12 @@ size_t QpackDecoder::ProgressiveDecoder::DoValueString(QuicStringPiece data) {
     huffman_decoder_.Decode(value_, &decoded_value);
     if (!huffman_decoder_.InputProperlyTerminated()) {
       OnError("Error in Huffman-encoded value.");
-      return bytes_consumed;
+      return;
     }
     value_ = decoded_value;
   }
 
   state_ = State::kDone;
-  return bytes_consumed;
 }
 
 void QpackDecoder::ProgressiveDecoder::DoDone() {

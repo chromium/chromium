@@ -74,8 +74,7 @@ SettingsStorageQuotaEnforcer::~SettingsStorageQuotaEnforcer() {}
 
 size_t SettingsStorageQuotaEnforcer::GetBytesInUse(const std::string& key) {
   LazyCalculateUsage();
-  std::map<std::string, size_t>::iterator maybe_used =
-      used_per_setting_.find(key);
+  auto maybe_used = used_per_setting_.find(key);
   return maybe_used == used_per_setting_.end() ? 0u : maybe_used->second;
 }
 

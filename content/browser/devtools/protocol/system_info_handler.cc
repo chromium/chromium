@@ -11,10 +11,12 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_switches.h"
@@ -87,6 +89,10 @@ class AuxGPUInfoEnumerator : public gpu::GPUInfo::Enumerator {
   void BeginOverlayCapability() override {}
 
   void EndOverlayCapability() override {}
+
+  void BeginDx12VulkanVersionInfo() override {}
+
+  void EndDx12VulkanVersionInfo() override {}
 
   void BeginAuxAttributes() override {
     in_aux_attributes_ = true;
@@ -164,8 +170,8 @@ class SystemInfoHandlerGpuObserver : public content::GpuDataManagerObserver {
       std::unique_ptr<GetInfoCallback> callback)
       : callback_(std::move(callback)),
         weak_factory_(this) {
-    BrowserThread::PostDelayedTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostDelayedTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&SystemInfoHandlerGpuObserver::ObserverWatchdogCallback,
                        weak_factory_.GetWeakPtr()),
         base::TimeDelta::FromMilliseconds(kGPUInfoWatchdogTimeoutMs));

@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGText {text} at (10,45.50) size 141.31x18.50 contains 1 chunk(s)
-      LayoutSVGInlineText {#text} at (10,45.50) size 141.31x18.50
-        chunk 1 text run 1 at (10.00,60.00) startOffset 0 endOffset 22 width 141.32: "This should not crash."
-    LayoutSVGContainer {use} at (0,0) size 0x0 [transform={m=((1.00,0.00)(0.00,1.00)) t=(25.00,25.00)}]

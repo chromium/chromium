@@ -43,16 +43,14 @@ std::vector<DownloadItem::ReceivedSlice> FindSlicesToDownload(
     return result;
   }
 
-  std::vector<DownloadItem::ReceivedSlice>::const_iterator iter =
-      received_slices.begin();
+  auto iter = received_slices.begin();
   DCHECK_GE(iter->offset, 0);
   if (iter->offset != 0)
     result.emplace_back(0, iter->offset);
 
   while (true) {
     int64_t offset = iter->offset + iter->received_bytes;
-    std::vector<DownloadItem::ReceivedSlice>::const_iterator next =
-        std::next(iter);
+    auto next = std::next(iter);
     if (next == received_slices.end()) {
       result.emplace_back(offset, DownloadSaveInfo::kLengthFullContent);
       break;
@@ -69,11 +67,10 @@ std::vector<DownloadItem::ReceivedSlice> FindSlicesToDownload(
 size_t AddOrMergeReceivedSliceIntoSortedArray(
     const DownloadItem::ReceivedSlice& new_slice,
     std::vector<DownloadItem::ReceivedSlice>& received_slices) {
-  std::vector<DownloadItem::ReceivedSlice>::iterator it =
-      std::upper_bound(received_slices.begin(), received_slices.end(),
-                       new_slice, compareReceivedSlices);
+  auto it = std::upper_bound(received_slices.begin(), received_slices.end(),
+                             new_slice, compareReceivedSlices);
   if (it != received_slices.begin()) {
-    std::vector<DownloadItem::ReceivedSlice>::iterator prev = std::prev(it);
+    auto prev = std::prev(it);
     if (prev->offset + prev->received_bytes == new_slice.offset) {
       prev->received_bytes += new_slice.received_bytes;
       return static_cast<size_t>(std::distance(received_slices.begin(), prev));
@@ -197,8 +194,7 @@ base::TimeDelta GetParallelRequestRemainingTimeConfig() {
 
 int64_t GetMaxContiguousDataBlockSizeFromBeginning(
     const DownloadItem::ReceivedSlices& slices) {
-  std::vector<DownloadItem::ReceivedSlice>::const_iterator iter =
-      slices.begin();
+  auto iter = slices.begin();
 
   int64_t size = 0;
   while (iter != slices.end() && iter->offset == size) {

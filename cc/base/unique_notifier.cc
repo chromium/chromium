@@ -22,11 +22,13 @@ UniqueNotifier::UniqueNotifier(base::SequencedTaskRunner* task_runner,
 UniqueNotifier::~UniqueNotifier() = default;
 
 void UniqueNotifier::Cancel() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock hold(lock_);
   notification_pending_ = false;
 }
 
 void UniqueNotifier::Schedule() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock hold(lock_);
   if (notification_pending_)
     return;
@@ -38,6 +40,7 @@ void UniqueNotifier::Schedule() {
 }
 
 void UniqueNotifier::Notify() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   // Scope to release |lock_| before running the closure.
   {
     base::AutoLock hold(lock_);

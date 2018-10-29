@@ -1,10 +1,10 @@
 Button 1
 Button 2
 Button 3
+
 This test makes sure that when aria-hidden changes, the AX hierarchy is updated.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS parent.childAtIndex(0).isEqual(button1) is true
 PASS parent.childAtIndex(1).isEqual(button2) is true

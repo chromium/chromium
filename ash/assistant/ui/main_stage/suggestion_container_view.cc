@@ -91,7 +91,7 @@ void SuggestionContainerView::OnConversationStartersChanged(
 }
 
 void SuggestionContainerView::OnResponseChanged(
-    const AssistantResponse& response) {
+    const std::shared_ptr<AssistantResponse>& response) {
   has_received_response_ = true;
 
   OnSuggestionsCleared();
@@ -100,7 +100,7 @@ void SuggestionContainerView::OnResponseChanged(
   layout_manager_->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::MAIN_AXIS_ALIGNMENT_START);
 
-  OnSuggestionsChanged(response.GetSuggestions());
+  OnSuggestionsChanged(response->GetSuggestions());
 }
 
 void SuggestionContainerView::OnResponseCleared() {

@@ -113,7 +113,8 @@ class CONTENT_EXPORT SharedWorkerHost
                  int frame_id,
                  const blink::MessagePortChannel& port);
 
-  void BindDevToolsAgent(blink::mojom::DevToolsAgentAssociatedRequest request);
+  void BindDevToolsAgent(blink::mojom::DevToolsAgentHostAssociatedPtrInfo host,
+                         blink::mojom::DevToolsAgentAssociatedRequest request);
 
   void SetAppCacheHandle(
       std::unique_ptr<AppCacheNavigationHandle> appcache_handle);

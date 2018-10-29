@@ -61,6 +61,10 @@ bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
   if (!IsCreditCardMigrationEnabled())
     return false;
 
+  // Don't show the the prompt if user cancelled/rejected previously.
+  if (prefs::IsLocalCardMigrationPromptPreviouslyCancelled(client_->GetPrefs()))
+    return false;
+
   // Fetch all migratable credit cards and store in |migratable_credit_cards_|.
   GetMigratableCreditCards();
 
@@ -111,8 +115,7 @@ void LocalCardMigrationManager::OnUserAcceptedMainMigrationDialog(
   // will remove any card from |migratable_credit_cards_| of which the GUID is
   // not in |selected_card_guids|.
   auto card_is_selected = [&selected_card_guids](MigratableCreditCard& card) {
-    return std::find(selected_card_guids.begin(), selected_card_guids.end(),
-                     card.credit_card().guid()) == selected_card_guids.end();
+    return !base::ContainsValue(selected_card_guids, card.credit_card().guid());
   };
   migratable_credit_cards_.erase(
       std::remove_if(migratable_credit_cards_.begin(),

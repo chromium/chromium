@@ -203,8 +203,7 @@ void GcmSendFunction::CompleteFunctionWithResult(
 
 bool GcmSendFunction::ValidateMessageData(const gcm::MessageData& data) const {
   size_t total_size = 0u;
-  for (std::map<std::string, std::string>::const_iterator iter = data.begin();
-       iter != data.end(); ++iter) {
+  for (auto iter = data.cbegin(); iter != data.cend(); ++iter) {
     total_size += iter->first.size() + iter->second.size();
 
     if (!IsMessageKeyValid(iter->first) ||

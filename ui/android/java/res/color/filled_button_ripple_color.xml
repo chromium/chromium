@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources">
+    <item android:alpha="@dimen/default_pressed_alpha"
+        android:color="@android:color/white" android:state_pressed="true"/>
+    <item android:alpha="@dimen/default_focused_hovered_alpha"
+        android:color="@android:color/white" android:state_focused="true" android:state_hovered="true"/>
+    <item android:alpha="@dimen/default_focused_alpha"
+        android:color="@android:color/white" android:state_focused="true"/>
+    <item android:alpha="@dimen/default_hovered_alpha"
+        android:color="@android:color/white" android:state_hovered="true"/>
+    <item android:color="@android:color/transparent" />
+</selector>

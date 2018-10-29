@@ -15,7 +15,9 @@ using v8::HandleScope;
 
 namespace gin {
 
-V8Test::V8Test() = default;
+V8Test::V8Test()
+    : scoped_task_environment_(
+          base::test::ScopedTaskEnvironment::MainThreadType::IO) {}
 
 V8Test::~V8Test() = default;
 

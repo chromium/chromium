@@ -5,7 +5,6 @@
 #include "chrome/service/cloud_print/job_status_updater.h"
 
 #include "base/bind.h"
-#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
@@ -15,7 +14,6 @@
 #include "base/values.h"
 #include "chrome/common/cloud_print/cloud_print_constants.h"
 #include "chrome/service/cloud_print/cloud_print_service_helpers.h"
-#include "url/gurl.h"
 
 namespace cloud_print {
 
@@ -43,7 +41,6 @@ JobStatusUpdater::JobStatusUpdater(
       cloud_print_server_url_(cloud_print_server_url),
       print_system_(print_system),
       delegate_(delegate),
-      stopped_(false),
       partial_traffic_annotation_(partial_traffic_annotation) {
   DCHECK(delegate_);
 }
@@ -93,8 +90,7 @@ void JobStatusUpdater::UpdateStatus() {
 }
 
 void JobStatusUpdater::Stop() {
-  request_ = NULL;
-  DCHECK(delegate_);
+  request_ = nullptr;
   stopped_ = true;
   delegate_->OnJobCompleted(this);
 }
@@ -117,8 +113,7 @@ CloudPrintURLFetcher::ResponseAction JobStatusUpdater::OnRequestAuthError() {
   // auth information (may take forever). We'll drop current request and
   // propagate this error to the upper level. After auth issues will be
   // resolved, GCP connector will restart.
-  if (delegate_)
-    delegate_->OnAuthError();
+  delegate_->OnAuthError();
   return CloudPrintURLFetcher::STOP_PROCESSING;
 }
 

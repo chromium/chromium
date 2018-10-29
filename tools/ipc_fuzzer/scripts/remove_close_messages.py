@@ -1,11 +1,11 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Removes ViewHostMsg_Close and alike from testcases. These messages are an
+"""Removes WidgetHostMsg_Close and alike from testcases. These messages are an
 annoyance for corpus distillation. They cause the browser to exit, so no
-further messages are processed. On the other hand, ViewHostMsg_Close is useful
+further messages are processed. On the other hand, WidgetHostMsg_Close is useful
 for fuzzing - many found bugs are related to a renderer disappearing. So the
-fuzzer should be crafting random ViewHostMsg_Close messages.
+fuzzer should be crafting random WidgetHostMsg_Close messages.
 """
 
 import argparse
@@ -24,7 +24,7 @@ def create_temp_file():
 
 
 def main():
-  desc = 'Remove ViewHostMsg_Close and alike from the testcases.'
+  desc = 'Remove WidgetHostMsg_Close and alike from the testcases.'
   parser = argparse.ArgumentParser(description=desc)
   parser.add_argument(
       '--out-dir',
@@ -55,7 +55,7 @@ def main():
   filter_command = [
       message_util_path,
       '--invert',
-      '--regexp=ViewHostMsg_Close|ViewHostMsg_ClosePage_ACK',
+      '--regexp=WidgetHostMsg_Close|WidgetHostMsg_ClosePage_ACK',
       'input',
       'output',
   ]

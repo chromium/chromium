@@ -69,7 +69,7 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
     first_time = false;
   }
 
-  ASSERT_PRED_FORMAT2(FloatBoxTest::AssertContains, bounds, empirical_bounds);
+  ASSERT_PRED_FORMAT2(float_box_test::AssertContains, bounds, empirical_bounds);
 }
 
 TEST(TransformOperationsTest, AbsoluteAnimatedTranslatedBoundsTest) {
@@ -86,25 +86,25 @@ TEST(TransformOperationsTest, AbsoluteAnimatedTranslatedBoundsTest) {
 
   EXPECT_TRUE(
       to_ops.BlendedBoundsForBox(box, kIdentityOperations, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, 0, 0, 20, 20, 210), bounds);
 
   EXPECT_TRUE(
       kIdentityOperations.BlendedBoundsForBox(box, to_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, 0, 0, 20, 20, 210), bounds);
 
   EXPECT_TRUE(
       kIdentityOperations.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-30, 0, 0, 40, 30, 25), bounds);
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-30, 10, 15, 50, 20, 195), bounds);
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, -0.5, 1.25, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-50, 7.5, -77.5, 80, 27.5, 333.75), bounds);
 }
 
@@ -148,25 +148,25 @@ TEST(TransformOperationsTest, AbsoluteAnimatedScaleBoundsTest) {
 
   EXPECT_TRUE(
       to_ops.BlendedBoundsForBox(box, kIdentityOperations, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, 0, 0, 50, 20, 10), bounds);
 
   EXPECT_TRUE(
       kIdentityOperations.BlendedBoundsForBox(box, to_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, 0, 0, 50, 20, 10), bounds);
 
   EXPECT_TRUE(
       kIdentityOperations.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, -30, 0, 40, 40, 10), bounds);
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, -30, 0, 50, 50, 10), bounds);
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, -0.5, 1.25, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, -55, 0, 52.5, 87.5, 10), bounds);
 }
 
@@ -217,7 +217,7 @@ TEST(TransformOperationsTest, AbsoluteAnimatedRotationBounds) {
     box.SetSize(FloatPoint3D(sizes[i], sizes[i], 0));
 
     EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-    EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+    EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                         FloatBox(-2, -2, 0, 4, 4, 0), bounds);
   }
 }
@@ -239,7 +239,7 @@ TEST(TransformOperationsTest, AbsoluteAnimatedExtremeRotationBounds) {
   float max = 1;
   float size = max - min;
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(min, min, min, size, size, size), bounds);
 }
 
@@ -281,7 +281,7 @@ TEST(TransformOperationsTest, AbsoluteAnimatedOnAxisRotationBounds) {
   FloatBox bounds;
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual, box, bounds);
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual, box, bounds);
 }
 
 // This would have been best as anonymous structs, but |arraysize|
@@ -328,7 +328,7 @@ TEST(TransformOperationsTest, AbsoluteAnimatedProblematicAxisRotationBounds) {
     FloatBox bounds;
 
     EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-    EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual, tests[i].expected,
+    EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual, tests[i].expected,
                         bounds);
   }
 }
@@ -374,7 +374,7 @@ TEST(TransformOperationsTest, AbsoluteAnimatedPerspectiveBoundsTest) {
   FloatBox box(0, 0, 0, 10, 10, 10);
   FloatBox bounds;
   to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds);
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, 0, 0, 20, 20, 20), bounds);
 
   from_ops.BlendedBoundsForBox(box, to_ops, -0.25, 1.25, &bounds);
@@ -383,7 +383,7 @@ TEST(TransformOperationsTest, AbsoluteAnimatedPerspectiveBoundsTest) {
   // closest the observer is 17-10=7.
   double projected_size = 10.0 / 7.0 * 17.0;
   EXPECT_PRED_FORMAT2(
-      FloatBoxTest::AssertAlmostEqual,
+      float_box_test::AssertAlmostEqual,
       FloatBox(0, 0, 0, projected_size, projected_size, projected_size),
       bounds);
 }
@@ -420,19 +420,19 @@ TEST(TransformOperationsTest, AnimatedSkewBoundsTest) {
   FloatBox bounds;
 
   to_ops.BlendedBoundsForBox(box, kIdentityOperations, 0, 1, &bounds);
-  ASSERT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  ASSERT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, 0, 0, 10, 20, 10), bounds);
 
   kIdentityOperations.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds);
-  ASSERT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  ASSERT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-10, 0, 0, 20, 10, 10), bounds);
 
   to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds);
-  ASSERT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  ASSERT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-10, 0, 0, 20, 20, 10), bounds);
 
   from_ops.BlendedBoundsForBox(box, to_ops, 0, 1, &bounds);
-  ASSERT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  ASSERT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-10, 0, 0, 20, 20, 10), bounds);
 }
 
@@ -465,7 +465,8 @@ TEST(TransformOperationsTest, NonCommutativeRotations) {
   FloatBox expanded_bounds = bounds;
   expanded_bounds.ExpandTo(blended_point);
 
-  ASSERT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual, bounds, expanded_bounds);
+  ASSERT_PRED_FORMAT2(float_box_test::AssertAlmostEqual, bounds,
+                      expanded_bounds);
 }
 
 TEST(TransformOperationsTest, AbsoluteSequenceBoundsTest) {
@@ -494,21 +495,21 @@ TEST(TransformOperationsTest, AbsoluteSequenceBoundsTest) {
   FloatBox bounds;
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, -0.5, 1.5, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-57, -59, -1, 76, 112, 80), bounds);
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-32, -25, 7, 42, 44, 48), bounds);
 
   EXPECT_TRUE(
       to_ops.BlendedBoundsForBox(box, kIdentityOperations, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-33, -13, 3, 57, 19, 52), bounds);
 
   EXPECT_TRUE(
       kIdentityOperations.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(FloatBoxTest::AssertAlmostEqual,
+  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-7, -3, 2, 15, 23, 20), bounds);
 }
 

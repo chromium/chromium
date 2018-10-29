@@ -59,6 +59,7 @@ SiteInstanceImpl::~SiteInstanceImpl() {
 // static
 scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::Create(
     BrowserContext* browser_context) {
+  DCHECK(browser_context);
   return base::WrapRefCounted(
       new SiteInstanceImpl(new BrowsingInstance(browser_context)));
 }
@@ -67,6 +68,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::Create(
 scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForURL(
     BrowserContext* browser_context,
     const GURL& url) {
+  DCHECK(browser_context);
   // This will create a new SiteInstance and BrowsingInstance.
   scoped_refptr<BrowsingInstance> instance(
       new BrowsingInstance(browser_context));
@@ -273,21 +275,11 @@ bool SiteInstanceImpl::HasWrongProcessForURL(const GURL& url) {
       origin_lock);
 }
 
-scoped_refptr<SiteInstanceImpl>
-SiteInstanceImpl::GetDefaultSubframeSiteInstance() {
-  return browsing_instance_->GetDefaultSubframeSiteInstance();
-}
-
 bool SiteInstanceImpl::RequiresDedicatedProcess() {
   if (!has_site_)
     return false;
 
   return DoesSiteRequireDedicatedProcess(GetBrowserContext(), site_);
-}
-
-bool SiteInstanceImpl::IsDefaultSubframeSiteInstance() const {
-  return process_reuse_policy_ ==
-         ProcessReusePolicy::USE_DEFAULT_SUBFRAME_PROCESS;
 }
 
 void SiteInstanceImpl::IncrementActiveFrameCount() {
@@ -324,6 +316,7 @@ BrowserContext* SiteInstanceImpl::GetBrowserContext() const {
 // static
 scoped_refptr<SiteInstance> SiteInstance::Create(
     BrowserContext* browser_context) {
+  DCHECK(browser_context);
   return SiteInstanceImpl::Create(browser_context);
 }
 
@@ -331,6 +324,7 @@ scoped_refptr<SiteInstance> SiteInstance::Create(
 scoped_refptr<SiteInstance> SiteInstance::CreateForURL(
     BrowserContext* browser_context,
     const GURL& url) {
+  DCHECK(browser_context);
   return SiteInstanceImpl::CreateForURL(browser_context, url);
 }
 
@@ -351,6 +345,8 @@ bool SiteInstanceImpl::IsSameWebSite(BrowserContext* browser_context,
                                      const GURL& real_src_url,
                                      const GURL& real_dest_url,
                                      bool should_compare_effective_urls) {
+  DCHECK(browser_context);
+
   GURL src_url =
       should_compare_effective_urls
           ? SiteInstanceImpl::GetEffectiveURL(browser_context, real_src_url)
@@ -491,7 +487,7 @@ GURL SiteInstanceImpl::GetSiteForURL(BrowserContext* browser_context,
 
   // If there is no host but there is a scheme, return the scheme.
   // This is useful for cases like file URLs.
-  if (!origin.unique()) {
+  if (!origin.opaque()) {
     // Prefer to use the scheme of |origin| rather than |url|, to correctly
     // cover blob:file: and filesystem:file: URIs (see also
     // https://crbug.com/697111).
@@ -565,20 +561,27 @@ bool SiteInstanceImpl::HasEffectiveURL(BrowserContext* browser_context,
 bool SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
     BrowserContext* browser_context,
     const GURL& url) {
+  DCHECK(browser_context);
+
   // If --site-per-process is enabled, site isolation is enabled everywhere.
   if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
-    return true;
-
-  // Error pages in main frames do require isolation, however since this is
-  // missing the context whether this is for a main frame or not, that part
-  // is enforced in RenderFrameHostManager.
-  if (url.SchemeIs(kChromeErrorScheme))
     return true;
 
   // Always require a dedicated process for isolated origins.
   GURL site_url = SiteInstance::GetSiteForURL(browser_context, url);
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   if (policy->IsIsolatedOrigin(url::Origin::Create(site_url)))
+    return true;
+
+  // Error pages in main frames do require isolation, however since this is
+  // missing the context whether this is for a main frame or not, that part
+  // is enforced in RenderFrameHostManager.
+  if (site_url.SchemeIs(kChromeErrorScheme))
+    return true;
+
+  // Isolate kChromeUIScheme pages from one another and from other kinds of
+  // schemes.
+  if (site_url.SchemeIs(content::kChromeUIScheme))
     return true;
 
   // Let the content embedder enable site isolation for specific URLs. Use the
@@ -595,6 +598,8 @@ bool SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
 // static
 bool SiteInstanceImpl::ShouldLockToOrigin(BrowserContext* browser_context,
                                           GURL site_url) {
+  DCHECK(browser_context);
+
   // Don't lock to origin in --single-process mode, since this mode puts
   // cross-site pages into the same process.
   if (RenderProcessHost::run_renderer_in_process())
@@ -609,12 +614,6 @@ bool SiteInstanceImpl::ShouldLockToOrigin(BrowserContext* browser_context,
   // TODO(ncarter): Remove this exclusion once we can make origin lock per
   // RenderFrame routing id.
   if (site_url.SchemeIs(content::kGuestScheme))
-    return false;
-
-  // TODO(creis, nick) https://crbug.com/510588 Chrome UI pages use the same
-  // site (chrome://chrome), so they can't be locked because the site being
-  // loaded doesn't match the SiteInstance.
-  if (site_url.SchemeIs(content::kChromeUIScheme))
     return false;
 
   // TODO(creis, nick): Until we can handle sites with effective URLs at the

@@ -14,5 +14,7 @@ component("cpp") {
     "//base",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "IS_MEDIA_SESSION_CPP_IMPL" ]
 }

@@ -48,11 +48,13 @@ class LockScreenActionBackgroundView::NoteBackground
     gfx::Point center = base::i18n::IsRTL() ? GetLocalBounds().origin()
                                             : GetLocalBounds().top_right();
     auto ink_drop_ripple = std::make_unique<views::FloodFillInkDropRipple>(
-        size(), gfx::Insets(), center, SK_ColorBLACK, 1);
+        size(), gfx::Insets(), center, GetInkDropBaseColor(), 1);
     ink_drop_ripple->set_use_hide_transform_duration_for_hide_fade_out(true);
     ink_drop_ripple->set_duration_factor(1.5);
     return ink_drop_ripple;
   }
+
+  SkColor GetInkDropBaseColor() const override { return SK_ColorBLACK; }
 
  private:
   views::InkDropObserver* observer_;

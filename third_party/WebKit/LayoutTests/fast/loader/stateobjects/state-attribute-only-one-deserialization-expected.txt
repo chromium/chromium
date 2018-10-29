@@ -9,7 +9,6 @@ PASS history.state !== stateObject is true
 PASS history.state === stateObject is true
 
 Inside popstate event
-
 PASS history.state !== stateObject is true
 PASS popStateEvent.state !== stateObject is true
 PASS popStateEvent.state === history.state is true

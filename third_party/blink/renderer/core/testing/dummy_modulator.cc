@@ -64,7 +64,7 @@ base::SingleThreadTaskRunner* DummyModulator::TaskRunner() {
 
 void DummyModulator::FetchTree(const KURL&,
                                FetchClientSettingsObjectSnapshot*,
-                               WebURLRequest::RequestContext,
+                               mojom::RequestContextType,
                                const ScriptFetchOptions&,
                                ModuleScriptCustomFetchType,
                                ModuleTreeClient*) {
@@ -82,7 +82,7 @@ void DummyModulator::FetchSingle(const ModuleScriptFetchRequest&,
 void DummyModulator::FetchDescendantsForInlineScript(
     ModuleScript*,
     FetchClientSettingsObjectSnapshot* fetch_client_settings_object,
-    WebURLRequest::RequestContext,
+    mojom::RequestContextType,
     ModuleTreeClient*) {
   NOTREACHED();
 }

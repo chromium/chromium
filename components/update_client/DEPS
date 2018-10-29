@@ -15,5 +15,6 @@ include_rules = [
   "+services/network/test",
   "+services/service_manager/public",
   "+third_party/libxml",
+  "+third_party/re2",
   "+third_party/zlib",
 ]

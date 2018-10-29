@@ -71,6 +71,7 @@
       'ToTMacASan', # https://crbug.com/828031
       # chromium.fyi
       'Chromium Mac 10.13', # https://crbug.com/828031
+      'mac-osxbeta-rel', # https://crbug.com/828031
       'mac-views-rel', # https://crbug.com/828031
       # chromium.mac
       'Mac10.10 Tests', # https://crbug.com/828031
@@ -84,7 +85,7 @@
       # chromium.chromiumos
       'linux-chromeos-dbg': {
         'swarming': {
-          'shards': 20,
+          'shards': 21,
         },
       },
       # chromium.clang
@@ -106,14 +107,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac_window_server_killers.browser_tests.filter',
           '--gtest_shuffle',
         ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'Chrome-quarantine',
-              'gpu': 'none',
-            },
-          ],
-        },
       },
       'Mac10.12 Tests': {
         # A subset of tests seem to cause WindowServer deaths on VMs.
@@ -122,14 +115,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac_window_server_killers.browser_tests.filter',
           '--gtest_shuffle',
         ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'Chrome-quarantine',
-              'gpu': 'none',
-            },
-          ],
-        },
       },
       'Mac10.13 Tests': {
         # A subset of tests seem to cause WindowServer deaths on VMs.
@@ -138,15 +123,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac_window_server_killers.browser_tests.filter',
           '--gtest_shuffle',
         ],
-        'experiment_percentage': 50,
-        'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'Chrome-quarantine',
-              'gpu': 'none',
-            },
-          ],
-        },
       },
       'Mac10.13 Tests (dbg)': {
         # A subset of tests seem to cause WindowServer deaths on VMs.
@@ -155,30 +131,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac_window_server_killers.browser_tests.filter',
           '--gtest_shuffle',
         ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'Chrome-quarantine',
-              'gpu': 'none',
-            },
-          ],
-        },
-      },
-      'mac-cocoa-rel': {
-        # A subset of tests seem to cause WindowServer deaths on VMs.
-        # crbug.com/828031 et al.
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac_window_server_killers.browser_tests.filter',
-          '--gtest_shuffle',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'Chrome-quarantine',
-              'gpu': 'none',
-            },
-          ],
-        },
       },
       # chromium.memory
       'Linux ASan LSan Tests (1)': {
@@ -197,14 +149,14 @@
         # These are very slow on the Chrome OS MSAN trybot for some reason.
         # crbug.com/865455
         'swarming': {
-          'shards': 20,
+          'shards': 25,
         },
       },
       'Linux Chromium OS ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/794372
         'swarming': {
-          'shards': 30,
+          'shards': 31,
         },
       },
       # client.v8.chromium
@@ -344,17 +296,6 @@
       'KitKat Phone Tester (dbg)': {
         'swarming': {
           'shards': 2,
-        },
-      },
-    },
-  },
-  'chromevox_tests': {
-    'modifications': {
-      'Linux ChromiumOS MSan Tests': {
-        # These are very slow on the Chrome OS MSAN trybot for some reason.
-        # crbug.com/865455
-        'swarming': {
-          'shards': 6,
         },
       },
     },
@@ -508,6 +449,13 @@
       # chromium.clang
       'linux-win_cross-rel', # https://crbug.com/762167
     ],
+  },
+  'extensions_browsertests': {
+    'modifications': {
+      'Win10 Tests x64 (dbg)': {
+        'experiment_percentage': 100, # https://crbug.com/876615
+      },
+    },
   },
   'gin_unittests': {
     'remove_from': [
@@ -669,6 +617,12 @@
       'Linux ASan LSan Tests (1)',  # https://crbug.com/843732
     ],
   },
+  'http_service_tests': {
+    'remove_from': [
+      # chromium.linux
+      'Fuchsia x64',  # https://crbug.com/896884
+    ],
+  },
   'info_collection_tests': {
     'remove_from': [
       # chromium.gpu.fyi
@@ -720,33 +674,6 @@
       # chromium.win; temporary, https://crbug.com/818832
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,
-      },
-    },
-  },
-  'single_process_mash_browser_tests': {
-    'remove_from': [
-      # Temporarily remove from ASan/LSan bot due to flakiness. crbug.com/885309
-      'Linux Chromium OS ASan LSan Tests (1)',
-    ],
-    'modifications': {
-      # chromium.chromiumos
-      'linux-chromeos-dbg': {
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      # chromium.memory
-      'Linux Chromium OS ASan LSan Tests (1)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/794372
-        'swarming': {
-          'shards': 30,
-        },
-      },
-      'Linux ChromiumOS MSan Tests': {
-        'swarming': {
-          'shards': 20,
-        },
       },
     },
   },
@@ -962,92 +889,6 @@
       'ToTWinThinLTO64',
     ],
   },
- 'remoting_unittests': {
-    'remove_from': [
-      # chromium.linux
-      'Linux Tests (dbg)(1)(32)',  # https://crbug.com/852895
-    ],
-  },
-  'services_unittests': {
-    'remove_from': [
-      # chromium.clang
-      'ToTLinuxMSan',  # https://crbug.com/831676
-      # chromium.gpu.fyi
-      # The face and barcode detection tests fail on the Mac Pros.
-      'Mac Pro FYI Release (AMD)',
-      # chromium.memory
-      'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
-      'Linux MSan Tests',  # https://crbug.com/831676
-    ],
-  },
-  'site_per_process_webkit_layout_tests': {
-    'remove_from': [
-      # chromium.linux
-      # TODO(dpranke): Should we be running this step on Linux Tests (dbg)(1)?
-      'Linux Tests (dbg)(1)',
-      'Linux Tests (dbg)(1)(32)',
-    ],
-  },
-  'sizes': {
-    'remove_from': [
-      'win32-dbg',
-      'win32-rel',
-      'win-dbg',
-      'win-rel',
-    ],
-    'modifications': {
-      # chromium
-      'mac-dbg': {
-        'args': [
-          'mac-debug/sizes',
-        ],
-      },
-      'mac-rel': {
-        'args': [
-          'mac-release/sizes',
-        ],
-      },
-      'linux-dbg': {
-        'args': [
-          'linux-debug-64/sizes',
-        ],
-      },
-      'linux-rel': {
-        'args': [
-          'linux-release-64/sizes',
-        ],
-      },
-      # chromium.android.fyi
-      'Android Cronet KitKat Builder': {
-        'args': [
-          '--platform',
-          'android-cronet',
-          '--perf-id',
-          'android_cronet_builder',
-          'cronet-arm/sizes',
-        ],
-        'override_compile_targets': [
-          'cronet',
-        ],
-      },
-    },
-  },
-  'sync_integration_tests': {
-    'modifications': {
-      'Win7 Tests (dbg)(1)': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'Win10 Tests x64 (dbg)': {
-        'experiment_percentage': 100, # https://crbug.com/840369
-      },
-    },
-    'remove_from': [
-      # chromium.memory
-      'Linux TSan Tests',  # https://crbug.com/852002
-    ],
-  },
   'performance_test_suite': {
     'modifications': {
       'Mac10.13 Tests (dbg)': {
@@ -1068,6 +909,78 @@
       },
     },
   },
+ 'remoting_unittests': {
+    'remove_from': [
+      # chromium.linux
+      'Linux Tests (dbg)(1)(32)',  # https://crbug.com/852895
+    ],
+  },
+  'services_unittests': {
+    'remove_from': [
+      # chromium.clang
+      'ToTLinuxMSan',  # https://crbug.com/831676
+      # chromium.gpu.fyi
+      # The face and barcode detection tests fail on the Mac Pros.
+      'Mac Pro FYI Release (AMD)',
+      # chromium.memory
+      'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
+      'Linux MSan Tests',  # https://crbug.com/831676
+    ],
+  },
+  'single_process_mash_browser_tests': {
+    'modifications': {
+      # chromium.chromiumos
+      'linux-chromeos-dbg': {
+        'swarming': {
+          'shards': 20,
+        },
+      },
+      # chromium.memory
+      'Linux Chromium OS ASan LSan Tests (1)': {
+        # These are very slow on the ASAN trybot for some reason.
+        # crbug.com/794372
+        'swarming': {
+          'shards': 30,
+        },
+      },
+      'Linux ChromiumOS MSan Tests': {
+        'swarming': {
+          'shards': 20,
+        },
+      },
+    },
+  },
+  'site_per_process_webkit_layout_tests': {
+    'remove_from': [
+      # chromium.linux
+      # TODO(dpranke): Should we be running this step on Linux Tests (dbg)(1)?
+      'Linux Tests (dbg)(1)',
+      'Linux Tests (dbg)(1)(32)',
+    ],
+  },
+  'sizes': {
+    'remove_from': [
+      'win32-dbg',
+      'win32-rel',
+      'win-dbg',
+      'win-rel',
+    ],
+    'modifications': {
+      # chromium.android.fyi
+      'Android Cronet KitKat Builder': {
+        'args': [
+          '--platform',
+          'android-cronet',
+          '--perf-id',
+          'android_cronet_builder',
+          'cronet-arm/sizes',
+        ],
+        'override_compile_targets': [
+          'cronet',
+        ],
+      },
+    },
+  },
   'swiftshader_unittests': {
     'remove_from': [
       # Save capacity on the hardware where we have only a few machines.
@@ -1075,6 +988,22 @@
       'Mac FYI Experimental Retina Release (AMD)',
       'Mac FYI Experimental Retina Release (NVIDIA)',
       'Mac Pro FYI Release (AMD)',
+    ],
+  },
+  'sync_integration_tests': {
+    'modifications': {
+      'Win7 Tests (dbg)(1)': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+      'Win10 Tests x64 (dbg)': {
+        'experiment_percentage': 100, # https://crbug.com/840369
+      },
+    },
+    'remove_from': [
+      # chromium.memory
+      'Linux TSan Tests',  # https://crbug.com/852002
     ],
   },
   'tab_capture_end2end_tests': {
@@ -1089,13 +1018,6 @@
       'Win10 FYI Debug (NVIDIA)',
       'Win7 FYI Debug (AMD)',
     ],
-  },
-  'telemetry_unittests': {
-    'modifications': {
-      'Win10 Tests x64 (dbg)': {
-        'experiment_percentage': 100,  # crbug.com/870673
-      }
-    }
   },
   'telemetry_perf_unittests': {
     'modifications': {
@@ -1190,6 +1112,13 @@
         },
         'experiment_percentage': 100,
       },
+      # luci.chromium.ci
+      'linux-tcmalloc-rel': {
+        'args': [
+          '--xvfb',
+          '--jobs=1',
+        ],
+      },
     },
     'remove_from': [
       'Linux Tests (dbg)(1)(32)',
@@ -1200,6 +1129,13 @@
       # chromium.win
       'Win10 Tests x64 (dbg)',
     ],
+  },
+  'telemetry_unittests': {
+    'modifications': {
+      'Win10 Tests x64 (dbg)': {
+        'experiment_percentage': 100,  # crbug.com/870673
+      }
+    }
   },
   'unit_tests': {
     'modifications': {
@@ -1253,24 +1189,6 @@
       'Win10 FYI Exp Release (Intel HD 630)',
     ],
   },
-  'viz_content_browsertests': {
-    'modifications': {
-      # chromium.memory
-      'Linux Chromium OS ASan LSan Tests (1)': {
-        # content_browsertests is slow on ASAN try bot. crbug.com/822461.
-        'swarming': {
-          'shards': 4,
-        }
-      },
-      'Linux ChromiumOS MSan Tests': {
-        # These are very slow on the Chrome OS MSAN trybot for some reason.
-        # crbug.com/865455
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-  },
   'viz_browser_tests': {
     'modifications': {
       # chromium.chromiumos
@@ -1296,29 +1214,34 @@
       },
     },
   },
+  'viz_content_browsertests': {
+    'modifications': {
+      # chromium.memory
+      'Linux Chromium OS ASan LSan Tests (1)': {
+        # content_browsertests is slow on ASAN try bot. crbug.com/822461.
+        'swarming': {
+          'shards': 4,
+        }
+      },
+      'Linux ChromiumOS MSan Tests': {
+        # These are very slow on the Chrome OS MSAN trybot for some reason.
+        # crbug.com/865455
+        'swarming': {
+          'shards': 2,
+        },
+      },
+    },
+  },
   'viz_unittests': {
     'remove_from': [
       # chromium.win
       'Win10 Tests x64',
     ],
   },
-  'vr_common_unittests': {
-    'remove_from': [
-      # chromium.win
-      'Win 7 Tests x64 (1)',
-      'Win10 Tests x64',
-    ],
-  },
-
   'vr_pixeltests': {
     'remove_from': [
       # chromium.fyi
       'VR Linux',
-      # chromium.win
-      'Win 7 Tests x64 (1)',
-      'Win10 Tests x64',
-      'Win7 Tests (1)',
-      'Win7 Tests (dbg)(1)',
     ],
   },
   'wayland_client_perftests': {
@@ -1326,17 +1249,13 @@
       'linux-chromeos-dbg',  # https://crbug.com/859307
     ],
   },
-  'webgl_conformance_tests': {
+  'webgl2_conformance_tests': {
+    'remove_from': [
+      # The Mac NVIDIA Retina bots don't have the capacity to run
+      # this test suite on mac_optional_gpu_tests_rel.
+      'Optional Mac Retina Release (NVIDIA)',
+    ],
     'modifications': {
-      # On desktop platforms these don't take very long (~7 minutes),
-      # but on Android they take ~30 minutes and we want to use more
-      # shards than on desktop.
-      # chromium.gpu
-      'Android Release (Nexus 5X)': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
       'Mac FYI GPU ASAN Release': {
         'args': [
           '--is-asan',
@@ -1353,13 +1272,17 @@
       'Win7 FYI Release (AMD)',
     ],
   },
-  'webgl2_conformance_tests': {
-    'remove_from': [
-      # The Mac NVIDIA Retina bots don't have the capacity to run
-      # this test suite on mac_optional_gpu_tests_rel.
-      'Optional Mac Retina Release (NVIDIA)',
-    ],
+  'webgl_conformance_tests': {
     'modifications': {
+      # On desktop platforms these don't take very long (~7 minutes),
+      # but on Android they take ~30 minutes and we want to use more
+      # shards than on desktop.
+      # chromium.gpu
+      'Android Release (Nexus 5X)': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
       'Mac FYI GPU ASAN Release': {
         'args': [
           '--is-asan',
@@ -1387,7 +1310,6 @@
           # software fallback, SwiftShader, isn't yet for 32-bit ARM.
           '--additional-driver-flag=--use-gpu-in-tests',
         ],
-        'experiment_percentage': 100, # crbug.com/824539
       },
       # chromium.fyi
       'linux-blink-animation-use-time-delta': {

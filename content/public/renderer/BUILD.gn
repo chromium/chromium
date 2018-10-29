@@ -52,8 +52,6 @@ target(link_target_type, "renderer_sources") {
     "media_stream_video_renderer.h",
     "media_stream_video_sink.cc",
     "media_stream_video_sink.h",
-    "navigation_state.cc",
-    "navigation_state.h",
     "pepper_plugin_instance.h",
     "plugin_instance_throttler.h",
     "render_accessibility.h",

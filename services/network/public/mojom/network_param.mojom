@@ -4,6 +4,16 @@
 
 module network.mojom;
 
+// Mirror of base::android::ApplicationState.
+[EnableIf=is_android]
+enum ApplicationState {
+  UNKNOWN,
+  HAS_RUNNING_ACTIVITIES,
+  HAS_PAUSED_ACTIVITIES,
+  HAS_STOPPED_ACTIVITIES,
+  HAS_DESTROYED_ACTIVITIES,
+};
+
 [Native]
 struct AuthChallengeInfo;
 

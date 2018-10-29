@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.net.impl;
 
-import android.support.annotation.IntDef;
-
 import static org.chromium.net.UrlRequest.Status.CONNECTING;
 import static org.chromium.net.UrlRequest.Status.DOWNLOADING_PAC_FILE;
 import static org.chromium.net.UrlRequest.Status.ESTABLISHING_PROXY_TUNNEL;
@@ -21,6 +19,8 @@ import static org.chromium.net.UrlRequest.Status.WAITING_FOR_CACHE;
 import static org.chromium.net.UrlRequest.Status.WAITING_FOR_DELEGATE;
 import static org.chromium.net.UrlRequest.Status.WAITING_FOR_RESPONSE;
 import static org.chromium.net.UrlRequest.Status.WAITING_FOR_STALLED_SOCKET_POOL;
+
+import android.support.annotation.IntDef;
 
 import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.UploadDataProvider;

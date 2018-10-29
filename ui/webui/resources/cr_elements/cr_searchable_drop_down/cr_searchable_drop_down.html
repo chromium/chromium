@@ -13,7 +13,7 @@
 
       iron-dropdown,
       cr-input {
-        width: 270px;
+        width: var(--cr-searchable-drop-down-width, 270px);
       }
 
       iron-dropdown {
@@ -49,7 +49,8 @@
       immediately as the user types unless the update-value-on-input flag is
       explicitly used. -->
     <cr-input label="[[label]]" on-click="onClick_" value="[[value]]"
-        on-input="onInput_" id="search" autofocus="[[autofocus]]">
+        on-input="onInput_" id="search" autofocus="[[autofocus]]"
+        placeholder="[[placeholder]]">
     </cr-input>
     <iron-dropdown horizontal-align="left" vertical-align="top"
         vertical-offset="52">

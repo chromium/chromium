@@ -336,7 +336,7 @@ void FakePacketSocketFactory::DoReceivePacket() {
 
   PendingPacket packet;
   if (pending_packets_.size() > 1 && RandDouble() < out_of_order_rate_) {
-    std::list<PendingPacket>::iterator it = pending_packets_.begin();
+    auto it = pending_packets_.begin();
     ++it;
     packet = *it;
     pending_packets_.erase(it);
@@ -345,7 +345,7 @@ void FakePacketSocketFactory::DoReceivePacket() {
     pending_packets_.pop_front();
   }
 
-  UdpSocketsMap::iterator iter = udp_sockets_.find(packet.to.port());
+  auto iter = udp_sockets_.find(packet.to.port());
   if (iter == udp_sockets_.end()) {
     // Invalid port number.
     return;

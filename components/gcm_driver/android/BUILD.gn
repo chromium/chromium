@@ -24,12 +24,15 @@ android_library("gcm_driver_java") {
     "java/src/org/chromium/components/gcm_driver/GCMMessage.java",
     "java/src/org/chromium/components/gcm_driver/GoogleCloudMessagingSubscriber.java",
     "java/src/org/chromium/components/gcm_driver/GoogleCloudMessagingV2.java",
+    "java/src/org/chromium/components/gcm_driver/LazySubscriptionsManager.java",
   ]
 }
 
 junit_binary("components_gcm_driver_junit_tests") {
-  java_files =
-      [ "junit/src/org/chromium/components/gcm_driver/GCMMessageTest.java" ]
+  java_files = [
+    "junit/src/org/chromium/components/gcm_driver/GCMMessageTest.java",
+    "junit/src/org/chromium/components/gcm_driver/LazySubscriptionsManagerTest.java",
+  ]
   deps = [
     ":gcm_driver_java",
     "//base:base_java",

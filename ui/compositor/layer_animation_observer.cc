@@ -159,8 +159,7 @@ void ImplicitAnimationObserver::UpdatePropertyAnimationStatus(
 ImplicitAnimationObserver::AnimationStatus
 ImplicitAnimationObserver::AnimationStatusForProperty(
     LayerAnimationElement::AnimatableProperty property) const {
-  PropertyAnimationStatusMap::const_iterator iter =
-      property_animation_status_.find(property);
+  auto iter = property_animation_status_.find(property);
   return iter == property_animation_status_.end() ? ANIMATION_STATUS_UNKNOWN :
       iter->second;
 }

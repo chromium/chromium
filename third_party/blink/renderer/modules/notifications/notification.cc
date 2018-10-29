@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -86,19 +87,19 @@ Notification* Notification::Create(ExecutionContext* context,
     return nullptr;
   }
 
+  auto* document = DynamicTo<Document>(context);
   if (context->IsSecureContext()) {
     UseCounter::Count(context, WebFeature::kNotificationSecureOrigin);
-    if (context->IsDocument()) {
+    if (document) {
       UseCounter::CountCrossOriginIframe(
-          *ToDocument(context), WebFeature::kNotificationAPISecureOriginIframe);
+          *document, WebFeature::kNotificationAPISecureOriginIframe);
     }
   } else {
     Deprecation::CountDeprecation(context,
                                   WebFeature::kNotificationInsecureOrigin);
-    if (context->IsDocument()) {
+    if (document) {
       Deprecation::CountDeprecationCrossOriginIframe(
-          *ToDocument(context),
-          WebFeature::kNotificationAPIInsecureOriginIframe);
+          *document, WebFeature::kNotificationAPIInsecureOriginIframe);
     }
   }
 
@@ -126,7 +127,6 @@ Notification* Notification::Create(ExecutionContext* context,
 
   notification->SchedulePrepareShow();
 
-  Document* document = context->IsDocument() ? ToDocument(context) : nullptr;
   if (document && document->GetFrame()) {
     if (auto* frame_resource_coordinator =
             document->GetFrame()->GetFrameResourceCoordinator()) {
@@ -229,10 +229,11 @@ void Notification::OnShow() {
 
 void Notification::OnClick(OnClickCallback completed_closure) {
   ExecutionContext* context = GetExecutionContext();
-  Document* document = context->IsDocument() ? ToDocument(context) : nullptr;
+  Document* document = DynamicTo<Document>(context);
   std::unique_ptr<UserGestureIndicator> gesture_indicator =
-      Frame::NotifyUserActivation(document ? document->GetFrame() : nullptr,
-                                  UserGestureToken::kNewGesture);
+      LocalFrame::NotifyUserActivation(
+          document ? document->GetFrame() : nullptr,
+          UserGestureToken::kNewGesture);
   ScopedWindowFocusAllowedIndicator window_focus_allowed(GetExecutionContext());
   DispatchEvent(*Event::Create(EventTypeNames::click));
 
@@ -345,7 +346,7 @@ Vector<v8::Local<v8::Value>> Notification::actions(
   const Vector<mojom::blink::NotificationActionPtr>& actions =
       data_->actions.value();
   result.Grow(actions.size());
-  for (size_t i = 0; i < actions.size(); ++i) {
+  for (wtf_size_t i = 0; i < actions.size(); ++i) {
     NotificationAction action;
 
     switch (actions[i]->type) {
@@ -402,8 +403,9 @@ String Notification::permission(ExecutionContext* context) {
   //
   // TODO(crbug.com/758603): Move this check to the browser process when the
   // NotificationService connection becomes frame-bound.
-  if (status == mojom::blink::PermissionStatus::ASK && context->IsDocument()) {
-    LocalFrame* frame = ToDocument(context)->GetFrame();
+  if (status == mojom::blink::PermissionStatus::ASK) {
+    auto* document = DynamicTo<Document>(context);
+    LocalFrame* frame = document ? document->GetFrame() : nullptr;
     if (!frame || frame->IsCrossOriginSubframe())
       status = mojom::blink::PermissionStatus::DENIED;
   }
@@ -415,10 +417,11 @@ ScriptPromise Notification::requestPermission(
     ScriptState* script_state,
     V8NotificationPermissionCallback* deprecated_callback) {
   ExecutionContext* context = ExecutionContext::From(script_state);
-  Document* doc = ToDocumentOrNull(context);
+  Document* doc = DynamicTo<Document>(context);
 
   probe::breakableLocation(context, "Notification.requestPermission");
-  if (!Frame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr)) {
+  if (!LocalFrame::HasTransientUserActivation(doc ? doc->GetFrame()
+                                                  : nullptr)) {
     PerformanceMonitor::ReportGenericViolation(
         context, PerformanceMonitor::kDiscouragedAPIUse,
         "Only request notification permission in response to a user gesture.",
@@ -433,8 +436,8 @@ ScriptPromise Notification::requestPermission(
 
   // Sites cannot request notification permission from cross-origin iframes,
   // but they can use notifications if permission had already been granted.
-  if (context->IsDocument()) {
-    LocalFrame* frame = ToDocument(context)->GetFrame();
+  if (auto* document = DynamicTo<Document>(context)) {
+    LocalFrame* frame = document->GetFrame();
     if (!frame || frame->IsCrossOriginSubframe()) {
       Deprecation::CountDeprecation(
           context, WebFeature::kNotificationPermissionRequestedIframe);

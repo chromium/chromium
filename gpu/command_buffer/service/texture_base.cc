@@ -33,4 +33,8 @@ void TextureBase::SetMailboxManager(MailboxManager* mailbox_manager) {
   mailbox_manager_ = mailbox_manager;
 }
 
+TextureBase::Type TextureBase::GetType() const {
+  return TextureBase::Type::kNone;
+}
+
 }  // namespace gpu

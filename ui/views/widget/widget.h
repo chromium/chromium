@@ -26,16 +26,6 @@
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/non_client_view.h"
 
-#if defined(OS_WIN)
-// Windows headers define macros for these function names which screw with us.
-#if defined(IsMaximized)
-#undef IsMaximized
-#endif
-#if defined(IsMinimized)
-#undef IsMinimized
-#endif
-#endif
-
 namespace base {
 class TimeDelta;
 }

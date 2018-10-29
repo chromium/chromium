@@ -110,6 +110,15 @@ SSLBlockingPage* SSLBlockingPage::Create(
     }
   }
 
+  if (cert_error == net::ERR_CERT_SYMANTEC_LEGACY) {
+    GURL symantec_support_url(kSymantecSupportUrl);
+    return new SSLBlockingPage(
+        web_contents, cert_error, ssl_info, request_url, options_mask,
+        time_triggered, std::move(symantec_support_url),
+        std::move(ssl_cert_reporter), overridable, std::move(metrics_helper),
+        is_superfish, callback);
+  }
+
   return new SSLBlockingPage(web_contents, cert_error, ssl_info, request_url,
                              options_mask, time_triggered, support_url,
                              std::move(ssl_cert_reporter), overridable,

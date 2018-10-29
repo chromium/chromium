@@ -15,7 +15,6 @@ from core import perf_benchmark
 from telemetry import benchmark
 from telemetry.value import scalar
 from telemetry.page import legacy_page_test
-from telemetry.web_perf import timeline_based_measurement
 
 from page_sets import dummy_story_set
 
@@ -62,19 +61,3 @@ class DummyBenchmarkTwo(_DummyBenchmark):
   @classmethod
   def Name(cls):
     return 'dummy_benchmark.noisy_benchmark_1'
-
-
-@benchmark.Info(emails=['eakuefner@chromium.org', 'simonhatch@chromium.org'])
-class DummyBenchmarkThree(perf_benchmark.PerfBenchmark):
-  """A test benchmark for outputting histograms."""
-  page_set = dummy_story_set.DummyStorySet
-
-  def CreateCoreTimelineBasedMeasurementOptions(self):
-    options = timeline_based_measurement.Options(
-        timeline_based_measurement.DEBUG_OVERHEAD_LEVEL)
-    options.SetTimelineBasedMetrics(['sampleMetric'])
-    return options
-
-  @classmethod
-  def Name(cls):
-    return 'dummy_benchmark.histogram_benchmark_1'

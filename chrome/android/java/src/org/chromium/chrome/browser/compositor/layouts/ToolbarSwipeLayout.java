@@ -246,12 +246,9 @@ public class ToolbarSwipeLayout extends Layout {
         if (duration > 0) {
             CompositorAnimator offsetAnimation =
                     CompositorAnimator.ofFloat(getAnimationHandler(), start, end, duration, null);
-            offsetAnimation.addUpdateListener(new CompositorAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(CompositorAnimator animator) {
-                    mOffset = animator.getAnimatedValue();
-                    mOffsetTarget = mOffset;
-                }
+            offsetAnimation.addUpdateListener(animator -> {
+                mOffset = animator.getAnimatedValue();
+                mOffsetTarget = mOffset;
             });
             offsetAnimation.start();
         }

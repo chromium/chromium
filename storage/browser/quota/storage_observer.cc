@@ -14,7 +14,7 @@ StorageObserver::Filter::Filter()
     : storage_type(blink::mojom::StorageType::kUnknown) {}
 
 StorageObserver::Filter::Filter(blink::mojom::StorageType storage_type,
-                                const GURL& origin)
+                                const url::Origin& origin)
     : storage_type(storage_type), origin(origin) {}
 
 bool StorageObserver::Filter::operator==(const Filter& other) const {
@@ -30,7 +30,7 @@ StorageObserver::MonitorParams::MonitorParams()
 
 StorageObserver::MonitorParams::MonitorParams(
     blink::mojom::StorageType storage_type,
-    const GURL& origin,
+    const url::Origin& origin,
     const base::TimeDelta& rate,
     bool get_initial_state)
     : filter(storage_type, origin),

@@ -7,17 +7,13 @@ package org.chromium.chrome.browser.ntp;
 import static org.chromium.chrome.browser.util.ViewUtils.dpToPx;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.content.res.Configuration;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
-import android.text.Layout;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
-import android.text.style.BulletSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -28,6 +24,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.widget.ChromeBulletSpan;
 
 /**
  * The Material Design New Tab Page for use in the Incognito profile. This is an extension
@@ -35,7 +32,6 @@ import org.chromium.ui.text.SpanApplier;
  */
 public class IncognitoNewTabPageViewMD extends IncognitoNewTabPageView {
     private final Context mContext;
-    private final DisplayMetrics mMetrics;
 
     private int mWidthDp;
     private int mHeightDp;
@@ -51,37 +47,18 @@ public class IncognitoNewTabPageViewMD extends IncognitoNewTabPageView {
     private static final int CONTENT_WIDTH_DP = 600;
     private static final int WIDE_LAYOUT_THRESHOLD_DP = 720;
 
-    private static class IncognitoBulletSpan extends BulletSpan {
-        public IncognitoBulletSpan() {
-            super(0 /* gapWidth */);
-        }
-
-        @Override
-        public void drawLeadingMargin(Canvas c, Paint p, int x, int dir, int top, int baseline,
-                int bottom, CharSequence text, int start, int end, boolean first, Layout l) {
-            // Do not draw the standard bullet point. We will include the Unicode bullet point
-            // symbol in the text instead.
-        }
-    }
-
     /** Default constructor needed to inflate via XML. */
     public IncognitoNewTabPageViewMD(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        mMetrics = mContext.getResources().getDisplayMetrics();
-    }
-
-    private int pxToDp(int px) {
-        return (int) Math.ceil(px / mMetrics.density);
-    }
-
-    private int spToPx(int sp) {
-        return (int) Math.ceil(sp * mMetrics.scaledDensity);
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+
+        mWidthDp = mContext.getResources().getConfiguration().screenWidthDp;
+        mHeightDp = mContext.getResources().getConfiguration().screenHeightDp;
 
         populateBulletpoints(R.id.new_tab_incognito_features, R.string.new_tab_otr_not_saved);
         populateBulletpoints(R.id.new_tab_incognito_warning, R.string.new_tab_otr_visible);
@@ -95,21 +72,28 @@ public class IncognitoNewTabPageViewMD extends IncognitoNewTabPageView {
                         (TextView) findViewById(R.id.new_tab_incognito_warning), mLearnMore};
         mBulletpointsContainer =
                 (LinearLayout) findViewById(R.id.new_tab_incognito_bulletpoints_container);
+
+        adjustView();
+    }
+
+    private void adjustView() {
+        adjustIcon();
+        adjustLayout();
+        adjustLearnMore();
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-
-        if (changed) {
-            mWidthDp = pxToDp(getMeasuredWidth());
-            mHeightDp = pxToDp(getMeasuredHeight());
-
-            adjustTypography();
-            adjustIcon();
-            adjustLayout();
-            adjustLearnMore();
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        // View#onConfigurationChanged() doesn't get called when resizing this view in
+        // multi-window mode, so #onMeasure() is used instead.
+        Configuration config = getContext().getResources().getConfiguration();
+        if (mWidthDp != config.screenWidthDp || mHeightDp != config.screenHeightDp) {
+            mWidthDp = config.screenWidthDp;
+            mHeightDp = config.screenHeightDp;
+            adjustView();
         }
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     /**
@@ -132,43 +116,23 @@ public class IncognitoNewTabPageViewMD extends IncognitoNewTabPageView {
 
         // Format the bulletpoints:
         //   - Disambiguate the <li></li> spans for SpanApplier.
-        //   - Add the bulletpoint symbols (Unicode BULLET U+2022)
         //   - Remove leading whitespace (caused by formatting in the .grdp file)
         //   - Remove the trailing newline after the last bulletpoint.
-        text = text.replaceFirst(" +<li>([^<]*)</li>", "<li1>     \u2022     $1</li1>");
-        text = text.replaceFirst(" +<li>([^<]*)</li>", "<li2>     \u2022     $1</li2>");
-        text = text.replaceFirst(" +<li>([^<]*)</li>\n", "<li3>     \u2022     $1</li3>");
+        text = text.replaceFirst(" *<li>([^<]*)</li>", "<li1>$1</li1>");
+        text = text.replaceFirst(" *<li>([^<]*)</li>", "<li2>$1</li2>");
+        text = text.replaceFirst(" *<li>([^<]*)</li>\n", "<li3>$1</li3>");
 
         // Remove the <ul></ul> tags which serve no purpose here, including the whitespace around
         // them.
-        text = text.replaceAll(" +</?ul>\\n?", "");
+        text = text.replaceAll(" *</?ul>\\n?", "");
 
         view.setText(SpanApplier.applySpans(text,
                 new SpanApplier.SpanInfo("<em>", "</em>",
                         new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
                                 mContext.getResources(), R.color.incognito_emphasis))),
-                new SpanApplier.SpanInfo("<li1>", "</li1>", new IncognitoBulletSpan()),
-                new SpanApplier.SpanInfo("<li2>", "</li2>", new IncognitoBulletSpan()),
-                new SpanApplier.SpanInfo("<li3>", "</li3>", new IncognitoBulletSpan())));
-    }
-
-    /** Adjusts the font settings. */
-    private void adjustTypography() {
-        if (mWidthDp <= 240 || mHeightDp <= 320) {
-            // Small text on small screens.
-            mHeader.setTextSize(20 /* sp */);
-            mHeader.setLineSpacing(spToPx(4) /* add */, 1 /* mult */); // 20sp + 4sp = 24sp
-
-            for (TextView paragraph : mParagraphs) paragraph.setTextSize(12 /* sp */);
-        } else {
-            // Large text on large screens.
-            mHeader.setTextSize(24 /* sp */);
-            mHeader.setLineSpacing(spToPx(8) /* add */, 1 /* mult */); // 24sp + 8sp = 32sp
-
-            for (TextView paragraph : mParagraphs) paragraph.setTextSize(14 /* sp */);
-        }
-
-        // Paragraph line spacing is constant +6sp, defined in R.layout.new_tab_page_incognito_md.
+                new SpanApplier.SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(mContext)),
+                new SpanApplier.SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(mContext)),
+                new SpanApplier.SpanInfo("<li3>", "</li3>", new ChromeBulletSpan(mContext))));
     }
 
     /** Adjusts the paddings, margins, and the orientation of bulletpoints. */
@@ -181,14 +145,12 @@ public class IncognitoNewTabPageViewMD extends IncognitoNewTabPageView {
         if (mWidthDp <= WIDE_LAYOUT_THRESHOLD_DP) {
             // Small padding.
             paddingHorizontalDp = mWidthDp <= 240 ? 24 : 32;
-            paddingVerticalDp = (mHeightDp <= 600) ? 32 : 72;
+            paddingVerticalDp = 32;
 
             // Align left.
             mContainer.setGravity(Gravity.START);
 
             // Decide the bulletpoints orientation.
-            // TODO (thildebr): This is never set to anything but false, check if we can remove
-            // related code.
             bulletpointsArrangedHorizontally = false;
 
             // The subtitle is sized automatically, but not wider than CONTENT_WIDTH_DP.
@@ -212,16 +174,9 @@ public class IncognitoNewTabPageViewMD extends IncognitoNewTabPageView {
             mContainer.setGravity(Gravity.CENTER_HORIZONTAL);
 
             // Decide the bulletpoints orientation.
-            int totalBulletpointsWidthDp = pxToDp(mBulletpointsContainer.getChildAt(0).getWidth())
-                    + pxToDp(mBulletpointsContainer.getChildAt(1).getWidth())
-                    + BULLETPOINTS_HORIZONTAL_SPACING_DP;
-            bulletpointsArrangedHorizontally = totalBulletpointsWidthDp <= CONTENT_WIDTH_DP;
+            bulletpointsArrangedHorizontally = true;
 
-            // The subtitle width is equal to the two sets of bulletpoints if they are arranged
-            // horizontally. If not, use the default CONTENT_WIDTH_DP.
-            int contentWidthPx = bulletpointsArrangedHorizontally
-                    ? dpToPx(mContext, totalBulletpointsWidthDp)
-                    : dpToPx(mContext, CONTENT_WIDTH_DP);
+            int contentWidthPx = dpToPx(mContext, CONTENT_WIDTH_DP);
             mSubtitle.setLayoutParams(new LinearLayout.LayoutParams(
                     contentWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
             mBulletpointsContainer.setLayoutParams(new LinearLayout.LayoutParams(
@@ -284,7 +239,6 @@ public class IncognitoNewTabPageViewMD extends IncognitoNewTabPageView {
                 mContext.getResources().getString(R.string.new_tab_otr_subtitle);
         boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;
 
-        mSubtitle.setClickable(learnMoreInSubtitle);
         mLearnMore.setVisibility(learnMoreInSubtitle ? View.GONE : View.VISIBLE);
 
         if (!learnMoreInSubtitle) {

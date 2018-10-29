@@ -28,11 +28,12 @@ namespace blink {
 
 LayoutSVGResourceGradient::LayoutSVGResourceGradient(SVGGradientElement* node)
     : LayoutSVGResourcePaintServer(node),
-      should_collect_gradient_attributes_(true) {}
+      should_collect_gradient_attributes_(true),
+      gradient_map_(new GradientMap) {}
 
 void LayoutSVGResourceGradient::RemoveAllClientsFromCache(
     bool mark_for_invalidation) {
-  gradient_map_.clear();
+  gradient_map_->clear();
   should_collect_gradient_attributes_ = true;
   ToSVGGradientElement(*GetElement()).InvalidateDependentGradients();
   MarkAllClientsForInvalidation(
@@ -42,10 +43,10 @@ void LayoutSVGResourceGradient::RemoveAllClientsFromCache(
 
 bool LayoutSVGResourceGradient::RemoveClientFromCache(
     SVGResourceClient& client) {
-  auto entry = gradient_map_.find(&client);
-  if (entry == gradient_map_.end())
+  auto entry = gradient_map_->find(&client);
+  if (entry == gradient_map_->end())
     return false;
-  gradient_map_.erase(entry);
+  gradient_map_->erase(entry);
   return true;
 }
 
@@ -72,7 +73,7 @@ SVGPaintServer LayoutSVGResourceGradient::PreparePaintServer(
     return SVGPaintServer::Invalid();
 
   std::unique_ptr<GradientData>& gradient_data =
-      gradient_map_.insert(&client, nullptr).stored_value->value;
+      gradient_map_->insert(&client, nullptr).stored_value->value;
   if (!gradient_data)
     gradient_data = std::make_unique<GradientData>();
 

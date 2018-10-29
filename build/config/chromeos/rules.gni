@@ -17,31 +17,62 @@ is_chromeos_chrome = cros_board != ""
 # Creates a script at $generated_script that can be used to launch a cros VM
 # and optionally run a test within it.
 # Args:
+#   test_exe: Name of test binary located in the out dir. This will get copied
+#       to the VM and executed there.
+#   tast_conditional: Tast conditional to pass to local_test_runner on the VM.
+#   tast_tests: List of Tast tests to run on the VM. Note that when this is
+#       specified, the target name used to invoke this template will be
+#       designated as the "name" of this test and will primarly used for test
+#       results tracking and displaying (eg: flakiness dashboard).
 #   generated_script: Path to place the generated script.
 #   deploy_chrome: If true, deploys a locally built chrome located in the root
-#                  build dir to the VM after launching it.
+#       build dir to the VM after launching it.
+#   runtime_deps_file: Path to file listing runtime deps for the test. If set,
+#       all files listed will be copied to the VM before testing.
 template("generate_vm_runner_script") {
   _cache_path_prefix =
       "//build/cros_cache/chrome-sdk/tarballs/${cros_board}+${cros_sdk_version}"
   _vm_image_path = "${_cache_path_prefix}+chromiumos_qemu_image.tar.xz/"
   _qemu_dir = "${_cache_path_prefix}+qemu/"
 
-  action(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "need_toolchain",
-                           ])
+  forward_variables_from(invoker,
+                         [
+                           "deploy_chrome",
+                           "generated_script",
+                           "runtime_deps_file",
+                           "tast_conditional",
+                           "tast_tests",
+                           "testonly",
+                           "test_exe",
+                         ])
+  if (!defined(deploy_chrome)) {
+    deploy_chrome = false
+  }
 
+  assert(defined(generated_script),
+         "Must specify where to place generated test launcher script via " +
+             "'generated_script'")
+  is_tast = defined(tast_conditional) || defined(tast_tests)
+  assert(!(is_tast && defined(test_exe)),
+         "Tast tests are invoked from binaries shipped with the VM image. " +
+             "There should be no locally built binary needed.")
+
+  action(target_name) {
+    if (defined(runtime_deps_file)) {
+      write_runtime_deps = runtime_deps_file
+    }
     script = "//build/chromeos/create_vm_test_script.py"
 
     outputs = [
-      invoker.generated_script,
+      generated_script,
     ]
 
     deps = [
       "//testing/buildbot/filters:chromeos_filters",
     ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
 
     data = [
       # We use android test-runner's results libs to construct gtest output
@@ -49,7 +80,7 @@ template("generate_vm_runner_script") {
       "//build/android/pylib/__init__.py",
       "//build/android/pylib/base/",
       "//build/android/pylib/results/",
-      invoker.generated_script,
+      generated_script,
       "//build/chromeos/",
       "//build/cros_cache/chrome-sdk/misc/",
 
@@ -63,14 +94,18 @@ template("generate_vm_runner_script") {
       _vm_image_path,
       _qemu_dir,
     ]
-    if (defined(need_toolchain) && need_toolchain) {
-      data += [ "${_cache_path_prefix}+target_toolchain/" ]
+    if (defined(invoker.data)) {
+      deps += invoker.data
+    }
+
+    if (defined(invoker.data_deps)) {
+      data_deps = invoker.data_deps
     }
 
     # Required arguments used at build time by the runner script generator.
     args = [
       "--script-output-path",
-      rebase_path(invoker.generated_script, root_build_dir),
+      rebase_path(generated_script, root_build_dir),
       "--cros-cache",
       rebase_path("//build/cros_cache/", root_build_dir),
       "--board",
@@ -79,24 +114,70 @@ template("generate_vm_runner_script") {
       rebase_path(root_out_dir, root_build_dir),
     ]
 
-    if (defined(invoker.deploy_chrome) && invoker.deploy_chrome) {
+    if (deploy_chrome) {
       args += [ "--deploy-chrome" ]
+
+      # To deploy chrome to the VM, it needs to be stripped down to fit into
+      # the VM. This is done by using binutils in the toolchain. So add the
+      # toolchain to the data.
+      data += [ "${_cache_path_prefix}+target_toolchain/" ]
     }
 
     # When --test-exe is specified, run_vm_test will push the exe to the VM and
     # execute it. Otherwise it wraps a host-side command and just takes care
     # launching & tearing-down the VM.
-    if (defined(invoker.test_exe)) {
+    if (defined(test_exe)) {
       args += [
         "--test-exe",
-        rebase_path(invoker.test_exe, root_build_dir),
+        test_exe,
       ]
-      if (defined(invoker.runtime_deps_file)) {
+      if (defined(runtime_deps_file)) {
         args += [
           "--runtime-deps-path",
-          rebase_path(invoker.runtime_deps_file, root_build_dir),
+          rebase_path(runtime_deps_file, root_build_dir),
         ]
       }
+    } else if (is_tast) {
+      # When --tast-tests is specified, run_vm_test will call local_test_runner
+      # on the VM to run the set of tests.
+      args += [
+        "--suite-name",
+        target_name,
+      ]
+      if (defined(tast_conditional)) {
+        args += [
+          "--tast-conditional",
+          tast_conditional,
+        ]
+      } else {
+        foreach(test, tast_tests) {
+          args += [
+            "--tast-tests",
+            test,
+          ]
+        }
+      }
     }
+  }
+}
+
+template("tast_test") {
+  assert(defined(invoker.tast_conditional) != defined(invoker.tast_tests),
+         "Specify one of tast_tests or tast_conditional.")
+
+  generate_vm_runner_script(target_name) {
+    testonly = true
+    if (defined(invoker.tast_conditional)) {
+      tast_conditional = invoker.tast_conditional
+    } else if (defined(invoker.tast_tests)) {
+      tast_tests = invoker.tast_tests
+    }
+    generated_script = "$root_build_dir/bin/run_${target_name}"
+    runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
+    deploy_chrome = true
+    data_deps = [
+      "//:chromiumos_preflight",  # Builds the browser.
+      "//chromeos:cros_chrome_deploy",  # Adds additional browser run-time deps.
+    ]
   }
 }

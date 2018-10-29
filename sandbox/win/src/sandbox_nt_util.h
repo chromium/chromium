@@ -8,6 +8,7 @@
 #include <intrin.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <memory>
 
 #include "base/macros.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -89,6 +90,12 @@ __forceinline void* _InterlockedCompareExchangePointer(
 
 #endif
 
+struct NtAllocDeleter {
+  inline void operator()(void* ptr) const {
+    operator delete(ptr, AllocationType::NT_ALLOC);
+  }
+};
+
 // Returns a pointer to the IPC shared memory.
 void* GetGlobalIPCMemory();
 
@@ -107,12 +114,15 @@ NTSTATUS CopyData(void* destination, const void* source, size_t bytes);
 
 // Copies the name from an object attributes.
 NTSTATUS AllocAndCopyName(const OBJECT_ATTRIBUTES* in_object,
-                          wchar_t** out_name,
+                          std::unique_ptr<wchar_t, NtAllocDeleter>* out_name,
                           uint32_t* attributes,
                           HANDLE* root);
 
 // Determine full path name from object root and path.
-NTSTATUS AllocAndGetFullPath(HANDLE root, wchar_t* path, wchar_t** full_path);
+NTSTATUS AllocAndGetFullPath(
+    HANDLE root,
+    const wchar_t* path,
+    std::unique_ptr<wchar_t, NtAllocDeleter>* full_path);
 
 // Initializes our ntdll level heap
 bool InitHeap();

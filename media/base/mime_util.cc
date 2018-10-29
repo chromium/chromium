@@ -29,28 +29,31 @@ SupportsType IsSupportedEncryptedMediaFormat(
   return GetMimeUtil()->IsSupportedMediaFormat(mime_type, codecs, true);
 }
 
-void SplitCodecsToVector(const std::string& codecs,
-                         std::vector<std::string>* codecs_out,
-                         bool strip) {
-  GetMimeUtil()->SplitCodecsToVector(codecs, codecs_out, strip);
+void SplitCodecs(const std::string& codecs,
+                 std::vector<std::string>* codecs_out) {
+  GetMimeUtil()->SplitCodecs(codecs, codecs_out);
 }
 
-MEDIA_EXPORT bool ParseVideoCodecString(const std::string& mime_type,
-                                        const std::string& codec_id,
-                                        bool* ambiguous_codec_string,
-                                        VideoCodec* out_codec,
-                                        VideoCodecProfile* out_profile,
-                                        uint8_t* out_level,
-                                        VideoColorSpace* out_colorspace) {
+void StripCodecs(std::vector<std::string>* codecs) {
+  GetMimeUtil()->StripCodecs(codecs);
+}
+
+bool ParseVideoCodecString(const std::string& mime_type,
+                           const std::string& codec_id,
+                           bool* ambiguous_codec_string,
+                           VideoCodec* out_codec,
+                           VideoCodecProfile* out_profile,
+                           uint8_t* out_level,
+                           VideoColorSpace* out_colorspace) {
   return GetMimeUtil()->ParseVideoCodecString(
       mime_type, codec_id, ambiguous_codec_string, out_codec, out_profile,
       out_level, out_colorspace);
 }
 
-MEDIA_EXPORT bool ParseAudioCodecString(const std::string& mime_type,
-                                        const std::string& codec_id,
-                                        bool* ambiguous_codec_string,
-                                        AudioCodec* out_codec) {
+bool ParseAudioCodecString(const std::string& mime_type,
+                           const std::string& codec_id,
+                           bool* ambiguous_codec_string,
+                           AudioCodec* out_codec) {
   return GetMimeUtil()->ParseAudioCodecString(
       mime_type, codec_id, ambiguous_codec_string, out_codec);
 }

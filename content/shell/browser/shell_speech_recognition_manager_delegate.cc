@@ -4,6 +4,8 @@
 
 #include "content/shell/browser/shell_speech_recognition_manager_delegate.h"
 
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using base::OnceCallback;
@@ -17,8 +19,8 @@ void ShellSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
   // Therefore we simply authorize it by calling back with is_allowed=true. The
   // first parameter, ask_user, is set to false because we don't want to prompt
   // the user for permission with an infobar.
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(std::move(callback), false, true));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(std::move(callback), false, true));
 }
 
 SpeechRecognitionEventListener*

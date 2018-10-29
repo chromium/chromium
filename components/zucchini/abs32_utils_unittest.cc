@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "components/zucchini/address_translator.h"
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +53,7 @@ TEST(Abs32UtilsTest, AbsoluteAddress32) {
   EXPECT_TRUE(addr32.Read(0x8U, image32));
   EXPECT_EQ(kInvalidRva, addr32.ToRva());  // Underflow.
   EXPECT_TRUE(addr32.Read(0xCU, image32));
-  EXPECT_EQ(kInvalidRva, addr32.ToRva());  // Translated RVA would be to large.
+  EXPECT_EQ(kInvalidRva, addr32.ToRva());  // Translated RVA would be too large.
   EXPECT_TRUE(addr32.Read(0x10U, image32));
   EXPECT_EQ(kInvalidRva, addr32.ToRva());  // Underflow (boundary case).
 
@@ -432,21 +433,67 @@ TEST(Abs32UtilsTest, Win32Write64) {
   EXPECT_EQ(expected_data64, data64);
 }
 
-TEST(Abs32UtilsTest, RemoveOverlappingAbs32Locations) {
-  // Make |bitness| a state to reduce repetition.
-  Bitness bitness = kBit32;
+TEST(Abs32UtilsTest, RemoveUntranslatableAbs32) {
+  Bitness kBitness = kBit32;
+  uint64_t kImageBase = 0x2BCD0000;
 
-  auto run_test = [&bitness](const std::vector<offset_t>& expected_locations,
-                             std::vector<offset_t>&& locations) {
+  // Valid RVAs: [0x00001A00, 0x00001A28) and [0x00003A00, 0x00004000).
+  // Valid AVAs: [0x2BCD1A00, 0x2BCD1A28) and [0x2BCD3A00, 0x2BCD4000).
+  // Notice that the second section has has dangling RVA.
+  AddressTranslator translator;
+  ASSERT_EQ(AddressTranslator::kSuccess,
+            translator.Initialize(
+                {{0x04, +0x28, 0x1A00, +0x28}, {0x30, +0x30, 0x3A00, +0x600}}));
+
+  std::vector<uint8_t> data = ParseHexString(
+      "FF FF FF FF  0B 3A CD 2B  00 00 00  04 3A CD 2B  00 "
+      "FC 3F CD 2B  14 1A CD 2B  44 00 00 00  CC 00 00 00 "
+      "00 00 55 00  00 00  1E 1A CD 2B  00 99  FF FF FF FF "
+      "10 3A CD 2B  22 00 00 00  00 00 00 11  00 00 00 00 "
+      "66 00 00 00  28 1A CD 2B  00 00 CD 2B  27 1A CD 2B "
+      "FF 39 CD 2B  00 00 00 00  18 1A CD 2B  00 00 00 00 "
+      "FF FF FF FF  FF FF FF FF");
+  MutableBufferView image(data.data(), data.size());
+
+  const offset_t kAbs1 = 0x04;  // a:2BCD3A0B = r:3A0B = o:3B
+  const offset_t kAbs2 = 0x0B;  // a:2BCD3A04 = r:3A04 = o:34
+  const offset_t kAbs3 = 0x10;  // a:2BCD3FFF = r:3FFF (dangling)
+  const offset_t kAbs4 = 0x14;  // a:2BCD1A14 = r:1A14 = o:18
+  const offset_t kAbs5 = 0x26;  // a:2BCD1A1E = r:1A1E = o:22
+  const offset_t kAbs6 = 0x30;  // a:2BCD3A10 = r:3A10 = 0x40
+  const offset_t kAbs7 = 0x44;  // a:2BCD1A28 = r:1A28 (bad: sentinel)
+  const offset_t kAbs8 = 0x48;  // a:2BCD0000 = r:0000 (bad: not covered)
+  const offset_t kAbs9 = 0x4C;  // a:2BCD1A27 = r:1A27 = 0x2B
+  const offset_t kAbsA = 0x50;  // a:2BCD39FF (bad: not covered)
+  const offset_t kAbsB = 0x54;  // a:00000000 (bad: underflow)
+  const offset_t kAbsC = 0x58;  // a:2BCD1A18 = r:1A18 = 0x1C
+
+  std::vector<offset_t> locations = {kAbs1, kAbs2, kAbs3, kAbs4, kAbs5, kAbs6,
+                                     kAbs7, kAbs8, kAbs9, kAbsA, kAbsB, kAbsC};
+  std::vector<offset_t> exp_locations = {kAbs1, kAbs2, kAbs3, kAbs4,
+                                         kAbs5, kAbs6, kAbs9, kAbsC};
+  size_t exp_num_removed = locations.size() - exp_locations.size();
+  size_t num_removed = RemoveUntranslatableAbs32(image, {kBitness, kImageBase},
+                                                 translator, &locations);
+  EXPECT_EQ(exp_num_removed, num_removed);
+  EXPECT_EQ(exp_locations, locations);
+}
+
+TEST(Abs32UtilsTest, RemoveOverlappingAbs32Locations) {
+  // Make |width| a state to reduce repetition.
+  uint32_t width = WidthOf(kBit32);
+
+  auto run_test = [&width](const std::vector<offset_t>& expected_locations,
+                           std::vector<offset_t>&& locations) {
     ASSERT_TRUE(std::is_sorted(locations.begin(), locations.end()));
     size_t expected_removals = locations.size() - expected_locations.size();
-    size_t removals = RemoveOverlappingAbs32Locations(bitness, &locations);
+    size_t removals = RemoveOverlappingAbs32Locations(width, &locations);
     EXPECT_EQ(expected_removals, removals);
     EXPECT_EQ(expected_locations, locations);
   };
 
   // 32-bit tests.
-  bitness = kBit32;
+  width = WidthOf(kBit32);
   run_test(std::vector<offset_t>(), std::vector<offset_t>());
   run_test({4U}, {4U});
   run_test({4U, 10U}, {4U, 10U});
@@ -470,7 +517,7 @@ TEST(Abs32UtilsTest, RemoveOverlappingAbs32Locations) {
   run_test({1000000U}, {1000000U, 1000002U});
 
   // 64-bit tests.
-  bitness = kBit64;
+  width = WidthOf(kBit64);
   run_test(std::vector<offset_t>(), std::vector<offset_t>());
   run_test({4U}, {4U});
   run_test({4U, 20U}, {4U, 20U});

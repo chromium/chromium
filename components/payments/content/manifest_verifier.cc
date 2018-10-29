@@ -19,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/console_message_level.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -110,10 +111,11 @@ void ManifestVerifier::Verify(content::PaymentAppProvider::PaymentApps apps,
         continue;
       }
 
-      // All URL payment method names must be HTTPS.
+      // All URL payment method names must be HTTPS or localhost for test.
       GURL method_manifest_url = GURL(method);
       if (!method_manifest_url.is_valid() ||
-          method_manifest_url.scheme() != "https") {
+          (method_manifest_url.scheme() != "https" &&
+           !net::IsLocalhost(method_manifest_url))) {
         dev_tools_.WarnIfPossible("\"" + method +
                                   "\" is not a valid payment method name.");
         continue;

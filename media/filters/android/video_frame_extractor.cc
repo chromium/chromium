@@ -76,6 +76,11 @@ void VideoFrameExtractor::Start(VideoFrameCallback video_frame_callback) {
   }
 
   auto packet = ReadVideoFrame();
+  if (!packet) {
+    OnError();
+    return;
+  }
+
   ConvertPacket(packet.get());
   NotifyComplete(
       std::vector<uint8_t>(packet->data, packet->data + packet->size),
@@ -107,7 +112,8 @@ void VideoFrameExtractor::ConvertPacket(AVPacket* packet) {
       break;
   }
 
-  bitstream_converter_->ConvertPacket(packet);
+  if (bitstream_converter_)
+    bitstream_converter_->ConvertPacket(packet);
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 

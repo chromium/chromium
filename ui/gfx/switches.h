@@ -15,10 +15,6 @@ namespace switches {
 GFX_SWITCHES_EXPORT extern const char kDisableDirectWriteForUI[];
 #endif
 
-#if defined(OS_MACOSX)
-GFX_SWITCHES_EXPORT extern const char kEnableHarfBuzzRenderText[];
-#endif
-
 GFX_SWITCHES_EXPORT extern const char kDisableFontSubpixelPositioning[];
 
 GFX_SWITCHES_EXPORT extern const char kHeadless[];
@@ -28,6 +24,8 @@ GFX_SWITCHES_EXPORT extern const char kHeadless[];
 namespace features {
 
 GFX_SWITCHES_EXPORT extern const base::Feature kLeftToRightUrls;
+
+GFX_SWITCHES_EXPORT extern const base::Feature kUsePaintRecordForImageSkia;
 
 }  // namespace features
 

@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 
+#import <MobileCoreServices/MobileCoreServices.h>
 #import <StoreKit/StoreKit.h>
 
 #include <memory>
 
 #import "base/logging.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -338,6 +340,12 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
   NSURL* URL = [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
   _openInController =
       [UIDocumentInteractionController interactionControllerWithURL:URL];
+
+  base::ScopedCFTypeRef<CFStringRef> MIMEType(
+      base::SysUTF8ToCFStringRef(_downloadTask->GetMimeType()));
+  CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(
+      kUTTagClassMIMEType, MIMEType.get(), nullptr);
+  _openInController.UTI = CFBridgingRelease(UTI);
   _openInController.delegate = self;
 
   BOOL menuShown =

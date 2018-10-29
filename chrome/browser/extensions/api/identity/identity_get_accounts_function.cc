@@ -6,8 +6,8 @@
 
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/identity.h"
-#include "components/signin/core/browser/profile_management_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/service_manager_connection.h"
 #include "services/identity/public/mojom/account.mojom.h"
@@ -41,10 +41,20 @@ void IdentityGetAccountsFunction::OnGotAccounts(
     std::vector<identity::mojom::AccountPtr> accounts) {
   std::unique_ptr<base::ListValue> infos(new base::ListValue());
 
-  // If there is no primary account or the primary account has no refresh token
-  // available, short-circuit out.
-  if (accounts.empty() || !accounts[0]->state.is_primary_account ||
-      !accounts[0]->state.has_refresh_token) {
+  if (accounts.empty()) {
+    Respond(OneArgument(std::move(infos)));
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  bool primary_account_only = IdentityAPI::GetFactoryInstance()
+                                  ->Get(profile)
+                                  ->AreExtensionsRestrictedToPrimaryAccount();
+
+  // If extensions are restricted to the primary account and there is no valid
+  // primary account, short-circuit out.
+  if (primary_account_only && (!accounts[0]->state.is_primary_account ||
+                               !accounts[0]->state.has_refresh_token)) {
     Respond(OneArgument(std::move(infos)));
     return;
   }
@@ -54,8 +64,9 @@ void IdentityGetAccountsFunction::OnGotAccounts(
     account_info.id = account->info.gaia;
     infos->Append(account_info.ToValue());
 
-    // Stop after the primary account if extensions are not multi-account.
-    if (!signin::IsExtensionsMultiAccount())
+    // Stop after the primary account if extensions are restricted to the
+    // primary account.
+    if (primary_account_only)
       break;
   }
 

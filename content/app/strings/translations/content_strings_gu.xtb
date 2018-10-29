@@ -2,10 +2,9 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1018939186200882850">મેનૂ આઇટમ</translation>
-<translation id="1020833440720551630">ઑડિઓ ટ્રેક મ્યૂટ કરો</translation>
 <translation id="10623998915015855">ટોગલ બટન</translation>
 <translation id="1088086359088493902">સેકંડ</translation>
-<translation id="1171774979989969504">કૃપા કરી કોઈ ઇમેઇલ સરનામું દાખલ કરો.</translation>
+<translation id="1171774979989969504">કૃપા કરી કોઈ ઇમેઇલ ઍડ્રેસ દાખલ કરો.</translation>
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="1188858454923323853">પૂરક</translation>
 <translation id="1206619573307042055">માર્કી</translation>
@@ -16,18 +15,16 @@
 <translation id="1335095011850992622">ક્રેડિટ</translation>
 <translation id="1342835525016946179">લેખ</translation>
 <translation id="1359897965706325498">બેનર</translation>
-<translation id="1548116112524424341">ચિત્ર-માં-ચિત્ર મોડમાં વીડિઓ ચલાવો</translation>
 <translation id="1589122976691792535">પ્રદેશ</translation>
 <translation id="1591562245178063882">આ મહિને</translation>
 <translation id="1637811476055996098">ફાઇલો પસંદ કરો</translation>
 <translation id="1650423536718072820">પુલક્વોટ</translation>
-<translation id="1729654308190250600">કૃપા કરીને એક બિન-ખાલી ઇમેઇલ સરનામું દાખલ કરો.</translation>
+<translation id="1729654308190250600">કૃપા કરીને ખાલી ન હોય એવું ઇમેઇલ ઍડ્રેસ દાખલ કરો.</translation>
 <translation id="1758486001363313524">અન્ય...</translation>
 <translation id="1806710327868736751">ચેતવણી_સંવાદ</translation>
 <translation id="1821985195704844674">ટ્રી ગ્રિડ</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">રિમોટ ઉપકરણ પર ચલાવો</translation>
-<translation id="1838818994221231429">પૂર્ણસ્ક્રીનને ડિસ્પ્લેમાં જ સામેલ વિસ્તારમાં જ ટૉગલ કરો</translation>
 <translation id="190587075670221089">ડિલીટ કરો</translation>
 <translation id="1907737156431278478">ઉદાહરણ</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">સમય</translation>
 <translation id="5630795885300617244">10 સેકન્ડ છોડવા માટે ડાબે અથવા જમણે બે વાર ટૅપ કરો</translation>
 <translation id="5631759159893697722">અમૂર્ત</translation>
-<translation id="5641012560118721995">પ્લેબેક થોભાવો</translation>
 <translation id="5643186887447432888">બટન</translation>
 <translation id="5677946354068040947">વધુ વિકલ્પો</translation>
 <translation id="576709008726043716">પ્રસ્તાવના</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">રીસેટ કરો</translation>
 <translation id="5966707198760109579">અઠવાડિયું</translation>
 <translation id="5987525920412732405">સ્પિન બટન</translation>
+<translation id="6011459053400940133">વોલ્યુમ સ્લાઇડર</translation>
 <translation id="6015796118275082299">વર્ષ</translation>
 <translation id="6023896073578205740">સૂચિ બૉક્સ</translation>
-<translation id="6101327004457443354">ઑડિઓ ટ્રેક અનમ્યૂટ કરો</translation>
 <translation id="6150588977291308318">ગ્રંથસૂચિ</translation>
 <translation id="6164829606128959761">મીટર</translation>
 <translation id="6166809985690652833">સમાપન ભાષણ</translation>
@@ -191,20 +187,17 @@
 <translation id="7673697353781729403">કલાક</translation>
 <translation id="7681220483256441252">અનુક્રમણિકા</translation>
 <translation id="7720026100085573005">બાકીનો સમય</translation>
-<translation id="7740016676195725605">વિગતવાર ઉપશીર્ષકનું પ્રદર્શન અટકાવો</translation>
 <translation id="7740050170769002709">HTML માહિતી</translation>
 <translation id="7750228210027921155">ચિત્રમાં ચિત્ર</translation>
 <translation id="7789962463072032349">થોભો</translation>
 <translation id="7802800022689234070">પ્રકટીકરણ ત્રિકોણ</translation>
-<translation id="7888071071722539607">કૃપા કરીને ઇમેઇલ સરનામાંમાં '<ph name="ATSIGN" />' શામેલ કરો. '<ph name="INVALIDADDRESS" />' માં '<ph name="ATSIGN" />' ખૂટી રહ્યું છે.</translation>
+<translation id="7888071071722539607">કૃપા કરીને ઇમેઇલ સરનામાંમાં '<ph name="ATSIGN" />' શામેલ કરો. '<ph name="INVALIDADDRESS" />'માં '<ph name="ATSIGN" />' ખૂટે છે.</translation>
 <translation id="7891486169920085145">વિભાજનકર્તા</translation>
 <translation id="795667975304826397">કોઈ ફાઇલ પસંદ કરેલી નથી</translation>
 <translation id="8053789581856978548">ટેક્સ્ટ ફીલ્ડ શોધો</translation>
 <translation id="8057695513531652401">સૂચના</translation>
 <translation id="8105797009065549151">નોંધ સંદર્ભ</translation>
-<translation id="8115662671911883373">ઉપશીર્ષક પ્રદર્શન પ્રારંભ કરો</translation>
 <translation id="8117451130807776954">આ અઠવાડિયે</translation>
-<translation id="819205353528511139">પૂર્ણ સ્ક્રીન મોડમાં મૂવી ચલાવો</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8284326494547611709">કૅપ્શન્સ</translation>
 <translation id="835897206747267392">અમાન્ય મૂલ્ય.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">રિમોટ પ્લેબેકનું નિયંત્રણ કરો</translation>
 <translation id="862370744433916922">(સબટાઇટલ)</translation>
 <translation id="8750798805984357768">કૃપા કરીને આ વિકલ્પોમાંથી કોઈ એક પસંદ કરો.</translation>
-<translation id="8785498733064193001">પ્લેબૅક શરૂ કરો</translation>
 <translation id="8808573423886751634">પ્રકરણ</translation>
 <translation id="8845239796550121995">હમણાં તમારા TV પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8851136666856101339">મુખ્ય</translation>

@@ -26,7 +26,7 @@ enum OutputDeviceStatus {
   OUTPUT_DEVICE_STATUS_MAX = OUTPUT_DEVICE_STATUS_ERROR_INTERNAL
 };
 
-using OutputDeviceStatusCB = base::Callback<void(OutputDeviceStatus)>;
+using OutputDeviceStatusCB = base::OnceCallback<void(OutputDeviceStatus)>;
 
 // Output device information returned by
 // AudioRendererSink::GetOutputDeviceInfo()

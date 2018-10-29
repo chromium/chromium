@@ -2,7 +2,6 @@ This tests that when a link is inside a button, its visible text is still availa
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS button1.name is 'foo1'
 PASS button2.name is 'foo2'
 PASS successfullyParsed is true

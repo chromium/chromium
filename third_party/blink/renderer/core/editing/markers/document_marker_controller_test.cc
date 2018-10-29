@@ -366,7 +366,7 @@ TEST_F(DocumentMarkerControllerTest, RemoveSuggestionMarkerByTag) {
   ASSERT_EQ(1u, MarkerController().Markers().size());
   const SuggestionMarker& marker =
       *ToSuggestionMarker(MarkerController().Markers()[0]);
-  MarkerController().RemoveSuggestionMarkerByTag(text, marker.Tag());
+  MarkerController().RemoveSuggestionMarkerByTag(*ToText(text), marker.Tag());
   EXPECT_EQ(0u, MarkerController().Markers().size());
 }
 

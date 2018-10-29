@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "content/browser/renderer_host/input/input_disposition_handler.h"
+#include "content/browser/renderer_host/input/input_router.h"
 
 namespace content {
 
@@ -21,13 +22,10 @@ class MockInputDispositionHandler : public InputDispositionHandler {
   MockInputDispositionHandler();
   ~MockInputDispositionHandler() override;
 
+  InputRouter::KeyboardEventCallback CreateKeyboardEventCallback();
+  InputRouter::MouseEventCallback CreateMouseEventCallback();
+
   // InputDispositionHandler
-  void OnKeyboardEventAck(const NativeWebKeyboardEventWithLatencyInfo& event,
-                          InputEventAckSource ack_source,
-                          InputEventAckState ack_result) override;
-  void OnMouseEventAck(const MouseEventWithLatencyInfo& event,
-                       InputEventAckSource ack_source,
-                       InputEventAckState ack_result) override;
   void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
                        InputEventAckSource ack_source,
                        InputEventAckState ack_result) override;
@@ -81,6 +79,13 @@ class MockInputDispositionHandler : public InputDispositionHandler {
 
  private:
   void RecordAckCalled(blink::WebInputEvent::Type eventType,
+                       InputEventAckState ack_result);
+
+  void OnKeyboardEventAck(const NativeWebKeyboardEventWithLatencyInfo& event,
+                          InputEventAckSource ack_source,
+                          InputEventAckState ack_result);
+  void OnMouseEventAck(const MouseEventWithLatencyInfo& event,
+                       InputEventAckSource ack_source,
                        InputEventAckState ack_result);
 
   InputRouter* input_router_;

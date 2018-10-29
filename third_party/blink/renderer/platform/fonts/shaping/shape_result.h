@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -63,7 +63,7 @@ enum class AdjustMidCluster {
 };
 
 struct ShapeResultCharacterData {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   float x_position;
   // Set for the logical first character of a cluster.
   unsigned is_cluster_base : 1;
@@ -248,7 +248,7 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // Computes the list of fonts along with the number of glyphs for each font.
   struct RunFontData {
     SimpleFontData* font_data_;
-    size_t glyph_count_;
+    wtf_size_t glyph_count_;
   };
   void GetRunFontData(Vector<RunFontData>* font_data) const;
 

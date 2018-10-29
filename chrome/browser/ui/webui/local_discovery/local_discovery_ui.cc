@@ -8,8 +8,6 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/local_discovery/local_discovery_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/common/pref_names.h"
@@ -44,7 +42,6 @@ content::WebUIDataSource* CreateLocalDiscoveryHTMLSource() {
                              IDS_LOCAL_DISCOVERY_CONFIRM_REGISTRATION);
   source->AddLocalizedString("addingPrinter",
                              IDS_LOCAL_DISCOVERY_ADDING_PRINTER);
-  source->AddLocalizedString("addingDevice", IDS_LOCAL_DISCOVERY_ADDING_DEVICE);
   source->AddLocalizedString("addingError",
                              IDS_LOCAL_DISCOVERY_ERROR_OCURRED);
   source->AddLocalizedString("addingErrorMessage",
@@ -57,15 +54,8 @@ content::WebUIDataSource* CreateLocalDiscoveryHTMLSource() {
                              IDS_LOCAL_DISCOVERY_ADDING_PRINTER_MESSAGE1);
   source->AddLocalizedString("addingPrinterMessage2",
                              IDS_LOCAL_DISCOVERY_ADDING_PRINTER_MESSAGE2);
-  source->AddLocalizedString("addingDeviceMessage1",
-                             IDS_LOCAL_DISCOVERY_ADDING_DEVICE_MESSAGE1);
-  source->AddLocalizedString("addingDeviceConfirmCodeMessage",
-                             IDS_LOCAL_DISCOVERY_CONFIRM_CODE_MESSAGE);
-  source->AddLocalizedString("confirmCode", IDS_LOCAL_DISCOVERY_CONFIRM_CODE);
   source->AddLocalizedString("devicesTitle",
                              IDS_LOCAL_DISCOVERY_DEVICES_PAGE_TITLE);
-  source->AddLocalizedString("noDescriptionDevice",
-                             IDS_LOCAL_DISCOVERY_NO_DESCRIPTION_DEVICE);
   source->AddLocalizedString("noDescriptionPrinter",
                              IDS_LOCAL_DISCOVERY_NO_DESCRIPTION_PRINTER);
   source->AddLocalizedString("printersOnNetworkZero",
@@ -96,7 +86,6 @@ content::WebUIDataSource* CreateLocalDiscoveryHTMLSource() {
                              IDS_LOCAL_DISCOVERY_AVAILABLE_DEVICES);
   source->AddLocalizedString("myDevicesTitle",
                              IDS_LOCAL_DISCOVERY_MY_DEVICES);
-  source->AddLocalizedString("backButton", IDS_SETTINGS_TITLE);
 
   // Cloud print connector-related strings.
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OS_CHROMEOS)
@@ -125,11 +114,6 @@ LocalDiscoveryUI::LocalDiscoveryUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   // Set up the chrome://devices/ source.
   content::WebUIDataSource* source = CreateLocalDiscoveryHTMLSource();
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui->GetWebContents());
-  // Show a back button pointing to Settings if the browser has no location bar.
-  if (browser && browser->is_trusted_source())
-    source->AddString("backButtonURL", chrome::kChromeUISettingsURL);
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 
   // TODO(gene): Use LocalDiscoveryUIHandler to send updated to the devices

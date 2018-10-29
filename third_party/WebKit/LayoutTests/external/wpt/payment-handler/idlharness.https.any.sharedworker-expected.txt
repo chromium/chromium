@@ -10,7 +10,6 @@ FAIL PaymentManager interface: existence and properties of interface prototype o
 FAIL PaymentManager interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
 FAIL PaymentManager interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
 FAIL PaymentManager interface: attribute instruments assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
-FAIL PaymentManager interface: member requestPermission Cannot use 'in' operator to search for 'requestPermission' in undefined
 FAIL PaymentManager interface: attribute userHint assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
 PASS PaymentInstruments interface: existence and properties of interface object
 PASS PaymentInstruments interface object length

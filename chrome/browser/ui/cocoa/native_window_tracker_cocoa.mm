@@ -48,7 +48,9 @@
 
 @end
 
-NativeWindowTrackerCocoa::NativeWindowTrackerCocoa(gfx::NativeWindow window) {
+NativeWindowTrackerCocoa::NativeWindowTrackerCocoa(
+    gfx::NativeWindow native_window) {
+  NSWindow* window = native_window.GetNativeNSWindow();
   bridge_.reset([[BridgedNativeWindowTracker alloc] initWithNSWindow:window]);
 }
 

@@ -2,9 +2,8 @@ Animations should be canceled when an element is removed from the document.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.getAnimations().length is 0
 PASS successfullyParsed is true
 
 TEST COMPLETE
- 
+

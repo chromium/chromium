@@ -63,7 +63,7 @@ TEST(IdentityExtensionTokenKeyTest, Ordering) {
   // comparison should establish an ordering
   std::sort(keys.begin(), keys.end());
   for (ExtensionTokenKeyIterator it1 = keys.begin(); it1 != keys.end(); ++it1) {
-    ExtensionTokenKeyIterator it2 = it1;
+    auto it2 = it1;
     for (++it2; it2 != keys.end(); ++it2) {
       EXPECT_LT(*it1, *it2);
       EXPECT_FALSE(it2 < it1);

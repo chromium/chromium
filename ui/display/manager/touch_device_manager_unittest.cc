@@ -142,7 +142,7 @@ TEST_F(TouchAssociationTest, ManyTouchscreens) {
   std::vector<ui::TouchscreenDevice> devices;
   for (int i = 0; i < 5; ++i) {
     devices.push_back(CreateTouchscreenDevice(
-        i, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(256, 256)));
+        i, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(256, 256)));
   }
 
   DisplayInfoList displays;
@@ -159,9 +159,9 @@ TEST_F(TouchAssociationTest, ManyTouchscreens) {
 TEST_F(TouchAssociationTest, OneToOneMapping) {
   std::vector<ui::TouchscreenDevice> devices;
   devices.push_back(CreateTouchscreenDevice(
-      1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(800, 600)));
+      1, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(800, 600)));
   devices.push_back(CreateTouchscreenDevice(
-      2, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1024, 768)));
+      2, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1024, 768)));
 
   test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                 displays_[0].id());
@@ -178,7 +178,7 @@ TEST_F(TouchAssociationTest, OneToOneMapping) {
 TEST_F(TouchAssociationTest, MapToCorrectDisplaySize) {
   std::vector<ui::TouchscreenDevice> devices;
   devices.push_back(CreateTouchscreenDevice(
-      2, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1024, 768)));
+      2, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1024, 768)));
 
   test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                 displays_[0].id());
@@ -194,9 +194,9 @@ TEST_F(TouchAssociationTest, MapToCorrectDisplaySize) {
 TEST_F(TouchAssociationTest, MapWhenSizeDiffersByOne) {
   std::vector<ui::TouchscreenDevice> devices;
   devices.push_back(CreateTouchscreenDevice(
-      1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(801, 600)));
+      1, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(801, 600)));
   devices.push_back(CreateTouchscreenDevice(
-      2, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1023, 768)));
+      2, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1023, 768)));
 
   test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                 displays_[0].id());
@@ -213,9 +213,9 @@ TEST_F(TouchAssociationTest, MapWhenSizeDiffersByOne) {
 TEST_F(TouchAssociationTest, MapWhenSizesDoNotMatch) {
   std::vector<ui::TouchscreenDevice> devices;
   devices.push_back(CreateTouchscreenDevice(
-      1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1022, 768)));
+      1, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1022, 768)));
   devices.push_back(CreateTouchscreenDevice(
-      2, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(802, 600)));
+      2, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(802, 600)));
 
   DisplayInfoList displays;
   displays.push_back(displays_[0]);
@@ -236,7 +236,7 @@ TEST_F(TouchAssociationTest, MapWhenSizesDoNotMatch) {
 TEST_F(TouchAssociationTest, MapInternalTouchscreen) {
   std::vector<ui::TouchscreenDevice> devices;
   devices.push_back(CreateTouchscreenDevice(
-      1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1920, 1080)));
+      1, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1920, 1080)));
   devices.push_back(CreateTouchscreenDevice(
       2, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, gfx::Size(9999, 888)));
 
@@ -279,7 +279,7 @@ TEST_F(TouchAssociationTest, MultipleInternalAndExternal) {
   devices.push_back(CreateTouchscreenDevice(
       2, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, gfx::Size(1920, 1080)));
   devices.push_back(CreateTouchscreenDevice(
-      3, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1024, 768)));
+      3, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1024, 768)));
 
   test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                 displays_[0].id());
@@ -298,7 +298,7 @@ TEST_F(TouchAssociationTest, MultipleInternalAndExternal) {
 TEST_F(TouchAssociationTest, TestWithNoInternalDisplay) {
   std::vector<ui::TouchscreenDevice> devices;
   devices.push_back(CreateTouchscreenDevice(
-      1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1920, 1080)));
+      1, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1920, 1080)));
   devices.push_back(CreateTouchscreenDevice(
       2, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, gfx::Size(9999, 888)));
 
@@ -315,11 +315,11 @@ TEST_F(TouchAssociationTest, TestWithNoInternalDisplay) {
 TEST_F(TouchAssociationTest, MatchRemainingDevicesToInternalDisplay) {
   std::vector<ui::TouchscreenDevice> devices;
   devices.push_back(CreateTouchscreenDevice(
-      1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(123, 456)));
+      1, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(123, 456)));
   devices.push_back(CreateTouchscreenDevice(
-      2, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(234, 567)));
+      2, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(234, 567)));
   devices.push_back(CreateTouchscreenDevice(
-      3, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(345, 678)));
+      3, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(345, 678)));
 
   test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                 displays_[0].id());
@@ -338,11 +338,11 @@ TEST_F(TouchAssociationTest,
        MatchRemainingDevicesWithNoInternalDisplayPresent) {
   std::vector<ui::TouchscreenDevice> devices;
   devices.push_back(CreateTouchscreenDevice(
-      1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(123, 456)));
+      1, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(123, 456)));
   devices.push_back(CreateTouchscreenDevice(
-      2, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(234, 567)));
+      2, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(234, 567)));
   devices.push_back(CreateTouchscreenDevice(
-      3, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(345, 678)));
+      3, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(345, 678)));
 
   touch_device_manager()->AssociateTouchscreens(&displays_, devices);
 
@@ -364,11 +364,11 @@ class TouchAssociationFromPrefTest : public TouchAssociationTest {
     TouchDeviceManager::TouchAssociationMap touch_associations;
 
     devices_.push_back(CreateTouchscreenDevice(
-        1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1920, 1080)));
+        1, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1920, 1080)));
     devices_.push_back(CreateTouchscreenDevice(
-        2, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1024, 768)));
+        2, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1024, 768)));
     devices_.push_back(CreateTouchscreenDevice(
-        3, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(640, 480)));
+        3, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(640, 480)));
     devices_.push_back(CreateTouchscreenDevice(
         4, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, gfx::Size(800, 600)));
 
@@ -600,7 +600,7 @@ class TouchAssociationWithDuplicateDeviceTest : public TouchAssociationTest {
 
     // Create a device with name |device_name_1| connected to |ports[0]|.
     devices_.push_back(CreateTouchscreenDevice(
-        1, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1920, 1080)));
+        1, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1920, 1080)));
     devices_.back().name = device_name_1;
     devices_.back().phys = ports[0];
 
@@ -608,7 +608,7 @@ class TouchAssociationWithDuplicateDeviceTest : public TouchAssociationTest {
     int product_id = devices_.back().product_id;
 
     devices_.push_back(CreateTouchscreenDevice(
-        2, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1920, 1080)));
+        2, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1920, 1080)));
 
     // Create another device with the same name but different port. Ensure that
     // the touch device idnetifier is the same by setting the same vendor id,
@@ -619,7 +619,7 @@ class TouchAssociationWithDuplicateDeviceTest : public TouchAssociationTest {
     devices_.back().product_id = product_id;
 
     devices_.push_back(CreateTouchscreenDevice(
-        3, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(1920, 1080)));
+        3, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(1920, 1080)));
     devices_.back().name = device_name_1;
     devices_.back().phys = ports[2];
     devices_.back().vendor_id = vendor_id;
@@ -629,7 +629,7 @@ class TouchAssociationWithDuplicateDeviceTest : public TouchAssociationTest {
         4, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, gfx::Size(800, 600)));
 
     devices_.push_back(CreateTouchscreenDevice(
-        5, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(4096, 4096)));
+        5, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(4096, 4096)));
     devices_.back().name = device_name_2;
     devices_.back().phys = ports[3];
 
@@ -637,7 +637,7 @@ class TouchAssociationWithDuplicateDeviceTest : public TouchAssociationTest {
     product_id = devices_.back().product_id;
 
     devices_.push_back(CreateTouchscreenDevice(
-        6, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, gfx::Size(4096, 4096)));
+        6, ui::InputDeviceType::INPUT_DEVICE_USB, gfx::Size(4096, 4096)));
     devices_.back().name = device_name_2;
     devices_.back().phys = ports[4];
     devices_.back().vendor_id = vendor_id;

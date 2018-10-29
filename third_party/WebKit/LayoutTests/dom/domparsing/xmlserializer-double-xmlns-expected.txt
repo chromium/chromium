@@ -2,7 +2,6 @@ Checks that attributes created setAttributeNS() don't cause two identical xmlns 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS doc.documentElement.getAttributeNS("http://www.example.com", "attr") is "value"
 PASS parsedDoc.documentElement.getAttributeNS("http://www.example.com", "attr") is "value"
 PASS successfullyParsed is true

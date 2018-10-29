@@ -14,7 +14,7 @@
 namespace device {
 
 FidoHidDiscovery::FidoHidDiscovery(::service_manager::Connector* connector)
-    : FidoDiscovery(FidoTransportProtocol::kUsbHumanInterfaceDevice),
+    : FidoDeviceDiscovery(FidoTransportProtocol::kUsbHumanInterfaceDevice),
       connector_(connector),
       binding_(this),
       weak_factory_(this) {

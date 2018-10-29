@@ -31,6 +31,12 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+
+bool g_auto_accept_bookmark_app_for_testing = false;
+
+}  // namespace
+
 BookmarkAppConfirmationView::~BookmarkAppConfirmationView() {}
 
 BookmarkAppConfirmationView::BookmarkAppConfirmationView(
@@ -98,6 +104,9 @@ BookmarkAppConfirmationView::BookmarkAppConfirmationView(
   title_tf_->SelectAll(true);
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::BOOKMARK_APP_CONFIRMATION);
+
+  if (g_auto_accept_bookmark_app_for_testing)
+    Accept();
 }
 
 views::View* BookmarkAppConfirmationView::GetInitiallyFocusedView() {
@@ -162,6 +171,10 @@ void ShowBookmarkAppDialog(content::WebContents* web_contents,
   constrained_window::ShowWebModalDialogViews(
       new BookmarkAppConfirmationView(web_app_info, std::move(callback)),
       web_contents);
+}
+
+void SetAutoAcceptBookmarkAppDialogForTesting(bool auto_accept) {
+  g_auto_accept_bookmark_app_for_testing = auto_accept;
 }
 
 }  // namespace chrome

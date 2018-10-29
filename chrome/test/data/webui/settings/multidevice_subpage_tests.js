@@ -2,22 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @implements {settings.MultideviceBrowserProxy}
- */
-class TestMultideviceBrowserProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'setUpAndroidSms',
-    ]);
-  }
-
-  /** @override */
-  setUpAndroidSms() {
-    this.methodCalled('setUpAndroidSms');
-  }
-}
-
 suite('Multidevice', function() {
   let multideviceSubpage = null;
   let browserProxy = null;
@@ -90,7 +74,7 @@ suite('Multidevice', function() {
   });
 
   setup(function() {
-    browserProxy = new TestMultideviceBrowserProxy();
+    browserProxy = new multidevice.TestMultideviceBrowserProxy();
     settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
 
     PolymerTest.clearBody();
@@ -148,9 +132,9 @@ suite('Multidevice', function() {
         assertFalse(!!multideviceSubpage.$$('#messagesItem'));
       });
 
-  test('clicking EasyUnlock item routes to screen lock page', function() {
+  test('clicking SmartLock item routes to SmartLock subpage', function() {
     multideviceSubpage.$$('#smartLockItem').$.card.click();
-    assertEquals(settings.getCurrentRoute(), settings.routes.LOCK_SCREEN);
+    assertEquals(settings.getCurrentRoute(), settings.routes.SMART_LOCK);
   });
 
   test('AndroidMessages item shows button when not set up', function() {

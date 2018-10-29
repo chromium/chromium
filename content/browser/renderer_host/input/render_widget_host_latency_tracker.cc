@@ -70,7 +70,7 @@ void RenderWidgetHostLatencyTracker::ComputeInputLatencyHistograms(
 
   std::string event_name = WebInputEvent::GetName(type);
 
-  if (latency.source_event_type() == ui::KEY_PRESS)
+  if (latency.source_event_type() == ui::SourceEventType::KEY_PRESS)
     event_name = "KeyPress";
 
   std::string default_action_status =
@@ -112,7 +112,7 @@ void RenderWidgetHostLatencyTracker::OnInputEvent(
     active_multi_finger_gesture_ = touch_event.touches_length != 1;
   }
 
-  if (latency->source_event_type() == ui::KEY_PRESS) {
+  if (latency->source_event_type() == ui::SourceEventType::KEY_PRESS) {
     DCHECK(event.GetType() == WebInputEvent::kChar ||
            event.GetType() == WebInputEvent::kRawKeyDown);
   }

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <random>
+#include <set>
 #include <vector>
 
 #include "base/command_line.h"
@@ -63,6 +64,7 @@ void LogFileInformation(const base::FilePath& file_path,
   FileInformationToProtoObject(file_information,
                                matched_file->mutable_file_information());
   matched_file->set_removal_status(REMOVAL_STATUS_MATCHED_ONLY);
+  matched_file->set_quarantine_status(QUARANTINE_STATUS_UNSPECIFIED);
 }
 
 UwS PUPToUwS(const PUPData::PUP* found_uws,

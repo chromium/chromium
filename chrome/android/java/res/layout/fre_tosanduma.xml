@@ -6,7 +6,6 @@
 -->
 <org.chromium.chrome.browser.firstrun.FirstRunView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -87,9 +86,7 @@
         android:paddingStart="@dimen/fre_button_padding"
         android:paddingEnd="@dimen/fre_button_padding"
         android:text="@string/fre_accept_continue"
-        android:textAppearance="@style/WhiteButtonText"
-        app:buttonColor="@color/light_active_color"
-        app:buttonRaised="false"/>
+        style="@style/FilledButton.Flat" />
 
     <!-- Same location as the button; marginButtom is adjusted for the different size. -->
     <ProgressBar

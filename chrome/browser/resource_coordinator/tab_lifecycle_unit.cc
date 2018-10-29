@@ -513,30 +513,19 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanFreeze(
     return false;
   }
 
-  if (!GetTabSource()->tab_lifecycles_enterprise_policy()) {
-    decision_details->AddReason(
-        DecisionFailureReason::LIFECYCLES_ENTERPRISE_POLICY_OPT_OUT);
-  }
+  bool check_heuristics = !GetStaticProactiveTabFreezeAndDiscardParams()
+                               .disable_heuristics_protections;
 
-  auto intervention_policy =
-      GetTabSource()->intervention_policy_database()->GetFreezingPolicy(
-          url::Origin::Create(web_contents()->GetLastCommittedURL()));
-
-  switch (intervention_policy) {
-    case OriginInterventions::OPT_IN:
-      decision_details->AddReason(DecisionSuccessReason::GLOBAL_WHITELIST);
-      break;
-    case OriginInterventions::OPT_OUT:
-      decision_details->AddReason(DecisionFailureReason::GLOBAL_BLACKLIST);
-      break;
-    case OriginInterventions::DEFAULT:
-      break;
-  }
+  if (check_heuristics)
+    CanFreezeHeuristicsChecks(decision_details);
 
   if (web_contents()->GetVisibility() == content::Visibility::VISIBLE)
     decision_details->AddReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
 
-  CheckIfTabIsUsedInBackground(decision_details, InterventionType::kProactive);
+  if (check_heuristics) {
+    CheckIfTabIsUsedInBackground(decision_details,
+                                 InterventionType::kProactive);
+  }
 
   if (decision_details->reasons().empty()) {
     decision_details->AddReason(
@@ -598,31 +587,11 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
   }
 #endif
 
-  // We deliberately run through all of the logic without early termination.
-  // This ensures that the decision details lists all possible reasons that the
-  // transition can be denied.
+  bool check_heuristics = !GetStaticProactiveTabFreezeAndDiscardParams()
+                               .disable_heuristics_protections;
 
-  if (!GetTabSource()->tab_lifecycles_enterprise_policy()) {
-    decision_details->AddReason(
-        DecisionFailureReason::LIFECYCLES_ENTERPRISE_POLICY_OPT_OUT);
-  }
-
-  if (reason == LifecycleUnitDiscardReason::PROACTIVE) {
-    auto intervention_policy =
-        GetTabSource()->intervention_policy_database()->GetDiscardingPolicy(
-            url::Origin::Create(web_contents()->GetLastCommittedURL()));
-
-    switch (intervention_policy) {
-      case OriginInterventions::OPT_IN:
-        decision_details->AddReason(DecisionSuccessReason::GLOBAL_WHITELIST);
-        break;
-      case OriginInterventions::OPT_OUT:
-        decision_details->AddReason(DecisionFailureReason::GLOBAL_BLACKLIST);
-        break;
-      case OriginInterventions::DEFAULT:
-        break;
-    }
-  }
+  if (check_heuristics)
+    CanDiscardHeuristicsChecks(decision_details, reason);
 
 #if defined(OS_CHROMEOS)
   if (web_contents()->GetVisibility() == content::Visibility::VISIBLE)
@@ -650,10 +619,12 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
         DecisionFailureReason::LIVE_STATE_EXTENSION_DISALLOWED);
   }
 
-  CheckIfTabIsUsedInBackground(decision_details,
-                               reason == LifecycleUnitDiscardReason::PROACTIVE
-                                   ? InterventionType::kProactive
-                                   : InterventionType::kExternalOrUrgent);
+  if (check_heuristics) {
+    CheckIfTabIsUsedInBackground(decision_details,
+                                 reason == LifecycleUnitDiscardReason::PROACTIVE
+                                     ? InterventionType::kProactive
+                                     : InterventionType::kExternalOrUrgent);
+  }
 
   if (decision_details->reasons().empty()) {
     decision_details->AddReason(
@@ -977,6 +948,58 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckIfTabIsUsedInBackground(
   if (DevToolsWindow::GetInstanceForInspectedWebContents(web_contents())) {
     decision_details->AddReason(
         DecisionFailureReason::LIVE_STATE_DEVTOOLS_OPEN);
+  }
+}
+
+void TabLifecycleUnitSource::TabLifecycleUnit::CanFreezeHeuristicsChecks(
+    DecisionDetails* decision_details) const {
+  if (!GetTabSource()->tab_lifecycles_enterprise_policy()) {
+    decision_details->AddReason(
+        DecisionFailureReason::LIFECYCLES_ENTERPRISE_POLICY_OPT_OUT);
+  }
+
+  auto intervention_policy =
+      GetTabSource()->intervention_policy_database()->GetFreezingPolicy(
+          url::Origin::Create(web_contents()->GetLastCommittedURL()));
+
+  switch (intervention_policy) {
+    case OriginInterventions::OPT_IN:
+      decision_details->AddReason(DecisionSuccessReason::GLOBAL_WHITELIST);
+      break;
+    case OriginInterventions::OPT_OUT:
+      decision_details->AddReason(DecisionFailureReason::GLOBAL_BLACKLIST);
+      break;
+    case OriginInterventions::DEFAULT:
+      break;
+  }
+}
+
+void TabLifecycleUnitSource::TabLifecycleUnit::CanDiscardHeuristicsChecks(
+    DecisionDetails* decision_details,
+    LifecycleUnitDiscardReason reason) const {
+  // We deliberately run through all of the logic without early termination.
+  // This ensures that the decision details lists all possible reasons that
+  // the transition can be denied.
+  if (!GetTabSource()->tab_lifecycles_enterprise_policy()) {
+    decision_details->AddReason(
+        DecisionFailureReason::LIFECYCLES_ENTERPRISE_POLICY_OPT_OUT);
+  }
+
+  if (reason == LifecycleUnitDiscardReason::PROACTIVE) {
+    auto intervention_policy =
+        GetTabSource()->intervention_policy_database()->GetDiscardingPolicy(
+            url::Origin::Create(web_contents()->GetLastCommittedURL()));
+
+    switch (intervention_policy) {
+      case OriginInterventions::OPT_IN:
+        decision_details->AddReason(DecisionSuccessReason::GLOBAL_WHITELIST);
+        break;
+      case OriginInterventions::OPT_OUT:
+        decision_details->AddReason(DecisionFailureReason::GLOBAL_BLACKLIST);
+        break;
+      case OriginInterventions::DEFAULT:
+        break;
+    }
   }
 }
 

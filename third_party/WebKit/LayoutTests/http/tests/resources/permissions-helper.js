@@ -33,6 +33,8 @@ var PermissionsHelper = (function() {
         return {name: "clipboard-write"};
       case "payment-handler":
         return {name: "payment-handler"};
+      case "background-fetch":
+        return {name: "background-fetch"};
       default:
         throw "Invalid permission name provided";
     }

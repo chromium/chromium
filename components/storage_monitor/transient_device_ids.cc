@@ -36,7 +36,7 @@ std::string TransientDeviceIds::GetTransientIdForDeviceId(
 
 std::string TransientDeviceIds::DeviceIdFromTransientId(
     const std::string& transient_id) const {
-  IdMap::const_iterator it = transient_id_map_.find(transient_id);
+  auto it = transient_id_map_.find(transient_id);
   if (it == transient_id_map_.end())
     return std::string();
   return it->second;

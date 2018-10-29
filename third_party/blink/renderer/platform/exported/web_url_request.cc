@@ -45,8 +45,9 @@
 namespace blink {
 
 // The purpose of this struct is to permit allocating a ResourceRequest on the
-// heap, which is otherwise disallowed by DISALLOW_NEW_EXCEPT_PLACEMENT_NEW
-// annotation on ResourceRequest.
+// heap, which is otherwise disallowed by DISALLOW_NEW annotation on
+// ResourceRequest.
+// TODO(keishi): Replace with GCWrapper<ResourceRequest>
 struct WebURLRequest::ResourceRequestContainer {
   ResourceRequestContainer() = default;
   explicit ResourceRequestContainer(const ResourceRequest& r)
@@ -147,8 +148,9 @@ void WebURLRequest::SetHTTPHeaderField(const WebString& name,
   resource_request_->SetHTTPHeaderField(name, value);
 }
 
-void WebURLRequest::SetHTTPReferrer(const WebString& web_referrer,
-                                    WebReferrerPolicy referrer_policy) {
+void WebURLRequest::SetHTTPReferrer(
+    const WebString& web_referrer,
+    network::mojom::ReferrerPolicy referrer_policy) {
   // WebString doesn't have the distinction between empty and null. We use
   // the null WTFString for referrer.
   DCHECK_EQ(Referrer::NoReferrer(), String());
@@ -199,7 +201,7 @@ bool WebURLRequest::ReportRawHeaders() const {
   return resource_request_->ReportRawHeaders();
 }
 
-WebURLRequest::RequestContext WebURLRequest::GetRequestContext() const {
+mojom::RequestContextType WebURLRequest::GetRequestContext() const {
   return resource_request_->GetRequestContext();
 }
 
@@ -207,8 +209,9 @@ network::mojom::RequestContextFrameType WebURLRequest::GetFrameType() const {
   return resource_request_->GetFrameType();
 }
 
-WebReferrerPolicy WebURLRequest::GetReferrerPolicy() const {
-  return static_cast<WebReferrerPolicy>(resource_request_->GetReferrerPolicy());
+network::mojom::ReferrerPolicy WebURLRequest::GetReferrerPolicy() const {
+  return static_cast<network::mojom::ReferrerPolicy>(
+      resource_request_->GetReferrerPolicy());
 }
 
 void WebURLRequest::SetHTTPOriginIfNeeded(const WebSecurityOrigin& origin) {
@@ -223,7 +226,8 @@ void WebURLRequest::SetHasUserGesture(bool has_user_gesture) {
   resource_request_->SetHasUserGesture(has_user_gesture);
 }
 
-void WebURLRequest::SetRequestContext(RequestContext request_context) {
+void WebURLRequest::SetRequestContext(
+    mojom::RequestContextType request_context) {
   resource_request_->SetRequestContext(request_context);
 }
 
@@ -344,6 +348,14 @@ void WebURLRequest::SetExtraData(std::unique_ptr<ExtraData> extra_data) {
   resource_request_->SetExtraData(std::move(extra_data));
 }
 
+bool WebURLRequest::IsDownloadToNetworkCacheOnly() const {
+  return resource_request_->IsDownloadToNetworkCacheOnly();
+}
+
+void WebURLRequest::SetDownloadToNetworkCacheOnly(bool download_to_cache_only) {
+  resource_request_->SetDownloadToNetworkCacheOnly(download_to_cache_only);
+}
+
 ResourceRequest& WebURLRequest::ToMutableResourceRequest() {
   DCHECK(resource_request_);
   return *resource_request_;
@@ -389,7 +401,7 @@ bool WebURLRequest::IsAdResource() const {
   return resource_request_->IsAdResource();
 }
 
-const WebContentSecurityPolicyList& WebURLRequest::GetNavigationCSP() const {
+const WebContentSecurityPolicyList& WebURLRequest::GetInitiatorCSP() const {
   return resource_request_->GetInitiatorCSP();
 }
 
@@ -405,17 +417,29 @@ bool WebURLRequest::SupportsAsyncRevalidation() const {
   return resource_request_->AllowsStaleResponse();
 }
 
+bool WebURLRequest::IsRevalidating() const {
+  return resource_request_->IsRevalidating();
+}
+
 const base::Optional<base::UnguessableToken>& WebURLRequest::GetDevToolsToken()
     const {
   return resource_request_->GetDevToolsToken();
+}
+
+const WebString WebURLRequest::GetOriginPolicy() const {
+  return resource_request_->GetOriginPolicy();
 }
 
 void WebURLRequest::SetOriginPolicy(const WebString& policy) {
   resource_request_->SetOriginPolicy(policy);
 }
 
-const WebString WebURLRequest::GetOriginPolicy() const {
-  return resource_request_->GetOriginPolicy();
+const WebString WebURLRequest::GetRequestedWith() const {
+  return resource_request_->GetRequestedWith();
+}
+
+void WebURLRequest::SetRequestedWith(const WebString& value) {
+  resource_request_->SetRequestedWith(value);
 }
 
 const ResourceRequest& WebURLRequest::ToResourceRequest() const {

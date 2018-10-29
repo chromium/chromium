@@ -5,13 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_SESSION_AUDIO_FOCUS_DELEGATE_H_
 #define CONTENT_BROWSER_MEDIA_SESSION_AUDIO_FOCUS_DELEGATE_H_
 
-#include "content/browser/media/session/audio_focus_manager.h"
-
-namespace media_session {
-namespace mojom {
-enum class AudioFocusType;
-}  // namespace mojom
-}  // namespace media_session
+#include "services/media_session/public/mojom/audio_focus.mojom.h"
 
 namespace content {
 
@@ -27,12 +21,23 @@ class AudioFocusDelegate {
 
   virtual ~AudioFocusDelegate() = default;
 
-  virtual bool RequestAudioFocus(
+  enum class AudioFocusResult {
+    kSuccess,
+    kFailed,
+    kDelayed,
+  };
+
+  virtual AudioFocusResult RequestAudioFocus(
       media_session::mojom::AudioFocusType audio_focus_type) = 0;
   virtual void AbandonAudioFocus() = 0;
 
   // Retrieves the current |AudioFocusType| for the associated |MediaSession|.
-  virtual media_session::mojom::AudioFocusType GetCurrentFocusType() const = 0;
+  virtual base::Optional<media_session::mojom::AudioFocusType>
+  GetCurrentFocusType() const = 0;
+
+  // |MediaSession| should call this when it's state changes.
+  virtual void MediaSessionInfoChanged(
+      media_session::mojom::MediaSessionInfoPtr) = 0;
 };
 
 }  // namespace content

@@ -225,9 +225,10 @@ void ExplainConnectionSecurity(
       net::SSLConnectionStatusToCipherSuite(security_info.connection_status);
   net::SSLCipherSuiteToStrings(&key_exchange, &cipher, &mac, &is_aead,
                                &is_tls13, cipher_suite);
-  base::string16 protocol_name = base::ASCIIToUTF16(protocol);
-  const base::string16 cipher_name =
-      (mac == nullptr) ? base::ASCIIToUTF16(cipher)
+  const base::string16 protocol_name = base::ASCIIToUTF16(protocol);
+  const base::string16 cipher_name = base::ASCIIToUTF16(cipher);
+  const base::string16 cipher_full_name =
+      (mac == nullptr) ? cipher_name
                        : l10n_util::GetStringFUTF16(IDS_CIPHER_WITH_MAC,
                                                     base::ASCIIToUTF16(cipher),
                                                     base::ASCIIToUTF16(mac));
@@ -246,44 +247,43 @@ void ExplainConnectionSecurity(
     key_exchange_name = base::ASCIIToUTF16(key_exchange);
   }
 
-  if (security_info.obsolete_ssl_status == net::OBSOLETE_SSL_NONE) {
-    security_style_explanations->secure_explanations.push_back(
-        content::SecurityStyleExplanation(
-            l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE),
-            l10n_util::GetStringFUTF8(IDS_STRONG_SSL_SUMMARY, protocol_name),
-            l10n_util::GetStringFUTF8(IDS_STRONG_SSL_DESCRIPTION, protocol_name,
-                                      key_exchange_name, cipher_name)));
+  int status = security_info.obsolete_ssl_status;
+  if (status == net::OBSOLETE_SSL_NONE) {
+    security_style_explanations->secure_explanations.emplace_back(
+        l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE),
+        l10n_util::GetStringUTF8(IDS_SECURE_SSL_SUMMARY),
+        l10n_util::GetStringFUTF8(IDS_SSL_DESCRIPTION, protocol_name,
+                                  key_exchange_name, cipher_full_name));
     return;
   }
 
-  std::vector<base::string16> description_replacements;
-  int status = security_info.obsolete_ssl_status;
-  int str_id;
+  std::vector<std::string> recommendations;
+  if (status & net::OBSOLETE_SSL_MASK_PROTOCOL) {
+    recommendations.push_back(
+        l10n_util::GetStringFUTF8(IDS_SSL_RECOMMEND_PROTOCOL, protocol_name));
+  }
+  if (status & net::OBSOLETE_SSL_MASK_KEY_EXCHANGE) {
+    recommendations.push_back(
+        l10n_util::GetStringUTF8(IDS_SSL_RECOMMEND_KEY_EXCHANGE));
+  }
+  if (status & net::OBSOLETE_SSL_MASK_CIPHER) {
+    // The problems with obsolete encryption come from the cipher portion rather
+    // than the MAC, so use the shorter |cipher_name| rather than
+    // |cipher_full_name|.
+    recommendations.push_back(
+        l10n_util::GetStringFUTF8(IDS_SSL_RECOMMEND_CIPHER, cipher_name));
+  }
+  if (status & net::OBSOLETE_SSL_MASK_SIGNATURE) {
+    recommendations.push_back(
+        l10n_util::GetStringUTF8(IDS_SSL_RECOMMEND_SIGNATURE));
+  }
 
-  str_id = (status & net::OBSOLETE_SSL_MASK_PROTOCOL)
-               ? IDS_SSL_AN_OBSOLETE_PROTOCOL
-               : IDS_SSL_A_STRONG_PROTOCOL;
-  description_replacements.push_back(protocol_name);
-  description_replacements.push_back(l10n_util::GetStringUTF16(str_id));
-
-  str_id = (status & net::OBSOLETE_SSL_MASK_KEY_EXCHANGE)
-               ? IDS_SSL_AN_OBSOLETE_KEY_EXCHANGE
-               : IDS_SSL_A_STRONG_KEY_EXCHANGE;
-  description_replacements.push_back(key_exchange_name);
-  description_replacements.push_back(l10n_util::GetStringUTF16(str_id));
-
-  str_id = (status & net::OBSOLETE_SSL_MASK_CIPHER) ? IDS_SSL_AN_OBSOLETE_CIPHER
-                                                    : IDS_SSL_A_STRONG_CIPHER;
-  description_replacements.push_back(cipher_name);
-  description_replacements.push_back(l10n_util::GetStringUTF16(str_id));
-
-  security_style_explanations->info_explanations.push_back(
-      content::SecurityStyleExplanation(
-          l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE),
-          l10n_util::GetStringUTF8(IDS_OBSOLETE_SSL_SUMMARY),
-          base::UTF16ToUTF8(
-              l10n_util::GetStringFUTF16(IDS_OBSOLETE_SSL_DESCRIPTION,
-                                         description_replacements, nullptr))));
+  security_style_explanations->info_explanations.emplace_back(
+      l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE),
+      l10n_util::GetStringUTF8(IDS_OBSOLETE_SSL_SUMMARY),
+      l10n_util::GetStringFUTF8(IDS_SSL_DESCRIPTION, protocol_name,
+                                key_exchange_name, cipher_full_name),
+      std::move(recommendations));
 }
 
 void ExplainContentSecurity(
@@ -414,6 +414,7 @@ std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
   state->cert_status = ssl.cert_status;
   state->connection_status = ssl.connection_status;
   state->key_exchange_group = ssl.key_exchange_group;
+  state->peer_signature_algorithm = ssl.peer_signature_algorithm;
   state->security_bits = ssl.security_bits;
   state->pkp_bypassed = ssl.pkp_bypassed;
   state->displayed_mixed_content =

@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">讀取私密金鑰失敗。</translation>
 <translation id="6391538222494443604">輸入項目目錄必須存在</translation>
 <translation id="641087317769093025">無法將擴充功能解壓縮</translation>
+<translation id="6413453408918378296">「<ph name="ICON" />」圖示不夠明顯。</translation>
 <translation id="6542618148162044354">「<ph name="APP_NAME" />」要求存取你的一或多個裝置：</translation>
 <translation id="657064425229075395">無法載入背景指令碼「<ph name="BACKGROUND_SCRIPT" />」。</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> 的 <ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>

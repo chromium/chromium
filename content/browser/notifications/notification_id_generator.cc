@@ -64,7 +64,7 @@ std::string NotificationIdGenerator::GenerateForPersistentNotification(
 std::string NotificationIdGenerator::GenerateForNonPersistentNotification(
     const url::Origin& origin,
     const std::string& token) const {
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   DCHECK(!token.empty());
   return base::StringPrintf(
       "%c%c%s%c%s", kNonPersistentNotificationPrefix, kNotificationTagSeparator,

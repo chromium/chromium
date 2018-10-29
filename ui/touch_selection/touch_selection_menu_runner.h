@@ -6,6 +6,7 @@
 #define UI_TOUCH_SELECTION_TOUCH_SELECTION_MENU_RUNNER_H_
 
 #include "base/macros.h"
+#include "base/strings/string_util.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
 
 namespace aura {
@@ -32,6 +33,12 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuClient {
   // menu to show up in which case the menu will run asynchronously at a later
   // time.
   virtual void RunContextMenu() = 0;
+
+  // Whether the Quick Menu should be opened.
+  virtual bool ShouldShowQuickMenu() = 0;
+
+  // Returns the current text selection.
+  virtual base::string16 GetSelectedText() = 0;
 };
 
 // An interface for the singleton object responsible for running touch selection

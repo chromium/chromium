@@ -13,12 +13,17 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
+#include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "services/identity/public/mojom/identity_manager.mojom.h"
+
+namespace drive {
+class DriveNotificationManager;
+}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -28,6 +33,12 @@ namespace service_manager {
 class Connector;
 }  // namespace service_manager
 
+namespace chromeos {
+namespace disks {
+class DiskMountManager;
+}
+}  // namespace chromeos
+
 namespace drivefs {
 
 class DriveFsHostObserver;
@@ -35,8 +46,7 @@ class DriveFsHostObserver;
 // A host for a DriveFS process. In addition to managing its lifetime via
 // mounting and unmounting, it also bridges between the DriveFS process and the
 // file manager.
-class COMPONENT_EXPORT(DRIVEFS) DriveFsHost
-    : public chromeos::disks::DiskMountManager::Observer {
+class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
  public:
   // Public for overriding in tests. A default implementation is used under
   // normal conditions.
@@ -52,6 +62,28 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost
     virtual void AcceptMojoConnection(base::ScopedFD handle) = 0;
   };
 
+  class MountObserver {
+   public:
+    enum class MountFailure {
+      kUnknown,
+      kNeedsRestart,
+      kIpcDisconnect,
+      kInvocation,
+      kTimeout,
+    };
+
+    MountObserver() = default;
+    virtual ~MountObserver() = default;
+    virtual void OnMounted(const base::FilePath& mount_path) = 0;
+    virtual void OnUnmounted(base::Optional<base::TimeDelta> remount_delay) = 0;
+    virtual void OnMountFailed(
+        MountFailure failure,
+        base::Optional<base::TimeDelta> remount_delay) = 0;
+
+   private:
+    DISALLOW_COPY_AND_ASSIGN(MountObserver);
+  };
+
   class Delegate {
    public:
     Delegate() = default;
@@ -62,6 +94,7 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost
     virtual service_manager::Connector* GetConnector() = 0;
     virtual const AccountId& GetAccountId() = 0;
     virtual std::string GetObfuscatedAccountId() = 0;
+    virtual drive::DriveNotificationManager& GetDriveNotificationManager() = 0;
     virtual std::unique_ptr<OAuth2MintTokenFlow> CreateMintTokenFlow(
         OAuth2MintTokenFlow::Delegate* delegate,
         const std::string& client_id,
@@ -70,19 +103,17 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost
     virtual std::unique_ptr<MojoConnectionDelegate>
     CreateMojoConnectionDelegate();
 
-    virtual void OnMounted(const base::FilePath& mount_path) = 0;
-    virtual void OnUnmounted(base::Optional<base::TimeDelta> remount_delay) = 0;
-    virtual void OnMountFailed(
-        base::Optional<base::TimeDelta> remount_delay) = 0;
-
    private:
     DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   DriveFsHost(const base::FilePath& profile_path,
               Delegate* delegate,
+              MountObserver* mount_observer,
+              const base::Clock* clock,
+              chromeos::disks::DiskMountManager* disk_mount_manager,
               std::unique_ptr<base::OneShotTimer> timer);
-  ~DriveFsHost() override;
+  ~DriveFsHost();
 
   void AddObserver(DriveFsHostObserver* observer);
   void RemoveObserver(DriveFsHostObserver* observer);
@@ -105,31 +136,24 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost
   mojom::DriveFs* GetDriveFsInterface() const;
 
  private:
+  class AccountTokenDelegate;
   class MountState;
 
-  // DiskMountManager::Observer:
-  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
-                    chromeos::MountError error_code,
-                    const chromeos::disks::DiskMountManager::MountPointInfo&
-                        mount_info) override;
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Returns the connection to the identity service, connecting lazily.
-  identity::mojom::IdentityManager& GetIdentityManager();
 
   // The path to the user's profile.
   const base::FilePath profile_path_;
 
   Delegate* const delegate_;
-
+  MountObserver* const mount_observer_;
+  const base::Clock* const clock_;
+  chromeos::disks::DiskMountManager* const disk_mount_manager_;
   std::unique_ptr<base::OneShotTimer> timer_;
+
+  std::unique_ptr<AccountTokenDelegate> account_token_delegate_;
 
   // State specific to the current mount, or null if not mounted.
   std::unique_ptr<MountState> mount_state_;
-
-  // The connection to the identity service. Access via |GetIdentityManager()|.
-  identity::mojom::IdentityManagerPtr identity_manager_;
 
   base::ObserverList<DriveFsHostObserver>::Unchecked observers_;
 

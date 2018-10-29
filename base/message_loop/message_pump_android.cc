@@ -278,9 +278,6 @@ void MessagePumpForUI::Quit() {
 }
 
 void MessagePumpForUI::ScheduleWork() {
-  if (ShouldQuit())
-    return;
-
   // Write (add) 1 to the eventfd. This tells the Looper to wake up and call our
   // callback, allowing us to run tasks. This also allows us to detect, when we
   // clear the fd, whether additional work was scheduled after we finished

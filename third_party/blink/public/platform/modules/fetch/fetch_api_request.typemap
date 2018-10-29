@@ -4,12 +4,7 @@
 
 mojom =
     "//third_party/blink/public/platform/modules/fetch/fetch_api_request.mojom"
-public_headers = [
-  "//third_party/blink/public/platform/web_url_request.h",
-  "//third_party/blink/public/platform/modules/service_worker/web_service_worker_request.h",
-]
+public_headers = [ "//third_party/blink/public/platform/modules/service_worker/web_service_worker_request.h" ]
 traits_headers = [ "//third_party/blink/renderer/platform/mojo/fetch_api_request_struct_traits.h" ]
-type_mappings = [
-  "blink.mojom.FetchAPIRequest=::blink::WebServiceWorkerRequest",
-  "blink.mojom.RequestContextType=::blink::WebURLRequest::RequestContext",
-]
+type_mappings =
+    [ "blink.mojom.FetchAPIRequest=::blink::WebServiceWorkerRequest" ]

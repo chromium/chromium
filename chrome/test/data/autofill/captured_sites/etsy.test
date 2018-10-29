@@ -1,0 +1,206 @@
+{
+  "originalURL": "https://www.etsy.com/listing/184374778/spoon-bookmark-with-tassel-drink-tea?ref=hp_prn&ep_click=1",
+  "startingURL": "https://www.etsy.com/cart/1927887938/review",
+  "dismissBeforeUnload": true,
+  "autofillProfile": [
+    {
+      "type": "EMAIL_ADDRESS",
+      "value": "red.swingline@initech.com"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LEVEL1",
+      "value": "TX"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LEVEL2",
+      "value": "Austin"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LINE1",
+      "value": "4120 Freidrich Lane"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LINE2",
+      "value": "Apt 8"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_EXP_MONTH",
+      "value": "05"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_EXP_YEAR",
+      "value": "2027"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_NUMBER",
+      "value": "9621327911759602"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_NAME_FULL",
+      "value": "Milton Waddams"
+    },
+    {
+      "type": "HTML_TYPE_NAME",
+      "value": "Milton C. Waddams"
+    },
+    {
+      "type": "HTML_TYPE_POSTAL_CODE",
+      "value": "78744"
+    }
+  ],
+  "passwordManagerProfiles": [],
+  "actions": [
+    {
+      "url": "https://www.etsy.com/cart/1927887938/review",
+      "context": {
+        "isIframe": false
+      },
+      "type": "loadPage",
+      "action_index": 5
+    },
+    {
+      "selector": "//div[@id=\"address-form-email-group\"]/div/input[@value and @type=\"email\" and @aria-label=\"Email\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 6
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton C. Waddams",
+      "selector": "//div[@id=\"shipping-address-form\"]//input[@type=\"text\" and @data-field=\"name\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_NAME",
+      "action_index": 7
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane",
+      "selector": "//div[@id=\"shipping-address-form\"]//input[@type=\"text\" and @data-field=\"first_line\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LINE1",
+      "action_index": 8
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//div[@id=\"shipping-address-form\"]//input[@type=\"text\" and @data-field=\"second_line\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LINE2",
+      "action_index": 9
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//div[@id=\"shipping-address-form\"]//input[@data-field=\"zip\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_POSTAL_CODE",
+      "action_index": 10
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Austin",
+      "selector": "//div[@id=\"shipping-address-form\"]//input[@type=\"text\" and @data-field=\"city\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LEVEL2",
+      "action_index": 11
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "TX",
+      "selector": "//div[@id=\"shipping-address-form\"]//select[@data-field=\"state\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LEVEL1",
+      "action_index": 12
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "red.swingline@initech.com",
+      "selector": "//div[@id=\"address-form-email-group\"]/div/input[@value and @type=\"email\" and @aria-label=\"Email\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "EMAIL_ADDRESS",
+      "action_index": 13
+    },
+    {
+      "selector": "//div[@id=\"shipping-address-form\"]/div[2]/button[normalize-space(text())=\"\"]/span[@data-button-cta and text()=\"Continue to payment\"]",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 14
+    },
+    {
+      "selector": "//div/div[2]/input[@type=\"tel\" and @name=\"card[number]\" and @aria-label=\"Credit card number\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 15
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5",
+      "selector": "//div[@role=\"group\"]/div/select[@name=\"card[exp_mon]\" and @aria-label=\"Credit card expiration month\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "action_index": 16
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "2027",
+      "selector": "//div[@role=\"group\"]/div/select[@name=\"card[exp_year]\" and @aria-label=\"Credit card expiration year\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "action_index": 17
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton Waddams",
+      "selector": "//div/div[3]/div[@id=\"new-cc-name-group\"]/input[@type=\"text\" and @name=\"card[name]\" and @value]",
+      "type": "validateField",
+      "visibility": 7,
+      "action_index": 18
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "9621327911759602",
+      "selector": "//div/div[2]/input[@type=\"tel\" and @name=\"card[number]\" and @aria-label=\"Credit card number\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "action_index": 19
+    }
+  ]
+}

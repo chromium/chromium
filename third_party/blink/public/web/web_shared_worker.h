@@ -87,6 +87,7 @@ class BLINK_EXPORT WebSharedWorker {
 
   virtual void PauseWorkerContextOnStart() = 0;
   virtual void BindDevToolsAgent(
+      mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
       mojo::ScopedInterfaceEndpointHandle devtools_agent_request) = 0;
 
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(

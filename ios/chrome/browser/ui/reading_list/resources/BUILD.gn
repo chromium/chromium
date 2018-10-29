@@ -4,30 +4,12 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("distillation_fail") {
-  sources = [
-    "distillation_fail.imageset/Contents.json",
-    "distillation_fail.imageset/distillation_fail.png",
-    "distillation_fail.imageset/distillation_fail@2x.png",
-    "distillation_fail.imageset/distillation_fail@3x.png",
-  ]
-}
-
 imageset("distillation_fail_new") {
   sources = [
     "distillation_fail_new.imageset/Contents.json",
     "distillation_fail_new.imageset/distillation_fail_new.png",
     "distillation_fail_new.imageset/distillation_fail_new@2x.png",
     "distillation_fail_new.imageset/distillation_fail_new@3x.png",
-  ]
-}
-
-imageset("distillation_success") {
-  sources = [
-    "distillation_success.imageset/Contents.json",
-    "distillation_success.imageset/distillation_success.png",
-    "distillation_success.imageset/distillation_success@2x.png",
-    "distillation_success.imageset/distillation_success@3x.png",
   ]
 }
 
@@ -49,30 +31,12 @@ imageset("reading_list_empty_state_new") {
   ]
 }
 
-imageset("reading_list_share_icon") {
-  sources = [
-    "reading_list_share_icon.imageset/Contents.json",
-    "reading_list_share_icon.imageset/reading_list_share_icon.png",
-    "reading_list_share_icon.imageset/reading_list_share_icon@2x.png",
-    "reading_list_share_icon.imageset/reading_list_share_icon@3x.png",
-  ]
-}
-
 imageset("reading_list_side_swipe") {
   sources = [
     "reading_list_side_swipe.imageset/Contents.json",
     "reading_list_side_swipe.imageset/reading_list_side_swipe.png",
     "reading_list_side_swipe.imageset/reading_list_side_swipe@2x.png",
     "reading_list_side_swipe.imageset/reading_list_side_swipe@3x.png",
-  ]
-}
-
-imageset("reading_list_toolbar_icon") {
-  sources = [
-    "reading_list_toolbar_icon.imageset/Contents.json",
-    "reading_list_toolbar_icon.imageset/reading_list_toolbar_icon.png",
-    "reading_list_toolbar_icon.imageset/reading_list_toolbar_icon@2x.png",
-    "reading_list_toolbar_icon.imageset/reading_list_toolbar_icon@3x.png",
   ]
 }
 

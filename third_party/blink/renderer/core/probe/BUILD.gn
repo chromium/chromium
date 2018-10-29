@@ -8,23 +8,23 @@ action("instrumentation_probes") {
   script = "../../build/scripts/make_instrumenting_probes.py"
 
   inputs = [
-    "CoreProbes.pidl",
-    "CoreProbes.json5",
-    "../../build/scripts/templates/InstrumentingProbesImpl.cpp.tmpl",
-    "../../build/scripts/templates/InstrumentingProbesInl.h.tmpl",
-    "../../build/scripts/templates/ProbeSink.h.tmpl",
+    "core_probes.pidl",
+    "core_probes.json5",
+    "../../build/scripts/templates/instrumenting_probes_impl.cc.tmpl",
+    "../../build/scripts/templates/instrumenting_probes_inl.h.tmpl",
+    "../../build/scripts/templates/probe_sink.h.tmpl",
   ]
 
   outputs = [
-    "$blink_core_output_dir/CoreProbesInl.h",
-    "$blink_core_output_dir/CoreProbesImpl.cpp",
-    "$blink_core_output_dir/CoreProbeSink.h",
+    "$blink_core_output_dir/core_probes_inl.h",
+    "$blink_core_output_dir/core_probes_impl.cc",
+    "$blink_core_output_dir/core_probe_sink.h",
   ]
 
   args = [
     rebase_path(inputs[0], root_build_dir),
     "--config",
-    rebase_path("CoreProbes.json5", root_build_dir),
+    rebase_path("core_probes.json5", root_build_dir),
     "--output_dir",
     rebase_path(blink_core_output_dir, root_build_dir),
   ]

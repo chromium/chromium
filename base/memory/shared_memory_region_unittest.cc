@@ -195,6 +195,11 @@ TYPED_TEST(SharedMemoryRegionTest, MapAtNotAlignedOffsetFails) {
   EXPECT_FALSE(mapping.IsValid());
 }
 
+TYPED_TEST(SharedMemoryRegionTest, MapZeroBytesFails) {
+  typename TypeParam::MappingType mapping = this->region_.MapAt(0, 0);
+  EXPECT_FALSE(mapping.IsValid());
+}
+
 TYPED_TEST(SharedMemoryRegionTest, MapMoreBytesThanRegionSizeFails) {
   size_t region_real_size = this->region_.GetSize();
   typename TypeParam::MappingType mapping =

@@ -198,8 +198,8 @@ public class LocationBarTablet extends LocationBarLayout {
     }
 
     private void finishUrlFocusChange(boolean hasFocus) {
+        mStatusViewCoordinator.setSecurityButtonVisibility(!hasFocus);
         if (hasFocus) {
-            if (mSecurityButton.getVisibility() == VISIBLE) mSecurityButton.setVisibility(GONE);
             if (getWindowDelegate().getWindowSoftInputMode()
                     != WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN) {
                 getWindowDelegate().setWindowSoftInputMode(
@@ -207,12 +207,6 @@ public class LocationBarTablet extends LocationBarLayout {
             }
             getWindowAndroid().getKeyboardDelegate().showKeyboard(mUrlBar);
         } else {
-            if (mSecurityButton.getVisibility() == GONE
-                    && mSecurityButton.getDrawable() != null
-                    && mSecurityButton.getDrawable().getIntrinsicWidth() > 0
-                    && mSecurityButton.getDrawable().getIntrinsicHeight() > 0) {
-                mSecurityButton.setVisibility(VISIBLE);
-            }
             getWindowAndroid().getKeyboardDelegate().hideKeyboard(mUrlBar);
             // Convert the keyboard back to resize mode (delay the change for an arbitrary
             // amount of time in hopes the keyboard will be completely hidden before making

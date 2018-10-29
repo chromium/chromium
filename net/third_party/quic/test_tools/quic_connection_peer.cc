@@ -195,6 +195,12 @@ QuicAlarm* QuicConnectionPeer::GetPathDegradingAlarm(
 }
 
 // static
+QuicAlarm* QuicConnectionPeer::GetProcessUndecryptablePacketsAlarm(
+    QuicConnection* connection) {
+  return connection->process_undecryptable_packets_alarm_.get();
+}
+
+// static
 QuicPacketWriter* QuicConnectionPeer::GetWriter(QuicConnection* connection) {
   return connection->writer_;
 }
@@ -318,6 +324,13 @@ void QuicConnectionPeer::SetMaxConsecutiveNumPacketsWithNoRetransmittableFrames(
     size_t new_value) {
   connection->max_consecutive_num_packets_with_no_retransmittable_frames_ =
       new_value;
+}
+
+// static
+void QuicConnectionPeer::SetNoVersionNegotiation(QuicConnection* connection,
+                                                 bool no_version_negotiation) {
+  *const_cast<bool*>(&connection->no_version_negotiation_) =
+      no_version_negotiation;
 }
 
 }  // namespace test

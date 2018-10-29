@@ -18,8 +18,7 @@ WebUIExtensionData::~WebUIExtensionData() {
 }
 
 std::string WebUIExtensionData::GetValue(const std::string& key) const {
-  std::map<std::string, std::string>::const_iterator it =
-      variable_map_.find(key);
+  auto it = variable_map_.find(key);
   if (it == variable_map_.end())
     return std::string();
   return it->second;

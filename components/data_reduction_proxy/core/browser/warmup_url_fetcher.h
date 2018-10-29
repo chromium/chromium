@@ -13,46 +13,57 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
-#include "net/url_request/url_fetcher_delegate.h"
+#include "net/base/proxy_server.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 class GURL;
 
 namespace net {
-
-class ProxyServer;
-class URLFetcher;
-class URLRequestContextGetter;
-
+struct RedirectInfo;
 }  // namespace net
 
-namespace data_reduction_proxy {
+namespace network {
+struct ResourceResponseHead;
+class SharedURLLoaderFactory;
+class SimpleURLLoader;
+}  // namespace network
 
-// URLFetcherDelegate for fetching the warmup URL.
-class WarmupURLFetcher : public net::URLFetcherDelegate {
+namespace data_reduction_proxy {
+class DataReductionProxyServer;
+
+class WarmupURLFetcher {
  public:
   enum class FetchResult { kFailed, kSuccessful, kTimedOut };
 
   // The proxy server that was used to fetch the request, and whether the fetch
   // was successful.
-  typedef base::RepeatingCallback<void(const net::ProxyServer&, FetchResult)>
-      WarmupURLFetcherCallback;
+  using WarmupURLFetcherCallback =
+      base::RepeatingCallback<void(const net::ProxyServer&, FetchResult)>;
 
   // Callback to obtain the current HTTP RTT estimate.
-  typedef base::RepeatingCallback<base::Optional<base::TimeDelta>()>
-      GetHttpRttCallback;
+  using GetHttpRttCallback =
+      base::RepeatingCallback<base::Optional<base::TimeDelta>()>;
 
-  WarmupURLFetcher(const scoped_refptr<net::URLRequestContextGetter>&
-                       url_request_context_getter,
-                   WarmupURLFetcherCallback callback,
-                   GetHttpRttCallback get_http_rtt_callback);
+  // Callback to get a config for the given proxy servers.
+  using CreateCustomProxyConfigCallback =
+      base::RepeatingCallback<network::mojom::CustomProxyConfigPtr(
+          const std::vector<DataReductionProxyServer>&)>;
 
-  ~WarmupURLFetcher() override;
+  WarmupURLFetcher(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      CreateCustomProxyConfigCallback create_custom_proxy_config_callback,
+      WarmupURLFetcherCallback callback,
+      GetHttpRttCallback get_http_rtt_callback,
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
-  // Creates and starts a URLFetcher that fetches the warmup URL.
+  virtual ~WarmupURLFetcher();
+
+  // Creates and starts a URLLoader that loads the warmup URL.
   // |previous_attempt_counts| is the count of fetch attempts that have been
   // made to the proxy which is being probed. The fetching may happen after some
   // delay depending on |previous_attempt_counts|.
-  void FetchWarmupURL(size_t previous_attempt_counts);
+  void FetchWarmupURL(size_t previous_attempt_counts,
+                      const DataReductionProxyServer& proxy_server);
 
   // Returns true if a warmup URL fetch is currently in-flight.
   bool IsFetchInFlight() const;
@@ -73,11 +84,22 @@ class WarmupURLFetcher : public net::URLFetcherDelegate {
   // Called when the fetch timeouts.
   void OnFetchTimeout();
 
-  void OnURLFetchComplete(const net::URLFetcher* source) override;
+  // URL loader callback when response starts.
+  void OnURLLoadResponseStarted(
+      const GURL& final_url,
+      const network::ResourceResponseHead& response_head);
 
-  // The URLFetcher being used for fetching the warmup URL. Protected for
+  // URL loader callback for redirections.
+  void OnURLLoaderRedirect(const net::RedirectInfo& redirect_info,
+                           const network::ResourceResponseHead& response_head,
+                           std::vector<std::string>* to_be_removed_headers);
+
+  // URL loader completion callback.
+  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+
+  // The URLLoader being used for loading the warmup URL. Protected for
   // testing.
-  std::unique_ptr<net::URLFetcher> fetcher_;
+  std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   // Timer used to delay the fetching of the warmup probe URL.
   base::OneShotTimer fetch_delay_timer_;
@@ -85,22 +107,34 @@ class WarmupURLFetcher : public net::URLFetcherDelegate {
   // Timer to enforce timeout of fetching the warmup URL.
   base::OneShotTimer fetch_timeout_timer_;
 
-  // True if the fetcher for warmup URL is in-flight.
+  // True if the loader for warmup URL is in-flight.
   bool is_fetch_in_flight_;
 
+  // Proxy server used on the last resource loaded.
+  net::ProxyServer proxy_server_;
+
  private:
-  // Creates and immediately starts a URLFetcher that fetches the warmup URL.
-  void FetchWarmupURLNow();
+  // Creates and immediately starts a URLLoader that fetches the warmup URL.
+  void FetchWarmupURLNow(const DataReductionProxyServer& proxy_server);
 
   // Resets the variable after the fetching of the warmup URL has completed or
   // timed out. Must be called after |callback_| has been run.
   void CleanupAfterFetch();
 
+  // Gets a URLLoaderFactory which will only attempt to use |proxy_server| as a
+  // proxy.
+  network::mojom::URLLoaderFactory* GetNetworkServiceURLLoaderFactory(
+      const DataReductionProxyServer& proxy_server);
+
   // Count of fetch attempts that have been made to the proxy which is being
   // probed.
   size_t previous_attempt_counts_;
 
-  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter_;
+  scoped_refptr<network::SharedURLLoaderFactory>
+      non_network_service_url_loader_factory_;
+  CreateCustomProxyConfigCallback create_custom_proxy_config_callback_;
+  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
+  network::mojom::NetworkContextPtr context_;
 
   // Callback that should be executed when the fetching of the warmup URL is
   // completed.
@@ -108,6 +142,8 @@ class WarmupURLFetcher : public net::URLFetcherDelegate {
 
   // Callback to obtain the current HTTP RTT estimate.
   GetHttpRttCallback get_http_rtt_callback_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

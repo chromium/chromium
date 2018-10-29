@@ -2,19 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-{%  for declaration in module.namespace|namespace_declarations -%}
-/** @const */
-{%-   if loop.first %}
-var {{declaration}} = {};
-{%    else %}
-{{declaration}} = {};
-{%    endif -%}
-{%- endfor -%}
-
+{# Note that goog.provide is understood by the Closure Compiler even if the
+   Closure base library is unavailable. See https://crbug.com/898692 #}
 {#--- Constant definitions #}
 {%- for constant in module.constants %}
 /** @type { {{constant.kind|closure_type_with_nullability }} } */
-{{module.namespace}}.{{constant.name}};
+goog.provide('{{module.namespace}}.{{constant.name}}');
 {%- endfor %}
 
 {#--- Enum definitions #}

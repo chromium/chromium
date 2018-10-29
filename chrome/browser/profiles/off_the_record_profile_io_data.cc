@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
@@ -27,6 +28,7 @@
 #include "components/net_log/chrome_net_log.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_store_factory.h"
 #include "content/public/browser/resource_context.h"
@@ -103,17 +105,6 @@ OffTheRecordProfileIOData::Handle::CreateMainRequestContextGetter(
 }
 
 scoped_refptr<ChromeURLRequestContextGetter>
-OffTheRecordProfileIOData::Handle::GetExtensionsRequestContextGetter() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  LazyInitialize();
-  if (!extensions_request_context_getter_.get()) {
-    extensions_request_context_getter_ =
-        ChromeURLRequestContextGetter::CreateForExtensions(profile_, io_data_);
-  }
-  return extensions_request_context_getter_;
-}
-
-scoped_refptr<ChromeURLRequestContextGetter>
 OffTheRecordProfileIOData::Handle::GetIsolatedAppRequestContextGetter(
     const base::FilePath& partition_path,
     bool in_memory) const {
@@ -123,8 +114,7 @@ OffTheRecordProfileIOData::Handle::GetIsolatedAppRequestContextGetter(
 
   // Keep a map of request context getters, one per requested app ID.
   StoragePartitionDescriptor descriptor(partition_path, in_memory);
-  ChromeURLRequestContextGetterMap::iterator iter =
-      app_request_context_getter_map_.find(descriptor);
+  auto iter = app_request_context_getter_map_.find(descriptor);
   CHECK(iter != app_request_context_getter_map_.end());
   return iter->second;
 }
@@ -180,16 +170,16 @@ void OffTheRecordProfileIOData::Handle::LazyInitialize() const {
   io_data_->safe_browsing_enabled()->Init(prefs::kSafeBrowsingEnabled,
       profile_->GetPrefs());
   io_data_->safe_browsing_enabled()->MoveToThread(
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
   io_data_->safe_browsing_whitelist_domains()->Init(
       prefs::kSafeBrowsingWhitelistDomains, profile_->GetPrefs());
   io_data_->safe_browsing_whitelist_domains()->MoveToThread(
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
 #if BUILDFLAG(ENABLE_PLUGINS)
   io_data_->always_open_pdf_externally()->Init(
       prefs::kPluginsAlwaysOpenPdfExternally, profile_->GetPrefs());
   io_data_->always_open_pdf_externally()->MoveToThread(
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
 #endif
   io_data_->InitializeOnUIThread(profile_);
 }
@@ -198,13 +188,9 @@ std::unique_ptr<ProfileIOData::ChromeURLRequestContextGetterVector>
 OffTheRecordProfileIOData::Handle::GetAllContextGetters() {
   std::unique_ptr<ChromeURLRequestContextGetterVector> context_getters(
       new ChromeURLRequestContextGetterVector());
-  ChromeURLRequestContextGetterMap::iterator iter =
-      app_request_context_getter_map_.begin();
+  auto iter = app_request_context_getter_map_.begin();
   for (; iter != app_request_context_getter_map_.end(); ++iter)
     context_getters->push_back(iter->second);
-
-  if (extensions_request_context_getter_.get())
-    context_getters->push_back(extensions_request_context_getter_);
 
   if (main_request_context_getter_.get())
     context_getters->push_back(main_request_context_getter_);
@@ -239,22 +225,17 @@ void OffTheRecordProfileIOData::InitializeInternal(
 void OffTheRecordProfileIOData::OnMainRequestContextCreated(
     ProfileParams* profile_params) const {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  InitializeExtensionsRequestContext(profile_params);
+  InitializeExtensionsCookieStore(profile_params);
 #endif
 }
 
-void OffTheRecordProfileIOData::
-    InitializeExtensionsRequestContext(ProfileParams* profile_params) const {
-  // All we care about for extensions is the cookie store. For incognito, we
-  // use a non-persistent cookie store.
-  net::URLRequestContext* extensions_context = extensions_request_context();
-
+void OffTheRecordProfileIOData::InitializeExtensionsCookieStore(
+    ProfileParams* profile_params) const {
   content::CookieStoreConfig cookie_config;
   // Enable cookies for chrome-extension URLs.
   cookie_config.cookieable_schemes.push_back(extensions::kExtensionScheme);
   extensions_cookie_store_ = content::CreateCookieStore(
       cookie_config, profile_params->io_thread->net_log());
-  extensions_context->set_cookie_store(extensions_cookie_store_.get());
 }
 
 net::URLRequestContext*
@@ -278,4 +259,8 @@ OffTheRecordProfileIOData::AcquireIsolatedMediaRequestContext(
     const StoragePartitionDescriptor& partition_descriptor) const {
   NOTREACHED();
   return NULL;
+}
+
+net::CookieStore* OffTheRecordProfileIOData::GetExtensionsCookieStore() const {
+  return extensions_cookie_store_.get();
 }

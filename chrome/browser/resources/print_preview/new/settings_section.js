@@ -12,5 +12,28 @@ Polymer({
       value: false,
       reflectToAttribute: true,
     },
+
+    /** @type {boolean} */
+    showPolicyOnEnd: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
+  },
+
+  /**
+   * @return {boolean} Whether to show the policy icon before the controls.
+   * @private
+   */
+  showStartIcon_: function() {
+    return this.managed && !this.showPolicyOnEnd;
+  },
+
+  /**
+   * @return {boolean} Whether to show the policy icon after the controls.
+   * @private
+   */
+  showEndIcon_: function() {
+    return this.managed && this.showPolicyOnEnd;
   },
 });

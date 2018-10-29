@@ -150,7 +150,8 @@ base::WeakPtr<JavaScriptDialog> CreateNewDialog(
 #if defined(OS_ANDROID)
   return JavaScriptDialogAndroid::Create(
       parent_web_contents, alerting_web_contents, title, dialog_type,
-      message_text, default_prompt_text, std::move(dialog_callback));
+      message_text, default_prompt_text, std::move(dialog_callback),
+      std::move(dialog_closed_callback));
 #else
   return JavaScriptDialogViews::Create(
       parent_web_contents, alerting_web_contents, title, dialog_type,
@@ -443,39 +444,42 @@ void JavaScriptDialogTabHelper::OnBrowserSetLastActive(Browser* browser) {
   }
 }
 
-void JavaScriptDialogTabHelper::TabReplacedAt(
+void JavaScriptDialogTabHelper::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
-    content::WebContents* old_contents,
-    content::WebContents* new_contents,
-    int index) {
-  if (old_contents == WebContentsObserver::web_contents()) {
-    // At this point, this WebContents is no longer in the tabstrip. The usual
-    // teardown will not be able to turn off the attention indicator, so that
-    // must be done here.
-    SetTabNeedsAttentionImpl(false, tab_strip_model, index);
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() == TabStripModelChange::kReplaced) {
+    for (const auto& delta : change.deltas()) {
+      if (delta.replace.old_contents != WebContentsObserver::web_contents())
+        continue;
 
-    CloseDialog(DismissalCause::kTabSwitchedOut, false, base::string16());
+      // At this point, this WebContents is no longer in the tabstrip. The usual
+      // teardown will not be able to turn off the attention indicator, so that
+      // must be done here.
+      SetTabNeedsAttentionImpl(false, tab_strip_model, delta.replace.index);
+
+      CloseDialog(DismissalCause::kTabSwitchedOut, false, base::string16());
+    }
+  } else if (change.type() == TabStripModelChange::kRemoved) {
+    for (const auto& delta : change.deltas()) {
+      if (delta.remove.contents != WebContentsObserver::web_contents())
+        continue;
+
+      // We don't call TabStripModel::SetTabNeedsAttention because it causes
+      // re-entrancy into TabStripModel and correctness of the |index| parameter
+      // is dependent on observer ordering.
+      // This is okay in the short term because the tab in question is being
+      // removed.
+      // TODO(erikchen): Clean up TabStripModel observer API so that this
+      // doesn't require re-entrancy and/or works correctly
+      // https://crbug.com/842194.
+      DCHECK(tab_strip_model_being_observed_);
+      tab_strip_model_being_observed_->RemoveObserver(this);
+      tab_strip_model_being_observed_ = nullptr;
+      CloseDialog(DismissalCause::kTabHelperDestroyed, false, base::string16());
+    }
   }
 }
-
-void JavaScriptDialogTabHelper::TabDetachedAt(content::WebContents* contents,
-                                              int index,
-                                              bool was_active) {
-  if (contents == WebContentsObserver::web_contents()) {
-    // We don't call TabStripModel::SetTabNeedsAttention because it causes
-    // re-entrancy into TabStripModel and correctness of the |index| parameter
-    // is dependent on observer ordering.
-    // This is okay in the short term because the tab in question is being
-    // removed.
-    // TODO(erikchen): Clean up TabStripModel observer API so that this doesn't
-    // require re-entrancy and/or works correctly. https://crbug.com/842194.
-    DCHECK(tab_strip_model_being_observed_);
-    tab_strip_model_being_observed_->RemoveObserver(this);
-    tab_strip_model_being_observed_ = nullptr;
-    CloseDialog(DismissalCause::kTabHelperDestroyed, false, base::string16());
-  }
-}
-
 #endif
 
 void JavaScriptDialogTabHelper::LogDialogDismissalCause(DismissalCause cause) {
@@ -552,8 +556,8 @@ void JavaScriptDialogTabHelper::CloseDialog(DismissalCause cause,
 
   // If there's a pending dialog, then the tab is still in the "needs attention"
   // state; clear it out. However, if the tab was switched out, the turning off
-  // of the "needs attention" state was done in TabReplacedAt() or
-  // TabDetachedAt() because SetTabNeedsAttention won't work, so don't call it.
+  // of the "needs attention" state was done in OnTabStripModelChanged()
+  // SetTabNeedsAttention won't work, so don't call it.
   if (pending_dialog_ && cause != DismissalCause::kTabSwitchedOut &&
       cause != DismissalCause::kTabHelperDestroyed) {
     SetTabNeedsAttention(false);

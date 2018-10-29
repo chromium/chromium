@@ -2,12 +2,12 @@ Ensure that moving a selection does not skip adjacent contenteditable if the cur
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS selection.focusNode is before
 PASS selection.focusNode is before
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Also bug if moved to here
 Bug if moved to here
 Selection starts here, and should not go out from here

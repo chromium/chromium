@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <if expr="chromeos">
+    <include name="IDR_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_START_SETUP_ICON_1X_PNG"
+             file="cr_components/chromeos/multidevice_setup/start_setup_icon_1x.png"
+             type="BINDATA"
+             compress="gzip" />
+    <include name="IDR_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_START_SETUP_ICON_2X_PNG"
+             file="cr_components/chromeos/multidevice_setup/start_setup_icon_2x.png"
+             type="BINDATA"
+             compress="gzip" />
+    <include name="IDR_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_SETUP_SUCCEEDED_ICON_1X_PNG"
+             file="cr_components/chromeos/multidevice_setup/setup_succeeded_icon_1x.png"
+             type="BINDATA"
+             compress="gzip" />
+    <include name="IDR_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_SETUP_SUCCEEDED_ICON_2X_PNG"
+             file="cr_components/chromeos/multidevice_setup/setup_succeeded_icon_2x.png"
+             type="BINDATA"
+             compress="gzip" />
+  </if>
+</grit-part>

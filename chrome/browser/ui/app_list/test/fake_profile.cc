@@ -160,8 +160,9 @@ net::URLRequestContextGetter* FakeProfile::GetRequestContext() {
   return nullptr;
 }
 
-net::URLRequestContextGetter* FakeProfile::GetRequestContextForExtensions() {
-  return nullptr;
+base::OnceCallback<net::CookieStore*()>
+FakeProfile::GetExtensionsCookieStoreGetter() {
+  return base::BindOnce([]() -> net::CookieStore* { return nullptr; });
 }
 
 bool FakeProfile::IsSameProfile(Profile* profile) {

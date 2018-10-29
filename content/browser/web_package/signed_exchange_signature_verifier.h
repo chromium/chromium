@@ -5,17 +5,14 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_SIGNATURE_VERIFIER_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_SIGNATURE_VERIFIER_H_
 
-#include <map>
-#include <string>
-#include <vector>
-
-#include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
 #include "net/cert/x509_certificate.h"
+#include "services/network/ignore_errors_cert_verifier.h"
 
 namespace base {
+class CommandLine;
 class Time;
 }  // namespace base
 
@@ -36,6 +33,7 @@ class SignedExchangeDevToolsProxy;
 // https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#signature-validity
 class CONTENT_EXPORT SignedExchangeSignatureVerifier final {
  public:
+  // This enum is used for recording histograms. Treat as append-only.
   enum class Result {
     kSuccess,
     kErrNoCertificate,
@@ -45,16 +43,35 @@ class CONTENT_EXPORT SignedExchangeSignatureVerifier final {
     kErrSignatureVerificationFailed,
     kErrInvalidSignatureIntegrity,
     kErrInvalidTimestamp,
-    kErrUnsupportedCertType
+    kErrUnsupportedCertType,
+    kMaxValue = kErrUnsupportedCertType
+  };
+
+  // An utility class which holds a set of certificates which errors should be
+  // ignored. It parses a comma-delimited list of base64-encoded SHA-256 SPKI
+  // fingerprints, and can query if a certificate is included in the set.
+  // CONTENT_EXPORT since it is used from the unit test.
+  class CONTENT_EXPORT IgnoreErrorsSPKIList {
+   public:
+    explicit IgnoreErrorsSPKIList(const base::CommandLine& command_line);
+    ~IgnoreErrorsSPKIList();
+    bool ShouldIgnoreError(scoped_refptr<net::X509Certificate> certificate);
+
+   private:
+    FRIEND_TEST_ALL_PREFIXES(SignedExchangeSignatureVerifierTest,
+                             IgnoreErrorsSPKIList);
+
+    explicit IgnoreErrorsSPKIList(const std::string& spki_list);
+    void Parse(const std::string& spki_list);
+
+    network::IgnoreErrorsCertVerifier::SPKIHashSet hash_set_;
+    DISALLOW_COPY_AND_ASSIGN(IgnoreErrorsSPKIList);
   };
 
   static Result Verify(const SignedExchangeEnvelope& envelope,
                        scoped_refptr<net::X509Certificate> certificate,
                        const base::Time& verification_time,
                        SignedExchangeDevToolsProxy* devtools_proxy);
-
-  static base::Optional<std::vector<uint8_t>> EncodeCanonicalExchangeHeaders(
-      const SignedExchangeEnvelope& envelope);
 };
 
 }  // namespace content

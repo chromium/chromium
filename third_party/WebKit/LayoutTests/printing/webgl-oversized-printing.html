@@ -19,9 +19,9 @@ if (!window.testRunner) {
     testRunner.setPrinting();
     testRunner.waitUntilDone();
     testRunner.capturePixelsAsyncThen(function() {
-        testRunner.clearPrinting();
-        testPassed("Printed without crashing.");
-        testRunner.notifyDone();
+      testRunner.clearPrinting();
+      testPassed("Printed without crashing.");
+      testRunner.notifyDone();
     });
 }
 </script>

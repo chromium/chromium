@@ -24,7 +24,7 @@ class Animation;
 class ComputedStyle;
 
 class NewCSSAnimation {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   NewCSSAnimation(AtomicString name,
@@ -56,7 +56,7 @@ class NewCSSAnimation {
 };
 
 class UpdatedCSSAnimation {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   UpdatedCSSAnimation(wtf_size_t index,
@@ -175,7 +175,7 @@ class CSSAnimationUpdate final {
   }
 
   struct NewTransition {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     NewTransition();

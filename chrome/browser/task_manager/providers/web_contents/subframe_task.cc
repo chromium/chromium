@@ -56,15 +56,6 @@ void SubframeTask::Activate() {
 base::string16 SubframeTask::GetTitle() {
   DCHECK(site_instance_);
 
-  if (site_instance_->IsDefaultSubframeSiteInstance()) {
-    base::string16 main_task_title =
-        main_task_->GetTitleFromWebContents(main_task_->web_contents());
-    int message_id = site_instance_->GetBrowserContext()->IsOffTheRecord()
-                         ? IDS_TASK_MANAGER_ISOLATED_INCOGNITO_SUBFRAMES_PREFIX
-                         : IDS_TASK_MANAGER_ISOLATED_SUBFRAMES_PREFIX;
-    return l10n_util::GetStringFUTF16(message_id, main_task_title);
-  }
-
   // By default, subframe rows display the site, like this:
   //     "Subframe: http://example.com/"
   const GURL& site_url = site_instance_->GetSiteURL();

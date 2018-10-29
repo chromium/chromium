@@ -39,7 +39,7 @@ void DeleteJournal::UpdateDeleteJournalForServerDelete(
     return;
   }
 
-  JournalIndex::iterator it = delete_journals_.find(&entry);
+  auto it = delete_journals_.find(&entry);
 
   if (entry.ref(SERVER_IS_DEL)) {
     if (it == delete_journals_.end()) {

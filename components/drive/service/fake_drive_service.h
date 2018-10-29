@@ -332,6 +332,9 @@ class FakeDriveService : public DriveServiceInterface {
       const std::string& resource_id,
       google_apis::drive::FileVisibility* visibility);
 
+  google_apis::DriveApiErrorCode SetFileAsSharedWithMe(
+      const std::string& resource_id);
+
   void AddChangeObserver(ChangeObserver* observer);
   void RemoveChangeObserver(ChangeObserver* observer);
 

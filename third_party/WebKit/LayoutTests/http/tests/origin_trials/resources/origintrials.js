@@ -17,7 +17,7 @@ expect_member = (member_name, get_value_func) => {
 expect_dictionary_member = (dictionary_member_name) => {
   var testObject = internals.originTrialsTest();
   var dictionary = testObject.getDictionaryMethod();
-  assert_exists(dictionary, dictionary_member_name);
+  assert_own_property(dictionary, dictionary_member_name);
   assert_true(dictionary[dictionary_member_name],
     'Dictionary member ' + dictionary_member_name + ' should return boolean value');
 }
@@ -47,7 +47,7 @@ expect_input_dictionary_member = (dictionary_member_name) => {
 expect_static_member = (member_name, get_value_func) => {
   var testObject = internals.originTrialsTest();
   var testInterface = testObject.constructor;
-  assert_exists(testInterface, member_name);
+  assert_own_property(testInterface, member_name);
   assert_true(get_value_func(testInterface),
     'Static member should return boolean value');
 }
@@ -57,7 +57,7 @@ expect_static_member = (member_name, get_value_func) => {
 expect_constant = (constant_name, constant_value, get_value_func) => {
   var testObject = internals.originTrialsTest();
   var testInterface = testObject.constructor;
-  assert_exists(testInterface, constant_name);
+  assert_own_property(testInterface, constant_name);
   assert_equals(get_value_func(testInterface), constant_value,
     'Constant should return expected value');
   testInterface[constant_name] = constant_value + 1;
@@ -70,7 +70,6 @@ expect_constant = (constant_name, constant_value, get_value_func) => {
 expect_member_fails = (member_name) => {
   var testObject = internals.originTrialsTest();
   assert_false(member_name in testObject);
-  assert_not_exists(testObject, member_name);
   assert_equals(testObject[member_name], undefined);
 }
 
@@ -80,7 +79,6 @@ expect_dictionary_member_fails = (dictionary_member_name) => {
   var testObject = internals.originTrialsTest();
   var dictionary = testObject.getDictionaryMethod();
   assert_false(dictionary_member_name in dictionary);
-  assert_not_exists(dictionary, dictionary_member_name);
   assert_equals(dictionary[dictionary_member_name], undefined,
     'Dictionary member ' + dictionary_member_name + ' should not have a value');
 }
@@ -111,7 +109,6 @@ expect_static_member_fails = (member_name) => {
   var testObject = internals.originTrialsTest();
   var testInterface = testObject.constructor;
   assert_false(member_name in testInterface);
-  assert_not_exists(testInterface, member_name);
   assert_equals(testInterface[member_name], undefined);
 }
 

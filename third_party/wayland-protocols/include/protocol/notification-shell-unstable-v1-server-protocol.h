@@ -34,6 +34,7 @@ struct wl_resource;
  * @section page_ifaces_notification_shell_unstable_v1 Interfaces
  * - @subpage page_iface_zcr_notification_shell_v1 - A notification window
  * - @subpage page_iface_zcr_notification_shell_surface_v1 - A notification window
+ * - @subpage page_iface_zcr_notification_shell_notification_v1 - A notification
  * @section page_copyright_notification_shell_unstable_v1 Copyright
  * <pre>
  *
@@ -60,6 +61,7 @@ struct wl_resource;
  * </pre>
  */
 struct wl_surface;
+struct zcr_notification_shell_notification_v1;
 struct zcr_notification_shell_surface_v1;
 struct zcr_notification_shell_v1;
 
@@ -93,6 +95,20 @@ extern const struct wl_interface zcr_notification_shell_v1_interface;
  * notification contents.
  */
 extern const struct wl_interface zcr_notification_shell_surface_v1_interface;
+/**
+ * @page page_iface_zcr_notification_shell_notification_v1 zcr_notification_shell_notification_v1
+ * @section page_iface_zcr_notification_shell_notification_v1_desc Description
+ *
+ * An interface that controls the notification created by create_notification.
+ * @section page_iface_zcr_notification_shell_notification_v1_api API
+ * See @ref iface_zcr_notification_shell_notification_v1.
+ */
+/**
+ * @defgroup iface_zcr_notification_shell_notification_v1 The zcr_notification_shell_notification_v1 interface
+ *
+ * An interface that controls the notification created by create_notification.
+ */
+extern const struct wl_interface zcr_notification_shell_notification_v1_interface;
 
 #ifndef ZCR_NOTIFICATION_SHELL_V1_ERROR_ENUM
 #define ZCR_NOTIFICATION_SHELL_V1_ERROR_ENUM
@@ -114,13 +130,16 @@ struct zcr_notification_shell_v1_interface {
 	 *
 	 * Creates a desktop notification from plain text information.
 	 * @param display_source textual representation of who's shown the notification
+	 * @param buttons array of 0-terminated button title names
 	 */
 	void (*create_notification)(struct wl_client *client,
 				    struct wl_resource *resource,
+				    uint32_t id,
 				    const char *title,
 				    const char *message,
 				    const char *display_source,
-				    const char *notification_key);
+				    const char *notification_key,
+				    struct wl_array *buttons);
 	/**
 	 * create a notification surface from a surface
 	 *
@@ -176,6 +195,73 @@ struct zcr_notification_shell_surface_v1_interface {
  * @ingroup iface_zcr_notification_shell_surface_v1
  */
 #define ZCR_NOTIFICATION_SHELL_SURFACE_V1_SET_APP_ID_SINCE_VERSION 1
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ * @struct zcr_notification_shell_notification_v1_interface
+ */
+struct zcr_notification_shell_notification_v1_interface {
+	/**
+	 * Destroy the notification
+	 *
+	 * Destroys the notification object.
+	 */
+	void (*destroy)(struct wl_client *client,
+			struct wl_resource *resource);
+	/**
+	 * Close the notification
+	 *
+	 * Closes the notification. The closed event is sent after this
+	 * request.
+	 */
+	void (*close)(struct wl_client *client,
+		      struct wl_resource *resource);
+};
+
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLOSED 0
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLICKED 1
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ */
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLOSED_SINCE_VERSION 1
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ */
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLICKED_SINCE_VERSION 1
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ */
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_DESTROY_SINCE_VERSION 1
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ */
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLOSE_SINCE_VERSION 1
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ * Sends an closed event to the client owning the resource.
+ * @param resource_ The client's resource
+ * @param by_user 1 if notification is closed by a user
+ */
+static inline void
+zcr_notification_shell_notification_v1_send_closed(struct wl_resource *resource_, uint32_t by_user)
+{
+	wl_resource_post_event(resource_, ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLOSED, by_user);
+}
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ * Sends an clicked event to the client owning the resource.
+ * @param resource_ The client's resource
+ * @param button_index -1 if the body of the notification is cliked as opposed to a button
+ */
+static inline void
+zcr_notification_shell_notification_v1_send_clicked(struct wl_resource *resource_, int32_t button_index)
+{
+	wl_resource_post_event(resource_, ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLICKED, button_index);
+}
 
 #ifdef  __cplusplus
 }

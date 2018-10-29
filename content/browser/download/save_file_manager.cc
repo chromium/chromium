@@ -4,7 +4,9 @@
 
 #include "build/build_config.h"
 
+#include "base/task/post_task.h"
 #include "content/browser/download/save_file_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -325,9 +327,9 @@ void SaveFileManager::StartSave(std::unique_ptr<SaveFileCreateInfo> info) {
   DCHECK(!LookupSaveFile(save_file->save_item_id()));
   save_file_map_[save_file->save_item_id()] = std::move(save_file);
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&SaveFileManager::OnStartSave, this,
-                                         save_file_create_info));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(&SaveFileManager::OnStartSave, this,
+                                          save_file_create_info));
 }
 
 // We do forward an update to the UI thread here, since we do not use timer to
@@ -343,8 +345,8 @@ void SaveFileManager::UpdateSaveProgress(SaveItemId save_item_id,
 
     download::DownloadInterruptReason reason =
         save_file->AppendDataToFile(data.data(), data.size());
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&SaveFileManager::OnUpdateSaveProgress, this,
                        save_file->save_item_id(), save_file->BytesSoFar(),
                        reason == download::DOWNLOAD_INTERRUPT_REASON_NONE));
@@ -374,8 +376,8 @@ void SaveFileManager::SaveFinished(SaveItemId save_item_id,
     save_file->Detach();
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&SaveFileManager::OnSaveFinished, this, save_item_id,
                      bytes_so_far, is_success));
 }
@@ -437,8 +439,8 @@ void SaveFileManager::CancelSave(SaveItemId save_item_id) {
       base::DeleteFile(save_file->FullPath(), false);
     } else if (save_file->save_source() ==
                SaveFileCreateInfo::SAVE_FILE_FROM_NET) {
-      BrowserThread::PostTask(
-          BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
           base::BindOnce(&SaveFileManager::ClearURLLoader, this, save_item_id));
     }
 
@@ -486,8 +488,8 @@ void SaveFileManager::RenameAllFiles(const FinalNamesMap& final_names,
     }
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&SaveFileManager::OnFinishSavePageJob, this,
                      render_process_id, render_frame_routing_id,
                      save_package_id));

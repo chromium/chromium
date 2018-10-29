@@ -44,6 +44,17 @@ class AdsPageLoadMetricsObserver
     kMaxValue = kCross,
   };
 
+  // High level categories of mime types for resources loaded by the page.
+  enum class ResourceMimeType {
+    kJavascript = 0,
+    kVideo = 1,
+    kImage = 2,
+    kCss = 3,
+    kHtml = 4,
+    kOther = 5,
+    kMaxValue = kOther,
+  };
+
   using AdTypes = std::bitset<AD_TYPE_MAX>;
 
   // Returns a new AdsPageLoadMetricObserver. If the feature is disabled it
@@ -65,6 +76,8 @@ class AdsPageLoadMetricsObserver
                          bool frame_navigated);
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnDidInternalNavigationAbort(
+      content::NavigationHandle* navigation_handle) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       const page_load_metrics::PageLoadExtraInfo& extra_info) override;
@@ -75,6 +88,9 @@ class AdsPageLoadMetricsObserver
   void OnResourceDataUseObserved(
       const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
           resources) override;
+  void OnPageInteractive(
+      const page_load_metrics::mojom::PageLoadTiming& timing,
+      const page_load_metrics::PageLoadExtraInfo& extra_info) override;
 
  private:
   struct AdFrameData {
@@ -111,16 +127,27 @@ class AdsPageLoadMetricsObserver
   void ProcessLoadedResource(
       const page_load_metrics::ExtraRequestCompleteInfo& extra_request_info);
 
+  // Get the mime type of a resource. This only returns a subset of mime types,
+  // grouped at a higher level. For example, all video mime types return the
+  // same value.
+  ResourceMimeType GetResourceMimeType(
+      const page_load_metrics::mojom::ResourceDataUpdatePtr& resource);
+
   // Update all of the per-resource page counters given a new resource data
   // update. Updates |page_resources_| to reflect the new state of the resource.
   // Called once per ResourceDataUpdate.
   void UpdateResource(
       const page_load_metrics::mojom::ResourceDataUpdatePtr& resource);
 
-  void RecordResourceHistogram(
+  // Records size of resources by mime type.
+  void RecordResourceMimeHistograms(
       const page_load_metrics::mojom::ResourceDataUpdatePtr& resource);
-  void RecordPageResourceTotalHistograms();
-  void RecordHistograms();
+
+  // Records per-resource histograms.
+  void RecordResourceHistograms(
+      const page_load_metrics::mojom::ResourceDataUpdatePtr& resource);
+  void RecordPageResourceTotalHistograms(ukm::SourceId source_id);
+  void RecordHistograms(ukm::SourceId source_id);
   void RecordHistogramsForType(int ad_type);
 
   // Checks to see if a resource is waiting for a navigation with the given
@@ -157,10 +184,21 @@ class AdsPageLoadMetricsObserver
 
   // Tallies for bytes and counts observed in resource data updates for the
   // entire page.
+  size_t page_ad_javascript_bytes_ = 0u;
+  size_t page_ad_video_bytes_ = 0u;
   size_t page_resource_bytes_ = 0u;
   size_t page_ad_resource_bytes_ = 0u;
   size_t page_main_frame_ad_resource_bytes_ = 0u;
   uint32_t total_number_page_resources_ = 0;
+
+  // Time the page was committed.
+  base::Time time_commit_;
+
+  // Time the page was observed to be interactive.
+  base::Time time_interactive_;
+
+  // Total ad bytes loaded by the page since it was observed to be interactive.
+  size_t page_ad_resource_bytes_since_interactive_ = 0u;
 
   size_t page_bytes_ = 0u;
   size_t uncached_page_bytes_ = 0u;

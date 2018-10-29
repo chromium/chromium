@@ -759,6 +759,9 @@ void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
 
 void UserImageManagerImpl::OnExternalDataCleared(const std::string& policy) {
   DCHECK_EQ(policy::key::kUserAvatarImage, policy);
+  if (!IsUserImageManaged())
+    return;
+
   has_managed_image_ = false;
   SetInitialUserImage();
   TryToCreateImageSyncObserver();

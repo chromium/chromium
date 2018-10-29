@@ -31,15 +31,21 @@ String PaintChunk::ToString() const {
       known_to_be_opaque);
   if (hit_test_data) {
     ret_val.append(String::Format(
-        ", border_rect=(%s), touch_action_rects=(%u), "
-        "wheel_event_handler_region=(%s) non_fast_scrollable_region=(%s))",
-        hit_test_data->border_rect.ToString().Ascii().data(),
+        ", touch_action_rects=(rects: %u, bounds: %s), "
+        "wheel_event_handler_region=(rects: %u, bounds: %s), "
+        "non_fast_scrollable_region=(rects: %u, bounds: %s))",
         hit_test_data->touch_action_rects.size(),
-        hit_test_data->wheel_event_handler_region.Bounds()
+        HitTestRect::GetBounds(hit_test_data->touch_action_rects)
             .ToString()
             .Ascii()
             .data(),
-        hit_test_data->non_fast_scrollable_region.Bounds()
+        hit_test_data->wheel_event_handler_region.size(),
+        HitTestRect::GetBounds(hit_test_data->wheel_event_handler_region)
+            .ToString()
+            .Ascii()
+            .data(),
+        hit_test_data->non_fast_scrollable_region.size(),
+        HitTestRect::GetBounds(hit_test_data->non_fast_scrollable_region)
             .ToString()
             .Ascii()
             .data()));

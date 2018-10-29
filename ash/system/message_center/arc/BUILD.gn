@@ -30,6 +30,7 @@ static_library("arc") {
   ]
 
   deps = [
+    "//ash/public/cpp:cpp",
     "//base",
     "//components/account_id",
     "//components/arc:arc_metrics_constants",

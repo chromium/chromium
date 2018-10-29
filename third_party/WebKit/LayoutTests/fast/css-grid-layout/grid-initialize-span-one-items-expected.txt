@@ -2,7 +2,6 @@ This test checks that content sized tracks are initialized using non-spanning gr
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.getComputedStyle(gridAutoAndAuto, '').getPropertyValue('grid-template-columns') is "10px 90px"
 PASS window.getComputedStyle(gridAutoAndAutoReversed, '').getPropertyValue('grid-template-columns') is "90px 10px"
 PASS window.getComputedStyle(gridFixedMinContentFixedMaxContent, '').getPropertyValue('grid-template-columns') is "50px 50px"
@@ -15,6 +14,7 @@ PASS window.getComputedStyle(gridMinContentAndAutoReversed, '').getPropertyValue
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 X
 XXX XX XXX
 X

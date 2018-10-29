@@ -67,6 +67,10 @@ void DidUnregisterServiceWorker(base::Closure quit_closure,
   std::move(quit_closure).Run();
 }
 
+GURL GetScopeForId(int64_t id) {
+  return GURL(kTestOrigin + base::IntToString(id));
+}
+
 }  // namespace
 
 BackgroundFetchTestBase::BackgroundFetchTestBase()
@@ -99,7 +103,7 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorker() {
 
   {
     blink::mojom::ServiceWorkerRegistrationOptions options;
-    options.scope = origin_.GetURL();
+    options.scope = GetScopeForId(next_pattern_id_++);
     base::RunLoop run_loop;
     embedded_worker_test_helper_.context()->RegisterServiceWorker(
         script_url, options,
@@ -142,10 +146,11 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorker() {
   return service_worker_registration_id;
 }
 
-void BackgroundFetchTestBase::UnregisterServiceWorker() {
+void BackgroundFetchTestBase::UnregisterServiceWorker(
+    int64_t service_worker_registration_id) {
   base::RunLoop run_loop;
   embedded_worker_test_helper_.context()->UnregisterServiceWorker(
-      origin_.GetURL(),
+      GetScopeForId(service_worker_registration_id),
       base::BindOnce(&DidUnregisterServiceWorker, run_loop.QuitClosure()));
   run_loop.Run();
 }

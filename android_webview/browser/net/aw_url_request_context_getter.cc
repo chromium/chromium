@@ -31,6 +31,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/cookie_store_factory.h"
@@ -189,12 +190,13 @@ AwURLRequestContextGetter::AwURLRequestContextGetter(
       channel_id_path_(channel_id_path),
       net_log_(net_log),
       proxy_config_service_(std::move(config_service)),
+      proxy_config_service_android_(nullptr),
       http_user_agent_settings_(new AwHttpUserAgentSettings()) {
   // CreateSystemProxyConfigService for Android must be called on main thread.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_proxy =
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO});
 
   auth_server_whitelist_.Init(
       prefs::kAuthServerWhitelist, user_pref_service,
@@ -292,6 +294,9 @@ void AwURLRequestContextGetter::InitializeURLRequestContext() {
         net::ProxyResolutionService::CreateFixed(proxy,
                                                  NO_TRAFFIC_ANNOTATION_YET));
   } else {
+    // Retain a pointer to the config proxy service before ownership is passed
+    // on.
+    proxy_config_service_android_ = proxy_config_service_.get();
     builder.set_proxy_resolution_service(
         net::ProxyResolutionService::CreateWithoutProxyResolver(
             std::move(proxy_config_service_), net_log_));
@@ -370,7 +375,7 @@ net::URLRequestContext* AwURLRequestContextGetter::GetURLRequestContext() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 AwURLRequestContextGetter::GetNetworkTaskRunner() const {
-  return BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+  return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO});
 }
 
 void AwURLRequestContextGetter::SetHandlersAndInterceptors(
@@ -410,12 +415,18 @@ void AwURLRequestContextGetter::UpdateAndroidAuthNegotiateAccountType() {
 void AwURLRequestContextGetter::SetProxyOverride(
     const std::string& host,
     int port,
-    const std::vector<std::string>& exclusion_list) {
-  proxy_config_service_->SetProxyOverride(host, port, exclusion_list);
+    const std::vector<std::string>& exclusion_list,
+    base::OnceClosure callback) {
+  if (proxy_config_service_android_ != NULL) {
+    proxy_config_service_android_->SetProxyOverride(host, port, exclusion_list,
+                                                    std::move(callback));
+  }
 }
 
-void AwURLRequestContextGetter::ClearProxyOverride() {
-  proxy_config_service_->ClearProxyOverride();
+void AwURLRequestContextGetter::ClearProxyOverride(base::OnceClosure callback) {
+  if (proxy_config_service_android_ != NULL) {
+    proxy_config_service_android_->ClearProxyOverride(std::move(callback));
+  }
 }
 
 }  // namespace android_webview

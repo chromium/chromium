@@ -12,9 +12,6 @@ found in the LICENSE file.
                                    maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
     <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="status_view.css">
-    <link rel="stylesheet" href="events_view.css">
-    <link rel="stylesheet" href="timeline_view.css">
     <link rel="stylesheet" href="chromeos_view.css">
     <script src="chrome://resources/js/util.js"></script>
     <script src="chrome://resources/js/cr.js"></script>
@@ -22,29 +19,16 @@ found in the LICENSE file.
     <script src="chrome://net-internals/index.js"></script>
     <script src="chrome://net-internals/strings.js"></script>
   </head>
-  <body id=import-view-drop-target>
-    <include src="top_bar_view.html">
-
+  <body id=events-view-drop-target>
     <div id="tab-list">
     </div>
 
     <div id=main-tab-contents>
+      <include src="events_view.html">
       <include src="proxy_view.html">
       <include src="dns_view.html">
       <include src="sockets_view.html">
-      <include src="alt_svc_view.html">
-      <include src="spdy_view.html">
-      <include src="quic_view.html">
-      <include src="reporting_view.html">
-      <include src="http_cache_view.html">
-      <include src="bandwidth_view.html">
-      <include src="prerender_view.html">
-      <include src="modules_view.html">
-      <include src="import_view.html">
-      <include src="capture_view.html">
       <include src="domain_security_policy_view.html">
-      <include src="events_view.html">
-      <include src="timeline_view.html">
       <include src="chromeos_view.html">
     </div>
 

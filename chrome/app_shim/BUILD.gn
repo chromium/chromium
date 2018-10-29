@@ -11,15 +11,22 @@ import("//build/util/branding.gni")
 # Framework bundle.
 source_set("app_shim") {
   sources = [
+    "app_shim_controller.h",
+    "app_shim_controller.mm",
+    "app_shim_delegate.h",
+    "app_shim_delegate.mm",
     "chrome_main_app_mode_mac.mm",
   ]
 
   deps = [
     "//chrome:strings",
+    "//chrome/browser/ui:ui",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//content/public/browser",
     "//ipc",
     "//mojo/core/embedder",
+    "//ui/accelerated_widget_mac",
     "//ui/base",
     "//ui/views:views",
   ]

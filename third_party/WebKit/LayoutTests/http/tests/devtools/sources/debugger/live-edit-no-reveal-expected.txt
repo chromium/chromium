@@ -1,24 +1,6 @@
 Tests live edit feature.
 
 
-Running: testLiveEditWithoutStepInWhenPausedDoesNotCauseCursorMove
-Script execution paused.
-Moving cursor to (0, 0).
-Committing live edit.
-Script execution paused.
-Script execution resumed.
-Cursor position is: (0, 0).
-
-Running: testLiveEditWithStepInWhenPausedDoesNotCauseCursorMove
-Script execution paused.
-Moving cursor to (0, 0).
-Committing live edit.
-Did step into
-Script execution resumed.
-Script execution paused.
-Script execution resumed.
-Cursor position is: (0, 0).
-
 Running: testLiveEditWithoutStepInWhenPausedThenStepIntoCausesCursorMove
 Script execution paused.
 Moving cursor to (0, 0).
@@ -44,4 +26,22 @@ Script execution resumed.
 Script execution paused.
 Script execution resumed.
 Cursor position is: (8, 4).
+
+Running: testLiveEditWithoutStepInWhenPausedDoesNotCauseCursorMove
+Script execution paused.
+Moving cursor to (0, 0).
+Committing live edit.
+Script execution paused.
+Script execution resumed.
+Cursor position is: (0, 0).
+
+Running: testLiveEditWithStepInWhenPausedDoesNotCauseCursorMove
+Script execution paused.
+Moving cursor to (0, 0).
+Committing live edit.
+Did step into
+Script execution resumed.
+Script execution paused.
+Script execution resumed.
+Cursor position is: (0, 0).
 

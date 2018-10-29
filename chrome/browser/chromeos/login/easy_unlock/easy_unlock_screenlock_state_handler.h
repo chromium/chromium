@@ -65,10 +65,6 @@ class EasyUnlockScreenlockStateHandler
   // Marks the current screenlock state as the one for trial Easy Unlock run.
   void SetTrialRun();
 
-  // Records that the user clicked on the lock icon during the trial run
-  // initiated by the Easy Unlock app.
-  void RecordClickOnLockIcon();
-
   proximity_auth::ScreenlockState state() const { return state_; }
 
  private:

@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -43,9 +42,6 @@ class FilterGroup {
   //    some features are specific to certain locations:
   //     - mono mixer takes place at the end of kFinalMix.
   //     - channel selection occurs before post-processing in kLinearize.
-  // |mix_to_mono| enables mono mixing in the pipeline. The number of audio
-  //    output channels will be 1 if it is set to true, otherwise it remains
-  //    same as |num_channels|.
   // |name| is used for debug printing
   // |pipeline| - processing pipeline.
   // |device_ids| is a set of strings that is used as a filter to determine
@@ -58,10 +54,9 @@ class FilterGroup {
 
   FilterGroup(int num_channels,
               GroupType type,
-              bool mix_to_mono,
               const std::string& name,
               std::unique_ptr<PostProcessingPipeline> pipeline,
-              const std::unordered_set<std::string>& device_ids,
+              const base::flat_set<std::string>& device_ids,
               const std::vector<FilterGroup*>& mixed_inputs);
 
   ~FilterGroup();
@@ -88,6 +83,11 @@ class FilterGroup {
   // Gets the current delay of this filter group's AudioPostProcessors.
   // (Not recursive).
   int64_t GetRenderingDelayMicroseconds();
+
+  // Gets the delay of this FilterGroup and all downstream FilterGroups.
+  // Computed recursively when MixAndFilter() is called.
+  MediaPipelineBackend::AudioDecoder::RenderingDelay
+  GetRenderingDelayToOutput();
 
   // Retrieves a pointer to the output buffer. This will crash if called before
   // MixAndFilter(), and the data & memory location may change each time
@@ -127,7 +127,7 @@ class FilterGroup {
   bool mix_to_mono_;
   int playout_channel_;
   const std::string name_;
-  const std::unordered_set<std::string> device_ids_;
+  const base::flat_set<std::string> device_ids_;
   std::vector<FilterGroup*> mixed_inputs_;
   base::flat_set<MixerInput*> active_inputs_;
 
@@ -135,6 +135,7 @@ class FilterGroup {
   int frames_zeroed_;
   float last_volume_;
   int64_t delay_frames_;
+  MediaPipelineBackend::AudioDecoder::RenderingDelay rendering_delay_to_output_;
   AudioContentType content_type_;
 
   // Buffers that hold audio data while it is mixed.

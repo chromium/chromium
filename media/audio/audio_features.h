@@ -13,6 +13,7 @@ namespace features {
 
 #if defined(OS_CHROMEOS)
 MEDIA_EXPORT extern const base::Feature kEnumerateAudioDevices;
+MEDIA_EXPORT extern const base::Feature kCrOSSystemAEC;
 #endif
 
 #if defined(OS_WIN)

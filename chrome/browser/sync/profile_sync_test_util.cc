@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "chrome/browser/invalidation/deprecated_profile_invalidation_provider_factory.h"
+#include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_sync/profile_sync_service.h"
 #include "components/browser_sync/profile_sync_test_util.h"
+#include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/signin/core/browser/signin_manager.h"
 #include "components/sync/driver/startup_controller.h"
@@ -54,10 +56,17 @@ ProfileSyncService::InitParams CreateProfileSyncServiceParamsForTest(
   init_params.start_behavior = ProfileSyncService::MANUAL_START;
   init_params.sync_client = std::move(sync_client);
   init_params.network_time_update_callback = base::DoNothing();
-  init_params.invalidations_identity_provider =
+  bool fcm_invalidations_enabled =
+      base::FeatureList::IsEnabled(invalidation::switches::kFCMInvalidations);
+  if (fcm_invalidations_enabled) {
+    init_params.invalidations_identity_providers.push_back(
+        invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile)
+            ->GetIdentityProvider());
+  }
+  init_params.invalidations_identity_providers.push_back(
       invalidation::DeprecatedProfileInvalidationProviderFactory::GetForProfile(
           profile)
-          ->GetIdentityProvider();
+          ->GetIdentityProvider());
   init_params.url_loader_factory =
       content::BrowserContext::GetDefaultStoragePartition(profile)
           ->GetURLLoaderFactoryForBrowserProcess();

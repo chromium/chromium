@@ -79,14 +79,14 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
 
   // Adds another reader/writer to this entry, if possible, returning |this| to
   // |entry|.
-  int OpenEntry(Entry** entry, CompletionOnceCallback callback);
+  net::Error OpenEntry(Entry** entry, CompletionOnceCallback callback);
 
   // Creates this entry, if possible. Returns |this| to |entry|.
-  int CreateEntry(Entry** entry, CompletionOnceCallback callback);
+  net::Error CreateEntry(Entry** entry, CompletionOnceCallback callback);
 
   // Identical to Backend::Doom() except that it accepts a
   // CompletionOnceCallback.
-  int DoomEntry(CompletionOnceCallback callback);
+  net::Error DoomEntry(CompletionOnceCallback callback);
 
   const std::string& key() const { return key_; }
   uint64_t entry_hash() const { return entry_hash_; }
@@ -135,7 +135,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
                         CompletionOnceCallback callback) override;
   bool CouldBeSparse() const override;
   void CancelSparseIO() override;
-  int ReadyForSparseIO(CompletionOnceCallback callback) override;
+  net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
   void SetLastUsedTimeForTest(base::Time time) override;
 
   // Returns the estimate of dynamically allocated memory in bytes.

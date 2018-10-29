@@ -8,22 +8,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// We do something compatible with glibc. Hopefully, at some point Android will
-// provide that for us, and __BIONIC_HAVE_UCONTEXT_T should be defined.
 // This is mostly copied from breakpad (common/android/include/sys/ucontext.h),
 // except we do use sigset_t for uc_sigmask instead of a custom type.
 
-#if !defined(__BIONIC_HAVE_UCONTEXT_T)
-#if !defined(__native_client_nonsfi__)
-#include <asm/sigcontext.h>
-#else
 // In PNaCl toolchain, sigcontext is not defined. So here declare it.
 typedef struct sigaltstack {
   void* ss_sp;
   int ss_flags;
   size_t ss_size;
 } stack_t;
-#endif
 
 /* 80-bit floating-point register */
 struct _libc_fpreg {
@@ -88,9 +81,5 @@ typedef struct ucontext {
   };
   struct _libc_fpstate __fpregs_mem;
 } ucontext_t;
-
-#else
-#include <sys/ucontext.h>
-#endif  // __BIONIC_HAVE_UCONTEXT_T
 
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_ANDROID_I386_UCONTEXT_H_

@@ -14,11 +14,6 @@
 
 class Profile;
 
-namespace extensions {
-struct TtsVoice;
-struct TtsVoices;
-};  // namespace extensions
-
 // Profile-keyed class that observes the extension registry to determine load of
 // extension-based tts engines.
 class TtsEngineExtensionObserver
@@ -34,15 +29,6 @@ class TtsEngineExtensionObserver
 
   // Gets the currently loaded TTS extension ids.
   const std::set<std::string> GetTtsExtensions();
-
-  // Gets voices for |extension_id| updated through TtsEngine.updateVoices.
-  const std::vector<extensions::TtsVoice>* GetRuntimeVoices(
-      const std::string extension_id);
-
-  // Called to update the voices list for the given extension. This overrides
-  // voices declared in the extension manifest.
-  void SetRuntimeVoices(std::unique_ptr<extensions::TtsVoices> tts_voices,
-                        const std::string extension_id);
 
   // Implementation of KeyedService.
   void Shutdown() override;
@@ -68,9 +54,6 @@ class TtsEngineExtensionObserver
   Profile* profile_;
 
   std::set<std::string> engine_extension_ids_;
-
-  std::map<std::string, std::unique_ptr<extensions::TtsVoices>>
-      extension_id_to_runtime_voices_;
 
   friend class TtsEngineExtensionObserverFactory;
 

@@ -19,8 +19,3 @@ declare_args() {
 }
 
 enable_hidpi = is_mac || is_win || is_linux
-
-# Whether the entire browser uses toolkit-views on Mac instead of Cocoa.
-# TODO(https://crbug.com/832676): Now that this is always true, remove all uses
-# of this and then remove it.
-mac_views_browser = is_mac

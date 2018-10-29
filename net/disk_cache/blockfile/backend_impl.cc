@@ -226,7 +226,7 @@ BackendImpl::~BackendImpl() {
   }
 }
 
-int BackendImpl::Init(CompletionOnceCallback callback) {
+net::Error BackendImpl::Init(CompletionOnceCallback callback) {
   background_queue_.Init(std::move(callback));
   return net::ERR_IO_PENDING;
 }
@@ -907,7 +907,7 @@ void BackendImpl::RemoveEntry(EntryImpl* entry) {
 }
 
 void BackendImpl::OnEntryDestroyBegin(Addr address) {
-  EntriesMap::iterator it = open_entries_.find(address.value());
+  auto it = open_entries_.find(address.value());
   if (it != open_entries_.end())
     open_entries_.erase(it);
 }
@@ -928,8 +928,7 @@ void BackendImpl::OnSyncBackendOpComplete() {
 
 EntryImpl* BackendImpl::GetOpenEntry(CacheRankingsBlock* rankings) const {
   DCHECK(rankings->HasData());
-  EntriesMap::const_iterator it =
-      open_entries_.find(rankings->Data()->contents);
+  auto it = open_entries_.find(rankings->Data()->contents);
   if (it != open_entries_.end()) {
     // We have this entry in memory.
     return it->second;
@@ -1253,49 +1252,49 @@ int32_t BackendImpl::GetEntryCount() const {
   return not_deleted;
 }
 
-int BackendImpl::OpenEntry(const std::string& key,
-                           net::RequestPriority request_priority,
-                           Entry** entry,
-                           CompletionOnceCallback callback) {
+net::Error BackendImpl::OpenEntry(const std::string& key,
+                                  net::RequestPriority request_priority,
+                                  Entry** entry,
+                                  CompletionOnceCallback callback) {
   DCHECK(!callback.is_null());
   background_queue_.OpenEntry(key, entry, std::move(callback));
   return net::ERR_IO_PENDING;
 }
 
-int BackendImpl::CreateEntry(const std::string& key,
-                             net::RequestPriority request_priority,
-                             Entry** entry,
-                             CompletionOnceCallback callback) {
+net::Error BackendImpl::CreateEntry(const std::string& key,
+                                    net::RequestPriority request_priority,
+                                    Entry** entry,
+                                    CompletionOnceCallback callback) {
   DCHECK(!callback.is_null());
   background_queue_.CreateEntry(key, entry, std::move(callback));
   return net::ERR_IO_PENDING;
 }
 
-int BackendImpl::DoomEntry(const std::string& key,
-                           net::RequestPriority priority,
-                           CompletionOnceCallback callback) {
+net::Error BackendImpl::DoomEntry(const std::string& key,
+                                  net::RequestPriority priority,
+                                  CompletionOnceCallback callback) {
   DCHECK(!callback.is_null());
   background_queue_.DoomEntry(key, std::move(callback));
   return net::ERR_IO_PENDING;
 }
 
-int BackendImpl::DoomAllEntries(CompletionOnceCallback callback) {
+net::Error BackendImpl::DoomAllEntries(CompletionOnceCallback callback) {
   DCHECK(!callback.is_null());
   background_queue_.DoomAllEntries(std::move(callback));
   return net::ERR_IO_PENDING;
 }
 
-int BackendImpl::DoomEntriesBetween(const base::Time initial_time,
-                                    const base::Time end_time,
-                                    CompletionOnceCallback callback) {
+net::Error BackendImpl::DoomEntriesBetween(const base::Time initial_time,
+                                           const base::Time end_time,
+                                           CompletionOnceCallback callback) {
   DCHECK(!callback.is_null());
   background_queue_.DoomEntriesBetween(initial_time, end_time,
                                        std::move(callback));
   return net::ERR_IO_PENDING;
 }
 
-int BackendImpl::DoomEntriesSince(const base::Time initial_time,
-                                  CompletionOnceCallback callback) {
+net::Error BackendImpl::DoomEntriesSince(const base::Time initial_time,
+                                         CompletionOnceCallback callback) {
   DCHECK(!callback.is_null());
   background_queue_.DoomEntriesSince(initial_time, std::move(callback));
   return net::ERR_IO_PENDING;
@@ -1324,8 +1323,8 @@ class BackendImpl::IteratorImpl : public Backend::Iterator {
       background_queue_->EndEnumeration(std::move(iterator_));
   }
 
-  int OpenNextEntry(Entry** next_entry,
-                    net::CompletionOnceCallback callback) override {
+  net::Error OpenNextEntry(Entry** next_entry,
+                           net::CompletionOnceCallback callback) override {
     if (!background_queue_)
       return net::ERR_FAILED;
     background_queue_->OpenNextEntry(iterator_.get(), next_entry,
@@ -1579,7 +1578,7 @@ void BackendImpl::PrepareForRestart() {
 }
 
 int BackendImpl::NewEntry(Addr address, scoped_refptr<EntryImpl>* entry) {
-  EntriesMap::iterator it = open_entries_.find(address.value());
+  auto it = open_entries_.find(address.value());
   if (it != open_entries_.end()) {
     // Easy job. This entry is already in memory.
     *entry = base::WrapRefCounted(it->second);

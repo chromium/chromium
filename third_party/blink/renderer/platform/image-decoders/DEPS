@@ -7,7 +7,6 @@ include_rules = [
 
     # Dependencies.
     "+cc/paint/image_animation_count.h",
-    "+third_party/blink/renderer/platform/histogram.h",
     "+third_party/blink/renderer/platform/geometry",
     "+third_party/blink/renderer/platform/graphics",
     "+third_party/blink/renderer/platform/histogram.h",

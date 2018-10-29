@@ -9,17 +9,21 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
-#include "content/browser/media/session/audio_focus_manager.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -27,10 +31,14 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/service_manager_connection.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_log_event.h"
 #include "media/filters/gpu_video_decoder.h"
+#include "media/webrtc/webrtc_switches.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
+#include "services/service_manager/sandbox/features.h"
 
 #if !defined(OS_ANDROID)
 #include "media/filters/decrypting_video_decoder.h"
@@ -269,8 +277,8 @@ void MediaInternals::AudioLogImpl::SendWebContentsTitleHelper(
     int render_frame_id) {
   // Page title information can only be retrieved from the UI thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&SendWebContentsTitleHelper, cache_key, std::move(dict),
                        render_process_id, render_frame_id));
     return;
@@ -653,8 +661,7 @@ void MediaInternals::AddUpdateCallback(const UpdateCallback& callback) {
 
   base::AutoLock auto_lock(lock_);
   can_update_ = true;
-
-  RegisterAudioFocusObserver();
+  audio_focus_helper_.SetEnabled(true);
 }
 
 void MediaInternals::RemoveUpdateCallback(const UpdateCallback& callback) {
@@ -668,9 +675,7 @@ void MediaInternals::RemoveUpdateCallback(const UpdateCallback& callback) {
 
   base::AutoLock auto_lock(lock_);
   can_update_ = !update_callbacks_.empty();
-
-  if (!can_update_)
-    UnregisterAudioFocusObserver();
+  audio_focus_helper_.SetEnabled(can_update_);
 }
 
 bool MediaInternals::CanUpdate() {
@@ -689,6 +694,27 @@ void MediaInternals::SendHistoricalMediaEvents() {
   }
   // Do not clear the map/list here so that refreshing the UI or opening a
   // second UI still works nicely!
+}
+
+void MediaInternals::SendGeneralAudioInformation() {
+  base::DictionaryValue audio_info_data;
+
+  // Audio feature information.
+  auto set_feature_data = [&](auto& feature) {
+    audio_info_data.SetKey(
+        feature.name,
+        base::Value(base::FeatureList::IsEnabled(feature) ? "Enabled"
+                                                          : "Disabled"));
+  };
+  set_feature_data(features::kAudioServiceAudioStreams);
+  set_feature_data(features::kAudioServiceOutOfProcess);
+  set_feature_data(features::kAudioServiceLaunchOnStartup);
+  set_feature_data(service_manager::features::kAudioServiceSandbox);
+  set_feature_data(features::kWebRtcApmInAudioService);
+
+  base::string16 audio_info_update =
+      SerializeUpdate("media.updateGeneralAudioInformation", &audio_info_data);
+  SendUpdate(audio_info_update);
 }
 
 void MediaInternals::SendAudioStreamData() {
@@ -712,32 +738,7 @@ void MediaInternals::SendVideoCaptureDeviceCapabilities() {
 }
 
 void MediaInternals::SendAudioFocusState() {
-#if !defined(OS_ANDROID)
-  if (!CanUpdate())
-    return;
-
-  base::DictionaryValue audio_focus_data;
-  const std::list<AudioFocusManager::StackRow>& stack =
-      AudioFocusManager::GetInstance()->audio_focus_stack_;
-
-  // We should go backwards through the stack so the top of the stack is always
-  // shown first in the list.
-  base::ListValue stack_data;
-  for (auto iter = stack.rbegin(); iter != stack.rend(); ++iter) {
-    MediaSessionImpl::DebugInfo debug_info =
-        (*iter).media_session->GetDebugInfo();
-    base::DictionaryValue media_session_data;
-    media_session_data.SetKey("name", base::Value(debug_info.name));
-    media_session_data.SetKey("owner", base::Value(debug_info.owner));
-    media_session_data.SetKey("state", base::Value(debug_info.state));
-    stack_data.GetList().push_back(std::move(media_session_data));
-  }
-
-  audio_focus_data.SetKey("sessions", std::move(stack_data));
-
-  SendUpdate(
-      SerializeUpdate("media.onReceiveAudioFocusState", &audio_focus_data));
-#endif  // !defined(OS_ANDROID)
+  audio_focus_helper_.SendAudioFocusState();
 }
 
 void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
@@ -820,31 +821,12 @@ void MediaInternals::OnProcessTerminatedForTesting(int process_id) {
   uma_handler_->OnProcessTerminated(process_id);
 }
 
-void MediaInternals::OnFocusGained(
-    media_session::mojom::MediaSessionPtr media_session,
-    media_session::mojom::AudioFocusType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&MediaInternals::SendAudioFocusState,
-                                         base::Unretained(this)));
-}
-
-void MediaInternals::OnFocusLost(
-    media_session::mojom::MediaSessionPtr media_session) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&MediaInternals::SendAudioFocusState,
-                                         base::Unretained(this)));
-}
-
 void MediaInternals::SendUpdate(const base::string16& update) {
   // SendUpdate() may be called from any thread, but must run on the UI thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(&MediaInternals::SendUpdate,
-                                           base::Unretained(this), update));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(&MediaInternals::SendUpdate,
+                                            base::Unretained(this), update));
     return;
   }
 
@@ -871,11 +853,9 @@ void MediaInternals::SaveEvent(int process_id,
     // Remove all events for a given player as soon as we have to remove a
     // single event for that player to avoid showing incomplete players.
     const int id_to_remove = saved_events.front().id;
-    saved_events.erase(std::remove_if(saved_events.begin(), saved_events.end(),
-                                      [&](const media::MediaLogEvent& event) {
-                                        return event.id == id_to_remove;
-                                      }),
-                       saved_events.end());
+    base::EraseIf(saved_events, [&](const media::MediaLogEvent& event) {
+      return event.id == id_to_remove;
+    });
   }
 }
 

@@ -127,12 +127,12 @@ Element* TreeScope::getElementById(const AtomicString& element_id) const {
 
 const HeapVector<Member<Element>>& TreeScope::GetAllElementsById(
     const AtomicString& element_id) const {
-  DEFINE_STATIC_LOCAL(HeapVector<Member<Element>>, empty_vector,
+  DEFINE_STATIC_LOCAL(Persistent<HeapVector<Member<Element>>>, empty_vector,
                       (new HeapVector<Member<Element>>));
   if (element_id.IsEmpty())
-    return empty_vector;
+    return *empty_vector;
   if (!elements_by_id_)
-    return empty_vector;
+    return *empty_vector;
   return elements_by_id_->GetAllElementsById(element_id, *this);
 }
 
@@ -189,7 +189,9 @@ HTMLMapElement* TreeScope::GetImageMap(const String& url) const {
   if (!image_maps_by_name_)
     return nullptr;
   wtf_size_t hash_pos = url.find('#');
-  String name = hash_pos == kNotFound ? url : url.Substring(hash_pos + 1);
+  if (hash_pos == kNotFound)
+    return nullptr;
+  String name = url.Substring(hash_pos + 1);
   return ToHTMLMapElement(
       image_maps_by_name_->GetElementByMapName(AtomicString(name), *this));
 }
@@ -615,10 +617,11 @@ void TreeScope::SetNeedsStyleRecalcForViewportUnits() {
     if (ShadowRoot* root = element->GetShadowRoot())
       root->SetNeedsStyleRecalcForViewportUnits();
     const ComputedStyle* style = element->GetComputedStyle();
-    if (style && style->HasViewportUnits())
+    if (style && style->HasViewportUnits()) {
       element->SetNeedsStyleRecalc(kLocalStyleChange,
                                    StyleChangeReasonForTracing::Create(
-                                       StyleChangeReason::kViewportUnits));
+                                       style_change_reason::kViewportUnits));
+    }
   }
 }
 

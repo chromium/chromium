@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/stl_util.h"
 
 const char kChromeUIScheme[] = "chrome";
 
@@ -65,7 +65,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUITermsHost,
     kChromeUIVersionHost,
 };
-const size_t kNumberOfChromeHostURLs = arraysize(kChromeHostURLs);
+const size_t kNumberOfChromeHostURLs = base::size(kChromeHostURLs);
 
 const char kSyncGoogleDashboardURL[] =
     "https://www.google.com/settings/chrome/sync/";

@@ -19,6 +19,8 @@ static_library("search_engines") {
     "keyword_web_data_service.h",
     "search_engine_data_type_controller.cc",
     "search_engine_data_type_controller.h",
+    "search_engine_model_type_controller.cc",
+    "search_engine_model_type_controller.h",
     "search_engine_type.h",
     "search_engines_pref_names.cc",
     "search_engines_pref_names.h",
@@ -63,23 +65,18 @@ static_library("search_engines") {
     ":prepopulated_engines",
     "//base:i18n",
     "//components/history/core/browser",
-    "//third_party/metrics_proto",
-
-    # The search_engines target is in an include cycle with
-    # components/omnibox/browser. The cycle is whitelisted in the
-    # omnibox/browser target, but should ideally be fixed, then this
-    # dependency added:
-    #"//components/omnibox/browser",
     "//components/infobars/core",
     "//components/pref_registry",
     "//components/rappor",
     "//components/strings",
     "//components/url_formatter",
+    "//components/variations",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
     "//sql",
     "//third_party/libxml",
+    "//third_party/metrics_proto",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",

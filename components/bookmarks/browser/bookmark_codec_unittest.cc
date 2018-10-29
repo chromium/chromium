@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,14 +39,14 @@ const char kFolder1Title[] = "folder1";
 const char kFolder2Title[] = "folder2";
 
 const base::FilePath& GetTestDataDir() {
-  CR_DEFINE_STATIC_LOCAL(base::FilePath, dir, ());
-  if (dir.empty()) {
+  static base::NoDestructor<base::FilePath> dir([]() {
+    base::FilePath dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
-    dir = dir.AppendASCII("components");
-    dir = dir.AppendASCII("test");
-    dir = dir.AppendASCII("data");
-  }
-  return dir;
+    return dir.AppendASCII("components")
+        .AppendASCII("test")
+        .AppendASCII("data");
+  }());
+  return *dir;
 }
 
 // Helper to get a mutable bookmark node.

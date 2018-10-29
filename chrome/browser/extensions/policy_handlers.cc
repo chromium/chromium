@@ -96,7 +96,7 @@ bool ExtensionInstallListPolicyHandler::ParseList(
     return false;
   }
 
-  for (base::ListValue::const_iterator entry(policy_list_value->begin());
+  for (auto entry(policy_list_value->begin());
        entry != policy_list_value->end(); ++entry) {
     std::string entry_string;
     if (!entry->GetAsString(&entry_string)) {
@@ -183,8 +183,7 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
   }
 
   // Check that the list contains valid URLPattern strings only.
-  for (base::ListValue::const_iterator entry(list_value->begin());
-       entry != list_value->end(); ++entry) {
+  for (auto entry(list_value->begin()); entry != list_value->end(); ++entry) {
     std::string url_pattern_string;
     if (!entry->GetAsString(&url_pattern_string)) {
       errors->AddError(policy_name(), entry - list_value->begin(),
@@ -306,7 +305,7 @@ bool ExtensionSettingsPolicyHandler::CheckPolicySettings(
           unparsed_urls->GetString(i, &unparsed_url);
           URLPattern pattern(extension_scheme_mask);
           URLPattern::ParseResult parse_result = pattern.Parse(
-              unparsed_url, URLPattern::ALLOW_WILDCARD_FOR_EFFECTIVE_TLD);
+              unparsed_url, URLPattern::DENY_WILDCARD_FOR_EFFECTIVE_TLD);
           // These keys don't support paths due to how we track the initiator
           // of a webRequest and cookie security policy. We expect a valid
           // pattern to return a PARSE_ERROR_EMPTY_PATH.
@@ -314,7 +313,7 @@ bool ExtensionSettingsPolicyHandler::CheckPolicySettings(
             // Add a wildcard path to the URL as it should match any path.
             parse_result =
                 pattern.Parse(unparsed_url + "/*",
-                              URLPattern::ALLOW_WILDCARD_FOR_EFFECTIVE_TLD);
+                              URLPattern::DENY_WILDCARD_FOR_EFFECTIVE_TLD);
           } else if (parse_result == URLPattern::ParseResult::kSuccess) {
             // The user supplied a path, notify them that this is not supported.
             if (!pattern.match_all_urls()) {

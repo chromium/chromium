@@ -15,7 +15,6 @@
 @class BrowserWindowTouchBarController;
 @class CreditCardAutofillTouchBarController;
 @class TextSuggestionsTouchBarController;
-@class TabContentsController;
 
 namespace autofill {
 class AutofillPopupController;

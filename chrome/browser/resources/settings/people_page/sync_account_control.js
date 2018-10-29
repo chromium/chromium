@@ -63,6 +63,14 @@ Polymer({
       reflectToAttribute: true,
     },
 
+    // This property should be set by the parent only and should not change
+    // after the element is created.
+    hideButtons: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
+
     /** @private {boolean} */
     shouldShowAvatarRow_: {
       type: Boolean,
@@ -242,7 +250,8 @@ Polymer({
    * @private
    */
   shouldShowTurnOffButton_: function() {
-    return !!this.syncStatus.signedIn && !this.embeddedInSubpage;
+    return !this.hideButtons && !!this.syncStatus.signedIn &&
+        !this.embeddedInSubpage;
   },
 
   /**
@@ -250,8 +259,8 @@ Polymer({
    * @private
    */
   shouldShowSigninAgainButton_: function() {
-    return !!this.syncStatus.signedIn && this.embeddedInSubpage &&
-        !!this.syncStatus.hasError &&
+    return !this.hideButtons && !!this.syncStatus.signedIn &&
+        this.embeddedInSubpage && !!this.syncStatus.hasError &&
         this.syncStatus.statusAction == settings.StatusAction.REAUTHENTICATE;
   },
 
@@ -268,7 +277,7 @@ Polymer({
    * @private
    */
   computeShouldShowAvatarRow_: function() {
-    if (this.storedAccounts_ == undefined)
+    if (this.storedAccounts_ === undefined || this.syncStatus === undefined)
       return false;
 
     return this.syncStatus.signedIn || this.storedAccounts_.length > 0;
@@ -336,7 +345,7 @@ Polymer({
 
   /** @private */
   onShownAccountShouldChange_: function() {
-    if (this.storedAccounts_ == undefined)
+    if (this.storedAccounts_ === undefined || this.syncStatus === undefined)
       return;
 
     if (this.syncStatus.signedIn) {

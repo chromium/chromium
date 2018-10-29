@@ -30,25 +30,22 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_lazy_event_listener.h"
-#include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
+// TODO(yukiy): make this method receive |Document*| instead of |Node*|, which
+// is no longer necessary.
 EventListener* CreateAttributeEventListener(Node* node,
                                             const QualifiedName& name,
-                                            const AtomicString& value) {
+                                            const AtomicString& value,
+                                            JSEventHandler::HandlerType type) {
   DCHECK(node);
   if (value.IsNull())
     return nullptr;
@@ -74,15 +71,17 @@ EventListener* CreateAttributeEventListener(Node* node,
   // when parsing HTML. In that case we should assume the main world.
   v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
 
-  return V8LazyEventListener::Create(
-      name.LocalName(), value, source_url, position, node, isolate,
+  return JSEventHandlerForContentAttribute::Create(
+      name.LocalName(), value, source_url, position, isolate,
       v8_context.IsEmpty() ? DOMWrapperWorld::MainWorld()
-                           : ScriptState::From(v8_context)->World());
+                           : ScriptState::From(v8_context)->World(),
+      type);
 }
 
 EventListener* CreateAttributeEventListener(LocalFrame* frame,
                                             const QualifiedName& name,
-                                            const AtomicString& value) {
+                                            const AtomicString& value,
+                                            JSEventHandler::HandlerType type) {
   if (!frame)
     return nullptr;
 
@@ -103,64 +102,11 @@ EventListener* CreateAttributeEventListener(LocalFrame* frame,
   // when parsing HTML. In that case we should assume the main world.
   v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
 
-  return V8LazyEventListener::Create(
-      name.LocalName(), value, source_url, position, nullptr, isolate,
+  return JSEventHandlerForContentAttribute::Create(
+      name.LocalName(), value, source_url, position, isolate,
       v8_context.IsEmpty() ? DOMWrapperWorld::MainWorld()
-                           : ScriptState::From(v8_context)->World());
-}
-
-v8::Local<v8::Object> EventListenerHandler(ExecutionContext* execution_context,
-                                           EventListener* listener) {
-  if (auto* v8_listener = V8AbstractEventHandler::Cast(listener)) {
-    return v8_listener->GetListenerObject(execution_context);
-  }
-  if (auto* v8_listener = V8EventListenerImpl::Cast(listener)) {
-    return v8_listener->GetListenerObject();
-  }
-  return v8::Local<v8::Object>();
-}
-
-v8::Local<v8::Function> EventListenerEffectiveFunction(
-    v8::Isolate* isolate,
-    v8::Local<v8::Object> handler) {
-  v8::Local<v8::Function> function;
-  if (handler->IsFunction()) {
-    function = handler.As<v8::Function>();
-  } else if (handler->IsObject()) {
-    v8::Local<v8::Value> property;
-    // Try the "handleEvent" method (EventListener interface).
-    if (handler
-            ->Get(handler->CreationContext(),
-                  V8AtomicString(isolate, "handleEvent"))
-            .ToLocal(&property) &&
-        property->IsFunction())
-      function = property.As<v8::Function>();
-    // Fall back to the "constructor" property.
-    else if (handler
-                 ->Get(handler->CreationContext(),
-                       V8AtomicString(isolate, "constructor"))
-                 .ToLocal(&property) &&
-             property->IsFunction())
-      function = property.As<v8::Function>();
-  }
-  if (!function.IsEmpty())
-    return GetBoundFunction(function);
-  return v8::Local<v8::Function>();
-}
-
-// TODO(yukiy): move this method into V8EventListenerImpl or interface class
-// of EventListener and EventHandler
-std::unique_ptr<SourceLocation> GetFunctionLocation(
-    ExecutionContext* execution_context,
-    EventListener* listener) {
-  v8::Isolate* isolate = ToIsolate(execution_context);
-  v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Object> handler =
-      EventListenerHandler(execution_context, listener);
-  if (handler.IsEmpty())
-    return nullptr;
-  return SourceLocation::FromFunction(
-      EventListenerEffectiveFunction(isolate, handler));
+                           : ScriptState::From(v8_context)->World(),
+      type);
 }
 
 }  // namespace blink

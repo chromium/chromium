@@ -317,15 +317,9 @@ public class CompositorView
         mRenderHost.onCompositorLayout();
     }
 
-    /*
-     * On JellyBean there is a known bug where a crashed producer process
-     * (i.e. GPU process) does not properly disconnect from the BufferQueue,
-     * which means we won't be able to reconnect to it ever again.
-     * This workaround forces the creation of a new Surface.
-     */
     @CalledByNative
-    private void onJellyBeanSurfaceDisconnectWorkaround(boolean inOverlayMode) {
-        mCompositorSurfaceManager.recreateSurfaceForJellyBean();
+    private void recreateSurface() {
+        mCompositorSurfaceManager.recreateSurface();
     }
 
     /**

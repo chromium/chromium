@@ -8,7 +8,6 @@
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "headless/lib/browser/protocol/browser_handler.h"
 #include "headless/lib/browser/protocol/headless_handler.h"
-#include "headless/lib/browser/protocol/network_handler.h"
 #include "headless/lib/browser/protocol/page_handler.h"
 #include "headless/lib/browser/protocol/target_handler.h"
 
@@ -32,7 +31,6 @@ HeadlessDevToolsSession::HeadlessDevToolsSession(
   }
   if (agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser)
     AddHandler(std::make_unique<BrowserHandler>(browser_));
-  AddHandler(std::make_unique<NetworkHandler>(browser_));
   AddHandler(std::make_unique<TargetHandler>(browser_));
 }
 

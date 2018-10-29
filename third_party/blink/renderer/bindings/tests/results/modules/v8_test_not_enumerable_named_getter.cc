@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -60,7 +60,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestNotEnumerableNamedGetterV8Internal {
+namespace test_not_enumerable_named_getter_v8_internal {
 
 static void namedPropertyGetter(const AtomicString& name, const v8::PropertyCallbackInfo<v8::Value>& info) {
   TestNotEnumerableNamedGetter* impl = V8TestNotEnumerableNamedGetter::ToImpl(info.Holder());
@@ -90,7 +90,7 @@ static void namedPropertyDescriptor(uint32_t index, const v8::PropertyCallbackIn
   }
 }
 
-} // namespace TestNotEnumerableNamedGetterV8Internal
+}  // namespace test_not_enumerable_named_getter_v8_internal
 
 void V8TestNotEnumerableNamedGetter::namedPropertyGetterCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestNotEnumerableNamedGetter_NamedPropertyGetter");
@@ -99,7 +99,7 @@ void V8TestNotEnumerableNamedGetter::namedPropertyGetterCallback(v8::Local<v8::N
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestNotEnumerableNamedGetterV8Internal::namedPropertyGetter(propertyName, info);
+  test_not_enumerable_named_getter_v8_internal::namedPropertyGetter(propertyName, info);
 }
 
 void V8TestNotEnumerableNamedGetter::indexedPropertyGetterCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -107,11 +107,11 @@ void V8TestNotEnumerableNamedGetter::indexedPropertyGetterCallback(uint32_t inde
 
   const AtomicString& propertyName = AtomicString::Number(index);
 
-  TestNotEnumerableNamedGetterV8Internal::namedPropertyGetter(propertyName, info);
+  test_not_enumerable_named_getter_v8_internal::namedPropertyGetter(propertyName, info);
 }
 
 void V8TestNotEnumerableNamedGetter::indexedPropertyDescriptorCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
-  TestNotEnumerableNamedGetterV8Internal::namedPropertyDescriptor(index, info);
+  test_not_enumerable_named_getter_v8_internal::namedPropertyDescriptor(index, info);
 }
 
 static void installV8TestNotEnumerableNamedGetterTemplate(

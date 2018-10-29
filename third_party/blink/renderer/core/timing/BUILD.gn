@@ -20,6 +20,8 @@ blink_core_sources("timing") {
     "performance_entry.h",
     "performance_event_timing.cc",
     "performance_event_timing.h",
+    "performance_layout_jank.cc",
+    "performance_layout_jank.h",
     "performance_long_task_timing.cc",
     "performance_long_task_timing.h",
     "performance_mark.cc",

@@ -76,8 +76,8 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
       return parent_changed;
 
     DCHECK(!IsParentAlias()) << "Changed the state of an alias node.";
-    SetChanged();
     state_ = std::move(state);
+    SetChanged();
     return true;
   }
 
@@ -123,32 +123,29 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
     return state_.direct_compositing_reasons != CompositingReason::kNone;
   }
 
-#if DCHECK_IS_ON()
-  // The clone function is used by FindPropertiesNeedingUpdate.h for recording
-  // a clip node before it has been updated, to later detect changes.
-  scoped_refptr<ClipPaintPropertyNode> Clone() const {
-    return base::AdoptRef(
-        new ClipPaintPropertyNode(Parent(), State(state_), IsParentAlias()));
-  }
-
-  // The equality operator is used by FindPropertiesNeedingUpdate.h for checking
-  // if a clip node has changed.
-  bool operator==(const ClipPaintPropertyNode& o) const {
-    return Parent() == o.Parent() && state_ == o.state_ &&
-           IsParentAlias() == o.IsParentAlias();
-  }
-#endif
-
   std::unique_ptr<JSONObject> ToJSON() const;
 
   // Returns memory usage of the clip cache of this node plus ancestors.
   size_t CacheMemoryUsageInBytes() const;
 
  private:
+  friend class PaintPropertyNode<ClipPaintPropertyNode>;
+
   ClipPaintPropertyNode(const ClipPaintPropertyNode* parent,
                         State&& state,
                         bool is_parent_alias)
       : PaintPropertyNode(parent, is_parent_alias), state_(std::move(state)) {}
+
+  void SetChanged() {
+    // TODO(crbug.com/814815): This is a workaround of the bug. When the bug is
+    // fixed, change the following condition to
+    //   DCHECK(!clip_cache_ || !clip_cache_->IsValid());
+    if (clip_cache_ && clip_cache_->IsValid()) {
+      DLOG(WARNING) << "Clip tree changed without invalidating the cache.";
+      GeometryMapperClipCache::ClearCache();
+    }
+    PaintPropertyNode::SetChanged();
+  }
 
   // For access to GetClipCache();
   friend class GeometryMapper;
@@ -159,13 +156,13 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   }
 
   GeometryMapperClipCache& GetClipCache() {
-    if (!geometry_mapper_clip_cache_)
-      geometry_mapper_clip_cache_.reset(new GeometryMapperClipCache());
-    return *geometry_mapper_clip_cache_.get();
+    if (!clip_cache_)
+      clip_cache_.reset(new GeometryMapperClipCache());
+    return *clip_cache_.get();
   }
 
   State state_;
-  std::unique_ptr<GeometryMapperClipCache> geometry_mapper_clip_cache_;
+  std::unique_ptr<GeometryMapperClipCache> clip_cache_;
 };
 
 }  // namespace blink

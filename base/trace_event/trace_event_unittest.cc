@@ -1334,7 +1334,9 @@ class SelfRemovingEnabledStateObserver
   }
 };
 
-TEST_F(TraceEventTestFixture, SelfRemovingObserver) {
+// Self removing observers are not supported at the moment.
+// TODO(alph): We could add support once we have recursive locks.
+TEST_F(TraceEventTestFixture, DISABLED_SelfRemovingObserver) {
   ASSERT_EQ(0u, TraceLog::GetInstance()->GetObserverCountForTest());
 
   SelfRemovingEnabledStateObserver observer;

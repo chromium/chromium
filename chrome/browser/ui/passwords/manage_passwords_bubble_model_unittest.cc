@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -137,9 +138,10 @@ class ManagePasswordsBubbleModelTest : public ::testing::Test {
         .WillByDefault(Return(nullptr));
     PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
-        password_manager::BuildPasswordStore<
-            content::BrowserContext,
-            testing::StrictMock<password_manager::MockPasswordStore>>);
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<
+                content::BrowserContext,
+                testing::StrictMock<password_manager::MockPasswordStore>>));
     pending_password_.origin = GURL(kSiteOrigin);
     pending_password_.signon_realm = kSiteOrigin;
     pending_password_.username_value = base::ASCIIToUTF16(kUsername);
@@ -441,13 +443,6 @@ TEST_F(ManagePasswordsBubbleModelTest, EditCredential) {
   DestroyModelAndVerifyControllerExpectations();
 }
 
-TEST_F(ManagePasswordsBubbleModelTest, OnBrandLinkClicked) {
-  PretendPasswordWaiting();
-
-  EXPECT_CALL(*controller(), NavigateToSmartLockHelpPage());
-  model()->OnBrandLinkClicked();
-}
-
 TEST_F(ManagePasswordsBubbleModelTest, SuppressSignInPromo) {
   prefs()->SetBoolean(password_manager::prefs::kWasSignInPasswordPromoClicked,
                       true);
@@ -551,7 +546,7 @@ class ManagePasswordsBubbleModelManageLinkTest
 TEST_P(ManagePasswordsBubbleModelManageLinkTest, OnManageClicked) {
   TestSyncService* sync_service = static_cast<TestSyncService*>(
       ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), &TestingSyncFactoryFunction));
+          profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
   sync_service->set_synced_types(GetParam());
 
   PretendManagingPasswords();

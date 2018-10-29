@@ -4,6 +4,37 @@
 
 module mojom;
 
+import "url/mojom/url.mojom";
+
+// Basic information describing a SiteInstance.
+struct SiteInstanceInfo {
+  int32 id;
+
+  // Boolean indicating whether the SiteInstance is locked to a specific URL.
+  // It does not indicate the granularity of the lock URL.
+  bool locked;
+
+  url.mojom.Url? site_url;
+};
+
+// Basic information describing a frame and all of its subframes.
+struct FrameInfo {
+  int32 routing_id;
+  int32 process_id;
+
+  SiteInstanceInfo site_instance;
+  url.mojom.Url? last_committed_url;
+
+  array<FrameInfo> subframes;
+};
+
+// Basic information describing a WebContents object and all frames that are
+// in it.
+struct WebContentsInfo {
+  string title;
+  FrameInfo root_frame;
+};
+
 // Interface used by chrome://process-internals to query data from the
 // browser process.
 interface ProcessInternalsHandler {
@@ -13,4 +44,8 @@ interface ProcessInternalsHandler {
 
   // Returns the number of isolated origins.
   GetIsolatedOriginsSize() => (uint32 size);
+
+  // Returns an array of WebContentsInfo structs for all WebContents
+  // associated with the profile in which this call is made.
+  GetAllWebContentsInfo() => (array<WebContentsInfo> infos);
 };

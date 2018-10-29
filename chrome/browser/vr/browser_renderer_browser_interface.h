@@ -17,7 +17,7 @@ class BrowserRendererBrowserInterface {
   virtual void ForceExitVr() = 0;
   virtual void ReportUiOperationResultForTesting(
       const UiTestOperationType& action_type,
-      const VrUiTestActivityResult& result) = 0;
+      const UiTestOperationResult& result) = 0;
 };
 
 }  // namespace vr

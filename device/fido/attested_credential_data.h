@@ -23,8 +23,12 @@ class PublicKey;
 // https://www.w3.org/TR/2017/WD-webauthn-20170505/#sec-attestation-data
 class COMPONENT_EXPORT(DEVICE_FIDO) AttestedCredentialData {
  public:
-  static base::Optional<AttestedCredentialData> DecodeFromCtapResponse(
-      base::span<const uint8_t> buffer);
+  // Parses an |AttestedCredentialData| from a prefix of |*buffer|. Returns
+  // nullopt on error, or else the parse return and a (possibly empty) suffix of
+  // |buffer| that was not parsed.
+  static base::Optional<
+      std::pair<AttestedCredentialData, base::span<const uint8_t>>>
+  ConsumeFromCtapResponse(base::span<const uint8_t> buffer);
 
   static base::Optional<AttestedCredentialData> CreateFromU2fRegisterResponse(
       base::span<const uint8_t> u2f_data,

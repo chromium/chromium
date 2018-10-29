@@ -85,7 +85,7 @@ TEST(SizesAttributeParserTest, Basic) {
   data.primary_pointer_type = kPointerTypeFine;
   data.default_font_size = 16;
   data.three_d_enabled = true;
-  data.media_type = MediaTypeNames::screen;
+  data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
   data.display_mode = kWebDisplayModeBrowser;
   MediaValues* media_values = MediaValuesCached::Create(data);
@@ -166,7 +166,7 @@ TEST(SizesAttributeParserTest, FloatViewportWidth) {
   data.primary_pointer_type = kPointerTypeFine;
   data.default_font_size = 16;
   data.three_d_enabled = true;
-  data.media_type = MediaTypeNames::screen;
+  data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
   data.display_mode = kWebDisplayModeBrowser;
   MediaValues* media_values = MediaValuesCached::Create(data);

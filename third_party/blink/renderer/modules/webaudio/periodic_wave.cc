@@ -49,7 +49,7 @@ const unsigned kMaxPeriodicWaveSize = 16384;
 
 const float kCentsPerRange = 1200 / kNumberOfOctaveBands;
 
-using namespace VectorMath;
+using namespace vector_math;
 
 PeriodicWave* PeriodicWave::Create(BaseAudioContext& context,
                                    const Vector<float>& real,

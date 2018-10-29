@@ -285,7 +285,7 @@ void ResourceFetcherImpl::SetHeader(const std::string& header,
 
 void ResourceFetcherImpl::Start(
     blink::WebLocalFrame* frame,
-    blink::WebURLRequest::RequestContext request_context,
+    blink::mojom::RequestContextType request_context,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     Callback callback,
@@ -302,7 +302,7 @@ void ResourceFetcherImpl::Start(
         << "GETs can't have bodies.";
   }
 
-  request_.fetch_request_context_type = request_context;
+  request_.fetch_request_context_type = static_cast<int>(request_context);
   request_.site_for_cookies = frame->GetDocument().SiteForCookies();
   if (!frame->GetDocument().GetSecurityOrigin().IsNull()) {
     request_.request_initiator =
@@ -310,7 +310,7 @@ void ResourceFetcherImpl::Start(
     SetHeader(kAccessControlAllowOriginHeader,
               blink::WebSecurityOrigin::CreateUnique().ToString().Ascii());
   }
-  request_.resource_type = WebURLRequestContextToResourceType(request_context);
+  request_.resource_type = RequestContextToResourceType(request_context);
 
   client_ = std::make_unique<ClientImpl>(
       this, std::move(callback), maximum_download_size,

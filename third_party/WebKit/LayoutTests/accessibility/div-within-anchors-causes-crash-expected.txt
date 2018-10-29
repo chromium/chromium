@@ -1,8 +1,8 @@
 End of test
+
 This can cause a crash.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 Before:
 AXRole: AXWebArea
@@ -13,6 +13,7 @@ After:
 AXRole: AXWebArea
     AXRole: AXGenericContainer
         AXRole: AXStaticText "End of test"
+
 PASS successfullyParsed is true
 
 TEST COMPLETE

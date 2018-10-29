@@ -3,7 +3,6 @@ Distributions from disconnected subtrees should be cleared when inserted again t
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS content.getDistributedNodes().length is 0
 PASS successfullyParsed is true
 

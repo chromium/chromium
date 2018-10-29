@@ -54,6 +54,7 @@ class ChromeSearchResult {
     return metadata_->answer_card_contents_token.value();
   }
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
+  const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   const gfx::ImageSkia& badge_icon() const { return metadata_->badge_icon; }
 
   const std::string& comparable_id() const { return comparable_id_; }
@@ -64,6 +65,7 @@ class ChromeSearchResult {
   void SetTitleTags(const Tags& tags);
   void SetDetails(const base::string16& details);
   void SetDetailsTags(const Tags& tags);
+  void SetAccessibleName(const base::string16& name);
   void SetRating(float rating);
   void SetFormattedPrice(const base::string16& formatted_price);
   void SetDisplayType(DisplayType display_type);
@@ -75,6 +77,7 @@ class ChromeSearchResult {
   void SetAnswerCardSize(const gfx::Size& size);
   void SetIsInstalling(bool is_installing);
   void SetIcon(const gfx::ImageSkia& icon);
+  void SetChipIcon(const gfx::ImageSkia& icon);
   void SetBadgeIcon(const gfx::ImageSkia& badge_icon);
 
   // The following methods call model updater to update Ash.

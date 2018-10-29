@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.download.home.list.view.AspectRatioFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:background="@color/modern_grey_100" >
+
+    <!-- Set the src attribute in Java to wrap the drawable properly. -->
+    <ImageView
+        android:id="@+id/placeholder"
+        android:layout_width="match_parent"
+        app:layout_aspectRatio="100%"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        tools:ignore="ContentDescription" />
+
+    <android.support.v7.widget.AppCompatImageButton
+        android:id="@+id/cancel_button"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="end|top"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/download_notification_cancel_button"
+        android:src="@drawable/btn_close"
+        app:tint="@color/modern_blue_600" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal|bottom"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/caption"
+            style="@style/DownloadItemText"
+            android:textAppearance="@style/BlackHint2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="4dp" />
+        <org.chromium.chrome.browser.download.home.list.view.CircularProgressView
+            android:id="@+id/action_button"
+            android:layout_gravity="center_vertical"
+            style="@style/TinyCircularProgress" />
+    </LinearLayout>
+</org.chromium.chrome.browser.download.home.list.view.AspectRatioFrameLayout>

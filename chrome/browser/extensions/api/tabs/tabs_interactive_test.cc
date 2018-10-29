@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
 
   scoped_refptr<extensions::WindowsGetLastFocusedFunction> function =
       new extensions::WindowsGetLastFocusedFunction();
-  scoped_refptr<extensions::Extension> extension(
+  scoped_refptr<const extensions::Extension> extension(
       extensions::ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   std::unique_ptr<base::DictionaryValue> result(
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
   // Get tabs in the 'last focused' window called from non-focused browser.
   scoped_refptr<extensions::TabsQueryFunction> function =
       new extensions::TabsQueryFunction();
-  scoped_refptr<extensions::Extension> extension(
+  scoped_refptr<const extensions::Extension> extension(
       extensions::ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   std::unique_ptr<base::ListValue> result(

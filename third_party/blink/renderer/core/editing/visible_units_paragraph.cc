@@ -307,6 +307,13 @@ VisiblePosition StartOfNextParagraph(const VisiblePosition& visible_position) {
       EndOfParagraph(visible_position, kCanSkipOverEditingBoundary));
   VisiblePosition after_paragraph_end(
       NextPositionOf(paragraph_end, kCannotCrossEditingBoundary));
+  // It may happen that an element's next visually equivalent candidate is set
+  // to such element when creating the VisualPosition. This may cause infinite
+  // loops when we are iterating over parapgrahs.
+  if (after_paragraph_end.DeepEquivalent() == paragraph_end.DeepEquivalent()) {
+    after_paragraph_end = VisiblePosition::AfterNode(
+        *paragraph_end.DeepEquivalent().AnchorNode());
+  }
   // The position after the last position in the last cell of a table
   // is not the start of the next paragraph.
   if (TableElementJustBefore(after_paragraph_end))

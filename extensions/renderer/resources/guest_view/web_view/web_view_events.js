@@ -23,7 +23,6 @@ function WebViewEvents(webViewImpl) {
   $Function.call(GuestViewEvents, this, webViewImpl);
 
   this.setupWebRequestEvents();
-  this.view.maybeSetupContextMenus();
 }
 
 var jsEvent;

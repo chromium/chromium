@@ -36,34 +36,29 @@ source_set("json_proto_converter") {
   ]
 }
 
-if (!is_win) {
-  static_library("skia_image_filter_converter") {
-    sources = [
-      "skia_image_filter_proto_converter.cc",
-      "skia_image_filter_proto_converter.h",
-    ]
-    deps = [
-      ":skia_image_filter_proto",
-      "//base",
-      "//skia",
-      "//third_party/libprotobuf-mutator",
-    ]
-    defines = [ "AVOID_MISBEHAVIOR=1" ]
+static_library("skia_image_filter_converter") {
+  sources = [
+    "skia_image_filter_proto_converter.cc",
+    "skia_image_filter_proto_converter.h",
+  ]
+  deps = [
+    ":skia_image_filter_proto",
+    "//base",
+    "//skia",
+    "//third_party/libprotobuf-mutator",
+  ]
+  defines = [ "AVOID_MISBEHAVIOR=1" ]
+  testonly = true
 
-    testonly = true
-
-    #  Can't disable instrumentation because of container-overflow false
-    # positives.
-
-    # Assertion failures and integer oveflows in skia are uninteresting.
-    if (is_debug || is_ubsan) {
-      all_dependent_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-    }
+  #  Can't disable instrumentation because of container-overflow false
+  # positives.
+  # Assertion failures and integer oveflows in skia are uninteresting.
+  if (is_debug || is_ubsan) {
+    all_dependent_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
   }
-
-  proto_library("skia_image_filter_proto") {
-    sources = [
-      "skia_image_filter.proto",
-    ]
-  }
+}
+proto_library("skia_image_filter_proto") {
+  sources = [
+    "skia_image_filter.proto",
+  ]
 }

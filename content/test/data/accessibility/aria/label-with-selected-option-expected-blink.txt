@@ -1,0 +1,9 @@
+rootWebArea
+++checkBox name='Test 1: Flash the screen 2 times.' checkedState=false
+++checkBox name='Test 2: Flash the screen 2 times.' checkedState=false
+++textField
+++checkBox name='Test 3: Flash the screen two times.' checkedState=false
+++checkBox name='Test 4: Flash the screen two times.' checkedState=false
+++textField
+++checkBox name='Test 5: Flash the screen two times.' checkedState=false
+++comboBoxMenuButton name='two'

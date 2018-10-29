@@ -10,7 +10,7 @@ mkdir bld
 cd bld
 ../configure
 
-OPTS=""
+OPTS="-DSQLITE_OMIT_UPSERT -DSQLITE_OMIT_WINDOWFUNC"
 make "OPTS=$OPTS" shell.c sqlite3.h sqlite3.c
 cp -f sqlite3.h sqlite3.c ../../amalgamation
 

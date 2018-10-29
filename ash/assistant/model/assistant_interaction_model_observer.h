@@ -47,7 +47,8 @@ class AssistantInteractionModelObserver {
   virtual void OnPendingQueryCleared() {}
 
   // Invoked when the response associated with the interaction is changed.
-  virtual void OnResponseChanged(const AssistantResponse& response) {}
+  virtual void OnResponseChanged(
+      const std::shared_ptr<AssistantResponse>& response) {}
 
   // Invoked when the response associated with the interaction is cleared.
   virtual void OnResponseCleared() {}

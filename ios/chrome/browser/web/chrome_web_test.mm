@@ -28,8 +28,9 @@ void ChromeWebTest::SetUp() {
   web::WebTestWithWebState::SetUp();
   IOSChromePasswordStoreFactory::GetInstance()->SetTestingFactory(
       chrome_browser_state_.get(),
-      &password_manager::BuildPasswordStore<
-          web::BrowserState, password_manager::MockPasswordStore>);
+      base::BindRepeating(
+          &password_manager::BuildPasswordStore<
+              web::BrowserState, password_manager::MockPasswordStore>));
 }
 
 void ChromeWebTest::TearDown() {

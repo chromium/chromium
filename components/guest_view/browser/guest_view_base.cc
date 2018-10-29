@@ -16,6 +16,7 @@
 #include "components/guest_view/common/guest_view_messages.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/guest_mode.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -136,7 +137,16 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
     if (destroyed_)
       return;
     destroyed_ = true;
-    guest_->Destroy(true);
+
+    bool also_delete = true;
+    WebContents* guest_web_contents = guest_->web_contents();
+    if (content::GuestMode::IsCrossProcessFrameGuest(guest_web_contents)) {
+      // The outer WebContents have ownership of attached OOPIF-based guests, so
+      // we are not responsible for their deletion.
+      if (guest_web_contents->GetOuterWebContents())
+        also_delete = false;
+    }
+    guest_->Destroy(also_delete);
   }
 
   DISALLOW_COPY_AND_ASSIGN(OwnerContentsObserver);
@@ -467,8 +477,6 @@ void GuestViewBase::Destroy(bool also_delete) {
   StopTrackingEmbedderZoomLevel();
   owner_web_contents_ = nullptr;
 
-  element_instance_id_ = kInstanceIDNone;
-
   DCHECK(web_contents());
 
   // Give the derived class an opportunity to perform some cleanup.
@@ -631,15 +639,15 @@ void GuestViewBase::ContentsZoomChange(bool zoom_in) {
   embedder_web_contents()->GetDelegate()->ContentsZoomChange(zoom_in);
 }
 
-void GuestViewBase::HandleKeyboardEvent(
+bool GuestViewBase::HandleKeyboardEvent(
     WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   if (!attached())
-    return;
+    return false;
 
   // Send the keyboard events back to the embedder to reprocess them.
-  embedder_web_contents()->GetDelegate()->
-      HandleKeyboardEvent(embedder_web_contents(), event);
+  return embedder_web_contents()->GetDelegate()->HandleKeyboardEvent(
+      embedder_web_contents(), event);
 }
 
 void GuestViewBase::LoadingStateChanged(WebContents* source,
@@ -669,12 +677,15 @@ void GuestViewBase::ResizeDueToAutoResize(WebContents* web_contents,
 
 void GuestViewBase::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
-  if (!attached() || !embedder_web_contents()->GetDelegate())
+  if (!attached() || !embedder_web_contents()->GetDelegate()) {
+    listener->FileSelectionCanceled();
     return;
+  }
 
-  embedder_web_contents()->GetDelegate()->RunFileChooser(render_frame_host,
-                                                         params);
+  embedder_web_contents()->GetDelegate()->RunFileChooser(
+      render_frame_host, std::move(listener), params);
 }
 
 bool GuestViewBase::ShouldFocusPageAfterCrash() {
@@ -687,7 +698,9 @@ bool GuestViewBase::PreHandleGestureEvent(WebContents* source,
   // Pinch events which cause a scale change should not be routed to a guest.
   // We still allow synthetic wheel events for touchpad pinch to go to the page.
   DCHECK(!blink::WebInputEvent::IsPinchGestureEventType(event.GetType()) ||
-         event.NeedsWheelEvent());
+         (event.SourceDevice() ==
+              blink::WebGestureDevice::kWebGestureDeviceTouchpad &&
+          event.NeedsWheelEvent()));
   return false;
 }
 

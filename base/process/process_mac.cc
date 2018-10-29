@@ -5,15 +5,36 @@
 #include "base/process/process.h"
 
 #include <mach/mach.h>
+#include <stddef.h>
+#include <sys/sysctl.h>
+#include <sys/time.h>
+#include <unistd.h>
+
+#include <memory>
 
 #include "base/feature_list.h"
 #include "base/mac/mach_logging.h"
+#include "base/memory/free_deleter.h"
+#include "base/stl_util.h"
 
 namespace base {
 
 // Enables backgrounding hidden renderers on Mac.
 const Feature kMacAllowBackgroundingProcesses{"MacAllowBackgroundingProcesses",
                                               FEATURE_DISABLED_BY_DEFAULT};
+
+Time Process::CreationTime() const {
+  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, Pid()};
+  size_t len = 0;
+  if (sysctl(mib, size(mib), NULL, &len, NULL, 0) < 0)
+    return Time();
+
+  std::unique_ptr<struct kinfo_proc, base::FreeDeleter> proc(
+      static_cast<struct kinfo_proc*>(malloc(len)));
+  if (sysctl(mib, size(mib), proc.get(), &len, NULL, 0) < 0)
+    return Time();
+  return Time::FromTimeVal(proc->kp_proc.p_un.__p_starttime);
+}
 
 bool Process::CanBackgroundProcesses() {
   return FeatureList::IsEnabled(kMacAllowBackgroundingProcesses);

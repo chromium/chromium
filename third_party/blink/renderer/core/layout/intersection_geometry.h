@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INTERSECTION_GEOMETRY_H_
 
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/length.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -38,12 +38,18 @@ class IntersectionGeometry {
 
   // Client rect in the coordinate system of the frame containing target.
   LayoutRect TargetRect() const { return target_rect_; }
+  // Target rect in CSS pixels
+  LayoutRect UnZoomedTargetRect() const;
 
   // Client rect in the coordinate system of the frame containing target.
   LayoutRect IntersectionRect() const { return intersection_rect_; }
+  // Intersection rect in CSS pixels
+  LayoutRect UnZoomedIntersectionRect() const;
 
   // Client rect in the coordinate system of the frame containing root.
   LayoutRect RootRect() const { return root_rect_; }
+  // Root rect in CSS pixels
+  LayoutRect UnZoomedRootRect() const;
 
   bool DoesIntersect() const { return does_intersect_; }
 

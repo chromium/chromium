@@ -188,6 +188,14 @@ void PDFWebContentsHelper::RunContextMenu() {
   NOTIMPLEMENTED();
 }
 
+bool PDFWebContentsHelper::ShouldShowQuickMenu() {
+  return false;
+}
+
+base::string16 PDFWebContentsHelper::GetSelectedText() {
+  return base::string16();
+}
+
 void PDFWebContentsHelper::InitTouchSelectionClientManager() {
   content::RenderWidgetHostView* view =
       web_contents()->GetRenderWidgetHostView();

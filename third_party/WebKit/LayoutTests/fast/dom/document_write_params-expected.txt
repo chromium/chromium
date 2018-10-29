@@ -1,4 +1,4 @@
-Test purpose: This tests display of multiple parameters given in document.write. 
+Test purpose: This tests display of multiple parameters given in document.write.
 Expected output: AB
 
 AB

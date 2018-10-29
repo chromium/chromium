@@ -25,8 +25,7 @@
   AccessSyncWallpaperInfoKey: 'wallpaper-sync-info-key',
 
   /**
-   * Key to access last changed date of a surprise me wallpaper (on the old
-   * picker) or a daily refresh wallpaper (on the new picker) in
+   * Key to access last changed date of a daily refresh wallpaper in
    * chrome.storage.local or chrome.storage.sync.
    */
   AccessLastSurpriseWallpaperChangedDate: 'wallpaper-last-changed-date-key',
@@ -44,20 +43,19 @@
   AccessSyncSurpriseMeEnabledKey: 'sync-surprise-me-enabled-key',
 
   /**
-   * Key to access the info related to daily refresh feature (on the new
-   * wallpaper picker) in chrome.storage.local.
+   * Key to access the info related to daily refresh feature in
+   * chrome.storage.local.
    */
   AccessLocalDailyRefreshInfoKey: 'daily-refresh-info-key',
 
   /**
-   * Key to access the info related to daily refresh feature (on the new
-   * wallpaper picker) in chrome.storage.sync.
+   * Key to access the info related to daily refresh feature in
+   * chrome.storage.sync.
    */
   AccessSyncDailyRefreshInfoKey: 'sync-daily-refresh-info-key',
 
   /**
-   * Key to access the images info (on the new wallpaper picker) in
-   * chrome.storage.local.
+   * Key to access the images info in chrome.storage.local.
    */
   AccessLocalImagesInfoKey: 'images-info-key',
 

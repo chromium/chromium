@@ -15,8 +15,7 @@
                 message: message,
                 filename: filename,
                 lineno: lineno,
-                colno: colno,
-                error: error
+                colno: colno
             });
             return false;
         }
@@ -29,17 +28,16 @@
         checkPostMessage({
             message: "Uncaught ReferenceError: foo is not defined",
             filename: "[blob: URL]",
-            lineno: 13,
+            lineno: 12,
             colno: 9,
         });
 
         checkErrorEventInHandler({
             message: "Uncaught ReferenceError: foo is not defined",
             filename: "[blob: URL]",
-            lineno: 13,
+            lineno: 12,
             colno: 9,
         });
     </script>
 </body>
 </html>
-

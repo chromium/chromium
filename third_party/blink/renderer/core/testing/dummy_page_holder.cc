@@ -64,9 +64,6 @@ DummyPageHolder::DummyPageHolder(
     page_clients.chrome_client = page_clients_argument->chrome_client;
   page_ = Page::Create(page_clients);
   Settings& settings = page_->GetSettings();
-  // FIXME: http://crbug.com/363843. This needs to find a better way to
-  // not create graphics layers.
-  settings.SetAcceleratedCompositingEnabled(false);
   if (setting_overrider)
     (*setting_overrider)(settings);
 

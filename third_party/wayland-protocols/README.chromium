@@ -76,4 +76,7 @@ To import a new snapshot of wayland-protocols:
     wayland-scanner code < unstable/notification-shell/notification-shell-unstable-v1.xml > protocol/notification-shell-v1-protocol.c
     wayland-scanner server-header < unstable/notification-shell/notification-shell-unstable-v1.xml > include/protocol/notification-shell-unstable-v1-server-protocol.h
     wayland-scanner client-header < unstable/notification-shell/notification-shell-unstable-v1.xml > include/protocol/notification-shell-unstable-v1-client-protocol.h
+    wayland-scanner code < src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml > protocol/fullscreen-shell-v1-protocol.c
+    wayland-scanner server-header < src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml > include/protocol/fullscreen-shell-unstable-v1-server-protocol.h
+    wayland-scanner client-header < src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml > include/protocol/fullscreen-shell-unstable-v1-client-protocol.h
 - Update this README to reflect the new version number.

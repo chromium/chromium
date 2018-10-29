@@ -28,10 +28,17 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gl/gl_image.h"
 
+namespace gl {
+class ProgressReporter;
+}
+
 namespace gpu {
 class DecoderContext;
 class ServiceDiscardableManager;
-class SharedImageFactory;
+class SharedImageBackingGLTexture;
+class SharedImageBackingFactoryGLTexture;
+class SharedImageBackingAHardwareBuffer;
+class SharedImageRepresentationGLTexture;
 
 namespace gles2 {
 class GLStreamTextureImage;
@@ -40,7 +47,6 @@ struct DecoderFramebufferState;
 class ErrorState;
 class FeatureInfo;
 class FramebufferManager;
-class ProgressReporter;
 class Texture;
 class TextureManager;
 class TextureRef;
@@ -53,6 +59,11 @@ class GPU_GLES2_EXPORT TexturePassthrough final
       public base::SupportsWeakPtr<TexturePassthrough> {
  public:
   TexturePassthrough(GLuint service_id, GLenum target);
+
+  // TextureBase implementation:
+  TextureBase::Type GetType() const override;
+
+  static TexturePassthrough* CheckedCast(TextureBase* texture);
 
   // Notify the texture that the context is lost and it shouldn't delete the
   // native GL texture in the destructor
@@ -68,6 +79,9 @@ class GPU_GLES2_EXPORT TexturePassthrough final
     is_bind_pending_ = is_bind_pending;
   }
 
+  void SetEstimatedSize(size_t size);
+  size_t estimated_size() const { return estimated_size_; }
+
  protected:
   ~TexturePassthrough() override;
 
@@ -76,6 +90,8 @@ class GPU_GLES2_EXPORT TexturePassthrough final
 
   bool have_context_;
   bool is_bind_pending_ = false;
+
+  size_t estimated_size_ = 0;
 
   // Bound images divided into faces and then levels
   std::vector<std::vector<scoped_refptr<gl::GLImage>>> level_images_;
@@ -114,6 +130,11 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   };
 
   explicit Texture(GLuint service_id);
+
+  // TextureBase implementation:
+  TextureBase::Type GetType() const override;
+
+  static Texture* CheckedCast(TextureBase* texture);
 
   const SamplerState& sampler_state() const {
     return sampler_state_;
@@ -332,11 +353,14 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
  private:
   friend class MailboxManagerSync;
   friend class MailboxManagerTest;
-  friend class gpu::SharedImageFactory;
+  friend class gpu::SharedImageBackingGLTexture;
+  friend class gpu::SharedImageBackingFactoryGLTexture;
+  friend class gpu::SharedImageBackingAHardwareBuffer;
   friend class TextureDefinition;
   friend class TextureManager;
   friend class TextureRef;
   friend class TextureTestHelper;
+  friend class TestSharedImageBacking;
   FRIEND_TEST_ALL_PREFIXES(TextureMemoryTrackerTest, LightweightRef);
 
   ~Texture() override;
@@ -663,6 +687,10 @@ class GPU_GLES2_EXPORT TextureRef : public base::RefCounted<TextureRef> {
   void AddObserver() { num_observers_++; }
   void RemoveObserver() { num_observers_--; }
 
+  // TODO(ericrk): Remove this once the Texture itself is generated from and
+  // owns the SharedImageRepresentation.
+  void SetSharedImageRepresentation(
+      std::unique_ptr<SharedImageRepresentationGLTexture> shared_image);
   const Texture* texture() const { return texture_; }
   Texture* texture() { return texture_; }
   GLuint client_id() const { return client_id_; }
@@ -688,6 +716,8 @@ class GPU_GLES2_EXPORT TextureRef : public base::RefCounted<TextureRef> {
   GLuint client_id_;
   GLint num_observers_;
   bool force_context_lost_;
+
+  std::unique_ptr<SharedImageRepresentationGLTexture> shared_image_;
 
   DISALLOW_COPY_AND_ASSIGN(TextureRef);
 };
@@ -754,7 +784,7 @@ class GPU_GLES2_EXPORT TextureManager
                  GLsizei max_3d_texture_size,
                  GLsizei max_array_texture_layers,
                  bool use_default_textures,
-                 ProgressReporter* progress_reporter,
+                 gl::ProgressReporter* progress_reporter,
                  ServiceDiscardableManager* discardable_manager);
   ~TextureManager() override;
 
@@ -860,6 +890,12 @@ class GPU_GLES2_EXPORT TextureManager
 
   // Maps an existing texture into the texture manager, at a given client ID.
   TextureRef* Consume(GLuint client_id, Texture* texture);
+
+  // Maps an existing SharedImage into the texture manager, at a given client
+  // ID.
+  TextureRef* ConsumeSharedImage(
+      GLuint client_id,
+      std::unique_ptr<SharedImageRepresentationGLTexture> shared_image);
 
   // Sets |rect| of mip as cleared.
   void SetLevelClearedRect(TextureRef* ref,
@@ -1247,7 +1283,7 @@ class GPU_GLES2_EXPORT TextureManager
   // Used to notify the watchdog thread of progress during destruction,
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
-  ProgressReporter* progress_reporter_;
+  gl::ProgressReporter* progress_reporter_;
 
   ServiceDiscardableManager* discardable_manager_;
 

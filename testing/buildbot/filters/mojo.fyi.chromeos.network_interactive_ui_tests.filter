@@ -1,0 +1,26 @@
+# NOTE: if adding an exclusion for an existing failure (e.g. additional test for
+# feature X that is already not working), please add it beside the existing
+# failures. Otherwise please reach out to network-service-dev@.
+
+# This filter contains Chrome OS only test failures.
+# See https://crbug.com/881976
+
+# Uncategorized timeouts or test failures.
+-DownloadNotificationTest.CancelDownload
+-DownloadNotificationTest.CloseNotificationAfterDownload
+-DownloadNotificationTest.CloseNotificationWhileDownloading
+-DownloadNotificationTest.DownloadCancelledByUserExternally
+-DownloadNotificationTest.DownloadFile
+-DownloadNotificationTest.DownloadMultipleFiles
+-DownloadNotificationTest.DownloadMultipleFilesOneByOne
+-DownloadNotificationTest.DownloadRemoved
+-DownloadNotificationTest.IncognitoDownloadFile
+-DownloadNotificationTest.InterruptDownload
+-DownloadNotificationTest.InterruptDownloadAfterClosingNotification
+-DownloadNotificationTest.SimultaneousIncognitoAndNormalDownloads
+-MultiProfileDownloadNotificationTest.DownloadMultipleFiles
+-OobeTest.NewUser
+
+# NOTE: if adding an exclusion for an existing failure (e.g. additional test for
+# feature X that is already not working), please add it beside the existing
+# failures. Otherwise please reach out to network-service-dev@.

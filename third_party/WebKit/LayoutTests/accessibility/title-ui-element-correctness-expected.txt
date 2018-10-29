@@ -2,7 +2,6 @@ This tests that titleUIElement works correctly even when things change dynamical
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS axElement('control1').nameElementAtIndex(0).isEqual(axElement('label1')) is true
 PASS axElement('control2').nameElementAtIndex(0).isEqual(axElement('label2')) is true
 PASS hasTitleUIElement(axElement('control3')) is false
@@ -12,7 +11,7 @@ PASS document.getElementById('container').appendChild(label4Element); hasTitleUI
 PASS axElement('control4').nameElementAtIndex(0).isEqual(axElement('label4')) is true
 PASS label4Element.parentElement.removeChild(label4Element); hasTitleUIElement(axElement('control4')) is false
 PASS hasTitleUIElement(axElement('control5')) is false
-PASS reparentNodeIntoContainer(document.getElementById('control5'), document.getElementById('label5')); axElement('control5').nameElementAtIndex(0) != null is true
+PASS reparentNodeIntoContainer(document.getElementById('control5'), document.getElementById('label5')); document.body.offsetTop; axElement('control5').nameElementAtIndex(0) != null is true
 PASS axElement('control5').nameElementAtIndex(0).isEqual(axElement('label5')) is true
 PASS axElement('control6').nameElementAtIndex(0).isEqual(axElement('label6b')) is true
 PASS newLabel6Element = createLabelWithIdAndForAttribute('label6a', 'control6'); document.body.insertBefore(newLabel6Element, document.body.firstChild); axElement('control6').nameElementAtIndex(0).isEqual(axElement('label6a')) is true

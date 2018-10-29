@@ -26,9 +26,10 @@ const char kTestOrigin1[] = "http://host1:1/";
 const char kTestOrigin2[] = "http://host2:1/";
 const char kTestOrigin3[] = "http://host3:1/";
 
-const GURL kOrigin1(kTestOrigin1);
-const GURL kOrigin2(kTestOrigin2);
-const GURL kOrigin3(kTestOrigin3);
+// TODO(crbug.com/889590): Use helper for url::Origin creation from string.
+const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
+const url::Origin kOrigin2 = url::Origin::Create(GURL(kTestOrigin2));
+const url::Origin kOrigin3 = url::Origin::Create(GURL(kTestOrigin3));
 
 const StorageType kTemporary = StorageType::kTemporary;
 const StorageType kPersistent = StorageType::kPersistent;
@@ -64,13 +65,15 @@ class MockQuotaManagerTest : public testing::Test {
                        weak_factory_.GetWeakPtr()));
   }
 
-  void GotModifiedOrigins(const std::set<GURL>& origins, StorageType type) {
+  void GotModifiedOrigins(const std::set<url::Origin>& origins,
+                          StorageType type) {
     origins_ = origins;
     type_ = type;
   }
 
-  void DeleteOriginData(const GURL& origin, StorageType type,
-      int quota_client_mask) {
+  void DeleteOriginData(const url::Origin& origin,
+                        StorageType type,
+                        int quota_client_mask) {
     manager_->DeleteOriginData(
         origin, type, quota_client_mask,
         base::BindOnce(&MockQuotaManagerTest::DeletedOriginData,
@@ -90,9 +93,7 @@ class MockQuotaManagerTest : public testing::Test {
     return manager_.get();
   }
 
-  const std::set<GURL>& origins() const {
-    return origins_;
-  }
+  const std::set<url::Origin>& origins() const { return origins_; }
 
   const StorageType& type() const {
     return type_;
@@ -106,7 +107,7 @@ class MockQuotaManagerTest : public testing::Test {
 
   int deletion_callback_count_;
 
-  std::set<GURL> origins_;
+  std::set<url::Origin> origins_;
   StorageType type_;
 
   base::WeakPtrFactory<MockQuotaManagerTest> weak_factory_;

@@ -75,11 +75,11 @@ cr-checkbox {
   width: 32px;
 }
 
-paper-radio-button {
-  --paper-radio-button-checked-color: var(--google-blue-500);
-  --paper-radio-button-ink-size: 40px;
-  --paper-radio-button-label-spacing: 16px;
-  --paper-radio-button-unchecked-color: var(--paper-grey-600);
+cr-radio-button {
+  --cr-radio-button-checked-color: var(--google-blue-500);
+  --cr-radio-button-ink-size: 40px;
+  --cr-radio-button-label-spacing: 16px;
+  --cr-radio-button-unchecked-color: var(--paper-grey-600);
 }
 
 #syncConsentMakeChromeSyncOptionsDialog .options-list-item {

@@ -105,6 +105,10 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Indicates if video content should be treated as a "normal" camera feed
     // or as generated (e.g. screen capture).
     enum class ContentType { kCamera, kDisplay };
+    // Indicates the storage type of a video frame provided on Encode().
+    // kShmem if a video frame is mapped in user space.
+    // kDmabuf if a video frame is referred by dmabuf.
+    enum class StorageType { kShmem, kDmabuf };
 
     Config();
     Config(const Config& config);
@@ -115,6 +119,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
            uint32_t initial_bitrate,
            base::Optional<uint32_t> initial_framerate = base::nullopt,
            base::Optional<uint8_t> h264_output_level = base::nullopt,
+           base::Optional<StorageType> storage_type = base::nullopt,
            ContentType content_type = ContentType::kCamera);
 
     ~Config();
@@ -146,6 +151,13 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // constraint_set3_flag to 1 (Spec A.3.1 and A.3.2). This is optional and
     // use |kDefaultH264Level| if not given.
     base::Optional<uint8_t> h264_output_level;
+
+    // The storage type of video frame provided on Encode().
+    // If no value is set, VEA doesn't check the storage type of video frame on
+    // Encode().
+    // This is kShmem iff a video frame is mapped in user space.
+    // This is kDmabuf iff a video frame has dmabuf.
+    base::Optional<StorageType> storage_type;
 
     // Indicates captured video (from a camera) or generated (screen grabber).
     // Screen content has a number of special properties such as lack of noise,
@@ -216,6 +228,9 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   virtual bool Initialize(const Config& config, Client* client) = 0;
 
   // Encodes the given frame.
+  // The storage type of |frame| must be the |storage_type| if it is specified
+  // in Initialize().
+  // TODO(crbug.com/895230): Raise an error if the storage types are mismatch.
   // Parameters:
   //  |frame| is the VideoFrame that is to be encoded.
   //  |force_keyframe| forces the encoding of a keyframe for this frame.

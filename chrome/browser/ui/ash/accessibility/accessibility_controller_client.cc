@@ -21,7 +21,7 @@ void SetAutomationManagerEnabled(content::BrowserContext* context,
   DCHECK(context);
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
   if (enabled)
-    manager->Enable(context);
+    manager->Enable();
   else
     manager->Disable();
 }
@@ -85,7 +85,7 @@ void AccessibilityControllerClient::TriggerAccessibilityAlert(
 
   if (msg) {
     AutomationManagerAura::GetInstance()->HandleAlert(
-        profile, l10n_util::GetStringUTF8(msg));
+        l10n_util::GetStringUTF8(msg));
     // After handling the alert, if the alert is screen-off, we should
     // disable automation manager to handle any following a11y events.
     if (alert == ash::mojom::AccessibilityAlert::SCREEN_OFF)

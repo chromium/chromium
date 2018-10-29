@@ -9,64 +9,97 @@
   <script src="chrome://resources/js/mojo_bindings.js"></script>
   <script src="chrome://resources/js/util.js"></script>
   <script src="chrome/browser/ui/webui/omnibox/omnibox.mojom.js"></script>
+  <script src="omnibox_element.js"></script>
+  <script src="omnibox_inputs.js"></script>
+  <script src="omnibox_output.js"></script>
   <script src="omnibox.js"></script>
 </head>
 <body>
-  <div class="input-section">
-    <form id="omnibox-input-form" action="">
-      <p>
-        Enter omnibox input text:
-        <input id="input-text" type="text" size="40" autofocus>
-        <input type="submit">
-      </p>
-      <p>Input parameters:</p>
-      <p>
-        <label>
-          <input id="prevent-inline-autocomplete" type="checkbox">
-          Prevent inline autocomplete
-        </label>
-      </p>
-      <p>
-        <label>
-          <input id="prefer-keyword" type="checkbox">
-          In keyword mode
-        </label>
-      </p>
-      <p>
-        Current page context:
-        <select id="page-classification">
-          <option value="0">Invalid spec</option>
-          <option value="1">(OBSOLETE) new tab page</option>
-          <option value="2">about:blank</option>
-          <option value="3">user's home page</option>
-          <option value="4">arbitrary URL</option>
-          <option value="6">search result page doing search term replacement</option>
-          <option value="9">search result page not doing search term replacement</option>
-          <option value="7" selected>new tab page with focus in omnibox</option>
-          <option value="8">new tab page with focus in fakebox</option>
-        </select>
-      </p>
-      <p>Display parameters:</p>
-      <p>
-        <label>
-          <input id="show-incomplete-results" type="checkbox">
-          Show incomplete results
-        </label>
-      </p>
-      <p>
-        <label>
-          <input id="show-details" type="checkbox">
-          Show all details
-        </label>
-      </p>
-      <p>
-        <label>
-          <input id="show-all-providers" type="checkbox">
-          Show results per provider, not just merged results
-        </label>
-      </p>
-    </form>
-  </div>
-  <div id="omnibox-debug-text"></div>
+  <template id="omnibox-inputs-template">
+    <link rel="stylesheet" href="omnibox.css">
+    <p>
+      <input id="input-text" type="text" size="60" placeholder="Enter omnibox input text" autofocus>
+    </p>
+    <p>Input parameters:</p>
+    <p>
+      <label>
+        <input id="prevent-inline-autocomplete" type="checkbox">
+        Prevent inline autocomplete
+      </label>
+    </p>
+    <p>
+      <label>
+        <input id="prefer-keyword" type="checkbox">
+        In keyword mode
+      </label>
+    </p>
+    <p>
+      Current page context:
+      <select id="page-classification">
+        <option value="0">Invalid spec</option>
+        <option value="2">about:blank</option>
+        <option value="3">user's home page</option>
+        <option value="4">arbitrary URL</option>
+        <option value="9">search result page not doing search term replacement</option>
+        <option value="7" selected>new tab page omnibox</option>
+        <option value="8">new tab page fakebox</option>
+        <option value="1">(OBSOLETE) new tab page</option>
+        <option value="6">(OBSOLETE) search result page doing search term replacement</option>
+      </select>
+    </p>
+    <p>Display parameters:</p>
+    <p>
+      <label>
+        <input id="show-incomplete-results" type="checkbox">
+        Show incomplete results
+      </label>
+    </p>
+    <p>
+      <label>
+        <input id="show-details" type="checkbox">
+        Show all details
+      </label>
+    </p>
+    <p>
+      <label>
+        <input id="show-all-providers" type="checkbox">
+        Show results per provider, not just merged results
+      </label>
+    </p>
+  </template>
+
+  <template id="omnibox-output-template">
+    <link rel="stylesheet" href="omnibox.css">
+    <div id="contents"></div>
+  </template>
+
+  <template id="results-group-template">
+    <div class="details"></div>
+    <div class="combined-results">
+      <p>Combined results</p>
+    </div>
+    <div class="individual-results"></div>
+  </template>
+
+  <template id="results-group-details-template">
+    <p>cursor position = <span class="cursor-position"></span></p>
+    <p>elapsed time = <span class="time"></span>ms</p>
+    <p>all providers done = <span class="done"></span></p>
+    <p>host = <span class="host"></span>, has isTypedHost = <span class="is-typed-host"></span></p>
+  </template>
+
+  <template id="results-group-individual-results-template">
+    <p>individual results</p>
+  </template>
+
+  <template id="results-table-template">
+    <table class="autocomplete-results-table">
+      <tbody class="results-table-body">
+      </tbody>
+    </table>
+  </template>
+
+  <omnibox-inputs id="omnibox-inputs" class="section"></omnibox-inputs>
+  <omnibox-output id="omnibox-output" class="section"></omnibox-output>
 </body>
 </html>

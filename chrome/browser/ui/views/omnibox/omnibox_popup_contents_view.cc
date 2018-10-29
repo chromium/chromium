@@ -4,154 +4,23 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
 
-#include <algorithm>
 #include <memory>
-#include <utility>
-#include <vector>
 
-#include "base/feature_list.h"
-#include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/search/search.h"
-#include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
-#include "chrome/browser/ui/views/location_bar/background_with_1_px_border.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_view.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/material_design/material_design_controller.h"
-#include "ui/base/theme_provider.h"
-#include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/closure_animation_observer.h"
-#include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/animation/animation_delegate.h"
-#include "ui/gfx/animation/slide_animation.h"
-#include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/safe_integer_conversions.h"
-#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/path.h"
-#include "ui/gfx/shadow_value.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
 
 #if defined(USE_AURA)
 #include "ui/wm/core/window_util.h"
 #endif  // defined(USE_AURA)
-
-namespace {
-
-// Cache the shadow images so that potentially expensive shadow drawing isn't
-// repeated.
-base::LazyInstance<gfx::ImageSkia>::DestructorAtExit g_top_shadow =
-    LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<gfx::ImageSkia>::DestructorAtExit g_bottom_shadow =
-    LAZY_INSTANCE_INITIALIZER;
-
-constexpr int kPopupVerticalPadding = 4;
-
-void InitializeWideShadows() {
-  if (!g_top_shadow.Get().isNull()) {
-    DCHECK(!g_bottom_shadow.Get().isNull());
-    return;
-  }
-
-  // Blur by 1dp. See comment below about blur accounting.
-  g_top_shadow.Get() = gfx::ImageSkiaOperations::CreateHorizontalShadow(
-      {{gfx::Vector2d(), 2, SK_ColorBLACK}}, false);
-
-  constexpr int kSmallShadowBlur = 3;
-  constexpr int kLargeShadowBlur = 8;
-  constexpr int kLargeShadowYOffset = 3;
-
-  // gfx::ShadowValue counts blur pixels both inside and outside the shape,
-  // whereas these blur values only describe the outside portion, hence they
-  // must be doubled.
-  const std::vector<gfx::ShadowValue> bottom_shadows{
-      {gfx::Vector2d(), 2 * kSmallShadowBlur, SK_ColorBLACK},
-      {gfx::Vector2d(0, kLargeShadowYOffset), 2 * kLargeShadowBlur,
-       SK_ColorBLACK}};
-
-  g_bottom_shadow.Get() =
-      gfx::ImageSkiaOperations::CreateHorizontalShadow(bottom_shadows, true);
-}
-
-// Controller for the results Widget that animates size changes when the height
-// is being reduced. Increases in height are not animated, since that adds the
-// perception of latency. This is not used for all popup styles.
-class WidgetShrinkAnimation : public gfx::AnimationDelegate {
- public:
-  WidgetShrinkAnimation(views::Widget* widget, const gfx::Rect& initial_bounds)
-      : widget_(widget),
-        size_animation_(this),
-        start_height_(0),
-        target_bounds_(initial_bounds) {}
-
-  void SetTargetBounds(const gfx::Rect& bounds) {
-    // Animate based on the last height set on the Widget. Don't query the
-    // Widget itself since it may be rounded to pixel coordinates on some scale
-    // factors.
-    start_height_ = GetHeightFromAnimation();
-
-    // If we're animating and our target height changes, reset the animation.
-    // NOTE: If we just reset blindly on _every_ update, then when the user
-    // types rapidly we could get "stuck" trying repeatedly to animate shrinking
-    // by the last few pixels to get to one visible result.
-    if (bounds.height() != target_bounds_.height())
-      size_animation_.Reset();
-    target_bounds_ = bounds;
-
-    // Animate the popup shrinking, but don't animate growing larger since that
-    // would make the popup feel less responsive.
-    if (target_bounds_.height() < start_height_) {
-      size_animation_.Show();
-      AnimationProgressed(&size_animation_);
-    } else {
-      widget_->SetBounds(target_bounds_);
-    }
-  }
-
-  // gfx::AnimationDelegate:
-  void AnimationProgressed(const gfx::Animation* animation) override {
-    gfx::Rect current_frame_bounds = target_bounds_;
-    current_frame_bounds.set_height(GetHeightFromAnimation());
-    widget_->SetBounds(current_frame_bounds);
-  }
-
- private:
-  int GetHeightFromAnimation() const {
-    if (!size_animation_.is_animating())
-      return target_bounds_.height();
-
-    // Round |current_height_delta| away from zero instead of truncating so we
-    // won't leave single white pixels at the bottom of the popup when animating
-    // very small height differences. Note the delta is negative.
-    int total_height_delta = target_bounds_.height() - start_height_;
-    return start_height_ +
-           static_cast<int>(
-               size_animation_.GetCurrentValue() * total_height_delta - 0.5);
-  }
-
-  views::Widget* widget_;  // Weak. Owns |this|.
-
-  gfx::SlideAnimation size_animation_;
-  int start_height_;
-  gfx::Rect target_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetShrinkAnimation);
-};
-
-}  // namespace
 
 class OmniboxPopupContentsView::AutocompletePopupWidget
     : public ThemeCopyingWidget,
@@ -176,28 +45,18 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
     params.bounds = bounds;
     params.context = parent_widget->GetNativeWindow();
 
-    if (LocationBarView::IsRounded())
-      RoundedOmniboxResultsFrame::OnBeforeWidgetInit(&params, this);
-    else
-      animator_ = std::make_unique<WidgetShrinkAnimation>(this, bounds);
+    RoundedOmniboxResultsFrame::OnBeforeWidgetInit(&params, this);
 
     Init(params);
   }
 
   void SetPopupContentsView(OmniboxPopupContentsView* contents) {
-    if (LocationBarView::IsRounded()) {
-      SetContentsView(new RoundedOmniboxResultsFrame(
-          contents, contents->location_bar_view_->tint()));
-    } else {
-      SetContentsView(contents);
-    }
+    SetContentsView(
+        new RoundedOmniboxResultsFrame(contents, contents->location_bar_view_));
   }
 
   void SetTargetBounds(const gfx::Rect& bounds) {
-    if (animator_)
-      animator_->SetTargetBounds(bounds);
-    else
-      SetBounds(bounds);
+    SetBounds(bounds);
 
 #if defined(USE_AURA)
     // TODO(malaykeshav): Remove this manual snap when we start snapping each
@@ -207,11 +66,6 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
   }
 
   void ShowAnimated() {
-    if (!LocationBarView::IsRounded()) {
-      ShowInactive();
-      return;
-    }
-
     // Set the initial opacity to 0 and ease into fully opaque.
     GetLayer()->SetOpacity(0.0);
     ShowInactive();
@@ -221,15 +75,6 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
   }
 
   void CloseAnimated() {
-    if (!LocationBarView::IsRounded()) {
-      // NOTE: Do NOT use CloseNow() here, as we may be deep in a callstack
-      // triggered by the popup receiving a message (e.g. LBUTTONUP), and
-      // destroying the popup would cause us to read garbage when we unwind back
-      // to that level.
-      Close();
-      return;
-    }
-
     // If the opening or shrinking animations still running, abort them, as the
     // popup is closing. This is an edge case for superhumanly fast users.
     GetLayer()->GetAnimator()->AbortAllAnimations();
@@ -287,8 +132,6 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
     return settings;
   }
 
-  std::unique_ptr<WidgetShrinkAnimation> animator_;
-
   // True if the popup is in the process of closing via animation.
   bool is_animating_closed_ = false;
 
@@ -304,14 +147,9 @@ OmniboxPopupContentsView::OmniboxPopupContentsView(
     LocationBarView* location_bar_view)
     : model_(new OmniboxPopupModel(this, edit_model)),
       omnibox_view_(omnibox_view),
-      location_bar_view_(location_bar_view),
-      start_margin_(0),
-      end_margin_(0) {
+      location_bar_view_(location_bar_view) {
   // The contents is owned by the LocationBarView.
   set_owned_by_client();
-
-  if (!LocationBarView::IsRounded())
-    InitializeWideShadows();
 
   for (size_t i = 0; i < AutocompleteResult::GetMaxMatches(); ++i) {
     OmniboxResultView* result_view = new OmniboxResultView(this, i);
@@ -429,7 +267,7 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
   for (size_t i = result_size; i < AutocompleteResult::GetMaxMatches(); ++i)
     child_at(i)->SetVisible(false);
 
-  gfx::Rect new_target_bounds = UpdateMarginsAndGetTargetBounds();
+  gfx::Rect new_target_bounds = GetTargetBounds();
 
   if (popup_) {
     popup_->SetTargetBounds(new_target_bounds);
@@ -541,64 +379,29 @@ void OmniboxPopupContentsView::OnGestureEvent(ui::GestureEvent* event) {
 ////////////////////////////////////////////////////////////////////////////////
 // OmniboxPopupContentsView, private:
 
-gfx::Rect OmniboxPopupContentsView::UpdateMarginsAndGetTargetBounds() {
-  if (LocationBarView::IsRounded()) {
-    // The rounded popup is always offset the same amount from the omnibox.
-    gfx::Rect content_rect = location_bar_view_->GetBoundsInScreen();
-    content_rect.Inset(
-        -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
-    content_rect.set_height(CalculatePopupHeight());
-
-    // Finally, expand the widget to accomodate the custom-drawn shadows.
-    content_rect.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
-    return content_rect;
-  }
-
-  // We want the popup to appear to overlay the bottom of the toolbar. So we
-  // shift the popup to completely cover the client edge, and then draw an
-  // additional semitransparent shadow above that.
-  int top_edge_overlap = g_top_shadow.Get().height() +
-                         views::NonClientFrameView::kClientEdgeThickness;
-
-  // The popup contents are always sized matching the location bar size.
-  views::View* toolbar = location_bar_view_->parent();
-  start_margin_ = location_bar_view_->x();
-  end_margin_ = toolbar->width() - location_bar_view_->bounds().right();
-
-  gfx::Point top_left_screen_coord =
-      gfx::Point(0, toolbar->height() - top_edge_overlap);
-  views::View::ConvertPointToScreen(toolbar, &top_left_screen_coord);
-  return gfx::Rect(top_left_screen_coord,
-                   gfx::Size(toolbar->width(), CalculatePopupHeight()));
-}
-
-int OmniboxPopupContentsView::CalculatePopupHeight() {
+gfx::Rect OmniboxPopupContentsView::GetTargetBounds() {
   DCHECK_GE(static_cast<size_t>(child_count()), model_->result().size());
   int popup_height = 0;
   for (size_t i = 0; i < model_->result().size(); ++i)
     popup_height += child_at(i)->GetPreferredSize().height();
-
   // Add enough space on the top and bottom so it looks like there is the same
   // amount of space between the text and the popup border as there is in the
   // interior between each row of text.
-  int height = popup_height;
-  if (LocationBarView::IsRounded()) {
-    height += RoundedOmniboxResultsFrame::GetNonResultSectionHeight();
-  } else {
-    height += kPopupVerticalPadding * 2 + g_top_shadow.Get().height() +
-              g_bottom_shadow.Get().height();
-  }
-  return height;
+  popup_height += RoundedOmniboxResultsFrame::GetNonResultSectionHeight();
+
+  // The rounded popup is always offset the same amount from the omnibox.
+  gfx::Rect content_rect = location_bar_view_->GetBoundsInScreen();
+  content_rect.Inset(
+      -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
+  content_rect.set_height(popup_height);
+
+  // Finally, expand the widget to accomodate the custom-drawn shadows.
+  content_rect.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
+  return content_rect;
 }
 
 void OmniboxPopupContentsView::LayoutChildren() {
   gfx::Rect contents_rect = GetContentsBounds();
-  if (!LocationBarView::IsRounded()) {
-    contents_rect.Inset(gfx::Insets(kPopupVerticalPadding, 0));
-    contents_rect.Inset(start_margin_, g_top_shadow.Get().height(), end_margin_,
-                        0);
-  }
-
   int top = contents_rect.y();
   for (size_t i = 0; i < AutocompleteResult::GetMaxMatches(); ++i) {
     View* v = child_at(i);
@@ -655,41 +458,4 @@ void OmniboxPopupContentsView::GetAccessibleNodeData(
 
 const char* OmniboxPopupContentsView::GetClassName() const {
   return "OmniboxPopupContentsView";
-}
-
-void OmniboxPopupContentsView::OnPaint(gfx::Canvas* canvas) {
-  if (LocationBarView::IsRounded()) {
-    View::OnPaint(canvas);
-    return;
-  }
-
-  canvas->TileImageInt(g_top_shadow.Get(), 0, 0, width(),
-                       g_top_shadow.Get().height());
-  canvas->TileImageInt(g_bottom_shadow.Get(), 0,
-                       height() - g_bottom_shadow.Get().height(), width(),
-                       g_bottom_shadow.Get().height());
-}
-
-void OmniboxPopupContentsView::PaintChildren(
-    const views::PaintInfo& paint_info) {
-  if (LocationBarView::IsRounded()) {
-    View::PaintChildren(paint_info);
-    return;
-  }
-
-  gfx::Rect contents_bounds = GetContentsBounds();
-  contents_bounds.Inset(0, g_top_shadow.Get().height(), 0,
-                        g_bottom_shadow.Get().height());
-
-  ui::ClipRecorder clip_recorder(paint_info.context());
-  clip_recorder.ClipRect(gfx::ScaleToRoundedRect(
-      contents_bounds, paint_info.paint_recording_scale_x(),
-      paint_info.paint_recording_scale_y()));
-  {
-    ui::PaintRecorder recorder(paint_info.context(), size());
-    SkColor background_color =
-        GetOmniboxColor(OmniboxPart::RESULTS_BACKGROUND, GetTint());
-    recorder.canvas()->DrawColor(background_color);
-  }
-  View::PaintChildren(paint_info);
 }

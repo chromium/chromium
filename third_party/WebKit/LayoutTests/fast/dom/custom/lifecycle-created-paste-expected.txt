@@ -3,7 +3,6 @@ This test ensures that the lifecycle callbacks of editing-originated elements ar
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.callbacksCalled is ['X-FOO', 'DIV']
 PASS window.callbacksCalled is ['X-FOO', 'DIV', 'X-FOO', 'DIV']
 PASS successfullyParsed is true

@@ -95,11 +95,6 @@ class LayoutSVGModelObject : public LayoutObject {
   // LayoutSVGModelObject subclasses should use GetElement() instead.
   void GetNode() const = delete;
 
-  // This method should never be called, SVG uses a different nodeAtPoint method
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
-                   HitTestAction) final;
   void AddOutlineRects(Vector<LayoutRect>&,
                        const LayoutPoint& additional_offset,
                        NGOutlineType) const final;

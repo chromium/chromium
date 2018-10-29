@@ -1099,7 +1099,7 @@ components/rappor/rappor_parameters.h.
   <owner>nzolghadr@chromium.org</owner>
   <owner>tdresser@chromium.org</owner>
   <summary>
-    The eTLD+1 of the website visited, along with  the time between initial
+    The eTLD+1 of the website visited, along with the time between initial
     creation of a wheel event and the start of the frame swap on the GPU service
     caused by the generated ScrollUpdate gesture event if that ScrollUpdate is
     the first such event in a given scroll gesture event sequence. If no swap
@@ -1188,14 +1188,14 @@ components/rappor/rappor_parameters.h.
     content script.
 
     Note that gathering of this data is not reimplemented in the NetworkService
-    version of Cross-Origin Read Blocking feature.  This should be okay since we
+    version of Cross-Origin Read Blocking feature. This should be okay since we
     hope to gather enough data before NetworkService ships.
 
     TODO(lukasza): Around Q4 2018: Remove code after we've gathered enough data.
 
     DEPRECATED: This metric incorrectly covers more than just requests from
     content scripts - for example it also covers requests from GuestViews
-    (initiated by a Chrome App injecting scripts into GuestView).  For now
+    (initiated by a Chrome App injecting scripts into GuestView). For now
     GuestView is outside the scope of Site Isolation so this metric has been
     replaced by Extensions.CrossOriginFetchFromContentScript2.
   </summary>
@@ -1211,7 +1211,7 @@ components/rappor/rappor_parameters.h.
     content script.
 
     Note that gathering of this data is not reimplemented in the NetworkService
-    version of Cross-Origin Read Blocking feature.  This should be okay since we
+    version of Cross-Origin Read Blocking feature. This should be okay since we
     hope to gather enough data before NetworkService ships.
 
     TODO(lukasza): Around Q4 2018: Remove code after we've gathered enough data.
@@ -1229,8 +1229,7 @@ components/rappor/rappor_parameters.h.
   <owner>dfalcantara@chromium.org</owner>
   <summary>
     The eTLD+1 of a URL that was launched from the Android Home screen into a
-    tab.  This explicitly does not count relaunches via the Android Recents
-    menu.
+    tab. This explicitly does not count relaunches via the Android Recents menu.
   </summary>
 </rappor-metric>
 
@@ -1238,7 +1237,7 @@ components/rappor/rappor_parameters.h.
   <owner>dfalcantara@chromium.org</owner>
   <summary>
     The eTLD+1 of a URL that was launched from the Android Home screen into a
-    WebappActivity.  This explicitly does not count relaunches via the Android
+    WebappActivity. This explicitly does not count relaunches via the Android
     Recents menu.
   </summary>
 </rappor-metric>
@@ -1907,7 +1906,7 @@ now we are only interested in H264, VP8 and VP9.
   <owner>kcarattini@chromium.org</owner>
   <summary>
     **DEPRECATED. No longer reported as of M52. The domain+registry of a URL
-    that     requested the MidiSysEx API.
+    that requested the MidiSysEx API.
   </summary>
   <string-field name="Scheme">
     <summary>
@@ -2123,8 +2122,8 @@ now we are only interested in H264, VP8 and VP9.
   <summary>
     The domain and registry of the URL from where Flash SWF or SPL content is
     being loaded from, while attempting to launch a Flash (NPAPI or PPAPI)
-    plugin that is installed and enabled.  Recorded when the plugin frame
-    appears for each Flash object found in the page, even if the plugin is
+    plugin that is installed and enabled. Recorded when the plugin frame appears
+    for each Flash object found in the page, even if the plugin is
     click-to-play.
   </summary>
 </rappor-metric>
@@ -2414,6 +2413,9 @@ now we are only interested in H264, VP8 and VP9.
 <rappor-metric
     name="ServiceWorker.ContextRequestHandlerStatus.UninstalledScriptImport"
     type="ETLD_PLUS_ONE">
+  <obsolete>
+    No longer being logged since Sep 2018.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <summary>
     The domain and registry of the URL of service worker script which used
@@ -2442,7 +2444,7 @@ now we are only interested in H264, VP8 and VP9.
 <rappor-metric name="Settings.HomePage2" type="ETLD_PLUS_ONE">
   <owner>holte@chromium.org</owner>
   <summary>
-    The eTLD+1 of the prefs::kHomePage setting.  Recorded when a profile is
+    The eTLD+1 of the prefs::kHomePage setting. Recorded when a profile is
     loaded if the URL is valid and prefs::kHomePageIsNewTabPage is false.
   </summary>
 </rappor-metric>
@@ -2689,9 +2691,9 @@ now we are only interested in H264, VP8 and VP9.
 <rappor-metric name="interstitial.ssl.domain" type="COARSE_RAPPOR_TYPE">
   <owner>nparker@chromium.org</owner>
   <summary>
-    ** DEPRECATED.  Replaced by insterstitial.ssl2.domain on 2015-07-07 since
-    the type changed.**  The domain+registry of a URL that triggered an SSL
-    interstitial.  Domains for bad-clock warnings are not reported.
+    ** DEPRECATED. Replaced by insterstitial.ssl2.domain on 2015-07-07 since the
+    type changed.** The domain+registry of a URL that triggered an SSL
+    interstitial. Domains for bad-clock warnings are not reported.
   </summary>
 </rappor-metric>
 

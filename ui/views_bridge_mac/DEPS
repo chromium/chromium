@@ -1,4 +1,17 @@
 include_rules = [
+  "+components/crash/core/common/crash_key.h",
+  "+components/viz/common",
+  "+mojo/public/cpp/bindings",
+  "+skia/ext",
+  "+ui/accelerated_widget_mac",
   "+ui/base",
+  "+ui/compositor",
+  "+ui/display",
+  "+ui/events",
   "+ui/gfx",
+  # TODO(ccameron): This can be removed when sources are moved to the
+  # views_bridge_mac component.
+  "+ui/views/views_export.h",
+  # TODO(ccameron): This file should be moved to forward declarations.
+  "+ui/views/widget/util_mac.h",
 ]

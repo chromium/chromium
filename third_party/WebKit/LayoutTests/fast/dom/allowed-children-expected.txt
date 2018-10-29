@@ -2,7 +2,6 @@ This test ensures that we can attach various DOMs to the document.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS u.tagName is 'Long'
 PASS (new XMLSerializer()).serializeToString(doc) is '<Long/>'
 PASS u.tagName is 'Long'

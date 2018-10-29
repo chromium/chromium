@@ -1,0 +1,73 @@
+<!doctype HTML>
+
+<!--
+Runs an acquireDisplayLock, which suspends the context twice and schedules
+a continuation; later resumes the context (twice).
+-->
+
+<style>
+#parent {
+  contain: paint;
+  width: 150px;
+  height: 150px;
+  background: lightblue;
+}
+#pass_child {
+  width: 50px;
+  height: 50px;
+  background: lightgreen;
+}
+#fail_child {
+  width: 50px;
+  height: 50px;
+  background: red;
+}
+</style>
+
+<div id="log"></div>
+<div id="parent"></div>
+
+<script>
+if (window.testRunner)
+  window.testRunner.waitUntilDone();
+
+var child_class = "fail_child";
+function modifyDom(context) {
+  let child = document.createElement("div");
+  child.id = child_class;
+  document.getElementById("parent").appendChild(child);
+}
+
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  if (window.testRunner)
+    window.testRunner.notifyDone();
+}
+
+function acquire() {
+  let current_status = "FAIL";
+  let resume_handle1 = undefined;
+  let resume_handle2 = undefined;
+  document.getElementById("parent").acquireDisplayLock(
+    (context) => {
+      context.schedule(modifyDom);
+      resume_handle1 = context.suspend();
+      resume_handle2 = context.suspend();
+  }).then(
+    () => { finishTest(current_status); },
+    () => { finishTest("FAIL - rejected"); });
+
+  setTimeout(() => {
+    resume_handle1.resume();
+    setTimeout(() => {
+      current_status = "PASS";
+      child_class = "pass_child";
+      resume_handle2.resume();
+    }, 50);
+  }, 50);
+}
+
+window.onload = acquire;
+</script>
+

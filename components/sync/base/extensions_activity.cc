@@ -22,7 +22,7 @@ void ExtensionsActivity::GetAndClearRecords(Records* buffer) {
 
 void ExtensionsActivity::PutRecords(const Records& records) {
   base::AutoLock lock(records_lock_);
-  for (Records::const_iterator i = records.begin(); i != records.end(); ++i) {
+  for (auto i = records.begin(); i != records.end(); ++i) {
     records_[i->first].extension_id = i->second.extension_id;
     records_[i->first].bookmark_write_count += i->second.bookmark_write_count;
   }

@@ -4,6 +4,20 @@
 
 module chromeos.assistant.mojom;
 
+interface SpeakerIdEnrollmentClient {
+  // Listening for hotword.
+  OnListeningHotword();
+
+  // Hotword utterance detected. Processing utterance.
+  OnProcessingHotword();
+
+  // The enrollment completed successfully.
+  OnSpeakerIdEnrollmentDone();
+
+  // Enrollment failed.
+  OnSpeakerIdEnrollmentFailure();
+};
+
 interface AssistantSettingsManager {
   // |selector| is a serialized proto of SettingsUiSelector, indicating which
   // settings sub-pages should be requested to the server.
@@ -18,4 +32,13 @@ interface AssistantSettingsManager {
   // result of updates.
   // Send a request to update the assistant settings indicated by the |update|.
   UpdateSettings(string update) => (string result);
+
+  // Starts speaker id enrollment.
+  // |skip_cloud_enrollment| whether to skip Cloud Enrollment (e.g. for when
+  // user explicictly requests voice match re-training).
+  StartSpeakerIdEnrollment(bool skip_cloud_enrollment,
+                           SpeakerIdEnrollmentClient client);
+
+  // Stops speaker id enrollment.
+  StopSpeakerIdEnrollment() => ();
 };

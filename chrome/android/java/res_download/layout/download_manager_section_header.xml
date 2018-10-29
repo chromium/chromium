@@ -4,13 +4,50 @@
      found in the LICENSE file.
 -->
 
-<TextView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingTop="@dimen/download_manager_section_title_padding_top"
-    android:paddingBottom="@dimen/download_manager_section_title_padding_bottom"
-    android:paddingStart="@dimen/list_item_default_margin"
-    android:gravity="start|center_vertical"
-    android:textAppearance="@style/BlackHint2"
-    android:textAlignment="viewStart" />
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <View
+        android:id="@+id/divider"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/HorizontalDivider" />
+
+    <Space
+        android:id="@+id/top_space"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/download_manager_section_title_padding_top"
+        android:layout_below="@+id/divider" />
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/top_space"
+        android:paddingStart="@dimen/list_item_default_margin"
+        android:maxLines="1"
+        android:textAppearance="@style/BlackTitle1"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/date"
+        android:paddingStart="@dimen/list_item_default_margin"
+        android:textAppearance="@style/BlackHint2"
+        android:maxLines="1" />
+
+    <Space
+        android:id="@+id/bottom_space"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@+id/title" />
+
+    <include layout="@layout/list_menu_button"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true" />
+
+</RelativeLayout>

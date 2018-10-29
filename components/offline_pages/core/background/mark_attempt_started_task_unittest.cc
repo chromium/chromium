@@ -27,8 +27,7 @@ class MarkAttemptStartedTaskTest : public RequestQueueTaskTestBase {
   ~MarkAttemptStartedTaskTest() override {}
 
   void AddItemToStore();
-  void ChangeRequestsStateCallback(
-      std::unique_ptr<UpdateRequestsResult> result);
+  void ChangeRequestsStateCallback(UpdateRequestsResult result);
 
   UpdateRequestsResult* last_result() const { return result_.get(); }
 
@@ -49,8 +48,8 @@ void MarkAttemptStartedTaskTest::AddItemToStore() {
 }
 
 void MarkAttemptStartedTaskTest::ChangeRequestsStateCallback(
-    std::unique_ptr<UpdateRequestsResult> result) {
-  result_ = std::move(result);
+    UpdateRequestsResult result) {
+  result_ = std::make_unique<UpdateRequestsResult>(std::move(result));
 }
 
 void MarkAttemptStartedTaskTest::AddRequestDone(ItemActionStatus status) {

@@ -1,0 +1,11 @@
+<script>
+async function register(worker_url, scope) {
+  try {
+    await navigator.serviceWorker.register(worker_url);
+    await navigator.serviceWorker.ready;
+    return 'DONE';
+  } catch (error) {
+    return `${error}`;
+  }
+}
+</script>

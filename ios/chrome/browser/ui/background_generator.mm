@@ -10,7 +10,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#import "ios/chrome/browser/ui/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -48,14 +48,4 @@ UIImage* GetRadialGradient(CGRect backgroundRect,
   UIImage* background = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return background;
-}
-
-void InstallBackgroundInView(UIView* view) {
-  // TODO(crbug.com/800266): This function should be removed.
-  UIImageView* imageView = [[UIImageView alloc] initWithFrame:view.bounds];
-  imageView.image = [UIImage imageNamed:@"stack_view_background_noise"];
-  imageView.contentMode = UIViewContentModeScaleAspectFill;
-  imageView.autoresizingMask =
-      UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-  [view insertSubview:imageView atIndex:0];
 }

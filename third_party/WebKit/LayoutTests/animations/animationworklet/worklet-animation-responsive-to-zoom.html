@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<style>
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: #00ff00;
+}
+</style>
+
+<div id="target" class="box"></div>
+
+<script id="visual_update"  type="text/worklet">
+registerAnimator("simple_animator", class {
+  animate(currentTime, effect) {
+    effect.localTime = 500;
+  }
+});
+</script>
+
+<script src="resources/animation-worklet-tests.js"></script>
+<script>
+if (window.testRunner)
+  testRunner.waitUntilDone();
+
+runInAnimationWorklet(
+  document.getElementById('visual_update').textContent
+).then(()=>{
+  const effect = new KeyframeEffect(
+    document.getElementById('target'),
+    [{ transform: 'translateX(0)' }, { transform: 'translateX(200px)'}],
+    {duration: 1000});
+  const animation = new WorkletAnimation('simple_animator', effect);
+  animation.play();
+
+  if (window.testRunner) {
+    waitTwoAnimationFrames(_ => {
+      internals.setZoomFactor(2);
+      waitTwoAnimationFrames(_ => {
+        testRunner.notifyDone();
+      });
+    });
+  }
+});
+</script>

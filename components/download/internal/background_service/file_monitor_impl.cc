@@ -11,7 +11,7 @@
 #include "base/stl_util.h"
 #include "base/sys_info.h"
 #include "base/task_runner_util.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 
 namespace download {
 
@@ -24,7 +24,7 @@ bool CalculateDiskUtilization(const base::FilePath& file_dir,
                               int64_t& total_disk_space,
                               int64_t& free_disk_space,
                               int64_t& files_size) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   base::FileEnumerator file_enumerator(file_dir, false /* recursive */,
                                        base::FileEnumerator::FILES);
 
@@ -79,7 +79,7 @@ bool InitializeAndCreateDownloadDirectory(const base::FilePath& dir_path) {
 
 void GetFilesInDirectory(const base::FilePath& directory,
                          std::set<base::FilePath>& paths_out) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   base::FileEnumerator file_enumerator(directory, false /* recursive */,
                                        base::FileEnumerator::FILES);
 
@@ -91,7 +91,7 @@ void GetFilesInDirectory(const base::FilePath& directory,
 
 void DeleteFilesOnFileThread(const std::set<base::FilePath>& paths,
                              stats::FileCleanupReason reason) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   int num_delete_attempted = 0;
   int num_delete_failed = 0;
   int num_delete_by_external = 0;
@@ -116,7 +116,7 @@ void DeleteFilesOnFileThread(const std::set<base::FilePath>& paths,
 void DeleteUnknownFilesOnFileThread(
     const base::FilePath& directory,
     const std::set<base::FilePath>& download_file_paths) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   std::set<base::FilePath> files_in_dir;
   GetFilesInDirectory(directory, files_in_dir);
 
@@ -127,7 +127,7 @@ void DeleteUnknownFilesOnFileThread(
 }
 
 bool HardRecoverOnFileThread(const base::FilePath& directory) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   std::set<base::FilePath> files_in_dir;
   GetFilesInDirectory(directory, files_in_dir);
   DeleteFilesOnFileThread(files_in_dir,

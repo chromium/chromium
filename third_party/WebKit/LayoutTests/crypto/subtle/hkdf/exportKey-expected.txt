@@ -3,7 +3,6 @@ Test that HKDF does not support exportKey().
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Calling exportKey() on an HKDF key...
 error is: InvalidAccessError: key is not extractable
 PASS successfullyParsed is true

@@ -18,20 +18,35 @@ customElements.define("my-detail", class extends HTMLElement {
     if (!target.shadowRoot.querySelector(':scope > slot')) {
       const slot1 = document.createElement("slot");
       const slot2 = document.createElement("slot");
+      const child1 = document.createElement("span");
+      const child2 = document.createElement("span");
+      target.appendChild(child1);
+      target.appendChild(child2);
+      child1.innerHTML = "&rtrif; ";
+      child1.addEventListener('click', (e) => {
+        slot2.style.display = "block";
+        child2.innerHTML = "&dtrif; ";
+        child1.innerText = "";
+      });
+      child2.addEventListener('click', (e) => {
+        slot2.style.display = "none";
+        child1.innerHTML = "&rtrif; ";
+        child2.innerText = "";
+      });
       const shadowRoot = target.shadowRoot;
       shadowRoot.appendChild(slot1);
       shadowRoot.appendChild(slot2);
       slot1.style.display = "block";
-      slot1.style.backgroundColor = "red";
       const observer = new MutationObserver(function(mutations) {
         //Get the first <my-summary> element from <my-detail>'s direct children
         const my_summary = target.querySelector(':scope > my-summary');
         if (my_summary) {
-          slot1.assign([my_summary]);
+          slot1.assign([child1,child2,my_summary]);
         } else {
-          slot1.assign([]);
+          slot1.assign([child1,child2]);
         }
         slot2.assign(target.childNodes);
+        slot2.style.display = "none";
       });
     observer.observe(this, {childList: true});
     }

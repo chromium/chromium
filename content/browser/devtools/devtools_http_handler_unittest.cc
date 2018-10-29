@@ -17,8 +17,10 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
@@ -59,7 +61,7 @@ class DummyServerSocket : public net::ServerSocket {
 };
 
 void QuitFromHandlerThread(const base::Closure& quit_closure) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, quit_closure);
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, quit_closure);
 }
 
 class DummyServerSocketFactory : public DevToolsSocketFactory {
@@ -70,8 +72,7 @@ class DummyServerSocketFactory : public DevToolsSocketFactory {
         quit_closure_2_(quit_closure_2) {}
 
   ~DummyServerSocketFactory() override {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE, quit_closure_2_);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, quit_closure_2_);
   }
 
  protected:

@@ -8,7 +8,6 @@
 #include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
-#include "third_party/blink/public/web/devtools_agent.mojom.h"
 
 namespace content {
 
@@ -32,11 +31,6 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   void Reload() override;
   bool Close() override;
 
-  // DevToolsAgentHostImpl overrides.
-  bool AttachSession(DevToolsSession* session,
-                     TargetRegistry* registry) override;
-  void DetachSession(DevToolsSession* session) override;
-
   bool Matches(SharedWorkerHost* worker_host);
   void WorkerReadyForInspection();
   void WorkerRestarted(SharedWorkerHost* worker_host);
@@ -48,7 +42,12 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
 
  private:
   ~SharedWorkerDevToolsAgentHost() override;
-  const blink::mojom::DevToolsAgentAssociatedPtr& EnsureAgent();
+
+  // DevToolsAgentHostImpl overrides.
+  bool AttachSession(DevToolsSession* session,
+                     TargetRegistry* registry) override;
+  void DetachSession(DevToolsSession* session) override;
+  void UpdateRendererChannel(bool force) override;
 
   enum WorkerState {
     WORKER_NOT_READY,
@@ -57,7 +56,6 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   };
   WorkerState state_;
   SharedWorkerHost* worker_host_;
-  blink::mojom::DevToolsAgentAssociatedPtr agent_ptr_;
   base::UnguessableToken devtools_worker_token_;
   std::unique_ptr<SharedWorkerInstance> instance_;
 

@@ -13,11 +13,11 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js',
  * @constructor
  * @extends {ChromeVoxE2ETest}
  */
-function CvoxBrailleTableTest() {
+function ChromeVoxBrailleTableTest() {
   ChromeVoxE2ETest.call(this);
 }
 
-CvoxBrailleTableTest.prototype = {
+ChromeVoxBrailleTableTest.prototype = {
   __proto__: ChromeVoxE2ETest.prototype,
 };
 
@@ -25,7 +25,7 @@ CvoxBrailleTableTest.prototype = {
  * Tests that {@code getAll} can fetch and parse the tables file.
  * NOTE: This will need to be adjusted when more tables are added.
  */
-TEST_F('CvoxBrailleTableTest', 'testGetAllAndValidate', function() {
+TEST_F('ChromeVoxBrailleTableTest', 'testGetAllAndValidate', function() {
   cvox.BrailleTable.getAll(this.newCallback(function(tables) {
     expectEquals(68, tables.length);
     assertNotNullNorUndefined(
@@ -40,7 +40,7 @@ TEST_F('CvoxBrailleTableTest', 'testGetAllAndValidate', function() {
 });
 
 /** Tests getDisplayName for some specific representative cases. */
-TEST_F('CvoxBrailleTableTest', 'testGetDisplayName', function() {
+TEST_F('ChromeVoxBrailleTableTest', 'testGetDisplayName', function() {
   cvox.BrailleTable.getAll(this.newCallback(function(tables) {
     var table = cvox.BrailleTable.forId(tables, 'bg-comp8');
     expectEquals('Bulgarian', cvox.BrailleTable.getDisplayName(table));
@@ -55,7 +55,7 @@ TEST_F('CvoxBrailleTableTest', 'testGetDisplayName', function() {
 /**
  * Tests the getUncontracted function.
  */
-TEST_F('CvoxBrailleTableTest', 'testGetUncontracted', function() {
+TEST_F('ChromeVoxBrailleTableTest', 'testGetUncontracted', function() {
   cvox.BrailleTable.getAll(this.newCallback(function(tables) {
     function expectUncontracted(uncontractedId, idToCheck) {
       var checkedTable = cvox.BrailleTable.forId(tables, idToCheck);

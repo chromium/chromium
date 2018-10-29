@@ -898,9 +898,9 @@ TEST_F(SSLClientSocketPoolTest, Tag) {
   scoped_refptr<TransportSocketParams> tcp_params(new TransportSocketParams(
       test_server.host_port_pair(), false, OnHostResolutionCallback(),
       TransportSocketParams::COMBINE_CONNECT_AND_WRITE_DEFAULT));
-  scoped_refptr<SSLSocketParams> params(
-      new SSLSocketParams(tcp_params, NULL, NULL, test_server.host_port_pair(),
-                          ssl_config_, PRIVACY_MODE_DISABLED, 0));
+  scoped_refptr<SSLSocketParams> params(new SSLSocketParams(
+      tcp_params, NULL, NULL, test_server.host_port_pair(), ssl_config_,
+      PRIVACY_MODE_DISABLED, false /* ignore_certificate_errors */));
 
   // Test socket is tagged before connected.
   uint64_t old_traffic = GetTaggedBytes(tag_val1);
@@ -968,9 +968,9 @@ TEST_F(SSLClientSocketPoolTest, TagTwoSockets) {
   scoped_refptr<TransportSocketParams> tcp_params(new TransportSocketParams(
       test_server.host_port_pair(), false, OnHostResolutionCallback(),
       TransportSocketParams::COMBINE_CONNECT_AND_WRITE_DEFAULT));
-  scoped_refptr<SSLSocketParams> params(
-      new SSLSocketParams(tcp_params, NULL, NULL, test_server.host_port_pair(),
-                          ssl_config_, PRIVACY_MODE_DISABLED, 0));
+  scoped_refptr<SSLSocketParams> params(new SSLSocketParams(
+      tcp_params, NULL, NULL, test_server.host_port_pair(), ssl_config_,
+      PRIVACY_MODE_DISABLED, false /* ignore_certificate_errors */));
 
   // Test connect jobs that are orphaned and then adopted, appropriately apply
   // new tag. Request socket with |tag1|.
@@ -1032,9 +1032,9 @@ TEST_F(SSLClientSocketPoolTest, TagTwoSocketsFullPool) {
   scoped_refptr<TransportSocketParams> tcp_params(new TransportSocketParams(
       test_server.host_port_pair(), false, OnHostResolutionCallback(),
       TransportSocketParams::COMBINE_CONNECT_AND_WRITE_DEFAULT));
-  scoped_refptr<SSLSocketParams> params(
-      new SSLSocketParams(tcp_params, NULL, NULL, test_server.host_port_pair(),
-                          ssl_config_, PRIVACY_MODE_DISABLED, 0));
+  scoped_refptr<SSLSocketParams> params(new SSLSocketParams(
+      tcp_params, NULL, NULL, test_server.host_port_pair(), ssl_config_,
+      PRIVACY_MODE_DISABLED, false /* ignore_certificate_errors */));
 
   // Test that sockets paused by a full underlying socket pool are properly
   // connected and tagged when underlying pool is freed up.

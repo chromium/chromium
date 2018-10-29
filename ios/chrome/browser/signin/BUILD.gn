@@ -105,10 +105,14 @@ source_set("test_support") {
     "authentication_service_delegate_fake.mm",
     "authentication_service_fake.h",
     "authentication_service_fake.mm",
+    "fake_gaia_cookie_manager_service_builder.cc",
+    "fake_gaia_cookie_manager_service_builder.h",
     "fake_oauth2_token_service_builder.h",
     "fake_oauth2_token_service_builder.mm",
     "fake_signin_manager_builder.cc",
     "fake_signin_manager_builder.h",
+    "identity_test_environment_chrome_browser_state_adaptor.cc",
+    "identity_test_environment_chrome_browser_state_adaptor.h",
   ]
   deps = [
     ":signin",
@@ -116,9 +120,11 @@ source_set("test_support") {
     "//components/signin/core/browser:test_support",
     "//components/signin/ios/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/sync",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
+    "//services/identity/public/cpp:test_support",
   ]
 }
 

@@ -748,8 +748,7 @@ base::Optional<URLPattern> URLPattern::CreateIntersection(
 
 bool URLPattern::MatchesAnyScheme(
     const std::vector<std::string>& schemes) const {
-  for (std::vector<std::string>::const_iterator i = schemes.begin();
-       i != schemes.end(); ++i) {
+  for (auto i = schemes.cbegin(); i != schemes.cend(); ++i) {
     if (MatchesScheme(*i))
       return true;
   }
@@ -759,8 +758,7 @@ bool URLPattern::MatchesAnyScheme(
 
 bool URLPattern::MatchesAllSchemes(
     const std::vector<std::string>& schemes) const {
-  for (std::vector<std::string>::const_iterator i = schemes.begin();
-       i != schemes.end(); ++i) {
+  for (auto i = schemes.cbegin(); i != schemes.cend(); ++i) {
     if (!MatchesScheme(*i))
       return false;
   }

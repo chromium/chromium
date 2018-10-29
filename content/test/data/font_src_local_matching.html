@@ -84,12 +84,25 @@ function getFontsWithTestCharsForOS() {
       ["muktinarrow", "0"],
       ["Tinos-Regular", "0"]
     ];
-  }
+  } else if (navigator.userAgent.indexOf("Macintosh") !== -1) {
+    return [
+      [ "AmericanTypewriter-CondensedLight", "0" ],
+      [ "ArialNarrow-BoldItalic", "0" ],
+      [ "Baskerville-SemiBoldItalic", "0" ],
+      [ "DevanagariMT", "0" ],
+      [ "DINAlternate-Bold", "0" ],
+      [ "GillSans-LightItalic", "0" ],
+      [ "IowanOldStyle-Titling", "0" ],
+      [ "MalayalamSangamMN", "0" ],
+      [ "HiraMaruPro-W4", "0" ],
+      [ "HiraKakuStdN-W8", "0" ],
+    ]
+  };
   return [];
 }
 
 function stripSpaces(fontName) {
-    return fontName.replace(/\s+/g, '');
+  return fontName.replace(/\s+/g, '');
 }
 
 function addTestNodes() {

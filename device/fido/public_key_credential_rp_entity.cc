@@ -13,7 +13,7 @@ namespace device {
 
 // static
 base::Optional<PublicKeyCredentialRpEntity>
-PublicKeyCredentialRpEntity::CreateFromCBORValue(const cbor::CBORValue& cbor) {
+PublicKeyCredentialRpEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   if (!cbor.is_map() || cbor.GetMap().size() > 3)
     return base::nullopt;
 
@@ -31,9 +31,9 @@ PublicKeyCredentialRpEntity::CreateFromCBORValue(const cbor::CBORValue& cbor) {
   if (!is_rp_map_format_correct)
     return base::nullopt;
 
-  const auto& id_it = rp_map.find(cbor::CBORValue(kEntityIdMapKey));
-  const auto& name_it = rp_map.find(cbor::CBORValue(kEntityNameMapKey));
-  const auto& icon_it = rp_map.find(cbor::CBORValue(kIconUrlMapKey));
+  const auto& id_it = rp_map.find(cbor::Value(kEntityIdMapKey));
+  const auto& name_it = rp_map.find(cbor::Value(kEntityNameMapKey));
+  const auto& icon_it = rp_map.find(cbor::Value(kIconUrlMapKey));
   if (id_it == rp_map.end())
     return base::nullopt;
   PublicKeyCredentialRpEntity rp(id_it->second.GetString());
@@ -76,8 +76,8 @@ PublicKeyCredentialRpEntity& PublicKeyCredentialRpEntity::SetRpIconUrl(
   return *this;
 }
 
-cbor::CBORValue PublicKeyCredentialRpEntity::ConvertToCBOR() const {
-  cbor::CBORValue::MapValue rp_map;
+cbor::Value PublicKeyCredentialRpEntity::ConvertToCBOR() const {
+  cbor::Value::MapValue rp_map;
   rp_map.emplace(kEntityIdMapKey, rp_id_);
   if (rp_name_)
     rp_map.emplace(kEntityNameMapKey, *rp_name_);
@@ -85,7 +85,7 @@ cbor::CBORValue PublicKeyCredentialRpEntity::ConvertToCBOR() const {
   if (rp_icon_url_)
     rp_map.emplace(kIconUrlMapKey, rp_icon_url_->spec());
 
-  return cbor::CBORValue(std::move(rp_map));
+  return cbor::Value(std::move(rp_map));
 }
 
 }  // namespace device

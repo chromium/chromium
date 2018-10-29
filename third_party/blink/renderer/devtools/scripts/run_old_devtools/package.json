@@ -1,0 +1,10 @@
+{
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "progress": "^2.0.1",
+    "puppeteer": "^1.9.0"
+  }
+}

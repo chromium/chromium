@@ -100,6 +100,9 @@ const char kFrenchPageWithLinkPath[] = "/frenchpagewithlink/";
 const char kTranslateScriptPath[] = "/translatescript/";
 const char kTranslateScript[] = "Fake Translate Script";
 
+// Body text for /languagepath/.
+const char kLanguagePathText[] = "Some text here.";
+
 // Builds a HTML document with a French text and the given |html| and |meta|
 // tags.
 std::string GetFrenchPageHtml(const std::string& html_tag,
@@ -230,7 +233,8 @@ void TestResponseProvider::GetLanguageResponse(
         "'>"
         "</head>";
   }
-  *response_body += "<body>Some text here.</body></html>";
+  *response_body +=
+      base::StringPrintf("<html><body>%s</body></html>", kLanguagePathText);
 }
 
 }  // namespace
@@ -514,6 +518,7 @@ using translate::LanguageDetectionController;
   GURL someLanguageURL = web::test::HttpServer::MakeUrl(kSomeLanguageUrl);
   [ChromeEarlGrey loadURL:URL];
   GREYAssert(TapWebViewElementWithId("click"), @"Failed to tap \"click\"");
+  [ChromeEarlGrey waitForWebViewContainingText:kLanguagePathText];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           someLanguageURL.GetContent())]
       assertWithMatcher:grey_notNil()];

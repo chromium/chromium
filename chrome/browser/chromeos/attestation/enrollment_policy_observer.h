@@ -24,8 +24,6 @@ class CryptohomeClient;
 
 namespace attestation {
 
-class AttestationFlow;
-
 // A class which observes policy changes and triggers uploading identification
 // for enrollment if necessary.
 class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
@@ -39,8 +37,7 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
   // A constructor which accepts custom instances useful for testing.
   EnrollmentPolicyObserver(policy::CloudPolicyClient* policy_client,
                            DeviceSettingsService* device_settings_service,
-                           CryptohomeClient* cryptohome_client,
-                           AttestationFlow* attestation_flow);
+                           CryptohomeClient* cryptohome_client);
 
   ~EnrollmentPolicyObserver() override;
 
@@ -56,9 +53,6 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
   // Checks enrollment setting and starts any necessary work.
   void Start();
 
-  // Gets an enrollment certificate.
-  void GetEnrollmentCertificate();
-
   // Gets an enrollment identifier directly.
   void GetEnrollmentId();
 
@@ -69,30 +63,18 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
   void RescheduleGetEnrollmentId();
 
   // Called when an enrollment identifier upload operation completes.
-  // On success, |status| will be true. The string |enrollment_id|
-  // is the identifier that was uploaded.
-  void OnUploadEnrollmentIdComplete(const std::string& enrollment_id,
-                                    bool status);
-
-  // Handles a failure to get a certificate.
-  void HandleGetCertificateFailure(AttestationStatus status);
-
-  // Uploads an enrollment certificate to the policy server.
-  void UploadCertificate(const std::string& pem_certificate_chain);
-
-  // Called when a certificate or enrollment identifier upload operation
-  // completes. On success, |status| will be true. The string |what| is
-  // used in logging.
-  void OnUploadComplete(const std::string& what, bool status);
+  // On success, |status| will be true. The string |enrollment_id| contains
+  // the enrollment identifier that was uploaded.
+  void OnUploadComplete(const std::string& enrollment_id, bool status);
 
   DeviceSettingsService* device_settings_service_;
   policy::CloudPolicyClient* policy_client_;
   CryptohomeClient* cryptohome_client_;
-  AttestationFlow* attestation_flow_;
-  std::unique_ptr<AttestationFlow> default_attestation_flow_;
   int num_retries_;
   int retry_limit_;
   int retry_delay_;
+  // Whether we are requesting an EID right now.
+  bool request_in_flight_ = false;
   // Used to remember we uploaded an empty identifier this session for
   // devices that can't obtain the identifier until they are powerwashed or
   // updated and rebooted (see http://crbug.com/867724).

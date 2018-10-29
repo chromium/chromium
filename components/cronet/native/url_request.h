@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
@@ -14,6 +15,10 @@
 #include "components/cronet/cronet_url_request.h"
 #include "components/cronet/cronet_url_request_context.h"
 #include "components/cronet/native/generated/cronet.idl_impl_interface.h"
+
+namespace net {
+enum LoadState;
+}  // namespace net
 
 namespace cronet {
 
@@ -66,7 +71,7 @@ class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
   void PostTaskToExecutor(base::OnceClosure task);
 
   // Helper methods to invoke application |callback_|.
-  void InvokeCallbackOnRedirectReceived();
+  void InvokeCallbackOnRedirectReceived(const std::string& new_location);
   void InvokeCallbackOnResponseStarted();
   void InvokeCallbackOnReadCompleted(
       std::unique_ptr<Cronet_Buffer> cronet_buffer,
@@ -75,14 +80,24 @@ class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
   void InvokeCallbackOnFailed();
   void InvokeCallbackOnCanceled();
 
+  // Invoke all members of |status_listeners_|. Should be called prior to
+  // invoking a final callback. Once a final callback has been called, |this|
+  // and |executor_| may be deleted and so the callbacks cannot be issued.
+  void InvokeAllStatusListeners();
+
   // Synchronize access to |request_| and other objects below from different
   // threads.
   base::Lock lock_;
+  // NetworkTask object lives on the network thread. Owned by |request_|.
+  // Outlives this.
+  NetworkTasks* network_tasks_ = nullptr;
   // Cronet URLRequest used for this operation.
   CronetURLRequest* request_ = nullptr;
   bool started_ = false;
   bool waiting_on_redirect_ = false;
   bool waiting_on_read_ = false;
+  // Set of status_listeners_ that have not yet been called back.
+  std::unordered_multiset<Cronet_UrlRequestStatusListenerPtr> status_listeners_;
 
   // Response info updated by callback with number of bytes received. May be
   // nullptr, if no response has been received.
@@ -100,7 +115,7 @@ class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
 
   // Cronet Engine used to run network operations. Not owned, accessed from
   // client thread. Must outlive this request.
-  Cronet_EngineImpl* engine_;
+  Cronet_EngineImpl* engine_ = nullptr;
 
 #if DCHECK_IS_ON()
   // Event indicating Executor is properly destroying Runnables.

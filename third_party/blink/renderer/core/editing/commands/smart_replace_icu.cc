@@ -43,8 +43,9 @@ static void AddAllCodePoints(USet* smart_set, const String& string) {
     uset_add(smart_set, string[i]);
 }
 
-// This is mostly a port of the code in WebCore/editing/SmartReplaceCF.cpp
-// except we use icu in place of CoreFoundations character classes.
+// This is mostly a port of the code in
+// core/editing/commands/smart_replace_cf.cc except we use icu in place of
+// CoreFoundations character classes.
 static USet* GetSmartSet(bool is_previous_character) {
   static USet* pre_smart_set = nullptr;
   static USet* post_smart_set = nullptr;

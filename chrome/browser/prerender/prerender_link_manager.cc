@@ -212,9 +212,9 @@ void PrerenderLinkManager::OnAbandonPrerender(int child_id, int prerender_id) {
 }
 
 void PrerenderLinkManager::OnChannelClosing(int child_id) {
-  std::list<LinkPrerender>::iterator next = prerenders_.begin();
+  auto next = prerenders_.begin();
   while (next != prerenders_.end()) {
-    std::list<LinkPrerender>::iterator it = next;
+    auto it = next;
     ++next;
 
     if (child_id != it->launcher_child_id)
@@ -281,8 +281,7 @@ void PrerenderLinkManager::StartPrerenders() {
   // Scan the list, counting how many prerenders have handles (and so were added
   // to the PrerenderManager). The count is done for the system as a whole, and
   // also per launcher.
-  for (std::list<LinkPrerender>::iterator i = prerenders_.begin();
-       i != prerenders_.end(); ++i) {
+  for (auto i = prerenders_.begin(); i != prerenders_.end(); ++i) {
     LinkPrerender& prerender = *i;
     // Skip prerenders launched by a prerender.
     if (prerender.deferred_launcher)
@@ -416,8 +415,7 @@ PrerenderLinkManager::FindByPrerenderHandle(PrerenderHandle* prerender_handle) {
 }
 
 void PrerenderLinkManager::RemovePrerender(LinkPrerender* prerender) {
-  for (std::list<LinkPrerender>::iterator i = prerenders_.begin();
-       i != prerenders_.end(); ++i) {
+  for (auto i = prerenders_.begin(); i != prerenders_.end(); ++i) {
     LinkPrerender& current_prerender = *i;
     if (&current_prerender == prerender) {
       std::unique_ptr<PrerenderHandle> own_handle(prerender->handle);
@@ -430,8 +428,7 @@ void PrerenderLinkManager::RemovePrerender(LinkPrerender* prerender) {
 }
 
 void PrerenderLinkManager::CancelPrerender(LinkPrerender* prerender) {
-  for (std::list<LinkPrerender>::iterator i = prerenders_.begin();
-       i != prerenders_.end(); ++i) {
+  for (auto i = prerenders_.begin(); i != prerenders_.end(); ++i) {
     LinkPrerender& current_prerender = *i;
     if (&current_prerender == prerender) {
       std::unique_ptr<PrerenderHandle> own_handle(prerender->handle);
@@ -457,8 +454,7 @@ void PrerenderLinkManager::StartPendingPrerendersForLauncher(
 void PrerenderLinkManager::CancelPendingPrerendersForLauncher(
     PrerenderContents* launcher) {
   // Remove all pending prerenders for this launcher.
-  for (std::list<LinkPrerender>::iterator i = prerenders_.begin();
-       i != prerenders_.end();) {
+  for (auto i = prerenders_.begin(); i != prerenders_.end();) {
     if (i->deferred_launcher == launcher) {
       DCHECK(!i->handle);
       i = prerenders_.erase(i);

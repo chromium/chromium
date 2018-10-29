@@ -727,4 +727,46 @@ TEST(SecurityStateTest, WarningAndDangerousOnSensitiveFields) {
   }
 }
 
+// Tests that the billing status is set, and it overrides valid HTTPS.
+TEST(SecurityStateTest, BillingOverridesValidHTTPS) {
+  TestSecurityStateHelper helper;
+  // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 from
+  // http://www.iana.org/assignments/tls-parameters/tls-parameters.xml#tls-parameters-4
+  const uint16_t ciphersuite = 0xc02f;
+  helper.set_connection_status(net::SSL_CONNECTION_VERSION_TLS1_2
+                               << net::SSL_CONNECTION_VERSION_SHIFT);
+  helper.SetCipherSuite(ciphersuite);
+
+  SecurityInfo security_info;
+  helper.GetSecurityInfo(&security_info);
+  EXPECT_EQ(MALICIOUS_CONTENT_STATUS_NONE,
+            security_info.malicious_content_status);
+
+  helper.set_malicious_content_status(MALICIOUS_CONTENT_STATUS_BILLING);
+  helper.GetSecurityInfo(&security_info);
+
+  EXPECT_EQ(MALICIOUS_CONTENT_STATUS_BILLING,
+            security_info.malicious_content_status);
+  EXPECT_EQ(DANGEROUS, security_info.security_level);
+}
+
+// Tests that the billing status is set, and it overrides invalid HTTPS.
+TEST(SecurityStateTest, BillingOverridesHTTPWarning) {
+  TestSecurityStateHelper helper;
+  helper.SetUrl(GURL(kHttpUrl));
+
+  SecurityInfo security_info;
+  helper.GetSecurityInfo(&security_info);
+  // Expect to see a warning for HTTP first.
+  EXPECT_EQ(security_state::HTTP_SHOW_WARNING, security_info.security_level);
+
+  // Now mark the URL as matching the billing list.
+  helper.set_malicious_content_status(MALICIOUS_CONTENT_STATUS_BILLING);
+  helper.GetSecurityInfo(&security_info);
+  // Expect to see a warning for billing now.
+  EXPECT_EQ(MALICIOUS_CONTENT_STATUS_BILLING,
+            security_info.malicious_content_status);
+  EXPECT_EQ(DANGEROUS, security_info.security_level);
+}
+
 }  // namespace security_state

@@ -27,12 +27,14 @@ IcuEnvironment* env = new IcuEnvironment();
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   DataAccessor accessor(data, size);
-  FormParsingMode mode = accessor.ConsumeBit() ? FormParsingMode::FILLING
-                                               : FormParsingMode::SAVING;
+  FormDataParser::Mode mode = accessor.ConsumeBit()
+                                  ? FormDataParser::Mode::kFilling
+                                  : FormDataParser::Mode::kSaving;
   autofill::FormData form_data = GenerateWithDataAccessor(&accessor);
 
+  FormDataParser parser;
   std::unique_ptr<autofill::PasswordForm> result =
-      ParseFormData(form_data, nullptr, mode);
+      parser.Parse(form_data, mode);
   if (result) {
     // Create a copy of the result -- running the copy-constructor might
     // discover some invalid data in |result|.

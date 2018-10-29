@@ -116,8 +116,7 @@ cr.define('chrome', function() {
       var result = this.networkStates_.find(function(state) {
         return state.GUID == guid;
       });
-      // TODO(stevenjb): Convert state to ManagedProperties.
-      callback(result);
+      callback(CrOncTest.convertToManagedProperties(result));
       this.methodCalled('getManagedProperties');
     },
 

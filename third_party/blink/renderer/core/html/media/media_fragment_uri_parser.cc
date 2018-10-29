@@ -89,20 +89,20 @@ void MediaFragmentURIParser::ParseFragments() {
   if (fragment_string.IsEmpty())
     return;
 
-  unsigned offset = 0;
-  unsigned end = fragment_string.length();
+  wtf_size_t offset = 0;
+  wtf_size_t end = fragment_string.length();
   while (offset < end) {
     // http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#processing-name-value-components
     // 1. Parse the octet string according to the namevalues syntax, yielding a
     //    list of name-value pairs, where name and value are both octet string.
     //    In accordance with RFC 3986, the name and value components must be
     //    parsed and separated before percent-encoded octets are decoded.
-    size_t parameter_start = offset;
-    size_t parameter_end = fragment_string.find('&', offset);
+    wtf_size_t parameter_start = offset;
+    wtf_size_t parameter_end = fragment_string.find('&', offset);
     if (parameter_end == kNotFound)
       parameter_end = end;
 
-    size_t equal_offset = fragment_string.find('=', offset);
+    wtf_size_t equal_offset = fragment_string.find('=', offset);
     if (equal_offset == kNotFound || equal_offset > parameter_end) {
       offset = parameter_end + 1;
       continue;

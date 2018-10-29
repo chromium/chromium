@@ -221,6 +221,8 @@ message VideoDecoderConfig {
     PIXEL_FORMAT_YUV444P12 = 24;
     PIXEL_FORMAT_Y8 = 25 [deprecated = true];
     PIXEL_FORMAT_Y16 = 26;
+    PIXEL_FORMAT_ABGR = 27;
+    PIXEL_FORMAT_XBGR = 28;
   };
 
   // Proto version of media::ColorSpace.

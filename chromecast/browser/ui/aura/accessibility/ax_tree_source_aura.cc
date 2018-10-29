@@ -6,137 +6,46 @@
 
 #include <stddef.h>
 
-#include <vector>
-
 #include "chromecast/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/accessibility/ax_view_obj_wrapper.h"
 
-#if defined(TOOLKIT_VIEWS)
-#include "ui/views/controls/webview/webview.h"  // nogncheck
-#endif
+AXTreeSourceAura::AXTreeSourceAura()
+    : desktop_root_(std::make_unique<AXRootObjWrapper>(
+          AutomationManagerAura::GetInstance())) {}
 
-using views::AXAuraObjCache;
-using views::AXAuraObjWrapper;
-
-AXTreeSourceAura::AXTreeSourceAura() {
-  root_.reset(new AXRootObjWrapper());
-}
-
-AXTreeSourceAura::~AXTreeSourceAura() {
-  root_.reset();
-}
-
-bool AXTreeSourceAura::HandleAccessibleAction(const ui::AXActionData& action) {
-  int id = action.target_node_id;
-
-  // In Views, we only support setting the selection within a single node,
-  // not across multiple nodes like on the web.
-  if (action.action == ax::mojom::Action::kSetSelection) {
-    if (action.anchor_node_id != action.focus_node_id) {
-      NOTREACHED();
-      return false;
-    }
-    id = action.anchor_node_id;
-  }
-
-  AXAuraObjWrapper* obj = AXAuraObjCache::GetInstance()->Get(id);
-  if (obj)
-    return obj->HandleAccessibleAction(action);
-
-  return false;
-}
+AXTreeSourceAura::~AXTreeSourceAura() = default;
 
 bool AXTreeSourceAura::GetTreeData(ui::AXTreeData* tree_data) const {
-  tree_data->tree_id = 0;
-  tree_data->loaded = true;
-  tree_data->loading_progress = 1.0;
-  AXAuraObjWrapper* focus = AXAuraObjCache::GetInstance()->GetFocus();
+  tree_data->tree_id = ui::DesktopAXTreeID();
+  AXTreeSourceViews::GetTreeData(tree_data);
 
   // TODO(b/111911092): AXTreeData::focus_id represents the node within the
   // tree with 'keyboard focus'.  We have no keyboard focus on chromecast so
   // this is being left as -1. This prevents getFocus calls from the chromevox
   // background page from finding any window in focus and interferes with
   // gesture event processing.  Since we only ever have one top level window
-  // and one ax tree, temporarily returning 1 here to indicate the root node is
-  // always the focused window. A better solution would be to fix the focus
+  // and one ax tree, temporarily returning 1 here to indicate the root node
+  // is always the focused window. A better solution would be to fix the focus
   // issues on chromecast which relies on a) the root window to be focused via
   // Focus() and 2) a native widget being registered with the root window so
   // the above GetFocus call will work.  When this code is re-unified with
   // chrome, this will need to be a special case for chromecast unless the
   // better solution described above is implemented.
-  if (focus)
-    tree_data->focus_id = focus->GetUniqueId().Get();
-  else
-    tree_data->focus_id = 1; // root node
-
+  tree_data->focus_id = 1;
   return true;
 }
 
-AXAuraObjWrapper* AXTreeSourceAura::GetRoot() const {
-  return root_.get();
+views::AXAuraObjWrapper* AXTreeSourceAura::GetRoot() const {
+  return desktop_root_.get();
 }
 
-AXAuraObjWrapper* AXTreeSourceAura::GetFromId(int32_t id) const {
-  if (id == root_->GetUniqueId().Get())
-    return root_.get();
-  return AXAuraObjCache::GetInstance()->Get(id);
-}
-
-int32_t AXTreeSourceAura::GetId(AXAuraObjWrapper* node) const {
-  return node->GetUniqueId().Get();
-}
-
-void AXTreeSourceAura::GetChildren(
-    AXAuraObjWrapper* node,
-    std::vector<AXAuraObjWrapper*>* out_children) const {
-  node->GetChildren(out_children);
-}
-
-AXAuraObjWrapper* AXTreeSourceAura::GetParent(AXAuraObjWrapper* node) const {
-  AXAuraObjWrapper* parent = node->GetParent();
-  if (!parent && node->GetUniqueId() != root_->GetUniqueId())
-    parent = root_.get();
-  return parent;
-}
-
-bool AXTreeSourceAura::IsValid(AXAuraObjWrapper* node) const {
-  return node != nullptr;
-}
-
-bool AXTreeSourceAura::IsEqual(AXAuraObjWrapper* node1,
-                               AXAuraObjWrapper* node2) const {
-  if (!node1 || !node2)
-    return false;
-
-  return node1->GetUniqueId() == node2->GetUniqueId();
-}
-
-AXAuraObjWrapper* AXTreeSourceAura::GetNull() const {
-  return NULL;
-}
-
-void AXTreeSourceAura::SerializeNode(AXAuraObjWrapper* node,
+void AXTreeSourceAura::SerializeNode(views::AXAuraObjWrapper* node,
                                      ui::AXNodeData* out_data) const {
-  node->Serialize(out_data);
-
-  // Convert the global coordinates reported by each AXAuraObjWrapper
-  // into parent-relative coordinates to be used in the accessibility
-  // tree. That way when any Window, Widget, or View moves (and fires
-  // a location changed event), its descendants all move relative to
-  // it by default.
-  AXAuraObjWrapper* parent = node->GetParent();
-  if (parent) {
-    ui::AXNodeData parent_data;
-    parent->Serialize(&parent_data);
-    out_data->location.Offset(-parent_data.location.OffsetFromOrigin());
-    out_data->offset_container_id = parent->GetUniqueId().Get();
-  }
+  AXTreeSourceViews::SerializeNode(node, out_data);
 
   if (out_data->role == ax::mojom::Role::kWebView) {
     // TODO(rmrossi) : Figure out whether this will ever be required
@@ -149,18 +58,3 @@ void AXTreeSourceAura::SerializeNode(AXAuraObjWrapper* node,
   }
 }
 
-std::string AXTreeSourceAura::ToString(AXAuraObjWrapper* root,
-                                       std::string prefix) {
-  ui::AXNodeData data;
-  root->Serialize(&data);
-  std::string output = prefix + data.ToString() + '\n';
-
-  std::vector<AXAuraObjWrapper*> children;
-  root->GetChildren(&children);
-
-  prefix += prefix[0];
-  for (size_t i = 0; i < children.size(); ++i)
-    output += ToString(children[i], prefix);
-
-  return output;
-}

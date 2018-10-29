@@ -90,19 +90,22 @@
           id="files-to-remove-list"
           hidden="[[!hasFilesToShow_]]"
           title="$i18n{chromeCleanupDetailsFilesAndPrograms}"
-          items-to-show="[[scannerResults_.files]]">
+          items-to-show="[[
+              getListEntriesFromFilePaths_(scannerResults_.files)]]">
       </items-to-remove-list>
       <items-to-remove-list
           id="registry-keys-list"
           hidden="[[!hasRegistryKeysToShow_]]"
           title="$i18n{chromeCleanupDetailsRegistryEntries}"
-          items-to-show="[[scannerResults_.registryKeys]]">
+          items-to-show="[[
+              getListEntriesFromStrings_(scannerResults_.registryKeys)]]">
       </items-to-remove-list>
       <items-to-remove-list
           id="extensions-list"
           hidden="[[!hasExtensionsToShow_]]"
           title="$i18n{chromeCleanupDetailsExtensions}"
-          items-to-show="[[scannerResults_.extensions]]">
+          items-to-show="[[
+              getListEntriesFromStrings_(scannerResults_.extensions)]]">
       </items-to-remove-list>
       <div class="settings-box continuation">
         <div class="secondary">

@@ -18,7 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -93,6 +93,7 @@ int Clamp(int value, int min, int max) {
 std::vector<mojom::SerialDeviceInfoPtr> GetDevicesNew() {
   std::vector<mojom::SerialDeviceInfoPtr> devices;
 
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   // Make a device interface query to find all serial devices.
   HDEVINFO dev_info =
       SetupDiGetClassDevs(&GUID_DEVCLASS_PORTS, 0, 0, DIGCF_PRESENT);
@@ -143,6 +144,7 @@ std::vector<mojom::SerialDeviceInfoPtr> GetDevicesNew() {
 // enumerating serial devices (searching the registry). This old method gives
 // less information about the devices than the new method.
 std::vector<mojom::SerialDeviceInfoPtr> GetDevicesOld() {
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   base::win::RegistryValueIterator iter_key(
       HKEY_LOCAL_MACHINE, L"HARDWARE\\DEVICEMAP\\SERIALCOMM\\");
   std::vector<mojom::SerialDeviceInfoPtr> devices;
@@ -168,8 +170,6 @@ SerialDeviceEnumeratorWin::~SerialDeviceEnumeratorWin() {}
 
 std::vector<mojom::SerialDeviceInfoPtr>
 SerialDeviceEnumeratorWin::GetDevices() {
-  base::AssertBlockingAllowed();
-
   std::vector<mojom::SerialDeviceInfoPtr> devices = GetDevicesNew();
   std::vector<mojom::SerialDeviceInfoPtr> old_devices = GetDevicesOld();
 

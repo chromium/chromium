@@ -7,6 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+#include <utility>
+
 #include "base/atomic_sequence_num.h"
 #include "base/command_line.h"
 #include "base/pickle.h"
@@ -22,8 +25,7 @@ base::AtomicSequenceNumber g_user_script_id_generator;
 
 bool UrlMatchesGlobs(const std::vector<std::string>* globs,
                      const GURL& url) {
-  for (std::vector<std::string>::const_iterator glob = globs->begin();
-       glob != globs->end(); ++glob) {
+  for (auto glob = globs->cbegin(); glob != globs->cend(); ++glob) {
     if (base::MatchPattern(url.spec(), *glob))
       return true;
   }
@@ -47,10 +49,9 @@ enum {
 // static
 const char UserScript::kFileExtension[] = ".user.js";
 
-
 // static
 int UserScript::GenerateUserScriptID() {
-   return g_user_script_id_generator.GetNext();
+  return g_user_script_id_generator.GetNext();
 }
 
 bool UserScript::IsURLUserScript(const GURL& url,
@@ -168,6 +169,14 @@ bool UserScript::MatchesURL(const GURL& url) const {
   return true;
 }
 
+bool UserScript::MatchesDocument(const GURL& effective_document_url,
+                                 bool is_subframe) const {
+  if (is_subframe && !match_all_frames())
+    return false;
+
+  return MatchesURL(effective_document_url);
+}
+
 void UserScript::File::Pickle(base::Pickle* pickle) const {
   pickle->WriteString(url_.spec());
   // Do not write path. It's not needed in the renderer.
@@ -204,8 +213,7 @@ void UserScript::Pickle(base::Pickle* pickle) const {
 void UserScript::PickleGlobs(base::Pickle* pickle,
                              const std::vector<std::string>& globs) const {
   pickle->WriteUInt32(globs.size());
-  for (std::vector<std::string>::const_iterator glob = globs.begin();
-       glob != globs.end(); ++glob) {
+  for (auto glob = globs.cbegin(); glob != globs.cend(); ++glob) {
     pickle->WriteString(*glob);
   }
 }
@@ -219,8 +227,8 @@ void UserScript::PickleHostID(base::Pickle* pickle,
 void UserScript::PickleURLPatternSet(base::Pickle* pickle,
                                      const URLPatternSet& pattern_list) const {
   pickle->WriteUInt32(pattern_list.patterns().size());
-  for (URLPatternSet::const_iterator pattern = pattern_list.begin();
-       pattern != pattern_list.end(); ++pattern) {
+  for (auto pattern = pattern_list.begin(); pattern != pattern_list.end();
+       ++pattern) {
     pickle->WriteInt(pattern->valid_schemes());
     pickle->WriteString(pattern->GetAsString());
   }

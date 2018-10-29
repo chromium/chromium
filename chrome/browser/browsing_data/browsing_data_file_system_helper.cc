@@ -11,7 +11,9 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "storage/browser/fileapi/file_system_context.h"
@@ -120,9 +122,10 @@ void BrowsingDataFileSystemHelperImpl::FetchFileSystemInfoInFileThread(
         continue;  // Non-websafe state is not considered browsing data.
       int64_t usage = quota_util->GetOriginUsageOnFileTaskRunner(
           filesystem_context_.get(), current, type);
-      OriginInfoMap::iterator inserted =
-          file_system_info_map.insert(
-              std::make_pair(current, FileSystemInfo(current))).first;
+      auto inserted =
+          file_system_info_map
+              .insert(std::make_pair(current, FileSystemInfo(current)))
+              .first;
       inserted->second.usage_map[type] = usage;
     }
   }
@@ -130,8 +133,8 @@ void BrowsingDataFileSystemHelperImpl::FetchFileSystemInfoInFileThread(
   for (const auto& iter : file_system_info_map)
     result.push_back(iter.second);
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, result));
 }
 
 void BrowsingDataFileSystemHelperImpl::DeleteFileSystemOriginInFileThread(
@@ -208,6 +211,6 @@ void CannedBrowsingDataFileSystemHelper::StartFetching(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, file_system_info_));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, file_system_info_));
 }

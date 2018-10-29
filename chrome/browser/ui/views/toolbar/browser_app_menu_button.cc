@@ -37,6 +37,8 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/metrics.h"
 
@@ -54,8 +56,7 @@ constexpr base::TimeDelta kDelayTime = base::TimeDelta::FromMilliseconds(1500);
 bool BrowserAppMenuButton::g_open_app_immediately_for_testing = false;
 
 BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
-    : AppMenuButton(toolbar_view),
-      toolbar_view_(toolbar_view) {
+    : AppMenuButton(toolbar_view), toolbar_view_(toolbar_view) {
   SetInkDropMode(InkDropMode::ON);
   SetFocusPainter(nullptr);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -69,10 +70,7 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
 
   set_ink_drop_visible_opacity(kToolbarInkDropVisibleOpacity);
 
-  const int size = GetLayoutConstant(LOCATION_BAR_HEIGHT);
-  const int radii = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MAXIMUM, gfx::Size(size, size));
-  set_ink_drop_corner_radii(radii, radii);
+  md_observer_.Add(ui::MaterialDesignController::GetInstance());
 }
 
 BrowserAppMenuButton::~BrowserAppMenuButton() {}
@@ -109,10 +107,8 @@ void BrowserAppMenuButton::ShowMenu(bool for_drop) {
   // KeyboardController in the browser process.
   if (!features::IsUsingWindowService()) {
     auto* keyboard_controller = keyboard::KeyboardController::Get();
-    if (keyboard_controller->enabled() &&
-        keyboard_controller->IsKeyboardVisible()) {
+    if (keyboard_controller->IsKeyboardVisible())
       keyboard_controller->HideKeyboardExplicitlyBySystem();
-    }
   }
 #endif
 
@@ -136,8 +132,7 @@ void BrowserAppMenuButton::ShowMenu(bool for_drop) {
 }
 
 gfx::Size BrowserAppMenuButton::CalculatePreferredSize() const {
-  const int icon_size =
-      ui::MaterialDesignController::IsTouchOptimizedUiEnabled() ? 24 : 16;
+  const int icon_size = ui::MaterialDesignController::touch_ui() ? 24 : 16;
   gfx::Rect rect(gfx::Size(icon_size, icon_size));
   rect.Inset(-GetLayoutInsets(TOOLBAR_BUTTON));
 
@@ -158,10 +153,13 @@ void BrowserAppMenuButton::OnThemeChanged() {
   UpdateIcon(false);
 }
 
-void BrowserAppMenuButton::TabInsertedAt(TabStripModel* tab_strip_model,
-                                         content::WebContents* contents,
-                                         int index,
-                                         bool foreground) {
+void BrowserAppMenuButton::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() != TabStripModelChange::kInserted)
+    return;
+
   AnimateIconIfPossible(true);
 }
 
@@ -211,21 +209,20 @@ void BrowserAppMenuButton::UpdateIcon(bool should_animate) {
     return;
   }
 
-  const bool is_touch =
-      ui::MaterialDesignController::IsTouchOptimizedUiEnabled();
+  const bool touch_ui = ui::MaterialDesignController::touch_ui();
   const gfx::VectorIcon* icon_id = nullptr;
   switch (type_) {
     case AppMenuIconController::IconType::NONE:
-      icon_id = is_touch ? &kBrowserToolsTouchIcon : &kBrowserToolsIcon;
+      icon_id = touch_ui ? &kBrowserToolsTouchIcon : &kBrowserToolsIcon;
       DCHECK_EQ(AppMenuIconController::Severity::NONE, severity_);
       break;
     case AppMenuIconController::IconType::UPGRADE_NOTIFICATION:
       icon_id =
-          is_touch ? &kBrowserToolsUpdateTouchIcon : &kBrowserToolsUpdateIcon;
+          touch_ui ? &kBrowserToolsUpdateTouchIcon : &kBrowserToolsUpdateIcon;
       break;
     case AppMenuIconController::IconType::GLOBAL_ERROR:
       icon_id =
-          is_touch ? &kBrowserToolsErrorTouchIcon : &kBrowserToolsErrorIcon;
+          touch_ui ? &kBrowserToolsErrorTouchIcon : &kBrowserToolsErrorIcon;
       break;
   }
 
@@ -239,6 +236,11 @@ void BrowserAppMenuButton::SetTrailingMargin(int margin) {
   margin_trailing_ = margin;
   UpdateThemedBorder();
   InvalidateLayout();
+}
+
+void BrowserAppMenuButton::OnTouchUiChanged() {
+  UpdateIcon(false);
+  PreferredSizeChanged();
 }
 
 void BrowserAppMenuButton::AnimateIconIfPossible(bool with_delay) {
@@ -284,17 +286,15 @@ BrowserAppMenuButton::CreateDefaultBorder() const {
 
 void BrowserAppMenuButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // TODO(pbos): Consolidate with ToolbarButton::OnBoundsChanged.
-  if (focus_ring()) {
-    focus_ring()->SetPath(CreateToolbarFocusRingPath(
-        this, gfx::Insets(0, 0, 0, margin_trailing_)));
-  }
+  SetToolbarButtonHighlightPath(this, gfx::Insets(0, 0, 0, margin_trailing_));
+
   AppMenuButton::OnBoundsChanged(previous_bounds);
 }
 
 gfx::Rect BrowserAppMenuButton::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = GetBoundsInScreen();
   gfx::Insets insets =
-      GetInkDropInsets(this, gfx::Insets(0, 0, 0, margin_trailing_));
+      GetToolbarInkDropInsets(this, gfx::Insets(0, 0, 0, margin_trailing_));
   // If the button is extended, don't inset the trailing edge. The anchored menu
   // should extend to the screen edge as well so the menu is easier to hit
   // (Fitts's law).
@@ -354,26 +354,10 @@ int BrowserAppMenuButton::OnPerformDrop(const ui::DropTargetEvent& event) {
 }
 
 std::unique_ptr<views::InkDrop> BrowserAppMenuButton::CreateInkDrop() {
-  return CreateToolbarInkDrop<MenuButton>(this);
-}
-
-std::unique_ptr<views::InkDropRipple>
-BrowserAppMenuButton::CreateInkDropRipple() const {
-  // FIXME: GetInkDropCenterBasedOnLastEvent() will always return the center
-  // of this view. https://crbug.com/819878.
-  return CreateToolbarInkDropRipple<MenuButton>(
-      this, GetInkDropCenterBasedOnLastEvent(),
-      gfx::Insets(0, 0, 0, margin_trailing_));
+  return CreateToolbarInkDrop(this);
 }
 
 std::unique_ptr<views::InkDropHighlight>
 BrowserAppMenuButton::CreateInkDropHighlight() const {
-  return CreateToolbarInkDropHighlight<MenuButton>(
-      this, GetMirroredRect(GetContentsBounds()).CenterPoint());
-}
-
-std::unique_ptr<views::InkDropMask> BrowserAppMenuButton::CreateInkDropMask()
-    const {
-  return CreateToolbarInkDropMask<MenuButton>(
-      this, gfx::Insets(0, 0, 0, margin_trailing_));
+  return CreateToolbarInkDropHighlight(this);
 }

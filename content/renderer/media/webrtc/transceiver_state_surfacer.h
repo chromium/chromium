@@ -73,8 +73,6 @@ class CONTENT_EXPORT SurfaceSenderStateOnly
   absl::optional<webrtc::RtpTransceiverDirection> current_direction()
       const override;
   void Stop() override;
-  void SetCodecPreferences(
-      rtc::ArrayView<webrtc::RtpCodecCapability> codecs) override;
 
  private:
   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender_;
@@ -100,8 +98,6 @@ class CONTENT_EXPORT SurfaceReceiverStateOnly
   absl::optional<webrtc::RtpTransceiverDirection> current_direction()
       const override;
   void Stop() override;
-  void SetCodecPreferences(
-      rtc::ArrayView<webrtc::RtpCodecCapability> codecs) override;
 
  private:
   rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver_;

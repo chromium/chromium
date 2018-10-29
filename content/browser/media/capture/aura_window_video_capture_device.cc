@@ -11,8 +11,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/base/bind_to_current_loop.h"
@@ -43,8 +45,8 @@ class AuraWindowVideoCaptureDevice::WindowTracker
     DCHECK(device_task_runner_);
     DCHECK(cursor_controller_);
 
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&WindowTracker::ResolveTarget, AsWeakPtr(), source_id));
   }
 
@@ -144,8 +146,8 @@ AuraWindowVideoCaptureDevice::~AuraWindowVideoCaptureDevice() = default;
 #if defined(OS_CHROMEOS)
 void AuraWindowVideoCaptureDevice::CreateCapturer(
     viz::mojom::FrameSinkVideoCapturerRequest request) {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           [](base::WeakPtr<WindowTracker> tracker_ptr,
              viz::mojom::FrameSinkVideoCapturerRequest request) {

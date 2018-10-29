@@ -34,6 +34,9 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
                                 const std::string& header_name) const override;
   bool ShouldHideBrowserNetworkRequest(
       const WebRequestInfo& request) const override;
+  void NotifyWebRequestWithheld(int render_process_id,
+                                int render_frame_id,
+                                const ExtensionId& extension_id) override;
   AppViewGuestDelegate* CreateAppViewGuestDelegate() const override;
   ExtensionOptionsGuestDelegate* CreateExtensionOptionsGuestDelegate(
       ExtensionOptionsGuest* guest) const override;
@@ -47,8 +50,6 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
       WebViewGuest* web_view_guest) const override;
   WebViewPermissionHelperDelegate* CreateWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper) const override;
-  std::unique_ptr<WebRequestEventRouterDelegate>
-  CreateWebRequestEventRouterDelegate() const override;
   scoped_refptr<ContentRulesRegistry> CreateContentRulesRegistry(
       content::BrowserContext* browser_context,
       RulesCacheDelegate* cache_delegate) const override;

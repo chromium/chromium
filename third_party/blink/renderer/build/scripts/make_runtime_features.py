@@ -59,6 +59,7 @@ class RuntimeFeatureWriter(json5_generator.Writer):
             feature['enabled_condition'] = enabled_condition
         self._standard_features = [feature for feature in self._features if not feature['custom']]
         self._origin_trial_features = [feature for feature in self._features if feature['origin_trial_feature_name']]
+        self._header_guard = self.make_header_guard(self._relative_output_dir + self.file_basename + '.h')
 
     @staticmethod
     def _data_member_name(str_or_converter):
@@ -77,6 +78,7 @@ class RuntimeFeatureWriter(json5_generator.Writer):
             'input_files': self._input_files,
             'standard_features': self._standard_features,
             'origin_trial_controlled_features': self._origin_trial_features,
+            'header_guard': self._header_guard,
         }
 
     @template_expander.use_jinja('templates/' + file_basename + '.h.tmpl')
@@ -95,13 +97,14 @@ class RuntimeFeatureTestHelpersWriter(json5_generator.Writer):
     def __init__(self, json5_file_path, output_dir):
         super(RuntimeFeatureTestHelpersWriter, self).__init__(json5_file_path, output_dir)
         self._outputs = {('testing/' + self.file_basename + '.h'): self.generate_header}
-
         self._features = self.json5_file.name_dictionaries
+        self._header_guard = self.make_header_guard(self._relative_output_dir + self.file_basename + '.h')
 
     def _template_inputs(self):
         return {
             'features': self._features,
             'input_files': self._input_files,
+            'header_guard': self._header_guard,
         }
 
     @template_expander.use_jinja('templates/' + file_basename + '.h.tmpl')

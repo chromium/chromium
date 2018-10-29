@@ -18,14 +18,13 @@ MultiDeviceSetupClient::GenerateDefaultHostStatusWithDevice() {
 // static
 MultiDeviceSetupClient::FeatureStatesMap
 MultiDeviceSetupClient::GenerateDefaultFeatureStatesMap() {
-  return FeatureStatesMap{{mojom::Feature::kBetterTogetherSuite,
-                           mojom::FeatureState::kUnavailableNoVerifiedHost},
-                          {mojom::Feature::kInstantTethering,
-                           mojom::FeatureState::kUnavailableNoVerifiedHost},
-                          {mojom::Feature::kMessages,
-                           mojom::FeatureState::kUnavailableNoVerifiedHost},
-                          {mojom::Feature::kSmartLock,
-                           mojom::FeatureState::kUnavailableNoVerifiedHost}};
+  return FeatureStatesMap{
+      {mojom::Feature::kBetterTogetherSuite,
+       mojom::FeatureState::kProhibitedByPolicy},
+      {mojom::Feature::kInstantTethering,
+       mojom::FeatureState::kProhibitedByPolicy},
+      {mojom::Feature::kMessages, mojom::FeatureState::kProhibitedByPolicy},
+      {mojom::Feature::kSmartLock, mojom::FeatureState::kProhibitedByPolicy}};
 }
 
 MultiDeviceSetupClient::MultiDeviceSetupClient() = default;

@@ -645,8 +645,7 @@ DevicePermissionsManager::~DevicePermissionsManager() {
 
 DevicePermissions* DevicePermissionsManager::GetInternal(
     const std::string& extension_id) const {
-  std::map<std::string, DevicePermissions*>::const_iterator it =
-      extension_id_to_device_permissions_.find(extension_id);
+  auto it = extension_id_to_device_permissions_.find(extension_id);
   if (it != extension_id_to_device_permissions_.end()) {
     return it->second;
   }

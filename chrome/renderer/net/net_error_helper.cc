@@ -55,6 +55,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/jstemplate_builder.h"
@@ -388,8 +389,12 @@ void NetErrorHelper::GenerateLocalizedErrorPage(
 
 void NetErrorHelper::LoadErrorPage(const std::string& html,
                                    const GURL& failed_url) {
-  render_frame()->GetWebFrame()->LoadHTMLString(
-      html, GURL(kUnreachableWebDataURL), failed_url, true);
+  render_frame()->GetWebFrame()->CommitDataNavigation(
+      blink::WebURLRequest(GURL(kUnreachableWebDataURL)), blink::WebData(html),
+      blink::WebString::FromUTF8("text/html"),
+      blink::WebString::FromUTF8("UTF-8"), failed_url,
+      blink::WebFrameLoadType::kReplaceCurrentItem, blink::WebHistoryItem(),
+      false /* is_client_redirect */, nullptr, nullptr);
 }
 
 void NetErrorHelper::EnablePageHelperFunctions(net::Error net_error) {
@@ -450,8 +455,7 @@ void NetErrorHelper::FetchNavigationCorrections(
   correction_fetcher_->SetHeader("Origin", "null");
 
   correction_fetcher_->Start(
-      render_frame()->GetWebFrame(),
-      blink::WebURLRequest::kRequestContextInternal,
+      render_frame()->GetWebFrame(), blink::mojom::RequestContextType::INTERNAL,
       render_frame()->GetURLLoaderFactory(), GetNetworkTrafficAnnotationTag(),
       base::BindOnce(&NetErrorHelper::OnNavigationCorrectionsFetched,
                      base::Unretained(this)));
@@ -474,8 +478,7 @@ void NetErrorHelper::SendTrackingRequest(
   tracking_fetcher_->SetHeader("Content-Type", "application/json");
 
   tracking_fetcher_->Start(
-      render_frame()->GetWebFrame(),
-      blink::WebURLRequest::kRequestContextInternal,
+      render_frame()->GetWebFrame(), blink::mojom::RequestContextType::INTERNAL,
       render_frame()->GetURLLoaderFactory(), GetNetworkTrafficAnnotationTag(),
       base::BindOnce(&NetErrorHelper::OnTrackingRequestComplete,
                      base::Unretained(this)));
@@ -520,8 +523,10 @@ void NetErrorHelper::SetIsShowingDownloadButton(bool show) {
 void NetErrorHelper::OfflineContentAvailable(
     const std::string& offline_content_json) {
 #if defined(OS_ANDROID)
-  render_frame()->ExecuteJavaScript(base::UTF8ToUTF16(
-      base::StrCat({"offlineContentAvailable(", offline_content_json, ");"})));
+  if (!offline_content_json.empty()) {
+    render_frame()->ExecuteJavaScript(base::UTF8ToUTF16(base::StrCat(
+        {"offlineContentAvailable(", offline_content_json, ");"})));
+  }
 #endif
 }
 

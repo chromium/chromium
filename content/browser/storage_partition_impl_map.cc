@@ -41,6 +41,7 @@
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
@@ -187,9 +188,7 @@ void ObliterateOneDirectory(const base::FilePath& current_dir,
     // Enum tracking which of the 3 possible actions to take for |to_delete|.
     enum { kSkip, kEnqueue, kDelete } action = kDelete;
 
-    for (std::vector<base::FilePath>::const_iterator to_keep =
-             paths_to_keep.begin();
-         to_keep != paths_to_keep.end();
+    for (auto to_keep = paths_to_keep.begin(); to_keep != paths_to_keep.end();
          ++to_keep) {
       if (to_delete == *to_keep) {
         action = kSkip;
@@ -245,9 +244,7 @@ void BlockingObliteratePath(
 
   // Reduce |paths_to_keep| set to those under the root and actually on disk.
   std::vector<base::FilePath> valid_paths_to_keep;
-  for (std::vector<base::FilePath>::const_iterator it = paths_to_keep.begin();
-       it != paths_to_keep.end();
-       ++it) {
+  for (auto it = paths_to_keep.begin(); it != paths_to_keep.end(); ++it) {
     if (root.IsParent(*it) && base::PathExists(*it))
       valid_paths_to_keep.push_back(*it);
   }
@@ -277,8 +274,7 @@ void NormalizeActivePaths(const base::FilePath& storage_root,
                           base::hash_set<base::FilePath>* active_paths) {
   base::hash_set<base::FilePath> normalized_active_paths;
 
-  for (base::hash_set<base::FilePath>::iterator iter = active_paths->begin();
-       iter != active_paths->end(); ++iter) {
+  for (auto iter = active_paths->begin(); iter != active_paths->end(); ++iter) {
     base::FilePath relative_path;
     if (!storage_root.AppendRelativePath(*iter, &relative_path))
       continue;
@@ -486,8 +482,7 @@ void StoragePartitionImplMap::AsyncObliterate(
           // All except shader cache.
           ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
           StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-          StoragePartition::OriginMatcherFunction(), base::Time(),
-          base::Time::Max(), base::DoNothing());
+          base::Time(), base::Time::Max(), base::DoNothing());
       if (!config.in_memory) {
         paths_to_keep.push_back(it->second->GetPath());
       }
@@ -556,8 +551,8 @@ void StoragePartitionImplMap::PostCreateInitialization(
 
   // Check first to avoid memory leak in unittests.
   if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &ChromeAppCacheService::InitializeOnIOThread,
             partition->GetAppCacheService(),
@@ -567,29 +562,29 @@ void StoragePartitionImplMap::PostCreateInitialization(
             base::RetainedRef(partition->GetURLRequestContext()),
             base::RetainedRef(browser_context_->GetSpecialStoragePolicy())));
 
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&CacheStorageContextImpl::SetBlobParametersForCache,
                        partition->GetCacheStorageContext(),
                        base::RetainedRef(partition->GetURLRequestContext()),
                        base::RetainedRef(ChromeBlobStorageContext::GetFor(
                            browser_context_))));
 
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&ServiceWorkerContextWrapper::InitializeResourceContext,
                        partition->GetServiceWorkerContext(),
                        browser_context_->GetResourceContext()));
 
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&PrefetchURLLoaderService::InitializeResourceContext,
                        partition->GetPrefetchURLLoaderService(),
                        browser_context_->GetResourceContext(),
                        base::RetainedRef(partition->GetURLRequestContext())));
 
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&BackgroundFetchContext::InitializeOnIOThread,
                        partition->GetBackgroundFetchContext()));
 

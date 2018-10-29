@@ -140,6 +140,31 @@ TEST_F(PictureBufferManagerImplTest, ReusePictureBuffer) {
   environment_.RunUntilIdle();
 }
 
+TEST_F(PictureBufferManagerImplTest, ReusePictureBuffer_MultipleTime) {
+  constexpr size_t kFrameNum = 3;
+  Initialize();
+  PictureBuffer pb = CreateARGBPictureBuffer();
+  std::vector<scoped_refptr<VideoFrame>> frames;
+  for (size_t i = 0; i < kFrameNum; ++i) {
+    frames.push_back(CreateVideoFrame(pb.id()));
+  }
+
+  // Dropping the frame does not immediately trigger reuse.
+  std::vector<gpu::SyncToken> sync_tokens;
+  for (auto& frame : frames) {
+    sync_tokens.push_back(GenerateSyncToken(frame));
+  }
+  frames.clear();
+  environment_.RunUntilIdle();
+
+  // Completing the SyncToken wait does.
+  EXPECT_CALL(reuse_cb_, Run(pb.id())).Times(kFrameNum);
+  for (auto& sync_token : sync_tokens) {
+    cbh_->ReleaseSyncToken(sync_token);
+  }
+  environment_.RunUntilIdle();
+}
+
 TEST_F(PictureBufferManagerImplTest, DismissPictureBuffer_Available) {
   Initialize();
   PictureBuffer pb = CreateARGBPictureBuffer();

@@ -214,8 +214,7 @@ void DatabaseTracker::ForEachOpenDatabaseInPage(Page* page,
     for (auto& name_database_set : *origin_map.value) {
       for (Database* database : *name_database_set.value) {
         ExecutionContext* context = database->GetExecutionContext();
-        DCHECK(context->IsDocument());
-        if (ToDocument(context)->GetPage() == page)
+        if (To<Document>(context)->GetPage() == page)
           callback.Run(database);
       }
     }

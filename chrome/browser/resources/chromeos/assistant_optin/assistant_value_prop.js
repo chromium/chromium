@@ -118,10 +118,13 @@ Polymer({
    * @private
    */
   onSkipTap_: function() {
+    if (this.buttonsDisabled) {
+      return;
+    }
+    this.buttonsDisabled = true;
     chrome.send(
         'login.AssistantOptInFlowScreen.ValuePropScreen.userActed',
         ['skip-pressed']);
-    this.buttonsDisabled = true;
   },
 
   /**
@@ -130,10 +133,13 @@ Polymer({
    * @private
    */
   onNextTap_: function() {
+    if (this.buttonsDisabled) {
+      return;
+    }
+    this.buttonsDisabled = true;
     chrome.send(
         'login.AssistantOptInFlowScreen.ValuePropScreen.userActed',
         ['next-pressed']);
-    this.buttonsDisabled = true;
   },
 
   /**
@@ -162,6 +168,14 @@ Polymer({
    */
   reloadPage: function() {
     this.fire('loading');
+
+    if (this.initialized_) {
+      chrome.send(
+          'login.AssistantOptInFlowScreen.ValuePropScreen.userActed',
+          ['reload-requested']);
+      this.settingZippyLoaded_ = false;
+      this.consentStringLoaded_ = false;
+    }
 
     this.loadingError_ = false;
     this.headerReceived_ = false;
@@ -264,7 +278,7 @@ Polymer({
       var description = document.createElement('div');
       description.className = 'zippy-description';
       description.innerHTML = this.sanitizer_.sanitizeHtml(data['description']);
-      zippy.appendChild(description);
+      description.innerHTML += '&ensp;';
 
       var learnMoreLink = document.createElement('a');
       learnMoreLink.className = 'learn-more-link';
@@ -273,7 +287,9 @@ Polymer({
       learnMoreLink.onclick = function(title, additionalInfo) {
         this.showLearnMoreOverlay(title, additionalInfo);
       }.bind(this, data['title'], data['additionalInfo']);
-      zippy.appendChild(learnMoreLink);
+
+      description.appendChild(learnMoreLink);
+      zippy.appendChild(description);
 
       this.$['consents-container'].appendChild(zippy);
     }
@@ -316,8 +332,8 @@ Polymer({
           this.onWebViewErrorOccurred.bind(this), requestFilter);
       this.valuePropView_.request.onHeadersReceived.addListener(
           this.onWebViewHeadersReceived.bind(this), requestFilter);
-      this.valuePropView_.request.onCompleted.addListener(
-          this.onWebViewContentLoad.bind(this), requestFilter);
+      this.valuePropView_.addEventListener(
+          'contentload', this.onWebViewContentLoad.bind(this));
 
       this.valuePropView_.addContentScripts([{
         name: 'stripLinks',
@@ -329,9 +345,8 @@ Polymer({
         run_at: 'document_end'
       }]);
 
+      this.reloadPage();
       this.initialized_ = true;
     }
-
-    this.reloadPage();
   },
 });

@@ -88,6 +88,16 @@ class AXTreeSerializer {
   // being serialized.
   void InvalidateSubtree(AXSourceNode node);
 
+  // Return whether or not this node is in the client tree. If you call
+  // this immediately after serializing, this indicates whether a given
+  // node is in the set of nodes that the client (the recipient of
+  // the AXTreeUpdates) is aware of.
+  //
+  // For example, you could use this to determine if a given node is
+  // reachable. If one of its ancestors is hidden and it was pruned
+  // from the accessibility tree, this would return false.
+  bool IsInClientTree(AXSourceNode node);
+
   // Only for unit testing. Normally this class relies on getting a call
   // to SerializeChanges() every time the source tree changes. For unit
   // testing, it's convenient to create a static AXTree for the initial
@@ -430,6 +440,12 @@ void AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::InvalidateSubtree(
   ClientTreeNode* client_node = ClientTreeNodeById(tree_->GetId(node));
   if (client_node)
     InvalidateClientSubtree(client_node);
+}
+
+template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
+bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::IsInClientTree(
+    AXSourceNode node) {
+  return !!ClientTreeNodeById(tree_->GetId(node));
 }
 
 template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>

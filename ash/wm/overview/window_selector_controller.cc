@@ -264,6 +264,11 @@ bool WindowSelectorController::CanSelect() {
 
 bool WindowSelectorController::ToggleOverview(
     WindowSelector::EnterExitOverviewType type) {
+  // Hide the virtual keyboard as it obstructs the overview mode.
+  // Don't need to hide if it's the a11y keyboard, as overview mode
+  // can accept text input and it resizes correctly with the a11y keyboard.
+  keyboard::KeyboardController::Get()->HideKeyboardImplicitlyByUser();
+
   auto windows = Shell::Get()->mru_window_tracker()->BuildMruWindowList();
 
   // Hidden windows will be removed by ShouldExcludeWindowFromOverview so we
@@ -286,12 +291,16 @@ bool WindowSelectorController::ToggleOverview(
   }
 
   if (IsSelecting()) {
-    // Do not allow ending overview if we're in single split mode.
-    if (windows.empty() && Shell::Get()->IsSplitViewModeActive())
+    // Do not allow ending overview if we're in single split mode unless swiping
+    // up from the shelf.
+    if (windows.empty() && Shell::Get()->IsSplitViewModeActive() &&
+        type != WindowSelector::EnterExitOverviewType::kSwipeFromShelf) {
       return true;
+    }
 
     window_selector_->set_enter_exit_overview_type(new_type);
-    if (type != WindowSelector::EnterExitOverviewType::kNormal) {
+    if (type == WindowSelector::EnterExitOverviewType::kWindowsMinimized ||
+        type == WindowSelector::EnterExitOverviewType::kSwipeFromShelf) {
       // Minimize the windows without animations. When the home launcher button
       // is pressed, minimized widgets will get created in their place, and
       // those widgets will be slid out of overview. Otherwise,
@@ -316,6 +325,10 @@ bool WindowSelectorController::ToggleOverview(
     // Clear any animations that may be running from last overview end.
     for (const auto& animation : delayed_animations_)
       animation->Shutdown();
+    if (!delayed_animations_.empty()) {
+      Shell::Get()->NotifyOverviewModeStartingAnimationComplete(
+          /*canceled=*/true);
+    }
     delayed_animations_.clear();
 
     window_selector_ = std::make_unique<WindowSelector>(this);
@@ -330,7 +343,11 @@ bool WindowSelectorController::ToggleOverview(
 }
 
 bool WindowSelectorController::IsSelecting() const {
-  return window_selector_.get() != NULL;
+  return window_selector_ != nullptr;
+}
+
+bool WindowSelectorController::IsCompletingShutdownAnimations() {
+  return !delayed_animations_.empty();
 }
 
 void WindowSelectorController::IncrementSelection(int increment) {
@@ -462,9 +479,16 @@ WindowSelectorController::GetWindowsListInOverviewGridsForTesting() {
 void WindowSelectorController::OnSelectionEnded() {
   if (is_shutting_down_)
     return;
+
+  if (!start_animations_.empty()) {
+    Shell::Get()->NotifyOverviewModeEndingAnimationComplete(
+        /*canceled=*/true);
+  }
+  start_animations_.clear();
   is_shutting_down_ = true;
   Shell::Get()->NotifyOverviewModeEnding();
   auto* window_selector = window_selector_.release();
+  window_selector->UpdateMaskAndShadow(/*show=*/false);
   window_selector->Shutdown();
   // There may be no delayed animations in tests, so unblur right away.
   if (delayed_animations_.empty() && IsBlurAllowed())
@@ -495,7 +519,25 @@ void WindowSelectorController::RemoveAndDestroyAnimationObserver(
   if (!window_selector_ && !previous_empty && delayed_animations_.empty()) {
     if (IsBlurAllowed())
       overview_blur_controller_->Unblur();
-    Shell::Get()->NotifyOverviewModeEndingAnimationComplete();
+    Shell::Get()->NotifyOverviewModeEndingAnimationComplete(/*canceled=*/false);
+  }
+}
+
+void WindowSelectorController::AddStartAnimationObserver(
+    std::unique_ptr<DelayedAnimationObserver> animation_observer) {
+  animation_observer->SetOwner(this);
+  start_animations_.push_back(std::move(animation_observer));
+}
+
+void WindowSelectorController::RemoveAndDestroyStartAnimationObserver(
+    DelayedAnimationObserver* animation_observer) {
+  const bool previous_empty = start_animations_.empty();
+  base::EraseIf(start_animations_, base::MatchesUniquePtr(animation_observer));
+
+  if (!previous_empty && start_animations_.empty()) {
+    Shell::Get()->NotifyOverviewModeStartingAnimationComplete(
+        /*canceled=*/false);
+    window_selector_->UpdateMaskAndShadow(/*show=*/true);
   }
 }
 

@@ -32,6 +32,7 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/css/font_face_set_worker.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/instance_counters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
@@ -253,7 +255,7 @@ WorkerGlobalScope::LoadScriptFromClassicScriptLoader(
   scoped_refptr<WorkerClassicScriptLoader> classic_script_loader(
       WorkerClassicScriptLoader::Create());
   classic_script_loader->LoadSynchronously(
-      *execution_context, script_url, WebURLRequest::kRequestContextScript,
+      *execution_context, script_url, mojom::RequestContextType::SCRIPT,
       execution_context->GetSecurityContext().AddressSpace());
 
   // If the fetching attempt failed, throw a NetworkError exception and
@@ -327,7 +329,7 @@ void WorkerGlobalScope::EvaluateClassicScriptPausable(
     std::unique_ptr<Vector<char>> cached_meta_data,
     const v8_inspector::V8StackTraceId& stack_id) {
   if (IsContextPaused()) {
-    paused_calls_.push_back(WTF::Bind(
+    AddPausedCall(WTF::Bind(
         &WorkerGlobalScope::EvaluateClassicScriptPausable,
         WrapWeakPersistent(this), script_url, access_control_status,
         source_code, WTF::Passed(std::move(cached_meta_data)), stack_id));
@@ -347,10 +349,9 @@ void WorkerGlobalScope::ImportModuleScriptPausable(
     FetchClientSettingsObjectSnapshot* outside_settings_object,
     network::mojom::FetchCredentialsMode mode) {
   if (IsContextPaused()) {
-    paused_calls_.push_back(
-        WTF::Bind(&WorkerGlobalScope::ImportModuleScriptPausable,
-                  WrapWeakPersistent(this), module_url_record,
-                  WrapPersistent(outside_settings_object), mode));
+    AddPausedCall(WTF::Bind(&WorkerGlobalScope::ImportModuleScriptPausable,
+                            WrapWeakPersistent(this), module_url_record,
+                            WrapPersistent(outside_settings_object), mode));
     return;
   }
   ImportModuleScript(module_url_record, outside_settings_object, mode);
@@ -359,9 +360,8 @@ void WorkerGlobalScope::ImportModuleScriptPausable(
 void WorkerGlobalScope::ReceiveMessagePausable(
     BlinkTransferableMessage message) {
   if (IsContextPaused()) {
-    paused_calls_.push_back(
-        WTF::Bind(&WorkerGlobalScope::ReceiveMessagePausable,
-                  WrapWeakPersistent(this), std::move(message)));
+    AddPausedCall(WTF::Bind(&WorkerGlobalScope::ReceiveMessagePausable,
+                            WrapWeakPersistent(this), std::move(message)));
     return;
   }
 
@@ -396,10 +396,13 @@ void WorkerGlobalScope::EvaluateClassicScript(
       source_code.length(),
       cached_meta_data.get() ? cached_meta_data->size() : 0);
   bool success = ScriptController()->Evaluate(
-      ScriptSourceCode(source_code, ScriptSourceLocationType::kUnknown, handler,
-                       script_url),
-      access_control_status, nullptr /* error_event */, v8_cache_options_);
+      ScriptSourceCode(source_code, handler, script_url), access_control_status,
+      nullptr /* error_event */, v8_cache_options_);
   ReportingProxy().DidEvaluateClassicScript(success);
+}
+
+void WorkerGlobalScope::AddPausedCall(base::OnceClosure closure) {
+  paused_calls_.push_back(std::move(closure));
 }
 
 WorkerGlobalScope::WorkerGlobalScope(
@@ -489,6 +492,12 @@ void WorkerGlobalScope::RemoveURLFromMemoryCache(const KURL& url) {
                           TaskType::kNetworking),
                       FROM_HERE,
                       CrossThreadBind(&RemoveURLFromMemoryCacheInternal, url));
+}
+
+void WorkerGlobalScope::queueMicrotask(V8VoidFunction* callback) {
+  Microtask::EnqueueMicrotask(WTF::Bind(
+      &V8PersistentCallbackFunction<V8VoidFunction>::InvokeAndReportException,
+      WrapPersistent(ToV8PersistentCallbackFunction(callback)), nullptr));
 }
 
 int WorkerGlobalScope::requestAnimationFrame(V8FrameRequestCallback* callback,

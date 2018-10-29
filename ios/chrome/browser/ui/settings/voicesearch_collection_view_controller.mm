@@ -10,7 +10,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_text_item.h"
 #include "ios/chrome/browser/voice/speech_input_locale_config.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -75,8 +75,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // TTS section.
   [model addSectionWithIdentifier:SectionIdentifierTTS];
-  SettingsSwitchItem* tts =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeTTSEnabled];
+  LegacySettingsSwitchItem* tts =
+      [[LegacySettingsSwitchItem alloc] initWithType:ItemTypeTTSEnabled];
   tts.text = l10n_util::GetNSString(IDS_IOS_VOICE_SEARCH_SETTING_TTS);
   BOOL enabled = [self currentLanguageSupportsTTS];
   tts.on = enabled && _ttsEnabled.GetValue();
@@ -132,8 +132,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (itemType == ItemTypeTTSEnabled) {
     // Have the switch send a message on UIControlEventValueChanged.
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    LegacySettingsSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(ttsToggled:)
                     forControlEvents:UIControlEventValueChanged];
@@ -190,11 +190,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.collectionViewModel indexPathForItemType:ItemTypeTTSEnabled
                                    sectionIdentifier:SectionIdentifierTTS];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  LegacySettingsSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchItem>(
           [self.collectionViewModel itemAtIndexPath:switchPath]);
-  SettingsSwitchCell* switchCell =
-      base::mac::ObjCCastStrict<SettingsSwitchCell>(
+  LegacySettingsSwitchCell* switchCell =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(
           [self.collectionView cellForItemAtIndexPath:switchPath]);
 
   // Update the model and the preference with the current value of the switch.
@@ -229,8 +229,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSIndexPath* switchPath =
       [self.collectionViewModel indexPathForItemType:ItemTypeTTSEnabled
                                    sectionIdentifier:SectionIdentifierTTS];
-  SettingsSwitchCell* switchCell =
-      base::mac::ObjCCastStrict<SettingsSwitchCell>(
+  LegacySettingsSwitchCell* switchCell =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(
           [self.collectionView cellForItemAtIndexPath:switchPath]);
 
   BOOL enabled = [self currentLanguageSupportsTTS];
@@ -239,13 +239,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   UISwitch* switchView = switchCell.switchView;
   switchView.enabled = enabled;
   switchCell.textLabel.textColor =
-      [SettingsSwitchCell defaultTextColorForState:switchView.state];
+      [LegacySettingsSwitchCell defaultTextColorForState:switchView.state];
   if (on != switchView.isOn) {
     [switchView setOn:on animated:YES];
   }
   // Also update the switch item.
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  LegacySettingsSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchItem>(
           [self.collectionViewModel itemAtIndexPath:switchPath]);
   switchItem.enabled = enabled;
   switchItem.on = on;

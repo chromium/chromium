@@ -9,9 +9,9 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/omnibox_focuser.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#include "ios/chrome/browser/ui/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -63,8 +63,6 @@ const CGFloat kClearButtonSize = 28.0f;
 
   self.view = [[OmniboxContainerView alloc]
       initWithFrame:CGRectZero
-               font:[UIFont systemFontOfSize:kLocationBarFontSize]
-         largerFont:[UIFont systemFontOfSize:kLocationBarRegularRegularFontSize]
           textColor:textColor
       textFieldTint:textFieldTintColor
            iconTint:iconTintColor];

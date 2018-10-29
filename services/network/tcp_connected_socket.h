@@ -40,6 +40,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
   // testing.
   static const int kMaxBufferSize;
 
+  // If |client_socket_factory| is nullptr, consumers must use
+  // ConnectWithSocket() instead of Connect().
   TCPConnectedSocket(
       mojom::SocketObserverPtr observer,
       net::NetLog* net_log,
@@ -57,6 +59,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
   void Connect(
       const base::Optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
+      mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
+      mojom::NetworkContext::CreateTCPConnectedSocketCallback callback);
+
+  // Tries to connects using the provided TCPClientSocket. |socket| owns the
+  // list of addresses to try to connect to, so this method doesn't need any
+  // addresses as input.
+  void ConnectWithSocket(
+      std::unique_ptr<net::TransportClientSocket> socket,
       mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       mojom::NetworkContext::CreateTCPConnectedSocketCallback callback);
 

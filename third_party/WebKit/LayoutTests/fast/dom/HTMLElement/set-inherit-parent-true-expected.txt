@@ -2,7 +2,6 @@ When contentEditable is set to "inherit", the attribute must be removed and elem
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.getElementById("p").hasAttribute("contentEditable") is false
 PASS document.getElementById("p").contentEditable is "inherit"
 PASS document.getElementById("p").isContentEditable is true

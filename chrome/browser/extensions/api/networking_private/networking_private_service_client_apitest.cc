@@ -132,7 +132,7 @@ class NetworkingPrivateServiceClientApiTest
     extensions::ExtensionApiTest::SetUpOnMainThread();
     content::RunAllPendingInMessageLoop();
     NetworkingPrivateDelegateFactory::GetInstance()->SetTestingFactory(
-        profile(), &CreateNetworkingPrivateServiceClient);
+        profile(), base::BindRepeating(&CreateNetworkingPrivateServiceClient));
   }
 
   void TearDownOnMainThread() override {

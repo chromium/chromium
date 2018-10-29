@@ -8,6 +8,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -25,8 +27,25 @@ bool disable_pin_by_policy_for_testing_ = false;
 // Options for the quick unlock whitelist.
 const char kQuickUnlockWhitelistOptionAll[] = "all";
 const char kQuickUnlockWhitelistOptionPin[] = "PIN";
+const char kQuickUnlockWhitelistOptionFingerprint[] = "FINGERPRINT";
+
 // Default minimum PIN length. Policy can increase or decrease this value.
 constexpr int kDefaultMinimumPinLength = 6;
+
+bool HasPolicyValue(const PrefService* pref_service, const char* value) {
+  const base::ListValue* quick_unlock_whitelist =
+      pref_service->GetList(prefs::kQuickUnlockModeWhitelist);
+  return quick_unlock_whitelist->Find(base::Value(value)) !=
+         quick_unlock_whitelist->end();
+}
+
+bool IsFingerprintDisabledByPolicy(const PrefService* pref_service) {
+  const bool enabled =
+      HasPolicyValue(pref_service, kQuickUnlockWhitelistOptionAll) ||
+      HasPolicyValue(pref_service, kQuickUnlockWhitelistOptionFingerprint);
+  return !enabled;
+}
+
 }  // namespace
 
 base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
@@ -47,7 +66,7 @@ base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   base::ListValue quick_unlock_whitelist_default;
-  quick_unlock_whitelist_default.AppendString(kQuickUnlockWhitelistOptionPin);
+  quick_unlock_whitelist_default.AppendString(kQuickUnlockWhitelistOptionAll);
   registry->RegisterListPref(prefs::kQuickUnlockModeWhitelist,
                              quick_unlock_whitelist_default.CreateDeepCopy());
   registry->RegisterIntegerPref(
@@ -69,18 +88,10 @@ bool IsPinDisabledByPolicy(PrefService* pref_service) {
   if (enable_for_testing_)
     return false;
 
-  const base::ListValue* quick_unlock_whitelist =
-      pref_service->GetList(prefs::kQuickUnlockModeWhitelist);
-  base::Value all_value(kQuickUnlockWhitelistOptionAll);
-  base::Value pin_value(kQuickUnlockWhitelistOptionPin);
-  if (quick_unlock_whitelist->Find(all_value) ==
-          quick_unlock_whitelist->end() &&
-      quick_unlock_whitelist->Find(pin_value) ==
-          quick_unlock_whitelist->end()) {
-    return true;
-  }
-
-  return false;
+  const bool enabled =
+      HasPolicyValue(pref_service, kQuickUnlockWhitelistOptionAll) ||
+      HasPolicyValue(pref_service, kQuickUnlockWhitelistOptionPin);
+  return !enabled;
 }
 
 bool IsPinEnabled(PrefService* pref_service) {
@@ -97,13 +108,16 @@ bool IsPinEnabled(PrefService* pref_service) {
   return base::FeatureList::IsEnabled(features::kQuickUnlockPin);
 }
 
-bool IsFingerprintEnabled() {
+bool IsFingerprintEnabled(Profile* profile) {
   if (enable_for_testing_)
     return true;
 
-  // Disable fingerprint for secondary user.
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager->GetActiveUser() != user_manager->GetPrimaryUser())
+  // Disable fingerprint if the profile does not belong to the primary user.
+  if (profile != ProfileManager::GetPrimaryUserProfile())
+    return false;
+
+  // Disable fingerprint if disallowed by policy.
+  if (IsFingerprintDisabledByPolicy(profile->GetPrefs()))
     return false;
 
   // Enable fingerprint unlock only if the switch is present.

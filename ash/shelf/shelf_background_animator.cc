@@ -63,32 +63,19 @@ std::pair<int, int> GetTargetColorAlphaValues(
 
   switch (background_type) {
     case SHELF_BACKGROUND_DEFAULT:
-      if (chromeos::switches::ShouldUseShelfNewUi()) {
-        target_shelf_color_alpha = kShelfTranslucentAlpha;
-        target_item_color_alpha = SK_AlphaTRANSPARENT;
-      } else {
-        target_shelf_color_alpha = SK_AlphaTRANSPARENT;
-        target_item_color_alpha = kShelfTranslucentAlpha;
-      }
+      target_shelf_color_alpha = kShelfTranslucentAlpha;
+      target_item_color_alpha = SK_AlphaTRANSPARENT;
       break;
     case SHELF_BACKGROUND_OVERLAP:
       target_shelf_color_alpha = kShelfTranslucentAlpha;
       target_item_color_alpha = SK_AlphaTRANSPARENT;
       break;
     case SHELF_BACKGROUND_MAXIMIZED:
-      if (chromeos::switches::ShouldUseShelfNewUi()) {
-        target_shelf_color_alpha = kShelfTranslucentMaximizedWindowNewUi;
-      } else {
-        target_shelf_color_alpha = ShelfBackgroundAnimator::kMaxAlpha;
-      }
+      target_shelf_color_alpha = kShelfTranslucentMaximizedWindow;
       target_item_color_alpha = SK_AlphaTRANSPARENT;
       break;
     case SHELF_BACKGROUND_APP_LIST:
-      if (chromeos::switches::ShouldUseShelfNewUi()) {
-        target_shelf_color_alpha = kShelfTranslucentOverAppList;
-      } else {
-        target_shelf_color_alpha = SK_AlphaTRANSPARENT;
-      }
+      target_shelf_color_alpha = kShelfTranslucentOverAppList;
       target_item_color_alpha = SK_AlphaTRANSPARENT;
       break;
     case SHELF_BACKGROUND_SPLIT_VIEW:

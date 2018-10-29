@@ -45,9 +45,9 @@ void DataUseTracker::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(metrics::prefs::kUmaCellDataUse);
 }
 
-void DataUseTracker::UpdateMetricsUsagePrefs(const std::string& service_name,
-                                             int message_size,
-                                             bool is_cellular) {
+void DataUseTracker::UpdateMetricsUsagePrefs(int message_size,
+                                             bool is_cellular,
+                                             bool is_metrics_service_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_cellular)
@@ -55,7 +55,7 @@ void DataUseTracker::UpdateMetricsUsagePrefs(const std::string& service_name,
 
   UpdateUsagePref(prefs::kUserCellDataUse, message_size);
   // TODO(holte): Consider adding seperate tracking for UKM.
-  if (service_name == "UMA" || service_name == "UKM")
+  if (is_metrics_service_usage)
     UpdateUsagePref(prefs::kUmaCellDataUse, message_size);
 }
 

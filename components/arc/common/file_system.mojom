@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module arc.mojom;
 
@@ -70,7 +70,53 @@ struct OpenUrlsRequest {
   array<ContentUrlWithMimeType> urls;
 };
 
-// Next method ID: 5
+// Supported action types for SelectFilesRequest.
+// Corresponds to Android intent actions described in
+// http://developer.android.com/reference/android/content/Intent.html
+[Extensible]
+enum SelectFilesActionType {
+  GET_CONTENT,        // Intent.ACTION_GET_CONTENT
+  OPEN_DOCUMENT,      // Intent.ACTION_OPEN_DOCUMENT
+  OPEN_DOCUMENT_TREE, // Intent.ACTION_OPEN_DOCUMENT_TREE
+  CREATE_DOCUMENT,    // Intent.ACTION_CREATE_DOCUMENT
+};
+
+// Request for having the user select files using ChromeOS file selector,
+// converted from an Android intent.
+struct SelectFilesRequest {
+  // Action type of the original Android intent.
+  SelectFilesActionType action_type;
+
+  // Acceptable document MIME types. Copied from Intent.EXTRA_MIME_TYPES if
+  // there are multiple disjoint MIME types (e.g. ["image/*", "video/*"]), or
+  // copied from Intent#getType if there is only one. Empty means ["*/*"].
+  array<string> mime_types;
+
+  // If true, only requests files that can be opened by Android ContentResolver.
+  // Corresponds to Intent.CATEGORY_OPENABLE.
+  bool openable_only;
+
+  // If true, allows the user to select multiple files.
+  // Corresponds to Intent.EXTRA_ALLOW_MULTIPLE.
+  bool allow_multiple;
+
+  // File name to be initially filled in the selector when creating a new file.
+  // Corresponds to Intent.EXTRA_TITLE.
+  string default_file_name;
+
+  // Directory path to be initially opened when the file selector is launched.
+  // Corresponds to DocumentsContract.EXTRA_INITIAL_URI.
+  string initial_content_uri;
+};
+
+// Result for SelectFilesRequest.
+struct SelectFilesResult {
+  // Content URLs of the selected files.
+  // Empty if the user closes the file selector without selecting any files.
+  array<url.mojom.Url> urls;
+};
+
+// Next method ID: 6
 interface FileSystemHost {
   // Returns the name of the file specified by the URL.
   // When an error occurs, returns null value.
@@ -91,6 +137,10 @@ interface FileSystemHost {
 
   // Returns an FD for reading the file specified by the URL.
   [MinVersion=6] OpenFileToRead@4(string url) => (handle? fd);
+
+  // Asks the user to select files using ChromeOS file selector.
+  [MinVersion=9] SelectFiles@5(SelectFilesRequest request) =>
+      (SelectFilesResult result);
 };
 
 // Next method ID: 12

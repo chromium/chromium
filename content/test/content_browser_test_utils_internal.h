@@ -116,6 +116,7 @@ class FileChooserDelegate : public WebContentsDelegate {
 
   // Implementation of WebContentsDelegate::RunFileChooser.
   void RunFileChooser(RenderFrameHost* render_frame_host,
+                      std::unique_ptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
 
   // Whether the file dialog was shown.

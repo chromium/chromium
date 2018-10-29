@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -61,7 +62,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
       const GURL& scope,
       const GURL& first_party,
       content::ResourceContext* context,
-      const base::Callback<WebContents*(void)>& wc_getter) override {
+      base::RepeatingCallback<WebContents*()> wc_getter) override {
     logs_.emplace_back(scope, first_party);
     return false;
   }
@@ -184,12 +185,12 @@ class ServiceWorkerProviderHostTest : public testing::TestWithParam<bool> {
 
   blink::mojom::ServiceWorkerErrorType Register(
       mojom::ServiceWorkerContainerHost* container_host,
-      GURL pattern,
+      GURL scope,
       GURL worker_url) {
     blink::mojom::ServiceWorkerErrorType error =
         blink::mojom::ServiceWorkerErrorType::kUnknown;
     auto options = blink::mojom::ServiceWorkerRegistrationOptions::New();
-    options->scope = pattern;
+    options->scope = scope;
     container_host->Register(
         worker_url, std::move(options),
         base::BindOnce([](blink::mojom::ServiceWorkerErrorType* out_error,
@@ -301,8 +302,7 @@ class ServiceWorkerProviderHostTest : public testing::TestWithParam<bool> {
       ServiceWorkerRemoteProviderEndpoint* remote_endpoint) {
     base::WeakPtr<ServiceWorkerProviderHost> host =
         ServiceWorkerProviderHost::PreCreateNavigationHost(
-            helper_->context()->AsWeakPtr(), true,
-            base::Callback<WebContents*(void)>());
+            helper_->context()->AsWeakPtr(), true, base::NullCallback());
     mojom::ServiceWorkerProviderHostInfoPtr info =
         CreateProviderHostInfoForWindow(host->provider_id(), 1 /* route_id */);
     remote_endpoint->BindWithProviderHostInfo(&info);
@@ -448,7 +448,7 @@ TEST_P(ServiceWorkerProviderHostTest, Controller) {
   base::WeakPtr<ServiceWorkerProviderHost> host =
       ServiceWorkerProviderHost::PreCreateNavigationHost(
           helper_->context()->AsWeakPtr(), true /* are_ancestors_secure */,
-          base::Callback<WebContents*(void)>());
+          base::NullCallback());
   mojom::ServiceWorkerProviderHostInfoPtr info =
       CreateProviderHostInfoForWindow(host->provider_id(), 1 /* route_id */);
   remote_endpoints_.emplace_back();
@@ -484,7 +484,7 @@ TEST_P(ServiceWorkerProviderHostTest, UncontrolledWithMatchingRegistration) {
   base::WeakPtr<ServiceWorkerProviderHost> host =
       ServiceWorkerProviderHost::PreCreateNavigationHost(
           helper_->context()->AsWeakPtr(), true /* are_ancestors_secure */,
-          base::Callback<WebContents*(void)>());
+          base::NullCallback());
   mojom::ServiceWorkerProviderHostInfoPtr info =
       CreateProviderHostInfoForWindow(host->provider_id(), 1 /* route_id */);
   remote_endpoints_.emplace_back();
@@ -871,92 +871,6 @@ TEST_P(ServiceWorkerProviderHostTest,
     FinishNavigation(host.get(), std::move(info));
     EXPECT_TRUE(CanFindClientProviderHost(host.get()));
   }
-}
-
-// Regression test for https://crbug.com/860106. When a provider host
-// is destroyed, it removes itself as a controllee from its controller.
-// This can trigger the waiting version starting to activate. The
-// destructing host shouldn't try to change its controller to the new
-// active version.
-TEST_P(ServiceWorkerProviderHostTest, DontSetControllerInDestructor) {
-  // This test requires the idle timeout mechanism of S13nSW to exercise the
-  // desired code path.
-  if (!IsServiceWorkerServicificationEnabled())
-    return;
-
-  // Make a window.
-  ServiceWorkerProviderHost* provider_host1 =
-      CreateProviderHost(GURL("https://www.example.com/example1.html"));
-
-  // Make an active version.
-  auto version1 = base::MakeRefCounted<ServiceWorkerVersion>(
-      registration1_.get(), GURL("https://www.example.com/sw.js"),
-      blink::mojom::ScriptType::kClassic, 1 /* version_id */,
-      helper_->context()->AsWeakPtr());
-  version1->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
-  version1->SetStatus(ServiceWorkerVersion::ACTIVATED);
-  registration1_->SetActiveVersion(version1);
-
-  // Make the registration findable via storage functions. This allows
-  // the service worker to start, which will be needed later.
-  base::RunLoop loop;
-  helper_->context()->storage()->LazyInitializeForTest(loop.QuitClosure());
-  loop.Run();
-  std::vector<ServiceWorkerDatabase::ResourceRecord> records;
-  records.push_back(WriteToDiskCacheSync(
-      helper_->context()->storage(), version1->script_url(),
-      helper_->context()->storage()->NewResourceId(), {} /* headers */,
-      "I'm the body", "I'm the meta data"));
-  version1->script_cache_map()->SetResources(records);
-  version1->SetMainScriptHttpResponseInfo(
-      EmbeddedWorkerTestHelper::CreateHttpResponseInfo());
-  base::Optional<blink::ServiceWorkerStatusCode> status;
-  helper_->context()->storage()->StoreRegistration(
-      registration1_.get(), version1.get(),
-      CreateReceiverOnCurrentThread(&status));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
-
-  // Make the active worker the controller and give it an ongoing request. This
-  // way when a waiting worker calls SkipWaiting(), activation won't trigger
-  // until we're ready.
-  provider_host1->SetControllerRegistration(registration1_, false);
-  EXPECT_EQ(version1.get(), provider_host1->controller());
-  // The worker must be running to have a request.
-  version1->StartWorker(ServiceWorkerMetrics::EventType::PUSH,
-                        base::DoNothing());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version1->running_status());
-  int request = version1->StartRequest(ServiceWorkerMetrics::EventType::PUSH,
-                                       base::DoNothing());
-
-  // Make the waiting worker and have it call SkipWaiting().
-  auto version2 = base::MakeRefCounted<ServiceWorkerVersion>(
-      registration1_.get(), GURL("https://www.example.com/sw.js"),
-      blink::mojom::ScriptType::kClassic, 2 /* version_id */,
-      helper_->context()->AsWeakPtr());
-  version2->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
-  version2->SetStatus(ServiceWorkerVersion::INSTALLED);
-  registration1_->SetWaitingVersion(version2);
-  version2->SkipWaiting(base::DoNothing());
-
-  // Finish the request. Activation won't yet occur until as
-  // |idle_time_fired_in_renderer_| isn't true.
-  version1->FinishRequest(request, true, base::TimeTicks::Now());
-
-  // Destroy the provider host. This triggers activation, and since
-  // SkipWaiting() was called, the provider host is in danger
-  // of receiving an OnSkippedWaiting() call during destruction.
-  ASSERT_TRUE(remote_endpoints_.back().host_ptr()->is_bound());
-  remote_endpoints_.back().host_ptr()->reset();
-  base::RunLoop().RunUntilIdle();
-
-  // No crash should occur, and the new version should be the active
-  // one.
-  EXPECT_EQ(version2.get(), registration1_->active_version());
-  EXPECT_FALSE(version2->HasControllee());
 }
 
 // Tests that the service worker involved with a navigation (via

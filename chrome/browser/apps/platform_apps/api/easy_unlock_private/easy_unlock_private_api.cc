@@ -57,9 +57,8 @@
 
 using proximity_auth::ScreenlockState;
 
-namespace apps {
-
-namespace easy_unlock_private = api::easy_unlock_private;
+namespace chrome_apps {
+namespace api {
 
 namespace {
 
@@ -434,9 +433,11 @@ EasyUnlockPrivateSetupConnectionSendFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-}  // namespace apps
+}  // namespace api
+}  // namespace chrome_apps
 
 template <>
-void apps::EasyUnlockPrivateAPI::Factory::DeclareFactoryDependencies() {
+void chrome_apps::api::EasyUnlockPrivateAPI::Factory::
+    DeclareFactoryDependencies() {
   DependsOn(EasyUnlockPrivateConnectionResourceManager::GetFactoryInstance());
 }

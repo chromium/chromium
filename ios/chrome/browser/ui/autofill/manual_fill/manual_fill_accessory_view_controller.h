@@ -7,6 +7,19 @@
 
 #import <UIKit/UIKit.h>
 
+namespace manual_fill {
+
+// Accessibility identifier of the keyboard button.
+extern NSString* const AccessoryKeyboardAccessibilityIdentifier;
+// Accessibility identifier of the password button.
+extern NSString* const AccessoryPasswordAccessibilityIdentifier;
+// Accessibility identifier of the address button.
+extern NSString* const AccessoryAddressAccessibilityIdentifier;
+// Accessibility identifier of the credit card button.
+extern NSString* const AccessoryCreditCardAccessibilityIdentifier;
+
+}  // namespace manual_fill
+
 // Protocol to handle user interactions in a ManualFillAccessoryViewController.
 @protocol ManualFillAccessoryViewControllerDelegate
 
@@ -20,7 +33,7 @@
 - (void)keyboardButtonPressed;
 
 // Invoked after the user touches the `passwords` button.
-- (void)passwordButtonPressed;
+- (void)passwordButtonPressed:(UIButton*)sender;
 
 @end
 

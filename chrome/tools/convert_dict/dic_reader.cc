@@ -115,7 +115,7 @@ bool PopulateWordSet(WordSet* word_set, FILE* file, AffReader* aff_reader,
     if (word_tab_offset != std::string::npos)
       utf8word = utf8word.substr(0, word_tab_offset);
 
-    WordSet::iterator found = word_set->find(utf8word);
+    auto found = word_set->find(utf8word);
     std::set<int> affix_vector;
     affix_vector.insert(affix_index);
 
@@ -170,11 +170,9 @@ bool DicReader::Read(AffReader* aff_reader) {
                     "UTF-8", false);
   }
   // Make sure the words are sorted, they may be unsorted in the input.
-  for (WordSet::iterator word = word_set.begin(); word != word_set.end();
-       ++word) {
+  for (auto word = word_set.begin(); word != word_set.end(); ++word) {
     std::vector<int> affixes;
-    for (std::set<int>::iterator aff = word->second.begin();
-         aff != word->second.end(); ++aff)
+    for (auto aff = word->second.begin(); aff != word->second.end(); ++aff)
       affixes.push_back(*aff);
 
     // Double check that the affixes are sorted. This isn't strictly necessary

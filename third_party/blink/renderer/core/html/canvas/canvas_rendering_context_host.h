@@ -34,6 +34,9 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
  public:
   CanvasRenderingContextHost();
 
+  void static RecordCanvasSizeToUMA(unsigned width,
+                                    unsigned height,
+                                    bool isOffscreen);
   virtual void DetachContext() = 0;
 
   virtual void DidDraw(const FloatRect& rect) = 0;

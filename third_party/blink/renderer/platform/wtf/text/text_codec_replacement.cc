@@ -35,7 +35,7 @@ void TextCodecReplacement::RegisterCodecs(TextCodecRegistrar registrar) {
 }
 
 String TextCodecReplacement::Decode(const char*,
-                                    size_t length,
+                                    wtf_size_t length,
                                     FlushBehavior,
                                     bool,
                                     bool& saw_error) {

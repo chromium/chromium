@@ -89,11 +89,6 @@ void TestInkDropHost::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
   ++num_ink_drop_layers_removed_;
 }
 
-std::unique_ptr<InkDrop> TestInkDropHost::CreateInkDrop() {
-  NOTREACHED();
-  return nullptr;
-}
-
 std::unique_ptr<InkDropRipple> TestInkDropHost::CreateInkDropRipple() const {
   gfx::Size size(10, 10);
   std::unique_ptr<InkDropRipple> ripple(new TestInkDropRipple(

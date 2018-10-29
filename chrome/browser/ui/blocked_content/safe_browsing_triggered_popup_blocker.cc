@@ -67,19 +67,23 @@ void SafeBrowsingTriggeredPopupBlocker::RegisterProfilePrefs(
 }
 
 // static
-std::unique_ptr<SafeBrowsingTriggeredPopupBlocker>
-SafeBrowsingTriggeredPopupBlocker::MaybeCreate(
+void SafeBrowsingTriggeredPopupBlocker::MaybeCreate(
     content::WebContents* web_contents) {
   if (!IsEnabled(web_contents))
-    return nullptr;
+    return;
 
   auto* observer_manager =
       subresource_filter::SubresourceFilterObserverManager::FromWebContents(
           web_contents);
   if (!observer_manager)
-    return nullptr;
-  return base::WrapUnique(
-      new SafeBrowsingTriggeredPopupBlocker(web_contents, observer_manager));
+    return;
+
+  if (FromWebContents(web_contents))
+    return;
+
+  web_contents->SetUserData(
+      UserDataKey(), base::WrapUnique(new SafeBrowsingTriggeredPopupBlocker(
+                         web_contents, observer_manager)));
 }
 
 SafeBrowsingTriggeredPopupBlocker::~SafeBrowsingTriggeredPopupBlocker() =

@@ -2,7 +2,6 @@ This tests that transformed annotated regions have the correct bounds.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS draggableRegions() is ''
 PASS nonDraggableRegions() is ''
 PASS draggableRegions() is '20,10+100x60'

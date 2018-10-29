@@ -5,7 +5,9 @@
 #import "components/autofill/ios/browser/fake_js_autofill_manager.h"
 
 #include "base/bind.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "ios/web/public/web_state/web_frame.h"
 #include "ios/web/public/web_task_traits.h"
 #include "ios/web/public/web_thread.h"
 
@@ -17,14 +19,20 @@
 
 @synthesize lastClearedFormName = _lastClearedFormName;
 @synthesize lastClearedFieldIdentifier = _lastClearedFieldIdentifier;
+@synthesize lastClearedFrameIdentifier = _lastClearedFrameIdentifier;
 
 - (void)clearAutofilledFieldsForFormName:(NSString*)formName
                          fieldIdentifier:(NSString*)fieldIdentifier
+                                 inFrame:(web::WebFrame*)frame
                        completionHandler:(ProceduralBlock)completionHandler {
   base::PostTaskWithTraits(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
                              _lastClearedFormName = [formName copy];
                              _lastClearedFieldIdentifier =
                                  [fieldIdentifier copy];
+                             _lastClearedFrameIdentifier =
+                                 frame ? base::SysUTF8ToNSString(
+                                             frame->GetFrameId())
+                                       : nil;
                              completionHandler();
                            }));
 }

@@ -1,0 +1,10 @@
+Test to ensure devtools clears post data after getting HTTP 303 through interception response.
+
+Got request: POST http://127.0.0.1:8000/my-path
+Post Data: foo=bar
+Origin: http://127.0.0.1:8000
+Content-Type: application/x-www-form-urlencoded
+Got request: GET http://127.0.0.1:8000/devtools/resources/empty.html
+Origin: undefined
+Content-Type: undefined
+

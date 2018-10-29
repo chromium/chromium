@@ -16,6 +16,19 @@ class AshmemRegion {
 
   ~AshmemRegion() { Reset(-1); }
 
+  AshmemRegion(const AshmemRegion& other) = delete;
+  AshmemRegion& operator=(const AshmemRegion& other) = delete;
+
+  AshmemRegion(AshmemRegion&& other) : fd_(other.fd_) { other.fd_ = -1; }
+
+  AshmemRegion& operator=(AshmemRegion&& other) {
+    if (this != &other) {
+      fd_ = other.fd_;
+      other.fd_ = -1;
+    }
+    return *this;
+  }
+
   int fd() const { return fd_; }
 
   int Release() {
@@ -53,9 +66,6 @@ class AshmemRegion {
   static bool CheckFileDescriptorIsReadOnly(int fd);
 
  private:
-  AshmemRegion(const AshmemRegion& other);
-  AshmemRegion& operator=(const AshmemRegion& other);
-
   int fd_;
 };
 

@@ -100,9 +100,6 @@ bool D3D11PictureBuffer::GpuResources::Init(
   if (!MakeContextCurrent(stub))
     return false;
 
-  // TODO(liberato): see GpuVideoFrameFactory.
-  // stub_->AddDestructionObserver(this);
-
   auto decoder_helper = GLES2DecoderHelper::Create(stub->decoder_context());
   gpu::gles2::ContextGroup* group = stub->decoder_context()->GetContextGroup();
   gpu::MailboxManager* mailbox_manager = group->mailbox_manager();
@@ -178,7 +175,6 @@ bool D3D11PictureBuffer::GpuResources::Init(
   RETURN_ON_FAILURE(result, "Could not post texture", false);
 
   result = eglStreamConsumerAcquireKHR(egl_display, stream);
-  // TODO(liberato): who destroys |stream|?
 
   RETURN_ON_FAILURE(result, "Could not post acquire stream", false);
   gl::GLImageDXGI* gl_image_dxgi =

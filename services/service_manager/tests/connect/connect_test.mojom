@@ -32,11 +32,11 @@ interface StandaloneApp {
   ConnectToClassInterface() => (string class_interface_response, string title);
 };
 
-interface UserIdTest {
-  // Attempts to connect to mojo:connect_test_class_app as |user_id|.
+interface IdentityTest {
+  // Attempts to connect to mojo:connect_test_class_app as |target|.
   // The callback takes the connection response result, and the identity
-  // mojo:connect_test_class_app was run as, which should match |user_id|.
-  ConnectToClassAppAsDifferentUser(service_manager.mojom.Identity target) =>
+  // mojo:connect_test_class_app was run as, which should match |target|.
+  ConnectToClassAppWithIdentity(service_manager.mojom.Identity target) =>
       (int32 connection_result, service_manager.mojom.Identity target);
 };
 

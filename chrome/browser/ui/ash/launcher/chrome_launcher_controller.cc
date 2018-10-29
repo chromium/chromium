@@ -13,8 +13,8 @@
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
+#include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/interfaces/constants.mojom.h"
-#include "ash/shell.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/app_list/crostini/crostini_app_icon_loader.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_icon_loader.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
+#include "chrome/browser/ui/ash/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/browser/ui/ash/launcher/app_shortcut_launcher_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_launcher_controller.h"
@@ -81,7 +82,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/keyboard/keyboard_util.h"
 #include "ui/resources/grit/ui_resources.h"
 
 using extension_misc::kChromeAppId;
@@ -250,7 +250,7 @@ ChromeLauncherController::ChromeLauncherController(Profile* profile,
   app_window_controllers_.push_back(std::move(extension_app_window_controller));
   app_window_controllers_.push_back(
       std::make_unique<ArcAppWindowLauncherController>(this));
-  if (IsCrostiniUIAllowedForProfile(profile)) {
+  if (crostini::IsCrostiniUIAllowedForProfile(profile)) {
     std::unique_ptr<CrostiniAppWindowShelfController> crostini_controller =
         std::make_unique<CrostiniAppWindowShelfController>(this);
     crostini_app_window_shelf_controller_ = crostini_controller.get();
@@ -288,10 +288,7 @@ ChromeLauncherController::~ChromeLauncherController() {
 void ChromeLauncherController::Init() {
   CreateBrowserShortcutLauncherItem();
   UpdateAppLaunchersFromPref();
-
-  // TODO(sky): update unit test so that this test isn't necessary.
-  if (ash::Shell::HasInstance())
-    SetVirtualKeyboardBehaviorFromPrefs();
+  SetVirtualKeyboardBehaviorFromPrefs();
 }
 
 ash::ShelfID ChromeLauncherController::CreateAppLauncherItem(
@@ -520,10 +517,17 @@ ash::ShelfAction ChromeLauncherController::ActivateWindowOrMinimizeIfActive(
     return ash::SHELF_ACTION_WINDOW_ACTIVATED;
   }
 
+  AppListClientImpl* app_list_client = AppListClientImpl::GetInstance();
   if (window->IsActive() && allow_minimize &&
-      !AppListClientImpl::GetInstance()->app_list_target_visibility()) {
+      !(app_list_client && app_list_client->app_list_target_visibility())) {
     window->Minimize();
     return ash::SHELF_ACTION_WINDOW_MINIMIZED;
+  }
+
+  if (app_list_client && app_list_client->IsHomeLauncherEnabledInTabletMode()) {
+    // Run slide down animation to show the window.
+    wm::SetWindowVisibilityAnimationType(
+        native_window, ash::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_SLIDE_DOWN);
   }
 
   window->Show();
@@ -988,24 +992,20 @@ void ChromeLauncherController::UpdatePolicyPinnedAppsFromPrefs() {
 }
 
 void ChromeLauncherController::SetVirtualKeyboardBehaviorFromPrefs() {
+  using keyboard::mojom::KeyboardEnableFlag;
+  if (!ChromeKeyboardControllerClient::HasInstance())  // May be null in tests
+    return;
+  auto* client = ChromeKeyboardControllerClient::Get();
   const PrefService* service = profile()->GetPrefs();
-  const bool was_enabled = keyboard::IsKeyboardEnabled();
-  if (!service->HasPrefPath(prefs::kTouchVirtualKeyboardEnabled)) {
-    keyboard::SetKeyboardShowOverride(keyboard::KEYBOARD_SHOW_OVERRIDE_NONE);
+  if (service->HasPrefPath(prefs::kTouchVirtualKeyboardEnabled)) {
+    // Since these flags are mutually exclusive, setting one clears the other.
+    client->SetEnableFlag(
+        service->GetBoolean(prefs::kTouchVirtualKeyboardEnabled)
+            ? KeyboardEnableFlag::kPolicyEnabled
+            : KeyboardEnableFlag::kPolicyDisabled);
   } else {
-    const bool enable =
-        service->GetBoolean(prefs::kTouchVirtualKeyboardEnabled);
-    keyboard::SetKeyboardShowOverride(
-        enable ? keyboard::KEYBOARD_SHOW_OVERRIDE_ENABLED
-               : keyboard::KEYBOARD_SHOW_OVERRIDE_DISABLED);
-  }
-  // TODO(crbug.com/557406): Fix this interaction pattern in Mash.
-  if (!features::IsMultiProcessMash()) {
-    const bool is_enabled = keyboard::IsKeyboardEnabled();
-    if (was_enabled && !is_enabled)
-      ash::Shell::Get()->DisableKeyboard();
-    else if (is_enabled && !was_enabled)
-      ash::Shell::Get()->EnableKeyboard();
+    client->ClearEnableFlag(KeyboardEnableFlag::kPolicyDisabled);
+    client->ClearEnableFlag(KeyboardEnableFlag::kPolicyEnabled);
   }
 }
 
@@ -1143,7 +1143,7 @@ void ChromeLauncherController::AttachProfile(Profile* profile_to_attach) {
           profile_, extension_misc::EXTENSION_ICON_MEDIUM, this);
   app_icon_loaders_.push_back(std::move(internal_app_icon_loader));
 
-  if (IsCrostiniUIAllowedForProfile(profile_)) {
+  if (crostini::IsCrostiniUIAllowedForProfile(profile_)) {
     std::unique_ptr<AppIconLoader> crostini_app_icon_loader =
         std::make_unique<CrostiniAppIconLoader>(
             profile_, extension_misc::EXTENSION_ICON_MEDIUM, this);
@@ -1177,7 +1177,7 @@ void ChromeLauncherController::AttachProfile(Profile* profile_to_attach) {
     app_updaters_.push_back(std::move(arc_app_updater));
   }
 
-  if (IsCrostiniUIAllowedForProfile(profile())) {
+  if (crostini::IsCrostiniUIAllowedForProfile(profile())) {
     std::unique_ptr<LauncherAppUpdater> crostini_app_updater(
         new LauncherCrostiniAppUpdater(this, profile()));
     app_updaters_.push_back(std::move(crostini_app_updater));

@@ -16,12 +16,60 @@ function DateFromTimeT(timestamp) {
 }
 
 /**
+ * Decode a file name from a raw byte string by given |encoding|.
+ *
+ * @param {string} data hex-encoded string of the file name. Every 2 characters
+ *     represent one byte in the 2-digit hexadecimal number.
+ * @param {string} encoding
+ */
+function decodeBinary(data, encoding) {
+  console.assert(data.length % 2 == 0, 'invalid encoding format');
+  var codes = [];
+  for (var i = 0; i < data.length; i += 2) {
+    var s = data.substr(i, 2);
+    codes.push(parseInt(s, 16));
+  }
+  return new TextDecoder(encoding).decode(new Uint8Array(codes));
+}
+
+/**
+ * Collects |binary_name| of entries as a concatenated string, by recursively
+ * scanning files under the subtree.
+ *
+ * @param {!EntryMetadata} entryMetadata of the root directory.
+ * @param {number} limit Stops adding paths if total length exceed this.
+ */
+function getFileNameSample(entryMetadata, limit) {
+  if (entryMetadata.isDirectory) {
+    console.assert(
+        entryMetadata.entries,
+        'The field "entries" is mandatory for directories.');
+    var names = '';
+    for (var entry in entryMetadata.entries) {
+      var subtree = getFileNameSample(entryMetadata.entries[entry], limit);
+      names = names.concat(subtree);
+      limit -= subtree.length;
+      if (limit < 0)
+        return names;
+    }
+    return names;
+  } else if (entryMetadata.binary_name) {
+    return entryMetadata.binary_name;
+  }
+  return '';
+}
+
+/**
  * Corrects metadata entries fields in order for them to be sent to Files.app.
  * This function runs recursively for every entry in a directory.
+ *
  * @param {!Object<string, !EntryMetadata>} entryMetadata The metadata to
  *     correct.
+ * @param {string} encoding Coding system which |binary_name| codes the
+ *     original file name in the archive. Must be one of the labels supported
+ *     by TextDecoder, or empty if |entryMeatadata.name| is already correct.
  */
-function correctMetadata(entryMetadata) {
+function correctMetadata(entryMetadata, encoding) {
   entryMetadata.index = parseInt(entryMetadata.index, 10);
   entryMetadata.size = parseInt(entryMetadata.size, 10);
   entryMetadata.modificationTime =
@@ -30,9 +78,31 @@ function correctMetadata(entryMetadata) {
     console.assert(
         entryMetadata.entries,
         'The field "entries" is mandatory for dictionaries.');
+    var outputEntries = {};
     for (var entry in entryMetadata.entries) {
-      correctMetadata(entryMetadata.entries[entry]);
+      correctMetadata(entryMetadata.entries[entry], encoding);
+      var newKey;
+      if (!encoding || !entryMetadata.entries[entry].binary_name) {
+        newKey = entry;
+      } else {
+        newKey =
+            decodeBinary(entryMetadata.entries[entry].binary_name, encoding);
+      }
+      if (newKey in outputEntries) {
+        // TODO(crbug.com/846195): Tweak output file name to have a unique one.
+        // This would not happen unless either the archive or encoding detection
+        // was wrong. However an archive that doesn't use CP437 with the
+        // language encoding flag (EFS) in the general purpose bit flag unset is
+        // already invalid. So handling this case should be best-effort.
+        console.warn(
+            'Duplicated file names after encoding translation: ' + newKey);
+      }
+      outputEntries[newKey] = entryMetadata.entries[entry];
     }
+    entryMetadata.entries = outputEntries;
+  }
+  if (entryMetadata.binary_name && encoding) {
+    entryMetadata.name = decodeBinary(entryMetadata.binary_name, encoding);
   }
 }
 
@@ -145,6 +215,18 @@ unpacker.Volume.ENCODING_TABLE = {
   zh_TW: 'CP950'
 };
 
+// Map from a preferred MIME name detected by CED to the encoding label
+// supproted by TextEncoder class. We may add more encodings but only if there's
+// evidence that such archives are widespread.
+unpacker.Volume.MIME_TO_ENCODING_TABLE = {
+  'Shift_JIS': 'Shift_JIS'
+};
+
+/**
+ * Size of sampled file name strings for auto-detecting the coding system.
+ */
+unpacker.Volume.ENCODING_DETECT_SAMPLE_SIZE = 300;
+
 /**
  * @return {boolean} True if volume is ready to be used.
  */
@@ -160,6 +242,10 @@ unpacker.Volume.prototype.inUse = function() {
       Object.keys(this.openedFiles).length > 0;
 };
 
+function GetEncoding(preferred_mime_name) {
+  return unpacker.Volume.MIME_TO_ENCODING_TABLE[preferred_mime_name] || '';
+}
+
 /**
  * Initializes the volume by reading its metadata.
  * @param {function()} onSuccess Callback to execute on success.
@@ -171,9 +257,15 @@ unpacker.Volume.prototype.initialize = function(onSuccess, onError) {
     // Make a deep copy of metadata.
     this.metadata = /** @type {!Object<string, !EntryMetadata>} */ (
         JSON.parse(JSON.stringify(metadata)));
-    correctMetadata(this.metadata);
 
-    onSuccess();
+    var sample = getFileNameSample(
+        this.metadata, unpacker.Volume.ENCODING_DETECT_SAMPLE_SIZE);
+    chrome.fileManagerPrivate.detectCharacterEncoding(
+        sample, function(preferred_mime_name) {
+          correctMetadata(
+              this.metadata, GetEncoding(preferred_mime_name) || '');
+          onSuccess();
+        }.bind(this));
   }.bind(this), onError);
 };
 

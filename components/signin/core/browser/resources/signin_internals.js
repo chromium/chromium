@@ -169,6 +169,7 @@ function refreshSigninInfo(signinInfo) {
   jstProcess(new JsEvalContext(signinInfo), $('signin-info'));
   jstProcess(new JsEvalContext(signinInfo), $('token-info'));
   jstProcess(new JsEvalContext(signinInfo), $('account-info'));
+  jstProcess(new JsEvalContext(signinInfo), $('refresh-token-events'));
 }
 
 // Replace the cookie information with the fetched values.

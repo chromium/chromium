@@ -131,33 +131,43 @@
      ]
     }
   ],
-  "bluetoothPrivate": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "win", "mac", "linux"],
-    "whitelist": [
-      "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/387169
-      "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/387169
-      "E703483CEF33DEC18B4B6DD84B5C776FB9182BDB",  // http://crbug.com/387169
-      "307E96539209F95A1A8740C713E6998A73657D96",  // http://crbug.com/387169
-      "4F25792AF1AA7483936DE29C07806F203C7170A0",  // http://crbug.com/407693
-      "BD8781D757D830FC2E85470A1B6E8A718B7EE0D9",  // http://crbug.com/407693
-      "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB",  // http://crbug.com/407693
-      "81986D4F846CEDDDB962643FA501D1780DD441BB",  // http://crbug.com/407693
-      "89715614FAA2B4C2853802D70261D2A9D0756FC8",  // http://crbug.com/455986
-      "61FF4757F9420B62B19BA5C96084649339DB31F5",  // http://crbug.com/587613
-      "F3013F58BED982D1BC75943792FF877E5D458672",  // http://crbug.com/587613
-      "1B7734733E207CCE5C33BFAA544CA89634BF881F",  // http://crbug.com/587613
-      "23EEC2E3B4F6A62F5E6C8556364F7B749F9A809C",  // http://crbug.com/587613
-      "D238B3D5DB5836AEC1733DA4237CF93B7F96F495",  // http://crbug.com/587613
-      "B2FEB5422C0F105AED7027E363886F1FE29F13F6",  // http://crbug.com/587613
-      "2F6F6FDB84E0290ABAB7A9D7571EB344821E5F12",  // http://crbug.com/610452
-      "5B9E39EA374B136CBE7AED2D872003107642EAD5",  // http://crbug.com/610452
-      "E0E94FB0C01FFB9CDC7A5F098C99B5A8D2F95902",  // http://crbug.com/610452
-      "52E0557059A7A28F74ED1D92DDD997E0CCD37806",  // http://crbug.com/610452
-      "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/839189
-    ]
-  },
+  "bluetoothPrivate": [
+    {
+      "channel": "stable",
+      "extension_types": ["platform_app"],
+      "platforms": ["chromeos", "win", "mac", "linux"],
+      "whitelist": [
+        "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/387169
+        "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/387169
+        "E703483CEF33DEC18B4B6DD84B5C776FB9182BDB",  // http://crbug.com/387169
+        "307E96539209F95A1A8740C713E6998A73657D96",  // http://crbug.com/387169
+        "4F25792AF1AA7483936DE29C07806F203C7170A0",  // http://crbug.com/407693
+        "BD8781D757D830FC2E85470A1B6E8A718B7EE0D9",  // http://crbug.com/407693
+        "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB",  // http://crbug.com/407693
+        "81986D4F846CEDDDB962643FA501D1780DD441BB",  // http://crbug.com/407693
+        "89715614FAA2B4C2853802D70261D2A9D0756FC8",  // http://crbug.com/455986
+        "61FF4757F9420B62B19BA5C96084649339DB31F5",  // http://crbug.com/587613
+        "F3013F58BED982D1BC75943792FF877E5D458672",  // http://crbug.com/587613
+        "1B7734733E207CCE5C33BFAA544CA89634BF881F",  // http://crbug.com/587613
+        "23EEC2E3B4F6A62F5E6C8556364F7B749F9A809C",  // http://crbug.com/587613
+        "D238B3D5DB5836AEC1733DA4237CF93B7F96F495",  // http://crbug.com/587613
+        "B2FEB5422C0F105AED7027E363886F1FE29F13F6",  // http://crbug.com/587613
+        "2F6F6FDB84E0290ABAB7A9D7571EB344821E5F12",  // http://crbug.com/610452
+        "5B9E39EA374B136CBE7AED2D872003107642EAD5",  // http://crbug.com/610452
+        "E0E94FB0C01FFB9CDC7A5F098C99B5A8D2F95902",  // http://crbug.com/610452
+        "52E0557059A7A28F74ED1D92DDD997E0CCD37806",  // http://crbug.com/610452
+        "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/839189
+      ]
+    },
+    {
+      "channel": "stable",
+      "extension_types": ["extension"],
+      "platforms": ["chromeos"],
+      "whitelist": [
+        "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/899052
+      ]
+    }
+  ],
   "cast": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
@@ -190,7 +200,7 @@
     "platforms": ["chromeos"]
   },
   "declarativeNetRequest": {
-    "channel": "trunk",
+    "channel": "dev",
     "extension_types": ["extension"],
     "min_manifest_version": 2
   },

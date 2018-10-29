@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This header defines macros to export component's symbols.
-// See "platform/PlatformExport.h" for details.
+// See "platform/platform_export.h" for details.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CORE_EXPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CORE_EXPORT_H_

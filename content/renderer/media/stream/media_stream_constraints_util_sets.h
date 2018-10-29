@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/optional.h"
+#include "base/stl_util.h"
 #include "content/common/content_export.h"
 #include "content/renderer/media/stream/media_stream_constraints_util.h"
 
@@ -118,8 +119,7 @@ class DiscreteSet {
   ~DiscreteSet() = default;
 
   bool Contains(const T& value) const {
-    return is_universal_ || std::find(elements_.begin(), elements_.end(),
-                                      value) != elements_.end();
+    return is_universal_ || base::ContainsValue(elements_, value);
   }
 
   bool IsEmpty() const { return !is_universal_ && elements_.empty(); }
@@ -137,11 +137,8 @@ class DiscreteSet {
     // Both sets have explicit elements.
     std::vector<T> intersection;
     for (const auto& entry : elements_) {
-      auto it =
-          std::find(other.elements_.begin(), other.elements_.end(), entry);
-      if (it != other.elements_.end()) {
+      if (base::ContainsValue(other.elements_, entry))
         intersection.push_back(entry);
-      }
     }
     return DiscreteSet(std::move(intersection));
   }
@@ -167,6 +164,13 @@ class DiscreteSet {
   bool is_universal_;
   std::vector<T> elements_;
 };
+
+// Special case for DiscreteSet<bool> where it is easy to produce an explicit
+// set that contains all possible elements.
+template <>
+inline bool DiscreteSet<bool>::is_universal() const {
+  return Contains(true) && Contains(false);
+}
 
 DiscreteSet<std::string> StringSetFromConstraint(
     const blink::StringConstraint& constraint);

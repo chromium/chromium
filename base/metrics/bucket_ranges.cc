@@ -74,7 +74,8 @@ const uint32_t kCrcTable[256] = {
 // the CRC correct for big-endian vs little-ending calculations.  All we need is
 // a nice hash, that tends to depend on all the bits of the sample, with very
 // little chance of changes in one place impacting changes in another place.
-static uint32_t Crc32(uint32_t sum, HistogramBase::Sample value) {
+// Temporary non-static for https://crbug.com/836238
+/*static*/ uint32_t Crc32(uint32_t sum, HistogramBase::Sample value) {
   union {
     HistogramBase::Sample range;
     unsigned char bytes[sizeof(HistogramBase::Sample)];

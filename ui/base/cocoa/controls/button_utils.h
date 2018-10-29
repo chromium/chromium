@@ -22,9 +22,6 @@ UI_BASE_EXPORT
 
 + (NSButton*)checkboxWithTitle:(NSString*)title;
 
-+ (NSButton*)linkWithTitle:(NSString*)title
-                    action:(SEL)action
-                    target:(id)target;
 @end
 
 #endif  // UI_BASE_COCOA_CONTROLS_BUTTON_UTILS_H_

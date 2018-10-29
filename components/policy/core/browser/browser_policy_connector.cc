@@ -17,6 +17,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
@@ -133,6 +134,7 @@ void BrowserPolicyConnector::ScheduleServiceInitialization(
 
 // static
 bool BrowserPolicyConnector::IsNonEnterpriseUser(const std::string& username) {
+  TRACE_EVENT0("browser", "BrowserPolicyConnector::IsNonEnterpriseUser");
   if (username.empty() || username.find('@') == std::string::npos) {
     // An empty username means incognito user in case of ChromiumOS and
     // no logged-in user in case of Chromium (SigninService). Many tests use

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/union_container.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/union_container.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -98,7 +98,7 @@ void V8UnsignedLongLongOrBooleanOrTestCallbackInterface::ToImpl(v8::Isolate* iso
   }
 
   if (v8Value->IsNumber()) {
-    uint64_t cppValue = NativeValueTraits<IDLUnsignedLongLong>::NativeValue(isolate, v8Value, exceptionState, kNormalConversion);
+    uint64_t cppValue = NativeValueTraits<IDLUnsignedLongLong>::NativeValue(isolate, v8Value, exceptionState);
     if (exceptionState.HadException())
       return;
     impl.SetUnsignedLongLong(cppValue);
@@ -106,7 +106,7 @@ void V8UnsignedLongLongOrBooleanOrTestCallbackInterface::ToImpl(v8::Isolate* iso
   }
 
   {
-    uint64_t cppValue = NativeValueTraits<IDLUnsignedLongLong>::NativeValue(isolate, v8Value, exceptionState, kNormalConversion);
+    uint64_t cppValue = NativeValueTraits<IDLUnsignedLongLong>::NativeValue(isolate, v8Value, exceptionState);
     if (exceptionState.HadException())
       return;
     impl.SetUnsignedLongLong(cppValue);

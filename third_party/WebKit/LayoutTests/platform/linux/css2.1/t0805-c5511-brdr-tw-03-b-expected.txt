@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x39
-  LayoutBlockFlow {HTML} at (0,0) size 800x39
-    LayoutBlockFlow {BODY} at (8,8) size 784x23
-      LayoutBlockFlow {DIV} at (0,0) size 784x23 [color=#000080]
-        LayoutBlockFlow {DIV} at (0,0) size 784x23 [border: none (3px solid #000080)]
-          LayoutText {#text} at (3,0) size 264x19
-            text run at (3,0) width 264: "This box should be open ended at the top."

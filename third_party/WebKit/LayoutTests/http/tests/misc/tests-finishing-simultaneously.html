@@ -20,7 +20,7 @@ function onLoad() {
     document.body.innerText = 'Main frame';
     testRunner.waitUntilDone();
     testRunner.dumpAsText();
-    testRunner.dumpChildFramesAsText();
+    testRunner.dumpChildFrames();
 
     window.addEventListener("message", function(event) {
         loaded_frames = loaded_frames + 1;

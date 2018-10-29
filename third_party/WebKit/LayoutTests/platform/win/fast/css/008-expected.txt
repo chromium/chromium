@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutBlockFlow {DIV} at (0,0) size 784x48 [border: (10px solid #808000)]
-        LayoutText {#text} at (10,10) size 553x27
-          text run at (10,10) width 553: "You should see 24px text inside a 10px solid olive border."

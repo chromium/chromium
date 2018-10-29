@@ -321,15 +321,6 @@ class TestNetworkingCastPrivateDelegate
 
 class NetworkingPrivateApiTest : public ExtensionApiTest {
  public:
-  using TestNetworkingPrivateDelegateFactory =
-      base::Callback<std::unique_ptr<KeyedService>()>;
-
-  static std::unique_ptr<KeyedService> GetNetworkingPrivateDelegate(
-      content::BrowserContext* profile) {
-    CHECK(s_networking_private_delegate_factory_ptr);
-    return s_networking_private_delegate_factory_ptr->Run();
-  }
-
   NetworkingPrivateApiTest() = default;
   ~NetworkingPrivateApiTest() override = default;
 
@@ -339,12 +330,6 @@ class NetworkingPrivateApiTest : public ExtensionApiTest {
         base::Unretained(this), test_failure_);
     ChromeNetworkingCastPrivateDelegate::SetFactoryCallbackForTest(
         &networking_cast_delegate_factory_);
-
-    networking_private_delegate_factory_ = base::Bind(
-        &NetworkingPrivateApiTest::CreateTestNetworkingPrivateDelegate,
-        base::Unretained(this), test_failure_);
-    s_networking_private_delegate_factory_ptr =
-        &networking_private_delegate_factory_;
 
     ExtensionApiTest::SetUp();
   }
@@ -360,28 +345,28 @@ class NetworkingPrivateApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     NetworkingPrivateDelegateFactory::GetInstance()->SetTestingFactory(
-        profile(), &NetworkingPrivateApiTest::GetNetworkingPrivateDelegate);
+        profile(),
+        base::BindRepeating(
+            &NetworkingPrivateApiTest::CreateTestNetworkingPrivateDelegate,
+            base::Unretained(this), test_failure_));
   }
 
   void TearDown() override {
     ExtensionApiTest::TearDown();
 
-    s_networking_private_delegate_factory_ptr = nullptr;
     ChromeNetworkingCastPrivateDelegate::SetFactoryCallbackForTest(nullptr);
-
-    networking_private_delegate_ = nullptr;
   }
 
   bool GetEnabled(const std::string& type) {
-    return networking_private_delegate_->GetEnabled(type);
+    return networking_private_delegate()->GetEnabled(type);
   }
 
   bool GetDisabled(const std::string& type) {
-    return networking_private_delegate_->GetDisabled(type);
+    return networking_private_delegate()->GetDisabled(type);
   }
 
   const std::vector<std::string>& GetScanRequested() {
-    return networking_private_delegate_->GetScanRequested();
+    return networking_private_delegate()->GetScanRequested();
   }
 
  protected:
@@ -398,37 +383,28 @@ class NetworkingPrivateApiTest : public ExtensionApiTest {
   }
 
   std::unique_ptr<KeyedService> CreateTestNetworkingPrivateDelegate(
-      bool test_failure) {
-    CHECK(!networking_private_delegate_);
-    auto delegate =
-        std::make_unique<TestNetworkingPrivateDelegate>(test_failure);
-    networking_private_delegate_ = delegate.get();
-    return delegate;
+      bool test_failure,
+      content::BrowserContext* /*context*/) {
+    return std::make_unique<TestNetworkingPrivateDelegate>(test_failure);
+  }
+
+  // Returns a pointer to a networking private delegate created by the
+  // test factory callback.
+  TestNetworkingPrivateDelegate* networking_private_delegate() {
+    return static_cast<TestNetworkingPrivateDelegate*>(
+        NetworkingPrivateDelegateFactory::GetInstance()->GetForBrowserContext(
+            profile()));
   }
 
  protected:
   bool test_failure_ = false;
 
  private:
-  // Pointer to a networking private delegate created by the test factory
-  // callback.
-  TestNetworkingPrivateDelegate* networking_private_delegate_ = nullptr;
-
-  TestNetworkingPrivateDelegateFactory networking_private_delegate_factory_;
-  // Static pointer to |test_delegate_factory_|, so it can be used from
-  // |CreateNetwokringPrivateDelegate|.
-  static TestNetworkingPrivateDelegateFactory*
-      s_networking_private_delegate_factory_ptr;
-
   ChromeNetworkingCastPrivateDelegate::FactoryCallback
       networking_cast_delegate_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateApiTest);
 };
-
-NetworkingPrivateApiTest::TestNetworkingPrivateDelegateFactory*
-    NetworkingPrivateApiTest::s_networking_private_delegate_factory_ptr =
-        nullptr;
 
 }  // namespace
 

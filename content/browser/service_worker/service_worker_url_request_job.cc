@@ -586,7 +586,7 @@ blink::mojom::BlobPtr ServiceWorkerURLRequestJob::CreateRequestBodyBlob(
   auto blob_builder =
       std::make_unique<storage::BlobDataBuilder>(base::GenerateGUID());
   for (const network::DataElement& element : (*body_->elements())) {
-    blob_builder->AppendIPCDataElement(element, nullptr,
+    blob_builder->AppendIPCDataElement(element,
                                        blob_storage_context_->registry());
   }
 
@@ -660,6 +660,7 @@ void ServiceWorkerURLRequestJob::DidDispatchFetchEvent(
     ServiceWorkerFetchDispatcher::FetchEventResult fetch_result,
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
+    blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
     scoped_refptr<ServiceWorkerVersion> version) {
   // Do not clear |fetch_dispatcher_| if it has dispatched a navigation preload
   // request to keep the network::mojom::URLLoader related objects in it,

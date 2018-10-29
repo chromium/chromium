@@ -16,6 +16,9 @@ std::string PrefetchItem::ToString() const {
     << client_id << ", state=" << state
     << ", url=" << url.possibly_invalid_spec()
     << ", final_url=" << final_archived_url.possibly_invalid_spec()
+    << ", thumbnail_url=" << thumbnail_url.possibly_invalid_spec()
+    << ", favicon_url=" << favicon_url.possibly_invalid_spec()
+    << ", snippet=" << snippet << ", attribution=" << attribution
     << ", gb_attempts=" << generate_bundle_attempts
     << ", get_attempts=" << get_operation_attempts
     << ", dl_attempts=" << download_initiation_attempts
@@ -43,6 +46,9 @@ bool PrefetchItem::operator==(const PrefetchItem& other) const {
   return offline_id == other.offline_id && guid == other.guid &&
          client_id == other.client_id && state == other.state &&
          url == other.url && final_archived_url == other.final_archived_url &&
+         thumbnail_url == other.thumbnail_url &&
+         favicon_url == other.favicon_url && snippet == other.snippet &&
+         attribution == other.attribution &&
          generate_bundle_attempts == other.generate_bundle_attempts &&
          get_operation_attempts == other.get_operation_attempts &&
          download_initiation_attempts == other.download_initiation_attempts &&

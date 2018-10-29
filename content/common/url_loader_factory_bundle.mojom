@@ -5,14 +5,22 @@
 module content.mojom;
 
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "url/mojom/origin.mojom";
 
 // Serializes a collection of URLLoaderFactory interfaces.
 struct URLLoaderFactoryBundle {
   // The default factory to be used when no others apply.
+  //
+  // TODO(jam): https://crbug.com/887109: Remove |default_factory| and put it
+  // inside |scheme_specific_factories| instead.
   network.mojom.URLLoaderFactory default_factory;
 
   // A mapping from URL scheme to factory interface.
-  map<string, network.mojom.URLLoaderFactory> factories;
+  map<string, network.mojom.URLLoaderFactory> scheme_specific_factories;
+
+  // A mapping from request-initiator-origin to factory interface.
+  map<url.mojom.Origin, network.mojom.URLLoaderFactory>
+      initiator_specific_factories;
 
   // Whether redirect checks should be bypassed, since they are happening in the
   // browser.

@@ -36,6 +36,7 @@ constexpr char kAssistantRemindersPrefix[] = "googleassistant://reminders";
 constexpr char kAssistantScreenshotPrefix[] =
     "googleassistant://take-screenshot";
 constexpr char kAssistantSettingsPrefix[] = "googleassistant://settings";
+constexpr char kAssistantTaskManagerPrefix[] = "googleassistant://task-manager";
 constexpr char kAssistantWhatsOnMyScreenPrefix[] =
     "googleassistant://whats-on-my-screen";
 
@@ -112,6 +113,7 @@ DeepLinkType GetDeepLinkType(const GURL& url) {
       {DeepLinkType::kReminders, kAssistantRemindersPrefix},
       {DeepLinkType::kScreenshot, kAssistantScreenshotPrefix},
       {DeepLinkType::kSettings, kAssistantSettingsPrefix},
+      {DeepLinkType::kTaskManager, kAssistantTaskManagerPrefix},
       {DeepLinkType::kWhatsOnMyScreen, kAssistantWhatsOnMyScreenPrefix}};
 
   for (const auto& supported_deep_link : kSupportedDeepLinks) {
@@ -172,6 +174,7 @@ base::Optional<GURL> GetWebUrl(DeepLinkType type) {
     case DeepLinkType::kOnboarding:
     case DeepLinkType::kQuery:
     case DeepLinkType::kScreenshot:
+    case DeepLinkType::kTaskManager:
     case DeepLinkType::kWhatsOnMyScreen:
       NOTREACHED();
       return base::nullopt;

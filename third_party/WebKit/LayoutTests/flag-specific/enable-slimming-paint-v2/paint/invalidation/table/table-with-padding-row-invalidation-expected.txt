@@ -9,7 +9,7 @@
         {
           "object": "LayoutTableRow TR",
           "rect": [0, 0, 260, 50],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

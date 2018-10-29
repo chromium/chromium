@@ -23,6 +23,7 @@
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class Policy;
@@ -154,10 +155,12 @@ class TestConnectionFactoryImpl : public ConnectionFactoryImpl {
 TestConnectionFactoryImpl::TestConnectionFactoryImpl(
     GetProxyResolvingFactoryCallback get_socket_factory_callback,
     const base::Closure& finished_callback)
-    : ConnectionFactoryImpl(BuildEndpoints(),
-                            net::BackoffEntry::Policy(),
-                            get_socket_factory_callback,
-                            &dummy_recorder_),
+    : ConnectionFactoryImpl(
+          BuildEndpoints(),
+          net::BackoffEntry::Policy(),
+          get_socket_factory_callback,
+          &dummy_recorder_,
+          network::TestNetworkConnectionTracker::GetInstance()),
       connect_result_(net::ERR_UNEXPECTED),
       num_expected_attempts_(0),
       connections_fulfilled_(true),
@@ -294,6 +297,8 @@ class ConnectionFactoryImplTest
   }
   void ConnectionsComplete();
 
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
   base::test::ScopedTaskEnvironment scoped_task_environment_;
   TestConnectionFactoryImpl factory_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -305,7 +310,9 @@ class ConnectionFactoryImplTest
 };
 
 ConnectionFactoryImplTest::ConnectionFactoryImplTest()
-    : scoped_task_environment_(
+    : network_connection_tracker_(
+          network::TestNetworkConnectionTracker::CreateInstance()),
+      scoped_task_environment_(
           base::test::ScopedTaskEnvironment::MainThreadType::IO),
       factory_(base::BindRepeating(
                    &ConnectionFactoryImplTest::GetProxyResolvingSocketFactory,
@@ -443,7 +450,8 @@ TEST_F(ConnectionFactoryImplTest, FailThenNetworkChangeEvent) {
   EXPECT_FALSE(initial_backoff.is_null());
 
   factory()->SetConnectResult(net::ERR_FAILED);
-  factory()->OnNetworkChanged(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  factory()->OnConnectionChanged(
+      network::mojom::ConnectionType::CONNECTION_WIFI);
   WaitForConnections();
 
   // Backoff should increase.
@@ -462,7 +470,8 @@ TEST_F(ConnectionFactoryImplTest, CanarySucceedsThenDisconnects) {
   EXPECT_FALSE(initial_backoff.is_null());
 
   factory()->SetConnectResult(net::OK);
-  factory()->OnNetworkChanged(net::NetworkChangeNotifier::CONNECTION_ETHERNET);
+  factory()->OnConnectionChanged(
+      network::mojom::ConnectionType::CONNECTION_ETHERNET);
   WaitForConnections();
   EXPECT_TRUE(factory()->IsEndpointReachable());
   EXPECT_TRUE(connected_server().is_valid());
@@ -487,7 +496,8 @@ TEST_F(ConnectionFactoryImplTest, CanarySucceedsRetryDuringLogin) {
 
   factory()->SetDelayLogin(true);
   factory()->SetConnectResult(net::OK);
-  factory()->OnNetworkChanged(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  factory()->OnConnectionChanged(
+      network::mojom::ConnectionType::CONNECTION_WIFI);
   WaitForConnections();
   EXPECT_FALSE(factory()->IsEndpointReachable());
 
@@ -583,13 +593,14 @@ TEST_F(ConnectionFactoryImplTest, DISABLED_SuppressConnectWhenNoNetwork) {
   factory()->tick_clock()->Advance(base::TimeDelta::FromSeconds(11));
 
   // Will trigger reset, but will not attempt a new connection.
-  factory()->OnNetworkChanged(net::NetworkChangeNotifier::CONNECTION_NONE);
+  factory()->OnConnectionChanged(
+      network::mojom::ConnectionType::CONNECTION_NONE);
   EXPECT_FALSE(factory()->IsEndpointReachable());
   EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
 
   // When the network returns, attempt to connect.
   factory()->SetConnectResult(net::OK);
-  factory()->OnNetworkChanged(net::NetworkChangeNotifier::CONNECTION_4G);
+  factory()->OnConnectionChanged(network::mojom::ConnectionType::CONNECTION_4G);
   WaitForConnections();
 
   EXPECT_TRUE(factory()->IsEndpointReachable());
@@ -599,7 +610,7 @@ TEST_F(ConnectionFactoryImplTest, DISABLED_SuppressConnectWhenNoNetwork) {
 // Receiving a network change event before the initial connection should have
 // no effect.
 TEST_F(ConnectionFactoryImplTest, NetworkChangeBeforeFirstConnection) {
-  factory()->OnNetworkChanged(net::NetworkChangeNotifier::CONNECTION_4G);
+  factory()->OnConnectionChanged(network::mojom::ConnectionType::CONNECTION_4G);
   factory()->SetConnectResult(net::OK);
   factory()->Connect();
   EXPECT_TRUE(factory()->NextRetryAttempt().is_null());

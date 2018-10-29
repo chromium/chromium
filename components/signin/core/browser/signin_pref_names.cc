@@ -77,9 +77,6 @@ const char kGoogleServicesUsername[] = "google.services.username";
 const char kGoogleServicesUsernamePattern[] =
     "google.services.username_pattern";
 
-// Boolean identifying whether reverse auto-logins is enabled.
-const char kReverseAutologinEnabled[] = "reverse_autologin.enabled";
-
 // List to keep track of emails for which the user has rejected one-click
 // sign-in.
 const char kReverseAutologinRejectedEmailList[] =

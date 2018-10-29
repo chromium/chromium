@@ -242,12 +242,12 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
       logger->Send(LinkDocumentation(base::StringPrintf(
                        "Found %zu elements with non-unique id #%s:",
                        nodes.size(), id_attr.c_str())),
-                   PageFormAnalyserLogger::kError, nodes);
+                   PageFormAnalyserLogger::kWarning, nodes);
     } else {
       logger->Send(LinkDocumentation(base::StringPrintf(
                        "Found %zu elements with non-unique id #%s:",
                        nodes.size(), id_attr.c_str())),
-                   PageFormAnalyserLogger::kError, nodes);
+                   PageFormAnalyserLogger::kWarning, nodes);
     }
   }
 

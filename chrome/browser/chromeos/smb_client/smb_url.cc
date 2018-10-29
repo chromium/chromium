@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/smb_client/smb_url.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/chromeos/smb_client/smb_constants.h"
 #include "url/url_canon_stdstring.h"
@@ -13,6 +14,7 @@ namespace smb_client {
 
 namespace {
 
+const char kSingleBackslash[] = "\\";
 const char kDoubleBackslash[] = "\\\\";
 
 // Returns true if |url| starts with "smb://" or "\\".
@@ -59,6 +61,8 @@ SmbUrl::SmbUrl(const std::string& raw_url) {
   if (ShouldProcessUrl(raw_url)) {
     // Add "smb://" if |url| starts with "\\" and canonicalize the URL.
     CanonicalizeSmbUrl(AddSmbSchemeIfMissing(raw_url));
+    // Create the Windows UNC for the url.
+    CreateWindowsUnc(raw_url);
   }
 }
 
@@ -88,6 +92,12 @@ std::string SmbUrl::ReplaceHost(const std::string& new_host) const {
 
 bool SmbUrl::IsValid() const {
   return !url_.empty() && host_.is_valid();
+}
+
+std::string SmbUrl::GetWindowsUNCString() const {
+  DCHECK(IsValid());
+
+  return windows_unc_;
 }
 
 void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
@@ -133,6 +143,21 @@ void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
 
   DCHECK(host_.is_nonempty());
   DCHECK_EQ(url_.substr(scheme.begin, scheme.len), kSmbScheme);
+}
+
+void SmbUrl::CreateWindowsUnc(const std::string& url) {
+  url::Parsed parsed;
+  if (!ParseAndValidateUrl(url, &parsed)) {
+    return;
+  }
+
+  const std::string host = url.substr(parsed.host.begin, parsed.host.len);
+  std::string path = url.substr(parsed.path.begin, parsed.path.len);
+
+  // Turn any forward slashes into escaped backslashes.
+  base::ReplaceChars(path, "/", kSingleBackslash, &path);
+
+  windows_unc_ = base::StrCat({kDoubleBackslash, host, path});
 }
 
 void SmbUrl::Reset() {

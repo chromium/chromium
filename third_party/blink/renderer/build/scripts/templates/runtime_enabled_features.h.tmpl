@@ -3,14 +3,13 @@
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
-#ifndef RuntimeEnabledFeatures_h
-#define RuntimeEnabledFeatures_h
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 #include <string>
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -77,6 +76,6 @@ class PLATFORM_EXPORT RuntimeEnabledFeatures {
   {% endfor %}
 };
 
-} // namespace blink
+}  // namespace blink
 
-#endif // RuntimeEnabledFeatures_h
+#endif  // {{header_guard}}

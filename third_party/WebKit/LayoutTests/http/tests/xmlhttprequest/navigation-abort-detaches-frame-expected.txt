@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: line 18: PASS: Expected 'abort', got 'abort'.
-PASS: but only if nothing crashed.

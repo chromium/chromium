@@ -1,6 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600 transparent
-  LayoutSVGRoot {svg} at (0,0) size 800x600 [opacity=0.90]
-    LayoutSVGViewportContainer {svg} at (-83,-84) size 166x148
-      LayoutSVGRect {rect} at (-83,-84) size 166x148 [fill={[type=SOLID] [color=#008000]}] [x=-83.00] [y=-84.00] [width=166.00] [height=148.00]

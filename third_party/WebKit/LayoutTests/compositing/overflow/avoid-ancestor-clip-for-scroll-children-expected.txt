@@ -2,9 +2,8 @@ Verifies that scroll children do not create ancestor clipping layers in composit
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
-PASS scrollChildHasNoScrollClip(documentLayerTree) is true
 
+PASS scrollChildHasNoScrollClip(documentLayerTree) is true

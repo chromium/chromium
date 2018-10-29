@@ -34,8 +34,7 @@ void XMenuList::MaybeRegisterMenu(XID menu) {
 }
 
 void XMenuList::MaybeUnregisterMenu(XID menu) {
-  std::vector<XID>::iterator iter = std::find(menus_.begin(), menus_.end(),
-                                              menu);
+  auto iter = std::find(menus_.begin(), menus_.end(), menu);
   if (iter == menus_.end())
     return;
   menus_.erase(iter);

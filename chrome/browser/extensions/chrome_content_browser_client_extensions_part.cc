@@ -15,6 +15,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
@@ -32,6 +33,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/guest_view/browser/guest_view_message_filter.h"
 #include "components/rappor/public/rappor_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -57,6 +59,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/info_map.h"
 #include "extensions/browser/io_thread_extension_message_filter.h"
+#include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
@@ -805,19 +808,6 @@ ChromeContentBrowserClientExtensionsPart::GetVpnServiceProxy(
 }
 
 // static
-bool ChromeContentBrowserClientExtensionsPart::
-    ShouldFrameShareParentSiteInstanceDespiteTopDocumentIsolation(
-        const GURL& subframe_url,
-        content::SiteInstance* parent_site_instance) {
-  const Extension* extension =
-      ExtensionRegistry::Get(parent_site_instance->GetBrowserContext())
-          ->enabled_extensions()
-          .GetExtensionOrAppByURL(parent_site_instance->GetSiteURL());
-
-  return extension && extension->is_hosted_app();
-}
-
-// static
 void ChromeContentBrowserClientExtensionsPart::
     LogInitiatorSchemeBypassingDocumentBlocking(
         const url::Origin& initiator_origin,
@@ -859,6 +849,21 @@ void ChromeContentBrowserClientExtensionsPart::
   rappor::SampleString(rappor::GetDefaultService(),
                        "Extensions.CrossOriginFetchFromContentScript2",
                        rappor::UMA_RAPPOR_TYPE, extension_id);
+}
+
+// static
+network::mojom::URLLoaderFactoryPtrInfo
+ChromeContentBrowserClientExtensionsPart::
+    CreateURLLoaderFactoryForNetworkRequests(
+        content::RenderProcessHost* process,
+        network::mojom::NetworkContext* network_context,
+        const url::Origin& request_initiator) {
+  // TODO(lukasza): https://crbug.com/894766: Re-enable after a real fix for
+  // this bug.  For now, let's just avoid using separate URLLoaderFactories
+  // for extensions.
+  // return URLLoaderFactoryManager::CreateFactory(process, network_context,
+  //                                              request_initiator);
+  return network::mojom::URLLoaderFactoryPtrInfo();
 }
 
 // static
@@ -973,8 +978,8 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcess(
                                    site_instance->GetProcess()->GetID(),
                                    site_instance->GetId());
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&InfoMap::RegisterExtensionProcess,
                      ExtensionSystem::Get(context)->info_map(), extension->id(),
                      site_instance->GetProcess()->GetID(),
@@ -998,8 +1003,8 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceDeleting(
                                    site_instance->GetProcess()->GetID(),
                                    site_instance->GetId());
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&InfoMap::UnregisterExtensionProcess,
                      ExtensionSystem::Get(context)->info_map(), extension->id(),
                      site_instance->GetProcess()->GetID(),

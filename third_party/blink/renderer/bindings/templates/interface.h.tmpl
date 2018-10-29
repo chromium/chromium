@@ -1,8 +1,8 @@
 {% filter format_blink_cpp_source_code %}
 
 {% include 'copyright_block.txt' %}
-#ifndef {{v8_class}}_h
-#define {{v8_class}}_h
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 {% for filename in header_includes %}
 #include "{{filename}}"
@@ -312,6 +312,6 @@ struct V8TypeOf<{{cpp_class}}> {
 
 }  // namespace blink
 
-#endif  // {{v8_class}}_h
+#endif  // {{header_guard}}
 
 {% endfilter %}{# format_blink_cpp_source_code #}

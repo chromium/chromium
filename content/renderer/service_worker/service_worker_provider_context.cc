@@ -18,8 +18,6 @@
 #include "content/public/common/service_names.mojom.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/renderer/service_worker/service_worker_subresource_loader.h"
-#include "content/renderer/service_worker/web_service_worker_impl.h"
-#include "content/renderer/service_worker/web_service_worker_registration_impl.h"
 #include "content/renderer/worker_thread_registry.h"
 #include "mojo/public/cpp/bindings/strong_associated_binding.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -204,44 +202,9 @@ ServiceWorkerProviderContext::CloneContainerHostPtrInfo() {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_for_client_);
   mojom::ServiceWorkerContainerHostPtrInfo container_host_ptr_info;
-  // TODO(kinuko): rename this, now this can be used for non-worker clients.
-  container_host_->CloneForWorker(mojo::MakeRequest(&container_host_ptr_info));
+  container_host_->CloneContainerHost(
+      mojo::MakeRequest(&container_host_ptr_info));
   return container_host_ptr_info;
-}
-
-scoped_refptr<WebServiceWorkerRegistrationImpl>
-ServiceWorkerProviderContext::GetOrCreateServiceWorkerRegistrationObject(
-    blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info) {
-  DCHECK_EQ(blink::mojom::ServiceWorkerProviderType::kForWindow,
-            provider_type_);
-  DCHECK(state_for_client_);
-
-  auto found = state_for_client_->registrations_.find(info->registration_id);
-  if (found != state_for_client_->registrations_.end()) {
-    found->second->AttachForServiceWorkerClient(std::move(info));
-    return found->second;
-  }
-
-  return WebServiceWorkerRegistrationImpl::CreateForServiceWorkerClient(
-      std::move(info), weak_factory_.GetWeakPtr());
-}
-
-scoped_refptr<WebServiceWorkerImpl>
-ServiceWorkerProviderContext::GetOrCreateServiceWorkerObject(
-    blink::mojom::ServiceWorkerObjectInfoPtr info) {
-  DCHECK_EQ(blink::mojom::ServiceWorkerProviderType::kForWindow,
-            provider_type_);
-  DCHECK(state_for_client_);
-  if (!info)
-    return nullptr;
-
-  auto found = state_for_client_->workers_.find(info->version_id);
-  if (found != state_for_client_->workers_.end()) {
-    return found->second;
-  }
-
-  return WebServiceWorkerImpl::CreateForServiceWorkerClient(
-      std::move(info), weak_factory_.GetWeakPtr());
 }
 
 void ServiceWorkerProviderContext::OnNetworkProviderDestroyed() {
@@ -351,7 +314,7 @@ void ServiceWorkerProviderContext::SetController(
   }
 
   // The WebServiceWorkerProviderImpl might not exist yet because the document
-  // has not yet been created (as WebServiceWorkerImpl is created for a
+  // has not yet been created (as WebServiceWorkerProviderImpl is created for a
   // ServiceWorkerContainer). In that case, once it's created it will still get
   // the controller from |this| via WebServiceWorkerProviderImpl::SetClient().
   if (state->web_service_worker_provider) {
@@ -372,49 +335,6 @@ void ServiceWorkerProviderContext::PostMessageToClient(
     state->web_service_worker_provider->PostMessageToClient(std::move(source),
                                                             std::move(message));
   }
-}
-
-void ServiceWorkerProviderContext::AddServiceWorkerRegistrationObject(
-    int64_t registration_id,
-    WebServiceWorkerRegistrationImpl* registration) {
-  DCHECK(state_for_client_);
-  DCHECK(
-      !base::ContainsKey(state_for_client_->registrations_, registration_id));
-  state_for_client_->registrations_[registration_id] = registration;
-}
-
-void ServiceWorkerProviderContext::RemoveServiceWorkerRegistrationObject(
-    int64_t registration_id) {
-  DCHECK(state_for_client_);
-  DCHECK(base::ContainsKey(state_for_client_->registrations_, registration_id));
-  state_for_client_->registrations_.erase(registration_id);
-}
-
-bool ServiceWorkerProviderContext::
-    ContainsServiceWorkerRegistrationObjectForTesting(int64_t registration_id) {
-  DCHECK(state_for_client_);
-  return base::ContainsKey(state_for_client_->registrations_, registration_id);
-}
-
-void ServiceWorkerProviderContext::AddServiceWorkerObject(
-    int64_t version_id,
-    WebServiceWorkerImpl* worker) {
-  DCHECK(state_for_client_);
-  DCHECK(!base::ContainsKey(state_for_client_->workers_, version_id));
-  state_for_client_->workers_[version_id] = worker;
-}
-
-void ServiceWorkerProviderContext::RemoveServiceWorkerObject(
-    int64_t version_id) {
-  DCHECK(state_for_client_);
-  DCHECK(base::ContainsKey(state_for_client_->workers_, version_id));
-  state_for_client_->workers_.erase(version_id);
-}
-
-bool ServiceWorkerProviderContext::ContainsServiceWorkerObjectForTesting(
-    int64_t version_id) {
-  DCHECK(state_for_client_);
-  return base::ContainsKey(state_for_client_->workers_, version_id);
 }
 
 void ServiceWorkerProviderContext::CountFeature(

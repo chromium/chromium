@@ -195,8 +195,12 @@ static jboolean JNI_LibraryLoader_LibraryLoaded(
       !g_native_initialization_hook(
           static_cast<LibraryProcessType>(library_process_type)))
     return false;
-  if (g_registration_callback && !g_registration_callback(env, nullptr))
+  if (g_registration_callback &&
+      !g_registration_callback(
+          env, nullptr,
+          static_cast<LibraryProcessType>(library_process_type))) {
     return false;
+  }
   return true;
 }
 

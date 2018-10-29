@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -146,9 +147,9 @@ void CannedBrowsingDataCookieHelper::AddCookie(
   // counting cookies multiple times if they are stored in multiple cookie
   // sets.  B) Replace the GetCookieFor method call below with:
   // "GetCookiesFor(frame_url.GetOrigin());"
-  CR_DEFINE_STATIC_LOCAL(const GURL, origin_cookie_url, (kGlobalCookieSetURL));
+  static const base::NoDestructor<GURL> origin_cookie_url(kGlobalCookieSetURL);
   canonical_cookie::CookieHashSet* cookie_set =
-      GetCookiesFor(origin_cookie_url);
+      GetCookiesFor(*origin_cookie_url);
   DeleteMatchingCookie(cookie, cookie_set);
   cookie_set->insert(cookie);
 }

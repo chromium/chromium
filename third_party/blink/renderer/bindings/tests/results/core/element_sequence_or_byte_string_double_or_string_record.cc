@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/union_container.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/union_container.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 

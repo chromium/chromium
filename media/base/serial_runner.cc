@@ -36,7 +36,7 @@ static void RunOnTaskRunner(
     PipelineStatus last_status) {
   // Force post to permit cancellation of a series in the scenario where all
   // bound functions run on the same thread.
-  task_runner->PostTask(FROM_HERE, base::Bind(status_cb, last_status));
+  task_runner->PostTask(FROM_HERE, base::BindOnce(status_cb, last_status));
 }
 
 SerialRunner::Queue::Queue() = default;
@@ -98,10 +98,10 @@ std::unique_ptr<SerialRunner> SerialRunner::Run(
 
 void SerialRunner::RunNextInSeries(PipelineStatus last_status) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!done_cb_.is_null());
+  DCHECK(done_cb_);
 
   if (bound_fns_.empty() || last_status != PIPELINE_OK) {
-    base::ResetAndReturn(&done_cb_).Run(last_status);
+    std::move(done_cb_).Run(last_status);
     return;
   }
 

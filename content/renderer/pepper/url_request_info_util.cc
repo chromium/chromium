@@ -238,15 +238,13 @@ bool CreateWebURLRequest(PP_Instance instance,
         WebString::FromUTF8(data->custom_content_transfer_encoding));
   }
 
-  if (data->has_custom_user_agent || !name_version.empty()) {
+  if (!name_version.empty())
+    dest->SetRequestedWith(WebString::FromUTF8(name_version));
+
+  if (data->has_custom_user_agent) {
     auto extra_data = std::make_unique<RequestExtraData>();
-    if (data->has_custom_user_agent) {
-      extra_data->set_custom_user_agent(
-          WebString::FromUTF8(data->custom_user_agent));
-    }
-    if (!name_version.empty()) {
-      extra_data->set_requested_with(WebString::FromUTF8(name_version));
-    }
+    extra_data->set_custom_user_agent(
+        WebString::FromUTF8(data->custom_user_agent));
     dest->SetExtraData(std::move(extra_data));
   }
 

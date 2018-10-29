@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pdf_uma.h"
+#include "chrome/common/pdf_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_utils.h"
 #include "content/public/browser/navigation_handle.h"
@@ -91,10 +91,7 @@ PDFIFrameNavigationThrottle::WillProcessResponse() {
   if (!base::FeatureList::IsEnabled(features::kClickToOpenPDFPlaceholder))
     return content::NavigationThrottle::PROCEED;
 
-  std::string html = base::StringPrintf(
-      R"(<body style="margin: 0;"><object data="%s" type="application/pdf" )"
-      R"(style="width: 100%%; height: 100%%;"></object></body>)",
-      navigation_handle()->GetURL().spec().c_str());
+  std::string html = GetPDFPlaceholderHTML(navigation_handle()->GetURL());
   GURL data_url("data:text/html," + net::EscapePath(html));
 
   navigation_handle()->GetWebContents()->OpenURL(

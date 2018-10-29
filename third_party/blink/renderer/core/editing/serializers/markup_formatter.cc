@@ -157,7 +157,7 @@ void MarkupFormatter::AppendStartMarkup(StringBuilder& result,
       AppendComment(result, ToComment(node).data());
       break;
     case Node::kDocumentNode:
-      AppendXMLDeclaration(result, ToDocument(node));
+      AppendXMLDeclaration(result, To<Document>(node));
       break;
     case Node::kDocumentFragmentNode:
       break;
@@ -356,18 +356,18 @@ void MarkupFormatter::AppendAttribute(StringBuilder& result,
 
   QualifiedName prefixed_name = attribute.GetName();
   if (document_is_html) {
-    if (attribute.NamespaceURI() == XMLNSNames::xmlnsNamespaceURI) {
+    if (attribute.NamespaceURI() == xmlns_names::kNamespaceURI) {
       if (!attribute.Prefix() && attribute.LocalName() != g_xmlns_atom)
         prefixed_name.SetPrefix(g_xmlns_atom);
-    } else if (attribute.NamespaceURI() == XMLNames::xmlNamespaceURI) {
+    } else if (attribute.NamespaceURI() == xml_names::kNamespaceURI) {
       prefixed_name.SetPrefix(g_xml_atom);
-    } else if (attribute.NamespaceURI() == XLinkNames::xlinkNamespaceURI) {
+    } else if (attribute.NamespaceURI() == xlink_names::kNamespaceURI) {
       prefixed_name.SetPrefix(g_xlink_atom);
     }
     result.Append(' ');
     result.Append(prefixed_name.ToString());
   } else {
-    if (attribute.NamespaceURI() == XMLNSNames::xmlnsNamespaceURI) {
+    if (attribute.NamespaceURI() == xmlns_names::kNamespaceURI) {
       if (!attribute.Prefix() && attribute.LocalName() != g_xmlns_atom)
         prefixed_name.SetPrefix(g_xmlns_atom);
       // Account for the namespace attribute we're about to append.
@@ -376,11 +376,11 @@ void MarkupFormatter::AppendAttribute(StringBuilder& result,
             (!attribute.Prefix()) ? g_empty_atom : attribute.LocalName();
         namespaces->Set(lookup_key, attribute.Value());
       }
-    } else if (attribute.NamespaceURI() == XMLNames::xmlNamespaceURI) {
+    } else if (attribute.NamespaceURI() == xml_names::kNamespaceURI) {
       if (!attribute.Prefix())
         prefixed_name.SetPrefix(g_xml_atom);
     } else {
-      if (attribute.NamespaceURI() == XLinkNames::xlinkNamespaceURI) {
+      if (attribute.NamespaceURI() == xlink_names::kNamespaceURI) {
         if (!attribute.Prefix())
           prefixed_name.SetPrefix(g_xlink_atom);
       }
@@ -452,7 +452,7 @@ bool MarkupFormatter::ShouldAddNamespaceAttribute(
     const Element& element) const {
   // xmlns and xmlns:prefix attributes should be handled by another branch in
   // appendAttribute.
-  DCHECK_NE(attribute.NamespaceURI(), XMLNSNames::xmlnsNamespaceURI);
+  DCHECK_NE(attribute.NamespaceURI(), xmlns_names::kNamespaceURI);
 
   // Attributes are in the null namespace by default.
   if (!attribute.NamespaceURI())

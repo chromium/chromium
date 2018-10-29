@@ -67,7 +67,7 @@
 // with the expected frames, which it would pop-off the list as its expectations
 // are met.
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <memory>
 #include <type_traits>

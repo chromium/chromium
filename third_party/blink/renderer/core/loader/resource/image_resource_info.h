@@ -33,6 +33,7 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
   virtual bool IsSchedulingReload() const = 0;
   virtual const ResourceResponse& GetResponse() const = 0;
   virtual bool ShouldShowPlaceholder() const = 0;
+  virtual bool ShouldShowLazyImagePlaceholder() const = 0;
   virtual bool IsCacheValidator() const = 0;
   virtual bool SchedulingReloadOrShouldReloadBrokenPlaceholder() const = 0;
   enum DoesCurrentFrameHaveSingleSecurityOrigin {

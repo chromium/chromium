@@ -9,6 +9,7 @@ import("//build/config/android/chrome_version.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//chrome/android/trichrome.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//tools/grit/repack.gni")
 import("//tools/resources/generate_resource_whitelist.gni")
@@ -46,6 +47,7 @@ generate_jni("native_jni") {
     "java/src/org/chromium/android_webview/AwCookieManager.java",
     "java/src/org/chromium/android_webview/AwDebug.java",
     "java/src/org/chromium/android_webview/AwDevToolsServer.java",
+    "java/src/org/chromium/android_webview/AwFeatureList.java",
     "java/src/org/chromium/android_webview/AwFormDatabase.java",
     "java/src/org/chromium/android_webview/AwGLFunctor.java",
     "java/src/org/chromium/android_webview/AwHttpAuthHandler.java",
@@ -106,7 +108,16 @@ java_cpp_enum("aw_safe_browsing_action") {
 jinja_template("system_webview_manifest") {
   input = "apk/java/AndroidManifest.xml"
   output = system_webview_android_manifest
-  variables = [ "package=$system_webview_package_name" ]
+  variables = [ "manifest_package=$system_webview_package_name" ]
+}
+
+jinja_template("trichrome_webview_manifest") {
+  input = "apk/java/AndroidManifest.xml"
+  output = trichrome_webview_android_manifest
+  variables = trichrome_jinja_variables + [
+                "manifest_package=$system_webview_package_name",
+                "library=libmonochrome.so",
+              ]
 }
 
 webview_repack_locales("repack_locales") {
@@ -483,6 +494,8 @@ source_set("common") {
     "browser/aw_devtools_server.h",
     "browser/aw_download_manager_delegate.cc",
     "browser/aw_download_manager_delegate.h",
+    "browser/aw_feature_list.cc",
+    "browser/aw_feature_list.h",
     "browser/aw_field_trial_creator.cc",
     "browser/aw_field_trial_creator.h",
     "browser/aw_form_database.cc",
@@ -514,6 +527,8 @@ source_set("common") {
     "browser/aw_print_manager.h",
     "browser/aw_printing_message_filter.cc",
     "browser/aw_printing_message_filter.h",
+    "browser/aw_proxying_url_loader_factory.cc",
+    "browser/aw_proxying_url_loader_factory.h",
     "browser/aw_quota_manager_bridge.cc",
     "browser/aw_quota_manager_bridge.h",
     "browser/aw_quota_permission_context.cc",
@@ -831,6 +846,7 @@ android_library("android_webview_java") {
     "java/src/org/chromium/android_webview/AwCookieManager.java",
     "java/src/org/chromium/android_webview/AwDebug.java",
     "java/src/org/chromium/android_webview/AwDevToolsServer.java",
+    "java/src/org/chromium/android_webview/AwFeatureList.java",
     "java/src/org/chromium/android_webview/AwFormDatabase.java",
     "java/src/org/chromium/android_webview/AwGeolocationPermissions.java",
     "java/src/org/chromium/android_webview/AwGLFunctor.java",
@@ -917,6 +933,7 @@ android_library("android_webview_java") {
     "//content/public/android:content_java",
     "//device/gamepad:java",
     "//net/android:net_java",
+    "//services/network/public/mojom:mojom_java",
     "//third_party/android_deps:android_support_annotations_java",
     "//third_party/blink/public:blink_headers_java",
     "//ui/android:ui_java",
@@ -941,7 +958,9 @@ android_library("android_webview_variations_utils_java") {
   java_files = [ "java/src/org/chromium/android_webview/VariationsUtils.java" ]
   deps = [
     "//android_webview/proto:aw_variations_seed_proto_java",
+    "//base:base_java",
     "//components/variations/android:variations_java",
+    "//third_party/protobuf:protobuf_lite_javalib",
   ]
 }
 
@@ -1054,6 +1073,7 @@ android_library("android_webview_services_java") {
     "//base:base_java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/minidump_uploader:minidump_uploader_java",
+    "//components/variations/android:variations_java",
     "//components/version_info/android:version_constants_java",
   ]
   srcjar_deps = [
@@ -1082,12 +1102,16 @@ if (public_android_sdk) {
     version_name = chrome_version_name
     android_manifest = system_webview_android_manifest
     android_manifest_dep = ":system_webview_manifest"
-    deps = [
-      ":platform_service_bridge_upstream_implementation_java",
-      ":system_webview_resources",
-      "//android_webview/glue",
-      "//android_webview/support_library:support_lib_glue_java",
-    ]
+    deps = upstream_only_webview_deps
     apk_name = "SystemWebView"
+  }
+
+  system_webview_apk_tmpl("trichrome_webview_apk") {
+    version_name = chrome_version_name
+    android_manifest = trichrome_webview_android_manifest
+    android_manifest_dep = ":trichrome_webview_manifest"
+    deps = upstream_only_webview_deps
+    apk_name = "TrichromeWebView"
+    use_trichrome_library = true
   }
 }

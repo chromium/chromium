@@ -31,6 +31,12 @@ class MinimumVersionPolicyHandler {
   void RemoveObserver(Observer* observer);
   bool RequirementsAreSatisfied() const { return requirements_met_; }
 
+  // Returns |true| if the requirements represented by the given
+  // |kMinimumRequiredChromeVersion| setting string are satisfied.
+  // Defaults to |true| if there are no requirements, or no valid requirements.
+  static bool AreRequirementsSatisfied(
+      const std::string& min_chrome_version_string);
+
  private:
   void OnPolicyChanged();
 

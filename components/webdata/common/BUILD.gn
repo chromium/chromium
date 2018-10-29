@@ -65,6 +65,8 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/web_database/version_75.sql",
     "//components/test/data/web_database/version_76.sql",
     "//components/test/data/web_database/version_77.sql",
+    "//components/test/data/web_database/version_78.sql",
+    "//components/test/data/web_database/version_79.sql",
   ]
   outputs = [
     "{{bundle_resources_dir}}/" +

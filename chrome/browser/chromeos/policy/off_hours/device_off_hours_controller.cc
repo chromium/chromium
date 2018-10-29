@@ -15,10 +15,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/chromeos/policy/off_hours/off_hours_proto_parser.h"
-#include "chrome/browser/chromeos/policy/weekly_time/time_utils.h"
+#include "chromeos/policy/weekly_time/time_utils.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "components/prefs/pref_value_map.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -79,21 +80,23 @@ bool DeviceOffHoursController::IsCurrentSessionAllowedOnlyForOffHours() const {
       user_manager::UserManager::Get();
   const user_manager::UserList& logged_in_users =
       user_manager->GetLoggedInUsers();
-  // If at least one logged in user won't be allowed after OffHours,
-  // the session will be terminated.
+  user_manager::UserList users_to_check;
   for (auto* user : logged_in_users) {
-    if (user->GetType() != user_manager::USER_TYPE_REGULAR &&
-        user->GetType() != user_manager::USER_TYPE_GUEST &&
-        user->GetType() != user_manager::USER_TYPE_SUPERVISED &&
-        user->GetType() != user_manager::USER_TYPE_CHILD) {
-      continue;
-    }
-    if (!chromeos::chrome_user_manager_util::IsUserAllowed(
-            *user, device_settings_proto_)) {
-      return true;
+    if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
+        user->GetType() == user_manager::USER_TYPE_GUEST ||
+        user->GetType() == user_manager::USER_TYPE_SUPERVISED ||
+        user->GetType() == user_manager::USER_TYPE_CHILD) {
+      users_to_check.push_back(user);
     }
   }
-  return false;
+
+  if (users_to_check.empty())
+    return false;
+
+  // If at least one logged in user won't be allowed after OffHours,
+  // the session will be terminated.
+  return !chromeos::chrome_user_manager_util::AreAllUsersAllowed(
+      users_to_check, device_settings_proto_);
 }
 
 void DeviceOffHoursController::UpdateOffHoursPolicy(

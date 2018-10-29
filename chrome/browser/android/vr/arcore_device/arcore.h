@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <vector>
+#include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/display/display.h"
@@ -15,15 +16,16 @@
 
 namespace device {
 
-// This allows a real or fake implementation of ARCore to
+// This allows a real or fake implementation of ArCore to
 // be used as appropriate (i.e. for testing).
-class ARCore {
+class ArCore {
  public:
-  virtual ~ARCore() = default;
+  virtual ~ArCore() = default;
 
   // Initializes the runtime and returns whether it was successful.
   // If successful, the runtime must be paused when this method returns.
-  virtual bool Initialize() = 0;
+  virtual bool Initialize(
+      base::android::ScopedJavaLocalRef<jobject> application_context) = 0;
 
   virtual void SetDisplayGeometry(
       const gfx::Size& frame_size,
@@ -34,7 +36,7 @@ class ARCore {
       const base::span<const float> uvs) = 0;
   virtual gfx::Transform GetProjectionMatrix(float near, float far) = 0;
 
-  // Update ARCore state. This call blocks for up to 1/30s while waiting for a
+  // Update ArCore state. This call blocks for up to 1/30s while waiting for a
   // new camera image. The output parameter |camera_updated| must be non-null,
   // the stored value indicates if the camera image was updated successfully.
   // The returned pose is nullptr if tracking was lost, this can happen even
@@ -48,6 +50,12 @@ class ARCore {
 
   virtual void Pause() = 0;
   virtual void Resume() = 0;
+};
+
+class ArCoreFactory {
+ public:
+  virtual ~ArCoreFactory() = default;
+  virtual std::unique_ptr<ArCore> Create() = 0;
 };
 
 }  // namespace device

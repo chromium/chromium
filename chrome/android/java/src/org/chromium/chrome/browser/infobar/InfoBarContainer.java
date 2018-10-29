@@ -127,6 +127,12 @@ public class InfoBarContainer extends SwipableOverlayView implements UserData {
 
         @Override
         public void onContentChanged(Tab tab) {
+            WebContents webContents = tab.getWebContents();
+            if (webContents != null && webContents != getWebContents()) {
+                setWebContents(webContents);
+                nativeSetWebContents(mNativeInfoBarContainer, webContents);
+            }
+
             mTabView.removeOnAttachStateChangeListener(mAttachedStateListener);
             mTabView = tab.getView();
             mTabView.addOnAttachStateChangeListener(mAttachedStateListener);
@@ -298,12 +304,6 @@ public class InfoBarContainer extends SwipableOverlayView implements UserData {
         }
     }
 
-    @Override
-    public void setWebContents(WebContents webContents) {
-        super.setWebContents(webContents);
-        if (webContents != null) nativeSetWebContents(mNativeInfoBarContainer, webContents);
-    }
-
     /**
      * Sets the parent {@link ViewGroup} that contains the {@link InfoBarContainer}.
      */
@@ -417,6 +417,9 @@ public class InfoBarContainer extends SwipableOverlayView implements UserData {
 
     @Override
     public void destroy() {
+        removeFromParentView();
+        setWebContents(null);
+
         ChromeActivity activity = mTab.getActivity();
         if (activity != null && mBottomSheetObserver != null && activity.getBottomSheet() != null) {
             activity.getBottomSheet().removeObserver(mBottomSheetObserver);

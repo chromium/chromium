@@ -5,6 +5,7 @@
 #include "chrome/browser/installable/installable_logging.h"
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/installable/installable_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -13,9 +14,9 @@
 namespace {
 
 const std::string& GetMessagePrefix() {
-  CR_DEFINE_STATIC_LOCAL(std::string, message_prefix,
-                         ("Site cannot be installed: "));
-  return message_prefix;
+  static base::NoDestructor<std::string> message_prefix(
+      "Site cannot be installed: ");
+  return *message_prefix;
 }
 
 // Error message strings corresponding to the InstallableStatusCode enum.

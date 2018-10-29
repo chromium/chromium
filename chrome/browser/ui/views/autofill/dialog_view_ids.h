@@ -22,6 +22,9 @@ enum DialogViewId : int {
   SIGN_IN_PROMO_VIEW,        // Contains the sign-in promo view
   MANAGE_CARDS_VIEW,         // The manage cards view
 
+  // The sub-view that contains the sign-in button in the promo.
+  SIGN_IN_VIEW,
+
   // The following are views::LabelButton objects (clickable).
   OK_BUTTON,            // Can say [Save], [Next], [Confirm],
                         // or [Done] depending on context

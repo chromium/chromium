@@ -30,7 +30,7 @@
 
 namespace blink {
 
-namespace XPath {
+namespace xpath {
 
 // Variable references are not used with XPathEvaluator.
 class VariableReference final : public Expression {
@@ -47,7 +47,7 @@ class VariableReference final : public Expression {
   String name_;
 };
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_VARIABLE_REFERENCE_H_

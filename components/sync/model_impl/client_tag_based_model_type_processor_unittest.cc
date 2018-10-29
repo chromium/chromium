@@ -225,13 +225,14 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
 
   void OnCommitDataLoaded() { bridge()->OnCommitDataLoaded(); }
 
-  void OnSyncStarting() {
+  void OnSyncStarting(
+      const std::string& authenticated_account_id = "SomeAccountId") {
     DataTypeActivationRequest request;
     request.error_handler = base::BindRepeating(
         &ClientTagBasedModelTypeProcessorTest::ErrorReceived,
         base::Unretained(this));
     request.cache_guid = "TestCacheGuid";
-    request.authenticated_account_id = "SomeAccountId";
+    request.authenticated_account_id = authenticated_account_id;
     type_processor()->OnSyncStarting(
         request,
         base::BindOnce(&ClientTagBasedModelTypeProcessorTest::OnReadyToConnect,
@@ -366,6 +367,32 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
   // Whether to expect an error from the processor.
   bool expect_error_ = false;
 };
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldExposeNewlyTrackedAccountId) {
+  ModelReadyToSync();
+  ASSERT_EQ("", type_processor()->TrackedAccountId());
+  OnSyncStarting("SomeAccountId");
+  worker()->UpdateFromServer();
+  EXPECT_EQ("SomeAccountId", type_processor()->TrackedAccountId());
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldExposePreviouslyTrackedAccountId) {
+  std::unique_ptr<MetadataBatch> metadata_batch = db().CreateMetadataBatch();
+  sync_pb::ModelTypeState model_type_state(metadata_batch->GetModelTypeState());
+  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_authenticated_account_id("PersistedAccountId");
+  metadata_batch->SetModelTypeState(model_type_state);
+  type_processor()->ModelReadyToSync(std::move(metadata_batch));
+
+  // Even prior to starting sync, the account ID should already be tracked.
+  EXPECT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
+
+  // If sync gets started, the account should still be tracked.
+  OnSyncStarting("PersistedAccountId");
+  EXPECT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
+}
 
 // Test that an initial sync handles local and remote items properly.
 TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldMergeLocalAndRemoteChanges) {
@@ -729,7 +756,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   entity_data->specifics.mutable_preference()->set_value(kValue1);
 
   entity_data->non_unique_name = kKey1;
-  entity_data->client_tag_hash = kHash3;
+  entity_data->client_tag_hash = kHash1;
   entity_data->id = kId1;
   bridge()->WriteItem(kKey1, std::move(entity_data));
 
@@ -879,6 +906,15 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 
   worker()->UpdateFromServer(update);
   // Root node update should be filtered out.
+  EXPECT_EQ(0U, ProcessorEntityCount());
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldIgnoreRemoteUpdatesWithUnexpectedClientTagHash) {
+  InitializeToReadyState();
+  worker()->UpdateFromServer(kHash2, GenerateSpecifics(kKey1, kValue1));
+  EXPECT_EQ(0U, db().data_count());
+  EXPECT_EQ(0U, db().metadata_count());
   EXPECT_EQ(0U, ProcessorEntityCount());
 }
 
@@ -1174,6 +1210,52 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldResolveConflictToLocalUndeletion) {
+  InitializeToReadyState();
+  ASSERT_EQ(0U, worker()->GetNumPendingCommits());
+
+  bridge()->WriteItem(kKey1, kValue1);
+  ASSERT_EQ(1U, worker()->GetNumPendingCommits());
+  ASSERT_TRUE(
+      worker()->GetLatestPendingCommitForHash(kHash1).entity->id.empty());
+
+  // The update from the server should be mostly ignored because local wins, but
+  // the server ID should be updated.
+  bridge()->SetConflictResolution(ConflictResolution::UseLocal());
+  worker()->UpdateFromServer(kHash1, GenerateSpecifics(kKey1, kValue3));
+  // In this test setup, the processor's nudge for commit immediately pulls
+  // updates from the processor and list them as pending commits, so we should
+  // see two commits at this point.
+  EXPECT_EQ(2U, worker()->GetNumPendingCommits());
+
+  // Verify the commit request this operation has triggered.
+  const CommitRequestData& tag1_request_data =
+      worker()->GetLatestPendingCommitForHash(kHash1);
+  const EntityData& tag1_data = tag1_request_data.entity.value();
+
+  EXPECT_EQ(1, tag1_request_data.base_version);
+  EXPECT_FALSE(tag1_data.id.empty());
+  EXPECT_FALSE(tag1_data.creation_time.is_null());
+  EXPECT_FALSE(tag1_data.modification_time.is_null());
+  EXPECT_EQ(kKey1, tag1_data.non_unique_name);
+  EXPECT_FALSE(tag1_data.is_deleted());
+  EXPECT_EQ(kKey1, tag1_data.specifics.preference().name());
+  EXPECT_EQ(kValue1, tag1_data.specifics.preference().value());
+
+  EXPECT_EQ(1U, db().metadata_count());
+  const EntityMetadata metadata = db().GetMetadata(kKey1);
+  EXPECT_TRUE(metadata.has_client_tag_hash());
+  EXPECT_TRUE(metadata.has_server_id());
+  EXPECT_FALSE(metadata.is_deleted());
+  EXPECT_EQ(1, metadata.sequence_number());
+  EXPECT_EQ(0, metadata.acked_sequence_number());
+  EXPECT_EQ(1, metadata.server_version());
+  EXPECT_TRUE(metadata.has_creation_time());
+  EXPECT_TRUE(metadata.has_modification_time());
+  EXPECT_TRUE(metadata.has_specifics_hash());
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldResolveConflictToRemoteVersion) {
   InitializeToReadyState();
   bridge()->WriteItem(kKey1, kValue1);
@@ -1186,6 +1268,20 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   EXPECT_EQ(2U, db().metadata_change_count());
   EXPECT_EQ(1, db().GetMetadata(kKey1).server_version());
   worker()->VerifyPendingCommits({{kHash1}});
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldResolveConflictToRemoteDeletion) {
+  InitializeToReadyState();
+  bridge()->WriteItem(kKey1, kValue1);
+  bridge()->SetConflictResolution(ConflictResolution::UseRemote());
+  worker()->TombstoneFromServer(kHash1);
+
+  // Updated client data and metadata; no new commit request.
+  EXPECT_EQ(0U, db().data_count());
+  EXPECT_EQ(0U, db().metadata_count());
+  EXPECT_EQ(2U, db().data_change_count());
+  EXPECT_EQ(2U, db().metadata_change_count());
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
@@ -1296,6 +1392,26 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldStopAndClearMetadata) {
   // Once we're ready to commit, all three local items should consider
   // themselves uncommitted and pending for commit.
   worker()->VerifyPendingCommits({{kHash1}, {kHash2}, {kHash3}});
+}
+
+// Test proper handling of disable-sync before initial sync done.
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotClearBridgeMetadataPriorToMergeSyncData) {
+  // Populate the bridge's metadata with some non-empty values for us to later
+  // check that it hasn't been cleared.
+  const std::string kTestEncryptionKeyName = "TestEncryptionKey";
+  ModelTypeState model_type_state(db().model_type_state());
+  model_type_state.set_encryption_key_name(kTestEncryptionKeyName);
+  bridge()->mutable_db()->set_model_type_state(model_type_state);
+
+  ModelReadyToSync();
+  OnSyncStarting();
+  ASSERT_FALSE(type_processor()->IsTrackingMetadata());
+
+  type_processor()->OnSyncStopping(CLEAR_METADATA);
+  EXPECT_FALSE(type_processor()->IsTrackingMetadata());
+  EXPECT_EQ(kTestEncryptionKeyName,
+            db().model_type_state().encryption_key_name());
 }
 
 // Test re-encrypt everything when desired encryption key changes.
@@ -1868,44 +1984,101 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   metadata_batch->SetModelTypeState(model_type_state);
 
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
+  ASSERT_TRUE(type_processor()->IsModelReadyToSyncForTest());
 
   OnSyncStarting();
 
+  // Model should still be ready to sync.
+  ASSERT_TRUE(type_processor()->IsModelReadyToSyncForTest());
+  // OnSyncStarting() should have completed.
+  EXPECT_NE(nullptr, worker());
   // Upon a mismatch, metadata should have been cleared.
   EXPECT_EQ(0U, db().metadata_count());
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
-       ShouldReportOrphanMetadataInGetLocalChangesWhenDataIsMissing) {
+       ShouldNotConnectImmediatelyAfterGuidMismatchIfNotReadyToSync) {
+  // Commit item.
+  InitializeToReadyState();
+  WriteItemAndAck(kKey1, kValue1);
+  // Reset the processor to simulate a restart.
+  ResetState(/*keep_db=*/true);
+
+  // Force future stops cause the model to become unready.
+  bridge()->SetStopSyncResponse(
+      ModelTypeSyncBridge::StopSyncResponse::kModelNoLongerReadyToSync);
+
+  // A new processor loads the metadata after changing the cache GUID.
+  bridge()->SetInitialSyncDone(true);
+
+  std::unique_ptr<MetadataBatch> metadata_batch = db().CreateMetadataBatch();
+  sync_pb::ModelTypeState model_type_state(metadata_batch->GetModelTypeState());
+  model_type_state.set_cache_guid("WRONG_CACHE_GUID");
+  metadata_batch->SetModelTypeState(model_type_state);
+
+  type_processor()->ModelReadyToSync(std::move(metadata_batch));
+  ASSERT_TRUE(type_processor()->IsModelReadyToSyncForTest());
+
+  OnSyncStarting();
+
+  // Model should not be ready to sync.
+  ASSERT_FALSE(type_processor()->IsModelReadyToSyncForTest());
+  // OnSyncStarting() should NOT have completed.
+  EXPECT_EQ(nullptr, worker());
+  // Upon a mismatch, metadata should have been cleared.
+  EXPECT_EQ(0U, db().metadata_count());
+
+  // Calling ModelReadyToSync() should complete OnSyncStarting().
+  type_processor()->ModelReadyToSync(std::make_unique<MetadataBatch>());
+  EXPECT_NE(nullptr, worker());
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldClearOrphanMetadataInGetLocalChangesWhenDataIsMissing) {
   InitializeToReadyState();
   bridge()->WriteItem(kKey1, kValue1);
 
   // Loose the entity in the bridge (keeping the metadata around as an orphan).
   bridge()->MimicBugToLooseItemWithoutNotifyingProcessor(kKey1);
 
+  ASSERT_FALSE(db().HasData(kKey1));
+  ASSERT_TRUE(db().HasMetadata(kKey1));
+  ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
+
   // Reset "the browser" so that the processor looses the copy of the data.
   ResetState(/*keep_db=*/true);
 
   // Initializing the processor will trigger it to commit again. It does not
   // have a copy of the data so it will ask the bridge.
-  base::HistogramTester histogram_tester;
-  bridge()->ExpectSynchronousDataCallback();
-  InitializeToReadyState();
+  {
+    base::HistogramTester histogram_tester;
+    bridge()->ExpectSynchronousDataCallback();
+    InitializeToReadyState();
 
-  // Do it again, explicitly. The processor cannot return the entity as a
-  // LocalChange (because it cannot load its data) so it needs to ask the
-  // bridge.
+    histogram_tester.ExpectBucketCount(
+        "Sync.ModelTypeOrphanMetadata",
+        /*bucket=*/ModelTypeToHistogramInt(GetModelType()), /*count=*/1);
+  }
+
+  // Orphan metadata should have been deleted.
+  EXPECT_EQ(1, bridge()->apply_call_count());
+  EXPECT_FALSE(db().HasMetadata(kKey1));
+  EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
+
+  base::HistogramTester histogram_tester;
+
+  // Do it again, explicitly. The processor does not track the entity so it
+  // shouldn't ask the bridge or return local changes.
   CommitRequestDataList commit_request;
-  bridge()->ExpectSynchronousDataCallback();
   type_processor()->GetLocalChanges(
       INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
   EXPECT_EQ(0U, commit_request.size());
+  EXPECT_TRUE(bridge()->GetDataCallback().is_null());
 
-  // The processor reports the same orphan to UMA on both calls, so the total
-  // count is 2.
+  // The processor should not report orphan again in UMA.
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeOrphanMetadata",
-      /*bucket=*/ModelTypeToHistogramInt(GetModelType()), /*count=*/2);
+      /*bucket=*/ModelTypeToHistogramInt(GetModelType()), /*count=*/0);
 }
 
 TEST_F(
@@ -1916,6 +2089,10 @@ TEST_F(
 
   // Loose the entity in the bridge (keeping the metadata around as an orphan).
   bridge()->MimicBugToLooseItemWithoutNotifyingProcessor(kKey1);
+
+  ASSERT_FALSE(db().HasData(kKey1));
+  ASSERT_TRUE(db().HasMetadata(kKey1));
+  ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
 
   // Reset "the browser" so that the processor looses the copy of the data.
   ResetState(/*keep_db=*/true);
@@ -1934,6 +2111,13 @@ TEST_F(
   std::move(bridge()->GetDataCallback()).Run();
   histogram_tester.ExpectTotalCount("Sync.ModelTypeOrphanMetadata",
                                     /*count=*/0);
+
+  EXPECT_EQ(0, bridge()->apply_call_count());
+  EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
+
+  // The expectation below documents the fact that bridges are responsible for
+  // clearing the untracked metadata from their databases.
+  EXPECT_TRUE(db().HasMetadata(kKey1));
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
@@ -1943,6 +2127,10 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 
   // Loose the entity in the bridge (keeping the metadata around as an orphan).
   bridge()->MimicBugToLooseItemWithoutNotifyingProcessor(kKey1);
+
+  ASSERT_FALSE(db().HasData(kKey1));
+  ASSERT_TRUE(db().HasMetadata(kKey1));
+  ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
 
   // Reset "the browser" so that the processor looses the copy of the data.
   ResetState(/*keep_db=*/true);
@@ -1961,12 +2149,19 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   std::move(bridge()->GetDataCallback()).Run();
   histogram_tester.ExpectTotalCount("Sync.ModelTypeOrphanMetadata",
                                     /*count=*/0);
+
+  EXPECT_EQ(0, bridge()->apply_call_count());
+  EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldNotReportOrphanMetadataInGetLocalChangesWhenDataIsPresent) {
   InitializeToReadyState();
   bridge()->WriteItem(kKey1, kValue1);
+
+  ASSERT_TRUE(db().HasData(kKey1));
+  ASSERT_TRUE(db().HasMetadata(kKey1));
+  ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
 
   // Reset "the browser" so that the processor looses the copy of the data.
   ResetState(/*keep_db=*/true);
@@ -1986,6 +2181,10 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   // The processor never reports any orphan.
   histogram_tester.ExpectTotalCount("Sync.ModelTypeOrphanMetadata",
                                     /*count=*/0);
+
+  EXPECT_TRUE(db().HasData(kKey1));
+  EXPECT_TRUE(db().HasMetadata(kKey1));
+  EXPECT_NE(nullptr, GetEntityForStorageKey(kKey1));
 }
 
 class CommitOnlyClientTagBasedModelTypeProcessorTest
@@ -1993,6 +2192,31 @@ class CommitOnlyClientTagBasedModelTypeProcessorTest
  protected:
   bool IsCommitOnly() override { return true; }
 };
+
+TEST_F(CommitOnlyClientTagBasedModelTypeProcessorTest,
+       ShouldExposeNewlyTrackedAccountId) {
+  ModelReadyToSync();
+  ASSERT_EQ("", type_processor()->TrackedAccountId());
+  OnSyncStarting("SomeAccountId");
+  EXPECT_EQ("SomeAccountId", type_processor()->TrackedAccountId());
+}
+
+TEST_F(CommitOnlyClientTagBasedModelTypeProcessorTest,
+       ShouldExposePreviouslyTrackedAccountId) {
+  std::unique_ptr<MetadataBatch> metadata_batch = db().CreateMetadataBatch();
+  sync_pb::ModelTypeState model_type_state(metadata_batch->GetModelTypeState());
+  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_authenticated_account_id("PersistedAccountId");
+  metadata_batch->SetModelTypeState(model_type_state);
+  type_processor()->ModelReadyToSync(std::move(metadata_batch));
+
+  // Even prior to starting sync, the account ID should already be tracked.
+  EXPECT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
+
+  // If sync gets started, the account should still be tracked.
+  OnSyncStarting("PersistedAccountId");
+  EXPECT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
+}
 
 // Test that commit only types are deleted after commit response.
 TEST_F(CommitOnlyClientTagBasedModelTypeProcessorTest,

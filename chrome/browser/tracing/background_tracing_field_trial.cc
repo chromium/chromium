@@ -7,12 +7,17 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/tracing/crash_service_uploader.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/tracing/common/tracing_switches.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -89,6 +94,33 @@ std::unique_ptr<content::BackgroundTracingConfig> GetBackgroundTracingConfig() {
   return content::BackgroundTracingConfig::FromDict(dict);
 }
 
+void SetupBackgroundTracingFromConfigFile(const base::FilePath& config_file,
+                                          const std::string& upload_url) {
+  std::string config_text;
+  if (upload_url.empty() ||
+      !base::ReadFileToString(config_file, &config_text) ||
+      config_text.empty()) {
+    return;
+  }
+
+  std::unique_ptr<base::Value> value = base::JSONReader::Read(config_text);
+  if (!value) {
+    LOG(ERROR) << "Background tracing has incorrect config: " << config_text;
+    return;
+  }
+
+  const base::DictionaryValue* dict = nullptr;
+  if (!value->GetAsDictionary(&dict))
+    return;
+
+  std::unique_ptr<content::BackgroundTracingConfig> config =
+      content::BackgroundTracingConfig::FromDict(dict);
+  content::BackgroundTracingManager::GetInstance()->SetActiveScenario(
+      std::move(config),
+      base::BindRepeating(&BackgroundTracingUploadCallback, upload_url),
+      content::BackgroundTracingManager::NO_DATA_FILTERING);
+}
+
 }  // namespace
 
 void SetConfigTextFilterForTesting(ConfigTextFilterForTesting predicate) {
@@ -96,6 +128,15 @@ void SetConfigTextFilterForTesting(ConfigTextFilterForTesting predicate) {
 }
 
 void SetupBackgroundTracingFieldTrial() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
+      command_line->HasSwitch(switches::kTraceUploadURL)) {
+    tracing::SetupBackgroundTracingFromConfigFile(
+        command_line->GetSwitchValuePath(switches::kEnableBackgroundTracing),
+        command_line->GetSwitchValueASCII(switches::kTraceUploadURL));
+    return;
+  }
+
   std::unique_ptr<content::BackgroundTracingConfig> config =
       GetBackgroundTracingConfig();
 

@@ -9,10 +9,10 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace content {
 
@@ -21,7 +21,7 @@ class BrowserPpapiHostImpl;
 // The host for PPB_NetworkMonitor. This class lives on the IO thread.
 class CONTENT_EXPORT PepperNetworkMonitorHost
     : public ppapi::host::ResourceHost,
-      public net::NetworkChangeNotifier::NetworkChangeObserver {
+      public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   PepperNetworkMonitorHost(BrowserPpapiHostImpl* host,
                            PP_Instance instance,
@@ -29,17 +29,20 @@ class CONTENT_EXPORT PepperNetworkMonitorHost
 
   ~PepperNetworkMonitorHost() override;
 
-  // net::NetworkChangeNotifier::NetworkChangeObserver interface.
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override;
+  // network::NetworkConnectionTracker::NetworkConnectionObserver interface.
+  void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
  private:
   void OnPermissionCheckResult(bool can_use_network_monitor);
+  void SetNetworkConnectionTracker(
+      network::NetworkConnectionTracker* network_connection_tracker);
 
   void GetAndSendNetworkList();
   void SendNetworkList(std::unique_ptr<net::NetworkInterfaceList> list);
 
   ppapi::host::ReplyMessageContext reply_context_;
+
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   base::WeakPtrFactory<PepperNetworkMonitorHost> weak_factory_;
 

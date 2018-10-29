@@ -7,7 +7,7 @@
 #include <windows.h>
 
 #include "base/strings/utf_string_conversions.h"
-#include "crypto/wincrypt_shim.h"
+#include "base/win/wincrypt_shim.h"
 
 bool OSCrypt::EncryptString16(const base::string16& plaintext,
                               std::string* ciphertext) {

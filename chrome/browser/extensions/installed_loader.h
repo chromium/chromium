@@ -28,6 +28,10 @@ class InstalledLoader {
   // Loads all installed extensions (used by startup and testing code).
   void LoadAllExtensions();
 
+  // Allows tests to verify metrics without needing to go through
+  // LoadAllExtensions().
+  void RecordExtensionsMetricsForTesting();
+
  private:
   // Returns the flags that should be used with Extension::Create() for an
   // extension that is already installed.

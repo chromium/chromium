@@ -71,7 +71,7 @@ class SVGAnimatedTextLength final : public SVGAnimatedLength {
  private:
   SVGAnimatedTextLength(SVGTextContentElement* context_element)
       : SVGAnimatedLength(context_element,
-                          SVGNames::textLengthAttr,
+                          svg_names::kTextLengthAttr,
                           SVGLengthMode::kWidth,
                           SVGLength::Initial::kUnitlessZero) {}
 };
@@ -83,7 +83,7 @@ SVGTextContentElement::SVGTextContentElement(const QualifiedName& tag_name,
       text_length_is_specified_by_user_(false),
       length_adjust_(SVGAnimatedEnumeration<SVGLengthAdjustType>::Create(
           this,
-          SVGNames::lengthAdjustAttr,
+          svg_names::kLengthAdjustAttr,
           kSVGLengthAdjustSpacing)) {
   AddToPropertyMap(text_length_);
   AddToPropertyMap(length_adjust_);
@@ -224,7 +224,7 @@ void SVGTextContentElement::selectSubString(unsigned charnum,
 
 bool SVGTextContentElement::IsPresentationAttribute(
     const QualifiedName& name) const {
-  if (name.Matches(XMLNames::spaceAttr))
+  if (name.Matches(xml_names::kSpaceAttr))
     return true;
   return SVGGraphicsElement::IsPresentationAttribute(name);
 }
@@ -233,7 +233,7 @@ void SVGTextContentElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name.Matches(XMLNames::spaceAttr)) {
+  if (name.Matches(xml_names::kSpaceAttr)) {
     DEFINE_STATIC_LOCAL(const AtomicString, preserve_string, ("preserve"));
 
     if (value == preserve_string) {
@@ -254,12 +254,12 @@ void SVGTextContentElement::CollectStyleForPresentationAttribute(
 
 void SVGTextContentElement::SvgAttributeChanged(
     const QualifiedName& attr_name) {
-  if (attr_name == SVGNames::textLengthAttr)
+  if (attr_name == svg_names::kTextLengthAttr)
     text_length_is_specified_by_user_ = true;
 
-  if (attr_name == SVGNames::textLengthAttr ||
-      attr_name == SVGNames::lengthAdjustAttr ||
-      attr_name == XMLNames::spaceAttr) {
+  if (attr_name == svg_names::kTextLengthAttr ||
+      attr_name == svg_names::kLengthAdjustAttr ||
+      attr_name == xml_names::kSpaceAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
 
     if (LayoutObject* layout_object = GetLayoutObject())

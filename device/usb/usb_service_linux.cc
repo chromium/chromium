@@ -20,8 +20,8 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/udev_linux/udev_watcher.h"
@@ -102,7 +102,7 @@ UsbServiceLinux::FileThreadHelper::~FileThreadHelper() {
 // static
 void UsbServiceLinux::FileThreadHelper::Start() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
 
   // Initializing udev for device enumeration and monitoring may fail. In that
   // case this service will continue to exist but no devices will be found.
@@ -117,6 +117,8 @@ void UsbServiceLinux::FileThreadHelper::Start() {
 void UsbServiceLinux::FileThreadHelper::OnDeviceAdded(
     ScopedUdevDevicePtr device) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
+
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   const char* subsystem = udev_device_get_subsystem(device.get());
   if (!subsystem || strcmp(subsystem, "usb") != 0)
     return;
@@ -176,6 +178,8 @@ void UsbServiceLinux::FileThreadHelper::OnDeviceAdded(
 void UsbServiceLinux::FileThreadHelper::OnDeviceRemoved(
     ScopedUdevDevicePtr device) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
+
   const char* device_path = udev_device_get_devnode(device.get());
   if (device_path) {
     task_runner_->PostTask(

@@ -4,16 +4,13 @@
 
 package org.chromium.chrome.browser.preferences;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.text.format.DateUtils;
-import android.view.ContextThemeWrapper;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeVersionInfo;
@@ -30,23 +27,11 @@ public class AboutChromePreferences extends PreferenceFragment {
     private static final String PREF_OS_VERSION = "os_version";
     private static final String PREF_LEGAL_INFORMATION = "legal_information";
 
-    @SuppressLint("ObsoleteSdkInt")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.prefs_about_chrome);
         PreferenceUtils.addPreferencesFromResource(this, R.xml.about_chrome_preferences);
-
-        // TODO(crbug.com/635567): Fix this properly.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            ChromeBasePreference deprecationWarning = new ChromeBasePreference(
-                    new ContextThemeWrapper(getActivity(),
-                            R.style.DeprecationWarningPreferenceTheme));
-            deprecationWarning.setOrder(-1);
-            deprecationWarning.setTitle(R.string.deprecation_warning);
-            deprecationWarning.setIcon(R.drawable.exclamation_triangle);
-            getPreferenceScreen().addPreference(deprecationWarning);
-        }
 
         PrefServiceBridge prefServiceBridge = PrefServiceBridge.getInstance();
         AboutVersionStrings versionStrings = prefServiceBridge.getAboutVersionStrings();

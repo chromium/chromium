@@ -20,6 +20,7 @@ static_library("service") {
     "//base",
     "//components/data_use_measurement/core",
     "//components/encrypted_messages",
+    "//components/language/core/browser",
     "//components/metrics",
     "//components/network_time",
     "//components/pref_registry",

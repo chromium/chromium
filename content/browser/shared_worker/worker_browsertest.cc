@@ -9,10 +9,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_info.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/common/content_features.h"
@@ -94,8 +96,9 @@ class WorkerTest : public ContentBrowserTest {
     RunTest(shell(), url, expect_failure);
   }
 
-  static void QuitUIMessageLoop(base::Callback<void()> callback) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, std::move(callback));
+  static void QuitUIMessageLoop(base::OnceClosure callback) {
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             std::move(callback));
   }
 
   void NavigateAndWaitForAuth(const GURL& url) {

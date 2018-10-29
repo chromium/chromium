@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x252
-  LayoutBlockFlow {HTML} at (0,0) size 800x252
-    LayoutBlockFlow {BODY} at (8,16) size 784x228
-      LayoutBlockFlow {P} at (0,0) size 784x20
-        LayoutText {#text} at (0,0) size 601x19
-          text run at (0,0) width 601: "Test passes if there is a black box below with rounded corners and no red is visible on the page."
-      LayoutBlockFlow {DIV} at (0,36) size 192x192 [bgcolor=#000000]

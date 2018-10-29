@@ -25,7 +25,6 @@
 #include "chrome/renderer/extensions/page_capture_custom_bindings.h"
 #include "chrome/renderer/extensions/sync_file_system_custom_bindings.h"
 #include "chrome/renderer/extensions/tabs_hooks_delegate.h"
-#include "chrome/renderer/extensions/webstore_bindings.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"
@@ -75,12 +74,16 @@ void ChromeExtensionsDispatcherDelegate::AddOriginAccessPermissions(
   // to avoid granting them in "unblessed" (non-extension) processes.  If a
   // component extension somehow starts as inactive and becomes active later,
   // we'll re-init the origin permissions, so there's no danger in being
-  // conservative.
+  // conservative. Components shouldn't be subject to enterprise policy controls
+  // or blocking access to the webstore so they get the highest priority
+  // allowlist entry.
   if (extensions::Manifest::IsComponentLocation(extension.location()) &&
       is_extension_active) {
     blink::WebSecurityPolicy::AddOriginAccessAllowListEntry(
         extension.url(), blink::WebString::FromUTF8(content::kChromeUIScheme),
-        blink::WebString::FromUTF8(chrome::kChromeUIThemeHost), false);
+        blink::WebString::FromUTF8(chrome::kChromeUIThemeHost),
+        false /*allow_destination_subdomains*/,
+        network::mojom::CORSOriginAccessMatchPriority::kMaxPriority);
   }
 
   // TODO(jstritar): We should try to remove this special case. Also, these
@@ -90,7 +93,9 @@ void ChromeExtensionsDispatcherDelegate::AddOriginAccessPermissions(
                                  extensions::APIPermission::kManagement)) {
     blink::WebSecurityPolicy::AddOriginAccessAllowListEntry(
         extension.url(), blink::WebString::FromUTF8(content::kChromeUIScheme),
-        blink::WebString::FromUTF8(chrome::kChromeUIExtensionIconHost), false);
+        blink::WebString::FromUTF8(chrome::kChromeUIExtensionIconHost),
+        false /*allow_destination_subdomains*/,
+        network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
   }
 }
 
@@ -131,9 +136,6 @@ void ChromeExtensionsDispatcherDelegate::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "page_capture", std::unique_ptr<NativeHandler>(
                           new extensions::PageCaptureCustomBindings(context)));
-  module_system->RegisterNativeHandler(
-      "webstore", std::unique_ptr<NativeHandler>(
-                      new extensions::WebstoreBindings(context)));
   module_system->RegisterNativeHandler(
       "cast_streaming_natives",
       std::make_unique<extensions::CastStreamingNativeHandler>(
@@ -250,8 +252,6 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
       IDR_WEBRTC_DESKTOP_CAPTURE_PRIVATE_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("webrtcLoggingPrivate",
                              IDR_WEBRTC_LOGGING_PRIVATE_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("webstore", IDR_WEBSTORE_CUSTOM_BINDINGS_JS);
-
 
   // Platform app sources that are not API-specific..
   source_map->RegisterSource("chromeWebViewInternal",
@@ -272,6 +272,8 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_MEDIA_ROUTER_BINDINGS_JS);
   source_map->RegisterSource("mojo/public/mojom/base/time.mojom",
                              IDR_MOJO_TIME_MOJOM_JS);
+  source_map->RegisterSource("mojo/public/mojom/base/unguessable_token.mojom",
+                             IDR_MOJO_UNGUESSABLE_TOKEN_MOJOM_JS);
   source_map->RegisterSource("net/interfaces/ip_address.mojom",
                              IDR_MOJO_IP_ADDRESS_MOJOM_JS);
   source_map->RegisterSource("net/interfaces/ip_endpoint.mojom",
@@ -309,16 +311,10 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
   }
 }
 
-void ChromeExtensionsDispatcherDelegate::RequireAdditionalModules(
+void ChromeExtensionsDispatcherDelegate::RequireWebViewModules(
     extensions::ScriptContext* context) {
-  // Note: setting up the WebView class here, not the chrome.webview API.
-  // The API will be automatically set up when first used.
-  if (context->GetAvailability("webViewInternal").is_available()) {
-    // TODO(fsamuel): Eagerly calling Require on context startup is expensive.
-    // It would be better if there were a light way of detecting when a webview
-    // or appview is created and only then set up the infrastructure.
-    context->module_system()->Require("chromeWebView");
-  }
+  DCHECK(context->GetAvailability("webViewInternal").is_available());
+  context->module_system()->Require("chromeWebView");
 }
 
 void ChromeExtensionsDispatcherDelegate::OnActiveExtensionsUpdated(

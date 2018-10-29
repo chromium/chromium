@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL <body onerror> - compile error in <script src=data:...> assert_equals: first arg expected "string" but got "object"
-FAIL <body onerror> - compile error in <script src=data:...> (column) assert_equals: fourth arg expected "number" but got "undefined"
-Harness: the test ran to completion.
-

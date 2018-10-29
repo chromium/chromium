@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutBlockFlow {INPUT} at (2.89,4) size 12x12
-      LayoutText {#text} at (17,0) size 221x18
-        text run at (17,0) width 221: "This checkbox should be checked."

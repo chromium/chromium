@@ -2,7 +2,6 @@ Test for scrollTop/Left values of document.body and document.documentElement in 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.scrollingElement is document.documentElement
 PASS iframeStrict.contentDocument.scrollingElement is iframeStrict.contentDocument.documentElement
 PASS iframeStrict.contentDocument.documentElement.scrollTop is 5000
@@ -29,6 +28,7 @@ PASS iframeQuirks.contentWindow.pageXOffset is 4000
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 
 
 

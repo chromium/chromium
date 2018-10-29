@@ -5,6 +5,7 @@ include_rules = [
   "+components/security_state",
   "+components/viz",
   "+printing",
+  "+services/network",
   "+storage/browser/quota",
   "+storage/common/quota",
   "+third_party/skia/include",

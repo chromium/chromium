@@ -7,7 +7,7 @@
 
 #include "extensions/common/extensions_api_provider.h"
 
-namespace apps {
+namespace chrome_apps {
 
 class ChromeAppsAPIProvider : public extensions::ExtensionsAPIProvider {
  public:
@@ -31,6 +31,6 @@ class ChromeAppsAPIProvider : public extensions::ExtensionsAPIProvider {
   DISALLOW_COPY_AND_ASSIGN(ChromeAppsAPIProvider);
 };
 
-}  // namespace apps
+}  // namespace chrome_apps
 
 #endif  // CHROME_COMMON_APPS_PLATFORM_APPS_CHROME_APPS_API_PROVIDER_H_

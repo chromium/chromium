@@ -148,6 +148,8 @@ class AppListSyncableService : public syncer::SyncableService,
     return oem_folder_name_;
   }
 
+  void InstallDefaultPageBreaksForTest();
+
   const SyncItemMap& sync_items() const { return sync_items_; }
 
   // syncer::SyncableService
@@ -256,16 +258,24 @@ class AppListSyncableService : public syncer::SyncableService,
   // Returns true if extension service is ready.
   bool IsExtensionServiceReady() const;
 
-  // Remove sync data of Drive apps.
-  // TODO(http://crbug.com/794724): Remove after M65 goes stable.
-  void RemoveDriveAppItems();
-
   // Returns a list of top level sync items sorted by item ordinal.
   std::vector<SyncItem*> GetSortedTopLevelSyncItems() const;
 
   // Remove leading, trailing and duplicate "page break" items in sorted top
   // level item list.
   void PruneRedundantPageBreakItems();
+
+  // Installs the default page break items. This is only called for first time
+  // users.
+  void InstallDefaultPageBreaks();
+
+  // Applies sync changes to the local item.
+  void UpdateSyncItemFromSync(const sync_pb::AppListSpecifics& specifics,
+                              AppListSyncableService::SyncItem* item);
+
+  // Applies changes from the local item to sync item.
+  bool UpdateSyncItemFromAppItem(const ChromeAppListItem* app_item,
+                                 AppListSyncableService::SyncItem* sync_item);
 
   Profile* profile_;
   extensions::ExtensionSystem* extension_system_;

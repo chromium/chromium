@@ -4,43 +4,39 @@
 
 /**
  * Interface for controllers to interact with main SwitchAccess class.
- *
  * @interface
  */
-function SwitchAccessInterface() {}
-
-SwitchAccessInterface.prototype = {
+class SwitchAccessInterface {
   /**
    * Jump to the context menu.
    */
-  enterContextMenu: function() {},
+  enterContextMenu() {}
 
   /**
    * Move to the next interesting node.
    */
-  moveForward: function() {},
+  moveForward() {}
 
   /**
    * Move to the previous interesting node.
    */
-  moveBackward: function() {},
+  moveBackward() {}
 
   /**
    * Perform the default action on the current node.
    */
-  selectCurrentNode: function() {},
+  selectCurrentNode() {}
 
   /**
    * Open the options page in a new tab.
    */
-  showOptionsPage: function() {},
+  showOptionsPage() {}
 
   /**
    * Return a list of the names of all user commands.
-   *
    * @return {!Array<string>}
    */
-  getCommands: function() {},
+  getCommands() {}
 
   /**
    * Return the default key code for a command.
@@ -48,20 +44,19 @@ SwitchAccessInterface.prototype = {
    * @param {string} command
    * @return {number}
    */
-  getDefaultKeyCodeFor: function(command) {},
+  getDefaultKeyCodeFor(command) {}
 
   /**
    * Run the function binding for the specified command.
-   *
    * @param {string} command
    */
-  runCommand: function(command) {},
+  runCommand(command) {}
 
   /**
    * Perform actions as the result of actions by the user. Currently, restarts
    * auto-scan if it is enabled.
    */
-  performedUserAction: function() {},
+  performedUserAction() {}
 
   /**
    * Set the value of the preference |key| to |value| in chrome.storage.sync.
@@ -70,7 +65,7 @@ SwitchAccessInterface.prototype = {
    * @param {string} key
    * @param {boolean|string|number} value
    */
-  setPref: function(key, value) {},
+  setPref(key, value) {}
 
   /**
    * Get the value of type 'boolean' of the preference |key|. Will throw a type
@@ -79,7 +74,7 @@ SwitchAccessInterface.prototype = {
    * @param  {string} key
    * @return {boolean}
    */
-  getBooleanPref: function(key) {},
+  getBooleanPref(key) {}
 
   /**
    * Get the value of type 'number' of the preference |key|. Will throw a type
@@ -88,7 +83,7 @@ SwitchAccessInterface.prototype = {
    * @param  {string} key
    * @return {number}
    */
-  getNumberPref: function(key) {},
+  getNumberPref(key) {}
 
   /**
    * Get the value of type 'string' of the preference |key|. Will throw a type
@@ -97,7 +92,7 @@ SwitchAccessInterface.prototype = {
    * @param  {string} key
    * @return {string}
    */
-  getStringPref: function(key) {},
+  getStringPref(key) {}
 
   /**
    * Returns true if |keyCode| is already used to run a command from the
@@ -106,5 +101,5 @@ SwitchAccessInterface.prototype = {
    * @param {number} keyCode
    * @return {boolean}
    */
-  keyCodeIsUsed: function(keyCode) {}
-};
+  keyCodeIsUsed(keyCode) {}
+}

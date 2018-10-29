@@ -75,6 +75,12 @@ let prefsIncognito;
 let prefsChromeExtension;
 
 /**
+ * An example Javascript pref for android_sms notification setting.
+ * @type {SiteSettingsPref}
+ */
+let prefsAndroidSms;
+
+/**
  * Creates all the test |SiteSettingsPref|s that are needed for the tests in
  * this file. They are populated after test setup in order to access the
  * |settings| constants required.
@@ -241,6 +247,16 @@ function populateTestExceptions() {
   ]);
 
   prefsGeolocationEmpty = test_util.createSiteSettingsPrefs([], []);
+
+  prefsAndroidSms = test_util.createSiteSettingsPrefs(
+      [], [test_util.createContentSettingTypeToValuePair(
+              settings.ContentSettingsTypes.NOTIFICATIONS, [
+                // android sms setting.
+                test_util.createRawSiteException(
+                    multidevice.TEST_ANDROID_SMS_ORIGIN),
+                // Non android sms setting that should be handled as usual.
+                test_util.createRawSiteException('http://bar.com')
+              ])]);
 }
 
 suite('SiteList', function() {
@@ -274,6 +290,11 @@ suite('SiteList', function() {
     PolymerTest.clearBody();
     testElement = document.createElement('site-list');
     document.body.appendChild(testElement);
+
+    if (cr.isChromeOS) {
+      settings.MultiDeviceBrowserProxyImpl.instance_ =
+          new multidevice.TestMultideviceBrowserProxy();
+    }
   });
 
   teardown(function() {
@@ -281,6 +302,11 @@ suite('SiteList', function() {
     // The code being tested changes the Route. Reset so that state is not
     // leaked across tests.
     settings.resetRouteForTesting();
+
+    if (cr.isChromeOS) {
+      // Reset multidevice enabled flag.
+      loadTimeData.overrideValues({enableMultideviceSettings: false});
+    }
   });
 
   /**
@@ -362,6 +388,54 @@ suite('SiteList', function() {
           assertFalse(dotsMenu.hidden);
         });
   });
+
+  if (cr.isChromeOS) {
+    test('update androidSmsInfo', function() {
+      loadTimeData.overrideValues({enableMultideviceSettings: true});
+      setUpCategory(
+          settings.ContentSettingsTypes.NOTIFICATIONS,
+          settings.ContentSetting.ALLOW, prefsAndroidSms);
+      const multiDeviceBrowserProxy =
+          settings.MultiDeviceBrowserProxyImpl.getInstance();
+      return multiDeviceBrowserProxy.whenCalled('getAndroidSmsInfo')
+          .then(() => browserProxy.whenCalled('getExceptionList'))
+          .then((contentType) => {
+            assertEquals(
+                settings.ContentSettingsTypes.NOTIFICATIONS, contentType);
+            assertEquals(2, testElement.sites.length);
+
+            assertEquals(
+                prefsAndroidSms.exceptions[contentType][0].origin,
+                testElement.sites[0].origin);
+            assertTrue(testElement.sites[0].showAndroidSmsNote);
+
+            assertEquals(
+                prefsAndroidSms.exceptions[contentType][1].origin,
+                testElement.sites[1].origin);
+            assertEquals(undefined, testElement.sites[1].showAndroidSmsNote);
+
+            browserProxy.resetResolver('getExceptionList');
+            multiDeviceBrowserProxy.setFeatureEnabledState(
+                settings.MultiDeviceFeature.MESSAGES, false);
+            return browserProxy.whenCalled('getExceptionList');
+          })
+          .then((contentType) => {
+            assertEquals(
+                settings.ContentSettingsTypes.NOTIFICATIONS, contentType);
+            assertEquals(2, testElement.sites.length);
+
+            assertEquals(
+                prefsAndroidSms.exceptions[contentType][0].origin,
+                testElement.sites[0].origin);
+            assertEquals(undefined, testElement.sites[0].showAndroidSmsNote);
+
+            assertEquals(
+                prefsAndroidSms.exceptions[contentType][1].origin,
+                testElement.sites[1].origin);
+            assertEquals(undefined, testElement.sites[1].showAndroidSmsNote);
+          });
+    });
+  }
 
   test('getExceptionList API used', function() {
     setUpCategory(

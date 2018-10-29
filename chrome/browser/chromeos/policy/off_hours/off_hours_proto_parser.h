@@ -11,8 +11,8 @@
 
 #include "base/optional.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/policy/weekly_time/weekly_time.h"
-#include "chrome/browser/chromeos/policy/weekly_time/weekly_time_interval.h"
+#include "chromeos/policy/weekly_time/weekly_time.h"
+#include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
 namespace base {

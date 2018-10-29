@@ -199,32 +199,26 @@ void TextureLayerImpl::ReleaseResources() {
 
 void TextureLayerImpl::SetPremultipliedAlpha(bool premultiplied_alpha) {
   premultiplied_alpha_ = premultiplied_alpha;
-  SetNeedsPushProperties();
 }
 
 void TextureLayerImpl::SetBlendBackgroundColor(bool blend) {
   blend_background_color_ = blend;
-  SetNeedsPushProperties();
 }
 
 void TextureLayerImpl::SetFlipped(bool flipped) {
   flipped_ = flipped;
-  SetNeedsPushProperties();
 }
 
 void TextureLayerImpl::SetNearestNeighbor(bool nearest_neighbor) {
   nearest_neighbor_ = nearest_neighbor;
-  SetNeedsPushProperties();
 }
 
 void TextureLayerImpl::SetUVTopLeft(const gfx::PointF& top_left) {
   uv_top_left_ = top_left;
-  SetNeedsPushProperties();
 }
 
 void TextureLayerImpl::SetUVBottomRight(const gfx::PointF& bottom_right) {
   uv_bottom_right_ = bottom_right;
-  SetNeedsPushProperties();
 }
 
 // 1--2
@@ -235,7 +229,6 @@ void TextureLayerImpl::SetVertexOpacity(const float vertex_opacity[4]) {
   vertex_opacity_[1] = vertex_opacity[1];
   vertex_opacity_[2] = vertex_opacity[2];
   vertex_opacity_[3] = vertex_opacity[3];
-  SetNeedsPushProperties();
 }
 
 void TextureLayerImpl::SetTransferableResource(
@@ -246,7 +239,6 @@ void TextureLayerImpl::SetTransferableResource(
   transferable_resource_ = resource;
   release_callback_ = std::move(release_callback);
   own_resource_ = true;
-  SetNeedsPushProperties();
 }
 
 void TextureLayerImpl::RegisterSharedBitmapId(
@@ -263,7 +255,6 @@ void TextureLayerImpl::RegisterSharedBitmapId(
     to_register_bitmaps_[id] = std::move(bitmap);
   }
   base::Erase(to_unregister_bitmap_ids_, id);
-  SetNeedsPushProperties();
 }
 
 void TextureLayerImpl::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
@@ -278,7 +269,6 @@ void TextureLayerImpl::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
     // SharedBitmapId, so we should remove the SharedBitmapId only after we've
     // had a chance to replace it with activation.
     to_unregister_bitmap_ids_.push_back(id);
-    SetNeedsPushProperties();
   }
 }
 

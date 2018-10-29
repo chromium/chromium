@@ -70,10 +70,10 @@ class WebMouseWheelEvent : public WebMouseEvent {
 
   // True when phase information is added in mouse_wheel_phase_handler based
   // on its timer.
-  bool has_synthetic_phase;
+  bool has_synthetic_phase = false;
 
-  bool scroll_by_page;
-  bool has_precise_scrolling_deltas;
+  bool scroll_by_page = false;
+  bool has_precise_scrolling_deltas = false;
 
   RailsMode rails_mode;
 
@@ -99,8 +99,6 @@ class WebMouseWheelEvent : public WebMouseEvent {
         resending_plugin_id(-1),
         phase(kPhaseNone),
         momentum_phase(kPhaseNone),
-        scroll_by_page(false),
-        has_precise_scrolling_deltas(false),
         rails_mode(kRailsModeFree),
         dispatch_type(kBlocking) {}
 

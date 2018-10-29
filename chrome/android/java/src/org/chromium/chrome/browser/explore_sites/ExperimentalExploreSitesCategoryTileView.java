@@ -45,20 +45,22 @@ public class ExperimentalExploreSitesCategoryTileView extends LinearLayout {
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        mTitleView = findViewById(R.id.explore_sites_category_tile_title);
-        mIconView = findViewById(R.id.explore_sites_category_tile_icon);
+        mTitleView = findViewById(R.id.experimental_explore_sites_category_tile_title);
+        mIconView = findViewById(R.id.experimental_explore_sites_category_tile_icon);
     }
 
     public void initialize(ExploreSitesCategoryTile category, int widthPx) {
         mCategoryData = category;
-        mIconWidthPx =
-                widthPx - (2 * mResources.getDimensionPixelSize(R.dimen.explore_sites_padding));
+        mIconWidthPx = widthPx
+                - (2
+                          * mResources.getDimensionPixelSize(
+                                    R.dimen.experimental_explore_sites_padding));
         mIconHeightPx = mIconWidthPx * 2 / 3;
         mIconGenerator = new RoundedIconGenerator(mIconWidthPx, mIconHeightPx,
-                mResources.getDimensionPixelSize(R.dimen.explore_sites_radius),
+                mResources.getDimensionPixelSize(R.dimen.experimental_explore_sites_radius),
                 ApiCompatibilityUtils.getColor(
                         mResources, R.color.default_favicon_background_color),
-                mResources.getDimensionPixelSize(R.dimen.headline_size_medium));
+                mResources.getDimensionPixelSize(R.dimen.tile_view_icon_text_size));
         updateIcon(null);
         mTitleView.setText(mCategoryData.getCategoryName());
     }
@@ -71,7 +73,7 @@ public class ExperimentalExploreSitesCategoryTileView extends LinearLayout {
         } else {
             drawable = ViewUtils.createRoundedBitmapDrawable(
                     Bitmap.createScaledBitmap(bitmap, mIconWidthPx, mIconHeightPx, false),
-                    mResources.getDimensionPixelSize(R.dimen.explore_sites_radius));
+                    mResources.getDimensionPixelSize(R.dimen.experimental_explore_sites_radius));
         }
         mCategoryData.setIconDrawable(drawable);
         mIconView.setImageDrawable(drawable);

@@ -6,21 +6,21 @@
 #define UI_GFX_GEOMETRY_ANGLE_CONVERSIONS_H_
 
 #include "base/numerics/math_constants.h"
-#include "ui/gfx/gfx_export.h"
+#include "ui/gfx/geometry/geometry_export.h"
 
 namespace gfx {
 
-GFX_EXPORT constexpr double DegToRad(double deg) {
+GEOMETRY_EXPORT constexpr double DegToRad(double deg) {
   return deg * base::kPiDouble / 180.0;
 }
-GFX_EXPORT constexpr float DegToRad(float deg) {
+GEOMETRY_EXPORT constexpr float DegToRad(float deg) {
   return deg * base::kPiFloat / 180.0f;
 }
 
-GFX_EXPORT constexpr double RadToDeg(double rad) {
+GEOMETRY_EXPORT constexpr double RadToDeg(double rad) {
   return rad * 180.0 / base::kPiDouble;
 }
-GFX_EXPORT constexpr float RadToDeg(float rad) {
+GEOMETRY_EXPORT constexpr float RadToDeg(float rad) {
   return rad * 180.0f / base::kPiFloat;
 }
 

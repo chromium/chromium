@@ -45,6 +45,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/navigation_controller.h"
@@ -143,7 +144,7 @@ class DevToolsToolboxDelegate
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
-  void HandleKeyboardEvent(
+  bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
   void WebContentsDestroyed() override;
@@ -185,16 +186,15 @@ DevToolsToolboxDelegate::PreHandleKeyboardEvent(
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
-void DevToolsToolboxDelegate::HandleKeyboardEvent(
+bool DevToolsToolboxDelegate::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   if (event.windows_key_code == 0x08) {
     // Do not navigate back in history on Windows (http://crbug.com/74156).
-    return;
+    return false;
   }
   BrowserWindow* window = GetInspectedBrowserWindow();
-  if (window)
-    window->HandleKeyboardEvent(event);
+  return window && window->HandleKeyboardEvent(event);
 }
 
 void DevToolsToolboxDelegate::WebContentsDestroyed() {
@@ -269,7 +269,7 @@ void DevToolsEventForwarder::SetWhitelistedShortcuts(
   base::ListValue* shortcut_list;
   if (!parsed_message || !parsed_message->GetAsList(&shortcut_list))
       return;
-  base::ListValue::iterator it = shortcut_list->begin();
+  auto it = shortcut_list->begin();
   for (; it != shortcut_list->end(); ++it) {
     base::DictionaryValue* dictionary;
     if (!it->GetAsDictionary(&dictionary))
@@ -421,8 +421,7 @@ DevToolsWindow::~DevToolsWindow() {
   owned_toolbox_web_contents_.reset();
 
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
-  DevToolsWindows::iterator it(
-      std::find(instances->begin(), instances->end(), this));
+  auto it(std::find(instances->begin(), instances->end(), this));
   DCHECK(it != instances->end());
   instances->erase(it);
 
@@ -484,8 +483,7 @@ DevToolsWindow* DevToolsWindow::GetInstanceForInspectedWebContents(
   if (!inspected_web_contents || !g_devtools_window_instances.IsCreated())
     return NULL;
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
-  for (DevToolsWindows::iterator it(instances->begin()); it != instances->end();
-       ++it) {
+  for (auto it(instances->begin()); it != instances->end(); ++it) {
     if ((*it)->GetInspectedWebContents() == inspected_web_contents)
       return *it;
   }
@@ -497,8 +495,7 @@ bool DevToolsWindow::IsDevToolsWindow(content::WebContents* web_contents) {
   if (!web_contents || !g_devtools_window_instances.IsCreated())
     return false;
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
-  for (DevToolsWindows::iterator it(instances->begin()); it != instances->end();
-       ++it) {
+  for (auto it(instances->begin()); it != instances->end(); ++it) {
     if ((*it)->main_web_contents_ == web_contents ||
         (*it)->toolbox_web_contents_ == web_contents)
       return true;
@@ -1094,8 +1091,7 @@ DevToolsWindow* DevToolsWindow::FindDevToolsWindow(
   if (!agent_host || !g_devtools_window_instances.IsCreated())
     return NULL;
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
-  for (DevToolsWindows::iterator it(instances->begin()); it != instances->end();
-       ++it) {
+  for (auto it(instances->begin()); it != instances->end(); ++it) {
     if ((*it)->bindings_->IsAttachedTo(agent_host))
       return *it;
   }
@@ -1108,8 +1104,7 @@ DevToolsWindow* DevToolsWindow::AsDevToolsWindow(
   if (!web_contents || !g_devtools_window_instances.IsCreated())
     return NULL;
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
-  for (DevToolsWindows::iterator it(instances->begin()); it != instances->end();
-       ++it) {
+  for (auto it(instances->begin()); it != instances->end(); ++it) {
     if ((*it)->main_web_contents_ == web_contents)
       return *it;
   }
@@ -1253,16 +1248,15 @@ content::KeyboardEventProcessingResult DevToolsWindow::PreHandleKeyboardEvent(
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
-void DevToolsWindow::HandleKeyboardEvent(
+bool DevToolsWindow::HandleKeyboardEvent(
     WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   if (event.windows_key_code == 0x08) {
     // Do not navigate back in history on Windows (http://crbug.com/74156).
-    return;
+    return true;
   }
   BrowserWindow* inspected_window = GetInspectedBrowserWindow();
-  if (inspected_window)
-    inspected_window->HandleKeyboardEvent(event);
+  return inspected_window && inspected_window->HandleKeyboardEvent(event);
 }
 
 content::JavaScriptDialogManager* DevToolsWindow::GetJavaScriptDialogManager(
@@ -1279,8 +1273,10 @@ content::ColorChooser* DevToolsWindow::OpenColorChooser(
 
 void DevToolsWindow::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
-  FileSelectHelper::RunFileChooser(render_frame_host, params);
+  FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
+                                   params);
 }
 
 bool DevToolsWindow::PreHandleGestureEvent(

@@ -68,7 +68,6 @@ class AssociatedInterfaceProvider;
 class Color;
 class ComputedAccessibleNode;
 class ContentSecurityPolicy;
-class ContentSettingsClient;
 class Document;
 class Editor;
 class Element;
@@ -102,6 +101,7 @@ class SmoothScrollSequencer;
 class SpellChecker;
 class TextSuggestionController;
 class WebComputedAXTree;
+class WebContentSettingsClient;
 class WebPluginContainerImpl;
 class WebURLLoaderFactory;
 
@@ -127,9 +127,9 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void Trace(blink::Visitor*) override;
   void ScheduleNavigation(Document& origin_document,
                           const KURL&,
-                          bool replace_current_item,
+                          WebFrameLoadType,
                           UserGestureStatus) override;
-  void Navigate(const FrameLoadRequest&) override;
+  void Navigate(const FrameLoadRequest&, WebFrameLoadType) override;
   bool ShouldClose() override;
   SecurityContext* GetSecurityContext() const override;
   void PrintNavigationErrorMessage(const Frame&, const char* reason);
@@ -197,6 +197,38 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   CoreProbeSink* GetProbeSink() { return probe_sink_.Get(); }
   scoped_refptr<InspectorTaskRunner> GetInspectorTaskRunner();
+
+  // Activates the user activation states of the |LocalFrame| (provided it's
+  // non-null) and all its ancestors.  Also creates a |UserGestureIndicator|
+  // that contains a |UserGestureToken| with the given status.
+  static std::unique_ptr<UserGestureIndicator> NotifyUserActivation(
+      LocalFrame*,
+      UserGestureToken::Status = UserGestureToken::kPossiblyExistingGesture);
+
+  // Similar to above, but used only in old UAv1-specific code.
+  static std::unique_ptr<UserGestureIndicator> NotifyUserActivation(
+      LocalFrame*,
+      UserGestureToken*);
+
+  // Returns the transient user activation state of the |LocalFrame|, provided
+  // it is non-null.  Otherwise returns |false|.
+  //
+  // The |check_if_main_thread| parameter determines if the token based gestures
+  // (legacy UAv1 code) must be used in a thread-safe manner.
+  static bool HasTransientUserActivation(LocalFrame*,
+                                         bool check_if_main_thread = false);
+
+  // Consumes the transient user activation state of the |LocalFrame|, provided
+  // the frame pointer is non-null and the state hasn't been consumed since
+  // activation.  Returns |true| if successfully consumed the state.
+  //
+  // The |check_if_main_thread| parameter determines if the token based gestures
+  // (legacy code) must be used in a thread-safe manner.
+  static bool ConsumeTransientUserActivation(
+      LocalFrame*,
+      bool check_if_main_thread = false,
+      UserActivationUpdateSource update_source =
+          UserActivationUpdateSource::kRenderer);
 
   // =========================================================================
   // All public functions below this point are candidates to move out of
@@ -275,7 +307,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   LocalFrameClient* Client() const;
 
-  ContentSettingsClient* GetContentSettingsClient();
+  WebContentSettingsClient* GetContentSettingsClient();
 
   // GetFrameResourceCoordinator may return nullptr when it can not hook up to
   // services/resource_coordinator.
@@ -372,7 +404,11 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   SmoothScrollSequencer& GetSmoothScrollSequencer();
 
-  void ReportFeaturePolicyViolation(mojom::FeaturePolicyFeature) const override;
+  // TODO(iclelland): Replace this with a method on Document
+  void DeprecatedReportFeaturePolicyViolation(
+      mojom::FeaturePolicyFeature) const override;
+
+  const mojom::blink::ReportingServiceProxyPtr& GetReportingService() const;
 
  private:
   friend class FrameNavigationDisabler;
@@ -409,7 +445,15 @@ class CORE_EXPORT LocalFrame final : public Frame,
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
 
-  const mojom::blink::ReportingServiceProxyPtr& GetReportingService() const;
+  // Activates the user activation states of this frame and all its ancestors.
+  void NotifyUserActivation();
+
+  // Returns the transient user activation state of this frame
+  bool HasTransientUserActivation();
+
+  // Consumes and returns the transient user activation state of this frame,
+  // after updating all ancestor/descendant frames.
+  bool ConsumeTransientUserActivation(UserActivationUpdateSource update_source);
 
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 

@@ -9,6 +9,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -304,6 +306,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, RuntimeValidWhileDevToolsOpen) {
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       bg_contents, "domAutomationController.send(is_valid);", &is_valid));
   EXPECT_TRUE(is_valid);
+
+  // Tidy up.
+  DevToolsWindowTesting::CloseDevToolsWindowSync(
+      DevToolsWindow::FindDevToolsWindow(
+          content::DevToolsAgentHost::GetOrCreateFor(bg_contents).get()));
 }
 
 }  // namespace

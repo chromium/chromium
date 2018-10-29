@@ -16,7 +16,7 @@
 namespace viz {
 namespace {
 static const int kIdleCleanupDelaySeconds = 1;
-static const int kOldResourceCleanupDelaySeconds = 30;
+static const int kOldResourceCleanupDelaySeconds = 15;
 }  // namespace
 
 ContextCacheController::ScopedToken::ScopedToken() = default;
@@ -86,6 +86,7 @@ void ContextCacheController::ClientBecameNotVisible(
     if (gr_context_)
       gr_context_->freeGpuResources();
     context_support_->SetAggressivelyFreeResources(true);
+    context_support_->FlushPendingWork();
   }
 }
 
@@ -174,6 +175,7 @@ void ContextCacheController::OnIdle(uint32_t idle_generation) {
 
   // Toggle SetAggressivelyFreeResources to drop command buffer data.
   context_support_->SetAggressivelyFreeResources(true);
+  context_support_->FlushPendingWork();
   context_support_->SetAggressivelyFreeResources(false);
 
   callback_pending_ = false;

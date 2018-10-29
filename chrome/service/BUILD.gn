@@ -41,6 +41,8 @@ static_library("service") {
     "cloud_print/printer_job_handler.h",
     "cloud_print/printer_job_queue_handler.cc",
     "cloud_print/printer_job_queue_handler.h",
+    "net/in_process_network_connection_tracker.cc",
+    "net/in_process_network_connection_tracker.h",
     "net/service_url_request_context_getter.cc",
     "net/service_url_request_context_getter.h",
     "service_ipc_server.cc",
@@ -70,6 +72,7 @@ static_library("service") {
     "//mojo/public/cpp/system",
     "//net",
     "//printing",
+    "//services/network/public/cpp",
     "//skia",
     "//third_party/webrtc_overrides",
   ]

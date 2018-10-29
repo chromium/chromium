@@ -41,8 +41,7 @@ class MockRequestJobBase : public DeviceManagementRequestJob {
  private:
   // Searches for a query parameter and returns the associated value.
   const std::string& ExtractParameter(const std::string& name) const {
-    for (ParameterMap::const_iterator entry(query_params_.begin());
-         entry != query_params_.end();
+    for (auto entry(query_params_.begin()); entry != query_params_.end();
          ++entry) {
       if (name == entry->first)
         return entry->second;

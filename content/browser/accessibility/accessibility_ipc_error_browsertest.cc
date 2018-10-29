@@ -39,9 +39,8 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(AccessibilityIpcErrorBrowserTest);
 };
 
-// http://crbug.com/870661
 IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
-                       DISABLED_ResetBrowserAccessibilityManager) {
+                       ResetBrowserAccessibilityManager) {
   // Create a data url and load it.
   const char url_str[] =
       "data:text/html,"
@@ -131,9 +130,16 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   EXPECT_EQ(ax::mojom::Role::kButton, button->data().role);
 }
 
-// http://crbug.com/870661
+#if defined(OS_ANDROID)
+// http://crbug.com/542704
+#define MAYBE_MultipleBadAccessibilityIPCsKillsRenderer \
+  DISABLED_MultipleBadAccessibilityIPCsKillsRenderer
+#else
+#define MAYBE_MultipleBadAccessibilityIPCsKillsRenderer \
+  MultipleBadAccessibilityIPCsKillsRenderer
+#endif
 IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
-                       DISABLED_MultipleBadAccessibilityIPCsKillsRenderer) {
+                       MAYBE_MultipleBadAccessibilityIPCsKillsRenderer) {
   // Create a data url and load it.
   const char url_str[] =
       "data:text/html,"
@@ -157,7 +163,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   // will reject.
   AXEventNotificationDetails bad_accessibility_event;
   bad_accessibility_event.updates.resize(1);
-  bad_accessibility_event.updates[0].node_id_to_clear = -2;
+  bad_accessibility_event.updates[0].root_id = 1;
+  bad_accessibility_event.updates[0].nodes.resize(1);
+  bad_accessibility_event.updates[0].nodes[0].id = 1;
+  bad_accessibility_event.updates[0].nodes[0].child_ids.push_back(2);
 
   // We should be able to reset accessibility |max_iterations-1| times
   // (see render_frame_host_impl.cc - kMaxAccessibilityResets),

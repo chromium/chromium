@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_TOOLBAR_CHROME_TOOLBAR_MODEL_DELEGATE_H_
 
 #include "base/macros.h"
-#include "components/toolbar/toolbar_model_delegate.h"
+#include "components/omnibox/browser/toolbar_model_delegate.h"
 
 class Profile;
 
@@ -40,6 +40,7 @@ class ChromeToolbarModelDelegate : public ToolbarModelDelegate {
   bool GetURL(GURL* url) const override;
   SecurityLevel GetSecurityLevel() const override;
   scoped_refptr<net::X509Certificate> GetCertificate() const override;
+  bool FailsBillingCheck() const override;
   bool FailsMalwareCheck() const override;
   const gfx::VectorIcon* GetVectorIconOverride() const override;
   bool IsOfflinePage() const override;

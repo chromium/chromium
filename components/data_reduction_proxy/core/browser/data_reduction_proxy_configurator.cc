@@ -13,17 +13,12 @@
 #include "base/values.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_util.h"
 #include "components/data_reduction_proxy/core/browser/network_properties_manager.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_event_creator.h"
+#include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "net/proxy_resolution/proxy_config.h"
 
 namespace data_reduction_proxy {
 
-DataReductionProxyConfigurator::DataReductionProxyConfigurator(
-    net::NetLog* net_log,
-    DataReductionProxyEventCreator* event_creator)
-    : net_log_(net_log), data_reduction_proxy_event_creator_(event_creator) {
-  DCHECK(net_log);
-  DCHECK(event_creator);
+DataReductionProxyConfigurator::DataReductionProxyConfigurator() {
   // Constructed on the UI thread, but should be checked on the IO thread.
   thread_checker_.DetachFromThread();
 }
@@ -38,10 +33,9 @@ void DataReductionProxyConfigurator::Enable(
   net::ProxyConfig config =
       CreateProxyConfig(false /* probe_url_config */,
                         network_properties_manager, proxies_for_http);
-  data_reduction_proxy_event_creator_->AddProxyEnabledEvent(
-      net_log_, network_properties_manager.IsSecureProxyDisallowedByCarrier(),
-      DataReductionProxyServer::ConvertToNetProxyServers(proxies_for_http));
   config_ = config;
+  if (config_updated_callback_)
+    config_updated_callback_.Run();
 }
 
 net::ProxyConfig DataReductionProxyConfigurator::CreateProxyConfig(
@@ -87,6 +81,11 @@ net::ProxyConfig DataReductionProxyConfigurator::CreateProxyConfig(
       continue;
     }
 
+    if (!probe_url_config && http_proxy.IsSecureProxy() &&
+        params::IsIncludedInSecureProxyHoldbackFieldTrial()) {
+      continue;
+    }
+
     config.proxy_rules().proxies_for_http.AddProxyServer(
         http_proxy.proxy_server());
   }
@@ -108,8 +107,9 @@ net::ProxyConfig DataReductionProxyConfigurator::CreateProxyConfig(
 void DataReductionProxyConfigurator::Disable() {
   DCHECK(thread_checker_.CalledOnValidThread());
   net::ProxyConfig config = net::ProxyConfig::CreateDirect();
-  data_reduction_proxy_event_creator_->AddProxyDisabledEvent(net_log_);
   config_ = config;
+  if (config_updated_callback_)
+    config_updated_callback_.Run();
 }
 
 void DataReductionProxyConfigurator::SetBypassRules(

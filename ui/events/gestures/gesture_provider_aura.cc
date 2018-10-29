@@ -66,6 +66,10 @@ void GestureProviderAura::OnTouchEventAck(
       is_source_touch_event_set_non_blocking);
 }
 
+void GestureProviderAura::ResetGestureHandlingState() {
+  filtered_gesture_provider_.ResetGestureHandlingState();
+}
+
 void GestureProviderAura::OnGestureEvent(const GestureEventData& gesture) {
   std::unique_ptr<ui::GestureEvent> event(
       new ui::GestureEvent(gesture.x, gesture.y, gesture.flags,
@@ -92,10 +96,10 @@ GestureProviderAura::GetAndResetPendingGestures() {
 }
 
 void GestureProviderAura::OnTouchEnter(int pointer_id, float x, float y) {
-  std::unique_ptr<TouchEvent> touch_event(new TouchEvent(
+  auto touch_event = std::make_unique<TouchEvent>(
       ET_TOUCH_PRESSED, gfx::Point(), ui::EventTimeForNow(),
       PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, pointer_id),
-      EF_IS_SYNTHESIZED, 0.0f));
+      EF_IS_SYNTHESIZED);
   gfx::PointF point(x, y);
   touch_event->set_location_f(point);
   touch_event->set_root_location_f(point);

@@ -4,6 +4,7 @@
 
 #include "base/macros.h"
 #include "base/values.h"
+#include "chrome/browser/sync/test/integration/feature_toggler.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -12,6 +13,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using preferences_helper::BooleanPrefMatches;
@@ -24,16 +26,18 @@ using testing::NotNull;
 
 namespace {
 
-class SingleClientPreferencesSyncTest : public SyncTest {
+class SingleClientPreferencesSyncTest : public FeatureToggler, public SyncTest {
  public:
-  SingleClientPreferencesSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientPreferencesSyncTest()
+      : FeatureToggler(switches::kSyncPseudoUSSPreferences),
+        SyncTest(SINGLE_CLIENT) {}
   ~SingleClientPreferencesSyncTest() override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SingleClientPreferencesSyncTest);
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, Sanity) {
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(BooleanPrefMatches(prefs::kHomePageIsNewTabPage));
   ChangeBooleanPref(0, prefs::kHomePageIsNewTabPage);
@@ -43,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, Sanity) {
 
 // This test simply verifies that preferences registered after sync started
 // get properly synced.
-IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, LateRegistration) {
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest, LateRegistration) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   PrefRegistrySyncable* registry = GetRegistry(GetProfile(0));
   const std::string pref_name = "testing.my-test-preference";
@@ -64,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, LateRegistration) {
   EXPECT_FALSE(BooleanPrefMatches(pref_name.c_str()));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
                        ShouldRemoveBadDataWhenRegistering) {
   // Populate the data store with data of type boolean but register as string.
   SetPreexistingPreferencesFileContents(
@@ -90,5 +94,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   const base::Value* result;
   EXPECT_FALSE(pref_store->GetValue("testing.my-test-preference", &result));
 }
+
+INSTANTIATE_TEST_CASE_P(USS,
+                        SingleClientPreferencesSyncTest,
+                        ::testing::Values(false, true));
 
 }  // namespace

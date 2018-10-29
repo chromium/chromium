@@ -95,9 +95,7 @@ void TabStripModelStatsRecorder::TabInfo::UpdateState(TabState new_state) {
   current_state_ = new_state;
 }
 
-void TabStripModelStatsRecorder::TabClosingAt(TabStripModel*,
-                                              content::WebContents* contents,
-                                              int index) {
+void TabStripModelStatsRecorder::OnTabClosing(content::WebContents* contents) {
   TabInfo::Get(contents)->UpdateState(TabState::CLOSED);
   last_close_time_ = base::TimeTicks::Now();
 
@@ -106,10 +104,9 @@ void TabStripModelStatsRecorder::TabClosingAt(TabStripModel*,
                static_cast<content::WebContents*>(nullptr));
 }
 
-void TabStripModelStatsRecorder::ActiveTabChanged(
+void TabStripModelStatsRecorder::OnActiveTabChanged(
     content::WebContents* old_contents,
     content::WebContents* new_contents,
-    int index,
     int reason) {
   if (reason & TabStripModelObserver::CHANGE_REASON_REPLACED) {
     // We already handled tab clobber at TabReplacedAt notification.
@@ -162,14 +159,35 @@ void TabStripModelStatsRecorder::ActiveTabChanged(
     active_tab_history_.resize(kMaxTabHistory);
 }
 
-void TabStripModelStatsRecorder::TabReplacedAt(
-    TabStripModel* tab_strip_model,
+void TabStripModelStatsRecorder::OnTabReplaced(
     content::WebContents* old_contents,
-    content::WebContents* new_contents,
-    int index) {
+    content::WebContents* new_contents) {
   DCHECK(old_contents != new_contents);
   *TabInfo::Get(new_contents) = *TabInfo::Get(old_contents);
 
   std::replace(active_tab_history_.begin(), active_tab_history_.end(),
                old_contents, new_contents);
+}
+
+void TabStripModelStatsRecorder::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() == TabStripModelChange::kRemoved) {
+    for (const auto& delta : change.deltas()) {
+      if (!delta.remove.will_be_deleted)
+        continue;
+
+      OnTabClosing(delta.remove.contents);
+    }
+  } else if (change.type() == TabStripModelChange::kReplaced) {
+    for (const auto& delta : change.deltas())
+      OnTabReplaced(delta.replace.old_contents, delta.replace.new_contents);
+  }
+
+  if (!selection.active_tab_changed() || tab_strip_model->empty())
+    return;
+
+  OnActiveTabChanged(selection.old_contents, selection.new_contents,
+                     selection.reason);
 }

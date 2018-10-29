@@ -30,6 +30,5 @@ specific_include_rules = {
   "login_display_host_webui\.cc": [
     "+ash/accessibility/focus_ring_controller.h",
     "+ash/shell.h",
-    "+ash/system/tray/system_tray.h",
   ],
 }

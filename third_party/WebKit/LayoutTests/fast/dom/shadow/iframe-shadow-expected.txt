@@ -3,7 +3,6 @@ This test ensures that iframe inside shadow isn't visible from the host document
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.length is 4
 PASS i0byname.length is 1
 PASS i0 is i0byname[0].contentWindow
@@ -20,5 +19,6 @@ PASS document['i3'] is i3InShadow.contentWindow
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
   
 

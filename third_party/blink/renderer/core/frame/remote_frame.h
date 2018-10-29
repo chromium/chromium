@@ -31,9 +31,9 @@ class CORE_EXPORT RemoteFrame final : public Frame {
   void Trace(blink::Visitor*) override;
   void ScheduleNavigation(Document& origin_document,
                           const KURL&,
-                          bool replace_current_item,
+                          WebFrameLoadType,
                           UserGestureStatus) override;
-  void Navigate(const FrameLoadRequest& passed_request) override;
+  void Navigate(const FrameLoadRequest&, WebFrameLoadType) override;
   RemoteSecurityContext* GetSecurityContext() const override;
   bool PrepareForCommit() override;
   void CheckCompleted() override;

@@ -35,6 +35,7 @@
     liveRegionCreated,
     liveRegionChanged,
     loadComplete,
+    loadStart,
     locationChanged,
     mediaStartedPlaying,
     mediaStoppedPlaying,
@@ -353,9 +354,11 @@
     uninitialized,
     attribute,
     attributeExplicitlyEmpty,
+    caption,
     contents,
     placeholder,
     relatedElement,
+    title,
     value
   };
 
@@ -651,6 +654,9 @@
     long? scrollY;
     long? scrollYMin;
     long? scrollYMax;
+
+    // Indicates whether this node is scrollable.
+    boolean? scrollable;
 
     //
     // Editable text field attributes.

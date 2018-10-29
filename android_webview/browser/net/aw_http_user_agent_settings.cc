@@ -24,6 +24,8 @@ std::string AwHttpUserAgentSettings::GetAcceptLanguage() const {
   std::string new_aw_accept_language =
       AwContentBrowserClient::GetAcceptLangsImpl();
   if (new_aw_accept_language != last_aw_accept_language_) {
+    new_aw_accept_language =
+        net::HttpUtil::ExpandLanguageList(new_aw_accept_language);
     last_http_accept_language_ =
         net::HttpUtil::GenerateAcceptLanguageHeader(new_aw_accept_language);
     last_aw_accept_language_ = new_aw_accept_language;

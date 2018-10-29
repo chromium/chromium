@@ -9,6 +9,7 @@
 #include "base/task/post_task.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_helper.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
@@ -166,8 +167,8 @@ void DevToolsDownloadManagerDelegate::GenerateFilename(
     base::CreateDirectory(suggested_directory);
 
   base::FilePath suggested_path(suggested_directory.Append(generated_name));
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   base::BindOnce(callback, suggested_path));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(callback, suggested_path));
 }
 
 void DevToolsDownloadManagerDelegate::OnDownloadPathGenerated(

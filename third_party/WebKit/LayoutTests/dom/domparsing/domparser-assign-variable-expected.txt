@@ -1,2 +1,1 @@
 This creates a DOMParser object and tries to assign it to a variable. If the test is successful, it should not crash.
-

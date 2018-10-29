@@ -50,9 +50,9 @@ _*_ | Expand all sibling containers of the current node.
 
 ## Symbols
 
-### What are "Other entries"?
-The symbol type "Other entries" refers to symbols that don't fall in one of the
-defined symbol categories. This includes images and `.bin` files.
+A description of how size information is collected, including descriptions of
+each symbol type, is detailed in
+[README.md](README.md#how-are-symbols-collected).
 
 ### What are "Other small" symbols for?
 To reduce the size of the generated data file, small symbols are omitted by

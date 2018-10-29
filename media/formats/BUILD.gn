@@ -76,6 +76,7 @@ source_set("formats") {
     "//media/base",
     "//skia",
     "//third_party/libaom:av1_buildflags",
+    "//third_party/libwebm",
   ]
 
   configs += [

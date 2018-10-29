@@ -112,7 +112,7 @@ EpollServer::EpollServer()
 }
 
 void EpollServer::CleanupFDToCBMap() {
-  FDToCBMap::iterator cb_iter = cb_map_.begin();
+  auto cb_iter = cb_map_.begin();
   while (cb_iter != cb_map_.end()) {
     int fd = cb_iter->fd;
     CB* cb = cb_iter->cb;
@@ -132,9 +132,7 @@ void EpollServer::CleanupTimeToAlarmCBMap() {
 
   // Call OnShutdown() on alarms. Note that the structure of the loop
   // is similar to the structure of loop in the function HandleAlarms()
-  for (TimeToAlarmCBMap::iterator i = alarm_map_.begin();
-       i != alarm_map_.end();
-      ) {
+  for (auto i = alarm_map_.begin(); i != alarm_map_.end();) {
     // Note that OnShutdown() can call UnregisterAlarm() on
     // other iterators. OnShutdown() should not call UnregisterAlarm()
     // on self because by definition the iterator is not valid any more.
@@ -192,7 +190,7 @@ inline void EpollServer::RemoveFromReadyList(
 void EpollServer::RegisterFD(int fd, CB* cb, int event_mask) {
   CHECK(cb);
   VLOG(3) << "RegisterFD fd=" << fd << " event_mask=" << event_mask;
-  FDToCBMap::iterator fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
+  auto fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
   if (cb_map_.end() != fd_i) {
     // do we just abort, or do we just unregister the other callback?
     // for now, lets just unregister the other callback.
@@ -266,7 +264,7 @@ void EpollServer::RegisterFDForRead(int fd, CB* cb) {
 }
 
 void EpollServer::UnregisterFD(int fd) {
-  FDToCBMap::iterator fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
+  auto fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
   if (cb_map_.end() == fd_i || fd_i->cb == NULL) {
     // Doesn't exist in server, or has gone through UnregisterFD once and still
     // inside the callchain of OnEvent.
@@ -323,7 +321,7 @@ void EpollServer::HandleEvent(int fd, int event_mask) {
 #ifdef EPOLL_SERVER_EVENT_TRACING
   event_recorder_.RecordEpollEvent(fd, event_mask);
 #endif
-  FDToCBMap::iterator fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
+  auto fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
   if (fd_i == cb_map_.end() || fd_i->cb == NULL) {
     // Ignore the event.
     // This could occur if epoll() returns a set of events, and
@@ -395,7 +393,7 @@ void EpollServer::WaitForEventsAndExecuteCallbacks() {
 }
 
 void EpollServer::SetFDReady(int fd, int events_to_fake) {
-  FDToCBMap::iterator fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
+  auto fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
   if (cb_map_.end() != fd_i && fd_i->cb != NULL) {
     // This const_cast is necessary for LIST_HEAD_INSERT to work. Declaring
     // entry mutable is insufficient because LIST_HEAD_INSERT assigns the
@@ -416,14 +414,14 @@ void EpollServer::SetFDReady(int fd, int events_to_fake) {
 }
 
 void EpollServer::SetFDNotReady(int fd) {
-  FDToCBMap::iterator fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
+  auto fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
   if (cb_map_.end() != fd_i) {
     RemoveFromReadyList(*fd_i);
   }
 }
 
 bool EpollServer::IsFDReady(int fd) const {
-  FDToCBMap::const_iterator fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
+  auto fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
   return (cb_map_.end() != fd_i &&
           fd_i->cb != NULL &&
           fd_i->entry.le_prev != NULL);
@@ -448,8 +446,7 @@ void EpollServer::RegisterAlarm(int64_t timeout_time_in_us, AlarmCB* ac) {
   }
   VLOG(4) << "RegisteringAlarm at : " << timeout_time_in_us;
 
-  TimeToAlarmCBMap::iterator alarm_iter =
-      alarm_map_.insert(std::make_pair(timeout_time_in_us, ac));
+  auto alarm_iter = alarm_map_.insert(std::make_pair(timeout_time_in_us, ac));
 
   all_alarms_.insert(ac);
   // Pass the iterator to the EpollAlarmCallbackInterface.
@@ -512,9 +509,7 @@ void EpollServer::LogStateOnCrash() {
 
   // Log sessions with alarms.
   LOG(ERROR) << alarm_map_.size() << " alarms registered.";
-  for (TimeToAlarmCBMap::iterator it = alarm_map_.begin();
-       it != alarm_map_.end();
-       ++it) {
+  for (auto it = alarm_map_.begin(); it != alarm_map_.end(); ++it) {
     const bool skipped =
         alarms_reregistered_and_should_be_skipped_.find(it->second)
         != alarms_reregistered_and_should_be_skipped_.end();
@@ -523,9 +518,7 @@ void EpollServer::LogStateOnCrash() {
   }
 
   LOG(ERROR) << cb_map_.size() << " fd callbacks registered.";
-  for (FDToCBMap::iterator it = cb_map_.begin();
-       it != cb_map_.end();
-       ++it) {
+  for (auto it = cb_map_.begin(); it != cb_map_.end(); ++it) {
     LOG(ERROR) << "fd: " << it->fd << " with mask " << it->event_mask
                << " registered with cb: " << it->cb;
   }
@@ -592,7 +585,7 @@ void EpollServer::ModFD(int fd, int event_mask) const {
 ////////////////////////////////////////
 
 void EpollServer::ModifyFD(int fd, int remove_event, int add_event) {
-  FDToCBMap::iterator fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
+  auto fd_i = cb_map_.find(CBAndEventMask(NULL, 0, fd));
   if (cb_map_.end() == fd_i) {
     VLOG(2) << "Didn't find the fd " << fd << "in internal structures";
     return;
@@ -723,9 +716,7 @@ void EpollServer::CallAndReregisterAlarmEvents() {
   TimeToAlarmCBMap::iterator erase_it;
 
   // execute alarms.
-  for (TimeToAlarmCBMap::iterator i = alarm_map_.begin();
-       i != alarm_map_.end();
-      ) {
+  for (auto i = alarm_map_.begin(); i != alarm_map_.end();) {
     if (i->first > now_in_us) {
       break;
     }

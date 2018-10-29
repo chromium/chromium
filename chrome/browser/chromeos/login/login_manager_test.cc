@@ -70,8 +70,11 @@ constexpr char LoginManagerTest::kEnterpriseUser1GaiaId[] = "0000111111";
 constexpr char LoginManagerTest::kEnterpriseUser2[] = "user-2@example.com";
 constexpr char LoginManagerTest::kEnterpriseUser2GaiaId[] = "0000222222";
 
-LoginManagerTest::LoginManagerTest(bool should_launch_browser)
-    : should_launch_browser_(should_launch_browser), web_contents_(NULL) {
+LoginManagerTest::LoginManagerTest(bool should_launch_browser,
+                                   bool should_initialize_webui)
+    : should_launch_browser_(should_launch_browser),
+      should_initialize_webui_(should_initialize_webui),
+      web_contents_(NULL) {
   set_exit_when_last_browser_closes(false);
 }
 
@@ -140,11 +143,13 @@ void LoginManagerTest::SetUpOnMainThread() {
   token_info.email = kEnterpriseUser2;
   fake_gaia_.IssueOAuthToken(kTestRefreshToken2, token_info);
 
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-      content::NotificationService::AllSources())
-      .Wait();
-  InitializeWebContents();
+  if (should_initialize_webui_) {
+    content::WindowedNotificationObserver(
+        chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
+        content::NotificationService::AllSources())
+        .Wait();
+    InitializeWebContents();
+  }
   test::UserSessionManagerTestApi session_manager_test_api(
       UserSessionManager::GetInstance());
   session_manager_test_api.SetShouldLaunchBrowserInTests(

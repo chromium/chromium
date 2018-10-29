@@ -41,13 +41,6 @@
 
 namespace blink {
 
-MessageEvent* CreateConnectEvent(MessagePort* port) {
-  MessageEvent* event = MessageEvent::Create(new MessagePortArray(1, port),
-                                             String(), String(), port);
-  event->initEvent(EventTypeNames::connect, false, false);
-  return event;
-}
-
 SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     const String& name,
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
@@ -77,6 +70,21 @@ void SharedWorkerGlobalScope::ImportModuleScript(
   // TODO(nhiroki): Implement module loading for shared workers.
   // (https://crbug.com/824646)
   NOTREACHED();
+}
+
+void SharedWorkerGlobalScope::ConnectPausable(MessagePortChannel channel) {
+  if (IsContextPaused()) {
+    AddPausedCall(WTF::Bind(&SharedWorkerGlobalScope::ConnectPausable,
+                            WrapWeakPersistent(this), std::move(channel)));
+    return;
+  }
+
+  MessagePort* port = MessagePort::Create(*this);
+  port->Entangle(std::move(channel));
+  MessageEvent* event = MessageEvent::Create(new MessagePortArray(1, port),
+                                             String(), String(), port);
+  event->initEvent(EventTypeNames::connect, false, false);
+  DispatchEvent(*event);
 }
 
 void SharedWorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {

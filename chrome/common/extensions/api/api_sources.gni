@@ -44,11 +44,9 @@ schema_sources_ = [
   "identity.idl",
   "identity_private.idl",
   "image_writer_private.idl",
-  "inline_install_private.idl",
   "instance_id.json",
   "language_settings_private.idl",
   "manifest_types.json",
-  "media_galleries.idl",
   "notifications.idl",
   "omnibox.json",
   "page_capture.json",
@@ -60,8 +58,6 @@ schema_sources_ = [
   "sessions.json",
   "settings_private.idl",
   "signed_in_devices.idl",
-  "streams_private.idl",
-  "sync_file_system.idl",
   "system_indicator.idl",
   "system_private.json",
   "tab_capture.idl",
@@ -76,7 +72,6 @@ schema_sources_ = [
   "webrtc_logging_private.idl",
 
   "webstore_private.json",
-  "webstore_widget_private.idl",
   "windows.json",
 ]
 
@@ -136,7 +131,6 @@ uncompiled_sources_ = [
   "browsing_data.json",
   "extension.json",
   "idltest.idl",
-  "music_manager_private.idl",
   "top_sites.json",
 ]
 

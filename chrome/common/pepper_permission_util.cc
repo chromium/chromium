@@ -53,9 +53,7 @@ bool IsExtensionOrSharedModuleWhitelisted(
 
   typedef std::vector<SharedModuleInfo::ImportInfo> ImportInfoVector;
   const ImportInfoVector& imports = SharedModuleInfo::GetImports(extension);
-  for (ImportInfoVector::const_iterator it = imports.begin();
-       it != imports.end();
-       ++it) {
+  for (auto it = imports.begin(); it != imports.end(); ++it) {
     const Extension* imported_extension =
         extension_set->GetByID(it->extension_id);
     if (imported_extension &&

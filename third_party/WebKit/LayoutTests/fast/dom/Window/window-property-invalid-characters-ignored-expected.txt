@@ -2,7 +2,6 @@ Tests that Unicode characters that changes the string length when lower cased st
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS w.innerWidth is 123
 PASS w.innerHeight is 123
 PASS w !== window is true

@@ -32,6 +32,13 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if defined(OS_WIN)
+#include <Tlhelp32.h>
+#include <windows.h>
+
+#include "base/threading/platform_thread.h"
+#endif
+
 class ServiceProcessControlBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -439,3 +446,66 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessControlBrowserTest, MAYBE_Histograms) {
   EXPECT_CALL(*this, MockHistogramsCallback()).Times(1);
   run_loop.Run();
 }
+
+#if defined(OS_WIN)
+// Test for https://crbug.com/860827 to make sure it is possible to stop the
+// Cloud Print service with WM_QUIT.
+IN_PROC_BROWSER_TEST_F(ServiceProcessControlBrowserTest, StopViaWmQuit) {
+  LaunchServiceProcessControlAndWait();
+
+  // Make sure we are connected to the service process.
+  ASSERT_TRUE(ServiceProcessControl::GetInstance()->IsConnected());
+  cloud_print::mojom::CloudPrintPtr cloud_print_proxy;
+  ServiceProcessControl::GetInstance()->remote_interfaces().GetInterface(
+      &cloud_print_proxy);
+  base::RunLoop run_loop;
+  cloud_print_proxy->GetCloudPrintProxyInfo(
+      base::BindOnce([](base::OnceClosure done, bool, const std::string&,
+                        const std::string&) { std::move(done).Run(); },
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  base::ProcessId pid =
+      ServiceProcessControl::GetInstance()->GetLaunchedPidForTesting();
+  base::Process process = base::Process::Open(pid);
+  ASSERT_TRUE(process.IsValid());
+
+  // Find the first thread associated with |pid|.
+  base::PlatformThreadId tid = 0;
+  {
+    HANDLE snapshot = ::CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, NULL);
+    ASSERT_NE(INVALID_HANDLE_VALUE, snapshot);
+
+    THREADENTRY32 thread_entry = {0};
+    thread_entry.dwSize = sizeof(THREADENTRY32);
+
+    BOOL result = ::Thread32First(snapshot, &thread_entry);
+    while (result) {
+      if (thread_entry.th32OwnerProcessID == pid) {
+        tid = thread_entry.th32ThreadID;
+        break;
+      }
+      result = Thread32Next(snapshot, &thread_entry);
+    }
+  }
+  ASSERT_NE(base::kInvalidThreadId, tid);
+
+  // And then shutdown the service process via WM_QUIT.
+  ASSERT_TRUE(::PostThreadMessage(tid, WM_QUIT, 0, 0));
+
+  // And wait for it to stop running.
+  constexpr int kRetries = 5;
+  for (int retry = 0; retry < kRetries; ++retry) {
+    if (!process.IsRunning()) {
+      // |process| stopped running. Test is done.
+      return;
+    }
+
+    // |process| did not stop running. Wait.
+    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+  }
+
+  // |process| still did not stop running after |kRetries|.
+  FAIL();
+}
+#endif  // defined(OS_WIN)

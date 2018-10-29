@@ -30,8 +30,7 @@ void PolicyChangeRegistrar::OnPolicyUpdated(const PolicyNamespace& ns,
                                             const PolicyMap& current) {
   if (ns != ns_)
     return;
-  for (CallbackMap::iterator it = callback_map_.begin();
-       it != callback_map_.end(); ++it) {
+  for (auto it = callback_map_.begin(); it != callback_map_.end(); ++it) {
     const base::Value* prev = previous.GetValue(it->first);
     const base::Value* cur = current.GetValue(it->first);
 

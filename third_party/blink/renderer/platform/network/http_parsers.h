@@ -139,16 +139,16 @@ ParseContentTypeOptionsHeader(const String& header);
 // if the headers part ends in |bytes[0..size]|. Returns false otherwise.
 PLATFORM_EXPORT bool ParseMultipartFormHeadersFromBody(
     const char* bytes,
-    size_t,
+    wtf_size_t,
     HTTPHeaderMap* header_fields,
-    size_t* end);
+    wtf_size_t* end);
 
 // Returns true and stores the position of the end of the headers to |*end|
 // if the headers part ends in |bytes[0..size]|. Returns false otherwise.
 PLATFORM_EXPORT bool ParseMultipartHeadersFromBody(const char* bytes,
-                                                   size_t,
+                                                   wtf_size_t,
                                                    ResourceResponse*,
-                                                   size_t* end);
+                                                   wtf_size_t* end);
 
 // Extracts the values in a Content-Range header and returns true if all three
 // values are present and valid for a 206 response; otherwise returns false.

@@ -1,6 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
 <link rel="import" href="chrome://resources/html/cr.html">
@@ -8,7 +9,6 @@
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="icons.html">
 <link rel="import" href="signin_shared_css.html">
@@ -267,8 +267,7 @@
                consent-description>
             $i18n{syncConfirmationOptionsSubtitle}
           </div>
-          <paper-radio-group selected="noChanges"
-              selectable="cr-radio-button">
+          <cr-radio-group selected="noChanges">
             <cr-radio-button name="noChanges">
               $i18n{syncConfirmationOptionsMakeNoChangesTitle}
               <div class="subtitle-text">
@@ -286,7 +285,7 @@
                 $i18n{syncConfirmationOptionsUseDefaultSubtitle}
               </div>
             </cr-radio-button>
-          </paper-radio-group>
+          </cr-radio-group>
           <div class="action-container">
             <paper-button class="action-button" on-click="onOK_"
                           consent-confirmation>

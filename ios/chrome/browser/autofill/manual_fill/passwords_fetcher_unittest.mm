@@ -63,8 +63,9 @@ class PasswordFetcherTest : public PlatformTest {
     chrome_browser_state_ = test_cbs_builder.Build();
     IOSChromePasswordStoreFactory::GetInstance()->SetTestingFactory(
         chrome_browser_state_.get(),
-        &password_manager::BuildPasswordStore<
-            web::BrowserState, password_manager::TestPasswordStore>);
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<
+                web::BrowserState, password_manager::TestPasswordStore>));
   }
 
   password_manager::PasswordStore* GetPasswordStore() {

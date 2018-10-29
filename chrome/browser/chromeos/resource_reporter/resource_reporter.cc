@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/memory_coordinator_client_registry.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -114,7 +113,6 @@ void ResourceReporter::StartMonitoring(
   is_monitoring_ = true;
   memory_pressure_listener_.reset(new base::MemoryPressureListener(
       base::Bind(&ResourceReporter::OnMemoryPressure, base::Unretained(this))));
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Register(this);
 }
 
 void ResourceReporter::StopMonitoring() {
@@ -131,8 +129,6 @@ void ResourceReporter::StopMonitoring() {
 
   is_monitoring_ = false;
   memory_pressure_listener_.reset();
-
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Unregister(this);
 }
 
 void ResourceReporter::OnTasksRefreshedWithBackgroundCalculations(
@@ -432,22 +428,6 @@ void ResourceReporter::StopRecordingCurrentState() {
   // memory pressure level, we need to stop listening to it.
   if (observed_task_manager())
     observed_task_manager()->RemoveObserver(this);
-}
-
-void ResourceReporter::OnMemoryStateChange(base::MemoryState state) {
-  switch (state) {
-    case base::MemoryState::NORMAL:
-      StopRecordingCurrentState();
-      break;
-    case base::MemoryState::THROTTLED:
-      StartRecordingCurrentState();
-      break;
-    case base::MemoryState::SUSPENDED:
-    // Note: Not supported at present. Fall through.
-    case base::MemoryState::UNKNOWN:
-      NOTREACHED();
-      break;
-  }
 }
 
 }  // namespace chromeos

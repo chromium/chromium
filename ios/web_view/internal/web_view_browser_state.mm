@@ -24,6 +24,7 @@
 #include "components/signin/ios/browser/active_state_manager.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync_sessions/session_sync_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "ios/web/public/web_task_traits.h"
@@ -177,6 +178,7 @@ void WebViewBrowserState::RegisterPrefs(
 
 #if BUILDFLAG(IOS_WEB_VIEW_ENABLE_SYNC)
   gcm::GCMChannelStatusSyncer::RegisterProfilePrefs(pref_registry);
+  sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(pref_registry);
   syncer::SyncPrefs::RegisterProfilePrefs(pref_registry);
 #endif  // BUILDFLAG(IOS_WEB_VIEW_ENABLE_SYNC)
 

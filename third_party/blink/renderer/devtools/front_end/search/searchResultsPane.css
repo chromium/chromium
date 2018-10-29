@@ -110,6 +110,7 @@ ol.children.expanded {
 .search-match-link {
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-left: 9px;
 }
 
 .search-result-qualifier {

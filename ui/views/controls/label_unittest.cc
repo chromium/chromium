@@ -20,7 +20,6 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/render_text.h"
-#include "ui/gfx/switches.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
@@ -163,14 +162,6 @@ class LabelSelectionTest : public LabelTest {
 
   // LabelTest overrides:
   void SetUp() override {
-#if defined(OS_MACOSX)
-    // On Mac, by default RenderTextMac is used for labels which does not
-    // support text selection. Instead use RenderTextHarfBuzz for selection
-    // related tests. TODO(crbug.com/661394): Remove this once Mac also uses
-    // RenderTextHarfBuzz for Labels.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableHarfBuzzRenderText);
-#endif
     LabelTest::SetUp();
     event_generator_ =
         std::make_unique<ui::test::EventGenerator>(widget()->GetNativeWindow());

@@ -15,6 +15,8 @@ template("system_webview_apk_tmpl") {
       "//android_webview:assets",
       "//android_webview/apk:webview_license_activity_java",
       "//android_webview/apk:webview_license_provider_java",
+      "//android_webview/glue",
+      "//android_webview/support_library:support_lib_glue_java",
       "//base:base_java",
     ]
 
@@ -23,19 +25,41 @@ template("system_webview_apk_tmpl") {
     }
 
     shared_resources = true
-    shared_libraries = [ "//android_webview:libwebviewchromium" ]
-    native_lib_version_rule = "//build/util:chrome_version_json"
-    _native_lib_file =
-        rebase_path("$root_gen_dir/CHROME_VERSION.json", root_out_dir)
-    native_lib_version_arg = "@FileArg($_native_lib_file:full-quoted)"
-    if (build_apk_secondary_abi && android_64bit_target_cpu) {
-      secondary_abi_shared_libraries = [ "//android_webview:libwebviewchromium($android_secondary_abi_toolchain)" ]
+
+    if (!defined(use_trichrome_library) || !use_trichrome_library) {
+      shared_libraries = [ "//android_webview:libwebviewchromium" ]
+      if (build_apk_secondary_abi && android_64bit_target_cpu) {
+        secondary_abi_shared_libraries = [ "//android_webview:libwebviewchromium($android_secondary_abi_toolchain)" ]
+      }
+    } else {
+      # Include placeholder libraries to ensure we are treated as the desired
+      # architecture.
+      if (android_64bit_target_cpu) {
+        shared_libraries = [ "//android_webview:monochrome" ]
+        if (build_apk_secondary_abi) {
+          secondary_native_lib_placeholders = [ "libdummy.so" ]
+        }
+      } else {
+        native_lib_placeholders = [ "libdummy.so" ]
+      }
     }
+
+    if (!defined(use_trichrome_library) || !use_trichrome_library ||
+        android_64bit_target_cpu) {
+      # 32-bit TrichromeWebView doesn't have a native library, so only do this
+      # for other configs.
+      native_lib_version_rule = "//build/util:chrome_version_json"
+      _native_lib_file =
+          rebase_path("$root_gen_dir/CHROME_VERSION.json", root_out_dir)
+      native_lib_version_arg = "@FileArg($_native_lib_file:full-quoted)"
+    }
+
     aapt_locale_whitelist = locales
 
-    # Whitelist rationale in https://crbug.com/691733.
-    exclude_xxxhdpi = true
-    xxxhdpi_whitelist = [
+    resource_blacklist_regex = "[/-]xxxhdpi[/-]"
+
+    # Exception rationale in https://crbug.com/691733.
+    resource_blacklist_exceptions = [
       "*shadow*",  # Combination of gradient & transparency cause pixelation.
       "*.9.*",  # Most nine-patches contain shadows.
     ]

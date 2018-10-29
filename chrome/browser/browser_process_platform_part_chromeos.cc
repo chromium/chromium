@@ -27,7 +27,6 @@
 #include "chrome/browser/chromeos/system/timezone_util.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/discover_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/account_manager/account_manager_factory.h"
@@ -108,17 +107,24 @@ void BrowserProcessPlatformPart::ShutdownSessionManager() {
 }
 
 void BrowserProcessPlatformPart::InitializeCrosComponentManager() {
+  if (using_testing_cros_component_manager_)
+    return;
+
   DCHECK(!cros_component_manager_);
   cros_component_manager_ =
-      std::make_unique<component_updater::CrOSComponentManager>(
+      std::make_unique<component_updater::CrOSComponentInstaller>(
           component_updater::MetadataTable::Create(
-              g_browser_process->local_state()));
+              g_browser_process->local_state()),
+          g_browser_process->component_updater());
 
   // Register all installed components for regular update.
   cros_component_manager_->RegisterInstalled();
 }
 
 void BrowserProcessPlatformPart::ShutdownCrosComponentManager() {
+  if (using_testing_cros_component_manager_)
+    return;
+
   cros_component_manager_.reset();
 }
 
@@ -168,13 +174,6 @@ chromeos::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
         g_browser_process->local_state()));
   }
   return timezone_resolver_.get();
-}
-
-chromeos::DiscoverManager* BrowserProcessPlatformPart::GetDiscoverManager() {
-  if (!discover_manager_.get())
-    discover_manager_ = std::make_unique<chromeos::DiscoverManager>();
-
-  return discover_manager_.get();
 }
 
 void BrowserProcessPlatformPart::StartTearDown() {

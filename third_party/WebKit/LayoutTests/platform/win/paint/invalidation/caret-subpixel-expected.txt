@@ -23,7 +23,7 @@
           "reason": "subtree"
         },
         {
-          "object": "Caret",
+          "object": "LayoutBlockFlow DIV",
           "rect": [209, 11, 2, 16],
           "reason": "chunk appeared"
         }

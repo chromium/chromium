@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/app_list/search/app_result.h"
 #include "components/favicon_base/favicon_types.h"
@@ -69,6 +70,8 @@ class InternalAppResult : public AppResult {
 
   // Used to fetch the favicon of the website |url_for_continuous_reading_|.
   favicon::LargeIconService* large_icon_service_ = nullptr;
+
+  base::WeakPtrFactory<InternalAppResult> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(InternalAppResult);
 };

@@ -1,7 +1,7 @@
 {
   "name": "xr_device_service",
   "display_name": "XR Isolated Device Service",
-  "sandbox_type": "none",
+  "sandbox_type": "xr_compositing",
   "interface_provider_specs": {
     "service_manager:connector": {
       "provides": {

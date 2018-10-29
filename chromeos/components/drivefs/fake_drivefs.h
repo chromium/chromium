@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -33,12 +34,15 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void SetMetadata(const base::FilePath& path,
                    const std::string& mime_type,
                    const std::string& original_name,
-                   bool pinned);
+                   bool pinned,
+                   bool shared,
+                   const mojom::Capabilities& capabilities);
 
   const base::FilePath& mount_path() { return mount_path_; }
 
  private:
   struct FileMetadata;
+  class SearchQuery;
 
   // drivefs::mojom::DriveFsBootstrap:
   void Init(drivefs::mojom::DriveFsConfigurationPtr config,
@@ -47,7 +51,6 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   // drivefs::mojom::DriveFs:
   void GetMetadata(const base::FilePath& path,
-                   bool want_thumbnail,
                    GetMetadataCallback callback) override;
 
   void SetPinned(const base::FilePath& path,
@@ -65,6 +68,15 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void CopyFile(const base::FilePath& source,
                 const base::FilePath& target,
                 CopyFileCallback callback) override;
+
+  void StartSearchQuery(
+      drivefs::mojom::SearchQueryRequest query,
+      drivefs::mojom::QueryParametersPtr query_params) override;
+
+  void FetchAllChangeLogs() override;
+
+  void FetchChangeLog(
+      std::vector<mojom::FetchChangeLogOptionsPtr> options) override;
 
   const base::FilePath mount_path_;
 

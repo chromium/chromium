@@ -1,20 +1,16 @@
 <script>
-async function run() {
-  const params = new URLSearchParams(location.search);
-  let reg = navigator.serviceWorker.register('fetch_from_service_worker.js');
-  if (!reg) {
-    document.body.innerText = 'Registration failed';
-    document.title = 'DONE';
-    return;
-  }
-  reg = await navigator.serviceWorker.ready;
-  const channel = new MessageChannel();
-  channel.port1.onmessage = e => {
-    document.body.innerText += e.data;
-    document.title = 'DONE';
-  };
-  reg.active.postMessage({url: params.get('url')}, [channel.port2]);
+async function setup() {
+  await navigator.serviceWorker.register('fetch_from_service_worker.js');
+  await navigator.serviceWorker.ready;
+  return 'ready';
 }
 
-self.onload = run;
+function fetch_from_service_worker(url) {
+  return new Promise(async resolve => {
+    const registration = await navigator.serviceWorker.ready;
+    const channel = new MessageChannel();
+    channel.port1.onmessage = e => { resolve(e.data); };
+    registration.active.postMessage({url}, [channel.port2]);
+  });
+}
 </script>

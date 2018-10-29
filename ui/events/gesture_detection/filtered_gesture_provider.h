@@ -49,6 +49,8 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider
                        bool event_consumed,
                        bool is_source_touch_event_set_non_blocking);
 
+  void ResetGestureHandlingState();
+
   // Methods delegated to |gesture_provider_|.
   void ResetDetection();
   void SetMultiTouchZoomSupportEnabled(bool enabled);

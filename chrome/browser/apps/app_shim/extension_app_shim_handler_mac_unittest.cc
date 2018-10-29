@@ -133,6 +133,9 @@ class FakeHost : public apps::AppShimHandler::Host {
     return profile_path_;
   }
   std::string GetAppId() const override { return app_id_; }
+  views::BridgeFactoryHost* GetViewsBridgeFactoryHost() const override {
+    return nullptr;
+  }
 
   int close_count() { return close_count_; }
 
@@ -243,8 +246,8 @@ class ExtensionAppShimHandlerTest : public testing::Test {
   FakeHost host_ab_;
   FakeHost host_bb_;
   FakeHost host_aa_duplicate_;
-  scoped_refptr<Extension> extension_a_;
-  scoped_refptr<Extension> extension_b_;
+  scoped_refptr<const Extension> extension_a_;
+  scoped_refptr<const Extension> extension_b_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ExtensionAppShimHandlerTest);

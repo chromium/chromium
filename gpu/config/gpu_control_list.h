@@ -13,6 +13,7 @@
 
 #include "base/containers/hash_tables.h"
 #include "base/values.h"
+#include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
@@ -82,27 +83,6 @@ class GPU_EXPORT GpuControlList {
     kVersionStyleNumerical,
     kVersionStyleLexical,
     kVersionStyleUnknown
-  };
-
-  enum class GpuSeriesType {
-    // Intel 6th gen
-    kIntelSandyBridge,
-    // Intel 7th gen
-    kIntelValleyView,  // BayTrail
-    kIntelIvyBridge,
-    kIntelHaswell,
-    // Intel 8th gen
-    kIntelCherryView,  // Braswell
-    kIntelBroadwell,
-    // Intel 9th gen
-    kIntelApolloLake,
-    kIntelSkyLake,
-    kIntelGeminiLake,
-    kIntelKabyLake,
-    kIntelCoffeeLake,
-    // Please also update |gpu_series_map| in process_json.py.
-
-    kUnknown,
   };
 
   struct GPU_EXPORT Version {
@@ -314,8 +294,6 @@ class GPU_EXPORT GpuControlList {
 
   // Gets the current OS type.
   static OsType GetOsType();
-
-  static GpuSeriesType GetGpuSeriesType(uint32_t vendor_id, uint32_t device_id);
 
   size_t entry_count_;
   const Entry* entries_;

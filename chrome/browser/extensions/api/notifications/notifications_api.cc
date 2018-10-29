@@ -691,8 +691,8 @@ bool NotificationsGetAllFunction::RunNotificationsApi() {
 
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
 
-  for (std::set<std::string>::iterator iter = notification_ids.begin();
-       iter != notification_ids.end(); iter++) {
+  for (auto iter = notification_ids.begin(); iter != notification_ids.end();
+       iter++) {
     result->SetKey(StripScopeFromIdentifier(extension_->id(), *iter),
                    base::Value(true));
   }

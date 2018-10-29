@@ -716,9 +716,9 @@ HeapProfilerTestRunner._profileViewRefresh = function() {
 HeapProfilerTestRunner.startSamplingHeapProfiler = async function() {
   if (!UI.context.flavor(SDK.HeapProfilerModel))
     await new Promise(resolve => UI.context.addFlavorChangeListener(SDK.HeapProfilerModel, resolve));
-  Profiler.SamplingHeapProfileType.instance.startRecordingProfile();
+  Profiler.SamplingHeapProfileType.instance._startRecordingProfile();
 };
 
 HeapProfilerTestRunner.stopSamplingHeapProfiler = function() {
-  Profiler.SamplingHeapProfileType.instance.stopRecordingProfile();
+  Profiler.SamplingHeapProfileType.instance._stopRecordingProfile();
 };

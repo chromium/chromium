@@ -232,6 +232,8 @@ enum BadMessageReason {
   RFPH_BLOB_URL_TOKEN_FOR_NON_BLOB_URL = 204,
   RFH_ERROR_PROCESS_NON_ERROR_COMMIT = 205,
   RFH_ERROR_PROCESS_NON_UNIQUE_ORIGIN_COMMIT = 206,
+  RFH_CANNOT_RENDER_FALLBACK_CONTENT = 207,
+  RFH_CHILD_FRAME_NEEDS_OWNER_ELEMENT_TYPE = 208,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

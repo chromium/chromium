@@ -3,7 +3,6 @@ This test ensures ShadowRootType is correctly reflected
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS "V0ShadowRoot" is internals.shadowRootType(shadowRootForDiv)
 PASS "UserAgentShadowRoot" is internals.shadowRootType(shadowRootForInput)
 PASS successfullyParsed is true

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/power_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -66,19 +65,19 @@ class BatteryImageSource : public gfx::CanvasImageSource {
   void Draw(gfx::Canvas* canvas) override {
     canvas->Save();
     const float dsf = canvas->UndoDeviceScaleFactor();
-    // All constants below are expressed relative to a canvas size of 16. The
-    // actual canvas size (i.e. |size()|) may not be 16.
-    const float kAssumedCanvasSize = 16;
+    // All constants below are expressed relative to a canvas size of 20. The
+    // actual canvas size (i.e. |size()|) may not be 20.
+    const float kAssumedCanvasSize = 20;
     const float const_scale = dsf * size().height() / kAssumedCanvasSize;
 
     // The two shapes in this path define the outline of the battery icon.
     SkPath path;
-    gfx::RectF top(6.5f, 2, 3, 1);
+    gfx::RectF top = gfx::RectF(8, 3, 4, 2);
     top.Scale(const_scale);
     top = gfx::RectF(gfx::ToEnclosingRect(top));
     path.addRect(gfx::RectFToSkRect(top));
 
-    gfx::RectF bottom(4.5f, 3, 7, 11);
+    gfx::RectF bottom = gfx::RectF(6, 5, 8, 12);
     bottom.Scale(const_scale);
     // Align the top of bottom rect to the bottom of the top one. Otherwise,
     // they may overlap and the top will be too small.
@@ -342,24 +341,17 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
   info->alert_if_low = !IsLinePowerConnected();
 
   if (!IsUsbChargerConnected() && !IsBatteryPresent()) {
-    info->icon_badge = features::IsSystemTrayUnifiedEnabled()
-                           ? &kUnifiedMenuBatteryXIcon
-                           : &kSystemTrayBatteryXIcon;
+    info->icon_badge = &kUnifiedMenuBatteryXIcon;
     info->charge_percent = 0;
     return;
   }
 
-  if (IsUsbChargerConnected()) {
-    info->icon_badge = features::IsSystemTrayUnifiedEnabled()
-                           ? &kUnifiedMenuBatteryUnreliableIcon
-                           : &kSystemTrayBatteryUnreliableIcon;
-  } else if (IsLinePowerConnected()) {
-    info->icon_badge = features::IsSystemTrayUnifiedEnabled()
-                           ? &kUnifiedMenuBatteryBoltIcon
-                           : &kSystemTrayBatteryBoltIcon;
-  } else {
+  if (IsUsbChargerConnected())
+    info->icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
+  else if (IsLinePowerConnected())
+    info->icon_badge = &kUnifiedMenuBatteryBoltIcon;
+  else
     info->icon_badge = nullptr;
-  }
 
   info->charge_percent = GetBatteryPercent();
 
@@ -367,9 +359,7 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
   // have a badge assigned.
   if (GetBatteryPercent() < kCriticalBatteryChargePercentage &&
       !info->icon_badge) {
-    info->icon_badge = features::IsSystemTrayUnifiedEnabled()
-                           ? &kUnifiedMenuBatteryAlertIcon
-                           : &kSystemTrayBatteryAlertIcon;
+    info->icon_badge = &kUnifiedMenuBatteryAlertIcon;
   }
 }
 

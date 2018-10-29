@@ -49,7 +49,7 @@ namespace blink {
 namespace {
 
 class LocalFrameMockWebFrameClient
-    : public FrameTestHelpers::TestWebFrameClient {
+    : public frame_test_helpers::TestWebFrameClient {
  public:
   ~LocalFrameMockWebFrameClient() override = default;
 
@@ -63,10 +63,6 @@ class LocalFrameClientImplTest : public testing::Test {
         .WillByDefault(Return(WebString()));
 
     helper_.Initialize(&web_frame_client_);
-    // FIXME: http://crbug.com/363843. This needs to find a better way to
-    // not create graphics layers.
-    helper_.GetWebView()->GetSettings()->SetAcceleratedCompositingEnabled(
-        false);
   }
 
   void TearDown() override {
@@ -94,7 +90,7 @@ class LocalFrameClientImplTest : public testing::Test {
 
  private:
   LocalFrameMockWebFrameClient web_frame_client_;
-  FrameTestHelpers::WebViewHelper helper_;
+  frame_test_helpers::WebViewHelper helper_;
 };
 
 TEST_F(LocalFrameClientImplTest, UserAgentOverride) {

@@ -21,6 +21,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/url_util.h"
@@ -332,8 +333,7 @@ std::unique_ptr<base::Value> NetLogBadProxyListCallback(
   auto dict = std::make_unique<base::DictionaryValue>();
   auto list = std::make_unique<base::ListValue>();
 
-  for (ProxyRetryInfoMap::const_iterator iter = retry_info->begin();
-       iter != retry_info->end(); ++iter) {
+  for (auto iter = retry_info->begin(); iter != retry_info->end(); ++iter) {
     list->AppendString(iter->first);
   }
   dict->Set("bad_proxy_list", std::move(list));
@@ -1115,20 +1115,9 @@ int ProxyResolutionService::ResolveProxy(const GURL& raw_url,
                                          CompletionOnceCallback callback,
                                          std::unique_ptr<Request>* out_request,
                                          const NetLogWithSource& net_log) {
-  DCHECK(!callback.is_null());
-  return ResolveProxyHelper(raw_url, method, result, std::move(callback),
-                            out_request, net_log);
-}
-
-int ProxyResolutionService::ResolveProxyHelper(
-    const GURL& raw_url,
-    const std::string& method,
-    ProxyInfo* result,
-    CompletionOnceCallback callback,
-    std::unique_ptr<Request>* out_request,
-    const NetLogWithSource& net_log) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(out_request || callback.is_null());
+  DCHECK(!callback.is_null());
+  DCHECK(out_request);
 
   net_log.BeginEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
 
@@ -1155,9 +1144,6 @@ int ProxyResolutionService::ResolveProxyHelper(
     return rv;
   }
 
-  if (callback.is_null())
-    return ERR_IO_PENDING;
-
   std::unique_ptr<RequestImpl> req = std::make_unique<RequestImpl>(
       this, url, method, result, std::move(callback), net_log);
 
@@ -1179,15 +1165,6 @@ int ProxyResolutionService::ResolveProxyHelper(
   // the request using |out_request|.
   *out_request = std::move(req);
   return rv;  // ERR_IO_PENDING
-}
-
-bool ProxyResolutionService::TryResolveProxySynchronously(
-    const GURL& raw_url,
-    const std::string& method,
-    ProxyInfo* result,
-    const NetLogWithSource& net_log) {
-  return ResolveProxyHelper(raw_url, method, result, CompletionOnceCallback(),
-                            nullptr /* out_request*/, net_log) == OK;
 }
 
 int ProxyResolutionService::TryToCompleteSynchronously(
@@ -1235,8 +1212,7 @@ ProxyResolutionService::~ProxyResolutionService() {
 }
 
 void ProxyResolutionService::SuspendAllPendingRequests() {
-  for (PendingRequests::iterator it = pending_requests_.begin();
-       it != pending_requests_.end();
+  for (auto it = pending_requests_.begin(); it != pending_requests_.end();
        ++it) {
     RequestImpl* req = *it;
     if (req->is_started()) {
@@ -1363,9 +1339,9 @@ void ProxyResolutionService::ReportSuccess(const ProxyInfo& result) {
   if (new_retry_info.empty())
     return;
 
-  for (ProxyRetryInfoMap::const_iterator iter = new_retry_info.begin();
-       iter != new_retry_info.end(); ++iter) {
-    ProxyRetryInfoMap::iterator existing = proxy_retry_info_.find(iter->first);
+  for (auto iter = new_retry_info.begin(); iter != new_retry_info.end();
+       ++iter) {
+    auto existing = proxy_retry_info_.find(iter->first);
     if (existing == proxy_retry_info_.end()) {
       proxy_retry_info_[iter->first] = iter->second;
       if (proxy_delegate_) {
@@ -1578,6 +1554,9 @@ ProxyResolutionService::CreateSystemProxyConfigService(
 #elif defined(OS_ANDROID)
   return std::make_unique<ProxyConfigServiceAndroid>(
       main_task_runner, base::ThreadTaskRunnerHandle::Get());
+#elif defined(OS_FUCHSIA)
+  // TODO(crbug.com/889195): Implement a system proxy service for Fuchsia.
+  return std::make_unique<ProxyConfigServiceDirect>();
 #else
   LOG(WARNING) << "Failed to choose a system proxy settings fetcher "
                   "for this platform.";

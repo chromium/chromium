@@ -11,64 +11,66 @@
     <link rel="import" href="chrome://resources/html/cr.html">
     <link rel="import" href="chrome://resources/html/load_time_data.html">
     <link rel="import" href="chrome://resources/html/util.html">
-    <style is="custom-style" include="signin-dialog-shared paper-button-style">
-      .details {
-        line-height: 20px;
-        margin-bottom: 8px;
-        margin-top: 16px;
-        padding: 0 24px;
-      }
+    <custom-style>
+      <style is="custom-style" include="signin-dialog-shared paper-button-style">
+        .details {
+          line-height: 20px;
+          margin-bottom: 8px;
+          margin-top: 16px;
+          padding: 0 24px;
+        }
 
-      .details p {
-        margin-bottom: 0;
-      }
+        .details p {
+          margin-bottom: 0;
+        }
 
-      #closeButton {
-        margin-inline-start: 8px;
-      }
+        #closeButton {
+          margin-inline-start: 8px;
+        }
 
-      #normal-error-message p:empty,
-      #normal-error-message a:empty {
-        display: none;
-      }
+        #normal-error-message p:empty,
+        #normal-error-message a:empty {
+          display: none;
+        }
 
-      #profile-blocking-error-message {
-        margin-top: 30px;
-      }
+        #profile-blocking-error-message {
+          margin-top: 30px;
+        }
 
-      #profile-blocking-error-message p {
-        background-position: 0 3px;
-        background-repeat: no-repeat;
-        background-size: 20px;
-        line-height: 18px;
-        padding-inline-start: 35px;
-      }
+        #profile-blocking-error-message p {
+          background-position: 0 3px;
+          background-repeat: no-repeat;
+          background-size: 20px;
+          line-height: 18px;
+          padding-inline-start: 35px;
+        }
 
-      html[dir=rtl] #profile-blocking-error-message p {
-        background-position: right 3px;
-      }
+        html[dir=rtl] #profile-blocking-error-message p {
+          background-position: right 3px;
+        }
 
-      #profile-blocking-error-message p:empty {
-        display: none;
-      }
+        #profile-blocking-error-message p:empty {
+          display: none;
+        }
 
-      #profile-blocking-error-message p:nth-child(1) {
-        background-image:
-          url(../../../../../ui/webui/resources/images/business.svg);
-      }
+        #profile-blocking-error-message p:nth-child(1) {
+          background-image:
+            url(../../../../../ui/webui/resources/images/business.svg);
+        }
 
-      #profile-blocking-error-message p:nth-child(2) {
-        background-image:
-          url(../../../../../ui/webui/resources/images/info.svg);
-      }
+        #profile-blocking-error-message p:nth-child(2) {
+          background-image:
+            url(../../../../../ui/webui/resources/images/info.svg);
+        }
 
 <if expr="is_macosx or is_linux">
-      #closeButton {
-        margin-inline-end: 8px;
-        margin-inline-start: 0;
-      }
+        #closeButton {
+          margin-inline-end: 8px;
+          margin-inline-start: 0;
+        }
 </if>
-    </style>
+      </style>
+    <custom-style>
   </head>
   <body>
     <div class="container">

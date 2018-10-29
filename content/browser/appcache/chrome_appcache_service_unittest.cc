@@ -11,11 +11,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/appcache/appcache_database.h"
 #include "content/browser/appcache/appcache_storage_impl.h"
 #include "content/browser/appcache/chrome_appcache_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/test/test_browser_context.h"
@@ -103,8 +105,8 @@ ChromeAppCacheServiceTest::CreateAppCacheServiceImpl(
       new MockURLRequestContextGetter(
           browser_context_.GetResourceContext()->GetRequestContext(),
           base::ThreadTaskRunnerHandle::Get());
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &ChromeAppCacheService::InitializeOnIOThread, appcache_service,
           appcache_path, browser_context_.GetResourceContext(),

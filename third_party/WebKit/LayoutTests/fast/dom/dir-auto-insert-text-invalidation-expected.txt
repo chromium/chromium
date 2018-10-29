@@ -2,7 +2,6 @@ Style invalidation when inserting RTL text descendant of dir=auto
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(outerAuto).direction is "ltr"
 PASS getComputedStyle(textInsertionPoint).direction is "ltr"
 PASS getComputedStyle(affectedByAuto).direction is "ltr"
@@ -23,5 +22,5 @@ PASS getComputedStyle(explicitLTR).direction is "ltr"
 PASS successfullyParsed is true
 
 TEST COMPLETE
-؄ل
 
+؄ل

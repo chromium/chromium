@@ -32,18 +32,21 @@
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "services/service_manager/public/cpp/connector.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 #if defined(OS_CHROMEOS)
+#include "ash/public/interfaces/accessibility_controller.mojom.h"
 #include "ash/public/interfaces/accessibility_focus_ring_controller.mojom.h"
 #include "ash/public/interfaces/constants.mojom.h"
 #include "ash/public/interfaces/event_rewriter_controller.mojom.h"
-#include "ash/shell.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_helper_bridge.h"
-#include "ui/aura/window_tree_host.h"
+#include "services/ws/public/mojom/constants.mojom.h"
+#include "services/ws/public/mojom/event_injector.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/events/event_sink.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #endif
 
 namespace accessibility_private = extensions::api::accessibility_private;
@@ -51,6 +54,17 @@ namespace accessibility_private = extensions::api::accessibility_private;
 namespace {
 
 const char kErrorNotSupported[] = "This API is not supported on this platform.";
+
+#if defined(OS_CHROMEOS)
+ash::mojom::AccessibilityControllerPtr GetAccessibilityController() {
+  // Connect to the accessibility mojo interface in ash.
+  ash::mojom::AccessibilityControllerPtr accessibility_controller;
+  content::ServiceManagerConnection::GetForProcess()
+      ->GetConnector()
+      ->BindInterface(ash::mojom::kServiceName, &accessibility_controller);
+  return accessibility_controller;
+}
+#endif
 
 }  // namespace
 
@@ -233,12 +247,6 @@ AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
-  // TODO(crbug.com/876043): Mash support.
-  if (features::IsUsingWindowService()) {
-    NOTIMPLEMENTED();
-    return RespondNow(NoArguments());
-  }
-
   std::unique_ptr<accessibility_private::SendSyntheticKeyEvent::Params> params =
       accessibility_private::SendSyntheticKeyEvent::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -256,19 +264,96 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
       modifiers |= ui::EF_SHIFT_DOWN;
   }
 
-  ui::KeyEvent synthetic_key_event(
-      key_data->type ==
-              accessibility_private::SYNTHETIC_KEYBOARD_EVENT_TYPE_KEYUP
-          ? ui::ET_KEY_RELEASED
-          : ui::ET_KEY_PRESSED,
-      static_cast<ui::KeyboardCode>(key_data->key_code),
-      static_cast<ui::DomCode>(0), modifiers);
+  std::unique_ptr<ui::KeyEvent> synthetic_key_event =
+      std::make_unique<ui::KeyEvent>(
+          key_data->type ==
+                  accessibility_private::SYNTHETIC_KEYBOARD_EVENT_TYPE_KEYUP
+              ? ui::ET_KEY_RELEASED
+              : ui::ET_KEY_PRESSED,
+          static_cast<ui::KeyboardCode>(key_data->key_code),
+          static_cast<ui::DomCode>(0), modifiers);
 
-  // Only keyboard events, so dispatching to primary window suffices.
-  ui::EventSink* sink =
-      ash::Shell::GetPrimaryRootWindow()->GetHost()->event_sink();
-  if (sink->OnEventFromSource(&synthetic_key_event).dispatcher_destroyed)
-    return RespondNow(Error("Unable to dispatch key "));
+  ws::mojom::EventInjectorPtr event_injector_ptr;
+  content::ServiceManagerConnection* connection =
+      content::ServiceManagerConnection::GetForProcess();
+  connection->GetConnector()->BindInterface(ws::mojom::kServiceName,
+                                            &event_injector_ptr);
+  event_injector_ptr->InjectEventNoAck(
+      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      std::move(synthetic_key_event));
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateEnableChromeVoxMouseEventsFunction::Run() {
+#if defined(OS_CHROMEOS)
+  bool enabled = false;
+  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enabled));
+  ash::mojom::EventRewriterControllerPtr event_rewriter_controller_ptr;
+  content::ServiceManagerConnection* connection =
+      content::ServiceManagerConnection::GetForProcess();
+  connection->GetConnector()->BindInterface(ash::mojom::kServiceName,
+                                            &event_rewriter_controller_ptr);
+  event_rewriter_controller_ptr->SetSendMouseEventsToDelegate(enabled);
+  return RespondNow(NoArguments());
+#else
+  return RespondNow(Error(kErrorNotSupported));
+#endif
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
+  std::unique_ptr<accessibility_private::SendSyntheticMouseEvent::Params>
+      params = accessibility_private::SendSyntheticMouseEvent::Params::Create(
+          *args_);
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::SyntheticMouseEvent* mouse_data = &params->mouse_event;
+
+  // TODO(crbug/893752) Choose correct display
+  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  int x = (int)(mouse_data->x * display.device_scale_factor());
+  int y = (int)(mouse_data->y * display.device_scale_factor());
+
+  gfx::Point location(x, y);
+  ui::EventType type;
+  switch (mouse_data->type) {
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_PRESS:
+      type = ui::ET_MOUSE_PRESSED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_RELEASE:
+      type = ui::ET_MOUSE_RELEASED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_DRAG:
+      type = ui::ET_MOUSE_DRAGGED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_MOVE:
+      type = ui::ET_MOUSE_MOVED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_ENTER:
+      type = ui::ET_MOUSE_ENTERED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_EXIT:
+      type = ui::ET_MOUSE_EXITED;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  int flags = ui::EF_LEFT_MOUSE_BUTTON;
+
+  std::unique_ptr<ui::MouseEvent> synthetic_mouse_event =
+      std::make_unique<ui::MouseEvent>(type, location, location,
+                                       ui::EventTimeForNow(), flags,
+                                       flags /* changed_button_flags */);
+
+  ws::mojom::EventInjectorPtr event_injector_ptr;
+  content::ServiceManagerConnection* connection =
+      content::ServiceManagerConnection::GetForProcess();
+  connection->GetConnector()->BindInterface(ws::mojom::kServiceName,
+                                            &event_injector_ptr);
+  event_injector_ptr->InjectEventNoAck(display.id(),
+                                       std::move(synthetic_mouse_event));
 
   return RespondNow(NoArguments());
 }
@@ -299,6 +384,22 @@ AccessibilityPrivateOnSelectToSpeakStateChangedFunction::Run() {
 
   auto* accessibility_manager = chromeos::AccessibilityManager::Get();
   accessibility_manager->OnSelectToSpeakStateChanged(state);
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateToggleDictationFunction::Run() {
+  ash::mojom::DictationToggleSource source =
+      ash::mojom::DictationToggleSource::kChromevox;
+  if (extension()->id() == extension_misc::kSwitchAccessExtensionId)
+    source = ash::mojom::DictationToggleSource::kSwitchAccess;
+  else if (extension()->id() == extension_misc::kChromeVoxExtensionId)
+    source = ash::mojom::DictationToggleSource::kChromevox;
+  else
+    NOTREACHED();
+
+  GetAccessibilityController()->ToggleDictationFromSource(source);
 
   return RespondNow(NoArguments());
 }

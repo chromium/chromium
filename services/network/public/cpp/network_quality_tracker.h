@@ -128,12 +128,14 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
 
   // Changes effective connection type estimate to the provided value, and
   // reports |effective_connection_type| to all
-  // EffectiveConnectionTypeObservers.
+  // EffectiveConnectionTypeObservers. Calling this also disables all organic
+  // notifications sent to observers.
   void ReportEffectiveConnectionTypeForTesting(
       net::EffectiveConnectionType effective_connection_type);
 
   // Changes RTT and throughput estimate to the provided estimates, and
-  // reports it to all RTTAndThroughputEstimatesObservers.
+  // reports it to all RTTAndThroughputEstimatesObservers. Calling this also
+  // disables all organic notifications sent to observers.
   void ReportRTTsAndThroughputForTesting(base::TimeDelta http_rtt,
                                          int32_t downstream_throughput_kbps);
 
@@ -166,6 +168,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
   base::TimeDelta http_rtt_;
   base::TimeDelta transport_rtt_;
   int32_t downlink_bandwidth_kbps_;
+
+  // True if network quality has been overridden by tests. If set to true, it
+  // disables all organic notifications sent to observers.
+  bool network_quality_overridden_for_testing_;
 
   base::ObserverList<EffectiveConnectionTypeObserver>::Unchecked
       effective_connection_type_observer_list_;

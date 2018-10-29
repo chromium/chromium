@@ -28,7 +28,8 @@ public class TabModalLifetimeHandler {
         @Override
         public void onDestroyed(Tab tab) {
             if (mActiveTab == tab) {
-                mManager.cancelAllDialogs(ModalDialogType.TAB);
+                mManager.dismissDialogsOfType(
+                        ModalDialogType.TAB, DialogDismissalCause.TAB_DESTROYED);
                 mActiveTab = null;
             }
         }
@@ -58,7 +59,8 @@ public class TabModalLifetimeHandler {
                 // Do not use lastId here since it can be the selected tab's ID if model is switched
                 // inside tab switcher.
                 if (tab != mActiveTab) {
-                    mManager.cancelAllDialogs(ModalDialogType.TAB);
+                    mManager.dismissDialogsOfType(
+                            ModalDialogType.TAB, DialogDismissalCause.TAB_SWITCHED);
                     if (mActiveTab != null) mActiveTab.removeObserver(mTabObserver);
 
                     mActiveTab = tab;
@@ -87,7 +89,7 @@ public class TabModalLifetimeHandler {
      */
     public boolean handleBackPress() {
         if (mPresenter.getModalDialog() == null) return false;
-        mPresenter.cancelCurrentDialog();
+        mPresenter.dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
         return true;
     }
 

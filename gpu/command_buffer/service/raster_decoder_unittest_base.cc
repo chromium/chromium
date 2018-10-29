@@ -189,8 +189,8 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
       gpu_preferences_, false, &mailbox_manager_, nullptr /* memory_tracker */,
       &shader_translator_cache_, &framebuffer_completeness_cache_, feature_info,
       bind_generates_resource, &image_manager_, nullptr /* image_factory */,
-      nullptr /* progress_reporter */, gpu_feature_info,
-      &discardable_manager_));
+      nullptr /* progress_reporter */, gpu_feature_info, &discardable_manager_,
+      nullptr /* passthrough_discardable_manager */, &shared_image_manager_));
 
   InSequence sequence;
 

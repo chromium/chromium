@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef LongOrTestDictionary_h
-#define LongOrTestDictionary_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_LONG_OR_TEST_DICTIONARY_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_LONG_OR_TEST_DICTIONARY_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -23,7 +23,7 @@
 namespace blink {
 
 class CORE_EXPORT LongOrTestDictionary final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   LongOrTestDictionary();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -93,4 +93,4 @@ struct V8TypeOf<LongOrTestDictionary> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::LongOrTestDictionary);
 
-#endif  // LongOrTestDictionary_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_LONG_OR_TEST_DICTIONARY_H_

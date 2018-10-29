@@ -33,15 +33,14 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
 
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
-    settings_helper_.ReplaceProvider(
-        chromeos::kAccountsPrefDeviceLocalAccounts);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     owner_settings_service_ =
         settings_helper_.CreateOwnerSettingsService(browser()->profile());
   }
 
   void TearDownOnMainThread() override {
     PlatformAppBrowserTest::TearDownOnMainThread();
-    settings_helper_.RestoreProvider();
+    settings_helper_.RestoreRealDeviceSettingsProvider();
     user_manager_enabler_.reset();
     fake_user_manager_ = nullptr;
   }

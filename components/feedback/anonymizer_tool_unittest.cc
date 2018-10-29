@@ -165,25 +165,6 @@ TEST_F(AnonymizerToolTest, AnonymizeCustomPatterns) {
   // Test that "Android:" is not considered a schema with empty hier part.
   EXPECT_EQ("The following applies to Android:",
             AnonymizeCustomPatterns("The following applies to Android:"));
-
-  EXPECT_EQ(
-      "2000-01-01T01:00:00.123456-00:00 NOTICE usbguard-daemon[5000]: uid=0 "
-      "pid=5000 result='SUCCESS' device.rule='block id 13fe:5500 serial "
-      "\"1\" name \"Patriot Memory\" hash "
-      "\"nrP2FU5Q0KDHJvqT4OFjvpA4Mu/ITEF+fMCMuXsTBs4=\" parent-hash "
-      "\"++ZNvxSmqWP6SLayt9yJSIHqUn0PKkvTNT/TVw0OKDE=\" via-port \"2-5\" "
-      "with-interface 08:06:50' target.old='block' "
-      "device.system_name='/devices/pci0000:00/0000:00:15.0/usb2/2-5' "
-      "target.new='block' type='Policy.Device.Update'",
-      AnonymizeCustomPatterns(
-          "2000-01-01T01:00:00.123456-00:00 NOTICE usbguard-daemon[5000]: "
-          "uid=0 pid=5000 result='SUCCESS' device.rule='block id 13fe:5500 "
-          "serial \"0609911A1Z199991\" name \"Patriot Memory\" hash "
-          "\"nrP2FU5Q0KDHJvqT4OFjvpA4Mu/ITEF+fMCMuXsTBs4=\" parent-hash "
-          "\"++ZNvxSmqWP6SLayt9yJSIHqUn0PKkvTNT/TVw0OKDE=\" via-port \"2-5\" "
-          "with-interface 08:06:50' target.old='block' "
-          "device.system_name='/devices/pci0000:00/0000:00:15.0/usb2/2-5' "
-          "target.new='block' type='Policy.Device.Update'"));
 }
 
 TEST_F(AnonymizerToolTest, AnonymizeCustomPatternWithContext) {

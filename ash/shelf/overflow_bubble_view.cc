@@ -80,9 +80,8 @@ void OverflowBubbleView::InitOverflowBubble(views::View* anchor,
   views::BubbleDialogDelegateView::CreateBubble(this);
 
   // This can only be set after bubble creation:
-  if (chromeos::switches::ShouldUseShelfNewUi())
-    GetBubbleFrameView()->bubble_border()->SetCornerRadius(
-        ShelfConstants::shelf_size() / 2);
+  GetBubbleFrameView()->bubble_border()->SetCornerRadius(
+      ShelfConstants::shelf_size() / 2);
 
   AddChildView(shelf_view_);
 }

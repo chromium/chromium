@@ -22,7 +22,6 @@
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/test/material_design_controller_test_api.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -40,21 +39,18 @@ class OmniboxViewTest : public testing::Test {
   OmniboxViewTest() {
     controller_ = std::make_unique<TestOmniboxEditController>();
     view_ = std::make_unique<TestOmniboxView>(controller_.get());
-
-    model_ = new TestOmniboxEditModel(view_.get(), controller_.get());
-    view_->SetModel(model_);
+    view_->SetModel(
+        std::make_unique<TestOmniboxEditModel>(view_.get(), controller_.get()));
 
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     client()->SetBookmarkModel(bookmark_model_.get());
-
-    material_design_ =
-        std::make_unique<ui::test::MaterialDesignControllerTestAPI>(
-            ui::MaterialDesignController::MATERIAL_REFRESH);
   }
 
   TestOmniboxView* view() { return view_.get(); }
 
-  TestOmniboxEditModel* model() { return model_; }
+  TestOmniboxEditModel* model() {
+    return static_cast<TestOmniboxEditModel*>(view_->model());
+  }
 
   TestOmniboxClient* client() {
     return static_cast<TestOmniboxClient*>(model()->client());
@@ -64,10 +60,8 @@ class OmniboxViewTest : public testing::Test {
 
  private:
   base::test::ScopedTaskEnvironment task_environment_;
-  std::unique_ptr<ui::test::MaterialDesignControllerTestAPI> material_design_;
   std::unique_ptr<TestOmniboxEditController> controller_;
   std::unique_ptr<TestOmniboxView> view_;
-  TestOmniboxEditModel* model_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
@@ -164,14 +158,13 @@ TEST_F(OmniboxViewTest, GetIcon_BookmarkIcon) {
 
   AutocompleteMatch match;
   match.destination_url = kUrl;
-  model()->SetCurrentMatch(match);
+  model()->SetCurrentMatchForTest(match);
 
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), 0,
                            base::ASCIIToUTF16("a bookmark"), kUrl);
 
-  gfx::ImageSkia expected_icon =
-      gfx::CreateVectorIcon(omnibox::kTouchableBookmarkIcon, gfx::kFaviconSize,
-                            gfx::kPlaceholderColor);
+  gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
+      omnibox::kBookmarkIcon, gfx::kFaviconSize, gfx::kPlaceholderColor);
 
   gfx::ImageSkia icon = view()->GetIcon(
       gfx::kFaviconSize, gfx::kPlaceholderColor, base::DoNothing());
@@ -190,7 +183,7 @@ TEST_F(OmniboxViewTest, GetIcon_Favicon) {
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
   match.destination_url = kUrl;
-  model()->SetCurrentMatch(match);
+  model()->SetCurrentMatchForTest(match);
 
   view()->GetIcon(gfx::kFaviconSize, gfx::kPlaceholderColor, base::DoNothing());
 

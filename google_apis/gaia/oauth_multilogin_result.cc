@@ -11,7 +11,39 @@ OAuthMultiloginResult::OAuthMultiloginResult() {}
 
 OAuthMultiloginResult::OAuthMultiloginResult(
     const OAuthMultiloginResult& other) {
+  error_ = other.error();
   cookies_ = other.cookies();
+  failed_accounts_ = other.failed_accounts();
+}
+
+OAuthMultiloginResult& OAuthMultiloginResult::operator=(
+    const OAuthMultiloginResult& other) {
+  error_ = other.error();
+  cookies_ = other.cookies();
+  failed_accounts_ = other.failed_accounts();
+  return *this;
+}
+
+OAuthMultiloginResult::OAuthMultiloginResult(
+    const GoogleServiceAuthError& error)
+    : error_(error) {}
+
+void OAuthMultiloginResult::TryParseStatusFromValue(
+    base::DictionaryValue* dictionary_value) {
+  std::string status;
+  dictionary_value->GetString("status", &status);
+  if (status == "OK") {
+    error_ = GoogleServiceAuthError::AuthErrorNone();
+  } else if (status == "RETRY") {
+    // This is a transient error.
+    error_ =
+        GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
+  } else if (status == "INVALID_TOKENS") {
+    error_ = GoogleServiceAuthError(
+        GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  } else {
+    error_ = GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR);
+  }
 }
 
 // static
@@ -21,12 +53,37 @@ base::StringPiece OAuthMultiloginResult::StripXSSICharacters(
   return body.substr(body.find('\n'));
 }
 
+void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
+    base::DictionaryValue* dictionary_value) {
+  base::ListValue* failed_accounts = nullptr;
+  dictionary_value->GetList("failed_accounts", &failed_accounts);
+  if (failed_accounts == nullptr) {
+    VLOG(1) << "No invalid accounts found in the response but error is set to "
+               "INVALID_TOKENS";
+    error_ = GoogleServiceAuthError(
+        GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
+    return;
+  }
+  for (size_t i = 0; i < failed_accounts->GetSize(); ++i) {
+    base::DictionaryValue* account_value = nullptr;
+    failed_accounts->GetDictionary(i, &account_value);
+    std::string gaia_id;
+    std::string status;
+    account_value->GetString("obfuscated_id", &gaia_id);
+    account_value->GetString("status", &status);
+    if (status != "OK")
+      failed_accounts_.push_back(gaia_id);
+  }
+}
+
 void OAuthMultiloginResult::TryParseCookiesFromValue(
     base::DictionaryValue* dictionary_value) {
   base::ListValue* cookie_list = nullptr;
   dictionary_value->GetList("cookies", &cookie_list);
   if (cookie_list == nullptr) {
     VLOG(1) << "No cookies found in the response.";
+    error_ = GoogleServiceAuthError(
+        GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
     return;
   }
   for (size_t i = 0; i < cookie_list->GetSize(); ++i) {
@@ -72,18 +129,22 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
   }
 }
 
-// static
-bool OAuthMultiloginResult::CreateOAuthMultiloginResultFromString(
-    const std::string& raw_data,
-    OAuthMultiloginResult* result) {
+OAuthMultiloginResult::OAuthMultiloginResult(const std::string& raw_data) {
   base::StringPiece data = StripXSSICharacters(raw_data);
   std::unique_ptr<base::DictionaryValue> dictionary_value =
       base::DictionaryValue::From(base::JSONReader::Read(data));
   if (!dictionary_value) {
-    return false;
+    error_ = GoogleServiceAuthError(
+        GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
+    return;
   }
-  result->TryParseCookiesFromValue(dictionary_value.get());
-  return true;
+  TryParseStatusFromValue(dictionary_value.get());
+  if (error_.state() == GoogleServiceAuthError::State::NONE) {
+    TryParseCookiesFromValue(dictionary_value.get());
+  } else if (error_.state() ==
+             GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS) {
+    TryParseFailedAccountsFromValue(dictionary_value.get());
+  }
 }
 
 OAuthMultiloginResult::~OAuthMultiloginResult() = default;

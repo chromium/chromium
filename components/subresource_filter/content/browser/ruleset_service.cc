@@ -23,7 +23,7 @@
 #include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/subresource_filter/content/common/subresource_filter_messages.h"
@@ -35,6 +35,7 @@
 #include "components/subresource_filter/core/common/time_measurements.h"
 #include "components/subresource_filter/core/common/unindexed_ruleset.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
@@ -265,14 +266,14 @@ RulesetService::RulesetService(
     : local_state_(local_state),
       background_task_runner_(std::move(background_task_runner)),
       delegate_(delegate),
-      is_after_startup_(false),
+      is_initialized_(false),
       indexed_ruleset_base_dir_(indexed_ruleset_base_dir) {
   DCHECK(delegate_);
   DCHECK_NE(local_state_->GetInitializationStatus(),
             PrefService::INITIALIZATION_STATUS_WAITING);
 }
 
-void RulesetService::Initialize() {
+void RulesetService::StartInitialization() {
   IndexedRulesetVersion most_recently_indexed_version;
   most_recently_indexed_version.ReadFromPrefs(local_state_);
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
@@ -285,8 +286,10 @@ void RulesetService::Initialize() {
     IndexedRulesetVersion().SaveToPrefs(local_state_);
   }
 
-  delegate_->PostAfterStartupTask(
-      base::Bind(&RulesetService::InitializeAfterStartup, AsWeakPtr()));
+  DCHECK(delegate_->BestEffortTaskRunner()->BelongsToCurrentThread());
+  delegate_->BestEffortTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RulesetService::FinishInitialization, AsWeakPtr()));
 }
 
 RulesetService::~RulesetService() {}
@@ -308,16 +311,16 @@ void RulesetService::IndexAndStoreAndPublishRulesetIfNeeded(
     return;
   }
 
-  // During start-up, retain information about the most recently supplied
-  // unindexed ruleset, to be processed after start-up is complete.
-  if (!is_after_startup_) {
+  // Before initialization, retain information about the most recently supplied
+  // unindexed ruleset, to be processed during initialization.
+  if (!is_initialized_) {
     queued_unindexed_ruleset_info_ = unindexed_ruleset_info;
     return;
   }
 
   IndexAndStoreRuleset(
       unindexed_ruleset_info,
-      base::Bind(&RulesetService::OpenAndPublishRuleset, AsWeakPtr()));
+      base::BindOnce(&RulesetService::OpenAndPublishRuleset, AsWeakPtr()));
 }
 
 IndexedRulesetVersion RulesetService::GetMostRecentlyIndexedVersion() const {
@@ -485,8 +488,8 @@ RulesetService::IndexAndWriteRulesetResult RulesetService::WriteRuleset(
   return IndexAndWriteRulesetResult::SUCCESS;
 }
 
-void RulesetService::InitializeAfterStartup() {
-  is_after_startup_ = true;
+void RulesetService::FinishInitialization() {
+  is_initialized_ = true;
 
   IndexedRulesetVersion most_recently_indexed_version;
   most_recently_indexed_version.ReadFromPrefs(local_state_);
@@ -498,31 +501,30 @@ void RulesetService::InitializeAfterStartup() {
   if (!queued_unindexed_ruleset_info_.content_version.empty()) {
     IndexAndStoreRuleset(
         queued_unindexed_ruleset_info_,
-        base::Bind(&RulesetService::OpenAndPublishRuleset, AsWeakPtr()));
+        base::BindOnce(&RulesetService::OpenAndPublishRuleset, AsWeakPtr()));
     queued_unindexed_ruleset_info_ = UnindexedRulesetInfo();
   }
 }
 
 void RulesetService::IndexAndStoreRuleset(
     const UnindexedRulesetInfo& unindexed_ruleset_info,
-    const WriteRulesetCallback& success_callback) {
+    WriteRulesetCallback success_callback) {
   DCHECK(!unindexed_ruleset_info.content_version.empty());
   base::PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE,
-      base::Bind(&RulesetService::IndexAndWriteRuleset,
-                 indexed_ruleset_base_dir_, unindexed_ruleset_info),
-      base::Bind(&RulesetService::OnWrittenRuleset, AsWeakPtr(),
-                 success_callback));
+      base::BindOnce(&RulesetService::IndexAndWriteRuleset,
+                     indexed_ruleset_base_dir_, unindexed_ruleset_info),
+      base::BindOnce(&RulesetService::OnWrittenRuleset, AsWeakPtr(),
+                     std::move(success_callback)));
 }
 
-void RulesetService::OnWrittenRuleset(
-    const WriteRulesetCallback& result_callback,
-    const IndexedRulesetVersion& version) {
+void RulesetService::OnWrittenRuleset(WriteRulesetCallback result_callback,
+                                      const IndexedRulesetVersion& version) {
   DCHECK(!result_callback.is_null());
   if (!version.IsValid())
     return;
   version.SaveToPrefs(local_state_);
-  result_callback.Run(version);
+  std::move(result_callback).Run(version);
 }
 
 void RulesetService::OpenAndPublishRuleset(
@@ -556,6 +558,9 @@ ContentRulesetService::ContentRulesetService(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
     : ruleset_dealer_(std::make_unique<VerifiedRulesetDealer::Handle>(
           std::move(blocking_task_runner))) {
+  best_effort_task_runner_ = base::CreateSingleThreadTaskRunnerWithTraits(
+      {content::BrowserThread::UI, base::TaskPriority::BEST_EFFORT});
+  DCHECK(best_effort_task_runner_->BelongsToCurrentThread());
   // Must rely on notifications as RenderProcessHostObserver::RenderProcessReady
   // would only be called after queued IPC messages (potentially triggering a
   // navigation) had already been sent to the new renderer.
@@ -569,16 +574,8 @@ ContentRulesetService::~ContentRulesetService() {
 }
 
 void ContentRulesetService::SetRulesetPublishedCallbackForTesting(
-    base::Closure callback) {
-  ruleset_published_callback_ = callback;
-}
-
-void ContentRulesetService::PostAfterStartupTask(base::Closure task) {
-  content::BrowserThread::PostAfterStartupTask(
-      FROM_HERE,
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::UI),
-      task);
+    base::OnceClosure callback) {
+  ruleset_published_callback_ = std::move(callback);
 }
 
 void ContentRulesetService::TryOpenAndSetRulesetFile(
@@ -608,13 +605,18 @@ void ContentRulesetService::PublishNewRulesetVersion(base::File ruleset_data) {
   }
 
   if (!ruleset_published_callback_.is_null())
-    ruleset_published_callback_.Run();
+    std::move(ruleset_published_callback_).Run();
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+ContentRulesetService::BestEffortTaskRunner() {
+  return best_effort_task_runner_;
 }
 
 void ContentRulesetService::SetAndInitializeRulesetService(
     std::unique_ptr<RulesetService> ruleset_service) {
   ruleset_service_ = std::move(ruleset_service);
-  ruleset_service_->Initialize();
+  ruleset_service_->StartInitialization();
 }
 
 void ContentRulesetService::IndexAndStoreAndPublishRulesetIfNeeded(
@@ -622,11 +624,6 @@ void ContentRulesetService::IndexAndStoreAndPublishRulesetIfNeeded(
   DCHECK(ruleset_service_);
   ruleset_service_->IndexAndStoreAndPublishRulesetIfNeeded(
       unindexed_ruleset_info);
-}
-
-void ContentRulesetService::SetIsAfterStartupForTesting() {
-  DCHECK(ruleset_service_);
-  ruleset_service_->set_is_after_startup_for_testing();
 }
 
 void ContentRulesetService::Observe(

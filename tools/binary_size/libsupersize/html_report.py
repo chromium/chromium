@@ -112,6 +112,9 @@ def _MakeTreeViewList(symbols, include_all_symbols):
   small_symbol_pss = collections.defaultdict(
       lambda: collections.defaultdict(float))
 
+  # For delta symbols, most counts should 0, so use that as default. Else use 1.
+  default_symbol_count = 0 if symbols.IsDelta() else 1
+
   if include_all_symbols:
     main_symbols, extra_symbols = symbols, []
   else:
@@ -124,9 +127,9 @@ def _MakeTreeViewList(symbols, include_all_symbols):
     symbol_size = round(symbol.pss, 2)
     if symbol_size.is_integer():
       symbol_size = int(symbol_size)
-    symbol_count = 1
-    if symbol.IsDelta() and symbol.diff_status == models.DIFF_STATUS_REMOVED:
-      symbol_count = -1
+    symbol_count = default_symbol_count
+    if symbol.IsDelta():
+      symbol_count = models.DIFF_COUNT_DELTA[symbol.diff_status]
 
     path = symbol.source_path or symbol.object_path
     file_node = _GetOrAddFileNode(
@@ -146,7 +149,7 @@ def _MakeTreeViewList(symbols, include_all_symbols):
     # count as -1 rather than the default, 1.
     # We don't care about accurate counts for other symbol types currently,
     # so this data is only included for methods.
-    if is_dex_method and symbol_count != 1:
+    if is_dex_method and symbol_count != default_symbol_count:
       symbol_entry[_COMPACT_SYMBOL_COUNT_KEY] = symbol_count
     if symbol.flags:
       symbol_entry[_COMPACT_SYMBOL_FLAGS_KEY] = symbol.flags
@@ -191,38 +194,28 @@ def _MakeTreeViewList(symbols, include_all_symbols):
   return meta, file_nodes.values()
 
 
-def BuildReport(out_file, size_file, before_size_file=(None, None),
-                all_symbols=False):
+def BuildReportFromSizeInfo(out_path, size_info, all_symbols=False):
   """Builds a .ndjson report for a .size file.
 
   Args:
-    out_file: File object to save JSON report to.
-    size_file: Size file to use as input. Tuple of path and file object.
-    before_size_file: If used, creates a diff report where |size_file| is the
-      newer .size file. Tuple of path and file object.
+    out_path: Path to save JSON report to.
+    size_info: A SizeInfo or DeltaSizeInfo to use for the report.
     all_symbols: If true, all symbols will be included in the report rather
       than truncated.
   """
   logging.info('Reading .size file')
-  diff_mode = any(before_size_file)
-
-  size_info = archive.LoadAndPostProcessSizeInfo(*size_file)
-  if diff_mode:
-    before_size_info = archive.LoadAndPostProcessSizeInfo(*before_size_file)
-    after_size_info = size_info
-
-    size_info = diff.Diff(before_size_info, after_size_info)
-    symbols = size_info.raw_symbols
+  symbols = size_info.raw_symbols
+  is_diff = symbols.IsDelta()
+  if is_diff:
     symbols = symbols.WhereDiffStatusIs(models.DIFF_STATUS_UNCHANGED).Inverted()
-  else:
-    symbols = size_info.raw_symbols
 
   meta, tree_nodes = _MakeTreeViewList(symbols, all_symbols)
+  logging.info('Created %d tree nodes', len(tree_nodes))
   meta.update({
-    'diff_mode': diff_mode,
+    'diff_mode': is_diff,
     'section_sizes': size_info.section_sizes,
   })
-  if diff_mode:
+  if is_diff:
     meta.update({
       'before_metadata': size_info.before.metadata,
       'after_metadata': size_info.after.metadata,
@@ -239,12 +232,13 @@ def BuildReport(out_file, size_file, before_size_file=(None, None),
     'check_circular': False,
   }
 
-  json.dump(meta, out_file, **json_dump_args)
-  out_file.write('\n')
-
-  for tree_node in tree_nodes:
-    json.dump(tree_node, out_file, **json_dump_args)
+  with codecs.open(out_path, 'w', encoding='ascii') as out_file:
+    json.dump(meta, out_file, **json_dump_args)
     out_file.write('\n')
+
+    for tree_node in tree_nodes:
+      json.dump(tree_node, out_file, **json_dump_args)
+      out_file.write('\n')
 
 
 def _MakeDirIfDoesNotExist(rel_path):
@@ -278,20 +272,20 @@ def Run(args, parser):
   if not args.output_report_file.endswith('.ndjson'):
     parser.error('Output must end with ".ndjson"')
 
-  with codecs.open(args.output_report_file, 'w', encoding='ascii') as out_file:
-    BuildReport(
-      out_file,
-      size_file=(args.input_size_file, None),
-      before_size_file=(args.diff_with, None),
-      all_symbols=args.all_symbols
-    )
+  size_info = archive.LoadAndPostProcessSizeInfo(args.input_size_file)
+  if args.diff_with:
+    before_size_info = archive.LoadAndPostProcessSizeInfo(args.diff_with)
+    size_info = diff.Diff(before_size_info, size_info)
+
+  BuildReportFromSizeInfo(
+      args.output_report_file, size_info, all_symbols=args.all_symbols)
 
   msg = [
       'Done!',
       'View using a local server via: ',
       '    %s start_server %s',
       'or upload to the hosted version here:',
-      '    https://storage.googleapis.com/chrome-supersize/index.html'
+      '    https://storage.googleapis.com/chrome-supersize/viewer.html'
       ]
   supersize_path = os.path.relpath(os.path.join(
       path_util.SRC_ROOT, 'tools', 'binary_size', 'supersize'))

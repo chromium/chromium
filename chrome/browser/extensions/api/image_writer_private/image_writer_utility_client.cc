@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/optional.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/removable_storage_writer/public/mojom/constants.mojom.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,8 +35,6 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
       chrome::mojom::RemovableStorageWriterClientPtr* interface_ptr)
       : binding_(this, mojo::MakeRequest(interface_ptr)),
         image_writer_utility_client_(owner) {
-    base::AssertBlockingAllowed();
-
     binding_.set_connection_error_handler(
         base::BindOnce(&ImageWriterUtilityClient::OnConnectionError,
                        image_writer_utility_client_));

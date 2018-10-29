@@ -36,7 +36,7 @@ SpeechRecognitionEvent* SpeechRecognitionEvent::Create(
 }
 
 SpeechRecognitionEvent* SpeechRecognitionEvent::CreateResult(
-    unsigned long result_index,
+    uint32_t result_index,
     const HeapVector<Member<SpeechRecognitionResult>>& results) {
   return new SpeechRecognitionEvent(
       EventTypeNames::result, result_index,
@@ -72,7 +72,7 @@ SpeechRecognitionEvent::SpeechRecognitionEvent(
 
 SpeechRecognitionEvent::SpeechRecognitionEvent(
     const AtomicString& event_name,
-    unsigned long result_index,
+    uint32_t result_index,
     SpeechRecognitionResultList* results)
     : Event(event_name, Bubbles::kNo, Cancelable::kNo),
       result_index_(result_index),

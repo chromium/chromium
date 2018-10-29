@@ -7,25 +7,25 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
+class Node;
 class ScrollStateCallback;
 
 class CORE_EXPORT ScrollCustomizationCallbacks
     : public GarbageCollected<ScrollCustomizationCallbacks> {
  public:
   ScrollCustomizationCallbacks() = default;
-  void SetDistributeScroll(Element*, ScrollStateCallback*);
-  ScrollStateCallback* GetDistributeScroll(Element*);
-  void SetApplyScroll(Element*, ScrollStateCallback*);
-  void RemoveApplyScroll(Element*);
-  ScrollStateCallback* GetApplyScroll(Element*);
-  bool InScrollPhase(Element*) const;
-  void SetInScrollPhase(Element*, bool);
+  void SetDistributeScroll(Node*, ScrollStateCallback*);
+  ScrollStateCallback* GetDistributeScroll(Node*);
+  void SetApplyScroll(Node*, ScrollStateCallback*);
+  void RemoveApplyScroll(Node*);
+  ScrollStateCallback* GetApplyScroll(Node*);
+  bool InScrollPhase(Node*) const;
+  void SetInScrollPhase(Node*, bool);
 
   void Trace(blink::Visitor* visitor) {
     visitor->Trace(apply_scroll_callbacks_);
@@ -35,10 +35,10 @@ class CORE_EXPORT ScrollCustomizationCallbacks
 
  private:
   using ScrollStateCallbackList =
-      HeapHashMap<WeakMember<Element>, Member<ScrollStateCallback>>;
+      HeapHashMap<WeakMember<Node>, Member<ScrollStateCallback>>;
   ScrollStateCallbackList apply_scroll_callbacks_;
   ScrollStateCallbackList distribute_scroll_callbacks_;
-  HeapHashMap<WeakMember<Element>, bool> in_scrolling_phase_;
+  HeapHashMap<WeakMember<Node>, bool> in_scrolling_phase_;
 
   DISALLOW_COPY_AND_ASSIGN(ScrollCustomizationCallbacks);
 };

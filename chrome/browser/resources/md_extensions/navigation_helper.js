@@ -12,6 +12,7 @@ cr.exportPath('extensions');
 const Page = {
   LIST: 'items-list',
   DETAILS: 'details-view',
+  ACTIVITY_LOG: 'activity-log',
   SHORTCUTS: 'keyboard-shortcuts',
   ERRORS: 'error-page',
 };
@@ -99,6 +100,9 @@ cr.define('extensions', function() {
       let id = search.get('id');
       if (id)
         return {page: Page.DETAILS, extensionId: id};
+      id = search.get('activity');
+      if (id)
+        return {page: Page.ACTIVITY_LOG, extensionId: id};
       id = search.get('options');
       if (id)
         return {page: Page.DETAILS, extensionId: id, subpage: Dialog.OPTIONS};
@@ -179,6 +183,9 @@ cr.define('extensions', function() {
       switch (entry.page) {
         case Page.LIST:
             path = '/';
+          break;
+        case Page.ACTIVITY_LOG:
+          path = '/?activity=' + entry.extensionId;
           break;
         case Page.DETAILS:
           if (entry.subpage) {

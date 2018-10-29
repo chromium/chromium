@@ -30,6 +30,7 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
@@ -47,6 +48,7 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/utils.h"
 #include "components/variations/variations_associated_data.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace component_updater {
@@ -414,8 +416,8 @@ void RegisterSwReporterComponent(ComponentUpdateService* cus) {
   auto lambda = [](safe_browsing::SwReporterInvocationSequence&& invocations) {
     content::BrowserThread::PostAfterStartupTask(
         FROM_HERE,
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::UI),
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::UI}),
         base::BindOnce(
             &safe_browsing::ChromeCleanerController::OnSwReporterReady,
             base::Unretained(

@@ -29,6 +29,7 @@
         android:text="@string/default_url"
         android:ems="10"
         android:id="@+id/url_text" />
+
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -49,6 +50,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/warmup_checkbox" />
+
+    <CheckBox
+        android:text="@string/will_load_parallel_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/parallel_url_checkbox" />
+
+    <TextView
+        android:text="@string/parallel_url_to_load"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/parallel_url_label"
+        android:labelFor="@+id/parallel_url_text" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textUri"
+        android:text="@string/default_parallel_url"
+        android:ems="10"
+        android:id="@+id/parallel_url_text" />
 
     <Button
         android:text="@string/go"

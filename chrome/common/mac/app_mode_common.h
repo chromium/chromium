@@ -88,6 +88,11 @@ extern NSString* const kCrBundleVersionKey;
 // (e.g. Content/Resources/en.lproj/)
 extern NSString* const kLSHasLocalizedDisplayNameKey;
 
+// Key specifying whether or not high DPI display is supported at all. If this
+// is not set to true then all graphics (including system dialogs and display
+// property queries) will behave as though all displays are low DPI.
+extern NSString* const kNSHighResolutionCapableKey;
+
 // The key under which the browser's bundle ID will be stored in the
 // app mode launcher bundle's Info.plist.
 extern NSString* const kBrowserBundleIDKey;

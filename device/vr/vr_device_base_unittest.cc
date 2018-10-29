@@ -12,6 +12,7 @@
 #include "device/vr/test/fake_vr_device.h"
 #include "device/vr/test/fake_vr_service_client.h"
 #include "device/vr/vr_device_base.h"
+#include "mojo/public/cpp/bindings/associated_binding.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -72,14 +73,15 @@ class StubVRDeviceEventListener : public mojom::XRRuntimeEventListener {
   MOCK_METHOD0(OnBlur, void());
   MOCK_METHOD0(OnFocus, void());
   MOCK_METHOD1(OnDeviceIdle, void(mojom::VRDisplayEventReason));
+  MOCK_METHOD0(OnInitialized, void());
 
-  mojom::XRRuntimeEventListenerPtr BindPtr() {
-    mojom::XRRuntimeEventListenerPtr ret;
+  mojom::XRRuntimeEventListenerAssociatedPtrInfo BindPtrInfo() {
+    mojom::XRRuntimeEventListenerAssociatedPtrInfo ret;
     binding_.Bind(mojo::MakeRequest(&ret));
     return ret;
   }
 
-  mojo::Binding<mojom::XRRuntimeEventListener> binding_;
+  mojo::AssociatedBinding<mojom::XRRuntimeEventListener> binding_;
 };
 
 }  // namespace
@@ -122,10 +124,12 @@ class VRDeviceTest : public testing::Test {
 // will receive the "vrdevicechanged" event.
 TEST_F(VRDeviceTest, DeviceChangedDispatched) {
   auto device = MakeVRDevice();
+  auto device_ptr = device->BindXRRuntimePtr();
   StubVRDeviceEventListener listener;
-  device->ListenToDeviceChanges(
-      listener.BindPtr(),
+  device_ptr->ListenToDeviceChanges(
+      listener.BindPtrInfo(),
       base::DoNothing());  // TODO: consider getting initial info
+  base::RunLoop().RunUntilIdle();
   EXPECT_CALL(listener, DoOnChanged(testing::_)).Times(1);
   device->SetVRDisplayInfoForTest(MakeVRDisplayInfo(device->GetId()));
   base::RunLoop().RunUntilIdle();
@@ -135,10 +139,12 @@ TEST_F(VRDeviceTest, DisplayActivateRegsitered) {
   device::mojom::VRDisplayEventReason mounted =
       device::mojom::VRDisplayEventReason::MOUNTED;
   auto device = MakeVRDevice();
+  auto device_ptr = device->BindXRRuntimePtr();
   StubVRDeviceEventListener listener;
-  device->ListenToDeviceChanges(
-      listener.BindPtr(),
+  device_ptr->ListenToDeviceChanges(
+      listener.BindPtrInfo(),
       base::DoNothing());  // TODO: consider getting initial data
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(device->ListeningForActivate());
   device->SetListeningForActivate(true);

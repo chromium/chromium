@@ -36,7 +36,7 @@ void ServiceWorkerContentSettingsProxyImpl::AllowIndexedDB(
     std::move(callback).Run(false);
     return;
   }
-  if (origin_.unique()) {
+  if (origin_.opaque()) {
     std::move(callback).Run(false);
     return;
   }

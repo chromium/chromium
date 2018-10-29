@@ -181,8 +181,7 @@ bool CommandService::GetNamedCommands(const std::string& extension_id,
   if (!commands)
     return false;
 
-  for (CommandMap::const_iterator iter = commands->begin();
-       iter != commands->end(); ++iter) {
+  for (auto iter = commands->cbegin(); iter != commands->cend(); ++iter) {
     // Look up to see if the user has overridden how the command should work.
     Command saved_command =
         FindCommandByName(extension_id, iter->second.command_name());
@@ -510,8 +509,7 @@ void CommandService::AssignKeybindings(const Extension* extension) {
   if (!commands)
     return;
 
-  for (CommandMap::const_iterator iter = commands->begin();
-       iter != commands->end(); ++iter) {
+  for (auto iter = commands->cbegin(); iter != commands->cend(); ++iter) {
     const Command command = iter->second;
     if (CanAutoAssign(command, extension)) {
       AddKeybindingPref(command.accelerator(),
@@ -602,8 +600,7 @@ void CommandService::UpdateExtensionSuggestedCommandPrefs(
 
   const CommandMap* commands = CommandsInfo::GetNamedCommands(extension);
   if (commands) {
-    for (CommandMap::const_iterator iter = commands->begin();
-         iter != commands->end(); ++iter) {
+    for (auto iter = commands->cbegin(); iter != commands->cend(); ++iter) {
       const Command command = iter->second;
       std::unique_ptr<base::DictionaryValue> command_keys(
           new base::DictionaryValue);
@@ -731,7 +728,7 @@ bool CommandService::IsKeybindingChanging(const Extension* extension,
     const CommandMap* named_commands =
         CommandsInfo::GetNamedCommands(extension);
     if (named_commands) {
-      CommandMap::const_iterator loc = named_commands->find(command_name);
+      auto loc = named_commands->find(command_name);
       if (loc != named_commands->end())
         new_command = loc->second;
     }

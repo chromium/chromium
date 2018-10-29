@@ -15,6 +15,7 @@ import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.annotation.IntDef;
 import android.support.v4.view.accessibility.AccessibilityEventCompat;
+import android.support.v7.widget.AppCompatImageButton;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
@@ -45,7 +46,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.widget.TintedImageButton;
 import org.chromium.chrome.browser.widget.VerticallyFixedEditText;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -73,9 +73,9 @@ public class FindToolbar extends LinearLayout
     // Toolbar UI
     private TextView mFindStatus;
     protected FindQuery mFindQuery;
-    protected TintedImageButton mCloseFindButton;
-    protected TintedImageButton mFindPrevButton;
-    protected TintedImageButton mFindNextButton;
+    protected AppCompatImageButton mCloseFindButton;
+    protected AppCompatImageButton mFindPrevButton;
+    protected AppCompatImageButton mFindNextButton;
 
     private FindResultBar mResultBar;
 
@@ -310,7 +310,7 @@ public class FindToolbar extends LinearLayout
 
         mFindStatus = (TextView) findViewById(R.id.find_status);
 
-        mFindPrevButton = (TintedImageButton) findViewById(R.id.find_prev_button);
+        mFindPrevButton = (AppCompatImageButton) findViewById(R.id.find_prev_button);
         mFindPrevButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -318,7 +318,7 @@ public class FindToolbar extends LinearLayout
             }
         });
 
-        mFindNextButton = (TintedImageButton) findViewById(R.id.find_next_button);
+        mFindNextButton = (AppCompatImageButton) findViewById(R.id.find_next_button);
         mFindNextButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -328,7 +328,7 @@ public class FindToolbar extends LinearLayout
 
         setPrevNextEnabled(false);
 
-        mCloseFindButton = (TintedImageButton) findViewById(R.id.close_find_button);
+        mCloseFindButton = (AppCompatImageButton) findViewById(R.id.close_find_button);
         mCloseFindButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

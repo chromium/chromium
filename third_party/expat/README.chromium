@@ -1,7 +1,7 @@
 Name: Expat XML Parser
 Short Name: expat
-URL: http://sourceforge.net/projects/expat/
-Version: 2.2.3
+URL: https://github.com/libexpat/libexpat
+Version: 2.2.6
 License: MIT
 License File: files/COPYING
 Security Critical: yes
@@ -12,39 +12,24 @@ Description:
 
   We include it here because libjingle depends on it.
 
-Local Modifications:
-  Removed files that Chromium didn't need:
-    CMake.README
-    CMakeLists.txt
-    ConfigureChecks.cmake
-    Makefile.in
-    aclocal.m4
-    configure
-    configure.ac
-    conftools/
-    doc/
-    examples/
-    expat.pc.in
-    expat_config.h.cmake
-    expat_config.h.in
-    m4/
-    run.sh.in
-    tests/
-    win32/
-    xmlwf/
+Import process:
+  git clone https://github.com/libexpat/libexpat.git
+  cd libexpat/expat
+  ./buildconf.sh
+  ./configure
+  cp expat_config.h $CHROMIUM_SRC/third_party/expat/files/lib
+  cd lib
+  cp *.c *.def *.h $CHROMIUM_SRC/third_party/expat/files/lib
+  cd $CHROMIUM_SRC/third_party/expat
+  patch -p3 < 0001-Do-not-redefine-lean-and-mean.patch
+  patch -p3 < 0002-Add-missing-include-for-malloc-free.patch
 
 Patches:
-    0001-Expat-external-symbol-visibility.patch:
-      * Disallow adding symbol visibility attribute automatically to
-        function for static linked library.
-    0002-Do-not-redefine-lean-and-mean.patch:
+    0001-Do-not-redefine-lean-and-mean.patch:
       * Do not redefine WIN32_LEAN_AND_MEAN which breaks the Windows
         build because it uses -Werror,-Wmacro-redefined .
-    0003-Add-missing-include-for-malloc-free.patch:
+    0002-Add-missing-include-for-malloc-free.patch:
       * Include stdlib.h for declaration of malloc, free.
-    0004-Remove-truncating-cast-of-constant.patch:
-      * Truncate after multiplying when doing random number stuff.
-    0005-Fix-Win-Clang-Wsign-compare-warning.patch
-      * Adds a cast to fix Clang -Wsign-compare warning.
-  Added files:
-    lib/expat_config.h (a generated config file)
+
+Added files:
+  lib/expat_config.h (a generated config file)

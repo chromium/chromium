@@ -8,16 +8,17 @@ GEN_INCLUDE(['walker_unittest_base.js']);
 /**
  * Test fixture.
  * @constructor
- * @extends {CvoxWalkerTestBase}
+ * @extends {ChromeVoxWalkerTestBase}
  */
-function CvoxSentenceWalkerUnitTest() {}
+function ChromeVoxSentenceWalkerUnitTest() {}
 
-CvoxSentenceWalkerUnitTest.prototype = {
-  __proto__: CvoxWalkerUnitTestBase.prototype,
+ChromeVoxSentenceWalkerUnitTest.prototype = {
+  __proto__: ChromeVoxWalkerUnitTestBase.prototype,
 
   /** @override */
-  closureModuleDeps: CvoxWalkerUnitTestBase.prototype.closureModuleDeps.concat(
-      'cvox.SentenceWalker'),
+  closureModuleDeps:
+      ChromeVoxWalkerUnitTestBase.prototype.closureModuleDeps.concat(
+          'cvox.SentenceWalker'),
 
   /** @override */
   newWalker: function() {
@@ -35,9 +36,9 @@ CvoxSentenceWalkerUnitTest.prototype = {
   }
 };
 
-CvoxWalkerUnitTestBase.addCommonTests('CvoxSentenceWalkerUnitTest');
+ChromeVoxWalkerUnitTestBase.addCommonTests('ChromeVoxSentenceWalkerUnitTest');
 
-TEST_F('CvoxSentenceWalkerUnitTest', 'testSimpleForwardSync', function() {
+TEST_F('ChromeVoxSentenceWalkerUnitTest', 'testSimpleForwardSync', function() {
   this.setUpSimpleHtml_();
 
   var sel = cvox.CursorSelection.fromNode($('a'));
@@ -54,7 +55,7 @@ TEST_F('CvoxSentenceWalkerUnitTest', 'testSimpleForwardSync', function() {
   assertTrue(ret2.equals(ret));
 });
 
-TEST_F('CvoxSentenceWalkerUnitTest', 'testSimpleReversedSync', function() {
+TEST_F('ChromeVoxSentenceWalkerUnitTest', 'testSimpleReversedSync', function() {
   this.setUpSimpleHtml_();
 
   var sel = cvox.CursorSelection.fromNode($('a'));
@@ -72,7 +73,7 @@ TEST_F('CvoxSentenceWalkerUnitTest', 'testSimpleReversedSync', function() {
   assertTrue(ret2.equals(ret));
 });
 
-TEST_F('CvoxSentenceWalkerUnitTest', 'testSimpleForwardNext', function() {
+TEST_F('ChromeVoxSentenceWalkerUnitTest', 'testSimpleForwardNext', function() {
   this.setUpSimpleHtml_();
 
   var sel = cvox.CursorSelection.fromNode($('a'));
@@ -86,7 +87,7 @@ TEST_F('CvoxSentenceWalkerUnitTest', 'testSimpleForwardNext', function() {
   });
 });
 
-TEST_F('CvoxSentenceWalkerUnitTest', 'testSimpleReversedNext', function() {
+TEST_F('ChromeVoxSentenceWalkerUnitTest', 'testSimpleReversedNext', function() {
   this.setUpSimpleHtml_();
 
   var sel = cvox.CursorSelection.fromNode($('a'));
@@ -101,7 +102,7 @@ TEST_F('CvoxSentenceWalkerUnitTest', 'testSimpleReversedNext', function() {
   ret = this.go(ret, 'next', null);
 });
 
-TEST_F('CvoxSentenceWalkerUnitTest', 'testControlElements', function() {
+TEST_F('ChromeVoxSentenceWalkerUnitTest', 'testControlElements', function() {
   this.loadDoc(function() {/*!
       <div id="a"><p>Before</p><input type="text"/><p>After</p></div>
   */});

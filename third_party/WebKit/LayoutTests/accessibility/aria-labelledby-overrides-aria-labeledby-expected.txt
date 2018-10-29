@@ -4,4 +4,3 @@ Delta Eta Eta Using aria-labelledby Using aria-labeledby
 usingLabelledby.name: [Using aria-labelledby]
 usingLabeledby.name: [Using aria-labeledby]
 usingLabeledbyAndLabelledby.name: [Using aria-labelledby]
-

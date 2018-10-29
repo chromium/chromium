@@ -160,11 +160,11 @@ class SystemLogUploaderTest : public testing::Test {
   SystemLogUploaderTest() : task_runner_(new base::TestSimpleTaskRunner()) {}
 
   void SetUp() override {
-    settings_helper_.ReplaceProvider(chromeos::kSystemLogUploadEnabled);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
   }
 
   void TearDown() override {
-    settings_helper_.RestoreProvider();
+    settings_helper_.RestoreRealDeviceSettingsProvider();
     content::RunAllTasksUntilIdle();
   }
 

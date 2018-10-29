@@ -30,6 +30,10 @@ using network::SharedURLLoaderFactoryInfo;
 using network::TestURLLoaderFactory;
 
 namespace {
+
+const char kHistogramNetworkRequestStatusCode[] =
+    "ContentSuggestions.Feed.Network.RequestStatusCode";
+
 class MockResponseDoneCallback {
  public:
   MockResponseDoneCallback() : has_run(false), code(0) {}
@@ -171,9 +175,9 @@ TEST_F(FeedNetworkingHostTest, ShouldSendSuccessfullyMultipleInflight) {
   EXPECT_TRUE(done_callback2.has_run);
   EXPECT_TRUE(done_callback3.has_run);
 
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "ContentSuggestions.Feed.NetworkRequestStatusCode"),
-              ElementsAre(base::Bucket(/*min=*/200, /*count=*/3)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kHistogramNetworkRequestStatusCode),
+      ElementsAre(base::Bucket(/*min=*/200, /*count=*/3)));
 }
 
 TEST_F(FeedNetworkingHostTest, ShouldSendSuccessfullyDifferentRequestMethods) {
@@ -201,9 +205,9 @@ TEST_F(FeedNetworkingHostTest, ShouldReportProtocolErrorCodes) {
     base::HistogramTester histogram_tester;
     SendRequestAndValidateResponse("http://foobar.com/feed", "?bar=baz&foo=1",
                                    "error_response_data", code);
-    EXPECT_THAT(histogram_tester.GetAllSamples(
-                    "ContentSuggestions.Feed.NetworkRequestStatusCode"),
-                ElementsAre(base::Bucket(/*min=*/code, /*count=*/1)));
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(kHistogramNetworkRequestStatusCode),
+        ElementsAre(base::Bucket(/*min=*/code, /*count=*/1)));
   }
 }
 
@@ -221,9 +225,9 @@ TEST_F(FeedNetworkingHostTest, ShouldReportNonProtocolErrorCodes) {
 
     EXPECT_TRUE(done_callback.has_run);
     EXPECT_EQ(done_callback.code, code);
-    EXPECT_THAT(histogram_tester.GetAllSamples(
-                    "ContentSuggestions.Feed.NetworkRequestStatusCode"),
-                ElementsAre(base::Bucket(/*min=*/code, /*count=*/1)));
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(kHistogramNetworkRequestStatusCode),
+        ElementsAre(base::Bucket(/*min=*/code, /*count=*/1)));
   }
 }
 
@@ -261,13 +265,13 @@ TEST_F(FeedNetworkingHostTest, ShouldReportSizeHistograms) {
                                  uncompressed_request_string, response_string,
                                  net::HTTP_OK);
 
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("ContentSuggestions.Feed.ResponseSizeKB"),
-      ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "ContentSuggestions.Feed.Network.ResponseSizeKB"),
+              ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
 
   // A single character repeated 2048 times compresses to well under 1kb.
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "ContentSuggestions.Feed.RequestSizeKB.Compressed"),
+                  "ContentSuggestions.Feed.Network.RequestSizeKB.Compressed"),
               ElementsAre(base::Bucket(/*min=*/0, /*count=*/1)));
 }
 
@@ -306,7 +310,7 @@ TEST_F(FeedNetworkingHostTest, ShouldIncludeAPIKeyForAuthError) {
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          "ContentSuggestions.Feed.TokenFetchStatus"),
+          "ContentSuggestions.Feed.Network.TokenFetchStatus"),
       ElementsAre(base::Bucket(
           /*min=*/GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS,
           /*count=*/1)));

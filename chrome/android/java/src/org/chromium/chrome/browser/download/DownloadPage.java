@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactory;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.native_page.BasicNativePage;
 import org.chromium.chrome.browser.native_page.NativePageHost;
 import org.chromium.chrome.browser.snackbar.SnackbarManager.SnackbarManageable;
@@ -41,9 +42,12 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
     protected void initialize(ChromeActivity activity, final NativePageHost host) {
         ThreadUtils.assertOnUiThread();
 
-        mDownloadCoordinator = DownloadManagerCoordinatorFactory.create(activity,
-                host.isIncognito(), ((SnackbarManageable) activity).getSnackbarManager(),
-                activity.getComponentName(), false /* isSeparateActivity */);
+        DownloadManagerUiConfig config = new DownloadManagerUiConfig.Builder()
+                                                 .setIsOffTheRecord(host.isIncognito())
+                                                 .setIsSeparateActivity(false)
+                                                 .build();
+        mDownloadCoordinator = DownloadManagerCoordinatorFactory.create(activity, config,
+                ((SnackbarManageable) activity).getSnackbarManager(), activity.getComponentName());
 
         mDownloadCoordinator.addObserver(this);
         mTitle = activity.getString(R.string.menu_downloads);

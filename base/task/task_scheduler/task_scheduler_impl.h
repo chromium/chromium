@@ -20,6 +20,7 @@
 #include "base/task/task_scheduler/delayed_task_manager.h"
 #include "base/task/task_scheduler/environment_config.h"
 #include "base/task/task_scheduler/scheduler_single_thread_task_runner_manager.h"
+#include "base/task/task_scheduler/scheduler_task_runner_delegate.h"
 #include "base/task/task_scheduler/scheduler_worker_pool_impl.h"
 #include "base/task/task_scheduler/task_scheduler.h"
 #include "base/task/task_scheduler/task_tracker.h"
@@ -38,11 +39,16 @@ namespace base {
 
 class HistogramBase;
 class Thread;
+struct Feature;
 
 namespace internal {
 
+extern const BASE_EXPORT base::Feature kMergeBlockingNonBlockingPools;
+
 // Default TaskScheduler implementation. This class is thread-safe.
-class BASE_EXPORT TaskSchedulerImpl : public TaskScheduler {
+class BASE_EXPORT TaskSchedulerImpl : public TaskScheduler,
+                                      public SchedulerWorkerPool::Delegate,
+                                      public SchedulerTaskRunnerDelegate {
  public:
   using TaskTrackerImpl =
 #if defined(OS_POSIX) && !defined(OS_NACL_SFI)
@@ -102,6 +108,14 @@ class BASE_EXPORT TaskSchedulerImpl : public TaskScheduler {
 
   void ReportHeartbeatMetrics() const;
 
+  // SchedulerWorkerPool::Delegate:
+  void ReEnqueueSequence(scoped_refptr<Sequence> sequence) override;
+
+  // SchedulerTaskRunnerDelegate:
+  bool PostTaskWithSequence(Task task,
+                            scoped_refptr<Sequence> sequence) override;
+  bool IsRunningPoolWithTraits(const TaskTraits& traits) const override;
+
   const std::unique_ptr<TaskTrackerImpl> task_tracker_;
   std::unique_ptr<Thread> service_thread_;
   DelayedTaskManager delayed_task_manager_;
@@ -131,6 +145,8 @@ class BASE_EXPORT TaskSchedulerImpl : public TaskScheduler {
   // Provides COM initialization verification for supported builds.
   base::win::ComInitCheckHook com_init_check_hook_;
 #endif
+
+  TrackedRefFactory<SchedulerWorkerPool::Delegate> tracked_ref_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(TaskSchedulerImpl);
 };

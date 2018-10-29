@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -22,6 +23,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/url_request/url_request_test_util.h"
@@ -46,8 +48,8 @@ class SafeBrowsingTriggeredPopupBlockerTest
 
     system_request_context_getter_ =
         base::MakeRefCounted<net::TestURLRequestContextGetter>(
-            content::BrowserThread::GetTaskRunnerForThread(
-                content::BrowserThread::IO));
+            base::CreateSingleThreadTaskRunnerWithTraits(
+                {content::BrowserThread::IO}));
     TestingBrowserProcess::GetGlobal()->SetSystemRequestContext(
         system_request_context_getter_.get());
     // Set up safe browsing service with the fake database manager.
@@ -70,8 +72,9 @@ class SafeBrowsingTriggeredPopupBlockerTest
     ChromeSubresourceFilterClient::CreateForWebContents(web_contents());
 
     scoped_feature_list_ = DefaultFeatureList();
+    SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents());
     popup_blocker_ =
-        SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents());
+        SafeBrowsingTriggeredPopupBlocker::FromWebContents(web_contents());
   }
 
   void TearDown() override {
@@ -103,13 +106,11 @@ class SafeBrowsingTriggeredPopupBlockerTest
     return scoped_feature_list_.get();
   }
 
-  SafeBrowsingTriggeredPopupBlocker* popup_blocker() {
-    return popup_blocker_.get();
-  }
+  SafeBrowsingTriggeredPopupBlocker* popup_blocker() { return popup_blocker_; }
 
   void SimulateDeleteContents() {
     DeleteContents();
-    popup_blocker_.reset();
+    popup_blocker_ = nullptr;
   }
 
   void MarkUrlAsAbusiveWithLevel(const GURL& url,
@@ -139,7 +140,7 @@ class SafeBrowsingTriggeredPopupBlockerTest
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
-  std::unique_ptr<SafeBrowsingTriggeredPopupBlocker> popup_blocker_;
+  SafeBrowsingTriggeredPopupBlocker* popup_blocker_ = nullptr;
   scoped_refptr<net::URLRequestContextGetter> system_request_context_getter_;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingTriggeredPopupBlockerTest);
@@ -250,11 +251,9 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest, NoMatch_NoBlocking) {
 
 TEST_F(SafeBrowsingTriggeredPopupBlockerTest, FeatureEnabledByDefault) {
   ResetFeatureAndGet();
+  SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents());
   EXPECT_NE(nullptr,
-            SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents()));
-  ResetFeatureAndGet()->InitAndDisableFeature(kAbusiveExperienceEnforce);
-  EXPECT_EQ(nullptr,
-            SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents()));
+            SafeBrowsingTriggeredPopupBlocker::FromWebContents(web_contents()));
 }
 
 TEST_F(SafeBrowsingTriggeredPopupBlockerTest, OnlyBlockOnMatchingUrls) {

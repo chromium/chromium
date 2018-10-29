@@ -4,9 +4,7 @@
 
 #include "ios/chrome/browser/ui/bookmarks/bookmark_empty_background.h"
 
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -15,13 +13,9 @@
 namespace {
 // The spacing between the image and text label.
 const CGFloat kStackViewSpacing = 24.0;
-const CGFloat kLegacyStackViewSpacing = 5.0;
 
 // The margin between the stack view and the edges of its superview.
 const CGFloat kStackViewMargin = 24.0;
-
-// The font size to use when UIRefresh is disabled.
-const CGFloat kLegacyFontSize = 16.0;
 
 }  // namespace
 
@@ -42,13 +36,9 @@ const CGFloat kLegacyFontSize = 16.0;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    BOOL useRefreshUI = experimental_flags::IsBookmarksUIRebootEnabled();
-
     // The "star" image.
-    NSString* imageName =
-        useRefreshUI ? @"bookmark_empty_star" : @"bookmark_gray_star_large";
-    UIImageView* imageView =
-        [[UIImageView alloc] initWithImage:[UIImage imageNamed:imageName]];
+    UIImageView* imageView = [[UIImageView alloc]
+        initWithImage:[UIImage imageNamed:@"bookmark_empty_star"]];
 
     // The explanatory text label.
     self.textLabel = [[UILabel alloc] init];
@@ -57,16 +47,10 @@ const CGFloat kLegacyFontSize = 16.0;
         kBookmarkEmptyStateExplanatoryLabelIdentifier;
     self.textLabel.textAlignment = NSTextAlignmentCenter;
     self.textLabel.numberOfLines = 0;
-    if (useRefreshUI) {
-      self.textLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-      self.textLabel.adjustsFontForContentSizeCategory = YES;
-      self.textLabel.textColor = [UIColor colorWithWhite:0 alpha:100.0 / 255];
-    } else {
-      self.textLabel.font =
-          [[MDCTypography fontLoader] mediumFontOfSize:kLegacyFontSize];
-      self.textLabel.textColor = [UIColor colorWithWhite:0 alpha:110.0 / 255];
-    }
+    self.textLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    self.textLabel.adjustsFontForContentSizeCategory = YES;
+    self.textLabel.textColor = [UIColor colorWithWhite:0 alpha:100.0 / 255];
 
     // Vertical stack view that centers its contents.
     _stackView = [[UIStackView alloc]
@@ -75,8 +59,7 @@ const CGFloat kLegacyFontSize = 16.0;
     _stackView.axis = UILayoutConstraintAxisVertical;
     _stackView.alignment = UIStackViewAlignmentCenter;
     _stackView.distribution = UIStackViewDistributionEqualSpacing;
-    _stackView.spacing =
-        useRefreshUI ? kStackViewSpacing : kLegacyStackViewSpacing;
+    _stackView.spacing = kStackViewSpacing;
     [self addSubview:_stackView];
 
     // Center the stack view, with a minimum margin around the leading and

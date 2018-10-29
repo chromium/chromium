@@ -31,7 +31,7 @@ class SyncedPrintersManager;
 // in this class must be called from a sequenced context.
 class CupsPrintersManager : public KeyedService {
  public:
-  // Classes of printers tracked.  See doc/cups_printers_management.md for
+  // Classes of printers tracked.  See doc/cups_printer_management.md for
   // details on what these mean.
   enum PrinterClass {
     kConfigured,
@@ -43,10 +43,12 @@ class CupsPrintersManager : public KeyedService {
 
   class Observer {
    public:
-    virtual ~Observer() = default;
     // The list of printers in this class has changed to the given printers.
     virtual void OnPrintersChanged(PrinterClass printer_class,
                                    const std::vector<Printer>& printers) = 0;
+
+   protected:
+    virtual ~Observer() = default;
   };
 
   // Factory function.
@@ -54,7 +56,7 @@ class CupsPrintersManager : public KeyedService {
 
   // Factory function that allows injected dependencies, for testing.  Ownership
   // is not taken of any of the raw-pointer arguments.
-  static std::unique_ptr<CupsPrintersManager> Create(
+  static std::unique_ptr<CupsPrintersManager> CreateForTesting(
       SyncedPrintersManager* synced_printers_manager,
       std::unique_ptr<PrinterDetector> usb_printer_detector,
       std::unique_ptr<PrinterDetector> zeroconf_printer_detector,

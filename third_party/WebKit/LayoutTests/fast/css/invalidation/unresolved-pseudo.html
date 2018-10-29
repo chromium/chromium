@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <script src="../../../resources/js-test.js"></script>
 <style>
-#sibling, #child { background-color: green }
-custom-one:unresolved #child, custom-two:unresolved + #sibling { background-color: red }
+#sibling, #child, #child3 { background-color: green }
+custom-one:unresolved #child,
+custom-two:unresolved + #sibling,
+custom-three:unresolved #child3 {
+  background-color: red
+}
 </style>
 
 <custom-one>
@@ -16,6 +20,11 @@ custom-one:unresolved #child, custom-two:unresolved + #sibling { background-colo
 </custom-two>
 <div id="sibling"></div>
 
+<custom-three>
+    <div></div>
+    <div id="child3"></div>
+</custom-three>
+
 <script>
 description("Use invalidation sets for :unresolved pseudo class.")
 
@@ -25,6 +34,7 @@ var green = "rgb(0, 128, 0)";
 // Initially :unresolved.
 shouldBe("getComputedStyle(child).backgroundColor", "red");
 shouldBe("getComputedStyle(sibling).backgroundColor", "red");
+shouldBe("getComputedStyle(child3).backgroundColor", "red");
 
 document.body.offsetTop; // force recalc
 
@@ -43,5 +53,12 @@ document.head.appendChild(new CustomTwo());
 if (window.internals)
     shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "1");
 shouldBe("getComputedStyle(sibling).backgroundColor", "green");
+
+document.body.offsetTop; // force recalc
+
+customElements.define("custom-three", class extends HTMLElement {});
+if (window.internals)
+    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "1");
+shouldBe("getComputedStyle(child3).backgroundColor", "green");
 
 </script>

@@ -27,8 +27,13 @@
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/interfaces/tray_action.mojom.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/power/backlights_forced_off_setter.h"
+#include "ash/system/power/power_button_controller.h"
+#include "ash/system/status_area_widget.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -44,6 +49,27 @@ using ::testing::_;
 using ::testing::Mock;
 
 namespace ash {
+
+namespace {
+
+void PressAndReleasePowerButton() {
+  base::SimpleTestTickClock tick_clock;
+  auto dispatch_power_button_event_after_delay =
+      [&](const base::TimeDelta& delta, bool down) {
+        tick_clock.Advance(delta + base::TimeDelta::FromMilliseconds(1));
+        Shell::Get()->power_button_controller()->OnPowerButtonEvent(
+            down, tick_clock.NowTicks());
+        base::RunLoop().RunUntilIdle();
+      };
+
+  // Press and release the power button to force backlights off.
+  dispatch_power_button_event_after_delay(
+      PowerButtonController::kIgnorePowerButtonAfterResumeDelay, true /*down*/);
+  dispatch_power_button_event_after_delay(
+      PowerButtonController::kIgnoreRepeatedButtonUpDelay, false /*down*/);
+}
+
+}  // namespace
 
 using LockContentsViewUnitTest = LoginTestBase;
 using LockContentsViewKeyboardUnitTest = LoginKeyboardTestBase;
@@ -592,8 +618,8 @@ TEST_F(LockContentsViewUnitTest, NoteActionButtonBoundsInitiallyAvailable) {
   EXPECT_FALSE(test_api.note_action()->visible());
 }
 
-// Verifies the dev channel info view bounds.
-TEST_F(LockContentsViewUnitTest, DevChannelInfoViewBounds) {
+// Verifies the system info view bounds interaction with the note-taking button.
+TEST_F(LockContentsViewUnitTest, SystemInfoViewBounds) {
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
       data_dispatcher(),
@@ -603,28 +629,89 @@ TEST_F(LockContentsViewUnitTest, DevChannelInfoViewBounds) {
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
   LockContentsView::TestApi test_api(contents);
-  // Verify that the dev channel info view is hidden by default.
-  EXPECT_FALSE(test_api.dev_channel_info()->visible());
+  // Verify that the system info view is hidden by default.
+  EXPECT_FALSE(test_api.system_info()->visible());
 
-  // Verify that the dev channel info view becomes visible and it doesn't block
-  // the note action button.
-  data_dispatcher()->SetDevChannelInfo("Best version ever", "Asset ID: 6666",
-                                       "Bluetooth adapter");
-  EXPECT_TRUE(test_api.dev_channel_info()->visible());
+  // Verify that the system info view becomes visible and it doesn't block the
+  // note action button.
+  data_dispatcher()->SetSystemInfo(true /*show_if_hidden*/, "Best version ever",
+                                   "Asset ID: 6666", "Bluetooth adapter");
+  EXPECT_TRUE(test_api.system_info()->visible());
   EXPECT_TRUE(test_api.note_action()->visible());
   gfx::Size note_action_size = test_api.note_action()->GetPreferredSize();
   EXPECT_GE(widget_bounds.right() -
-                test_api.dev_channel_info()->GetBoundsInScreen().right(),
+                test_api.system_info()->GetBoundsInScreen().right(),
             note_action_size.width());
 
-  // Verify that if the note action is disabled, the dev channel info view moves
-  // to the right to fill the empty space.
+  // Verify that if the note action is disabled, the system info view moves to
+  // the right to fill the empty space.
   data_dispatcher()->SetLockScreenNoteState(
       mojom::TrayActionState::kNotAvailable);
   EXPECT_FALSE(test_api.note_action()->visible());
   EXPECT_LT(widget_bounds.right() -
-                test_api.dev_channel_info()->GetBoundsInScreen().right(),
+                test_api.system_info()->GetBoundsInScreen().right(),
             note_action_size.width());
+}
+
+// Alt-V toggles display of system information.
+TEST_F(LockContentsViewUnitTest, AltVShowsHiddenSystemInfo) {
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
+      data_dispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(data_dispatcher()));
+  SetUserCount(1);
+
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
+  LockContentsView::TestApi test_api(contents);
+  // Verify that the system info view is hidden by default.
+  EXPECT_FALSE(test_api.system_info()->visible());
+
+  // Verify that the system info view does not become visible when given data
+  // but show is false.
+  data_dispatcher()->SetSystemInfo(false /*show_if_hidden*/,
+                                   "Best version ever", "Asset ID: 6666",
+                                   "Bluetooth adapter");
+  EXPECT_FALSE(test_api.system_info()->visible());
+
+  // Alt-V shows hidden system info.
+  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(test_api.system_info()->visible());
+  // System info is not empty, ie, it is actually being displayed.
+  EXPECT_FALSE(test_api.system_info()->bounds().IsEmpty());
+
+  // Alt-V again does nothing.
+  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(test_api.system_info()->visible());
+}
+
+// Updating existing system info and setting show_if_hidden=true later will
+// reveal hidden system info.
+TEST_F(LockContentsViewUnitTest, ShowRevealsHiddenSystemInfo) {
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
+      data_dispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(data_dispatcher()));
+  SetUserCount(1);
+
+  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
+  LockContentsView::TestApi test_api(contents);
+
+  auto set_system_info = [&](bool show_if_hidden) {
+    data_dispatcher()->SetSystemInfo(show_if_hidden, "Best version ever",
+                                     "Asset ID: 6666", "Bluetooth adapter");
+  };
+
+  // Start with hidden system info.
+  set_system_info(false);
+  EXPECT_FALSE(test_api.system_info()->visible());
+
+  // Update system info but request it be shown.
+  set_system_info(true);
+  EXPECT_TRUE(test_api.system_info()->visible());
+
+  // Trying to hide system info from mojom call doesn't do anything.
+  set_system_info(false);
+  EXPECT_TRUE(test_api.system_info()->visible());
 }
 
 // Verifies the easy unlock tooltip is automatically displayed when requested.
@@ -763,9 +850,9 @@ TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
   // Password submit runs mojo.
   std::unique_ptr<MockLoginScreenClient> client = BindMockLoginScreenClient();
   client->set_authenticate_user_callback_result(false);
-  EXPECT_CALL(
-      *client,
-      AuthenticateUser_(users()[0]->basic_user_info->account_id, _, false, _));
+  EXPECT_CALL(*client,
+              AuthenticateUserWithPasswordOrPin_(
+                  users()[0]->basic_user_info->account_id, _, false, _));
 
   // Submit password.
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -911,7 +998,8 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleOnUntrustedDetachableBase) {
   // after they authenticate - test for this.
   std::unique_ptr<MockLoginScreenClient> client = BindMockLoginScreenClient();
   client->set_authenticate_user_callback_result(true);
-  EXPECT_CALL(*client, AuthenticateUser_(kFirstUserAccountId, _, false, _));
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(kFirstUserAccountId,
+                                                          _, false, _));
 
   // Submit password.
   primary_test_api.password_view()->RequestFocus();
@@ -973,7 +1061,8 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleForUnauthenticatedDetachableBase) {
   // user authentication.
   std::unique_ptr<MockLoginScreenClient> client = BindMockLoginScreenClient();
   client->set_authenticate_user_callback_result(true);
-  EXPECT_CALL(*client, AuthenticateUser_(kSecondUserAccountId, _, false, _));
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(kSecondUserAccountId,
+                                                          _, false, _));
 
   // Submit password.
   secondary_test_api.password_view()->RequestFocus();
@@ -1052,7 +1141,8 @@ TEST_F(LockContentsViewUnitTest, DetachableBaseErrorClearsAuthError) {
   // Attempt and fail user auth - an auth error is expected to be shown.
   std::unique_ptr<MockLoginScreenClient> client = BindMockLoginScreenClient();
   client->set_authenticate_user_callback_result(false);
-  EXPECT_CALL(*client, AuthenticateUser_(kUserAccountId, _, false, _));
+  EXPECT_CALL(*client,
+              AuthenticateUserWithPasswordOrPin_(kUserAccountId, _, false, _));
 
   // Submit password.
   generator->PressKey(ui::KeyboardCode::VKEY_A, 0);
@@ -1111,7 +1201,8 @@ TEST_F(LockContentsViewUnitTest, AuthErrorDoesNotRemoveDetachableBaseError) {
   // Detachable base error should not be hidden.
   std::unique_ptr<MockLoginScreenClient> client = BindMockLoginScreenClient();
   client->set_authenticate_user_callback_result(false);
-  EXPECT_CALL(*client, AuthenticateUser_(kUserAccountId, _, false, _));
+  EXPECT_CALL(*client,
+              AuthenticateUserWithPasswordOrPin_(kUserAccountId, _, false, _));
 
   // Submit password.
   LoginAuthUserView::TestApi(test_api.primary_big_view()->auth_user())
@@ -1222,8 +1313,8 @@ TEST_F(LockContentsViewKeyboardUnitTest, PinSubmitWithVirtualKeyboardShown) {
   // Require that AuthenticateUser is called with authenticated_by_pin set to
   // true.
   auto client = BindMockLoginScreenClient();
-  EXPECT_CALL(*client,
-              AuthenticateUser_(_, "1111", true /*authenticated_by_pin*/, _));
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                           _, "1111", true /*authenticated_by_pin*/, _));
 
   // Hide the PIN keyboard.
   LoginPinView* pin_view =
@@ -1669,6 +1760,45 @@ TEST_F(LockContentsViewUnitTest, OnUnlockAllowedForUserChanged) {
   EXPECT_FALSE(disabled_auth_message->visible());
 }
 
+TEST_F(LockContentsViewUnitTest, DisabledAuthMessageFocusBehavior) {
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
+      data_dispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(data_dispatcher()));
+  SetUserCount(1);
+  SetWidget(CreateWidgetWithContent(contents));
+
+  const AccountId& kFirstUserAccountId =
+      users()[0]->basic_user_info->account_id;
+  LockContentsView::TestApi contents_test_api(contents);
+  LoginAuthUserView::TestApi auth_test_api(
+      contents_test_api.primary_big_view()->auth_user());
+  views::View* disabled_auth_message = auth_test_api.disabled_auth_message();
+  LoginUserView* user_view = auth_test_api.user_view();
+
+  // The message is visible after disabling auth and it receives initial focus.
+  data_dispatcher()->SetAuthEnabledForUser(
+      kFirstUserAccountId, false,
+      base::Time::Now() + base::TimeDelta::FromHours(8));
+  EXPECT_TRUE(disabled_auth_message->visible());
+  EXPECT_TRUE(HasFocusInAnyChildView(disabled_auth_message));
+  // Tabbing from the message will move focus to the user view.
+  ASSERT_TRUE(TabThroughView(GetEventGenerator(), disabled_auth_message,
+                             false /*reverse*/));
+  EXPECT_TRUE(HasFocusInAnyChildView(user_view));
+  // Shift-tabbing from the user view will move focus back to the message.
+  ASSERT_TRUE(TabThroughView(GetEventGenerator(), user_view, true /*reverse*/));
+  EXPECT_TRUE(HasFocusInAnyChildView(disabled_auth_message));
+  // Additional shift-tabbing will eventually move focus to the status area.
+  ASSERT_TRUE(TabThroughView(GetEventGenerator(), disabled_auth_message,
+                             true /*reverse*/));
+  views::View* status_area =
+      RootWindowController::ForWindow(contents->GetWidget()->GetNativeWindow())
+          ->GetStatusAreaWidget()
+          ->GetContentsView();
+  EXPECT_TRUE(HasFocusInAnyChildView(status_area));
+}
+
 class LockContentsViewPowerManagerUnitTest
     : public LockContentsViewKeyboardUnitTest {
  public:
@@ -1894,7 +2024,8 @@ TEST_F(LockContentsViewUnitTest, ShowHideWarningBannerBubble) {
   // The warning banner should not be hidden.
   std::unique_ptr<MockLoginScreenClient> client = BindMockLoginScreenClient();
   client->set_authenticate_user_callback_result(false);
-  EXPECT_CALL(*client, AuthenticateUser_(kUserAccountId, _, false, _));
+  EXPECT_CALL(*client,
+              AuthenticateUserWithPasswordOrPin_(kUserAccountId, _, false, _));
 
   // Submit password.
   LoginAuthUserView::TestApi(test_api.primary_big_view()->auth_user())
@@ -1906,6 +2037,105 @@ TEST_F(LockContentsViewUnitTest, ShowHideWarningBannerBubble) {
 
   EXPECT_TRUE(test_api.auth_error_bubble()->IsVisible());
   EXPECT_TRUE(test_api.warning_banner_bubble()->IsVisible());
+}
+
+TEST_F(LockContentsViewUnitTest, RemoveUserFocusMovesBackToPrimaryUser) {
+  // Build lock screen with one public account and one normal user.
+  auto* lock = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
+      data_dispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(data_dispatcher()));
+  AddPublicAccountUsers(1);
+  AddUsers(1);
+  users()[1]->can_remove = true;
+  data_dispatcher()->NotifyUsers(users());
+  SetWidget(CreateWidgetWithContent(lock));
+
+  LockContentsView::TestApi test_api(lock);
+  LoginAuthUserView::TestApi secondary_test_api(
+      test_api.opt_secondary_big_view()->auth_user());
+  LoginUserView::TestApi user_test_api(secondary_test_api.user_view());
+
+  // Remove the user.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  // Focus the dropdown to raise the bubble.
+  user_test_api.dropdown()->RequestFocus();
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  base::RunLoop().RunUntilIdle();
+  // Focus the remove user bubble, tap twice to remove the user.
+  user_test_api.menu()->bubble_view()->RequestFocus();
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  base::RunLoop().RunUntilIdle();
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  base::RunLoop().RunUntilIdle();
+
+  // Secondary user was removed.
+  EXPECT_EQ(nullptr, test_api.opt_secondary_big_view());
+  // Primary user has focus.
+  EXPECT_TRUE(HasFocusInAnyChildView(test_api.primary_big_view()));
+}
+
+// Verifies that setting fingerprint state keeps the backlights forced off. A
+// fingerprint state change is not a user action, excluding too many
+// authentication attempts, which will trigger the auth attempt flow.
+TEST_F(LockContentsViewUnitTest,
+       BacklightRemainsForcedOffAfterFingerprintStateChange) {
+  // Enter tablet mode so the power button events force the backlight off.
+  Shell::Get()->power_button_controller()->OnTabletModeStarted();
+
+  // Show lock screen with one normal user.
+  auto* lock = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
+      data_dispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(data_dispatcher()));
+  AddUsers(1);
+  SetWidget(CreateWidgetWithContent(lock));
+
+  // Force the backlights off.
+  PressAndReleasePowerButton();
+  EXPECT_TRUE(
+      Shell::Get()->backlights_forced_off_setter()->backlights_forced_off());
+
+  // Change fingerprint state; backlights remain forced off.
+  data_dispatcher()->SetFingerprintState(
+      users()[0]->basic_user_info->account_id,
+      mojom::FingerprintState::DISABLED_FROM_ATTEMPTS);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      Shell::Get()->backlights_forced_off_setter()->backlights_forced_off());
+
+  Shell::Get()->power_button_controller()->OnTabletModeEnded();
+}
+
+// Verifies that a fingerprint authentication attempt makes sure the backlights
+// are not forced off.
+TEST_F(LockContentsViewUnitTest,
+       BacklightIsNotForcedOffAfterFingerprintAuthenticationAttempt) {
+  // Enter tablet mode so the power button events force the backlight off.
+  Shell::Get()->power_button_controller()->OnTabletModeStarted();
+
+  // Show lock screen with one normal user.
+  auto* lock = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
+      data_dispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(data_dispatcher()));
+  AddUsers(1);
+  SetWidget(CreateWidgetWithContent(lock));
+
+  // Force the backlights off.
+  PressAndReleasePowerButton();
+  EXPECT_TRUE(
+      Shell::Get()->backlights_forced_off_setter()->backlights_forced_off());
+
+  // Validate a fingerprint authentication attempt resets backlights being
+  // forced off.
+  data_dispatcher()->NotifyFingerprintAuthResult(
+      users()[0]->basic_user_info->account_id, false /*successful*/);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      Shell::Get()->backlights_forced_off_setter()->backlights_forced_off());
+
+  Shell::Get()->power_button_controller()->OnTabletModeEnded();
 }
 
 }  // namespace ash

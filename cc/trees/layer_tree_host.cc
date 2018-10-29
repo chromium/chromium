@@ -28,7 +28,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/histograms.h"
@@ -376,22 +376,14 @@ void LayerTreeHost::FinishCommitOnImplThread(
   // Dump property trees and layers if run with:
   //   --vmodule=layer_tree_host=3
   if (VLOG_IS_ON(3)) {
-    VLOG(3) << "After finishing commit on impl, the sync tree:";
-    // Because the property tree and layer list output can be verbose, the VLOG
-    // output is split by line to avoid line buffer limits on android.
-    VLOG(3) << "property trees:";
     std::string property_trees;
     base::JSONWriter::WriteWithOptions(
         *sync_tree->property_trees()->AsTracedValue()->ToBaseValue(),
         base::JSONWriter::OPTIONS_PRETTY_PRINT, &property_trees);
-    std::stringstream property_trees_stream(property_trees);
-    for (std::string line; std::getline(property_trees_stream, line);)
-      VLOG(3) << line;
-
-    VLOG(3) << "layers:";
-    std::stringstream layers_stream(host_impl->LayerListAsJson());
-    for (std::string line; std::getline(layers_stream, line);)
-      VLOG(3) << line;
+    VLOG(3) << "After finishing commit on impl, the sync tree:"
+            << "\nproperty_trees:\n"
+            << property_trees << "\nlayers:\n"
+            << host_impl->LayerListAsJson();
   }
 }
 
@@ -756,8 +748,6 @@ bool LayerTreeHost::DoUpdateLayers(Layer* root_layer) {
   // and SlimmingPaintV2.
   if (!IsUsingLayerLists()) {
     TRACE_EVENT0("cc", "LayerTreeHost::UpdateLayers::BuildPropertyTrees");
-    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug.cdp-perf"),
-                 "LayerTreeHostCommon::ComputeVisibleRectsWithPropertyTrees");
     Layer* root_scroll =
         PropertyTreeBuilder::FindFirstScrollableLayer(root_layer);
     Layer* page_scale_layer = viewport_layers_.page_scale.get();
@@ -813,33 +803,27 @@ bool LayerTreeHost::DoUpdateLayers(Layer* root_layer) {
   //   --vmodule=layer_tree_host=3
   // This only prints output for the renderer.
   if (VLOG_IS_ON(3) && GetClientNameForMetrics() == std::string("Renderer")) {
-    VLOG(3) << "After updating layers on the main thread:";
-    // Because the property tree and layer list output can be verbose, the VLOG
-    // output is split by line to avoid line buffer limits on android.
-    VLOG(3) << "property trees:";
     std::string property_trees;
     base::JSONWriter::WriteWithOptions(
         *property_trees_.AsTracedValue()->ToBaseValue(),
         base::JSONWriter::OPTIONS_PRETTY_PRINT, &property_trees);
-    std::stringstream property_trees_stream(property_trees);
-    for (std::string line; std::getline(property_trees_stream, line);)
-      VLOG(3) << line;
-
-    VLOG(3) << "layers:";
+    std::ostringstream layers;
     for (auto* layer : *this) {
-      VLOG(3) << "  layer id " << layer->id();
-      VLOG(3) << "    element_id: " << layer->element_id();
-      VLOG(3) << "    bounds: " << layer->bounds().ToString();
-      VLOG(3) << "    opacity: " << layer->opacity();
-      VLOG(3) << "    position: " << layer->position().ToString();
-      VLOG(3) << "    draws_content: " << layer->DrawsContent();
-      VLOG(3) << "    scrollable: " << layer->scrollable();
-      VLOG(3) << "    contents_opaque: " << layer->contents_opaque();
-      VLOG(3) << "    transform_tree_index: " << layer->transform_tree_index();
-      VLOG(3) << "    clip_tree_index: " << layer->clip_tree_index();
-      VLOG(3) << "    effect_tree_index: " << layer->effect_tree_index();
-      VLOG(3) << "    scroll_tree_index: " << layer->scroll_tree_index();
+      layers << "\n  layer id " << layer->id();
+      layers << "\n    element_id: " << layer->element_id();
+      layers << "\n    bounds: " << layer->bounds().ToString();
+      layers << "\n    opacity: " << layer->opacity();
+      layers << "\n    position: " << layer->position().ToString();
+      layers << "\n    draws_content: " << layer->DrawsContent();
+      layers << "\n    scrollable: " << layer->scrollable();
+      layers << "\n    contents_opaque: " << layer->contents_opaque();
+      layers << "\n    transform_tree_index: " << layer->transform_tree_index();
+      layers << "\n    clip_tree_index: " << layer->clip_tree_index();
+      layers << "\n    effect_tree_index: " << layer->effect_tree_index();
+      layers << "\n    scroll_tree_index: " << layer->scroll_tree_index();
     }
+    VLOG(3) << "After updating layers on the main thread:\nproperty trees:\n"
+            << property_trees << "\nlayers:" << layers.str();
   }
 
   bool painted_content_has_slow_paths = false;
@@ -869,23 +853,24 @@ bool LayerTreeHost::DoUpdateLayers(Layer* root_layer) {
   return did_paint_content;
 }
 
-void LayerTreeHost::ApplyViewportDeltas(const ScrollAndScaleSet& info) {
-  gfx::Vector2dF inner_viewport_scroll_delta;
+void LayerTreeHost::ApplyViewportChanges(const ScrollAndScaleSet& info) {
+  gfx::ScrollOffset inner_viewport_scroll_delta;
   if (info.inner_viewport_scroll.element_id)
     inner_viewport_scroll_delta = info.inner_viewport_scroll.scroll_delta;
 
   if (inner_viewport_scroll_delta.IsZero() && info.page_scale_delta == 1.f &&
-      info.elastic_overscroll_delta.IsZero() && !info.top_controls_delta)
+      info.elastic_overscroll_delta.IsZero() && !info.top_controls_delta &&
+      !info.browser_controls_constraint_changed) {
     return;
+  }
 
   // Preemptively apply the scroll offset and scale delta here before sending
   // it to the client.  If the client comes back and sets it to the same
   // value, then the layer can early out without needing a full commit.
   if (viewport_layers_.inner_viewport_scroll) {
     viewport_layers_.inner_viewport_scroll->SetScrollOffsetFromImplSide(
-        gfx::ScrollOffsetWithDelta(
-            viewport_layers_.inner_viewport_scroll->CurrentScrollOffset(),
-            inner_viewport_scroll_delta));
+        viewport_layers_.inner_viewport_scroll->CurrentScrollOffset() +
+        inner_viewport_scroll_delta);
   }
 
   ApplyPageScaleDeltaFromImplSide(info.page_scale_delta);
@@ -893,9 +878,10 @@ void LayerTreeHost::ApplyViewportDeltas(const ScrollAndScaleSet& info) {
                                    info.elastic_overscroll_delta);
   // TODO(ccameron): pass the elastic overscroll here so that input events
   // may be translated appropriately.
-  client_->ApplyViewportDeltas(inner_viewport_scroll_delta, gfx::Vector2dF(),
-                               info.elastic_overscroll_delta,
-                               info.page_scale_delta, info.top_controls_delta);
+  client_->ApplyViewportChanges({inner_viewport_scroll_delta,
+                                 info.elastic_overscroll_delta,
+                                 info.page_scale_delta, info.top_controls_delta,
+                                 info.browser_controls_constraint});
   SetNeedsUpdateLayers();
 }
 
@@ -925,8 +911,8 @@ void LayerTreeHost::ApplyScrollAndScale(ScrollAndScaleSet* info) {
       Layer* layer = LayerByElementId(info->scrolls[i].element_id);
       if (!layer)
         continue;
-      layer->SetScrollOffsetFromImplSide(gfx::ScrollOffsetWithDelta(
-          layer->CurrentScrollOffset(), info->scrolls[i].scroll_delta));
+      layer->SetScrollOffsetFromImplSide(layer->CurrentScrollOffset() +
+                                         info->scrolls[i].scroll_delta);
       SetNeedsUpdateLayers();
     }
     for (size_t i = 0; i < info->scrollbars.size(); ++i) {
@@ -940,9 +926,13 @@ void LayerTreeHost::ApplyScrollAndScale(ScrollAndScaleSet* info) {
   // This needs to happen after scroll deltas have been sent to prevent top
   // controls from clamping the layout viewport both on the compositor and
   // on the main thread.
-  ApplyViewportDeltas(*info);
+  ApplyViewportChanges(*info);
 
   RecordWheelAndTouchScrollingCount(*info);
+}
+
+void LayerTreeHost::RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) {
+  client_->RecordEndOfFrameMetrics(frame_begin_time);
 }
 
 const base::WeakPtr<InputHandler>& LayerTreeHost::GetInputHandler()
@@ -1136,8 +1126,10 @@ void LayerTreeHost::SetEventListenerProperties(
 void LayerTreeHost::SetViewportSizeAndScale(
     const gfx::Size& device_viewport_size,
     float device_scale_factor,
-    const viz::LocalSurfaceId& local_surface_id_from_parent) {
-  SetLocalSurfaceIdFromParent(local_surface_id_from_parent);
+    const viz::LocalSurfaceId& local_surface_id_from_parent,
+    base::TimeTicks local_surface_id_allocation_time_from_parent) {
+  SetLocalSurfaceIdFromParent(local_surface_id_from_parent,
+                              local_surface_id_allocation_time_from_parent);
 
   bool changed = false;
   if (device_viewport_size_ != device_viewport_size) {
@@ -1161,9 +1153,13 @@ void LayerTreeHost::SetViewportSizeAndScale(
   if (changed) {
     SetPropertyTreesNeedRebuild();
     SetNeedsCommit();
+#if defined(OS_MACOSX)
+    // TODO(ccameron): This check is not valid on Aura or Mus yet, but should
+    // be.
     CHECK(!has_pushed_local_surface_id_from_parent_ ||
           new_local_surface_id_request_ ||
           !local_surface_id_from_parent_.is_valid());
+#endif
   }
 }
 
@@ -1264,7 +1260,8 @@ void LayerTreeHost::SetContentSourceId(uint32_t id) {
 }
 
 void LayerTreeHost::SetLocalSurfaceIdFromParent(
-    const viz::LocalSurfaceId& local_surface_id_from_parent) {
+    const viz::LocalSurfaceId& local_surface_id_from_parent,
+    base::TimeTicks local_surface_id_allocation_time_from_parent) {
   if (local_surface_id_from_parent_.parent_sequence_number() ==
           local_surface_id_from_parent.parent_sequence_number() &&
       local_surface_id_from_parent_.embed_token() ==
@@ -1280,6 +1277,8 @@ void LayerTreeHost::SetLocalSurfaceIdFromParent(
       "SetLocalSurfaceIdFromParent", "local_surface_id",
       local_surface_id_from_parent.ToString());
   local_surface_id_from_parent_ = local_surface_id_from_parent;
+  local_surface_id_allocation_time_from_parent_ =
+      local_surface_id_allocation_time_from_parent;
   has_pushed_local_surface_id_from_parent_ = false;
   UpdateDeferCommitsInternal();
   SetNeedsCommit();
@@ -1404,14 +1403,10 @@ void LayerTreeHost::UpdateHudLayer(bool show_hud_info) {
   if (show_hud_info) {
     if (!hud_layer_.get())
       hud_layer_ = HeadsUpDisplayLayer::Create();
-
-    gfx::Size device_viewport_in_layout_pixels =
-        gfx::Size(device_viewport_size_.width() / device_scale_factor_,
-                  device_viewport_size_.height() / device_scale_factor_);
-    hud_layer_->SetBounds(device_viewport_in_layout_pixels);
-
     if (root_layer_.get() && !hud_layer_->parent())
       root_layer_->AddChild(hud_layer_);
+    hud_layer_->UpdateLocationAndSize(device_viewport_size_,
+                                      device_scale_factor_);
   } else if (hud_layer_.get()) {
     hud_layer_->RemoveFromParent();
     hud_layer_ = nullptr;
@@ -1502,7 +1497,9 @@ void LayerTreeHost::PushLayerTreePropertiesTo(LayerTreeImpl* tree_impl) {
   if (TakeNewLocalSurfaceIdRequest())
     tree_impl->RequestNewLocalSurfaceId();
 
-  tree_impl->SetLocalSurfaceIdFromParent(local_surface_id_from_parent_);
+  tree_impl->SetLocalSurfaceIdFromParent(
+      local_surface_id_from_parent_,
+      local_surface_id_allocation_time_from_parent_);
   has_pushed_local_surface_id_from_parent_ = true;
 
   if (pending_page_scale_animation_) {

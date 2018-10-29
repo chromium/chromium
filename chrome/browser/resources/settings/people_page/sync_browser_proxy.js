@@ -138,6 +138,11 @@ cr.define('settings', function() {
     signOut(deleteProfile) {}
 
     /**
+     * Invalidates the Sync token without signing the user out.
+     */
+    pauseSync() {}
+
+    /**
      * Opens the multi-profile user manager.
      */
     manageOtherPeople() {}
@@ -215,6 +220,13 @@ cr.define('settings', function() {
      * Opens the Google Activity Controls url in a new tab.
      */
     openActivityControlsUrl() {}
+
+    /**
+     * Function to invoke when the unified consent toggle state changes, to
+     * notify the C++ layer.
+     * @param {boolean} toggleChecked
+     */
+    unifiedConsentToggleChanged(toggleChecked) {}
   }
 
   /**
@@ -230,6 +242,11 @@ cr.define('settings', function() {
     /** @override */
     signOut(deleteProfile) {
       chrome.send('SyncSetupSignout', [deleteProfile]);
+    }
+
+    /** @override */
+    pauseSync() {
+      chrome.send('SyncSetupPauseSync');
     }
 
     /** @override */
@@ -301,6 +318,11 @@ cr.define('settings', function() {
     openActivityControlsUrl() {
       chrome.metricsPrivate.recordUserAction(
           'Signin_AccountSettings_GoogleActivityControlsClicked');
+    }
+
+    /** @override */
+    unifiedConsentToggleChanged(toggleChecked) {
+      chrome.send('UnifiedConsentToggleChanged', [toggleChecked]);
     }
   }
 

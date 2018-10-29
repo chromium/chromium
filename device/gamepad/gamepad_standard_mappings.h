@@ -24,9 +24,9 @@ typedef void (*GamepadStandardMappingFunction)(const Gamepad& original,
                                                Gamepad* mapped);
 
 GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
-    const base::StringPiece& vendor_id,
-    const base::StringPiece& product_id,
-    const base::StringPiece& version_number,
+    const uint16_t vendor_id,
+    const uint16_t product_id,
+    const uint16_t version_number,
     GamepadBusType bus_type);
 
 // This defines our canonical mapping order for gamepad-like devices. If these

@@ -14,7 +14,6 @@
 
     (load-file "src/tools/emacs/flymake-chromium.el")
 
-
 ## [ycmd](https://github.com/Valloric/ycmd) (YouCompleteMe) + flycheck
 
 [emacs-ycmd](https://github.com/abingham/emacs-ycmd) in combination with
@@ -163,6 +162,13 @@ Now, you can use the
 
 key to format the current line (even a long line) or region.
 
+## BUILD.gn and .gni files
+
+BUILD.gn and gni files are supported by the official gn-mode which can
+be enabled with:
+
+    (load-file "src/tools/emacs/gn.el")
+
 ## Highlight long lines
 
 One nice way to highlight long lines and other style issues:
@@ -181,21 +187,7 @@ One nice way to highlight long lines and other style issues:
 Note: You might need to grab the latest version of
 [whitespace.el](http://www.emacswiki.org/emacs-en/download/whitespace.el).
 
-## gyp
-
-### `gyp` style
-There is a gyp mode that provides basic indentation and font-lock (syntax
-highlighting) support. The mode derives from python.el (bundled with newer
-emacsen).
-
-You can find it in /src/tools/gyp/tools/emacs
-
-See the README file there for installation instructions.
-
-**Important**: the mode is only tested with `python.el` (bundled with newer
-emacsen), not with `python-mode.el` (outdated and less maintained these days).
-
-### deep nesting
+## deep nesting
 
 A couple of helpers that show a summary of where you are; the first by tracing
 the indentation hierarchy upwards, the second by only showing `#if`s and

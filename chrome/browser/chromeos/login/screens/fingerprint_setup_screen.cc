@@ -25,7 +25,10 @@ FingerprintSetupScreen::~FingerprintSetupScreen() {
 }
 
 void FingerprintSetupScreen::Show() {
-  // Show the screen.
+  if (IsPublicSessionOrEphemeralLogin()) {
+    Finish(ScreenExitCode::FINGERPRINT_SETUP_FINISHED);
+    return;
+  }
   view_->Show();
 }
 

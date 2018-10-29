@@ -143,7 +143,7 @@ class FilePathWatcherTest : public testing::Test {
  public:
   FilePathWatcherTest()
 #if defined(OS_POSIX)
-      : file_descriptor_watcher_(&loop_)
+      : file_descriptor_watcher_(loop_.task_runner())
 #endif
   {
   }

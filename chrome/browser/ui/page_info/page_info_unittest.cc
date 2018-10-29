@@ -31,10 +31,7 @@
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/content_switches.h"
-#include "device/base/mock_device_client.h"
-#include "device/usb/mock_usb_device.h"
-#include "device/usb/mock_usb_service.h"
-#include "device/usb/mojo/type_converters.h"
+#include "device/usb/public/cpp/fake_usb_device_manager.h"
 #include "device/usb/public/mojom/device.mojom.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
@@ -205,14 +202,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     return page_info_.get();
   }
 
-  device::MockUsbService& usb_service() {
-    return *device_client_.usb_service();
-  }
-
   security_state::SecurityInfo security_info_;
 
  private:
-  device::MockDeviceClient device_client_;
   std::unique_ptr<PageInfo> page_info_;
   std::unique_ptr<MockPageInfoUI> mock_ui_;
   scoped_refptr<net::X509Certificate> cert_;
@@ -393,12 +385,15 @@ TEST_F(PageInfoTest, OnSiteDataAccessed) {
 }
 
 TEST_F(PageInfoTest, OnChosenObjectDeleted) {
-  scoped_refptr<device::UsbDevice> device =
-      new device::MockUsbDevice(0, 0, "Google", "Gizmo", "1234567890");
-  auto device_info = device::mojom::UsbDeviceInfo::From(*device);
-  DCHECK(device_info);
-  usb_service().AddDevice(device);
+  // Connect the UsbChooserContext with FakeUsbDeviceManager.
+  device::FakeUsbDeviceManager usb_device_manager;
+  device::mojom::UsbDeviceManagerPtr device_manager_ptr;
+  usb_device_manager.AddBinding(mojo::MakeRequest(&device_manager_ptr));
   UsbChooserContext* store = UsbChooserContextFactory::GetForProfile(profile());
+  store->SetDeviceManagerForTesting(std::move(device_manager_ptr));
+
+  auto device_info = usb_device_manager.CreateAndAddDevice(
+      0, 0, "Google", "Gizmo", "1234567890");
   store->GrantDevicePermission(url(), url(), *device_info);
 
   EXPECT_CALL(*mock_ui(), SetIdentityInfo(_));
@@ -414,7 +409,7 @@ TEST_F(PageInfoTest, OnChosenObjectDeleted) {
   const PageInfoUI::ChosenObjectInfo* info = last_chosen_object_info()[0].get();
   page_info()->OnSiteChosenObjectDeleted(info->ui_info, *info->object);
 
-  EXPECT_FALSE(store->HasDevicePermission(url(), url(), device));
+  EXPECT_FALSE(store->HasDevicePermission(url(), url(), *device_info));
   EXPECT_EQ(0u, last_chosen_object_info().size());
 }
 
@@ -1097,7 +1092,9 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
   ~UnifiedAutoplaySoundSettingsPageInfoTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(media::kAutoplaySoundSettings);
+    scoped_feature_list_.InitWithFeatures(
+        {media::kAutoplayDisableSettings, media::kAutoplayWhitelistSettings},
+        {});
     ChromeRenderViewHostTestHarness::SetUp();
   }
 

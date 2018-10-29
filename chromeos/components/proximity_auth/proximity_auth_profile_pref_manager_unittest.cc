@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/chromeos_features.h"
 #include "chromeos/components/proximity_auth/proximity_auth_local_state_pref_manager.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
@@ -40,11 +42,19 @@ class ProximityAuthProfilePrefManagerTest : public testing::Test {
   void SetUp() override {
     ProximityAuthProfilePrefManager::RegisterPrefs(pref_service_.registry());
     chromeos::multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
+
+    scoped_feature_list_.InitWithFeatures(
+        std::vector<base::Feature>() /* enable_features */,
+        std::vector<base::Feature>{
+            chromeos::features::kMultiDeviceApi,
+            chromeos::features::
+                kEnableUnifiedMultiDeviceSetup} /* disable_features */);
   }
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   DISALLOW_COPY_AND_ASSIGN(ProximityAuthProfilePrefManagerTest);
 };
 

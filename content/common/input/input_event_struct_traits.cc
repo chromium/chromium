@@ -135,8 +135,6 @@ bool StructTraits<content::mojom::EventDataView, InputEventUniquePtr>::Read(
         default:
           break;
         case blink::WebInputEvent::Type::kGestureTapDown:
-        case blink::WebInputEvent::Type::kGestureTapUnconfirmed:
-        case blink::WebInputEvent::Type::kGestureDoubleTap:
           gesture_event->data.tap_down.width =
               gesture_data->contact_size->width();
           gesture_event->data.tap_down.height =
@@ -149,10 +147,13 @@ bool StructTraits<content::mojom::EventDataView, InputEventUniquePtr>::Read(
               gesture_data->contact_size->height();
           break;
         case blink::WebInputEvent::Type::kGestureTap:
+        case blink::WebInputEvent::Type::kGestureTapUnconfirmed:
+        case blink::WebInputEvent::Type::kGestureDoubleTap:
           gesture_event->data.tap.width = gesture_data->contact_size->width();
           gesture_event->data.tap.height = gesture_data->contact_size->height();
           break;
         case blink::WebInputEvent::Type::kGestureLongPress:
+        case blink::WebInputEvent::Type::kGestureLongTap:
           gesture_event->data.long_press.width =
               gesture_data->contact_size->width();
           gesture_event->data.long_press.height =
@@ -218,14 +219,12 @@ bool StructTraits<content::mojom::EventDataView, InputEventUniquePtr>::Read(
       }
     }
 
-    if (blink::WebInputEvent::IsPinchGestureEventType(type)) {
-      gesture_event->SetNeedsWheelEvent(false);
-      if (gesture_data->pinch_data &&
-          type == blink::WebInputEvent::Type::kGesturePinchUpdate) {
-        gesture_event->data.pinch_update.zoom_disabled = false;
-        gesture_event->data.pinch_update.scale =
-            gesture_data->pinch_data->scale;
-      }
+    gesture_event->SetNeedsWheelEvent(false);
+
+    if (gesture_data->pinch_data &&
+        type == blink::WebInputEvent::Type::kGesturePinchUpdate) {
+      gesture_event->data.pinch_update.zoom_disabled = false;
+      gesture_event->data.pinch_update.scale = gesture_data->pinch_data->scale;
     }
 
     if (gesture_data->tap_data) {
@@ -434,6 +433,7 @@ StructTraits<content::mojom::EventDataView, InputEventUniquePtr>::gesture_data(
           content::mojom::TapData::New(gesture_event->data.tap.tap_count);
       break;
     case blink::WebInputEvent::Type::kGestureLongPress:
+    case blink::WebInputEvent::Type::kGestureLongTap:
       gesture_data->contact_size =
           gfx::Size(gesture_event->data.long_press.width,
                     gesture_event->data.long_press.height);

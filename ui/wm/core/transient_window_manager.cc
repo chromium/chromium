@@ -84,7 +84,7 @@ void TransientWindowManager::AddTransientChild(Window* child) {
 }
 
 void TransientWindowManager::RemoveTransientChild(Window* child) {
-  Windows::iterator i =
+  auto i =
       std::find(transient_children_.begin(), transient_children_.end(), child);
   DCHECK(i != transient_children_.end());
   transient_children_.erase(i);
@@ -131,8 +131,7 @@ void TransientWindowManager::RestackTransientDescendants() {
   // |window_|. The existing stacking order is preserved by iterating backwards
   // and always stacking on top.
   Window::Windows children(parent->children());
-  for (Window::Windows::reverse_iterator it = children.rbegin();
-       it != children.rend(); ++it) {
+  for (auto it = children.rbegin(); it != children.rend(); ++it) {
     if ((*it) != window_ && HasTransientAncestor(*it, window_)) {
       TransientWindowManager* descendant_manager = GetOrCreate(*it);
       base::AutoReset<Window*> resetter(
@@ -205,10 +204,8 @@ void TransientWindowManager::OnWindowStackingChanged(Window* window) {
   // Do nothing if we initiated the stacking change.
   const TransientWindowManager* transient_manager = GetIfExists(window);
   if (transient_manager && transient_manager->stacking_target_) {
-    Windows::const_iterator window_i = std::find(
-        window->parent()->children().begin(),
-        window->parent()->children().end(),
-        window);
+    auto window_i = std::find(window->parent()->children().begin(),
+                              window->parent()->children().end(), window);
     DCHECK(window_i != window->parent()->children().end());
     if (window_i != window->parent()->children().begin() &&
         (*(window_i - 1) == transient_manager->stacking_target_))

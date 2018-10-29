@@ -16,15 +16,13 @@
 #include "content/shell/test_runner/web_widget_test_proxy.h"
 #include "third_party/blink/public/platform/modules/webmidi/web_midi_accessor.h"
 
-using namespace blink;
-
 namespace test_runner {
 
 WebTestInterfaces::WebTestInterfaces() : interfaces_(new TestInterfaces()) {}
 
 WebTestInterfaces::~WebTestInterfaces() {}
 
-void WebTestInterfaces::SetMainView(WebView* web_view) {
+void WebTestInterfaces::SetMainView(blink::WebView* web_view) {
   interfaces_->SetMainView(web_view);
 }
 
@@ -44,18 +42,16 @@ void WebTestInterfaces::SetTestIsRunning(bool running) {
   interfaces_->SetTestIsRunning(running);
 }
 
-void WebTestInterfaces::ConfigureForTestWithURL(const WebURL& test_url,
-                                                bool generate_pixels,
-                                                bool initial_configuration) {
-  interfaces_->ConfigureForTestWithURL(test_url, generate_pixels,
-                                       initial_configuration);
+void WebTestInterfaces::ConfigureForTestWithURL(const blink::WebURL& test_url,
+                                                bool protocol_mode) {
+  interfaces_->ConfigureForTestWithURL(test_url, protocol_mode);
 }
 
 WebTestRunner* WebTestInterfaces::TestRunner() {
   return interfaces_->GetTestRunner();
 }
 
-WebThemeEngine* WebTestInterfaces::ThemeEngine() {
+blink::WebThemeEngine* WebTestInterfaces::ThemeEngine() {
   return interfaces_->GetThemeEngine();
 }
 
@@ -63,8 +59,8 @@ TestInterfaces* WebTestInterfaces::GetTestInterfaces() {
   return interfaces_.get();
 }
 
-std::unique_ptr<WebMIDIAccessor> WebTestInterfaces::CreateMIDIAccessor(
-    WebMIDIAccessorClient* client) {
+std::unique_ptr<blink::WebMIDIAccessor> WebTestInterfaces::CreateMIDIAccessor(
+    blink::WebMIDIAccessorClient* client) {
   return std::make_unique<MockWebMIDIAccessor>(client, interfaces_.get());
 }
 

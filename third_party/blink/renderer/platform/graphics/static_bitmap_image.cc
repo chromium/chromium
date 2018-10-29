@@ -82,23 +82,24 @@ void StaticBitmapImage::DrawHelper(cc::PaintCanvas* canvas,
 scoped_refptr<StaticBitmapImage> StaticBitmapImage::ConvertToColorSpace(
     sk_sp<SkColorSpace> color_space,
     SkColorType color_type) {
+  DCHECK(color_space);
   sk_sp<SkImage> skia_image = PaintImageForCurrentFrame().GetSkImage();
+  // If we don't need to change the color type, use SkImage::makeColorSpace()
+  if (skia_image->colorType() == color_type) {
+    skia_image = skia_image->makeColorSpace(color_space);
+    return StaticBitmapImage::Create(skia_image, skia_image->isTextureBacked()
+                                                     ? ContextProviderWrapper()
+                                                     : nullptr);
+  }
+
+  // Otherwise, create a surface and draw on that to avoid GPU readback.
   sk_sp<SkColorSpace> src_color_space = skia_image->refColorSpace();
   if (!src_color_space.get())
     src_color_space = SkColorSpace::MakeSRGB();
   sk_sp<SkColorSpace> dst_color_space = color_space;
   if (!dst_color_space.get())
     dst_color_space = SkColorSpace::MakeSRGB();
-  if (SkColorSpace::Equals(src_color_space.get(), dst_color_space.get()) &&
-      skia_image->colorType() == color_type) {
-    return this;
-  }
 
-  // SkImage::makeColorSpace() converts all the color types to kN32_SkColorType.
-  // If this bug (skia:8382) is ever fixed, we can replace the following code
-  // with this:
-  // sk_sp<SkImage> converted_skia_image =
-  //     skia_image->makeColorSpace(dst_color_space);
   SkImageInfo info =
       SkImageInfo::Make(skia_image->width(), skia_image->height(), color_type,
                         skia_image->alphaType(), dst_color_space);

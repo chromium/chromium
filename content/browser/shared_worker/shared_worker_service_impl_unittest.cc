@@ -17,6 +17,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "content/test/not_implemented_network_url_loader_factory.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -29,42 +30,6 @@
 using blink::MessagePortChannel;
 
 namespace content {
-
-namespace {
-
-// A mock URLLoaderFactory which just fails to create a loader. This is
-// sufficient because the tests don't exercise script loading. Used when
-// S13nServiceWorker is enabled.
-class NotImplementedNetworkURLLoaderFactory final
-    : public network::mojom::URLLoaderFactory {
- public:
-  NotImplementedNetworkURLLoaderFactory() = default;
-
-  // network::mojom::URLLoaderFactory implementation.
-  void CreateLoaderAndStart(network::mojom::URLLoaderRequest request,
-                            int32_t routing_id,
-                            int32_t request_id,
-                            uint32_t options,
-                            const network::ResourceRequest& url_request,
-                            network::mojom::URLLoaderClientPtr client,
-                            const net::MutableNetworkTrafficAnnotationTag&
-                                traffic_annotation) override {
-    network::URLLoaderCompletionStatus status;
-    status.error_code = net::ERR_NOT_IMPLEMENTED;
-    client->OnComplete(status);
-  }
-
-  void Clone(network::mojom::URLLoaderFactoryRequest request) override {
-    bindings_.AddBinding(this, std::move(request));
-  }
-
- private:
-  mojo::BindingSet<network::mojom::URLLoaderFactory> bindings_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotImplementedNetworkURLLoaderFactory);
-};
-
-}  // namespace
 
 class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
  public:

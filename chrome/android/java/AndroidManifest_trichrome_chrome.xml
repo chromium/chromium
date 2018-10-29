@@ -1,0 +1,27 @@
+{% extends "chrome/android/java/AndroidManifest.xml" %}
+
+## Copyright 2018 The Chromium Authors. All rights reserved.
+## Use of this source code is governed by a BSD-style license that can be
+## found in the LICENSE file.
+
+## Note: This is a jinja2 template, processed at build time into the final manifest.
+
+## TODO(torne): we need a Trichrome application subclass to use the library preloader
+##{% block application_name %}org.chromium.chrome.browser.MonochromeApplication{% endblock %}
+
+{% block extra_application_attributes %}
+{{ super() }}
+android:extractNativeLibs="false"
+{% endblock %}
+
+{% block extra_keyset_definitions %}
+  <!-- No keyset definitions should exist for any trichrome apks -->
+{% endblock %}
+
+{% block extra_application_definitions %}
+{{ super() }}
+<uses-static-library
+    android:name="{{ trichrome_library }}"
+    android:version="{{ trichrome_version }}"
+    android:certDigest="{{ trichrome_certdigest }}" />
+{% endblock %}

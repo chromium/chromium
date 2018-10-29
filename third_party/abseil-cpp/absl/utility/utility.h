@@ -235,13 +235,13 @@ auto apply_helper(Functor&& functor, Tuple&& t, index_sequence<Indexes...>)
 // Example:
 //
 //   class Foo{void Bar(int);};
-//   void user_function(int, std::string);
+//   void user_function(int, string);
 //   void user_function(std::unique_ptr<Foo>);
 //
 //   int main()
 //   {
-//       std::tuple<int, std::string> tuple1(42, "bar");
-//       // Invokes the user function overload on int, std::string.
+//       std::tuple<int, string> tuple1(42, "bar");
+//       // Invokes the user function overload on int, string.
 //       absl::apply(&user_function, tuple1);
 //
 //       auto foo = absl::make_unique<Foo>();

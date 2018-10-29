@@ -2,7 +2,6 @@ This test checks that grid-area is properly parsed and stored internally.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test getting grid-area set through CSS
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-start') is "1"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-start') is "auto"
@@ -33,6 +32,7 @@ PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-start') is "sp
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-end') is "nonExistent"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-end') is "1 foobar"
 
+
 Test getting and setting grid-area set through JS
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-start') is "-1"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-start') is "auto"
@@ -47,6 +47,7 @@ PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-start') is "10
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-end') is "span 3"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-end') is "auto"
 
+
 Test setting grid-area to 'initial' through JS
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-start') is "1"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-start') is "2"
@@ -57,6 +58,7 @@ PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-start') is "au
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-end') is "auto"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-end') is "auto"
 
+
 Test setting grid-area to 'inherit' through JS
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-start') is "1"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-start') is "2"
@@ -66,6 +68,7 @@ PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-start') is "1"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-start') is "2"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-end') is "3"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-end') is "4"
+
 
 Test setting some positions to invalid values through JS
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-start') is "auto"

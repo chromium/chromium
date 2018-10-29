@@ -21,7 +21,8 @@ class XRCompositorCommon;
 class DEVICE_VR_EXPORT OculusDevice
     : public VRDeviceBase,
       public mojom::XRSessionController,
-      public mojom::IsolatedXRGamepadProviderFactory {
+      public mojom::IsolatedXRGamepadProviderFactory,
+      public mojom::XRCompositorHost {
  public:
   explicit OculusDevice();
   ~OculusDevice() override;
@@ -39,6 +40,7 @@ class DEVICE_VR_EXPORT OculusDevice
   bool IsInitialized() { return !!session_; }
 
   mojom::IsolatedXRGamepadProviderFactoryPtr BindGamepadFactory();
+  mojom::XRCompositorHostPtr BindCompositorHost();
 
  private:
   // XRSessionController
@@ -49,6 +51,10 @@ class DEVICE_VR_EXPORT OculusDevice
   // mojom::IsolatedXRGamepadProviderFactory
   void GetIsolatedXRGamepadProvider(
       mojom::IsolatedXRGamepadProviderRequest provider_request) override;
+
+  // XRCompositorHost
+  void CreateImmersiveOverlay(
+      mojom::ImmersiveOverlayRequest overlay_request) override;
 
   void OnPresentationEnded();
   void StartOvrSession();
@@ -62,6 +68,9 @@ class DEVICE_VR_EXPORT OculusDevice
   mojo::Binding<mojom::IsolatedXRGamepadProviderFactory>
       gamepad_provider_factory_binding_;
   mojom::IsolatedXRGamepadProviderRequest provider_request_;
+
+  mojo::Binding<mojom::XRCompositorHost> compositor_host_binding_;
+  mojom::ImmersiveOverlayRequest overlay_request_;
 
   base::WeakPtrFactory<OculusDevice> weak_ptr_factory_;
 

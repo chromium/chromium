@@ -32,10 +32,9 @@ void ChangeRequestsStateTask::ReadRequests() {
                                   weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ChangeRequestsStateTask::UpdateRequests(
-    std::unique_ptr<UpdateRequestsResult> read_result) {
-  if (read_result->store_state != StoreState::LOADED ||
-      read_result->updated_items.empty()) {
+void ChangeRequestsStateTask::UpdateRequests(UpdateRequestsResult read_result) {
+  if (read_result.store_state != StoreState::LOADED ||
+      read_result.updated_items.empty()) {
     UpdateCompleted(std::move(read_result));
     return;
   }
@@ -43,7 +42,7 @@ void ChangeRequestsStateTask::UpdateRequests(
   // We are only going to make an update to the items that were found. Statuses
   // of the missing items will be added at the end.
   std::vector<SavePageRequest> items_to_update;
-  for (auto request : read_result->updated_items) {
+  for (auto request : read_result.updated_items) {
     // Decrease the started_attempt_count_ for offlining requests paused by the
     // user (https://crbug.com/701037).
     if (request.request_state() == SavePageRequest::RequestState::OFFLINING &&
@@ -60,19 +59,19 @@ void ChangeRequestsStateTask::UpdateRequests(
 }
 
 void ChangeRequestsStateTask::UpdateCompleted(
-    std::unique_ptr<UpdateRequestsResult> update_result) {
+    UpdateRequestsResult update_result) {
   // Because the first step might not have found some of the items, we should
   // look their IDs now and include in the final result as not found.
 
   // Look up the missing items by removing the items present in the result
   // statuses from original list of request IDs.
-  for (const auto& id_status_pair : update_result->item_statuses)
+  for (const auto& id_status_pair : update_result.item_statuses)
     request_ids_.erase(id_status_pair.first);
 
   // Update the final result for the items that are left in |request_ids_|, as
   // these are identified as being missing from the final result.
   for (int64_t request_id : request_ids_) {
-    update_result->item_statuses.push_back(
+    update_result.item_statuses.push_back(
         std::make_pair(request_id, ItemActionStatus::NOT_FOUND));
   }
 

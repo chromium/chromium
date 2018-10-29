@@ -2,7 +2,6 @@ Tests deriveBits() using HKDF
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS key.type is "secret"
 PASS typeof key.extractable is 'boolean'
 PASS key.extractable is false

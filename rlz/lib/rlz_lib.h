@@ -137,6 +137,13 @@ bool RLZ_LIB_API GetAccessPointRlz(AccessPoint point, char* rlz,
 // Access: HKCU write.
 bool RLZ_LIB_API SetAccessPointRlz(AccessPoint point, const char* new_rlz);
 
+// Use |brand| to replace the brand code contained in existing access point RLZ
+// strings found in the RLZ data file. Return true if at least one access point
+// RLZ string is updated, otherwise return false (and the function is a no-op).
+// See https://crbug.com/846033.
+// Access: HKCU write.
+bool RLZ_LIB_API UpdateExistingAccessPointRlz(const std::string& brand);
+
 // Financial Server pinging functions.
 // These functions deal with pinging the RLZ financial server and parsing and
 // acting upon the response. Clients should SendFinancialPing() to avoid needing

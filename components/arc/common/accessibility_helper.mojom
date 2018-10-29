@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 11
+// Next MinVersion: 13
 
 module arc.mojom;
 
@@ -80,7 +80,7 @@ enum AccessibilityActionType {
   SCROLL_UP,
   SET_PROGRESS,
   SHOW_ON_SCREEN,
-  CUSTOM_ACTION  // Not a standard action.
+  CUSTOM_ACTION,  // Not a standard action.
 };
 
 // Possible boolean properties set on an AccessibilityNodeInfo.
@@ -159,6 +159,39 @@ enum AccessibilityStringListProperty {
   CUSTOM_ACTION_DESCRIPTIONS
 };
 
+// These fields are taken from boolean properties of
+// AccessibilityWindowInfo.
+[Extensible]
+enum AccessibilityWindowBooleanProperty {
+  ACCESSIBILITY_FOCUSED,
+  FOCUSED,
+  IN_PICTURE_IN_PICTURE_MODE,
+  WINDOW_ACTIVE,
+};
+
+// These fields are taken from int attributes of
+// AccessibilityWindowInfo.
+[Extensible]
+enum AccessibilityWindowIntProperty {
+  ANCHOR_NODE_ID,
+  LAYER_ORDER,
+  PARENT_WINDOW_ID,
+};
+
+// These fields are taken from String attributes of
+// AccessibilityWindowInfo.
+[Extensible]
+enum AccessibilityWindowStringProperty {
+  TITLE,
+};
+
+// These fields are taken from List<Integer> instance members of
+// AccessibilityWindowInfo.
+[Extensible]
+enum AccessibilityWindowIntListProperty {
+  CHILD_WINDOW_IDS,
+};
+
 // This type is a subset of spans available under android.text.style.
 [Extensible]
 enum SpanType {
@@ -215,6 +248,16 @@ struct AccessibilityRangeInfoData {
   float current;
 };
 
+// These fields are taken from AccessibilityWindowInfo's window types.
+[Extensible]
+enum AccessibilityWindowType {
+  TYPE_ACCESSIBILITY_OVERLAY,
+  TYPE_APPLICATION,
+  TYPE_INPUT_METHOD,
+  TYPE_SPLIT_SCREEN_DIVIDER,
+  TYPE_SYSTEM,
+};
+
 // AccessibilityNodeInfoData is a struct to contain info of
 // AccessibilityNodeInfo in Android.
 struct AccessibilityNodeInfoData {
@@ -232,6 +275,20 @@ struct AccessibilityNodeInfoData {
   [MinVersion=5] AccessibilityCollectionInfoData? collection_info;
   [MinVersion=5] AccessibilityCollectionItemInfoData? collection_item_info;
   [MinVersion=5] AccessibilityRangeInfoData? range_info;
+  [MinVersion=12] int32 window_id;
+};
+
+// AccessibilityWindowInfoData is a struct to contain info about
+// AccessibilityWindowInfo in Android.
+struct AccessibilityWindowInfoData {
+  int32 window_id;
+  int32 root_node_id;
+  Rect bounds_in_screen;
+  AccessibilityWindowType window_type;
+  map<AccessibilityWindowBooleanProperty, bool>? boolean_properties;
+  map<AccessibilityWindowStringProperty, string>? string_properties;
+  map<AccessibilityWindowIntProperty, int32>? int_properties;
+  map<AccessibilityWindowIntListProperty, array<int32>>? int_list_properties;
 };
 
 // Filters the event type (and implicitly the data) sent by the ARC
@@ -273,14 +330,19 @@ struct AccessibilityEventData {
   // notification_key is set only for an event on an Android notification.
   [MinVersion=6] string? notification_key;
 
-  // window_id where this event is dispatched for. While this window_id matches
-  // with AccessibilityNodeInfo.getWindowId now, do not expect that it always
-  // matches with it.
+  // window_id where this event is dispatched for. This does not match
+  // AccessibilityWindowInfo window ids, instead it is a mapping to from
+  // unique IDs in an Android task to nodes in Chrome.
   [MinVersion=6] int32 window_id;
 
   // Task associated with this event (usually the front task when this event
   // gets dispatched).
   [MinVersion=8] int32 task_id;
+
+  // The window data for the tree. This may not be populated if
+  // only one node needs to be returned, for example if the event
+  // filter type is AccessibilityFilterType.FOCUS.
+  [MinVersion=12] array<AccessibilityWindowInfoData>? window_data;
 };
 
 // AccessibilityActionData is a struct to contain info of AccessibilityAction in
@@ -313,7 +375,7 @@ interface AccessibilityHelperHost {
       string notification_key, AccessibilityNotificationStateType state);
 };
 
-// Next method ID: 8
+// Next method ID: 9
 interface AccessibilityHelperInstance {
   // DEPRECATED: Please use Init@7 instead.
   InitDeprecated@0(AccessibilityHelperHost host);
@@ -341,4 +403,7 @@ interface AccessibilityHelperInstance {
   // (false).
   [MinVersion=8] SetNativeChromeVoxArcSupportForFocusedWindow@6(
       bool enabled) => (bool processed);
+
+  // Requests the service to enable or disable Explore By Touch.
+  [MinVersion=11] SetExploreByTouchEnabled@8(bool enabled);
 };

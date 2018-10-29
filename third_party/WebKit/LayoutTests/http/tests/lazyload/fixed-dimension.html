@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="placeholder.js"></script>
+
+<body>
+  <div style="height:10000px;"></div>
+  <img id="fixed_dimension_img" src='../loading/resources/base-image1.png' width="10" height="10">
+  <img id="large_dimension_img" src='../loading/resources/base-image2.png' width="100" height="100">
+  <img id="percent_dimension_img" src='../loading/resources/base-image3.png' width="10%" height="10%">
+  <img id="fixed_width_only_img" src='../loading/resources/dup-image1.png' width="10">
+  <img id="fixed_height_only_img" src='../loading/resources/dup-image2.png' height="10">
+</body>
+
+<script>
+  async_test(function(t) {
+    window.addEventListener("load", t.step_func_done());
+  }, "Test that document load event is fired");
+
+  async_test(function(t) {
+    var fixed_dimension_img = document.getElementById("fixed_dimension_img");
+    fixed_dimension_img.addEventListener("load",
+      t.step_func_done(function() {
+        assert_true(is_image_fully_loaded(fixed_dimension_img));
+      }));
+  }, "Test that small <img> with fixed height and width is loaded, and not a placeholder");
+
+  async_test(function(t) {
+    var large_dimension_img = document.getElementById("large_dimension_img");
+    var percent_dimension_img = document.getElementById("percent_dimension_img");
+    var fixed_width_only_img = document.getElementById("fixed_width_only_img");
+    var fixed_height_only_img = document.getElementById("fixed_height_only_img");
+    window.addEventListener("load", t.step_func_done(function() {
+      assert_false(is_image_fully_loaded(large_dimension_img));
+      assert_false(is_image_fully_loaded(percent_dimension_img));
+      assert_false(is_image_fully_loaded(fixed_width_only_img));
+      assert_false(is_image_fully_loaded(fixed_height_only_img));
+    }));
+    large_dimension_img.addEventListener("load",
+      t.unreached_func("Load event should not be fired for below viewport image with large fixed dimension"));
+    percent_dimension_img.addEventListener("load",
+      t.unreached_func("Load event should not be fired for below viewport image with percentage dimension"));
+    fixed_width_only_img.addEventListener("load",
+      t.unreached_func("Load event should not be fired for below viewport image with only fixed width"));
+    fixed_height_only_img.addEventListener("load",
+      t.unreached_func("Load event should not be fired for below viewport image with only fixed height"));
+  }, "Test that <img> with non fixed height and width below the viewport is loaded as placeholder");
+</script>

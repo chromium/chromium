@@ -45,6 +45,7 @@
   Attributes:
     no-header - hides header
     no-footer-padding - disables footer padding.
+    no-buttons-padding - disables buttons padding.
     has-buttons - shows bottom buttons menu
 
   I.e. [no-header no-footer-padding] will make the footer occupy all the dialog
@@ -77,6 +78,7 @@
     </div>
     <template is="dom-if" if="[[hasButtons]]">
       <div id="oobe-bottom" hideShadow$="[[hideShadow]]" android$="[[android]]"
+        no-buttons-padding$="[[noButtonsPadding]]"
           class="layout horizontal center">
         <slot name="bottom-buttons"></slot>
       </div>

@@ -130,6 +130,12 @@ generated_core_testing_callback_function_files = [
 generated_core_callback_function_files = [
   "$bindings_core_v8_output_dir/v8_blob_callback.cc",
   "$bindings_core_v8_output_dir/v8_blob_callback.h",
+  "$bindings_core_v8_output_dir/v8_custom_element_constructor.cc",
+  "$bindings_core_v8_output_dir/v8_custom_element_constructor.h",
+  "$bindings_core_v8_output_dir/v8_display_lock_callback.cc",
+  "$bindings_core_v8_output_dir/v8_display_lock_callback.h",
+  "$bindings_core_v8_output_dir/v8_event_handler_non_null.cc",
+  "$bindings_core_v8_output_dir/v8_event_handler_non_null.h",
   "$bindings_core_v8_output_dir/v8_frame_request_callback.cc",
   "$bindings_core_v8_output_dir/v8_frame_request_callback.h",
   "$bindings_core_v8_output_dir/v8_function.cc",
@@ -158,6 +164,8 @@ generated_core_callback_function_files = [
   "$bindings_core_v8_output_dir/v8_create_script_callback.h",
   "$bindings_core_v8_output_dir/v8_create_url_callback.cc",
   "$bindings_core_v8_output_dir/v8_create_url_callback.h",
+  "$bindings_core_v8_output_dir/v8_task_queue_post_callback.cc",
+  "$bindings_core_v8_output_dir/v8_task_queue_post_callback.h",
   "$bindings_core_v8_output_dir/v8_void_function.cc",
   "$bindings_core_v8_output_dir/v8_void_function.h",
 ]

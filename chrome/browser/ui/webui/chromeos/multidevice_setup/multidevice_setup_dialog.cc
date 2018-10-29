@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 
+#include "ash/public/cpp/shell_window_ids.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_info.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_handler.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -44,15 +48,34 @@ void MultiDeviceSetupDialog::Show() {
     return;
 
   current_instance_ = new MultiDeviceSetupDialog();
-  current_instance_->ShowSystemDialog();
+
+  // TODO(crbug.com/888629): In order to remove the X button on the top right of
+  // of the dialog, passing |is_minimal_style| == true is required, but as of
+  // now, that will prevent the dialog from presenting in full screen if tablet
+  // mode is on. See bug for more details.
+  chrome::ShowWebDialogInContainer(
+      ash::kShellWindowId_DefaultContainer /* container_id */,
+      ProfileManager::GetActiveUserProfile(), current_instance_,
+      false /* is_minimal_style */);
+}
+
+// static
+MultiDeviceSetupDialog* MultiDeviceSetupDialog::Get() {
+  return current_instance_;
+}
+
+void MultiDeviceSetupDialog::AddOnCloseCallback(base::OnceClosure callback) {
+  on_close_callbacks_.push_back(std::move(callback));
 }
 
 MultiDeviceSetupDialog::MultiDeviceSetupDialog()
-    : SystemWebDialogDelegate(
-          GURL(chrome::kChromeUIMultiDeviceSetupUrl),
-          l10n_util::GetStringUTF16(IDS_MULTIDEVICE_SETUP_DIALOG_TITLE)) {}
+    : SystemWebDialogDelegate(GURL(chrome::kChromeUIMultiDeviceSetupUrl),
+                              base::string16()) {}
 
-MultiDeviceSetupDialog::~MultiDeviceSetupDialog() = default;
+MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
+  for (auto& callback : on_close_callbacks_)
+    std::move(callback).Run();
+}
 
 void MultiDeviceSetupDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kDialogWidthPx, kDialogHeightPx);
@@ -76,19 +99,6 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
   source->SetJsonPath("strings.js");
   source->SetDefaultResource(
       IDR_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_HTML);
-  source->AddResourcePath("mojo/public/mojom/base/time.mojom.js",
-                          IDR_TIME_MOJOM_JS);
-  source->AddResourcePath(
-      "chromeos/services/device_sync/public/mojom/device_sync.mojom.js",
-      IDR_DEVICE_SYNC_MOJOM_JS);
-  source->AddResourcePath(
-      "chromeos/services/multidevice_setup/public/mojom/"
-      "multidevice_setup.mojom.js",
-      IDR_MULTIDEVICE_SETUP_MOJOM_JS);
-  source->AddResourcePath(
-      "chromeos/services/multidevice_setup/public/mojom/"
-      "multidevice_setup_constants.mojom.js",
-      IDR_MULTIDEVICE_SETUP_CONSTANTS_MOJOM_JS);
 
   // Note: The |kMultiDeviceSetupResourcesSize| and |kMultideviceSetupResources|
   // fields are defined in the generated file
@@ -99,6 +109,7 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
   }
 
   web_ui->AddMessageHandler(std::make_unique<MultideviceSetupHandler>());
+  web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 
   // Add Mojo bindings to this WebUI so that Mojo calls can occur in JavaScript.

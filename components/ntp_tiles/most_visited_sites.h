@@ -156,8 +156,8 @@ class MostVisitedSites : public history::TopSitesObserver,
   // if the request resulted in the set of tiles changing.
   void Refresh();
 
-  // Forces a rebuild of the current tiles to update the pinned homepage.
-  void RefreshHomepageTile();
+  // Forces a rebuild of the current tiles.
+  void RefreshTiles();
 
   // Initializes custom links, which "freezes" the current MV tiles and converts
   // them to custom links. Once custom links is initialized, MostVisitedSites
@@ -174,21 +174,25 @@ class MostVisitedSites : public history::TopSitesObserver,
   // when a third-party NTP is being used.
   void EnableCustomLinks(bool enable);
   // Adds a custom link. If the number of current links is maxed, returns false
-  // and does nothing. Custom links must be enabled.
+  // and does nothing. Will initialize custom links if they have not been
+  // initialized yet. Custom links must be enabled.
   bool AddCustomLink(const GURL& url, const base::string16& title);
   // Updates the URL and/or title of the custom link specified by |url|. If
   // |url| does not exist or |new_url| already exists in the custom link list,
-  // returns false and does nothing. Custom links must be enabled.
+  // returns false and does nothing. Will initialize custom links if they have
+  // not been initialized yet. Custom links must be enabled.
   bool UpdateCustomLink(const GURL& url,
                         const GURL& new_url,
                         const base::string16& new_title);
   // Deletes the custom link with the specified |url|. If |url| does not exist
-  // in the custom link list, returns false and does nothing. Custom links must
-  // be enabled.
+  // in the custom link list, returns false and does nothing. Will initialize
+  // custom links if they have not been initialized yet. Custom links must be
+  // enabled.
   bool DeleteCustomLink(const GURL& url);
   // Restores the previous state of custom links before the last action that
-  // modified them. If there was no action, does nothing. Custom links must be
-  // enabled.
+  // modified them. If there was no action, does nothing. If this is undoing the
+  // first action after initialization, uninitializes the links. Custom links
+  // must be enabled.
   void UndoCustomLinkAction();
 
   void AddOrRemoveBlacklistedUrl(const GURL& url, bool add_url);
@@ -327,6 +331,9 @@ class MostVisitedSites : public history::TopSitesObserver,
   // False if custom links is disabled and Most Visited sites should be returned
   // instead.
   bool custom_links_enabled_ = true;
+  // Number of actions after custom link initialization. Set to -1 and not
+  // incremented if custom links was not initialized during this session.
+  int custom_links_action_count_ = -1;
 
   std::unique_ptr<
       suggestions::SuggestionsService::ResponseCallbackList::Subscription>

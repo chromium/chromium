@@ -16,6 +16,9 @@ class AbortSignal;
 class Document;
 class ExceptionState;
 class ExecutionContext;
+class ScriptState;
+class ScriptValue;
+class Task;
 
 class CORE_EXPORT WorkerTaskQueue : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -26,10 +29,14 @@ class CORE_EXPORT WorkerTaskQueue : public ScriptWrappable {
                                  ExceptionState&);
   ~WorkerTaskQueue() override = default;
 
-  ScriptPromise postTask(ScriptState*,
-                         const ScriptValue& task,
-                         AbortSignal*,
-                         const Vector<ScriptValue>& arguments);
+  ScriptPromise postFunction(ScriptState*,
+                             const ScriptValue& task,
+                             AbortSignal*,
+                             const Vector<ScriptValue>& arguments);
+
+  Task* postTask(ScriptState*,
+                 const ScriptValue& task,
+                 const Vector<ScriptValue>& arguments);
 
   void Trace(blink::Visitor*) override;
 

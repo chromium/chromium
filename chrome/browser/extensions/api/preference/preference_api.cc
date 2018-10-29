@@ -246,7 +246,7 @@ class PrefMapping {
                                        std::string* browser_pref,
                                        APIPermission::ID* read_permission,
                                        APIPermission::ID* write_permission) {
-    PrefMap::iterator it = mapping_.find(extension_pref);
+    auto it = mapping_.find(extension_pref);
     if (it != mapping_.end()) {
       *browser_pref = it->second.pref_name;
       *read_permission = it->second.read_permission;
@@ -259,7 +259,7 @@ class PrefMapping {
   bool FindEventForBrowserPref(const std::string& browser_pref,
                                std::string* event_name,
                                APIPermission::ID* permission) {
-    PrefMap::iterator it = event_mapping_.find(browser_pref);
+    auto it = event_mapping_.find(browser_pref);
     if (it != event_mapping_.end()) {
       *event_name = it->second.pref_name;
       *permission = it->second.read_permission;

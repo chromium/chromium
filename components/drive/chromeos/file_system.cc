@@ -295,13 +295,15 @@ FileSystem::FileSystem(EventLogger* logger,
                        JobScheduler* scheduler,
                        internal::ResourceMetadata* resource_metadata,
                        base::SequencedTaskRunner* blocking_task_runner,
-                       const base::FilePath& temporary_file_directory)
+                       const base::FilePath& temporary_file_directory,
+                       const base::Clock* clock)
     : logger_(logger),
       cache_(cache),
       scheduler_(scheduler),
       resource_metadata_(resource_metadata),
       blocking_task_runner_(blocking_task_runner),
       temporary_file_directory_(temporary_file_directory),
+      clock_(clock),
       weak_ptr_factory_(this) {
   ResetComponents();
 }
@@ -338,7 +340,7 @@ void FileSystem::ResetComponents() {
   default_corpus_change_list_loader_ =
       std::make_unique<internal::DefaultCorpusChangeListLoader>(
           logger_, blocking_task_runner_.get(), resource_metadata_, scheduler_,
-          about_resource_loader_.get(), loader_controller_.get());
+          about_resource_loader_.get(), loader_controller_.get(), clock_);
 
   default_corpus_change_list_loader_->AddChangeListLoaderObserver(this);
   default_corpus_change_list_loader_->AddTeamDriveListObserver(this);

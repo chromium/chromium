@@ -86,23 +86,23 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   // Backend interface.
   net::CacheType GetCacheType() const override;
   int32_t GetEntryCount() const override;
-  int OpenEntry(const std::string& key,
-                net::RequestPriority request_priority,
-                Entry** entry,
-                CompletionOnceCallback callback) override;
-  int CreateEntry(const std::string& key,
-                  net::RequestPriority request_priority,
-                  Entry** entry,
-                  CompletionOnceCallback callback) override;
-  int DoomEntry(const std::string& key,
-                net::RequestPriority priority,
-                CompletionOnceCallback callback) override;
-  int DoomAllEntries(CompletionOnceCallback callback) override;
-  int DoomEntriesBetween(base::Time initial_time,
-                         base::Time end_time,
-                         CompletionOnceCallback callback) override;
-  int DoomEntriesSince(base::Time initial_time,
+  net::Error OpenEntry(const std::string& key,
+                       net::RequestPriority request_priority,
+                       Entry** entry,
                        CompletionOnceCallback callback) override;
+  net::Error CreateEntry(const std::string& key,
+                         net::RequestPriority request_priority,
+                         Entry** entry,
+                         CompletionOnceCallback callback) override;
+  net::Error DoomEntry(const std::string& key,
+                       net::RequestPriority priority,
+                       CompletionOnceCallback callback) override;
+  net::Error DoomAllEntries(CompletionOnceCallback callback) override;
+  net::Error DoomEntriesBetween(base::Time initial_time,
+                                base::Time end_time,
+                                CompletionOnceCallback callback) override;
+  net::Error DoomEntriesSince(base::Time initial_time,
+                              CompletionOnceCallback callback) override;
   int64_t CalculateSizeOfAllEntries(
       Int64CompletionOnceCallback callback) override;
   int64_t CalculateSizeOfEntriesBetween(

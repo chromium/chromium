@@ -49,7 +49,8 @@ TEST(WebUserGestureTokenTest, Basic) {
 
   {
     std::unique_ptr<UserGestureIndicator> indicator =
-        Frame::NotifyUserActivation(nullptr, UserGestureToken::kNewGesture);
+        LocalFrame::NotifyUserActivation(nullptr,
+                                         UserGestureToken::kNewGesture);
     EXPECT_TRUE(WebUserGestureIndicator::IsProcessingUserGesture(nullptr));
     token = WebUserGestureIndicator::CurrentUserGestureToken();
   }

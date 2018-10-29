@@ -182,12 +182,14 @@ void NavigateToURLWithPost(Browser* browser, const GURL& url) {
   NavigateToURL(&params);
 }
 
-void NavigateToURL(Browser* browser, const GURL& url) {
-  NavigateToURLWithDisposition(browser, url, WindowOpenDisposition::CURRENT_TAB,
-                               BROWSER_TEST_WAIT_FOR_NAVIGATION);
+content::RenderProcessHost* NavigateToURL(Browser* browser, const GURL& url) {
+  return NavigateToURLWithDisposition(browser, url,
+                                      WindowOpenDisposition::CURRENT_TAB,
+                                      BROWSER_TEST_WAIT_FOR_NAVIGATION);
 }
 
-void NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+content::RenderProcessHost*
+NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     Browser* browser,
     const GURL& url,
     int number_of_navigations,
@@ -217,7 +219,7 @@ void NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     tab_added_observer.Wait();
   if (!(browser_test_flags & BROWSER_TEST_WAIT_FOR_NAVIGATION)) {
     // Some other flag caused the wait prior to this.
-    return;
+    return nullptr;
   }
   WebContents* web_contents = NULL;
   if (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
@@ -228,7 +230,7 @@ void NavigateToURLWithDispositionBlockUntilNavigationsComplete(
         << " Unable to wait for navigation to \"" << url.spec()
         << "\" because the new tab is not available yet";
     if (!web_contents)
-      return;
+      return nullptr;
   } else if ((disposition == WindowOpenDisposition::CURRENT_TAB) ||
              (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) ||
              (disposition == WindowOpenDisposition::SINGLETON_TAB)) {
@@ -237,35 +239,34 @@ void NavigateToURLWithDispositionBlockUntilNavigationsComplete(
   }
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     same_tab_observer.Wait();
-    return;
+    return web_contents->GetMainFrame()->GetProcess();
   } else if (web_contents) {
     content::TestNavigationObserver observer(
         web_contents, number_of_navigations,
         content::MessageLoopRunner::QuitMode::DEFERRED);
     observer.Wait();
-    return;
+    return web_contents->GetMainFrame()->GetProcess();
   }
   EXPECT_TRUE(NULL != web_contents) << " Unable to wait for navigation to \""
                                     << url.spec() << "\""
                                     << " because we can't get the tab contents";
+  return nullptr;
 }
 
-void NavigateToURLWithDisposition(Browser* browser,
-                                  const GURL& url,
-                                  WindowOpenDisposition disposition,
-                                  int browser_test_flags) {
-  NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser,
-      url,
-      1,
-      disposition,
-      browser_test_flags);
+content::RenderProcessHost* NavigateToURLWithDisposition(
+    Browser* browser,
+    const GURL& url,
+    WindowOpenDisposition disposition,
+    int browser_test_flags) {
+  return NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser, url, 1, disposition, browser_test_flags);
 }
 
-void NavigateToURLBlockUntilNavigationsComplete(Browser* browser,
-                                                const GURL& url,
-                                                int number_of_navigations) {
-  NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+content::RenderProcessHost* NavigateToURLBlockUntilNavigationsComplete(
+    Browser* browser,
+    const GURL& url,
+    int number_of_navigations) {
+  return NavigateToURLWithDispositionBlockUntilNavigationsComplete(
       browser, url, number_of_navigations, WindowOpenDisposition::CURRENT_TAB,
       BROWSER_TEST_WAIT_FOR_NAVIGATION);
 }

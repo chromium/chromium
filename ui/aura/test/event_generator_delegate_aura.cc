@@ -90,18 +90,12 @@ class EventTargeterMus : public ui::EventTarget,
                                 &remote_event_injector_);
     }
     base::RunLoop run_loop;
-    std::unique_ptr<ui::Event> cloned_event;
-    // TODO: event conversion should not be necessary. https://crbug.com/865781
-    if (event->IsMouseEvent())
-      cloned_event = std::make_unique<ui::PointerEvent>(*event->AsMouseEvent());
-    else if (event->IsTouchEvent())
-      cloned_event = std::make_unique<ui::PointerEvent>(*event->AsTouchEvent());
-    else
-      DCHECK(!event->IsGestureEvent());
-    ui::Event* event_to_send = cloned_event ? cloned_event.get() : event;
+    // GestureEvent should never be remotely injected (they are generated from
+    // TouchEvents).
+    DCHECK(!event->IsGestureEvent());
     remote_event_injector_->InjectEvent(
         display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-        ui::Event::Clone(*event_to_send),
+        ui::Event::Clone(*event),
         base::BindOnce(
             [](base::RunLoop* run_loop, bool success) {
               // NOTE: a failure is not necessarily fatal, or result in the test
@@ -165,11 +159,6 @@ class EventGeneratorDelegateMus : public EventGeneratorDelegateAura {
                             gfx::Point* point) const override {
     if (hosted_target != &event_targeter_)
       EventGeneratorDelegateAura::ConvertPointFromHost(hosted_target, point);
-  }
-  void DispatchEventToPointerWatchers(ui::EventTarget* target,
-                                      const ui::PointerEvent& event) override {
-    // Does nothing as events are injected into mus, which should trigger
-    // pointer events to be handled.
   }
 
  private:
@@ -256,24 +245,6 @@ ui::EventDispatchDetails EventGeneratorDelegateAura::DispatchKeyEventToIME(
     ui::KeyEvent* event) {
   Window* window = static_cast<Window*>(target);
   return window->GetHost()->GetInputMethod()->DispatchKeyEvent(event);
-}
-
-void EventGeneratorDelegateAura::DispatchEventToPointerWatchers(
-    ui::EventTarget* target,
-    const ui::PointerEvent& event) {
-  // In non-mus aura PointerWatchers are handled by system-wide EventHandlers,
-  // for example ash::Shell and ash::PointerWatcherAdapter.
-  if (!Env::GetInstance()->HasWindowTreeClient())
-    return;
-
-  Window* window = static_cast<Window*>(target);
-  if (!WindowPortMus::Get(window))
-    return;
-  // Route the event through WindowTreeClient as in production mus. Does nothing
-  // if there are no PointerWatchers installed.
-  WindowTreeClient* window_tree_client = EnvTestHelper().GetWindowTreeClient();
-  WindowTreeClientPrivate(window_tree_client)
-      .CallOnPointerEventObserved(window, ui::Event::Clone(event));
 }
 
 }  // namespace test

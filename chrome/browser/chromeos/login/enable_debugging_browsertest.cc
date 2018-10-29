@@ -154,7 +154,7 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
 class EnableDebuggingTest : public LoginManagerTest {
  public:
   EnableDebuggingTest()
-      : LoginManagerTest(false),
+      : LoginManagerTest(false, true /* should_initialize_webui */),
         debug_daemon_client_(NULL),
         power_manager_client_(NULL) {}
   ~EnableDebuggingTest() override {}

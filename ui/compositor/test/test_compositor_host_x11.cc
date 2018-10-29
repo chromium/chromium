@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "ui/base/x/x11_window_event_manager.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -85,7 +86,8 @@ void TestCompositorHostX11::Show() {
       break;
   }
   compositor_.SetAcceleratedWidget(window_);
-  compositor_.SetScaleAndSize(1.0f, bounds_.size(), viz::LocalSurfaceId());
+  compositor_.SetScaleAndSize(1.0f, bounds_.size(), viz::LocalSurfaceId(),
+                              base::TimeTicks());
   compositor_.SetVisible(true);
 }
 

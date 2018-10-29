@@ -110,8 +110,7 @@ bool OpenTabAtIndex(int index, int tab_index, const GURL& url) {
 
 bool OpenMultipleTabs(int index, const std::vector<GURL>& urls) {
   Browser* browser = test()->GetBrowser(index);
-  for (std::vector<GURL>::const_iterator it = urls.begin();
-       it != urls.end(); ++it) {
+  for (auto it = urls.begin(); it != urls.end(); ++it) {
     DVLOG(1) << "Opening tab: " << it->spec() << " using browser " << index
              << ".";
     ShowSingletonTab(browser, *it);

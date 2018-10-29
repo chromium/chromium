@@ -7,8 +7,14 @@ over the bare Identity Service Mojo interfaces such as:
 
 - Synchronous access to the information of the primary account (via caching)
 
-A cheat sheet for developers migrating from usage of //components/signin and
-//google_apis/gaia:
+Documentation on the mapping between usage of legacy signin
+classes (notably SigninManager(Base) and ProfileOAuth2TokenService) and usage of
+IdentityManager is available here:
+
+https://docs.google.com/document/d/14f3qqkDM9IE4Ff_l6wuXvCMeHfSC9TxKezXTCyeaPUY/edit#
+
+A quick inline cheat sheet for developers migrating from usage of //components/
+signin and //google_apis/gaia:
 
 - "Primary account" in IdentityManager refers to what is called the
   "authenticated account" in SigninManager, i.e., the account that has been

@@ -17,6 +17,9 @@ cr.define('settings_people_page', function() {
         easyUnlockAllowed: false,
         // Force Dice off. Dice is tested in the DiceUITest suite.
         diceEnabled: false,
+        // Force Unified Consent off. Unified Consent is tested in the
+        // UnifiedConsentUITest suite.
+        unifiedConsentEnabled: false,
       });
     });
 
@@ -130,20 +133,21 @@ cr.define('settings_people_page', function() {
               Polymer.dom.flush();
               disconnectButton = peoplePage.$$('#disconnectButton');
               assertTrue(!!disconnectButton);
-              assertFalse(!!peoplePage.$$('#disconnectDialog'));
+              assertFalse(!!peoplePage.$$('settings-signout-dialog'));
 
               disconnectButton.click();
               Polymer.dom.flush();
             })
             .then(function() {
-              assertTrue(peoplePage.$$('#disconnectDialog').open);
-              assertFalse(peoplePage.$$('#deleteProfile').hidden);
+              const signoutDialog = peoplePage.$$('settings-signout-dialog');
+              assertTrue(signoutDialog.$$('#dialog').open);
+              assertFalse(signoutDialog.$$('#deleteProfile').hidden);
 
-              const deleteProfileCheckbox = peoplePage.$$('#deleteProfile');
+              const deleteProfileCheckbox = signoutDialog.$$('#deleteProfile');
               assertTrue(!!deleteProfileCheckbox);
               assertLT(0, deleteProfileCheckbox.clientHeight);
 
-              const disconnectConfirm = peoplePage.$$('#disconnectConfirm');
+              const disconnectConfirm = signoutDialog.$$('#disconnectConfirm');
               assertTrue(!!disconnectConfirm);
               assertFalse(disconnectConfirm.hidden);
 
@@ -166,7 +170,7 @@ cr.define('settings_people_page', function() {
                 domain: 'example.com',
               });
 
-              assertFalse(!!peoplePage.$$('#disconnectDialog'));
+              assertFalse(!!peoplePage.$$('#dialog'));
               disconnectButton.click();
               Polymer.dom.flush();
 
@@ -175,11 +179,12 @@ cr.define('settings_people_page', function() {
               });
             })
             .then(function() {
-              assertTrue(peoplePage.$$('#disconnectDialog').open);
-              assertFalse(!!peoplePage.$$('#deleteProfile'));
+              const signoutDialog = peoplePage.$$('settings-signout-dialog');
+              assertTrue(signoutDialog.$$('#dialog').open);
+              assertFalse(!!signoutDialog.$$('#deleteProfile'));
 
               const disconnectManagedProfileConfirm =
-                  peoplePage.$$('#disconnectManagedProfileConfirm');
+                  signoutDialog.$$('#disconnectManagedProfileConfirm');
               assertTrue(!!disconnectManagedProfileConfirm);
               assertFalse(disconnectManagedProfileConfirm.hidden);
 
@@ -215,10 +220,12 @@ cr.define('settings_people_page', function() {
             })
             .then(function() {
               Polymer.dom.flush();
-              assertTrue(peoplePage.$$('#disconnectDialog').open);
+              const signoutDialog = peoplePage.$$('settings-signout-dialog');
+              assertTrue(signoutDialog.$$('#dialog').open);
 
               // Assert the warning message is as expected.
-              const warningMessage = peoplePage.$$('.delete-profile-warning');
+              const warningMessage =
+                  signoutDialog.$$('.delete-profile-warning');
 
               cr.webUIListenerCallback('profile-stats-count-ready', 0);
               assertEquals(
@@ -240,7 +247,7 @@ cr.define('settings_people_page', function() {
                   warningMessage.textContent.trim());
 
               // Close the disconnect dialog.
-              peoplePage.$$('#disconnectConfirm').click();
+              signoutDialog.$$('#disconnectConfirm').click();
               return new Promise(function(resolve) {
                 listenOnce(window, 'popstate', resolve);
               });
@@ -255,7 +262,8 @@ cr.define('settings_people_page', function() {
                  peoplePage.async(resolve);
                })
             .then(function() {
-              assertTrue(peoplePage.$$('#disconnectDialog').open);
+              assertTrue(
+                  peoplePage.$$('settings-signout-dialog').$$('#dialog').open);
               return profileInfoBrowserProxy.whenCalled('getProfileStatsCount');
             })
             .then(function() {
@@ -265,7 +273,9 @@ cr.define('settings_people_page', function() {
               new settings.ProfileInfoBrowserProxyImpl().getProfileStatsCount();
 
               // Close the disconnect dialog.
-              peoplePage.$$('#disconnectConfirm').click();
+              peoplePage.$$('settings-signout-dialog')
+                  .$$('#disconnectConfirm')
+                  .click();
             })
             .then(function() {
               return new Promise(function(resolve) {
@@ -283,7 +293,8 @@ cr.define('settings_people_page', function() {
               });
             })
             .then(function() {
-              assertTrue(peoplePage.$$('#disconnectDialog').open);
+              assertTrue(
+                  peoplePage.$$('settings-signout-dialog').$$('#dialog').open);
 
               const popstatePromise = new Promise(function(resolve) {
                 listenOnce(window, 'popstate', resolve);

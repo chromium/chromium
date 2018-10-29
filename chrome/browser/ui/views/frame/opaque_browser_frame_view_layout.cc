@@ -8,12 +8,8 @@
 #include "base/containers/adapters.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/views/frame/hosted_app_button_container.h"
-#include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/signin/core/browser/profile_management_switches.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/gfx/font.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
@@ -30,8 +26,6 @@ constexpr int kCaptionButtonSpacing = 0;
 #endif
 
 }  // namespace
-
-using MD = ui::MaterialDesignController;
 
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameViewLayout, public:
@@ -62,14 +56,8 @@ const int OpaqueBrowserFrameViewLayout::kCaptionSpacing = 5;
 // the top of the content shadow.
 const int OpaqueBrowserFrameViewLayout::kCaptionButtonBottomPadding = 3;
 
-// When the title bar is condensed to one row (as when maximized), the New Tab
-// button and the caption buttons are at similar vertical coordinates, so we
-// need to reserve a larger, 16 px gap to avoid looking too cluttered.
-const int OpaqueBrowserFrameViewLayout::kNewTabCaptionCondensedSpacing = 16;
-
 OpaqueBrowserFrameViewLayout::OpaqueBrowserFrameViewLayout()
-    : new_avatar_button_(nullptr),
-      available_space_leading_x_(0),
+    : available_space_leading_x_(0),
       available_space_trailing_x_(0),
       minimum_size_for_buttons_(0),
       has_leading_buttons_(false),
@@ -82,7 +70,6 @@ OpaqueBrowserFrameViewLayout::OpaqueBrowserFrameViewLayout()
       close_button_(nullptr),
       window_icon_(nullptr),
       window_title_(nullptr),
-      incognito_icon_(nullptr),
       trailing_buttons_{views::FRAME_BUTTON_MINIMIZE,
                         views::FRAME_BUTTON_MAXIMIZE,
                         views::FRAME_BUTTON_CLOSE} {}
@@ -99,9 +86,8 @@ void OpaqueBrowserFrameViewLayout::SetButtonOrdering(
 gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForTabStrip(
     const gfx::Size& tabstrip_preferred_size,
     int total_width) const {
-  const int x = GetTabStripLeftInset();
-  const int available_width =
-      available_space_trailing_x_ - x - TabStripCaptionSpacing();
+  const int x = available_space_leading_x_;
+  const int available_width = available_space_trailing_x_ - x;
   return gfx::Rect(x, GetTabStripInsetsTop(false), std::max(0, available_width),
                    tabstrip_preferred_size.height());
 }
@@ -109,34 +95,25 @@ gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForTabStrip(
 gfx::Size OpaqueBrowserFrameViewLayout::GetMinimumSize(
     int available_width) const {
   gfx::Size min_size = delegate_->GetBrowserViewMinimumSize();
-  int border_thickness = NonClientBorderThickness();
+  int border_thickness = FrameBorderThickness(false);
   min_size.Enlarge(2 * border_thickness,
                    NonClientTopHeight(false) + border_thickness);
 
-  // Ensure that we can, at minimum, hold our window controls and avatar icon.
+  // Ensure that we can, at minimum, hold our window controls.
   min_size.set_width(std::max(min_size.width(), minimum_size_for_buttons_));
 
   // Ensure that the minimum width is enough to hold a minimum width tab strip
   // at its usual insets.
-  if (delegate_->IsTabStripVisible()) {
-    gfx::Size preferred_size = delegate_->GetTabstripPreferredSize();
-    const int min_tabstrip_width = preferred_size.width();
-    const int caption_spacing = TabStripCaptionSpacing();
-    min_size.Enlarge(min_tabstrip_width + caption_spacing, 0);
-  }
+  if (delegate_->IsTabStripVisible())
+    min_size.Enlarge(delegate_->GetTabstripPreferredSize().width(), 0);
 
   return min_size;
-}
-
-int OpaqueBrowserFrameViewLayout::GetTabStripLeftInset() const {
-  return available_space_leading_x_ +
-         OpaqueBrowserFrameView::GetTabstripPadding();
 }
 
 gfx::Rect OpaqueBrowserFrameViewLayout::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   int top_height = NonClientTopHeight(false);
-  int border_thickness = NonClientBorderThickness();
+  int border_thickness = FrameBorderThickness(false);
   return gfx::Rect(std::max(0, client_bounds.x() - border_thickness),
                    std::max(0, client_bounds.y() - top_height),
                    client_bounds.width() + (2 * border_thickness),
@@ -149,21 +126,9 @@ int OpaqueBrowserFrameViewLayout::FrameBorderThickness(bool restored) const {
 
 int OpaqueBrowserFrameViewLayout::FrameTopBorderThickness(bool restored) const {
   int thickness = FrameBorderThickness(restored);
-  if (MD::IsRefreshUi() && (restored || !delegate_->IsFrameCondensed()))
-    thickness += kRefreshNonClientExtraTopThickness;
+  if (restored || !delegate_->IsFrameCondensed())
+    thickness += kNonClientExtraTopThickness;
   return thickness;
-}
-
-bool OpaqueBrowserFrameViewLayout::HasClientEdge() const {
-  return !MD::IsRefreshUi();
-}
-
-int OpaqueBrowserFrameViewLayout::NonClientBorderThickness() const {
-  const int frame = FrameBorderThickness(false);
-  // When we fill the screen, we don't show a client edge.
-  return !HasClientEdge() || delegate_->IsFrameCondensed()
-             ? frame
-             : (frame + views::NonClientFrameView::kClientEdgeThickness);
 }
 
 int OpaqueBrowserFrameViewLayout::NonClientTopHeight(bool restored) const {
@@ -191,7 +156,7 @@ int OpaqueBrowserFrameViewLayout::NonClientTopHeight(bool restored) const {
 
 int OpaqueBrowserFrameViewLayout::GetTabStripInsetsTop(bool restored) const {
   const int top = NonClientTopHeight(restored);
-  return !restored || !delegate_->IsFrameCondensed()
+  return !restored && delegate_->IsFrameCondensed()
              ? top
              : (top + GetNonClientRestoredExtraThickness());
 }
@@ -232,7 +197,7 @@ gfx::Rect OpaqueBrowserFrameViewLayout::CalculateClientAreaBounds(
     int width,
     int height) const {
   int top_height = NonClientTopHeight(false);
-  int border_thickness = NonClientBorderThickness();
+  int border_thickness = FrameBorderThickness(false);
   return gfx::Rect(border_thickness, top_height,
                    std::max(0, width - (2 * border_thickness)),
                    std::max(0, height - top_height - border_thickness));
@@ -279,13 +244,8 @@ int OpaqueBrowserFrameViewLayout::GetWindowCaptionSpacing(
 int OpaqueBrowserFrameViewLayout::GetNonClientRestoredExtraThickness() const {
   // Besides the frame border, there's empty space atop the window in restored
   // mode, to use to drag the window around.
-  if (!MD::IsRefreshUi()) {
-    constexpr int kNonClientRestoredExtraThickness = 11;
-    return kNonClientRestoredExtraThickness;
-  }
-
-  constexpr int kRefreshNonClientRestoredExtraThickness = 4;
-  int thickness = kRefreshNonClientRestoredExtraThickness;
+  constexpr int kNonClientRestoredExtraThickness = 4;
+  int thickness = kNonClientRestoredExtraThickness;
   if (delegate_->EverHasVisibleBackgroundTabShapes()) {
     thickness =
         std::max(thickness, BrowserNonClientFrameView::kMinimumDragHeight);
@@ -296,32 +256,6 @@ int OpaqueBrowserFrameViewLayout::GetNonClientRestoredExtraThickness() const {
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameViewLayout, protected:
 
-void OpaqueBrowserFrameViewLayout::LayoutNewStyleAvatar(views::View* host) {
-  if (!new_avatar_button_)
-    return;
-
-  const int button_width = new_avatar_button_->GetPreferredSize().width();
-  int button_width_with_offset = button_width;
-  if (!trailing_buttons_.empty())
-    button_width_with_offset += kCaptionSpacing;
-
-  const int button_x = available_space_trailing_x_ - button_width_with_offset;
-  const int button_y = DefaultCaptionButtonY(!delegate_->IsFrameCondensed());
-
-  minimum_size_for_buttons_ += button_width_with_offset;
-  available_space_trailing_x_ -= button_width_with_offset;
-
-  // In non-maximized mode, allow the new tab button to completely slide under
-  // the avatar button.
-  if (!delegate_->IsFrameCondensed()) {
-    available_space_trailing_x_ +=
-        delegate_->GetNewTabButtonPreferredSize().width() + kCaptionSpacing;
-  }
-
-  new_avatar_button_->SetBounds(button_x, button_y, button_width,
-                                kCaptionButtonHeight);
-}
-
 bool OpaqueBrowserFrameViewLayout::ShouldDrawImageMirrored(
     views::ImageButton* button,
     ButtonAlignment alignment) const {
@@ -331,23 +265,6 @@ bool OpaqueBrowserFrameViewLayout::ShouldDrawImageMirrored(
 
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameViewLayout, private:
-
-bool OpaqueBrowserFrameViewLayout::ShouldIncognitoIconBeOnRight() const {
-  // The incognito should be shown either on the end of the left or the
-  // beginning of the right, depending on which side has fewer buttons.
-  return trailing_buttons_.size() < leading_buttons_.size();
-}
-
-int OpaqueBrowserFrameViewLayout::TabStripCaptionSpacing() const {
-  // In Refresh, any necessary padding after the tabstrip is contained within
-  // the tabs and/or new tab button.
-  if (MD::IsRefreshUi())
-    return 0;
-
-  return has_trailing_buttons_ && delegate_->IsFrameCondensed()
-             ? kNewTabCaptionCondensedSpacing
-             : kCaptionSpacing;
-}
 
 void OpaqueBrowserFrameViewLayout::LayoutWindowControls(views::View* host) {
   // Keep a list of all buttons that we don't show.
@@ -444,42 +361,6 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar(views::View* host) {
           frame_thickness + kIconLeftSpacing, frame_thickness, size, size);
     }
   }
-}
-
-void OpaqueBrowserFrameViewLayout::LayoutIncognitoIcon(views::View* host) {
-  const int old_button_size =
-      available_space_leading_x_ + host->width() - available_space_trailing_x_;
-
-  // Any buttons/icon/title were laid out based on the frame border thickness,
-  // but the tabstrip bounds need to be based on the non-client border thickness
-  // on any side where there aren't other buttons forcing a larger inset.
-  int min_button_width = NonClientBorderThickness();
-  available_space_leading_x_ =
-      std::max(available_space_leading_x_, min_button_width);
-  // The trailing corner is a mirror of the leading one.
-  available_space_trailing_x_ =
-      std::min(available_space_trailing_x_, host->width() - min_button_width);
-
-  if (incognito_icon_) {
-    const int pad = OpaqueBrowserFrameView::GetAvatarIconPadding();
-    const gfx::Size size(delegate_->GetIncognitoAvatarIcon().size());
-    const int incognito_width = pad + size.width();
-    int x;
-    if (ShouldIncognitoIconBeOnRight()) {
-      available_space_trailing_x_ -= incognito_width;
-      x = available_space_trailing_x_;
-    } else {
-      x = available_space_leading_x_ + pad;
-      available_space_leading_x_ += incognito_width;
-    }
-    const int bottom =
-        GetTabStripInsetsTop(false) + delegate_->GetTabStripHeight() - pad;
-    incognito_icon_->SetBounds(x, bottom - size.height(), size.width(),
-                               size.height());
-  }
-
-  minimum_size_for_buttons_ += (available_space_leading_x_ + host->width() -
-                                available_space_trailing_x_ - old_button_size);
 }
 
 void OpaqueBrowserFrameViewLayout::ConfigureButton(views::View* host,
@@ -614,8 +495,7 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
 void OpaqueBrowserFrameViewLayout::SetView(int id, views::View* view) {
   // Why do things this way instead of having an Init() method, where we're
   // passed the views we'll handle? Because OpaqueBrowserFrameView doesn't own
-  // all the views which are part of it. The avatar stuff, for example, will be
-  // added and removed by the base class of OpaqueBrowserFrameView.
+  // all the views which are part of it.
   switch (id) {
     case VIEW_ID_MINIMIZE_BUTTON:
       if (view) {
@@ -655,12 +535,6 @@ void OpaqueBrowserFrameViewLayout::SetView(int id, views::View* view) {
       }
       window_title_ = static_cast<views::Label*>(view);
       break;
-    case VIEW_ID_PROFILE_INDICATOR_ICON:
-      incognito_icon_ = view;
-      break;
-    case VIEW_ID_AVATAR_BUTTON:
-      new_avatar_button_ = view;
-      break;
     case VIEW_ID_HOSTED_APP_BUTTON_CONTAINER:
       DCHECK_EQ(view->GetClassName(), HostedAppButtonContainer::kViewClassName);
       hosted_app_button_container_ =
@@ -689,9 +563,19 @@ void OpaqueBrowserFrameViewLayout::Layout(views::View* host) {
   LayoutWindowControls(host);
   LayoutTitleBar(host);
 
-  if (delegate_->IsRegularOrGuestSession())
-    LayoutNewStyleAvatar(host);
-  LayoutIncognitoIcon(host);
+  // Any buttons/icon/title were laid out based on the frame border thickness,
+  // but the tabstrip bounds need to be based on the non-client border thickness
+  // on any side where there aren't other buttons forcing a larger inset.
+  const int old_button_size =
+      available_space_leading_x_ + host->width() - available_space_trailing_x_;
+  const int min_button_width = FrameBorderThickness(false);
+  available_space_leading_x_ =
+      std::max(available_space_leading_x_, min_button_width);
+  // The trailing corner is a mirror of the leading one.
+  available_space_trailing_x_ =
+      std::min(available_space_trailing_x_, host->width() - min_button_width);
+  minimum_size_for_buttons_ += (available_space_leading_x_ + host->width() -
+                                available_space_trailing_x_ - old_button_size);
 
   client_view_bounds_ = CalculateClientAreaBounds(
       host->width(), host->height());

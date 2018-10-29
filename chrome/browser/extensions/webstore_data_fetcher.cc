@@ -43,10 +43,6 @@ WebstoreDataFetcher::WebstoreDataFetcher(WebstoreDataFetcherDelegate* delegate,
 
 WebstoreDataFetcher::~WebstoreDataFetcher() {}
 
-void WebstoreDataFetcher::SetPostData(const std::string& data) {
-  post_data_ = data;
-}
-
 void WebstoreDataFetcher::Start(
     network::mojom::URLLoaderFactory* url_loader_factory) {
   GURL webstore_data_url(extension_urls::GetWebstoreItemJsonDataURL(id_));
@@ -86,13 +82,9 @@ void WebstoreDataFetcher::Start(
   resource_request->load_flags =
       net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DISABLE_CACHE;
   resource_request->referrer = referrer_url_;
-  resource_request->method = post_data_.empty() ? "GET" : "POST";
+  resource_request->method = "GET";
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
-
-  if (!post_data_.empty())
-    simple_url_loader_->AttachStringForUpload(post_data_,
-                                              "application/octet-stream");
 
   if (max_auto_retries_ > 0) {
     simple_url_loader_->SetRetryOptions(

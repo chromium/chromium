@@ -7,6 +7,7 @@
 #include <queue>
 #include "base/auto_reset.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -18,14 +19,14 @@
 
 namespace blink {
 
-// TODO(dcheng): Ideally, enough of FrameTestHelpers would be in core/ that
+// TODO(dcheng): Ideally, enough of frame_test_helpers would be in core/ that
 // placing a test for a core/ class in web/ wouldn't be necessary.
 class DocumentLoaderTest : public testing::Test {
  protected:
   void SetUp() override {
     web_view_helper_.Initialize();
-    URLTestHelpers::RegisterMockedURLLoad(
-        URLTestHelpers::ToKURL("https://example.com/foo.html"),
+    url_test_helpers::RegisterMockedURLLoad(
+        url_test_helpers::ToKURL("https://example.com/foo.html"),
         test::CoreTestDataPath("foo.html"));
   }
 
@@ -37,7 +38,7 @@ class DocumentLoaderTest : public testing::Test {
 
   WebLocalFrameImpl* MainFrame() { return web_view_helper_.LocalMainFrame(); }
 
-  FrameTestHelpers::WebViewHelper web_view_helper_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
 TEST_F(DocumentLoaderTest, SingleChunk) {
@@ -52,7 +53,7 @@ TEST_F(DocumentLoaderTest, SingleChunk) {
   } delegate;
 
   Platform::Current()->GetURLLoaderMockFactory()->SetLoaderDelegate(&delegate);
-  FrameTestHelpers::LoadFrame(MainFrame(), "https://example.com/foo.html");
+  frame_test_helpers::LoadFrame(MainFrame(), "https://example.com/foo.html");
   Platform::Current()->GetURLLoaderMockFactory()->SetLoaderDelegate(nullptr);
 
   // TODO(dcheng): How should the test verify that the original callback is
@@ -76,7 +77,7 @@ TEST_F(DocumentLoaderTest, MultiChunkNoReentrancy) {
   } delegate;
 
   Platform::Current()->GetURLLoaderMockFactory()->SetLoaderDelegate(&delegate);
-  FrameTestHelpers::LoadFrame(MainFrame(), "https://example.com/foo.html");
+  frame_test_helpers::LoadFrame(MainFrame(), "https://example.com/foo.html");
   Platform::Current()->GetURLLoaderMockFactory()->SetLoaderDelegate(nullptr);
 }
 
@@ -89,7 +90,7 @@ TEST_F(DocumentLoaderTest, MultiChunkWithReentrancy) {
   //    dataReceived() reentrantly.
   // 3. The final chunk, which is dispatched normally at the top-level.
   class ChildDelegate : public WebURLLoaderTestDelegate,
-                        public FrameTestHelpers::TestWebFrameClient {
+                        public frame_test_helpers::TestWebFrameClient {
    public:
     // WebURLLoaderTestDelegate overrides:
     void DidReceiveData(WebURLLoaderClient* original_client,
@@ -145,7 +146,7 @@ TEST_F(DocumentLoaderTest, MultiChunkWithReentrancy) {
     bool served_reentrantly_ = false;
   };
 
-  class MainFrameClient : public FrameTestHelpers::TestWebFrameClient {
+  class MainFrameClient : public frame_test_helpers::TestWebFrameClient {
    public:
     explicit MainFrameClient(TestWebFrameClient& child_client)
         : child_client_(child_client) {}
@@ -155,7 +156,8 @@ TEST_F(DocumentLoaderTest, MultiChunkWithReentrancy) {
                                     const WebString& fallback_name,
                                     WebSandboxFlags,
                                     const ParsedFeaturePolicy&,
-                                    const WebFrameOwnerProperties&) override {
+                                    const WebFrameOwnerProperties&,
+                                    FrameOwnerElementType) override {
       return CreateLocalChild(*parent, scope, &child_client_);
     }
 
@@ -169,12 +171,12 @@ TEST_F(DocumentLoaderTest, MultiChunkWithReentrancy) {
 
   // This doesn't go through the mocked URL load path: it's just intended to
   // setup a situation where didReceiveData() can be invoked reentrantly.
-  FrameTestHelpers::LoadHTMLString(MainFrame(), "<iframe></iframe>",
-                                   URLTestHelpers::ToKURL("about:blank"));
+  frame_test_helpers::LoadHTMLString(MainFrame(), "<iframe></iframe>",
+                                     url_test_helpers::ToKURL("about:blank"));
 
   Platform::Current()->GetURLLoaderMockFactory()->SetLoaderDelegate(
       &child_delegate);
-  FrameTestHelpers::LoadFrame(MainFrame(), "https://example.com/foo.html");
+  frame_test_helpers::LoadFrame(MainFrame(), "https://example.com/foo.html");
   Platform::Current()->GetURLLoaderMockFactory()->SetLoaderDelegate(nullptr);
 
   EXPECT_TRUE(child_delegate.ServedReentrantly());

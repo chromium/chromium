@@ -4,7 +4,7 @@
 
 from gpu_tests import test_expectations
 
-ANGLE_CONDITIONS = ['d3d9', 'd3d11', 'opengl', 'no_angle']
+ANGLE_CONDITIONS = ['d3d9', 'd3d11', 'opengl', 'vulkan', 'no_angle']
 CMD_DECODER_CONDITIONS = ['passthrough', 'no_passthrough']
 GPU_CONDITIONS = ['amd', 'arm', 'broadcom', 'hisilicon', 'intel', 'imagination',
                   'nvidia', 'qualcomm', 'vivante']
@@ -168,6 +168,8 @@ class GpuTestExpectations(test_expectations.TestExpectations):
           return 'd3d9'
         elif 'OpenGL' in gl_renderer:
           return 'opengl'
+        elif 'Vulkan' in gl_renderer:
+          return 'vulkan'
     return 'no_angle'
 
   def _GetCommandDecoder(self, gpu_info):

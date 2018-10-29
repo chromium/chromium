@@ -226,8 +226,7 @@ CacheStorage::CacheStorage(ExecutionContext* context,
     : scoped_fetcher_(fetcher) {
   // Service workers may already have a CacheStoragePtr provided as an
   // optimization.
-  if (context->IsServiceWorkerGlobalScope()) {
-    auto* service_worker = ToServiceWorkerGlobalScope(context);
+  if (auto* service_worker = DynamicTo<ServiceWorkerGlobalScope>(context)) {
     mojom::blink::CacheStoragePtrInfo info = service_worker->TakeCacheStorage();
     if (info) {
       cache_storage_ptr_ = RevocableInterfacePtr<mojom::blink::CacheStorage>(

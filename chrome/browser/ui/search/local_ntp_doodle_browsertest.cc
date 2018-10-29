@@ -214,7 +214,7 @@ class LocalNTPDoodleTest : public InProcessBrowserTest {
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     LogoServiceFactory::GetInstance()->SetTestingFactory(
-        context, &LocalNTPDoodleTest::CreateLogoService);
+        context, base::BindRepeating(&LocalNTPDoodleTest::CreateLogoService));
   }
 
   base::test::ScopedFeatureList feature_list_;

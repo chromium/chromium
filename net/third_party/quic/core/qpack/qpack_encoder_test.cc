@@ -4,6 +4,7 @@
 
 #include "net/third_party/quic/core/qpack/qpack_encoder.h"
 
+#include "net/third_party/quic/core/qpack/qpack_encoder_test_utils.h"
 #include "net/third_party/quic/core/qpack/qpack_test_utils.h"
 #include "net/third_party/quic/platform/api/quic_string.h"
 #include "net/third_party/quic/platform/api/quic_test.h"
@@ -21,9 +22,8 @@ class QpackEncoderTest : public QuicTestWithParam<FragmentMode> {
   QpackEncoderTest() : fragment_mode_(GetParam()) {}
 
   QuicString Encode(const spdy::SpdyHeaderBlock* header_list) {
-    return QpackTestUtils::Encode(
-        QpackTestUtils::FragmentModeToFragmentSizeGenerator(fragment_mode_),
-        header_list);
+    return QpackEncode(FragmentModeToFragmentSizeGenerator(fragment_mode_),
+                       header_list);
   }
 
  private:
@@ -78,7 +78,7 @@ TEST_P(QpackEncoderTest, Multiple) {
   spdy::SpdyHeaderBlock header_list;
   header_list["foo"] = "bar";
   // 'Z' would be Huffman encoded to 8 bits, so no Huffman encoding is used.
-  header_list["ZZZZZZZ"] = std::string(127, 'Z');
+  header_list["ZZZZZZZ"] = QuicString(127, 'Z');
   QuicString output = Encode(&header_list);
 
   EXPECT_EQ(
@@ -99,29 +99,28 @@ TEST_P(QpackEncoderTest, StaticTable) {
   {
     spdy::SpdyHeaderBlock header_list;
     header_list[":method"] = "GET";
-    header_list["accept-encoding"] = "gzip, deflate";
-    header_list["cache-control"] = "";
+    header_list["accept-encoding"] = "gzip, deflate, br";
+    header_list["location"] = "";
 
     QuicString output = Encode(&header_list);
-    EXPECT_EQ(QuicTextUtils::HexDecode("c2d0d8"), output);
+    EXPECT_EQ(QuicTextUtils::HexDecode("d1dfcc"), output);
   }
   {
     spdy::SpdyHeaderBlock header_list;
     header_list[":method"] = "POST";
-    header_list["accept-encoding"] = "brotli";
-    header_list["cache-control"] = "foo";
+    header_list["accept-encoding"] = "compress";
+    header_list["location"] = "foo";
 
     QuicString output = Encode(&header_list);
-    DLOG(INFO) << QuicTextUtils::HexEncode(output);
-    EXPECT_EQ(QuicTextUtils::HexDecode("c35f01858ec3a6837f5f098294e7"), output);
+    EXPECT_EQ(QuicTextUtils::HexDecode("d45f108621e9aec2a11f5c8294e7"), output);
   }
   {
     spdy::SpdyHeaderBlock header_list;
-    header_list[":method"] = "CONNECT";
+    header_list[":method"] = "TRACE";
     header_list["accept-encoding"] = "";
 
     QuicString output = Encode(&header_list);
-    EXPECT_EQ(QuicTextUtils::HexDecode("5207434f4e4e4543545f0100"), output);
+    EXPECT_EQ(QuicTextUtils::HexDecode("5f000554524143455f1000"), output);
   }
 }
 

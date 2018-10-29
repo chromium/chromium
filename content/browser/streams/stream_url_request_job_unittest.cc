@@ -4,8 +4,8 @@
 
 #include "content/browser/streams/stream_url_request_job.h"
 
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "content/browser/streams/stream.h"
 #include "content/browser/streams/stream_metadata.h"
@@ -107,7 +107,8 @@ class StreamURLRequestJobTest : public testing::Test {
   }
 
  protected:
-  base::MessageLoopForIO message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_{
+      base::test::ScopedTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<StreamRegistry> registry_;
 
   net::URLRequestContext url_request_context_;

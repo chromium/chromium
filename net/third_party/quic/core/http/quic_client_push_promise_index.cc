@@ -20,7 +20,7 @@ QuicClientPushPromiseIndex::TryHandle::~TryHandle() {}
 
 QuicClientPromisedInfo* QuicClientPushPromiseIndex::GetPromised(
     const QuicString& url) {
-  QuicPromisedByUrlMap::iterator it = promised_by_url_.find(url);
+  auto it = promised_by_url_.find(url);
   if (it == promised_by_url_.end()) {
     return nullptr;
   }
@@ -32,7 +32,7 @@ QuicAsyncStatus QuicClientPushPromiseIndex::Try(
     QuicClientPushPromiseIndex::Delegate* delegate,
     TryHandle** handle) {
   QuicString url(SpdyUtils::GetPromisedUrlFromHeaders(request));
-  QuicPromisedByUrlMap::iterator it = promised_by_url_.find(url);
+  auto it = promised_by_url_.find(url);
   if (it != promised_by_url_.end()) {
     QuicClientPromisedInfo* promised = it->second;
     QuicAsyncStatus rv = promised->HandleClientRequest(request, delegate);

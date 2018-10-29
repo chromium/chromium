@@ -55,7 +55,6 @@ class ShellBrowserMainParts : public BrowserMainParts {
   }
 
  private:
-  void SetupFieldTrials();
 
   std::unique_ptr<net::NetLog> net_log_;
   std::unique_ptr<ShellBrowserContext> browser_context_;
@@ -64,10 +63,6 @@ class ShellBrowserMainParts : public BrowserMainParts {
   // For running content_browsertests.
   const MainFunctionParams parameters_;
   bool run_message_loop_;
-
-  // Statistical testing infrastructure for the entire browser. nullptr until
-  // |SetupFieldTrials()| is called.
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellBrowserMainParts);
 };

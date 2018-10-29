@@ -168,7 +168,7 @@ views::View* EnterpriseStartupDialogView::CreateExtraView() {
   logo_image->SetImage(ui::ResourceBundle::GetSharedInstance()
                            .GetImageNamed(IDR_PRODUCT_LOGO_ENTERPRISE)
                            .AsImageSkia());
-  logo_image->SetTooltipText(
+  logo_image->set_tooltip_text(
       l10n_util::GetStringUTF16(IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT));
   gfx::Rect logo_bounds = logo_image->GetImageBounds();
   logo_image->SetImageSize(gfx::Size(

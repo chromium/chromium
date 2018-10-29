@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/common/content_features.h"
 #include "media/base/audio_parameters.h"
@@ -33,8 +35,8 @@ void CheckPermissionAndGetSaltAndOrigin(
     // If we're not allowed to use the device, don't call |cb|.
     return;
   }
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(std::move(cb), salt_and_origin));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(std::move(cb), salt_and_origin));
 }
 
 void OldEnumerateOutputDevices(
@@ -69,8 +71,8 @@ RenderFrameAudioInputStreamFactoryHandle::CreateFactory(
           render_process_id, render_frame_id));
   // Unretained is safe since |*handle| must be posted to the IO thread prior to
   // deletion.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&RenderFrameAudioInputStreamFactoryHandle::Init,
                      base::Unretained(handle.get()), std::move(request)));
   return handle;
@@ -191,8 +193,8 @@ void OldRenderFrameAudioInputStreamFactory::AssociateInputAndOutputForAec(
       }
     }
   } else {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             CheckPermissionAndGetSaltAndOrigin, output_device_id,
             render_process_id_, render_frame_id_,

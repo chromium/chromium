@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
+#include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -273,30 +274,39 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
   bool transform_zoom_changed =
       old_style->HasCurrentTransformAnimation() &&
       old_style->EffectiveZoom() != style.EffectiveZoom();
-  for (auto& entry : element_animations->Animations()) {
-    Animation& animation = *entry.key;
+
+  const auto& snapshot = [&](AnimationEffect* effect) {
     const KeyframeEffectModelBase* keyframe_effect =
-        GetKeyframeEffectModelBase(animation.effect());
+        GetKeyframeEffectModelBase(effect);
     if (!keyframe_effect)
-      continue;
+      return false;
 
     if ((transform_zoom_changed || was_viewport_resized) &&
         (keyframe_effect->Affects(PropertyHandle(GetCSSPropertyTransform())) ||
          keyframe_effect->Affects(PropertyHandle(GetCSSPropertyTranslate()))))
       keyframe_effect->InvalidateCompositorKeyframesSnapshot();
 
-    bool update_compositor_keyframes = false;
     if (keyframe_effect->SnapshotAllCompositorKeyframesIfNecessary(
             element, style, parent_style)) {
-      update_compositor_keyframes = true;
+      return true;
     } else if (keyframe_effect->HasSyntheticKeyframes() &&
                keyframe_effect->SnapshotNeutralCompositorKeyframes(
                    element, *old_style, style, parent_style)) {
-      update_compositor_keyframes = true;
+      return true;
     }
+    return false;
+  };
 
-    if (update_compositor_keyframes)
+  for (auto& entry : element_animations->Animations()) {
+    Animation& animation = *entry.key;
+    if (snapshot(animation.effect()))
       update.UpdateCompositorKeyframes(&animation);
+  }
+
+  for (auto& entry : element_animations->GetWorkletAnimations()) {
+    WorkletAnimationBase& animation = *entry;
+    if (snapshot(animation.GetEffect()))
+      animation.InvalidateCompositingState();
   }
 }
 
@@ -809,10 +819,10 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
   keyframes.push_back(end_keyframe);
 
   if (property.GetCSSProperty().IsCompositableProperty()) {
-    AnimatableValue* from = CSSAnimatableValueFactory::Create(
-        property.GetCSSProperty(), state.old_style);
-    AnimatableValue* to = CSSAnimatableValueFactory::Create(
-        property.GetCSSProperty(), state.style);
+    AnimatableValue* from =
+        CSSAnimatableValueFactory::Create(property, state.old_style);
+    AnimatableValue* to =
+        CSSAnimatableValueFactory::Create(property, state.style);
     delay_keyframe->SetCompositorValue(from);
     start_keyframe->SetCompositorValue(from);
     end_keyframe->SetCompositorValue(to);

@@ -85,7 +85,6 @@ void DownloadDBImpl::Initialize(DownloadDBCallback callback) {
   db_->Init(kDatabaseClientName, database_dir_, options,
             base::BindOnce(&DownloadDBImpl::OnDatabaseInitialized,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
-  // TODO(qinmin): migrate all the data from InProgressCache into this database.
 }
 
 void DownloadDBImpl::DestroyAndReinitialize(DownloadDBCallback callback) {

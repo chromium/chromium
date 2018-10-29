@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/media_engagement_service.h"
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -129,7 +130,7 @@ class MediaEngagementServiceTest : public ChromeRenderViewHostTestHarness {
 
   void ConfigureHistoryService() {
     HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), &BuildTestHistoryService);
+        profile(), base::BindRepeating(&BuildTestHistoryService));
   }
 
   void RestartHistoryService() {

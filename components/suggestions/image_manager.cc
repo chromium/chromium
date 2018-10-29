@@ -146,7 +146,7 @@ void ImageManager::SaveImageAndForward(
 
 bool ImageManager::GetImageURL(const GURL& url, GURL* image_url) {
   DCHECK(image_url);
-  std::map<GURL, GURL>::iterator it = image_url_map_.find(url);
+  auto it = image_url_map_.find(url);
   if (it == image_url_map_.end())
     return false;  // Not found.
   *image_url = it->second;
@@ -157,7 +157,7 @@ void ImageManager::QueueCacheRequest(const GURL& url,
                                      const GURL& image_url,
                                      ImageCallback callback) {
   // To be served when the database has loaded.
-  ImageCacheRequestMap::iterator it = pending_cache_requests_.find(url);
+  auto it = pending_cache_requests_.find(url);
   if (it != pending_cache_requests_.end()) {
     // Request already queued for this url.
     it->second.callbacks.push_back(callback);
@@ -188,7 +188,7 @@ void ImageManager::OnCacheImageDecoded(const GURL& url,
 
 scoped_refptr<base::RefCountedMemory> ImageManager::GetEncodedImageFromCache(
     const GURL& url) {
-  ImageMap::iterator image_iter = image_map_.find(url.spec());
+  auto image_iter = image_map_.find(url.spec());
   if (image_iter != image_map_.end()) {
     return image_iter->second;
   }
@@ -280,8 +280,7 @@ void ImageManager::OnDatabaseSave(bool success) {
 
 void ImageManager::LoadEntriesInCache(
     std::unique_ptr<ImageDataVector> entries) {
-  for (ImageDataVector::iterator it = entries->begin(); it != entries->end();
-       ++it) {
+  for (auto it = entries->begin(); it != entries->end(); ++it) {
     std::vector<unsigned char> encoded_data(it->data().begin(),
                                             it->data().end());
 
@@ -291,10 +290,10 @@ void ImageManager::LoadEntriesInCache(
 }
 
 void ImageManager::ServePendingCacheRequests() {
-  for (ImageCacheRequestMap::iterator it = pending_cache_requests_.begin();
+  for (auto it = pending_cache_requests_.begin();
        it != pending_cache_requests_.end(); ++it) {
     const ImageCacheRequest& request = it->second;
-    for (CallbackVector::const_iterator callback_it = request.callbacks.begin();
+    for (auto callback_it = request.callbacks.begin();
          callback_it != request.callbacks.end(); ++callback_it) {
       ServeFromCacheOrNetwork(request.url, request.image_url, *callback_it);
     }

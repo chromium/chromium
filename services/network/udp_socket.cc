@@ -26,7 +26,7 @@ const uint32_t kMaxReadSize = 64 * 1024;
 // IPv6.
 const uint32_t kMaxPacketSize = kMaxReadSize - 1;
 
-int ClampBufferSize(int requested_buffer_size) {
+int ClampUDPBufferSize(int requested_buffer_size) {
   constexpr int kMinBufferSize = 0;
   constexpr int kMaxBufferSize = 128 * 1024;
   return base::ClampToRange(requested_buffer_size, kMinBufferSize,
@@ -83,10 +83,11 @@ class SocketWrapperImpl : public UDPSocket::SocketWrapper {
     return socket_.SetBroadcast(broadcast);
   }
   int SetSendBufferSize(int send_buffer_size) override {
-    return socket_.SetSendBufferSize(ClampBufferSize(send_buffer_size));
+    return socket_.SetSendBufferSize(ClampUDPBufferSize(send_buffer_size));
   }
   int SetReceiveBufferSize(int receive_buffer_size) override {
-    return socket_.SetReceiveBufferSize(ClampBufferSize(receive_buffer_size));
+    return socket_.SetReceiveBufferSize(
+        ClampUDPBufferSize(receive_buffer_size));
   }
   int JoinGroup(const net::IPAddress& group_address) override {
     return socket_.JoinGroup(group_address);
@@ -115,6 +116,8 @@ class SocketWrapperImpl : public UDPSocket::SocketWrapper {
     int result = net::OK;
     if (options->allow_address_reuse)
       result = socket_.AllowAddressReuse();
+    if (result == net::OK && options->allow_address_sharing_for_multicast)
+      result = socket_.AllowAddressSharingForMulticast();
     if (result == net::OK && options->allow_broadcast)
       result = socket_.SetBroadcast(true);
     if (result == net::OK && options->multicast_interface != 0)
@@ -129,11 +132,11 @@ class SocketWrapperImpl : public UDPSocket::SocketWrapper {
     }
     if (result == net::OK && options->receive_buffer_size != 0) {
       result = socket_.SetReceiveBufferSize(
-          ClampBufferSize(options->receive_buffer_size));
+          ClampUDPBufferSize(options->receive_buffer_size));
     }
     if (result == net::OK && options->send_buffer_size != 0) {
-      result =
-          socket_.SetSendBufferSize(ClampBufferSize(options->send_buffer_size));
+      result = socket_.SetSendBufferSize(
+          ClampUDPBufferSize(options->send_buffer_size));
     }
     return result;
   }

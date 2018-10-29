@@ -157,7 +157,6 @@ def summarized_results(port, expected, passing, flaky, only_include_failing=Fals
 
     return test_run_results.summarize_results(
         port, initial_results.expectations, initial_results, all_retry_results,
-        enabled_pixel_tests_in_retry=False,
         only_include_failing=only_include_failing)
 
 
@@ -331,8 +330,7 @@ class SummarizedResultsTest(unittest.TestCase):
         all_retry_results[1].add(get_result(test_name, test_expectations.PASS, run_time=0.1), False, False)
         all_retry_results[2].add(get_result(test_name, test_expectations.PASS, run_time=0.1), False, False)
         summary = test_run_results.summarize_results(
-            self.port, expectations, initial_results, all_retry_results,
-            enabled_pixel_tests_in_retry=True)
+            self.port, expectations, initial_results, all_retry_results)
         self.assertIn('is_unexpected', summary['tests']['failures']['expected']['text.html'])
         self.assertEquals(summary['tests']['failures']['expected']['text.html']['expected'], 'FAIL')
         self.assertEquals(summary['tests']['failures']['expected']['text.html']['actual'], 'TIMEOUT LEAK PASS PASS')
@@ -381,8 +379,7 @@ class SummarizedResultsTest(unittest.TestCase):
         all_retry_results[1].add(get_result(test_name, test_expectations.PASS), True, False)
         all_retry_results[2].add(get_result(test_name, test_expectations.PASS), True, False)
         summary = test_run_results.summarize_results(
-            self.port, expectations, initial_results, all_retry_results,
-            enabled_pixel_tests_in_retry=True)
+            self.port, expectations, initial_results, all_retry_results)
         self.assertTrue('is_unexpected' not in summary['tests']['passes']['text.html'])
         self.assertEquals(summary['tests']['passes']['text.html']['expected'], 'PASS')
         self.assertEquals(summary['tests']['passes']['text.html']['actual'], 'CRASH TIMEOUT PASS PASS')
@@ -402,9 +399,7 @@ class SummarizedResultsTest(unittest.TestCase):
         all_retry_results[0].add(get_result(test_name, test_expectations.LEAK), False, False)
 
         summary = test_run_results.summarize_results(
-            self.port, expectations, initial_results, all_retry_results,
-            enabled_pixel_tests_in_retry=True)
-        print summary
+            self.port, expectations, initial_results, all_retry_results)
         self.assertEquals(summary['tests']['passes']['text.html']['expected'], 'PASS')
         self.assertEquals(summary['tests']['passes']['text.html']['actual'], 'CRASH IMAGE TIMEOUT TEXT LEAK')
         self.assertEquals(summary['num_flaky'], 0)

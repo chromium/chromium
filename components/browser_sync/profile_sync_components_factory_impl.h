@@ -87,7 +87,7 @@ class ProfileSyncComponentsFactoryImpl
   std::unique_ptr<syncer::ModelTypeController>
   CreateModelTypeControllerForModelRunningOnUIThread(syncer::ModelType type);
 
-  // Factory function for ModelTypeController instnaces for autofill-related
+  // Factory function for ModelTypeController instances for autofill-related
   // datatypes, which live in |db_thread_| and have a delegate accesible via
   // AutofillWebDataService.
   std::unique_ptr<syncer::ModelTypeController> CreateWebDataModelTypeController(
@@ -95,11 +95,17 @@ class ProfileSyncComponentsFactoryImpl
       const base::RepeatingCallback<
           base::WeakPtr<syncer::ModelTypeControllerDelegate>(
               autofill::AutofillWebDataService*)>& delegate_from_web_data);
-  // Same as above, but for datatypes supporting STORAGE_IN_MEMORY implemented
-  // as an independent AutofillWebDataService,
-  // namely |web_data_service_in_memory_|.
+  // Same as above, but for AUTOFILL_WALLET_* datatypes.
+  std::unique_ptr<syncer::ModelTypeController> CreateWalletModelTypeController(
+      syncer::ModelType type,
+      const base::RepeatingCallback<
+          base::WeakPtr<syncer::ModelTypeControllerDelegate>(
+              autofill::AutofillWebDataService*)>& delegate_from_web_data);
+  // Same as above, but datatypes supporting STORAGE_IN_MEMORY implemented
+  // as an independent AutofillWebDataService, namely
+  // |web_data_service_in_memory_|.
   std::unique_ptr<syncer::ModelTypeController>
-  CreateWebDataModelTypeControllerWithInMemorySupport(
+  CreateWalletModelTypeControllerWithInMemorySupport(
       syncer::ModelType type,
       const base::RepeatingCallback<
           base::WeakPtr<syncer::ModelTypeControllerDelegate>(

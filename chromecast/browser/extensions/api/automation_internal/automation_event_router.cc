@@ -12,7 +12,6 @@
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chromecast/common/extensions_api/automation_api_constants.h"
 #include "chromecast/common/extensions_api/automation_internal.h"
 #include "chromecast/common/extensions_api/cast_extension_messages.h"
 #include "content/public/browser/notification_service.h"
@@ -47,15 +46,14 @@ AutomationEventRouter::~AutomationEventRouter() {}
 void AutomationEventRouter::RegisterListenerForOneTree(
     const ExtensionId& extension_id,
     int listener_process_id,
-    int source_ax_tree_id) {
+    ui::AXTreeID source_ax_tree_id) {
   Register(extension_id, listener_process_id, source_ax_tree_id, false);
 }
 
 void AutomationEventRouter::RegisterListenerWithDesktopPermission(
     const ExtensionId& extension_id,
     int listener_process_id) {
-  Register(extension_id, listener_process_id,
-           ::extensions::api::automation::kDesktopTreeID, true);
+  Register(extension_id, listener_process_id, ui::DesktopAXTreeID(), true);
 }
 
 void AutomationEventRouter::DispatchAccessibilityEvents(
@@ -89,7 +87,7 @@ void AutomationEventRouter::DispatchAccessibilityLocationChange(
 }
 
 void AutomationEventRouter::DispatchTreeDestroyedEvent(
-    int tree_id,
+    ui::AXTreeID tree_id,
     content::BrowserContext* browser_context) {
   if (listeners_.empty())
     return;
@@ -112,7 +110,7 @@ AutomationEventRouter::AutomationListener::~AutomationListener() {}
 
 void AutomationEventRouter::Register(const ExtensionId& extension_id,
                                      int listener_process_id,
-                                     int ax_tree_id,
+                                     ui::AXTreeID ax_tree_id,
                                      bool desktop) {
   auto iter =
       std::find_if(listeners_.begin(), listeners_.end(),

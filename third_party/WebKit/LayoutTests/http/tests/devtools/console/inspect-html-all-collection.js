@@ -13,15 +13,12 @@
     return;
   }
   var htmlAllCollection = TestRunner.runtimeModel.createRemoteObject(result);
-  htmlAllCollection.callFunctionJSON(
-      'function(collection) { return this.length + collection.length; }', [{objectId: htmlAllCollection.objectId}],
-      didGetLength.bind(this));
-
-  function didGetLength(len) {
-    if (!len || typeof len !== 'number')
-      TestRunner.addResult('FAILED: unexpected document.all.length: ' + len);
-    else
-      TestRunner.addResult('PASSED: retrieved length of document.all');
-    TestRunner.completeTest();
-  }
+  const len = await htmlAllCollection.callFunctionJSON(
+      'function(collection) { return this.length + collection.length; }',
+      [{objectId: htmlAllCollection.objectId}]);
+  if (!len || typeof len !== 'number')
+    TestRunner.addResult('FAILED: unexpected document.all.length: ' + len);
+  else
+    TestRunner.addResult('PASSED: retrieved length of document.all');
+  TestRunner.completeTest();
 })();

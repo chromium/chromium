@@ -164,13 +164,6 @@ class NET_EXPORT ProxyResolutionService
                    std::unique_ptr<Request>* request,
                    const NetLogWithSource& net_log);
 
-  // Returns true if the proxy information could be determined without spawning
-  // an asynchronous task.  Otherwise, |result| is unmodified.
-  bool TryResolveProxySynchronously(const GURL& raw_url,
-                                    const std::string& method,
-                                    ProxyInfo* result,
-                                    const NetLogWithSource& net_log);
-
   // Explicitly trigger proxy fallback for the given |results| by updating our
   // list of bad proxies to include the first entry of |results|, and,
   // additional bad proxies (can be none). Will retry after |retry_delay| if
@@ -351,16 +344,6 @@ class NET_EXPORT ProxyResolutionService
   // Otherwise it fills |result| with the proxy information for |url|.
   // Completing synchronously means we don't need to query ProxyResolver.
   int TryToCompleteSynchronously(const GURL& url, ProxyInfo* result);
-
-  // Identical to ResolveProxy, except that |callback| is permitted to be null.
-  // if |callback.is_null()|, this function becomes a thin wrapper around
-  // |TryToCompleteSynchronously|.
-  int ResolveProxyHelper(const GURL& url,
-                         const std::string& method,
-                         ProxyInfo* results,
-                         CompletionOnceCallback callback,
-                         std::unique_ptr<Request>* request,
-                         const NetLogWithSource& net_log);
 
   // Cancels all of the requests sent to the ProxyResolver. These will be
   // restarted when calling SetReady().

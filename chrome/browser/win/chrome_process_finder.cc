@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
-#include "base/process/process_info.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/message_window.h"
@@ -48,7 +47,7 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window,
   command_line.AppendSwitchASCII(
       switches::kOriginalProcessStartTime,
       base::Int64ToString(
-          base::CurrentProcessInfo::CreationTime().ToInternalValue()));
+          base::Process::Current().CreationTime().ToInternalValue()));
 
   if (fast_start)
     command_line.AppendSwitch(switches::kFastStart);

@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 namespace blink {
 
@@ -231,7 +231,8 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
                              writing_mode, margin);
       break;
     case ShapeValue::kImage:
-      DCHECK(shape_value.IsImageValid());
+      DCHECK(shape_value.GetImage());
+      DCHECK(shape_value.GetImage()->CanRender());
       shape_ = CreateShapeForImage(shape_value.GetImage(),
                                    shape_image_threshold, writing_mode, margin);
       break;
@@ -364,10 +365,12 @@ bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {
   switch (shape_value->GetType()) {
     case ShapeValue::kShape:
       return shape_value->Shape();
-    case ShapeValue::kImage:
-      return shape_value->IsImageValid() &&
-             CheckShapeImageOrigin(box.GetDocument(),
-                                   *(shape_value->GetImage()));
+    case ShapeValue::kImage: {
+      StyleImage* image = shape_value->GetImage();
+      DCHECK(image);
+      return image->CanRender() &&
+             CheckShapeImageOrigin(box.GetDocument(), *image);
+    }
     case ShapeValue::kBox:
       return true;
   }

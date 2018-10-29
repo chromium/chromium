@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,10 +23,6 @@ namespace ios {
 class ChromeBrowserState;
 }
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 // A BrowserContextKeyedServiceFactory to construct InvalidationServices wrapped
 // in ProfileInvalidationProviders.
 class IOSChromeProfileInvalidationProviderFactory
@@ -49,8 +45,6 @@ class IOSChromeProfileInvalidationProviderFactory
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
 
   DISALLOW_COPY_AND_ASSIGN(IOSChromeProfileInvalidationProviderFactory);
 };

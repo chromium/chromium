@@ -27,6 +27,7 @@ namespace autofill {
 
 class AutofillField;
 class CreditCard;
+enum class SubmissionSource;
 
 class AutofillMetrics {
  public:
@@ -99,6 +100,9 @@ class AutofillMetrics {
     // A textfield for the user to enter/confirm cardholder name was surfaced
     // in the offer-to-save dialog.
     USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME = 1 << 12,
+    // The Autofill StrikeDatabase decided not to allow offering to save for
+    // this card. On mobile, that means no save prompt is shown at all.
+    UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE = 1 << 13,
     // Update |kNumCardUploadDecisionMetrics| when adding new enum here.
   };
 
@@ -160,6 +164,14 @@ class AutofillMetrics {
     // dates.
     MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH,
     NUM_SUBMITTED_SERVER_CARD_EXPIRATION_STATUS_METRICS,
+  };
+
+  // Metric to distinguish between local credit card saves and upload credit
+  // card saves.
+  enum class SaveTypeMetric {
+    LOCAL = 0,
+    SERVER = 1,
+    kMaxValue = SERVER,
   };
 
   // Metric to measure volume of cards that are disallowed for upload by their
@@ -441,6 +453,26 @@ class AutofillMetrics {
     // while the bubble was hidden.
     LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_NAVIGATED_WHILE_HIDDEN = 3,
     NUM_LOCAL_CARD_MIGRATION_BUBBLE_USER_INTERACTION_METRICS,
+  };
+
+  // Metrics to track events when local card migration dialog is offered.
+  enum LocalCardMigrationDialogOfferMetric {
+    // The dialog is shown to the user.
+    LOCAL_CARD_MIGRATION_DIALOG_SHOWN = 0,
+    // The dialog is not shown due to legal message being invalid.
+    LOCAL_CARD_MIGRATION_DIALOG_NOT_SHOWN_INVALID_LEGAL_MESSAGE = 1,
+    NUM_LOCAL_CARD_MIGRATION_DIALOG_OFFER_METRICS,
+  };
+
+  // Metrics to track user interactions with the dialog.
+  enum LocalCardMigrationDialogUserInteractionMetric {
+    // The user explicitly accepts the offer by clicking the save button.
+    LOCAL_CARD_MIGRATION_DIALOG_CLOSED_SAVE_BUTTON_CLICKED = 0,
+    // The user explicitly denies the offer by clicking the cancel button.
+    LOCAL_CARD_MIGRATION_DIALOG_CLOSED_CANCEL_BUTTON_CLICKED = 1,
+    // The user clicks the legal message.
+    LOCAL_CARD_MIGRATION_DIALOG_LEGAL_MESSAGE_CLICKED = 2,
+    NUM_LOCAL_CARD_MIGRATION_DIALOG_USER_INTERACTION_METRICS,
   };
 
   // These metrics are logged for each local card migration origin. These are
@@ -833,6 +865,11 @@ class AutofillMetrics {
   static void LogSubmittedServerCardExpirationStatusMetric(
       SubmittedServerCardExpirationStatusMetric metric);
 
+  // When credit card save is not offered (either at all on mobile or by simply
+  // not showing the bubble on desktop), logs the occurrence.
+  static void LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
+      SaveTypeMetric metric);
+
   // When credit card upload is disallowed for a particular network, logs which
   // network was blocked.
   static void LogUploadDisallowedForNetworkMetric(const std::string& network);
@@ -886,6 +923,13 @@ class AutofillMetrics {
   static void LogLocalCardMigrationBubbleUserInteractionMetric(
       LocalCardMigrationBubbleUserInteractionMetric metric,
       bool is_reshow);
+  static void LogLocalCardMigrationDialogOfferMetric(
+      LocalCardMigrationDialogOfferMetric metric);
+  static void LogLocalCardMigrationDialogUserInteractionMetric(
+      const base::TimeDelta& duration,
+      const int selected,
+      const int total,
+      LocalCardMigrationDialogUserInteractionMetric metric);
   static void LogLocalCardMigrationPromptMetric(
       LocalCardMigrationOrigin local_card_migration_origin,
       LocalCardMigrationPromptMetric metric);
@@ -1100,6 +1144,21 @@ class AutofillMetrics {
   // suggestion to show an explanation of the warning.
   static void LogShowedHttpNotSecureExplanation();
 
+  // Logs if an autocomplete query was created for a field.
+  static void LogAutocompleteQuery(bool created);
+
+  // Logs if there is any suggestions for an autocomplete query.
+  static void LogAutocompleteSuggestions(bool has_suggestions);
+
+  // Returns the UMA metric used to track whether or not an upload was sent
+  // after being triggered by |submission_source|. This is exposed for testing.
+  static const char* SubmissionSourceToUploadEventMetric(
+      SubmissionSource submission_source);
+
+  // Logs whether or not an upload |was_sent| after being triggered by a
+  // |submission_source| event.
+  static void LogUploadEvent(SubmissionSource submission_source, bool was_sent);
+
   // Logs the card upload decisions ukm for the specified |url|.
   // |upload_decision_metrics| is a bitmask of |CardUploadDecisionMetric|.
   static void LogCardUploadDecisionsUkm(ukm::UkmRecorder* ukm_recorder,
@@ -1140,6 +1199,7 @@ class AutofillMetrics {
   class FormEventLogger {
    public:
     FormEventLogger(bool is_for_credit_card,
+                    bool is_in_main_frame,
                     FormInteractionsUkmLogger* form_interactions_ukm_logger);
 
     inline void set_server_record_type_count(size_t server_record_type_count) {
@@ -1195,6 +1255,7 @@ class AutofillMetrics {
     void Log(BankNameDisplayedFormEvent event) const;
 
     bool is_for_credit_card_;
+    bool is_in_main_frame_;
     size_t server_record_type_count_;
     size_t local_record_type_count_;
     bool is_context_secure_;
@@ -1216,7 +1277,7 @@ class AutofillMetrics {
   };
 
  private:
-  static const int kNumCardUploadDecisionMetrics = 13;
+  static const int kNumCardUploadDecisionMetrics = 14;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(AutofillMetrics);
 };

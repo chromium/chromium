@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -151,9 +153,8 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
 
     // Post a task to delay the "accept" until the socket is available, as
     // calling StartAccept at this point would error with ERR_IO_PENDING.
-    BrowserThread::PostTask(
-        params.thread_id,
-        FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {params.thread_id},
         base::Bind(&TCPServerSocketEventDispatcher::StartAccept, params));
   } else {
     // Dispatch "onAcceptError" event but don't start another accept to avoid
@@ -183,8 +184,8 @@ void TCPServerSocketEventDispatcher::PostEvent(const AcceptParams& params,
                                                std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(params.thread_id);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&DispatchEvent, params.browser_context_id, params.extension_id,
                  base::Passed(std::move(event))));
 }

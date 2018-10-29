@@ -57,13 +57,6 @@ void SubresourceFilterBrowserTest::TearDown() {
 }
 
 void SubresourceFilterBrowserTest::SetUpOnMainThread() {
-  // Note: even after startup, tasks posted to be run after startup are
-  // artificially delayed up to 10s. To avoid that delay in tests, just fake
-  // being after startup internally so there is no delay when writing and
-  // publishing rulesets.
-  g_browser_process->subresource_filter_ruleset_service()
-      ->SetIsAfterStartupForTesting();
-
   base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir);

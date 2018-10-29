@@ -296,7 +296,7 @@ abstract class OverlayPanelBase {
     /**
      * @return The fullscreen width.
      */
-    private float getFullscreenWidth() {
+    public float getFullscreenWidth() {
         return mLayoutWidth;
     }
 

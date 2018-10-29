@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::Test;
@@ -53,7 +54,7 @@ TEST_F(CommandLineHelperTest, EnableForEmptyCommandLine) {
 
 TEST_F(CommandLineHelperTest, EnableForNoEnabledFeatures) {
   const CommandLine::CharType* argv[] = {FILE_PATH_LITERAL("program")};
-  CommandLine command_line(arraysize(argv), argv);
+  CommandLine command_line(base::size(argv), argv);
   EnableFeatureAndVerify(command_line, "SomeSpecialFeature", "");
 }
 
@@ -61,7 +62,7 @@ TEST_F(CommandLineHelperTest, EnableForEnabledTestFeature) {
   const CommandLine::CharType* argv[] = {
       FILE_PATH_LITERAL("program"),
       FILE_PATH_LITERAL("--enable-features=TestFeature")};
-  CommandLine command_line(arraysize(argv), argv);
+  CommandLine command_line(base::size(argv), argv);
   EnableFeatureAndVerify(command_line, "TestFeature,SomeSpecialFeature", "");
 }
 
@@ -69,7 +70,7 @@ TEST_F(CommandLineHelperTest, EnableForEnabledSomeSpecialFeature) {
   const CommandLine::CharType* argv[] = {
       FILE_PATH_LITERAL("program"),
       FILE_PATH_LITERAL("--enable-features=SomeSpecialFeature,TestFeature")};
-  CommandLine command_line(arraysize(argv), argv);
+  CommandLine command_line(base::size(argv), argv);
   EnableFeatureAndVerify(command_line, "SomeSpecialFeature,TestFeature", "");
 }
 
@@ -77,7 +78,7 @@ TEST_F(CommandLineHelperTest, EnableForDisabledSomeSpecialFeature) {
   const CommandLine::CharType* argv[] = {
       FILE_PATH_LITERAL("program"),
       FILE_PATH_LITERAL("--disable-features=SomeSpecialFeature")};
-  CommandLine command_line(arraysize(argv), argv);
+  CommandLine command_line(base::size(argv), argv);
   EnableFeatureAndVerify(command_line, "", "SomeSpecialFeature");
 }
 
@@ -85,7 +86,7 @@ TEST_F(CommandLineHelperTest, EnableForDisabledTestFeature) {
   const CommandLine::CharType* argv[] = {
       FILE_PATH_LITERAL("program"),
       FILE_PATH_LITERAL("--disable-features=TestFeature")};
-  CommandLine command_line(arraysize(argv), argv);
+  CommandLine command_line(base::size(argv), argv);
   EnableFeatureAndVerify(command_line, "SomeSpecialFeature", "TestFeature");
 }
 
@@ -96,7 +97,7 @@ TEST_F(CommandLineHelperTest, DisableForEmptyCommandLine) {
 
 TEST_F(CommandLineHelperTest, DisableForNoDisabledFeatures) {
   const CommandLine::CharType* argv[] = {FILE_PATH_LITERAL("program")};
-  CommandLine command_line(arraysize(argv), argv);
+  CommandLine command_line(base::size(argv), argv);
   DisableFeatureAndVerify(command_line, "", "SomeSpecialFeature");
 }
 
@@ -104,7 +105,7 @@ TEST_F(CommandLineHelperTest, DisableForDisabledTestFeature) {
   const CommandLine::CharType* argv[] = {
       FILE_PATH_LITERAL("program"),
       FILE_PATH_LITERAL("--disable-features=TestFeature")};
-  CommandLine command_line(arraysize(argv), argv);
+  CommandLine command_line(base::size(argv), argv);
   DisableFeatureAndVerify(command_line, "", "TestFeature,SomeSpecialFeature");
 }
 
@@ -112,7 +113,7 @@ TEST_F(CommandLineHelperTest, DisableForDisabledSomeSpecialFeature) {
   const CommandLine::CharType* argv[] = {
       FILE_PATH_LITERAL("program"),
       FILE_PATH_LITERAL("--disable-features=SomeSpecialFeature,TestFeature")};
-  CommandLine command_line(arraysize(argv), argv);
+  CommandLine command_line(base::size(argv), argv);
   DisableFeatureAndVerify(command_line, "", "SomeSpecialFeature,TestFeature");
 }
 
@@ -120,7 +121,7 @@ TEST_F(CommandLineHelperTest, DisableForEnabledSomeSpecialFeature) {
   const CommandLine::CharType* argv[] = {
       FILE_PATH_LITERAL("program"),
       FILE_PATH_LITERAL("--enable-features=SomeSpecialFeature")};
-  CommandLine command_line(arraysize(argv), argv);
+  CommandLine command_line(base::size(argv), argv);
   DisableFeatureAndVerify(command_line, "SomeSpecialFeature", "");
 }
 
@@ -128,6 +129,6 @@ TEST_F(CommandLineHelperTest, DisableForEnabledTestFeature) {
   const CommandLine::CharType* argv[] = {
       FILE_PATH_LITERAL("program"),
       FILE_PATH_LITERAL("--enable-features=TestFeature")};
-  CommandLine command_line(arraysize(argv), argv);
+  CommandLine command_line(base::size(argv), argv);
   DisableFeatureAndVerify(command_line, "TestFeature", "SomeSpecialFeature");
 }

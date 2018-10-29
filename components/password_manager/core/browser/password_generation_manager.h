@@ -61,10 +61,6 @@ class PasswordGenerationManager {
   // autofill::SavePasswordProgressLogger.
   bool IsGenerationEnabled(bool log_debug_data) const;
 
-  // Determines whether the PasswordGeneraitonManager has the permission to
-  // fetch domain wide password requirements from gstatic.com.
-  bool IsRequirementsFetchingEnabled() const;
-
   // Returns a randomly generated password that should (but is not guaranteed
   // to) match the requirements of the site.
   // |last_committed_url| refers to the main frame URL and may impact the

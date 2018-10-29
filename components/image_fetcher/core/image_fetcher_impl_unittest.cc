@@ -12,7 +12,7 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_task_environment.h"
-#include "components/image_fetcher/core/image_decoder.h"
+#include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -35,36 +35,6 @@ const char kFetchID[] = "fetch-1";
 const char kFetchID2[] = "fetch-2";
 const char kImageData[] = "data";
 const char kImageURL[] = "http://image.test/test.png";
-
-// Always decodes a valid image for all non-empty input.
-class FakeImageDecoder : public image_fetcher::ImageDecoder {
- public:
-  void DecodeImage(
-      const std::string& image_data,
-      const gfx::Size& desired_image_frame_size,
-      const image_fetcher::ImageDecodedCallback& callback) override {
-    ASSERT_TRUE(enabled_);
-    gfx::Image image;
-    if (!image_data.empty()) {
-      ASSERT_EQ(kImageData, image_data);
-      image = gfx::test::CreateImage(2, 3);
-    }
-    if (before_image_decoded_) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                       before_image_decoded_);
-    }
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, image));
-  }
-  void SetBeforeImageDecoded(const base::RepeatingClosure& callback) {
-    before_image_decoded_ = callback;
-  }
-  void SetEnabled(bool enabled) { enabled_ = enabled; }
-
- private:
-  bool enabled_ = true;
-  base::RepeatingClosure before_image_decoded_;
-};
 
 class ImageFetcherImplTest : public testing::Test {
  public:

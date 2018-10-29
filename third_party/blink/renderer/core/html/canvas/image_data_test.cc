@@ -129,7 +129,8 @@ TEST_F(ImageDataTest,
 TEST_F(ImageDataTest, TestGetImageDataInCanvasColorSettings) {
   unsigned num_image_data_color_spaces = 3;
   CanvasColorSpace image_data_color_spaces[] = {
-      kSRGBCanvasColorSpace, kRec2020CanvasColorSpace, kP3CanvasColorSpace,
+      kSRGBCanvasColorSpace, kLinearRGBCanvasColorSpace,
+      kRec2020CanvasColorSpace, kP3CanvasColorSpace,
   };
 
   unsigned num_image_data_storage_formats = 3;
@@ -140,13 +141,14 @@ TEST_F(ImageDataTest, TestGetImageDataInCanvasColorSettings) {
 
   unsigned num_canvas_color_settings = 4;
   CanvasColorSpace canvas_color_spaces[] = {
-      kSRGBCanvasColorSpace, kSRGBCanvasColorSpace, kRec2020CanvasColorSpace,
+      kSRGBCanvasColorSpace,      kSRGBCanvasColorSpace,
+      kLinearRGBCanvasColorSpace, kRec2020CanvasColorSpace,
       kP3CanvasColorSpace,
   };
 
   CanvasPixelFormat canvas_pixel_formats[] = {
       kRGBA8CanvasPixelFormat, kF16CanvasPixelFormat, kF16CanvasPixelFormat,
-      kF16CanvasPixelFormat,
+      kF16CanvasPixelFormat,   kF16CanvasPixelFormat,
   };
 
   // As cross checking the output of Skia color space covnersion API is not in
@@ -241,7 +243,8 @@ TEST_F(ImageDataTest, TestGetImageDataInCanvasColorSettings) {
         // Compare the converted pixels
         ColorCorrectionTestUtils::CompareColorCorrectedPixels(
             pixels_converted_manually.get(),
-            pixels_converted_in_image_data.get(), image_data->Size().Area(),
+            pixels_converted_in_image_data.get(),
+            static_cast<int>(image_data->Size().Area()),
             (canvas_pixel_formats[k] == kRGBA8CanvasPixelFormat)
                 ? kPixelFormat_8888
                 : kPixelFormat_hhhh,

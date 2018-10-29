@@ -8,6 +8,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind_helpers.h"
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
@@ -21,6 +23,8 @@
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
+#include "components/variations/variations_seed_store.h"
+#include "components/variations/variations_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,6 +78,13 @@ VariationsSeed CreateTestSafeSeed() {
   study->set_default_experiment_name(kTestSafeSeedExperimentName);
   study->mutable_experiment(0)->set_name(kTestSafeSeedExperimentName);
   return seed;
+}
+
+void DisableTestingConfig() {
+  // If the testing config is in use, the seed will not be used to set up field
+  // trials. Disable the testing config to exercise CreateTrialsFromSeed().
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableFieldTrialTestingConfig);
 }
 
 #if defined(OS_ANDROID)
@@ -155,7 +166,6 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   ~TestVariationsServiceClient() override = default;
 
   // VariationsServiceClient:
-  std::string GetApplicationLocale() override { return std::string(); }
   base::Callback<base::Version(void)> GetVersionForSimulationCallback()
       override {
     return base::Callback<base::Version(void)>();
@@ -232,7 +242,11 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
   TestVariationsFieldTrialCreator(PrefService* local_state,
                                   TestVariationsServiceClient* client,
                                   SafeSeedManager* safe_seed_manager)
-      : VariationsFieldTrialCreator(local_state, client, UIStringOverrider()),
+      : VariationsFieldTrialCreator(
+            local_state,
+            client,
+            std::make_unique<VariationsSeedStore>(local_state),
+            UIStringOverrider()),
         seed_store_(local_state),
         safe_seed_manager_(safe_seed_manager) {}
 
@@ -290,6 +304,8 @@ class FieldTrialCreatorTest : public ::testing::Test {
 };
 
 TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed) {
+  DisableTestingConfig();
+
   // With a valid seed, the safe seed manager should be informed of the active
   // seed state.
   const base::Time now = base::Time::Now();
@@ -323,6 +339,8 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed) {
 }
 
 TEST_F(FieldTrialCreatorTest, SetupFieldTrials_NoLastFetchTime) {
+  DisableTestingConfig();
+
   // With a valid seed on first run, the safe seed manager should be informed of
   // the active seed state. The last fetch time in this case is expected to be
   // inferred to be recent.
@@ -357,6 +375,8 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_NoLastFetchTime) {
 }
 
 TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSeed) {
+  DisableTestingConfig();
+
   // With an expired seed, there should be no field trials created, and hence no
   // active state should be passed to the safe seed manager.
   testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
@@ -386,6 +406,8 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ExpiredSeed) {
 }
 
 TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSafeSeed) {
+  DisableTestingConfig();
+
   // With a valid safe seed, the safe seed manager should *not* be informed of
   // the active seed state. This is an optimization to avoid saving a safe seed
   // when already running in safe mode.
@@ -417,6 +439,8 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSafeSeed) {
 
 TEST_F(FieldTrialCreatorTest,
        SetupFieldTrials_CorruptedSafeSeed_FallsBackToLatestSeed) {
+  DisableTestingConfig();
+
   // With a corrupted safe seed, the field trial creator should fall back to the
   // latest seed. Hence, the safe seed manager *should* be informed of the
   // active seed state.
@@ -454,6 +478,8 @@ TEST_F(FieldTrialCreatorTest,
 #if defined(OS_ANDROID)
 // This is a regression test for https://crbug.com/829527
 TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
+  DisableTestingConfig();
+
   // Simulate having received a seed in Java during First Run.
   const base::Time one_day_ago =
       base::Time::Now() - base::TimeDelta::FromDays(1);
@@ -472,9 +498,12 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
 
   // Note: Unlike other tests, this test does not mock out the seed store, since
   // the interaction between these two classes is what's being tested.
+  auto seed_store = std::make_unique<VariationsSeedStore>(
+      &prefs_, std::move(initial_seed),
+      /*on_initial_seed_stored=*/base::DoNothing());
   VariationsFieldTrialCreator field_trial_creator(
-      &prefs_, &variations_service_client, UIStringOverrider(),
-      std::move(initial_seed));
+      &prefs_, &variations_service_client, std::move(seed_store),
+      UIStringOverrider());
 
   // Check that field trials are created from the seed. The test seed contains a
   // single study with an experiment targeting 100% of users in India. Since

@@ -40,23 +40,33 @@ void OnApplicationStateChange(
   }
 }
 
+// This wrapper is needed so we can call the ApplicationStatusListener::New
+// method which returns a unique_ptr.
+class ApplicationStatusListenerWrapper {
+ public:
+  ApplicationStatusListenerWrapper()
+      : listener_(base::android::ApplicationStatusListener::New(
+            base::BindRepeating(&OnApplicationStateChange))) {}
+
+ private:
+  std::unique_ptr<base::android::ApplicationStatusListener> listener_;
+};
+
 struct LeakyApplicationStatusListenerTraits {
   static const bool kRegisterOnExit = false;
 #if DCHECK_IS_ON()
   static const bool kAllowedToAccessOnNonjoinableThread = true;
 #endif
 
-  static base::android::ApplicationStatusListener* New(void* instance) {
+  static ApplicationStatusListenerWrapper* New(void* instance) {
     ANNOTATE_SCOPED_MEMORY_LEAK;
-    return new (instance) base::android::ApplicationStatusListener(
-            base::Bind(&OnApplicationStateChange));
+    return new (instance) ApplicationStatusListenerWrapper();
   }
 
-  static void Delete(base::android::ApplicationStatusListener* instance) {
-  }
+  static void Delete(ApplicationStatusListenerWrapper* instance) {}
 };
 
-base::LazyInstance<base::android::ApplicationStatusListener,
+base::LazyInstance<ApplicationStatusListenerWrapper,
                    LeakyApplicationStatusListenerTraits>
     g_application_status_listener = LAZY_INSTANCE_INITIALIZER;
 

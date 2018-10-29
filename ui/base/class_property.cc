@@ -54,7 +54,7 @@ void PropertyHandler::ClearProperties() {
 
 int64_t PropertyHandler::GetPropertyInternal(const void* key,
                                              int64_t default_value) const {
-  std::map<const void*, Value>::const_iterator iter = prop_map_.find(key);
+  auto iter = prop_map_.find(key);
   if (iter == prop_map_.end())
     return default_value;
   return iter->second.value;

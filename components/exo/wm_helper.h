@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_WM_HELPER_H_
 #define COMPONENTS_EXO_WM_HELPER_H_
 
+#include <vector>
+
 #include "ash/display/window_tree_host_manager.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
@@ -36,7 +38,6 @@ class ManagedDisplayInfo;
 namespace ui {
 class EventHandler;
 class DropTargetEvent;
-class InputDeviceEventObserver;
 }  // namespace ui
 
 namespace wm {
@@ -74,8 +75,6 @@ class WMHelper : public aura::client::DragDropDelegate {
   void RemoveFocusObserver(aura::client::FocusChangeObserver* observer);
   void AddTabletModeObserver(ash::TabletModeObserver* observer);
   void RemoveTabletModeObserver(ash::TabletModeObserver* observer);
-  void AddInputDeviceEventObserver(ui::InputDeviceEventObserver* observer);
-  void RemoveInputDeviceEventObserver(ui::InputDeviceEventObserver* observer);
 
   void AddDisplayConfigurationObserver(
       ash::WindowTreeHostManager::Observer* observer);
@@ -89,6 +88,9 @@ class WMHelper : public aura::client::DragDropDelegate {
   void RemoveVSyncObserver(ui::CompositorVSyncManager::Observer* observer);
 
   const display::ManagedDisplayInfo& GetDisplayInfo(int64_t display_id) const;
+  const std::vector<uint8_t>& GetDisplayIdentificationData(
+      int64_t display_id) const;
+
   aura::Window* GetPrimaryDisplayContainer(int container_id);
   aura::Window* GetActiveWindow() const;
   aura::Window* GetFocusedWindow() const;

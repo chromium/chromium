@@ -405,6 +405,10 @@ TEST_F(EventProcessorTest, HandlerSequence) {
       "PostR", "PreR", "PreC", "C", "PostC", "PostR", "PreR", "R", "PostR" };
   EXPECT_EQ(std::vector<std::string>(
       expected, expected + arraysize(expected)), recorder);
+
+  root()->RemovePreTargetHandler(&pre_root);
+  child_r->RemovePreTargetHandler(&pre_child);
+  grandchild_r->RemovePreTargetHandler(&pre_grandchild);
 }
 
 TEST(EventProcessorCrashTest, Basic) {

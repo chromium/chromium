@@ -11,7 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #include "ios/chrome/test/app/navigation_test_util.h"
 #import "ios/chrome/test/app/web_view_interaction_test_util.h"
@@ -250,6 +250,15 @@ id<GREYMatcher> ResendPostButtonMatcher() {
   // Go to a new page and go back and check that the data is reposted.
   [ChromeEarlGrey loadURL:GetGenericUrl()];
   [ChromeEarlGrey goBack];
+
+  // WKBasedNavigationManager doesn't triggere repost on |goForward| due to
+  // WKWebView's back-forward cache. Force reload to trigger repost. Not using
+  // [ChromeEarlGrey reload] because WKBasedNavigationManager presents repost
+  // confirmation dialog before loading stops.
+  if (web::GetWebClient()->IsSlimNavigationManagerEnabled()) {
+    [chrome_test_util::BrowserCommandDispatcherForMainBVC() reload];
+  }
+
   [self confirmResendWarning];
   [ChromeEarlGrey waitForWebViewContainingText:kDestinationText];
   [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
@@ -271,6 +280,15 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey goForward];
+
+  // WKBasedNavigationManager doesn't triggere repost on |goForward| due to
+  // WKWebView's back-forward cache. Force reload to trigger repost. Not using
+  // [ChromeEarlGrey reload] because WKBasedNavigationManager presents repost
+  // confirmation dialog before loading stops.
+  if (web::GetWebClient()->IsSlimNavigationManagerEnabled()) {
+    [chrome_test_util::BrowserCommandDispatcherForMainBVC() reload];
+  }
+
   [self confirmResendWarning];
   [ChromeEarlGrey waitForWebViewContainingText:kDestinationText];
   [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
@@ -325,16 +343,38 @@ id<GREYMatcher> ResendPostButtonMatcher() {
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey goForward];
 
+  // WKBasedNavigationManager doesn't triggere repost on |goForward| due to
+  // WKWebView's back-forward cache. Force reload to trigger repost. Not using
+  // [ChromeEarlGrey reload] because WKBasedNavigationManager presents repost
+  // confirmation dialog before loading stops.
+  if (web::GetWebClient()->IsSlimNavigationManagerEnabled()) {
+    [chrome_test_util::BrowserCommandDispatcherForMainBVC() reload];
+  }
+
   [[EarlGrey selectElementWithMatcher:ElementToDismissAlert(@"Cancel")]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
-  // Verify that navigation was cancelled, and forward navigation is possible.
-  [ChromeEarlGrey waitForWebViewContainingText:kSubmitButtonLabel];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(GetFormUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
-      assertWithMatcher:grey_interactable()];
+  // Expected behavior is different between the two navigation manager
+  // implementations.
+  if (!web::GetWebClient()->IsSlimNavigationManagerEnabled()) {
+    // LegacyNavigationManager displays repost on |goBack|. So after cancelling,
+    // web view should show form URL.
+    [ChromeEarlGrey waitForWebViewContainingText:kSubmitButtonLabel];
+    [[EarlGrey selectElementWithMatcher:OmniboxText(GetFormUrl().GetContent())]
+        assertWithMatcher:grey_notNil()];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
+        assertWithMatcher:grey_interactable()];
+  } else {
+    // WKBasedNavigationManager displays repost on |reload|. So after
+    // cancelling, web view should show |destinationURL|.
+    [ChromeEarlGrey waitForWebViewContainingText:kDestinationText];
+    [[EarlGrey
+        selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
+        assertWithMatcher:grey_notNil()];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+        assertWithMatcher:grey_interactable()];
+  }
 }
 
 // A new navigation dismisses the repost dialog.

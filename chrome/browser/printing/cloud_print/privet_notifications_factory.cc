@@ -6,6 +6,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/cloud_print/privet_notifications.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace cloud_print {
@@ -19,6 +20,7 @@ PrivetNotificationServiceFactory::PrivetNotificationServiceFactory()
     : BrowserContextKeyedServiceFactory(
         "PrivetNotificationService",
         BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 PrivetNotificationServiceFactory::~PrivetNotificationServiceFactory() {

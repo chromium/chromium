@@ -79,7 +79,6 @@
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -117,32 +116,77 @@ DocumentLoader::DocumentLoader(
     const ResourceRequest& req,
     const SubstituteData& substitute_data,
     ClientRedirectPolicy client_redirect_policy,
-    const base::UnguessableToken& devtools_navigation_token)
+    const base::UnguessableToken& devtools_navigation_token,
+    WebFrameLoadType load_type,
+    WebNavigationType navigation_type,
+    std::unique_ptr<WebNavigationParams> navigation_params)
     : frame_(frame),
       fetcher_(FrameFetchContext::CreateFetcherFromDocumentLoader(this)),
       original_request_(req),
       substitute_data_(substitute_data),
       request_(req),
-      load_type_(WebFrameLoadType::kStandard),
+      load_type_(load_type),
       is_client_redirect_(client_redirect_policy ==
                           ClientRedirectPolicy::kClientRedirect),
       replaces_current_history_item_(false),
       data_received_(false),
-      navigation_type_(kWebNavigationTypeOther),
+      navigation_type_(navigation_type),
       document_load_timing_(*this),
       application_cache_host_(ApplicationCacheHost::Create(this)),
+      service_worker_network_provider_(
+          navigation_params
+              ? std::move(navigation_params->service_worker_network_provider)
+              : nullptr),
       was_blocked_after_csp_(false),
       state_(kNotStarted),
       committed_data_buffer_(nullptr),
       in_data_received_(false),
       data_buffer_(SharedBuffer::Create()),
       devtools_navigation_token_(devtools_navigation_token),
-      had_sticky_activation_(false),
-      had_transient_activation_(Frame::HasTransientUserActivation(frame_)),
+      had_sticky_activation_(navigation_params &&
+                             navigation_params->is_user_activated),
+      had_transient_activation_(request_.HasUserGesture()),
       use_counter_(frame_->GetChromeClient().IsSVGImageChromeClient()
                        ? UseCounter::kSVGImageContext
                        : UseCounter::kDefaultContext) {
   DCHECK(frame_);
+
+  WebNavigationTimings timings;
+  if (navigation_params)
+    timings = navigation_params->navigation_timings;
+  if (!timings.input_start.is_null())
+    document_load_timing_.SetInputStart(timings.input_start);
+  if (timings.navigation_start.is_null()) {
+    // If we don't have any navigation timings yet, it starts now.
+    document_load_timing_.SetNavigationStart(CurrentTimeTicks());
+  } else {
+    document_load_timing_.SetNavigationStart(timings.navigation_start);
+    if (!timings.redirect_start.is_null()) {
+      document_load_timing_.SetRedirectStart(timings.redirect_start);
+      document_load_timing_.SetRedirectEnd(timings.redirect_end);
+    }
+    if (!timings.fetch_start.is_null()) {
+      // If we started fetching, we should have started the navigation.
+      DCHECK(!timings.navigation_start.is_null());
+      document_load_timing_.SetFetchStart(timings.fetch_start);
+    }
+  }
+
+  if (navigation_params) {
+    WebSourceLocation& location = navigation_params->source_location;
+    source_location_ = SourceLocation::Create(
+        location.url, location.line_number, location.column_number, nullptr);
+  }
+
+  // TODO(japhet): This is needed because the browser process DCHECKs if the
+  // first entry we commit in a new frame has replacement set. It's unclear
+  // whether the DCHECK is right, investigate removing this special case.
+  // TODO(dgozman): we should get rid of this boolean field, and make client
+  // responsible for it's own view of "replaces current item", based on the
+  // frame load type.
+  replaces_current_history_item_ =
+      load_type_ == WebFrameLoadType::kReplaceCurrentItem &&
+      (!frame_->Loader().Opener() || !request_.Url().IsEmpty());
 
   // The document URL needs to be added to the head of the list as that is
   // where the redirects originated.
@@ -221,7 +265,7 @@ Resource* DocumentLoader::StartPreload(ResourceType type,
       resource = ImageResource::Fetch(params, Fetcher());
       break;
     case ResourceType::kScript:
-      params.SetRequestContext(WebURLRequest::kRequestContextScript);
+      params.SetRequestContext(mojom::RequestContextType::SCRIPT);
       resource = ScriptResource::Fetch(params, Fetcher(), nullptr);
       break;
     case ResourceType::kCSSStyleSheet:
@@ -253,14 +297,6 @@ Resource* DocumentLoader::StartPreload(ResourceType type,
 void DocumentLoader::SetServiceWorkerNetworkProvider(
     std::unique_ptr<WebServiceWorkerNetworkProvider> provider) {
   service_worker_network_provider_ = std::move(provider);
-}
-
-void DocumentLoader::SetSourceLocation(
-    const WebSourceLocation& source_location) {
-  std::unique_ptr<SourceLocation> location =
-      SourceLocation::Create(source_location.url, source_location.line_number,
-                             source_location.column_number, nullptr);
-  source_location_ = std::move(location);
 }
 
 void DocumentLoader::ResetSourceLocation() {
@@ -433,18 +469,18 @@ void DocumentLoader::NotifyFinished(Resource* resource) {
 
 void DocumentLoader::LoadFailed(const ResourceError& error) {
   if (!error.IsCancellation() && frame_->Owner())
-    frame_->Owner()->RenderFallbackContent();
+    frame_->Owner()->RenderFallbackContent(frame_);
   fetcher_->ClearResourcesFromPreviousFetcher();
 
   WebHistoryCommitType history_commit_type = LoadTypeToCommitType(load_type_);
   switch (state_) {
     case kNotStarted:
-      probe::frameClearedScheduledClientNavigation(frame_);
       FALLTHROUGH;
     case kProvisional:
       state_ = kSentDidFinishLoad;
       GetLocalFrameClient().DispatchDidFailProvisionalLoad(error,
                                                            history_commit_type);
+      probe::didFailProvisionalLoad(frame_);
       if (frame_)
         GetFrameLoader().DetachProvisionalDocumentLoader(this);
       break;
@@ -697,7 +733,7 @@ void DocumentLoader::ResponseReceived(
 
   if (frame_->Owner() && response_.IsHTTP() &&
       !CORS::IsOkStatus(response_.HttpStatusCode()))
-    frame_->Owner()->RenderFallbackContent();
+    frame_->Owner()->RenderFallbackContent(frame_);
 }
 
 void DocumentLoader::CommitNavigation(const AtomicString& mime_type,
@@ -941,10 +977,13 @@ void DocumentLoader::StartLoading() {
                                         : fetch_params.GetResourceRequest();
 }
 
-void DocumentLoader::DidInstallNewDocument(Document* document) {
+void DocumentLoader::DidInstallNewDocument(
+    Document* document,
+    const ContentSecurityPolicy* previous_csp) {
   document->SetReadyState(Document::kLoading);
   if (content_security_policy_) {
-    document->InitContentSecurityPolicy(content_security_policy_.Release());
+    document->InitContentSecurityPolicy(content_security_policy_.Release(),
+                                        nullptr, previous_csp);
   }
 
   if (history_item_ && IsBackForwardLoadType(load_type_))
@@ -1098,8 +1137,11 @@ void DocumentLoader::InstallNewDocument(
   }
 
   const SecurityOrigin* previous_security_origin = nullptr;
-  if (frame_->GetDocument())
+  const ContentSecurityPolicy* previous_csp = nullptr;
+  if (frame_->GetDocument()) {
     previous_security_origin = frame_->GetDocument()->GetSecurityOrigin();
+    previous_csp = frame_->GetDocument()->GetContentSecurityPolicy();
+  }
 
   // In some rare cases, we'll re-use a LocalDOMWindow for a new Document. For
   // example, when a script calls window.open("..."), the browser gives
@@ -1121,7 +1163,8 @@ void DocumentLoader::InstallNewDocument(
           .WithDocumentLoader(this)
           .WithURL(url)
           .WithOwnerDocument(owner_document)
-          .WithNewRegistrationContext(),
+          .WithNewRegistrationContext()
+          .WithPreviousDocumentCSP(previous_csp),
       false);
 
   // Clear the user activation state.
@@ -1151,7 +1194,7 @@ void DocumentLoader::InstallNewDocument(
 
   if (!overriding_url.IsEmpty())
     document->SetBaseURLOverride(overriding_url);
-  DidInstallNewDocument(document);
+  DidInstallNewDocument(document, previous_csp);
 
   // This must be called before the document is opened, otherwise HTML parser
   // will use stale values from HTMLParserOption.
@@ -1257,34 +1300,6 @@ void DocumentLoader::ResumeParser() {
     finished_loading_ = false;
     parser_->Finish();
     parser_.Clear();
-  }
-}
-
-void DocumentLoader::UpdateNavigationTimings(
-    base::TimeTicks navigation_start_time,
-    base::TimeTicks redirect_start_time,
-    base::TimeTicks redirect_end_time,
-    base::TimeTicks fetch_start_time,
-    base::TimeTicks input_start_time) {
-  if (!input_start_time.is_null()) {
-    GetTiming().SetInputStart(input_start_time);
-  }
-
-  // If we don't have any navigation timings yet, just start the navigation.
-  if (navigation_start_time.is_null()) {
-    GetTiming().SetNavigationStart(CurrentTimeTicks());
-    return;
-  }
-
-  GetTiming().SetNavigationStart(navigation_start_time);
-  if (!redirect_start_time.is_null()) {
-    GetTiming().SetRedirectStart(redirect_start_time);
-    GetTiming().SetRedirectEnd(redirect_end_time);
-  }
-  if (!fetch_start_time.is_null()) {
-    // If we started fetching, we should have started the navigation.
-    DCHECK(!navigation_start_time.is_null());
-    GetTiming().SetFetchStart(fetch_start_time);
   }
 }
 

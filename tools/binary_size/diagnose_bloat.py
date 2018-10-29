@@ -847,32 +847,6 @@ def _SetRestoreFunc(subrepo):
   atexit.register(_GenRestoreFunc(subrepo))
 
 
-# Used by binary size trybot.
-def _DiffMain(args):
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--before-dir', required=True)
-  parser.add_argument('--after-dir', required=True)
-  parser.add_argument('--apk-name', required=True)
-  parser.add_argument('--diff-type', required=True, choices=['native', 'sizes'])
-  parser.add_argument('--diff-output', required=True)
-  args = parser.parse_args(args)
-
-  is_native_diff = args.diff_type == 'native'
-  if is_native_diff:
-    supersize_path = os.path.join(_BINARY_SIZE_DIR, 'supersize')
-    diff = NativeDiff(args.apk_name + '.size', supersize_path)
-  else:
-    diff = ResourceSizesDiff(args.apk_name)
-
-  diff.ProduceDiff(args.before_dir, args.after_dir)
-  lines = diff.DetailedResults() if is_native_diff else diff.Summary()
-
-  with open(args.diff_output, 'w') as f:
-    f.writelines(l + '\n' for l in lines)
-    stat = diff.summary_stat
-    f.write('\n{}={}\n'.format(*stat[:2]))
-
-
 def main():
   parser = argparse.ArgumentParser(
       description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -965,8 +939,6 @@ def main():
   if len(sys.argv) == 1:
     parser.print_help()
     return 1
-  if sys.argv[1] == 'diff':
-    return _DiffMain(sys.argv[2:])
 
   args = parser.parse_args()
   log_level = logging.DEBUG if args.verbose else logging.INFO

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @type {string} Result
+ * @type {?string} Result
  */
 var result;
 

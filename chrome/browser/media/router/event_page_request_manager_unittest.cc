@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -70,7 +71,7 @@ class EventPageRequestManagerTest : public ::testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     // Set up a mock ProcessManager instance.
     extensions::ProcessManagerFactory::GetInstance()->SetTestingFactory(
-        profile_.get(), &TestProcessManager::Create);
+        profile_.get(), base::BindRepeating(&TestProcessManager::Create));
     process_manager_ = static_cast<TestProcessManager*>(
         extensions::ProcessManager::Get(profile_.get()));
     DCHECK(process_manager_);

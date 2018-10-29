@@ -24,6 +24,9 @@ function slideshowTraversal(testVolumeName, volumeType) {
   }).then(function() {
     return gallery.waitForSlideImage(appId, 800, 600, 'My Desktop Background');
   }).then(function() {
+    // Check: There is a pause / play button
+    return gallery.waitForElement(appId, '.slideshow-play:not([hidden])');
+  }).then(function() {
     // Start slideshow.
     return gallery.waitAndClickElement(appId, '.slideshow.icon-button');
   }).then(function() {
@@ -78,6 +81,34 @@ function stopStartSlideshow(testVolumeName, volumeType) {
 }
 
 /**
+ * Runs a test to ensure there is not a play/pause button when one image
+ * is selected.
+ *
+ * @param {string} testVolumeName Test volume name passed to the addEntries
+ *     function. Either 'drive' or 'local'.
+ * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
+ * @return {Promise} Promise to be fulfilled on success.
+ */
+function oneImageSlideshowNoPauseButton(testVolumeName, volumeType) {
+  const testEntries = [ENTRIES.desktop];
+  const launchedPromise = launch(
+      testVolumeName, volumeType, testEntries);
+  let appId;
+  return launchedPromise.then(args => {
+    appId = args.appId;
+    return gallery.waitForElement(appId, '.gallery[mode="slide"]');
+  }).then(() => {
+    return gallery.waitForSlideImage(appId, 800, 600, 'My Desktop Background');
+  }).then(() => {
+    // Start slideshow.
+    return gallery.waitAndClickElement(appId, '.slideshow.icon-button');
+  }).then(() => {
+    // Check: There is no pause / play button
+    return gallery.waitForElement(appId, '.slideshow-play[hidden]');
+  });
+}
+
+/**
  * The slideshowTraversal test for Downloads.
  * @return {Promise} Promise to be fulfilled on success.
  */
@@ -107,4 +138,20 @@ testcase.stopStartSlideshowOnDownloads = function() {
  */
 testcase.stopStartSlideshowOnDrive = function() {
   return stopStartSlideshow('drive', 'drive');
+};
+
+/**
+ * The oneImageSlideshowNoPauseButton test for Downloads.
+ * @return {Promise} Promise to be fulfilled on success.
+ */
+testcase.oneImageSlideshowNoPauseButtonOnDownloads = () => {
+  return oneImageSlideshowNoPauseButton('local', 'downloads');
+};
+
+/**
+ * The oneImageSlideshowNoPauseButton test for Drive.
+ * @return {Promise} Promise to be fulfilled on success.
+ */
+testcase.oneImageSlideshowNoPauseButtonOnDrive = () => {
+  return oneImageSlideshowNoPauseButton('drive', 'drive');
 };

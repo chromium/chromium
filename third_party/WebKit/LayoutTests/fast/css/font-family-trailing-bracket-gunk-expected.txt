@@ -2,7 +2,6 @@ This test checks that we don't strip trailing gunk in brackets from font familie
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS spanElement.innerHTML is 'foo'
 PASS computedStyle.getPropertyValue('font-family') is '"Arial [ding dong]", "Helvetica [Xft]", Courier'
 PASS successfullyParsed is true

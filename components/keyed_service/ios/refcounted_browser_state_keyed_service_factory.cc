@@ -12,15 +12,15 @@
 
 void RefcountedBrowserStateKeyedServiceFactory::SetTestingFactory(
     web::BrowserState* context,
-    TestingFactoryFunction testing_factory) {
+    TestingFactory testing_factory) {
   RefcountedKeyedServiceFactory::TestingFactory wrapped_factory;
   if (testing_factory) {
     wrapped_factory = base::BindRepeating(
-        [](TestingFactoryFunction testing_factory,
+        [](const TestingFactory& testing_factory,
            base::SupportsUserData* context) {
-          return testing_factory(static_cast<web::BrowserState*>(context));
+          return testing_factory.Run(static_cast<web::BrowserState*>(context));
         },
-        testing_factory);
+        std::move(testing_factory));
   }
   RefcountedKeyedServiceFactory::SetTestingFactory(context,
                                                    std::move(wrapped_factory));
@@ -29,18 +29,16 @@ void RefcountedBrowserStateKeyedServiceFactory::SetTestingFactory(
 scoped_refptr<RefcountedKeyedService>
 RefcountedBrowserStateKeyedServiceFactory::SetTestingFactoryAndUse(
     web::BrowserState* context,
-    TestingFactoryFunction testing_factory) {
-  RefcountedKeyedServiceFactory::TestingFactory wrapped_factory;
-  if (testing_factory) {
-    wrapped_factory = base::BindRepeating(
-        [](TestingFactoryFunction testing_factory,
-           base::SupportsUserData* context) {
-          return testing_factory(static_cast<web::BrowserState*>(context));
-        },
-        testing_factory);
-  }
+    TestingFactory testing_factory) {
+  DCHECK(testing_factory);
   return RefcountedKeyedServiceFactory::SetTestingFactoryAndUse(
-      context, std::move(wrapped_factory));
+      context, base::BindRepeating(
+                   [](const TestingFactory& testing_factory,
+                      base::SupportsUserData* context) {
+                     return testing_factory.Run(
+                         static_cast<web::BrowserState*>(context));
+                   },
+                   std::move(testing_factory)));
 }
 
 RefcountedBrowserStateKeyedServiceFactory::

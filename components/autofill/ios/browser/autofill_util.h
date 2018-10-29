@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#import "ios/web/public/web_state/web_frame.h"
 #import "ios/web/public/web_state/web_state.h"
 
 class GURL;
@@ -32,18 +33,20 @@ std::unique_ptr<base::Value> ParseJson(NSString* json_string);
 bool ExtractFormsData(NSString* form_json,
                       bool filtered,
                       const base::string16& form_name,
-                      const GURL& page_url,
+                      const GURL& main_frame_url,
+                      const GURL& frame_origin,
                       std::vector<FormData>* forms_data);
 
 // Converts |form| into |form_data|.
 // Returns false if a form can not be extracted.
 // Returns false if |filtered| == true and |form["name"]| != |formName|.
-// Returns false if |form["origin"]| != |page_url|.
+// Returns false if |form["origin"]| != |form_frame_origin|.
 // Returns true if the conversion succeeds.
 bool ExtractFormData(const base::Value& form,
                      bool filtered,
                      const base::string16& form_name,
-                     const GURL& page_url,
+                     const GURL& main_frame_url,
+                     const GURL& form_frame_origin,
                      FormData* form_data);
 
 // Extracts a single form field from the JSON dictionary into a FormFieldData
@@ -51,6 +54,29 @@ bool ExtractFormData(const base::Value& form,
 // Returns false if the field could not be extracted.
 bool ExtractFormFieldData(const base::DictionaryValue& field,
                           FormFieldData* field_data);
+
+// Executes the JavaScript function using WebState of WebFrame functions
+// depending on the value of IsAutofillIFrameMessagingEnabled.
+// If |callback| is not null, it will be called when the result of the
+// command is received, or immediately if the command cannot be executed.
+// It will call the either |ExecuteJavaScriptFunctionInWebFrame:...| or
+// |ExecuteJavaScriptFunctionInWebState:...| depending on the
+// IsAutofillIFrameMessagingEnabled value.
+void ExecuteJavaScriptFunction(const std::string& name,
+                               const std::vector<base::Value>& parameters,
+                               web::WebFrame* frame,
+                               CRWJSInjectionReceiver* js_injection_receiver,
+                               base::OnceCallback<void(NSString*)> callback);
+void ExecuteJavaScriptFunctionInWebFrame(
+    const std::string& name,
+    const std::vector<base::Value>& parameters,
+    web::WebFrame* frame,
+    base::OnceCallback<void(NSString*)> callback);
+void ExecuteJavaScriptFunctionInWebState(
+    const std::string& name,
+    const std::vector<base::Value>& parameters,
+    CRWJSInjectionReceiver* js_injection_receiver,
+    base::OnceCallback<void(NSString*)> callback);
 
 }  // namespace autofill
 

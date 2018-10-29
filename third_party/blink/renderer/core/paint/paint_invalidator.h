@@ -17,7 +17,7 @@ class NGPaintFragment;
 class PrePaintTreeWalk;
 
 struct CORE_EXPORT PaintInvalidatorContext {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   class ParentContextAccessor {
@@ -51,6 +51,8 @@ struct CORE_EXPORT PaintInvalidatorContext {
     if (force_visual_rect_update_for_checking_)
       return true;
 #endif
+    // If an ancestor needed a visual rect update and any subtree flag was set,
+    // then we require that the subtree also needs a visual rect update.
     return object.NeedsPaintOffsetAndVisualRectUpdate() ||
            (subtree_flags & PaintInvalidatorContext::kSubtreeVisualRectUpdate);
   }

@@ -71,6 +71,15 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   virtual bool IsLayoutMultiColumnFlowThread() const { return false; }
   virtual bool IsLayoutPagedFlowThread() const { return false; }
 
+  bool CreatesNewFormattingContext() const final {
+    // The spec requires multicol containers to establish new formatting
+    // contexts. Blink uses an anonymous flow thread child of the multicol
+    // container to actually perform layout inside. Therefore we need to
+    // propagate the BFCness down to the flow thread, so that floats are fully
+    // contained by the flow thread, and thereby the multicol container.
+    return true;
+  }
+
   // Search mode when looking for an enclosing fragmentation context.
   enum AncestorSearchConstraint {
     // No constraints. When we're not laying out (but rather e.g. painting or
@@ -191,8 +200,9 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
 
   LayoutMultiColumnSetList multi_column_set_list_;
 
-  typedef PODInterval<LayoutUnit, LayoutMultiColumnSet*> MultiColumnSetInterval;
-  typedef PODIntervalTree<LayoutUnit, LayoutMultiColumnSet*>
+  typedef WTF::PODInterval<LayoutUnit, LayoutMultiColumnSet*>
+      MultiColumnSetInterval;
+  typedef WTF::PODIntervalTree<LayoutUnit, LayoutMultiColumnSet*>
       MultiColumnSetIntervalTree;
 
   class MultiColumnSetSearchAdapter {
@@ -219,16 +229,18 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
 
 DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutFlowThread, IsLayoutFlowThread());
 
+}  // namespace blink
+
+namespace WTF {
 // These structures are used by PODIntervalTree for debugging.
 #ifndef NDEBUG
 template <>
-struct ValueToString<LayoutMultiColumnSet*> {
-  static String ToString(const LayoutMultiColumnSet* value) {
+struct ValueToString<blink::LayoutMultiColumnSet*> {
+  static String ToString(const blink::LayoutMultiColumnSet* value) {
     return String::Format("%p", value);
   }
 };
 #endif
-
-}  // namespace blink
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_FLOW_THREAD_H_

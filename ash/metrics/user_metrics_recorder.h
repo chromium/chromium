@@ -16,18 +16,13 @@
 
 namespace ash {
 
+namespace mojom {
+enum class DictationToggleSource;
+}  // namespace mojom
+
 class DemoSessionMetricsRecorder;
 class DesktopTaskSwitchMetricRecorder;
 class PointerMetricsRecorder;
-
-// CrosDictationStartDictationMethod enum values.
-// These values are persisted to logs and should not be renumbered or re-used.
-// See tools/metrics/histograms/enums.xml.
-enum class DictationToggleMethod {
-  kToggleByKeyboard,
-  kToggleByButton,
-  kMaxValue = kToggleByButton
-};
 
 // User Metrics Recorder provides a repeating callback (RecordPeriodicMetrics)
 // on a timer to allow recording of state data over time to the UMA records.
@@ -51,7 +46,7 @@ class ASH_EXPORT UserMetricsRecorder {
       LoginMetricsRecorder::ShelfButtonClickTarget target);
 
   // Record the method used to activate dictation.
-  static void RecordUserToggleDictation(DictationToggleMethod method);
+  static void RecordUserToggleDictation(mojom::DictationToggleSource source);
 
   // Records an Ash owned user action.
   void RecordUserMetricsAction(UserMetricsAction action);

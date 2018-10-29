@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/shared_memory.h"
+#include "base/memory/platform_shared_memory_region.h"
 #include "build/build_config.h"
 #include "skia/ext/platform_canvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -148,15 +148,17 @@ TEST(Blit, ScrollCanvas) {
 TEST(Blit, WithSharedMemory) {
   const int kCanvasWidth = 5;
   const int kCanvasHeight = 5;
-  base::SharedMemory shared_mem;
-  ASSERT_TRUE(shared_mem.CreateAnonymous(kCanvasWidth * kCanvasHeight));
-  base::SharedMemoryHandle section = shared_mem.handle();
+  base::subtle::PlatformSharedMemoryRegion section =
+      base::subtle::PlatformSharedMemoryRegion::CreateWritable(kCanvasWidth *
+                                                               kCanvasHeight);
+  ASSERT_TRUE(section.IsValid());
   std::unique_ptr<SkCanvas> canvas =
-      skia::CreatePlatformCanvasWithSharedSection(kCanvasWidth, kCanvasHeight,
-                                                  false, section.GetHandle(),
-                                                  skia::RETURN_NULL_ON_FAILURE);
+      skia::CreatePlatformCanvasWithSharedSection(
+          kCanvasWidth, kCanvasHeight, false, section.GetPlatformHandle(),
+          skia::RETURN_NULL_ON_FAILURE);
   ASSERT_TRUE(canvas);
-  shared_mem.Close();
+  // Closes a HANDLE associated with |section|, |canvas| must remain valid.
+  section = base::subtle::PlatformSharedMemoryRegion();
 
   uint8_t initial_values[kCanvasHeight][kCanvasWidth] = {
       {0x00, 0x01, 0x02, 0x03, 0x04},

@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{Πριν από 1 λεπτό}other{Πριν από # λεπτά}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1λ.}other{#λ.}}</translation>
 <translation id="1243314992276662751">Μεταφόρτωση</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">ΠΡΟΤΕΙΝΟΜΕΝΕΣ ΕΦΑΡΜΟΓΕΣ</translation>
 <translation id="1368832886055348810">Από αριστερά προς τα δεξιά</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Επόμενη σελίδα</translation>
 <translation id="8245914219290430011">Πλήκτρο tab</translation>
+<translation id="8259556432390118667">Δεκαεξαδική τιμή χρώματος</translation>
 <translation id="8328145009876646418">Αριστερή άκρη</translation>
 <translation id="8331626408530291785">Κύλιση επάνω</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 χρόνος}other{# χρόνια}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8806053966018712535">Φάκελος <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">Σχολιασμός εικόνας</translation>
+<translation id="8841375032071747811">Κουμπί "Πίσω"</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="9002566407876343676">ανοίγω</translation>
 <translation id="9038489124413477075">Φάκελος χωρίς όνομα</translation>

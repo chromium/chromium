@@ -99,14 +99,16 @@ cr.define('gpu', function() {
      * as undefined, then we will issue the request again in 250ms.
      */
     beginRequestClientInfo_: function() {
-      this.callAsync('requestClientInfo', undefined, (function(data) {
-        if (data === undefined) { // try again in 250 ms
-          window.setTimeout(this.beginRequestClientInfo_.bind(this), 250);
-        } else {
-          this.clientInfo_ = data;
-          cr.dispatchSimpleEvent(this, 'clientInfoChange');
-        }
-      }).bind(this));
+      this.callAsync(
+          'requestClientInfo', undefined,
+          (function(data) {
+            if (data === undefined) {  // try again in 250 ms
+              window.setTimeout(this.beginRequestClientInfo_.bind(this), 250);
+            } else {
+              this.clientInfo_ = data;
+              cr.dispatchSimpleEvent(this, 'clientInfoChange');
+            }
+          }).bind(this));
     },
 
     /**
@@ -121,7 +123,8 @@ cr.define('gpu', function() {
      * If any are found, a refresh is triggered.
      */
     beginRequestLogMessages_: function() {
-      this.callAsync('requestLogMessages', undefined,
+      this.callAsync(
+          'requestLogMessages', undefined,
           (function(messages) {
             if (messages.length != this.logMessages_.length) {
               this.logMessages_ = messages;
@@ -142,17 +145,15 @@ cr.define('gpu', function() {
     /**
      * Returns the value of the "Sandboxed" row.
      */
-    isSandboxedForTesting : function() {
+    isSandboxedForTesting: function() {
       for (i = 0; i < this.gpuInfo_.basicInfo.length; ++i) {
         var info = this.gpuInfo_.basicInfo[i];
-        if (info.description == "Sandboxed")
+        if (info.description == 'Sandboxed')
           return info.value;
       }
       return false;
     }
   };
 
-  return {
-    BrowserBridge: BrowserBridge
-  };
+  return {BrowserBridge: BrowserBridge};
 });

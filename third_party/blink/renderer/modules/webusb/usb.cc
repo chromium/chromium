@@ -8,6 +8,7 @@
 
 #include "device/usb/public/mojom/device.mojom-blink.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -19,7 +20,6 @@
 #include "third_party/blink/renderer/modules/webusb/usb_device.h"
 #include "third_party/blink/renderer/modules/webusb/usb_device_filter.h"
 #include "third_party/blink/renderer/modules/webusb/usb_device_request_options.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -112,10 +112,8 @@ ScriptPromise USB::getDevices(ScriptState* script_state) {
   }
   if (!IsFeatureEnabled()) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
-    if (execution_context && execution_context->IsDocument()) {
-      ToDocument(execution_context)
-          ->GetFrame()
-          ->ReportFeaturePolicyViolation(mojom::FeaturePolicyFeature::kUsb);
+    if (auto* document = DynamicTo<Document>(execution_context)) {
+      document->ReportFeaturePolicyViolation(mojom::FeaturePolicyFeature::kUsb);
     }
     return ScriptPromise::RejectWithDOMException(
         script_state, DOMException::Create(DOMExceptionCode::kSecurityError,
@@ -133,14 +131,14 @@ ScriptPromise USB::getDevices(ScriptState* script_state) {
 ScriptPromise USB::requestDevice(ScriptState* script_state,
                                  const USBDeviceRequestOptions& options) {
   LocalFrame* frame = GetFrame();
-  if (!frame) {
+  if (!frame || !frame->GetDocument()) {
     return ScriptPromise::RejectWithDOMException(
         script_state,
         DOMException::Create(DOMExceptionCode::kNotSupportedError));
   }
 
-  if (!frame->IsFeatureEnabled(mojom::FeaturePolicyFeature::kUsb,
-                               ReportOptions::kReportOnFailure)) {
+  if (!frame->GetDocument()->IsFeatureEnabled(
+          mojom::FeaturePolicyFeature::kUsb, ReportOptions::kReportOnFailure)) {
     return ScriptPromise::RejectWithDOMException(
         script_state, DOMException::Create(DOMExceptionCode::kSecurityError,
                                            kFeaturePolicyBlocked));
@@ -148,7 +146,7 @@ ScriptPromise USB::requestDevice(ScriptState* script_state,
 
   EnsureServiceConnection();
 
-  if (!Frame::HasTransientUserActivation(frame)) {
+  if (!LocalFrame::HasTransientUserActivation(frame)) {
     return ScriptPromise::RejectWithDOMException(
         script_state,
         DOMException::Create(
@@ -314,9 +312,8 @@ bool USB::IsContextSupported() const {
 }
 
 bool USB::IsFeatureEnabled() const {
-  ExecutionContext* context = GetExecutionContext();
-  FeaturePolicy* policy = context->GetSecurityContext().GetFeaturePolicy();
-  return policy->IsFeatureEnabled(mojom::FeaturePolicyFeature::kUsb);
+  return GetExecutionContext()->GetSecurityContext().IsFeatureEnabled(
+      mojom::FeaturePolicyFeature::kUsb);
 }
 
 void USB::Trace(blink::Visitor* visitor) {

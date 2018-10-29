@@ -16,7 +16,7 @@ chroot.
     Run `build /install-build-deps.sh`, then exit the rooted chroot.
 *   Delete your out/ directory if you had a previous non-chrooted build.
 *   To enter your chroot as normal user, run `schroot -c lucid64`.
-*   Now run `build/gyp_chromium`, compile and run DumpRenderTree within chroot.
+*   Now compile and run DumpRenderTree within chroot.
 
 ## Tips and Tricks
 

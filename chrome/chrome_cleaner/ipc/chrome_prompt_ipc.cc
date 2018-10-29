@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/message_loop/message_loop.h"
@@ -65,14 +64,36 @@ void ChromePromptIPC::PostPromptUserTask(
                          base::Unretained(this), std::move(callback))));
 }
 
+void ChromePromptIPC::PostDisableExtensionsTask(
+    const std::vector<base::string16>& extension_ids,
+    mojom::ChromePrompt::DisableExtensionsCallback callback) {
+  DCHECK(task_runner_);
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ChromePromptIPC::RunDisableExtensionsTask, base::Unretained(this),
+          extension_ids,
+          base::BindOnce(&ChromePromptIPC::OnChromeResponseReceivedExtensions,
+                         base::Unretained(this), std::move(callback))));
+}
+
 void ChromePromptIPC::OnChromeResponseReceived(
     mojom::ChromePrompt::PromptUserCallback callback,
     mojom::PromptAcceptance prompt_acceptance) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(State::kWaitingForResponseFromChrome, state_);
 
-  state_ = State::kDone;
+  state_ = State::kDoneInteraction;
   std::move(callback).Run(prompt_acceptance);
+}
+
+void ChromePromptIPC::OnChromeResponseReceivedExtensions(
+    mojom::ChromePrompt::DisableExtensionsCallback callback,
+    bool extensions_disabled_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(State::kDoneInteraction, state_);
+
+  std::move(callback).Run(extensions_disabled_callback);
 }
 
 void ChromePromptIPC::OnConnectionError() {
@@ -82,10 +103,10 @@ void ChromePromptIPC::OnConnectionError() {
   if (!error_handler_)
     return;
 
-  if (state_ == State::kDone) {
+  if (state_ == State::kDoneInteraction) {
     error_handler_->OnConnectionClosedAfterDone();
   } else {
-    state_ = State::kDone;
+    state_ = State::kDoneInteraction;
     error_handler_->OnConnectionClosed();
   }
 }
@@ -125,7 +146,7 @@ void ChromePromptIPC::RunPromptUserTask(
   // This is a corner case, in which we receive the disconnect message on the
   // IPC thread right before this task is posted. In that case, this function
   // will be a no-op.
-  if (state_ == State::kDone)
+  if (state_ == State::kDoneInteraction)
     return;
 
   state_ = State::kWaitingForResponseFromChrome;
@@ -133,6 +154,17 @@ void ChromePromptIPC::RunPromptUserTask(
   (*chrome_prompt_service_)
       ->PromptUser(std::move(files_to_delete), std::move(registry_keys),
                    base::nullopt, std::move(callback));
+}
+
+void ChromePromptIPC::RunDisableExtensionsTask(
+    const std::vector<base::string16>& extension_ids,
+    mojom::ChromePrompt::DisableExtensionsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(chrome_prompt_service_);
+  DCHECK(state_ == State::kDoneInteraction);
+
+  (*chrome_prompt_service_)
+      ->DisableExtensions(std::move(extension_ids), std::move(callback));
 }
 
 }  // namespace chrome_cleaner

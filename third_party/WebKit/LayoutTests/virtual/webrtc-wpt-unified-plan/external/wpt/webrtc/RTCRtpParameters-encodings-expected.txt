@@ -1,10 +1,9 @@
 This is a testharness.js-based test.
 PASS addTransceiver() with undefined sendEncodings should have default encoding parameter with active set to true
 PASS addTransceiver() with empty list sendEncodings should have default encoding parameter with active set to true
-FAIL sender.getParameters() should return sendEncodings set by addTransceiver() assert_equals: expected (string) "enabled" but got (undefined) undefined
+FAIL sender.getParameters() should return sendEncodings set by addTransceiver() promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to set remote answer sdp: Failed to set remote audio description send parameters."
 PASS sender.setParameters() with mismatch number of encodings should reject with InvalidModificationError
-FAIL sender.setParameters() with encodings unset should reject with InvalidModificationError assert_throws: function "function() { throw e }" threw object "TypeError: Failed to execute 'setParameters' on 'RTCRtpSender': required member encodings is undefined." that is not a DOMException InvalidModificationError: property "code" is equal to undefined, expected 13
-FAIL setParameters() with modified encoding.rtx field should reject with InvalidModificationError assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS sender.setParameters() with encodings unset should reject with TypeError
 FAIL setParameters() with modified encoding.rid field should reject with InvalidModificationError assert_equals: expected (string) "foo" but got (undefined) undefined
 FAIL setParameters() with encoding.scaleResolutionDownBy field set to less than 1.0 should reject with RangeError assert_unreached: Should have rejected: undefined Reached unreachable code
 FAIL setParameters() with encoding.scaleResolutionDownBy field set to greater than 1.0 should succeed assert_approx_equals: expected a number but got a "undefined"
@@ -12,13 +11,13 @@ FAIL setParameters() with modified encoding.dtx should succeed with RTCRtpTransc
 FAIL setParameters() with modified encoding.dtx should succeed without RTCRtpTransceiverInit assert_equals: expected (string) "enabled" but got (undefined) undefined
 FAIL setParameters() with unset encoding.dtx should succeed with RTCRtpTransceiverInit assert_equals: expected (string) "enabled" but got (undefined) undefined
 FAIL setParameters() with unset encoding.dtx should succeed without RTCRtpTransceiverInit assert_equals: expected (string) "enabled" but got (undefined) undefined
-FAIL setParameters() with modified encoding.active should succeed with RTCRtpTransceiverInit assert_equals: expected false but got true
+PASS setParameters() with modified encoding.active should succeed with RTCRtpTransceiverInit
 PASS setParameters() with modified encoding.active should succeed without RTCRtpTransceiverInit
-FAIL setParameters() with modified encoding.priority should succeed with RTCRtpTransceiverInit assert_equals: expected "very-low" but got "low"
+PASS setParameters() with modified encoding.priority should succeed with RTCRtpTransceiverInit
 PASS setParameters() with modified encoding.priority should succeed without RTCRtpTransceiverInit
 FAIL setParameters() with modified encoding.ptime should succeed with RTCRtpTransceiverInit assert_equals: expected (number) 2 but got (undefined) undefined
 FAIL setParameters() with modified encoding.ptime should succeed without RTCRtpTransceiverInit assert_equals: expected (number) 2 but got (undefined) undefined
-FAIL setParameters() with modified encoding.maxBitrate should succeed with RTCRtpTransceiverInit assert_equals: expected (number) 10000 but got (undefined) undefined
+PASS setParameters() with modified encoding.maxBitrate should succeed with RTCRtpTransceiverInit
 PASS setParameters() with modified encoding.maxBitrate should succeed without RTCRtpTransceiverInit
 FAIL setParameters() with modified encoding.maxFramerate should succeed with RTCRtpTransceiverInit assert_equals: expected (number) 24 but got (undefined) undefined
 FAIL setParameters() with modified encoding.maxFramerate should succeed without RTCRtpTransceiverInit assert_equals: expected (number) 24 but got (undefined) undefined

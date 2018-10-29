@@ -832,6 +832,7 @@ void DisplayPrefs::RegisterForeignPrefs(PrefRegistry* registry) {
 DisplayPrefs::DisplayPrefs(std::unique_ptr<base::Value> initial_prefs)
     : local_state_(std::make_unique<LocalState>(std::move(initial_prefs))) {
   Shell::Get()->AddShellObserver(this);
+  Shell::Get()->session_controller()->AddObserver(this);
   // If |initial_prefs| is not null, load the initial display prefs. Otherwise
   // the initial prefs will be loaded from OnLocalStatePrefServiceInitialized.
   if (local_state_->has_initial_prefs())
@@ -839,6 +840,7 @@ DisplayPrefs::DisplayPrefs(std::unique_ptr<base::Value> initial_prefs)
 }
 
 DisplayPrefs::~DisplayPrefs() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
 }
 
@@ -851,13 +853,16 @@ void DisplayPrefs::OnLocalStatePrefServiceInitialized(
   if (!local_state_->has_initial_prefs())
     LoadDisplayPreferences();
 
-  if (store_requested_) {
-    StoreDisplayPrefs();
-    store_requested_ = false;
-  }
+  if (store_requested_)
+    MaybeStoreDisplayPrefs();
 }
 
-void DisplayPrefs::StoreDisplayPrefs() {
+void DisplayPrefs::OnFirstSessionStarted() {
+  if (store_requested_)
+    MaybeStoreDisplayPrefs();
+}
+
+void DisplayPrefs::MaybeStoreDisplayPrefs() {
   DCHECK(local_state_);
   PrefService* pref_service = local_state_->pref_service();
   if (!pref_service) {
@@ -871,12 +876,23 @@ void DisplayPrefs::StoreDisplayPrefs() {
   StoreCurrentDisplayPowerState(pref_service);
   StoreCurrentDisplayRotationLockPrefs(pref_service);
 
-  // Do not store prefs when the confirmation dialog is shown.
+  // We cannot really decide whether to store display prefs until there is an
+  // active user session. |OnFirstSessionStarted()| should eventually attempt to
+  // do a store in this case.
+  if (!Shell::Get()->session_controller()->GetUserType()) {
+    store_requested_ = true;
+    return;
+  }
+
+  // There are multiple scenarios where we don't want to save display prefs.
+  // Some user types are not allowed, we don't want to change them while a
+  // display change confirmation dialog is still visible, etc.
   if (!UserCanSaveDisplayPreference() ||
       !Shell::Get()->ShouldSaveDisplaySettings()) {
     return;
   }
 
+  store_requested_ = false;
   StoreCurrentDisplayLayoutPrefs(pref_service);
   StoreCurrentDisplayProperties(pref_service);
   StoreDisplayTouchAssociations(pref_service);

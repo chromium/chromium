@@ -67,7 +67,7 @@ class CapsLockDefaultView : public ActionableView {
     TrayPopupItemStyle caption_style(TrayPopupItemStyle::FontStyle::CAPTION);
     caption_style.SetupLabel(shortcut_label_);
 
-    SetInkDropMode(InkDropHostView::InkDropMode::ON);
+    SetInkDropMode(InkDropMode::ON);
 
     tri_view->AddView(TriView::Container::START, image);
     tri_view->AddView(TriView::Container::CENTER, text_label_);

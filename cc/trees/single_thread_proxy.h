@@ -67,11 +67,9 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override;
 
-  // Blink layout tests might call into this even though an unthreaded CC
-  // doesn't have BrowserControls itself.
   void UpdateBrowserControlsState(BrowserControlsState constraints,
                                   BrowserControlsState current,
-                                  bool animate) override {}
+                                  bool animate) override;
 
   // SchedulerClient implementation
   bool WillBeginImplFrame(const viz::BeginFrameArgs& args) override;
@@ -178,6 +176,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   bool animate_requested_;
   bool commit_requested_;
   bool inside_synchronous_composite_;
+  bool needs_impl_frame_;
 
   // True if a request to the LayerTreeHostClient to create an output surface
   // is still outstanding.

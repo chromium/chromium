@@ -13,6 +13,7 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/assistant_controller_observer.h"
+#include "ash/public/cpp/assistant/default_voice_interaction_observer.h"
 #include "ash/public/interfaces/assistant_controller.mojom.h"
 #include "ash/public/interfaces/assistant_image_downloader.mojom.h"
 #include "ash/public/interfaces/assistant_setup.mojom.h"
@@ -45,7 +46,7 @@ class ASH_EXPORT AssistantController
     : public mojom::AssistantController,
       public AssistantControllerObserver,
       public mojom::ManagedWebContentsOpenUrlDelegate,
-      public mojom::VoiceInteractionObserver,
+      public DefaultVoiceInteractionObserver,
       public mojom::AssistantVolumeControl,
       public chromeos::CrasAudioHandler::AudioObserver,
       public AccessibilityObserver {
@@ -130,9 +131,9 @@ class ASH_EXPORT AssistantController
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
 
-  // Opens the specified |url| in a new browser tab.
-  // TODO(dmblack): Support opening specific URLs in the Assistant container.
-  void OpenUrl(const GURL& url);
+  // Opens the specified |url| in a new browser tab. Special handling is applied
+  // to deep links which may cause deviation from this behavior.
+  void OpenUrl(const GURL& url, bool from_server = false);
 
   AssistantCacheController* cache_controller() {
     DCHECK(assistant_cache_controller_);
@@ -170,18 +171,11 @@ class ASH_EXPORT AssistantController
   void NotifyConstructed();
   void NotifyDestroying();
   void NotifyDeepLinkReceived(const GURL& deep_link);
-  void NotifyUrlOpened(const GURL& url);
+  void NotifyUrlOpened(const GURL& url, bool from_server);
 
   // mojom::VoiceInteractionObserver:
   void OnVoiceInteractionStatusChanged(
       mojom::VoiceInteractionState state) override;
-  void OnVoiceInteractionSettingsEnabled(bool enabled) override {}
-  void OnVoiceInteractionContextEnabled(bool enabled) override {}
-  void OnVoiceInteractionHotwordEnabled(bool enabled) override {}
-  void OnVoiceInteractionSetupCompleted(bool completed) override {}
-  void OnAssistantFeatureAllowedChanged(
-      mojom::AssistantAllowedState state) override {}
-  void OnLocaleChanged(const std::string& locale) override {}
 
   // The observer list should be initialized early so that sub-controllers may
   // register as observers during their construction.

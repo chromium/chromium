@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "google_apis/drive/drive_switches.h"
 #include "url/gurl.h"
 
 namespace google_apis {
@@ -32,9 +31,7 @@ class DriveApiUrlGenerator {
  public:
   // |base_url| is the path to the target drive api server.
   // Note that this is an injecting point for a testing server.
-  DriveApiUrlGenerator(const GURL& base_url,
-                       const GURL& base_thumbnail_url,
-                       TeamDrivesIntegrationStatus team_drives_integration);
+  DriveApiUrlGenerator(const GURL& base_url, const GURL& base_thumbnail_url);
   DriveApiUrlGenerator(const DriveApiUrlGenerator& src);
   ~DriveApiUrlGenerator();
 
@@ -47,22 +44,9 @@ class DriveApiUrlGenerator {
   // Returns a URL to invoke "About: get" method.
   GURL GetAboutGetUrl() const;
 
-  // Returns a URL to invoke "Apps: list" method.
-  // Set |use_internal_endpoint| to true if official Chrome's API key is used
-  // and retrieving more information (related to App uninstall) is necessary.
-  GURL GetAppsListUrl(bool use_internal_endpoint) const;
-
-  // Returns a URL to uninstall an app with the give |app_id|.
-  GURL GetAppsDeleteUrl(const std::string& app_id) const;
-
   // Returns a URL to fetch a file metadata.
   GURL GetFilesGetUrl(const std::string& file_id,
-                      bool use_internal_endpoint,
                       const GURL& embed_origin) const;
-
-  // Returns a URL to authorize an app to access a file.
-  GURL GetFilesAuthorizeUrl(const std::string& file_id,
-                            const std::string& app_id) const;
 
   // Returns a URL to create a resource.
   GURL GetFilesInsertUrl(const std::string& visibility) const;
@@ -152,7 +136,6 @@ class DriveApiUrlGenerator {
   const GURL base_url_;
   const GURL base_download_url_;
   const GURL base_thumbnail_url_;
-  const bool enable_team_drives_;
 
   // This class is copyable hence no DISALLOW_COPY_AND_ASSIGN here.
 };

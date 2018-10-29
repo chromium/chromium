@@ -229,19 +229,10 @@ SDK.Resource = class {
   /**
    * @param {!Element} image
    */
-  populateImageSource(image) {
-    /**
-     * @param {?string} content
-     * @this {SDK.Resource}
-     */
-    function onResourceContent(content) {
-      let imageSrc = Common.ContentProvider.contentAsDataURL(content, this._mimeType, true);
-      if (imageSrc === null)
-        imageSrc = this._url;
-      image.src = imageSrc;
-    }
-
-    this.requestContent().then(onResourceContent.bind(this));
+  async populateImageSource(image) {
+    const content = await this.requestContent();
+    const encoded = this._contentEncoded;
+    image.src = Common.ContentProvider.contentAsDataURL(content, this._mimeType, encoded) || this._url;
   }
 
   _requestFinished() {

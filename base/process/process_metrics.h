@@ -518,6 +518,13 @@ struct BASE_EXPORT SystemPerformanceInfo {
   uint64_t pagefile_pages_written = 0;
   // The number of write operations performed on the system's pagefiles.
   uint64_t pagefile_pages_write_ios = 0;
+  // The number of pages of physical memory available to processes running on
+  // the system.
+  uint64_t available_pages = 0;
+  // The number of pages read from disk to resolve page faults.
+  uint64_t pages_read = 0;
+  // The number of read operations initiated to resolve page faults.
+  uint64_t page_read_ios = 0;
 };
 
 // Retrieves performance counters from the operating system.

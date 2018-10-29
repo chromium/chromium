@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "content/renderer/pepper/gfx_conversion.h"
 #include "content/renderer/pepper/mock_renderer_ppapi_host.h"
 #include "content/renderer/pepper/ppb_image_data_impl.h"
@@ -82,7 +82,7 @@ class PepperGraphics2DHostTest : public testing::Test {
  private:
   ppapi::ViewData renderer_view_data_;
   std::unique_ptr<PepperGraphics2DHost> host_;
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
   MockRendererPpapiHost renderer_ppapi_host_;
   ppapi::TestGlobals test_globals_;
 };

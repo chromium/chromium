@@ -63,8 +63,7 @@ void MockModelTypeProcessor::SetSynchronousExecution(bool is_synchronous) {
 }
 
 void MockModelTypeProcessor::RunQueuedTasks() {
-  for (std::vector<base::Closure>::iterator it = pending_tasks_.begin();
-       it != pending_tasks_.end(); ++it) {
+  for (auto it = pending_tasks_.begin(); it != pending_tasks_.end(); ++it) {
     it->Run();
   }
   pending_tasks_.clear();
@@ -165,31 +164,27 @@ sync_pb::ModelTypeState MockModelTypeProcessor::GetNthCommitState(
 
 bool MockModelTypeProcessor::HasUpdateResponse(
     const std::string& tag_hash) const {
-  std::map<const std::string, UpdateResponseData>::const_iterator it =
-      update_response_items_.find(tag_hash);
+  auto it = update_response_items_.find(tag_hash);
   return it != update_response_items_.end();
 }
 
 UpdateResponseData MockModelTypeProcessor::GetUpdateResponse(
     const std::string& tag_hash) const {
   DCHECK(HasUpdateResponse(tag_hash));
-  std::map<const std::string, UpdateResponseData>::const_iterator it =
-      update_response_items_.find(tag_hash);
+  auto it = update_response_items_.find(tag_hash);
   return it->second;
 }
 
 bool MockModelTypeProcessor::HasCommitResponse(
     const std::string& tag_hash) const {
-  std::map<const std::string, CommitResponseData>::const_iterator it =
-      commit_response_items_.find(tag_hash);
+  auto it = commit_response_items_.find(tag_hash);
   return it != commit_response_items_.end();
 }
 
 CommitResponseData MockModelTypeProcessor::GetCommitResponse(
     const std::string& tag_hash) const {
   DCHECK(HasCommitResponse(tag_hash));
-  std::map<const std::string, CommitResponseData>::const_iterator it =
-      commit_response_items_.find(tag_hash);
+  auto it = commit_response_items_.find(tag_hash);
   return it->second;
 }
 
@@ -212,8 +207,7 @@ void MockModelTypeProcessor::OnCommitCompletedImpl(
     const CommitResponseDataList& response_list) {
   received_commit_responses_.push_back(response_list);
   type_states_received_on_commit_.push_back(type_state);
-  for (CommitResponseDataList::const_iterator it = response_list.begin();
-       it != response_list.end(); ++it) {
+  for (auto it = response_list.begin(); it != response_list.end(); ++it) {
     const std::string tag_hash = it->client_tag_hash;
     commit_response_items_.insert(std::make_pair(tag_hash, *it));
 
@@ -238,8 +232,7 @@ void MockModelTypeProcessor::OnUpdateReceivedImpl(
     const UpdateResponseDataList& response_list) {
   received_update_responses_.push_back(response_list);
   type_states_received_on_update_.push_back(type_state);
-  for (UpdateResponseDataList::const_iterator it = response_list.begin();
-       it != response_list.end(); ++it) {
+  for (auto it = response_list.begin(); it != response_list.end(); ++it) {
     const std::string client_tag_hash = it->entity->client_tag_hash;
     update_response_items_.insert(std::make_pair(client_tag_hash, *it));
 
@@ -252,8 +245,7 @@ void MockModelTypeProcessor::OnUpdateReceivedImpl(
 // Fetches the sequence number as of the most recent update request.
 int64_t MockModelTypeProcessor::GetCurrentSequenceNumber(
     const std::string& tag_hash) const {
-  std::map<const std::string, int64_t>::const_iterator it =
-      sequence_numbers_.find(tag_hash);
+  auto it = sequence_numbers_.find(tag_hash);
   if (it == sequence_numbers_.end()) {
     return 0;
   } else {
@@ -273,8 +265,7 @@ int64_t MockModelTypeProcessor::GetNextSequenceNumber(
 
 int64_t MockModelTypeProcessor::GetBaseVersion(
     const std::string& tag_hash) const {
-  std::map<const std::string, int64_t>::const_iterator it =
-      base_versions_.find(tag_hash);
+  auto it = base_versions_.find(tag_hash);
   if (it == base_versions_.end()) {
     return kUncommittedVersion;
   } else {

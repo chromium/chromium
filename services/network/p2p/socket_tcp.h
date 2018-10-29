@@ -110,10 +110,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
   base::queue<SendBuffer> write_queue_;
   SendBuffer write_buffer_;
 
-  bool write_pending_;
+  bool write_pending_ = false;
 
-  bool connected_;
-  P2PSocketType type_;
+  bool connected_ = false;
+  const P2PSocketType type_;
   ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(P2PSocketTcpBase);

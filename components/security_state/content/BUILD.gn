@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("content") {
+import("//build/config/jumbo.gni")
+
+jumbo_static_library("content") {
   sources = [
     "content_utils.cc",
     "content_utils.h",
@@ -25,7 +27,7 @@ static_library("content") {
   ]
 }
 
-source_set("unit_tests") {
+jumbo_source_set("unit_tests") {
   testonly = true
   sources = [
     "content_utils_unittest.cc",

@@ -348,6 +348,10 @@ dependencies for this APK.
 The path of an zip archive containing the APK's resources compiled to the
 protocol buffer format (instead of regular binary xml + resources.arsc).
 
+* `deps_info['module_rtxt_path']`:
+The path of the R.txt file generated when compiling the resources for the bundle
+module.
+
 * `native['libraries']`
 List of native libraries for the primary ABI to be embedded in this APK.
 E.g. [ "libchrome.so" ] (i.e. this doesn't include any ABI sub-directory
@@ -860,7 +864,7 @@ def main(argv):
       help='Whether proguard is enabled for this apk or bundle module.')
   parser.add_option('--proguard-configs',
       help='GN-list of proguard flag files to use in final apk.')
-  parser.add_option('--proguard-output-jar-path',
+  parser.add_option('--proguard-mapping-path',
       help='Path to jar created by ProGuard step')
   parser.add_option('--fail',
       help='GN-list of error message lines to fail with.')
@@ -871,6 +875,9 @@ def main(argv):
   parser.add_option('--apk-proto-resources',
                     help='Path to resources compiled in protocol buffer format '
                          ' for this apk.')
+  parser.add_option(
+      '--module-rtxt-path',
+      help='Path to R.txt file for resources in a bundle module.')
 
   parser.add_option('--generate-markdown-format-doc', action='store_true',
                     help='Dump the Markdown .build_config format documentation '
@@ -884,7 +891,7 @@ def main(argv):
   if options.generate_markdown_format_doc:
     doc_lines = _ExtractMarkdownDocumentation(__doc__)
     for line in doc_lines:
-        print(line)
+      print(line)
     return 0
 
   if options.fail:
@@ -918,6 +925,10 @@ def main(argv):
   if options.apk_proto_resources:
     if options.type != 'android_app_bundle_module':
       raise Exception('--apk-proto-resources can only be used with '
+                      '--type=android_app_bundle_module')
+  if options.module_rtxt_path:
+    if options.type != 'android_app_bundle_module':
+      raise Exception('--module-rxt-path can only be used with '
                       '--type=android_app_bundle_module')
 
   is_apk_or_module_target = options.type in ('android_apk',
@@ -1027,6 +1038,9 @@ def main(argv):
 
     if options.apk_proto_resources:
       deps_info['proto_resources_path'] = options.apk_proto_resources
+
+    if options.module_rtxt_path:
+      deps_info['module_rtxt_path'] = options.module_rtxt_path
 
   if is_java_target:
     deps_info['requires_android'] = bool(options.requires_android)
@@ -1257,8 +1271,8 @@ def main(argv):
                                                deps_proguard_disabled))
     else:
       deps_info['proguard_enabled'] = bool(options.proguard_enabled)
-      if options.proguard_output_jar_path:
-        deps_info['proguard_output_jar_path'] = options.proguard_output_jar_path
+      if options.proguard_mapping_path:
+        deps_info['proguard_mapping_path'] = options.proguard_mapping_path
 
   # The java code for an instrumentation test apk is assembled differently for
   # ProGuard vs. non-ProGuard.
@@ -1287,7 +1301,7 @@ def main(argv):
                         if p not in extra_jars)
       tested_apk_config = GetDepConfig(options.tested_apk_config)
       deps_info['proguard_under_test_mapping'] = (
-          tested_apk_config['proguard_output_jar_path'] + '.mapping')
+          tested_apk_config['proguard_mapping_path'])
     elif options.proguard_enabled:
       # Not sure why you'd want to proguard the test apk when the under-test apk
       # is not proguarded, but it's easy enough to support.

@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ime/constants.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/event_sink.h"
@@ -17,17 +18,17 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/keyboard/keyboard_controller.h"
 #include "ui/keyboard/keyboard_switches.h"
 
 namespace keyboard {
 
 namespace {
 
-const char kKeyDown[] ="keydown";
+const char kKeyDown[] = "keydown";
 const char kKeyUp[] = "keyup";
 
-void SendProcessKeyEvent(ui::EventType type,
-                         aura::WindowTreeHost* host) {
+void SendProcessKeyEvent(ui::EventType type, aura::WindowTreeHost* host) {
   ui::KeyEvent event(type, ui::VKEY_PROCESSKEY, ui::DomCode::NONE,
                      ui::EF_IS_SYNTHESIZED, ui::DomKey::PROCESS,
                      ui::EventTimeForNow());
@@ -36,58 +37,51 @@ void SendProcessKeyEvent(ui::EventType type,
   CHECK(!details.dispatcher_destroyed);
 }
 
-bool g_accessibility_keyboard_enabled = false;
+// Until src/chrome is fully transitioned to use ChromeKeyboardControllerClient
+// we need to test whether KeyboardController exists; it is null in OopMash.
+// TODO(stevenjb): Remove remaining calls from src/chrome.
+// https://crbug.com/84332.
 
-bool g_hotrod_keyboard_enabled = false;
+bool GetFlag(mojom::KeyboardEnableFlag flag) {
+  auto* controller = KeyboardController::Get();
+  return controller ? controller->IsEnableFlagSet(flag) : false;
+}
 
-bool g_keyboard_enabled_from_shelf = false;
-
-bool g_touch_keyboard_enabled = false;
-
-KeyboardState g_requested_keyboard_state = KEYBOARD_STATE_AUTO;
-
-KeyboardShowOverride g_keyboard_show_override = KEYBOARD_SHOW_OVERRIDE_NONE;
+void SetOrClearEnableFlag(mojom::KeyboardEnableFlag flag, bool enabled) {
+  auto* controller = KeyboardController::Get();
+  if (!controller)
+    return;
+  if (enabled)
+    controller->SetEnableFlag(flag);
+  else
+    controller->ClearEnableFlag(flag);
+}
 
 }  // namespace
 
 void SetAccessibilityKeyboardEnabled(bool enabled) {
-  g_accessibility_keyboard_enabled = enabled;
+  SetOrClearEnableFlag(mojom::KeyboardEnableFlag::kAccessibilityEnabled,
+                       enabled);
 }
 
 bool GetAccessibilityKeyboardEnabled() {
-  return g_accessibility_keyboard_enabled;
-}
-
-void SetHotrodKeyboardEnabled(bool enabled) {
-  g_hotrod_keyboard_enabled = enabled;
-}
-
-bool GetHotrodKeyboardEnabled() {
-  return g_hotrod_keyboard_enabled;
+  return GetFlag(mojom::KeyboardEnableFlag::kAccessibilityEnabled);
 }
 
 void SetKeyboardEnabledFromShelf(bool enabled) {
-  g_keyboard_enabled_from_shelf = enabled;
+  SetOrClearEnableFlag(mojom::KeyboardEnableFlag::kShelfEnabled, enabled);
 }
 
 bool GetKeyboardEnabledFromShelf() {
-  return g_keyboard_enabled_from_shelf;
+  return GetFlag(mojom::KeyboardEnableFlag::kShelfEnabled);
 }
 
 void SetTouchKeyboardEnabled(bool enabled) {
-  g_touch_keyboard_enabled = enabled;
+  SetOrClearEnableFlag(mojom::KeyboardEnableFlag::kTouchEnabled, enabled);
 }
 
 bool GetTouchKeyboardEnabled() {
-  return g_touch_keyboard_enabled;
-}
-
-void SetRequestedKeyboardState(KeyboardState state) {
-  g_requested_keyboard_state = state;
-}
-
-KeyboardState GetKeyboardRequestedState() {
-  return g_requested_keyboard_state;
+  return GetFlag(mojom::KeyboardEnableFlag::kTouchEnabled);
 }
 
 std::string GetKeyboardLayout() {
@@ -97,32 +91,7 @@ std::string GetKeyboardLayout() {
 }
 
 bool IsKeyboardEnabled() {
-  // Accessibility setting prioritized over policy setting.
-  if (g_accessibility_keyboard_enabled)
-    return true;
-  // Keyboard can be enabled temporarily by the shelf.
-  if (g_keyboard_enabled_from_shelf)
-    return true;
-  // Policy strictly disables showing a virtual keyboard.
-  if (g_keyboard_show_override == KEYBOARD_SHOW_OVERRIDE_DISABLED)
-    return false;
-  // Policy strictly enables the keyboard.
-  if (g_keyboard_show_override == KEYBOARD_SHOW_OVERRIDE_ENABLED)
-    return true;
-  // Run-time flag to enable keyboard has been included.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableVirtualKeyboard))
-    return true;
-  // Requested state from the application layer.
-  if (g_requested_keyboard_state == KEYBOARD_STATE_DISABLED)
-    return false;
-  // Check if any of the other flags are enabled.
-  return g_touch_keyboard_enabled ||
-         g_requested_keyboard_state == KEYBOARD_STATE_ENABLED;
-}
-
-void SetKeyboardShowOverride(KeyboardShowOverride show_override) {
-  g_keyboard_show_override = show_override;
+  return KeyboardController::Get()->IsKeyboardEnableRequested();
 }
 
 bool SendKeyEvent(const std::string type,
@@ -167,8 +136,8 @@ bool SendKeyEvent(const std::string type,
         // Log the rough lengths of characters typed between backspaces. This
         // metric will be used to determine the error rate for the keyboard.
         UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "VirtualKeyboard.KeystrokesBetweenBackspaces",
-            keys_seen, 1, 1000, 50);
+            "VirtualKeyboard.KeystrokesBetweenBackspaces", keys_seen, 1, 1000,
+            50);
         keys_seen = 0;
       } else {
         ++keys_seen;
@@ -179,11 +148,13 @@ bool SendKeyEvent(const std::string type,
     if (dom_code == ui::DomCode::NONE)
       dom_code = ui::UsLayoutKeyboardCodeToDomCode(code);
     CHECK(dom_code != ui::DomCode::NONE);
-    ui::KeyEvent event(
-        event_type,
-        code,
-        dom_code,
-        modifiers);
+    ui::KeyEvent event(event_type, code, dom_code, modifiers);
+
+    // Marks the simulated key event is from the Virtual Keyboard.
+    ui::Event::Properties properties;
+    properties[ui::kPropertyFromVK] = std::vector<uint8_t>();
+    event.SetProperties(properties);
+
     ui::EventDispatchDetails details =
         host->event_sink()->OnEventFromSource(&event);
     CHECK(!details.dispatcher_destroyed);

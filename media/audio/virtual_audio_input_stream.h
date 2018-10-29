@@ -13,6 +13,7 @@
 
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_converter.h"
@@ -96,14 +97,14 @@ class MEDIA_EXPORT VirtualAudioInputStream : public AudioInputStream {
 
   // AudioConverters associated with the attached VirtualAudioOutputStreams,
   // partitioned by common AudioParameters.
-  AudioConvertersMap converters_;
+  AudioConvertersMap converters_ GUARDED_BY(converter_network_lock_);
 
   // AudioConverter that takes all the audio converters and mixes them into one
   // final audio stream.
-  AudioConverter mixer_;
+  AudioConverter mixer_ GUARDED_BY(converter_network_lock_);
 
   // Number of currently attached VirtualAudioOutputStreams.
-  int num_attached_output_streams_;
+  int num_attached_output_streams_ GUARDED_BY(converter_network_lock_);
 
   // Handles callback timing for consumption of audio data.
   FakeAudioWorker fake_worker_;

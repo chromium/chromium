@@ -95,7 +95,7 @@ class StringType(TypeBase):
     @param StringType.TreatNullAs treat_null_as : argument of an extended attribute [TreatNullAs] (optional)
     """
     STRING_TYPES = ('DOMString', 'ByteString', 'USVString')
-    TREAT_NULL_AS = ('EmptyString', 'NullString')
+    TREAT_NULL_AS = ('EmptyString',)
 
     def __init__(self, **kwargs):
         self._string_type = kwargs.pop('string_type')

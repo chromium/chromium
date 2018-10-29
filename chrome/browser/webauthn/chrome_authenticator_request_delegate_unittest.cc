@@ -4,20 +4,64 @@
 
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 
+#include <utility>
+
 #include "build/build_config.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
-
 class ChromeAuthenticatorRequestDelegateTest
     : public ChromeRenderViewHostTestHarness {};
 
-TEST_F(ChromeAuthenticatorRequestDelegateTest, TestDefaultTransportPrefType) {
+TEST_F(ChromeAuthenticatorRequestDelegateTest, TestTransportPrefType) {
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
   EXPECT_FALSE(delegate.GetLastTransportUsed());
+  delegate.UpdateLastTransportUsed(device::FidoTransportProtocol::kInternal);
+  const auto transport = delegate.GetLastTransportUsed();
+  ASSERT_TRUE(transport);
+  EXPECT_EQ(device::FidoTransportProtocol::kInternal, transport);
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       TestPairedDeviceAddressPreference) {
+  static constexpr char kTestPairedDeviceAddress[] = "paired_device_address";
+  static constexpr char kTestPairedDeviceAddress2[] = "paired_device_address2";
+
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+
+  auto* const address_list =
+      delegate.GetPreviouslyPairedFidoBleDeviceAddresses();
+  ASSERT_TRUE(address_list);
+  EXPECT_TRUE(address_list->empty());
+
+  delegate.AddFidoBleDeviceToPairedList(kTestPairedDeviceAddress);
+  const auto* updated_address_list =
+      delegate.GetPreviouslyPairedFidoBleDeviceAddresses();
+  ASSERT_TRUE(updated_address_list);
+  ASSERT_EQ(1u, updated_address_list->GetSize());
+
+  const auto& address_value = updated_address_list->GetList().at(0);
+  ASSERT_TRUE(address_value.is_string());
+  EXPECT_EQ(kTestPairedDeviceAddress, address_value.GetString());
+
+  delegate.AddFidoBleDeviceToPairedList(kTestPairedDeviceAddress);
+  const auto* address_list_with_duplicate_address_added =
+      delegate.GetPreviouslyPairedFidoBleDeviceAddresses();
+  ASSERT_TRUE(address_list_with_duplicate_address_added);
+  EXPECT_EQ(1u, address_list_with_duplicate_address_added->GetSize());
+
+  delegate.AddFidoBleDeviceToPairedList(kTestPairedDeviceAddress2);
+  const auto* address_list_with_two_addresses =
+      delegate.GetPreviouslyPairedFidoBleDeviceAddresses();
+  ASSERT_TRUE(address_list_with_two_addresses);
+
+  ASSERT_EQ(2u, address_list_with_two_addresses->GetSize());
+  const auto& second_address_value =
+      address_list_with_two_addresses->GetList().at(1);
+  ASSERT_TRUE(second_address_value.is_string());
+  EXPECT_EQ(kTestPairedDeviceAddress2, second_address_value.GetString());
 }
 
 #if defined(OS_MACOSX)
@@ -63,4 +107,3 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
 }
 #endif
 
-}  // namespace

@@ -304,7 +304,7 @@ void WebContentsDelegateAndroid::UpdateTargetURL(WebContents* source,
   Java_WebContentsDelegateAndroid_onUpdateUrl(env, obj, java_url);
 }
 
-void WebContentsDelegateAndroid::HandleKeyboardEvent(
+bool WebContentsDelegateAndroid::HandleKeyboardEvent(
     WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   const JavaRef<jobject>& key_event = event.os_event;
@@ -312,9 +312,10 @@ void WebContentsDelegateAndroid::HandleKeyboardEvent(
     JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
     if (obj.is_null())
-      return;
+      return true;
     Java_WebContentsDelegateAndroid_handleKeyboardEvent(env, obj, key_event);
   }
+  return true;
 }
 
 bool WebContentsDelegateAndroid::TakeFocus(WebContents* source, bool reverse) {
@@ -397,7 +398,8 @@ int WebContentsDelegateAndroid::GetBottomControlsHeight() const {
   return Java_WebContentsDelegateAndroid_getBottomControlsHeight(env, obj);
 }
 
-bool WebContentsDelegateAndroid::DoBrowserControlsShrinkBlinkSize() const {
+bool WebContentsDelegateAndroid::DoBrowserControlsShrinkRendererSize(
+    const content::WebContents* contents) const {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null())

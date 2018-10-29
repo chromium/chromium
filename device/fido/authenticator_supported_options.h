@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "components/cbor/cbor_values.h"
+#include "components/cbor/values.h"
 
 namespace device {
 
@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSupportedOptions {
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-cbor::CBORValue ConvertToCBOR(const AuthenticatorSupportedOptions& options);
+cbor::Value ConvertToCBOR(const AuthenticatorSupportedOptions& options);
 
 }  // namespace device
 

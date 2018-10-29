@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/limits.h"
@@ -43,11 +44,19 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     // is called again, it will attempt to resume processing of the stream
     // by calling the same method again.
     enum class Status {
-      kOk,        // Operation completed successfully.
-      kFail,      // Operation failed.
-      kTryAgain,  // Operation failed because some external data is missing.
-                  // Retry the same operation later, once the data has been
-                  // provided.
+      // Operation completed successfully.
+      kOk,
+
+      // Operation failed.
+      kFail,
+
+      // Operation failed because some external data is missing. Retry the same
+      // operation later, once the data has been provided.
+      kTryAgain,
+
+      // Operation is not supported. Used by SetStream() and ParseSliceHeader()
+      // to indicate that the Accelerator can not handle this operation.
+      kNotSupported,
     };
 
     H264Accelerator();
@@ -120,6 +129,26 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     // Reset any current state that may be cached in the accelerator, dropping
     // any cached parameters/slices that have not been committed yet.
     virtual void Reset() = 0;
+
+    // Notifies the accelerator whenever there is a new stream to process.
+    // |stream| is the data in annex B format, which may include SPS and PPS
+    // NALUs when there is a configuration change. The first frame must contain
+    // the SPS and PPS NALUs. SPS and PPS NALUs may not be encrypted.
+    // |decrypt_config| is the config for decrypting the stream. The accelerator
+    // should use |decrypt_config| to keep track of the parts of |stream| that
+    // are encrypted. If kTryAgain is returned, the decoder will retry this call
+    // later. This method has a default implementation that returns
+    // kNotSupported.
+    virtual Status SetStream(base::span<const uint8_t> stream,
+                             const DecryptConfig* decrypt_config);
+
+    // Parse a slice header, returning it in |*slice_header|. |slice_nalu| must
+    // be a slice NALU. On success, this populates |*slice_header|. If the
+    // Accelerator doesn't handle this slice header, then it should return
+    // kNotSupported. This method has a default implementation that returns
+    // kNotSupported.
+    virtual Status ParseSliceHeader(const H264NALU& slice_nalu,
+                                    H264SliceHeader* slice_header);
 
    private:
     DISALLOW_COPY_AND_ASSIGN(H264Accelerator);
@@ -281,8 +310,16 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   // Parser in use.
   H264Parser parser_;
 
+  // Most recent call to SetStream().
+  const uint8_t* current_stream_ = nullptr;
+  size_t current_stream_size_ = 0;
+
   // Decrypting config for the most recent data passed to SetStream().
   std::unique_ptr<DecryptConfig> current_decrypt_config_;
+
+  // Keep track of when SetStream() is called so that
+  // H264Accelerator::SetStream() can be called.
+  bool current_stream_has_been_changed_ = false;
 
   // DPB in use.
   H264DPB dpb_;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/download/quarantine/quarantine.h"
+
 #include <errno.h>
 #include <stddef.h>
 #include <sys/types.h>
@@ -15,9 +17,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/stl_util.h"
 #include "base/strings/string_split.h"
-#include "components/download/quarantine/quarantine.h"
-#include "components/download/quarantine/quarantine_constants_linux.h"
+#include "components/download/quarantine/common_linux.h"
+#include "components/download/quarantine/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -111,10 +114,8 @@ TEST_F(QuarantineLinuxTest, InvalidSourceURLTest) {
       QuarantineFileResult::ANNOTATION_FAILED,
       QuarantineFile(test_file(), invalid_url, referrer_url(), std::string()));
   GetExtendedAttributeNames(&attr_names);
-  EXPECT_EQ(attr_names.end(), find(attr_names.begin(), attr_names.end(),
-                                   kSourceURLExtendedAttrName));
-  EXPECT_NE(attr_names.end(), find(attr_names.begin(), attr_names.end(),
-                                   kReferrerURLExtendedAttrName));
+  EXPECT_FALSE(base::ContainsValue(attr_names, kSourceURLExtendedAttrName));
+  EXPECT_TRUE(base::ContainsValue(attr_names, kReferrerURLExtendedAttrName));
 }
 
 TEST_F(QuarantineLinuxTest, InvalidReferrerURLTest) {
@@ -126,8 +127,7 @@ TEST_F(QuarantineLinuxTest, InvalidReferrerURLTest) {
       QuarantineFileResult::OK,
       QuarantineFile(test_file(), source_url(), invalid_url, std::string()));
   GetExtendedAttributeNames(&attr_names);
-  EXPECT_EQ(attr_names.end(), find(attr_names.begin(), attr_names.end(),
-                                   kReferrerURLExtendedAttrName));
+  EXPECT_FALSE(base::ContainsValue(attr_names, kReferrerURLExtendedAttrName));
   EXPECT_TRUE(IsFileQuarantined(test_file(), source_url(), GURL()));
 }
 
@@ -140,10 +140,8 @@ TEST_F(QuarantineLinuxTest, InvalidURLsTest) {
       QuarantineFileResult::ANNOTATION_FAILED,
       QuarantineFile(test_file(), invalid_url, invalid_url, std::string()));
   GetExtendedAttributeNames(&attr_names);
-  EXPECT_EQ(attr_names.end(), find(attr_names.begin(), attr_names.end(),
-                                   kSourceURLExtendedAttrName));
-  EXPECT_EQ(attr_names.end(), find(attr_names.begin(), attr_names.end(),
-                                   kReferrerURLExtendedAttrName));
+  EXPECT_FALSE(base::ContainsValue(attr_names, kSourceURLExtendedAttrName));
+  EXPECT_FALSE(base::ContainsValue(attr_names, kReferrerURLExtendedAttrName));
   EXPECT_FALSE(IsFileQuarantined(test_file(), GURL(), GURL()));
 }
 

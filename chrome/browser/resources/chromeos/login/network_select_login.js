@@ -215,9 +215,14 @@ Polymer({
       var network =
           networks.find(state => state.GUID == configuration.networkSelectGuid);
       if (network) {
-        this.handleNetworkSelection_(network);
+        window.setTimeout(this.handleNetworkSelection_.bind(this, network), 0);
         this.configuration_applied_ = true;
+        return;
       }
+    }
+    if (configuration.networkOfflineDemo && this.isOfflineDemoModeSetup) {
+      window.setTimeout(this.onOfflineDemoSetupClicked_.bind(this), 0);
+      this.configuration_applied_ = true;
     }
   },
 

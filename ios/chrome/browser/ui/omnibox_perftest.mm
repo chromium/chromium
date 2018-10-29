@@ -8,15 +8,16 @@
 
 #import "base/test/ios/wait_util.h"
 #include "base/time/time.h"
-#include "components/toolbar/test_toolbar_model.h"
-#include "components/toolbar/toolbar_model_impl.h"
+#include "components/omnibox/browser/test_toolbar_model.h"
+#include "components/omnibox/browser/toolbar_model_impl.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#include "ios/chrome/browser/ui/location_bar/toolbar_model_delegate_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/ui/toolbar/clean/toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar/clean/toolbar_coordinator_delegate.h"
-#include "ios/chrome/browser/ui/toolbar/toolbar_model_delegate_ios.h"
+#import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
+#import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/named_guide_util.h"
 #include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
@@ -106,12 +107,13 @@ class OmniboxPerfTest : public PerfTest {
     [[[toolbarDelegate stub] andReturnValue:OCMOCK_VALUE(model_for_mock)]
         toolbarModel];
 
-    coordinator_ = [[ToolbarCoordinator alloc]
-        initWithToolsMenuConfigurationProvider:nil
-                                    dispatcher:nil
-                                  browserState:chrome_browser_state_.get()];
+    CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
+
+    coordinator_ = [[PrimaryToolbarCoordinator alloc]
+        initWithBrowserState:chrome_browser_state_.get()];
     coordinator_.delegate = toolbarDelegate;
     coordinator_.webStateList = web_state_list_.get();
+    coordinator_.commandDispatcher = dispatcher;
     [coordinator_ start];
 
     UIView* toolbarView = coordinator_.viewController.view;
@@ -227,7 +229,7 @@ class OmniboxPerfTest : public PerfTest {
   std::unique_ptr<WebStateList> web_state_list_;
   std::unique_ptr<ToolbarModelDelegateIOS> toolbar_model_delegate_;
   std::unique_ptr<ToolbarModel> toolbar_model_;
-  ToolbarCoordinator* coordinator_;
+  PrimaryToolbarCoordinator* coordinator_;
   UIWindow* window_;
   KeyboardAppearanceListener* keyboard_listener_;
 };

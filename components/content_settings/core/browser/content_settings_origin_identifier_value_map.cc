@@ -99,7 +99,7 @@ std::unique_ptr<RuleIterator> OriginIdentifierValueMap::GetRuleIterator(
   std::unique_ptr<base::AutoLock> auto_lock;
   if (lock)
     auto_lock.reset(new base::AutoLock(*lock));
-  EntryMap::const_iterator it = entries_.find(key);
+  auto it = entries_.find(key);
   if (it == entries_.end())
     return nullptr;
   return std::unique_ptr<RuleIterator>(new RuleIteratorImpl(
@@ -123,7 +123,7 @@ base::Value* OriginIdentifierValueMap::GetValue(
     ContentSettingsType content_type,
     const ResourceIdentifier& resource_identifier) const {
   EntryMapKey key(content_type, resource_identifier);
-  EntryMap::const_iterator it = entries_.find(key);
+  auto it = entries_.find(key);
   if (it == entries_.end())
     return nullptr;
 
@@ -149,10 +149,10 @@ base::Time OriginIdentifierValueMap::GetLastModified(
 
   EntryMapKey key(content_type, resource_identifier);
   PatternPair patterns(primary_pattern, secondary_pattern);
-  EntryMap::const_iterator it = entries_.find(key);
+  auto it = entries_.find(key);
   if (it == entries_.end())
     return base::Time();
-  Rules::const_iterator r = it->second.find(patterns);
+  auto r = it->second.find(patterns);
   if (r == it->second.end())
     return base::Time();
   return r->second.last_modified;
@@ -186,7 +186,7 @@ void OriginIdentifierValueMap::DeleteValue(
       const ResourceIdentifier& resource_identifier) {
   EntryMapKey key(content_type, resource_identifier);
   PatternPair patterns(primary_pattern, secondary_pattern);
-  EntryMap::iterator it = entries_.find(key);
+  auto it = entries_.find(key);
   if (it == entries_.end())
     return;
   it->second.erase(patterns);

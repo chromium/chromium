@@ -224,8 +224,7 @@ int TracksBuilder::GetTracksSize() const {
 int TracksBuilder::GetTracksPayloadSize() const {
   int payload_size = 0;
 
-  for (TrackList::const_iterator itr = tracks_.begin();
-       itr != tracks_.end(); ++itr) {
+  for (auto itr = tracks_.begin(); itr != tracks_.end(); ++itr) {
     payload_size += itr->GetSize();
   }
 
@@ -235,8 +234,7 @@ int TracksBuilder::GetTracksPayloadSize() const {
 void TracksBuilder::WriteTracks(uint8_t* buf, int buf_size) const {
   WriteMasterElement(&buf, &buf_size, kWebMIdTracks, GetTracksPayloadSize());
 
-  for (TrackList::const_iterator itr = tracks_.begin();
-       itr != tracks_.end(); ++itr) {
+  for (auto itr = tracks_.begin(); itr != tracks_.end(); ++itr) {
     itr->Write(&buf, &buf_size);
   }
 }

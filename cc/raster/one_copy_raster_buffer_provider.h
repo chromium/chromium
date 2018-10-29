@@ -58,13 +58,13 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const base::Closure& callback,
       uint64_t pending_callback_id) const override;
   void Shutdown() override;
+  bool CheckRasterFinishedQueries() override;
 
   // Playback raster source and copy result into |resource|.
   gpu::SyncToken PlaybackAndCopyOnWorkerThread(
-      const gpu::Mailbox& mailbox,
+      gpu::Mailbox* mailbox,
       GLenum mailbox_texture_target,
       bool mailbox_texture_is_overlay_candidate,
-      bool mailbox_texture_storage_allocated,
       const gpu::SyncToken& sync_token,
       const RasterSource* raster_source,
       const gfx::Rect& raster_full_rect,
@@ -109,11 +109,9 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
     const gfx::ColorSpace color_space_;
     const uint64_t previous_content_id_;
     const gpu::SyncToken before_raster_sync_token_;
-    const gpu::Mailbox mailbox_;
+    gpu::Mailbox mailbox_;
     const GLenum mailbox_texture_target_;
     const bool mailbox_texture_is_overlay_candidate_;
-    // Set to true once allocation is done in the worker thread.
-    bool mailbox_texture_storage_allocated_;
     // A SyncToken to be returned from the worker thread, and waited on before
     // using the rastered resource.
     gpu::SyncToken after_raster_sync_token_;
@@ -137,10 +135,9 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
                                     const gfx::Rect& rect_to_copy,
                                     viz::ResourceFormat resource_format,
                                     const gfx::Size& resource_size,
-                                    const gpu::Mailbox& mailbox,
+                                    gpu::Mailbox* mailbox,
                                     GLenum mailbox_texture_target,
                                     bool mailbox_texture_is_overlay_candidate,
-                                    bool mailbox_texture_storage_allocated,
                                     const gpu::SyncToken& sync_token,
                                     const gfx::ColorSpace& color_space);
   gfx::BufferUsage StagingBufferUsage() const;

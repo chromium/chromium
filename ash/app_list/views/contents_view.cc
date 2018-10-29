@@ -42,17 +42,6 @@ namespace {
 constexpr float kExpandArrowOpacityStartProgress = 0.61;
 constexpr float kExpandArrowOpacityEndProgress = 1;
 
-void DoAnimation(base::TimeDelta animation_duration,
-                 ui::Layer* layer,
-                 float target_opacity) {
-  ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
-  animation.SetTransitionDuration(animation_duration);
-  animation.SetTweenType(gfx::Tween::EASE_OUT);
-  animation.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  layer->SetOpacity(target_opacity);
-}
-
 }  // namespace
 
 ContentsView::ContentsView(AppListView* app_list_view)
@@ -85,14 +74,14 @@ void ContentsView::Init(AppListModel* model) {
   SearchModel::SearchResults* results =
       view_delegate->GetSearchModel()->results();
 
-  if (features::IsAnswerCardEnabled()) {
+  if (app_list_features::IsAnswerCardEnabled()) {
     search_result_answer_card_view_ =
         new SearchResultAnswerCardView(view_delegate);
     search_results_page_view_->AddSearchResultContainerView(
         results, search_result_answer_card_view_);
   }
 
-  if (features::IsNewStyleLauncherEnabled()) {
+  if (app_list_features::IsNewStyleLauncherEnabled()) {
     expand_arrow_view_ = new ExpandArrowView(this, app_list_view_);
     AddChildView(expand_arrow_view_);
   }
@@ -323,7 +312,7 @@ void ContentsView::UpdateExpandArrowOpacity(double progress,
   // Don't show |expand_arrow_view_| when the home launcher gestures are
   // disabled in tablet mode.
   if (app_list_view_->IsHomeLauncherEnabledInTabletMode() &&
-      !features::IsHomeLauncherGesturesEnabled()) {
+      !app_list_features::IsHomeLauncherGesturesEnabled()) {
     expand_arrow_view_->layer()->SetOpacity(0);
     return;
   }
@@ -433,8 +422,7 @@ gfx::Size ContentsView::GetMaximumContentsSize() const {
 bool ContentsView::Back() {
   // If the virtual keyboard is visible, dismiss the keyboard and return early
   auto* const keyboard_controller = keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled() &&
-      keyboard_controller->IsKeyboardVisible()) {
+  if (keyboard_controller->IsKeyboardVisible()) {
     keyboard_controller->HideKeyboardByUser();
     return true;
   }
@@ -479,8 +467,8 @@ gfx::Size ContentsView::GetDefaultContentsSize() const {
 gfx::Size ContentsView::CalculatePreferredSize() const {
   // If shelf is set auto-hide, the work area will become fullscreen. The bottom
   // row of apps will be partially blocked by the shelf when it becomes shown.
-  // So always cut the shelf bounds from display bounds.
-  gfx::Size size = GetDisplaySize();
+  // So always cut the shelf bounds from widget bounds.
+  gfx::Size size = GetWidget()->GetNativeView()->bounds().size();
   if (!app_list_view_->is_side_shelf())
     size.set_height(size.height() - AppListConfig::instance().shelf_height());
   return size;
@@ -493,7 +481,7 @@ void ContentsView::Layout() {
 
   if (expand_arrow_view_) {
     // Layout expand arrow.
-    gfx::Rect arrow_rect(rect);
+    gfx::Rect arrow_rect(GetContentsBounds());
     const gfx::Size arrow_size(expand_arrow_view_->GetPreferredSize());
     arrow_rect.set_height(arrow_size.height());
     arrow_rect.ClampToCenteredSize(arrow_size);
@@ -526,29 +514,18 @@ void ContentsView::TransitionChanged() {
 
 void ContentsView::TransitionEnded() {}
 
-gfx::Size ContentsView::GetDisplaySize() const {
-  return display::Screen::GetScreen()
-      ->GetDisplayNearestView(GetWidget()->GetNativeView())
-      .size();
-}
-
-void ContentsView::FadeOutOnClose(base::TimeDelta animation_duration) {
-  DoAnimation(animation_duration, layer(), 0.0f);
-  DoAnimation(animation_duration, GetSearchBoxView()->layer(), 0.0f);
-}
-
-void ContentsView::FadeInOnOpen(base::TimeDelta animation_duration) {
-  GetSearchBoxView()->layer()->SetOpacity(0.0f);
-  layer()->SetOpacity(0.0f);
-  DoAnimation(animation_duration, layer(), 1.0f);
-  DoAnimation(animation_duration, GetSearchBoxView()->layer(), 1.0f);
-}
-
 views::View* ContentsView::GetSelectedView() const {
   return app_list_pages_[GetActivePageIndex()]->GetSelectedView();
 }
 
-void ContentsView::UpdateOpacity() {
+void ContentsView::UpdateYPositionAndOpacity() {
+  AppListViewState state = app_list_view_->app_list_state();
+  if (state == AppListViewState::CLOSED ||
+      state == AppListViewState::FULLSCREEN_SEARCH ||
+      state == AppListViewState::HALF) {
+    return;
+  }
+
   if (expand_arrow_view_) {
     const bool should_restore_opacity =
         !app_list_view_->is_in_drag() &&
@@ -567,9 +544,21 @@ void ContentsView::UpdateOpacity() {
                                 kExpandArrowOpacityStartProgress),
                            0.f),
                   1.0f));
+
+    expand_arrow_view_->SchedulePaint();
   }
 
-  GetAppsContainerView()->UpdateOpacity();
+  AppsContainerView* apps_container_view = GetAppsContainerView();
+  SearchBoxView* search_box = GetSearchBoxView();
+  search_box->GetWidget()->SetBounds(
+      search_box->GetViewBoundsForSearchBoxContentsBounds(
+          ConvertRectToWidgetWithoutTransform(
+              apps_container_view->GetSearchBoxExpectedBounds())));
+
+  search_results_page_view()->SetBoundsRect(
+      apps_container_view->GetSearchBoxExpectedBounds());
+
+  apps_container_view->UpdateYPositionAndOpacity();
 }
 
 bool ContentsView::ShouldLayoutPage(AppListPage* page,

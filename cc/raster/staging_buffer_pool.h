@@ -12,7 +12,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -76,8 +75,7 @@ struct StagingBuffer {
 };
 
 class CC_EXPORT StagingBufferPool
-    : public base::trace_event::MemoryDumpProvider,
-      public base::MemoryCoordinatorClient {
+    : public base::trace_event::MemoryDumpProvider {
  public:
   ~StagingBufferPool() final;
 
@@ -114,11 +112,6 @@ class CC_EXPORT StagingBufferPool
   void StagingStateAsValueInto(
       base::trace_event::TracedValue* staging_state) const;
 
-  // Overriden from base::MemoryCoordinatorClient.
-  void OnPurgeMemory() override;
-
-  // TODO(gyuyoung): OnMemoryPressure is deprecated. So this should be removed
-  // when the memory coordinator is enabled by default.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 

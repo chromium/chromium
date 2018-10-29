@@ -200,11 +200,10 @@ ThreadableLoader::ThreadableLoader(
       execution_context_(execution_context),
       resource_loader_options_(resource_loader_options),
       out_of_blink_cors_(RuntimeEnabledFeatures::OutOfBlinkCORSEnabled()),
-      security_origin_(resource_loader_options_.security_origin),
       is_using_data_consumer_handle_(false),
       async_(resource_loader_options.synchronous_policy ==
              kRequestAsynchronously),
-      request_context_(WebURLRequest::kRequestContextUnspecified),
+      request_context_(mojom::RequestContextType::UNSPECIFIED),
       fetch_request_mode_(network::mojom::FetchRequestMode::kSameOrigin),
       fetch_credentials_mode_(network::mojom::FetchCredentialsMode::kOmit),
       timeout_timer_(execution_context_->GetTaskRunner(TaskType::kNetworking),
@@ -214,11 +213,12 @@ ThreadableLoader::ThreadableLoader(
       redirect_mode_(network::mojom::FetchRedirectMode::kFollow),
       override_referrer_(false) {
   DCHECK(client);
-  if (execution_context_->IsWorkerGlobalScope())
-    ToWorkerGlobalScope(execution_context_)->EnsureFetcher();
+  if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_))
+    scope->EnsureFetcher();
 }
 
 void ThreadableLoader::Start(const ResourceRequest& request) {
+  original_security_origin_ = security_origin_ = request.RequestorOrigin();
   // Setting an outgoing referer is only supported in the async code path.
   DCHECK(async_ || request.HttpReferrer().IsEmpty());
 
@@ -619,6 +619,11 @@ bool ThreadableLoader::RedirectReceived(
     if (redirect_limit_ <= 0) {
       ThreadableLoaderClient* client = client_;
       Clear();
+      ConsoleMessage* message = ConsoleMessage::Create(
+          kNetworkMessageSource, kErrorMessageLevel,
+          "Failed to load resource: net::ERR_TOO_MANY_REDIRECTS",
+          SourceLocation::Capture(original_url, 0, 0));
+      execution_context_->AddConsoleMessage(message);
       client->DidFailRedirectCheck();
       return false;
     }
@@ -1055,7 +1060,7 @@ void ThreadableLoader::LoadRequest(
     }
   }
 
-  resource_loader_options.security_origin = security_origin_;
+  request.SetRequestorOrigin(original_security_origin_);
 
   if (!actual_request_.IsNull())
     resource_loader_options.data_buffering_policy = kBufferData;
@@ -1075,12 +1080,12 @@ void ThreadableLoader::LoadRequest(
 
   checker_.WillAddClient();
   ResourceFetcher* fetcher = execution_context_->Fetcher();
-  if (request.GetRequestContext() == WebURLRequest::kRequestContextVideo ||
-      request.GetRequestContext() == WebURLRequest::kRequestContextAudio) {
+  if (request.GetRequestContext() == mojom::RequestContextType::VIDEO ||
+      request.GetRequestContext() == mojom::RequestContextType::AUDIO) {
     DCHECK(async_);
     RawResource::FetchMedia(new_params, fetcher, this);
   } else if (request.GetRequestContext() ==
-             WebURLRequest::kRequestContextManifest) {
+             mojom::RequestContextType::MANIFEST) {
     DCHECK(async_);
     RawResource::FetchManifest(new_params, fetcher, this);
   } else if (async_) {
@@ -1096,10 +1101,7 @@ const SecurityOrigin* ThreadableLoader::GetSecurityOrigin() const {
 }
 
 Document* ThreadableLoader::GetDocument() const {
-  ExecutionContext* context = execution_context_;
-  if (context->IsDocument())
-    return ToDocument(context);
-  return nullptr;
+  return DynamicTo<Document>(execution_context_.Get());
 }
 
 void ThreadableLoader::Trace(blink::Visitor* visitor) {

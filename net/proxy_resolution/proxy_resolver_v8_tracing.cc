@@ -815,8 +815,7 @@ void Job::SaveDnsToLocalCache(const std::string& host,
     cache_value = addresses.front().ToStringWithoutPort();
   } else {
     // The *Ex versions are expected to return a semi-colon separated list.
-    for (AddressList::const_iterator iter = addresses.begin();
-         iter != addresses.end(); ++iter) {
+    for (auto iter = addresses.begin(); iter != addresses.end(); ++iter) {
       if (!cache_value.empty())
         cache_value += ";";
       cache_value += iter->ToStringWithoutPort();

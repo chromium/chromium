@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL It interleaves with MutationObservers as expected promise_test: Unhandled rejection with value: object "ReferenceError: queueMicrotask is not defined"
-FAIL It interleaves with MutationObservers and promises together as expected promise_test: Unhandled rejection with value: object "ReferenceError: queueMicrotask is not defined"
-Harness: the test ran to completion.
-

@@ -351,13 +351,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   ReferrerPolicy referrer_policy() const { return referrer_policy_; }
   void set_referrer_policy(ReferrerPolicy referrer_policy);
 
-  // If this request should include a referred Token Binding, this returns the
-  // hostname of the referrer that indicated this request should include a
-  // referred Token Binding. Otherwise, this returns the empty string.
-  const std::string& token_binding_referrer() const {
-    return token_binding_referrer_;
-  }
-
   // Sets the delegate of the request.  This is only to allow creating a request
   // before creating its delegate.  |delegate| must be non-NULL and the request
   // must not yet have a Delegate set.
@@ -860,7 +853,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   std::string method_;  // "GET", "POST", etc. Should be all uppercase.
   std::string referrer_;
   ReferrerPolicy referrer_policy_;
-  std::string token_binding_referrer_;
   FirstPartyURLPolicy first_party_url_policy_;
   HttpRequestHeaders extra_request_headers_;
   int load_flags_;  // Flags indicating the request type for the load;

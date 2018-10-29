@@ -2,4 +2,5 @@ This test requires DRT. It verifies that pasting in a richly editable area falls
 
 
 
+
 PASS

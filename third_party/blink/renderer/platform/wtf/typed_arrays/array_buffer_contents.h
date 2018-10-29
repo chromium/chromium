@@ -39,7 +39,7 @@
 namespace WTF {
 
 class WTF_EXPORT ArrayBufferContents {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   using AdjustAmountOfExternalAllocatedMemoryFunction = void (*)(int64_t diff);
@@ -52,8 +52,6 @@ class WTF_EXPORT ArrayBufferContents {
   // specifies the correct deleter.
   using DataDeleter = void (*)(void* data, size_t length, void* info);
 
-  enum class AllocationKind { kNormal, kReservation };
-
   class DataHandle {
     DISALLOW_COPY_AND_ASSIGN(DataHandle);
 
@@ -62,88 +60,37 @@ class WTF_EXPORT ArrayBufferContents {
                size_t length,
                DataDeleter deleter,
                void* deleter_info)
-        : allocation_base_(data),
-          allocation_length_(length),
-          data_(data),
+        : data_(data),
           data_length_(length),
-          kind_(AllocationKind::kNormal),
           deleter_(deleter),
           deleter_info_(deleter_info) {}
-    DataHandle(void* allocation_base,
-               size_t allocation_length,
-               void* data,
-               size_t data_length,
-               AllocationKind kind,
-               DataDeleter deleter,
-               void* deleter_info)
-        : allocation_base_(allocation_base),
-          allocation_length_(allocation_length),
-          data_(data),
-          data_length_(data_length),
-          kind_(kind),
-          deleter_(deleter),
-          deleter_info_(deleter_info) {
-      DCHECK(reinterpret_cast<uintptr_t>(allocation_base_) <=
-             reinterpret_cast<uintptr_t>(data_));
-      DCHECK(reinterpret_cast<uintptr_t>(data_) + data_length_ <=
-             reinterpret_cast<uintptr_t>(allocation_base_) +
-                 allocation_length_);
-    }
     // Move constructor
     DataHandle(DataHandle&& other) { *this = std::move(other); }
     ~DataHandle() {
-      if (!allocation_base_)
+      if (!data_)
         return;
-      DCHECK(reinterpret_cast<uintptr_t>(allocation_base_) <=
-             reinterpret_cast<uintptr_t>(data_));
-      DCHECK(reinterpret_cast<uintptr_t>(data_) + data_length_ <=
-             reinterpret_cast<uintptr_t>(allocation_base_) +
-                 allocation_length_);
-      switch (kind_) {
-        case AllocationKind::kNormal:
-          DCHECK(deleter_);
-          deleter_(data_, data_length_, deleter_info_);
-          return;
-        case AllocationKind::kReservation:
-          DCHECK(deleter_);
-          deleter_(data_, data_length_, deleter_info_);
-          return;
-      }
+      deleter_(data_, data_length_, deleter_info_);
     }
 
     // Move operator
     DataHandle& operator=(DataHandle&& other) {
-      allocation_base_ = other.allocation_base_;
-      allocation_length_ = other.allocation_length_;
       data_ = other.data_;
       data_length_ = other.data_length_;
-      kind_ = other.kind_;
       deleter_ = other.deleter_;
       deleter_info_ = other.deleter_info_;
-      other.allocation_base_ = nullptr;
+      other.data_ = nullptr;
       return *this;
     }
-
-    void* AllocationBase() const { return allocation_base_; }
-    size_t AllocationLength() const { return allocation_length_; }
 
     void* Data() const { return data_; }
     size_t DataLength() const { return data_length_; }
 
-    ArrayBufferContents::AllocationKind GetAllocationKind() const {
-      return kind_;
-    }
-
-    operator bool() const { return allocation_base_; }
+    operator bool() const { return data_; }
 
    private:
-    void* allocation_base_;
-    size_t allocation_length_;
-
     void* data_;
     size_t data_length_;
 
-    ArrayBufferContents::AllocationKind kind_;
     DataDeleter deleter_;
     void* deleter_info_;
   };
@@ -156,7 +103,7 @@ class WTF_EXPORT ArrayBufferContents {
   };
 
   ArrayBufferContents();
-  ArrayBufferContents(unsigned num_elements,
+  ArrayBufferContents(size_t num_elements,
                       unsigned element_byte_size,
                       SharingType is_shared,
                       InitializationPolicy);

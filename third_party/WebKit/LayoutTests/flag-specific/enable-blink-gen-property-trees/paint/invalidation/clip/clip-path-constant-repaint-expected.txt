@@ -25,7 +25,8 @@
       "maskLayer": [
         {
           "name": "Mask Layer",
-          "bounds": [800, 300]
+          "bounds": [800, 300],
+          "backfaceVisibility": "hidden"
         }
       ],
       "transform": 2

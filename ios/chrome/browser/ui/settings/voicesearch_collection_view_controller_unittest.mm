@@ -16,7 +16,7 @@
 #include "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller_test.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #include "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_prefs.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,8 +55,8 @@ class VoicesearchCollectionViewControllerTest
     return std::unique_ptr<PrefService>(prefs);
   }
 
-  SettingsSwitchCell* GetSwitchCell() {
-    return base::mac::ObjCCastStrict<SettingsSwitchCell>(
+  LegacySettingsSwitchCell* GetSwitchCell() {
+    return base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(
         [controller().collectionView
             cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0
                                                        inSection:0]]);
@@ -101,7 +101,7 @@ TEST_F(VoicesearchCollectionViewControllerTest, TapTheLastItemInTheList) {
 TEST_F(VoicesearchCollectionViewControllerTest,
        TestModel_TextToSpeechOff_TTSSupported) {
   CreateController();
-  SettingsSwitchItem* switchItem = GetCollectionViewItem(0, 0);
+  LegacySettingsSwitchItem* switchItem = GetCollectionViewItem(0, 0);
   EXPECT_FALSE(switchItem.isOn);
   EXPECT_TRUE(switchItem.isEnabled);
 }
@@ -114,7 +114,7 @@ TEST_F(VoicesearchCollectionViewControllerTest,
   textToSpeechEnabled.SetValue(true);
 
   CreateController();
-  SettingsSwitchItem* switchItem = GetCollectionViewItem(0, 0);
+  LegacySettingsSwitchItem* switchItem = GetCollectionViewItem(0, 0);
   EXPECT_TRUE(switchItem.isOn);
   EXPECT_TRUE(switchItem.isEnabled);
 }
@@ -127,7 +127,7 @@ TEST_F(VoicesearchCollectionViewControllerTest,
   selectedLanguage.SetValue("af-ZA");
 
   CreateController();
-  SettingsSwitchItem* switchItem = GetCollectionViewItem(0, 0);
+  LegacySettingsSwitchItem* switchItem = GetCollectionViewItem(0, 0);
   EXPECT_FALSE(switchItem.isOn);
   EXPECT_FALSE(switchItem.isEnabled);
 }
@@ -145,7 +145,7 @@ TEST_F(VoicesearchCollectionViewControllerTest,
   textToSpeechEnabled.SetValue(true);
 
   CreateController();
-  SettingsSwitchItem* switchItem = GetCollectionViewItem(0, 0);
+  LegacySettingsSwitchItem* switchItem = GetCollectionViewItem(0, 0);
   EXPECT_FALSE(switchItem.isOn);
   EXPECT_FALSE(switchItem.isEnabled);
 }

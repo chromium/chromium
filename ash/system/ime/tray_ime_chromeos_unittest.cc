@@ -109,8 +109,8 @@ void TrayIMETest::SuppressKeyboard() {
   input_device_client_test_api.SetTouchscreenDevices(screens);
 
   std::vector<ui::InputDevice> keyboards;
-  keyboards.push_back(ui::InputDevice(
-      2, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, "keyboard"));
+  keyboards.push_back(
+      ui::InputDevice(2, ui::InputDeviceType::INPUT_DEVICE_USB, "keyboard"));
   input_device_client_test_api.SetKeyboardDevices(keyboards);
 }
 

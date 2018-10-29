@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/common/pref_names.h"
+#include "components/offline_pages/core/offline_store_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,8 +44,7 @@ class OfflineMetricsCollectorTest : public testing::Test {
   const base::HistogramTester& histograms() const { return histogram_tester_; }
 
   base::Time GetTimestampFromPrefs() {
-    return base::Time::FromInternalValue(
-        prefs().GetInt64(prefs::kOfflineUsageTrackingDay));
+    return prefs().GetTime(prefs::kOfflineUsageTrackingDay);
   }
 
  protected:

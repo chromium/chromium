@@ -64,9 +64,15 @@ class LoadTimesExtensionWrapper : public v8::Extension {
   v8::Local<v8::FunctionTemplate> GetNativeFunctionTemplate(
       v8::Isolate* isolate,
       v8::Local<v8::String> name) override {
-    if (name->StringEquals(v8::String::NewFromUtf8(isolate, "GetLoadTimes"))) {
+    if (name->StringEquals(
+            v8::String::NewFromUtf8(isolate, "GetLoadTimes",
+                                    v8::NewStringType::kInternalized)
+                .ToLocalChecked())) {
       return v8::FunctionTemplate::New(isolate, GetLoadTimes);
-    } else if (name->StringEquals(v8::String::NewFromUtf8(isolate, "GetCSI"))) {
+    } else if (name->StringEquals(
+                   v8::String::NewFromUtf8(isolate, "GetCSI",
+                                           v8::NewStringType::kInternalized)
+                       .ToLocalChecked())) {
       return v8::FunctionTemplate::New(isolate, GetCSI);
     }
     return v8::Local<v8::FunctionTemplate>();

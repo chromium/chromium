@@ -620,13 +620,13 @@ TEST_F(StructTraitsTest, CompositorFrameMetadata) {
   uint64_t begin_frame_ack_sequence_number = 0xdeadbeef;
   FrameDeadline frame_deadline(base::TimeTicks(), 4u, base::TimeDelta(), true);
   const float min_page_scale_factor = 3.5f;
+  const float top_bar_height(1234.5f);
+  const float top_bar_shown_ratio(1.0f);
 
 #if defined(OS_ANDROID)
   const float max_page_scale_factor = 4.6f;
   const gfx::SizeF root_layer_size(1234.5f, 5432.1f);
   const bool root_overflow_y_hidden = true;
-  const float top_bar_height(1234.5f);
-  const float top_bar_shown_ratio(1.0f);
   const float bottom_bar_height(1234.5f);
   const float bottom_bar_shown_ratio(1.0f);
   Selection<gfx::SelectionBound> selection;
@@ -656,13 +656,13 @@ TEST_F(StructTraitsTest, CompositorFrameMetadata) {
   input.frame_token = frame_token;
   input.begin_frame_ack.sequence_number = begin_frame_ack_sequence_number;
   input.min_page_scale_factor = min_page_scale_factor;
+  input.top_controls_height = top_bar_height;
+  input.top_controls_shown_ratio = top_bar_shown_ratio;
 
 #if defined(OS_ANDROID)
   input.max_page_scale_factor = max_page_scale_factor;
   input.root_layer_size = root_layer_size;
   input.root_overflow_y_hidden = root_overflow_y_hidden;
-  input.top_controls_height = top_bar_height;
-  input.top_controls_shown_ratio = top_bar_shown_ratio;
   input.bottom_controls_height = bottom_bar_height;
   input.bottom_controls_shown_ratio = bottom_bar_shown_ratio;
   input.selection = selection;
@@ -694,13 +694,13 @@ TEST_F(StructTraitsTest, CompositorFrameMetadata) {
   EXPECT_EQ(begin_frame_ack_sequence_number,
             output.begin_frame_ack.sequence_number);
   EXPECT_EQ(min_page_scale_factor, output.min_page_scale_factor);
+  EXPECT_EQ(top_bar_height, output.top_controls_height);
+  EXPECT_EQ(top_bar_shown_ratio, output.top_controls_shown_ratio);
 
 #if defined(OS_ANDROID)
   EXPECT_EQ(max_page_scale_factor, output.max_page_scale_factor);
   EXPECT_EQ(root_layer_size, output.root_layer_size);
   EXPECT_EQ(root_overflow_y_hidden, output.root_overflow_y_hidden);
-  EXPECT_EQ(top_bar_height, output.top_controls_height);
-  EXPECT_EQ(top_bar_shown_ratio, output.top_controls_shown_ratio);
   EXPECT_EQ(bottom_bar_height, output.bottom_controls_height);
   EXPECT_EQ(bottom_bar_shown_ratio, output.bottom_controls_shown_ratio);
   EXPECT_EQ(selection, output.selection);
@@ -719,10 +719,10 @@ TEST_F(StructTraitsTest, RenderPass) {
   cc::FilterOperations filters;
   filters.Append(cc::FilterOperation::CreateBlurFilter(0.f));
   filters.Append(cc::FilterOperation::CreateZoomFilter(2.0f, 1));
-  cc::FilterOperations background_filters;
-  background_filters.Append(cc::FilterOperation::CreateSaturateFilter(4.f));
-  background_filters.Append(cc::FilterOperation::CreateZoomFilter(2.0f, 1));
-  background_filters.Append(cc::FilterOperation::CreateSaturateFilter(2.f));
+  cc::FilterOperations backdrop_filters;
+  backdrop_filters.Append(cc::FilterOperation::CreateSaturateFilter(4.f));
+  backdrop_filters.Append(cc::FilterOperation::CreateZoomFilter(2.0f, 1));
+  backdrop_filters.Append(cc::FilterOperation::CreateSaturateFilter(2.f));
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateXYZD50();
   const bool has_transparent_background = true;
   const bool cache_render_pass = true;
@@ -730,7 +730,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   const bool generate_mipmap = true;
   std::unique_ptr<RenderPass> input = RenderPass::Create();
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
-                filters, background_filters, color_space,
+                filters, backdrop_filters, color_space,
                 has_transparent_background, cache_render_pass,
                 has_damage_from_contributing_content, generate_mipmap);
   input->copy_requests.push_back(CopyOutputRequest::CreateStubForTesting());
@@ -791,7 +791,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   EXPECT_EQ(color_space, output->color_space);
   EXPECT_EQ(has_transparent_background, output->has_transparent_background);
   EXPECT_EQ(filters, output->filters);
-  EXPECT_EQ(background_filters, output->background_filters);
+  EXPECT_EQ(backdrop_filters, output->backdrop_filters);
   EXPECT_EQ(cache_render_pass, output->cache_render_pass);
   EXPECT_EQ(has_damage_from_contributing_content,
             output->has_damage_from_contributing_content);

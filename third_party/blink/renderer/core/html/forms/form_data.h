@@ -45,7 +45,7 @@ class Blob;
 class HTMLFormElement;
 class ScriptState;
 
-// Typedef from FormData.idl:
+// Typedef from form_data.idl:
 typedef FileOrUSVString FormDataEntryValue;
 
 class CORE_EXPORT FormData final
@@ -104,7 +104,7 @@ class CORE_EXPORT FormData final
   IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
 
   WTF::TextEncoding encoding_;
-  // Entry pointers in m_entries never be nullptr.
+  // Entry pointers in entries_ never be nullptr.
   HeapVector<Member<const Entry>> entries_;
   bool contains_password_data_ = false;
 };

@@ -16,8 +16,7 @@ using content::BrowserThread;
 static scoped_refptr<DevToolsAndroidBridge::RemoteBrowser>
 FindBrowserByDisplayName(DevToolsAndroidBridge::RemoteBrowsers browsers,
                          const std::string& name) {
-  for (DevToolsAndroidBridge::RemoteBrowsers::iterator it = browsers.begin();
-      it != browsers.end(); ++it)
+  for (auto it = browsers.begin(); it != browsers.end(); ++it)
     if ((*it)->display_name() == name)
       return *it;
   return NULL;

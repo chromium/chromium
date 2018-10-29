@@ -11,16 +11,16 @@
 #include <vector>
 
 #include "ui/aura/aura_export.h"
+#include "ui/aura/window.h"
 
 namespace ws {
 namespace mojom {
+enum class OcclusionState;
 enum class WindowType;
 }
 }
 
 namespace aura {
-
-class Window;
 
 // Configures the two window type properties on |window|. Specifically this
 // sets the property client::kWindowTypeKey as well as calling SetType().
@@ -31,6 +31,12 @@ AURA_EXPORT void SetWindowType(Window* window,
 // Returns the window type specified in |properties|, or WindowType::UNKNOWN.
 AURA_EXPORT ws::mojom::WindowType GetWindowTypeFromProperties(
     const std::map<std::string, std::vector<uint8_t>>& properties);
+
+// Helpers to map Window::OcclusionState to/from its ws::mojom equivalent.
+AURA_EXPORT ws::mojom::OcclusionState WindowOcclusionStateToMojom(
+    Window::OcclusionState input);
+AURA_EXPORT Window::OcclusionState WindowOcclusionStateFromMojom(
+    ws::mojom::OcclusionState input);
 
 }  // namespace aura
 

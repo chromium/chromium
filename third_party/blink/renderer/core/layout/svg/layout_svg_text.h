@@ -72,9 +72,10 @@ class LayoutSVGText final : public LayoutSVGBlock {
   }
 
   void Paint(const PaintInfo&) const override;
-  bool NodeAtFloatPoint(HitTestResult&,
-                        const FloatPoint& point_in_parent,
-                        HitTestAction) override;
+  bool NodeAtPoint(HitTestResult&,
+                   const HitTestLocation& location_in_parent,
+                   const LayoutPoint& accumulated_offset,
+                   HitTestAction) override;
   PositionWithAffinity PositionForPoint(const LayoutPoint&) const override;
 
   void UpdateLayout() override;

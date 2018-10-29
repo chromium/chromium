@@ -23,6 +23,8 @@ class IOBuffer;
 }
 
 namespace content {
+class AppCacheDiskCache;
+class AppCacheDiskCacheEntry;
 class AppCacheStorage;
 class MockAppCacheStorage;
 
@@ -75,48 +77,6 @@ struct CONTENT_EXPORT HttpResponseInfoIOBuffer
   ~HttpResponseInfoIOBuffer();
 };
 
-// Low level storage API used by the response reader and writer.
-class CONTENT_EXPORT AppCacheDiskCacheInterface {
- public:
-  class Entry {
-   public:
-    virtual int Read(int index,
-                     int64_t offset,
-                     net::IOBuffer* buf,
-                     int buf_len,
-                     net::CompletionOnceCallback callback) = 0;
-    virtual int Write(int index,
-                      int64_t offset,
-                      net::IOBuffer* buf,
-                      int buf_len,
-                      net::CompletionOnceCallback callback) = 0;
-    virtual int64_t GetSize(int index) = 0;
-    virtual void Close() = 0;
-   protected:
-    virtual ~Entry() = default;
-  };
-
-  // The uma_name pointer must remain valid for the life of the object.
-  AppCacheDiskCacheInterface(const char* uma_name);
-
-  virtual int CreateEntry(int64_t key,
-                          Entry** entry,
-                          net::CompletionOnceCallback callback) = 0;
-  virtual int OpenEntry(int64_t key,
-                        Entry** entry,
-                        net::CompletionOnceCallback callback) = 0;
-  virtual int DoomEntry(int64_t key, net::CompletionOnceCallback callback) = 0;
-
-  const char* uma_name() const { return uma_name_; }
-  base::WeakPtr<AppCacheDiskCacheInterface> GetWeakPtr();
-
- protected:
-  virtual ~AppCacheDiskCacheInterface();
-
-  const char* uma_name_;
-  base::WeakPtrFactory<AppCacheDiskCacheInterface> weak_factory_;
-};
-
 // Common base class for response reader and writer.
 class CONTENT_EXPORT AppCacheResponseIO {
  public:
@@ -125,7 +85,7 @@ class CONTENT_EXPORT AppCacheResponseIO {
 
  protected:
   AppCacheResponseIO(int64_t response_id,
-                     base::WeakPtr<AppCacheDiskCacheInterface> disk_cache);
+                     base::WeakPtr<AppCacheDiskCache> disk_cache);
 
   virtual void OnIOComplete(int result) = 0;
   virtual void OnOpenEntryComplete() {}
@@ -142,8 +102,8 @@ class CONTENT_EXPORT AppCacheResponseIO {
   virtual base::WeakPtr<AppCacheResponseIO> GetWeakPtr() = 0;
 
   const int64_t response_id_;
-  base::WeakPtr<AppCacheDiskCacheInterface> disk_cache_;
-  AppCacheDiskCacheInterface::Entry* entry_;
+  base::WeakPtr<AppCacheDiskCache> disk_cache_;
+  AppCacheDiskCacheEntry* entry_;
   scoped_refptr<HttpResponseInfoIOBuffer> info_buffer_;
   scoped_refptr<net::IOBuffer> buffer_;
   int buffer_len_;
@@ -153,7 +113,7 @@ class CONTENT_EXPORT AppCacheResponseIO {
  private:
   void OnRawIOComplete(int result);
   static void OpenEntryCallback(base::WeakPtr<AppCacheResponseIO> response,
-                                AppCacheDiskCacheInterface::Entry** entry,
+                                AppCacheDiskCacheEntry** entry,
                                 int rv);
 };
 
@@ -202,9 +162,9 @@ class CONTENT_EXPORT AppCacheResponseReader : public AppCacheResponseIO {
   friend class AppCacheStorageImpl;
   friend class content::MockAppCacheStorage;
 
-  // Should only be constructed by the storage class and derivatives.
+  // Use AppCacheStorage::CreateResponse() instead of calling directly.
   AppCacheResponseReader(int64_t response_id,
-                         base::WeakPtr<AppCacheDiskCacheInterface> disk_cache);
+                         base::WeakPtr<AppCacheDiskCache> disk_cache);
 
   void OnIOComplete(int result) override;
   void OnOpenEntryComplete() override;
@@ -262,7 +222,7 @@ class CONTENT_EXPORT AppCacheResponseWriter : public AppCacheResponseIO {
  protected:
   // Should only be constructed by the storage class and derivatives.
   AppCacheResponseWriter(int64_t response_id,
-                         base::WeakPtr<AppCacheDiskCacheInterface> disk_cache);
+                         base::WeakPtr<AppCacheDiskCache> disk_cache);
 
  private:
   friend class AppCacheStorageImpl;
@@ -283,7 +243,7 @@ class CONTENT_EXPORT AppCacheResponseWriter : public AppCacheResponseIO {
   void CreateEntryIfNeededAndContinue();
   static void OnCreateEntryComplete(
       base::WeakPtr<AppCacheResponseWriter> writer,
-      AppCacheDiskCacheInterface::Entry** entry,
+      AppCacheDiskCacheEntry** entry,
       int rv);
 
   int info_size_;
@@ -323,9 +283,8 @@ class CONTENT_EXPORT AppCacheResponseMetadataWriter
   friend class content::MockAppCacheStorage;
 
   // Should only be constructed by the storage class and derivatives.
-  AppCacheResponseMetadataWriter(
-      int64_t response_id,
-      base::WeakPtr<AppCacheDiskCacheInterface> disk_cache);
+  AppCacheResponseMetadataWriter(int64_t response_id,
+                                 base::WeakPtr<AppCacheDiskCache> disk_cache);
 
  private:
   void OnIOComplete(int result) override;

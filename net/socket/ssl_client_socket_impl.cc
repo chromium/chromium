@@ -30,6 +30,7 @@
 #include "base/values.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/openssl_util.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
@@ -53,7 +54,6 @@
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_key_logger.h"
 #include "net/ssl/ssl_private_key.h"
-#include "net/ssl/token_binding.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -76,12 +76,6 @@ const int kSSLClientSocketNoPendingResult = 1;
 
 // Default size of the internal BoringSSL buffers.
 const int kDefaultOpenSSLBufferSize = 17 * 1024;
-
-// This feature disables the TLS 1.3 downgrade protection that may be triggered
-// by buggy TLS-terminating proxies. It will be removed once TLS 1.3 is
-// successfully deployed without needing to disable this feature.
-const base::Feature kIgnoreTLS13Downgrade{"IgnoreTLS13Downgrade",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 std::unique_ptr<base::Value> NetLogPrivateKeyOperationCallback(
     uint16_t algorithm,
@@ -346,10 +340,6 @@ class SSLClientSocketImpl::SSLContext {
 
     SSL_CTX_set_grease_enabled(ssl_ctx_.get(), 1);
 
-    if (base::FeatureList::IsEnabled(kIgnoreTLS13Downgrade)) {
-      SSL_CTX_set_ignore_tls13_downgrade(ssl_ctx_.get(), 1);
-    }
-
     // Deduplicate all certificates minted from the SSL_CTX in memory.
     SSL_CTX_set0_buffer_pool(ssl_ctx_.get(), x509_util::GetBufferPool());
 
@@ -461,7 +451,6 @@ SSLClientSocketImpl::SSLClientSocketImpl(
       cert_verifier_(context.cert_verifier),
       cert_transparency_verifier_(context.cert_transparency_verifier),
       channel_id_service_(context.channel_id_service),
-      tb_signature_map_(10),
       transport_(std::move(transport_socket)),
       host_and_port_(host_and_port),
       ssl_config_(ssl_config),
@@ -666,10 +655,6 @@ bool SSLClientSocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
   ssl_info->client_cert_sent =
       ssl_config_.send_client_cert && ssl_config_.client_cert.get();
   ssl_info->channel_id_sent = channel_id_sent_;
-  ssl_info->token_binding_negotiated =
-      SSL_is_token_binding_negotiated(ssl_.get());
-  ssl_info->token_binding_key_param = static_cast<net::TokenBindingParam>(
-      SSL_get_negotiated_token_binding_param(ssl_.get()));
   ssl_info->pinning_failure_log = pinning_failure_log_;
   ssl_info->ocsp_result = server_cert_verify_result_.ocsp_result;
   ssl_info->is_fatal_cert_error = is_fatal_cert_error_;
@@ -680,6 +665,8 @@ bool SSLClientSocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
   ssl_info->security_bits = SSL_CIPHER_get_bits(cipher, NULL);
   // Historically, the "group" was known as "curve".
   ssl_info->key_exchange_group = SSL_get_curve_id(ssl_.get());
+  ssl_info->peer_signature_algorithm =
+      SSL_get_peer_signature_algorithm(ssl_.get());
 
   SSLConnectionStatusSetCipherSuite(
       static_cast<uint16_t>(SSL_CIPHER_get_id(cipher)),
@@ -746,39 +733,6 @@ void SSLClientSocketImpl::GetSSLCertRequestInfo(
 
 ChannelIDService* SSLClientSocketImpl::GetChannelIDService() const {
   return channel_id_service_;
-}
-
-Error SSLClientSocketImpl::GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                                    TokenBindingType tb_type,
-                                                    std::vector<uint8_t>* out) {
-  // The same key will be used across multiple requests to sign the same value,
-  // so the signature is cached.
-  std::string raw_public_key;
-  if (!key->ExportRawPublicKey(&raw_public_key))
-    return ERR_FAILED;
-  auto it = tb_signature_map_.Get(std::make_pair(tb_type, raw_public_key));
-  if (it != tb_signature_map_.end()) {
-    *out = it->second;
-    return OK;
-  }
-
-  uint8_t tb_ekm_buf[32];
-  static const char kTokenBindingExporterLabel[] = "EXPORTER-Token-Binding";
-  if (!SSL_export_keying_material(ssl_.get(), tb_ekm_buf, sizeof(tb_ekm_buf),
-                                  kTokenBindingExporterLabel,
-                                  strlen(kTokenBindingExporterLabel), nullptr,
-                                  0, false /* no context */)) {
-    return ERR_FAILED;
-  }
-
-  if (!CreateTokenBindingSignature(
-          base::StringPiece(reinterpret_cast<char*>(tb_ekm_buf),
-                            sizeof(tb_ekm_buf)),
-          tb_type, key, out))
-    return ERR_FAILED;
-
-  tb_signature_map_.Put(std::make_pair(tb_type, raw_public_key), *out);
-  return OK;
 }
 
 crypto::ECPrivateKey* SSLClientSocketImpl::GetChannelIDKey() const {
@@ -927,6 +881,10 @@ int SSLClientSocketImpl::Init() {
       break;
   }
 
+  if (!base::FeatureList::IsEnabled(features::kEnforceTLS13Downgrade)) {
+    SSL_set_ignore_tls13_downgrade(ssl_.get(), 1);
+  }
+
   // OpenSSL defaults some options to on, others to off. To avoid ambiguity,
   // set everything we care about to an absolute value.
   SslSetClearMask options;
@@ -974,12 +932,6 @@ int SSLClientSocketImpl::Init() {
   // TLS channel ids.
   if (IsChannelIDEnabled()) {
     SSL_enable_tls_channel_id(ssl_.get());
-  }
-
-  if (!ssl_config_.token_binding_params.empty()) {
-    std::vector<uint8_t> params(ssl_config_.token_binding_params.begin(),
-                                ssl_config_.token_binding_params.end());
-    SSL_set_token_binding_params(ssl_.get(), params.data(), params.size());
   }
 
   if (!ssl_config_.alpn_protos.empty()) {
@@ -1113,15 +1065,6 @@ int SSLClientSocketImpl::DoHandshakeComplete(int result) {
   uint16_t signature_algorithm = SSL_get_peer_signature_algorithm(ssl_.get());
   if (signature_algorithm != 0) {
     base::UmaHistogramSparse("Net.SSLSignatureAlgorithm", signature_algorithm);
-  }
-
-  if (base::FeatureList::IsEnabled(kIgnoreTLS13Downgrade) &&
-      IsTLS13ExperimentHost(host_and_port_.host())) {
-    // Record whether the TLS 1.3 anti-downgrade mechanism has fired. This is
-    // only recorded when enforcement is disabled. See
-    // https://crbug.com/boringssl/226.
-    UMA_HISTOGRAM_BOOLEAN("Net.SSLTLS13DowngradeTLS13Experiment",
-                          !!SSL_is_tls13_downgrade(ssl_.get()));
   }
 
   // Verify the certificate.
@@ -1276,6 +1219,57 @@ int SSLClientSocketImpl::DoVerifyCertComplete(int result) {
         UMA_HISTOGRAM_ENUMERATION(
             "Net.SSLRSAKeyUsage.UnknownRoot", rsa_key_usage,
             static_cast<int>(RSAKeyUsage::kLastValue) + 1);
+      }
+    }
+
+    if (!base::FeatureList::IsEnabled(features::kEnforceTLS13Downgrade)) {
+      // Record metrics on the TLS 1.3 anti-downgrade mechanism. This is only
+      // recorded when enforcement is disabled. (When enforcement is enabled,
+      // the connection will fail with ERR_TLS13_DOWNGRADE_DETECTED.) See
+      // https://crbug.com/boringssl/226.
+      //
+      // Record metrics for both servers overall and the TLS 1.3 experiment
+      // set. These metrics are only useful on TLS 1.3 servers, so the latter is
+      // more precise, but there is a large enough TLS 1.3 deployment that the
+      // overall numbers may be more robust. In particular, the DowngradeType
+      // metrics do not need to be filtered.
+      bool is_downgrade = !!SSL_is_tls13_downgrade(ssl_.get());
+      UMA_HISTOGRAM_BOOLEAN("Net.SSLTLS13Downgrade", is_downgrade);
+      bool is_tls13_experiment_host =
+          IsTLS13ExperimentHost(host_and_port_.host());
+      if (is_tls13_experiment_host) {
+        UMA_HISTOGRAM_BOOLEAN("Net.SSLTLS13DowngradeTLS13Experiment",
+                              is_downgrade);
+      }
+
+      if (is_downgrade) {
+        // Record whether connections which hit the downgrade used known vs
+        // unknown roots and which key exchange type.
+
+        // This enum is persisted into histograms. Values may not be renumbered.
+        enum class DowngradeType {
+          kKnownRootRSA = 0,
+          kKnownRootECDHE = 1,
+          kUnknownRootRSA = 2,
+          kUnknownRootECDHE = 3,
+          kMaxValue = kUnknownRootECDHE,
+        };
+
+        DowngradeType type;
+        int kx_nid = SSL_CIPHER_get_kx_nid(SSL_get_current_cipher(ssl_.get()));
+        DCHECK(kx_nid == NID_kx_rsa || kx_nid == NID_kx_ecdhe);
+        if (server_cert_verify_result_.is_issued_by_known_root) {
+          type = kx_nid == NID_kx_rsa ? DowngradeType::kKnownRootRSA
+                                      : DowngradeType::kKnownRootECDHE;
+        } else {
+          type = kx_nid == NID_kx_rsa ? DowngradeType::kUnknownRootRSA
+                                      : DowngradeType::kUnknownRootECDHE;
+        }
+        UMA_HISTOGRAM_ENUMERATION("Net.SSLTLS13DowngradeType", type);
+        if (is_tls13_experiment_host) {
+          UMA_HISTOGRAM_ENUMERATION("Net.SSLTLS13DowngradeTypeTLS13Experiment",
+                                    type);
+        }
       }
     }
   }
@@ -1547,7 +1541,7 @@ int SSLClientSocketImpl::VerifyCT() {
     if (server_cert_verify_result_.is_issued_by_known_root) {
       UMA_HISTOGRAM_ENUMERATION("Net.CertificateTransparency.EVCompliance2.SSL",
                                 ct_verify_result_.policy_compliance,
-                                ct::CTPolicyCompliance::CT_POLICY_MAX);
+                                ct::CTPolicyCompliance::CT_POLICY_COUNT);
     }
   }
 
@@ -1557,7 +1551,7 @@ int SSLClientSocketImpl::VerifyCT() {
     UMA_HISTOGRAM_ENUMERATION(
         "Net.CertificateTransparency.ConnectionComplianceStatus2.SSL",
         ct_verify_result_.policy_compliance,
-        ct::CTPolicyCompliance::CT_POLICY_MAX);
+        ct::CTPolicyCompliance::CT_POLICY_COUNT);
   }
 
   TransportSecurityState::CTRequirementsStatus ct_requirement_status =
@@ -1578,7 +1572,7 @@ int SSLClientSocketImpl::VerifyCT() {
           "Net.CertificateTransparency.CTRequiredConnectionComplianceStatus2."
           "SSL",
           ct_verify_result_.policy_compliance,
-          ct::CTPolicyCompliance::CT_POLICY_MAX);
+          ct::CTPolicyCompliance::CT_POLICY_COUNT);
     }
   } else {
     ct_verify_result_.policy_compliance_required = false;
@@ -1699,9 +1693,6 @@ std::string SSLClientSocketImpl::GetSessionCacheKey() const {
 }
 
 bool SSLClientSocketImpl::IsRenegotiationAllowed() const {
-  if (SSL_is_token_binding_negotiated(ssl_.get()))
-    return false;
-
   if (negotiated_protocol_ == kProtoUnknown)
     return ssl_config_.renego_allowed_default;
 

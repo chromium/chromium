@@ -57,3 +57,5 @@ Local Modifications:
 - patches/renegotiation_indication.patch: Implement the renegotiation
   indication extension (RFC 5746) without supporting renegotiation.
 - patches/tls13_intolerance.patch: Extend the intolerance simulation to TLS 1.3.
+- patches/simulate_tls13_downgrade.patch: Add an option to simulate the TLS 1.3
+  downgrade signal.

@@ -18,7 +18,7 @@ import com.sun.tools.javac.code.Symbol;
  */
 @AutoService(BugChecker.class)
 @BugPattern(name = "NoAndroidAsyncTaskCheck", category = BugPattern.Category.ANDROID,
-        summary = "Do not use android.os.AsyncTask - use org.chromium.base.AsyncTask instead",
+        summary = "Do not use android.os.AsyncTask - use org.chromium.base.task.AsyncTask instead",
         severity = BugPattern.SeverityLevel.ERROR, linkType = BugPattern.LinkType.CUSTOM,
         link = "https://bugs.chromium.org/p/chromium/issues/detail?id=843745")
 public class NoAndroidAsyncTaskCheck
@@ -30,7 +30,7 @@ public class NoAndroidAsyncTaskCheck
             if (symbol.getQualifiedName().contentEquals("android.os")) {
                 return buildDescription(tree)
                         .setMessage("Do not use android.os.AsyncTask - "
-                                + "use org.chromium.base.AsyncTask instead")
+                                + "use org.chromium.base.task.AsyncTask instead")
                         .build();
             }
         }

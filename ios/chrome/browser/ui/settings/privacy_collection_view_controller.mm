@@ -27,16 +27,16 @@
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_footer_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/settings/accounts_collection_view_controller.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_detail_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_detail_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_text_item.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data_collection_view_controller.h"
-#import "ios/chrome/browser/ui/settings/dataplan_usage_collection_view_controller.h"
+#import "ios/chrome/browser/ui/settings/dataplan_usage_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/handoff_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_utils.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
@@ -78,7 +78,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ios::ChromeBrowserState* _browserState;  // weak
   PrefBackedBoolean* _suggestionsEnabled;
   // The item related to the switch for the show suggestions setting.
-  SettingsSwitchItem* _showSuggestionsItem;
+  LegacySettingsSwitchItem* _showSuggestionsItem;
 
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -87,13 +87,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   PrefChangeRegistrar _prefChangeRegistrarApplicationContext;
 
   // Updatable Items
-  SettingsDetailItem* _handoffDetailItem;
-  SettingsDetailItem* _sendUsageDetailItem;
+  LegacySettingsDetailItem* _handoffDetailItem;
+  LegacySettingsDetailItem* _sendUsageDetailItem;
 }
 
 // Initialization methods for various model items.
 - (CollectionViewItem*)handoffDetailItem;
-- (SettingsSwitchItem*)showSuggestionsSwitchItem;
+- (LegacySettingsSwitchItem*)showSuggestionsSwitchItem;
 - (CollectionViewItem*)showSuggestionsFooterItem;
 - (CollectionViewItem*)clearBrowsingDetailItem;
 - (CollectionViewItem*)canMakePaymentItem;
@@ -219,9 +219,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _handoffDetailItem;
 }
 
-- (SettingsSwitchItem*)showSuggestionsSwitchItem {
-  SettingsSwitchItem* showSuggestionsSwitchItem = [[SettingsSwitchItem alloc]
-      initWithType:ItemTypeWebServicesShowSuggestions];
+- (LegacySettingsSwitchItem*)showSuggestionsSwitchItem {
+  LegacySettingsSwitchItem* showSuggestionsSwitchItem =
+      [[LegacySettingsSwitchItem alloc]
+          initWithType:ItemTypeWebServicesShowSuggestions];
   showSuggestionsSwitchItem.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_SEARCH_URL_SUGGESTIONS);
   showSuggestionsSwitchItem.on = [_suggestionsEnabled value];
@@ -250,8 +251,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (CollectionViewItem*)canMakePaymentItem {
-  SettingsSwitchItem* canMakePaymentItem =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeCanMakePaymentSwitch];
+  LegacySettingsSwitchItem* canMakePaymentItem =
+      [[LegacySettingsSwitchItem alloc]
+          initWithType:ItemTypeCanMakePaymentSwitch];
   canMakePaymentItem.text =
       l10n_util::GetNSString(IDS_SETTINGS_CAN_MAKE_PAYMENT_TOGGLE_LABEL);
   canMakePaymentItem.on = [self isCanMakePaymentEnabled];
@@ -269,7 +271,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (CollectionViewItem*)sendUsageDetailItem {
-  NSString* detailText = [DataplanUsageCollectionViewController
+  NSString* detailText = [DataplanUsageTableViewController
       currentLabelForPreference:GetApplicationContext()->GetLocalState()
                        basePref:metrics::prefs::kMetricsReportingEnabled
                        wifiPref:prefs::kMetricsReportingWifiOnly];
@@ -281,11 +283,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _sendUsageDetailItem;
 }
 
-- (SettingsDetailItem*)detailItemWithType:(NSInteger)type
-                                  titleId:(NSInteger)titleId
-                               detailText:(NSString*)detailText {
-  SettingsDetailItem* detailItem =
-      [[SettingsDetailItem alloc] initWithType:type];
+- (LegacySettingsDetailItem*)detailItemWithType:(NSInteger)type
+                                        titleId:(NSInteger)titleId
+                                     detailText:(NSString*)detailText {
+  LegacySettingsDetailItem* detailItem =
+      [[LegacySettingsDetailItem alloc] initWithType:type];
   detailItem.text = l10n_util::GetNSString(titleId);
   detailItem.detailText = detailText;
   detailItem.accessoryType = MDCCollectionViewCellAccessoryDisclosureIndicator;
@@ -305,14 +307,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.collectionViewModel itemTypeForIndexPath:indexPath];
 
   if (itemType == ItemTypeWebServicesShowSuggestions) {
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    LegacySettingsSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(showSuggestionsToggled:)
                     forControlEvents:UIControlEventValueChanged];
   } else if (itemType == ItemTypeCanMakePaymentSwitch) {
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    LegacySettingsSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(canMakePaymentSwitchChanged:)
                     forControlEvents:UIControlEventValueChanged];
@@ -329,7 +331,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.collectionViewModel itemTypeForIndexPath:indexPath];
 
   // Items that push a new view controller.
-  SettingsRootCollectionViewController* controller;
+  UIViewController<SettingsRootViewControlling>* controller;
 
   switch (itemType) {
     case ItemTypeOtherDevicesHandoff:
@@ -337,7 +339,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           initWithBrowserState:_browserState];
       break;
     case ItemTypeWebServicesSendUsageData:
-      controller = [[DataplanUsageCollectionViewController alloc]
+      controller = [[DataplanUsageTableViewController alloc]
           initWithPrefs:GetApplicationContext()->GetLocalState()
                basePref:metrics::prefs::kMetricsReportingEnabled
                wifiPref:prefs::kMetricsReportingWifiOnly
@@ -432,11 +434,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       indexPathForItemType:ItemTypeWebServicesShowSuggestions
          sectionIdentifier:SectionIdentifierWebServices];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  LegacySettingsSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchItem>(
           [self.collectionViewModel itemAtIndexPath:switchPath]);
-  SettingsSwitchCell* switchCell =
-      base::mac::ObjCCastStrict<SettingsSwitchCell>(
+  LegacySettingsSwitchCell* switchCell =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(
           [self.collectionView cellForItemAtIndexPath:switchPath]);
 
   if (switchCell.switchView.isOn) {
@@ -458,11 +460,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       indexPathForItemType:ItemTypeCanMakePaymentSwitch
          sectionIdentifier:SectionIdentifierCanMakePayment];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  LegacySettingsSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchItem>(
           [self.collectionViewModel itemAtIndexPath:switchPath]);
-  SettingsSwitchCell* switchCell =
-      base::mac::ObjCCastStrict<SettingsSwitchCell>(
+  LegacySettingsSwitchCell* switchCell =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(
           [self.collectionView cellForItemAtIndexPath:switchPath]);
 
   DCHECK_EQ(switchCell.switchView, sender);
@@ -485,7 +487,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (preferenceName == metrics::prefs::kMetricsReportingEnabled ||
       preferenceName == prefs::kMetricsReportingWifiOnly) {
-    NSString* detailText = [DataplanUsageCollectionViewController
+    NSString* detailText = [DataplanUsageTableViewController
         currentLabelForPreference:GetApplicationContext()->GetLocalState()
                          basePref:metrics::prefs::kMetricsReportingEnabled
                          wifiPref:prefs::kMetricsReportingWifiOnly];

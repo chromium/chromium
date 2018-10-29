@@ -15,7 +15,7 @@
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
 #if defined(GOOGLE_CHROME_BUILD)
-#include "components/nux/constants.h"
+#include "chrome/browser/ui/webui/welcome/nux/constants.h"
 #endif  // defined(GOOGLE_CHROME_BUILD)
 #endif  // defined(OS_WIN)
 
@@ -319,78 +319,6 @@ TEST(StartupTabProviderTest,
     EXPECT_TRUE(output.empty());
   }
 }
-
-#if defined(GOOGLE_CHROME_BUILD)
-TEST(StartupTabProviderTest, GetAppsPromoTabsForState) {
-  {
-    // Show App Promo on if enabled and not seen. Overrides any other tab for
-    // people in the experiment group.
-    StandardOnboardingTabsParams params;
-    params.has_seen_apps_promo = false;
-    params.is_apps_promo_allowed = true;
-    params.is_first_run = true;
-
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
-
-    ASSERT_EQ(1U, output.size());
-    EXPECT_EQ(nux::kNuxGoogleAppsUrl, output[0].url);
-    EXPECT_FALSE(output[0].is_pinned);
-  }
-  {
-    // Show App Promo on if enabled and not seen. Overrides any other tab for
-    // people in the experiment group. Also works on Windows 10.
-    StandardOnboardingTabsParams standard_params;
-    standard_params.has_seen_apps_promo = false;
-    standard_params.is_apps_promo_allowed = true;
-    standard_params.is_first_run = true;
-
-    Win10OnboardingTabsParams win10_params;
-
-    StartupTabs output = StartupTabProviderImpl::GetWin10OnboardingTabsForState(
-        standard_params, win10_params);
-
-    ASSERT_EQ(1U, output.size());
-    EXPECT_EQ(nux::kNuxGoogleAppsUrl, output[0].url);
-    EXPECT_FALSE(output[0].is_pinned);
-  }
-}
-
-TEST(StartupTabProviderTest, GetEmailPromoTabsForState) {
-  {
-    // Show Email Promo on if enabled and not seen. Overrides any other tab for
-    // people in the experiment group.
-    StandardOnboardingTabsParams params;
-    params.has_seen_email_promo = false;
-    params.is_email_promo_allowed = true;
-    params.is_first_run = true;
-
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
-
-    ASSERT_EQ(1U, output.size());
-    EXPECT_EQ(nux::kNuxEmailUrl, output[0].url);
-    EXPECT_FALSE(output[0].is_pinned);
-  }
-  {
-    // Show Email Promo on if enabled and not seen. Overrides any other tab for
-    // people in the experiment group. Also works on Windows 10.
-    StandardOnboardingTabsParams standard_params;
-    standard_params.has_seen_email_promo = false;
-    standard_params.is_email_promo_allowed = true;
-    standard_params.is_first_run = true;
-
-    Win10OnboardingTabsParams win10_params;
-
-    StartupTabs output = StartupTabProviderImpl::GetWin10OnboardingTabsForState(
-        standard_params, win10_params);
-
-    ASSERT_EQ(1U, output.size());
-    EXPECT_EQ(nux::kNuxEmailUrl, output[0].url);
-    EXPECT_FALSE(output[0].is_pinned);
-  }
-}
-#endif  // defined(GOOGLE_CHROME_BUILD)
 #endif  // defined(OS_WIN)
 
 TEST(StartupTabProviderTest, GetMasterPrefsTabsForState) {

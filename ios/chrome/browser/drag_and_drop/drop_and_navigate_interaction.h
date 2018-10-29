@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
-
 @protocol DropAndNavigateDelegate;
 
 // A UIDropManager that notifies it's DropAndNavigateDelegate whenever an object
@@ -23,7 +21,5 @@ API_AVAILABLE(ios(11.0))
     NS_DESIGNATED_INITIALIZER;
 
 @end
-
-#endif
 
 #endif  // IOS_CHROME_BROWSER_DRAG_AND_DROP_DROP_AND_NAVIGATE_INTERACTION_H_

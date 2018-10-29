@@ -41,8 +41,10 @@ Polymer({
    * @private
    */
   onInputChanged_: function() {
-    this.setSetting(
-        'copies', this.inputValid_ ? parseInt(this.currentValue_, 10) : 1);
+    if (this.currentValue_ !== '') {
+      this.setSetting(
+          'copies', this.inputValid_ ? parseInt(this.currentValue_, 10) : 1);
+    }
     this.setSettingValid('copies', this.inputValid_);
   },
 
@@ -51,7 +53,8 @@ Polymer({
    * @private
    */
   collateHidden_: function() {
-    return !this.inputValid_ || parseInt(this.currentValue_, 10) == 1;
+    return !this.inputValid_ || this.currentValue_ === '' ||
+        parseInt(this.currentValue_, 10) == 1;
   },
 
   /** @private */

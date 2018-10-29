@@ -16,6 +16,18 @@ SurfaceDependencyTracker::SurfaceDependencyTracker(
 
 SurfaceDependencyTracker::~SurfaceDependencyTracker() = default;
 
+void SurfaceDependencyTracker::TrackEmbedding(Surface* surface) {
+  // If |surface| is blocking on the arrival of a parent and the parent frame
+  // has not yet arrived then track this |surface|'s SurfaceId by FrameSinkId so
+  // that if a parent refers to it or a more recent surface, then
+  // SurfaceDependencyTracker reports back that a dependency has been added.
+  if (surface->block_activation_on_parent() && !surface->HasDependentFrame()) {
+    surfaces_blocked_on_parent_by_frame_sink_id_[surface->surface_id()
+                                                     .frame_sink_id()]
+        .insert(surface->surface_id());
+  }
+}
+
 void SurfaceDependencyTracker::RequestSurfaceResolution(Surface* surface) {
   DCHECK(surface->HasPendingFrame());
 
@@ -37,12 +49,59 @@ void SurfaceDependencyTracker::RequestSurfaceResolution(Surface* surface) {
   UpdateSurfaceDeadline(surface);
 }
 
+bool SurfaceDependencyTracker::HasSurfaceBlockedOn(
+    const SurfaceId& surface_id) const {
+  auto it = blocked_surfaces_from_dependency_.find(surface_id.frame_sink_id());
+  if (it == blocked_surfaces_from_dependency_.end())
+    return false;
+
+  for (const SurfaceId& blocked_surface_by_id : it->second) {
+    Surface* blocked_surface =
+        surface_manager_->GetSurfaceForId(blocked_surface_by_id);
+    if (blocked_surface && blocked_surface->IsBlockedOn(surface_id))
+      return true;
+  }
+  return false;
+}
+
 void SurfaceDependencyTracker::OnSurfaceActivated(Surface* surface) {
   if (!surface->late_activation_dependencies().empty())
     surfaces_with_missing_dependencies_.insert(surface->surface_id());
   else
     surfaces_with_missing_dependencies_.erase(surface->surface_id());
   NotifySurfaceIdAvailable(surface->surface_id());
+  // We treat an activation (by deadline) as being the equivalent of a parent
+  // embedding the surface.
+  OnSurfaceDependencyAdded(surface->surface_id());
+}
+
+void SurfaceDependencyTracker::OnSurfaceDependencyAdded(
+    const SurfaceId& surface_id) {
+  auto it = surfaces_blocked_on_parent_by_frame_sink_id_.find(
+      surface_id.frame_sink_id());
+  if (it == surfaces_blocked_on_parent_by_frame_sink_id_.end())
+    return;
+
+  std::vector<SurfaceId> dependencies_to_notify;
+
+  base::flat_set<SurfaceId>& blocked_surfaces = it->second;
+  for (auto iter = blocked_surfaces.begin(); iter != blocked_surfaces.end();) {
+    if (iter->local_surface_id() <= surface_id.local_surface_id()) {
+      dependencies_to_notify.push_back(*iter);
+      iter = blocked_surfaces.erase(iter);
+    } else {
+      ++iter;
+    }
+  }
+
+  if (blocked_surfaces.empty())
+    surfaces_blocked_on_parent_by_frame_sink_id_.erase(it);
+
+  for (const SurfaceId& dependency : dependencies_to_notify) {
+    Surface* surface = surface_manager_->GetSurfaceForId(dependency);
+    if (surface)
+      surface->OnSurfaceDependencyAdded();
+  }
 }
 
 void SurfaceDependencyTracker::OnSurfaceDependenciesChanged(
@@ -78,6 +137,7 @@ void SurfaceDependencyTracker::OnSurfaceDiscarded(Surface* surface) {
   // Pretend that the discarded surface's SurfaceId is now available to
   // unblock dependencies because we now know the surface will never activate.
   NotifySurfaceIdAvailable(surface->surface_id());
+  OnSurfaceDependencyAdded(surface->surface_id());
 }
 
 void SurfaceDependencyTracker::OnFrameSinkInvalidated(
@@ -85,6 +145,7 @@ void SurfaceDependencyTracker::OnFrameSinkInvalidated(
   // We now know the frame sink will never generated any more frames,
   // thus unblock all dependencies to any future surfaces.
   NotifySurfaceIdAvailable(SurfaceId::MaxSequenceId(frame_sink_id));
+  OnSurfaceDependencyAdded(SurfaceId::MaxSequenceId(frame_sink_id));
 }
 
 void SurfaceDependencyTracker::ActivateLateSurfaceSubtree(Surface* surface) {

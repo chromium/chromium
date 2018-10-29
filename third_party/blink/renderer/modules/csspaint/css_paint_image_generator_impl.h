@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "v8/include/v8.h"
 
@@ -29,9 +29,9 @@ class MODULES_EXPORT CSSPaintImageGeneratorImpl final
                                         Observer*);
   ~CSSPaintImageGeneratorImpl() override;
 
-  // The |container_size| is the container size with subpixel snapping.
+  // The |container_size| is without subpixel snapping.
   scoped_refptr<Image> Paint(const ImageResourceObserver&,
-                             const IntSize& container_size,
+                             const FloatSize& container_size,
                              const CSSStyleValueVector*) final;
   const Vector<CSSPropertyID>& NativeInvalidationProperties() const final;
   const Vector<AtomicString>& CustomInvalidationProperties() const final;

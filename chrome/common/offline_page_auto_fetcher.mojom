@@ -1,0 +1,33 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+import "url/mojom/url.mojom";
+
+enum OfflinePageAutoFetcherScheduleResult {
+  // There are too many in flight requests, so the new request was not
+  // scheduled.
+  kNotEnoughQuota,
+  // An error prevented the request from being scheduled.
+  kOtherError,
+  // There already exists a request for the URL, so the request was not
+  // scheduled.
+  kAlreadyScheduled,
+  // The request was scheduled.
+  kScheduled
+};
+
+// Provides controls for fetching offline pages automatically and quietly in
+// the background.
+interface OfflinePageAutoFetcher {
+  // Attempts to schedule an auto fetch for this URL, and returns the result.
+  // If user_requested is false, only schedules the fetch if there is remaining
+  // quota.
+  TrySchedule(bool user_requested, url.mojom.Url url) =>
+    (OfflinePageAutoFetcherScheduleResult out);
+
+  // Cancels a previously scheduled auto fetch.
+  CancelSchedule(url.mojom.Url url);
+};

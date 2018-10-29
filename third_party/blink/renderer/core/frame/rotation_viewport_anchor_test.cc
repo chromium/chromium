@@ -25,9 +25,7 @@ class RotationViewportAnchorTest : public SimTest {
   }
 };
 
-// This tests that the rotation anchor doesn't make any changes to scroll
-// when nothing on the page changes.
-TEST_F(RotationViewportAnchorTest, SimpleAbsolutePositionNoOpRotation) {
+TEST_F(RotationViewportAnchorTest, SimpleAbsolutePosition) {
   WebView().Resize(WebSize(400, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -117,60 +115,6 @@ TEST_F(RotationViewportAnchorTest, PositionRelativeToViewportSize) {
 
   EXPECT_EQ(expected_offset.X(), layout_viewport->GetScrollOffset().Width());
   EXPECT_EQ(expected_offset.Y(), layout_viewport->GetScrollOffset().Height());
-}
-
-// Ensure that only a size change that looks like a rotation (i.e. width and
-// height are swapped) causes the rotation viewport anchoring behavior. Other
-// resizes don't cause anchoring.
-TEST_F(RotationViewportAnchorTest, OnlyRotationEngagesAnchor) {
-  WebView().Resize(WebSize(100, 600));
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-      <!DOCTYPE html>
-      <style>
-        body {
-          width: 10000px;
-          height: 10000px;
-          margin: 0px;
-        }
-
-        #target {
-          width: 50px;
-          height: 50px;
-          position: absolute;
-          left: 500%;
-          top: 500%;
-        }
-      </style>
-      <div id="target"></div>
-  )HTML");
-  Compositor().BeginFrame();
-
-  Document& document = GetDocument();
-  ScrollableArea* layout_viewport = document.View()->LayoutViewport();
-
-  IntPoint target_position(5 * WebView().Size().width,
-                           5 * WebView().Size().height);
-
-  // Place the target at the top-center of the viewport. This is where the
-  // rotation anchor finds the node to anchor to.
-  layout_viewport->SetScrollOffset(
-      ScrollOffset(target_position.X() - WebView().Size().width / 2 + 25,
-                   target_position.Y()),
-      kProgrammaticScroll);
-
-  ScrollOffset expected_offset = layout_viewport->GetScrollOffset();
-
-  // Change just the width - we shouldn't consider this a rotation so the
-  // expectation is that the scroll offset won't change.
-  WebView().Resize(WebSize(600, 600));
-  Compositor().BeginFrame();
-
-  EXPECT_EQ(expected_offset.Width(),
-            layout_viewport->GetScrollOffset().Width());
-  EXPECT_EQ(expected_offset.Height(),
-            layout_viewport->GetScrollOffset().Height());
 }
 
 }  // namespace

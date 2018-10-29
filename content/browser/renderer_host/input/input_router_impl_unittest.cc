@@ -31,7 +31,6 @@
 #include "content/common/edit_command.h"
 #include "content/common/input/synthetic_web_input_event_builders.h"
 #include "content/common/input_messages.h"
-#include "content/common/view_messages.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -126,10 +125,6 @@ class MockInputRouterImplClient : public InputRouterImplClient {
     input_router_client_.DecrementInFlightEventCount(ack_source);
   }
 
-  void OnHasTouchEventHandlers(bool has_handlers) override {
-    input_router_client_.OnHasTouchEventHandlers(has_handlers);
-  }
-
   void DidOverscroll(const ui::DidOverscrollParams& params) override {
     input_router_client_.DidOverscroll(params);
   }
@@ -174,10 +169,6 @@ class MockInputRouterImplClient : public InputRouterImplClient {
 
   void set_input_router(InputRouter* input_router) {
     input_router_client_.set_input_router(input_router);
-  }
-
-  bool has_touch_handler() const {
-    return input_router_client_.has_touch_handler();
   }
 
   void set_filter_state(InputEventAckState filter_state) {
@@ -251,16 +242,17 @@ class InputRouterImplTest : public testing::Test {
     NativeWebKeyboardEventWithLatencyInfo key_event(
         type, WebInputEvent::kNoModifiers, ui::EventTimeForNow(),
         ui::LatencyInfo());
-    input_router_->SendKeyboardEvent(key_event);
+    input_router_->SendKeyboardEvent(
+        key_event, disposition_handler_->CreateKeyboardEventCallback());
   }
 
   void SimulateWheelEvent(float x,
-                                   float y,
-                                   float dX,
-                                   float dY,
-                                   int modifiers,
-                                   bool precise,
-                                   WebMouseWheelEvent::Phase phase) {
+                          float y,
+                          float dX,
+                          float dY,
+                          int modifiers,
+                          bool precise,
+                          WebMouseWheelEvent::Phase phase) {
     WebMouseWheelEvent wheel_event = SyntheticWebMouseWheelEventBuilder::Build(
         x, y, dX, dY, modifiers, precise);
     wheel_event.phase = phase;
@@ -273,8 +265,10 @@ class InputRouterImplTest : public testing::Test {
   }
 
   void SimulateMouseEvent(WebInputEvent::Type type, int x, int y) {
-    input_router_->SendMouseEvent(MouseEventWithLatencyInfo(
-        SyntheticWebMouseEventBuilder::Build(type, x, y, 0)));
+    input_router_->SendMouseEvent(
+        MouseEventWithLatencyInfo(
+            SyntheticWebMouseEventBuilder::Build(type, x, y, 0)),
+        disposition_handler_->CreateMouseEventCallback());
   }
 
   void SimulateGestureEvent(WebGestureEvent gesture) {
@@ -388,8 +382,7 @@ class InputRouterImplTest : public testing::Test {
   bool HasPendingEvents() const { return input_router_->HasPendingEvents(); }
 
   void OnHasTouchEventHandlers(bool has_handlers) {
-    input_router_->OnMessageReceived(
-        ViewHostMsg_HasTouchEventHandlers(0, has_handlers));
+    input_router_->OnHasTouchEventHandlers(has_handlers);
   }
 
   void CancelTouchTimeout() { input_router_->CancelTouchTimeout(); }
@@ -433,11 +426,11 @@ class InputRouterImplTest : public testing::Test {
     input_router_->TouchEventHandled(
         TouchEventWithLatencyInfo(touch_event_), InputEventAckSource::BROWSER,
         ui::LatencyInfo(), state, overscroll, touch_action);
-    EXPECT_EQ(input_router_->num_of_active_touches_for_test(), 1);
+    EXPECT_EQ(input_router_->touch_action_filter_.num_of_active_touches_, 1);
     ReleaseTouchPoint(0);
     input_router_->OnTouchEventAck(TouchEventWithLatencyInfo(touch_event_),
                                    InputEventAckSource::BROWSER, state);
-    EXPECT_EQ(input_router_->num_of_active_touches_for_test(), 0);
+    EXPECT_EQ(input_router_->touch_action_filter_.num_of_active_touches_, 0);
   }
 
   void OnTouchEventAckWithAckState(InputEventAckState ack_state) {
@@ -718,7 +711,6 @@ TEST_F(InputRouterImplTest, TouchEventQueue) {
 // events and the outstanding ack is received.
 TEST_F(InputRouterImplTest, TouchEventQueueFlush) {
   OnHasTouchEventHandlers(true);
-  EXPECT_TRUE(client_->has_touch_handler());
   EXPECT_EQ(0U, GetAndResetDispatchedMessages().size());
   EXPECT_TRUE(TouchEventQueueEmpty());
 
@@ -735,7 +727,6 @@ TEST_F(InputRouterImplTest, TouchEventQueueFlush) {
   // The page stops listening for touch-events. Note that flushing is deferred
   // until the outstanding ack is received.
   OnHasTouchEventHandlers(false);
-  EXPECT_FALSE(client_->has_touch_handler());
   EXPECT_EQ(0U, GetAndResetDispatchedMessages().size());
   EXPECT_FALSE(TouchEventQueueEmpty());
 
@@ -2213,78 +2204,141 @@ class InputRouterImplScaleGestureEventTest
  public:
   InputRouterImplScaleGestureEventTest() {}
 
+  base::Optional<gfx::SizeF> GetContactSize(const WebGestureEvent& event) {
+    switch (event.GetType()) {
+      case WebInputEvent::Type::kGestureTapDown:
+        return gfx::SizeF(event.data.tap_down.width,
+                          event.data.tap_down.height);
+      case WebInputEvent::Type::kGestureShowPress:
+        return gfx::SizeF(event.data.show_press.width,
+                          event.data.show_press.height);
+      case WebInputEvent::Type::kGestureTap:
+      case WebInputEvent::Type::kGestureTapUnconfirmed:
+      case WebInputEvent::Type::kGestureDoubleTap:
+        return gfx::SizeF(event.data.tap.width, event.data.tap.height);
+      case WebInputEvent::Type::kGestureLongPress:
+      case WebInputEvent::Type::kGestureLongTap:
+        return gfx::SizeF(event.data.long_press.width,
+                          event.data.long_press.height);
+      case WebInputEvent::Type::kGestureTwoFingerTap:
+        return gfx::SizeF(event.data.two_finger_tap.first_finger_width,
+                          event.data.two_finger_tap.first_finger_height);
+      default:
+        return base::nullopt;
+    }
+  }
+
+  void SetContactSize(WebGestureEvent& event, const gfx::SizeF& size) {
+    switch (event.GetType()) {
+      case WebInputEvent::Type::kGestureTapDown:
+        event.data.tap_down.width = size.width();
+        event.data.tap_down.height = size.height();
+        break;
+      case WebInputEvent::Type::kGestureShowPress:
+        event.data.show_press.width = size.width();
+        event.data.show_press.height = size.height();
+        break;
+      case WebInputEvent::Type::kGestureTap:
+      case WebInputEvent::Type::kGestureTapUnconfirmed:
+      case WebInputEvent::Type::kGestureDoubleTap:
+        event.data.tap.width = size.width();
+        event.data.tap.height = size.height();
+        break;
+      case WebInputEvent::Type::kGestureLongPress:
+      case WebInputEvent::Type::kGestureLongTap:
+        event.data.long_press.width = size.width();
+        event.data.long_press.height = size.height();
+        break;
+      case WebInputEvent::Type::kGestureTwoFingerTap:
+        event.data.two_finger_tap.first_finger_width = size.width();
+        event.data.two_finger_tap.first_finger_height = size.height();
+        break;
+      default:
+        break;
+    }
+  }
+
   WebGestureEvent BuildGestureEvent(WebInputEvent::Type type,
-                                    const gfx::PointF& point) {
+                                    const gfx::PointF& point,
+                                    const gfx::SizeF& contact_size) {
     WebGestureEvent event = SyntheticWebGestureEventBuilder::Build(
-        type, blink::kWebGestureDeviceTouchpad);
+        type, blink::kWebGestureDeviceTouchscreen);
     event.SetPositionInWidget(point);
     event.SetPositionInScreen(point);
+    SetContactSize(event, contact_size);
     return event;
   }
 
-  void TestTap(const std::string& name, WebInputEvent::Type type) {
-    SCOPED_TRACE(name);
+  void SendGestureSequence(
+      const std::vector<WebInputEvent::Type>& gesture_types) {
     const gfx::PointF orig(10, 20), scaled(20, 40);
-    WebGestureEvent event = BuildGestureEvent(type, orig);
-    event.data.tap.width = 30;
-    event.data.tap.height = 40;
-    SimulateGestureEvent(event);
-    FlushGestureEvent(type);
+    const gfx::SizeF contact_size(30, 40), contact_size_scaled(60, 80);
 
-    const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
-    TestLocationInSentEvent(sent_event, orig, scaled);
-    EXPECT_EQ(60, sent_event->data.tap.width);
-    EXPECT_EQ(80, sent_event->data.tap.height);
+    for (WebInputEvent::Type type : gesture_types) {
+      SCOPED_TRACE(WebInputEvent::GetName(type));
 
-    const WebGestureEvent* filter_event =
-        GetFilterWebInputEvent<WebGestureEvent>();
-    TestLocationInFilterEvent(filter_event, orig);
-    EXPECT_EQ(30, filter_event->data.tap.width);
-    EXPECT_EQ(40, filter_event->data.tap.height);
+      WebGestureEvent event = BuildGestureEvent(type, orig, contact_size);
+      SimulateGestureEvent(event);
+      FlushGestureEvents({type});
+
+      const WebGestureEvent* sent_event =
+          GetSentWebInputEvent<WebGestureEvent>();
+      TestLocationInSentEvent(sent_event, orig, scaled, contact_size_scaled);
+
+      const WebGestureEvent* filter_event =
+          GetFilterWebInputEvent<WebGestureEvent>();
+      TestLocationInFilterEvent(filter_event, orig, contact_size);
+    }
   }
 
-  void TestLongPress(const std::string& name, WebInputEvent::Type type) {
-    const gfx::PointF orig(10, 20), scaled(20, 40);
-    WebGestureEvent event = BuildGestureEvent(type, orig);
-    event.data.long_press.width = 30;
-    event.data.long_press.height = 40;
-    SimulateGestureEvent(event);
-    FlushGestureEvent(type);
-    const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
-    TestLocationInSentEvent(sent_event, orig, scaled);
-    EXPECT_EQ(60, sent_event->data.long_press.width);
-    EXPECT_EQ(80, sent_event->data.long_press.height);
-
-    const WebGestureEvent* filter_event =
-        GetFilterWebInputEvent<WebGestureEvent>();
-    TestLocationInFilterEvent(filter_event, orig);
-    EXPECT_EQ(30, filter_event->data.long_press.width);
-    EXPECT_EQ(40, filter_event->data.long_press.height);
-  }
-
-  void FlushGestureEvent(WebInputEvent::Type type) {
+  void FlushGestureEvents(
+      const std::vector<WebInputEvent::Type>& expected_types) {
     UpdateDispatchedMessages();
-    ASSERT_EQ(1u, dispatched_messages_.size());
-    ASSERT_TRUE(dispatched_messages_[0]->ToEvent());
-    dispatched_messages_[0]->ToEvent()->CallCallback(
-        INPUT_EVENT_ACK_STATE_CONSUMED);
+    ASSERT_EQ(expected_types.size(), dispatched_messages_.size());
+    for (size_t i = 0; i < dispatched_messages_.size(); i++) {
+      ASSERT_TRUE(dispatched_messages_[i]->ToEvent());
+      ASSERT_EQ(
+          expected_types[i],
+          dispatched_messages_[i]->ToEvent()->Event()->web_event->GetType());
+      dispatched_messages_[i]->ToEvent()->CallCallback(
+          INPUT_EVENT_ACK_STATE_CONSUMED);
+    }
   }
 
-  void TestLocationInSentEvent(const WebGestureEvent* sent_event,
-                               const gfx::PointF& orig,
-                               const gfx::PointF& scaled) {
-    EXPECT_EQ(20, sent_event->PositionInWidget().x);
-    EXPECT_EQ(40, sent_event->PositionInWidget().y);
-    EXPECT_EQ(10, sent_event->PositionInScreen().x);
-    EXPECT_EQ(20, sent_event->PositionInScreen().y);
+  void TestLocationInSentEvent(
+      const WebGestureEvent* sent_event,
+      const gfx::PointF& orig,
+      const gfx::PointF& scaled,
+      const base::Optional<gfx::SizeF>& contact_size_scaled) {
+    EXPECT_FLOAT_EQ(scaled.x(), sent_event->PositionInWidget().x);
+    EXPECT_FLOAT_EQ(scaled.y(), sent_event->PositionInWidget().y);
+    EXPECT_FLOAT_EQ(orig.x(), sent_event->PositionInScreen().x);
+    EXPECT_FLOAT_EQ(orig.y(), sent_event->PositionInScreen().y);
+
+    base::Optional<gfx::SizeF> event_contact_size = GetContactSize(*sent_event);
+    if (event_contact_size && contact_size_scaled) {
+      EXPECT_FLOAT_EQ(contact_size_scaled->width(),
+                      event_contact_size->width());
+      EXPECT_FLOAT_EQ(contact_size_scaled->height(),
+                      event_contact_size->height());
+    }
   }
 
-  void TestLocationInFilterEvent(const WebGestureEvent* filter_event,
-                                 const gfx::PointF& point) {
-    EXPECT_EQ(10, filter_event->PositionInWidget().x);
-    EXPECT_EQ(20, filter_event->PositionInWidget().y);
-    EXPECT_EQ(10, filter_event->PositionInScreen().x);
-    EXPECT_EQ(20, filter_event->PositionInScreen().y);
+  void TestLocationInFilterEvent(
+      const WebGestureEvent* filter_event,
+      const gfx::PointF& orig,
+      const base::Optional<gfx::SizeF>& contact_size) {
+    EXPECT_FLOAT_EQ(orig.x(), filter_event->PositionInWidget().x);
+    EXPECT_FLOAT_EQ(orig.y(), filter_event->PositionInWidget().y);
+    EXPECT_FLOAT_EQ(orig.x(), filter_event->PositionInScreen().x);
+    EXPECT_FLOAT_EQ(orig.y(), filter_event->PositionInScreen().y);
+
+    base::Optional<gfx::SizeF> event_contact_size =
+        GetContactSize(*filter_event);
+    if (event_contact_size && contact_size) {
+      EXPECT_FLOAT_EQ(contact_size->width(), event_contact_size->width());
+      EXPECT_FLOAT_EQ(contact_size->height(), event_contact_size->height());
+    }
   }
 
  private:
@@ -2293,124 +2347,109 @@ class InputRouterImplScaleGestureEventTest
 
 }  // namespace
 
-TEST_F(InputRouterImplScaleGestureEventTest, GestureScrollUpdate) {
-  SimulateGestureScrollUpdateEvent(10.f, 20, 0,
-                                   blink::kWebGestureDeviceTouchpad);
-  FlushGestureEvent(WebInputEvent::kGestureScrollUpdate);
-  const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
+TEST_F(InputRouterImplScaleGestureEventTest, GestureScroll) {
+  const gfx::Vector2dF delta(10.f, 20.f), delta_scaled(20.f, 40.f);
 
-  EXPECT_EQ(20.f, sent_event->data.scroll_update.delta_x);
-  EXPECT_EQ(40.f, sent_event->data.scroll_update.delta_y);
-
-  const WebGestureEvent* filter_event =
-      GetFilterWebInputEvent<WebGestureEvent>();
-  EXPECT_EQ(10.f, filter_event->data.scroll_update.delta_x);
-  EXPECT_EQ(20.f, filter_event->data.scroll_update.delta_y);
-}
-
-TEST_F(InputRouterImplScaleGestureEventTest, GestureScrollBegin) {
   PressAndSetTouchActionAuto();
+
+  SendGestureSequence(
+      {WebInputEvent::kGestureTapDown, WebInputEvent::kGestureTapCancel});
+
+  {
+    SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
+        delta.x(), delta.y(), blink::kWebGestureDeviceTouchscreen));
+    FlushGestureEvents({WebInputEvent::kGestureScrollBegin});
+
+    const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
+    EXPECT_FLOAT_EQ(delta_scaled.x(),
+                    sent_event->data.scroll_begin.delta_x_hint);
+    EXPECT_FLOAT_EQ(delta_scaled.y(),
+                    sent_event->data.scroll_begin.delta_y_hint);
+
+    const WebGestureEvent* filter_event =
+        GetFilterWebInputEvent<WebGestureEvent>();
+    EXPECT_FLOAT_EQ(delta.x(), filter_event->data.scroll_begin.delta_x_hint);
+    EXPECT_FLOAT_EQ(delta.y(), filter_event->data.scroll_begin.delta_y_hint);
+  }
+
+  {
+    SimulateGestureScrollUpdateEvent(delta.x(), delta.y(), 0,
+                                     blink::kWebGestureDeviceTouchscreen);
+    FlushGestureEvents({WebInputEvent::kTouchScrollStarted,
+                        WebInputEvent::kGestureScrollUpdate});
+    // Erase TouchScrollStarted so we can inspect the GestureScrollUpdate.
+    dispatched_messages_.erase(dispatched_messages_.begin());
+
+    const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
+    EXPECT_FLOAT_EQ(delta_scaled.x(), sent_event->data.scroll_update.delta_x);
+    EXPECT_FLOAT_EQ(delta_scaled.y(), sent_event->data.scroll_update.delta_y);
+
+    const WebGestureEvent* filter_event =
+        GetFilterWebInputEvent<WebGestureEvent>();
+    EXPECT_FLOAT_EQ(delta.x(), filter_event->data.scroll_update.delta_x);
+    EXPECT_FLOAT_EQ(delta.y(), filter_event->data.scroll_update.delta_y);
+  }
+
+  SendGestureSequence({WebInputEvent::kGestureScrollEnd});
+}
+
+TEST_F(InputRouterImplScaleGestureEventTest, GesturePinch) {
+  const gfx::PointF anchor(10.f, 20.f), anchor_scaled(20.f, 40.f);
+  const float scale_change(1.5f);
+
+  PressAndSetTouchActionAuto();
+
+  SendGestureSequence(
+      {WebInputEvent::kGestureTapDown, WebInputEvent::kGestureTapCancel});
+
   SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
-      10.f, 20.f, blink::kWebGestureDeviceTouchscreen));
-  FlushGestureEvent(WebInputEvent::kGestureScrollBegin);
+      0.f, 0.f, blink::kWebGestureDeviceTouchscreen));
+  FlushGestureEvents({WebInputEvent::kGestureScrollBegin});
 
+  SendGestureSequence({WebInputEvent::kGesturePinchBegin});
+
+  SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildPinchUpdate(
+      scale_change, anchor.x(), anchor.y(), 0,
+      blink::kWebGestureDeviceTouchscreen));
+
+  FlushGestureEvents({WebInputEvent::kGesturePinchUpdate});
   const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
-  EXPECT_EQ(20.f, sent_event->data.scroll_begin.delta_x_hint);
-  EXPECT_EQ(40.f, sent_event->data.scroll_begin.delta_y_hint);
+  TestLocationInSentEvent(sent_event, anchor, anchor_scaled, base::nullopt);
+  EXPECT_FLOAT_EQ(scale_change, sent_event->data.pinch_update.scale);
 
   const WebGestureEvent* filter_event =
       GetFilterWebInputEvent<WebGestureEvent>();
-  EXPECT_EQ(10.f, filter_event->data.scroll_begin.delta_x_hint);
-  EXPECT_EQ(20.f, filter_event->data.scroll_begin.delta_y_hint);
+  TestLocationInFilterEvent(filter_event, anchor, base::nullopt);
+  EXPECT_FLOAT_EQ(scale_change, filter_event->data.pinch_update.scale);
+
+  SendGestureSequence(
+      {WebInputEvent::kGesturePinchEnd, WebInputEvent::kGestureScrollEnd});
 }
 
-TEST_F(InputRouterImplScaleGestureEventTest, GesturePinchUpdate) {
-  const gfx::PointF orig(10, 20), scaled(20, 40);
-  SimulateTouchpadGesturePinchEventWithoutWheel(
-      WebInputEvent::kGesturePinchUpdate, 1.5f, orig.x(), orig.y(), 0);
-  FlushGestureEvent(WebInputEvent::kGesturePinchUpdate);
-  const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
-  TestLocationInSentEvent(sent_event, orig, scaled);
-  EXPECT_EQ(1.5f, sent_event->data.pinch_update.scale);
-
-  const WebGestureEvent* filter_event =
-      GetFilterWebInputEvent<WebGestureEvent>();
-  TestLocationInFilterEvent(filter_event, orig);
-  EXPECT_EQ(1.5f, filter_event->data.pinch_update.scale);
+TEST_F(InputRouterImplScaleGestureEventTest, GestureTap) {
+  SendGestureSequence({WebInputEvent::kGestureTapDown,
+                       WebInputEvent::kGestureShowPress,
+                       WebInputEvent::kGestureTap});
 }
 
-TEST_F(InputRouterImplScaleGestureEventTest, GestureTapDown) {
-  const gfx::PointF orig(10, 20), scaled(20, 40);
-  WebGestureEvent event =
-      BuildGestureEvent(WebInputEvent::kGestureTapDown, orig);
-  event.data.tap_down.width = 30;
-  event.data.tap_down.height = 40;
-  SimulateGestureEvent(event);
-  FlushGestureEvent(WebInputEvent::kGestureTapDown);
-  const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
-  TestLocationInSentEvent(sent_event, orig, scaled);
-  EXPECT_EQ(60, sent_event->data.tap_down.width);
-  EXPECT_EQ(80, sent_event->data.tap_down.height);
-
-  const WebGestureEvent* filter_event =
-      GetFilterWebInputEvent<WebGestureEvent>();
-  TestLocationInFilterEvent(filter_event, orig);
-  EXPECT_EQ(30, filter_event->data.tap_down.width);
-  EXPECT_EQ(40, filter_event->data.tap_down.height);
-}
-
-TEST_F(InputRouterImplScaleGestureEventTest, GestureTapOthers) {
-  TestTap("GestureDoubleTap", WebInputEvent::kGestureDoubleTap);
-  TestTap("GestureTap", WebInputEvent::kGestureTap);
-  TestTap("GestureTapUnconfirmed", WebInputEvent::kGestureTapUnconfirmed);
-}
-
-TEST_F(InputRouterImplScaleGestureEventTest, GestureShowPress) {
-  const gfx::PointF orig(10, 20), scaled(20, 40);
-  WebGestureEvent event =
-      BuildGestureEvent(WebInputEvent::kGestureShowPress, orig);
-  event.data.show_press.width = 30;
-  event.data.show_press.height = 40;
-  SimulateGestureEvent(event);
-  FlushGestureEvent(WebInputEvent::kGestureShowPress);
-
-  const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
-  TestLocationInSentEvent(sent_event, orig, scaled);
-  EXPECT_EQ(60, sent_event->data.show_press.width);
-  EXPECT_EQ(80, sent_event->data.show_press.height);
-
-  const WebGestureEvent* filter_event =
-      GetFilterWebInputEvent<WebGestureEvent>();
-  TestLocationInFilterEvent(filter_event, orig);
-  EXPECT_EQ(30, filter_event->data.show_press.width);
-  EXPECT_EQ(40, filter_event->data.show_press.height);
+TEST_F(InputRouterImplScaleGestureEventTest, GestureDoubleTap) {
+  SendGestureSequence(
+      {WebInputEvent::kGestureTapDown, WebInputEvent::kGestureTapUnconfirmed,
+       WebInputEvent::kGestureTapCancel, WebInputEvent::kGestureTapDown,
+       WebInputEvent::kGestureTapCancel, WebInputEvent::kGestureDoubleTap});
 }
 
 TEST_F(InputRouterImplScaleGestureEventTest, GestureLongPress) {
-  TestLongPress("LongPress", WebInputEvent::kGestureLongPress);
-  TestLongPress("LongPap", WebInputEvent::kGestureLongTap);
+  SendGestureSequence(
+      {WebInputEvent::kGestureTapDown, WebInputEvent::kGestureShowPress,
+       WebInputEvent::kGestureLongPress, WebInputEvent::kGestureTapCancel,
+       WebInputEvent::kGestureLongTap});
 }
 
 TEST_F(InputRouterImplScaleGestureEventTest, GestureTwoFingerTap) {
-  WebGestureEvent event = BuildGestureEvent(WebInputEvent::kGestureTwoFingerTap,
-                                            gfx::PointF(10, 20));
-  event.data.two_finger_tap.first_finger_width = 30;
-  event.data.two_finger_tap.first_finger_height = 40;
-  SimulateGestureEvent(event);
-  FlushGestureEvent(WebInputEvent::kGestureTwoFingerTap);
-
-  const WebGestureEvent* sent_event = GetSentWebInputEvent<WebGestureEvent>();
-  EXPECT_EQ(20, sent_event->PositionInWidget().x);
-  EXPECT_EQ(40, sent_event->PositionInWidget().y);
-  EXPECT_EQ(60, sent_event->data.two_finger_tap.first_finger_width);
-  EXPECT_EQ(80, sent_event->data.two_finger_tap.first_finger_height);
-
-  const WebGestureEvent* filter_event =
-      GetFilterWebInputEvent<WebGestureEvent>();
-  EXPECT_EQ(10, filter_event->PositionInWidget().x);
-  EXPECT_EQ(20, filter_event->PositionInWidget().y);
-  EXPECT_EQ(30, filter_event->data.two_finger_tap.first_finger_width);
-  EXPECT_EQ(40, filter_event->data.two_finger_tap.first_finger_height);
+  SendGestureSequence({WebInputEvent::kGestureTapDown,
+                       WebInputEvent::kGestureTapCancel,
+                       WebInputEvent::kGestureTwoFingerTap});
 }
 
 }  // namespace content

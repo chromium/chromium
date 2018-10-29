@@ -54,8 +54,8 @@ void SandboxQuotaObserver::OnUpdate(const FileSystemURL& url, int64_t delta) {
     delayed_cache_update_helper_.Start(
         FROM_HERE,
         base::TimeDelta(),  // No delay.
-        base::Bind(&SandboxQuotaObserver::ApplyPendingUsageUpdate,
-                   base::Unretained(this)));
+        base::BindOnce(&SandboxQuotaObserver::ApplyPendingUsageUpdate,
+                       base::Unretained(this)));
   }
 }
 
@@ -66,8 +66,7 @@ void SandboxQuotaObserver::OnEndUpdate(const FileSystemURL& url) {
   if (usage_file_path.empty())
     return;
 
-  PendingUpdateNotificationMap::iterator found =
-      pending_update_notification_.find(usage_file_path);
+  auto found = pending_update_notification_.find(usage_file_path);
   if (found != pending_update_notification_.end()) {
     UpdateUsageCacheFile(found->first, found->second);
     pending_update_notification_.erase(found);

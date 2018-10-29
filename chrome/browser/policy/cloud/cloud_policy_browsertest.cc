@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -202,7 +203,8 @@ class CloudPolicyTest : public InProcessBrowserTest,
     command_line->AppendSwitchASCII(switches::kDeviceManagementUrl, url);
 
     invalidation::DeprecatedProfileInvalidationProviderFactory::GetInstance()
-        ->RegisterTestingFactory(BuildFakeProfileInvalidationProvider);
+        ->RegisterTestingFactory(
+            base::BindRepeating(&BuildFakeProfileInvalidationProvider));
   }
 
   void SetUpOnMainThread() override {

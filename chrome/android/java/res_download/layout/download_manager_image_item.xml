@@ -4,7 +4,7 @@
      found in the LICENSE file.
 -->
 
-<FrameLayout
+<org.chromium.chrome.browser.download.home.list.view.AspectRatioFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,18 +13,18 @@
     android:clickable="true"
     android:background="@color/modern_grey_100" >
 
-    <ImageView
+    <org.chromium.chrome.browser.download.home.list.view.AsyncImageView
         android:id="@+id/thumbnail"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/placeholder_thumbnail_bg_color"
+        android:background="@color/modern_grey_300"
         android:scaleType="centerCrop"
         android:layout_gravity="center"
         android:adjustViewBounds="true"
-        tools:ignore="ContentDescription" />
+        style="@style/AsyncImageView"
+        tools:ignore="ContentDescription"
+        app:layout_aspectRatio="100%" />
 
     <org.chromium.chrome.browser.download.home.view.SelectionView
         android:id="@+id/selection"
         style="@style/DownloadItemSelectionView"/>
-
-</FrameLayout>
+</org.chromium.chrome.browser.download.home.list.view.AspectRatioFrameLayout>

@@ -26,6 +26,9 @@ class STORAGE_EXPORT FileWriterImpl : public blink::mojom::FileWriter {
   void Write(uint64_t position,
              blink::mojom::BlobPtr blob,
              WriteCallback callback) override;
+  void WriteStream(uint64_t position,
+                   mojo::ScopedDataPipeConsumerHandle stream,
+                   WriteStreamCallback callback) override;
   void Truncate(uint64_t length, TruncateCallback callback) override;
 
  private:
@@ -37,6 +40,11 @@ class STORAGE_EXPORT FileWriterImpl : public blink::mojom::FileWriter {
                            std::unique_ptr<BlobDataHandle> blob,
                            base::File::Error result,
                            const base::File::Info& file_info);
+  void DoWriteStreamWithFileInfo(WriteCallback callback,
+                                 uint64_t position,
+                                 mojo::ScopedDataPipeConsumerHandle data_pipe,
+                                 base::File::Error result,
+                                 const base::File::Info& file_info);
 
   struct WriteState {
     uint64_t bytes_written = 0;

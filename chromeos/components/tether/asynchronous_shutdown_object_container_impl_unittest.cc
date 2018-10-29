@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_task_environment.h"
+#include "chromeos/chromeos_features.h"
 #include "chromeos/components/tether/fake_ble_advertiser.h"
 #include "chromeos/components/tether/fake_ble_scanner.h"
 #include "chromeos/components/tether/fake_disconnect_tethering_request_sender.h"
@@ -57,6 +59,8 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
       : test_device_(cryptauth::CreateRemoteDeviceRefListForTest(1u)[0]) {}
 
   void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(features::kMultiDeviceApi);
+
     was_shutdown_callback_invoked_ = false;
     is_adapter_powered_ = true;
 
@@ -121,6 +125,7 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
 
   const base::test::ScopedTaskEnvironment scoped_task_environment_;
   const cryptauth::RemoteDeviceRef test_device_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<cryptauth::FakeCryptAuthService> fake_cryptauth_service_;

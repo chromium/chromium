@@ -15,6 +15,14 @@ void LoginDataDispatcher::Observer::OnPinEnabledForUserChanged(
     const AccountId& user,
     bool enabled) {}
 
+void LoginDataDispatcher::Observer::OnFingerprintStateChanged(
+    const AccountId& account_id,
+    mojom::FingerprintState state) {}
+
+void LoginDataDispatcher::Observer::OnFingerprintAuthResult(
+    const AccountId& account_id,
+    bool successful) {}
+
 void LoginDataDispatcher::Observer::OnAuthEnabledForUserChanged(
     const AccountId& user,
     bool enabled,
@@ -39,7 +47,8 @@ void LoginDataDispatcher::Observer::OnShowWarningBanner(
 
 void LoginDataDispatcher::Observer::OnHideWarningBanner() {}
 
-void LoginDataDispatcher::Observer::OnDevChannelInfoChanged(
+void LoginDataDispatcher::Observer::OnSystemInfoChanged(
+    bool show,
     const std::string& os_version_label_text,
     const std::string& enterprise_info_text,
     const std::string& bluetooth_name) {}
@@ -61,10 +70,6 @@ void LoginDataDispatcher::Observer::OnPublicSessionKeyboardLayoutsChanged(
 
 void LoginDataDispatcher::Observer::OnDetachableBasePairingStatusChanged(
     DetachableBasePairingStatus pairing_status) {}
-
-void LoginDataDispatcher::Observer::OnFingerprintUnlockStateChanged(
-    const AccountId& account_id,
-    mojom::FingerprintUnlockState state) {}
 
 LoginDataDispatcher::LoginDataDispatcher() = default;
 
@@ -88,6 +93,19 @@ void LoginDataDispatcher::SetPinEnabledForUser(const AccountId& user,
                                                bool enabled) {
   for (auto& observer : observers_)
     observer.OnPinEnabledForUserChanged(user, enabled);
+}
+
+void LoginDataDispatcher::SetFingerprintState(const AccountId& account_id,
+                                              mojom::FingerprintState state) {
+  for (auto& observer : observers_)
+    observer.OnFingerprintStateChanged(account_id, state);
+}
+
+void LoginDataDispatcher::NotifyFingerprintAuthResult(
+    const AccountId& account_id,
+    bool successful) {
+  for (auto& observer : observers_)
+    observer.OnFingerprintAuthResult(account_id, successful);
 }
 
 void LoginDataDispatcher::SetAuthEnabledForUser(
@@ -133,13 +151,14 @@ void LoginDataDispatcher::HideWarningBanner() {
     observer.OnHideWarningBanner();
 }
 
-void LoginDataDispatcher::SetDevChannelInfo(
+void LoginDataDispatcher::SetSystemInfo(
+    bool show_if_hidden,
     const std::string& os_version_label_text,
     const std::string& enterprise_info_text,
     const std::string& bluetooth_name) {
   for (auto& observer : observers_) {
-    observer.OnDevChannelInfoChanged(os_version_label_text,
-                                     enterprise_info_text, bluetooth_name);
+    observer.OnSystemInfoChanged(show_if_hidden, os_version_label_text,
+                                 enterprise_info_text, bluetooth_name);
   }
 }
 
@@ -175,13 +194,6 @@ void LoginDataDispatcher::SetDetachableBasePairingStatus(
     DetachableBasePairingStatus pairing_status) {
   for (auto& observer : observers_)
     observer.OnDetachableBasePairingStatusChanged(pairing_status);
-}
-
-void LoginDataDispatcher::SetFingerprintUnlockState(
-    const AccountId& account_id,
-    mojom::FingerprintUnlockState state) {
-  for (auto& observer : observers_)
-    observer.OnFingerprintUnlockStateChanged(account_id, state);
 }
 
 }  // namespace ash

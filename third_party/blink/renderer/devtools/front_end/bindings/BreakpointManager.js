@@ -305,6 +305,7 @@ Bindings.BreakpointManager.Breakpoint = class {
     /** @type {boolean} */ this._enabled;
     /** @type {boolean} */ this._isRemoved;
 
+    this._currentState = null;
     /** @type {!Map.<!SDK.DebuggerModel, !Bindings.BreakpointManager.ModelBreakpoint>}*/
     this._modelBreakpoints = new Map();
     this._updateState(condition, enabled);
@@ -578,6 +579,10 @@ Bindings.BreakpointManager.ModelBreakpoint = class {
         newState = new Bindings.BreakpointManager.Breakpoint.State(
             null, script.scriptId, script.hash, debuggerLocation.lineNumber, debuggerLocation.columnNumber, condition);
       }
+    } else if (this._breakpoint._currentState && this._breakpoint._currentState.url) {
+      const position = this._breakpoint._currentState;
+      newState = new Bindings.BreakpointManager.Breakpoint.State(
+          position.url, null, null, position.lineNumber, position.columnNumber, condition);
     } else if (uiSourceCode) {
       newState = new Bindings.BreakpointManager.Breakpoint.State(
           uiSourceCode.url(), null, null, lineNumber, columnNumber, condition);
@@ -586,6 +591,8 @@ Bindings.BreakpointManager.ModelBreakpoint = class {
       callback();
       return;
     }
+
+    this._breakpoint._currentState = newState;
 
     if (this._debuggerId) {
       await this._refreshBreakpoint();

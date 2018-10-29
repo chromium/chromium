@@ -6,7 +6,7 @@
 var t = async_test('Ensure that adding an OPTION to a SELECT element closes a validation bubble.');
 var select = document.querySelector('select');
 t.step(() => {
-  assert_exists(window, 'internals');
+  assert_own_property(window, 'internals');
   select.reportValidity();
   assert_true(internals.isValidationMessageVisible(select));
   select.appendChild(new Option('value'));

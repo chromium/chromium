@@ -11,9 +11,9 @@
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/stl_util.h"
-#include "media/base/cdm_proxy_context.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/subsample_entry.h"
+#include "media/cdm/cdm_proxy_context.h"
 #include "media/gpu/windows/d3d11_mocks.h"
 
 using ::testing::_;
@@ -87,8 +87,9 @@ class CallbackMock {
 
 class CdmProxyContextMock : public CdmProxyContext {
  public:
-  MOCK_METHOD1(GetD3D11DecryptContext,
-               base::Optional<D3D11DecryptContext>(const std::string& key_id));
+  MOCK_METHOD2(GetD3D11DecryptContext,
+               base::Optional<D3D11DecryptContext>(CdmProxy::KeyType key_type,
+                                                   const std::string& key_id));
 };
 
 // Checks that BUFFER_DESC has these fields match.
@@ -181,7 +182,8 @@ class D3D11DecryptorTest : public ::testing::Test {
             DoAll(AddRefAndSetArgPointee<1>(video_context_mock_.Get()),
                   Return(S_OK)));
 
-    EXPECT_CALL(mock_proxy_, GetD3D11DecryptContext(kKeyId))
+    EXPECT_CALL(mock_proxy_,
+                GetD3D11DecryptContext(CdmProxy::KeyType::kDecryptOnly, kKeyId))
         .WillOnce(Return(*decrypt_context));
 
     // These return big enough size.
@@ -469,7 +471,8 @@ TEST_F(D3D11DecryptorTest, NoDecryptContext) {
   scoped_refptr<DecoderBuffer> encrypted_buffer = TestDecoderBuffer(
       kAnyInput, base::size(kAnyInput), kKeyId, kIv, {kAnyInputSubsample});
 
-  EXPECT_CALL(mock_proxy_, GetD3D11DecryptContext(kKeyId))
+  EXPECT_CALL(mock_proxy_,
+              GetD3D11DecryptContext(CdmProxy::KeyType::kDecryptOnly, kKeyId))
       .WillOnce(Return(base::nullopt));
 
   CallbackMock callbacks;
@@ -504,7 +507,8 @@ TEST_F(D3D11DecryptorTest, ReuseBuffers) {
   EXPECT_CALL(*crypto_session_mock.Get(), GetDevice(_))
       .Times(AtLeast(1))
       .WillRepeatedly(AddRefAndSetArgPointee<0>(device_mock_.Get()));
-  EXPECT_CALL(mock_proxy_, GetD3D11DecryptContext(kKeyId))
+  EXPECT_CALL(mock_proxy_,
+              GetD3D11DecryptContext(CdmProxy::KeyType::kDecryptOnly, kKeyId))
       .WillOnce(Return(decrypt_context));
 
   // Buffers should not be (re)initialized on the next call to decrypt because

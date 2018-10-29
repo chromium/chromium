@@ -1,0 +1,17 @@
+<body onload="loaded();">
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.dumpBackForwardList();
+  internals.settings.setHistoryEntryRequiresUserGesture(true);
+}
+
+/* Because user gesture required flag is enabled this html file will not be part
+ * of history
+ */
+function loaded() {
+   history.pushState(null, "", "../resources/dummy.html");
+}
+
+</script>
+</body>

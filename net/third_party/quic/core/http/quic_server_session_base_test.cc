@@ -53,6 +53,7 @@ class TestServerSession : public QuicServerSessionBase {
                     QuicCompressedCertsCache* compressed_certs_cache,
                     QuicSimpleServerBackend* quic_simple_server_backend)
       : QuicServerSessionBase(config,
+                              CurrentSupportedVersions(),
                               connection,
                               visitor,
                               helper,
@@ -63,23 +64,29 @@ class TestServerSession : public QuicServerSessionBase {
   ~TestServerSession() override { delete connection(); };
 
  protected:
-  QuicSpdyStream* CreateIncomingDynamicStream(QuicStreamId id) override {
-    if (!ShouldCreateIncomingDynamicStream(id)) {
+  QuicSpdyStream* CreateIncomingStream(QuicStreamId id) override {
+    if (!ShouldCreateIncomingStream(id)) {
       return nullptr;
     }
-    QuicSpdyStream* stream =
-        new QuicSimpleServerStream(id, this, quic_simple_server_backend_);
+    QuicSpdyStream* stream = new QuicSimpleServerStream(
+        id, this, BIDIRECTIONAL, quic_simple_server_backend_);
     ActivateStream(QuicWrapUnique(stream));
     return stream;
   }
 
-  QuicSpdyStream* CreateOutgoingDynamicStream() override {
-    if (!ShouldCreateOutgoingDynamicStream()) {
+  QuicSpdyStream* CreateOutgoingBidirectionalStream() override {
+    DCHECK(false);
+    return nullptr;
+  }
+
+  QuicSpdyStream* CreateOutgoingUnidirectionalStream() override {
+    if (!ShouldCreateOutgoingStream()) {
       return nullptr;
     }
 
     QuicSpdyStream* stream = new QuicSimpleServerStream(
-        GetNextOutgoingStreamId(), this, quic_simple_server_backend_);
+        GetNextOutgoingStreamId(), this, WRITE_UNIDIRECTIONAL,
+        quic_simple_server_backend_);
     ActivateStream(QuicWrapUnique(stream));
     return stream;
   }
@@ -124,6 +131,7 @@ class QuicServerSessionBaseTest : public QuicTestWithParam<ParsedQuicVersion> {
     ParsedQuicVersionVector supported_versions = SupportedVersions(GetParam());
     connection_ = new StrictMock<MockQuicConnection>(
         &helper_, &alarm_factory_, Perspective::IS_SERVER, supported_versions);
+    connection_->AdvanceTime(QuicTime::Delta::FromSeconds(1));
     session_ = QuicMakeUnique<TestServerSession>(
         config_, connection_, &owner_, &stream_helper_, &crypto_config_,
         &compressed_certs_cache_, &memory_cache_backend_);
@@ -348,7 +356,7 @@ TEST_P(QuicServerSessionBaseTest, GetStreamDisconnected) {
   QuicConnectionPeer::TearDownLocalConnectionState(connection_);
   EXPECT_QUIC_BUG(QuicServerSessionBasePeer::GetOrCreateDynamicStream(
                       session_.get(), GetNthClientInitiatedId(0)),
-                  "ShouldCreateIncomingDynamicStream called when disconnected");
+                  "ShouldCreateIncomingStream called when disconnected");
 }
 
 class MockQuicCryptoServerStream : public QuicCryptoServerStream {
@@ -393,14 +401,17 @@ TEST_P(QuicServerSessionBaseTest, BandwidthEstimates) {
   const QuicString serving_region = "not a real region";
   session_->set_serving_region(serving_region);
 
-  session_->UnregisterStreamPriority(kHeadersStreamId, /*is_static=*/true);
+  session_->UnregisterStreamPriority(
+      QuicUtils::GetHeadersStreamId(connection_->transport_version()),
+      /*is_static=*/true);
   QuicServerSessionBasePeer::SetCryptoStream(session_.get(), nullptr);
   MockQuicCryptoServerStream* crypto_stream =
       new MockQuicCryptoServerStream(&crypto_config_, &compressed_certs_cache_,
                                      session_.get(), &stream_helper_);
   QuicServerSessionBasePeer::SetCryptoStream(session_.get(), crypto_stream);
-  session_->RegisterStreamPriority(kHeadersStreamId, /*is_static=*/true,
-                                   QuicStream::kDefaultPriority);
+  session_->RegisterStreamPriority(
+      QuicUtils::GetHeadersStreamId(connection_->transport_version()),
+      /*is_static=*/true, QuicStream::kDefaultPriority);
 
   // Set some initial bandwidth values.
   QuicSentPacketManager* sent_packet_manager =
@@ -418,7 +429,8 @@ TEST_P(QuicServerSessionBaseTest, BandwidthEstimates) {
       &bandwidth_recorder, max_bandwidth_estimate_kbytes_per_second,
       max_bandwidth_estimate_timestamp);
   // Queue up some pending data.
-  session_->MarkConnectionLevelWriteBlocked(kCryptoStreamId);
+  session_->MarkConnectionLevelWriteBlocked(QuicUtils::GetCryptoStreamId(
+      session_->connection()->transport_version()));
   EXPECT_TRUE(session_->HasDataToWrite());
 
   // There will be no update sent yet - not enough time has passed.

@@ -12,9 +12,7 @@ testcase.suggestAppDialog = function() {
   StepsRunner.run([
     // Set up File Manager.
     function() {
-      chrome.test.sendMessage(
-          JSON.stringify({name: 'getCwsWidgetContainerMockUrl'}),
-          this.next);
+      sendTestMessage({name: 'getCwsWidgetContainerMockUrl'}).then(this.next);
     },
     // Override the container URL with the mock.
     function(json) {

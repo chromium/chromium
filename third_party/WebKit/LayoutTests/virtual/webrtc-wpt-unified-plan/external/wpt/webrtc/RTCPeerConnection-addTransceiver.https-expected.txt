@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
 PASS addTransceiver() with string argument as invalid kind should throw TypeError
-FAIL addTransceiver('audio') should return an audio transceiver assert_equals: expected true but got false
-FAIL addTransceiver('video') should return a video transceiver assert_equals: expected true but got false
+PASS addTransceiver('audio') should return an audio transceiver
+PASS addTransceiver('video') should return a video transceiver
 PASS addTransceiver() with direction sendonly should have result transceiver.direction be the same
 PASS addTransceiver() with direction inactive should have result transceiver.direction be the same
 PASS addTransceiver() with invalid direction should throw TypeError
-FAIL addTransceiver(track) should have result with sender.track be given track assert_equals: expected true but got false
+PASS addTransceiver(track) should have result with sender.track be given track
 PASS addTransceiver(track) multiple times should create multiple transceivers
 FAIL addTransceiver() with rid containing invalid non-alphanumeric characters should throw TypeError assert_throws: function "() =>
       pc.addTransceiver('audio', {
@@ -20,28 +20,6 @@ FAIL addTransceiver() with rid longer than 16 characters should throw TypeError 
         }]
       })" did not throw
 PASS addTransceiver() with valid rid value should succeed
-FAIL addTransceiver() with readonly ssrc set should throw InvalidAccessError assert_throws: function "() =>
-      pc.addTransceiver('audio', {
-        sendEncodings: [{
-          ssrc: 2
-        }]
-      })" did not throw
-FAIL addTransceiver() with readonly rtx set should throw InvalidAccessError assert_throws: function "() =>
-      pc.addTransceiver('audio', {
-        sendEncodings: [{
-          rtx: {
-            ssrc: 2
-          }
-        }]
-      })" did not throw
-FAIL addTransceiver() with readonly fec set should throw InvalidAccessError assert_throws: function "() =>
-      pc.addTransceiver('audio', {
-        sendEncodings: [{
-          fec: {
-            ssrc: 2
-          }
-        }]
-      })" did not throw
 PASS addTransceiver() with valid sendEncodings should succeed
 Harness: the test ran to completion.
 

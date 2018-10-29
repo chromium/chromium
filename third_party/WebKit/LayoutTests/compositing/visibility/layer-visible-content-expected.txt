@@ -22,11 +22,6 @@
       "bounds": [200, 200]
     },
     {
-      "name": "Child Containment Layer",
-      "bounds": [200, 200],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow DIV class='composited box'",
       "bounds": [10, 10],
       "drawsContent": false

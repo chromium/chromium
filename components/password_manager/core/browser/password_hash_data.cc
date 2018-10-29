@@ -56,19 +56,6 @@ bool PasswordHashData::MatchesPassword(const std::string& username,
   return CalculatePasswordHash(password, this->salt) == this->hash;
 }
 
-SyncPasswordData::SyncPasswordData(const base::string16& password,
-                                   bool force_update)
-    : length(password.size()),
-      salt(CreateRandomSalt()),
-      hash(CalculatePasswordHash(password, salt)),
-      force_update(force_update) {}
-
-bool SyncPasswordData::MatchesPassword(const base::string16& password) const {
-  if (password.size() != this->length)
-    return false;
-  return CalculatePasswordHash(password, this->salt) == this->hash;
-}
-
 uint64_t CalculatePasswordHash(const base::StringPiece16& text,
                                const std::string& salt) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);

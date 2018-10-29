@@ -28,8 +28,8 @@ Bringing things back
 Wrapper identity: identity
 Event Symbol(AttrRemoved): H2
 Event Symbol(AttrRemoved): H2
-Event Symbol(CharacterDataModified): #text
 Event Symbol(NodeInserted): LI
+Event Symbol(NodeRemoved): #text
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>

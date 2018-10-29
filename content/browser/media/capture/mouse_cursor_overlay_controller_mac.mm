@@ -135,12 +135,12 @@ MouseCursorOverlayController::~MouseCursorOverlayController() {
   Stop();
 }
 
-void MouseCursorOverlayController::SetTargetView(NSView* view) {
+void MouseCursorOverlayController::SetTargetView(gfx::NativeView view) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
   observer_.reset();
   if (view) {
-    observer_ = std::make_unique<Observer>(this, view);
+    observer_ = std::make_unique<Observer>(this, view.GetNativeNSView());
   }
 }
 

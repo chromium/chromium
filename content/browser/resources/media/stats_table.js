@@ -36,8 +36,8 @@ var StatsTable = (function(ssrcInfoManager) {
       var statsTable = this.ensureStatsTable_(peerConnectionElement, report);
 
       if (report.stats) {
-        this.addStatsToTable_(statsTable,
-                              report.stats.timestamp, report.stats.values);
+        this.addStatsToTable_(
+            statsTable, report.stats.timestamp, report.stats.values);
       }
     },
 
@@ -76,7 +76,7 @@ var StatsTable = (function(ssrcInfoManager) {
      * @return {!Element} The stats table element.
      * @private
      */
-     ensureStatsTable_: function(peerConnectionElement, report) {
+    ensureStatsTable_: function(peerConnectionElement, report) {
       var tableId = peerConnectionElement.id + '-table-' + report.id;
       var table = $(tableId);
       if (!table) {
@@ -96,10 +96,10 @@ var StatsTable = (function(ssrcInfoManager) {
         table.innerHTML = '<tr><th colspan=2></th></tr>';
         table.rows[0].cells[0].textContent = 'Statistics ' + report.id;
         if (report.type == 'ssrc') {
-            table.insertRow(1);
-            table.rows[1].innerHTML = '<td colspan=2></td>';
-            this.ssrcInfoManager_.populateSsrcInfo(
-                table.rows[1].cells[0], GetSsrcFromReport(report));
+          table.insertRow(1);
+          table.rows[1].innerHTML = '<td colspan=2></td>';
+          this.ssrcInfoManager_.populateSsrcInfo(
+              table.rows[1].cells[0], GetSsrcFromReport(report));
         }
       }
       return table;

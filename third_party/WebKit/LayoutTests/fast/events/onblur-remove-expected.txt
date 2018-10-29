@@ -10,4 +10,3 @@ TEST COMPLETE
 FAIL Onblur handler called.
 
 TEST COMPLETE
-

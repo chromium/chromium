@@ -14,12 +14,15 @@ enum RTCQuicStreamState {
 // https://w3c.github.io/webrtc-quic/#quicstream*
 [
    Exposed=Window,
-   RuntimeEnabled=RTCQuicStream
-] interface RTCQuicStream {
+   RuntimeEnabled=RTCQuicTransport
+] interface RTCQuicStream : EventTarget {
     readonly attribute RTCQuicTransport transport;
     readonly attribute RTCQuicStreamState state;
     readonly attribute unsigned long readBufferedAmount;
     readonly attribute unsigned long writeBufferedAmount;
+    void finish();
+    void reset();
+    attribute EventHandler onstatechange;
     // TODO(crbug.com/868068): Implement remaining methods, attributes, and events.
 };
 

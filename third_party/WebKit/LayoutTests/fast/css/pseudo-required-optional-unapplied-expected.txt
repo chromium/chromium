@@ -2,7 +2,6 @@ Check cases that :required/:optional classes are not applied
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getBackgroundColor("fieldset") is normalColor
 PASS getBackgroundColor("legend") is normalColor
 PASS getBackgroundColor("label") is normalColor

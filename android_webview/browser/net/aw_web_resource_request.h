@@ -10,6 +10,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/optional.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -58,6 +59,7 @@ struct AwWebResourceRequest final {
   bool has_user_gesture;
   std::vector<std::string> header_names;
   std::vector<std::string> header_values;
+  base::Optional<bool> is_renderer_initiated;
 };
 
 }  // namespace android_webview

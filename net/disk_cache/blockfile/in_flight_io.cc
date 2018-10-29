@@ -52,14 +52,14 @@ void BackgroundIO::NotifyController() {
 void InFlightIO::WaitForPendingIO() {
   while (!io_list_.empty()) {
     // Block the current thread until all pending IO completes.
-    IOList::iterator it = io_list_.begin();
+    auto it = io_list_.begin();
     InvokeCallback(it->get(), true);
   }
 }
 
 void InFlightIO::DropPendingIO() {
   while (!io_list_.empty()) {
-    IOList::iterator it = io_list_.begin();
+    auto it = io_list_.begin();
     BackgroundIO* operation = it->get();
     operation->Cancel();
     DCHECK(io_list_.find(operation) != io_list_.end());

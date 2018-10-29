@@ -20,10 +20,15 @@ namespace background_fetch {
 // completely removed.
 class MarkRegistrationForDeletionTask : public background_fetch::DatabaseTask {
  public:
+  using MarkRegistrationForDeletionCallback =
+      base::OnceCallback<void(blink::mojom::BackgroundFetchError,
+                              blink::mojom::BackgroundFetchFailureReason)>;
+
   MarkRegistrationForDeletionTask(
       DatabaseTaskHost* host,
       const BackgroundFetchRegistrationId& registration_id,
-      HandleBackgroundFetchErrorCallback callback);
+      bool check_for_failure,
+      MarkRegistrationForDeletionCallback callback);
 
   ~MarkRegistrationForDeletionTask() override;
 
@@ -35,12 +40,19 @@ class MarkRegistrationForDeletionTask : public background_fetch::DatabaseTask {
 
   void DidDeactivate(blink::ServiceWorkerStatusCode status);
 
+  void DidGetCompletedRequests(const std::vector<std::string>& data,
+                               blink::ServiceWorkerStatusCode status);
+
   void FinishWithError(blink::mojom::BackgroundFetchError error) override;
 
   std::string HistogramName() const override;
 
   BackgroundFetchRegistrationId registration_id_;
-  HandleBackgroundFetchErrorCallback callback_;
+  bool check_for_failure_;
+  MarkRegistrationForDeletionCallback callback_;
+
+  blink::mojom::BackgroundFetchFailureReason failure_reason_ =
+      blink::mojom::BackgroundFetchFailureReason::NONE;
 
   base::WeakPtrFactory<MarkRegistrationForDeletionTask>
       weak_factory_;  // Keep as last.

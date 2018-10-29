@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
@@ -233,7 +232,7 @@ bool ChromeBrowserStateIOData::IsHandledProtocol(const std::string& scheme) {
   static const char* const kProtocolList[] = {
       url::kFileScheme, kChromeUIScheme, url::kDataScheme, url::kAboutScheme,
   };
-  for (size_t i = 0; i < arraysize(kProtocolList); ++i) {
+  for (size_t i = 0; i < base::size(kProtocolList); ++i) {
     if (scheme == kProtocolList[i])
       return true;
   }

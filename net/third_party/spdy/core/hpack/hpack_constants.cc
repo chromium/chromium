@@ -4,70 +4,28 @@
 
 #include "net/third_party/spdy/core/hpack/hpack_constants.h"
 
+#include <cstddef>
 #include <memory>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/memory/singleton.h"
 #include "net/third_party/spdy/core/hpack/hpack_huffman_table.h"
 #include "net/third_party/spdy/core/hpack/hpack_static_table.h"
-#include "net/third_party/spdy/platform/api/spdy_ptr_util.h"
+#include "net/third_party/spdy/platform/api/spdy_arraysize.h"
 
 namespace spdy {
 
-namespace {
-
-// SharedHpackHuffmanTable is a Singleton wrapping a HpackHuffmanTable
-// instance initialized with |kHpackHuffmanCode|.
-struct SharedHpackHuffmanTable {
- public:
-  SharedHpackHuffmanTable() {
-    std::vector<HpackHuffmanSymbol> code = HpackHuffmanCode();
-    auto mutable_table = SpdyMakeUnique<HpackHuffmanTable>();
-    CHECK(mutable_table->Initialize(&code[0], code.size()));
-    CHECK(mutable_table->IsInitialized());
-    table = std::move(mutable_table);
-  }
-
-  static SharedHpackHuffmanTable* GetInstance() {
-    return base::Singleton<SharedHpackHuffmanTable>::get();
-  }
-
-  std::unique_ptr<const HpackHuffmanTable> table;
-};
-
-// SharedHpackStaticTable is a Singleton wrapping a HpackStaticTable
-// instance initialized with |kHpackStaticTable|.
-struct SharedHpackStaticTable {
- public:
-  SharedHpackStaticTable() {
-    std::vector<HpackStaticEntry> static_table = HpackStaticTableVector();
-    auto mutable_table = SpdyMakeUnique<HpackStaticTable>();
-    mutable_table->Initialize(&static_table[0], static_table.size());
-    CHECK(mutable_table->IsInitialized());
-    table = std::move(mutable_table);
-  }
-
-  static SharedHpackStaticTable* GetInstance() {
-    return base::Singleton<SharedHpackStaticTable>::get();
-  }
-
-  std::unique_ptr<const HpackStaticTable> table;
-};
-
-}  // namespace
-
-// Produced by applying the python program [1] with tables
-// provided by [2] (inserted into the source of the python program)
-// and copy-paste them into this file.
+// Produced by applying the python program [1] with tables provided by [2]
+// (inserted into the source of the python program) and copy-paste them into
+// this file.
 //
-// [1] net/tools/build_hpack_constants.py
+// [1] net/tools/build_hpack_constants.py in Chromium
 // [2] http://tools.ietf.org/html/draft-ietf-httpbis-header-compression-08
 
 // HpackHuffmanSymbol entries are initialized as {code, length, id}.
 // Codes are specified in the |length| most-significant bits of |code|.
-std::vector<HpackHuffmanSymbol> HpackHuffmanCode() {
-  static const HpackHuffmanSymbol kHpackHuffmanCode[] = {
+const std::vector<HpackHuffmanSymbol>& HpackHuffmanCodeVector() {
+  static const auto* kHpackHuffmanCode = new std::vector<HpackHuffmanSymbol>{
       {0xffc00000ul, 13, 0},    //     11111111|11000
       {0xffffb000ul, 23, 1},    //     11111111|11111111|1011000
       {0xfffffe20ul, 28, 2},    //     11111111|11111111|11111110|0010
@@ -326,17 +284,16 @@ std::vector<HpackHuffmanSymbol> HpackHuffmanCode() {
       {0xfffffb80ul, 26, 255},  //     11111111|11111111|11111011|10
       {0xfffffffcul, 30, 256},  // EOS 11111111|11111111|11111111|111111
   };
-  return std::vector<HpackHuffmanSymbol>(
-      kHpackHuffmanCode, kHpackHuffmanCode + arraysize(kHpackHuffmanCode));
+  return *kHpackHuffmanCode;
 }
 
 // The "constructor" for a HpackStaticEntry that computes the lengths at
 // compile time.
 #define STATIC_ENTRY(name, value) \
-  { name, arraysize(name) - 1, value, arraysize(value) - 1 }
+  { name, SPDY_ARRAYSIZE(name) - 1, value, SPDY_ARRAYSIZE(value) - 1 }
 
-std::vector<HpackStaticEntry> HpackStaticTableVector() {
-  static const HpackStaticEntry kHpackStaticTable[] = {
+const std::vector<HpackStaticEntry>& HpackStaticTableVector() {
+  static const auto* kHpackStaticTable = new std::vector<HpackStaticEntry>{
       STATIC_ENTRY(":authority", ""),                    // 1
       STATIC_ENTRY(":method", "GET"),                    // 2
       STATIC_ENTRY(":method", "POST"),                   // 3
@@ -399,18 +356,31 @@ std::vector<HpackStaticEntry> HpackStaticTableVector() {
       STATIC_ENTRY("via", ""),                           // 60
       STATIC_ENTRY("www-authenticate", ""),              // 61
   };
-  return std::vector<HpackStaticEntry>(
-      kHpackStaticTable, kHpackStaticTable + arraysize(kHpackStaticTable));
+  return *kHpackStaticTable;
 }
 
 #undef STATIC_ENTRY
 
 const HpackHuffmanTable& ObtainHpackHuffmanTable() {
-  return *SharedHpackHuffmanTable::GetInstance()->table;
+  static const HpackHuffmanTable* const shared_huffman_table = []() {
+    auto* table = new HpackHuffmanTable();
+    CHECK(table->Initialize(HpackHuffmanCodeVector().data(),
+                            HpackHuffmanCodeVector().size()));
+    CHECK(table->IsInitialized());
+    return table;
+  }();
+  return *shared_huffman_table;
 }
 
 const HpackStaticTable& ObtainHpackStaticTable() {
-  return *SharedHpackStaticTable::GetInstance()->table;
+  static const HpackStaticTable* const shared_static_table = []() {
+    auto* table = new HpackStaticTable();
+    table->Initialize(HpackStaticTableVector().data(),
+                      HpackStaticTableVector().size());
+    CHECK(table->IsInitialized());
+    return table;
+  }();
+  return *shared_static_table;
 }
 
 }  // namespace spdy

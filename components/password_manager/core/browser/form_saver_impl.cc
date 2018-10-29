@@ -16,9 +16,31 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using autofill::FormData;
+using autofill::FormFieldData;
 using autofill::PasswordForm;
 
 namespace password_manager {
+
+namespace {
+
+// Remove all information from |form| that is not required for signature
+// calculation.
+void SanitizeFormData(FormData* form) {
+  form->main_frame_origin = url::Origin();
+  for (FormFieldData& field : form->fields) {
+    field.label.clear();
+    field.value.clear();
+    field.autocomplete_attribute.clear();
+    field.option_values.clear();
+    field.option_contents.clear();
+    field.placeholder.clear();
+    field.css_classes.clear();
+    field.id.clear();
+  }
+}
+
+}  // namespace
 
 FormSaverImpl::FormSaverImpl(PasswordStore* store) : store_(store) {
   DCHECK(store);
@@ -53,11 +75,13 @@ void FormSaverImpl::Update(
 }
 
 void FormSaverImpl::PresaveGeneratedPassword(const PasswordForm& generated) {
+  auto form = std::make_unique<PasswordForm>(generated);
+  SanitizeFormData(&form->form_data);
   if (presaved_)
-    store_->UpdateLoginWithPrimaryKey(generated, *presaved_);
+    store_->UpdateLoginWithPrimaryKey(*form, *presaved_);
   else
-    store_->AddLogin(generated);
-  presaved_.reset(new PasswordForm(generated));
+    store_->AddLogin(*form);
+  presaved_ = std::move(form);
 }
 
 void FormSaverImpl::RemovePresavedPassword() {
@@ -72,7 +96,7 @@ std::unique_ptr<FormSaver> FormSaverImpl::Clone() {
   auto result = std::make_unique<FormSaverImpl>(store_);
   if (presaved_)
     result->presaved_ = std::make_unique<PasswordForm>(*presaved_);
-  return std::move(result);
+  return result;
 }
 
 void FormSaverImpl::SaveImpl(
@@ -85,18 +109,20 @@ void FormSaverImpl::SaveImpl(
   DCHECK(!pending.blacklisted_by_user);
 
   UpdatePreferredLoginState(pending.username_value, best_matches);
+  PasswordForm sanitized_pending(pending);
+  SanitizeFormData(&sanitized_pending.form_data);
   if (presaved_) {
-    store_->UpdateLoginWithPrimaryKey(pending, *presaved_);
+    store_->UpdateLoginWithPrimaryKey(sanitized_pending, *presaved_);
     presaved_ = nullptr;
   } else if (is_new_login) {
-    store_->AddLogin(pending);
-    if (!pending.username_value.empty())
-      DeleteEmptyUsernameCredentials(pending, best_matches);
+    store_->AddLogin(sanitized_pending);
+    if (!sanitized_pending.username_value.empty())
+      DeleteEmptyUsernameCredentials(sanitized_pending, best_matches);
   } else {
     if (old_primary_key)
-      store_->UpdateLoginWithPrimaryKey(pending, *old_primary_key);
+      store_->UpdateLoginWithPrimaryKey(sanitized_pending, *old_primary_key);
     else
-      store_->UpdateLogin(pending);
+      store_->UpdateLogin(sanitized_pending);
   }
 
   if (credentials_to_update) {
@@ -115,6 +141,7 @@ void FormSaverImpl::UpdatePreferredLoginState(
         form.username_value != preferred_username) {
       // This wasn't the selected login but it used to be preferred.
       PasswordForm update(form);
+      SanitizeFormData(&update.form_data);
       update.preferred = false;
       store_->UpdateLogin(update);
     }

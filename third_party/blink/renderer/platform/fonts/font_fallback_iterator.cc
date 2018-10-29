@@ -224,7 +224,7 @@ static inline unsigned ChooseHintIndex(const Vector<UChar32>& hint_list) {
   if (hint_list.size() <= 1)
     return 0;
 
-  for (size_t i = 1; i < hint_list.size(); ++i) {
+  for (wtf_size_t i = 1; i < hint_list.size(); ++i) {
     if (Character::HasDefiniteScript(hint_list[i]))
       return i;
   }

@@ -16,7 +16,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/page_transition_types.h"
 #import "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #include "ui/base/ui_base_features.h"

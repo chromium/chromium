@@ -23,7 +23,6 @@
 #include "android_webview/common/crash_reporter/aw_crash_reporter_client.h"
 #include "base/android/apk_assets.h"
 #include "base/android/build_info.h"
-#include "base/android/locale_utils.h"
 #include "base/android/memory_pressure_listener_android.h"
 #include "base/base_paths_android.h"
 #include "base/command_line.h"
@@ -36,6 +35,7 @@
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/crash_dump_manager_android.h"
 #include "components/heap_profiling/supervisor.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/url_blacklist_manager.h"
@@ -45,6 +45,7 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/render_frame_host.h"
@@ -60,12 +61,19 @@
 #include "services/service_manager/public/cpp/connector.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/resource/resource_bundle_android.h"
-#include "ui/base/ui_base_paths.h"
 #include "ui/gl/gl_surface.h"
 
 namespace {
+
+// These prefs go in the JsonPrefStore, and will persist across runs. Other
+// prefs go in the InMemoryPrefStore, and will be lost when the process ends.
+const char* const kPersistentPrefsWhitelist[] = {
+    // Random seed value for variation's entropy providers, used to assign
+    // experiment groups.
+    metrics::prefs::kMetricsLowEntropySource,
+    // Used by CachingPermutedEntropyProvider to cache generated values.
+    variations::prefs::kVariationsPermutedEntropyCache,
+};
 
 // Shows notifications which correspond to PersistentPrefStore's reading errors.
 void HandleReadError(PersistentPrefStore::PrefReadError error) {}
@@ -102,11 +110,9 @@ std::unique_ptr<PrefService> CreatePrefService(
 
   PrefServiceFactory pref_service_factory;
 
-  // These prefs go in the JsonPrefStore, and will persist across runs. Other
-  // prefs go in the InMemoryPrefStore, and will be lost when the process ends.
   std::set<std::string> persistent_prefs;
-  // TODO(crbug/866722): Add kMetricsLowEntropySource to persistent_prefs to
-  // support persistent variations experiments.
+  for (const char* const pref_name : kPersistentPrefsWhitelist)
+    persistent_prefs.insert(pref_name);
 
   // SegregatedPrefStore may be validated with a MAC (message authentication
   // code). On Android, the store is protected by app sandboxing, so validation
@@ -139,11 +145,6 @@ AwBrowserMainParts::AwBrowserMainParts(AwContentBrowserClient* browser_client)
 AwBrowserMainParts::~AwBrowserMainParts() {
 }
 
-bool AwBrowserMainParts::ShouldContentCreateFeatureList() {
-  // FeatureList will be created in AwFieldTrialCreator.
-  return false;
-}
-
 int AwBrowserMainParts::PreEarlyInitialization() {
   // Network change notifier factory must be singleton, only set factory
   // instance while it is not been created.
@@ -164,23 +165,6 @@ int AwBrowserMainParts::PreEarlyInitialization() {
 }
 
 int AwBrowserMainParts::PreCreateThreads() {
-  ui::SetLocalePaksStoredInApk(true);
-  std::string locale = ui::ResourceBundle::InitSharedInstanceWithLocale(
-      base::android::GetDefaultLocaleString(), NULL,
-      ui::ResourceBundle::LOAD_COMMON_RESOURCES);
-  if (locale.empty()) {
-    LOG(WARNING) << "Failed to load locale .pak from the apk. "
-        "Bringing up WebView without any locale";
-  }
-  base::i18n::SetICUDefaultLocale(locale);
-
-  // Try to directly mmap the resources.pak from the apk. Fall back to load
-  // from file, using PATH_SERVICE, otherwise.
-  base::FilePath pak_file_path;
-  base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &pak_file_path);
-  pak_file_path = pak_file_path.AppendASCII("resources.pak");
-  ui::LoadMainAndroidPackFile("assets/resources.pak", pak_file_path);
-
   base::android::MemoryPressureListenerAndroid::Initialize(
       base::android::AttachCurrentThread());
   ::crash_reporter::ChildExitObserver::Create();
@@ -213,6 +197,7 @@ int AwBrowserMainParts::PreCreateThreads() {
 
   browser_policy_connector_ = std::make_unique<AwBrowserPolicyConnector>();
   pref_service_ = CreatePrefService(browser_policy_connector_.get());
+  AwMetricsServiceClient::GetInstance()->Initialize(pref_service_.get());
   aw_field_trial_creator_.SetUpFieldTrials(pref_service_.get());
 
   return service_manager::RESULT_CODE_NORMAL_EXIT;

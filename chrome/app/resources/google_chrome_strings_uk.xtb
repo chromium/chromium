@@ -36,13 +36,14 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1773601347087397504">Отримати довідку щодо користування ОС Chrome</translation>
 <translation id="1795405610103747296">Установіть Chrome на телефоні. Ми надішлемо SMS на ваш телефон: <ph name="PHONE_NUMBER" /></translation>
+<translation id="1812689907177901597">Якщо вимкнути цей параметр, ви зможете входити на сайти Google, як-от Gmail, без входу в Chrome</translation>
 <translation id="1860536484129686729">Chrome потрібен дозвіл на використання камери, щоб надати цьому сайту доступ до неї</translation>
 <translation id="1873233029667955273">Google Chrome не є веб-переглядачем за умовчанням</translation>
 <translation id="1874309113135274312">Бета-версія Google Chrome (mDNS-In)</translation>
 <translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="1915828456209461693">Доступне оновлення Chrome, його буде застосовано відразу після перезапуску.</translation>
+<translation id="1919130412786645364">Дозволити вхід у Chrome</translation>
 <translation id="2063848847527508675">Щоб застосувати це оновлення, потрібно перезапустити ОС Chrome.</translation>
-<translation id="2084710999043359739">Додати в Chrome</translation>
 <translation id="2094919256425865063">Усе одно вийти з Chrome?</translation>
 <translation id="2120620239521071941">З цього пристрою буде видалено стільки елементів: <ph name="ITEMS_COUNT" />. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2123055963409958220">Допоможіть покращити Chrome, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" /></translation>
@@ -213,6 +214,7 @@
 <translation id="7106741999175697885">Диспетчер завдань - Google Chrome</translation>
 <translation id="7164397146364144019">Ви можете допомогти зробити Chrome безпечнішим і простішим у користуванні, автоматично повідомляючи Google деталі щодо можливого порушення безпеки.</translation>
 <translation id="7242029209006116544">Ви входите, використовуючи дані облікового запису, яким керує адміністратор. Адміністратор може контролювати ваш профіль Google Chrome. Ваші дані Chrome, як-от програми, закладки, історія, паролі й інші налаштування, буде назавжди пов’язано з обліковим записом <ph name="USER_NAME" />. Ці дані можна видалити на інформаційній панелі Облікових записів Google, але ви не зможете пов’язати їх з іншим обліковим записом. Проте ви можете створити новий профіль, щоб зберігати наявні дані Chrome окремо. <ph name="LEARN_MORE" /></translation>
+<translation id="7296210096911315575">Важлива інформація про використання й безпеку</translation>
 <translation id="7308322188646931570">Chrome потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="7330164299247909639">Не вдалось отримати сертифікат автентифікації. Щоб дізнатися більше, знову ввійдіть в обліковий запис Google Chrome як користувач <ph name="USER_NAME" /> або зв’яжіться з адміністратором. <ph name="ADDITIONAL_EXPLANATION" /></translation>
 <translation id="7339898014177206373">Нове вікно</translation>
@@ -285,6 +287,7 @@
 <translation id="9084668267983921457">Не вдалось отримати сертифікат автентифікації. Щоб дізнатися більше, знову ввійдіть в обліковий запис Google Chrome або зв’яжіться з адміністратором. <ph name="ADDITIONAL_EXPLANATION" /></translation>
 <translation id="909149346112452267">{0,plural, =1{ОС Chrome перезапуститься через годину}one{ОС Chrome перезапуститься через # годину}few{ОС Chrome перезапуститься через # години}many{ОС Chrome перезапуститься через # годин}other{ОС Chrome перезапуститься через # години}}</translation>
 <translation id="911206726377975832">Також видалити дані веб-перегляду?</translation>
+<translation id="9138603949443464873">Щоб застосувати зміни, перезапустіть Chrome</translation>
 <translation id="919706545465235479">Щоб почати синхронізацію, оновіть Chrome</translation>
 <translation id="924447568950697217">Як зробити Chrome веб-переглядачем за умовчанням</translation>
 <translation id="989369509083708165">Google Chrome – ваш веб-переглядач за умовчанням</translation>

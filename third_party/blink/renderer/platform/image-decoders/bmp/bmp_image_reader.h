@@ -119,7 +119,7 @@ class PLATFORM_EXPORT BMPImageReader final {
     uint32_t bi_clr_used;
   };
   struct RGBTriple {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
     uint8_t rgb_blue;
     uint8_t rgb_green;
     uint8_t rgb_red;

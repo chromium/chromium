@@ -21,7 +21,8 @@ class MakeMediaFeaturesWriter(json5_generator.Writer):
     }
     filters = {
         'symbol': media_feature_symbol.getMediaFeatureSymbolWithSuffix(''),
-        'to_function_name': lambda symbol: NameStyleConverter(symbol).to_function_name(),
+        # symbol[1:] removes the leading 'k' produced by the above function.
+        'to_function_name': lambda symbol: NameStyleConverter(symbol[1:]).to_function_name(),
     }
 
     def __init__(self, json5_file_path, output_dir):
@@ -33,6 +34,7 @@ class MakeMediaFeaturesWriter(json5_generator.Writer):
         self._template_context = {
             'entries': self.json5_file.name_dictionaries,
             'input_files': self._input_files,
+            'header_guard': self.make_header_guard(self._relative_output_dir + 'media_festures.h')
         }
 
     @template_expander.use_jinja('core/css/templates/media_features.h.tmpl', filters=filters)

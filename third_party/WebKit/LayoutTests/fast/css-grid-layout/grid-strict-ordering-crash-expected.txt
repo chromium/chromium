@@ -1,5 +1,3 @@
 Bug 108834: [CSS Grid Layout] Heap-buffer-overflow in std::sort
 
 This test has PASSED if it doesn't CRASH.
-
-

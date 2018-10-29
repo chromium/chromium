@@ -27,8 +27,7 @@ const char kTestUrlD[] = "http://ddd.com/";
 
 SuggestionsProfile CreateSuggestions(std::set<std::string> urls) {
   SuggestionsProfile suggestions;
-  for (std::set<std::string>::iterator it = urls.begin(); it != urls.end();
-       ++it) {
+  for (auto it = urls.begin(); it != urls.end(); ++it) {
     ChromeSuggestion* suggestion = suggestions.add_suggestions();
     suggestion->set_url(*it);
   }

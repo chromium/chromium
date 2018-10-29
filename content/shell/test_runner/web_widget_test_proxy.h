@@ -105,14 +105,13 @@ class TEST_RUNNER_EXPORT WebWidgetTestProxy : public content::RenderWidget,
                   content::RenderViewImpl* render_view_for_local_root);
 
   // WebWidgetClient implementation.
-  blink::WebScreenInfo GetScreenInfo() override;
   void ScheduleAnimation() override;
   bool RequestPointerLock() override;
   void RequestPointerUnlock() override;
   bool IsPointerLocked() override;
   void SetToolTipText(const blink::WebString& text,
                       blink::WebTextDirection hint) override;
-  void StartDragging(blink::WebReferrerPolicy policy,
+  void StartDragging(network::mojom::ReferrerPolicy policy,
                      const blink::WebDragData& data,
                      blink::WebDragOperationsMask mask,
                      const SkBitmap& drag_image,

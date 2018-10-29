@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -197,7 +198,7 @@ class ExtensionStorageMonitorTest : public ExtensionBrowserTest {
     // Setting a testing factory function deletes the current
     // ExtensionStorageMonitor; see KeyedServiceFactory::SetTestingFactory().
     ExtensionStorageMonitorFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), &CreateExtensionStorageMonitorInstance);
+        profile(), base::BindRepeating(&CreateExtensionStorageMonitorInstance));
     InitStorageMonitor();
   }
 

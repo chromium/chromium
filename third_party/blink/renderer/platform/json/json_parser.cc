@@ -383,7 +383,7 @@ Error DecodeString(Cursor<CharType>* cursor,
 
   const CharType* string_start = cursor->pos;
   StringBuilder buffer;
-  buffer.ReserveCapacity(end - cursor->pos - 2);
+  buffer.ReserveCapacity(static_cast<wtf_size_t>(end - cursor->pos - 2));
 
   cursor->pos++;
   while (cursor->pos < end - 1) {
@@ -618,7 +618,7 @@ JSONParseError ParseJSONInternal(const CharType* start_ptr,
   JSONParseError error;
   error.type = BuildValue(&cursor, end, max_depth, result);
   error.line = cursor.line;
-  error.column = cursor.pos - cursor.line_start;
+  error.column = static_cast<int>(cursor.pos - cursor.line_start);
   if (error.type != Error::kNoError) {
     *result = nullptr;
   } else if (cursor.pos != end) {

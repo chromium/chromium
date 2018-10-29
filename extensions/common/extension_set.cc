@@ -115,8 +115,7 @@ const Extension* ExtensionSet::GetAppByURL(const GURL& url) const {
 }
 
 const Extension* ExtensionSet::GetHostedAppByURL(const GURL& url) const {
-  for (ExtensionMap::const_iterator iter = extensions_.begin();
-       iter != extensions_.end(); ++iter) {
+  for (auto iter = extensions_.cbegin(); iter != extensions_.cend(); ++iter) {
     if (iter->second->web_extent().MatchesURL(url))
       return iter->second.get();
   }
@@ -126,8 +125,7 @@ const Extension* ExtensionSet::GetHostedAppByURL(const GURL& url) const {
 
 const Extension* ExtensionSet::GetHostedAppByOverlappingWebExtent(
     const URLPatternSet& extent) const {
-  for (ExtensionMap::const_iterator iter = extensions_.begin();
-       iter != extensions_.end(); ++iter) {
+  for (auto iter = extensions_.cbegin(); iter != extensions_.cend(); ++iter) {
     if (iter->second->web_extent().OverlapsWith(extent))
       return iter->second.get();
   }
@@ -142,7 +140,7 @@ bool ExtensionSet::InSameExtent(const GURL& old_url,
 }
 
 const Extension* ExtensionSet::GetByID(const std::string& id) const {
-  ExtensionMap::const_iterator i = extensions_.find(id);
+  auto i = extensions_.find(id);
   if (i != extensions_.end())
     return i->second.get();
   else
@@ -151,8 +149,7 @@ const Extension* ExtensionSet::GetByID(const std::string& id) const {
 
 ExtensionIdSet ExtensionSet::GetIDs() const {
   ExtensionIdSet ids;
-  for (ExtensionMap::const_iterator it = extensions_.begin();
-       it != extensions_.end(); ++it) {
+  for (auto it = extensions_.cbegin(); it != extensions_.cend(); ++it) {
     ids.insert(it->first);
   }
   return ids;
@@ -162,8 +159,7 @@ bool ExtensionSet::ExtensionBindingsAllowed(const GURL& url) const {
   if (url.SchemeIs(kExtensionScheme))
     return true;
 
-  for (ExtensionMap::const_iterator it = extensions_.begin();
-       it != extensions_.end(); ++it) {
+  for (auto it = extensions_.cbegin(); it != extensions_.cend(); ++it) {
     if (it->second->location() == Manifest::COMPONENT &&
         it->second->web_extent().MatchesURL(url))
       return true;

@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 
 namespace blink {
-namespace GeometryTest {
+namespace geometry_test {
 
 bool ApproximatelyEqual(float, float, float test_epsilon);
 testing::AssertionResult AssertAlmostEqual(const char* actual_expr,
@@ -17,7 +17,7 @@ testing::AssertionResult AssertAlmostEqual(const char* actual_expr,
                                            float expected,
                                            float test_epsilon = 1e-6);
 
-}  // namespace GeometryTest
+}  // namespace geometry_test
 }  // namespace blink
 
 #endif

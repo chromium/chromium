@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -50,11 +51,13 @@ class SigninGlobalErrorTest : public testing::Test {
 
     // Create a signed-in profile.
     TestingProfile::TestingFactories testing_factories;
-    testing_factories.push_back(std::make_pair(
-        SigninManagerFactory::GetInstance(), BuildFakeSigninManagerBase));
+    testing_factories.emplace_back(
+        SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeSigninManagerForTesting));
     profile_ = profile_manager_.CreateTestingProfile(
         "Person 1", std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        base::UTF8ToUTF16("Person 1"), 0, std::string(), testing_factories);
+        base::UTF8ToUTF16("Person 1"), 0, std::string(),
+        std::move(testing_factories));
 
     SigninManagerFactory::GetForProfile(profile())
         ->SetAuthenticatedAccountInfo(kTestAccountId, kTestUsername);

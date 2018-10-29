@@ -4,11 +4,7 @@
 
 #include "media/audio/win/audio_low_latency_input_win.h"
 
-#include <audiopolicy.h>
-#include <mediaobj.h>
 #include <objbase.h>
-#include <uuids.h>
-#include <wmcodecdsp.h>
 
 #include <algorithm>
 #include <cmath>
@@ -47,13 +43,14 @@ enum FormatRelatedInitError {
   kCount
 };
 
-bool IsSupportedFormatForConversion(const WAVEFORMATEX& format) {
-  if (format.nSamplesPerSec < limits::kMinSampleRate ||
-      format.nSamplesPerSec > limits::kMaxSampleRate) {
+bool IsSupportedFormatForConversion(WAVEFORMATEXTENSIBLE* format_ex) {
+  WAVEFORMATEX* format = &format_ex->Format;
+  if (format->nSamplesPerSec < limits::kMinSampleRate ||
+      format->nSamplesPerSec > limits::kMaxSampleRate) {
     return false;
   }
 
-  switch (format.wBitsPerSample) {
+  switch (format->wBitsPerSample) {
     case 8:
     case 16:
     case 32:
@@ -62,7 +59,7 @@ bool IsSupportedFormatForConversion(const WAVEFORMATEX& format) {
       return false;
   }
 
-  if (GuessChannelLayout(format.nChannels) == CHANNEL_LAYOUT_UNSUPPORTED) {
+  if (GuessChannelLayout(format->nChannels) == CHANNEL_LAYOUT_UNSUPPORTED) {
     LOG(ERROR) << "Hardware configuration not supported for audio conversion";
     return false;
   }
@@ -70,124 +67,17 @@ bool IsSupportedFormatForConversion(const WAVEFORMATEX& format) {
   return true;
 }
 
-// Returns the index of the device in the device collection, or -1 for the
-// default device, as used by the voice processing DMO.
-base::Optional<WORD> GetAudioDeviceCollectionIndexFromId(
-    const std::string& device_id,
-    const EDataFlow data_flow) {
-  // The default device is specified with -1.
-  if (AudioDeviceDescription::IsDefaultDevice(device_id))
-    return -1;
-
-  WORD device_index = -1;
-  HRESULT hr = E_FAIL;
-  // The default communications does not have an index itself, so we need to
-  // find the index for the underlying device.
-  if (AudioDeviceDescription::IsCommunicationsDevice(device_id)) {
-    const std::string communications_id =
-        (data_flow == eCapture)
-            ? CoreAudioUtil::GetCommunicationsInputDeviceID()
-            : CoreAudioUtil::GetCommunicationsOutputDeviceID();
-    hr = CoreAudioUtil::GetDeviceCollectionIndex(communications_id, data_flow,
-                                                 &device_index);
-  } else {
-    // Otherwise, just look for the device_id directly.
-    hr = CoreAudioUtil::GetDeviceCollectionIndex(device_id, data_flow,
-                                                 &device_index);
-  }
-
-  if (FAILED(hr) || hr == S_FALSE)
-    return base::nullopt;
-
-  return device_index;
-}
-
-// Implementation of IMediaBuffer, as required for
-// IMediaObject::ProcessOutput(). After consuming data provided by
-// ProcessOutput(), call SetLength() to update the buffer availability.
-// Example implementation:
-// http://msdn.microsoft.com/en-us/library/dd376684(v=vs.85).aspx
-class MediaBufferImpl : public IMediaBuffer {
- public:
-  explicit MediaBufferImpl(DWORD max_length)
-      : data_(new BYTE[max_length]), max_length_(max_length) {}
-
-  // IMediaBuffer implementation.
-  STDMETHOD(GetBufferAndLength)(BYTE** buffer, DWORD* length) {
-    if (!buffer || !length)
-      return E_POINTER;
-
-    *buffer = data_.get();
-    *length = length_;
-    return S_OK;
-  }
-
-  STDMETHOD(GetMaxLength)(DWORD* max_length) {
-    if (!max_length)
-      return E_POINTER;
-
-    *max_length = max_length_;
-    return S_OK;
-  }
-
-  STDMETHOD(SetLength)(DWORD length) {
-    if (length > max_length_)
-      return E_INVALIDARG;
-
-    length_ = length;
-    return S_OK;
-  }
-
-  // IUnknown implementation.
-  STDMETHOD_(ULONG, AddRef)() { return InterlockedIncrement(&ref_count_); }
-
-  STDMETHOD(QueryInterface)(REFIID riid, void** object) {
-    if (!object)
-      return E_POINTER;
-    if (riid != IID_IMediaBuffer && riid != IID_IUnknown)
-      return E_NOINTERFACE;
-
-    *object = static_cast<IMediaBuffer*>(this);
-    AddRef();
-    return S_OK;
-  }
-
-  STDMETHOD_(ULONG, Release)() {
-    LONG ref_count = InterlockedDecrement(&ref_count_);
-    if (ref_count == 0)
-      delete this;
-
-    return ref_count;
-  }
-
- private:
-  virtual ~MediaBufferImpl() {}
-
-  std::unique_ptr<BYTE[]> data_;
-  DWORD length_ = 0;
-  const DWORD max_length_;
-  LONG ref_count_ = 0;
-};
-
 }  // namespace
 
 WASAPIAudioInputStream::WASAPIAudioInputStream(
     AudioManagerWin* manager,
     const AudioParameters& params,
     const std::string& device_id,
-    const AudioManager::LogCallback& log_callback,
-    AudioManagerBase::VoiceProcessingMode voice_processing_mode)
-    : manager_(manager),
-      device_id_(device_id),
-      output_device_id_for_aec_(AudioDeviceDescription::kDefaultDeviceId),
-      log_callback_(log_callback),
-      use_voice_processing_(voice_processing_mode ==
-                            AudioManagerBase::VoiceProcessingMode::kEnabled) {
+    const AudioManager::LogCallback& log_callback)
+    : manager_(manager), device_id_(device_id), log_callback_(log_callback) {
   DCHECK(manager_);
   DCHECK(!device_id_.empty());
   DCHECK(!log_callback_.is_null());
-
-  DVLOG_IF(1, use_voice_processing_) << "Using Windows voice capture DSP DMO.";
 
   // Load the Avrt DLL if not already loaded. Required to support MMCSS.
   bool avrt_init = avrt::Initialize();
@@ -196,27 +86,34 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   const SampleFormat kSampleFormat = kSampleFormatS16;
 
   // Set up the desired output format specified by the client.
-  output_format_.wFormatTag = WAVE_FORMAT_PCM;
-  output_format_.nChannels = params.channels();
-  output_format_.nSamplesPerSec = params.sample_rate();
-  output_format_.wBitsPerSample = SampleFormatToBitsPerChannel(kSampleFormat);
-  output_format_.nBlockAlign =
-      (output_format_.wBitsPerSample / 8) * output_format_.nChannels;
-  output_format_.nAvgBytesPerSec =
-      output_format_.nSamplesPerSec * output_format_.nBlockAlign;
-  output_format_.cbSize = 0;
+  DVLOG(1) << params.AsHumanReadableString();
+  WAVEFORMATEX* format = &output_format_.Format;
+  format->wFormatTag = WAVE_FORMAT_EXTENSIBLE;
+  format->nChannels = params.channels();
+  format->nSamplesPerSec = params.sample_rate();
+  format->wBitsPerSample = SampleFormatToBitsPerChannel(kSampleFormat);
+  format->nBlockAlign = (format->wBitsPerSample / 8) * format->nChannels;
+  format->nAvgBytesPerSec = format->nSamplesPerSec * format->nBlockAlign;
+  format->cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
+
+  // Add the parts which are unique to WAVE_FORMAT_EXTENSIBLE.
+  output_format_.Samples.wValidBitsPerSample = format->wBitsPerSample;
+  output_format_.dwChannelMask =
+      CoreAudioUtil::GetChannelConfig(device_id, eCapture);
+  output_format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
 
   // Set the input (capture) format to the desired output format. In most cases,
   // it will be used unchanged.
   input_format_ = output_format_;
+  DVLOG(1) << CoreAudioUtil::WaveFormatExToString(&input_format_);
 
   // Size in bytes of each audio frame.
-  frame_size_bytes_ = input_format_.nBlockAlign;
+  frame_size_bytes_ = format->nBlockAlign;
 
   // Store size of audio packets which we expect to get from the audio
   // endpoint device in each capture event.
   packet_size_bytes_ = params.GetBytesPerBuffer(kSampleFormat);
-  packet_size_frames_ = packet_size_bytes_ / input_format_.nBlockAlign;
+  packet_size_frames_ = packet_size_bytes_ / format->nBlockAlign;
   DVLOG(1) << "Number of bytes per audio frame  : " << frame_size_bytes_;
   DVLOG(1) << "Number of audio frames per packet: " << packet_size_frames_;
 
@@ -238,7 +135,6 @@ WASAPIAudioInputStream::~WASAPIAudioInputStream() {
 
 bool WASAPIAudioInputStream::Open() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(OPEN_RESULT_OK, open_result_);
 
   // Verify that we are not already opened.
   if (opened_) {
@@ -253,16 +149,6 @@ bool WASAPIAudioInputStream::Open() {
   if (FAILED(hr)) {
     ReportOpenResult(hr);
     return false;
-  }
-
-  // If voice processing is enabled, initialize the DMO that is used for it. The
-  // remainder of the function initializes an audio capture client (the normal
-  // case). Either the DMO or the capture client is used.
-  // TODO(grunell): Refactor out the audio capture client initialization to its
-  // own function.
-  if (use_voice_processing_) {
-    opened_ = InitializeDmo();
-    return opened_;
   }
 
   // Obtain an IAudioClient interface which enables us to create and initialize
@@ -312,27 +198,17 @@ void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
   if (started_)
     return;
 
-  // TODO(grunell): Refactor the |use_voice_processing_| conditions in this
-  // function to clean up the code.
-  if (use_voice_processing_) {
-    // Pre-fill render buffer with silence.
-    if (!CoreAudioUtil::FillRenderEndpointBufferWithSilence(
-            audio_client_for_render_.Get(), audio_render_client_.Get())) {
-      DLOG(WARNING) << "Failed to pre-fill render buffer with silence.";
-    }
-  } else {
-    if (device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId &&
-        system_audio_volume_) {
-      BOOL muted = false;
-      system_audio_volume_->GetMute(&muted);
+  if (device_id_ == AudioDeviceDescription::kLoopbackWithMuteDeviceId &&
+      system_audio_volume_) {
+    BOOL muted = false;
+    system_audio_volume_->GetMute(&muted);
 
-      // If the system audio is muted at the time of capturing, then no need to
-      // mute it again, and later we do not unmute system audio when stopping
-      // capturing.
-      if (!muted) {
-        system_audio_volume_->SetMute(true, NULL);
-        mute_done_ = true;
-      }
+    // If the system audio is muted at the time of capturing, then no need to
+    // mute it again, and later we do not unmute system audio when stopping
+    // capturing.
+    if (!muted) {
+      system_audio_volume_->SetMute(true, NULL);
+      mute_done_ = true;
     }
   }
 
@@ -351,31 +227,21 @@ void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
       base::SimpleThread::Options(base::ThreadPriority::REALTIME_AUDIO)));
   capture_thread_->Start();
 
-  HRESULT hr = E_FAIL;
-  if (use_voice_processing_) {
-    hr = audio_client_for_render_->Start();
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to start output streaming: " << std::hex << hr
-                  << ", proceeding without rendering.";
-    }
-  } else {
-    // Start streaming data between the endpoint buffer and the audio engine.
-    hr = audio_client_->Start();
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to start input streaming.";
-      log_callback_.Run(base::StringPrintf(
-          "WASAPIAIS::Start: Failed to start audio client, hresult = %#lx",
-          hr));
-    }
+  // Start streaming data between the endpoint buffer and the audio engine.
+  HRESULT hr = audio_client_->Start();
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to start input streaming.";
+    log_callback_.Run(base::StringPrintf(
+        "WASAPIAIS::Start: Failed to start audio client, hresult = %#lx", hr));
+  }
 
-    if (SUCCEEDED(hr) && audio_render_client_for_loopback_.Get()) {
-      hr = audio_render_client_for_loopback_->Start();
-      if (FAILED(hr))
-        log_callback_.Run(base::StringPrintf(
-            "WASAPIAIS::Start: Failed to start render client for loopback, "
-            "hresult = %#lx",
-            hr));
-    }
+  if (SUCCEEDED(hr) && audio_render_client_for_loopback_.Get()) {
+    hr = audio_render_client_for_loopback_->Start();
+    if (FAILED(hr))
+      log_callback_.Run(base::StringPrintf(
+          "WASAPIAIS::Start: Failed to start render client for loopback, "
+          "hresult = %#lx",
+          hr));
   }
 
   started_ = SUCCEEDED(hr);
@@ -406,21 +272,10 @@ void WASAPIAudioInputStream::Stop() {
     SetEvent(stop_capture_event_.Get());
   }
 
-  // TODO(grunell): Refactor the |use_voice_processing_| conditions in this
-  // function to clean up the code.
-  if (use_voice_processing_) {
-    // Stop the render audio streaming. The input streaming needs no explicit
-    // stopping.
-    HRESULT hr = audio_client_for_render_->Stop();
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to stop output streaming.";
-    }
-  } else {
-    // Stop the input audio streaming.
-    HRESULT hr = audio_client_->Stop();
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to stop input streaming.";
-    }
+  // Stop the input audio streaming.
+  HRESULT hr = audio_client_->Stop();
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to stop input streaming.";
   }
 
   // Wait until the thread completes and perform cleanup.
@@ -428,12 +283,6 @@ void WASAPIAudioInputStream::Stop() {
     SetEvent(stop_capture_event_.Get());
     capture_thread_->Join();
     capture_thread_.reset();
-  }
-
-  if (use_voice_processing_) {
-    HRESULT hr = voice_capture_dmo_->FreeStreamingResources();
-    if (FAILED(hr))
-      DLOG(ERROR) << "Failed to free dmo resources.";
   }
 
   started_ = false;
@@ -524,52 +373,7 @@ bool WASAPIAudioInputStream::IsMuted() {
 
 void WASAPIAudioInputStream::SetOutputDeviceForAec(
     const std::string& output_device_id) {
-  if (!use_voice_processing_)
-    return;
-
-  if (output_device_id == output_device_id_for_aec_)
-    return;
-
-  output_device_id_for_aec_ = output_device_id;
-
-  // Set devices.
-  Microsoft::WRL::ComPtr<IPropertyStore> ps;
-  HRESULT hr = voice_capture_dmo_->QueryInterface(IID_IPropertyStore, &ps);
-  if (FAILED(hr) || !ps) {
-    log_callback_.Run(base::StringPrintf(
-        "WASAPIAIS:SetOutputDeviceForAec: Getting DMO property store failed."));
-    return;
-  }
-
-  if (!SetDmoDevices(ps.Get())) {
-    log_callback_.Run(
-        "WASAPIAIS:SetOutputDeviceForAec: Setting device indices failed.");
-    return;
-  }
-
-  // Recreate the dummy render client on the new output.
-  hr = audio_client_for_render_->Stop();
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to stop output streaming.";
-  }
-
-  CreateDummyRenderClientsForDmo();
-
-  if (!CoreAudioUtil::FillRenderEndpointBufferWithSilence(
-          audio_client_for_render_.Get(), audio_render_client_.Get())) {
-    DLOG(WARNING) << "Failed to pre-fill render buffer with silence.";
-  }
-
-  hr = audio_client_for_render_->Start();
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to start output streaming: " << std::hex << hr
-                << ", proceeding without rendering.";
-  }
-
-  log_callback_.Run(base::StringPrintf(
-      "WASAPIAIS:SetOutputDeviceForAec: Successfully updated AEC output "
-      "device to %s",
-      output_device_id.c_str()));
+  // Not supported. Do nothing.
 }
 
 void WASAPIAudioInputStream::Run() {
@@ -608,15 +412,36 @@ void WASAPIAudioInputStream::Run() {
     ++buffers_required;
 
   DCHECK(!fifo_);
-  fifo_.reset(new AudioBlockFifo(input_format_.nChannels, packet_size_frames_,
-                                 buffers_required));
+  fifo_.reset(new AudioBlockFifo(input_format_.Format.nChannels,
+                                 packet_size_frames_, buffers_required));
 
   DVLOG(1) << "AudioBlockFifo buffer count: " << buffers_required;
 
-  bool success =
-      use_voice_processing_ ? RunWithDmo() : RunWithAudioCaptureClient();
+  bool recording = true;
+  bool error = false;
+  HANDLE wait_array[2] = {stop_capture_event_.Get(),
+                          audio_samples_ready_event_.Get()};
 
-  if (!success) {
+  while (recording && !error) {
+    // Wait for a close-down event or a new capture event.
+    DWORD wait_result = WaitForMultipleObjects(2, wait_array, FALSE, INFINITE);
+    switch (wait_result) {
+      case WAIT_OBJECT_0 + 0:
+        // |stop_capture_event_| has been set.
+        recording = false;
+        break;
+      case WAIT_OBJECT_0 + 1:
+        // |audio_samples_ready_event_| has been set.
+        PullCaptureDataAndPushToSink();
+        break;
+      case WAIT_FAILED:
+      default:
+        error = true;
+        break;
+    }
+  }
+
+  if (recording && error) {
     // TODO(henrika): perhaps it worth improving the cleanup here by e.g.
     // stopping the audio client, joining the thread etc.?
     NOTREACHED() << "WASAPI capturing failed with error code "
@@ -631,57 +456,9 @@ void WASAPIAudioInputStream::Run() {
   fifo_.reset();
 }
 
-bool WASAPIAudioInputStream::RunWithAudioCaptureClient() {
-  HANDLE wait_array[2] = {stop_capture_event_.Get(),
-                          audio_samples_ready_event_.Get()};
-
-  while (true) {
-    // Wait for a close-down event or a new capture event.
-    DWORD wait_result = WaitForMultipleObjects(2, wait_array, FALSE, INFINITE);
-    switch (wait_result) {
-      case WAIT_OBJECT_0 + 0:
-        // |stop_capture_event_| has been set.
-        return true;
-      case WAIT_OBJECT_0 + 1:
-        // |audio_samples_ready_event_| has been set.
-        PullCaptureDataAndPushToSink();
-        break;
-      case WAIT_FAILED:
-      default:
-        return false;
-    }
-  }
-
-  return false;
-}
-
-bool WASAPIAudioInputStream::RunWithDmo() {
-  while (true) {
-    // Poll every 5 ms, or wake up on capture stop signal.
-    DWORD wait_result = WaitForSingleObject(stop_capture_event_.Get(), 5);
-    switch (wait_result) {
-      case WAIT_OBJECT_0:
-        // |stop_capture_event_| has been set.
-        return true;
-      case WAIT_TIMEOUT:
-        PullDmoCaptureDataAndPushToSink();
-        if (!CoreAudioUtil::FillRenderEndpointBufferWithSilence(
-                audio_client_for_render_.Get(), audio_render_client_.Get())) {
-          DLOG(WARNING) << "Failed to fill render buffer with silence.";
-        }
-        break;
-      case WAIT_FAILED:
-      default:
-        return false;
-    }
-  }
-
-  return false;
-}
-
 void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
   TRACE_EVENT1("audio", "WASAPIAudioInputStream::PullCaptureDataAndPushToSink",
-               "sample rate", input_format_.nSamplesPerSec);
+               "sample rate", input_format_.Format.nSamplesPerSec);
 
   UINT64 last_device_position = 0;
 
@@ -757,7 +534,7 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
 
     // Adjust |capture_time| for the FIFO before pushing.
     capture_time -= AudioTimestampHelper::FramesToTime(
-        fifo_->GetAvailableFrames(), input_format_.nSamplesPerSec);
+        fifo_->GetAvailableFrames(), input_format_.Format.nSamplesPerSec);
 
     // TODO(grunell): Since we check |hr == AUDCLNT_S_BUFFER_EMPTY| above,
     // should we instead assert that |num_frames_to_read != 0|?
@@ -766,7 +543,7 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
         fifo_->PushSilence(num_frames_to_read);
       } else {
         fifo_->Push(data_ptr, num_frames_to_read,
-                    input_format_.wBitsPerSample / 8);
+                    input_format_.Format.wBitsPerSample / 8);
       }
     }
 
@@ -795,114 +572,14 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
 
         // Move the capture time forward for each vended block.
         capture_time += AudioTimestampHelper::FramesToTime(
-            convert_bus_->frames(), output_format_.nSamplesPerSec);
+            convert_bus_->frames(), output_format_.Format.nSamplesPerSec);
       } else {
         sink_->OnData(fifo_->Consume(), capture_time, volume);
 
         // Move the capture time forward for each vended block.
         capture_time += AudioTimestampHelper::FramesToTime(
-            packet_size_frames_, input_format_.nSamplesPerSec);
+            packet_size_frames_, input_format_.Format.nSamplesPerSec);
       }
-    }
-  }  // while (true)
-}
-
-void WASAPIAudioInputStream::PullDmoCaptureDataAndPushToSink() {
-  TRACE_EVENT1("audio",
-               "WASAPIAudioInputStream::PullDmoCaptureDataAndPushToSink",
-               "sample rate", input_format_.nSamplesPerSec);
-
-  // Pull data from the capture endpoint buffer until it's empty or an error
-  // occurs.
-  while (true) {
-    DWORD status = 0;
-    DMO_OUTPUT_DATA_BUFFER data_buffer = {0};
-    data_buffer.pBuffer = media_buffer_.Get();
-
-    // Get processed capture data from the DMO.
-    HRESULT hr =
-        voice_capture_dmo_->ProcessOutput(0,  // dwFlags
-                                          1,  // cOutputBufferCount
-                                          &data_buffer,
-                                          &status);  // Must be ignored.
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "DMO ProcessOutput failed, hr = 0x" << std::hex << hr;
-      break;
-    }
-
-    BYTE* data;
-    ULONG data_length = 0;
-    // Get a pointer to the data buffer. This should be valid until the next
-    // call to ProcessOutput.
-    hr = media_buffer_->GetBufferAndLength(&data, &data_length);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Could not get buffer, hr = 0x" << std::hex << hr;
-      break;
-    }
-
-    if (data_length > 0) {
-      const int samples_produced = data_length / frame_size_bytes_;
-
-      base::TimeTicks capture_time;
-      if (data_buffer.dwStatus & DMO_OUTPUT_DATA_BUFFERF_TIME &&
-          data_buffer.rtTimestamp > 0) {
-        // See conversion notes on |capture_time_100ns| in
-        // PullCaptureDataAndPushToSink().
-        capture_time +=
-            base::TimeDelta::FromMicroseconds(data_buffer.rtTimestamp / 10.0);
-      } else {
-        // We may not get the timestamp from ProcessOutput(), fall back on
-        // current timestamp.
-        capture_time = base::TimeTicks::Now();
-      }
-
-      // Adjust |capture_time| for the FIFO before pushing.
-      capture_time -= AudioTimestampHelper::FramesToTime(
-          fifo_->GetAvailableFrames(), input_format_.nSamplesPerSec);
-
-      fifo_->Push(data, samples_produced, input_format_.wBitsPerSample / 8);
-
-      // Reset length to indicate buffer availability.
-      hr = media_buffer_->SetLength(0);
-      if (FAILED(hr))
-        DLOG(ERROR) << "Could not reset length, hr = 0x" << std::hex << hr;
-
-      // Get a cached AGC volume level which is updated once every second on the
-      // audio manager thread. Note that, |volume| is also updated each time
-      // SetVolume() is called through IPC by the render-side AGC.
-      double volume = 0.0;
-      GetAgcVolume(&volume);
-
-      while (fifo_->available_blocks()) {
-        if (converter_) {
-          if (imperfect_buffer_size_conversion_ &&
-              fifo_->available_blocks() == 1) {
-            // Special case. We need to buffer up more audio before we can
-            // convert or else we'll suffer an underrun.
-            // TODO(grunell): Verify this is really true.
-            break;
-          }
-          converter_->Convert(convert_bus_.get());
-          sink_->OnData(convert_bus_.get(), capture_time, volume);
-
-          // Move the capture time forward for each vended block.
-          capture_time += AudioTimestampHelper::FramesToTime(
-              convert_bus_->frames(), output_format_.nSamplesPerSec);
-        } else {
-          sink_->OnData(fifo_->Consume(), capture_time, volume);
-
-          // Move the capture time forward for each vended block.
-          capture_time += AudioTimestampHelper::FramesToTime(
-              packet_size_frames_, input_format_.nSamplesPerSec);
-        }
-      }
-    }  //  if (data_length > 0)
-
-    if (!(data_buffer.dwStatus & DMO_OUTPUT_DATA_BUFFERF_INCOMPLETE)) {
-      // The DMO cannot currently produce more data. This is the normal case;
-      // otherwise it means the DMO had more than 10 ms of data available and
-      // ProcessOutput should be called again.
-      break;
     }
   }  // while (true)
 }
@@ -984,37 +661,35 @@ HRESULT WASAPIAudioInputStream::GetAudioEngineStreamFormat() {
 #ifndef NDEBUG
   // The GetMixFormat() method retrieves the stream format that the
   // audio engine uses for its internal processing of shared-mode streams.
-  // The method always uses a WAVEFORMATEXTENSIBLE structure, instead
-  // of a stand-alone WAVEFORMATEX structure, to specify the format.
-  // An WAVEFORMATEXTENSIBLE structure can specify both the mapping of
-  // channels to speakers and the number of bits of precision in each sample.
-  base::win::ScopedCoMem<WAVEFORMATEXTENSIBLE> format_ex;
-  hr =
-      audio_client_->GetMixFormat(reinterpret_cast<WAVEFORMATEX**>(&format_ex));
+  base::win::ScopedCoMem<WAVEFORMATEX> format;
+  hr = audio_client_->GetMixFormat(&format);
+  if (FAILED(hr))
+    return hr;
 
-  // See http://msdn.microsoft.com/en-us/windows/hardware/gg463006#EFH
-  // for details on the WAVE file format.
-  WAVEFORMATEX format = format_ex->Format;
   DVLOG(2) << "WAVEFORMATEX:";
-  DVLOG(2) << "  wFormatTags    : 0x" << std::hex << format.wFormatTag;
-  DVLOG(2) << "  nChannels      : " << format.nChannels;
-  DVLOG(2) << "  nSamplesPerSec : " << format.nSamplesPerSec;
-  DVLOG(2) << "  nAvgBytesPerSec: " << format.nAvgBytesPerSec;
-  DVLOG(2) << "  nBlockAlign    : " << format.nBlockAlign;
-  DVLOG(2) << "  wBitsPerSample : " << format.wBitsPerSample;
-  DVLOG(2) << "  cbSize         : " << format.cbSize;
+  DVLOG(2) << "  wFormatTags    : 0x" << std::hex << format->wFormatTag;
+  DVLOG(2) << "  nChannels      : " << format->nChannels;
+  DVLOG(2) << "  nSamplesPerSec : " << format->nSamplesPerSec;
+  DVLOG(2) << "  nAvgBytesPerSec: " << format->nAvgBytesPerSec;
+  DVLOG(2) << "  nBlockAlign    : " << format->nBlockAlign;
+  DVLOG(2) << "  wBitsPerSample : " << format->wBitsPerSample;
+  DVLOG(2) << "  cbSize         : " << format->cbSize;
 
-  DVLOG(2) << "WAVEFORMATEXTENSIBLE:";
-  DVLOG(2) << " wValidBitsPerSample: "
-           << format_ex->Samples.wValidBitsPerSample;
-  DVLOG(2) << " dwChannelMask      : 0x" << std::hex
-           << format_ex->dwChannelMask;
-  if (format_ex->SubFormat == KSDATAFORMAT_SUBTYPE_PCM)
-    DVLOG(2) << " SubFormat          : KSDATAFORMAT_SUBTYPE_PCM";
-  else if (format_ex->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)
-    DVLOG(2) << " SubFormat          : KSDATAFORMAT_SUBTYPE_IEEE_FLOAT";
-  else if (format_ex->SubFormat == KSDATAFORMAT_SUBTYPE_WAVEFORMATEX)
-    DVLOG(2) << " SubFormat          : KSDATAFORMAT_SUBTYPE_WAVEFORMATEX";
+  if (format->wFormatTag == WAVE_FORMAT_EXTENSIBLE) {
+    WAVEFORMATEXTENSIBLE* format_ex =
+        reinterpret_cast<WAVEFORMATEXTENSIBLE*>(format.get());
+    DVLOG(2) << "WAVEFORMATEXTENSIBLE:";
+    DVLOG(2) << " wValidBitsPerSample: "
+             << format_ex->Samples.wValidBitsPerSample;
+    DVLOG(2) << " dwChannelMask      : 0x" << std::hex
+             << format_ex->dwChannelMask;
+    if (format_ex->SubFormat == KSDATAFORMAT_SUBTYPE_PCM)
+      DVLOG(2) << " SubFormat          : KSDATAFORMAT_SUBTYPE_PCM";
+    else if (format_ex->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)
+      DVLOG(2) << " SubFormat          : KSDATAFORMAT_SUBTYPE_IEEE_FLOAT";
+    else if (format_ex->SubFormat == KSDATAFORMAT_SUBTYPE_WAVEFORMATEX)
+      DVLOG(2) << " SubFormat          : KSDATAFORMAT_SUBTYPE_WAVEFORMATEX";
+  }
 #endif
   return hr;
 }
@@ -1031,7 +706,8 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
   // the audio engine can mix only PCM streams.
   base::win::ScopedCoMem<WAVEFORMATEX> closest_match;
   HRESULT hresult = audio_client_->IsFormatSupported(
-      AUDCLNT_SHAREMODE_SHARED, &input_format_, &closest_match);
+      AUDCLNT_SHAREMODE_SHARED,
+      reinterpret_cast<const WAVEFORMATEX*>(&input_format_), &closest_match);
   DLOG_IF(ERROR, hresult == S_FALSE)
       << "Format is not supported but a closest match exists.";
 
@@ -1040,8 +716,9 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
     // can provide.  If we succeed in initializing the audio client in this
     // format and are able to convert from this format, we will do that
     // conversion.
-    input_format_.nChannels = closest_match->nChannels;
-    input_format_.nSamplesPerSec = closest_match->nSamplesPerSec;
+    WAVEFORMATEX* input_format = &input_format_.Format;
+    input_format->nChannels = closest_match->nChannels;
+    input_format->nSamplesPerSec = closest_match->nSamplesPerSec;
 
     // If the closest match is fixed point PCM (WAVE_FORMAT_PCM or
     // KSDATAFORMAT_SUBTYPE_PCM), we use the closest match's bits per sample.
@@ -1059,20 +736,18 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
       return false;
     };
     if (format_is_pcm(closest_match))
-      input_format_.wBitsPerSample = closest_match->wBitsPerSample;
+      input_format->wBitsPerSample = closest_match->wBitsPerSample;
 
-    input_format_.nBlockAlign =
-        (input_format_.wBitsPerSample / 8) * input_format_.nChannels;
-    input_format_.nAvgBytesPerSec =
-        input_format_.nSamplesPerSec * input_format_.nBlockAlign;
+    input_format->nBlockAlign =
+        (input_format->wBitsPerSample / 8) * input_format->nChannels;
+    input_format->nAvgBytesPerSec =
+        input_format->nSamplesPerSec * input_format->nBlockAlign;
 
-    if (IsSupportedFormatForConversion(input_format_)) {
-      DVLOG(1) << "Will convert capture audio from: \nbits: "
-               << input_format_.wBitsPerSample
-               << "\nsample rate: " << input_format_.nSamplesPerSec
-               << "\nchannels: " << input_format_.nChannels
-               << "\nblock align: " << input_format_.nBlockAlign
-               << "\navg bytes per sec: " << input_format_.nAvgBytesPerSec;
+    if (IsSupportedFormatForConversion(&input_format_)) {
+      DVLOG(1) << "Will convert captured audio: \n"
+               << CoreAudioUtil::WaveFormatExToString(&input_format_)
+               << " ==> \n"
+               << CoreAudioUtil::WaveFormatExToString(&output_format_);
 
       SetupConverterAndStoreFormatInfo();
 
@@ -1093,22 +768,24 @@ void WASAPIAudioInputStream::SetupConverterAndStoreFormatInfo() {
   // Ideally, we want a 1:1 ratio between the buffers we get and the buffers
   // we give to OnData so that each buffer we receive from the OS can be
   // directly converted to a buffer that matches with what was asked for.
-  const double buffer_ratio =
-      output_format_.nSamplesPerSec / static_cast<double>(packet_size_frames_);
-  double new_frames_per_buffer = input_format_.nSamplesPerSec / buffer_ratio;
+  const double buffer_ratio = output_format_.Format.nSamplesPerSec /
+                              static_cast<double>(packet_size_frames_);
+  double new_frames_per_buffer =
+      input_format_.Format.nSamplesPerSec / buffer_ratio;
 
-  const auto input_layout = GuessChannelLayout(input_format_.nChannels);
+  const auto input_layout = GuessChannelLayout(input_format_.Format.nChannels);
   DCHECK_NE(CHANNEL_LAYOUT_UNSUPPORTED, input_layout);
-  const auto output_layout = GuessChannelLayout(output_format_.nChannels);
+  const auto output_layout =
+      GuessChannelLayout(output_format_.Format.nChannels);
   DCHECK_NE(CHANNEL_LAYOUT_UNSUPPORTED, output_layout);
 
   const AudioParameters input(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                              input_layout, input_format_.nSamplesPerSec,
+                              input_layout, input_format_.Format.nSamplesPerSec,
                               static_cast<int>(new_frames_per_buffer));
 
-  const AudioParameters output(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               output_layout, output_format_.nSamplesPerSec,
-                               packet_size_frames_);
+  const AudioParameters output(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, output_layout,
+      output_format_.Format.nSamplesPerSec, packet_size_frames_);
 
   converter_.reset(new AudioConverter(input, output, false));
   converter_->AddInput(this);
@@ -1116,11 +793,11 @@ void WASAPIAudioInputStream::SetupConverterAndStoreFormatInfo() {
   convert_bus_ = AudioBus::Create(output);
 
   // Update our packet size assumptions based on the new format.
-  const auto new_bytes_per_buffer =
-      static_cast<int>(new_frames_per_buffer) * input_format_.nBlockAlign;
-  packet_size_frames_ = new_bytes_per_buffer / input_format_.nBlockAlign;
+  const auto new_bytes_per_buffer = static_cast<int>(new_frames_per_buffer) *
+                                    input_format_.Format.nBlockAlign;
+  packet_size_frames_ = new_bytes_per_buffer / input_format_.Format.nBlockAlign;
   packet_size_bytes_ = new_bytes_per_buffer;
-  frame_size_bytes_ = input_format_.nBlockAlign;
+  frame_size_bytes_ = input_format_.Format.nBlockAlign;
 
   imperfect_buffer_size_conversion_ =
       std::modf(new_frames_per_buffer, &new_frames_per_buffer) != 0.0;
@@ -1131,8 +808,8 @@ void WASAPIAudioInputStream::SetupConverterAndStoreFormatInfo() {
 HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
   DCHECK_EQ(OPEN_RESULT_OK, open_result_);
   DWORD flags;
-  // Use event-driven mode only fo regular input devices. For loopback the
-  // EVENTCALLBACK flag is specified when intializing
+  // Use event-driven mode only for regular input devices. For loopback the
+  // EVENTCALLBACK flag is specified when initializing
   // |audio_render_client_for_loopback_|.
   if (AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
     flags = AUDCLNT_STREAMFLAGS_LOOPBACK | AUDCLNT_STREAMFLAGS_NOPERSIST;
@@ -1155,7 +832,7 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
   HRESULT hr = audio_client_->Initialize(
       AUDCLNT_SHAREMODE_SHARED, flags, buffer_duration,
       0,  // device period, n/a for shared mode.
-      &input_format_,
+      reinterpret_cast<const WAVEFORMATEX*>(&input_format_),
       device_id_ == AudioDeviceDescription::kCommunicationsDeviceId
           ? &kCommunicationsSessionId
           : nullptr);
@@ -1178,7 +855,7 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
   }
   const int endpoint_buffer_size_ms =
       static_cast<double>(endpoint_buffer_size_frames_ * 1000) /
-          input_format_.nSamplesPerSec +
+          input_format_.Format.nSamplesPerSec +
       0.5;  // Round to closest integer
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "Media.Audio.Capture.Win.EndpointBufferSize",
@@ -1247,7 +924,7 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
     hr = audio_render_client_for_loopback_->Initialize(
         AUDCLNT_SHAREMODE_SHARED,
         AUDCLNT_STREAMFLAGS_EVENTCALLBACK | AUDCLNT_STREAMFLAGS_NOPERSIST, 0, 0,
-        &input_format_, NULL);
+        reinterpret_cast<const WAVEFORMATEX*>(&input_format_), NULL);
     if (FAILED(hr)) {
       open_result_ = OPEN_RESULT_LOOPBACK_INIT_FAILED;
       return hr;
@@ -1297,14 +974,17 @@ void WASAPIAudioInputStream::ReportOpenResult(HRESULT hr) const {
         "output format = %#x/%d/%ld/%d/%d/%ld/%d",
         // clang-format off
         open_result_, hr,
-        input_format_.wFormatTag, input_format_.nChannels,
-        input_format_.nSamplesPerSec, input_format_.wBitsPerSample,
-        input_format_.nBlockAlign, input_format_.nAvgBytesPerSec,
-        input_format_.cbSize,
-        output_format_.wFormatTag, output_format_.nChannels,
-        output_format_.nSamplesPerSec, output_format_.wBitsPerSample,
-        output_format_.nBlockAlign, output_format_.nAvgBytesPerSec,
-        output_format_.cbSize));
+        input_format_.Format.wFormatTag, input_format_.Format.nChannels,
+        input_format_.Format.nSamplesPerSec,
+        input_format_.Format.wBitsPerSample,
+        input_format_.Format.nBlockAlign, input_format_.Format.nAvgBytesPerSec,
+        input_format_.Format.cbSize,
+        output_format_.Format.wFormatTag, output_format_.Format.nChannels,
+        output_format_.Format.nSamplesPerSec,
+        output_format_.Format.wBitsPerSample,
+        output_format_.Format.nBlockAlign,
+        output_format_.Format.nAvgBytesPerSec,
+        output_format_.Format.cbSize));
     // clang-format on
   }
 }
@@ -1326,223 +1006,6 @@ void WASAPIAudioInputStream::MaybeReportFormatRelatedInitError(
   base::UmaHistogramEnumeration(
       "Media.Audio.Capture.Win.InitError.FormatRelated", format_related_error,
       FormatRelatedInitError::kCount);
-}
-
-bool WASAPIAudioInputStream::InitializeDmo() {
-  HRESULT hr = ::CoCreateInstance(CLSID_CWMAudioAEC, NULL, CLSCTX_INPROC_SERVER,
-                                  IID_IMediaObject, &voice_capture_dmo_);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Creating DMO failed.";
-    return false;
-  }
-
-  if (!SetDmoProperties())
-    return false;
-
-  if (!SetDmoFormat())
-    return false;
-
-  hr = voice_capture_dmo_->AllocateStreamingResources();
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Allocating DMO resources failed.";
-    return false;
-  }
-
-  SetupConverterAndStoreFormatInfo();
-
-  media_buffer_ =
-      new MediaBufferImpl(endpoint_buffer_size_frames_ * frame_size_bytes_);
-
-  if (!CreateDummyRenderClientsForDmo())
-    return false;
-
-  // Get volume interface.
-  Microsoft::WRL::ComPtr<IAudioSessionManager> audio_session_manager;
-  hr = endpoint_device_->Activate(__uuidof(IAudioSessionManager),
-                                  CLSCTX_INPROC_SERVER, NULL,
-                                  &audio_session_manager);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Obtaining audio session manager failed.";
-    return false;
-  }
-  hr = audio_session_manager->GetSimpleAudioVolume(
-      NULL,   // AudioSessionGuid. NULL for default session.
-      FALSE,  // CrossProcessSession.
-      &simple_audio_volume_);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Obtaining audio volume interface failed.";
-    return false;
-  }
-
-  return true;
-}
-
-bool WASAPIAudioInputStream::SetDmoProperties() {
-  Microsoft::WRL::ComPtr<IPropertyStore> ps;
-  HRESULT hr = voice_capture_dmo_->QueryInterface(IID_IPropertyStore, &ps);
-  if (FAILED(hr) || !ps) {
-    DLOG(ERROR) << "Getting DMO property store failed.";
-    return false;
-  }
-
-  // Set devices.
-  if (!SetDmoDevices(ps.Get())) {
-    DLOG(ERROR) << "Setting device indices failed.";
-    return false;
-  }
-
-  // Set DMO mode to AEC only.
-  if (FAILED(CoreAudioUtil::SetVtI4Property(
-          ps.Get(), MFPKEY_WMAAECMA_SYSTEM_MODE, SINGLE_CHANNEL_AEC))) {
-    DLOG(ERROR) << "Setting DMO system mode failed.";
-    return false;
-  }
-
-  // Enable the feature mode. This lets us override the default processing
-  // settings below.
-  if (FAILED(CoreAudioUtil::SetBoolProperty(
-          ps.Get(), MFPKEY_WMAAECMA_FEATURE_MODE, VARIANT_TRUE))) {
-    DLOG(ERROR) << "Setting DMO feature mode failed.";
-    return false;
-  }
-
-  // Disable analog AGC (default enabled).
-  if (FAILED(CoreAudioUtil::SetBoolProperty(
-          ps.Get(), MFPKEY_WMAAECMA_MIC_GAIN_BOUNDER, VARIANT_FALSE))) {
-    DLOG(ERROR) << "Setting DMO mic gain bounder failed.";
-    return false;
-  }
-
-  // Disable noise suppression (default enabled).
-  if (FAILED(CoreAudioUtil::SetVtI4Property(ps.Get(), MFPKEY_WMAAECMA_FEATR_NS,
-                                            0))) {
-    DLOG(ERROR) << "Disabling DMO NS failed.";
-    return false;
-  }
-
-  return true;
-}
-
-bool WASAPIAudioInputStream::SetDmoFormat() {
-  DMO_MEDIA_TYPE mt;  // Media type.
-  mt.majortype = MEDIATYPE_Audio;
-  mt.subtype = MEDIASUBTYPE_PCM;
-  mt.lSampleSize = 0;
-  mt.bFixedSizeSamples = TRUE;
-  mt.bTemporalCompression = FALSE;
-  mt.formattype = FORMAT_WaveFormatEx;
-
-  HRESULT hr = MoInitMediaType(&mt, sizeof(WAVEFORMATEX));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Init media type for DMO failed.";
-    return false;
-  }
-
-  WAVEFORMATEX* dmo_output_format =
-      reinterpret_cast<WAVEFORMATEX*>(mt.pbFormat);
-  dmo_output_format->wFormatTag = WAVE_FORMAT_PCM;
-  dmo_output_format->nChannels = 1;
-  dmo_output_format->nSamplesPerSec = 16000;
-  dmo_output_format->nAvgBytesPerSec = 32000;
-  dmo_output_format->nBlockAlign = 2;
-  dmo_output_format->wBitsPerSample = 16;
-  dmo_output_format->cbSize = 0;
-
-  DCHECK(IsSupportedFormatForConversion(*dmo_output_format));
-
-  // Store the format used.
-  input_format_.wFormatTag = dmo_output_format->wFormatTag;
-  input_format_.nChannels = dmo_output_format->nChannels;
-  input_format_.nSamplesPerSec = dmo_output_format->nSamplesPerSec;
-  input_format_.wBitsPerSample = dmo_output_format->wBitsPerSample;
-  input_format_.nBlockAlign = dmo_output_format->nBlockAlign;
-  input_format_.nAvgBytesPerSec = dmo_output_format->nAvgBytesPerSec;
-  input_format_.cbSize = dmo_output_format->cbSize;
-
-  hr = voice_capture_dmo_->SetOutputType(0, &mt, 0);
-  MoFreeMediaType(&mt);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Setting DMO output type failed.";
-    return false;
-  }
-
-  // We use 10 ms buffer size for the DMO.
-  endpoint_buffer_size_frames_ = input_format_.nSamplesPerSec / 100;
-
-  return true;
-}
-
-bool WASAPIAudioInputStream::SetDmoDevices(IPropertyStore* ps) {
-  // Look up the input device's index.
-  const base::Optional<WORD> input_device_index =
-      GetAudioDeviceCollectionIndexFromId(device_id_, eCapture);
-
-  if (!input_device_index) {
-    log_callback_.Run(
-        base::StringPrintf("WASAPIAIS:SetDmoDevices: Could not "
-                           "resolve input device index for %s",
-                           device_id_.c_str()));
-    return false;
-  }
-
-  // Look up the output device's index.
-  const base::Optional<WORD> output_device_index =
-      GetAudioDeviceCollectionIndexFromId(output_device_id_for_aec_, eRender);
-  if (!output_device_index) {
-    log_callback_.Run(
-        base::StringPrintf("WASAPIAIS:SetDmoDevices: Could not "
-                           "resolve output device index for %s",
-                           output_device_id_for_aec_.c_str()));
-    return false;
-  }
-
-  // The DEVICE_INDEXES property packs the input and output indices into the
-  // upper and lower halves of a LONG.
-  LONG device_index_value =
-      (static_cast<ULONG>(*output_device_index) << 16) +
-      (static_cast<ULONG>(*input_device_index) & 0x0000ffff);
-  return !FAILED(CoreAudioUtil::SetVtI4Property(
-      ps, MFPKEY_WMAAECMA_DEVICE_INDEXES, device_index_value));
-}
-
-bool WASAPIAudioInputStream::CreateDummyRenderClientsForDmo() {
-  Microsoft::WRL::ComPtr<IAudioClient> audio_client(CoreAudioUtil::CreateClient(
-      output_device_id_for_aec_, eRender, eConsole));
-  if (!audio_client.Get()) {
-    DLOG(ERROR) << "Failed to create audio client for dummy rendering for DMO.";
-    return false;
-  }
-
-  WAVEFORMATPCMEX mix_format;
-  HRESULT hr =
-      CoreAudioUtil::GetSharedModeMixFormat(audio_client.Get(), &mix_format);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to get mix format.";
-    return false;
-  }
-
-  hr = audio_client->Initialize(AUDCLNT_SHAREMODE_SHARED,
-                                0,  // Stream flags
-                                0,  // Buffer duration
-                                0,  // Device period
-                                reinterpret_cast<WAVEFORMATEX*>(&mix_format),
-                                NULL);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to initalize audio client for rendering.";
-    return false;
-  }
-
-  Microsoft::WRL::ComPtr<IAudioRenderClient> audio_render_client =
-      CoreAudioUtil::CreateRenderClient(audio_client.Get());
-  if (!audio_render_client.Get()) {
-    DLOG(ERROR) << "Failed to create audio render client.";
-    return false;
-  }
-
-  audio_client_for_render_ = audio_client;
-  audio_render_client_ = audio_render_client;
-
-  return true;
 }
 
 double WASAPIAudioInputStream::ProvideInput(AudioBus* audio_bus,
@@ -1599,7 +1062,7 @@ void WASAPIAudioInputStream::ReportAndResetGlitchStats() {
       total_concurrent_glitch_and_discontinuities_);
 
   double lost_frames_ms =
-      (total_lost_frames_ * 1000) / input_format_.nSamplesPerSec;
+      (total_lost_frames_ * 1000) / input_format_.Format.nSamplesPerSec;
   std::string log_message = base::StringPrintf(
       "WASAPIAIS: Total glitches=%d. Total frames lost=%llu (%.0lf ms). Total "
       "discontinuities=%d. Total concurrent glitch and discont=%d. Total low "
@@ -1614,7 +1077,7 @@ void WASAPIAudioInputStream::ReportAndResetGlitchStats() {
     UMA_HISTOGRAM_LONG_TIMES("Media.Audio.Capture.LostFramesInMs",
                              base::TimeDelta::FromMilliseconds(lost_frames_ms));
     int64_t largest_glitch_ms =
-        (largest_glitch_frames_ * 1000) / input_format_.nSamplesPerSec;
+        (largest_glitch_frames_ * 1000) / input_format_.Format.nSamplesPerSec;
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "Media.Audio.Capture.LargestGlitchMs",
         base::TimeDelta::FromMilliseconds(largest_glitch_ms),

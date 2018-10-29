@@ -33,10 +33,6 @@ class GPU_IPC_SERVICE_EXPORT RasterCommandBufferStub
   void OnReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) override;
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
   void SetActiveURL(GURL url) override;
-  void ResetActiveURL() override;
-
-  GURL original_url_;
-  size_t original_url_hash_;
 
   DISALLOW_COPY_AND_ASSIGN(RasterCommandBufferStub);
 };

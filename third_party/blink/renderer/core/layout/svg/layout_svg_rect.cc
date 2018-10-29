@@ -33,7 +33,7 @@
 namespace blink {
 
 LayoutSVGRect::LayoutSVGRect(SVGRectElement* node)
-    : LayoutSVGShape(node), use_path_fallback_(false) {}
+    : LayoutSVGShape(node, kSimple), use_path_fallback_(false) {}
 
 LayoutSVGRect::~LayoutSVGRect() = default;
 
@@ -43,10 +43,8 @@ void LayoutSVGRect::UpdateShapeFromElement() {
   fill_bounding_box_ = FloatRect();
   stroke_bounding_box_ = FloatRect();
   use_path_fallback_ = false;
-  SVGRectElement* rect = ToSVGRectElement(GetElement());
-  DCHECK(rect);
 
-  SVGLengthContext length_context(rect);
+  SVGLengthContext length_context(GetElement());
   const ComputedStyle& style = StyleRef();
   FloatSize bounding_box_size(ToFloatSize(
       length_context.ResolveLengthPair(style.Width(), style.Height(), style)));
@@ -79,17 +77,17 @@ void LayoutSVGRect::UpdateShapeFromElement() {
   fill_bounding_box_ = FloatRect(
       length_context.ResolveLengthPair(svg_style.X(), svg_style.Y(), style),
       bounding_box_size);
-  stroke_bounding_box_ = fill_bounding_box_;
-  if (svg_style.HasStroke())
-    stroke_bounding_box_.Inflate(StrokeWidth() / 2);
+  stroke_bounding_box_ = CalculateStrokeBoundingBox();
 }
 
-bool LayoutSVGRect::ShapeDependentStrokeContains(const FloatPoint& point) {
+bool LayoutSVGRect::ShapeDependentStrokeContains(
+    const HitTestLocation& location) {
   // The optimized code below does not support the cases that we set
   // use_path_fallback_ in UpdateShapeFromElement().
   if (use_path_fallback_)
-    return LayoutSVGShape::ShapeDependentStrokeContains(point);
+    return LayoutSVGShape::ShapeDependentStrokeContains(location);
 
+  const FloatPoint& point = location.TransformedPoint();
   const float half_stroke_width = StrokeWidth() / 2;
   const float half_width = fill_bounding_box_.Width() / 2;
   const float half_height = fill_bounding_box_.Height() / 2;
@@ -108,10 +106,11 @@ bool LayoutSVGRect::ShapeDependentStrokeContains(const FloatPoint& point) {
          (half_height - half_stroke_width <= abs_delta_y);
 }
 
-bool LayoutSVGRect::ShapeDependentFillContains(const FloatPoint& point,
+bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
                                                const WindRule fill_rule) const {
   if (use_path_fallback_)
-    return LayoutSVGShape::ShapeDependentFillContains(point, fill_rule);
+    return LayoutSVGShape::ShapeDependentFillContains(location, fill_rule);
+  const FloatPoint& point = location.TransformedPoint();
   return fill_bounding_box_.Contains(point.X(), point.Y());
 }
 

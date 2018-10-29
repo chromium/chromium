@@ -4,6 +4,8 @@
 
 #include "ui/latency/stream_analyzer.h"
 
+#include "ui/latency/frame_metrics.h"
+
 namespace ui {
 
 StreamAnalysis::StreamAnalysis() = default;
@@ -89,8 +91,9 @@ void StreamAnalyzer::AddSample(const uint32_t value, const uint32_t weight) {
   DCHECK_GT(weight, 0u);
 
   const uint64_t weighted_value = static_cast<uint64_t>(weight) * value;
-  const uint64_t weighted_root = weight * std::sqrt(static_cast<double>(value) *
-                                                    kFixedPointRootMultiplier);
+  const uint64_t weighted_root =
+      weight * FrameMetrics::FastApproximateSqrt(static_cast<double>(value) *
+                                                 kFixedPointRootMultiplier);
   const Accumulator96b weighted_square(value, weight);
 
   // Verify overflow isn't an issue.
@@ -128,7 +131,7 @@ double StreamAnalyzer::ComputeMean() const {
 
 double StreamAnalyzer::ComputeRMS() const {
   double mean_square = square_accumulator_.ToDouble() / total_weight_;
-  double result = std::sqrt(mean_square);
+  double result = FrameMetrics::FastApproximateSqrt(mean_square);
   return client_->TransformResult(result);
 }
 
@@ -152,7 +155,7 @@ double StreamAnalyzer::VarianceHelper(double accum, double square_accum) const {
 double StreamAnalyzer::ComputeStdDev() const {
   double variance =
       VarianceHelper(accumulator_, square_accumulator_.ToDouble());
-  double std_dev = std::sqrt(variance);
+  double std_dev = FrameMetrics::FrameMetrics::FastApproximateSqrt(variance);
   return client_->TransformResult(std_dev);
 }
 

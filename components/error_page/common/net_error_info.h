@@ -7,7 +7,8 @@
 
 namespace error_page {
 
-// Network error page events.  Used for UMA statistics.
+// Network error page events.  Used for UMA statistics and its values must be
+// mirrored in NetErrorPageEvents in enums.xml.
 enum NetworkErrorPageEvent {
   NETWORK_ERROR_PAGE_SHOWN = 0,  // Error pages shown.
 

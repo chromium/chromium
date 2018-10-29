@@ -15,7 +15,6 @@
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "services/service_manager/sandbox/linux/sandbox_linux.h"
 
-#if defined(OS_CHROMEOS)
 // TODO(vignatti): replace the local definitions below with #include
 // <linux/dma-buf.h> once kernel version 4.6 becomes widely used.
 #include <linux/types.h>
@@ -26,7 +25,6 @@ struct local_dma_buf_sync {
 #define LOCAL_DMA_BUF_BASE 'b'
 #define LOCAL_DMA_BUF_IOCTL_SYNC \
   _IOW(LOCAL_DMA_BUF_BASE, 0, struct local_dma_buf_sync)
-#endif
 
 using sandbox::SyscallSets;
 using sandbox::bpf_dsl::Allow;
@@ -43,10 +41,8 @@ ResultExpr RestrictIoctl() {
   return Switch(request)
       .SANDBOX_BPF_DSL_CASES((static_cast<unsigned long>(TCGETS), FIONREAD),
                              Allow())
-#if defined(OS_CHROMEOS)
       .SANDBOX_BPF_DSL_CASES(
           (static_cast<unsigned long>(LOCAL_DMA_BUF_IOCTL_SYNC)), Allow())
-#endif
       .Default(sandbox::CrashSIGSYSIoctl());
 }
 

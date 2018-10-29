@@ -40,15 +40,6 @@ imageset("toolbar_reload") {
   ]
 }
 
-imageset("toolbar_menu") {
-  sources = [
-    "toolbar_menu.imageset/Contents.json",
-    "toolbar_menu.imageset/toolbar_menu.png",
-    "toolbar_menu.imageset/toolbar_menu@2x.png",
-    "toolbar_menu.imageset/toolbar_menu@3x.png",
-  ]
-}
-
 imageset("toolbar_share") {
   sources = [
     "toolbar_share.imageset/Contents.json",

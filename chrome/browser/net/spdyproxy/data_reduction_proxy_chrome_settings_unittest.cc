@@ -9,37 +9,64 @@
 
 #include "base/message_loop/message_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_config_test_utils.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params_test_utils.h"
+#include "components/data_reduction_proxy/proto/client_config.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "content/public/browser/navigation_handle.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
+#include "services/network/test/test_network_quality_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
 using testing::_;
 using testing::Return;
 
-class DataReductionProxyChromeSettingsTest : public testing::Test {
+constexpr char kUrl[] = "http://example.com";
+constexpr char kProxyPac[] = "PROXY proxy.net";
+}  // namespace
+
+class DataReductionProxyChromeSettingsTest
+    : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    drp_chrome_settings_ = std::make_unique<DataReductionProxyChromeSettings>();
+    ChromeRenderViewHostTestHarness::SetUp();
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_4G);
+    auto settings = std::make_unique<DataReductionProxyChromeSettings>();
+    drp_chrome_settings_ = settings.get();
     test_context_ =
         data_reduction_proxy::DataReductionProxyTestContext::Builder()
             .WithMockConfig()
-            .SkipSettingsInitialization()
+            .WithSettings(std::move(settings))
             .Build();
+    net::ProxyList proxies;
+    proxies.SetFromPacString(kProxyPac);
+    test_context_->data_reduction_proxy_service()->SetConfiguredProxiesOnUI(
+        proxies);
+    test_context_->test_network_quality_tracker()
+        ->ReportEffectiveConnectionTypeForTesting(
+            net::EFFECTIVE_CONNECTION_TYPE_4G);
     config_ = test_context_->mock_config();
-    drp_chrome_settings_->ResetConfigForTest(config_);
     dict_ = std::make_unique<base::DictionaryValue>();
 
     PrefRegistrySimple* registry = test_context_->pref_service()->registry();
     registry->RegisterDictionaryPref(proxy_config::prefs::kProxy);
   }
 
-  base::MessageLoopForIO message_loop_;
-  std::unique_ptr<DataReductionProxyChromeSettings> drp_chrome_settings_;
+  void TearDown() override {
+    // Make sure |test_context_| is destroyed before message loop is destroyed.
+    test_context_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  DataReductionProxyChromeSettings* drp_chrome_settings_;
   std::unique_ptr<base::DictionaryValue> dict_;
   std::unique_ptr<data_reduction_proxy::DataReductionProxyTestContext>
       test_context_;
@@ -352,4 +379,111 @@ TEST_F(DataReductionProxyChromeSettingsTest, MigrateIgnoreOtherProxy) {
         "DataReductionProxy.ProxyPrefMigrationResult",
         DataReductionProxyChromeSettings::PROXY_PREF_NOT_CLEARED, 1);
   }
+}
+
+TEST_F(DataReductionProxyChromeSettingsTest, CreateDataBasic) {
+  std::unique_ptr<content::NavigationHandle> handle =
+      content::NavigationHandle::CreateNavigationHandleForTesting(GURL(kUrl),
+                                                                  main_rfh());
+  std::string headers = "HTTP/1.0 200 OK\n";
+  handle->CallWillProcessResponseForTesting(
+      main_rfh(),
+      net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()), false,
+      net::ProxyServer::Direct());
+  auto data = drp_chrome_settings_->CreateDataFromNavigationHandle(
+      handle.get(), handle->GetResponseHeaders());
+
+  EXPECT_EQ(data->request_url(), GURL(kUrl));
+  EXPECT_EQ(data->effective_connection_type(),
+            net::EFFECTIVE_CONNECTION_TYPE_4G);
+  EXPECT_EQ(data->connection_type(),
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G);
+  EXPECT_FALSE(data->used_data_reduction_proxy());
+}
+
+TEST_F(DataReductionProxyChromeSettingsTest, CreateDataUsedDataReductionProxy) {
+  std::unique_ptr<content::NavigationHandle> handle =
+      content::NavigationHandle::CreateNavigationHandleForTesting(GURL(kUrl),
+                                                                  main_rfh());
+  std::string headers = "HTTP/1.0 200 OK\n";
+  handle->CallWillProcessResponseForTesting(
+      main_rfh(),
+      net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()), false,
+      net::ProxyServer::FromPacString(kProxyPac));
+  auto data = drp_chrome_settings_->CreateDataFromNavigationHandle(
+      handle.get(), handle->GetResponseHeaders());
+
+  EXPECT_TRUE(data->used_data_reduction_proxy());
+}
+
+TEST_F(DataReductionProxyChromeSettingsTest, CreateDataCachedResponse) {
+  std::unique_ptr<content::NavigationHandle> handle =
+      content::NavigationHandle::CreateNavigationHandleForTesting(GURL(kUrl),
+                                                                  main_rfh());
+  std::string headers = "HTTP/1.0 200 OK\nchrome-proxy: foo\n";
+  handle->CallWillProcessResponseForTesting(
+      main_rfh(),
+      net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()), true,
+      net::ProxyServer::Direct());
+  auto data = drp_chrome_settings_->CreateDataFromNavigationHandle(
+      handle.get(), handle->GetResponseHeaders());
+
+  EXPECT_TRUE(data->was_cached_data_reduction_proxy_response());
+}
+
+TEST_F(DataReductionProxyChromeSettingsTest, CreateDataWithLitePage) {
+  std::unique_ptr<content::NavigationHandle> handle =
+      content::NavigationHandle::CreateNavigationHandleForTesting(GURL(kUrl),
+                                                                  main_rfh());
+  std::string headers =
+      "HTTP/1.0 200 OK\n"
+      "chrome-proxy-content-transform: lite-page\n";
+  handle->CallWillProcessResponseForTesting(
+      main_rfh(),
+      net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()), false,
+      net::ProxyServer::Direct());
+  auto data = drp_chrome_settings_->CreateDataFromNavigationHandle(
+      handle.get(), handle->GetResponseHeaders());
+
+  EXPECT_TRUE(data->lite_page_received());
+  EXPECT_FALSE(data->lofi_received());
+  EXPECT_FALSE(data->lofi_policy_received());
+}
+
+TEST_F(DataReductionProxyChromeSettingsTest, CreateDataWithLofiPolicyReceived) {
+  std::unique_ptr<content::NavigationHandle> handle =
+      content::NavigationHandle::CreateNavigationHandleForTesting(GURL(kUrl),
+                                                                  main_rfh());
+  std::string headers =
+      "HTTP/1.0 200 OK\n"
+      "chrome-proxy: page-policies=empty-image\n";
+  handle->CallWillProcessResponseForTesting(
+      main_rfh(),
+      net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()), false,
+      net::ProxyServer::Direct());
+  auto data = drp_chrome_settings_->CreateDataFromNavigationHandle(
+      handle.get(), handle->GetResponseHeaders());
+
+  EXPECT_FALSE(data->lite_page_received());
+  EXPECT_FALSE(data->lofi_received());
+  EXPECT_TRUE(data->lofi_policy_received());
+}
+
+TEST_F(DataReductionProxyChromeSettingsTest, CreateDataWithLofiReceived) {
+  std::unique_ptr<content::NavigationHandle> handle =
+      content::NavigationHandle::CreateNavigationHandleForTesting(GURL(kUrl),
+                                                                  main_rfh());
+  std::string headers =
+      "HTTP/1.0 200 OK\n"
+      "chrome-proxy-content-transform: empty-image\n";
+  handle->CallWillProcessResponseForTesting(
+      main_rfh(),
+      net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()), false,
+      net::ProxyServer::Direct());
+  auto data = drp_chrome_settings_->CreateDataFromNavigationHandle(
+      handle.get(), handle->GetResponseHeaders());
+
+  EXPECT_FALSE(data->lite_page_received());
+  EXPECT_TRUE(data->lofi_received());
+  EXPECT_FALSE(data->lofi_policy_received());
 }

@@ -857,4 +857,90 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkHyperlink) {
   g_object_unref(root_obj);
 }
 
+//
+// AtkText interface
+//
+//
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextCharacterGranularity) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kTextField;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kValue,
+                          "A decently long string \xE2\x98\xBA with an emoji.");
+  Init(root);
+
+  AtkObject* root_obj(GetRootAtkObject());
+  ASSERT_TRUE(ATK_IS_OBJECT(root_obj));
+  g_object_ref(root_obj);
+
+  ASSERT_TRUE(ATK_IS_TEXT(root_obj));
+  AtkText* atk_text = ATK_TEXT(root_obj);
+
+  EXPECT_EQ(static_cast<gunichar>('d'),
+            atk_text_get_character_at_offset(atk_text, 2));
+  EXPECT_EQ(static_cast<gunichar>('A'),
+            atk_text_get_character_at_offset(atk_text, -1));
+  EXPECT_EQ(0u, atk_text_get_character_at_offset(atk_text, 42342));
+  EXPECT_EQ(0x263Au, atk_text_get_character_at_offset(atk_text, 23));
+  EXPECT_EQ(static_cast<gunichar>(' '),
+            atk_text_get_character_at_offset(atk_text, 24));
+
+  auto verify_text = [&](const char* expected_text, char* text,
+                         int expected_start, int expected_end, int start,
+                         int end) {
+    EXPECT_STREQ(expected_text, text);
+    EXPECT_EQ(start, expected_start);
+    EXPECT_EQ(end, expected_end);
+    g_free(text);
+  };
+
+  auto verify_text_at_offset = [&](const char* expected_text, int offset,
+                                   int expected_start, int expected_end) {
+    int start = 0, end = 0;
+    char* text = atk_text_get_text_at_offset(
+        atk_text, offset, ATK_TEXT_BOUNDARY_CHAR, &start, &end);
+    verify_text(expected_text, text, expected_start, expected_end, start, end);
+  };
+
+  verify_text_at_offset("d", 2, 2, 3);
+  verify_text_at_offset("A", -1, 0, 1);
+  verify_text_at_offset("", 42342, 39, 39);
+  verify_text_at_offset("\xE2\x98\xBA", 23, 23, 24);
+  verify_text_at_offset(" ", 24, 24, 25);
+
+  auto verify_text_after_offset = [&](const char* expected_text, int offset,
+                                      int expected_start, int expected_end) {
+    int start = 0, end = 0;
+    char* text = atk_text_get_text_after_offset(
+        atk_text, offset, ATK_TEXT_BOUNDARY_CHAR, &start, &end);
+    verify_text(expected_text, text, expected_start, expected_end, start, end);
+  };
+
+  verify_text_after_offset("d", 1, 2, 3);
+  verify_text_after_offset("", 42342, 39, 39);
+  verify_text_after_offset("\xE2\x98\xBA", 22, 23, 24);
+  verify_text_after_offset(" ", 23, 24, 25);
+
+  // This boundary condition is enforced by ATK for some reason.
+  verify_text_after_offset(nullptr, -1, 0, 0);
+
+  auto verify_text_before_offset = [&](const char* expected_text, int offset,
+                                       int expected_start, int expected_end) {
+    int start = 0, end = 0;
+    char* text = atk_text_get_text_before_offset(
+        atk_text, offset, ATK_TEXT_BOUNDARY_CHAR, &start, &end);
+    verify_text(expected_text, text, expected_start, expected_end, start, end);
+  };
+
+  verify_text_before_offset("d", 3, 2, 3);
+  verify_text_before_offset("", 42342, 39, 39);
+  verify_text_before_offset("\xE2\x98\xBA", 24, 23, 24);
+  verify_text_before_offset(" ", 25, 24, 25);
+
+  // This boundary condition is enforced by ATK for some reason.
+  verify_text_after_offset(nullptr, -1, 0, 0);
+
+  g_object_unref(root_obj);
+}
+
 }  // namespace ui

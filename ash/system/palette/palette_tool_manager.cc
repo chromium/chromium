@@ -82,9 +82,7 @@ const gfx::VectorIcon& PaletteToolManager::GetActiveTrayIcon(
     PaletteToolId tool_id) const {
   PaletteTool* tool = FindToolById(tool_id);
   if (!tool)
-    return chromeos::switches::ShouldUseShelfNewUi()
-               ? kPaletteTrayIconDefaultNewuiIcon
-               : kPaletteTrayIconDefaultIcon;
+    return kPaletteTrayIconDefaultNewuiIcon;
 
   return tool->GetActiveTrayIcon();
 }

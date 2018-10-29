@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/ui/ash/chrome_keyboard_controller_client.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
@@ -32,7 +33,6 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/keyboard/keyboard_controller.h"
 
 namespace chromeos {
 namespace input_method {
@@ -1041,12 +1041,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
 
-  auto keyboard_config = keyboard::KeyboardController::Get()->keyboard_config();
+  auto keyboard_config =
+      ChromeKeyboardControllerClient::Get()->GetKeyboardConfig();
   // Turn off these features, which are on by default.
   keyboard_config.auto_correct = false;
   keyboard_config.auto_complete = false;
   keyboard_config.spell_check = false;
-  keyboard::KeyboardController::Get()->UpdateKeyboardConfig(keyboard_config);
+  ChromeKeyboardControllerClient::Get()->SetKeyboardConfig(keyboard_config);
+
   extensions::ExtensionHost* host =
       extensions::ProcessManager::Get(profile())->GetBackgroundHostForExtension(
           extension_->id());

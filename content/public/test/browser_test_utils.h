@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
@@ -85,6 +86,19 @@ class NavigationHandle;
 class RenderWidgetHost;
 class RenderWidgetHostView;
 class WebContents;
+
+// Navigates |web_contents| to |url|, blocking until the navigation finishes.
+// Returns true if the page was loaded successfully and the last committed URL
+// matches |url|.  This is a browser-initiated navigation that simulates a user
+// typing |url| into the address bar.
+WARN_UNUSED_RESULT bool NavigateToURL(WebContents* web_contents,
+                                      const GURL& url);
+
+// Navigates |web_contents| to |url|, blocking until the given number of
+// navigations finishes.
+void NavigateToURLBlockUntilNavigationsComplete(WebContents* web_contents,
+                                                const GURL& url,
+                                                int number_of_navigations);
 
 // Navigate a frame with ID |iframe_id| to |url|, blocking until the navigation
 // finishes.  Uses a renderer-initiated navigation from script code in the
@@ -168,6 +182,12 @@ void SimulateRoutedMouseClickAt(WebContents* web_contents,
                                 int modifiers,
                                 blink::WebMouseEvent::Button button,
                                 const gfx::Point& point);
+
+// Simulates MouseDown at the center of the given RenderWidgetHost's area.
+// This does not send a corresponding MouseUp.
+void SendMouseDownToWidget(RenderWidgetHost* target,
+                           int modifiers,
+                           blink::WebMouseEvent::Button button);
 
 // Simulates asynchronously a mouse enter/move/leave event.
 void SimulateMouseEvent(WebContents* web_contents,
@@ -840,6 +860,12 @@ RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents);
 // Returns the RenderWidgetHost that holds the keyboard lock.
 RenderWidgetHost* GetKeyboardLockWidget(WebContents* web_contents);
 
+// Returns the RenderWidgetHost that holds mouse capture, if any. This is
+// distinct from MouseLock above in that it is a widget that has requested
+// implicit capture, such as during a drag. MouseLock is explicitly gained
+// through the JavaScript API.
+RenderWidgetHost* GetMouseCaptureWidget(WebContents* web_contents);
+
 // Allows tests to drive keyboard lock functionality without requiring access
 // to the RenderWidgetHostImpl header or setting up an HTTP test server.
 // |codes| represents the set of keys to lock.  If |codes| has no value, then
@@ -852,6 +878,10 @@ void CancelKeyboardLock(WebContents* web_contents);
 // Returns true if inner |interstitial_page| is connected to an outer
 // WebContents.
 bool IsInnerInterstitialPageConnected(InterstitialPage* interstitial_page);
+
+// Returns the screen orientation provider that's been set via
+// WebContents::SetScreenOrientationDelegate(). May return null.
+ScreenOrientationDelegate* GetScreenOrientationDelegate();
 
 // Returns all the RenderWidgetHostViews inside the |web_contents| that are
 // registered in the RenderWidgetHostInputEventRouter.
@@ -1439,7 +1469,7 @@ class PwnMessageHelper {
                               std::string blob_uuid,
                               int64_t position);
 
-  // Sends ViewHostMsg_LockMouse
+  // Sends WidgetHostMsg_LockMouse
   static void LockMouse(RenderProcessHost* process,
                         int routing_id,
                         bool user_gesture,

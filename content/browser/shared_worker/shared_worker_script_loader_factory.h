@@ -16,7 +16,6 @@ class SharedURLLoaderFactory;
 namespace content {
 
 class AppCacheHost;
-class ServiceWorkerContextWrapper;
 class ServiceWorkerProviderHost;
 class SharedWorkerScriptLoader;
 class ResourceContext;
@@ -41,7 +40,6 @@ class SharedWorkerScriptLoaderFactory
   // factories used for non-http(s) URLs, e.g., a chrome-extension:// URL.
   SharedWorkerScriptLoaderFactory(
       int process_id,
-      ServiceWorkerContextWrapper* context,
       base::WeakPtr<ServiceWorkerProviderHost> provider_host,
       base::WeakPtr<AppCacheHost> appcache_host,
       ResourceContext* resource_context,
@@ -59,7 +57,9 @@ class SharedWorkerScriptLoaderFactory
                                 traffic_annotation) override;
   void Clone(network::mojom::URLLoaderFactoryRequest request) override;
 
-  base::Optional<SubresourceLoaderParams> TakeSubresourceLoaderParams();
+  base::WeakPtr<SharedWorkerScriptLoader> GetScriptLoader() {
+    return script_loader_;
+  }
 
  private:
   const int process_id_;

@@ -6,8 +6,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/common/content_features.h"
 #include "content/renderer/p2p/socket_dispatcher.h"
 #include "jingle/glue/utils.h"
 
@@ -30,9 +32,12 @@ void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
 
   state_ = STATE_SENT;
   done_callback_ = done_callback;
-  dispatcher_->GetP2PSocketManager()->GetHostAddress(
-      host_name.hostname(), base::BindOnce(&P2PAsyncAddressResolver::OnResponse,
-                                           base::Unretained(this)));
+  bool enable_mdns =
+      base::FeatureList::IsEnabled(features::kWebRtcHideLocalIpsWithMdns);
+  dispatcher_->GetP2PSocketManager()->get()->GetHostAddress(
+      host_name.hostname(), enable_mdns,
+      base::BindOnce(&P2PAsyncAddressResolver::OnResponse,
+                     base::Unretained(this)));
 }
 
 void P2PAsyncAddressResolver::Cancel() {

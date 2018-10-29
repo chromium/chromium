@@ -69,7 +69,7 @@ struct NamedColor {
 PLATFORM_EXPORT const NamedColor* FindColor(const char* str, unsigned len);
 
 class PLATFORM_EXPORT Color {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   Color() : color_(Color::kTransparent) {}
@@ -96,10 +96,6 @@ class PLATFORM_EXPORT Color {
   // Returns the color serialized according to HTML5:
   // http://www.whatwg.org/specs/web-apps/current-work/#serialization-of-a-color
   String Serialized() const;
-
-  // Returns the color serialized according to CSSOM:
-  // https://drafts.csswg.org/cssom/#serialize-a-css-component-value
-  String SerializedAsCSSComponentValue() const;
 
   // Returns the color serialized as either #RRGGBB or #RRGGBBAA. The latter
   // format is not a valid CSS color, and should only be seen in DRT dumps.

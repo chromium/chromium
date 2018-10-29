@@ -29,6 +29,8 @@
 #include "content/browser/cache_storage/cache_storage_blob_to_disk_cache.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "content/browser/cache_storage/cache_storage_cache_observer.h"
+#include "content/browser/cache_storage/cache_storage_histogram_utils.h"
+#include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
 #include "content/browser/cache_storage/cache_storage_scheduler.h"
 #include "content/public/browser/browser_thread.h"
@@ -149,9 +151,8 @@ bool VaryMatches(const ServiceWorkerHeaderMap& request,
     if (trimmed == "*")
       return false;
 
-    ServiceWorkerHeaderMap::const_iterator request_iter = request.find(trimmed);
-    ServiceWorkerHeaderMap::const_iterator cached_request_iter =
-        cached_request.find(trimmed);
+    auto request_iter = request.find(trimmed);
+    auto cached_request_iter = cached_request.find(trimmed);
 
     // If the header exists in one but not the other, no match.
     if ((request_iter == request.end()) !=
@@ -570,7 +571,8 @@ void CacheStorageCache::Match(
     blink::mojom::QueryParamsPtr match_params,
     ResponseCallback callback) {
   if (backend_state_ == BACKEND_CLOSED) {
-    std::move(callback).Run(CacheStorageError::kErrorStorage, nullptr);
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kMatchBackendClosed), nullptr);
     return;
   }
 
@@ -585,8 +587,9 @@ void CacheStorageCache::MatchAll(
     blink::mojom::QueryParamsPtr match_params,
     ResponsesCallback callback) {
   if (backend_state_ == BACKEND_CLOSED) {
-    std::move(callback).Run(CacheStorageError::kErrorStorage,
-                            std::vector<blink::mojom::FetchAPIResponsePtr>());
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kMatchAllBackendClosed),
+        std::vector<blink::mojom::FetchAPIResponsePtr>());
     return;
   }
 
@@ -604,7 +607,9 @@ void CacheStorageCache::WriteSideData(ErrorCallback callback,
   if (backend_state_ == BACKEND_CLOSED) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), CacheStorageError::kErrorStorage));
+        base::BindOnce(
+            std::move(callback),
+            MakeErrorStorage(ErrorStorageType::kWriteSideDataBackendClosed)));
     return;
   }
 
@@ -630,10 +635,12 @@ void CacheStorageCache::BatchOperation(
 
   if (backend_state_ == BACKEND_CLOSED) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  CacheStorageVerboseError::New(
-                                      CacheStorageError::kErrorStorage,
-                                      std::move(message))));
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            CacheStorageVerboseError::New(
+                MakeErrorStorage(ErrorStorageType::kBatchBackendClosed),
+                std::move(message))));
     return;
   }
 
@@ -693,10 +700,12 @@ void CacheStorageCache::BatchOperation(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(bad_message_callback));
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  CacheStorageVerboseError::New(
-                                      CacheStorageError::kErrorStorage,
-                                      std::move(message))));
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            CacheStorageVerboseError::New(
+                MakeErrorStorage(ErrorStorageType::kBatchInvalidSpace),
+                std::move(message))));
     return;
   }
   uint64_t space_required = safe_space_required.ValueOrDie();
@@ -743,10 +752,13 @@ void CacheStorageCache::BatchDidGetUsageAndQuota(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(bad_message_callback));
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  CacheStorageVerboseError::New(
-                                      CacheStorageError::kErrorStorage,
-                                      std::move(message))));
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            CacheStorageVerboseError::New(
+                MakeErrorStorage(
+                    ErrorStorageType::kBatchDidGetUsageAndQuotaInvalidSpace),
+                std::move(message))));
     return;
   }
   if (status_code != blink::mojom::QuotaStatusCode::kOk ||
@@ -797,7 +809,8 @@ void CacheStorageCache::BatchDidGetUsageAndQuota(
         NOTREACHED();
         // TODO(nhiroki): This should return "TypeError".
         // http://crbug.com/425505
-        completion_callback.Run(CacheStorageError::kErrorStorage);
+        completion_callback.Run(MakeErrorStorage(
+            ErrorStorageType::kBatchDidGetUsageAndQuotaUndefinedOp));
         break;
     }
   }
@@ -831,7 +844,8 @@ void CacheStorageCache::Keys(std::unique_ptr<ServiceWorkerFetchRequest> request,
                              blink::mojom::QueryParamsPtr options,
                              RequestsCallback callback) {
   if (backend_state_ == BACKEND_CLOSED) {
-    std::move(callback).Run(CacheStorageError::kErrorStorage, nullptr);
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kKeysBackendClosed), nullptr);
     return;
   }
 
@@ -915,7 +929,7 @@ CacheStorageCache::CacheStorageCache(
       cache_observer_(nullptr),
       memory_only_(path.empty()),
       weak_ptr_factory_(this) {
-  DCHECK(!origin_.unique());
+  DCHECK(!origin_.opaque());
   DCHECK(quota_manager_proxy_.get());
   DCHECK(cache_padding_key_.get());
 
@@ -937,11 +951,13 @@ void CacheStorageCache::QueryCache(
       QUERY_CACHE_ENTRIES | QUERY_CACHE_RESPONSES_WITH_BODIES,
       query_types & (QUERY_CACHE_ENTRIES | QUERY_CACHE_RESPONSES_WITH_BODIES));
   if (backend_state_ == BACKEND_CLOSED) {
-    std::move(callback).Run(CacheStorageError::kErrorStorage, nullptr);
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kQueryCacheBackendClosed), nullptr);
     return;
   }
 
-  if ((!options || !options->ignore_method) && request &&
+  if (owner_ != CacheStorageOwner::kBackgroundFetch &&
+      (!options || !options->ignore_method) && request &&
       !request->method.empty() && request->method != "GET") {
     std::move(callback).Run(CacheStorageError::kSuccess,
                             std::make_unique<QueryCacheResults>());
@@ -1029,7 +1045,7 @@ void CacheStorageCache::QueryCacheFilterEntry(
 
   if (rv < 0) {
     std::move(query_cache_context->callback)
-        .Run(CacheStorageError::kErrorStorage,
+        .Run(MakeErrorStorage(ErrorStorageType::kQueryCacheFilterEntryFailed),
              std::move(query_cache_context->matches));
     return;
   }
@@ -1131,7 +1147,9 @@ void CacheStorageCache::QueryCacheDidReadMetadata(
 
     if (!blob_storage_context_) {
       std::move(query_cache_context->callback)
-          .Run(CacheStorageError::kErrorStorage, nullptr);
+          .Run(MakeErrorStorage(
+                   ErrorStorageType::kQueryCacheDidReadMetadataNullBlobContext),
+               nullptr);
       return;
     }
 
@@ -1218,8 +1236,9 @@ void CacheStorageCache::MatchAllImpl(
     ResponsesCallback callback) {
   DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
   if (backend_state_ != BACKEND_OPEN) {
-    std::move(callback).Run(CacheStorageError::kErrorStorage,
-                            std::vector<blink::mojom::FetchAPIResponsePtr>());
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kStorageMatchAllBackendClosed),
+        std::vector<blink::mojom::FetchAPIResponsePtr>());
     return;
   }
 
@@ -1281,7 +1300,8 @@ void CacheStorageCache::WriteSideDataImpl(ErrorCallback callback,
                                           int buf_len) {
   DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
   if (backend_state_ != BACKEND_OPEN) {
-    std::move(callback).Run(CacheStorageError::kErrorStorage);
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kWriteSideDataImplBackendClosed));
     return;
   }
 
@@ -1438,7 +1458,8 @@ void CacheStorageCache::Put(std::unique_ptr<ServiceWorkerFetchRequest> request,
 void CacheStorageCache::PutImpl(std::unique_ptr<PutContext> put_context) {
   DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
   if (backend_state_ != BACKEND_OPEN) {
-    std::move(put_context->callback).Run(CacheStorageError::kErrorStorage);
+    std::move(put_context->callback)
+        .Run(MakeErrorStorage(ErrorStorageType::kPutImplBackendClosed));
     return;
   }
 
@@ -1464,7 +1485,9 @@ void CacheStorageCache::PutDidDeleteEntry(
     std::unique_ptr<PutContext> put_context,
     CacheStorageError error) {
   if (backend_state_ != BACKEND_OPEN) {
-    std::move(put_context->callback).Run(CacheStorageError::kErrorStorage);
+    std::move(put_context->callback)
+        .Run(MakeErrorStorage(
+            ErrorStorageType::kPutDidDeleteEntryBackendClosed));
     return;
   }
 
@@ -1540,7 +1563,8 @@ void CacheStorageCache::PutDidCreateEntry(
 
   std::unique_ptr<std::string> serialized(new std::string());
   if (!metadata.SerializeToString(serialized.get())) {
-    std::move(put_context->callback).Run(CacheStorageError::kErrorStorage);
+    std::move(put_context->callback)
+        .Run(MakeErrorStorage(ErrorStorageType::kMetadataSerializationFailed));
     return;
   }
 
@@ -1570,7 +1594,8 @@ void CacheStorageCache::PutDidWriteHeaders(
     int rv) {
   if (rv != expected_bytes) {
     put_context->cache_entry->Doom();
-    std::move(put_context->callback).Run(CacheStorageError::kErrorStorage);
+    std::move(put_context->callback)
+        .Run(MakeErrorStorage(ErrorStorageType::kPutDidWriteHeadersWrongBytes));
     return;
   }
 
@@ -1635,7 +1660,8 @@ void CacheStorageCache::PutDidWriteBlobToCache(
 
   if (!success) {
     put_context->cache_entry->Doom();
-    std::move(put_context->callback).Run(CacheStorageError::kErrorStorage);
+    std::move(put_context->callback)
+        .Run(MakeErrorStorage(ErrorStorageType::kPutDidWriteBlobToCacheFailed));
     return;
   }
 
@@ -1738,6 +1764,61 @@ void CacheStorageCache::UpdateCacheSizeGotSize(
   std::move(callback).Run();
 }
 
+void CacheStorageCache::GetAllMatchedEntries(
+    std::unique_ptr<ServiceWorkerFetchRequest> request,
+    blink::mojom::QueryParamsPtr options,
+    CacheEntriesCallback callback) {
+  if (backend_state_ == BACKEND_CLOSED) {
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kKeysBackendClosed), {});
+    return;
+  }
+
+  scheduler_->ScheduleOperation(base::BindOnce(
+      &CacheStorageCache::GetAllMatchedEntriesImpl,
+      weak_ptr_factory_.GetWeakPtr(), std::move(request), std::move(options),
+      scheduler_->WrapCallbackToRunNext(std::move(callback))));
+}
+
+void CacheStorageCache::GetAllMatchedEntriesImpl(
+    std::unique_ptr<ServiceWorkerFetchRequest> request,
+    blink::mojom::QueryParamsPtr options,
+    CacheEntriesCallback callback) {
+  DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
+  if (backend_state_ != BACKEND_OPEN) {
+    std::move(callback).Run(
+        MakeErrorStorage(
+            ErrorStorageType::kStorageGetAllMatchedEntriesBackendClosed),
+        {});
+    return;
+  }
+
+  QueryCache(
+      std::move(request), std::move(options),
+      QUERY_CACHE_REQUESTS | QUERY_CACHE_RESPONSES_WITH_BODIES,
+      base::BindOnce(&CacheStorageCache::GetAllMatchedEntriesDidQueryCache,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CacheStorageCache::GetAllMatchedEntriesDidQueryCache(
+    CacheEntriesCallback callback,
+    blink::mojom::CacheStorageError error,
+    std::unique_ptr<QueryCacheResults> query_cache_results) {
+  if (error != CacheStorageError::kSuccess) {
+    std::move(callback).Run(error, {});
+    return;
+  }
+
+  std::vector<CacheEntry> entries;
+  entries.reserve(query_cache_results->size());
+
+  for (auto& result : *query_cache_results) {
+    entries.emplace_back(std::move(result.request), std::move(result.response));
+  }
+
+  std::move(callback).Run(CacheStorageError::kSuccess, std::move(entries));
+}
+
 void CacheStorageCache::Delete(blink::mojom::BatchOperationPtr operation,
                                ErrorCallback callback) {
   DCHECK(BACKEND_OPEN == backend_state_ || initializing_);
@@ -1761,7 +1842,8 @@ void CacheStorageCache::DeleteImpl(
     ErrorCallback callback) {
   DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
   if (backend_state_ != BACKEND_OPEN) {
-    std::move(callback).Run(CacheStorageError::kErrorStorage);
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kDeleteImplBackendClosed));
     return;
   }
 
@@ -1806,7 +1888,8 @@ void CacheStorageCache::KeysImpl(
     RequestsCallback callback) {
   DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
   if (backend_state_ != BACKEND_OPEN) {
-    std::move(callback).Run(CacheStorageError::kErrorStorage, nullptr);
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kKeysImplBackendClosed), nullptr);
     return;
   }
 
@@ -1908,7 +1991,8 @@ void CacheStorageCache::CreateBackendDidCreate(
     std::unique_ptr<ScopedBackendPtr> backend_ptr,
     int rv) {
   if (rv != net::OK) {
-    std::move(callback).Run(CacheStorageError::kErrorStorage);
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kCreateBackendDidCreateFailed));
     return;
   }
 

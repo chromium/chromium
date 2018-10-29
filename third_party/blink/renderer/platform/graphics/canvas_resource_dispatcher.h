@@ -49,12 +49,14 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void DispatchFrame(scoped_refptr<CanvasResource>,
                      base::TimeTicks commit_start_time,
                      const SkIRect& damage_rect,
-                     bool needs_vertical_flip);
+                     bool needs_vertical_flip,
+                     bool is_opaque);
   void ReclaimResource(viz::ResourceId);
   void DispatchFrameSync(scoped_refptr<CanvasResource>,
                          base::TimeTicks commit_start_time,
                          const SkIRect& damage_rect,
-                         bool needs_vertical_flip);
+                         bool needs_vertical_flip,
+                         bool is_opaque);
 
   void Reshape(const IntSize&);
 
@@ -91,6 +93,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
                     base::TimeTicks commit_start_time,
                     const SkIRect& damage_rect,
                     bool needs_vertical_flip,
+                    bool is_opaque,
                     viz::CompositorFrame* frame);
 
   // Surface-related

@@ -11,6 +11,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -49,8 +50,8 @@ void CacheStorageContextImpl::Init(
     return;
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CacheStorageContextImpl::CreateCacheStorageManager, this,
                      user_data_directory, cache_task_runner,
                      std::move(quota_manager_proxy)));
@@ -59,8 +60,8 @@ void CacheStorageContextImpl::Init(
 void CacheStorageContextImpl::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CacheStorageContextImpl::ShutdownOnIO, this));
 }
 
@@ -81,17 +82,19 @@ void CacheStorageContextImpl::SetBlobParametersForCache(
 }
 
 void CacheStorageContextImpl::GetAllOriginsInfo(
-    const CacheStorageContext::GetUsageInfoCallback& callback) {
+    CacheStorageContext::GetUsageInfoCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!cache_manager_) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
-        base::BindOnce(callback, std::vector<CacheStorageUsageInfo>()));
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
+        base::BindOnce(std::move(callback),
+                       std::vector<CacheStorageUsageInfo>()));
     return;
   }
 
-  cache_manager_->GetAllOriginsUsage(CacheStorageOwner::kCacheAPI, callback);
+  cache_manager_->GetAllOriginsUsage(CacheStorageOwner::kCacheAPI,
+                                     std::move(callback));
 }
 
 void CacheStorageContextImpl::DeleteForOrigin(const GURL& origin) {

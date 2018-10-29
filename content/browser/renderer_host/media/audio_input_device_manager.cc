@@ -11,7 +11,9 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/media_stream_request.h"
 #include "media/audio/audio_input_ipc.h"
@@ -57,7 +59,7 @@ AudioInputDeviceManager::~AudioInputDeviceManager() {
 const MediaStreamDevice* AudioInputDeviceManager::GetOpenedDeviceById(
     int session_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  MediaStreamDevices::iterator device = GetDevice(session_id);
+  auto device = GetDevice(session_id);
   if (device == devices_.end())
     return nullptr;
 
@@ -115,7 +117,7 @@ int AudioInputDeviceManager::Open(const MediaStreamDevice& device) {
 
 void AudioInputDeviceManager::Close(int session_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  MediaStreamDevices::iterator device = GetDevice(session_id);
+  auto device = GetDevice(session_id);
   if (device == devices_.end())
     return;
   const MediaStreamType stream_type = device->type;
@@ -124,8 +126,8 @@ void AudioInputDeviceManager::Close(int session_id) {
 
   // Post a callback through the listener on IO thread since
   // MediaStreamManager is expecting the callback asynchronously.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&AudioInputDeviceManager::ClosedOnIOThread, this,
                      stream_type, session_id));
 }
@@ -155,8 +157,8 @@ void AudioInputDeviceManager::KeyboardMicRegistration::DeregisterIfNeeded() {
     --*shared_registration_count_;
     DCHECK_GE(*shared_registration_count_, 0);
     if (*shared_registration_count_ == 0) {
-      BrowserThread::PostTask(
-          BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
           base::BindOnce(&SetKeyboardMicStreamActiveOnUIThread, false));
     }
   }
@@ -172,8 +174,8 @@ void AudioInputDeviceManager::RegisterKeyboardMicStream(
 
   ++keyboard_mic_streams_count_;
   if (keyboard_mic_streams_count_ == 1) {
-    BrowserThread::PostTaskAndReply(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraitsAndReply(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&SetKeyboardMicStreamActiveOnUIThread, true),
         base::BindOnce(std::move(callback),
                        KeyboardMicRegistration(&keyboard_mic_streams_count_)));
@@ -221,8 +223,7 @@ void AudioInputDeviceManager::ClosedOnIOThread(MediaStreamType stream_type,
 
 MediaStreamDevices::iterator AudioInputDeviceManager::GetDevice(
     int session_id) {
-  for (MediaStreamDevices::iterator it = devices_.begin(); it != devices_.end();
-       ++it) {
+  for (auto it = devices_.begin(); it != devices_.end(); ++it) {
     if (it->session_id == session_id)
       return it;
   }

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<div style="margin: 100px; width: 300px; transform: rotate(45deg)">
+  <div style="position: absolute; width: 200px; height: 22px; background: yellow; z-index: 1; will-change: transform"></div>
+  <div style="width: 100px; height: 100px; overflow: hidden">
+    <div style="position: relative; width: 200px; height: 100px; background: green; will-change: transform"></div>
+    <div style="position: relative; top: -100px; z-index: 2; width: 50px; height: 200px; background: red; will-change: transform"></div>
+  </div>
+</div>
+<script>
+if (window.testRunner)
+  testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
+</script>

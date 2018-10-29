@@ -2151,7 +2151,7 @@ class TestOverlayProcessor : public OverlayProcessor {
     MOCK_METHOD6(Attempt,
                  bool(const SkMatrix44& output_color_matrix,
                       const OverlayProcessor::FilterOperationsMap&
-                          render_pass_background_filters,
+                          render_pass_backdrop_filters,
                       DisplayResourceProvider* resource_provider,
                       RenderPass* render_pass,
                       OverlayCandidateList* candidates,
@@ -2955,7 +2955,7 @@ class ContentBoundsOverlayProcessor : public OverlayProcessor {
 
     bool Attempt(const SkMatrix44& output_color_matrix,
                  const OverlayProcessor::FilterOperationsMap&
-                     render_pass_background_filters,
+                     render_pass_backdrop_filters,
                  DisplayResourceProvider* resource_provider,
                  RenderPass* render_pass,
                  OverlayCandidateList* candidates,
@@ -4145,10 +4145,6 @@ TEST_F(GLRendererWithGpuFenceTest, GpuFenceIdIsUsedWithoutRootRenderPass) {
                        uv_top_left, uv_bottom_right, SK_ColorTRANSPARENT,
                        vertex_opacity, flipped, nearest_neighbor, false);
 
-  EXPECT_CALL(overlay_scheduler,
-              Schedule(0, gfx::OVERLAY_TRANSFORM_NONE, kSurfaceOverlayTextureId,
-                       gfx::Rect(viewport_size), _, _, kGpuFenceId))
-      .Times(1);
   EXPECT_CALL(overlay_scheduler,
               Schedule(1, gfx::OVERLAY_TRANSFORM_NONE, _,
                        gfx::Rect(viewport_size), _, _, kGpuFenceId))

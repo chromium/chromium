@@ -4,8 +4,10 @@
 
 #include "chrome/browser/chromeos/login/signin/merge_session_resource_throttle.h"
 
+#include "base/task/post_task.h"
 #include "chrome/browser/chromeos/login/signin/merge_session_throttling_utils.h"
 #include "chrome/browser/chromeos/login/signin/merge_session_xhr_request_waiter.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/resource_request_info.h"
@@ -36,7 +38,7 @@ void DelayXHRLoadOnUIThread(
     (new chromeos::MergeSessionXHRRequestWaiter(profile, callback))
         ->StartWaiting();
   } else {
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE, callback);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO}, callback);
   }
 }
 
@@ -60,8 +62,8 @@ bool MergeSessionResourceThrottle::MaybeDeferLoading(const GURL& url) {
   DVLOG(1) << "MergeSessionResourceThrottle: defer " << url;
   const content::ResourceRequestInfo* info =
       content::ResourceRequestInfo::ForRequest(request_);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &DelayXHRLoadOnUIThread, info->GetWebContentsGetterForRequest(), url,
           base::Bind(&MergeSessionResourceThrottle::OnBlockingPageComplete,

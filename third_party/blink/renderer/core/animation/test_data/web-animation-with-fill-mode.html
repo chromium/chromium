@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<style>
+.target {
+  width: 10px;
+  height: 10px;
+  background: red;
+}
+
+.positioned {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 10px;
+  width: 10px;
+  background: lime;
+}
+</style>
+<div id="target1" class="target">
+  <div class="positioned"></div>
+</div>
+<div id="target2" class="target">
+  <div class="positioned"></div>
+</div>
+<div id="target3" class="target">
+  <div class="positioned"></div>
+</div>
+<div id="target4" class="target">
+  <div class="positioned"></div>
+</div>
+
+<script>
+var keyframe1 = {opacity: [1, 0.2]};
+var keyframe2 = {transform: ['rotate(20deg)', 'none']};
+var option1 = {fill: 'both', duration: 0};
+var option2 = {fill: 'none', duration: 0};
+
+var target1 = document.getElementById('target1');
+target1.animate(keyframe1, option1);
+
+var target2 = document.getElementById('target2');
+target2.animate(keyframe2, option1);
+
+var target3 = document.getElementById('target3');
+target3.animate(keyframe2, option1);
+target3.animate(keyframe1, option2);
+
+var target4 = document.getElementById('target4');
+target4.animate(keyframe2, option2);
+target4.animate(keyframe1, option1);
+</script>
+</html>

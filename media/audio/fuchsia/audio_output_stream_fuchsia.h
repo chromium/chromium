@@ -61,7 +61,7 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
   AudioManagerFuchsia* manager_;
   AudioParameters parameters_;
 
-  fuchsia::media::AudioOutPtr audio_out_;
+  fuchsia::media::AudioRendererPtr audio_renderer_;
 
   // |audio_bus_| is used only in PumpSamples(). It is kept here to avoid
   // reallocating the memory every time.

@@ -45,14 +45,9 @@ void WindowTreeClientPrivate::OnEmbed(ws::mojom::WindowTree* window_tree) {
                                  base::nullopt);
 }
 
-void WindowTreeClientPrivate::CallOnPointerEventObserved(
-    Window* window,
+void WindowTreeClientPrivate::CallOnObservedInputEvent(
     std::unique_ptr<ui::Event> event) {
-  const int64_t display_id = 0;
-  const uint32_t window_id =
-      window ? WindowPortMus::Get(window)->server_id() : 0u;
-  tree_client_impl_->OnPointerEventObserved(std::move(event), window_id,
-                                            display_id);
+  tree_client_impl_->OnObservedInputEvent(std::move(event));
 }
 
 void WindowTreeClientPrivate::CallOnCaptureChanged(Window* new_capture,
@@ -74,8 +69,8 @@ void WindowTreeClientPrivate::SetTree(ws::mojom::WindowTree* window_tree) {
   tree_client_impl_->WindowTreeConnectionEstablished(window_tree);
 }
 
-bool WindowTreeClientPrivate::HasPointerWatcher() {
-  return tree_client_impl_->has_pointer_watcher_;
+bool WindowTreeClientPrivate::HasEventObserver() {
+  return !tree_client_impl_->event_type_to_observer_count_.empty();
 }
 
 Window* WindowTreeClientPrivate::GetWindowByServerId(ws::Id id) {

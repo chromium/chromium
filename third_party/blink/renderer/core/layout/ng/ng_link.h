@@ -12,12 +12,27 @@
 
 namespace blink {
 
+// We use this struct to store NGLinks in a flexible array in fragments. We have
+// to use this struct instead of using NGLink because flexible array members
+// cannot have destructors, so we need to do manual refcounting.
+struct NGLinkStorage {
+  NGPhysicalOffset Offset() const { return offset; }
+  const NGPhysicalFragment* get() const { return fragment; }
+
+  operator bool() const { return fragment; }
+  const NGPhysicalFragment& operator*() const { return *fragment; }
+  const NGPhysicalFragment* operator->() const { return fragment; }
+
+  const NGPhysicalFragment* fragment;
+  NGPhysicalOffset offset;
+};
+
 // Class representing the offset of a child fragment relative to the
 // parent fragment. Fragments themselves have no position information
 // allowing entire fragment subtrees to be reused and cached regardless
 // of placement.
 class CORE_EXPORT NGLink {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   NGLink() = default;
@@ -26,6 +41,8 @@ class CORE_EXPORT NGLink {
       : fragment_(std::move(fragment)), offset_(offset) {}
   NGLink(NGLink&& o) noexcept
       : fragment_(std::move(o.fragment_)), offset_(o.offset_) {}
+  NGLink(const NGLinkStorage& storage)
+      : fragment_(storage.fragment), offset_(storage.offset) {}
   ~NGLink() = default;
   NGLink(const NGLink&) = default;
   NGLink& operator=(const NGLink&) = default;
@@ -46,8 +63,6 @@ class CORE_EXPORT NGLink {
   // The builder classes needs to set the offset_ field during
   // fragment construciton to allow the child vector to be moved
   // instead of reconstructed during fragment construction.
-  friend class NGFragmentBuilder;
-  friend class NGLineBoxFragmentBuilder;
   friend class NGLayoutResult;
 };
 

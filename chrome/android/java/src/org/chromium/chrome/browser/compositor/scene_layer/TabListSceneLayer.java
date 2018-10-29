@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.scene_layer;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.RectF;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -65,6 +66,9 @@ public class TabListSceneLayer extends SceneLayer {
                 viewport.top, viewport.width(), viewport.height(), layerTitleCache,
                 tabContentManager, resourceManager);
 
+        boolean isHTSEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID);
+
         for (int i = 0; i < tabsCount; i++) {
             LayoutTab t = tabs[i];
             assert t.isVisible() : "LayoutTab in that list should be visible";
@@ -72,20 +76,24 @@ public class TabListSceneLayer extends SceneLayer {
 
             float shadowAlpha = decoration / 2;
             int urlBarBackgroundId = R.drawable.modern_location_bar;
+            boolean useLightIcon = t.isIncognito() && !isHTSEnabled;
 
-            int defaultThemeColor = ColorUtils.getDefaultThemeColor(res, t.isIncognito());
+            int defaultThemeColor = ColorUtils.getDefaultThemeColor(res, useLightIcon);
 
             // In the modern design, the text box is always drawn opaque in the compositor.
             float textBoxAlpha = 1.f;
 
-            int closeButtonColor =
-                    ColorUtils.getThemedAssetColor(defaultThemeColor, t.isIncognito());
+            int closeButtonColor = useLightIcon
+                    ? Color.WHITE
+                    : ApiCompatibilityUtils.getColor(res, R.color.light_icon_color);
+            float closeButtonSizePx =
+                    res.getDimensionPixelSize(R.dimen.tab_switcher_close_button_size);
 
             int borderColorResource =
                     t.isIncognito() ? R.color.tab_back_incognito : R.color.tab_back;
             // TODO(dtrainor, clholgat): remove "* dpToPx" once the native part fully supports dp.
             nativePutTabLayer(mNativePtr, t.getId(), R.id.control_container,
-                    R.drawable.btn_close_white, R.drawable.tabswitcher_border_frame_shadow,
+                    R.drawable.btn_delete_24dp, R.drawable.tabswitcher_border_frame_shadow,
                     R.drawable.tabswitcher_border_frame_decoration, R.drawable.logo_card_back,
                     R.drawable.tabswitcher_border_frame,
                     R.drawable.tabswitcher_border_frame_inner_shadow, t.canUseLiveTexture(),
@@ -101,13 +109,13 @@ public class TabListSceneLayer extends SceneLayer {
                     t.getTiltX(), t.getTiltY(), t.getAlpha(), t.getBorderAlpha() * decoration,
                     t.getBorderInnerShadowAlpha() * decoration, decoration, shadowAlpha,
                     t.getBorderCloseButtonAlpha() * decoration,
-                    LayoutTab.CLOSE_BUTTON_WIDTH_DP * dpToPx, t.getStaticToViewBlend(),
-                    t.getBorderScale(), t.getSaturation(), t.getBrightness(), t.showToolbar(),
-                    defaultThemeColor, t.getToolbarBackgroundColor(), closeButtonColor,
-                    t.anonymizeToolbar(), t.isTitleNeeded(), urlBarBackgroundId,
-                    t.getTextBoxBackgroundColor(), textBoxAlpha, t.getToolbarAlpha(),
-                    t.getToolbarYOffset() * dpToPx, t.getSideBorderScale(),
-                    t.insetBorderVertical());
+                    LayoutTab.CLOSE_BUTTON_WIDTH_DP * dpToPx, closeButtonSizePx,
+                    t.getStaticToViewBlend(), t.getBorderScale(), t.getSaturation(),
+                    t.getBrightness(), t.showToolbar(), defaultThemeColor,
+                    t.getToolbarBackgroundColor(), closeButtonColor, t.anonymizeToolbar(),
+                    t.isTitleNeeded(), urlBarBackgroundId, t.getTextBoxBackgroundColor(),
+                    textBoxAlpha, t.getToolbarAlpha(), t.getToolbarYOffset() * dpToPx,
+                    t.getSideBorderScale(), t.insetBorderVertical());
         }
         nativeFinishBuildingFrame(mNativePtr);
     }
@@ -166,10 +174,10 @@ public class TabListSceneLayer extends SceneLayer {
             float shadowX, float shadowY, float shadowWidth, float shadowHeight, float pivotX,
             float pivotY, float rotationX, float rotationY, float alpha, float borderAlpha,
             float borderInnerShadowAlpha, float contourAlpha, float shadowAlpha, float closeAlpha,
-            float closeBtnWidth, float staticToViewBlend, float borderScale, float saturation,
-            float brightness, boolean showToolbar, int defaultThemeColor,
-            int toolbarBackgroundColor, int closeButtonColor, boolean anonymizeToolbar,
-            boolean showTabTitle, int toolbarTextBoxResource, int toolbarTextBoxBackgroundColor,
-            float toolbarTextBoxAlpha, float toolbarAlpha, float toolbarYOffset,
-            float sideBorderScale, boolean insetVerticalBorder);
+            float closeBtnWidth, float closeBtnAssetSize, float staticToViewBlend,
+            float borderScale, float saturation, float brightness, boolean showToolbar,
+            int defaultThemeColor, int toolbarBackgroundColor, int closeButtonColor,
+            boolean anonymizeToolbar, boolean showTabTitle, int toolbarTextBoxResource,
+            int toolbarTextBoxBackgroundColor, float toolbarTextBoxAlpha, float toolbarAlpha,
+            float toolbarYOffset, float sideBorderScale, boolean insetVerticalBorder);
 }

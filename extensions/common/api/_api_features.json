@@ -373,7 +373,7 @@
   "runtime": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "contexts": ["blessed_extension", "lock_screen_extension"]
+    "contexts": ["blessed_extension", "lock_screen_extension", "extension_service_worker"]
   },
   "runtime.getManifest": {
     "contexts": [

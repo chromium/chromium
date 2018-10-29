@@ -24,6 +24,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "google/cacheinvalidation/include/types.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,10 +78,9 @@ TEST(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
   // Set up a CloudPolicyCore backed by a simple CloudPolicyStore that does no
   // signature verification and stores policy in memory.
   FakeCloudPolicyStore store;
-  CloudPolicyCore core(dm_protocol::kChromeDevicePolicyType,
-                       std::string(),
-                       &store,
-                       base::ThreadTaskRunnerHandle::Get());
+  CloudPolicyCore core(dm_protocol::kChromeDevicePolicyType, std::string(),
+                       &store, base::ThreadTaskRunnerHandle::Get(),
+                       network::TestNetworkConnectionTracker::CreateGetter());
 
   // Connect |core|. Expect it to send a registration request. Let the
   // registration succeed.

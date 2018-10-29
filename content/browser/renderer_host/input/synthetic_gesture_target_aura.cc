@@ -180,11 +180,8 @@ SyntheticGestureTargetAura::GetDefaultSyntheticGestureSourceType() const {
 }
 
 float SyntheticGestureTargetAura::GetTouchSlopInDips() const {
-  // - 1 because Aura considers a pointer to be moving if it has moved at least
-  // 'max_touch_move_in_pixels_for_click' pixels.
   return ui::GestureConfiguration::GetInstance()
-             ->max_touch_move_in_pixels_for_click() -
-         1;
+      ->max_touch_move_in_pixels_for_click();
 }
 
 float SyntheticGestureTargetAura::GetSpanSlopInDips() const {

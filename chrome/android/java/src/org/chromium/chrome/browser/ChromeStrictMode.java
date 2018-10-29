@@ -15,6 +15,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 
 import java.lang.reflect.Field;
@@ -192,8 +193,11 @@ public class ChromeStrictMode {
                 (ChromeVersionInfo.isDevBuild() && Math.random() < UPLOAD_PROBABILITY);
         if ((ChromeVersionInfo.isLocalBuild() && !BuildConfig.DCHECK_IS_ON)
                 || enableStrictModeWatch) {
-            turnOnDetection(threadPolicy, vmPolicy);
-            initializeStrictModeWatch();
+            try (TraceEvent e =
+                            TraceEvent.scoped("configureStrictMode.initializeStrictModeWatch")) {
+                turnOnDetection(threadPolicy, vmPolicy);
+                initializeStrictModeWatch();
+            }
         }
 
         StrictMode.setThreadPolicy(threadPolicy.build());

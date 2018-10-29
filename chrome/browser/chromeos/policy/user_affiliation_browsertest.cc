@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/active_directory_test_helper.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
@@ -29,6 +30,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_launcher.h"
@@ -104,8 +106,8 @@ bool IsSystemSlotAvailable(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::RunLoop run_loop;
   bool system_slot_available = false;
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(CheckIsSystemSlotAvailableOnIOThread,
                      profile->GetResourceContext(), &system_slot_available,
                      run_loop.QuitClosure()));
@@ -226,8 +228,8 @@ class UserAffiliationBrowserTest
   void SetUpTestSystemSlot() {
     bool system_slot_constructed_successfully = false;
     base::RunLoop loop;
-    content::BrowserThread::PostTaskAndReply(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraitsAndReply(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&UserAffiliationBrowserTest::SetUpTestSystemSlotOnIO,
                        base::Unretained(this),
                        &system_slot_constructed_successfully),
@@ -263,8 +265,8 @@ class UserAffiliationBrowserTest
       return;
 
     base::RunLoop loop;
-    content::BrowserThread::PostTaskAndReply(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraitsAndReply(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&UserAffiliationBrowserTest::TearDownTestSystemSlotOnIO,
                        base::Unretained(this)),
         loop.QuitClosure());

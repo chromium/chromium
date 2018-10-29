@@ -51,6 +51,10 @@ namespace base {
 class ListValue;
 }
 
+namespace content {
+class RenderThread;
+}  // namespace content
+
 namespace extensions {
 class ContentWatcher;
 class DispatcherDelegate;
@@ -79,6 +83,8 @@ class Dispatcher : public content::RenderThreadObserver,
   const std::string& webview_partition_id() { return webview_partition_id_; }
 
   bool activity_logging_enabled() const { return activity_logging_enabled_; }
+
+  void OnRenderThreadStarted(content::RenderThread* render_thread);
 
   void OnRenderFrameCreated(content::RenderFrame* render_frame);
 

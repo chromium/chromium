@@ -57,7 +57,7 @@ bool TargetCanHaveMotionTransform(const SVGElement& target) {
 }
 
 inline SVGAnimateMotionElement::SVGAnimateMotionElement(Document& document)
-    : SVGAnimationElement(SVGNames::animateMotionTag, document),
+    : SVGAnimationElement(svg_names::kAnimateMotionTag, document),
       has_to_point_at_end_of_duration_(false) {
   SetCalcMode(kCalcModePaced);
 }
@@ -73,7 +73,7 @@ bool SVGAnimateMotionElement::HasValidTarget() {
 
 void SVGAnimateMotionElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == SVGNames::pathAttr) {
+  if (params.name == svg_names::kPathAttr) {
     path_ = Path();
     BuildPathFromString(params.new_value, path_);
     UpdateAnimationPath();
@@ -87,7 +87,7 @@ SVGAnimateMotionElement::RotateMode SVGAnimateMotionElement::GetRotateMode()
     const {
   DEFINE_STATIC_LOCAL(const AtomicString, auto_val, ("auto"));
   DEFINE_STATIC_LOCAL(const AtomicString, auto_reverse, ("auto-reverse"));
-  const AtomicString& rotate = getAttribute(SVGNames::rotateAttr);
+  const AtomicString& rotate = getAttribute(svg_names::kRotateAttr);
   if (rotate == auto_val)
     return kRotateAuto;
   if (rotate == auto_reverse)
@@ -108,7 +108,7 @@ void SVGAnimateMotionElement::UpdateAnimationPath() {
     }
   }
 
-  if (!found_m_path && FastHasAttribute(SVGNames::pathAttr))
+  if (!found_m_path && FastHasAttribute(svg_names::kPathAttr))
     animation_path_ = path_;
 
   UpdateAnimationMode();

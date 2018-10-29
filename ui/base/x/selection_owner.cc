@@ -100,8 +100,7 @@ SelectionOwner::~SelectionOwner() {
 }
 
 void SelectionOwner::RetrieveTargets(std::vector<XAtom>* targets) {
-  for (SelectionFormatMap::const_iterator it = format_map_.begin();
-       it != format_map_.end(); ++it) {
+  for (auto it = format_map_.begin(); it != format_map_.end(); ++it) {
     targets->push_back(it->first);
   }
 }
@@ -187,8 +186,7 @@ bool SelectionOwner::CanDispatchPropertyEvent(const XEvent& event) {
 }
 
 void SelectionOwner::OnPropertyEvent(const XEvent& event) {
-  std::vector<IncrementalTransfer>::iterator it =
-      FindIncrementalTransferForEvent(event);
+  auto it = FindIncrementalTransferForEvent(event);
   if (it == incremental_transfers_.end())
     return;
 
@@ -233,7 +231,7 @@ bool SelectionOwner::ProcessTarget(XAtom target,
   }
 
   // Try to find the data type in map.
-  SelectionFormatMap::const_iterator it = format_map_.find(target);
+  auto it = format_map_.find(target);
   if (it != format_map_.end()) {
     if (it->second->size() > max_request_size_) {
       // We must send the data back in several chunks due to a limitation in
@@ -326,10 +324,8 @@ void SelectionOwner::CompleteIncrementalTransfer(
 
 std::vector<SelectionOwner::IncrementalTransfer>::iterator
     SelectionOwner::FindIncrementalTransferForEvent(const XEvent& event) {
-  for (std::vector<IncrementalTransfer>::iterator it =
-           incremental_transfers_.begin();
-       it != incremental_transfers_.end();
-       ++it) {
+  for (auto it = incremental_transfers_.begin();
+       it != incremental_transfers_.end(); ++it) {
     if (it->window == event.xproperty.window &&
         it->property == event.xproperty.atom) {
       return it;

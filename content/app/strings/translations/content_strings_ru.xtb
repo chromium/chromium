@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1018939186200882850">элемент меню</translation>
-<translation id="1020833440720551630">отключение звуковой дорожки</translation>
 <translation id="10623998915015855">кнопка-переключатель</translation>
 <translation id="1088086359088493902">Секунды</translation>
 <translation id="1171774979989969504">Введите адрес электронной почты.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">выходные сведения</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">баннер</translation>
-<translation id="1548116112524424341">воспроизвести видео в режиме "Картинка в картинке"</translation>
 <translation id="1589122976691792535">регион</translation>
 <translation id="1591562245178063882">В этом месяце</translation>
 <translation id="1637811476055996098">Выбрать файлы</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">сетка в виде дерева</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">воспроизвести на удаленном устройстве</translation>
-<translation id="1838818994221231429">Переключить полный экран на вырезанную область</translation>
 <translation id="190587075670221089">удаление</translation>
 <translation id="1907737156431278478">пример</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">Чтобы пропустить 10 секунд, нажмите дважды слева или справа.</translation>
 <translation id="5631759159893697722">аннотация</translation>
-<translation id="5641012560118721995">пауза</translation>
 <translation id="5643186887447432888">кнопка</translation>
 <translation id="5677946354068040947">дополнительные параметры</translation>
 <translation id="576709008726043716">введение</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="5966707198760109579">Неделя</translation>
 <translation id="5987525920412732405">кнопка счетчика</translation>
+<translation id="6011459053400940133">регулятор громкости</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6023896073578205740">список</translation>
-<translation id="6101327004457443354">включение звуковой дорожки</translation>
 <translation id="6150588977291308318">библиография</translation>
 <translation id="6164829606128959761">счетчик</translation>
 <translation id="6166809985690652833">послесловие</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Часы</translation>
 <translation id="7681220483256441252">указатель</translation>
 <translation id="7720026100085573005">оставшееся время</translation>
-<translation id="7740016676195725605">скрыть субтитры</translation>
 <translation id="7740050170769002709">HTML-содержание</translation>
 <translation id="7750228210027921155">Картинка в картинке</translation>
 <translation id="7789962463072032349">Пауза</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">поле поиска</translation>
 <translation id="8057695513531652401">примечание</translation>
 <translation id="8105797009065549151">ссылка на примечание</translation>
-<translation id="8115662671911883373">показать субтитры</translation>
 <translation id="8117451130807776954">На этой неделе</translation>
-<translation id="819205353528511139">воспроизведение в полноэкранном режиме</translation>
 <translation id="8199524924445686405">гггг</translation>
 <translation id="8284326494547611709">Титры</translation>
 <translation id="835897206747267392">Недопустимые данные.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">управлять воспроизведением на удаленных устройствах</translation>
 <translation id="862370744433916922">подзаголовок</translation>
 <translation id="8750798805984357768">Выберите один из вариантов.</translation>
-<translation id="8785498733064193001">начать воспроизведение</translation>
 <translation id="8808573423886751634">глава</translation>
 <translation id="8845239796550121995">Транслируется на телевизор</translation>
 <translation id="8851136666856101339">main</translation>

@@ -434,7 +434,7 @@ TEST(WebInputEventBuilderMacTest, USDvorakQWERTYCommand) {
 }
 
 // Test conversion from key combination with Control to DomKey.
-// TODO(chongz): Move DomKey tests for all platforms into one place.
+// TODO(input-dev): Move DomKey tests for all platforms into one place.
 // http://crbug.com/587589
 // This test case only works for U.S. layout.
 TEST(WebInputEventBuilderMacTest, DomKeyCtrlShift) {

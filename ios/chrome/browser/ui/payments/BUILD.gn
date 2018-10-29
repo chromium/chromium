@@ -29,8 +29,6 @@ source_set("payments") {
     "credit_card_edit_coordinator.mm",
     "credit_card_edit_mediator.h",
     "credit_card_edit_mediator.mm",
-    "full_card_requester.h",
-    "full_card_requester.mm",
     "js_payment_request_manager.h",
     "js_payment_request_manager.mm",
     "payment_items_display_coordinator.h",
@@ -62,15 +60,16 @@ source_set("payments") {
   ]
   deps = [
     ":payments_ui",
+    ":requesters",
     "resources:ic_add",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
+    "//components/omnibox/browser",
     "//components/payments/core",
     "//components/payments/mojom",
     "//components/signin/core/browser",
     "//components/strings",
-    "//components/toolbar",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
@@ -94,6 +93,25 @@ source_set("payments") {
     "//ios/web",
     "//third_party/libaddressinput",
     "//third_party/libaddressinput:strings_grit",
+    "//ui/base",
+  ]
+  libs = [ "UIKit.framework" ]
+}
+
+source_set("requesters") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "full_card_requester.h",
+    "full_card_requester.mm",
+  ]
+  deps = [
+    ":payments_ui",
+    "resources:ic_add",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui/autofill:bridges",
     "//ui/base",
   ]
   libs = [ "UIKit.framework" ]
@@ -190,6 +208,7 @@ source_set("unit_tests") {
   deps = [
     ":payments",
     ":payments_ui",
+    ":requesters",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
@@ -210,6 +229,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/autofill",
     "//ios/chrome/browser/ui/autofill:autofill_ui",
+    "//ios/chrome/browser/ui/autofill:bridges",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/collection_view:test_support",
     "//ios/chrome/browser/ui/collection_view/cells",
@@ -258,6 +278,7 @@ source_set("eg_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/image_fetcher/core",
     "//components/payments/core",
+    "//components/payments/core:payments_test_bundle_data",
     "//components/payments/mojom",
     "//components/prefs",
     "//components/strings",
@@ -266,8 +287,9 @@ source_set("eg_tests") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/payments",
     "//ios/chrome/browser/ui/autofill",
+    "//ios/chrome/browser/ui/autofill:bridges",
     "//ios/chrome/browser/ui/payments/cells",
-    "//ios/chrome/browser/ui/tools_menu/public",
+    "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
     "//ios/testing/earl_grey:earl_grey_support",

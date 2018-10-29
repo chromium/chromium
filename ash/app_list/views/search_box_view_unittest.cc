@@ -286,7 +286,7 @@ class SearchBoxViewAutocompleteTest
   // Overridden from testing::Test
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kEnableAppListSearchAutocomplete}, {});
+        {app_list_features::kEnableAppListSearchAutocomplete}, {});
     SearchBoxViewTest::SetUp();
   }
 

@@ -1,6 +1,5 @@
 -webkit-cross-fade
 
-
 PASS testCrossfade("opacity: 500%", "opacity") is "1"
 PASS testCrossfade("background-image: -webkit-cross-fade(url(dummy://example.png), url(dummy://example.png), 50%)", "background-image") is "-webkit-cross-fade(url(\"dummy://example.png\"), url(\"dummy://example.png\"), 0.5)"
 PASS testCrossfade("background-image: -webkit-cross-fade(-webkit-cross-fade(url(dummy://a.png), url(dummy://b.png), 25%), url(dummy://example.png), 50%)", "background-image") is "-webkit-cross-fade(-webkit-cross-fade(url(\"dummy://a.png\"), url(\"dummy://b.png\"), 0.25), url(\"dummy://example.png\"), 0.5)"

@@ -12,4 +12,3 @@ PASS Orphaned timeout worker thread created.
 PASS Orphaned timeout worker thread exited.
 
 TEST COMPLETE
-

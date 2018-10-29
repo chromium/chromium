@@ -55,6 +55,8 @@ if (is_android) {
 
     data = [
       "//media/test/data/bear.mp4",
+      "//media/test/data/bear-vp8-webvtt.webm",
+      "//media/test/data/bear-vp8a.webm",
       "//media/test/data/sfx.mp3",
     ]
 

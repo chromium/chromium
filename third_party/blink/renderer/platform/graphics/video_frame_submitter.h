@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "components/viz/client/shared_bitmap_reporter.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/shared_bitmap.h"
@@ -60,7 +61,9 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   void Initialize(cc::VideoFrameProvider*) override;
   void SetRotation(media::VideoRotation) override;
   void SetIsOpaque(bool) override;
-  void EnableSubmission(viz::SurfaceId, WebFrameSinkDestroyedCallback) override;
+  void EnableSubmission(viz::SurfaceId,
+                        base::TimeTicks local_surface_id_allocation_time,
+                        WebFrameSinkDestroyedCallback) override;
   void UpdateSubmissionState(bool is_visible) override;
   void SetForceSubmit(bool) override;
 
@@ -88,7 +91,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
     compositor_frame_sink_ = std::move(*sink);
   }
 
-  void SetSurfaceIdForTesting(const viz::SurfaceId&);
+  void SetSurfaceIdForTesting(const viz::SurfaceId&, base::TimeTicks);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(VideoFrameSubmitterTest, ContextLostDuringSubmit);

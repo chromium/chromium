@@ -15,6 +15,8 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "cc/paint/raw_memory_transfer_cache_entry.h"
+#include "cc/paint/transfer_cache_serialize_helper.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/client/mock_transfer_buffer.h"
 #include "gpu/command_buffer/client/query_tracker.h"
@@ -203,7 +205,7 @@ class RasterImplementationTest : public testing::Test {
     return gl_->MapRasterCHROMIUM(size);
   }
   void UnmapRasterCHROMIUM(GLsizeiptr written_size) {
-    gl_->UnmapRasterCHROMIUM(written_size);
+    gl_->UnmapRasterCHROMIUM(written_size, written_size);
   }
 
   struct ContextInitOptions {
@@ -514,6 +516,10 @@ TEST_F(RasterImplementationTest, BeginEndQueryEXT) {
   // Test GetQueryObjectuivEXT CheckResultsAvailable
   ClearCommands();
   gl_->GetQueryObjectuivEXT(id1, GL_QUERY_RESULT_AVAILABLE_EXT, &available);
+  EXPECT_EQ(0u, available);
+  available = 1u;
+  gl_->GetQueryObjectuivEXT(
+      id1, GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT, &available);
   EXPECT_EQ(0u, available);
 }
 
@@ -898,6 +904,65 @@ TEST_F(RasterImplementationManualInitTest, FailInitOnTransferBufferFail) {
   ContextInitOptions init_options;
   init_options.transfer_buffer_initialize_fail = true;
   EXPECT_FALSE(Initialize(init_options));
+}
+
+TEST_F(RasterImplementationTest, TransferCacheSerialization) {
+  gl_->set_max_inlined_entry_size_for_testing(768u);
+  size_t buffer_size = transfer_buffer_->MaxTransferBufferSize();
+  ScopedTransferBufferPtr buffer(buffer_size, helper_, transfer_buffer_);
+  ASSERT_EQ(buffer.size(), buffer_size);
+
+  char* buffer_start = reinterpret_cast<char*>(buffer.address());
+  memset(buffer_start, 0, buffer_size);
+  gl_->SetRasterMappedBufferForTesting(std::move(buffer));
+  auto transfer_cache = gl_->CreateTransferCacheHelperForTesting();
+
+  std::vector<uint8_t> data(buffer_size - 16u);
+  char* memory = buffer_start + 8u;
+  cc::ClientRawMemoryTransferCacheEntry inlined_entry(data);
+  EXPECT_EQ(transfer_cache->CreateEntry(inlined_entry, memory), data.size());
+  EXPECT_EQ(memcmp(data.data(), memory, data.size()), 0);
+
+  data.resize(buffer_size + 16u);
+  memory = buffer_start + 8u;
+  cc::ClientRawMemoryTransferCacheEntry non_inlined_entry(data);
+  EXPECT_EQ(transfer_cache->CreateEntry(non_inlined_entry, memory), 0u);
+}
+
+TEST_F(RasterImplementationTest, SetActiveURLCHROMIUM) {
+  const uint32_t kURLBucketId = RasterImplementation::kResultBucketId;
+  const std::string url = "chrome://test";
+  const size_t kPaddedStringSize =
+      transfer_buffer_->RoundToAlignment(url.size());
+
+  gl_->SetActiveURLCHROMIUM(url.c_str());
+  EXPECT_EQ(GL_NO_ERROR, CheckError());
+
+  struct Cmds {
+    cmd::SetBucketSize url_size;
+    cmd::SetBucketData url_data;
+    cmd::SetToken set_token;
+    cmds::SetActiveURLCHROMIUM set_url_call;
+    cmd::SetBucketSize url_size_end;
+  };
+
+  ExpectedMemoryInfo mem = GetExpectedMemory(kPaddedStringSize);
+  EXPECT_EQ(0,
+            memcmp(url.c_str(), reinterpret_cast<char*>(mem.ptr), url.size()));
+
+  Cmds expected;
+  expected.url_size.Init(kURLBucketId, url.size());
+  expected.url_data.Init(kURLBucketId, 0, url.size(), mem.id, mem.offset);
+  expected.set_token.Init(GetNextToken());
+  expected.set_url_call.Init(kURLBucketId);
+  expected.url_size_end.Init(kURLBucketId, 0);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+
+  // Same URL shouldn't make any commands.
+  EXPECT_FALSE(NoCommandsWritten());
+  ClearCommands();
+  gl_->SetActiveURLCHROMIUM(url.c_str());
+  EXPECT_TRUE(NoCommandsWritten());
 }
 
 #include "base/macros.h"

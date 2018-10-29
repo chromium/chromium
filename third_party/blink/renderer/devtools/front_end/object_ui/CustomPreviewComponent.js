@@ -28,7 +28,7 @@ ObjectUI.CustomPreviewSection = class {
       return;
     }
 
-    if (customPreview.hasBody) {
+    if (customPreview.hasBody || customPreview.bodyGetterId) {
       this._header.classList.add('custom-expandable-section-header');
       this._header.addEventListener('click', this._onClick.bind(this), false);
       this._expandIcon = UI.Icon.create('smallicon-triangle-right', 'custom-expand-icon');
@@ -180,10 +180,16 @@ ObjectUI.CustomPreviewSection = class {
     }
 
     const customPreview = this._object.customPreview();
-    const args = [{objectId: customPreview.bindRemoteObjectFunctionId}, {objectId: customPreview.formatterObjectId}];
-    if (customPreview.configObjectId)
-      args.push({objectId: customPreview.configObjectId});
-    this._object.callFunctionJSON(load, args, onBodyLoaded.bind(this));
+    if (customPreview.bindRemoteObjectFunctionId && customPreview.formatterObjectId) {
+      // Support for V8 version < 7.3.
+      const args = [{objectId: customPreview.bindRemoteObjectFunctionId}, {objectId: customPreview.formatterObjectId}];
+      if (customPreview.configObjectId)
+        args.push({objectId: customPreview.configObjectId});
+      this._object.callFunctionJSON(load, args).then(onBodyLoaded.bind(this));
+    } else if (customPreview.bodyGetterId) {
+      this._object.callFunctionJSON(bodyGetter => bodyGetter(), [{objectId: customPreview.bodyGetterId}])
+          .then(onBodyLoaded.bind(this));
+    }
 
     /**
      * @param {*} bodyJsonML
@@ -217,7 +223,8 @@ ObjectUI.CustomPreviewComponent = class {
   }
 
   expandIfPossible() {
-    if (this._object.customPreview().hasBody && this._customPreviewSection)
+    if ((this._object.customPreview().hasBody || this._object.customPreview().bodyGetterId) &&
+        this._customPreviewSection)
       this._customPreviewSection._loadBody();
   }
 

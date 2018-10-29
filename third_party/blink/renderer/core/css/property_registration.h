@@ -45,6 +45,8 @@ class CORE_EXPORT PropertyRegistration
   void Trace(blink::Visitor* visitor) { visitor->Trace(initial_); }
 
  private:
+  friend class ::blink::PropertyRegistry;
+
   PropertyRegistration(const AtomicString& name,
                        const CSSSyntaxDescriptor&,
                        bool inherits,
@@ -56,6 +58,7 @@ class CORE_EXPORT PropertyRegistration
   const Member<const CSSValue> initial_;
   const scoped_refptr<CSSVariableData> initial_variable_data_;
   const InterpolationTypes interpolation_types_;
+  mutable bool referenced_;
 
   FRIEND_TEST_ALL_PREFIXES(CSSVariableResolverTest,
                            NeedsResolutionClearedByResolver);

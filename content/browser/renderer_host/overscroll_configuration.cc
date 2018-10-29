@@ -59,13 +59,8 @@ OverscrollConfig::GetHistoryNavigationMode() {
   if (g_is_history_navigation_mode_initialized)
     return g_history_navigation_mode;
 
-  const std::string mode =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kOverscrollHistoryNavigation);
-  if (mode == "0")
+  if (!base::FeatureList::IsEnabled(features::kOverscrollHistoryNavigation))
     g_history_navigation_mode = HistoryNavigationMode::kDisabled;
-  else if (mode == "1")
-    g_history_navigation_mode = HistoryNavigationMode::kParallaxUi;
   g_is_history_navigation_mode_initialized = true;
   return g_history_navigation_mode;
 }

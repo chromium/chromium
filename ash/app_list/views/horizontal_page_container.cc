@@ -55,7 +55,6 @@ void HorizontalPageContainer::Layout() {
     gfx::Rect page_bounds(
         page->GetPageBoundsForState(contents_view_->GetActiveState()));
     page_bounds.Offset(GetOffsetForPageIndex(i));
-    page->InvalidateLayout();
     page->SetBoundsRect(page_bounds);
   }
 }
@@ -81,7 +80,6 @@ void HorizontalPageContainer::OnAnimationUpdated(double progress,
     gfx::Rect bounds(
         gfx::Tween::RectValueBetween(progress, from_rect, to_rect));
     bounds.Offset(GetOffsetForPageIndex(i));
-    page->InvalidateLayout();
     page->SetBoundsRect(bounds);
   }
 }

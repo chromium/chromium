@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "build/build_config.h"
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -35,11 +36,17 @@ class VIZ_COMMON_EXPORT RendererSettings {
   int highp_threshold_min = 0;
   bool auto_resize_output_surface = true;
   bool requires_alpha_channel = false;
+  bool record_sk_picture = false;
 
   int slow_down_compositing_scale_factor = 1;
 
   // The required minimum size for DrawQuad to apply Draw Occlusion on.
   gfx::Size kMinimumDrawOcclusionSize = gfx::Size(60, 60);
+
+#if defined(OS_ANDROID)
+  // The screen size at renderer creation time.
+  gfx::Size initial_screen_size = gfx::Size(0, 0);
+#endif
 };
 
 }  // namespace viz

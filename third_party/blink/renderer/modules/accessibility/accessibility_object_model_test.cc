@@ -82,7 +82,7 @@ TEST_F(AccessibilityObjectModelTest, AOMDoesNotReflectARIA) {
   ASSERT_NE(nullptr, cache);
   auto* axTextBox = cache->GetOrCreate(textbox);
   EXPECT_EQ(ax::mojom::Role::kTextFieldWithComboBox, axTextBox->RoleValue());
-  AXNameFrom name_from;
+  ax::mojom::NameFrom name_from;
   AXObject::AXObjectVector name_objects;
   EXPECT_EQ("Combo", axTextBox->GetName(name_from, &name_objects));
   EXPECT_EQ(axTextBox->Restriction(), kDisabled);
@@ -113,7 +113,7 @@ TEST_F(AccessibilityObjectModelTest, AOMPropertiesCanBeCleared) {
   ASSERT_NE(nullptr, cache);
   auto* axButton = cache->GetOrCreate(button);
   EXPECT_EQ(ax::mojom::Role::kCheckBox, axButton->RoleValue());
-  AXNameFrom name_from;
+  ax::mojom::NameFrom name_from;
   AXObject::AXObjectVector name_objects;
   EXPECT_EQ("Check", axButton->GetName(name_from, &name_objects));
   EXPECT_EQ(axButton->Restriction(), kDisabled);

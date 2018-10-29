@@ -1,63 +1,32 @@
-<html>
-  <head>
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
-
-    var resultMap = [
-      ["Down", "e1"],
-      ["Down", "e2"],
-      ["Down", "e3"],
-      ["Up", "e2"],
-      ["Up", "e1"],
-      ["Up", "start"],
-      ["DONE", "DONE"]
-    ];
-
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
-
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, testCompleted);
-    }
-
-    function testCompleted()
-    {
-      if (window.testRunner)
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-    </script>
-    <style>
-    div.container1 { width: 100px;}
-    div.container2 { width: 100px;}
-    </style>
-  </head>
-<body id="some-content" xmlns="http://www.w3.org/1999/xhtml" style="padding:20px">
-<div class="container1">
-<a href="#" id="start">AAAAAAAAAA AAAAAAAAAA AA</a>
-<a href="#" id="e1">AA AAAAAAAAAA AAAAAAAAAA</a>
+<!DOCTYPE html>
+<style>
+  div { width: 100px;}
+</style>
+<div>
+  <a href="#" id="start">AAAAAAAAAA AAAAAAAAAA AA</a>
+  <a href="#" id="e1">AA AAAAAAAAAA AAAAAAAAAA</a>
 </div>
 <br><br>
-<div class="container2">
-<a href="#" id="e2">AAAAAAAAAA AAAAAAAAAA AA</a>
-<span>B</span>
-<a href="#" id="e3">AA AAAAAAAAAA AAAAAAAAAA</a>
+<div>
+  <a href="#" id="e2">AAAAAAAAAA AAAAAAAAAA AA</a>
+  <span>B</span>
+  <a href="#" id="e3">AA AAAAAAAAAA AAAAAAAAAA</a>
 </div>
 
+<p>Spatnav can navigate focusables that span multiple lines.</p>
 
-
-
-<div id="console"></div>
-This test is testing that we can handle 2 inline elements in the same line.
-</body>
-</html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "e1"],
+    ["Down", "e2"],
+    ["Down", "e3"],
+    ["Up", "e2"],
+    ["Up", "e1"],
+    ["Up", "start"],
+  ];
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap);
+</script>

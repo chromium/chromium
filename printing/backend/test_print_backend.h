@@ -28,8 +28,10 @@ class TestPrintBackend : public PrintBackend {
   bool GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) override;
+#if !defined(OS_CHROMEOS)
   bool GetPrinterCapsAndDefaults(const std::string& printer_name,
                                  PrinterCapsAndDefaults* printer_info) override;
+#endif  // !defined(OS_CHROMEOS)
   std::string GetPrinterDriverInfo(const std::string& printer_name) override;
   bool IsValidPrinter(const std::string& printer_name) override;
 

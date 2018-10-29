@@ -69,7 +69,7 @@ class EVENTS_OZONE_EVDEV_EXPORT EventDeviceInfo {
   void SetAbsMtSlots(unsigned int code, const std::vector<int32_t>& values);
   void SetAbsMtSlot(unsigned int code, unsigned int slot, uint32_t value);
   void SetDeviceType(InputDeviceType type);
-  void SetId(uint16_t vendor_id, uint16_t product_id);
+  void SetId(input_id id);
 
   // Check events this device can generate.
   bool HasEventType(unsigned int type) const;
@@ -94,8 +94,9 @@ class EVENTS_OZONE_EVDEV_EXPORT EventDeviceInfo {
   // Device identification.
   const std::string& name() const { return name_; }
   const std::string& phys() const { return phys_; }
-  uint16_t vendor_id() const { return vendor_id_; }
-  uint16_t product_id() const { return product_id_; }
+  uint16_t bustype() const { return input_id_.bustype; }
+  uint16_t vendor_id() const { return input_id_.vendor; }
+  uint16_t product_id() const { return input_id_.product; }
 
   // Check input device properties.
   bool HasProp(unsigned int code) const;
@@ -147,6 +148,9 @@ class EVENTS_OZONE_EVDEV_EXPORT EventDeviceInfo {
   // The device type (internal or external.)
   InputDeviceType device_type() const { return device_type_; }
 
+  // Determines InputDeviceType from device identification.
+  static InputDeviceType GetInputDeviceTypeFromId(input_id id);
+
  private:
   enum class LegacyAbsoluteDeviceType {
     TOUCHPAD,
@@ -175,8 +179,7 @@ class EVENTS_OZONE_EVDEV_EXPORT EventDeviceInfo {
 
   // Device identification.
   std::string name_;
-  uint16_t vendor_id_;
-  uint16_t product_id_;
+  input_id input_id_ = {};
 
   // Device evdev physical property containing the output for EVIOCGPHYS that is
   // (supposed to be) stable between reboots and hotplugs.

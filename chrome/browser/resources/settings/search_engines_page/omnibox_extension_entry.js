@@ -42,15 +42,6 @@ Polymer({
     this.$$('cr-action-menu').close();
   },
 
-  /**
-   * @param {string} url
-   * @return {string} A set of icon URLs.
-   * @private
-   */
-  getIconSet_: function(url) {
-    return cr.icon.getFavicon(url);
-  },
-
   /** @private */
   onDotsTap_: function() {
     /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'))

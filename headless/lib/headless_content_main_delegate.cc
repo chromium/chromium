@@ -282,8 +282,8 @@ int HeadlessContentMainDelegate::RunProcess(
 
   browser_->RunOnStartCallback();
   browser_runner->Run();
-  browser_.reset();
   browser_runner->Shutdown();
+  browser_.reset();
 
   // Return value >=0 here to disable calling content::BrowserMain.
   return 0;

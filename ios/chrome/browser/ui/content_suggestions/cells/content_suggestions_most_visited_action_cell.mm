@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_cell.h"
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_constants.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/ntp_tile_views/ntp_shortcut_tile_view.h"
+#import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_constants.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/favicon/favicon_view.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
@@ -16,67 +18,25 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
+@interface ContentSuggestionsMostVisitedActionCell ()
 
-const CGFloat kCountWidth = 20;
-const CGFloat kCountBorderWidth = 24;
+@property(nonatomic, strong) NTPShortcutTileView* tileView;
 
-const int kBackgroundColor = 0xE8F1FC;
-
-}  // namespace
+@end
 
 @implementation ContentSuggestionsMostVisitedActionCell : MDCCollectionViewCell
-
-@synthesize countContainer = _countContainer;
-@synthesize countLabel = _countLabel;
-@synthesize iconView = _iconView;
-@synthesize titleLabel = _titleLabel;
 
 #pragma mark - Public
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _titleLabel = [[UILabel alloc] init];
-    _titleLabel.textColor = [UIColor colorWithWhite:0 alpha:kTitleAlpha];
-    _titleLabel.font = [UIFont systemFontOfSize:12];
-    _titleLabel.textAlignment = NSTextAlignmentCenter;
-    _titleLabel.preferredMaxLayoutWidth = [[self class] defaultSize].width;
-    _titleLabel.numberOfLines = kLabelNumLines;
+    _tileView = [[NTPShortcutTileView alloc] initWithFrame:frame];
+    _tileView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.contentView addSubview:_tileView];
+    AddSameConstraints(self.contentView, _tileView);
 
-    _iconView = [[UIImageView alloc] initWithFrame:self.bounds];
-
-    UIImageView* iconBackground = [[UIImageView alloc] init];
-    iconBackground.image = [[UIImage imageNamed:@"ntp_most_visited_tile"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    iconBackground.tintColor = UIColorFromRGB(kBackgroundColor);
-
-    _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _iconView.translatesAutoresizingMaskIntoConstraints = NO;
-    iconBackground.translatesAutoresizingMaskIntoConstraints = NO;
-
-    [self.contentView addSubview:iconBackground];
-    [self.contentView addSubview:_titleLabel];
-    [self.contentView addSubview:_iconView];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [_iconView.widthAnchor constraintEqualToConstant:kIconSize],
-      [iconBackground.widthAnchor
-          constraintEqualToAnchor:_iconView.widthAnchor],
-      [_iconView.heightAnchor constraintEqualToAnchor:_iconView.widthAnchor],
-      [iconBackground.heightAnchor
-          constraintEqualToAnchor:iconBackground.widthAnchor],
-      [_iconView.centerXAnchor
-          constraintEqualToAnchor:_titleLabel.centerXAnchor],
-    ]];
-
-    AddSameCenterXConstraint(iconBackground, _iconView);
-    AddSameCenterYConstraint(iconBackground, _iconView);
-
-    ApplyVisualConstraintsWithMetrics(
-        @[ @"V:|[icon]-(space)-[title]", @"H:|[title]|" ],
-        @{@"icon" : _iconView, @"title" : _titleLabel},
-        @{ @"space" : @(kSpaceIconTitle) });
+    _tileView.countLabel.font = [MDCTypography captionFont];
 
     self.isAccessibilityElement = YES;
   }
@@ -96,7 +56,7 @@ const int kBackgroundColor = 0xE8F1FC;
 }
 
 + (CGSize)defaultSize {
-  return kCellSize;
+  return kMostVisitedCellSize;
 }
 
 - (CGSize)intrinsicContentSize {
@@ -105,50 +65,25 @@ const int kBackgroundColor = 0xE8F1FC;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  _countContainer.hidden = YES;
+  self.tileView.countContainer.hidden = YES;
+}
+
+#pragma mark - properties
+
+- (UIImageView*)iconView {
+  return self.tileView.iconView;
+}
+
+- (UILabel*)titleLabel {
+  return self.tileView.titleLabel;
+}
+
+- (UIView*)countContainer {
+  return self.tileView.countContainer;
 }
 
 - (UILabel*)countLabel {
-  if (!_countLabel) {
-    _countContainer = [[UIView alloc] init];
-    _countContainer.backgroundColor = [UIColor whiteColor];
-    // Unfortunately, simply setting a CALayer borderWidth and borderColor
-    // on |_countContainer|, and setting a background color on |_countLabel|
-    // will result in the inner color bleeeding thru to the outside.
-    _countContainer.layer.cornerRadius = kCountBorderWidth / 2;
-    _countContainer.layer.masksToBounds = YES;
-
-    _countLabel = [[UILabel alloc] init];
-    _countLabel.layer.cornerRadius = kCountWidth / 2;
-    _countLabel.layer.masksToBounds = YES;
-    _countLabel.textColor = [UIColor whiteColor];
-    _countLabel.font = [MDCTypography captionFont];
-    _countLabel.textAlignment = NSTextAlignmentCenter;
-    _countLabel.backgroundColor =
-        [UIColor colorWithRed:0.10 green:0.45 blue:0.91 alpha:1.0];
-
-    _countContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    _countLabel.translatesAutoresizingMaskIntoConstraints = NO;
-
-    [self.contentView addSubview:self.countContainer];
-    [self.countContainer addSubview:self.countLabel];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [_countContainer.widthAnchor constraintEqualToConstant:kCountBorderWidth],
-      [_countContainer.heightAnchor
-          constraintEqualToAnchor:_countContainer.widthAnchor],
-      [_countContainer.topAnchor
-          constraintEqualToAnchor:self.contentView.topAnchor],
-      [_countContainer.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor],
-      [_countLabel.widthAnchor constraintEqualToConstant:kCountWidth],
-      [_countLabel.heightAnchor
-          constraintEqualToAnchor:_countLabel.widthAnchor],
-    ]];
-    AddSameCenterConstraints(_countLabel, _countContainer);
-  }
-  _countContainer.hidden = NO;
-  return _countLabel;
+  return self.tileView.countLabel;
 }
 
 @end

@@ -27,6 +27,8 @@ Polymer({
       value: false,
     },
 
+    categoryHeader: String,
+
     /**
      * The site serving as the model for the currently open action menu.
      * @private {?SiteException}
@@ -107,6 +109,15 @@ Polymer({
     tooltipText_: String,
   },
 
+  // <if expr="chromeos">
+  /**
+   * Android messages info object containing messages feature state and
+   * exception origin.
+   * @private {?settings.AndroidSmsInfo}
+   */
+  androidSmsInfo_: null,
+  // </if>
+
   /**
    * The element to return focus to, when the currently active dialog is closed.
    * @private {?HTMLElement}
@@ -122,6 +133,12 @@ Polymer({
         this.siteWithinCategoryChanged_.bind(this));
     this.addWebUIListener(
         'onIncognitoStatusChanged', this.onIncognitoStatusChanged_.bind(this));
+    // <if expr="chromeos">
+    this.addWebUIListener('settings.onAndroidSmsInfoChange', (info) => {
+      this.androidSmsInfo_ = info;
+      this.populateList_();
+    });
+    // </if>
     this.browserProxy.updateIncognitoStatus();
   },
 
@@ -171,7 +188,14 @@ Polymer({
     }
 
     this.setUpActionMenu_();
+
+    // <if expr="not chromeos">
     this.populateList_();
+    // </if>
+
+    // <if expr="chromeos">
+    this.updateAndroidSmsInfo_().then(this.populateList_.bind(this));
+    // </if>
 
     // The Session permissions are only for cookies.
     if (this.categorySubtype == settings.ContentSetting.SESSION_ONLY) {
@@ -234,6 +258,48 @@ Polymer({
     this.$.tooltip.show();
   },
 
+  // <if expr="chromeos">
+  /**
+   * Load android sms info if required and sets it to the |androidSmsInfo_|
+   * property. Returns a promise that resolves when load is complete.
+   * @private
+   */
+  updateAndroidSmsInfo_: function() {
+    // |androidSmsInfo_| is only relevant for NOTIFICATIONS category. Don't
+    // bother fetching it for other categories.
+    if (this.category === settings.ContentSettingsTypes.NOTIFICATIONS &&
+        loadTimeData.valueExists('enableMultideviceSettings') &&
+        loadTimeData.getBoolean('enableMultideviceSettings') &&
+        !this.androidSmsInfo_) {
+      const multideviceSetupProxy =
+          settings.MultiDeviceBrowserProxyImpl.getInstance();
+      return multideviceSetupProxy.getAndroidSmsInfo().then((info) => {
+        this.androidSmsInfo_ = info;
+      });
+    }
+
+    return Promise.resolve();
+  },
+
+  /**
+   * Processes exceptions and adds showAndroidSmsNote field to
+   * the required exception item.
+   * @private
+   */
+  processExceptionsForAndroidSmsInfo_: function(sites) {
+    if (!this.androidSmsInfo_ || !this.androidSmsInfo_.enabled) {
+      return sites;
+    }
+    return sites.map((site) => {
+      if (site.origin === this.androidSmsInfo_.origin) {
+        return Object.assign({showAndroidSmsNote: true}, site);
+      } else {
+        return site;
+      }
+    });
+  },
+  // </if>
+
   /**
    * Populate the sites list for display.
    * @private
@@ -251,13 +317,21 @@ Polymer({
    * @private
    */
   processExceptions_: function(exceptionList) {
-    const sites =
+    let sites =
         exceptionList
             .filter(
                 site => site.setting != settings.ContentSetting.DEFAULT &&
                     site.setting == this.categorySubtype)
             .map(site => this.expandSiteException(site));
-    this.updateList('sites', x => x.origin, sites);
+
+    // <if expr="not chromeos">
+    this.updateList('sites', (x) => x.origin, sites);
+    // </if>
+
+    // <if expr="chromeos">
+    sites = this.processExceptionsForAndroidSmsInfo_(sites);
+    this.updateList('sites', (x) => x.origin + x.showAndroidSmsNote, sites);
+    // </if>
   },
 
   /**

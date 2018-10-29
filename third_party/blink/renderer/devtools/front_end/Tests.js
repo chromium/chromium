@@ -576,10 +576,18 @@
     function callback() {
       const debuggerModel = SDK.targetManager.models(SDK.DebuggerModel)[0];
       if (debuggerModel.isPaused()) {
-        this.releaseControl();
+        SDK.consoleModel.addEventListener(SDK.ConsoleModel.Events.MessageAdded, onConsoleMessage, this);
+        debuggerModel.resume();
         return;
       }
-      this._waitForScriptPause(this.releaseControl.bind(this));
+      this._waitForScriptPause(callback.bind(this));
+    }
+
+    function onConsoleMessage(event) {
+      const message = event.data.messageText;
+      if (message !== 'connected')
+        this.fail('Unexpected message: ' + message);
+      this.releaseControl();
     }
   };
 

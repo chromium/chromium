@@ -213,6 +213,7 @@ if (enable_openvr) {
     deps = [
       "//base",
       "//device/vr/public/mojom:test_mojom",
+      "//third_party/openvr:openvr_headers",
     ]
   }
 }

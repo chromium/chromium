@@ -46,33 +46,16 @@ class WebRTCRtpTransceiver;
 
 class BLINK_PLATFORM_EXPORT WebRTCPeerConnectionHandlerClient {
  public:
-  enum ICEConnectionState {
-    kICEConnectionStateNew = 1,
-    kICEConnectionStateChecking = 2,
-    kICEConnectionStateConnected = 3,
-    kICEConnectionStateCompleted = 4,
-    kICEConnectionStateFailed = 5,
-    kICEConnectionStateDisconnected = 6,
-    kICEConnectionStateClosed = 7,
-
-    // DEPRECATED
-    kICEConnectionStateStarting = 1,
-  };
-
-  enum ICEGatheringState {
-    kICEGatheringStateNew = 1,
-    kICEGatheringStateGathering = 2,
-    kICEGatheringStateComplete = 3
-  };
-
   virtual ~WebRTCPeerConnectionHandlerClient();
 
   virtual void NegotiationNeeded() = 0;
   virtual void DidGenerateICECandidate(scoped_refptr<WebRTCICECandidate>) = 0;
   virtual void DidChangeSignalingState(
       webrtc::PeerConnectionInterface::SignalingState) = 0;
-  virtual void DidChangeICEGatheringState(ICEGatheringState) = 0;
-  virtual void DidChangeICEConnectionState(ICEConnectionState) = 0;
+  virtual void DidChangeIceGatheringState(
+      webrtc::PeerConnectionInterface::IceGatheringState) = 0;
+  virtual void DidChangeIceConnectionState(
+      webrtc::PeerConnectionInterface::IceConnectionState) = 0;
   virtual void DidAddReceiverPlanB(std::unique_ptr<WebRTCRtpReceiver>) = 0;
   virtual void DidRemoveReceiverPlanB(std::unique_ptr<WebRTCRtpReceiver>) = 0;
   virtual void DidModifyTransceivers(

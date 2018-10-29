@@ -22,6 +22,7 @@ class CodeCacheLoaderMock : public CodeCacheLoader {
                                        base::Time* response_time_out,
                                        std::vector<uint8_t>* data_out) override;
   void FetchFromCodeCache(
+      blink::mojom::CodeCacheType cache_type,
       const GURL& url,
       CodeCacheLoader::FetchCodeCacheCallback callback) override;
 

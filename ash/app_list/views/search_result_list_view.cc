@@ -77,7 +77,7 @@ SearchResultBaseView* SearchResultListView::GetFirstResultView() {
 int SearchResultListView::DoUpdate() {
   std::vector<SearchResult*> display_results =
       SearchModel::FilterSearchResultsByDisplayType(
-          results(), ash::SearchResultDisplayType::kList,
+          results(), ash::SearchResultDisplayType::kList, /*excludes=*/{},
           results_container_->child_count());
 
   for (size_t i = 0; i < static_cast<size_t>(results_container_->child_count());

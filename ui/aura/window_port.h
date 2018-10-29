@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "ui/aura/aura_export.h"
@@ -105,10 +106,6 @@ class AURA_EXPORT WindowPort {
   // that does not involve a resize or a device scale factor change.
   virtual void AllocateLocalSurfaceId() = 0;
 
-  // When a child-allocated viz::LocalSurfaceId is being processed, this returns
-  // true.
-  virtual bool IsLocalSurfaceIdAllocationSuppressed() const = 0;
-
   // When a ScopedSurfaceIdAllocator is alive, it prevents the
   // allocator from actually allocating. Instead, it triggers its
   // |allocation_task| upon destruction. This allows us to issue only one
@@ -118,17 +115,29 @@ class AURA_EXPORT WindowPort {
       base::OnceCallback<void()> allocation_task) = 0;
 
   virtual void UpdateLocalSurfaceIdFromEmbeddedClient(
-      const viz::LocalSurfaceId& embedded_client_local_surface_id) = 0;
+      const viz::LocalSurfaceId& embedded_client_local_surface_id,
+      base::TimeTicks embedded_client_local_surface_id_allocation_time) = 0;
 
   // Gets the current viz::LocalSurfaceId. The viz::LocalSurfaceId is allocated
   // lazily on call, and will be updated on changes to size or device scale
   // factor.
   virtual const viz::LocalSurfaceId& GetLocalSurfaceId() = 0;
 
+  // Gets the time at which the current viz::LocalSurfaceId was allocated.
+  virtual base::TimeTicks GetLocalSurfaceIdAllocationTime() const = 0;
+
   virtual void OnEventTargetingPolicyChanged() = 0;
 
   // See description of function with same name in transient_window_client.
   virtual bool ShouldRestackTransientChildren() = 0;
+
+  // Called to register/unregister an embedded FramesSinkId. This is only called
+  // if SetEmbedFrameSinkId() is called on the associated Window.
+  virtual void RegisterFrameSinkId(const viz::FrameSinkId& frame_sink_id) {}
+  virtual void UnregisterFrameSinkId(const viz::FrameSinkId& frame_sink_id) {}
+
+  // Called to start occlusion state tracking.
+  virtual void TrackOcclusionState() {}
 
  protected:
   explicit WindowPort(Type type);

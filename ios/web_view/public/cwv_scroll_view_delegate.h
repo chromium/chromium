@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
               targetContentOffset:(inout CGPoint*)targetContentOffset;
 - (void)scrollViewDidScroll:(CWVScrollView*)scrollView;
 - (void)scrollViewDidEndDecelerating:(CWVScrollView*)scrollView;
+- (BOOL)scrollViewShouldScrollToTop:(CWVScrollView*)scrollView;
 
 // The equivalent in UIScrollViewDelegate also takes a parameter (UIView*)view,
 // but CWVScrollViewDelegate doesn't expose it for flexibility of future

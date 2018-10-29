@@ -20,7 +20,7 @@ namespace net {
 
 MockMDnsDatagramServerSocket::MockMDnsDatagramServerSocket(
     AddressFamily address_family) {
-  local_address_ = GetMDnsIPEndPoint(address_family);
+  local_address_ = GetMDnsReceiveEndPoint(address_family);
 }
 
 MockMDnsDatagramServerSocket::~MockMDnsDatagramServerSocket() = default;

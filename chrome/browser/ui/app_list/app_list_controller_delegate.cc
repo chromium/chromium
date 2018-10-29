@@ -51,7 +51,7 @@ const extensions::Extension* GetExtension(Profile* profile,
 }  // namespace
 
 AppListControllerDelegate::AppListControllerDelegate()
-    : is_home_launcher_enabled_(app_list::features::IsHomeLauncherEnabled()),
+    : is_home_launcher_enabled_(app_list_features::IsHomeLauncherEnabled()),
       weak_ptr_factory_(this) {}
 
 AppListControllerDelegate::~AppListControllerDelegate() {}

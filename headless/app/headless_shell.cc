@@ -26,6 +26,7 @@
 #include "base/task_runner_util.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/os_crypt/os_crypt_switches.h"
 #include "components/viz/common/switches.h"
 #include "content/public/app/content_main.h"
 #include "content/public/browser/browser_thread.h"
@@ -652,6 +653,10 @@ int HeadlessShellMain(int argc, const char** argv) {
   builder.SetCrashDumpsDir(dumps_path);
 #endif
 
+#if defined(OS_MACOSX)
+  command_line.AppendSwitch(os_crypt::switches::kUseMockKeychain);
+#endif
+
   if (command_line.HasSwitch(switches::kDeterministicMode)) {
     command_line.AppendSwitch(switches::kEnableBeginFrameControl);
 
@@ -719,11 +724,6 @@ int HeadlessShellMain(int argc, const char** argv) {
       proxy_config->proxy_rules().bypass_rules.ParseFromString(bypass_list);
     }
     builder.SetProxyConfig(std::move(proxy_config));
-  }
-
-  if (command_line.HasSwitch(::network::switches::kHostResolverRules)) {
-    builder.SetHostResolverRules(command_line.GetSwitchValueASCII(
-        ::network::switches::kHostResolverRules));
   }
 
   if (command_line.HasSwitch(switches::kUseGL)) {

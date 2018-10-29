@@ -932,14 +932,10 @@ Elements.ElementsActionDelegate = class {
         treeOutline.toggleEditAsHTML(node);
         return true;
       case 'elements.undo':
-        if (UI.isEditing())
-          return false;
         SDK.domModelUndoStack.undo();
         Elements.ElementsPanel.instance()._stylesWidget.forceUpdate();
         return true;
       case 'elements.redo':
-        if (UI.isEditing())
-          return false;
         SDK.domModelUndoStack.redo();
         Elements.ElementsPanel.instance()._stylesWidget.forceUpdate();
         return true;

@@ -17,7 +17,7 @@
   }
 
   function dumpUISourceCode(uiSourceCode, callback) {
-    TestRunner.addResult('UISourceCode: ' + uiSourceCode.url().replace(/.*LayoutTests/, 'LayoutTests'));
+    TestRunner.addResult('UISourceCode: ' + uiSourceCode.url().replace(/.*(LayoutTests|web_tests)./, ''));
     if (uiSourceCode.contentType() === Common.resourceTypes.Script ||
         uiSourceCode.contentType() === Common.resourceTypes.Document)
       TestRunner.addResult(

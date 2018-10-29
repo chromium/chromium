@@ -180,8 +180,8 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
     }
 
     // Drop links from inactive trackers.
-    for (std::set<int64_t>::iterator iter = inactive_trackers.begin();
-         iter != inactive_trackers.end(); ++iter) {
+    for (auto iter = inactive_trackers.begin(); iter != inactive_trackers.end();
+         ++iter) {
       trackers_by_parent.erase(*iter);
     }
   }

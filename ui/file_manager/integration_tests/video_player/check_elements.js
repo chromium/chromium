@@ -16,8 +16,13 @@ testcase.checkInitialElements = function() {
       return Promise.all([
         remoteCallVideoPlayer.waitForElement(appId, 'html[i18n-processed]'),
         remoteCallVideoPlayer.waitForElement(appId, 'div#video-player'),
-        remoteCallVideoPlayer.waitForElement(
-            appId, '#video-container > video'),
+        remoteCallVideoPlayer.waitForElement(appId, '#video-container > video'),
+        remoteCallVideoPlayer.waitForElement(appId, 'files-icon-button.play')
+            .then(function(element) {
+              // files-icon-button is a Polymer element and should have a
+              // shadowRoot.
+              chrome.test.assertTrue(element.hasShadowRoot);
+            }),
       ]);
     });
 };

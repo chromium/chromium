@@ -3,4 +3,5 @@ This tests for a bug where content before a list made into a list item would be 
 One
 Two
 Three
+
 <ul><li>One</li><li>Two</li><li>Three</li></ul>

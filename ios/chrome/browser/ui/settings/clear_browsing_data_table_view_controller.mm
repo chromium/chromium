@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/elements/chrome_activity_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/settings/cells/table_view_clear_browsing_data_item.h"
 #include "ios/chrome/browser/ui/settings/clear_browsing_data_local_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data_manager.h"
@@ -50,6 +51,11 @@ class ChromeBrowserState;
 
 // Coordinator that managers a UIAlertController to clear browsing data.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
+
+// Coordinator for displaying a modal overlay with native activity indicator to
+// prevent the user from interacting with the page.
+@property(nonatomic, strong)
+    ChromeActivityOverlayCoordinator* chromeActivityOverlayCoordinator;
 
 // Reference to clear browsing data button for positioning popover confirmation
 // dialog.
@@ -250,10 +256,39 @@ class ChromeBrowserState;
                           completionBlock:(ProceduralBlock)completionBlock {
   base::RecordAction(
       base::UserMetricsAction("MobileClearBrowsingDataTriggeredFromUIRefresh"));
-  [self.dispatcher removeBrowsingDataForBrowserState:browserState
-                                          timePeriod:timePeriod
-                                          removeMask:removeMask
-                                     completionBlock:completionBlock];
+
+  // Show activity indicator modal while removal is happening.
+  self.chromeActivityOverlayCoordinator =
+      [[ChromeActivityOverlayCoordinator alloc]
+          initWithBaseViewController:self.navigationController];
+  self.chromeActivityOverlayCoordinator.messageText =
+      l10n_util::GetNSStringWithFixup(
+          IDS_IOS_CLEAR_BROWSING_DATA_ACTIVITY_MODAL);
+  [self.chromeActivityOverlayCoordinator start];
+
+  __weak ClearBrowsingDataTableViewController* weakSelf = self;
+  dispatch_time_t timeOneSecondLater =
+      dispatch_time(DISPATCH_TIME_NOW, (1 * NSEC_PER_SEC));
+  void (^removeBrowsingDidFinishCompletionBlock)(void) = ^void() {
+    ClearBrowsingDataTableViewController* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    // Sometimes clear browsing data is really short
+    // (<1sec), so ensure that overlay displays for at
+    // least 1 second instead of looking like a glitch.
+    dispatch_after(timeOneSecondLater, dispatch_get_main_queue(), ^{
+      [self.chromeActivityOverlayCoordinator stop];
+      if (completionBlock)
+        completionBlock();
+    });
+  };
+
+  [self.dispatcher
+      removeBrowsingDataForBrowserState:browserState
+                             timePeriod:timePeriod
+                             removeMask:removeMask
+                        completionBlock:removeBrowsingDidFinishCompletionBlock];
 }
 
 - (void)showBrowsingHistoryRemovedDialog {

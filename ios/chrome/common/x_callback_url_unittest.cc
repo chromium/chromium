@@ -4,6 +4,7 @@
 
 #include "ios/chrome/common/x_callback_url.h"
 
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -109,7 +110,7 @@ TEST_F(XCallbackURLTest, URLWithScheme) {
       },
   };
 
-  for (size_t i = 0; i < arraysize(test_cases); ++i) {
+  for (size_t i = 0; i < base::size(test_cases); ++i) {
     const XCallbackURLEncodeTestCase& test_case = test_cases[i];
     const GURL x_callback_url = CreateXCallbackURLWithParameters(
         test_case.scheme, test_case.action, test_case.success_url,
@@ -171,7 +172,7 @@ TEST_F(XCallbackURLTest, QueryParameters) {
       },
   };
 
-  for (size_t i = 0; i < arraysize(test_cases); ++i) {
+  for (size_t i = 0; i < base::size(test_cases); ++i) {
     const XCallbackURLDecodeTestCase& test_case = test_cases[i];
     const std::map<std::string, std::string> parameters =
         ExtractQueryParametersFromXCallbackURL(test_case.x_callback_url);

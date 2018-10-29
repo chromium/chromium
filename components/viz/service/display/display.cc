@@ -7,10 +7,12 @@
 #include <stddef.h>
 #include <limits>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/benchmarks/benchmark_instrumentation.h"
@@ -80,7 +82,7 @@ Display::~Display() {
   observers_.Clear();
 
   for (auto& callback_list : pending_presented_callbacks_) {
-    for (auto& callback : callback_list)
+    for (auto& callback : callback_list.second)
       std::move(callback).Run(gfx::PresentationFeedback::Failure());
   }
 
@@ -230,12 +232,22 @@ void Display::InitializeRenderer() {
       mode, output_surface_->context_provider(), bitmap_manager_);
 
   if (settings_.use_skia_renderer && mode == DisplayResourceProvider::kGpu) {
-    // Check the compositing mode, because SkiaRenderer only works with GPU
-    // compositing.
-    DCHECK(output_surface_);
-    renderer_ = std::make_unique<SkiaRenderer>(
-        &settings_, output_surface_.get(), resource_provider_.get(),
-        skia_output_surface_);
+    // Default to use DDL if skia_output_surface is not null.
+    if (skia_output_surface_) {
+      renderer_ = std::make_unique<SkiaRenderer>(
+          &settings_, output_surface_.get(), resource_provider_.get(),
+          skia_output_surface_, SkiaRenderer::DrawMode::DDL);
+    } else {
+      // GPU compositing with GL.
+      DCHECK(output_surface_);
+      DCHECK(output_surface_->context_provider());
+      SkiaRenderer::DrawMode mode = settings_.record_sk_picture
+                                        ? SkiaRenderer::DrawMode::SKPRECORD
+                                        : SkiaRenderer::DrawMode::GL;
+      renderer_ = std::make_unique<SkiaRenderer>(
+          &settings_, output_surface_.get(), resource_provider_.get(),
+          nullptr /* skia_output_surface */, mode);
+    }
   } else if (output_surface_->context_provider()) {
     renderer_ = std::make_unique<GLRenderer>(&settings_, output_surface_.get(),
                                              resource_provider_.get(),
@@ -244,7 +256,7 @@ void Display::InitializeRenderer() {
   } else if (output_surface_->vulkan_context_provider()) {
     renderer_ = std::make_unique<SkiaRenderer>(
         &settings_, output_surface_.get(), resource_provider_.get(),
-        nullptr /* skia_output_surface */);
+        nullptr /* skia_output_surface */, SkiaRenderer::DrawMode::VULKAN);
 #endif
   } else {
     auto renderer = std::make_unique<SoftwareRenderer>(
@@ -294,11 +306,23 @@ bool Display::DrawAndSwap() {
     return false;
   }
 
+  // During aggregation, SurfaceAggregator marks all resources used for a draw
+  // in the resource provider.  This has the side effect of deleting unused
+  // resources and their textures, generating sync tokens, and returning the
+  // resources to the client.  This involves GL work which is issued before
+  // drawing commands, and gets prioritized by GPU scheduler because sync token
+  // dependencies aren't issued until the draw.
+  //
+  // Batch and defer returning resources in resource provider.  This defers the
+  // GL commands for deleting resources to after the draw, and prevents context
+  // switching because the scheduler knows sync token dependencies at that time.
+  DisplayResourceProvider::ScopedBatchReturnResources returner(
+      resource_provider_.get());
   base::ElapsedTimer aggregate_timer;
+  const base::TimeTicks now_time = aggregate_timer.Begin();
   CompositorFrame frame = aggregator_->Aggregate(
       current_surface_id_,
-      scheduler_ ? scheduler_->current_frame_display_time()
-                 : base::TimeTicks::Now(),
+      scheduler_ ? scheduler_->current_frame_display_time() : now_time,
       ++swapped_trace_id_);
   UMA_HISTOGRAM_COUNTS_1M("Compositing.SurfaceAggregator.AggregateUs",
                           aggregate_timer.Elapsed().InMicroseconds());
@@ -413,7 +437,8 @@ bool Display::DrawAndSwap() {
         callbacks.emplace_back(std::move(callback));
       }
     }
-    pending_presented_callbacks_.emplace_back(std::move(callbacks));
+    pending_presented_callbacks_.emplace_back(
+        std::make_pair(now_time, std::move(callbacks)));
 
     ui::LatencyInfo::TraceIntermediateFlowEvents(frame.metadata.latency_info,
                                                  "Display::DrawAndSwap");
@@ -497,7 +522,34 @@ void Display::DidSwapWithSize(const gfx::Size& pixel_size) {
 void Display::DidReceivePresentationFeedback(
     const gfx::PresentationFeedback& feedback) {
   DCHECK(!pending_presented_callbacks_.empty());
-  auto& callbacks = pending_presented_callbacks_.front();
+  auto& callbacks = pending_presented_callbacks_.front().second;
+#if defined(OS_ANDROID)
+  // Temporary to investigate large presentation times.
+  // https://crbug.com/894440
+  const auto swap_time = pending_presented_callbacks_.front().first;
+  DCHECK(!swap_time.is_null());
+  if (!feedback.timestamp.is_null()) {
+    const auto now = base::TimeTicks::Now();
+    if (feedback.timestamp > now) {
+      const auto diff = feedback.timestamp - now;
+      // This collects the time-delta in buckets from 10ms up-to 3minutes. This
+      // should provide sufficient information about the spread.
+      // https://crbug.com/894440
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Graphics.PresentationTimestamp.InvalidFromFuture", diff);
+      base::debug::DumpWithoutCrashing();
+      // In debug builds, just crash immediately.
+      DCHECK(false);
+    }
+
+    const auto difference = feedback.timestamp - swap_time;
+    if (difference.InMinutes() > 3) {
+      base::debug::DumpWithoutCrashing();
+      // In debug builds, just crash immediately.
+      DCHECK(false);
+    }
+  }
+#endif
   for (auto& callback : callbacks) {
     std::move(callback).Run(feedback);
   }
@@ -608,7 +660,7 @@ void Display::RemoveOverdrawQuads(CompositorFrame* frame) {
   for (const auto& pass : frame->render_pass_list) {
     // TODO(yiyix): Add filter effects to draw occlusion calculation and perform
     // draw occlusion on render pass.
-    if (!pass->filters.IsEmpty() || !pass->background_filters.IsEmpty()) {
+    if (!pass->filters.IsEmpty() || !pass->backdrop_filters.IsEmpty()) {
       for (auto* const quad : pass->quad_list) {
         total_quad_area_shown_wo_occlusion_px +=
             quad->visible_rect.size().GetCheckedArea();

@@ -21,7 +21,8 @@ enum class HostResolverSource {
   // Results will only come from DNS queries.
   DNS,
 
-  // TODO(crbug.com/846423): Add MDNS support.
+  // Results will only come from Multicast DNS queries.
+  MULTICAST_DNS,
 };
 
 }  // namespace net

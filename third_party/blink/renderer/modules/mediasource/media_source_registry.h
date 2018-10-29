@@ -55,7 +55,7 @@ class MediaSourceRegistry final : public URLRegistry {
 
  private:
   MediaSourceRegistry();
-  PersistentHeapHashMap<String, Member<MediaSource>> media_sources_;
+  Persistent<HeapHashMap<String, Member<MediaSource>>> media_sources_;
 };
 
 }  // namespace blink

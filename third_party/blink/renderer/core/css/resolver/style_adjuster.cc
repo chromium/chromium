@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/length.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -447,16 +447,20 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
       style.Display() == EDisplay::kTableHeaderGroup ||
       style.Display() == EDisplay::kTableRow ||
       style.Display() == EDisplay::kTableRowGroup ||
-      style.Display() == EDisplay::kTableCell)
+      style.Display() == EDisplay::kTableCell) {
     style.SetWritingMode(layout_parent_style.GetWritingMode());
+    style.UpdateFontOrientation();
+  }
 
   // FIXME: Since we don't support block-flow on flexible boxes yet, disallow
   // setting of block-flow to anything other than TopToBottomWritingMode.
   // https://bugs.webkit.org/show_bug.cgi?id=46418 - Flexible box support.
   if (style.GetWritingMode() != WritingMode::kHorizontalTb &&
       (style.Display() == EDisplay::kWebkitBox ||
-       style.Display() == EDisplay::kWebkitInlineBox))
+       style.Display() == EDisplay::kWebkitInlineBox)) {
     style.SetWritingMode(WritingMode::kHorizontalTb);
+    style.UpdateFontOrientation();
+  }
 
   if (layout_parent_style.IsDisplayFlexibleOrGridBox()) {
     style.SetFloating(EFloat::kNone);
@@ -557,14 +561,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   const ComputedStyle& parent_style = *state.ParentStyle();
   const ComputedStyle& layout_parent_style = *state.LayoutParentStyle();
 
-  if (element && (style.Display() != EDisplay::kNone ||
-                  element->LayoutObjectIsNeeded(style))) {
-    // TODO(rakina): Move this attribute check somewhere else.
-    if (RuntimeEnabledFeatures::InvisibleDOMEnabled() &&
-        element->Invisible() != InvisibleState::kMissing)
-      style.SetDisplay(EDisplay::kNone);
-    else if (element->IsHTMLElement())
-      AdjustStyleForHTMLElement(style, ToHTMLElement(*element));
+  if (element && element->IsHTMLElement() &&
+      (style.Display() != EDisplay::kNone ||
+       element->LayoutObjectIsNeeded(style))) {
+    AdjustStyleForHTMLElement(style, ToHTMLElement(*element));
   }
   if (style.Display() != EDisplay::kNone) {
     bool is_document_element =
@@ -636,12 +636,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // Let the theme also have a crack at adjusting the style.
   if (style.HasAppearance())
     LayoutTheme::GetTheme().AdjustStyle(style, element);
-
-  // If we have first-letter pseudo style, transitions, or animations, do not
-  // share this style.
-  if (style.HasPseudoStyle(kPseudoIdFirstLetter) || style.Transitions() ||
-      style.Animations())
-    style.SetUnique();
 
   AdjustStyleForEditing(style);
 

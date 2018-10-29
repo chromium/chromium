@@ -21,6 +21,7 @@
 <translation id="1270290102613614947">Экранная клавиатура отключена</translation>
 <translation id="1272079795634619415">Остановить</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1289185460362160437">Устройство станет доступно в <ph name="COME_BACK_TIME" /> (<ph name="COME_BACK_DAY_OF_WEEK" />).</translation>
 <translation id="1290331692326790741">слабый сигнал</translation>
 <translation id="1293264513303784526">Устройство USB-C (порт слева)</translation>
 <translation id="1294929383540927798">Изменить настройки уведомлений на заблокированном экране</translation>
@@ -98,6 +99,7 @@
 <translation id="2501920221385095727">Залипание клавиш</translation>
 <translation id="2509468283778169019">Включен режим CAPS LOCK</translation>
 <translation id="2532589005999780174">Режим высокой контрастности</translation>
+<translation id="255671100581129685">Google Ассистент не работает в сеансе общего доступа.</translation>
 <translation id="2575685495496069081">Множественный вход отключен</translation>
 <translation id="2582112259361606227">Перезагрузить и обновить</translation>
 <translation id="2597972630681408282">Ночной режим: <ph name="NIGHT_LIGHT_STATUS" /></translation>
@@ -110,7 +112,6 @@
 <translation id="277257480934873581">Повторное подключение к сети <ph name="NAME" />…</translation>
 <translation id="2790844815106384441">Настраивать доступ сайтов к местоположению устройства, его камере, микрофону и другим функциям.</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
-<translation id="2808012452536866044">В режиме Better Together теперь используется другой телефон.</translation>
 <translation id="2819276065543622893">Сеанс завершен.</translation>
 <translation id="2825619548187458965">Полка</translation>
 <translation id="2844169650293029770">Устройство USB-C (ближний порт слева)</translation>
@@ -129,6 +130,7 @@
 <translation id="3000461861112256445">Монофонический звук</translation>
 <translation id="3009178788565917040">Выход</translation>
 <translation id="3019353588588144572">Оставшееся время до полной зарядки батареи: <ph name="TIME_REMAINING" />.</translation>
+<translation id="3055162170959710888">Сегодня вы уже использовали это устройство <ph name="USED_TIME" />.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Развернуть меню</translation>
 <translation id="3087734570205094154">Снизу</translation>
@@ -150,9 +152,9 @@
 <translation id="3413817803639110246">Уведомлений нет.</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
 <translation id="3454224730401036106">Вы были подключены к более безопасной сети.</translation>
-<translation id="3465566417615315331">Нажмите на свое фото</translation>
 <translation id="3477079411857374384">Ctrl + Shift + Пробел</translation>
 <translation id="3510164367642747937">Выделять указатель мыши</translation>
+<translation id="3510503721818156981">Устройство Chromebook подключено к новому телефону.</translation>
 <translation id="3513798432020909783">Администратор аккаунта: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3573179567135747900">Вернуться к языку: "<ph name="FROM_LOCALE" />" (потребуется перезагрузка)</translation>
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
@@ -196,6 +198,7 @@
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Загрузка Ассистента…</translation>
+<translation id="435527878592612277">Выберите фото</translation>
 <translation id="4378551569595875038">Подключение…</translation>
 <translation id="4379531060876907730">Инструменты для работы со стилусом</translation>
 <translation id="4421231901400348175">Доступ к экрану для <ph name="HELPER_NAME" /> с помощью удаленного помощника</translation>
@@ -214,6 +217,7 @@
 <translation id="4659419629803378708">Функция ChromeVox включена</translation>
 <translation id="4734965478015604180">Горизонтальная ориентация</translation>
 <translation id="476166673298332917">Администратору этого устройства доступна информация обо всех действиях, а также пароли и сообщения.</translation>
+<translation id="4774338217796918551">Возвращайтесь завтра в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Пароль для адреса электронной почты <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Google Ассистент в демонстрационном сеансе недоступен</translation>
 <translation id="479989351350248267">поиск</translation>
@@ -228,6 +232,7 @@
 <translation id="4918086044614829423">Принять</translation>
 <translation id="4924411785043111640">Перезапустить и сбросить настройки</translation>
 <translation id="4961318399572185831">Трансляция экрана</translation>
+<translation id="5030687792513154421">Время вышло</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
 <translation id="5168181903108465623">Доступны устройства для трансляции</translation>
@@ -248,7 +253,6 @@
 <translation id="554893713779400387">Включение голосового ввода</translation>
 <translation id="5571066253365925590">Bluetooth включен</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
-<translation id="5598551463564921617">Режим Better Together включен</translation>
 <translation id="5600837773213129531">Чтобы отключить озвучивание текста на экране, нажмите CTRL + ALT + Z.</translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
 <translation id="5669267381087807207">Активация</translation>
@@ -276,7 +280,6 @@
 <translation id="598882571027504733">Чтобы выполнить обновление, перезагрузите устройство Chromebook, не отключая от него клавиатуру.</translation>
 <translation id="5992218262414051481">Режим высокой контрастности включен. Чтобы отключить его, нажмите CTRL + ПОИСК + H.</translation>
 <translation id="6018164090099858612">Выход из режима трансляции…</translation>
-<translation id="6040143037577758943">Закрыть</translation>
 <translation id="6043212731627905357">Монитор не совместим с устройством <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6043994281159824495">Выйти</translation>
 <translation id="6047696787498798094">Если перейти к другому пользователю, доступ к экрану будет закрыт. Продолжить?</translation>
@@ -340,6 +343,7 @@
 <translation id="7066646422045619941">Эта сеть отключена администратором.</translation>
 <translation id="7067196344162293536">Автоповорот</translation>
 <translation id="7068360136237591149">Открыть файлы</translation>
+<translation id="7076293881109082629">Вход</translation>
 <translation id="7092922358121866860">Показать настройки ночного режима</translation>
 <translation id="7098389117866926363">Устройство USB-C (порт слева на задней панели)</translation>
 <translation id="7131634465328662194">После этого вы выйдете из системы.</translation>
@@ -359,6 +363,7 @@
 <translation id="7510334386202674593">Ctrl + Shift + L</translation>
 <translation id="7526573455193969409">Сеть может отслеживаться</translation>
 <translation id="7536035074519304529">IP-адрес: <ph name="ADDRESS" /></translation>
+<translation id="7548434653388805669">Пора ложиться спать</translation>
 <translation id="7561014039265304140">Дисплей <ph name="DISPLAY_NAME" /> не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" />. Будет использовано разрешение <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="7562368315689366235">Меню смайликов</translation>
 <translation id="7564874036684306347">При переносе окон на другой рабочий стол иногда возникают ошибки. Уведомления и диалоговые окна могут появляться на разных рабочих столах.</translation>
@@ -401,12 +406,14 @@
 <translation id="8152119955266188852">Вы нажали сочетание клавиш для полноэкранной лупы. Включить ее?</translation>
 <translation id="8190698733819146287">Настройки языков и ввода…</translation>
 <translation id="8192202700944119416">Уведомления скрыты</translation>
+<translation id="8236042855478648955">Пора сделать перерыв</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8297006494302853456">Слабый</translation>
 <translation id="8308637677604853869">Предыдущее меню</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8351131234907093545">Создать заметку</translation>
 <translation id="8392451568018454956">Меню параметров пользователя "<ph name="USER_EMAIL_ADDRESS" />"</translation>
+<translation id="8394567579869570560">Ваш родитель заблокировал это устройство.</translation>
 <translation id="8406981827175133772">Полноэкранная лупа</translation>
 <translation id="8425213833346101688">Изменить</translation>
 <translation id="8427213022735114808">Запись вашего голоса отправляется в Google. Это позволяет использовать голосовой набор для любого текстового поля.</translation>
@@ -436,7 +443,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8825534185036233643">Зеркалирование более двух дисплеев не поддерживается.</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8841375032071747811">Назад</translation>
 <translation id="8843682306134542540">Изменить настройки автоповорота экрана. <ph name="STATE_TEXT" />.</translation>
 <translation id="8850991929411075241">Клавиша поиска + Esc</translation>
 <translation id="8870509716567206129">Приложение не поддерживает разделение экрана.j</translation>
@@ -463,6 +469,7 @@
 <translation id="9201131092683066720">Батарея заряжена на <ph name="PERCENTAGE" />%.</translation>
 <translation id="9210037371811586452">Выход из режима единого рабочего стола…</translation>
 <translation id="9215934040295798075">Выбрать обои</translation>
+<translation id="921989828232331238">Ваш родитель заблокировал это устройство на целый день.</translation>
 <translation id="923686485342484400">Чтобы выйти, дважды нажмите Control+Shift+Q.</translation>
 <translation id="938963181863597773">Что у меня запланировано?</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>

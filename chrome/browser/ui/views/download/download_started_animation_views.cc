@@ -6,9 +6,7 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -123,10 +121,6 @@ void DownloadStartedAnimationViews::AnimateToState(double state) {
 
 // static
 void DownloadStartedAnimation::Show(content::WebContents* web_contents) {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    return ShowCocoa(web_contents);
-#endif
   // The animation will delete itself when it's finished.
   new DownloadStartedAnimationViews(web_contents);
 }

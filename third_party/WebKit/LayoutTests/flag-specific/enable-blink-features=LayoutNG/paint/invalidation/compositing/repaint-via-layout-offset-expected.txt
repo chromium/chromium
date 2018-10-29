@@ -36,12 +36,12 @@
         {
           "object": "LayoutNGBlockFlow (positioned) SPAN class='child embiggen'",
           "rect": [0, 0, 50, 50],
-          "reason": "subtree"
+          "reason": "background"
         },
         {
           "object": "LayoutNGBlockFlow (positioned) SPAN class='child'",
           "rect": [0, 0, 40, 40],
-          "reason": "subtree"
+          "reason": "geometry"
         }
       ]
     }

@@ -474,7 +474,7 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
   if (!enabled_networks_onc_types)
     return RespondNow(Error(networking_private::kErrorNotSupported));
   std::unique_ptr<base::ListValue> enabled_networks_list(new base::ListValue);
-  for (base::ListValue::iterator iter = enabled_networks_onc_types->begin();
+  for (auto iter = enabled_networks_onc_types->begin();
        iter != enabled_networks_onc_types->end(); ++iter) {
     std::string type;
     if (!iter->GetAsString(&type))

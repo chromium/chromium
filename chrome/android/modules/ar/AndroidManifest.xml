@@ -12,10 +12,8 @@
         android:minSdkVersion="24"
         android:targetSdkVersion="{{target_sdk_version}}" />
 
-    <!-- TODO(crbug.com/863068): Set dist:onDemand="true" once we can on-demand
-         install modules. -->
     <dist:module
-        dist:onDemand="false"
+        dist:onDemand="true"
         dist:title="@string/ar_module_title">
         <dist:fusing dist:include="false" />
     </dist:module>

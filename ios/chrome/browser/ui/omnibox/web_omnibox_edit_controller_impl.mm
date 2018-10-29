@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller_impl.h"
 
-#include "components/toolbar/toolbar_model.h"
+#include "components/omnibox/browser/toolbar_model.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #import "ios/chrome/browser/ui/omnibox/location_bar_delegate.h"
 #include "url/gurl.h"

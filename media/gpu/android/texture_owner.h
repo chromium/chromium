@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_ANDROID_TEXTURE_OWNER_H_
 #define MEDIA_GPU_ANDROID_TEXTURE_OWNER_H_
 
+#include <android/hardware_buffer.h>
+
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/single_thread_task_runner.h"
@@ -12,6 +14,7 @@
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
 
 namespace media {
@@ -68,6 +71,12 @@ class MEDIA_GPU_EXPORT TextureOwner
   // Waits for onFrameAvailable until it's been 5ms since the buffer was
   // released. This must only be called if IsExpectingFrameAvailable().
   virtual void WaitForFrameAvailable() = 0;
+
+  // Retrieves the AHardwareBuffer from the latest available image data.
+  // Note that the object must be used and destroyed on the same thread the
+  // TextureOwner is bound to.
+  virtual std::unique_ptr<gl::GLImage::ScopedHardwareBuffer>
+  GetAHardwareBuffer() = 0;
 
  protected:
   friend class base::RefCountedDeleteOnSequence<TextureOwner>;

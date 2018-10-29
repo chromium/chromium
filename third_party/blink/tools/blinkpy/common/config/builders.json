@@ -92,7 +92,6 @@
         "is_try_builder": true
     },
     "android_blink_rel": {
-        "bucket": "master.tryserver.chromium.android",
         "port_name": "android-kitkat",
         "specifiers": ["KitKat", "Release"],
         "is_try_builder": true

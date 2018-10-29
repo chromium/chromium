@@ -70,6 +70,11 @@ dependencies {
     def daggerVersion = '2.17'
     compile "com.google.dagger:dagger:${daggerVersion}"
     annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
+
+    // JavaPoet
+    // Matches version depended on by Dagger.
+    compile "com.squareup:javapoet:1.11.0"
+
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

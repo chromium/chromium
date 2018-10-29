@@ -5,75 +5,78 @@
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
 
 #include "base/sequenced_task_runner.h"
-#include "chrome/browser/io_thread.h"
+#include "base/task/post_task.h"
+#include "chrome/browser/browser_process.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/url_request/url_request_context.h"
-
-namespace net {
-class NetworkQualityEstimator;
-}
 
 namespace metrics {
 
-namespace {
-
-void GetNetworkQualityEstimatorOnIOThread(
-    base::Callback<void(net::NetworkQualityEstimator*)> io_callback,
-    IOThread* io_thread) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
-
-  net::NetworkQualityEstimator* network_quality_estimator =
-      io_thread->globals()->system_request_context->network_quality_estimator();
-  // |network_quality_estimator| may be nullptr when running the network service
-  // out of process.
-  // TODO(mmenke):  Hook this up through a Mojo API.
-  if (network_quality_estimator) {
-    // It is safe to run |io_callback| here since it is guaranteed to be
-    // non-null.
-    io_callback.Run(network_quality_estimator);
-  }
-}
-
-}  // namespace
-
-NetworkQualityEstimatorProviderImpl::NetworkQualityEstimatorProviderImpl(
-    IOThread* io_thread)
-    : io_thread_(io_thread), weak_ptr_factory_(this) {
+NetworkQualityEstimatorProviderImpl::NetworkQualityEstimatorProviderImpl()
+    : weak_ptr_factory_(this) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  DCHECK(io_thread_);
 }
 
 NetworkQualityEstimatorProviderImpl::~NetworkQualityEstimatorProviderImpl() {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (callback_) {
+    g_browser_process->network_quality_tracker()
+        ->RemoveEffectiveConnectionTypeObserver(this);
+  }
 }
 
-scoped_refptr<base::SequencedTaskRunner>
-NetworkQualityEstimatorProviderImpl::GetTaskRunner() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return content::BrowserThread::GetTaskRunnerForThread(
-      content::BrowserThread::IO);
-}
-
-void NetworkQualityEstimatorProviderImpl::PostReplyNetworkQualityEstimator(
-    base::Callback<void(net::NetworkQualityEstimator*)> io_callback) {
+void NetworkQualityEstimatorProviderImpl::PostReplyOnNetworkQualityChanged(
+    base::RepeatingCallback<void(net::EffectiveConnectionType)> callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!content::BrowserThread::IsThreadInitialized(
           content::BrowserThread::IO)) {
     // IO thread is not yet initialized. Try again in the next message pump.
     bool task_posted = base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::Bind(&NetworkQualityEstimatorProviderImpl::
-                                  PostReplyNetworkQualityEstimator,
-                              weak_ptr_factory_.GetWeakPtr(), io_callback));
+        FROM_HERE,
+        base::BindOnce(&NetworkQualityEstimatorProviderImpl::
+                           PostReplyOnNetworkQualityChanged,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     DCHECK(task_posted);
     return;
   }
 
-  bool task_posted =
-      content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::IO)
-          ->PostTask(FROM_HERE,
-                     base::Bind(&GetNetworkQualityEstimatorOnIOThread,
-                                io_callback, io_thread_));
+#ifdef OS_ANDROID
+  // TODO(tbansal): https://crbug.com/898304: Tasks posted via
+  // content::BrowserThread::PostAfterStartupTask may take up to ~20 seconds to
+  // execute. Figure out a way to call
+  // g_browser_process->network_quality_tracker earlier rather than waiting for
+  // content::BrowserThread::PostAfterStartupTask.
+  content::BrowserThread::PostAfterStartupTask(
+      FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&NetworkQualityEstimatorProviderImpl::
+                         AddEffectiveConnectionTypeObserverNow,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  return;
+#endif
+
+  bool task_posted = base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NetworkQualityEstimatorProviderImpl::
+                         AddEffectiveConnectionTypeObserverNow,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   DCHECK(task_posted);
+}
+
+void NetworkQualityEstimatorProviderImpl::AddEffectiveConnectionTypeObserverNow(
+    base::RepeatingCallback<void(net::EffectiveConnectionType)> callback) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(!callback_);
+
+  callback_ = callback;
+
+  g_browser_process->network_quality_tracker()
+      ->AddEffectiveConnectionTypeObserver(this);
+}
+
+void NetworkQualityEstimatorProviderImpl::OnEffectiveConnectionTypeChanged(
+    net::EffectiveConnectionType type) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  callback_.Run(type);
 }
 
 }  // namespace metrics

@@ -318,7 +318,7 @@ void HistoryURLProviderTest::RunTest(
   matches_ = autocomplete_->matches();
   if (sort_matches_) {
     TemplateURLService* service = client_->GetTemplateURLService();
-    for (ACMatches::iterator i = matches_.begin(); i != matches_.end(); ++i) {
+    for (auto i = matches_.begin(); i != matches_.end(); ++i) {
       i->ComputeStrippedDestinationURL(input, service);
     }
     AutocompleteResult::SortAndDedupMatches(input.current_page_classification(),

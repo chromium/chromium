@@ -10,8 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "content/public/common/content_client.h"
-#include "services/service_manager/embedder/embedded_service_info.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "services/service_manager/public/cpp/embedded_service_info.h"
 
 namespace content {
 

@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/optional.h"
+#include "base/unguessable_token.h"
 
 namespace ash {
 
@@ -42,15 +44,30 @@ class AssistantUiElement {
 // An Assistant UI element that will be rendered as an HTML card.
 class AssistantCardElement : public AssistantUiElement {
  public:
-  explicit AssistantCardElement(const std::string& html)
-      : AssistantUiElement(AssistantUiElementType::kCard), html_(html) {}
-
-  ~AssistantCardElement() override = default;
+  explicit AssistantCardElement(const std::string& html,
+                                const std::string& fallback);
+  ~AssistantCardElement() override;
 
   const std::string& html() const { return html_; }
 
+  const std::string& fallback() const { return fallback_; }
+
+  const base::UnguessableToken& id_token() const { return id_token_; }
+
+  const base::Optional<base::UnguessableToken>& embed_token() const {
+    return embed_token_;
+  }
+
+  void set_embed_token(
+      const base::Optional<base::UnguessableToken>& embed_token) {
+    embed_token_ = embed_token;
+  }
+
  private:
   const std::string html_;
+  const std::string fallback_;
+  base::UnguessableToken id_token_;
+  base::Optional<base::UnguessableToken> embed_token_ = base::nullopt;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantCardElement);
 };

@@ -33,4 +33,7 @@ specific_include_rules = {
     "+ash/shell.h",
     "+ash/sticky_keys/sticky_keys_controller.h",
   ],
+  "event_rewriter_unittest.cc": [
+    "+ui/events/devices/device_data_manager.h",
+  ],
 }

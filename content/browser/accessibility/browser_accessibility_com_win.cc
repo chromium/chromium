@@ -1593,7 +1593,7 @@ STDMETHODIMP BrowserAccessibilityComWin::InternalQueryInterface(
       return E_NOINTERFACE;
     }
   } else if (iid == IID_IAccessibleTableCell) {
-    if (!ui::IsCellOrTableHeaderRole(accessibility->owner()->GetRole())) {
+    if (!ui::IsCellOrTableHeader(accessibility->owner()->GetRole())) {
       *object = nullptr;
       return E_NOINTERFACE;
     }

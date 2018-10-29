@@ -20,7 +20,7 @@ uint32_t AtomicStringToFourByteTag(AtomicString tag);
 
 template <typename T>
 class FontTagValuePair {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   FontTagValuePair(const AtomicString& tag, T value)
@@ -41,16 +41,16 @@ template <typename T>
 class FontSettings {
  public:
   void Append(const T& feature) { list_.push_back(feature); }
-  size_t size() const { return list_.size(); }
-  const T& operator[](int index) const { return list_[index]; }
-  const T& at(size_t index) const { return list_.at(index); }
+  wtf_size_t size() const { return list_.size(); }
+  const T& operator[](wtf_size_t index) const { return list_[index]; }
+  const T& at(wtf_size_t index) const { return list_.at(index); }
   bool operator==(const FontSettings& other) const {
     return list_ == other.list_;
   };
   String ToString() const {
     StringBuilder builder;
-    size_t num_features = size();
-    for (size_t i = 0; i < num_features; ++i) {
+    wtf_size_t num_features = size();
+    for (wtf_size_t i = 0; i < num_features; ++i) {
       if (i > 0)
         builder.Append(",");
       const AtomicString& tag = at(i).Tag();
@@ -60,6 +60,10 @@ class FontSettings {
     }
     return builder.ToString();
   }
+  const T* begin() const { return list_.begin(); }
+  const T* end() const { return list_.end(); }
+  T* begin() { return list_.begin(); }
+  T* end() { return list_.end(); }
 
  protected:
   FontSettings() = default;

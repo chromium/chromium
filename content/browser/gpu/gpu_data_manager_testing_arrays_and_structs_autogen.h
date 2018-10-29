@@ -14,39 +14,40 @@
 #include "gpu/config/gpu_feature_type.h"
 
 namespace gpu {
-const int kFeatureListForEntry1[1] = {
+const int kFeatureListForGpuManagerTestingEntry1[1] = {
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
 };
 
-const int kFeatureListForEntry2[1] = {
+const int kFeatureListForGpuManagerTestingEntry2[1] = {
     GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS,
 };
 
-const GpuControlList::GLStrings kGLStringsForEntry2 = {
+const GpuControlList::GLStrings kGLStringsForGpuManagerTestingEntry2 = {
     nullptr, ".*GeForce.*", nullptr, nullptr,
 };
 
-const int kFeatureListForEntry3[1] = {
+const int kFeatureListForGpuManagerTestingEntry3[1] = {
     GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS,
 };
 
-const int kFeatureListForEntry4[2] = {
+const int kFeatureListForGpuManagerTestingEntry4[2] = {
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL2, GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
 };
 
-const GpuControlList::GLStrings kGLStringsForEntry4 = {
+const GpuControlList::GLStrings kGLStringsForGpuManagerTestingEntry4 = {
     nullptr, ".*GeForce.*", nullptr, nullptr,
 };
 
-const int kFeatureListForEntry5[1] = {
+const int kFeatureListForGpuManagerTestingEntry5[1] = {
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
 };
 
-const GpuControlList::GLStrings kGLStringsForEntry5Exception0 = {
-    nullptr, ".*GeForce.*", nullptr, nullptr,
+const GpuControlList::GLStrings kGLStringsForGpuManagerTestingEntry5Exception0 =
+    {
+        nullptr, ".*GeForce.*", nullptr, nullptr,
 };
 
-const int kFeatureListForEntry6[10] = {
+const int kFeatureListForGpuManagerTestingEntry6[12] = {
     GPU_FEATURE_TYPE_FLASH_STAGE3D,
     GPU_FEATURE_TYPE_GPU_COMPOSITING,
     GPU_FEATURE_TYPE_GPU_RASTERIZATION,
@@ -54,12 +55,14 @@ const int kFeatureListForEntry6[10] = {
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL2,
     GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS,
     GPU_FEATURE_TYPE_PROTECTED_VIDEO_DECODE,
+    GPU_FEATURE_TYPE_OOP_RASTERIZATION,
     GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE,
+    GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL,
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
     GPU_FEATURE_TYPE_FLASH_STAGE3D_BASELINE,
 };
 
-const int kFeatureListForEntry7[1] = {
+const int kFeatureListForGpuManagerTestingEntry7[1] = {
     GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
 };
 

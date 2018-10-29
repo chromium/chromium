@@ -47,7 +47,6 @@ jlong JNI_DownloadMediaParserBridge_Init(
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jstring>& jmime_type,
     const base::android::JavaParamRef<jstring>& jfile_path,
-    jlong jtotal_size,
     const base::android::JavaParamRef<jobject>& jcallback) {
   base::FilePath file_path(
       base::android::ConvertJavaStringToUTF8(env, jfile_path));
@@ -55,22 +54,18 @@ jlong JNI_DownloadMediaParserBridge_Init(
       base::android::ConvertJavaStringToUTF8(env, jmime_type);
 
   auto* bridge = new DownloadMediaParserBridge(
-      static_cast<int64_t>(jtotal_size), mime_type, file_path,
+      mime_type, file_path,
       base::BindOnce(&OnMediaParsed,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
   return reinterpret_cast<intptr_t>(bridge);
 }
 
 DownloadMediaParserBridge::DownloadMediaParserBridge(
-    int64_t size,
     const std::string& mime_type,
     const base::FilePath& file_path,
     DownloadMediaParser::ParseCompleteCB parse_complete_cb)
-    : parser_(std::make_unique<DownloadMediaParser>(
-          size,
-          mime_type,
-          file_path,
-          std::move(parse_complete_cb))) {}
+    : parser_(std::make_unique<DownloadMediaParser>(mime_type, file_path)),
+      parse_complete_cb_(std::move(parse_complete_cb)) {}
 
 DownloadMediaParserBridge::~DownloadMediaParserBridge() = default;
 
@@ -79,5 +74,5 @@ void DownloadMediaParserBridge::Destory(JNIEnv* env, jobject obj) {
 }
 
 void DownloadMediaParserBridge::Start(JNIEnv* env, jobject obj) {
-  parser_->Start();
+  parser_->Start(std::move(parse_complete_cb_));
 }

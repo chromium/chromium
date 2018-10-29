@@ -8,6 +8,7 @@ import argparse
 import json
 import logging
 import os
+import pipes
 import re
 import signal
 import sys
@@ -29,6 +30,8 @@ sys.path.insert(
     0, os.path.join(CHROMIUM_SRC_PATH, 'tools', 'swarming_client', 'utils'))
 import subprocess42  # pylint: disable=import-error
 
+DEFAULT_CROS_CACHE = os.path.abspath(os.path.join(
+    CHROMIUM_SRC_PATH, 'build', 'cros_cache'))
 CHROMITE_PATH = os.path.abspath(os.path.join(
     CHROMIUM_SRC_PATH, 'third_party', 'chromite'))
 CROS_RUN_VM_TEST_PATH = os.path.abspath(os.path.join(
@@ -47,11 +50,9 @@ class RemoteTest(object):
   def __init__(self, args, unknown_args):
     self._additional_args = unknown_args
     self._path_to_outdir = args.path_to_outdir
-    self._test_exe = args.test_exe
     self._test_launcher_summary_output = args.test_launcher_summary_output
     self._vm_logs_dir = args.vm_logs_dir
 
-    self._test_env = os.environ.copy()
     self._retries = 0
     self._timeout = None
 
@@ -60,12 +61,20 @@ class RemoteTest(object):
         '--start',
         '--board', args.board,
         '--cache-dir', args.cros_cache,
+        # Don't persist any filesystem changes after the VM shutsdown.
+        '--copy-on-write',
     ]
     if args.vm_logs_dir:
       self._vm_test_cmd += [
           '--results-src', '/var/log/',
           '--results-dest-dir', args.vm_logs_dir,
       ]
+
+    self._test_env = setup_env()
+
+  @property
+  def suite_name(self):
+    raise NotImplementedError('Child classes need to define suite name.')
 
   @property
   def vm_test_cmd(self):
@@ -119,7 +128,63 @@ class RemoteTest(object):
     return test_proc.returncode
 
   def post_run(self, return_code):
-    raise NotImplementedError()
+    # Create a simple json results file for a test run. The results will contain
+    # only one test (suite_name), and will either be a PASS or FAIL depending on
+    # return_code.
+    if self._test_launcher_summary_output:
+      result = (base_test_result.ResultType.FAIL if return_code else
+                    base_test_result.ResultType.PASS)
+      suite_result = base_test_result.BaseTestResult(self.suite_name, result)
+      run_results = base_test_result.TestRunResults()
+      run_results.AddResult(suite_result)
+      with open(self._test_launcher_summary_output, 'w') as f:
+        json.dump(json_results.GenerateResultsDict([run_results]), f)
+
+
+class TastTest(RemoteTest):
+
+  def __init__(self, args, unknown_args):
+    super(TastTest, self).__init__(args, unknown_args)
+
+    self._suite_name = args.suite_name
+    self._tests = args.tests
+    self._conditional = args.conditional
+
+  @property
+  def suite_name(self):
+    return self._suite_name
+
+  def build_test_command(self):
+    if '--gtest_filter=%s' % self.suite_name in self._additional_args:
+      logging.info(
+          'GTest filtering not supported for tast tests. The '
+          '--gtest_filter arg will be ignored.')
+      self._additional_args.remove('--gtest_filter=%s' % self.suite_name)
+    if any(arg.startswith('--gtest_repeat') for arg in self._additional_args):
+      logging.info(
+          '--gtest_repeat not supported for tast tests. The arg will be '
+          'ignored.')
+      self._additional_args = [
+          arg for arg in self._additional_args if not arg.startswith(
+              '--gtest_repeat')]
+
+    if self._additional_args:
+      raise TestFormatError(
+          'Tast tests should not have additional args: %s' % (
+              self._additional_args))
+
+    self._vm_test_cmd += [
+        '--deploy',
+        '--nostrip',
+        '--build-dir', os.path.relpath(self._path_to_outdir, CHROMIUM_SRC_PATH),
+        '--cmd',
+        '--',
+        'local_test_runner',
+    ]
+    if self._conditional:
+      self._vm_test_cmd.append(pipes.quote(self._conditional))
+    else:
+      self._vm_test_cmd.extend(self._tests)
 
 
 class GTestTest(RemoteTest):
@@ -133,6 +198,7 @@ class GTestTest(RemoteTest):
   def __init__(self, args, unknown_args):
     super(GTestTest, self).__init__(args, unknown_args)
 
+    self._test_exe = args.test_exe
     self._runtime_deps_path = args.runtime_deps_path
     self._vpython_dir = args.vpython_dir
 
@@ -140,6 +206,10 @@ class GTestTest(RemoteTest):
     self._test_launcher_total_shards = args.test_launcher_total_shards
 
     self._on_vm_script = None
+
+  @property
+  def suite_name(self):
+    return self._test_exe
 
   def build_test_command(self):
     # To keep things easy for us, ensure both types of output locations are
@@ -197,26 +267,7 @@ class GTestTest(RemoteTest):
       test_invocation += ' --test-launcher-summary-output=%s' % vm_result_file
     if self._additional_args:
       test_invocation += ' %s' % ' '.join(self._additional_args)
-    vm_test_script_contents += [
-        test_invocation,
-        'test_retcode=$?',
-    ]
-
-    # Clear out directories that persist logs and crash dumps. These can
-    # accumulate over a VM's lifetime and consume disk space, so remove any
-    # that the test generated.
-    # TODO(crbug.com/878526): Remove this once cros_run_vm_test handles it.
-    vm_test_script_contents += [
-        # We run tests as chronos, but need to be root to rm the files. So pass
-        # in the public plaintext root password to sudo via stdin.
-        'echo "test0000" | '
-        'sudo -S find /var/spool/crash/ -type f -print -delete',
-        'echo "test0000" | '
-        'sudo -S find /var/log/chrome/ -type f -print -delete',
-        # Make sure the exit code is that of the test, and not the post-test
-        # cleanup.
-        'exit $test_retcode',
-    ]
+    vm_test_script_contents.append(test_invocation)
 
     logging.info('Running the following command in the VM:')
     logging.info('\n' + '\n'.join(vm_test_script_contents))
@@ -280,9 +331,13 @@ class BrowserSanityTest(RemoteTest):
   def __init__(self, args, unknown_args):
     super(BrowserSanityTest, self).__init__(args, unknown_args)
 
-    # 5 min should be enough time for the sanity test to pass.
-    self._retries = 2
-    self._timeout = 300
+    # 10 min should be enough time for the sanity test to pass.
+    self._retries = 1
+    self._timeout = 600
+
+  @property
+  def suite_name(self):
+    return SANITY_TEST_TARGET
 
   def build_test_command(self):
     if '--gtest_filter=%s' % SANITY_TEST_TARGET in self._additional_args:
@@ -290,6 +345,13 @@ class BrowserSanityTest(RemoteTest):
           'GTest filtering not supported for the sanity test. The '
           '--gtest_filter arg will be ignored.')
       self._additional_args.remove('--gtest_filter=%s' % SANITY_TEST_TARGET)
+    if any(arg.startswith('--gtest_repeat') for arg in self._additional_args):
+      logging.info(
+          '--gtest_repeat not supported for sanity test. The arg will be '
+          'ignored.')
+      self._additional_args = [
+          arg for arg in self._additional_args if not arg.startswith(
+              '--gtest_repeat')]
 
     if self._additional_args:
       raise TestFormatError(
@@ -301,35 +363,9 @@ class BrowserSanityTest(RemoteTest):
     # browser, so deploy our locally-built chrome to the VM before testing.
     self._vm_test_cmd += [
         '--deploy',
+        '--nostrip',
         '--build-dir', os.path.relpath(self._path_to_outdir, CHROMIUM_SRC_PATH),
     ]
-
-    # deploy_chrome needs a set of GN args used to build chrome to determine if
-    # certain libraries need to be pushed to the VM. It looks for the args via
-    # an env var. To trigger the default deploying behavior, give it a dummy set
-    # of args.
-    # TODO(crbug.com/823996): Make the GN-dependent deps controllable via cmd
-    # line args.
-    if not self._test_env.get('GN_ARGS'):
-      self._test_env['GN_ARGS'] = 'is_chromeos = true'
-    if not self._test_env.get('USE'):
-      self._test_env['USE'] = 'highdpi'
-    self._test_env['PATH'] = (
-        self._test_env['PATH'] + ':' + os.path.join(CHROMITE_PATH, 'bin'))
-
-  def post_run(self, return_code):
-    # Create a simple json results file for the sanity test if needed. The
-    # results will contain only one test (SANITY_TEST_TARGET), and will
-    # either be a PASS or FAIL depending on the return code of cros_run_vm_test.
-    if self._test_launcher_summary_output:
-      result = (base_test_result.ResultType.FAIL if return_code else
-                    base_test_result.ResultType.PASS)
-      sanity_test_result = base_test_result.BaseTestResult(
-          SANITY_TEST_TARGET, result)
-      run_results = base_test_result.TestRunResults()
-      run_results.AddResult(sanity_test_result)
-      with open(self._test_launcher_summary_output, 'w') as f:
-        json.dump(json_results.GenerateResultsDict([run_results]), f)
 
 
 def vm_test(args, unknown_args):
@@ -340,7 +376,9 @@ def vm_test(args, unknown_args):
   # pylint: disable=redefined-variable-type
   # TODO: Remove the above when depot_tool's pylint is updated to include the
   # fix to https://github.com/PyCQA/pylint/issues/710.
-  if args.test_exe == SANITY_TEST_TARGET:
+  if args.test_type == 'tast':
+    test = TastTest(args, unknown_args)
+  elif args.test_exe == SANITY_TEST_TARGET:
     test = BrowserSanityTest(args, unknown_args)
   else:
     test = GTestTest(args, unknown_args)
@@ -368,27 +406,18 @@ def host_cmd(args, unknown_args):
       '--start',
       '--board', args.board,
       '--cache-dir', args.cros_cache,
+      # Don't persist any filesystem changes after the VM shutsdown.
+      '--copy-on-write',
   ]
   if args.verbose:
     cros_run_vm_test_cmd.append('--debug')
 
-  test_env = os.environ.copy()
+  test_env = setup_env()
   if args.deploy_chrome:
     cros_run_vm_test_cmd += [
         '--deploy',
         '--build-dir', os.path.abspath(args.path_to_outdir),
     ]
-    # If we're deploying, push chromite/bin's deploy_chrome onto PATH.
-    test_env['PATH'] = (
-        test_env['PATH'] + ':' + os.path.join(CHROMITE_PATH, 'bin'))
-    # deploy_chrome needs a set of GN args used to build chrome to determine if
-    # certain libraries need to be pushed to the VM. It looks for the args via
-    # an env var. To trigger the default deploying behavior, give it a dummy set
-    # of args.
-    # TODO(crbug.com/823996): Make the GN-dependent deps controllable via cmd
-    # line args.
-    if not test_env.get('GN_ARGS'):
-      test_env['GN_ARGS'] = 'is_chromeos = true'
 
   cros_run_vm_test_cmd += [
       '--host-cmd',
@@ -400,6 +429,48 @@ def host_cmd(args, unknown_args):
 
   return subprocess42.call(
       cros_run_vm_test_cmd, stdout=sys.stdout, stderr=sys.stderr, env=test_env)
+
+
+def setup_env():
+  """Returns a copy of the current env with some needed vars added."""
+  env = os.environ.copy()
+  # Some chromite scripts expect chromite/bin to be on PATH.
+  env['PATH'] = env['PATH'] + ':' + os.path.join(CHROMITE_PATH, 'bin')
+  # deploy_chrome needs a set of GN args used to build chrome to determine if
+  # certain libraries need to be pushed to the VM. It looks for the args via
+  # an env var. To trigger the default deploying behavior, give it a dummy set
+  # of args.
+  # TODO(crbug.com/823996): Make the GN-dependent deps controllable via cmd
+  # line args.
+  if not env.get('GN_ARGS'):
+    env['GN_ARGS'] = 'enable_nacl = true'
+  if not env.get('USE'):
+    env['USE'] = 'highdpi'
+  return env
+
+
+def add_common_args(parser):
+   parser.add_argument(
+       '--cros-cache', type=str, default=DEFAULT_CROS_CACHE,
+       help='Path to cros cache.')
+   parser.add_argument(
+       '--path-to-outdir', type=str, required=True,
+       help='Path to output directory, all of whose contents will be '
+            'deployed to the device.')
+   parser.add_argument(
+       '--runtime-deps-path', type=str,
+       help='Runtime data dependency file from GN.')
+   parser.add_argument(
+       '--vpython-dir', type=str,
+       help='Location on host of a directory containing a vpython binary to '
+            'deploy to the VM before the test starts. The location of this '
+            'dir will be added onto PATH in the VM. WARNING: The arch of the '
+            'VM might not match the arch of the host, so avoid using '
+            '"${platform}" when downloading vpython via CIPD.')
+   parser.add_argument(
+       '--vm-logs-dir', type=str,
+       help='Will copy everything under /var/log/ from the VM after the test '
+            'into the specified dir.')
 
 
 def main():
@@ -416,7 +487,8 @@ def main():
            '"--". Hostname and port for the VM will be 127.0.0.1:9222.')
   host_cmd_parser.set_defaults(func=host_cmd)
   host_cmd_parser.add_argument(
-      '--cros-cache', type=str, required=True, help='Path to cros cache.')
+      '--cros-cache', type=str, default=DEFAULT_CROS_CACHE,
+      help='Path to cros cache.')
   host_cmd_parser.add_argument(
       '--path-to-outdir', type=os.path.realpath,
       help='Path to output directory, all of whose contents will be deployed '
@@ -426,14 +498,13 @@ def main():
       help='Will deploy a locally built Chrome binary to the VM before running '
            'the host-cmd.')
   host_cmd_parser.add_argument('cmd', nargs=argparse.REMAINDER)
-  # VM-side test args.
-  vm_test_parser = subparsers.add_parser(
+  # GTest args.
+  # TODO(bpastene): Rename 'vm-test' arg to 'gtest'.
+  gtest_parser = subparsers.add_parser(
       'vm-test',
       help='Runs a vm-side gtest.')
-  vm_test_parser.set_defaults(func=vm_test)
-  vm_test_parser.add_argument(
-      '--cros-cache', type=str, required=True, help='Path to cros cache.')
-  vm_test_parser.add_argument(
+  gtest_parser.set_defaults(func=vm_test)
+  gtest_parser.add_argument(
       '--test-exe', type=str, required=True,
       help='Path to test executable to run inside VM. If the value is '
            '%s, the sanity test that ships with the VM '
@@ -444,39 +515,43 @@ def main():
 
   # GTest args. Some are passed down to the test binary in the VM. Others are
   # parsed here since they might need tweaking or special handling.
-  vm_test_parser.add_argument(
+  gtest_parser.add_argument(
       '--test-launcher-summary-output', type=str,
       help='When set, will pass the same option down to the test and retrieve '
            'its result file at the specified location.')
   # Shard args are parsed here since we might also specify them via env vars.
-  vm_test_parser.add_argument(
+  gtest_parser.add_argument(
       '--test-launcher-shard-index',
       type=int, default=os.environ.get('GTEST_SHARD_INDEX', 0),
       help='Index of the external shard to run.')
-  vm_test_parser.add_argument(
+  gtest_parser.add_argument(
       '--test-launcher-total-shards',
       type=int, default=os.environ.get('GTEST_TOTAL_SHARDS', 1),
       help='Total number of external shards.')
 
-  # Misc args.
-  vm_test_parser.add_argument(
-      '--path-to-outdir', type=str, required=True,
-      help='Path to output directory, all of whose contents will be deployed '
-           'to the device.')
-  vm_test_parser.add_argument(
-      '--runtime-deps-path', type=str,
-      help='Runtime data dependency file from GN.')
-  vm_test_parser.add_argument(
-      '--vpython-dir', type=str,
-      help='Location on host of a directory containing a vpython binary to '
-           'deploy to the VM before the test starts. The location of this dir '
-           'will be added onto PATH in the VM. WARNING: The arch of the VM '
-           'might not match the arch of the host, so avoid using "${platform}" '
-           'when downloading vpython via CIPD.')
-  vm_test_parser.add_argument(
-      '--vm-logs-dir', type=str,
-      help='Will copy everything under /var/log/ from the VM after the test '
-           'into the specified dir.')
+  # Tast test args.
+  tast_test_parser = subparsers.add_parser(
+      'tast',
+      help='Runs a vm-side set of Tast tests.')
+  tast_test_parser.set_defaults(func=vm_test)
+  tast_test_parser.add_argument(
+      '--suite-name', type=str, required=True,
+      help='Name to apply to the set of Tast tests to run. This has no effect '
+           'on what is executed, but is used mainly for test results reporting '
+           'and tracking (eg: flakiness dashboard).')
+  tast_test_parser.add_argument(
+      '--test-launcher-summary-output', type=str,
+      help='Generates a simple GTest-style JSON result file for the test run.')
+  tast_test_parser.add_argument(
+      '--conditional', type=str,
+      help='A conditional whose matching tests will run '
+           '(eg: ("dep:chrome" || "dep:chrome_login")).')
+  tast_test_parser.add_argument(
+      '--test', '-t', action='append', dest='tests',
+      help='A Tast test to run in the VM (eg: "ui.ChromeLogin").')
+
+  add_common_args(gtest_parser)
+  add_common_args(tast_test_parser)
   args, unknown_args = parser.parse_known_args()
 
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)

@@ -12,7 +12,9 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
+#include "chrome/browser/ssl/ssl_error_assistant.h"
 #include "chrome/browser/ssl/ssl_error_handler.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using component_updater::ComponentUpdateService;
@@ -45,7 +47,17 @@ void LoadProtoFromDisk(const base::FilePath& pb_path) {
     DVLOG(1) << "Failed parsing proto " << pb_path.value();
     return;
   }
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+
+  // Retrieve the default proto from the resource bundle and keep the most
+  // recent version. This is required since the component updater may still have
+  // an older version.
+  std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig> default_proto =
+      SSLErrorAssistant::GetErrorAssistantProtoFromResourceBundle();
+  if (default_proto && default_proto->version_id() > proto->version_id()) {
+    proto = std::move(default_proto);
+  }
+
+  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&SSLErrorHandler::SetErrorAssistantProto,
                                 std::move(proto)));

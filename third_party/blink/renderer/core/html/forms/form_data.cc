@@ -75,7 +75,7 @@ class FormDataIterationSource final
 
  private:
   const Member<FormData> form_data_;
-  size_t current_;
+  wtf_size_t current_;
 };
 
 String Normalize(const String& input) {
@@ -113,7 +113,7 @@ void FormData::append(ScriptState* script_state,
 }
 
 void FormData::deleteEntry(const String& name) {
-  size_t i = 0;
+  wtf_size_t i = 0;
   while (i < entries_.size()) {
     if (entries_[i]->name() == name) {
       entries_.EraseAt(i);
@@ -174,7 +174,7 @@ void FormData::set(const String& name, Blob* blob, const String& filename) {
 void FormData::SetEntry(const Entry* entry) {
   DCHECK(entry);
   bool found = false;
-  size_t i = 0;
+  wtf_size_t i = 0;
   while (i < entries_.size()) {
     if (entries_[i]->name() != entry->name()) {
       ++i;

@@ -242,6 +242,7 @@ public class HostBrowserUtilsTest {
 
         for (String name : browsersToInstall) {
             mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(name));
+            mPackageManager.addPackage(name);
         }
     }
 

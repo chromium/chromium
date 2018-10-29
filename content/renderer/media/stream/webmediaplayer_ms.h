@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "media/blink/webmediaplayer_delegate.h"
+#include "media/blink/webmediaplayer_params.h"
 #include "media/blink/webmediaplayer_util.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -92,9 +93,8 @@ class CONTENT_EXPORT WebMediaPlayerMS
       media::GpuVideoAcceleratorFactories* gpu_factories,
       const blink::WebString& sink_id,
       CreateSurfaceLayerBridgeCB create_bridge_callback,
-      base::RepeatingCallback<std::unique_ptr<blink::WebVideoFrameSubmitter>()>
-          create_submitter_callback,
-      bool surface_layer_for_video_enabled_);
+      std::unique_ptr<blink::WebVideoFrameSubmitter> submitter_,
+      blink::WebMediaPlayer::SurfaceLayerMode surface_layer_mode);
 
   ~WebMediaPlayerMS() override;
 
@@ -123,8 +123,9 @@ class CONTENT_EXPORT WebMediaPlayerMS
       const std::vector<blink::PictureInPictureControlInfo>&) override;
   void RegisterPictureInPictureWindowResizeCallback(
       blink::WebMediaPlayer::PipWindowResizedCallback) override;
-  void SetSinkId(const blink::WebString& sink_id,
-                 blink::WebSetSinkIdCallbacks* web_callback) override;
+  void SetSinkId(
+      const blink::WebString& sink_id,
+      std::unique_ptr<blink::WebSetSinkIdCallbacks> web_callback) override;
   void SetPreload(blink::WebMediaPlayer::Preload preload) override;
   blink::WebTimeRanges Buffered() const override;
   blink::WebTimeRanges Seekable() const override;
@@ -160,12 +161,13 @@ class CONTENT_EXPORT WebMediaPlayerMS
   blink::WebMediaPlayer::NetworkState GetNetworkState() const override;
   blink::WebMediaPlayer::ReadyState GetReadyState() const override;
 
+  blink::WebMediaPlayer::SurfaceLayerMode GetVideoSurfaceLayerMode()
+      const override;
+
   blink::WebString GetErrorMessage() const override;
   bool DidLoadingProgress() override;
 
-  bool DidGetOpaqueResponseFromServiceWorker() const override;
-  bool HasSingleSecurityOrigin() const override;
-  bool DidPassCORSAccessCheck() const override;
+  bool WouldTaintOrigin() const override;
 
   double MediaTimeForTimeValue(double timeValue) const override;
 
@@ -187,6 +189,11 @@ class CONTENT_EXPORT WebMediaPlayerMS
   void OnBecamePersistentVideo(bool value) override;
   void OnPictureInPictureModeEnded() override;
   void OnPictureInPictureControlClicked(const std::string& control_id) override;
+
+  void OnFirstFrameReceived(media::VideoRotation video_rotation,
+                            bool is_opaque);
+  void OnOpacityChanged(bool is_opaque);
+  void OnRotationChanged(media::VideoRotation video_rotation);
 
   bool CopyVideoTextureToPlatformTexture(
       gpu::gles2::GLES2Interface* gl,
@@ -233,6 +240,8 @@ class CONTENT_EXPORT WebMediaPlayerMS
   void TrackRemoved(const blink::WebMediaStreamTrack& track) override;
   void ActiveStateChanged(bool is_active) override;
 
+  void OnDisplayTypeChanged(WebMediaPlayer::DisplayType) override;
+
  private:
   friend class WebMediaPlayerMSTest;
 
@@ -245,12 +254,10 @@ class CONTENT_EXPORT WebMediaPlayerMS
   // invalid.
   void OnFrameSinkDestroyed();
 
-  void OnFirstFrameReceived(media::VideoRotation video_rotation,
-                            bool is_opaque);
-  void OnOpacityChanged(bool is_opaque);
-  void OnRotationChanged(media::VideoRotation video_rotation, bool is_opaque);
-
   bool IsInPictureInPicture() const;
+
+  // Switch to SurfaceLayer, either initially or from VideoLayer.
+  void ActivateSurfaceLayerForVideo();
 
   // Need repaint due to state change.
   void RepaintInternal();
@@ -347,11 +354,11 @@ class CONTENT_EXPORT WebMediaPlayerMS
 
   CreateSurfaceLayerBridgeCB create_bridge_callback_;
 
-  base::RepeatingCallback<std::unique_ptr<blink::WebVideoFrameSubmitter>()>
-      create_submitter_callback_;
+  std::unique_ptr<blink::WebVideoFrameSubmitter> submitter_;
 
   // Whether the use of a surface layer instead of a video layer is enabled.
-  bool surface_layer_for_video_enabled_ = false;
+  blink::WebMediaPlayer::SurfaceLayerMode surface_layer_mode_ =
+      blink::WebMediaPlayer::SurfaceLayerMode::kNever;
 
   // Owns the weblayer and obtains/maintains SurfaceIds for
   // kUseSurfaceLayerForVideo feature.

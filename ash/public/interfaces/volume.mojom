@@ -11,10 +11,10 @@ module ash.mojom;
 // control interface or both ash and chrome should directly access the
 // CrasAudioHandler volume control functions.
 interface VolumeController {
-  // Mute the audio volume.
-  VolumeMute();
-  // Decrease the audio volume.
+  // Toggle the audio volume between muted and un-muted.
+  VolumeMuteToggle();
+  // Decrease the audio volume, may also mute or un-mute the volume.
   VolumeDown();
-  // Increase the audio volume.
+  // Increase the audio volume, may also un-mute the volume.
   VolumeUp();
 };

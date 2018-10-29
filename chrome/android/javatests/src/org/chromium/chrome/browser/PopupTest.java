@@ -163,7 +163,7 @@ public class PopupTest {
         mActivityTestRule.loadUrl(mPopupHtmlUrl);
         waitForForegroundInfoBar(InfoBarIdentifier.POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE);
         Assert.assertEquals(1, selector.getTotalTabCount());
-        final InfoBarContainer container = selector.getCurrentTab().getInfoBarContainer();
+        final InfoBarContainer container = mActivityTestRule.getInfoBarContainer();
         ArrayList<InfoBar> infobars = container.getInfoBarsForTesting();
 
         // Wait until the animations are done, then click the "open popups" button.

@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/fileapi/file_system_operation_runner.h"
 #include "storage/browser/fileapi/quota/open_file_handle.h"
@@ -46,7 +48,7 @@ QuotaReservation::QuotaReservation(
 QuotaReservation::~QuotaReservation() {
   // We should have no open files at this point.
   DCHECK(files_.size() == 0);
-  for (FileMap::iterator it = files_.begin(); it != files_.end(); ++it)
+  for (auto it = files_.begin(); it != files_.end(); ++it)
     delete it->second;
 }
 
@@ -81,7 +83,7 @@ int64_t QuotaReservation::OpenFile(int32_t id,
 
 void QuotaReservation::CloseFile(int32_t id,
                                  const ppapi::FileGrowth& file_growth) {
-  FileMap::iterator it = files_.find(id);
+  auto it = files_.find(id);
   if (it != files_.end()) {
     it->second->UpdateMaxWrittenOffset(file_growth.max_written_offset);
     it->second->AddAppendModeWriteAmount(file_growth.append_mode_write_amount);
@@ -95,9 +97,8 @@ void QuotaReservation::CloseFile(int32_t id,
 void QuotaReservation::ReserveQuota(int64_t amount,
                                     const ppapi::FileGrowthMap& file_growths,
                                     const ReserveQuotaCallback& callback) {
-  for (FileMap::iterator it = files_.begin(); it != files_.end(); ++it) {
-    ppapi::FileGrowthMap::const_iterator growth_it =
-        file_growths.find(it->first);
+  for (auto it = files_.begin(); it != files_.end(); ++it) {
+    auto growth_it = file_growths.find(it->first);
     if (growth_it != file_growths.end()) {
       it->second->UpdateMaxWrittenOffset(growth_it->second.max_written_offset);
       it->second->AddAppendModeWriteAmount(
@@ -116,12 +117,12 @@ void QuotaReservation::OnClientCrash() { quota_reservation_->OnClientCrash(); }
 void QuotaReservation::GotReservedQuota(const ReserveQuotaCallback& callback,
                                         base::File::Error error) {
   ppapi::FileSizeMap file_sizes;
-  for (FileMap::iterator it = files_.begin(); it != files_.end(); ++it)
+  for (auto it = files_.begin(); it != files_.end(); ++it)
     file_sizes[it->first] = it->second->GetMaxWrittenOffset();
 
   if (file_system_context_.get()) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(callback, quota_reservation_->remaining_quota(),
                        file_sizes));
   } else {

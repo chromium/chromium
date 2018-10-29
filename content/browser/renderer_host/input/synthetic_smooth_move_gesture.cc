@@ -12,12 +12,6 @@
 namespace content {
 namespace {
 
-gfx::Vector2d CeilFromZero(const gfx::Vector2dF& vector) {
-  int x = vector.x() > 0 ? ceil(vector.x()) : floor(vector.x());
-  int y = vector.y() > 0 ? ceil(vector.y()) : floor(vector.y());
-  return gfx::Vector2d(x, y);
-}
-
 gfx::Vector2dF ProjectScalarOntoVector(float scalar,
                                        const gfx::Vector2dF& vector) {
   return gfx::ScaleVector2d(vector, scalar / vector.Length());
@@ -334,8 +328,8 @@ void SyntheticSmoothMoveGesture::AddTouchSlopToFirstDistance(
   DCHECK_GE(params_.distances.size(), 1ul);
   gfx::Vector2dF& first_move_distance = params_.distances[0];
   DCHECK_GT(first_move_distance.Length(), 0);
-  first_move_distance += CeilFromZero(ProjectScalarOntoVector(
-      target->GetTouchSlopInDips(), first_move_distance));
+  first_move_distance += ProjectScalarOntoVector(target->GetTouchSlopInDips(),
+                                                 first_move_distance);
 }
 
 gfx::Vector2dF SyntheticSmoothMoveGesture::GetPositionDeltaAtTime(

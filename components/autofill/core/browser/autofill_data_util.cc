@@ -112,7 +112,7 @@ bool ContainsString(const char* const set[],
 
 // Removes common name prefixes from |name_tokens|.
 void StripPrefixes(std::vector<base::StringPiece16>* name_tokens) {
-  std::vector<base::StringPiece16>::iterator iter = name_tokens->begin();
+  auto iter = name_tokens->begin();
   while (iter != name_tokens->end()) {
     if (!ContainsString(name_prefixes, arraysize(name_prefixes), *iter))
       break;

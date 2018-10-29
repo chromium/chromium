@@ -11,4 +11,7 @@ PASS document.scrollingElement.scrollLeft is within 0.00001 of 40
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
+
 Test for rdar://problem/6643103 Unscaled values from body.scrollHeight.

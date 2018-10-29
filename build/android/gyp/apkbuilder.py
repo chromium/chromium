@@ -327,8 +327,9 @@ def main(args):
         resource_infos = resource_apk.infolist()
 
         # 1. AndroidManifest.xml
-        assert resource_infos[0].filename == 'AndroidManifest.xml'
-        copy_resource(resource_infos[0], out_dir=apk_manifest_dir)
+        copy_resource(
+            resource_apk.getinfo('AndroidManifest.xml'),
+            out_dir=apk_manifest_dir)
 
         # 2. Assets
         if options.write_asset_list:
@@ -376,8 +377,9 @@ def main(args):
           build_utils.AddToZipHermetic(out_apk, apk_path, data='')
 
         # 5. Resources
-        for info in resource_infos[1:]:
-          copy_resource(info)
+        for info in resource_infos:
+          if info.filename != 'AndroidManifest.xml':
+            copy_resource(info)
 
         # 6. Java resources that should be accessible via
         # Class.getResourceAsStream(), in particular parts of Emma jar.

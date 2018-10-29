@@ -17,6 +17,10 @@
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point.h"
 
+namespace ui {
+class GestureEvent;
+}  // namespace ui
+
 namespace ws {
 class WindowService;
 }  // namespace ws
@@ -83,6 +87,9 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Invoked when the app list is closing.
   virtual void ViewClosing() = 0;
 
+  // Invoked when the app list is closed.
+  virtual void ViewClosed() = 0;
+
   // Gets the wallpaper prominent colors.
   using GetWallpaperProminentColorsCallback =
       base::OnceCallback<void(const std::vector<SkColor>&)>;
@@ -113,12 +120,12 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Forwards events to the home launcher gesture handler and returns true if
   // they have been processed.
   virtual bool ProcessHomeLauncherGesture(
-      ui::EventType type,
+      ui::GestureEvent* event,
       const gfx::Point& screen_location) = 0;
 
-  // Checks if we are in the act of currently swiping up on the shelf to show
-  // the home launcher.
-  virtual bool IsSwipingUpOnShelf() = 0;
+  // Checks if we are allowed to process events on the app list main view and
+  // its descendants.
+  virtual bool CanProcessEventsOnApplistViews() = 0;
 
   virtual ws::WindowService* GetWindowService() = 0;
 };

@@ -41,7 +41,7 @@ std::string GetFieldTrialParamValue(const std::string& trial_name,
                                     const std::string& param_name) {
   std::map<std::string, std::string> params;
   if (GetFieldTrialParams(trial_name, &params)) {
-    std::map<std::string, std::string>::iterator it = params.find(param_name);
+    auto it = params.find(param_name);
     if (it != params.end())
       return it->second;
   }

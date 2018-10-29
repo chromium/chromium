@@ -37,14 +37,6 @@
 #include "third_party/blink/renderer/platform/wtf/alignment.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 
-#if DCHECK_IS_ON()
-namespace {
-bool ApproximatelyEquals(const double& d1, const double& d2) {
-  return std::fabs(d1 - d2) < std::numeric_limits<double>::epsilon();
-}
-}  // namespace
-#endif
-
 namespace gfx {
 class Transform;
 }
@@ -418,27 +410,6 @@ class PLATFORM_EXPORT TransformationMatrix {
   // details and discussion.
   void FlattenTo2d();
 
-#if DCHECK_IS_ON()
-  bool ApproximatelyEquals(const TransformationMatrix& m2) const {
-    return ::ApproximatelyEquals(matrix_[0][0], m2.matrix_[0][0]) &&
-           ::ApproximatelyEquals(matrix_[0][1], m2.matrix_[0][1]) &&
-           ::ApproximatelyEquals(matrix_[0][2], m2.matrix_[0][2]) &&
-           ::ApproximatelyEquals(matrix_[0][3], m2.matrix_[0][3]) &&
-           ::ApproximatelyEquals(matrix_[1][0], m2.matrix_[1][0]) &&
-           ::ApproximatelyEquals(matrix_[1][1], m2.matrix_[1][1]) &&
-           ::ApproximatelyEquals(matrix_[1][2], m2.matrix_[1][2]) &&
-           ::ApproximatelyEquals(matrix_[1][3], m2.matrix_[1][3]) &&
-           ::ApproximatelyEquals(matrix_[2][0], m2.matrix_[2][0]) &&
-           ::ApproximatelyEquals(matrix_[2][1], m2.matrix_[2][1]) &&
-           ::ApproximatelyEquals(matrix_[2][2], m2.matrix_[2][2]) &&
-           ::ApproximatelyEquals(matrix_[2][3], m2.matrix_[2][3]) &&
-           ::ApproximatelyEquals(matrix_[3][0], m2.matrix_[3][0]) &&
-           ::ApproximatelyEquals(matrix_[3][1], m2.matrix_[3][1]) &&
-           ::ApproximatelyEquals(matrix_[3][2], m2.matrix_[3][2]) &&
-           ::ApproximatelyEquals(matrix_[3][3], m2.matrix_[3][3]);
-  }
-#endif
-
   bool operator==(const TransformationMatrix& m2) const {
     return matrix_[0][0] == m2.matrix_[0][0] &&
            matrix_[0][1] == m2.matrix_[0][1] &&
@@ -502,6 +473,10 @@ class PLATFORM_EXPORT TransformationMatrix {
   }
 
   bool IsIntegerTranslation() const;
+
+  // Returns true if axis-aligned 2d rects will remain axis-aligned after being
+  // transformed by this matrix.
+  bool Preserves2dAxisAlignment() const;
 
   // If this transformation is identity or 2D translation, returns the
   // translation.

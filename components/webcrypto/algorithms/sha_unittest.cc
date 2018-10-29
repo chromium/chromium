@@ -65,7 +65,7 @@ TEST_F(WebCryptoShaTest, DigestSampleSetsInChunks) {
     size_t length = test_input.size();
     std::unique_ptr<blink::WebCryptoDigestor> digestor(
         CreateDigestor(test_algorithm.Id()));
-    std::vector<uint8_t>::iterator begin = test_input.begin();
+    auto begin = test_input.begin();
     size_t chunk_index = 0;
     while (begin != test_input.end()) {
       size_t chunk_length = std::min(kChunkSizeBytes, length - chunk_index);

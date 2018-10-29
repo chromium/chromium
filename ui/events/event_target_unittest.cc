@@ -60,6 +60,9 @@ TEST(EventTargetTest, HandlerOrdering) {
   EXPECT_EQ(list[0], &a11y_handler);
   EXPECT_EQ(list[1], &system_handler);
   EXPECT_EQ(list[2], &default_handler);
+  target.RemovePreTargetHandler(&default_handler);
+  target.RemovePreTargetHandler(&system_handler);
+  target.RemovePreTargetHandler(&a11y_handler);
 }
 
 TEST(EventTargetTest, HandlerOrderingComplex) {
@@ -100,6 +103,14 @@ TEST(EventTargetTest, HandlerOrderingComplex) {
   EXPECT_EQ(list[4], &system_handler_3);
   EXPECT_EQ(list[5], &default_handler_1);
   EXPECT_EQ(list[6], &default_handler_2);
+
+  target.RemovePreTargetHandler(&system_handler_3);
+  target.RemovePreTargetHandler(&default_handler_1);
+  target.RemovePreTargetHandler(&system_handler_2);
+  target.RemovePreTargetHandler(&a11y_handler_2);
+  target.RemovePreTargetHandler(&system_handler_1);
+  target.RemovePreTargetHandler(&default_handler_2);
+  target.RemovePreTargetHandler(&a11y_handler_1);
 }
 
 TEST(EventTargetTest, HandlerOrderingAcrossEventTargets) {
@@ -138,6 +149,7 @@ TEST(EventTargetTest, HandlerOrderingAcrossEventTargets) {
 
   // Connect the parent and child in a EventTargetTestAPI.
   EventTargetTestApi test_api(child.get());
+  test::TestEventTarget* child_ptr = child.get();
   parent.AddChild(std::move(child));
 
   EventHandlerList list;
@@ -159,6 +171,18 @@ TEST(EventTargetTest, HandlerOrderingAcrossEventTargets) {
   EXPECT_EQ(list[6], &default_handler_1);
   EXPECT_EQ(list[7], &default_handler_2);
   EXPECT_EQ(list[8], &default_handler_3);
+
+  parent.RemovePreTargetHandler(&default_handler_1);
+  parent.RemovePreTargetHandler(&system_handler_2);
+  parent.RemovePreTargetHandler(&a11y_handler_2);
+
+  child_ptr->RemovePreTargetHandler(&default_handler_3);
+  child_ptr->RemovePreTargetHandler(&a11y_handler_3);
+  child_ptr->RemovePreTargetHandler(&system_handler_3);
+
+  parent.RemovePreTargetHandler(&system_handler_1);
+  parent.RemovePreTargetHandler(&default_handler_2);
+  parent.RemovePreTargetHandler(&a11y_handler_1);
 }
 
 }  // namespace

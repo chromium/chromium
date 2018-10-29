@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 मिनिटापूर्वी}one{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1मि}one{#मि}other{#मि}}</translation>
 <translation id="1243314992276662751">अपलोड करा</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">शिफारस केलेले अ‍ॅप्स</translation>
 <translation id="1368832886055348810">डावीकडून उजवीकडे</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">पृष्ठ खाली</translation>
 <translation id="8245914219290430011">टॅब</translation>
+<translation id="8259556432390118667">हेक्स रंग मूल्य</translation>
 <translation id="8328145009876646418">डावे काठ</translation>
 <translation id="8331626408530291785">वर स्क्रोल करा</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 वर्ष}one{# वर्ष}other{# वर्षे}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> फोल्डर</translation>
 <translation id="883911313571074303">इमेजवर भाष्य करा</translation>
+<translation id="8841375032071747811">मागे जा बटण</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="9002566407876343676">उघडा</translation>
 <translation id="9038489124413477075">अनामित फोल्डर</translation>

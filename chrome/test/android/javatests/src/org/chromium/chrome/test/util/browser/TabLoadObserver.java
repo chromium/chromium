@@ -55,7 +55,7 @@ public class TabLoadObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onCrash(Tab tab, boolean sadTabShown) {
+    public void onCrash(Tab tab) {
         Assert.fail("Tab crashed; test results will be invalid.  Failing.");
     }
 

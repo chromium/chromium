@@ -124,8 +124,8 @@ class BackgroundHTMLParser {
   DocumentEncodingData last_seen_encoding_data_;
   scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
 
-  // Index into |m_pendingTokens| of the last <meta> csp token found. Will be
-  // |TokenizedChunk::noPendingToken| if none have been found.
+  // Index into |pending_tokens_| of the last <meta> csp token found. Will be
+  // |TokenizedChunk::kNoPendingToken| if none have been found.
   int pending_csp_meta_token_index_;
 
   bool starting_script_;

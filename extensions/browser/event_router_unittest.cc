@@ -92,7 +92,8 @@ std::unique_ptr<EventListener> CreateEventListenerForURL(
 // Creates an extension.  If |component| is true, it is created as a component
 // extension.  If |persistent| is true, it is created with a persistent
 // background page; otherwise it is created with an event page.
-scoped_refptr<Extension> CreateExtension(bool component, bool persistent) {
+scoped_refptr<const Extension> CreateExtension(bool component,
+                                               bool persistent) {
   ExtensionBuilder builder;
   std::unique_ptr<base::DictionaryValue> manifest =
       std::make_unique<base::DictionaryValue>();
@@ -319,7 +320,7 @@ TEST_F(EventRouterTest, EventRouterObserverForURLs) {
 
 TEST_F(EventRouterTest, TestReportEvent) {
   EventRouter router(browser_context(), nullptr);
-  scoped_refptr<Extension> normal = ExtensionBuilder("Test").Build();
+  scoped_refptr<const Extension> normal = ExtensionBuilder("Test").Build();
   router.ReportEvent(events::HistogramValue::FOR_TEST, normal.get(),
                      false /** did_enqueue */);
   ExpectHistogramCounts(1 /** Dispatch */, 0 /** DispatchToComponent */,
@@ -328,18 +329,18 @@ TEST_F(EventRouterTest, TestReportEvent) {
                         0 /** DispatchToComponentWithSuspendedEventPage */,
                         0 /** DispatchWithRunningEventPage */);
 
-  scoped_refptr<Extension> component =
+  scoped_refptr<const Extension> component =
       CreateExtension(true /** component */, true /** persistent */);
   router.ReportEvent(events::HistogramValue::FOR_TEST, component.get(),
                      false /** did_enqueue */);
   ExpectHistogramCounts(2, 1, 1, 0, 0, 0);
 
-  scoped_refptr<Extension> persistent = CreateExtension(false, true);
+  scoped_refptr<const Extension> persistent = CreateExtension(false, true);
   router.ReportEvent(events::HistogramValue::FOR_TEST, persistent.get(),
                      false /** did_enqueue */);
   ExpectHistogramCounts(3, 1, 2, 0, 0, 0);
 
-  scoped_refptr<Extension> event = CreateExtension(false, false);
+  scoped_refptr<const Extension> event = CreateExtension(false, false);
   router.ReportEvent(events::HistogramValue::FOR_TEST, event.get(),
                      false /** did_enqueue */);
   ExpectHistogramCounts(4, 1, 2, 0, 0, 0);
@@ -347,7 +348,7 @@ TEST_F(EventRouterTest, TestReportEvent) {
                      true /** did_enqueue */);
   ExpectHistogramCounts(5, 1, 2, 1, 0, 1);
 
-  scoped_refptr<Extension> component_event = CreateExtension(true, false);
+  scoped_refptr<const Extension> component_event = CreateExtension(true, false);
   router.ReportEvent(events::HistogramValue::FOR_TEST, component_event.get(),
                      false /** did_enqueue */);
   ExpectHistogramCounts(6, 2, 2, 1, 0, 2);

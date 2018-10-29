@@ -7,17 +7,14 @@
 #include "base/mac/foundation_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/experimental_flags.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/ui/material_components/app_bar_presenting.h"
 #import "ios/chrome/browser/ui/material_components/app_bar_view_controller_presenting.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
 #import "ios/chrome/browser/ui/settings/accounts_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill_profile_collection_view_controller.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/ui/settings/import_data_collection_view_controller.h"
@@ -27,8 +24,8 @@
 #import "ios/chrome/browser/ui/settings/settings_utils.h"
 #import "ios/chrome/browser/ui/settings/sync_encryption_passphrase_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync_settings_collection_view_controller.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -178,22 +175,6 @@ newUserFeedbackController:(ios::ChromeBrowserState*)browserState
       initWithRootViewController:controller
                     browserState:browserState
                         delegate:delegate];
-  return nc;
-}
-
-+ (SettingsNavigationController*)
-newClearBrowsingDataController:(ios::ChromeBrowserState*)browserState
-                      delegate:
-                          (id<SettingsNavigationControllerDelegate>)delegate {
-  ClearBrowsingDataCollectionViewController* controller =
-      [[ClearBrowsingDataCollectionViewController alloc]
-          initWithBrowserState:browserState];
-  controller.dispatcher = [delegate dispatcherForSettings];
-  SettingsNavigationController* nc = [[SettingsNavigationController alloc]
-      initWithRootViewController:controller
-                    browserState:browserState
-                        delegate:delegate];
-  [controller navigationItem].rightBarButtonItem = [nc doneButton];
   return nc;
 }
 
@@ -575,8 +556,7 @@ initWithRootViewController:(UIViewController*)rootViewController
 - (UIViewController*)wrappedControllerIfNeeded:(UIViewController*)controller {
   // If the controller can't be presented with an app bar, it needs to be
   // wrapped in an MDCAppBarContainerViewController.
-  if (![controller conformsToProtocol:@protocol(AppBarPresenting)] &&
-      ![controller
+  if (![controller
           conformsToProtocol:@protocol(AppBarViewControllerPresenting)]) {
     MDCAppBarContainerViewController* appBarContainer =
         [[SettingsAppBarContainerViewController alloc]
@@ -587,12 +567,9 @@ initWithRootViewController:(UIViewController*)rootViewController
     ConfigureAppBarViewControllerWithCardStyle(
         appBarContainer.appBarViewController);
 
-    // Override the header view's background color if the UIRefresh experiment
-    // is enabled.
-    if (experimental_flags::IsSettingsUIRebootEnabled()) {
-      appBarContainer.appBarViewController.headerView.backgroundColor =
-          [UIColor groupTableViewBackgroundColor];
-    }
+    // Override the header view's background color.
+    appBarContainer.appBarViewController.headerView.backgroundColor =
+        [UIColor groupTableViewBackgroundColor];
 
     // Register the app bar container and return it.
     [self registerAppBarContainer:appBarContainer];

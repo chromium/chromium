@@ -10,6 +10,7 @@
 #include "base/test/scoped_task_environment.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor.pb.h"
+#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,7 +47,7 @@ class AppSearchResultRankerFlagTest : public testing::Test {
 
 TEST_F(AppSearchResultRankerFlagTest, TrainAndInfer) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kEnableAppSearchResultRanker,
+      app_list_features::kEnableAppSearchResultRanker,
       {{"app_search_result_ranker_predictor_name",
         FakeAppLaunchPredictor::kPredictorName}});
 
@@ -63,7 +64,7 @@ TEST_F(AppSearchResultRankerFlagTest, TrainAndInfer) {
 
 TEST_F(AppSearchResultRankerFlagTest, EphemeralUsersAreDisabled) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kEnableAppSearchResultRanker,
+      app_list_features::kEnableAppSearchResultRanker,
       {{"app_search_result_ranker_predictor_name",
         FakeAppLaunchPredictor::kPredictorName}});
 
@@ -78,7 +79,7 @@ TEST_F(AppSearchResultRankerFlagTest, EphemeralUsersAreDisabled) {
 
 TEST_F(AppSearchResultRankerFlagTest, ReturnEmptyIfDisabled) {
   scoped_feature_list_.InitWithFeatures(
-      {}, {features::kEnableAppSearchResultRanker});
+      {}, {app_list_features::kEnableAppSearchResultRanker});
 
   AppSearchResultRanker ranker(temp_dir_.GetPath(), kNotAnEphemeralUser);
   Wait();
@@ -99,28 +100,27 @@ class AppSearchResultRankerSerializationTest
         temp_dir_.GetPath().AppendASCII("app_launch_predictor");
 
     // Sets proto.
-    AppLaunchPredictorProto proto;
-    (*proto.mutable_fake_app_launch_predictor()
+    (*proto_.mutable_fake_app_launch_predictor()
           ->mutable_rank_result())[kTarget1] = 1.0f;
-    (*proto.mutable_fake_app_launch_predictor()
+    (*proto_.mutable_fake_app_launch_predictor()
           ->mutable_rank_result())[kTarget2] = 2.0f;
-    ASSERT_TRUE(proto.SerializeToString(&proto_str_));
 
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kEnableAppSearchResultRanker,
+        app_list_features::kEnableAppSearchResultRanker,
         {{"app_search_result_ranker_predictor_name",
           FakeAppLaunchPredictor::kPredictorName}});
   }
 
   base::FilePath predictor_filename_;
-  std::string proto_str_;
+  AppLaunchPredictorProto proto_;
 };
 
 TEST_F(AppSearchResultRankerSerializationTest, LoadFromDiskSucceed) {
   // Prepare file to be loaded.
-  EXPECT_NE(base::WriteFile(predictor_filename_, proto_str_.c_str(),
-                            proto_str_.size()),
-            -1);
+  const std::string proto_str = proto_.SerializeAsString();
+  EXPECT_NE(
+      base::WriteFile(predictor_filename_, proto_str.c_str(), proto_str.size()),
+      -1);
   // Construct ranker.
   AppSearchResultRanker ranker(temp_dir_.GetPath(), kNotAnEphemeralUser);
 
@@ -172,8 +172,7 @@ TEST_F(AppSearchResultRankerSerializationTest,
   EXPECT_TRUE(ranker.Rank().empty());
 }
 
-// Test is flaky. See https://crbug.com/884140
-TEST_F(AppSearchResultRankerSerializationTest, DISABLED_SaveToDiskSucceed) {
+TEST_F(AppSearchResultRankerSerializationTest, SaveToDiskSucceed) {
   // Construct ranker.
   AppSearchResultRanker ranker(temp_dir_.GetPath(), kNotAnEphemeralUser);
   // Wait for the loading to finish.
@@ -201,10 +200,14 @@ TEST_F(AppSearchResultRankerSerializationTest, DISABLED_SaveToDiskSucceed) {
   // Expect the predictor file is created.
   EXPECT_TRUE(base::PathExists(predictor_filename_));
 
-  // Expect the content to be proto_str_.
+  // Parse the content of the file.
   std::string str_written;
   EXPECT_TRUE(base::ReadFileToString(predictor_filename_, &str_written));
-  EXPECT_EQ(str_written, proto_str_);
+  AppLaunchPredictorProto proto_written;
+  EXPECT_TRUE(proto_written.ParseFromString(str_written));
+
+  // Expect the content to be proto_.
+  EXPECT_TRUE(EquivToProtoLite(proto_written, proto_));
 }
 
 }  // namespace app_list

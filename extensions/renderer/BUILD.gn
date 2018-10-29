@@ -90,11 +90,10 @@ jumbo_source_set("renderer") {
     "declarative_content_hooks_delegate.h",
     "dispatcher.cc",
     "dispatcher.h",
+    "dispatcher_delegate.cc",
     "dispatcher_delegate.h",
     "display_source_custom_bindings.cc",
     "display_source_custom_bindings.h",
-    "document_custom_bindings.cc",
-    "document_custom_bindings.h",
     "dom_activity_logger.cc",
     "dom_activity_logger.h",
     "easy_unlock_proximity_required_stub.cc",
@@ -233,6 +232,7 @@ jumbo_source_set("renderer") {
     "resources/guest_view/guest_view_events.js",
     "resources/guest_view/guest_view_iframe.js",
     "resources/guest_view/guest_view_iframe_container.js",
+    "resources/guest_view/web_view/extensions_web_view_element.js",
     "resources/guest_view/web_view/web_view.js",
     "resources/guest_view/web_view/web_view_action_requests.js",
     "resources/guest_view/web_view/web_view_api_methods.js",
@@ -321,7 +321,10 @@ jumbo_source_set("renderer") {
     "worker_thread_dispatcher.h",
   ]
 
-  configs += [ "//build/config:precompiled_headers" ]
+  configs += [
+    "//build/config:precompiled_headers",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   deps = [
     "//chrome:resources",

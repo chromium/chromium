@@ -61,7 +61,7 @@ bool g_save_to_file = false;
 // Threshold for mean absolute difference of hardware and software decode.
 // Absolute difference is to calculate the difference between each pixel in two
 // images. This is used for measuring of the similarity of two images.
-constexpr double kDecodeSimilarityThreshold = 1.0;
+constexpr double kDecodeSimilarityThreshold = 1.25;
 
 // Environment to create test data for all test cases.
 class JpegDecodeAcceleratorTestEnvironment;
@@ -178,9 +178,8 @@ class JpegDecodeAcceleratorTestEnvironment : public ::testing::Environment {
   // Used for testing some drivers which will align the output resolution to a
   // multiple of 16. 640x360 will be aligned to 640x368.
   std::unique_ptr<ParsedJpegImage> image_data_640x360_black_;
-  // Generated black images used to test different JPEG sampling formats.
+  // Generated black image used to test different JPEG sampling formats.
   std::unique_ptr<ParsedJpegImage> image_data_640x368_422_black_;
-  std::unique_ptr<ParsedJpegImage> image_data_640x368_444_black_;
   // Parsed data of "peach_pi-1280x720.jpg".
   std::unique_ptr<ParsedJpegImage> image_data_1280x720_default_;
   // Parsed data of failure image.
@@ -202,8 +201,6 @@ void JpegDecodeAcceleratorTestEnvironment::SetUp() {
   image_data_640x360_black_ = ParsedJpegImage::CreateBlackImage(640, 360);
   image_data_640x368_422_black_ = ParsedJpegImage::CreateBlackImage(
       640, 368, SkJpegEncoder::Downsample::k422);
-  image_data_640x368_444_black_ = ParsedJpegImage::CreateBlackImage(
-      640, 368, SkJpegEncoder::Downsample::k444);
 
   image_data_1280x720_default_ = ParsedJpegImage::CreateFromFile(
       GetOriginalOrTestDataFilePath(kDefaultJpegFilename));
@@ -791,8 +788,7 @@ TEST_F(JpegDecodeAcceleratorTest, CodedSizeAlignment) {
 TEST_F(JpegDecodeAcceleratorTest, SamplingFormatChange) {
   const std::vector<ParsedJpegImage*> images = {
       g_env->image_data_640x368_black_.get(),
-      g_env->image_data_640x368_422_black_.get(),
-      g_env->image_data_640x368_444_black_.get()};
+      g_env->image_data_640x368_422_black_.get()};
   const std::vector<ClientState> expected_status(images.size(), CS_DECODE_PASS);
   TestDecode(images, expected_status);
 }

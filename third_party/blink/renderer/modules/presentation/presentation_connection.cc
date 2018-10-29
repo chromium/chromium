@@ -212,9 +212,8 @@ ControllerPresentationConnection* ControllerPresentationConnection::Take(
     PresentationRequest* request) {
   DCHECK(resolver);
   DCHECK(request);
-  DCHECK(resolver->GetExecutionContext()->IsDocument());
 
-  Document* document = ToDocument(resolver->GetExecutionContext());
+  Document* document = To<Document>(resolver->GetExecutionContext());
   if (!document->GetFrame())
     return nullptr;
 
@@ -539,7 +538,7 @@ void PresentationConnection::DidReceiveTextMessage(const WebString& message) {
 }
 
 void PresentationConnection::DidReceiveBinaryMessage(const uint8_t* data,
-                                                     size_t length) {
+                                                     uint32_t length) {
   if (state_ != mojom::blink::PresentationConnectionState::CONNECTED)
     return;
 

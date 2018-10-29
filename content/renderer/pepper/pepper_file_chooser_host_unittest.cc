@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "content/common/frame_messages.h"
 #include "content/common/view_messages.h"
-#include "content/public/common/file_chooser_file_info.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/pepper/mock_renderer_ppapi_host.h"
 #include "content/renderer/pepper/pepper_file_chooser_host.h"
@@ -60,15 +59,6 @@ class PepperFileChooserHostTest : public RenderViewTest {
   TestContentClient client_;
 };
 
-// For testing to convert our hardcoded file paths to 8-bit.
-std::string FilePathToUTF8(const base::FilePath::StringType& path) {
-#if defined(OS_WIN)
-  return base::UTF16ToUTF8(path);
-#else
-  return path;
-#endif
-}
-
 }  // namespace
 
 TEST_F(PepperFileChooserHostTest, Show) {
@@ -106,11 +96,12 @@ TEST_F(PepperFileChooserHostTest, Show) {
 
   // Send a chooser reply to the render view. Note our reply path has to have a
   // path separator so we include both a Unix and a Windows one.
-  content::FileChooserFileInfo selected_info;
-  selected_info.display_name = FILE_PATH_LITERAL("Hello, world");
-  selected_info.file_path = base::FilePath(FILE_PATH_LITERAL("myp\\ath/foo"));
-  std::vector<content::FileChooserFileInfo> selected_info_vector;
-  selected_info_vector.push_back(selected_info);
+  std::vector<blink::mojom::FileChooserFileInfoPtr> selected_info_vector;
+  selected_info_vector.push_back(
+      blink::mojom::FileChooserFileInfo::NewNativeFile(
+          blink::mojom::NativeFileInfo::New(
+              base::FilePath(FILE_PATH_LITERAL("myp\\ath/foo")),
+              base::ASCIIToUTF16("Hello, world"))));
   RenderFrameImpl* frame_impl =
       static_cast<RenderFrameImpl*>(view_->GetMainRenderFrame());
   FrameMsg_RunFileChooserResponse response(frame_impl->GetRoutingID(),
@@ -132,7 +123,8 @@ TEST_F(PepperFileChooserHostTest, Show) {
   const std::vector<ppapi::FileRefCreateInfo>& chooser_results =
       std::get<0>(reply_msg_param);
   ASSERT_EQ(1u, chooser_results.size());
-  EXPECT_EQ(FilePathToUTF8(selected_info.display_name),
+  EXPECT_EQ(base::UTF16ToUTF8(
+                selected_info_vector[0]->get_native_file()->display_name),
             chooser_results[0].display_name);
 }
 

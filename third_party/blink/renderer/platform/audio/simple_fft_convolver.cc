@@ -46,8 +46,8 @@ void SimpleFFTConvolver::Process(const float* source_p,
 
   // Overlap-add 1st half with 2nd half from previous time and write
   // to destination.
-  VectorMath::Vadd(output_buffer_.Data(), 1, last_overlap_buffer_.Data(), 1,
-                   dest_p, 1, half_size);
+  vector_math::Vadd(output_buffer_.Data(), 1, last_overlap_buffer_.Data(), 1,
+                    dest_p, 1, half_size);
 
   // Finally, save 2nd half for the next time.
   last_overlap_buffer_.CopyToRange(output_buffer_.Data() + half_size, 0,

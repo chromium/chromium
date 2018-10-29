@@ -38,17 +38,17 @@
       {
         "id": "PageStateMatcher",
         "type": "object",
-        "description": "Matches the state of a web page by various criteria.",
+        "description": "Matches the state of a web page based on various criteria.",
         "properties": {
           "pageUrl": {
             "$ref": "events.UrlFilter",
-            "description": "Matches if the condition of the UrlFilter are fulfilled for the top-level URL of the page.",
+            "description": "Matches if the conditions of the <code>UrlFilter</code> are fulfilled for the top-level URL of the page.",
             "optional": true
           },
           "css": {
             "type": "array",
             "optional": true,
-            "description": "Matches if all of the CSS selectors in the array match displayed elements in a frame with the same origin as the page's main frame.  All selectors in this array must be <a href=\"http://www.w3.org/TR/selectors4/#compound\">compound selectors</a> to speed up matching.  Note that listing hundreds of CSS selectors or CSS selectors that match hundreds of times per page can still slow down web sites.",
+            "description": "Matches if all of the CSS selectors in the array match displayed elements in a frame with the same origin as the page's main frame. All selectors in this array must be <a href=\"http://www.w3.org/TR/selectors4/#compound\">compound selectors</a> to speed up matching. Note: Listing hundreds of CSS selectors or listing CSS selectors that match hundreds of times per page can slow down web sites.",
             // TODO(jyasskin): Figure out if we want to require all
             // the selectors to match in the same frame, or allow several
             // frames to contribute to a match.
@@ -73,7 +73,7 @@
       },
       {
         "id": "ShowPageAction",
-        "description": "Declarative event action that shows the extension's $(ref:pageAction page action) while the corresponding conditions are met.  This action can be used without <a href=\"declare_permissions#host-permissions\">host permissions</a>, but the extension must have a page action.  If the extension takes the <a href=\"activeTab.html\">activeTab</a> permission, a click on the page action will grant access to the active tab.",
+        "description": "Declarative event action that shows the extension's $(ref:pageAction page action) while the corresponding conditions are met. This action can be used without <a href=\"declare_permissions#host-permissions\">host permissions</a>, but the extension must have a page action. If the extension has the <a href=\"activeTab.html\">activeTab</a> permission, clicking the page action grants access to the active tab.",
         "type": "object",
         "properties": {
           "instanceType": {
@@ -84,7 +84,7 @@
       },
       {
         "id": "SetIcon",
-        "description": "Declarative event action that sets the n-<abbr title=\"device-independent pixel\">dip</abbr> square icon for the extension's $(ref:pageAction page action) or $(ref:browserAction browser action) while the corresponding conditions are met.  This action can be used without <a href=\"declare_permissions.html#host-permissions\">host permissions</a>, but the extension must have  page or browser action.<p>Exactly one of <code>imageData</code> or <code>path</code> must be specified.  Both are dictionaries mapping a number of pixels to an image representation. The image representation in <code>imageData</code> is an<a href=\"https://developer.mozilla.org/en-US/docs/Web/API/ImageData\">ImageData</a> object, for example from a <code>&lt;canvas></code> element, while the image representation in <code>path</code> is the path to an image file relative to the extension's manifest.  If <code>scale</code> screen pixels fit into a device-independent pixel, the <code>scale * n</code> icon will be used.  If that scale is missing, another image will be resized to the needed size.",
+        "description": "Declarative event action that sets the n-<abbr title=\"device-independent pixel\">dip</abbr> square icon for the extension's $(ref:pageAction page action) or $(ref:browserAction browser action) while the corresponding conditions are met. This action can be used without <a href=\"declare_permissions.html#host-permissions\">host permissions</a>, but the extension must have a page or browser action.<p>Exactly one of <code>imageData</code> or <code>path</code> must be specified. Both are dictionaries mapping a number of pixels to an image representation. The image representation in <code>imageData</code> is an <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/ImageData\">ImageData</a> object; for example, from a <code>canvas</code> element, while the image representation in <code>path</code> is the path to an image file relative to the extension's manifest. If <code>scale</code> screen pixels fit into a device-independent pixel, the <code>scale * n</code> icon is used. If that scale is missing, another image is resized to the required size.</p>",
         "type": "object",
         "properties": {
           "instanceType": {
@@ -100,7 +100,7 @@
               }
             ],
             "optional": true,
-            "description": "Either an ImageData object or a dictionary {size -> ImageData} representing icon to be set. If the icon is specified as a dictionary, the actual image to be used is chosen depending on screen's pixel density. If the number of image pixels that fit into one screen space unit equals <code>scale</code>, then image with size <code>scale</code> * n will be selected, where n is the size of the icon in the UI. At least one image must be specified. Note that 'details.imageData = foo' is equivalent to 'details.imageData = {'16': foo}'"
+            "description": "Either an <code>ImageData</code> object or a dictionary {size -> ImageData} representing an icon to be set. If the icon is specified as a dictionary, the image used is chosen depending on the screen's pixel density. If the number of image pixels that fit into one screen space unit equals <code>scale</code>, then an image with size <code>scale * n</code> is selected, where <i>n</i> is the size of the icon in the UI. At least one image must be specified. Note that <code>details.imageData = foo</code> is equivalent to <code>details.imageData = {'16': foo}</code>."
           }
 //          TODO: "path": {
 //            "choices": [
@@ -129,18 +129,18 @@
           "js": {
             "type": "array",
             "optional": true,
-            "description": "Names of Javascript files to be injected as a part of the content script.",
+            "description": "Names of JavaScript files to be injected as a part of the content script.",
             "items": { "type": "string" }
           },
           "allFrames": {
             "type": "boolean",
             "optional": true,
-            "description": "Whether the content script runs in all frames of the matching page, or only the top frame. Default is false."
+            "description": "Whether the content script runs in all frames of the matching page, or in only the top frame. Default is <code>false</code>."
           },
           "matchAboutBlank": {
             "type": "boolean",
             "optional": true,
-            "description": "Whether to insert the content script on about:blank and about:srcdoc. Default is false."
+            "description": "Whether to insert the content script on <code>about:blank</code> and <code>about:srcdoc</code>. Default is <code>false</code>."
           },
           "instanceType": {
             "$ref": "RequestContentScriptInstanceType",

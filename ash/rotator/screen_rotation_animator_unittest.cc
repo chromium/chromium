@@ -25,6 +25,7 @@
 #include "base/run_loop.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -656,6 +657,61 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest, DisplayChangeDuringCopy) {
   EXPECT_FALSE(animator->IsRotating());
   EXPECT_EQ(display::Display::ROTATE_0,
             GetDisplayRotation(internal_display_id));
+}
+
+TEST_F(ScreenRotationAnimatorSmoothAnimationTest, NewRequestShouldNotCancel) {
+  const int64_t display_id = display_manager()->GetDisplayAt(0).id();
+  aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
+  SetScreenRotationAnimator(
+      root_window, run_loop_->QuitWhenIdleClosure(),
+      base::BindRepeating(
+          &ScreenRotationAnimatorSmoothAnimationTest::QuitWaitForCopyCallback,
+          base::Unretained(this)));
+  SetDisplayRotation(display_id, display::Display::ROTATE_0);
+  animator()->Rotate(display::Display::ROTATE_90,
+                     display::Display::RotationSource::USER,
+                     DisplayConfigurationController::ANIMATION_ASYNC);
+  EXPECT_EQ(display::Display::ROTATE_0, GetDisplayRotation(display_id));
+
+  // Requesting new orientation while waiting for copy should apply the previous
+  // change immediately.
+  animator()->Rotate(display::Display::ROTATE_180,
+                     display::Display::RotationSource::USER,
+                     DisplayConfigurationController::ANIMATION_ASYNC);
+  EXPECT_EQ(display::Display::ROTATE_90, GetDisplayRotation(display_id));
+
+  // Requesting yet another new orientation while waiting for copy should do the
+  // same.
+  animator()->Rotate(display::Display::ROTATE_270,
+                     display::Display::RotationSource::USER,
+                     DisplayConfigurationController::ANIMATION_ASYNC);
+  EXPECT_EQ(display::Display::ROTATE_180, GetDisplayRotation(display_id));
+
+  WaitForCopyCallback();
+  // The display must be rotated once copy finishes.
+  EXPECT_EQ(display::Display::ROTATE_270, GetDisplayRotation(display_id));
+  EXPECT_TRUE(test_api()->HasActiveAnimations());
+
+  // Requesting new orientation while animating will be queued.
+  animator()->Rotate(display::Display::ROTATE_0,
+                     display::Display::RotationSource::USER,
+                     DisplayConfigurationController::ANIMATION_ASYNC);
+  EXPECT_EQ(display::Display::ROTATE_270, GetDisplayRotation(display_id));
+  EXPECT_FALSE(test_api()->HasActiveAnimations());
+
+  // Finish current animation will start queued animation (from 270 to 0).
+  test_api()->CompleteAnimations();
+  EXPECT_TRUE(animator()->IsRotating());
+  EXPECT_EQ(display::Display::ROTATE_270, GetDisplayRotation(display_id));
+  EXPECT_FALSE(test_api()->HasActiveAnimations());
+
+  WaitForCopyCallback();
+  EXPECT_TRUE(test_api()->HasActiveAnimations());
+  EXPECT_EQ(display::Display::ROTATE_0, GetDisplayRotation(display_id));
+
+  test_api()->CompleteAnimations();
+  EXPECT_FALSE(test_api()->HasActiveAnimations());
+  EXPECT_EQ(display::Display::ROTATE_0, GetDisplayRotation(display_id));
 }
 
 }  // namespace ash

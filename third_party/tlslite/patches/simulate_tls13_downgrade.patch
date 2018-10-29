@@ -1,0 +1,61 @@
+diff --git a/third_party/tlslite/tlslite/handshakesettings.py b/third_party/tlslite/tlslite/handshakesettings.py
+index 69fc6f455e10..a647af53c13e 100644
+--- a/third_party/tlslite/tlslite/handshakesettings.py
++++ b/third_party/tlslite/tlslite/handshakesettings.py
+@@ -125,7 +125,15 @@ class HandshakeSettings(object):
+     corresponding to the TokenBindingKeyParameters enum in the Token Binding
+     Negotiation spec (draft-ietf-tokbind-negotiation-00). Values are in server's
+     preference order, with most preferred params first.
+-    
++
++    @type simulateTLS13Downgrade: bool
++    @ivar simulateTLS13Downgrade: If true, the server will simulate a TLS 1.3
++    to TLS 1.2 downgrade in the ServerHello random.
++
++    @type simulateTLS12Downgrade: bool
++    @ivar simulateTLS12Downgrade: If true, the server will simulate a TLS 1.2
++    to TLS 1.1 downgrade in the ServerHello random.
++
+     Note that TACK support is not standardized by IETF and uses a temporary
+     TLS Extension number, so should NOT be used in production software.
+ 
+@@ -153,6 +161,8 @@ class HandshakeSettings(object):
+         self.enableExtendedMasterSecret = True
+         self.supportedTokenBindingParams = []
+         self.alpnProtos = None
++        self.simulateTLS13Downgrade = False
++        self.simulateTLS12Downgrade = False
+ 
+     # Validates the min/max fields, and certificateTypes
+     # Filters out unsupported cipherNames and cipherImplementations
+@@ -174,6 +184,8 @@ class HandshakeSettings(object):
+         other.enableExtendedMasterSecret = self.enableExtendedMasterSecret
+         other.supportedTokenBindingParams = self.supportedTokenBindingParams
+         other.alpnProtos = self.alpnProtos;
++        other.simulateTLS13Downgrade = self.simulateTLS13Downgrade
++        other.simulateTLS12Downgrade = self.simulateTLS12Downgrade
+ 
+         if not cipherfactory.tripleDESPresent:
+             other.cipherNames = [e for e in self.cipherNames if e != "3des"]
+diff --git a/third_party/tlslite/tlslite/tlsconnection.py b/third_party/tlslite/tlslite/tlsconnection.py
+index 2309d4fa8f3a..cb7160f25cc9 100644
+--- a/third_party/tlslite/tlslite/tlsconnection.py
++++ b/third_party/tlslite/tlslite/tlsconnection.py
+@@ -1352,8 +1352,16 @@ class TLSConnection(TLSRecordLayer):
+             tackExt = TackExtension.create(tacks, activationFlags)
+         else:
+             tackExt = None
++        serverRandom = getRandomBytes(32)
++        # See https://tools.ietf.org/html/rfc8446#section-4.1.3
++        if settings.simulateTLS13Downgrade:
++            serverRandom = serverRandom[:24] + \
++                bytearray("\x44\x4f\x57\x4e\x47\x52\x44\x01")
++        elif settings.simulateTLS12Downgrade:
++            serverRandom = serverRandom[:24] + \
++                bytearray("\x44\x4f\x57\x4e\x47\x52\x44\x00")
+         serverHello = ServerHello()
+-        serverHello.create(self.version, getRandomBytes(32), sessionID, \
++        serverHello.create(self.version, serverRandom, sessionID, \
+                             cipherSuite, CertificateType.x509, tackExt,
+                             alpn_proto_selected,
+                             nextProtos)

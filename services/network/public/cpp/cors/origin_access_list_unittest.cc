@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/mojom/cors.mojom.h"
 
 #include <memory>
 
@@ -50,29 +51,35 @@ class OriginAccessListTest : public testing::Test {
                          const std::string& host,
                          bool allow_subdomains) {
     std::vector<mojom::CorsOriginPatternPtr> patterns;
-    patterns.push_back(
-        mojom::CorsOriginPattern::New(protocol, host, allow_subdomains));
+    patterns.push_back(mojom::CorsOriginPattern::New(
+        protocol, host, allow_subdomains,
+        network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority));
     list_.SetAllowListForOrigin(source_origin_, patterns);
   }
-  void AddAllowListEntry(const std::string& protocol,
-                         const std::string& host,
-                         bool allow_subdomains) {
+  void AddAllowListEntry(
+      const std::string& protocol,
+      const std::string& host,
+      bool allow_subdomains,
+      const network::mojom::CORSOriginAccessMatchPriority priority) {
     list_.AddAllowListEntryForOrigin(source_origin_, protocol, host,
-                                     allow_subdomains);
+                                     allow_subdomains, priority);
   }
   void SetBlockListEntry(const std::string& protocol,
                          const std::string& host,
                          bool allow_subdomains) {
     std::vector<mojom::CorsOriginPatternPtr> patterns;
-    patterns.push_back(
-        mojom::CorsOriginPattern::New(protocol, host, allow_subdomains));
+    patterns.push_back(mojom::CorsOriginPattern::New(
+        protocol, host, allow_subdomains,
+        network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority));
     list_.SetBlockListForOrigin(source_origin_, patterns);
   }
-  void AddBlockListEntry(const std::string& protocol,
-                         const std::string& host,
-                         bool allow_subdomains) {
+  void AddBlockListEntry(
+      const std::string& protocol,
+      const std::string& host,
+      bool allow_subdomains,
+      const network::mojom::CORSOriginAccessMatchPriority priority) {
     list_.AddBlockListEntryForOrigin(source_origin_, protocol, host,
-                                     allow_subdomains);
+                                     allow_subdomains, priority);
   }
   void ResetLists() {
     std::vector<mojom::CorsOriginPatternPtr> patterns;
@@ -114,7 +121,9 @@ TEST_F(OriginAccessListTest, IsAccessAllowed) {
 
   // Adding an entry that matches subdomains should grant access to any
   // subdomains.
-  AddAllowListEntry("https", "example.com", true);
+  AddAllowListEntry(
+      "https", "example.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
   EXPECT_TRUE(IsAllowed(https_example_origin()));
   EXPECT_TRUE(IsAllowed(https_sub_example_origin()));
   EXPECT_FALSE(IsAllowed(http_example_origin()));
@@ -139,10 +148,52 @@ TEST_F(OriginAccessListTest, IsAccessAllowedWithBlockListEntry) {
 
 TEST_F(OriginAccessListTest, IsAccessAllowedWildcardWithBlockListEntry) {
   SetAllowListEntry("https", "", true);
-  AddBlockListEntry("https", "google.com", false);
+  AddBlockListEntry(
+      "https", "google.com", false,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
 
   EXPECT_TRUE(IsAllowed(https_example_origin()));
   EXPECT_FALSE(IsAllowed(https_google_origin()));
+}
+
+TEST_F(OriginAccessListTest, IsPriorityRespected) {
+  SetAllowListEntry("https", "example.com", true);
+  EXPECT_TRUE(IsAllowed(https_example_origin()));
+  EXPECT_TRUE(IsAllowed(https_sub_example_origin()));
+
+  // Higher priority blocklist overrides lower priority allowlist.
+  AddBlockListEntry(
+      "https", "example.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kLowPriority);
+  EXPECT_FALSE(IsAllowed(https_example_origin()));
+  EXPECT_FALSE(IsAllowed(https_sub_example_origin()));
+
+  // Higher priority allowlist overrides lower priority blocklist.
+  AddAllowListEntry(
+      "https", "example.com", false,
+      network::mojom::CORSOriginAccessMatchPriority::kMediumPriority);
+  EXPECT_TRUE(IsAllowed(https_example_origin()));
+  EXPECT_FALSE(IsAllowed(https_sub_example_origin()));
+}
+
+TEST_F(OriginAccessListTest, IsPriorityRespectedReverse) {
+  AddAllowListEntry(
+      "https", "example.com", false,
+      network::mojom::CORSOriginAccessMatchPriority::kMediumPriority);
+  EXPECT_TRUE(IsAllowed(https_example_origin()));
+  EXPECT_FALSE(IsAllowed(https_sub_example_origin()));
+
+  AddBlockListEntry(
+      "https", "example.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kLowPriority);
+  EXPECT_TRUE(IsAllowed(https_example_origin()));
+  EXPECT_FALSE(IsAllowed(https_sub_example_origin()));
+
+  AddAllowListEntry(
+      "https", "example.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
+  EXPECT_TRUE(IsAllowed(https_example_origin()));
+  EXPECT_FALSE(IsAllowed(https_sub_example_origin()));
 }
 
 }  // namespace

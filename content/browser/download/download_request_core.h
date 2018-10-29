@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_save_info.h"
@@ -27,6 +28,7 @@ struct DownloadCreateInfo;
 namespace net {
 class HttpResponseHeaders;
 class URLRequest;
+class URLRequestContextGetter;
 class URLRequestStatus;
 }  // namespace net
 
@@ -110,7 +112,8 @@ class CONTENT_EXPORT DownloadRequestCore
 
   static std::unique_ptr<net::URLRequest> CreateRequestOnIOThread(
       bool is_new_download,
-      download::DownloadUrlParameters* params);
+      download::DownloadUrlParameters* params,
+      scoped_refptr<net::URLRequestContextGetter> url_request_context_getter);
 
   // Size of the buffer used between the DownloadRequestCore and the
   // downstream receiver of its output.

@@ -53,11 +53,13 @@ class CORE_EXPORT WebRemoteFrameImpl final
                                   WebFrame* previous_sibling,
                                   const ParsedFeaturePolicy&,
                                   const WebFrameOwnerProperties&,
+                                  FrameOwnerElementType,
                                   WebFrame* opener) override;
   WebRemoteFrame* CreateRemoteChild(WebTreeScopeType,
                                     const WebString& name,
                                     WebSandboxFlags,
                                     const ParsedFeaturePolicy&,
+                                    FrameOwnerElementType,
                                     WebRemoteFrameClient*,
                                     WebFrame* opener) override;
   void SetCcLayer(cc::Layer*,
@@ -93,6 +95,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
   void SetHasReceivedUserGestureBeforeNavigation(bool value) override;
   v8::Local<v8::Object> GlobalProxy() const override;
   WebRect GetCompositingRect() override;
+  void RenderFallbackContent() const override;
 
   void InitializeCoreFrame(Page&, FrameOwner*, const AtomicString& name);
   RemoteFrame* GetFrame() const { return frame_.Get(); }

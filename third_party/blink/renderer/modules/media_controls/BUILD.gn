@@ -91,7 +91,6 @@ blink_modules_sources("media_controls") {
   deps = [
     ":media_controls_resources",
     "//services/service_manager/public/cpp",
-    "//third_party/blink/public:media_controls_resources_header",
   ]
 }
 

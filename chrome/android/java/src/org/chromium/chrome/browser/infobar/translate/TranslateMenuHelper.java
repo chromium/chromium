@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatImageView;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,6 @@ import android.widget.TextView;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.TranslateOptions;
-import org.chromium.chrome.browser.widget.TintedImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -287,8 +287,8 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
                     menuItemView = getItemView(
                             menuItemView, position, parent, R.layout.translate_menu_item_checked);
 
-                    TintedImageView checkboxIcon =
-                            (TintedImageView) menuItemView.findViewById(R.id.menu_item_icon);
+                    AppCompatImageView checkboxIcon =
+                            (AppCompatImageView) menuItemView.findViewById(R.id.menu_item_icon);
                     if (getItem(position).mId == TranslateMenu.ID_OVERFLOW_ALWAYS_TRANSLATE
                             && mOptions.getTranslateState(TranslateOptions.Type.ALWAYS_LANGUAGE)) {
                         checkboxIcon.setVisibility(View.VISIBLE);

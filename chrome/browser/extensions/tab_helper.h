@@ -9,15 +9,14 @@
 #include <set>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/extension_reenabler.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "chrome/common/extensions/mojom/inline_install.mojom.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "chrome/common/web_application_info.h"
 #include "content/public/browser/web_contents_binding_set.h"
@@ -25,7 +24,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/browser/script_execution_observer.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/stack_frame.h"
@@ -43,23 +41,21 @@ namespace extensions {
 class ExtensionActionRunner;
 class BookmarkAppHelper;
 class Extension;
-class WebstoreInlineInstallerFactory;
 
 // Per-tab extension helper. Also handles non-extension apps.
 class TabHelper : public content::WebContentsObserver,
                   public ExtensionFunctionDispatcher::Delegate,
                   public ExtensionRegistryObserver,
-                  public content::WebContentsUserData<TabHelper>,
-                  public mojom::InlineInstaller {
+                  public content::WebContentsUserData<TabHelper> {
  public:
   ~TabHelper() override;
 
-  void CreateHostedAppFromWebContents();
-  bool CanCreateBookmarkApp() const;
+  using OnceInstallCallback =
+      base::OnceCallback<void(const ExtensionId& app_id, bool success)>;
 
-  // ScriptExecutionObserver::Delegate
-  virtual void AddScriptExecutionObserver(ScriptExecutionObserver* observer);
-  virtual void RemoveScriptExecutionObserver(ScriptExecutionObserver* observer);
+  void CreateHostedAppFromWebContents(bool shortcut_app_requested,
+                                      OnceInstallCallback callback);
+  bool CanCreateBookmarkApp() const;
 
   // Sets the extension denoting this as an app. If |extension| is non-null this
   // tab becomes an app-tab. WebContents does not listen for unload events for
@@ -101,14 +97,7 @@ class TabHelper : public content::WebContentsObserver,
     return active_tab_permission_granter_.get();
   }
 
-  // Sets the factory used to create inline webstore item installers.
-  // Used for testing. Takes ownership of the factory instance.
-  void SetWebstoreInlineInstallerFactoryForTests(
-      WebstoreInlineInstallerFactory* factory);
-
  private:
-  class InlineInstallObserver;
-
   // Utility function to invoke member functions on all relevant
   // ContentRulesRegistries.
   template <class Func>
@@ -148,25 +137,18 @@ class TabHelper : public content::WebContentsObserver,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  // mojom::InlineInstall:
-  void DoInlineInstall(
-      const std::string& webstore_item_id,
-      int listeners_mask,
-      mojom::InlineInstallProgressListenerPtr install_progress_listener,
-      DoInlineInstallCallback callback) override;
-
   // Message handlers.
   void OnDidGetWebApplicationInfo(
       chrome::mojom::ChromeRenderFrameAssociatedPtr chrome_render_frame,
+      bool shortcut_app_requested,
       const WebApplicationInfo& info);
   void OnGetAppInstallState(content::RenderFrameHost* host,
                             const GURL& requestor_url,
                             int return_route_id,
                             int callback_id);
-  void OnContentScriptsExecuting(
-      content::RenderFrameHost* host,
-      const ScriptExecutionObserver::ExecutingScriptsMap& extension_ids,
-      const GURL& on_url);
+  void OnContentScriptsExecuting(content::RenderFrameHost* host,
+                                 const ExecutingScriptsMap& extension_ids,
+                                 const GURL& on_url);
 
   // App extensions related methods:
 
@@ -178,30 +160,15 @@ class TabHelper : public content::WebContentsObserver,
 
   void OnImageLoaded(const gfx::Image& image);
 
-  // WebstoreStandaloneInstaller::Callback.
-  void OnInlineInstallComplete(const ExtensionId& extension_id,
-                               bool success,
-                               const std::string& error,
-                               webstore_install::Result result);
-
-  // ExtensionReenabler::Callback.
-  void OnReenableComplete(const ExtensionId& extension_id,
-                          ExtensionReenabler::ReenableResult result);
-
   // Requests application info for the specified page. This is an asynchronous
   // request. The delegate is notified by way of OnDidGetWebApplicationInfo when
   // the data is available.
-  void GetApplicationInfo(WebAppAction action);
+  void GetApplicationInfo(WebAppAction action, bool shortcut_app_requested);
 
   // Sends our tab ID to |render_frame_host|.
   void SetTabId(content::RenderFrameHost* render_frame_host);
 
   Profile* profile_;
-
-  // Our content script observers. Declare at top so that it will outlive all
-  // other members, since they might add themselves as observers.
-  base::ObserverList<ScriptExecutionObserver>::Unchecked
-      script_execution_observers_;
 
   // If non-null this tab is an app tab and this is the extension the tab was
   // created for.
@@ -230,29 +197,11 @@ class TabHelper : public content::WebContentsObserver,
 
   std::unique_ptr<BookmarkAppHelper> bookmark_app_helper_;
 
-  // Creates WebstoreInlineInstaller instances for inline install triggers.
-  std::unique_ptr<WebstoreInlineInstallerFactory>
-      webstore_inline_installer_factory_;
-
-  // The reenable prompt for disabled extensions, if any.
-  std::unique_ptr<ExtensionReenabler> extension_reenabler_;
+  // Reponse to CreateHostedAppFromWebContents request.
+  OnceInstallCallback install_callback_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observer_;
-
-  // Map of InlineInstallObservers for inline installations that have progress
-  // listeners.
-  std::map<ExtensionId, std::unique_ptr<InlineInstallObserver>>
-      install_observers_;
-
-  // Map of function callbacks that are invoked when the inline installation for
-  // a particular extension (hence ExtensionId) completes.
-  std::map<ExtensionId, DoInlineInstallCallback> install_callbacks_;
-
-  content::WebContentsFrameBindingSet<mojom::InlineInstaller> bindings_;
-
-  std::map<ExtensionId, mojom::InlineInstallProgressListenerPtr>
-      inline_install_progress_listeners_;
 
   // Vend weak pointers that can be invalidated to stop in-progress loads.
   base::WeakPtrFactory<TabHelper> image_loader_ptr_factory_;

@@ -26,14 +26,13 @@ namespace blink {
 
 enum CanvasColorSpace {
   kSRGBCanvasColorSpace,
+  kLinearRGBCanvasColorSpace,
   kRec2020CanvasColorSpace,
   kP3CanvasColorSpace,
 };
 
 enum CanvasPixelFormat {
   kRGBA8CanvasPixelFormat,
-  kRGB10A2CanvasPixelFormat,
-  kRGBA12CanvasPixelFormat,
   kF16CanvasPixelFormat,
 };
 

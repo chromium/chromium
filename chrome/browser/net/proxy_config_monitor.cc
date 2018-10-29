@@ -21,6 +21,8 @@
 #include "chrome/browser/extensions/api/proxy/proxy_api.h"
 #endif
 
+using content::BrowserThread;
+
 ProxyConfigMonitor::ProxyConfigMonitor(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile);
@@ -51,12 +53,13 @@ ProxyConfigMonitor::ProxyConfigMonitor(Profile* profile) {
   proxy_config_service_->AddObserver(this);
 }
 
-ProxyConfigMonitor::ProxyConfigMonitor() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+ProxyConfigMonitor::ProxyConfigMonitor(PrefService* local_state) {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
 
   pref_proxy_config_tracker_.reset(
       ProxyServiceFactory::CreatePrefProxyConfigTrackerOfLocalState(
-          g_browser_process->local_state()));
+          local_state));
 
   proxy_config_service_ = ProxyServiceFactory::CreateProxyConfigService(
       pref_proxy_config_tracker_.get());
@@ -65,7 +68,8 @@ ProxyConfigMonitor::ProxyConfigMonitor() {
 }
 
 ProxyConfigMonitor::~ProxyConfigMonitor() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
   proxy_config_service_->RemoveObserver(this);
   pref_proxy_config_tracker_->DetachFromPrefService();
 }
@@ -100,7 +104,8 @@ void ProxyConfigMonitor::FlushForTesting() {
 void ProxyConfigMonitor::OnProxyConfigChanged(
     const net::ProxyConfigWithAnnotation& config,
     net::ProxyConfigService::ConfigAvailability availability) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
   proxy_config_client_set_.ForAllPtrs(
       [config,
        availability](network::mojom::ProxyConfigClient* proxy_config_client) {
@@ -134,7 +139,8 @@ void ProxyConfigMonitor::OnPACScriptError(int32_t line_number,
 
 void ProxyConfigMonitor::OnRequestMaybeFailedDueToProxySettings(
     int32_t net_error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
 
   if (net_error >= 0) {
     // If the error is obviously wrong, don't dispatch it to extensions. If the

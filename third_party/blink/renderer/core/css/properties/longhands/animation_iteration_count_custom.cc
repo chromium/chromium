@@ -30,7 +30,8 @@ const CSSValue* AnimationIterationCount::CSSValueFromComputedStyleInternal(
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   const CSSAnimationData* animation_data = style.Animations();
   if (animation_data) {
-    for (size_t i = 0; i < animation_data->IterationCountList().size(); ++i) {
+    for (wtf_size_t i = 0; i < animation_data->IterationCountList().size();
+         ++i) {
       list->Append(*ComputedStyleUtils::ValueForAnimationIterationCount(
           animation_data->IterationCountList()[i]));
     }
@@ -42,10 +43,10 @@ const CSSValue* AnimationIterationCount::CSSValueFromComputedStyleInternal(
 
 const CSSValue* AnimationIterationCount::InitialValue() const {
   DEFINE_STATIC_LOCAL(
-      CSSValue, value,
+      Persistent<CSSValue>, value,
       (CSSPrimitiveValue::Create(CSSAnimationData::InitialIterationCount(),
                                  CSSPrimitiveValue::UnitType::kNumber)));
-  return &value;
+  return value;
 }
 
 }  // namespace CSSLonghand

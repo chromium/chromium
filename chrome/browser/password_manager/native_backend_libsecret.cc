@@ -352,7 +352,7 @@ bool NativeBackendLibsecret::RawAddLogin(const PasswordForm& form) {
       "avatar_url", form.icon_url.spec().c_str(),
       // We serialize unique origins as "", in order to make other systems that
       // read from the login database happy. https://crbug.com/591310
-      "federation_url", form.federation_origin.unique()
+      "federation_url", form.federation_origin.opaque()
           ? ""
           : form.federation_origin.Serialize().c_str(),
       "should_skip_zero_click", form.skip_zero_click,

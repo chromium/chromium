@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/cc_export.h"
+#include "cc/input/browser_controls_state.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/layer_impl.h"
@@ -134,9 +135,7 @@ class CC_EXPORT LayerTreeHostCommon {
 
   struct CC_EXPORT ScrollUpdateInfo {
     ElementId element_id;
-    // TODO(miletus): Use ScrollOffset once LayerTreeHost/Blink fully supports
-    // fractional scroll offset.
-    gfx::Vector2d scroll_delta;
+    gfx::ScrollOffset scroll_delta;
 
     bool operator==(const ScrollUpdateInfo& other) const;
   };
@@ -173,6 +172,8 @@ struct CC_EXPORT ScrollAndScaleSet {
   float top_controls_delta;
   std::vector<LayerTreeHostCommon::ScrollbarsUpdateInfo> scrollbars;
   std::vector<std::unique_ptr<SwapPromise>> swap_promises;
+  BrowserControlsState browser_controls_constraint;
+  bool browser_controls_constraint_changed;
   bool has_scrolled_by_wheel;
   bool has_scrolled_by_touch;
 

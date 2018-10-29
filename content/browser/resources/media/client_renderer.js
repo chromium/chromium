@@ -4,20 +4,24 @@
 
 var ClientRenderer = (function() {
   var ClientRenderer = function() {
-    this.playerListElement = document.getElementById('player-list');
-    var audioTableElement = document.getElementById('audio-property-table');
+    this.playerListElement = $('player-list');
+    var audioTableElement = $('audio-property-table');
     if (audioTableElement)
       this.audioPropertiesTable = audioTableElement.querySelector('tbody');
-    var playerTableElement = document.getElementById('player-property-table');
+    var playerTableElement = $('player-property-table');
     if (playerTableElement)
       this.playerPropertiesTable = playerTableElement.querySelector('tbody');
-    var logElement = document.getElementById('log');
+    var logElement = $('log');
     if (logElement)
       this.logTable = logElement.querySelector('tbody');
-    this.graphElement = document.getElementById('graphs');
-    this.audioPropertyName = document.getElementById('audio-property-name');
-    this.audioFocusSessionListElement_ =
-        document.getElementById('audio-focus-session-list');
+    this.graphElement = $('graphs');
+    this.audioPropertyName = $('audio-property-name');
+    this.audioFocusSessionListElement_ = $('audio-focus-session-list');
+    var generalAudioInformationTableElement = $('general-audio-info-table');
+    if (generalAudioInformationTableElement) {
+      this.generalAudioInformationTable =
+          generalAudioInformationTableElement.querySelector('tbody');
+    }
 
     this.players = null;
     this.selectedPlayer = null;
@@ -27,13 +31,15 @@ var ClientRenderer = (function() {
 
     this.selectedPlayerLogIndex = 0;
 
-    this.filterFunction = function() { return true; };
-    this.filterText = document.getElementById('filter-text');
+    this.filterFunction = function() {
+      return true;
+    };
+    this.filterText = $('filter-text');
     if (this.filterText)
       this.filterText.onkeyup = this.onTextChange_.bind(this);
-    this.clipboardDialog = document.getElementById('clipboard-dialog');
+    this.clipboardDialog = $('clipboard-dialog');
 
-    this.clipboardTextarea = document.getElementById('clipboard-textarea');
+    this.clipboardTextarea = $('clipboard-textarea');
     if (this.clipboardTextarea)
       this.clipboardTextarea.onblur = this.hideClipboard_.bind(this);
     var clipboardButtons = document.getElementsByClassName('copy-button');
@@ -43,7 +49,7 @@ var ClientRenderer = (function() {
       }
     }
 
-    this.saveLogButton = document.getElementById('save-log-button');
+    this.saveLogButton = $('save-log-button');
     if (this.saveLogButton)
       this.saveLogButton.onclick = this.saveLog_.bind(this);
 
@@ -71,8 +77,8 @@ var ClientRenderer = (function() {
     }
   }
 
-  function createSelectableButton(id, groupName, buttonLabel, select_cb,
-                                  isDestructed) {
+  function createSelectableButton(
+      id, groupName, buttonLabel, select_cb, isDestructed) {
     // For CSS styling.
     var radioButton = document.createElement('input');
     radioButton.classList.add(ClientRenderer.Css_.SELECTABLE_BUTTON);
@@ -99,7 +105,7 @@ var ClientRenderer = (function() {
   }
 
   function selectSelectableButton(id) {
-    var element = document.getElementById(id);
+    var element = $(id);
     if (!element) {
       console.error('failed to select button with id: ' + id);
       return;
@@ -112,11 +118,19 @@ var ClientRenderer = (function() {
     var file = new Blob([text], {type: 'text/plain'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(file);
-    a.download = "media-internals.txt";
+    a.download = 'media-internals.txt';
     a.click();
   }
 
   ClientRenderer.prototype = {
+    /**
+     * Called to set general audio information.
+     @param audioInfo The map of information.
+     */
+    generalAudioInformationSet: function(audioInfo) {
+      this.drawProperties_(audioInfo, this.generalAudioInformationTable);
+    },
+
     /**
      * Called when an audio component is added to the collection.
      * @param componentType Integer AudioComponent enum value; must match values
@@ -201,8 +215,10 @@ var ClientRenderer = (function() {
       }
       if (key === 'event' && value === 'WEBMEDIAPLAYER_DESTROYED')
         player.destructed = true;
-      if (['url', 'frame_url', 'frame_title', 'audio_codec_name',
-           'video_codec_name', 'width', 'height', 'event'].includes(key)) {
+      if ([
+            'url', 'frame_url', 'frame_title', 'audio_codec_name',
+            'video_codec_name', 'width', 'height', 'event'
+          ].includes(key)) {
         this.redrawPlayerList_(players);
       }
     },
@@ -222,7 +238,7 @@ var ClientRenderer = (function() {
       thead.appendChild(theadRow);
       table.appendChild(thead);
       var tbody = document.createElement('tbody');
-      for (var i=0; i < formats.length; ++i) {
+      for (var i = 0; i < formats.length; ++i) {
         var tr = document.createElement('tr');
         for (var key in formats[i]) {
           var td = document.createElement('td');
@@ -237,24 +253,22 @@ var ClientRenderer = (function() {
     },
 
     redrawVideoCaptureCapabilities: function(videoCaptureCapabilities, keys) {
-      var copyButtonElement =
-          document.getElementById('video-capture-capabilities-copy-button');
+      var copyButtonElement = $('video-capture-capabilities-copy-button');
       copyButtonElement.onclick = function() {
         this.showClipboard(JSON.stringify(videoCaptureCapabilities, null, 2));
       }.bind(this);
 
-      var videoTableBodyElement  =
-          document.getElementById('video-capture-capabilities-tbody');
+      var videoTableBodyElement = $('video-capture-capabilities-tbody');
       removeChildren(videoTableBodyElement);
 
       for (var component in videoCaptureCapabilities) {
-        var tableRow =  document.createElement('tr');
-        var device = videoCaptureCapabilities[ component ];
+        var tableRow = document.createElement('tr');
+        var device = videoCaptureCapabilities[component];
         for (var i in keys) {
           var value = device[keys[i]];
           var tableCell = document.createElement('td');
           var cellElement;
-          if ((typeof value) == (typeof [])) {
+          if ((typeof value) == (typeof[])) {
             cellElement = this.createVideoCaptureFormatTable(value);
           } else {
             cellElement = document.createTextNode(
@@ -289,16 +303,13 @@ var ClientRenderer = (function() {
       var listElement;
       switch (componentType) {
         case 0:
-          listElement = document.getElementById(
-              'audio-input-controller-list');
+          listElement = $('audio-input-controller-list');
           break;
         case 1:
-          listElement = document.getElementById(
-              'audio-output-controller-list');
+          listElement = $('audio-output-controller-list');
           break;
         case 2:
-          listElement = document.getElementById(
-              'audio-output-stream-list');
+          listElement = $('audio-output-stream-list');
           break;
         default:
           console.error('Unrecognized component type: ' + componentType);
@@ -315,21 +326,21 @@ var ClientRenderer = (function() {
 
       var listElement = this.getListElementForAudioComponent_(componentType);
       if (!listElement) {
-        console.error('Failed to find list element for component type: ' +
-            componentType);
+        console.error(
+            'Failed to find list element for component type: ' + componentType);
         return;
       }
 
       var fragment = document.createDocumentFragment();
       for (var id in components) {
         var li = document.createElement('li');
-        var button_cb = this.selectAudioComponent_.bind(
-                this, componentType, id, components[id]);
+        var buttonCb = this.selectAudioComponent_.bind(
+            this, componentType, id, components[id]);
         var friendlyName = this.getAudioComponentName_(componentType, id);
         var label = document.createElement('label');
         label.appendChild(document.createTextNode(friendlyName));
-        li.appendChild(createSelectableButton(
-            id, buttonGroupName, label, button_cb));
+        li.appendChild(
+            createSelectableButton(id, buttonGroupName, label, buttonCb));
         fragment.appendChild(li);
       }
       removeChildren(listElement);
@@ -345,7 +356,7 @@ var ClientRenderer = (function() {
 
     selectAudioComponent_: function(componentType, componentId, componentData) {
       document.body.classList.remove(
-         ClientRenderer.Css_.NO_COMPONENTS_SELECTED);
+          ClientRenderer.Css_.NO_COMPONENTS_SELECTED);
 
       this.selectedAudioComponentType = componentType;
       this.selectedAudioComponentId = componentId;
@@ -372,23 +383,23 @@ var ClientRenderer = (function() {
         var p = player.properties;
         var label = document.createElement('label');
 
-        var name_text = p.url || 'Player ' + player.id;
-        var name_node = document.createElement('div');
-        name_node.appendChild(document.createTextNode(name_text));
-        name_node.className = 'player-name';
-        label.appendChild(name_node);
+        var nameText = p.url || 'Player ' + player.id;
+        var nameNode = document.createElement('div');
+        nameNode.appendChild(document.createTextNode(nameText));
+        nameNode.className = 'player-name';
+        label.appendChild(nameNode);
 
         var frame = [];
         if (p.frame_title)
           frame.push(p.frame_title);
         if (p.frame_url)
           frame.push(p.frame_url);
-        var frame_text = frame.join(' - ');
-        if (frame_text) {
-          var frame_node = document.createElement('div');
-          frame_node.className = 'player-frame';
-          frame_node.appendChild(document.createTextNode(frame_text));
-          label.appendChild(frame_node);
+        var frameText = frame.join(' - ');
+        if (frameText) {
+          var frameNode = document.createElement('div');
+          frameNode.className = 'player-frame';
+          frameNode.appendChild(document.createTextNode(frameText));
+          label.appendChild(frameNode);
         }
 
         var desc = [];
@@ -402,18 +413,18 @@ var ClientRenderer = (function() {
           desc.push(p.audio_codec_name);
         if (p.event)
           desc.push('(' + p.event + ')');
-        var desc_text = desc.join(' ');
-        if (desc_text) {
-          var desc_node = document.createElement('div');
-          desc_node.className = 'player-desc';
-          desc_node.appendChild(document.createTextNode(desc_text));
-          label.appendChild(desc_node);
+        var descText = desc.join(' ');
+        if (descText) {
+          var descNode = document.createElement('div');
+          descNode.className = 'player-desc';
+          descNode.appendChild(document.createTextNode(descText));
+          label.appendChild(descNode);
         }
 
         var li = document.createElement('li');
-        var button_cb = this.selectPlayer_.bind(this, player);
+        var buttonCb = this.selectPlayer_.bind(this, player);
         li.appendChild(createSelectableButton(
-            id, buttonGroupName, label, button_cb, player.destructed));
+            id, buttonGroupName, label, buttonCb, player.destructed));
         fragment.appendChild(li);
       }
       removeChildren(this.playerListElement);
@@ -424,7 +435,7 @@ var ClientRenderer = (function() {
         selectSelectableButton(this.selectedPlayer.id);
       }
 
-      this.saveLogButton.style.display = hasPlayers ? "inline-block" : "none";
+      this.saveLogButton.style.display = hasPlayers ? 'inline-block' : 'none';
     },
 
     selectPlayer_: function(player) {
@@ -466,16 +477,16 @@ var ClientRenderer = (function() {
 
         var timestampCell = row.insertCell(-1);
         timestampCell.classList.add('timestamp');
-        timestampCell.appendChild(document.createTextNode(
-            util.millisecondsToString(event.time)));
+        timestampCell.appendChild(
+            document.createTextNode(util.millisecondsToString(event.time)));
         row.insertCell(-1).appendChild(document.createTextNode(event.key));
         row.insertCell(-1).appendChild(document.createTextNode(event.value));
       }
     },
 
     drawLog_: function() {
-      var toDraw = this.selectedPlayer.allEvents.slice(
-          this.selectedPlayerLogIndex);
+      var toDraw =
+          this.selectedPlayer.allEvents.slice(this.selectedPlayerLogIndex);
       toDraw.forEach(this.appendEventToLog_.bind(this));
       this.selectedPlayerLogIndex = this.selectedPlayer.allEvents.length;
     },
@@ -505,8 +516,8 @@ var ClientRenderer = (function() {
       if (!this.selectedPlayer && !this.selectedAudioCompontentData) {
         return;
       }
-      var properties = this.selectedAudioCompontentData ||
-          this.selectedPlayer.properties;
+      var properties =
+          this.selectedAudioCompontentData || this.selectedPlayer.properties;
       var stringBuffer = [];
 
       for (var key in properties) {
@@ -522,11 +533,13 @@ var ClientRenderer = (function() {
 
     onTextChange_: function(event) {
       var text = this.filterText.value.toLowerCase();
-      var parts = text.split(',').map(function(part) {
-        return part.trim();
-      }).filter(function(part) {
-        return part.trim().length > 0;
-      });
+      var parts = text.split(',')
+                      .map(function(part) {
+                        return part.trim();
+                      })
+                      .filter(function(part) {
+                        return part.trim().length > 0;
+                      });
 
       this.filterFunction = function(text) {
         text = text.toLowerCase();

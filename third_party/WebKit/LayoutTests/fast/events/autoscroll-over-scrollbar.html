@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/compositor-controls.js"></script>
 <style>
   body {
     margin: 0px;
@@ -24,6 +25,7 @@
 </div>
 
 <script>
+setAnimationRequiresRaster();
 var scrollable = document.getElementById('scrollable');
 function autoScroll(start_x, start_y, end_x, end_y) {
   return new Promise((resolve, reject) => {

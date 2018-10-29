@@ -40,6 +40,7 @@ class MockDelegatedFrameHostAndroidClient
   MOCK_METHOD2(DidPresentCompositorFrame,
                void(uint32_t, const gfx::PresentationFeedback&));
   MOCK_METHOD1(OnFrameTokenChanged, void(uint32_t));
+  MOCK_METHOD0(WasEvicted, void());
 };
 
 class MockWindowAndroidCompositor : public WindowAndroidCompositor {
@@ -178,9 +179,9 @@ TEST_F(DelegatedFrameHostAndroidTest, TakeFallbackContentFromUpdatesPrimary) {
   other_frame_host->TakeFallbackContentFrom(frame_host_.get());
 
   EXPECT_TRUE(other_frame_host->SurfaceId().is_valid());
-  EXPECT_EQ(
-      other_frame_host->content_layer_for_testing()->primary_surface_id(),
-      other_frame_host->content_layer_for_testing()->fallback_surface_id());
+  EXPECT_EQ(other_frame_host->content_layer_for_testing()->surface_id(),
+            other_frame_host->content_layer_for_testing()
+                ->oldest_acceptable_fallback());
 }
 
 TEST_F(DelegatedFrameHostAndroidTest, CompositorLockDuringFirstFrame) {
@@ -301,6 +302,49 @@ TEST_F(DelegatedFrameHostAndroidTest, TestBothCompositorLocks) {
   // Submit a compositor frame of the right size, both locks should release.
   SubmitCompositorFrame(gfx::Size(50, 50));
   EXPECT_FALSE(IsLocked());
+}
+
+// Make sure frame evictor is notified of the newly embedded surface after
+// WasShown.
+TEST_F(DelegatedFrameHostAndroidSurfaceSynchronizationTest, EmbedWhileHidden) {
+  {
+    EXPECT_CALL(client_, WasEvicted());
+    frame_host_->EvictDelegatedFrame();
+  }
+  EXPECT_FALSE(frame_host_->HasSavedFrame());
+  viz::LocalSurfaceId id = allocator_.GenerateId();
+  gfx::Size size(100, 100);
+  frame_host_->WasHidden();
+  frame_host_->EmbedSurface(id, size, cc::DeadlinePolicy::UseDefaultDeadline());
+  EXPECT_FALSE(frame_host_->HasSavedFrame());
+  frame_host_->WasShown(id, size);
+  EXPECT_TRUE(frame_host_->HasSavedFrame());
+}
+
+// Verify that when a source rect or output size is not provided to
+// CopyFromCompositingSurface, the corresponding values in CopyOutputRequest
+// are also not initialized.
+TEST_F(DelegatedFrameHostAndroidSurfaceSynchronizationTest,
+       FullSurfaceCapture) {
+  // First embed a surface to make sure we have something to copy from.
+  viz::LocalSurfaceId id = allocator_.GenerateId();
+  gfx::Size size(100, 100);
+  frame_host_->EmbedSurface(id, size, cc::DeadlinePolicy::UseDefaultDeadline());
+
+  // Request readback without source rect or output size specified.
+  frame_host_->CopyFromCompositingSurface(gfx::Rect(), gfx::Size(),
+                                          base::DoNothing());
+
+  // Make sure the resulting CopyOutputRequest does not have its area or result
+  // selection set.
+  const std::vector<
+      std::pair<viz::LocalSurfaceId, std::unique_ptr<viz::CopyOutputRequest>>>&
+      requests = frame_sink_manager_impl_.GetFrameSinkForId(frame_sink_id_)
+                     ->copy_output_requests_for_testing();
+  ASSERT_EQ(1u, requests.size());
+  viz::CopyOutputRequest* request = requests[0].second.get();
+  EXPECT_FALSE(request->has_area());
+  EXPECT_FALSE(request->has_result_selection());
 }
 
 }  // namespace

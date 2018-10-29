@@ -29,7 +29,7 @@ extern "C" void* (*const malloc_default)(size_t) = &malloc;
 
 #if defined(_M_IX86)
 #pragma comment(linker, "/alternatename:_malloc_unchecked=_malloc_default")
-#elif defined(_M_X64) || defined(_M_ARM)
+#elif defined(_M_X64) || defined(_M_ARM) || defined(_M_ARM64)
 #pragma comment(linker, "/alternatename:malloc_unchecked=malloc_default")
 #else
 #error Unsupported platform

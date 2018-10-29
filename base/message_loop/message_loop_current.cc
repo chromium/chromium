@@ -22,6 +22,11 @@ base::ThreadLocalPointer<MessageLoop>* GetTLSMessageLoop() {
 
 }  // namespace
 
+// static
+MessageLoop* MessageLoop::GetCurrentDeprecated() {
+  return GetTLSMessageLoop()->Get();
+}
+
 //------------------------------------------------------------------------------
 // MessageLoopCurrent
 
@@ -47,6 +52,10 @@ void MessageLoopCurrent::RemoveDestructionObserver(
   current_->destruction_observers_.RemoveObserver(destruction_observer);
 }
 
+std::string MessageLoopCurrent::GetThreadName() const {
+  return current_->GetThreadName();
+}
+
 const scoped_refptr<SingleThreadTaskRunner>& MessageLoopCurrent::task_runner()
     const {
   DCHECK_CALLED_ON_VALID_THREAD(current_->bound_thread_checker_);
@@ -57,6 +66,10 @@ void MessageLoopCurrent::SetTaskRunner(
     scoped_refptr<SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(current_->bound_thread_checker_);
   current_->SetTaskRunner(std::move(task_runner));
+}
+
+bool MessageLoopCurrent::IsBoundToCurrentThread() const {
+  return current_ == GetTLSMessageLoop()->Get();
 }
 
 bool MessageLoopCurrent::IsIdleForTesting() {
@@ -115,11 +128,6 @@ void MessageLoopCurrent::BindToCurrentThreadInternal(MessageLoop* current) {
 void MessageLoopCurrent::UnbindFromCurrentThreadInternal(MessageLoop* current) {
   DCHECK_EQ(current, GetTLSMessageLoop()->Get());
   GetTLSMessageLoop()->Set(nullptr);
-}
-
-bool MessageLoopCurrent::IsBoundToCurrentThreadInternal(
-    MessageLoop* message_loop) {
-  return GetTLSMessageLoop()->Get() == message_loop;
 }
 
 #if !defined(OS_NACL)

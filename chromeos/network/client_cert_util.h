@@ -40,19 +40,24 @@ enum ConfigType {
 struct CHROMEOS_EXPORT ClientCertConfig {
   ClientCertConfig();
   ClientCertConfig(const ClientCertConfig& other);
+  ~ClientCertConfig();
 
   // Independent of whether the client cert (pattern or reference) is
   // configured, the location determines whether this network configuration
   // supports client certs and what kind of configuration it requires.
   ConfigType location;
 
-  // One of the ClientCertTypes defined in ONC: kNone, kRef, or kPattern.
+  // One of the ClientCertTypes defined in ONC: |kNone|, |kRef|, or |kPattern|.
   std::string client_cert_type;
 
-  // If |client_cert_type| equals kPattern, this contains the pattern.
+  // If |client_cert_type| equals |kPattern|, this contains the pattern.
   CertificatePattern pattern;
 
-  // The value of kIdentity, to enable substitutions.
+  // If |client_cert_type| equals |kRef|, this contains the GUID of the
+  // referenced certificate.
+  std::string guid;
+
+  // The value of |kIdentity|, to enable substitutions.
   std::string policy_identity;
 
   // source of this ClientCertConfig.
@@ -67,8 +72,8 @@ bool CertPrincipalMatches(const IssuerSubjectPattern& pattern,
                           const net::CertPrincipal& principal);
 
 // Returns the PKCS11 and slot ID of |cert_id|, which is expected to be a
-// value of the Shill property kEapCertIdProperty or kEapKeyIdProperty, either
-// of format "<pkcs11_id>" or "<slot_id>:<pkcs11_id>".
+// value of the Shill property |kEapCertIdProperty| or |kEapKeyIdProperty|,
+// either of format "<pkcs11_id>" or "<slot_id>:<pkcs11_id>".
 CHROMEOS_EXPORT std::string GetPkcs11AndSlotIdFromEapCertId(
     const std::string& cert_id,
     int* slot_id);

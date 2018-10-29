@@ -25,10 +25,10 @@ Settings* GetSettings(ExecutionContext* execution_context) {
   if (!execution_context)
     return nullptr;
 
-  if (!execution_context->IsDocument())
+  auto* document = DynamicTo<Document>(execution_context);
+  if (!document)
     return nullptr;
 
-  Document* document = ToDocument(execution_context);
   // |document| is guaranteed to be non-null since |execution_context| is
   // non-null.
   return document->GetSettings();

@@ -7,9 +7,12 @@
 
 #include <inttypes.h>
 
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
+
+class SkSurface;
 
 namespace ui {
 
@@ -34,6 +37,7 @@ class GbmBuffer {
   virtual size_t GetPlaneSize(size_t plane) const = 0;
   virtual uint32_t GetHandle() const = 0;
   virtual gfx::NativePixmapHandle ExportHandle() const = 0;
+  virtual sk_sp<SkSurface> GetSurface() = 0;
 };
 
 }  // namespace ui

@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+PASS Branding
+PASS Immutable i32 (missing)
+PASS Immutable i32 (undefined)
+PASS Immutable i32 (null)
+PASS Immutable i32 (false)
+PASS Immutable i32 (empty string)
+PASS Immutable i32 (zero)
+PASS Mutable i32 (true)
+PASS Mutable i32 (one)
+PASS Mutable i32 (string)
+PASS Mutable i32 (true on prototype)
+PASS Immutable f32 (missing)
+PASS Immutable f32 (undefined)
+PASS Immutable f32 (null)
+PASS Immutable f32 (false)
+PASS Immutable f32 (empty string)
+PASS Immutable f32 (zero)
+PASS Mutable f32 (true)
+PASS Mutable f32 (one)
+PASS Mutable f32 (string)
+PASS Mutable f32 (true on prototype)
+PASS Immutable f64 (missing)
+PASS Immutable f64 (undefined)
+PASS Immutable f64 (null)
+PASS Immutable f64 (false)
+PASS Immutable f64 (empty string)
+PASS Immutable f64 (zero)
+PASS Mutable f64 (true)
+PASS Mutable f64 (one)
+PASS Mutable f64 (string)
+PASS Mutable f64 (true on prototype)
+FAIL i64 with default WebAssembly.Global(): Descriptor property 'value' must be 'i32', 'f32', or 'f64'
+FAIL Calling setter without argument assert_throws: function "() => setter.call(global)" did not throw
+PASS Stray argument
+Harness: the test ran to completion.
+

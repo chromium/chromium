@@ -29,12 +29,6 @@ enum {
   SSL_PROTOCOL_VERSION_TLS1_3 = 0x0304,
 };
 
-enum TokenBindingParam {
-  TB_PARAM_RSA2048_PKCS15 = 0,
-  TB_PARAM_RSA2048_PSS = 1,
-  TB_PARAM_ECDSAP256 = 2,
-};
-
 enum TLS13Variant {
   kTLS13VariantDraft23,
   kTLS13VariantFinal,
@@ -108,10 +102,6 @@ struct NET_EXPORT SSLConfig {
   bool version_interference_probe;
 
   bool channel_id_enabled;   // True if TLS channel ID extension is enabled.
-
-  // List of Token Binding key parameters supported by the client. If empty,
-  // Token Binding will be disabled, even if token_binding_enabled is true.
-  std::vector<TokenBindingParam> token_binding_params;
 
   bool false_start_enabled;  // True if we'll use TLS False Start.
 

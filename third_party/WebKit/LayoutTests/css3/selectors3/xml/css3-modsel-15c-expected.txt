@@ -1,0 +1,1 @@
+CONSOLE ERROR: line 9: Uncaught TypeError: document.getElementsByTagNameNS(...)[0].setIdAttribute is not a function

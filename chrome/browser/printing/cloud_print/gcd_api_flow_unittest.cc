@@ -105,7 +105,8 @@ TEST_F(GCDApiFlowTest, SuccessOAuth2) {
   gcd_flow_->OnAccessTokenFetchComplete(
       GoogleServiceAuthError::AuthErrorNone(),
       identity::AccessTokenInfo(
-          "SomeToken", base::Time::Now() + base::TimeDelta::FromHours(1)));
+          "SomeToken", base::Time::Now() + base::TimeDelta::FromHours(1),
+          std::string() /* No extra information needed for this test */));
 
   EXPECT_TRUE(base::ContainsKey(requested_urls, GURL(kConfirmRequest)));
 
@@ -134,7 +135,8 @@ TEST_F(GCDApiFlowTest, BadJson) {
   gcd_flow_->OnAccessTokenFetchComplete(
       GoogleServiceAuthError::AuthErrorNone(),
       identity::AccessTokenInfo(
-          "SomeToken", base::Time::Now() + base::TimeDelta::FromHours(1)));
+          "SomeToken", base::Time::Now() + base::TimeDelta::FromHours(1),
+          std::string() /* No extra information needed for this test */));
 
   EXPECT_TRUE(base::ContainsKey(requested_urls, GURL(kConfirmRequest)));
   test_url_loader_factory_.AddResponse(kConfirmRequest,

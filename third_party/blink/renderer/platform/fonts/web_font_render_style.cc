@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
-#include "third_party/blink/renderer/platform/fonts/paint_font.h"
 #include "third_party/blink/renderer/platform/layout_test_support.h"
 
 namespace blink {
@@ -97,15 +96,15 @@ void WebFontRenderStyle::OverrideWith(const WebFontRenderStyle& other) {
     use_subpixel_positioning = other.use_subpixel_positioning;
 }
 
-void WebFontRenderStyle::ApplyToPaintFont(PaintFont& font,
-                                          float device_scale_factor) const {
+void WebFontRenderStyle::ApplyToSkPaint(SkPaint& font,
+                                        float device_scale_factor) const {
   auto sk_hint_style = static_cast<SkPaint::Hinting>(hint_style);
-  font.SetAntiAlias(use_anti_alias);
-  font.SetHinting(sk_hint_style);
-  font.SetEmbeddedBitmapText(use_bitmaps);
-  font.SetAutohinted(use_auto_hint);
+  font.setAntiAlias(use_anti_alias);
+  font.setHinting(sk_hint_style);
+  font.setEmbeddedBitmapText(use_bitmaps);
+  font.setAutohinted(use_auto_hint);
   if (use_anti_alias)
-    font.SetLcdRenderText(use_subpixel_rendering);
+    font.setLCDRenderText(use_subpixel_rendering);
 
   // Force-enable subpixel positioning, except when full hinting is requested on
   // low-dpi screen or when running layout tests.
@@ -113,7 +112,7 @@ void WebFontRenderStyle::ApplyToPaintFont(PaintFont& font,
       !LayoutTestSupport::IsRunningLayoutTest() &&
       (sk_hint_style != SkPaint::kFull_Hinting || device_scale_factor > 1.0f);
 
-  font.SetSubpixelText(force_subpixel_positioning || use_subpixel_positioning);
+  font.setSubpixelText(force_subpixel_positioning || use_subpixel_positioning);
 }
 
 }  // namespace blink

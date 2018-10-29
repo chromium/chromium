@@ -12,7 +12,7 @@
 
 namespace content {
 
-struct VideoTrackAdapterSettings;
+class VideoTrackAdapterSettings;
 
 // This class encapsulates creation of a Blink MediaStream having inside the
 // necessary Blink and Chromium, track and source. The Chrome Video source is

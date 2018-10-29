@@ -354,9 +354,8 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
       if (max_count == 0) {
         nodes.push_back(parent);
       } else {
-        std::vector<const BookmarkNode*>::iterator i =
-            std::upper_bound(nodes.begin(), nodes.end(), parent,
-                             &MoreRecentlyModified);
+        auto i = std::upper_bound(nodes.begin(), nodes.end(), parent,
+                                  &MoreRecentlyModified);
         if (nodes.size() < max_count || i != nodes.end()) {
           nodes.insert(i, parent);
           while (nodes.size() > max_count)
@@ -393,9 +392,8 @@ void GetMostRecentlyAddedEntries(BookmarkModel* model,
   while (iterator.has_next()) {
     const BookmarkNode* node = iterator.Next();
     if (node->is_url()) {
-      std::vector<const BookmarkNode*>::iterator insert_position =
-          std::upper_bound(nodes->begin(), nodes->end(), node,
-                           &MoreRecentlyAdded);
+      auto insert_position = std::upper_bound(nodes->begin(), nodes->end(),
+                                              node, &MoreRecentlyAdded);
       if (nodes->size() < count || insert_position != nodes->end()) {
         nodes->insert(insert_position, node);
         while (nodes->size() > count)
@@ -498,9 +496,7 @@ void DeleteBookmarkFolders(BookmarkModel* model,
                            const std::vector<int64_t>& ids) {
   // Remove the folders that were removed. This has to be done after all the
   // other changes have been committed.
-  for (std::vector<int64_t>::const_iterator iter = ids.begin();
-       iter != ids.end();
-       ++iter) {
+  for (auto iter = ids.begin(); iter != ids.end(); ++iter) {
     const BookmarkNode* node = GetBookmarkNodeByID(model, *iter);
     if (!node)
       continue;

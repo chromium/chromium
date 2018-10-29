@@ -22,59 +22,6 @@
 
 namespace content {
 
-namespace {
-
-bool CurrentRenderViewImpl(RenderViewImpl** out) {
-  blink::WebLocalFrame* web_frame =
-      blink::WebLocalFrame::FrameForCurrentContext();
-  if (!web_frame)
-    return false;
-
-  blink::WebView* web_view = web_frame->View();
-  if (!web_view)
-    return false;
-
-  RenderViewImpl* render_view_impl =
-      RenderViewImpl::FromWebView(web_view);
-  if (!render_view_impl)
-    return false;
-
-  *out = render_view_impl;
-  return true;
-}
-
-// Encodes a WebContentsLoadTime as JSON.
-// Input:
-// - |load_start_time| - time at which page load started.
-// - |load_stop_time| - time at which page load stopped.
-// - |result| - returned JSON.
-// Example return value:
-// {'load_start_ms': 1, 'load_duration_ms': 2.5}
-// either value may be null if a web contents hasn't fully loaded.
-// load_start_ms is represented as milliseconds since the unix epoch.
-void ConvertLoadTimeToJSON(
-    const base::Time& load_start_time,
-    const base::Time& load_stop_time,
-    std::string *result) {
-  base::DictionaryValue item;
-
-  if (load_start_time.is_null()) {
-    item.Set("load_start_ms", std::make_unique<base::Value>());
-  } else {
-    item.SetDouble("load_start_ms", (load_start_time - base::Time::UnixEpoch())
-                   .InMillisecondsF());
-  }
-  if (load_start_time.is_null() || load_stop_time.is_null()) {
-    item.Set("load_duration_ms", std::make_unique<base::Value>());
-  } else {
-    item.SetDouble("load_duration_ms",
-        (load_stop_time - load_start_time).InMillisecondsF());
-  }
-  base::JSONWriter::Write(item, result);
-}
-
-}  // namespace
-
 // static
 gin::WrapperInfo StatsCollectionController::kWrapperInfo = {
     gin::kEmbedderNativeGin
@@ -106,11 +53,10 @@ StatsCollectionController::~StatsCollectionController() {}
 gin::ObjectTemplateBuilder StatsCollectionController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<StatsCollectionController>::GetObjectTemplateBuilder(
-      isolate)
+             isolate)
       .SetMethod("getHistogram", &StatsCollectionController::GetHistogram)
       .SetMethod("getBrowserHistogram",
-                 &StatsCollectionController::GetBrowserHistogram)
-      .SetMethod("tabLoadTiming", &StatsCollectionController::GetTabLoadTiming);
+                 &StatsCollectionController::GetBrowserHistogram);
 }
 
 std::string StatsCollectionController::GetHistogram(
@@ -133,22 +79,6 @@ std::string StatsCollectionController::GetBrowserHistogram(
       histogram_name, &histogram_json);
 
   return histogram_json;
-}
-
-std::string StatsCollectionController::GetTabLoadTiming() {
-  RenderViewImpl* render_view_impl = nullptr;
-  bool result = CurrentRenderViewImpl(&render_view_impl);
-  DCHECK(result);
-
-  StatsCollectionObserver* observer =
-      render_view_impl->GetStatsCollectionObserver();
-  DCHECK(observer);
-
-  std::string tab_timing_json;
-  ConvertLoadTimeToJSON(
-      observer->load_start_time(), observer->load_stop_time(),
-      &tab_timing_json);
-  return tab_timing_json;
 }
 
 }  // namespace content

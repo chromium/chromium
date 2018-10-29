@@ -20,10 +20,12 @@
 namespace {
 
 #if defined(OS_WIN)
-const int kExpectedStillRunningExitCode = 0x102;
+constexpr int kExpectedStillRunningExitCode = 0x102;
 #else
-const int kExpectedStillRunningExitCode = 0;
+constexpr int kExpectedStillRunningExitCode = 0;
 #endif
+
+constexpr int kDummyExitCode = 42;
 
 #if defined(OS_MACOSX)
 // Fake port provider that returns the calling process's
@@ -129,11 +131,41 @@ MULTIPROCESS_TEST_MAIN(SleepyChildProcess) {
   return 0;
 }
 
+// TODO(https://crbug.com/726484): Enable these tests on Fuchsia when
+// CreationTime() is implemented.
+//
+// Disabled on Android because Process::CreationTime() is not supported.
+// https://issuetracker.google.com/issues/37140047
+#if !defined(OS_FUCHSIA) && !defined(OS_ANDROID)
+TEST_F(ProcessTest, CreationTimeCurrentProcess) {
+  // The current process creation time should be less than or equal to the
+  // current time.
+  EXPECT_LE(Process::Current().CreationTime(), Time::Now());
+}
+
+TEST_F(ProcessTest, CreationTimeOtherProcess) {
+  // The creation time of a process should be between a time recorded before it
+  // was spawned and a time recorded after it was spawned. However, since the
+  // base::Time and process creation clocks don't match, tolerate a 1 second
+  // range. (On Linux, process creation time is relative to boot time which as a
+  // 1-second resolution. On Windows, process creation time is based on the
+  // system clock while Time::Now() can be a combination of system clock and
+  // QueryPerformanceCounter().)
+  constexpr base::TimeDelta kTolerance = base::TimeDelta::FromSeconds(1);
+  const Time before_creation = Time::Now();
+  Process process(SpawnChild("SleepyChildProcess"));
+  const Time after_creation = Time::Now();
+  const Time creation = process.CreationTime();
+  EXPECT_LE(before_creation - kTolerance, creation);
+  EXPECT_LE(creation, after_creation + kTolerance);
+  EXPECT_TRUE(process.Terminate(kDummyExitCode, true));
+}
+#endif  // !defined(OS_FUCHSIA)
+
 TEST_F(ProcessTest, Terminate) {
   Process process(SpawnChild("SleepyChildProcess"));
   ASSERT_TRUE(process.IsValid());
 
-  const int kDummyExitCode = 42;
   int exit_code = kDummyExitCode;
   EXPECT_EQ(TERMINATION_STATUS_STILL_RUNNING,
             GetTerminationStatus(process.Handle(), &exit_code));

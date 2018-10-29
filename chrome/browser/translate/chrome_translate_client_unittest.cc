@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -45,8 +46,9 @@ class ChromeTranslateClientTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     fake_user_event_service_ = static_cast<syncer::FakeUserEventService*>(
         browser_sync::UserEventServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(browser_context(),
-                                      &BuildFakeUserEventService));
+            ->SetTestingFactoryAndUse(
+                browser_context(),
+                base::BindRepeating(&BuildFakeUserEventService)));
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeatures(
         {switches::kSyncUserLanguageDetectionEvents,

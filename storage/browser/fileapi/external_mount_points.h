@@ -122,9 +122,6 @@ class STORAGE_EXPORT ExternalMountPoints
 
   using NameToInstance = std::map<std::string, std::unique_ptr<Instance>>;
 
-  // Reverse map from registered path to its corresponding mount name.
-  using PathToName = std::map<base::FilePath, std::string>;
-
   // Use |GetSystemInstance| of |CreateRefCounted| to get an instance.
   ExternalMountPoints();
   ~ExternalMountPoints() override;
@@ -149,7 +146,9 @@ class STORAGE_EXPORT ExternalMountPoints
   mutable base::Lock lock_;
 
   NameToInstance instance_map_;
-  PathToName path_to_name_map_;
+
+  // Reverse map from registered path to its corresponding mount name.
+  std::map<base::FilePath, std::string> path_to_name_map_;
 
   DISALLOW_COPY_AND_ASSIGN(ExternalMountPoints);
 };

@@ -18,7 +18,7 @@ Classes in this directory are named with the following conventions, there're sti
 - `WorkerOrWorklet` prefix: Classes commonly used for workers and worklets (e.g., `WorkerOrWorkletGlobalScope`).
 - `Worker` / `Worklet` prefix: Classes used for workers or worklets (e.g., `WorkerGlobalScope`).
 - `Threaded` prefix: Classes used for workers and threaded worklets (e.g., `ThreadedMessagingProxyBase`).
-- `MainThreadWorklet` prefix: Classes used for main thread worklets (e.g., `MainThreadWorkletGlobalScope`).
+- `MainThreadWorklet` prefix: Classes used for main thread worklets (e.g., `MainThreadWorkletReportingProxy`).
 
 Thread hopping between the main (parent) thread and a worker thread is handled by proxy classes.
 

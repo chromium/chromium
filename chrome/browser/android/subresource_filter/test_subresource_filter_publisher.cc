@@ -96,7 +96,6 @@ void JNI_TestSubresourceFilterPublisher_CreateAndPublishRulesetDisallowingSuffix
 
   subresource_filter::ContentRulesetService* service =
       g_browser_process->subresource_filter_ruleset_service();
-  service->SetIsAfterStartupForTesting();
   service->SetRulesetPublishedCallbackForTesting(base::BindRepeating(
       &OnPublished, base::Passed(&scoped_temp_dir), service, publisher));
 

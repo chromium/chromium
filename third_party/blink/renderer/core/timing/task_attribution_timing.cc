@@ -28,7 +28,7 @@ TaskAttributionTiming::TaskAttributionTiming(const AtomicString& name,
 TaskAttributionTiming::~TaskAttributionTiming() = default;
 
 AtomicString TaskAttributionTiming::entryType() const {
-  return PerformanceEntryNames::taskattribution;
+  return performance_entry_names::kTaskattribution;
 }
 
 PerformanceEntryType TaskAttributionTiming::EntryTypeEnum() const {

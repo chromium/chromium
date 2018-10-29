@@ -27,7 +27,7 @@ class NGPaintFragmentTraversalTest : public RenderingTest,
     root_fragment_ = layout_block_flow_->PaintFragment();
   }
 
-  const Vector<scoped_refptr<NGPaintFragment>>& RootChildren() const {
+  const NGPaintFragment::ChildList RootChildren() const {
     return root_fragment_->Children();
   }
 
@@ -51,6 +51,13 @@ class NGPaintFragmentTraversalTest : public RenderingTest,
     return results;
   }
 
+  Vector<NGPaintFragment*, 16> ToList(
+      const NGPaintFragment::ChildList& children) {
+    Vector<NGPaintFragment*, 16> list;
+    children.ToList(&list);
+    return list;
+  }
+
   LayoutBlockFlow* layout_block_flow_;
   NGPaintFragment* root_fragment_;
 };
@@ -65,14 +72,14 @@ TEST_F(NGPaintFragmentTraversalTest, MoveToNext) {
     </div>
   )HTML");
   NGPaintFragmentTraversal traversal(*root_fragment_);
-  NGPaintFragment* line0 = root_fragment_->Children()[0].get();
-  NGPaintFragment* line1 = root_fragment_->Children()[1].get();
-  NGPaintFragment* span = line0->Children()[1].get();
-  NGPaintFragment* br = line0->Children()[2].get();
-  EXPECT_THAT(ToDepthFirstList(&traversal),
-              ElementsAreArray({line0, line0->Children()[0].get(), span,
-                                span->Children()[0].get(), br, line1,
-                                line1->Children()[0].get()}));
+  NGPaintFragment* line0 = root_fragment_->FirstChild();
+  NGPaintFragment* line1 = ToList(root_fragment_->Children())[1];
+  NGPaintFragment* span = ToList(line0->Children())[1];
+  NGPaintFragment* br = ToList(line0->Children())[2];
+  EXPECT_THAT(
+      ToDepthFirstList(&traversal),
+      ElementsAreArray({line0, line0->FirstChild(), span, span->FirstChild(),
+                        br, line1, line1->FirstChild()}));
 }
 
 TEST_F(NGPaintFragmentTraversalTest, MoveToNextWithRoot) {
@@ -84,13 +91,13 @@ TEST_F(NGPaintFragmentTraversalTest, MoveToNextWithRoot) {
       line1
     </div>
   )HTML");
-  NGPaintFragment* line0 = root_fragment_->Children()[0].get();
-  NGPaintFragment* span = line0->Children()[1].get();
-  NGPaintFragment* br = line0->Children()[2].get();
+  NGPaintFragment* line0 = root_fragment_->FirstChild();
+  NGPaintFragment* span = ToList(line0->Children())[1];
+  NGPaintFragment* br = ToList(line0->Children())[2];
   NGPaintFragmentTraversal traversal(*line0);
-  EXPECT_THAT(ToDepthFirstList(&traversal),
-              ElementsAreArray({line0->Children()[0].get(), span,
-                                span->Children()[0].get(), br}));
+  EXPECT_THAT(
+      ToDepthFirstList(&traversal),
+      ElementsAreArray({line0->FirstChild(), span, span->FirstChild(), br}));
 }
 
 TEST_F(NGPaintFragmentTraversalTest, MoveToPrevious) {
@@ -103,15 +110,15 @@ TEST_F(NGPaintFragmentTraversalTest, MoveToPrevious) {
     </div>
   )HTML");
   NGPaintFragmentTraversal traversal(*root_fragment_);
-  NGPaintFragment* line0 = root_fragment_->Children()[0].get();
-  NGPaintFragment* line1 = root_fragment_->Children()[1].get();
-  NGPaintFragment* span = line0->Children()[1].get();
-  NGPaintFragment* br = line0->Children()[2].get();
-  traversal.MoveTo(*line1->Children()[0].get());
-  EXPECT_THAT(ToReverseDepthFirstList(&traversal),
-              ElementsAreArray({line1->Children()[0].get(), line1, br,
-                                span->Children()[0].get(), span,
-                                line0->Children()[0].get(), line0}));
+  NGPaintFragment* line0 = root_fragment_->FirstChild();
+  NGPaintFragment* line1 = ToList(root_fragment_->Children())[1];
+  NGPaintFragment* span = ToList(line0->Children())[1];
+  NGPaintFragment* br = ToList(line0->Children())[2];
+  traversal.MoveTo(*line1->FirstChild());
+  EXPECT_THAT(
+      ToReverseDepthFirstList(&traversal),
+      ElementsAreArray({line1->FirstChild(), line1, br, span->FirstChild(),
+                        span, line0->FirstChild(), line0}));
 }
 
 TEST_F(NGPaintFragmentTraversalTest, MoveToPreviousWithRoot) {
@@ -123,14 +130,14 @@ TEST_F(NGPaintFragmentTraversalTest, MoveToPreviousWithRoot) {
       line1
     </div>
   )HTML");
-  NGPaintFragment* line0 = root_fragment_->Children()[0].get();
-  NGPaintFragment* span = line0->Children()[1].get();
-  NGPaintFragment* br = line0->Children()[2].get();
+  NGPaintFragment* line0 = root_fragment_->FirstChild();
+  NGPaintFragment* span = ToList(line0->Children())[1];
+  NGPaintFragment* br = ToList(line0->Children())[2];
   NGPaintFragmentTraversal traversal(*line0);
   traversal.MoveTo(*br);
-  EXPECT_THAT(ToReverseDepthFirstList(&traversal),
-              ElementsAreArray({br, span->Children()[0].get(), span,
-                                line0->Children()[0].get()}));
+  EXPECT_THAT(
+      ToReverseDepthFirstList(&traversal),
+      ElementsAreArray({br, span->FirstChild(), span, line0->FirstChild()}));
 }
 
 TEST_F(NGPaintFragmentTraversalTest, MoveTo) {
@@ -143,15 +150,15 @@ TEST_F(NGPaintFragmentTraversalTest, MoveTo) {
     </div>
   )HTML");
   NGPaintFragmentTraversal traversal(*root_fragment_);
-  NGPaintFragment* line0 = root_fragment_->Children()[0].get();
-  NGPaintFragment* line1 = root_fragment_->Children()[1].get();
-  NGPaintFragment* span = line0->Children()[1].get();
-  NGPaintFragment* br = line0->Children()[2].get();
+  NGPaintFragment* line0 = root_fragment_->FirstChild();
+  NGPaintFragment* line1 = ToList(root_fragment_->Children())[1];
+  NGPaintFragment* span = ToList(line0->Children())[1];
+  NGPaintFragment* br = ToList(line0->Children())[2];
   traversal.MoveTo(*span);
   EXPECT_EQ(span, &*traversal);
   EXPECT_THAT(ToDepthFirstList(&traversal),
-              ElementsAreArray({span, span->Children()[0].get(), br, line1,
-                                line1->Children()[0].get()}));
+              ElementsAreArray(
+                  {span, span->FirstChild(), br, line1, line1->FirstChild()}));
 }
 
 TEST_F(NGPaintFragmentTraversalTest, MoveToWithRoot) {
@@ -163,31 +170,31 @@ TEST_F(NGPaintFragmentTraversalTest, MoveToWithRoot) {
       line1
     </div>
   )HTML");
-  NGPaintFragment* line0 = root_fragment_->Children()[0].get();
-  NGPaintFragment* span = line0->Children()[1].get();
-  NGPaintFragment* br = line0->Children()[2].get();
+  NGPaintFragment* line0 = root_fragment_->FirstChild();
+  NGPaintFragment* span = ToList(line0->Children())[1];
+  NGPaintFragment* br = ToList(line0->Children())[2];
   NGPaintFragmentTraversal traversal(*line0);
   traversal.MoveTo(*span);
   EXPECT_EQ(span, &*traversal);
   EXPECT_THAT(ToDepthFirstList(&traversal),
-              ElementsAreArray({span, span->Children()[0].get(), br}));
+              ElementsAreArray({span, span->FirstChild(), br}));
 }
 
 TEST_F(NGPaintFragmentTraversalTest, PreviousLineOf) {
   SetUpHtml("t", "<div id=t>foo<br>bar</div>");
   ASSERT_EQ(2u, RootChildren().size());
-  EXPECT_EQ(nullptr,
-            NGPaintFragmentTraversal::PreviousLineOf(*RootChildren()[0]));
-  EXPECT_EQ(RootChildren()[0].get(),
-            NGPaintFragmentTraversal::PreviousLineOf(*RootChildren()[1]));
+  EXPECT_EQ(nullptr, NGPaintFragmentTraversal::PreviousLineOf(
+                         *ToList(RootChildren())[0]));
+  EXPECT_EQ(ToList(RootChildren())[0], NGPaintFragmentTraversal::PreviousLineOf(
+                                           *ToList(RootChildren())[1]));
 }
 
 TEST_F(NGPaintFragmentTraversalTest, PreviousLineInListItem) {
   SetUpHtml("t", "<ul><li id=t>foo</li></ul>");
   ASSERT_EQ(2u, RootChildren().size());
-  ASSERT_TRUE(RootChildren()[0]->PhysicalFragment().IsListMarker());
-  EXPECT_EQ(nullptr,
-            NGPaintFragmentTraversal::PreviousLineOf(*RootChildren()[1]));
+  ASSERT_TRUE(ToList(RootChildren())[0]->PhysicalFragment().IsListMarker());
+  EXPECT_EQ(nullptr, NGPaintFragmentTraversal::PreviousLineOf(
+                         *ToList(RootChildren())[1]));
 }
 
 TEST_F(NGPaintFragmentTraversalTest, InlineDescendantsOf) {

@@ -22,9 +22,9 @@ class PRINTING_EXPORT PrintingContextAndroid : public PrintingContext {
 
   // Called when the page is successfully written to a PDF using the file
   // descriptor specified, or when the printing operation failed. On success,
-  // the PDF written to |fd| has |page_count| pages. Non-positive |page_count|
-  // indicates failure.
-  static void PdfWritingDone(int fd, int page_count);
+  // the PDF has |page_count| pages. Non-positive |page_count| indicates
+  // failure.
+  static void PdfWritingDone(int page_count);
 
   // Called from Java, when printing settings from the user are ready or the
   // printing operation is canceled.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
@@ -85,7 +86,8 @@ class DownloadsApiUnitTest : public ExtensionApiUnittest {
     TestDownloadCoreService* download_core_service =
         static_cast<TestDownloadCoreService*>(
             DownloadCoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-                profile(), &TestingDownloadCoreServiceFactory));
+                profile(),
+                base::BindRepeating(&TestingDownloadCoreServiceFactory)));
     ASSERT_TRUE(download_core_service);
     download_core_service->set_download_history(std::move(download_history));
   }

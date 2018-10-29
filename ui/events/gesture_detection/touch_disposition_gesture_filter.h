@@ -52,6 +52,8 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   // Whether there are any active gesture sequences still queued in the filter.
   bool IsEmpty() const;
 
+  void ResetGestureHandlingState();
+
  private:
   // A single GestureSequence corresponds to all gestures created
   // between the first finger down and the last finger up, including gestures

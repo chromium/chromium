@@ -37,6 +37,8 @@ class ManagementUIHandler : public content::WebUIMessageHandler {
 
   void HandleGetReportingInfo(const base::ListValue* args);
 
+  void HandleGetExtensions(const base::ListValue* args);
+
   DISALLOW_COPY_AND_ASSIGN(ManagementUIHandler);
 };
 

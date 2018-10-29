@@ -2,7 +2,6 @@ Test that computed style for grid-template-columns and grid-template-rows works 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.getComputedStyle(gridContentStart, '').getPropertyValue('grid-template-columns') is "300px 200px 100px"
 PASS window.getComputedStyle(gridContentStart, '').getPropertyValue('grid-template-rows') is "150px 100px 50px"
 PASS window.getComputedStyle(gridContentCenter, '').getPropertyValue('grid-template-columns') is "300px 200px 100px"

@@ -8,11 +8,8 @@
 
 namespace blink {
 
-SimWebViewClient::SimWebViewClient(content::LayerTreeView& layer_tree_view)
-    : visually_non_empty_layout_count_(0),
-      finished_parsing_layout_count_(0),
-      finished_loading_layout_count_(0),
-      layer_tree_view_(&layer_tree_view) {}
+SimWebViewClient::SimWebViewClient(content::LayerTreeViewDelegate* delegate)
+    : frame_test_helpers::TestWebViewClient(delegate) {}
 
 void SimWebViewClient::DidMeaningfulLayout(
     WebMeaningfulLayout meaningful_layout) {
@@ -29,17 +26,14 @@ void SimWebViewClient::DidMeaningfulLayout(
   }
 }
 
-WebLayerTreeView* SimWebViewClient::InitializeLayerTreeView() {
-  return layer_tree_view_;
-}
-
 WebView* SimWebViewClient::CreateView(WebLocalFrame* opener,
                                       const WebURLRequest&,
                                       const WebWindowFeatures&,
                                       const WebString& name,
                                       WebNavigationPolicy,
                                       bool,
-                                      WebSandboxFlags) {
+                                      WebSandboxFlags,
+                                      const SessionStorageNamespaceId&) {
   return web_view_helper_.InitializeWithOpener(opener);
 }
 

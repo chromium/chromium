@@ -78,6 +78,37 @@ const TEB* GetThreadEnvironmentBlock(HANDLE thread_handle) {
   return basic_info.Teb;
 }
 
+enum NativeStackSamplerError {
+  NATIVE_STACK_SAMPLER_SUCCESS,
+  NATIVE_STACK_SAMPLER_SUSPEND_FAILED,
+  NATIVE_STACK_SAMPLER_GET_THREAD_CONTEXT_FAILED,
+  NATIVE_STACK_SAMPLER_STACK_TOO_BIG,
+  NATIVE_STACK_SAMPLER_POINTS_TO_GUARD,
+  NATIVE_STACK_SAMPLER_UNWIND_UNSUPPORTED,
+  NATIVE_STACK_SAMPLER_TRY_UNWIND_FAILED,
+};
+
+const char* NativeStackSamplerErrorToString(NativeStackSamplerError code) {
+  switch (code) {
+    case NATIVE_STACK_SAMPLER_SUCCESS:
+      return "SUCCESS";
+    case NATIVE_STACK_SAMPLER_SUSPEND_FAILED:
+      return "SUSPEND_FAILED";
+    case NATIVE_STACK_SAMPLER_GET_THREAD_CONTEXT_FAILED:
+      return "GET_THREAD_CONTEXT_FAILED";
+    case NATIVE_STACK_SAMPLER_STACK_TOO_BIG:
+      return "STACK_TOO_BIG";
+    case NATIVE_STACK_SAMPLER_POINTS_TO_GUARD:
+      return "POINTS_TO_GUARD";
+    case NATIVE_STACK_SAMPLER_UNWIND_UNSUPPORTED:
+      return "UNWIND_UNSUPPORTED";
+    case NATIVE_STACK_SAMPLER_TRY_UNWIND_FAILED:
+      return "TRY_UNWIND";
+    default:
+      return "UNKNWON";
+  }
+}
+
 #if defined(_WIN64)
 // If the value at |pointer| points to the original stack, rewrite it to point
 // to the corresponding location in the copied stack.
@@ -171,7 +202,8 @@ struct RecordedFrame {
 // Walks the stack represented by |context| from the current frame downwards,
 // recording the instruction pointer and associated module for each frame in
 // |stack|.
-void RecordStack(CONTEXT* context, std::vector<RecordedFrame>* stack) {
+NativeStackSamplerError RecordStack(CONTEXT* context,
+                                    std::vector<RecordedFrame>* stack) {
 #ifdef _WIN64
   DCHECK(stack->empty());
 
@@ -186,12 +218,15 @@ void RecordStack(CONTEXT* context, std::vector<RecordedFrame>* stack) {
         reinterpret_cast<const void*>(context->Rip);
     ScopedModuleHandle module;
     if (!frame_unwinder.TryUnwind(context, &module))
-      return;
+      return NATIVE_STACK_SAMPLER_TRY_UNWIND_FAILED;
     RecordedFrame frame;
     frame.instruction_pointer = instruction_pointer;
     frame.module = std::move(module);
     stack->push_back(std::move(frame));
   }
+  return NATIVE_STACK_SAMPLER_SUCCESS;
+#else
+  return NATIVE_STACK_SAMPLER_UNWIND_UNSUPPORTED;
 #endif
 }
 
@@ -291,7 +326,7 @@ bool PointsToGuardPage(uintptr_t stack_pointer) {
 // ScopedSuspendThread scope, including indirectly via use of DCHECK/CHECK or
 // other logging statements. Otherwise this code can deadlock on heap locks in
 // the default heap acquired by the target thread before it was suspended.
-void SuspendThreadAndRecordStack(
+NativeStackSamplerError SuspendThreadAndRecordStack(
     HANDLE thread_handle,
     const void* base_address,
     void* stack_copy_buffer,
@@ -315,10 +350,10 @@ void SuspendThreadAndRecordStack(
       ScopedSuspendThread suspend_thread(thread_handle);
 
       if (!suspend_thread.was_successful())
-        return;
+        return NATIVE_STACK_SAMPLER_SUSPEND_FAILED;
 
       if (!::GetThreadContext(thread_handle, &thread_context))
-        return;
+        return NATIVE_STACK_SAMPLER_GET_THREAD_CONTEXT_FAILED;
 
 #if defined(_WIN64)
       bottom = thread_context.Rsp;
@@ -327,13 +362,13 @@ void SuspendThreadAndRecordStack(
 #endif
 
       if ((top - bottom) > stack_copy_buffer_size)
-        return;
+        return NATIVE_STACK_SAMPLER_STACK_TOO_BIG;
 
       // Dereferencing a pointer in the guard page in a thread that doesn't own
       // the stack results in a STATUS_GUARD_PAGE_VIOLATION exception and a
       // crash. This occurs very rarely, but reliably over the population.
       if (PointsToGuardPage(bottom))
-        return;
+        return NATIVE_STACK_SAMPLER_POINTS_TO_GUARD;
 
       profile_builder->RecordAnnotations();
 
@@ -351,7 +386,7 @@ void SuspendThreadAndRecordStack(
     RewritePointersToStackMemory(top, bottom, &thread_context,
                                  stack_copy_buffer);
 
-    RecordStack(&thread_context, stack);
+    return RecordStack(&thread_context, stack);
   }
 }
 
@@ -409,12 +444,22 @@ std::vector<Frame> NativeStackSamplerWin::RecordStackFrames(
                "NativeStackSamplerWin::RecordStackFrames");
   DCHECK(stack_buffer);
 
-  std::vector<RecordedFrame> stack;
-  SuspendThreadAndRecordStack(thread_handle_.Get(), thread_stack_base_address_,
-                              stack_buffer->buffer(), stack_buffer->size(),
-                              &stack, profile_builder, test_delegate_);
+  std::vector<Frame> recorded_stackframes;
 
-  return CreateFrames(stack);
+  std::vector<RecordedFrame> stack;
+  NativeStackSamplerError error_code = SuspendThreadAndRecordStack(
+      thread_handle_.Get(), thread_stack_base_address_, stack_buffer->buffer(),
+      stack_buffer->size(), &stack, profile_builder, test_delegate_);
+
+  if (error_code != NATIVE_STACK_SAMPLER_SUCCESS) {
+    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
+                         "RecordStackFramesFailed", TRACE_EVENT_SCOPE_THREAD,
+                         "error_code",
+                         NativeStackSamplerErrorToString(error_code));
+  }
+
+  recorded_stackframes = CreateFrames(stack);
+  return recorded_stackframes;
 }
 
 std::vector<Frame> NativeStackSamplerWin::CreateFrames(

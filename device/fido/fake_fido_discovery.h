@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "device/fido/fido_discovery.h"
+#include "device/fido/fido_device_discovery.h"
 #include "device/fido/fido_transport_protocol.h"
 
 namespace service_manager {
@@ -32,10 +32,11 @@ namespace test {
 //   auto* fake_ble_discovery = factory.ForgeNextBleDiscovery();
 //
 //   // Run the production code that will eventually call:
-//   //// FidoDiscovery::Create(FidoTransportProtocol::kUsbHumanInterfaceDevice)
-//   //// hid_instance->Start();
-//   //// FidoDiscovery::Create(FidoTransportProtocol::kBluetoothLowEnergy)
-//   //// ble_instance->Start();
+//   // FidoDeviceDiscovery::Create(
+//   //     FidoTransportProtocol::kUsbHumanInterfaceDevice)
+//   // hid_instance->Start();
+//   // FidoDeviceDiscovery::Create(FidoTransportProtocol::kBluetoothLowEnergy)
+//   // ble_instance->Start();
 //
 //   // Wait, i.e. spin the message loop until the fake discoveries are started.
 //   fake_hid_discovery->WaitForCallToStart();
@@ -54,7 +55,7 @@ namespace test {
 //   // Destroy the production instance to eventually stop the discovery.
 //   // hid_instance.reset();
 //
-class FakeFidoDiscovery : public FidoDiscovery,
+class FakeFidoDiscovery : public FidoDeviceDiscovery,
                           public base::SupportsWeakPtr<FakeFidoDiscovery> {
  public:
   enum class StartMode {
@@ -80,11 +81,11 @@ class FakeFidoDiscovery : public FidoDiscovery,
 
   // Tests are to directly call Add/RemoveDevice to simulate adding/removing
   // devices. Observers are automatically notified.
-  using FidoDiscovery::AddDevice;
-  using FidoDiscovery::RemoveDevice;
+  using FidoDeviceDiscovery::AddDevice;
+  using FidoDeviceDiscovery::RemoveDevice;
 
  private:
-  // FidoDiscovery:
+  // FidoDeviceDiscovery:
   void StartInternal() override;
 
   const StartMode mode_;
@@ -93,8 +94,8 @@ class FakeFidoDiscovery : public FidoDiscovery,
   DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscovery);
 };
 
-// Overrides FidoDiscovery::Create to construct FakeFidoDiscoveries while this
-// instance is in scope.
+// Overrides FidoDeviceDiscovery::Create to construct FakeFidoDiscoveries while
+// this instance is in scope.
 class ScopedFakeFidoDiscoveryFactory
     : public ::device::internal::ScopedFidoDiscoveryFactory {
  public:
@@ -104,11 +105,11 @@ class ScopedFakeFidoDiscoveryFactory
   ~ScopedFakeFidoDiscoveryFactory() override;
 
   // Constructs a fake discovery to be returned from the next call to
-  // FidoDiscovery::Create. Returns a raw pointer to the fake so that tests can
-  // set it up according to taste.
+  // FidoDeviceDiscovery::Create. Returns a raw pointer to the fake so that
+  // tests can set it up according to taste.
   //
   // It is an error not to call the relevant method prior to a call to
-  // FidoDiscovery::Create with the respective transport.
+  // FidoDeviceDiscovery::Create with the respective transport.
   FakeFidoDiscovery* ForgeNextHidDiscovery(StartMode mode = StartMode::kManual);
   FakeFidoDiscovery* ForgeNextNfcDiscovery(StartMode mode = StartMode::kManual);
   FakeFidoDiscovery* ForgeNextBleDiscovery(StartMode mode = StartMode::kManual);
@@ -116,7 +117,7 @@ class ScopedFakeFidoDiscoveryFactory
       StartMode mode = StartMode::kManual);
 
  protected:
-  std::unique_ptr<FidoDiscovery> CreateFidoDiscovery(
+  std::unique_ptr<FidoDeviceDiscovery> CreateFidoDiscovery(
       FidoTransportProtocol transport,
       ::service_manager::Connector* connector) override;
 

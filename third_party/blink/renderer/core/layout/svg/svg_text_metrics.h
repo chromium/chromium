@@ -28,7 +28,7 @@ class FloatSize;
 enum class FontOrientation;
 
 class SVGTextMetrics {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum MetricsType { kSkippedSpaceMetrics };

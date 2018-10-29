@@ -20,11 +20,11 @@ function startTest()
           './resources/drag-files-to-editable-element-fail', 
           './resources/foo',
           './resources/bar']);
-        result = editable.innerHTML.replace(/file.*?LayoutTests/g, "LayoutTests");
+        result = editable.innerHTML.replace(/file.*?(LayoutTests|web_tests)/g, "web_tests");
         shouldBeEqualToString('result',
-          '<div>LayoutTests/editing/pasteboard/resources/drag-files-to-editable-element-fails</div>'+
-          '<div>LayoutTests/editing/pasteboard/resources/foo</div>'+
-          '<div>LayoutTests/editing/pasteboard/resources/bar</div>');
+          '<div>web_tests/editing/pasteboard/resources/drag-files-to-editable-element-fails</div>'+
+          '<div>web_tests/editing/pasteboard/resources/foo</div>'+
+          '<div>web_tests/editing/pasteboard/resources/bar</div>');
         editable.innerHTML = '';
         finishJSTest();
     }

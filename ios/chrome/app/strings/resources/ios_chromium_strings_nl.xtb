@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Gebruik slimme Google-functies in Chromium</translation>
 <translation id="2730884209570016437">Chromium kan je camera niet gebruiken omdat deze wordt gebruikt door een andere app</translation>
 <translation id="2797210818057553964">Je kunt dit op elk gewenst moment aanpassen in de Chromium-instellingen</translation>
+<translation id="2915596697727466327">Chromium gebruikt Face ID om geautoriseerde toegang tot je wachtwoorden mogelijk te maken.</translation>
 <translation id="3256316712990552818">Gekopieerd naar Chromium</translation>
 <translation id="3413120535237193088">Log in bij Chromium om al je bladwijzers op al je apparaten te bekijken.</translation>
 <translation id="3473048256428424907">QR-scanner van Chromium inschakelen</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Tabbladen die je op andere apparaten in Chromium hebt geopend, worden hier weergegeven.</translation>
 <translation id="495292094137889840">QR-scanner van Chromium gebruiken</translation>
 <translation id="5231355151045086930">Uitloggen bij Chromium</translation>
-<translation id="5416919929805616771">Ben je fan van Chromium? <ph name="BEGIN_LINK" />Beoordeel deze app<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Welkom bij Chromium</translation>
 <translation id="5945387852661427312">Je logt in met een account dat wordt beheerd door <ph name="DOMAIN" />, waarmee je de eigenaar beheer geeft over je Chromium-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chromium, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
 <translation id="6068866989048414399">Servicevoorwaarden van Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chromium-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Verplaats Chromium naar je dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Gebruik Google in Chromium beter en efficiënter op basis van je locatie.</translation>
-<translation id="8353224596138547809">Wil je dat Chromium je wachtwoord voor deze site opslaat?</translation>
 <translation id="8508544542427105412">De <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" /> kunnen op elk gewenst moment worden aangepast. Google kan content op sites die je bezoekt en je browseractiviteit en interacties gebruiken om Chromium en andere Google-services (zoals Translate, Zoeken en advertenties) te personaliseren.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="8809780021347235332">Als je afbeeldingen wilt opslaan, tik je op Instellingen om Chromium je foto's te laten gebruiken</translation>

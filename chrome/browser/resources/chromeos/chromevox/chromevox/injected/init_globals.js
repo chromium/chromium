@@ -12,7 +12,6 @@ goog.provide('cvox.InitGlobals');
 goog.require('cvox.ChromeVox');
 goog.require('cvox.ChromeVoxEventWatcher');
 goog.require('cvox.CompositeTts');
-goog.require('cvox.ConsoleTts');
 goog.require('cvox.HostFactory');
 goog.require('cvox.NavigationManager');
 goog.require('cvox.Serializer');
@@ -35,8 +34,7 @@ cvox.InitGlobals.initGlobals = function() {
 
   cvox.ChromeVox.tts = new cvox.CompositeTts()
                            .add(cvox.HostFactory.getTts())
-                           .add(cvox.History.getInstance())
-                           .add(cvox.ConsoleTts.getInstance());
+                           .add(cvox.History.getInstance());
 
   if (!cvox.ChromeVox.braille) {
     cvox.ChromeVox.braille = cvox.HostFactory.getBraille();

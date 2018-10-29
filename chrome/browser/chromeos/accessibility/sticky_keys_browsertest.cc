@@ -4,13 +4,11 @@
 
 #include <stddef.h>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/sticky_keys/sticky_keys_controller.h"
 #include "ash/sticky_keys/sticky_keys_overlay.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/tray/system_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -27,21 +25,12 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace chromeos {
 
 class StickyKeysBrowserTest : public InProcessBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    content::BrowserTestBase::SetUpOnMainThread();
-    event_generator_.reset(
-        new ui::test::EventGenerator(browser()->window()->GetNativeWindow()));
-  }
-
  protected:
   StickyKeysBrowserTest() = default;
   ~StickyKeysBrowserTest() override = default;
@@ -53,36 +42,27 @@ class StickyKeysBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsSystemTrayBubbleOpen() {
-    return ash::features::IsSystemTrayUnifiedEnabled()
-               ? ash::Shell::Get()
-                     ->GetPrimaryRootWindowController()
-                     ->GetStatusAreaWidget()
-                     ->unified_system_tray()
-                     ->IsBubbleShown()
-               : ash::Shell::Get()->GetPrimarySystemTray()->HasSystemBubble();
+    return ash::Shell::Get()
+        ->GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->unified_system_tray()
+        ->IsBubbleShown();
   }
 
   void CloseSystemTrayBubble() {
-    if (ash::features::IsSystemTrayUnifiedEnabled()) {
-      ash::Shell::Get()
-          ->GetPrimaryRootWindowController()
-          ->GetStatusAreaWidget()
-          ->unified_system_tray()
-          ->CloseBubble();
-    } else {
-      ash::Shell::Get()->GetPrimarySystemTray()->CloseBubble();
-    }
+    ash::Shell::Get()
+        ->GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->unified_system_tray()
+        ->CloseBubble();
   }
 
   void SendKeyPress(ui::KeyboardCode key) {
-    event_generator_->PressKey(key, ui::EF_NONE);
-    content::RunAllPendingInMessageLoop();
-    event_generator_->ReleaseKey(key, ui::EF_NONE);
-    content::RunAllPendingInMessageLoop();
+    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false, false,
+                                                false, false));
   }
 
   content::NotificationRegistrar registrar_;
-  std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
   DISALLOW_COPY_AND_ASSIGN(StickyKeysBrowserTest);
 };

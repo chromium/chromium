@@ -187,8 +187,8 @@ bool JsonStringEquals(const std::string& json,
                       const base::Value& value) {
   base::DictionaryValue dict_value;
   dict_value.Set(key, value.CreateDeepCopy());
-  std::unique_ptr<const std::string> dict_json(SerializeToJson(dict_value));
-  return dict_json.get() && *dict_json == json;
+  base::Optional<std::string> dict_json = SerializeToJson(dict_value);
+  return dict_json && *dict_json == json;
 }
 
 // The function runs through the set of basic operations of DeviceCapabilities.
@@ -273,9 +273,8 @@ class DeviceCapabilitiesImplTest : public ::testing::Test {
 
 // Tests that class is in correct state after Create().
 TEST_F(DeviceCapabilitiesImplTest, Create) {
-  std::unique_ptr<const std::string> empty_dict_string(
-      SerializeToJson(base::DictionaryValue()));
-  EXPECT_EQ(capabilities()->GetAllData()->json_string(), *empty_dict_string);
+  std::string empty_dict_string = *SerializeToJson(base::DictionaryValue());
+  EXPECT_EQ(capabilities()->GetAllData()->json_string(), empty_dict_string);
   EXPECT_TRUE(capabilities()->GetAllData()->dictionary().empty());
 }
 
@@ -290,9 +289,8 @@ TEST_F(DeviceCapabilitiesImplTest, Register) {
                                       false);
 
   EXPECT_EQ(capabilities()->GetValidator(key), &manager);
-  std::unique_ptr<const std::string> empty_dict_string(
-      SerializeToJson(base::DictionaryValue()));
-  EXPECT_EQ(capabilities()->GetAllData()->json_string(), *empty_dict_string);
+  std::string empty_dict_string = *SerializeToJson(base::DictionaryValue());
+  EXPECT_EQ(capabilities()->GetAllData()->json_string(), empty_dict_string);
   EXPECT_FALSE(capabilities()->GetCapability(key));
 }
 
@@ -309,9 +307,8 @@ TEST_F(DeviceCapabilitiesImplTest, Unregister) {
   delete manager;
 
   EXPECT_FALSE(capabilities()->GetValidator(key));
-  std::unique_ptr<const std::string> empty_dict_string(
-      SerializeToJson(base::DictionaryValue()));
-  EXPECT_EQ(capabilities()->GetAllData()->json_string(), *empty_dict_string);
+  std::string empty_dict_string = *SerializeToJson(base::DictionaryValue());
+  EXPECT_EQ(capabilities()->GetAllData()->json_string(), empty_dict_string);
   EXPECT_FALSE(capabilities()->GetCapability(key));
 }
 

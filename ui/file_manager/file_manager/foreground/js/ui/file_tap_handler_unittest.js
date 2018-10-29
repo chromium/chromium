@@ -16,7 +16,7 @@ var dummyTarget;
 var events;
 
 /**
- * @type {function(!Event, number, !FiletapHandler.TapEvent)}
+ * @type {function(!Event, number, !FileTapHandler.TapEvent)}
  */
 var handleTap = function(e, index, eventType) {
   events.push({index: index, eventType: eventType});
@@ -180,8 +180,8 @@ function testLongTap(callback) {
           .then(function() {
             assertEquals(1, events.length);
             assertEquals(
-                FileTapHandler.TapEvent.LONG_PRESS, events[0].eventType)
-            assertEquals(0, events[0].index)
+                FileTapHandler.TapEvent.LONG_PRESS, events[0].eventType);
+            assertEquals(0, events[0].index);
             handler.handleTouchEvents(
                 new TouchEvent('touchend', {
                   changedTouches: [touch1],
@@ -190,8 +190,8 @@ function testLongTap(callback) {
                 }),
                 1, handleTap);
             assertEquals(2, events.length);
-            assertEquals(FileTapHandler.TapEvent.LONG_TAP, events[1].eventType)
-            assertEquals(0, events[1].index)
+            assertEquals(FileTapHandler.TapEvent.LONG_TAP, events[1].eventType);
+            assertEquals(0, events[1].index);
           }),
       callback);
 }

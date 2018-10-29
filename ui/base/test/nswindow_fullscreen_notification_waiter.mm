@@ -18,7 +18,7 @@
 @synthesize enterCount = enterCount_;
 @synthesize exitCount = exitCount_;
 
-- (id)initWithWindow:(NSWindow*)window {
+- (instancetype)initWithWindow:(NSWindow*)window {
   if ((self = [super init])) {
     window_.reset([window retain]);
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];

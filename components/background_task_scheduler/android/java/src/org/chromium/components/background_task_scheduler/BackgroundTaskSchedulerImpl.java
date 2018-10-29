@@ -7,6 +7,7 @@ package org.chromium.components.background_task_scheduler;
 import android.content.Context;
 import android.os.Build;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -21,6 +22,7 @@ import java.util.Set;
  */
 class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
     private static final String TAG = "BkgrdTaskScheduler";
+    private static final String SWITCH_IGNORE_BACKGROUND_TASKS = "ignore-background-tasks";
 
     private final BackgroundTaskSchedulerDelegate mSchedulerDelegate;
 
@@ -31,6 +33,12 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
 
     @Override
     public boolean schedule(Context context, TaskInfo taskInfo) {
+        if (CommandLine.getInstance().hasSwitch(SWITCH_IGNORE_BACKGROUND_TASKS)) {
+            // When background tasks finish executing, they leave a cached process, which
+            // artificially inflates startup metrics that are based on events near to process
+            // creation.
+            return true;
+        }
         try (TraceEvent te = TraceEvent.scoped(
                      "BackgroundTaskScheduler.schedule", Integer.toString(taskInfo.getTaskId()))) {
             ThreadUtils.assertOnUiThread();

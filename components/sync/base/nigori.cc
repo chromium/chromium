@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
+#include "base/time/default_tick_clock.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "crypto/encryptor.h"
 #include "crypto/hmac.h"
@@ -100,8 +101,12 @@ bool KeyDerivationParams::operator==(const KeyDerivationParams& other) const {
          scrypt_salt_ == other.scrypt_salt_;
 }
 
+bool KeyDerivationParams::operator!=(const KeyDerivationParams& other) const {
+  return !(*this == other);
+}
+
 const std::string& KeyDerivationParams::scrypt_salt() const {
-  DCHECK(method_ == KeyDerivationMethod::SCRYPT_8192_8_11);
+  DCHECK_EQ(method_, KeyDerivationMethod::SCRYPT_8192_8_11);
   return scrypt_salt_;
 }
 
@@ -205,13 +210,13 @@ bool Nigori::Keys::InitByImport(const std::string& user_key_str,
   return encryption_key && mac_key;
 }
 
-Nigori::Nigori() {}
+Nigori::Nigori() : tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
 Nigori::~Nigori() {}
 
 bool Nigori::InitByDerivation(const KeyDerivationParams& key_derivation_params,
                               const std::string& password) {
-  base::TimeTicks begin_time = base::TimeTicks::Now();
+  base::TimeTicks begin_time = tick_clock_->NowTicks();
   bool result = false;
   switch (key_derivation_params.method()) {
     case KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
@@ -231,7 +236,7 @@ bool Nigori::InitByDerivation(const KeyDerivationParams& key_derivation_params,
       base::StringPrintf("Sync.Crypto.NigoriKeyDerivationDuration.%s",
                          GetHistogramSuffixForKeyDerivationMethod(
                              key_derivation_params.method())),
-      base::TimeTicks::Now() - begin_time);
+      tick_clock_->NowTicks() - begin_time);
 
   return result;
 }
@@ -330,12 +335,7 @@ bool Nigori::Decrypt(const std::string& encrypted, std::string* value) const {
   if (!hmac.Init(keys_.mac_key->key()))
     return false;
 
-  std::vector<unsigned char> expected(kHashSize);
-  if (!hmac.Sign(ciphertext, &expected[0], expected.size()))
-    return false;
-
-  if (hash.compare(0, hash.size(), reinterpret_cast<char*>(&expected[0]),
-                   expected.size()))
+  if (!hmac.Verify(ciphertext, hash))
     return false;
 
   crypto::Encryptor encryptor;

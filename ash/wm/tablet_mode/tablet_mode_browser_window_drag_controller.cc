@@ -78,4 +78,9 @@ void TabletModeBrowserWindowDragController::RevertDrag() {
       previous_location_in_screen_);
 }
 
+void TabletModeBrowserWindowDragController::FlingOrSwipe(
+    ui::GestureEvent* event) {
+  drag_delegate_->FlingOrSwipe(event);
+}
+
 }  // namespace ash

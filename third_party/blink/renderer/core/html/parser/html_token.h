@@ -78,7 +78,7 @@ class HTMLToken {
   };
 
   class Attribute {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     class Range {
@@ -359,7 +359,7 @@ class HTMLToken {
     current_attribute_->AppendToValue(character);
   }
 
-  void AppendToAttributeValue(size_t i, const String& value) {
+  void AppendToAttributeValue(wtf_size_t i, const String& value) {
     DCHECK(!value.IsEmpty());
     DCHECK(type_ == kStartTag || type_ == kEndTag);
     attributes_[i].AppendToValue(value);
@@ -379,7 +379,7 @@ class HTMLToken {
   }
 
   // Used by the XSSAuditor to nuke XSS-laden attributes.
-  void EraseValueOfAttribute(size_t i) {
+  void EraseValueOfAttribute(wtf_size_t i) {
     DCHECK(type_ == kStartTag || type_ == kEndTag);
     attributes_[i].ClearValue();
   }
@@ -451,7 +451,7 @@ class HTMLToken {
   bool self_closing_;
   AttributeList attributes_;
 
-  // A pointer into m_attributes used during lexing.
+  // A pointer into attributes_ used during lexing.
   Attribute* current_attribute_;
 
   // For DOCTYPE

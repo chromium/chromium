@@ -66,7 +66,6 @@ class ProfileChooserView : public content::WebContentsDelegate,
       Browser* browser,
       bool is_source_keyboard);
   static bool IsShowing();
-  static views::Widget* GetCurrentBubbleWidget();
   static void Hide();
 
   const Browser* browser() const { return browser_; }
@@ -227,6 +226,7 @@ class ProfileChooserView : public content::WebContentsDelegate,
   views::LabelButton* passwords_button_;
   views::LabelButton* credit_cards_button_;
   views::LabelButton* addresses_button_;
+  views::LabelButton* signout_button_;
 
   // Buttons displayed in the gaia signin view.
   views::ImageButton* gaia_signin_cancel_button_;

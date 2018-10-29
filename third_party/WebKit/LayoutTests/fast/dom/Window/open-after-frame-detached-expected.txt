@@ -2,9 +2,8 @@ Tests that calling window.open on the contentWindow of a detached frame does not
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
-PASS childWindow.open('about:blank') is null
 
+PASS childWindow.open('about:blank') is null

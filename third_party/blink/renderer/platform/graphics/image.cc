@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -43,9 +44,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_interpolation_quality.h"
 #include "third_party/blink/renderer/platform/histogram.h"
-#include "third_party/blink/renderer/platform/instrumentation/platform_instrumentation.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/length.h"
 #include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -73,11 +72,19 @@ Image* Image::NullImage() {
 }
 
 // static
-cc::ImageDecodeCache& Image::SharedCCDecodeCache() {
+cc::ImageDecodeCache& Image::SharedCCDecodeCache(SkColorType color_type) {
   // This denotes the allocated locked memory budget for the cache used for
   // book-keeping. The cache indicates when the total memory locked exceeds this
   // budget in cc::DecodedDrawImage.
+  DCHECK(color_type == kN32_SkColorType || color_type == kRGBA_F16_SkColorType);
   static const size_t kLockedMemoryLimitBytes = 64 * 1024 * 1024;
+  if (color_type == kRGBA_F16_SkColorType) {
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(
+        cc::SoftwareImageDecodeCache, image_decode_cache,
+        (kRGBA_F16_SkColorType, kLockedMemoryLimitBytes,
+         PaintImage::kDefaultGeneratorClientId));
+    return image_decode_cache;
+  }
   DEFINE_THREAD_SAFE_STATIC_LOCAL(cc::SoftwareImageDecodeCache,
                                   image_decode_cache,
                                   (kN32_SkColorType, kLockedMemoryLimitBytes,
@@ -380,8 +387,11 @@ void Image::DrawPattern(GraphicsContext& context,
 
   context.DrawRect(dest_rect, flags);
 
-  if (CurrentFrameIsLazyDecoded())
-    PlatformInstrumentation::DidDrawLazyPixelRef(image_id);
+  if (CurrentFrameIsLazyDecoded()) {
+    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                         "Draw LazyPixelRef", TRACE_EVENT_SCOPE_THREAD,
+                         "LazyPixelRef", image_id);
+  }
 }
 
 scoped_refptr<Image> Image::ImageForDefaultFrame() {

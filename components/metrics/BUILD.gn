@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/jumbo.gni")
 import("//testing/test.gni")
 
-static_library("metrics") {
+jumbo_static_library("metrics") {
   sources = [
     "call_stack_profile_metrics_provider.cc",
     "call_stack_profile_metrics_provider.h",
@@ -181,7 +182,7 @@ if (!is_ios) {
   }
 }
 
-static_library("net") {
+jumbo_static_library("net") {
   sources = [
     "net/cellular_logic_helper.cc",
     "net/cellular_logic_helper.h",
@@ -321,7 +322,7 @@ source_set("call_stack_profile_collector") {
   ]
 }
 
-static_library("test_support") {
+jumbo_static_library("test_support") {
   testonly = true
   sources = [
     "test_enabled_state_provider.cc",

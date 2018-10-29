@@ -87,10 +87,10 @@ void FakeDemuxerStream::CreateFakeFrame(size_t size,
 
   // Sends frame out if there is pending read callback. Otherwise, stores it
   // in the buffer queue.
-  if (pending_read_cb_.is_null()) {
+  if (!pending_read_cb_) {
     buffer_queue_.push_back(input_buffer);
   } else {
-    base::ResetAndReturn(&pending_read_cb_).Run(kOk, input_buffer);
+    std::move(pending_read_cb_).Run(kOk, input_buffer);
   }
 }
 

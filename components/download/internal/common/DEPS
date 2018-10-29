@@ -19,6 +19,7 @@ include_rules = [
   "+net/http/http_status_code.h",
   "+net/http/http_util.h",
   "+net/traffic_annotation/network_traffic_annotation.h",
+  "+net/url_request/url_request_context_getter.h",
   "+services/metrics/public/cpp",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

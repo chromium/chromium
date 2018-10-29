@@ -93,8 +93,7 @@ void IpcNetworkManager::OnNetworkListChanged(
   // rtc::Network uses these prefix_length to compare network
   // interfaces discovered.
   std::vector<rtc::Network*> networks;
-  for (net::NetworkInterfaceList::const_iterator it = list.begin();
-       it != list.end(); it++) {
+  for (auto it = list.begin(); it != list.end(); it++) {
     rtc::IPAddress ip_address =
         jingle_glue::NetIPAddressToRtcIPAddress(it->address);
     DCHECK(!ip_address.IsNil());

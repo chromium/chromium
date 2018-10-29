@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutDeprecatedFlexibleBox {HTML} at (0,0) size 800x600
-    LayoutDeprecatedFlexibleBox {BODY} at (0,0) size 800x600 [color=#FFFFFF] [bgcolor=#008000]
-      LayoutBlockFlow (anonymous) at (0,0) size 452.84x600
-        LayoutText {#text} at (0,0) size 453x18
-          text run at (0,0) width 453: "You should see white text on a green background that fills the window."

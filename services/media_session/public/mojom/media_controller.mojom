@@ -1,0 +1,33 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media_session.mojom;
+
+import "services/media_session/public/mojom/media_session.mojom";
+
+// Controls a MediaSession. This will automatically route commands to the
+// correct session if the audio focus changes. If the media session is
+// not controllable then the commands will be no-ops.
+interface MediaController {
+  // Suspend the media session.
+  Suspend();
+
+  // Resume the media session.
+  Resume();
+
+  // This will either suspend or resume the media session based on the
+  // playback state.
+  ToggleSuspendResume();
+
+  // Adds an observer that will forward events from the active media session.
+  // If the active session changes then observers do not need to be readded.
+  // Adding the observer will update the observer with the latest state.
+  AddObserver(MediaSessionObserver observer);
+
+  // Skip to the previous track.
+  PreviousTrack();
+
+  // Skip to the next track.
+  NextTrack();
+};

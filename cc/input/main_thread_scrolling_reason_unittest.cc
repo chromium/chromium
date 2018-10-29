@@ -16,13 +16,14 @@ TEST_F(MainThreadScrollingReasonTest, AsText) {
       "Has background-attachment:fixed,"
       "Has non-layer viewport-constrained objects,"
       "Threaded scrolling is disabled,"
-      "Scrollbar scrolling,Page overlay,"
+      "Scrollbar scrolling,"
+      "Page overlay,"
       "Handling scroll from main thread,"
       "Custom scrollbar scrolling,"
       "Has opacity and LCD text,"
       "Has transform and LCD text,"
       "Background is not opaque in rect and LCD text,"
-      "Has border radius,Has clip related property,"
+      "Has clip related property,"
       "Has box shadow from non-root layer,"
       "Is not stacking context and LCD text,"
       "Non fast scrollable region,"
@@ -31,7 +32,9 @@ TEST_F(MainThreadScrollingReasonTest, AsText) {
       "Not scrollable,"
       "Continuing main thread scroll,"
       "Non-invertible transform,"
-      "Page-based scrolling",
+      "Page-based scrolling,"
+      "Wheel event handler region,"
+      "Touch event handler region",
       MainThreadScrollingReason::AsText(0xffffffffu));
 }
 

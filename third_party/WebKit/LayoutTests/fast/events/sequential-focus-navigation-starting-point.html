@@ -71,6 +71,68 @@ test(function() {
 }, 'After removing a focused element from the documen tree, sequential focus navigation should start at a place where the focused element was.');
 
 test(function() {
+    const container = document.querySelector('#container');
+    container.innerHTML = '<input id="before"><div></div><input id="after">';
+    const host = container.querySelector('div');
+    const shadowRoot = host.attachShadow({mode:'closed'});
+
+    let buttonInShadow = document.createElement('button');
+    shadowRoot.appendChild(buttonInShadow);
+    buttonInShadow.focus();
+    assert_equals(shadowRoot.activeElement, buttonInShadow);
+    buttonInShadow.remove();
+    eventSender.keyDown('\t');
+    assert_equals(document.activeElement.id, 'after', 'Forward');
+
+    buttonInShadow = document.createElement('button');
+    shadowRoot.appendChild(buttonInShadow);
+    buttonInShadow.focus();
+    assert_equals(shadowRoot.activeElement, buttonInShadow);
+    buttonInShadow.remove();
+    eventSender.keyDown('\t', ['shiftKey']);
+    assert_equals(document.activeElement.id, 'before', 'Backward');
+}, 'Disconnecting a focused element in a shadow tree');
+
+test(function() {
+    const container = document.querySelector('#container');
+    container.innerHTML = '<input id="before"><div></div><input id="after">';
+
+    let host = container.querySelector('div');
+    let shadowRoot = host.attachShadow({mode:'closed'});
+    let buttonInShadow = document.createElement('button');
+    shadowRoot.appendChild(buttonInShadow);
+    buttonInShadow.focus();
+    assert_equals(shadowRoot.activeElement, buttonInShadow);
+    host.remove();
+    eventSender.keyDown('\t');
+    assert_equals(document.activeElement.id, 'after', 'Forward');
+
+    container.insertBefore(host, container.lastChild);
+    buttonInShadow.focus();
+    assert_equals(shadowRoot.activeElement, buttonInShadow);
+    host.remove();
+    eventSender.keyDown('\t', ['shiftKey']);
+    assert_equals(document.activeElement.id, 'before', 'Backward');
+}, 'Disconnecting a shadow tree including a focused element');
+
+test(function() {
+    // crbug.com/897403
+    const container = document.querySelector('#container');
+    container.innerHTML = '<input id="before"><span><div></div><div></div></span><input id="after">';
+
+    let host = container.querySelector('div');
+    let hostParent = host.parentNode;
+    let shadowRoot = host.attachShadow({mode:'closed'});
+    let buttonInShadow = document.createElement('button');
+    shadowRoot.appendChild(buttonInShadow);
+    buttonInShadow.focus();
+    assert_equals(shadowRoot.activeElement, buttonInShadow);
+    hostParent.innerHTML = '';
+    eventSender.keyDown('\t');
+    assert_equals(document.activeElement.id, 'after', 'Forward');
+}, 'Disconnecting a shadow tree including a focused element 2');
+
+test(function() {
     var container = document.querySelector('#container');
     container.innerHTML = '<input id="i1"><input id="i2"><input id="i3">';
     container.querySelector('#i3').click();

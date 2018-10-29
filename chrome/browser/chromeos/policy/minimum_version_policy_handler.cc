@@ -34,6 +34,22 @@ void MinimumVersionPolicyHandler::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+// static
+bool MinimumVersionPolicyHandler::AreRequirementsSatisfied(
+    const std::string& min_chrome_version_string) {
+  if (min_chrome_version_string.empty())
+    return true;
+
+  const base::Version required_version(min_chrome_version_string);
+  if (!required_version.IsValid()) {
+    LOG(ERROR) << "Version supplied by policy is not a valid version "
+               << required_version;
+    return true;
+  }
+
+  return version_info::GetVersion().CompareTo(required_version) >= 0;
+}
+
 void MinimumVersionPolicyHandler::NotifyMinimumVersionStateChanged() {
   for (auto& observer : observers_)
     observer.OnMinimumVersionStateChanged();
@@ -47,22 +63,10 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
   if (status != chromeos::CrosSettingsProvider::TRUSTED)
     return;
 
-  requirements_met_ = true;
   std::string min_chrome_version_string;
   cros_settings_->GetString(chromeos::kMinimumRequiredChromeVersion,
                             &min_chrome_version_string);
-  if (min_chrome_version_string.empty())
-    return;
-
-  const base::Version required_version(min_chrome_version_string);
-  if (!required_version.IsValid()) {
-    LOG(ERROR) << "Version supplied by policy is not a valid version "
-               << required_version;
-    return;
-  }
-
-  requirements_met_ =
-      version_info::GetVersion().CompareTo(required_version) >= 0;
+  requirements_met_ = AreRequirementsSatisfied(min_chrome_version_string);
   NotifyMinimumVersionStateChanged();
 }
 

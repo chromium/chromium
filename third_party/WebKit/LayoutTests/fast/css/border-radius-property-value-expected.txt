@@ -2,7 +2,6 @@ Test for Bug: 80736 - CSSStyleDeclaration.getPropertyValue() for 'border-radius'
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS style.getPropertyValue('border-radius') is '5px'
 PASS style.getPropertyValue('border-top-left-radius') is '5px'
 PASS style.getPropertyValue('border-top-right-radius') is '5px'

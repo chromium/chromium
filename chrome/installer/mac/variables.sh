@@ -19,6 +19,5 @@ enforcement_flags_installer_tools="${enforcement_flags_helpers},kill"
 # contains the hash of the certificate used to sign Chrome. When transitioning
 # signing certs, this may include the hash of both the old and new certificate.
 requirement_suffix="\
-and (certificate leaf = H\"85cee8254216185620ddc8851c7a9fc4dfe120ef\" or \
-certificate leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\") \
+and certificate leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\" \
 "

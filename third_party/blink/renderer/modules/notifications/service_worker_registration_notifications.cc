@@ -87,7 +87,7 @@ ScriptPromise ServiceWorkerRegistrationNotifications::getNotifications(
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   NotificationManager::From(execution_context)
-      ->GetNotifications(registration.WebRegistration(), options.tag(),
+      ->GetNotifications(registration.RegistrationId(), options.tag(),
                          WrapPersistent(resolver));
   return promise;
 }
@@ -144,7 +144,7 @@ void ServiceWorkerRegistrationNotifications::DidLoadResources(
   DCHECK(loaders_.Contains(loader));
 
   NotificationManager::From(GetExecutionContext())
-      ->DisplayPersistentNotification(registration_->WebRegistration(),
+      ->DisplayPersistentNotification(registration_->RegistrationId(),
                                       std::move(data), loader->GetResources(),
                                       WrapPersistent(resolver));
   loaders_.erase(loader);

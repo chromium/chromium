@@ -128,6 +128,7 @@ class LocalSiteCharacteristicsDataImpl
   }
 
   const url::Origin& origin() const { return origin_; }
+  bool is_dirty() const { return is_dirty_; }
 
   void ExpireAllObservationWindowsForTesting();
 

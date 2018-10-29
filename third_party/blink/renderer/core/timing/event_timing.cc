@@ -17,15 +17,15 @@ EventTiming::EventTiming(LocalDOMWindow* window) {
   performance_ = DOMWindowPerformance::performance(*window);
 }
 
-bool EventTiming::ShouldReportForEventTiming(const Event* event) const {
-  return (event->IsMouseEvent() || event->IsPointerEvent() ||
-          event->IsTouchEvent() || event->IsKeyboardEvent() ||
-          event->IsWheelEvent() || event->IsInputEvent() ||
-          event->IsCompositionEvent()) &&
-         event->isTrusted();
+bool EventTiming::ShouldReportForEventTiming(const Event& event) const {
+  return (event.IsMouseEvent() || event.IsPointerEvent() ||
+          event.IsTouchEvent() || event.IsKeyboardEvent() ||
+          event.IsWheelEvent() || event.IsInputEvent() ||
+          event.IsCompositionEvent()) &&
+         event.isTrusted();
 }
 
-void EventTiming::WillDispatchEvent(const Event* event) {
+void EventTiming::WillDispatchEvent(const Event& event) {
   // Assume each event can be dispatched only once.
   DCHECK(!finished_will_dispatch_event_);
   if (!performance_ || !ShouldReportForEventTiming(event))
@@ -37,27 +37,28 @@ void EventTiming::WillDispatchEvent(const Event* event) {
   // dispatched.
   if ((performance_->ShouldBufferEventTiming() &&
        !performance_->IsEventTimingBufferFull()) ||
-      performance_->HasObserverFor(PerformanceEntry::kEvent)) {
+      performance_->HasObserverFor(PerformanceEntry::kEvent)
+      || (performance_->HasObserverFor(PerformanceEntry::kFirstInput)
+         && !performance_->FirstInputDetected())) {
     processing_start_ = CurrentTimeTicks();
     finished_will_dispatch_event_ = true;
   }
 }
 
-void EventTiming::DidDispatchEvent(const Event* event) {
+void EventTiming::DidDispatchEvent(const Event& event) {
   if (!finished_will_dispatch_event_ ||
-      (!event->executedListenerOrDefaultAction() && !event->DefaultHandled())) {
+      (!event.executedListenerOrDefaultAction() && !event.DefaultHandled())) {
     return;
   }
 
   TimeTicks start_time;
-  if (event->IsPointerEvent())
-    start_time = ToPointerEvent(event)->OldestPlatformTimeStamp();
+  if (event.IsPointerEvent())
+    start_time = ToPointerEvent(&event)->OldestPlatformTimeStamp();
   else
-    start_time = event->PlatformTimeStamp();
+    start_time = event.PlatformTimeStamp();
 
-  performance_->RegisterEventTiming(event->type(), start_time,
-                                    processing_start_, CurrentTimeTicks(),
-                                    event->cancelable());
+  performance_->RegisterEventTiming(event.type(), start_time, processing_start_,
+                                    CurrentTimeTicks(), event.cancelable());
 }
 
 }  // namespace blink

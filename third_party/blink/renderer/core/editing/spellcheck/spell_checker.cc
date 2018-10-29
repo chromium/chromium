@@ -416,9 +416,10 @@ void SpellChecker::RemoveSpellingAndGrammarMarkers(const HTMLElement& element,
   GetFrame().GetDocument()->UpdateStyleAndLayoutTreeForNode(&element);
 
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(element)) {
-    if (elements_type == ElementsType::kAll || !HasEditableStyle(node)) {
+    if ((elements_type == ElementsType::kAll || !HasEditableStyle(node)) &&
+        node.IsTextNode()) {
       GetFrame().GetDocument()->Markers().RemoveMarkersForNode(
-          &node, DocumentMarker::MarkerTypes::Misspelling());
+          ToText(node), DocumentMarker::MarkerTypes::Misspelling());
     }
   }
 }

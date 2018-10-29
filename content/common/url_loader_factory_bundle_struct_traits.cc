@@ -4,6 +4,11 @@
 
 #include "content/common/url_loader_factory_bundle_struct_traits.h"
 
+#include <memory>
+#include <utility>
+
+#include "url/mojom/origin_mojom_traits.h"
+
 namespace mojo {
 
 using Traits =
@@ -17,9 +22,15 @@ network::mojom::URLLoaderFactoryPtrInfo Traits::default_factory(
 }
 
 // static
-std::map<std::string, network::mojom::URLLoaderFactoryPtrInfo>
-Traits::factories(BundleInfoType& bundle) {
-  return std::move(bundle->factories_info());
+content::URLLoaderFactoryBundleInfo::SchemeMap
+Traits::scheme_specific_factories(BundleInfoType& bundle) {
+  return std::move(bundle->scheme_specific_factory_infos());
+}
+
+// static
+content::URLLoaderFactoryBundleInfo::OriginMap
+Traits::initiator_specific_factories(BundleInfoType& bundle) {
+  return std::move(bundle->initiator_specific_factory_infos());
 }
 
 // static
@@ -34,7 +45,11 @@ bool Traits::Read(content::mojom::URLLoaderFactoryBundleDataView data,
 
   (*out_bundle)->default_factory_info() =
       data.TakeDefaultFactory<network::mojom::URLLoaderFactoryPtrInfo>();
-  if (!data.ReadFactories(&(*out_bundle)->factories_info()))
+  if (!data.ReadSchemeSpecificFactories(
+          &(*out_bundle)->scheme_specific_factory_infos()))
+    return false;
+  if (!data.ReadInitiatorSpecificFactories(
+          &(*out_bundle)->initiator_specific_factory_infos()))
     return false;
 
   (*out_bundle)->set_bypass_redirect_checks(data.bypass_redirect_checks());

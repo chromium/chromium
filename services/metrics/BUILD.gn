@@ -17,6 +17,8 @@ source_set("metrics") {
     "ukm_recorder_interface.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",

@@ -78,11 +78,6 @@ class SystemStorageApiTest : public extensions::ShellApiTest {
     TestStorageMonitor::CreateForBrowserTests();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    ShellApiTest::SetUpInProcessBrowserTestFixture();
-    message_loop_.reset(new base::MessageLoopForUI);
-  }
-
   void SetUpAllMockStorageDevices() {
     for (size_t i = 0; i < arraysize(kTestingData); ++i) {
       AttachRemovableStorage(kTestingData[i]);
@@ -99,9 +94,6 @@ class SystemStorageApiTest : public extensions::ShellApiTest {
   void DetachRemovableStorage(const std::string& id) {
     StorageMonitor::GetInstance()->receiver()->ProcessDetach(id);
   }
-
- private:
-  std::unique_ptr<base::MessageLoop> message_loop_;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, Storage) {

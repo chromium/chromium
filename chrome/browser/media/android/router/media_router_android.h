@@ -124,6 +124,9 @@ class MediaRouterAndroid : public MediaRouterBase {
     // Sends a text message back to router's peer for this connection (|peer_|).
     void SendMessage(const std::string& message);
 
+    // Sends a TERMINATED state change message directly via |peer_|.
+    void Terminate();
+
    private:
     blink::mojom::PresentationConnectionPtrInfo Bind();
 

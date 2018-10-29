@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-// This file defines Windows types for the sandbox_ipc_fuzzer target, which
-// currently only compiles on Linux.
+// This file defines Windows types for the sandbox_ipc_fuzzer target when
+// compiled on Linux.
 //
 // It also disables Windows exception handling to ensure any crashes are
 // captured by the fuzzing harness.

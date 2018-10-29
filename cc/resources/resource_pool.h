@@ -13,7 +13,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -34,6 +33,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
+namespace gpu {
+struct Capabilities;
+}
+
 namespace viz {
 class ClientResourceProvider;
 class ContextProvider;
@@ -41,14 +44,16 @@ class ContextProvider;
 
 namespace cc {
 
-class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider,
-                               public base::MemoryCoordinatorClient {
+class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   class PoolResource;
 
  public:
   // Delay before a resource is considered expired.
   static constexpr base::TimeDelta kDefaultExpirationDelay =
       base::TimeDelta::FromSeconds(5);
+  // Max delay before an evicted resource is flushed.
+  static constexpr base::TimeDelta kDefaultMaxFlushDelay =
+      base::TimeDelta::FromSeconds(1);
 
   // A base class to hold ownership of gpu backed PoolResources. Allows the
   // client to define destruction semantics.
@@ -67,6 +72,11 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider,
         const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
         uint64_t tracing_process_id,
         int importance) const = 0;
+
+    void InitOverlayCandidateAndTextureTarget(
+        const viz::ResourceFormat format,
+        const gpu::Capabilities& caps,
+        bool use_gpu_memory_buffer_resources);
 
     gpu::Mailbox mailbox;
     gpu::SyncToken mailbox_sync_token;
@@ -235,12 +245,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider,
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  // Overriden from base::MemoryCoordinatorClient.
-  void OnPurgeMemory() override;
-  void OnMemoryStateChange(base::MemoryState state) override;
-
-  // TODO(gyuyoung): OnMemoryPressure is deprecated. So this should be removed
-  // when the memory coordinator is enabled by default.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 
@@ -389,6 +393,8 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider,
   std::map<size_t, std::unique_ptr<PoolResource>> in_use_resources_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+
+  base::TimeTicks flush_evicted_resources_deadline_;
 
   base::WeakPtrFactory<ResourcePool> weak_ptr_factory_;
 

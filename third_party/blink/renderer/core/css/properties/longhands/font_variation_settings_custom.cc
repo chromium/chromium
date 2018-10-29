@@ -17,7 +17,7 @@ namespace {
 cssvalue::CSSFontVariationValue* ConsumeFontVariationTag(
     CSSParserTokenRange& range) {
   // Feature tag name consists of 4-letter characters.
-  static const unsigned kTagNameLength = 4;
+  static const wtf_size_t kTagNameLength = 4;
 
   const CSSParserToken& token = range.ConsumeIncludingWhitespace();
   // Feature tag name comes first
@@ -26,7 +26,7 @@ cssvalue::CSSFontVariationValue* ConsumeFontVariationTag(
   if (token.Value().length() != kTagNameLength)
     return nullptr;
   AtomicString tag = token.Value().ToAtomicString();
-  for (unsigned i = 0; i < kTagNameLength; ++i) {
+  for (wtf_size_t i = 0; i < kTagNameLength; ++i) {
     // Limits the range of characters to 0x20-0x7E, following the tag name rules
     // defined in the OpenType specification.
     UChar character = tag[i];
@@ -72,7 +72,7 @@ const CSSValue* FontVariationSettings::CSSValueFromComputedStyleInternal(
   if (!variation_settings || !variation_settings->size())
     return CSSIdentifierValue::Create(CSSValueNormal);
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (unsigned i = 0; i < variation_settings->size(); ++i) {
+  for (wtf_size_t i = 0; i < variation_settings->size(); ++i) {
     const FontVariationAxis& variation_axis = variation_settings->at(i);
     cssvalue::CSSFontVariationValue* variation_value =
         cssvalue::CSSFontVariationValue::Create(variation_axis.Tag(),

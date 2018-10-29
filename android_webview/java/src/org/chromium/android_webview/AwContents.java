@@ -48,7 +48,6 @@ import android.webkit.JavascriptInterface;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
@@ -59,7 +58,7 @@ import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.blink_public.web.WebReferrerPolicy;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.navigation_interception.NavigationParams;
@@ -89,6 +88,7 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.content_public.common.UseZoomForDSFPolicy;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -616,7 +616,9 @@ public class AwContents implements SmartClipProvider {
             // The shouldOverrideUrlLoading call might have resulted in posting messages to the
             // UI thread. Using sendMessage here (instead of calling onPageStarted directly)
             // will allow those to run in order.
-            mContentsClient.getCallbackHelper().postOnPageStarted(navigationParams.url);
+            if (!navigationParams.isRendererInitiated) {
+                mContentsClient.getCallbackHelper().postOnPageStarted(navigationParams.url);
+            }
             return false;
         }
     }
@@ -1576,6 +1578,10 @@ public class AwContents implements SmartClipProvider {
     public void loadUrl(String url, Map<String, String> additionalHttpHeaders) {
         if (TRACE) Log.i(TAG, "%s loadUrl(extra headers)=%s", this, url);
         if (isDestroyedOrNoOperation(WARN)) return;
+        // Early out to match old WebView implementation
+        if (url == null) {
+            return;
+        }
         // TODO: We may actually want to do some sanity checks here (like filter about://chrome).
 
         // For backwards compatibility, apps targeting less than K will have JS URLs evaluated
@@ -1583,19 +1589,18 @@ public class AwContents implements SmartClipProvider {
         // Matching Chrome behavior more closely; apps targetting >= K that load a JS URL will
         // have the result of that URL replace the content of the current page.
         final String javaScriptScheme = "javascript:";
-        if (mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT && url != null
-                && url.startsWith(javaScriptScheme)) {
+        if (mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT && url.startsWith(javaScriptScheme)) {
             evaluateJavaScript(url.substring(javaScriptScheme.length()), null);
             return;
         }
 
-        LoadUrlParams params = new LoadUrlParams(url);
+        LoadUrlParams params = new LoadUrlParams(url, PageTransition.TYPED);
         if (additionalHttpHeaders != null) {
             params.setExtraHeaders(new HashMap<String, String>(additionalHttpHeaders));
         }
 
         final String dataScheme = "data:";
-        if (url != null && url.startsWith(dataScheme) && url.contains("#")) {
+        if (url.startsWith(dataScheme) && url.contains("#")) {
             RecordHistogram.recordBooleanHistogram(DATA_URI_HISTOGRAM_NAME, true);
         }
 
@@ -1741,7 +1746,7 @@ public class AwContents implements SmartClipProvider {
 
         // If we are reloading the same url, then set transition type as reload.
         if (params.getUrl() != null && params.getUrl().equals(mWebContents.getLastCommittedUrl())
-                && params.getTransitionType() == PageTransition.LINK) {
+                && params.getTransitionType() == PageTransition.TYPED) {
             params.setTransitionType(PageTransition.RELOAD);
         }
         params.setTransitionType(
@@ -1761,8 +1766,8 @@ public class AwContents implements SmartClipProvider {
         if (extraHeaders != null) {
             for (String header : extraHeaders.keySet()) {
                 if (referer.equals(header.toLowerCase(Locale.US))) {
-                    params.setReferrer(new Referrer(extraHeaders.remove(header),
-                            WebReferrerPolicy.DEFAULT));
+                    params.setReferrer(
+                            new Referrer(extraHeaders.remove(header), ReferrerPolicy.DEFAULT));
                     params.setExtraHeaders(extraHeaders);
                     break;
                 }
@@ -2244,7 +2249,6 @@ public class AwContents implements SmartClipProvider {
 
         // In order to maintain compatibility with the old WebView's implementation,
         // the absolute (full) url is passed in the |url| field, not only the href attribute.
-        // Note: HitTestData could be cleaned up at this point. See http://crbug.com/290992.
         data.putString("url", mPossiblyStaleHitTestData.href);
         data.putString("title", mPossiblyStaleHitTestData.anchorText);
         data.putString("src", mPossiblyStaleHitTestData.imgSrc);

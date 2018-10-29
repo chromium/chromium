@@ -1,0 +1,190 @@
+class {{interface.name}}Request {
+  /** @param {!MojoHandle} handle */
+  constructor(handle) {
+    /** @public {!MojoHandle} */
+    this.handle = handle;
+  }
+}
+
+/** @interface */
+class {{interface.name}}Interface {
+{%-  for method in interface.methods %}
+  /**
+{%-   for param in method.parameters %}
+   * @param { {{param.kind|lite_closure_type_with_nullability}} } {{param.name|sanitize_identifier}}
+{%-   endfor -%}
+{%-   if method.response_parameters != None %}
+   * @return {Promise}
+{%-   endif %}
+   */
+  {{method.name}}(
+{%-   for param in method.parameters -%}
+{{param.name|sanitize_identifier}}{% if not loop.last %}, {% endif %}
+{%-   endfor -%}
+) {}
+{%- endfor %}
+}
+
+/** @implements { {{interface.name}}Interface } */
+class {{interface.name}}Proxy {
+  /** @param {MojoHandle=} opt_handle */
+  constructor(opt_handle) {
+    /** @private {!mojo.internal.InterfaceProxyBase} */
+    this.proxy = new mojo.internal.InterfaceProxyBase(opt_handle);
+  }
+
+  /** @return {!{{interface.name}}Request} */
+  createRequest() {
+    let {handle0, handle1} = Mojo.createMessagePipe();
+    this.proxy.bindHandle(handle0);
+    return new {{interface.name}}Request(handle1);
+  }
+
+{%- for method in interface.methods -%}
+{%-   set interface_message_id =
+          interface.mojom_name ~ "_" ~ method.mojom_name %}
+
+  /**
+{%-   for param in method.parameters %}
+   * @param { {{param.kind|lite_closure_type_with_nullability}} } {{param.name|sanitize_identifier}}
+{%-   endfor -%}
+{%-   if method.response_parameters != None %}
+   * @return {Promise}
+{%-   endif %}
+   */
+  {{method.name}}(
+{%- for param in method.parameters %}
+      {{param.name}}{%- if not loop.last %},{% endif %}
+{%- endfor -%}) {
+    return this.proxy.sendMessage(
+        {{method.ordinal}},
+        {{interface_message_id}}_Params,
+{%-   if method.response_parameters != None %}
+        {{interface_message_id}}_ResponseParams,
+{%-   else %}
+        null,
+{%-   endif %}
+        [
+{%- for param in method.parameters %}
+          {{param.name}}{%- if not loop.last %},{% endif %}
+{%- endfor %}
+        ]);
+  }
+{%-  endfor %}
+}
+
+/**
+ * An object which receives request messages for the {{interface.name}}
+ * mojom interface. Must be constructed over an object which implements that
+ * interface.
+ */
+class {{interface.name}} {
+  /**
+   * @param {!{{interface.name}}Interface} impl
+   */
+  constructor(impl) {
+    this.target_ = new mojo.internal.InterfaceTarget;
+{%  for method in interface.methods %}
+{%-   set interface_message_id =
+          interface.mojom_name ~ "_" ~ method.mojom_name %}
+    this.target_.registerHandler(
+        {{method.ordinal}},
+        {{interface_message_id}}_Params,
+{%-   if method.response_parameters != None %}
+        {{interface_message_id}}_ResponseParams,
+{%-   else %}
+        null,
+{%-   endif %}
+        impl.{{method.name}}.bind(impl));
+{%- endfor %}
+  }
+
+  /**
+   * Binds a new handle to this object. Messages which arrive on the handle will
+   * be read and dispatched to this object.
+   *
+   * @param {!MojoHandle}
+   */
+  bindHandle(handle) {
+    this.target_.bindHandle(handle);
+  }
+
+  /**
+   * Returns a proxy for this interface which sends messages to the browser.
+   * The browser must have an interface request binder registered for this
+   * interface and accessible to the calling document's frame.
+   *
+   * @return {!{{interface.name}}Proxy}
+   */
+  static getProxy() {
+    let proxy = new {{interface.name}}Proxy;
+    Mojo.bindInterface('{{mojom_namespace}}.{{interface.name}}',
+                       proxy.createRequest().handle);
+    return proxy;
+  }
+
+  /**
+   * Returns a proxy for this interface which sends messages directly to this
+   * object. Any number of proxies may be created to the same object.
+   *
+   * @return {!{{interface.name}}Proxy}
+   */
+  createProxy() {
+    let proxy = new {{interface.name}}Proxy;
+    this.target_.bindHandle(proxy.createRequest().handle);
+    return proxy;
+  }
+}
+
+/** @const {!string} */
+{{interface.name}}.$interfaceName = '{{mojom_namespace}}.{{interface.name}}';
+
+/**
+ * An object which receives request messages for the {{interface.name}}
+ * mojom interface and dispatches them as callbacks. One callback target exists
+ * on this object for each message defined in the mojom interface, and each
+ * target can have any number of listeners added to it.
+ */
+class {{interface.name}}CallbackRouter {
+  constructor() {
+    this.target_ = new mojo.internal.InterfaceTarget;
+{%  for method in interface.methods %}
+{%-   set interface_message_id =
+          interface.mojom_name ~ "_" ~ method.mojom_name %}
+    /** @public {!mojo.internal.InterfaceCallbackTarget} */
+    this.{{method.name}} = new mojo.internal.InterfaceCallbackTarget;
+    this.target_.registerHandler(
+        {{method.ordinal}},
+        {{interface_message_id}}_Params,
+{%-   if method.response_parameters != None %}
+        {{interface_message_id}}_ResponseParams,
+        this.{{method.name}}.createTargetHandler(true /* expectsResponse */));
+{%-   else %}
+        null,
+        this.{{method.name}}.createTargetHandler(false /* expectsResponse */));
+{%-   endif %}
+{%- endfor %}
+  }
+
+  /**
+   * Binds a new handle to this object. Messages which arrive on the handle will
+   * be read and dispatched as callbacks on this object.
+   *
+   * @param {!MojoHandle}
+   */
+  bindHandle(handle) {
+    this.target_.bindHandle(handle);
+  }
+
+  /**
+   * Returns a proxy for this interface which sends messages directly to this
+   * object. Any number of proxies may be created to the same object.
+   *
+   * @return {!{{interface.name}}Proxy}
+   */
+  createProxy() {
+    let proxy = new {{interface.name}}Proxy;
+    this.target_.bindHandle(proxy.createRequest().handle);
+    return proxy;
+  }
+}

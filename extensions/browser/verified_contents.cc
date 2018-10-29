@@ -221,7 +221,7 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
           base::FilePath::FromUTF8Unsafe(file_path_string);
       base::FilePath::StringType lowercase_file_path =
           base::ToLowerASCII(file_path.value());
-      RootHashes::iterator i = verified_contents->root_hashes_.insert(
+      auto i = verified_contents->root_hashes_.insert(
           std::make_pair(lowercase_file_path, std::string()));
       i->second.swap(root_hash);
 
@@ -409,8 +409,7 @@ bool VerifiedContents::TreeHashRootEqualsImpl(
     const std::string& expected) const {
   std::pair<RootHashes::const_iterator, RootHashes::const_iterator> hashes =
       root_hashes_.equal_range(normalized_relative_path);
-  for (RootHashes::const_iterator iter = hashes.first; iter != hashes.second;
-       ++iter) {
+  for (auto iter = hashes.first; iter != hashes.second; ++iter) {
     if (expected == iter->second)
       return true;
   }

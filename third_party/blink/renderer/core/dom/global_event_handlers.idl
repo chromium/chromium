@@ -122,4 +122,9 @@
     [OriginTrialEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchend;
     [OriginTrialEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchmove;
     [OriginTrialEnabled=TouchEventFeatureDetection] attribute EventHandler ontouchstart;
+
+    // Selection API
+    // https://w3c.github.io/selection-api/#extensions-to-globaleventhandlers
+    attribute EventHandler onselectstart;
+    attribute EventHandler onselectionchange;
 };

@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x173
-  LayoutBlockFlow {HTML} at (0,0) size 800x173
-    LayoutBlockFlow {BODY} at (8,8) size 784x157
-      LayoutText {#text} at (0,0) size 0x0
-layer at (8,8) size 152x152
-  LayoutEmbeddedObject {EMBED} at (0,0) size 152x152 [border: (1px solid #000000)]

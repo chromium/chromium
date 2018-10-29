@@ -101,6 +101,7 @@ enum QuicTransportVersion {
                          // server.
   QUIC_VERSION_44 = 44,  // Use IETF header format.
   QUIC_VERSION_45 = 45,  // Added MESSAGE frame.
+  QUIC_VERSION_46 = 46,  // Use CRYPTO frames for QuicCryptoStreams.
   QUIC_VERSION_99 = 99,  // Dumping ground for IETF QUIC changes which are not
                          // yet ready for production.
 };
@@ -161,7 +162,7 @@ using QuicVersionLabelVector = std::vector<QuicVersionLabel>;
 //
 // See go/new-quic-version for more details on how to roll out new versions.
 static const QuicTransportVersion kSupportedTransportVersions[] = {
-    QUIC_VERSION_99, QUIC_VERSION_45, QUIC_VERSION_44,
+    QUIC_VERSION_99, QUIC_VERSION_46, QUIC_VERSION_45, QUIC_VERSION_44,
     QUIC_VERSION_43, QUIC_VERSION_39, QUIC_VERSION_35};
 
 // This vector contains all crypto handshake protocols that are supported.

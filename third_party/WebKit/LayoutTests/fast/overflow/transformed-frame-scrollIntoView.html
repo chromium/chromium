@@ -26,7 +26,8 @@
 <script>
 if (window.testRunner) {
     testRunner.waitUntilDone();
-    testRunner.dumpChildFrameScrollPositions();
+    testRunner.dumpAsLayoutWithPixelResults();
+    testRunner.dumpChildFrames();
 }
 document.getElementById('frame').contentWindow.addEventListener('load', function() {
     document.getElementById('frame').contentDocument.getElementById('green').scrollIntoViewIfNeeded(false);

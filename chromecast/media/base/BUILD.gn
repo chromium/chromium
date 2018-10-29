@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chromecast/chromecast.gni")
+import("//third_party/widevine/cdm/widevine.gni")
 
 cast_source_set("key_systems") {
   sources = [
@@ -10,16 +11,17 @@ cast_source_set("key_systems") {
     "key_systems_common.h",
   ]
 
-  if (use_playready) {
-    public_configs = [ "//chromecast:playready_config" ]
-  }
-
   deps = [
     "//base",
+    "//chromecast:chromecast_buildflags",
     "//chromecast/public/media",
     "//media",
-    "//third_party/widevine/cdm:headers",
+    "//third_party/widevine/cdm:buildflags",
   ]
+
+  if (enable_widevine) {
+    deps += [ "//third_party/widevine/cdm:headers" ]
+  }
 }
 
 cast_source_set("base") {

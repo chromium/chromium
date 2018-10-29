@@ -34,11 +34,6 @@ interface WindowManager {
   // Type: int32_t.
   const string kContainerId_InitProperty = "init:container_id";
 
-  // Disables the window manager from handling immersive fullscreen for the
-  // window. This is typically done if the client wants to handle immersive
-  // themselves. Type: bool.
-  const string kDisableImmersive_InitProperty = "init:disable_immersive";
-
   // The id of the display (display::Display::id()) to create the window on.
   // Type: int64.
   const string kDisplayId_InitProperty = "init:display_id";
@@ -77,6 +72,11 @@ interface WindowManager {
   // The Android Java-style package name for an ARC++ window, such as
   // "com.google.Photos". Type: mojom::String.
   const string kArcPackageName_Property = "prop:arc-package-name";
+
+  // The accessibility ui::AXTreeID for a views::Widget.
+  // TODO(dmazzoni): Convert to base::UnguessableToken. https://crbug.com/881986
+  // Type: mojom::String
+  const string kChildAXTreeID_Property = "prop:child-ax-tree-id";
 
   // The modal parent of a child modal window. Type: window Id.
   const string kChildModalParent_Property = "prop:child-modal-parent";

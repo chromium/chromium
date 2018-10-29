@@ -4,11 +4,11 @@
 
 #include "chromecast/media/cma/backend/volume_map.h"
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
+#include <utility>
+
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/media/cma/backend/cast_audio_json.h"
 
 namespace chromecast {
@@ -22,9 +22,22 @@ constexpr float kMinDbFS = -120.0f;
 
 }  // namespace
 
-VolumeMap::VolumeMap() {
-  auto cast_audio_config =
-      DeserializeJsonFromFile(CastAudioJson::GetFilePath());
+VolumeMap::VolumeMap()
+    : VolumeMap(std::make_unique<CastAudioJsonProviderImpl>()) {}
+
+VolumeMap::VolumeMap(std::unique_ptr<CastAudioJsonProvider> config_provider)
+    : config_provider_(std::move(config_provider)) {
+  DCHECK(config_provider_);
+
+  // base::Unretained is safe because VolumeMap outlives |config_provider_|.
+  config_provider_->SetTuningChangedCallback(
+      base::BindRepeating(&VolumeMap::LoadVolumeMap, base::Unretained(this)));
+  LoadVolumeMap(config_provider_->GetCastAudioConfig());
+}
+
+VolumeMap::~VolumeMap() = default;
+
+void VolumeMap::LoadVolumeMap(std::unique_ptr<base::Value> cast_audio_config) {
   const base::DictionaryValue* cast_audio_dict;
   if (!cast_audio_config ||
       !cast_audio_config->GetAsDictionary(&cast_audio_dict)) {
@@ -41,6 +54,7 @@ VolumeMap::VolumeMap() {
   }
 
   double prev_level = -1.0;
+  std::vector<LevelToDb> new_map;
   for (size_t i = 0; i < volume_map_list->GetSize(); ++i) {
     const base::DictionaryValue* volume_map_entry;
     CHECK(volume_map_list->GetDictionary(i, &volume_map_entry));
@@ -59,26 +73,27 @@ VolumeMap::VolumeMap() {
       CHECK_EQ(db, 0.0);
     }
 
-    volume_map_.push_back({level, db});
+    new_map.push_back({level, db});
   }
 
-  if (volume_map_.empty()) {
+  if (new_map.empty()) {
     LOG(FATAL) << "No entries in volume map.";
     return;
   }
 
-  if (volume_map_[0].level > 0.0) {
-    volume_map_.insert(volume_map_.begin(), {0.0, kMinDbFS});
+  if (new_map[0].level > 0.0) {
+    new_map.insert(new_map.begin(), {0.0, kMinDbFS});
   }
 
-  if (volume_map_.rbegin()->level < 1.0) {
-    volume_map_.push_back({1.0, 0.0});
+  if (new_map.rbegin()->level < 1.0) {
+    new_map.push_back({1.0, 0.0});
   }
+  base::AutoLock lock(lock_);
+  volume_map_ = std::move(new_map);
 }
 
-VolumeMap::~VolumeMap() = default;
-
 float VolumeMap::VolumeToDbFS(float volume) {
+  base::AutoLock lock(lock_);
   if (volume <= volume_map_[0].level) {
     return volume_map_[0].db;
   }
@@ -95,6 +110,7 @@ float VolumeMap::VolumeToDbFS(float volume) {
 }
 
 float VolumeMap::DbFSToVolume(float db) {
+  base::AutoLock lock(lock_);
   if (db <= volume_map_[0].db) {
     return volume_map_[0].level;
   }
@@ -110,13 +126,14 @@ float VolumeMap::DbFSToVolume(float db) {
   return volume_map_[volume_map_.size() - 1].level;
 }
 
-// static
 void VolumeMap::UseDefaultVolumeMap() {
-  volume_map_ = {{0.0f, kMinDbFS},
-                 {0.01f, -58.0f},
-                 {0.090909f, -48.0f},
-                 {0.818182f, -8.0f},
-                 {1.0f, 0.0f}};
+  std::vector<LevelToDb> new_map = {{0.0f, kMinDbFS},
+                                    {0.01f, -58.0f},
+                                    {0.090909f, -48.0f},
+                                    {0.818182f, -8.0f},
+                                    {1.0f, 0.0f}};
+  base::AutoLock lock(lock_);
+  volume_map_ = std::move(new_map);
 }
 
 }  // namespace media

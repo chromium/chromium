@@ -7,8 +7,10 @@
 
 #include "base/macros.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -18,7 +20,7 @@ class HTMLAnchorElement;
 
 // AnchorElementMetricsSender is responsible to send anchor element metrics to
 // the browser process for a given document.
-class AnchorElementMetricsSender final
+class CORE_EXPORT AnchorElementMetricsSender final
     : public GarbageCollectedFinalized<AnchorElementMetricsSender>,
       public Supplement<Document> {
   USING_GARBAGE_COLLECTED_MIXIN(AnchorElementMetricsSender);
@@ -48,7 +50,7 @@ class AnchorElementMetricsSender final
   void AddAnchorElement(HTMLAnchorElement& element);
 
   // Returns the stored |anchor_elements_|.
-  const HeapVector<Member<HTMLAnchorElement>>& GetAnchorElements() const;
+  const HeapHashSet<Member<HTMLAnchorElement>>& GetAnchorElements() const;
 
   void Trace(blink::Visitor*) override;
 
@@ -62,8 +64,9 @@ class AnchorElementMetricsSender final
   // Browser host to which the anchor element metrics are sent.
   mojom::blink::AnchorElementMetricsHostPtr metrics_host_;
 
-  // Collection of anchor elements in the document.
-  HeapVector<Member<HTMLAnchorElement>> anchor_elements_;
+  // Collection of anchor elements in the document. Use a HashSet to ensure that
+  // an element is inserted at most once.
+  HeapHashSet<Member<HTMLAnchorElement>> anchor_elements_;
 
   // If |has_onload_report_sent_| is true, |anchor_elements_| will not accept
   // new anchor elements.

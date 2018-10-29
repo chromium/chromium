@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
@@ -24,6 +25,7 @@
 #include "components/safe_browsing/db/whitelist_checker_client.h"
 #include "components/safe_browsing/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/password_protection/password_protection_request.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -94,9 +96,6 @@ PasswordProtectionService::PasswordProtectionService(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (history_service)
     history_service_observer_.Add(history_service);
-
-  // TODO(jialiul): Remove this code when migration is done.
-  MigrateCachedVerdicts();
 }
 
 PasswordProtectionService::~PasswordProtectionService() {
@@ -230,7 +229,7 @@ void PasswordProtectionService::CacheVerdict(
   DCHECK(trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
          trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
 
-  if (!CanGetReputationOfURL(url)) {
+  if (!CanGetReputationOfURL(url) || IsIncognito()) {
     return;
   }
 
@@ -527,19 +526,20 @@ void PasswordProtectionService::FillUserPopulation(
   user_population->set_is_history_sync_enabled(IsHistorySyncEnabled());
   user_population->set_is_under_advanced_protection(
       IsUnderAdvancedProtection());
+  user_population->set_is_incognito(IsIncognito());
 }
 
 void PasswordProtectionService::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindRepeating(
           &PasswordProtectionService::RemoveContentSettingsOnURLsDeleted,
           GetWeakPtr(), deletion_info.IsAllHistory(),
           deletion_info.deleted_rows()));
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindRepeating(&PasswordProtectionService::
                               RemoveUnhandledSyncPasswordReuseOnURLsDeleted,
                           GetWeakPtr(), deletion_info.IsAllHistory(),
@@ -677,7 +677,7 @@ bool PasswordProtectionService::ParseVerdictEntry(
     int* out_verdict_received_time,
     LoginReputationClientResponse* out_verdict) {
   std::string serialized_verdict_proto;
-  if (!verdict_entry || !out_verdict)
+  if (!verdict_entry || !verdict_entry->is_dict() || !out_verdict)
     return false;
   base::Value* cache_creation_time_value =
       verdict_entry->FindKey(kCacheCreationTime);
@@ -704,9 +704,7 @@ bool PasswordProtectionService::PathVariantsMatchCacheExpression(
 
 bool PasswordProtectionService::IsCacheExpired(int cache_creation_time,
                                                int cache_duration) {
-  // TODO(jialiul): For now, we assume client's clock is accurate or almost
-  // accurate. Need some logic to handle cases where client's clock is way
-  // off.
+  // Note that we assume client's clock is accurate or almost accurate.
   return base::Time::Now().ToDoubleT() >
          static_cast<double>(cache_creation_time + cache_duration);
 }
@@ -802,7 +800,8 @@ bool PasswordProtectionService::IsWarningEnabled() {
 }
 
 bool PasswordProtectionService::IsEventLoggingEnabled() {
-  return GetSyncAccountType() != PasswordReuseEvent::NOT_SIGNED_IN;
+  return !IsIncognito() &&
+         GetSyncAccountType() != PasswordReuseEvent::NOT_SIGNED_IN;
 }
 
 // static
@@ -847,61 +846,6 @@ bool PasswordProtectionService::IsSupportedPasswordTypeForModalWarning(
     ReusedPasswordType reused_password_type) const {
   return reused_password_type == PasswordReuseEvent::SIGN_IN_PASSWORD ||
          reused_password_type == PasswordReuseEvent::ENTERPRISE_PASSWORD;
-}
-
-void PasswordProtectionService::MigrateCachedVerdicts() {
-  // |content_settings_| can be null in tests.
-  if (!content_settings_)
-    return;
-
-  ContentSettingsForOneType password_protection_settings;
-  content_settings_->GetSettingsForOneType(
-      CONTENT_SETTINGS_TYPE_PASSWORD_PROTECTION, std::string(),
-      &password_protection_settings);
-
-  size_t verdicts_migrated = 0;
-  for (const ContentSettingPatternSource& source :
-       password_protection_settings) {
-    GURL primary_pattern_url = GURL(source.primary_pattern.ToString());
-    // Find all verdicts associated with this origin.
-    std::unique_ptr<base::DictionaryValue> cache_dictionary =
-        base::DictionaryValue::From(content_settings_->GetWebsiteSetting(
-            primary_pattern_url, GURL(),
-            CONTENT_SETTINGS_TYPE_PASSWORD_PROTECTION, std::string(), nullptr));
-
-    std::vector<std::string> removed_keys;
-    for (const auto& item : cache_dictionary->DictItems()) {
-      int password_type_int = -1;
-      if (item.first == kPasswordOnFocusCacheKey ||
-          (base::StringToInt(item.first, &password_type_int) &&
-           password_type_int >= PasswordReuseEvent::ReusedPasswordType_MIN &&
-           password_type_int <= PasswordReuseEvent::ReusedPasswordType_MAX)) {
-        continue;
-      }
-      // Removes value if its key is not kPasswordOnFocusCacheKey or a valid
-      // reused password type.
-      removed_keys.push_back(item.first);
-    }
-
-    verdicts_migrated += removed_keys.size();
-    for (const std::string& key : removed_keys)
-      cache_dictionary->RemoveKey(key);
-
-    if (cache_dictionary->size() == 0u) {
-      content_settings_->ClearSettingsForOneTypeWithPredicate(
-          CONTENT_SETTINGS_TYPE_PASSWORD_PROTECTION, base::Time(),
-          base::Time::Max(),
-          base::BindRepeating(&OriginMatchPrimaryPattern, primary_pattern_url));
-    } else {
-      // Set the website setting of this origin with the updated
-      // |cache_dictionary|.
-      content_settings_->SetWebsiteSettingDefaultScope(
-          primary_pattern_url, GURL(),
-          CONTENT_SETTINGS_TYPE_PASSWORD_PROTECTION, std::string(),
-          std::move(cache_dictionary));
-    }
-  }
-  LogNumberOfVerdictMigrated(verdicts_migrated);
 }
 
 }  // namespace safe_browsing

@@ -1,7 +1,18 @@
 /**
- * @license Copyright 2017 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ * @license
+ * Copyright 2017 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS-IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 'use strict';
 
@@ -115,11 +126,11 @@ class CriticalRequestChainRenderer {
     dom.find('.crc-node__tree-hostname', treevalEl).textContent = hostname ? `(${hostname})` : '';
 
     if (!segment.hasChildren) {
+      const {startTime, endTime, transferSize} = segment.node.request;
       const span = dom.createElement('span', 'crc-node__chain-duration');
-      span.textContent = ' - ' + Util.chainDuration(
-          segment.node.request.startTime, segment.node.request.endTime) + 'ms, ';
+      span.textContent = ' - ' + Util.formatMilliseconds((endTime - startTime) * 1000) + ', ';
       const span2 = dom.createElement('span', 'crc-node__chain-duration');
-      span2.textContent = Util.formatBytesToKB(segment.node.request.transferSize, 0.01);
+      span2.textContent = Util.formatBytesToKB(transferSize, 0.01);
 
       treevalEl.appendChild(span);
       treevalEl.appendChild(span2);
@@ -157,11 +168,11 @@ class CriticalRequestChainRenderer {
     const containerEl = dom.find('.lh-crc', tmpl);
 
     // Fill in top summary.
+    dom.find('.crc-initial-nav', tmpl).textContent = Util.UIStrings.crcInitialNavigation;
+    dom.find('.lh-crc__longest_duration_label', tmpl).textContent =
+        Util.UIStrings.crcLongestDurationLabel;
     dom.find('.lh-crc__longest_duration', tmpl).textContent =
-        Util.formatNumber(details.longestChain.duration) + 'ms';
-    dom.find('.lh-crc__longest_length', tmpl).textContent = details.longestChain.length.toString();
-    dom.find('.lh-crc__longest_transfersize', tmpl).textContent =
-        Util.formatBytesToKB(details.longestChain.transferSize);
+        Util.formatMilliseconds(details.longestChain.duration);
 
     // Construct visual tree.
     const root = CriticalRequestChainRenderer.initTree(details.chains);

@@ -48,7 +48,8 @@ AutofillDriverIOS* AutofillDriverIOS::FromWebStateAndWebFrame(
     web::WebFrame* web_frame) {
   if (autofill::switches::IsAutofillIFrameMessagingEnabled()) {
     return AutofillDriverIOSWebFrameFactory::FromWebState(web_state)
-        ->AutofillDriverIOSFromWebFrame(web_frame);
+        ->AutofillDriverIOSFromWebFrame(web_frame)
+        ->driver();
   } else {
     return AutofillDriverIOSWebState::FromWebState(web_state);
   }
@@ -73,6 +74,10 @@ AutofillDriverIOS::~AutofillDriverIOS() {}
 
 bool AutofillDriverIOS::IsIncognito() const {
   return web_state_->GetBrowserState()->IsOffTheRecord();
+}
+
+bool AutofillDriverIOS::IsInMainFrame() const {
+  return web_frame_ ? web_frame_->IsMainFrame() : true;
 }
 
 net::URLRequestContextGetter* AutofillDriverIOS::GetURLRequestContext() {

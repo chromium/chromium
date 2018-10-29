@@ -97,10 +97,6 @@ bool NetworkDelegateImpl::OnCanEnablePrivacyMode(
   return false;
 }
 
-bool NetworkDelegateImpl::OnAreExperimentalCookieFeaturesEnabled() const {
-  return false;
-}
-
 bool NetworkDelegateImpl::OnCancelURLRequestWithPolicyViolatingReferrerHeader(
     const URLRequest& request,
     const GURL& target_url,

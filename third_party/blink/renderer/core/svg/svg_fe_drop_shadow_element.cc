@@ -19,7 +19,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_fe_drop_shadow_element.h"
 
-#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/svg_computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
@@ -29,14 +29,15 @@
 namespace blink {
 
 inline SVGFEDropShadowElement::SVGFEDropShadowElement(Document& document)
-    : SVGFilterPrimitiveStandardAttributes(SVGNames::feDropShadowTag, document),
-      dx_(SVGAnimatedNumber::Create(this, SVGNames::dxAttr, 2)),
-      dy_(SVGAnimatedNumber::Create(this, SVGNames::dyAttr, 2)),
+    : SVGFilterPrimitiveStandardAttributes(svg_names::kFEDropShadowTag,
+                                           document),
+      dx_(SVGAnimatedNumber::Create(this, svg_names::kDxAttr, 2)),
+      dy_(SVGAnimatedNumber::Create(this, svg_names::kDyAttr, 2)),
       std_deviation_(
           SVGAnimatedNumberOptionalNumber::Create(this,
-                                                  SVGNames::stdDeviationAttr,
+                                                  svg_names::kStdDeviationAttr,
                                                   2)),
-      in1_(SVGAnimatedString::Create(this, SVGNames::inAttr)) {
+      in1_(SVGAnimatedString::Create(this, svg_names::kInAttr)) {
   AddToPropertyMap(dx_);
   AddToPropertyMap(dy_);
   AddToPropertyMap(std_deviation_);
@@ -62,16 +63,16 @@ void SVGFEDropShadowElement::setStdDeviation(float x, float y) {
 bool SVGFEDropShadowElement::SetFilterEffectAttribute(
     FilterEffect* effect,
     const QualifiedName& attr_name) {
-  DCHECK(GetLayoutObject());
-  FEDropShadow* drop_shadow = static_cast<FEDropShadow*>(effect);
+  const ComputedStyle& style = ComputedStyleRef();
 
-  const SVGComputedStyle& svg_style = GetLayoutObject()->StyleRef().SvgStyle();
-  if (attr_name == SVGNames::flood_colorAttr) {
-    drop_shadow->SetShadowColor(svg_style.FloodColor());
+  FEDropShadow* drop_shadow = static_cast<FEDropShadow*>(effect);
+  if (attr_name == svg_names::kFloodColorAttr) {
+    drop_shadow->SetShadowColor(
+        style.VisitedDependentColor(GetCSSPropertyFloodColor()));
     return true;
   }
-  if (attr_name == SVGNames::flood_opacityAttr) {
-    drop_shadow->SetShadowOpacity(svg_style.FloodOpacity());
+  if (attr_name == svg_names::kFloodOpacityAttr) {
+    drop_shadow->SetShadowOpacity(style.SvgStyle().FloodOpacity());
     return true;
   }
   return SVGFilterPrimitiveStandardAttributes::SetFilterEffectAttribute(
@@ -80,9 +81,9 @@ bool SVGFEDropShadowElement::SetFilterEffectAttribute(
 
 void SVGFEDropShadowElement::SvgAttributeChanged(
     const QualifiedName& attr_name) {
-  if (attr_name == SVGNames::inAttr ||
-      attr_name == SVGNames::stdDeviationAttr ||
-      attr_name == SVGNames::dxAttr || attr_name == SVGNames::dyAttr) {
+  if (attr_name == svg_names::kInAttr ||
+      attr_name == svg_names::kStdDeviationAttr ||
+      attr_name == svg_names::kDxAttr || attr_name == svg_names::kDyAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
@@ -93,15 +94,12 @@ void SVGFEDropShadowElement::SvgAttributeChanged(
 
 FilterEffect* SVGFEDropShadowElement::Build(SVGFilterBuilder* filter_builder,
                                             Filter* filter) {
-  LayoutObject* layout_object = this->GetLayoutObject();
-  if (!layout_object)
+  const ComputedStyle* style = GetComputedStyle();
+  if (!style)
     return nullptr;
 
-  DCHECK(layout_object->Style());
-  const SVGComputedStyle& svg_style = layout_object->StyleRef().SvgStyle();
-
-  Color color = svg_style.FloodColor();
-  float opacity = svg_style.FloodOpacity();
+  Color color = style->VisitedDependentColor(GetCSSPropertyFloodColor());
+  float opacity = style->SvgStyle().FloodOpacity();
 
   FilterEffect* input1 = filter_builder->GetEffectById(
       AtomicString(in1_->CurrentValue()->Value()));

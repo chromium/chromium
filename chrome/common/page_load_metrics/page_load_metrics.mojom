@@ -35,6 +35,18 @@ struct PaintTiming {
 
   // (Experimental) Time when the page's primary content is painted.
   mojo_base.mojom.TimeDelta? first_meaningful_paint;
+
+  // (Experimental) Time when the page's largest image is painted.
+  mojo_base.mojom.TimeDelta? largest_image_paint;
+
+  // (Experimental) Time when the page's last image is painted.
+  mojo_base.mojom.TimeDelta? last_image_paint;
+
+  // (Experimental) Time when the page's largest text is painted.
+  mojo_base.mojom.TimeDelta? largest_text_paint;
+
+  // (Experimental) Time when the page's last text is painted.
+  mojo_base.mojom.TimeDelta? last_text_paint;
 };
 
 // TimeDeltas below represent durations of time during the page load.
@@ -167,6 +179,10 @@ struct ResourceDataUpdate {
   // is the aggregate of the |delta_bytes| from each timing update.
   int64 received_data_length = 0;
 
+  // The length of the response body for the resource before removing any
+  // content encodings.
+  int64 encoded_body_length = 0;
+
   // Whether this resource load has completed.
   bool is_complete;
 
@@ -182,6 +198,18 @@ struct ResourceDataUpdate {
 
   // Whether this resource was loaded in the top-level frame.
   bool is_main_frame_resource;
+
+  // Whether this resource was fetched from the http cache.
+  bool was_fetched_via_cache;
+
+  // Mime type for the resource found in the network response header.
+  string mime_type;
+};
+
+// Metrics about how the page rendered during the browsing session.
+struct PageRenderData {
+  // How much visible elements in the frame shifted (bit.ly/lsm-explainer).
+  float layout_jank_score;
 };
 
 // Sent from renderer to browser process when the PageLoadTiming for the

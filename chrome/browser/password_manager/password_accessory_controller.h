@@ -80,14 +80,6 @@ class PasswordAccessoryController
           autofill::password_generation::PasswordGenerationUIData>& ui_data,
       const base::WeakPtr<password_manager::PasswordManagerDriver>& driver);
 
-  // Notifies the controller that the generated password has potentially
-  // changed. Currently only used for recording metrics.
-  void MaybeGeneratedPasswordChanged(const base::string16& changed_password);
-
-  // Notifies the controller that the generated password was deleted. Used for
-  // recording metrics.
-  void GeneratedPasswordDeleted();
-
   // Completes a filling attempt by recording metrics, giving feedback to the
   // user and dismissing the accessory sheet.
   void OnFilledIntoFocusedField(autofill::FillingStatus status);
@@ -102,6 +94,14 @@ class PasswordAccessoryController
   // Reacts to a navigation on the main frame, e.g. by clearing caches.
   void DidNavigateMainFrame();
 
+  // Requests to show the accessory bar. The accessory will only be shown
+  // when the keyboard becomes visible.
+  void ShowWhenKeyboardIsVisible();
+
+  // Requests to hide the accessory. This hides both the accessory sheet
+  // (if open) and the accessory bar.
+  void Hide();
+
   // --------------------------
   // Methods called by UI code:
   // --------------------------
@@ -110,7 +110,8 @@ class PasswordAccessoryController
   // frame. The given callback is called with an image unless an icon for a new
   // origin was called. In the latter case, the callback is dropped.
   // The callback is called with an |IsEmpty()| image if there is no favicon.
-  void GetFavicon(base::OnceCallback<void(const gfx::Image&)> icon_callback);
+  void GetFavicon(int desired_size_in_pixel,
+                  base::OnceCallback<void(const gfx::Image&)> icon_callback);
 
   // Called by the UI code to request that |textToFill| is to be filled into the
   // currently focused field.
@@ -162,10 +163,6 @@ class PasswordAccessoryController
   // Data allowing to cache favicons and favicon-related requests.
   struct FaviconRequestData;
 
-  // Created when generation is requested the user. Used for recording metrics
-  // for the lifetime of the generated password.
-  class GeneratedPasswordMetricsRecorder;
-
   // Required for construction via |CreateForWebContents|:
   explicit PasswordAccessoryController(content::WebContents* contents);
   friend class content::WebContentsUserData<PasswordAccessoryController>;
@@ -186,8 +183,9 @@ class PasswordAccessoryController
 
   // Handles a favicon response requested by |GetFavicon| and calls the waiting
   // last_icon_callback_ with a (possibly empty) icon bitmap.
-  void OnImageFetched(url::Origin origin,
-                      const favicon_base::FaviconImageResult& image_result);
+  void OnImageFetched(
+      url::Origin origin,
+      const favicon_base::FaviconRawBitmapResult& bitmap_results);
 
   // Contains the last set of credentials by origin.
   std::map<url::Origin, std::vector<SuggestionElementData>> origin_suggestions_;
@@ -231,13 +229,6 @@ class PasswordAccessoryController
 
   // The favicon service used to make retrieve icons for a given origin.
   favicon::FaviconService* favicon_service_;
-
-  // Used during the lifetime of a generated password to record metrics.
-  // The lifetime of a generated password starts when a user requests generation
-  // and ends when the password is rejected, deleted or when another password
-  // is generated.
-  std::unique_ptr<GeneratedPasswordMetricsRecorder>
-      generated_password_metrics_recorder_;
 
   base::WeakPtrFactory<PasswordAccessoryController> weak_factory_;
 

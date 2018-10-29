@@ -2,7 +2,6 @@ This test checks whether passing wrong types to setAttributeNode causes a crash.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS element.setAttributeNode("style"); threw exception TypeError: Failed to execute 'setAttributeNode' on 'Element': parameter 1 is not of type 'Attr'..
 PASS element.setAttributeNode(null); threw exception TypeError: Failed to execute 'setAttributeNode' on 'Element': parameter 1 is not of type 'Attr'..
 PASS element.setAttributeNode(undefined); threw exception TypeError: Failed to execute 'setAttributeNode' on 'Element': parameter 1 is not of type 'Attr'..

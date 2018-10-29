@@ -59,7 +59,7 @@ void GetFingerprint(
     const base::Time& install_time,
     const std::string& app_locale,
     const std::string& user_agent,
-    const base::Callback<void(std::unique_ptr<Fingerprint>)>& callback,
+    const base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback,
     service_manager::Connector* connector);
 
 }  // namespace risk

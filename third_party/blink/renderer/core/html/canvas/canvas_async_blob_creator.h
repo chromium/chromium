@@ -30,7 +30,7 @@ constexpr const char* kSRGBImageColorSpaceName = "srgb";
 constexpr const char* kRec2020ImageColorSpaceName = "rec2020";
 constexpr const char* kDisplayP3ImageColorSpaceName = "display-p3";
 
-constexpr const char* kRGBA8ImagePixelFormatName = "8-8-8-8";
+constexpr const char* kRGBA8ImagePixelFormatName = "uint8";
 constexpr const char* kRGBA16ImagePixelFormatName = "uint16";
 
 class CORE_EXPORT CanvasAsyncBlobCreator
@@ -128,7 +128,7 @@ class CORE_EXPORT CanvasAsyncBlobCreator
   ImageEncodingMimeType mime_type_;
   const ImageEncodeOptions encode_options_;
   ToBlobFunctionType function_type_;
-  sk_sp<SkData> png_16bit_data_helper_;
+  sk_sp<SkData> png_data_helper_;
 
   // Chrome metrics use
   TimeTicks start_time_;

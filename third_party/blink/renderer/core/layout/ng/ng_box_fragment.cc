@@ -83,16 +83,4 @@ NGLineHeightMetrics NGBoxFragment::BaselineMetrics(
   return NGLineHeightMetrics(block_size - block_size / 2, block_size / 2);
 }
 
-NGBoxStrut NGBoxFragment::Borders() const {
-  const auto& physical_fragment = ToNGPhysicalBoxFragment(physical_fragment_);
-  return physical_fragment.Borders().ConvertToLogical(GetWritingMode(),
-                                                      direction_);
-}
-
-NGBoxStrut NGBoxFragment::Padding() const {
-  const auto& physical_fragment = ToNGPhysicalBoxFragment(physical_fragment_);
-  return physical_fragment.Padding().ConvertToLogical(GetWritingMode(),
-                                                      direction_);
-}
-
 }  // namespace blink

@@ -123,13 +123,12 @@ class RunDetails(object):
 
     def __init__(self, exit_code, summarized_full_results=None,
                  summarized_failing_results=None, initial_results=None,
-                 all_retry_results=None, enabled_pixel_tests_in_retry=False):
+                 all_retry_results=None):
         self.exit_code = exit_code
         self.summarized_full_results = summarized_full_results
         self.summarized_failing_results = summarized_failing_results
         self.initial_results = initial_results
         self.all_retry_results = all_retry_results or []
-        self.enabled_pixel_tests_in_retry = enabled_pixel_tests_in_retry
 
 
 def _interpret_test_failures(failures):
@@ -156,8 +155,7 @@ def _interpret_test_failures(failures):
 
 
 def summarize_results(port_obj, expectations, initial_results,
-                      all_retry_results, enabled_pixel_tests_in_retry,
-                      only_include_failing=False):
+                      all_retry_results, only_include_failing=False):
     """Returns a dictionary containing a summary of the test runs, with the following fields:
         'version': a version indicator
         'fixable': The number of fixable tests (NOW - PASS)
@@ -318,7 +316,6 @@ def summarize_results(port_obj, expectations, initial_results,
 
         def is_expected(actual_result):
             return expectations.matches_an_expected_result(test_name, actual_result,
-                                                           port_obj.get_option('pixel_tests') or initial_result.reftest_type,
                                                            port_obj.get_option('enable_sanitizer'))
 
         # Note: is_unexpected and is_regression are intended to reflect the
@@ -369,7 +366,6 @@ def summarize_results(port_obj, expectations, initial_results,
     # checking total number of results vs. total number of tests?)
     results['interrupted'] = initial_results.interrupted
     results['layout_tests_dir'] = port_obj.layout_tests_dir()
-    results['pixel_tests_enabled'] = port_obj.get_option('pixel_tests')
     results['seconds_since_epoch'] = int(time.time())
     results['build_number'] = port_obj.get_option('build_number')
     results['builder_name'] = port_obj.get_option('builder_name')

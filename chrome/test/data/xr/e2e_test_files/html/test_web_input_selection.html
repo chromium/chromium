@@ -1,0 +1,56 @@
+<!doctype html>
+<!-- Used to test that text can be selected while inputting text. -->
+<html>
+  <head>
+    <!-- We need this meta tag, otherwise double clicking to select in text
+         boxes doesn't work (zooms instead). Double clicking to select non-text-
+         box text still doesn't work for some reason though. -->
+    <meta name='viewport' content='width=device-width'>
+  </head>
+  <body>
+    <script src="../../../../../../third_party/WebKit/LayoutTests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <input id="textfield" type="text" style="width:100%" oninput="finishJavaScriptStep()">
+  </body>
+  <script>
+    var t = async_test("Web input text can be selected");
+    var numExpectedClicks = 1;
+
+    function stepVerifyInitialString(expectedString) {
+      t.step(() => {
+        let actualString = document.getElementById("textfield").value;
+        assert_equals(actualString, expectedString,
+            "Initial text input did not work");
+      });
+      finishJavaScriptStep();
+    }
+
+    function stepVerifyDeletedString(expectedString) {
+      t.step(() => {
+        let actualString = document.getElementById("textfield").value;
+        assert_equals(actualString, expectedString,
+            "Text deletion at via text selection did not work");
+      });
+      finishJavaScriptStep();
+    }
+
+    function stepVerifyClearedString() {
+      t.step(() => {
+        let actualString = document.getElementById("textfield").value;
+        assert_equals(actualString.length, 0,
+            "Text field was not fully cleared by triple click + backspace");
+      });
+      t.done();
+    }
+
+    function onClick(evt) {
+      // We expect a single click, then a double click, then a triple click.
+      if (evt.detail === numExpectedClicks) {
+        numExpectedClicks++;
+        finishJavaScriptStep();
+      }
+      return true;
+    }
+    document.getElementById("textfield").addEventListener("click", onClick);
+  </script>
+</html>

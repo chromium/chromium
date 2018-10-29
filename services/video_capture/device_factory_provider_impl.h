@@ -17,11 +17,15 @@
 
 namespace video_capture {
 
+class VirtualDeviceEnabledDeviceFactory;
+
 class DeviceFactoryProviderImpl : public mojom::DeviceFactoryProvider {
  public:
-  DeviceFactoryProviderImpl(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+  DeviceFactoryProviderImpl();
   ~DeviceFactoryProviderImpl() override;
+
+  void SetServiceRef(
+      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
 
   // mojom::DeviceFactoryProvider implementation.
   void InjectGpuDependencies(
@@ -33,10 +37,11 @@ class DeviceFactoryProviderImpl : public mojom::DeviceFactoryProvider {
 
   void LazyInitializeGpuDependenciesContext();
   void LazyInitializeDeviceFactory();
+  void OnFactoryClientDisconnected();
 
   mojo::BindingSet<mojom::DeviceFactory> factory_bindings_;
-  std::unique_ptr<mojom::DeviceFactory> device_factory_;
-  const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
+  std::unique_ptr<VirtualDeviceEnabledDeviceFactory> device_factory_;
+  std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
   std::unique_ptr<GpuDependenciesContext> gpu_dependencies_context_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceFactoryProviderImpl);

@@ -87,10 +87,10 @@ void NavigableContentsImpl::CreateView(bool in_service_process,
 void NavigableContentsImpl::OnEmbedTokenReceived(
     CreateViewCallback callback,
     const base::UnguessableToken& token) {
-#if defined(TOOLKIT_VIEWS)
-  if (native_content_view_)
-    native_content_view_->Show();
-#endif  // defined(TOOLKIT_VIEWS)
+#if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
+  DCHECK(native_content_view_);
+  native_content_view_->Show();
+#endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
   std::move(callback).Run(token);
 }
 #endif  // BUILDFLAG(ENABLE_REMOTE_NAVIGABLE_CONTENTS_VIEW)
@@ -98,13 +98,9 @@ void NavigableContentsImpl::OnEmbedTokenReceived(
 void NavigableContentsImpl::EmbedInProcessClientView(
     NavigableContentsView* view) {
   DCHECK(native_content_view_);
-#if defined(TOOLKIT_VIEWS)
-  DCHECK(!local_view_host_);
-  local_view_host_ = std::make_unique<views::NativeViewHost>();
-  local_view_host_->set_owned_by_client();
-  view->view()->AddChildView(local_view_host_.get());
-  view->view()->Layout();
-  local_view_host_->Attach(native_content_view_);
+#if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
+  view->native_view()->AddChild(native_content_view_);
+  native_content_view_->Show();
 #else
   // TODO(https://crbug.com/855092): Support embedding of other native client
   // views without Views + Aura.

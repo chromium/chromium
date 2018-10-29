@@ -82,6 +82,11 @@ void NoopLocalSiteCharacteristicsDatabase::RemoveSiteCharacteristicsFromDB(
 
 void NoopLocalSiteCharacteristicsDatabase::ClearDatabase() {}
 
+void NoopLocalSiteCharacteristicsDatabase::GetDatabaseSize(
+    GetDatabaseSizeCallback callback) {
+  std::move(callback).Run(base::nullopt, base::nullopt);
+}
+
 ChromeTestHarnessWithLocalDB::ChromeTestHarnessWithLocalDB() {
   scoped_feature_list_.InitAndEnableFeature(
       features::kSiteCharacteristicsDatabase);

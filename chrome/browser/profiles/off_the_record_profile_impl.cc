@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_factory.h"
@@ -52,6 +53,7 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -187,8 +189,8 @@ void OffTheRecordProfileImpl::Init() {
 
   extensions::ExtensionSystem::Get(this)->InitForIncognitoProfile();
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&NotifyOTRProfileCreatedOnIOThread, profile_, this));
 #endif
 
@@ -215,8 +217,8 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
       this);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&NotifyOTRProfileDestroyedOnIOThread, profile_, this));
 #endif
 
@@ -381,8 +383,8 @@ void OffTheRecordProfileImpl::RegisterInProcessServices(
     info.factory =
         InProcessPrefServiceFactoryFactory::GetInstanceForContext(this)
             ->CreatePrefServiceFactory();
-    info.task_runner = content::BrowserThread::GetTaskRunnerForThread(
-        content::BrowserThread::UI);
+    info.task_runner = base::CreateSingleThreadTaskRunnerWithTraits(
+        {content::BrowserThread::UI});
     services->insert(std::make_pair(prefs::mojom::kServiceName, info));
   }
 }
@@ -391,9 +393,14 @@ net::URLRequestContextGetter* OffTheRecordProfileImpl::GetRequestContext() {
   return GetDefaultStoragePartition(this)->GetURLRequestContext();
 }
 
-net::URLRequestContextGetter*
-    OffTheRecordProfileImpl::GetRequestContextForExtensions() {
-  return io_data_->GetExtensionsRequestContextGetter().get();
+base::OnceCallback<net::CookieStore*()>
+OffTheRecordProfileImpl::GetExtensionsCookieStoreGetter() {
+  return base::BindOnce(
+      [](content::ResourceContext* context) {
+        auto* io_data = ProfileIOData::FromResourceContext(context);
+        return io_data->GetExtensionsCookieStore();
+      },
+      GetResourceContext());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -489,12 +496,10 @@ OffTheRecordProfileImpl::GetVideoDecodePerfHistory() {
                          // because original profile will outlive this profile.
                          : GetOriginalProfile()->GetVideoDecodePerfHistory();
 
-    auto db_factory =
-        std::make_unique<media::InMemoryVideoDecodeStatsDBFactory>(
-            seed_db_provider);
-
+    auto stats_db = std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(
+        seed_db_provider);
     auto new_decode_history =
-        std::make_unique<media::VideoDecodePerfHistory>(std::move(db_factory));
+        std::make_unique<media::VideoDecodePerfHistory>(std::move(stats_db));
     decode_history = new_decode_history.get();
 
     SetUserData(kVideoDecodePerfHistoryId, std::move(new_decode_history));

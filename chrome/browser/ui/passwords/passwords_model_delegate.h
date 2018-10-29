@@ -100,9 +100,6 @@ class PasswordsModelDelegate {
       const autofill::PasswordForm& form,
       password_manager::CredentialType credential_type) = 0;
 
-  // Open a new tab, pointing to the Smart Lock help article.
-  // TODO(crbug.com/862269): remove when "Smart Lock" is gone.
-  virtual void NavigateToSmartLockHelpPage() = 0;
   // Open a new tab, pointing to passwords.google.com.
   virtual void NavigateToPasswordManagerAccountDashboard() = 0;
   // Open a new tab, pointing to the password manager settings page.

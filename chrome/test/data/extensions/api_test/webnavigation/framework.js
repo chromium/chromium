@@ -16,6 +16,16 @@ var initialized = false;
 
 var debug = false;
 
+// Helper function. Turns a function returning an object in a callback into a
+// promise. It helps keeping the code at the same indentation level.
+function promise(fun, ...args) {
+  return new Promise(function(resolve, reject) {
+    fun(...args, function(value) {
+      resolve(value);
+    });
+  });
+}
+
 function deepCopy(obj) {
   if (obj === null)
     return null;

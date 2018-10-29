@@ -14,6 +14,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -99,8 +100,8 @@ Clipboard::FormatType Clipboard::GetFormatType(
 
 // static
 const Clipboard::FormatType& Clipboard::GetUrlFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (NSURLPboardType));
-  return type;
+  static base::NoDestructor<FormatType> type(NSURLPboardType);
+  return *type;
 }
 
 // static
@@ -110,8 +111,8 @@ const Clipboard::FormatType& Clipboard::GetUrlWFormatType() {
 
 // static
 const Clipboard::FormatType& Clipboard::GetPlainTextFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (NSPasteboardTypeString));
-  return type;
+  static base::NoDestructor<FormatType> type(NSPasteboardTypeString);
+  return *type;
 }
 
 // static
@@ -121,8 +122,8 @@ const Clipboard::FormatType& Clipboard::GetPlainTextWFormatType() {
 
 // static
 const Clipboard::FormatType& Clipboard::GetFilenameFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (NSFilenamesPboardType));
-  return type;
+  static base::NoDestructor<FormatType> type(NSFilenamesPboardType);
+  return *type;
 }
 
 // static
@@ -132,38 +133,38 @@ const Clipboard::FormatType& Clipboard::GetFilenameWFormatType() {
 
 // static
 const Clipboard::FormatType& Clipboard::GetHtmlFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (NSHTMLPboardType));
-  return type;
+  static base::NoDestructor<FormatType> type(NSHTMLPboardType);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetRtfFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (NSRTFPboardType));
-  return type;
+  static base::NoDestructor<FormatType> type(NSRTFPboardType);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetBitmapFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (NSTIFFPboardType));
-  return type;
+  static base::NoDestructor<FormatType> type(NSTIFFPboardType);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetWebKitSmartPasteFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kWebSmartPastePboardType));
-  return type;
+  static base::NoDestructor<FormatType> type(kWebSmartPastePboardType);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetWebCustomDataFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kWebCustomDataPboardType));
-  return type;
+  static base::NoDestructor<FormatType> type(kWebCustomDataPboardType);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetPepperCustomDataFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kPepperCustomDataPboardType));
-  return type;
+  static base::NoDestructor<FormatType> type(kPepperCustomDataPboardType);
+  return *type;
 }
 
 // Clipboard factory method.
@@ -213,7 +214,7 @@ void ClipboardMac::Clear(ClipboardType type) {
   DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
 
   NSPasteboard* pb = GetPasteboard();
-  [pb declareTypes:[NSArray array] owner:nil];
+  [pb declareTypes:@[] owner:nil];
 }
 
 void ClipboardMac::ReadAvailableTypes(ClipboardType type,
@@ -276,10 +277,8 @@ void ClipboardMac::ReadHTML(ClipboardType type,
     src_url->clear();
 
   NSPasteboard* pb = GetPasteboard();
-  NSArray* supportedTypes = [NSArray arrayWithObjects:NSHTMLPboardType,
-                                                      NSRTFPboardType,
-                                                      NSPasteboardTypeString,
-                                                      nil];
+  NSArray* supportedTypes =
+      @[ NSHTMLPboardType, NSRTFPboardType, NSPasteboardTypeString ];
   NSString* bestType = [pb availableTypeFromArray:supportedTypes];
   if (bestType) {
     NSString* contents = [pb stringForType:bestType];
@@ -336,7 +335,7 @@ SkBitmap ClipboardMac::ReadImage(ClipboardType type, NSPasteboard* pb) const {
   // the way through to the web, but the clipboard API doesn't support the
   // additional metainformation.
   if ([[image representations] count] == 1u) {
-    NSImageRep* rep = [[image representations] objectAtIndex:0];
+    NSImageRep* rep = [image representations][0];
     NSInteger width = [rep pixelsWide];
     NSInteger height = [rep pixelsHigh];
     if (width != 0 && height != 0) {
@@ -399,7 +398,7 @@ void ClipboardMac::WriteObjects(ClipboardType type, const ObjectMap& objects) {
   DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
 
   NSPasteboard* pb = GetPasteboard();
-  [pb declareTypes:[NSArray array] owner:nil];
+  [pb declareTypes:@[] owner:nil];
 
   for (ObjectMap::const_iterator iter = objects.begin(); iter != objects.end();
        ++iter) {
@@ -411,7 +410,7 @@ void ClipboardMac::WriteText(const char* text_data, size_t text_len) {
   std::string text_str(text_data, text_len);
   NSString* text = base::SysUTF8ToNSString(text_str);
   NSPasteboard* pb = GetPasteboard();
-  [pb addTypes:[NSArray arrayWithObject:NSPasteboardTypeString] owner:nil];
+  [pb addTypes:@[ NSPasteboardTypeString ] owner:nil];
   [pb setString:text forType:NSPasteboardTypeString];
 }
 
@@ -426,7 +425,7 @@ void ClipboardMac::WriteHTML(const char* markup_data,
 
   // TODO(avi): url_data?
   NSPasteboard* pb = GetPasteboard();
-  [pb addTypes:[NSArray arrayWithObject:NSHTMLPboardType] owner:nil];
+  [pb addTypes:@[ NSHTMLPboardType ] owner:nil];
   [pb setString:html_fragment forType:NSHTMLPboardType];
 }
 
@@ -455,7 +454,7 @@ void ClipboardMac::WriteBitmap(const SkBitmap& bitmap) {
   // An API to ask the NSImage to write itself to the clipboard comes in 10.6 :(
   // For now, spit out the image as a TIFF.
   NSPasteboard* pb = GetPasteboard();
-  [pb addTypes:[NSArray arrayWithObject:NSTIFFPboardType] owner:nil];
+  [pb addTypes:@[ NSTIFFPboardType ] owner:nil];
   NSData* tiff_data = [image TIFFRepresentation];
   LOG_IF(ERROR, tiff_data == NULL) << "Failed to allocate image for clipboard";
   if (tiff_data) {
@@ -467,7 +466,7 @@ void ClipboardMac::WriteData(const FormatType& format,
                              const char* data_data,
                              size_t data_len) {
   NSPasteboard* pb = GetPasteboard();
-  [pb addTypes:[NSArray arrayWithObject:format.ToNSString()] owner:nil];
+  [pb addTypes:@[ format.ToNSString() ] owner:nil];
   [pb setData:[NSData dataWithBytes:data_data length:data_len]
       forType:format.ToNSString()];
 }
@@ -477,7 +476,7 @@ void ClipboardMac::WriteData(const FormatType& format,
 void ClipboardMac::WriteWebSmartPaste() {
   NSPasteboard* pb = GetPasteboard();
   NSString* format = GetWebKitSmartPasteFormatType().ToNSString();
-  [pb addTypes:[NSArray arrayWithObject:format] owner:nil];
+  [pb addTypes:@[ format ] owner:nil];
   [pb setData:nil forType:format];
 }
 

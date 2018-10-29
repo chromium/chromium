@@ -118,25 +118,38 @@ void ServiceWorkerInstalledScriptReader::OnReadInfoComplete(
   DCHECK_GE(http_info->response_data_size, 0);
   uint64_t body_size = http_info->response_data_size;
   uint64_t meta_data_size = 0;
-  mojo::DataPipe body_pipe(blink::BlobUtils::GetDataPipeCapacity(body_size));
-  if (!body_pipe.producer_handle.is_valid()) {
+
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes = blink::BlobUtils::GetDataPipeCapacity(body_size);
+
+  mojo::ScopedDataPipeConsumerHandle body_consumer_handle;
+  MojoResult rv =
+      mojo::CreateDataPipe(&options, &body_handle_, &body_consumer_handle);
+  if (rv != MOJO_RESULT_OK) {
     CompleteSendIfNeeded(FinishedReason::kCreateDataPipeError);
     return;
   }
-  body_handle_ = std::move(body_pipe.producer_handle);
+
   // Start sending meta data (V8 code cache data).
   if (http_info->http_info->metadata) {
     DCHECK_GE(http_info->http_info->metadata->size(), 0);
     meta_data_size = http_info->http_info->metadata->size();
-    mojo::DataPipe meta_pipe(
-        blink::BlobUtils::GetDataPipeCapacity(meta_data_size));
-    if (!meta_pipe.producer_handle.is_valid()) {
+
+    mojo::ScopedDataPipeProducerHandle meta_producer_handle;
+    options.capacity_num_bytes =
+        blink::BlobUtils::GetDataPipeCapacity(meta_data_size);
+    rv = mojo::CreateDataPipe(&options, &meta_producer_handle,
+                              &meta_data_consumer);
+    if (rv != MOJO_RESULT_OK) {
       CompleteSendIfNeeded(FinishedReason::kCreateDataPipeError);
       return;
     }
-    meta_data_consumer = std::move(meta_pipe.consumer_handle);
+
     meta_data_sender_ = std::make_unique<MetaDataSender>(
-        http_info->http_info->metadata, std::move(meta_pipe.producer_handle));
+        http_info->http_info->metadata, std::move(meta_producer_handle));
     meta_data_sender_->Start(base::BindOnce(
         &ServiceWorkerInstalledScriptReader::OnMetaDataSent, AsWeakPtr()));
   }
@@ -170,7 +183,7 @@ void ServiceWorkerInstalledScriptReader::OnReadInfoComplete(
   }
 
   client_->OnStarted(charset, std::move(header_strings),
-                     std::move(body_pipe.consumer_handle), body_size,
+                     std::move(body_consumer_handle), body_size,
                      std::move(meta_data_consumer), meta_data_size);
   client_->OnHttpInfoRead(http_info);
 }

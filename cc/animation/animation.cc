@@ -48,7 +48,7 @@ ElementId Animation::element_id_of_keyframe_effect(
 }
 
 bool Animation::IsElementAttached(ElementId id) const {
-  return !!element_to_keyframe_effect_id_map_.count(id);
+  return base::ContainsKey(element_to_keyframe_effect_id_map_, id);
 }
 
 void Animation::SetAnimationHost(AnimationHost* animation_host) {

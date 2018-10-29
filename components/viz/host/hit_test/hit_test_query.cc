@@ -4,6 +4,7 @@
 
 #include "components/viz/host/hit_test/hit_test_query.h"
 
+#include "base/containers/stack.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -24,9 +25,51 @@ bool RegionMatchEventSource(EventSource event_source, uint32_t flags) {
                    HitTestRegionFlags::kHitTestTouch)) != 0u;
 }
 
-bool CheckChildCount(int32_t child_count, uint32_t child_count_max) {
+bool CheckChildCount(int32_t child_count, size_t child_count_max) {
   return (child_count >= 0) &&
-         (static_cast<uint32_t>(child_count) < child_count_max);
+         (static_cast<size_t>(child_count) < child_count_max);
+}
+
+const std::string GetFlagNames(uint32_t flag) {
+  std::string names = "";
+  uint32_t mask = 1;
+
+  while (flag) {
+    std::string name = "";
+    switch (flag & mask) {
+      case kHitTestMine:
+        name = "Mine";
+        break;
+      case kHitTestIgnore:
+        name = "Ignore";
+        break;
+      case kHitTestChildSurface:
+        name = "ChildSurface";
+        break;
+      case kHitTestAsk:
+        name = "Ask";
+        break;
+      case kHitTestMouse:
+        name = "Mouse";
+        break;
+      case kHitTestTouch:
+        name = "Touch";
+        break;
+      case kHitTestNotActive:
+        name = "NotActive";
+        break;
+      case 0:
+        break;
+    }
+    if (!name.empty()) {
+      names += names.empty() ? name : ", " + name;
+    }
+
+    flag &= ~mask;
+    mask <<= 1;
+  }
+
+  return names;
 }
 
 }  // namespace
@@ -40,18 +83,16 @@ void HitTestQuery::OnAggregatedHitTestRegionListUpdated(
     const std::vector<AggregatedHitTestRegion>& hit_test_data) {
   hit_test_data_.clear();
   hit_test_data_ = hit_test_data;
-  hit_test_data_size_ = hit_test_data.size();
 }
 
 Target HitTestQuery::FindTargetForLocation(
     EventSource event_source,
     const gfx::PointF& location_in_root) const {
+  if (hit_test_data_.empty())
+    return Target();
+
   base::ElapsedTimer target_timer;
-
   Target target;
-  if (!hit_test_data_size_)
-    return target;
-
   FindTargetInRegionForLocation(event_source, location_in_root, 0, &target);
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Event.VizHitTest.TargetTimeUs",
                                           target_timer.Elapsed(),
@@ -67,8 +108,19 @@ bool HitTestQuery::TransformLocationForTarget(
     gfx::PointF* transformed_location) const {
   base::ElapsedTimer transform_timer;
 
-  if (!hit_test_data_size_)
+  if (hit_test_data_.empty())
     return false;
+
+  // Use GetTransformToTarget if |target_ancestors| only has the target.
+  if (target_ancestors.size() == 1u) {
+    gfx::Transform transform;
+    if (!GetTransformToTarget(target_ancestors.front(), &transform))
+      return false;
+
+    *transformed_location = location_in_root;
+    transform.TransformPoint(transformed_location);
+    return true;
+  }
 
   if (target_ancestors.size() == 0u ||
       target_ancestors[target_ancestors.size() - 1] !=
@@ -90,7 +142,7 @@ bool HitTestQuery::TransformLocationForTarget(
 
 bool HitTestQuery::GetTransformToTarget(const FrameSinkId& target,
                                         gfx::Transform* transform) const {
-  if (!hit_test_data_size_)
+  if (hit_test_data_.empty())
     return false;
 
   return GetTransformToTargetRecursively(target, 0, transform);
@@ -110,7 +162,7 @@ bool HitTestQuery::ContainsActiveFrameSinkId(
 bool HitTestQuery::FindTargetInRegionForLocation(
     EventSource event_source,
     const gfx::PointF& location_in_parent,
-    uint32_t region_index,
+    size_t region_index,
     Target* target) const {
   gfx::PointF location_transformed(location_in_parent);
 
@@ -132,11 +184,12 @@ bool HitTestQuery::FindTargetInRegionForLocation(
   }
 
   const int32_t region_child_count = hit_test_data_[region_index].child_count;
-  if (!CheckChildCount(region_child_count, hit_test_data_size_ - region_index))
+  if (!CheckChildCount(region_child_count,
+                       hit_test_data_.size() - region_index))
     return false;
 
-  uint32_t child_region = region_index + 1;
-  uint32_t child_region_end = child_region + region_child_count;
+  size_t child_region = region_index + 1;
+  size_t child_region_end = child_region + region_child_count;
   gfx::PointF location_in_target =
       location_transformed -
       hit_test_data_[region_index].rect.OffsetFromOrigin();
@@ -171,7 +224,7 @@ bool HitTestQuery::TransformLocationForTargetRecursively(
     EventSource event_source,
     const std::vector<FrameSinkId>& target_ancestors,
     size_t target_ancestor,
-    uint32_t region_index,
+    size_t region_index,
     gfx::PointF* location_in_target) const {
   const uint32_t flags = hit_test_data_[region_index].flags;
   if ((flags & HitTestRegionFlags::kHitTestChildSurface) == 0u &&
@@ -186,11 +239,13 @@ bool HitTestQuery::TransformLocationForTargetRecursively(
     return true;
 
   const int32_t region_child_count = hit_test_data_[region_index].child_count;
-  if (!CheckChildCount(region_child_count, hit_test_data_size_ - region_index))
+  if (!CheckChildCount(region_child_count,
+                       hit_test_data_.size() - region_index)) {
     return false;
+  }
 
-  uint32_t child_region = region_index + 1;
-  uint32_t child_region_end = child_region + region_child_count;
+  size_t child_region = region_index + 1;
+  size_t child_region_end = child_region + region_child_count;
   while (child_region < child_region_end) {
     if (hit_test_data_[child_region].frame_sink_id ==
         target_ancestors[target_ancestor - 1]) {
@@ -212,7 +267,7 @@ bool HitTestQuery::TransformLocationForTargetRecursively(
 
 bool HitTestQuery::GetTransformToTargetRecursively(
     const FrameSinkId& target,
-    uint32_t region_index,
+    size_t region_index,
     gfx::Transform* transform) const {
   // TODO(riajiang): Cache the matrix product such that the transform can be
   // found immediately.
@@ -224,11 +279,13 @@ bool HitTestQuery::GetTransformToTargetRecursively(
   }
 
   const int32_t region_child_count = hit_test_data_[region_index].child_count;
-  if (!CheckChildCount(region_child_count, hit_test_data_size_ - region_index))
+  if (!CheckChildCount(region_child_count,
+                       hit_test_data_.size() - region_index)) {
     return false;
+  }
 
-  uint32_t child_region = region_index + 1;
-  uint32_t child_region_end = child_region + region_child_count;
+  size_t child_region = region_index + 1;
+  size_t child_region_end = child_region + region_child_count;
   while (child_region < child_region_end) {
     gfx::Transform transform_to_child;
     if (GetTransformToTargetRecursively(target, child_region,
@@ -254,6 +311,49 @@ bool HitTestQuery::GetTransformToTargetRecursively(
 void HitTestQuery::ReceivedBadMessageFromGpuProcess() const {
   if (!bad_message_gpu_callback_.is_null())
     bad_message_gpu_callback_.Run();
+}
+
+std::string HitTestQuery::PrintHitTestData() const {
+  std::ostringstream oss;
+  base::stack<uint32_t> parents;
+  std::string tabs = "";
+
+  for (uint32_t i = 0; i < hit_test_data_.size(); ++i) {
+    const AggregatedHitTestRegion& htr = hit_test_data_[i];
+
+    oss << tabs << "Index: " << i << '\n';
+    oss << tabs << "Children: " << htr.child_count << '\n';
+    oss << tabs << "Flags: " << GetFlagNames(htr.flags) << '\n';
+    oss << tabs << "Frame Sink Id: " << htr.frame_sink_id.ToString() << '\n';
+    oss << tabs << "Rect: " << htr.rect.ToString() << '\n';
+    oss << tabs << "Transform:" << '\n';
+
+    // gfx::Transform::ToString spans multiple lines, so we use an additional
+    // stringstream.
+    {
+      std::string s;
+      std::stringstream transform_ss;
+
+      transform_ss << htr.transform().ToString() << '\n';
+
+      while (getline(transform_ss, s)) {
+        oss << tabs << s << '\n';
+      }
+    }
+
+    tabs += "\t\t";
+    parents.push(i);
+
+    while (!parents.empty() &&
+           parents.top() + hit_test_data_[parents.top()].child_count <= i) {
+      tabs.pop_back();
+      tabs.pop_back();
+
+      parents.pop();
+    }
+  }
+
+  return oss.str();
 }
 
 }  // namespace viz

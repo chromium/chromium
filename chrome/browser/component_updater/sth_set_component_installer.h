@@ -15,12 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/component_updater/component_installer.h"
 
-namespace net {
-namespace ct {
-struct SignedTreeHead;
-}  // namespace ct
-}  // namespace net
-
 namespace network {
 namespace mojom {
 class NetworkService;
@@ -46,13 +40,13 @@ class STHSetComponentInstallerPolicy : public ComponentInstallerPolicy {
   STHSetComponentInstallerPolicy();
   ~STHSetComponentInstallerPolicy() override;
 
+  // Update the STHs after a network process crash.
+  static void ReconfigureAfterNetworkRestart();
+
  private:
   friend class STHSetComponentInstallerTest;
   void SetNetworkServiceForTesting(
       network::mojom::NetworkService* network_service);
-
-  // Indicates that a new STH has been loaded.
-  void OnSTHLoaded(const net::ct::SignedTreeHead& sth);
 
   // ComponentInstallerPolicy implementation.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
@@ -72,9 +66,7 @@ class STHSetComponentInstallerPolicy : public ComponentInstallerPolicy {
   update_client::InstallerAttributes GetInstallerAttributes() const override;
   std::vector<std::string> GetMimeTypes() const override;
 
-  network::mojom::NetworkService* network_service_for_testing_ = nullptr;
-
-  base::WeakPtrFactory<STHSetComponentInstallerPolicy> weak_ptr_factory_;
+  static void ConfigureNetworkService();
 
   DISALLOW_COPY_AND_ASSIGN(STHSetComponentInstallerPolicy);
 };

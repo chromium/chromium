@@ -56,7 +56,6 @@ rtc_static_library("rtc_xmllite") {
   ]
   all_dependent_configs = [
     ":libjingle_xmpp_common_config",
-    "//third_party/webrtc_overrides:jingle_unexported_configs",
   ]
 }
 

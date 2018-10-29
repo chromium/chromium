@@ -405,6 +405,18 @@ const CLSID& GetElevatorClsid() {
   return InstallDetails::Get().elevator_clsid();
 }
 
+std::wstring GetElevationServiceName() {
+  std::wstring name = GetElevationServiceDisplayName();
+  name.erase(std::remove_if(name.begin(), name.end(), isspace), name.end());
+  return name;
+}
+
+std::wstring GetElevationServiceDisplayName() {
+  static constexpr wchar_t kElevationServiceDisplayName[] =
+      L" Elevation Service";
+  return GetBaseAppName() + kElevationServiceDisplayName;
+}
+
 std::wstring GetBaseAppName() {
   return InstallDetails::Get().mode().base_app_name;
 }

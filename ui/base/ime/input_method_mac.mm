@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/bind_helpers.h"
+
 namespace ui {
 
 InputMethodMac::InputMethodMac(internal::InputMethodDelegate* delegate)
@@ -16,7 +18,7 @@ InputMethodMac::~InputMethodMac() {
 
 ui::EventDispatchDetails InputMethodMac::DispatchKeyEvent(ui::KeyEvent* event) {
   // This is used on Mac only to dispatch events post-IME.
-  return DispatchKeyEventPostIME(event);
+  return DispatchKeyEventPostIME(event, base::NullCallback());
 }
 
 void InputMethodMac::OnCaretBoundsChanged(const TextInputClient* client) {

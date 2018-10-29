@@ -41,7 +41,7 @@ TEST(PluginFinderTest, JsonSyntax) {
       EXPECT_TRUE(plugin->GetBoolean("requires_authorization", &dummy_bool));
     const base::ListValue* mime_types = NULL;
     if (plugin->GetList("mime_types", &mime_types)) {
-      for (base::ListValue::const_iterator mime_type_it = mime_types->begin();
+      for (auto mime_type_it = mime_types->begin();
            mime_type_it != mime_types->end(); ++mime_type_it) {
         EXPECT_TRUE(mime_type_it->GetAsString(&dummy_str));
       }
@@ -49,7 +49,7 @@ TEST(PluginFinderTest, JsonSyntax) {
 
     const base::ListValue* matching_mime_types = NULL;
     if (plugin->GetList("matching_mime_types", &matching_mime_types)) {
-      for (base::ListValue::const_iterator it = matching_mime_types->begin();
+      for (auto it = matching_mime_types->begin();
            it != matching_mime_types->end(); ++it) {
         EXPECT_TRUE(it->GetAsString(&dummy_str));
       }
@@ -59,8 +59,7 @@ TEST(PluginFinderTest, JsonSyntax) {
     if (!plugin->GetList("versions", &versions))
       continue;
 
-    for (base::ListValue::const_iterator it = versions->begin();
-         it != versions->end(); ++it) {
+    for (auto it = versions->begin(); it != versions->end(); ++it) {
       const base::DictionaryValue* version_dict = NULL;
       ASSERT_TRUE(it->GetAsDictionary(&version_dict));
       EXPECT_TRUE(version_dict->GetString("version", &dummy_str));

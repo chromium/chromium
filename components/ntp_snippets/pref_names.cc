@@ -53,8 +53,6 @@ const char kSnippetThumbnailsRequestsDay[] =
 
 const char kDismissedAssetDownloadSuggestions[] =
     "ntp_suggestions.downloads.assets.dismissed_ids";
-const char kDismissedForeignSessionsSuggestions[] =
-    "ntp_suggestions.foreign_sessions.dismissed_ids";
 const char kDismissedOfflinePageDownloadSuggestions[] =
     "ntp_suggestions.downloads.offline_pages.dismissed_ids";
 

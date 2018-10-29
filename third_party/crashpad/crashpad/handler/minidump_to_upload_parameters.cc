@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "client/annotation.h"
 #include "snapshot/module_snapshot.h"
+#include "snapshot/process_snapshot.h"
 #include "util/stdlib/map_insert.h"
 
 namespace crashpad {

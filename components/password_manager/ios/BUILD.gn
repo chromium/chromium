@@ -23,8 +23,10 @@ component("ios") {
     "account_select_fill_data.h",
     "js_password_manager.h",
     "js_password_manager.mm",
-    "password_controller_helper.h",
-    "password_controller_helper.mm",
+    "password_form_helper.h",
+    "password_form_helper.mm",
+    "password_suggestion_helper.h",
+    "password_suggestion_helper.mm",
   ]
 }
 
@@ -48,7 +50,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "account_select_fill_data_unittest.cc",
-    "password_controller_helper_unittest.mm",
+    "password_form_helper_unittest.mm",
   ]
   deps = [
     ":ios",

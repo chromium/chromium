@@ -57,6 +57,11 @@
 #include "ui/gl/gl_switches.h"
 
 namespace ui {
+namespace {
+
+const char* kDefaultTraceEnvironmentName = "browser";
+
+}  // namespace
 
 Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
                        ui::ContextFactory* context_factory,
@@ -65,7 +70,8 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
                        bool enable_surface_synchronization,
                        bool enable_pixel_canvas,
                        bool external_begin_frames_enabled,
-                       bool force_software_compositor)
+                       bool force_software_compositor,
+                       const char* trace_environment_name)
     : context_factory_(context_factory),
       context_factory_private_(context_factory_private),
       frame_sink_id_(frame_sink_id),
@@ -76,11 +82,15 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
       layer_animator_collection_(this),
       is_pixel_canvas_(enable_pixel_canvas),
       lock_manager_(task_runner),
+      trace_environment_name_(trace_environment_name
+                                  ? trace_environment_name
+                                  : kDefaultTraceEnvironmentName),
       context_creation_weak_ptr_factory_(this) {
   if (context_factory_private) {
     auto* host_frame_sink_manager =
         context_factory_private_->GetHostFrameSinkManager();
-    host_frame_sink_manager->RegisterFrameSinkId(frame_sink_id_, this);
+    host_frame_sink_manager->RegisterFrameSinkId(
+        frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
     host_frame_sink_manager->SetFrameSinkDebugLabel(frame_sink_id_,
                                                     "Compositor");
   }
@@ -276,8 +286,10 @@ void Compositor::RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) {
 }
 
 void Compositor::SetLocalSurfaceId(
-    const viz::LocalSurfaceId& local_surface_id) {
-  host_->SetLocalSurfaceIdFromParent(local_surface_id);
+    const viz::LocalSurfaceId& local_surface_id,
+    base::TimeTicks local_surface_id_allocation_time) {
+  host_->SetLocalSurfaceIdFromParent(local_surface_id,
+                                     local_surface_id_allocation_time);
 }
 
 void Compositor::SetLayerTreeFrameSink(
@@ -357,9 +369,11 @@ void Compositor::SetLatencyInfo(const ui::LatencyInfo& latency_info) {
   host_->QueueSwapPromise(std::move(swap_promise));
 }
 
-void Compositor::SetScaleAndSize(float scale,
-                                 const gfx::Size& size_in_pixel,
-                                 const viz::LocalSurfaceId& local_surface_id) {
+void Compositor::SetScaleAndSize(
+    float scale,
+    const gfx::Size& size_in_pixel,
+    const viz::LocalSurfaceId& local_surface_id,
+    base::TimeTicks local_surface_id_allocation_time) {
   DCHECK_GT(scale, 0);
   bool device_scale_factor_changed = device_scale_factor_ != scale;
   device_scale_factor_ = scale;
@@ -372,7 +386,8 @@ void Compositor::SetScaleAndSize(float scale,
   if (!size_in_pixel.IsEmpty()) {
     bool size_changed = size_ != size_in_pixel;
     size_ = size_in_pixel;
-    host_->SetViewportSizeAndScale(size_in_pixel, scale, local_surface_id);
+    host_->SetViewportSizeAndScale(size_in_pixel, scale, local_surface_id,
+                                   local_surface_id_allocation_time);
     root_web_layer_->SetBounds(size_in_pixel);
     // TODO(fsamuel): Get rid of ContextFactoryPrivate.
     if (context_factory_private_ &&
@@ -620,6 +635,14 @@ void Compositor::DidReceiveCompositorFrameAck() {
     observer.OnCompositingEnded(this);
 }
 
+void Compositor::DidPresentCompositorFrame(
+    uint32_t frame_token,
+    const gfx::PresentationFeedback& feedback) {
+  TRACE_EVENT_MARK_WITH_TIMESTAMP1("cc,benchmark", "FramePresented",
+                                   feedback.timestamp, "environment",
+                                   trace_environment_name_);
+}
+
 void Compositor::DidSubmitCompositorFrame() {
   base::TimeTicks start_time = base::TimeTicks::Now();
   for (auto& observer : observer_list_)
@@ -628,8 +651,7 @@ void Compositor::DidSubmitCompositorFrame() {
 
 void Compositor::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
-  // TODO(fsamuel): Once surface synchronization is turned on, the fallback
-  // surface should be set here.
+  NOTREACHED();
 }
 
 void Compositor::OnFrameTokenChanged(uint32_t frame_token) {

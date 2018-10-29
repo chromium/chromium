@@ -11,7 +11,6 @@
 #include <map>
 
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/singleton.h"
 #include "components/viz/client/viz_client_export.h"
@@ -30,8 +29,7 @@ class FrameEvictionManagerClient {
 // between a small set of tabs faster. The limit is a soft limit, because
 // clients can lock their frame to prevent it from being discarded, e.g. if the
 // tab is visible, or while capturing a screenshot.
-class VIZ_CLIENT_EXPORT FrameEvictionManager
-    : public base::MemoryCoordinatorClient {
+class VIZ_CLIENT_EXPORT FrameEvictionManager {
  public:
   static FrameEvictionManager* GetInstance();
 
@@ -57,10 +55,7 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager
 
  private:
   FrameEvictionManager();
-  ~FrameEvictionManager() override;
-
-  // base::MemoryCoordinatorClient implementation:
-  void OnPurgeMemory() override;
+  ~FrameEvictionManager();
 
   void CullUnlockedFrames(size_t saved_frame_limit);
 

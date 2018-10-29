@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_SYSTEM_DIRECTORY_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_SYSTEM_DIRECTORY_ITERATOR_H_
 
-#include "third_party/blink/renderer/core/fileapi/file_error.h"
+#include "base/files/file.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_reader_base.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 
@@ -30,9 +30,9 @@ class FileSystemDirectoryIterator : public DirectoryReaderBase {
   class EntriesCallbackHelper;
   class ErrorCallbackHelper;
   void AddEntries(const EntryHeapVector& entries);
-  void OnError(FileError::ErrorCode);
+  void OnError(base::File::Error);
 
-  FileError::ErrorCode error_ = FileError::kOK;
+  base::File::Error error_ = base::File::FILE_OK;
   HeapDeque<Member<Entry>> entries_;
   Member<ScriptPromiseResolver> pending_next_;
 };

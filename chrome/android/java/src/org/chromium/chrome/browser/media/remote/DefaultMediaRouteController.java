@@ -24,10 +24,10 @@ import com.google.android.gms.cast.CastMediaControlIntent;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.media.remote.RemoteVideoInfo.PlayerState;
 

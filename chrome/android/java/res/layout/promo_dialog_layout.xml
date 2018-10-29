@@ -60,19 +60,18 @@
                         app:maxWidthPortrait="@dimen/promo_dialog_max_content_width" >
 
                     <TextView
-                            android:id="@+id/header"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/dialog_header_margin"
-                            android:layout_marginBottom="@dimen/dialog_header_margin"
-                            android:textColor="@color/default_text_color"
-                            android:textSize="@dimen/promo_dialog_title_text_size" />
+                        android:id="@+id/header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dialog_header_margin"
+                        android:layout_marginBottom="@dimen/dialog_header_margin"
+                        android:textAppearance="@style/BlackHeadline" />
 
                     <TextView
-                            android:id="@+id/subheader"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            style="@style/PromoDialogNormalText" />
+                        android:id="@+id/subheader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/PromoDialogNormalText" />
                 </org.chromium.chrome.browser.widget.BoundedLinearLayout>
             </LinearLayout>
 

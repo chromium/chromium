@@ -134,8 +134,8 @@ bool FEComponentTransfer::AffectsTransparentPixels() const {
 }
 
 sk_sp<PaintFilter> FEComponentTransfer::CreateImageFilter() {
-  sk_sp<PaintFilter> input(
-      PaintFilterBuilder::Build(InputEffect(0), OperatingInterpolationSpace()));
+  sk_sp<PaintFilter> input(paint_filter_builder::Build(
+      InputEffect(0), OperatingInterpolationSpace()));
 
   unsigned char r_values[256], g_values[256], b_values[256], a_values[256];
   GetValues(r_values, g_values, b_values, a_values);

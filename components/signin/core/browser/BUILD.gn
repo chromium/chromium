@@ -233,6 +233,7 @@ source_set("unit_tests") {
     "signin_manager_unittest.cc",
     "signin_metrics_unittest.cc",
     "signin_status_metrics_provider_unittest.cc",
+    "signin_tracker_unittest.cc",
     "webdata/token_service_table_unittest.cc",
   ]
 

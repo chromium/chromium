@@ -16,24 +16,23 @@ cr.define('indexeddb', function() {
   function downloadOriginData(event) {
     var link = event.target;
     progressNodeFor(link).style.display = 'inline';
-    chrome.send('downloadOriginData', [link.idb_partition_path,
-                                       link.idb_origin_url]);
+    chrome.send(
+        'downloadOriginData', [link.idb_partition_path, link.idb_origin_url]);
     return false;
   }
 
   function forceClose(event) {
     var link = event.target;
     progressNodeFor(link).style.display = 'inline';
-    chrome.send('forceClose', [link.idb_partition_path,
-                               link.idb_origin_url]);
+    chrome.send('forceClose', [link.idb_partition_path, link.idb_origin_url]);
     return false;
   }
 
   function forceSchemaDowngrade(event) {
     var link = event.target;
     progressNodeFor(link).style.display = 'inline';
-    chrome.send('forceSchemaDowngrade', [link.idb_partition_path,
-                                         link.idb_origin_url]);
+    chrome.send(
+        'forceSchemaDowngrade', [link.idb_partition_path, link.idb_origin_url]);
     return false;
   }
 
@@ -67,13 +66,12 @@ cr.define('indexeddb', function() {
     });
   }
 
-  function onForcedSchemaDowngrade(partition_path,
-                                   origin_url,
-                                   connection_count) {
-    withNode('a.force-schema-downgrade', partition_path, origin_url,
-             function(link) {
-      progressNodeFor(link).style.display = 'none';
-    });
+  function onForcedSchemaDowngrade(
+      partition_path, origin_url, connection_count) {
+    withNode(
+        'a.force-schema-downgrade', partition_path, origin_url, function(link) {
+          progressNodeFor(link).style.display = 'none';
+        });
     withNode('.connection-count', partition_path, origin_url, function(span) {
       span.innerText = connection_count;
     });
@@ -85,8 +83,9 @@ cr.define('indexeddb', function() {
     var template = jstGetTemplate('indexeddb-list-template');
     var container = $('indexeddb-list');
     container.appendChild(template);
-    jstProcess(new JsEvalContext({ idbs: origins,
-                                   partition_path: partition_path}), template);
+    jstProcess(
+        new JsEvalContext({idbs: origins, partition_path: partition_path}),
+        template);
 
     var downloadLinks = container.querySelectorAll('a.download');
     for (var i = 0; i < downloadLinks.length; ++i) {

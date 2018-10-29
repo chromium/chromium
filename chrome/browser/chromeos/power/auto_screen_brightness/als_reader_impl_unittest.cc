@@ -33,10 +33,10 @@ class TestObserver : public AlsReader::Observer {
     status_ = base::Optional<AlsReader::AlsInitStatus>(status);
   }
 
-  int get_ambient_light() { return ambient_light_; }
-  int get_num_received_ambient_lights() { return num_received_ambient_lights_; }
+  int ambient_light() { return ambient_light_; }
+  int num_received_ambient_lights() { return num_received_ambient_lights_; }
 
-  AlsReader::AlsInitStatus get_status() {
+  AlsReader::AlsInitStatus status() {
     CHECK(status_);
     return status_.value();
   }
@@ -87,19 +87,15 @@ class AlsReaderImplTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(AlsReaderImplTest);
 };
 
-TEST_F(AlsReaderImplTest, CheckInitStatusAlsFileFound) {
-  EXPECT_EQ(AlsReader::AlsInitStatus::kSuccess, als_reader_.GetInitStatus());
-}
-
 TEST_F(AlsReaderImplTest, OnAlsReaderInitialized) {
-  EXPECT_EQ(AlsReader::AlsInitStatus::kSuccess, test_observer_.get_status());
+  EXPECT_EQ(AlsReader::AlsInitStatus::kSuccess, test_observer_.status());
 }
 
 TEST_F(AlsReaderImplTest, OneAlsValue) {
   WriteLux(10);
   scoped_task_environment_->RunUntilIdle();
-  EXPECT_EQ(10, test_observer_.get_ambient_light());
-  EXPECT_EQ(1, test_observer_.get_num_received_ambient_lights());
+  EXPECT_EQ(10, test_observer_.ambient_light());
+  EXPECT_EQ(1, test_observer_.num_received_ambient_lights());
 }
 
 TEST_F(AlsReaderImplTest, TwoAlsValues) {
@@ -108,14 +104,14 @@ TEST_F(AlsReaderImplTest, TwoAlsValues) {
   // periodically every |kAlsPollInterval|. Below we move time for half of
   // |kAlsPollInterval| to ensure there is only one reading attempt.
   scoped_task_environment_->FastForwardBy(AlsReaderImpl::kAlsPollInterval / 2);
-  EXPECT_EQ(10, test_observer_.get_ambient_light());
-  EXPECT_EQ(1, test_observer_.get_num_received_ambient_lights());
+  EXPECT_EQ(10, test_observer_.ambient_light());
+  EXPECT_EQ(1, test_observer_.num_received_ambient_lights());
 
   WriteLux(20);
   // Now move time for another |kAlsPollInterval| to trigger another read.
   scoped_task_environment_->FastForwardBy(AlsReaderImpl::kAlsPollInterval);
-  EXPECT_EQ(20, test_observer_.get_ambient_light());
-  EXPECT_EQ(2, test_observer_.get_num_received_ambient_lights());
+  EXPECT_EQ(20, test_observer_.ambient_light());
+  EXPECT_EQ(2, test_observer_.num_received_ambient_lights());
 }
 
 }  // namespace auto_screen_brightness

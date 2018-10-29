@@ -74,8 +74,7 @@ void PepperBrowserConnection::OnMsgCreateResourceHostsFromHostReply(
     const std::vector<int>& pending_resource_host_ids) {
   // Check that the message is destined for the plugin this object is associated
   // with.
-  std::map<int32_t, PendingResourceIDCallback>::iterator it =
-      pending_create_map_.find(sequence_number);
+  auto it = pending_create_map_.find(sequence_number);
   if (it != pending_create_map_.end()) {
     it->second.Run(pending_resource_host_ids);
     pending_create_map_.erase(it);

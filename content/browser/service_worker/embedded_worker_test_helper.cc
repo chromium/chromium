@@ -48,7 +48,8 @@ void OnFetchEventCommon(
   response->status_code = 200;
   response->status_text = "OK";
   response->response_type = network::mojom::FetchResponseType::kDefault;
-  response_callback->OnResponse(std::move(response), base::TimeTicks::Now());
+  response_callback->OnResponse(
+      std::move(response), blink::mojom::ServiceWorkerFetchEventTiming::New());
   std::move(finish_callback)
       .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED,
            base::TimeTicks::Now());
@@ -787,6 +788,16 @@ void EmbeddedWorkerTestHelper::SimulateWorkerStopped(int embedded_worker_id) {
     embedded_worker_id_remote_provider_map_.erase(embedded_worker_id);
     base::RunLoop().RunUntilIdle();
   }
+}
+
+void EmbeddedWorkerTestHelper::SimulateRequestTermination(
+    int embedded_worker_id,
+    base::OnceCallback<void(bool)> callback) {
+  base::RunLoop loop;
+  ASSERT_TRUE(embedded_worker_id_instance_host_ptr_map_[embedded_worker_id]);
+  embedded_worker_id_instance_host_ptr_map_[embedded_worker_id]
+      ->RequestTermination(std::move(callback));
+  base::RunLoop().RunUntilIdle();
 }
 
 void EmbeddedWorkerTestHelper::OnInitializeGlobalScope(

@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PAGE_CAPPING_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PAGE_CAPPING_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include <memory>
 #include <vector>
 
 #include <stdint.h>
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_observer.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom.h"
 
@@ -38,6 +41,10 @@ class PageCappingPageLoadMetricsObserver
 
   // Returns whether the page's subresource loading is currently paused.
   bool IsPausedForTesting() const;
+
+  // Tests can change the behavior of clock for testing time between resource
+  // loads.
+  void SetTickClockForTesting(base::TickClock* clock);
 
   // The current state of the page.
   // This class operates as a state machine going from each of the below states
@@ -67,8 +74,9 @@ class PageCappingPageLoadMetricsObserver
 
  private:
   // page_load_metrics::PageLoadMetricsObserver:
-  void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
-                            extra_request_complete_info) override;
+  void OnResourceDataUseObserved(
+      const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
+          resources) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
                          ukm::SourceId source_id) override;
   void OnDidFinishSubFrameNavigation(
@@ -112,6 +120,15 @@ class PageCappingPageLoadMetricsObserver
   // load resources. https://crbug.com/835895
   void PauseSubresourceLoading(bool paused);
 
+  // Sets |time_to_expire| to the earliest time duration that the page load is
+  // considered not to be using data anymore. |time_to_expire| must be passed in
+  // as TimeDelta initialized to 0 to handle the case of the underlying weak
+  // pointer being destroyed.
+  // If |time_to_expire| is returned as 0, the consumer should treat the page as
+  // not using data anymore, and does not need to wait any longer to consider
+  // the page stopped with respect to data use..
+  void TimeToExpire(base::TimeDelta* time_to_expire) const;
+
   // The current bytes threshold of the capping page triggering.
   base::Optional<int64_t> page_cap_;
 
@@ -148,6 +165,11 @@ class PageCappingPageLoadMetricsObserver
   // If non-empty, a group of handles that are pausing subresource loads in the
   // render frames of this page.
   std::vector<blink::mojom::PauseSubresourceLoadingHandlePtr> handles_;
+
+  base::Optional<base::TimeTicks> last_data_use_time_;
+
+  // Default clock unless SetClockForTesting is called.
+  const base::TickClock* clock_;
 
   base::WeakPtrFactory<PageCappingPageLoadMetricsObserver> weak_factory_;
 

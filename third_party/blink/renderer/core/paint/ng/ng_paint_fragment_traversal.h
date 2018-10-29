@@ -16,7 +16,7 @@ class NGPaintFragment;
 
 // Used for return value of traversing fragment tree.
 struct CORE_EXPORT NGPaintFragmentWithContainerOffset {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   NGPaintFragment* fragment;
   // Offset relative to container fragment
   NGPhysicalOffset container_offset;
@@ -28,6 +28,12 @@ struct CORE_EXPORT NGPaintFragmentTraversalContext {
   STACK_ALLOCATED();
 
  public:
+  NGPaintFragmentTraversalContext() = default;
+  explicit NGPaintFragmentTraversalContext(const NGPaintFragment* fragment);
+  NGPaintFragmentTraversalContext(const NGPaintFragment* parent,
+                                  unsigned index);
+  // TODO(kojii): deprecated, prefer constructors to avoid unexpected
+  // instantiation.
   static NGPaintFragmentTraversalContext Create(const NGPaintFragment*);
 
   bool IsNull() const { return !parent; }
@@ -39,6 +45,7 @@ struct CORE_EXPORT NGPaintFragmentTraversalContext {
 
   const NGPaintFragment* parent = nullptr;
   unsigned index = 0;
+  Vector<NGPaintFragment*, 16> siblings;
 };
 
 // Utility class for traversing the paint fragment tree.
@@ -170,9 +177,6 @@ class CORE_EXPORT NGPaintFragmentTraversal {
       const NGPaintFragmentTraversalContext&);
 
  private:
-  void Push(const NGPaintFragment& parent, unsigned index);
-  void Push(const NGPaintFragment& fragment);
-
   // |current_| holds a |NGPaintFragment| specified by |index|th child of
   // |parent| of the last element of |stack_|.
   const NGPaintFragment* current_ = nullptr;
@@ -181,18 +185,12 @@ class CORE_EXPORT NGPaintFragmentTraversal {
   // from traversal. |current_| can't |root_|.
   const NGPaintFragment& root_;
 
-  // The stack of parent and its child index up to the root. Each stack entry
-  // represents the current node, and thus
-  // |stack_.back().parent->Children()[stack_.back().index] == current_|.
-  //
-  // Computing ancestors maybe deferred until |MoveToNextSiblingOrAncestor()|
-  // when |Moveto()| is used. In that case, the |stack_| does not contain all
-  // fragments to the |root_|.
-  struct ParentAndIndex {
-    const NGPaintFragment* parent;
-    unsigned index;
-  };
-  Vector<ParentAndIndex, 4> stack_;
+  // Keep a list of siblings for MoveToPrevious().
+  // TODO(kojii): We could keep a stack of this to avoid repetitive
+  // constructions of the list when we move up/down levels. Also can consider
+  // sharing with NGPaintFragmentTraversalContext.
+  unsigned current_index_ = 0;
+  Vector<NGPaintFragment*, 16> siblings_;
 
   DISALLOW_COPY_AND_ASSIGN(NGPaintFragmentTraversal);
 };

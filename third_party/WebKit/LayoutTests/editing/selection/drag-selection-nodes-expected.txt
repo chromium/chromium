@@ -1,6 +1,7 @@
 Simple test that dragging and dropping a selection targets the right node.
 
 Test 1: select this line and drag me.
+
 Test 2: 
 
 Test 3: select this line and  drag me from the image.

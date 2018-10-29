@@ -14,6 +14,11 @@ namespace ui {
 
 UI_BASE_EXPORT base::char16 GetMnemonic(const base::string16& label);
 
+// This function escapes every '&' in label by replacing it with '&&', to avoid
+// having single ampersands in user-provided strings treated as accelerators.
+UI_BASE_EXPORT base::string16 EscapeMenuLabelAmpersands(
+    const base::string16& label);
+
 }  // namespace ui
 
 #endif  // UI_BASE_ACCELERATORS_MENU_LABEL_ACCELERATOR_UTIL_H_

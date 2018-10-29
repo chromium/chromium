@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/task_runner.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -17,18 +18,23 @@ namespace content {
 // a callback on a specific task runner. Furthermore the listener will delete
 // itself when any of its listener methods are called.
 // All of this class has to be called on the UI thread.
-class FileSystemChooser : public ui::SelectFileDialog::Listener {
+class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
  public:
   using ResultCallback =
       base::OnceCallback<void(base::File::Error,
                               std::vector<blink::mojom::FileSystemEntryPtr>)>;
 
-  static void CreateAndShow(int render_process_id,
-                            int frame_id,
-                            ResultCallback callback,
-                            scoped_refptr<base::TaskRunner> callback_runner);
+  static void CreateAndShow(
+      int render_process_id,
+      int frame_id,
+      blink::mojom::ChooseFileSystemEntryType type,
+      std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+      bool include_accepts_all,
+      ResultCallback callback,
+      scoped_refptr<base::TaskRunner> callback_runner);
 
   FileSystemChooser(int render_process_id,
+                    blink::mojom::ChooseFileSystemEntryType type,
                     ResultCallback callback,
                     scoped_refptr<base::TaskRunner> callback_runner);
 
@@ -46,6 +52,7 @@ class FileSystemChooser : public ui::SelectFileDialog::Listener {
   int render_process_id_;
   ResultCallback callback_;
   scoped_refptr<base::TaskRunner> callback_runner_;
+  blink::mojom::ChooseFileSystemEntryType type_;
 
   scoped_refptr<ui::SelectFileDialog> dialog_;
 };

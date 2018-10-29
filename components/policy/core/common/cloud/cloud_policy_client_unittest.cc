@@ -47,6 +47,7 @@ const char kMachineModel[] = "fake-machine-model";
 const char kBrandCode[] = "fake-brand-code";
 const char kOAuthToken[] = "fake-oauth-token";
 const char kDMToken[] = "fake-dm-token";
+const char kDMToken2[] = "fake-dm-token-2";
 const char kDeviceDMToken[] = "fake-device-dm-token";
 const char kMachineCertificate[] = "fake-machine-certificate";
 const char kEnrollmentCertificate[] = "fake-enrollment-certificate";
@@ -128,6 +129,19 @@ class CloudPolicyClientTest : public testing::Test {
     register_request->set_flavor(
         em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
 
+    em::DeviceRegisterRequest* reregister_request =
+        reregistration_request_.mutable_register_request();
+    reregister_request->set_type(em::DeviceRegisterRequest::USER);
+    reregister_request->set_machine_id(kMachineID);
+    reregister_request->set_machine_model(kMachineModel);
+    reregister_request->set_brand_code(kBrandCode);
+    reregister_request->set_lifetime(
+        em::DeviceRegisterRequest::LIFETIME_INDEFINITE);
+    reregister_request->set_flavor(
+        em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_RECOVERY);
+    reregister_request->set_reregister(true);
+    reregister_request->set_reregistration_dm_token(kDMToken);
+
     em::CertificateBasedDeviceRegistrationData data;
     data.set_certificate_type(em::CertificateBasedDeviceRegistrationData::
         ENTERPRISE_ENROLLMENT_CERTIFICATE);
@@ -159,6 +173,9 @@ class CloudPolicyClientTest : public testing::Test {
 
     registration_response_.mutable_register_response()->
         set_device_management_token(kDMToken);
+
+    failed_reregistration_response_.mutable_register_response()
+        ->set_device_management_token(kDMToken2);
 
 #if defined(OS_WIN) || defined(OS_MACOSX) || \
     defined(OS_LINUX) && !defined(OS_CHROMEOS)
@@ -305,6 +322,28 @@ class CloudPolicyClientTest : public testing::Test {
                          oauth_token, std::string(), std::string(), _,
                          MatchProto(registration_request_)))
         .WillOnce(SaveArg<5>(&client_id_));
+  }
+
+  void ExpectReregistration(const std::string& oauth_token) {
+    EXPECT_CALL(service_,
+                CreateJob(DeviceManagementRequestJob::TYPE_REGISTRATION,
+                          shared_url_loader_factory_))
+        .WillOnce(service_.SucceedJob(registration_response_));
+    EXPECT_CALL(service_,
+                StartJob(dm_protocol::kValueRequestRegister, std::string(),
+                         oauth_token, std::string(), std::string(), client_id_,
+                         MatchProto(reregistration_request_)));
+  }
+
+  void ExpectFailedReregistration(const std::string& oauth_token) {
+    EXPECT_CALL(service_,
+                CreateJob(DeviceManagementRequestJob::TYPE_REGISTRATION,
+                          shared_url_loader_factory_))
+        .WillOnce(service_.SucceedJob(failed_reregistration_response_));
+    EXPECT_CALL(service_,
+                StartJob(dm_protocol::kValueRequestRegister, std::string(),
+                         oauth_token, std::string(), std::string(), client_id_,
+                         MatchProto(reregistration_request_)));
   }
 
   void ExpectCertBasedRegistration() {
@@ -502,6 +541,7 @@ class CloudPolicyClientTest : public testing::Test {
 
   // Request protobufs used as expectations for the client requests.
   em::DeviceManagementRequest registration_request_;
+  em::DeviceManagementRequest reregistration_request_;
   em::DeviceManagementRequest cert_based_registration_request_;
   em::DeviceManagementRequest enrollment_token_request_;
   em::DeviceManagementRequest policy_request_;
@@ -520,6 +560,7 @@ class CloudPolicyClientTest : public testing::Test {
 
   // Protobufs used in successful responses.
   em::DeviceManagementResponse registration_response_;
+  em::DeviceManagementResponse failed_reregistration_response_;
   em::DeviceManagementResponse policy_response_;
   em::DeviceManagementResponse unregistration_response_;
   em::DeviceManagementResponse upload_certificate_response_;
@@ -942,8 +983,8 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
   EXPECT_TRUE(expected_namespaces.empty());
 
   // Verify that the client got all the responses mapped to their namespaces.
-  for (ResponseMap::iterator it = expected_responses.begin();
-       it != expected_responses.end(); ++it) {
+  for (auto it = expected_responses.begin(); it != expected_responses.end();
+       ++it) {
     const em::PolicyFetchResponse* response =
         client_->GetPolicyFor(it->first.first, it->first.second);
     ASSERT_TRUE(response);
@@ -1353,6 +1394,74 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReportSupersedesPending) {
                           upload_app_install_report_response_);
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
   EXPECT_EQ(0, client_->GetActiveRequestCountForTest());
+}
+
+TEST_F(CloudPolicyClientTest, PolicyReregistration) {
+  Register();
+
+  // Handle 410 (unknown deviceID) on policy fetch.
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->requires_reregistration());
+  EXPECT_CALL(service_, CreateJob(DeviceManagementRequestJob::TYPE_POLICY_FETCH,
+                                  shared_url_loader_factory_))
+      .WillOnce(service_.FailJob(DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+  EXPECT_CALL(service_, StartJob(_, _, _, _, _, _, _));
+  EXPECT_CALL(observer_, OnRegistrationStateChanged(_));
+  EXPECT_CALL(observer_, OnClientError(_));
+  client_->FetchPolicy();
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->status());
+  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+  EXPECT_FALSE(client_->is_registered());
+  EXPECT_TRUE(client_->requires_reregistration());
+
+  // Re-register.
+  ExpectReregistration(kOAuthToken);
+  EXPECT_CALL(observer_, OnRegistrationStateChanged(_));
+  EXPECT_CALL(device_dmtoken_callback_observer_, OnDeviceDMTokenRequested(_))
+      .WillOnce(Return(kDeviceDMToken));
+  client_->Register(em::DeviceRegisterRequest::USER,
+                    em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_RECOVERY,
+                    em::DeviceRegisterRequest::LIFETIME_INDEFINITE,
+                    em::LicenseType::UNDEFINED,
+                    DMAuth::FromOAuthToken(kOAuthToken), client_id_,
+                    std::string(), std::string());
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->requires_reregistration());
+  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+}
+
+TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
+  Register();
+
+  // Handle 410 (unknown deviceID) on policy fetch.
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->requires_reregistration());
+  EXPECT_CALL(service_, CreateJob(DeviceManagementRequestJob::TYPE_POLICY_FETCH,
+                                  shared_url_loader_factory_))
+      .WillOnce(service_.FailJob(DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+  EXPECT_CALL(service_, StartJob(_, _, _, _, _, _, _));
+  EXPECT_CALL(observer_, OnRegistrationStateChanged(_));
+  EXPECT_CALL(observer_, OnClientError(_));
+  client_->FetchPolicy();
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->status());
+  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+  EXPECT_FALSE(client_->is_registered());
+  EXPECT_TRUE(client_->requires_reregistration());
+
+  // Re-register (server sends wrong DMToken).
+  ExpectFailedReregistration(kOAuthToken);
+  EXPECT_CALL(observer_, OnClientError(_));
+  client_->Register(em::DeviceRegisterRequest::USER,
+                    em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_RECOVERY,
+                    em::DeviceRegisterRequest::LIFETIME_INDEFINITE,
+                    em::LicenseType::UNDEFINED,
+                    DMAuth::FromOAuthToken(kOAuthToken), client_id_,
+                    std::string(), std::string());
+  EXPECT_FALSE(client_->is_registered());
+  EXPECT_TRUE(client_->requires_reregistration());
+  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+  EXPECT_EQ(DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID, client_->status());
 }
 
 }  // namespace policy

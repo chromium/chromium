@@ -160,7 +160,9 @@ class LeakDetectionStorySet(story_module.StorySet):
       'https://imgur.com/',
       'https://www.craigslist.org/',
       'https://www.chase.com/',
-      'https://www.tumblr.com/',
+      # TODO(892352): tumblr started timing out due to a catapult roll. See
+      # https://crbug.com/892352
+      # 'https://www.tumblr.com/',
       'https://www.paypal.com/',
       'http://www.espn.com/',
       'https://edition.cnn.com/',

@@ -13,12 +13,17 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/condition_variable.h"
+#include "base/task/post_task.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/test/mock_time_domain.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/task/sequence_manager/test/test_task_queue.h"
 #include "base/task/sequence_manager/test/test_task_time_observer.h"
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
+#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/task_scheduler/task_scheduler_impl.h"
+#include "base/task/task_traits.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
@@ -55,8 +60,10 @@ class PerfTestTimeDomain : public MockTimeDomain {
 };
 
 enum class PerfTestType : int {
-  kUseMessageLoop = 0,
-  kUseMessagePump = 1,
+  kUseSequenceManagerWithMessageLoop = 0,
+  kUseSequenceManagerWithMessagePump = 1,
+  kUseMessageLoop = 2,
+  kUseSingleThreadInWorkerPool = 3,
 };
 
 class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
@@ -66,7 +73,8 @@ class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
         max_tasks_in_flight_(0),
         num_tasks_in_flight_(0),
         num_tasks_to_post_(0),
-        num_tasks_to_run_(0) {}
+        num_tasks_to_run_(0),
+        done_cond_(&done_lock_) {}
 
   void SetUp() override {
     if (ThreadTicks::IsSupported())
@@ -79,17 +87,24 @@ class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
         &SequenceManagerPerfTest::TestImmediateTask, Unretained(this));
 
     switch (GetParam()) {
-      case PerfTestType::kUseMessageLoop:
+      case PerfTestType::kUseSequenceManagerWithMessageLoop:
         CreateSequenceManagerWithMessageLoop();
         break;
-      case PerfTestType::kUseMessagePump:
+      case PerfTestType::kUseSequenceManagerWithMessagePump:
         CreateSequenceManagerWithMessagePump();
+        break;
+      case PerfTestType::kUseMessageLoop:
+        CreateMessageLoop();
+        break;
+      case PerfTestType::kUseSingleThreadInWorkerPool:
+        CreateTaskScheduler();
         break;
     }
 
-    time_domain_ = std::make_unique<PerfTestTimeDomain>();
-    manager_->RegisterTimeDomain(time_domain_.get());
-    manager_->AddTaskTimeObserver(&test_task_time_observer_);
+    if (manager_) {
+      time_domain_ = std::make_unique<PerfTestTimeDomain>();
+      manager_->RegisterTimeDomain(time_domain_.get());
+    }
   }
 
   void CreateSequenceManagerWithMessageLoop() {
@@ -104,29 +119,95 @@ class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
         std::make_unique<internal::ThreadControllerWithMessagePumpImpl>(
             std::make_unique<MessagePumpDefault>(),
             DefaultTickClock::GetInstance()));
-    // ThreadControllerWithMessagePumpImpl doesn't provide a default tas runner.
+    // ThreadControllerWithMessagePumpImpl doesn't provide a default task
+    // runner.
     scoped_refptr<TaskQueue> default_task_queue =
         manager_->CreateTaskQueue<TestTaskQueue>(TaskQueue::Spec("default"));
-    manager_->SetDefaultTaskRunner(default_task_queue);
+    manager_->SetDefaultTaskRunner(default_task_queue->task_runner());
+  }
+
+  void CreateMessageLoop() { message_loop_ = std::make_unique<MessageLoop>(); }
+
+  void CreateTaskScheduler() {
+    TaskScheduler::SetInstance(
+        std::make_unique<::base::internal::TaskSchedulerImpl>("Test"));
+    TaskScheduler::GetInstance()->StartWithDefaultParams();
   }
 
   void TearDown() override {
-    queues_.clear();
-    manager_->UnregisterTimeDomain(time_domain_.get());
-    manager_.reset();
+    task_runners_.clear();
+    if (manager_) {
+      manager_->UnregisterTimeDomain(time_domain_.get());
+      manager_.reset();
+    }
+    if (GetParam() == PerfTestType::kUseSingleThreadInWorkerPool) {
+      TaskScheduler::GetInstance()->JoinForTesting();
+      TaskScheduler::SetInstance(nullptr);
+    }
+  }
+
+  scoped_refptr<TaskRunner> CreateTaskRunner() {
+    switch (GetParam()) {
+      case PerfTestType::kUseSequenceManagerWithMessageLoop:
+      case PerfTestType::kUseSequenceManagerWithMessagePump: {
+        scoped_refptr<TestTaskQueue> task_queue =
+            manager_->CreateTaskQueue<TestTaskQueue>(
+                TaskQueue::Spec("test").SetTimeDomain(time_domain_.get()));
+        owning_task_queues_.push_back(task_queue);
+        return task_queue->task_runner();
+      }
+
+      case PerfTestType::kUseMessageLoop:
+        return message_loop_->task_runner();
+
+      case PerfTestType::kUseSingleThreadInWorkerPool:
+        return CreateSingleThreadTaskRunnerWithTraits(
+            {TaskPriority::USER_BLOCKING});
+    };
   }
 
   void Initialize(size_t num_queues) {
+    owning_task_queues_.clear();
     num_queues_ = num_queues;
     for (size_t i = 0; i < num_queues; i++) {
-      queues_.push_back(manager_->CreateTaskQueue<TestTaskQueue>(
-          TaskQueue::Spec("test").SetTimeDomain(time_domain_.get())));
+      task_runners_.push_back(CreateTaskRunner());
+    }
+  }
+
+  void WaitUntilDone() {
+    switch (GetParam()) {
+      case PerfTestType::kUseSequenceManagerWithMessageLoop:
+      case PerfTestType::kUseSequenceManagerWithMessagePump:
+      case PerfTestType::kUseMessageLoop:
+        run_loop_.reset(new RunLoop());
+        run_loop_->Run();
+        break;
+      case PerfTestType::kUseSingleThreadInWorkerPool: {
+        AutoLock auto_lock(done_lock_);
+        done_cond_.Wait();
+        break;
+      }
+    }
+  }
+
+  void SignalDone() {
+    switch (GetParam()) {
+      case PerfTestType::kUseSequenceManagerWithMessageLoop:
+      case PerfTestType::kUseSequenceManagerWithMessagePump:
+      case PerfTestType::kUseMessageLoop:
+        run_loop_->Quit();
+        break;
+      case PerfTestType::kUseSingleThreadInWorkerPool: {
+        AutoLock auto_lock(done_lock_);
+        done_cond_.Signal();
+        break;
+      }
     }
   }
 
   void TestDelayedTask() {
     if (--num_tasks_to_run_ == 0) {
-      run_loop_->QuitWhenIdle();
+      SignalDone();
       return;
     }
 
@@ -151,8 +232,8 @@ class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
       // Simulate a mix of short and longer delays.
       unsigned int delay =
           num_tasks_to_post_ % 2 ? 1 : (10 + num_tasks_to_post_ % 10);
-      queues_[queue]->PostDelayedTask(FROM_HERE, delayed_task_closure_,
-                                      TimeDelta::FromMilliseconds(delay));
+      task_runners_[queue]->PostDelayedTask(FROM_HERE, delayed_task_closure_,
+                                            TimeDelta::FromMilliseconds(delay));
       num_tasks_in_flight_++;
       num_tasks_to_post_--;
     }
@@ -160,7 +241,7 @@ class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
 
   void TestImmediateTask() {
     if (--num_tasks_to_run_ == 0) {
-      run_loop_->QuitWhenIdle();
+      SignalDone();
       return;
     }
 
@@ -182,7 +263,7 @@ class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
       if (queue == num_queues_) {
         queue = 0;
       }
-      queues_[queue]->PostTask(FROM_HERE, immediate_task_closure_);
+      task_runners_[queue]->PostTask(FROM_HERE, immediate_task_closure_);
       num_tasks_in_flight_++;
       num_tasks_to_post_--;
     }
@@ -203,24 +284,29 @@ class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
   }
 
   void Benchmark(const std::string& trace, const RepeatingClosure& test_task) {
-    ThreadTicks start = ThreadTicks::Now();
-    ThreadTicks now;
+    TimeTicks start = TimeTicks::Now();
+    TimeTicks now;
     unsigned long long num_iterations = 0;
     do {
       test_task.Run();
-      run_loop_.reset(new RunLoop());
-      run_loop_->Run();
-      now = ThreadTicks::Now();
+      WaitUntilDone();
+      now = TimeTicks::Now();
       num_iterations++;
     } while (now - start < TimeDelta::FromSeconds(5));
 
     std::string trace_suffix;
     switch (GetParam()) {
-      case PerfTestType::kUseMessageLoop:
-        trace_suffix = " with message loop";
+      case PerfTestType::kUseSequenceManagerWithMessageLoop:
+        trace_suffix = " SequenceManager with message loop";
         break;
-      case PerfTestType::kUseMessagePump:
-        trace_suffix = " with message pump";
+      case PerfTestType::kUseSequenceManagerWithMessagePump:
+        trace_suffix = " SequenceManager with message pump";
+        break;
+      case PerfTestType::kUseMessageLoop:
+        trace_suffix = " message loop";
+        break;
+      case PerfTestType::kUseSingleThreadInWorkerPool:
+        trace_suffix = " single thread in WorkerPool";
         break;
     }
 
@@ -237,24 +323,43 @@ class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
   unsigned int num_tasks_to_run_;
   std::unique_ptr<MessageLoop> message_loop_;
   std::unique_ptr<SequenceManager> manager_;
-  std::unique_ptr<RunLoop> run_loop_;
   std::unique_ptr<TimeDomain> time_domain_;
-  std::vector<scoped_refptr<SingleThreadTaskRunner>> queues_;
+  std::vector<scoped_refptr<TaskRunner>> task_runners_;
+
+  Lock done_lock_;
+  ConditionVariable done_cond_;
+  std::unique_ptr<RunLoop> run_loop_;
+
+  // May own |task_runners_|.
+  std::vector<scoped_refptr<TestTaskQueue>> owning_task_queues_;
+
   RepeatingClosure delayed_task_closure_;
   RepeatingClosure immediate_task_closure_;
-  // TODO(alexclarke): parameterize so we can measure with and without a
-  // TaskTimeObserver.
-  TestTaskTimeObserver test_task_time_observer_;
 };
 
-INSTANTIATE_TEST_CASE_P(,
-                        SequenceManagerPerfTest,
-                        testing::Values(PerfTestType::kUseMessageLoop,
-                                        PerfTestType::kUseMessagePump));
+INSTANTIATE_TEST_CASE_P(
+    ,
+    SequenceManagerPerfTest,
+    testing::Values(PerfTestType::kUseSequenceManagerWithMessageLoop,
+                    PerfTestType::kUseSequenceManagerWithMessagePump,
+                    PerfTestType::kUseMessageLoop,
+                    PerfTestType::kUseSingleThreadInWorkerPool));
 
 TEST_P(SequenceManagerPerfTest, RunTenThousandDelayedTasks_OneQueue) {
   if (!ThreadTicks::IsSupported())
     return;
+
+  switch (GetParam()) {
+    // Virtual time is not supported for MessageLoop or WorkerPool.
+    case PerfTestType::kUseMessageLoop:
+    case PerfTestType::kUseSingleThreadInWorkerPool:
+      LOG(INFO) << "Unsupported";
+      return;
+
+    default:
+      break;
+  }
+
   Initialize(1u);
 
   max_tasks_in_flight_ = 200;
@@ -266,6 +371,18 @@ TEST_P(SequenceManagerPerfTest, RunTenThousandDelayedTasks_OneQueue) {
 TEST_P(SequenceManagerPerfTest, RunTenThousandDelayedTasks_FourQueues) {
   if (!ThreadTicks::IsSupported())
     return;
+
+  switch (GetParam()) {
+    // Virtual time is not supported for MessageLoop or WorkerPool.
+    case PerfTestType::kUseMessageLoop:
+    case PerfTestType::kUseSingleThreadInWorkerPool:
+      LOG(INFO) << "Unsupported";
+      return;
+
+    default:
+      break;
+  }
+
   Initialize(4u);
 
   max_tasks_in_flight_ = 200;
@@ -277,6 +394,18 @@ TEST_P(SequenceManagerPerfTest, RunTenThousandDelayedTasks_FourQueues) {
 TEST_P(SequenceManagerPerfTest, RunTenThousandDelayedTasks_EightQueues) {
   if (!ThreadTicks::IsSupported())
     return;
+
+  switch (GetParam()) {
+    // Virtual time is not supported for MessageLoop or WorkerPool.
+    case PerfTestType::kUseMessageLoop:
+    case PerfTestType::kUseSingleThreadInWorkerPool:
+      LOG(INFO) << "Unsupported";
+      return;
+
+    default:
+      break;
+  }
+
   Initialize(8u);
 
   max_tasks_in_flight_ = 200;
@@ -288,6 +417,17 @@ TEST_P(SequenceManagerPerfTest, RunTenThousandDelayedTasks_EightQueues) {
 TEST_P(SequenceManagerPerfTest, RunTenThousandDelayedTasks_ThirtyTwoQueues) {
   if (!ThreadTicks::IsSupported())
     return;
+
+  switch (GetParam()) {
+    case PerfTestType::kUseMessageLoop:
+    case PerfTestType::kUseSingleThreadInWorkerPool:
+      LOG(INFO) << "Unsupported";
+      return;
+
+    default:
+      break;
+  }
+
   Initialize(32u);
 
   max_tasks_in_flight_ = 200;
@@ -311,6 +451,17 @@ TEST_P(SequenceManagerPerfTest, RunTenThousandImmediateTasks_OneQueue) {
 TEST_P(SequenceManagerPerfTest, RunTenThousandImmediateTasks_FourQueues) {
   if (!ThreadTicks::IsSupported())
     return;
+
+  switch (GetParam()) {
+    // We only support a single queue on the MessageLoop.
+    case PerfTestType::kUseMessageLoop:
+      LOG(INFO) << "Unsupported";
+      return;
+
+    default:
+      break;
+  }
+
   Initialize(4u);
 
   max_tasks_in_flight_ = 200;
@@ -323,6 +474,16 @@ TEST_P(SequenceManagerPerfTest, RunTenThousandImmediateTasks_FourQueues) {
 TEST_P(SequenceManagerPerfTest, RunTenThousandImmediateTasks_EightQueues) {
   if (!ThreadTicks::IsSupported())
     return;
+
+  switch (GetParam()) {
+    // We only support a single queue on the MessageLoop.
+    case PerfTestType::kUseMessageLoop:
+      LOG(INFO) << "Unsupported";
+      return;
+
+    default:
+      break;
+  }
   Initialize(8u);
 
   max_tasks_in_flight_ = 200;
@@ -335,6 +496,16 @@ TEST_P(SequenceManagerPerfTest, RunTenThousandImmediateTasks_EightQueues) {
 TEST_P(SequenceManagerPerfTest, RunTenThousandImmediateTasks_ThirtyTwoQueues) {
   if (!ThreadTicks::IsSupported())
     return;
+
+  switch (GetParam()) {
+    // We only support a single queue on the MessageLoop.
+    case PerfTestType::kUseMessageLoop:
+      LOG(INFO) << "Unsupported";
+      return;
+
+    default:
+      break;
+  }
   Initialize(32u);
 
   max_tasks_in_flight_ = 200;

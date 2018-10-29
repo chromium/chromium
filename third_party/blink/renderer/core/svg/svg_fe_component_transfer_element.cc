@@ -33,9 +33,9 @@ namespace blink {
 
 inline SVGFEComponentTransferElement::SVGFEComponentTransferElement(
     Document& document)
-    : SVGFilterPrimitiveStandardAttributes(SVGNames::feComponentTransferTag,
+    : SVGFilterPrimitiveStandardAttributes(svg_names::kFEComponentTransferTag,
                                            document),
-      in1_(SVGAnimatedString::Create(this, SVGNames::inAttr)) {
+      in1_(SVGAnimatedString::Create(this, svg_names::kInAttr)) {
   AddToPropertyMap(in1_);
 }
 
@@ -48,7 +48,7 @@ DEFINE_NODE_FACTORY(SVGFEComponentTransferElement)
 
 void SVGFEComponentTransferElement::SvgAttributeChanged(
     const QualifiedName& attr_name) {
-  if (attr_name == SVGNames::inAttr) {
+  if (attr_name == svg_names::kInAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;

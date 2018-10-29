@@ -5,7 +5,6 @@
 #include "chrome/browser/safe_browsing/browser_features.h"
 
 namespace safe_browsing {
-namespace features {
 const char kUrlHistoryVisitCount[] = "UrlHistoryVisitCount";
 const char kUrlHistoryTypedCount[] = "UrlHistoryTypedCount";
 const char kUrlHistoryLinkCount[] = "UrlHistoryLinkCount";
@@ -31,5 +30,4 @@ const char kSafeBrowsingMaliciousUrl[] = "SafeBrowsingMaliciousUrl=";
 const char kSafeBrowsingOriginalUrl[] = "SafeBrowsingOriginalUrl=";
 const char kSafeBrowsingIsSubresource[] = "SafeBrowsingIsSubresource";
 const char kSafeBrowsingThreatType[] = "SafeBrowsingThreatType";
-}  // namespace features
 }  // namespace safe_browsing

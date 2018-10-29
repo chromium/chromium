@@ -68,7 +68,7 @@ static_library("libxslt") {
     "src/libxslt/xsltlocale.h",
     "src/libxslt/xsltutils.c",
     "src/libxslt/xsltutils.h",
-    "src/libxslt/xsltwin32config.h",
+    "src/libxslt/xsltwin32config.h.in",
     "win32/config.h",
   ]
 

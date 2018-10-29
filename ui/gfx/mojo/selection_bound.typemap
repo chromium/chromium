@@ -6,3 +6,6 @@ mojom = "//ui/gfx/mojo/selection_bound.mojom"
 public_headers = [ "//ui/gfx/selection_bound.h" ]
 traits_headers = [ "//ui/gfx/mojo/selection_bound_struct_traits.h" ]
 type_mappings = [ "gfx.mojom.SelectionBound=gfx::SelectionBound" ]
+deps = [
+  "//ui/gfx/geometry/mojo:struct_traits",
+]

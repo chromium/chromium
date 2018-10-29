@@ -35,14 +35,10 @@ def get_proc_output(args):
   return subprocess.check_output(args).strip()
 
 def build_and_upload(script_path, distro, release, arch, lock):
-  # TODO(thomasanderson):  Find out which revision 'git-cl upload' uses to
-  # calculate the diff against and use that instead of HEAD.
   script_dir = os.path.dirname(os.path.realpath(__file__))
-  revision = get_proc_output(['git', '-C', script_dir, 'rev-parse', 'HEAD'])
 
-  run_script([script_path, 'UpdatePackageLists%s' % arch])
-  run_script([script_path, 'BuildSysroot%s' % arch])
-  run_script([script_path, 'UploadSysroot%s' % arch, revision])
+  run_script([script_path, 'BuildSysroot' + arch])
+  run_script([script_path, 'UploadSysroot' + arch])
 
   tarball = '%s_%s_%s_sysroot.tar.xz' % (distro, release, arch.lower())
   tarxz_path = os.path.join(script_dir, "..", "..", "..", "out",
@@ -51,10 +47,9 @@ def build_and_upload(script_path, distro, release, arch, lock):
   sysroot_dir = '%s_%s_%s-sysroot' % (distro, release, arch.lower())
 
   sysroot_metadata = {
-      'Revision': revision,
       'Tarball': tarball,
       'Sha1Sum': sha1sum,
-      'SysrootDir': sysroot_dir
+      'SysrootDir': sysroot_dir,
   }
   with lock:
     with open(os.path.join(script_dir, 'sysroots.json'), 'rw+') as f:

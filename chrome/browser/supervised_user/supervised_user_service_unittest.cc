@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
@@ -187,8 +188,9 @@ class SupervisedUserServiceTest : public ::testing::Test {
 
   void SetUp() override {
     TestingProfile::Builder builder;
-    builder.AddTestingFactory(ProfileOAuth2TokenServiceFactory::GetInstance(),
-                              BuildFakeProfileOAuth2TokenService);
+    builder.AddTestingFactory(
+        ProfileOAuth2TokenServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeProfileOAuth2TokenService));
     profile_ = builder.Build();
     supervised_user_service_ =
         SupervisedUserServiceFactory::GetForProfile(profile_.get());
@@ -403,20 +405,20 @@ class SupervisedUserServiceExtensionTestBase
   }
 
  protected:
-  scoped_refptr<extensions::Extension> MakeThemeExtension() {
+  scoped_refptr<const extensions::Extension> MakeThemeExtension() {
     std::unique_ptr<base::DictionaryValue> source(new base::DictionaryValue());
     source->SetString(extensions::manifest_keys::kName, "Theme");
     source->Set(extensions::manifest_keys::kTheme,
                 std::make_unique<base::DictionaryValue>());
     source->SetString(extensions::manifest_keys::kVersion, "1.0");
     extensions::ExtensionBuilder builder;
-    scoped_refptr<extensions::Extension> extension =
+    scoped_refptr<const extensions::Extension> extension =
         builder.SetManifest(std::move(source)).Build();
     return extension;
   }
 
-  scoped_refptr<extensions::Extension> MakeExtension(bool by_custodian) {
-    scoped_refptr<extensions::Extension> extension =
+  scoped_refptr<const extensions::Extension> MakeExtension(bool by_custodian) {
+    scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder("Extension").Build();
     extensions::util::SetWasInstalledByCustodian(extension->id(),
                                                  profile_.get(), by_custodian);
@@ -466,7 +468,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
   // Check that a supervised user can install and uninstall a theme even if
   // they are not allowed to install extensions.
   {
-    scoped_refptr<extensions::Extension> theme = MakeThemeExtension();
+    scoped_refptr<const extensions::Extension> theme = MakeThemeExtension();
 
     base::string16 error_1;
     EXPECT_TRUE(supervised_user_service->UserMayLoad(theme.get(), &error_1));
@@ -481,7 +483,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
   // Now check a different kind of extension; the supervised user should not be
   // able to load it.
   {
-    scoped_refptr<extensions::Extension> extension = MakeExtension(false);
+    scoped_refptr<const extensions::Extension> extension = MakeExtension(false);
 
     base::string16 error;
     EXPECT_FALSE(supervised_user_service->UserMayLoad(extension.get(), &error));
@@ -491,7 +493,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
   {
     // Check that a custodian-installed extension may be loaded, but not
     // uninstalled.
-    scoped_refptr<extensions::Extension> extension = MakeExtension(true);
+    scoped_refptr<const extensions::Extension> extension = MakeExtension(true);
 
     base::string16 error_1;
     EXPECT_TRUE(
@@ -521,7 +523,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
   // The supervised user should be able to load and uninstall the extensions
   // they install.
   {
-    scoped_refptr<extensions::Extension> extension = MakeExtension(false);
+    scoped_refptr<const extensions::Extension> extension = MakeExtension(false);
 
     base::string16 error;
     EXPECT_TRUE(supervised_user_service->UserMayLoad(extension.get(), &error));
@@ -550,7 +552,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
 
   {
     // A custodian-installed extension may be loaded, but not uninstalled.
-    scoped_refptr<extensions::Extension> extension = MakeExtension(true);
+    scoped_refptr<const extensions::Extension> extension = MakeExtension(true);
 
     base::string16 error_1;
     EXPECT_TRUE(

@@ -139,8 +139,7 @@ void AutocompleteActionPredictorTable::AddAndUpdateRows(
 
   if (!DB()->BeginTransaction())
     return;
-  for (Rows::const_iterator it = rows_to_add.begin();
-       it != rows_to_add.end(); ++it) {
+  for (auto it = rows_to_add.begin(); it != rows_to_add.end(); ++it) {
     sql::Statement statement(DB()->GetCachedStatement(SQL_FROM_HERE,
         base::StringPrintf(
             "INSERT INTO %s "
@@ -157,8 +156,7 @@ void AutocompleteActionPredictorTable::AddAndUpdateRows(
       return;
     }
   }
-  for (Rows::const_iterator it = rows_to_update.begin();
-       it != rows_to_update.end(); ++it) {
+  for (auto it = rows_to_update.begin(); it != rows_to_update.end(); ++it) {
     sql::Statement statement(DB()->GetCachedStatement(SQL_FROM_HERE,
         base::StringPrintf(
             "UPDATE %s "
@@ -187,8 +185,7 @@ void AutocompleteActionPredictorTable::DeleteRows(
 
   if (!DB()->BeginTransaction())
     return;
-  for (std::vector<Row::Id>::const_iterator it = id_list.begin();
-       it != id_list.end(); ++it) {
+  for (auto it = id_list.begin(); it != id_list.end(); ++it) {
     sql::Statement statement(DB()->GetCachedStatement(SQL_FROM_HERE,
         base::StringPrintf(
             "DELETE FROM %s WHERE id=?",

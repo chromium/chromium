@@ -89,8 +89,8 @@ class Coordinator : public mojom::Coordinator {
                                const std::string& categories);
 
   mojo::Binding<mojom::Coordinator> binding_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   AgentRegistry* agent_registry_;
   std::string config_;
   base::trace_event::TraceConfig parsed_config_;

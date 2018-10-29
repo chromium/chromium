@@ -1,0 +1,62 @@
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_accessibility_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_can_make_payment_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_cancel_pay_abort_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_debit_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_egtest_base\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_misc_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_modifiers_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_payment_app_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_payment_method_identifier_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_payment_response_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_show_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "payment_request_use_stats_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

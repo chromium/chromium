@@ -371,7 +371,7 @@ CommandLine::StringVector CommandLine::GetArgs() const {
   // Gather all arguments after the last switch (may include kSwitchTerminator).
   StringVector args(argv_.begin() + begin_args_, argv_.end());
   // Erase only the first kSwitchTerminator (maybe "--" is a legitimate page?)
-  StringVector::iterator switch_terminator =
+  auto switch_terminator =
       std::find(args.begin(), args.end(), kSwitchTerminator);
   if (switch_terminator != args.end())
     args.erase(switch_terminator);

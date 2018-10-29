@@ -858,4 +858,25 @@ base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,
       .Append(kNotificationHelperExe);
 }
 
+base::FilePath GetElevationServicePath(const base::FilePath& target_path,
+                                       const base::Version& version) {
+  return target_path.AppendASCII(version.GetString())
+      .Append(kElevationServiceExe);
+}
+
+base::string16 GetElevationServiceGuid(base::StringPiece16 prefix) {
+  base::string16 result =
+      InstallUtil::String16FromGUID(install_static::GetElevatorClsid());
+  result.insert(0, prefix.data(), prefix.size());
+  return result;
+}
+
+base::string16 GetElevationServiceClsidRegistryPath() {
+  return GetElevationServiceGuid(L"Software\\Classes\\CLSID\\");
+}
+
+base::string16 GetElevationServiceAppidRegistryPath() {
+  return GetElevationServiceGuid(L"Software\\Classes\\AppID\\");
+}
+
 }  // namespace installer

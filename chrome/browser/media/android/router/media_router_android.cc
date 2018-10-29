@@ -50,6 +50,11 @@ void MediaRouterAndroid::PresentationConnectionProxy::OnMessage(
     media_router_android_->SendRouteMessage(route_id_, message->get_message());
 }
 
+void MediaRouterAndroid::PresentationConnectionProxy::Terminate() {
+  DCHECK(peer_);
+  peer_->DidChangeState(blink::mojom::PresentationConnectionState::TERMINATED);
+}
+
 void MediaRouterAndroid::PresentationConnectionProxy::DidClose(
     blink::mojom::PresentationConnectionCloseReason reason) {
   auto& route_connections =
@@ -306,9 +311,19 @@ void MediaRouterAndroid::OnRouteRequestError(const std::string& error_text,
 }
 
 void MediaRouterAndroid::OnRouteTerminated(const MediaRoute::Id& route_id) {
+  auto entry = presentation_connections_.find(route_id);
+  if (entry != presentation_connections_.end()) {
+    // Note: Route-ID-to-presentation-ID mapping is done by route providers.
+    // Although the messages API (being deprecated) is based on route IDs,
+    // providers may use the same route for each presentation connection.  This
+    // would result in broadcasting provider messages to all presentation
+    // connections.  So although this loop may seem strange in the context of
+    // the Presentation API, it can't be avoided at the moment.
+    for (auto& connection : entry->second) {
+      connection->Terminate();
+    }
+  }
   RemoveRoute(route_id);
-  NotifyPresentationConnectionStateChange(
-      route_id, blink::mojom::PresentationConnectionState::TERMINATED);
 }
 
 void MediaRouterAndroid::OnRouteClosed(

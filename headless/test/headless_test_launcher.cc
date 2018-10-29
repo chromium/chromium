@@ -8,10 +8,13 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/test/launcher/test_launcher.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/content_test_suite_base.h"
+#include "content/public/test/network_service_test_helper.h"
 #include "content/public/test/test_launcher.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/headless_content_main_delegate.h"
+#include "headless/lib/utility/headless_content_utility_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace headless {
@@ -72,6 +75,25 @@ int main(int argc, char** argv) {
   if (parallel_jobs > 1U) {
     parallel_jobs /= 2U;
   }
+
+  // Setup a working test environment for the network service in case it's used.
+  // Only create this object in the utility process, so that its members don't
+  // interfere with other test objects in the browser process.
+  std::unique_ptr<content::NetworkServiceTestHelper>
+      network_service_test_helper;
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProcessType) == switches::kUtilityProcess) {
+    network_service_test_helper =
+        std::make_unique<content::NetworkServiceTestHelper>();
+    headless::HeadlessContentUtilityClient::
+        SetNetworkBinderCreationCallbackForTests(base::BindRepeating(
+            [](content::NetworkServiceTestHelper* helper,
+               service_manager::BinderRegistry* registry) {
+              helper->RegisterNetworkBinders(registry);
+            },
+            network_service_test_helper.get()));
+  }
+
   headless::HeadlessTestLauncherDelegate launcher_delegate;
   return LaunchTests(&launcher_delegate, parallel_jobs, argc, argv);
 }

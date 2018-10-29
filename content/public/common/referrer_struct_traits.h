@@ -7,8 +7,8 @@
 
 #include "content/common/content_export.h"
 #include "content/public/common/referrer.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/platform/referrer.mojom.h"
-#include "third_party/blink/public/platform/referrer_policy_enum_traits.h"
 
 namespace mojo {
 
@@ -19,7 +19,7 @@ struct CONTENT_EXPORT
     return r.url;
   }
 
-  static ::blink::WebReferrerPolicy policy(const content::Referrer& r) {
+  static ::network::mojom::ReferrerPolicy policy(const content::Referrer& r) {
     return r.policy;
   }
 

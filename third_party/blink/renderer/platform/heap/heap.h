@@ -524,6 +524,17 @@ class GarbageCollected {
   DISALLOW_COPY_AND_ASSIGN(GarbageCollected);
 };
 
+// Constructs an instance of T, which is a garbage collected type.
+template <typename T, typename... Args>
+T* MakeGarbageCollected(Args&&... args) {
+  static_assert(WTF::IsGarbageCollectedType<T>::value,
+                "T needs to be a garbage collected object");
+  // Uses placement new so we can force MakeGarbageCollected usage by deleting
+  // the new operator.
+  return ::new (T::AllocateObject(sizeof(T), IsEagerlyFinalizedType<T>::value))
+      T(std::forward<Args>(args)...);
+}
+
 // Assigning class types to their arenas.
 //
 // We use sized arenas for most 'normal' objects to improve memory locality.

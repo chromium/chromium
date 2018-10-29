@@ -35,6 +35,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/brand_behaviors.h"
 #include "chrome/installer/setup/install.h"
+#include "chrome/installer/setup/install_service_work_item.h"
 #include "chrome/installer/setup/install_worker.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/setup/launch_chrome.h"
@@ -631,6 +632,19 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
                                    WorkItem::kWow64Default);
   } else {
     LOG(DFATAL) << "Cannot retrieve the toast activator registry path";
+  }
+
+  if (installer_state.system_install()) {
+    // Delete Software\Classes\CLSID and AppId\|elevation_service_clsid|.
+    const base::string16 clsid_reg_path =
+        GetElevationServiceClsidRegistryPath();
+    const base::string16 appid_reg_path =
+        GetElevationServiceAppidRegistryPath();
+    for (const auto& reg_path : {clsid_reg_path, appid_reg_path})
+      InstallUtil::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
+
+    LOG_IF(WARNING, !InstallServiceWorkItem::DeleteService(
+                        install_static::GetElevationServiceName()));
   }
 
   // Delete all Start Menu Internet registrations that refer to this Chrome.

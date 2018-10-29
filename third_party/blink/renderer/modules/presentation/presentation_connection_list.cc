@@ -43,7 +43,7 @@ void PresentationConnectionList::AddConnection(
 
 bool PresentationConnectionList::RemoveConnection(
     ReceiverPresentationConnection* connection) {
-  for (size_t i = 0; i < connections_.size(); i++) {
+  for (wtf_size_t i = 0; i < connections_.size(); i++) {
     if (connections_[i] == connection) {
       connections_.EraseAt(i);
       return true;

@@ -12,13 +12,10 @@
 #include "base/bind_helpers.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/signin/core/browser/account_tracker_service.h"
-#include "components/signin/core/browser/fake_profile_oauth2_token_service.h"
-#include "components/signin/core/browser/fake_signin_manager.h"
 #include "components/signin/core/browser/profile_management_switches.h"
-#include "components/signin/core/browser/test_signin_client.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
+#include "services/identity/public/cpp/identity_manager.h"
+#include "services/identity/public/cpp/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -35,36 +32,21 @@ class ProcessDiceHeaderDelegateImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ProcessDiceHeaderDelegateImplTest()
-      : signin_client_(&pref_service_),
-        token_service_(&pref_service_),
-        signin_manager_(&signin_client_,
-                        &token_service_,
-                        &account_tracker_service_,
-                        nullptr),
-        enable_sync_called_(false),
+      : enable_sync_called_(false),
         show_error_called_(false),
         account_id_("12345"),
         email_("foo@bar.com"),
-        auth_error_(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
-    AccountTrackerService::RegisterPrefs(pref_service_.registry());
-    SigninManager::RegisterProfilePrefs(pref_service_.registry());
-    account_tracker_service_.Initialize(&pref_service_, base::FilePath());
-  }
+        auth_error_(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {}
 
-  ~ProcessDiceHeaderDelegateImplTest() override {
-    signin_manager_.Shutdown();
-    account_tracker_service_.Shutdown();
-    token_service_.Shutdown();
-    signin_client_.Shutdown();
-  }
+  ~ProcessDiceHeaderDelegateImplTest() override {}
 
   // Creates a ProcessDiceHeaderDelegateImpl instance.
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> CreateDelegate(
       bool is_sync_signin_tab,
       signin::AccountConsistencyMethod account_consistency) {
     return std::make_unique<ProcessDiceHeaderDelegateImpl>(
-        web_contents(), account_consistency, &signin_manager_,
-        is_sync_signin_tab,
+        web_contents(), account_consistency,
+        identity_test_environment_.identity_manager(), is_sync_signin_tab,
         base::BindOnce(&ProcessDiceHeaderDelegateImplTest::StartSyncCallback,
                        base::Unretained(this)),
         base::BindOnce(
@@ -90,11 +72,7 @@ class ProcessDiceHeaderDelegateImplTest
     show_error_called_ = true;
   }
 
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
-  TestSigninClient signin_client_;
-  FakeProfileOAuth2TokenService token_service_;
-  AccountTrackerService account_tracker_service_;
-  FakeSigninManager signin_manager_;
+  identity::IdentityTestEnvironment identity_test_environment_;
 
   bool enable_sync_called_;
   bool show_error_called_;
@@ -181,7 +159,7 @@ TEST_P(ProcessDiceHeaderDelegateImplTestEnableSync, EnableSync) {
   NavigateAndCommit(kSigninURL);
   ASSERT_EQ(kSigninURL, web_contents()->GetVisibleURL());
   if (GetParam().signed_in)
-    signin_manager_.SignIn("gaia_id", "user", "pass");
+    identity_test_environment_.SetPrimaryAccount(email_);
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegate(GetParam().signin_tab, GetParam().account_consistency);
 
@@ -229,7 +207,7 @@ TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeFailure,
   NavigateAndCommit(kSigninURL);
   ASSERT_EQ(kSigninURL, web_contents()->GetVisibleURL());
   if (GetParam().signed_in)
-    signin_manager_.SignIn("gaia_id", "user", "pass");
+    identity_test_environment_.SetPrimaryAccount(email_);
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegate(GetParam().signin_tab, GetParam().account_consistency);
 

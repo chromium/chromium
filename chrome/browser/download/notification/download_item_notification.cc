@@ -47,6 +47,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 
 using base::UserMetricsAction;
+using offline_items_collection::FailState;
 
 namespace {
 
@@ -180,7 +181,7 @@ bool IsExtensionDownload(DownloadUIModel* item) {
 
 DownloadItemNotification::DownloadItemNotification(
     Profile* profile,
-    std::unique_ptr<DownloadUIModel> item)
+    DownloadUIModel::DownloadUIModelPtr item)
     : profile_(profile), item_(std::move(item)), weak_factory_(this) {
   item_->AddObserver(this);
   // Creates the notification instance. |title|, |body| and |icon| will be
@@ -207,8 +208,7 @@ DownloadItemNotification::DownloadItemNotification(
 }
 
 DownloadItemNotification::~DownloadItemNotification() {
-  if (item_)
-    item_->RemoveObserver(this);
+  ShutDown();
 
   if (image_decode_status_ == IN_PROGRESS)
     ImageDecoder::Cancel(this);
@@ -234,6 +234,8 @@ void DownloadItemNotification::OnDownloadDestroyed() {
   Close(false);
 
   observer_->OnDownloadDestroyed(item_->GetContentId());
+
+  item_.reset();
 }
 
 void DownloadItemNotification::DisablePopup() {
@@ -279,7 +281,7 @@ void DownloadItemNotification::Click(
     DownloadCommands::Command command = button_actions_->at(*button_index);
     RecordButtonClickAction(command);
 
-    item_->GetDownloadCommands().ExecuteCommand(command);
+    DownloadCommands(item_.get()).ExecuteCommand(command);
 
     // ExecuteCommand() might cause |item_| to be destroyed.
     if (item_ && command != DownloadCommands::PAUSE &&
@@ -331,6 +333,11 @@ void DownloadItemNotification::Click(
   }
 }
 
+void DownloadItemNotification::ShutDown() {
+  if (item_)
+    item_->RemoveObserver(this);
+}
+
 std::string DownloadItemNotification::GetNotificationId() const {
   return item_->GetContentId().id;
 }
@@ -367,16 +374,14 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
 
   if (item_->GetState() == download::DownloadItem::CANCELLED) {
     // Confirms that a download is cancelled by user action.
-    DCHECK(item_->GetLastReason() ==
-               download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED ||
-           item_->GetLastReason() ==
-               download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN);
+    DCHECK(item_->GetLastFailState() == FailState::USER_CANCELED ||
+           item_->GetLastFailState() == FailState::USER_SHUTDOWN);
 
     CloseNotification();
     return;
   }
 
-  DownloadCommands command = item_->GetDownloadCommands();
+  DownloadCommands command(item_.get());
 
   notification_->set_title(GetTitle());
   notification_->set_message(GetSubStatusString());
@@ -772,8 +777,8 @@ base::string16 DownloadItemNotification::GetSubStatusString() const {
       // "Cancelled"
       return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
     case download::DownloadItem::INTERRUPTED: {
-      download::DownloadInterruptReason reason = item_->GetLastReason();
-      if (reason != download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED) {
+      FailState fail_state = item_->GetLastFailState();
+      if (fail_state != FailState::USER_CANCELED) {
         // "Failed - <REASON>"
         base::string16 interrupt_reason = item_->GetInterruptReasonText();
         DCHECK(!interrupt_reason.empty());

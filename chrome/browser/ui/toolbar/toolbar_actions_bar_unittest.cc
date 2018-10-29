@@ -236,14 +236,9 @@ testing::AssertionResult ToolbarActionsBarUnitTest::VerifyToolbarOrder(
 
 // Note: First argument is optional and intentionally left blank.
 // (it's a prefix for the generated test cases)
-INSTANTIATE_TEST_CASE_P(
-    ,
-    ToolbarActionsBarUnitTest,
-    testing::Values(ui::MaterialDesignController::MATERIAL_NORMAL,
-                    ui::MaterialDesignController::MATERIAL_HYBRID,
-                    ui::MaterialDesignController::MATERIAL_TOUCH_OPTIMIZED,
-                    ui::MaterialDesignController::MATERIAL_REFRESH,
-                    ui::MaterialDesignController::MATERIAL_TOUCH_REFRESH));
+INSTANTIATE_TEST_CASE_P(,
+                        ToolbarActionsBarUnitTest,
+                        testing::Values(false, true));
 
 TEST_P(ToolbarActionsBarUnitTest, BasicToolbarActionsBarTest) {
   // Add three extensions to the profile; this is the easiest way to have
@@ -500,11 +495,8 @@ TEST_P(ToolbarActionsBarUnitTest, TestStartAndEndIndexes) {
   const int icon_width = toolbar_actions_bar()->GetViewSize().width();
   // Width of the resize handle.
   int extra_area_width =
-      toolbar_actions_bar()->platform_settings().item_spacing;
-  if (ui::MaterialDesignController::IsRefreshUi()) {
-    // In Refresh there's a 1dp separator with spacing on both sides of it.
-    extra_area_width += 2 * GetLayoutConstant(TOOLBAR_STANDARD_SPACING) + 1;
-  }
+      toolbar_actions_bar()->platform_settings().item_spacing +
+      2 * GetLayoutConstant(TOOLBAR_STANDARD_SPACING) + 1;
 
   for (int i = 0; i < 3; ++i) {
     CreateAndAddExtension(base::StringPrintf("extension %d", i),

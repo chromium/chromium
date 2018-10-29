@@ -161,8 +161,8 @@ V4L2JpegDecodeAccelerator::~V4L2JpegDecodeAccelerator() {
 
   if (decoder_thread_.IsRunning()) {
     decoder_task_runner_->PostTask(
-        FROM_HERE, base::Bind(&V4L2JpegDecodeAccelerator::DestroyTask,
-                              base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&V4L2JpegDecodeAccelerator::DestroyTask,
+                                  base::Unretained(this)));
     decoder_thread_.Stop();
   }
   weak_factory_.InvalidateWeakPtrs();
@@ -199,8 +199,8 @@ void V4L2JpegDecodeAccelerator::NotifyError(int32_t bitstream_buffer_id,
 void V4L2JpegDecodeAccelerator::PostNotifyError(int32_t bitstream_buffer_id,
                                                 Error error) {
   child_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&V4L2JpegDecodeAccelerator::NotifyError, weak_ptr_,
-                            bitstream_buffer_id, error));
+      FROM_HERE, base::BindOnce(&V4L2JpegDecodeAccelerator::NotifyError,
+                                weak_ptr_, bitstream_buffer_id, error));
 }
 
 bool V4L2JpegDecodeAccelerator::Initialize(Client* client) {
@@ -242,8 +242,8 @@ bool V4L2JpegDecodeAccelerator::Initialize(Client* client) {
   decoder_task_runner_ = decoder_thread_.task_runner();
 
   decoder_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&V4L2JpegDecodeAccelerator::StartDevicePoll,
-                            base::Unretained(this)));
+      FROM_HERE, base::BindOnce(&V4L2JpegDecodeAccelerator::StartDevicePoll,
+                                base::Unretained(this)));
 
   VLOGF(2) << "V4L2JpegDecodeAccelerator initialized.";
   return true;
@@ -273,8 +273,9 @@ void V4L2JpegDecodeAccelerator::Decode(
       new JobRecord(bitstream_buffer, video_frame));
 
   decoder_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&V4L2JpegDecodeAccelerator::DecodeTask,
-                            base::Unretained(this), base::Passed(&job_record)));
+      FROM_HERE,
+      base::BindOnce(&V4L2JpegDecodeAccelerator::DecodeTask,
+                     base::Unretained(this), base::Passed(&job_record)));
 }
 
 // static
@@ -570,8 +571,8 @@ void V4L2JpegDecodeAccelerator::DevicePollTask() {
   // All processing should happen on ServiceDeviceTask(), since we shouldn't
   // touch decoder state from this thread.
   decoder_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&V4L2JpegDecodeAccelerator::ServiceDeviceTask,
-                            base::Unretained(this), event_pending));
+      FROM_HERE, base::BindOnce(&V4L2JpegDecodeAccelerator::ServiceDeviceTask,
+                                base::Unretained(this), event_pending));
 }
 
 bool V4L2JpegDecodeAccelerator::DequeueSourceChangeEvent() {
@@ -622,8 +623,8 @@ void V4L2JpegDecodeAccelerator::ServiceDeviceTask(bool event_pending) {
 
   if (!running_jobs_.empty()) {
     device_poll_task_runner_->PostTask(
-        FROM_HERE, base::Bind(&V4L2JpegDecodeAccelerator::DevicePollTask,
-                              base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&V4L2JpegDecodeAccelerator::DevicePollTask,
+                                  base::Unretained(this)));
   }
 
   DVLOGF(3) << "buffer counts: INPUT["
@@ -831,8 +832,9 @@ void V4L2JpegDecodeAccelerator::Dequeue() {
                 << job_record->bitstream_buffer_id;
 
       child_task_runner_->PostTask(
-          FROM_HERE, base::Bind(&V4L2JpegDecodeAccelerator::VideoFrameReady,
-                                weak_ptr_, job_record->bitstream_buffer_id));
+          FROM_HERE,
+          base::BindOnce(&V4L2JpegDecodeAccelerator::VideoFrameReady, weak_ptr_,
+                         job_record->bitstream_buffer_id));
     }
   }
 }

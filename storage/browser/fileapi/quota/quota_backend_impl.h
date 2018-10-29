@@ -46,7 +46,7 @@ class STORAGE_EXPORT QuotaBackendImpl
   void ReserveQuota(const url::Origin& origin,
                     FileSystemType type,
                     int64_t delta,
-                    const ReserveQuotaCallback& callback) override;
+                    ReserveQuotaCallback callback) override;
   void ReleaseReservedQuota(const url::Origin& origin,
                             FileSystemType type,
                             int64_t size) override;
@@ -73,7 +73,7 @@ class STORAGE_EXPORT QuotaBackendImpl
   };
 
   void DidGetUsageAndQuotaForReserveQuota(const QuotaReservationInfo& info,
-                                          const ReserveQuotaCallback& callback,
+                                          ReserveQuotaCallback callback,
                                           blink::mojom::QuotaStatusCode status,
                                           int64_t usage,
                                           int64_t quota);

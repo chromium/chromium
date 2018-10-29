@@ -190,9 +190,12 @@ void ProximityAuthSystem::OnFocusedUserChanged(const AccountId& account_id) {
                  << account_id.Serialize();
     remote_device_life_cycle_ =
         CreateRemoteDeviceLifeCycle(remote_device, local_device);
-    unlock_manager_->SetRemoteDeviceLifeCycle(remote_device_life_cycle_.get());
     remote_device_life_cycle_->AddObserver(this);
-    remote_device_life_cycle_->Start();
+
+    // UnlockManager listens for Bluetooth power change events, and is therefore
+    // responsible for starting RemoteDeviceLifeCycle when Bluetooth becomes
+    // powered.
+    unlock_manager_->SetRemoteDeviceLifeCycle(remote_device_life_cycle_.get());
   }
 }
 

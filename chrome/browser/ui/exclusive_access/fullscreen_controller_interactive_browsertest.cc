@@ -516,21 +516,13 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 // Flaky on Linux, CrOS: http://crbug.com/159000
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_MouseLockSilentAfterTargetUnlock \
-  DISABLED_MouseLockSilentAfterTargetUnlock
-#elif defined(OS_WIN)
 // Flaky on Windows; see https://crbug.com/791539.
-#define MAYBE_MouseLockSilentAfterTargetUnlock \
-  DISABLED_MouseLockSilentAfterTargetUnlock
-#else
-#define MAYBE_MouseLockSilentAfterTargetUnlock MouseLockSilentAfterTargetUnlock
-#endif
+// Flaky on Mac: https://crbug.com/876617.
 
 // Tests mouse lock can be exited and re-entered by an application silently
 // with no UI distraction for users.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_MouseLockSilentAfterTargetUnlock) {
+                       DISABLED_MouseLockSilentAfterTargetUnlock) {
   SetWebContentsGrantedSilentMouseLockPermission();
   ASSERT_TRUE(embedded_test_server()->Start());
   ui_test_utils::NavigateToURL(

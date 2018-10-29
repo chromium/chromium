@@ -10,8 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "content/browser/media/audio_log_factory.h"
-#include "content/public/browser/child_process_data.h"
-#include "content/public/browser/child_process_termination_info.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/audio/public/mojom/constants.mojom.h"
@@ -78,12 +76,6 @@ void AudioServiceListener::Metrics::ServiceStopped() {
   started_ = base::TimeTicks();
 }
 
-void AudioServiceListener::Metrics::ServiceProcessTerminated(
-    Metrics::ServiceProcessTerminationStatus status) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Media.AudioService.ObservedProcessTerminationStatus", status);
-}
-
 void AudioServiceListener::Metrics::LogServiceStartStatus(
     Metrics::ServiceStartStatus status) {
   UMA_HISTOGRAM_ENUMERATION("Media.AudioService.ObservedStartStatus", status);
@@ -106,12 +98,10 @@ AudioServiceListener::AudioServiceListener(
       mojo::MakeRequest(&listener));
   service_manager->AddListener(std::move(listener));
   binding_.Bind(std::move(request));
-  BrowserChildProcessObserver::Add(this);
 }
 
 AudioServiceListener::~AudioServiceListener() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  BrowserChildProcessObserver::Remove(this);
 }
 
 base::ProcessId AudioServiceListener::GetProcessId() const {
@@ -177,38 +167,6 @@ void AudioServiceListener::OnServiceStopped(
     return;
   metrics_.ServiceStopped();
   log_factory_is_set_ = false;
-}
-
-void AudioServiceListener::BrowserChildProcessHostDisconnected(
-    const ChildProcessData& data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  if (base::GetProcId(data.GetHandle()) != process_id_)
-    return;
-  process_id_ = base::kNullProcessId;
-  metrics_.ServiceProcessTerminated(
-      Metrics::ServiceProcessTerminationStatus::kDisconnect);
-}
-
-void AudioServiceListener::BrowserChildProcessCrashed(
-    const ChildProcessData& data,
-    const ChildProcessTerminationInfo& info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  if (base::GetProcId(data.GetHandle()) != process_id_)
-    return;
-  process_id_ = base::kNullProcessId;
-  metrics_.ServiceProcessTerminated(
-      Metrics::ServiceProcessTerminationStatus::kCrash);
-}
-
-void AudioServiceListener::BrowserChildProcessKilled(
-    const ChildProcessData& data,
-    const ChildProcessTerminationInfo& info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  if (base::GetProcId(data.GetHandle()) != process_id_)
-    return;
-  process_id_ = base::kNullProcessId;
-  metrics_.ServiceProcessTerminated(
-      Metrics::ServiceProcessTerminationStatus::kKill);
 }
 
 void AudioServiceListener::MaybeSetLogFactory() {

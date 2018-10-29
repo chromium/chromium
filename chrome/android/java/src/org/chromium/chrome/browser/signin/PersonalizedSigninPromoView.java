@@ -33,11 +33,11 @@ public class PersonalizedSigninPromoView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mImage = (ImageView) findViewById(R.id.signin_promo_image);
-        mDismissButton = (ImageButton) findViewById(R.id.signin_promo_close_button);
-        mDescription = (TextView) findViewById(R.id.signin_promo_description);
-        mSigninButton = (ButtonCompat) findViewById(R.id.signin_promo_signin_button);
-        mChooseAccountButton = (Button) findViewById(R.id.signin_promo_choose_account_button);
+        mImage = findViewById(R.id.signin_promo_image);
+        mDismissButton = findViewById(R.id.signin_promo_close_button);
+        mDescription = findViewById(R.id.signin_promo_description);
+        mSigninButton = findViewById(R.id.signin_promo_signin_button);
+        mChooseAccountButton = findViewById(R.id.signin_promo_choose_account_button);
     }
 
     /**

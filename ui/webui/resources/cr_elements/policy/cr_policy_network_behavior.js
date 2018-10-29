@@ -53,22 +53,42 @@ var CrPolicyNetworkBehavior = {
 
   /**
    * @param {!CrOnc.ManagedProperty|undefined} property
-   * @return {boolean} True if the network property is enforced by a policy.
+   * @return {boolean} True if the network property is editable.
    */
-  isNetworkPolicyEnforced: function(property) {
-    if (!this.isNetworkPolicyControlled(property))
+  isEditable: function(property) {
+    // If the property is not a dictionary, then the property is not editable.
+    if (typeof property != 'object')
       return false;
+
     // If the property has a UserEditable sub-property, that determines whether
-    // or not it is editable (not enforced).
+    // or not it is editable.
     if (typeof property.UserEditable != 'undefined')
-      return !property.UserEditable;
+      return property.UserEditable;
 
     // Otherwise if the property has a DeviceEditable sub-property, check that.
     if (typeof property.DeviceEditable != 'undefined')
-      return !property.DeviceEditable;
+      return property.DeviceEditable;
 
-    // If no 'Editable' sub-property exists, the policy value is enforced.
-    return true;
+    // If no 'Editable' sub-property exists, the policy value is not editable.
+    return false;
+  },
+
+  /**
+   * @param {!CrOnc.ManagedProperty|undefined} property
+   * @return {boolean} True if the network property is enforced by a policy.
+   */
+  isNetworkPolicyEnforced: function(property) {
+    return this.isNetworkPolicyControlled(property) &&
+        !this.isEditable(property);
+  },
+
+  /**
+   * @param {!CrOnc.ManagedProperty|undefined} property
+   * @return {boolean} True if the network property is recommended by a policy.
+   */
+  isNetworkPolicyRecommended: function(property) {
+    return this.isNetworkPolicyControlled(property) &&
+        this.isEditable(property);
   },
 
   /**

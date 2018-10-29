@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/optional.h"
+#include "components/autofill/core/browser/autofill_metadata.h"
 #include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/credit_card.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
@@ -45,53 +46,56 @@ std::string GetClientTagForSpecificsId(WalletMetadataSpecifics::Type type,
   }
 }
 
-// Returns EntityData with common fields set based on |local_data_model|.
-std::unique_ptr<EntityData> CreateEntityDataFromAutofillDataModel(
-    const AutofillDataModel& local_data_model,
-    WalletMetadataSpecifics::Type type,
-    const std::string& specifics_id) {
+// Returns EntityData for wallet_metadata for |local_metadata| and |type|.
+std::unique_ptr<EntityData> CreateEntityDataFromAutofillMetadata(
+    const AutofillMetadata& local_metadata,
+    WalletMetadataSpecifics::Type type) {
   auto entity_data = std::make_unique<EntityData>();
+  std::string specifics_id = GetSpecificsIdForMetadataId(local_metadata.id);
   entity_data->non_unique_name = GetClientTagForSpecificsId(type, specifics_id);
 
-  WalletMetadataSpecifics* metadata =
+  WalletMetadataSpecifics* remote_metadata =
       entity_data->specifics.mutable_wallet_metadata();
-  metadata->set_type(type);
-  metadata->set_id(specifics_id);
-  metadata->set_use_count(local_data_model.use_count());
-  metadata->set_use_date(
-      local_data_model.use_date().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  remote_metadata->set_type(type);
+  remote_metadata->set_id(specifics_id);
+  remote_metadata->set_use_count(local_metadata.use_count);
+  remote_metadata->set_use_date(
+      local_metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  switch (type) {
+    case WalletMetadataSpecifics::ADDRESS: {
+      remote_metadata->set_address_has_converted(local_metadata.has_converted);
+      break;
+    }
+    case WalletMetadataSpecifics::CARD: {
+      // The strings must be in valid UTF-8 to sync.
+      std::string billing_address_id;
+      base::Base64Encode(local_metadata.billing_address_id,
+                         &billing_address_id);
+      remote_metadata->set_card_billing_address_id(billing_address_id);
+      break;
+    }
+    case WalletMetadataSpecifics::UNKNOWN: {
+      NOTREACHED();
+      break;
+    }
+  }
+
   return entity_data;
 }
 
 // Returns EntityData for wallet_metadata for |local_profile|.
 std::unique_ptr<EntityData> CreateMetadataEntityDataFromAutofillServerProfile(
     const AutofillProfile& local_profile) {
-  std::unique_ptr<EntityData> entity_data =
-      CreateEntityDataFromAutofillDataModel(
-          local_profile, WalletMetadataSpecifics::ADDRESS,
-          GetSpecificsIdForEntryServerId(local_profile.server_id()));
-
-  WalletMetadataSpecifics* metadata =
-      entity_data->specifics.mutable_wallet_metadata();
-  metadata->set_address_has_converted(local_profile.has_converted());
-  return entity_data;
+  return CreateEntityDataFromAutofillMetadata(local_profile.GetMetadata(),
+                                              WalletMetadataSpecifics::ADDRESS);
 }
 
 // Returns EntityData for wallet_metadata for |local_card|.
 std::unique_ptr<EntityData> CreateMetadataEntityDataFromCard(
     const CreditCard& local_card) {
-  std::unique_ptr<EntityData> entity_data =
-      CreateEntityDataFromAutofillDataModel(
-          local_card, WalletMetadataSpecifics::CARD,
-          GetSpecificsIdForEntryServerId(local_card.server_id()));
-
-  WalletMetadataSpecifics* metadata =
-      entity_data->specifics.mutable_wallet_metadata();
-  // The strings must be in valid UTF-8 to sync.
-  std::string billing_address_id;
-  base::Base64Encode(local_card.billing_address_id(), &billing_address_id);
-  metadata->set_card_billing_address_id(billing_address_id);
-  return entity_data;
+  return CreateEntityDataFromAutofillMetadata(local_card.GetMetadata(),
+                                              WalletMetadataSpecifics::CARD);
 }
 
 }  // namespace
@@ -111,7 +115,7 @@ void AutofillWalletMetadataSyncBridge::CreateForWebDataServiceAndBackend(
 }
 
 // static
-syncer::ModelTypeSyncBridge*
+AutofillWalletMetadataSyncBridge*
 AutofillWalletMetadataSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<AutofillWalletMetadataSyncBridge*>(
@@ -124,15 +128,21 @@ AutofillWalletMetadataSyncBridge::AutofillWalletMetadataSyncBridge(
     AutofillWebDataBackend* web_data_backend)
     : ModelTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(web_data_backend),
-      scoped_observer_(this) {
+      scoped_observer_(this),
+      track_wallet_data_(false),
+      weak_ptr_factory_(this) {
   DCHECK(web_data_backend_);
-
   scoped_observer_.Add(web_data_backend_);
 
   LoadDataCacheAndMetadata();
 }
 
 AutofillWalletMetadataSyncBridge::~AutofillWalletMetadataSyncBridge() {}
+
+void AutofillWalletMetadataSyncBridge::OnWalletDataTrackingStateChanged(
+    bool is_tracking) {
+  track_wallet_data_ = is_tracking;
+}
 
 std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletMetadataSyncBridge::CreateMetadataChangeList() {
@@ -269,12 +279,12 @@ void AutofillWalletMetadataSyncBridge::LoadDataCacheAndMetadata() {
     return;
   }
   for (const std::unique_ptr<AutofillProfile>& entry : profiles) {
-    cache_[GetStorageKeyForEntryServerId(entry->server_id())] =
+    cache_[GetStorageKeyForMetadataId(entry->GetMetadata().id)] =
         CreateMetadataEntityDataFromAutofillServerProfile(*entry)
             ->specifics.wallet_metadata();
   }
   for (const std::unique_ptr<CreditCard>& entry : cards) {
-    cache_[GetStorageKeyForEntryServerId(entry->server_id())] =
+    cache_[GetStorageKeyForMetadataId(entry->GetMetadata().id)] =
         CreateMetadataEntityDataFromCard(*entry)->specifics.wallet_metadata();
   }
 
@@ -307,17 +317,16 @@ void AutofillWalletMetadataSyncBridge::GetDataImpl(
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::unique_ptr<AutofillProfile>& entry : profiles) {
-    std::string key = GetStorageKeyForEntryServerId(entry->server_id());
+    std::string key = GetStorageKeyForMetadataId(entry->GetMetadata().id);
     if (!storage_keys_set || base::ContainsKey(*storage_keys_set, key)) {
       batch->Put(key,
                  CreateMetadataEntityDataFromAutofillServerProfile(*entry));
     }
   }
   for (const std::unique_ptr<CreditCard>& entry : cards) {
-    std::string key = GetStorageKeyForEntryServerId(entry->server_id());
+    std::string key = GetStorageKeyForMetadataId(entry->GetMetadata().id);
     if (!storage_keys_set || base::ContainsKey(*storage_keys_set, key)) {
-      batch->Put(GetStorageKeyForEntryServerId(entry->server_id()),
-                 CreateMetadataEntityDataFromCard(*entry));
+      batch->Put(key, CreateMetadataEntityDataFromCard(*entry));
     }
   }
 

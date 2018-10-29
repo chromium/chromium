@@ -10,8 +10,10 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/task/post_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/browser/threat_details.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
@@ -44,8 +46,8 @@ void ThreatDetailsRedirectsCollector::StartHistoryCollection(
     return;
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ThreatDetailsRedirectsCollector::StartGetRedirects, this,
                      urls));
 }
@@ -110,7 +112,7 @@ void ThreatDetailsRedirectsCollector::OnGotQueryRedirectsTo(
 
 void ThreatDetailsRedirectsCollector::AllDone() {
   DVLOG(1) << "AllDone";
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, callback_);
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, callback_);
   callback_.Reset();
 }
 

@@ -12,6 +12,7 @@
 #include "components/feed/core/feed_content_database.h"
 #include "components/feed/core/feed_image_manager.h"
 #include "components/feed/core/feed_journal_database.h"
+#include "components/feed/core/feed_logging_metrics.h"
 #include "components/feed/core/feed_networking_host.h"
 #include "components/feed/core/feed_scheduler_host.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -25,7 +26,8 @@ namespace feed {
 // yet.
 class FeedHostService : public KeyedService {
  public:
-  FeedHostService(std::unique_ptr<FeedImageManager> image_manager,
+  FeedHostService(std::unique_ptr<FeedLoggingMetrics> logging_metrics,
+                  std::unique_ptr<FeedImageManager> image_manager,
                   std::unique_ptr<FeedNetworkingHost> networking_host,
                   std::unique_ptr<FeedSchedulerHost> scheduler_host,
                   std::unique_ptr<FeedContentDatabase> content_database,
@@ -33,6 +35,7 @@ class FeedHostService : public KeyedService {
                   std::unique_ptr<FeedOfflineHost> offline_host);
   ~FeedHostService() override;
 
+  FeedLoggingMetrics* GetLoggingMetrics();
   FeedImageManager* GetImageManager();
   FeedNetworkingHost* GetNetworkingHost();
   FeedSchedulerHost* GetSchedulerHost();
@@ -41,6 +44,7 @@ class FeedHostService : public KeyedService {
   FeedOfflineHost* GetOfflineHost();
 
  private:
+  std::unique_ptr<FeedLoggingMetrics> logging_metrics_;
   std::unique_ptr<FeedImageManager> image_manager_;
   std::unique_ptr<FeedNetworkingHost> networking_host_;
   std::unique_ptr<FeedSchedulerHost> scheduler_host_;

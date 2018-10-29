@@ -20,12 +20,7 @@
         {
           "object": "NGPhysicalTextFragment 'Passed'",
           "rect": [8, 136, 43, 17],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Failed'",
-          "rect": [8, 136, 39, 17],
-          "reason": "disappeared"
+          "reason": "full"
         }
       ]
     }

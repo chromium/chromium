@@ -11,7 +11,7 @@ namespace ui {
 AXHostDelegate::AXHostDelegate()
     : tree_id_(AXTreeIDRegistry::GetInstance()->GetOrCreateAXTreeID(this)) {}
 
-AXHostDelegate::AXHostDelegate(int32_t tree_id) : tree_id_(tree_id) {
+AXHostDelegate::AXHostDelegate(AXTreeID tree_id) : tree_id_(tree_id) {
   AXTreeIDRegistry::GetInstance()->SetDelegateForID(this, tree_id);
 }
 

@@ -3,10 +3,10 @@ Links should be clickable even when their content is projected into them.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Cursor Info: type=Hand hotSpot=0,0
 PASS window.location.hash is "#link-clicked"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Example link

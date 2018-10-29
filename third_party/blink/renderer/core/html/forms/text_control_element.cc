@@ -492,8 +492,8 @@ VisiblePosition TextControlElement::VisiblePositionForIndex(int index) const {
   return CreateVisiblePosition(it.EndPosition(), TextAffinity::kUpstream);
 }
 
-// TODO(yosin): We should move |TextControlElement::indexForVisiblePosition()|
-// to "AXLayoutObject.cpp" since this funciton is used only there.
+// TODO(yosin): We should move |TextControlElement::IndexForVisiblePosition()|
+// to "ax_layout_object.cc" since this function is used only there.
 int TextControlElement::IndexForVisiblePosition(
     const VisiblePosition& pos) const {
   Position index_position = pos.DeepEquivalent().ParentAnchoredEquivalent();
@@ -872,7 +872,6 @@ String TextControlElement::ValueWithHardLineBreaks() const {
   if (!layout_object)
     return value();
 
-  DCHECK(CanUseInlineBox(*layout_object));
   Node* break_node;
   unsigned break_offset;
   RootInlineBox* line = layout_object->FirstRootBox();

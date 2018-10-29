@@ -1,6 +1,7 @@
 PASS matchMedia("(max-width: 300px)").matches is false
 PASS matchMedia("(max-width: 18.75em)").matches is false
 
+
 eventSender.zoomPageIn()
 PASS matchMedia("(max-width: 300px)").matches is matchMedia("(max-width: 18.75em)").matches
 eventSender.zoomPageIn()
@@ -13,8 +14,10 @@ eventSender.zoomPageIn()
 PASS matchMedia("(max-width: 300px)").matches is matchMedia("(max-width: 18.75em)").matches
 eventSender.zoomPageIn()
 
+
 PASS matchMedia("(max-width: 300px)").matches is true
 PASS matchMedia("(max-width: 18.75em)").matches is true
+
 
 eventSender.zoomPageOut()
 PASS matchMedia("(max-width: 300px)").matches is false

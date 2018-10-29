@@ -46,7 +46,6 @@ Running: testSetTextContentWithEmptyText
 
 Running: testClearTextNodeTextContent
 //*[@id="textTest"]
-//*[@id="textTest"]/text() ""
 
 Running: testAppendChildWhenHidden
 <No highlights>

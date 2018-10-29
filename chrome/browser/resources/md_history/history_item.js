@@ -6,7 +6,7 @@ class HistoryFocusRow extends cr.ui.FocusRow {
   /**
    * @param {!Element} root
    * @param {?Element} boundary
-   * @param {cr.ui.FocusRow.Delegate} delegate
+   * @param {cr.ui.FocusRowDelegate} delegate
    */
   constructor(root, boundary, delegate) {
     super(root, boundary, delegate);
@@ -35,7 +35,7 @@ class HistoryFocusRow extends cr.ui.FocusRow {
 }
 
 cr.define('md_history', function() {
-  /** @implements {cr.ui.FocusRow.Delegate} */
+  /** @implements {cr.ui.FocusRowDelegate} */
   class FocusRowDelegate {
     /** @param {{lastFocused: Object}} historyItemElement */
     constructor(historyItemElement) {

@@ -67,7 +67,6 @@ component("crypto") {
     "signature_verifier.h",
     "symmetric_key.cc",
     "symmetric_key.h",
-    "wincrypt_shim.h",
   ]
 
   # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.

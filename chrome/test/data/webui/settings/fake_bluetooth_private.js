@@ -47,8 +47,9 @@ cr.define('settings', function() {
 
     /** @override */
     connect: function(address, opt_callback) {
-      const device =
+      let device =
           this.bluetoothApi_.getDeviceForTest(address) || {address: address};
+      device = Object.assign({}, device);
       device.paired = true;
       device.connecting = true;
       this.bluetoothApi_.updateDeviceForTest(device);

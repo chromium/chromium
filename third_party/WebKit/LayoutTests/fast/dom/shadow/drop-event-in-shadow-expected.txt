@@ -2,5 +2,5 @@ CONSOLE WARNING: line 24: Element.createShadowRoot is deprecated and will be rem
 PASS successfullyParsed is true
 
 TEST COMPLETE
-PASS: drop event is fired.
 
+PASS: drop event is fired.

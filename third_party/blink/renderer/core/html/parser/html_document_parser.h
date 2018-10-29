@@ -223,7 +223,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       TokenPreloadScanner::ScannerType);
 
   // Let the given HTMLPreloadScanner scan the input it has, and then preloads
-  // resources using the resulting PreloadRequests and |m_preloader|.
+  // resources using the resulting PreloadRequests and |preloader_|.
   void ScanAndPreload(HTMLPreloadScanner*);
   void FetchQueuedPreloads();
 
@@ -249,7 +249,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   XSSAuditor xss_auditor_;
   XSSAuditorDelegate xss_auditor_delegate_;
 
-  // FIXME: m_lastChunkBeforePause, m_tokenizer, m_token, and m_input should be
+  // FIXME: last_chunk_before_pause_, tokenizer_, token_, and input_ should be
   // combined into a single state object so they can be set and cleared together
   // and passed between threads together.
   std::unique_ptr<TokenizedChunk> last_chunk_before_pause_;

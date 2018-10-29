@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 
 namespace blink {
 
@@ -96,7 +96,11 @@ class ObjectVectorAttributeSetter : public AXSparseAttributeSetter {
     for (const auto& id : ids) {
       if (Element* id_element = scope.getElementById(AtomicString(id))) {
         AXObject* ax_id_element = obj.AXObjectCache().GetOrCreate(id_element);
-        if (ax_id_element && !ax_id_element->AccessibilityIsIgnored())
+        if (!ax_id_element)
+          continue;
+        if (AXObject* parent = ax_id_element->ParentObject())
+          parent->UpdateChildrenIfNecessary();
+        if (!ax_id_element->AccessibilityIsIgnored())
           objects.push_back(ax_id_element);
       }
     }
@@ -222,7 +226,7 @@ void AXSparseAttributeAOMPropertyClient::AddRelationListProperty(
   }
 
   HeapVector<Member<AXObject>> objects;
-  for (size_t i = 0; i < relations.length(); ++i) {
+  for (unsigned i = 0; i < relations.length(); ++i) {
     AccessibleNode* accessible_node = relations.item(i);
     if (accessible_node) {
       Element* element = accessible_node->element();

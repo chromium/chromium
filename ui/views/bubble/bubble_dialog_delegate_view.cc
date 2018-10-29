@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/default_style.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -165,6 +164,12 @@ const char* BubbleDialogDelegateView::GetClassName() const {
   return kViewClassName;
 }
 
+void BubbleDialogDelegateView::AddedToWidget() {
+  DialogDelegateView::AddedToWidget();
+  if (GetAnchorView())
+    EnableFocusTraversalFromAnchorView();
+}
+
 void BubbleDialogDelegateView::OnWidgetDestroying(Widget* widget) {
   if (anchor_widget() == widget)
     SetAnchorView(NULL);
@@ -193,7 +198,7 @@ void BubbleDialogDelegateView::OnWidgetActivationChanged(Widget* widget,
   // Install |mac_bubble_closer_| the first time the widget becomes active.
   if (active && !mac_bubble_closer_ && GetWidget()) {
     mac_bubble_closer_ = std::make_unique<ui::BubbleCloser>(
-        GetWidget()->GetNativeWindow(),
+        GetWidget()->GetNativeWindow().GetNativeNSWindow(),
         base::BindRepeating(&BubbleDialogDelegateView::OnDeactivate,
                             base::Unretained(this)));
   }
@@ -269,6 +274,7 @@ void BubbleDialogDelegateView::OnAnchorBoundsChanged() {
 void BubbleDialogDelegateView::EnableFocusTraversalFromAnchorView() {
   DCHECK(GetWidget());
   DCHECK(GetAnchorView());
+  DCHECK(anchor_widget());
   GetWidget()->SetFocusTraversableParent(
       anchor_widget()->GetFocusTraversable());
   GetWidget()->SetFocusTraversableParentView(GetAnchorView());
@@ -343,8 +349,13 @@ void BubbleDialogDelegateView::OnNativeThemeChanged(
 void BubbleDialogDelegateView::Init() {}
 
 void BubbleDialogDelegateView::SetAnchorView(View* anchor_view) {
-  if (GetAnchorView())
+  if (GetAnchorView()) {
+    if (GetWidget()) {
+      GetWidget()->SetFocusTraversableParent(nullptr);
+      GetWidget()->SetFocusTraversableParentView(nullptr);
+    }
     GetAnchorView()->ClearProperty(kAnchoredDialogKey);
+  }
 
   // When the anchor view gets set the associated anchor widget might
   // change as well.
@@ -378,6 +389,8 @@ void BubbleDialogDelegateView::SetAnchorView(View* anchor_view) {
     // bounds when |anchor_view| is NULL, the bubble won't move.)
     OnAnchorBoundsChanged();
 
+    // Make sure that focus can move into here from the anchor view. If there's
+    // no widget yet, focus traversal will be set up in ::AddedToWidget().
     EnableFocusTraversalFromAnchorView();
   }
 }

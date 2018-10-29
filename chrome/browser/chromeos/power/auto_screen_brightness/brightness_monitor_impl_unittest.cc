@@ -10,6 +10,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -48,7 +49,7 @@ class TestObserver : public BrightnessMonitor::Observer {
     return num_user_brightness_change_requested_;
   }
 
-  BrightnessMonitor::Status get_status() {
+  BrightnessMonitor::Status status() {
     CHECK(status_);
     return status_.value();
   }
@@ -81,9 +82,11 @@ class BrightnessMonitorImplTest : public testing::Test {
   // on fake power manager client.
   void SetUpBrightnessMonitor(double init_brightness) {
     if (init_brightness >= 0) {
+      power_manager::SetBacklightBrightnessRequest request;
+      request.set_percent(init_brightness);
       chromeos::DBusThreadManager::Get()
           ->GetPowerManagerClient()
-          ->SetScreenBrightnessPercent(init_brightness, true);
+          ->SetScreenBrightness(request);
     }
 
     monitor_ = BrightnessMonitorImpl::CreateForTesting(
@@ -119,8 +122,7 @@ TEST_F(BrightnessMonitorImplTest, PowerManagerClientBrightnessUnset) {
   // Do not set initial brightess in FakePowerManagerClient.
   SetUpBrightnessMonitor(-1);
   scoped_task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(BrightnessMonitor::Status::kDisabled, monitor_->GetStatus());
-  EXPECT_EQ(BrightnessMonitor::Status::kDisabled, test_observer_->get_status());
+  EXPECT_EQ(BrightnessMonitor::Status::kDisabled, test_observer_->status());
 
   // User request will be ignored.
   ReportBrightnessChangeEvent(
@@ -136,8 +138,7 @@ TEST_F(BrightnessMonitorImplTest, PowerManagerClientBrightnessUnset) {
 TEST_F(BrightnessMonitorImplTest, TwoUserAdjustmentsShortGap) {
   SetUpBrightnessMonitor(10);
   scoped_task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(BrightnessMonitor::Status::kSuccess, monitor_->GetStatus());
-  EXPECT_EQ(BrightnessMonitor::Status::kSuccess, test_observer_->get_status());
+  EXPECT_EQ(BrightnessMonitor::Status::kSuccess, test_observer_->status());
   EXPECT_EQ(0, test_observer_->num_brightness_changes());
   EXPECT_EQ(0, test_observer_->num_user_brightness_change_requested());
 
@@ -169,8 +170,7 @@ TEST_F(BrightnessMonitorImplTest, TwoUserAdjustmentsShortGap) {
 TEST_F(BrightnessMonitorImplTest, TwoUserAdjustmentsLongGap) {
   SetUpBrightnessMonitor(10);
   scoped_task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(BrightnessMonitor::Status::kSuccess, monitor_->GetStatus());
-  EXPECT_EQ(BrightnessMonitor::Status::kSuccess, test_observer_->get_status());
+  EXPECT_EQ(BrightnessMonitor::Status::kSuccess, test_observer_->status());
   EXPECT_EQ(0, test_observer_->num_brightness_changes());
   EXPECT_EQ(0, test_observer_->num_user_brightness_change_requested());
 
@@ -205,7 +205,6 @@ TEST_F(BrightnessMonitorImplTest, TwoUserAdjustmentsLongGap) {
 TEST_F(BrightnessMonitorImplTest, NonUserFollowedByUserShortGap) {
   SetUpBrightnessMonitor(10);
   scoped_task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(BrightnessMonitor::Status::kSuccess, monitor_->GetStatus());
 
   // Non-user.
   ReportBrightnessChangeEvent(
@@ -232,7 +231,6 @@ TEST_F(BrightnessMonitorImplTest, NonUserFollowedByUserShortGap) {
 TEST_F(BrightnessMonitorImplTest, NonUserFollowedByUserLongGap) {
   SetUpBrightnessMonitor(10);
   scoped_task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(BrightnessMonitor::Status::kSuccess, monitor_->GetStatus());
 
   ReportBrightnessChangeEvent(
       20, power_manager::BacklightBrightnessChange_Cause_USER_ACTIVITY);
@@ -258,7 +256,6 @@ TEST_F(BrightnessMonitorImplTest, NonUserFollowedByUserLongGap) {
 TEST_F(BrightnessMonitorImplTest, UserAdjustmentsSeparatedByNonUser) {
   SetUpBrightnessMonitor(10);
   scoped_task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(BrightnessMonitor::Status::kSuccess, monitor_->GetStatus());
 
   // User request.
   ReportBrightnessChangeEvent(

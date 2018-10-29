@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/object_watcher.h"
@@ -99,6 +100,7 @@ bool FilePathWatcherImpl::Watch(const FilePath& path,
   recursive_watch_ = recursive;
 
   File::Info file_info;
+  ScopedBlockingCall scoped_blocking_call(BlockingType::MAY_BLOCK);
   if (GetFileInfo(target_, &file_info)) {
     last_modified_ = file_info.last_modified;
     first_notification_ = Time::Now();
@@ -143,7 +145,11 @@ void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
 
   // Check whether the event applies to |target_| and notify the callback.
   File::Info file_info;
-  bool file_exists = GetFileInfo(target_, &file_info);
+  bool file_exists = false;
+  {
+    ScopedBlockingCall scoped_blocking_call(BlockingType::MAY_BLOCK);
+    file_exists = GetFileInfo(target_, &file_info);
+  }
   if (recursive_watch_) {
     // Only the mtime of |target_| is tracked but in a recursive watch,
     // some other file or directory may have changed so all notifications
@@ -194,6 +200,7 @@ void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
 bool FilePathWatcherImpl::SetupWatchHandle(const FilePath& dir,
                                            bool recursive,
                                            HANDLE* handle) {
+  ScopedBlockingCall scoped_blocking_call(BlockingType::MAY_BLOCK);
   *handle = FindFirstChangeNotification(
       dir.value().c_str(),
       recursive,
@@ -232,6 +239,8 @@ bool FilePathWatcherImpl::SetupWatchHandle(const FilePath& dir,
 bool FilePathWatcherImpl::UpdateWatch() {
   if (handle_ != INVALID_HANDLE_VALUE)
     DestroyWatch();
+
+  ScopedBlockingCall scoped_blocking_call(BlockingType::MAY_BLOCK);
 
   // Start at the target and walk up the directory chain until we succesfully
   // create a watch handle in |handle_|. |child_dirs| keeps a stack of child
@@ -276,6 +285,8 @@ bool FilePathWatcherImpl::UpdateWatch() {
 
 void FilePathWatcherImpl::DestroyWatch() {
   watcher_.StopWatching();
+
+  ScopedBlockingCall scoped_blocking_call(BlockingType::MAY_BLOCK);
   FindCloseChangeNotification(handle_);
   handle_ = INVALID_HANDLE_VALUE;
 }

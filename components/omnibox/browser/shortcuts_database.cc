@@ -196,8 +196,7 @@ bool ShortcutsDatabase::DeleteShortcutsWithIDs(
     const ShortcutIDs& shortcut_ids) {
   bool success = true;
   db_.BeginTransaction();
-  for (ShortcutIDs::const_iterator it(shortcut_ids.begin());
-       it != shortcut_ids.end(); ++it) {
+  for (auto it(shortcut_ids.begin()); it != shortcut_ids.end(); ++it) {
     success &= DeleteShortcut("id", *it, db_);
   }
   db_.CommitTransaction();

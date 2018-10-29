@@ -38,7 +38,7 @@ class PluginPrivateFileSystemBackend::FileSystemIDToPluginMap {
 
   std::string GetPluginIDForURL(const FileSystemURL& url) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    Map::iterator found = map_.find(url.filesystem_id());
+    auto found = map_.find(url.filesystem_id());
     if (url.type() != kFileSystemTypePluginPrivate || found == map_.end()) {
       NOTREACHED() << "Unsupported url is given: " << url.DebugString();
       return std::string();
@@ -102,11 +102,11 @@ PluginPrivateFileSystemBackend::PluginPrivateFileSystemBackend(
                      .Append(kPluginPrivateDirectory)),
       plugin_map_(new FileSystemIDToPluginMap(file_task_runner)),
       weak_factory_(this) {
-  file_util_.reset(new AsyncFileUtilAdapter(new ObfuscatedFileUtil(
+  file_util_ = std::make_unique<AsyncFileUtilAdapter>(new ObfuscatedFileUtil(
       special_storage_policy, base_path_, env_override,
-      base::Bind(&FileSystemIDToPluginMap::GetPluginIDForURL,
-                 base::Owned(plugin_map_)),
-      std::set<std::string>(), nullptr)));
+      base::BindRepeating(&FileSystemIDToPluginMap::GetPluginIDForURL,
+                          base::Owned(plugin_map_)),
+      std::set<std::string>(), nullptr));
 }
 
 PluginPrivateFileSystemBackend::~PluginPrivateFileSystemBackend() {

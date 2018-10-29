@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Child css from external stylesheet. assert_equals: expected (undefined) undefined but got (string) "http://web-platform.test:8001/"
+Harness: the test ran to completion.
+

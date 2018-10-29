@@ -10,11 +10,11 @@ GEN_INCLUDE(['../../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxNavigationManagerUnitTest() {
+function ChromeVoxNavigationManagerUnitTest() {
   ChromeVoxUnitTestBase.call(this);
 }
 
-CvoxNavigationManagerUnitTest.prototype = {
+ChromeVoxNavigationManagerUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -55,7 +55,7 @@ CvoxNavigationManagerUnitTest.prototype = {
     this.waitForCalm(cvox.ChromeVoxTester.setStrategy, strategy)
         .waitForCalm(cvox.ChromeVoxTester.syncToFirstNode);
 
-    var depth = 0;    
+    var depth = 0;
     commandsAndExpectations.forEach((function(ce) {
       this.waitForCalm(function() {
         if (ce.command) {
@@ -119,7 +119,7 @@ CvoxNavigationManagerUnitTest.prototype = {
   }
 };
 
-TEST_F('CvoxNavigationManagerUnitTest', 'SimpleStaticHTML', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'SimpleStaticHTML', function() {
   this.loadHtml(
       '<div>' +
         '<p id="before">Before</p>' +
@@ -145,7 +145,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'SimpleStaticHTML', function() {
  * Test navigation of simple static HTML with some control elements to validate
  *      the text and annotation returned when doing navigation.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'ControlElements', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'ControlElements', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -182,7 +182,8 @@ TEST_F('CvoxNavigationManagerUnitTest', 'ControlElements', function() {
  *     fieldset to validate the text and annotation returned when doing
  *     navigation.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'ControlElementsWithFieldset', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'ControlElementsWithFieldset',
+       function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -222,7 +223,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'ControlElementsWithFieldset', function(
 /**
  * Test skip to next/prev element navigation.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'SkipNavigation', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'SkipNavigation', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -261,7 +262,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'SkipNavigation', function() {
 /**
  * Test finding the next heading.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'FindNextHeading', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'FindNextHeading', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -330,7 +331,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'FindNextHeading', function() {
 /**
  * Test navigation of HTML and ARIA lists.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'ListLinearNav', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'ListLinearNav', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -395,7 +396,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'ListLinearNav', function() {
 /**
  * Test navigation of HTML and ARIA lists.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'ListSmartNav', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'ListSmartNav', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -450,7 +451,8 @@ TEST_F('CvoxNavigationManagerUnitTest', 'ListSmartNav', function() {
 /**
  * Test smart navigation of link collections.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'LinkCollectionSmartNav', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'LinkCollectionSmartNav',
+       function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -507,7 +509,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'LinkCollectionSmartNav', function() {
 /**
  * Test navigation of a control followed by its label.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'ControlThenLabel', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'ControlThenLabel', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -541,7 +543,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'ControlThenLabel', function() {
 /**
  * Test navigation of a label followed by its control.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'LabelThenControl', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'LabelThenControl', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -576,7 +578,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'LabelThenControl', function() {
  * Test navigation of a control inside a label element (yes, this is
  *     valid HTML and should be supported).
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'ControlInsideLabel', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'ControlInsideLabel', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -628,7 +630,8 @@ TEST_F('CvoxNavigationManagerUnitTest', 'ControlInsideLabel', function() {
  * Test navigation of two controls inside a single label element - this
  *     is nonstandard but we should make sure we don't totally fail!
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'TwoControlsInsideLabel', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'TwoControlsInsideLabel',
+       function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -676,7 +679,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'TwoControlsInsideLabel', function() {
  * Test invalid labels - if a label doesn't point to a control, it
  *     should just be read as if it wasn't a label.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'InvalidLabels', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'InvalidLabels', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -718,7 +721,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'InvalidLabels', function() {
 /**
  * Test scrollbar value readout.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'Scrollbar', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'Scrollbar', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -742,7 +745,8 @@ TEST_F('CvoxNavigationManagerUnitTest', 'Scrollbar', function() {
 /**
  * Test ARIA listbox where the whole box gets focus.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'AriaListboxActiveDescendant', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'AriaListboxActiveDescendant',
+       function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -803,7 +807,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'AriaListboxActiveDescendant', function(
 /**
  * Test ARIA listbox where each option gets focus.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'AriaListboxOption', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'AriaListboxOption', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -898,7 +902,8 @@ TEST_F('CvoxNavigationManagerUnitTest', 'AriaListboxOption', function() {
  * Test ARIA listbox where each option gets focus and the outer container has
  * tabindex="-1"
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'AriaListboxOptionOuterFocus', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'AriaListboxOptionOuterFocus',
+       function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -937,7 +942,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'AriaListboxOptionOuterFocus', function(
 /**
  * Test ARIA menus.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'AriaMenus', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'AriaMenus', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -977,7 +982,8 @@ TEST_F('CvoxNavigationManagerUnitTest', 'AriaMenus', function() {
 /**
  * Test left and right navigation at the group level.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'LeftRightGroupNavigation', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'LeftRightGroupNavigation',
+       function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -1019,7 +1025,8 @@ TEST_F('CvoxNavigationManagerUnitTest', 'LeftRightGroupNavigation', function() {
 /**
  * Test left and right navigation at the sentence level.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'LeftRightSentenceNavigation', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'LeftRightSentenceNavigation',
+       function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -1073,7 +1080,8 @@ TEST_F('CvoxNavigationManagerUnitTest', 'LeftRightSentenceNavigation', function(
 /**
  * Test left and right navigation at the word level.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'LeftRightWordNavigation', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'LeftRightWordNavigation',
+       function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -1131,7 +1139,8 @@ TEST_F('CvoxNavigationManagerUnitTest', 'LeftRightWordNavigation', function() {
 /**
  * Test left and right navigation at the character level.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'LeftRightCharacterNavigation', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'LeftRightCharacterNavigation',
+       function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -1205,7 +1214,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'LeftRightCharacterNavigation', function
 /**
  * Test whether fullyDescribe works
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'FullyDescribe', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'FullyDescribe', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -1252,7 +1261,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'FullyDescribe', function() {
 /**
  * Test continuous reading mode.
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'ContinuousReading', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'ContinuousReading', function() {
   this.loadHtml(
     '<div id="continuousTest">' +
       '<p id="before">Before</p>' +
@@ -1274,7 +1283,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'ContinuousReading', function() {
 /**
  * Test HTML5 semantic elements
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'SemanticElts', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'SemanticElts', function() {
   this.loadHtml(
     '<p id="before">Before</p>' +
     '<article>' +
@@ -1331,7 +1340,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'SemanticElts', function() {
 /**
  * Test aria-haspopup
  */
-TEST_F('CvoxNavigationManagerUnitTest', 'AriaHasPopup', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'AriaHasPopup', function() {
   this.loadHtml(
     '<div>' +
       '<p id="before">Before</p>' +
@@ -1374,7 +1383,7 @@ TEST_F('CvoxNavigationManagerUnitTest', 'AriaHasPopup', function() {
 
 
 /** Test Aria Math Roles. */
-TEST_F('CvoxNavigationManagerUnitTest', 'AriaMathRoles', function() {
+TEST_F('ChromeVoxNavigationManagerUnitTest', 'AriaMathRoles', function() {
   this.loadHtml(
     '<p><div role="math"' +
     'aria-label="a times x squared plus b times x plus c equals 0">' +

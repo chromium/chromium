@@ -13,6 +13,7 @@
 #include "ash/assistant/ui/caption_bar.h"
 #include "base/macros.h"
 #include "base/optional.h"
+#include "ui/aura/window_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -30,6 +31,7 @@ class AssistantController;
 // web contents.
 class AssistantWebView : public views::View,
                          public views::ViewObserver,
+                         public aura::WindowObserver,
                          public AssistantControllerObserver,
                          public CaptionBarDelegate {
  public:
@@ -43,7 +45,14 @@ class AssistantWebView : public views::View,
   void ChildPreferredSizeChanged(views::View* child) override;
 
   // views::ViewObserver:
-  void OnViewBoundsChanged(views::View* view) override;
+  void OnViewIsDeleting(views::View* view) override;
+
+  // views::WindowObserver:
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   // CaptionBarDelegate:
   bool OnCaptionButtonPressed(CaptionButtonId id) override;

@@ -51,7 +51,6 @@ namespace blink {
 
 class ExecutionContext;
 class NavigatorServiceWorker;
-class WebServiceWorker;
 class WebServiceWorkerProvider;
 
 class MODULES_EXPORT ServiceWorkerContainer final
@@ -84,9 +83,9 @@ class MODULES_EXPORT ServiceWorkerContainer final
   void ContextDestroyed(ExecutionContext*) override;
 
   // WebServiceWorkerProviderClient implementation.
-  void SetController(std::unique_ptr<WebServiceWorker::Handle>,
+  void SetController(WebServiceWorkerObjectInfo,
                      bool should_notify_controller_change) override;
-  void DispatchMessageEvent(std::unique_ptr<WebServiceWorker::Handle>,
+  void DispatchMessageEvent(WebServiceWorkerObjectInfo,
                             TransferableMessage) override;
   void CountFeature(mojom::WebFeature) override;
 

@@ -248,6 +248,10 @@ def GetClangOptionsFromCommandLine(clang_commandline, out_dir,
       clang_flags.append(include_match.group(1) + path)
     elif flag.startswith('-std') or flag == '-nostdinc++':
       clang_flags.append(flag)
+    elif flag.startswith('-march=arm'):
+      # Value armv7-a of this flag causes a parsing error with a message
+      # "ClangParseError: Failed to parse the translation unit."
+      continue
     elif flag.startswith('-') and flag[1] in 'DWFfmO':
       if flag == '-Wno-deprecated-register' or flag == '-Wno-header-guard':
         # These flags causes libclang (3.3) to crash. Remove it until things

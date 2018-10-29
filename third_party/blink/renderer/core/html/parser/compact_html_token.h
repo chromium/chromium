@@ -37,11 +37,11 @@ namespace blink {
 class QualifiedName;
 
 class CORE_EXPORT CompactHTMLToken {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   struct Attribute {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     Attribute(const String& name, const String& value)
@@ -71,7 +71,7 @@ class CORE_EXPORT CompactHTMLToken {
   const TextPosition& GetTextPosition() const { return text_position_; }
 
   // There is only 1 DOCTYPE token per document, so to avoid increasing the
-  // size of CompactHTMLToken, we just use the m_attributes vector.
+  // size of CompactHTMLToken, we just use the attributes_ vector.
   const String& PublicIdentifier() const { return attributes_[0].GetName(); }
   const String& SystemIdentifier() const { return attributes_[0].Value(); }
   bool DoctypeForcesQuirks() const { return doctype_forces_quirks_; }
@@ -82,7 +82,7 @@ class CORE_EXPORT CompactHTMLToken {
   unsigned is_all8_bit_data_ : 1;
   unsigned doctype_forces_quirks_ : 1;
 
-  String data_;  // "name", "characters", or "data" depending on m_type
+  String data_;  // "name", "characters", or "data" depending on type_
   Vector<Attribute> attributes_;
   TextPosition text_position_;
 };

@@ -44,7 +44,7 @@ class MEDIA_EXPORT KeySystems {
       const std::string& key_system,
       EncryptionMode encryption_scheme) const = 0;
 
-  // Returns the configuration rule for supporting a container and list of
+  // Returns the configuration rule for supporting a container and a list of
   // codecs.
   virtual EmeConfigRule GetContentTypeConfigRule(
       const std::string& key_system,
@@ -94,13 +94,13 @@ MEDIA_EXPORT bool CanUseAesDecryptor(const std::string& key_system);
 
 #if defined(UNIT_TEST)
 // Helper functions to add container/codec types for testing purposes.
-// Call AddCodecMask() first to ensure the mask values passed to
-// AddMimeTypeCodecMask() already exist.
-MEDIA_EXPORT void AddCodecMask(EmeMediaType media_type,
-                               const std::string& codec,
-                               uint32_t mask);
-MEDIA_EXPORT void AddMimeTypeCodecMask(const std::string& mime_type,
-                                       uint32_t mask);
+// Call AddCodecMaskForTesting() first to ensure the mask values passed to
+// AddMimeTypeCodecMaskForTesting() already exist.
+MEDIA_EXPORT void AddCodecMaskForTesting(EmeMediaType media_type,
+                                         const std::string& codec,
+                                         uint32_t mask);
+MEDIA_EXPORT void AddMimeTypeCodecMaskForTesting(const std::string& mime_type,
+                                                 uint32_t mask);
 #endif  // defined(UNIT_TEST)
 
 }  // namespace media

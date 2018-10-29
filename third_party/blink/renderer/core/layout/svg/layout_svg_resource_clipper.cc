@@ -26,7 +26,9 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
+#include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/svg/svg_clip_path_element.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -214,6 +216,13 @@ void LayoutSVGResourceClipper::CalculateLocalClipBounds() {
   }
 }
 
+SVGUnitTypes::SVGUnitType LayoutSVGResourceClipper::ClipPathUnits() const {
+  return ToSVGClipPathElement(GetElement())
+      ->clipPathUnits()
+      ->CurrentValue()
+      ->EnumValue();
+}
+
 AffineTransform LayoutSVGResourceClipper::CalculateClipTransform(
     const FloatRect& reference_box) const {
   AffineTransform transform =
@@ -228,30 +237,27 @@ AffineTransform LayoutSVGResourceClipper::CalculateClipTransform(
 
 bool LayoutSVGResourceClipper::HitTestClipContent(
     const FloatRect& object_bounding_box,
-    const FloatPoint& node_at_point) {
-  FloatPoint point = node_at_point;
-  if (!SVGLayoutSupport::PointInClippingArea(*this, point))
+    const HitTestLocation& location) const {
+  if (!SVGLayoutSupport::IntersectsClipPath(*this, location))
     return false;
 
-  AffineTransform user_space_transform =
-      CalculateClipTransform(object_bounding_box);
-  if (!user_space_transform.IsInvertible())
+  TransformedHitTestLocation local_location(
+      location, CalculateClipTransform(object_bounding_box));
+  if (!local_location)
     return false;
 
-  point = user_space_transform.Inverse().MapPoint(point);
-
+  HitTestResult result(HitTestRequest::kSVGClipContent, *local_location);
   for (const SVGElement& child_element :
        Traversal<SVGElement>::ChildrenOf(*GetElement())) {
     if (!ContributesToClip(child_element))
       continue;
-    HitTestLocation location((LayoutPoint()));
-    HitTestResult result(HitTestRequest::kSVGClipContent, location);
     LayoutObject* layout_object = child_element.GetLayoutObject();
 
     DCHECK(!layout_object->IsBoxModelObject() ||
            !ToLayoutBoxModelObject(layout_object)->HasSelfPaintingLayer());
 
-    if (layout_object->NodeAtFloatPoint(result, point, kHitTestForeground))
+    if (layout_object->NodeAtPoint(result, *local_location, LayoutPoint(),
+                                   kHitTestForeground))
       return true;
   }
   return false;

@@ -28,7 +28,7 @@ class StubCredentialsFilter : public CredentialsFilter {
   bool ShouldSaveEnterprisePasswordHash(
       const autofill::PasswordForm& form) const override;
   void ReportFormLoginSuccess(
-      const PasswordFormManager& form_manager) const override;
+      const PasswordFormManagerInterface& form_manager) const override;
   bool IsSyncAccountEmail(const std::string& username) const override;
 
   // A version of FilterResult without moveable arguments, which cannot be

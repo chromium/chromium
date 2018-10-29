@@ -23,53 +23,17 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
+#include "components/download/quarantine/common_win.h"
 #include "components/download/quarantine/quarantine_features_win.h"
 #include "url/gurl.h"
 
 namespace download {
 namespace {
-
-// [MS-FSCC] Section 5.6.1
-const base::FilePath::CharType kZoneIdentifierStreamSuffix[] =
-    FILE_PATH_LITERAL(":Zone.Identifier");
-
-bool ZoneIdentifierPresentForFile(const base::FilePath& path) {
-  const DWORD kShare = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-  base::FilePath::StringType zone_identifier_path =
-      path.value() + kZoneIdentifierStreamSuffix;
-  base::win::ScopedHandle file(
-      CreateFile(zone_identifier_path.c_str(), GENERIC_READ, kShare, nullptr,
-                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr));
-  if (!file.IsValid())
-    return false;
-
-  // The zone identifier contents is expected to be:
-  // "[ZoneTransfer]\r\nZoneId=3\r\n". The actual ZoneId can be different. A
-  // buffer of 32 bytes is sufficient for verifying the contents.
-  std::vector<char> zone_identifier_contents_buffer(32);
-  DWORD actual_length = 0;
-  if (!ReadFile(file.Get(), &zone_identifier_contents_buffer.front(),
-                zone_identifier_contents_buffer.size(), &actual_length,
-                nullptr))
-    return false;
-  zone_identifier_contents_buffer.resize(actual_length);
-
-  std::string zone_identifier_contents(zone_identifier_contents_buffer.begin(),
-                                       zone_identifier_contents_buffer.end());
-
-  std::vector<base::StringPiece> lines =
-      base::SplitStringPiece(zone_identifier_contents, "\n",
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return lines.size() > 1 && lines[0] == "[ZoneTransfer]" &&
-         lines[1].find("ZoneId=") == 0;
-}
 
 // Returns true for a valid |url| whose length does not exceed
 // INTERNET_MAX_URL_LENGTH.
@@ -93,9 +57,10 @@ QuarantineFileResult SetInternetZoneIdentifierDirectly(
     const GURL& referrer_url) {
   const DWORD kShare = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
   std::wstring path = full_path.value() + kZoneIdentifierStreamSuffix;
-  HANDLE file = CreateFile(path.c_str(), GENERIC_WRITE, kShare, nullptr,
-                           OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-  if (INVALID_HANDLE_VALUE == file)
+  base::win::ScopedHandle file(::CreateFile(path.c_str(), GENERIC_WRITE, kShare,
+                                            nullptr, OPEN_ALWAYS,
+                                            FILE_ATTRIBUTE_NORMAL, nullptr));
+  if (!file.IsValid())
     return QuarantineFileResult::ANNOTATION_FAILED;
 
   static const char kReferrerUrlFormat[] = "ReferrerUrl=%s\r\n";
@@ -117,10 +82,9 @@ QuarantineFileResult SetInternetZoneIdentifierDirectly(
 
   // Don't include trailing null in data written.
   DWORD written = 0;
-  BOOL write_result = WriteFile(file, identifier.c_str(), identifier.length(),
-                                &written, nullptr);
-  BOOL flush_result = FlushFileBuffers(file);
-  CloseHandle(file);
+  BOOL write_result = ::WriteFile(file.Get(), identifier.c_str(),
+                                  identifier.length(), &written, nullptr);
+  BOOL flush_result = FlushFileBuffers(file.Get());
 
   return write_result && flush_result && written == identifier.length()
              ? QuarantineFileResult::OK
@@ -251,7 +215,7 @@ QuarantineFileResult QuarantineFile(const base::FilePath& file,
                                     const GURL& source_url,
                                     const GURL& referrer_url,
                                     const std::string& client_guid) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
 
   int64_t file_size = 0;
   if (!base::PathExists(file) || !base::GetFileSize(file, &file_size))
@@ -307,12 +271,6 @@ QuarantineFileResult QuarantineFile(const base::FilePath& file,
   if (!base::PathExists(file))
     return FailedSaveResultToQuarantineResult(save_result);
   return QuarantineFileResult::OK;
-}
-
-bool IsFileQuarantined(const base::FilePath& file,
-                       const GURL& source_url,
-                       const GURL& referrer_url) {
-  return ZoneIdentifierPresentForFile(file);
 }
 
 }  // namespace download

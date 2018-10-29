@@ -34,9 +34,8 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
 
   std::vector<AccountInfo> accounts =
       signin_ui_util::GetAccountsForDicePromos(profile);
-  int title_resource_id = accounts.empty()
-                              ? no_accounts_promo_message_resource_id
-                              : accounts_promo_message_resource_id;
+  // Always show the accounts promo message for now.
+  const int title_resource_id = accounts_promo_message_resource_id;
 
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::kVertical, gfx::Insets(),
@@ -66,7 +65,8 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
           profiles::GetPlaceholderAvatarIconResourceID());
     }
     signin_button_view_ = new DiceSigninButtonView(
-        accounts[0], account_icon, this, true /* show_drop_down_arrow */);
+        accounts[0], account_icon, this, /*show_drop_down_arrow=*/false,
+        /*use_account_name_as_title=*/true);
 
     // Store account information for submenu.
     accounts_for_submenu_.assign(accounts.begin() + 1, accounts.end());
@@ -108,6 +108,10 @@ void DiceBubbleSyncPromoView::ButtonPressed(views::Button* sender,
   }
 
   NOTREACHED();
+}
+
+views::View* DiceBubbleSyncPromoView::GetSigninButtonForTesting() {
+  return signin_button_view_ ? signin_button_view_->signin_button() : nullptr;
 }
 
 void DiceBubbleSyncPromoView::EnableSync(

@@ -14,9 +14,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_service.h"
@@ -718,15 +718,15 @@ TEST_F(PasswordStoreTest, UpdatePasswordsStoredForAffiliatedWebsites) {
       }
       if (test_remove_and_add_login) {
         store->ScheduleTask(
-            base::Bind(IgnoreResult(&PasswordStore::RemoveLoginSync), store,
-                       *all_credentials[0]));
+            base::BindOnce(IgnoreResult(&PasswordStore::RemoveLoginSync), store,
+                           *all_credentials[0]));
         store->ScheduleTask(
-            base::Bind(IgnoreResult(&PasswordStore::AddLoginSync), store,
-                       *expected_credentials_after_update[0]));
+            base::BindOnce(IgnoreResult(&PasswordStore::AddLoginSync), store,
+                           *expected_credentials_after_update[0]));
       } else {
         store->ScheduleTask(
-            base::Bind(IgnoreResult(&PasswordStore::UpdateLoginSync), store,
-                       *expected_credentials_after_update[0]));
+            base::BindOnce(IgnoreResult(&PasswordStore::UpdateLoginSync), store,
+                           *expected_credentials_after_update[0]));
       }
       WaitForPasswordStore();
       store->RemoveObserver(&mock_observer);
@@ -818,6 +818,72 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliationAndBrandingInformation) {
   }
 }
 
+TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
+  static constexpr PasswordFormData kTestCredentials[] = {
+      {PasswordForm::SCHEME_HTML, kTestAndroidRealm1, "", "", L"", L"", L"",
+       L"username_value_1", L"", true, 1},
+      {PasswordForm::SCHEME_HTML, kTestAndroidRealm2, "", "", L"", L"", L"",
+       L"username_value_2", L"", true, 1},
+      {PasswordForm::SCHEME_HTML, kTestAndroidRealm3, "", "", L"", L"", L"",
+       L"username_value_3", L"", true, 1},
+      {PasswordForm::SCHEME_HTML, kTestWebRealm1, kTestWebOrigin1, "", L"", L"",
+       L"", L"username_value_4", L"", true, 1},
+      // A PasswordFormData with nullptr as the username_value will be converted
+      // in a blacklisted PasswordForm in FillPasswordFormWithData().
+      {PasswordForm::SCHEME_HTML, kTestWebRealm2, kTestWebOrigin2, "", L"", L"",
+       L"", nullptr, L"", true, 1},
+      {PasswordForm::SCHEME_HTML, kTestWebRealm3, kTestWebOrigin3, "", L"", L"",
+       L"", nullptr, L"", true, 1}};
+
+  auto store = base::MakeRefCounted<PasswordStoreDefault>(
+      std::make_unique<LoginDatabase>(test_login_db_file_path()));
+  store->Init(syncer::SyncableService::StartSyncFlare(), nullptr);
+
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  for (const auto& test_credential : kTestCredentials) {
+    all_credentials.push_back(FillPasswordFormWithData(test_credential));
+    store->AddLogin(*all_credentials.back());
+  }
+
+  MockPasswordStoreConsumer mock_consumer;
+  std::vector<std::unique_ptr<PasswordForm>> expected_results;
+  for (const auto& credential : all_credentials)
+    expected_results.push_back(std::make_unique<PasswordForm>(*credential));
+
+  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
+      affiliation_info_for_results = {
+          {kTestWebRealm1, kTestAndroidName1, GURL(kTestAndroidIconURL1)},
+          {kTestWebRealm2, kTestAndroidName2, GURL(kTestAndroidIconURL2)},
+          {/* Pretend affiliation or branding info is unavailable. */},
+          {/* Pretend affiliation or branding info is unavailable. */},
+          {/* Pretend affiliation or branding info is unavailable. */},
+          {/* Pretend affiliation or branding info is unavailable. */}};
+
+  auto mock_helper = std::make_unique<MockAffiliatedMatchHelper>();
+  mock_helper->ExpectCallToInjectAffiliationAndBrandingInformation(
+      affiliation_info_for_results);
+  store->SetAffiliatedMatchHelper(std::move(mock_helper));
+  for (size_t i = 0; i < expected_results.size(); ++i) {
+    expected_results[i]->affiliated_web_realm =
+        affiliation_info_for_results[i].affiliated_web_realm;
+    expected_results[i]->app_display_name =
+        affiliation_info_for_results[i].app_display_name;
+    expected_results[i]->app_icon_url =
+        affiliation_info_for_results[i].app_icon_url;
+  }
+
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsConstRef(
+                  UnorderedPasswordFormElementsAre(&expected_results)));
+  store->GetAllLoginsWithAffiliationAndBrandingInformation(&mock_consumer);
+
+  // Since GetAutofillableLoginsWithAffiliationAndBrandingInformation
+  // schedules a request for affiliation information to UI thread, don't
+  // shutdown UI thread until there are no tasks in the UI queue.
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+}
+
 TEST_F(PasswordStoreTest, GetLoginsForSameOrganizationName) {
   static constexpr const PasswordFormData kSameOrganizationCredentials[] = {
       // Credential that is an exact match of the observed form.
@@ -871,8 +937,7 @@ TEST_F(PasswordStoreTest, GetLoginsForSameOrganizationName) {
   store->ShutdownOnUIThread();
 }
 
-// TODO(crbug.com/706392): Fix password reuse detection for Android.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
 TEST_F(PasswordStoreTest, CheckPasswordReuse) {
   static constexpr PasswordFormData kTestCredentials[] = {
       {PasswordForm::SCHEME_HTML, "https://www.google.com",
@@ -918,9 +983,7 @@ TEST_F(PasswordStoreTest, CheckPasswordReuse) {
 
   store->ShutdownOnUIThread();
 }
-#endif
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
 TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   scoped_refptr<PasswordStoreDefault> store(new PasswordStoreDefault(
       std::make_unique<LoginDatabase>(test_login_db_file_path())));
@@ -1031,6 +1094,39 @@ TEST_F(PasswordStoreTest, SubscriptionAndUnsubscriptionFromSignInEvents) {
   EXPECT_CALL(*notifier_weak, UnsubscribeFromSigninEvents());
   store->ShutdownOnUIThread();
 }
+
+TEST_F(PasswordStoreTest, ReportMetricsForAdvancedProtection) {
+  scoped_refptr<PasswordStoreDefault> store(new PasswordStoreDefault(
+      std::make_unique<LoginDatabase>(test_login_db_file_path())));
+
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterListPref(prefs::kPasswordHashDataList,
+                                     PrefRegistry::NO_REGISTRATION_FLAGS);
+  ASSERT_FALSE(prefs.HasPrefPath(prefs::kSyncPasswordHash));
+  store->Init(syncer::SyncableService::StartSyncFlare(), &prefs);
+
+  base::HistogramTester histogram_tester;
+  store->ReportMetrics("sync_username", false, true);
+  std::string name =
+      "PasswordManager.IsSyncPasswordHashSavedForAdvancedProtectionUser";
+  histogram_tester.ExpectBucketCount(
+      name, metrics_util::IsSyncPasswordHashSaved::NOT_SAVED, 1);
+
+  // Save password.
+  const base::string16 sync_password = base::ASCIIToUTF16("password");
+  const base::string16 input = base::ASCIIToUTF16("123password");
+  store->SaveGaiaPasswordHash(
+      "sync_username", sync_password,
+      metrics_util::SyncPasswordHashChange::SAVED_ON_CHROME_SIGNIN);
+  WaitForPasswordStore();
+
+  store->ReportMetrics("sync_username", false, true);
+  histogram_tester.ExpectBucketCount(
+      name, metrics_util::IsSyncPasswordHashSaved::SAVED_VIA_LIST_PREF, 1);
+
+  store->ShutdownOnUIThread();
+}
+
 #endif
 
 }  // namespace password_manager

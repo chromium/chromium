@@ -70,7 +70,8 @@ class ASH_PUBLIC_EXPORT SignalStrengthImageSource
   SignalStrengthImageSource(ImageType image_type,
                             SkColor color,
                             const gfx::Size& size,
-                            int signal_strength);
+                            int signal_strength,
+                            int padding = 2);
 
   ~SignalStrengthImageSource() override;
 
@@ -87,6 +88,10 @@ class ASH_PUBLIC_EXPORT SignalStrengthImageSource
 
   // On a scale of 0 to kNumNetworkImages - 1, how connected we are.
   int signal_strength_;
+
+  // Padding between outside of icon and edge of the canvas, in dp. This value
+  // stays the same regardless of the canvas size.
+  const int padding_;
 
   DISALLOW_COPY_AND_ASSIGN(SignalStrengthImageSource);
 };

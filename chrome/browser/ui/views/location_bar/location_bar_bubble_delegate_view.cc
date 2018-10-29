@@ -24,30 +24,21 @@ LocationBarBubbleDelegateView::WebContentMouseHandler::WebContentMouseHandler(
   DCHECK(bubble_);
   DCHECK(web_contents_);
   event_monitor_ = views::EventMonitor::CreateWindowMonitor(
-      this, web_contents_->GetTopLevelNativeWindow());
+      this, web_contents_->GetTopLevelNativeWindow(),
+      {ui::ET_MOUSE_PRESSED, ui::ET_KEY_PRESSED, ui::ET_TOUCH_PRESSED});
 }
 
 LocationBarBubbleDelegateView::WebContentMouseHandler::
-    ~WebContentMouseHandler() {}
+    ~WebContentMouseHandler() = default;
 
-void LocationBarBubbleDelegateView::WebContentMouseHandler::OnKeyEvent(
-    ui::KeyEvent* event) {
-  if ((event->key_code() == ui::VKEY_ESCAPE ||
-       web_contents_->IsFocusedElementEditable()) &&
-      event->type() == ui::ET_KEY_PRESSED)
-    bubble_->CloseBubble();
-}
+void LocationBarBubbleDelegateView::WebContentMouseHandler::OnEvent(
+    const ui::Event& event) {
+  if (event.IsKeyEvent() && event.AsKeyEvent()->key_code() != ui::VKEY_ESCAPE &&
+      !web_contents_->IsFocusedElementEditable()) {
+    return;
+  }
 
-void LocationBarBubbleDelegateView::WebContentMouseHandler::OnMouseEvent(
-    ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED)
-    bubble_->CloseBubble();
-}
-
-void LocationBarBubbleDelegateView::WebContentMouseHandler::OnTouchEvent(
-    ui::TouchEvent* event) {
-  if (event->type() == ui::ET_TOUCH_PRESSED)
-    bubble_->CloseBubble();
+  bubble_->CloseBubble();
 }
 
 LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
@@ -70,7 +61,7 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
     SetAnchorRect(gfx::Rect(anchor_point, gfx::Size()));
 }
 
-LocationBarBubbleDelegateView::~LocationBarBubbleDelegateView() {}
+LocationBarBubbleDelegateView::~LocationBarBubbleDelegateView() = default;
 
 void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason) {
   if (reason == USER_GESTURE) {

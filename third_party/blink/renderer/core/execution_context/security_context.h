@@ -32,6 +32,7 @@
 #include "third_party/blink/public/platform/web_insecure_request_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/sandbox_flags.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -47,7 +48,12 @@ struct ParsedFeaturePolicyDeclaration;
 
 using ParsedFeaturePolicy = std::vector<ParsedFeaturePolicyDeclaration>;
 
+// Whether to report policy violations when checking whether a feature is
+// enabled.
+enum class ReportOptions { kReportOnFailure, kDoNotReport };
+
 namespace mojom {
+enum class FeaturePolicyFeature : int32_t;
 enum class IPAddressSpace : int32_t;
 }
 
@@ -122,6 +128,19 @@ class CORE_EXPORT SecurityContext : public GarbageCollectedMixin {
   void InitializeFeaturePolicy(const ParsedFeaturePolicy& parsed_header,
                                const ParsedFeaturePolicy& container_policy,
                                const FeaturePolicy* parent_feature_policy);
+
+  // Tests whether the policy-controlled feature is enabled in this frame.
+  // Optionally sends a report to any registered reporting observers or
+  // Report-To endpoints, via ReportFeaturePolicyViolation(), if the feature is
+  // disabled. The optional ConsoleMessage will be sent to the console if
+  // present, or else a default message will be used instead.
+  bool IsFeatureEnabled(
+      mojom::FeaturePolicyFeature,
+      ReportOptions report_on_failure = ReportOptions::kDoNotReport,
+      const String& message = g_empty_string) const;
+  virtual void ReportFeaturePolicyViolation(
+      mojom::FeaturePolicyFeature,
+      const String& message = g_empty_string) const {}
 
   // Apply the sandbox flag. In addition, if the origin is not already opaque,
   // the origin is updated to a newly created unique opaque origin, setting the

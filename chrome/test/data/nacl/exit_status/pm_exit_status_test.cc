@@ -18,6 +18,7 @@
 #include <sys/fcntl.h>
 #include <unistd.h>
 
+#include "base/format_macros.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/module.h"
 #include "ppapi/cpp/var.h"
@@ -93,14 +94,14 @@ void MyInstance::HandleMessage(const pp::Var& message_data) {
 
     for (size_t ix = 0; kMsgHandlers[ix].request != NULL; ++ix) {
       if (op_name == kMsgHandlers[ix].request) {
-        fprintf(stderr, "found at index %u\n", ix);
+        fprintf(stderr, "found at index %" PRIuS "\n", ix);
         kMsgHandlers[ix].handler(message_data, &sb);
         break;
       }
     }
 
     len = strlen(sb.c_str());
-    fprintf(stderr, "posting reply len %d\n", len);
+    fprintf(stderr, "posting reply len %" PRIuS "\n", len);
     fprintf(stderr, "posting reply \"%s\".\n", sb.c_str());
     fflush(stderr);
 

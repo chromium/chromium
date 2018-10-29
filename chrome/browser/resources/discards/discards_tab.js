@@ -5,6 +5,8 @@
 Polymer({
   is: 'discards-tab',
 
+  behaviors: [SortedTableBehavior],
+
   properties: {
     /**
      * List of tabinfos.
@@ -12,24 +14,6 @@ Polymer({
      */
     tabInfos_: {
       type: Array,
-    },
-
-    /**
-     * The current sort key, exposed to allow dom-repeat to observe changes
-     * to it for re-sorting on changes.
-     */
-    sortKey_: {
-      type: String,
-      value: 'utilityRank',
-    },
-
-    /**
-     * True if sorting in reverse, expowsed to allow dom-repeat to observe
-     * changes to it for re-sorting on changes.
-     */
-    sortReverse_: {
-      type: Boolean,
-      value: false,
     },
   },
 
@@ -41,6 +25,7 @@ Polymer({
 
   /** @override */
   ready: function() {
+    this.setSortKey('utilityRank');
     this.uiHandler_ = discards.getOrCreateUiHandler();
 
     this.updateTable_();
@@ -58,6 +43,11 @@ Polymer({
    * @private
    */
   computeSortFunction_: function(sortKey, sortReverse) {
+    // Polymer 2.0 may invoke multi-property observers before all properties
+    // are defined.
+    if (!sortKey)
+      return (a, b) => 0;
+
     return function(a, b) {
       const comp = discards.compareTabDiscardsInfos(sortKey, a, b);
       return sortReverse ? -comp : comp;
@@ -299,19 +289,6 @@ Polymer({
   },
 
   /**
-   * Sets a new sort key for this item, or toggles the sorting order if called
-   * with the current sort key.
-   * @param {string} sortKey The new sort key.
-   * @private
-   */
-  setSortKey_: function(sortKey) {
-    if (this.sortKey_ == sortKey)
-      this.sortReverse_ = !this.sortReverse_;
-    else
-      this.sortKey_ = sortKey;
-  },
-
-  /**
    * Tests whether an item can be loaded.
    * @param {mojom.TabDiscardsInfo} item The item in question.
    * @return {boolean} true iff the item can be loaded.
@@ -361,47 +338,6 @@ Polymer({
       return true;
     }
     return false;
-  },
-
-  /**
-   * Invoked when the table header is tapped, sets a new sort key and updates
-   * element styles to present the new sort key.
-   * @param {Event} e The event.
-   * @private
-   */
-  onHeaderClick_: function(e) {
-    // Find the sortKey of the clicked header by walking up the path, looking
-    // for an element with a sortKey.
-    /**
-     * A sort key header element.
-     * @typedef {{
-     *   dataset: {
-     *     sortKey: string
-     *   },
-     * }}
-     */
-    let newElement = null;
-    for (let i = 0; i < e.path.length; ++i) {
-      if (e.path[i].dataset.sortKey) {
-        newElement = e.path[i];
-        break;
-      }
-    }
-
-    // Remove the presentation styles on the old sort header.
-    const target = e.currentTarget;
-    let oldElement = target.querySelector('.sort-column');
-    if (oldElement) {
-      oldElement.classList.remove('sort-column');
-    } else {
-      oldElement = target.querySelector('.sort-column-reverse');
-      oldElement.classList.remove('sort-column-reverse');
-    }
-
-    // Update the sort key and the styles on the new sort header.
-    this.setSortKey_(newElement.dataset.sortKey);
-    const newClass = this.sortReverse_ ? 'sort-column-reverse' : 'sort-column';
-    newElement.classList.add(newClass);
   },
 
   /**

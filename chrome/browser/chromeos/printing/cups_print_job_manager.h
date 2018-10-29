@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_CHROMEOS_PRINTING_CUPS_PRINT_JOB_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_PRINTING_CUPS_PRINT_JOB_MANAGER_H_
 
+#include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -76,6 +79,11 @@ class CupsPrintJobManager : public KeyedService {
   base::ObserverList<Observer>::Unchecked observers_;
 
  private:
+  void RecordJobDuration(base::WeakPtr<CupsPrintJob> job);
+
+  // Keyed by CupsPrintJob's unique ID
+  std::map<std::string, base::TimeTicks> print_job_start_times_;
+
   DISALLOW_COPY_AND_ASSIGN(CupsPrintJobManager);
 };
 

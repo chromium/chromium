@@ -85,7 +85,7 @@ class SyncAuthManager : public identity::IdentityManager::Observer {
 
   // Returns the state of the access token and token request, for display in
   // internals UI.
-  const syncer::SyncTokenStatus& GetSyncTokenStatus() const;
+  syncer::SyncTokenStatus GetSyncTokenStatus() const;
 
   // Called by ProfileSyncService when the status of the connection to the Sync
   // server changed. Updates auth error state accordingly.
@@ -101,8 +101,7 @@ class SyncAuthManager : public identity::IdentityManager::Observer {
       const AccountInfo& previous_primary_account_info) override;
   void OnRefreshTokenUpdatedForAccount(const AccountInfo& account_info,
                                        bool is_valid) override;
-  void OnRefreshTokenRemovedForAccount(
-      const AccountInfo& account_info) override;
+  void OnRefreshTokenRemovedForAccount(const std::string& account_id) override;
   void OnAccountsInCookieUpdated(
       const std::vector<AccountInfo>& accounts) override;
 
@@ -121,8 +120,23 @@ class SyncAuthManager : public identity::IdentityManager::Observer {
   // account to another is exposed to observers as a sign-out + sign-in.
   bool UpdateSyncAccountIfNecessary();
 
+  // Invalidates any current access token, which means invalidating it with the
+  // IdentityManager and also dropping our own cached copy. Meant to be called
+  // when we know the current token is invalid (e.g. expired). Does not do
+  // anything about any scheduled or ongoing request.
+  void InvalidateAccessToken();
+
+  // Clears any access token we have, and cancels any pending or scheduled
+  // request for one.
   void ClearAccessTokenAndRequest();
 
+  // Schedules a request for an access token according to the current
+  // |request_access_token_backoff_|. Usually called after some transient error.
+  void ScheduleAccessTokenRequest();
+
+  // Immediately starts an access token request, unless one is already ongoing.
+  // If another request is scheduled for later, it is canceled. Any access token
+  // we currently have is invalidated.
   void RequestAccessToken();
 
   void AccessTokenFetched(GoogleServiceAuthError error,
@@ -165,7 +179,9 @@ class SyncAuthManager : public identity::IdentityManager::Observer {
   net::BackoffEntry request_access_token_backoff_;
 
   // Info about the state of our access token, for display in the internals UI.
-  syncer::SyncTokenStatus token_status_;
+  // "Partial" because this instance is not fully populated - in particular,
+  // |have_token| and |next_token_request_time| get computed on demand.
+  syncer::SyncTokenStatus partial_token_status_;
 
   base::WeakPtrFactory<SyncAuthManager> weak_ptr_factory_;
 

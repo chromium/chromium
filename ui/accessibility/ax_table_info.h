@@ -36,11 +36,11 @@ class AX_EXPORT AXTableInfo {
 
   // The real row count, guaranteed to be at least as large as the
   // maximum row index of any cell.
-  int row_count = 0;
+  int32_t row_count = 0;
 
   // The real column count, guaranteed to be at least as large as the
   // maximum column index of any cell.
-  int col_count = 0;
+  int32_t col_count = 0;
 
   // List of column header nodes IDs for each column index.
   std::vector<std::vector<int32_t>> col_headers;

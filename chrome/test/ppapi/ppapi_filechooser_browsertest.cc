@@ -16,7 +16,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/ppapi/ppapi_test.h"
 #include "chrome/test/ppapi/ppapi_test_select_file_dialog_factory.h"
-#include "components/download/quarantine/quarantine.h"
+#include "components/download/quarantine/test_support.h"
 #include "ppapi/shared_impl/test_utils.h"
 
 #if defined(FULL_SAFE_BROWSING)

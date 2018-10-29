@@ -1,8 +1,7 @@
-CONSOLE WARNING: line 1: document.registerElement is deprecated and will be removed in M73, around March 2019. Please use window.customElements.define instead. See https://www.chromestatus.com/features/4642138092470272 for more details.
+CONSOLE WARNING: document.registerElement is deprecated and will be removed in M73, around March 2019. Please use window.customElements.define instead. See https://www.chromestatus.com/features/4642138092470272 for more details.
 Tests throwing an exception during registration of constructor
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS document.registerElement("x-a", {prototype: proto}) threw exception Exception thrown from getter.
 PASS successfullyParsed is true

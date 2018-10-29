@@ -44,7 +44,6 @@
 #ifndef CHROME_COMMON_EXTENSIONS_CHROME_EXTENSION_MESSAGES_H_
 #error "Failed to include chrome/common/extensions/chrome_extension_messages.h"
 #endif
-#include "chrome/common/extensions/mojom/inline_install_traits.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)

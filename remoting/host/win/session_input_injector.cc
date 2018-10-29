@@ -94,9 +94,6 @@ class SessionInputInjectorWin::Core
   // Used to lock the current session on non-home SKUs of Windows.
   base::Closure lock_workstation_;
 
-  // Used to inject Secure Attention Sequence on XP.
-  std::unique_ptr<SasInjector> sas_injector_;
-
   // Keys currently pressed by the client, used to detect key sequences.
   std::set<ui::DomCode> pressed_keys_;
 

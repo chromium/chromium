@@ -5,7 +5,6 @@
 #include "ash/system/caps_lock_notification_controller.h"
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller.h"
 #include "ash/shell.h"
@@ -44,8 +43,7 @@ std::unique_ptr<Notification> CreateNotification() {
           message_center::RichNotificationData(), nullptr,
           kNotificationCapslockIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
-  if (features::IsSystemTrayUnifiedEnabled())
-    notification->set_pinned(true);
+  notification->set_pinned(true);
   return notification;
 }
 
@@ -98,13 +96,10 @@ void CapsLockNotificationController::OnCapsLockChanged(bool enabled) {
               : mojom::AccessibilityAlert::CAPS_OFF);
 
   if (enabled) {
-    if (!notification_shown_ || features::IsSystemTrayUnifiedEnabled()) {
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_STATUS_AREA_CAPS_LOCK_POPUP);
+    Shell::Get()->metrics()->RecordUserMetricsAction(
+        UMA_STATUS_AREA_CAPS_LOCK_POPUP);
 
-      MessageCenter::Get()->AddNotification(CreateNotification());
-      notification_shown_ = true;
-    }
+    MessageCenter::Get()->AddNotification(CreateNotification());
   } else if (MessageCenter::Get()->FindVisibleNotificationById(
                  kCapsLockNotificationId)) {
     MessageCenter::Get()->RemoveNotification(kCapsLockNotificationId, false);

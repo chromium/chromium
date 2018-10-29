@@ -181,9 +181,9 @@ std::unique_ptr<TrialToken> TrialToken::Parse(
   datadict->GetString("feature", &feature_name);
   datadict->GetInteger("expiry", &expiry_timestamp);
 
-  // Ensure that the origin is a valid (non-unique) origin URL.
+  // Ensure that the origin is a valid (non-opaque) origin URL.
   url::Origin origin = url::Origin::Create(GURL(origin_string));
-  if (origin.unique()) {
+  if (origin.opaque()) {
     return nullptr;
   }
 

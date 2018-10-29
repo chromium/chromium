@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome menghemat waktu Anda dengan membawa akun ke web. Anda dapat menambahkan atau menghapus akun di Setelan.</translation>
 <translation id="3282568296779691940">Masuk ke Chrome</translation>
 <translation id="3345341804167540816">Gunakan Chrome di Mana Saja</translation>
-<translation id="3678774398092457402">Ingin Chrome menyimpan sandi untuk situs ini?</translation>
 <translation id="384394811301901750">Google Chrome saat ini tidak dapat menggunakan kamera</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Anda beralih akun sinkronisasi dari <ph name="USER_EMAIL1" /> ke <ph name="USER_EMAIL2" />. Data Chrome yang sudah ada dikelola oleh <ph name="DOMAIN" />. Tindakan ini akan menghapus data Anda dari perangkat berikut, namun data Anda akan tetap tersedia di <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" /> dapat disesuaikan kapan saja. Google dapat menggunakan konten di situs yang Anda buka, interaksi dan aktivitas browser untuk mempersonalisasi Chrome dan layanan Google seperti Terjemahan, Penelusuran, dan iklan.</translation>
 <translation id="5639704535586432836">Buka Setelan &gt; Privasi &gt; Kamera &gt; Google Chrome, lalu aktifkan kamera.</translation>
 <translation id="5642200033778930880">Google Chrome tidak dapat menggunakan kamera dalam mode Layar Terpisah</translation>
-<translation id="5703130498371792817">Suka menggunakan Chrome? <ph name="BEGIN_LINK" />Beri nilai aplikasi ini<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Tips Chrome. Beberapa tombol sekarang terdapat di bagian bawah layar, seperti Kembali, Teruskan, dan Telusuri.</translation>
 <translation id="6036420186814142909">Google Chrome memiliki fitur yang dapat membantu Anda mengelola data internet dan seberapa cepat Anda dapat memuat halaman web.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Persyaratan Layanan Google Chrome</translation>
 <translation id="7165736900384873061">Mulai menggunakan pemindai QR Google Chrome</translation>
 <translation id="7172660552945675509">Kiat: <ph name="BEGIN_LINK" />Pindahkan Chrome ke dok<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome menggunakan Face ID untuk memastikan akses terotorisasi ke sandi Anda.</translation>
 <translation id="7265369419224458312">Akses tab yang telah Anda buka di komputer, di sini. Cukup buka Chrome di komputer, buka menu, lalu pilih "Masuk ke Chrome…”</translation>
 <translation id="728488472449859922">Mengaktifkan pemindai QR Google Chrome</translation>
 <translation id="7400722733683201933">Tentang Google Chrome</translation>

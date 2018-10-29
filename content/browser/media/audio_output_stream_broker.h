@@ -44,11 +44,14 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
   void CreateStream(audio::mojom::StreamFactory* factory) final;
 
  private:
+  using DisconnectReason =
+      media::mojom::AudioOutputStreamObserver::DisconnectReason;
+
   void StreamCreated(media::mojom::AudioOutputStreamPtr stream,
                      media::mojom::ReadWriteAudioDataPipePtr data_pipe);
   void ObserverBindingLost(uint32_t reason, const std::string& description);
-  void ClientBindingLost();
-  void Cleanup();
+  void Cleanup(DisconnectReason reason);
+  bool AwaitingCreated() const;
 
   SEQUENCE_CHECKER(owning_sequence_);
 
@@ -57,8 +60,8 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
   const base::UnguessableToken group_id_;
   const base::Optional<base::UnguessableToken> processing_id_;
 
-  // Indicates that CreateStream has been called, but not StreamCreated.
-  bool awaiting_created_ = false;
+  // Set while CreateStream() has been called, but not StreamCreated().
+  base::TimeTicks stream_creation_start_time_;
 
   DeleterCallback deleter_;
 
@@ -68,9 +71,7 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
   mojo::AssociatedBinding<media::mojom::AudioOutputStreamObserver>
       observer_binding_;
 
-  media::mojom::AudioOutputStreamObserver::DisconnectReason disconnect_reason_ =
-      media::mojom::AudioOutputStreamObserver::DisconnectReason::
-          kDocumentDestroyed;
+  DisconnectReason disconnect_reason_ = DisconnectReason::kDocumentDestroyed;
 
   base::WeakPtrFactory<AudioOutputStreamBroker> weak_ptr_factory_;
 

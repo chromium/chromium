@@ -223,7 +223,6 @@ function getContentShellBinaryPath(dirPath) {
 
 function runTests(buildDirectoryPath, useDebugDevtools) {
   var testArgs = getInspectorTests().concat([
-    '--no-pixel-tests',
     '--build-directory',
     buildDirectoryPath,
     '--target',

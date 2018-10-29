@@ -12,7 +12,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/assistant_controller.h"
 #include "ash/cast_config_controller.h"
-#include "ash/client_image_registry.h"
 #include "ash/display/ash_display_controller.h"
 #include "ash/display/cros_display_config.h"
 #include "ash/display/display_output_protection.h"
@@ -20,10 +19,10 @@
 #include "ash/first_run/first_run_helper.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "ash/ime/ime_controller.h"
+#include "ash/keyboard/ash_keyboard_controller.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/magnifier/docked_magnifier_controller.h"
 #include "ash/media_controller.h"
-#include "ash/message_center/message_center_controller.h"
 #include "ash/metrics/time_to_first_present_recorder.h"
 #include "ash/new_window_controller.h"
 #include "ash/note_taking_controller.h"
@@ -35,6 +34,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/shutdown_controller.h"
 #include "ash/system/locale/locale_notification_controller.h"
+#include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/vpn_list.h"
 #include "ash/system/night_light/night_light_controller.h"
@@ -47,6 +47,7 @@
 #include "base/lazy_instance.h"
 #include "base/single_thread_task_runner.h"
 #include "chromeos/chromeos_switches.h"
+#include "ui/keyboard/keyboard_controller.h"
 
 namespace ash {
 namespace mojo_interface_factory {
@@ -105,11 +106,6 @@ void BindCastConfigOnMainThread(mojom::CastConfigRequest request) {
   Shell::Get()->cast_config()->BindRequest(std::move(request));
 }
 
-void BindClientImageRegistryRequestOnMainThread(
-    mojom::ClientImageRegistryRequest request) {
-  Shell::Get()->client_image_registry()->BindRequest(std::move(request));
-}
-
 void BindDisplayOutputProtectionRequestOnMainThread(
     mojom::DisplayOutputProtectionRequest request) {
   Shell::Get()->display_output_protection()->BindRequest(std::move(request));
@@ -137,6 +133,11 @@ void BindHighlighterControllerRequestOnMainThread(
 
 void BindImeControllerRequestOnMainThread(mojom::ImeControllerRequest request) {
   Shell::Get()->ime_controller()->BindRequest(std::move(request));
+}
+
+void BindKeyboardControllerRequestOnMainThread(
+    mojom::KeyboardControllerRequest request) {
+  Shell::Get()->ash_keyboard_controller()->BindRequest(std::move(request));
 }
 
 void BindLocaleNotificationControllerOnMainThread(
@@ -258,9 +259,6 @@ void RegisterInterfaces(
   registry->AddInterface(base::BindRepeating(&BindCastConfigOnMainThread),
                          main_thread_task_runner);
   registry->AddInterface(
-      base::BindRepeating(&BindClientImageRegistryRequestOnMainThread),
-      main_thread_task_runner);
-  registry->AddInterface(
       base::BindRepeating(&BindDisplayOutputProtectionRequestOnMainThread),
       main_thread_task_runner);
   if (features::IsDockedMagnifierEnabled()) {
@@ -279,6 +277,9 @@ void RegisterInterfaces(
       main_thread_task_runner);
   registry->AddInterface(
       base::BindRepeating(&BindImeControllerRequestOnMainThread),
+      main_thread_task_runner);
+  registry->AddInterface(
+      base::BindRepeating(&BindKeyboardControllerRequestOnMainThread),
       main_thread_task_runner);
   registry->AddInterface(
       base::BindRepeating(&BindLocaleNotificationControllerOnMainThread),

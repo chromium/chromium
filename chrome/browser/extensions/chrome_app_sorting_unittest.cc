@@ -221,16 +221,14 @@ class ChromeAppSortingInitializeWithNoApps : public PrefsPrepopulatedTestBase {
         app_sorting()->GetPageOrdinal(extensions::kWebStoreAppId);
     EXPECT_TRUE(page.IsValid());
 
-    ChromeAppSorting::PageOrdinalMap::iterator page_it =
-        app_sorting()->ntp_ordinal_map_.find(page);
+    auto page_it = app_sorting()->ntp_ordinal_map_.find(page);
     EXPECT_TRUE(page_it != app_sorting()->ntp_ordinal_map_.end());
 
     syncer::StringOrdinal app_launch =
         app_sorting()->GetPageOrdinal(extensions::kWebStoreAppId);
     EXPECT_TRUE(app_launch.IsValid());
 
-    ChromeAppSorting::AppLaunchOrdinalMap::iterator app_launch_it =
-        page_it->second.find(app_launch);
+    auto app_launch_it = page_it->second.find(app_launch);
     EXPECT_TRUE(app_launch_it != page_it->second.end());
   }
 };
@@ -549,7 +547,7 @@ class ChromeAppSortingPageOrdinalMapping : public PrefsPrepopulatedTestBase {
     EXPECT_EQ(1U, app_sorting()->ntp_ordinal_map_.size());
     EXPECT_EQ(2U, app_sorting()->ntp_ordinal_map_[first_ordinal].size());
 
-    ChromeAppSorting::AppLaunchOrdinalMap::iterator it =
+    auto it =
         app_sorting()->ntp_ordinal_map_[first_ordinal].find(first_ordinal);
     EXPECT_EQ(ext_1, it->second);
     ++it;

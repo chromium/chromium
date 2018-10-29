@@ -71,9 +71,14 @@ void UrlIndex::GetNodesByUrl(const GURL& url,
   }
 }
 
-bool UrlIndex::HasBookmarks() {
+bool UrlIndex::HasBookmarks() const {
   base::AutoLock url_lock(url_lock_);
   return !nodes_ordered_by_url_set_.empty();
+}
+
+size_t UrlIndex::UrlCount() const {
+  base::AutoLock url_lock(url_lock_);
+  return nodes_ordered_by_url_set_.size();
 }
 
 bool UrlIndex::IsBookmarked(const GURL& url) {

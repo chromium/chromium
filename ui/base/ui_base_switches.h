@@ -27,6 +27,7 @@ UI_BASE_EXPORT extern const char kDisableTouchAdjustment[];
 UI_BASE_EXPORT extern const char kDisableTouchDragDrop[];
 UI_BASE_EXPORT extern const char kEnableTouchDragDrop[];
 UI_BASE_EXPORT extern const char kEnableTouchableAppContextMenu[];
+UI_BASE_EXPORT extern const char kForceDarkMode[];
 UI_BASE_EXPORT extern const char kForceHighContrast[];
 UI_BASE_EXPORT extern const char kLang[];
 UI_BASE_EXPORT extern const char kMaterialDesignInkDropAnimationSpeed[];
@@ -35,13 +36,10 @@ UI_BASE_EXPORT extern const char kMaterialDesignInkDropAnimationSpeedSlow[];
 UI_BASE_EXPORT extern const char kShowOverdrawFeedback[];
 UI_BASE_EXPORT extern const char kSlowDownCompositingScaleFactor[];
 UI_BASE_EXPORT extern const char kTintGlCompositedContent[];
-UI_BASE_EXPORT extern const char kTopChromeMD[];
-UI_BASE_EXPORT extern const char kTopChromeMDMaterial[];
-UI_BASE_EXPORT extern const char kTopChromeMDMaterialAuto[];
-UI_BASE_EXPORT extern const char kTopChromeMDMaterialHybrid[];
-UI_BASE_EXPORT extern const char kTopChromeMDMaterialTouchOptimized[];
-UI_BASE_EXPORT extern const char kTopChromeMDMaterialRefresh[];
-UI_BASE_EXPORT extern const char kTopChromeMDMaterialRefreshTouchOptimized[];
+UI_BASE_EXPORT extern const char kTopChromeTouchUi[];
+UI_BASE_EXPORT extern const char kTopChromeTouchUiAuto[];
+UI_BASE_EXPORT extern const char kTopChromeTouchUiDisabled[];
+UI_BASE_EXPORT extern const char kTopChromeTouchUiEnabled[];
 UI_BASE_EXPORT extern const char kUIDisablePartialSwap[];
 
 // Test related.

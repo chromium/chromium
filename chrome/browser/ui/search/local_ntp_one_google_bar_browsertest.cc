@@ -83,7 +83,9 @@ class LocalNTPOneGoogleBarSmokeTest : public InProcessBrowserTest {
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     OneGoogleBarServiceFactory::GetInstance()->SetTestingFactory(
-        context, &LocalNTPOneGoogleBarSmokeTest::CreateOneGoogleBarService);
+        context,
+        base::BindRepeating(
+            &LocalNTPOneGoogleBarSmokeTest::CreateOneGoogleBarService));
   }
 
   base::test::ScopedFeatureList feature_list_;

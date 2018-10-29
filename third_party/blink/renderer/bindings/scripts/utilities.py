@@ -462,9 +462,11 @@ def shorten_union_name(union_type):
 
 
 def to_snake_case(name):
-    if name.lower() == name:
-        return name
     return NameStyleConverter(name).to_snake_case()
+
+
+def to_header_guard(path):
+    return NameStyleConverter(path).to_header_guard()
 
 
 def format_remove_duplicates(text, patterns):

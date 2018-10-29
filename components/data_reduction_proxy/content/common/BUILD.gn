@@ -1,0 +1,34 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("common") {
+  sources = [
+    "data_reduction_proxy_url_loader_throttle.cc",
+    "data_reduction_proxy_url_loader_throttle.h",
+    "header_util.cc",
+    "header_util.h",
+  ]
+
+  deps = [
+    "//components/data_reduction_proxy/core/common",
+    "//content/public/common",
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "data_reduction_proxy_url_loader_throttle_unittest.cc",
+    "header_util_unittest.cc",
+  ]
+
+  deps = [
+    ":common",
+    "//components/data_reduction_proxy/core/common",
+    "//content/public/common",
+    "//net",
+    "//testing/gtest",
+  ]
+}

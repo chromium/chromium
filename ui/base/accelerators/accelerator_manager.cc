@@ -48,7 +48,7 @@ void AcceleratorManager::Register(
 
 void AcceleratorManager::Unregister(const Accelerator& accelerator,
                                     AcceleratorTarget* target) {
-  AcceleratorMap::iterator map_iter = accelerators_.find(accelerator);
+  auto map_iter = accelerators_.find(accelerator);
   if (map_iter == accelerators_.end()) {
     NOTREACHED() << "Unregistering non-existing accelerator";
     return;
@@ -58,7 +58,7 @@ void AcceleratorManager::Unregister(const Accelerator& accelerator,
 }
 
 void AcceleratorManager::UnregisterAll(AcceleratorTarget* target) {
-  for (AcceleratorMap::iterator map_iter = accelerators_.begin();
+  for (auto map_iter = accelerators_.begin();
        map_iter != accelerators_.end();) {
     AcceleratorTargetList* targets = &map_iter->second.second;
     if (!base::ContainsValue(*targets, target)) {
@@ -72,20 +72,19 @@ void AcceleratorManager::UnregisterAll(AcceleratorTarget* target) {
 }
 
 bool AcceleratorManager::IsRegistered(const Accelerator& accelerator) const {
-  AcceleratorMap::const_iterator map_iter = accelerators_.find(accelerator);
+  auto map_iter = accelerators_.find(accelerator);
   return map_iter != accelerators_.end() && !map_iter->second.second.empty();
 }
 
 bool AcceleratorManager::Process(const Accelerator& accelerator) {
-  AcceleratorMap::iterator map_iter = accelerators_.find(accelerator);
+  auto map_iter = accelerators_.find(accelerator);
   if (map_iter == accelerators_.end())
     return false;
 
   // We have to copy the target list here, because an AcceleratorPressed
   // event handler may modify the list.
   AcceleratorTargetList targets(map_iter->second.second);
-  for (AcceleratorTargetList::iterator iter = targets.begin();
-       iter != targets.end(); ++iter) {
+  for (auto iter = targets.begin(); iter != targets.end(); ++iter) {
     if ((*iter)->CanHandleAccelerators() &&
         (*iter)->AcceleratorPressed(accelerator)) {
       return true;
@@ -97,7 +96,7 @@ bool AcceleratorManager::Process(const Accelerator& accelerator) {
 
 bool AcceleratorManager::HasPriorityHandler(
     const Accelerator& accelerator) const {
-  AcceleratorMap::const_iterator map_iter = accelerators_.find(accelerator);
+  auto map_iter = accelerators_.find(accelerator);
   if (map_iter == accelerators_.end() || map_iter->second.second.empty())
     return false;
 
@@ -113,8 +112,7 @@ bool AcceleratorManager::HasPriorityHandler(
 void AcceleratorManager::UnregisterImpl(AcceleratorMap::iterator map_iter,
                                         AcceleratorTarget* target) {
   AcceleratorTargetList* targets = &map_iter->second.second;
-  AcceleratorTargetList::iterator target_iter =
-      std::find(targets->begin(), targets->end(), target);
+  auto target_iter = std::find(targets->begin(), targets->end(), target);
   if (target_iter == targets->end()) {
     NOTREACHED() << "Unregistering accelerator for wrong target";
     return;

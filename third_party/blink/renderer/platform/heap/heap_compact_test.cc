@@ -245,20 +245,20 @@ TEST(HeapCompactTest, CompactVector) {
   Persistent<IntVector> vector = new IntVector(10, val);
   EXPECT_EQ(10u, vector->size());
 
-  for (size_t i = 0; i < vector->size(); ++i)
-    EXPECT_EQ(val, (*vector)[i]);
+  for (IntWrapper* item : *vector)
+    EXPECT_EQ(val, item);
 
   PerformHeapCompaction();
 
-  for (size_t i = 0; i < vector->size(); ++i)
-    EXPECT_EQ(val, (*vector)[i]);
+  for (IntWrapper* item : *vector)
+    EXPECT_EQ(val, item);
 }
 
 TEST(HeapCompactTest, CompactHashMap) {
   ClearOutOldGarbage();
 
   Persistent<IntMap> int_map = new IntMap();
-  for (size_t i = 0; i < 100; ++i) {
+  for (wtf_size_t i = 0; i < 100; ++i) {
     IntWrapper* val = IntWrapper::Create(i, HashTablesAreCompacted);
     int_map->insert(val, 100 - i);
   }
@@ -282,7 +282,7 @@ TEST(HeapCompactTest, CompactVectorPartHashMap) {
   Persistent<IntMapVector> int_map_vector = new IntMapVector();
   for (size_t i = 0; i < 10; ++i) {
     IntMap map;
-    for (size_t j = 0; j < 10; ++j) {
+    for (wtf_size_t j = 0; j < 10; ++j) {
       IntWrapper* val = IntWrapper::Create(j, VectorsAreCompacted);
       map.insert(val, 10 - j);
     }
@@ -315,9 +315,9 @@ TEST(HeapCompactTest, CompactHashPartVector) {
   using IntVectorMap = HeapHashMap<int, IntVector>;
 
   Persistent<IntVectorMap> int_vector_map = new IntVectorMap();
-  for (size_t i = 0; i < 10; ++i) {
+  for (wtf_size_t i = 0; i < 10; ++i) {
     IntVector vector;
-    for (size_t j = 0; j < 10; ++j) {
+    for (wtf_size_t j = 0; j < 10; ++j) {
       vector.push_back(IntWrapper::Create(j, HashTablesAreCompacted));
     }
     int_vector_map->insert(1 + i, vector);
@@ -326,7 +326,7 @@ TEST(HeapCompactTest, CompactHashPartVector) {
   EXPECT_EQ(10u, int_vector_map->size());
   for (const IntVector& int_vector : int_vector_map->Values()) {
     EXPECT_EQ(10u, int_vector.size());
-    for (size_t i = 0; i < int_vector.size(); ++i) {
+    for (wtf_size_t i = 0; i < int_vector.size(); ++i) {
       EXPECT_EQ(static_cast<int>(i), int_vector[i]->Value());
     }
   }
@@ -337,7 +337,7 @@ TEST(HeapCompactTest, CompactHashPartVector) {
   EXPECT_EQ(10u, int_vector_map->size());
   for (const IntVector& int_vector : int_vector_map->Values()) {
     EXPECT_EQ(10u, int_vector.size());
-    for (size_t i = 0; i < int_vector.size(); ++i) {
+    for (wtf_size_t i = 0; i < int_vector.size(); ++i) {
       EXPECT_EQ(static_cast<int>(i), int_vector[i]->Value());
     }
   }
@@ -350,13 +350,13 @@ TEST(HeapCompactTest, CompactDeques) {
   }
   EXPECT_EQ(8u, deque->size());
 
-  for (size_t i = 0; i < deque->size(); ++i)
+  for (wtf_size_t i = 0; i < deque->size(); ++i)
     EXPECT_EQ(static_cast<int>(7 - i), deque->at(i)->Value());
 
   PerformHeapCompaction();
   EXPECT_TRUE(IntWrapper::did_verify_at_least_once);
 
-  for (size_t i = 0; i < deque->size(); ++i)
+  for (wtf_size_t i = 0; i < deque->size(); ++i)
     EXPECT_EQ(static_cast<int>(7 - i), deque->at(i)->Value());
 }
 
@@ -369,13 +369,13 @@ TEST(HeapCompactTest, CompactDequeVectors) {
   }
   EXPECT_EQ(8u, deque->size());
 
-  for (size_t i = 0; i < deque->size(); ++i)
+  for (wtf_size_t i = 0; i < deque->size(); ++i)
     EXPECT_EQ(static_cast<int>(7 - i), deque->at(i).at(i)->Value());
 
   PerformHeapCompaction();
   EXPECT_TRUE(IntWrapper::did_verify_at_least_once);
 
-  for (size_t i = 0; i < deque->size(); ++i)
+  for (wtf_size_t i = 0; i < deque->size(); ++i)
     EXPECT_EQ(static_cast<int>(7 - i), deque->at(i).at(i)->Value());
 }
 

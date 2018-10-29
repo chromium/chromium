@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOAD_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOAD_REQUEST_H_
 
-#include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/web/web_triggering_event_info.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -34,7 +33,6 @@
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/loader/fetch/substitute_data.h"
 
 namespace blink {
 
@@ -51,16 +49,8 @@ struct CORE_EXPORT FrameLoadRequest {
                    const AtomicString& frame_name);
   FrameLoadRequest(Document* origin_document,
                    const ResourceRequest&,
-                   const SubstituteData&);
-  FrameLoadRequest(Document* origin_document,
-                   const ResourceRequest&,
                    const AtomicString& frame_name,
                    ContentSecurityPolicyDisposition);
-  FrameLoadRequest(Document* origin_document,
-                   const ResourceRequest&,
-                   const AtomicString& frame_name,
-                   ContentSecurityPolicyDisposition,
-                   const base::UnguessableToken& devtools_navigation_token);
 
   Document* OriginDocument() const { return origin_document_.Get(); }
 
@@ -72,13 +62,6 @@ struct CORE_EXPORT FrameLoadRequest {
   const AtomicString& FrameName() const { return frame_name_; }
   void SetFrameName(const AtomicString& frame_name) {
     frame_name_ = frame_name;
-  }
-
-  const SubstituteData& GetSubstituteData() const { return substitute_data_; }
-
-  bool ReplacesCurrentItem() const { return replaces_current_item_; }
-  void SetReplacesCurrentItem(bool replaces_current_item) {
-    replaces_current_item_ = replaces_current_item;
   }
 
   ClientRedirectPolicy ClientRedirect() const { return client_redirect_; }
@@ -119,11 +102,6 @@ struct CORE_EXPORT FrameLoadRequest {
     return should_check_main_world_content_security_policy_;
   }
 
-  // See DocumentLoader::devtools_navigation_token_ for documentation.
-  const base::UnguessableToken& GetDevToolsNavigationToken() const {
-    return devtools_navigation_token_;
-  }
-
   // Sets the BlobURLToken that should be used when fetching the resource. This
   // is needed for blob URLs, because the blob URL might be revoked before the
   // actual fetch happens, which would result in incorrect failures to fetch.
@@ -155,19 +133,10 @@ struct CORE_EXPORT FrameLoadRequest {
   base::TimeTicks GetInputStartTime() const { return input_start_time_; }
 
  private:
-  FrameLoadRequest(Document* origin_document,
-                   const ResourceRequest&,
-                   const AtomicString& frame_name,
-                   const SubstituteData&,
-                   ContentSecurityPolicyDisposition,
-                   const base::UnguessableToken& devtools_navigation_token);
-
   Member<Document> origin_document_;
   ResourceRequest resource_request_;
   AtomicString frame_name_;
   AtomicString href_translate_;
-  SubstituteData substitute_data_;
-  bool replaces_current_item_;
   ClientRedirectPolicy client_redirect_;
   WebTriggeringEventInfo triggering_event_info_ =
       WebTriggeringEventInfo::kNotFromEvent;
@@ -176,7 +145,6 @@ struct CORE_EXPORT FrameLoadRequest {
   ShouldSetOpener should_set_opener_;
   ContentSecurityPolicyDisposition
       should_check_main_world_content_security_policy_;
-  base::UnguessableToken devtools_navigation_token_;
   scoped_refptr<base::RefCountedData<mojom::blink::BlobURLTokenPtr>>
       blob_url_token_;
   base::TimeTicks input_start_time_;

@@ -285,7 +285,7 @@ Background::Renderer::Renderer()
   }
 
   GLuint buffers[2];
-  glGenBuffersARB(2, buffers);
+  glGenBuffers(2, buffers);
   vertex_buffer_ = buffers[0];
   index_buffer_ = buffers[1];
   index_count_ = indices.size();

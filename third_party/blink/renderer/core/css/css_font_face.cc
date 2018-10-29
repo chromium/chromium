@@ -205,14 +205,11 @@ void CSSFontFace::SetLoadStatus(FontFace::LoadStatusType new_status) {
   if (!segmented_font_face_ || !font_face_->GetExecutionContext())
     return;
 
-  if (font_face_->GetExecutionContext()->IsDocument()) {
-    Document* document = ToDocument(font_face_->GetExecutionContext());
+  if (auto* document = DynamicTo<Document>(font_face_->GetExecutionContext())) {
     if (new_status == FontFace::kLoading)
       FontFaceSetDocument::From(*document)->BeginFontLoading(font_face_);
-  }
-  if (font_face_->GetExecutionContext()->IsWorkerGlobalScope()) {
-    WorkerGlobalScope* scope =
-        ToWorkerGlobalScope(font_face_->GetExecutionContext());
+  } else if (auto* scope = DynamicTo<WorkerGlobalScope>(
+                 font_face_->GetExecutionContext())) {
     if (new_status == FontFace::kLoading)
       FontFaceSetWorker::From(*scope)->BeginFontLoading(font_face_);
   }

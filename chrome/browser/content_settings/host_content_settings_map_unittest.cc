@@ -30,7 +30,6 @@
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -1948,11 +1947,10 @@ void ReloadProviders(PrefService* pref_service,
       HostContentSettingsMap::EPHEMERAL_PROVIDER);
 }
 
-// Tests if availability of EnableEphemeralFlashPermission switch results in
-// Flash permissions being reset after restarting.
-// The flag is not available on Android.
+// Tests that Flash permissions are reset after restarting.
+// Flash, and consequently, Flash permissions are not available on Android.
 #if !defined(OS_ANDROID)
-TEST_F(HostContentSettingsMapTest, FlashEphemeralPermissionSwitch) {
+TEST_F(HostContentSettingsMapTest, FlashPermissionsAreEphemeral) {
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -1961,47 +1959,31 @@ TEST_F(HostContentSettingsMapTest, FlashEphemeralPermissionSwitch) {
   map->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_PLUGINS,
                                 CONTENT_SETTING_ASK);
 
-  for (int ephemeral = 0; ephemeral < 2; ephemeral++) {
-    base::test::ScopedFeatureList feature_list;
-    if (ephemeral) {
-      feature_list.InitAndEnableFeature(
-          content_settings::features::kEnableEphemeralFlashPermission);
-    } else {
-      feature_list.InitAndDisableFeature(
-          content_settings::features::kEnableEphemeralFlashPermission);
-    }
-    content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
+  base::test::ScopedFeatureList feature_list;
+  content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
 
-    ReloadProviders(profile.GetPrefs(), map);
-    map->SetContentSettingDefaultScope(url, url, CONTENT_SETTINGS_TYPE_PLUGINS,
-                                       std::string(), CONTENT_SETTING_ALLOW);
-    EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(url, url, CONTENT_SETTINGS_TYPE_PLUGINS,
-                                     std::string()));
+  ReloadProviders(profile.GetPrefs(), map);
+  map->SetContentSettingDefaultScope(url, url, CONTENT_SETTINGS_TYPE_PLUGINS,
+                                     std::string(), CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(url, url, CONTENT_SETTINGS_TYPE_PLUGINS,
+                                   std::string()));
 
-    ReloadProviders(profile.GetPrefs(), map);
-    ContentSetting expectation =
-        ephemeral ? CONTENT_SETTING_ASK : CONTENT_SETTING_ALLOW;
-
-    EXPECT_EQ(expectation,
-              map->GetContentSetting(url, url, CONTENT_SETTINGS_TYPE_PLUGINS,
-                                     std::string()))
-        << ephemeral;
-  }
+  ReloadProviders(profile.GetPrefs(), map);
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(url, url, CONTENT_SETTINGS_TYPE_PLUGINS,
+                                   std::string()));
 }
 #endif  // !defined(OS_ANDROID)
 
-// Tests if restarting only removes ephemeral permissions.
-// kEnableEphemeralFlashPermission is not available on Android.
+// Tests that restarting only removes ephemeral permissions. Flash, and
+// consequently, Flash permissions are not available on Android.
 #if !defined(OS_ANDROID)
 TEST_F(HostContentSettingsMapTest, MixedEphemeralAndPersistentPermissions) {
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      content_settings::features::kEnableEphemeralFlashPermission);
   content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
   ReloadProviders(profile.GetPrefs(), map);
 
@@ -2052,18 +2034,15 @@ TEST_F(HostContentSettingsMapTest, MixedEphemeralAndPersistentPermissions) {
 }
 #endif  // !defined(OS_ANDROID)
 
-// Tests if directly writing a value to PrefProvider doesn't affect ephmeral
-// types.
-// kEnableEphemeralFlashPermission is not available on Android.
+// Test that directly writing a value to PrefProvider doesn't affect ephmeral
+// types. Flash, and consequently, Flash permissions are not available on
+// Android.
 #if !defined(OS_ANDROID)
 TEST_F(HostContentSettingsMapTest, EphemeralTypeDoesntReadFromPrefProvider) {
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      content_settings::features::kEnableEphemeralFlashPermission);
   content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
   ReloadProviders(profile.GetPrefs(), map);
 

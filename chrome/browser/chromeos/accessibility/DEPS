@@ -1,6 +1,6 @@
 specific_include_rules = {
   "accessibility_manager\.cc": [
-    # TODO(mash): Fix. https://crbug.com/594887
+    # TODO(mash): Fix. https://crbug.com/594887 https://crbug.com/888145
     "+ash/accessibility/accessibility_controller.h",
     "+ash/root_window_controller.h",
     "+ash/shell.h",

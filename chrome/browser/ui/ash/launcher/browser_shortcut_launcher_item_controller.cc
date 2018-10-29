@@ -12,6 +12,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/launcher_context_menu.h"
@@ -37,7 +38,6 @@
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/image/image.h"
-#include "ui/wm/core/window_animations.h"
 
 namespace {
 
@@ -320,8 +320,7 @@ BrowserShortcutLauncherItemController::ActivateOrAdvanceToNextBrowser() {
     // If there is only one suitable browser, we can either activate it, or
     // bounce it (if it is already active).
     if (items[0]->window()->IsActive()) {
-      AnimateWindow(items[0]->window()->GetNativeWindow(),
-                    wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+      ash_util::BounceWindow(items[0]->window()->GetNativeWindow());
       return ash::SHELF_ACTION_NONE;
     }
     browser = items[0];
@@ -357,7 +356,7 @@ bool BrowserShortcutLauncherItemController::IsBrowserRepresentedInBrowserList(
     // Crostini Terminals always have their own item.
     // TODO(rjwright): We shouldn't need to special-case Crostini here.
     // https://crbug.com/846546
-    if (CrostiniAppIdFromAppName(browser->app_name()))
+    if (crostini::CrostiniAppIdFromAppName(browser->app_name()))
       return false;
 
     // V1 App popup windows may have their own item.

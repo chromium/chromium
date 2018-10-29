@@ -1,6 +1,5 @@
 include_rules = [
   "+ash/host",
-  "+cc/paint",
 ]
 
 specific_include_rules = {

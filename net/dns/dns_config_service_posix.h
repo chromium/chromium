@@ -19,6 +19,7 @@
 #include "net/dns/dns_config_service.h"
 
 namespace net {
+struct DnsConfig;
 
 // Use DnsConfigService::CreateSystemService to use it outside of tests.
 namespace internal {

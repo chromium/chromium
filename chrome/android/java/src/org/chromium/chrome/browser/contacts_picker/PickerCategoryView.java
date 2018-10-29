@@ -17,7 +17,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.BitmapCache;
+import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.util.ConversionUtils;
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.chrome.browser.widget.selection.SelectableListLayout;
 import org.chromium.chrome.browser.widget.selection.SelectableListToolbar;
@@ -37,11 +41,12 @@ import java.util.Set;
  * A class for keeping track of common data associated with showing contact details in
  * the contacts picker, for example the RecyclerView.
  */
-public class PickerCategoryView extends RelativeLayout
-        implements View.OnClickListener, SelectionDelegate.SelectionObserver<ContactDetails>,
-                   SelectableListToolbar.SearchDelegate {
+public class PickerCategoryView
+        extends RelativeLayout implements View.OnClickListener, RecyclerView.RecyclerListener,
+                                          SelectionDelegate.SelectionObserver<ContactDetails>,
+                                          SelectableListToolbar.SearchDelegate {
     // Constants for the RoundedIconGenerator.
-    private static final int ICON_SIZE_DP = 32;
+    private static final int ICON_SIZE_DP = 28;
     private static final int ICON_CORNER_RADIUS_DP = 20;
     private static final int ICON_TEXT_SIZE_DP = 12;
 
@@ -50,6 +55,9 @@ public class PickerCategoryView extends RelativeLayout
 
     // The view containing the RecyclerView and the toolbar, etc.
     private SelectableListLayout<ContactDetails> mSelectableListLayout;
+
+    // Our activity.
+    private ChromeActivity mActivity;
 
     // The callback to notify the listener of decisions reached in the picker.
     private ContactsPickerListener mListener;
@@ -71,6 +79,9 @@ public class PickerCategoryView extends RelativeLayout
 
     // The {@link SelectionDelegate} keeping track of which contacts are selected.
     private SelectionDelegate<ContactDetails> mSelectionDelegate;
+
+    // A cache for contact images, lazily created.
+    private BitmapCache mBitmapCache;
 
     // The search icon.
     private ImageView mSearchButton;
@@ -106,6 +117,7 @@ public class PickerCategoryView extends RelativeLayout
     public PickerCategoryView(Context context, boolean multiSelectionAllowed) {
         super(context);
 
+        mActivity = (ChromeActivity) context;
         mMultiSelectionAllowed = multiSelectionAllowed;
 
         mSelectionDelegate = new SelectionDelegate<ContactDetails>();
@@ -151,6 +163,13 @@ public class PickerCategoryView extends RelativeLayout
         mLayoutManager = new LinearLayoutManager(context);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // Each image (on a Pixel 2 phone) is about 30-40K. Calculate a proportional amount of the
+        // available memory, but cap it at 5MB.
+        final long maxMemory = ConversionUtils.bytesToKilobytes(Runtime.getRuntime().maxMemory());
+        int iconCacheSizeKb = (int) (maxMemory / 8); // 1/8th of the available memory.
+        mBitmapCache = new BitmapCache(mActivity.getChromeApplication().getReferencePool(),
+                Math.min(iconCacheSizeKb, 5 * ConversionUtils.BYTES_PER_MEGABYTE));
     }
 
     /**
@@ -228,13 +247,19 @@ public class PickerCategoryView extends RelativeLayout
 
         // If all items have been selected, only show the Undo button if there's a meaningful
         // state to revert to (one might not exist if they were all selected manually).
-        // TODO(finnur): Add automatic test that exercises the visibility of the action button,
-        //               including when all items are selected manually (special case).
         mActionButton.setVisibility(!mToolbar.isSearching() && mMultiSelectionAllowed
                                 && (selectedItems.size() != mPickerAdapter.getItemCount()
                                            || mPreviousSelection != null)
                         ? VISIBLE
                         : GONE);
+    }
+
+    // RecyclerView.RecyclerListener:
+
+    @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        ContactViewHolder bitmapHolder = (ContactViewHolder) holder;
+        bitmapHolder.cancelIconRetrieval();
     }
 
     // OnClickListener:
@@ -253,11 +278,15 @@ public class PickerCategoryView extends RelativeLayout
                         new HashSet<ContactDetails>(mPickerAdapter.getAllContacts()));
                 mActionButton.setImageResource(R.drawable.ic_undo);
                 mActionButton.setContentDescription(mLabelUndo);
+                mListener.onContactsPickerUserAction(
+                        ContactsPickerListener.ContactsPickerAction.SELECT_ALL, null);
             } else {
                 mSelectionDelegate.setSelectedItems(mPreviousSelection);
                 mActionButton.setImageResource(R.drawable.ic_select_all);
                 mActionButton.setContentDescription(mLabelSelectAll);
                 mPreviousSelection = null;
+                mListener.onContactsPickerUserAction(
+                        ContactsPickerListener.ContactsPickerAction.UNDO_SELECT_ALL, null);
             }
             mSelectAllMode = !mSelectAllMode;
         } else {
@@ -273,6 +302,10 @@ public class PickerCategoryView extends RelativeLayout
 
     public RoundedIconGenerator getIconGenerator() {
         return mIconGenerator;
+    }
+
+    public BitmapCache getIconCache() {
+        return mBitmapCache;
     }
 
     /**
@@ -305,9 +338,14 @@ public class PickerCategoryView extends RelativeLayout
      * @param contacts The contacts that were selected (if any).
      */
     private void executeAction(
-            ContactsPickerListener.ContactsPickerAction action, String contacts) {
+            @ContactsPickerListener.ContactsPickerAction int action, String contacts) {
         mListener.onContactsPickerUserAction(action, contacts);
         mDialog.dismiss();
         UiUtils.onContactsPickerDismissed();
+    }
+
+    @VisibleForTesting
+    public SelectionDelegate<ContactDetails> getSelectionDelegateForTesting() {
+        return mSelectionDelegate;
     }
 }

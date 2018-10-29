@@ -10,13 +10,14 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/optional.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/attestation/attestation_ca_client.h"
 #include "chrome/browser/chromeos/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -25,6 +26,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/user_manager/known_user.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_details.h"
 #include "net/cert/pem_tokenizer.h"
@@ -55,23 +57,6 @@ void DBusStringCallback(
   std::move(on_success).Run(result->data);
 }
 
-void DBusPrivacyCACallback(
-    const base::RepeatingCallback<void(const std::string&)> on_success,
-    const base::RepeatingCallback<
-        void(chromeos::attestation::AttestationStatus)> on_failure,
-    const base::Location& from_here,
-    chromeos::attestation::AttestationStatus status,
-    const std::string& data) {
-  if (status == chromeos::attestation::ATTESTATION_SUCCESS) {
-    on_success.Run(data);
-    return;
-  }
-  LOG(ERROR) << "Cryptohome DBus method or server call failed with status: "
-             << status << ": " << from_here.ToString();
-  if (!on_failure.is_null())
-    on_failure.Run(status);
-}
-
 }  // namespace
 
 namespace chromeos {
@@ -82,7 +67,6 @@ EnrollmentPolicyObserver::EnrollmentPolicyObserver(
     : device_settings_service_(DeviceSettingsService::Get()),
       policy_client_(policy_client),
       cryptohome_client_(nullptr),
-      attestation_flow_(nullptr),
       num_retries_(0),
       retry_limit_(kRetryLimit),
       retry_delay_(kRetryDelay),
@@ -95,12 +79,10 @@ EnrollmentPolicyObserver::EnrollmentPolicyObserver(
 EnrollmentPolicyObserver::EnrollmentPolicyObserver(
     policy::CloudPolicyClient* policy_client,
     DeviceSettingsService* device_settings_service,
-    CryptohomeClient* cryptohome_client,
-    AttestationFlow* attestation_flow)
+    CryptohomeClient* cryptohome_client)
     : device_settings_service_(device_settings_service),
       policy_client_(policy_client),
       cryptohome_client_(cryptohome_client),
-      attestation_flow_(attestation_flow),
       num_retries_(0),
       retry_delay_(kRetryDelay),
       weak_factory_(this) {
@@ -129,6 +111,7 @@ void EnrollmentPolicyObserver::Start() {
   // contain an EID).
   if (did_upload_empty_eid_)
     return;
+
   // If identification for enrollment isn't needed, there is nothing to do.
   const enterprise_management::PolicyData* policy_data =
       device_settings_service_->policy_data();
@@ -141,43 +124,15 @@ void EnrollmentPolicyObserver::Start() {
     return;
   }
 
+  // Do not allow multiple concurrent starts.
+  if (request_in_flight_)
+    return;
+  request_in_flight_ = true;
+
   if (!cryptohome_client_)
     cryptohome_client_ = DBusThreadManager::Get()->GetCryptohomeClient();
 
-  if (!attestation_flow_) {
-    std::unique_ptr<ServerProxy> attestation_ca_client(
-        new AttestationCAClient());
-    default_attestation_flow_.reset(new AttestationFlow(
-        cryptohome::AsyncMethodCaller::GetInstance(), cryptohome_client_,
-        std::move(attestation_ca_client)));
-    attestation_flow_ = default_attestation_flow_.get();
-  }
-
-  GetEnrollmentCertificate();
-}
-
-void EnrollmentPolicyObserver::GetEnrollmentCertificate() {
-  // We can reuse the dbus callback handler logic.
-  attestation_flow_->GetCertificate(
-      PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-      EmptyAccountId(),  // Not used.
-      std::string(),     // Not used.
-      true,              // Get a fresh certificate.
-      base::Bind(
-          [](const base::RepeatingCallback<void(const std::string&)> on_success,
-             const base::RepeatingCallback<void(
-                 chromeos::attestation::AttestationStatus)> on_failure,
-             const base::Location& from_here, AttestationStatus status,
-             const std::string& data) {
-            DBusPrivacyCACallback(on_success, on_failure, from_here, status,
-                                  std::move(data));
-          },
-          base::BindRepeating(&EnrollmentPolicyObserver::UploadCertificate,
-                              weak_factory_.GetWeakPtr()),
-          base::BindRepeating(
-              &EnrollmentPolicyObserver::HandleGetCertificateFailure,
-              weak_factory_.GetWeakPtr()),
-          FROM_HERE));
+  GetEnrollmentId();
 }
 
 void EnrollmentPolicyObserver::GetEnrollmentId() {
@@ -200,66 +155,39 @@ void EnrollmentPolicyObserver::HandleEnrollmentId(
   }
   policy_client_->UploadEnterpriseEnrollmentId(
       enrollment_id,
-      base::BindRepeating(
-          &EnrollmentPolicyObserver::OnUploadEnrollmentIdComplete,
-          weak_factory_.GetWeakPtr(), enrollment_id));
+      base::BindRepeating(&EnrollmentPolicyObserver::OnUploadComplete,
+                          weak_factory_.GetWeakPtr(), enrollment_id));
 }
 
 void EnrollmentPolicyObserver::RescheduleGetEnrollmentId() {
   if (++num_retries_ < retry_limit_) {
-    content::BrowserThread::PostDelayedTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostDelayedTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&EnrollmentPolicyObserver::GetEnrollmentId,
                        weak_factory_.GetWeakPtr()),
         base::TimeDelta::FromSeconds(retry_delay_));
   } else {
     LOG(WARNING) << "EnrollmentPolicyObserver: Retry limit exceeded.";
+    request_in_flight_ = false;
   }
 }
 
-void EnrollmentPolicyObserver::HandleGetCertificateFailure(
-    AttestationStatus status) {
-  if (status == ATTESTATION_SERVER_BAD_REQUEST_FAILURE) {
-    // We cannot get an enrollment cert (no EID). However we can compute the
-    // EID we will have after a device wipe, and should upload that.
-    GetEnrollmentId();
-  } else if (++num_retries_ < retry_limit_) {
-    content::BrowserThread::PostDelayedTask(
-        content::BrowserThread::UI, FROM_HERE,
-        base::BindOnce(&EnrollmentPolicyObserver::Start,
-                       weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(retry_delay_));
-  } else {
-    LOG(WARNING) << "EnrollmentPolicyObserver: Retry limit exceeded.";
-  }
-}
-
-void EnrollmentPolicyObserver::UploadCertificate(
-    const std::string& pem_certificate_chain) {
-  policy_client_->UploadEnterpriseEnrollmentCertificate(
-      pem_certificate_chain,
-      base::BindRepeating(&EnrollmentPolicyObserver::OnUploadComplete,
-                          weak_factory_.GetWeakPtr(),
-                          "Enterprise Enrollment Certificate"));
-}
-
-void EnrollmentPolicyObserver::OnUploadEnrollmentIdComplete(
+void EnrollmentPolicyObserver::OnUploadComplete(
     const std::string& enrollment_id,
     bool status) {
-  if (status && enrollment_id.empty())
-    did_upload_empty_eid_ = true;
-  OnUploadComplete(enrollment_id.empty() ? "Empty Enrollment Identifier"
-                                         : "Enrollment Identifier",
-                   status);
-}
-
-void EnrollmentPolicyObserver::OnUploadComplete(const std::string& what,
-                                                bool status) {
-  if (!status) {
-    LOG(ERROR) << "Failed to upload " << what << " to DMServer.";
+  const std::string& printable_enrollment_id = base::ToLowerASCII(
+      base::HexEncode(enrollment_id.data(), enrollment_id.size()));
+  request_in_flight_ = false;
+  if (status) {
+    if (enrollment_id.empty())
+      did_upload_empty_eid_ = true;
+  } else {
+    LOG(ERROR) << "Failed to upload Enrollment Identifier \""
+               << printable_enrollment_id << "\" to DMServer.";
     return;
   }
-  VLOG(1) << what << " uploaded to DMServer.";
+  VLOG(1) << "Enrollment Identifier \"" << printable_enrollment_id
+          << "\" uploaded to DMServer.";
 }
 
 }  // namespace attestation

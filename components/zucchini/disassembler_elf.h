@@ -39,6 +39,7 @@ struct Elf32IntelTraits : public Elf32Traits {
   static const char kExeTypeString[];
   static constexpr elf::MachineArchitecture kMachineValue = elf::EM_386;
   static constexpr uint32_t kRelType = elf::R_386_RELATIVE;
+  enum : uint32_t { kVAWidth = 4 };
   using Rel32FinderUse = Rel32FinderX86;
 };
 
@@ -58,6 +59,7 @@ struct Elf64IntelTraits : public Elf64Traits {
   static const char kExeTypeString[];
   static constexpr elf::MachineArchitecture kMachineValue = elf::EM_X86_64;
   static constexpr uint32_t kRelType = elf::R_X86_64_RELATIVE;
+  enum : uint32_t { kVAWidth = 8 };
   using Rel32FinderUse = Rel32FinderX64;
 };
 
@@ -81,8 +83,6 @@ class DisassemblerElf : public Disassembler {
   // Find/Receive functions that are common among different architectures.
   std::unique_ptr<ReferenceReader> MakeReadRelocs(offset_t lo, offset_t hi);
   std::unique_ptr<ReferenceWriter> MakeWriteRelocs(MutableBufferView image);
-  std::unique_ptr<ReferenceReader> MakeReadAbs32(offset_t lo, offset_t hi);
-  std::unique_ptr<ReferenceWriter> MakeWriteAbs32(MutableBufferView image);
 
   const AddressTranslator& translator() const { return translator_; }
 
@@ -171,6 +171,8 @@ class DisassemblerElfIntel : public DisassemblerElf<Traits> {
   void PostProcessRel32() override;
 
   // Specialized Find/Receive functions.
+  std::unique_ptr<ReferenceReader> MakeReadAbs32(offset_t lo, offset_t hi);
+  std::unique_ptr<ReferenceWriter> MakeWriteAbs32(MutableBufferView image);
   std::unique_ptr<ReferenceReader> MakeReadRel32(offset_t lo, offset_t hi);
   std::unique_ptr<ReferenceWriter> MakeWriteRel32(MutableBufferView image);
 

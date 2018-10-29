@@ -319,10 +319,8 @@ TEST(SpdyAltSvcWireFormatTest, RoundTripMultiple) {
   ASSERT_TRUE(SpdyAltSvcWireFormat::ParseHeaderFieldValue(
       expected_header_field_value, &parsed_altsvc_vector));
   ASSERT_EQ(altsvc_vector.size(), parsed_altsvc_vector.size());
-  SpdyAltSvcWireFormat::AlternativeServiceVector::iterator expected_it =
-      altsvc_vector.begin();
-  SpdyAltSvcWireFormat::AlternativeServiceVector::iterator parsed_it =
-      parsed_altsvc_vector.begin();
+  auto expected_it = altsvc_vector.begin();
+  auto parsed_it = parsed_altsvc_vector.begin();
   for (; expected_it != altsvc_vector.end(); ++expected_it, ++parsed_it) {
     EXPECT_EQ(expected_it->protocol_id, parsed_it->protocol_id);
     EXPECT_EQ(expected_it->host, parsed_it->host);

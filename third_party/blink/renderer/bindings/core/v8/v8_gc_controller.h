@@ -45,20 +45,23 @@ class CORE_EXPORT V8GCController {
   STATIC_ONLY(V8GCController);
 
  public:
+  static Node* OpaqueRootForGC(v8::Isolate*, Node*);
+
+  // Prologue and epilogue callbacks for V8 garbage collections.
   static void GcPrologue(v8::Isolate*, v8::GCType, v8::GCCallbackFlags);
   static void GcEpilogue(v8::Isolate*, v8::GCType, v8::GCCallbackFlags);
 
-  static void CollectGarbage(v8::Isolate*, bool only_minor_gc = false);
-
-  // Collects V8 and Blink objects in multiple garbage collectin passes. Also
+  // Collects V8 and Blink objects in multiple garbage collection passes. Also
   // triggers follow up garbage collections in Oilpan to collect chains of
   // persistent handles.
+  //
+  // Usage: Testing that objects do indeed get collected. Note that this may
+  // depend on the EmbedderStackState, i.e., Blink may keep objects alive that
+  // are reachabe from the stack if necessary.
   static void CollectAllGarbageForTesting(
       v8::Isolate*,
       v8::EmbedderHeapTracer::EmbedderStackState stack_state =
           v8::EmbedderHeapTracer::EmbedderStackState::kUnknown);
-
-  static Node* OpaqueRootForGC(v8::Isolate*, Node*);
 
   // Called when Oilpan traces references from V8 wrappers to DOM wrappables.
   static void TraceDOMWrappers(v8::Isolate*, Visitor*);

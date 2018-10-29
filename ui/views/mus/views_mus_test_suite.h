@@ -9,7 +9,14 @@
 
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread.h"
 #include "ui/views/views_test_suite.h"
+
+namespace mojo {
+namespace core {
+class ScopedIPCSupport;
+}
+}  // namespace mojo
 
 namespace views {
 
@@ -23,6 +30,9 @@ class ViewsMusTestSuite : public ViewsTestSuite {
   void Initialize() override;
   void InitializeEnv() override;
   void DestroyEnv() override;
+
+  base::Thread ipc_thread_;
+  std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
 
   base::test::ScopedFeatureList feature_list_;
 

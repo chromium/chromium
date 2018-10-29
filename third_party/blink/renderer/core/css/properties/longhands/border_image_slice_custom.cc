@@ -29,10 +29,10 @@ const CSSValue* BorderImageSlice::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* BorderImageSlice::InitialValue() const {
-  DEFINE_STATIC_LOCAL(CSSValue, value,
+  DEFINE_STATIC_LOCAL(Persistent<CSSValue>, value,
                       (CSSPrimitiveValue::Create(
                           100, CSSPrimitiveValue::UnitType::kPercentage)));
-  return &value;
+  return value;
 }
 
 }  // namespace CSSLonghand

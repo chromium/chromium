@@ -21,6 +21,7 @@ class TestAutofillDriver : public AutofillDriver {
 
   // AutofillDriver implementation overrides.
   bool IsIncognito() const override;
+  bool IsInMainFrame() const override;
   // Returns the value passed in to the last call to |SetURLRequestContext()|
   // or NULL if that method has never been called.
   net::URLRequestContextGetter* GetURLRequestContext() override;
@@ -53,6 +54,7 @@ class TestAutofillDriver : public AutofillDriver {
   bool GetDidInteractWithCreditCardForm() const;
 
   void SetIsIncognito(bool is_incognito);
+  void SetIsInMainFrame(bool is_in_main_frame);
 
   // Sets the URL request context for this instance. |url_request_context|
   // should outlive this instance.
@@ -65,6 +67,7 @@ class TestAutofillDriver : public AutofillDriver {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   bool is_incognito_ = false;
+  bool is_in_main_frame_ = false;
   bool did_interact_with_credit_card_form_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestAutofillDriver);

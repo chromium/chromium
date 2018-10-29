@@ -18,7 +18,7 @@
 #include "content/common/frame_messages.h"
 #include "content/common/frame_owner_properties.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/view_messages.h"
+#include "content/common/widget_messages.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/previews_state.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -28,7 +28,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
-#include "content/renderer/navigation_state_impl.h"
+#include "content/renderer/navigation_state.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_view_impl.h"
@@ -200,7 +200,7 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   visual_properties.browser_controls_shrink_blink_size = false;
   visual_properties.is_fullscreen_granted = false;
 
-  ViewMsg_SynchronizeVisualProperties resize_message(0, visual_properties);
+  WidgetMsg_SynchronizeVisualProperties resize_message(0, visual_properties);
   frame_widget()->OnMessageReceived(resize_message);
 
   EXPECT_EQ(frame_widget()->GetWebWidget()->Size(), blink::WebSize(size));
@@ -211,7 +211,7 @@ TEST_F(RenderFrameImplTest, FrameResize) {
 TEST_F(RenderFrameImplTest, FrameWasShown) {
   RenderFrameTestObserver observer(frame());
 
-  ViewMsg_WasShown was_shown_message(0, true, base::TimeTicks());
+  WidgetMsg_WasShown was_shown_message(0, base::TimeTicks());
   frame_widget()->OnMessageReceived(was_shown_message);
 
   EXPECT_FALSE(frame_widget()->is_hidden());
@@ -241,7 +241,7 @@ TEST_F(RenderFrameImplTest, LocalChildFrameWasShown) {
 
   RenderFrameTestObserver observer(grandchild);
 
-  ViewMsg_WasShown was_shown_message(0, true, base::TimeTicks());
+  WidgetMsg_WasShown was_shown_message(0, base::TimeTicks());
   frame_widget()->OnMessageReceived(was_shown_message);
 
   EXPECT_FALSE(frame_widget()->is_hidden());
@@ -251,10 +251,10 @@ TEST_F(RenderFrameImplTest, LocalChildFrameWasShown) {
 // Ensure that a RenderFrameImpl does not crash if the RenderView receives
 // a WasShown message after the frame's widget has been closed.
 TEST_F(RenderFrameImplTest, FrameWasShownAfterWidgetClose) {
-  ViewMsg_Close close_message(0);
+  WidgetMsg_Close close_message(0);
   frame_widget()->OnMessageReceived(close_message);
 
-  ViewMsg_WasShown was_shown_message(0, true, base::TimeTicks());
+  WidgetMsg_WasShown was_shown_message(0, base::TimeTicks());
   // Test passes if this does not crash.
   RenderWidget* render_widget =
       static_cast<RenderViewImpl*>(view_)->GetWidget();
@@ -282,10 +282,9 @@ TEST_F(RenderFrameImplTest, LoFiNotUpdatedOnSubframeCommits) {
   EXPECT_EQ(SERVER_LOFI_ON, GetMainRenderFrame()->GetPreviewsState());
 
   // The subframe's LoFi state should not be reset on commit.
-  DocumentState* document_state = DocumentState::FromDocumentLoader(
+  NavigationState* navigation_state = NavigationState::FromDocumentLoader(
       frame()->GetWebFrame()->GetDocumentLoader());
-  static_cast<NavigationStateImpl*>(document_state->navigation_state())
-      ->set_was_within_same_document(false);
+  navigation_state->set_was_within_same_document(false);
 
   frame()->DidCommitProvisionalLoad(
       item, blink::kWebStandardCommit,
@@ -293,10 +292,9 @@ TEST_F(RenderFrameImplTest, LoFiNotUpdatedOnSubframeCommits) {
   EXPECT_EQ(SERVER_LOFI_ON, frame()->GetPreviewsState());
 
   // The main frame's LoFi state should be reset to off on commit.
-  document_state = DocumentState::FromDocumentLoader(
+  navigation_state = NavigationState::FromDocumentLoader(
       GetMainRenderFrame()->GetWebFrame()->GetDocumentLoader());
-  static_cast<NavigationStateImpl*>(document_state->navigation_state())
-      ->set_was_within_same_document(false);
+  navigation_state->set_was_within_same_document(false);
 
   // Calling didCommitProvisionalLoad is not representative of a full navigation
   // but serves the purpose of testing the LoFi state logic.
@@ -344,10 +342,9 @@ TEST_F(RenderFrameImplTest, EffectiveConnectionType) {
     EXPECT_EQ(tests[i].type, frame()->GetEffectiveConnectionType());
 
     // The subframe's effective connection type should not be reset on commit.
-    DocumentState* document_state = DocumentState::FromDocumentLoader(
+    NavigationState* navigation_state = NavigationState::FromDocumentLoader(
         frame()->GetWebFrame()->GetDocumentLoader());
-    static_cast<NavigationStateImpl*>(document_state->navigation_state())
-        ->set_was_within_same_document(false);
+    navigation_state->set_was_within_same_document(false);
 
     frame()->DidCommitProvisionalLoad(
         item, blink::kWebStandardCommit,
@@ -355,10 +352,9 @@ TEST_F(RenderFrameImplTest, EffectiveConnectionType) {
     EXPECT_EQ(tests[i].type, frame()->GetEffectiveConnectionType());
 
     // The main frame's effective connection type should be reset on commit.
-    document_state = DocumentState::FromDocumentLoader(
+    navigation_state = NavigationState::FromDocumentLoader(
         GetMainRenderFrame()->GetWebFrame()->GetDocumentLoader());
-    static_cast<NavigationStateImpl*>(document_state->navigation_state())
-        ->set_was_within_same_document(false);
+    navigation_state->set_was_within_same_document(false);
 
     GetMainRenderFrame()->DidCommitProvisionalLoad(
         item, blink::kWebStandardCommit,
@@ -480,9 +476,9 @@ TEST_F(RenderFrameImplTest, ZoomLimit) {
 // text finding, and then delete the frame immediately before the text finding
 // returns any text match.
 TEST_F(RenderFrameImplTest, NoCrashWhenDeletingFrameDuringFind) {
-  blink::WebFindOptions options;
-  options.force = true;
-  frame()->GetWebFrame()->Find(1, "foo", options, false);
+  frame()->GetWebFrame()->FindForTesting(
+      1, "foo", true /* match_case */, true /* forward */,
+      false /* find_next */, true /* force */, false /* wrap_within_frame */);
 
   FrameMsg_Delete delete_message(0);
   frame()->OnMessageReceived(delete_message);

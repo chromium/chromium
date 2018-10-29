@@ -25,6 +25,11 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/display/display.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/keyboard/keyboard_controller.h"
+#include "ui/keyboard/keyboard_switches.h"
+#include "ui/keyboard/keyboard_util.h"
+#include "ui/keyboard/test/keyboard_test_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -530,6 +535,69 @@ TEST_F(ShelfWidgetViewsVisibilityTest, LoginWebUiLockWebUi) {
   ExpectVisible(SessionState::ACTIVE, kShelf, kShelf);
   ExpectVisible(SessionState::LOGIN_SECONDARY, kNone, kNone);
   ExpectVisible(SessionState::ACTIVE, kShelf, kShelf);
+}
+
+class ShelfWidgetVirtualKeyboardTest : public AshTestBase {
+ protected:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        keyboard::switches::kEnableVirtualKeyboard);
+    AshTestBase::SetUp();
+    ASSERT_TRUE(keyboard::IsKeyboardEnabled());
+
+    // These tests only apply to the floating virtual keyboard, as it is the
+    // only case where both the virtual keyboard and the shelf are visible.
+    keyboard_controller()->SetContainerType(keyboard::ContainerType::FLOATING,
+                                            base::nullopt, base::DoNothing());
+  }
+
+  keyboard::KeyboardController* keyboard_controller() {
+    return keyboard::KeyboardController::Get();
+  }
+};
+
+TEST_F(ShelfWidgetVirtualKeyboardTest, ClickingHidesVirtualKeyboard) {
+  keyboard_controller()->ShowKeyboard(false /* locked */);
+  keyboard_controller()->NotifyKeyboardWindowLoaded();
+  ASSERT_TRUE(keyboard_controller()->IsKeyboardVisible());
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_location(
+      GetShelfWidget()->GetWindowBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+
+  // Times out if test fails.
+  ASSERT_TRUE(keyboard::WaitUntilHidden());
+}
+
+TEST_F(ShelfWidgetVirtualKeyboardTest, TappingHidesVirtualKeyboard) {
+  keyboard_controller()->ShowKeyboard(false /* locked */);
+  keyboard_controller()->NotifyKeyboardWindowLoaded();
+  ASSERT_TRUE(keyboard_controller()->IsKeyboardVisible());
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_location(
+      GetShelfWidget()->GetWindowBoundsInScreen().CenterPoint());
+  generator->PressTouch();
+
+  // Times out if test fails.
+  ASSERT_TRUE(keyboard::WaitUntilHidden());
+}
+
+TEST_F(ShelfWidgetVirtualKeyboardTest, DoesNotHideLockedVirtualKeyboard) {
+  keyboard_controller()->ShowKeyboard(true /* locked */);
+  keyboard_controller()->NotifyKeyboardWindowLoaded();
+  ASSERT_TRUE(keyboard_controller()->IsKeyboardVisible());
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_location(
+      GetShelfWidget()->GetWindowBoundsInScreen().CenterPoint());
+
+  generator->ClickLeftButton();
+  EXPECT_FALSE(keyboard::IsKeyboardHiding());
+
+  generator->PressTouch();
+  EXPECT_FALSE(keyboard::IsKeyboardHiding());
 }
 
 }  // namespace

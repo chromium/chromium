@@ -461,13 +461,11 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   ResourceMap resources_;
   ChildMap children_;
   base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_image_;
-  // Maps from a child id to the set of resources to be returned to it.
-  base::small_map<std::map<int, std::vector<ResourceId>>>
-      batched_returning_resources_;
+  base::flat_map<int, std::vector<ResourceId>> batched_returning_resources_;
   scoped_refptr<ResourceFence> current_read_lock_fence_;
   // Keep track of whether deleted resources should be batched up or returned
   // immediately.
-  bool batch_return_resources_ = false;
+  int batch_return_resources_lock_count_ = 0;
   // Set to true when the ContextProvider becomes lost, to inform that resources
   // modified by this class are now in an indeterminate state.
   bool lost_context_provider_ = false;

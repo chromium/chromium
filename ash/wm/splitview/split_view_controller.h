@@ -159,6 +159,8 @@ class ASH_EXPORT SplitViewController : public mojom::SplitViewController,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  void FlushForTesting();
+
   // mojom::SplitViewObserver:
   void AddObserver(mojom::SplitViewObserverPtr observer) override;
 
@@ -262,8 +264,9 @@ class ASH_EXPORT SplitViewController : public mojom::SplitViewController,
   // needs to be activated. Returns nullptr if there is no such window.
   aura::Window* GetActiveWindowAfterResizingUponExit();
 
-  // Returns the maximum value of the |divider_position_|. It should always be
-  // the length of the longer side of the current display's work area bounds.
+  // Returns the maximum value of the |divider_position_|. It is the width of
+  // the current display's work area bounds in landscape orientation, or height
+  // of the current display's work area bounds in portrait orientation.
   int GetDividerEndPosition();
 
   // Called after a to-be-snapped window |window| got snapped. It updates the
@@ -382,8 +385,8 @@ class ASH_EXPORT SplitViewController : public mojom::SplitViewController,
   // The window observer that obseves the tab-dragged window.
   std::unique_ptr<TabDraggedWindowObserver> dragged_window_observer_;
 
-  // The distance between the origin of the divider and the origin of the screen
-  // in screen coordinates.
+  // The distance between the origin of the divider and the origin of the
+  // current display's work area in screen coordinates.
   //     |<---     divider_position_    --->|
   //     ----------------------------------------------------------
   //     |                                  | |                    |
@@ -391,6 +394,12 @@ class ASH_EXPORT SplitViewController : public mojom::SplitViewController,
   //     |                                  | |                    |
   //     ----------------------------------------------------------
   int divider_position_ = -1;
+
+  // The closest position ratio of divider among kFixedPositionRatios,
+  // kOneThirdPositionRatio and kTwoThirdPositionRatio based on current
+  // |divider_position_|. Used to update |divider_position_| on work area
+  // changes.
+  float divider_closest_ratio_ = 0.f;
 
   // The location of the previous mouse/gesture event in screen coordinates.
   gfx::Point previous_event_location_;

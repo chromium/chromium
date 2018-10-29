@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contacts_picker;
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
 
+import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.ui.ContactsPickerListener;
 
@@ -35,5 +36,10 @@ public class ContactsPickerDialog extends AlertDialog {
         mCategoryView = new PickerCategoryView(context, allowMultiple);
         mCategoryView.initialize(this, listener, mimeTypes);
         setView(mCategoryView);
+    }
+
+    @VisibleForTesting
+    public PickerCategoryView getCategoryViewForTesting() {
+        return mCategoryView;
     }
 }

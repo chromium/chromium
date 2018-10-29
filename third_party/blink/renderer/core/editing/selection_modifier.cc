@@ -767,7 +767,8 @@ bool SelectionModifier::Modify(SelectionModifyAlteration alter,
 
 // TODO(yosin): Maybe baseline would be better?
 static bool AbsoluteCaretY(const VisiblePosition& c, int& y) {
-  IntRect rect = AbsoluteCaretBoundsOf(c);
+  DCHECK(c.IsValid()) << c;
+  IntRect rect = AbsoluteCaretBoundsOf(c.ToPositionWithAffinity());
   if (rect.IsEmpty())
     return false;
   y = rect.Y() + rect.Height() / 2;

@@ -92,7 +92,8 @@ class ModelTypeRegistryTest : public ::testing::Test {
  private:
   bool MigrateDirectory(ModelType type,
                         UserShare* user_share,
-                        ModelTypeWorker* worker) {
+                        ModelTypeWorker* worker,
+                        int* migrated_entity_count) {
     migration_attempted_ = true;
     return true;
   }

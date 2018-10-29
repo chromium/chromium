@@ -22,7 +22,7 @@ namespace {
 
 // Return an extension with |id| which imports a module with the given
 // |import_id|.
-scoped_refptr<Extension> CreateExtensionImportingModule(
+scoped_refptr<const Extension> CreateExtensionImportingModule(
     const std::string& import_id,
     const std::string& id) {
   std::unique_ptr<base::DictionaryValue> manifest =
@@ -56,10 +56,10 @@ TEST(PepperPermissionUtilTest, ExtensionWhitelisting) {
           .Set("version", "1.0")
           .Set("manifest_version", 2)
           .Build();
-  scoped_refptr<Extension> ext = ExtensionBuilder()
-                                     .SetManifest(std::move(manifest))
-                                     .SetID(whitelisted_id)
-                                     .Build();
+  scoped_refptr<const Extension> ext = ExtensionBuilder()
+                                           .SetManifest(std::move(manifest))
+                                           .SetID(whitelisted_id)
+                                           .Build();
   extensions.Insert(ext);
   std::set<std::string> whitelist;
   std::string url = std::string("chrome-extension://") + whitelisted_id +
@@ -101,10 +101,10 @@ TEST(PepperPermissionUtilTest, SharedModuleWhitelisting) {
                         ListBuilder().Append(whitelisted_id).Build())
                    .Build())
           .Build();
-  scoped_refptr<Extension> shared_module =
+  scoped_refptr<const Extension> shared_module =
       ExtensionBuilder().SetManifest(std::move(shared_module_manifest)).Build();
 
-  scoped_refptr<Extension> ext =
+  scoped_refptr<const Extension> ext =
       CreateExtensionImportingModule(shared_module->id(), whitelisted_id);
   std::string extension_url =
       std::string("chrome-extension://") + ext->id() + std::string("/foo.html");
@@ -120,7 +120,7 @@ TEST(PepperPermissionUtilTest, SharedModuleWhitelisting) {
   extensions.Insert(shared_module);
   EXPECT_TRUE(IsExtensionOrSharedModuleWhitelisted(
       GURL(extension_url), &extensions, whitelist));
-  scoped_refptr<Extension> not_in_sm_whitelist =
+  scoped_refptr<const Extension> not_in_sm_whitelist =
       CreateExtensionImportingModule(shared_module->id(), bad_id);
   std::string not_in_sm_whitelist_url = std::string("chrome-extension://") +
                                         not_in_sm_whitelist->id() +

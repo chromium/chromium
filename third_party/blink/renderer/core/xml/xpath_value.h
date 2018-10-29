@@ -33,7 +33,7 @@
 
 namespace blink {
 
-namespace XPath {
+namespace xpath {
 
 struct EvaluationContext;
 
@@ -141,7 +141,7 @@ template <>
 inline Value::Value(bool value)
     : type_(kBooleanValue), bool_(value), number_(0) {}
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink
 

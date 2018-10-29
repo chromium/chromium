@@ -244,6 +244,15 @@ let SettingsSectionElement = Polymer({
     return animation;
   },
 
+  show: function() {
+    this.setAttribute('tabindex', '-1');
+    this.focus();
+    this.scrollIntoView();
+    listenOnce(this, ['blur', 'pointerdown'], () => {
+      this.removeAttribute('tabindex');
+    });
+  },
+
   /**
    * Helper function to animate the card's position and height.
    * @param {string} position CSS position property.

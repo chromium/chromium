@@ -62,6 +62,8 @@ class CONTENT_EXPORT LocalStorageContextMojo
   // |callback| is called when the deletion is sent to the database and
   // GetStorageUsage() will not return entries for |origin| anymore.
   void DeleteStorage(const url::Origin& origin, base::OnceClosure callback);
+  // Ensure that no traces of deleted data are left in the backing storage.
+  void PerformCleanup(base::OnceClosure callback);
   void Flush();
   void FlushOriginForTesting(const url::Origin& origin);
 
@@ -116,6 +118,7 @@ class CONTENT_EXPORT LocalStorageContextMojo
   void DeleteAndRecreateDatabase(const char* histogram_name);
   void OnDBDestroyed(bool recreate_in_memory,
                      leveldb::mojom::DatabaseError status);
+  void OnMojoConnectionDestroyed();
 
   // The (possibly delayed) implementation of OpenLocalStorage(). Can be called
   // directly from that function, or through |on_database_open_callbacks_|.

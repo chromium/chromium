@@ -29,7 +29,7 @@
 namespace blink {
 
 inline SVGFEMergeElement::SVGFEMergeElement(Document& document)
-    : SVGFilterPrimitiveStandardAttributes(SVGNames::feMergeTag, document) {}
+    : SVGFilterPrimitiveStandardAttributes(svg_names::kFEMergeTag, document) {}
 
 DEFINE_NODE_FACTORY(SVGFEMergeElement)
 

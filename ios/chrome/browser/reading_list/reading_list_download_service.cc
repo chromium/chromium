@@ -17,7 +17,9 @@
 #include "components/reading_list/core/offline_url_utils.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/reading_list/reading_list_distiller_page_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 // Status of the download when it ends, for UMA report.
@@ -55,19 +57,21 @@ void CleanUpFiles(base::FilePath root,
     }
   }
 }
+
 }  // namespace
 
 ReadingListDownloadService::ReadingListDownloadService(
     ReadingListModel* reading_list_model,
     PrefService* prefs,
     base::FilePath chrome_profile_path,
-    net::URLRequestContextGetter* url_request_context_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory,
     std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
         distiller_page_factory)
     : reading_list_model_(reading_list_model),
       chrome_profile_path_(chrome_profile_path),
-      had_connection_(!net::NetworkChangeNotifier::IsOffline()),
+      had_connection_(
+          !GetApplicationContext()->GetNetworkConnectionTracker()->IsOffline()),
       distiller_page_factory_(std::move(distiller_page_factory)),
       distiller_factory_(std::move(distiller_factory)),
       weak_ptr_factory_(this) {
@@ -75,16 +79,21 @@ ReadingListDownloadService::ReadingListDownloadService(
 
   url_downloader_ = std::make_unique<URLDownloader>(
       distiller_factory_.get(), distiller_page_factory_.get(), prefs,
-      chrome_profile_path, url_request_context_getter,
+      chrome_profile_path, url_loader_factory,
       base::Bind(&ReadingListDownloadService::OnDownloadEnd,
                  base::Unretained(this)),
       base::Bind(&ReadingListDownloadService::OnDeleteEnd,
                  base::Unretained(this)));
-  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+
+  GetApplicationContext()
+      ->GetNetworkConnectionTracker()
+      ->AddNetworkConnectionObserver(this);
 }
 
 ReadingListDownloadService::~ReadingListDownloadService() {
-  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  GetApplicationContext()
+      ->GetNetworkConnectionTracker()
+      ->RemoveNetworkConnectionObserver(this);
 }
 
 void ReadingListDownloadService::Initialize() {
@@ -199,7 +208,7 @@ void ReadingListDownloadService::DownloadEntry(const GURL& url) {
       entry->DistilledState() == ReadingListEntry::PROCESSED || entry->IsRead())
     return;
 
-  if (net::NetworkChangeNotifier::IsOffline()) {
+  if (GetApplicationContext()->GetNetworkConnectionTracker()->IsOffline()) {
     // There is no connection, save it for download only if we did not exceed
     // the maximaxum number of tries.
     if (entry->FailedDownloadCounter() < kNumberOfFailsBeforeWifiOnly)
@@ -218,8 +227,15 @@ void ReadingListDownloadService::DownloadEntry(const GURL& url) {
 
   } else if (entry->FailedDownloadCounter() < kNumberOfFailsBeforeStop) {
     // Try to download the page only if the connection is wifi.
-    if (net::NetworkChangeNotifier::GetConnectionType() ==
-        net::NetworkChangeNotifier::CONNECTION_WIFI) {
+    auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+    // GetConnectionType will return false if the type isn't known yet, and
+    // connection_type will be unchanged, so we can ignore the return value and
+    // let this treat the connection as non-wifi.
+    GetApplicationContext()->GetNetworkConnectionTracker()->GetConnectionType(
+        &connection_type,
+        base::BindOnce(&ReadingListDownloadService::OnConnectionChanged,
+                       weak_ptr_factory_.GetWeakPtr()));
+    if (connection_type == network::mojom::ConnectionType::CONNECTION_WIFI) {
       // The connection is wifi, download the page.
       reading_list_model_->SetEntryDistilledState(entry->URL(),
                                                   ReadingListEntry::PROCESSING);
@@ -293,9 +309,9 @@ void ReadingListDownloadService::OnDeleteEnd(const GURL& url, bool success) {
   // Nothing to update as this is only called when deleting reading list entries
 }
 
-void ReadingListDownloadService::OnNetworkChanged(
-    net::NetworkChangeNotifier::ConnectionType type) {
-  if (type == net::NetworkChangeNotifier::CONNECTION_NONE) {
+void ReadingListDownloadService::OnConnectionChanged(
+    network::mojom::ConnectionType type) {
+  if (type == network::mojom::ConnectionType::CONNECTION_NONE) {
     had_connection_ = false;
     return;
   }
@@ -306,7 +322,7 @@ void ReadingListDownloadService::OnNetworkChanged(
       ScheduleDownloadEntry(url);
     }
   }
-  if (type == net::NetworkChangeNotifier::CONNECTION_WIFI) {
+  if (type == network::mojom::ConnectionType::CONNECTION_WIFI) {
     for (auto& url : url_to_download_wifi_) {
       ScheduleDownloadEntry(url);
     }

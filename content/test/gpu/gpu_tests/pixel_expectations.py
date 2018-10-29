@@ -99,7 +99,7 @@ class PixelExpectations(GpuTestExpectations):
     # self.Fail('Pixel_Video_VP9',
     #     ['highsierra', ('intel', 0xa2e)], bug=774809)
     self.Fail('Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha',
-        ['highsierra', ('intel', 0xa2e)], bug=774809)
+        ['highsierra', 'mojave', ('intel', 0xa2e)], bug=774809)
     self.Flaky('Pixel_OffscreenCanvasTransferBeforeStyleResize',
         ['highsierra', ('intel', 0xa2e)], bug=857578)
 

@@ -9,7 +9,7 @@
 
 namespace blink {
 
-CSSLazyPropertyParserImpl::CSSLazyPropertyParserImpl(size_t offset,
+CSSLazyPropertyParserImpl::CSSLazyPropertyParserImpl(wtf_size_t offset,
                                                      CSSLazyParsingState* state)
     : CSSLazyPropertyParser(), offset_(offset), lazy_state_(state) {}
 

@@ -36,6 +36,9 @@ const QuicByteCount kDefaultServerMaxPacketSize = 1000;
 // additional 8 bytes.  This is a total overhead of 48 bytes.  Ethernet's
 // max packet size is 1500 bytes,  1500 - 48 = 1452.
 const QuicByteCount kMaxPacketSize = 1452;
+// The maximum packet size of any QUIC packet over IPv4.
+// 1500(Ethernet) - 20(IPv4 header) - 8(UDP header) = 1472.
+const QuicByteCount kMaxV4PacketSize = 1472;
 // ETH_MAX_MTU - MAX(sizeof(iphdr), sizeof(ip6_hdr)) - sizeof(udphdr).
 const QuicByteCount kMaxGsoPacketSize = 65535 - 40 - 8;
 // Default maximum packet size used in the Linux TCP implementation.
@@ -89,15 +92,6 @@ const bool kIncludeVersion = true;
 const bool kIncludePathId = true;
 // Signifies that the QuicPacket will include a diversification nonce.
 const bool kIncludeDiversificationNonce = true;
-
-// Stream ID is reserved to denote an invalid ID.
-const QuicStreamId kInvalidStreamId = 0;
-
-// Reserved ID for the crypto stream.
-const QuicStreamId kCryptoStreamId = 1;
-
-// Reserved ID for the headers stream.
-const QuicStreamId kHeadersStreamId = 3;
 
 // Header key used to identify final offset on data stream when sending HTTP/2
 // trailing headers over QUIC.
@@ -220,8 +214,17 @@ const size_t kPacketHeaderTypeSize = 1;
 // Number of bytes reserved for connection ID length.
 const size_t kConnectionIdLengthSize = 1;
 
+// Length of an encoded variable length connection ID, in bytes.
+const size_t kQuicConnectionIdLength = 8;
+
 // Minimum length of random bytes in IETF stateless reset packet.
 const size_t kMinRandomBytesLengthInStatelessReset = 20;
+
+// Maximum length allowed for the token in a NEW_TOKEN frame.
+const size_t kMaxNewTokenTokenLength = 0xffff;
+
+// Used to represent an invalid packet number.
+const QuicPacketNumber kInvalidPacketNumber = 0;
 
 }  // namespace quic
 

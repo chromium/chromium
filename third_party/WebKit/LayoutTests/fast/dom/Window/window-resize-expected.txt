@@ -6,11 +6,14 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 window.resizeTo Tests
 
+
 Testing - resizeTo: Too Big
 PASS window.outerWidth is screen.availWidth
 
+
 Testing - resizeTo: Too Small
 PASS window.outerWidth is 100
+
 
 Testing - resizeTo: Full Screen Out of Bounds
 PASS window.screenY is screen.availTop
@@ -18,95 +21,121 @@ PASS window.outerHeight is screen.availHeight
 PASS window.screenX is screen.availLeft
 PASS window.outerWidth is screen.availWidth
 
+
 Testing - resizeTo: Not Full Screen Out of Bounds
 PASS window.outerHeight + window.screenY - screen.availTop is screen.availHeight
 PASS window.outerWidth + window.screenX - screen.availLeft is screen.availWidth
 
+
 window.resizeBy Tests
+
 
 Testing - resizeBy: Too Small
 PASS window.outerWidth is 100
 
+
 Testing - resizeBy: Too Big
 PASS window.outerWidth is screen.availWidth
 
+
 window.moveTo Tests
+
 
 Testing - moveTo: Top Left
 PASS window.screenY is screen.availTop
 PASS window.screenX is screen.availLeft
 
+
 Testing - moveTo: Top
 PASS window.screenY is screen.availTop
 PASS window.screenX is screen.availLeft
+
 
 Testing - moveTo: Top Right
 PASS window.screenY is screen.availTop
 PASS window.outerWidth is screen.availWidth
 
+
 Testing - moveTo: Right
 PASS window.screenY is screen.availTop
 PASS window.outerWidth is screen.availWidth
+
 
 Testing - moveTo: Bottom Right
 PASS window.outerHeight is screen.availHeight
 PASS window.outerWidth is screen.availWidth
 
+
 Testing - moveTo: Bottom
 PASS window.outerHeight is screen.availHeight
 PASS window.screenX is screen.availLeft
+
 
 Testing - moveTo: Bottom Left
 PASS window.outerHeight is screen.availHeight
 PASS window.screenX is screen.availLeft
 
+
 Testing - moveTo: Left
 PASS window.screenY is screen.availTop
 PASS window.screenX is screen.availLeft
 
+
 window.moveBy Tests
+
 
 Testing - moveBy: Zero Zero
 PASS window.screenX == previousScreenX is true
 PASS window.screenY == previousScreenY is true
 
+
 Testing - moveBy: One Zero
 PASS window.screenX == previousScreenX + 1 is true
 PASS window.screenY == previousScreenY is true
+
 
 Testing - moveBy: Zero One
 PASS window.screenX == previousScreenX is true
 PASS window.screenY == previousScreenY + 1 is true
 
+
 Testing - moveBy: Top Left
 PASS window.screenY is screen.availTop
 PASS window.screenX is screen.availLeft
+
 
 Testing - moveBy: Top
 PASS window.screenY is screen.availTop
 PASS window.screenX is screen.availLeft
 
+
 Testing - moveBy: Top Right
 PASS window.screenY is screen.availTop
 PASS window.outerWidth is screen.availWidth
+
 
 Testing - moveBy: Right
 PASS window.screenY is screen.availTop
 PASS window.outerWidth is screen.availWidth
 
+
 Testing - moveBy: Bottom Right
 PASS window.outerHeight is screen.availHeight
 PASS window.outerWidth is screen.availWidth
 
+
 Testing - moveBy: Bottom
 PASS window.outerHeight is screen.availHeight
+
 
 Testing - moveBy: Bottom Left
 PASS window.outerHeight is screen.availHeight
 PASS window.screenX is screen.availLeft
 
+
 Testing - moveBy: Left
 PASS window.screenX is screen.availLeft
+
 
 PASS successfullyParsed is true
 

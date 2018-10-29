@@ -2,9 +2,9 @@ Test that setSelectedRange resets the selection granularity to CharacterGranular
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS PASSED
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

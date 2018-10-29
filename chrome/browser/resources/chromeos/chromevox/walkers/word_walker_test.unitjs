@@ -8,16 +8,17 @@ GEN_INCLUDE(['walker_unittest_base.js']);
 /**
  * Test fixture.
  * @constructor
- * @extends {CvoxWalkerTestBase}
+ * @extends {ChromeVoxWalkerTestBase}
  */
-function CvoxWordWalkerUnitTest() {}
+function ChromeVoxWordWalkerUnitTest() {}
 
-CvoxWordWalkerUnitTest.prototype = {
-  __proto__: CvoxWalkerUnitTestBase.prototype,
+ChromeVoxWordWalkerUnitTest.prototype = {
+  __proto__: ChromeVoxWalkerUnitTestBase.prototype,
 
   /** @override */
-  closureModuleDeps: CvoxWalkerUnitTestBase.prototype.closureModuleDeps.concat(
-      'cvox.WordWalker'),
+  closureModuleDeps:
+      ChromeVoxWalkerUnitTestBase.prototype.closureModuleDeps.concat(
+          'cvox.WordWalker'),
 
   /** @override */
   newWalker: function() {
@@ -35,9 +36,9 @@ CvoxWordWalkerUnitTest.prototype = {
   }
 };
 
-CvoxWalkerUnitTestBase.addCommonTests('CvoxWordWalkerUnitTest');
+ChromeVoxWalkerUnitTestBase.addCommonTests('ChromeVoxWordWalkerUnitTest');
 
-TEST_F('CvoxWordWalkerUnitTest', 'testSimpleForwardSync', function() {
+TEST_F('ChromeVoxWordWalkerUnitTest', 'testSimpleForwardSync', function() {
   this.setUpSimpleHtml_();
 
   // invalid selection
@@ -55,7 +56,7 @@ TEST_F('CvoxWordWalkerUnitTest', 'testSimpleForwardSync', function() {
   assertTrue(ret2.equals(ret));
 });
 
-TEST_F('CvoxWordWalkerUnitTest', 'testSimpleReversedSync', function() {
+TEST_F('ChromeVoxWordWalkerUnitTest', 'testSimpleReversedSync', function() {
   this.setUpSimpleHtml_();
 
   // invalid selection
@@ -74,7 +75,7 @@ TEST_F('CvoxWordWalkerUnitTest', 'testSimpleReversedSync', function() {
   assertTrue(ret2.equals(ret));
 });
 
-TEST_F('CvoxWordWalkerUnitTest', 'testSimpleForwardNext', function() {
+TEST_F('ChromeVoxWordWalkerUnitTest', 'testSimpleForwardNext', function() {
   this.setUpSimpleHtml_();
 
   var sel = cvox.CursorSelection.fromNode(document.getElementById('a'));
@@ -88,7 +89,7 @@ TEST_F('CvoxWordWalkerUnitTest', 'testSimpleForwardNext', function() {
   });
 });
 
-TEST_F('CvoxWordWalkerUnitTest', 'testSimpleReversedNext', function() {
+TEST_F('ChromeVoxWordWalkerUnitTest', 'testSimpleReversedNext', function() {
   this.setUpSimpleHtml_();
 
   var sel = cvox.CursorSelection.fromNode(document.getElementById('a'));

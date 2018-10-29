@@ -74,6 +74,7 @@ def AddTestLauncherOptions(parser):
       '--test-launcher-retry-limit',
       '--test_launcher_retry_limit',
       '--num_retries', '--num-retries',
+      '--isolated-script-test-launcher-retry-limit',
       dest='num_retries', type=int, default=2,
       help='Number of retries for a test before '
            'giving up (default: %(default)s).')
@@ -193,7 +194,6 @@ def AddCommonOptions(parser):
       '--gs-results-bucket',
       help='Google Storage bucket to upload results to.')
 
-
   parser.add_argument(
       '--output-directory',
       dest='output_directory', type=os.path.realpath,
@@ -201,13 +201,21 @@ def AddCommonOptions(parser):
            ' located (must include build type). This will take'
            ' precedence over --debug and --release')
   parser.add_argument(
-      '--repeat', '--gtest_repeat', '--gtest-repeat',
-      dest='repeat', type=int, default=0,
-      help='Number of times to repeat the specified set of tests.')
-  parser.add_argument(
       '-v', '--verbose',
       dest='verbose_count', default=0, action='count',
       help='Verbose level (multiple times for more)')
+
+  parser.add_argument(
+      '--repeat', '--gtest_repeat', '--gtest-repeat',
+      '--isolated-script-test-repeat',
+      dest='repeat', type=int, default=0,
+      help='Number of times to repeat the specified set of tests.')
+  # This is currently only implemented for gtests and instrumentation tests.
+  parser.add_argument(
+      '--gtest_also_run_disabled_tests', '--gtest-also-run-disabled-tests',
+      '--isolated-script-test-also-run-disabled-tests',
+      dest='run_disabled', action='store_true',
+      help='Also run disabled tests if applicable.')
 
   AddTestLauncherOptions(parser)
 
@@ -332,10 +340,6 @@ def AddGTestOptions(parser):
       help=('If present, test artifacts will be uploaded to this Google '
             'Storage bucket.'))
   parser.add_argument(
-      '--gtest_also_run_disabled_tests', '--gtest-also-run-disabled-tests',
-      dest='run_disabled', action='store_true',
-      help='Also run disabled tests if applicable.')
-  parser.add_argument(
       '--runtime-deps-path',
       dest='runtime_deps_path', type=os.path.realpath,
       help='Runtime data dependency file from GN.')
@@ -406,10 +410,6 @@ def AddInstrumentationTestOptions(parser):
       dest='exclude_annotation_str',
       help='Comma-separated list of annotations. Exclude tests with these '
            'annotations.')
-  parser.add_argument(
-      '--gtest_also_run_disabled_tests', '--gtest-also-run-disabled-tests',
-      dest='run_disabled', action='store_true',
-      help='Also run disabled tests if applicable.')
   def package_replacement(arg):
     split_arg = arg.split(',')
     if len(split_arg) != 2:
@@ -844,11 +844,17 @@ def RunTestsInPlatformMode(args):
           lambda: collections.defaultdict(int))
       iteration_count = 0
       for _ in repetitions:
-        raw_results = test_run.RunTests()
-        if not raw_results:
-          continue
-
+        # raw_results will be populated with base_test_result.TestRunResults by
+        # test_run.RunTests(). It is immediately added to all_raw_results so
+        # that in the event of an exception, all_raw_results will already have
+        # the up-to-date results and those can be written to disk.
+        raw_results = []
         all_raw_results.append(raw_results)
+
+        test_run.RunTests(raw_results)
+        if not raw_results:
+          all_raw_results.pop()
+          continue
 
         iteration_results = base_test_result.TestRunResults()
         for r in reversed(raw_results):

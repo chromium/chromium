@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   CtapMakeCredentialRequest& SetPinProtocol(uint8_t pin_protocol);
   CtapMakeCredentialRequest& SetIsIndividualAttestation(
       bool is_individual_attestation);
+  CtapMakeCredentialRequest& SetHmacSecret(bool hmac_secret);
 
   const std::array<uint8_t, kClientDataHashLength>& client_data_hash() const {
     return client_data_hash_;
@@ -66,6 +67,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   }
   bool resident_key_supported() const { return resident_key_supported_; }
   bool is_individual_attestation() const { return is_individual_attestation_; }
+  bool hmac_secret() const { return hmac_secret_; }
   const base::Optional<std::vector<PublicKeyCredentialDescriptor>>&
   exclude_list() const {
     return exclude_list_;
@@ -82,6 +84,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   bool user_verification_required_ = false;
   bool resident_key_supported_ = false;
   bool is_individual_attestation_ = false;
+  // hmac_secret_ indicates whether the "hmac-secret" extension should be
+  // asserted to CTAP2 authenticators.
+  bool hmac_secret_ = false;
 
   base::Optional<std::vector<PublicKeyCredentialDescriptor>> exclude_list_;
   base::Optional<std::vector<uint8_t>> pin_auth_;

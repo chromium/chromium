@@ -71,10 +71,10 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
 
   // Used by WorkerThread. Returns true if the context is successfully
   // initialized or already initialized.
-  // For WorkerGlobalScope and ThreadedWorkletGlobalScope, |url_for_debugger| is
-  // and should be used only for setting name/origin that appears in DevTools.
-  // For other global scopes, |human_readable_name| is used for setting
-  // DOMWrapperWorld's human readable name.
+  // For WorkerGlobalScope and threaded WorkletGlobalScope, |url_for_debugger|
+  // is and should be used only for setting name/origin that appears in
+  // DevTools. For other global scopes, |human_readable_name| is used for
+  // setting DOMWrapperWorld's human readable name.
   bool InitializeContextIfNeeded(const String& human_readable_name,
                                  const KURL& url_for_debugger);
 

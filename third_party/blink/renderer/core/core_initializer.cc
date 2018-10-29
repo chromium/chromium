@@ -89,24 +89,20 @@ void CoreInitializer::Initialize() {
   // TODO(mikhail.pozdnyakov@intel.com): We should generate static strings
   // initialization code.
   const unsigned kQualifiedNamesCount =
-      HTMLNames::HTMLTagsCount + HTMLNames::HTMLAttrsCount +
-      MathMLNames::MathMLTagsCount + MathMLNames::MathMLAttrsCount +
-      SVGNames::SVGTagsCount + SVGNames::SVGAttrsCount +
-      XLinkNames::XLinkAttrsCount + XMLNSNames::XMLNSAttrsCount +
-      XMLNames::XMLAttrsCount;
+      HTMLNames::kTagsCount + HTMLNames::kAttrsCount +
+      mathml_names::kTagsCount + mathml_names::kAttrsCount +
+      svg_names::kTagsCount + svg_names::kAttrsCount +
+      xlink_names::kAttrsCount + xml_names::kAttrsCount +
+      xmlns_names::kAttrsCount;
 
   const unsigned kCoreStaticStringsCount =
-      kQualifiedNamesCount + EventNames::EventNamesCount +
-      EventTargetNames::EventTargetNamesCount +
-      EventTypeNames::EventTypeNamesCount +
-      FetchInitiatorTypeNames::FetchInitiatorTypeNamesCount +
-      FontFamilyNames::FontFamilyNamesCount +
-      HTMLTokenizerNames::HTMLTokenizerNamesCount + HTTPNames::HTTPNamesCount +
-      InputModeNames::InputModeNamesCount +
-      InputTypeNames::InputTypeNamesCount +
-      MediaFeatureNames::MediaFeatureNamesCount +
-      MediaTypeNames::MediaTypeNamesCount +
-      PerformanceEntryNames::PerformanceEntryNamesCount;
+      kQualifiedNamesCount + EventNames::kNamesCount +
+      EventTargetNames::kNamesCount + EventTypeNames::kNamesCount +
+      FetchInitiatorTypeNames::kNamesCount + FontFamilyNames::kNamesCount +
+      HTMLTokenizerNames::kNamesCount + HTTPNames::kNamesCount +
+      InputModeNames::kNamesCount + InputTypeNames::kNamesCount +
+      media_feature_names::kNamesCount + media_type_names::kNamesCount +
+      performance_entry_names::kNamesCount;
 
   StringImpl::ReserveStaticStringsCapacityForSize(
       kCoreStaticStringsCount + StringImpl::AllStaticStrings().size());
@@ -115,11 +111,11 @@ void CoreInitializer::Initialize() {
   AtomicStringTable::Instance().ReserveCapacity(kCoreStaticStringsCount);
 
   HTMLNames::init();
-  SVGNames::init();
-  XLinkNames::init();
-  MathMLNames::init();
-  XMLNSNames::init();
-  XMLNames::init();
+  mathml_names::init();
+  svg_names::init();
+  xlink_names::init();
+  xml_names::init();
+  xmlns_names::init();
 
   EventNames::init();
   EventTargetNames::init();
@@ -130,9 +126,9 @@ void CoreInitializer::Initialize() {
   HTTPNames::init();
   InputModeNames::init();
   InputTypeNames::init();
-  MediaFeatureNames::init();
-  MediaTypeNames::init();
-  PerformanceEntryNames::init();
+  media_feature_names::init();
+  media_type_names::init();
+  performance_entry_names::init();
 
   MediaQueryEvaluator::Init();
   CSSParserTokenRange::InitStaticEOFToken();

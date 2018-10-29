@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -65,9 +65,9 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterfaceNamedConstructorV8Internal {
+namespace test_interface_named_constructor_v8_internal {
 
-} // namespace TestInterfaceNamedConstructorV8Internal
+}  // namespace test_interface_named_constructor_v8_internal
 
 void V8TestInterfaceNamedConstructor::testNamedConstructorConstructorAttributeConstructorGetterCallback(v8::Local<v8::Name> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceNamedConstructor_testNamedConstructorConstructorAttribute_ConstructorGetterCallback");
@@ -148,7 +148,7 @@ static void V8TestInterfaceNamedConstructorConstructorCallback(const v8::Functio
   if (exceptionState.HadException())
     return;
 
-  defaultUndefinedOptionalLongArg = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), info[2], exceptionState, kNormalConversion);
+  defaultUndefinedOptionalLongArg = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), info[2], exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -164,7 +164,7 @@ static void V8TestInterfaceNamedConstructorConstructorCallback(const v8::Functio
     defaultNullStringOptionalstringArg = nullptr;
   }
   if (UNLIKELY(numArgsPassed <= 5)) {
-    Document& document = *ToDocument(ToExecutionContext(
+    Document& document = *To<Document>(ToExecutionContext(
         info.NewTarget().As<v8::Object>()->CreationContext()));
     TestInterfaceNamedConstructor* impl = TestInterfaceNamedConstructor::CreateForJSConstructor(document, stringArg, defaultUndefinedOptionalBooleanArg, defaultUndefinedOptionalLongArg, defaultUndefinedOptionalStringArg, defaultNullStringOptionalstringArg, exceptionState);
     if (exceptionState.HadException()) {
@@ -179,7 +179,7 @@ static void V8TestInterfaceNamedConstructorConstructorCallback(const v8::Functio
   if (!optionalStringArg.Prepare())
     return;
 
-  Document& document = *ToDocument(ToExecutionContext(
+  Document& document = *To<Document>(ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext()));
   TestInterfaceNamedConstructor* impl = TestInterfaceNamedConstructor::CreateForJSConstructor(document, stringArg, defaultUndefinedOptionalBooleanArg, defaultUndefinedOptionalLongArg, defaultUndefinedOptionalStringArg, defaultNullStringOptionalstringArg, optionalStringArg, exceptionState);
   if (exceptionState.HadException()) {

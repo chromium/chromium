@@ -21,8 +21,6 @@
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 #include "url/gurl.h"
 
-#include "widevine_cdm_version.h"  // In SHARED_INTERMEDIATE_DIR.
-
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
 

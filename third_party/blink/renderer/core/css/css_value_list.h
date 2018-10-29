@@ -54,8 +54,8 @@ class CORE_EXPORT CSSValueList : public CSSValue {
   const_iterator begin() const { return values_.begin(); }
   const_iterator end() const { return values_.end(); }
 
-  size_t length() const { return values_.size(); }
-  const CSSValue& Item(size_t index) const { return *values_[index]; }
+  wtf_size_t length() const { return values_.size(); }
+  const CSSValue& Item(wtf_size_t index) const { return *values_[index]; }
 
   void Append(const CSSValue& value) { values_.push_back(value); }
   bool RemoveAll(const CSSValue&);

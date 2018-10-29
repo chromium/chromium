@@ -8,6 +8,8 @@
 #include "device/vr/isolated_gamepad_data_fetcher.h"
 #include "services/service_manager/public/cpp/connector.h"
 
+#include "chrome/browser/vr/win/vr_renderloop_host_win.h"
+
 namespace vr {
 
 void IsolatedVRDeviceProvider::Initialize(
@@ -23,6 +25,9 @@ void IsolatedVRDeviceProvider::Initialize(
   connection->GetConnector()->BindInterface(
       device::mojom::kVrIsolatedServiceName,
       mojo::MakeRequest(&device_provider_));
+
+  device_provider_.set_connection_error_handler(base::BindOnce(
+      &IsolatedVRDeviceProvider::OnServerError, base::Unretained(this)));
 
   device::mojom::IsolatedXRRuntimeProviderClientPtr client;
   binding_.Bind(mojo::MakeRequest(&client));
@@ -40,23 +45,41 @@ bool IsolatedVRDeviceProvider::Initialized() {
 void IsolatedVRDeviceProvider::OnDeviceAdded(
     device::mojom::XRRuntimePtr device,
     device::mojom::IsolatedXRGamepadProviderFactoryPtr gamepad_factory,
+    device::mojom::XRCompositorHostPtr compositor_host,
     device::mojom::VRDisplayInfoPtr display_info) {
   device::mojom::XRDeviceId id = display_info->id;
-  add_device_callback_.Run(id, std::move(display_info), std::move(device));
-
-#if BUILDFLAG(ENABLE_OPENVR) || BUILDFLAG(ENABLE_OCULUS_VR)
-  registered_gamepads_.insert(id);
+  add_device_callback_.Run(id, display_info.Clone(), std::move(device));
+  VRBrowserRendererHostWin::AddCompositor(std::move(display_info),
+                                          std::move(compositor_host));
+  registered_devices_.insert(id);
   device::IsolatedGamepadDataFetcher::Factory::AddGamepad(
       id, std::move(gamepad_factory));
-#endif
 }
 
 void IsolatedVRDeviceProvider::OnDeviceRemoved(device::mojom::XRDeviceId id) {
   remove_device_callback_.Run(id);
-
-#if BUILDFLAG(ENABLE_OPENVR) || BUILDFLAG(ENABLE_OCULUS_VR)
+  registered_devices_.erase(id);
+  VRBrowserRendererHostWin::RemoveCompositor(id);
   device::IsolatedGamepadDataFetcher::Factory::RemoveGamepad(id);
-#endif
+}
+
+void IsolatedVRDeviceProvider::OnServerError() {
+  // An error occurred - any devices we have added are now disconnected and
+  // should be removed.
+  for (auto id : registered_devices_) {
+    remove_device_callback_.Run(id);
+    VRBrowserRendererHostWin::RemoveCompositor(id);
+    device::IsolatedGamepadDataFetcher::Factory::RemoveGamepad(id);
+  }
+  registered_devices_.clear();
+
+  // At this point, XRRuntimeManager may be blocked waiting for us to return
+  // that we've enumerated all runtimes/devices.  If we lost the connection to
+  // the service, we won't ever get devices, so report we are done now.
+  // This will unblock WebXR/WebVR promises so they can reject indicating we
+  // never found devices.
+  if (!initialized_)
+    OnDevicesEnumerated();
 }
 
 void IsolatedVRDeviceProvider::OnDevicesEnumerated() {
@@ -67,11 +90,10 @@ void IsolatedVRDeviceProvider::OnDevicesEnumerated() {
 IsolatedVRDeviceProvider::IsolatedVRDeviceProvider() : binding_(this) {}
 
 IsolatedVRDeviceProvider::~IsolatedVRDeviceProvider() {
-#if BUILDFLAG(ENABLE_OPENVR) || BUILDFLAG(ENABLE_OCULUS_VR)
-  for (auto gamepad_id : registered_gamepads_) {
-    device::IsolatedGamepadDataFetcher::Factory::RemoveGamepad(gamepad_id);
+  for (auto device_id : registered_devices_) {
+    device::IsolatedGamepadDataFetcher::Factory::RemoveGamepad(device_id);
+    VRBrowserRendererHostWin::RemoveCompositor(device_id);
   }
-#endif
 }
 
 }  // namespace vr

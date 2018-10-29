@@ -20,8 +20,9 @@ public class PermissionInfo implements Serializable {
             Type.NOTIFICATION, Type.PROTECTED_MEDIA_IDENTIFIER, Type.SENSORS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
-        // Values used below, in Website, SingleWebsitePreferences and other places to address
-        // array index. Should be enumerated from 0 and can't have gaps.
+        // Values used to address index - should be enumerated from 0 and can't have gaps.
+        // All updates here must also be reflected in {@link #getContentSettingsType(int)
+        // getContentSettingsType} and {@link SingleWebsitePreferences.PERMISSION_PREFERENCE_KEYS}.
         int CAMERA = 0;
         int CLIPBOARD = 1;
         int GEOLOCATION = 2;
@@ -35,18 +36,6 @@ public class PermissionInfo implements Serializable {
          */
         int NUM_ENTRIES = 8;
     }
-
-    // Mapping from {@link Type} to ContentSettingType.
-    final static int[] CONTENT_TYPES = {
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA,
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_CLIPBOARD_READ,
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION,
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC,
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_MIDI_SYSEX,
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER,
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_SENSORS,
-    };
 
     private final boolean mIsIncognito;
     private final String mEmbedder;
@@ -161,6 +150,30 @@ public class PermissionInfo implements Serializable {
                 break;
             default:
                 assert false;
+        }
+    }
+
+    public static @ContentSettingsType int getContentSettingsType(@Type int type) {
+        switch (type) {
+            case Type.CAMERA:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA;
+            case Type.CLIPBOARD:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_CLIPBOARD_READ;
+            case Type.GEOLOCATION:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION;
+            case Type.MICROPHONE:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC;
+            case Type.MIDI:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_MIDI_SYSEX;
+            case Type.NOTIFICATION:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS;
+            case Type.PROTECTED_MEDIA_IDENTIFIER:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER;
+            case Type.SENSORS:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_SENSORS;
+            default:
+                assert false;
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_DEFAULT;
         }
     }
 }

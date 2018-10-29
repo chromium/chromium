@@ -64,10 +64,14 @@ class ProximityAuthPrefManager {
   virtual void SetProximityThreshold(ProximityThreshold value) = 0;
   virtual ProximityThreshold GetProximityThreshold() const = 0;
 
-  // Setting and getter for whether EasyUnlock is enabled for ChromeOS login (in
+  // Getter for whether EasyUnlock is allowed for ChromeOS login (in addition to
+  // screen lock).
+  virtual bool IsChromeOSLoginAllowed() const = 0;
+
+  // Setter and getter for whether EasyUnlock is enabled for ChromeOS login (in
   // addition to screen lock).
   virtual void SetIsChromeOSLoginEnabled(bool is_enabled) = 0;
-  virtual bool IsChromeOSLoginEnabled() = 0;
+  virtual bool IsChromeOSLoginEnabled() const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProximityAuthPrefManager);

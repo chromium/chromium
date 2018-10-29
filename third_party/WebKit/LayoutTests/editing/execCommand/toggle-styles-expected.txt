@@ -2,7 +2,6 @@ Test to make sure styles toggle as expected and tag-based styles can be removed 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.compatMode is "BackCompat"
 PASS bold toggle
 PASS bold removing b

@@ -47,11 +47,8 @@ bool RunOneTest(
   DCHECK(ran_at_least_once);
   DCHECK(blink_test_controller);
 
-  if (!blink_test_controller->PrepareForLayoutTest(
-          test_info.url, test_info.current_working_directory,
-          test_info.enable_pixel_dumping, test_info.expected_pixel_hash)) {
+  if (!blink_test_controller->PrepareForLayoutTest(test_info))
     return false;
-  }
 
   *ran_at_least_once = true;
 #if defined(OS_ANDROID)

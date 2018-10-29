@@ -127,11 +127,17 @@ public class Features {
 
     // WebViewCompat.setProxyOverride
     // WebViewCompat.clearProxyOverride
-    public static final String PROXY_OVERRIDE = "PROXY_OVERRIDE";
+    public static final String PROXY_OVERRIDE = "PROXY_OVERRIDE:2";
 
     // WebViewCompat.getWebViewRenderer
     public static final String GET_WEB_VIEW_RENDERER = "GET_WEB_VIEW_RENDERER";
 
     // WebViewRenderer.terminate
     public static final String WEB_VIEW_RENDERER_TERMINATE = "WEB_VIEW_RENDERER_TERMINATE";
+
+    // TracingController.getInstance
+    // TracingController.isTracing
+    // TracingController.start
+    // TracingController.stop
+    public static final String TRACING_CONTROLLER_BASIC_USAGE = "TRACING_CONTROLLER_BASIC_USAGE";
 }

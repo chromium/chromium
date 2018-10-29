@@ -28,7 +28,7 @@ constexpr base::FilePath::CharType kLevelDBFolderName[] =
 
 // Initialized ModelTypeStoreBackend, on the backend sequence.
 void InitOnBackendSequence(const base::FilePath& level_db_path,
-                           ModelTypeStoreBackend* store_backend) {
+                           scoped_refptr<ModelTypeStoreBackend> store_backend) {
   base::Optional<ModelError> error = store_backend->Init(level_db_path);
   if (error) {
     LOG(ERROR) << "Failed to initialize ModelTypeStore backend: "
@@ -39,7 +39,7 @@ void InitOnBackendSequence(const base::FilePath& level_db_path,
 std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
 CreateBlockingModelTypeStoreOnBackendSequence(
     ModelType type,
-    ModelTypeStoreBackend* store_backend) {
+    scoped_refptr<ModelTypeStoreBackend> store_backend) {
   BlockingModelTypeStoreImpl* blocking_store = nullptr;
   if (store_backend->IsInitialized()) {
     blocking_store = new BlockingModelTypeStoreImpl(type, store_backend);
@@ -50,7 +50,7 @@ CreateBlockingModelTypeStoreOnBackendSequence(
       base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
 }
 
-void CreateModelTypeStoreOnUIThread(
+void ConstructModelTypeStoreOnFrontendSequence(
     ModelType type,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
     ModelTypeStore::InitCallback callback,
@@ -68,6 +68,25 @@ void CreateModelTypeStoreOnUIThread(
   }
 }
 
+void CreateModelTypeStoreOnFrontendSequence(
+    scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
+    scoped_refptr<ModelTypeStoreBackend> store_backend,
+    ModelType type,
+    ModelTypeStore::InitCallback callback) {
+  // BlockingModelTypeStoreImpl must be instantiated in the backend sequence.
+  // This also guarantees that the creation is sequenced with the backend's
+  // initialization, since we can't know for sure that InitOnBackendSequence()
+  // has already run.
+  auto task = base::BindOnce(&CreateBlockingModelTypeStoreOnBackendSequence,
+                             type, store_backend);
+
+  auto reply = base::BindOnce(&ConstructModelTypeStoreOnFrontendSequence, type,
+                              backend_task_runner, std::move(callback));
+
+  base::PostTaskAndReplyWithResult(backend_task_runner.get(), FROM_HERE,
+                                   std::move(task), std::move(reply));
+}
+
 }  // namespace
 
 ModelTypeStoreServiceImpl::ModelTypeStoreServiceImpl(
@@ -76,13 +95,12 @@ ModelTypeStoreServiceImpl::ModelTypeStoreServiceImpl(
       leveldb_path_(sync_path_.Append(base::FilePath(kLevelDBFolderName))),
       backend_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      store_backend_(ModelTypeStoreBackend::CreateUninitialized().release(),
-                     base::OnTaskRunnerDeleter(backend_task_runner_)),
+      store_backend_(ModelTypeStoreBackend::CreateUninitialized()),
       weak_ptr_factory_(this) {
   DCHECK(backend_task_runner_);
   backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&InitOnBackendSequence, leveldb_path_,
-                                store_backend_.get()));
+      FROM_HERE,
+      base::BindOnce(&InitOnBackendSequence, leveldb_path_, store_backend_));
 }
 
 ModelTypeStoreServiceImpl::~ModelTypeStoreServiceImpl() {
@@ -95,8 +113,8 @@ const base::FilePath& ModelTypeStoreServiceImpl::GetSyncDataPath() const {
 
 RepeatingModelTypeStoreFactory ModelTypeStoreServiceImpl::GetStoreFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-  return base::BindRepeating(&ModelTypeStoreServiceImpl::CreateModelTypeStore,
-                             weak_ptr_factory_.GetWeakPtr());
+  return base::BindRepeating(&CreateModelTypeStoreOnFrontendSequence,
+                             backend_task_runner_, store_backend_);
 }
 
 scoped_refptr<base::SequencedTaskRunner>
@@ -114,24 +132,6 @@ ModelTypeStoreServiceImpl::CreateBlockingStoreFromBackendSequence(
   }
   return std::make_unique<BlockingModelTypeStoreImpl>(type,
                                                       store_backend_.get());
-}
-
-void ModelTypeStoreServiceImpl::CreateModelTypeStore(
-    ModelType type,
-    ModelTypeStore::InitCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-  // BlockingModelTypeStoreImpl must be instantiated in the backend sequence.
-  // This also guarantees that the creation is sequenced with the backend's
-  // initialization, since we can't know for sure that InitOnBackendSequence()
-  // has already run.
-  auto task = base::BindOnce(&CreateBlockingModelTypeStoreOnBackendSequence,
-                             type, store_backend_.get());
-
-  auto reply = base::BindOnce(&CreateModelTypeStoreOnUIThread, type,
-                              backend_task_runner_, std::move(callback));
-
-  base::PostTaskAndReplyWithResult(backend_task_runner_.get(), FROM_HERE,
-                                   std::move(task), std::move(reply));
 }
 
 }  // namespace syncer

@@ -49,7 +49,11 @@ class WorkletAnimationTest : public AnimationTimelinesTest {
 class MockScrollTimeline : public ScrollTimeline {
  public:
   MockScrollTimeline()
-      : ScrollTimeline(ElementId(), ScrollTimeline::Vertical, 0) {}
+      : ScrollTimeline(ElementId(),
+                       ScrollTimeline::Vertical,
+                       base::nullopt,
+                       base::nullopt,
+                       0) {}
   MOCK_CONST_METHOD2(CurrentTime, double(const ScrollTree&, bool));
 };
 
@@ -64,8 +68,10 @@ TEST_F(WorkletAnimationTest, NonImplInstanceDoesNotTickKeyframe) {
           false /* not impl instance*/, std::move(effect)));
 
   EXPECT_CALL(*mock_effect, Tick(_)).Times(0);
-  worklet_animation->SetOutputState(
-      {worklet_animation_id_, base::TimeDelta::FromSecondsD(1)});
+
+  MutatorOutputState::AnimationState state(worklet_animation_id_);
+  state.local_times.push_back(base::TimeDelta::FromSecondsD(1));
+  worklet_animation->SetOutputState(state);
   worklet_animation->Tick(base::TimeTicks());
 }
 
@@ -87,7 +93,9 @@ TEST_F(WorkletAnimationTest, LocalTimeIsUsedWhenTicking) {
   keyframe_model->set_needs_synchronized_start_time(false);
 
   base::TimeDelta local_time = base::TimeDelta::FromSecondsD(duration / 2);
-  worklet_animation_->SetOutputState({worklet_animation_id_, local_time});
+  MutatorOutputState::AnimationState state(worklet_animation_id_);
+  state.local_times.push_back(local_time);
+  worklet_animation_->SetOutputState(state);
 
   worklet_animation_->Tick(base::TimeTicks());
 

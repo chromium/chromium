@@ -10,10 +10,12 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_socket_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -130,8 +132,8 @@ void PepperUDPSocketMessageFilter::OnFilterDestroyed() {
   // that future messages will be ignored, so the mojo pipes won't be
   // re-created, so after Close() runs, |this| can be safely deleted on the IO
   // thread.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&PepperUDPSocketMessageFilter::Close, this));
 }
 
@@ -146,7 +148,7 @@ PepperUDPSocketMessageFilter::OverrideTaskRunnerForMessage(
     case PpapiHostMsg_UDPSocket_SendTo::ID:
     case PpapiHostMsg_UDPSocket_JoinGroup::ID:
     case PpapiHostMsg_UDPSocket_LeaveGroup::ID:
-      return BrowserThread::GetTaskRunnerForThread(BrowserThread::UI);
+      return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
   }
   return nullptr;
 }
@@ -717,8 +719,8 @@ void PepperUDPSocketMessageFilter::SendRecvFromResult(
     const PP_NetAddress_Private& addr) {
   // Unlike SendReply, which is safe to call on any thread, SendUnsolicitedReply
   // calls are only safe to make on the IO thread.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &PepperUDPSocketMessageFilter::SendRecvFromResultOnIOThread, this,
           result, data, addr));
@@ -807,7 +809,7 @@ PepperUDPSocketMessageFilter::CreateCompletionCallback(
   base::ScopedClosureRunner closure_runner(
       base::BindOnce(&PepperUDPSocketMessageFilter::ReturnResult<ReturnMessage>,
                      base::Unretained(this), context->MakeReplyMessageContext(),
-                     base::Passed(std::move(result))));
+                     std::move(result)));
   return base::BindOnce(
       [](base::ScopedClosureRunner closure_runner, int* result_ptr,
          int net_result) { *result_ptr = net_result; },

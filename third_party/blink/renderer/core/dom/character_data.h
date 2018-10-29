@@ -50,7 +50,7 @@ class CORE_EXPORT CharacterData : public Node {
   void insertData(unsigned offset, const String&, ExceptionState&);
   void deleteData(unsigned offset, unsigned count, ExceptionState&);
 
-  bool ContainsOnlyWhitespace() const;
+  bool ContainsOnlyWhitespaceOrEmpty() const;
 
   StringImpl* DataImpl() { return data_.Impl(); }
 

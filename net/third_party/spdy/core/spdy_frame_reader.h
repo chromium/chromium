@@ -5,8 +5,7 @@
 #ifndef NET_THIRD_PARTY_SPDY_CORE_SPDY_FRAME_READER_H_
 #define NET_THIRD_PARTY_SPDY_CORE_SPDY_FRAME_READER_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstdint>
 
 #include "net/third_party/spdy/platform/api/spdy_export.h"
 #include "net/third_party/spdy/platform/api/spdy_string_piece.h"

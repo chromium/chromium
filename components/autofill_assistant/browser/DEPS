@@ -4,8 +4,12 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
   "+content/shell/browser/shell.h",
+  "+components/strings/grit/components_strings.h",
   "+google_apis",
   "+net",
   "+services/network/public/cpp",
+  "+services/identity/public/cpp",
+  "+third_party/blink/public/mojom/payments/payment_request.mojom.h",
   "+third_party/re2",
+  "+ui/base/l10n/l10n_util.h",
 ]

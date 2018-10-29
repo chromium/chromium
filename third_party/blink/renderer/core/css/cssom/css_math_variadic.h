@@ -50,7 +50,7 @@ class CORE_EXPORT CSSMathVariadic : public CSSMathValue {
     error = false;
 
     CSSNumericValueType final_type = values.front()->Type();
-    for (size_t i = 1; i < values.size(); i++) {
+    for (wtf_size_t i = 1; i < values.size(); i++) {
       final_type = op(final_type, values[i]->Type(), error);
       if (error)
         return final_type;

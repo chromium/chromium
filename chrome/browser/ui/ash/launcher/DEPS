@@ -3,8 +3,16 @@ specific_include_rules = {
   "app_window_launcher_controller\.cc": [
     "+ash/shell.h",
   ],
-  # TODO(mash): Fix. https://crbug.com/826391
-  "chrome_launcher_controller\.cc": [
+  # https://crbug.com/887156
+  "arc_app_window_launcher_controller\.cc": [
+    "+ash/shell.h",
+  ],
+  # https://crbug.com/887156
+  "crostini_app_window_shelf_controller\.cc": [
+    "+ash/shell.h",
+  ],
+  # https://crbug.com/887156
+  "internal_app_window_shelf_controller\.cc": [
     "+ash/shell.h",
   ],
 }

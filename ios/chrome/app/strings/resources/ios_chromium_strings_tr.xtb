@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Chromium'da Google'ın akıllı yaklaşımını elde edin</translation>
 <translation id="2730884209570016437">Kameranız başka bir uygulama tarafından kullanıldığından Chromium, kameranızı kullanamıyor.</translation>
 <translation id="2797210818057553964">Bunu istediğiniz zaman Chromium Ayarları'ndan özelleştirebilirsiniz</translation>
+<translation id="2915596697727466327">Chromium, şifrelerinize yetkili erişim sağlanması için Face ID kullanır.</translation>
 <translation id="3256316712990552818">Chromium'a kopyalandı</translation>
 <translation id="3413120535237193088">Yer işaretlerinizi tüm cihazlarınızda almak için Chromium'da oturum açın.</translation>
 <translation id="3473048256428424907">Chromium QR tarayıcısını açın</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Diğer cihazlarınızda Chromium'da açtığınız sekmeler burada görünür.</translation>
 <translation id="495292094137889840">Chromium QR tarayıcısını kullanmaya başlayın</translation>
 <translation id="5231355151045086930">Chromium oturumunu kapatın</translation>
-<translation id="5416919929805616771">Chromium'u kullanmayı seviyor musunuz? <ph name="BEGIN_LINK" />Bu uygulamaya oy verin<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Chromium'a Hoş Geldiniz</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyor ve yöneticiye tüm Chromium verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chromium'da oturumu kapattığınızda verileriniz bu cihazdan silinir ancak Google Hesabınızda kalmaya devam eder.</translation>
 <translation id="6068866989048414399">Chromium Hizmet Şartları</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Senkronizasyon hesapları arasında (<ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına) geçiş yapıyorsunuz. Mevcut Chromium verileriniz <ph name="DOMAIN" /> tarafından yönetiliyor. Bu işlemle verileriniz bu cihazdan silinir, ancak <ph name="USER_EMAIL1" /> hesabınızda kalmaya devam eder.</translation>
 <translation id="8175055321229419309">İpucu: <ph name="BEGIN_LINK" />Chromium'u yuva bölümüne taşıyın<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Chromium'da, konumunuza dayalı olarak daha iyi bir Google deneyimi yaşayın.</translation>
-<translation id="8353224596138547809">Chromium'un bu site için şifrenizi kaydetmesini ister misiniz?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'ı istediğiniz zaman özelleştirebilirsiniz. Chromium'u ve diğer Google hizmetlerini (Çeviri, Arama, reklamlar gibi) kişiselleştirmek için Google, ziyaret ettiğiniz sitelerdeki içeriği, tarayıcı etkileşimlerini ve etkinlikleri kullanabilir.</translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
 <translation id="8809780021347235332">Resimleri kaydetmek için Ayarlar'a dokunarak Chromium'un fotoğraflarınızı kullanmasına izin verin</translation>

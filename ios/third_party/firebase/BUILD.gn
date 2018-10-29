@@ -2,13 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/third_party/firebase/firebase.gni")
-
 source_set("firebase") {
-  assert(
-      ios_firebase_resources_target != "",
-      "ios_firebase_resources_target must be defined if Firebase SDK is enabled.")
-
   # From gn documentation:
   #   https://chromium.googlesource.com/chromium/src/+/master/tools/gn/docs/reference.md#ldflags
   # "ldflags are NOT pushed to dependents, so applying ldflags to source sets
@@ -19,9 +13,6 @@ source_set("firebase") {
   # This source_set must be specified as a direct deps of an ios_app_bundle
   # target for ldflags specified in :firebase_config to be applied.
   public_configs = [ ":firebase_config" ]
-  deps = [
-    ios_firebase_resources_target,
-  ]
 }
 
 config("firebase_config") {

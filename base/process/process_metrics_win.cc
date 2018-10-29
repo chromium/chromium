@@ -45,6 +45,8 @@ struct SYSTEM_PERFORMANCE_INFORMATION {
   ULONG WriteOperationCount;
   // The amount of other operations.
   ULONG OtherOperationCount;
+  // The number of pages of physical memory available to processes running on
+  // the system.
   ULONG AvailablePages;
   ULONG TotalCommittedPages;
   ULONG TotalCommitLimit;
@@ -54,7 +56,9 @@ struct SYSTEM_PERFORMANCE_INFORMATION {
   ULONG TransitionFaults;
   ULONG CacheTransitionFaults;
   ULONG DemandZeroFaults;
+  // The number of pages read from disk to resolve page faults.
   ULONG PagesRead;
+  // The number of read operations initiated to resolve page faults.
   ULONG PageReadIos;
   ULONG CacheReads;
   ULONG CacheIos;
@@ -307,23 +311,26 @@ std::unique_ptr<Value> SystemPerformanceInfo::ToValue() const {
 
   // Write out uint64_t variables as doubles.
   // Note: this may discard some precision, but for JS there's no other option.
-  result->SetDouble("idle_time", static_cast<double>(idle_time));
+  result->SetDouble("idle_time", strict_cast<double>(idle_time));
   result->SetDouble("read_transfer_count",
-                    static_cast<double>(read_transfer_count));
+                    strict_cast<double>(read_transfer_count));
   result->SetDouble("write_transfer_count",
-                    static_cast<double>(write_transfer_count));
+                    strict_cast<double>(write_transfer_count));
   result->SetDouble("other_transfer_count",
-                    static_cast<double>(other_transfer_count));
+                    strict_cast<double>(other_transfer_count));
   result->SetDouble("read_operation_count",
-                    static_cast<double>(read_operation_count));
+                    strict_cast<double>(read_operation_count));
   result->SetDouble("write_operation_count",
-                    static_cast<double>(write_operation_count));
+                    strict_cast<double>(write_operation_count));
   result->SetDouble("other_operation_count",
-                    static_cast<double>(other_operation_count));
+                    strict_cast<double>(other_operation_count));
   result->SetDouble("pagefile_pages_written",
-                    static_cast<double>(pagefile_pages_written));
+                    strict_cast<double>(pagefile_pages_written));
   result->SetDouble("pagefile_pages_write_ios",
-                    static_cast<double>(pagefile_pages_write_ios));
+                    strict_cast<double>(pagefile_pages_write_ios));
+  result->SetDouble("available_pages", strict_cast<double>(available_pages));
+  result->SetDouble("pages_read", strict_cast<double>(pages_read));
+  result->SetDouble("page_read_ios", strict_cast<double>(page_read_ios));
 
   return result;
 }
@@ -354,6 +361,9 @@ BASE_EXPORT bool GetSystemPerformanceInfo(SystemPerformanceInfo* info) {
   info->other_operation_count = counters.OtherOperationCount;
   info->pagefile_pages_written = counters.PagefilePagesWritten;
   info->pagefile_pages_write_ios = counters.PagefilePageWriteIos;
+  info->available_pages = counters.AvailablePages;
+  info->pages_read = counters.PagesRead;
+  info->page_read_ios = counters.PageReadIos;
 
   return true;
 }

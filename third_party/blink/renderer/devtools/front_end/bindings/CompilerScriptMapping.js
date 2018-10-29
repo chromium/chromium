@@ -211,8 +211,10 @@ Bindings.CompilerScriptMapping = class {
     const sourceMap = /** @type {!SDK.SourceMap} */ (event.data.sourceMap);
     this._removeStubUISourceCode(script);
 
-    if (Bindings.blackboxManager.isBlackboxedURL(script.sourceURL, script.isContentScript()))
+    if (Bindings.blackboxManager.isBlackboxedURL(script.sourceURL, script.isContentScript())) {
+      this._sourceMapAttachedForTest(sourceMap);
       return;
+    }
 
     this._populateSourceMapSources(script, sourceMap);
     this._sourceMapAttachedForTest(sourceMap);
@@ -228,9 +230,11 @@ Bindings.CompilerScriptMapping = class {
     const bindings = script.isContentScript() ? this._contentScriptsBindings : this._regularBindings;
     for (const sourceURL of sourceMap.sourceURLs()) {
       const binding = bindings.get(sourceURL);
-      binding.removeSourceMap(sourceMap, frameId);
-      if (!binding._uiSourceCode)
-        bindings.delete(sourceURL);
+      if (binding) {
+        binding.removeSourceMap(sourceMap, frameId);
+        if (!binding._uiSourceCode)
+          bindings.delete(sourceURL);
+      }
     }
     this._debuggerWorkspaceBinding.updateLocations(script);
   }

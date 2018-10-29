@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,15 +16,6 @@ import subprocess
 _BASE_REGEX_STRING = r'^\s*goog\.%s\(\s*[\'"](.+)[\'"]\s*\)'
 require_regex = re.compile(_BASE_REGEX_STRING % 'require')
 provide_regex = re.compile(_BASE_REGEX_STRING % 'provide')
-
-preamble = [
-    '# Copyright 2014 The Chromium Authors. All rights reserved.',
-    '# Use of this source code is governed by a BSD-style license that can be',
-    '# found in the LICENSE file.',
-    '',
-    '# This file is auto-generated using update.py.',
-    ''
-]
 
 # Entry-points required to build a virtual keyboard.
 namespaces = [
@@ -235,16 +226,15 @@ def update_file(filename, input_source, closure_source, target_files):
 
 
 def generate_build_file(target_files):
-  """Updates inputview.gypi.
+  """Updates inputview.json.
 
   Args:
     target_files: List of files required to build inputview.js.
   """
 
   sorted_files = sorted(target_files)
-  with open('inputview.gypi', 'w') as file_handle:
-    file_handle.write(os.linesep.join(preamble))
-    json_data = {'variables': {'inputview_sources': sorted_files}}
+  with open('inputview.json', 'w') as file_handle:
+    json_data = {'inputview_sources': sorted_files}
     json_str = json.dumps(json_data, indent=2, separators=(',', ': '))
     file_handle.write(json_str.replace('\"', '\''))
 
@@ -290,8 +280,8 @@ def main():
 
   (options, _) = parser.parse_args()
 
-  input_path = get_google_input_tools_sandbox_from_options(options)
-  closure_library_path = get_closure_library_sandbox_from_options(options)
+  input_path = get_google_input_tools_sandbox_from_options(options)[0]
+  closure_library_path = get_closure_library_sandbox_from_options(options)[0]
 
   if not os.path.isdir(input_path):
     print 'Could not find google-input-tools sandbox.'

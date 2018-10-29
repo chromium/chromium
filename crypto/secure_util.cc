@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
-
 #include "crypto/secure_util.h"
+
+#include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace crypto {
 
 bool SecureMemEqual(const void* s1, const void* s2, size_t n) {
-  const unsigned char* s1_ptr = reinterpret_cast<const unsigned char*>(s1);
-  const unsigned char* s2_ptr = reinterpret_cast<const unsigned char*>(s2);
-  unsigned char tmp = 0;
-  for (size_t i = 0; i < n; ++i, ++s1_ptr, ++s2_ptr)
-    tmp |= *s1_ptr ^ *s2_ptr;
-  return (tmp == 0);
+  return CRYPTO_memcmp(s1, s2, n) == 0;
 }
 
 }  // namespace crypto

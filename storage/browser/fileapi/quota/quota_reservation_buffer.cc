@@ -25,7 +25,7 @@ QuotaReservationBuffer::QuotaReservationBuffer(
       origin_(origin),
       type_(type),
       reserved_quota_(0) {
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   DCHECK(sequence_checker_.CalledOnValidSequence());
   reservation_manager_->IncrementDirtyCount(origin, type);
 }
@@ -88,8 +88,8 @@ QuotaReservationBuffer::~QuotaReservationBuffer() {
   if (reserved_quota_ && reservation_manager_) {
     reservation_manager_->ReserveQuota(
         origin_, type_, -reserved_quota_,
-        base::Bind(&QuotaReservationBuffer::DecrementDirtyCount,
-                   reservation_manager_, origin_, type_));
+        base::BindOnce(&QuotaReservationBuffer::DecrementDirtyCount,
+                       reservation_manager_, origin_, type_));
   }
   reservation_manager_->ReleaseReservationBuffer(this);
 }
@@ -101,7 +101,7 @@ bool QuotaReservationBuffer::DecrementDirtyCount(
     FileSystemType type,
     base::File::Error error,
     int64_t delta_unused) {
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   if (error == base::File::FILE_OK && reservation_manager) {
     reservation_manager->DecrementDirtyCount(origin, type);
     return true;

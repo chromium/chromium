@@ -20,7 +20,6 @@
 #include "base/task/sequence_manager/test/mock_time_domain.h"
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -116,9 +115,8 @@ class TaskQueueSelectorTest : public testing::Test {
     for (size_t i = 0; i < num_tasks; i++) {
       changed_queue_set.insert(queue_indices[i]);
       task_queues_[queue_indices[i]]->immediate_work_queue()->Push(
-          TaskQueueImpl::Task(TaskQueue::PostedTask(test_closure_, FROM_HERE),
-                              TimeTicks(), EnqueueOrder(),
-                              enqueue_order_generator.GenerateNext()));
+          Task(PostedTask(test_closure_, FROM_HERE), TimeTicks(),
+               EnqueueOrder(), enqueue_order_generator.GenerateNext()));
     }
   }
 
@@ -128,11 +126,9 @@ class TaskQueueSelectorTest : public testing::Test {
     std::set<size_t> changed_queue_set;
     for (size_t i = 0; i < num_tasks; i++) {
       changed_queue_set.insert(queue_indices[i]);
-      task_queues_[queue_indices[i]]->immediate_work_queue()->Push(
-          TaskQueueImpl::Task(
-              TaskQueue::PostedTask(test_closure_, FROM_HERE), TimeTicks(),
-              EnqueueOrder(),
-              EnqueueOrder::FromIntForTesting(enqueue_orders[i])));
+      task_queues_[queue_indices[i]]->immediate_work_queue()->Push(Task(
+          PostedTask(test_closure_, FROM_HERE), TimeTicks(), EnqueueOrder(),
+          EnqueueOrder::FromIntForTesting(enqueue_orders[i])));
     }
   }
 
@@ -167,7 +163,6 @@ class TaskQueueSelectorTest : public testing::Test {
           << i;
       queue_to_index_map_.insert(std::make_pair(task_queues_[i].get(), i));
     }
-    histogram_tester_.reset(new HistogramTester());
   }
 
   void TearDown() final {
@@ -192,17 +187,12 @@ class TaskQueueSelectorTest : public testing::Test {
   std::unique_ptr<TimeDomain> time_domain_;
   std::vector<std::unique_ptr<TaskQueueImpl>> task_queues_;
   std::map<TaskQueueImpl*, size_t> queue_to_index_map_;
-  std::unique_ptr<HistogramTester> histogram_tester_;
 };
 
 TEST_F(TaskQueueSelectorTest, TestDefaultPriority) {
   size_t queue_order[] = {4, 3, 2, 1, 0};
   PushTasks(queue_order, 5);
   EXPECT_THAT(PopTasks(), testing::ElementsAre(4, 3, 2, 1, 0));
-  EXPECT_EQ(histogram_tester_->GetBucketCount(
-                "TaskQueueSelector.TaskServicedPerSelectorLogic",
-                static_cast<int>(TaskQueueSelectorLogic::kNormalPriorityLogic)),
-            5);
 }
 
 TEST_F(TaskQueueSelectorTest, TestHighestPriority) {
@@ -211,11 +201,6 @@ TEST_F(TaskQueueSelectorTest, TestHighestPriority) {
   selector_.SetQueuePriority(task_queues_[2].get(),
                              TaskQueue::kHighestPriority);
   EXPECT_THAT(PopTasks(), ::testing::ElementsAre(2, 0, 1, 3, 4));
-  EXPECT_EQ(
-      histogram_tester_->GetBucketCount(
-          "TaskQueueSelector.TaskServicedPerSelectorLogic",
-          static_cast<int>(TaskQueueSelectorLogic::kHighestPriorityLogic)),
-      1);
 }
 
 TEST_F(TaskQueueSelectorTest, TestHighPriority) {
@@ -226,10 +211,6 @@ TEST_F(TaskQueueSelectorTest, TestHighPriority) {
   selector_.SetQueuePriority(task_queues_[1].get(), TaskQueue::kHighPriority);
   selector_.SetQueuePriority(task_queues_[0].get(), TaskQueue::kLowPriority);
   EXPECT_THAT(PopTasks(), ::testing::ElementsAre(2, 1, 3, 4, 0));
-  EXPECT_EQ(histogram_tester_->GetBucketCount(
-                "TaskQueueSelector.TaskServicedPerSelectorLogic",
-                static_cast<int>(TaskQueueSelectorLogic::kHighPriorityLogic)),
-            1);
 }
 
 TEST_F(TaskQueueSelectorTest, TestLowPriority) {
@@ -237,10 +218,6 @@ TEST_F(TaskQueueSelectorTest, TestLowPriority) {
   PushTasks(queue_order, 5);
   selector_.SetQueuePriority(task_queues_[2].get(), TaskQueue::kLowPriority);
   EXPECT_THAT(PopTasks(), testing::ElementsAre(0, 1, 3, 4, 2));
-  EXPECT_EQ(histogram_tester_->GetBucketCount(
-                "TaskQueueSelector.TaskServicedPerSelectorLogic",
-                static_cast<int>(TaskQueueSelectorLogic::kLowPriorityLogic)),
-            1);
 }
 
 TEST_F(TaskQueueSelectorTest, TestBestEffortPriority) {
@@ -252,11 +229,6 @@ TEST_F(TaskQueueSelectorTest, TestBestEffortPriority) {
   selector_.SetQueuePriority(task_queues_[3].get(),
                              TaskQueue::kHighestPriority);
   EXPECT_THAT(PopTasks(), ::testing::ElementsAre(3, 1, 4, 2, 0));
-  EXPECT_EQ(
-      histogram_tester_->GetBucketCount(
-          "TaskQueueSelector.TaskServicedPerSelectorLogic",
-          static_cast<int>(TaskQueueSelectorLogic::kBestEffortPriorityLogic)),
-      1);
 }
 
 TEST_F(TaskQueueSelectorTest, TestControlPriority) {
@@ -269,11 +241,6 @@ TEST_F(TaskQueueSelectorTest, TestControlPriority) {
                              TaskQueue::kHighestPriority);
   EXPECT_EQ(TaskQueue::kHighestPriority, task_queues_[2]->GetQueuePriority());
   EXPECT_THAT(PopTasks(), ::testing::ElementsAre(4, 2, 0, 1, 3));
-  EXPECT_EQ(
-      histogram_tester_->GetBucketCount(
-          "TaskQueueSelector.TaskServicedPerSelectorLogic",
-          static_cast<int>(TaskQueueSelectorLogic::kControlPriorityLogic)),
-      1);
 }
 
 TEST_F(TaskQueueSelectorTest, TestObserverWithEnabledQueue) {
@@ -738,9 +705,9 @@ TEST_F(TaskQueueSelectorTest, ChooseOldestWithPriority_Empty) {
 }
 
 TEST_F(TaskQueueSelectorTest, ChooseOldestWithPriority_OnlyDelayed) {
-  task_queues_[0]->delayed_work_queue()->Push(TaskQueueImpl::Task(
-      TaskQueue::PostedTask(test_closure_, FROM_HERE), TimeTicks(),
-      EnqueueOrder(), EnqueueOrder::FromIntForTesting(2)));
+  task_queues_[0]->delayed_work_queue()->Push(
+      Task(PostedTask(test_closure_, FROM_HERE), TimeTicks(), EnqueueOrder(),
+           EnqueueOrder::FromIntForTesting(2)));
 
   WorkQueue* chosen_work_queue = nullptr;
   bool chose_delayed_over_immediate = false;
@@ -752,9 +719,9 @@ TEST_F(TaskQueueSelectorTest, ChooseOldestWithPriority_OnlyDelayed) {
 }
 
 TEST_F(TaskQueueSelectorTest, ChooseOldestWithPriority_OnlyImmediate) {
-  task_queues_[0]->immediate_work_queue()->Push(TaskQueueImpl::Task(
-      TaskQueue::PostedTask(test_closure_, FROM_HERE), TimeTicks(),
-      EnqueueOrder(), EnqueueOrder::FromIntForTesting(2)));
+  task_queues_[0]->immediate_work_queue()->Push(
+      Task(PostedTask(test_closure_, FROM_HERE), TimeTicks(), EnqueueOrder(),
+           EnqueueOrder::FromIntForTesting(2)));
 
   WorkQueue* chosen_work_queue = nullptr;
   bool chose_delayed_over_immediate = false;
@@ -778,9 +745,8 @@ TEST_F(TaskQueueSelectorTest, TestObserverWithOneBlockedQueue) {
   task_queue->SetQueueEnabledForTest(false);
   selector.DisableQueue(task_queue.get());
 
-  TaskQueueImpl::Task task(TaskQueue::PostedTask(test_closure_, FROM_HERE),
-                           TimeTicks(), EnqueueOrder(),
-                           EnqueueOrder::FromIntForTesting(2));
+  Task task(PostedTask(test_closure_, FROM_HERE), TimeTicks(), EnqueueOrder(),
+            EnqueueOrder::FromIntForTesting(2));
   task_queue->immediate_work_queue()->Push(std::move(task));
 
   WorkQueue* chosen_work_queue;
@@ -809,12 +775,12 @@ TEST_F(TaskQueueSelectorTest, TestObserverWithTwoBlockedQueues) {
 
   selector.SetQueuePriority(task_queue2.get(), TaskQueue::kControlPriority);
 
-  TaskQueueImpl::Task task1(TaskQueue::PostedTask(test_closure_, FROM_HERE),
-                            TimeTicks(), EnqueueOrder::FromIntForTesting(2),
-                            EnqueueOrder::FromIntForTesting(2));
-  TaskQueueImpl::Task task2(TaskQueue::PostedTask(test_closure_, FROM_HERE),
-                            TimeTicks(), EnqueueOrder::FromIntForTesting(3),
-                            EnqueueOrder::FromIntForTesting(3));
+  Task task1(PostedTask(test_closure_, FROM_HERE), TimeTicks(),
+             EnqueueOrder::FromIntForTesting(2),
+             EnqueueOrder::FromIntForTesting(2));
+  Task task2(PostedTask(test_closure_, FROM_HERE), TimeTicks(),
+             EnqueueOrder::FromIntForTesting(3),
+             EnqueueOrder::FromIntForTesting(3));
   task_queue->immediate_work_queue()->Push(std::move(task1));
   task_queue2->immediate_work_queue()->Push(std::move(task2));
 
@@ -858,14 +824,14 @@ class ChooseOldestWithPriorityTest
       public testing::WithParamInterface<ChooseOldestWithPriorityTestParam> {};
 
 TEST_P(ChooseOldestWithPriorityTest, RoundRobinTest) {
-  task_queues_[0]->immediate_work_queue()->Push(TaskQueueImpl::Task(
-      TaskQueue::PostedTask(test_closure_, FROM_HERE), TimeTicks(),
+  task_queues_[0]->immediate_work_queue()->Push(Task(
+      PostedTask(test_closure_, FROM_HERE), TimeTicks(),
       EnqueueOrder::FromIntForTesting(GetParam().immediate_task_enqueue_order),
       EnqueueOrder::FromIntForTesting(
           GetParam().immediate_task_enqueue_order)));
 
-  task_queues_[0]->delayed_work_queue()->Push(TaskQueueImpl::Task(
-      TaskQueue::PostedTask(test_closure_, FROM_HERE), TimeTicks(),
+  task_queues_[0]->delayed_work_queue()->Push(Task(
+      PostedTask(test_closure_, FROM_HERE), TimeTicks(),
       EnqueueOrder::FromIntForTesting(GetParam().delayed_task_enqueue_order),
       EnqueueOrder::FromIntForTesting(GetParam().delayed_task_enqueue_order)));
 

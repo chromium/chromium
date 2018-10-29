@@ -99,7 +99,7 @@ class PLATFORM_EXPORT SchedulerHelper
   bool HasCPUTimingForEachTask() const;
 
   // Test helpers.
-  void SetWorkBatchSizeForTesting(size_t work_batch_size);
+  void SetWorkBatchSizeForTesting(int work_batch_size);
 
  protected:
   void InitDefaultQueues(

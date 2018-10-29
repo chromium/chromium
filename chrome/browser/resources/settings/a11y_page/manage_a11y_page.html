@@ -204,7 +204,8 @@
         pref="{{prefs.settings.a11y.autoclick}}"
         label="$i18n{clickOnStopLabel}">
     </settings-toggle-button>
-    <div class="settings-box continuation">
+    <div class="settings-box continuation"
+        hidden$="[[!prefs.settings.a11y.autoclick.value]]">
       <div class="start sub-item">$i18n{delayBeforeClickLabel}</div>
       <settings-dropdown-menu label="$i18n{delayBeforeClickLabel}"
           pref="{{prefs.settings.a11y.autoclick_delay_ms}}"
@@ -212,6 +213,24 @@
           disabled="[[!prefs.settings.a11y.autoclick.value]]">
       </settings-dropdown-menu>
     </div>
+    <template is="dom-if" if="[[showExperimentalFeatures_]]">
+      <div class="settings-box continuation"
+          hidden$="[[!prefs.settings.a11y.autoclick.value]]">
+        <div class="start sub-item">$i18n{autoclickEventTypeLabel}</div>
+        <settings-dropdown-menu label="$i18n{autoclickEventTypeLabel}"
+            pref="{{prefs.settings.a11y.autoclick_event_type}}"
+            menu-options="[[autoClickEventTypeOptions_]]"
+            disabled="[[!prefs.settings.a11y.autoclick.value]]">
+        </settings-dropdown-menu>
+      </div>
+      <div class="sub-item">
+        <settings-toggle-button class="continuation sub-item"
+          hidden$="[[!prefs.settings.a11y.autoclick.value]]"
+          pref="{{prefs.settings.a11y.autoclick_revert_to_left_click}}"
+          label="$i18n{autoclickReverToLeftClick}">
+        </settings-toggle-button>
+      </div>
+    </template>
     <settings-toggle-button
         pref="{{prefs.settings.a11y.large_cursor_enabled}}"
         label="$i18n{largeMouseCursorLabel}">

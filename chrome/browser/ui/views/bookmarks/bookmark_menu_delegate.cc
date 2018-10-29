@@ -23,6 +23,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
@@ -91,6 +92,10 @@ void BookmarkMenuDelegate::Init(views::MenuDelegate* real_delegate,
   GetBookmarkModel()->AddObserver(this);
   real_delegate_ = real_delegate;
   location_ = location;
+  // Assume that the menu will only use mnemonics if there's already a parent
+  // menu and that parent uses them. In cases where the BookmarkMenuDelegate
+  // will be the root, client code does not current enable mnemonics.
+  menu_uses_mnemonics_ = parent && parent->GetRootMenuItem()->has_mnemonics();
   if (parent) {
     parent_menu_item_ = parent;
 
@@ -145,7 +150,7 @@ void BookmarkMenuDelegate::SetActiveMenu(const BookmarkNode* node,
 base::string16 BookmarkMenuDelegate::GetTooltipText(
     int id,
     const gfx::Point& screen_loc) const {
-  MenuIDToNodeMap::const_iterator i = menu_id_to_node_map_.find(id);
+  auto i = menu_id_to_node_map_.find(id);
   // When removing bookmarks it may be possible to end up here without a node.
   if (i == menu_id_to_node_map_.end()) {
     DCHECK(is_mutating_model_);
@@ -372,7 +377,7 @@ void BookmarkMenuDelegate::BookmarkModelChanged() {
 void BookmarkMenuDelegate::BookmarkNodeFaviconChanged(
     BookmarkModel* model,
     const BookmarkNode* node) {
-  NodeToMenuMap::iterator menu_pair = node_to_menu_map_.find(node);
+  auto menu_pair = node_to_menu_map_.find(node);
   if (menu_pair == node_to_menu_map_.end())
     return;  // We're not showing a menu item for the node.
 
@@ -396,9 +401,8 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
 
   // Remove the menu items.
   std::set<MenuItemView*> changed_parent_menus;
-  for (std::vector<const BookmarkNode*>::const_iterator i(bookmarks.begin());
-       i != bookmarks.end(); ++i) {
-    NodeToMenuMap::iterator node_to_menu = node_to_menu_map_.find(*i);
+  for (auto i(bookmarks.begin()); i != bookmarks.end(); ++i) {
+    auto node_to_menu = node_to_menu_map_.find(*i);
     if (node_to_menu != node_to_menu_map_.end()) {
       MenuItemView* menu = node_to_menu->second;
       MenuItemView* parent = menu->GetParentMenuItem();
@@ -420,11 +424,9 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
   DCHECK_LE(changed_parent_menus.size(), 1U);
 
   // Remove any descendants of the removed nodes in |node_to_menu_map_|.
-  for (NodeToMenuMap::iterator i(node_to_menu_map_.begin());
-       i != node_to_menu_map_.end(); ) {
+  for (auto i(node_to_menu_map_.begin()); i != node_to_menu_map_.end();) {
     bool ancestor_removed = false;
-    for (std::vector<const BookmarkNode*>::const_iterator j(bookmarks.begin());
-         j != bookmarks.end(); ++j) {
+    for (auto j(bookmarks.begin()); j != bookmarks.end(); ++j) {
       if (i->first->HasAncestor(*j)) {
         ancestor_removed = true;
         break;
@@ -438,8 +440,8 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
     }
   }
 
-  for (std::set<MenuItemView*>::const_iterator i(changed_parent_menus.begin());
-       i != changed_parent_menus.end(); ++i)
+  for (auto i(changed_parent_menus.begin()); i != changed_parent_menus.end();
+       ++i)
     (*i)->ChildrenChanged();
 }
 
@@ -515,9 +517,9 @@ void BookmarkMenuDelegate::BuildMenuForPermanentNode(const BookmarkNode* node,
     menu->AppendSeparator();
   }
 
-  AddMenuToMaps(
-      menu->AppendSubMenuWithIcon(next_menu_id_++, node->GetTitle(), icon),
-      node);
+  AddMenuToMaps(menu->AppendSubMenuWithIcon(
+                    next_menu_id_++, MaybeEscapeLabel(node->GetTitle()), icon),
+                node);
 }
 
 void BookmarkMenuDelegate::BuildMenuForManagedNode(MenuItemView* menu) {
@@ -545,12 +547,12 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
       const gfx::Image& image = GetBookmarkModel()->GetFavicon(node);
       const gfx::ImageSkia* icon = image.IsEmpty() ?
           rb->GetImageSkiaNamed(IDR_DEFAULT_FAVICON) : image.ToImageSkia();
-      child_menu_item =
-          menu->AppendMenuItemWithIcon(id, node->GetTitle(), *icon);
+      child_menu_item = menu->AppendMenuItemWithIcon(
+          id, MaybeEscapeLabel(node->GetTitle()), *icon);
     } else {
       DCHECK(node->is_folder());
-      child_menu_item =
-          menu->AppendSubMenuWithIcon(id, node->GetTitle(), folder_icon);
+      child_menu_item = menu->AppendSubMenuWithIcon(
+          id, MaybeEscapeLabel(node->GetTitle()), folder_icon);
     }
     AddMenuToMaps(child_menu_item, node);
   }
@@ -560,4 +562,9 @@ void BookmarkMenuDelegate::AddMenuToMaps(MenuItemView* menu,
                                          const BookmarkNode* node) {
   menu_id_to_node_map_[menu->GetCommand()] = node;
   node_to_menu_map_[node] = menu;
+}
+
+base::string16 BookmarkMenuDelegate::MaybeEscapeLabel(
+    const base::string16& label) {
+  return menu_uses_mnemonics_ ? ui::EscapeMenuLabelAmpersands(label) : label;
 }

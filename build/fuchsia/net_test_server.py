@@ -130,6 +130,7 @@ def SetupTestServer(target, test_concurrency):
   }))
 
   config_file.flush()
-  target.PutFile(config_file.name, '/data/net-test-server-config')
+  target.RunCommand(['mkdir /data/shared'])
+  target.PutFile(config_file.name, '/data/shared/net-test-server-config')
 
   return spawning_server

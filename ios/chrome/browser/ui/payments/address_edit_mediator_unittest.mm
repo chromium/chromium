@@ -28,8 +28,9 @@
 class PaymentRequestAddressEditMediatorTest : public PaymentRequestUnitTestBase,
                                               public PlatformTest {
  protected:
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     autofill::CountryNames::SetLocaleString("en-US");
 
@@ -39,7 +40,8 @@ class PaymentRequestAddressEditMediatorTest : public PaymentRequestUnitTestBase,
     payment_request()->SetRegionDataLoader(&test_region_data_loader_);
   }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 
   autofill::TestRegionDataLoader test_region_data_loader_;
 };

@@ -39,8 +39,8 @@ UnicodeRangeSet::UnicodeRangeSet(const Vector<UnicodeRange>& ranges)
   // Unify overlapping ranges.
   UChar32 from = ranges_[0].From();
   UChar32 to = ranges_[0].To();
-  size_t target_index = 0;
-  for (size_t i = 1; i < ranges_.size(); i++) {
+  wtf_size_t target_index = 0;
+  for (wtf_size_t i = 1; i < ranges_.size(); i++) {
     if (to + 1 >= ranges_[i].From()) {
       to = std::max(to, ranges_[i].To());
     } else {
@@ -86,7 +86,7 @@ bool UnicodeRangeSet::operator==(const UnicodeRangeSet& other) const {
     return false;
   }
   bool equal = true;
-  for (size_t i = 0; i < ranges_.size(); ++i) {
+  for (wtf_size_t i = 0; i < ranges_.size(); ++i) {
     equal = equal && ranges_[i] == other.ranges_[i];
   }
   return equal;

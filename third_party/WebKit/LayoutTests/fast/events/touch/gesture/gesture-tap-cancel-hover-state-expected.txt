@@ -23,4 +23,3 @@ PASS getHoverActiveState(box) is "hovered"
 tapCancel outside element when it is hovered but not active should keep hover
 PASS getHoverActiveState(box) is "hovered"
 PASS getHoverActiveState(box) is "hovered"
-

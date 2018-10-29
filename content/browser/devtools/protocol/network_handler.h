@@ -119,7 +119,7 @@ class NetworkHandler : public DevToolsDomainHandler,
   void ContinueInterceptedRequest(
       const std::string& request_id,
       Maybe<std::string> error_reason,
-      Maybe<std::string> base64_raw_response,
+      Maybe<protocol::Binary> raw_response,
       Maybe<std::string> url,
       Maybe<std::string> method,
       Maybe<std::string> post_data,
@@ -137,8 +137,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       override;
 
   bool MaybeCreateProxyForInterception(
-      const base::UnguessableToken& frame_token,
-      int process_id,
+      RenderFrameHostImpl* rfh,
+      bool is_navigation,
       bool is_download,
       network::mojom::URLLoaderFactoryRequest* target_factory_request);
 
@@ -177,7 +177,8 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   static std::string ExtractFragment(const GURL& url, std::string* fragment);
   static std::unique_ptr<Network::Request> CreateRequestFromResourceRequest(
-      const network::ResourceRequest& request);
+      const network::ResourceRequest& request,
+      const std::string& cookie_line);
   static std::unique_ptr<Network::Request> CreateRequestFromURLRequest(
       const net::URLRequest* request,
       const std::string& cookie);

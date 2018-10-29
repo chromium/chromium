@@ -17,18 +17,11 @@
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/reading_list/empty_reading_list_background_view.h"
-#import "ios/chrome/browser/ui/reading_list/legacy_reading_list_toolbar_button.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_collection_view_cell.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_collection_view_controller.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_collection_view_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_toolbar_button_identifiers.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_empty_view.h"
-#include "ios/chrome/browser/ui/tools_menu/public/tools_menu_constants.h"
-#include "ios/chrome/browser/ui/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -117,33 +110,12 @@ ReadingListModel* GetReadingListModel() {
   return model;
 }
 
-// The ancestor class of toolbar buttons.
-Class ToolbarButtonAncestorClass() {
-  return experimental_flags::IsReadingListUIRebootEnabled()
-             ? [UIToolbar class]
-             : [LegacyReadingListToolbarButton class];
-}
-
-// The class displaying the reading list cells.
-Class ReadingListCellClass() {
-  return experimental_flags::IsReadingListUIRebootEnabled()
-             ? [TableViewURLCell class]
-             : [ReadingListCell class];
-}
-
-// The class displaying the reading list.
-Class ReadingListViewControllerClass() {
-  return experimental_flags::IsReadingListUIRebootEnabled()
-             ? [ReadingListTableViewController class]
-             : [ReadingListCollectionViewController class];
-}
-
 // Scroll to the top of the Reading List.
 void ScrollToTop() {
   NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          [ReadingListViewControllerClass()
-                                              accessibilityIdentifier])]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID([
+                                          [ReadingListTableViewController class]
+                                          accessibilityIdentifier])]
       performAction:grey_scrollToContentEdgeWithStartPoint(kGREYContentEdgeTop,
                                                            0.5, 0.5)
               error:&error];
@@ -157,7 +129,7 @@ void AssertToolbarMarkButtonText(int a11y_label_id) {
       selectElementWithMatcher:
           grey_allOf(
               grey_accessibilityID(kReadingListToolbarMarkButtonID),
-              grey_ancestor(grey_kindOfClass(ToolbarButtonAncestorClass())),
+              grey_ancestor(grey_kindOfClass([UIToolbar class])),
               chrome_test_util::ButtonWithAccessibilityLabelId(a11y_label_id),
               nil)] assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -167,7 +139,7 @@ void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
                                           grey_ancestor(grey_kindOfClass(
-                                              ToolbarButtonAncestorClass())),
+                                              [UIToolbar class])),
                                           nil)]
       assertWithMatcher:grey_notVisible()];
 }
@@ -177,7 +149,7 @@ void AssertToolbarButtonVisibleWithID(NSString* button_id) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
                                           grey_ancestor(grey_kindOfClass(
-                                              ToolbarButtonAncestorClass())),
+                                              [UIToolbar class])),
                                           nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -203,12 +175,12 @@ void PerformActionOnEntry(const std::string& entryTitle,
   id<GREYMatcher> matcher =
       grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
                      base::SysUTF8ToNSString(entryTitle)),
-                 grey_ancestor(grey_kindOfClass(ReadingListCellClass())),
+                 grey_ancestor(grey_kindOfClass([TableViewURLCell class])),
                  grey_sufficientlyVisible(), nil);
   [[[EarlGrey selectElementWithMatcher:matcher]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(
-                               ReadingListViewControllerClass())]
+                               [ReadingListTableViewController class])]
       performAction:action];
 }
 
@@ -230,11 +202,11 @@ void AssertEntryVisible(const std::string& entryTitle) {
       selectElementWithMatcher:
           grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
                          base::SysUTF8ToNSString(entryTitle)),
-                     grey_ancestor(grey_kindOfClass(ReadingListCellClass())),
+                     grey_ancestor(grey_kindOfClass([TableViewURLCell class])),
                      grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(
-                               [ReadingListViewControllerClass()
+                               [[ReadingListTableViewController class]
                                    accessibilityIdentifier])]
       assertWithMatcher:grey_notNil()];
 }
@@ -263,11 +235,11 @@ void AssertEntryNotVisible(std::string title) {
       selectElementWithMatcher:
           grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
                          base::SysUTF8ToNSString(title)),
-                     grey_ancestor(grey_kindOfClass(ReadingListCellClass())),
+                     grey_ancestor(grey_kindOfClass([TableViewURLCell class])),
                      grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(
-                               [ReadingListViewControllerClass()
+                               [[ReadingListTableViewController class]
                                    accessibilityIdentifier])]
       assertWithMatcher:grey_notNil()
                   error:&error];
@@ -321,38 +293,17 @@ size_t ModelReadSize(ReadingListModel* model) {
 
 // Returns a match for the Reading List Empty Collection Background.
 id<GREYMatcher> EmptyBackground() {
-  Class empty_background_class =
-      experimental_flags::IsReadingListUIRebootEnabled()
-          ? [TableViewEmptyView class]
-          : [EmptyReadingListBackgroundView class];
-  return grey_accessibilityID([empty_background_class accessibilityIdentifier]);
+  return grey_accessibilityID(
+      [[TableViewEmptyView class] accessibilityIdentifier]);
 }
 
 // Adds the current page to the Reading List.
 void AddCurrentPageToReadingList() {
   // Add the page to the reading list.
-  if (IsUIRefreshPhase1Enabled()) {
-    [ChromeEarlGreyUI openToolsMenu];
-    [ChromeEarlGreyUI
-        tapToolsMenuButton:chrome_test_util::ButtonWithAccessibilityLabelId(
-                               IDS_IOS_SHARE_MENU_READING_LIST_ACTION)];
-  } else if (base::ios::IsRunningOnIOS11OrLater()) {
-    // On iOS 11, it is not possible to interact with the share menu in EG.
-    // Send directly the command instead. This is the closest behavior we can
-    // have from the normal behavior.
-    web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-    ReadingListAddCommand* command = [[ReadingListAddCommand alloc]
-        initWithURL:web_state->GetVisibleURL()
-              title:base::SysUTF16ToNSString(web_state->GetTitle())];
-    [chrome_test_util::DispatcherForActiveBrowserViewController()
-        addToReadingList:command];
-  } else {
-    [ChromeEarlGreyUI openShareMenu];
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ButtonWithAccessibilityLabelId(
-                       IDS_IOS_SHARE_MENU_READING_LIST_ACTION)]
-        performAction:grey_tap()];
-  }
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::ButtonWithAccessibilityLabelId(
+                             IDS_IOS_SHARE_MENU_READING_LIST_ACTION)];
 
   // Wait for the snackbar to appear.
   id<GREYMatcher> snackbar_matcher =
@@ -389,9 +340,7 @@ void AddCurrentPageToReadingList() {
 // Wait until one element is distilled.
 void WaitForDistillation() {
   NSString* a11y_id =
-      experimental_flags::IsReadingListUIRebootEnabled()
-          ? [TableViewURLCellFaviconBadgeView accessibilityIdentifier]
-          : @"Reading List Item distillation date";
+      [TableViewURLCellFaviconBadgeView accessibilityIdentifier];
   ConditionBlock wait_for_distillation_date = ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:grey_accessibilityID(a11y_id)]
@@ -430,17 +379,11 @@ std::map<GURL, std::string> ResponsesForDistillationServer() {
 
 // Opens the page security info bubble.
 void OpenPageSecurityInfoBubble() {
-  if (IsUIRefreshPhase1Enabled()) {
-    // In UI Refresh, the security info is accessed through the tools menu.
-    [ChromeEarlGreyUI openToolsMenu];
-    // Tap on the Page Info button.
-    [ChromeEarlGreyUI
-        tapToolsMenuButton:grey_accessibilityID(kToolsMenuSiteInformation)];
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::PageSecurityInfoIndicator()]
-        performAction:grey_tap()];
-  }
+  // In UI Refresh, the security info is accessed through the tools menu.
+  [ChromeEarlGreyUI openToolsMenu];
+  // Tap on the Page Info button.
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:grey_accessibilityID(kToolsMenuSiteInformation)];
 }
 
 // Tests that the correct version of kDistillableURL is displayed.
@@ -480,22 +423,12 @@ void AssertIsShowingDistillablePage(bool online) {
   }
 
   // Test the presence of the omnibox offline chip.
-  if (IsRefreshLocationBarEnabled()) {
-    [[EarlGrey selectElementWithMatcher:
-                   grey_allOf(chrome_test_util::PageSecurityInfoIndicator(),
-                              chrome_test_util::ImageViewWithImageNamed(
-                                  @"location_bar_offline"),
-                              nil)]
-        assertWithMatcher:online ? grey_nil() : grey_notNil()];
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(
-                                     chrome_test_util::PageSecurityInfoButton(),
-                                     chrome_test_util::ButtonWithImage(
-                                         IDR_IOS_OMNIBOX_OFFLINE),
-                                     nil)]
-        assertWithMatcher:online ? grey_nil() : grey_notNil()];
-  }
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::PageSecurityInfoIndicator(),
+                            chrome_test_util::ImageViewWithImageNamed(
+                                @"location_bar_offline"),
+                            nil)]
+      assertWithMatcher:online ? grey_nil() : grey_notNil()];
 }
 
 }  // namespace

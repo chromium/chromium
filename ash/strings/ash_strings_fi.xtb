@@ -21,6 +21,7 @@
 <translation id="1270290102613614947">Ruutunäppäimistö poistettiin käytöstä</translation>
 <translation id="1272079795634619415">Pysäytä</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1289185460362160437">Palaa seuraavana ajankohtana: <ph name="COME_BACK_DAY_OF_WEEK" />, kello <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Heikko signaali</translation>
 <translation id="1293264513303784526">C-tyypin USB-laite (vasemman sivun portti)</translation>
 <translation id="1294929383540927798">Muuta lukitusnäytön ilmoitusasetuksia</translation>
@@ -98,6 +99,7 @@
 <translation id="2501920221385095727">Päälle jäävät näppäimet</translation>
 <translation id="2509468283778169019">CAPS LOCK on päällä</translation>
 <translation id="2532589005999780174">Suuri kontrasti -tila</translation>
+<translation id="255671100581129685">Google Assistantia ei voi käyttää julkisella käyttökerralla.</translation>
 <translation id="2575685495496069081">Useille tileille kirjautuminen on poistettu käytöstä</translation>
 <translation id="2582112259361606227">Päivitä käynnistämällä uudelleen</translation>
 <translation id="2597972630681408282">Yövalo: <ph name="NIGHT_LIGHT_STATUS" /></translation>
@@ -110,7 +112,6 @@
 <translation id="277257480934873581">Yhdistetään uudelleen verkkoon <ph name="NAME" /></translation>
 <translation id="2790844815106384441">valita, saavatko verkkosivustot käyttää sijaintipalveluja, laitteen mikrofonia, kameraa tai muita ominaisuuksia</translation>
 <translation id="2792498699870441125">Alt + haku</translation>
-<translation id="2808012452536866044">Better Together siirretty uudelle puhelimelle</translation>
 <translation id="2819276065543622893">Sinut kirjataan ulos nyt.</translation>
 <translation id="2825619548187458965">Hylly</translation>
 <translation id="2844169650293029770">C-tyypin USB-laite (vasemman sivun etummainen portti)</translation>
@@ -129,6 +130,7 @@
 <translation id="3000461861112256445">Monoääni</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
 <translation id="3019353588588144572">Akku on ladattu <ph name="TIME_REMAINING" /> kuluttua</translation>
+<translation id="3055162170959710888">Olet käyttänyt tätä laitetta tänään <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Laajenna valikko</translation>
 <translation id="3087734570205094154">Alaosa</translation>
@@ -150,9 +152,9 @@
 <translation id="3413817803639110246">Ei mitään nähtävää vielä</translation>
 <translation id="3445925074670675829">C-tyypin USB-laite</translation>
 <translation id="3454224730401036106">Olet nyt yhteydessä turvallisempaan verkkoon.</translation>
-<translation id="3465566417615315331">Klikkaa valokuvaasi</translation>
 <translation id="3477079411857374384">Ctrl + vaihto + välilyönti</translation>
 <translation id="3510164367642747937">Korosta hiiren osoitin</translation>
+<translation id="3510503721818156981">Chromebook on yhdistettiin uuteen puhelimeen</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> hallinnoi tiliä</translation>
 <translation id="3573179567135747900">Vaihda takaisin kieleksi <ph name="FROM_LOCALE" /> (vaatii uudelleenkäynnistyksen)</translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
@@ -197,6 +199,7 @@
 </translation>
 <translation id="4338109981321384717">Suurennuslasi</translation>
 <translation id="4351433414020964307">Assistantia ladataan…</translation>
+<translation id="435527878592612277">Valitse valokuva</translation>
 <translation id="4378551569595875038">Yhdistetään…</translation>
 <translation id="4379531060876907730">Tässä ovat näyttökynätyökalusi</translation>
 <translation id="4421231901400348175">Näyttösi hallinta jaetaan käyttäjän <ph name="HELPER_NAME" /> kanssa Etätuen kautta.</translation>
@@ -215,6 +218,7 @@
 <translation id="4659419629803378708">ChromeVox käytössä</translation>
 <translation id="4734965478015604180">Vaakasuora</translation>
 <translation id="476166673298332917">Tämän laitteen järjestelmänvalvojalla on pääsy kaikkeen toimintaan, mukaan lukien salasanoihin ja viestintään.</translation>
+<translation id="4774338217796918551">Palaa huomenna kello <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Osoitteen <ph name="USER_EMAIL_ADDRESS" /> salasana</translation>
 <translation id="4778095205580009397">Google Assistantia ei voi käyttää demo-käyttökerralla.</translation>
 <translation id="479989351350248267">haku</translation>
@@ -229,6 +233,7 @@
 <translation id="4918086044614829423">Hyväksy</translation>
 <translation id="4924411785043111640">Käynnistä uudelleen ja palauta</translation>
 <translation id="4961318399572185831">Suoratoista näyttö</translation>
+<translation id="5030687792513154421">Aika on lopussa</translation>
 <translation id="5083553833479578423">Käytä lisää Assistantin ominaisuuksia.</translation>
 <translation id="5136175204352732067">Eri näppäimistö kytketty</translation>
 <translation id="5168181903108465623">Cast-laitteita käytettävissä</translation>
@@ -249,7 +254,6 @@
 <translation id="554893713779400387">Ota sanelu käyttöön tai poista se käytöstä</translation>
 <translation id="5571066253365925590">Bluetooth käytössä</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
-<translation id="5598551463564921617">Better Together on käytössä</translation>
 <translation id="5600837773213129531">Poista äänipalaute käytöstä painamalla Ctrl+Alt+Z.</translation>
 <translation id="5648021990716966815">Mikrofoniliitäntä</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
@@ -277,7 +281,6 @@
 <translation id="598882571027504733">Voit asentaa päivityksen käynnistämällä Chromebookisi uudelleen niin, että näppäimistö on kytkettynä.</translation>
 <translation id="5992218262414051481">Suuri kontrasti ‑tila on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + H.</translation>
 <translation id="6018164090099858612">Poistutaan peilitilasta</translation>
-<translation id="6040143037577758943">Sulje</translation>
 <translation id="6043212731627905357">Näyttö ja <ph name="DEVICE_TYPE" /> eivät sovi yhteen (näyttöä ei tueta).</translation>
 <translation id="6043994281159824495">Kirjaudu ulos nyt</translation>
 <translation id="6047696787498798094">Näytön jakaminen loppuu, kun vaihdat toiseen käyttäjään. Haluatko jatkaa?</translation>
@@ -343,6 +346,7 @@
 <translation id="7066646422045619941">Järjestelmänvalvoja on poistanut tämän verkon käytöstä.</translation>
 <translation id="7067196344162293536">Automaattinen kierto</translation>
 <translation id="7068360136237591149">Avaa tiedostot</translation>
+<translation id="7076293881109082629">Kirjautuminen</translation>
 <translation id="7092922358121866860">Näytä Yövalon asetukset</translation>
 <translation id="7098389117866926363">C-tyypin USB-laite (vasemmanpuoleinen takaportti)</translation>
 <translation id="7131634465328662194">Sinut kirjataan automaattisesti ulos.</translation>
@@ -362,6 +366,7 @@
 <translation id="7510334386202674593">Ctrl+Shift+L</translation>
 <translation id="7526573455193969409">Verkkoa saatetaan valvoa</translation>
 <translation id="7536035074519304529">IP-osoite: <ph name="ADDRESS" /></translation>
+<translation id="7548434653388805669">Nukkumaanmenoaika</translation>
 <translation id="7561014039265304140"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi valittiin <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="7562368315689366235">Emojipaletti</translation>
 <translation id="7564874036684306347">Ikkunan siirtämisellä toiselle työpöydälle voi olla odottamattomia seurauksia. Myöhemmät ilmoitukset, ikkunat ja valintaikkunat voidaan jakaa työpöytien välillä.</translation>
@@ -404,12 +409,14 @@
 <translation id="8152119955266188852">Painoit koko näytön suurennuksen pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
 <translation id="8190698733819146287">Muokkaa kieliä ja syötettä...</translation>
 <translation id="8192202700944119416">Ilmoitukset on piilotettu.</translation>
+<translation id="8236042855478648955">Tauon paikka</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8308637677604853869">Edellinen valikko</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8351131234907093545">Luo muistiinpano</translation>
 <translation id="8392451568018454956">Tilin <ph name="USER_EMAIL_ADDRESS" /> vaihtoehtovalikko</translation>
+<translation id="8394567579869570560">Vanhempasi lukitsi tämän laitteen</translation>
 <translation id="8406981827175133772">Koko näytön suurennus</translation>
 <translation id="8425213833346101688">Vaihda</translation>
 <translation id="8427213022735114808">Sanelu lähettää äänesi Googlelle, jotta puhekirjoitus on mahdollista kaikissa tekstikentissä.</translation>
@@ -439,7 +446,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8825534185036233643">Peilaamista yli kahdelle näytölle ei tueta.</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8841375032071747811">Takaisin-painike</translation>
 <translation id="8843682306134542540">Ota kierron lukitus käyttöön tai poista se käytöstä. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Haku+Esc</translation>
 <translation id="8870509716567206129">Sovellus ei tue jaetun näytön tilaa.</translation>
@@ -466,6 +472,7 @@
 <translation id="9201131092683066720">Akussa on virtaa <ph name="PERCENTAGE" /> %.</translation>
 <translation id="9210037371811586452">Poistutaan yhtenäisen työpöydän tilasta</translation>
 <translation id="9215934040295798075">Aseta taustakuva</translation>
+<translation id="921989828232331238">Vanhempasi lukitsi laitteen loppupäivän ajaksi</translation>
 <translation id="923686485342484400">Kirjaudu ulos painamalla Control Shift Q kahdesti.</translation>
 <translation id="938963181863597773">Mitä kalenterissani on?</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>

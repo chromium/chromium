@@ -149,6 +149,12 @@ String MakeAbsolutePathFrom(const char* path, size_t path_len);
 // Returns the value of a given environment variable.
 const char* GetEnv(const char* var_name);
 
+// Returns true iff |lib_path| corresponds to the path of a system library,
+// which should always be loaded through the system linker, and not the
+// crazy one. Note that |lib_path| must be an absolute path, not a relative
+// one.
+bool IsSystemLibraryPath(const char* lib_path);
+
 }  // namespace crazy
 
 #endif  // CRAZY_LINKER_SYSTEM_H

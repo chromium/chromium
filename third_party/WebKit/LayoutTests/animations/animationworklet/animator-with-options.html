@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<style>
+#target {
+  width: 100px;
+  height: 100px;
+  background-color: green;
+}
+</style>
+
+<script id="animate_with_options" type="text/worklet">
+registerAnimator("test_animator", class {
+  constructor(options) {
+    this.time_ = options.time;
+  }
+  animate(currentTime, effect) {
+    effect.localTime = this.time_;
+  }
+});
+</script>
+
+<div id="target"></div>
+
+<script src="resources/animation-worklet-tests.js"></script>
+<script>
+if (window.testRunner) {
+  testRunner.waitUntilDone();
+  testRunner.dumpAsText();
+}
+
+runInAnimationWorklet(
+  document.getElementById('animate_with_options').textContent
+).then(_ => {
+  const target = document.getElementById('target');
+  const effect = new KeyframeEffect(target, [{ opacity: 0 }], { duration: 1000 });
+  const options = {
+    'time': 500
+  };
+  const animation = new WorkletAnimation('test_animator', [effect],
+      document.timeline, options);
+  animation.play();
+
+  if (window.testRunner) {
+    waitTwoAnimationFrames( _ => {
+      console.log(`opacity of target is ${getComputedStyle(target).opacity}`);
+      testRunner.notifyDone();
+    });
+  }
+});
+</script>

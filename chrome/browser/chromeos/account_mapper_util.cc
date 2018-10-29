@@ -43,14 +43,12 @@ AccountManager::AccountKey AccountMapperUtil::OAuthAccountIdToAccountKey(
 
 AccountInfo AccountMapperUtil::AccountKeyToGaiaAccountInfo(
     const AccountManager::AccountKey& account_key) const {
-  AccountInfo account_info;
-
   DCHECK(account_key.IsValid());
   if (account_key.account_type !=
       account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
-    return account_info;
+    return AccountInfo();
   }
-  account_info =
+  AccountInfo account_info =
       account_tracker_service_->FindAccountInfoByGaiaId(account_key.id);
   DCHECK(!account_info.IsEmpty()) << "Can't find account info";
 

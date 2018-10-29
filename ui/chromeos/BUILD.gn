@@ -34,6 +34,8 @@ component("chromeos") {
     "//components/device_event_log",
     "//components/onc",
     "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+    "//services/service_manager/public/cpp",
     "//services/ws/public/cpp",
     "//services/ws/public/mojom",
     "//skia",

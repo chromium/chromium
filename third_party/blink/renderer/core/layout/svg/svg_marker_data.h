@@ -29,7 +29,7 @@ namespace blink {
 enum SVGMarkerType { kStartMarker, kMidMarker, kEndMarker };
 
 struct MarkerPosition {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   MarkerPosition(SVGMarkerType use_type,
                  const FloatPoint& use_origin,
                  float use_angle)

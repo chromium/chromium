@@ -70,7 +70,7 @@
     flex: auto;
 }
 
-.heap-snapshot-view .heap-tracking-overview {
+.profile-view .heap-tracking-overview {
     flex: 0 0 80px;
     height: 80px;
 }
@@ -145,7 +145,7 @@
     opacity: 0.6;
 }
 
-#heap-recording-view .heap-snapshot-view {
+#heap-recording-view .profile-view {
     top: 80px;
 }
 

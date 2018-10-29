@@ -84,6 +84,22 @@ ComputedStyleCSSValueMapping::GetVariables(const ComputedStyle& style,
     }
   }
 
+  // Registered properties with initial values are not stored explicitly on
+  // each computed style. Their initialness is instead indicated by the
+  // absence of that property on the computed style. This means that registered
+  // properties with an implicit initial value will not appear in the result of
+  // Style[Non]InheritedVariables::GetCustomPropertyNames, so we need to
+  // iterate though all registrations and add the initial values, if necessary.
+  if (registry) {
+    for (const auto& entry : *registry) {
+      if (variables.Contains(entry.key))
+        continue;
+      const CSSValue* initial = entry.value->Initial();
+      if (initial)
+        variables.Set(entry.key, initial);
+    }
+  }
+
   return variables;
 }
 

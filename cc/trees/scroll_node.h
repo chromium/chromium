@@ -10,6 +10,7 @@
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/filter_operations.h"
+#include "cc/trees/element_id.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {

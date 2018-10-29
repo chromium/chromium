@@ -6,4 +6,5 @@
     ImplementedAs=WorkerInternalsFetch
 ] partial interface WorkerInternals {
     sequence<USVString> getInternalResponseURLList(Response response);
+    unsigned long getResourcePriority(DOMString url, WorkerGlobalScope worker_global);
 };

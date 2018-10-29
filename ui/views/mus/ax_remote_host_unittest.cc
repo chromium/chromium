@@ -5,9 +5,11 @@
 #include "ui/views/mus/ax_remote_host.h"
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/mojom/ax_host.mojom.h"
+#include "ui/accessibility/platform/aura_window_properties.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/transform.h"
@@ -20,6 +22,13 @@
 
 namespace views {
 namespace {
+
+// Returns a well-known tree ID for the test widget.
+const ui::AXTreeID& TestAXTreeID() {
+  static const base::NoDestructor<ui::AXTreeID> test_ax_tree_id(
+      ui::AXTreeID::FromString("123"));
+  return *test_ax_tree_id;
+}
 
 // Simulates the AXHostService in the browser.
 class TestAXHostService : public ax::mojom::AXHost {
@@ -35,33 +44,34 @@ class TestAXHostService : public ax::mojom::AXHost {
   }
 
   void ResetCounts() {
-    add_client_count_ = 0;
+    remote_host_count_ = 0;
     event_count_ = 0;
-    last_tree_id_ = 0;
+    last_tree_id_ = ui::AXTreeIDUnknown();
     last_updates_.clear();
     last_event_ = ui::AXEvent();
   }
 
   // ax::mojom::AXHost:
-  void SetRemoteHost(ax::mojom::AXRemoteHostPtr client) override {
-    ++add_client_count_;
-    client->OnAutomationEnabled(automation_enabled_);
+  void RegisterRemoteHost(ax::mojom::AXRemoteHostPtr client,
+                          RegisterRemoteHostCallback cb) override {
+    ++remote_host_count_;
+    std::move(cb).Run(TestAXTreeID(), automation_enabled_);
     client.FlushForTesting();
   }
-  void HandleAccessibilityEvent(int32_t tree_id,
+  void HandleAccessibilityEvent(const ui::AXTreeID& tree_id,
                                 const std::vector<ui::AXTreeUpdate>& updates,
                                 const ui::AXEvent& event) override {
     ++event_count_;
-    last_tree_id_ = tree_id;
+    last_tree_id_ = ui::AXTreeID::FromString(tree_id);
     last_updates_ = updates;
     last_event_ = event;
   }
 
   mojo::Binding<ax::mojom::AXHost> binding_{this};
   bool automation_enabled_ = false;
-  int add_client_count_ = 0;
+  int remote_host_count_ = 0;
   int event_count_ = 0;
-  int last_tree_id_ = 0;
+  ui::AXTreeID last_tree_id_ = ui::AXTreeIDUnknown();
   std::vector<ui::AXTreeUpdate> last_updates_;
   ui::AXEvent last_event_;
 
@@ -127,7 +137,7 @@ TEST_F(AXRemoteHostTest, CreateRemote) {
   CreateRemote(&service);
 
   // Client registered itself with service.
-  EXPECT_EQ(1, service.add_client_count_);
+  EXPECT_EQ(1, service.remote_host_count_);
 }
 
 TEST_F(AXRemoteHostTest, AutomationEnabled) {
@@ -136,7 +146,15 @@ TEST_F(AXRemoteHostTest, AutomationEnabled) {
   std::unique_ptr<Widget> widget = CreateTestWidget();
   remote->FlushForTesting();
 
+  // Tree ID is assigned.
+  std::string* tree_id_ptr =
+      widget->GetNativeWindow()->GetProperty(ui::kChildAXTreeID);
+  ASSERT_TRUE(tree_id_ptr);
+  ui::AXTreeID tree_id = ui::AXTreeID::FromString(*tree_id_ptr);
+  EXPECT_EQ(TestAXTreeID(), tree_id);
+
   // Event was sent with initial hierarchy.
+  EXPECT_EQ(TestAXTreeID(), service.last_tree_id_);
   EXPECT_EQ(ax::mojom::Event::kLoadComplete, service.last_event_.event_type);
   EXPECT_EQ(AXAuraObjCache::GetInstance()->GetID(
                 widget->widget_delegate()->GetContentsView()),
@@ -163,6 +181,20 @@ TEST_F(AXRemoteHostTest, AutomationEnabledTwice) {
 
   // Load complete was sent again after the second enable.
   EXPECT_EQ(ax::mojom::Event::kLoadComplete, service.last_event_.event_type);
+}
+
+// Verifies that a remote app doesn't crash if a View triggers an accessibility
+// event before it is attached to a Widget. https://crbug.com/889121
+TEST_F(AXRemoteHostTest, SendEventOnViewWithNoWidget) {
+  TestAXHostService service(true /*automation_enabled*/);
+  AXRemoteHost* remote = CreateRemote(&service);
+  std::unique_ptr<Widget> widget = CreateTestWidget();
+  remote->FlushForTesting();
+
+  // Create a view that is not yet associated with the widget.
+  views::View view;
+  remote->HandleEvent(&view, ax::mojom::Event::kLocationChanged);
+  // No crash.
 }
 
 // Verifies that the AXRemoteHost stops monitoring widgets that are closed

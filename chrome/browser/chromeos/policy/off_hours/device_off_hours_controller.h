@@ -14,7 +14,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/policy/weekly_time/weekly_time_interval.h"
+#include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/dbus/power_manager_client.h"
 #include "chromeos/dbus/system_clock_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"

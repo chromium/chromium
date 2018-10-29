@@ -41,10 +41,8 @@ class OrphanedTestServerFilter : public base::ProcessFilter {
       return false;
     bool found_path_string = false;
     bool found_port_string = false;
-    for (std::vector<std::string>::const_iterator it =
-         entry.cmd_line_args().begin();
-         it != entry.cmd_line_args().end();
-         ++it) {
+    for (auto it = entry.cmd_line_args().begin();
+         it != entry.cmd_line_args().end(); ++it) {
       if (it->find(path_string_) != std::string::npos)
         found_path_string = true;
       if (it->find(port_string_) != std::string::npos)

@@ -41,7 +41,7 @@ namespace blink {
 class FloatQuad;
 
 class PLATFORM_EXPORT FloatRoundedRect {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   class PLATFORM_EXPORT Radii {

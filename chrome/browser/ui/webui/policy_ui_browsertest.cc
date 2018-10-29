@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, ExtensionLoadAndSendPolicy) {
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(browser()->profile())
           ->extension_service();
-  scoped_refptr<extensions::Extension> extension = builder.Build();
+  scoped_refptr<const extensions::Extension> extension = builder.Build();
   service->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
   const policy::PolicyNamespace extension_policy_namespace(
       policy::POLICY_DOMAIN_EXTENSIONS, extension->id());

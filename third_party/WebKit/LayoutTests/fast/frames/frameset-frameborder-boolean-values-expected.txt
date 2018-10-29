@@ -7,31 +7,25 @@ frameborder=1 is true
 PASS frames[0].offsetWidth is 145
 PASS frames[1].offsetWidth is 145
 
-
 frameborder=yes is true
 PASS frames[0].offsetWidth is 145
 PASS frames[1].offsetWidth is 145
-
 
 frameborder=0 is false
 PASS frames[0].offsetWidth is 150
 PASS frames[1].offsetWidth is 150
 
-
 frameborder=no is false
 PASS frames[0].offsetWidth is 150
 PASS frames[1].offsetWidth is 150
-
 
 Invalid values like frameborder=false are ignored
 PASS frames[0].offsetWidth is 147
 PASS frames[1].offsetWidth is 147
 
-
 Invalid values like frameborder=2 are ignored
 PASS frames[0].offsetWidth is 147
 PASS frames[1].offsetWidth is 147
-
 
 PASS successfullyParsed is true
 

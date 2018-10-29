@@ -2,48 +2,48 @@
 ++[section]
 ++++[label]
 ++++++[text] name='Default: '
-++++++[entry] name='Default: ' selectable-text
+++++++[entry] name='Default:' selectable-text
 ++++[label]
 ++++++[text] name='Button: '
-++++++[push button] name='Button: '
-++++[check box] name='Checkbox: ' checkable:true
+++++++[push button] name='Button:'
+++++[check box] name='Checkbox:' checkable:true
 ++++[label]
 ++++++[text] name='Color: '
-++++++[push button] name='Color: '
+++++++[push button] name='Color:'
 ++++[label]
 ++++++[text] name='Email: '
-++++++[entry] name='Email: ' selectable-text text-input-type:email
+++++++[entry] name='Email:' selectable-text text-input-type:email
 ++++[label]
 ++++++[text] name='File: '
-++++++[push button] name='File: '
+++++++[push button] name='File:'
 ++++[label]
 ++++++[text] name='Image: '
-++++++[push button] name='Image: '
+++++++[push button] name='Image:'
 ++++[label]
 ++++++[text] name='Number: '
-++++++[spin button] name='Number: ' selectable-text text-input-type:number
+++++++[spin button] name='Number:' selectable-text text-input-type:number
 ++++[label]
 ++++++[text] name='Password: '
-++++++[password text] name='Password: ' selectable-text text-input-type:password
-++++[radio button] name='Radio: ' checkable:true
+++++++[password text] name='Password:' selectable-text text-input-type:password
+++++[radio button] name='Radio:' checkable:true
 ++++[label]
 ++++++[text] name='Range: '
-++++++[slider] name='Range: ' horizontal
+++++++[slider] name='Range:' horizontal
 ++++[label]
 ++++++[text] name='Reset: '
-++++++[push button] name='Reset: '
+++++++[push button] name='Reset:'
 ++++[label]
 ++++++[text] name='Search: '
-++++++[entry] name='Search: ' selectable-text text-input-type:search
+++++++[entry] name='Search:' selectable-text text-input-type:search
 ++++[label]
 ++++++[text] name='Submit: '
-++++++[push button] name='Submit: '
+++++++[push button] name='Submit:'
 ++++[label]
 ++++++[text] name='Tel: '
-++++++[entry] name='Tel: ' selectable-text text-input-type:tel
+++++++[entry] name='Tel:' selectable-text text-input-type:tel
 ++++[label]
 ++++++[text] name='Text: '
-++++++[entry] name='Text: ' selectable-text text-input-type:text
+++++++[entry] name='Text:' selectable-text text-input-type:text
 ++++[label]
 ++++++[text] name='Url: '
-++++++[entry] name='Url: ' selectable-text text-input-type:url
+++++++[entry] name='Url:' selectable-text text-input-type:url

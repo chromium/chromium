@@ -2,7 +2,8 @@ Move the caret upwards from [ ] on the second line. The caret should appear in t
 
 קו [ ] ראשון
 
+
 קו [ ] שני
 
-PASS
 
+PASS

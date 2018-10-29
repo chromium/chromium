@@ -200,6 +200,7 @@ without changes to the corresponding grd file. -->
                file="images/trash.png" type="BINDATA" />
 
       <if expr="not is_android">
+        <part file="cr_components/cr_components_images.grdp" />
         <part file="cr_elements_images.grdp" />
       </if>
     </includes>

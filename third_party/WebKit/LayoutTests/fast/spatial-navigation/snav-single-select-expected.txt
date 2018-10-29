@@ -20,4 +20,3 @@ PASS gFocusedDocument.activeElement.getAttribute("id") is "8"
 PASS gFocusedDocument.getElementById("start").selectedIndex is 0
 PASS gFocusedDocument.getElementById("start").selectedIndex is 1
 PASS gFocusedDocument.getElementById("start").selectedIndex is 0
-

@@ -32,7 +32,8 @@ namespace chromeos {
 class UserAddingScreenTest : public LoginManagerTest,
                              public UserAddingScreen::Observer {
  public:
-  UserAddingScreenTest() : LoginManagerTest(false) {
+  UserAddingScreenTest()
+      : LoginManagerTest(false, true /* should_initialize_webui */) {
     struct {
       const char* email;
       const char* gaia_id;

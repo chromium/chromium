@@ -125,7 +125,8 @@ class TestWebUIControllerFactory : public WebUIIOSControllerFactory {
   std::unique_ptr<WebUIIOSController> CreateWebUIIOSControllerForURL(
       WebUIIOS* web_ui,
       const GURL& url) const override {
-    DCHECK_EQ(url.scheme(), kTestWebUIScheme);
+    if (!url.SchemeIs(kTestWebUIScheme))
+      return nullptr;
     DCHECK_EQ(url.host(), kTestWebUIURLHost);
     return std::make_unique<TestUI>(web_ui, ui_handler_);
   }

@@ -105,7 +105,6 @@ class MockCloudPolicyClientObserver : public CloudPolicyClient::Observer {
 
   MOCK_METHOD1(OnPolicyFetched, void(CloudPolicyClient*));
   MOCK_METHOD1(OnRegistrationStateChanged, void(CloudPolicyClient*));
-  MOCK_METHOD1(OnRobotAuthCodesFetched, void(CloudPolicyClient*));
   MOCK_METHOD1(OnClientError, void(CloudPolicyClient*));
 
  private:

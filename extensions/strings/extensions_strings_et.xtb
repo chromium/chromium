@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">Privaatvõtme lugemine ei õnnestunud.</translation>
 <translation id="6391538222494443604">Olemas peab olema sisendkataloog.</translation>
 <translation id="641087317769093025">Ei saanud laiendust lahti pakkida</translation>
+<translation id="6413453408918378296">Ikoon „<ph name="ICON" />” ei ole piisavalt nähtav.</translation>
 <translation id="6542618148162044354">Rakendus „<ph name="APP_NAME" />” taotleb juurdepääsu ühele või mitmele teie seadmele:</translation>
 <translation id="657064425229075395">Taustaskripti „<ph name="BACKGROUND_SCRIPT" />” ei õnnestunud laadida.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> tootjalt <ph name="VENDOR_NAME" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>

@@ -43,11 +43,13 @@ RasterDecoderContextState::~RasterDecoderContextState() {
 void RasterDecoderContextState::InitializeGrContext(
     const GpuDriverBugWorkarounds& workarounds,
     GrContextOptions::PersistentCache* cache,
-    GpuProcessActivityFlags* activity_flags) {
+    GpuProcessActivityFlags* activity_flags,
+    gl::ProgressReporter* progress_reporter) {
   DCHECK(context->IsCurrent(surface.get()));
 
   sk_sp<GrGLInterface> interface(gl::init::CreateGrGLInterface(
-      *context->GetVersionInfo(), workarounds.use_es2_for_oopr));
+      *context->GetVersionInfo(), workarounds.use_es2_for_oopr,
+      progress_reporter));
   if (!interface) {
     LOG(ERROR) << "OOP raster support disabled: GrGLInterface creation "
                   "failed.";

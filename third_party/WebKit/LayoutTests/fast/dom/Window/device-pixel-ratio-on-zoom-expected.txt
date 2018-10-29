@@ -16,4 +16,6 @@ PASS round(window.devicePixelRatio) is 2.49
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 Tests that window.devicePixelRatio is updated on zoom.

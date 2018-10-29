@@ -94,7 +94,8 @@
       </paper-button>
       <paper-button on-click="onConfigureTap_"
           hidden$="[[!showConfigure_(networkProperties, globalPolicy,
-              managedNetworkAvailable)]]">
+              managedNetworkAvailable)]]"
+          disabled="[[disableConfigure_(networkProperties)]]">
         $i18n{networkButtonConfigure}
       </paper-button>
       <paper-button class="action-button" on-click="onConnectTap_"

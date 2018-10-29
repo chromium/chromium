@@ -20,7 +20,7 @@ QuicPacketGenerator::QuicPacketGenerator(QuicConnectionId connection_id,
                                          QuicRandom* random_generator,
                                          DelegateInterface* delegate)
     : delegate_(delegate),
-      packet_creator_(connection_id, framer, delegate),
+      packet_creator_(connection_id, framer, random_generator, delegate),
       flusher_attached_(false),
       should_send_ack_(false),
       should_send_stop_waiting_(false),
@@ -59,7 +59,8 @@ QuicConsumedData QuicPacketGenerator::ConsumeData(QuicStreamId id,
                                                   StreamSendingState state) {
   QUIC_BUG_IF(!flusher_attached_) << "Packet flusher is not attached when "
                                      "generator tries to write stream data.";
-  bool has_handshake = (id == kCryptoStreamId);
+  bool has_handshake =
+      (id == QuicUtils::GetCryptoStreamId(packet_creator_.transport_version()));
   bool fin = state != NO_FIN;
   QUIC_BUG_IF(has_handshake && fin)
       << "Handshake packets should never send a fin";
@@ -142,7 +143,8 @@ QuicConsumedData QuicPacketGenerator::ConsumeDataFastPath(
     QuicStreamOffset offset,
     bool fin,
     size_t total_bytes_consumed) {
-  DCHECK_NE(id, kCryptoStreamId);
+  DCHECK_NE(id,
+            QuicUtils::GetCryptoStreamId(packet_creator_.transport_version()));
 
   while (total_bytes_consumed < write_length &&
          delegate_->ShouldGeneratePacket(HAS_RETRANSMITTABLE_DATA,
@@ -318,6 +320,21 @@ QuicPacketGenerator::SerializeVersionNegotiationPacket(
 OwningSerializedPacketPointer
 QuicPacketGenerator::SerializeConnectivityProbingPacket() {
   return packet_creator_.SerializeConnectivityProbingPacket();
+}
+
+OwningSerializedPacketPointer
+QuicPacketGenerator::SerializePathChallengeConnectivityProbingPacket(
+    QuicPathFrameBuffer* payload) {
+  return packet_creator_.SerializePathChallengeConnectivityProbingPacket(
+      payload);
+}
+
+OwningSerializedPacketPointer
+QuicPacketGenerator::SerializePathResponseConnectivityProbingPacket(
+    const QuicDeque<QuicPathFrameBuffer>& payloads,
+    const bool is_padded) {
+  return packet_creator_.SerializePathResponseConnectivityProbingPacket(
+      payloads, is_padded);
 }
 
 void QuicPacketGenerator::ReserializeAllFrames(

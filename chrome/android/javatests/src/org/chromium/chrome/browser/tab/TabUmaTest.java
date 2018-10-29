@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel.TabSelectionType;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -147,7 +148,7 @@ public class TabUmaTest {
                 bgTab.initialize(null, null, new TabDelegateFactory(), true, false);
                 bgTab.loadUrl(new LoadUrlParams(mTestUrl));
                 // Simulate the renderer being killed by the OS.
-                bgTab.simulateRendererKilledForTesting(false);
+                ChromeTabUtils.simulateRendererKilledForTesting(bgTab, false);
                 bgTab.show(TabSelectionType.FROM_USER);
                 return bgTab;
             }

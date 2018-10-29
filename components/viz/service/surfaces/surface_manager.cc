@@ -40,10 +40,6 @@ const char kUmaRemovedTemporaryReference[] =
 
 }  // namespace
 
-SurfaceManager::TemporaryReferenceData::TemporaryReferenceData() = default;
-
-SurfaceManager::TemporaryReferenceData::~TemporaryReferenceData() = default;
-
 SurfaceManager::SurfaceManager(
     base::Optional<uint32_t> activation_deadline_in_frames)
     : activation_deadline_in_frames_(activation_deadline_in_frames),
@@ -106,50 +102,33 @@ Surface* SurfaceManager::CreateSurface(
     base::WeakPtr<SurfaceClient> surface_client,
     const SurfaceInfo& surface_info,
     BeginFrameSource* begin_frame_source,
-    bool needs_sync_tokens) {
+    bool needs_sync_tokens,
+    bool block_activation_on_parent) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(surface_info.is_valid());
   DCHECK(surface_client);
 
+  auto it = surface_map_.find(surface_info.id());
+  if (it != surface_map_.end())
+    return nullptr;
+
   // If no surface with this SurfaceId exists, simply create the surface
   // and return.
-  auto it = surface_map_.find(surface_info.id());
-  if (it == surface_map_.end()) {
-    std::unique_ptr<Surface> surface = std::make_unique<Surface>(
-        surface_info, this, surface_client, needs_sync_tokens);
-    // If no default deadline is specified then don't track deadlines.
-    if (activation_deadline_in_frames_) {
-      surface->SetDependencyDeadline(
-          std::make_unique<SurfaceDependencyDeadline>(
-              surface.get(), begin_frame_source, tick_clock_));
-    }
-    surface_map_[surface_info.id()] = std::move(surface);
-    // We can get into a situation where multiple CompositorFrames arrive for a
-    // FrameSink before the client can add any references for the frame. When
-    // the second frame with a new size arrives, the first will be destroyed in
-    // SurfaceFactory and then if there are no references it will be deleted
-    // during surface GC. A temporary reference, removed when a real reference
-    // is received, is added to prevent this from happening.
-    AddTemporaryReference(surface_info.id());
+  std::unique_ptr<Surface> surface =
+      std::make_unique<Surface>(surface_info, this, surface_client,
+                                needs_sync_tokens, block_activation_on_parent);
+  surface->SetDependencyDeadline(std::make_unique<SurfaceDependencyDeadline>(
+      surface.get(), begin_frame_source, tick_clock_));
+  surface_map_[surface_info.id()] = std::move(surface);
+  // We can get into a situation where multiple CompositorFrames arrive for a
+  // FrameSink before the client can add any references for the frame. When
+  // the second frame with a new size arrives, the first will be destroyed in
+  // SurfaceFactory and then if there are no references it will be deleted
+  // during surface GC. A temporary reference, removed when a real reference
+  // is received, is added to prevent this from happening.
+  AddTemporaryReference(surface_info.id());
 
-    for (auto& observer : observer_list_)
-      observer.OnSurfaceCreated(surface_info.id());
-    return surface_map_[surface_info.id()].get();
-  }
-
-  // If a surface with this SurfaceId exists, it must be marked as
-  // destroyed. Otherwise, we wouldn't receive a request to reuse the same
-  // SurfaceId. Remove the surface out of the garbage collector's queue and
-  // reuse it.
-  Surface* surface = it->second.get();
-
-  DCHECK(IsMarkedForDestruction(surface_info.id()));
-  surfaces_to_destroy_.erase(surface_info.id());
-  SurfaceDiscarded(surface);
-  surface->Reset(surface_client);
-  for (auto& observer : observer_list_)
-    observer.OnSurfaceCreated(surface_info.id());
-  return surface;
+  return surface_map_[surface_info.id()].get();
 }
 
 void SurfaceManager::DestroySurface(const SurfaceId& surface_id) {
@@ -161,17 +140,6 @@ void SurfaceManager::DestroySurface(const SurfaceId& surface_id) {
 }
 
 void SurfaceManager::InvalidateFrameSinkId(const FrameSinkId& frame_sink_id) {
-  // Remove any temporary references owned by |frame_sink_id|.
-  std::vector<SurfaceId> temp_refs_to_clear;
-  for (auto& map_entry : temporary_references_) {
-    base::Optional<FrameSinkId>& owner = map_entry.second.owner;
-    if (owner.has_value() && owner.value() == frame_sink_id)
-      temp_refs_to_clear.push_back(map_entry.first);
-  }
-
-  for (auto& surface_id : temp_refs_to_clear)
-    RemoveTemporaryReference(surface_id, RemovedReason::INVALIDATED);
-
   dependency_tracker_.OnFrameSinkInvalidated(frame_sink_id);
 
   GarbageCollectSurfaces();
@@ -202,16 +170,6 @@ void SurfaceManager::RemoveSurfaceReferences(
 
   for (const auto& reference : references)
     RemoveSurfaceReferenceImpl(reference);
-}
-
-void SurfaceManager::AssignTemporaryReference(const SurfaceId& surface_id,
-                                              const FrameSinkId& owner) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  if (!HasTemporaryReference(surface_id))
-    return;
-
-  temporary_references_[surface_id].owner = owner;
 }
 
 void SurfaceManager::DropTemporaryReference(const SurfaceId& surface_id) {
@@ -432,10 +390,9 @@ bool SurfaceManager::HasPersistentReference(const SurfaceId& surface_id) const {
 void SurfaceManager::AddTemporaryReference(const SurfaceId& surface_id) {
   DCHECK(!HasTemporaryReference(surface_id));
 
-  // Add an entry to |temporary_references_| with no owner for the temporary
-  // reference. Also add a range tracking entry so we know the order that
-  // surfaces were created for the FrameSinkId.
-  temporary_references_[surface_id].owner = base::Optional<FrameSinkId>();
+  // Add an entry to |temporary_references_|. Also add a range tracking entry so
+  // we know the order that surfaces were created for the FrameSinkId.
+  temporary_references_.emplace(surface_id, TemporaryReferenceData());
   temporary_reference_ranges_[surface_id.frame_sink_id()].push_back(
       surface_id.local_surface_id());
 
@@ -608,6 +565,10 @@ void SurfaceManager::SurfaceActivated(
     observer.OnSurfaceActivated(surface->surface_id(), duration);
 
   dependency_tracker_.OnSurfaceActivated(surface);
+}
+
+void SurfaceManager::SurfaceDependencyAdded(const SurfaceId& surface_id) {
+  dependency_tracker_.OnSurfaceDependencyAdded(surface_id);
 }
 
 void SurfaceManager::SurfaceDependenciesChanged(

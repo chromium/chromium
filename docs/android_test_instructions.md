@@ -158,9 +158,7 @@ for example, `content_junit_tests` and `chrome_junit_tests`.
 
 When adding a new JUnit test, the associated `BUILD.gn` file must be updated.
 For example, adding a test to `chrome_junit_tests` requires to update
-`chrome/android/BUILD.gn`. If you are a GYP user, you will not need to do that
-step in order to run the test locally but it is still required for GN users to
-run the test.
+`chrome/android/BUILD.gn`.
 
 ```shell
 # Build the test suite.

@@ -24,7 +24,6 @@ import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -43,20 +42,15 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
     public void startActivityCompletely(Intent intent) {
         Activity activity = InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
         Assert.assertNotNull("Main activity did not start", activity);
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                List<WeakReference<Activity>> list = ApplicationStatus.getRunningActivities();
-                for (WeakReference<Activity> ref : list) {
-                    Activity activity = ref.get();
-                    if (activity == null) continue;
-                    if (activity instanceof CustomTabActivity) {
-                        setActivity((CustomTabActivity) activity);
-                        return true;
-                    }
+        CriteriaHelper.pollUiThread(() -> {
+            for (WeakReference<Activity> ref : ApplicationStatus.getRunningActivities()) {
+                Activity runningActivity = ref.get();
+                if (runningActivity instanceof CustomTabActivity) {
+                    setActivity((CustomTabActivity) runningActivity);
+                    return true;
                 }
-                return false;
             }
+            return false;
         });
     }
 
@@ -89,12 +83,10 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
         } catch (TimeoutException e) {
             Assert.fail();
         }
-        CriteriaHelper.pollUiThread(new Criteria("Deferred startup never completed") {
-            @Override
-            public boolean isSatisfied() {
-                return DeferredStartupHandler.getInstance().isDeferredStartupCompleteForApp();
-            }
-        }, STARTUP_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                DeferredStartupHandler.getInstance()::isDeferredStartupCompleteForApp,
+                "Deferred startup never completed", STARTUP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         Assert.assertNotNull(tab);
         Assert.assertNotNull(tab.getView());
         Assert.assertTrue(tab.isCurrentlyACustomTab());

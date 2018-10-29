@@ -33,9 +33,9 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.CompositorView;
+import org.chromium.chrome.browser.modaldialog.DialogDismissalCause;
 import org.chromium.chrome.browser.modaldialog.ModalDialogManager;
 import org.chromium.chrome.browser.page_info.PageInfoController;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -52,10 +52,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.util.FeatureUtilities;
 import org.chromium.chrome.browser.vr.keyboard.VrInputMethodManagerWrapper;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheet;
-import org.chromium.chrome.browser.widget.newtab.NewTabButton;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.ViewEventSink;
@@ -207,11 +206,8 @@ public class VrShell extends GvrLayout
         if (mVrBrowsingEnabled) injectVrHostedUiView();
 
         // This has to happen after VrModalDialogManager is created.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.VR_BROWSING_NATIVE_ANDROID_UI)) {
-            mNonVrUiWidgetFactory = UiWidgetFactory.getInstance();
-            UiWidgetFactory.setInstance(
-                    new VrUiWidgetFactory(this, mActivity.getModalDialogManager()));
-        }
+        mNonVrUiWidgetFactory = UiWidgetFactory.getInstance();
+        UiWidgetFactory.setInstance(new VrUiWidgetFactory(this, mActivity.getModalDialogManager()));
 
         mTabRedirectHandler = new TabRedirectHandler(mActivity) {
             @Override
@@ -256,7 +252,7 @@ public class VrShell extends GvrLayout
             }
 
             @Override
-            public void onCrash(Tab tab, boolean sadTabShown) {
+            public void onCrash(Tab tab) {
                 updateHistoryButtonsVisibility();
             }
 
@@ -327,9 +323,8 @@ public class VrShell extends GvrLayout
     }
 
     private void injectVrHostedUiView() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.VR_BROWSING_NATIVE_ANDROID_UI)) return;
         mNonVrModalDialogManager = mActivity.getModalDialogManager();
-        mNonVrModalDialogManager.cancelAllDialogs();
+        mNonVrModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
         mVrModalPresenter = new VrModalPresenter(this);
         mVrModalDialogManager =
                 new ModalDialogManager(mVrModalPresenter, ModalDialogManager.ModalDialogType.APP);
@@ -370,10 +365,6 @@ public class VrShell extends GvrLayout
         if (mActivity.isInOverviewMode() || tab == null) {
             launchNTP();
             tab = mActivity.getActivityTab();
-        }
-        if (mActivity.getBottomSheet() != null) {
-            // Make sure the bottom sheet (Chrome Home) is hidden.
-            mActivity.getBottomSheet().setSheetState(BottomSheet.SheetState.PEEK, false);
         }
 
         // Start with content rendering paused if the renderer-drawn controls are visible, as this
@@ -543,20 +534,6 @@ public class VrShell extends GvrLayout
     public void showPageInfo() {
         Tab tab = mActivity.getActivityTab();
         if (tab == null) return;
-
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.VR_BROWSING_NATIVE_ANDROID_UI)) {
-            VrShellDelegate.requestToExitVr(new OnExitVrRequestListener() {
-                @Override
-                public void onSucceeded() {
-                    PageInfoController.show(
-                            mActivity, tab, null, PageInfoController.OpenedFromSource.VR);
-                }
-
-                @Override
-                public void onDenied() {}
-            }, UiUnsupportedMode.UNHANDLED_PAGE_INFO);
-            return;
-        }
 
         PageInfoController.show(mActivity, tab, null, PageInfoController.OpenedFromSource.VR);
     }
@@ -754,7 +731,7 @@ public class VrShell extends GvrLayout
     public void shutdown() {
         if (mVrBrowsingEnabled) {
             if (mVrModalDialogManager != null) {
-                mVrModalDialogManager.cancelAllDialogs();
+                mVrModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
                 mActivity.setModalDialogManager(mNonVrModalDialogManager);
                 mVrModalDialogManager = null;
             }
@@ -1236,7 +1213,7 @@ public class VrShell extends GvrLayout
     }
 
     @VisibleForTesting
-    public VrInputMethodManagerWrapper getInputMethodManageWrapperForTesting() {
+    public VrInputMethodManagerWrapper getInputMethodManagerWrapperForTesting() {
         return mInputMethodManagerWrapper;
     }
 
@@ -1250,8 +1227,14 @@ public class VrShell extends GvrLayout
                 mNativeVrShell, elementName, actionType, position.x, position.y);
     }
 
+    public void performKeyboardInputForTesting(int inputType, String inputString) {
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            nativePerformKeyboardInputForTesting(mNativeVrShell, inputType, inputString);
+        });
+    }
+
     public void registerUiOperationCallbackForTesting(
-            int actionType, Runnable resultCallback, int quiescenceTimeoutMs) {
+            int actionType, Runnable resultCallback, int timeoutMs, int elementName) {
         assert actionType < UiTestOperationType.NUM_UI_TEST_OPERATION_TYPES;
         // Fill the ArrayLists if this is the first time the method has been called.
         if (mUiOperationResults == null) {
@@ -1264,16 +1247,15 @@ public class VrShell extends GvrLayout
                 mUiOperationResultCallbacks.add(null);
             }
         }
-        // We currently have two callback types, and only one of them actually cares about the
-        // value given to the callback, so we can blindly set the default here. If more are added,
-        // their defaults will have to be properly set here.
-        mUiOperationResults.set(actionType, VrUiTestActivityResult.UNREPORTED);
+        mUiOperationResults.set(actionType, UiTestOperationResult.UNREPORTED);
         mUiOperationResultCallbacks.set(actionType, resultCallback);
 
         // In the case of the UI activity quiescence callback type, we need to let the native UI
         // know how long to wait before timing out.
         if (actionType == UiTestOperationType.UI_ACTIVITY_RESULT) {
-            nativeSetUiExpectingActivityForTesting(mNativeVrShell, quiescenceTimeoutMs);
+            nativeSetUiExpectingActivityForTesting(mNativeVrShell, timeoutMs);
+        } else if (actionType == UiTestOperationType.ELEMENT_VISIBILITY_CHANGE) {
+            nativeWatchElementForVisibilityChangeForTesting(mNativeVrShell, elementName, timeoutMs);
         }
     }
 
@@ -1339,10 +1321,14 @@ public class VrShell extends GvrLayout
     private native void nativeAcceptDoffPromptForTesting(long nativeVrShell);
     private native void nativePerformControllerActionForTesting(
             long nativeVrShell, int elementName, int actionType, float x, float y);
+    private native void nativePerformKeyboardInputForTesting(
+            long nativeVrShell, int inputType, String inputString);
     private native void nativeSetUiExpectingActivityForTesting(
             long nativeVrShell, int quiescenceTimeoutMs);
     private native void nativeSaveNextFrameBufferToDiskForTesting(
             long nativeVrShell, String filepathBase);
+    private native void nativeWatchElementForVisibilityChangeForTesting(
+            long nativeVrShell, int elementName, int timeoutMs);
     private native void nativeResumeContentRendering(long nativeVrShell);
     private native void nativeOnOverlayTextureEmptyChanged(long nativeVrShell, boolean empty);
 }

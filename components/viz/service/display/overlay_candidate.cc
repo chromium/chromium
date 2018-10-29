@@ -271,7 +271,7 @@ bool OverlayCandidate::IsOccludedByFilteredQuad(
     QuadList::ConstIterator quad_list_begin,
     QuadList::ConstIterator quad_list_end,
     const base::flat_map<RenderPassId, cc::FilterOperations*>&
-        render_pass_background_filters) {
+        render_pass_backdrop_filters) {
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
     if (overlap_iter->material == DrawQuad::RENDER_PASS) {
@@ -281,7 +281,7 @@ bool OverlayCandidate::IsOccludedByFilteredQuad(
       const RenderPassDrawQuad* render_pass_draw_quad =
           RenderPassDrawQuad::MaterialCast(*overlap_iter);
       if (candidate.display_rect.Intersects(overlap_rect) &&
-          render_pass_background_filters.count(
+          render_pass_backdrop_filters.count(
               render_pass_draw_quad->render_pass_id)) {
         return true;
       }

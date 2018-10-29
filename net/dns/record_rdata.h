@@ -30,6 +30,10 @@ class NET_EXPORT_PRIVATE RecordRdata {
  public:
   virtual ~RecordRdata() {}
 
+  // Return true if |data| represents RDATA in the wire format with a valid size
+  // for the give |type|.
+  static bool HasValidSize(const base::StringPiece& data, uint16_t type);
+
   virtual bool IsEqual(const RecordRdata* other) const = 0;
   virtual uint16_t Type() const = 0;
 

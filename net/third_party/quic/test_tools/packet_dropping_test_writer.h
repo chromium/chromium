@@ -44,11 +44,10 @@ class PacketDroppingTestWriter : public QuicPacketWriterWrapper {
 
   // Must be called before blocking, reordering or delaying (loss is OK). May be
   // called after connecting if the helper is not available before.
-  // |on_can_write| will be triggered when fake-unblocking; ownership will be
-  // assumed.
+  // |on_can_write| will be triggered when fake-unblocking.
   void Initialize(QuicConnectionHelperInterface* helper,
                   QuicAlarmFactory* alarm_factory,
-                  Delegate* on_can_write);
+                  std::unique_ptr<Delegate> on_can_write);
 
   // QuicPacketWriter methods:
   WriteResult WritePacket(const char* buffer,

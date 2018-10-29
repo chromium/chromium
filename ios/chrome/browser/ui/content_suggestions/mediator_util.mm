@@ -169,20 +169,20 @@ content_suggestions::StatusCode ConvertStatusCode(ntp_snippets::Status status) {
 
 ContentSuggestionsMostVisitedActionItem* BookmarkActionItem() {
   return [[ContentSuggestionsMostVisitedActionItem alloc]
-      initWithAction:ContentSuggestionsMostVisitedActionBookmark];
+      initWithCollectionShortcutType:NTPCollectionShortcutTypeBookmark];
 }
 
 ContentSuggestionsMostVisitedActionItem* ReadingListActionItem() {
   return [[ContentSuggestionsMostVisitedActionItem alloc]
-      initWithAction:ContentSuggestionsMostVisitedActionReadingList];
+      initWithCollectionShortcutType:NTPCollectionShortcutTypeReadingList];
 }
 
 ContentSuggestionsMostVisitedActionItem* RecentTabsActionItem() {
   return [[ContentSuggestionsMostVisitedActionItem alloc]
-      initWithAction:ContentSuggestionsMostVisitedActionRecentTabs];
+      initWithCollectionShortcutType:NTPCollectionShortcutTypeRecentTabs];
 }
 
 ContentSuggestionsMostVisitedActionItem* HistoryActionItem() {
   return [[ContentSuggestionsMostVisitedActionItem alloc]
-      initWithAction:ContentSuggestionsMostVisitedActionHistory];
+      initWithCollectionShortcutType:NTPCollectionShortcutTypeHistory];
 }

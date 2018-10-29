@@ -12,6 +12,9 @@
 
 namespace chromeos {
 
+// Extends from |SystemWebDialogDelegate| to create an always-on-top but movable
+// dialog. It is intentionally made movable so that users can copy-paste account
+// passwords from password managers.
 class InlineLoginHandlerDialogChromeOS : public SystemWebDialogDelegate {
  public:
   static void Show();

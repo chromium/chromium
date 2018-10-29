@@ -47,7 +47,7 @@ enum RTCIceGatheringState {
     RTCIceParameters? getRemoteParameters();
     attribute EventHandler onstatechange;
     attribute EventHandler ongatheringstatechange;
-    // TODO(crbug.com/864871): Implement onselectedcandidatepairchange.
+    attribute EventHandler onselectedcandidatepairchange;
 
     // The following is defined in the WebRTC-ICE extension specification.
     // https://w3c.github.io/webrtc-ice/#rtcicetransport*

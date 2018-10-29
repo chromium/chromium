@@ -71,9 +71,13 @@ void ProducerHost::OnTracingSetup() {
   producer_client_->OnTracingStart(std::move(shm));
 }
 
-void ProducerHost::CreateDataSourceInstance(
-    perfetto::DataSourceInstanceID id,
-    const perfetto::DataSourceConfig& config) {
+void ProducerHost::SetupDataSource(perfetto::DataSourceInstanceID,
+                                   const perfetto::DataSourceConfig&) {
+  // TODO(primiano): plumb call through mojo.
+}
+
+void ProducerHost::StartDataSource(perfetto::DataSourceInstanceID id,
+                                   const perfetto::DataSourceConfig& config) {
   // TODO(oysteine): Send full DataSourceConfig, not just the name/target_buffer
   // and Chrome Tracing string.
   auto data_source_config = mojom::DataSourceConfig::New();
@@ -81,13 +85,12 @@ void ProducerHost::CreateDataSourceInstance(
   data_source_config->target_buffer = config.target_buffer();
 
   data_source_config->trace_config = config.chrome_config().trace_config();
-  producer_client_->CreateDataSourceInstance(id, std::move(data_source_config));
+  producer_client_->StartDataSource(id, std::move(data_source_config));
 }
 
-void ProducerHost::TearDownDataSourceInstance(
-    perfetto::DataSourceInstanceID id) {
+void ProducerHost::StopDataSource(perfetto::DataSourceInstanceID id) {
   if (producer_client_) {
-    producer_client_->TearDownDataSourceInstance(
+    producer_client_->StopDataSource(
         id,
         base::BindOnce(
             [](ProducerHost* producer_host, perfetto::DataSourceInstanceID id) {

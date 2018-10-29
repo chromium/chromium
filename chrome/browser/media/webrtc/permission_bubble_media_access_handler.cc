@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/metrics/field_trial.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/media/webrtc/media_stream_devices_controller.h"
 #include "chrome/browser/permissions/permission_manager.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -134,8 +136,7 @@ void PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::map<content::WebContents*, RequestsQueue>::iterator it =
-      pending_requests_.find(web_contents);
+  auto it = pending_requests_.find(web_contents);
 
   if (it == pending_requests_.end() || it->second.empty()) {
     // Don't do anything if the tab was closed.
@@ -172,7 +173,7 @@ void PermissionBubbleMediaAccessHandler::UpdateMediaRequestState(
     return;
 
   bool found = false;
-  for (RequestsQueues::iterator rqs_it = pending_requests_.begin();
+  for (auto rqs_it = pending_requests_.begin();
        rqs_it != pending_requests_.end(); ++rqs_it) {
     RequestsQueue& queue = rqs_it->second;
     for (RequestsQueue::iterator it = queue.begin(); it != queue.end(); ++it) {
@@ -196,8 +197,7 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
     std::unique_ptr<content::MediaStreamUI> ui) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::map<content::WebContents*, RequestsQueue>::iterator it =
-      pending_requests_.find(web_contents);
+  auto it = pending_requests_.find(web_contents);
   if (it == pending_requests_.end()) {
     // WebContents has been destroyed. Don't need to do anything.
     return;
@@ -214,8 +214,8 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
     // Post a task to process next queued request. It has to be done
     // asynchronously to make sure that calling infobar is not destroyed until
     // after this function returns.
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest,
             base::Unretained(this), web_contents));

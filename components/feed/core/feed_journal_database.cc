@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -17,6 +18,7 @@
 namespace feed {
 
 namespace {
+
 using StorageEntryVector =
     leveldb_proto::ProtoDatabase<JournalStorageProto>::KeyEntryVector;
 
@@ -30,6 +32,14 @@ const char kJournalDatabaseFolder[] = "journal";
 
 const size_t kDatabaseWriteBufferSizeBytes = 512 * 1024;
 const size_t kDatabaseWriteBufferSizeBytesForLowEndDevice = 128 * 1024;
+
+void ReportLoadEntriesHistograms(bool success, base::TimeTicks start_time) {
+  UMA_HISTOGRAM_BOOLEAN("ContentSuggestions.Feed.JournalStorage.LoadSuccess",
+                        success);
+  base::TimeDelta load_time = base::TimeTicks::Now() - start_time;
+  UMA_HISTOGRAM_TIMES("ContentSuggestions.Feed.JournalStorage.LoadTime",
+                      load_time);
+}
 
 }  // namespace
 
@@ -76,7 +86,8 @@ void FeedJournalDatabase::LoadJournal(const std::string& key,
 
   storage_database_->GetEntry(
       key, base::BindOnce(&FeedJournalDatabase::OnGetEntryForLoadJournal,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          base::TimeTicks::Now(), std::move(callback)));
 }
 
 void FeedJournalDatabase::DoesJournalExist(const std::string& key,
@@ -85,7 +96,8 @@ void FeedJournalDatabase::DoesJournalExist(const std::string& key,
 
   storage_database_->GetEntry(
       key, base::BindOnce(&FeedJournalDatabase::OnGetEntryForDoesJournalExist,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          base::TimeTicks::Now(), std::move(callback)));
 }
 
 void FeedJournalDatabase::CommitJournalMutation(
@@ -93,6 +105,10 @@ void FeedJournalDatabase::CommitJournalMutation(
     ConfirmationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(journal_mutation);
+
+  UMA_HISTOGRAM_COUNTS_100(
+      "ContentSuggestions.Feed.JournalStorage.CommitMutationCount",
+      journal_mutation->Size());
 
   if (journal_mutation->Empty()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -124,7 +140,8 @@ void FeedJournalDatabase::LoadAllJournalKeys(JournalLoadCallback callback) {
 
   storage_database_->LoadKeys(
       base::BindOnce(&FeedJournalDatabase::OnLoadKeysForLoadAllJournalKeys,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                     std::move(callback)));
 }
 
 void FeedJournalDatabase::DeleteAllJournals(ConfirmationCallback callback) {
@@ -135,7 +152,8 @@ void FeedJournalDatabase::DeleteAllJournals(ConfirmationCallback callback) {
       std::make_unique<StorageEntryVector>(),
       base::BindRepeating([](const std::string& x) { return true; }),
       base::BindOnce(&FeedJournalDatabase::OnOperationCommitted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                     std::move(callback)));
 }
 
 void FeedJournalDatabase::PerformOperations(
@@ -168,11 +186,12 @@ void FeedJournalDatabase::PerformOperations(
     }
   }
 
-  CommitOperations(std::move(journal), std::move(copy_to_journal),
-                   std::move(callback));
+  CommitOperations(journal_mutation->GetStartTime(), std::move(journal),
+                   std::move(copy_to_journal), std::move(callback));
 }
 
 void FeedJournalDatabase::CommitOperations(
+    base::TimeTicks start_time,
     std::unique_ptr<JournalStorageProto> journal,
     JournalMap copy_to_journal,
     ConfirmationCallback callback) {
@@ -187,15 +206,15 @@ void FeedJournalDatabase::CommitOperations(
     journals_to_save->emplace_back(journal_name, std::move(*journal));
   }
 
-  for (JournalMap::iterator it = copy_to_journal.begin();
-       it != copy_to_journal.end(); ++it) {
+  for (auto it = copy_to_journal.begin(); it != copy_to_journal.end(); ++it) {
     journals_to_save->emplace_back(it->first, std::move(it->second));
   }
 
   storage_database_->UpdateEntries(
       std::move(journals_to_save), std::move(journals_to_delete),
       base::BindOnce(&FeedJournalDatabase::OnOperationCommitted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(start_time),
+                     std::move(callback)));
 }
 
 void FeedJournalDatabase::OnDatabaseInitialized(bool success) {
@@ -207,9 +226,12 @@ void FeedJournalDatabase::OnDatabaseInitialized(bool success) {
     database_status_ = INIT_FAILURE;
     DVLOG(1) << "FeedJournalDatabase init failed.";
   }
+  UMA_HISTOGRAM_BOOLEAN("ContentSuggestions.Feed.JournalStorage.InitialSuccess",
+                        success);
 }
 
 void FeedJournalDatabase::OnGetEntryForLoadJournal(
+    base::TimeTicks start_time,
     JournalLoadCallback callback,
     bool success,
     std::unique_ptr<JournalStorageProto> journal) {
@@ -222,28 +244,47 @@ void FeedJournalDatabase::OnGetEntryForLoadJournal(
     }
   }
 
+  ReportLoadEntriesHistograms(success, start_time);
+
   std::move(callback).Run(success, std::move(results));
 }
 
 void FeedJournalDatabase::OnGetEntryForDoesJournalExist(
+    base::TimeTicks start_time,
     CheckExistingCallback callback,
     bool success,
     std::unique_ptr<JournalStorageProto> journal) {
   DVLOG_IF(1, !success) << "FeedJournalDatabase load journal failed.";
 
+  ReportLoadEntriesHistograms(success, start_time);
+
   std::move(callback).Run(success, journal ? true : false);
 }
 
 void FeedJournalDatabase::OnLoadKeysForLoadAllJournalKeys(
+    base::TimeTicks start_time,
     JournalLoadCallback callback,
     bool success,
     std::unique_ptr<std::vector<std::string>> keys) {
   DVLOG_IF(1, !success) << "FeedJournalDatabase load journal keys failed.";
+  UMA_HISTOGRAM_BOOLEAN(
+      "ContentSuggestions.Feed.JournalStorage.LoadKeysSuccess", success);
 
   std::vector<std::string> results;
   if (keys) {
     results = std::move(*keys);
   }
+
+  if (success) {
+    // Journal count is about how many Feed surfaces opens/shows to a user.
+    UMA_HISTOGRAM_EXACT_LINEAR("ContentSuggestions.Feed.JournalStorage.Count",
+                               results.size(), 50);
+  }
+
+  base::TimeDelta load_time = base::TimeTicks::Now() - start_time;
+  UMA_HISTOGRAM_TIMES("ContentSuggestions.Feed.JournalStorage.LoadKeysTime",
+                      load_time);
+
   std::move(callback).Run(success, std::move(results));
 }
 
@@ -262,9 +303,18 @@ void FeedJournalDatabase::OnGetEntryForCommitJournalMutation(
                     std::move(callback));
 }
 
-void FeedJournalDatabase::OnOperationCommitted(ConfirmationCallback callback,
+void FeedJournalDatabase::OnOperationCommitted(base::TimeTicks start_time,
+                                               ConfirmationCallback callback,
                                                bool success) {
   DVLOG_IF(1, !success) << "FeedJournalDatabase commit failed.";
+  UMA_HISTOGRAM_BOOLEAN(
+      "ContentSuggestions.Feed.JournalStorage.OperationCommitSuccess", success);
+
+  base::TimeDelta commit_time = base::TimeTicks::Now() - start_time;
+  UMA_HISTOGRAM_TIMES(
+      "ContentSuggestions.Feed.JournalStorage.OperationCommitTime",
+      commit_time);
+
   std::move(callback).Run(success);
 }
 

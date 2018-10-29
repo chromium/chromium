@@ -100,20 +100,4 @@ CAMediaTimingFunction* TimingFunction(Curve curve) {
   [CATransaction commit];
 }
 
-+ (void)cr_transitionWithView:(UIView*)view
-                     duration:(NSTimeInterval)duration
-                        curve:(ios::material::Curve)curve
-                      options:(UIViewAnimationOptions)options
-                   animations:(void (^)(void))animations
-                   completion:(void (^)(BOOL finished))completion {
-  [CATransaction begin];
-  [CATransaction setAnimationTimingFunction:TimingFunction(curve)];
-  [UIView transitionWithView:view
-                    duration:duration
-                     options:AnimationOptionsForceLinearTiming(options)
-                  animations:animations
-                  completion:completion];
-  [CATransaction commit];
-}
-
 @end

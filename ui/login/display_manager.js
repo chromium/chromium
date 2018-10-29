@@ -502,7 +502,7 @@ cr.define('cr.ui.login', function() {
       } else if (name == ACCELERATOR_BOOTSTRAPPING_SLAVE) {
         chrome.send('setOobeBootstrappingSlave');
       } else if (name == ACCELERATOR_DEMO_MODE) {
-          this.showEnableDemoModeDialog_();
+        this.startDemoModeFlow();
       } else if (name == ACCELERATOR_SEND_FEEDBACK) {
         chrome.send('sendFeedback');
       }
@@ -917,7 +917,7 @@ cr.define('cr.ui.login', function() {
     initializeDemoModeMultiTapListener: function() {
       if (this.displayType_ == DISPLAY_TYPE.OOBE) {
         this.demoModeStartListener_ = new MultiTapDetector(
-          $('outer-container'), 10, this.showEnableDemoModeDialog_.bind(this));
+            $('outer-container'), 10, this.startDemoModeFlow.bind(this));
       }
     },
 
@@ -1013,10 +1013,9 @@ cr.define('cr.ui.login', function() {
     },
 
     /**
-     * Shows the enable demo mode dialog.
-     * @private
+     * Starts demo mode flow. Shows the enable demo mode dialog if needed.
      */
-    showEnableDemoModeDialog_: function() {
+    startDemoModeFlow: function() {
       var isDemoModeEnabled = loadTimeData.getBoolean('isDemoModeEnabled');
       if (!isDemoModeEnabled) {
         console.warn('Cannot setup demo mode, because it is disabled.');
@@ -1035,13 +1034,18 @@ cr.define('cr.ui.login', function() {
         this.enableDemoModeDialog_.setCancelLabel(
             loadTimeData.getString('enableDemoModeDialogCancel'));
       }
-
-      this.enableDemoModeDialog_.showWithTitle(
-          loadTimeData.getString('enableDemoModeDialogTitle'),
-          loadTimeData.getString('enableDemoModeDialogText'),
-          function() {  // onOk
-            chrome.send('setupDemoMode');
-          });
+      var configuration = Oobe.getInstance().getOobeConfiguration();
+      if (configuration && configuration.enableDemoMode) {
+        // Bypass showing dialog.
+        chrome.send('setupDemoMode');
+      } else {
+        this.enableDemoModeDialog_.showWithTitle(
+            loadTimeData.getString('enableDemoModeDialogTitle'),
+            loadTimeData.getString('enableDemoModeDialogText'),
+            function() {  // onOk
+              chrome.send('setupDemoMode');
+            });
+      }
     },
 
     /**

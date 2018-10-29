@@ -22,10 +22,10 @@ size_t ClientPathTransferCacheEntry::SerializedSize() const {
 }
 
 bool ClientPathTransferCacheEntry::Serialize(base::span<uint8_t> data) const {
-  DCHECK_EQ(data.size(), size_);
+  DCHECK_GE(data.size(), size_);
 
   size_t bytes_written = path_.writeToMemory(data.data());
-  CHECK_LE(bytes_written, size_);
+  DCHECK_LE(bytes_written, size_);
   return true;
 }
 
@@ -47,7 +47,6 @@ bool ServicePathTransferCacheEntry::Deserialize(
   if (read_bytes > data.size())
     return false;
   size_ = read_bytes;
-
   return true;
 }
 

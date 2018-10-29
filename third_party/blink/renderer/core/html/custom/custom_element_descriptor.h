@@ -30,7 +30,7 @@ namespace blink {
 // example, a definition for "my-element", "my-element" must not be
 // applied to an element <button is="my-element">.
 class CORE_EXPORT CustomElementDescriptor final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   CustomElementDescriptor() = default;

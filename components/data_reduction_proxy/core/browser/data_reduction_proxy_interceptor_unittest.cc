@@ -30,7 +30,6 @@
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_response_headers.h"
-#include "net/log/test_net_log.h"
 #include "net/socket/socket_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -128,7 +127,6 @@ class DataReductionProxyInterceptorTest : public testing::Test {
             .proxy_server(),
         &default_network_delegate_));
     default_context_->set_network_delegate(&default_network_delegate_);
-    default_context_->set_net_log(test_context_->net_log());
     test_context_->config()->test_params()->UseNonSecureProxiesForHttp();
   }
 
@@ -199,7 +197,6 @@ class DataReductionProxyInterceptorWithServerTest : public testing::Test {
             base::test::ScopedTaskEnvironment::MainThreadType::IO),
         context_(true) {
     context_.set_network_delegate(&network_delegate_);
-    context_.set_net_log(&net_log_);
   }
 
   ~DataReductionProxyInterceptorWithServerTest() override {
@@ -257,7 +254,6 @@ class DataReductionProxyInterceptorWithServerTest : public testing::Test {
   base::test::ScopedTaskEnvironment scoped_task_environment_;
 
  private:
-  net::TestNetLog net_log_;
   net::TestNetworkDelegate network_delegate_;
   net::TestURLRequestContext context_;
   net::EmbeddedTestServer proxy_;
@@ -517,26 +513,25 @@ TEST_F(DataReductionProxyInterceptorEndToEndTest, ResponseWithBypassAndRetry) {
 
 TEST_F(DataReductionProxyInterceptorEndToEndTest, RedirectWithBypassAndRetry) {
   MockRead mock_reads_array[][3] = {
-      // First, get a redirect without a via header, which should be retried
+      // First, get a bypass which should be retried
       // using the fallback proxy.
       {
           MockRead("HTTP/1.1 302 Found\r\n"
+                   "Chrome-Proxy: bypass=0\r\n"
                    "Location: http://bar.com/\r\n\r\n"),
-          MockRead(""),
-          MockRead(net::SYNCHRONOUS, net::OK),
+          MockRead(""), MockRead(net::SYNCHRONOUS, net::OK),
       },
       // Same as before, but through the fallback proxy. Now both proxies are
       // bypassed, and the request should be retried over direct.
       {
           MockRead("HTTP/1.1 302 Found\r\n"
+                   "Chrome-Proxy: bypass=0\r\n"
                    "Location: http://baz.com/\r\n\r\n"),
-          MockRead(""),
-          MockRead(net::SYNCHRONOUS, net::OK),
+          MockRead(""), MockRead(net::SYNCHRONOUS, net::OK),
       },
       // Finally, a successful response is received.
       {
-          MockRead("HTTP/1.1 200 OK\r\n\r\n"),
-          MockRead(kBody.c_str()),
+          MockRead("HTTP/1.1 200 OK\r\n\r\n"), MockRead(kBody.c_str()),
           MockRead(net::SYNCHRONOUS, net::OK),
       },
   };

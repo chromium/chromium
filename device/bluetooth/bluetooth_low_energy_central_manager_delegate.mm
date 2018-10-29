@@ -68,11 +68,6 @@ class BluetoothLowEnergyCentralManagerBridge {
   return self;
 }
 
-- (void)dealloc {
-  [bridge_->GetCentralManager() setDelegate:nil];
-  [super dealloc];
-}
-
 - (void)centralManager:(CBCentralManager*)central
  didDiscoverPeripheral:(CBPeripheral*)peripheral
      advertisementData:(NSDictionary*)advertisementData

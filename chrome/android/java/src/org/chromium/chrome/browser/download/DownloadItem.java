@@ -24,6 +24,7 @@ public class DownloadItem {
     private DownloadInfo mDownloadInfo;
     private long mDownloadId = INVALID_DOWNLOAD_ID;
     private long mStartTime;
+    private long mEndTime;
     private boolean mHasBeenExternallyRemoved;
 
     public DownloadItem(boolean useAndroidDownloadManager, DownloadInfo info) {
@@ -112,6 +113,24 @@ public class DownloadItem {
     }
 
     /**
+     * Sets the download end time.
+     *
+     * @param endTime Download end time from System.currentTimeMillis().
+     */
+    public void setEndTime(long endTime) {
+        mEndTime = endTime;
+    }
+
+    /**
+     * Gets the download end time.
+     *
+     * @return Download end time from System.currentTimeMillis().
+     */
+    public long getEndTime() {
+        return mEndTime;
+    }
+
+    /**
      * Sets whether the file associated with this item has been removed through an external
      * action.
      *
@@ -139,15 +158,17 @@ public class DownloadItem {
     public static OfflineItem createOfflineItem(DownloadItem item) {
         OfflineItem offlineItem = DownloadInfo.createOfflineItem(item.getDownloadInfo());
         offlineItem.creationTimeMs = item.getStartTime();
+        offlineItem.completionTimeMs = item.getEndTime();
         offlineItem.externallyRemoved = item.hasBeenExternallyRemoved();
         return offlineItem;
     }
 
     @CalledByNative
-    private static DownloadItem createDownloadItem(
-            DownloadInfo downloadInfo, long startTimestamp, boolean hasBeenExternallyRemoved) {
+    private static DownloadItem createDownloadItem(DownloadInfo downloadInfo, long startTimestamp,
+            long endTimestamp, boolean hasBeenExternallyRemoved) {
         DownloadItem downloadItem = new DownloadItem(false, downloadInfo);
         downloadItem.setStartTime(startTimestamp);
+        downloadItem.setEndTime(endTimestamp);
         downloadItem.setHasBeenExternallyRemoved(hasBeenExternallyRemoved);
         return downloadItem;
     }

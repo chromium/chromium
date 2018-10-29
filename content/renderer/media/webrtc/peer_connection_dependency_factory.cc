@@ -34,8 +34,9 @@
 #include "content/renderer/media/stream/media_stream_video_track.h"
 #include "content/renderer/media/webrtc/audio_codec_factory.h"
 #include "content/renderer/media/webrtc/rtc_peer_connection_handler.h"
+#include "content/renderer/media/webrtc/rtc_video_decoder_factory.h"
+#include "content/renderer/media/webrtc/rtc_video_encoder_factory.h"
 #include "content/renderer/media/webrtc/stun_field_trial.h"
-#include "content/renderer/media/webrtc/video_codec_factory.h"
 #include "content/renderer/media/webrtc/webrtc_audio_device_impl.h"
 #include "content/renderer/media/webrtc/webrtc_uma_histograms.h"
 #include "content/renderer/media/webrtc/webrtc_video_capturer_adapter.h"
@@ -61,11 +62,18 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/webrtc/api/mediaconstraintsinterface.h"
+#include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 #include "third_party/webrtc/api/videosourceproxy.h"
+#include "third_party/webrtc/media/engine/convert_legacy_video_factory.h"
 #include "third_party/webrtc/media/engine/multiplexcodecfactory.h"
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 #include "third_party/webrtc/rtc_base/refcountedobject.h"
 #include "third_party/webrtc/rtc_base/ssladapter.h"
+
+#if defined(OS_ANDROID)
+#include "media/base/android/media_codec_util.h"
+#endif
 
 namespace content {
 
@@ -282,12 +290,31 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   socket_factory_.reset(new IpcPacketSocketFactory(p2p_socket_dispatcher_.get(),
                                                    traffic_annotation));
 
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  std::unique_ptr<cricket::WebRtcVideoDecoderFactory> decoder_factory;
+  std::unique_ptr<cricket::WebRtcVideoEncoderFactory> encoder_factory;
 
+  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (gpu_factories && gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+    if (!cmd_line->HasSwitch(switches::kDisableWebRtcHWDecoding))
+      decoder_factory.reset(new RTCVideoDecoderFactory(gpu_factories));
+
+    if (!cmd_line->HasSwitch(switches::kDisableWebRtcHWEncoding))
+      encoder_factory.reset(new RTCVideoEncoderFactory(gpu_factories));
+  }
+
+#if defined(OS_ANDROID)
+  if (!media::MediaCodecUtil::SupportsSetParameters())
+    encoder_factory.reset();
+#endif
+
+  // TODO(magjed): Update RTCVideoEncoderFactory/RTCVideoDecoderFactory to new
+  // interface and let Chromium be responsible in what order video codecs are
+  // listed, instead of using
+  // cricket::ConvertVideoEncoderFactory/cricket::ConvertVideoDecoderFactory.
   std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
-      CreateWebrtcVideoEncoderFactory(gpu_factories);
+      ConvertVideoEncoderFactory(std::move(encoder_factory));
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
-      CreateWebrtcVideoDecoderFactory(gpu_factories);
+      ConvertVideoDecoderFactory(std::move(decoder_factory));
 
   // Enable Multiplex codec in SDP optionally.
   if (base::FeatureList::IsEnabled(features::kWebRtcMultiplexCodec)) {
@@ -309,9 +336,9 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   factory_options.disable_sctp_data_channels = false;
   factory_options.disable_encryption =
       cmd_line->HasSwitch(switches::kDisableWebRtcEncryption);
-  factory_options.crypto_options.enable_gcm_crypto_suites =
+  factory_options.crypto_options.srtp.enable_gcm_crypto_suites =
       cmd_line->HasSwitch(switches::kEnableWebRtcSrtpAesGcm);
-  factory_options.crypto_options.enable_encrypted_rtp_header_extensions =
+  factory_options.crypto_options.srtp.enable_encrypted_rtp_header_extensions =
       cmd_line->HasSwitch(switches::kEnableWebRtcSrtpEncryptedHeaders);
   pc_factory_->SetOptions(factory_options);
 

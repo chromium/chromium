@@ -11,11 +11,11 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
+#include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -44,12 +44,15 @@ class NewPasswordFormManager : public PasswordFormManagerInterface,
   // |this| creates an instance of it itself (meant for production code). Once
   // the fetcher is shared between PasswordFormManager instances, it will be
   // required that |form_fetcher| is not null. |form_saver| is used to
-  // save/update the form.
-  NewPasswordFormManager(PasswordManagerClient* client,
-                         const base::WeakPtr<PasswordManagerDriver>& driver,
-                         const autofill::FormData& observed_form,
-                         FormFetcher* form_fetcher,
-                         std::unique_ptr<FormSaver> form_saver);
+  // save/update the form. |metrics_recorder| records metrics for |*this|. If
+  // null a new instance will be created.
+  NewPasswordFormManager(
+      PasswordManagerClient* client,
+      const base::WeakPtr<PasswordManagerDriver>& driver,
+      const autofill::FormData& observed_form,
+      FormFetcher* form_fetcher,
+      std::unique_ptr<FormSaver> form_saver,
+      scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder);
 
   ~NewPasswordFormManager() override;
 
@@ -117,10 +120,23 @@ class NewPasswordFormManager : public PasswordFormManagerInterface,
   // PasswordFormManagerInterface:
   bool IsNewLogin() const override;
   bool IsPendingCredentialsPublicSuffixMatch() const override;
+  void PresaveGeneratedPassword(const autofill::PasswordForm& form) override;
+  void PasswordNoLongerGenerated() override;
   bool HasGeneratedPassword() const override;
+  void SetGenerationPopupWasShown(bool generation_popup_was_shown,
+                                  bool is_manual_generation) override;
+  void SetGenerationElement(const base::string16& generation_element) override;
   bool IsPossibleChangePasswordFormWithoutUsername() const override;
   bool RetryPasswordFormPasswordUpdate() const override;
   std::vector<base::WeakPtr<PasswordManagerDriver>> GetDrivers() const override;
+  const autofill::PasswordForm* GetSubmittedForm() const override;
+
+  // Create a copy of |*this| which can be passed to the code handling
+  // save-password related UI. This omits some parts of the internal data, so
+  // the result is not identical to the original.
+  // TODO(crbug.com/739366): Replace with translating one appropriate class into
+  // another one.
+  std::unique_ptr<NewPasswordFormManager> Clone();
 
 #if defined(UNIT_TEST)
   static void set_wait_for_server_predictions_for_filling(bool value) {
@@ -128,7 +144,6 @@ class NewPasswordFormManager : public PasswordFormManagerInterface,
   }
 
   FormSaver* form_saver() { return form_saver_.get(); }
-
 #endif
 
   // TODO(https://crbug.com/831123): Remove it when the old form parsing is
@@ -149,6 +164,14 @@ class NewPasswordFormManager : public PasswordFormManagerInterface,
   // removed.
   void RecordMetricOnCompareParsingResult(
       const autofill::PasswordForm& parsed_form);
+
+  // Records the status of readonly fields during parsing, combined with the
+  // overall success of the parsing. It reports through two different metrics,
+  // depending on whether |mode| indicates parsing for saving or filling.
+  void RecordMetricOnReadonly(
+      FormDataParser::ReadonlyPasswordFields readonly_status,
+      bool parsing_successful,
+      FormDataParser::Mode mode);
 
   // Report the time between receiving credentials from the password store and
   // the autofill server responding to the lookup request.
@@ -195,6 +218,12 @@ class NewPasswordFormManager : public PasswordFormManagerInterface,
   // password of |pending_credentials_|, and returns copies of all such modified
   // credentials.
   std::vector<autofill::PasswordForm> FindOtherCredentialsToUpdate();
+
+  // Helper function for calling form parsing and logging results if logging is
+  // active.
+  std::unique_ptr<autofill::PasswordForm> ParseFormAndMakeLogging(
+      const autofill::FormData& form,
+      FormDataParser::Mode mode);
 
   // The client which implements embedder-specific PasswordManager operations.
   PasswordManagerClient* client_;
@@ -282,8 +311,6 @@ class NewPasswordFormManager : public PasswordFormManagerInterface,
   // form.
   UserAction user_action_ = UserAction::kNone;
 
-  base::Optional<FormPredictions> predictions_;
-
   // If Chrome has already autofilled a few times, it is probable that autofill
   // is triggered by programmatic changes in the page. We set a maximum number
   // of times that Chrome will autofill to avoid being stuck in an infinite
@@ -300,6 +327,9 @@ class NewPasswordFormManager : public PasswordFormManagerInterface,
 
   // Time when stored credentials are received from the store. Used for metrics.
   base::TimeTicks received_stored_credentials_time_;
+
+  // Used to transform FormData into PasswordForms.
+  FormDataParser parser_;
 
   base::WeakPtrFactory<NewPasswordFormManager> weak_ptr_factory_;
 

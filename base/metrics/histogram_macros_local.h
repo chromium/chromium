@@ -19,10 +19,10 @@
 // For usage details, see the equivalents in histogram_macros.h.
 
 #define LOCAL_HISTOGRAM_ENUMERATION(name, ...)                          \
-  CR_EXPAND_ARG(INTERNAL_UMA_HISTOGRAM_ENUMERATION_GET_MACRO(           \
+  INTERNAL_UMA_HISTOGRAM_ENUMERATION_GET_MACRO(                         \
       __VA_ARGS__, INTERNAL_UMA_HISTOGRAM_ENUMERATION_SPECIFY_BOUNDARY, \
-      INTERNAL_UMA_HISTOGRAM_ENUMERATION_DEDUCE_BOUNDARY)(              \
-      name, __VA_ARGS__, base::HistogramBase::kNoFlags))
+      INTERNAL_UMA_HISTOGRAM_ENUMERATION_DEDUCE_BOUNDARY)               \
+  (name, __VA_ARGS__, base::HistogramBase::kNoFlags)
 
 #define LOCAL_HISTOGRAM_BOOLEAN(name, sample)                                  \
     STATIC_HISTOGRAM_POINTER_BLOCK(name, AddBoolean(sample),                   \

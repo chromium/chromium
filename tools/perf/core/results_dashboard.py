@@ -141,6 +141,7 @@ def SendResults(data, data_label, url, send_as_histograms=False,
 
 def MakeHistogramSetWithDiagnostics(histograms_file,
                                     test_name, bot, buildername, buildnumber,
+                                    project, buildbucket,
                                     revisions_dict, is_reference_build,
                                     perf_dashboard_machine_group):
   add_diagnostics_args = []
@@ -152,10 +153,16 @@ def MakeHistogramSetWithDiagnostics(histograms_file,
       '--is_reference_build', 'true' if is_reference_build else '',
   ])
 
-  url = _MakeStdioUrl(test_name, buildername, buildnumber)
-  if url:
+  stdio_url = _MakeStdioUrl(test_name, buildername, buildnumber)
+  if stdio_url:
     add_diagnostics_args.extend(['--log_urls_k', 'Buildbot stdio'])
-    add_diagnostics_args.extend(['--log_urls_v', url])
+    add_diagnostics_args.extend(['--log_urls_v', stdio_url])
+
+  build_status_url = _MakeBuildStatusUrl(
+      project, buildbucket, buildername, buildnumber)
+  if build_status_url:
+    add_diagnostics_args.extend(['--build_urls_k', 'Build Status'])
+    add_diagnostics_args.extend(['--build_urls_v', build_status_url])
 
   for k, v in revisions_dict.iteritems():
     add_diagnostics_args.extend((k, v))
@@ -317,6 +324,18 @@ def _MakeStdioUrl(test_name, buildername, buildnumber):
       urllib.quote(buildername),
       urllib.quote(str(buildnumber)),
       urllib.quote(test_name))
+
+
+def _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber):
+  # Note: this construction only works for LUCI but it's ok because we are
+  # converting all perf bots to LUCI (crbug.com/803137).
+  if not (project and buildbucket and buildnumber and buildnumber):
+    return None
+  return 'https://ci.chromium.org/p/%s/builders/%s/%s/%s' % (
+      urllib.quote(project),
+      urllib.quote(buildbucket),
+      urllib.quote(buildername),
+      urllib.quote(str(buildnumber)))
 
 
 def _GetStdioUriColumn(test_name, buildername, buildnumber):

@@ -247,9 +247,6 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
     settings = all_settings_dictionary;
   }
 
-  size_t cookies_block_exception_count = 0;
-  size_t cookies_allow_exception_count = 0;
-  size_t cookies_session_only_exception_count = 0;
   for (base::DictionaryValue::Iterator i(*settings); !i.IsAtEnd();
        i.Advance()) {
     const std::string& pattern_str(i.key());
@@ -299,35 +296,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
       value_map_.SetValue(pattern_pair.first, pattern_pair.second,
                           content_type_, ResourceIdentifier(), last_modified,
                           value->DeepCopy());
-      if (content_type_ == CONTENT_SETTINGS_TYPE_COOKIES) {
-        ContentSetting s = ValueToContentSetting(value);
-        switch (s) {
-          case CONTENT_SETTING_ALLOW :
-            ++cookies_allow_exception_count;
-            break;
-          case CONTENT_SETTING_BLOCK :
-            ++cookies_block_exception_count;
-            break;
-          case CONTENT_SETTING_SESSION_ONLY :
-            ++cookies_session_only_exception_count;
-            break;
-          default:
-            NOTREACHED();
-            break;
-        }
-      }
     }
-
-  }
-
-  if (content_type_ == CONTENT_SETTINGS_TYPE_COOKIES) {
-    UMA_HISTOGRAM_COUNTS_1M("ContentSettings.NumberOfBlockCookiesExceptions",
-                            cookies_block_exception_count);
-    UMA_HISTOGRAM_COUNTS_1M("ContentSettings.NumberOfAllowCookiesExceptions",
-                            cookies_allow_exception_count);
-    UMA_HISTOGRAM_COUNTS_1M(
-        "ContentSettings.NumberOfSessionOnlyCookiesExceptions",
-        cookies_session_only_exception_count);
   }
 }
 

@@ -144,7 +144,7 @@ void XMLErrors::InsertErrorMessageBlock() {
     root_element->ParserAppendChild(body);
     document_->ParserAppendChild(root_element);
     document_element = body;
-  } else if (document_element->namespaceURI() == SVGNames::svgNamespaceURI) {
+  } else if (document_element->namespaceURI() == svg_names::kNamespaceURI) {
     Element* root_element = document_->CreateRawElement(htmlTag, flags);
     Element* head = document_->CreateRawElement(headTag, flags);
     Element* style = document_->CreateRawElement(styleTag, flags);

@@ -11,10 +11,13 @@
 namespace ppapi {
 
 #if defined(OS_WIN)
+const char kCorbTestPluginName[] = "corb_test_plugin.dll";
 const char kPowerSaverTestPluginName[] = "power_saver_test_plugin.dll";
 #elif defined(OS_MACOSX)
+const char kCorbTestPluginName[] = "corb_test_plugin.plugin";
 const char kPowerSaverTestPluginName[] = "power_saver_test_plugin.plugin";
 #elif defined(OS_POSIX)
+const char kCorbTestPluginName[] = "libcorb_test_plugin.so";
 const char kPowerSaverTestPluginName[] = "libpower_saver_test_plugin.so";
 #endif
 

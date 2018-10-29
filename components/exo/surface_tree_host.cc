@@ -108,10 +108,11 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
   if (root_surface == root_surface_)
     return;
 
-  // This method applies multiple changes to the window tree. Use
-  // ScopedPauseOcclusionTracking to ensure that occlusion isn't recomputed
-  // before all changes have been applied.
-  aura::WindowOcclusionTracker::ScopedPauseOcclusionTracking pause_occlusion;
+  // This method applies multiple changes to the window tree. Use ScopedPause to
+  // ensure that occlusion isn't recomputed before all changes have been
+  // applied.
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion(
+      host_window_->env());
 
   if (root_surface_) {
     root_surface_->window()->Hide();
@@ -266,10 +267,11 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
 // SurfaceTreeHost, private:
 
 void SurfaceTreeHost::UpdateHostWindowBounds() {
-  // This method applies multiple changes to the window tree. Use
-  // ScopedPauseOcclusionTracking to ensure that occlusion isn't recomputed
-  // before all changes have been applied.
-  aura::WindowOcclusionTracker::ScopedPauseOcclusionTracking pause_occlusion;
+  // This method applies multiple changes to the window tree. Use ScopedPause
+  // to ensure that occlusion isn't recomputed before all changes have been
+  // applied.
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion(
+      host_window_->env());
 
   gfx::Rect bounds = root_surface_->surface_hierarchy_content_bounds();
   host_window_->SetBounds(

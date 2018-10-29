@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_REQUEST_H_
 #define CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_REQUEST_H_
 
+#include <cstdint>
+#include <string>
+
 #include "ppapi/cpp/var_array_buffer.h"
 #include "ppapi/cpp/var_dictionary.h"
 
@@ -43,8 +46,8 @@ const char kEntryId[] = "entry_id";                    // Should be an int.
 const char kPathname[] = "pathname";                   // Should be a string.
 const char kFileSize[] = "file_size";                  // Should be a string.
 const char kIsDirectory[] = "is_directory";            // Should be a bool.
-const char kModificationTime[] = "modification_time";  // Should be a string
-                                                       // (mm/dd/yy h:m:s).
+// Local time in milliseconds since UNIX epoch, as a string.
+const char kModificationTime[] = "modification_time";
 const char kHasError[] = "has_error";                  // Should be a bool.
 
 // Optional keys used for both packing and unpacking operations.

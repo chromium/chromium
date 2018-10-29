@@ -1,11 +1,13 @@
 This tests that double-clicking a word that follows newline and span
 
 cases for white-space: pre
+
 Note: Here for pre, we change width value to 200 to prevent layout change on contentEditable enabled.
 
 cases for white-space: pre-wrap
 cases for white-space: pre-line
 cases for white-space: nowrap
+
 Note: Although following cases have no line-breaks that had caused problem reported bug28036, we add these for comprehensiveness.
 
 Passed totest_minimum

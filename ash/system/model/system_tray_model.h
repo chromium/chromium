@@ -18,6 +18,7 @@ class EnterpriseDomainModel;
 class SessionLengthLimitModel;
 class TracingModel;
 class UpdateModel;
+class VirtualKeyboardModel;
 
 // Top level model of SystemTray.
 class SystemTrayModel : public mojom::SystemTray {
@@ -56,6 +57,7 @@ class SystemTrayModel : public mojom::SystemTray {
   }
   TracingModel* tracing() { return tracing_.get(); }
   UpdateModel* update_model() { return update_model_.get(); }
+  VirtualKeyboardModel* virtual_keyboard() { return virtual_keyboard_.get(); }
 
   const mojom::SystemTrayClientPtr& client_ptr() { return client_ptr_; }
 
@@ -65,6 +67,7 @@ class SystemTrayModel : public mojom::SystemTray {
   std::unique_ptr<SessionLengthLimitModel> session_length_limit_;
   std::unique_ptr<TracingModel> tracing_;
   std::unique_ptr<UpdateModel> update_model_;
+  std::unique_ptr<VirtualKeyboardModel> virtual_keyboard_;
 
   // TODO(tetsui): Add following as a sub-model of SystemTrayModel:
   // * BluetoothModel

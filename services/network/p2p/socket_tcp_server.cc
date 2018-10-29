@@ -32,20 +32,13 @@ P2PSocketTcpServer::P2PSocketTcpServer(Delegate* delegate,
       accept_callback_(base::BindRepeating(&P2PSocketTcpServer::OnAccepted,
                                            base::Unretained(this))) {}
 
-P2PSocketTcpServer::~P2PSocketTcpServer() {
-  if (state_ == STATE_OPEN) {
-    DCHECK(socket_.get());
-    socket_.reset();
-  }
-}
+P2PSocketTcpServer::~P2PSocketTcpServer() = default;
 
 // TODO(guidou): Add support for port range.
 void P2PSocketTcpServer::Init(const net::IPEndPoint& local_address,
                               uint16_t min_port,
                               uint16_t max_port,
                               const P2PHostAndIPEndPoint& remote_address) {
-  DCHECK_EQ(state_, STATE_UNINITIALIZED);
-
   int result = socket_->Listen(local_address, kListenBacklog);
   if (result < 0) {
     LOG(ERROR) << "Listen() failed: " << result;
@@ -62,7 +55,6 @@ void P2PSocketTcpServer::Init(const net::IPEndPoint& local_address,
   }
   VLOG(1) << "Local address: " << local_address_.ToString();
 
-  state_ = STATE_OPEN;
   // NOTE: Remote address can be empty as socket is just listening
   // in this state.
   client_->SocketCreated(local_address_, remote_address.ip_address);

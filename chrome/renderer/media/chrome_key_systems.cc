@@ -23,7 +23,7 @@
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_properties.h"
 #include "media/media_buildflags.h"
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "third_party/widevine/cdm/buildflags.h"
 
 #if defined(OS_ANDROID)
 #include "components/cdm/renderer/android_key_systems.h"
@@ -34,16 +34,18 @@
 #include "content/public/renderer/key_system_support.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
-#endif
-
+#if BUILDFLAG(ENABLE_WIDEVINE)
+#include "third_party/widevine/cdm/widevine_cdm_common.h"
+// TODO(crbug.com/663554): Needed for WIDEVINE_CDM_MIN_GLIBC_VERSION.
+// component updated CDM on all desktop platforms and remove this.
 #include "widevine_cdm_version.h" // In SHARED_INTERMEDIATE_DIR.
-
 // The following must be after widevine_cdm_version.h.
-
-#if defined(WIDEVINE_CDM_AVAILABLE) && defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
+#if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
 #include <gnu/libc-version.h>
 #include "base/version.h"
-#endif
+#endif  // defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 using media::EmeFeatureSupport;
 using media::EmeSessionTypeSupport;
@@ -139,9 +141,10 @@ static void AddExternalClearKey(
       new cdm::ExternalClearKeyProperties(kExternalClearKeyCdmProxyKeySystem));
 }
 
-#if defined(WIDEVINE_CDM_AVAILABLE)
+#if BUILDFLAG(ENABLE_WIDEVINE)
 static SupportedCodecs GetSupportedCodecs(
     const std::vector<media::VideoCodec>& supported_video_codecs,
+    bool supports_vp9_profile2,
     bool is_secure) {
   SupportedCodecs supported_codecs = media::EME_CODEC_NONE;
 
@@ -152,11 +155,11 @@ static SupportedCodecs GetSupportedCodecs(
   // TODO(sandersd): Distinguish these from those that are directly supported,
   // as those may offer a higher level of protection.
   if (!supported_video_codecs.empty() || !is_secure) {
-    supported_codecs |= media::EME_CODEC_WEBM_OPUS;
-    supported_codecs |= media::EME_CODEC_WEBM_VORBIS;
-    supported_codecs |= media::EME_CODEC_MP4_FLAC;
+    supported_codecs |= media::EME_CODEC_OPUS;
+    supported_codecs |= media::EME_CODEC_VORBIS;
+    supported_codecs |= media::EME_CODEC_FLAC;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    supported_codecs |= media::EME_CODEC_MP4_AAC;
+    supported_codecs |= media::EME_CODEC_AAC;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   }
 
@@ -164,15 +167,19 @@ static SupportedCodecs GetSupportedCodecs(
   for (const auto& codec : supported_video_codecs) {
     switch (codec) {
       case media::VideoCodec::kCodecVP8:
-        supported_codecs |= media::EME_CODEC_WEBM_VP8;
+        supported_codecs |= media::EME_CODEC_VP8;
         break;
       case media::VideoCodec::kCodecVP9:
-        supported_codecs |= media::EME_CODEC_WEBM_VP9;
-        supported_codecs |= media::EME_CODEC_COMMON_VP9;
+        supported_codecs |= media::EME_CODEC_VP9_PROFILE0;
+        if (supports_vp9_profile2)
+          supported_codecs |= media::EME_CODEC_VP9_PROFILE2;
+        break;
+      case media::VideoCodec::kCodecAV1:
+        supported_codecs |= media::EME_CODEC_AV1;
         break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
       case media::VideoCodec::kCodecH264:
-        supported_codecs |= media::EME_CODEC_MP4_AVC1;
+        supported_codecs |= media::EME_CODEC_AVC1;
         break;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
       default:
@@ -246,10 +253,13 @@ static void AddWidevine(
   }
 
   // Codecs and encryption schemes.
-  auto codecs =
-      GetSupportedCodecs(capability->video_codecs, /*is_secure=*/false);
+  auto codecs = GetSupportedCodecs(capability->video_codecs,
+                                   capability->supports_vp9_profile2,
+                                   /*is_secure=*/false);
   const auto& encryption_schemes = capability->encryption_schemes;
+  // TODO(xhwang): Investigate whether hardware VP9 profile 2 is supported.
   auto hw_secure_codecs = GetSupportedCodecs(capability->hw_secure_video_codecs,
+                                             /*supports_vp9_profile2=*/false,
                                              /*is_secure=*/true);
   const auto& hw_secure_encryption_schemes =
       capability->hw_secure_encryption_schemes;
@@ -304,7 +314,7 @@ static void AddWidevine(
       persistent_license_support, persistent_usage_record_support,
       persistent_state_support, distinctive_identifier_support));
 }
-#endif  // defined(WIDEVINE_CDM_AVAILABLE)
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 void AddChromeKeySystems(
@@ -313,9 +323,9 @@ void AddChromeKeySystems(
   if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting))
     AddExternalClearKey(key_systems_properties);
 
-#if defined(WIDEVINE_CDM_AVAILABLE)
+#if BUILDFLAG(ENABLE_WIDEVINE)
   AddWidevine(key_systems_properties);
-#endif  // defined(WIDEVINE_CDM_AVAILABLE)
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

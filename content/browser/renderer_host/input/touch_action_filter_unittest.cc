@@ -29,6 +29,7 @@ class TouchActionFilterTest : public testing::Test {
   base::Optional<cc::TouchAction> ScrollingTouchAction() const {
     return filter_.scrolling_touch_action_;
   }
+  void ResetTouchAction() { filter_.ResetTouchAction(); }
   void PanTest(cc::TouchAction action,
                float scroll_x,
                float scroll_y,
@@ -43,7 +44,7 @@ class TouchActionFilterTest : public testing::Test {
 
     {
       // Scrolls with no direction hint are permitted in the |action| direction.
-      filter_.ResetTouchAction();
+      ResetTouchAction();
       filter_.OnSetTouchAction(action);
       filter_.IncreaseActiveTouches();
 
@@ -70,7 +71,7 @@ class TouchActionFilterTest : public testing::Test {
 
     {
       // Scrolls biased towards the touch-action axis are permitted.
-      filter_.ResetTouchAction();
+      ResetTouchAction();
       filter_.OnSetTouchAction(action);
       filter_.IncreaseActiveTouches();
       WebGestureEvent scroll_begin =
@@ -109,7 +110,7 @@ class TouchActionFilterTest : public testing::Test {
     {
       // Scrolls biased towards the perpendicular of the touch-action axis are
       // suppressed entirely.
-      filter_.ResetTouchAction();
+      ResetTouchAction();
       filter_.OnSetTouchAction(action);
       filter_.IncreaseActiveTouches();
       WebGestureEvent scroll_begin =
@@ -144,7 +145,7 @@ class TouchActionFilterTest : public testing::Test {
 
     {
       // Scrolls towards the touch-action direction are permitted.
-      filter_.ResetTouchAction();
+      ResetTouchAction();
       filter_.OnSetTouchAction(action);
       filter_.IncreaseActiveTouches();
       WebGestureEvent scroll_begin =
@@ -168,7 +169,7 @@ class TouchActionFilterTest : public testing::Test {
     {
       // Scrolls towards the exact opposite of the touch-action direction are
       // suppressed entirely.
-      filter_.ResetTouchAction();
+      ResetTouchAction();
       filter_.OnSetTouchAction(action);
       filter_.IncreaseActiveTouches();
       WebGestureEvent scroll_begin =
@@ -192,7 +193,7 @@ class TouchActionFilterTest : public testing::Test {
     {
       // Scrolls towards the diagonal opposite of the touch-action direction are
       // suppressed entirely.
-      filter_.ResetTouchAction();
+      ResetTouchAction();
       filter_.OnSetTouchAction(action);
       filter_.IncreaseActiveTouches();
       WebGestureEvent scroll_begin =
@@ -230,7 +231,7 @@ TEST_F(TouchActionFilterTest, SimpleFilter) {
       WebInputEvent::kGestureScrollEnd, kSourceDevice);
 
   // cc::kTouchActionAuto doesn't cause any filtering.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -246,7 +247,7 @@ TEST_F(TouchActionFilterTest, SimpleFilter) {
   filter_.DecreaseActiveTouches();
 
   // cc::kTouchActionNone filters out all scroll events, but no other events.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionNone);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -264,7 +265,7 @@ TEST_F(TouchActionFilterTest, SimpleFilter) {
   filter_.DecreaseActiveTouches();
 
   // When a new touch sequence begins, the state is reset.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -278,7 +279,7 @@ TEST_F(TouchActionFilterTest, SimpleFilter) {
   filter_.DecreaseActiveTouches();
 
   // Setting touch action doesn't impact any in-progress gestures.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -293,7 +294,7 @@ TEST_F(TouchActionFilterTest, SimpleFilter) {
   filter_.DecreaseActiveTouches();
 
   // And the state is still cleared for the next gesture.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -305,7 +306,7 @@ TEST_F(TouchActionFilterTest, SimpleFilter) {
   filter_.DecreaseActiveTouches();
 
   // Changing the touch action during a gesture has no effect.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionNone);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -392,7 +393,7 @@ TEST_F(TouchActionFilterTest, PanXY) {
 
   {
     // Scrolls hinted in the X axis are permitted and unmodified.
-    filter_.ResetTouchAction();
+    ResetTouchAction();
     filter_.OnSetTouchAction(cc::kTouchActionPan);
     filter_.IncreaseActiveTouches();
     WebGestureEvent scroll_begin =
@@ -417,7 +418,7 @@ TEST_F(TouchActionFilterTest, PanXY) {
 
   {
     // Scrolls hinted in the Y axis are permitted and unmodified.
-    filter_.ResetTouchAction();
+    ResetTouchAction();
     filter_.OnSetTouchAction(cc::kTouchActionPan);
     filter_.IncreaseActiveTouches();
     WebGestureEvent scroll_begin =
@@ -442,7 +443,7 @@ TEST_F(TouchActionFilterTest, PanXY) {
 
   {
     // A two-finger gesture is not allowed.
-    filter_.ResetTouchAction();
+    ResetTouchAction();
     filter_.OnSetTouchAction(cc::kTouchActionPan);
     filter_.IncreaseActiveTouches();
     WebGestureEvent scroll_begin =
@@ -493,7 +494,7 @@ TEST_F(TouchActionFilterTest, MultiTouch) {
       WebInputEvent::kGestureScrollEnd, kSourceDevice);
 
   // For multiple points, the intersection is what matters.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionNone);
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   filter_.IncreaseActiveTouches();
@@ -512,7 +513,7 @@ TEST_F(TouchActionFilterTest, MultiTouch) {
   filter_.DecreaseActiveTouches();
 
   // Intersection of PAN_X and PAN_Y is NONE.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionPanX);
   filter_.OnSetTouchAction(cc::kTouchActionPanY);
   filter_.OnSetTouchAction(cc::kTouchActionPan);
@@ -778,7 +779,7 @@ TEST_F(TouchActionFilterTest, DoubleTapWithTouchActionAuto) {
       WebInputEvent::kGestureDoubleTap, kSourceDevice);
 
   // Double tap is allowed with touch action auto.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
             FilterGestureEventResult::kFilterGestureEventAllowed);
@@ -786,7 +787,7 @@ TEST_F(TouchActionFilterTest, DoubleTapWithTouchActionAuto) {
             FilterGestureEventResult::kFilterGestureEventAllowed);
   EXPECT_EQ(unconfirmed_tap.GetType(), WebInputEvent::kGestureTapUnconfirmed);
   // The tap cancel will come as part of the next touch sequence.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   // Changing the touch action for the second tap doesn't effect the behaviour
   // of the event.
   filter_.OnSetTouchAction(cc::kTouchActionNone);
@@ -809,7 +810,7 @@ TEST_F(TouchActionFilterTest, DoubleTap) {
       WebInputEvent::kGestureDoubleTap, kSourceDevice);
 
   // Double tap is disabled with any touch action other than auto.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionManipulation);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -819,7 +820,7 @@ TEST_F(TouchActionFilterTest, DoubleTap) {
   EXPECT_EQ(WebInputEvent::kGestureTap, unconfirmed_tap.GetType());
   // Changing the touch action for the second tap doesn't effect the behaviour
   // of the event. The tap cancel will come as part of the next touch sequence.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_cancel),
             FilterGestureEventResult::kFilterGestureEventFiltered);
@@ -828,6 +829,7 @@ TEST_F(TouchActionFilterTest, DoubleTap) {
   EXPECT_EQ(filter_.FilterGestureEvent(&double_tap),
             FilterGestureEventResult::kFilterGestureEventAllowed);
   EXPECT_EQ(WebInputEvent::kGestureTap, double_tap.GetType());
+  EXPECT_EQ(2, double_tap.data.tap.tap_count);
   filter_.DecreaseActiveTouches();
 }
 
@@ -840,7 +842,7 @@ TEST_F(TouchActionFilterTest, SingleTapWithTouchActionAuto) {
       WebInputEvent::kGestureTap, kSourceDevice);
 
   // Single tap is allowed with touch action auto.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
             FilterGestureEventResult::kFilterGestureEventAllowed);
@@ -860,7 +862,7 @@ TEST_F(TouchActionFilterTest, SingleTap) {
       WebInputEvent::kGestureTap, kSourceDevice);
 
   // With touch action other than auto, tap unconfirmed is turned into tap.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionNone);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -883,7 +885,7 @@ TEST_F(TouchActionFilterTest, TouchActionResetsOnResetTouchAction) {
   WebGestureEvent scroll_end = SyntheticWebGestureEventBuilder::Build(
       WebInputEvent::kGestureScrollEnd, kSourceDevice);
 
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionNone);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -894,7 +896,7 @@ TEST_F(TouchActionFilterTest, TouchActionResetsOnResetTouchAction) {
             FilterGestureEventResult::kFilterGestureEventFiltered);
   filter_.DecreaseActiveTouches();
 
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionNone);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -903,7 +905,7 @@ TEST_F(TouchActionFilterTest, TouchActionResetsOnResetTouchAction) {
             FilterGestureEventResult::kFilterGestureEventAllowed);
   filter_.DecreaseActiveTouches();
 
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   filter_.IncreaseActiveTouches();
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -942,7 +944,7 @@ TEST_F(TouchActionFilterTest, TouchActionResetMidSequence) {
 
   // Even though the allowed action is auto after the reset, the remaining
   // scroll and pinch events should be suppressed.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   EXPECT_EQ(filter_.FilterGestureEvent(&pinch_update),
             FilterGestureEventResult::kFilterGestureEventFiltered);
@@ -963,7 +965,7 @@ TEST_F(TouchActionFilterTest, TouchActionResetMidSequence) {
             FilterGestureEventResult::kFilterGestureEventAllowed);
 
   // Resetting from auto to auto mid-stream should have no effect.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionAuto);
   EXPECT_EQ(filter_.FilterGestureEvent(&pinch_update),
             FilterGestureEventResult::kFilterGestureEventAllowed);
@@ -1038,7 +1040,7 @@ TEST_F(TouchActionFilterTest, OnHasTouchEventHandlersReceivedDuringTap) {
             FilterGestureEventResult::kFilterGestureEventAllowed);
   // Gesture tap indicates that there is no scroll in progress, so this should
   // reset the |allowed_touch_action_|.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   EXPECT_FALSE(filter_.allowed_touch_action().has_value());
 }
 
@@ -1197,7 +1199,7 @@ TEST_F(TouchActionFilterTest, GestureArrivesBeforeHasHandlerSet) {
 
 TEST_F(TouchActionFilterTest, ResetBeforeHasHandlerSet) {
   // This should not crash, and should set touch action to auto.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   WebGestureEvent tap_down = SyntheticWebGestureEventBuilder::Build(
       WebInputEvent::kGestureTapDown, kSourceDevice);
   EXPECT_EQ(filter_.FilterGestureEvent(&tap_down),
@@ -1253,7 +1255,7 @@ TEST_F(TouchActionFilterTest, TouchpadScroll) {
           2, 3, blink::kWebGestureDeviceTouchpad);
 
   // cc::kTouchActionNone filters out only touchscreen scroll events.
-  filter_.ResetTouchAction();
+  ResetTouchAction();
   filter_.OnSetTouchAction(cc::kTouchActionNone);
   EXPECT_EQ(filter_.FilterGestureEvent(&scroll_begin),
             FilterGestureEventResult::kFilterGestureEventAllowed);

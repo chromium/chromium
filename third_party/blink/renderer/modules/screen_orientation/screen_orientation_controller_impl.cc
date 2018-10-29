@@ -168,9 +168,9 @@ void ScreenOrientationControllerImpl::NotifyOrientationChanged() {
     dispatch_event_timer_.StartOneShot(TimeDelta(), FROM_HERE);
 
   // ... and child frames, if they have a ScreenOrientationControllerImpl.
-  for (size_t i = 0; i < child_frames.size(); ++i) {
+  for (LocalFrame* child_frame : child_frames) {
     if (ScreenOrientationControllerImpl* controller =
-            ScreenOrientationControllerImpl::From(*child_frames[i])) {
+            ScreenOrientationControllerImpl::From(*child_frame)) {
       controller->NotifyOrientationChanged();
     }
   }

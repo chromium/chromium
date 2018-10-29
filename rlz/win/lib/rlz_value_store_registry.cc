@@ -254,6 +254,11 @@ bool RlzValueStoreRegistry::ClearAccessPointRlz(AccessPoint access_point) {
   return true;
 }
 
+bool RlzValueStoreRegistry::UpdateExistingAccessPointRlz(
+    const std::string& brand) {
+  return false;
+}
+
 bool RlzValueStoreRegistry::AddProductEvent(Product product,
                                             const char* event_rlz) {
   base::string16 event_rlz16(ASCIIToUTF16(event_rlz));

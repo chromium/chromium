@@ -78,9 +78,9 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   // same => we should be able to cache a single display list per
   // LayoutSVGResourcePattern + one Pattern(shader) for each client -- this
   // would avoid re-recording when multiple clients share the same pattern.
-  using PatternMap = PersistentHeapHashMap<Member<const SVGResourceClient>,
-                                           std::unique_ptr<PatternData>>;
-  PatternMap pattern_map_;
+  using PatternMap = HeapHashMap<Member<const SVGResourceClient>,
+                                 std::unique_ptr<PatternData>>;
+  Persistent<PatternMap> pattern_map_;
 };
 
 }  // namespace blink

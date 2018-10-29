@@ -1,0 +1,10 @@
+{
+  "name": "My extension with an invisible icon",
+  "version": "1.0",
+  "browser_action": {
+    "default_icon": {
+      "16": "invisible_icon.png"
+    }
+  },
+  "manifest_version": 2
+}

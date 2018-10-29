@@ -62,6 +62,8 @@ class ChromeDataUseAscriberTest : public testing::Test {
 
   void CreateAscriber() {
     ascriber_ = std::make_unique<ChromeDataUseAscriber>();
+    // Enable ascriber for tests.
+    ascriber_->disable_ascriber_ = false;
   }
 
   std::list<ChromeDataUseRecorder>& recorders() {

@@ -22,6 +22,7 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/blink/web_input_event_traits.h"
+#include "url/ipc/url_param_traits.h"
 // #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 
 namespace IPC {
@@ -148,7 +149,7 @@ void ParamTraits<scoped_refptr<storage::BlobHandle>>::Log(const param_type& p,
 void ParamTraits<content::FrameMsg_ViewChanged_Params>::Write(
     base::Pickle* m,
     const param_type& p) {
-  DCHECK(features::IsUsingWindowService() ||
+  DCHECK(features::IsMultiProcessMash() ||
          (p.frame_sink_id.has_value() && p.frame_sink_id->is_valid()));
   WriteParam(m, p.frame_sink_id);
 }
@@ -159,7 +160,7 @@ bool ParamTraits<content::FrameMsg_ViewChanged_Params>::Read(
     param_type* r) {
   if (!ReadParam(m, iter, &(r->frame_sink_id)))
     return false;
-  if (!features::IsUsingWindowService() &&
+  if (!features::IsMultiProcessMash() &&
       (!r->frame_sink_id || !r->frame_sink_id->is_valid())) {
     NOTREACHED();
     return false;
@@ -395,6 +396,78 @@ void ParamTraits<viz::SurfaceInfo>::Log(const param_type& p, std::string* l) {
   l->append(", ");
   LogParam(p.size_in_pixels(), l);
   l->append(")");
+}
+
+void ParamTraits<blink::mojom::FileChooserFileInfoPtr>::Write(
+    base::Pickle* m,
+    const param_type& p) {
+  WriteParam(m, p->is_native_file());
+  if (p->is_native_file()) {
+    WriteParam(m, p->get_native_file()->file_path);
+    WriteParam(m, p->get_native_file()->display_name);
+  } else {
+    WriteParam(m, p->get_file_system()->url);
+    WriteParam(m, p->get_file_system()->modification_time);
+    WriteParam(m, p->get_file_system()->length);
+  }
+}
+
+bool ParamTraits<blink::mojom::FileChooserFileInfoPtr>::Read(
+    const base::Pickle* m,
+    base::PickleIterator* iter,
+    param_type* p) {
+  bool is_native;
+  if (!ReadParam(m, iter, &is_native))
+    return false;
+
+  if (is_native) {
+    base::FilePath file_path;
+    if (!ReadParam(m, iter, &file_path))
+      return false;
+
+    base::string16 display_name;
+    if (!ReadParam(m, iter, &display_name))
+      return false;
+
+    *p = blink::mojom::FileChooserFileInfo::NewNativeFile(
+        blink::mojom::NativeFileInfo::New(file_path, display_name));
+  } else {
+    GURL file_system_url;
+    if (!ReadParam(m, iter, &file_system_url))
+      return false;
+
+    base::Time modification_time;
+    if (!ReadParam(m, iter, &modification_time))
+      return false;
+
+    int64_t length;
+    if (!ReadParam(m, iter, &length))
+      return false;
+
+    *p = blink::mojom::FileChooserFileInfo::NewFileSystem(
+        blink::mojom::FileSystemFileInfo::New(file_system_url,
+                                              modification_time, length));
+  }
+  return true;
+}
+
+void ParamTraits<blink::mojom::FileChooserFileInfoPtr>::Log(const param_type& p,
+                                                            std::string* l) {
+  l->append("blink::mojom::FileChooserFileInfo(");
+  if (p->is_native_file()) {
+    l->append("NativeFileInfo(");
+    LogParam(p->get_native_file()->file_path, l);
+    l->append(", ");
+    LogParam(p->get_native_file()->display_name, l);
+  } else {
+    l->append("FileSystemFileInfo(");
+    LogParam(p->get_file_system()->url, l);
+    l->append(", ");
+    LogParam(p->get_file_system()->modification_time, l);
+    l->append(", ");
+    LogParam(p->get_file_system()->length, l);
+  }
+  l->append("))");
 }
 
 }  // namespace IPC

@@ -16,7 +16,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
@@ -59,8 +61,8 @@ void OnResume(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
 void OnResponseSentOnServerIOThread(
     const TestDownloadHttpResponse::OnResponseSentCallback& callback,
     std::unique_ptr<TestDownloadHttpResponse::CompletedRequest> request) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, std::move(request)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, std::move(request)));
 }
 
 // The shim response object used by embedded_test_server. After this object is
@@ -264,11 +266,12 @@ void TestDownloadHttpResponse::SendResponse(
       parameters_.injected_errors.front() <= range_.last_byte_position() &&
       parameters_.injected_errors.front() >= range_.first_byte_position() &&
       !parameters_.inject_error_cb.is_null()) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(parameters_.inject_error_cb,
-                                           range_.first_byte_position(),
-                                           parameters_.injected_errors.front() -
-                                               range_.first_byte_position()));
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
+        base::BindOnce(parameters_.inject_error_cb,
+                       range_.first_byte_position(),
+                       parameters_.injected_errors.front() -
+                           range_.first_byte_position()));
   }
 
   // Pause before sending headers.
@@ -539,8 +542,8 @@ void TestDownloadHttpResponse::PauseResponsesAndWaitForResumption() {
 
   // Continue to send data after resumption.
   // TODO(xingliu): Unwind thread hopping callbacks here.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           pause_callback,
           base::BindRepeating(&OnResume, base::ThreadTaskRunnerHandle::Get(),

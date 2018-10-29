@@ -6,7 +6,7 @@
 // Regression tests for crbug.com/713607.
 
 test(() => {
-  assert_exists(window, 'eventSender', 'This test requires eventSender');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
 
   assert_selection(
   [
@@ -26,7 +26,7 @@ test(() => {
 }, 'Press left arrow key with unfocused selection in text control');
 
 test(() => {
-  assert_exists(window, 'eventSender', 'This test requires eventSender');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
 
   assert_selection(
   [

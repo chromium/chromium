@@ -5,13 +5,14 @@
 module ax.mojom;
 
 import "ui/accessibility/ax_enums.mojom";
+import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
 
 // A compact representation of an accessibility action and the arguments
 // associated with that action. See ui::AXActionData for full documentation.
 struct AXActionData {
   Action action;
-  int32 target_tree_id;
+  ax.mojom.AXTreeID target_tree_id;
   string source_extension_id;
   int32 target_node_id;
   int32 request_id;

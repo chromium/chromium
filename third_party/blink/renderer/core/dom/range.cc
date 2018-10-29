@@ -603,9 +603,8 @@ DocumentFragment* Range::ProcessContents(ActionType action,
   // delete all children of commonRoot between the start and end container
   Node* process_start = ChildOfCommonRootBeforeOffset(
       &original_start.Container(), original_start.Offset(), common_root);
-  if (process_start &&
-      original_start.Container() !=
-          common_root)  // processStart contains nodes before m_start.
+  // process_start contains nodes before start_.
+  if (process_start && original_start.Container() != common_root)
     process_start = process_start->nextSibling();
   Node* process_end = ChildOfCommonRootBeforeOffset(
       &original_end.Container(), original_end.Offset(), common_root);
@@ -1436,10 +1435,31 @@ static inline void BoundaryNodeChildrenWillBeRemoved(
   }
 }
 
+static void BoundaryShadowNodeChildrenWillBeRemoved(
+    RangeBoundaryPoint& boundary,
+    ContainerNode& container) {
+  for (Node* node_to_be_removed = container.firstChild(); node_to_be_removed;
+       node_to_be_removed = node_to_be_removed->nextSibling()) {
+    for (Node* n = &boundary.Container(); n;
+         n = n->ParentOrShadowHostElement()) {
+      if (n == node_to_be_removed) {
+        boundary.SetToStartOfNode(container);
+        return;
+      }
+    }
+  }
+}
+
 void Range::NodeChildrenWillBeRemoved(ContainerNode& container) {
   DCHECK_EQ(container.GetDocument(), owner_document_);
   BoundaryNodeChildrenWillBeRemoved(start_, container);
   BoundaryNodeChildrenWillBeRemoved(end_, container);
+}
+
+void Range::FixupRemovedChildrenAcrossShadowBoundary(ContainerNode& container) {
+  DCHECK_EQ(container.GetDocument(), owner_document_);
+  BoundaryShadowNodeChildrenWillBeRemoved(start_, container);
+  BoundaryShadowNodeChildrenWillBeRemoved(end_, container);
 }
 
 static inline void BoundaryNodeWillBeRemoved(RangeBoundaryPoint& boundary,
@@ -1457,6 +1477,19 @@ static inline void BoundaryNodeWillBeRemoved(RangeBoundaryPoint& boundary,
   }
 }
 
+static inline void BoundaryShadowNodeWillBeRemoved(RangeBoundaryPoint& boundary,
+                                                   Node& node_to_be_removed) {
+  DCHECK_NE(boundary.ChildBefore(), node_to_be_removed);
+
+  for (Node* node = &boundary.Container(); node;
+       node = node->ParentOrShadowHostElement()) {
+    if (node == node_to_be_removed) {
+      boundary.SetToBeforeChild(node_to_be_removed);
+      return;
+    }
+  }
+}
+
 void Range::NodeWillBeRemoved(Node& node) {
   DCHECK_EQ(node.GetDocument(), owner_document_);
   DCHECK_NE(node, owner_document_.Get());
@@ -1467,6 +1500,11 @@ void Range::NodeWillBeRemoved(Node& node) {
     return;
   BoundaryNodeWillBeRemoved(start_, node);
   BoundaryNodeWillBeRemoved(end_, node);
+}
+
+void Range::FixupRemovedNodeAcrossShadowBoundary(Node& node) {
+  BoundaryShadowNodeWillBeRemoved(start_, node);
+  BoundaryShadowNodeWillBeRemoved(end_, node);
 }
 
 static inline void BoundaryTextInserted(RangeBoundaryPoint& boundary,

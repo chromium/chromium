@@ -112,45 +112,6 @@ TEST_F(DataReductionProxyParamsTest, Flags) {
   EXPECT_EQ(1U, second_info->proxy_index);
 }
 
-TEST_F(DataReductionProxyParamsTest, IsClientConfigEnabled) {
-  const struct {
-    std::string test_case;
-    std::string trial_group_value;
-    bool expected;
-  } tests[] = {
-      {
-          "Nothing set", "", true,
-      },
-      {
-          "Enabled in experiment", "Enabled", true,
-      },
-      {
-          "Alternate enabled in experiment", "Enabled_Other", true,
-      },
-      {
-          "Control in experiment", "Control", true,
-      },
-      {
-          "Disabled in experiment", "Disabled", false,
-      },
-      {
-          "Disabled in experiment", "Disabled_Other", false,
-      },
-      {
-          "disabled in experiment lower case", "disabled", true,
-      },
-  };
-
-  for (const auto& test : tests) {
-    base::FieldTrialList field_trial_list(nullptr);
-    if (!test.trial_group_value.empty()) {
-      ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
-          "DataReductionProxyConfigService", test.trial_group_value));
-    }
-    EXPECT_EQ(test.expected, params::IsConfigClientEnabled()) << test.test_case;
-  }
-}
-
 TEST_F(DataReductionProxyParamsTest, IsBrotliAcceptEncodingEnabled) {
   const struct {
     std::string test_case;
@@ -288,6 +249,7 @@ TEST_F(DataReductionProxyParamsTest, QuicFieldTrial) {
                 params::GetWarmupURL());
     }
     EXPECT_TRUE(params::FetchWarmupProbeURLEnabled());
+    EXPECT_TRUE(params::IsWarmupURLFetchCallbackEnabled());
   }
 }
 
@@ -519,48 +481,6 @@ TEST(DataReductionProxyParamsStandaloneTest, OverrideProxiesForHttp) {
       ProxyServer::UNSPECIFIED_TYPE));
 
   EXPECT_EQ(expected_override_proxies_for_http, params.proxies_for_http());
-}
-
-TEST(DataReductionProxyParamsStandaloneTest, TestMissingViaHeaderParams) {
-  EXPECT_TRUE(
-      params::ShouldBypassMissingViaHeader(true /* connection_is_cellular */));
-  EXPECT_TRUE(
-      params::ShouldBypassMissingViaHeader(false /* connection_is_cellular */));
-  std::pair<base::TimeDelta, base::TimeDelta> cell_range =
-      params::GetMissingViaHeaderBypassDurationRange(
-          true /* connection_is_cellular */);
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1), cell_range.first);
-  EXPECT_EQ(base::TimeDelta::FromMinutes(5), cell_range.second);
-  std::pair<base::TimeDelta, base::TimeDelta> wifi_range =
-      params::GetMissingViaHeaderBypassDurationRange(
-          false /* connection_is_cellular */);
-  EXPECT_EQ(base::TimeDelta::FromMinutes(1), wifi_range.first);
-  EXPECT_EQ(base::TimeDelta::FromMinutes(5), wifi_range.second);
-
-  std::map<std::string, std::string> feature_parameters = {
-      {"should_bypass_missing_via_cellular", "false"},
-      {"missing_via_min_bypass_cellular_in_seconds", "10"},
-      {"missing_via_max_bypass_cellular_in_seconds", "20"},
-      {"should_bypass_missing_via_wifi", "false"},
-      {"missing_via_min_bypass_wifi_in_seconds", "30"},
-      {"missing_via_max_bypass_wifi_in_seconds", "40"}};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kMissingViaHeaderShortDuration, feature_parameters);
-
-  EXPECT_FALSE(
-      params::ShouldBypassMissingViaHeader(true /* connection_is_cellular */));
-  EXPECT_FALSE(
-      params::ShouldBypassMissingViaHeader(false /* connection_is_cellular */));
-  cell_range = params::GetMissingViaHeaderBypassDurationRange(
-      true /* connection_is_cellular */);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(10), cell_range.first);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(20), cell_range.second);
-  wifi_range = params::GetMissingViaHeaderBypassDurationRange(
-      false /* connection_is_cellular */);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(30), wifi_range.first);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(40), wifi_range.second);
 }
 
 }  // namespace data_reduction_proxy

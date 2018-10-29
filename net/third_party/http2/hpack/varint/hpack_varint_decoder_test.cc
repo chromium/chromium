@@ -1,19 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/third_party/http2/hpack/varint/hpack_varint_decoder.h"
 
-// Tests of HpackVarintDecoder.
+// Test HpackVarintDecoder against hardcoded data.
 
 #include <stddef.h>
 
-#include <iterator>
-#include <set>
-#include <vector>
-
 #include "base/logging.h"
-#include "net/third_party/http2/hpack/tools/hpack_block_builder.h"
+#include "net/third_party/http2/platform/api/http2_arraysize.h"
 #include "net/third_party/http2/platform/api/http2_string_piece.h"
 #include "net/third_party/http2/platform/api/http2_string_utils.h"
 #include "net/third_party/http2/tools/random_decoder_test.h"
@@ -26,16 +22,72 @@ namespace http2 {
 namespace test {
 namespace {
 
-// Returns the highest value with the specified number of extension bytes
-// and the specified prefix length (bits).
-uint64_t HiValueOfExtensionBytes(uint32_t extension_bytes,
-                                 uint32_t prefix_length) {
-  return (1 << prefix_length) - 2 +
-         (extension_bytes == 0 ? 0 : (1LLU << (extension_bytes * 7)));
-}
-
-class HpackVarintDecoderTest : public RandomDecoderTest {
+class HpackVarintDecoderTest : public RandomDecoderTest,
+                               public ::testing::WithParamInterface<
+                                   ::testing::tuple<uint8_t, const char*>> {
  protected:
+  HpackVarintDecoderTest()
+      : high_bits_(::testing::get<0>(GetParam())),
+        suffix_(Http2HexDecode(::testing::get<1>(GetParam()))),
+        prefix_length_(0) {}
+
+  void DecodeExpectSuccess(Http2StringPiece data,
+                           uint32_t prefix_length,
+                           uint32_t expected_value) {
+    Validator validator = [expected_value, this](
+                              const DecodeBuffer& db,
+                              DecodeStatus status) -> AssertionResult {
+      VERIFY_EQ(expected_value, decoder_.value())
+          << "Value doesn't match expected: " << decoder_.value()
+          << " != " << expected_value;
+      return AssertionSuccess();
+    };
+
+    // First validate that decoding is done and that we've advanced the cursor
+    // the expected amount.
+    validator = ValidateDoneAndOffset(/* offset = */ data.size(), validator);
+
+    EXPECT_TRUE(Decode(data, prefix_length, validator));
+
+    EXPECT_EQ(expected_value, decoder_.value());
+  }
+
+  void DecodeExpectError(Http2StringPiece data, uint32_t prefix_length) {
+    Validator validator = [](const DecodeBuffer& db,
+                             DecodeStatus status) -> AssertionResult {
+      VERIFY_EQ(DecodeStatus::kDecodeError, status);
+      return AssertionSuccess();
+    };
+
+    EXPECT_TRUE(Decode(data, prefix_length, validator));
+  }
+
+ private:
+  AssertionResult Decode(Http2StringPiece data,
+                         uint32_t prefix_length,
+                         const Validator validator) {
+    prefix_length_ = prefix_length;
+
+    // Copy |data| so that it can be modified.
+    Http2String data_copy(data);
+
+    // Bits of the first byte not part of the prefix should be ignored.
+    uint8_t high_bits_mask = 0b11111111 << prefix_length_;
+    data_copy[0] |= (high_bits_mask & high_bits_);
+
+    // Extra bytes appended to the input should be ignored.
+    data_copy.append(suffix_);
+
+    DecodeBuffer b(data_copy);
+
+    // StartDecoding, above, requires the DecodeBuffer be non-empty so that it
+    // can call Start with the prefix byte.
+    bool return_non_zero_on_first = true;
+
+    return DecodeAndValidateSeveralWays(&b, return_non_zero_on_first,
+                                        validator);
+  }
+
   DecodeStatus StartDecoding(DecodeBuffer* b) override {
     CHECK_LT(0u, b->Remaining());
     uint8_t prefix = b->DecodeUInt8();
@@ -46,326 +98,162 @@ class HpackVarintDecoderTest : public RandomDecoderTest {
     return decoder_.Resume(b);
   }
 
-  void DecodeSeveralWays(uint32_t expected_value, uint32_t expected_offset) {
-    // The validator is called after each of the several times that the input
-    // DecodeBuffer is decoded, each with a different segmentation of the input.
-    // Validate that decoder_.value() matches the expected value.
-    Validator validator = [expected_value, this](
-                              const DecodeBuffer& db,
-                              DecodeStatus status) -> AssertionResult {
-      if (decoder_.value() != expected_value) {
-        return AssertionFailure()
-               << "Value doesn't match expected: " << decoder_.value()
-               << " != " << expected_value;
-      }
-      return AssertionSuccess();
-    };
-
-    // First validate that decoding is done and that we've advanced the cursor
-    // the expected amount.
-    validator = ValidateDoneAndOffset(expected_offset, validator);
-
-    // StartDecoding, above, requires the DecodeBuffer be non-empty so that it
-    // can call Start with the prefix byte.
-    bool return_non_zero_on_first = true;
-
-    DecodeBuffer b(buffer_);
-    EXPECT_TRUE(
-        DecodeAndValidateSeveralWays(&b, return_non_zero_on_first, validator));
-
-    EXPECT_EQ(expected_value, decoder_.value());
-    EXPECT_EQ(expected_offset, b.Offset());
-  }
-
-  void EncodeNoRandom(uint32_t value, uint8_t prefix_length) {
-    DCHECK_LE(3, prefix_length);
-    DCHECK_LE(prefix_length, 7);
-    prefix_length_ = prefix_length;
-
-    HpackBlockBuilder bb;
-    bb.AppendHighBitsAndVarint(0, prefix_length_, value);
-    buffer_ = bb.buffer();
-    ASSERT_LT(0u, buffer_.size());
-
-    const uint8_t prefix_mask = (1 << prefix_length_) - 1;
-    ASSERT_EQ(buffer_[0], buffer_[0] & prefix_mask);
-  }
-
-  void Encode(uint32_t value, uint8_t prefix_length) {
-    EncodeNoRandom(value, prefix_length);
-    // Add some random bits to the prefix (the first byte) above the mask.
-    uint8_t prefix = buffer_[0];
-    buffer_[0] = prefix | (Random().Rand8() << prefix_length);
-    const uint8_t prefix_mask = (1 << prefix_length_) - 1;
-    ASSERT_EQ(prefix, buffer_[0] & prefix_mask);
-  }
-
-  // This is really a test of HpackBlockBuilder, making sure that the input to
-  // HpackVarintDecoder is as expected, which also acts as confirmation that
-  // my thinking about the encodings being used by the tests, i.e. cover the
-  // range desired.
-  void ValidateEncoding(uint32_t value,
-                        uint32_t minimum,
-                        uint32_t maximum,
-                        size_t expected_bytes) {
-    ASSERT_EQ(expected_bytes, buffer_.size());
-    if (expected_bytes > 1) {
-      const uint8_t prefix_mask = (1 << prefix_length_) - 1;
-      EXPECT_EQ(prefix_mask, buffer_[0] & prefix_mask);
-      size_t last = expected_bytes - 1;
-      for (size_t ndx = 1; ndx < last; ++ndx) {
-        // Before the last extension byte, we expect the high-bit set.
-        uint8_t byte = buffer_[ndx];
-        if (value == minimum) {
-          EXPECT_EQ(0x80, byte) << "ndx=" << ndx;
-        } else if (value == maximum) {
-          EXPECT_EQ(0xff, byte) << "ndx=" << ndx;
-        } else {
-          EXPECT_EQ(0x80, byte & 0x80) << "ndx=" << ndx;
-        }
-      }
-      // The last extension byte should not have the high-bit set.
-      uint8_t byte = buffer_[last];
-      if (value == minimum) {
-        if (expected_bytes == 2) {
-          EXPECT_EQ(0x00, byte);
-        } else {
-          EXPECT_EQ(0x01, byte);
-        }
-      } else if (value == maximum) {
-        EXPECT_EQ(0x7f, byte);
-      } else {
-        EXPECT_EQ(0x00, byte & 0x80);
-      }
-    } else {
-      const uint8_t prefix_mask = (1 << prefix_length_) - 1;
-      EXPECT_EQ(value, static_cast<uint32_t>(buffer_[0] & prefix_mask));
-      EXPECT_LT(value, prefix_mask);
-    }
-  }
-
-  void EncodeAndDecodeValues(const std::set<uint32_t>& values,
-                             uint8_t prefix_length,
-                             size_t expected_bytes) {
-    CHECK(!values.empty());
-    const uint32_t minimum = *values.begin();
-    const uint32_t maximum = *values.rbegin();
-    for (const uint32_t value : values) {
-      Encode(value, prefix_length);  // Sets prefix_buffer_
-
-      std::stringstream ss;
-      ss << "value=" << value << " (0x" << std::hex << value
-         << "), prefix_length=" << prefix_length
-         << ", expected_bytes=" << expected_bytes << "\n"
-         << Http2HexDump(buffer_);
-      Http2String msg(ss.str());
-
-      if (value == minimum) {
-        LOG(INFO) << "Checking minimum; " << msg;
-      } else if (value == maximum) {
-        LOG(INFO) << "Checking maximum; " << msg;
-      }
-
-      SCOPED_TRACE(msg);
-      ValidateEncoding(value, minimum, maximum, expected_bytes);
-      DecodeSeveralWays(value, expected_bytes);
-
-      // Append some random data to the end of buffer_ and repeat. That random
-      // data should be ignored.
-      buffer_.append(Random().RandString(1 + Random().Uniform(10)));
-      DecodeSeveralWays(value, expected_bytes);
-
-      // If possible, add extension bytes that don't change the value.
-      if (1 < expected_bytes) {
-        buffer_.resize(expected_bytes);
-        for (uint8_t total_bytes = expected_bytes + 1; total_bytes <= 6;
-             ++total_bytes) {
-          // Mark the current last byte as not being the last one.
-          EXPECT_EQ(0x00, 0x80 & buffer_.back());
-          buffer_.back() |= 0x80;
-          buffer_.push_back('\0');
-          DecodeSeveralWays(value, total_bytes);
-        }
-      }
-    }
-  }
-
-  void EncodeAndDecodeValuesInRange(uint32_t start,
-                                    uint32_t range,
-                                    uint8_t prefix_length,
-                                    size_t expected_bytes) {
-    const uint8_t prefix_mask = (1 << prefix_length) - 1;
-    const uint32_t beyond = start + range;
-
-    LOG(INFO) << "############################################################";
-    LOG(INFO) << "prefix_length=" << static_cast<int>(prefix_length);
-    LOG(INFO) << "prefix_mask=" << std::hex << static_cast<int>(prefix_mask);
-    LOG(INFO) << "start=" << start << " (" << std::hex << start << ")";
-    LOG(INFO) << "range=" << range << " (" << std::hex << range << ")";
-    LOG(INFO) << "beyond=" << beyond << " (" << std::hex << beyond << ")";
-    LOG(INFO) << "expected_bytes=" << expected_bytes;
-
-    // Confirm the claim that beyond requires more bytes.
-    Encode(beyond, prefix_length);
-    EXPECT_EQ(expected_bytes + 1, buffer_.size()) << Http2HexDump(buffer_);
-
-    std::set<uint32_t> values;
-    if (range < 200) {
-      // Select all values in the range.
-      for (uint32_t offset = 0; offset < range; ++offset) {
-        values.insert(start + offset);
-      }
-    } else {
-      // Select some values in this range, including the minimum and maximum
-      // values that require exactly |expected_bytes| extension bytes.
-      values.insert({start, start + 1, beyond - 2, beyond - 1});
-      while (values.size() < 100) {
-        values.insert(start + Random().Uniform(range));
-      }
-    }
-
-    EncodeAndDecodeValues(values, prefix_length, expected_bytes);
-  }
+  // Bits of the first byte not part of the prefix.
+  const uint8_t high_bits_;
+  // Extra bytes appended to the input.
+  const Http2String suffix_;
 
   HpackVarintDecoder decoder_;
-  Http2String buffer_;
-  uint8_t prefix_length_ = 0;
+  uint8_t prefix_length_;
 };
 
-// To help me and future debuggers of varint encodings, this LOGs out the
-// transition points where a new extension byte is added.
-TEST_F(HpackVarintDecoderTest, Encode) {
-  for (int prefix_length = 3; prefix_length <= 7; ++prefix_length) {
-    const uint32_t a = (1 << prefix_length) - 1;
-    const uint32_t b = a + 128;
-    const uint32_t c = b + (127 << 7);
-    const uint32_t d = c + (127 << 14);
-    const uint32_t e = d + (127 << 21);
+INSTANTIATE_TEST_CASE_P(
+    HpackVarintDecoderTest,
+    HpackVarintDecoderTest,
+    ::testing::Combine(
+        // Bits of the first byte not part of the prefix should be ignored.
+        ::testing::Values(0b00000000, 0b11111111, 0b10101010),
+        // Extra bytes appended to the input should be ignored.
+        ::testing::Values("", "00", "666f6f")));
 
-    LOG(INFO) << "############################################################";
-    LOG(INFO) << "prefix_length=" << prefix_length << "   a=" << a
-              << "   b=" << b << "   c=" << c;
+struct {
+  const char* data;
+  uint32_t prefix_length;
+  uint32_t expected_value;
+} kSuccessTestData[] = {
+    // Zero value with different prefix lengths.
+    {"00", 3, 0},
+    {"00", 4, 0},
+    {"00", 5, 0},
+    {"00", 6, 0},
+    {"00", 7, 0},
+    // Small values that fit in the prefix.
+    {"06", 3, 6},
+    {"0d", 4, 13},
+    {"10", 5, 16},
+    {"29", 6, 41},
+    {"56", 7, 86},
+    // Values of 2^n-1, which have an all-zero extension byte.
+    {"0700", 3, 7},
+    {"0f00", 4, 15},
+    {"1f00", 5, 31},
+    {"3f00", 6, 63},
+    {"7f00", 7, 127},
+    // Values of 2^n-1, plus one extra byte of padding.
+    {"078000", 3, 7},
+    {"0f8000", 4, 15},
+    {"1f8000", 5, 31},
+    {"3f8000", 6, 63},
+    {"7f8000", 7, 127},
+    // Values requiring one extension byte.
+    {"0760", 3, 103},
+    {"0f2a", 4, 57},
+    {"1f7f", 5, 158},
+    {"3f02", 6, 65},
+    {"7f49", 7, 200},
+    // Values requiring one extension byte, plus one byte of padding.
+    {"07e000", 3, 103},
+    {"0faa00", 4, 57},
+    {"1fff00", 5, 158},
+    {"3f8200", 6, 65},
+    {"7fc900", 7, 200},
+    // Values requiring one extension byte, plus two bytes of padding.
+    {"07e08000", 3, 103},
+    {"0faa8000", 4, 57},
+    {"1fff8000", 5, 158},
+    {"3f828000", 6, 65},
+    {"7fc98000", 7, 200},
+    // Values requiring one extension byte, plus the maximum amount of padding.
+    {"07e080808000", 3, 103},
+    {"0faa80808000", 4, 57},
+    {"1fff80808000", 5, 158},
+    {"3f8280808000", 6, 65},
+    {"7fc980808000", 7, 200},
+    // Values requiring two extension bytes.
+    {"07b260", 3, 12345},
+    {"0f8a2a", 4, 5401},
+    {"1fa87f", 5, 16327},
+    {"3fd002", 6, 399},
+    {"7fff49", 7, 9598},
+    // Values requiring two extension bytes, plus one byte of padding.
+    {"07b2e000", 3, 12345},
+    {"0f8aaa00", 4, 5401},
+    {"1fa8ff00", 5, 16327},
+    {"3fd08200", 6, 399},
+    {"7fffc900", 7, 9598},
+    // Values requiring two extension bytes, plus the maximum amount of padding.
+    {"07b2e0808000", 3, 12345},
+    {"0f8aaa808000", 4, 5401},
+    {"1fa8ff808000", 5, 16327},
+    {"3fd082808000", 6, 399},
+    {"7fffc9808000", 7, 9598},
+    // Values requiring three extension bytes.
+    {"078ab260", 3, 1579281},
+    {"0fc18a2a", 4, 689488},
+    {"1fada87f", 5, 2085964},
+    {"3fa0d002", 6, 43103},
+    {"7ffeff49", 7, 1212541},
+    // Values requiring three extension bytes, plus one byte of padding.
+    {"078ab2e000", 3, 1579281},
+    {"0fc18aaa00", 4, 689488},
+    {"1fada8ff00", 5, 2085964},
+    {"3fa0d08200", 6, 43103},
+    {"7ffeffc900", 7, 1212541},
+    // Values requiring four extension bytes.
+    {"079f8ab260", 3, 202147110},
+    {"0fa2c18a2a", 4, 88252593},
+    {"1fd0ada87f", 5, 266999535},
+    {"3ff9a0d002", 6, 5509304},
+    {"7f9efeff49", 7, 155189149},
+    // Values requiring four extension bytes, plus one byte of padding.
+    {"079f8ab2e000", 3, 202147110},
+    {"0fa2c18aaa00", 4, 88252593},
+    {"1fd0ada8ff00", 5, 266999535},
+    {"3ff9a0d08200", 6, 5509304},
+    {"7f9efeffc900", 7, 155189149},
+    // Examples from RFC7541 C.1.
+    {"0a", 5, 10},
+    {"1f9a0a", 5, 1337},
+};
 
-    EXPECT_EQ(a - 1, HiValueOfExtensionBytes(0, prefix_length));
-    EXPECT_EQ(b - 1, HiValueOfExtensionBytes(1, prefix_length));
-    EXPECT_EQ(c - 1, HiValueOfExtensionBytes(2, prefix_length));
-    EXPECT_EQ(d - 1, HiValueOfExtensionBytes(3, prefix_length));
-    EXPECT_EQ(e - 1, HiValueOfExtensionBytes(4, prefix_length));
-
-    std::vector<uint32_t> values = {
-        0,     1,                       // Force line break.
-        a - 2, a - 1, a, a + 1, a + 2,  // Force line break.
-        b - 2, b - 1, b, b + 1, b + 2,  // Force line break.
-        c - 2, c - 1, c, c + 1, c + 2,  // Force line break.
-        d - 2, d - 1, d, d + 1, d + 2,  // Force line break.
-        e - 2, e - 1, e, e + 1, e + 2   // Force line break.
-    };
-
-    for (uint32_t value : values) {
-      EncodeNoRandom(value, prefix_length);
-      Http2String dump = Http2HexDump(buffer_);
-      LOG(INFO) << Http2StringPrintf("%10u %0#10x ", value, value)
-                << Http2HexDump(buffer_).substr(7);
-    }
+TEST_P(HpackVarintDecoderTest, Success) {
+  for (size_t i = 0; i < HTTP2_ARRAYSIZE(kSuccessTestData); ++i) {
+    DecodeExpectSuccess(Http2HexDecode(kSuccessTestData[i].data),
+                        kSuccessTestData[i].prefix_length,
+                        kSuccessTestData[i].expected_value);
   }
 }
 
-TEST_F(HpackVarintDecoderTest, FromSpec1337) {
-  DecodeBuffer b(Http2StringPiece("\x1f\x9a\x0a"));
-  uint32_t prefix_length = 5;
-  uint8_t p = b.DecodeUInt8();
-  EXPECT_EQ(1u, b.Offset());
-  EXPECT_EQ(DecodeStatus::kDecodeDone, decoder_.Start(p, prefix_length, &b));
-  EXPECT_EQ(3u, b.Offset());
-  EXPECT_EQ(1337u, decoder_.value());
+// HpackVarintDecoder allows at most five extension bytes,
+// and fifth extension byte must be zero.
+struct {
+  const char* data;
+  uint32_t prefix_length;
+} kErrorTestData[] = {
+    // Maximum number of extension bytes but last byte is non-zero.
+    {"078080808001", 3},
+    {"0f8080808001", 4},
+    {"1f8080808001", 5},
+    {"3f8080808001", 6},
+    {"7f8080808001", 7},
+    // Too many extension bytes, all 0s (except for extension bit in each byte).
+    {"078080808080", 3},
+    {"0f8080808080", 4},
+    {"1f8080808080", 5},
+    {"3f8080808080", 6},
+    {"7f8080808080", 7},
+    // Too many extension bytes, all 1s.
+    {"07ffffffffff", 3},
+    {"0fffffffffff", 4},
+    {"1fffffffffff", 5},
+    {"3fffffffffff", 6},
+    {"7fffffffffff", 7},
+};
 
-  EncodeNoRandom(1337, prefix_length);
-  EXPECT_EQ(3u, buffer_.size());
-  EXPECT_EQ('\x1f', buffer_[0]);
-  EXPECT_EQ('\x9A', buffer_[1]);
-  EXPECT_EQ('\x0a', buffer_[2]);
-}
-
-// Test all the values that fit into the prefix (one less than the mask).
-TEST_F(HpackVarintDecoderTest, ValidatePrefixOnly) {
-  for (int prefix_length = 3; prefix_length <= 7; ++prefix_length) {
-    const uint8_t prefix_mask = (1 << prefix_length) - 1;
-    EncodeAndDecodeValuesInRange(0, prefix_mask, prefix_length, 1);
-  }
-}
-
-// Test all values that require exactly 1 extension byte.
-TEST_F(HpackVarintDecoderTest, ValidateOneExtensionByte) {
-  for (int prefix_length = 3; prefix_length <= 7; ++prefix_length) {
-    const uint32_t start = (1 << prefix_length) - 1;
-    EncodeAndDecodeValuesInRange(start, 128, prefix_length, 2);
-  }
-}
-
-// Test *some* values that require exactly 2 extension bytes.
-TEST_F(HpackVarintDecoderTest, ValidateTwoExtensionBytes) {
-  for (int prefix_length = 3; prefix_length <= 7; ++prefix_length) {
-    const uint8_t prefix_mask = (1 << prefix_length) - 1;
-    const uint32_t start = prefix_mask + 128;
-    const uint32_t range = 127 << 7;
-
-    EncodeAndDecodeValuesInRange(start, range, prefix_length, 3);
-  }
-}
-
-// Test *some* values that require 3 extension bytes.
-TEST_F(HpackVarintDecoderTest, ValidateThreeExtensionBytes) {
-  for (int prefix_length = 3; prefix_length <= 7; ++prefix_length) {
-    const uint8_t prefix_mask = (1 << prefix_length) - 1;
-    const uint32_t start = prefix_mask + 128 + (127 << 7);
-    const uint32_t range = 127 << 14;
-
-    EncodeAndDecodeValuesInRange(start, range, prefix_length, 4);
-  }
-}
-
-// Test *some* values that require 4 extension bytes.
-TEST_F(HpackVarintDecoderTest, ValidateFourExtensionBytes) {
-  for (int prefix_length = 3; prefix_length <= 7; ++prefix_length) {
-    const uint8_t prefix_mask = (1 << prefix_length) - 1;
-    const uint32_t start = prefix_mask + 128 + (127 << 7) + (127 << 14);
-    const uint32_t range = 127 << 21;
-
-    EncodeAndDecodeValuesInRange(start, range, prefix_length, 5);
-  }
-}
-
-// Test *some* values that require too many extension bytes.
-TEST_F(HpackVarintDecoderTest, ValueTooLarge) {
-  const uint32_t expected_offset = HpackVarintDecoder::MaxExtensionBytes() + 1;
-  for (prefix_length_ = 3; prefix_length_ <= 7; ++prefix_length_) {
-    uint64_t too_large = HiValueOfExtensionBytes(
-        HpackVarintDecoder::MaxExtensionBytes() + 3, prefix_length_);
-    HpackBlockBuilder bb;
-    bb.AppendHighBitsAndVarint(0, prefix_length_, too_large);
-    buffer_ = bb.buffer();
-
-    // The validator is called after each of the several times that the input
-    // DecodeBuffer is decoded, each with a different segmentation of the input.
-    // Validate that decoder_.value() matches the expected value.
-    bool validated = false;
-    Validator validator = [&validated, expected_offset](
-                              const DecodeBuffer& db,
-                              DecodeStatus status) -> AssertionResult {
-      validated = true;
-      VERIFY_EQ(DecodeStatus::kDecodeError, status);
-      VERIFY_EQ(expected_offset, db.Offset());
-      return AssertionSuccess();
-    };
-
-    // StartDecoding, above, requires the DecodeBuffer be non-empty so that it
-    // can call Start with the prefix byte.
-    bool return_non_zero_on_first = true;
-    DecodeBuffer b(buffer_);
-    EXPECT_TRUE(
-        DecodeAndValidateSeveralWays(&b, return_non_zero_on_first, validator));
-    EXPECT_EQ(expected_offset, b.Offset());
-    EXPECT_TRUE(validated);
+TEST_P(HpackVarintDecoderTest, Error) {
+  for (size_t i = 0; i < HTTP2_ARRAYSIZE(kErrorTestData); ++i) {
+    DecodeExpectError(Http2HexDecode(kErrorTestData[i].data),
+                      kErrorTestData[i].prefix_length);
   }
 }
 

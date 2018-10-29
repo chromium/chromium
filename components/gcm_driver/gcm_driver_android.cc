@@ -19,7 +19,7 @@ using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaByteArrayToByteVector;
+using base::android::JavaByteArrayToString;
 using base::android::JavaParamRef;
 
 namespace gcm {
@@ -96,9 +96,7 @@ void GCMDriverAndroid::OnMessageReceived(
   }
   // Convert j_raw_data from byte[] to binary std::string.
   if (j_raw_data) {
-    std::vector<uint8_t> raw_data;
-    JavaByteArrayToByteVector(env, j_raw_data, &raw_data);
-    message.raw_data.assign(raw_data.begin(), raw_data.end());
+    JavaByteArrayToString(env, j_raw_data, &message.raw_data);
 
     message_byte_size += message.raw_data.size();
   }

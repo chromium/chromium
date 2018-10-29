@@ -41,6 +41,9 @@ const int kMaxMessagesInQueue = 5;
 
 }  // namespace
 
+// static
+constexpr int LeScanManagerImpl::kMaxScanResultEntries;
+
 class LeScanManagerImpl::ScanHandleImpl : public LeScanManager::ScanHandle {
  public:
   explicit ScanHandleImpl(LeScanManagerImpl* manager, int32_t id)
@@ -120,16 +123,32 @@ void LeScanManagerImpl::OnScanResult(
   scan_result.addr = scan_result_shlib.addr;
   scan_result.rssi = scan_result_shlib.rssi;
 
-  // Remove results with the same data as the current result to avoid duplicate
-  // messages in the queue
   auto& previous_scan_results = addr_to_scan_results_[scan_result.addr];
-  previous_scan_results.remove_if([&scan_result](const auto& previous_result) {
-    return previous_result.adv_data == scan_result.adv_data;
-  });
+  if (previous_scan_results.size() > 0) {
+    // Remove results with the same data as the current result to avoid
+    // duplicate messages in the queue
+    previous_scan_results.remove_if(
+        [&scan_result](const auto& previous_result) {
+          return previous_result.adv_data == scan_result.adv_data;
+        });
+
+    // Remove scan_result.addr to avoid duplicate addresses in
+    // recent_scan_result_addr_list_.
+    base::Erase(scan_result_addr_list_, scan_result.addr);
+  }
 
   previous_scan_results.push_front(scan_result);
   if (previous_scan_results.size() > kMaxMessagesInQueue) {
     previous_scan_results.pop_back();
+  }
+
+  // Update recent_scan_result_addr_list_.
+  scan_result_addr_list_.push_front(scan_result.addr);
+  while (scan_result_addr_list_.size() > kMaxScanResultEntries) {
+    // Remove least recently used address in recent_scan_result_addr_list_.
+    auto least_recently_used_addr = scan_result_addr_list_.back();
+    scan_result_addr_list_.pop_back();
+    addr_to_scan_results_.erase(least_recently_used_addr);
   }
 
   // Update observers.

@@ -29,7 +29,7 @@ base::FilePath GetFilePathFromCommandLine() {
 std::unique_ptr<VideoCaptureDevice> FileVideoCaptureDeviceFactory::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 #if defined(OS_WIN)
   return std::unique_ptr<VideoCaptureDevice>(new FileVideoCaptureDevice(
       base::FilePath(base::SysUTF8ToWide(device_descriptor.display_name()))));
@@ -67,7 +67,7 @@ void FileVideoCaptureDeviceFactory::GetSupportedFormats(
     const VideoCaptureDeviceDescriptor& device_descriptor,
     VideoCaptureFormats* supported_formats) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   VideoCaptureFormat capture_format;
   if (!FileVideoCaptureDevice::GetVideoCaptureFormat(
@@ -81,7 +81,7 @@ void FileVideoCaptureDeviceFactory::GetSupportedFormats(
 void FileVideoCaptureDeviceFactory::GetCameraLocationsAsync(
     std::unique_ptr<VideoCaptureDeviceDescriptors> device_descriptors,
     DeviceDescriptorsCallback result_callback) {
-  base::ResetAndReturn(&result_callback).Run(std::move(device_descriptors));
+  std::move(result_callback).Run(std::move(device_descriptors));
 }
 
 }  // namespace media

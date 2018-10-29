@@ -122,7 +122,7 @@ PpapiThread::PpapiThread(base::RepeatingClosure quit_closure,
   // allocator.
   if (!command_line.HasSwitch(switches::kSingleProcess)) {
     discardable_memory::mojom::DiscardableSharedMemoryManagerPtr manager_ptr;
-    if (features::IsUsingWindowService()) {
+    if (features::IsMultiProcessMash()) {
 #if defined(USE_AURA)
       GetServiceManagerConnection()->GetConnector()->BindInterface(
           ws::mojom::kServiceName, &manager_ptr);

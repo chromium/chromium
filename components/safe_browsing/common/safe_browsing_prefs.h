@@ -34,18 +34,8 @@ extern const char kSafeBrowsingIncidentsSent[];
 // users to proceed anyway.
 extern const char kSafeBrowsingProceedAnywayDisabled[];
 
-// Boolean indicating whether the user has ever seen a security interstitial
-// containing the legacy Extended Reporting opt-in.
-extern const char kSafeBrowsingSawInterstitialExtendedReporting[];
-
-// Boolean indicating whether the user has ever seen a security interstitial
-// containing the new Scout opt-in.
+// Boolean indicating whether the user has ever seen a security interstitial.
 extern const char kSafeBrowsingSawInterstitialScoutReporting[];
-
-// Boolean indicating whether the Scout reporting workflow is enabled. This
-// affects which of SafeBrowsingExtendedReporting or SafeBrowsingScoutReporting
-// is used.
-extern const char kSafeBrowsingScoutGroupSelected[];
 
 // Boolean indicating whether Safe Browsing Scout reporting is enabled, which
 // collects data for malware detection.
@@ -94,11 +84,6 @@ extern const char kAdvancedProtectionLastRefreshInUs[];
 
 namespace safe_browsing {
 
-// When this feature is enabled, the Scout opt-in text will be displayed as of
-// the next security incident. Until then, the legacy SBER text will appear.
-// TODO: this is temporary (crbug.com/662944)
-extern const base::Feature kCanShowScoutOptIn;
-
 // Enumerates the level of Safe Browsing Extended Reporting that is currently
 // available.
 enum ExtendedReportingLevel {
@@ -142,33 +127,12 @@ enum PasswordProtectionTrigger {
   PASSWORD_PROTECTION_TRIGGER_MAX,
 };
 
-// Determines which opt-in text should be used based on the currently active
-// preference. Will return either |extended_reporting_pref| if the legacy
-// Extended Reporting pref is active, or |scout_pref| if the Scout pref is
-// active. Used for Android.
-std::string ChooseOptInTextPreference(
-    const PrefService& prefs,
-    const std::string& extended_reporting_pref,
-    const std::string& scout_pref);
-
-// Determines which opt-in text should be used based on the currently active
-// preference. Will return either |extended_reporting_resource| if the legacy
-// Extended Reporting pref is active, or |scout_resource| if the Scout pref is
-// active.
-int ChooseOptInTextResource(const PrefService& prefs,
-                            int extended_reporting_resource,
-                            int scout_resource);
-
 // Returns whether the currently active Safe Browsing Extended Reporting
 // preference exists (eg: has been set before).
 bool ExtendedReportingPrefExists(const PrefService& prefs);
 
 // Returns the level of reporting available for the current user.
 ExtendedReportingLevel GetExtendedReportingLevel(const PrefService& prefs);
-
-// Returns the name of the Safe Browsing Extended Reporting pref that is
-// currently in effect. The specific pref in-use may change through experiments.
-const char* GetExtendedReportingPrefName(const PrefService& prefs);
 
 // Returns whether the user is able to modify the Safe Browsing Extended
 // Reporting opt-in.
@@ -182,9 +146,6 @@ bool IsExtendedReportingEnabled(const PrefService& prefs);
 // Returns whether the active Extended Reporting pref is currently managed by
 // enterprise policy, meaning the user can't change it.
 bool IsExtendedReportingPolicyManaged(const PrefService& prefs);
-
-// Returns whether the currently-active Extended Reporting pref is Scout.
-bool IsScout(const PrefService& prefs);
 
 // Updates UMA metrics about Safe Browsing Extended Reporting states.
 void RecordExtendedReportingMetrics(const PrefService& prefs);

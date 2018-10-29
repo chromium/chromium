@@ -39,37 +39,37 @@ std::string VideoDecodeStatsDB::VideoDescKey::ToLogString() const {
 VideoDecodeStatsDB::DecodeStatsEntry::DecodeStatsEntry(
     uint64_t frames_decoded,
     uint64_t frames_dropped,
-    uint64_t frames_decoded_power_efficient)
+    uint64_t frames_power_efficient)
     : frames_decoded(frames_decoded),
       frames_dropped(frames_dropped),
-      frames_decoded_power_efficient(frames_decoded_power_efficient) {
+      frames_power_efficient(frames_power_efficient) {
   DCHECK_GE(frames_decoded, 0u);
   DCHECK_GE(frames_dropped, 0u);
-  DCHECK_GE(frames_decoded_power_efficient, 0u);
+  DCHECK_GE(frames_power_efficient, 0u);
 }
 
 VideoDecodeStatsDB::DecodeStatsEntry::DecodeStatsEntry(
     const DecodeStatsEntry& entry)
     : frames_decoded(entry.frames_decoded),
       frames_dropped(entry.frames_dropped),
-      frames_decoded_power_efficient(entry.frames_decoded_power_efficient) {}
+      frames_power_efficient(entry.frames_power_efficient) {}
 
 std::string VideoDecodeStatsDB::DecodeStatsEntry::ToLogString() const {
   return base::StringPrintf(
       "DecodeStatsEntry {frames decoded:%" PRIu64 ", dropped:%" PRIu64
-      ", power efficient decoded:%" PRIu64 "}",
-      frames_decoded, frames_dropped, frames_decoded_power_efficient);
+      ", power efficient:%" PRIu64 "}",
+      frames_decoded, frames_dropped, frames_power_efficient);
 }
 
 VideoDecodeStatsDB::DecodeStatsEntry& VideoDecodeStatsDB::DecodeStatsEntry::
 operator+=(const DecodeStatsEntry& right) {
   DCHECK_GE(right.frames_decoded, 0u);
   DCHECK_GE(right.frames_dropped, 0u);
-  DCHECK_GE(right.frames_decoded_power_efficient, 0u);
+  DCHECK_GE(right.frames_power_efficient, 0u);
 
   frames_decoded += right.frames_decoded;
   frames_dropped += right.frames_dropped;
-  frames_decoded_power_efficient += right.frames_decoded_power_efficient;
+  frames_power_efficient += right.frames_power_efficient;
   return *this;
 }
 
@@ -87,7 +87,7 @@ bool operator==(const VideoDecodeStatsDB::DecodeStatsEntry& x,
                 const VideoDecodeStatsDB::DecodeStatsEntry& y) {
   return x.frames_decoded == y.frames_decoded &&
          x.frames_dropped == y.frames_dropped &&
-         x.frames_decoded_power_efficient == y.frames_decoded_power_efficient;
+         x.frames_power_efficient == y.frames_power_efficient;
 }
 
 bool operator!=(const VideoDecodeStatsDB::DecodeStatsEntry& x,

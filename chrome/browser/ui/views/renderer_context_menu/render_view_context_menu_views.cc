@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/message_loop/message_loop_current.h"
 #include "base/strings/string16.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -164,6 +165,18 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
     case IDC_VIEW_SOURCE:
       *accel = ui::Accelerator(ui::VKEY_U, ui::EF_CONTROL_DOWN);
       return true;
+
+    case IDC_CONTENT_CONTEXT_EMOJI:
+#if defined(OS_WIN)
+      *accel = ui::Accelerator(ui::VKEY_OEM_PERIOD, ui::EF_COMMAND_DOWN);
+      return true;
+#elif defined(OS_MACOSX)
+      *accel = ui::Accelerator(ui::VKEY_SPACE,
+                               ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
+      return true;
+#else
+      return false;
+#endif
 
     default:
       return false;

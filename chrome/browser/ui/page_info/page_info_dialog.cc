@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/security_state/core/security_state.h"
@@ -39,6 +40,6 @@ bool ShowPageInfoDialog(content::WebContents* web_contents,
 }
 
 base::OnceClosure& GetPageInfoDialogCreatedCallbackForTesting() {
-  CR_DEFINE_STATIC_LOCAL(base::OnceClosure, closure, ());
-  return closure;
+  static base::NoDestructor<base::OnceClosure> closure;
+  return *closure;
 }

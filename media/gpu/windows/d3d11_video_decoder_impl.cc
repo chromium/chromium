@@ -32,8 +32,8 @@ D3D11VideoDecoderImpl::D3D11VideoDecoderImpl(
 D3D11VideoDecoderImpl::~D3D11VideoDecoderImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (stub_ && !wait_sequence_id_.is_null())
-    stub_->channel()->scheduler()->DestroySequence(wait_sequence_id_);
+  if (stub_)
+    DestroyStub();
 }
 
 void D3D11VideoDecoderImpl::Initialize(
@@ -41,6 +41,15 @@ void D3D11VideoDecoderImpl::Initialize(
     ReturnPictureBufferCB return_picture_buffer_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  return_picture_buffer_cb_ = std::move(return_picture_buffer_cb);
+
+  // If already have a stub, then we're as initialized as we need to be.
+  if (stub_) {
+    std::move(init_cb).Run(true);
+    return;
+  }
+
+  // First init.  Get the stub, register, and generally do stuff.
   stub_ = get_stub_cb_.Run();
   if (!MakeContextCurrent(stub_)) {
     const char* reason = "Failed to get decoder stub";
@@ -49,14 +58,12 @@ void D3D11VideoDecoderImpl::Initialize(
       media_log_->AddEvent(media_log_->CreateStringEvent(
           MediaLogEvent::MEDIA_ERROR_LOG_ENTRY, "error", reason));
     }
+    stub_ = nullptr;
     std::move(init_cb).Run(false);
     return;
   }
 
-  return_picture_buffer_cb_ = std::move(return_picture_buffer_cb);
-
-  // TODO(liberato): see GpuVideoFrameFactory.
-  // stub_->AddDestructionObserver(this);
+  stub_->AddDestructionObserver(this);
   wait_sequence_id_ = stub_->channel()->scheduler()->CreateSequence(
       gpu::SchedulingPriority::kNormal);
 
@@ -67,6 +74,9 @@ void D3D11VideoDecoderImpl::OnMailboxReleased(
     scoped_refptr<D3D11PictureBuffer> buffer,
     const gpu::SyncToken& sync_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!stub_)
+    return;
 
   stub_->channel()->scheduler()->ScheduleTask(gpu::Scheduler::Task(
       wait_sequence_id_,
@@ -80,6 +90,21 @@ void D3D11VideoDecoderImpl::OnSyncTokenReleased(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   return_picture_buffer_cb_.Run(std::move(buffer));
+}
+
+void D3D11VideoDecoderImpl::OnWillDestroyStub(bool have_context) {
+  DestroyStub();
+}
+
+void D3D11VideoDecoderImpl::DestroyStub() {
+  DCHECK(stub_);
+  gpu::CommandBufferStub* stub = stub_;
+  stub_ = nullptr;
+
+  stub->RemoveDestructionObserver(this);
+
+  if (!wait_sequence_id_.is_null())
+    stub->channel()->scheduler()->DestroySequence(wait_sequence_id_);
 }
 
 base::WeakPtr<D3D11VideoDecoderImpl> D3D11VideoDecoderImpl::GetWeakPtr() {

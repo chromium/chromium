@@ -34,59 +34,59 @@ namespace blink {
 
 // static
 WebMixedContentContextType WebMixedContent::ContextTypeFromRequestContext(
-    WebURLRequest::RequestContext context,
+    mojom::RequestContextType context,
     bool strict_mixed_content_checking_for_plugin) {
   switch (context) {
     // "Optionally-blockable" mixed content
-    case WebURLRequest::kRequestContextAudio:
-    case WebURLRequest::kRequestContextImage:
-    case WebURLRequest::kRequestContextVideo:
+    case mojom::RequestContextType::AUDIO:
+    case mojom::RequestContextType::IMAGE:
+    case mojom::RequestContextType::VIDEO:
       return WebMixedContentContextType::kOptionallyBlockable;
 
     // Plugins! Oh how dearly we love plugin-loaded content!
-    case WebURLRequest::kRequestContextPlugin: {
+    case mojom::RequestContextType::PLUGIN: {
       return strict_mixed_content_checking_for_plugin
                  ? WebMixedContentContextType::kBlockable
                  : WebMixedContentContextType::kOptionallyBlockable;
     }
 
     // "Blockable" mixed content
-    case WebURLRequest::kRequestContextBeacon:
-    case WebURLRequest::kRequestContextCSPReport:
-    case WebURLRequest::kRequestContextEmbed:
-    case WebURLRequest::kRequestContextEventSource:
-    case WebURLRequest::kRequestContextFavicon:
-    case WebURLRequest::kRequestContextFetch:
-    case WebURLRequest::kRequestContextFont:
-    case WebURLRequest::kRequestContextForm:
-    case WebURLRequest::kRequestContextFrame:
-    case WebURLRequest::kRequestContextHyperlink:
-    case WebURLRequest::kRequestContextIframe:
-    case WebURLRequest::kRequestContextImageSet:
-    case WebURLRequest::kRequestContextImport:
-    case WebURLRequest::kRequestContextInternal:
-    case WebURLRequest::kRequestContextLocation:
-    case WebURLRequest::kRequestContextManifest:
-    case WebURLRequest::kRequestContextObject:
-    case WebURLRequest::kRequestContextPing:
-    case WebURLRequest::kRequestContextPrefetch:
-    case WebURLRequest::kRequestContextScript:
-    case WebURLRequest::kRequestContextServiceWorker:
-    case WebURLRequest::kRequestContextSharedWorker:
-    case WebURLRequest::kRequestContextStyle:
-    case WebURLRequest::kRequestContextSubresource:
-    case WebURLRequest::kRequestContextTrack:
-    case WebURLRequest::kRequestContextWorker:
-    case WebURLRequest::kRequestContextXMLHttpRequest:
-    case WebURLRequest::kRequestContextXSLT:
+    case mojom::RequestContextType::BEACON:
+    case mojom::RequestContextType::CSP_REPORT:
+    case mojom::RequestContextType::EMBED:
+    case mojom::RequestContextType::EVENT_SOURCE:
+    case mojom::RequestContextType::FAVICON:
+    case mojom::RequestContextType::FETCH:
+    case mojom::RequestContextType::FONT:
+    case mojom::RequestContextType::FORM:
+    case mojom::RequestContextType::FRAME:
+    case mojom::RequestContextType::HYPERLINK:
+    case mojom::RequestContextType::IFRAME:
+    case mojom::RequestContextType::IMAGE_SET:
+    case mojom::RequestContextType::IMPORT:
+    case mojom::RequestContextType::INTERNAL:
+    case mojom::RequestContextType::LOCATION:
+    case mojom::RequestContextType::MANIFEST:
+    case mojom::RequestContextType::OBJECT:
+    case mojom::RequestContextType::PING:
+    case mojom::RequestContextType::PREFETCH:
+    case mojom::RequestContextType::SCRIPT:
+    case mojom::RequestContextType::SERVICE_WORKER:
+    case mojom::RequestContextType::SHARED_WORKER:
+    case mojom::RequestContextType::STYLE:
+    case mojom::RequestContextType::SUBRESOURCE:
+    case mojom::RequestContextType::TRACK:
+    case mojom::RequestContextType::WORKER:
+    case mojom::RequestContextType::XML_HTTP_REQUEST:
+    case mojom::RequestContextType::XSLT:
       return WebMixedContentContextType::kBlockable;
 
     // FIXME: Contexts that we should block, but don't currently.
     // https://crbug.com/388650
-    case WebURLRequest::kRequestContextDownload:
+    case mojom::RequestContextType::DOWNLOAD:
       return WebMixedContentContextType::kShouldBeBlockable;
 
-    case WebURLRequest::kRequestContextUnspecified:
+    case mojom::RequestContextType::UNSPECIFIED:
       NOTREACHED();
   }
   NOTREACHED();

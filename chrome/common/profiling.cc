@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread.h"
@@ -21,23 +22,25 @@
 namespace {
 
 std::string GetProfileName() {
-  static const char kDefaultProfileName[] = "chrome-profile-{type}-{pid}";
-  CR_DEFINE_STATIC_LOCAL(std::string, profile_name, ());
+  static base::NoDestructor<std::string> profile_name([]() {
+    std::string profile_name;
 
-  if (profile_name.empty()) {
     const base::CommandLine& command_line =
         *base::CommandLine::ForCurrentProcess();
     if (command_line.HasSwitch(switches::kProfilingFile))
       profile_name = command_line.GetSwitchValueASCII(switches::kProfilingFile);
     else
-      profile_name = std::string(kDefaultProfileName);
+      profile_name = std::string("chrome-profile-{type}-{pid}");
     std::string process_type =
         command_line.GetSwitchValueASCII(switches::kProcessType);
     std::string type = process_type.empty() ?
         std::string("browser") : std::string(process_type);
     base::ReplaceSubstringsAfterOffset(&profile_name, 0, "{type}", type);
-  }
-  return profile_name;
+
+    return profile_name;
+  }());
+
+  return *profile_name;
 }
 
 void FlushProfilingData(base::Thread* thread) {

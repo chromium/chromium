@@ -74,17 +74,17 @@ void ResourceMultiBufferDataProvider::Start() {
   DVLOG(1) << __func__ << " @ " << byte_pos();
   if (url_data_->length() > 0 && byte_pos() >= url_data_->length()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::Bind(&ResourceMultiBufferDataProvider::Terminate,
-                              weak_factory_.GetWeakPtr()));
+        FROM_HERE, base::BindOnce(&ResourceMultiBufferDataProvider::Terminate,
+                                  weak_factory_.GetWeakPtr()));
     return;
   }
 
   // Prepare the request.
-  WebURLRequest request(url_data_->url());
-  request.SetRequestContext(is_client_audio_element_
-                                ? WebURLRequest::kRequestContextAudio
-                                : WebURLRequest::kRequestContextVideo);
-  request.SetHTTPHeaderField(
+  auto request = std::make_unique<WebURLRequest>(url_data_->url());
+  request->SetRequestContext(is_client_audio_element_
+                                 ? blink::mojom::RequestContextType::AUDIO
+                                 : blink::mojom::RequestContextType::VIDEO);
+  request->SetHTTPHeaderField(
       WebString::FromUTF8(net::HttpRequestHeaders::kRange),
       WebString::FromUTF8(
           net::HttpByteRange::RightUnbounded(byte_pos()).GetHeaderValue()));
@@ -94,8 +94,8 @@ void ResourceMultiBufferDataProvider::Start() {
     // This lets the data reduction proxy know that we don't have anything
     // previously cached data for this resource. We can only send it if this is
     // the first request for this resource.
-    request.SetHTTPHeaderField(WebString::FromUTF8("chrome-proxy"),
-                               WebString::FromUTF8("frfr"));
+    request->SetHTTPHeaderField(WebString::FromUTF8("chrome-proxy"),
+                                WebString::FromUTF8("frfr"));
   }
 
   // We would like to send an if-match header with the request to
@@ -105,7 +105,7 @@ void ResourceMultiBufferDataProvider::Start() {
   // along the way. See crbug/504194 and crbug/689989 for more information.
 
   // Disable compression, compression for audio/video doesn't make sense...
-  request.SetHTTPHeaderField(
+  request->SetHTTPHeaderField(
       WebString::FromUTF8(net::HttpRequestHeaders::kAcceptEncoding),
       WebString::FromUTF8("identity;q=1, *;q=0"));
 
@@ -117,15 +117,24 @@ void ResourceMultiBufferDataProvider::Start() {
     options.preflight_policy =
         network::mojom::CORSPreflightPolicy::kPreventPreflight;
 
-    request.SetFetchRequestMode(network::mojom::FetchRequestMode::kCORS);
+    request->SetFetchRequestMode(network::mojom::FetchRequestMode::kCORS);
     if (url_data_->cors_mode() != UrlData::CORS_USE_CREDENTIALS) {
-      request.SetFetchCredentialsMode(
+      request->SetFetchCredentialsMode(
           network::mojom::FetchCredentialsMode::kSameOrigin);
     }
   }
+
+  url_data_->WaitToLoad(
+      base::BindOnce(&ResourceMultiBufferDataProvider::StartLoading,
+                     weak_factory_.GetWeakPtr(), std::move(request), options));
+}
+
+void ResourceMultiBufferDataProvider::StartLoading(
+    std::unique_ptr<WebURLRequest> request,
+    const blink::WebAssociatedURLLoaderOptions& options) {
   active_loader_ =
       url_data_->url_index()->fetch_context()->CreateUrlLoader(options);
-  active_loader_->LoadAsynchronously(request, this);
+  active_loader_->LoadAsynchronously(*request, this);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -271,6 +280,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   int64_t content_length = response.ExpectedContentLength();
   bool end_of_file = false;
   bool do_fail = false;
+  // We get the response type here because aborting the loader may change it.
+  const auto response_type = response.GetType();
   bytes_to_discard_ = 0;
 
   // We make a strong assumption that when we reach here we have either
@@ -324,10 +335,9 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
         url_data_->url_index()->TryInsert(destination_url_data);
   }
 
-  // This is vital for security! A service worker can respond with a response
-  // from a different origin, so this response type is needed to detect that.
-  destination_url_data->set_has_opaque_data(
-      network::cors::IsCORSCrossOriginResponseType(response.GetType()));
+  // This is vital for security!
+  destination_url_data->set_is_cors_cross_origin(
+      network::cors::IsCORSCrossOriginResponseType(response_type));
 
   if (destination_url_data != url_data_) {
     // At this point, we've encountered a redirect, or found a better url data

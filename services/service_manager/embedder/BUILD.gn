@@ -4,16 +4,10 @@
 
 component("embedder") {
   public = [
-    "embedded_service_info.h",
-    "embedded_service_runner.h",
     "manifest_utils.h",
   ]
 
   sources = [
-    "embedded_instance_manager.cc",
-    "embedded_instance_manager.h",
-    "embedded_service_info.cc",
-    "embedded_service_runner.cc",
     "manifest_utils.cc",
     "service_manager_embedder_export.h",
   ]
@@ -103,17 +97,13 @@ source_set("unittests") {
   testonly = true
 
   sources = [
-    "embedded_instance_manager_unittest.cc",
     "manifest_utils_unittest.cc",
   ]
 
   # These headers are duplicated here so that they can remain private in the
   # "embedder" target. See http://crbug.com/732993 for a way to make it
   # unnecessary to do this.
-  sources += [
-    "embedded_instance_manager.h",
-    "service_manager_embedder_export.h",
-  ]
+  sources += [ "service_manager_embedder_export.h" ]
 
   deps = [
     ":embedder",

@@ -179,7 +179,8 @@ class SkiaRendererDDL : public viz::SkiaRenderer {
       : viz::SkiaRenderer(settings,
                           output_surface,
                           resource_provider,
-                          skia_output_surface) {}
+                          skia_output_surface,
+                          viz::SkiaRenderer::DrawMode::DDL) {}
 };
 
 template <>

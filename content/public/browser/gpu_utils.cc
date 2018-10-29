@@ -11,10 +11,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/viz/common/features.h"
+#include "content/browser/browser_main_loop.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/media_buildflags.h"
 
@@ -46,6 +49,17 @@ void StopGpuProcessImpl(const base::Closure& callback,
 }  // namespace
 
 namespace content {
+
+bool ShouldEnableAndroidSurfaceControl(const base::CommandLine& cmd_line) {
+#if !defined(OS_ANDROID)
+  return false;
+#else
+  if (!base::FeatureList::IsEnabled(features::kVizDisplayCompositor))
+    return false;
+
+  return base::FeatureList::IsEnabled(features::kAndroidSurfaceControl);
+#endif
+}
 
 const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   DCHECK(base::CommandLine::InitializedForCurrentProcess());
@@ -105,6 +119,9 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   gpu_preferences.enable_gpu_benchmarking_extension =
       command_line->HasSwitch(cc::switches::kEnableGpuBenchmarking);
 
+  gpu_preferences.enable_android_surface_control =
+      ShouldEnableAndroidSurfaceControl(*command_line);
+
   // Some of these preferences are set or adjusted in
   // GpuDataManagerImplPrivate::AppendGpuCommandLine.
   return gpu_preferences;
@@ -117,6 +134,11 @@ void StopGpuProcess(const base::Closure& callback) {
       base::Bind(&StopGpuProcessImpl,
                  base::Bind(RunTaskOnTaskRunner,
                             base::ThreadTaskRunnerHandle::Get(), callback)));
+}
+
+gpu::GpuChannelEstablishFactory* GetGpuChannelEstablishFactory() {
+  return content::BrowserMainLoop::GetInstance()
+      ->gpu_channel_establish_factory();
 }
 
 }  // namespace content

@@ -59,7 +59,7 @@ void OriginInfo::GetAllDatabaseNames(
 }
 
 int64_t OriginInfo::GetDatabaseSize(const base::string16& database_name) const {
-  DatabaseInfoMap::const_iterator it = database_info_.find(database_name);
+  auto it = database_info_.find(database_name);
   if (it != database_info_.end())
     return it->second.first;
   return 0;
@@ -67,7 +67,7 @@ int64_t OriginInfo::GetDatabaseSize(const base::string16& database_name) const {
 
 base::string16 OriginInfo::GetDatabaseDescription(
     const base::string16& database_name) const {
-  DatabaseInfoMap::const_iterator it = database_info_.find(database_name);
+  auto it = database_info_.find(database_name);
   if (it != database_info_.end())
     return it->second.second;
   return base::string16();
@@ -212,10 +212,9 @@ void DatabaseTracker::DeleteDatabaseIfNeeded(
     if (dbs_to_be_deleted_[origin_identifier].empty())
       dbs_to_be_deleted_.erase(origin_identifier);
 
-    PendingDeletionCallbacks::iterator callback = deletion_callbacks_.begin();
+    auto callback = deletion_callbacks_.begin();
     while (callback != deletion_callbacks_.end()) {
-      DatabaseSet::iterator found_origin =
-          callback->second.find(origin_identifier);
+      auto found_origin = callback->second.find(origin_identifier);
       if (found_origin != callback->second.end()) {
         std::set<base::string16>& databases = found_origin->second;
         databases.erase(database_name);
@@ -260,21 +259,26 @@ void DatabaseTracker::CloseTrackerDatabaseAndClearCaches() {
   }
 }
 
-base::string16 DatabaseTracker::GetOriginDirectory(
+base::FilePath DatabaseTracker::GetOriginDirectory(
     const std::string& origin_identifier) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!is_incognito_)
-    return base::UTF8ToUTF16(origin_identifier);
 
-  OriginDirectoriesMap::const_iterator it =
-      incognito_origin_directories_.find(origin_identifier);
-  if (it != incognito_origin_directories_.end())
-    return it->second;
+  base::string16 origin_directory;
 
-  base::string16 origin_directory =
-      base::IntToString16(incognito_origin_directories_generator_++);
-  incognito_origin_directories_[origin_identifier] = origin_directory;
-  return origin_directory;
+  if (!is_incognito_) {
+    origin_directory = base::UTF8ToUTF16(origin_identifier);
+  } else {
+    auto it = incognito_origin_directories_.find(origin_identifier);
+    if (it != incognito_origin_directories_.end()) {
+      origin_directory = it->second;
+    } else {
+      origin_directory =
+          base::IntToString16(incognito_origin_directories_generator_++);
+      incognito_origin_directories_[origin_identifier] = origin_directory;
+    }
+  }
+
+  return db_dir_.Append(base::FilePath::FromUTF16Unsafe(origin_directory));
 }
 
 base::FilePath DatabaseTracker::GetFullDBFilePath(
@@ -290,9 +294,8 @@ base::FilePath DatabaseTracker::GetFullDBFilePath(
   if (id < 0)
     return base::FilePath();
 
-  return db_dir_.Append(base::FilePath::FromUTF16Unsafe(
-      GetOriginDirectory(origin_identifier))).AppendASCII(
-          base::Int64ToString(id));
+  return GetOriginDirectory(origin_identifier)
+      .AppendASCII(base::Int64ToString(id));
 }
 
 bool DatabaseTracker::GetOriginInfo(const std::string& origin_identifier,
@@ -396,7 +399,7 @@ bool DatabaseTracker::DeleteOrigin(const std::string& origin_identifier,
   }
 
   origins_info_map_.erase(origin_identifier);
-  base::FilePath origin_dir = db_dir_.AppendASCII(origin_identifier);
+  base::FilePath origin_dir = GetOriginDirectory(origin_identifier);
 
   // Create a temporary directory to move possibly still existing databases to,
   // as we can't delete the origin directory on windows if it contains opened
@@ -417,6 +420,24 @@ bool DatabaseTracker::DeleteOrigin(const std::string& origin_identifier,
   base::DeleteFile(origin_dir, true);
   base::DeleteFile(new_origin_dir, true); // might fail on windows.
 
+  if (is_incognito_) {
+    incognito_origin_directories_.erase(origin_identifier);
+
+    // TODO(jsbell): Consider alternate data structures to avoid this
+    // linear scan.
+    for (auto it = incognito_file_handles_.begin();
+         it != incognito_file_handles_.end();) {
+      std::string id;
+      if (DatabaseUtil::CrackVfsFileName(it->first, &id, nullptr, nullptr) &&
+          id == origin_identifier) {
+        delete it->second;
+        it = incognito_file_handles_.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+
   databases_table_->DeleteOriginIdentifier(origin_identifier);
 
   if (quota_manager_proxy_.get() && deleted_size) {
@@ -433,11 +454,11 @@ bool DatabaseTracker::IsDatabaseScheduledForDeletion(
     const std::string& origin_identifier,
     const base::string16& database_name) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DatabaseSet::iterator it = dbs_to_be_deleted_.find(origin_identifier);
+  auto it = dbs_to_be_deleted_.find(origin_identifier);
   if (it == dbs_to_be_deleted_.end())
     return false;
 
-  std::set<base::string16>& databases = it->second;
+  const std::set<base::string16>& databases = it->second;
   return (databases.find(database_name) != databases.end());
 }
 
@@ -754,8 +775,7 @@ const base::File* DatabaseTracker::GetIncognitoFile(
     const base::string16& vfs_file_name) const {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(is_incognito_);
-  FileHandlesMap::const_iterator it =
-      incognito_file_handles_.find(vfs_file_name);
+  auto it = incognito_file_handles_.find(vfs_file_name);
   if (it != incognito_file_handles_.end())
     return it->second;
 
@@ -771,7 +791,7 @@ const base::File* DatabaseTracker::SaveIncognitoFile(
     return nullptr;
 
   base::File* to_insert = new base::File(std::move(file));
-  std::pair<FileHandlesMap::iterator, bool> rv =
+  auto rv =
       incognito_file_handles_.insert(std::make_pair(vfs_file_name, to_insert));
   DCHECK(rv.second);
   return rv.first->second;
@@ -784,7 +804,7 @@ void DatabaseTracker::CloseIncognitoFileHandle(
   DCHECK(incognito_file_handles_.find(vfs_file_name) !=
          incognito_file_handles_.end());
 
-  FileHandlesMap::iterator it = incognito_file_handles_.find(vfs_file_name);
+  auto it = incognito_file_handles_.find(vfs_file_name);
   if (it != incognito_file_handles_.end()) {
     delete it->second;
     incognito_file_handles_.erase(it);

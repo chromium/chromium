@@ -190,7 +190,9 @@ _PNG_FILE_EXTENSION = 'png'
 # This list should be in addition to files with FileType.NONE.  Files
 # with FileType.NONE are automatically skipped without warning.
 _SKIPPED_FILES_WITHOUT_WARNING = [
+    # TODO(tkent): Remove the item for LayoutTests.
     'LayoutTests' + os.path.sep,
+    'web_tests' + os.path.sep,
     'third_party' + os.path.sep + 'blink' + os.path.sep + 'renderer' + os.path.sep + 'devtools' + os.path.sep + 'protocol.json',
 ]
 

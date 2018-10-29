@@ -46,8 +46,8 @@ function resetMouseClick() {
 }
 
 function doTest(behavior) {
-  assert_exists(window, 'eventSender', 'This test requires eventSender.');
-  assert_exists(window, 'internals', 'This test requires internals.');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender.');
+  assert_own_property(window, 'internals', 'This test requires internals.');
   internals.settings.setEditingBehavior(behavior);
 
   assert_selection(

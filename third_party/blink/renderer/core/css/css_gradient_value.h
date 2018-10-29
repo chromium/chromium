@@ -59,7 +59,7 @@ enum CSSGradientRepeat { kNonRepeating, kRepeating };
 //
 // http://www.w3.org/TR/css3-images/#color-stop-syntax
 struct CSSGradientColorStop {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
   bool operator==(const CSSGradientColorStop& other) const {
     return DataEquivalent(color_, other.color_) &&

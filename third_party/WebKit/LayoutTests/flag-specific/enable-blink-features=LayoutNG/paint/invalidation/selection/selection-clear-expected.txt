@@ -20,27 +20,17 @@
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='firstLine'",
           "rect": [8, 8, 100, 200],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='firstLine'",
-          "rect": [8, 8, 100, 100],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'FAIL: Test did'",
+          "object": "NGPhysicalTextFragment '\u00A0'",
           "rect": [8, 8, 97, 100],
-          "reason": "disappeared"
+          "reason": "selection"
         },
         {
           "object": "NGPhysicalTextFragment 'not run'",
           "rect": [8, 108, 49, 100],
           "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment '\u00A0'",
-          "rect": [8, 8, 8, 100],
-          "reason": "appeared"
         }
       ]
     }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.suggestions;
 
 import android.content.res.Resources;
+import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -12,12 +13,21 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.util.AccessibilityUtil;
 import org.chromium.chrome.browser.widget.displaystyle.UiConfig;
-import org.chromium.chrome.browser.widget.tile.TileWithTextView;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Provides configuration details for suggestions.
  */
 public final class SuggestionsConfig {
+    @IntDef({TileStyle.MODERN, TileStyle.MODERN_CONDENSED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TileStyle {
+        int MODERN = 1;
+        int MODERN_CONDENSED = 2;
+    }
+
     /**
      * Field trial parameter for referrer URL.
      * It must be kept in sync with //components/ntp_suggestions/features.cc
@@ -25,10 +35,15 @@ public final class SuggestionsConfig {
     private static final String REFERRER_URL_PARAM = "referrer_url";
 
     /**
-     * Default value for referrer URL.
+     * Default value of referrer URL for content suggestions.
      * It must be kept in sync with //components/ntp_suggestions/features.cc
      */
-    private static final String DEFAULT_REFERRER_URL = "https://discover.google.com/";
+    private static final String DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL =
+            "https://discover.google.com/";
+
+    /** Default value of referrer URL for contextual suggestions. */
+    private static final String DEFAULT_CONTEXTUAL_SUGGESTIONS_REFERRER_URL =
+            "https://goto.google.com/explore-on-content-viewer";
 
     private SuggestionsConfig() {}
 
@@ -55,10 +70,10 @@ public final class SuggestionsConfig {
     /**
      * Returns the current tile style, that depends on the enabled features and the screen size.
      */
-    @TileWithTextView.Style
+    @TileStyle
     public static int getTileStyle(UiConfig uiConfig) {
-        return uiConfig.getCurrentDisplayStyle().isSmall() ? TileWithTextView.Style.MODERN_CONDENSED
-                                                           : TileWithTextView.Style.MODERN;
+        return uiConfig.getCurrentDisplayStyle().isSmall() ? TileStyle.MODERN_CONDENSED
+                                                           : TileStyle.MODERN;
     }
 
     private static boolean useCondensedTileLayout(boolean isScreenSmall) {
@@ -73,6 +88,19 @@ public final class SuggestionsConfig {
      * @return The value of referrer URL to use with content suggestions.
      */
     public static String getReferrerUrl(String featureName) {
+        assert ChromeFeatureList.NTP_ARTICLE_SUGGESTIONS.equals(featureName)
+                || ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS.equals(featureName)
+                || ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON.equals(featureName);
+
+        if (ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON.equals(featureName)) {
+            return getReferrerUrlParamOrDefault(
+                    featureName, DEFAULT_CONTEXTUAL_SUGGESTIONS_REFERRER_URL);
+        }
+
+        return getReferrerUrlParamOrDefault(featureName, DEFAULT_CONTENT_SUGGESTIONS_REFERRER_URL);
+    }
+
+    private static String getReferrerUrlParamOrDefault(String featureName, String defaultValue) {
         String referrerParamValue =
                 ChromeFeatureList.getFieldTrialParamByFeature(featureName, REFERRER_URL_PARAM);
 
@@ -80,6 +108,6 @@ public final class SuggestionsConfig {
             return referrerParamValue;
         }
 
-        return DEFAULT_REFERRER_URL;
+        return defaultValue;
     }
 }

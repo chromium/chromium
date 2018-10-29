@@ -15,11 +15,14 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/result_codes.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "services/catalog/public/cpp/manifest_parsing_util.h"
 #include "services/service_manager/zygote/common/zygote_buildflags.h"
+
+#if !defined(OS_FUCHSIA)
+#include "mojo/public/cpp/platform/named_platform_channel.h"
+#endif
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -106,11 +109,13 @@ class ChildProcessLauncherHelper :
   // Platform specific.
   void BeforeLaunchOnClientThread();
 
+#if !defined(OS_FUCHSIA)
   // Called to give implementors a chance at creating a server pipe. Platform-
   // specific. Returns |base::nullopt| if the helper should initialize
   // a regular PlatformChannel for communication instead.
   base::Optional<mojo::NamedPlatformChannel>
   CreateNamedPlatformChannelOnClientThread();
+#endif
 
   // Returns the list of files that should be mapped in the child process.
   // Platform specific.
@@ -221,10 +226,12 @@ class ChildProcessLauncherHelper :
   // |CreateNamedPlatformChannelOnClientThread()|.
   base::Optional<mojo::PlatformChannel> mojo_channel_;
 
+#if !defined(OS_FUCHSIA)
   // May be used in exclusion to the above if the platform helper implementation
   // returns a valid server endpoint from
   // |CreateNamedPlatformChannelOnClientThread()|.
   base::Optional<mojo::NamedPlatformChannel> mojo_named_channel_;
+#endif
 
   bool terminate_on_shutdown_;
   mojo::OutgoingInvitation mojo_invitation_;

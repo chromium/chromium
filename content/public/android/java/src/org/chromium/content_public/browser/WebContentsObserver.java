@@ -62,6 +62,8 @@ public abstract class WebContentsObserver {
      * @param isSameDocument Whether the main frame navigation did not cause changes to the
      *                   document (for example scrolling to a named anchor or PopState).
      * @param isFragmentNavigation Whether the navigation was to a different fragment.
+     * @param isRendererInitiated Whether initiated by renderer. Eg clicking on a link.
+     * @param isDownload See NavigationHandle::IsDownload.
      * @param pageTransition The page transition type associated with this navigation.
      * @param errorCode The net error code if an error occurred prior to commit, otherwise net::OK.
      * @param errorDescription The description for the net error code.
@@ -69,8 +71,8 @@ public abstract class WebContentsObserver {
      */
     public void didFinishNavigation(String url, boolean isInMainFrame, boolean isErrorPage,
             boolean hasCommitted, boolean isSameDocument, boolean isFragmentNavigation,
-            @Nullable Integer pageTransition, int errorCode, String errorDescription,
-            int httpStatusCode) {}
+            boolean isRendererInitiated, boolean isDownload, @Nullable Integer pageTransition,
+            int errorCode, String errorDescription, int httpStatusCode) {}
 
     /**
      * Called when the a page starts loading.

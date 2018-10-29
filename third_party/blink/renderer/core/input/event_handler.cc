@@ -592,9 +592,10 @@ WebInputEventResult EventHandler::DispatchBufferedTouchEvents() {
 
 WebInputEventResult EventHandler::HandlePointerEvent(
     const WebPointerEvent& web_pointer_event,
-    const Vector<WebPointerEvent>& coalesced_events) {
-  return pointer_event_manager_->HandlePointerEvent(web_pointer_event,
-                                                    coalesced_events);
+    const Vector<WebPointerEvent>& coalesced_events,
+    const Vector<WebPointerEvent>& predicted_events) {
+  return pointer_event_manager_->HandlePointerEvent(
+      web_pointer_event, coalesced_events, predicted_events);
 }
 
 WebInputEventResult EventHandler::HandleMousePressEvent(
@@ -621,7 +622,6 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   MouseEventWithHitTestResults mev =
       frame_->GetDocument()->PerformMouseEventHitTest(request, document_point,
                                                       mouse_event);
-
   if (!mev.InnerNode()) {
     mouse_event_manager_->InvalidateClick();
     return WebInputEventResult::kNotHandled;
@@ -631,7 +631,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   frame_->GetDocument()->SetSequentialFocusNavigationStartingPoint(
       mev.InnerNode());
 
-  LocalFrame* subframe = EventHandlingUtil::SubframeForHitTestResult(mev);
+  LocalFrame* subframe = event_handling_util::SubframeForHitTestResult(mev);
   if (subframe) {
     WebInputEventResult result = PassMousePressEventToSubframe(mev, subframe);
     // Start capturing future events for this frame.  We only do this if we
@@ -651,12 +651,11 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   }
 
   std::unique_ptr<UserGestureIndicator> gesture_indicator =
-      Frame::NotifyUserActivation(frame_);
+      LocalFrame::NotifyUserActivation(frame_);
   frame_->LocalFrameRoot()
       .GetEventHandler()
       .last_mouse_down_user_gesture_token_ =
       UserGestureIndicator::CurrentToken();
-
   if (RuntimeEnabledFeatures::MiddleClickAutoscrollEnabled()) {
     // We store whether middle click autoscroll is in progress before calling
     // stopAutoscroll() because it will set m_autoscrollType to NoAutoscroll on
@@ -681,7 +680,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
 
   WebInputEventResult event_result = DispatchMousePointerEvent(
       WebInputEvent::kPointerDown, mev.InnerNode(), mev.CanvasRegionId(),
-      mev.Event(), Vector<WebMouseEvent>());
+      mev.Event(), Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
   // Disabled form controls still need to resize the scrollable area.
   if ((event_result == WebInputEventResult::kNotHandled ||
@@ -708,7 +707,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   // dragging if we keep the selection in case of mousedown. FireFox also has
   // the same behavior and it's more compatible with other browsers.
   GetSelectionController().InitializeSelectionState();
-  HitTestResult hit_test_result = EventHandlingUtil::HitTestResultInFrame(
+  HitTestResult hit_test_result = event_handling_util::HitTestResultInFrame(
       frame_, HitTestLocation(document_point), HitTestRequest::kReadOnly);
   InputDeviceCapabilities* source_capabilities =
       frame_->GetDocument()
@@ -720,8 +719,16 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
     event_result = mouse_event_manager_->HandleMouseFocus(hit_test_result,
                                                           source_capabilities);
   }
-  mouse_event_manager_->SetCapturesDragging(
-      event_result == WebInputEventResult::kNotHandled || mev.GetScrollbar());
+
+  if (event_result == WebInputEventResult::kNotHandled || mev.GetScrollbar()) {
+    mouse_event_manager_->SetCapturesDragging(true);
+    // Main frames don't implicitly capture mouse input on MouseDown, just
+    // subframes do (regardless of whether local or remote).
+    if (!frame_->IsMainFrame())
+      CaptureMouseEventsToWidget(true);
+  } else {
+    mouse_event_manager_->SetCapturesDragging(false);
+  }
 
   // If the hit testing originally determined the event was in a scrollbar,
   // refetch the MouseEventWithHitTestResults in case the scrollbar
@@ -762,27 +769,28 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
     result.SetToShadowHostIfInRestrictedShadowRoot();
     frame_->GetChromeClient().OnMouseDown(*result.InnerNode());
   }
-
   return event_result;
 }
 
 WebInputEventResult EventHandler::HandleMouseMoveEvent(
     const WebMouseEvent& event,
-    const Vector<WebMouseEvent>& coalesced_events) {
+    const Vector<WebMouseEvent>& coalesced_events,
+    const Vector<WebMouseEvent>& predicted_events) {
   TRACE_EVENT0("blink", "EventHandler::handleMouseMoveEvent");
   HitTestResult hovered_node_result;
   HitTestLocation location;
-  WebInputEventResult result = HandleMouseMoveOrLeaveEvent(
-      event, coalesced_events, &hovered_node_result, &location);
+  WebInputEventResult result =
+      HandleMouseMoveOrLeaveEvent(event, coalesced_events, predicted_events,
+                                  &hovered_node_result, &location);
 
   Page* page = frame_->GetPage();
   if (!page)
     return result;
 
   if (PaintLayer* layer =
-          EventHandlingUtil::LayerForNode(hovered_node_result.InnerNode())) {
+          event_handling_util::LayerForNode(hovered_node_result.InnerNode())) {
     if (ScrollableArea* layer_scrollable_area =
-            EventHandlingUtil::AssociatedScrollableArea(layer))
+            event_handling_util::AssociatedScrollableArea(layer))
       layer_scrollable_area->MouseMovedInContentArea();
   }
 
@@ -799,13 +807,15 @@ void EventHandler::HandleMouseLeaveEvent(const WebMouseEvent& event) {
   Page* page = frame_->GetPage();
   if (page)
     page->GetChromeClient().ClearToolTip(*frame_);
-  HandleMouseMoveOrLeaveEvent(event, Vector<WebMouseEvent>(), nullptr, nullptr,
-                              false, true);
+  HandleMouseMoveOrLeaveEvent(event, Vector<WebMouseEvent>(),
+                              Vector<WebMouseEvent>(), nullptr, nullptr, false,
+                              true);
 }
 
 WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
     const WebMouseEvent& mouse_event,
     const Vector<WebMouseEvent>& coalesced_events,
+    const Vector<WebMouseEvent>& predicted_events,
     HitTestResult* hovered_node_result,
     HitTestLocation* hit_test_location,
     bool only_update_scrollbars,
@@ -831,6 +841,7 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
     mouse_event_manager_->ClearDragHeuristicState();
     if (event_handler_will_reset_capturing_mouse_events_node_)
       capturing_mouse_events_node_ = nullptr;
+    CaptureMouseEventsToWidget(false);
   }
 
   if (RuntimeEnabledFeatures::MiddleClickAutoscrollEnabled()) {
@@ -847,9 +858,9 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
   }
 
   if (frame_set_being_resized_) {
-    return DispatchMousePointerEvent(WebInputEvent::kPointerMove,
-                                     frame_set_being_resized_.Get(), String(),
-                                     mouse_event, coalesced_events);
+    return DispatchMousePointerEvent(
+        WebInputEvent::kPointerMove, frame_set_being_resized_.Get(), String(),
+        mouse_event, coalesced_events, predicted_events);
   }
 
   // Send events right to a scrollbar if the mouse is pressed.
@@ -886,8 +897,8 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
   if (force_leave) {
     frame_->GetDocument()->UpdateHoverActiveState(request, nullptr);
   } else {
-    mev = EventHandlingUtil::PerformMouseEventHitTest(frame_, request,
-                                                      mouse_event);
+    mev = event_handling_util::PerformMouseEventHitTest(frame_, request,
+                                                        mouse_event);
   }
 
   if (hovered_node_result)
@@ -913,9 +924,9 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
   WebInputEventResult event_result = WebInputEventResult::kNotHandled;
   LocalFrame* new_subframe =
       capturing_mouse_events_node_.Get()
-          ? EventHandlingUtil::SubframeForTargetNode(
+          ? event_handling_util::SubframeForTargetNode(
                 capturing_mouse_events_node_.Get())
-          : EventHandlingUtil::SubframeForHitTestResult(mev);
+          : event_handling_util::SubframeForHitTestResult(mev);
 
   // We want mouseouts to happen first, from the inside out.  First send a
   // move event to the last subframe so that it will fire mouseouts.
@@ -938,8 +949,9 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
     // subframe of the target node to be detached from its LocalFrameView, in
     // which case the event should not be passed.
     if (new_subframe->View()) {
-      event_result = PassMouseMoveEventToSubframe(
-          mev, coalesced_events, new_subframe, hovered_node_result);
+      event_result =
+          PassMouseMoveEventToSubframe(mev, coalesced_events, predicted_events,
+                                       new_subframe, hovered_node_result);
     }
   } else {
     if (scrollbar && !mouse_event_manager_->MousePressed()) {
@@ -963,7 +975,7 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
 
   event_result = DispatchMousePointerEvent(
       WebInputEvent::kPointerMove, mev.InnerNode(), mev.CanvasRegionId(),
-      mev.Event(), coalesced_events);
+      mev.Event(), coalesced_events, predicted_events);
   // TODO(crbug.com/346473): Since there is no default action for the mousemove
   // event we should consider doing drag&drop even when js cancels the
   // mouse move event.
@@ -1001,6 +1013,7 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
   mouse_event_manager_->HandleSvgPanIfNeeded(true);
 
   if (frame_set_being_resized_) {
+    CaptureMouseEventsToWidget(false);
     return mouse_event_manager_->SetMousePositionAndDispatchMouseEvent(
         EffectiveMouseEventTargetNode(frame_set_being_resized_.Get()), String(),
         EventTypeNames::mouseup, mouse_event);
@@ -1009,10 +1022,11 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
   if (last_scrollbar_under_mouse_) {
     mouse_event_manager_->InvalidateClick();
     last_scrollbar_under_mouse_->MouseUp(mouse_event);
-    frame_->LocalFrameRoot().Client()->SetMouseCapture(false);
+    CaptureMouseEventsToWidget(false);
     return DispatchMousePointerEvent(
         WebInputEvent::kPointerUp, mouse_event_manager_->GetNodeUnderMouse(),
-        String(), mouse_event, Vector<WebMouseEvent>());
+        String(), mouse_event, Vector<WebMouseEvent>(),
+        Vector<WebMouseEvent>());
   }
 
   // Mouse events simulated from touch should not hit-test again.
@@ -1021,12 +1035,14 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
   HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kRelease;
   HitTestRequest request(hit_type);
   MouseEventWithHitTestResults mev =
-      EventHandlingUtil::PerformMouseEventHitTest(frame_, request, mouse_event);
+      event_handling_util::PerformMouseEventHitTest(frame_, request,
+                                                    mouse_event);
   Element* mouse_release_target = mev.InnerElement();
-  LocalFrame* subframe = capturing_mouse_events_node_.Get()
-                             ? EventHandlingUtil::SubframeForTargetNode(
-                                   capturing_mouse_events_node_.Get())
-                             : EventHandlingUtil::SubframeForHitTestResult(mev);
+  LocalFrame* subframe =
+      capturing_mouse_events_node_.Get()
+          ? event_handling_util::SubframeForTargetNode(
+                capturing_mouse_events_node_.Get())
+          : event_handling_util::SubframeForHitTestResult(mev);
   if (event_handler_will_reset_capturing_mouse_events_node_)
     capturing_mouse_events_node_ = nullptr;
   if (subframe)
@@ -1046,12 +1062,12 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
                       .GetEventHandler()
                       .last_mouse_down_user_gesture_token_));
   } else {
-    gesture_indicator = Frame::NotifyUserActivation(frame_);
+    gesture_indicator = LocalFrame::NotifyUserActivation(frame_);
   }
 
   WebInputEventResult event_result = DispatchMousePointerEvent(
       WebInputEvent::kPointerUp, mev.InnerNode(), mev.CanvasRegionId(),
-      mev.Event(), Vector<WebMouseEvent>());
+      mev.Event(), Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
   WebInputEventResult click_event_result =
       mouse_release_target ? mouse_event_manager_->DispatchMouseClickIfNeeded(
@@ -1064,8 +1080,10 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
     event_result = mouse_event_manager_->HandleMouseReleaseEvent(mev);
 
   mouse_event_manager_->HandleMouseReleaseEventUpdateStates();
+  CaptureMouseEventsToWidget(false);
 
-  return EventHandlingUtil::MergeEventResult(click_event_result, event_result);
+  return event_handling_util::MergeEventResult(click_event_result,
+                                               event_result);
 }
 
 static bool TargetIsFrame(Node* target, LocalFrame*& frame) {
@@ -1091,7 +1109,7 @@ WebInputEventResult EventHandler::UpdateDragAndDrop(
 
   HitTestRequest request(HitTestRequest::kReadOnly);
   MouseEventWithHitTestResults mev =
-      EventHandlingUtil::PerformMouseEventHitTest(frame_, request, event);
+      event_handling_util::PerformMouseEventHitTest(frame_, request, event);
 
   // Drag events should never go to text nodes (following IE, and proper
   // mouseover/out dispatch)
@@ -1219,8 +1237,8 @@ void EventHandler::AnimateSnapFling(base::TimeTicks monotonic_time) {
 }
 
 void EventHandler::SetCapturingMouseEventsNode(Node* n) {
+  CaptureMouseEventsToWidget(n);
   capturing_mouse_events_node_ = n;
-  event_handler_will_reset_capturing_mouse_events_node_ = false;
 }
 
 Node* EventHandler::EffectiveMouseEventTargetNode(Node* target_node) {
@@ -1313,10 +1331,11 @@ WebInputEventResult EventHandler::DispatchMousePointerEvent(
     Node* target_node,
     const String& canvas_region_id,
     const WebMouseEvent& mouse_event,
-    const Vector<WebMouseEvent>& coalesced_events) {
+    const Vector<WebMouseEvent>& coalesced_events,
+    const Vector<WebMouseEvent>& predicted_events) {
   const auto& event_result = pointer_event_manager_->SendMousePointerEvent(
       EffectiveMouseEventTargetNode(target_node), canvas_region_id, event_type,
-      mouse_event, coalesced_events);
+      mouse_event, coalesced_events, predicted_events);
   return event_result;
 }
 
@@ -1332,10 +1351,12 @@ WebInputEventResult EventHandler::HandleTargetedMouseEvent(
     const WebMouseEvent& event,
     const AtomicString& mouse_event_type,
     const Vector<WebMouseEvent>& coalesced_events,
+    const Vector<WebMouseEvent>& predicted_events,
     const String& canvas_region_id) {
   mouse_event_manager_->SetClickCount(event.click_count);
   return pointer_event_manager_->DirectDispatchMousePointerEvent(
-      target, event, mouse_event_type, coalesced_events, canvas_region_id);
+      target, event, mouse_event_type, coalesced_events, predicted_events,
+      canvas_region_id);
 }
 
 WebInputEventResult EventHandler::HandleGestureEvent(
@@ -1745,7 +1766,7 @@ GestureEventWithHitTestResults EventHandler::HitTestResultForGestureEvent(
           touch_adjustment_result_.adjusted_point);
     } else {
       hit_rect_size = GetHitTestRectForAdjustment(
-          LayoutSize(adjusted_event.TapAreaInRootFrame()));
+          *frame_, LayoutSize(adjusted_event.TapAreaInRootFrame()));
       if (!hit_rect_size.IsEmpty())
         hit_type |= HitTestRequest::kListBased;
     }
@@ -2014,6 +2035,7 @@ void EventHandler::MayUpdateHoverAfterScroll(
 }
 
 void EventHandler::SetResizingFrameSet(HTMLFrameSetElement* frame_set) {
+  CaptureMouseEventsToWidget(true);
   frame_set_being_resized_ = frame_set;
 }
 
@@ -2081,7 +2103,7 @@ void EventHandler::DragSourceEndedAt(const WebMouseEvent& event,
   // opportunity for Layer to update the :hover and :active pseudoclasses.
   HitTestRequest request(HitTestRequest::kRelease);
   MouseEventWithHitTestResults mev =
-      EventHandlingUtil::PerformMouseEventHitTest(frame_, request, event);
+      event_handling_util::PerformMouseEventHitTest(frame_, request, event);
 
   LocalFrame* target_frame;
   if (TargetIsFrame(mev.InnerNode(), target_frame)) {
@@ -2157,7 +2179,7 @@ bool EventHandler::PassMousePressEventToScrollbar(
     return false;
   scrollbar->MouseDown(mev.Event());
   if (scrollbar->PressedPart() == ScrollbarPart::kThumbPart)
-    frame_->LocalFrameRoot().Client()->SetMouseCapture(true);
+    CaptureMouseEventsToWidget(true);
   return true;
 }
 
@@ -2192,6 +2214,7 @@ WebInputEventResult EventHandler::PassMousePressEventToSubframe(
 WebInputEventResult EventHandler::PassMouseMoveEventToSubframe(
     MouseEventWithHitTestResults& mev,
     const Vector<WebMouseEvent>& coalesced_events,
+    const Vector<WebMouseEvent>& predicted_events,
     LocalFrame* subframe,
     HitTestResult* hovered_node,
     HitTestLocation* hit_test_location) {
@@ -2199,7 +2222,8 @@ WebInputEventResult EventHandler::PassMouseMoveEventToSubframe(
     return WebInputEventResult::kNotHandled;
   WebInputEventResult result =
       subframe->GetEventHandler().HandleMouseMoveOrLeaveEvent(
-          mev.Event(), coalesced_events, hovered_node, hit_test_location);
+          mev.Event(), coalesced_events, predicted_events, hovered_node,
+          hit_test_location);
   if (result != WebInputEventResult::kNotHandled)
     return result;
   return WebInputEventResult::kHandledSystem;
@@ -2213,6 +2237,20 @@ WebInputEventResult EventHandler::PassMouseReleaseEventToSubframe(
   if (result != WebInputEventResult::kNotHandled)
     return result;
   return WebInputEventResult::kHandledSystem;
+}
+
+void EventHandler::CaptureMouseEventsToWidget(bool capture) {
+  if (!frame_->IsLocalRoot()) {
+    frame_->LocalFrameRoot().GetEventHandler().CaptureMouseEventsToWidget(
+        capture);
+    return;
+  }
+
+  if (capture == is_widget_capturing_mouse_events_)
+    return;
+
+  frame_->LocalFrameRoot().Client()->SetMouseCapture(capture);
+  is_widget_capturing_mouse_events_ = capture;
 }
 
 }  // namespace blink

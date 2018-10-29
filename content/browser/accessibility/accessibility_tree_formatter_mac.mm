@@ -143,72 +143,68 @@ std::unique_ptr<base::Value> PopulateObject(id value) {
       SysNSStringToUTF16([NSString stringWithFormat:@"%@", value])));
 }
 
-NSArray* BuildAllAttributesArray() {
-  // Note: clang-format tries to put multiple attributes on one line,
-  // but we prefer to have one per line for readability.
-  // clang-format off
-  NSArray* array = [NSArray arrayWithObjects:
-      NSAccessibilityRoleDescriptionAttribute,
-      NSAccessibilityTitleAttribute,
-      NSAccessibilityValueAttribute,
-      NSAccessibilityMinValueAttribute,
-      NSAccessibilityMaxValueAttribute,
-      NSAccessibilityValueDescriptionAttribute,
-      NSAccessibilityDescriptionAttribute,
-      NSAccessibilityHelpAttribute,
-      @"AXInvalid",
-      NSAccessibilityDisclosingAttribute,
-      NSAccessibilityDisclosureLevelAttribute,
-      @"AXAccessKey",
-      @"AXARIAAtomic",
-      @"AXARIABusy",
-      @"AXARIAColumnCount",
-      @"AXARIAColumnIndex",
-      @"AXARIALive",
-      @"AXARIARelevant",
-      @"AXARIARowCount",
-      @"AXARIARowIndex",
-      @"AXARIASetSize",
-      @"AXARIAPosInSet",
-      @"AXAutocomplete",
-      @"AXAutocompleteValue",
-      NSAccessibilityColumnHeaderUIElementsAttribute,
-      NSAccessibilityColumnIndexRangeAttribute,
-      @"AXDOMIdentifier",
-      @"AXDropEffects",
-      @"AXEditableAncestor",
-      NSAccessibilityEnabledAttribute,
-      NSAccessibilityExpandedAttribute,
-      @"AXFocusableAncestor",
-      NSAccessibilityFocusedAttribute,
-      @"AXGrabbed",
-      NSAccessibilityHeaderAttribute,
-      @"AXHasPopup",
-      @"AXHasPopupValue",
-      @"AXHighestEditableAncestor",
-      NSAccessibilityIndexAttribute,
-      @"AXLanguage",
-      @"AXLoaded",
-      @"AXLoadingProcess",
-      NSAccessibilityNumberOfCharactersAttribute,
-      NSAccessibilitySortDirectionAttribute,
-      NSAccessibilityOrientationAttribute,
-      NSAccessibilityPlaceholderValueAttribute,
-      @"AXRequired",
-      NSAccessibilityRowHeaderUIElementsAttribute,
-      NSAccessibilityRowIndexRangeAttribute,
-      NSAccessibilitySelectedAttribute,
-      NSAccessibilitySelectedChildrenAttribute,
-      NSAccessibilityTitleUIElementAttribute,
-      NSAccessibilityURLAttribute,
-      NSAccessibilityVisibleCharacterRangeAttribute,
-      NSAccessibilityVisibleChildrenAttribute,
-      @"AXVisited",
-      @"AXLinkedUIElements",
-      nil];
-  // clang-format off
+NSArray* AllAttributesArray() {
+  static NSArray* all_attributes = [@[
+    NSAccessibilityRoleDescriptionAttribute,
+    NSAccessibilityTitleAttribute,
+    NSAccessibilityValueAttribute,
+    NSAccessibilityMinValueAttribute,
+    NSAccessibilityMaxValueAttribute,
+    NSAccessibilityValueDescriptionAttribute,
+    NSAccessibilityDescriptionAttribute,
+    NSAccessibilityHelpAttribute,
+    @"AXInvalid",
+    NSAccessibilityDisclosingAttribute,
+    NSAccessibilityDisclosureLevelAttribute,
+    @"AXAccessKey",
+    @"AXARIAAtomic",
+    @"AXARIABusy",
+    @"AXARIAColumnCount",
+    @"AXARIAColumnIndex",
+    @"AXARIALive",
+    @"AXARIARelevant",
+    @"AXARIARowCount",
+    @"AXARIARowIndex",
+    @"AXARIASetSize",
+    @"AXARIAPosInSet",
+    @"AXAutocomplete",
+    @"AXAutocompleteValue",
+    NSAccessibilityColumnHeaderUIElementsAttribute,
+    NSAccessibilityColumnIndexRangeAttribute,
+    @"AXDOMIdentifier",
+    @"AXDropEffects",
+    @"AXEditableAncestor",
+    NSAccessibilityEnabledAttribute,
+    NSAccessibilityExpandedAttribute,
+    @"AXFocusableAncestor",
+    NSAccessibilityFocusedAttribute,
+    @"AXGrabbed",
+    NSAccessibilityHeaderAttribute,
+    @"AXHasPopup",
+    @"AXHasPopupValue",
+    @"AXHighestEditableAncestor",
+    NSAccessibilityIndexAttribute,
+    @"AXLanguage",
+    @"AXLoaded",
+    @"AXLoadingProcess",
+    NSAccessibilityNumberOfCharactersAttribute,
+    NSAccessibilitySortDirectionAttribute,
+    NSAccessibilityOrientationAttribute,
+    NSAccessibilityPlaceholderValueAttribute,
+    @"AXRequired",
+    NSAccessibilityRowHeaderUIElementsAttribute,
+    NSAccessibilityRowIndexRangeAttribute,
+    NSAccessibilitySelectedAttribute,
+    NSAccessibilitySelectedChildrenAttribute,
+    NSAccessibilityTitleUIElementAttribute,
+    NSAccessibilityURLAttribute,
+    NSAccessibilityVisibleCharacterRangeAttribute,
+    NSAccessibilityVisibleChildrenAttribute,
+    @"AXVisited",
+    @"AXLinkedUIElements"
+  ] retain];
 
-  return [array retain];
+  return all_attributes;
 }
 
 }  // namespace
@@ -230,8 +226,9 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBrowser {
 };
 
 // static
-AccessibilityTreeFormatter* AccessibilityTreeFormatter::Create() {
-  return new AccessibilityTreeFormatterMac();
+std::unique_ptr<AccessibilityTreeFormatter>
+AccessibilityTreeFormatter::Create() {
+  return std::make_unique<AccessibilityTreeFormatterMac>();
 }
 
 AccessibilityTreeFormatterMac::AccessibilityTreeFormatterMac() {
@@ -259,8 +256,7 @@ void AccessibilityTreeFormatterMac::AddProperties(
                     SysNSStringToUTF8(subrole));
   }
 
-  CR_DEFINE_STATIC_LOCAL(NSArray*, all_attributes, (BuildAllAttributesArray()));
-  for (NSString* requestedAttribute in all_attributes) {
+  for (NSString* requestedAttribute in AllAttributesArray()) {
     if (![supportedAttributes containsObject:requestedAttribute])
       continue;
     id value = [cocoa_node accessibilityAttributeValue:requestedAttribute];
@@ -307,8 +303,7 @@ base::string16 AccessibilityTreeFormatterMac::ProcessTreeForOutput(
                    &line);
   }
 
-  CR_DEFINE_STATIC_LOCAL(NSArray*, all_attributes, (BuildAllAttributesArray()));
-  for (NSString* requestedAttribute in all_attributes) {
+  for (NSString* requestedAttribute in AllAttributesArray()) {
     string requestedAttributeUTF8 = SysNSStringToUTF8(requestedAttribute);
     if (dict.GetString(requestedAttributeUTF8, &s_value)) {
       WriteAttribute([defaultAttributes containsObject:requestedAttribute],

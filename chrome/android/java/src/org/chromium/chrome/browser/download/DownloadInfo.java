@@ -9,7 +9,9 @@ import android.graphics.Bitmap;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.download.ui.DownloadFilter;
 import org.chromium.components.download.DownloadState;
+import org.chromium.components.download.ResumeMode;
 import org.chromium.components.offline_items_collection.ContentId;
+import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -56,6 +58,9 @@ public final class DownloadInfo {
     private final Bitmap mIcon;
     @PendingState
     private final int mPendingState;
+    @FailState
+    private final int mFailState;
+    private final boolean mShouldPromoteOrigin;
 
     private DownloadInfo(Builder builder) {
         mUrl = builder.mUrl;
@@ -93,6 +98,8 @@ public final class DownloadInfo {
         mIsParallelDownload = builder.mIsParallelDownload;
         mIcon = builder.mIcon;
         mPendingState = builder.mPendingState;
+        mFailState = builder.mFailState;
+        mShouldPromoteOrigin = builder.mShouldPromoteOrigin;
     }
 
     public String getUrl() {
@@ -218,12 +225,33 @@ public final class DownloadInfo {
         return mPendingState;
     }
 
+    public @FailState int getFailState() {
+        return mFailState;
+    }
+
+    public boolean getShouldPromoteOrigin() {
+        return mShouldPromoteOrigin;
+    }
+
     /**
      * Helper method to build a {@link DownloadInfo} from an {@link OfflineItem}.
-     * @param item The {@link OfflineItem} to mimic.
-     * @return     A {@link DownloadInfo} containing the relevant fields from {@code item}.
+     * @param item    The {@link OfflineItem} to mimic.
+     * @param visuals The {@link OfflineItemVisuals} to mimic.
+     * @return        A {@link DownloadInfo} containing the relevant fields from {@code item}.
      */
     public static DownloadInfo fromOfflineItem(OfflineItem item, OfflineItemVisuals visuals) {
+        return builderFromOfflineItem(item, visuals).build();
+    }
+
+    /**
+     * Helper method to build a {@link DownloadInfo.Builder} from an {@link OfflineItem}.
+     * @param item    The {@link OfflineItem} to mimic.
+     * @param visuals The {@link OfflineItemVisuals} to mimic.
+     * @return        A {@link DownloadInfo.Builder} containing the relevant fields from
+     *                {@code item}.
+     */
+    public static DownloadInfo.Builder builderFromOfflineItem(
+            OfflineItem item, OfflineItemVisuals visuals) {
         int state;
         switch (item.state) {
             case OfflineItemState.COMPLETE:
@@ -248,6 +276,7 @@ public final class DownloadInfo {
 
         return new DownloadInfo.Builder()
                 .setContentId(item.id)
+                .setDownloadGuid(item.id.id)
                 .setFileName(item.title)
                 .setFilePath(item.filePath)
                 .setDescription(item.description)
@@ -269,7 +298,8 @@ public final class DownloadInfo {
                 .setIsParallelDownload(item.isAccelerated)
                 .setIcon(visuals == null ? null : visuals.icon)
                 .setPendingState(item.pendingState)
-                .build();
+                .setFailState(item.failState)
+                .setShouldPromoteOrigin(item.promoteOrigin);
     }
 
     /**
@@ -294,7 +324,13 @@ public final class DownloadInfo {
         offlineItem.isOffTheRecord = downloadInfo.isOffTheRecord();
         offlineItem.mimeType = downloadInfo.getMimeType();
         offlineItem.progress = downloadInfo.getProgress();
+        offlineItem.timeRemainingMs = downloadInfo.getTimeRemainingInMillis();
         offlineItem.isDangerous = downloadInfo.getIsDangerous();
+        offlineItem.pendingState = downloadInfo.getPendingState();
+        offlineItem.failState = downloadInfo.getFailState();
+        offlineItem.promoteOrigin = downloadInfo.getShouldPromoteOrigin();
+        offlineItem.lastAccessedTimeMs = downloadInfo.getLastAccessTime();
+
         switch (downloadInfo.state()) {
             case DownloadState.IN_PROGRESS:
                 offlineItem.state = downloadInfo.isPaused() ? OfflineItemState.PAUSED
@@ -309,8 +345,28 @@ public final class DownloadInfo {
                 offlineItem.state = OfflineItemState.CANCELLED;
                 break;
             case DownloadState.INTERRUPTED:
-                offlineItem.state = downloadInfo.isResumable() ? OfflineItemState.INTERRUPTED
-                                                               : OfflineItemState.FAILED;
+                DownloadItem downloadItem = new DownloadItem(false, downloadInfo);
+                @ResumeMode
+                int resumeMode = DownloadUtils.getResumeMode(downloadInfo.getFailState());
+                if (resumeMode == ResumeMode.INVALID) {
+                    // These are dead end states and no further user actions are needed.
+                    offlineItem.state = OfflineItemState.FAILED;
+                } else if (resumeMode == ResumeMode.USER_RESTART) {
+                    // Fail but can restart from the beginning. The UI should let the user to retry.
+                    offlineItem.state = OfflineItemState.INTERRUPTED;
+                }
+                // TODO(xingliu): isDownloadPaused and isDownloadPending rely on isAutoResumable
+                // is set correctly in {@link DownloadSharedPreferenceEntry}. The states of
+                // notification UI and download home currently may not match. Also pending is
+                // related to Java side auto resumption on good network condition.
+                else if (DownloadUtils.isDownloadPaused(downloadItem)) {
+                    offlineItem.state = OfflineItemState.PAUSED;
+                } else if (DownloadUtils.isDownloadPending(downloadItem)) {
+                    offlineItem.state = OfflineItemState.PENDING;
+                } else {
+                    // Unknown failure state.
+                    offlineItem.state = OfflineItemState.FAILED;
+                }
                 break;
             default:
                 assert false;
@@ -376,6 +432,9 @@ public final class DownloadInfo {
         private Bitmap mIcon;
         @PendingState
         private int mPendingState;
+        @FailState
+        private int mFailState;
+        private boolean mShouldPromoteOrigin;
 
         public Builder setUrl(String url) {
             mUrl = url;
@@ -527,6 +586,16 @@ public final class DownloadInfo {
             return this;
         }
 
+        public Builder setFailState(@FailState int failState) {
+            mFailState = failState;
+            return this;
+        }
+
+        public Builder setShouldPromoteOrigin(boolean shouldPromoteOrigin) {
+            mShouldPromoteOrigin = shouldPromoteOrigin;
+            return this;
+        }
+
         public DownloadInfo build() {
             return new DownloadInfo(this);
         }
@@ -565,7 +634,9 @@ public final class DownloadInfo {
                     .setIsTransient(downloadInfo.getIsTransient())
                     .setIsParallelDownload(downloadInfo.getIsParallelDownload())
                     .setIcon(downloadInfo.getIcon())
-                    .setPendingState(downloadInfo.getPendingState());
+                    .setPendingState(downloadInfo.getPendingState())
+                    .setFailState(downloadInfo.getFailState())
+                    .setShouldPromoteOrigin(downloadInfo.getShouldPromoteOrigin());
             return builder;
         }
     }
@@ -576,7 +647,7 @@ public final class DownloadInfo {
             boolean isIncognito, int state, int percentCompleted, boolean isPaused,
             boolean hasUserGesture, boolean isResumable, boolean isParallelDownload,
             String originalUrl, String referrerUrl, long timeRemainingInMs, long lastAccessTime,
-            boolean isDangerous) {
+            boolean isDangerous, @FailState int failState) {
         String remappedMimeType = ChromeDownloadDelegate.remapGenericMimeType(
                 mimeType, url, fileName);
 
@@ -604,6 +675,7 @@ public final class DownloadInfo {
                 .setLastAccessTime(lastAccessTime)
                 .setIsDangerous(isDangerous)
                 .setUrl(url)
+                .setFailState(failState)
                 .build();
     }
 }

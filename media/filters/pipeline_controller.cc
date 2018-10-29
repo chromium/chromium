@@ -26,12 +26,12 @@ PipelineController::PipelineController(
       error_cb_(error_cb),
       weak_factory_(this) {
   DCHECK(pipeline_);
-  DCHECK(!renderer_factory_cb_.is_null());
-  DCHECK(!seeked_cb_.is_null());
-  DCHECK(!suspended_cb_.is_null());
-  DCHECK(!before_resume_cb_.is_null());
-  DCHECK(!resumed_cb_.is_null());
-  DCHECK(!error_cb_.is_null());
+  DCHECK(renderer_factory_cb_);
+  DCHECK(seeked_cb_);
+  DCHECK(suspended_cb_);
+  DCHECK(before_resume_cb_);
+  DCHECK(resumed_cb_);
+  DCHECK(error_cb_);
 }
 
 PipelineController::~PipelineController() {

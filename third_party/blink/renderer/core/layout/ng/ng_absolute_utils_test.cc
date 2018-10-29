@@ -395,14 +395,16 @@ TEST_F(NGAbsoluteUtilsTest, Vertical) {
   EXPECT_EQ(top + margin_space, p.inset.top);
   EXPECT_EQ(bottom + margin_space, p.inset.bottom);
 
-  // If top, bottom, and height are known, not enough space for margins.
+  // If top, bottom, and height are known, negative auto margins.
+  LayoutUnit negative_margin_space =
+      (container_size_.block_size - top - LayoutUnit(300) - bottom) / 2;
   SetVerticalStyle(top, NGAuto, LayoutUnit(300), NGAuto, bottom);
   EXPECT_EQ(AbsoluteNeedsChildBlockSize(*style_), false);
   ComputeFullAbsoluteWithChildBlockSize(
       ltr_space_, *style_, static_position, auto_height, base::nullopt,
       WritingMode::kHorizontalTb, TextDirection::kLtr, &p);
-  EXPECT_EQ(top, p.inset.top);
-  EXPECT_EQ(-top, p.inset.bottom);
+  EXPECT_EQ(top + negative_margin_space, p.inset.top);
+  EXPECT_EQ(bottom + negative_margin_space, p.inset.bottom);
 
   // Rule 1: top and height are unknown.
   SetVerticalStyle(NGAuto, margin_top, NGAuto, margin_bottom, bottom);

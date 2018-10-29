@@ -171,6 +171,10 @@ void UserImageScreen::Show() {
   if (!view_)
     return;
 
+  if (IsPublicSessionOrEphemeralLogin()) {
+    ExitScreen();
+    return;
+  }
   DCHECK(!policy_registrar_);
   if (Profile* profile = ProfileHelper::Get()->GetProfileByUser(GetUser())) {
     policy::PolicyService* policy_service =

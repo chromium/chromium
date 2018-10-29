@@ -32,7 +32,10 @@ class CORE_EXPORT ThreadedWorkletMessagingProxy
   void WorkletObjectDestroyed() final;
   void TerminateWorkletGlobalScope() final;
 
-  void Initialize(WorkerClients*, WorkletModuleResponsesMap*);
+  void Initialize(
+      WorkerClients*,
+      WorkletModuleResponsesMap*,
+      const base::Optional<WorkerBackingThreadStartupData>& = base::nullopt);
 
   void Trace(blink::Visitor*) override;
 

@@ -52,7 +52,8 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   void OnMessageReceived(const IPC::Message& message);
 
-  AutomationAXTreeWrapper* GetAutomationAXTreeWrapperFromTreeID(int tree_id);
+  AutomationAXTreeWrapper* GetAutomationAXTreeWrapperFromTreeID(
+      ui::AXTreeID tree_id);
 
   // Given a tree (|in_out_tree_wrapper|) and a node, returns the parent.
   // If |node| is the root of its tree, the return value will be the host
@@ -71,7 +72,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   void SendTreeChangeEvent(api::automation::TreeChangeType change_type,
                            ui::AXTree* tree,
                            ui::AXNode* node);
-  void SendAutomationEvent(int tree_id,
+  void SendAutomationEvent(ui::AXTreeID tree_id,
                            const gfx::Point& mouse_location,
                            ui::AXEvent& event,
                            api::automation::EventType event_type);
@@ -174,7 +175,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   void SendChildTreeIDEvent(ui::AXTree* tree, ui::AXNode* node);
 
-  std::map<int, std::unique_ptr<AutomationAXTreeWrapper>>
+  std::map<ui::AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>
       tree_id_to_tree_wrapper_map_;
   std::map<ui::AXTree*, AutomationAXTreeWrapper*> axtree_to_tree_wrapper_map_;
   scoped_refptr<AutomationMessageFilter> message_filter_;

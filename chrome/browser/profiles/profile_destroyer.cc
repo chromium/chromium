@@ -105,8 +105,8 @@ void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* const profile) {
   DCHECK(profile);
   DCHECK(profile->IsOffTheRecord());
   if (pending_destroyers_) {
-    for (DestroyerSet::iterator i = pending_destroyers_->begin();
-         i != pending_destroyers_->end(); ++i) {
+    for (auto i = pending_destroyers_->begin(); i != pending_destroyers_->end();
+         ++i) {
       if ((*i)->profile_ == profile) {
         // We want to signal this in debug builds so that we don't lose sight of
         // these potential leaks, but we handle it in release so that we don't
@@ -126,7 +126,7 @@ ProfileDestroyer::ProfileDestroyer(Profile* const profile, HostSet* hosts)
   if (pending_destroyers_ == NULL)
     pending_destroyers_ = new DestroyerSet;
   pending_destroyers_->insert(this);
-  for (HostSet::iterator i = hosts->begin(); i != hosts->end(); ++i) {
+  for (auto i = hosts->begin(); i != hosts->end(); ++i) {
     (*i)->AddObserver(this);
     // For each of the observations, we bump up our reference count.
     // It will go back to 0 and free us when all hosts are terminated.
@@ -156,7 +156,7 @@ ProfileDestroyer::~ProfileDestroyer() {
                            << "destroyed early enough!";
 #endif  // NDEBUG
   DCHECK(pending_destroyers_ != NULL);
-  DestroyerSet::iterator iter = pending_destroyers_->find(this);
+  auto iter = pending_destroyers_->find(this);
   DCHECK(iter != pending_destroyers_->end());
   pending_destroyers_->erase(iter);
   if (pending_destroyers_->empty()) {

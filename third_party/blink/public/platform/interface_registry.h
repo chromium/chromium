@@ -14,8 +14,8 @@
 #if INSIDE_BLINK
 #include "mojo/public/cpp/bindings/associated_interface_request.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/cross_thread_functional.h"  // nogncheck
+#include "third_party/blink/renderer/platform/wtf/functional.h"  // nogncheck
 #endif
 
 namespace base {

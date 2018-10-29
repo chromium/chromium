@@ -2,7 +2,6 @@ Test that iframe.contentWindow.document.write() can convert a document to strict
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 about:blank is quirksmode by default
 PASS iframeDocument.compatMode is "BackCompat"
 ensure that about:blank's DOM has an html and body element

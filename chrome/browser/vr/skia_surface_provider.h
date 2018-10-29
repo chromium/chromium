@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_VR_SKIA_SURFACE_PROVIDER_H_
 #define CHROME_BROWSER_VR_SKIA_SURFACE_PROVIDER_H_
 
+#include "chrome/browser/vr/gl_bindings.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrContext.h"
-#include "ui/gl/gl_bindings.h"
 
 class SkSurface;
 

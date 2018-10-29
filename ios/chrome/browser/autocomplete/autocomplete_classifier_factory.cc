@@ -46,9 +46,9 @@ AutocompleteClassifierFactory* AutocompleteClassifierFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactoryFunction
+BrowserStateKeyedServiceFactory::TestingFactory
 AutocompleteClassifierFactory::GetDefaultFactory() {
-  return &BuildAutocompleteClassifier;
+  return base::BindRepeating(&BuildAutocompleteClassifier);
 }
 
 AutocompleteClassifierFactory::AutocompleteClassifierFactory()

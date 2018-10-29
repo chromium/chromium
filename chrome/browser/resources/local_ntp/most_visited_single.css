@@ -397,6 +397,11 @@ html[dir=rtl] .mv-favicon {
   padding: var(--md-tile-padding-vertical) var(--md-tile-padding-horizontal);
 }
 
+body.using-theme .md-tile {
+  /* The theme title pill adds 2*4px of vertical padding. */
+  padding-bottom: calc(var(--md-tile-padding-vertical) - 2*4px);
+}
+
 .md-empty-tile {
   display: none;
 }

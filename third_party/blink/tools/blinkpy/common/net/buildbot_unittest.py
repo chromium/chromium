@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import json
 import logging
 import unittest
 
@@ -48,6 +49,13 @@ class BuilderTest(LoggingTestCase):
             BuildBot().results_url('Test Builder', 10),
             'https://test-results.appspot.com/data/layout_results/Test_Builder/10/layout-test-results')
 
+    def test_results_url_with_build_number_step_name(self):
+        self.assertEqual(
+            BuildBot().results_url('Test Builder', 10,
+                                   'webkit_layout_tests (with patch)'),
+            'https://test-results.appspot.com/data/layout_results/Test_Builder'
+            '/10/webkit_layout_tests%20%28with%20patch%29/layout-test-results')
+
     def test_results_url_with_non_numeric_build_number(self):
         with self.assertRaisesRegexp(AssertionError, 'expected numeric build number'):
             BuildBot().results_url('Test Builder', 'ba5eba11')
@@ -65,8 +73,8 @@ class BuilderTest(LoggingTestCase):
     def test_fetch_layout_test_results_with_no_results_fetched(self):
         buildbot = BuildBot()
 
-        def fetch_file(_, filename):
-            return None if filename == 'failing_results.json' else 'contents'
+        def fetch_file(url):
+            return None if url.endswith('failing_results.json') else 'contents'
 
         buildbot.fetch_file = fetch_file
         results = buildbot.fetch_layout_test_results(buildbot.results_url('B'))
@@ -75,6 +83,38 @@ class BuilderTest(LoggingTestCase):
             'DEBUG: Got 404 response from:\n'
             'https://test-results.appspot.com/data/layout_results/B/results/layout-test-results/failing_results.json\n'
         ])
+
+    def test_fetch_layout_test_results_weird_step_name(self):
+        buildbot = BuildBot()
+
+        def fetch_file(url):
+            if '/testfile' in url:
+                return ('ADD_RESULTS(%s);' % (json.dumps(
+                    [{"TestType": "webkit_layout_tests on Intel GPU (with patch)"},
+                     {"TestType": "base_unittests (with patch)"}])))
+            return json.dumps({'passed': True}) if url.endswith('failing_results.json') else 'deadbeef'
+
+        buildbot.fetch_file = fetch_file
+        results = buildbot.fetch_results(Build('builder', 123))
+        self.assertEqual(results._results, {  # pylint: disable=protected-access
+            'passed': True
+        })
+        self.assertLog([])
+
+    def test_get_step_name(self):
+        buildbot = BuildBot()
+
+        def fetch_file(_):
+            return ('ADD_RESULTS(%s);' % (json.dumps(
+                [{"TestType": "webkit_layout_tests (with patch)"},
+                 {"TestType": "site_per_process_webkit_layout_tests (with patch)"},
+                 {"TestType": "webkit_layout_tests (retry with patch)"},
+                 {"TestType": "base_unittests (with patch)"}])))
+
+        buildbot.fetch_file = fetch_file
+        step_name = buildbot.get_layout_test_step_name(Build('foo', 5))
+        self.assertEqual(step_name, 'webkit_layout_tests (with patch)')
+        self.assertLog([])
 
 
 class BuildBotHelperFunctionTest(unittest.TestCase):

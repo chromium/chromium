@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/insets_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -21,7 +21,7 @@ class Vector2d;
 // This can be used to represent a space within a rectangle, by "shrinking" the
 // rectangle by the inset amount on all four sides. Alternatively, it can
 // represent a border that has a different thickness on each side.
-class GFX_EXPORT Insets {
+class GEOMETRY_EXPORT Insets {
  public:
   constexpr Insets() : top_(0), left_(0), bottom_(0), right_(0) {}
   constexpr explicit Insets(int all)

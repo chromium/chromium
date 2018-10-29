@@ -37,7 +37,6 @@
 importScripts('./shared.js');
 
 const _PATH_SEP = '/';
-const _DEMO_DATA_URL = 'demo.ndjson';
 const _NAMES_TO_FLAGS = Object.freeze({
   hot: _FLAGS.HOT,
   generated: _FLAGS.GENERATED_SOURCE,
@@ -362,8 +361,9 @@ class TreeBuilder {
    * tree nodes for that file's symbols attached. Afterwards attach that node to
    * its parent directory node, or create it if missing.
    * @param {FileEntry} fileEntry File entry from data file
+   * @param {boolean} diffMode Whether diff mode is in effect.
    */
-  addFileEntry(fileEntry) {
+  addFileEntry(fileEntry, diffMode) {
     const idPath = this._getPath(fileEntry);
     // make node for this
     const fileNode = createNode({
@@ -371,13 +371,15 @@ class TreeBuilder {
       shortNameIndex: lastIndexOf(idPath, this._sep) + 1,
       type: _CONTAINER_TYPES.FILE,
     });
+    const defaultCount = diffMode ? 0 : 1;
     // build child nodes for this file's symbols and attach to self
     for (const symbol of fileEntry[_KEYS.FILE_SYMBOLS]) {
       const size = symbol[_KEYS.SIZE];
       const type = symbol[_KEYS.TYPE];
-      const count = symbol[_KEYS.COUNT] || 1;
-      const flags = symbol[_KEYS.FLAGS] || 0;
-      const numAliases = symbol[_KEYS.NUM_ALIASES] || 1;
+      const count = _KEYS.COUNT in symbol ? symbol[_KEYS.COUNT] : defaultCount;
+      const flags = _KEYS.FLAGS in symbol ? symbol[_KEYS.FLAGS] : 0;
+      const numAliases =
+          _KEYS.NUM_ALIASES in symbol ? symbol[_KEYS.NUM_ALIASES] : 1;
 
       const symbolNode = createNode({
         // Join file path to symbol name with a ":"
@@ -600,7 +602,7 @@ class DataFetcher {
 function parseOptions(options) {
   const params = new URLSearchParams(options);
 
-  const url = params.get('data_url');
+  const url = params.get('load_url');
   const groupBy = params.get('group_by') || 'source_path';
   const methodCountMode = params.has('method_count');
   const filterGeneratedFiles = params.has('generated_filter');
@@ -759,13 +761,15 @@ async function buildTree(groupBy, filterTest, highlightTest, onProgress) {
   try {
     // Post partial state every second
     let lastBatchSent = Date.now();
+    let diffMode = null;
     for await (const dataObj of fetcher.newlineDelimtedJsonStream()) {
       if (meta == null) {
         // First line of data is used to store meta information.
         meta = /** @type {Meta} */ (dataObj);
+        diffMode = meta.diff_mode;
         postToUi();
       } else {
-        builder.addFileEntry(/** @type {FileEntry} */ (dataObj));
+        builder.addFileEntry(/** @type {FileEntry} */ (dataObj), diffMode);
         const currentTime = Date.now();
         if (currentTime - lastBatchSent > 500) {
           postToUi();
@@ -793,19 +797,10 @@ const actions = {
   /** @param {{input:string|null,options:string}} param0 */
   load({input, options}) {
     const {groupBy, filterTest, highlightTest, url} = parseOptions(options);
-    if (input === 'from-url://') {
-      if (url) {
-        // Display the data from the `data_url` query parameter
-        console.info('Displaying data from', url);
-        fetcher.setInput(url);
-      } else {
-        // Display starter content if nothing was specified.
-        console.info('Displaying demo data');
-        // The demo file only exists in the GCS bucket where the UI is hosted.
-        // When using `start_server`, no data is shown until the user uploads
-        // something.
-        fetcher.setInput(_DEMO_DATA_URL);
-      }
+    if (input === 'from-url://' && url) {
+      // Display the data from the `load_url` query parameter
+      console.info('Displaying data from', url);
+      fetcher.setInput(url);
     } else if (input != null) {
       console.info('Displaying uploaded data');
       fetcher.setInput(input);

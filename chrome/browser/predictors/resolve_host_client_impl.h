@@ -37,6 +37,8 @@ class ResolveHostClientImpl : public network::mojom::ResolveHostClient {
   // Cancels the request if it hasn't been completed yet.
   ~ResolveHostClientImpl() override;
 
+  void Cancel();
+
   // network::mojom::ResolveHostClient:
   void OnComplete(
       int result,
@@ -46,6 +48,7 @@ class ResolveHostClientImpl : public network::mojom::ResolveHostClient {
 
  private:
   mojo::Binding<network::mojom::ResolveHostClient> binding_;
+  network::mojom::ResolveHostHandlePtr control_handle_;
   ResolveHostCallback callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ResolveHostClientImpl);

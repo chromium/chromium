@@ -46,7 +46,6 @@
 
   if (newWebState) {
     Tab* newTab = LegacyTabHelper::GetTabForWebState(newWebState);
-    [newTab updateLastVisitedTimestamp];
 
     // Persist the session state.
     if (newTab.loadFinished)

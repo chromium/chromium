@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "base/containers/flat_map.h"
+#include "base/files/file.h"
 #include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"

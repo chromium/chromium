@@ -25,7 +25,7 @@
         {
           "object": "LayoutNGBlockFlow DIV id='target'",
           "rect": [8, 2408, 100, 100],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "transform": 1

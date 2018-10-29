@@ -123,6 +123,12 @@ AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
   // invoked straight after, which destroys child views. views::View subclasses
   // shouldn't be doing anything interesting in their destructors, so it should
   // be okay to destroy the |sheet_| immediately after this line.
+  //
+  // However, as AuthenticatorRequestDialogModel is owned by |this|, and
+  // ObservableAuthenticatorList is owned by AuthenticatorRequestDialogModel,
+  // destroy all view components that might own models observing the list prior
+  // to destroying AuthenticatorRequestDialogModel.
+  RemoveAllChildViews(true /* delete_children */);
 }
 
 gfx::Size AuthenticatorRequestDialogView::CalculatePreferredSize() const {

@@ -54,7 +54,7 @@ class PictureInPictureWindowManager {
   // Closes the active Picture-in-Picture window.
   // There MUST be a window open.
   // This is suffixed with "Internal" to keep consistency with the method above.
-  void CloseWindowInternal();
+  void CloseWindowInternal(bool should_reset_pip_player);
 
   PictureInPictureWindowManager();
   ~PictureInPictureWindowManager();

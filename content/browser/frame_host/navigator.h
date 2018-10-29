@@ -144,7 +144,8 @@ class CONTENT_EXPORT Navigator : public base::RefCounted<Navigator> {
       const CommonNavigationParams& common_params,
       mojom::BeginNavigationParamsPtr begin_params,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      mojom::NavigationClientAssociatedPtrInfo navigation_client);
+      mojom::NavigationClientAssociatedPtrInfo navigation_client,
+      blink::mojom::NavigationInitiatorPtr navigation_initiator);
 
   // Used to restart a navigation that was thought to be same-document in
   // cross-document mode.

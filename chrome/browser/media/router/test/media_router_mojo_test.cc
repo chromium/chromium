@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/event_page_request_manager_factory.h"
 #include "extensions/common/extension_builder.h"
@@ -165,7 +166,8 @@ MockMediaRouteControllerObserver::~MockMediaRouteControllerObserver() {}
 MediaRouterMojoTest::MediaRouterMojoTest() {
   request_manager_ = static_cast<MockEventPageRequestManager*>(
       EventPageRequestManagerFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), &MockEventPageRequestManager::Create));
+          profile(),
+          base::BindRepeating(&MockEventPageRequestManager::Create)));
   request_manager_->set_mojo_connections_ready_for_test(true);
   ON_CALL(*request_manager_, RunOrDeferInternal(_, _))
       .WillByDefault(Invoke([](base::OnceClosure& request,

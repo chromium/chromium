@@ -26,6 +26,8 @@ jumbo_source_set("common") {
     "client_hints/client_hints.cc",
     "common_export.h",
     "device_memory/approximated_device_memory.cc",
+    "dom_storage/session_storage_namespace_id.cc",
+    "download/download_stats.cc",
     "experiments/memory_ablation_experiment.cc",
     "feature_policy/feature_policy.cc",
     "features.cc",
@@ -35,7 +37,7 @@ jumbo_source_set("common") {
     "indexeddb/indexeddb_key_path.cc",
     "indexeddb/indexeddb_key_range.cc",
     "indexeddb/indexeddb_metadata.cc",
-    "indexeddb/indexeddb_struct_traits.cc",
+    "indexeddb/indexeddb_mojom_traits.cc",
     "manifest/manifest.cc",
     "manifest/manifest_icon_selector.cc",
     "messaging/cloneable_message.cc",
@@ -62,6 +64,10 @@ jumbo_source_set("common") {
   ]
 
   public_deps = [
+    "//third_party/blink/public/common:headers",
+  ]
+  allow_circular_includes_from = [
+    # It's using common_export.h creating a circular dependency.
     "//third_party/blink/public/common:headers",
   ]
 

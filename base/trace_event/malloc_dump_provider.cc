@@ -12,7 +12,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/debug/profiler.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 
 #if defined(OS_MACOSX)

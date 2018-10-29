@@ -6,7 +6,7 @@ import org.robolectric.util.ReflectionHelpers;
 import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 /**
- * Bridge between shadows and {@link org.chromium.base.AsyncTask}.
+ * Bridge between shadows and {@link org.chromium.base.task.AsyncTask}.
  */
 @DoNotInstrument
 public class ShadowAsyncTaskBridge<Result> {

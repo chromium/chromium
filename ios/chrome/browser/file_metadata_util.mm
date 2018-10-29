@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,7 +16,7 @@
 
 void SetSkipSystemBackupAttributeToItem(const base::FilePath& path,
                                         bool skip_system_backup) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
 
   NSURL* file_url =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];

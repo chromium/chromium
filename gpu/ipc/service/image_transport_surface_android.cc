@@ -4,13 +4,15 @@
 
 #include "gpu/ipc/service/image_transport_surface.h"
 
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/gl_surface_egl_surface_control.h"
 #include "ui/gl/gl_surface_stub.h"
-
-#include <android/native_window.h>
 
 namespace gpu {
 
@@ -32,8 +34,15 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
     LOG(WARNING) << "Failed to acquire native widget.";
     return nullptr;
   }
-  scoped_refptr<gl::GLSurface> surface =
-      new gl::NativeViewGLSurfaceEGL(window, nullptr);
+  scoped_refptr<gl::GLSurface> surface;
+
+  if (delegate &&
+      delegate->GetFeatureInfo()->feature_flags().android_surface_control) {
+    surface = new gl::GLSurfaceEGLSurfaceControl(window);
+  } else {
+    surface = new gl::NativeViewGLSurfaceEGL(window, nullptr);
+  }
+
   bool initialize_success = surface->Initialize(format);
   ANativeWindow_release(window);
   if (!initialize_success)

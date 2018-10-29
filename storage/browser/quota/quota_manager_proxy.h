@@ -66,9 +66,8 @@ class STORAGE_EXPORT QuotaManagerProxy
   friend class QuotaManager;
   friend class base::RefCountedThreadSafe<QuotaManagerProxy>;
 
-  QuotaManagerProxy(
-      QuotaManager* manager,
-      const scoped_refptr<base::SingleThreadTaskRunner>& io_thread);
+  QuotaManagerProxy(QuotaManager* manager,
+                    scoped_refptr<base::SingleThreadTaskRunner> io_thread);
   virtual ~QuotaManagerProxy();
 
   QuotaManager* manager_;  // only accessed on the io thread

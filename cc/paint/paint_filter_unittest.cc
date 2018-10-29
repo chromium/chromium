@@ -33,7 +33,7 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
   if (has_discardable_images)
     image = CreateDiscardablePaintImage(gfx::Size(100, 100));
   else
-    image = CreateBitmapImage(gfx::Size(100, 100));
+    image = CreateNonDiscardablePaintImage(gfx::Size(100, 100));
 
   auto image_filter = sk_make_sp<ImagePaintFilter>(
       image, SkRect::MakeWH(100.f, 100.f), SkRect::MakeWH(100.f, 100.f),

@@ -127,12 +127,14 @@ void RendererWebMediaPlayerDelegate::DidPictureInPictureModeStart(
     int delegate_id,
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size,
-    blink::WebMediaPlayer::PipWindowOpenedCallback callback) {
+    blink::WebMediaPlayer::PipWindowOpenedCallback callback,
+    bool show_play_pause_button) {
   int request_id = next_picture_in_picture_callback_id_++;
   enter_picture_in_picture_callback_map_.insert(
       std::make_pair(request_id, std::move(callback)));
   Send(new MediaPlayerDelegateHostMsg_OnPictureInPictureModeStarted(
-      routing_id(), delegate_id, surface_id, natural_size, request_id));
+      routing_id(), delegate_id, surface_id, natural_size, request_id,
+      show_play_pause_button));
 }
 
 void RendererWebMediaPlayerDelegate::DidPictureInPictureModeEnd(
@@ -155,9 +157,11 @@ void RendererWebMediaPlayerDelegate::DidSetPictureInPictureCustomControls(
 void RendererWebMediaPlayerDelegate::DidPictureInPictureSurfaceChange(
     int delegate_id,
     const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
+    const gfx::Size& natural_size,
+    bool show_play_pause_button) {
   Send(new MediaPlayerDelegateHostMsg_OnPictureInPictureSurfaceChanged(
-      routing_id(), delegate_id, surface_id, natural_size));
+      routing_id(), delegate_id, surface_id, natural_size,
+      show_play_pause_button));
 }
 
 void RendererWebMediaPlayerDelegate::

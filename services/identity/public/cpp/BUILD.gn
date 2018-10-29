@@ -12,10 +12,21 @@ source_set("cpp") {
     "identity_manager.h",
     "primary_account_access_token_fetcher.cc",
     "primary_account_access_token_fetcher.h",
+    "primary_account_mutator.h",
   ]
+
+  if (!is_chromeos) {
+    sources += [
+      "primary_account_mutator_impl.cc",
+      "primary_account_mutator_impl.h",
+    ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//components/signin/core/browser",
+    "//services/identity/public/cpp:cpp_types",
   ]
 }
 
@@ -29,6 +40,8 @@ source_set("cpp_types") {
     "account_state.h",
     "scope_set.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {

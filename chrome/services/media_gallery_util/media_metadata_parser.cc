@@ -57,15 +57,12 @@ chrome::mojom::MediaMetadataPtr ParseAudioVideoMetadata(
   metadata->title = extractor.title();
   metadata->track = extractor.track();
 
-  for (media::AudioVideoMetadataExtractor::StreamInfoVector::const_iterator it =
-           extractor.stream_infos().begin();
+  for (auto it = extractor.stream_infos().begin();
        it != extractor.stream_infos().end(); ++it) {
     chrome::mojom::MediaStreamInfoPtr stream_info =
         chrome::mojom::MediaStreamInfo::New(
             it->type, base::Value(base::Value::Type::DICTIONARY));
-    for (std::map<std::string, std::string>::const_iterator tag_it =
-             it->tags.begin();
-         tag_it != it->tags.end(); ++tag_it) {
+    for (auto tag_it = it->tags.begin(); tag_it != it->tags.end(); ++tag_it) {
       stream_info->additional_properties.SetKey(tag_it->first,
                                                 base::Value(tag_it->second));
     }
@@ -73,8 +70,7 @@ chrome::mojom::MediaMetadataPtr ParseAudioVideoMetadata(
   }
 
   if (get_attached_images) {
-    for (std::vector<std::string>::const_iterator it =
-             extractor.attached_images_bytes().begin();
+    for (auto it = extractor.attached_images_bytes().begin();
          it != extractor.attached_images_bytes().end(); ++it) {
       attached_images->push_back(metadata::AttachedImage());
       attached_images->back().data = *it;

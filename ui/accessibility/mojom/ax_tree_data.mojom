@@ -5,12 +5,13 @@
 module ax.mojom;
 
 import "ui/accessibility/ax_enums.mojom";
+import "ui/accessibility/mojom/ax_tree_id.mojom";
 
 // See ui::AXTreeData for comments / explanations of these fields.
 struct AXTreeData {
-  int32 tree_id;
-  int32 parent_tree_id;
-  int32 focused_tree_id;
+  ax.mojom.AXTreeID tree_id;
+  ax.mojom.AXTreeID parent_tree_id;
+  ax.mojom.AXTreeID focused_tree_id;
   string doctype;
   bool loaded;
   float loading_progress;

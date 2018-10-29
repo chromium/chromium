@@ -19,10 +19,10 @@
 namespace content {
 namespace {
 
-// Determines whether it is safe to redirect to |url|.
-bool IsRedirectSafe(const GURL& url) {
-  return IsSafeRedirectTarget(url) &&
-         GetContentClient()->renderer()->IsSafeRedirectTarget(url);
+// Determines whether it is safe to redirect from |from_url| to |to_url|.
+bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) {
+  return IsSafeRedirectTarget(from_url, to_url) &&
+         GetContentClient()->renderer()->IsSafeRedirectTarget(to_url);
 }
 
 }  // namespace
@@ -127,11 +127,13 @@ URLLoaderClientImpl::URLLoaderClientImpl(
     int request_id,
     ResourceDispatcher* resource_dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    bool bypass_redirect_checks)
+    bool bypass_redirect_checks,
+    const GURL& request_url)
     : request_id_(request_id),
       resource_dispatcher_(resource_dispatcher),
       task_runner_(std::move(task_runner)),
       bypass_redirect_checks_(bypass_redirect_checks),
+      last_loaded_url_(request_url),
       url_loader_client_binding_(this),
       weak_factory_(this) {}
 
@@ -247,11 +249,13 @@ void URLLoaderClientImpl::OnReceiveRedirect(
   DCHECK(!has_received_response_);
   DCHECK(!body_consumer_);
   if (base::FeatureList::IsEnabled(network::features::kNetworkService) &&
-      !bypass_redirect_checks_ && !IsRedirectSafe(redirect_info.new_url)) {
+      !bypass_redirect_checks_ &&
+      !IsRedirectSafe(last_loaded_url_, redirect_info.new_url)) {
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT));
     return;
   }
 
+  last_loaded_url_ = redirect_info.new_url;
   if (NeedsStoringMessage()) {
     StoreAndDispatch(std::make_unique<DeferredOnReceiveRedirect>(
         redirect_info, response_head, task_runner_));

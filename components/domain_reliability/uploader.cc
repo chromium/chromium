@@ -215,12 +215,6 @@ std::unique_ptr<DomainReliabilityUploader> DomainReliabilityUploader::Create(
 }
 
 // static
-bool DomainReliabilityUploader::OriginatedFromDomainReliability(
-    const net::URLRequest& request) {
-  return request.GetUserData(UploadUserData::kUserDataKey) != nullptr;
-}
-
-// static
 int DomainReliabilityUploader::GetURLRequestUploadDepth(
     const net::URLRequest& request) {
   UploadUserData* data = static_cast<UploadUserData*>(

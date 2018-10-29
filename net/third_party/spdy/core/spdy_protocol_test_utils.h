@@ -23,6 +23,7 @@
 #include "net/third_party/spdy/core/spdy_protocol.h"
 #include "net/third_party/spdy/core/spdy_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace spdy {
 namespace test {
@@ -37,12 +38,10 @@ namespace test {
 template <class T>
 ::testing::AssertionResult VerifySpdyFrameWithPaddingIREquals(const T& expected,
                                                               const T& actual) {
-  DVLOG(1) << "VerifySpdyFrameWithPaddingIREquals";
-  if (expected.padded() != actual.padded())
-    return ::testing::AssertionFailure();
+  VLOG(1) << "VerifySpdyFrameWithPaddingIREquals";
+  VERIFY_EQ(expected.padded(), actual.padded());
   if (expected.padded()) {
-    if (expected.padding_payload_len() != actual.padding_payload_len())
-      return ::testing::AssertionFailure();
+    VERIFY_EQ(expected.padding_payload_len(), actual.padding_payload_len());
   }
 
   return ::testing::AssertionSuccess();
@@ -53,14 +52,10 @@ template <class T>
 ::testing::AssertionResult VerifySpdyFrameWithPriorityIREquals(
     const T& expected,
     const T& actual) {
-  DVLOG(1) << "VerifySpdyFrameWithPriorityIREquals";
-  if (expected.parent_stream_id() != actual.parent_stream_id())
-    return ::testing::AssertionFailure();
-  if (expected.weight() != actual.weight())
-    return ::testing::AssertionFailure();
-  if (expected.exclusive() != actual.exclusive())
-    return ::testing::AssertionFailure();
-
+  VLOG(1) << "VerifySpdyFrameWithPriorityIREquals";
+  VERIFY_EQ(expected.parent_stream_id(), actual.parent_stream_id());
+  VERIFY_EQ(expected.weight(), actual.weight());
+  VERIFY_EQ(expected.exclusive(), actual.exclusive());
   return ::testing::AssertionSuccess();
 }
 
@@ -128,19 +123,14 @@ template <class E>
 ::testing::AssertionResult VerifySpdyFrameIREquals(const E* expected,
                                                    const SpdyFrameIR* actual) {
   if (expected == nullptr || actual == nullptr) {
-    DVLOG(1) << "VerifySpdyFrameIREquals one null";
-    if (expected != nullptr)
-      return ::testing::AssertionFailure();
-    if (actual != nullptr)
-      return ::testing::AssertionFailure();
-
+    VLOG(1) << "VerifySpdyFrameIREquals one null";
+    VERIFY_EQ(expected, nullptr);
+    VERIFY_EQ(actual, nullptr);
     return ::testing::AssertionSuccess();
   }
-  DVLOG(1) << "VerifySpdyFrameIREquals not null";
-  const E* actual2 = reinterpret_cast<const E*>(actual);
-  if (actual2 == nullptr)
-    return ::testing::AssertionFailure();
-
+  VLOG(1) << "VerifySpdyFrameIREquals not null";
+  VERIFY_EQ(actual->frame_type(), expected->frame_type());
+  const E* actual2 = static_cast<const E*>(actual);
   return VerifySpdyFrameIREquals(*expected, *actual2);
 }
 
@@ -149,7 +139,7 @@ template <class E>
 template <class E>
 ::testing::AssertionResult VerifySpdyFrameIREquals(const E& expected,
                                                    const SpdyFrameIR* actual) {
-  DVLOG(1) << "VerifySpdyFrameIREquals";
+  VLOG(1) << "VerifySpdyFrameIREquals";
   return VerifySpdyFrameIREquals(&expected, actual);
 }
 

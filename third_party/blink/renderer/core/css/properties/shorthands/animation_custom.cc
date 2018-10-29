@@ -71,7 +71,7 @@ bool Animation::ParseShorthand(
     return false;
   }
 
-  for (size_t i = 0; i < longhand_count; ++i) {
+  for (unsigned i = 0; i < longhand_count; ++i) {
     CSSPropertyParserHelpers::AddProperty(
         shorthand.properties()[i]->PropertyID(), shorthand.id(), *longhands[i],
         important, CSSPropertyParserHelpers::IsImplicitProperty::kNotImplicit,
@@ -89,7 +89,7 @@ const CSSValue* Animation::CSSValueFromComputedStyleInternal(
   const CSSAnimationData* animation_data = style.Animations();
   if (animation_data) {
     CSSValueList* animations_list = CSSValueList::CreateCommaSeparated();
-    for (size_t i = 0; i < animation_data->NameList().size(); ++i) {
+    for (wtf_size_t i = 0; i < animation_data->NameList().size(); ++i) {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
       list->Append(*CSSCustomIdentValue::Create(animation_data->NameList()[i]));
       list->Append(*CSSPrimitiveValue::Create(

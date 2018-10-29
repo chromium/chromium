@@ -68,6 +68,10 @@ DownloadCoreServiceImpl::GetDownloadManagerDelegate() {
 
   download_provider_.reset(new DownloadOfflineContentProvider(manager));
 
+#if !defined(OS_ANDROID)
+  download_shelf_controller_.reset(new DownloadShelfController(profile_));
+#endif
+
   // Include this download manager in the set monitored by the
   // global status updater.
   DCHECK(g_browser_process->download_status_updater());
@@ -110,8 +114,7 @@ void DownloadCoreServiceImpl::CancelDownloads() {
       BrowserContext::GetDownloadManager(profile_);
   DownloadManager::DownloadVector downloads;
   download_manager->GetAllDownloads(&downloads);
-  for (DownloadManager::DownloadVector::iterator it = downloads.begin();
-       it != downloads.end(); ++it) {
+  for (auto it = downloads.begin(); it != downloads.end(); ++it) {
     if ((*it)->GetState() == download::DownloadItem::IN_PROGRESS)
       (*it)->Cancel(false);
   }

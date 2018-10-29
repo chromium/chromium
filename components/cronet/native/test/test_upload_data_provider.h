@@ -40,7 +40,7 @@ class TestUploadDataProvider {
   TestUploadDataProvider(SuccessCallbackMode success_callback_mode,
                          Cronet_ExecutorPtr executor);
 
-  ~TestUploadDataProvider();
+  virtual ~TestUploadDataProvider();
 
   Cronet_UploadDataProviderPtr CreateUploadDataProvider();
 
@@ -64,11 +64,12 @@ class TestUploadDataProvider {
   /**
    * Returns the cumulative length of all data added by calls to addRead.
    */
-  int64_t GetLength() const;
+  virtual int64_t GetLength() const;
 
   int64_t GetUploadedLength() const;
 
-  void Read(Cronet_UploadDataSinkPtr upload_data_sink, Cronet_BufferPtr buffer);
+  virtual void Read(Cronet_UploadDataSinkPtr upload_data_sink,
+                    Cronet_BufferPtr buffer);
 
   void Rewind(Cronet_UploadDataSinkPtr upload_data_sink);
 

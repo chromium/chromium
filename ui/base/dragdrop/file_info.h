@@ -15,6 +15,7 @@ struct UI_BASE_EXPORT FileInfo {
   FileInfo();
   FileInfo(const base::FilePath& path, const base::FilePath& display_name);
   ~FileInfo();
+  bool operator==(const FileInfo& other) const;
 
   base::FilePath path;
   base::FilePath display_name;  // Optional.

@@ -231,7 +231,7 @@ void PageSwitcher::Layout() {
 
 void PageSwitcher::ButtonPressed(views::Button* sender,
                                  const ui::Event& event) {
-  if (!model_)
+  if (!model_ || ignore_button_press_)
     return;
 
   for (int i = 0; i < buttons_->child_count(); ++i) {

@@ -61,6 +61,10 @@ class ComponentUpdateService;
 class SupervisedUserWhitelistInstaller;
 }
 
+namespace data_use_measurement {
+class ChromeDataUseMeasurement;
+}
+
 namespace extensions {
 class EventRouterForwarder;
 }
@@ -172,8 +176,8 @@ class BrowserProcess {
   //
   // Can be NULL close to startup and shutdown.
   //
-  // NOTE: If you want to post a task to the IO thread, use
-  // BrowserThread::PostTask (or other variants).
+  // NOTE: If you want to post a task to the IO thread, see
+  // browser_task_traits.h.
   virtual IOThread* io_thread() = 0;
 
   // Replacement for IOThread (And ChromeNetLog). It owns and manages the
@@ -219,7 +223,7 @@ class BrowserProcess {
   // distinguishing information to the language tag (e.g. both "en-US" and "fr"
   // are correct here).
   virtual const std::string& GetApplicationLocale() = 0;
-  virtual void SetApplicationLocale(const std::string& locale) = 0;
+  virtual void SetApplicationLocale(const std::string& actual_locale) = 0;
 
   virtual DownloadStatusUpdater* download_status_updater() = 0;
   virtual DownloadRequestLimiter* download_request_limiter() = 0;
@@ -288,6 +292,9 @@ class BrowserProcess {
   CachedDefaultWebClientState() = 0;
 
   virtual prefs::InProcessPrefServiceFactory* pref_service_factory() const = 0;
+
+  virtual data_use_measurement::ChromeDataUseMeasurement*
+  data_use_measurement() = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BrowserProcess);

@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.infobar;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
@@ -72,8 +72,8 @@ public class AppBannerInfoBarAndroid extends ConfirmInfoBar implements View.OnCl
         Context context = getContext();
         if (mAppData != null) {
             // Native app.
-            layout.getPrimaryButton().setButtonColor(ApiCompatibilityUtils.getColor(
-                    context.getResources(), R.color.app_banner_install_button_bg));
+            layout.getPrimaryButton().setButtonColor(AppCompatResources.getColorStateList(
+                    context, R.color.app_banner_install_button_bg));
             mMessageLayout.addRatingBar(mAppData.rating());
             mMessageLayout.setContentDescription(context.getString(
                     R.string.app_banner_view_native_app_accessibility, mAppTitle,

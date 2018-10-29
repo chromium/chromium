@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 
@@ -39,7 +40,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   explicit WebViewFrameWidget(WebWidgetClient&, WebViewImpl&);
   ~WebViewFrameWidget() override;
 
-  // WebFrameWidget overrides:
+  // WebWidget overrides:
   void Close() override;
   WebSize Size() override;
   void Resize(const WebSize&) override;
@@ -48,8 +49,8 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void DidExitFullscreen() override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) final;
   void BeginFrame(base::TimeTicks last_frame_time) override;
+  void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) override;
   void UpdateLifecycle(LifecycleUpdate requested_update) override;
-  void UpdateAllLifecyclePhasesAndCompositeForTesting() override;
   void PaintContent(cc::PaintCanvas*, const WebRect& view_port) override;
   void LayoutAndPaintAsync(base::OnceClosure callback) override;
   void CompositeAndReadbackAsync(
@@ -58,11 +59,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   WebInputEventResult DispatchBufferedTouchEvents() override;
   void SetCursorVisibilityState(bool is_visible) override;
-  void ApplyViewportDeltas(const WebFloatSize& visual_viewport_delta,
-                           const WebFloatSize& layout_viewport_delta,
-                           const WebFloatSize& elastic_overscroll_delta,
-                           float scale_factor,
-                           float browser_controls_shown_ratio_delta) override;
+  void ApplyViewportChanges(const ApplyViewportChangesArgs&) override;
   void RecordWheelAndTouchScrollingCount(bool has_scrolled_by_wheel,
                                          bool has_scrolled_by_touch) override;
   void MouseCaptureLost() override;
@@ -74,9 +71,9 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void WillCloseLayerTreeView() override;
   SkColor BackgroundColor() const override;
   WebPagePopup* GetPagePopup() const override;
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate) override;
+  WebURL GetURLForDebugTrace() override;
+
+  // WebFrameWidget overrides:
   void SetVisibilityState(mojom::PageVisibilityState) override;
   void SetBackgroundColorOverride(SkColor) override;
   void ClearBackgroundColorOverride() override;
@@ -88,6 +85,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
 
   // WebFrameWidgetBase overrides:
   void Initialize() override;
+  void SetLayerTreeView(WebLayerTreeView*) override;
   bool ForSubframe() const override { return false; }
   void ScheduleAnimation() override;
   base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>

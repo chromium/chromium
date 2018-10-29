@@ -1,0 +1,18 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "1x",
+            "filename": "tabstrip_tab_switcher_count_button_pressed.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "tabstrip_tab_switcher_count_button_pressed@2x.png"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}

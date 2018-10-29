@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/input_event_shim.h"
 #include "content/common/content_export.h"
 #include "content/common/drag_event_source_info.h"
 #include "content/public/common/drop_data.h"
@@ -58,7 +59,10 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
  public:
   // Functions for controlling the browser top controls slide behavior with page
   // gesture scrolling.
-  virtual void SetTopControlsShownRatio(float ratio) {}
+  virtual void SetTopControlsShownRatio(
+      RenderWidgetHostImpl* render_widget_host,
+      float ratio) {}
+  virtual bool DoBrowserControlsShrinkRendererSize() const;
   virtual int GetTopControlsHeight() const;
   virtual void SetTopControlsGestureScrollInProgress(bool in_progress) {}
 
@@ -106,7 +110,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Callback to inform the browser that the renderer did not process the
   // specified events. This gives an opportunity to the browser to process the
   // event (used for keyboard shortcuts).
-  virtual void HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {}
+  virtual bool HandleKeyboardEvent(const NativeWebKeyboardEvent& event);
 
   // Callback to inform the browser that the renderer did not process the
   // specified mouse wheel event.  Returns true if the browser has handled
@@ -310,6 +314,10 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   // Returns true if there is context menu shown on page.
   virtual bool IsShowingContextMenuOnPage() const;
+
+  // Returns an object that will override handling of Text Input and Mouse
+  // Lock events from the renderer.
+  virtual InputEventShim* GetInputEventShim() const;
 
  protected:
   virtual ~RenderWidgetHostDelegate() {}

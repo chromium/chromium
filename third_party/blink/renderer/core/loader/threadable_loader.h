@@ -226,6 +226,7 @@ class CORE_EXPORT ThreadableLoader final
   // Corresponds to the CORS flag in the Fetch spec.
   bool cors_flag_ = false;
   scoped_refptr<const SecurityOrigin> security_origin_;
+  scoped_refptr<const SecurityOrigin> original_security_origin_;
 
   // Set to true when the response data is given to a data consumer handle.
   bool is_using_data_consumer_handle_;
@@ -233,7 +234,7 @@ class CORE_EXPORT ThreadableLoader final
   const bool async_;
 
   // Holds the original request context (used for sanity checks).
-  WebURLRequest::RequestContext request_context_;
+  mojom::RequestContextType request_context_;
 
   // Saved so that we can use the original value for the modes in
   // ResponseReceived() where |resource| might be a reused one (e.g. preloaded

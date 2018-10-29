@@ -37,9 +37,9 @@
     [Affects=Nothing, Unforgeable, CrossOrigin] readonly attribute Window window;
     [Replaceable, CrossOrigin] readonly attribute Window self;
     [Affects=Nothing, Unforgeable, CachedAccessor] readonly attribute Document document;
-    [Replaceable] readonly attribute DOMString origin;
     attribute DOMString name;
     [Affects=Nothing, PutForwards=href, Unforgeable, CrossOrigin=(Getter,Setter), Custom=Getter] readonly attribute Location location;
+    [CallWith=ScriptState] readonly attribute CustomElementRegistry customElements;
     [Affects=Nothing] readonly attribute History history;
     [Replaceable, MeasureAs=BarPropLocationbar] readonly attribute BarProp locationbar;
     [Replaceable, MeasureAs=BarPropMenubar] readonly attribute BarProp menubar;
@@ -74,7 +74,7 @@
     [CrossOrigin, Custom=Setter] attribute Window opener;
     [Replaceable, CrossOrigin] readonly attribute Window? parent;
     [CheckSecurity=ReturnValue, Custom=Getter] readonly attribute Element? frameElement;
-    [CallWith=(ExecutionContext,CurrentWindow,EnteredWindow), RaisesException] Window? open(optional [TreatNullAs=EmptyString] URLString url="", optional DOMString target = "_blank", optional [TreatNullAs=EmptyString] DOMString features = "");
+    [CallWith=(ExecutionContext,CurrentWindow,EnteredWindow), RaisesException] Window? open(optional URLString url="", optional DOMString target = "_blank", optional [TreatNullAs=EmptyString] DOMString features = "");
 
     // indexed properties
     // https://html.spec.whatwg.org/C/browsers.html#windowproxy-getownproperty
@@ -94,19 +94,19 @@
     [Measure, CallWith=ScriptState] DOMString? prompt(optional DOMString message = "", optional DOMString defaultValue = "");
     [Measure, CallWith=ScriptState] void print();
 
-    [MeasureAs=UnprefixedRequestAnimationFrame] long requestAnimationFrame(FrameRequestCallback callback);
-    void cancelAnimationFrame(long handle);
-
-    [Measure] long requestIdleCallback(IdleRequestCallback callback, optional IdleRequestOptions options);
-    void cancelIdleCallback(long handle);
-
     [CrossOrigin, CallWith=CurrentWindow, RaisesException] void postMessage(any message, USVString targetOrigin, optional sequence<object> transfer = []);
 
     [CrossOrigin, CallWith=CurrentWindow, RaisesException, RuntimeEnabled=PostMessageOptions] void postMessage(any message, optional WindowPostMessageOptions options);
 
-    // Custom elements
-    // https://w3c.github.io/webcomponents/spec/custom/#custom-elements-api
-    [CallWith=ScriptState] readonly attribute CustomElementRegistry customElements;
+    // WindowOrWorkerGlobalScope mixin
+    // https://html.spec.whatwg.org/#windoworworkerglobalscope-mixin
+    [Replaceable] readonly attribute DOMString origin;
+    void queueMicrotask(VoidFunction callback);
+
+    // AnimationFrameProvider mixin
+    // https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#animation-frames
+    [MeasureAs=UnprefixedRequestAnimationFrame] long requestAnimationFrame(FrameRequestCallback callback);
+    void cancelAnimationFrame(long handle);
 
     // HTML obsolete features
     // https://html.spec.whatwg.org/#Window-partial
@@ -114,6 +114,11 @@
     [MeasureAs=WindowReleaseEvents] void releaseEvents();
 
     [Replaceable, SameObject] readonly attribute External external;
+
+    // Cooperative Scheduling of Background Tasks
+    // https://www.w3.org/TR/requestidlecallback/#window_extensions
+    [Measure] long requestIdleCallback(IdleRequestCallback callback, optional IdleRequestOptions options);
+    void cancelIdleCallback(long handle);
 
     // CSS Object Model (CSSOM)
     // https://drafts.csswg.org/cssom/#extensions-to-the-window-interface
@@ -123,6 +128,8 @@
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-window-interface
     [NewObject] MediaQueryList matchMedia(DOMString query);
     [SameObject, Replaceable] readonly attribute Screen screen;
+
+    [RuntimeEnabled=WorkerTaskQueue, SameObject, Replaceable] readonly attribute ScriptedTaskQueueController TaskQueue;
 
     // browsing context
     void moveTo(long x, long y);
@@ -197,7 +204,6 @@
     [MeasureAs=StyleMedia] readonly attribute StyleMedia styleMedia;
     [DeprecateAs=PrefixedRequestAnimationFrame] long webkitRequestAnimationFrame(FrameRequestCallback callback);
     [DeprecateAs=PrefixedCancelAnimationFrame, ImplementedAs=cancelAnimationFrame] void webkitCancelAnimationFrame(long id);
-    [Measure] attribute AnimationEventConstructor WebKitAnimationEvent;
     [DeprecateAs=PrefixedWindowURL] attribute URLConstructor webkitURL;
     [MeasureAs=PrefixedMutationObserverConstructor] attribute MutationObserverConstructor WebKitMutationObserver;
 

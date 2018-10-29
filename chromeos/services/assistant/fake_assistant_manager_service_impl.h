@@ -37,12 +37,18 @@ class FakeAssistantManagerServiceImpl : public AssistantManagerService {
   void SendUpdateSettingsUiRequest(
       const std::string& update,
       UpdateSettingsUiResponseCallback callback) override;
+  void StartSpeakerIdEnrollment(
+      bool skip_cloud_enrollment,
+      mojom::SpeakerIdEnrollmentClientPtr client) override;
+  void StopSpeakerIdEnrollment(
+      AssistantSettingsManager::StopSpeakerIdEnrollmentCallback on_stopped)
+      override;
 
   // mojom::Assistant overrides:
   void StartCachedScreenContextInteraction() override;
   void StartMetalayerInteraction(const gfx::Rect& region) override;
   void StartVoiceInteraction() override;
-  void StopActiveInteraction() override;
+  void StopActiveInteraction(bool cancel_conversation) override;
   void SendTextQuery(const std::string& query) override;
   void AddAssistantInteractionSubscriber(
       mojom::AssistantInteractionSubscriberPtr subscriber) override;

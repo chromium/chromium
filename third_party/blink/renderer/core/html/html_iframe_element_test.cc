@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
+#include "third_party/blink/renderer/core/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
@@ -269,7 +269,7 @@ TEST_F(HTMLIFrameElementTest, SameOriginSandboxAttributeContainerPolicy) {
   EXPECT_FALSE(container_policy[0].matches_all_origins);
   EXPECT_FALSE(container_policy[0].matches_opaque_src);
   EXPECT_EQ(1UL, container_policy[0].origins.size());
-  EXPECT_FALSE(container_policy[0].origins[0].unique());
+  EXPECT_FALSE(container_policy[0].origins[0].opaque());
   EXPECT_EQ("http://example.net", container_policy[0].origins[0].Serialize());
 }
 

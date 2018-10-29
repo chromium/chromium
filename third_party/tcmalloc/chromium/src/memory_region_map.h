@@ -362,6 +362,9 @@ class MemoryRegionMap {
   // table where all buckets eventually should be.
   static void RestoreSavedBucketsLocked();
 
+  // Initialize RegionSet regions_.
+  inline static void InitRegionSetLocked();
+
   // Wrapper around DoInsertRegionLocked
   // that handles the case of recursive allocator calls.
   inline static void InsertRegionLocked(const Region& region);

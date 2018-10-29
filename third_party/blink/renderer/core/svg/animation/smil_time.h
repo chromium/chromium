@@ -34,7 +34,7 @@
 namespace blink {
 
 class SMILTime {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   SMILTime() : time_(0) {}
@@ -58,7 +58,7 @@ class SMILTime {
 };
 
 class SMILTimeWithOrigin {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum Origin { kParserOrigin, kScriptOrigin };

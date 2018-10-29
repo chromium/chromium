@@ -39,6 +39,10 @@ class PRINTING_EXPORT PageSetup {
   PageSetup(const PageSetup& other);
   ~PageSetup();
 
+  // Gets a symmetrical printable area.
+  static gfx::Rect GetSymmetricalPrintableArea(const gfx::Size& page_size,
+                                               const gfx::Rect& printable_area);
+
   void Clear();
 
   // Equality operator.

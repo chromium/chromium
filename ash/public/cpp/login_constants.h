@@ -18,6 +18,11 @@ namespace login_constants {
 // extracted from wallpaper is invalid.
 constexpr SkColor kDefaultBaseColor = SK_ColorBLACK;
 
+// Color used on text associated with an auth method, e.g., password,
+// fingerprint.
+constexpr SkColor kAuthMethodsTextColor =
+    SkColorSetARGB(0xAB, 0xFF, 0xFF, 0xFF);
+
 // When the wallpaper is not blurred, a black background with this alpha should
 // be rendered behind UI elements so they remain legible.
 constexpr int kNonBlurredWallpaperBackgroundAlpha = 0xCC;  // 0xCC -> 80% of 255

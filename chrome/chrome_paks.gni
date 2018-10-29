@@ -154,16 +154,18 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
         "$root_gen_dir/chrome/multidevice_setup_resources.pak",
         "$root_gen_dir/chromeos/chromeos_resources.pak",
-        "$root_gen_dir/components/chrome_apps/chrome_apps_resources.pak",
         "$root_gen_dir/ui/file_manager/file_manager_resources.pak",
       ]
       deps += [
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
         "//chrome/browser/resources/chromeos:multidevice_setup_resources",
         "//chromeos/resources",
-        "//components/chrome_apps:resources",
         "//ui/file_manager:resources",
       ]
+    }
+    if (!is_android && !is_chromeos) {
+      sources += [ "$root_gen_dir/chrome/onboarding_welcome_resources.pak" ]
+      deps += [ "//chrome/browser/resources:onboarding_welcome_resources" ]
     }
     if (enable_extensions) {
       sources += [

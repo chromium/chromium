@@ -10,10 +10,11 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "net/socket/tcp_socket.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/host/host_factory.h"
 #include "ppapi/shared_impl/ppb_tcp_socket_shared.h"
+#include "services/network/public/mojom/tcp_socket.mojom.h"
 
 namespace ppapi {
 class PpapiPermissions;
@@ -41,7 +42,10 @@ class ContentBrowserPepperHostFactory : public ppapi::host::HostFactory {
   std::unique_ptr<ppapi::host::ResourceHost> CreateAcceptedTCPSocket(
       PP_Instance instance,
       ppapi::TCPSocketVersion version,
-      std::unique_ptr<net::TCPSocket> socket);
+      network::mojom::TCPConnectedSocketPtrInfo connected_socket,
+      network::mojom::SocketObserverRequest socket_observer_request,
+      mojo::ScopedDataPipeConsumerHandle receive_stream,
+      mojo::ScopedDataPipeProducerHandle send_stream);
 
  private:
   std::unique_ptr<ppapi::host::ResourceHost> CreateNewTCPSocket(

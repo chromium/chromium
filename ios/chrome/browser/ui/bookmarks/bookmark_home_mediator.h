@@ -42,6 +42,9 @@ class ChromeBrowserState;
 - (void)computeBookmarkTableViewDataMatching:(NSString*)searchText
                   orShowMessageWhenNoResults:(NSString*)noResults;
 
+// Updates promo cell based on its current visibility.
+- (void)computePromoTableViewData;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_MEDIATOR_H_

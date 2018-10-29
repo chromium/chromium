@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/passwords/manage_passwords_bubble_model.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "ui/base/ui_features.h"
 
 namespace content {
 class WebContents;
@@ -31,12 +30,10 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
     return g_manage_passwords_bubble_;
   }
 
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
   // Shows an appropriate bubble on the toolkit-views Browser window containing
   // |web_contents|.
   static void ShowBubble(content::WebContents* web_contents,
                          DisplayReason reason);
-#endif
   // Creates and returns the passwords manager bubble UI appropriate for the
   // current password_manager::ui::State value for the provided |web_contents|.
   static PasswordBubbleViewBase* CreateBubble(

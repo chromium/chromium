@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "content/public/common/service_manager_connection.h"
 #include "extensions/common/api/system_display.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -274,7 +275,7 @@ DisplayInfoProviderChromeOS::DisplayInfoProviderChromeOS(
   connector->BindInterface(ash::mojom::kServiceName, &cros_display_config_);
 }
 
-DisplayInfoProviderChromeOS::~DisplayInfoProviderChromeOS() {}
+DisplayInfoProviderChromeOS::~DisplayInfoProviderChromeOS() = default;
 
 void DisplayInfoProviderChromeOS::SetDisplayProperties(
     const std::string& display_id_str,
@@ -593,6 +594,26 @@ void DisplayInfoProviderChromeOS::SetMirrorMode(
             std::move(callback).Run(GetStringResult(result));
           },
           std::move(callback)));
+}
+
+void DisplayInfoProviderChromeOS::StartObserving() {
+  DisplayInfoProvider::StartObserving();
+
+  TabletModeClient* client = TabletModeClient::Get();
+  if (client)
+    client->AddObserver(this);
+}
+
+void DisplayInfoProviderChromeOS::StopObserving() {
+  DisplayInfoProvider::StopObserving();
+
+  TabletModeClient* client = TabletModeClient::Get();
+  if (client)
+    client->RemoveObserver(this);
+}
+
+void DisplayInfoProviderChromeOS::OnTabletModeToggled(bool enabled) {
+  DispatchOnDisplayChangedEvent();
 }
 
 // static

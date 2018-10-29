@@ -79,9 +79,7 @@ class CORE_EXPORT ImageResource final
 
   void AllClientsAndObserversRemoved() override;
 
-  MatchStatus CanReuse(
-      const FetchParameters&,
-      scoped_refptr<const SecurityOrigin> new_source_origin) const override;
+  MatchStatus CanReuse(const FetchParameters&) const override;
   bool CanUseCacheValidator() const override;
 
   scoped_refptr<const SharedBuffer> ResourceBuffer() const override;
@@ -101,6 +99,7 @@ class CORE_EXPORT ImageResource final
   void MultipartDataReceived(const char*, size_t) final;
 
   bool ShouldShowPlaceholder() const;
+  bool ShouldShowLazyImagePlaceholder() const;
 
   // If the ImageResource came from a user agent CSS stylesheet then we should
   // flag it so that it can persist beyond navigation.

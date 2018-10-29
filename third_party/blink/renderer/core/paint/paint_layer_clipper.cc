@@ -281,28 +281,10 @@ void PaintLayerClipper::CalculateRectsWithGeometryMapper(
   } else {
     layer_bounds.SetLocation(LayoutPoint(context.sub_pixel_accumulation));
     layer_bounds.MoveBy(fragment_data.PaintOffset());
-
-    const auto* current_transform = fragment_data.PreTransform();
-    const auto* root_transform =
-        context.root_fragment->LocalBorderBoxProperties().Transform();
-    if (current_transform != root_transform) {
-      if (current_transform->RequiresCompositingForRootScroller()) {
-        // This is a fast-path for computing the SourceToDestinationProjection
-        // when the current transform is the root scroller's scroll translation.
-        const auto& transform = current_transform->Matrix();
-#if DCHECK_IS_ON()
-        DCHECK(transform.IsIdentityOr2DTranslation());
-        DCHECK(transform.ApproximatelyEquals(
-            GeometryMapper::SourceToDestinationProjection(current_transform,
-                                                          root_transform)));
-#endif
-        layer_bounds.Move(
-            LayoutSize(LayoutUnit(transform.E()), LayoutUnit(transform.F())));
-      } else {
-        GeometryMapper::SourceToDestinationRect(current_transform,
-                                                root_transform, layer_bounds);
-      }
-    }
+    GeometryMapper::SourceToDestinationRect(
+        fragment_data.PreTransform(),
+        context.root_fragment->LocalBorderBoxProperties().Transform(),
+        layer_bounds);
     layer_bounds.MoveBy(-context.root_fragment->PaintOffset());
   }
 

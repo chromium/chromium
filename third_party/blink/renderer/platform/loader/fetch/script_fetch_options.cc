@@ -13,6 +13,7 @@ namespace blink {
 FetchParameters ScriptFetchOptions::CreateFetchParameters(
     const KURL& url,
     const SecurityOrigin* security_origin,
+    CrossOriginAttributeValue cross_origin,
     const WTF::TextEncoding& encoding,
     FetchParameters::DeferOption defer) const {
   // Step 1. Let request be the result of creating a potential-CORS request
@@ -23,19 +24,11 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
   ResourceLoaderOptions resource_loader_options;
   resource_loader_options.initiator_info.name = "script";
   FetchParameters params(resource_request, resource_loader_options);
-  params.SetRequestContext(WebURLRequest::kRequestContextScript);
+  params.SetRequestContext(mojom::RequestContextType::SCRIPT);
 
   // Step 1. ... and CORS setting. [spec text]
-  //
-  // Instead of using CrossOriginAttributeValue that corresponds to |CORS
-  // setting|, we use ScriptFetchOptions::CredentialsMode().
-  // We shouldn't call SetCrossOriginAccessControl() if CredentialsMode() is
-  // kFetchCredentialsModeOmit, because in that case the request should be
-  // no-cors, while SetCrossOriginAccessControl(kFetchCredentialsModeOmit)
-  // would result in a cors request.
-  if (CredentialsMode() != network::mojom::FetchCredentialsMode::kOmit) {
-    params.SetCrossOriginAccessControl(security_origin, CredentialsMode());
-  }
+  if (cross_origin != kCrossOriginAttributeNotSet)
+    params.SetCrossOriginAccessControl(security_origin, cross_origin);
 
   // Step 2. Set request's client to settings object. [spec text]
   // Note: Implemented at ClassicPendingScript::Fetch().

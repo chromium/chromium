@@ -51,7 +51,6 @@ class AXRemoteHost;
 class DesktopNativeWidgetAura;
 class MusClientObserver;
 class MusPropertyMirror;
-class PointerWatcherEventRouter;
 class ScreenMus;
 
 namespace internal {
@@ -123,10 +122,6 @@ class VIEWS_MUS_EXPORT MusClient : public aura::WindowTreeClientDelegate,
 
   aura::WindowTreeClient* window_tree_client() { return window_tree_client_; }
 
-  PointerWatcherEventRouter* pointer_watcher_event_router() {
-    return pointer_watcher_event_router_.get();
-  }
-
   AXRemoteHost* ax_remote_host() { return ax_remote_host_.get(); }
 
   // Creates DesktopNativeWidgetAura with DesktopWindowTreeHostMus. This is
@@ -136,12 +131,8 @@ class VIEWS_MUS_EXPORT MusClient : public aura::WindowTreeClientDelegate,
                                    internal::NativeWidgetDelegate* delegate);
   void OnWidgetInitDone(Widget* widget);
 
-  // Called when the capture client has been set for a window to notify
-  // PointerWatcherEventRouter and CaptureSynchronizer.
+  // Called when the capture client has been set or unset for a window.
   void OnCaptureClientSet(aura::client::CaptureClient* capture_client);
-
-  // Called when the capture client will be unset for a window to notify
-  // PointerWatcherEventRouter and CaptureSynchronizer.
   void OnCaptureClientUnset(aura::client::CaptureClient* capture_client);
 
   void AddObserver(MusClientObserver* observer);
@@ -172,9 +163,6 @@ class VIEWS_MUS_EXPORT MusClient : public aura::WindowTreeClientDelegate,
       std::unique_ptr<aura::WindowTreeHostMus> window_tree_host) override;
   void OnLostConnection(aura::WindowTreeClient* client) override;
   void OnEmbedRootDestroyed(aura::WindowTreeHostMus* window_tree_host) override;
-  void OnPointerEventObserved(const ui::PointerEvent& event,
-                              const gfx::Point& location_in_screen,
-                              aura::Window* target) override;
   aura::PropertyConverter* GetPropertyConverter() override;
   void OnDisplaysChanged(std::vector<ws::mojom::WsDisplayPtr> ws_displays,
                          int64_t primary_display_id,
@@ -209,8 +197,6 @@ class VIEWS_MUS_EXPORT MusClient : public aura::WindowTreeClientDelegate,
 
   // Never null.
   aura::WindowTreeClient* window_tree_client_;
-
-  std::unique_ptr<PointerWatcherEventRouter> pointer_watcher_event_router_;
 
   // Gives services transparent remote access the InputDeviceManager.
   std::unique_ptr<ws::InputDeviceClient> input_device_client_;

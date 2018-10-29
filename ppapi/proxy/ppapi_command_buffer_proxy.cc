@@ -252,8 +252,7 @@ const gpu::Capabilities& PpapiCommandBufferProxy::GetCapabilities() const {
 
 int32_t PpapiCommandBufferProxy::CreateImage(ClientBuffer buffer,
                                              size_t width,
-                                             size_t height,
-                                             unsigned internalformat) {
+                                             size_t height) {
   NOTREACHED();
   return -1;
 }

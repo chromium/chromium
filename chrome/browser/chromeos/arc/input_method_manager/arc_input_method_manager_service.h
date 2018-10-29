@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_manager_bridge.h"
+#include "chrome/browser/chromeos/arc/input_method_manager/input_connection_impl.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "components/arc/common/input_method_manager.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -66,14 +68,27 @@ class ArcInputMethodManagerService
                           Profile* profile,
                           bool show_message) override;
 
+  // Called when a11y keyboard option changed and disables ARC IME while a11y
+  // keyboard option is enabled.
+  void OnAccessibilityStatusChanged(
+      const chromeos::AccessibilityStatusEventDetails& event_details);
+
+  InputConnectionImpl* GetInputConnectionForTesting();
+
  private:
-  class ArcProxyInputMethodObserver;
+  class InputMethodEngineObserver;
+  class InputMethodObserver;
   class TabletModeObserver;
 
   void EnableIme(const std::string& ime_id, bool enable);
   void SwitchImeTo(const std::string& ime_id);
   chromeos::input_method::InputMethodDescriptor BuildInputMethodDescriptor(
       const mojom::ImeInfo* info);
+  void Focus(int input_context_id);
+  void Blur();
+  void UpdateTextInputState();
+  mojom::TextInputStatePtr GetTextInputState(
+      bool is_input_state_update_requested);
 
   // Removes ARC IME from IME related prefs that are current active IME pref,
   // previous active IME pref, enabled IME list pref and preloading IME list
@@ -81,16 +96,29 @@ class ArcInputMethodManagerService
   void RemoveArcIMEFromPrefs();
   void RemoveArcIMEFromPref(const char* pref_name);
 
-  // Calls InputMethodManager.SetAllowedInputMethods according to the argument.
-  void SetArcIMEAllowed(bool allowed);
+  // Calls InputMethodManager.SetAllowedInputMethods according to the return
+  // value of ShouldArcImeAllowed().
+  void UpdateArcIMEAllowed();
+  // Returns whether ARC IMEs should be allowed now or not.
+  // It depends on tablet mode state and a11y keyboard option.
+  bool ShouldArcIMEAllowed() const;
 
   // Notifies InputMethodManager's observers of possible ARC IME state changes.
   void NotifyInputMethodManagerObservers(bool is_tablet_mode);
+
+  // Called by InputMethodEngineObserver.
+  void OnArcImeActivated();
+  void OnArcImeDeactivated();
+
+  bool IsVirtualKeyboardShown() const;
+  void SendShowVirtualKeyboard();
+  void SendHideVirtualKeyboard();
 
   Profile* const profile_;
 
   std::unique_ptr<ArcInputMethodManagerBridge> imm_bridge_;
   std::set<std::string> active_arc_ime_ids_;
+  bool is_virtual_keyboard_shown_;
 
   // ArcInputMethodManager installs a proxy IME to redirect IME related events
   // from/to ARC IMEs in the container. The below two variables are for the
@@ -98,7 +126,14 @@ class ArcInputMethodManagerService
   const std::string proxy_ime_extension_id_;
   std::unique_ptr<chromeos::InputMethodEngine> proxy_ime_engine_;
 
+  std::unique_ptr<InputConnectionImpl> active_connection_;
+
   std::unique_ptr<TabletModeObserver> tablet_mode_observer_;
+
+  std::unique_ptr<InputMethodObserver> input_method_observer_;
+
+  std::unique_ptr<chromeos::AccessibilityStatusSubscription>
+      accessibility_status_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcInputMethodManagerService);
 };

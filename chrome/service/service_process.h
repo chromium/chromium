@@ -13,6 +13,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "chrome/service/cloud_print/cloud_print_proxy.h"
+#include "chrome/service/net/in_process_network_connection_tracker.h"
 #include "chrome/service/service_ipc_server.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
@@ -112,6 +113,8 @@ class ServiceProcess : public ServiceIPCServer::Client,
   void Terminate();
 
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
+  std::unique_ptr<InProcessNetworkConnectionTracker>
+      network_connection_tracker_;
   std::unique_ptr<base::Thread> io_thread_;
   std::unique_ptr<cloud_print::CloudPrintProxy> cloud_print_proxy_;
   std::unique_ptr<ServiceProcessPrefs> service_prefs_;

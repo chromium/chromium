@@ -111,9 +111,9 @@ static sk_sp<SkTypeface> LoadFromBrowserProcess(NSFont* ns_font,
   return return_font;
 }
 
-void FontPlatformData::SetupPaintFont(PaintFont* paint_font,
-                                      float,
-                                      const Font* font) const {
+void FontPlatformData::SetupSkPaint(SkPaint* paint,
+                                    float,
+                                    const Font* font) const {
   bool should_smooth_fonts = true;
   bool should_antialias = true;
   bool should_subpixel_position = true;
@@ -144,15 +144,15 @@ void FontPlatformData::SetupPaintFont(PaintFont* paint_font,
         LayoutTestSupport::IsTextSubpixelPositioningAllowedForTest();
   }
 
-  paint_font->SetAntiAlias(should_antialias);
-  paint_font->SetEmbeddedBitmapText(false);
+  paint->setAntiAlias(should_antialias);
+  paint->setEmbeddedBitmapText(false);
   const float ts = text_size_ >= 0 ? text_size_ : 12;
-  paint_font->SetTextSize(SkFloatToScalar(ts));
-  paint_font->SetTypeface(paint_typeface_);
-  paint_font->SetFakeBoldText(synthetic_bold_);
-  paint_font->SetTextSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
-  paint_font->SetLcdRenderText(should_smooth_fonts);
-  paint_font->SetSubpixelText(should_subpixel_position);
+  paint->setTextSize(SkFloatToScalar(ts));
+  paint->setTypeface(typeface_);
+  paint->setFakeBoldText(synthetic_bold_);
+  paint->setTextSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
+  paint->setLCDRenderText(should_smooth_fonts);
+  paint->setSubpixelText(should_subpixel_position);
 
   // When rendering using CoreGraphics, disable hinting when
   // webkit-font-smoothing:antialiased or text-rendering:geometricPrecision is
@@ -160,7 +160,7 @@ void FontPlatformData::SetupPaintFont(PaintFont* paint_font,
   if (font &&
       (font->GetFontDescription().FontSmoothing() == kAntialiased ||
        font->GetFontDescription().TextRendering() == kGeometricPrecision))
-    paint_font->SetHinting(SkPaint::kNo_Hinting);
+    paint->setHinting(SkPaint::kNo_Hinting);
 }
 
 FontPlatformData::FontPlatformData(NSFont* ns_font,
@@ -199,8 +199,7 @@ FontPlatformData::FontPlatformData(NSFont* ns_font,
         typeface->openStream(nullptr)->duplicate(),
         SkFontArguments().setAxes(axes, variation_settings->size()));
   }
-  // TODO(vmpstr): Save the creation parameters in PaintTypeface instead.
-  paint_typeface_ = PaintTypeface::FromSkTypeface(typeface);
+  typeface_ = typeface;
 }
 
 }  // namespace blink

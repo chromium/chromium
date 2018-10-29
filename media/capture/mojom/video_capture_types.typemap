@@ -10,11 +10,7 @@ public_headers = [
   "//media/capture/video/video_capture_device_info.h",
 ]
 
-traits_headers = [
-  "//media/capture/ipc/capture_param_traits_macros.h",
-  "//media/capture/ipc/capture_param_traits.h",
-  "//media/capture/mojom/video_capture_types_mojom_traits.h",
-]
+traits_headers = [ "//media/capture/mojom/video_capture_types_mojom_traits.h" ]
 
 sources = [
   "//media/capture/mojom/video_capture_types_mojom_traits.cc",
@@ -24,7 +20,6 @@ deps = [
   "//media",
   "//media/base/ipc",
   "//media/capture:capture_base",
-  "//media/capture/ipc",
   "//media/mojo/interfaces",
   "//ui/gfx/geometry/mojo:struct_traits",
 ]

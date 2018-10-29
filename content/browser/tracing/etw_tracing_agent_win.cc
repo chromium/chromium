@@ -13,11 +13,13 @@
 #include "base/lazy_instance.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/values.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/service_manager/public/cpp/connector.h"
 
@@ -250,9 +252,9 @@ void EtwTracingAgent::FlushOnThread() {
 
   // Tracing agents, e.g. this, live as long as BrowserMainLoop lives and so
   // using base::Unretained here is safe.
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::Bind(&EtwTracingAgent::OnStopSystemTracingDone,
-                                     base::Unretained(this), output));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::Bind(&EtwTracingAgent::OnStopSystemTracingDone,
+                                      base::Unretained(this), output));
 }
 
 }  // namespace content

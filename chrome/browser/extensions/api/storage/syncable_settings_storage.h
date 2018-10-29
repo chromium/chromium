@@ -29,13 +29,12 @@ class SettingsSyncProcessor;
 // Decorates a ValueStore with sync behaviour.
 class SyncableSettingsStorage : public ValueStore {
  public:
-  SyncableSettingsStorage(
-      const scoped_refptr<SettingsObserverList>& observers,
-      const std::string& extension_id,
-      // Ownership taken.
-      ValueStore* delegate,
-      syncer::ModelType sync_type,
-      const syncer::SyncableService::StartSyncFlare& flare);
+  SyncableSettingsStorage(scoped_refptr<SettingsObserverList> observers,
+                          const std::string& extension_id,
+                          // Ownership taken.
+                          ValueStore* delegate,
+                          syncer::ModelType sync_type,
+                          const syncer::SyncableService::StartSyncFlare& flare);
 
   ~SyncableSettingsStorage() override;
 

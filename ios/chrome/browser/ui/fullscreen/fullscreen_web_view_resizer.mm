@@ -6,7 +6,7 @@
 
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/web/public/features.h"
 #import "ios/web/public/web_state/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state/ui/crw_web_view_scroll_view_proxy.h"
@@ -110,6 +110,15 @@
 
   id<CRWWebViewProxy> webViewProxy = self.webState->GetWebViewProxy();
   CRWWebViewScrollViewProxy* scrollViewProxy = webViewProxy.scrollViewProxy;
+
+  if (self.webState->GetContentsMimeType() == "application/pdf") {
+    scrollViewProxy.contentInset = insets;
+    if (!CGRectEqualToRect(webView.frame, webView.superview.bounds)) {
+      webView.frame = webView.superview.bounds;
+    }
+    return;
+  }
+
   CGRect newFrame = UIEdgeInsetsInsetRect(webView.superview.bounds, insets);
 
   // Make sure the frame has changed to avoid a loop as the frame property is

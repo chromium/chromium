@@ -42,9 +42,37 @@ Status StubChrome::GetWindowSize(const std::string& id,
   return Status(kOk);
 }
 
+Status StubChrome::SetWindowSize(const std::string& id,
+                                 int width,
+                                 int height) {
+  return Status(kOk);
+}
+
+Status StubChrome::SetWindowRect(const std::string& target_id,
+                                 const base::DictionaryValue& params) {
+  return Status(kOk);
+}
+
 Status StubChrome::GetWindowPosition(const std::string& target_id,
                                      int* x,
                                      int* y) {
+  return Status(kOk);
+}
+
+Status StubChrome::SetWindowPosition(const std::string& target_id,
+                                     int x, int y) {
+  return Status(kOk);
+}
+
+Status StubChrome::MaximizeWindow(const std::string& target_id) {
+  return Status(kOk);
+}
+
+Status StubChrome::MinimizeWindow(const std::string& target_id) {
+  return Status(kOk);
+}
+
+Status StubChrome::FullScreenWindow(const std::string& target_id) {
   return Status(kOk);
 }
 

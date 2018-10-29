@@ -290,6 +290,12 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   ExpectKeyFiresItem(key, MenuItem(@"}", 0x100000), false);
   ExpectKeyDoesntFireItem(key, MenuItem(@"+", 0x100000), false);
 
+  // ctr-shift-tab should trigger correctly.
+  key = KeyEvent(0x60103, @"\x19", @"\x19", 48);
+  ExpectKeyFiresItem(key, MenuItem(@"\x9", NSShiftKeyMask | NSControlKeyMask),
+                     false);
+  ExpectKeyDoesntFireItem(key, MenuItem(@"\x9", NSControlKeyMask), false);
+
   // Change away from Dvorak-QWERTY
   SetIsInputSourceDvorakQwertyForTesting(false);
 
@@ -316,6 +322,52 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   key = KeyEvent(0x60103, @"\x19", @"\x19", 1);
   ExpectKeyFiresItem(key, MenuItem(@"\x9", NSShiftKeyMask | NSControlKeyMask),
                      false);
+
+  // In 2-set Korean layout, (cmd + shift + t) and (cmd + t) both produce
+  // multi-byte unmodified chars. For keyEquivalent purposes, we use their
+  // raw characters, where "shift" should be handled correctly.
+  key = KeyEvent(0x100108, @"t", @"\u3145", 17);
+  ExpectKeyFiresItem(key, MenuItem(@"t", NSCommandKeyMask),
+                     /*compareCocoa=*/false);
+  ExpectKeyDoesntFireItem(key, MenuItem(@"T", NSCommandKeyMask),
+                          /*compareCocoa=*/false);
+
+  key = KeyEvent(0x12010a, @"t", @"\u3146", 17);
+  ExpectKeyDoesntFireItem(key, MenuItem(@"t", NSCommandKeyMask),
+                          /*compareCocoa=*/false);
+  ExpectKeyFiresItem(key, MenuItem(@"T", NSCommandKeyMask),
+                     /*compareCocoa=*/false);
+
+  // On Czech layout, cmd + '+' should instead trigger cmd + '1'.
+  key = KeyEvent(0x100108, @"1", @"+", 18);
+  ExpectKeyDoesntFireItem(key, MenuItem(@"1", NSCommandKeyMask),
+                          /*compareCocoa=*/false);
+  SetIsInputSourceCzechForTesting(true);
+  ExpectKeyFiresItem(key, MenuItem(@"1", NSCommandKeyMask),
+                     /*compareCocoa=*/false);
+  SetIsInputSourceCzechForTesting(false);
+  ExpectKeyDoesntFireItem(key, MenuItem(@"1", NSCommandKeyMask),
+                          /*compareCocoa=*/false);
+
+  // On Vietnamese layout, cmd + '' [vkeycode = 18] should instead trigger cmd +
+  // '1'. Ditto for other number keys.
+  key = KeyEvent(0x100108, @"1", @"", 18);
+  ExpectKeyFiresItem(key, MenuItem(@"1", NSCommandKeyMask),
+                     /*compareCocoa=*/false);
+  key = KeyEvent(0x100108, @"4", @"", 21);
+  ExpectKeyFiresItem(key, MenuItem(@"4", NSCommandKeyMask),
+                     /*compareCocoa=*/false);
+
+  // On French AZERTY layout, cmd + '&' [vkeycode = 18] should instead trigger
+  // cmd + '1'. Ditto for other number keys.
+  SetIsInputSourceAbcAzertyForTesting(true);
+  key = KeyEvent(0x100108, @"&", @"&", 18);
+  ExpectKeyFiresItem(key, MenuItem(@"1", NSCommandKeyMask),
+                     /*compareCocoa=*/false);
+  key = KeyEvent(0x100108, @"é", @"é", 19);
+  ExpectKeyFiresItem(key, MenuItem(@"2", NSCommandKeyMask),
+                     /*compareCocoa=*/false);
+  SetIsInputSourceAbcAzertyForTesting(false);
 }
 
 NSString* keyCodeToCharacter(NSUInteger keyCode,

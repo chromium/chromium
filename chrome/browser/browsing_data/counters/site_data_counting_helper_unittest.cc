@@ -4,26 +4,24 @@
 
 #include <algorithm>
 #include <memory>
-#include <set>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
+#include "base/test/bind_test_util.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_browser_thread_bundle.h"
-#include "net/cookies/cookie_store.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using content::BrowserThread;
 
 class SiteDataCountingHelperTest : public testing::Test {
  public:
@@ -31,10 +29,6 @@ class SiteDataCountingHelperTest : public testing::Test {
 
   void SetUp() override {
     profile_.reset(new TestingProfile());
-    run_loop_.reset(new base::RunLoop());
-    tasks_ = 0;
-    cookie_callback_ = base::Bind(&SiteDataCountingHelperTest::CookieCallback,
-                                  base::Unretained(this));
   }
 
   void TearDown() override {
@@ -42,43 +36,35 @@ class SiteDataCountingHelperTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void CookieCallback(int count) {
-    // Negative values represent an unexpected error.
-    DCHECK(count >= 0);
-    last_count_ = count;
-
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-
-  void DoneOnIOThread(bool success) {
-    DCHECK(success);
-    if (--tasks_ > 0)
-      return;
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
-        base::BindOnce(&SiteDataCountingHelperTest::DoneCallback,
-                       base::Unretained(this)));
-  }
-
-  void DoneCallback() { run_loop_->Quit(); }
-
-  void WaitForTasksOnIOThread() {
-    run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
-  }
-
   void CreateCookies(base::Time creation_time,
                      const std::vector<std::string>& urls) {
     content::StoragePartition* partition =
         content::BrowserContext::GetDefaultStoragePartition(profile());
-    net::URLRequestContextGetter* rq_context =
-        partition->GetURLRequestContext();
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
-        base::BindOnce(&SiteDataCountingHelperTest::CreateCookiesOnIOThread,
-                       base::Unretained(this), base::WrapRefCounted(rq_context),
-                       creation_time, urls));
+    network::mojom::CookieManager* cookie_manager =
+        partition->GetCookieManagerForBrowserProcess();
+
+    base::RunLoop run_loop;
+    int tasks = urls.size();
+
+    int i = 0;
+    for (const std::string& url_string : urls) {
+      GURL url(url_string);
+      // Cookies need a unique creation time.
+      base::Time time = creation_time + base::TimeDelta::FromMilliseconds(i++);
+      std::unique_ptr<net::CanonicalCookie> cookie =
+          net::CanonicalCookie::CreateSanitizedCookie(
+              url, "name", "A=1", url.host(), url.path(), time, base::Time(),
+              time, url.SchemeIsCryptographic(), false,
+              net::CookieSameSite::DEFAULT_MODE, net::COOKIE_PRIORITY_DEFAULT);
+      cookie_manager->SetCanonicalCookie(
+          *cookie, url.SchemeIsCryptographic(), true /*modify_http_only*/,
+          base::BindLambdaForTesting([&](bool result) {
+            if (--tasks == 0)
+              run_loop.Quit();
+          }));
+    }
+
+    run_loop.Run();
   }
 
   void CreateLocalStorage(
@@ -98,60 +84,31 @@ class SiteDataCountingHelperTest : public testing::Test {
     }
   }
 
-  void CreateCookiesOnIOThread(
-      const scoped_refptr<net::URLRequestContextGetter>& rq_context,
-      base::Time creation_time,
-      std::vector<std::string> urls) {
-    net::CookieStore* cookie_store =
-        rq_context->GetURLRequestContext()->cookie_store();
-
-    tasks_ = urls.size();
-    int i = 0;
-    for (const std::string& url_string : urls) {
-      GURL url(url_string);
-      // Cookies need a unique creation time.
-      base::Time time = creation_time + base::TimeDelta::FromMilliseconds(i++);
-
-      cookie_store->SetCanonicalCookieAsync(
-          net::CanonicalCookie::CreateSanitizedCookie(
-              url, "name", "A=1", url.host(), url.path(), time, base::Time(),
-              time, url.SchemeIsCryptographic(), false,
-              net::CookieSameSite::DEFAULT_MODE, net::COOKIE_PRIORITY_DEFAULT),
-          url.SchemeIsCryptographic(), true /*modify_http_only*/,
-          base::BindOnce(&SiteDataCountingHelperTest::DoneOnIOThread,
-                         base::Unretained(this)));
-    }
-  }
-
-  void CountEntries(base::Time begin_time) {
-    last_count_ = -1;
-    auto* helper =
-        new SiteDataCountingHelper(profile(), begin_time, cookie_callback_);
+  int CountEntries(base::Time begin_time) {
+    base::RunLoop run_loop;
+    int result = -1;
+    auto* helper = new SiteDataCountingHelper(
+        profile(), begin_time, base::BindLambdaForTesting([&](int count) {
+          // Negative values represent an unexpected error.
+          DCHECK_GE(count, 0);
+          result = count;
+          run_loop.Quit();
+        }));
     helper->CountAndDestroySelfWhenFinished();
-  }
+    run_loop.Run();
 
-  int64_t GetResult() {
-    DCHECK_GE(last_count_, 0);
-    return last_count_;
+    return result;
   }
 
   Profile* profile() { return profile_.get(); }
 
  private:
-  base::Callback<void(int)> cookie_callback_;
-  std::unique_ptr<base::RunLoop> run_loop_;
   content::TestBrowserThreadBundle thread_bundle_;
   std::unique_ptr<TestingProfile> profile_;
-
-  int tasks_;
-  int64_t last_count_;
 };
 
 TEST_F(SiteDataCountingHelperTest, CheckEmptyResult) {
-  CountEntries(base::Time());
-  WaitForTasksOnIOThread();
-
-  DCHECK_EQ(0, GetResult());
+  EXPECT_EQ(0, CountEntries(base::Time()));
 }
 
 TEST_F(SiteDataCountingHelperTest, CountCookies) {
@@ -160,26 +117,12 @@ TEST_F(SiteDataCountingHelperTest, CountCookies) {
   base::Time yesterday = now - base::TimeDelta::FromDays(1);
 
   CreateCookies(last_hour, {"https://example.com"});
-  WaitForTasksOnIOThread();
-
   CreateCookies(yesterday, {"https://google.com", "https://bing.com"});
-  WaitForTasksOnIOThread();
 
-  CountEntries(base::Time());
-  WaitForTasksOnIOThread();
-  DCHECK_EQ(3, GetResult());
-
-  CountEntries(yesterday);
-  WaitForTasksOnIOThread();
-  DCHECK_EQ(3, GetResult());
-
-  CountEntries(last_hour);
-  WaitForTasksOnIOThread();
-  DCHECK_EQ(1, GetResult());
-
-  CountEntries(now);
-  WaitForTasksOnIOThread();
-  DCHECK_EQ(0, GetResult());
+  EXPECT_EQ(3, CountEntries(base::Time()));
+  EXPECT_EQ(3, CountEntries(yesterday));
+  EXPECT_EQ(1, CountEntries(last_hour));
+  EXPECT_EQ(0, CountEntries(now));
 }
 
 TEST_F(SiteDataCountingHelperTest, LocalStorage) {
@@ -188,9 +131,7 @@ TEST_F(SiteDataCountingHelperTest, LocalStorage) {
                      {FILE_PATH_LITERAL("https_example.com_443.localstorage"),
                       FILE_PATH_LITERAL("https_bing.com_443.localstorage")});
 
-  CountEntries(base::Time());
-  WaitForTasksOnIOThread();
-  DCHECK_EQ(2, GetResult());
+  EXPECT_EQ(2, CountEntries(base::Time()));
 }
 
 TEST_F(SiteDataCountingHelperTest, CookiesAndLocalStorage) {
@@ -199,11 +140,8 @@ TEST_F(SiteDataCountingHelperTest, CookiesAndLocalStorage) {
   CreateLocalStorage(now,
                      {FILE_PATH_LITERAL("https_example.com_443.localstorage"),
                       FILE_PATH_LITERAL("https_bing.com_443.localstorage")});
-  WaitForTasksOnIOThread();
 
-  CountEntries(base::Time());
-  WaitForTasksOnIOThread();
-  DCHECK_EQ(3, GetResult());
+  EXPECT_EQ(3, CountEntries(base::Time()));
 }
 
 TEST_F(SiteDataCountingHelperTest, SameHostDifferentScheme) {
@@ -212,8 +150,6 @@ TEST_F(SiteDataCountingHelperTest, SameHostDifferentScheme) {
   CreateLocalStorage(now,
                      {FILE_PATH_LITERAL("https_google.com_443.localstorage"),
                       FILE_PATH_LITERAL("http_google.com_80.localstorage")});
-  WaitForTasksOnIOThread();
-  CountEntries(base::Time());
-  WaitForTasksOnIOThread();
-  DCHECK_EQ(1, GetResult());
+
+  EXPECT_EQ(1, CountEntries(base::Time()));
 }

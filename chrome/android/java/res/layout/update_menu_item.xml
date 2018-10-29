@@ -24,15 +24,13 @@
             android:id="@+id/menu_item_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
-            android:textColor="#dc5554" />
+            android:textAppearance="@style/TextAppearance.UpdateMenuItem" />
 
         <TextView
             android:id="@+id/menu_item_summary"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="12sp"
-            android:textColor="#646464" />
+            android:textAppearance="@style/BlackCaption" />
 
     </LinearLayout>
 
@@ -43,6 +41,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:gravity="center_vertical"
-        app:chrometint="@null" />
+        app:tint="@null" />
 
 </LinearLayout>

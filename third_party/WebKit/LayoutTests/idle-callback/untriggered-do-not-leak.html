@@ -3,9 +3,10 @@
 <script src="../resources/testharnessreport.js"></script>
 <script>
 test(
-  () => requestIdleCallback(() =>
-      assert_unreached('Should not trigger the idle task during the test.')),
-  'Untriggered idle task does not introduce memory leak.');
+  () => {
+    requestIdleCallback(() =>
+        assert_unreached('Should not trigger the idle task during the test.'));
+  }, 'Untriggered idle task does not introduce memory leak.');
 
 test(
   () => {

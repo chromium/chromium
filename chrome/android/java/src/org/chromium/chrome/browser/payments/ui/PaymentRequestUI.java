@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.payments.ui.PaymentRequestSection.EDIT
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
@@ -17,23 +16,18 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -49,9 +43,7 @@ import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.LineItemBreakdownSection;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.SectionSeparator;
-import org.chromium.chrome.browser.widget.AlwaysDismissedDialog;
 import org.chromium.chrome.browser.widget.FadingEdgeScrollView;
-import org.chromium.chrome.browser.widget.animation.AnimatorProperties;
 import org.chromium.chrome.browser.widget.animation.FocusAnimator;
 import org.chromium.chrome.browser.widget.prefeditor.EditableOption;
 import org.chromium.chrome.browser.widget.prefeditor.EditorDialog;
@@ -278,13 +270,13 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
     private final Context mContext;
     private final Client mClient;
     private final boolean mRequestShipping;
+    private final boolean mRequestShippingOption;
     private final boolean mRequestContactDetails;
     private final boolean mShowDataSource;
 
-    private final Dialog mDialog;
+    private final DimmingDialog mDialog;
     private final EditorDialog mEditorDialog;
     private final EditorDialog mCardEditorDialog;
-    private final ViewGroup mFullContainer;
     private final ViewGroup mRequestView;
     private final PaymentRequestUiErrorView mErrorView;
     private final Callback<PaymentInformation> mUpdateSectionsCallback;
@@ -326,31 +318,35 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
     /**
      * Builds the UI for PaymentRequest.
      *
-     * @param activity        The activity on top of which the UI should be displayed.
-     * @param client          The consumer of the PaymentRequest UI.
-     * @param requestShipping Whether the UI should show the shipping address and option selection.
-     * @param requestContact  Whether the UI should show the payer name, email address and
-     *                        phone number selection.
-     * @param canAddCards     Whether the UI should show the [+ADD CARD] button. This can be false,
-     *                        for example, when the merchant does not accept credit cards, so
-     *                        there's no point in adding cards within PaymentRequest UI.
-     * @param showDataSource  Whether the UI should describe the source of Autofill data.
-     * @param title           The title to show at the top of the UI. This can be, for example, the
-     *                        &lt;title&gt; of the merchant website. If the string is too long for
-     *                        UI, it elides at the end.
-     * @param origin          The origin (https://tools.ietf.org/html/rfc6454) to show under the
-     *                        title. For example, "https://shop.momandpop.com". If the origin is too
-     *                        long for the UI, it should elide according to:
+     * @param activity              The activity on top of which the UI should be displayed.
+     * @param client                The consumer of the PaymentRequest UI.
+     * @param requestShipping       Whether the UI should show the shipping address selection.
+     * @param requestShippingOption Whether the UI should show the shipping option selection.
+     * @param requestContact        Whether the UI should show the payer name, email address and
+     *                              phone number selection.
+     * @param canAddCards           Whether the UI should show the [+ADD CARD] button. This can be
+     *                              false, for example, when the merchant does not accept credit
+     *                              cards, so there's no point in adding cards within PaymentRequest
+     *                              UI.
+     * @param showDataSource        Whether the UI should describe the source of Autofill data.
+     * @param title                 The title to show at the top of the UI. This can be, for
+     *                              example, the &lt;title&gt; of the merchant website. If the
+     *                              string is too long for UI, it elides at the end.
+     * @param origin                The origin (https://tools.ietf.org/html/rfc6454) to show under
+     *                              the title. For example, "https://shop.momandpop.com". If the
+     *                              origin is too long for the UI, it should elide according to:
      * https://www.chromium.org/Home/chromium-security/enamel#TOC-Eliding-Origin-Names-And-Hostnames
      * @param securityLevel   The security level of the page that invoked PaymentRequest.
      * @param shippingStrings The string resource identifiers to use in the shipping sections.
      */
     public PaymentRequestUI(Activity activity, Client client, boolean requestShipping,
-            boolean requestContact, boolean canAddCards, boolean showDataSource, String title,
-            String origin, int securityLevel, ShippingStrings shippingStrings) {
+            boolean requestShippingOption, boolean requestContact, boolean canAddCards,
+            boolean showDataSource, String title, String origin, int securityLevel,
+            ShippingStrings shippingStrings) {
         mContext = activity;
         mClient = client;
         mRequestShipping = requestShipping;
+        mRequestShippingOption = requestShippingOption;
         mRequestContactDetails = requestContact;
         mShowDataSource = showDataSource;
         mAnimatorTranslation = mContext.getResources().getDimensionPixelSize(
@@ -379,6 +375,8 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
                 updateOrderSummarySection(result.getShoppingCart());
                 if (mRequestShipping) {
                     updateSection(DataType.SHIPPING_ADDRESSES, result.getShippingAddresses());
+                }
+                if (mRequestShippingOption) {
                     updateSection(DataType.SHIPPING_OPTIONS, result.getShippingOptions());
                 }
                 if (mRequestContactDetails) {
@@ -401,44 +399,27 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
                 (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.payment_request, null);
         prepareRequestView(mContext, title, origin, securityLevel, canAddCards);
 
-        // To handle the specced animations, the dialog is entirely contained within a translucent
-        // FrameLayout.  This could eventually be converted to a real BottomSheetDialog, but that
-        // requires exploration of how interactions would work when the dialog can be sent back and
-        // forth between the peeking and expanded state.
-        mFullContainer = new FrameLayout(mContext);
-        mFullContainer.setBackgroundColor(ApiCompatibilityUtils.getColor(
-                mContext.getResources(), R.color.modal_dialog_scrim_color));
-        FrameLayout.LayoutParams bottomSheetParams = new FrameLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        bottomSheetParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-        mFullContainer.addView(mRequestView, bottomSheetParams);
-
         mEditorDialog = new EditorDialog(activity, sEditorObserverForTest,
                 /*deleteRunnable =*/null);
+        DimmingDialog.setVisibleStatusBarIconColor(mEditorDialog.getWindow());
+
         mCardEditorDialog = new EditorDialog(activity, sEditorObserverForTest,
                 /*deleteRunnable =*/null);
+        DimmingDialog.setVisibleStatusBarIconColor(mCardEditorDialog.getWindow());
 
         // Allow screenshots of the credit card number in Canary, Dev, and developer builds.
         if (ChromeVersionInfo.isBetaBuild() || ChromeVersionInfo.isStableBuild()) {
             mCardEditorDialog.disableScreenshots();
         }
 
-        // Set up the dialog.
-        mDialog = new AlwaysDismissedDialog(activity, R.style.DialogWhenLarge);
-        mDialog.setOnDismissListener(this);
-        mDialog.addContentView(mFullContainer,
-                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
-        Window dialogWindow = mDialog.getWindow();
-        dialogWindow.setGravity(Gravity.CENTER);
-        dialogWindow.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mDialog = new DimmingDialog(activity, this);
     }
 
     /**
-     * Shows the PaymentRequest UI.
+     * Shows the PaymentRequest UI. This will dim the background behind the PaymentRequest UI.
      */
     public void show() {
+        mDialog.addBottomSheetView(mRequestView);
         mDialog.show();
         mClient.getDefaultPaymentInformation(new Callback<PaymentInformation>() {
             @Override
@@ -447,14 +428,10 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
 
                 if (mRequestShipping) {
                     updateSection(DataType.SHIPPING_ADDRESSES, result.getShippingAddresses());
-                    updateSection(DataType.SHIPPING_OPTIONS, result.getShippingOptions());
+                }
 
-                    // Let the summary display a CHOOSE/ADD button for the first subsection that
-                    // needs it.
-                    PaymentRequestSection section =
-                            mShippingAddressSection.getEditButtonState() == EDIT_BUTTON_GONE
-                            ? mShippingOptionSection
-                            : mShippingAddressSection;
+                if (mRequestShippingOption) {
+                    updateSection(DataType.SHIPPING_OPTIONS, result.getShippingOptions());
                 }
 
                 if (mRequestContactDetails) {
@@ -472,6 +449,16 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
                 mRequestView.addOnLayoutChangeListener(new SheetEnlargingAnimator(false));
             }
         });
+    }
+
+    /**
+     * Dim the background without showing any UI. No UI will be interactive. The dimming stops when
+     * close() is called. This is useful for launching a payment handler directly without showing a
+     * PaymentRequest UI first in cases where only one payment handler is available.
+     */
+    public void dimBackground() {
+        // Intentionally do not add the bottom sheet view.
+        mDialog.show();
     }
 
     /**
@@ -570,7 +557,6 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
                     LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         }
 
-        mRequestView.addOnLayoutChangeListener(new FadeInAnimator());
         mRequestView.addOnLayoutChangeListener(new PeekingAnimator());
 
         // Enabled in updatePayButtonEnabled() when the user has selected all payment options.
@@ -611,11 +597,9 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
             // in JavaScript.
             dismissRunnable.run();
         } else {
-            // Animate the bottom sheet going away.
-            new DisappearingAnimator(false);
-
             // Show the error dialog.
-            mErrorView.show(mFullContainer, dismissRunnable);
+            mDialog.showOverlay(mErrorView);
+            mErrorView.setDismissRunnable(dismissRunnable);
         }
 
         if (sPaymentRequestObserverForTest != null) {
@@ -633,6 +617,15 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
     public void setTitleBitmap(Bitmap bitmap) {
         ((PaymentRequestHeader) mRequestView.findViewById(R.id.header)).setTitleBitmap(bitmap);
         mErrorView.setBitmap(bitmap);
+    }
+
+    /**
+     * Update default text on the pay button to the given text.
+     *
+     * @param textResId The resource id of the text to be shown on the button.
+     */
+    public void updatePayButtonText(int textResId) {
+        mPayButton.setText(textResId);
     }
 
     /**
@@ -681,7 +674,7 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
 
     // Only show shipping option section once there are shipping options.
     private void showShippingOptionSectionIfNecessary() {
-        if (!mRequestShipping || mShippingOptionsSectionInformation.isEmpty()
+        if (!mRequestShippingOption || mShippingOptionsSectionInformation.isEmpty()
                 || mPaymentContainerLayout.indexOfChild(mShippingOptionSection) != -1) {
             return;
         }
@@ -849,13 +842,7 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
      */
     private void dismissDialog(boolean isAnimated) {
         mIsClosing = true;
-        if (mDialog.isShowing()) {
-            if (isAnimated) {
-                new DisappearingAnimator(true);
-            } else {
-                mDialog.dismiss();
-            }
-        }
+        mDialog.dismiss(isAnimated);
     }
 
     private void processPayButton() {
@@ -943,22 +930,22 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
                            && mContactDetailsSectionInformation.getSelectedItem() != null);
         boolean shippingInfoOk = !mRequestShipping
                 || (mShippingAddressSectionInformation != null
-                           && mShippingAddressSectionInformation.getSelectedItem() != null
-                           && mShippingOptionsSectionInformation != null
+                           && mShippingAddressSectionInformation.getSelectedItem() != null);
+        boolean shippingOptionInfoOk = !mRequestShippingOption
+                || (mShippingOptionsSectionInformation != null
                            && mShippingOptionsSectionInformation.getSelectedItem() != null);
-        mPayButton.setEnabled(contactInfoOk && shippingInfoOk
+        mPayButton.setEnabled(contactInfoOk && shippingInfoOk && shippingOptionInfoOk
                 && mPaymentMethodSectionInformation != null
                 && mPaymentMethodSectionInformation.getSelectedItem() != null
-                && !mIsClientCheckingSelection
-                && !mIsEditingPaymentItem
-                && !mIsClosing);
+                && !mIsClientCheckingSelection && !mIsEditingPaymentItem && !mIsClosing);
         mReadyToPayNotifierForTest.run();
     }
 
     /** @return Whether or not the dialog can be closed via the X close button. */
     private boolean isAcceptingCloseButton() {
-        return mSheetAnimator == null && mSectionAnimator == null && !mIsProcessingPayClicked
-                && !mIsEditingPaymentItem && !mIsClosing;
+        return !mDialog.isAnimatingDisappearance() && mSheetAnimator == null
+                && mSectionAnimator == null && !mIsProcessingPayClicked && !mIsEditingPaymentItem
+                && !mIsClosing;
     }
 
     /** @return Whether or not the dialog is accepting user input. */
@@ -998,10 +985,6 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
 
             // Switch the 'edit' button to a 'cancel' button.
             mEditButton.setText(mContext.getString(R.string.cancel));
-
-            // Make the dialog take the whole screen.
-            mDialog.getWindow().setLayout(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
             // Disable all but the first button.
             updateSectionButtons();
@@ -1185,29 +1168,6 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
     }
 
     /**
-     * Animates the whole dialog fading in and darkening everything else on screen.
-     * This particular animation is not tracked because it is not meant to be cancellable.
-     */
-    private class FadeInAnimator
-            extends AnimatorListenerAdapter implements OnLayoutChangeListener {
-        @Override
-        public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                int oldLeft, int oldTop, int oldRight, int oldBottom) {
-            mRequestView.removeOnLayoutChangeListener(this);
-
-            Animator scrimFader = ObjectAnimator.ofInt(mFullContainer.getBackground(),
-                    AnimatorProperties.DRAWABLE_ALPHA_PROPERTY, 0, 255);
-            Animator alphaAnimator = ObjectAnimator.ofFloat(mFullContainer, View.ALPHA, 0f, 1f);
-
-            AnimatorSet alphaSet = new AnimatorSet();
-            alphaSet.playTogether(scrimFader, alphaAnimator);
-            alphaSet.setDuration(DIALOG_ENTER_ANIMATION_MS);
-            alphaSet.setInterpolator(new LinearOutSlowInInterpolator());
-            alphaSet.start();
-        }
-    }
-
-    /**
      * Animates the bottom sheet UI translating upwards from the bottom of the screen.
      * Can be canceled when a {@link SheetEnlargingAnimator} starts and expands the dialog.
      */
@@ -1306,42 +1266,6 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
         }
     }
 
-    /** Animates the bottom sheet (and optionally, the scrim) disappearing off screen. */
-    private class DisappearingAnimator extends AnimatorListenerAdapter {
-        private final boolean mIsDialogClosing;
-
-        public DisappearingAnimator(boolean removeDialog) {
-            mIsDialogClosing = removeDialog;
-
-            Animator sheetFader = ObjectAnimator.ofFloat(
-                    mRequestView, View.ALPHA, mRequestView.getAlpha(), 0f);
-            Animator sheetTranslator = ObjectAnimator.ofFloat(
-                    mRequestView, View.TRANSLATION_Y, 0f, mAnimatorTranslation);
-
-            AnimatorSet current = new AnimatorSet();
-            current.setDuration(DIALOG_EXIT_ANIMATION_MS);
-            current.setInterpolator(new FastOutLinearInInterpolator());
-            if (mIsDialogClosing) {
-                Animator scrimFader = ObjectAnimator.ofInt(mFullContainer.getBackground(),
-                        AnimatorProperties.DRAWABLE_ALPHA_PROPERTY, 127, 0);
-                current.playTogether(sheetFader, sheetTranslator, scrimFader);
-            } else {
-                current.playTogether(sheetFader, sheetTranslator);
-            }
-
-            mSheetAnimator = current;
-            mSheetAnimator.addListener(this);
-            mSheetAnimator.start();
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            mSheetAnimator = null;
-            mFullContainer.removeView(mRequestView);
-            if (mIsDialogClosing && mDialog.isShowing()) mDialog.dismiss();
-        }
-    }
-
     @VisibleForTesting
     public static void setEditorObserverForTest(EditorObserverForTest editorObserverForTest) {
         sEditorObserverForTest = editorObserverForTest;
@@ -1355,7 +1279,7 @@ public class PaymentRequestUI implements DialogInterface.OnDismissListener, View
 
     @VisibleForTesting
     public Dialog getDialogForTest() {
-        return mDialog;
+        return mDialog.getDialogForTest();
     }
 
     @VisibleForTesting

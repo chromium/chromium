@@ -130,7 +130,7 @@ const Feature* FeatureProvider::GetBehaviorFeature(const std::string& name) {
 }
 
 const Feature* FeatureProvider::GetFeature(const std::string& name) const {
-  FeatureMap::const_iterator iter = features_.find(name);
+  auto iter = features_.find(name);
   if (iter != features_.end())
     return iter->second.get();
   else

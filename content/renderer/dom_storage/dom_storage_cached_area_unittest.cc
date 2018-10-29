@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_task_environment.h"
 #include "content/renderer/dom_storage/dom_storage_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/fake_renderer_scheduler.h"
@@ -159,7 +159,8 @@ class DOMStorageCachedAreaTest : public testing::Test {
   }
 
  protected:
-  base::MessageLoop message_loop_;  // Needed to construct a RendererScheduler.
+  base::test::ScopedTaskEnvironment
+      task_environment_;  // Needed to construct a RendererScheduler.
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler_;
   scoped_refptr<MockProxy> mock_proxy_;
 };

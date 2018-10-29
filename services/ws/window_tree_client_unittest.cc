@@ -372,7 +372,7 @@ class TestWindowTreeClient2 : public TestWindowTreeClient {
                           Id window_id,
                           int64_t display_id,
                           std::unique_ptr<ui::Event> event,
-                          bool matches_pointer_watcher) override {
+                          bool matches_event_observer) override {
     // Ack input events to clear the state on the server. These can be received
     // during test startup. X11Window::DispatchEvent sends a synthetic move
     // event to notify of entry.
@@ -380,9 +380,7 @@ class TestWindowTreeClient2 : public TestWindowTreeClient {
     // Don't log input events as none of the tests care about them and they
     // may come in at random points.
   }
-  void OnPointerEventObserved(std::unique_ptr<ui::Event>,
-                              Id window_id,
-                              int64_t display_id) override {}
+  void OnObservedInputEvent(std::unique_ptr<ui::Event> event) override {}
   void OnWindowSharedPropertyChanged(
       Id window,
       const std::string& name,
@@ -394,14 +392,8 @@ class TestWindowTreeClient2 : public TestWindowTreeClient {
   void OnWindowCursorChanged(Id window_id, ui::CursorData cursor) override {
     tracker_.OnWindowCursorChanged(window_id, cursor);
   }
-
   void OnDragDropStart(const base::flat_map<std::string, std::vector<uint8_t>>&
                            drag_data) override {}
-
-  void OnWindowSurfaceChanged(Id window_id,
-                              const viz::SurfaceInfo& surface_info) override {
-    tracker_.OnWindowSurfaceChanged(window_id, surface_info);
-  }
 
   void OnDragEnter(Id window,
                    uint32_t key_state,
@@ -2172,92 +2164,6 @@ TEST_F(WindowTreeClientTest, DISABLED_ExplicitCapturePropagation) {
   wt_client1_->WaitForAllMessages();
 
   EXPECT_TRUE(changes1()->empty());
-}
-
-TEST_F(WindowTreeClientTest, DISABLED_SurfaceIdPropagation) {
-  const Id window_1_100 = wt_client1()->NewWindow(100);
-  ASSERT_TRUE(window_1_100);
-  ASSERT_TRUE(wt_client1()->AddWindow(root_window_id(), window_1_100));
-
-  // Establish the second client at client_id_1(),100.
-  ASSERT_NO_FATAL_FAILURE(EstablishSecondClientWithRoot(window_1_100));
-  changes2()->clear();
-
-  // client_id_1(),100 is the id in the wt_client1's id space. The new client
-  // should see client_id_2(),1 (the server id).
-  const Id window_1_100_in_ws2 = BuildWindowId(client_id_1(), 100);
-  EXPECT_EQ(window_1_100_in_ws2, wt_client2()->root_window_id());
-
-  // Submit a CompositorFrame to window_1_100_in_ws2 (the embedded window in
-  // wt2) and make sure the server gets it.
-  {
-    viz::mojom::CompositorFrameSinkPtr surface_ptr;
-    viz::mojom::CompositorFrameSinkClientRequest client_request;
-    viz::mojom::CompositorFrameSinkClientPtr surface_client_ptr;
-    client_request = mojo::MakeRequest(&surface_client_ptr);
-    wt2()->AttachCompositorFrameSink(window_1_100_in_ws2,
-                                     mojo::MakeRequest(&surface_ptr),
-                                     std::move(surface_client_ptr));
-    viz::CompositorFrame compositor_frame;
-    std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
-    gfx::Rect frame_rect(0, 0, 100, 100);
-    render_pass->SetNew(1, frame_rect, frame_rect, gfx::Transform());
-    compositor_frame.render_pass_list.push_back(std::move(render_pass));
-    compositor_frame.metadata.device_scale_factor = 1.f;
-    compositor_frame.metadata.begin_frame_ack = viz::BeginFrameAck(0, 1, true);
-    viz::LocalSurfaceId local_surface_id(1, base::UnguessableToken::Create());
-    surface_ptr->SubmitCompositorFrame(
-        local_surface_id, std::move(compositor_frame), base::nullopt, 0);
-  }
-  // Make sure the parent connection gets the surface ID.
-  wt_client1()->WaitForChangeCount(1);
-  // Verify that the submitted frame is for |window_2_101|.
-  viz::FrameSinkId frame_sink_id =
-      changes1()->back().surface_id.frame_sink_id();
-  // FrameSinkId is based on window's ClientWindowId.
-  EXPECT_EQ(static_cast<size_t>(client_id_2()), frame_sink_id.client_id());
-  EXPECT_EQ(0u, frame_sink_id.sink_id());
-  changes1()->clear();
-
-  // The first window created in the second client gets a server id of
-  // client_id_2(),1 regardless of the id the client uses.
-  const Id window_2_101 = wt_client2()->NewWindow(101);
-  ASSERT_TRUE(wt_client2()->AddWindow(window_1_100_in_ws2, window_2_101));
-  const Id window_2_101_in_ws2 = BuildWindowId(client_id_2(), 101);
-  wt_client1()->WaitForChangeCount(1);
-  EXPECT_EQ("HierarchyChanged window=" + IdToString(window_2_101_in_ws2) +
-                " old_parent=null new_parent=" + IdToString(window_1_100),
-            SingleChangeToDescription(*changes1()));
-  // Submit a CompositorFrame to window_2_101_in_ws2 (a regular window in
-  // wt2) and make sure client gets it.
-  {
-    viz::mojom::CompositorFrameSinkPtr surface_ptr;
-    viz::mojom::CompositorFrameSinkClientRequest client_request;
-    viz::mojom::CompositorFrameSinkClientPtr surface_client_ptr;
-    client_request = mojo::MakeRequest(&surface_client_ptr);
-    wt2()->AttachCompositorFrameSink(window_2_101,
-                                     mojo::MakeRequest(&surface_ptr),
-                                     std::move(surface_client_ptr));
-    viz::CompositorFrame compositor_frame;
-    std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
-    gfx::Rect frame_rect(0, 0, 100, 100);
-    render_pass->SetNew(1, frame_rect, frame_rect, gfx::Transform());
-    compositor_frame.render_pass_list.push_back(std::move(render_pass));
-    compositor_frame.metadata.device_scale_factor = 1.f;
-    compositor_frame.metadata.begin_frame_ack = viz::BeginFrameAck(0, 1, true);
-    viz::LocalSurfaceId local_surface_id(2, base::UnguessableToken::Create());
-    surface_ptr->SubmitCompositorFrame(
-        local_surface_id, std::move(compositor_frame), base::nullopt, 0);
-  }
-  // Make sure the parent connection gets the surface ID.
-  wt_client2()->WaitForChangeCount(1);
-  // Verify that the submitted frame is for |window_2_101|.
-  viz::FrameSinkId frame_sink_id2 =
-      changes2()->back().surface_id.frame_sink_id();
-  // FrameSinkId is based on window's ClientWindowId.
-  EXPECT_NE(0u, frame_sink_id2.client_id());
-  EXPECT_EQ(ClientWindowIdFromTransportId(window_2_101),
-            frame_sink_id2.sink_id());
 }
 
 // Verifies when an unknown window with a known child is added to a hierarchy

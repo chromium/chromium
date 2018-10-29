@@ -444,11 +444,11 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, WindowOpenFromSubframe) {
       ExpectLatestWindowOpenUkmEntry(
           ukm_recorder, expected_num_entries, false /* from_main_frame */,
           main_frame_url, ad_frame /* from_ad_subframe */,
-          false /* from_ad_script */);
+          ad_frame /* from_ad_script */);
       ExpectWindowOpenUmaStatus(
-          histogram_tester, 0 /* adscript_adframe */,
-          expected_num_from_ad_subframe /* nonadscript_adframe */,
-          0 /* adscript_nonadframe */,
+          histogram_tester,
+          expected_num_from_ad_subframe /* adscript_adframe */,
+          0 /* nonadscript_adframe */, 0 /* adscript_nonadframe */,
           expected_num_entries -
               expected_num_from_ad_subframe /* nonadscript_nonadframe */);
     }

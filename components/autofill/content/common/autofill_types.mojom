@@ -57,6 +57,7 @@ enum PasswordFormSubmissionIndicatorEvent {
     FRAME_DETACHED,
     DOM_MUTATION_AFTER_XHR,
     PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD,
+    PROBABLE_FORM_SUBMISSION,
     SUBMISSION_INDICATOR_EVENT_COUNT
 };
 
@@ -70,6 +71,7 @@ enum PasswordFormFieldPredictionType {
 
 // autofill::SubmissionSource
 enum SubmissionSource {
+  NONE,
   SAME_DOCUMENT_NAVIGATION,
   XHR_SUCCEEDED,
   FRAME_DETACHED,
@@ -134,6 +136,7 @@ struct FormFieldData {
 // autofill::FormData
 struct FormData {
   mojo_base.mojom.String16 name;
+  mojo_base.mojom.String16 button_title;
   // TODO(crbug.com/788181): Either change type to Origin or rename to URL.
   url.mojom.Url origin;
   url.mojom.Url action;

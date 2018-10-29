@@ -13,7 +13,6 @@ static_library("common") {
     "activation_scope.h",
     "common_features.cc",
     "common_features.h",
-    "document_load_statistics.h",
     "document_subresource_filter.cc",
     "document_subresource_filter.h",
     "first_party_origin.cc",

@@ -2,7 +2,6 @@ Tests that we can create instances of Range using new
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS typeof new Range is "object"
 PASS Object.prototype.toString.call(new Range) is "[object Range]"
 PASS new Range instanceof Range is true
@@ -14,5 +13,6 @@ PASS r.toString() is "Inner"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Test
 

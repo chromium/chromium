@@ -82,7 +82,7 @@ void ExtensionTestingProfile::AddExtension(std::string extension_id,
                                            std::string description,
                                            std::string update_url,
                                            int state_value) {
-  scoped_refptr<extensions::Extension> extension =
+  scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetID(extension_id)
           .SetManifest(extensions::DictionaryBuilder()

@@ -5,7 +5,6 @@
 #include "ui/views/style/platform_style.h"
 
 #include "build/build_config.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/shadow_value.h"
@@ -61,8 +60,8 @@ const bool PlatformStyle::kTreeViewSelectionPaintsEntireRow = false;
 const bool PlatformStyle::kUseRipples = true;
 const bool PlatformStyle::kTextfieldScrollsToStartOnFocusChange = false;
 const bool PlatformStyle::kTextfieldUsesDragCursorWhenDraggable = true;
-const bool PlatformStyle::kShouldElideBookmarksInBookmarksBar = false;
 const bool PlatformStyle::kPreferFocusRings = false;
+const bool PlatformStyle::kInactiveWidgetControlsAppearDisabled = false;
 
 // static
 std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(bool is_horizontal) {

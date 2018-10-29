@@ -557,14 +557,14 @@ WebString WebPluginContainerImpl::ExecuteScriptURL(const WebURL& url,
   std::unique_ptr<UserGestureIndicator> gesture_indicator;
   if (popups_allowed) {
     gesture_indicator =
-        Frame::NotifyUserActivation(frame, UserGestureToken::kNewGesture);
+        LocalFrame::NotifyUserActivation(frame, UserGestureToken::kNewGesture);
   }
 
   v8::HandleScope handle_scope(ToIsolate(frame));
   v8::Local<v8::Value> result =
       frame->GetScriptController().ExecuteScriptInMainWorldAndReturnValue(
           ScriptSourceCode(script, ScriptSourceLocationType::kJavascriptUrl),
-          KURL(), kNotSharableCrossOrigin);
+          KURL(), kOpaqueResource);
 
   // Failure is reported as a null string.
   if (result.IsEmpty() || !result->IsString())
@@ -701,7 +701,8 @@ void WebPluginContainerImpl::DidReceiveResponse(
   web_plugin_->DidReceiveResponse(url_response);
 }
 
-void WebPluginContainerImpl::DidReceiveData(const char* data, int data_length) {
+void WebPluginContainerImpl::DidReceiveData(const char* data,
+                                            size_t data_length) {
   web_plugin_->DidReceiveData(data, data_length);
 }
 
@@ -983,10 +984,14 @@ WebCoalescedInputEvent WebPluginContainerImpl::TransformCoalescedTouchEvent(
     const WebCoalescedInputEvent& coalesced_event) {
   WebCoalescedInputEvent transformed_event(
       TransformTouchEvent(coalesced_event.Event()),
-      std::vector<const WebInputEvent*>());
+      std::vector<const WebInputEvent*>(), std::vector<const WebInputEvent*>());
   for (size_t i = 0; i < coalesced_event.CoalescedEventSize(); ++i) {
     transformed_event.AddCoalescedEvent(
         TransformTouchEvent(coalesced_event.CoalescedEvent(i)));
+  }
+  for (size_t i = 0; i < coalesced_event.PredictedEventSize(); ++i) {
+    transformed_event.AddPredictedEvent(
+        TransformTouchEvent(coalesced_event.PredictedEvent(i)));
   }
   return transformed_event;
 }

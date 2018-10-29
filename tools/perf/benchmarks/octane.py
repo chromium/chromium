@@ -117,7 +117,8 @@ class _OctaneMeasurement(legacy_page_test.LegacyPageTest):
                            'benchmark collection.'))
 
 
-@benchmark.Info(emails=['hablich@chromium.org'])
+@benchmark.Info(emails=['hablich@chromium.org'],
+                component='Blink>JavaScript')
 class Octane(perf_benchmark.PerfBenchmark):
   """Google's Octane JavaScript benchmark.
 

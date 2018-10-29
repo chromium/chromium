@@ -1,3 +1,1 @@
 There should be no white gap at the right hand side of the box.
-
-

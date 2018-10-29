@@ -318,6 +318,7 @@ TEST(TextEliderTest, TestFileURLEliding) {
      {
          /* clang-format off */
          "file:///C:/path1/path2/path3/filename",
+         "/C:/path1/path2/path3/filename",
          "C:/path1/path2/path3/filename",
          "C:/path1/path2/" + kEllipsisStr + "/filename",
          /* clang-format on */
@@ -327,7 +328,6 @@ TEST(TextEliderTest, TestFileURLEliding) {
     {"file:///C:path1/path2/path3/filename",
      {
          /* clang-format off */
-         "file:///C:/path1/path2/path3/filename",
          "C:/path1/path2/path3/filename",
          "C:/path1/path2/" + kEllipsisStr + "/filename",
          "C:/path1/" + kEllipsisStr + "/filename",

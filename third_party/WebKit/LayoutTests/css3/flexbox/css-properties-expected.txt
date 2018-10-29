@@ -2,7 +2,6 @@ Tests being able to set the display to flex and inline-flex.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS flexbox.style.display is "flex"
 PASS flexbox.style.display is "inline"
 PASS flexbox.style.display is "inline-flex"

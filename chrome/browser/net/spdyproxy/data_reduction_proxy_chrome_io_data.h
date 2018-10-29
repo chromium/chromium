@@ -19,15 +19,11 @@ namespace data_reduction_proxy {
 class DataReductionProxyIOData;
 }
 
-namespace net {
-class NetLog;
-}
 
 // Constructs DataReductionProxyIOData suitable for use by ProfileImpl and
 // ProfileImplIOData.
 std::unique_ptr<data_reduction_proxy::DataReductionProxyIOData>
 CreateDataReductionProxyChromeIOData(
-    net::NetLog* net_log,
     PrefService* prefs,
     const scoped_refptr<base::SingleThreadTaskRunner>& io_thread_runner,
     const scoped_refptr<base::SingleThreadTaskRunner>& ui_thread_runner);

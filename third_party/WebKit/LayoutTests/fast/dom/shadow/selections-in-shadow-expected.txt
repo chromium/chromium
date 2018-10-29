@@ -1,6 +1,7 @@
 CONSOLE WARNING: line 40: Element.createShadowRoot is deprecated and will be removed in M73, around March 2019. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 for more details.
 
 
+
 CONTAINER1 --> CONTAINER1
 PASS internals.treeScopeRootNode(window.getSelection().anchorNode) is internals.treeScopeRootNode(window.getSelection().focusNode)
 CONTAINER1 --> CONTAINER2
@@ -113,6 +114,7 @@ SPAN 2 INOLDER: double click
 PASS internals.treeScopeRootNode(window.getSelection().anchorNode) is internals.treeScopeRootNode(window.getSelection().focusNode)
 SPAN 3 INOLDER: double click
 PASS internals.treeScopeRootNode(window.getSelection().anchorNode) is internals.treeScopeRootNode(window.getSelection().focusNode)
+
 
 
 

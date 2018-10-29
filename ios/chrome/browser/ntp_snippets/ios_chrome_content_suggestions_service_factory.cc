@@ -35,9 +35,10 @@ IOSChromeContentSuggestionsServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactoryFunction
+BrowserStateKeyedServiceFactory::TestingFactory
 IOSChromeContentSuggestionsServiceFactory::GetDefaultFactory() {
-  return &ntp_snippets::CreateChromeContentSuggestionsServiceWithProviders;
+  return base::BindRepeating(
+      &ntp_snippets::CreateChromeContentSuggestionsServiceWithProviders);
 }
 
 IOSChromeContentSuggestionsServiceFactory::

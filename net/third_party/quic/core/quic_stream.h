@@ -22,7 +22,6 @@
 #include <list>
 
 #include "base/macros.h"
-#include "net/base/iovec.h"
 #include "net/third_party/quic/core/quic_flow_controller.h"
 #include "net/third_party/quic/core/quic_packets.h"
 #include "net/third_party/quic/core/quic_stream_send_buffer.h"
@@ -58,7 +57,12 @@ class QUIC_EXPORT_PRIVATE QuicStream {
   // Creates a new stream with stream_id |id| associated with |session|. If
   // |is_static| is true, then the stream will be given precedence
   // over other streams when determing what streams should write next.
-  QuicStream(QuicStreamId id, QuicSession* session, bool is_static);
+  // |type| indicates whether the stream is bidirectional, read unidirectional
+  // or write unidirectional.
+  QuicStream(QuicStreamId id,
+             QuicSession* session,
+             bool is_static,
+             StreamType type);
   QuicStream(const QuicStream&) = delete;
   QuicStream& operator=(const QuicStream&) = delete;
 
@@ -133,10 +137,12 @@ class QUIC_EXPORT_PRIVATE QuicStream {
   }
   bool write_side_closed() const { return write_side_closed_; }
 
-  bool rst_received() { return rst_received_; }
-  bool rst_sent() { return rst_sent_; }
-  bool fin_received() { return fin_received_; }
-  bool fin_sent() { return fin_sent_; }
+  bool rst_received() const { return rst_received_; }
+  bool rst_sent() const { return rst_sent_; }
+  bool fin_received() const { return fin_received_; }
+  bool fin_sent() const { return fin_sent_; }
+  bool fin_outstanding() const { return fin_outstanding_; }
+  bool fin_lost() const { return fin_lost_; }
 
   uint64_t BufferedDataBytes() const;
 
@@ -194,8 +200,6 @@ class QUIC_EXPORT_PRIVATE QuicStream {
   // Returns the crypto handshake protocol that was used on this stream's
   // connection.
   HandshakeProtocol handshake_protocol() const;
-
-  bool fin_received() const { return fin_received_; }
 
   // Sets the sequencer to consume all incoming data itself and not call
   // OnDataAvailable().
@@ -269,6 +273,8 @@ class QUIC_EXPORT_PRIVATE QuicStream {
   bool IsStreamFrameOutstanding(QuicStreamOffset offset,
                                 QuicByteCount data_length,
                                 bool fin) const;
+
+  StreamType type() const { return type_; }
 
  protected:
   // Sends as many bytes in the first |count| buffers of |iov| to the connection
@@ -449,6 +455,10 @@ class QUIC_EXPORT_PRIVATE QuicStream {
 
   // If initialized, reset this stream at this deadline.
   QuicTime deadline_;
+
+  // Indicates whether this stream is bidirectional, read unidirectional or
+  // write unidirectional.
+  const StreamType type_;
 };
 
 }  // namespace quic

@@ -58,7 +58,7 @@ class PageHandler : public DevToolsDomainHandler,
                     public Page::Backend,
                     public RenderWidgetHostObserver {
  public:
-  explicit PageHandler(EmulationHandler* handler);
+  PageHandler(EmulationHandler* handler, bool allow_set_download_behavior);
   ~PageHandler() override;
 
   static std::vector<PageHandler*> EnabledForWebContents(
@@ -212,6 +212,7 @@ class PageHandler : public DevToolsDomainHandler,
 
   RenderFrameHostImpl* host_;
   EmulationHandler* emulation_handler_;
+  bool allow_set_download_behavior_;
   std::unique_ptr<Page::Frontend> frontend_;
   ScopedObserver<RenderWidgetHost, RenderWidgetHostObserver> observer_;
   JavaScriptDialogCallback pending_dialog_;

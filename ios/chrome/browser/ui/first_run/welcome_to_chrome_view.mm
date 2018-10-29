@@ -10,11 +10,11 @@
 #import "ios/chrome/browser/ui/UIView+SizeClassSupport.h"
 #include "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #include "ios/chrome/browser/ui/first_run/first_run_util.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/util/CRUILabel+AttributeUtils.h"
 #import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/label_observer.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/string_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -320,6 +320,11 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
   [self configureSubviews];
 }
 
+- (void)safeAreaInsetsDidChange {
+  [super safeAreaInsetsDidChange];
+  [self layoutOKButtonAndContainerView];
+}
+
 - (void)layoutSubviews {
   [super layoutSubviews];
   [self layoutTitleLabel];
@@ -327,6 +332,10 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
   [self layoutTOSLabel];
   [self layoutOptInLabel];
   [self layoutCheckBoxButton];
+  [self layoutOKButtonAndContainerView];
+}
+
+- (void)layoutOKButtonAndContainerView {
   // The OK Button must be laid out before the container view so that the
   // container view can take its position into account.
   [self layoutOKButton];
@@ -494,10 +503,15 @@ const char kPrivacyNoticeUrl[] = "internal://privacy-notice";
   CGFloat OKButtonBottomPadding =
       kOKButtonBottomPadding[self.cr_widthSizeClass];
   CGSize OKButtonSize = self.OKButton.bounds.size;
-  self.OKButton.frame = AlignRectOriginAndSizeToPixels(CGRectMake(
-      (CGRectGetWidth(self.bounds) - OKButtonSize.width) / 2.0,
-      CGRectGetMaxY(self.bounds) - OKButtonSize.height - OKButtonBottomPadding,
-      OKButtonSize.width, OKButtonSize.height));
+  CGFloat bottomSafeArea = 0;
+  if (@available(iOS 11.0, *)) {
+    bottomSafeArea = self.safeAreaInsets.bottom;
+  }
+  self.OKButton.frame = AlignRectOriginAndSizeToPixels(
+      CGRectMake((CGRectGetWidth(self.bounds) - OKButtonSize.width) / 2.0,
+                 CGRectGetMaxY(self.bounds) - OKButtonSize.height -
+                     OKButtonBottomPadding - bottomSafeArea,
+                 OKButtonSize.width, OKButtonSize.height));
 }
 
 - (void)traitCollectionDidChange:

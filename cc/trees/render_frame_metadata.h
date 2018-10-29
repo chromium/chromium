@@ -6,6 +6,7 @@
 #define CC_TREES_RENDER_FRAME_METADATA_H_
 
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/selection.h"
@@ -64,10 +65,13 @@ class CC_EXPORT RenderFrameMetadata {
   // The last viz::LocalSurfaceId used to submit a CompositorFrame.
   base::Optional<viz::LocalSurfaceId> local_surface_id;
 
+  // The time at which |local_surface_id| was allocated.
+  base::Optional<base::TimeTicks> local_surface_id_allocation_time_from_child;
+
   float page_scale_factor = 1.f;
 
-  // Used to position the Android location top bar and page content, whose
-  // precise position is computed by the renderer compositor.
+  // Used to position the location top bar and page content, whose precise
+  // position is computed by the renderer compositor.
   float top_controls_height = 0.f;
   float top_controls_shown_ratio = 0.f;
 

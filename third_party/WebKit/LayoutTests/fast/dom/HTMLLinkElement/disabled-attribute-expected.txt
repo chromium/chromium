@@ -2,7 +2,6 @@ This test checks HTMLLinkElement disabled conforms to HTML5 spec for the bug id 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS test.disabled is false
 PASS test.disabled is true
 PASS test.sheet.disabled is true

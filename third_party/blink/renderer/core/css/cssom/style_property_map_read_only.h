@@ -50,12 +50,13 @@ class CORE_EXPORT StylePropertyMapReadOnly
 
   virtual String SerializationForShorthand(const CSSProperty&) = 0;
 
+  const CSSValue* GetCustomProperty(const ExecutionContext&,
+                                    const AtomicString&);
+
  private:
   IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
 
   CSSStyleValue* GetShorthandProperty(const CSSProperty&);
-  const CSSValue* GetCustomProperty(const ExecutionContext&,
-                                    const AtomicString&);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(StylePropertyMapReadOnly);

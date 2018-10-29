@@ -78,7 +78,49 @@ class MODULES_EXPORT IDBKey {
     return base::WrapUnique(new IDBKey(std::move(array)));
   }
 
+  // TODO(cmp): This |Clone| function is necessary for WebIDBKey's ctor
+  //            functions.  It needs to be available in this header file so
+  //            web_idb_key.cc can use it.  When the IDB Blink variant typemap
+  //            moves to the renderer/modules/indexeddb/ types and off of the
+  //            WebIDB* types, this |Clone| function should be removed.
+  static std::unique_ptr<IDBKey> Clone(const std::unique_ptr<IDBKey>& rkey_in) {
+    IDBKey* rkey = rkey_in.get();
+    if (!rkey_in.get())
+      return nullptr;
+
+    switch (rkey->GetType()) {
+      case kInvalidType:
+        return IDBKey::CreateInvalid();
+      case kArrayType: {
+        IDBKey::KeyArray lkey_array;
+        const auto& rkey_array = rkey->Array();
+        for (const auto& rkey_item : rkey_array)
+          lkey_array.push_back(IDBKey::Clone(rkey_item));
+        return IDBKey::CreateArray(std::move(lkey_array));
+      }
+      case kBinaryType:
+        return IDBKey::CreateBinary(rkey->Binary());
+      case kStringType:
+        return IDBKey::CreateString(rkey->GetString());
+      case kDateType:
+        return IDBKey::CreateDate(rkey->Date());
+      case kNumberType:
+        return IDBKey::CreateNumber(rkey->Number());
+
+      case kTypeEnumMax:
+        break;  // Not used, NOTREACHED.
+    }
+    NOTREACHED();
+    return nullptr;
+  }
+
   ~IDBKey();
+
+  // Very rough estimate of minimum key size overhead.
+  //
+  // TODO(cmp): When the reference to this in web_idb_key.cc goes away, move
+  //            this variable back to idb_key.cc's anonymous namespace.
+  static const size_t kIDBKeyOverheadSize = 16;
 
   // In order of the least to the highest precedent in terms of sort order.
   // These values are written to logs. New enum values can be added, but
@@ -124,6 +166,7 @@ class MODULES_EXPORT IDBKey {
   int Compare(const IDBKey* other) const;
   bool IsLessThan(const IDBKey* other) const;
   bool IsEqual(const IDBKey* other) const;
+  size_t SizeEstimate() const { return size_estimate_; }
 
   // Returns a new key array with invalid keys and duplicates removed.
   //
@@ -140,20 +183,22 @@ class MODULES_EXPORT IDBKey {
  private:
   DISALLOW_COPY_AND_ASSIGN(IDBKey);
 
-  IDBKey() : type_(kInvalidType) {}
-  IDBKey(Type type, double number) : type_(type), number_(number) {}
-  explicit IDBKey(const class String& value)
-      : type_(kStringType), string_(value) {}
-  explicit IDBKey(scoped_refptr<SharedBuffer> value)
-      : type_(kBinaryType), binary_(std::move(value)) {}
-  explicit IDBKey(KeyArray key_array)
-      : type_(kArrayType), array_(std::move(key_array)) {}
+  IDBKey();
+  IDBKey(Type type, double number);
+  explicit IDBKey(const class String& value);
+  explicit IDBKey(scoped_refptr<SharedBuffer> value);
+  explicit IDBKey(KeyArray key_array);
 
   Type type_;
   KeyArray array_;
   scoped_refptr<SharedBuffer> binary_;
   const class String string_;
   const double number_ = 0;
+
+  // Initialized in IDBKey constructors based on key type and value size (see
+  // idb_key.cc).  Returned via SizeEstimate() and used in IndexedDB code to
+  // verify that a given key is small enough to pass over IPC.
+  size_t size_estimate_;
 };
 
 }  // namespace blink

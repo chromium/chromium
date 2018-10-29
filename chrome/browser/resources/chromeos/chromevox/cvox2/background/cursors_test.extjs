@@ -10,11 +10,11 @@ GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
  * @constructor
  * @extends {ChromeVoxNextE2ETest}
  */
-function CursorsTest() {
+function ChromeVoxCursorsTest() {
   ChromeVoxNextE2ETest.call(this);
 }
 
-CursorsTest.prototype = {
+ChromeVoxCursorsTest.prototype = {
   __proto__: ChromeVoxNextE2ETest.prototype,
 
   /** Test cursors.Cursor. @const {string} */
@@ -129,7 +129,7 @@ simpleDoc: function() {/*!
   */}
 };
 
-TEST_F('CursorsTest', 'CharacterCursor', function() {
+TEST_F('ChromeVoxCursorsTest', 'CharacterCursor', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
     [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'start '}],
     [CHARACTER, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}],
@@ -149,7 +149,7 @@ TEST_F('CursorsTest', 'CharacterCursor', function() {
     [CHARACTER, DIRECTIONAL, BACKWARD, {index: 5, value: 'start '}],]);
 });
 
-TEST_F('CursorsTest', 'WordCursor', function() {
+TEST_F('ChromeVoxCursorsTest', 'WordCursor', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
     // Word (BOUND).
     [WORD, BOUND, BACKWARD, {index: 0, value: 'start '}],
@@ -171,7 +171,7 @@ TEST_F('CursorsTest', 'WordCursor', function() {
     [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: undefined}]]);
 });
 
-TEST_F('CursorsTest', 'CharacterWordCursor', function() {
+TEST_F('ChromeVoxCursorsTest', 'CharacterWordCursor', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
     [CHARACTER, DIRECTIONAL, FORWARD, {index: 1, value: 'start '}],
 
@@ -187,7 +187,7 @@ TEST_F('CursorsTest', 'CharacterWordCursor', function() {
     [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'start '}]]);
 });
 
-TEST_F('CursorsTest', 'LineCursor', function() {
+TEST_F('ChromeVoxCursorsTest', 'LineCursor', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
     // Line (BOUND).
     [LINE, BOUND, FORWARD, {value: 'same line'}],
@@ -204,7 +204,7 @@ TEST_F('CursorsTest', 'LineCursor', function() {
     [LINE, BOUND, BACKWARD, {value: 'start '}]]);
 });
 
-TEST_F('CursorsTest', 'CharacterRange', function() {
+TEST_F('ChromeVoxCursorsTest', 'CharacterRange', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
       [CHARACTER, FORWARD,
           {value: 'start ', index: 1}, {value: 'start ', index: 2}],
@@ -237,7 +237,7 @@ TEST_F('CursorsTest', 'CharacterRange', function() {
   ], this.RANGE);
 });
 
-TEST_F('CursorsTest', 'WordRange', function() {
+TEST_F('ChromeVoxCursorsTest', 'WordRange', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
       [WORD, FORWARD,
           {value: 'same line', index: 0}, {value: 'same line', index: 4}],
@@ -262,7 +262,7 @@ TEST_F('CursorsTest', 'WordRange', function() {
 });
 
 
-TEST_F('CursorsTest', 'LineRange', function() {
+TEST_F('ChromeVoxCursorsTest', 'LineRange', function() {
   this.runCursorMovesOnDocument(this.simpleDoc, [
         [LINE, FORWARD, {value: 'end', index: 0}, {value: 'end', index: 3}],
       [LINE, FORWARD, {value: 'end', index: 0}, {value: 'end', index: 3}],
@@ -277,7 +277,7 @@ TEST_F('CursorsTest', 'LineRange', function() {
   ], this.RANGE);
 });
 
-TEST_F('CursorsTest', 'DontSplitOnNodeNavigation', function() {
+TEST_F('ChromeVoxCursorsTest', 'DontSplitOnNodeNavigation', function() {
   this.runWithLoadedTree(this.multiInlineDoc, function(root) {
     var para = root.firstChild;
     assertEquals('paragraph', para.role);
@@ -297,7 +297,7 @@ TEST_F('CursorsTest', 'DontSplitOnNodeNavigation', function() {
   });
 });
 
-TEST_F('CursorsTest', 'WrappingCursors', function() {
+TEST_F('ChromeVoxCursorsTest', 'WrappingCursors', function() {
   this.runWithLoadedTree(this.multiInlineDoc, function(root) {
     var first = root;
     var last = root.lastChild.firstChild;
@@ -313,7 +313,7 @@ TEST_F('CursorsTest', 'WrappingCursors', function() {
   });
 });
 
-TEST_F('CursorsTest', 'IsInWebRange', function() {
+TEST_F('ChromeVoxCursorsTest', 'IsInWebRange', function() {
   this.runWithLoadedTree(this.simpleDoc, function(root) {
     var para = root.firstChild;
     var webRange = new cursors.Range.fromNode(para);
@@ -323,7 +323,7 @@ TEST_F('CursorsTest', 'IsInWebRange', function() {
   });
 });
 
-TEST_F('CursorsTest', 'SingleDocSelection', function() {
+TEST_F('ChromeVoxCursorsTest', 'SingleDocSelection', function() {
   this.runWithLoadedTree(function() {/*!
     <span>start</span>
     <p><a href="google.com">google home page</a></p>
@@ -364,7 +364,7 @@ TEST_F('CursorsTest', 'SingleDocSelection', function() {
   });
 });
 
-TEST_F('CursorsTest', 'MultiLineOffsetSelection', function() {
+TEST_F('ChromeVoxCursorsTest', 'MultiLineOffsetSelection', function() {
   this.runWithLoadedTree(this.multiInlineDoc, function(root) {
     var secondLine = root.firstChild.firstChild.firstChild.nextSibling;
     assertEquals('inlineTextBox', secondLine.role);
@@ -393,7 +393,7 @@ TEST_F('CursorsTest', 'MultiLineOffsetSelection', function() {
   });
 });
 
-TEST_F('CursorsTest', 'InlineElementOffset', function() {
+TEST_F('ChromeVoxCursorsTest', 'InlineElementOffset', function() {
   this.runWithLoadedTree(function() {/*!
     <span>start</span>
     <p>This<br> is a<a href="#g">test</a>of selection</p>
@@ -431,7 +431,7 @@ TEST_F('CursorsTest', 'InlineElementOffset', function() {
   });
 });
 
-TEST_F('CursorsTest', 'ContentEquality', function() {
+TEST_F('ChromeVoxCursorsTest', 'ContentEquality', function() {
   this.runWithLoadedTree(function() {/*!
     <div role="region">this is a test</button>
   */}, function(root) {
@@ -463,7 +463,7 @@ TEST_F('CursorsTest', 'ContentEquality', function() {
   });
 });
 
-TEST_F('CursorsTest', 'DeepEquivalency', function() {
+TEST_F('ChromeVoxCursorsTest', 'DeepEquivalency', function() {
   this.runWithLoadedTree(function() {/*!
     <p style="word-spacing:100000px">this is a test</p>
   */}, function(root) {
@@ -514,7 +514,7 @@ TEST_F('CursorsTest', 'DeepEquivalency', function() {
   });
 });
 
-TEST_F('CursorsTest', 'SelectionAdjustmentsRichText', function() {
+TEST_F('ChromeVoxCursorsTest', 'SelectionAdjustmentsRichText', function() {
   this.runWithLoadedTree(function() {/*!
     <div contenteditable><p>test</p><p>123</p></div>
   */}, function(root) {
@@ -563,7 +563,7 @@ TEST_F('CursorsTest', 'SelectionAdjustmentsRichText', function() {
   });
 });
 
-TEST_F('CursorsTest', 'SelectionAdjustmentsNonRichText', function() {
+TEST_F('ChromeVoxCursorsTest', 'SelectionAdjustmentsNonRichText', function() {
   this.runWithLoadedTree(function() {/*!
     <input type="text"></input>
     <textarea></textarea>

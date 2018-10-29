@@ -20,6 +20,7 @@ that Daydream controller input is registered when using Daydream View.
       var selectCount = 0;
       var iterations;
       var currentIteration = 0;
+      var finishAfterEachInput = true;
 
       function onSelectStart() {
         // selectstart should always be fired first, so check that
@@ -55,7 +56,7 @@ that Daydream controller input is registered when using Daydream View.
         currentIteration++;
         if (currentIteration == iterations) {
           t.done();
-        } else {
+        } else if (finishAfterEachInput) {
           finishJavaScriptStep();
         }
       }

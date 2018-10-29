@@ -6,21 +6,22 @@ for (const item of location.search.substr(1).split('&')) {
   queryMap[key] = value;
 }
 
-const test_origin = 'http://127.0.0.1:' + queryMap.port;
-const test_url = test_origin + '/test?allow=' + queryMap.allow;
+const test_url = queryMap.url + '?allow=' + queryMap.allow;
 
 function finish(result) { document.title = result; }
 
 const xhr = new XMLHttpRequest();
 xhr.open('GET', test_url);
 xhr.setRequestHeader('X-NotSimple', 'true');
-xhr.addEventListener('readystatechange', e => {
-  if (xhr.readyState != xhr.DONE)
-    return;
-  if (xhr.status != 200)
-    return finish('FAIL');
-  if (xhr.response != queryMap.origin)
-    return finish('FAIL: request origin does not match');
+xhr.addEventListener('error', e => {
+  finish('FAIL');
+});
+xhr.addEventListener('load', e => {
+  console.log('status = ' + xhr.status);
+  if (xhr.response !== queryMap.response_text &&
+      queryMap.response_text !== 'unused') {
+    return finish('FAIL: response text does not match');
+  }
   finish('PASS');
 });
 xhr.send();

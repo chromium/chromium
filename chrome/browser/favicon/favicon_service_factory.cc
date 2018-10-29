@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/favicon/chrome_favicon_client.h"
@@ -54,9 +55,9 @@ FaviconServiceFactory* FaviconServiceFactory::GetInstance() {
 }
 
 // static
-BrowserContextKeyedServiceFactory::TestingFactoryFunction
+BrowserContextKeyedServiceFactory::TestingFactory
 FaviconServiceFactory::GetDefaultFactory() {
-  return &BuildFaviconService;
+  return base::BindRepeating(&BuildFaviconService);
 }
 
 FaviconServiceFactory::FaviconServiceFactory()

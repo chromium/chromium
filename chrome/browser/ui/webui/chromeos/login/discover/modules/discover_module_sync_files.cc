@@ -55,8 +55,7 @@ bool DiscoverModuleSyncFiles::IsCompleted() const {
   return false;
 }
 
-std::unique_ptr<DiscoverHandler> DiscoverModuleSyncFiles::CreateWebUIHandler()
-    const {
+std::unique_ptr<DiscoverHandler> DiscoverModuleSyncFiles::CreateWebUIHandler() {
   return std::make_unique<DiscoverModuleSyncFilesHandler>();
 }
 

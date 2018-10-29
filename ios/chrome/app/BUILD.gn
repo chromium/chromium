@@ -61,8 +61,10 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/base",
-    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser:browser",
+    "//ios/public/provider/chrome/browser:test_support",
     "//ios/public/provider/chrome/browser/distribution",
+    "//ios/public/provider/chrome/browser/distribution:test_support",
     "//ios/web/public/test:test",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -214,17 +216,14 @@ source_set("app_internal") {
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/history",
     "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/main:feature_flags",
     "//ios/chrome/browser/ui/main:tab_switcher",
     "//ios/chrome/browser/ui/promos",
     "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/ui/signin_interaction",
-    "//ios/chrome/browser/ui/stack_view",
     "//ios/chrome/browser/ui/tab_grid",
     "//ios/chrome/browser/ui/tab_grid:tab_grid_ui",
-    "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tabs",
-    "//ios/chrome/browser/ui/toolbar/clean:toolbar_ui",
+    "//ios/chrome/browser/ui/toolbar:toolbar_ui",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/webui:webui_internal",
@@ -289,7 +288,16 @@ ios_app_bundle("chrome") {
 
   bundle_deps = [ "//ios/chrome/app/resources" ]
   if (!is_chrome_branded || ios_chrome_app_variants == []) {
+    assert(ios_application_icons_target != "",
+           "ios_application_icons_target must be defined.")
     bundle_deps += [ ios_application_icons_target ]
+
+    if (ios_enable_firebase_sdk) {
+      assert(ios_firebase_resources_target != "",
+             "ios_firebase_resources_target must be defined if Firebase SDK " +
+                 "is enabled.")
+      bundle_deps += [ ios_firebase_resources_target ]
+    }
   } else {
     variants = ios_chrome_app_variants
   }

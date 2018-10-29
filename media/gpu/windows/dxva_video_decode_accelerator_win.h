@@ -418,8 +418,6 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   // Reset token for the DX11 device manager.
   uint32_t dx11_dev_manager_reset_token_;
 
-  uint32_t dx11_dev_manager_reset_token_format_conversion_;
-
   // The EGL config to use for decoded frames.
   EGLConfig egl_config_;
 

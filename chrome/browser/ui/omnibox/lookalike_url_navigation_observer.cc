@@ -14,10 +14,13 @@
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
 #include "chrome/common/chrome_features.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/idn_spoof_checker.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace {
 
@@ -55,12 +58,15 @@ LookalikeUrlNavigationObserver::~LookalikeUrlNavigationObserver() {}
 
 void LookalikeUrlNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK(navigation_handle->IsInMainFrame());
+  // Ignore subframe and same document navigations.
+  if (!navigation_handle->IsInMainFrame() ||
+      navigation_handle->IsSameDocument())
+    return;
+
   // If the navigation was not committed, it means either the page was a
   // download or error 204/205, or the navigation never left the previous
   // URL. Basically, this isn't a problem since we stayed at the existing URL.
-  // Also ignore same document navigations.
-  if (!navigation_handle->HasCommitted() || navigation_handle->IsSameDocument())
+  if (!navigation_handle->HasCommitted())
     return;
 
   const GURL url = navigation_handle->GetURL();
@@ -80,14 +86,17 @@ void LookalikeUrlNavigationObserver::DidFinishNavigation(
     return;
 
   std::string matched_domain;
+  MatchType match_type;
   if (result.matching_top_domain.empty()) {
     matched_domain = GetMatchingSiteEngagementDomain(service, url);
     if (matched_domain.empty())
       return;
     RecordEvent(NavigationSuggestionEvent::kMatchSiteEngagement);
+    match_type = MatchType::kSiteEngagement;
   } else {
     matched_domain = result.matching_top_domain;
     RecordEvent(NavigationSuggestionEvent::kMatchTopSite);
+    match_type = MatchType::kTopSite;
   }
 
   DCHECK(!matched_domain.empty());
@@ -95,6 +104,14 @@ void LookalikeUrlNavigationObserver::DidFinishNavigation(
   GURL::Replacements replace_host;
   replace_host.SetHostStr(matched_domain);
   const GURL suggested_url = url.ReplaceComponents(replace_host);
+
+  ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+  CHECK(ukm_recorder);
+  ukm::SourceId source_id =
+      ukm::GetSourceIdForWebContentsDocument(web_contents());
+  ukm::builders::LookalikeUrl_NavigationSuggestion(source_id)
+      .SetMatchType(static_cast<int>(match_type))
+      .Record(ukm_recorder);
 
   if (kMetricsOnly.Get().empty()) {
     RecordEvent(NavigationSuggestionEvent::kInfobarShown);
@@ -122,6 +139,9 @@ std::string LookalikeUrlNavigationObserver::GetMatchingSiteEngagementDomain(
   const std::string domain_and_registry =
       net::registry_controlled_domains::GetDomainAndRegistry(
           url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  // eTLD+1 can be empty for private domains.
+  if (domain_and_registry.empty())
+    return std::string();
 
   url_formatter::IDNConversionResult result =
       url_formatter::IDNToUnicodeWithDetails(domain_and_registry);
@@ -145,6 +165,10 @@ std::string LookalikeUrlNavigationObserver::GetMatchingSiteEngagementDomain(
         net::registry_controlled_domains::GetDomainAndRegistry(
             detail.origin,
             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    // eTLD+1 can be empty for private domains.
+    if (engaged_domain_and_registry.empty())
+      continue;
+
     if (domain_and_registry == engaged_domain_and_registry)
       return std::string();
 

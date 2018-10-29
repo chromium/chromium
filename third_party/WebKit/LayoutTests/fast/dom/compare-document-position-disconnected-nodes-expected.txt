@@ -56,4 +56,6 @@ PASS b.compareDocumentPosition(a) is b.compareDocumentPosition(a)
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 Comparing the positions of two disconnected nodes should result in DOCUMENT_POSITION_DISCONNECTED.

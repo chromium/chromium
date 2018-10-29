@@ -20,9 +20,6 @@ class MetricsHelper;
 
 // Handle commands from security interstitial pages. This class should only be
 // instantiated by SafeBrowsingBlockingPage for the time being.
-// TODO(jialiul): After we've done componentizing SafeBrowsingBlockingPage, we
-// should revisit this class to decide if other interstitials can use
-// SecurityInterstitialControllerClient.
 class SecurityInterstitialControllerClient
     : public security_interstitials::ControllerClient {
  public:

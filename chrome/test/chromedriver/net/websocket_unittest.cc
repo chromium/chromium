@@ -91,7 +91,10 @@ class WebSocketTest : public testing::Test {
   std::unique_ptr<WebSocket> CreateWebSocket(const GURL& url,
                                              WebSocketListener* listener) {
     int error;
-    std::unique_ptr<WebSocket> sock(new WebSocket(url, listener));
+    std::unique_ptr<WebSocket> sock(
+        read_buffer_size_ == 0
+            ? new WebSocket(url, listener)
+            : new WebSocket(url, listener, read_buffer_size_));
     base::RunLoop run_loop;
     sock->Connect(base::Bind(&OnConnectFinished, &run_loop, &error));
     loop_.task_runner()->PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
@@ -120,8 +123,11 @@ class WebSocketTest : public testing::Test {
     run_loop.Run();
   }
 
+  void SetReadBufferSize(size_t size) { read_buffer_size_ = size; }
+
   base::MessageLoopForIO loop_;
   TestHttpServer server_;
+  size_t read_buffer_size_ = 0;
 };
 
 }  // namespace
@@ -192,6 +198,16 @@ TEST_F(WebSocketTest, SendReceive) {
 TEST_F(WebSocketTest, SendReceiveLarge) {
   std::vector<std::string> messages;
   messages.push_back(std::string(10 << 20, 'a'));
+  SendReceive(messages);
+}
+
+TEST_F(WebSocketTest, SendReceiveManyPacks) {
+  std::vector<std::string> messages;
+  // A message size of 1 << 16 crashes code with https://crbug.com/877105 bug
+  // on Linux and Windows, but a size of 1 << 17 is needed to cause crash on
+  // Mac. We use message size 1 << 18 for some extra margin to ensure bug repro.
+  messages.push_back(std::string(1 << 18, 'a'));
+  SetReadBufferSize(1);
   SendReceive(messages);
 }
 

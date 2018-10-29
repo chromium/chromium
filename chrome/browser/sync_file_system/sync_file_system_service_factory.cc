@@ -47,9 +47,7 @@ SyncFileSystemServiceFactory::SyncFileSystemServiceFactory()
   FactorySet factories;
   factories.insert(extensions::ExtensionRegistryFactory::GetInstance());
   RemoteFileSyncService::AppendDependsOnFactories(&factories);
-  for (FactorySet::iterator iter = factories.begin();
-       iter != factories.end();
-       ++iter) {
+  for (auto iter = factories.begin(); iter != factories.end(); ++iter) {
     DependsOn(*iter);
   }
 }

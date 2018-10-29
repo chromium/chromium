@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/workers/worker_inspector_proxy.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -16,7 +15,6 @@ namespace blink {
 // Tracks the WorkerInspectorProxy objects created by a given ExecutionContext.
 class ExecutionContextWorkerRegistry final
     : public GarbageCollectedFinalized<ExecutionContextWorkerRegistry>,
-      public TraceEvent::AsyncEnabledStateObserver,
       public Supplement<ExecutionContext> {
   USING_GARBAGE_COLLECTED_MIXIN(ExecutionContextWorkerRegistry);
 
@@ -25,25 +23,18 @@ class ExecutionContextWorkerRegistry final
 
   static ExecutionContextWorkerRegistry* From(ExecutionContext& context);
 
-  ~ExecutionContextWorkerRegistry() override;
+  ~ExecutionContextWorkerRegistry();
 
   void AddWorkerInspectorProxy(WorkerInspectorProxy* proxy);
   void RemoveWorkerInspectorProxy(WorkerInspectorProxy* proxy);
   const HeapHashSet<Member<WorkerInspectorProxy>>& GetWorkerInspectorProxies();
-
-  // blink::TraceEvent::AsyncEnabledStateObserver implementation:
-  void OnTraceLogEnabled() override;
-  void OnTraceLogDisabled() override;
 
   void Trace(Visitor* visitor) override;
 
  private:
   explicit ExecutionContextWorkerRegistry(ExecutionContext& context);
 
-  void EmitTraceEvent(WorkerInspectorProxy* proxy);
-
   HeapHashSet<Member<WorkerInspectorProxy>> proxies_;
-  base::WeakPtrFactory<ExecutionContextWorkerRegistry> weak_factory_;
 };
 
 }  // namespace blink

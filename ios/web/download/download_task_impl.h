@@ -95,11 +95,19 @@ class DownloadTaskImpl : public DownloadTask {
   // Starts the download with given cookies.
   void StartWithCookies(NSArray<NSHTTPCookie*>* cookies);
 
+  // Starts parsing data:// url. Separate code path is used because
+  // NSURLSession does not support data URLs.
+  void StartDataUrlParsing();
+
   // Called when download task was updated.
   void OnDownloadUpdated();
 
   // Called when download was completed and the data writing was finished.
   void OnDownloadFinished(int error_code);
+
+  // Called when data:// url parsing has completed and the data has been
+  // written.
+  void OnDataUrlWritten(int bytes_written);
 
   // A list of observers. Weak references.
   base::ObserverList<DownloadTaskObserver, true>::Unchecked observers_;
@@ -116,6 +124,7 @@ class DownloadTaskImpl : public DownloadTask {
   std::string content_disposition_;
   std::string mime_type_;
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
+  NSString* identifier_ = nil;
   bool has_performed_background_download_ = false;
 
   const WebState* web_state_ = nullptr;

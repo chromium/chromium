@@ -14,5 +14,5 @@ Http headers:
 HTTP_CONNECTION = keep-alive
 HTTP_HOST = localhost:8080
 HTTP_REFERER = http://127.0.0.1:8000/navigation/form-targets-cross-site-frame-get.html
-HTTP_SEC_METADATA = cause="forced", destination="nested-document", site="cross-site"
+HTTP_SEC_METADATA = cause=forced, destination=nested-document, site=cross-site
 HTTP_UPGRADE_INSECURE_REQUESTS = 1

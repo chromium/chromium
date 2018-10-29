@@ -31,6 +31,9 @@ cr.define('extensions', function() {
 
       /** Whether "allow in incognito" option should be shown. */
       incognitoAvailable: Boolean,
+
+      /** Whether "View Activity Log" link should be shown. */
+      showActivityLog: Boolean,
     },
 
     observers: [
@@ -58,6 +61,12 @@ cr.define('extensions', function() {
       this.delegate.getExtensionSize(this.data.id).then(size => {
         this.size_ = size;
       });
+    },
+
+    /** @private */
+    onActivityLogTap_: function() {
+      extensions.navigation.navigateTo(
+          {page: Page.ACTIVITY_LOG, extensionId: this.data.id});
     },
 
     /**

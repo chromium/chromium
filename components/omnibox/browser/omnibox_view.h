@@ -143,7 +143,7 @@ class OmniboxView {
   // defines a method with that name.
   virtual void CloseOmniboxPopup();
 
-  // Sets the focus to the autocomplete view.
+  // Sets the focus to the omnibox.
   virtual void SetFocus() = 0;
 
   // Shows or hides the caret based on whether the model's is_caret_visible() is

@@ -18,8 +18,8 @@
 #include "content/common/frame_messages.h"
 #include "content/common/input_messages.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/view_messages.h"
 #include "content/common/visual_properties.h"
+#include "content/common/widget_messages.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/bind_interface_helpers.h"
@@ -42,6 +42,7 @@
 #include "content/test/test_render_frame.h"
 #include "net/base/escape.h"
 #include "services/service_manager/public/cpp/connector.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_gesture_event.h"
@@ -91,7 +92,7 @@ class CloseMessageSendingRenderViewVisitor : public RenderViewVisitor {
     // Simulate the Widget receiving a close message. This should result on
     // releasing the internal reference counts and destroying the internal
     // state.
-    ViewMsg_Close msg(render_view->GetRoutingID());
+    WidgetMsg_Close msg(render_view->GetRoutingID());
     RenderWidget* render_widget =
         static_cast<RenderViewImpl*>(render_view)->GetWidget();
     render_widget->OnMessageReceived(msg);
@@ -170,7 +171,10 @@ void RenderViewTest::RendererBlinkPlatformImplTestOverride::Shutdown() {
 }
 
 RenderViewTest::RenderViewTest() {
-  RenderFrameImpl::InstallCreateHook(&TestRenderFrame::CreateTestRenderFrame);
+  // Overrides creation of RenderFrameImpl, but does not need to
+  // override behaviour of WebWidgetClient.
+  RenderFrameImpl::InstallCreateHook(&TestRenderFrame::CreateTestRenderFrame,
+                                     nullptr, nullptr);
 }
 
 RenderViewTest::~RenderViewTest() {
@@ -343,7 +347,8 @@ void RenderViewTest::SetUp() {
   render_thread_->PassInitialInterfaceProviderRequestForFrame(
       view_params->main_frame_routing_id,
       mojo::MakeRequest(&view_params->main_frame_interface_provider));
-  view_params->session_storage_namespace_id = "";
+  view_params->session_storage_namespace_id =
+      blink::AllocateSessionStorageNamespaceId();
   view_params->swapped_out = false;
   view_params->replicated_frame_state = FrameReplicationState();
   view_params->proxy_routing_id = MSG_ROUTING_NONE;
@@ -562,10 +567,8 @@ void RenderViewTest::Reload(const GURL& url) {
       url, Referrer(), ui::PAGE_TRANSITION_LINK, FrameMsg_Navigate_Type::RELOAD,
       true, false, GURL(), GURL(), PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(),
       "GET", nullptr, base::Optional<SourceLocation>(),
-      CSPDisposition::CHECK /* should_check_main_world_csp */,
       false /* started_from_context_menu */, false /* has_user_gesture */,
-      std::vector<ContentSecurityPolicy>() /* initiator_csp */,
-      CSPSource() /* initiator_self_source */);
+      InitiatorCSPInfo());
   RenderViewImpl* impl = static_cast<RenderViewImpl*>(view_);
   TestRenderFrame* frame =
       static_cast<TestRenderFrame*>(impl->GetMainRenderFrame());
@@ -585,7 +588,7 @@ void RenderViewTest::Resize(gfx::Size new_size,
   visual_properties.is_fullscreen_granted = is_fullscreen_granted;
   visual_properties.display_mode = blink::kWebDisplayModeBrowser;
   std::unique_ptr<IPC::Message> resize_message(
-      new ViewMsg_SynchronizeVisualProperties(0, visual_properties));
+      new WidgetMsg_SynchronizeVisualProperties(0, visual_properties));
   OnMessageReceived(*resize_message);
 }
 
@@ -706,11 +709,8 @@ void RenderViewTest::GoToOffset(int offset,
       url, Referrer(), ui::PAGE_TRANSITION_FORWARD_BACK,
       FrameMsg_Navigate_Type::HISTORY_DIFFERENT_DOCUMENT, true, false, GURL(),
       GURL(), PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(), "GET", nullptr,
-      base::Optional<SourceLocation>(),
-      CSPDisposition::CHECK /* should_check_main_world_csp */,
-      false /* started_from_context_menu */, false /* has_user_gesture */,
-      std::vector<ContentSecurityPolicy>() /* initiator_csp */,
-      CSPSource() /* initiator_self_source */);
+      base::Optional<SourceLocation>(), false /* started_from_context_menu */,
+      false /* has_user_gesture */, InitiatorCSPInfo());
   RequestNavigationParams request_params;
   request_params.page_state = state;
   request_params.nav_entry_id = pending_offset + 1;

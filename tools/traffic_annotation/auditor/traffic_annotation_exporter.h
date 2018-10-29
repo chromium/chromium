@@ -42,10 +42,12 @@ class TrafficAnnotationExporter {
   // Loads annotations from annotations.xml file into |archive_|.
   bool LoadAnnotationsXML();
 
-  // Updates |archive_| with current set of extracted annotations and
-  // reserved ids. Sets the |modified_| flag if any item is updated.
-  bool UpdateAnnotations(const std::vector<AnnotationInstance>& annotations,
-                         const std::map<int, std::string>& reserved_ids);
+  // Updates |archive_| with current set of extracted annotations and reserved
+  // ids. Sets the |modified_| flag if any item is updated. Appends errors to
+  // |errors|.
+  void UpdateAnnotations(const std::vector<AnnotationInstance>& annotations,
+                         const std::map<int, std::string>& reserved_ids,
+                         std::vector<AuditorResult>* errors);
 
   // Saves |archive_| into annotations.xml.
   bool SaveAnnotationsXML() const;
@@ -53,14 +55,14 @@ class TrafficAnnotationExporter {
   // Returns the required updates for annotations.xml.
   std::string GetRequiredUpdates();
 
-  // Produces the list of deprecated hash codes. Returns false if
-  // annotations.xml is not loaded and cannot be loaded.
-  bool GetDeprecatedHashCodes(std::set<int>* hash_codes);
+  // Produces the list of deprecated hash codes. Requires annotations.xml to be
+  // loaded.
+  void GetDeprecatedHashCodes(std::set<int>* hash_codes);
 
   bool modified() const { return modified_; }
 
   // Runs tests on content of |archive_|.
-  bool CheckArchivedAnnotations();
+  void CheckArchivedAnnotations(std::vector<AuditorResult>* errors);
 
   const std::map<std::string, ArchivedAnnotation>& GetArchivedAnnotations()
       const {

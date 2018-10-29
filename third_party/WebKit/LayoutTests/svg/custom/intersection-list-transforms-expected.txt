@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 500x500
-  LayoutSVGRoot {svg} at (0,0) size 500x500
-    LayoutSVGContainer {g} at (-70.71,1.41) size 141.42x141.42 [transform={m=((-0.71,0.71)(-0.71,-0.71)) t=(100.00,100.00)}]
-      LayoutSVGRect {rect} at (1,1) size 100x100 [transform={m=((0.71,0.71)(-0.71,0.71)) t=(0.00,0.00)}] [fill={[type=SOLID] [color=#008000]}] [x=1.00] [y=1.00] [width=100.00] [height=100.00]
-    LayoutSVGText {text} at (0,0) size 0x0

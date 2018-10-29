@@ -101,7 +101,7 @@ class ActiveDirectoryPolicyManager
   // the policy, the store needs to be reloaded from session manager.)
   void OnPolicyFetched(bool success);
 
-  // Called right before policy is published. Expands e.g. ${machine_name} for
+  // Called right before policy is published. Expands e.g. ${MACHINE_NAME} for
   // a selected set of policies.
   void ExpandVariables(PolicyMap* policy_map);
 

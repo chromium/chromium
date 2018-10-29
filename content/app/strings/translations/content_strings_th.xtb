@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1018939186200882850">รายการเมนู</translation>
-<translation id="1020833440720551630">ปิดไฟล์เสียง</translation>
 <translation id="10623998915015855">ปุ่มสลับ</translation>
 <translation id="1088086359088493902">วินาที</translation>
 <translation id="1171774979989969504">โปรดป้อนที่อยู่อีเมล</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">เครดิต</translation>
 <translation id="1342835525016946179">บทความ</translation>
 <translation id="1359897965706325498">แบนเนอร์</translation>
-<translation id="1548116112524424341">เล่นวิดีโอในโหมดการแสดงภาพซ้อนภาพ</translation>
 <translation id="1589122976691792535">ภูมิภาค</translation>
 <translation id="1591562245178063882">เดือนนี้</translation>
 <translation id="1637811476055996098">เลือกไฟล์</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">แผนผังต้นไม้</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">เล่นในอุปกรณ์ระยะไกล</translation>
-<translation id="1838818994221231429">สลับจากเต็มหน้าจอเป็นพื้นที่หน้าจอรอยบาก</translation>
 <translation id="190587075670221089">การลบ</translation>
 <translation id="1907737156431278478">ตัวอย่าง</translation>
 <translation id="1921819250265091946">วว</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">เวลา</translation>
 <translation id="5630795885300617244">แตะ 2 ครั้งที่ด้านขวาหรือซ้ายเพื่อข้ามทีละ 10 วินาที</translation>
 <translation id="5631759159893697722">บทคัดย่อ</translation>
-<translation id="5641012560118721995">หยุดเล่นชั่วคราว</translation>
 <translation id="5643186887447432888">ปุ่ม</translation>
 <translation id="5677946354068040947">ตัวเลือกเพิ่มเติม</translation>
 <translation id="576709008726043716">บทนำ</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">รีเซ็ต</translation>
 <translation id="5966707198760109579">สัปดาห์</translation>
 <translation id="5987525920412732405">ปุ่มหมุน</translation>
+<translation id="6011459053400940133">แถบเลื่อนปรับระดับเสียง</translation>
 <translation id="6015796118275082299">ปี</translation>
 <translation id="6023896073578205740">ช่องรายการ</translation>
-<translation id="6101327004457443354">เปิดไฟล์เสียง</translation>
 <translation id="6150588977291308318">บรรณานุกรม</translation>
 <translation id="6164829606128959761">เมตร</translation>
 <translation id="6166809985690652833">คำแถลงท้ายเล่ม</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">ชั่วโมง</translation>
 <translation id="7681220483256441252">ดัชนี</translation>
 <translation id="7720026100085573005">เวลาที่เหลือ</translation>
-<translation id="7740016676195725605">หยุดแสดงคำอธิบายภาพ</translation>
 <translation id="7740050170769002709">เนื้อหา HTML</translation>
 <translation id="7750228210027921155">การแสดงภาพซ้อนภาพ</translation>
 <translation id="7789962463072032349">หยุดชั่วคราว</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">ช่องข้อความค้นหา</translation>
 <translation id="8057695513531652401">ประกาศ</translation>
 <translation id="8105797009065549151">ข้อมูลอ้างอิงหมายเหตุ</translation>
-<translation id="8115662671911883373">เริ่มแสดงคำอธิบายภาพ</translation>
 <translation id="8117451130807776954">สัปดาห์นี้</translation>
-<translation id="819205353528511139">เล่นภาพยนตร์ในโหมดเต็มหน้าจอ</translation>
 <translation id="8199524924445686405">ปปปป</translation>
 <translation id="8284326494547611709">คำบรรยาย</translation>
 <translation id="835897206747267392">ค่าไม่ถูกต้อง</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">ควบคุมการเล่นระยะไกล</translation>
 <translation id="862370744433916922">คำบรรยาย</translation>
 <translation id="8750798805984357768">โปรดเลือกตัวเลือกอย่างหนึ่งอย่างใดเหล่านี้</translation>
-<translation id="8785498733064193001">เริ่มเล่น</translation>
 <translation id="8808573423886751634">บท</translation>
 <translation id="8845239796550121995">ตอนนี้กำลังแคสต์ไปยัง TV</translation>
 <translation id="8851136666856101339">หลัก</translation>

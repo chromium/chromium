@@ -44,8 +44,6 @@ const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
       return "subtree";
     case PaintInvalidationReason::kSVGResource:
       return "SVG resource change";
-    case PaintInvalidationReason::kBackgroundOnScrollingContentsLayer:
-      return "background on scrolling contents layer";
     case PaintInvalidationReason::kCaret:
       return "caret";
     case PaintInvalidationReason::kDocumentMarker:

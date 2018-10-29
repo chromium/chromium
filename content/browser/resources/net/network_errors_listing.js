@@ -17,8 +17,8 @@ cr.define('errorCodes', function() {
       var listEl = document.createElement('li');
       var errorCodeLinkEl = document.createElement('a');
       errorCodeLinkEl.href = errorPageUrl + errorCodes[i].errorId;
-      errorCodeLinkEl.textContent = errorCodes[i].errorCode + ' (' +
-          errorCodes[i].errorId + ')';
+      errorCodeLinkEl.textContent =
+          errorCodes[i].errorCode + ' (' + errorCodes[i].errorId + ')';
       listEl.appendChild(errorCodeLinkEl);
       errorCodesList.appendChild(listEl);
     }
@@ -42,9 +42,7 @@ cr.define('errorCodes', function() {
     xhr.send();
   }
 
-  return {
-    initialize: initialize
-  };
+  return {initialize: initialize};
 });
 
 document.addEventListener('DOMContentLoaded', errorCodes.initialize);

@@ -34,6 +34,9 @@ class SuggestionChipContainerView : public SearchResultContainerView {
   // trap focus within the folder when it is opened.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
+  // Called when tablet mode starts and ends.
+  void OnTabletModeChanged(bool started);
+
  private:
   // Returns true if update and layout should be ignored.
   bool IgnoreUpdateAndLayout() const;

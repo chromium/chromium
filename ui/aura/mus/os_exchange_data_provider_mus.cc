@@ -113,8 +113,7 @@ void OSExchangeDataProviderMus::SetFilename(const base::FilePath& path) {
 void OSExchangeDataProviderMus::SetFilenames(
     const std::vector<ui::FileInfo>& file_names) {
   std::vector<std::string> paths;
-  for (std::vector<ui::FileInfo>::const_iterator it = file_names.begin();
-       it != file_names.end(); ++it) {
+  for (auto it = file_names.begin(); it != file_names.end(); ++it) {
     std::string url_spec = net::FilePathToFileURL(it->path).spec();
     if (!url_spec.empty())
       paths.push_back(url_spec);

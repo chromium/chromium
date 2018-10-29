@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1018939186200882850">izvēlnes vienums</translation>
-<translation id="1020833440720551630">izslēgt audio ieraksta skaņu</translation>
 <translation id="10623998915015855">pārslēgšanas poga</translation>
 <translation id="1088086359088493902">Sekundes</translation>
 <translation id="1171774979989969504">Ievadiet e-pasta adresi.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">pateicības</translation>
 <translation id="1342835525016946179">raksts</translation>
 <translation id="1359897965706325498">reklāmkarogs</translation>
-<translation id="1548116112524424341">atskaņot videoklipu režīmā “attēls attēlā”</translation>
 <translation id="1589122976691792535">reģions</translation>
 <translation id="1591562245178063882">Šis mēnesis</translation>
 <translation id="1637811476055996098">Izvēlēties failus</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">koka režģis</translation>
 <translation id="1822429046913737220">priekšpusdienā/pēcpusdienā</translation>
 <translation id="1832974991323546415">atskaņot attālinātā ierīcē</translation>
-<translation id="1838818994221231429">pārslēdz pilnekrāna režīmu displeja izgriezuma apgabalā</translation>
 <translation id="190587075670221089">dzēšana</translation>
 <translation id="1907737156431278478">piemērs</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">laiks</translation>
 <translation id="5630795885300617244">Veiciet dubultskārienu pa labi vai pa kreisi, lai izlaistu 10 s.</translation>
 <translation id="5631759159893697722">kopsavilkums</translation>
-<translation id="5641012560118721995">pauzēt atskaņošanu</translation>
 <translation id="5643186887447432888">poga</translation>
 <translation id="5677946354068040947">citas opcijas</translation>
 <translation id="576709008726043716">ievads</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Atiestatīt</translation>
 <translation id="5966707198760109579">Nedēļa</translation>
 <translation id="5987525920412732405">skaitītājpoga</translation>
+<translation id="6011459053400940133">skaļuma slīdnis</translation>
 <translation id="6015796118275082299">Gads</translation>
 <translation id="6023896073578205740">sarakstlodziņš</translation>
-<translation id="6101327004457443354">ieslēgt audio ieraksta skaņu</translation>
 <translation id="6150588977291308318">bibliogrāfija</translation>
 <translation id="6164829606128959761">mērītājs</translation>
 <translation id="6166809985690652833">pēcvārds</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Stundas</translation>
 <translation id="7681220483256441252">rādītājs</translation>
 <translation id="7720026100085573005">atlikušais laiks</translation>
-<translation id="7740016676195725605">apturēt slēgto parakstu rādīšanu</translation>
 <translation id="7740050170769002709">HTML saturs</translation>
 <translation id="7750228210027921155">Attēls attēlā</translation>
 <translation id="7789962463072032349">pauzēt</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">meklēšanas teksta lauks</translation>
 <translation id="8057695513531652401">paziņojums</translation>
 <translation id="8105797009065549151">vēres atsauce</translation>
-<translation id="8115662671911883373">sākt slēgto parakstu rādīšanu</translation>
 <translation id="8117451130807776954">Šī nedēļa</translation>
-<translation id="819205353528511139">atskaņot filmu pilnekrāna režīmā</translation>
 <translation id="8199524924445686405">gggg</translation>
 <translation id="8284326494547611709">Paraksti</translation>
 <translation id="835897206747267392">Nederīga vērtība.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">kontrolēt attālināto atskaņošanu</translation>
 <translation id="862370744433916922">apakšvirsraksts</translation>
 <translation id="8750798805984357768">Lūdzu, atlasiet vienu no šīm opcijām.</translation>
-<translation id="8785498733064193001">sākt atskaņošanu</translation>
 <translation id="8808573423886751634">nodaļa</translation>
 <translation id="8845239796550121995">Pašlaik notiek apraide uz jūsu TV</translation>
 <translation id="8851136666856101339">galvenais</translation>

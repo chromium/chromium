@@ -16,6 +16,7 @@
 #include "base/strings/string16.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
@@ -105,7 +106,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void SetStartupId(const char* startup_id);
 
   // Set the child ax tree ID for the surface.
-  void SetChildAxTreeId(int32_t child_ax_tree_id);
+  void SetChildAxTreeId(ui::AXTreeID child_ax_tree_id);
 
   // Signal a request to close the window. It is up to the implementation to
   // actually decide to do so though.
@@ -310,7 +311,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Size pending_minimum_size_;
   gfx::Size maximum_size_;
   gfx::Size pending_maximum_size_;
-  int32_t child_ax_tree_id_ = -1;
+  ui::AXTreeID child_ax_tree_id_ = ui::AXTreeIDUnknown();
 
   DISALLOW_COPY_AND_ASSIGN(ShellSurfaceBase);
 };

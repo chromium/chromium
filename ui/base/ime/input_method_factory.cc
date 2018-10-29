@@ -20,7 +20,7 @@
 #include "ui/base/ime/input_method_mac.h"
 #elif defined(OS_FUCHSIA)
 #include "ui/base/ime/input_method_fuchsia.h"
-#elif defined(USE_AURA) && defined(USE_X11)
+#elif defined(USE_AURA) && (defined(USE_X11) || defined(USE_OZONE))
 #include "ui/base/ime/input_method_auralinux.h"
 #else
 #include "ui/base/ime/input_method_minimal.h"
@@ -66,7 +66,7 @@ std::unique_ptr<InputMethod> CreateInputMethod(
   return std::make_unique<InputMethodMac>(delegate);
 #elif defined(OS_FUCHSIA)
   return std::make_unique<InputMethodFuchsia>(delegate);
-#elif defined(USE_AURA) && defined(USE_X11)
+#elif defined(USE_AURA) && (defined(USE_X11) || defined(USE_OZONE))
   return std::make_unique<InputMethodAuraLinux>(delegate);
 #else
   return std::make_unique<InputMethodMinimal>(delegate);

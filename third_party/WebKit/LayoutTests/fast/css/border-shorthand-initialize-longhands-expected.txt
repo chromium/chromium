@@ -2,7 +2,6 @@ This test ensures border shorthand property initializes longhand properties such
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS div.setAttribute('style', 'border: 1px');div.style.borderTopStyle is 'initial'
 PASS div.style.borderTopStyle is 'initial'
 PASS div.style.borderRightStyle is 'initial'

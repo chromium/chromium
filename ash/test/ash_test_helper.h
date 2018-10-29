@@ -23,6 +23,12 @@ class EnvWindowTreeClientSetter;
 }
 }
 
+namespace chromeos {
+namespace system {
+class ScopedFakeStatisticsProvider;
+}  // namespace system
+}  // namespace chromeos
+
 namespace display {
 class Display;
 }
@@ -112,6 +118,9 @@ class AshTestHelper {
 
   // Called when running in ash to create Shell.
   void CreateShell();
+
+  std::unique_ptr<chromeos::system::ScopedFakeStatisticsProvider>
+      statistics_provider_;
 
   std::unique_ptr<aura::test::EnvWindowTreeClientSetter>
       env_window_tree_client_setter_;

@@ -84,16 +84,6 @@ WebCanonicalCookie& WebCanonicalCookie::operator=(
 
 WebCanonicalCookie::~WebCanonicalCookie() = default;
 
-// static
-String WebCanonicalCookie::BuildCookieLine(
-    const Vector<WebCanonicalCookie>& cookies) {
-  std::vector<net::CanonicalCookie> copy;
-  copy.reserve(cookies.size());
-  for (const auto& cookie : cookies)
-    copy.push_back(ToNetCanonicalCookie(cookie));
-  return WebString::FromUTF8(net::CanonicalCookie::BuildCookieLine(copy));
-}
-
 namespace {
 
 // TODO(crbug.com/851889): WebURL::operator GURL() is only available if

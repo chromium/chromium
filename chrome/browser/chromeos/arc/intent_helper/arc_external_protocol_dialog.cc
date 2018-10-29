@@ -25,7 +25,6 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image.h"
@@ -78,6 +77,13 @@ bool IsChromeAnAppCandidate(
   return false;
 }
 
+// Returns true if |handlers| only contains Chrome as an app candidate for the
+// current navigation.
+bool IsChromeOnlyAppCandidate(
+    const std::vector<mojom::IntentHandlerInfoPtr>& handlers) {
+  return handlers.size() == 1 && IsChromeAnAppCandidate(handlers);
+}
+
 // Returns true if the |handler| is for opening ARC IME settings page.
 bool ForOpeningArcImeSettingsPage(const mojom::IntentHandlerInfoPtr& handler) {
   return (handler->package_name == kPackageForOpeningArcImeSettingsPage) &&
@@ -99,7 +105,7 @@ void OpenUrlInChrome(int render_process_host_id,
   const content::OpenURLParams params(
       url,
       content::Referrer(web_contents->GetLastCommittedURL(),
-                        blink::kWebReferrerPolicyDefault),
+                        network::mojom::ReferrerPolicy::kDefault),
       WindowOpenDisposition::CURRENT_TAB, page_transition_type,
       kIsRendererInitiated);
   web_contents->OpenURL(params);
@@ -498,8 +504,12 @@ void OnUrlHandlerList(int render_process_host_id,
       web_contents ? ArcIntentHelperBridge::GetForBrowserContext(
                          web_contents->GetBrowserContext())
                    : nullptr;
-  if (!instance || !intent_helper_bridge) {
-    // ARC is not running anymore. Show the Chrome OS dialog.
+
+  // We only reach here if Chrome doesn't think it can handle the URL. If ARC is
+  // not running anymore, or Chrome is the only candidate returned, show the
+  // usual Chrome OS dialog that says we cannot handle the URL.
+  if (!instance || !intent_helper_bridge ||
+      IsChromeOnlyAppCandidate(handlers)) {
     ShowFallbackExternalProtocolDialog(render_process_host_id, routing_id, url);
     return;
   }

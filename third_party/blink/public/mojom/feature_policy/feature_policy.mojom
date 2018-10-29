@@ -84,7 +84,6 @@ enum FeaturePolicyFeature {
   kLegacyImageFormats = 22,
   // When disallowed, requires images to have a reasonable byte-to-pixel ratio.
   kImageCompression = 23,
-  kAnimations = 24,
   // When disallowed, restricts source image size to be no more 2x larger than
   // the image's containing block.
   kMaxDownscalingImage = 25,
@@ -98,6 +97,8 @@ enum FeaturePolicyFeature {
   kDocumentWrite = 28,
   // Used to enforce lazyloading for a frame and any nested <iframe> or image.
   kLazyLoad = 29,
+  // Restricts the usage of layout-causing animations in a document.
+  kLayoutAnimations = 30,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Also, run update_feature_policy_enum.py in

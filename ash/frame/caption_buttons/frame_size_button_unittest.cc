@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/frame/caption_buttons/frame_size_button.h"
+#include "ash/public/cpp/caption_buttons/frame_size_button.h"
 
-#include "ash/frame/caption_buttons/frame_caption_button.h"
-#include "ash/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "ash/frame/ash_frame_caption_controller.h"
 #include "ash/public/cpp/ash_layout_constants.h"
+#include "ash/public/cpp/caption_buttons/frame_caption_button.h"
+#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -53,8 +54,8 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override {
     if (details.is_add && details.child == this) {
-      caption_button_container_ =
-          new FrameCaptionButtonContainerView(GetWidget());
+      caption_button_container_ = new FrameCaptionButtonContainerView(
+          GetWidget(), &caption_controller_);
 
       // Set arbitrary images for the button icons and assign the default
       // caption button size.
@@ -71,6 +72,7 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 
   // Not owned.
   ash::FrameCaptionButtonContainerView* caption_button_container_;
+  AshFrameCaptionController caption_controller_;
   bool resizable_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
@@ -110,6 +112,7 @@ class FrameSizeButtonTest : public AshTestBase {
     params.context = CurrentContext();
     widget->Init(params);
     widget->Show();
+
     return widget;
   }
 

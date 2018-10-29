@@ -429,6 +429,9 @@ need to be translated for each locale.-->
           Disclosure triangle
         </message>
       </if>
+      <message name="IDS_APP_ACCNAME_BACK" desc="The accessible name for the back button on the window frame.">
+        Back button
+      </message>
       <message name="IDS_APP_ACCNAME_CLOSE" desc="The accessible name for the Close button.">
         Close
       </message>
@@ -616,6 +619,12 @@ need to be translated for each locale.-->
       <message name="IDS_APP_SHIFT_KEY" desc="Shift key">
         Shift
       </message>
+      <if expr="is_win">
+        <message name="IDS_APP_WINDOWS_KEY" desc="This refers to the 'Windows' key on certain
+            keyboards (often between Ctrl and Alt). This may not need to be translated.">
+          Win
+        </message>
+      </if>
 
       <!-- Accelerator format -->
       <message name="IDS_APP_ACCELERATOR_WITH_MODIFIER" desc="Accelerator with a modifier key">
@@ -830,6 +839,23 @@ need to be translated for each locale.-->
       </message>
       <message name="IDS_DISPLAY_NAME_INTERNAL" desc="The name used for internal displays, which is shown in the display settings.">
         Internal Display
+      </message>
+
+      <!-- Crostini app context menu item names, dialog message and button strings -->
+      <message name="IDS_CROSTINI_USE_LOW_DENSITY" desc="The Crostini app Shelf item context menu item to use low display density for app windows.">
+        Use low density
+      </message>
+      <message name="IDS_CROSTINI_USE_HIGH_DENSITY" desc="The Crostini app Shelf item context menu item to use high display density for app windows.">
+        Use high density
+      </message>
+      <message name="IDS_CROSTINI_APP_RESTART_BODY" desc="Description for the Crostini app restart dialog.">
+        To adjust the window display density, restart the app.
+      </message>
+      <message name="IDS_CROSTINI_APP_RESTART_BUTTON" desc="Label for the button in the Crostini app restart dialog to restart an app.">
+        Restart
+      </message>
+      <message name="IDS_CROSTINI_NOT_NOW_BUTTON" desc="Label for the button in the Crostini app restart dialog to dismiss the dialog.">
+        Not now
       </message>
     </messages>
   </release>

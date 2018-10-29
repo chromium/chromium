@@ -163,9 +163,24 @@ print_preview.ColorMode = {
 };
 
 /**
+ * Enumeration of duplex modes used by Chromium.
+ * This has to coincide with |printing::DuplexModeRestriction| as defined in
+ * printing/backend/printing_restrictions.h
+ * @enum {number}
+ */
+print_preview.DuplexModeRestriction = {
+  NONE: 0x0,
+  SIMPLEX: 0x1,
+  LONG_EDGE: 0x2,
+  SHORT_EDGE: 0x4,
+  DUPLEX: 0x6
+};
+
+/**
  * Policies affecting a destination.
  * @typedef {{
- *   allowedColorModes: ?number,
+ *   allowedColorModes: ?print_preview.ColorMode,
+ *   allowedDuplexModes: ?print_preview.DuplexModeRestriction,
  * }}
  */
 print_preview.Policies;
@@ -780,14 +795,24 @@ cr.define('print_preview', function() {
     }
 
     /**
-     * @return {?number} Color mode set by policy. Valid values are |null|,
-           |print_preview.ColorMode.COLOR| and |print_preview.ColorMode.GRAY|.
+     * @return {?print_preview.ColorMode} Color mode set by policy.
      * @private
      */
     colorPolicy_() {
       return this.policies && this.policies.allowedColorModes ?
           this.policies.allowedColorModes :
           null;
+    }
+
+    /**
+     * @return {print_preview.DuplexModeRestriction} Duplex modes allowed by
+     *     policy.
+     * @private
+     */
+    duplexPolicy_() {
+      return this.policies && this.policies.allowedDuplexModes ?
+          this.policies.allowedDuplexModes :
+          print_preview.DuplexModeRestriction.NONE;
     }
 
     /**
@@ -809,20 +834,33 @@ cr.define('print_preview', function() {
       return hasColor && hasMonochrome;
     }
 
-    /**
-     * @return {boolean} Whether the printer color mode is set by policy.
-     */
+    /** @return {boolean} Whether the printer color mode is set by policy. */
     get isColorManaged() {
       return !!this.colorPolicy_();
     }
 
-    /**
-     * @return {?boolean} Value for color setting set by policy.
-     */
+    /** @return {?boolean} Value of color setting given by policy. */
     get colorPolicyValue() {
       return this.colorPolicy_() ?
           this.colorPolicy_() == print_preview.ColorMode.COLOR :
           null;
+    }
+
+    /** @return {boolean} Whether the printer duplex mode is set by policy. */
+    get isDuplexManaged() {
+      return !!this.duplexPolicy_();
+    }
+
+    /** @return {?boolean} Value for duplex setting given by policy. */
+    get duplexPolicyValue() {
+      switch (this.duplexPolicy_()) {
+        case print_preview.DuplexModeRestriction.NONE:
+          return null;
+        case print_preview.DuplexModeRestriction.SIMPLEX:
+          return false;
+        default:
+          return true;
+      }
     }
 
     /**

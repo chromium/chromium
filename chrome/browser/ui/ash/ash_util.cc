@@ -6,6 +6,7 @@
 
 #include "ash/accelerators/accelerator_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/interfaces/ash_window_manager.mojom.h"
 #include "ash/public/interfaces/event_properties.mojom.h"
 #include "ash/shell.h"
 #include "base/macros.h"
@@ -13,10 +14,14 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "services/ws/public/cpp/property_type_converters.h"
 #include "services/ws/public/mojom/window_manager.mojom.h"
+#include "ui/aura/mus/window_mus.h"
+#include "ui/aura/mus/window_tree_client.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/mus/mus_client.h"
+#include "ui/wm/core/window_animations.h"
 
 namespace ash_util {
 
@@ -58,6 +63,19 @@ service_manager::Connector* GetServiceManagerConnector() {
   if (!manager_connection)
     return nullptr;
   return manager_connection->GetConnector();
+}
+
+void BounceWindow(aura::Window* window) {
+  if (features::IsUsingWindowService()) {
+    const uint64_t window_id =
+        aura::WindowMus::Get(window->GetRootWindow())->server_id();
+    views::MusClient::Get()
+        ->window_tree_client()
+        ->BindWindowManagerInterface<ash::mojom::AshWindowManager>()
+        ->BounceWindow(window_id);
+  } else {
+    wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+  }
 }
 
 }  // namespace ash_util

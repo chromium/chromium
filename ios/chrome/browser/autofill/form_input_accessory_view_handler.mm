@@ -9,7 +9,7 @@
 #include "base/mac/foundation_util.h"
 #import "components/autofill/core/browser/keyboard_accessory_metrics_logger.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -110,6 +110,16 @@ NSArray* FindDescendantToolbarItemsForActionName(
 
 }  // namespace
 
+@interface FormInputAccessoryViewHandler () {
+  // The frameId of the frame containing the form with the latest focus.
+  NSString* _lastFocusFormActivityWebFrameID;
+}
+
+// The frameId of the frame containing the form with the latest focus.
+@property(nonatomic) NSString* lastFocusFormActivityWebFrameID;
+
+@end
+
 @implementation FormInputAccessoryViewHandler {
   // Logs UMA metrics for the keyboard accessory.
   std::unique_ptr<autofill::KeyboardAccessoryMetricsLogger>
@@ -125,6 +135,10 @@ NSArray* FindDescendantToolbarItemsForActionName(
         new autofill::KeyboardAccessoryMetricsLogger());
   }
   return self;
+}
+
+- (void)setLastFocusFormActivityWebFrameID:(NSString*)frameID {
+  _lastFocusFormActivityWebFrameID = frameID;
 }
 
 // Attempts to execute/tap/send-an-event-to the iOS built-in "next" and
@@ -198,8 +212,9 @@ NSArray* FindDescendantToolbarItemsForActionName(
     (void (^)(BOOL, BOOL))completionHandler {
   DCHECK(completionHandler);
   [_JSSuggestionManager
-      fetchPreviousAndNextElementsPresenceWithCompletionHandler:
-          completionHandler];
+      fetchPreviousAndNextElementsPresenceInFrameWithID:
+          _lastFocusFormActivityWebFrameID
+                                      completionHandler:completionHandler];
 }
 
 #pragma mark - Private
@@ -214,7 +229,8 @@ NSArray* FindDescendantToolbarItemsForActionName(
   if (!performedAction) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    [_JSSuggestionManager closeKeyboard];
+    [_JSSuggestionManager
+        closeKeyboardForFrameWithID:_lastFocusFormActivityWebFrameID];
   }
   if (loggingButtonPressed) {
     _keyboardAccessoryMetricsLogger->OnCloseButtonPressed();
@@ -231,7 +247,8 @@ NSArray* FindDescendantToolbarItemsForActionName(
   if (!performedAction) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    [_JSSuggestionManager selectPreviousElement];
+    [_JSSuggestionManager
+        selectPreviousElementInFrameWithID:_lastFocusFormActivityWebFrameID];
   }
   if (loggingButtonPressed) {
     _keyboardAccessoryMetricsLogger->OnPreviousButtonPressed();
@@ -248,7 +265,8 @@ NSArray* FindDescendantToolbarItemsForActionName(
   if (!performedAction) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    [_JSSuggestionManager selectNextElement];
+    [_JSSuggestionManager
+        selectNextElementInFrameWithID:_lastFocusFormActivityWebFrameID];
   }
   if (loggingButtonPressed) {
     _keyboardAccessoryMetricsLogger->OnNextButtonPressed();

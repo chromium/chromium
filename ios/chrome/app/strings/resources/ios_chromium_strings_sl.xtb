@@ -19,6 +19,7 @@ Te storitve lahko po želji onemogočite. <ph name="BEGIN_LINK" />Več o tem<ph 
 <translation id="2687023731466035790">Prejmite Googlove pametne rešitve v Chromiumu</translation>
 <translation id="2730884209570016437">Chromium ne more uporabljati fotoaparata, ker ga uporablja druga aplikacija</translation>
 <translation id="2797210818057553964">To je mogoče kadar koli prilagoditi v nastavitvah za Chromium</translation>
+<translation id="2915596697727466327">Chromium uporablja funkcijo Face ID za zagotavljanje pooblaščenega dostopa do vaših gesel.</translation>
 <translation id="3256316712990552818">Kopirano v Chromium</translation>
 <translation id="3413120535237193088">Če želite dostopati do zaznamkov v vseh napravah, se prijavite v Chromium.</translation>
 <translation id="3473048256428424907">Vklop bralnika kod QR Chromiuma</translation>
@@ -32,7 +33,6 @@ Te storitve lahko po želji onemogočite. <ph name="BEGIN_LINK" />Več o tem<ph 
 <translation id="4787850887676698916">Zavihki, ki ste jih odprli v Chromiumu v drugih napravah, bodo prikazani tukaj.</translation>
 <translation id="495292094137889840">Začetek uporabe bralnika kod QR Chromiuma</translation>
 <translation id="5231355151045086930">Odjava iz Chromiuma</translation>
-<translation id="5416919929805616771">Vam je všeč Chromium? <ph name="BEGIN_LINK" />Ocenite to aplikacijo<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
 <translation id="5945387852661427312">Prijavljate se z računom, ki ga upravlja <ph name="DOMAIN" />, in nadzor nad podatki v Chromiumu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chromiuma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
 <translation id="6068866989048414399">Pogoji storitve za Chromium</translation>
@@ -53,7 +53,6 @@ Te storitve lahko po želji onemogočite. <ph name="BEGIN_LINK" />Več o tem<ph 
 <translation id="786327964234957808">Z računa za sinhronizacijo <ph name="USER_EMAIL1" /> boste preklopili na račun <ph name="USER_EMAIL2" />. Obstoječe podatke v Chromiumu upravlja <ph name="DOMAIN" />. S tem boste izbrisali podatke iz te naprave, vendar bodo vaši podatki še vedno na voljo v računu <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Nasvet: <ph name="BEGIN_LINK" />premaknite Chromium v vrstico z aplikacijami<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Izboljšajte izkušnjo z Googlom v Chromiumu na podlagi lokacije.</translation>
-<translation id="8353224596138547809">Želite, da Chromium shrani geslo za to spletno mesto?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Nastavitve<ph name="END_LINK" /> je mogoče kadar koli prilagoditi. Google lahko vsebino na spletnih mestih, ki jih obiščete, interakcije z brskalnikom in dejavnost v brskalniku uporabi za prilagajanje Chromiuma in Googlovih storitev, kot so Prevajalnik, Iskanje Google in oglasi.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="8809780021347235332">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite Chromiumu dostop do fotografij</translation>

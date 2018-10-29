@@ -36,7 +36,7 @@
 
 namespace blink {
 
-using namespace VectorMath;
+using namespace vector_math;
 
 OscillatorHandler::OscillatorHandler(AudioNode& node,
                                      float sample_rate,
@@ -49,8 +49,8 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
       detune_(&detune),
       first_render_(true),
       virtual_read_index_(0),
-      phase_increments_(AudioUtilities::kRenderQuantumFrames),
-      detune_values_(AudioUtilities::kRenderQuantumFrames) {
+      phase_increments_(audio_utilities::kRenderQuantumFrames),
+      detune_values_(audio_utilities::kRenderQuantumFrames) {
   if (wave_table) {
     // A PeriodicWave overrides any value for the oscillator type,
     // forcing the type to be 'custom".

@@ -2,7 +2,6 @@ Test that setting and getting grid-template-columns and grid-template-rows works
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test getting grid-template-columns and grid-template-rows set through CSS
 PASS window.getComputedStyle(gridWithFixedElement, '').getPropertyValue('grid-template-columns') is "[first] 10px"
 PASS window.getComputedStyle(gridWithFixedElement, '').getPropertyValue('grid-template-rows') is "[first] 15px"
@@ -20,6 +19,7 @@ PASS window.getComputedStyle(gridWithRepeatElement, '').getPropertyValue('grid-t
 PASS window.getComputedStyle(gridWithRepeatElement, '').getPropertyValue('grid-template-rows') is "100px [nav nav2] 25% [nav nav2] 25% [last]"
 PASS window.getComputedStyle(gridWithEmptyBrackets, '').getPropertyValue('grid-template-columns') is "10px"
 PASS window.getComputedStyle(gridWithEmptyBrackets, '').getPropertyValue('grid-template-rows') is "20px 50px"
+
 
 Test getting and setting grid-template-columns and grid-template-rows through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "[first] 18px"
@@ -70,6 +70,7 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is 
 PASS element.style.gridTemplateColumns is "[foo bar] auto [foo] auto [bar]"
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "[foo bar] auto [foo] auto [bar]"
 PASS element.style.gridTemplateRows is "[foo bar] auto [foo] auto [bar]"
+
 
 Test getting and setting invalid grid-template-columns and grid-template-rows through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"

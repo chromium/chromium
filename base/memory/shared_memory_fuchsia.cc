@@ -53,7 +53,8 @@ bool SharedMemory::Create(const SharedMemoryCreateOptions& options) {
   requested_size_ = options.size;
   mapped_size_ = bits::Align(requested_size_, GetPageSize());
   zx::vmo vmo;
-  zx_status_t status = zx::vmo::create(mapped_size_, 0, &vmo);
+  zx_status_t status =
+      zx::vmo::create(mapped_size_, ZX_VMO_NON_RESIZABLE, &vmo);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_vmo_create";
     return false;
@@ -84,12 +85,13 @@ bool SharedMemory::MapAt(off_t offset, size_t bytes) {
   if (memory_)
     return false;
 
-  int flags = ZX_VM_FLAG_PERM_READ;
+  zx_vm_option_t options = ZX_VM_REQUIRE_NON_RESIZABLE | ZX_VM_FLAG_PERM_READ;
   if (!read_only_)
-    flags |= ZX_VM_FLAG_PERM_WRITE;
+    options |= ZX_VM_FLAG_PERM_WRITE;
   uintptr_t addr;
   zx_status_t status = zx::vmar::root_self()->map(
-      0, *zx::unowned_vmo(shm_.GetHandle()), offset, bytes, flags, &addr);
+      /*vmar_offset=*/0, *zx::unowned_vmo(shm_.GetHandle()), offset, bytes,
+      options, &addr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_vmar_map";
     return false;

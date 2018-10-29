@@ -1,0 +1,25 @@
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+promise_test(async t => {
+  const queue = new WorkerTaskQueue("background");
+  const task = queue.postTask(i => i, 2);
+  const task2 = queue.postTask(i => i, 4);
+  const task3 = queue.postTask((i,j) => i+j, task, task2);
+  task3.cancel();
+  promise_rejects(t, new Error("Task aborted"), task3.result);
+  assert_equals(await task2.result, 4);
+}, "Cancel the last task in a chain of dependencies");
+
+promise_test(async t => {
+  const queue = new WorkerTaskQueue("background");
+  const task = queue.postTask(i => i, 2);
+  const task2 = queue.postTask(i => i, 4);
+  task2.cancel();
+  const task3 = queue.postTask((i,j) => i+j, task, task2);
+  promise_rejects(t, new Error("Task aborted"), task2.result);
+  promise_rejects(t, new Error("Task aborted"), task3.result);
+}, "Canceling a task should cancel its dependents");
+</script>
+</body>

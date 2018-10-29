@@ -1,4 +1,5 @@
 Attr empty value tests Bug 16923
+
 In Opera, Firefox and IE, when an Attr's value is an empty string, the Attr node won't have any childNodes. The following 12 tests will see if this is true for WebKit for both parsed and dynamically-created Attr nodes. The tests use multiple methods of changing the Attr's value and even test reverting from a non-empty value to an empty one to check that all childNodes were removed. Some of the tests make use of .textContent, so this test is not compatible with IE. Opera and Firefox both completely pass this test.
 
 SubTest 1 = PASS

@@ -88,6 +88,9 @@ cc_test(
     size = "small",
     srcs = ["barrier_test.cc"],
     copts = ABSL_TEST_COPTS,
+    tags = [
+        "no_test_wasm",
+    ],
     deps = [
         ":synchronization",
         "//absl/time",
@@ -100,6 +103,9 @@ cc_test(
     size = "small",
     srcs = ["blocking_counter_test.cc"],
     copts = ABSL_TEST_COPTS,
+    tags = [
+        "no_test_wasm",
+    ],
     deps = [
         ":synchronization",
         "//absl/time",
@@ -138,6 +144,9 @@ cc_library(
     name = "thread_pool",
     testonly = 1,
     hdrs = ["internal/thread_pool.h"],
+    visibility = [
+        "//absl:__subpackages__",
+    ],
     deps = [
         ":synchronization",
         "//absl/base:core_headers",
@@ -149,6 +158,7 @@ cc_test(
     size = "large",
     srcs = ["mutex_test.cc"],
     copts = ABSL_TEST_COPTS,
+    shard_count = 25,
     deps = [
         ":synchronization",
         ":thread_pool",
@@ -205,6 +215,7 @@ cc_test(
     name = "per_thread_sem_test",
     size = "medium",
     copts = ABSL_TEST_COPTS,
+    tags = ["no_test_wasm"],
     deps = [
         ":per_thread_sem_test_common",
         ":synchronization",

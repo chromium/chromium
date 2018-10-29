@@ -37,6 +37,8 @@ class VIZ_HOST_EXPORT GpuClient : public ws::mojom::GpuMemoryBufferFactory,
   void SetConnectionErrorHandler(
       ConnectionErrorHandlerClosure connection_error_handler);
 
+  base::WeakPtr<GpuClient> GetWeakPtr();
+
   // ws::mojom::GpuMemoryBufferFactory overrides:
   void CreateGpuMemoryBuffer(
       gfx::GpuMemoryBufferId id,

@@ -23,30 +23,33 @@ class NET_EXPORT HttpContentDisposition {
   // report download metrics in UMA. This enum isn't directly used in UMA but
   // mapped to another one for binary compatiblity; ie. changes are OK.
   enum ParseResultFlags {
-    INVALID                      = 0,
+    INVALID = 0,
 
     // A valid disposition-type is present.
-    HAS_DISPOSITION_TYPE         = 1 << 0,
+    HAS_DISPOSITION_TYPE = 1 << 0,
 
     // The disposition-type is not 'inline' or 'attachment'.
     HAS_UNKNOWN_DISPOSITION_TYPE = 1 << 1,
 
     // Has a valid non-empty 'filename' attribute.
-    HAS_FILENAME                 = 1 << 2,
+    HAS_FILENAME = 1 << 2,
 
     // Has a valid non-empty 'filename*' attribute.
-    HAS_EXT_FILENAME             = 1 << 3,
+    HAS_EXT_FILENAME = 1 << 3,
 
     // The following fields are properties of the 'filename' attribute:
 
     // Quoted-string contains non-ASCII characters.
-    HAS_NON_ASCII_STRINGS        = 1 << 4,
+    HAS_NON_ASCII_STRINGS = 1 << 4,
 
     // Quoted-string contains percent-encoding.
-    HAS_PERCENT_ENCODED_STRINGS  = 1 << 5,
+    HAS_PERCENT_ENCODED_STRINGS = 1 << 5,
 
     // Quoted-string contains RFC 2047 encoded words.
-    HAS_RFC2047_ENCODED_STRINGS  = 1 << 6
+    HAS_RFC2047_ENCODED_STRINGS = 1 << 6,
+
+    // Has a filename that starts with a single quote.
+    HAS_SINGLE_QUOTED_FILENAME = 1 << 7,
   };
 
   HttpContentDisposition(const std::string& header,

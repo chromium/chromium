@@ -16,7 +16,6 @@
 #include "components/data_reduction_proxy/core/common/lofi_decider.h"
 #include "components/data_use_measurement/core/data_use.h"
 #include "components/data_use_measurement/core/data_use_ascriber.h"
-#include "components/previews/core/previews_user_data.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
 #include "url/gurl.h"
@@ -47,8 +46,6 @@ class DataUseUserDataBytes : public base::SupportsUserData::Data {
 // static
 const void* const DataUseUserDataBytes::kUserDataKey =
     &DataUseUserDataBytes::kUserDataKey;
-
-const void* const kDataUsePreviewsUserDataKey = &kDataUsePreviewsUserDataKey;
 
 }  // namespace
 
@@ -96,13 +93,6 @@ void DataReductionProxyDataUseObserver::OnPageResourceLoad(
     return;
   }
 
-  previews::PreviewsUserData* previews_user_data =
-      previews::PreviewsUserData::GetData(request);
-  if (previews_user_data) {
-    data_use->SetUserData(kDataUsePreviewsUserDataKey,
-                          previews_user_data->DeepCopy());
-  }
-
   if (request.GetTotalReceivedBytes() <= 0)
     return;
 
@@ -142,11 +132,6 @@ void DataReductionProxyDataUseObserver::OnPageResourceLoad(
 
 void DataReductionProxyDataUseObserver::OnPageDidFinishLoad(
     data_use_measurement::DataUse* data_use) {
-}
-
-const void*
-DataReductionProxyDataUseObserver::GetDataUsePreviewsUserDataKeyForTesting() {
-  return kDataUsePreviewsUserDataKey;
 }
 
 }  // namespace data_reduction_proxy

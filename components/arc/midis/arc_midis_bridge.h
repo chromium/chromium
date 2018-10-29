@@ -40,6 +40,7 @@ class ArcMidisBridge : public KeyedService,
   void OnBootstrapMojoConnection(mojom::MidisServerRequest request,
                                  mojom::MidisClientPtr client_ptr,
                                  bool result);
+  void OnMojoConnectionError();
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
   mojom::MidisHostPtr midis_host_ptr_;

@@ -1,7 +1,18 @@
 /**
- * @license Copyright 2017 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ * @license
+ * Copyright 2017 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS-IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 'use strict';
 
@@ -9,11 +20,11 @@
 
 const ELLIPSIS = '\u2026';
 const NBSP = '\xa0';
-const PASS_THRESHOLD = 0.75;
+const PASS_THRESHOLD = 0.9;
 
 const RATINGS = {
   PASS: {label: 'pass', minScore: PASS_THRESHOLD},
-  AVERAGE: {label: 'average', minScore: 0.45},
+  AVERAGE: {label: 'average', minScore: 0.5},
   FAIL: {label: 'fail'},
   ERROR: {label: 'error'},
 };
@@ -25,6 +36,52 @@ class Util {
 
   static get MS_DISPLAY_VALUE() {
     return `%10d${NBSP}ms`;
+  }
+
+  /**
+   * Returns a new LHR that's reshaped for slightly better ergonomics within the report rendereer.
+   * Also, sets up the localized UI strings used within renderer and number/date formatting
+   * The LHR passed in is not mutated.
+   * TODO(team): we all agree the LHR shape change is technical debt we should fix
+   * @param {LH.Result} result
+   * @return {LH.ReportResult}
+   */
+  static prepareReportResult(result) {
+    // If any mutations happen to the report within the renderers, we want the original object untouched
+    const clone = /** @type {LH.ReportResult} */ (JSON.parse(JSON.stringify(result)));
+
+    // If LHR is older (≤3.0.3), it has no locale setting. Set default.
+    if (!clone.configSettings.locale) {
+      clone.configSettings.locale = 'en';
+    }
+    Util.setNumberDateLocale(clone.configSettings.locale);
+    if (clone.i18n && clone.i18n.rendererFormattedStrings) {
+      Util.updateAllUIStrings(clone.i18n.rendererFormattedStrings);
+    }
+
+    if (typeof clone.categories !== 'object') throw new Error('No categories provided.');
+    clone.reportCategories = Object.values(clone.categories);
+
+    // For convenience, smoosh all AuditResults into their auditDfn (which has just weight & group)
+    for (const category of clone.reportCategories) {
+      category.auditRefs.forEach(auditMeta => {
+        const result = clone.audits[auditMeta.id];
+        auditMeta.result = result;
+      });
+    }
+
+    return clone;
+  }
+
+
+  /**
+   * @param {LH.I18NRendererStrings} rendererFormattedStrings
+   */
+  static updateAllUIStrings(rendererFormattedStrings) {
+    // TODO(i18n): don't mutate these here but on the LHR and pass that around everywhere
+    for (const [key, value] of Object.entries(rendererFormattedStrings)) {
+      Util.UIStrings[key] = value;
+    }
   }
 
   /**
@@ -85,10 +142,7 @@ class Util {
       case 'numeric':
       case 'binary':
       default:
-        // Numeric audits that are within PASS_THRESHOLD will still show up with failing.
-        // For opportunities, we want to have them show up with other failing for contrast.
-        // For diagnostics, we sort by score so they'll be lowest priority.
-        return Number(audit.score) === 1;
+        return Number(audit.score) >= RATINGS.PASS.minScore;
     }
   }
 
@@ -126,7 +180,7 @@ class Util {
    */
   static formatNumber(number, granularity = 0.1) {
     const coarseValue = Math.round(number / granularity) * granularity;
-    return coarseValue.toLocaleString();
+    return coarseValue.toLocaleString(Util.numberDateLocale);
   }
 
   /**
@@ -135,7 +189,8 @@ class Util {
    * @return {string}
    */
   static formatBytesToKB(size, granularity = 0.1) {
-    const kbs = (Math.round(size / 1024 / granularity) * granularity).toLocaleString();
+    const kbs = (Math.round(size / 1024 / granularity) * granularity)
+      .toLocaleString(Util.numberDateLocale);
     return `${kbs}${NBSP}KB`;
   }
 
@@ -146,7 +201,7 @@ class Util {
    */
   static formatMilliseconds(ms, granularity = 10) {
     const coarseTime = Math.round(ms / granularity) * granularity;
-    return `${coarseTime.toLocaleString()}${NBSP}ms`;
+    return `${coarseTime.toLocaleString(Util.numberDateLocale)}${NBSP}ms`;
   }
 
   /**
@@ -156,7 +211,7 @@ class Util {
    */
   static formatSeconds(ms, granularity = 0.1) {
     const coarseTime = Math.round(ms / 1000 / granularity) * granularity;
-    return `${coarseTime.toLocaleString()}${NBSP}s`;
+    return `${coarseTime.toLocaleString(Util.numberDateLocale)}${NBSP}s`;
   }
 
   /**
@@ -165,18 +220,19 @@ class Util {
    * @return {string}
    */
   static formatDateTime(date) {
+    /** @type {Intl.DateTimeFormatOptions} */
     const options = {
       month: 'short', day: 'numeric', year: 'numeric',
       hour: 'numeric', minute: 'numeric', timeZoneName: 'short',
     };
-    let formatter = new Intl.DateTimeFormat('en-US', options);
+    let formatter = new Intl.DateTimeFormat(Util.numberDateLocale, options);
 
     // Force UTC if runtime timezone could not be detected.
     // See https://github.com/GoogleChrome/lighthouse/issues/1056
     const tz = formatter.resolvedOptions().timeZone;
     if (!tz || tz.toLowerCase() === 'etc/unknown') {
       options.timeZone = 'UTC';
-      formatter = new Intl.DateTimeFormat('en-US', options);
+      formatter = new Intl.DateTimeFormat(Util.numberDateLocale, options);
     }
     return formatter.format(new Date(date));
   }
@@ -297,15 +353,6 @@ class Util {
   }
 
   /**
-   * @param {number} startTime
-   * @param {number} endTime
-   * @return {string}
-   */
-  static chainDuration(startTime, endTime) {
-    return Util.formatNumber((endTime - startTime) * 1000);
-  }
-
-  /**
    * @param {LH.Config.Settings} settings
    * @return {Array<{name: string, description: string}>}
    */
@@ -368,7 +415,12 @@ class Util {
         summary = 'Unknown';
     }
 
-    const deviceEmulation = settings.disableDeviceEmulation ? 'No emulation' : 'Emulated Nexus 5X';
+    let deviceEmulation = 'No emulation';
+    if (!settings.disableDeviceEmulation) {
+      if (settings.emulatedFormFactor === 'mobile') deviceEmulation = 'Emulated Nexus 5X';
+      if (settings.emulatedFormFactor === 'desktop') deviceEmulation = 'Emulated Desktop';
+    }
+
     return {
       deviceEmulation,
       cpuThrottling,
@@ -376,7 +428,67 @@ class Util {
       summary: `${deviceEmulation}, ${summary}`,
     };
   }
+
+  /**
+   * Set the locale to be used for Util's number and date formatting functions.
+   * @param {LH.Locale} locale
+   */
+  static setNumberDateLocale(locale) {
+    Util.numberDateLocale = locale;
+
+    // When testing, use a locale with more exciting numeric formatting
+    if (Util.numberDateLocale === 'en-XA') Util.numberDateLocale = 'de';
+  }
 }
+
+/**
+ * This value is updated on each run to the locale of the report
+ * @type {LH.Locale}
+ */
+Util.numberDateLocale = 'en';
+
+/**
+ * Report-renderer-specific strings.
+ * @type {LH.I18NRendererStrings}
+ */
+Util.UIStrings = {
+  /** Disclaimer shown to users below the metric values (First Contentful Paint, Time to Interactive, etc) to warn them that the numbers they see will likely change slightly the next time they run Lighthouse. */
+  varianceDisclaimer: 'Values are estimated and may vary.',
+  /** Column heading label for the listing of opportunity audits. Each audit title represents an opportunity. There are only 2 columns, so no strict character limit.  */
+  opportunityResourceColumnLabel: 'Opportunity',
+  /** Column heading label for the estimated page load savings of opportunity audits. Estimated Savings is the total amount of time (in seconds) that Lighthouse computed could be reduced from the total page load time, if the suggested action is taken. There are only 2 columns, so no strict character limit. */
+  opportunitySavingsColumnLabel: 'Estimated Savings',
+
+  /** An error string displayed next to a particular audit when it has errored, but not provided any specific error message. */
+  errorMissingAuditInfo: 'Report error: no audit information',
+  /** A label, shown next to an audit title or metric title, indicating that there was an error computing it. The user can hover on the label to reveal a tooltip with the extended error message. Translation should be short (< 20 characters). */
+  errorLabel: 'Error!',
+  /** This label is shown above a bulleted list of warnings. It is shown directly below an audit that produced warnings. Warnings describe situations the user should be aware of, as Lighthouse was unable to complete all the work required on this audit. For example, The 'Unable to decode image (biglogo.jpg)' warning may show up below an image encoding audit. */
+  warningHeader: 'Warnings: ',
+  /** The tooltip text on an expandable chevron icon. Clicking the icon expands a section to reveal a list of audit results that was hidden by default. */
+  auditGroupExpandTooltip: 'Show audits',
+  /** Section heading shown above a list of audits that are passing. 'Passed' here refers to a passing grade. This section is collapsed by default, as the user should be focusing on the failed audits instead. Users can click this heading to reveal the list. */
+  passedAuditsGroupTitle: 'Passed audits',
+  /** Section heading shown above a list of audits that do not apply to the page. For example, if an audit is 'Are images optimized?', but the page has no images on it, the audit will be marked as not applicable. This is neither passing or failing. This section is collapsed by default, as the user should be focusing on the failed audits instead. Users can click this heading to reveal the list. */
+  notApplicableAuditsGroupTitle: 'Not applicable',
+  /** Section heading shown above a list of audits that were not computed by Lighthouse. They serve as a list of suggestions for the user to go and manually check. For example, Lighthouse can't automate testing cross-browser compatibility, so that is listed within this section, so the user is reminded to test it themselves. This section is collapsed by default, as the user should be focusing on the failed audits instead. Users can click this heading to reveal the list. */
+  manualAuditsGroupTitle: 'Additional items to manually check',
+
+  /** Label shown preceding any important warnings that may have invalidated the entire report. For example, if the user has Chrome extensions installed, they may add enough performance overhead that Lighthouse's performance metrics are unreliable. If shown, this will be displayed at the top of the report UI. */
+  toplevelWarningsMessage: 'There were issues affecting this run of Lighthouse:',
+  /** Label preceding a pictorial explanation of the scoring scale: 0-50 is red (bad), 50-90 is orange (ok), 90-100 is green (good). These colors are used throughout the report to provide context for how good/bad a particular result is. */
+  scorescaleLabel: 'Score scale:',
+
+  /** String of text shown in a graphical representation of the flow of network requests for the web page. This label represents the initial network request that fetches an HTML page. This navigation may be redirected (eg. Initial navigation to http://example.com redirects to https://www.example.com). */
+  crcInitialNavigation: 'Initial Navigation',
+  /** Label of value shown in the summary of critical request chains. Refers to the total amount of time (milliseconds) of the longest critical path chain/sequence of network requests. Example value: 2310 ms */
+  crcLongestDurationLabel: 'Maximum critical path latency:',
+
+  /** Explanation shown to users below performance results to inform them that the test was done with a 3G network connection and to warn them that the numbers they see will likely change slightly the next time they run Lighthouse. 'Lighthouse' becomes link text to additional documentation. */
+  lsPerformanceCategoryDescription: '[Lighthouse](https://developers.google.com/web/tools/lighthouse/) analysis of the current page on emulated 3G. Values are estimated and may vary.',
+  /** Title of the lab data section of the Performance category. Within this section are various speed metrics which quantify the pageload performance into values presented in seconds and milliseconds. "Lab" is an abbreviated form of "laboratory", and refers to the fact that the data is from a controlled test of a website, not measurements from real users visiting that site.  */
+  labDataTitle: 'Lab Data',
+};
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = Util;

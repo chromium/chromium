@@ -1,4 +1,5 @@
 This tests pasting (InsertHTML) into an input element when body element has visibility set to hidden. You should see PASS below.
 
 
+
 PASS

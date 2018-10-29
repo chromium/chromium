@@ -299,7 +299,7 @@ size_t QpackProgressiveEncoder::DoValueString(size_t max_encoded_bytes,
 }  // namespace
 
 std::unique_ptr<spdy::HpackEncoder::ProgressiveEncoder>
-QpackEncoder::EncodeHeaderSet(const spdy::SpdyHeaderBlock* header_list) {
+QpackEncoder::EncodeHeaderList(const spdy::SpdyHeaderBlock* header_list) {
   return std::make_unique<QpackProgressiveEncoder>(&header_table_, header_list);
 }
 

@@ -80,7 +80,6 @@ class AppInstallEventLogUploader : public CloudPolicyClient::Observer {
   // request when the client registers, by asking the delegate to serialize logs
   // and with the exponential backoff reset to its minimum.
   void OnRegistrationStateChanged(CloudPolicyClient* client) override;
-  void OnRobotAuthCodesFetched(CloudPolicyClient* client) override {}
   void OnClientError(CloudPolicyClient* client) override {}
 
  private:

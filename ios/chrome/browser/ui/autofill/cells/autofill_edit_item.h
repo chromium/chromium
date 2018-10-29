@@ -16,6 +16,11 @@
 // a text field.
 @interface AutofillEditItem : CollectionViewItem
 
+// TODO(crbug.com/891299) remove when all collection and table views are fixed
+// for dynamic types.
+// Set to YES to use dynamic font types.
+@property(nonatomic, assign) BOOL useScaledFont;
+
 // The style to use for the cell.
 @property(nonatomic, assign) CollectionViewCellStyle cellStyle;
 

@@ -396,7 +396,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual resource_coordinator::ProcessResourceCoordinator*
   GetProcessResourceCoordinator() = 0;
 
-  // Create an URLLoaderFactory for this process.
+  // Create an URLLoaderFactory that can be used by |origin| being hosted in
+  // |this| process.
+  //
   // When NetworkService is enabled, |request| will be bound with a new
   // URLLoaderFactory created from the storage partition's Network Context. Note
   // that the URLLoaderFactory returned by this method does NOT support
@@ -404,6 +406,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // When NetworkService is not enabled, |request| will be bound with a
   // URLLoaderFactory which routes requests to ResourceDispatcherHost.
   virtual void CreateURLLoaderFactory(
+      const url::Origin& origin,
       network::mojom::URLLoaderFactoryRequest request) = 0;
 
   // Whether this process is locked out from ever being reused for sites other

@@ -52,6 +52,9 @@ class DiceBubbleSyncPromoView : public views::View,
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
+  // Returns the sign-in button.
+  views::View* GetSigninButtonForTesting();
+
  private:
   // Used to enable sync in the DiceAccountsMenu and when |signin_button_| is
   // pressed.

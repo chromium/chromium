@@ -83,13 +83,27 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         DropdownItem item = getItem(position);
 
         if (mIsRefresh) {
-            populateLabelView(item, layout);
+            TextView labelView = populateLabelView(item, layout);
             populateSublabelView(item, layout);
             ImageView iconView =
                     populateIconView((ImageView) layout.findViewById(R.id.end_dropdown_icon), item);
             if (iconView != null) {
                 iconView.setLayoutParams(getSizeParamsForIconView(iconView, item));
             }
+
+            if (item.isMultilineLabel()) {
+                labelView.setSingleLine(false);
+
+                LinearLayout wrapper =
+                        (LinearLayout) layout.findViewById(R.id.dropdown_label_wrapper);
+
+                int paddingHeight = mContext.getResources().getDimensionPixelSize(
+                        R.dimen.autofill_dropdown_refresh_vertical_padding);
+
+                wrapper.setPadding(
+                        /*left=*/0, /*top=*/paddingHeight, /*right=*/0, /*bottom=*/paddingHeight);
+            }
+
             return layout;
         }
 

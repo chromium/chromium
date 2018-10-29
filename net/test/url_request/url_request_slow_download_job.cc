@@ -95,16 +95,14 @@ size_t URLRequestSlowDownloadJob::NumberOutstandingRequests() {
 
 // static
 void URLRequestSlowDownloadJob::FinishPendingRequests() {
-  typedef std::set<URLRequestSlowDownloadJob*> JobList;
-  for (JobList::iterator it = pending_requests_.Get().begin();
+  for (auto it = pending_requests_.Get().begin();
        it != pending_requests_.Get().end(); ++it) {
     (*it)->set_should_finish_download();
   }
 }
 
 void URLRequestSlowDownloadJob::ErrorPendingRequests() {
-  typedef std::set<URLRequestSlowDownloadJob*> JobList;
-  for (JobList::iterator it = pending_requests_.Get().begin();
+  for (auto it = pending_requests_.Get().begin();
        it != pending_requests_.Get().end(); ++it) {
     (*it)->set_should_error_download();
   }

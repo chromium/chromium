@@ -26,17 +26,30 @@ class TracingControllerAndroid {
                     const base::android::JavaParamRef<jstring>& trace_options);
   void StopTracing(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj,
-                   const base::android::JavaParamRef<jstring>& jfilepath);
-  bool GetKnownCategoryGroupsAsync(
+                   const base::android::JavaParamRef<jstring>& jfilepath,
+                   bool compressfile,
+                   const base::android::JavaParamRef<jobject>& callback);
+  bool GetKnownCategoriesAsync(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& callback);
+  bool GetTraceBufferUsageAsync(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& callback);
   static void GenerateTracingFilePath(base::FilePath* file_path);
 
  private:
   ~TracingControllerAndroid();
-  void OnTracingStopped();
+  void OnTracingStopped(
+      const base::android::ScopedJavaGlobalRef<jobject>& callback);
   void OnKnownCategoriesReceived(
+      const base::android::ScopedJavaGlobalRef<jobject>& callback,
       const std::set<std::string>& categories_received);
+  void OnTraceBufferUsageReceived(
+      const base::android::ScopedJavaGlobalRef<jobject>& callback,
+      float percent_full,
+      size_t approximate_event_count);
 
   JavaObjectWeakGlobalRef weak_java_object_;
   base::WeakPtrFactory<TracingControllerAndroid> weak_factory_;

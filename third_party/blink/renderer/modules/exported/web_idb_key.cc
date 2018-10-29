@@ -28,6 +28,7 @@
 #include "third_party/blink/public/platform/modules/indexeddb/web_idb_key.h"
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -36,7 +37,7 @@ size_t WebIDBKeyArrayView::size() const {
 }
 
 WebIDBKeyView WebIDBKeyArrayView::operator[](size_t index) const {
-  return WebIDBKeyView(private_->Array()[index].get());
+  return WebIDBKeyView(private_->Array()[SafeCast<wtf_size_t>(index)].get());
 }
 
 WebIDBKeyType WebIDBKeyView::KeyType() const {
@@ -67,9 +68,26 @@ double WebIDBKeyView::Number() const {
   return private_->Number();
 }
 
+size_t WebIDBKeyView::SizeEstimate() const {
+  // TODO(cmp): Ensure |private_| can never be null.
+  //
+  // SizeEstimate() can be called when |private_| is null.  That happens if and
+  // only if the |WebIDBKey| instance is created using WebIDBKey::CreateNull().
+  //
+  // Eventually, WebIDBKey::CreateNull() will change so that case will lead to
+  // a non-null |private_|.  At that time, this null check can change to a
+  // DCHECK that |private_| is not null and the special null case handling can
+  // be removed.
+  if (this->IsNull()) {
+    return IDBKey::kIDBKeyOverheadSize;
+  }
+
+  return private_->SizeEstimate();
+}
+
 WebIDBKey WebIDBKey::CreateArray(WebVector<WebIDBKey> array) {
   IDBKey::KeyArray keys;
-  keys.ReserveCapacity(array.size());
+  keys.ReserveCapacity(SafeCast<wtf_size_t>(array.size()));
   for (WebIDBKey& key : array) {
     DCHECK(key.View().KeyType() != kWebIDBKeyTypeNull);
     keys.emplace_back(key.ReleaseIdbKey());
@@ -108,6 +126,13 @@ WebIDBKey::WebIDBKey(std::unique_ptr<IDBKey> idb_key) noexcept
     : private_(std::move(idb_key)) {}
 WebIDBKey& WebIDBKey::operator=(std::unique_ptr<IDBKey> idb_key) noexcept {
   private_ = std::move(idb_key);
+  return *this;
+}
+
+WebIDBKey::WebIDBKey(const WebIDBKey& rkey)
+    : private_(IDBKey::Clone(rkey.private_)) {}
+WebIDBKey& WebIDBKey::operator=(const WebIDBKey& rkey) {
+  private_ = IDBKey::Clone(rkey.private_);
   return *this;
 }
 

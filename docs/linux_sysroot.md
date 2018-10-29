@@ -29,17 +29,7 @@ new packages, skip to `Using build_and_upload.py`.
 ### Adding new packages
 
 To add a new package, edit the `sysroot-creator-*.sh` scripts and modify the
-`DEBIAN_PACKAGES` list, then run the update step (`UpdatePackageListsAll`).  The
-steps below will use `sysroot-creator-stretch.sh` as an example.
-
-### Updating existing package list
-
-To update packages to the latest versions run:
-
-    $ ./sysroot-creator-stretch.sh UpdatePackageListsAll
-
-This command will update the package lists that are stored alongside the script.
-If no packages have changed then this script will have no effect.
+`DEBIAN_PACKAGES` list.
 
 ### Rebuilding
 
@@ -61,7 +51,7 @@ the one on Google Cloud Storage.
 
 To upload images to Google Cloud Storage run the following command:
 
-    $ ./sysroot-creator-stretch.sh UploadSysrootAll <SHA1>
+    $ ./sysroot-creator-stretch.sh UploadSysrootAll
 
 Here you should use the SHA1 of the git revision at which the images were
 created.

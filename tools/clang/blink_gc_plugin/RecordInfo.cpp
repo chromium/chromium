@@ -703,12 +703,11 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
 
   if (Config::IsGCCollection(info->name()) ||
       Config::IsWTFCollection(info->name())) {
-    bool is_root = Config::IsPersistentGCCollection(info->name());
-    bool on_heap = is_root || info->IsHeapAllocatedCollection();
+    bool on_heap = info->IsHeapAllocatedCollection();
     size_t count = Config::CollectionDimension(info->name());
     if (!info->GetTemplateArgs(count, &args))
       return 0;
-    Collection* edge = new Collection(info, on_heap, is_root);
+    Collection* edge = new Collection(info, on_heap);
     for (TemplateArgs::iterator it = args.begin(); it != args.end(); ++it) {
       if (Edge* member = CreateEdge(*it)) {
         edge->members().push_back(member);

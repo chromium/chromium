@@ -80,7 +80,7 @@ class OriginTest : public ::testing::Test {
   }
 
   bool HasNonceTokenBeenInitialized(const url::Origin& origin) {
-    EXPECT_TRUE(origin.unique());
+    EXPECT_TRUE(origin.opaque());
     // Avoid calling nonce_.token() here, to not trigger lazy initialization.
     return !origin.nonce_->token_.is_empty();
   }
@@ -110,14 +110,14 @@ TEST_F(OriginTest, OpaqueOriginComparison) {
   // A default-constructed Origin should should be cross origin to everything
   // but itself.
   url::Origin opaque_a, opaque_b;
-  EXPECT_TRUE(opaque_a.unique());
+  EXPECT_TRUE(opaque_a.opaque());
   EXPECT_EQ("", opaque_a.scheme());
   EXPECT_EQ("", opaque_a.host());
   EXPECT_EQ(0, opaque_a.port());
   EXPECT_EQ(SchemeHostPort(), opaque_a.GetTupleOrPrecursorTupleIfOpaque());
   EXPECT_TRUE(opaque_a.GetTupleOrPrecursorTupleIfOpaque().IsInvalid());
 
-  EXPECT_TRUE(opaque_b.unique());
+  EXPECT_TRUE(opaque_b.opaque());
   EXPECT_EQ("", opaque_b.scheme());
   EXPECT_EQ("", opaque_b.host());
   EXPECT_EQ(0, opaque_b.port());
@@ -222,7 +222,7 @@ TEST_F(OriginTest, OpaqueOriginComparison) {
       EXPECT_EQ("", origin.scheme());
       EXPECT_EQ("", origin.host());
       EXPECT_EQ(0, origin.port());
-      EXPECT_TRUE(origin.unique());
+      EXPECT_TRUE(origin.opaque());
       // An origin is always same-origin with itself.
       EXPECT_EQ(origin, origin);
       EXPECT_NE(origin, url::Origin());
@@ -232,7 +232,7 @@ TEST_F(OriginTest, OpaqueOriginComparison) {
       EXPECT_EQ("", origin_copy.scheme());
       EXPECT_EQ("", origin_copy.host());
       EXPECT_EQ(0, origin_copy.port());
-      EXPECT_TRUE(origin_copy.unique());
+      EXPECT_TRUE(origin_copy.opaque());
       EXPECT_EQ(origin, origin_copy);
       // And it should always be cross-origin to another opaque Origin.
       EXPECT_NE(origin, opaque_origin);
@@ -352,6 +352,9 @@ TEST_F(OriginTest, ConstructFromGURL) {
        123},
       {"blob:https://example.com/guid-goes-here", "https", "example.com", 443},
       {"blob:http://u:p@example.com/guid-goes-here", "http", "example.com", 80},
+
+      // Gopher:
+      {"gopher://8u.9.Vx6", "gopher", "8u.9.vx6", 70},
   };
 
   for (const auto& test_case : cases) {
@@ -362,7 +365,7 @@ TEST_F(OriginTest, ConstructFromGURL) {
     EXPECT_EQ(test_case.expected_scheme, origin.scheme());
     EXPECT_EQ(test_case.expected_host, origin.host());
     EXPECT_EQ(test_case.expected_port, origin.port());
-    EXPECT_FALSE(origin.unique());
+    EXPECT_FALSE(origin.opaque());
     EXPECT_EQ(origin, origin);
     EXPECT_NE(different_origin, origin);
     EXPECT_NE(origin, different_origin);
@@ -374,7 +377,7 @@ TEST_F(OriginTest, ConstructFromGURL) {
     url::Origin derived_opaque =
         Origin::Resolve(GURL("about:blank?bar#foo"), origin)
             .DeriveNewOpaqueOrigin();
-    EXPECT_TRUE(derived_opaque.unique());
+    EXPECT_TRUE(derived_opaque.opaque());
     EXPECT_NE(origin, derived_opaque);
     EXPECT_FALSE(derived_opaque.GetTupleOrPrecursorTupleIfOpaque().IsInvalid());
     EXPECT_EQ(origin.GetTupleOrPrecursorTupleIfOpaque(),
@@ -383,7 +386,7 @@ TEST_F(OriginTest, ConstructFromGURL) {
 
     url::Origin derived_opaque_via_data_url =
         Origin::Resolve(GURL("data:text/html,baz"), origin);
-    EXPECT_TRUE(derived_opaque_via_data_url.unique());
+    EXPECT_TRUE(derived_opaque_via_data_url.opaque());
     EXPECT_NE(origin, derived_opaque_via_data_url);
     EXPECT_FALSE(derived_opaque_via_data_url.GetTupleOrPrecursorTupleIfOpaque()
                      .IsInvalid());
@@ -485,7 +488,7 @@ TEST_F(OriginTest, UnsafelyCreate) {
     EXPECT_EQ(test.scheme, origin->scheme());
     EXPECT_EQ(test.host, origin->host());
     EXPECT_EQ(test.port, origin->port());
-    EXPECT_FALSE(origin->unique());
+    EXPECT_FALSE(origin->opaque());
     EXPECT_TRUE(origin->IsSameOriginWith(*origin));
 
     ExpectParsedUrlsEqual(GURL(origin->Serialize()), origin->GetURL());
@@ -495,7 +498,7 @@ TEST_F(OriginTest, UnsafelyCreate) {
         UnsafelyCreateOpaqueOriginWithoutNormalization(
             test.scheme, test.host, test.port, CreateNonce(nonce));
     ASSERT_TRUE(opaque_origin);
-    EXPECT_TRUE(opaque_origin->unique());
+    EXPECT_TRUE(opaque_origin->opaque());
     EXPECT_FALSE(*opaque_origin == origin);
     EXPECT_EQ(opaque_origin->GetTupleOrPrecursorTupleIfOpaque(),
               origin->GetTupleOrPrecursorTupleIfOpaque());
@@ -556,7 +559,7 @@ TEST_F(OriginTest, UnsafelyCreateUniqueOnInvalidInput) {
       << "An invalid tuple is a valid input to "
       << "UnsafelyCreateOpaqueOriginWithoutNormalization, so long as it is "
       << "the canonical form of the invalid tuple.";
-  EXPECT_TRUE(anonymous_opaque->unique());
+  EXPECT_TRUE(anonymous_opaque->opaque());
   EXPECT_EQ(GetNonce(anonymous_opaque.value()), token);
   EXPECT_EQ(anonymous_opaque->GetTupleOrPrecursorTupleIfOpaque(),
             url::SchemeHostPort());

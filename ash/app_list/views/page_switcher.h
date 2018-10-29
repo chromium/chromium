@@ -27,6 +27,8 @@ class PageSwitcher : public views::View,
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
 
+  void set_ignore_button_press(bool ignore) { ignore_button_press_ = ignore; }
+
  private:
   // Overridden from views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
@@ -43,6 +45,9 @@ class PageSwitcher : public views::View,
 
   // True if the page switcher button strip should grow vertically.
   const bool vertical_;
+
+  // True if button press should be ignored.
+  bool ignore_button_press_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PageSwitcher);
 };

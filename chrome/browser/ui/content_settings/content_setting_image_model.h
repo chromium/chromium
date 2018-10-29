@@ -158,26 +158,6 @@ class ContentSettingSimpleImageModel : public ContentSettingImageModel {
   DISALLOW_COPY_AND_ASSIGN(ContentSettingSimpleImageModel);
 };
 
-// Image model for subresource filter icons in the location bar.
-class ContentSettingSubresourceFilterImageModel
-    : public ContentSettingImageModel {
- public:
-  ContentSettingSubresourceFilterImageModel();
-
-  void UpdateFromWebContents(content::WebContents* web_contents) override;
-
-  ContentSettingBubbleModel* CreateBubbleModelImpl(
-      ContentSettingBubbleModel::Delegate* delegate,
-      content::WebContents* web_contents,
-      Profile* profile) override;
-
-  bool ShouldRunAnimation(content::WebContents* web_contents) override;
-  void SetAnimationHasRun(content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingSubresourceFilterImageModel);
-};
-
 class ContentSettingFramebustBlockImageModel : public ContentSettingImageModel {
  public:
   ContentSettingFramebustBlockImageModel();

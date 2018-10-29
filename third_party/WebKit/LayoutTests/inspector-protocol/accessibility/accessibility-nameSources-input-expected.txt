@@ -45,6 +45,27 @@ Tests name sources in inputs.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "multiline",
       "value": {
         "type": "boolean",
@@ -115,6 +136,27 @@ Tests name sources in inputs.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -210,6 +252,27 @@ Tests name sources in inputs.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -319,6 +382,27 @@ Tests name sources in inputs.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -449,6 +533,27 @@ Tests name sources in inputs.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -586,6 +691,27 @@ Tests name sources in inputs.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "multiline",
       "value": {
         "type": "boolean",
@@ -692,6 +818,27 @@ Tests name sources in inputs.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "multiline",
       "value": {
         "type": "boolean",
@@ -770,6 +917,27 @@ Tests name sources in inputs.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -883,6 +1051,27 @@ Tests name sources in inputs.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -1011,6 +1200,27 @@ Tests name sources in inputs.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "multiline",
       "value": {
         "type": "boolean",
@@ -1109,6 +1319,27 @@ Tests name sources in inputs.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -1211,6 +1442,27 @@ Tests name sources in inputs.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {

@@ -113,8 +113,8 @@ void MDnsAPI::UpdateMDnsListeners() {
   // mDNS unregistration is performed for difference(previous, cur).
   // The mDNS device list is refreshed if the listener count has grown for
   // a service type in union(cur, previous).
-  ServiceTypeCounts::iterator i_cur = current_service_counts.begin();
-  ServiceTypeCounts::iterator i_prev = prev_service_counts_.begin();
+  auto i_cur = current_service_counts.begin();
+  auto i_prev = prev_service_counts_.begin();
   while (i_cur != current_service_counts.end() ||
          i_prev != prev_service_counts_.end()) {
     if (i_prev == prev_service_counts_.end() ||

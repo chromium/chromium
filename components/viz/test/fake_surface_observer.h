@@ -36,7 +36,6 @@ class FakeSurfaceObserver : public SurfaceObserver {
 
  private:
   // SurfaceObserver implementation:
-  void OnSurfaceCreated(const SurfaceId& surface_id) override {}
   bool OnSurfaceDamaged(const SurfaceId& surface_id,
                         const BeginFrameAck& ack) override;
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;

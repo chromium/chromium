@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
+#include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/fido_constants.h"
 
@@ -34,11 +35,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   static base::Optional<AuthenticatorData> DecodeAuthenticatorData(
       base::span<const uint8_t> auth_data);
 
+  //  The attested credential |data| must be specified iff |flags| have
+  //  kAttestation set; and |extensions| must be specified iff |flags| have
+  //  kExtensionDataIncluded set.
   AuthenticatorData(
       base::span<const uint8_t, kRpIdHashLength> application_parameter,
       uint8_t flags,
       base::span<const uint8_t, kSignCounterLength> counter,
-      base::Optional<AttestedCredentialData> data);
+      base::Optional<AttestedCredentialData> data,
+      base::Optional<cbor::Value> extensions = base::nullopt);
 
   // Moveable.
   AuthenticatorData(AuthenticatorData&& other);
@@ -64,6 +69,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   const base::Optional<AttestedCredentialData>& attested_data() const {
     return attested_data_;
   }
+
+  // If a value is returned then the result of calling |is_map()| on it can be
+  // assumed to be true.
+  const base::Optional<cbor::Value>& extensions() const { return extensions_; }
 
   const std::array<uint8_t, kRpIdHashLength>& application_parameter() const {
     return application_parameter_;
@@ -105,6 +114,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   // Signature counter, 32-bit unsigned big-endian integer.
   std::array<uint8_t, kSignCounterLength> counter_;
   base::Optional<AttestedCredentialData> attested_data_;
+  // If |extensions_| has a value, then it will be a CBOR map.
+  base::Optional<cbor::Value> extensions_;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorData);
 };

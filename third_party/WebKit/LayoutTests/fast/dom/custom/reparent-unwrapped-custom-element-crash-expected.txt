@@ -1,3 +1,2 @@
 CONSOLE WARNING: line 4: document.registerElement is deprecated and will be removed in M73, around March 2019. Please use window.customElements.define instead. See https://www.chromestatus.com/features/4642138092470272 for more details.
 If this doesn't crash, it passed. 
-

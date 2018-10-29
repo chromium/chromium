@@ -2013,13 +2013,6 @@ void GLES2TraceImplementation::CopySubTextureCHROMIUM(
                               unpack_unmultiply_alpha);
 }
 
-void GLES2TraceImplementation::CompressedCopyTextureCHROMIUM(GLuint source_id,
-                                                             GLuint dest_id) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "GLES2Trace::CompressedCopyTextureCHROMIUM");
-  gl_->CompressedCopyTextureCHROMIUM(source_id, dest_id);
-}
-
 void GLES2TraceImplementation::DrawArraysInstancedANGLE(GLenum mode,
                                                         GLint first,
                                                         GLsizei count,
@@ -2056,6 +2049,14 @@ GLuint GLES2TraceImplementation::CreateAndConsumeTextureCHROMIUM(
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "GLES2Trace::CreateAndConsumeTextureCHROMIUM");
   return gl_->CreateAndConsumeTextureCHROMIUM(mailbox);
+}
+
+GLuint GLES2TraceImplementation::CreateAndTexStorage2DSharedImageCHROMIUM(
+    GLenum internalFormat,
+    const GLbyte* mailbox) {
+  TRACE_EVENT_BINARY_EFFICIENT0(
+      "gpu", "GLES2Trace::CreateAndTexStorage2DSharedImageCHROMIUM");
+  return gl_->CreateAndTexStorage2DSharedImageCHROMIUM(internalFormat, mailbox);
 }
 
 void GLES2TraceImplementation::BindUniformLocationCHROMIUM(GLuint program,
@@ -2257,6 +2258,11 @@ void GLES2TraceImplementation::ScheduleDCLayerCHROMIUM(
   gl_->ScheduleDCLayerCHROMIUM(num_textures, contents_texture_ids,
                                contents_rect, background_color, edge_aa_mask,
                                bounds_rect, filter, is_protected_video);
+}
+
+void GLES2TraceImplementation::SetActiveURLCHROMIUM(const char* url) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::SetActiveURLCHROMIUM");
+  gl_->SetActiveURLCHROMIUM(url);
 }
 
 void GLES2TraceImplementation::MatrixLoadfCHROMIUM(GLenum matrixMode,

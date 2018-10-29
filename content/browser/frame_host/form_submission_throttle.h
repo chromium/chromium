@@ -36,7 +36,7 @@ class CONTENT_EXPORT FormSubmissionThrottle : public NavigationThrottle {
  private:
   explicit FormSubmissionThrottle(NavigationHandle* handle);
   NavigationThrottle::ThrottleCheckResult CheckContentSecurityPolicyFormAction(
-      bool is_redirect);
+      bool was_server_redirect);
 
   DISALLOW_COPY_AND_ASSIGN(FormSubmissionThrottle);
 };

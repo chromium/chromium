@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">Не удалось прочитать закрытый ключ.</translation>
 <translation id="6391538222494443604">Каталог входа должен существовать.</translation>
 <translation id="641087317769093025">Не удалось распаковать расширение</translation>
+<translation id="6413453408918378296">Значок "<ph name="ICON" />" недостаточно заметен.</translation>
 <translation id="6542618148162044354">Приложение "<ph name="APP_NAME" />" запрашивает доступ к нескольким устройствам.</translation>
 <translation id="657064425229075395">Не удалось загрузить фоновый скрипт <ph name="BACKGROUND_SCRIPT" />.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" />, поставщик: <ph name="VENDOR_NAME" /> (серийный номер: <ph name="SERIAL_NUMBER" />)</translation>

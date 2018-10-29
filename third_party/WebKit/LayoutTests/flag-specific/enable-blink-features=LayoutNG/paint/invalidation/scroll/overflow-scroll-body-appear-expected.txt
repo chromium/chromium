@@ -20,42 +20,22 @@
         {
           "object": "NGPhysicalTextFragment 'Bug 36461 - No vertical scrollbar after the CSS class change'",
           "rect": [124, 52, 383, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Bug 36461 - No vertical scrollbar after the CSS class change'",
-          "rect": [124, 52, 383, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'You should see both vertical and horizontal scrollbars.'",
           "rect": [8, 16, 340, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'You should see both vertical and horizontal scrollbars.'",
-          "rect": [8, 16, 340, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'This is the test for '",
           "rect": [8, 52, 116, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'This is the test for '",
-          "rect": [8, 52, 116, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment '.'",
           "rect": [507, 52, 4, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment '.'",
-          "rect": [507, 52, 4, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

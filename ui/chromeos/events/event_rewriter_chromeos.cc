@@ -257,6 +257,17 @@ ui::DomCode RelocateModifier(ui::DomCode code, ui::DomKeyLocation location) {
   return code;
 }
 
+// Returns true if |mouse_event| was generated from a touchpad device.
+bool IsFromTouchpadDevice(const ui::MouseEvent& mouse_event) {
+  for (const ui::InputDevice& touchpad :
+       ui::InputDeviceManager::GetInstance()->GetTouchpadDevices()) {
+    if (touchpad.id == mouse_event.source_device_id())
+      return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 EventRewriterChromeOS::EventRewriterChromeOS(
@@ -302,7 +313,8 @@ EventRewriterChromeOS::DeviceType EventRewriterChromeOS::GetDeviceType(
       return EventRewriterChromeOS::kDeviceAppleKeyboard;
   }
 
-  if (!found_apple && keyboard_device.type == INPUT_DEVICE_EXTERNAL) {
+  if (!found_apple && (keyboard_device.type == INPUT_DEVICE_USB ||
+                       keyboard_device.type == INPUT_DEVICE_BLUETOOTH)) {
     // ui::InputDevice is a generic input device, and we're not sure if it's
     // actually a keyboard.
     return found_keyboard
@@ -1170,11 +1182,15 @@ void EventRewriterChromeOS::RewriteLocatedEvent(const ui::Event& event,
 int EventRewriterChromeOS::RewriteModifierClick(
     const ui::MouseEvent& mouse_event,
     int* flags) {
+  // Note that this behavior is limited to mouse events coming from touchpad
+  // devices. https://crbug.com/890648.
+
   // Remap Alt+Button1 to Button3.
   const int kAltLeftButton = (ui::EF_ALT_DOWN | ui::EF_LEFT_MOUSE_BUTTON);
   if (((*flags & kAltLeftButton) == kAltLeftButton) &&
       ((mouse_event.type() == ui::ET_MOUSE_PRESSED) ||
-       pressed_device_ids_.count(mouse_event.source_device_id()))) {
+       pressed_device_ids_.count(mouse_event.source_device_id())) &&
+      IsFromTouchpadDevice(mouse_event)) {
     *flags &= ~kAltLeftButton;
     *flags |= ui::EF_RIGHT_MOUSE_BUTTON;
     if (mouse_event.type() == ui::ET_MOUSE_PRESSED)

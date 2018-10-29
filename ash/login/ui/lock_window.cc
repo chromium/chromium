@@ -28,13 +28,19 @@ LockWindow::LockWindow() {
 
   // Disable virtual keyboard overscroll because it interferes with scrolling
   // login/lock content. See crbug.com/363635.
-  keyboard::KeyboardController::Get()->set_keyboard_overscroll_override(
-      keyboard::KEYBOARD_OVERSCROLL_OVERRIDE_DISABLED);
+  keyboard::mojom::KeyboardConfig config =
+      keyboard::KeyboardController::Get()->keyboard_config();
+  config.overscroll_behavior =
+      keyboard::mojom::KeyboardOverscrollBehavior::kDisabled;
+  keyboard::KeyboardController::Get()->UpdateKeyboardConfig(config);
 }
 
 LockWindow::~LockWindow() {
-  keyboard::KeyboardController::Get()->set_keyboard_overscroll_override(
-      keyboard::KEYBOARD_OVERSCROLL_OVERRIDE_NONE);
+  keyboard::mojom::KeyboardConfig config =
+      keyboard::KeyboardController::Get()->keyboard_config();
+  config.overscroll_behavior =
+      keyboard::mojom::KeyboardOverscrollBehavior::kDefault;
+  keyboard::KeyboardController::Get()->UpdateKeyboardConfig(config);
 
   // We need to destroy the root view before destroying |data_dispatcher_|
   // because lock screen destruction assumes it is alive. We could hand out

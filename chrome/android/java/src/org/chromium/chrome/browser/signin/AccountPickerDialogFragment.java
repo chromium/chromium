@@ -117,11 +117,10 @@ public class AccountPickerDialogFragment extends DialogFragment {
                 return new ViewHolder(view);
             }
             View view = inflater.inflate(R.layout.account_picker_row, viewGroup, false);
-            ImageView accountImage = (ImageView) view.findViewById(R.id.account_image);
-            TextView accountTextPrimary = (TextView) view.findViewById(R.id.account_text_primary);
-            TextView accountTextSecondary =
-                    (TextView) view.findViewById(R.id.account_text_secondary);
-            ImageView selectionMark = (ImageView) view.findViewById(R.id.account_selection_mark);
+            ImageView accountImage = view.findViewById(R.id.account_image);
+            TextView accountTextPrimary = view.findViewById(R.id.account_text_primary);
+            TextView accountTextSecondary = view.findViewById(R.id.account_text_secondary);
+            ImageView selectionMark = view.findViewById(R.id.account_selection_mark);
             return new ViewHolder(
                     view, accountImage, accountTextPrimary, accountTextSecondary, selectionMark);
         }

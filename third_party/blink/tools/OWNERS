@@ -1,5 +1,1 @@
 file://third_party/WebKit/Tools/OWNERS
-
-per-file audit_non_blink_usage.py=dcheng@chromium.org
-per-file audit_non_blink_usage.py=haraken@chromium.org
-per-file audit_non_blink_usage.py=jbroman@chromium.org

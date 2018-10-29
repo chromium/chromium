@@ -26,13 +26,11 @@ bool SimpleThreadScheduler::CanExceedIdleDeadlineIfRequired() const {
 }
 
 void SimpleThreadScheduler::PostIdleTask(const base::Location& location,
-                                         WebThread::IdleTask task) {
-}
+                                         Thread::IdleTask task) {}
 
 void SimpleThreadScheduler::PostNonNestableIdleTask(
     const base::Location& location,
-    WebThread::IdleTask task) {
-}
+    Thread::IdleTask task) {}
 
 void SimpleThreadScheduler::AddRAILModeObserver(WebRAILModeObserver* observer) {
 }
@@ -44,6 +42,11 @@ SimpleThreadScheduler::V8TaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 SimpleThreadScheduler::CompositorTaskRunner() {
+  return base::ThreadTaskRunnerHandle::Get();
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+SimpleThreadScheduler::IPCTaskRunner() {
   return base::ThreadTaskRunnerHandle::Get();
 }
 

@@ -1,0 +1,8 @@
+{
+  "enableDemoMode": true,
+  "desc" : "Do not automatically proceed on Demo Preference screen so that we can set up test components correctly ",
+  "demoPreferencesNext": false,
+  "networkOfflineDemo": true,
+  "eulaAutoAccept": true,
+  "arcTosAutoAccept": true,
+}

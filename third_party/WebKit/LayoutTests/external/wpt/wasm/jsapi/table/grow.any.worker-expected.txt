@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
 FAIL Missing arguments assert_throws: function "() => table.grow()" did not throw
 PASS Branding
-PASS Basic
-PASS Reached maximum
-PASS Exceeded maximum
+FAIL Basic assert_throws: before: table.get(-1) function "() => table.get(-1)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
+FAIL Reached maximum assert_throws: before: table.get(-1) function "() => table.get(-1)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
+FAIL Exceeded maximum assert_throws: before: table.get(-1) function "() => table.get(-1)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
 FAIL Out-of-range argument: undefined assert_throws: function "() => table.grow(value)" did not throw
 FAIL Out-of-range argument: NaN assert_throws: function "() => table.grow(value)" did not throw
 FAIL Out-of-range argument: Infinity assert_throws: function "() => table.grow(value)" threw object "RangeError: WebAssembly.Table.grow(): maximum table size exceeded" ("RangeError") expected object "TypeError" ("TypeError")
@@ -13,5 +13,6 @@ FAIL Out-of-range argument: 4294967296 assert_throws: function "() => table.grow
 FAIL Out-of-range argument: 68719476736 assert_throws: function "() => table.grow(value)" threw object "RangeError: WebAssembly.Table.grow(): maximum table size exceeded" ("RangeError") expected object "TypeError" ("TypeError")
 FAIL Out-of-range argument: "0x100000000" assert_throws: function "() => table.grow(value)" threw object "RangeError: WebAssembly.Table.grow(): maximum table size exceeded" ("RangeError") expected object "TypeError" ("TypeError")
 FAIL Out-of-range argument: object "[object Object]" assert_throws: function "() => table.grow(value)" threw object "RangeError: WebAssembly.Table.grow(): maximum table size exceeded" ("RangeError") expected object "TypeError" ("TypeError")
+FAIL Stray argument assert_throws: before: table.get(-1) function "() => table.get(-1)" threw object "RangeError: WebAssembly.Table.get(): index out of bounds" ("RangeError") expected object "TypeError" ("TypeError")
 Harness: the test ran to completion.
 

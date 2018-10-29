@@ -10,13 +10,13 @@ import org.chromium.chrome.browser.snackbar.SnackbarManager;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 /**
- * Trusted Web Activities and unbound WebAPKs are part of Chrome. They have access to cookies and
- * report metrics the same way as the rest of Chrome. However, there is no UI indicating they are
- * running in Chrome. For privacy purposes we show a Snackbar based privacy disclosure that the
- * activity is running as part of Chrome. This occurs once per app installation, but will appear
- * again if Chrome's storage is cleared. The Snackbar must be acknowledged in order to be dismissed
- * and should remain onscreen as long as the app is open. It should remain active even across
- * pause/resume and should show the next time the app is opened if it hasn't been acknowledged.
+ * Unbound WebAPKs are part of Chrome. They have access to cookies and report metrics the same way
+ * as the rest of Chrome. However, there is no UI indicating they are running in Chrome. For privacy
+ * purposes we show a Snackbar based privacy disclosure that the activity is running as part of
+ * Chrome. This occurs once per app installation, but will appear again if Chrome's storage is
+ * cleared. The Snackbar must be acknowledged in order to be dismissed and should remain onscreen
+ * as long as the app is open. It should remain active even across pause/resume and should show the
+ * next time the app is opened if it hasn't been acknowledged.
  */
 public class WebappDisclosureSnackbarController implements SnackbarManager.SnackbarController {
     /**
@@ -55,7 +55,7 @@ public class WebappDisclosureSnackbarController implements SnackbarManager.Snack
                                     this, Snackbar.TYPE_PERSISTENT,
                                     Snackbar.UMA_WEBAPK_PRIVACY_DISCLOSURE)
                             .setAction(
-                                    activity.getResources().getString(R.string.ok_got_it), storage)
+                                    activity.getResources().getString(R.string.ok), storage)
                             .setSingleLine(false));
         }
     }
@@ -71,19 +71,11 @@ public class WebappDisclosureSnackbarController implements SnackbarManager.Snack
         if (!storage.shouldShowDisclosure()) {
             return false;
         }
-        int activityType = activity.getActivityType();
-        // Show for TWAs.
-        if (activityType == WebappActivity.ActivityType.TWA) {
-            return true;
-        }
+
+        // This will be null for Webapps or bound WebAPKs.
         String packageName = activity.getNativeClientPackageName();
         // Show for unbound WebAPKs.
-        if (activityType == WebappActivity.ActivityType.WEBAPK
-                && (packageName != null
-                           && !packageName.startsWith(WebApkConstants.WEBAPK_PACKAGE_PREFIX))) {
-            return true;
-        }
-        // Webapps or bound WebAPKs.
-        return false;
+        return packageName != null
+                && !packageName.startsWith(WebApkConstants.WEBAPK_PACKAGE_PREFIX);
     }
 }

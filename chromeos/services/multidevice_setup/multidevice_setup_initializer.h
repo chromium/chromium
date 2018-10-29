@@ -22,15 +22,12 @@ class GcmDeviceInfoProvider;
 
 namespace chromeos {
 
-namespace secure_channel {
-class SecureChannelClient;
-}  // namespace secure_channel
-
 namespace multidevice_setup {
 
 class AndroidSmsAppHelperDelegate;
 class AndroidSmsPairingStateTracker;
 class AuthTokenValidator;
+class OobeCompletionTracker;
 
 // Initializes the MultiDeviceSetup service. This class is responsible for
 // waiting for asynchronous initialization steps to complete before creating
@@ -47,8 +44,8 @@ class MultiDeviceSetupInitializer
     virtual std::unique_ptr<MultiDeviceSetupBase> BuildInstance(
         PrefService* pref_service,
         device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client,
         AuthTokenValidator* auth_token_validator,
+        OobeCompletionTracker* oobe_completion_tracker,
         std::unique_ptr<AndroidSmsAppHelperDelegate>
             android_sms_app_helper_delegate,
         std::unique_ptr<AndroidSmsPairingStateTracker>
@@ -62,11 +59,31 @@ class MultiDeviceSetupInitializer
   ~MultiDeviceSetupInitializer() override;
 
  private:
+  // Used for both SetHostDevice() and SetHostDeviceWithoutAuthToken().
+  struct SetHostDeviceArgs {
+    // For SetHostDevice().
+    SetHostDeviceArgs(const std::string& host_device_id,
+                      const std::string& auth_token,
+                      SetHostDeviceCallback callback);
+
+    // For SetHostDeviceWithoutAuthToken().
+    SetHostDeviceArgs(
+        const std::string& host_device_id,
+        mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback);
+
+    ~SetHostDeviceArgs();
+
+    std::string host_device_id;
+    // Null for SetHostDeviceWithoutAuthToken().
+    base::Optional<std::string> auth_token;
+    base::OnceCallback<void(bool)> callback;
+  };
+
   MultiDeviceSetupInitializer(
       PrefService* pref_service,
       device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
       AuthTokenValidator* auth_token_validator,
+      OobeCompletionTracker* oobe_completion_tracker,
       std::unique_ptr<AndroidSmsAppHelperDelegate>
           android_sms_app_helper_delegate,
       std::unique_ptr<AndroidSmsPairingStateTracker>
@@ -95,6 +112,12 @@ class MultiDeviceSetupInitializer
       mojom::EventTypeForDebugging type,
       TriggerEventForDebuggingCallback callback) override;
 
+  // MultiDeviceSetupBase:
+  void SetHostDeviceWithoutAuthToken(
+      const std::string& host_device_id,
+      mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback)
+      override;
+
   // device_sync::DeviceSyncClient::Observer:
   void OnReady() override;
 
@@ -102,14 +125,14 @@ class MultiDeviceSetupInitializer
 
   PrefService* pref_service_;
   device_sync::DeviceSyncClient* device_sync_client_;
-  secure_channel::SecureChannelClient* secure_channel_client_;
   AuthTokenValidator* auth_token_validator_;
+  OobeCompletionTracker* oobe_completion_tracker_;
   std::unique_ptr<AndroidSmsAppHelperDelegate> android_sms_app_helper_delegate_;
   std::unique_ptr<AndroidSmsPairingStateTracker>
       android_sms_pairing_state_tracker_;
   const cryptauth::GcmDeviceInfoProvider* gcm_device_info_provider_;
 
-  std::unique_ptr<mojom::MultiDeviceSetup> multidevice_setup_impl_;
+  std::unique_ptr<MultiDeviceSetupBase> multidevice_setup_impl_;
 
   // If API functions are called before initialization is complete, their
   // parameters are cached here. Once asynchronous initialization is complete,
@@ -127,11 +150,11 @@ class MultiDeviceSetupInitializer
   std::vector<GetFeatureStatesCallback> pending_get_feature_states_args_;
   std::vector<RetrySetHostNowCallback> pending_retry_set_host_args_;
 
-  // Special case: for SetHostDevice() and RemoveHostDevice(), only keep track
-  // of the most recent call. Since each call to either of these functions
-  // overwrites the previous call, only one needs to be passed.
-  base::Optional<std::tuple<std::string, std::string, SetHostDeviceCallback>>
-      pending_set_host_args_;
+  // Special case: for SetHostDevice(), SetHostDeviceWithoutAuthToken(), and
+  // RemoveHostDevice(), only keep track of the most recent call. Since each
+  // call to either of these functions overwrites the previous call, only one
+  // needs to be passed.
+  base::Optional<SetHostDeviceArgs> pending_set_host_args_;
   bool pending_should_remove_host_device_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupInitializer);

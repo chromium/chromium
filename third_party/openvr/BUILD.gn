@@ -2,6 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("openvr_headers") {
+  sources = [
+    "src/headers/openvr.h",
+    "src/headers/openvr_capi.h",
+    "src/headers/openvr_driver.h",
+    "src/src/ivrclientcore.h",
+    "src/src/vrcommon/dirtools_public.h",
+    "src/src/vrcommon/envvartools_public.h",
+    "src/src/vrcommon/hmderrors_public.h",
+    "src/src/vrcommon/pathtools_public.h",
+    "src/src/vrcommon/sharedlibtools_public.h",
+    "src/src/vrcommon/strtools_public.h",
+    "src/src/vrcommon/vrpathregistry_public.h",
+  ]
+}
+
 component("openvr") {
   output_name = "openvr_api"
 
@@ -20,15 +36,29 @@ component("openvr") {
   ]
 
   sources = [
-    "src/src/jsoncpp.cpp",
+    "src/headers/openvr.h",
+    "src/headers/openvr_capi.h",
+    "src/headers/openvr_driver.h",
+    "src/src/ivrclientcore.h",
     "src/src/openvr_api_public.cpp",
     "src/src/vrcommon/dirtools_public.cpp",
+    "src/src/vrcommon/dirtools_public.h",
     "src/src/vrcommon/envvartools_public.cpp",
+    "src/src/vrcommon/envvartools_public.h",
     "src/src/vrcommon/hmderrors_public.cpp",
+    "src/src/vrcommon/hmderrors_public.h",
     "src/src/vrcommon/pathtools_public.cpp",
+    "src/src/vrcommon/pathtools_public.h",
     "src/src/vrcommon/sharedlibtools_public.cpp",
+    "src/src/vrcommon/sharedlibtools_public.h",
     "src/src/vrcommon/strtools_public.cpp",
+    "src/src/vrcommon/strtools_public.h",
     "src/src/vrcommon/vrpathregistry_public.cpp",
+    "src/src/vrcommon/vrpathregistry_public.h",
+  ]
+
+  public_deps = [
+    "//third_party/jsoncpp",
   ]
 
   if (target_cpu == "x64" && is_win) {
@@ -38,7 +68,7 @@ component("openvr") {
   include_dirs = [
     "src/headers",
     "src/src",
-    "src/src/json",
     "src/src/vrcommon",
+    "//third_party/jsoncpp/source/include",
   ]
 }

@@ -6,7 +6,7 @@
 selection_test(
     '<iframe></iframe>',
     selection => {
-        assert_exists(window, 'textInputController',
+        assert_own_property(window, 'textInputController',
                 'this test requires window.textInputController.');
         const document = selection.document;
         const iframe = document.querySelector('iframe');

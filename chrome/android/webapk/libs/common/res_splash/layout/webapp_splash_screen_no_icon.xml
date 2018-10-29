@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<!-- Unlike with the other two splash screen layouts, this one shows no image and the BOTTOM of
+     the TextView is shifted upward, not its center.  This is implemented by centering a Space
+     View in the center of the screen that is twice the height of the required spacing and then
+     making the TextView sit above that. -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/webapp_splash_screen_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Space
+        android:id="@+id/webapp_splash_space"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/webapp_splash_offset"
+        android:layout_centerInParent="true"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/webapp_splash_screen_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/webapp_splash_space"
+        android:layout_centerHorizontal="true"
+        style="@style/WebappSplashScreenTextTheme" />
+
+</RelativeLayout>

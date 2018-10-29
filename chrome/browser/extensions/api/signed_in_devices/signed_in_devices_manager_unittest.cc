@@ -27,8 +27,8 @@ TEST(SignedInDevicesManager, UpdateListener) {
   std::unique_ptr<TestingProfile> profile(new TestingProfile());
   SigninManagerFactory::GetForProfile(profile.get())->
       SetAuthenticatedAccountInfo("gaia_id", "foo");
-  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(profile.get(),
-                                                              nullptr);
+  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+      profile.get(), BrowserContextKeyedServiceFactory::TestingFactory());
   SignedInDevicesManager manager(profile.get());
 
   EventListenerInfo info(api::signed_in_devices::OnDeviceInfoChange::kEventName,

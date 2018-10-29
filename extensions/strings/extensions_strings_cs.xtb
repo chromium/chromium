@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">Čtení soukromého klíče se nezdařilo.</translation>
 <translation id="6391538222494443604">Vstupní adresář musí existovat.</translation>
 <translation id="641087317769093025">Rozšíření se nepodařilo rozbalit</translation>
+<translation id="6413453408918378296">Ikona není dostatečně viditelná: <ph name="ICON" />.</translation>
 <translation id="6542618148162044354">Aplikace <ph name="APP_NAME" /> žádá o přístup k jednomu nebo více z vašich zařízení:</translation>
 <translation id="657064425229075395">Nelze načíst skript pozadí <ph name="BACKGROUND_SCRIPT" />.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>

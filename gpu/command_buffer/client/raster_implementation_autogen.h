@@ -44,8 +44,6 @@ GLuint CreateImageCHROMIUM(ClientBuffer buffer,
 
 void DestroyImageCHROMIUM(GLuint image_id) override;
 
-void CompressedCopyTextureCHROMIUM(GLuint source_id, GLuint dest_id) override;
-
 void LoseContextCHROMIUM(GLenum current, GLenum other) override;
 
 void GenSyncTokenCHROMIUM(GLbyte* sync_token) override;
@@ -104,7 +102,5 @@ void TraceBeginCHROMIUM(const char* category_name,
 void TraceEndCHROMIUM() override;
 
 void SetActiveURLCHROMIUM(const char* url) override;
-
-void ResetActiveURLCHROMIUM() override;
 
 #endif  // GPU_COMMAND_BUFFER_CLIENT_RASTER_IMPLEMENTATION_AUTOGEN_H_

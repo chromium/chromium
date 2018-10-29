@@ -97,43 +97,29 @@ chrome.test.runTests([
   // Tests chrome.fileManagerPrivate.searchDrive method.
   function driveSearch() {
     var query = 'empty';
-    var expectedEntries = [
-      {path: '/root/test_dir/empty_test_dir', type: 'dir'},
-      {path: '/root/test_dir/empty_test_file.foo', type: 'file'},
-    ];
-
-    function runNextQuery(entries, nextFeed) {
-      chrome.test.assertFalse(!entries);
-
-      // Each search query should return exactly one result (this should be
-      // ensured by Chrome part of the test).
-      chrome.test.assertEq(1, entries.length);
-
-      var index = -1;
-      for (var i = 0; i < expectedEntries.length; ++i) {
-        if (expectedEntries[i].path === entries[0].fullPath)
-          index = i;
-      }
-      chrome.test.assertFalse(index === -1);
-
-      var verifyEntry = getEntryVerifier(expectedEntries[index].type);
-      chrome.test.assertFalse(!verifyEntry);
-      verifyEntry(entries[0], function() {
-        expectedEntries.splice(index, 1);
-
-        if (nextFeed === '') {
-          chrome.test.assertEq(0, expectedEntries.length);
-          chrome.test.succeed();
-          return;
-        }
-
-        chrome.fileManagerPrivate.searchDrive(
-            {query: query, nextFeed: nextFeed}, runNextQuery);
-      });
-    }
+    var expectedEntries = {
+      '/root/test_dir/empty_dir': 'dir',
+      '/root/test_dir/empty_file.foo': 'file',
+    };
 
     chrome.fileManagerPrivate.searchDrive(
-        {query: query, nextFeed: ''}, runNextQuery);
+        {query: query, nextFeed: ''},
+        chrome.test.callbackPass((entries, nextFeed) => {
+          chrome.test.assertFalse(!!nextFeed);
+          chrome.test.assertFalse(!entries);
+
+          // The search query should return exactly two results.
+          chrome.test.assertEq(2, entries.length);
+
+          var index = -1;
+          for (var i = 0; i < entries.length; ++i) {
+            var expectedType = expectedEntries[entries[i].fullPath];
+            chrome.test.assertTrue(!!expectedType);
+            var verifyEntry = getEntryVerifier(expectedType);
+            chrome.test.assertFalse(!verifyEntry);
+            verifyEntry(entries[i], chrome.test.callbackPass());
+          }
+        }));
   },
 
   // Tests chrome.fileManagerPrivate.searchDriveMetadata method.

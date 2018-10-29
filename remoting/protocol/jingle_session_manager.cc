@@ -128,7 +128,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
     return true;
   }
 
-  SessionsMap::iterator it = sessions_.find(message->sid);
+  auto it = sessions_.find(message->sid);
   if (it == sessions_.end()) {
     SendReply(std::move(stanza_copy), JingleMessageReply::INVALID_SID);
     return true;

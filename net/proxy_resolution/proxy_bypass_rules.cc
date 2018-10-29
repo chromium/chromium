@@ -160,7 +160,7 @@ ProxyBypassRules& ProxyBypassRules::operator=(const ProxyBypassRules& rhs) {
 }
 
 bool ProxyBypassRules::Matches(const GURL& url) const {
-  for (RuleList::const_iterator it = rules_.begin(); it != rules_.end(); ++it) {
+  for (auto it = rules_.begin(); it != rules_.end(); ++it) {
     if ((*it)->Matches(url))
       return true;
   }
@@ -213,9 +213,7 @@ bool ProxyBypassRules::AddRuleFromStringUsingSuffixMatching(
 
 std::string ProxyBypassRules::ToString() const {
   std::string result;
-  for (RuleList::const_iterator rule(rules_.begin());
-       rule != rules_.end();
-       ++rule) {
+  for (auto rule(rules_.begin()); rule != rules_.end(); ++rule) {
     result += (*rule)->ToString();
     result += ";";
   }
@@ -230,8 +228,7 @@ void ProxyBypassRules::AssignFrom(const ProxyBypassRules& other) {
   Clear();
 
   // Make a copy of the rules list.
-  for (RuleList::const_iterator it = other.rules_.begin();
-       it != other.rules_.end(); ++it) {
+  for (auto it = other.rules_.begin(); it != other.rules_.end(); ++it) {
     rules_.push_back((*it)->Clone());
   }
 }

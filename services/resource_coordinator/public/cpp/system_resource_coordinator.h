@@ -10,10 +10,10 @@
 
 namespace resource_coordinator {
 
-class SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT SystemResourceCoordinator
-    : public ResourceCoordinatorInterface<
-          mojom::SystemCoordinationUnitPtr,
-          mojom::SystemCoordinationUnitRequest> {
+class COMPONENT_EXPORT(SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP)
+    SystemResourceCoordinator : public ResourceCoordinatorInterface<
+                                    mojom::SystemCoordinationUnitPtr,
+                                    mojom::SystemCoordinationUnitRequest> {
  public:
   SystemResourceCoordinator(service_manager::Connector* connector);
   ~SystemResourceCoordinator() override;

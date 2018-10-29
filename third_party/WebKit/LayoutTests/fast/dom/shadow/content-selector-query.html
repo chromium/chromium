@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 </head>
 <body>
 <p>This test checks select attribute of content element is valid.</p>
@@ -12,16 +13,16 @@
 var container = document.getElementById("container");
 
 var content;
-function test(select, valid) {
+function runTest(select, valid) {
     content = document.createElement('content');
     if (select != null)
         content.setAttribute('select', select);
 
-    debug(select);
-    if (valid)
-        shouldBe("internals.isValidContentSelect(content)", "true");
-    else
-        shouldBe("internals.isValidContentSelect(content)", "false");
+    test(() => {
+      assert_own_property(window, 'internals',
+                    'This test requires internals.isValidContentSelect');
+      assert_equals(internals.isValidContentSelect(content), valid);
+    }, `${select} ${valid}`);
 }
 
 var dataOfValidCases = [
@@ -53,19 +54,15 @@ var dataOfInvalidCases = [
 ];
 
 function doTest() {
-    if (!window.internals)
-        return;
-
     for (var i = 0; i < dataOfValidCases.length; ++i) {
-        test(dataOfValidCases[i], true);
+        runTest(dataOfValidCases[i], true);
     }
     for (var i = 0; i < dataOfInvalidCases.length; ++i) {
-        test(dataOfInvalidCases[i], false);
+        runTest(dataOfInvalidCases[i], false);
     }
 }
 
 doTest();
-var successfullyParsed = true;
 </script>
 </body>
 </html>

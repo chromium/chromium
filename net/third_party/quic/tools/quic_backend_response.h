@@ -6,7 +6,7 @@
 #define NET_THIRD_PARTY_QUIC_TOOLS_QUIC_BACKEND_RESPONSE_H_
 
 #include "net/third_party/quic/core/http/spdy_utils.h"
-#include "net/third_party/quic/platform/api/quic_url.h"
+#include "net/third_party/quic/tools/quic_url.h"
 
 namespace quic {
 

@@ -1,6 +1,4 @@
-rouslan@chromium.org
-mathp@chromium.org
-gogerald@chromium.org
+file://components/payments/OWNERS
 
 per-file JourneyLogger.java=sebsg@chromium.org
 per-file PaymentRequestMetrics.java=sebsg@chromium.org

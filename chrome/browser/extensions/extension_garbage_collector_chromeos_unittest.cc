@@ -33,7 +33,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/manifest_constants.h"
 #include "extensions/common/value_builder.h"
 #include "ppapi/buildflags/buildflags.h"
 
@@ -117,11 +116,11 @@ class ExtensionGarbageCollectorChromeOSUnitTest
                                                  std::move(version_info));
   }
 
-  scoped_refptr<Extension> CreateExtension(const std::string& id,
-                                           const std::string& version,
-                                           const base::FilePath& path) {
+  scoped_refptr<const Extension> CreateExtension(const std::string& id,
+                                                 const std::string& version,
+                                                 const base::FilePath& path) {
     return ExtensionBuilder("test")
-        .SetManifestKey(manifest_keys::kVersion, version)
+        .SetVersion(version)
         .SetID(id)
         .SetPath(path)
         .SetLocation(Manifest::INTERNAL)
@@ -164,8 +163,8 @@ TEST_F(ExtensionGarbageCollectorChromeOSUnitTest, SharedExtensions) {
   CreateSharedExtensionPrefs(kExtensionId2, "1.0",
                              user_manager::StubAccountId().GetUserEmail(),
                              path_id2_1);
-  scoped_refptr<Extension> extension2 = CreateExtension(kExtensionId2, "1.0",
-                                                        path_id2_1);
+  scoped_refptr<const Extension> extension2 =
+      CreateExtension(kExtensionId2, "1.0", path_id2_1);
   GetExtensionPrefs()->SetDelayedInstallInfo(
       extension2.get(),
       Extension::ENABLED,

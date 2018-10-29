@@ -31,6 +31,8 @@ enum SdkVersion {
   SDK_VERSION_NOUGAT = 24,
   SDK_VERSION_NOUGAT_MR1 = 25,
   SDK_VERSION_OREO = 26,
+  SDK_VERSION_O_MR1 = 27,
+  SDK_VERSION_P = 28,
 };
 
 // BuildInfo is a singleton class that stores android build and device
@@ -120,8 +122,6 @@ class BASE_EXPORT BuildInfo {
     return sdk_int_;
   }
 
-  bool is_at_least_p() const { return is_at_least_p_; }
-
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -154,7 +154,6 @@ class BASE_EXPORT BuildInfo {
   const char* const resources_version_;
   // Not needed by breakpad.
   const std::string extracted_file_suffix_;
-  const int is_at_least_p_;
 
   DISALLOW_COPY_AND_ASSIGN(BuildInfo);
 };

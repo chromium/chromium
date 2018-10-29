@@ -94,13 +94,14 @@
 
         <include layout="@layout/data_usage_breakdown" />
 
-        <Button
+        <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/data_reduction_reset_statistics"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="24dp"
-            android:text="@string/data_reduction_usage_reset_statistics_button" />
+            android:text="@string/data_reduction_usage_reset_statistics_button"
+            style="@style/TextButton" />
 
     </LinearLayout>
 

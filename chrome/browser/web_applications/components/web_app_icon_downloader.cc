@@ -73,9 +73,7 @@ WebAppIconDownloader::GetFaviconURLsFromWebContents() {
 void WebAppIconDownloader::FetchIcons(
     const std::vector<content::FaviconURL>& favicon_urls) {
   std::vector<GURL> urls;
-  for (std::vector<content::FaviconURL>::const_iterator it =
-           favicon_urls.begin();
-       it != favicon_urls.end(); ++it) {
+  for (auto it = favicon_urls.begin(); it != favicon_urls.end(); ++it) {
     if (it->icon_type != content::FaviconURL::IconType::kInvalid)
       urls.push_back(it->icon_url);
   }
@@ -85,8 +83,7 @@ void WebAppIconDownloader::FetchIcons(
 void WebAppIconDownloader::FetchIcons(const std::vector<GURL>& urls) {
   // Download icons; put their download ids into |in_progress_requests_| and
   // their urls into |processed_urls_|.
-  for (std::vector<GURL>::const_iterator it = urls.begin();
-       it != urls.end(); ++it) {
+  for (auto it = urls.begin(); it != urls.end(); ++it) {
     // Only start the download if the url hasn't been processed before.
     if (processed_urls_.insert(*it).second)
       in_progress_requests_.insert(DownloadImage(*it));
@@ -127,7 +124,8 @@ void WebAppIconDownloader::DidDownloadFavicon(
 // content::WebContentsObserver overrides:
 void WebAppIconDownloader::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+  if (!navigation_handle->IsInMainFrame() ||
+      !navigation_handle->HasCommitted() || navigation_handle->IsSameDocument())
     return;
 
   // Clear all pending requests.

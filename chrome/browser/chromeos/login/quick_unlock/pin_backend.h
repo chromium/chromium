@@ -72,6 +72,11 @@ class PinBackend {
                        const Key& key,
                        BoolCallback result);
 
+  // Returns true if the cryptohome backend should be used. Sometimes the prefs
+  // backend should be used even when cryptohome is available, ie, when there is
+  // an non-migrated PIN key.
+  bool ShouldUseCryptohome(const AccountId& account_id);
+
   // Resets any cached state for testing purposes.
   static void ResetForTesting();
 
@@ -82,11 +87,6 @@ class PinBackend {
   // Called when a migration attempt has completed. If |success| is true the PIN
   // should be cleared from prefs.
   void OnPinMigrationAttemptComplete(Profile* profile, bool success);
-
-  // Returns true if the cryptohome backend should be used. Sometimes the prefs
-  // backend should be used even when cryptohome is available, ie, when there is
-  // an non-migrated PIN key.
-  bool ShouldUseCryptohome(const AccountId& account_id);
 
   // True if still trying to determine which backend should be used.
   bool resolving_backend_ = true;

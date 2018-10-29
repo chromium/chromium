@@ -85,6 +85,10 @@ class TestImporter(object):
             # Print out the full output when executive.run_command fails.
             self.host.executive.error_output_limit = None
 
+        if options.auto_update and options.auto_upload:
+            _log.error('--auto-upload and --auto-update cannot be used together.')
+            return 1
+
         if not self.checkout_is_okay():
             return 1
 
@@ -164,7 +168,7 @@ class TestImporter(object):
         self._commit_changes(commit_message)
         _log.info('Changes imported and committed.')
 
-        if not options.auto_update:
+        if not options.auto_upload and not options.auto_update:
             return 0
 
         self._upload_cl()
@@ -172,6 +176,9 @@ class TestImporter(object):
 
         if not self.update_expectations_for_cl():
             return 1
+
+        if not options.auto_update:
+            return 0
 
         if not self.run_commit_queue_for_cl():
             return 1
@@ -276,6 +283,9 @@ class TestImporter(object):
             '--ignore-exportable-commits', action='store_true',
             help='do not check for exportable commits that would be clobbered')
         parser.add_argument('-r', '--revision', help='target wpt revision')
+        parser.add_argument(
+            '--auto-upload', action='store_true',
+            help='upload a CL, update expectations, but do NOT trigger CQ')
         parser.add_argument(
             '--auto-update', action='store_true',
             help='upload a CL, update expectations, and trigger CQ')
@@ -564,7 +574,7 @@ class TestImporter(object):
 
         This is the same as invoking the `wpt-update-expectations` script.
         """
-        _log.info('Adding test expectations lines to LayoutTests/TestExpectations.')
+        _log.info('Adding test expectations lines to TestExpectations.')
         expectation_updater = WPTExpectationsUpdater(self.host)
         self.rebaselined_tests, self.new_test_expectations = expectation_updater.update_expectations()
 

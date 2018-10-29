@@ -8,9 +8,11 @@
 
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_delegate.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/uicolor_manualfill.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,6 +34,24 @@ const CGFloat kNavigationAreaSeparatorShadowWidth = 2;
 
 // The width of the navigation area / custom view separator asset.
 const CGFloat kNavigationAreaSeparatorWidth = 1;
+
+// The width for the white gradient UIImageView.
+constexpr CGFloat ManualFillGradientWidth = 44;
+
+// The margin for the white gradient UIImageView.
+constexpr CGFloat ManualFillGradientMargin = 14;
+
+// The spacing between the items in the navigation view.
+constexpr CGFloat ManualFillNavigationItemSpacing = 4;
+
+// The left content inset for the close button.
+constexpr CGFloat ManualFillCloseButtonLeftInset = 7;
+
+// The right content inset for the close button.
+constexpr CGFloat ManualFillCloseButtonRightInset = 15;
+
+// The height for the top and bottom sepparator lines.
+constexpr CGFloat ManualFillSeparatorHeight = 0.5;
 
 }  // namespace
 
@@ -81,39 +101,86 @@ const CGFloat kNavigationAreaSeparatorWidth = 1;
   UIView* customViewContainer = [[UIView alloc] init];
   customViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:customViewContainer];
-  UIView* navView = [[UIView alloc] init];
-  navView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addSubview:navView];
 
   [customViewContainer addSubview:customView];
   customView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(customViewContainer, customView);
 
-  UIView* navViewContent =
+  UIView* navigationView =
       [self viewForNavigationButtonsUsingDelegate:delegate];
-  [navView addSubview:navViewContent];
+  navigationView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addSubview:navigationView];
 
-    AddSameConstraints(navView, navViewContent);
+  id<LayoutGuideProvider> layoutGuide = SafeAreaLayoutGuideForView(self);
+  [NSLayoutConstraint activateConstraints:@[
+    [customViewContainer.topAnchor
+        constraintEqualToAnchor:layoutGuide.topAnchor],
+    [customViewContainer.bottomAnchor
+        constraintEqualToAnchor:layoutGuide.bottomAnchor],
+    [customViewContainer.leadingAnchor
+        constraintEqualToAnchor:layoutGuide.leadingAnchor],
+    [navigationView.trailingAnchor
+        constraintEqualToAnchor:layoutGuide.trailingAnchor],
+    [navigationView.topAnchor constraintEqualToAnchor:layoutGuide.topAnchor],
+    [navigationView.bottomAnchor
+        constraintEqualToAnchor:layoutGuide.bottomAnchor],
+  ]];
 
+  if (autofill::features::IsPasswordManualFallbackEnabled()) {
+    self.backgroundColor = UIColor.whiteColor;
+
+    UIImage* gradientImage = [[UIImage imageNamed:@"mf_gradient"]
+        resizableImageWithCapInsets:UIEdgeInsetsZero
+                       resizingMode:UIImageResizingModeStretch];
+    UIImageView* gradientView =
+        [[UIImageView alloc] initWithImage:gradientImage];
+    gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self insertSubview:gradientView belowSubview:navigationView];
+
+    UIView* topGrayLine = [[UIView alloc] init];
+    topGrayLine.backgroundColor = UIColor.cr_manualFillSeparatorColor;
+    topGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:topGrayLine];
+
+    UIView* bottomGrayLine = [[UIView alloc] init];
+    bottomGrayLine.backgroundColor = UIColor.cr_manualFillSeparatorColor;
+    bottomGrayLine.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:bottomGrayLine];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [topGrayLine.topAnchor constraintEqualToAnchor:self.topAnchor],
+      [topGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [topGrayLine.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+      [topGrayLine.heightAnchor
+          constraintEqualToConstant:ManualFillSeparatorHeight],
+
+      [bottomGrayLine.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+      [bottomGrayLine.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [bottomGrayLine.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor],
+      [bottomGrayLine.heightAnchor
+          constraintEqualToConstant:ManualFillSeparatorHeight],
+
+      [gradientView.topAnchor constraintEqualToAnchor:navigationView.topAnchor],
+      [gradientView.bottomAnchor
+          constraintEqualToAnchor:navigationView.bottomAnchor],
+      [gradientView.widthAnchor
+          constraintEqualToConstant:ManualFillGradientWidth],
+      [gradientView.trailingAnchor
+          constraintEqualToAnchor:navigationView.leadingAnchor
+                         constant:ManualFillGradientMargin],
+
+      [customViewContainer.trailingAnchor
+          constraintEqualToAnchor:navigationView.leadingAnchor],
+    ]];
+  } else {
     [[self class] addBackgroundImageInView:self
                              withImageName:@"autofill_keyboard_background"];
-
-    id<LayoutGuideProvider> layoutGuide = SafeAreaLayoutGuideForView(self);
-    [NSLayoutConstraint activateConstraints:@[
-      [customViewContainer.topAnchor
-          constraintEqualToAnchor:layoutGuide.topAnchor],
-      [customViewContainer.bottomAnchor
-          constraintEqualToAnchor:layoutGuide.bottomAnchor],
-      [customViewContainer.leadingAnchor
-          constraintEqualToAnchor:layoutGuide.leadingAnchor],
-      [customViewContainer.trailingAnchor
-          constraintEqualToAnchor:navView.leadingAnchor
-                         constant:kNavigationAreaSeparatorShadowWidth],
-      [navView.trailingAnchor
-          constraintEqualToAnchor:layoutGuide.trailingAnchor],
-      [navView.topAnchor constraintEqualToAnchor:layoutGuide.topAnchor],
-      [navView.bottomAnchor constraintEqualToAnchor:layoutGuide.bottomAnchor],
-    ]];
+    [customViewContainer.trailingAnchor
+        constraintEqualToAnchor:navigationView.leadingAnchor
+                       constant:kNavigationAreaSeparatorShadowWidth]
+        .active = YES;
+  }
 }
 
 #pragma mark -
@@ -133,6 +200,56 @@ UIImage* ButtonImage(NSString* name) {
 
 - (UIView*)viewForNavigationButtonsUsingDelegate:
     (id<FormInputAccessoryViewDelegate>)delegate {
+  if (autofill::features::IsPasswordManualFallbackEnabled()) {
+    UIButton* previousButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [previousButton setImage:[UIImage imageNamed:@"mf_arrow_up"]
+                    forState:UIControlStateNormal];
+    previousButton.tintColor = UIColor.cr_manualFillTintColor;
+    [previousButton addTarget:delegate
+                       action:@selector(selectPreviousElementWithButtonPress)
+             forControlEvents:UIControlEventTouchUpInside];
+    previousButton.enabled = NO;
+    NSString* previousButtonAccessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_PREVIOUS_FIELD);
+    [previousButton setAccessibilityLabel:previousButtonAccessibilityLabel];
+
+    UIButton* nextButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [nextButton setImage:[UIImage imageNamed:@"mf_arrow_down"]
+                forState:UIControlStateNormal];
+    nextButton.tintColor = UIColor.cr_manualFillTintColor;
+    [nextButton addTarget:delegate
+                   action:@selector(selectNextElementWithButtonPress)
+         forControlEvents:UIControlEventTouchUpInside];
+    nextButton.enabled = NO;
+    NSString* nextButtonAccessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_NEXT_FIELD);
+    [nextButton setAccessibilityLabel:nextButtonAccessibilityLabel];
+
+    UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    NSString* title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_INPUT_BAR_DONE);
+    [closeButton setTitle:title forState:UIControlStateNormal];
+    closeButton.tintColor = UIColor.cr_manualFillTintColor;
+    [closeButton addTarget:delegate
+                    action:@selector(closeKeyboardWithButtonPress)
+          forControlEvents:UIControlEventTouchUpInside];
+    closeButton.contentEdgeInsets = UIEdgeInsetsMake(
+        0, ManualFillCloseButtonLeftInset, 0, ManualFillCloseButtonRightInset);
+    NSString* closeButtonAccessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_HIDE_KEYBOARD);
+    [closeButton setAccessibilityLabel:closeButtonAccessibilityLabel];
+
+    [delegate fetchPreviousAndNextElementsPresenceWithCompletionHandler:^(
+                  BOOL hasPreviousElement, BOOL hasNextElement) {
+      previousButton.enabled = hasPreviousElement;
+      nextButton.enabled = hasNextElement;
+    }];
+
+    UIStackView* navigationView = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ previousButton, nextButton, closeButton ]];
+    navigationView.spacing = ManualFillNavigationItemSpacing;
+    return navigationView;
+  }
+
   UIView* navView = [[UIView alloc] init];
   navView.translatesAutoresizingMaskIntoConstraints = NO;
 

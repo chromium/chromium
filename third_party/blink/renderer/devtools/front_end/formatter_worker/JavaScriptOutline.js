@@ -13,7 +13,7 @@ FormatterWorker.javaScriptOutline = function(content) {
   try {
     ast = acorn.parse(content, {ranges: false, ecmaVersion: 8});
   } catch (e) {
-    ast = acorn.parse_dammit(content, {ranges: false, ecmaVersion: 8});
+    ast = acorn.loose.parse(content, {ranges: false, ecmaVersion: 8});
   }
 
   const textCursor = new TextUtils.TextCursor(content.computeLineEndings());

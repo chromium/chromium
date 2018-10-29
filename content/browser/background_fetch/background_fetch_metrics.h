@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_METRICS_H_
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_METRICS_H_
 
+#include "content/public/browser/background_fetch_delegate.h"
 #include "third_party/blink/public/platform/modules/background_fetch/background_fetch.mojom.h"
 
 namespace content {
@@ -38,7 +39,7 @@ void RecordBackgroundFetchUkmEvent(
     const SkBitmap& icon,
     blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
     int frame_tree_node_id,
-    bool has_permission);
+    BackgroundFetchPermission permission);
 
 }  // namespace background_fetch
 

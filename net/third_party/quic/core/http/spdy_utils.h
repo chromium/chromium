@@ -56,6 +56,13 @@ class QUIC_EXPORT_PRIVATE SpdyUtils {
   // which must be fully-qualified.
   static bool PopulateHeaderBlockFromUrl(const QuicString url,
                                          spdy::SpdyHeaderBlock* headers);
+
+  // Returns a canonical, valid URL for a PUSH_PROMISE with the specified
+  // ":scheme", ":authority", and ":path" header fields, or an empty
+  // string if the resulting URL is not valid or supported.
+  static QuicString GetPushPromiseUrl(QuicStringPiece scheme,
+                                      QuicStringPiece authority,
+                                      QuicStringPiece path);
 };
 
 }  // namespace quic

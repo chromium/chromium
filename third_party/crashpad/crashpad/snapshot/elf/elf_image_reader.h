@@ -149,6 +149,13 @@ class ElfImageReader {
   //! The load bias is the actual load address minus the preferred load address.
   VMOffset GetLoadBias() const { return load_bias_; }
 
+  //! \brief Determines the name of this object using `DT_SONAME`, if present.
+  //!
+  //! \param[out] name The name of this object, only valid if this method
+  //!     returns `true`.
+  //! \return `true` if a name was found for this object.
+  bool SoName(std::string* name);
+
   //! \brief Reads information from the dynamic symbol table about the symbol
   //!     identified by \a name.
   //!

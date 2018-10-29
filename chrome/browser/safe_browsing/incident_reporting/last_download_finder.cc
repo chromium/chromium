@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/safe_browsing/download_protection_util.h"
+#include "chrome/common/safe_browsing/download_type_util.h"
 #include "chrome/common/safe_browsing/file_type_policies.h"
 #include "components/history/core/browser/download_constants.h"
 #include "components/history/core/browser/history_service.h"
@@ -68,7 +68,7 @@ bool IsBinaryDownloadForCurrentOS(
 // Platform-specific types are relevant only for their own platforms.
 #if defined(OS_MACOSX)
   if (download_type == ClientDownloadRequest::MAC_EXECUTABLE ||
-      download_type == ClientDownloadRequest::INVALID_MAC_ARCHIVE)
+      download_type == ClientDownloadRequest::MAC_ARCHIVE_FAILED_PARSING)
     return true;
 #elif defined(OS_ANDROID)
   if (download_type == ClientDownloadRequest::ANDROID_APK)
@@ -92,7 +92,7 @@ bool IsBinaryDownloadForCurrentOS(
     return true;
   }
 
-  // The default return value of download_protection_util::GetDownloadType is
+  // The default return value of download_type_util::GetDownloadType is
   // ClientDownloadRequest::WIN_EXECUTABLE.
   return download_type == ClientDownloadRequest::WIN_EXECUTABLE;
 }
@@ -106,7 +106,7 @@ bool IsBinaryDownload(const history::DownloadRow& row) {
   return (policies->IsCheckedBinaryFile(row.target_path) &&
           !policies->IsArchiveFile(row.target_path) &&
           IsBinaryDownloadForCurrentOS(
-              download_protection_util::GetDownloadType(row.target_path)));
+              download_type_util::GetDownloadType(row.target_path)));
 }
 
 // Returns true if a download represented by a DownloadRow is not a binary file.
@@ -209,7 +209,7 @@ void PopulateDetailsFromRow(const history::DownloadRow& download,
   download_request->set_file_basename(
       download.target_path.BaseName().AsUTF8Unsafe());
   download_request->set_download_type(
-      download_protection_util::GetDownloadType(download.target_path));
+      download_type_util::GetDownloadType(download.target_path));
   std::string pref_locale = g_browser_process->local_state()->GetString(
       language::prefs::kApplicationLocale);
   language::ConvertToActualUILocale(&pref_locale);

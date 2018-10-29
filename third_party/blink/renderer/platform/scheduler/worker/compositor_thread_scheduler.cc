@@ -13,7 +13,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/platform/scheduler/child/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 
 namespace blink {
@@ -67,7 +67,7 @@ void CompositorThreadScheduler::InitImpl() {}
 
 void CompositorThreadScheduler::OnTaskCompleted(
     NonMainThreadTaskQueue* worker_task_queue,
-    const base::sequence_manager::TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   compositor_metrics_helper_.RecordTaskMetrics(worker_task_queue, task,
                                                task_timing);
@@ -98,6 +98,12 @@ CompositorThreadScheduler::V8TaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadScheduler::CompositorTaskRunner() {
+  NOTREACHED();
+  return nullptr;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+CompositorThreadScheduler::IPCTaskRunner() {
   NOTREACHED();
   return nullptr;
 }

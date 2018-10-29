@@ -24,10 +24,6 @@ class Identity;
 class ZygoteForkDelegate;
 }  // namespace service_manager
 
-namespace ui {
-class DataPack;
-}
-
 namespace content {
 
 class ContentBrowserClient;
@@ -62,10 +58,6 @@ class CONTENT_EXPORT ContentMainDelegate {
 
   // Called right before the process exits.
   virtual void ProcessExiting(const std::string& process_type) {}
-
-  // This loads the service manifest datapack, takes its ownership and returns
-  // the pointer to it.
-  virtual ui::DataPack* LoadServiceManifestDataPack();
 
 #if defined(OS_MACOSX)
   // Returns true if the process registers with the system monitor, so that we
@@ -129,10 +121,17 @@ class CONTENT_EXPORT ContentMainDelegate {
   // creating the main message loop.
   virtual void PreCreateMainMessageLoop() {}
 
-  // Allows the embedder to perform platform-specific initializatioion. For
-  // example, things that should be done right after TaskScheduler starts and
-  // the main MessageLoop was installed.
-  virtual void PostEarlyInitialization() {}
+  // Returns true if content should create field trials and initialize the
+  // FeatureList instance for this process. Default implementation returns true.
+  // Embedders that need to control when and/or how FeatureList should be
+  // created should override and return false.
+  virtual bool ShouldCreateFeatureList();
+
+  // Allows the embedder to perform its own initialization after content
+  // performed its own and already brought up MessageLoop, TaskScheduler, field
+  // tials and FeatureList (by default).
+  // |is_running_tests| indicates whether it is running in tests.
+  virtual void PostEarlyInitialization(bool is_running_tests) {}
 
  protected:
   friend class ContentClientInitializer;

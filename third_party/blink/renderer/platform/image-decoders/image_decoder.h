@@ -119,7 +119,7 @@ class PLATFORM_EXPORT ImageDecoder {
 
   enum AlphaOption { kAlphaPremultiplied, kAlphaNotPremultiplied };
   enum HighBitDepthDecodingOption {
-    // Decode everything to 8-8-8-8 pixel format (kN32 channel order).
+    // Decode everything to uint8 pixel format (kN32 channel order).
     kDefaultBitDepth,
     // Decode high bit depth images to half float pixel format.
     kHighBitDepthToHalfFloat

@@ -15,7 +15,7 @@ namespace base {
 constexpr TaskTraits traits = {MayBlock(), MayBlock()};
 #elif defined(NCTEST_TASK_TRAITS_EXTENSION_MULTIPLE_EXTENSION_TRAITS)  // [r"Multiple arguments of the same type were provided to the constructor of TaskTraits."]
 constexpr TaskTraits traits = {TestExtensionEnumTrait::kB, TestExtensionEnumTrait::kC};
-#elif defined(NCTEST_TASK_TRAITS_EXTENSION_INVALID_TYPE)  // [r"no matching function for call to 'MakeTaskTraitsExtension'"]
+#elif defined(NCTEST_TASK_TRAITS_EXTENSION_INVALID_TYPE)  // [r"no matching constructor for initialization of 'const base::TaskTraits'"]
 constexpr TaskTraits traits = {TestExtensionEnumTrait::kB, 123};
 #elif defined(NCTEST_TASK_TRAITS_EXTENSION_TOO_MUCH_DATA_FOR_STORAGE)  // [r"no matching constructor for initialization of 'base::TaskTraitsExtensionStorage'"]
 constexpr TaskTraitsExtensionStorage TestSerializeTaskTraitsWithTooMuchData() {

@@ -23,7 +23,7 @@ inline bool Is{{tag.interface}}(const {{namespace}}Element& element) {
   if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled())
     return false;
   {% endif %}
-  return element.HasTagName({{namespace}}Names::{{tag|symbol}}Tag);
+  return element.HasTagName({{cpp_namespace}}::{{tag|symbol}}Tag);
 }
 inline bool Is{{tag.interface}}(const {{namespace}}Element* element) {
   return element && Is{{tag.interface}}(*element);

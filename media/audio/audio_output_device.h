@@ -70,6 +70,7 @@
 #include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/audio/audio_device_thread.h"
 #include "media/audio/audio_output_ipc.h"
@@ -207,7 +208,8 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
   // guard to control stopping and starting the audio thread.
   base::Lock audio_thread_lock_;
   std::unique_ptr<AudioOutputDeviceThreadCallback> audio_callback_;
-  std::unique_ptr<AudioDeviceThread> audio_thread_;
+  std::unique_ptr<AudioDeviceThread> audio_thread_
+      GUARDED_BY(audio_thread_lock_);
 
   // Temporary hack to ignore OnStreamCreated() due to the user calling Stop()
   // so we don't start the audio thread pointing to a potentially freed

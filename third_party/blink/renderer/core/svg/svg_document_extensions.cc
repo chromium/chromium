@@ -140,9 +140,8 @@ void SVGDocumentExtensions::InvalidateSVGRootsWithRelativeLengthDescendents(
 }
 
 bool SVGDocumentExtensions::ZoomAndPanEnabled() const {
-  if (SVGSVGElement* svg = rootElement(*document_))
-    return svg->ZoomAndPanEnabled();
-  return false;
+  SVGSVGElement* svg = rootElement(*document_);
+  return !svg || svg->ZoomAndPanEnabled();
 }
 
 void SVGDocumentExtensions::StartPan(const FloatPoint& start) {

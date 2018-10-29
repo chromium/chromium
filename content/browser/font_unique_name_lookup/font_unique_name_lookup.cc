@@ -23,8 +23,6 @@
 
 namespace {
 
-using namespace ::icu_62;
-
 const char kProtobufFilename[] = "font_unique_name_table.pb";
 static const char* const kAndroidFontPaths[] = {"/system/fonts",
                                                 "/vendor/fonts"};
@@ -285,9 +283,9 @@ bool FontUniqueNameLookup::IndexFile(
                sfnt_name.encoding_id == TT_MAC_ID_ROMAN) {
       codepage_name = "macintosh";
     }
-    UnicodeString sfnt_name_unicode(reinterpret_cast<char*>(sfnt_name.string),
-                                    sfnt_name.string_len,
-                                    codepage_name.c_str());
+    icu::UnicodeString sfnt_name_unicode(
+        reinterpret_cast<char*>(sfnt_name.string), sfnt_name.string_len,
+        codepage_name.c_str());
     if (sfnt_name_unicode.isBogus())
       return false;
     // Firefox performs case insensitive matching for src: local().

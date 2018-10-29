@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Mit Chrome sparen Sie Zeit, da Sie Ihre Konten im Web verwenden können. In den Einstellungen haben Sie die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3345341804167540816">Chrome überall nutzen</translation>
-<translation id="3678774398092457402">Soll Chrome Ihr Passwort für diese Website speichern?</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Sie stellen die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Ihre bestehenden Chrome-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden Ihre Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943">Die <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> können jederzeit angepasst werden. Google kann die Inhalte der von Ihnen besuchten Websites, Browserinteraktionen und Browseraktivitäten nutzen, um Chrome und andere Google-Dienste wie Übersetzer, die Google-Suche und Anzeigen zu personalisieren.</translation>
 <translation id="5639704535586432836">Öffnen Sie "Einstellungen" &gt; "Datenschutz" &gt; "Kamera" &gt; "Google Chrome" und aktivieren Sie die Kamera.</translation>
 <translation id="5642200033778930880">Google Chrome kann die Kamera nicht im Modus "Geteilte Ansicht" nutzen</translation>
-<translation id="5703130498371792817">Gefällt Ihnen Chrome? <ph name="BEGIN_LINK" />Bewerten Sie diese App!<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Chrome-Tipp: Manche Schaltflächen wie "Zurück", "Weiter" und "Suche" befinden sich jetzt unten auf dem Bildschirm.</translation>
 <translation id="6036420186814142909">Google Chrome bietet Funktionen, mit denen Sie Ihre Internetdaten und die Ladezeit von Webseiten verwalten können.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Chrome-Nutzungsbedingungen</translation>
 <translation id="7165736900384873061">Google Chrome QR-Scanner nutzen</translation>
 <translation id="7172660552945675509">Tipp: <ph name="BEGIN_LINK" />Ziehen Sie Chrome in Ihr Dock<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome verwendet Face ID, um den autorisierten Zugriff auf Ihre Passwörter zu gewährleisten.</translation>
 <translation id="7265369419224458312">Greifen Sie hier auf die Tabs zu, die Sie auf Ihrem Computer geöffnet haben. Öffnen Sie dazu Chrome auf Ihrem Computer und wählen Sie im Menü "In Chrome anmelden…" aus.</translation>
 <translation id="728488472449859922">Google Chrome QR-Scanner aktivieren</translation>
 <translation id="7400722733683201933">Über Google Chrome</translation>

@@ -196,6 +196,4 @@ TEST_F(CustomElementUpgradeSorterTest, sorter_shadow) {
   EXPECT_EQ(d, elements[2].Get());
 }
 
-// TODO(kochi): Add test cases which uses HTML imports.
-
 }  // namespace blink

@@ -2,7 +2,6 @@ Tests border-start and border-end
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS testWidth("ltr", "border-inline-start-width: 10px; border-inline-start-style: solid") is 110
 PASS testWidth("ltr", "border-inline-end-width: 20px; border-inline-end-style:  solid") is 120
 PASS testWidth("rtl", "border-inline-start-width: 10px; border-inline-start-style:  solid") is 110

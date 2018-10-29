@@ -95,6 +95,7 @@ bool EnumTraits<blink::mojom::CredentialManagerError,
     case blink::mojom::CredentialManagerError::CREDENTIAL_NOT_RECOGNIZED:
     case blink::mojom::CredentialManagerError::NOT_IMPLEMENTED:
     case blink::mojom::CredentialManagerError::NOT_FOCUSED:
+    case blink::mojom::CredentialManagerError::RESIDENT_CREDENTIALS_UNSUPPORTED:
     case blink::mojom::CredentialManagerError::UNKNOWN:
       *output = password_manager::CredentialManagerError::UNKNOWN;
       return true;

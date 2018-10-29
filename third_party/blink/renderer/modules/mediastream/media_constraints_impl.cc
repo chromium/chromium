@@ -45,7 +45,7 @@
 
 namespace blink {
 
-namespace MediaConstraintsImpl {
+namespace media_constraints_impl {
 
 // A naked value is treated as an "ideal" value in the basic constraints,
 // but as an exact value in "advanced" constraints.
@@ -966,5 +966,5 @@ void ConvertConstraints(const WebMediaConstraints& input,
     output.setAdvanced(advanced_vector);
 }
 
-}  // namespace MediaConstraintsImpl
+}  // namespace media_constraints_impl
 }  // namespace blink

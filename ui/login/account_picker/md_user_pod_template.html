@@ -4,7 +4,10 @@
   </template>
 </dom-module>
 
-<style is="custom-style" include="user-pod-template-shared-styles"></style>
+<custom-style>
+  <style is="custom-style" include="user-pod-template-shared-styles"></style>
+</custom-style>
+
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 
 <iron-iconset-svg name="user-pod" size="24">
@@ -50,7 +53,8 @@
     </div>
 <if expr="chromeos">
     <div class="pin-container pin-disabled pin-tag">
-      <pin-keyboard enable-password hide-input></pin-keyboard>
+      <pin-keyboard enable-password hide-input enable-placeholder>
+      </pin-keyboard>
     </div>
 </if>
     <div class="main-pane">

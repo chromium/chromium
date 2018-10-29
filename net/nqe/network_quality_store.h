@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "net/base/net_export.h"
 #include "net/nqe/cached_network_quality.h"
 #include "net/nqe/effective_connection_type.h"
@@ -97,7 +97,7 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
   base::ObserverList<NetworkQualitiesCacheObserver>::Unchecked
       network_qualities_cache_observer_list_;
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NetworkQualityStore> weak_ptr_factory_;
 

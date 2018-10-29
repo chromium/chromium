@@ -53,8 +53,7 @@ SkBitmap MakeBitmap(SkColor color, int w, int h) {
 
 SkColor GetColor(const gfx::ImageSkia& image, float scale,
                  int x = -1, int y = -1) {
-  const SkBitmap& bitmap =
-      image.GetRepresentation(scale).sk_bitmap();
+  const SkBitmap& bitmap = image.GetRepresentation(scale).GetBitmap();
   if (x == -1)
     x = bitmap.width() / 2;
   if (y == -1)

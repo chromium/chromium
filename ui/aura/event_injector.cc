@@ -13,24 +13,6 @@
 #include "ui/events/event.h"
 #include "ui/events/event_sink.h"
 
-namespace {
-std::unique_ptr<ui::Event> MapEvent(const ui::Event& event) {
-  if (event.IsScrollEvent()) {
-    return std::make_unique<ui::PointerEvent>(
-        ui::MouseWheelEvent(*event.AsScrollEvent()));
-  }
-
-  if (event.IsMouseEvent())
-    return std::make_unique<ui::PointerEvent>(*event.AsMouseEvent());
-
-  if (event.IsTouchEvent())
-    return std::make_unique<ui::PointerEvent>(*event.AsTouchEvent());
-
-  return ui::Event::Clone(event);
-}
-
-}  // namespace
-
 namespace aura {
 
 EventInjector::EventInjector() {}
@@ -60,7 +42,8 @@ ui::EventDispatchDetails EventInjector::Inject(WindowTreeHost* host,
     env->window_tree_client_->connector()->BindInterface(
         ws::mojom::kServiceName, &event_injector_);
   }
-  event_injector_->InjectEventNoAck(host->GetDisplayId(), MapEvent(*event));
+  event_injector_->InjectEventNoAck(host->GetDisplayId(),
+                                    ui::Event::Clone(*event));
   return ui::EventDispatchDetails();
 }
 

@@ -121,22 +121,6 @@ public class WebappDisclosureSnackbarControllerTest {
 
     @Test
     @Feature({"Webapps"})
-    public void testTrustedWebActivityShowDisclosure() {
-        String packageName = "twa";
-        doReturn(packageName).when(mActivity).getNativeClientPackageName();
-        doReturn(WebappActivity.ActivityType.TWA).when(mActivity).getActivityType();
-
-        verifyShownThenDismissedOnNewCreateStorage(packageName);
-    }
-
-    @Test
-    @Feature({"Webapps"})
-    public void testTrustedWebActivityNoDisclosureOnExistingStorage() {
-        verifyNotShownOnExistingStorageWithoutShouldShowDisclosure("twa");
-    }
-
-    @Test
-    @Feature({"Webapps"})
     public void testBoundWebApkNoDisclosure() {
         String packageName = WebApkConstants.WEBAPK_PACKAGE_PREFIX + ".bound";
         doReturn(packageName).when(mActivity).getNativeClientPackageName();
@@ -149,7 +133,7 @@ public class WebappDisclosureSnackbarControllerTest {
     @Feature({"Webapps"})
     public void testWebappNoDisclosure() {
         String packageName = "webapp";
-        doReturn(packageName).when(mActivity).getNativeClientPackageName();
+        // Don't set a client package name, it should be null for Webapps.
         doReturn(WebappActivity.ActivityType.WEBAPP).when(mActivity).getActivityType();
 
         verifyNeverShown(packageName);

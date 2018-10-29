@@ -77,7 +77,7 @@ void MediaControlDownloadButtonElement::DefaultEventHandler(Event& event) {
         UserMetricsAction("Media.Controls.Download"));
     ResourceRequest request(url);
     request.SetSuggestedFilename(MediaElement().title());
-    request.SetRequestContext(WebURLRequest::kRequestContextDownload);
+    request.SetRequestContext(mojom::RequestContextType::DOWNLOAD);
     request.SetRequestorOrigin(SecurityOrigin::Create(GetDocument().Url()));
     GetDocument().GetFrame()->Client()->DownloadURL(
         request, DownloadCrossOriginRedirects::kFollow);

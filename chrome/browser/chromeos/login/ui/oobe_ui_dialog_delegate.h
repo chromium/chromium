@@ -13,12 +13,12 @@
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/chromeos/login/screens/error_screen.h"
+#include "chrome/browser/ui/ash/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/tablet_mode_client_observer.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/display/display_observer.h"
-#include "ui/keyboard/keyboard_controller_observer.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -59,7 +59,7 @@ class OobeUIDialogDelegate : public display::DisplayObserver,
                              public TabletModeClientObserver,
                              public ui::WebDialogDelegate,
                              public content::WebContentsDelegate,
-                             public keyboard::KeyboardControllerObserver,
+                             public ChromeKeyboardControllerClient::Observer,
                              public CaptivePortalWindowProxy::Observer {
  public:
   explicit OobeUIDialogDelegate(base::WeakPtr<LoginDisplayHostMojo> controller);
@@ -94,7 +94,7 @@ class OobeUIDialogDelegate : public display::DisplayObserver,
 
   // content::WebContentsDelegate:
   bool TakeFocus(content::WebContents* source, bool reverse) override;
-  void HandleKeyboardEvent(
+  bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
 
@@ -123,8 +123,8 @@ class OobeUIDialogDelegate : public display::DisplayObserver,
   std::vector<ui::Accelerator> GetAccelerators() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
-  // keyboard::KeyboardControllerObserver:
-  void OnKeyboardVisibilityStateChanged(bool is_visible) override;
+  // ChromeKeyboardControllerClient::Observer:
+  void OnKeyboardVisibilityChanged(bool visible) override;
 
   // CaptivePortalWindowProxy::Observer:
   void OnBeforeCaptivePortalShown() override;
@@ -145,7 +145,8 @@ class OobeUIDialogDelegate : public display::DisplayObserver,
       this};
   ScopedObserver<TabletModeClient, TabletModeClientObserver>
       tablet_mode_observer_{this};
-  ScopedObserver<keyboard::KeyboardController, KeyboardControllerObserver>
+  ScopedObserver<ChromeKeyboardControllerClient,
+                 ChromeKeyboardControllerClient::Observer>
       keyboard_observer_{this};
   ScopedObserver<CaptivePortalWindowProxy, OobeUIDialogDelegate>
       captive_portal_observer_{this};

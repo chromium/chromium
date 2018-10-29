@@ -203,9 +203,12 @@ void XRDeviceImpl::GetImmersiveVRDisplayInfo(
     device::mojom::XRDevice::GetImmersiveVRDisplayInfoCallback callback) {
   BrowserXRRuntime* immersive_runtime =
       XRRuntimeManager::GetInstance()->GetImmersiveRuntime();
-  device::mojom::VRDisplayInfoPtr device_info =
-      immersive_runtime ? immersive_runtime->GetVRDisplayInfo() : nullptr;
-  std::move(callback).Run(std::move(device_info));
+  if (!immersive_runtime) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  immersive_runtime->InitializeAndGetDisplayInfo(std::move(callback));
 }
 
 void XRDeviceImpl::SetInFocusedFrame(bool in_focused_frame) {
@@ -262,6 +265,17 @@ void XRDeviceImpl::OnDeactivate(device::mojom::VRDisplayEventReason reason) {
   if (client_) {
     client_->OnDeactivate(reason);
   }
+}
+
+content::WebContents* XRDeviceImpl::GetWebContents() {
+  if (render_frame_host_ != nullptr) {
+    return content::WebContents::FromRenderFrameHost(render_frame_host_);
+  }
+
+  // We should only have a null render_frame_host_ for some unittests, for which
+  // we don't actually expect to get here.
+  NOTREACHED();
+  return nullptr;
 }
 
 bool XRDeviceImpl::IsSecureContextRequirementSatisfied() {

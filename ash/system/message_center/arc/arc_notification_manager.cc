@@ -7,13 +7,17 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/system/message_center/arc/arc_notification_delegate.h"
 #include "ash/system/message_center/arc/arc_notification_item_impl.h"
 #include "ash/system/message_center/arc/arc_notification_manager_delegate.h"
 #include "ash/system/message_center/arc/arc_notification_view.h"
+#include "base/command_line.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/arc/mojo_channel.h"
+#include "ui/message_center/lock_screen/lock_screen_controller.h"
+#include "ui/message_center/message_center_impl.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/views/message_view_factory.h"
 
@@ -25,6 +29,8 @@ using arc::mojom::ArcNotificationEvent;
 using arc::mojom::ArcNotificationPriority;
 using arc::mojom::ArcDoNotDisturbStatus;
 using arc::mojom::ArcDoNotDisturbStatusPtr;
+using arc::mojom::NotificationConfiguration;
+using arc::mojom::NotificationConfigurationPtr;
 using arc::mojom::NotificationsHost;
 using arc::mojom::NotificationsInstance;
 using arc::mojom::NotificationsInstancePtr;
@@ -142,6 +148,9 @@ void ArcNotificationManager::OnConnectionReady() {
 
   // Sync the initial quiet mode state with Android.
   SetDoNotDisturbStatusOnAndroid(message_center_->IsQuietMode());
+
+  // Set configuration variables for notifications on arc.
+  SetNotificationConfiguration();
 }
 
 void ArcNotificationManager::OnConnectionClosed() {
@@ -231,6 +240,62 @@ void ArcNotificationManager::OpenMessageCenter() {
 
 void ArcNotificationManager::CloseMessageCenter() {
   delegate_->HideMessageCenter();
+}
+
+void ArcNotificationManager::OnLockScreenSettingUpdated(
+    arc::mojom::ArcLockScreenNotificationSettingPtr setting) {
+  // TODO(yoshiki): sync the setting.
+}
+
+void ArcNotificationManager::ProcessUserAction(
+    arc::mojom::ArcNotificationUserActionDataPtr data) {
+  if (!data->defer_until_unlock) {
+    PerformUserAction(data->action_id);
+    return;
+  }
+
+  // TODO(yoshiki): remove the static cast after refactionring.
+  static_cast<message_center::MessageCenterImpl*>(message_center_)
+      ->lock_screen_controller()
+      ->DismissLockScreenThenExecute(
+          base::BindOnce(&ArcNotificationManager::PerformUserAction,
+                         weak_ptr_factory_.GetWeakPtr(), data->action_id),
+          base::BindOnce(&ArcNotificationManager::CancelUserAction,
+                         weak_ptr_factory_.GetWeakPtr(), data->action_id));
+}
+
+void ArcNotificationManager::PerformUserAction(uint32_t id) {
+  // TODO(yoshiki): Pass the event to the message center and handle the action
+  // in the NotificationDelegate::Click() for consistency with non-arc
+  // notifications.
+  auto* notifications_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      instance_owner_->holder(), PerformDeferredUserAction);
+
+  // On shutdown, the ARC channel may quit earlier than notifications.
+  if (!notifications_instance) {
+    VLOG(2) << "Trying to perform the defered operation, "
+               "but the ARC channel has already gone.";
+    return;
+  }
+
+  notifications_instance->PerformDeferredUserAction(id);
+
+  // TODO(yoshiki): open the message center and focus the target notification if
+  // the flag is set.
+}
+
+void ArcNotificationManager::CancelUserAction(uint32_t id) {
+  auto* notifications_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      instance_owner_->holder(), CancelDeferredUserAction);
+
+  // On shutdown, the ARC channel may quit earlier than notifications.
+  if (!notifications_instance) {
+    VLOG(2) << "Trying to cancel the defered operation, "
+               "but the ARC channel has already gone.";
+    return;
+  }
+
+  notifications_instance->CancelDeferredUserAction(id);
 }
 
 void ArcNotificationManager::OnNotificationRemoved(const std::string& key) {
@@ -457,6 +522,24 @@ void ArcNotificationManager::CancelLongPress(const std::string& key) {
   }
 
   notifications_instance->CancelLongPress(key);
+}
+
+void ArcNotificationManager::SetNotificationConfiguration() {
+  auto* notifications_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      instance_owner_->holder(), SetNotificationConfiguration);
+
+  if (!notifications_instance) {
+    VLOG(2) << "Trying to set notification expansion animations"
+            << ", but the ARC channel has already gone.";
+    return;
+  }
+
+  NotificationConfigurationPtr configuration = NotificationConfiguration::New();
+  configuration->expansion_animation =
+      ash::features::IsNotificationExpansionAnimationEnabled();
+
+  notifications_instance->SetNotificationConfiguration(
+      std::move(configuration));
 }
 
 }  // namespace ash

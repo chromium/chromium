@@ -112,6 +112,7 @@ CN=127.0.0.3
 DNS.1 = www.example.org
 DNS.2 = mail.example.org
 DNS.3 = mail.example.com
+DNS.4 = example.test
 
 [punycode_san]
 DNS.1 = xn--wgv71a119e.com

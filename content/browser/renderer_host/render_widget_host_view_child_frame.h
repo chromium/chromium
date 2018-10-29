@@ -67,10 +67,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id);
 #endif  // defined(USE_AURA)
 
-  bool OnMessageReceived(const IPC::Message& msg) override;
-
-  void OnIntrinsicSizingInfoChanged(blink::WebIntrinsicSizingInfo);
-
   // This functions registers single-use callbacks that want to be notified when
   // the next frame is swapped. The callback is triggered by
   // SubmitCompositorFrame, which is the appropriate time to request pixel
@@ -146,6 +142,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void UnlockMouse() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
+  base::TimeTicks GetLocalSurfaceIdAllocationTime() const override;
   void PreProcessTouchEvent(const blink::WebTouchEvent& event) override;
   viz::FrameSinkId GetRootFrameSinkId() override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
@@ -167,6 +164,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
   void OnRenderFrameMetadataChangedAfterActivation() override;
+  void UpdateIntrinsicSizingInfo(
+      const blink::WebIntrinsicSizingInfo& sizing_info) override;
 
   bool IsRenderWidgetHostViewChildFrame() override;
 
@@ -305,10 +304,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
 
-  void ProcessTouchpadPinchAckInRoot(const blink::WebGestureEvent& event,
-                                     InputEventAckState ack_result);
-  void ForwardTouchpadPinchIfNecessary(const blink::WebGestureEvent& event,
-                                       InputEventAckState ack_result) override;
+  void ProcessTouchpadZoomEventAckInRoot(const blink::WebGestureEvent& event,
+                                         InputEventAckState ack_result);
+  void ForwardTouchpadZoomEventIfNecessary(
+      const blink::WebGestureEvent& event,
+      InputEventAckState ack_result) override;
 
   std::vector<base::OnceClosure> frame_swapped_callbacks_;
 

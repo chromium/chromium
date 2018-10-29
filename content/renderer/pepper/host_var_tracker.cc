@@ -63,8 +63,8 @@ void HostVarTracker::AddV8ObjectVar(V8ObjectVar* object_var) {
 void HostVarTracker::RemoveV8ObjectVar(V8ObjectVar* object_var) {
   CheckThreadingPreconditions();
   v8::HandleScope handle_scope(object_var->instance()->GetIsolate());
-  ObjectMap::iterator it = GetForV8Object(
-      object_var->instance()->pp_instance(), object_var->GetHandle());
+  auto it = GetForV8Object(object_var->instance()->pp_instance(),
+                           object_var->GetHandle());
   DCHECK(it != object_map_.end());
   object_map_.erase(it);
 }
@@ -120,7 +120,7 @@ void HostVarTracker::DidDeleteInstance(PP_Instance pp_instance) {
   // Use a key with an empty handle to find the v8 object var in the map with
   // the given instance and the lowest hash.
   V8ObjectVarKey key(pp_instance, v8::Local<v8::Object>());
-  ObjectMap::iterator it = object_map_.lower_bound(key);
+  auto it = object_map_.lower_bound(key);
   while (it != object_map_.end() && it->first.instance == pp_instance) {
     ForceReleaseV8Object(it->second);
     object_map_.erase(it++);
@@ -129,7 +129,7 @@ void HostVarTracker::DidDeleteInstance(PP_Instance pp_instance) {
 
 void HostVarTracker::ForceReleaseV8Object(ppapi::V8ObjectVar* object_var) {
   object_var->InstanceDeleted();
-  VarMap::iterator iter = live_vars_.find(object_var->GetExistingVarID());
+  auto iter = live_vars_.find(object_var->GetExistingVarID());
   if (iter == live_vars_.end()) {
     NOTREACHED();
     return;
@@ -145,7 +145,7 @@ HostVarTracker::ObjectMap::iterator HostVarTracker::GetForV8Object(
   std::pair<ObjectMap::iterator, ObjectMap::iterator> range =
       object_map_.equal_range(V8ObjectVarKey(instance, object));
 
-  for (ObjectMap::iterator it = range.first; it != range.second; ++it) {
+  for (auto it = range.first; it != range.second; ++it) {
     if (object == it->second->GetHandle())
       return it;
   }
@@ -174,7 +174,7 @@ bool HostVarTracker::StopTrackingSharedMemoryHandle(
     PP_Instance instance,
     base::SharedMemoryHandle* handle,
     uint32_t* size_in_bytes) {
-  SharedMemoryMap::iterator it = shared_memory_map_.find(id);
+  auto it = shared_memory_map_.find(id);
   if (it == shared_memory_map_.end())
     return false;
   if (it->second.instance != instance)

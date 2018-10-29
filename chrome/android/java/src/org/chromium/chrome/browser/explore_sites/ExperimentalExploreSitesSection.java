@@ -13,8 +13,10 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.List;
@@ -27,12 +29,12 @@ public class ExperimentalExploreSitesSection {
     private static final int MAX_TILES = 3;
 
     private Profile mProfile;
-    private SuggestionsNavigationDelegate mNavigationDelegate;
+    private NativePageNavigationDelegate mNavigationDelegate;
     private View mExploreSection;
     private LinearLayout mCategorySection;
 
     public ExperimentalExploreSitesSection(
-            View view, Profile profile, SuggestionsNavigationDelegate navigationDelegate) {
+            View view, Profile profile, NativePageNavigationDelegate navigationDelegate) {
         mProfile = profile;
         mExploreSection = view;
         mNavigationDelegate = navigationDelegate;
@@ -40,15 +42,17 @@ public class ExperimentalExploreSitesSection {
     }
 
     private void initialize() {
-        mCategorySection = mExploreSection.findViewById(R.id.explore_sites_tiles);
+        mCategorySection = mExploreSection.findViewById(R.id.experimental_explore_sites_tiles);
         ExploreSitesBridgeExperimental.getNtpCategories(mProfile, this::initializeTiles);
 
-        View moreCategoriesButton = mExploreSection.findViewById(R.id.explore_sites_more_button);
+        View moreCategoriesButton =
+                mExploreSection.findViewById(R.id.experimental_explore_sites_more_button);
         moreCategoriesButton.setOnClickListener(
                 (View v)
-                        -> mNavigationDelegate.navigateToSuggestionUrl(
-                                WindowOpenDisposition.CURRENT_TAB,
-                                ExploreSitesBridgeExperimental.nativeGetCatalogUrl()));
+                        -> mNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
+                                new LoadUrlParams(
+                                        ExploreSitesBridgeExperimental.nativeGetCatalogUrl(),
+                                        PageTransition.AUTO_BOOKMARK)));
     }
 
     private void initializeTiles(List<ExploreSitesCategoryTile> tileList) {
@@ -82,8 +86,9 @@ public class ExperimentalExploreSitesSection {
             mCategorySection.addView(tileView);
             tileView.setOnClickListener(
                     (View v)
-                            -> mNavigationDelegate.navigateToSuggestionUrl(
-                                    WindowOpenDisposition.CURRENT_TAB, tile.getNavigationUrl()));
+                            -> mNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
+                                    new LoadUrlParams(tile.getNavigationUrl(),
+                                            PageTransition.AUTO_BOOKMARK)));
             ExploreSitesBridgeExperimental.getIcon(
                     mProfile, tile.getIconUrl(), (Bitmap icon) -> onIconRetrieved(tileView, icon));
         }

@@ -12,6 +12,7 @@ import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.modaldialog.DialogDismissalCause;
 import org.chromium.chrome.browser.modaldialog.ModalDialogManager;
 import org.chromium.chrome.browser.modaldialog.ModalDialogView;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
@@ -297,10 +298,7 @@ public class PermissionDialogController
     }
 
     @Override
-    public void onCancel() {}
-
-    @Override
-    public void onDismiss() {
+    public void onDismiss(@DialogDismissalCause int dismissalCause) {
         mDismissListener.onDismiss(null);
         mAppModalDialogView = null;
     }

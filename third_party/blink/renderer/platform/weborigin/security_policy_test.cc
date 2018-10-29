@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
+#include "services/network/public/mojom/cors.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -349,8 +350,9 @@ TEST_F(SecurityPolicyAccessTest, IsOriginAccessAllowed) {
 
   // Adding access for https://example.com should work, but should not grant
   // access to subdomains or other schemes.
-  SecurityPolicy::AddOriginAccessAllowListEntry(*https_chromium_origin(),
-                                                "https", "example.com", false);
+  SecurityPolicy::AddOriginAccessAllowListEntry(
+      *https_chromium_origin(), "https", "example.com", false,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
   EXPECT_TRUE(SecurityPolicy::IsOriginAccessAllowed(https_chromium_origin(),
                                                     https_example_origin()));
   EXPECT_FALSE(SecurityPolicy::IsOriginAccessAllowed(
@@ -369,8 +371,9 @@ TEST_F(SecurityPolicyAccessTest, IsOriginAccessAllowed) {
 
   // Adding an entry that matches subdomains should grant access to any
   // subdomains.
-  SecurityPolicy::AddOriginAccessAllowListEntry(*https_chromium_origin(),
-                                                "https", "example.com", true);
+  SecurityPolicy::AddOriginAccessAllowListEntry(
+      *https_chromium_origin(), "https", "example.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
   EXPECT_TRUE(SecurityPolicy::IsOriginAccessAllowed(https_chromium_origin(),
                                                     https_example_origin()));
   EXPECT_TRUE(SecurityPolicy::IsOriginAccessAllowed(
@@ -381,8 +384,9 @@ TEST_F(SecurityPolicyAccessTest, IsOriginAccessAllowed) {
 
 TEST_F(SecurityPolicyAccessTest, IsOriginAccessAllowedWildCard) {
   // An empty domain that matches subdomains results in matching every domain.
-  SecurityPolicy::AddOriginAccessAllowListEntry(*https_chromium_origin(),
-                                                "https", "", true);
+  SecurityPolicy::AddOriginAccessAllowListEntry(
+      *https_chromium_origin(), "https", "", true,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
   EXPECT_TRUE(SecurityPolicy::IsOriginAccessAllowed(https_chromium_origin(),
                                                     https_example_origin()));
   EXPECT_TRUE(SecurityPolicy::IsOriginAccessAllowed(https_chromium_origin(),
@@ -393,10 +397,12 @@ TEST_F(SecurityPolicyAccessTest, IsOriginAccessAllowedWildCard) {
 
 TEST_F(SecurityPolicyAccessTest, IsOriginAccessAllowedWithBlockListEntry) {
   // The block list takes priority over the allow list.
-  SecurityPolicy::AddOriginAccessAllowListEntry(*https_chromium_origin(),
-                                                "https", "example.com", true);
-  SecurityPolicy::AddOriginAccessBlockListEntry(*https_chromium_origin(),
-                                                "https", "example.com", false);
+  SecurityPolicy::AddOriginAccessAllowListEntry(
+      *https_chromium_origin(), "https", "example.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
+  SecurityPolicy::AddOriginAccessBlockListEntry(
+      *https_chromium_origin(), "https", "example.com", false,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
 
   EXPECT_FALSE(SecurityPolicy::IsOriginAccessAllowed(https_chromium_origin(),
                                                      https_example_origin()));
@@ -406,10 +412,12 @@ TEST_F(SecurityPolicyAccessTest, IsOriginAccessAllowedWithBlockListEntry) {
 
 TEST_F(SecurityPolicyAccessTest,
        IsOriginAccessAllowedWildcardWithBlockListEntry) {
-  SecurityPolicy::AddOriginAccessAllowListEntry(*https_chromium_origin(),
-                                                "https", "", true);
-  SecurityPolicy::AddOriginAccessBlockListEntry(*https_chromium_origin(),
-                                                "https", "google.com", false);
+  SecurityPolicy::AddOriginAccessAllowListEntry(
+      *https_chromium_origin(), "https", "", true,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
+  SecurityPolicy::AddOriginAccessBlockListEntry(
+      *https_chromium_origin(), "https", "google.com", false,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
 
   EXPECT_TRUE(SecurityPolicy::IsOriginAccessAllowed(https_chromium_origin(),
                                                     https_example_origin()));
@@ -418,12 +426,15 @@ TEST_F(SecurityPolicyAccessTest,
 }
 
 TEST_F(SecurityPolicyAccessTest, ClearOriginAccessAllowListForOrigin) {
-  SecurityPolicy::AddOriginAccessAllowListEntry(*https_chromium_origin(),
-                                                "https", "example.com", true);
-  SecurityPolicy::AddOriginAccessAllowListEntry(*https_chromium_origin(),
-                                                "https", "google.com", true);
-  SecurityPolicy::AddOriginAccessAllowListEntry(*https_example_origin(),
-                                                "https", "google.com", true);
+  SecurityPolicy::AddOriginAccessAllowListEntry(
+      *https_chromium_origin(), "https", "example.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
+  SecurityPolicy::AddOriginAccessAllowListEntry(
+      *https_chromium_origin(), "https", "google.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
+  SecurityPolicy::AddOriginAccessAllowListEntry(
+      *https_example_origin(), "https", "google.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
 
   SecurityPolicy::ClearOriginAccessAllowListForOrigin(*https_chromium_origin());
 
@@ -433,6 +444,27 @@ TEST_F(SecurityPolicyAccessTest, ClearOriginAccessAllowListForOrigin) {
                                                      https_google_origin()));
   EXPECT_TRUE(SecurityPolicy::IsOriginAccessAllowed(https_example_origin(),
                                                     https_google_origin()));
+}
+
+TEST_F(SecurityPolicyAccessTest, IsOriginAccessAllowedPriority) {
+  EXPECT_FALSE(SecurityPolicy::IsOriginAccessAllowed(
+      https_chromium_origin(), https_sub_example_origin()));
+  SecurityPolicy::AddOriginAccessAllowListEntry(
+      *https_chromium_origin(), "https", "sub.example.com", false,
+      network::mojom::CORSOriginAccessMatchPriority::kLowPriority);
+  EXPECT_TRUE(SecurityPolicy::IsOriginAccessAllowed(
+      https_chromium_origin(), https_sub_example_origin()));
+  SecurityPolicy::AddOriginAccessBlockListEntry(
+      *https_chromium_origin(), "https", "example.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kMediumPriority);
+  EXPECT_FALSE(SecurityPolicy::IsOriginAccessAllowed(
+      https_chromium_origin(), https_sub_example_origin()));
+  SecurityPolicy::AddOriginAccessAllowListEntry(
+      *https_chromium_origin(), "https", "example.com", true,
+      network::mojom::CORSOriginAccessMatchPriority::kHighPriority);
+
+  EXPECT_TRUE(SecurityPolicy::IsOriginAccessAllowed(
+      https_chromium_origin(), https_sub_example_origin()));
 }
 
 }  // namespace blink

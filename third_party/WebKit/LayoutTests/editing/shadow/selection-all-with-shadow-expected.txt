@@ -3,7 +3,6 @@ SelectAll and Shadow DOM Tree
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Select all from host content in shadow tree => select all on document
 PASS selection.anchorNode.nodeValue is "SelectAll and Shadow DOM Tree"
 PASS selection.anchorOffset is 0
@@ -58,8 +57,10 @@ PASS selectionInHost4.focusOffset is 6
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 012host1345
 012host2345
 012host3abchost4host3def345
 012host5345
+
 end of document

@@ -2,6 +2,7 @@ This tests find with queries that contain line breaks, for text broken into para
 test
 over
 brs
+
 test
 over
 divs

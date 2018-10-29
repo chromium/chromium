@@ -1,0 +1,60 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+library chromium.web;
+
+// Provides methods for controlling and querying the navigation state
+// of a Frame.
+interface NavigationController {
+  // Tells the Frame to navigate to a |url|.
+  //
+  // |url|:    The address to navigate to.
+  // |params|: Additional parameters that affect how the resource will be
+  //           loaded (e.g. cookies, HTTP headers, etc.)
+  1: LoadUrl(string url, LoadUrlParams? params);
+
+  50: GoBack();
+  51: GoForward();
+  52: Stop();
+  53: Reload(ReloadType type);
+
+  // Returns information for the currently visible content regardless of
+  // loading state, or a null entry if no content is being displayed.
+  100: GetVisibleEntry() -> (NavigationEntry? entry);
+};
+
+// Additional parameters for modifying the behavior of LoadUrl().
+struct LoadUrlParams {
+  // Provides a hint to the browser UI about how LoadUrl was triggered.
+  LoadUrlReason type;
+
+  // The URL that linked to the resource being requested.
+  string referrer;
+
+  // Custom HTTP headers.
+  vector<vector<uint8>> headers;
+};
+
+// Characterizes the origin of a LoadUrl request.
+enum LoadUrlReason {
+  LINK = 0;   // Navigation was initiated by the user following a link.
+  TYPED = 1;  // Navigation was initiated by a user-provided URL.
+};
+
+// Contains information about the Frame's navigation state.
+// The Frame's navigation history can be represented as an aggregation of
+// NavigationEntries.
+struct NavigationEntry {
+  string url;     // The page's URL.
+  string title;   // The user-visible page title.
+  bool is_error;  // Indicates if an error occurred during this navigation.
+};
+
+enum ReloadType {
+  // Reloads the current entry, bypassing the cache for the main resource.
+  PARTIAL_CACHE = 0;
+
+  // Reloads the current entry, bypassing the cache entirely.
+  NO_CACHE = 1;
+};

@@ -24,7 +24,11 @@ ASH_PUBLIC_EXPORT mojom::WindowStateType ToWindowStateType(
 ASH_PUBLIC_EXPORT ui::WindowShowState ToWindowShowState(
     mojom::WindowStateType type);
 
-// Returns true if |type| is MAXIMIZED, FULLSCREEN or PINNED.
+// Returns true if |type| is FULLSCREEN, PINNED, or TRUSTED_PINNED.
+ASH_PUBLIC_EXPORT bool IsFullscreenOrPinnedWindowStateType(
+    mojom::WindowStateType type);
+
+// Returns true if |type| is MAXIMIZED, FULLSCREEN, PINNED, or TRUSTED_PINNED.
 ASH_PUBLIC_EXPORT bool IsMaximizedOrFullscreenOrPinnedWindowStateType(
     mojom::WindowStateType type);
 

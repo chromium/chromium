@@ -10,7 +10,7 @@ specific_include_rules = {
    "!ash",
    "+ash/public",
   ],
-  # AshShellInit supports CLASSIC and MUS modes so allow ash/ includes.
+  # AshShellInit supports classic (non-mash) mode so allow ash/ includes.
   "ash_shell_init\.cc": [
     "+ash",
   ],
@@ -20,13 +20,20 @@ specific_include_rules = {
     "+ash/accelerators/accelerator_controller.h",
     "+ash/shell.h",
   ],
+  # https://crbug.com/756054
+  "chrome_accessibility_delegate.*": [
+    "+ash/accessibility/accessibility_delegate.h",
+  ],
   # For ash::Shell::SetIsBrowserProcessWithMash()
   "chrome_browser_main_extra_parts_ash\.cc": [
     "+ash/shell.h",
   ],
+  # Only for !features::IsUsingWindowService().
+  "chrome_keyboard_bounds_observer\.cc": [
+    "+ash/root_window_controller.h",
+  ],
   # https://crbug.com/843332
   "chrome_keyboard_ui\.cc": [
-    "+ash/root_window_controller.h",
     "+ash/shell.h",
   ],
   # https://crbug.com/124222
@@ -40,12 +47,15 @@ specific_include_rules = {
   ],
   # https://crbug.com/665064
   "chrome_shell_delegate.*": [
-    # https://crbug.com/756054
-    "+ash/accessibility/accessibility_delegate.h",
     # https://crbug.com/557397
     "+ash/screenshot_delegate.h",
     # https://crbug.com/665064
     "+ash/shell_delegate.h",
+  ],
+  # Only used in !mash
+  "screen_orientation_delegate_chromeos.cc": [
+    "+ash/display/screen_orientation_controller.h",
+    "+ash/shell.h",
   ],
   # For ash::Shell::GetContainer (!mash)
   "system_tray_client\.cc": [

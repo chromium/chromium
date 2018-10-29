@@ -367,8 +367,9 @@ Viewport.prototype = {
    */
   setZoomInternal_: function(newZoom) {
     if (!this.allowedToChangeZoom_) {
-      throw 'Called Viewport.setZoomInternal_ without calling ' +
-          'Viewport.mightZoom_.';
+      throw new Error(
+          'Called Viewport.setZoomInternal_ without calling ' +
+          'Viewport.mightZoom_.');
     }
     // Record the scroll position (relative to the top-left of the window).
     var currentScrollPos = {

@@ -81,7 +81,7 @@ class BytesConsumerTestUtil {
   };
 
   class Command final {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     enum Name {

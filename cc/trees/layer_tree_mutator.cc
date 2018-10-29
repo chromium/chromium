@@ -12,11 +12,13 @@ AnimationWorkletInput::AddAndUpdateState::AddAndUpdateState(
     WorkletAnimationId worklet_animation_id,
     std::string name,
     double current_time,
-    std::unique_ptr<AnimationOptions> options)
+    std::unique_ptr<AnimationOptions> options,
+    int num_effects)
     : worklet_animation_id(worklet_animation_id),
       name(name),
       current_time(current_time),
-      options(std::move(options)) {}
+      options(std::move(options)),
+      num_effects(num_effects) {}
 AnimationWorkletInput::AddAndUpdateState::AddAndUpdateState(
     AddAndUpdateState&&) = default;
 AnimationWorkletInput::AddAndUpdateState::~AddAndUpdateState() = default;
@@ -97,11 +99,10 @@ std::unique_ptr<AnimationWorkletInput> MutatorInputState::TakeWorkletState(
 AnimationWorkletOutput::AnimationWorkletOutput() = default;
 AnimationWorkletOutput::~AnimationWorkletOutput() = default;
 
-AnimationWorkletOutput::AnimationState::AnimationState(
-    WorkletAnimationId id,
-    base::Optional<base::TimeDelta> time)
-    : worklet_animation_id(id), local_time(time) {}
+AnimationWorkletOutput::AnimationState::AnimationState(WorkletAnimationId id)
+    : worklet_animation_id(id) {}
 AnimationWorkletOutput::AnimationState::AnimationState(const AnimationState&) =
     default;
+AnimationWorkletOutput::AnimationState::~AnimationState() = default;
 
 }  // namespace cc

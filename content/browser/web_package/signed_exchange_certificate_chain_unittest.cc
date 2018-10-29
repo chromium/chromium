@@ -9,8 +9,8 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
-#include "components/cbor/cbor_values.h"
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "content/public/common/content_paths.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
@@ -21,8 +21,8 @@ namespace content {
 
 namespace {
 
-cbor::CBORValue CBORByteString(base::StringPiece str) {
-  return cbor::CBORValue(str, cbor::CBORValue::Type::BYTE_STRING);
+cbor::Value CBORByteString(base::StringPiece str) {
+  return cbor::Value(str, cbor::Value::Type::BYTE_STRING);
 }
 
 }  // namespace
@@ -34,11 +34,10 @@ TEST(SignedExchangeCertificateParseB2Test, Empty) {
 }
 
 TEST(SignedExchangeCertificateParseB2Test, EmptyChain) {
-  cbor::CBORValue::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::CBORValue(u8"\U0001F4DC\u26D3"));
+  cbor::Value::ArrayValue cbor_array;
+  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
 
-  auto serialized =
-      cbor::CBORWriter::Write(cbor::CBORValue(std::move(cbor_array)));
+  auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
   auto parsed = SignedExchangeCertificateChain::Parse(
@@ -47,16 +46,15 @@ TEST(SignedExchangeCertificateParseB2Test, EmptyChain) {
 }
 
 TEST(SignedExchangeCertificateParseB2Test, MissingCert) {
-  cbor::CBORValue::MapValue cbor_map;
-  cbor_map[cbor::CBORValue("sct")] = CBORByteString("SCT");
-  cbor_map[cbor::CBORValue("ocsp")] = CBORByteString("OCSP");
+  cbor::Value::MapValue cbor_map;
+  cbor_map[cbor::Value("sct")] = CBORByteString("SCT");
+  cbor_map[cbor::Value("ocsp")] = CBORByteString("OCSP");
 
-  cbor::CBORValue::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::CBORValue(u8"\U0001F4DC\u26D3"));
-  cbor_array.push_back(cbor::CBORValue(std::move(cbor_map)));
+  cbor::Value::ArrayValue cbor_array;
+  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value(std::move(cbor_map)));
 
-  auto serialized =
-      cbor::CBORWriter::Write(cbor::CBORValue(std::move(cbor_array)));
+  auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
   auto parsed = SignedExchangeCertificateChain::Parse(
@@ -72,17 +70,16 @@ TEST(SignedExchangeCertificateParseB2Test, OneCert) {
   base::StringPiece cert_der =
       net::x509_util::CryptoBufferAsStringPiece(certs[0]->cert_buffer());
 
-  cbor::CBORValue::MapValue cbor_map;
-  cbor_map[cbor::CBORValue("sct")] = CBORByteString("SCT");
-  cbor_map[cbor::CBORValue("cert")] = CBORByteString(cert_der);
-  cbor_map[cbor::CBORValue("ocsp")] = CBORByteString("OCSP");
+  cbor::Value::MapValue cbor_map;
+  cbor_map[cbor::Value("sct")] = CBORByteString("SCT");
+  cbor_map[cbor::Value("cert")] = CBORByteString(cert_der);
+  cbor_map[cbor::Value("ocsp")] = CBORByteString("OCSP");
 
-  cbor::CBORValue::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::CBORValue(u8"\U0001F4DC\u26D3"));
-  cbor_array.push_back(cbor::CBORValue(std::move(cbor_map)));
+  cbor::Value::ArrayValue cbor_array;
+  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value(std::move(cbor_map)));
 
-  auto serialized =
-      cbor::CBORWriter::Write(cbor::CBORValue(std::move(cbor_array)));
+  auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
   auto parsed = SignedExchangeCertificateChain::Parse(
@@ -103,16 +100,15 @@ TEST(SignedExchangeCertificateParseB2Test, MissingOCSPInFirstCert) {
   base::StringPiece cert_der =
       net::x509_util::CryptoBufferAsStringPiece(certs[0]->cert_buffer());
 
-  cbor::CBORValue::MapValue cbor_map;
-  cbor_map[cbor::CBORValue("sct")] = CBORByteString("SCT");
-  cbor_map[cbor::CBORValue("cert")] = CBORByteString(cert_der);
+  cbor::Value::MapValue cbor_map;
+  cbor_map[cbor::Value("sct")] = CBORByteString("SCT");
+  cbor_map[cbor::Value("cert")] = CBORByteString(cert_der);
 
-  cbor::CBORValue::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::CBORValue(u8"\U0001F4DC\u26D3"));
-  cbor_array.push_back(cbor::CBORValue(std::move(cbor_map)));
+  cbor::Value::ArrayValue cbor_array;
+  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value(std::move(cbor_map)));
 
-  auto serialized =
-      cbor::CBORWriter::Write(cbor::CBORValue(std::move(cbor_array)));
+  auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
   auto parsed = SignedExchangeCertificateChain::Parse(
@@ -130,21 +126,20 @@ TEST(SignedExchangeCertificateParseB2Test, TwoCerts) {
   base::StringPiece cert2_der =
       net::x509_util::CryptoBufferAsStringPiece(certs[1]->cert_buffer());
 
-  cbor::CBORValue::MapValue cbor_map1;
-  cbor_map1[cbor::CBORValue("sct")] = CBORByteString("SCT");
-  cbor_map1[cbor::CBORValue("cert")] = CBORByteString(cert1_der);
-  cbor_map1[cbor::CBORValue("ocsp")] = CBORByteString("OCSP");
+  cbor::Value::MapValue cbor_map1;
+  cbor_map1[cbor::Value("sct")] = CBORByteString("SCT");
+  cbor_map1[cbor::Value("cert")] = CBORByteString(cert1_der);
+  cbor_map1[cbor::Value("ocsp")] = CBORByteString("OCSP");
 
-  cbor::CBORValue::MapValue cbor_map2;
-  cbor_map2[cbor::CBORValue("cert")] = CBORByteString(cert2_der);
+  cbor::Value::MapValue cbor_map2;
+  cbor_map2[cbor::Value("cert")] = CBORByteString(cert2_der);
 
-  cbor::CBORValue::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::CBORValue(u8"\U0001F4DC\u26D3"));
-  cbor_array.push_back(cbor::CBORValue(std::move(cbor_map1)));
-  cbor_array.push_back(cbor::CBORValue(std::move(cbor_map2)));
+  cbor::Value::ArrayValue cbor_array;
+  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value(std::move(cbor_map1)));
+  cbor_array.push_back(cbor::Value(std::move(cbor_map2)));
 
-  auto serialized =
-      cbor::CBORWriter::Write(cbor::CBORValue(std::move(cbor_array)));
+  auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
   auto parsed = SignedExchangeCertificateChain::Parse(
@@ -169,22 +164,21 @@ TEST(SignedExchangeCertificateParseB2Test, HavingOCSPInSecondCert) {
   base::StringPiece cert2_der =
       net::x509_util::CryptoBufferAsStringPiece(certs[1]->cert_buffer());
 
-  cbor::CBORValue::MapValue cbor_map1;
-  cbor_map1[cbor::CBORValue("sct")] = CBORByteString("SCT");
-  cbor_map1[cbor::CBORValue("cert")] = CBORByteString(cert1_der);
-  cbor_map1[cbor::CBORValue("ocsp")] = CBORByteString("OCSP1");
+  cbor::Value::MapValue cbor_map1;
+  cbor_map1[cbor::Value("sct")] = CBORByteString("SCT");
+  cbor_map1[cbor::Value("cert")] = CBORByteString(cert1_der);
+  cbor_map1[cbor::Value("ocsp")] = CBORByteString("OCSP1");
 
-  cbor::CBORValue::MapValue cbor_map2;
-  cbor_map2[cbor::CBORValue("cert")] = CBORByteString(cert2_der);
-  cbor_map2[cbor::CBORValue("ocsp")] = CBORByteString("OCSP2");
+  cbor::Value::MapValue cbor_map2;
+  cbor_map2[cbor::Value("cert")] = CBORByteString(cert2_der);
+  cbor_map2[cbor::Value("ocsp")] = CBORByteString("OCSP2");
 
-  cbor::CBORValue::ArrayValue cbor_array;
-  cbor_array.push_back(cbor::CBORValue(u8"\U0001F4DC\u26D3"));
-  cbor_array.push_back(cbor::CBORValue(std::move(cbor_map1)));
-  cbor_array.push_back(cbor::CBORValue(std::move(cbor_map2)));
+  cbor::Value::ArrayValue cbor_array;
+  cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
+  cbor_array.push_back(cbor::Value(std::move(cbor_map1)));
+  cbor_array.push_back(cbor::Value(std::move(cbor_map2)));
 
-  auto serialized =
-      cbor::CBORWriter::Write(cbor::CBORValue(std::move(cbor_array)));
+  auto serialized = cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
   ASSERT_TRUE(serialized.has_value());
 
   auto parsed = SignedExchangeCertificateChain::Parse(

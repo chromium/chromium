@@ -90,9 +90,6 @@ constexpr SkColor kLargeImageBackgroundColor = SkColorSetRGB(0xf5, 0xf5, 0xf5);
 constexpr SkColor kRegularTextColorMD = SkColorSetRGB(0x21, 0x21, 0x21);
 constexpr SkColor kDimTextColorMD = SkColorSetRGB(0x75, 0x75, 0x75);
 
-// Background of inline settings area.
-const SkColor kSettingsRowBackgroundColor = SkColorSetRGB(0xee, 0xee, 0xee);
-
 // Text color and icon color of inline reply area when the textfield is empty.
 constexpr SkColor kTextfieldPlaceholderTextColorMD =
     SkColorSetA(SK_ColorWHITE, 0x8A);
@@ -335,7 +332,7 @@ NotificationButtonMD::NotificationButtonMD(
                          views::style::CONTEXT_BUTTON_MD),
       placeholder_(placeholder) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  SetInkDropMode(views::LabelButton::InkDropMode::ON);
+  SetInkDropMode(InkDropMode::ON);
   set_has_ink_drop_action_on_click(true);
   set_ink_drop_base_color(SK_ColorBLACK);
   set_ink_drop_visible_opacity(kActionButtonInkDropRippleVisibleOpacity);
@@ -617,12 +614,6 @@ void NotificationViewMD::Layout() {
 void NotificationViewMD::OnFocus() {
   MessageView::OnFocus();
   ScrollRectToVisible(GetLocalBounds());
-}
-
-void NotificationViewMD::ScrollRectToVisible(const gfx::Rect& rect) {
-  // Notification want to show the whole notification when a part of it (like
-  // a button) gets focused.
-  views::View::ScrollRectToVisible(GetLocalBounds());
 }
 
 bool NotificationViewMD::OnMousePressed(const ui::MouseEvent& event) {
@@ -1012,13 +1003,25 @@ void NotificationViewMD::CreateOrUpdateActionButtonViews(
   const std::vector<ButtonInfo>& buttons = notification.buttons();
   bool new_buttons = action_buttons_.size() != buttons.size();
 
-  if (new_buttons || buttons.size() == 0) {
+  if (new_buttons || buttons.empty()) {
     for (auto* item : action_buttons_)
       delete item;
     action_buttons_.clear();
+    if (buttons.empty())
+      actions_row_->SetVisible(false);
   }
 
   DCHECK_EQ(this, actions_row_->parent());
+
+  // Hide inline reply field if it doesn't exist anymore.
+  if (inline_reply_->visible()) {
+    const size_t index =
+        inline_reply_->textfield()->GetProperty(kTextfieldIndexKey);
+    if (index >= buttons.size() || !buttons[index].placeholder.has_value()) {
+      action_buttons_row_->SetVisible(true);
+      inline_reply_->SetVisible(false);
+    }
+  }
 
   for (size_t i = 0; i < buttons.size(); ++i) {
     ButtonInfo button_info = buttons[i];
@@ -1029,6 +1032,7 @@ void NotificationViewMD::CreateOrUpdateActionButtonViews(
       action_buttons_row_->AddChildView(button);
     } else {
       action_buttons_[i]->SetText(button_info.title);
+      action_buttons_[i]->set_placeholder(button_info.placeholder);
       action_buttons_[i]->SchedulePaint();
       action_buttons_[i]->Layout();
     }
@@ -1267,11 +1271,6 @@ void NotificationViewMD::SetManuallyExpandedOrCollapsed(bool value) {
 }
 
 void NotificationViewMD::OnSettingsButtonPressed(const ui::Event& event) {
-  // TODO(yamaguchi): remove this line and call CloseSwipeControl() from parent
-  // view of this view. The parent view should activate the swipe control of
-  // the slider attached to this view.
-  CloseSwipeControl();
-
   if (settings_row_)
     ToggleInlineSettings(event);
   else
@@ -1344,7 +1343,8 @@ std::unique_ptr<views::InkDropRipple> NotificationViewMD::CreateInkDropRipple()
 }
 
 SkColor NotificationViewMD::GetInkDropBaseColor() const {
-  return kSettingsRowBackgroundColor;
+  // Background of inline settings area.
+  return SkColorSetRGB(0xEE, 0xEE, 0xEE);
 }
 
 void NotificationViewMD::InkDropAnimationStarted() {

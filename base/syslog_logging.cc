@@ -41,6 +41,11 @@ void SetEventSource(const std::string& name,
   g_event_id = event_id;
 }
 
+void ResetEventSourceForTesting() {
+  delete g_event_source_name;
+  g_event_source_name = nullptr;
+}
+
 #endif  // defined(OS_WIN)
 
 EventLogMessage::EventLogMessage(const char* file,

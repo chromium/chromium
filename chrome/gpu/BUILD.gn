@@ -3,12 +3,14 @@
 # found in the LICENSE file.
 
 import("//media/media_options.gni")
+import("//third_party/widevine/cdm/widevine.gni")
 
 static_library("gpu") {
   deps = [
     "//components/metrics:child_call_stack_profile_builder",
     "//content/public/common",
     "//content/public/gpu",
+    "//third_party/widevine/cdm:buildflags",
   ]
 
   sources = [
@@ -22,7 +24,7 @@ static_library("gpu") {
       "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm_proxy",
     ]
 
-    if (is_win) {
+    if (enable_widevine && is_win) {
       sources += [
         "widevine_cdm_proxy_factory.cc",
         "widevine_cdm_proxy_factory.h",

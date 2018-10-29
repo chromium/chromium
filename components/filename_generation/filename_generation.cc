@@ -12,7 +12,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/filename_util.h"
@@ -61,8 +60,6 @@ const base::FilePath::CharType* ExtensionForMimeType(
 }
 
 base::FilePath EnsureHtmlExtension(const base::FilePath& name) {
-  base::AssertBlockingAllowed();
-
   base::FilePath::StringType ext = name.Extension();
   if (!ext.empty())
     ext.erase(ext.begin());  // Erase preceding '.'.
@@ -77,8 +74,6 @@ base::FilePath EnsureHtmlExtension(const base::FilePath& name) {
 
 base::FilePath EnsureMimeExtension(const base::FilePath& name,
                                    const std::string& contents_mime_type) {
-  base::AssertBlockingAllowed();
-
   // Start extension at 1 to skip over period if non-empty.
   base::FilePath::StringType ext = name.Extension();
   if (!ext.empty())

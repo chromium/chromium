@@ -11,6 +11,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "device/usb/mojo/device_manager_impl.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/device/bluetooth/bluetooth_system_factory.h"
 #include "services/device/fingerprint/fingerprint.h"
@@ -141,6 +142,8 @@ void DeviceService::OnStart() {
                  base::Unretained(this)));
   registry_.AddInterface<mojom::SerialIoHandler>(base::Bind(
       &DeviceService::BindSerialIoHandlerRequest, base::Unretained(this)));
+  registry_.AddInterface<mojom::UsbDeviceManager>(base::Bind(
+      &DeviceService::BindUsbDeviceManagerRequest, base::Unretained(this)));
 
 #if defined(OS_ANDROID)
   registry_.AddInterface(GetJavaInterfaceProvider()
@@ -318,6 +321,14 @@ void DeviceService::BindSerialIoHandlerRequest(
                    base::ThreadTaskRunnerHandle::Get()));
   }
 #endif
+}
+
+void DeviceService::BindUsbDeviceManagerRequest(
+    mojom::UsbDeviceManagerRequest request) {
+  if (!usb_device_manager_)
+    usb_device_manager_ = std::make_unique<usb::DeviceManagerImpl>();
+
+  usb_device_manager_->AddBinding(std::move(request));
 }
 
 #if defined(OS_ANDROID)

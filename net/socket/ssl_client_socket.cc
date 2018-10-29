@@ -25,13 +25,6 @@ void SSLClientSocket::SetSSLKeyLogger(std::unique_ptr<SSLKeyLogger> logger) {
   SSLClientSocketImpl::SetSSLKeyLogger(std::move(logger));
 }
 
-bool SSLClientSocket::IgnoreCertError(int error, int load_flags) {
-  if (error == OK)
-    return true;
-  return (load_flags & LOAD_IGNORE_ALL_CERT_ERRORS) &&
-         IsCertificateError(error);
-}
-
 // static
 std::vector<uint8_t> SSLClientSocket::SerializeNextProtos(
     const NextProtoVector& next_protos) {

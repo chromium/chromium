@@ -116,10 +116,9 @@ class SerializeDeserializeTest : public ::testing::Test {
 
     // Check that the returned map is equal to the original map.
     EXPECT_EQ(frame_event_list_.size(), returned_frame_events.size());
-    for (FrameEventMap::const_iterator frame_it = returned_frame_events.begin();
-         frame_it != returned_frame_events.end();
-         ++frame_it) {
-      FrameEventList::iterator original_it = frame_event_list_.begin();
+    for (auto frame_it = returned_frame_events.begin();
+         frame_it != returned_frame_events.end(); ++frame_it) {
+      auto original_it = frame_event_list_.begin();
       ASSERT_NE(frame_event_list_.end(), original_it);
       // Compare protos by serializing and checking the bytes.
       EXPECT_EQ((*original_it)->SerializeAsString(),
@@ -129,11 +128,9 @@ class SerializeDeserializeTest : public ::testing::Test {
     EXPECT_TRUE(frame_event_list_.empty());
 
     EXPECT_EQ(packet_event_list_.size(), returned_packet_events.size());
-    for (PacketEventMap::const_iterator packet_it =
-             returned_packet_events.begin();
-         packet_it != returned_packet_events.end();
-         ++packet_it) {
-      PacketEventList::iterator original_it = packet_event_list_.begin();
+    for (auto packet_it = returned_packet_events.begin();
+         packet_it != returned_packet_events.end(); ++packet_it) {
+      auto original_it = packet_event_list_.begin();
       ASSERT_NE(packet_event_list_.end(), original_it);
       // Compare protos by serializing and checking the bytes.
       EXPECT_EQ((*original_it)->SerializeAsString(),

@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
 import android.view.KeyEvent;
 
 import org.junit.Assert;
@@ -18,8 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -105,9 +103,12 @@ public class VideoFullscreenOrientationLockChromeTest {
     }
 
     @Test
-    @MediumTest
-    @Feature({"VideoFullscreenOrientationLock"})
-    @RetryOnFailure // The final waitForContentsFullscreenState(false) is flaky - crbug.com/711005.
+    // Test is disabled due to flakiness - crbug.com/888161
+    // @MediumTest
+    // @Feature({"VideoFullscreenOrientationLock"})
+    // @RetryOnFailure // The final waitForContentsFullscreenState(false) is flaky -
+    // crbug.com/711005.
+    @DisabledTest
     public void testUnlockWithDownloadViewerActivity() throws Exception {
         if (mActivityTestRule.getActivity().isTablet()) {
             return;

@@ -33,9 +33,6 @@ class CONTENT_EXPORT RenderWidgetOwnerDelegate {
   // See comment in RenderWidgetHost::SetActive().
   virtual void SetActiveForWidget(bool active) = 0;
 
-  // See comment in RenderWidgetHostImpl::SetBackgroundOpaque().
-  virtual void SetBackgroundOpaqueForWidget(bool opaque) = 0;
-
   // Returns whether multiple windows are allowed for the widget. If true, then
   // Show() may be called more than once.
   virtual bool SupportsMultipleWindowsForWidget() = 0;
@@ -85,9 +82,6 @@ class CONTENT_EXPORT RenderWidgetOwnerDelegate {
 
   // Called after RenderWidget changes focus.
   virtual void DidChangeFocusForWidget() = 0;
-
-  // Called to get the current URL if it exists or a hardcoded fallback.
-  virtual GURL GetURLForGraphicsContext3DForWidget() = 0;
 
   // Called when the RenderWidget handles
   // LayerTreeViewDelegate::DidCommitCompositorFrame().

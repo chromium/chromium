@@ -25,6 +25,7 @@
 
 #if defined(USE_X11)
 #include "ui/events/test/events_test_utils_x11.h"
+#include "ui/events/x/events_x_utils.h"  // nogncheck
 #include "ui/gfx/x/x11.h"        // nogncheck
 #include "ui/gfx/x/x11_types.h"  // nogncheck
 #endif
@@ -430,6 +431,15 @@ TEST(EventTest, KeyEventCode) {
 #if defined(USE_X11)
 namespace {
 
+class MockTimestampServer : public ui::TimestampServer {
+ public:
+  Time GetCurrentServerTime() override { return base_time_; }
+  void SetBaseTime(Time time) { base_time_ = time; }
+
+ private:
+  Time base_time_ = 0;
+};
+
 void SetKeyEventTimestamp(XEvent* event, int64_t time) {
   event->xkey.time = time & UINT32_MAX;
 }
@@ -440,7 +450,29 @@ void AdvanceKeyEventTimestamp(XEvent* event) {
 
 }  // namespace
 
-TEST(EventTest, AutoRepeat) {
+class X11EventTest : public testing::Test {
+ public:
+  X11EventTest() {}
+  ~X11EventTest() override {}
+
+  void SetUp() override {
+    SetTimestampServer(&server_);
+    SetUseFixedTimeForXEventTesting(true);
+  }
+
+  void TearDown() override {
+    SetTimestampServer(nullptr);
+    SetUseFixedTimeForXEventTesting(false);
+  }
+
+ protected:
+  MockTimestampServer server_;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(X11EventTest);
+};
+
+TEST_F(X11EventTest, AutoRepeat) {
   const uint16_t kNativeCodeA =
       ui::KeycodeConverter::DomCodeToNativeKeycode(DomCode::US_A);
   const uint16_t kNativeCodeB =
@@ -468,6 +500,7 @@ TEST(EventTest, AutoRepeat) {
 
   int64_t ticks_base =
       (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds() - 5000;
+  server_.SetBaseTime(static_cast<Time>(ticks_base));
   SetKeyEventTimestamp(native_event_a_pressed, ticks_base);
   SetKeyEventTimestamp(native_event_a_pressed_1500, ticks_base + 1500);
   SetKeyEventTimestamp(native_event_a_pressed_3000, ticks_base + 3000);
@@ -582,8 +615,8 @@ TEST(EventTest, TouchEventRotationAngleFixing) {
     TouchEvent event(ui::ET_TOUCH_PRESSED, gfx::Point(0, 0), time,
                      PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
                                     /* pointer_id*/ 0, radius_x, radius_y,
-                                    /* force */ 0),
-                     0, angle_in_range);
+                                    /* force */ 0, angle_in_range),
+                     0);
     EXPECT_FLOAT_EQ(angle_in_range, event.ComputeRotationAngle());
   }
 
@@ -592,8 +625,8 @@ TEST(EventTest, TouchEventRotationAngleFixing) {
     TouchEvent event(ui::ET_TOUCH_PRESSED, gfx::Point(0, 0), time,
                      PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
                                     /* pointer_id*/ 0, radius_x, radius_y,
-                                    /* force */ 0),
-                     0, angle_in_range);
+                                    /* force */ 0, angle_in_range),
+                     0);
     EXPECT_FLOAT_EQ(angle_in_range, event.ComputeRotationAngle());
   }
 
@@ -602,8 +635,8 @@ TEST(EventTest, TouchEventRotationAngleFixing) {
     TouchEvent event(ui::ET_TOUCH_PRESSED, gfx::Point(0, 0), time,
                      PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
                                     /* pointer_id*/ 0, radius_x, radius_y,
-                                    /* force */ 0),
-                     0, angle_negative);
+                                    /* force */ 0, angle_negative),
+                     0);
     EXPECT_FLOAT_EQ(180 - 0.1f, event.ComputeRotationAngle());
   }
 
@@ -612,8 +645,8 @@ TEST(EventTest, TouchEventRotationAngleFixing) {
     TouchEvent event(ui::ET_TOUCH_PRESSED, gfx::Point(0, 0), time,
                      PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
                                     /* pointer_id*/ 0, radius_x, radius_y,
-                                    /* force */ 0),
-                     0, angle_negative);
+                                    /* force */ 0, angle_negative),
+                     0);
     EXPECT_FLOAT_EQ(360 - 200, event.ComputeRotationAngle());
   }
 
@@ -622,8 +655,8 @@ TEST(EventTest, TouchEventRotationAngleFixing) {
     TouchEvent event(ui::ET_TOUCH_PRESSED, gfx::Point(0, 0), time,
                      PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
                                     /* pointer_id*/ 0, radius_x, radius_y,
-                                    /* force */ 0),
-                     0, angle_too_big);
+                                    /* force */ 0, angle_too_big),
+                     0);
     EXPECT_FLOAT_EQ(0, event.ComputeRotationAngle());
   }
 
@@ -632,8 +665,8 @@ TEST(EventTest, TouchEventRotationAngleFixing) {
     TouchEvent event(ui::ET_TOUCH_PRESSED, gfx::Point(0, 0), time,
                      PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
                                     /* pointer_id*/ 0, radius_x, radius_y,
-                                    /* force */ 0),
-                     0, angle_too_big);
+                                    /* force */ 0, angle_too_big),
+                     0);
     EXPECT_FLOAT_EQ(400 - 360, event.ComputeRotationAngle());
   }
 }
@@ -755,166 +788,6 @@ TEST(EventTest, PointerDetailsCustomTouch) {
   EXPECT_EQ(touch_event.pointer_details(), touch_event_copy.pointer_details());
 }
 
-TEST(EventTest, PointerEventCanConvertFrom) {
-  const gfx::Point point;
-  const base::TimeTicks time;
-
-  // Common mouse events can be converted.
-  const EventType mouse_allowed[] = {
-      ET_MOUSE_PRESSED,         ET_MOUSE_DRAGGED, ET_MOUSE_MOVED,
-      ET_MOUSE_ENTERED,         ET_MOUSE_EXITED,  ET_MOUSE_RELEASED,
-      ET_MOUSE_CAPTURE_CHANGED,
-  };
-  for (size_t i = 0; i < arraysize(mouse_allowed); i++) {
-    MouseEvent event(mouse_allowed[i], point, point, time, 0, 0);
-    EXPECT_TRUE(PointerEvent::CanConvertFrom(event));
-  }
-  // Mouse wheel events can be converted.
-  MouseWheelEvent event(gfx::Vector2d(), point, point, time, 0, 0);
-  EXPECT_TRUE(PointerEvent::CanConvertFrom(event));
-
-  // Common touch events can be converted.
-  const EventType touch_allowed[] = {
-      ET_TOUCH_PRESSED,
-      ET_TOUCH_MOVED,
-      ET_TOUCH_RELEASED,
-      ET_TOUCH_CANCELLED
-  };
-  for (size_t i = 0; i < arraysize(touch_allowed); i++) {
-    TouchEvent event(
-        touch_allowed[i], point, time,
-        PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-    EXPECT_TRUE(PointerEvent::CanConvertFrom(event));
-  }
-
-  // Non-mouse non-touch events cannot be converted.
-  EXPECT_FALSE(
-      PointerEvent::CanConvertFrom(
-          KeyEvent(ET_KEY_PRESSED, VKEY_SPACE, EF_NONE)));
-}
-
-TEST(EventTest, PointerEventType) {
-  const ui::EventType kMouseTypeMap[][2] = {
-      {ui::ET_MOUSE_PRESSED, ui::ET_POINTER_DOWN},
-      {ui::ET_MOUSE_DRAGGED, ui::ET_POINTER_MOVED},
-      {ui::ET_MOUSE_MOVED, ui::ET_POINTER_MOVED},
-      {ui::ET_MOUSE_ENTERED, ui::ET_POINTER_ENTERED},
-      {ui::ET_MOUSE_EXITED, ui::ET_POINTER_EXITED},
-      {ui::ET_MOUSE_RELEASED, ui::ET_POINTER_UP},
-  };
-  const ui::EventType kTouchTypeMap[][2] = {
-      {ui::ET_TOUCH_PRESSED, ui::ET_POINTER_DOWN},
-      {ui::ET_TOUCH_MOVED, ui::ET_POINTER_MOVED},
-      {ui::ET_TOUCH_RELEASED, ui::ET_POINTER_UP},
-      {ui::ET_TOUCH_CANCELLED, ui::ET_POINTER_CANCELLED},
-  };
-
-  for (size_t i = 0; i < arraysize(kMouseTypeMap); i++) {
-    ui::MouseEvent mouse_event(kMouseTypeMap[i][0], gfx::Point(0, 0),
-                               gfx::Point(0, 0), base::TimeTicks(), 0, 0);
-    ui::PointerEvent pointer_event(mouse_event);
-    EXPECT_EQ(kMouseTypeMap[i][1], pointer_event.type());
-    EXPECT_FALSE(pointer_event.IsMouseEvent());
-    EXPECT_FALSE(pointer_event.IsTouchEvent());
-    EXPECT_TRUE(pointer_event.IsPointerEvent());
-  }
-
-  for (size_t i = 0; i < arraysize(kTouchTypeMap); i++) {
-    ui::TouchEvent touch_event(
-        kTouchTypeMap[i][0], gfx::Point(0, 0), base::TimeTicks(),
-        PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-    ui::PointerEvent pointer_event(touch_event);
-    EXPECT_EQ(kTouchTypeMap[i][1], pointer_event.type());
-    EXPECT_FALSE(pointer_event.IsMouseEvent());
-    EXPECT_FALSE(pointer_event.IsTouchEvent());
-    EXPECT_TRUE(pointer_event.IsPointerEvent());
-  }
-}
-
-TEST(EventTest, PointerEventId) {
-  {
-    ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
-                               gfx::Point(0, 0), base::TimeTicks(), 0, 0);
-    ui::PointerEvent pointer_event(mouse_event);
-    EXPECT_EQ(pointer_event.pointer_details().id,
-              ui::MouseEvent::kMousePointerId);
-  }
-
-  for (int touch_id = 0; touch_id < 8; touch_id++) {
-    ui::TouchEvent touch_event(
-        ui::ET_TOUCH_PRESSED, gfx::Point(0, 0), base::TimeTicks(),
-        PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, touch_id));
-    ui::PointerEvent pointer_event(touch_event);
-    EXPECT_EQ(pointer_event.pointer_details().id, touch_id);
-  }
-}
-
-TEST(EventTest, PointerDetailsPointer) {
-  const float kRadiusX = 10.0f;
-  const float kRadiusY = 5.0f;
-  const float kForce = 15.0f;
-  ui::TouchEvent touch_event(
-      ET_TOUCH_PRESSED, gfx::Point(0, 0), ui::EventTimeForNow(),
-      PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                     /* pointer_id*/ 0,
-                     /* radius_x */ kRadiusX,
-                     /* radius_y */ kRadiusY,
-                     /* force */ kForce));
-  ui::PointerEvent pointer_event_from_touch(touch_event);
-  EXPECT_EQ(kRadiusX, pointer_event_from_touch.pointer_details().radius_x);
-  EXPECT_EQ(kRadiusY, pointer_event_from_touch.pointer_details().radius_y);
-  EXPECT_EQ(kForce, pointer_event_from_touch.pointer_details().force);
-  EXPECT_EQ(kRadiusX, pointer_event_from_touch.pointer_details().radius_x);
-  EXPECT_EQ(0.0f, pointer_event_from_touch.pointer_details().tilt_x);
-  EXPECT_EQ(0.0f, pointer_event_from_touch.pointer_details().tilt_y);
-  EXPECT_EQ(EventPointerType::POINTER_TYPE_TOUCH,
-            pointer_event_from_touch.pointer_details().pointer_type);
-
-  ui::MouseEvent mouse_event(ET_MOUSE_PRESSED, gfx::Point(0, 0),
-                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
-  ui::PointerEvent pointer_event_from_mouse(mouse_event);
-  EXPECT_EQ(mouse_event.pointer_details(),
-            pointer_event_from_mouse.pointer_details());
-}
-
-TEST(EventTest, PointerEventClone) {
-  {
-    ui::PointerEvent ptr_event(ui::TouchEvent(
-        ET_TOUCH_PRESSED, gfx::Point(0, 0), ui::EventTimeForNow(),
-        PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                       /* pointer_id*/ 0,
-                       /* radius_x */ 10.0f,
-                       /* radius_y */ 5.0f,
-                       /* force */ 15.0f)));
-    std::unique_ptr<ui::Event> clone(ui::Event::Clone(ptr_event));
-    EXPECT_TRUE(clone->IsPointerEvent());
-    ui::PointerEvent* clone_as_ptr = clone->AsPointerEvent();
-
-    EXPECT_EQ(ptr_event.type(), clone_as_ptr->type());
-    EXPECT_EQ(ptr_event.pointer_details().id,
-              clone_as_ptr->pointer_details().id);
-    EXPECT_EQ(ptr_event.pointer_details(), clone_as_ptr->pointer_details());
-    EXPECT_EQ(ptr_event.location(), clone_as_ptr->location());
-    EXPECT_EQ(ptr_event.root_location(), clone_as_ptr->root_location());
-  }
-
-  {
-    ui::PointerEvent ptr_event(
-        ui::MouseEvent(ET_MOUSE_PRESSED, gfx::Point(0, 0), gfx::Point(0, 0),
-                       ui::EventTimeForNow(), 0, 0));
-    std::unique_ptr<ui::Event> clone(ui::Event::Clone(ptr_event));
-    EXPECT_TRUE(clone->IsPointerEvent());
-    ui::PointerEvent* clone_as_ptr = clone->AsPointerEvent();
-
-    EXPECT_EQ(ptr_event.type(), clone_as_ptr->type());
-    EXPECT_EQ(ptr_event.pointer_details().id,
-              clone_as_ptr->pointer_details().id);
-    EXPECT_EQ(ptr_event.pointer_details(), clone_as_ptr->pointer_details());
-    EXPECT_EQ(ptr_event.location(), clone_as_ptr->location());
-    EXPECT_EQ(ptr_event.root_location(), clone_as_ptr->root_location());
-  }
-}
-
 TEST(EventTest, MouseEventLatencyUIComponentExists) {
   const gfx::Point origin(0, 0);
   MouseEvent mouseev(ET_MOUSE_PRESSED, origin, origin, EventTimeForNow(), 0, 0);
@@ -928,103 +801,6 @@ TEST(EventTest, MouseWheelEventLatencyUIComponentExists) {
                                EventTimeForNow(), 0, 0);
   EXPECT_TRUE(mouseWheelev.latency()->FindLatency(
       ui::INPUT_EVENT_LATENCY_UI_COMPONENT, nullptr));
-}
-
-TEST(EventTest, PointerEventToMouseEvent) {
-  const struct {
-    ui::EventType in_type;
-    ui::EventType out_type;
-    gfx::Point location;
-    gfx::Point root_location;
-    int flags;
-    int changed_button_flags;
-  } kTestData[] = {
-      {ui::ET_POINTER_DOWN, ui::ET_MOUSE_PRESSED, gfx::Point(10, 20),
-       gfx::Point(110, 120), 0, 0},
-      {ui::ET_POINTER_MOVED, ui::ET_MOUSE_MOVED, gfx::Point(20, 10),
-       gfx::Point(1, 2), 0, 0},
-      {ui::ET_POINTER_MOVED, ui::ET_MOUSE_DRAGGED, gfx::Point(20, 10),
-       gfx::Point(1, 2), EF_LEFT_MOUSE_BUTTON, 0},
-      {ui::ET_POINTER_MOVED, ui::ET_MOUSE_DRAGGED, gfx::Point(20, 10),
-       gfx::Point(1, 2), EF_RIGHT_MOUSE_BUTTON, 0},
-      {ui::ET_POINTER_MOVED, ui::ET_MOUSE_DRAGGED, gfx::Point(20, 10),
-       gfx::Point(1, 2), EF_MIDDLE_MOUSE_BUTTON, 0},
-      {ui::ET_POINTER_ENTERED, ui::ET_MOUSE_ENTERED, gfx::Point(), gfx::Point(),
-       EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON, 0},
-      {ui::ET_POINTER_EXITED, ui::ET_MOUSE_EXITED, gfx::Point(5, 1),
-       gfx::Point(1, 5), EF_RIGHT_MOUSE_BUTTON, 0},
-      {ui::ET_POINTER_UP, ui::ET_MOUSE_RELEASED, gfx::Point(1000, 1000),
-       gfx::Point(14, 15), EF_MIDDLE_MOUSE_BUTTON, EF_MIDDLE_MOUSE_BUTTON}};
-
-  for (size_t i = 0; i < arraysize(kTestData); i++) {
-    ui::PointerEvent pointer_event(
-        kTestData[i].in_type, kTestData[i].location, kTestData[i].root_location,
-        kTestData[i].flags, kTestData[i].changed_button_flags,
-        ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_MOUSE, 0),
-        base::TimeTicks());
-    ui::MouseEvent mouse_event(pointer_event);
-
-    EXPECT_EQ(kTestData[i].out_type, mouse_event.type());
-    EXPECT_EQ(kTestData[i].location, mouse_event.location());
-    EXPECT_EQ(kTestData[i].root_location, mouse_event.root_location());
-    EXPECT_EQ(kTestData[i].flags, mouse_event.flags());
-    EXPECT_EQ(kTestData[i].changed_button_flags,
-              mouse_event.changed_button_flags());
-  }
-}
-
-TEST(EventTest, PointerEventToTouchEventType) {
-  ui::EventType kTouchTypeMap[][2] = {
-      {ui::ET_POINTER_DOWN, ui::ET_TOUCH_PRESSED},
-      {ui::ET_POINTER_MOVED, ui::ET_TOUCH_MOVED},
-      {ui::ET_POINTER_UP, ui::ET_TOUCH_RELEASED},
-      {ui::ET_POINTER_CANCELLED, ui::ET_TOUCH_CANCELLED},
-  };
-
-  for (size_t i = 0; i < arraysize(kTouchTypeMap); i++) {
-    ui::PointerEvent pointer_event(
-        kTouchTypeMap[i][0], gfx::Point(), gfx::Point(), 0, 0,
-        ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0),
-        base::TimeTicks());
-    ui::TouchEvent touch_event(pointer_event);
-
-    EXPECT_EQ(kTouchTypeMap[i][1], touch_event.type());
-  }
-}
-
-TEST(EventTest, PointerEventToTouchEventDetails) {
-  ui::PointerEvent pointer_event(ui::TouchEvent(
-      ui::ET_TOUCH_PRESSED, gfx::Point(12, 14), EventTimeForNow(),
-      PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                     /* pointer_id*/ 15,
-                     /* radius_x */ 11.5,
-                     /* radius_y */ 13.5,
-                     /* force */ 0.5),
-      0, 13.0));
-  ui::TouchEvent touch_event(pointer_event);
-
-  EXPECT_EQ(pointer_event.location(), touch_event.location());
-  EXPECT_EQ(pointer_event.flags(), touch_event.flags());
-  EXPECT_EQ(pointer_event.pointer_details().id,
-            touch_event.pointer_details().id);
-  EXPECT_EQ(pointer_event.pointer_details(), touch_event.pointer_details());
-  EXPECT_EQ(pointer_event.time_stamp(), touch_event.time_stamp());
-}
-
-TEST(EventTest, PointerEventSourceEventTypeExistsInLatencyInfo) {
-  ui::PointerEvent wheel_poniter_event(
-      ui::ET_POINTER_WHEEL_CHANGED, gfx::Point(), gfx::Point(), 0, 0,
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_MOUSE, 0),
-      ui::EventTimeForNow());
-  EXPECT_EQ(wheel_poniter_event.latency()->source_event_type(),
-            ui::SourceEventType::WHEEL);
-
-  ui::PointerEvent touch_poniter_event(
-      ui::ET_TOUCH_PRESSED, gfx::Point(), gfx::Point(), 0, 0,
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0),
-      ui::EventTimeForNow());
-  EXPECT_EQ(touch_poniter_event.latency()->source_event_type(),
-            ui::SourceEventType::TOUCH);
 }
 
 // Checks that Event.Latency.OS.TOUCH_PRESSED, TOUCH_MOVED,

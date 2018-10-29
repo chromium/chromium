@@ -629,7 +629,9 @@ TEST_F(CORSTest, CORSUnsafeNotForbiddenRequestHeaderNames) {
   using List = std::vector<std::string>;
 
   // Empty => Empty
-  EXPECT_EQ(CORSUnsafeNotForbiddenRequestHeaderNames({}), List({}));
+  EXPECT_EQ(
+      CORSUnsafeNotForbiddenRequestHeaderNames({}, false /* is_revalidating */),
+      List({}));
 
   // "user-agent" is NOT forbidden per spec, but forbidden in Chromium.
   EXPECT_EQ(
@@ -638,7 +640,8 @@ TEST_F(CORSTest, CORSUnsafeNotForbiddenRequestHeaderNames) {
                                                 {"aCCept", "en,ja"},
                                                 {"accept-charset", "utf-8"},
                                                 {"uSer-Agent", "foo"},
-                                                {"hogE", "fuga"}}),
+                                                {"hogE", "fuga"}},
+                                               false /* is_revalidating */),
       List({"hoge"}));
 
   EXPECT_EQ(
@@ -646,7 +649,8 @@ TEST_F(CORSTest, CORSUnsafeNotForbiddenRequestHeaderNames) {
                                                 {"dpr", "123-45"},
                                                 {"aCCept", "en,ja"},
                                                 {"accept-charset", "utf-8"},
-                                                {"hogE", "fuga"}}),
+                                                {"hogE", "fuga"}},
+                                               false /* is_revalidating */),
       List({"content-type", "dpr", "hoge"}));
 
   // |safelistValueSize| is 1024.
@@ -662,7 +666,8 @@ TEST_F(CORSTest, CORSUnsafeNotForbiddenRequestHeaderNames) {
            {"viewport-width", std::string(128, '1')},
            {"width", std::string(126, '1')},
            {"accept-charset", "utf-8"},
-           {"hogE", "fuga"}}),
+           {"hogE", "fuga"}},
+          false /* is_revalidating */),
       List({"hoge"}));
 
   // |safelistValueSize| is 1025.
@@ -678,7 +683,8 @@ TEST_F(CORSTest, CORSUnsafeNotForbiddenRequestHeaderNames) {
            {"viewport-width", std::string(128, '1')},
            {"width", std::string(127, '1')},
            {"accept-charset", "utf-8"},
-           {"hogE", "fuga"}}),
+           {"hogE", "fuga"}},
+          false /* is_revalidating */),
       List({"hoge", "content-type", "accept", "accept-language",
             "content-language", "dpr", "device-memory", "save-data",
             "viewport-width", "width"}));
@@ -696,8 +702,35 @@ TEST_F(CORSTest, CORSUnsafeNotForbiddenRequestHeaderNames) {
            {"viewport-width", std::string(128, '1')},
            {"width", std::string(127, '1')},
            {"accept-charset", "utf-8"},
-           {"hogE", "fuga"}}),
+           {"hogE", "fuga"}},
+          false /* is_revalidating */),
       List({"content-type", "hoge"}));
+}
+
+TEST_F(CORSTest, CORSUnsafeNotForbiddenRequestHeaderNamesWithRevalidating) {
+  // Needed because initializer list is not allowed for a macro argument.
+  using List = std::vector<std::string>;
+
+  // Empty => Empty
+  EXPECT_EQ(
+      CORSUnsafeNotForbiddenRequestHeaderNames({}, true /* is_revalidating */),
+      List({}));
+
+  // These three headers will be ignored.
+  EXPECT_EQ(
+      CORSUnsafeNotForbiddenRequestHeaderNames({{"If-MODifIED-since", "x"},
+                                                {"iF-nONE-MATCh", "y"},
+                                                {"CACHE-ContrOl", "z"}},
+                                               true /* is_revalidating */),
+      List({}));
+
+  // Without is_revalidating set, these three headers will not be safelisted.
+  EXPECT_EQ(
+      CORSUnsafeNotForbiddenRequestHeaderNames({{"If-MODifIED-since", "x"},
+                                                {"iF-nONE-MATCh", "y"},
+                                                {"CACHE-ContrOl", "z"}},
+                                               false /* is_revalidating */),
+      List({"if-modified-since", "if-none-match", "cache-control"}));
 }
 
 }  // namespace

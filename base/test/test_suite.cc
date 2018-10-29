@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/memory.h"
@@ -135,18 +136,16 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
   DISALLOW_COPY_AND_ASSIGN(CheckForLeakedGlobals);
 };
 
-std::string GetProfileName() {
-  static const char kDefaultProfileName[] = "test-profile-{pid}";
-  CR_DEFINE_STATIC_LOCAL(std::string, profile_name, ());
-  if (profile_name.empty()) {
+const std::string& GetProfileName() {
+  static const base::NoDestructor<std::string> profile_name([]() {
     const base::CommandLine& command_line =
         *base::CommandLine::ForCurrentProcess();
     if (command_line.HasSwitch(switches::kProfilingFile))
-      profile_name = command_line.GetSwitchValueASCII(switches::kProfilingFile);
+      return command_line.GetSwitchValueASCII(switches::kProfilingFile);
     else
-      profile_name = std::string(kDefaultProfileName);
-  }
-  return profile_name;
+      return std::string("test-profile-{pid}");
+  }());
+  return *profile_name;
 }
 
 void InitializeLogging() {

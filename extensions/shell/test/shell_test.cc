@@ -5,6 +5,7 @@
 #include "extensions/shell/test/shell_test.h"
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
@@ -19,6 +20,7 @@ namespace extensions {
 AppShellTest::AppShellTest()
     : browser_context_(nullptr),
       extension_system_(nullptr) {
+  CreateTestServer(base::FilePath(FILE_PATH_LITERAL("extensions/test/data")));
 }
 
 AppShellTest::~AppShellTest() {

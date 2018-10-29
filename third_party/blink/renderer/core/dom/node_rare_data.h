@@ -124,9 +124,9 @@ class NodeRareData : public GarbageCollectedFinalized<NodeRareData>,
 
   void ClearNodeLists() { node_lists_.Clear(); }
   NodeListsNodeData* NodeLists() const { return node_lists_.Get(); }
-  // ensureNodeLists() and a following NodeListsNodeData functions must be
+  // EnsureNodeLists() and a following NodeListsNodeData functions must be
   // wrapped with a ThreadState::GCForbiddenScope in order to avoid an
-  // initialized m_nodeLists is cleared by NodeRareData::traceAfterDispatch().
+  // initialized node_lists_ is cleared by NodeRareData::TraceAfterDispatch().
   NodeListsNodeData& EnsureNodeLists() {
     DCHECK(ThreadState::Current()->IsGCForbidden());
     if (!node_lists_)

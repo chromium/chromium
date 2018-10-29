@@ -33,6 +33,12 @@ class MockTextureOwner : public TextureOwner {
   MOCK_METHOD0(IsExpectingFrameAvailable, bool());
   MOCK_METHOD0(WaitForFrameAvailable, void());
 
+  std::unique_ptr<gl::GLImage::ScopedHardwareBuffer> GetAHardwareBuffer()
+      override {
+    get_a_hardware_buffer_count++;
+    return nullptr;
+  }
+
   // Fake implementations that the mocks will call by default.
   void FakeSetReleaseTimeToNow() { expecting_frame_available = true; }
   void FakeIgnorePendingRelease() { expecting_frame_available = false; }
@@ -43,6 +49,7 @@ class MockTextureOwner : public TextureOwner {
   gl::GLContext* fake_context;
   gl::GLSurface* fake_surface;
   bool expecting_frame_available;
+  int get_a_hardware_buffer_count = 0;
 
  protected:
   ~MockTextureOwner();

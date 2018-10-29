@@ -7,11 +7,13 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/post_task.h"
 #include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/db/whitelist_checker_client.h"
 #include "components/safe_browsing/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/web_ui/safe_browsing_ui.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
@@ -95,7 +97,8 @@ void PasswordProtectionRequest::CheckWhitelist() {
   // check is required.
   auto result_callback = base::Bind(&OnWhitelistCheckDoneOnIO, GetWeakPtr());
   tracker_.PostTask(
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO).get(), FROM_HERE,
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}).get(),
+      FROM_HERE,
       base::BindOnce(&WhitelistCheckerClient::StartCheckCsdWhitelist,
                      password_protection_service_->database_manager(),
                      main_frame_url_, result_callback));
@@ -106,8 +109,8 @@ void PasswordProtectionRequest::OnWhitelistCheckDoneOnIO(
     base::WeakPtr<PasswordProtectionRequest> weak_request,
     bool match_whitelist) {
   // Don't access weak_request on IO thread. Move it back to UI thread first.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&PasswordProtectionRequest::OnWhitelistCheckDone,
                      weak_request, match_whitelist));
 }
@@ -156,6 +159,13 @@ void PasswordProtectionRequest::FillRequestProto() {
   request_proto_->set_clicked_through_interstitial(
       clicked_through_interstitial);
   request_proto_->set_content_type(web_contents_->GetContentsMimeType());
+  if (password_protection_service_->IsExtendedReporting() &&
+      !password_protection_service_->IsIncognito()) {
+    gfx::Size content_area_size =
+        password_protection_service_->GetCurrentContentAreaSize();
+    request_proto_->set_content_area_height(content_area_size.height());
+    request_proto_->set_content_area_width(content_area_size.width());
+  }
 
   switch (trigger_type_) {
     case LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE: {
@@ -168,12 +178,9 @@ void PasswordProtectionRequest::FillRequestProto() {
             request_proto_->add_frames();
         password_frame->set_url(password_form_frame_url_.spec());
         password_frame->set_has_password_field(true);
-        // TODO(jialiul): Add referrer chain for subframes later.
         password_form = password_frame->add_forms();
       }
       password_form->set_action_url(password_form_action_.spec());
-      // TODO(jialiul): Fill more frame specific info when Safe Browsing backend
-      // is ready to handle these pieces of information.
       break;
     }
     case LoginReputationClientRequest::PASSWORD_REUSE_EVENT: {
@@ -276,8 +283,8 @@ void PasswordProtectionRequest::StartTimeout() {
   // The weak pointer used for the timeout will be invalidated (and
   // hence would prevent the timeout) if the check completes on time and
   // execution reaches Finish().
-  BrowserThread::PostDelayedTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostDelayedTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&PasswordProtectionRequest::Cancel, GetWeakPtr(), true),
       base::TimeDelta::FromMilliseconds(request_timeout_in_ms_));
 }

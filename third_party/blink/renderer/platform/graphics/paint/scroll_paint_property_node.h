@@ -91,9 +91,9 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     if (state == state_)
       return parent_changed;
 
-    SetChanged();
     state_ = std::move(state);
     Validate();
+    SetChanged();
     return true;
   }
 
@@ -150,20 +150,6 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
   const CompositorElementId& GetCompositorElementId() const {
     return state_.compositor_element_id;
   }
-
-#if DCHECK_IS_ON()
-  // The clone function is used by FindPropertiesNeedingUpdate.h for recording
-  // a scroll node before it has been updated, to later detect changes.
-  scoped_refptr<ScrollPaintPropertyNode> Clone() const {
-    return base::AdoptRef(new ScrollPaintPropertyNode(Parent(), State(state_)));
-  }
-
-  // The equality operator is used by FindPropertiesNeedingUpdate.h for checking
-  // if a scroll node has changed.
-  bool operator==(const ScrollPaintPropertyNode& o) const {
-    return Parent() == o.Parent() && state_ == o.state_;
-  }
-#endif
 
   std::unique_ptr<JSONObject> ToJSON() const;
 

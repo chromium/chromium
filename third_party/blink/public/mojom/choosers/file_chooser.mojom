@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 // FileChooserParams stores arguments for an operation to open a file
@@ -65,5 +66,25 @@ struct FileChooserParams {
   url.mojom.Url requestor;
 };
 
-// TODO(tkent): Add FileChooserFileInfo, FileChooserFactory, FileChooser, and
-// FileChooseClient. crbug.com/869257
+struct NativeFileInfo {
+  mojo_base.mojom.FilePath file_path;
+
+  // The display name of the file that is to be exposed as File.name in the
+  // DOM layer.  If it is empty, the base part of the |file_path| is used.
+  mojo_base.mojom.String16 display_name;
+};
+
+struct FileSystemFileInfo {
+  url.mojom.Url url;
+  mojo_base.mojom.Time modification_time;
+  int64 length = 0;
+};
+
+// Represents a file selected by a user.
+union FileChooserFileInfo {
+  NativeFileInfo native_file;
+  FileSystemFileInfo file_system;
+};
+
+// TODO(tkent): Add FileChooserFactory, FileChooser, and FileChooseClient.
+// crbug.com/869257

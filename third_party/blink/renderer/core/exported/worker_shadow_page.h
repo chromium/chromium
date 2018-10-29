@@ -83,7 +83,7 @@ class CORE_EXPORT WorkerShadowPage : public WebLocalFrameClient {
   WebDocumentLoader* DocumentLoader() {
     return main_frame_->GetDocumentLoader();
   }
-  void BindDevToolsAgent(mojom::blink::DevToolsAgentAssociatedRequest);
+  WebDevToolsAgentImpl* DevToolsAgent();
 
   bool WasInitialized() const;
 

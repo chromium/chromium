@@ -18,51 +18,19 @@ const string kBlockedForAssistantSnapshot_Property =
 const string kCanConsumeSystemKeys_Property =
   "ash:can-consume-system-keys";
 
-// The bounds of the window control buttons (minimize, maximize, restore)
-// relative to the frame.
-const string kCaptionButtonBounds_Property = "ash:caption-button-bounds";
-
-// An UnguessableToken used to tell Mash the frame image to use for a custom
-// Browser theme, for both a window's active state and its inactive state.
-// The token to image mapping is stored in ash::ClientImageRegistry.
-const string kFrameImageActive_Property = "ash:frame-image-active";
-const string kFrameImageInactive_Property = "ash:frame-image-inactive";
-
-// More frame image tokens. These map to "theme_frame_overlay[_inactive]" in
-// custom browser themes. See browser_theme_pack.cc
-const string kFrameImageOverlayActive_Property =
-    "ash:frame-image-overlay-active";
-const string kFrameImageOverlayInactive_Property =
-    "ash:frame-image-overlay-inactive";
-
-// A property that controls where a themed window's image is painted.
-const string kFrameImageYInset_Property = "ash:frame-image-y-inset";
-
-// A boolean that tells Ash whether the frame's colors come from a PWA manifest.
-const string kFrameIsThemedByHostedApp_Property =
-    "ash:frame-is-themed-by-hosted-app";
-
-// The color of the text drawn on the frame (i.e. the window title). Only used
-// for tabless browser windows.
-const string kFrameTextColor_Property = "ash:frame-text-color";
-
-// See ash::kHideCaptionButtonsInTabletModeKey.
-const string kHideCaptionButtonsInTabletMode_Property =
-    "ash:hide-caption-buttons-in-tablet-mode";
-
 // True if the shelf should be hidden when this window is put into fullscreen.
 // Exposed because some windows want to explicitly opt-out of this.
 const string kHideShelfWhenFullscreen_Property =
   "ash:hide-shelf-when-fullscreen";
 
-// See ash::kImmseriveImpliedByFullscreen.
+// See ash::kImmersiveImpliedByFullscreen.
 const string kImmersiveImpliedByFullscreen_Property =
   "ash:immersive-implied-by-fullscreen";
 
-// See ash::kImmseriveIsActive.
+// See ash::kImmersiveIsActive.
 const string kImmersiveIsActive_Property = "ash:immersive-is-active";
 
-// See ash::kImmseriveTopContainerBoundsInScreen.
+// See ash::kImmersiveTopContainerBoundsInScreen.
 const string kImmersiveTopContainerBoundsInScreen_Property =
     "ash:immersive-top-container-bounds-in-screen";
 

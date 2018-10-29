@@ -170,20 +170,19 @@ IntRect::operator gfx::Rect() const {
 IntRect UnionRect(const Vector<IntRect>& rects) {
   IntRect result;
 
-  size_t count = rects.size();
-  for (size_t i = 0; i < count; ++i)
-    result.Unite(rects[i]);
+  for (const IntRect& rect : rects)
+    result.Unite(rect);
 
   return result;
 }
 
 IntRect UnionRectEvenIfEmpty(const Vector<IntRect>& rects) {
-  size_t count = rects.size();
+  wtf_size_t count = rects.size();
   if (!count)
     return IntRect();
 
   IntRect result = rects[0];
-  for (size_t i = 1; i < count; ++i)
+  for (wtf_size_t i = 1; i < count; ++i)
     result.UniteEvenIfEmpty(rects[i]);
 
   return result;

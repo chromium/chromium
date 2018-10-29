@@ -111,8 +111,7 @@ class FilesListRequestRunnerTest : public testing::Test {
     runner_.reset(new FilesListRequestRunner(
         request_sender_.get(),
         google_apis::DriveApiUrlGenerator(test_server_.base_url(),
-                                          test_server_.GetURL("/thumbnail/"),
-                                          TEAM_DRIVES_INTEGRATION_DISABLED)));
+                                          test_server_.GetURL("/thumbnail/"))));
   }
 
   void TearDown() override {
@@ -184,7 +183,8 @@ TEST_F(FilesListRequestRunnerTest, Success_NoBackoff) {
 
   ASSERT_TRUE(http_request_.get());
   EXPECT_EQ(
-      "/drive/v2/files?maxResults=4&q=testing-query&fields=testing-fields",
+      "/drive/v2/files?supportsTeamDrives=true&includeTeamDriveItems=true"
+      "&corpora=default&maxResults=4&q=testing-query&fields=testing-fields",
       http_request_->relative_url);
 
   ASSERT_TRUE(response_error_.get());
@@ -206,7 +206,8 @@ TEST_F(FilesListRequestRunnerTest, Success_Backoff) {
 
     ASSERT_TRUE(http_request_.get());
     EXPECT_EQ(
-        "/drive/v2/files?maxResults=4&q=testing-query&fields=testing-fields",
+        "/drive/v2/files?supportsTeamDrives=true&includeTeamDriveItems=true"
+        "&corpora=default&maxResults=4&q=testing-query&fields=testing-fields",
         http_request_->relative_url);
     EXPECT_FALSE(response_error_.get());
   }
@@ -221,7 +222,8 @@ TEST_F(FilesListRequestRunnerTest, Success_Backoff) {
 
     ASSERT_TRUE(http_request_.get());
     EXPECT_EQ(
-        "/drive/v2/files?maxResults=2&q=testing-query&fields=testing-fields",
+        "/drive/v2/files?supportsTeamDrives=true&includeTeamDriveItems=true"
+        "&corpora=default&maxResults=2&q=testing-query&fields=testing-fields",
         http_request_->relative_url);
 
     ASSERT_TRUE(response_error_.get());
@@ -244,7 +246,8 @@ TEST_F(FilesListRequestRunnerTest, Failure_TooManyBackoffs) {
 
     ASSERT_TRUE(http_request_.get());
     EXPECT_EQ(
-        "/drive/v2/files?maxResults=4&q=testing-query&fields=testing-fields",
+        "/drive/v2/files?supportsTeamDrives=true&includeTeamDriveItems=true"
+        "&corpora=default&maxResults=4&q=testing-query&fields=testing-fields",
         http_request_->relative_url);
     EXPECT_FALSE(response_error_.get());
   }
@@ -261,7 +264,8 @@ TEST_F(FilesListRequestRunnerTest, Failure_TooManyBackoffs) {
 
     ASSERT_TRUE(http_request_.get());
     EXPECT_EQ(
-        "/drive/v2/files?maxResults=2&q=testing-query&fields=testing-fields",
+        "/drive/v2/files?supportsTeamDrives=true&includeTeamDriveItems=true"
+        "&corpora=default&maxResults=2&q=testing-query&fields=testing-fields",
         http_request_->relative_url);
     EXPECT_FALSE(response_error_.get());
   }
@@ -277,7 +281,8 @@ TEST_F(FilesListRequestRunnerTest, Failure_TooManyBackoffs) {
 
     ASSERT_TRUE(http_request_.get());
     EXPECT_EQ(
-        "/drive/v2/files?maxResults=1&q=testing-query&fields=testing-fields",
+        "/drive/v2/files?supportsTeamDrives=true&includeTeamDriveItems=true"
+        "&corpora=default&maxResults=1&q=testing-query&fields=testing-fields",
         http_request_->relative_url);
 
     ASSERT_TRUE(response_error_.get());
@@ -300,7 +305,8 @@ TEST_F(FilesListRequestRunnerTest, Failure_AnotherError) {
 
   ASSERT_TRUE(http_request_.get());
   EXPECT_EQ(
-      "/drive/v2/files?maxResults=4&q=testing-query&fields=testing-fields",
+      "/drive/v2/files?supportsTeamDrives=true&includeTeamDriveItems=true"
+      "&corpora=default&maxResults=4&q=testing-query&fields=testing-fields",
       http_request_->relative_url);
 
   // There must be no backoff in case of an error different than

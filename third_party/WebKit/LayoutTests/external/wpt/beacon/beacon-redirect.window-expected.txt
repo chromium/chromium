@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: NoData-307
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: NullData-307
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: UndefinedData-307
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallString-307
+FAIL Verify 'navigator.sendbeacon()' successfully sends for variant: SmallBlob-307 Failed to execute 'sendBeacon' on 'Navigator': sendBeacon() with a Blob whose type is not any of the CORS-safelisted values for the Content-Type request header is disabled temporarily. See http://crbug.com/490015 for details.
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallBufferSource-307
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallFormData-307
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeEncoded-307
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeForm-307
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeText-307
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: NoData-308
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: NullData-308
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: UndefinedData-308
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallString-308
+FAIL Verify 'navigator.sendbeacon()' successfully sends for variant: SmallBlob-308 Failed to execute 'sendBeacon' on 'Navigator': sendBeacon() with a Blob whose type is not any of the CORS-safelisted values for the Content-Type request header is disabled temporarily. See http://crbug.com/490015 for details.
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallBufferSource-308
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallFormData-308
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeEncoded-308
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeForm-308
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeText-308
+Harness: the test ran to completion.
+

@@ -84,6 +84,21 @@ void GinJavaBridgeMessageFilter::RemoveHost(GinJavaBridgeDispatcherHost* host) {
   }
 }
 
+void GinJavaBridgeMessageFilter::RenderProcessExited(
+    RenderProcessHost* rph,
+    const ChildProcessTerminationInfo& info) {
+#if DCHECK_IS_ON()
+  {
+    scoped_refptr<GinJavaBridgeMessageFilter> filter =
+        base::UserDataAdapter<GinJavaBridgeMessageFilter>::Get(
+            rph, kGinJavaBridgeMessageFilterKey);
+    DCHECK_EQ(this, filter.get());
+  }
+#endif
+  rph->RemoveObserver(this);
+  rph->RemoveUserData(kGinJavaBridgeMessageFilterKey);
+}
+
 // static
 scoped_refptr<GinJavaBridgeMessageFilter> GinJavaBridgeMessageFilter::FromHost(
     GinJavaBridgeDispatcherHost* host, bool create_if_not_exists) {
@@ -94,6 +109,8 @@ scoped_refptr<GinJavaBridgeMessageFilter> GinJavaBridgeMessageFilter::FromHost(
   if (!filter && create_if_not_exists) {
     filter = new GinJavaBridgeMessageFilter();
     rph->AddFilter(filter.get());
+    rph->AddObserver(filter.get());
+
     rph->SetUserData(
         kGinJavaBridgeMessageFilterKey,
         std::make_unique<base::UserDataAdapter<GinJavaBridgeMessageFilter>>(

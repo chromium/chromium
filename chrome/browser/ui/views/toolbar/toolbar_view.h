@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/scoped_observer.h"
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
@@ -23,6 +24,7 @@
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/material_design/material_design_controller_observer.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_listener.h"
@@ -62,7 +64,8 @@ class ToolbarView : public views::AccessiblePaneView,
                     public AppMenuIconController::Delegate,
                     public UpgradeObserver,
                     public ToolbarButtonProvider,
-                    public BrowserRootView::DropTarget {
+                    public BrowserRootView::DropTarget,
+                    public ui::MaterialDesignControllerObserver {
  public:
   // The view class name.
   static const char kViewClassName[];
@@ -122,9 +125,6 @@ class ToolbarView : public views::AccessiblePaneView,
     return &app_menu_icon_controller_;
   }
 
-  // AccessiblePaneView:
-  bool SetPaneFocus(View* initial_focus) override;
-
   // views::MenuButtonListener:
   void OnMenuButtonClicked(views::MenuButton* source,
                            const gfx::Point& point,
@@ -173,7 +173,9 @@ class ToolbarView : public views::AccessiblePaneView,
  protected:
   // AccessiblePaneView:
   bool SetPaneFocusAndFocusDefault() override;
-  void RemovePaneFocus() override;
+
+  // ui::MaterialDesignControllerObserver:
+  void OnTouchUiChanged() override;
 
   bool is_display_mode_normal() const {
     return display_mode_ == DISPLAYMODE_NORMAL;
@@ -249,6 +251,10 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // The display mode used when laying out the toolbar.
   const DisplayMode display_mode_;
+
+  ScopedObserver<ui::MaterialDesignController,
+                 ui::MaterialDesignControllerObserver>
+      md_observer_{this};
 
   // Whether this toolbar has been initialized.
   bool initialized_ = false;

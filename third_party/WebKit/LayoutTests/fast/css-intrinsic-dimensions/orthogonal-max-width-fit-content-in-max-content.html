@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<style>
+  #container { width:max-content; border:10px solid green; background:red; }
+  #child { writing-mode:vertical-rl; border:10px solid green; max-width:-webkit-fill-available; background:red; }
+  .float { float:left; width:60px; height:30px; background:green; }
+</style>
+<p>There should be a green square below, and no red.</p>
+<div id="container" data-expected-width="100" data-expected-height="100">
+  <div id="child" data-expected-width="80" data-expected-height="80">
+    <div class="float"></div>
+    <div class="float"></div>
+  </div>
+</div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/check-layout-th.js"></script>
+<script>
+  checkLayout("#container");
+</script>

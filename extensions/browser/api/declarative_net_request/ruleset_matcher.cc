@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
@@ -36,7 +35,6 @@ RulesetMatcher::LoadRulesetResult RulesetMatcher::CreateVerifiedMatcher(
     std::unique_ptr<RulesetMatcher>* matcher) {
   DCHECK(matcher);
   DCHECK(IsAPIAvailable());
-  base::AssertBlockingAllowed();
 
   base::ElapsedTimer timer;
 

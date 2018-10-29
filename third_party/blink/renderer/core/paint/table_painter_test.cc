@@ -39,7 +39,8 @@ TEST_P(TablePainterTest, Background) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 2,
-      TestDisplayItem(ViewBackgroundClient(), DisplayItem::kDocumentBackground),
+      TestDisplayItem(ViewScrollingBackgroundClient(),
+                      DisplayItem::kDocumentBackground),
       TestDisplayItem(row1, DisplayItem::kBoxDecorationBackground));
 
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
@@ -48,7 +49,8 @@ TEST_P(TablePainterTest, Background) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 2,
-      TestDisplayItem(ViewBackgroundClient(), DisplayItem::kDocumentBackground),
+      TestDisplayItem(ViewScrollingBackgroundClient(),
+                      DisplayItem::kDocumentBackground),
       TestDisplayItem(row2, DisplayItem::kBoxDecorationBackground));
 }
 
@@ -82,7 +84,8 @@ TEST_P(TablePainterTest, BackgroundWithCellSpacing) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 3,
-      TestDisplayItem(ViewBackgroundClient(), DisplayItem::kDocumentBackground),
+      TestDisplayItem(ViewScrollingBackgroundClient(),
+                      DisplayItem::kDocumentBackground),
       TestDisplayItem(row1, DisplayItem::kBoxDecorationBackground),
       TestDisplayItem(cell1, DisplayItem::kBoxDecorationBackground));
 
@@ -93,7 +96,8 @@ TEST_P(TablePainterTest, BackgroundWithCellSpacing) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 2,
-      TestDisplayItem(ViewBackgroundClient(), DisplayItem::kDocumentBackground),
+      TestDisplayItem(ViewScrollingBackgroundClient(),
+                      DisplayItem::kDocumentBackground),
       TestDisplayItem(row1, DisplayItem::kBoxDecorationBackground));
 
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
@@ -103,7 +107,8 @@ TEST_P(TablePainterTest, BackgroundWithCellSpacing) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 3,
-      TestDisplayItem(ViewBackgroundClient(), DisplayItem::kDocumentBackground),
+      TestDisplayItem(ViewScrollingBackgroundClient(),
+                      DisplayItem::kDocumentBackground),
       TestDisplayItem(row2, DisplayItem::kBoxDecorationBackground),
       TestDisplayItem(cell2, DisplayItem::kBoxDecorationBackground));
 }
@@ -135,7 +140,8 @@ TEST_P(TablePainterTest, BackgroundInSelfPaintingRow) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 3,
-      TestDisplayItem(ViewBackgroundClient(), DisplayItem::kDocumentBackground),
+      TestDisplayItem(ViewScrollingBackgroundClient(),
+                      DisplayItem::kDocumentBackground),
       TestDisplayItem(row, DisplayItem::kBoxDecorationBackground),
       TestDisplayItem(cell1, DisplayItem::kBoxDecorationBackground));
 
@@ -145,7 +151,7 @@ TEST_P(TablePainterTest, BackgroundInSelfPaintingRow) {
   Paint(&interest_rect);
 
   EXPECT_DISPLAY_LIST(RootPaintController().GetDisplayItemList(), 1,
-                      TestDisplayItem(ViewBackgroundClient(),
+                      TestDisplayItem(ViewScrollingBackgroundClient(),
                                       DisplayItem::kDocumentBackground));
 
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
@@ -153,12 +159,12 @@ TEST_P(TablePainterTest, BackgroundInSelfPaintingRow) {
   interest_rect = IntRect(450, 0, 200, 200);
   Paint(&interest_rect);
 
-    EXPECT_DISPLAY_LIST(
-        RootPaintController().GetDisplayItemList(), 3,
-        TestDisplayItem(ViewBackgroundClient(),
-                        DisplayItem::kDocumentBackground),
-        TestDisplayItem(row, DisplayItem::kBoxDecorationBackground),
-        TestDisplayItem(cell2, DisplayItem::kBoxDecorationBackground));
+  EXPECT_DISPLAY_LIST(
+      RootPaintController().GetDisplayItemList(), 3,
+      TestDisplayItem(ViewScrollingBackgroundClient(),
+                      DisplayItem::kDocumentBackground),
+      TestDisplayItem(row, DisplayItem::kBoxDecorationBackground),
+      TestDisplayItem(cell2, DisplayItem::kBoxDecorationBackground));
 }
 
 TEST_P(TablePainterTest, CollapsedBorderAndOverflow) {
@@ -185,7 +191,8 @@ TEST_P(TablePainterTest, CollapsedBorderAndOverflow) {
   // We should paint all display items of cell.
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 4,
-      TestDisplayItem(ViewBackgroundClient(), DisplayItem::kDocumentBackground),
+      TestDisplayItem(ViewScrollingBackgroundClient(),
+                      DisplayItem::kDocumentBackground),
       TestDisplayItem(cell, DisplayItem::kBoxDecorationBackground),
       TestDisplayItem(*cell.Row(), DisplayItem::kTableCollapsedBorders),
       TestDisplayItem(cell, DisplayItem::PaintPhaseToDrawingType(

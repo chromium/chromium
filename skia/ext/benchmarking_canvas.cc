@@ -216,7 +216,6 @@ std::unique_ptr<base::Value> AsValue(const SkPaint& paint) {
     builder.addFlag(paint.isLCDRenderText(), "LCDRenderText");
     builder.addFlag(paint.isEmbeddedBitmapText(), "EmbeddedBitmapText");
     builder.addFlag(paint.isAutohinted(), "Autohinted");
-    builder.addFlag(paint.isVerticalText(), "VerticalText");
 
     val->SetString("Flags", builder.str());
   }

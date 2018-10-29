@@ -45,11 +45,10 @@ DRIVER_START_TIMEOUT_SECS = 30
 
 class DriverInput(object):
 
-    def __init__(self, test_name, timeout, image_hash, should_run_pixel_test, args):
+    def __init__(self, test_name, timeout, image_hash, args):
         self.test_name = test_name
         self.timeout = timeout  # in ms
         self.image_hash = image_hash
-        self.should_run_pixel_test = should_run_pixel_test
         self.args = args
 
 
@@ -91,7 +90,7 @@ class DeviceFailure(Exception):
 class Driver(object):
     """object for running test(s) using content_shell or other driver."""
 
-    def __init__(self, port, worker_number, pixel_tests, no_timeout=False):
+    def __init__(self, port, worker_number, no_timeout=False):
         """Initialize a Driver to subsequently run tests.
 
         Typically this routine will spawn content_shell in a config
@@ -144,7 +143,7 @@ class Driver(object):
     def __del__(self):
         self.stop()
 
-    def run_test(self, driver_input, stop_when_done):
+    def run_test(self, driver_input):
         """Run a single test and return the results.
 
         Note that it is okay if a test times out or crashes. content_shell
@@ -156,7 +155,7 @@ class Driver(object):
         """
         start_time = time.time()
         stdin_deadline = start_time + int(driver_input.timeout) / 2000.0
-        self.start(driver_input.should_run_pixel_test, driver_input.args, stdin_deadline)
+        self.start(driver_input.args, stdin_deadline)
         test_begin_time = time.time()
         self.error_from_test = str()
         self.err_seen_eof = False
@@ -182,10 +181,10 @@ class Driver(object):
                 self._crashed_process_name = 'unknown process name'
                 self._crashed_pid = 0
 
-        if stop_when_done or crashed or timed_out or leaked:
+        if crashed or timed_out or leaked:
             # We call stop() even if we crashed or timed out in order to get any remaining stdout/stderr output.
             # In the timeout case, we kill the hung process as well.
-            out, err = self._server_process.stop(self._port.driver_stop_timeout() if stop_when_done else 0.0)
+            out, err = self._server_process.stop(0.0)
             if out:
                 text += out
             if err:
@@ -305,10 +304,10 @@ class Driver(object):
             return True
         return False
 
-    def start(self, pixel_tests, per_test_args, deadline):
-        new_cmd_line = self.cmd_line(pixel_tests, per_test_args)
+    def start(self, per_test_args, deadline):
+        new_cmd_line = self.cmd_line(per_test_args)
         if not self._server_process or new_cmd_line != self._current_cmd_line:
-            self._start(pixel_tests, per_test_args)
+            self._start(per_test_args)
             self._run_post_start_tasks()
 
     def _setup_environ_for_driver(self, environment):
@@ -316,7 +315,7 @@ class Driver(object):
             environment = self._profiler.adjusted_environment(environment)
         return environment
 
-    def _start(self, pixel_tests, per_test_args, wait_for_ready=True):
+    def _start(self, per_test_args, wait_for_ready=True):
         self.stop()
         self._driver_tempdir = self._port.host.filesystem.mkdtemp(prefix='%s-' % self._port.driver_name())
         server_name = self._port.driver_name()
@@ -326,7 +325,7 @@ class Driver(object):
         self._crashed_pid = None
         self._leaked = False
         self._leak_log = None
-        cmd_line = self.cmd_line(pixel_tests, per_test_args)
+        cmd_line = self.cmd_line(per_test_args)
         self._server_process = self._port.server_process_constructor(
             self._port, server_name, cmd_line, environment, more_logging=self._port.get_option('driver_logging'))
         self._server_process.start()
@@ -380,7 +379,7 @@ class Driver(object):
     def _base_cmd_line(self):
         return [self._port._path_to_driver()]  # pylint: disable=protected-access
 
-    def cmd_line(self, pixel_tests, per_test_args):
+    def cmd_line(self, per_test_args):
         cmd = self._command_wrapper(self._port.get_option('wrapper'))
         cmd += self._base_cmd_line()
         if self._no_timeout:
@@ -436,13 +435,9 @@ class Driver(object):
         else:
             command = self._port.abspath_for_test(driver_input.test_name)
 
-        assert not driver_input.image_hash or driver_input.should_run_pixel_test
-
         # ' is the separator between arguments.
         if self._port.supports_per_test_timeout():
             command += "'--timeout'%s" % driver_input.timeout
-        if driver_input.should_run_pixel_test:
-            command += "'--pixel-test"
         if driver_input.image_hash:
             command += "'" + driver_input.image_hash
         return command + '\n'

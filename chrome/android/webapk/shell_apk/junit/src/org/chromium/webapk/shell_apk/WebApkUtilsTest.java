@@ -86,33 +86,6 @@ public class WebApkUtilsTest {
     }
 
     /**
-     * Tests that a WebAPK should be launched as a tab if Chrome's version number is lower than
-     * {@link WebApkUtils#MINIMUM_REQUIRED_CHROME_VERSION}.
-     */
-    @Test
-    public void testShouldLaunchInTabWhenChromeVersionIsTooLow() {
-        String versionName = "56.0.0000.0";
-        Assert.assertTrue(WebApkUtils.shouldLaunchInTab(versionName));
-    }
-
-    /**
-     * Tests that a WebAPK should not be launched as a tab if Chrome's version is higher or equal to
-     * {@link WebApkUtils#MINIMUM_REQUIRED_CHROME_VERSION}.
-     */
-    @Test
-    public void testShouldNotLaunchInTabWithNewVersionOfChrome() {
-        String versionName = "57.0.0000.0";
-        Assert.assertFalse(WebApkUtils.shouldLaunchInTab(versionName));
-    }
-
-    /** Tests that a WebAPK should not be launched as a tab in a developer build of Chrome. */
-    @Test
-    public void testShouldNotLaunchInTabWithDevBuild() {
-        String versionName = "Developer Build";
-        Assert.assertFalse(WebApkUtils.shouldLaunchInTab(versionName));
-    }
-
-    /**
      * Tests that {@link WebApkUtils#isInstalled} returns false for an installed but disabled app.
      */
     @Test

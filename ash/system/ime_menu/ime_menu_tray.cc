@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/ime/ime_controller.h"
+#include "ash/keyboard/ash_keyboard_controller.h"
 #include "ash/keyboard/virtual_keyboard_controller.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -342,6 +343,10 @@ ImeMenuTray::ImeMenuTray(Shelf* shelf)
   SystemTrayNotifier* tray_notifier = Shell::Get()->system_tray_notifier();
   tray_notifier->AddIMEObserver(this);
   tray_notifier->AddVirtualKeyboardObserver(this);
+
+  // Show the tray even if virtual keyboard is shown. (Other tray buttons will
+  // be hidden).
+  set_show_with_virtual_keyboard(true);
 }
 
 ImeMenuTray::~ImeMenuTray() {
@@ -351,12 +356,12 @@ ImeMenuTray::~ImeMenuTray() {
   tray_notifier->RemoveIMEObserver(this);
   tray_notifier->RemoveVirtualKeyboardObserver(this);
   auto* keyboard_controller = keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled())
+  if (keyboard_controller->HasObserver(this))
     keyboard_controller->RemoveObserver(this);
 }
 
 void ImeMenuTray::ShowImeMenuBubbleInternal(bool show_by_click) {
-  views::TrayBubbleView::InitParams init_params;
+  TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_view = GetBubbleAnchor();
@@ -366,7 +371,7 @@ void ImeMenuTray::ShowImeMenuBubbleInternal(bool show_by_click) {
   init_params.close_on_deactivate = true;
   init_params.show_by_click = show_by_click;
 
-  views::TrayBubbleView* bubble_view = new views::TrayBubbleView(init_params);
+  TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
   bubble_view->set_anchor_view_insets(GetBubbleAnchorInsets());
 
   // Add a title item with a separator on the top of the IME menu.
@@ -393,8 +398,10 @@ void ImeMenuTray::ShowKeyboardWithKeyset(
     chromeos::input_method::mojom::ImeKeyset keyset) {
   CloseBubble();
 
-  Shell::Get()->virtual_keyboard_controller()->ForceShowKeyboardWithKeyset(
-      keyset);
+  Shell::Get()
+      ->ash_keyboard_controller()
+      ->virtual_keyboard_controller()
+      ->ForceShowKeyboardWithKeyset(keyset);
 }
 
 bool ImeMenuTray::ShouldShowBottomButtons() {
@@ -430,7 +437,7 @@ base::string16 ImeMenuTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME);
 }
 
-void ImeMenuTray::HideBubbleWithView(const views::TrayBubbleView* bubble_view) {
+void ImeMenuTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
   if (bubble_->bubble_view() == bubble_view)
     CloseBubble();
 }
@@ -458,8 +465,7 @@ void ImeMenuTray::CloseBubble() {
 
 void ImeMenuTray::ShowBubble(bool show_by_click) {
   auto* keyboard_controller = keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled() &&
-      keyboard_controller->IsKeyboardVisible()) {
+  if (keyboard_controller->IsKeyboardVisible()) {
     show_bubble_after_keyboard_hidden_ = true;
     keyboard_controller->AddObserver(this);
     keyboard_controller->HideKeyboardExplicitlyBySystem();
@@ -469,7 +475,7 @@ void ImeMenuTray::ShowBubble(bool show_by_click) {
   }
 }
 
-views::TrayBubbleView* ImeMenuTray::GetBubbleView() {
+TrayBubbleView* ImeMenuTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
 }
 
@@ -491,13 +497,6 @@ void ImeMenuTray::OnIMEMenuActivationChanged(bool is_activated) {
     CloseBubble();
 }
 
-void ImeMenuTray::BubbleViewDestroyed() {
-}
-
-void ImeMenuTray::OnMouseEnteredView() {}
-
-void ImeMenuTray::OnMouseExitedView() {}
-
 base::string16 ImeMenuTray::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME);
 }
@@ -506,7 +505,7 @@ bool ImeMenuTray::ShouldEnableExtraKeyboardAccessibility() {
   return Shell::Get()->accessibility_controller()->IsSpokenFeedbackEnabled();
 }
 
-void ImeMenuTray::HideBubble(const views::TrayBubbleView* bubble_view) {
+void ImeMenuTray::HideBubble(const TrayBubbleView* bubble_view) {
   HideBubbleWithView(bubble_view);
 }
 
@@ -573,7 +572,7 @@ void ImeMenuTray::CreateImageView() {
     label_ = nullptr;
   }
   image_view_ = new ImeMenuImageView();
-  image_view_->SetTooltipText(
+  image_view_->set_tooltip_text(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
   tray_container()->AddChildView(image_view_);
 }

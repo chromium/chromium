@@ -41,6 +41,7 @@ class CrostiniAppResult : public AppResult, public AppIconLoaderDelegate {
   AppContextMenu* GetAppContextMenu() override;
 
   std::unique_ptr<CrostiniAppIconLoader> icon_loader_;
+  std::unique_ptr<CrostiniAppIconLoader> chip_icon_loader_;
   std::unique_ptr<CrostiniAppContextMenu> context_menu_;
 
   DISALLOW_COPY_AND_ASSIGN(CrostiniAppResult);

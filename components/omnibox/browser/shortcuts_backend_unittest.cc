@@ -250,8 +250,7 @@ TEST_F(ShortcutsBackendTest, AddAndUpdateShortcut) {
       MatchCoreForTesting("http://www.google.com"), base::Time::Now(), 100);
   EXPECT_TRUE(AddShortcut(shortcut));
   EXPECT_TRUE(changed_notified());
-  ShortcutsBackend::ShortcutMap::const_iterator shortcut_iter(
-      shortcuts_map().find(shortcut.text));
+  auto shortcut_iter(shortcuts_map().find(shortcut.text));
   ASSERT_TRUE(shortcut_iter != shortcuts_map().end());
   EXPECT_EQ(shortcut.id, shortcut_iter->second.id);
   EXPECT_EQ(shortcut.match_core.contents,

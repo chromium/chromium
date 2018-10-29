@@ -5,8 +5,6 @@
 #ifndef WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
 #define WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
 
-#include "media/media_buildflags.h"
-
 // This file defines constants common to all Widevine CDM versions.
 
 // "alpha" is a temporary name until a convention is defined.
@@ -24,7 +22,6 @@ const char kWidevineKeySystemNameForUMA[] = "Widevine";
 
 const char kWidevineCdmDisplayName[] = "Widevine Content Decryption Module";
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 // Identifier used by the PluginPrivateFileSystem to identify the files stored
 // for the Widevine CDM. This is used to store persistent files. As the files
 // were initially used by the CDM running as a pepper plugin, this ID is based
@@ -34,11 +31,5 @@ const char kWidevineCdmFileSystemId[] = "application_x-ppapi-widevine-cdm";
 
 // Name of the CDM library.
 const char kWidevineCdmLibraryName[] = "widevinecdm";
-
-#if defined(OS_MACOSX) || defined(OS_WIN)
-// CDM is installed by the component installer instead of the Chrome installer.
-#define WIDEVINE_CDM_IS_COMPONENT
-#endif  // defined(OS_MACOSX) || defined(OS_WIN)
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #endif  // WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_

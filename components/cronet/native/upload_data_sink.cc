@@ -110,7 +110,7 @@ void Cronet_UploadDataSinkImpl::OnReadSucceeded(uint64_t bytes_read,
   }
   CHECK(bytes_read > 0 || (final_chunk && bytes_read == 0));
   // Bytes read exceeds buffer length.
-  CHECK_LT(static_cast<size_t>(bytes_read), buffer_->io_buffer_len());
+  CHECK_LE(static_cast<size_t>(bytes_read), buffer_->io_buffer_len());
   if (!is_chunked_) {
     // Only chunked upload can have the final chunk.
     CHECK(!final_chunk);

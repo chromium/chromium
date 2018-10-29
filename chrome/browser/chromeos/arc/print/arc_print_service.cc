@@ -27,6 +27,7 @@
 #include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
@@ -155,8 +156,8 @@ void CreateQueryOnIOThread(std::unique_ptr<printing::PrintSettings> settings,
 // Send initialized PrinterQuery to UI thread.
 void OnSetSettingsDoneOnIOThread(scoped_refptr<printing::PrinterQuery> query,
                                  PrinterQueryCallback callback) {
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   base::BindOnce(std::move(callback), query));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(std::move(callback), query));
 }
 
 std::unique_ptr<printing::PrinterSemanticCapsAndDefaults>
@@ -374,8 +375,8 @@ class PrintJobHostImpl : public mojom::PrintJobHost,
                        data_size),
         base::BindOnce(&PrintJobHostImpl::OnFileRead,
                        weak_ptr_factory_.GetWeakPtr()));
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&CreateQueryOnIOThread, std::move(settings),
                        base::BindOnce(&PrintJobHostImpl::OnSetSettingsDone,
                                       weak_ptr_factory_.GetWeakPtr())));

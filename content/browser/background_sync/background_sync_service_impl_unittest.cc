@@ -34,7 +34,7 @@ namespace {
 
 using ::testing::_;
 
-const char kServiceWorkerPattern[] = "https://example.com/a";
+const char kServiceWorkerScope[] = "https://example.com/a";
 const char kServiceWorkerScript[] = "https://example.com/a/script.js";
 
 // Callbacks from SetUp methods
@@ -164,7 +164,7 @@ class BackgroundSyncServiceImplTest : public testing::Test {
   void CreateServiceWorkerRegistration() {
     bool called = false;
     blink::mojom::ServiceWorkerRegistrationOptions options;
-    options.scope = GURL(kServiceWorkerPattern);
+    options.scope = GURL(kServiceWorkerScope);
     embedded_worker_helper_->context()->RegisterServiceWorker(
         GURL(kServiceWorkerScript), options,
         base::BindOnce(&RegisterServiceWorkerCallback, &called,
@@ -173,7 +173,7 @@ class BackgroundSyncServiceImplTest : public testing::Test {
     EXPECT_TRUE(called);
 
     embedded_worker_helper_->context_wrapper()->FindReadyRegistrationForId(
-        sw_registration_id_, GURL(kServiceWorkerPattern).GetOrigin(),
+        sw_registration_id_, GURL(kServiceWorkerScope).GetOrigin(),
         base::BindOnce(FindServiceWorkerRegistrationCallback,
                        &sw_registration_));
     base::RunLoop().RunUntilIdle();

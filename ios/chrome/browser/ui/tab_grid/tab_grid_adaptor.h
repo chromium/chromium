@@ -13,7 +13,7 @@
 @protocol TabGridPaging;
 @class TabGridURLLoader;
 
-// An opque adaptor for the TabSwitcher protocol into the TabGrid.
+// An opaque adaptor for the TabSwitcher protocol into the TabGrid.
 // Consuming objects should be passed instances of this object as an
 // id<TabSwitcher>.
 // All of the methods and properties on this class are internal API fot the

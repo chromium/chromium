@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_CONTEXT_RESULT_H_
 #define GPU_COMMAND_BUFFER_COMMON_CONTEXT_RESULT_H_
 
+#include "gpu/gpu_export.h"
+
 namespace gpu {
 
 // The result of trying to create a gpu context. Also the result of intermediate
@@ -20,8 +22,13 @@ enum class ContextResult {
   // An error occured that will recur in future attempts too with the
   // same inputs, retrying would not be productive.
   kFatalFailure,
-  kLastContextResult = kFatalFailure
+  // An error occurred using the gpu::SurfaceHandle. Only retry with a new
+  // SurfaceHandle; treat as kFatalFailure otherwise.
+  kSurfaceFailure,
+  kLastContextResult = kSurfaceFailure
 };
+
+GPU_EXPORT bool IsFatalOrSurfaceFailure(ContextResult result);
 
 }  // namespace gpu
 

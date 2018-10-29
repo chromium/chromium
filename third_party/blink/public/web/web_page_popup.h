@@ -40,6 +40,8 @@ class WebWidgetClient;
 
 class WebPagePopup : public WebWidget {
  public:
+  // Returns a WebPagePopup which is self-referencing. It's self-reference will
+  // be released when the popup is closed via Close().
   BLINK_EXPORT static WebPagePopup* Create(WebWidgetClient*);
   virtual WebPoint PositionRelativeToOwner() = 0;
 };

@@ -204,7 +204,7 @@ void LoadingDataCollector::RecordMainFrameLoadComplete(
   if (predictor_)
     predictor_->StartInitialization();
 
-  NavigationMap::iterator nav_it = inflight_navigations_.find(navigation_id);
+  auto nav_it = inflight_navigations_.find(navigation_id);
   if (nav_it == inflight_navigations_.end())
     return;
 
@@ -224,7 +224,7 @@ void LoadingDataCollector::RecordFirstContentfulPaint(
     const base::TimeTicks& first_contentful_paint) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  NavigationMap::iterator nav_it = inflight_navigations_.find(navigation_id);
+  auto nav_it = inflight_navigations_.find(navigation_id);
   if (nav_it != inflight_navigations_.end())
     nav_it->second->first_contentful_paint = first_contentful_paint;
 }
@@ -266,7 +266,7 @@ void LoadingDataCollector::CleanupAbandonedNavigations(
       base::TimeDelta::FromSeconds(config_.max_navigation_lifetime_seconds);
 
   base::TimeTicks time_now = base::TimeTicks::Now();
-  for (NavigationMap::iterator it = inflight_navigations_.begin();
+  for (auto it = inflight_navigations_.begin();
        it != inflight_navigations_.end();) {
     if ((it->first.tab_id == navigation_id.tab_id) ||
         (time_now - it->first.creation_time > max_navigation_age)) {

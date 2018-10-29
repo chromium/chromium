@@ -57,6 +57,7 @@
     <string name="help_context_sad_tab">mobile_awsnap</string>
     <string name="help_context_clear_browsing_data">clear_browsing_data</string>
     <string name="help_context_change_sync_passphrase">change_sync_passphrase</string>
+    <string name="help_context_sync_and_services">syncgoogleservices</string>
     <!-- TODO(peconn): Add help section. -->
     <!-- <string name="help_context_suggestions">mobile_content_suggestions</string> -->
 

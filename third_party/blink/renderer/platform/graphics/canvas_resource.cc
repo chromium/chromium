@@ -103,10 +103,8 @@ bool CanvasResource::PrepareTransferableResource(
   *out_callback = viz::SingleReleaseCallback::Create(std::move(func));
 
   if (out_resource) {
-    if (SupportsAcceleratedCompositing()) {
+    if (SupportsAcceleratedCompositing())
       return PrepareAcceleratedTransferableResource(out_resource, sync_mode);
-    }
-
     return PrepareUnacceleratedTransferableResource(out_resource);
   }
   return true;
@@ -182,18 +180,13 @@ scoped_refptr<CanvasResourceBitmap> CanvasResourceBitmap::Create(
     base::WeakPtr<CanvasResourceProvider> provider,
     SkFilterQuality filter_quality,
     const CanvasColorParams& color_params) {
-  scoped_refptr<CanvasResourceBitmap> resource =
-      AdoptRef(new CanvasResourceBitmap(std::move(image), std::move(provider),
-                                        filter_quality, color_params));
-  if (resource->IsValid())
-    return resource;
-  return nullptr;
+  auto resource = AdoptRef(new CanvasResourceBitmap(
+      std::move(image), std::move(provider), filter_quality, color_params));
+  return resource->IsValid() ? resource : nullptr;
 }
 
 bool CanvasResourceBitmap::IsValid() const {
-  if (!image_)
-    return false;
-  return image_->IsValid();
+  return image_ ? image_->IsValid() : false;
 }
 
 bool CanvasResourceBitmap::IsAccelerated() const {
@@ -320,12 +313,9 @@ CanvasResourceGpuMemoryBuffer::CanvasResourceGpuMemoryBuffer(
   if (!gl || !gr)
     return;
 
-  gfx::BufferUsage buffer_usage;
-  if (is_accelerated) {
-    buffer_usage = gfx::BufferUsage::SCANOUT;
-  } else {
-    buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-  }
+  const gfx::BufferUsage buffer_usage =
+      is_accelerated ? gfx::BufferUsage::SCANOUT
+                     : gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
 
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager =
       Platform::Current()->GetGpuMemoryBufferManager();
@@ -334,9 +324,9 @@ CanvasResourceGpuMemoryBuffer::CanvasResourceGpuMemoryBuffer(
   gpu_memory_buffer_ = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
       gfx::Size(size.Width(), size.Height()), ColorParams().GetBufferFormat(),
       buffer_usage, gpu::kNullSurfaceHandle);
-  if (!gpu_memory_buffer_) {
+  if (!gpu_memory_buffer_)
     return;
-  }
+
   gpu_memory_buffer_->SetColorSpace(color_params.GetStorageGfxColorSpace());
 
   image_id_ = gl->CreateImageCHROMIUM(gpu_memory_buffer_->AsClientBuffer(),
@@ -382,8 +372,7 @@ GLenum CanvasResourceGpuMemoryBuffer::TextureTarget() const {
 }
 
 IntSize CanvasResourceGpuMemoryBuffer::Size() const {
-  return IntSize(gpu_memory_buffer_->GetSize().width(),
-                 gpu_memory_buffer_->GetSize().height());
+  return IntSize(gpu_memory_buffer_->GetSize());
 }
 
 scoped_refptr<CanvasResourceGpuMemoryBuffer>
@@ -395,14 +384,10 @@ CanvasResourceGpuMemoryBuffer::Create(
     SkFilterQuality filter_quality,
     bool is_accelerated) {
   TRACE_EVENT0("blink", "CanvasResourceGpuMemoryBuffer::Create");
-
-  scoped_refptr<CanvasResourceGpuMemoryBuffer> resource =
-      AdoptRef(new CanvasResourceGpuMemoryBuffer(
-          size, color_params, std::move(context_provider_wrapper),
-          std::move(provider), filter_quality, is_accelerated));
-  if (resource->IsValid())
-    return resource;
-  return nullptr;
+  auto resource = AdoptRef(new CanvasResourceGpuMemoryBuffer(
+      size, color_params, std::move(context_provider_wrapper),
+      std::move(provider), filter_quality, is_accelerated));
+  return resource->IsValid() ? resource : nullptr;
 }
 
 void CanvasResourceGpuMemoryBuffer::TearDown() {
@@ -638,12 +623,9 @@ scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
     const CanvasColorParams& color_params,
     base::WeakPtr<CanvasResourceProvider> provider,
     SkFilterQuality filter_quality) {
-  scoped_refptr<CanvasResourceSharedBitmap> resource =
-      AdoptRef(new CanvasResourceSharedBitmap(
-          size, color_params, std::move(provider), filter_quality));
-  if (resource->IsValid())
-    return resource;
-  return nullptr;
+  auto resource = AdoptRef(new CanvasResourceSharedBitmap(
+      size, color_params, std::move(provider), filter_quality));
+  return resource->IsValid() ? resource : nullptr;
 }
 
 void CanvasResourceSharedBitmap::TearDown() {

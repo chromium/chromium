@@ -26,6 +26,7 @@ const char kNetworkSandbox[] = "network";
 const char kPpapiSandbox[] = "ppapi";
 const char kUtilitySandbox[] = "utility";
 const char kCdmSandbox[] = "cdm";
+const char kXrCompositingSandbox[] = "xr_compositing";
 const char kPdfCompositorSandbox[] = "pdf_compositor";
 const char kProfilingSandbox[] = "profiling";
 const char kAudioSandbox[] = "audio";
@@ -92,6 +93,10 @@ const char kEnableGpuAppContainer[] = "enable-gpu-appcontainer";
 
 // Disables the sandbox and gives the process elevated privileges.
 const char kNoSandboxAndElevatedPrivileges[] = "no-sandbox-and-elevated";
+
+// Add additional capabilities to the AppContainer sandbox used for XR
+// compositing.
+const char kAddXrAppContainerCaps[] = "add-xr-appcontainer-caps";
 #endif
 
 #if defined(OS_MACOSX)

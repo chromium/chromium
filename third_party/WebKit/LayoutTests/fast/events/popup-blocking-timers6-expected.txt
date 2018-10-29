@@ -4,4 +4,3 @@ PASS successfullyParsed is true
 TEST COMPLETE
 Test calling window.open() with a 1001 ms delay. A popup should not be allowed.
 PASS newWindow is null
-

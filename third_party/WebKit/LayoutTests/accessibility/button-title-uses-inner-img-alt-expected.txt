@@ -1,8 +1,8 @@
 Button with image of 
+
 This test makes sure that a generic focusable div can get accessibility focus and gets its accessible text from contents..
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS document.activeElement == button is true
 PASS axButton.name.indexOf('Button with image of cake') >= 0 is true

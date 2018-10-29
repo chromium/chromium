@@ -30,6 +30,7 @@
 import optparse
 import unittest
 
+from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.system.output_capture import OutputCapture
 from blinkpy.tool.commands.queries import PrintBaselines, PrintExpectations
 from blinkpy.tool.mock_tool import MockBlinkTool
@@ -104,10 +105,10 @@ class PrintExpectationsTest(unittest.TestCase):
 
     def test_paths(self):
         self.run_test([],
-                      ('LayoutTests/TestExpectations\n'
-                       'LayoutTests/NeverFixTests\n'
-                       'LayoutTests/StaleTestExpectations\n'
-                       'LayoutTests/SlowTests\n'),
+                      (WEB_TESTS_LAST_COMPONENT + '/TestExpectations\n' +
+                       WEB_TESTS_LAST_COMPONENT + '/NeverFixTests\n' +
+                       WEB_TESTS_LAST_COMPONENT + '/StaleTestExpectations\n' +
+                       WEB_TESTS_LAST_COMPONENT + '/SlowTests\n'),
                       paths=True)
 
 

@@ -13,17 +13,13 @@
 #include "chrome/browser/net/referrer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/usb/usb_blocklist.h"
-#include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/web_usb_histograms.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "device/base/device_client.h"
-#include "device/usb/mojo/type_converters.h"
-#include "device/usb/public/cpp/filter_utils.h"
-#include "device/usb/usb_device.h"
+#include "device/usb/public/cpp/usb_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -33,7 +29,6 @@
 
 using content::RenderFrameHost;
 using content::WebContents;
-using device::UsbDevice;
 
 namespace {
 
@@ -78,16 +73,8 @@ UsbChooserController::UsbChooserController(
       filters_(std::move(device_filters)),
       callback_(std::move(callback)),
       web_contents_(WebContents::FromRenderFrameHost(render_frame_host)),
-      usb_service_observer_(this),
+      observer_(this),
       weak_factory_(this) {
-  device::UsbService* usb_service =
-      device::DeviceClient::Get()->GetUsbService();
-  if (usb_service) {
-    usb_service_observer_.Add(usb_service);
-    usb_service->GetDevices(base::Bind(&UsbChooserController::GotUsbDeviceList,
-                                       weak_factory_.GetWeakPtr()));
-  }
-
   RenderFrameHost* main_frame = web_contents_->GetMainFrame();
   requesting_origin_ = render_frame_host->GetLastCommittedURL().GetOrigin();
   embedding_origin_ = main_frame->GetLastCommittedURL().GetOrigin();
@@ -95,6 +82,9 @@ UsbChooserController::UsbChooserController(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   chooser_context_ =
       UsbChooserContextFactory::GetForProfile(profile)->AsWeakPtr();
+  DCHECK(chooser_context_);
+  chooser_context_->GetDevices(base::BindOnce(
+      &UsbChooserController::GotUsbDeviceList, weak_factory_.GetWeakPtr()));
 }
 
 UsbChooserController::~UsbChooserController() {
@@ -172,23 +162,21 @@ void UsbChooserController::OpenHelpCenterUrl() const {
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false /* is_renderer_initialized */));
 }
 
-void UsbChooserController::OnDeviceAdded(scoped_refptr<UsbDevice> device) {
-  auto device_info = device::mojom::UsbDeviceInfo::From(*device);
-  DCHECK(device_info);
-  if (DisplayDevice(*device_info)) {
-    base::string16 device_name = FormatUsbDeviceName(*device_info);
-    devices_.push_back(std::make_pair(std::move(device_info), device_name));
+void UsbChooserController::OnDeviceAdded(
+    const device::mojom::UsbDeviceInfo& device_info) {
+  if (DisplayDevice(device_info)) {
+    base::string16 device_name = FormatUsbDeviceName(device_info);
+    devices_.push_back(std::make_pair(device_info.Clone(), device_name));
     ++device_name_map_[device_name];
     if (view())
       view()->OnOptionAdded(devices_.size() - 1);
   }
 }
 
-void UsbChooserController::OnDeviceRemoved(scoped_refptr<UsbDevice> device) {
-  auto device_info = device::mojom::UsbDeviceInfo::From(*device);
-  DCHECK(device_info);
+void UsbChooserController::OnDeviceRemoved(
+    const device::mojom::UsbDeviceInfo& device_info) {
   for (auto it = devices_.begin(); it != devices_.end(); ++it) {
-    if (it->first->guid == device_info->guid) {
+    if (it->first->guid == device_info.guid) {
       size_t index = it - devices_.begin();
       DCHECK_GT(device_name_map_[it->second], 0);
       if (--device_name_map_[it->second] == 0)
@@ -201,12 +189,15 @@ void UsbChooserController::OnDeviceRemoved(scoped_refptr<UsbDevice> device) {
   }
 }
 
+void UsbChooserController::OnDeviceManagerConnectionError() {
+  observer_.RemoveAll();
+}
+
 // Get a list of devices that can be shown in the chooser bubble UI for
 // user to grant permsssion.
 void UsbChooserController::GotUsbDeviceList(
-    const std::vector<scoped_refptr<UsbDevice>>& devices) {
-  for (const auto& device : devices) {
-    auto device_info = device::mojom::UsbDeviceInfo::From(*device);
+    std::vector<::device::mojom::UsbDeviceInfoPtr> devices) {
+  for (auto& device_info : devices) {
     DCHECK(device_info);
     if (DisplayDevice(*device_info)) {
       base::string16 device_name = FormatUsbDeviceName(*device_info);
@@ -214,6 +205,12 @@ void UsbChooserController::GotUsbDeviceList(
       ++device_name_map_[device_name];
     }
   }
+
+  // Listen to UsbChooserContext for OnDeviceAdded/Removed events after the
+  // enumeration.
+  if (chooser_context_)
+    observer_.Add(chooser_context_.get());
+
   if (view())
     view()->OnOptionsInitialized();
 }

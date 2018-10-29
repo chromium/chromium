@@ -86,18 +86,12 @@ class ChromeTranslateClient
   PrefService* GetPrefs() override;
   std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() override;
   translate::TranslateAcceptLanguages* GetTranslateAcceptLanguages() override;
-  int GetInfobarIconID() const override;
   void RecordTranslateEvent(const metrics::TranslateEventProto&) override;
-#if !defined(USE_AURA)
+#if defined(OS_ANDROID)
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
       const override;
-#endif
-#if defined(OS_MACOSX)
-  // Temporary shim for Polychrome. See bottom of first comment in
-  // https://crbug.com/804950 for details
-  std::unique_ptr<infobars::InfoBar> CreateInfoBarCocoa(
-      std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const;
+  int GetInfobarIconID() const override;
 #endif
 
   void RecordLanguageDetectionEvent(

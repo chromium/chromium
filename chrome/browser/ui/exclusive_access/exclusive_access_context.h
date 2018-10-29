@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 
-class ExclusiveAccessBubbleViews;
 class GURL;
 class Profile;
 
@@ -76,14 +75,9 @@ class ExclusiveAccessContext {
   // Hides download shelf associated with currently active window.
   virtual void HideDownloadShelf() = 0;
 
-  // TODO(yuweih): These two methods may not be needed once MacViews is
-  // launched.
-  // Returns true if there is no browser control in fullscreen, i.e. the browser
-  // doesn't drop a slide-down panel with controls in it.
-  virtual bool ShouldHideUIForFullscreen() const = 0;
-
-  // Accessor for the FullscreenExitBubbleViews.
-  virtual ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() = 0;
+  // There are special modes where the user isn't allowed to exit fullscreen on
+  // their own, and this function allows us to check for that.
+  virtual bool CanUserExitFullscreen() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_CONTEXT_H_

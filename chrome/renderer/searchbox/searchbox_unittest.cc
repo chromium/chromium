@@ -78,7 +78,7 @@ bool TranslateIconRestrictedUrl(const GURL& transient_url,
                                 GURL* url);
 
 // Defined in searchbox.cc
-std::string FixupAndValidateUrl(const std::string& url);
+std::pair<GURL, bool> FixupAndValidateUrl(const std::string& url);
 
 TEST(SearchBoxUtilTest, ParseViewIdAndRestrictedIdSuccess) {
   int view_id = -1;
@@ -287,7 +287,8 @@ TEST(SearchBoxUtilTest, FixupAndValidateUrlReturnsEmptyIfInvalid) {
   };
 
   for (const TestCase& test_case : test_cases) {
-    const std::string& url = FixupAndValidateUrl(test_case.url);
+    std::pair<GURL, bool> fixed_url = FixupAndValidateUrl(test_case.url);
+    const std::string& url = fixed_url.first.spec();
     EXPECT_EQ(!url.empty(), test_case.is_valid)
         << " for test_case '" << test_case.url << "'";
   }
@@ -296,24 +297,27 @@ TEST(SearchBoxUtilTest, FixupAndValidateUrlReturnsEmptyIfInvalid) {
 TEST(SearchBoxUtilTest, FixupAndValidateUrlDefaultsToHttps) {
   struct TestCase {
     const char* url;
+    bool default_https;
     const char* expected_scheme;
   } test_cases[] = {
       // No scheme.
-      {"foo.com", url::kHttpsScheme},
+      {"foo.com", true, url::kHttpsScheme},
       // With "http".
-      {"http://foo.com", url::kHttpScheme},
+      {"http://foo.com", false, url::kHttpScheme},
       // With "http" and whitespace.
-      {"\thttp://foo", url::kHttpScheme},
-      {"    http://foo", url::kHttpScheme},
+      {"\thttp://foo", false, url::kHttpScheme},
+      {"    http://foo", false, url::kHttpScheme},
       // With "https".
-      {"https://foo.com", url::kHttpsScheme},
+      {"https://foo.com", false, url::kHttpsScheme},
       // Non "http"/"https".
-      {"blob://foo", url::kBlobScheme},
+      {"blob://foo", false, url::kBlobScheme},
   };
 
   for (const TestCase& test_case : test_cases) {
-    const GURL url(FixupAndValidateUrl(test_case.url));
-    EXPECT_TRUE(url.SchemeIs(test_case.expected_scheme))
+    std::pair<GURL, bool> fixed_url = FixupAndValidateUrl(test_case.url);
+    EXPECT_TRUE(fixed_url.first.SchemeIs(test_case.expected_scheme))
+        << " for test case '" << test_case.url << "'";
+    EXPECT_EQ(fixed_url.second, test_case.default_https)
         << " for test case '" << test_case.url << "'";
   }
 }

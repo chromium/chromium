@@ -14,6 +14,7 @@
 
 #include "base/containers/stack.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -24,11 +25,12 @@
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/common/frame_visual_properties.h"
 #include "content/common/view_messages.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/file_chooser_file_info.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -234,8 +236,6 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
     SiteInstanceImpl* site_instance =
         static_cast<SiteInstanceImpl*>(legend_entry.second);
     std::string description = site_instance->GetSiteURL().spec();
-    if (site_instance->IsDefaultSubframeSiteInstance())
-      description = "default subframe process";
     base::StringAppendF(&result, "\n%s%s = %s", prefix,
                         legend_entry.first.c_str(), description.c_str());
     // Highlight some exceptionable conditions.
@@ -289,14 +289,15 @@ FileChooserDelegate::~FileChooserDelegate() = default;
 
 void FileChooserDelegate::RunFileChooser(
     RenderFrameHost* render_frame_host,
+    std::unique_ptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
   // Send the selected file to the renderer process.
-  FileChooserFileInfo file_info;
-  file_info.file_path = file_;
-  std::vector<FileChooserFileInfo> files;
-  files.push_back(file_info);
-  render_frame_host->FilesSelectedInChooser(
-      files, blink::mojom::FileChooserParams::Mode::kOpen);
+  auto file_info = blink::mojom::FileChooserFileInfo::NewNativeFile(
+      blink::mojom::NativeFileInfo::New(file_, base::string16()));
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+  files.push_back(std::move(file_info));
+  listener->FileSelected(std::move(files),
+                         blink::mojom::FileChooserParams::Mode::kOpen);
 
   file_chosen_ = true;
   params_ = params.Clone();
@@ -406,8 +407,8 @@ void ShowWidgetMessageFilter::Reset() {
 
 void ShowWidgetMessageFilter::OnShowWidget(int route_id,
                                            const gfx::Rect& initial_rect) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&ShowWidgetMessageFilter::OnShowWidgetOnUI, this, route_id,
                      initial_rect));
 }
@@ -415,8 +416,8 @@ void ShowWidgetMessageFilter::OnShowWidget(int route_id,
 #if defined(OS_MACOSX) || defined(OS_ANDROID)
 void ShowWidgetMessageFilter::OnShowPopup(
     const FrameHostMsg_ShowPopup_Params& params) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&ShowWidgetMessageFilter::OnShowWidgetOnUI, this,
                  MSG_ROUTING_NONE, params.bounds));
 }

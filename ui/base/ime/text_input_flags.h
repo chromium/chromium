@@ -8,7 +8,7 @@
 namespace ui {
 
 // Intentionally keep in sync with blink::WebTextInputFlags defined in:
-// third_party/WebKit/public/platform/WebTextInputType.h
+// third_party/blink/public/platform/web_text_input_type.h
 enum TextInputFlags {
   TEXT_INPUT_FLAG_NONE = 0,
   TEXT_INPUT_FLAG_AUTOCOMPLETE_ON = 1 << 0,
@@ -20,7 +20,8 @@ enum TextInputFlags {
   TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE = 1 << 6,
   TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS = 1 << 7,
   TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS = 1 << 8,
-  TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES = 1 << 9
+  TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES = 1 << 9,
+  TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD = 1 << 12
 };
 
 }  // namespace ui

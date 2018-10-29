@@ -12,6 +12,7 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/accessibility_panel_layout_manager.h"
 #include "ash/autoclick/autoclick_controller.h"
+#include "ash/events/select_to_speak_event_handler.h"
 #include "ash/high_contrast/high_contrast_controller.h"
 #include "ash/policy/policy_recommendation_restorer.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -26,6 +27,7 @@
 #include "ash/system/power/scoped_backlights_forced_off.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string16.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -85,6 +87,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
     prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted,
     prefs::kDictationAcceleratorDialogHasBeenAccepted,
+    prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted,
 };
 
 // Returns true if |pref_service| is the one used for the signin screen.
@@ -255,6 +258,10 @@ void AccessibilityController::RegisterProfilePrefs(PrefRegistrySimple* registry,
         prefs::kAccessibilityAutoclickDelayMs,
         static_cast<int>(
             AutoclickController::GetDefaultAutoclickDelay().InMilliseconds()));
+    registry->RegisterIntegerPref(prefs::kAccessibilityAutoclickEventType,
+                                  static_cast<int>(kDefaultAutoclickEventType));
+    registry->RegisterBooleanPref(
+        prefs::kAccessibilityAutoclickRevertToLeftClick, true);
     registry->RegisterBooleanPref(prefs::kAccessibilityCaretHighlightEnabled,
                                   false);
     registry->RegisterBooleanPref(prefs::kAccessibilityCursorHighlightEnabled,
@@ -289,6 +296,8 @@ void AccessibilityController::RegisterProfilePrefs(PrefRegistrySimple* registry,
         prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted, false);
     registry->RegisterBooleanPref(
         prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
+    registry->RegisterBooleanPref(
+        prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted, false);
     return;
   }
 
@@ -296,6 +305,9 @@ void AccessibilityController::RegisterProfilePrefs(PrefRegistrySimple* registry,
   // TODO(jamescook): Move ownership to ash.
   registry->RegisterForeignPref(prefs::kAccessibilityAutoclickEnabled);
   registry->RegisterForeignPref(prefs::kAccessibilityAutoclickDelayMs);
+  registry->RegisterForeignPref(prefs::kAccessibilityAutoclickEventType);
+  registry->RegisterForeignPref(
+      prefs::kAccessibilityAutoclickRevertToLeftClick);
   registry->RegisterForeignPref(prefs::kAccessibilityCaretHighlightEnabled);
   registry->RegisterForeignPref(prefs::kAccessibilityCursorHighlightEnabled);
   registry->RegisterForeignPref(prefs::kAccessibilityDictationEnabled);
@@ -318,6 +330,8 @@ void AccessibilityController::RegisterProfilePrefs(PrefRegistrySimple* registry,
       prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted);
   registry->RegisterForeignPref(
       prefs::kDictationAcceleratorDialogHasBeenAccepted);
+  registry->RegisterForeignPref(
+      prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted);
 }
 
 void AccessibilityController::SetHighContrastAcceleratorDialogAccepted() {
@@ -355,6 +369,22 @@ void AccessibilityController::SetDockedMagnifierAcceleratorDialogAccepted() {
     return;
   active_user_prefs_->SetBoolean(
       prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted, true);
+  active_user_prefs_->CommitPendingWrite();
+}
+
+bool AccessibilityController::HasDisplayRotationAcceleratorDialogBeenAccepted()
+    const {
+  return active_user_prefs_ &&
+         active_user_prefs_->GetBoolean(
+             prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted);
+}
+
+void AccessibilityController::
+    SetDisplayRotationAcceleratorDialogBeenAccepted() {
+  if (!active_user_prefs_)
+    return;
+  active_user_prefs_->SetBoolean(
+      prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted, true);
   active_user_prefs_->CommitPendingWrite();
 }
 
@@ -552,7 +582,21 @@ void AccessibilityController::RequestSelectToSpeakStateChange() {
 void AccessibilityController::SetSelectToSpeakState(
     mojom::SelectToSpeakState state) {
   select_to_speak_state_ = state;
+
+  // Forward the state change event to select_to_speak_event_handler_.
+  // The extension may have requested that the handler enter SELECTING state.
+  // Prepare to start capturing events from stylus, mouse or touch.
+  if (select_to_speak_event_handler_) {
+    select_to_speak_event_handler_->SetSelectToSpeakStateSelecting(
+        state == mojom::SelectToSpeakState::kSelectToSpeakStateSelecting);
+  }
   NotifyAccessibilityStatusChanged();
+}
+
+void AccessibilityController::SetSelectToSpeakEventHandlerDelegate(
+    mojom::SelectToSpeakEventHandlerDelegatePtr delegate) {
+  select_to_speak_event_handler_delegate_ptr_ = std::move(delegate);
+  MaybeCreateSelectToSpeakEventHandler();
 }
 
 mojom::SelectToSpeakState AccessibilityController::GetSelectToSpeakState()
@@ -631,6 +675,14 @@ void AccessibilityController::ToggleDictation() {
         },
         base::Unretained(this)));
   }
+}
+
+void AccessibilityController::ToggleDictationFromSource(
+    mojom::DictationToggleSource source) {
+  base::RecordAction(base::UserMetricsAction("Accel_Toggle_Dictation"));
+  UserMetricsRecorder::RecordUserToggleDictation(source);
+
+  ToggleDictation();
 }
 
 void AccessibilityController::SilenceSpokenFeedback() {
@@ -741,7 +793,10 @@ void AccessibilityController::OnActiveUserPrefServiceChanged(
 }
 
 void AccessibilityController::FlushMojoForTest() {
-  client_.FlushForTesting();
+  if (client_)
+    client_.FlushForTesting();
+  if (select_to_speak_event_handler_)
+    select_to_speak_event_handler_->FlushMojoForTest();
 }
 
 void AccessibilityController::OnTabletModeStarted() {
@@ -770,6 +825,16 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
       prefs::kAccessibilityAutoclickDelayMs,
       base::BindRepeating(
           &AccessibilityController::UpdateAutoclickDelayFromPref,
+          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityAutoclickEventType,
+      base::BindRepeating(
+          &AccessibilityController::UpdateAutoclickEventTypeFromPref,
+          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityAutoclickRevertToLeftClick,
+      base::BindRepeating(
+          &AccessibilityController::UpdateAutoclickRevertToLeftClickFromPref,
           base::Unretained(this)));
   pref_change_registrar_->Add(
       prefs::kAccessibilityCaretHighlightEnabled,
@@ -828,6 +893,8 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   // Load current state.
   UpdateAutoclickFromPref();
   UpdateAutoclickDelayFromPref();
+  UpdateAutoclickEventTypeFromPref();
+  UpdateAutoclickRevertToLeftClickFromPref();
   UpdateCaretHighlightFromPref();
   UpdateCursorHighlightFromPref();
   UpdateDictationFromPref();
@@ -866,6 +933,32 @@ void AccessibilityController::UpdateAutoclickDelayFromPref() {
   autoclick_delay_ = autoclick_delay;
 
   Shell::Get()->autoclick_controller()->SetAutoclickDelay(autoclick_delay_);
+}
+
+void AccessibilityController::UpdateAutoclickEventTypeFromPref() {
+  DCHECK(active_user_prefs_);
+  mojom::AutoclickEventType event_type = static_cast<mojom::AutoclickEventType>(
+      active_user_prefs_->GetInteger(prefs::kAccessibilityAutoclickEventType));
+
+  Shell::Get()->autoclick_controller()->SetAutoclickEventType(event_type);
+}
+
+void AccessibilityController::SetAutoclickEventType(
+    mojom::AutoclickEventType event_type) {
+  if (!active_user_prefs_)
+    return;
+  active_user_prefs_->SetInteger(prefs::kAccessibilityAutoclickEventType,
+                                 static_cast<int>(event_type));
+  active_user_prefs_->CommitPendingWrite();
+}
+
+void AccessibilityController::UpdateAutoclickRevertToLeftClickFromPref() {
+  DCHECK(active_user_prefs_);
+  bool revert_to_left_click = active_user_prefs_->GetBoolean(
+      prefs::kAccessibilityAutoclickRevertToLeftClick);
+
+  Shell::Get()->autoclick_controller()->set_revert_to_left_click(
+      revert_to_left_click);
 }
 
 void AccessibilityController::UpdateCaretHighlightFromPref() {
@@ -1031,7 +1124,27 @@ void AccessibilityController::UpdateSelectToSpeakFromPref() {
   select_to_speak_state_ =
       mojom::SelectToSpeakState::kSelectToSpeakStateInactive;
 
+  if (enabled)
+    MaybeCreateSelectToSpeakEventHandler();
+  else
+    select_to_speak_event_handler_.reset();
+
   NotifyAccessibilityStatusChanged();
+}
+
+void AccessibilityController::MaybeCreateSelectToSpeakEventHandler() {
+  // Sometimes the handler is not yet created if the prefs change has taken
+  // longer to propagate than setting the delegate from Chrome.
+  // Create the handler here; we only set the delegate when Select-to-Speak
+  // has been enabled.
+  // A different ordering has been observed between interactive_ui_tests and
+  // running Chrome on Linux, for example.
+  if (!select_to_speak_enabled_ || select_to_speak_event_handler_ ||
+      !select_to_speak_event_handler_delegate_ptr_)
+    return;
+
+  select_to_speak_event_handler_ = std::make_unique<SelectToSpeakEventHandler>(
+      std::move(select_to_speak_event_handler_delegate_ptr_));
 }
 
 void AccessibilityController::UpdateStickyKeysFromPref() {

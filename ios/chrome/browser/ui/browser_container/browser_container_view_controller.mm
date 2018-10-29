@@ -10,13 +10,6 @@
 #error "This file requires ARC support."
 #endif
 
-@interface BrowserContainerViewController () {
-  // Weak reference to content view, so old _contentView can be removed from
-  // superview when new one is added.
-  __weak UIView* _contentView;
-}
-@end
-
 @implementation BrowserContainerViewController
 
 - (void)dealloc {
@@ -53,16 +46,48 @@
 
 #pragma mark - Public
 
-- (void)displayContentView:(UIView*)contentView {
+- (void)setContentViewController:(UIViewController*)contentViewController {
+  if (_contentViewController == contentViewController)
+    return;
+
+  [self removeOldContent];
+  _contentViewController = contentViewController;
+
+  if (contentViewController) {
+    [contentViewController willMoveToParentViewController:self];
+    [self addChildViewController:contentViewController];
+    [self.view addSubview:contentViewController.view];
+    [contentViewController didMoveToParentViewController:self];
+  }
+}
+
+- (void)setContentView:(UIView*)contentView {
   if (_contentView == contentView)
     return;
 
-  DCHECK(![_contentView superview] || [_contentView superview] == self.view);
-  [_contentView removeFromSuperview];
+  [self removeOldContent];
   _contentView = contentView;
 
   if (contentView)
     [self.view addSubview:contentView];
+}
+
+#pragma mark - Private
+
+// Unloads and nils any any previous content views if they exist.
+- (void)removeOldContent {
+  if (_contentViewController) {
+    [_contentViewController willMoveToParentViewController:nil];
+    [_contentViewController.view removeFromSuperview];
+    [_contentViewController removeFromParentViewController];
+    _contentViewController = nil;
+  }
+
+  if (_contentView) {
+    DCHECK(![_contentView superview] || [_contentView superview] == self.view);
+    [_contentView removeFromSuperview];
+    _contentView = nil;
+  }
 }
 
 @end

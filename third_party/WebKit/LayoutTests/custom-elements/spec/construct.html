@@ -9,6 +9,10 @@
 <script>
 'use strict';
 
+setup({
+  allow_uncaught_exception: true,
+});
+
 test_with_window((w) => {
   assert_throws(TypeError.prototype, () => {
     w.HTMLElement();
@@ -142,7 +146,7 @@ test_with_window((w) => {
   }
   w.customElements.define('a-a', A);
   let d = w.document.createElement('div');
-  assert_reports(w, 'INVALID_STATE_ERR', () => {
+  assert_reports(window, 'INVALID_STATE_ERR', () => {
     d.innerHTML = '<a-a>';
   }, 'Creating an element that is already constructed marker should report ' +
      'InvalidStateError');
@@ -150,7 +154,7 @@ test_with_window((w) => {
 
 test_with_window((w) => {
   let errors = [];
-  w.onerror = function (event, source, lineno, colno, error) {
+  window.onerror = function (event, source, lineno, colno, error) {
     errors.push(error.name);
     return true;
   };

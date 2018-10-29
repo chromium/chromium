@@ -113,7 +113,7 @@ bool SandboxedPageHandler::Parse(Extension* extension, base::string16* error) {
     sandboxed_info->content_security_policy =
         csp_validator::GetEffectiveSandoxedPageCSP(content_security_policy,
                                                    &warnings);
-    extension->AddInstallWarnings(warnings);
+    extension->AddInstallWarnings(std::move(warnings));
   } else {
     sandboxed_info->content_security_policy =
         kDefaultSandboxedPageContentSecurityPolicy;

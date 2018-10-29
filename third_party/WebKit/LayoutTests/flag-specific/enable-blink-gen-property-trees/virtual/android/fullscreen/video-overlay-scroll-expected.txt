@@ -1,0 +1,39 @@
+EVENT(fullscreenchange)
+END OF TEST
+{
+  "layers": [
+    {
+      "name": "LayoutVideo (positioned) VIDEO id='video'",
+      "bounds": [800, 600],
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutFlexibleBox (relative positioned) DIV class='phase-pre-ready state-no-source use-default-poster sizing-medium'",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#333333"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV",
+      "bounds": [800, 600],
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutFlexibleBox DIV",
+      "bounds": [800, 600]
+    },
+    {
+      "name": "LayoutButton (positioned) INPUT",
+      "position": [335, 223],
+      "bounds": [130, 130]
+    },
+    {
+      "name": "LayoutBlockFlow DIV",
+      "position": [336, 224],
+      "bounds": [128, 128],
+      "opacity": 0.300000011920929,
+      "backgroundColor": "#FFFFFFE6"
+    }
+  ]
+}
+

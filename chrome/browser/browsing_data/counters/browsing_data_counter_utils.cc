@@ -8,17 +8,17 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/media_licenses_counter.h"
+#include "chrome/browser/browsing_data/counters/signin_data_counter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/profile_oauth2_token_service.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -28,6 +28,14 @@
 #include "chrome/browser/browsing_data/counters/hosted_apps_counter.h"
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_ui_util.h"
+#endif
+
+namespace browsing_data_counter_utils {
+
+namespace {
 // A helper function to display the size of cache in units of MB or higher.
 // We need this, as 1 MB is the lowest nonzero cache size displayed by the
 // counter.
@@ -39,22 +47,23 @@ base::string16 FormatBytesMBOrHigher(
   return ui::FormatBytesWithUnits(
       bytes, ui::DataUnits::DATA_UNITS_MEBIBYTE, true);
 }
+}  // namespace
 
 bool ShouldShowCookieException(Profile* profile) {
   if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile)) {
-    auto* signin_manager = SigninManagerFactory::GetForProfile(profile);
-    return signin_manager->IsAuthenticated();
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+    return identity_manager->HasPrimaryAccount();
   }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
-    auto* token_service =
-        ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
-    std::vector<std::string> accounts = token_service->GetAccounts();
-    bool has_valid_token = std::any_of(
-        accounts.begin(), accounts.end(), [&](std::string account_id) {
-          return !token_service->RefreshTokenHasError(account_id);
-        });
-    return has_valid_token;
+    // TODO(http://crbug.com/890796): Migrate this part once sync_ui_util has
+    // been migrated to the IdentityManager.
+    sync_ui_util::MessageType sync_status = sync_ui_util::GetStatus(
+        profile, ProfileSyncServiceFactory::GetForProfile(profile),
+        *SigninManagerFactory::GetForProfile(profile));
+    return sync_status == sync_ui_util::SYNCED;
   }
+#endif
   return false;
 }
 
@@ -187,5 +196,45 @@ base::string16 GetChromeCounterTextFromResult(
   }
 #endif
 
+  if (pref_name == browsing_data::prefs::kDeletePasswords) {
+    const browsing_data::SigninDataCounter::SigninDataResult*
+        passwords_and_signin_data_result = static_cast<
+            const browsing_data::SigninDataCounter::SigninDataResult*>(result);
+
+    browsing_data::BrowsingDataCounter::ResultInt password_count =
+        passwords_and_signin_data_result->Value();
+    browsing_data::BrowsingDataCounter::ResultInt signin_data_count =
+        passwords_and_signin_data_result->WebAuthnCredentialsValue();
+
+    std::vector<base::string16> counts;
+    if (password_count) {
+      counts.emplace_back(l10n_util::GetPluralStringFUTF16(
+          passwords_and_signin_data_result->is_sync_enabled()
+              ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
+              : IDS_DEL_PASSWORDS_COUNTER,
+          password_count));
+    }
+    if (signin_data_count) {
+      counts.emplace_back(l10n_util::GetPluralStringFUTF16(
+          IDS_DEL_SIGNIN_DATA_COUNTER, signin_data_count));
+    }
+    switch (counts.size()) {
+      case 0:
+        return l10n_util::GetStringUTF16(
+            IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_NONE);
+      case 1:
+        return counts[0];
+      case 2:
+        return l10n_util::GetStringFUTF16(
+            IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_COMBINATION, counts[0],
+            counts[1]);
+      default:
+        NOTREACHED();
+    }
+    NOTREACHED();
+  }
+
   return browsing_data::GetCounterTextFromResult(result);
 }
+
+}  // namespace browsing_data_counter_utils

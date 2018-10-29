@@ -3,11 +3,10 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.widget.TintedImageButton
+<android.support.v7.widget.AppCompatImageButton
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/ToolbarButton"
     android:layout_gravity="top"
     android:paddingStart="8dp"
-    tools:ignore="ContentDescription" />
+    tools:ignore="ContentDescription"/>

@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_TASK_TRAITS_DETAILS_H_
 #define BASE_TASK_TASK_TRAITS_DETAILS_H_
 
+#include <initializer_list>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -12,116 +13,147 @@
 namespace base {
 namespace trait_helpers {
 
-// HasArgOfType<CheckedType, ArgTypes...>::value is true iff a type in ArgTypes
-// matches CheckedType.
-template <class...>
-struct HasArgOfType : std::false_type {};
-template <class CheckedType, class FirstArgType, class... ArgTypes>
-struct HasArgOfType<CheckedType, FirstArgType, ArgTypes...>
-    : std::conditional<std::is_same<CheckedType, FirstArgType>::value,
-                       std::true_type,
-                       HasArgOfType<CheckedType, ArgTypes...>>::type {};
+// Checks if any of the elements in |ilist| is true.
+// Similar to std::any_of for the case of constexpr initializer_list.
+inline constexpr bool any_of(std::initializer_list<bool> ilist) {
+  for (auto c : ilist) {
+    if (c)
+      return true;
+  }
+  return false;
+}
 
-// When the following call is made:
-//    GetValueFromArgListImpl(CallFirstTag(), GetterType(), args...);
-// If |args| is empty, the compiler selects the first overload. This overload
-// returns getter.GetDefaultValue(). If |args| is not empty, the compiler
-// prefers using the second overload because the type of the first argument
-// matches exactly. This overload returns getter.GetValueFromArg(first_arg),
-// where |first_arg| is the first element in |args|. If
-// getter.GetValueFromArg(first_arg) isn't defined, the compiler uses the third
-// overload instead. This overload discards the first argument in |args| and
-// makes a recursive call to GetValueFromArgListImpl() with CallFirstTag() as
-// first argument.
+// Checks if all of the elements in |ilist| are true.
+// Similar to std::any_of for the case of constexpr initializer_list.
+inline constexpr bool all_of(std::initializer_list<bool> ilist) {
+  for (auto c : ilist) {
+    if (!c)
+      return false;
+  }
+  return true;
+}
 
-// Tag dispatching.
+// Counts the elements in |ilist| that are equal to |value|.
+// Similar to std::count for the case of constexpr initializer_list.
+template <class T>
+inline constexpr size_t count(std::initializer_list<T> ilist, T value) {
+  size_t c = 0;
+  for (const auto& v : ilist) {
+    c += (v == value);
+  }
+  return c;
+}
+
+// CallFirstTag is an argument tag that helps to avoid ambiguous overloaded
+// functions. When the following call is made:
+//    func(CallFirstTag(), arg...);
+// the compiler will give precedence to an overload candidate that directly
+// takes CallFirstTag. Another overload that takes CallSecondTag will be
+// considered iff the preferred overload candidates were all invalids and
+// therefore discarded.
 struct CallSecondTag {};
 struct CallFirstTag : CallSecondTag {};
 
-// Overload 1: Default value.
-template <class GetterType>
-constexpr typename GetterType::ValueType GetValueFromArgListImpl(
-    CallFirstTag,
-    GetterType getter) {
-  return getter.GetDefaultValue();
+// A trait filter class |TraitFilterType| implements the protocol to get a value
+// of type |ArgType| from an argument list and convert it to a value of type
+// |TraitType|. If the argument list contains an argument of type |ArgType|, the
+// filter class will be instantiated with that argument. If the argument list
+// contains no argument of type |ArgType|, the filter class will be instantiated
+// using the default constructor if available; a compile error is issued
+// otherwise. The filter class must have the conversion operator TraitType()
+// which returns a value of type TraitType.
+
+// |InvalidTrait| is used to return from GetTraitFromArg when the argument is
+// not compatible with the desired trait.
+struct InvalidTrait {};
+
+// Returns an object of type |TraitFilterType| constructed from |arg| if
+// compatible, or |InvalidTrait| otherwise.
+template <class TraitFilterType,
+          class ArgType,
+          class CheckArgumentIsCompatible = std::enable_if_t<
+              std::is_constructible<TraitFilterType, ArgType>::value>>
+constexpr TraitFilterType GetTraitFromArg(CallFirstTag, ArgType arg) {
+  return TraitFilterType(arg);
 }
 
-// Overload 2: Get value from first argument. Check that no argument in |args|
-// has the same type as |first_arg|.
-template <class GetterType,
-          class FirstArgType,
+template <class TraitFilterType, class ArgType>
+constexpr InvalidTrait GetTraitFromArg(CallSecondTag, ArgType arg) {
+  return InvalidTrait();
+}
+
+// Returns an object of type |TraitFilterType| constructed from a compatible
+// argument in |args...|, or default constructed if none of the arguments are
+// compatible. This is the implementation of GetTraitFromArgList() with a
+// disambiguation tag.
+template <class TraitFilterType,
           class... ArgTypes,
-          class TestGetValueFromArgDefined =
-              decltype(std::declval<GetterType>().GetValueFromArg(
-                  std::declval<FirstArgType>()))>
-constexpr typename GetterType::ValueType GetValueFromArgListImpl(
-    CallFirstTag,
-    GetterType getter,
-    const FirstArgType& first_arg,
-    const ArgTypes&... args) {
-  static_assert(!HasArgOfType<FirstArgType, ArgTypes...>::value,
-                "Multiple arguments of the same type were provided to the "
-                "constructor of TaskTraits.");
-  return getter.GetValueFromArg(first_arg);
+          class TestCompatibleArgument = std::enable_if_t<any_of(
+              {std::is_constructible<TraitFilterType, ArgTypes>::value...})>>
+constexpr TraitFilterType GetTraitFromArgListImpl(CallFirstTag,
+                                                  ArgTypes... args) {
+  return std::get<TraitFilterType>(std::make_tuple(
+      GetTraitFromArg<TraitFilterType>(CallFirstTag(), args)...));
 }
 
-// Overload 3: Discard first argument.
-template <class GetterType, class FirstArgType, class... ArgTypes>
-constexpr typename GetterType::ValueType GetValueFromArgListImpl(
-    CallSecondTag,
-    GetterType getter,
-    const FirstArgType&,
-    const ArgTypes&... args) {
-  return GetValueFromArgListImpl(CallFirstTag(), getter, args...);
+template <class TraitFilterType, class... ArgTypes>
+constexpr TraitFilterType GetTraitFromArgListImpl(CallSecondTag,
+                                                  ArgTypes... args) {
+  static_assert(std::is_constructible<TraitFilterType>::value,
+                "TaskTraits contains a Trait that must be explicity "
+                "initialized in its constructor.");
+  return TraitFilterType();
 }
 
-// If there is an argument |arg_of_type| of type Getter::ArgType in |args|,
-// returns getter.GetValueFromArg(arg_of_type). If there are more than one
-// argument of type Getter::ArgType in |args|, generates a compile-time error.
-// Otherwise, returns getter.GetDefaultValue().
-//
-// |getter| must provide:
-//     ValueType:
-//         The return type of GetValueFromArgListImpl().
-//
-//     ArgType:
-//         The type of the argument from which GetValueFromArgListImpl() derives
-//         its return value.
-//
-//     ValueType GetValueFromArg(ArgType):
-//         Converts an argument of type ArgType into a value returned by
-//         GetValueFromArgListImpl().
-//
-// |getter| may provide:
-//     ValueType GetDefaultValue():
-//         Returns the value returned by GetValueFromArgListImpl() if none of
-//         its arguments is of type ArgType. If this method is not provided,
-//         compilation will fail when no argument of type ArgType is provided.
-template <class GetterType, class... ArgTypes>
-constexpr typename GetterType::ValueType GetValueFromArgList(
-    GetterType getter,
-    const ArgTypes&... args) {
-  return GetValueFromArgListImpl(CallFirstTag(), getter, args...);
+// Constructs an object of type |TraitFilterType| from a compatible argument in
+// |args...|, or using the default constructor, and returns its associated trait
+// value using conversion to |TraitFilterType::ValueType|. If there are more
+// than one compatible argument in |args|, generates a compile-time error.
+template <class TraitFilterType, class... ArgTypes>
+constexpr typename TraitFilterType::ValueType GetTraitFromArgList(
+    ArgTypes... args) {
+  static_assert(
+      count({std::is_constructible<TraitFilterType, ArgTypes>::value...},
+            true) <= 1,
+      "Multiple arguments of the same type were provided to the "
+      "constructor of TaskTraits.");
+  return GetTraitFromArgListImpl<TraitFilterType>(CallFirstTag(), args...);
 }
+
+// Returns true if this trait is explicitly defined in an argument list, i.e.
+// there is an argument compatible with this trait in |args...|.
+template <class TraitFilterType, class... ArgTypes>
+constexpr bool TraitIsDefined(ArgTypes... args) {
+  return any_of({std::is_constructible<TraitFilterType, ArgTypes>::value...});
+}
+
+// Helper class to implemnent a |TraitFilterType|.
+template <typename T>
+struct BasicTraitFilter {
+  using ValueType = T;
+
+  constexpr operator ValueType() const { return value; }
+
+  ValueType value = {};
+};
 
 template <typename ArgType>
-struct BooleanArgGetter {
-  using ValueType = bool;
-  constexpr ValueType GetValueFromArg(ArgType) const { return true; }
-  constexpr ValueType GetDefaultValue() const { return false; }
+struct BooleanTraitFilter : public BasicTraitFilter<bool> {
+  constexpr BooleanTraitFilter() { this->value = false; }
+  constexpr BooleanTraitFilter(ArgType) { this->value = true; }
 };
 
 template <typename ArgType, ArgType DefaultValue>
-struct EnumArgGetter {
-  using ValueType = ArgType;
-  constexpr ValueType GetValueFromArg(ArgType arg) const { return arg; }
-  constexpr ValueType GetDefaultValue() const { return DefaultValue; }
+struct EnumTraitFilter : public BasicTraitFilter<ArgType> {
+  constexpr EnumTraitFilter() { this->value = DefaultValue; }
+  constexpr EnumTraitFilter(ArgType arg) { this->value = arg; }
 };
 
+// Tests whether multiple given argtument types are all valid traits according
+// to the provided ValidTraits. To use, define a ValidTraits
 template <typename ArgType>
-struct RequiredEnumArgGetter {
-  using ValueType = ArgType;
-  constexpr ValueType GetValueFromArg(ArgType arg) const { return arg; }
+struct RequiredEnumTraitFilter : public BasicTraitFilter<ArgType> {
+  constexpr RequiredEnumTraitFilter(ArgType arg) { this->value = arg; }
 };
 
 // Tests whether a given trait type is valid or invalid by testing whether it is
@@ -129,82 +161,14 @@ struct RequiredEnumArgGetter {
 // type like this:
 //
 // struct ValidTraits {
-//   ValidTraits(MyTrait) {}
+//   ValidTraits(MyTrait);
 //   ...
 // };
-template <class ValidTraits>
-struct ValidTraitTester {
-  template <class TraitType>
-  struct IsValid : std::is_convertible<TraitType, ValidTraits> {};
-
-  template <class TraitType>
-  struct IsInvalid
-      : std::conditional_t<std::is_convertible<TraitType, ValidTraits>::value,
-                           std::false_type,
-                           std::true_type> {};
-};
-
-// Tests if a given trait type is valid according to the provided ValidTraits.
-template <class ValidTraits, class TraitType>
-struct IsValidTrait
-    : ValidTraitTester<ValidTraits>::template IsValid<TraitType> {};
-
-// Tests whether multiple given traits types are all valid according to the
-// provided ValidTraits.
-template <class ValidTraits, class...>
-struct AreValidTraits : std::true_type {};
-
-template <class ValidTraits, class NextType, class... Rest>
-struct AreValidTraits<ValidTraits, NextType, Rest...>
-    : std::conditional<IsValidTrait<ValidTraits, NextType>::value,
-                       AreValidTraits<ValidTraits, Rest...>,
-                       std::false_type>::type {};
-
-// Helper struct that recursively builds up an index_sequence containing all
-// those indexes of elements in Args for which the |Predicate<Arg>::value| is
-// true.
-template <template <class> class Predicate,
-          std::size_t CurrentIndex,
-          class Output,
-          class... Args>
-struct SelectIndicesHelper;
-
-template <template <class> class Predicate,
-          std::size_t CurrentIndex,
-          std::size_t... Indices,
-          class First,
-          class... Rest>
-struct SelectIndicesHelper<Predicate,
-                           CurrentIndex,
-                           std::index_sequence<Indices...>,
-                           First,
-                           Rest...>
-    : std::conditional_t<
-          Predicate<First>::value,
-          // Push the index into the sequence and recurse.
-          SelectIndicesHelper<Predicate,
-                              CurrentIndex + 1,
-                              std::index_sequence<Indices..., CurrentIndex>,
-                              Rest...>,
-          // Skip the index and recurse.
-          SelectIndicesHelper<Predicate,
-                              CurrentIndex + 1,
-                              std::index_sequence<Indices...>,
-                              Rest...>> {};
-
-template <template <class> class Predicate,
-          std::size_t CurrentIndex,
-          class Sequence>
-struct SelectIndicesHelper<Predicate, CurrentIndex, Sequence> {
-  using type = Sequence;
-};
-
-// Selects the indices of elements in the |Args| list for which
-// |Predicate<Arg>::value| is |true|.
-template <template <class> class Predicate, class... Args>
-using SelectIndices =
-    typename SelectIndicesHelper<Predicate, 0, std::index_sequence<>, Args...>::
-        type;
+template <class ValidTraits, class... ArgTypes>
+struct AreValidTraits
+    : std::integral_constant<
+          bool,
+          all_of({std::is_convertible<ArgTypes, ValidTraits>::value...})> {};
 
 }  // namespace trait_helpers
 }  // namespace base

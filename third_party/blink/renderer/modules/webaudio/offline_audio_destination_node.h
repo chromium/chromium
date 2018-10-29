@@ -28,10 +28,10 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 namespace blink {
 
@@ -69,7 +69,7 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   double SampleRate() const override { return sample_rate_; }
 
   size_t RenderQuantumFrames() const {
-    return AudioUtilities::kRenderQuantumFrames;
+    return audio_utilities::kRenderQuantumFrames;
   }
 
   // This is called when rendering of the offline context is started
@@ -145,7 +145,7 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
 
   // The rendering thread for the non-AudioWorklet mode. For the AudioWorklet
   // node, AudioWorkletThread will drive the rendering.
-  std::unique_ptr<WebThread> render_thread_;
+  std::unique_ptr<Thread> render_thread_;
 
   scoped_refptr<base::SingleThreadTaskRunner> render_thread_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;

@@ -100,8 +100,6 @@ source_set("common") {
     "dom_storage/dom_storage_map.cc",
     "dom_storage/dom_storage_map.h",
     "dom_storage/dom_storage_messages.h",
-    "dom_storage/dom_storage_namespace_ids.cc",
-    "dom_storage/dom_storage_namespace_ids.h",
     "dom_storage/dom_storage_types.h",
     "download/mhtml_save_status.cc",
     "download/mhtml_save_status.h",
@@ -133,6 +131,8 @@ source_set("common") {
     "gin_java_bridge_messages.h",
     "in_process_child_thread_params.cc",
     "in_process_child_thread_params.h",
+    "input/actions_parser.cc",
+    "input/actions_parser.h",
     "input/event_with_latency_info.h",
     "input/gesture_event_stream_validator.cc",
     "input/gesture_event_stream_validator.h",
@@ -191,8 +191,6 @@ source_set("common") {
     "media/media_player_messages_android.h",
     "media/media_stream_controls.cc",
     "media/media_stream_controls.h",
-    "media/media_stream_param_traits.cc",
-    "media/media_stream_param_traits.h",
     "media/midi_messages.h",
     "media/peer_connection_tracker_messages.h",
     "media/video_capture.h",
@@ -270,6 +268,7 @@ source_set("common") {
     "view_messages.h",
     "visual_properties.cc",
     "visual_properties.h",
+    "widget_messages.h",
   ]
 
   configs += [
@@ -284,6 +283,7 @@ source_set("common") {
     "//gpu/command_buffer/common",
     "//ipc",
     "//services/network:network_service",
+    "//services/service_manager/public/cpp",
     "//services/service_manager/sandbox",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common",
@@ -318,7 +318,6 @@ source_set("common") {
     "//media:shared_memory_support",
     "//media/base/ipc",
     "//media/capture",
-    "//media/capture/ipc",
     "//media/gpu:buildflags",
     "//media/gpu/ipc/client",
     "//media/gpu/ipc/common",
@@ -331,10 +330,7 @@ source_set("common") {
     "//sandbox:sandbox_buildflags",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
-    "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
-    "//services/service_manager",
-    "//services/service_manager/embedder",
-    "//services/service_manager/public/cpp",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//services/service_manager/public/mojom",
     "//services/service_manager/runner/common",
     "//services/service_manager/zygote:zygote_buildflags",
@@ -352,6 +348,7 @@ source_set("common") {
     "//ui/events/blink",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry/mojo:struct_traits",
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/color",
     "//ui/gfx/ipc/geometry",
@@ -467,9 +464,9 @@ source_set("common") {
     ]
 
     deps += [
-      "//third_party/fuchsia-sdk:fdio",
-      "//third_party/fuchsia-sdk:fonts",
-      "//third_party/fuchsia-sdk:scenic",
+      "//third_party/fuchsia-sdk/sdk:fdio",
+      "//third_party/fuchsia-sdk/sdk:fonts",
+      "//third_party/fuchsia-sdk/sdk:scenic",
     ]
   }
 }
@@ -493,11 +490,6 @@ mojom("mojo_bindings") {
   # at some point.
   cpp_only = true
 
-  # imports vs deps check is disabled for this target to work around
-  # windows multiple definitions linker error caused by having
-  # both a direct and an indirect dependency on the same target
-  skip_deps_check = true
-
   disable_variants = true
 
   sources = [
@@ -505,7 +497,6 @@ mojom("mojo_bindings") {
     "associated_interfaces.mojom",
     "child.mojom",
     "child_control.mojom",
-    "child_memory_coordinator.mojom",
     "field_trial_recorder.mojom",
     "frame.mojom",
     "frame_sink_provider.mojom",
@@ -520,7 +511,6 @@ mojom("mojo_bindings") {
     "media/peer_connection_tracker.mojom",
     "media/renderer_audio_input_stream_factory.mojom",
     "media/renderer_audio_output_stream_factory.mojom",
-    "memory_coordinator.mojom",
     "native_types.mojom",
     "navigation_client.mojom",
     "navigation_params.mojom",
@@ -577,6 +567,7 @@ mojom("mojo_bindings") {
     "//content/public/common:interfaces",
     "//content/public/common:resource_type_bindings",
     "//ipc:mojom_constants",
+    "//media/capture/mojom:video_capture",
     "//media/mojo/interfaces",
     "//mojo/public/mojom/base",
     "//services/audio/public/mojom",

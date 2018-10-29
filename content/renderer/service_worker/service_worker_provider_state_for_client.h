@@ -6,7 +6,6 @@
 #define CONTENT_RENDERER_SERVICE_WORKER_SERVICE_WORKER_PROVIDER_STATE_FOR_CLIENT_H_
 
 #include <stdint.h>
-#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,9 +16,7 @@
 #include "content/common/service_worker/controller_service_worker.mojom.h"
 #include "content/common/service_worker/service_worker_container.mojom.h"
 #include "content/common/service_worker/service_worker_provider.mojom.h"
-#include "content/renderer/service_worker/web_service_worker_impl.h"
 #include "content/renderer/service_worker/web_service_worker_provider_impl.h"
-#include "content/renderer/service_worker/web_service_worker_registration_impl.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -91,14 +88,6 @@ struct ServiceWorkerProviderStateForClient {
   // factory and takes |controller_endpoint|.
   mojom::ControllerServiceWorkerPtrInfo controller_endpoint;
   mojom::ControllerServiceWorkerConnectorPtr controller_connector;
-
-  // For service worker clients. Map from registration id to JavaScript
-  // ServiceWorkerRegistration object.
-  std::map<int64_t, WebServiceWorkerRegistrationImpl*> registrations_;
-
-  // For service worker clients. Map from version id to JavaScript ServiceWorker
-  // object.
-  std::map<int64_t, WebServiceWorkerImpl*> workers_;
 };
 
 }  // namespace content

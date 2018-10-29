@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGResourcePattern {pattern} [id="patternUserSpace"] [patternUnits=userSpaceOnUse] [patternContentUnits=userSpaceOnUse]
-      LayoutSVGRect {rect} at (0,0) size 50x30 [stroke={[type=SOLID] [color=#008000]}] [fill={[type=SOLID] [color=#0000FF]}] [x=0.00] [y=0.00] [width=50.00] [height=30.00]
-    LayoutSVGRect {rect} at (20,20) size 100x60 [stroke={[type=SOLID] [color=#000000]}] [fill={[type=PATTERN] [id="patternUserSpace"]}] [x=20.00] [y=20.00] [width=100.00] [height=60.00]

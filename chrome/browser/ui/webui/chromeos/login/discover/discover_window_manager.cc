@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/discover/discover_window_manager.h"
 
+#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/window_properties.h"
@@ -17,6 +18,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -83,6 +87,13 @@ void DiscoverWindowManager::ShowChromeDiscoverPageForProfile(Profile* profile) {
 
   auto* window = params.browser->window()->GetNativeWindow();
   window->SetProperty(kOverrideWindowIconResourceIdKey, IDR_DISCOVER_APP_192);
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(ash::AppType::CHROME_APP));
+  // Manually position the window in center of the screen.
+  gfx::Rect center_in_screen =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+  center_in_screen.ClampToCenteredSize(window->bounds().size());
+  window->SetBounds(center_in_screen);
 
   for (DiscoverWindowManagerObserver& observer : observers_)
     observer.OnNewDiscoverWindow(params.browser);

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/notifications/notification_options.h"
 #include "third_party/blink/renderer/modules/vibration/vibration_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/time.h"
 
@@ -100,7 +101,7 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
     notification_data->data = Vector<uint8_t>();
     notification_data->data->Append(
         serialized_script_value->Data(),
-        serialized_script_value->DataLengthInBytes());
+        SafeCast<wtf_size_t>(serialized_script_value->DataLengthInBytes()));
   }
 
   Vector<mojom::blink::NotificationActionPtr> actions;

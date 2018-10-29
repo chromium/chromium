@@ -176,11 +176,12 @@ void MenuRunnerImplCocoa::RunMenuAt(Widget* parent,
   // Ensure the UI can update while the menu is fading out.
   base::ScopedPumpMessagesInPrivateModes pump_private;
 
-  NSWindow* window = parent->GetNativeWindow();
+  NSWindow* window = parent->GetNativeWindow().GetNativeNSWindow();
+  NSView* view = parent->GetNativeView().GetNativeNSView();
   if (run_types & MenuRunner::CONTEXT_MENU) {
     [NSMenu popUpContextMenu:[menu_controller_ menu]
                    withEvent:EventForPositioningContextMenu(bounds, window)
-                     forView:parent->GetNativeView()];
+                     forView:view];
   } else if (run_types & MenuRunner::COMBOBOX) {
     NSMenuItem* checked_item = FirstCheckedItem(menu_controller_);
     NSMenu* menu = [menu_controller_ menu];

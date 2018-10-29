@@ -17,7 +17,6 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/tabs/tab.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
@@ -35,9 +34,8 @@
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller_delegate.h"
-#include "ios/chrome/browser/ui/uikit_ui_util.h"
 #include "ios/chrome/browser/ui/url_loader.h"
-#import "ios/chrome/browser/ui/util/form_sheet_navigation_controller.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
 #import "ios/web/public/navigation_manager.h"
@@ -504,47 +502,32 @@ bookmarkHomeViewControllerWantsDismissal:(BookmarkHomeViewController*)controller
 - (void)presentTableViewController:(ChromeTableViewController*)viewController
     withReplacementViewControllers:
         (NSArray<ChromeTableViewController*>*)replacementViewControllers {
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    TableViewNavigationController* navController =
-        [[TableViewNavigationController alloc] initWithTable:viewController];
-    self.bookmarkNavigationController = navController;
-    if (replacementViewControllers) {
-      [navController setViewControllers:replacementViewControllers];
-    }
-
-    navController.toolbarHidden = YES;
-    self.bookmarkNavigationControllerDelegate =
-        [[TableViewNavigationControllerDelegate alloc] init];
-    navController.delegate = self.bookmarkNavigationControllerDelegate;
-    self.bookmarkTransitioningDelegate =
-        [[BookmarkTransitioningDelegate alloc] init];
-    self.bookmarkTransitioningDelegate.presentationControllerModalDelegate =
-        self;
-    navController.transitioningDelegate = self.bookmarkTransitioningDelegate;
-    navController.modalPresentationStyle = UIModalPresentationCustom;
-
-    [_parentController presentViewController:navController
-                                    animated:YES
-                                  completion:nil];
-
-    TableViewPresentationController* presentationController =
-        base::mac::ObjCCastStrict<TableViewPresentationController>(
-            navController.presentationController);
-    self.bookmarkNavigationControllerDelegate.modalController =
-        presentationController;
-  } else {
-    FormSheetNavigationController* navController =
-        [[FormSheetNavigationController alloc]
-            initWithRootViewController:viewController];
-    if (replacementViewControllers) {
-      [navController setViewControllers:replacementViewControllers];
-    }
-    navController.modalPresentationStyle = UIModalPresentationFormSheet;
-    self.bookmarkNavigationController = navController;
-    [_parentController presentViewController:navController
-                                    animated:YES
-                                  completion:nil];
+  TableViewNavigationController* navController =
+      [[TableViewNavigationController alloc] initWithTable:viewController];
+  self.bookmarkNavigationController = navController;
+  if (replacementViewControllers) {
+    [navController setViewControllers:replacementViewControllers];
   }
+
+  navController.toolbarHidden = YES;
+  self.bookmarkNavigationControllerDelegate =
+      [[TableViewNavigationControllerDelegate alloc] init];
+  navController.delegate = self.bookmarkNavigationControllerDelegate;
+  self.bookmarkTransitioningDelegate =
+      [[BookmarkTransitioningDelegate alloc] init];
+  self.bookmarkTransitioningDelegate.presentationControllerModalDelegate = self;
+  navController.transitioningDelegate = self.bookmarkTransitioningDelegate;
+  navController.modalPresentationStyle = UIModalPresentationCustom;
+
+  [_parentController presentViewController:navController
+                                  animated:YES
+                                completion:nil];
+
+  TableViewPresentationController* presentationController =
+      base::mac::ObjCCastStrict<TableViewPresentationController>(
+          navController.presentationController);
+  self.bookmarkNavigationControllerDelegate.modalController =
+      presentationController;
 }
 
 - (void)openURLInCurrentTab:(const GURL&)url {

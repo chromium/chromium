@@ -36,6 +36,27 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }
 
+namespace signin {
+// The maximum number of retries for a fetcher used in this class.
+constexpr int kMaxFetcherRetries = 8;
+
+struct MultiloginParameters {
+  MultiloginParameters(const MultiloginMode mode,
+                       const std::vector<std::string>& accounts_to_send);
+  MultiloginParameters(const MultiloginParameters& other);
+  MultiloginParameters& operator=(const MultiloginParameters& other);
+  ~MultiloginParameters();
+
+  // Needed for testing.
+  bool operator==(const MultiloginParameters& other) const {
+    return mode == other.mode && accounts_to_send == other.accounts_to_send;
+  }
+
+  MultiloginMode mode;
+  std::vector<std::string> accounts_to_send;
+};
+}  // namespace signin
+
 // Merges a Google account known to Chrome into the cookie jar.  When merging
 // multiple accounts, one instance of the helper is better than multiple
 // instances if there is the possibility that they run concurrently, since
@@ -123,6 +144,10 @@ class GaiaCookieManagerService : public KeyedService,
         const std::vector<gaia::ListedAccount>& signed_out_accounts,
         const GoogleServiceAuthError& error) {}
 
+    // Called when the Gaia cookie has been deleted explicitly by a user action,
+    // e.g. from the settings or by an extension.
+    virtual void OnGaiaCookieDeletedByUserAction() {}
+
    protected:
     virtual ~Observer() {}
   };
@@ -209,7 +234,8 @@ class GaiaCookieManagerService : public KeyedService,
 
   // Takes list of account_ids from the front request, matches them with a
   // corresponding stored access_token and calls StartMultilogin.
-  void SetAccountsInCookieWithTokens();
+  // Virtual for testing purposes.
+  virtual void SetAccountsInCookieWithTokens();
 
   // Returns if the listed accounts are up to date or not. The out parameter
   // will be assigned the current cached accounts (whether they are not up to
@@ -270,6 +296,18 @@ class GaiaCookieManagerService : public KeyedService,
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(GaiaCookieManagerServiceTest,
+                           MultiloginSuccessAndCookiesSet);
+  FRIEND_TEST_ALL_PREFIXES(GaiaCookieManagerServiceTest,
+                           MultiloginFailurePersistentError);
+  FRIEND_TEST_ALL_PREFIXES(GaiaCookieManagerServiceTest,
+                           MultiloginFailureMaxRetriesReached);
+  FRIEND_TEST_ALL_PREFIXES(GaiaCookieManagerServiceTest,
+                           FetcherRetriesZeroedBetweenCalls);
+  FRIEND_TEST_ALL_PREFIXES(GaiaCookieManagerServiceTest,
+                           MultiloginFailureInvalidGaiaCredentialsMobile);
+  FRIEND_TEST_ALL_PREFIXES(GaiaCookieManagerServiceTest,
+                           MultiloginFailureInvalidGaiaCredentialsDesktop);
   // Returns the source value to use for GaiaFetcher requests.  This is
   // virtual to allow tests and fake classes to override.
   virtual std::string GetSourceForRequest(
@@ -296,41 +334,47 @@ class GaiaCookieManagerService : public KeyedService,
       const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
   void OnGetTokenFailure(const OAuth2TokenService::Request* request,
                          const GoogleServiceAuthError& error) override;
+  // Called when either refresh or access token becomes available.
+  void OnTokenFetched(const std::string& account_id, const std::string& token);
 
   // Overridden from GaiaAuthConsumer.
   void OnMergeSessionSuccess(const std::string& data) override;
   void OnMergeSessionFailure(const GoogleServiceAuthError& error) override;
-  void OnOAuthMultiloginSuccess(const OAuthMultiloginResult& result) override;
-  void OnOAuthMultiloginFailure(const GoogleServiceAuthError& error) override;
+  void OnOAuthMultiloginFinished(const OAuthMultiloginResult& result) override;
   void OnListAccountsSuccess(const std::string& data) override;
   void OnListAccountsFailure(const GoogleServiceAuthError& error) override;
   void OnLogOutSuccess() override;
   void OnLogOutFailure(const GoogleServiceAuthError& error) override;
-
-  // Final call in the Setting accounts in cookie procedure.
-  void OnSetAccountsFinished(const GoogleServiceAuthError& error);
 
   // Callback for CookieManager::SetCanonicalCookie.
   void OnCookieSet(const std::string& cookie_name,
                    const std::string& cookie_domain,
                    bool success);
 
+  // Final call in the Setting accounts in cookie procedure. Virtual for testing
+  // purposes.
+  virtual void OnSetAccountsFinished(const GoogleServiceAuthError& error);
+
   // Helper method for AddAccountToCookie* methods.
   void AddAccountToCookieInternal(const std::string& account_id,
                                   const std::string& source);
 
+  // Helper function to trigger fetching retry in case of failure for only
+  // failed account id. Virtual for testing purposes.
+  virtual void StartFetchingAccessTokenForMultilogin(
+      const std::string& account_id);
+
   // Starts the process of fetching the access token with OauthLogin scope and
   // performing SetAccountsInCookie on success.  Virtual so that it can be
   // overridden in tests.
-  virtual void StartFetchingAccesstokens();
+  virtual void StartFetchingAccessTokensForMultilogin();
 
   // Starts the proess of fetching the uber token and performing a merge session
   // for the next account.  Virtual so that it can be overriden in tests.
   virtual void StartFetchingUbertoken();
 
-  // Starts the process of setting accounts in cookie. Virtual for testing
-  // purposes.
-  virtual void StartFetchingMultiLogin(
+  // Starts the process of setting accounts in cookie.
+  void StartFetchingMultiLogin(
       const std::vector<GaiaAuthFetcher::MultiloginTokenIDPair>& accounts);
 
   // Virtual for testing purposes.
@@ -346,7 +390,7 @@ class GaiaCookieManagerService : public KeyedService,
   // Virtual for testing purpose.
   virtual void StartFetchingLogOut();
 
-  // Starts setting parsed cookies in browser;
+  // Starts setting parsed cookies in browser.
   void StartSettingCookies(const OAuthMultiloginResult& result);
 
   // Start the next request, if needed.
@@ -404,14 +448,6 @@ class GaiaCookieManagerService : public KeyedService,
   std::vector<gaia::ListedAccount> signed_out_accounts_;
 
   bool list_accounts_stale_;
-
-  // The time when the profile was loaded and used to compute the time passed
-  // between the moment the profile was loaded and the moment a new list
-  // account request is started.
-  base::Time profile_load_time_;
-
-  // Counter for list account requests.
-  int list_accounts_request_counter_;
 
   base::WeakPtrFactory<GaiaCookieManagerService> weak_ptr_factory_;
 

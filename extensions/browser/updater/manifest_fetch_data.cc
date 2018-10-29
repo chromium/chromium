@@ -207,7 +207,7 @@ bool ManifestFetchData::Includes(const std::string& extension_id) const {
 
 bool ManifestFetchData::DidPing(const std::string& extension_id,
                                 PingType type) const {
-  std::map<std::string, PingData>::const_iterator i = pings_.find(extension_id);
+  auto i = pings_.find(extension_id);
   if (i == pings_.end())
     return false;
   int value = 0;

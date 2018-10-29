@@ -316,20 +316,28 @@ bool DisassemblerWin32<Traits>::ParseAndStoreAbs32() {
     return true;
   has_parsed_abs32_ = true;
 
-  ParseAndStoreRelocBlocks();
-
+  // Read reloc targets as preliminary abs32 locations.
   std::unique_ptr<ReferenceReader> relocs = MakeReadRelocs(0, offset_t(size()));
   for (auto ref = relocs->GetNext(); ref.has_value(); ref = relocs->GetNext())
     abs32_locations_.push_back(ref->target);
 
-  abs32_locations_.shrink_to_fit();
   std::sort(abs32_locations_.begin(), abs32_locations_.end());
 
+  // Abs32 references must have targets translatable to offsets. Remove those
+  // that are unable to do so.
+  size_t num_untranslatable = RemoveUntranslatableAbs32(
+      image_, {Traits::kBitness, image_base_}, translator_, &abs32_locations_);
+  LOG_IF(WARNING, num_untranslatable) << "Removed " << num_untranslatable
+                                      << " untranslatable abs32 references.";
+
   // Abs32 reference bodies must not overlap. If found, simply remove them.
-  size_t num_removed =
-      RemoveOverlappingAbs32Locations(Traits::kBitness, &abs32_locations_);
-  LOG_IF(WARNING, num_removed) << "Found and removed " << num_removed
-                               << " abs32 locations with overlapping bodies.";
+  size_t num_overlapping =
+      RemoveOverlappingAbs32Locations(Traits::kVAWidth, &abs32_locations_);
+  LOG_IF(WARNING, num_overlapping)
+      << "Removed " << num_overlapping
+      << " abs32 references with overlapping bodies.";
+
+  abs32_locations_.shrink_to_fit();
   return true;
 }
 

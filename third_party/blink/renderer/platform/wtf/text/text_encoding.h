@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
 
@@ -48,12 +49,12 @@ class WTF_EXPORT TextEncoding final {
   const TextEncoding& ClosestByteBasedEquivalent() const;
   const TextEncoding& EncodingForFormSubmission() const;
 
-  String Decode(const char* str, size_t length) const {
+  String Decode(const char* str, wtf_size_t length) const {
     bool ignored;
     return Decode(str, length, false, ignored);
   }
   String Decode(const char*,
-                size_t length,
+                wtf_size_t length,
                 bool stop_on_error,
                 bool& saw_error) const;
 

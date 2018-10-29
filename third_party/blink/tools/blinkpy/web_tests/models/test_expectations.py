@@ -969,19 +969,6 @@ class TestExpectations(object):
         return False
 
     @staticmethod
-    def remove_pixel_failures(expected_results):
-        """Returns a copy of the expected results for a test, except that we
-        drop any pixel failures and return the remaining expectations. For example,
-        if we're not running pixel tests, then tests expected to fail as IMAGE
-        will PASS.
-        """
-        expected_results = expected_results.copy()
-        if IMAGE in expected_results:
-            expected_results.remove(IMAGE)
-            expected_results.add(PASS)
-        return expected_results
-
-    @staticmethod
     def remove_non_sanitizer_failures(expected_results):
         """Returns a copy of the expected results for a test, except that we
         drop any failures that the sanitizers don't care about.
@@ -1095,12 +1082,10 @@ class TestExpectations(object):
     def get_expectations_string(self, test):
         return self._model.get_expectations_string(test)
 
-    def matches_an_expected_result(self, test, result, pixel_tests_are_enabled, sanitizer_is_enabled):
+    def matches_an_expected_result(self, test, result, sanitizer_is_enabled):
         expected_results = self._model.get_expectations(test)
         if sanitizer_is_enabled:
             expected_results = self.remove_non_sanitizer_failures(expected_results)
-        elif not pixel_tests_are_enabled:
-            expected_results = self.remove_pixel_failures(expected_results)
         return self.result_was_expected(result, expected_results)
 
     def _shorten_filename(self, filename):

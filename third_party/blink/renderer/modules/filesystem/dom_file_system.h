@@ -67,11 +67,11 @@ class MODULES_EXPORT DOMFileSystem final
   // DOMFileSystemBase overrides.
   void AddPendingCallbacks() override;
   void RemovePendingCallbacks() override;
-  void ReportError(ErrorCallbackBase*, FileError::ErrorCode) override;
+  void ReportError(ErrorCallbackBase*, base::File::Error error) override;
 
   static void ReportError(ExecutionContext*,
                           ErrorCallbackBase*,
-                          FileError::ErrorCode);
+                          base::File::Error error);
 
   // ScriptWrappable overrides.
   bool HasPendingActivity() const final;

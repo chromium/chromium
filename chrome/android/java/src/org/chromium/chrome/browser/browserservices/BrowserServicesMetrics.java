@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browserservices;
 import android.os.SystemClock;
 import android.support.annotation.IntDef;
 
+import org.chromium.base.metrics.CachedMetrics;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 
@@ -68,6 +69,14 @@ public class BrowserServicesMetrics {
     }
 
     /**
+     * Returns a {@link TimingMetric} that records the amount of time spent opening the
+     * {@link ClientAppDataRegister}.
+     */
+    public static TimingMetric getClientAppDataLoadTimingContext() {
+        return new TimingMetric("BrowserServices.ClientAppDataLoad");
+    }
+
+    /**
      * A class to be used with a try-with-resources to record the elapsed time within the try block.
      */
     public static class TimingMetric implements AutoCloseable {
@@ -85,8 +94,9 @@ public class BrowserServicesMetrics {
 
         @Override
         public void close() {
-            RecordHistogram.recordMediumTimesHistogram(
-                    mMetric, now() - mStart, TimeUnit.MILLISECONDS);
+            // Use {@link CachedMetrics} so this can be called before native is loaded.
+            new CachedMetrics.MediumTimesHistogramSample(mMetric, TimeUnit.MILLISECONDS)
+                    .record(now() - mStart);
         }
     }
 

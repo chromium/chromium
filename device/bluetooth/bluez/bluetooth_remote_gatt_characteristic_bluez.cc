@@ -32,8 +32,7 @@ namespace {
 // Stream operator for logging vector<uint8_t>.
 std::ostream& operator<<(std::ostream& out, const std::vector<uint8_t> bytes) {
   out << "[";
-  for (std::vector<uint8_t>::const_iterator iter = bytes.begin();
-       iter != bytes.end(); ++iter) {
+  for (auto iter = bytes.begin(); iter != bytes.end(); ++iter) {
     out << base::StringPrintf("%02X", *iter);
   }
   return out << "]";
@@ -60,8 +59,7 @@ BluetoothRemoteGattCharacteristicBlueZ::BluetoothRemoteGattCharacteristicBlueZ(
       bluez::BluezDBusManager::Get()
           ->GetBluetoothGattDescriptorClient()
           ->GetDescriptors();
-  for (std::vector<dbus::ObjectPath>::const_iterator iter = gatt_descs.begin();
-       iter != gatt_descs.end(); ++iter)
+  for (auto iter = gatt_descs.begin(); iter != gatt_descs.end(); ++iter)
     GattDescriptorAdded(*iter);
 }
 
@@ -91,8 +89,7 @@ BluetoothRemoteGattCharacteristicBlueZ::GetProperties() const {
 
   Properties props = PROPERTY_NONE;
   const std::vector<std::string>& flags = properties->flags.value();
-  for (std::vector<std::string>::const_iterator iter = flags.begin();
-       iter != flags.end(); ++iter) {
+  for (auto iter = flags.begin(); iter != flags.end(); ++iter) {
     if (*iter == bluetooth_gatt_characteristic::kFlagBroadcast)
       props |= PROPERTY_BROADCAST;
     if (*iter == bluetooth_gatt_characteristic::kFlagRead)

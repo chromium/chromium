@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Background Fetch API: CORS preflight blocking test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/serviceworker/resources/test-helpers.js"></script>
+<script src="resources/utils.js"></script>
+<script>
+'use strict';
+
+// https://crbug.com/889401
+backgroundFetchTest(async (t, bgFetch) => {
+  const registrationPromises = [];
+  for (let i = 0; i < 6; i++) {
+    const registrationPromise = bgFetch.fetch(
+        `my-fetch-${i}`,
+        '/serviceworker/resources/slow-response.php');
+    registrationPromises.push(registrationPromise);
+  }
+
+  try {
+    await Promise.all(registrationPromises);
+    assert_unreached('Should have rejected the registration exceeding the limit');
+  } catch (e) {
+    assert_equals(e.message, 'There are too many active fetches for this origin.');
+  }
+
+}, 'Registration rejected after limit exceeded');
+
+</script>

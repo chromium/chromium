@@ -42,8 +42,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkTypes.h"
-
-struct SkYUVSizeInfo;
+#include "third_party/skia/include/core/SkYUVASizeInfo.h"
 
 namespace blink {
 
@@ -112,7 +111,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   // Must not be called unless the SkROBuffer has all the data. YUV decoding
   // does not currently support progressive decoding. See comment above on
   // decodeToYUV().
-  bool GetYUVComponentSizes(SegmentReader*, SkYUVSizeInfo*);
+  bool GetYUVComponentSizes(SegmentReader*, SkYUVASizeInfo*);
 
  private:
   class ClientMutexLocker {

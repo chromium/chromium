@@ -14,12 +14,15 @@ struct skcms_ICCProfile;
 
 namespace blink {
 
+class IntSize;
+
 class PLATFORM_EXPORT BitmapImageMetrics {
   STATIC_ONLY(BitmapImageMetrics);
 
  public:
   // Values synced with 'DecodedImageType' in
-  // src/tools/metrics/histograms/histograms.xml
+  // src/tools/metrics/histograms/enums.xml. These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should never be reused.
   enum DecodedImageType {
     kImageUnknown = 0,
     kImageJPEG = 1,
@@ -31,8 +34,10 @@ class PLATFORM_EXPORT BitmapImageMetrics {
     kDecodedImageTypeEnumEnd = kImageBMP + 1
   };
 
+  // Values synced with 'Gamma' in src/tools/metrics/histograms/enums.xml. These
+  // values are persisted to logs. Entries should not be renumbered and numeric
+  // values should never be reused.
   enum Gamma {
-    // Values synced with 'Gamma' in src/tools/metrics/histograms/histograms.xml
     kGammaLinear = 0,
     kGammaSRGB = 1,
     kGamma2Dot2 = 2,
@@ -47,6 +52,26 @@ class PLATFORM_EXPORT BitmapImageMetrics {
     kGammaEnd = kGammaNamed + 1,
   };
 
+  // Categories for the JPEG color space histogram. Synced with 'JpegColorSpace'
+  // in src/tools/metrics/histograms/enums.xml. These values are persisted to
+  // logs. Entries should not be renumbered and numeric values should never be
+  // reused.
+  enum JpegColorSpace {
+    kUnknown = 0,
+    kGrayscale = 1,
+    kRGB = 2,
+    kCMYK = 3,
+    kYCCK = 4,
+    kYCbCr410 = 5,
+    kYCbCr411 = 6,
+    kYCbCr420 = 7,
+    kYCbCr422 = 8,
+    kYCbCr440 = 9,
+    kYCbCr444 = 10,
+    kYCbCrOther = 11,
+    kMaxValue = kYCbCrOther,
+  };
+
   static void CountDecodedImageType(const String& type);
   static void CountImageOrientation(const ImageOrientationEnum);
   // Report the JPEG compression density in 0.01 bits per pixel for an image
@@ -54,6 +79,8 @@ class PLATFORM_EXPORT BitmapImageMetrics {
   static void CountImageJpegDensity(int image_min_side,
                                     int64_t density_centi_bpp);
   static void CountImageGammaAndGamut(const skcms_ICCProfile*);
+  static void CountJpegArea(const IntSize& size);
+  static void CountJpegColorSpace(JpegColorSpace color_space);
 
  private:
   static Gamma GetColorSpaceGamma(const skcms_ICCProfile*);

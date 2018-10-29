@@ -28,6 +28,7 @@
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_utils.h"
@@ -77,7 +78,7 @@ void AssignValueAndQuit(base::RunLoop* run_loop,
 void VerifyFileError(base::Closure callback,
                      base::File::Error error) {
   EXPECT_EQ(base::File::FILE_OK, error);
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, callback);
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, callback);
 }
 
 }  // namespace
@@ -134,7 +135,7 @@ class SyncFileSystemServiceTest : public testing::Test {
     in_memory_env_ = leveldb_chrome::NewMemEnv("SyncFileSystemServiceTest");
     file_system_.reset(new CannedSyncableFileSystem(
         GURL(kOrigin), in_memory_env_.get(),
-        BrowserThread::GetTaskRunnerForThread(BrowserThread::IO),
+        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}),
         base::CreateSingleThreadTaskRunnerWithTraits({base::MayBlock()})));
 
     std::unique_ptr<LocalFileSyncService> local_service =
@@ -422,8 +423,8 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
 
   // Start a local operation on the same file (to make it BUSY).
   base::RunLoop verify_file_error_run_loop;
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CannedSyncableFileSystem::DoCreateFile,
                      base::Unretained(file_system_.get()), kFile,
                      base::Bind(&VerifyFileError,

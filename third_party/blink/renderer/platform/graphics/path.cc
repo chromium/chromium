@@ -67,13 +67,16 @@ bool Path::operator==(const Path& other) const {
 }
 
 bool Path::Contains(const FloatPoint& point) const {
-  return path_.contains(WebCoreFloatToSkScalar(point.X()),
-                        WebCoreFloatToSkScalar(point.Y()));
+  if (!std::isfinite(point.X()) || !std::isfinite(point.Y()))
+    return false;
+  return path_.contains(SkScalar(point.X()), SkScalar(point.Y()));
 }
 
 bool Path::Contains(const FloatPoint& point, WindRule rule) const {
-  SkScalar x = WebCoreFloatToSkScalar(point.X());
-  SkScalar y = WebCoreFloatToSkScalar(point.Y());
+  if (!std::isfinite(point.X()) || !std::isfinite(point.Y()))
+    return false;
+  SkScalar x = point.X();
+  SkScalar y = point.Y();
   SkPath::FillType fill_type = WebCoreWindRuleToSkFillType(rule);
   if (path_.getFillType() != fill_type) {
     SkPath tmp(path_);
@@ -101,9 +104,10 @@ SkPath Path::StrokePath(const StrokeData& stroke_data) const {
 
 bool Path::StrokeContains(const FloatPoint& point,
                           const StrokeData& stroke_data) const {
+  if (!std::isfinite(point.X()) || !std::isfinite(point.Y()))
+    return false;
   return StrokePath(stroke_data)
-      .contains(WebCoreFloatToSkScalar(point.X()),
-                WebCoreFloatToSkScalar(point.Y()));
+      .contains(SkScalar(point.X()), SkScalar(point.Y()));
 }
 
 FloatRect Path::BoundingRect() const {

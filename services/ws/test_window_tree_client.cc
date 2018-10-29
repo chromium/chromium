@@ -19,13 +19,6 @@ TestWindowTreeClient::InputEvent::InputEvent(InputEvent&& other) = default;
 
 TestWindowTreeClient::InputEvent::~InputEvent() = default;
 
-TestWindowTreeClient::ObservedPointerEvent::ObservedPointerEvent() = default;
-
-TestWindowTreeClient::ObservedPointerEvent::ObservedPointerEvent(
-    ObservedPointerEvent&& other) = default;
-
-TestWindowTreeClient::ObservedPointerEvent::~ObservedPointerEvent() = default;
-
 TestWindowTreeClient::TestWindowTreeClient() {
   tracker_.set_delegate(this);
 }
@@ -45,13 +38,12 @@ void TestWindowTreeClient::ClearInputEvents() {
   input_events_ = std::queue<InputEvent>();
 }
 
-TestWindowTreeClient::ObservedPointerEvent
-TestWindowTreeClient::PopObservedPointerEvent() {
-  if (observed_pointer_events_.empty())
-    return ObservedPointerEvent();
+std::unique_ptr<ui::Event> TestWindowTreeClient::PopObservedEvent() {
+  if (observed_events_.empty())
+    return nullptr;
 
-  ObservedPointerEvent event = std::move(observed_pointer_events_.front());
-  observed_pointer_events_.pop();
+  std::unique_ptr<ui::Event> event = std::move(observed_events_.front());
+  observed_events_.pop();
   return event;
 }
 
@@ -180,6 +172,11 @@ void TestWindowTreeClient::OnWindowOpacityChanged(Id window,
   tracker_.OnWindowOpacityChanged(window, new_opacity);
 }
 
+void TestWindowTreeClient::OnWindowDisplayChanged(Id window_id,
+                                                  int64_t display_id) {
+  tracker_.OnWindowDisplayChanged(window_id, display_id);
+}
+
 void TestWindowTreeClient::OnWindowParentDrawnStateChanged(Id window,
                                                            bool drawn) {
   tracker_.OnWindowParentDrawnStateChanged(window, drawn);
@@ -189,31 +186,26 @@ void TestWindowTreeClient::OnWindowInputEvent(uint32_t event_id,
                                               Id window_id,
                                               int64_t display_id,
                                               std::unique_ptr<ui::Event> event,
-                                              bool matches_pointer_watcher) {
+                                              bool matches_event_observer) {
   tracker_.OnWindowInputEvent(window_id, *event, display_id,
-                              matches_pointer_watcher);
+                              matches_event_observer);
 
   InputEvent input_event;
   input_event.event_id = event_id;
   input_event.window_id = window_id;
   input_event.display_id = display_id;
   input_event.event = std::move(event);
-  input_event.matches_pointer_watcher = matches_pointer_watcher;
+  input_event.matches_event_observer = matches_event_observer;
   input_events_.push(std::move(input_event));
 
   if (tree_)
     tree_->OnWindowInputEventAck(event_id, mojom::EventResult::HANDLED);
 }
 
-void TestWindowTreeClient::OnPointerEventObserved(
-    std::unique_ptr<ui::Event> event,
-    Id window_id,
-    int64_t display_id) {
-  ObservedPointerEvent observed_pointer_event;
-  observed_pointer_event.window_id = window_id;
-  observed_pointer_event.display_id = display_id;
-  observed_pointer_event.event = std::move(event);
-  observed_pointer_events_.push(std::move(observed_pointer_event));
+void TestWindowTreeClient::OnObservedInputEvent(
+    std::unique_ptr<ui::Event> event) {
+  tracker_.OnObservedInputEvent(*event);
+  observed_events_.push(std::move(event));
 }
 
 void TestWindowTreeClient::OnWindowSharedPropertyChanged(
@@ -230,12 +222,6 @@ void TestWindowTreeClient::OnWindowFocused(Id focused_window_id) {
 void TestWindowTreeClient::OnWindowCursorChanged(Id window_id,
                                                  ui::CursorData cursor) {
   tracker_.OnWindowCursorChanged(window_id, cursor);
-}
-
-void TestWindowTreeClient::OnWindowSurfaceChanged(
-    Id window_id,
-    const viz::SurfaceInfo& surface_info) {
-  tracker_.OnWindowSurfaceChanged(window_id, surface_info);
 }
 
 void TestWindowTreeClient::OnDragDropStart(
@@ -297,6 +283,12 @@ void TestWindowTreeClient::RequestClose(Id window_id) {
 void TestWindowTreeClient::GetScreenProviderObserver(
     mojom::ScreenProviderObserverAssociatedRequest observer) {
   screen_provider_observer_binding_.Bind(std::move(observer));
+}
+
+void TestWindowTreeClient::OnOcclusionStateChanged(
+    Id window_id,
+    mojom::OcclusionState occlusion_state) {
+  tracker_.OnOcclusionStateChanged(window_id, occlusion_state);
 }
 
 }  // namespace ws

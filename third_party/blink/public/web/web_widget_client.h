@@ -31,13 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_CLIENT_H_
 
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_drag_operation.h"
 #include "third_party/blink/public/platform/web_intrinsic_sizing_info.h"
 #include "third_party/blink/public/platform/web_layer_tree_view.h"
 #include "third_party/blink/public/platform/web_point.h"
 #include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
 #include "third_party/blink/public/platform/web_screen_info.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
@@ -63,12 +63,6 @@ class WebWidgetClient {
 
   // Called when a region of the WebWidget needs to be re-painted.
   virtual void DidInvalidateRect(const WebRect&) {}
-
-  // Initializes the layer compositor for the widget, returning a pointer
-  // to the newly constructed LayerTreeView that provides access to the
-  // compositor, which is owned by the WebWidgetClient. Will return null if
-  // AllowsBrokenNullLayerTreeView() is true.
-  virtual WebLayerTreeView* InitializeLayerTreeView() = 0;
 
   // FIXME: Remove all overrides of this.
   virtual bool AllowsBrokenNullLayerTreeView() const { return false; }
@@ -113,10 +107,6 @@ class WebWidgetClient {
 
   // Called when a tooltip should be shown at the current cursor position.
   virtual void SetToolTipText(const WebString&, WebTextDirection hint) {}
-
-  // Called to query information about the screen where this widget is
-  // displayed.
-  virtual WebScreenInfo GetScreenInfo() { return WebScreenInfo(); }
 
   // Requests to lock the mouse cursor. If true is returned, the success
   // result will be asynchronously returned via a single call to
@@ -181,7 +171,7 @@ class WebWidgetClient {
   virtual void ConvertWindowToViewport(WebFloatRect* rect) {}
 
   // Called when a drag-and-drop operation should begin.
-  virtual void StartDragging(WebReferrerPolicy,
+  virtual void StartDragging(network::mojom::ReferrerPolicy,
                              const WebDragData&,
                              WebDragOperationsMask,
                              const SkBitmap& drag_image,

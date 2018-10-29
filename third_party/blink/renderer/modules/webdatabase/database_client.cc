@@ -30,8 +30,8 @@
 
 #include "third_party/blink/renderer/modules/webdatabase/database_client.h"
 
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
@@ -51,7 +51,7 @@ DatabaseClient* DatabaseClient::FromPage(Page* page) {
 }
 
 DatabaseClient* DatabaseClient::From(ExecutionContext* context) {
-  return DatabaseClient::FromPage(ToDocument(context)->GetPage());
+  return DatabaseClient::FromPage(To<Document>(context)->GetPage());
 }
 
 const char DatabaseClient::kSupplementName[] = "DatabaseClient";
@@ -61,12 +61,9 @@ bool DatabaseClient::AllowDatabase(ExecutionContext* context,
                                    const String& display_name,
                                    unsigned estimated_size) {
   DCHECK(context->IsContextThread());
-  Document* document = ToDocument(context);
-  DCHECK(document->GetFrame());
-  if (document->GetFrame()->GetContentSettingsClient()) {
-    return document->GetFrame()->GetContentSettingsClient()->AllowDatabase(
-        name, display_name, estimated_size);
-  }
+  Document* document = To<Document>(context);
+  if (auto* client = document->GetFrame()->GetContentSettingsClient())
+    return client->AllowDatabase(name, display_name, estimated_size);
   return true;
 }
 

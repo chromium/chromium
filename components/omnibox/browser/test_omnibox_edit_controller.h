@@ -6,7 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_CONTROLLER_H_
 
 #include "components/omnibox/browser/omnibox_edit_controller.h"
-#include "components/toolbar/test_toolbar_model.h"
+#include "components/omnibox/browser/test_toolbar_model.h"
 
 class TestOmniboxEditController : public OmniboxEditController {
  public:
@@ -15,6 +15,8 @@ class TestOmniboxEditController : public OmniboxEditController {
   // OmniboxEditController:
   TestToolbarModel* GetToolbarModel() override;
   const TestToolbarModel* GetToolbarModel() const override;
+
+  using OmniboxEditController::destination_url;
 
  private:
   TestToolbarModel toolbar_model_;

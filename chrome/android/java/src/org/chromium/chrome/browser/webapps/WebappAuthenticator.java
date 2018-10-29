@@ -11,9 +11,9 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.SecureRandomInitializer;
 import org.chromium.base.metrics.CachedMetrics.TimesHistogramSample;
+import org.chromium.base.task.AsyncTask;
 
 import java.io.File;
 import java.io.FileInputStream;

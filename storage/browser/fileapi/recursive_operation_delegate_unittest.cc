@@ -44,10 +44,10 @@ class LoggingRecursiveOperation : public storage::RecursiveOperationDelegate {
 
   LoggingRecursiveOperation(FileSystemContext* file_system_context,
                             const FileSystemURL& root,
-                            const StatusCallback& callback)
+                            StatusCallback callback)
       : storage::RecursiveOperationDelegate(file_system_context),
         root_(root),
-        callback_(callback),
+        callback_(std::move(callback)),
         weak_factory_(this) {}
   ~LoggingRecursiveOperation() override = default;
 
@@ -57,40 +57,41 @@ class LoggingRecursiveOperation : public storage::RecursiveOperationDelegate {
   void Run() override { NOTREACHED(); }
 
   void RunRecursively() override {
-    StartRecursiveOperation(
-        root_, storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT, callback_);
+    StartRecursiveOperation(root_,
+                            storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+                            std::move(callback_));
   }
 
   void RunRecursivelyWithIgnoringError() {
-    StartRecursiveOperation(
-        root_, storage::FileSystemOperation::ERROR_BEHAVIOR_SKIP, callback_);
+    StartRecursiveOperation(root_,
+                            storage::FileSystemOperation::ERROR_BEHAVIOR_SKIP,
+                            std::move(callback_));
   }
 
-  void ProcessFile(const FileSystemURL& url,
-                   const StatusCallback& callback) override {
+  void ProcessFile(const FileSystemURL& url, StatusCallback callback) override {
     RecordLogEntry(LogEntry::PROCESS_FILE, url);
 
     if (error_url_.is_valid() && error_url_ == url) {
-      callback.Run(base::File::FILE_ERROR_FAILED);
+      std::move(callback).Run(base::File::FILE_ERROR_FAILED);
       return;
     }
 
     operation_runner()->GetMetadata(
         url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
-        base::Bind(&LoggingRecursiveOperation::DidGetMetadata,
-                   weak_factory_.GetWeakPtr(), callback));
+        base::BindOnce(&LoggingRecursiveOperation::DidGetMetadata,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void ProcessDirectory(const FileSystemURL& url,
-                        const StatusCallback& callback) override {
+                        StatusCallback callback) override {
     RecordLogEntry(LogEntry::PROCESS_DIRECTORY, url);
-    callback.Run(base::File::FILE_OK);
+    std::move(callback).Run(base::File::FILE_OK);
   }
 
   void PostProcessDirectory(const FileSystemURL& url,
-                            const StatusCallback& callback) override {
+                            StatusCallback callback) override {
     RecordLogEntry(LogEntry::POST_PROCESS_DIRECTORY, url);
-    callback.Run(base::File::FILE_OK);
+    std::move(callback).Run(base::File::FILE_OK);
   }
 
   void SetEntryToFail(const FileSystemURL& url) { error_url_ = url; }
@@ -103,17 +104,17 @@ class LoggingRecursiveOperation : public storage::RecursiveOperationDelegate {
     log_entries_.push_back(entry);
   }
 
-  void DidGetMetadata(const StatusCallback& callback,
+  void DidGetMetadata(StatusCallback callback,
                       base::File::Error result,
                       const base::File::Info& file_info) {
     if (result != base::File::FILE_OK) {
-      callback.Run(result);
+      std::move(callback).Run(result);
       return;
     }
 
-    callback.Run(file_info.is_directory ?
-                 base::File::FILE_ERROR_NOT_A_FILE :
-                 base::File::FILE_OK);
+    std::move(callback).Run(file_info.is_directory
+                                ? base::File::FILE_ERROR_NOT_A_FILE
+                                : base::File::FILE_OK);
   }
 
   FileSystemURL root_;
@@ -203,9 +204,9 @@ TEST_F(RecursiveOperationDelegateTest, RootIsFile) {
 
   base::File::Error error = base::File::FILE_ERROR_FAILED;
   std::unique_ptr<FileSystemOperationContext> context = NewContext();
-  std::unique_ptr<LoggingRecursiveOperation> operation(
-      new LoggingRecursiveOperation(context->file_system_context(), src_file,
-                                    base::Bind(&ReportStatus, &error)));
+  auto operation = std::make_unique<LoggingRecursiveOperation>(
+      context->file_system_context(), src_file,
+      base::BindOnce(&ReportStatus, &error));
   operation->RunRecursively();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::File::FILE_OK, error);
@@ -227,9 +228,9 @@ TEST_F(RecursiveOperationDelegateTest, RootIsDirectory) {
 
   base::File::Error error = base::File::FILE_ERROR_FAILED;
   std::unique_ptr<FileSystemOperationContext> context = NewContext();
-  std::unique_ptr<LoggingRecursiveOperation> operation(
-      new LoggingRecursiveOperation(context->file_system_context(), src_root,
-                                    base::Bind(&ReportStatus, &error)));
+  auto operation = std::make_unique<LoggingRecursiveOperation>(
+      context->file_system_context(), src_root,
+      base::BindOnce(&ReportStatus, &error));
   operation->RunRecursively();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(base::File::FILE_OK, error);
@@ -282,9 +283,9 @@ TEST_F(RecursiveOperationDelegateTest, Cancel) {
 
   base::File::Error error = base::File::FILE_ERROR_FAILED;
   std::unique_ptr<FileSystemOperationContext> context = NewContext();
-  std::unique_ptr<LoggingRecursiveOperation> operation(
-      new LoggingRecursiveOperation(context->file_system_context(), src_root,
-                                    base::Bind(&ReportStatus, &error)));
+  auto operation = std::make_unique<LoggingRecursiveOperation>(
+      context->file_system_context(), src_root,
+      base::BindOnce(&ReportStatus, &error));
   operation->RunRecursively();
 
   // Invoke Cancel(), after 5 times message posting.
@@ -302,9 +303,9 @@ TEST_F(RecursiveOperationDelegateTest, AbortWithError) {
 
   base::File::Error error = base::File::FILE_ERROR_FAILED;
   std::unique_ptr<FileSystemOperationContext> context = NewContext();
-  std::unique_ptr<LoggingRecursiveOperation> operation(
-      new LoggingRecursiveOperation(context->file_system_context(), src_root,
-                                    base::Bind(&ReportStatus, &error)));
+  auto operation = std::make_unique<LoggingRecursiveOperation>(
+      context->file_system_context(), src_root,
+      base::BindOnce(&ReportStatus, &error));
   operation->SetEntryToFail(src_file1);
   operation->RunRecursively();
   base::RunLoop().RunUntilIdle();
@@ -338,9 +339,9 @@ TEST_F(RecursiveOperationDelegateTest, ContinueWithError) {
 
   base::File::Error error = base::File::FILE_ERROR_FAILED;
   std::unique_ptr<FileSystemOperationContext> context = NewContext();
-  std::unique_ptr<LoggingRecursiveOperation> operation(
-      new LoggingRecursiveOperation(context->file_system_context(), src_root,
-                                    base::Bind(&ReportStatus, &error)));
+  auto operation = std::make_unique<LoggingRecursiveOperation>(
+      context->file_system_context(), src_root,
+      base::BindOnce(&ReportStatus, &error));
   operation->SetEntryToFail(src_file1);
   operation->RunRecursivelyWithIgnoringError();
   base::RunLoop().RunUntilIdle();

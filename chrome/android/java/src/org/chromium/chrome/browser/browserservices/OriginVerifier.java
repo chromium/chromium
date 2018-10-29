@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsService;
 import android.support.customtabs.CustomTabsService.Relation;
-import android.support.v4.util.Pair;
 import android.text.TextUtils;
 
 import org.chromium.base.CommandLine;
@@ -26,7 +25,6 @@ import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.UrlConstants;
-import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.BrowserStartupController;
 
@@ -38,12 +36,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Used to verify postMessage origin for a designated package name.
@@ -62,7 +55,6 @@ public class OriginVerifier {
     private static final String USE_AS_ORIGIN = "delegate_permission/common.use_as_origin";
     private static final String HANDLE_ALL_URLS = "delegate_permission/common.handle_all_urls";
 
-    private static Map<Pair<String, Integer>, Set<Origin>> sPackageToCachedOrigins;
     private final OriginVerificationListener mListener;
     private final String mPackageName;
     private final String mSignatureFingerprint;
@@ -95,8 +87,7 @@ public class OriginVerifier {
     /** Clears all known relations. */
     @VisibleForTesting
     public static void clearCachedVerificationsForTesting() {
-        ThreadUtils.assertOnUiThread();
-        if (sPackageToCachedOrigins != null) sPackageToCachedOrigins.clear();
+        VerificationResultStore.clearStoredRelationships();
     }
 
     /**
@@ -108,15 +99,7 @@ public class OriginVerifier {
     public static void addVerifiedOriginForPackage(
             String packageName, Origin origin, @Relation int relation) {
         Log.d(TAG, "Adding: %s for %s", packageName, origin);
-        ThreadUtils.assertOnUiThread();
-        if (sPackageToCachedOrigins == null) sPackageToCachedOrigins = new HashMap<>();
-        Set<Origin> cachedOrigins =
-                sPackageToCachedOrigins.get(new Pair<>(packageName, relation));
-        if (cachedOrigins == null) {
-            cachedOrigins = new HashSet<>();
-            sPackageToCachedOrigins.put(new Pair<>(packageName, relation), cachedOrigins);
-        }
-        cachedOrigins.add(origin);
+        VerificationResultStore.addRelationship(new Relationship(packageName, origin, relation));
 
         TrustedWebActivityClient.registerClient(ContextUtils.getApplicationContext(),
                 origin, packageName);
@@ -133,11 +116,8 @@ public class OriginVerifier {
      * @param relation The Digital Asset Links relation to verify for.
      */
     public static boolean isValidOrigin(String packageName, Origin origin, @Relation int relation) {
-        ThreadUtils.assertOnUiThread();
-        if (sPackageToCachedOrigins == null) return false;
-        Set<Origin> cachedOrigins = sPackageToCachedOrigins.get(new Pair<>(packageName, relation));
-        if (cachedOrigins == null) return false;
-        return cachedOrigins.contains(origin);
+        return VerificationResultStore.isRelationshipSaved(
+                new Relationship(packageName, origin, relation));
     }
 
     /**
@@ -351,28 +331,21 @@ public class OriginVerifier {
      * Saves the result of a verification to Preferences so we can reuse it when offline.
      */
     private void saveVerificationResult(boolean originVerified) {
-        String link = relationshipToString(mPackageName, mOrigin, mRelation);
-        Set<String> savedLinks;
-        try (StrictModeContext unused = StrictModeContext.allowDiskReads()) {
-            savedLinks = ChromePreferenceManager.getInstance().getVerifiedDigitalAssetLinks();
-        }
+        Relationship relationship = new Relationship(mPackageName, mOrigin, mRelation);
         if (originVerified) {
-            savedLinks.add(link);
+            VerificationResultStore.addRelationship(relationship);
         } else {
-            savedLinks.remove(link);
+            VerificationResultStore.removeRelationship(relationship);
         }
-        ChromePreferenceManager.getInstance().setVerifiedDigitalAssetLinks(savedLinks);
     }
 
     /**
      * Checks for a previously saved verification result.
      */
     private void checkForSavedResult() {
-        String link = relationshipToString(mPackageName, mOrigin, mRelation);
         try (StrictModeContext unused = StrictModeContext.allowDiskReads()) {
-            Set<String> savedLinks =
-                    ChromePreferenceManager.getInstance().getVerifiedDigitalAssetLinks();
-            boolean verified = savedLinks.contains(link);
+            boolean verified = VerificationResultStore.isRelationshipSaved(
+                    new Relationship(mPackageName, mOrigin, mRelation));
 
             BrowserServicesMetrics.recordVerificationResult(verified
                             ? BrowserServicesMetrics.VerificationResult.OFFLINE_SUCCESS
@@ -382,19 +355,13 @@ public class OriginVerifier {
         }
     }
 
-    private static String relationshipToString(String packageName, Origin origin, int relation) {
-        // Neither package names nor origins contain commas.
-        return packageName + "," + origin + "," + relation;
-    }
-
     /**
      * Removes any data about sites visited from static variables and Android Preferences.
      */
     @CalledByNative
     public static void clearBrowsingData() {
-        ThreadUtils.assertOnUiThread();
-        if (sPackageToCachedOrigins != null) sPackageToCachedOrigins.clear();
-        ChromePreferenceManager.getInstance().setVerifiedDigitalAssetLinks(Collections.emptySet());
+        // TODO(peconn): Move this over to VerificationResultStore.
+        VerificationResultStore.clearStoredRelationships();
     }
 
     private native long nativeInit(Profile profile);

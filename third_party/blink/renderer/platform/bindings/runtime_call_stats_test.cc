@@ -112,7 +112,7 @@ TEST_F(RuntimeCallStatsTest, CountAndTimeAreUpdatedAfterMultipleExecutions) {
   const unsigned loops = 5;
 
   RuntimeCallStatsTest* test = this;
-  auto func = [&stats, func_duration, test]() {
+  auto func = [&stats, test]() {
     RuntimeCallTimer timer(test->clock());
     stats.Enter(&timer, test_counter_1_id);
     test->AdvanceClock(func_duration);
@@ -135,14 +135,14 @@ TEST_F(RuntimeCallStatsTest, NestedTimersTest) {
   const unsigned outer_func_duration = 20;
 
   RuntimeCallStatsTest* test = this;
-  auto inner_func = [&stats, inner_func_duration, test]() {
+  auto inner_func = [&stats, test]() {
     RuntimeCallTimer timer(test->clock());
     stats.Enter(&timer, test_counter_2_id);
     test->AdvanceClock(inner_func_duration);
     stats.Leave(&timer);
   };
 
-  auto outer_func = [&stats, &inner_func, outer_func_duration, test]() {
+  auto outer_func = [&stats, &inner_func, test]() {
     RuntimeCallTimer timer(test->clock());
     stats.Enter(&timer, test_counter_1_id);
     inner_func();

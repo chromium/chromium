@@ -7,11 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "net/base/backoff_entry.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace net {
-class URLRequestContextGetter;
-}  // namespace net
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 // Delegate protocol for RetryableURLFetcher object.
 @protocol RetryableURLFetcherDelegate<NSObject>
@@ -28,13 +30,14 @@ class URLRequestContextGetter;
 
 @interface RetryableURLFetcher : NSObject
 
-// Designated initializer. |context| and |delegate| must not be nil. If |policy|
-// is not null, it specifies how often to retry the URL fetch on a call to
-// -startFetch. If |policy| is null, there is no retry.
+// Designated initializer. |shared_url_loader_factory| and |delegate| must not
+// be nil. If |policy| is not null, it specifies how often to retry the URL
+// fetch on a call to -startFetch. If |policy| is null, there is no retry.
 - (instancetype)
-    initWithRequestContextGetter:(net::URLRequestContextGetter*)context
-                        delegate:(id<RetryableURLFetcherDelegate>)delegate
-                   backoffPolicy:(const net::BackoffEntry::Policy*)policy;
+initWithURLLoaderFactory:
+    (scoped_refptr<network::SharedURLLoaderFactory>)shared_url_loader_factory
+                delegate:(id<RetryableURLFetcherDelegate>)delegate
+           backoffPolicy:(const net::BackoffEntry::Policy*)policy;
 
 // Starts fetching URL. Uses the backoff policy specified when the object was
 // initialized.

@@ -8,8 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/message_center/message_center_view.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/arc/arc_notification_content_view.h"
 #include "ash/system/message_center/arc/arc_notification_delegate.h"
@@ -19,7 +17,7 @@
 #include "ash/system/message_center/arc/arc_notification_surface_manager_impl.h"
 #include "ash/system/message_center/arc/arc_notification_view.h"
 #include "ash/system/message_center/arc/mock_arc_notification_item.h"
-#include "ash/system/message_center/notification_tray.h"
+#include "ash/system/message_center/message_center_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -346,22 +344,10 @@ TEST_F(ArcNotificationContentViewTest, CloseButtonInMessageCenterView) {
           }));
 
   // Show MessageCenterView and activate its widget.
-  if (features::IsSystemTrayUnifiedEnabled()) {
-    auto* unified_system_tray =
-        StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-            ->unified_system_tray();
-    unified_system_tray->ShowBubble(false /* show_by_click */);
-    unified_system_tray->ActivateBubble();
-  } else {
-    auto* notification_tray =
-        StatusAreaWidgetTestHelper::GetStatusAreaWidget()->notification_tray();
-    notification_tray->ShowBubble(false /* show_by_click */);
-    notification_tray->GetBubbleView()
-        ->GetWidget()
-        ->widget_delegate()
-        ->set_can_activate(true);
-    notification_tray->GetBubbleView()->GetWidget()->Activate();
-  }
+  auto* unified_system_tray =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->unified_system_tray();
+  unified_system_tray->ShowBubble(false /* show_by_click */);
+  unified_system_tray->ActivateBubble();
 
   auto notification_item =
       std::make_unique<MockArcNotificationItem>(notification_key);

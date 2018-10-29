@@ -429,8 +429,6 @@ DataReductionProxyCompressionStats::DataReductionProxyCompressionStats(
       pref_service_(prefs),
       delay_(delay),
       data_usage_map_is_dirty_(false),
-      session_total_received_(0),
-      session_total_original_(0),
       current_data_usage_load_status_(NOT_LOADED),
       weak_factory_(this) {
   DCHECK(service);
@@ -528,8 +526,6 @@ void DataReductionProxyCompressionStats::RecordDataUseWithMimeType(
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0("loader",
                "DataReductionProxyCompressionStats::RecordDataUseWithMimeType")
-  session_total_received_ += data_used;
-  session_total_original_ += original_size;
 
   IncreaseInt64Pref(data_reduction_proxy::prefs::kHttpReceivedContentLength,
                     data_used);
@@ -559,7 +555,7 @@ int64_t DataReductionProxyCompressionStats::GetInt64(const char* pref_path) {
   if (delay_.is_zero())
     return pref_service_->GetInt64(pref_path);
 
-  DataReductionProxyPrefMap::iterator iter = pref_map_.find(pref_path);
+  auto iter = pref_map_.find(pref_path);
   return iter->second;
 }
 
@@ -597,8 +593,7 @@ void DataReductionProxyCompressionStats::WritePrefs() {
   if (delay_.is_zero())
     return;
 
-  for (DataReductionProxyPrefMap::iterator iter = pref_map_.begin();
-       iter != pref_map_.end(); ++iter) {
+  for (auto iter = pref_map_.begin(); iter != pref_map_.end(); ++iter) {
     pref_service_->SetInt64(iter->first, iter->second);
   }
 
@@ -607,34 +602,6 @@ void DataReductionProxyCompressionStats::WritePrefs() {
     TransferList(*(iter->second.get()),
                  ListPrefUpdate(pref_service_, iter->first).Get());
   }
-}
-
-std::unique_ptr<base::Value>
-DataReductionProxyCompressionStats::HistoricNetworkStatsInfoToValue() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  int64_t total_received = GetInt64(prefs::kHttpReceivedContentLength);
-  int64_t total_original = GetInt64(prefs::kHttpOriginalContentLength);
-
-  auto dict = std::make_unique<base::DictionaryValue>();
-  // Use strings to avoid overflow. base::Value only supports 32-bit integers.
-  dict->SetString("historic_received_content_length",
-                  base::Int64ToString(total_received));
-  dict->SetString("historic_original_content_length",
-                  base::Int64ToString(total_original));
-  return std::move(dict);
-}
-
-std::unique_ptr<base::Value>
-DataReductionProxyCompressionStats::SessionNetworkStatsInfoToValue() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  auto dict = std::make_unique<base::DictionaryValue>();
-  // Use strings to avoid overflow. base::Value only supports 32-bit integers.
-  dict->SetString("session_received_content_length",
-                  base::Int64ToString(session_total_received_));
-  dict->SetString("session_original_content_length",
-                  base::Int64ToString(session_total_original_));
-  return std::move(dict);
 }
 
 int64_t DataReductionProxyCompressionStats::GetLastUpdateTime() {

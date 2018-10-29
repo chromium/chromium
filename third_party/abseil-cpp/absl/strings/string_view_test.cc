@@ -35,7 +35,8 @@
 #define ABSL_EXPECT_DEATH_IF_SUPPORTED(statement, regex) \
   EXPECT_DEATH_IF_SUPPORTED(statement, ".*")
 #else
-#define ABSL_EXPECT_DEATH_IF_SUPPORTED EXPECT_DEATH_IF_SUPPORTED
+#define ABSL_EXPECT_DEATH_IF_SUPPORTED(statement, regex) \
+  EXPECT_DEATH_IF_SUPPORTED(statement, regex)
 #endif
 
 namespace {
@@ -283,7 +284,7 @@ TEST(StringViewTest, ComparisonOperatorsByCharacterPosition) {
 }
 #undef COMPARE
 
-// Sadly, our users often confuse std::string::npos with absl::string_view::npos;
+// Sadly, our users often confuse string::npos with absl::string_view::npos;
 // So much so that we test here that they are the same.  They need to
 // both be unsigned, and both be the maximum-valued integer of their type.
 
@@ -811,15 +812,18 @@ TEST(StringViewTest, FrontBackSingleChar) {
 }
 
 // `std::string_view::string_view(const char*)` calls
-// `std::char_traits<char>::length(const char*)` to get the std::string length. In
+// `std::char_traits<char>::length(const char*)` to get the string length. In
 // libc++, it doesn't allow `nullptr` in the constexpr context, with the error
 // "read of dereferenced null pointer is not allowed in a constant expression".
 // At run time, the behavior of `std::char_traits::length()` on `nullptr` is
-// undefined by the standard and usually results in crash with libc++. This
-// conforms to the standard, but `absl::string_view` implements a different
+// undefined by the standard and usually results in crash with libc++.
+// In MSVC, creating a constexpr string_view from nullptr also triggers an
+// "unevaluable pointer value" error. This compiler implementation conforms
+// to the standard, but `absl::string_view` implements a different
 // behavior for historical reasons. We work around tests that construct
 // `string_view` from `nullptr` when using libc++.
-#if !defined(ABSL_HAVE_STD_STRING_VIEW) || !defined(_LIBCPP_VERSION)
+#if !defined(ABSL_HAVE_STD_STRING_VIEW) || \
+    (!defined(_LIBCPP_VERSION) && !defined(_MSC_VER))
 #define ABSL_HAVE_STRING_VIEW_FROM_NULLPTR 1
 #endif  // !defined(ABSL_HAVE_STD_STRING_VIEW) || !defined(_LIBCPP_VERSION)
 

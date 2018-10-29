@@ -22,8 +22,8 @@
 {% from 'templates/macros.tmpl' import source_files_for_generated_file %}
 {{source_files_for_generated_file(template_file, input_files)}}
 
-#ifndef BLINK_CORE_STYLE_PROPERTY_SHORTHAND_H_
-#define BLINK_CORE_STYLE_PROPERTY_SHORTHAND_H_
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 #include "css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -74,6 +74,6 @@ void getMatchingShorthandsForLonghand(
 unsigned indexOfShorthandForLonghand(CSSPropertyID,
                                      const Vector<StylePropertyShorthand, 4>&);
 
-} // namespace blink
+}  // namespace blink
 
-#endif // BLINK_CORE_STYLE_PROPERTY_SHORTHAND_H_
+#endif  // {{header_guard}}

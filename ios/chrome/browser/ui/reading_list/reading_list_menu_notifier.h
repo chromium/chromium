@@ -22,9 +22,6 @@ class ReadingListModel;
 // The number of unread items in the reading list.
 - (NSInteger)readingListUnreadCount;
 
-// Whether the reading list has unseen items.
-- (BOOL)readingListUnseenItemsExist;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_MENU_NOTIFIER_H_

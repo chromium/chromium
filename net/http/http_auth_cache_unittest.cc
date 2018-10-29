@@ -83,6 +83,7 @@ AuthCredentials CreateASCIICredentials(const char* username,
 // Test adding and looking-up cache entries (both by realm and by path).
 TEST(HttpAuthCacheTest, Basic) {
   GURL origin("http://www.google.com");
+  GURL origin2("http://www.foobar.com");
   HttpAuthCache cache;
   HttpAuthCache::Entry* entry;
 
@@ -129,7 +130,18 @@ TEST(HttpAuthCacheTest, Basic) {
                                    "realm4-basic-password"),
             "/");
 
-  // There is no Realm5
+  std::unique_ptr<HttpAuthHandler> origin2_realm5_handler(new MockAuthHandler(
+      HttpAuth::AUTH_SCHEME_BASIC, kRealm5, HttpAuth::AUTH_SERVER));
+  cache.Add(origin2, origin2_realm5_handler->realm(),
+            origin2_realm5_handler->auth_scheme(), "Basic realm=Realm5",
+            CreateASCIICredentials("realm5-user", "realm5-password"), "/");
+  cache.Add(
+      origin2, realm3_basic_handler->realm(),
+      realm3_basic_handler->auth_scheme(), "Basic realm=Realm3",
+      CreateASCIICredentials("realm3-basic-user", "realm3-basic-password"),
+      std::string());
+
+  // There is no Realm5 in origin
   entry = cache.Lookup(origin, kRealm5, HttpAuth::AUTH_SCHEME_BASIC);
   EXPECT_TRUE(NULL == entry);
 
@@ -154,6 +166,12 @@ TEST(HttpAuthCacheTest, Basic) {
   EXPECT_EQ(ASCIIToUTF16("realm3-basic-password"),
             entry->credentials().password());
 
+  // Same realm, scheme with different origins
+  HttpAuthCache::Entry* entry2 = cache.Lookup(
+      GURL("http://www.foobar.com:80"), kRealm3, HttpAuth::AUTH_SCHEME_BASIC);
+  ASSERT_FALSE(NULL == entry2);
+  EXPECT_NE(entry, entry2);
+
   // Valid lookup by origin, realm, scheme when there's a duplicate
   // origin, realm in the cache
   entry = cache.Lookup(
@@ -177,55 +195,59 @@ TEST(HttpAuthCacheTest, Basic) {
   EXPECT_EQ(ASCIIToUTF16("realm2-password"), entry->credentials().password());
 
   // Check that subpaths are recognized.
-  HttpAuthCache::Entry* realm2_entry = cache.Lookup(
-      origin, kRealm2, HttpAuth::AUTH_SCHEME_BASIC);
-  HttpAuthCache::Entry* realm4_entry = cache.Lookup(
-      origin, kRealm4, HttpAuth::AUTH_SCHEME_BASIC);
-  EXPECT_FALSE(NULL == realm2_entry);
-  EXPECT_FALSE(NULL == realm4_entry);
+  HttpAuthCache::Entry* p_realm2_entry =
+      cache.Lookup(origin, kRealm2, HttpAuth::AUTH_SCHEME_BASIC);
+  HttpAuthCache::Entry* p_realm4_entry =
+      cache.Lookup(origin, kRealm4, HttpAuth::AUTH_SCHEME_BASIC);
+  EXPECT_FALSE(NULL == p_realm2_entry);
+  EXPECT_FALSE(NULL == p_realm4_entry);
+  HttpAuthCache::Entry realm2_entry = *p_realm2_entry;
+  HttpAuthCache::Entry realm4_entry = *p_realm4_entry;
   // Realm4 applies to '/' and Realm2 applies to '/foo2/'.
   // LookupByPath() should return the closest enclosing path.
   // Positive tests:
   entry = cache.LookupByPath(origin, "/foo2/index.html");
-  EXPECT_TRUE(realm2_entry == entry);
+  EXPECT_TRUE(realm2_entry.IsEqualForTesting(*entry));
   entry = cache.LookupByPath(origin, "/foo2/foobar.html");
-  EXPECT_TRUE(realm2_entry == entry);
+  EXPECT_TRUE(realm2_entry.IsEqualForTesting(*entry));
   entry = cache.LookupByPath(origin, "/foo2/bar/index.html");
-  EXPECT_TRUE(realm2_entry == entry);
+  EXPECT_TRUE(realm2_entry.IsEqualForTesting(*entry));
   entry = cache.LookupByPath(origin, "/foo2/");
-  EXPECT_TRUE(realm2_entry == entry);
+  EXPECT_TRUE(realm2_entry.IsEqualForTesting(*entry));
   entry = cache.LookupByPath(origin, "/foo2");
-  EXPECT_TRUE(realm4_entry == entry);
+  EXPECT_TRUE(realm4_entry.IsEqualForTesting(*entry));
   entry = cache.LookupByPath(origin, "/");
-  EXPECT_TRUE(realm4_entry == entry);
+  EXPECT_TRUE(realm4_entry.IsEqualForTesting(*entry));
 
   // Negative tests:
   entry = cache.LookupByPath(origin, "/foo3/index.html");
-  EXPECT_FALSE(realm2_entry == entry);
+  EXPECT_FALSE(realm2_entry.IsEqualForTesting(*entry));
   entry = cache.LookupByPath(origin, std::string());
-  EXPECT_FALSE(realm2_entry == entry);
+  EXPECT_FALSE(realm2_entry.IsEqualForTesting(*entry));
 
   // Confirm we find the same realm, different auth scheme by path lookup
-  HttpAuthCache::Entry* realm3_digest_entry =
+  HttpAuthCache::Entry* p_realm3_digest_entry =
       cache.Lookup(origin, kRealm3, HttpAuth::AUTH_SCHEME_DIGEST);
-  EXPECT_FALSE(NULL == realm3_digest_entry);
+  EXPECT_FALSE(NULL == p_realm3_digest_entry);
+  HttpAuthCache::Entry realm3_digest_entry = *p_realm3_digest_entry;
   entry = cache.LookupByPath(origin, "/baz/index.html");
-  EXPECT_TRUE(realm3_digest_entry == entry);
+  EXPECT_TRUE(realm3_digest_entry.IsEqualForTesting(*entry));
   entry = cache.LookupByPath(origin, "/baz/");
-  EXPECT_TRUE(realm3_digest_entry == entry);
+  EXPECT_TRUE(realm3_digest_entry.IsEqualForTesting(*entry));
   entry = cache.LookupByPath(origin, "/baz");
-  EXPECT_FALSE(realm3_digest_entry == entry);
+  EXPECT_FALSE(realm3_digest_entry.IsEqualForTesting(*entry));
 
   // Confirm we find the same realm, different auth scheme by path lookup
-  HttpAuthCache::Entry* realm3DigestEntry =
+  HttpAuthCache::Entry* p_realm3DigestEntry =
       cache.Lookup(origin, kRealm3, HttpAuth::AUTH_SCHEME_DIGEST);
-  EXPECT_FALSE(NULL == realm3DigestEntry);
+  EXPECT_FALSE(NULL == p_realm3DigestEntry);
+  HttpAuthCache::Entry realm3DigestEntry = *p_realm3DigestEntry;
   entry = cache.LookupByPath(origin, "/baz/index.html");
-  EXPECT_TRUE(realm3DigestEntry == entry);
+  EXPECT_TRUE(realm3DigestEntry.IsEqualForTesting(*entry));
   entry = cache.LookupByPath(origin, "/baz/");
-  EXPECT_TRUE(realm3DigestEntry == entry);
+  EXPECT_TRUE(realm3DigestEntry.IsEqualForTesting(*entry));
   entry = cache.LookupByPath(origin, "/baz");
-  EXPECT_FALSE(realm3DigestEntry == entry);
+  EXPECT_FALSE(realm3DigestEntry.IsEqualForTesting(*entry));
 
   // Lookup using empty path (may be used for proxy).
   entry = cache.LookupByPath(origin, std::string());
@@ -694,22 +716,37 @@ class HttpAuthCacheEvictionTest : public testing::Test {
 
 // Add the maxinim number of realm entries to the cache. Each of these entries
 // must still be retrievable. Next add three more entries -- since the cache is
-// full this causes FIFO eviction of the first three entries.
+// full this causes FIFO eviction of the first three entries by time of last
+// use.
 TEST_F(HttpAuthCacheEvictionTest, RealmEntryEviction) {
-  for (int i = 0; i < kMaxRealms; ++i)
+  base::SimpleTestTickClock test_clock;
+  test_clock.SetNowTicks(base::TimeTicks::Now());
+  cache_.set_tick_clock_for_testing(&test_clock);
+
+  for (int i = 0; i < kMaxRealms; ++i) {
     AddRealm(i);
+    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  }
 
-  for (int i = 0; i < kMaxRealms; ++i)
+  for (int i = 0; i < kMaxRealms; ++i) {
     CheckRealmExistence(i, true);
+    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  }
 
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     AddRealm(i + kMaxRealms);
+    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  }
 
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     CheckRealmExistence(i, false);
+    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  }
 
-  for (int i = 0; i < kMaxRealms; ++i)
+  for (int i = 0; i < kMaxRealms; ++i) {
     CheckRealmExistence(i + 3, true);
+    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  }
 }
 
 // Add the maximum number of paths to a single realm entry. Each of these

@@ -46,21 +46,21 @@ namespace blink {
 using namespace HTMLNames;
 
 CSSDefaultStyleSheets& CSSDefaultStyleSheets::Instance() {
-  DEFINE_STATIC_LOCAL(CSSDefaultStyleSheets, css_default_style_sheets,
-                      (new CSSDefaultStyleSheets));
-  return css_default_style_sheets;
+  DEFINE_STATIC_LOCAL(Persistent<CSSDefaultStyleSheets>,
+                      css_default_style_sheets, (new CSSDefaultStyleSheets));
+  return *css_default_style_sheets;
 }
 
 static const MediaQueryEvaluator& ScreenEval() {
-  DEFINE_STATIC_LOCAL(MediaQueryEvaluator, static_screen_eval,
+  DEFINE_STATIC_LOCAL(Persistent<MediaQueryEvaluator>, static_screen_eval,
                       (new MediaQueryEvaluator("screen")));
-  return static_screen_eval;
+  return *static_screen_eval;
 }
 
 static const MediaQueryEvaluator& PrintEval() {
-  DEFINE_STATIC_LOCAL(MediaQueryEvaluator, static_print_eval,
+  DEFINE_STATIC_LOCAL(Persistent<MediaQueryEvaluator>, static_print_eval,
                       (new MediaQueryEvaluator("print")));
-  return static_print_eval;
+  return *static_print_eval;
 }
 
 static StyleSheetContents* ParseUASheet(const String& str) {
@@ -173,7 +173,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   }
 
   // FIXME: We should assert that the sheet only styles MathML elements.
-  if (element.namespaceURI() == MathMLNames::mathmlNamespaceURI &&
+  if (element.namespaceURI() == mathml_names::kNamespaceURI &&
       !mathml_style_sheet_) {
     mathml_style_sheet_ =
         ParseUASheet(GetDataResourceAsASCIIString("mathml.css"));

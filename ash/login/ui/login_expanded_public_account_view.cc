@@ -12,7 +12,6 @@
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/login_bubble.h"
 #include "ash/login/ui/login_button.h"
-#include "ash/login/ui/login_menu_view.h"
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/public_account_warning_dialog.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -101,7 +100,7 @@ class SelectionButtonView : public LoginButton {
     layer()->SetFillsBoundsOpaquely(false);
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    SetInkDropMode(InkDropHostView::InkDropMode::OFF);
+    SetInkDropMode(InkDropMode::OFF);
 
     auto add_horizontal_margin = [&](int width,
                                      views::View* parent) -> views::View* {
@@ -558,6 +557,34 @@ LoginExpandedPublicAccountView::TestApi::warning_dialog() {
 views::StyledLabel*
 LoginExpandedPublicAccountView::TestApi::learn_more_label() {
   return view_->right_pane_->learn_more_label_;
+}
+
+views::View*
+LoginExpandedPublicAccountView::TestApi::language_selection_button() {
+  return view_->right_pane_->language_selection_;
+}
+
+views::View*
+LoginExpandedPublicAccountView::TestApi::keyboard_selection_button() {
+  return view_->right_pane_->keyboard_selection_;
+}
+
+LoginBubble* LoginExpandedPublicAccountView::TestApi::language_menu() {
+  return view_->right_pane_->language_menu_.get();
+}
+
+LoginBubble* LoginExpandedPublicAccountView::TestApi::keyboard_menu() {
+  return view_->right_pane_->keyboard_menu_.get();
+}
+
+LoginMenuView::Item
+LoginExpandedPublicAccountView::TestApi::selected_language_item() {
+  return view_->right_pane_->selected_language_item_;
+}
+
+LoginMenuView::Item
+LoginExpandedPublicAccountView::TestApi::selected_keyboard_item() {
+  return view_->right_pane_->selected_keyboard_item_;
 }
 
 LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(

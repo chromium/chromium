@@ -8,16 +8,17 @@ GEN_INCLUDE(['walker_unittest_base.js']);
 /**
  * Test fixture.
  * @constructor
- * @extends {CvoxWalkerTestBase}
+ * @extends {ChromeVoxWalkerTestBase}
  */
-function CvoxGroupWalkerUnitTest() {}
+function ChromeVoxGroupWalkerUnitTest() {}
 
-CvoxGroupWalkerUnitTest.prototype = {
-  __proto__: CvoxWalkerUnitTestBase.prototype,
+ChromeVoxGroupWalkerUnitTest.prototype = {
+  __proto__: ChromeVoxWalkerUnitTestBase.prototype,
 
   /** @override */
-  closureModuleDeps: CvoxWalkerUnitTestBase.prototype.closureModuleDeps.concat(
-      'cvox.GroupWalker'),
+  closureModuleDeps:
+      ChromeVoxWalkerUnitTestBase.prototype.closureModuleDeps.concat(
+          'cvox.GroupWalker'),
 
   /** @override */
   newWalker: function() {
@@ -43,9 +44,9 @@ CvoxGroupWalkerUnitTest.prototype = {
   }
 };
 
-CvoxWalkerUnitTestBase.addCommonTests('CvoxGroupWalkerUnitTest');
+ChromeVoxWalkerUnitTestBase.addCommonTests('ChromeVoxGroupWalkerUnitTest');
 
-TEST_F('CvoxGroupWalkerUnitTest', 'testSimpleForwardSync', function() {
+TEST_F('ChromeVoxGroupWalkerUnitTest', 'testSimpleForwardSync', function() {
   this.setUpSimpleHtml_();
 
   // invalid selection
@@ -57,7 +58,7 @@ TEST_F('CvoxGroupWalkerUnitTest', 'testSimpleForwardSync', function() {
   assertTrue(ret2.equals(ret));
 });
 
-TEST_F('CvoxGroupWalkerUnitTest', 'testSimpleReversedSync', function() {
+TEST_F('ChromeVoxGroupWalkerUnitTest', 'testSimpleReversedSync', function() {
   this.setUpSimpleHtml_();
 
   // invalid selection
@@ -70,7 +71,7 @@ TEST_F('CvoxGroupWalkerUnitTest', 'testSimpleReversedSync', function() {
   assertTrue(ret2.equals(ret));
 });
 
-TEST_F('CvoxGroupWalkerUnitTest', 'testSimpleForwardNext', function() {
+TEST_F('ChromeVoxGroupWalkerUnitTest', 'testSimpleForwardNext', function() {
   this.setUpSimpleHtml_();
 
   // invalid selection
@@ -79,7 +80,7 @@ TEST_F('CvoxGroupWalkerUnitTest', 'testSimpleForwardNext', function() {
   var ret = this.go(sel, 'next', {selNodeId: 'b', selReversed: false});
 });
 
-TEST_F('CvoxGroupWalkerUnitTest', 'testSimpleReversedNext', function() {
+TEST_F('ChromeVoxGroupWalkerUnitTest', 'testSimpleReversedNext', function() {
   this.setUpSimpleHtml_();
 
   // invalid selection

@@ -8,7 +8,7 @@
 namespace vr {
 
 // TODO(vollick): add support for unloading the SDK.
-bool LoadArCoreSdk();
+bool LoadArCoreSdk(const std::string& libraryPath);
 
 }  // namespace vr
 

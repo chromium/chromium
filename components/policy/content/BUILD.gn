@@ -3,10 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/config/jumbo.gni")
 
 assert(!is_ios, "Policy Throttle should not be referenced on iOS")
 
-source_set("content") {
+jumbo_source_set("content") {
   sources = [
     "policy_blacklist_navigation_throttle.cc",
     "policy_blacklist_navigation_throttle.h",

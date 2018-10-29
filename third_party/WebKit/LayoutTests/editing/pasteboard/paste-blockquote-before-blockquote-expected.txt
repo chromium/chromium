@@ -3,6 +3,7 @@ This tests pasting a singly nested blockquote before, and outside of, another bl
 
 line 2
 
+
 line 1
 line 2
 line 3

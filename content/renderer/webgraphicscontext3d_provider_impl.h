@@ -6,6 +6,7 @@
 #define CONTENT_RENDERER_WEBGRAPHICSCONTEXT3D_PROVIDER_IMPL_H_
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "content/common/content_export.h"
@@ -50,7 +51,7 @@ class CONTENT_EXPORT WebGraphicsContext3DProviderImpl
   void SetLostContextCallback(base::RepeatingClosure) override;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)>) override;
-  cc::ImageDecodeCache* ImageDecodeCache() override;
+  cc::ImageDecodeCache* ImageDecodeCache(SkColorType) override;
 
   ws::ContextProviderCommandBuffer* context_provider() const {
     return provider_.get();
@@ -63,7 +64,8 @@ class CONTENT_EXPORT WebGraphicsContext3DProviderImpl
   scoped_refptr<ws::ContextProviderCommandBuffer> provider_;
   std::unique_ptr<viz::GLHelper> gl_helper_;
   base::RepeatingClosure context_lost_callback_;
-  std::unique_ptr<cc::ImageDecodeCache> image_decode_cache_;
+  base::flat_map<SkColorType, std::unique_ptr<cc::ImageDecodeCache>>
+      image_decode_cache_map_;
 
   DISALLOW_COPY_AND_ASSIGN(WebGraphicsContext3DProviderImpl);
 };

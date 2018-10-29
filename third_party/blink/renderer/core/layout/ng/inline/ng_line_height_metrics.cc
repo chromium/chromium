@@ -59,4 +59,10 @@ void NGLineHeightMetrics::operator+=(const NGLineHeightMetrics& other) {
   descent += other.descent;
 }
 
+std::ostream& operator<<(std::ostream& stream,
+                         const NGLineHeightMetrics& metrics) {
+  return stream << "ascent=" << metrics.ascent
+                << ", descent=" << metrics.descent;
+}
+
 }  // namespace blink

@@ -19,7 +19,7 @@
         "connect_test_app": [
           "connect_unittests:connect_test_service",
           "connect_unittests:standalone_app",
-          "connect_unittests:user_id_test"
+          "connect_unittests:identity_test"
         ],
         "connect_test_driver": [
           "connect_unittests:client_process_test"
@@ -27,7 +27,7 @@
         "connect_test_a": [
           "connect_unittests:connect_test_service",
           "connect_unittests:standalone_app",
-          "connect_unittests:user_id_test"
+          "connect_unittests:identity_test"
         ],
         "connect_test_singleton_app": []
       }

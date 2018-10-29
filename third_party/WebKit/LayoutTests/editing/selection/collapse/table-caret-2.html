@@ -19,7 +19,7 @@ test(function () {
     assert_equals(selection.anchorNode, sample, 'DOM anchorNode');
     assert_equals(selection.anchorOffset, childLength, 'DOM anchorOffset');
 
-    assert_exists(window, 'internals');
+    assert_own_property(window, 'internals');
     assert_equals(internals.visibleSelectionAnchorNode, div, 'Canonicalized anchorNode');
     assert_equals(internals.visibleSelectionAnchorOffset, 2, 'Canonicalized anchorOffset');
 });

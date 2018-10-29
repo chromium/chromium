@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -60,7 +61,7 @@ TEST_F(CrashRestoreHelperTest, MoveAsideTest) {
       chrome_browser_state_.get(), off_the_record_chrome_browser_state_,
   };
 
-  for (size_t index = 0; index < arraysize(browser_states); ++index) {
+  for (size_t index = 0; index < base::size(browser_states); ++index) {
     NSString* state_path =
         base::SysUTF8ToNSString(browser_states[index]->GetStatePath().value());
     NSString* session_path =
@@ -71,7 +72,7 @@ TEST_F(CrashRestoreHelperTest, MoveAsideTest) {
 
   [helper_ moveAsideSessionInformation];
 
-  for (size_t index = 0; index < arraysize(browser_states); ++index) {
+  for (size_t index = 0; index < base::size(browser_states); ++index) {
     NSString* state_path =
         base::SysUTF8ToNSString(browser_states[index]->GetStatePath().value());
     NSString* session_path =

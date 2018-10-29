@@ -92,7 +92,7 @@ class PageMemoryRegion : public MemoryRegion {
       return 0;
     size_t offset = BlinkPageAddress(address) - Base();
     DCHECK_EQ(offset % kBlinkPageSize, 0u);
-    return offset / kBlinkPageSize;
+    return static_cast<unsigned>(offset / kBlinkPageSize);
   }
 
   static PageMemoryRegion* Allocate(size_t, unsigned num_pages, RegionTree*);

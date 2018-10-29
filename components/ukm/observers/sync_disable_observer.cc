@@ -4,6 +4,9 @@
 
 #include "components/ukm/observers/sync_disable_observer.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
@@ -18,6 +21,8 @@ namespace ukm {
 
 const base::Feature kUkmCheckAuthErrorFeature{"UkmCheckAuthError",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kUkmPurgingOnConnection{"UkmPurgingOnConnection",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace {
 
@@ -198,8 +203,35 @@ void SyncDisableObserver::UpdateSyncState(
              DataCollectionState::kIgnored ||
          consent_helper);
   SyncDisableObserver::SyncState state = GetSyncState(sync, consent_helper);
+
   // Trigger a purge if sync state no longer allows UKM.
-  bool must_purge = previous_state.AllowsUkm() && !state.AllowsUkm();
+  // TODO(rkaplow): Clean this up once crbug.com/891777 is resolved.
+  bool must_purge;
+
+  // If unified_consent is used, we keep the logic introduced in
+  // http://crrev.com/c/1152744. Otherwise, if the kUkmPurgingOnConnection
+  // feature is enabled, we still use that logic.
+  if (unified_consent::IsUnifiedConsentFeatureEnabled() ||
+      base::FeatureList::IsEnabled(kUkmPurgingOnConnection)) {
+    // Purge using AllowsUkm which includes connected status.
+    must_purge = previous_state.AllowsUkm() && !state.AllowsUkm();
+  } else {
+    // Use the previous logic to investigate crbug.com/891777.
+    must_purge =
+        // Trigger a purge if history sync was disabled.
+        (previous_state.history_enabled && !state.history_enabled) ||
+        // Trigger a purge if engine has become disabled.
+        (previous_state.initialized && !state.initialized) ||
+        // Trigger a purge if the user added a passphrase.  Since we can't
+        // detect the use of a passphrase while the engine is not initialized,
+        // we may miss the transition if the user adds a passphrase in this
+        // state.
+        (previous_state.initialized && state.initialized &&
+         !previous_state.passphrase_protected && state.passphrase_protected);
+  }
+
+  UMA_HISTOGRAM_BOOLEAN("UKM.SyncDisable.Purge", must_purge);
+
   previous_states_[sync] = state;
   UpdateAllProfileEnabled(must_purge);
 }

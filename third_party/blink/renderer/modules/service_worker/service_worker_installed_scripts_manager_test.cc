@@ -9,8 +9,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/waitable_event.h"
 #include "third_party/blink/renderer/platform/web_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -123,10 +123,10 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
  public:
   ServiceWorkerInstalledScriptsManagerTest()
       : io_thread_(Platform::Current()->CreateThread(
-            WebThreadCreationParams(WebThreadType::kTestThread)
+            ThreadCreationParams(WebThreadType::kTestThread)
                 .SetThreadNameForTest("io thread"))),
         worker_thread_(Platform::Current()->CreateThread(
-            WebThreadCreationParams(WebThreadType::kTestThread)
+            ThreadCreationParams(WebThreadType::kTestThread)
                 .SetThreadNameForTest("worker thread"))) {}
 
  protected:
@@ -182,8 +182,8 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
     waiter->Signal();
   }
 
-  std::unique_ptr<WebThread> io_thread_;
-  std::unique_ptr<WebThread> worker_thread_;
+  std::unique_ptr<Thread> io_thread_;
+  std::unique_ptr<Thread> worker_thread_;
 
   WaitableEvent worker_waiter_;
 

@@ -15,7 +15,6 @@
 #include "content/public/common/push_messaging_status.mojom.h"
 #include "content/public/common/push_subscription_options.h"
 #include "content/public/common/service_names.mojom.h"
-#include "content/renderer/service_worker/web_service_worker_registration_impl.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "third_party/blink/public/platform/modules/push_messaging/web_push_subscription.h"
 #include "third_party/blink/public/platform/modules/push_messaging/web_push_subscription_options.h"
@@ -85,15 +84,6 @@ const char* PushRegistrationStatusToString(
   }
   NOTREACHED();
   return "";
-}
-
-// Returns the id of the given |service_worker_registration|, which
-// is only available on the implementation of the interface.
-int64_t GetServiceWorkerRegistrationId(
-    blink::WebServiceWorkerRegistration* service_worker_registration) {
-  return static_cast<WebServiceWorkerRegistrationImpl*>(
-             service_worker_registration)
-      ->RegistrationId();
 }
 
 }  // namespace
@@ -180,15 +170,12 @@ void PushProvider::WillStopCurrentWorkerThread() {
 }
 
 void PushProvider::Subscribe(
-    blink::WebServiceWorkerRegistration* service_worker_registration,
+    int64_t service_worker_registration_id,
     const blink::WebPushSubscriptionOptions& options,
     bool user_gesture,
     std::unique_ptr<blink::WebPushSubscriptionCallbacks> callbacks) {
-  DCHECK(service_worker_registration);
   DCHECK(callbacks);
 
-  int64_t service_worker_registration_id =
-      GetServiceWorkerRegistrationId(service_worker_registration);
   PushSubscriptionOptions content_options;
   content_options.user_visible_only = options.user_visible_only;
 
@@ -233,13 +220,9 @@ void PushProvider::DidSubscribe(
 }
 
 void PushProvider::Unsubscribe(
-    blink::WebServiceWorkerRegistration* service_worker_registration,
+    int64_t service_worker_registration_id,
     std::unique_ptr<blink::WebPushUnsubscribeCallbacks> callbacks) {
-  DCHECK(service_worker_registration);
   DCHECK(callbacks);
-
-  int64_t service_worker_registration_id =
-      GetServiceWorkerRegistrationId(service_worker_registration);
 
   push_messaging_manager_->Unsubscribe(
       service_worker_registration_id,
@@ -266,13 +249,9 @@ void PushProvider::DidUnsubscribe(
 }
 
 void PushProvider::GetSubscription(
-    blink::WebServiceWorkerRegistration* service_worker_registration,
+    int64_t service_worker_registration_id,
     std::unique_ptr<blink::WebPushSubscriptionCallbacks> callbacks) {
-  DCHECK(service_worker_registration);
   DCHECK(callbacks);
-
-  int64_t service_worker_registration_id =
-      GetServiceWorkerRegistrationId(service_worker_registration);
 
   push_messaging_manager_->GetSubscription(
       service_worker_registration_id,

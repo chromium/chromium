@@ -34,29 +34,34 @@ def EnsureEmptyDir(path):
 def BuildForArch(arch):
   build_dir = 'out/release-' + arch
   Run('scripts/fx', 'set', arch,
-      '--packages=topaz/packages/sdk/topaz',
-      '--args=is_debug=false', build_dir)
+      '--packages=garnet/packages/sdk/garnet',
+      '--args=is_debug=false', '--args=build_sdk_archives=true', build_dir)
   Run('scripts/fx', 'full-build')
 
 
 def main(args):
-  if len(args) != 1 or not os.path.isdir(args[0]):
-    print 'usage: %s <path_to_fuchsia_tree>' % SELF_FILE
+  if len(args) == 0 or len(args) > 2 or not os.path.isdir(args[0]):
+    print """usage: %s <path_to_fuchsia_tree> [architecture]""" % SELF_FILE
     return 1
 
   original_dir = os.getcwd()
 
   fuchsia_root = args[0]
 
+  arch = args[1] if len(args) > 1 else 'x64'
+  if arch not in ['x64', 'arm64']:
+    print 'Unknown architecture: ' + arch
+    print 'Must be "x64" or "arm64".'
+    return 1
+
   # Switch to the Fuchsia tree and build an SDK.
   os.chdir(fuchsia_root)
 
-  BuildForArch('x64')
-  BuildForArch('arm64')
+  BuildForArch(arch)
 
   tempdir = tempfile.mkdtemp()
-  sdk_tar = os.path.join(tempdir, 'fuchsia-sdk.tgz')
-  Run('go', 'run', 'scripts/sdk/foundation/makesdk.go', '-output', sdk_tar, '.')
+  sdk_tar = os.path.join(fuchsia_root, 'out', 'release-' + arch, 'sdk',
+                         'archive', 'garnet.tar.gz')
 
   # Nuke the SDK from DEPS, put our just-built one there, and set a fake .hash
   # file. This means that on next gclient runhooks, we'll restore to the
@@ -85,6 +90,10 @@ def main(args):
   # Clean up.
   shutil.rmtree(tempdir)
   os.chdir(original_dir)
+
+  subprocess.check_call([os.path.join(REPOSITORY_ROOT, 'third_party',
+                                      'fuchsia-sdk',
+                                      'gen_build_defs.py')])
 
   return 0
 

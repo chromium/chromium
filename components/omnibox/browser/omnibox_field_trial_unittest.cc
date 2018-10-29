@@ -79,8 +79,7 @@ void OmniboxFieldTrialTest::VerifyDemotion(
     const OmniboxFieldTrial::DemotionMultipliers& demotions,
     AutocompleteMatchType::Type match_type,
     float expected_value) {
-  OmniboxFieldTrial::DemotionMultipliers::const_iterator demotion_it =
-      demotions.find(match_type);
+  auto demotion_it = demotions.find(match_type);
   ASSERT_TRUE(demotion_it != demotions.end());
   EXPECT_FLOAT_EQ(expected_value, demotion_it->second);
 }

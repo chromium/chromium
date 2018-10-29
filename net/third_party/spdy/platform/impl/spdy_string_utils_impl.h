@@ -31,16 +31,6 @@ inline void SpdyStrAppendImpl(SpdyString* output, Args... args) {
   output->append(SpdyStrCatImpl(args...));
 }
 
-template <typename... Args>
-inline SpdyString SpdyStringPrintfImpl(const Args&... args) {
-  return base::StringPrintf(std::forward<const Args&>(args)...);
-}
-
-template <typename... Args>
-inline void SpdyStringAppendFImpl(const Args&... args) {
-  base::StringAppendF(std::forward<const Args&>(args)...);
-}
-
 inline char SpdyHexDigitToIntImpl(char c) {
   return base::HexDigitToInt(c);
 }

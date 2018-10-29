@@ -12,6 +12,7 @@
 #include "base/message_loop/message_loop_current.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
@@ -20,6 +21,7 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/lib/headless_content_main_delegate.h"
+#include "headless/public/devtools/domains/emulation.h"
 #include "headless/public/devtools/domains/runtime.h"
 #include "headless/public/headless_devtools_client.h"
 #include "headless/public/headless_devtools_target.h"
@@ -235,7 +237,22 @@ HeadlessAsyncDevTooledBrowserTest::~HeadlessAsyncDevTooledBrowserTest() =
 void HeadlessAsyncDevTooledBrowserTest::DevToolsTargetReady() {
   EXPECT_TRUE(web_contents_->GetDevToolsTarget());
   web_contents_->GetDevToolsTarget()->AttachClient(devtools_client_.get());
+#if defined(OS_MACOSX)
+  devtools_client_->GetEmulation()->SetDeviceMetricsOverride(
+      emulation::SetDeviceMetricsOverrideParams::Builder()
+          .SetWidth(0)
+          .SetHeight(0)
+          .SetDeviceScaleFactor(1)
+          .SetMobile(false)
+          .Build(),
+      base::BindOnce(
+          [](HeadlessAsyncDevTooledBrowserTest* self) {
+            self->RunDevTooledTest();
+          },
+          base::Unretained(this)));
+#else
   RunDevTooledTest();
+#endif
 }
 
 void HeadlessAsyncDevTooledBrowserTest::RenderProcessExited(

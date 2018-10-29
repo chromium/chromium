@@ -80,9 +80,9 @@ bool ScopedSVGPaintState::ApplyClipMaskAndFilterIfNecessary() {
   bool is_svg_root = object_.IsSVGRoot();
   if (is_svg_root) {
     // Layer takes care of root opacity and blend mode.
-    DCHECK(object_.HasLayer() ||
-           !(object_.IsTransparent() || object_.StyleRef().HasBlendMode() ||
-             object_.StyleRef().ClipPath()));
+    DCHECK(object_.HasLayer() || !(object_.StyleRef().HasOpacity() ||
+                                   object_.StyleRef().HasBlendMode() ||
+                                   object_.StyleRef().ClipPath()));
   } else {
     ApplyClipIfNecessary();
   }

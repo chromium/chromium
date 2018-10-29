@@ -78,7 +78,7 @@ void IntersectionObserverController::DeliverIntersectionObservations() {
 }
 
 void IntersectionObserverController::ComputeTrackedIntersectionObservations() {
-  if (Document* document = ToDocument(GetExecutionContext())) {
+  if (Document* document = To<Document>(GetExecutionContext())) {
     TRACE_EVENT0("blink",
                  "IntersectionObserverController::"
                  "computeTrackedIntersectionObservations");

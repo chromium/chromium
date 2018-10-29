@@ -4,7 +4,6 @@
 
 #include "ash/system/tray/tray_detailed_view.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -372,8 +371,7 @@ void TrayDetailedView::SetupConnectingScrollListItem(HoverHighlightView* view) {
 
 TriView* TrayDetailedView::AddScrollListSubHeader(const gfx::VectorIcon& icon,
                                                   int text_id) {
-  TriView* header = TrayPopupUtils::CreateSubHeaderRowView(
-      features::IsSystemTrayUnifiedEnabled() || !icon.is_empty());
+  TriView* header = TrayPopupUtils::CreateSubHeaderRowView(true);
   TrayPopupUtils::ConfigureAsStickyHeader(header);
 
   views::Label* label = TrayPopupUtils::CreateDefaultLabel();
@@ -382,13 +380,11 @@ TriView* TrayDetailedView::AddScrollListSubHeader(const gfx::VectorIcon& icon,
   style.SetupLabel(label);
   header->AddView(TriView::Container::CENTER, label);
 
-  if (features::IsSystemTrayUnifiedEnabled() || !icon.is_empty()) {
-    views::ImageView* image_view = TrayPopupUtils::CreateMainImageView();
-    image_view->SetImage(gfx::CreateVectorIcon(
-        icon, GetNativeTheme()->GetSystemColor(
-                  ui::NativeTheme::kColorId_ProminentButtonColor)));
-    header->AddView(TriView::Container::START, image_view);
-  }
+  views::ImageView* image_view = TrayPopupUtils::CreateMainImageView();
+  image_view->SetImage(gfx::CreateVectorIcon(
+      icon, GetNativeTheme()->GetSystemColor(
+                ui::NativeTheme::kColorId_ProminentButtonColor)));
+  header->AddView(TriView::Container::START, image_view);
 
   scroll_content_->AddChildView(header);
   return header;

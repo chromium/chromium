@@ -110,7 +110,6 @@ TEST(SimpleColorSpace, BT2020CLtoBT2020RGB) {
   ColorSpace bt2020rgb(ColorSpace::PrimaryID::BT2020,
                        ColorSpace::TransferID::BT2020_10,
                        ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
-  ColorSpace sRGB = ColorSpace::CreateSRGB();
   std::unique_ptr<ColorTransform> t(ColorTransform::NewColorTransform(
       bt2020cl, bt2020rgb, ColorTransform::Intent::INTENT_ABSOLUTE));
 

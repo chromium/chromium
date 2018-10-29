@@ -110,7 +110,7 @@ void ProgressTracker::ProgressStarted() {
   Reset();
   progress_value_ = kInitialProgressValue;
   if (!frame_->IsLoading()) {
-    GetLocalFrameClient()->DidStartLoading(kNavigationToDifferentDocument);
+    GetLocalFrameClient()->DidStartLoading();
     frame_->SetIsLoading(true);
     probe::frameStartedLoading(frame_);
   }

@@ -28,6 +28,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_scoped_task_environment.h"
+#include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/core/quic_versions.h"
 #include "net/third_party/quic/test_tools/mock_clock.h"
 #include "net/third_party/quic/test_tools/mock_random.h"
@@ -43,8 +44,6 @@ const int kProxyPort = 6121;
 const char kOriginHost[] = "www.google.org";
 const int kOriginPort = 443;
 const char kUserAgent[] = "Mozilla/1.0";
-
-const quic::QuicStreamId kClientDataStreamId1 = quic::kHeadersStreamId + 2;
 
 class MockSSLConfigService : public SSLConfigService {
  public:
@@ -85,6 +84,8 @@ class HttpProxyClientSocketWrapperTest
         cert_transparency_verifier_(new DoNothingCTVerifier()),
         random_generator_(0),
         quic_version_(std::get<0>(GetParam())),
+        client_data_stream_id1_(
+            quic::QuicUtils::GetHeadersStreamId(quic_version_) + 2),
         client_headers_include_h2_stream_dependency_(std::get<1>(GetParam())),
         client_maker_(quic_version_,
                       0,
@@ -120,8 +121,8 @@ class HttpProxyClientSocketWrapperTest
     quic_stream_factory_.reset(new QuicStreamFactory(
         net_log_.net_log(), &host_resolver_, ssl_config_service_.get(),
         &socket_factory_, &http_server_properties_, cert_verifier_.get(),
-        &ct_policy_enforcer_, channel_id_service_.get(),
-        &transport_security_state_, cert_transparency_verifier_.get(),
+        &ct_policy_enforcer_, &transport_security_state_,
+        cert_transparency_verifier_.get(),
         /*SocketPerformanceWatcherFactory=*/nullptr,
         &crypto_client_stream_factory_, &random_generator_, &clock_,
         quic::kDefaultMaxPacketSize, /*user_agent_id=*/kUserAgent,
@@ -137,14 +138,14 @@ class HttpProxyClientSocketWrapperTest
         /*migrate_sessions_on_network_change_v2=*/false,
         /*migrate_sessions_early_v2=*/false,
         /*retry_on_alternate_network_before_handshake=*/false,
+        /*race_stale_dns_on_connection=*/false,
         /*go_away_on_path_degrading=*/false,
         base::TimeDelta::FromSeconds(kMaxTimeOnNonDefaultNetworkSecs),
         kMaxMigrationsToNonDefaultNetworkOnWriteError,
         kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
         allow_server_migration_, race_cert_verification_, estimate_initial_rtt_,
         client_headers_include_h2_stream_dependency_, connection_options_,
-        client_connection_options_, /*enable_token_binding=*/false,
-        /*enable_channel_id=*/false,
+        client_connection_options_,
         /*enable_socket_recv_optimization=*/false));
   }
 
@@ -165,7 +166,7 @@ class HttpProxyClientSocketWrapperTest
     spdy::SpdyHeaderBlock block;
     PopulateConnectRequestIR(&block);
     return client_maker_.MakeRequestHeadersPacket(
-        packet_number, kClientDataStreamId1, kIncludeVersion, !kFin,
+        packet_number, client_data_stream_id1_, kIncludeVersion, !kFin,
         ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY),
         std::move(block), 0, nullptr, &header_stream_offset_);
   }
@@ -177,7 +178,7 @@ class HttpProxyClientSocketWrapperTest
     block[":status"] = "200";
 
     return server_maker_.MakeResponseHeadersPacket(
-        packet_number, kClientDataStreamId1, !kIncludeVersion, fin,
+        packet_number, client_data_stream_id1_, !kIncludeVersion, fin,
         std::move(block), nullptr, &response_offset_);
   }
 
@@ -188,7 +189,7 @@ class HttpProxyClientSocketWrapperTest
       quic::QuicPacketNumber smallest_received,
       quic::QuicPacketNumber least_unacked) {
     return client_maker_.MakeAckAndRstPacket(
-        packet_number, !kIncludeVersion, kClientDataStreamId1, error_code,
+        packet_number, !kIncludeVersion, client_data_stream_id1_, error_code,
         largest_received, smallest_received, least_unacked, kSendFeedback);
   }
 
@@ -224,6 +225,7 @@ class HttpProxyClientSocketWrapperTest
   quic::test::MockRandom random_generator_;
 
   const quic::QuicTransportVersion quic_version_;
+  const quic::QuicStreamId client_data_stream_id1_;
   const bool client_headers_include_h2_stream_dependency_;
   QuicTestPacketMaker client_maker_;
   QuicTestPacketMaker server_maker_;
@@ -273,9 +275,9 @@ TEST_P(HttpProxyClientSocketWrapperTest, QuicProxy) {
           proxy_host_port_, false, OnHostResolutionCallback(),
           TransportSocketParams::COMBINE_CONNECT_AND_WRITE_DEFAULT);
 
-  scoped_refptr<SSLSocketParams> ssl_params =
-      new SSLSocketParams(transport_params, nullptr, nullptr, proxy_host_port_,
-                          SSLConfig(), privacy_mode_, 0);
+  scoped_refptr<SSLSocketParams> ssl_params = new SSLSocketParams(
+      transport_params, nullptr, nullptr, proxy_host_port_, SSLConfig(),
+      privacy_mode_, false /* ignore_certificate_errors */);
   transport_params = nullptr;
 
   client_socket_wrapper_.reset(new HttpProxyClientSocketWrapper(
@@ -326,9 +328,9 @@ TEST_P(HttpProxyClientSocketWrapperTest, QuicProxySocketTag) {
           proxy_host_port_, false, OnHostResolutionCallback(),
           TransportSocketParams::COMBINE_CONNECT_AND_WRITE_DEFAULT);
 
-  scoped_refptr<SSLSocketParams> ssl_params =
-      new SSLSocketParams(transport_params, nullptr, nullptr, proxy_host_port_,
-                          SSLConfig(), privacy_mode_, 0);
+  scoped_refptr<SSLSocketParams> ssl_params = new SSLSocketParams(
+      transport_params, nullptr, nullptr, proxy_host_port_, SSLConfig(),
+      privacy_mode_, false /* ignore_certificate_errors */);
   transport_params = nullptr;
   SocketTag tag(getuid(), 0x87654321);
 

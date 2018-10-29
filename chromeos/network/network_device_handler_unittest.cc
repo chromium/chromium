@@ -16,6 +16,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
 
@@ -388,6 +389,32 @@ TEST_F(NetworkDeviceHandlerTest, ChangePin) {
                                      error_callback_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkDeviceHandler::kErrorIncorrectPin, result_);
+}
+
+TEST_F(NetworkDeviceHandlerTest, AddWifiWakeOnPacketOfTypes) {
+  std::vector<std::string> valid_packet_types = {shill::kWakeOnTCP,
+                                                 shill::kWakeOnUDP};
+
+  network_device_handler_->AddWifiWakeOnPacketOfTypes(
+      valid_packet_types, success_callback_, error_callback_);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(kResultSuccess, result_);
+}
+
+TEST_F(NetworkDeviceHandlerTest, AddAndRemoveWifiWakeOnPacketOfTypes) {
+  std::vector<std::string> valid_packet_types = {shill::kWakeOnTCP,
+                                                 shill::kWakeOnUDP};
+  std::vector<std::string> remove_packet_types = {shill::kWakeOnTCP};
+
+  network_device_handler_->AddWifiWakeOnPacketOfTypes(
+      valid_packet_types, success_callback_, error_callback_);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(kResultSuccess, result_);
+
+  network_device_handler_->RemoveWifiWakeOnPacketOfTypes(
+      remove_packet_types, success_callback_, error_callback_);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(kResultSuccess, result_);
 }
 
 }  // namespace chromeos

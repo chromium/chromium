@@ -254,7 +254,7 @@ class AppCacheStorageImplTest : public testing::Test {
                        storage::GetQuotaSettingsFunc()),
           async_(false) {}
 
-    void GetUsageAndQuota(const GURL& origin,
+    void GetUsageAndQuota(const url::Origin& /* origin */,
                           StorageType type,
                           UsageAndQuotaCallback callback) override {
       EXPECT_EQ(StorageType::kTemporary, type);

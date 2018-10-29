@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_CHILD_CALL_STACK_PROFILE_COLLECTOR_H_
 #define COMPONENTS_METRICS_CHILD_CALL_STACK_PROFILE_COLLECTOR_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
@@ -12,13 +13,14 @@
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "components/metrics/public/interfaces/call_stack_profile_collector.mojom.h"
-#include "third_party/metrics_proto/sampled_profile.pb.h"
 
 namespace service_manager {
 class InterfaceProvider;
 }
 
 namespace metrics {
+
+class SampledProfile;
 
 // ChildCallStackProfileCollector collects stacks at startup, caching them
 // internally until a CallStackProfileCollector interface is available. If a
@@ -63,21 +65,22 @@ class ChildCallStackProfileCollector {
  private:
   friend class ChildCallStackProfileCollectorTest;
 
-  // Bundles together a collected profile and the collection state for
-  // storage, pending availability of the parent mojo interface. |profile|
-  // is not const& because it must be passed with std::move.
+  // Bundles together a collected serialized profile and the collection state
+  // for storage, pending availability of the parent mojo interface.
   struct ProfileState {
     ProfileState();
     ProfileState(ProfileState&&);
-    ProfileState(base::TimeTicks start_timestamp, SampledProfile profile);
+    // |profile| is not const& because it can be very large and must be passed
+    // with std::move.
+    ProfileState(base::TimeTicks start_timestamp, std::string profile);
     ~ProfileState();
 
     ProfileState& operator=(ProfileState&&);
 
     base::TimeTicks start_timestamp;
 
-    // The sampled profile.
-    SampledProfile profile;
+    // The serialized sampled profile.
+    std::string profile;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(ProfileState);

@@ -179,7 +179,7 @@ int DragDropController::StartDragAndDrop(
     // capture, it still gets a valid gesture state.
     Shell::Get()->aura_env()->gesture_recognizer()->TransferEventsTo(
         source_window, tracker->capture_window(),
-        ui::GestureRecognizer::ShouldCancelTouches::Cancel);
+        ui::TransferTouchesBehavior::kCancel);
     // We also send a gesture end to the source window so it can clear state.
     // TODO(varunjain): Remove this whole block when gesture sequence
     // transferring is properly done in the GR (http://crbug.com/160558)

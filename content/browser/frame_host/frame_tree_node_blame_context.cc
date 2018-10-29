@@ -6,7 +6,7 @@
 
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "content/browser/frame_host/frame_tree.h"
 #include "url/gurl.h"
 

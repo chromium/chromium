@@ -68,7 +68,8 @@ void HitTestManager::SubmitHitTestRegionList(
 
 const HitTestRegionList* HitTestManager::GetActiveHitTestRegionList(
     LatestLocalSurfaceIdLookupDelegate* delegate,
-    const FrameSinkId& frame_sink_id) const {
+    const FrameSinkId& frame_sink_id,
+    uint64_t* store_active_frame_index) const {
   if (!delegate)
     return nullptr;
 
@@ -85,6 +86,8 @@ const HitTestRegionList* HitTestManager::GetActiveHitTestRegionList(
   Surface* surface = surface_manager_->GetSurfaceForId(surface_id);
   DCHECK(surface);
   uint64_t frame_index = surface->GetActiveFrameIndex();
+  if (store_active_frame_index)
+    *store_active_frame_index = frame_index;
 
   auto& frame_index_map = search->second;
   auto search2 = frame_index_map.find(frame_index);
@@ -92,6 +95,11 @@ const HitTestRegionList* HitTestManager::GetActiveHitTestRegionList(
     return nullptr;
 
   return &search2->second;
+}
+
+int64_t HitTestManager::GetTraceId(const SurfaceId& id) const {
+  Surface* surface = surface_manager_->GetSurfaceForId(id);
+  return surface->GetActiveFrame().metadata.begin_frame_ack.trace_id;
 }
 
 bool HitTestManager::ValidateHitTestRegionList(

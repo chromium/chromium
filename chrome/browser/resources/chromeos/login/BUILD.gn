@@ -12,12 +12,18 @@ js_type_check("closure_compile") {
   ]
 }
 
+js_library("oobe_dialog_host_behavior") {
+}
+
 js_library("oobe_select") {
 }
 
 js_library("offline_ad_login") {
   deps = [
+    ":oobe_dialog_host_behavior",
     ":oobe_select",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
+    "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:load_time_data",
   ]
 }

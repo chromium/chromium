@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_ppapi_host.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "crypto/encryptor.h"
@@ -74,9 +75,8 @@ bool DeviceIDFetcher::Start(const IDCallback& callback) {
   in_progress_ = true;
   callback_ = callback;
 
-  BrowserThread::PostTask(
-      BrowserThread::UI,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&DeviceIDFetcher::CheckPrefsOnUIThread, this));
   return true;
 }
@@ -190,9 +190,8 @@ void DeviceIDFetcher::LegacyComputeAsync(const base::FilePath& profile_path,
   }
   // If we didn't find an ID, get the machine ID and call the new code path to
   // generate an ID.
-  BrowserThread::PostTask(
-      BrowserThread::UI,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&GetMachineIDAsync,
                  base::Bind(&DeviceIDFetcher::ComputeOnUIThread, this, salt)));
 }
@@ -200,9 +199,8 @@ void DeviceIDFetcher::LegacyComputeAsync(const base::FilePath& profile_path,
 void DeviceIDFetcher::RunCallbackOnIOThread(const std::string& id,
                                             int32_t result) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    BrowserThread::PostTask(
-        BrowserThread::IO,
-        FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::Bind(&DeviceIDFetcher::RunCallbackOnIOThread, this, id, result));
     return;
   }

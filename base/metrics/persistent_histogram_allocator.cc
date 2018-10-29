@@ -687,14 +687,15 @@ bool GlobalHistogramAllocator::CreateWithFile(
                  File::FLAG_READ | File::FLAG_WRITE);
 
   std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
+  bool success = false;
   if (exists) {
     size = saturated_cast<size_t>(file.GetLength());
-    mmfile->Initialize(std::move(file), MemoryMappedFile::READ_WRITE);
+    success = mmfile->Initialize(std::move(file), MemoryMappedFile::READ_WRITE);
   } else {
-    mmfile->Initialize(std::move(file), {0, size},
-                       MemoryMappedFile::READ_WRITE_EXTEND);
+    success = mmfile->Initialize(std::move(file), {0, size},
+                                 MemoryMappedFile::READ_WRITE_EXTEND);
   }
-  if (!mmfile->IsValid() ||
+  if (!success ||
       !FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, true)) {
     return false;
   }
@@ -844,9 +845,8 @@ bool GlobalHistogramAllocator::CreateSpareFile(const FilePath& spare_path,
       return false;
 
     MemoryMappedFile mmfile;
-    mmfile.Initialize(std::move(spare_file), {0, size},
-                      MemoryMappedFile::READ_WRITE_EXTEND);
-    success = mmfile.IsValid();
+    success = mmfile.Initialize(std::move(spare_file), {0, size},
+                                MemoryMappedFile::READ_WRITE_EXTEND);
   }
 
   if (success)

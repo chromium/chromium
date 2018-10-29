@@ -4,6 +4,7 @@
 
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -36,7 +37,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/url_pattern.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_context_menu_data.h"
 #include "url/gurl.h"
@@ -352,7 +353,8 @@ TEST_F(RenderViewContextMenuExtensionsTest,
       static_cast<MenuManager*>(
           (MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
               profile(),
-              &MenuManagerFactory::BuildServiceInstanceForTesting)));
+              base::BindRepeating(
+                  &MenuManagerFactory::BuildServiceInstanceForTesting))));
 
   const Extension* extension1 = environment().MakeExtension(
       base::DictionaryValue(), "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
@@ -439,8 +441,8 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
         drp_test_context_->GetDataReductionProxyEnabledPrefName());
     settings->InitDataReductionProxySettings(
         drp_test_context_->io_data(), drp_test_context_->pref_service(),
-        drp_test_context_->request_context_getter(),
-        nullptr /* url_loader_factory */,
+        drp_test_context_->request_context_getter(), profile(),
+        base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
         std::make_unique<data_reduction_proxy::DataStore>(),
         base::ThreadTaskRunnerHandle::Get(),
         base::ThreadTaskRunnerHandle::Get());

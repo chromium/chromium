@@ -94,11 +94,11 @@ Abs32RvaExtractorWin32::Abs32RvaExtractorWin32(
     offset_t hi)
     : image_(image), addr_(std::move(addr)) {
   CHECK_LE(lo, hi);
-  auto find_and_check = [&addr](const std::vector<offset_t>& locations,
-                                offset_t offset) {
+  auto find_and_check = [this](const std::vector<offset_t>& locations,
+                               offset_t offset) {
     auto it = std::lower_bound(locations.begin(), locations.end(), offset);
-    // Ensure |offset| does not straddle a reference body.
-    CHECK(it == locations.begin() || offset - *(it - 1) >= addr.width());
+    // Ensure that |offset| does not straddle a reference body.
+    CHECK(it == locations.begin() || offset - *(it - 1) >= addr_.width());
     return it;
   };
   cur_abs32_ = find_and_check(abs32_locations, lo);
@@ -136,11 +136,8 @@ base::Optional<Reference> Abs32ReaderWin32::GetNext() {
   for (auto unit = abs32_rva_extractor_.GetNext(); unit.has_value();
        unit = abs32_rva_extractor_.GetNext()) {
     offset_t location = unit->location;
-    // |target| will not be dereferenced, so we don't worry about it
-    // exceeding |image_.size()| (in fact, there are valid cases where it
-    // does).
     offset_t unsafe_target = target_rva_to_offset_.Convert(unit->target_rva);
-    if (unsafe_target < kOffsetBound)
+    if (unsafe_target != kInvalidOffset)
       return Reference{location, unsafe_target};
   }
   return base::nullopt;
@@ -167,12 +164,30 @@ void Abs32WriterWin32::PutNext(Reference ref) {
 
 /******** Exported Functions ********/
 
-size_t RemoveOverlappingAbs32Locations(Bitness bitness,
+size_t RemoveUntranslatableAbs32(ConstBufferView image,
+                                 AbsoluteAddress&& addr,
+                                 const AddressTranslator& translator,
+                                 std::vector<offset_t>* locations) {
+  AddressTranslator::RvaToOffsetCache target_rva_checker(translator);
+  Abs32RvaExtractorWin32 extractor(image, std::move(addr), *locations, 0,
+                                   image.size());
+  Abs32ReaderWin32 reader(std::move(extractor), translator);
+  std::vector<offset_t>::iterator write_it = locations->begin();
+  // |reader| reads |locations| while |write_it| modifies it. However, there's
+  // no conflict since read occurs before write, and can skip ahead.
+  for (auto ref = reader.GetNext(); ref.has_value(); ref = reader.GetNext())
+    *(write_it++) = ref->location;
+  DCHECK(write_it <= locations->end());
+  size_t num_removed = locations->end() - write_it;
+  locations->erase(write_it, locations->end());
+  return num_removed;
+}
+
+size_t RemoveOverlappingAbs32Locations(uint32_t width,
                                        std::vector<offset_t>* locations) {
   if (locations->size() <= 1)
     return 0;
 
-  uint32_t width = WidthOf(bitness);
   auto slow = locations->begin();
   auto fast = locations->begin() + 1;
   for (;;) {

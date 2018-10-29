@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
@@ -103,8 +104,18 @@ class CHROMEOS_EXPORT NetworkDeviceHandlerImpl
       const base::Closure& callback,
       const network_handler::ErrorCallback& error_callback) override;
 
+  void AddWifiWakeOnPacketOfTypes(
+      const std::vector<std::string>& types,
+      const base::Closure& callback,
+      const network_handler::ErrorCallback& error_callback) override;
+
   void RemoveWifiWakeOnPacketConnection(
       const net::IPEndPoint& ip_endpoint,
+      const base::Closure& callback,
+      const network_handler::ErrorCallback& error_callback) override;
+
+  void RemoveWifiWakeOnPacketOfTypes(
+      const std::vector<std::string>& types,
       const base::Closure& callback,
       const network_handler::ErrorCallback& error_callback) override;
 

@@ -10,10 +10,12 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "content/browser/browsing_data/conditional_cache_deletion_helper.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -103,8 +105,8 @@ IN_PROC_BROWSER_TEST_F(ConditionalCacheDeletionHelperBrowserTest, Condition) {
   GetCacheTestUtil()->CreateCacheEntries(keys);
 
   // Delete the entries whose keys are even numbers.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&ConditionalCacheDeletionHelperBrowserTest::DeleteEntries,
                      base::Unretained(this), base::Bind(&KeyIsEven)));
   WaitForTasksOnIOThread();
@@ -163,8 +165,8 @@ IN_PROC_BROWSER_TEST_F(ConditionalCacheDeletionHelperBrowserTest,
           base::Bind(&HasHttpsExampleOrigin), now, base::Time::Max());
 
   // Delete the entries.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&ConditionalCacheDeletionHelperBrowserTest::DeleteEntries,
                      base::Unretained(this), std::move(condition)));
   WaitForTasksOnIOThread();

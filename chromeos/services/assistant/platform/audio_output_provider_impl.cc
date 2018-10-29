@@ -4,7 +4,11 @@
 
 #include "chromeos/services/assistant/platform/audio_output_provider_impl.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "ash/public/interfaces/constants.mojom.h"
+#include "base/bind.h"
 #include "chromeos/services/assistant/platform/audio_stream_handler.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/services/assistant/public/mojom/constants.mojom.h"
@@ -161,7 +165,9 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
 }  // namespace
 
 VolumeControlImpl::VolumeControlImpl(service_manager::Connector* connector)
-    : binding_(this) {
+    : binding_(this),
+      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      weak_factory_(this) {
   connector->BindInterface(ash::mojom::kServiceName, &volume_control_ptr_);
   ash::mojom::VolumeObserverPtr observer;
   binding_.Bind(mojo::MakeRequest(&observer));
@@ -178,7 +184,10 @@ float VolumeControlImpl::GetSystemVolume() {
 }
 
 void VolumeControlImpl::SetSystemVolume(float new_volume, bool user_initiated) {
-  volume_control_ptr_->SetVolume(new_volume * 100.0, user_initiated);
+  main_thread_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VolumeControlImpl::SetSystemVolumeOnMainThread,
+                     weak_factory_.GetWeakPtr(), new_volume, user_initiated));
 }
 
 float VolumeControlImpl::GetAlarmVolume() {
@@ -195,7 +204,9 @@ bool VolumeControlImpl::IsSystemMuted() {
 }
 
 void VolumeControlImpl::SetSystemMuted(bool muted) {
-  volume_control_ptr_->SetMuted(muted);
+  main_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&VolumeControlImpl::SetSystemMutedOnMainThread,
+                                weak_factory_.GetWeakPtr(), muted));
 }
 
 void VolumeControlImpl::OnVolumeChanged(int volume) {
@@ -204,6 +215,17 @@ void VolumeControlImpl::OnVolumeChanged(int volume) {
 
 void VolumeControlImpl::OnMuteStateChanged(bool mute) {
   mute_ = mute;
+}
+
+void VolumeControlImpl::SetSystemVolumeOnMainThread(float new_volume,
+                                                    bool user_initiated) {
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  volume_control_ptr_->SetVolume(new_volume * 100.0, user_initiated);
+}
+
+void VolumeControlImpl::SetSystemMutedOnMainThread(bool muted) {
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  volume_control_ptr_->SetMuted(muted);
 }
 
 AudioOutputProviderImpl::AudioOutputProviderImpl(
@@ -344,11 +366,11 @@ int AudioDeviceOwner::Render(base::TimeDelta delay,
   int available_frames = audio_fifo_->GetAvailableFrames();
   if (available_frames < dest->frames()) {
     // In our setting, dest->frames() == frames per block in |audio_fifo_|.
-    DCHECK(audio_fifo_->available_blocks() == 0);
+    DCHECK_EQ(audio_fifo_->available_blocks(), 0);
 
     int frames_to_fill = audio_param_.frames_per_buffer() - available_frames;
 
-    DCHECK(frames_to_fill >= 0);
+    DCHECK_GE(frames_to_fill, 0);
 
     // Fill up to one block with zero data so that |audio_fifo_| has 1 block
     // to consume. This avoids DCHECK in audio_fifo_->Consume() and also

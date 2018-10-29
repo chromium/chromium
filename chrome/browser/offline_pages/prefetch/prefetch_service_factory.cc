@@ -22,6 +22,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_content_client.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher_impl.h"
 #include "components/offline_pages/core/prefetch/prefetch_downloader_impl.h"
@@ -58,6 +59,9 @@ PrefetchService* PrefetchServiceFactory::GetForBrowserContext(
 
 KeyedService* PrefetchServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  const bool feed_enabled =
+      base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions);
+
   Profile* profile = Profile::FromBrowserContext(context);
   DCHECK(profile);
   OfflinePageModel* offline_page_model =
@@ -85,8 +89,14 @@ KeyedService* PrefetchServiceFactory::BuildServiceInstanceFor(
   auto prefetch_store =
       std::make_unique<PrefetchStore>(background_task_runner, store_path);
 
-  auto suggested_articles_observer =
-      std::make_unique<SuggestedArticlesObserver>();
+  // Zine/Feed
+  // Conditional components for Zine. Not created when using Feed.
+  std::unique_ptr<SuggestedArticlesObserver> suggested_articles_observer;
+  std::unique_ptr<ThumbnailFetcherImpl> thumbnail_fetcher;
+  if (!feed_enabled) {
+    suggested_articles_observer = std::make_unique<SuggestedArticlesObserver>();
+    thumbnail_fetcher = std::make_unique<ThumbnailFetcherImpl>();
+  }
 
   auto prefetch_downloader = std::make_unique<PrefetchDownloaderImpl>(
       DownloadServiceFactory::GetForBrowserContext(context),
@@ -97,8 +107,6 @@ KeyedService* PrefetchServiceFactory::BuildServiceInstanceFor(
 
   auto prefetch_background_task_handler =
       std::make_unique<PrefetchBackgroundTaskHandlerImpl>(profile->GetPrefs());
-
-  auto thumbnail_fetcher = std::make_unique<ThumbnailFetcherImpl>();
 
   return new PrefetchServiceImpl(
       std::move(offline_metrics_collector), std::move(prefetch_dispatcher),

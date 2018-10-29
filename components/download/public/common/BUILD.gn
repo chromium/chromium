@@ -98,6 +98,7 @@ if (is_android) {
   java_cpp_enum("jni_enums") {
     sources = [
       "download_item.h",
+      "resume_mode.h",
     ]
   }
 }

@@ -10,6 +10,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <type_traits>
+
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "build/build_config.h"

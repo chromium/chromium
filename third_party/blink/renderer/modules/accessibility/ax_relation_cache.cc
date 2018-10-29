@@ -69,9 +69,8 @@ bool AXRelationCache::IsValidOwnsRelation(AXObject* owner,
 
 void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
                                          const Vector<AXID> child_ids) {
-  for (size_t i = 0; i < child_ids.size(); ++i) {
+  for (AXID removed_child_id : child_ids) {
     // Find the AXObject for the child that this owner no longer owns.
-    AXID removed_child_id = child_ids[i];
     AXObject* removed_child = ObjectFromAXID(removed_child_id);
 
     // It's possible that this child has already been owned by some other
@@ -102,10 +101,7 @@ void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
 
 void AXRelationCache::MapOwnedChildren(const AXObject* owner,
                                        const Vector<AXID> child_ids) {
-  for (size_t i = 0; i < child_ids.size(); ++i) {
-    // Find the AXObject for the child that will now be a child of this
-    // owner.
-    AXID added_child_id = child_ids[i];
+  for (AXID added_child_id : child_ids) {
     AXObject* added_child = ObjectFromAXID(added_child_id);
 
     // Add this child to the mapping from child to owner.
@@ -233,8 +229,8 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
 void AXRelationCache::RemoveAXID(AXID obj_id) {
   if (aria_owner_to_children_mapping_.Contains(obj_id)) {
     Vector<AXID> child_axids = aria_owner_to_children_mapping_.at(obj_id);
-    for (size_t i = 0; i < child_axids.size(); ++i)
-      aria_owned_child_to_owner_mapping_.erase(child_axids[i]);
+    for (AXID child_axid : child_axids)
+      aria_owned_child_to_owner_mapping_.erase(child_axid);
     aria_owner_to_children_mapping_.erase(obj_id);
   }
   aria_owned_child_to_owner_mapping_.erase(obj_id);

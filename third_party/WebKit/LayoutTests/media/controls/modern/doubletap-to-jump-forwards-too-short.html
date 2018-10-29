@@ -14,10 +14,9 @@ async_test(t => {
     if (video.currentTime < 55) {
       video.currentTime = 55;
 
-      // Double tap in the top right hand corner
-      const coordinates =
-        coordinatesOutsideElement(mediaControlsOverlayPlayButton(video));
-      doubleTouchAtCoordinates(coordinates[0] + video.width, coordinates[1] + 1);
+      // Double tap on the right side.
+      const coordinates = videoRightEdgeCoordinates(video);
+      doubleTouchAtCoordinates(coordinates[0], coordinates[1]);
     }
   }, { once: true });
 

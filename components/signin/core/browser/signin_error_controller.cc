@@ -37,7 +37,7 @@ void SigninErrorController::AddProvider(const AuthStatusProvider* provider) {
 }
 
 void SigninErrorController::RemoveProvider(const AuthStatusProvider* provider) {
-  AuthStatusProviderSet::iterator iter = provider_set_.find(provider);
+  auto iter = provider_set_.find(provider);
   DCHECK(iter != provider_set_.end())
       << "Removing provider that was never added";
   provider_set_.erase(iter);
@@ -53,8 +53,7 @@ void SigninErrorController::AuthStatusChanged() {
   // actionable error state and some provider exposes a similar error and
   // account id, use that error. Otherwise, just take the first actionable
   // error we find.
-  for (AuthStatusProviderSet::const_iterator it = provider_set_.begin();
-       it != provider_set_.end(); ++it) {
+  for (auto it = provider_set_.begin(); it != provider_set_.end(); ++it) {
     std::string account_id = (*it)->GetAccountId();
 
     // In PRIMARY_ACCOUNT mode, ignore all secondary accounts.

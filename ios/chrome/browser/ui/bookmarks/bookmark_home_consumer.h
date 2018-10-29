@@ -32,7 +32,7 @@ typedef NS_ENUM(NSInteger, BookmarkHomeBackgroundStyle) {
 // optionally fetch a favicon from a Google server if nothing suitable is found
 // locally; otherwise uses the fallback icon style.
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
-        continueToGoogleServer:(BOOL)continueToGoogleServer;
+        fallbackToGoogleServer:(BOOL)fallbackToGoogleServer;
 
 // Displays the table view background for the given |style|.
 - (void)updateTableViewBackgroundStyle:(BookmarkHomeBackgroundStyle)style;

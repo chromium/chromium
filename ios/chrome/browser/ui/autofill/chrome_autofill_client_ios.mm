@@ -22,6 +22,7 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/autofill/address_normalizer_factory.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#include "ios/chrome/browser/autofill/strike_database_factory.h"
 #include "ios/chrome/browser/infobars/infobar.h"
 #include "ios/chrome/browser/infobars/infobar_utils.h"
 #include "ios/chrome/browser/metrics/ukm_url_recorder.h"
@@ -67,6 +68,8 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       bridge_(bridge),
       identity_manager_(IdentityManagerFactory::GetForBrowserState(
           browser_state->GetOriginalChromeBrowserState())),
+      strike_database_(StrikeDatabaseFactory::GetForBrowserState(
+          browser_state->GetOriginalChromeBrowserState())),
       autofill_web_data_service_(
           ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
               browser_state,
@@ -99,6 +102,10 @@ syncer::SyncService* ChromeAutofillClientIOS::GetSyncService() {
 
 identity::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager() {
   return identity_manager_;
+}
+
+StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {
+  return strike_database_;
 }
 
 ukm::UkmRecorder* ChromeAutofillClientIOS::GetUkmRecorder() {
@@ -161,13 +168,16 @@ void ChromeAutofillClientIOS::ConfirmSaveAutofillProfile(
 
 void ChromeAutofillClientIOS::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
-    const base::Closure& callback) {
+    bool show_prompt,
+    base::OnceClosure callback) {
+  DCHECK(show_prompt);
   infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
       std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
           false, card, std::unique_ptr<base::DictionaryValue>(nullptr),
+          GetStrikeDatabase(),
           /*upload_save_card_callback=*/
           base::OnceCallback<void(const base::string16&)>(),
-          /*local_save_card_callback=*/callback, GetPrefs())));
+          /*local_save_card_callback=*/std::move(callback), GetPrefs())));
 }
 
 void ChromeAutofillClientIOS::ShowLocalCardMigrationDialog(
@@ -186,10 +196,12 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     std::unique_ptr<base::DictionaryValue> legal_message,
     bool should_request_name_from_user,
+    bool show_prompt,
     base::OnceCallback<void(const base::string16&)> callback) {
+  DCHECK(show_prompt);
   auto save_card_info_bar_delegate_mobile =
       std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
-          true, card, std::move(legal_message),
+          true, card, std::move(legal_message), GetStrikeDatabase(),
           /*upload_save_card_callback=*/std::move(callback),
           /*local_save_card_callback=*/base::Closure(), GetPrefs());
   // Allow user to save card only if legal messages are successfully parsed.
@@ -214,8 +226,8 @@ void ChromeAutofillClientIOS::ConfirmCreditCardFillAssist(
 }
 
 void ChromeAutofillClientIOS::LoadRiskData(
-    const base::Callback<void(const std::string&)>& callback) {
-  callback.Run(ios::GetChromeBrowserProvider()->GetRiskData());
+    base::OnceCallback<void(const std::string&)> callback) {
+  std::move(callback).Run(ios::GetChromeBrowserProvider()->GetRiskData());
 }
 
 bool ChromeAutofillClientIOS::HasCreditCardScanFeature() {
@@ -281,10 +293,6 @@ bool ChromeAutofillClientIOS::ShouldShowSigninPromo() {
 
 void ChromeAutofillClientIOS::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
-}
-
-bool ChromeAutofillClientIOS::IsAutofillSupported() {
-  return true;
 }
 
 bool ChromeAutofillClientIOS::AreServerCardsSupported() {

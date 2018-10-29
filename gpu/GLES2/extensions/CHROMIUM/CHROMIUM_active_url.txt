@@ -1,0 +1,45 @@
+Name
+
+    CHROMIUM_active_url
+
+Name Strings
+
+    GL_CHROMIUM_active_url
+
+Version
+
+    Last Modifed Date: October 25, 2018
+
+Dependencies
+
+    OpenGL ES 2.0 is required.
+
+Overview
+
+    This extension lets you annotate the context with a url string identifying
+    the source for the commands being executed for this context. Only a single
+    url can be set for a context at a time using SetActiveURLCHROMIUM, and the
+    state persists until the next update using the same method.
+
+New Tokens
+
+    None
+
+New Procedures and Functions
+
+    void SetActiveURLCHROMIUM(const char* url)
+
+    Updates the url tied to this context. Once set, the state remains until the
+    next call to this method.
+
+Errors
+
+    None.
+
+New State
+
+    None.
+
+Revision History
+
+    10/25/2018  Documented the extension

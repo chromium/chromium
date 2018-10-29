@@ -15,11 +15,11 @@
 {
   base::scoped_nsobject<id> aRef_;
 }
-- (id)initWith:(id)anObject;
+- (instancetype)initWith:(id)anObject;
 @end
 
 @implementation ZombieCxxDestructTest
-- (id)initWith:(id)anObject {
+- (instancetype)initWith:(id)anObject {
   self = [super init];
   if (self) {
     aRef_.reset([anObject retain]);
@@ -29,12 +29,12 @@
 @end
 
 @interface ZombieAssociatedObjectTest : NSObject
-- (id)initWithAssociatedObject:(id)anObject;
+- (instancetype)initWithAssociatedObject:(id)anObject;
 @end
 
 @implementation ZombieAssociatedObjectTest
 
-- (id)initWithAssociatedObject:(id)anObject {
+- (instancetype)initWithAssociatedObject:(id)anObject {
   if ((self = [super init])) {
     // The address of the variable itself is the unique key, the
     // contents don't matter.

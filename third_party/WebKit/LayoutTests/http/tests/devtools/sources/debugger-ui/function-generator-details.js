@@ -54,7 +54,7 @@
       TestRunner.addResult(
           pageExpression + ': type = ' + object.type +
           ', subtype = ' + object.subtype);
-      object.getOwnPropertiesPromise().then(dumpInternalProperties);
+      object.getOwnProperties().then(dumpInternalProperties);
     }
 
     function dumpInternalProperties(properties) {

@@ -19,6 +19,10 @@ namespace net {
 class URLRequestContextGetter;
 }
 
+namespace network {
+class NetworkConnectionTracker;
+}
+
 namespace syncer {
 class P2PInvalidator;
 }
@@ -34,6 +38,7 @@ class P2PInvalidationService : public InvalidationService {
  public:
   P2PInvalidationService(
       const scoped_refptr<net::URLRequestContextGetter>& request_context,
+      network::NetworkConnectionTracker* network_connection_tracker,
       syncer::P2PNotificationTarget notification_target);
   ~P2PInvalidationService() override;
 

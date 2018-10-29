@@ -11,7 +11,6 @@
 #import "ios/chrome/test/app/histogram_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/web/public/web_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -778,19 +777,8 @@ using payments::JourneyLogger;
       buckets[0].min & JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS, @"");
   GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW, @"");
   GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_COMPLETED, @"");
-
-  // TODO(crbug.com/676129): LegacyNavigationManager has a bug that doesn't
-  // create a pending item when reloading the page. This is incorrectly causing
-  // the second navigation above to be considered a renderer-initiated
-  // navigation, and the abort reason is incorrectly logged as
-  // EVENT_OTHER_ABORTED.
-  if (!web::GetWebClient()->IsSlimNavigationManagerEnabled()) {
-    GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED, @"");
-    GREYAssertTrue(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED, @"");
-  } else {
-    GREYAssertTrue(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED, @"");
-    GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED, @"");
-  }
+  GREYAssertTrue(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED, @"");
+  GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED, @"");
   GREYAssertTrue(
       buckets[0].min & JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT, @"");
   GREYAssertTrue(
@@ -840,18 +828,8 @@ using payments::JourneyLogger;
       buckets[0].min & JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS, @"");
   GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW, @"");
   GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_COMPLETED, @"");
-  // TODO(crbug.com/676129): LegacyNavigationManager has a bug that doesn't
-  // create a pending item when reloading the page. This is incorrectly causing
-  // the second navigation above to be considered a renderer-initiated
-  // navigation, and the abort reason is incorrectly logged as
-  // EVENT_OTHER_ABORTED.
-  if (!web::GetWebClient()->IsSlimNavigationManagerEnabled()) {
-    GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED, @"");
-    GREYAssertTrue(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED, @"");
-  } else {
-    GREYAssertTrue(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED, @"");
-    GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED, @"");
-  }
+  GREYAssertTrue(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED, @"");
+  GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED, @"");
   GREYAssertFalse(
       buckets[0].min & JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT, @"");
   GREYAssertFalse(
@@ -902,18 +880,8 @@ using payments::JourneyLogger;
       buckets[0].min & JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS, @"");
   GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW, @"");
   GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_COMPLETED, @"");
-  // TODO(crbug.com/676129): LegacyNavigationManager has a bug that doesn't
-  // create a pending item when reloading the page. This is incorrectly causing
-  // the second navigation above to be considered a renderer-initiated
-  // navigation, and the abort reason is incorrectly logged as
-  // EVENT_OTHER_ABORTED.
-  if (!web::GetWebClient()->IsSlimNavigationManagerEnabled()) {
-    GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED, @"");
-    GREYAssertTrue(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED, @"");
-  } else {
-    GREYAssertTrue(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED, @"");
-    GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED, @"");
-  }
+  GREYAssertTrue(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED, @"");
+  GREYAssertFalse(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED, @"");
   GREYAssertFalse(
       buckets[0].min & JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT, @"");
   GREYAssertFalse(

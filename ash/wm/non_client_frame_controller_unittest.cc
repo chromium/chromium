@@ -10,6 +10,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/top_level_window_factory.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "cc/base/math_util.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -19,6 +20,7 @@
 #include "services/ws/test_window_tree_client.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/aura_window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -26,7 +28,6 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/compositor/test/fake_context_factory.h"
-#include "ui/views/mus/ax_remote_host.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -141,7 +142,7 @@ TEST_F(NonClientFrameControllerMashTest, ContentRegionNotDrawnForClient) {
   // Give the ui::Compositor a LocalSurfaceId so that it does not defer commit
   // when a draw is scheduled.
   viz::LocalSurfaceId local_surface_id(1, base::UnguessableToken::Create());
-  compositor->SetLocalSurfaceId(local_surface_id);
+  compositor->SetLocalSurfaceId(local_surface_id, base::TimeTicks());
 
   // Without the window visible, there should be a tile for the wallpaper at
   // (tile_x, tile_y) of size |tile_size|.
@@ -227,14 +228,15 @@ TEST_F(NonClientFrameControllerTest, WindowTitle) {
 
 TEST_F(NonClientFrameControllerTest, ExposesChildTreeIdToAccessibility) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
+  const std::string ax_tree_id = "123";
+  window->SetProperty(ui::kChildAXTreeID, new std::string(ax_tree_id));
   NonClientFrameController* non_client_frame_controller =
       NonClientFrameController::Get(window.get());
   views::View* contents_view = non_client_frame_controller->GetContentsView();
   ui::AXNodeData ax_node_data;
   contents_view->GetAccessibleNodeData(&ax_node_data);
-  EXPECT_EQ(
-      views::AXRemoteHost::kRemoteAXTreeID,
-      ax_node_data.GetIntAttribute(ax::mojom::IntAttribute::kChildTreeId));
+  EXPECT_EQ(ax_tree_id, ax_node_data.GetStringAttribute(
+                            ax::mojom::StringAttribute::kChildTreeId));
   EXPECT_EQ(ax::mojom::Role::kClient, ax_node_data.role);
 }
 

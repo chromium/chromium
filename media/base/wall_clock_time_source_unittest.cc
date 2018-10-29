@@ -14,7 +14,7 @@ namespace media {
 class WallClockTimeSourceTest : public testing::Test {
  public:
   WallClockTimeSourceTest() : tick_clock_(new base::SimpleTestTickClock()) {
-    time_source_.set_tick_clock_for_testing(tick_clock_.get());
+    time_source_.SetTickClockForTesting(tick_clock_.get());
     AdvanceTimeInSeconds(1);
   }
   ~WallClockTimeSourceTest() override = default;

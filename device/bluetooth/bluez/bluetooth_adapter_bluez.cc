@@ -1010,8 +1010,7 @@ void BluetoothAdapterBlueZ::SetAdapter(const dbus::ObjectPath& object_path) {
           ->GetBluetoothDeviceClient()
           ->GetDevicesForAdapter(object_path_);
 
-  for (std::vector<dbus::ObjectPath>::iterator iter = device_paths.begin();
-       iter != device_paths.end(); ++iter) {
+  for (auto iter = device_paths.begin(); iter != device_paths.end(); ++iter) {
     DeviceAdded(*iter);
   }
 }

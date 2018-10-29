@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 
 namespace blink {
-namespace XPath {
+namespace xpath {
 
 // When a node set is large, sorting it by traversing the whole document is
 // better (we can assume that we aren't dealing with documents that we cannot
@@ -277,5 +277,5 @@ Node* NodeSet::AnyNode() const {
   return nodes_.at(0).Get();
 }
 
-}  // namespace XPath
+}  // namespace xpath
 }  // namespace blink

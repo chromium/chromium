@@ -14,6 +14,116 @@
 
 namespace media {
 
+// Tuple of <sample rate, hardware buffer size, min buffer size, max buffer
+// size>.
+using AudioLatencyTestData = std::tuple<int, int, int, int>;
+
+class AudioLatencyTest : public testing::TestWithParam<AudioLatencyTestData> {
+ public:
+  AudioLatencyTest() = default;
+  ~AudioLatencyTest() override = default;
+
+  void TestExactBufferSizes() {
+    const int hardware_sample_rate = std::get<0>(GetParam());
+    const int hardware_buffer_size = std::get<1>(GetParam());
+    const int min_buffer_size = std::get<2>(GetParam());
+    const int max_buffer_size = std::get<3>(GetParam());
+
+    const int platform_min_buffer_size =
+        min_buffer_size ? min_buffer_size : hardware_buffer_size;
+
+// Windows 10 may allow exactly the minimum buffer size using the IAudioClient3
+// API but any other buffer size must be a multiple of the hardware_buffer_size
+// and not the min_buffer_size.
+#if defined(OS_WIN)
+    const int multiplier = hardware_buffer_size;
+#else
+    const int multiplier = platform_min_buffer_size;
+#endif
+
+    const int platform_max_buffer_size =
+        max_buffer_size
+            ? (limits::kMaxWebAudioBufferSize / max_buffer_size) *
+                  max_buffer_size
+            : (limits::kMaxWebAudioBufferSize / multiplier) * multiplier;
+
+    EXPECT_EQ(platform_min_buffer_size,
+              media::AudioLatency::GetExactBufferSize(
+                  base::TimeDelta::FromSecondsD(0.0), hardware_sample_rate,
+                  hardware_buffer_size, min_buffer_size, max_buffer_size));
+    EXPECT_EQ(
+        platform_min_buffer_size,
+        media::AudioLatency::GetExactBufferSize(
+            base::TimeDelta::FromSecondsD(
+                min_buffer_size / static_cast<double>(hardware_sample_rate)),
+            hardware_sample_rate, hardware_buffer_size, min_buffer_size,
+            max_buffer_size));
+    EXPECT_EQ(
+        multiplier * 2,
+        media::AudioLatency::GetExactBufferSize(
+            base::TimeDelta::FromSecondsD(
+                (multiplier * 2) / static_cast<double>(hardware_sample_rate)),
+            hardware_sample_rate, hardware_buffer_size, min_buffer_size,
+            max_buffer_size));
+    EXPECT_EQ(
+        multiplier * 2,
+        media::AudioLatency::GetExactBufferSize(
+            base::TimeDelta::FromSecondsD(
+                (multiplier * 1.1) / static_cast<double>(hardware_sample_rate)),
+            hardware_sample_rate, hardware_buffer_size, min_buffer_size,
+            max_buffer_size));
+    EXPECT_EQ(platform_max_buffer_size,
+              media::AudioLatency::GetExactBufferSize(
+                  base::TimeDelta::FromSecondsD(10.0), hardware_sample_rate,
+                  hardware_buffer_size, min_buffer_size, max_buffer_size));
+    if (max_buffer_size) {
+      EXPECT_EQ(
+          max_buffer_size,
+          media::AudioLatency::GetExactBufferSize(
+              base::TimeDelta::FromSecondsD(
+                  max_buffer_size / static_cast<double>(hardware_sample_rate)),
+              hardware_sample_rate, hardware_buffer_size, min_buffer_size,
+              max_buffer_size));
+    }
+
+#if defined(OS_WIN)
+    if (min_buffer_size && min_buffer_size < hardware_buffer_size) {
+      EXPECT_EQ(hardware_buffer_size,
+                media::AudioLatency::GetExactBufferSize(
+                    base::TimeDelta::FromSecondsD(
+                        (min_buffer_size * 1.1) /
+                        static_cast<double>(hardware_sample_rate)),
+                    hardware_sample_rate, hardware_buffer_size, min_buffer_size,
+                    max_buffer_size));
+    }
+#elif defined(OS_MACOSX)
+    EXPECT_EQ(limits::kMaxWebAudioBufferSize,
+              media::AudioLatency::GetExactBufferSize(
+                  base::TimeDelta::FromSecondsD(
+                      (limits::kMaxAudioBufferSize * 1.1) /
+                      static_cast<double>(hardware_sample_rate)),
+                  hardware_sample_rate, hardware_buffer_size, min_buffer_size,
+                  max_buffer_size));
+#endif
+
+    int previous_buffer_size = 0;
+    for (int i = 0; i < 1000; i++) {
+      int buffer_size = media::AudioLatency::GetExactBufferSize(
+          base::TimeDelta::FromSecondsD(i / 1000.0), hardware_sample_rate,
+          hardware_buffer_size, min_buffer_size, max_buffer_size);
+      EXPECT_GE(buffer_size, previous_buffer_size);
+#if defined(OS_WIN)
+      EXPECT_TRUE(buffer_size == min_buffer_size ||
+                  buffer_size % multiplier == 0 ||
+                  buffer_size % max_buffer_size == 0);
+#else
+      EXPECT_EQ(buffer_size, buffer_size / multiplier * multiplier);
+#endif
+      previous_buffer_size = buffer_size;
+    }
+  }
+};
+
 // TODO(olka): extend unit tests, use real-world sample rates.
 
 TEST(AudioLatency, HighLatencyBufferSizes) {
@@ -47,68 +157,35 @@ TEST(AudioLatency, RtcBufferSizes) {
   }
 }
 
-TEST(AudioLatency, ExactBufferSizes) {
-  const int hardware_buffer_size = 256;
-  const int hardware_sample_rate = 44100;
-  const int max_webaudio_buffer_size = 8192;
-
-#if defined(OS_MACOSX) || defined(USE_CRAS)
-  const int minimum_buffer_size = limits::kMinAudioBufferSize;
-#else
-  const int minimum_buffer_size = hardware_buffer_size;
-#endif
-
-  EXPECT_EQ(minimum_buffer_size,
-            media::AudioLatency::GetExactBufferSize(
-                base::TimeDelta::FromSecondsD(0.0), hardware_sample_rate,
-                hardware_buffer_size));
-  EXPECT_EQ(
-      minimum_buffer_size,
-      media::AudioLatency::GetExactBufferSize(
-          base::TimeDelta::FromSecondsD(
-              minimum_buffer_size / static_cast<double>(hardware_sample_rate)),
-          hardware_sample_rate, hardware_buffer_size));
-  EXPECT_EQ(minimum_buffer_size * 2,
-            media::AudioLatency::GetExactBufferSize(
-                base::TimeDelta::FromSecondsD(
-                    (minimum_buffer_size * 2) /
-                    static_cast<double>(hardware_sample_rate)),
-                hardware_sample_rate, hardware_buffer_size));
-  EXPECT_EQ(minimum_buffer_size * 2,
-            media::AudioLatency::GetExactBufferSize(
-                base::TimeDelta::FromSecondsD(
-                    (minimum_buffer_size * 1.1) /
-                    static_cast<double>(hardware_sample_rate)),
-                hardware_sample_rate, hardware_buffer_size));
-  EXPECT_EQ(max_webaudio_buffer_size,
-            media::AudioLatency::GetExactBufferSize(
-                base::TimeDelta::FromSecondsD(10.0), hardware_sample_rate,
-                hardware_buffer_size));
-
-#if defined(OS_MACOSX)
-  EXPECT_EQ(limits::kMaxAudioBufferSize,
-            media::AudioLatency::GetExactBufferSize(
-                base::TimeDelta::FromSecondsD(
-                    limits::kMaxAudioBufferSize /
-                    static_cast<double>(hardware_sample_rate)),
-                hardware_sample_rate, hardware_buffer_size));
-  EXPECT_EQ(max_webaudio_buffer_size,
-            media::AudioLatency::GetExactBufferSize(
-                base::TimeDelta::FromSecondsD(
-                    (limits::kMaxAudioBufferSize * 1.1) /
-                    static_cast<double>(hardware_sample_rate)),
-                hardware_sample_rate, hardware_buffer_size));
-#endif
-
-  int previous_buffer_size = 0;
-  for (int i = 0; i < 1000; i++) {
-    int buffer_size = media::AudioLatency::GetExactBufferSize(
-        base::TimeDelta::FromSecondsD(i / 1000.0), hardware_sample_rate,
-        hardware_buffer_size);
-    EXPECT_GE(buffer_size, previous_buffer_size);
-    EXPECT_EQ(buffer_size,
-              buffer_size / minimum_buffer_size * minimum_buffer_size);
-    previous_buffer_size = buffer_size;
-  }
+TEST_P(AudioLatencyTest, ExactBufferSizes) {
+  TestExactBufferSizes();
 }
+
+INSTANTIATE_TEST_CASE_P(
+    /* no prefix */,
+    AudioLatencyTest,
+#if defined(OS_WIN)
+    // Windows 10 with supported driver will have valid min and max buffer sizes
+    // whereas older Windows will have zeros. The specific min, max and hardware
+    // are device-dependent.
+    testing::Values(std::make_tuple(44100, 440, 128, 440),
+                    std::make_tuple(44100, 440, 440, 440),
+                    std::make_tuple(44100, 440, 440, 880),
+                    std::make_tuple(44100, 440, 440, 4400),
+                    std::make_tuple(44100, 440, 128, 4196),
+                    std::make_tuple(44100, 440, 440, 4196),
+                    std::make_tuple(44100, 440, 0, 0),
+                    std::make_tuple(44100, 256, 128, 512),
+                    std::make_tuple(44100, 256, 0, 0))
+#elif defined(OS_MACOSX) || defined(USE_CRAS)
+    // These values are constant on Mac and ChromeOS, regardless of device.
+    testing::Values(std::make_tuple(44100,
+                                    256,
+                                    limits::kMinAudioBufferSize,
+                                    limits::kMaxAudioBufferSize))
+#else
+    testing::Values(std::make_tuple(44100, 256, 0, 0),
+                    std::make_tuple(44100, 440, 0, 0))
+#endif
+        );
 }  // namespace media

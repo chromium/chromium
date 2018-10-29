@@ -2,7 +2,6 @@ Test to make sure we preserve styles when removing links
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS unlink on all of "hello <b>world</b>" yields "hello <b>world</b>"
 PASS unlink on all of "<a href="http://webkit.org/"><u>hello world</u></a>" yields "<u>hello world</u>"
 PASS unlink on all of "hello <i><a href="http://webkit.org/">world</a></i>" yields "hello <i>world</i>"

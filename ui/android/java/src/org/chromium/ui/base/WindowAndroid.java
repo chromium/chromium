@@ -51,6 +51,8 @@ import java.util.HashSet;
 @JNINamespace("ui")
 public class WindowAndroid implements AndroidPermissionDelegate {
     private static final String TAG = "WindowAndroid";
+    private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
+            KeyboardVisibilityDelegate.getInstance();
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private class TouchExplorationMonitor {
@@ -100,8 +102,6 @@ public class WindowAndroid implements AndroidPermissionDelegate {
     private HashSet<Animator> mAnimationsOverContent = new HashSet<>();
     private View mAnimationPlaceholderView;
 
-    protected boolean mIsKeyboardShowing;
-
     // System accessibility service.
     private final AccessibilityManager mAccessibilityManager;
 
@@ -117,15 +117,6 @@ public class WindowAndroid implements AndroidPermissionDelegate {
     // clients may pause VSync before the native WindowAndroid is created.
     private boolean mPendingVSyncRequest;
     private boolean mVSyncPaused;
-
-    /**
-     * An interface to notify listeners of changes in the soft keyboard's visibility.
-     */
-    public interface KeyboardVisibilityListener {
-        public void keyboardVisibilityChanged(boolean isShowing);
-    }
-    private ObserverList<KeyboardVisibilityListener> mKeyboardVisibilityListeners =
-            new ObserverList<>();
 
     /**
      * An interface to notify listeners that a context menu is closed.
@@ -691,40 +682,19 @@ public class WindowAndroid implements AndroidPermissionDelegate {
         }
     }
 
-    protected void registerKeyboardVisibilityCallbacks() {
-    }
-
-    protected void unregisterKeyboardVisibilityCallbacks() {
-    }
-
-    /**
-     * Adds a listener that is updated of keyboard visibility changes. This works as a best guess.
-     *
-     * @see org.chromium.ui.KeyboardVisibilityDelegate#isKeyboardShowing(Context, View)
-     */
-    public void addKeyboardVisibilityListener(KeyboardVisibilityListener listener) {
-        if (mKeyboardVisibilityListeners.isEmpty()) {
-            registerKeyboardVisibilityCallbacks();
-        }
-        mKeyboardVisibilityListeners.addObserver(listener);
-    }
-
-    /**
-     * @see #addKeyboardVisibilityListener(KeyboardVisibilityListener)
-     */
-    public void removeKeyboardVisibilityListener(KeyboardVisibilityListener listener) {
-        mKeyboardVisibilityListeners.removeObserver(listener);
-        if (mKeyboardVisibilityListeners.isEmpty()) {
-            unregisterKeyboardVisibilityCallbacks();
-        }
-    }
-
     /**
      * The returned {@link KeyboardVisibilityDelegate} can read and influence the soft keyboard.
      * @return a {@link KeyboardVisibilityDelegate} specific for this window.
      */
     public KeyboardVisibilityDelegate getKeyboardDelegate() {
-        return KeyboardVisibilityDelegate.getInstance();
+        return mKeyboardVisibilityDelegate;
+    }
+
+    @VisibleForTesting
+    public void setKeyboardDelegate(KeyboardVisibilityDelegate keyboardDelegate) {
+        mKeyboardVisibilityDelegate = keyboardDelegate;
+        // TODO(fhorschig): Remove - every caller should use the window to get the delegate.
+        KeyboardVisibilityDelegate.setInstance(keyboardDelegate);
     }
 
     /**
@@ -750,20 +720,6 @@ public class WindowAndroid implements AndroidPermissionDelegate {
     public void onContextMenuClosed() {
         for (OnCloseContextMenuListener listener : mContextMenuCloseListeners) {
             listener.onContextMenuClosed();
-        }
-    }
-
-    /**
-     * To be called when the keyboard visibility state might have changed. Informs listeners of the
-     * state change IFF there actually was a change.
-     * @param isShowing The current (guesstimated) state of the keyboard.
-     */
-    protected void keyboardVisibilityPossiblyChanged(boolean isShowing) {
-        if (mIsKeyboardShowing == isShowing) return;
-        mIsKeyboardShowing = isShowing;
-
-        for (KeyboardVisibilityListener listener : mKeyboardVisibilityListeners) {
-            listener.keyboardVisibilityChanged(isShowing);
         }
     }
 

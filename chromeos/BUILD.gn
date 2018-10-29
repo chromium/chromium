@@ -8,16 +8,29 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos, "Non-ChromeOS builds must not depend on //chromeos")
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
-declare_args() {
-  # Use binder. Binder related code is compiled only when true.
-  use_binder = false
+# Used by targets that compile into the implementation.
+config("chromeos_implementation") {
+  defines = [ "CHROMEOS_IMPLEMENTATION" ]
 }
 
 component("chromeos") {
-  configs += [ "//build/config/linux/nss:system_nss_no_ssl_config" ]
+  configs += [
+    ":chromeos_implementation",
+    "//build/config/linux/nss:system_nss_no_ssl_config"
+  ]
   public_deps = [
+    ":chromeos_constants",
+    ":chromeos_export",
+    ":login_event_recorder",
+    ":policy_certificate_provider",
+    ":tools",
+    "//chromeos/cryptohome",
+    "//chromeos/dbus",
+    "//chromeos/login",
+    "//chromeos/network",
+    "//chromeos/settings",
     "//dbus",
   ]
   deps = [
@@ -31,6 +44,7 @@ component("chromeos") {
     ":login_manager_proto",
     ":media_perception_proto",
     ":metrics_event_proto",
+    ":oobe_config_proto",
     ":power_manager_proto",
     ":seneschal_proto",
     ":smbprovider_proto",
@@ -40,25 +54,17 @@ component("chromeos") {
     "//base/third_party/dynamic_annotations",
     "//components/account_id",
     "//components/device_event_log",
-    "//components/onc",
-    "//components/password_manager/core/browser:password_hash_data",
     "//components/policy:cloud_policy_proto_generated_compile",
     "//components/policy/proto",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/proxy_config",
-    "//components/url_formatter",
     "//components/user_manager",
     "//crypto:platform",
     "//google_apis",
     "//media/base:video_facing",
-    "//net",
     "//services/network/public/cpp:cpp",
-    "//skia",  # For components/user_manager
-    "//third_party/icu",
     "//third_party/protobuf:protobuf_lite",
     "//ui/gfx/geometry",  # For accelerometer.
-    "//url",
   ]
   sources = [
     "accelerometer/accelerometer_reader.cc",
@@ -84,246 +90,6 @@ component("chromeos") {
     "audio/chromeos_sounds.h",
     "audio/cras_audio_handler.cc",
     "audio/cras_audio_handler.h",
-    "binder/buffer_reader.cc",
-    "binder/buffer_reader.h",
-    "binder/command_broker.cc",
-    "binder/command_broker.h",
-    "binder/command_stream.cc",
-    "binder/command_stream.h",
-    "binder/constants.h",
-    "binder/driver.cc",
-    "binder/driver.h",
-    "binder/ipc_thread.cc",
-    "binder/ipc_thread.h",
-    "binder/local_object.cc",
-    "binder/local_object.h",
-    "binder/object.h",
-    "binder/remote_object.cc",
-    "binder/remote_object.h",
-    "binder/service_manager_proxy.cc",
-    "binder/service_manager_proxy.h",
-    "binder/status.h",
-    "binder/transaction_data.h",
-    "binder/transaction_data_from_driver.cc",
-    "binder/transaction_data_from_driver.h",
-    "binder/transaction_data_reader.cc",
-    "binder/transaction_data_reader.h",
-    "binder/transaction_status.cc",
-    "binder/transaction_status.h",
-    "binder/util.cc",
-    "binder/util.h",
-    "binder/writable_transaction_data.cc",
-    "binder/writable_transaction_data.h",
-    "cert_loader.cc",
-    "cert_loader.h",
-    "chromeos_constants.cc",
-    "chromeos_constants.h",
-    "chromeos_export.h",
-    "chromeos_features.cc",
-    "chromeos_features.h",
-    "chromeos_paths.cc",
-    "chromeos_paths.h",
-    "chromeos_pref_names.cc",
-    "chromeos_pref_names.h",
-    "chromeos_switches.cc",
-    "chromeos_switches.h",
-    "cryptohome/async_method_caller.cc",
-    "cryptohome/async_method_caller.h",
-    "cryptohome/cryptohome_parameters.cc",
-    "cryptohome/cryptohome_parameters.h",
-    "cryptohome/cryptohome_util.cc",
-    "cryptohome/cryptohome_util.h",
-    "cryptohome/homedir_methods.cc",
-    "cryptohome/homedir_methods.h",
-    "cryptohome/system_salt_getter.cc",
-    "cryptohome/system_salt_getter.h",
-    "dbus/arc_appfuse_provider_client.cc",
-    "dbus/arc_appfuse_provider_client.h",
-    "dbus/arc_midis_client.cc",
-    "dbus/arc_midis_client.h",
-    "dbus/arc_obb_mounter_client.cc",
-    "dbus/arc_obb_mounter_client.h",
-    "dbus/arc_oemcrypto_client.cc",
-    "dbus/arc_oemcrypto_client.h",
-    "dbus/attestation_constants.cc",
-    "dbus/attestation_constants.h",
-    "dbus/audio_node.cc",
-    "dbus/audio_node.h",
-    "dbus/auth_policy_client.cc",
-    "dbus/auth_policy_client.h",
-    "dbus/biod/biod_client.cc",
-    "dbus/biod/biod_client.h",
-    "dbus/biod/fake_biod_client.cc",
-    "dbus/biod/fake_biod_client.h",
-    "dbus/blocking_method_caller.cc",
-    "dbus/blocking_method_caller.h",
-    "dbus/cec_service_client.cc",
-    "dbus/cec_service_client.h",
-    "dbus/cicerone_client.cc",
-    "dbus/cicerone_client.h",
-    "dbus/concierge_client.cc",
-    "dbus/concierge_client.h",
-    "dbus/cras_audio_client.cc",
-    "dbus/cras_audio_client.h",
-    "dbus/cros_disks_client.cc",
-    "dbus/cros_disks_client.h",
-    "dbus/cryptohome_client.cc",
-    "dbus/cryptohome_client.h",
-    "dbus/dbus_client_implementation_type.h",
-    "dbus/dbus_clients_browser.cc",
-    "dbus/dbus_clients_browser.h",
-    "dbus/dbus_clients_common.cc",
-    "dbus/dbus_clients_common.h",
-    "dbus/dbus_method_call_status.cc",
-    "dbus/dbus_method_call_status.h",
-    "dbus/dbus_switches.cc",
-    "dbus/dbus_switches.h",
-    "dbus/dbus_thread_manager.cc",
-    "dbus/dbus_thread_manager.h",
-    "dbus/debug_daemon_client.cc",
-    "dbus/debug_daemon_client.h",
-    "dbus/easy_unlock_client.cc",
-    "dbus/easy_unlock_client.h",
-    "dbus/fake_arc_appfuse_provider_client.cc",
-    "dbus/fake_arc_appfuse_provider_client.h",
-    "dbus/fake_arc_midis_client.cc",
-    "dbus/fake_arc_midis_client.h",
-    "dbus/fake_arc_obb_mounter_client.cc",
-    "dbus/fake_arc_obb_mounter_client.h",
-    "dbus/fake_arc_oemcrypto_client.cc",
-    "dbus/fake_arc_oemcrypto_client.h",
-    "dbus/fake_auth_policy_client.cc",
-    "dbus/fake_auth_policy_client.h",
-    "dbus/fake_cec_service_client.cc",
-    "dbus/fake_cec_service_client.h",
-    "dbus/fake_cicerone_client.cc",
-    "dbus/fake_cicerone_client.h",
-    "dbus/fake_concierge_client.cc",
-    "dbus/fake_concierge_client.h",
-    "dbus/fake_cras_audio_client.cc",
-    "dbus/fake_cras_audio_client.h",
-    "dbus/fake_cros_disks_client.cc",
-    "dbus/fake_cros_disks_client.h",
-    "dbus/fake_cryptohome_client.cc",
-    "dbus/fake_cryptohome_client.h",
-    "dbus/fake_debug_daemon_client.cc",
-    "dbus/fake_debug_daemon_client.h",
-    "dbus/fake_easy_unlock_client.cc",
-    "dbus/fake_easy_unlock_client.h",
-    "dbus/fake_gsm_sms_client.cc",
-    "dbus/fake_gsm_sms_client.h",
-    "dbus/fake_hammerd_client.cc",
-    "dbus/fake_hammerd_client.h",
-    "dbus/fake_image_burner_client.cc",
-    "dbus/fake_image_burner_client.h",
-    "dbus/fake_image_loader_client.cc",
-    "dbus/fake_image_loader_client.h",
-    "dbus/fake_lorgnette_manager_client.cc",
-    "dbus/fake_lorgnette_manager_client.h",
-    "dbus/fake_machine_learning_client.cc",
-    "dbus/fake_machine_learning_client.h",
-    "dbus/fake_media_analytics_client.cc",
-    "dbus/fake_media_analytics_client.h",
-    "dbus/fake_modem_messaging_client.cc",
-    "dbus/fake_modem_messaging_client.h",
-    "dbus/fake_oobe_configuration_client.cc",
-    "dbus/fake_oobe_configuration_client.h",
-    "dbus/fake_permission_broker_client.cc",
-    "dbus/fake_permission_broker_client.h",
-    "dbus/fake_power_manager_client.cc",
-    "dbus/fake_power_manager_client.h",
-    "dbus/fake_seneschal_client.cc",
-    "dbus/fake_seneschal_client.h",
-    "dbus/fake_session_manager_client.cc",
-    "dbus/fake_session_manager_client.h",
-    "dbus/fake_shill_device_client.cc",
-    "dbus/fake_shill_device_client.h",
-    "dbus/fake_shill_ipconfig_client.cc",
-    "dbus/fake_shill_ipconfig_client.h",
-    "dbus/fake_shill_manager_client.cc",
-    "dbus/fake_shill_manager_client.h",
-    "dbus/fake_shill_profile_client.cc",
-    "dbus/fake_shill_profile_client.h",
-    "dbus/fake_shill_service_client.cc",
-    "dbus/fake_shill_service_client.h",
-    "dbus/fake_shill_third_party_vpn_driver_client.cc",
-    "dbus/fake_shill_third_party_vpn_driver_client.h",
-    "dbus/fake_smb_provider_client.cc",
-    "dbus/fake_smb_provider_client.h",
-    "dbus/fake_sms_client.cc",
-    "dbus/fake_sms_client.h",
-    "dbus/fake_system_clock_client.cc",
-    "dbus/fake_system_clock_client.h",
-    "dbus/fake_upstart_client.cc",
-    "dbus/fake_upstart_client.h",
-    "dbus/fake_virtual_file_provider_client.cc",
-    "dbus/fake_virtual_file_provider_client.h",
-    "dbus/gsm_sms_client.cc",
-    "dbus/gsm_sms_client.h",
-    "dbus/hammerd_client.cc",
-    "dbus/hammerd_client.h",
-    "dbus/image_burner_client.cc",
-    "dbus/image_burner_client.h",
-    "dbus/image_loader_client.cc",
-    "dbus/image_loader_client.h",
-    "dbus/lorgnette_manager_client.cc",
-    "dbus/lorgnette_manager_client.h",
-    "dbus/machine_learning_client.cc",
-    "dbus/machine_learning_client.h",
-    "dbus/media_analytics_client.cc",
-    "dbus/media_analytics_client.h",
-    "dbus/modem_messaging_client.cc",
-    "dbus/modem_messaging_client.h",
-    "dbus/oobe_configuration_client.cc",
-    "dbus/oobe_configuration_client.h",
-    "dbus/permission_broker_client.cc",
-    "dbus/permission_broker_client.h",
-    "dbus/pipe_reader.cc",
-    "dbus/pipe_reader.h",
-    "dbus/power_manager_client.cc",
-    "dbus/power_manager_client.h",
-    "dbus/power_policy_controller.cc",
-    "dbus/power_policy_controller.h",
-    "dbus/seneschal_client.cc",
-    "dbus/seneschal_client.h",
-    "dbus/services/cros_dbus_service.cc",
-    "dbus/services/cros_dbus_service.h",
-    "dbus/session_manager_client.cc",
-    "dbus/session_manager_client.h",
-    "dbus/shill_client_helper.cc",
-    "dbus/shill_client_helper.h",
-    "dbus/shill_device_client.cc",
-    "dbus/shill_device_client.h",
-    "dbus/shill_ipconfig_client.cc",
-    "dbus/shill_ipconfig_client.h",
-    "dbus/shill_manager_client.cc",
-    "dbus/shill_manager_client.h",
-    "dbus/shill_profile_client.cc",
-    "dbus/shill_profile_client.h",
-    "dbus/shill_service_client.cc",
-    "dbus/shill_service_client.h",
-    "dbus/shill_third_party_vpn_driver_client.cc",
-    "dbus/shill_third_party_vpn_driver_client.h",
-    "dbus/smb_provider_client.cc",
-    "dbus/smb_provider_client.h",
-    "dbus/sms_client.cc",
-    "dbus/sms_client.h",
-    "dbus/system_clock_client.cc",
-    "dbus/system_clock_client.h",
-    "dbus/update_engine_client.cc",
-    "dbus/update_engine_client.h",
-    "dbus/upstart_client.cc",
-    "dbus/upstart_client.h",
-    "dbus/util/account_identifier_operators.cc",
-    "dbus/util/account_identifier_operators.h",
-    "dbus/util/tpm_util.cc",
-    "dbus/util/tpm_util.h",
-    "dbus/util/version_loader.cc",
-    "dbus/util/version_loader.h",
-    "dbus/virtual_file_provider_client.cc",
-    "dbus/virtual_file_provider_client.h",
-    "dbus/volume_state.cc",
-    "dbus/volume_state.h",
     "disks/disk.cc",
     "disks/disk.h",
     "disks/disk_mount_manager.cc",
@@ -340,165 +106,12 @@ component("chromeos") {
     "geolocation/simple_geolocation_request_test_monitor.h",
     "hugepage_text/hugepage_text.cc",
     "hugepage_text/hugepage_text.h",
-    "login/auth/auth_attempt_state.cc",
-    "login/auth/auth_attempt_state.h",
-    "login/auth/auth_attempt_state_resolver.cc",
-    "login/auth/auth_attempt_state_resolver.h",
-    "login/auth/auth_status_consumer.cc",
-    "login/auth/auth_status_consumer.h",
-    "login/auth/authenticator.cc",
-    "login/auth/authenticator.h",
-    "login/auth/authpolicy_login_helper.cc",
-    "login/auth/authpolicy_login_helper.h",
-    "login/auth/challenge_response_key.cc",
-    "login/auth/challenge_response_key.h",
-    "login/auth/cryptohome_authenticator.cc",
-    "login/auth/cryptohome_authenticator.h",
-    "login/auth/extended_authenticator.cc",
-    "login/auth/extended_authenticator.h",
-    "login/auth/extended_authenticator_impl.cc",
-    "login/auth/extended_authenticator_impl.h",
-    "login/auth/key.cc",
-    "login/auth/key.h",
-    "login/auth/login_performer.cc",
-    "login/auth/login_performer.h",
-    "login/auth/stub_authenticator.cc",
-    "login/auth/stub_authenticator.h",
-    "login/auth/test_attempt_state.cc",
-    "login/auth/test_attempt_state.h",
-    "login/auth/user_context.cc",
-    "login/auth/user_context.h",
-    "login/login_state.cc",
-    "login/login_state.h",
-    "login_event_recorder.cc",
-    "login_event_recorder.h",
-    "network/auto_connect_handler.cc",
-    "network/auto_connect_handler.h",
-    "network/certificate_helper.cc",
-    "network/certificate_helper.h",
-    "network/certificate_pattern.cc",
-    "network/certificate_pattern.h",
-    "network/client_cert_resolver.cc",
-    "network/client_cert_resolver.h",
-    "network/client_cert_util.cc",
-    "network/client_cert_util.h",
-    "network/device_state.cc",
-    "network/device_state.h",
-    "network/dhcp_pac_file_fetcher_chromeos.cc",
-    "network/dhcp_pac_file_fetcher_chromeos.h",
-    "network/dhcp_pac_file_fetcher_factory_chromeos.cc",
-    "network/dhcp_pac_file_fetcher_factory_chromeos.h",
-    "network/firewall_hole.cc",
-    "network/firewall_hole.h",
-    "network/geolocation_handler.cc",
-    "network/geolocation_handler.h",
-    "network/host_resolver_impl_chromeos.cc",
-    "network/host_resolver_impl_chromeos.h",
-    "network/managed_network_configuration_handler.cc",
-    "network/managed_network_configuration_handler.h",
-    "network/managed_network_configuration_handler_impl.cc",
-    "network/managed_network_configuration_handler_impl.h",
-    "network/managed_state.cc",
-    "network/managed_state.h",
-    "network/network_activation_handler.cc",
-    "network/network_activation_handler.h",
-    "network/network_cert_migrator.cc",
-    "network/network_cert_migrator.h",
-    "network/network_certificate_handler.cc",
-    "network/network_certificate_handler.h",
-    "network/network_change_notifier_chromeos.cc",
-    "network/network_change_notifier_chromeos.h",
-    "network/network_change_notifier_factory_chromeos.cc",
-    "network/network_change_notifier_factory_chromeos.h",
-    "network/network_configuration_handler.cc",
-    "network/network_configuration_handler.h",
-    "network/network_configuration_observer.h",
-    "network/network_connect.cc",
-    "network/network_connect.h",
-    "network/network_connection_handler.cc",
-    "network/network_connection_handler.h",
-    "network/network_connection_handler_impl.cc",
-    "network/network_connection_handler_impl.h",
-    "network/network_connection_observer.cc",
-    "network/network_connection_observer.h",
-    "network/network_device_handler.cc",
-    "network/network_device_handler.h",
-    "network/network_device_handler_impl.cc",
-    "network/network_device_handler_impl.h",
-    "network/network_event_log.h",
-    "network/network_handler.cc",
-    "network/network_handler.h",
-    "network/network_handler_callbacks.cc",
-    "network/network_handler_callbacks.h",
-    "network/network_ip_config.cc",
-    "network/network_ip_config.h",
-    "network/network_profile.cc",
-    "network/network_profile.h",
-    "network/network_profile_handler.cc",
-    "network/network_profile_handler.h",
-    "network/network_profile_observer.h",
-    "network/network_sms_handler.cc",
-    "network/network_sms_handler.h",
-    "network/network_state.cc",
-    "network/network_state.h",
-    "network/network_state_handler.cc",
-    "network/network_state_handler.h",
-    "network/network_state_handler_observer.cc",
-    "network/network_state_handler_observer.h",
-    "network/network_type_pattern.cc",
-    "network/network_type_pattern.h",
-    "network/network_ui_data.cc",
-    "network/network_ui_data.h",
-    "network/network_util.cc",
-    "network/network_util.h",
-    "network/onc/onc_certificate_importer.h",
-    "network/onc/onc_certificate_importer_impl.cc",
-    "network/onc/onc_certificate_importer_impl.h",
-    "network/onc/onc_mapper.cc",
-    "network/onc/onc_mapper.h",
-    "network/onc/onc_merger.cc",
-    "network/onc/onc_merger.h",
-    "network/onc/onc_normalizer.cc",
-    "network/onc/onc_normalizer.h",
-    "network/onc/onc_parsed_certificates.cc",
-    "network/onc/onc_parsed_certificates.h",
-    "network/onc/onc_signature.cc",
-    "network/onc/onc_signature.h",
-    "network/onc/onc_translation_tables.cc",
-    "network/onc/onc_translation_tables.h",
-    "network/onc/onc_translator.h",
-    "network/onc/onc_translator_onc_to_shill.cc",
-    "network/onc/onc_translator_shill_to_onc.cc",
-    "network/onc/onc_utils.cc",
-    "network/onc/onc_utils.h",
-    "network/onc/onc_validator.cc",
-    "network/onc/onc_validator.h",
-    "network/policy_applicator.cc",
-    "network/policy_applicator.h",
-    "network/policy_util.cc",
-    "network/policy_util.h",
-    "network/portal_detector/network_portal_detector.cc",
-    "network/portal_detector/network_portal_detector.h",
-    "network/portal_detector/network_portal_detector_strategy.cc",
-    "network/portal_detector/network_portal_detector_strategy.h",
-    "network/portal_detector/network_portal_detector_stub.cc",
-    "network/portal_detector/network_portal_detector_stub.h",
-    "network/prohibited_technologies_handler.cc",
-    "network/prohibited_technologies_handler.h",
-    "network/proxy/proxy_config_handler.cc",
-    "network/proxy/proxy_config_handler.h",
-    "network/proxy/proxy_config_service_impl.cc",
-    "network/proxy/proxy_config_service_impl.h",
-    "network/proxy/ui_proxy_config.cc",
-    "network/proxy/ui_proxy_config.h",
-    "network/proxy/ui_proxy_config_service.cc",
-    "network/proxy/ui_proxy_config_service.h",
-    "network/shill_property_handler.cc",
-    "network/shill_property_handler.h",
-    "network/shill_property_util.cc",
-    "network/shill_property_util.h",
-    "network/tether_constants.cc",
-    "network/tether_constants.h",
+    "policy/weekly_time/time_utils.cc",
+    "policy/weekly_time/time_utils.h",
+    "policy/weekly_time/weekly_time.cc",
+    "policy/weekly_time/weekly_time.h",
+    "policy/weekly_time/weekly_time_interval.cc",
+    "policy/weekly_time/weekly_time_interval.h",
     "printing/ppd_cache.cc",
     "printing/ppd_cache.h",
     "printing/ppd_line_reader.cc",
@@ -517,14 +130,6 @@ component("chromeos") {
     "process_proxy/process_proxy.h",
     "process_proxy/process_proxy_registry.cc",
     "process_proxy/process_proxy_registry.h",
-    "settings/cros_settings_names.cc",
-    "settings/cros_settings_names.h",
-    "settings/cros_settings_provider.cc",
-    "settings/cros_settings_provider.h",
-    "settings/timezone_settings.cc",
-    "settings/timezone_settings.h",
-    "settings/timezone_settings_helper.cc",
-    "settings/timezone_settings_helper.h",
     "system/cpu_temperature_reader.cc",
     "system/cpu_temperature_reader.h",
     "system/devicemode.cc",
@@ -547,8 +152,6 @@ component("chromeos") {
     "timezone/timezone_request.h",
     "timezone/timezone_resolver.cc",
     "timezone/timezone_resolver.h",
-    "tools/variable_expander.cc",
-    "tools/variable_expander.h",
     "tpm/tpm_password_fetcher.cc",
     "tpm/tpm_password_fetcher.h",
     "tpm/tpm_token_info_getter.cc",
@@ -556,10 +159,76 @@ component("chromeos") {
     "tpm/tpm_token_loader.cc",
     "tpm/tpm_token_loader.h",
   ]
-  defines = [ "CHROMEOS_IMPLEMENTATION" ]
   if (current_cpu == "arm" || current_cpu == "x86") {
-    defines += [ "BINDER_IPC_32BIT" ]
+    defines = [ "BINDER_IPC_32BIT" ]
   }
+}
+
+source_set("chromeos_export") {
+  deps = [
+    "//base",
+  ]
+  sources = [
+    "chromeos_export.h",
+  ]
+}
+
+source_set("chromeos_constants") {
+  configs += [ ":chromeos_implementation" ]
+  deps = [
+    ":chromeos_export",
+    "//base",
+    "//base:i18n",
+    "//chromeos/dbus:dbus_switches",
+    "//third_party/icu",
+  ]
+  sources = [
+    "chromeos_constants.cc",
+    "chromeos_constants.h",
+    "chromeos_features.cc",
+    "chromeos_features.h",
+    "chromeos_paths.cc",
+    "chromeos_paths.h",
+    "chromeos_pref_names.cc",
+    "chromeos_pref_names.h",
+    "chromeos_switches.cc",
+    "chromeos_switches.h",
+  ]
+}
+
+source_set("login_event_recorder") {
+  configs += [ ":chromeos_implementation" ]
+  deps = [
+    ":chromeos_export",
+    "//base",
+  ]
+  sources = [
+    "login_event_recorder.cc",
+    "login_event_recorder.h",
+  ]
+}
+
+source_set("policy_certificate_provider") {
+  configs += [ ":chromeos_implementation" ]
+  deps = [
+    ":chromeos_export",
+    "//base",
+  ]
+  sources = [
+    "policy_certificate_provider.h",
+  ]
+}
+
+source_set("tools") {
+  configs += [ ":chromeos_implementation" ]
+  deps = [
+    ":chromeos_export",
+    "//base",
+  ]
+  sources = [
+    "tools/variable_expander.cc",
+    "tools/variable_expander.h",
+  ]
 }
 
 # This must be a static library instead of a source set because some of the
@@ -569,18 +238,23 @@ component("chromeos") {
 # can be converted to a source set.
 static_library("test_support") {
   testonly = true
-  configs += [ "//build/config/linux/dbus" ]
+  public_deps = [
+    ":test_support_source_set",
+  ]
+}
+
+source_set("test_support_source_set") {
+  testonly = true
   public_deps = [
     ":attestation_proto",
     ":biod_proto",
     ":chromeos",
     ":cryptohome_proto",
     ":power_manager_proto",
+    "//chromeos/dbus:test_support",
   ]
   deps = [
-    ":test_support_without_gmock",
     "//components/account_id",
-    "//dbus:test_support",
     "//google_apis",
     "//net:test_support",
     "//services/network:test_support",
@@ -596,10 +270,6 @@ static_library("test_support") {
     "cryptohome/mock_async_method_caller.h",
     "cryptohome/mock_homedir_methods.cc",
     "cryptohome/mock_homedir_methods.h",
-    "dbus/biod/test_utils.cc",
-    "dbus/biod/test_utils.h",
-    "dbus/services/service_provider_test_helper.cc",
-    "dbus/services/service_provider_test_helper.h",
     "disks/mock_disk_mount_manager.cc",
     "disks/mock_disk_mount_manager.h",
     "login/auth/fake_extended_authenticator.cc",
@@ -631,29 +301,8 @@ static_library("test_support") {
 
 static_library("test_support_without_gmock") {
   testonly = true
-  configs += [ "//build/config/linux/dbus" ]
-  deps = [
-    ":attestation_proto",
-    ":biod_proto",
-    ":chromeos",
-    ":cryptohome_proto",
-    ":login_manager_proto",
-    ":power_manager_proto",
-    "//components/policy/proto",
-    "//crypto",
-    "//url",
-  ]
-  sources = [
-    "dbus/fake_cros_disks_client.cc",
-    "dbus/fake_cros_disks_client.h",
-
-    # TODO(crbug.com/799071) remove fake_session_manager_client and fix build rules.
-    "dbus/fake_session_manager_client.cc",
-    "dbus/fake_session_manager_client.h",
-    "dbus/fake_shill_manager_client.cc",
-    "dbus/fake_shill_manager_client.h",
-    "dbus/fake_update_engine_client.cc",
-    "dbus/fake_update_engine_client.h",
+  public_deps = [
+    "//chromeos/dbus",
   ]
 }
 
@@ -667,13 +316,21 @@ test("chromeos_unittests") {
     ":authpolicy_proto",
     ":biod_proto",
     ":cryptohome_proto",
+    ":oobe_config_proto",
     ":power_manager_proto",
     ":test_support",
     ":test_support_without_gmock",
     "//base/test:test_support",
+    "//chromeos/cryptohome:unit_tests",
+    "//chromeos/dbus:unit_tests",
+    "//chromeos/login:unit_tests",
+    "//chromeos/network:unit_tests",
     "//chromeos/services:unit_tests",
+    "//chromeos/settings:unit_tests",
     "//components/account_id",
     "//components/onc",
+    "//components/policy:generated",
+    "//components/policy/proto",
     "//components/prefs:test_support",
     "//components/proxy_config",
     "//crypto",
@@ -697,72 +354,13 @@ test("chromeos_unittests") {
     "attestation/attestation_flow_unittest.cc",
     "audio/audio_devices_pref_handler_impl_unittest.cc",
     "audio/cras_audio_handler_unittest.cc",
-    "cert_loader_unittest.cc",
-    "cryptohome/cryptohome_util_unittest.cc",
-    "cryptohome/system_salt_getter_unittest.cc",
-    "dbus/biod/biod_client_unittest.cc",
-    "dbus/biod/fake_biod_client_unittest.cc",
-    "dbus/blocking_method_caller_unittest.cc",
-    "dbus/cec_service_client_unittest.cc",
-    "dbus/cras_audio_client_unittest.cc",
-    "dbus/cros_disks_client_unittest.cc",
-    "dbus/dbus_thread_manager_unittest.cc",
-    "dbus/fake_auth_policy_client_unittest.cc",
-    "dbus/fake_cryptohome_client_unittest.cc",
-    "dbus/fake_easy_unlock_client_unittest.cc",
-    "dbus/fake_power_manager_client_unittest.cc",
-    "dbus/gsm_sms_client_unittest.cc",
-    "dbus/modem_messaging_client_unittest.cc",
-    "dbus/pipe_reader_unittest.cc",
-    "dbus/power_manager_client_unittest.cc",
-    "dbus/power_policy_controller_unittest.cc",
-    "dbus/services/cros_dbus_service_unittest.cc",
-    "dbus/shill_client_unittest_base.cc",
-    "dbus/shill_client_unittest_base.h",
-    "dbus/shill_device_client_unittest.cc",
-    "dbus/shill_ipconfig_client_unittest.cc",
-    "dbus/shill_manager_client_unittest.cc",
-    "dbus/shill_profile_client_unittest.cc",
-    "dbus/shill_service_client_unittest.cc",
-    "dbus/shill_third_party_vpn_driver_client_unittest.cc",
-    "dbus/update_engine_client_unittest.cc",
-    "dbus/util/version_loader_unittest.cc",
     "disks/disk_mount_manager_unittest.cc",
     "disks/disk_unittest.cc",
     "disks/suspend_unmount_manager_unittest.cc",
     "geolocation/simple_geolocation_unittest.cc",
-    "login/auth/authpolicy_login_helper_unittest.cc",
-    "login/auth/key_unittest.cc",
-    "login/login_state_unittest.cc",
-    "network/auto_connect_handler_unittest.cc",
-    "network/certificate_helper_unittest.cc",
-    "network/client_cert_resolver_unittest.cc",
-    "network/firewall_hole_unittest.cc",
-    "network/geolocation_handler_unittest.cc",
-    "network/host_resolver_impl_chromeos_unittest.cc",
-    "network/managed_network_configuration_handler_unittest.cc",
-    "network/network_cert_migrator_unittest.cc",
-    "network/network_change_notifier_chromeos_unittest.cc",
-    "network/network_configuration_handler_unittest.cc",
-    "network/network_connect_unittest.cc",
-    "network/network_connection_handler_impl_unittest.cc",
-    "network/network_device_handler_unittest.cc",
-    "network/network_sms_handler_unittest.cc",
-    "network/network_state_handler_unittest.cc",
-    "network/network_state_unittest.cc",
-    "network/network_type_pattern_unittest.cc",
-    "network/network_ui_data_unittest.cc",
-    "network/network_util_unittest.cc",
-    "network/onc/onc_certificate_importer_impl_unittest.cc",
-    "network/onc/onc_merger_unittest.cc",
-    "network/onc/onc_normalizer_unittest.cc",
-    "network/onc/onc_parsed_certificates_unittest.cc",
-    "network/onc/onc_translator_unittest.cc",
-    "network/onc/onc_utils_unittest.cc",
-    "network/onc/onc_validator_unittest.cc",
-    "network/prohibited_technologies_handler_unittest.cc",
-    "network/proxy/proxy_config_service_impl_unittest.cc",
-    "network/shill_property_handler_unittest.cc",
+    "policy/weekly_time/time_utils_unittest.cc",
+    "policy/weekly_time/weekly_time_interval_unittest.cc",
+    "policy/weekly_time/weekly_time_unittest.cc",
     "printing/ppd_cache_unittest.cc",
     "printing/ppd_line_reader_unittest.cc",
     "printing/ppd_provider_unittest.cc",
@@ -771,7 +369,6 @@ test("chromeos_unittests") {
     "process_proxy/process_output_watcher_unittest.cc",
     "process_proxy/process_proxy_unittest.cc",
     "run_all_unittests.cc",
-    "settings/timezone_settings_unittest.cc",
     "system/cpu_temperature_reader_unittest.cc",
     "system/factory_ping_embargo_check_unittest.cc",
     "system/name_value_pairs_parser_unittest.cc",
@@ -779,22 +376,6 @@ test("chromeos_unittests") {
     "tools/variable_expander_unittest.cc",
     "tpm/tpm_token_info_getter_unittest.cc",
   ]
-  if (use_binder) {
-    if (current_cpu == "arm" || current_cpu == "x86") {
-      defines += [ "BINDER_IPC_32BIT" ]
-    }
-    sources += [
-      "binder/buffer_reader_unittest.cc",
-      "binder/command_broker_unittest.cc",
-      "binder/command_stream_unittest.cc",
-      "binder/driver_unittest.cc",
-      "binder/end_to_end_unittest.cc",
-      "binder/service_manager_proxy_unittest.cc",
-      "binder/test_service.cc",
-      "binder/test_service.h",
-      "binder/transaction_data_read_write_unittest.cc",
-    ]
-  }
 
   data = [
     "test/data/",
@@ -817,14 +398,28 @@ if (is_chromeos_chrome) {
   # The sanity test's actual binary is baked into the vm image. All we need to
   # do is build the test wrapper and build our own browser to push to the VM
   # before testing it.
-  generate_vm_runner_script("cros_vm_sanity_test_wrapper") {
-    test_exe = "$root_out_dir/cros_vm_sanity_test"
+  generate_vm_runner_script("cros_vm_sanity_test") {
+    testonly = true
+    test_exe = "cros_vm_sanity_test"
     generated_script = "$root_build_dir/bin/run_cros_vm_sanity_test"
+    runtime_deps_file = "$root_out_dir/cros_vm_sanity_test.runtime_deps"
 
-    # The sanity test needs to strip down Chrome and its deps to fit it into
-    # the VM. It does so by using binutils in the toolchain. So signal that we
-    # need the toolchain in the data.
-    need_toolchain = true
+    data_deps = [
+      ":cros_chrome_deploy",
+      "//:chromiumos_preflight",  # Builds the browser.
+    ]
+  }
+
+  tast_test("chrome_login_tast_tests") {
+    tast_tests = [
+      "ui.ChromeLogin",
+      "ui.ChromeCrashLoggedIn",
+      "ui.ChromeCrashNotLoggedIn",
+    ]
+  }
+
+  tast_test("chrome_all_tast_tests") {
+    tast_conditional = "(!disabled && !\"group:*\" && !informational && (\"dep:chrome\" || \"dep:chrome_login\"))"
   }
 
   group("cros_chrome_deploy") {
@@ -844,16 +439,6 @@ if (is_chromeos_chrome) {
     # declare it as a dep instead of adding the dir directly.
     data = [
       "$root_out_dir/resources/chromeos/",
-    ]
-  }
-
-  group("cros_vm_sanity_test") {
-    testonly = true
-    write_runtime_deps = "$root_out_dir/cros_vm_sanity_test.runtime_deps"
-    data_deps = [
-      ":cros_chrome_deploy",
-      "//:chromiumos_preflight",  # Builds the browser.
-      ":cros_vm_sanity_test_wrapper",  # Builds the test wrapper.
     ]
   }
 }
@@ -966,6 +551,14 @@ proto_library("media_perception_proto") {
   ]
 
   proto_out_dir = "chromeos/dbus/media_perception"
+}
+
+proto_library("oobe_config_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/oobe_config/oobe_config.proto",
+  ]
+
+  proto_out_dir = "chromeos/dbus/oobe_config"
 }
 
 proto_library("seneschal_proto") {

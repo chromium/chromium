@@ -41,7 +41,7 @@ class AutomationEventRouter : public content::NotificationObserver {
   // listener process dies.
   void RegisterListenerForOneTree(const ExtensionId& extension_id,
                                   int listener_process_id,
-                                  int source_ax_tree_id);
+                                  ui::AXTreeID source_ax_tree_id);
 
   // Indicates that the listener at |listener_process_id| wants to receive
   // automation events from all accessibility trees because it has Desktop
@@ -57,7 +57,7 @@ class AutomationEventRouter : public content::NotificationObserver {
 
   // Notify all automation extensions that an accessibility tree was
   // destroyed. If |browser_context| is null,
-  void DispatchTreeDestroyedEvent(int tree_id,
+  void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id,
                                   content::BrowserContext* browser_context);
 
  private:
@@ -69,7 +69,7 @@ class AutomationEventRouter : public content::NotificationObserver {
     ExtensionId extension_id;
     int process_id;
     bool desktop;
-    std::set<int> tree_ids;
+    std::set<ui::AXTreeID> tree_ids;
   };
 
   AutomationEventRouter();
@@ -77,7 +77,7 @@ class AutomationEventRouter : public content::NotificationObserver {
 
   void Register(const ExtensionId& extension_id,
                 int listener_process_id,
-                int source_ax_tree_id,
+                ui::AXTreeID source_ax_tree_id,
                 bool desktop);
 
   // content::NotificationObserver interface.

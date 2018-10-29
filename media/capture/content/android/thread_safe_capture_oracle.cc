@@ -96,8 +96,9 @@ bool ThreadSafeCaptureOracle::ObserveEventAndDecideCapture(
     coded_size.SetSize(base::bits::Align(visible_size.width(), 16),
                        base::bits::Align(visible_size.height(), 16));
 
-    output_buffer = client_->ReserveOutputBuffer(
-        coded_size, params_.requested_format.pixel_format, frame_number);
+    const auto result_code = client_->ReserveOutputBuffer(
+        coded_size, params_.requested_format.pixel_format, frame_number,
+        &output_buffer);
 
     // Get the current buffer pool utilization and attenuate it: The utilization
     // reported to the oracle is in terms of a maximum sustainable amount (not
@@ -105,7 +106,7 @@ bool ThreadSafeCaptureOracle::ObserveEventAndDecideCapture(
     attenuated_utilization = client_->GetBufferPoolUtilization() *
                              (100.0 / kTargetMaxPoolUtilizationPercent);
 
-    if (!output_buffer.is_valid()) {
+    if (result_code != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
       TRACE_EVENT_INSTANT2(
           "gpu.capture", "PipelineLimited", TRACE_EVENT_SCOPE_THREAD, "trigger",
           VideoCaptureOracle::EventAsString(event), "atten_util_percent",

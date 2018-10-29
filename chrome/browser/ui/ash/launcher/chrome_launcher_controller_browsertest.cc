@@ -167,6 +167,12 @@ ash::ShelfView* GetPrimaryShelfView() {
       ->GetShelfViewForTesting();
 }
 
+int64_t GetDisplayIdForBrowserWindow(BrowserWindow* window) {
+  return display::Screen::GetScreen()
+      ->GetDisplayNearestWindow(window->GetNativeWindow())
+      .id();
+}
+
 }  // namespace
 
 class LauncherPlatformAppBrowserTest
@@ -855,10 +861,11 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus0) {
   // Ensures browser 2 is above browser 1 in display 1.
   browser_list->SetLastActive(browser2);
   browser_list->SetLastActive(browser0);
+  aura::test::WaitForAllChangesToComplete();
   EXPECT_EQ(browser_list->size(), 3U);
-  EXPECT_EQ(browser0->window()->GetNativeWindow()->GetRootWindow(), roots[0]);
-  EXPECT_EQ(browser1->window()->GetNativeWindow()->GetRootWindow(), roots[1]);
-  EXPECT_EQ(browser2->window()->GetNativeWindow()->GetRootWindow(), roots[1]);
+  EXPECT_EQ(displays[0].id(), GetDisplayIdForBrowserWindow(browser0->window()));
+  EXPECT_EQ(displays[1].id(), GetDisplayIdForBrowserWindow(browser1->window()));
+  EXPECT_EQ(displays[1].id(), GetDisplayIdForBrowserWindow(browser2->window()));
   EXPECT_EQ(browser0->tab_strip_model()->count(), 1);
   EXPECT_EQ(browser1->tab_strip_model()->count(), 1);
   EXPECT_EQ(browser2->tab_strip_model()->count(), 1);
@@ -897,8 +904,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus1) {
   BrowserList* browser_list = BrowserList::GetInstance();
   Browser* browser0 = browser();
   browser0->window()->SetBounds(displays[0].work_area());
+  aura::test::WaitForAllChangesToComplete();
   EXPECT_EQ(browser_list->size(), 1U);
-  EXPECT_EQ(browser0->window()->GetNativeWindow()->GetRootWindow(), roots[0]);
+  EXPECT_EQ(displays[0].id(), GetDisplayIdForBrowserWindow(browser0->window()));
   EXPECT_EQ(browser0->tab_strip_model()->count(), 1);
 
   // Launches an app from the shelf of display 0 and expects a new browser with

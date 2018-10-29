@@ -25,7 +25,8 @@ namespace extensions {
 class Extension;
 }
 
-namespace apps {
+namespace chrome_apps {
+namespace api {
 
 // EasyUnlockPrivateConnectionManager is used by the EasyUnlockPrivateAPI to
 // interface with cryptauth::Connection.
@@ -43,7 +44,7 @@ class EasyUnlockPrivateConnectionManager
                     bool persistent);
 
   // Returns the status of the connection with |connection_id|.
-  api::easy_unlock_private::ConnectionStatus ConnectionStatus(
+  easy_unlock_private::ConnectionStatus ConnectionStatus(
       const extensions::Extension* extension,
       int connection_id) const;
 
@@ -110,6 +111,7 @@ class EasyUnlockPrivateConnectionManager
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockPrivateConnectionManager);
 };
 
-}  // namespace apps
+}  // namespace api
+}  // namespace chrome_apps
 
 #endif  // CHROME_BROWSER_APPS_PLATFORM_APPS_API_EASY_UNLOCK_PRIVATE_EASY_UNLOCK_PRIVATE_CONNECTION_MANAGER_H_

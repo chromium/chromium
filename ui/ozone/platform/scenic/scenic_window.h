@@ -122,7 +122,7 @@ class OZONE_EXPORT ScenicWindow : public PlatformWindow,
 
   // The ratio used for translating device-independent coordinates to absolute
   // pixel coordinates.
-  float device_pixel_ratio_;
+  float device_pixel_ratio_ = 0.f;
 
   // Current view size in DIPs.
   gfx::SizeF size_dips_;

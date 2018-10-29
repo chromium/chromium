@@ -1150,10 +1150,15 @@ void ControllerImpl::HandleCompleteDownload(CompletionType type,
     TransitTo(entry, Entry::State::COMPLETE, model_.get());
     ScheduleCleanupTask();
   } else {
+    CompletionInfo completion_info;
+    completion_info.url_chain = entry->url_chain;
+    completion_info.response_headers = entry->response_headers;
+
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&ControllerImpl::SendOnDownloadFailed,
-                                  weak_ptr_factory_.GetWeakPtr(), entry->client,
-                                  guid, FailureReasonFromCompletionType(type)));
+        FROM_HERE,
+        base::BindOnce(&ControllerImpl::SendOnDownloadFailed,
+                       weak_ptr_factory_.GetWeakPtr(), entry->client, guid,
+                       completion_info, FailureReasonFromCompletionType(type)));
     log_sink_->OnServiceDownloadFailed(type, *entry);
 
     // TODO(dtrainor): Handle the case where we crash before the model write
@@ -1358,10 +1363,11 @@ void ControllerImpl::SendOnDownloadSucceeded(
 void ControllerImpl::SendOnDownloadFailed(
     DownloadClient client_id,
     const std::string& guid,
+    const CompletionInfo& completion_info,
     download::Client::FailureReason reason) {
   auto* client = clients_->GetClient(client_id);
   DCHECK(client);
-  client->OnDownloadFailed(guid, reason);
+  client->OnDownloadFailed(guid, completion_info, reason);
 }
 
 }  // namespace download

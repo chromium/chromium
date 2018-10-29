@@ -20,11 +20,27 @@ function DriveSyncHandler(progressCenter) {
   this.progressCenter_ = progressCenter;
 
   /**
+   * Predefined error ID for out of quota messages.
+   * @type {number}
+   * @const
+   * @private
+   */
+  this.driveErrorIdOutOfQuota_ = 1;
+
+  /**
+   * Maximum reserved ID for predefined errors.
+   * @type {number}
+   * @const
+   * @private
+   */
+  this.driveErrorIdMax_ = this.driveErrorIdOutOfQuota_;
+
+  /**
    * Counter for error ID.
    * @type {number}
    * @private
    */
-  this.errorIdCounter_ = 0;
+  this.errorIdCounter_ = this.driveErrorIdMax_ + 1;
 
   /**
    * Progress center item.
@@ -213,8 +229,6 @@ DriveSyncHandler.prototype.removeItem_ = function(status) {
 DriveSyncHandler.prototype.onDriveSyncError_ = function(event) {
   window.webkitResolveLocalFileSystemURL(event.fileUrl, function(entry) {
     var item = new ProgressCenterItem();
-    item.id =
-        DriveSyncHandler.DRIVE_SYNC_ERROR_PREFIX + (this.errorIdCounter_++);
     item.type = ProgressItemType.SYNC;
     item.quiet = true;
     item.state = ProgressItemState.ERROR;
@@ -228,10 +242,18 @@ DriveSyncHandler.prototype.onDriveSyncError_ = function(event) {
         break;
       case 'no_server_space':
         item.message = strf('SYNC_NO_SERVER_SPACE', entry.name);
+        // This error will reappear every time sync is retried, so we use a
+        // fixed ID to avoid spamming the user.
+        item.id = DriveSyncHandler.DRIVE_SYNC_ERROR_PREFIX +
+            this.driveErrorIdOutOfQuota_;
         break;
       case 'misc':
         item.message = strf('SYNC_MISC_ERROR', entry.name);
         break;
+    }
+    if (!item.id) {
+      item.id =
+          DriveSyncHandler.DRIVE_SYNC_ERROR_PREFIX + (this.errorIdCounter_++);
     }
     this.progressCenter_.updateItem(item);
   }.bind(this));

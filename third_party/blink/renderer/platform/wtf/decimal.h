@@ -39,7 +39,7 @@
 
 namespace blink {
 
-namespace DecimalPrivate {
+namespace decimal_private {
 class SpecialValueHandler;
 }
 
@@ -63,7 +63,7 @@ class WTF_EXPORT Decimal {
     DISALLOW_NEW();
     // For accessing FormatClass.
     friend class Decimal;
-    friend class DecimalPrivate::SpecialValueHandler;
+    friend class decimal_private::SpecialValueHandler;
 
    public:
     EncodedData(Sign, int exponent, uint64_t coefficient);

@@ -189,7 +189,7 @@ public class EditorDialog
         EditorDialogToolbar toolbar = (EditorDialogToolbar) mLayout.findViewById(R.id.action_bar);
         toolbar.setBackgroundColor(ApiCompatibilityUtils.getColor(
                 toolbar.getResources(), R.color.modern_primary_color));
-        toolbar.setTitleTextAppearance(toolbar.getContext(), R.style.BlackHeadline1);
+        toolbar.setTitleTextAppearance(toolbar.getContext(), R.style.BlackHeadline);
         toolbar.setTitle(mEditorModel.getTitle());
         toolbar.setShowDeleteMenuItem(mDeleteRunnable != null);
 

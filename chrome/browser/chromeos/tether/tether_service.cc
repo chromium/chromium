@@ -174,10 +174,14 @@ TetherService::TetherService(
     }
   }
 
-  registrar_.Init(profile_->GetPrefs());
-  registrar_.Add(chromeos::multidevice_setup::kInstantTetheringAllowedPrefName,
-                 base::BindRepeating(&TetherService::OnPrefsChanged,
-                                     weak_ptr_factory_.GetWeakPtr()));
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+    registrar_.Init(profile_->GetPrefs());
+    registrar_.Add(
+        chromeos::multidevice_setup::kInstantTetheringAllowedPrefName,
+        base::BindRepeating(&TetherService::OnPrefsChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 
   UMA_HISTOGRAM_BOOLEAN("InstantTethering.UserPreference.OnStartup",
                         IsEnabledByPreference());
@@ -309,9 +313,14 @@ void TetherService::Shutdown() {
       multidevice_setup_client_->RemoveObserver(this);
     }
   }
+
   if (adapter_)
     adapter_->RemoveObserver(this);
-  registrar_.RemoveAll();
+
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+    registrar_.RemoveAll();
+  }
 
   // Shut down the feature. Note that this does not change Tether's technology
   // state in NetworkStateHandler because doing so could cause visual jank just
@@ -408,13 +417,12 @@ void TetherService::UpdateEnabledState() {
       profile_->GetPrefs()->SetBoolean(
           chromeos::multidevice_setup::kInstantTetheringEnabledPrefName,
           is_enabled);
+      LogUserPreferenceChanged(is_enabled);
+      UpdateTetherTechnologyState();
     }
-
-    UMA_HISTOGRAM_BOOLEAN("InstantTethering.UserPreference.OnToggle",
-                          is_enabled);
-    PA_LOG(INFO) << "Tether user preference changed. New value: " << is_enabled;
+  } else {
+    UpdateTetherTechnologyState();
   }
-  UpdateTetherTechnologyState();
 }
 
 void TetherService::OnShutdownComplete() {
@@ -446,6 +454,23 @@ void TetherService::OnReady() {
 void TetherService::OnFeatureStatesChanged(
     const chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
+  const chromeos::multidevice_setup::mojom::FeatureState new_state =
+      feature_states_map
+          .find(chromeos::multidevice_setup::mojom::Feature::kInstantTethering)
+          ->second;
+
+  // If the feature changed from enabled to disabled or vice-versa, log the
+  // associated metric.
+  if (new_state ==
+          chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser &&
+      previous_feature_state_ == TetherFeatureState::USER_PREFERENCE_DISABLED) {
+    LogUserPreferenceChanged(true /* is_now_enabled */);
+  } else if (new_state == chromeos::multidevice_setup::mojom::FeatureState::
+                              kDisabledByUser &&
+             previous_feature_state_ == TetherFeatureState::ENABLED) {
+    LogUserPreferenceChanged(false /* is_now_enabled */);
+  }
+
   if (adapter_)
     UpdateTetherTechnologyState();
   else
@@ -685,6 +710,15 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
           kUnavailableSuiteDisabled:
         return BETTER_TOGETHER_SUITE_DISABLED;
       case chromeos::multidevice_setup::mojom::FeatureState::
+          kUnavailableNoVerifiedHost:
+        // Note that because of the early return above after
+        // !HasSyncedTetherHosts, if this point is hit, there are synced tether
+        // hosts available, but the multidevice state is unverified. This switch
+        // case can only occur for legacy Magic Tether hosts, in which case the
+        // service should be enabled.
+        // TODO(crbug.com/894585): Remove this legacy special case after M71.
+        return ENABLED;
+      case chromeos::multidevice_setup::mojom::FeatureState::
           kNotSupportedByChromebook:
         // CryptAuth may not yet know that this device supports
         // MAGIC_TETHER_CLIENT (and the local device metadata is reflecting
@@ -694,10 +728,6 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
         FALLTHROUGH;
       case chromeos::multidevice_setup::mojom::FeatureState::
           kNotSupportedByPhone:
-        FALLTHROUGH;
-      case chromeos::multidevice_setup::mojom::FeatureState::
-          kUnavailableNoVerifiedHost:
-        no_available_hosts_false_positive_encountered_ = true;
         return NO_AVAILABLE_HOSTS;
       default:
         // Other FeatureStates:
@@ -785,6 +815,13 @@ bool TetherService::HandleFeatureStateMetricIfUninitialized() {
                                     weak_ptr_factory_.GetWeakPtr()));
 
   return true;
+}
+
+void TetherService::LogUserPreferenceChanged(bool is_now_enabled) {
+  UMA_HISTOGRAM_BOOLEAN("InstantTethering.UserPreference.OnToggle",
+                        is_now_enabled);
+  PA_LOG(INFO) << "Tether user preference changed. New value: "
+               << is_now_enabled;
 }
 
 void TetherService::SetTestDoubles(

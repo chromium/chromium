@@ -34,16 +34,17 @@ const char kAutofillDownstreamUseGooglePayBrandingOniOSDescription[] =
     "When enabled, shows the Google Pay logo animation when showing payments"
     "credit card suggestions in downstream keyboard accessory";
 
-const char kAutofillEnableIFrameSupportOniOSName[] =
-    "Enable iFrame messaging for autofill.";
-const char kAutofillEnableIFrameSupportOniOSDescription[] =
-    "When enabled, autofill is available in secure iframes.";
-
 const char kEnableAutofillCreditCardUploadUpdatePromptExplanationName[] =
     "Enable updated prompt explanation when offering credit card upload";
 const char kEnableAutofillCreditCardUploadUpdatePromptExplanationDescription[] =
     "If enabled, changes the server save card prompt's explanation to mention "
     "the saving of the billing address.";
+
+const char kEnableAutofillSaveCreditCardUsesStrikeSystemName[] =
+    "Enable limit on offering to save the same credit card repeatedly";
+const char kEnableAutofillSaveCreditCardUsesStrikeSystemDescription[] =
+    "If enabled, prevents popping up the credit card offer-to-save prompt if "
+    "it has repeatedly been ignored, declined, or failed.";
 
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
@@ -135,6 +136,11 @@ const char kBrowserContainerFullscreenDescription[] =
     "When enabled, the BrowserContainer is fullscreen. No UI change should be "
     "visible.";
 
+const char kBrowserContainerContainsNTPName[] = "Browser Container NTP";
+const char kBrowserContainerContainsNTPDescription[] =
+    "When enabled, the BrowserContainer contains the NTP directly, rather than"
+    "via native content.";
+
 const char kBrowserTaskScheduler[] = "Task Scheduler";
 const char kBrowserTaskSchedulerDescription[] =
     "Enables redirection of some task posting APIs to the task scheduler.";
@@ -143,6 +149,12 @@ const char kCaptivePortalMetricsName[] = "Captive Portal Metrics";
 const char kCaptivePortalMetricsDescription[] =
     "When enabled, some network issues will trigger a test to check if a "
     "Captive Portal network is the cause of the issue.";
+
+// TODO(crbug.com/893314) : Remove this flag.
+const char kClosingLastIncognitoTabName[] = "Closing Last Incognito Tab";
+const char kClosingLastIncognitoTabDescription[] =
+    "Automatically switches to the regular tabs panel in the tab grid after "
+    "closing the last incognito tab";
 
 const char kContextualSearch[] = "Contextual Search";
 const char kContextualSearchDescription[] =
@@ -161,6 +173,11 @@ const char kNewClearBrowsingDataUIDescription[] =
 
 const char kExternalSearchName[] = "External Search";
 const char kExternalSearchDescription[] = "Enable support for External Search.";
+
+const char kFCMInvalidationsName[] =
+    "Enable invalidations delivery via new FCM based protocol";
+const char kFCMInvalidationsDescription[] =
+    "Use the new FCM-based protocol for deliveling invalidations";
 
 const char kFullscreenViewportAdjustmentExperimentName[] =
     "Fullscreen Viewport Adjustment Mode";
@@ -208,10 +225,16 @@ const char kNewPasswordFormParsingDescription[] =
     "currently under development. WARNING: when enabled Password Manager might "
     "stop working";
 
-const char kOmniboxPopupShortcutsName[] = "Show zero-state omnibox shortcuts";
-const char kOmniboxPopupShortcutsDescription[] =
+const char kOmniboxPopupShortcutIconsInZeroStateName[] =
+    "Show zero-state omnibox shortcuts";
+const char kOmniboxPopupShortcutIconsInZeroStateDescription[] =
     "Instead of ZeroSuggest, show most visited sites and collection shortcuts "
     "in the omnibox popup.";
+
+const char kOmniboxTabSwitchSuggestionsName[] =
+    "Enable 'switch to this tab' option";
+const char kOmniboxTabSwitchSuggestionsDescription[] =
+    "Enable the 'switch to this tab' options in the omnibox suggestions.";
 
 const char kOmniboxUIElideSuggestionUrlAfterHostName[] =
     "Hide the path, query, and ref of omnibox suggestions";
@@ -229,17 +252,18 @@ const char kPhysicalWebDescription[] =
     "When enabled, the omnibox will include suggestions for web pages "
     "broadcast by devices near you.";
 
+const char kIgnoresViewportScaleLimitsName[] = "Ignore Viewport Scale Limits";
+const char kIgnoresViewportScaleLimitsDescription[] =
+    "When enabled the page can always be scaled, regardless of author intent.";
+
+const char kSearchIconToggleName[] = "Change the icon for the search button";
+const char kSearchIconToggleDescription[] =
+    "Different icons for the search button.";
+
 const char kSlimNavigationManagerName[] = "Use Slim Navigation Manager";
 const char kSlimNavigationManagerDescription[] =
     "When enabled, uses the experimental slim navigation manager that provides "
     "better compatibility with HTML navigation spec.";
-
-const char kWebErrorPagesName[] =
-    "Present load errors in web contents area, instead of using "
-    "CRWNativeContent";
-const char kWebErrorPagesDescription[] =
-    "When enabled the error pages will load in web contents area, instead of "
-    "presenting CRWNativeContent. Does not have sensible UI changes.";
 
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =
@@ -249,12 +273,6 @@ const char kShowAutofillTypePredictionsDescription[] =
 const char kSSOWithWKWebViewName[] = "SSO with WKWebView";
 const char kSSOWithWKWebViewDescription[] =
     "Using WKWebView instead of UIWebView in SSO";
-
-const char kTabSwitcherPresentsBVCName[] = "TabSwitcher Presents BVC";
-const char kTabSwitcherPresentsBVCDescription[] =
-    "When enabled, the tab switcher will present the BVC, so that when the "
-    "BVC is visible, the tab switcher will remain in the VC hierarchy "
-    "underneath it.";
 
 const char kToolbarContainerName[] = "Use Toolbar Containers";
 const char kToolbarContainerDescription[] =
@@ -266,6 +284,10 @@ const char kUnifiedConsentDescription[] =
     "Enables a unified management of user consent for privacy-related "
     "features. This includes new confirmation screens and improved settings "
     "pages.";
+
+const char kUseMultiloginEndpointName[] = "Use Multilogin endpoint.";
+const char kUseMultiloginEndpointDescription[] =
+    "Use Gaia OAuth multilogin for identity consistency.";
 
 const char kForceUnifiedConsentBumpName[] = "Force Unified Consent Bump";
 const char kForceUnifiedConsentBumpDescription[] =
@@ -287,15 +309,6 @@ const char kWebPageTextAccessibilityDescription[] =
     "When enabled, text in web pages will respect the user's Dynamic Type "
     "setting.";
 
-const char kWebPaymentsName[] = "Web Payments";
-const char kWebPaymentsDescription[] =
-    "Enable Payment Request API integration, a JavaScript API for merchants.";
-
-const char kWebPaymentsNativeAppsName[] = "Web Payments Native Apps";
-const char kWebPaymentsNativeAppsDescription[] =
-    "Enable third party iOS native apps as payments methods within Payment "
-    "Request.";
-
 const char kWKHTTPSystemCookieStoreName[] = "Use WKHTTPSystemCookieStore.";
 const char kWKHTTPSystemCookieStoreDescription[] =
     "Use WKHTTPCookieStore backed store for main context URL requests.";
@@ -303,6 +316,10 @@ const char kWKHTTPSystemCookieStoreDescription[] =
 const char kWKWebViewSnapshotsName[] = "WKWebView Snapshots";
 const char kWKWebViewSnapshotsDescription[] =
     "When enabled, the WKWebView snapshotting API is used for iOS 11+.";
+
+const char kCustomSearchEnginesName[] = "Custom Search Engines";
+const char kCustomSearchEnginesDescription[] =
+    "When enabled, user can add custom search engines in settings.";
 
 // Please insert your name/description above in alphabetical order.
 

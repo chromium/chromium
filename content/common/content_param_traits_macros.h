@@ -69,9 +69,9 @@ IPC_STRUCT_TRAITS_END()
 IPC_STRUCT_TRAITS_BEGIN(content::RenderWidgetSurfaceProperties)
   IPC_STRUCT_TRAITS_MEMBER(size)
   IPC_STRUCT_TRAITS_MEMBER(device_scale_factor)
-#ifdef OS_ANDROID
   IPC_STRUCT_TRAITS_MEMBER(top_controls_height)
   IPC_STRUCT_TRAITS_MEMBER(top_controls_shown_ratio)
+#ifdef OS_ANDROID
   IPC_STRUCT_TRAITS_MEMBER(bottom_controls_height)
   IPC_STRUCT_TRAITS_MEMBER(bottom_controls_shown_ratio)
   IPC_STRUCT_TRAITS_MEMBER(selection)

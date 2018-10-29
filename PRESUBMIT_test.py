@@ -1611,6 +1611,125 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
     self.assertTrue('base/another.h' in warnings[0].items)
 
 
+class CorrectProductNameInMessagesTest(unittest.TestCase):
+  def testProductNameInDesc(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('chrome/app/google_chrome_strings.grd', [
+        '<message name="Foo" desc="Welcome to Chrome">',
+        '  Welcome to Chrome!',
+        '</message>',
+      ]),
+      MockAffectedFile('chrome/app/chromium_strings.grd', [
+        '<message name="Bar" desc="Welcome to Chrome">',
+        '  Welcome to Chromium!',
+        '</message>',
+      ]),
+    ]
+    warnings = PRESUBMIT._CheckCorrectProductNameInMessages(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
+  def testChromeInChromium(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('chrome/app/google_chrome_strings.grd', [
+        '<message name="Foo" desc="Welcome to Chrome">',
+        '  Welcome to Chrome!',
+        '</message>',
+      ]),
+      MockAffectedFile('chrome/app/chromium_strings.grd', [
+        '<message name="Bar" desc="Welcome to Chrome">',
+        '  Welcome to Chrome!',
+        '</message>',
+      ]),
+    ]
+    warnings = PRESUBMIT._CheckCorrectProductNameInMessages(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+    self.assertTrue('chrome/app/chromium_strings.grd' in warnings[0].items[0])
+
+  def testChromiumInChrome(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('chrome/app/google_chrome_strings.grd', [
+        '<message name="Foo" desc="Welcome to Chrome">',
+        '  Welcome to Chromium!',
+        '</message>',
+      ]),
+      MockAffectedFile('chrome/app/chromium_strings.grd', [
+        '<message name="Bar" desc="Welcome to Chrome">',
+        '  Welcome to Chromium!',
+        '</message>',
+      ]),
+    ]
+    warnings = PRESUBMIT._CheckCorrectProductNameInMessages(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+    self.assertTrue(
+        'chrome/app/google_chrome_strings.grd:2' in warnings[0].items[0])
+
+  def testMultipleInstances(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('chrome/app/chromium_strings.grd', [
+        '<message name="Bar" desc="Welcome to Chrome">',
+        '  Welcome to Chrome!',
+        '</message>',
+        '<message name="Baz" desc="A correct message">',
+        '  Chromium is the software you are using.',
+        '</message>',
+        '<message name="Bat" desc="An incorrect message">',
+        '  Google Chrome is the software you are using.',
+        '</message>',
+      ]),
+    ]
+    warnings = PRESUBMIT._CheckCorrectProductNameInMessages(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+    self.assertTrue(
+        'chrome/app/chromium_strings.grd:2' in warnings[0].items[0])
+    self.assertTrue(
+        'chrome/app/chromium_strings.grd:8' in warnings[0].items[1])
+
+  def testMultipleWarnings(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('chrome/app/chromium_strings.grd', [
+        '<message name="Bar" desc="Welcome to Chrome">',
+        '  Welcome to Chrome!',
+        '</message>',
+        '<message name="Baz" desc="A correct message">',
+        '  Chromium is the software you are using.',
+        '</message>',
+        '<message name="Bat" desc="An incorrect message">',
+        '  Google Chrome is the software you are using.',
+        '</message>',
+      ]),
+      MockAffectedFile('components/components_google_chrome_strings.grd', [
+        '<message name="Bar" desc="Welcome to Chrome">',
+        '  Welcome to Chrome!',
+        '</message>',
+        '<message name="Baz" desc="A correct message">',
+        '  Chromium is the software you are using.',
+        '</message>',
+        '<message name="Bat" desc="An incorrect message">',
+        '  Google Chrome is the software you are using.',
+        '</message>',
+      ]),
+    ]
+    warnings = PRESUBMIT._CheckCorrectProductNameInMessages(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(2, len(warnings))
+    self.assertTrue(
+        'components/components_google_chrome_strings.grd:5'
+             in warnings[0].items[0])
+    self.assertTrue(
+        'chrome/app/chromium_strings.grd:2' in warnings[1].items[0])
+    self.assertTrue(
+        'chrome/app/chromium_strings.grd:8' in warnings[1].items[1])
+
+
 class MojoManifestOwnerTest(unittest.TestCase):
   def testMojoManifestChangeNeedsSecurityOwner(self):
     mock_input_api = MockInputApi()
@@ -2018,6 +2137,69 @@ class TranslationScreenshotsTest(unittest.TestCase):
                                                       MockOutputApi())
     self.assertEqual([], warnings)
 
+
+class DISABLETypoInTest(unittest.TestCase):
+
+  def testPositive(self):
+    # Verify the typo "DISABLE_" instead of "DISABLED_" in various contexts
+    # where the desire is to disable a test.
+    tests = [
+        # Disabled on one platform:
+        '#if defined(OS_WIN)\n'
+        '#define MAYBE_FoobarTest DISABLE_FoobarTest\n'
+        '#else\n'
+        '#define MAYBE_FoobarTest FoobarTest\n'
+        '#endif\n',
+        # Disabled on one platform spread cross lines:
+        '#if defined(OS_WIN)\n'
+        '#define MAYBE_FoobarTest \\\n'
+        '    DISABLE_FoobarTest\n'
+        '#else\n'
+        '#define MAYBE_FoobarTest FoobarTest\n'
+        '#endif\n',
+        # Disabled on all platforms:
+        '  TEST_F(FoobarTest, DISABLE_Foo)\n{\n}',
+        # Disabled on all platforms but multiple lines
+        '  TEST_F(FoobarTest,\n   DISABLE_foo){\n}\n',
+    ]
+
+    for test in tests:
+      mock_input_api = MockInputApi()
+      mock_input_api.files = [
+          MockFile('some/path/foo_unittest.cc', test.splitlines()),
+      ]
+
+      results = PRESUBMIT._CheckNoDISABLETypoInTests(mock_input_api,
+                                                     MockOutputApi())
+      self.assertEqual(
+          1,
+          len(results),
+          msg=('expected len(results) == 1 but got %d in test: %s' %
+               (len(results), test)))
+      self.assertTrue(
+          'foo_unittest.cc' in results[0].message,
+          msg=('expected foo_unittest.cc in message but got %s in test %s' %
+               (results[0].message, test)))
+
+  def testIngoreNotTestFiles(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('some/path/foo.cc', 'TEST_F(FoobarTest, DISABLE_Foo)'),
+    ]
+
+    results = PRESUBMIT._CheckNoDISABLETypoInTests(mock_input_api,
+                                                   MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testIngoreDeletedFiles(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('some/path/foo.cc', 'TEST_F(FoobarTest, Foo)', action='D'),
+    ]
+
+    results = PRESUBMIT._CheckNoDISABLETypoInTests(mock_input_api,
+                                                   MockOutputApi())
+    self.assertEqual(0, len(results))
 
 if __name__ == '__main__':
   unittest.main()

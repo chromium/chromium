@@ -6,7 +6,9 @@
 
 #include <ios>
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
@@ -202,7 +204,7 @@ TEST(CustomElementTest, StateByCreateElement) {
     EXPECT_EQ(data.state, element->GetCustomElementState()) << data.name;
     EXPECT_EQ(data.v0state, element->GetV0CustomElementState()) << data.name;
 
-    element = document.createElementNS(SVGNames::svgNamespaceURI, data.name,
+    element = document.createElementNS(svg_names::kNamespaceURI, data.name,
                                        ASSERT_NO_EXCEPTION);
     EXPECT_EQ(CustomElementState::kUncustomized,
               element->GetCustomElementState())
@@ -215,14 +217,15 @@ TEST(CustomElementTest,
      CreateElement_TagNameCaseHandlingCreatingCustomElement) {
   // register a definition
   std::unique_ptr<DummyPageHolder> holder(DummyPageHolder::Create());
+  ScriptState* script_state = ToScriptStateForMainWorld(&holder->GetFrame());
   CustomElementRegistry* registry =
       holder->GetFrame().DomWindow()->customElements();
   NonThrowableExceptionState should_not_throw;
   {
     CEReactionsScope reactions;
     TestCustomElementDefinitionBuilder builder;
-    registry->define("a-a", builder, ElementDefinitionOptions(),
-                     should_not_throw);
+    registry->DefineInternal(script_state, "a-a", builder,
+                             ElementDefinitionOptions(), should_not_throw);
   }
   CustomElementDefinition* definition =
       registry->DefinitionFor(CustomElementDescriptor("a-a", "a-a"));

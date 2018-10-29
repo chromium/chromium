@@ -32,14 +32,6 @@
 // Background color of the toolbar.
 @property(nonatomic, readonly) UIColor* backgroundColor;
 
-// Background color of the omnibox.
-// TODO(crbug.com/800266): Remove this property.
-@property(nonatomic, readonly) UIColor* omniboxBackgroundColor;
-
-// Border color of the omnibox.
-// TODO(crbug.com/800266): Remove this property.
-@property(nonatomic, readonly) UIColor* omniboxBorderColor;
-
 // Tint color of the buttons.
 @property(nonatomic, readonly) UIColor* buttonsTintColor;
 
@@ -52,14 +44,6 @@
 
 // Color for the spotlight view's background when the toolbar is dimmed.
 @property(nonatomic, readonly) UIColor* dimmedButtonsSpotlightColor;
-
-// Color of the title of the buttons for the normal state.
-// TODO(crbug.com/800266): Remove this property.
-@property(nonatomic, readonly) UIColor* buttonTitleNormalColor;
-
-// Color of the title of the buttons for the highlighted state.
-// TODO(crbug.com/800266): Remove this property.
-@property(nonatomic, readonly) UIColor* buttonTitleHighlightedColor;
 
 // Returns the background color of the location bar, with a |visibilityFactor|.
 // The |visibilityFactor| is here to alter the alpha value of the background

@@ -101,8 +101,8 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
     }
     // For Workers, Fetcher is lazily loaded, so we must ensure it's available
     // here.
-    if (context->IsWorkerGlobalScope()) {
-      ToWorkerGlobalScope(context)->EnsureFetcher();
+    if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
+      scope->EnsureFetcher();
     }
     fetched_ = FontResourceHelper::Create(
         FontResource::Fetch(params, context->Fetcher(), client),
@@ -131,7 +131,7 @@ void CSSFontFaceSrcValue::RestoreCachedResourceIfNeeded(
             fetched_->GetResource()->Options().content_security_policy_option);
   context->Fetcher()->EmulateLoadStartedForInspector(
       fetched_->GetResource(), KURL(resource_url),
-      WebURLRequest::kRequestContextFont, FetchInitiatorTypeNames::css);
+      mojom::RequestContextType::FONT, FetchInitiatorTypeNames::css);
 }
 
 bool CSSFontFaceSrcValue::Equals(const CSSFontFaceSrcValue& other) const {

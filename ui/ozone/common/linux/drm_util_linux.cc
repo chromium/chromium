@@ -75,19 +75,19 @@ gfx::BufferFormat GetBufferFormatFromFourCCFormat(int format) {
 }
 
 bool IsValidBufferFormat(uint32_t current_format) {
-  switch (GetBufferFormatFromFourCCFormat(current_format)) {
-    case gfx::BufferFormat::R_8:
-    case gfx::BufferFormat::RG_88:
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::RGBX_8888:
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-    case gfx::BufferFormat::BGRX_1010102:
-    case gfx::BufferFormat::RGBX_1010102:
-    case gfx::BufferFormat::BGR_565:
-    case gfx::BufferFormat::UYVY_422:
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-    case gfx::BufferFormat::YVU_420:
+  switch (current_format) {
+    case DRM_FORMAT_R8:
+    case DRM_FORMAT_GR88:
+    case DRM_FORMAT_ABGR8888:
+    case DRM_FORMAT_XBGR8888:
+    case DRM_FORMAT_ARGB8888:
+    case DRM_FORMAT_XRGB8888:
+    case DRM_FORMAT_XRGB2101010:
+    case DRM_FORMAT_XBGR2101010:
+    case DRM_FORMAT_RGB565:
+    case DRM_FORMAT_UYVY:
+    case DRM_FORMAT_NV12:
+    case DRM_FORMAT_YVU420:
       return true;
     default:
       return false;

@@ -29,7 +29,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_type_preference_provider.h"
 #include "extensions/buildflags/buildflags.h"
-#include "net/url_request/url_request_context_getter.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_registry_observer.h"
@@ -37,7 +36,6 @@
 #endif
 
 class Browser;
-class GoogleServiceAuthError;
 class PermissionRequestCreator;
 class Profile;
 class SupervisedUserServiceObserver;
@@ -49,10 +47,6 @@ class SupervisedUserWhitelistService;
 namespace base {
 class FilePath;
 class Version;
-}
-
-namespace content {
-class WebContents;
 }
 
 namespace extensions {
@@ -77,10 +71,6 @@ class SupervisedUserService : public KeyedService,
 #endif
                               public SupervisedUserURLFilter::Observer {
  public:
-  using NavigationBlockedCallback =
-      base::RepeatingCallback<void(content::WebContents*)>;
-  using AuthErrorCallback =
-      base::OnceCallback<void(const GoogleServiceAuthError&)>;
   using SuccessCallback = base::OnceCallback<void(bool)>;
 
   class Delegate {
@@ -171,9 +161,6 @@ class SupervisedUserService : public KeyedService,
   void InitSync(const std::string& refresh_token);
 #endif
 
-  void AddNavigationBlockedCallback(const NavigationBlockedCallback& callback);
-  void DidBlockNavigation(content::WebContents* web_contents);
-
   void AddObserver(SupervisedUserServiceObserver* observer);
   void RemoveObserver(SupervisedUserServiceObserver* observer);
 
@@ -204,8 +191,6 @@ class SupervisedUserService : public KeyedService,
  private:
   friend class SupervisedUserServiceExtensionTestBase;
   friend class SupervisedUserServiceFactory;
-  FRIEND_TEST_ALL_PREFIXES(SingleClientSupervisedUserSettingsSyncTest, Sanity);
-  FRIEND_TEST_ALL_PREFIXES(SupervisedUserServiceTest, ClearOmitOnRegistration);
   FRIEND_TEST_ALL_PREFIXES(
       SupervisedUserServiceExtensionTest,
       ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls);
@@ -323,9 +308,6 @@ class SupervisedUserService : public KeyedService,
   // corresponding preference is changed.
   void UpdateManualURLs();
 
-  // Returns the human readable name of the supervised user.
-  std::string GetSupervisedUserName() const;
-
   // Subscribes to the SupervisedUserPrefStore, refreshes
   // |includes_sync_sessions_type_| and triggers reconfiguring the
   // ProfileSyncService.
@@ -346,8 +328,6 @@ class SupervisedUserService : public KeyedService,
   PrefChangeRegistrar pref_change_registrar_;
 
   bool is_profile_active_;
-
-  std::vector<NavigationBlockedCallback> navigation_blocked_callbacks_;
 
   // True only when |Init()| method has been called.
   bool did_init_;

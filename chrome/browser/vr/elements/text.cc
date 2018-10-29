@@ -101,7 +101,6 @@ bool GetFontList(const std::string& preferred_font_name,
   std::vector<gfx::Font> fonts{preferred_font};
 
   std::set<std::string> names;
-  // TODO(acondor): Query BrowserProcess to obtain the application locale.
   for (UChar32 c : CollectDifferentChars(text)) {
     std::string name;
     bool found_name = GetFallbackFontNameForChar(preferred_font, c, "", &name);

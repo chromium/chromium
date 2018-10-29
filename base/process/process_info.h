@@ -10,16 +10,6 @@
 
 namespace base {
 
-class Time;
-
-// Vends information about the current process.
-class BASE_EXPORT CurrentProcessInfo {
- public:
-  // Returns the time at which the process was launched. May be empty if an
-  // error occurred retrieving the information.
-  static const Time CreationTime();
-};
-
 #if defined(OS_WIN)
 enum IntegrityLevel {
   INTEGRITY_UNKNOWN,

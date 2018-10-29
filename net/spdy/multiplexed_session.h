@@ -11,11 +11,6 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_stream.h"
 #include "net/ssl/ssl_info.h"
-#include "net/ssl/token_binding.h"
-
-namespace crypto {
-class ECPrivateKey;
-}  // namespace crypto
 
 namespace net {
 
@@ -31,13 +26,6 @@ class NET_EXPORT_PRIVATE MultiplexedSession {
   // any. Returns true and fills in |endpoint| if it is available; returns false
   // and does not modify |endpoint| if it is unavailable.
   virtual bool GetRemoteEndpoint(IPEndPoint* endpoint) = 0;
-
-  // Generates the signature used in Token Binding using key |*key| and for a
-  // Token Binding of type |tb_type|, putting the signature in |*out|. Returns a
-  // net error code.
-  virtual Error GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                         TokenBindingType tb_type,
-                                         std::vector<uint8_t>* out) = 0;
 };
 
 // A handle to a multiplexed session which will be valid even after the
@@ -57,13 +45,6 @@ class NET_EXPORT_PRIVATE MultiplexedSessionHandle {
 
   // Caches SSL info from the underlying session.
   void SaveSSLInfo();
-
-  // Generates the signature used in Token Binding using key |*key| and for a
-  // Token Binding of type |tb_type|, putting the signature in |*out|. Returns a
-  // net error code.
-  Error GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                 TokenBindingType tb_type,
-                                 std::vector<uint8_t>* out);
 
  private:
   base::WeakPtr<MultiplexedSession> session_;

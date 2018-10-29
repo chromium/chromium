@@ -38,9 +38,9 @@ void MojoCdmFactory::Create(
     const CdmCreatedCB& cdm_created_cb) {
   DVLOG(2) << __func__ << ": " << key_system;
 
-  if (security_origin.unique()) {
+  if (security_origin.opaque()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::Bind(cdm_created_cb, nullptr, "Invalid origin."));
+        FROM_HERE, base::BindOnce(cdm_created_cb, nullptr, "Invalid origin."));
     return;
   }
 
@@ -55,7 +55,7 @@ void MojoCdmFactory::Create(
         new AesDecryptor(session_message_cb, session_closed_cb,
                          session_keys_change_cb, session_expiration_update_cb));
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::Bind(cdm_created_cb, cdm, ""));
+        FROM_HERE, base::BindOnce(cdm_created_cb, cdm, ""));
     return;
   }
 #endif

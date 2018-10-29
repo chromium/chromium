@@ -121,10 +121,17 @@ cr.define('chrome.sync', function() {
   };
 
   /**
-   * Triggers a RequestStop call on the SyncService.
+   * Triggers a RequestStop(KEEP_DATA) call on the SyncService.
    */
-  var requestStop = function() {
-    chrome.send('requestStop');
+  var requestStopKeepData = function() {
+    chrome.send('requestStopKeepData');
+  };
+
+  /**
+   * Triggers a RequestStop(CLEAR_DATA) call on the SyncService.
+   */
+  var requestStopClearData = function() {
+    chrome.send('requestStopClearData');
   };
 
   /**
@@ -185,7 +192,8 @@ cr.define('chrome.sync', function() {
     setIncludeSpecifics: setIncludeSpecifics,
     writeUserEvent: writeUserEvent,
     requestStart: requestStart,
-    requestStop: requestStop,
+    requestStopKeepData: requestStopKeepData,
+    requestStopClearData: requestStopClearData,
     triggerRefresh: triggerRefresh,
   };
 });

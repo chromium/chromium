@@ -71,22 +71,6 @@ bool IsArcAvailable() {
           base::FeatureList::IsEnabled(kEnableArcFeature));
 }
 
-bool IsWebstoreSearchEnabled() {
-  return false;
-}
-
-bool IsPlayStoreAvailable() {
-  if (IsRobotOrOfflineDemoAccountMode())
-    return false;
-  const auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(chromeos::switches::kArcStartMode))
-    return true;
-
-  const std::string value =
-      command_line->GetSwitchValueASCII(chromeos::switches::kArcStartMode);
-  return value != kAlwaysStartWithNoPlayStore;
-}
-
 bool ShouldArcAlwaysStart() {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(chromeos::switches::kArcStartMode))
@@ -94,6 +78,11 @@ bool ShouldArcAlwaysStart() {
   const std::string value =
       command_line->GetSwitchValueASCII(chromeos::switches::kArcStartMode);
   return value == kAlwaysStartWithNoPlayStore || value == kAlwaysStart;
+}
+
+bool ShouldArcAlwaysStartWithNoPlayStore() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+             chromeos::switches::kArcStartMode) == kAlwaysStartWithNoPlayStore;
 }
 
 bool ShouldShowOptInForTesting() {

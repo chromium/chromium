@@ -18,9 +18,6 @@ struct BeginFrameArgs;
 
 class SurfaceObserver {
  public:
-  // Called when a Surface with a new SurfaceId is created.
-  virtual void OnSurfaceCreated(const SurfaceId& surface_id) = 0;
-
   // Called when a CompositorFrame with a new SurfaceId activates for the first
   // time.
   virtual void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) = 0;
@@ -40,8 +37,7 @@ class SurfaceObserver {
   // in response to a BeginFrame, or a CopyOutputRequest is issued.
   //
   // |ack.sequence_number| is only valid if called in response to a BeginFrame.
-  // Should return true if this causes a Display to be damaged resulting in a
-  // draw.
+  // Should return true if this causes a Display to be damaged.
   virtual bool OnSurfaceDamaged(const SurfaceId& surface_id,
                                 const BeginFrameAck& ack) = 0;
 

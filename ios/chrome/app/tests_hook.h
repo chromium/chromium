@@ -36,16 +36,6 @@ bool DisableSigninRecallPromo();
 // infobar won't be shown during testing.
 bool DisableUpdateService();
 
-// TODO(crbug.com/800266): Removes this hook.
-// Returns true if the first phase of the UI refresh will be displayed,
-// overriding the flag value.
-bool ForceUIRefreshPhase1();
-
-// TODO(crbug.com/885003) : Remove this hook.
-// Returns true if the WKWebView snapshotting API will be used, overriding the
-// flag value.
-bool ForceWKWebViewSnapshots();
-
 // Global integration tests setup.  This is not used by EarlGrey-based
 // integration tests.
 void SetUpTestsIfPresent();

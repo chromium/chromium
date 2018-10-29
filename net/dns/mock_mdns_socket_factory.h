@@ -69,6 +69,7 @@ class MockMDnsDatagramServerSocket : public DatagramServerSocket {
 
   MOCK_METHOD0(AllowAddressReuse, void());
   MOCK_METHOD0(AllowBroadcast, void());
+  MOCK_METHOD0(AllowAddressSharingForMulticast, void());
 
   MOCK_CONST_METHOD1(JoinGroup, int(const IPAddress& group_address));
   MOCK_CONST_METHOD1(LeaveGroup, int(const IPAddress& address));

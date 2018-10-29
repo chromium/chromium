@@ -81,7 +81,11 @@ class ImeObserver : public input_method::InputMethodEngineBase::Observer {
   bool ShouldForwardKeyEvent() const;
 
   // Returns true if there are any listeners on the given event.
+  // TODO(https://crbug.com/835699): Merge this with |ExtensionHasListener|.
   bool HasListener(const std::string& event_name) const;
+
+  // Returns true if the extension has any listeners on the given event.
+  bool ExtensionHasListener(const std::string& event_name) const;
 
   // Functions used to convert InputContext struct to string
   std::string ConvertInputContextType(

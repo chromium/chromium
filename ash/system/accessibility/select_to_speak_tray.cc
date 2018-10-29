@@ -39,7 +39,7 @@ SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf)
   const int horizontal_padding = (kTrayItemSize - inactive_image_.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(vertical_padding, horizontal_padding)));
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(
+  icon_->set_tooltip_text(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK));
   tray_container()->AddChildView(icon_);
   CheckStatusAndUpdateIcon();
@@ -82,19 +82,11 @@ void SelectToSpeakTray::UpdateIconsForSession() {
       Shell::Get()->session_controller()->GetSessionState();
   SkColor color = TrayIconColor(session_state);
 
-  if (chromeos::switches::ShouldUseShelfNewUi()) {
-    inactive_image_ =
-        gfx::CreateVectorIcon(kSystemTraySelectToSpeakNewuiIcon, color);
-    selecting_image_ =
-        gfx::CreateVectorIcon(kSystemTraySelectToSpeakActiveNewuiIcon, color);
-    speaking_image_ = gfx::CreateVectorIcon(kSystemTrayStopNewuiIcon, color);
-  } else {
-    inactive_image_ =
-        gfx::CreateVectorIcon(kSystemTraySelectToSpeakIcon, color);
-    selecting_image_ =
-        gfx::CreateVectorIcon(kSystemTraySelectToSpeakActiveIcon, color);
-    speaking_image_ = gfx::CreateVectorIcon(kSystemTrayStopIcon, color);
-  }
+  inactive_image_ =
+      gfx::CreateVectorIcon(kSystemTraySelectToSpeakNewuiIcon, color);
+  selecting_image_ =
+      gfx::CreateVectorIcon(kSystemTraySelectToSpeakActiveNewuiIcon, color);
+  speaking_image_ = gfx::CreateVectorIcon(kSystemTrayStopNewuiIcon, color);
 }
 
 void SelectToSpeakTray::CheckStatusAndUpdateIcon() {

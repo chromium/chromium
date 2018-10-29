@@ -73,6 +73,8 @@ void CloseGpuMemoryBufferHandle(const gfx::GpuMemoryBufferHandle& handle) {
 #endif
 
 // Returns true if the CPU is an Intel Kaby Lake or later.
+// cpu platform id's are referenced from the following file in kernel source
+// arch/x86/include/asm/intel-family.h
 bool IsKabyLakeOrLater() {
   constexpr int kPentiumAndLaterFamily = 0x06;
   constexpr int kFirstKabyLakeModelId = 0x8E;
@@ -83,6 +85,15 @@ bool IsKabyLakeOrLater() {
   return is_kaby_lake_or_later;
 }
 
+bool IsGeminiLakeOrLater() {
+  constexpr int kPentiumAndLaterFamily = 0x06;
+  constexpr int kGeminiLakeModelId = 0x7A;
+  static base::CPU cpuid;
+  static bool is_geminilake_or_later =
+      cpuid.family() == kPentiumAndLaterFamily &&
+      cpuid.model() >= kGeminiLakeModelId;
+  return is_geminilake_or_later;
+}
 }  // namespace
 
 #define RETURN_AND_NOTIFY_ON_FAILURE(result, log, error_code, ret) \
@@ -133,7 +144,8 @@ void VaapiVideoDecodeAccelerator::NotifyError(Error error) {
 
   // Post Cleanup() as a task so we don't recursively acquire lock_.
   task_runner_->PostTask(
-      FROM_HERE, base::Bind(&VaapiVideoDecodeAccelerator::Cleanup, weak_this_));
+      FROM_HERE,
+      base::BindOnce(&VaapiVideoDecodeAccelerator::Cleanup, weak_this_));
 
   VLOGF(1) << "Notifying of error " << error;
   if (client_) {
@@ -207,7 +219,8 @@ bool VaapiVideoDecodeAccelerator::Initialize(const Config& config,
         std::make_unique<VaapiVP8Accelerator>(this, vaapi_wrapper_)));
   } else if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
     decoder_.reset(new VP9Decoder(
-        std::make_unique<VaapiVP9Accelerator>(this, vaapi_wrapper_)));
+        std::make_unique<VaapiVP9Accelerator>(this, vaapi_wrapper_),
+        config.container_color_space));
   } else {
     VLOGF(1) << "Unsupported profile " << GetProfileName(profile);
     return false;
@@ -297,7 +310,7 @@ void VaapiVideoDecodeAccelerator::QueueInputBuffer(
     scoped_refptr<DecoderBuffer> buffer,
     int32_t bitstream_id) {
   DVLOGF(4) << "Queueing new input buffer id: " << bitstream_id
-            << " size: " << buffer->data_size();
+            << " size: " << (buffer->end_of_stream() ? 0 : buffer->data_size());
   DCHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media,gpu", "QueueInputBuffer", "input_id", bitstream_id);
 
@@ -321,8 +334,8 @@ void VaapiVideoDecodeAccelerator::QueueInputBuffer(
     case kIdle:
       state_ = kDecoding;
       decoder_thread_task_runner_->PostTask(
-          FROM_HERE, base::Bind(&VaapiVideoDecodeAccelerator::DecodeTask,
-                                base::Unretained(this)));
+          FROM_HERE, base::BindOnce(&VaapiVideoDecodeAccelerator::DecodeTask,
+                                    base::Unretained(this)));
       break;
 
     case kDecoding:
@@ -535,9 +548,10 @@ void VaapiVideoDecodeAccelerator::TryFinishSurfaceSetChange() {
   VideoPixelFormat format = GfxBufferFormatToVideoPixelFormat(
       vaapi_picture_factory_->GetBufferFormat());
   task_runner_->PostTask(
-      FROM_HERE, base::Bind(&Client::ProvidePictureBuffers, client_,
-                            requested_num_pics_, format, 1, requested_pic_size_,
-                            vaapi_picture_factory_->GetGLTextureTarget()));
+      FROM_HERE,
+      base::BindOnce(&Client::ProvidePictureBuffers, client_,
+                     requested_num_pics_, format, 1, requested_pic_size_,
+                     vaapi_picture_factory_->GetGLTextureTarget()));
 }
 
 void VaapiVideoDecodeAccelerator::Decode(
@@ -618,9 +632,10 @@ void VaapiVideoDecodeAccelerator::AssignPictureBuffers(
     surfaces_available_.Signal();
   }
 
-  decode_using_client_picture_buffers_ = !va_surface_ids.empty() &&
-                                         IsKabyLakeOrLater() &&
-                                         profile_ == VP9PROFILE_PROFILE0;
+  decode_using_client_picture_buffers_ =
+      !va_surface_ids.empty() &&
+      (IsKabyLakeOrLater() || IsGeminiLakeOrLater()) &&
+      profile_ == VP9PROFILE_PROFILE0;
 
   // If we have some |va_surface_ids|, use them for decode, otherwise ask
   // |vaapi_wrapper_| to allocate them for us.
@@ -644,8 +659,8 @@ void VaapiVideoDecodeAccelerator::AssignPictureBuffers(
   // Resume DecodeTask if it is still in decoding state.
   if (state_ == kDecoding) {
     decoder_thread_task_runner_->PostTask(
-        FROM_HERE, base::Bind(&VaapiVideoDecodeAccelerator::DecodeTask,
-                              base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&VaapiVideoDecodeAccelerator::DecodeTask,
+                                  base::Unretained(this)));
   }
 }
 
@@ -770,8 +785,8 @@ void VaapiVideoDecodeAccelerator::FinishFlush() {
     state_ = kIdle;
   } else {
     decoder_thread_task_runner_->PostTask(
-        FROM_HERE, base::Bind(&VaapiVideoDecodeAccelerator::DecodeTask,
-                              base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&VaapiVideoDecodeAccelerator::DecodeTask,
+                                  base::Unretained(this)));
   }
 
   task_runner_->PostTask(FROM_HERE,
@@ -814,8 +829,8 @@ void VaapiVideoDecodeAccelerator::Reset() {
   TRACE_COUNTER1("media,gpu", "Vaapi input buffers", input_buffers_.size());
 
   decoder_thread_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&VaapiVideoDecodeAccelerator::ResetTask,
-                            base::Unretained(this)));
+      FROM_HERE, base::BindOnce(&VaapiVideoDecodeAccelerator::ResetTask,
+                                base::Unretained(this)));
 
   input_ready_.Signal();
   surfaces_available_.Signal();
@@ -859,8 +874,8 @@ void VaapiVideoDecodeAccelerator::FinishReset() {
   if (!input_buffers_.empty()) {
     state_ = kDecoding;
     decoder_thread_task_runner_->PostTask(
-        FROM_HERE, base::Bind(&VaapiVideoDecodeAccelerator::DecodeTask,
-                              base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&VaapiVideoDecodeAccelerator::DecodeTask,
+                                  base::Unretained(this)));
   }
 }
 

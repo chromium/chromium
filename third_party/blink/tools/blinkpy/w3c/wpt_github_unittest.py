@@ -171,6 +171,14 @@ class WPTGitHubTest(unittest.TestCase):
         with self.assertRaises(GitHubError):
             self.wpt_github.delete_remote_branch('rutabaga')
 
+    def test_add_comment_throws_github_error_on_non_201(self):
+        self.wpt_github.host.web.responses = [
+            {'status_code': 200},
+        ]
+
+        with self.assertRaises(GitHubError):
+            self.wpt_github.add_comment(123, 'rutabaga')
+
     def test_pr_for_chromium_commit_change_id_only(self):
         self.wpt_github.all_pull_requests = lambda: [
             PullRequest('PR1', 1, 'body\nChange-Id: I00c0ffee', 'open', []),

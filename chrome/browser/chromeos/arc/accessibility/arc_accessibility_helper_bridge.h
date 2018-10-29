@@ -119,15 +119,16 @@ class ArcAccessibilityHelperBridge
   arc::mojom::AccessibilityFilterType GetFilterTypeForProfile(Profile* profile);
   void UpdateFilterType();
   void UpdateWindowProperties(aura::Window* window);
+  void SetExploreByTouchEnabled(bool enabled);
   void UpdateTreeIdOfNotificationSurface(const std::string& notification_key,
-                                         uint32_t tree_id);
+                                         ui::AXTreeID tree_id);
 
   AXTreeSourceArc* GetFromTaskId(int32_t task_id);
   AXTreeSourceArc* CreateFromTaskId(int32_t task_id);
   AXTreeSourceArc* GetFromNotificationKey(const std::string& notification_key);
   AXTreeSourceArc* CreateFromNotificationKey(
       const std::string& notification_key);
-  AXTreeSourceArc* GetFromTreeId(int32_t tree_id) const;
+  AXTreeSourceArc* GetFromTreeId(ui::AXTreeID tree_id) const;
 
   bool activation_observer_added_ = false;
   Profile* const profile_;

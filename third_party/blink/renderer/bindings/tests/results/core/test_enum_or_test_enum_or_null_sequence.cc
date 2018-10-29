@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/union_container.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/union_container.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -91,7 +91,7 @@ void V8TestEnumOrTestEnumOrNullSequence::ToImpl(v8::Isolate* isolate, v8::Local<
     return;
 
   if (HasCallableIteratorSymbol(isolate, v8Value, exceptionState)) {
-    Vector<String> cppValue = NativeValueTraits<IDLSequence<IDLStringBase<kTreatNullAndUndefinedAsNullString>>>::NativeValue(isolate, v8Value, exceptionState);
+    Vector<String> cppValue = NativeValueTraits<IDLSequence<IDLStringOrNull>>::NativeValue(isolate, v8Value, exceptionState);
     if (exceptionState.HadException())
       return;
     const char* validValues[] = {

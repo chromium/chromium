@@ -230,8 +230,7 @@ std::string WebRequestRulesRegistry::RemoveRulesImpl(
 
   for (const std::string& identifier : rule_identifiers) {
     // Skip unknown rules.
-    RulesMap::iterator webrequest_rules_entry =
-        registered_rules.find(identifier);
+    auto webrequest_rules_entry = registered_rules.find(identifier);
     if (webrequest_rules_entry == registered_rules.end())
       continue;
 
@@ -372,7 +371,7 @@ void WebRequestRulesRegistry::AddTriggeredRules(
     const WebRequestCondition::MatchData& request_data,
     RuleSet* result) const {
   for (url_matcher::URLMatcherConditionSet::ID url_match : url_matches) {
-    RuleTriggers::const_iterator rule_trigger = rule_triggers_.find(url_match);
+    auto rule_trigger = rule_triggers_.find(url_match);
     CHECK(rule_trigger != rule_triggers_.end());
     if (!base::ContainsKey(*result, rule_trigger->second) &&
         rule_trigger->second->conditions().IsFulfilled(url_match, request_data))

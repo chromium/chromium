@@ -140,6 +140,9 @@ CORE_EXPORT VisiblePosition NextWordPosition(const VisiblePosition&);
 CORE_EXPORT VisiblePosition StartOfSentence(const VisiblePosition&);
 CORE_EXPORT VisiblePositionInFlatTree
 StartOfSentence(const VisiblePositionInFlatTree&);
+CORE_EXPORT PositionWithAffinity EndOfSentence(const Position&);
+CORE_EXPORT PositionInFlatTreeWithAffinity
+EndOfSentence(const PositionInFlatTree&);
 CORE_EXPORT VisiblePosition EndOfSentence(const VisiblePosition&);
 CORE_EXPORT VisiblePositionInFlatTree
 EndOfSentence(const VisiblePositionInFlatTree&);

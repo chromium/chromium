@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/event_page_request_manager_factory.h"
 #include "chrome/browser/media/router/media_router_factory.h"
@@ -78,7 +79,8 @@ class MediaRouteControllerTest : public ::testing::Test {
   void SetUpMockObjects() {
     request_manager_ = static_cast<MockEventPageRequestManager*>(
         EventPageRequestManagerFactory::GetInstance()->SetTestingFactoryAndUse(
-            &profile_, &MockEventPageRequestManager::Create));
+            &profile_,
+            base::BindRepeating(&MockEventPageRequestManager::Create)));
     request_manager_->set_mojo_connections_ready_for_test(true);
   }
 

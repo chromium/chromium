@@ -24,36 +24,13 @@ class WorkletThreadHolder {
     return thread_holder_instance_;
   }
 
-  static void EnsureInstance(const WebThreadCreationParams& params) {
+  static void EnsureInstance(const ThreadCreationParams& params) {
     DCHECK(IsMainThread());
     MutexLocker locker(HolderInstanceMutex());
     if (thread_holder_instance_)
       return;
     thread_holder_instance_ = new WorkletThreadHolder<DerivedWorkletThread>;
     thread_holder_instance_->Initialize(WorkerBackingThread::Create(params));
-  }
-
-  static void EnsureInstance(WebThread* thread) {
-    DCHECK(IsMainThread());
-    MutexLocker locker(HolderInstanceMutex());
-    if (thread_holder_instance_)
-      return;
-    thread_holder_instance_ = new WorkletThreadHolder<DerivedWorkletThread>;
-    thread_holder_instance_->Initialize(WorkerBackingThread::Create(thread));
-  }
-
-  static void CreateForTest(const WebThreadCreationParams& params) {
-    MutexLocker locker(HolderInstanceMutex());
-    DCHECK(!thread_holder_instance_);
-    thread_holder_instance_ = new WorkletThreadHolder<DerivedWorkletThread>;
-    thread_holder_instance_->Initialize(WorkerBackingThread::Create(params));
-  }
-
-  static void CreateForTest(WebThread* thread) {
-    MutexLocker locker(HolderInstanceMutex());
-    DCHECK(!thread_holder_instance_);
-    thread_holder_instance_ = new WorkletThreadHolder<DerivedWorkletThread>;
-    thread_holder_instance_->Initialize(WorkerBackingThread::Create(thread));
   }
 
   static void ClearInstance() {
@@ -87,10 +64,8 @@ class WorkletThreadHolder {
 
   void InitializeOnWorkletThread() {
     MutexLocker locker(HolderInstanceMutex());
-    DCHECK(!initialized_);
     thread_->InitializeOnBackingThread(
         WorkerBackingThreadStartupData::CreateDefault());
-    initialized_ = true;
   }
 
   void ShutdownAndWait() {
@@ -110,7 +85,6 @@ class WorkletThreadHolder {
   }
 
   std::unique_ptr<WorkerBackingThread> thread_;
-  bool initialized_ = false;
 
   static WorkletThreadHolder<DerivedWorkletThread>* thread_holder_instance_;
 };

@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
-#include <windowsx.h>
 
 #include "ui/events/event_constants.h"
 
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "base/win/windowsx_shim.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"

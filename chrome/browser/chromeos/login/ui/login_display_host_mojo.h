@@ -25,7 +25,7 @@ class LoginDisplayMojo;
 class OobeUIDialogDelegate;
 class UserBoardViewMojo;
 class UserSelectionScreen;
-class MojoVersionInfoDispatcher;
+class MojoSystemInfoDispatcher;
 
 // A LoginDisplayHost instance that sends requests to the views-based signin
 // screen.
@@ -98,13 +98,19 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void UpdateAddUserButtonStatus() override;
 
   // LoginScreenClient::Delegate:
-  void HandleAuthenticateUser(const AccountId& account_id,
-                              const std::string& password,
-                              bool authenticated_by_pin,
-                              AuthenticateUserCallback callback) override;
-  void HandleAttemptUnlock(const AccountId& account_id) override;
+  void HandleAuthenticateUserWithPasswordOrPin(
+      const AccountId& account_id,
+      const std::string& password,
+      bool authenticated_by_pin,
+      AuthenticateUserWithPasswordOrPinCallback callback) override;
+  void HandleAuthenticateUserWithExternalBinary(
+      const AccountId& account_id,
+      AuthenticateUserWithExternalBinaryCallback callback) override;
+  void HandleEnrollUserWithExternalBinary(
+      EnrollUserWithExternalBinaryCallback callback) override;
+  void HandleAuthenticateUserWithEasyUnlock(
+      const AccountId& account_id) override;
   void HandleHardlockPod(const AccountId& account_id) override;
-  void HandleRecordClickOnLockIcon(const AccountId& account_id) override;
   void HandleOnFocusPod(const AccountId& account_id) override;
   void HandleOnNoPodFocused() override;
   bool HandleFocusLockScreenApps(bool reverse) override;
@@ -123,13 +129,14 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   // State associated with a pending authentication attempt.
   struct AuthState {
-    AuthState(AccountId account_id, AuthenticateUserCallback callback);
+    AuthState(AccountId account_id,
+              AuthenticateUserWithPasswordOrPinCallback callback);
     ~AuthState();
 
     // Account that is being authenticated.
     AccountId account_id;
     // Callback that should be executed the authentication result is available.
-    AuthenticateUserCallback callback;
+    AuthenticateUserWithPasswordOrPinCallback callback;
   };
   std::unique_ptr<AuthState> pending_auth_state_;
 
@@ -155,8 +162,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   KioskAppMenuUpdater kiosk_updater_;
 
-  // Updates UI when version info is changed.
-  std::unique_ptr<MojoVersionInfoDispatcher> version_info_updater_;
+  // Fetches system information and sends it to the UI over mojo.
+  std::unique_ptr<MojoSystemInfoDispatcher> system_info_updater_;
 
   // Prevents repeated calls to OnStartSigninScreen, which can happen when a
   // user cancels the Powerwash dialog in the login screen. Set to true on the

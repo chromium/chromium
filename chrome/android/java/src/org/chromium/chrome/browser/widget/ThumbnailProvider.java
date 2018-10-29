@@ -20,6 +20,10 @@ public interface ThumbnailProvider {
         @Nullable
         String getFilePath();
 
+        /** The mime type of the file. */
+        @Nullable
+        String getMimeType();
+
         /** Content ID that uniquely identifies the file. */
         @Nullable
         String getContentId();

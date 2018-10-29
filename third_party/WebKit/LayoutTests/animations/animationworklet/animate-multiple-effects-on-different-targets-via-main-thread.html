@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<style>
+#target {
+  width: 100px;
+  height: 100px;
+  background-color: #0f0;
+}
+#target2 {
+  width: 100px;
+  height: 100px;
+  background-color: #00f;
+  box-shadow: 4px 4px 25px #00f;
+}
+</style>
+
+<div id="target"></div>
+<div id="target2"></div>
+
+<script id="simple_animate" type="text/worklet">
+registerAnimator("test_animator", class {
+  animate(currentTime, effect) {
+    let effects = effect.getChildren();
+    effects[0].localTime = 1000;
+    effects[1].localTime = 1000;
+  }
+});
+</script>
+
+<script src="resources/animation-worklet-tests.js"></script>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+
+runInAnimationWorklet(
+  document.getElementById('simple_animate').textContent
+).then(_ => {
+  const effect = new KeyframeEffect(
+      document.getElementById("target"),
+      [
+        { background: '#0f0' },
+        { background: '#00f' },
+      ],
+      { duration: 2000 }
+  );
+
+  const effect2 = new KeyframeEffect(
+      document.getElementById("target2"),
+      [
+        { boxShadow: '4px 4px 25px #00f' },
+        { boxShadow: '4px 4px 25px #0f0' }
+      ],
+      { duration: 2000 }
+  );
+
+  const animation = new WorkletAnimation('test_animator',
+      [ effect, effect2 ]);
+  animation.play();
+
+  if (window.testRunner) {
+    waitTwoAnimationFrames( _ => {
+      console.log('background-color for the first target is: ' +
+          getComputedStyle(document.getElementById('target')).backgroundColor);
+      console.log('box-shadow for the second target is: ' +
+          getComputedStyle(document.getElementById('target2')).boxShadow);
+      testRunner.notifyDone();
+    });
+  }
+});
+</script>

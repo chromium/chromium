@@ -147,10 +147,13 @@ public abstract class ChromeFeatureList {
     }
 
     // Alphabetical:
+    public static final String AUTOFILL_ALLOW_NON_HTTP_ACTIVATION =
+            "AutofillAllowNonHttpActivation";
     public static final String ADJUST_WEBAPK_INSTALLATION_SPACE = "AdjustWebApkInstallationSpace";
     public static final String ANDROID_PAY_INTEGRATION_V1 = "AndroidPayIntegrationV1";
     public static final String ANDROID_PAY_INTEGRATION_V2 = "AndroidPayIntegrationV2";
     public static final String ANDROID_PAYMENT_APPS = "AndroidPaymentApps";
+    public static final String ANDROID_SITE_SETTINGS_UI = "AndroidSiteSettingsUI";
     public static final String APP_NOTIFICATION_STATUS_MESSAGING = "AppNotificationStatusMessaging";
     public static final String AUTOFILL_ASSISTANT = "AutofillAssistant";
     public static final String AUTOFILL_REFRESH_STYLE_ANDROID = "AutofillRefreshStyleAndroid";
@@ -160,16 +163,18 @@ public abstract class ChromeFeatureList {
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
     public static final String CCT_BACKGROUND_TAB = "CCTBackgroundTab";
     public static final String CCT_MODULE = "CCTModule";
+    public static final String CCT_MODULE_CACHE = "CCTModuleCache";
     public static final String CCT_EXTERNAL_LINK_HANDLING = "CCTExternalLinkHandling";
     public static final String CCT_PARALLEL_REQUEST = "CCTParallelRequest";
     public static final String CCT_POST_MESSAGE_API = "CCTPostMessageAPI";
     public static final String CCT_REDIRECT_PRECONNECT = "CCTRedirectPreconnect";
     public static final String CCT_RESOURCE_PREFETCH = "CCTResourcePrefetch";
+    public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
+            "CCTReportParallelRequestStatus";
     public static final String CHROME_DUET = "ChromeDuet";
     // TODO(mdjones): Remove CHROME_HOME_SWIPE_VELOCITY_FEATURE or rename.
     public static final String CHROME_HOME_SWIPE_VELOCITY_FEATURE = "ChromeHomeSwipeLogicVelocity";
     public static final String CHROME_MEMEX = "ChromeMemex";
-    public static final String CHROME_MODERN_FULL_ROLL = "ChromeModernFullRoll";
     public static final String CHROME_SMART_SELECTION = "ChromeSmartSelection";
     public static final String CLEAR_OLD_BROWSING_DATA = "ClearOldBrowsingData";
     public static final String CLIPBOARD_CONTENT_SETTING = "ClipboardContentSetting";
@@ -191,14 +196,13 @@ public abstract class ChromeFeatureList {
             "ContextualSearchUnityIntegration";
     public static final String CONTEXTUAL_SUGGESTIONS_ALTERNATE_CARD_LAYOUT =
             "ContextualSuggestionsAlternateCardLayout";
-    public static final String CONTEXTUAL_SUGGESTIONS_BOTTOM_SHEET =
-            "ContextualSuggestionsBottomSheet";
     public static final String CONTEXTUAL_SUGGESTIONS_BUTTON = "ContextualSuggestionsButton";
-    public static final String CONTEXTUAL_SUGGESTIONS_SLIM_PEEK_UI =
-            "ContextualSuggestionsSlimPeekUI";
     public static final String CONTEXTUAL_SUGGESTIONS_OPT_OUT = "ContextualSuggestionsOptOut";
+    public static final String CONTEXTUAL_SUGGESTIONS_IPH_REVERSE_SCROLL =
+            "ContextualSuggestionsIPHReverseScroll";
     public static final String CUSTOM_CONTEXT_MENU = "CustomContextMenu";
     public static final String CUSTOM_FEEDBACK_UI = "CustomFeedbackUi";
+    public static final String DEVELOPER_PREFERENCES = "DeveloperPreferences";
     // Enables the Data Reduction Proxy menu item in the main menu rather than under Settings on
     // Android.
     public static final String DATA_REDUCTION_MAIN_MENU = "DataReductionProxyMainMenu";
@@ -208,6 +212,7 @@ public abstract class ChromeFeatureList {
     public static final String DOWNLOAD_HOME_V2 = "DownloadHomeV2";
     public static final String DOWNLOADS_FOREGROUND = "DownloadsForeground";
     public static final String DOWNLOADS_LOCATION_CHANGE = "DownloadsLocationChange";
+    public static final String EPHEMERAL_TAB = "EphemeralTab";
     public static final String EXPERIMENTAL_APP_BANNERS = "ExperimentalAppBanners";
     public static final String EXPERIMENTAL_UI = "ExperimentalUi";
     public static final String EXPLICIT_LANGUAGE_ASK = "ExplicitLanguageAsk";
@@ -226,7 +231,7 @@ public abstract class ChromeFeatureList {
     public static final String INFLATE_TOOLBAR_ON_BACKGROUND_THREAD = "BackgroundToolbarInflation";
     public static final String INTEREST_FEED_CONTENT_SUGGESTIONS = "InterestFeedContentSuggestions";
     public static final String LANGUAGES_PREFERENCE = "LanguagesPreference";
-    public static final String LONG_PRESS_BACK_FOR_HISTORY = "LongPressBackForHistory";
+    public static final String JELLY_BEAN_SUPPORTED = "JellyBeanSupported";
     public static final String SEARCH_ENGINE_PROMO_EXISTING_DEVICE =
             "SearchEnginePromo.ExistingDevice";
     public static final String SEARCH_ENGINE_PROMO_NEW_DEVICE = "SearchEnginePromo.NewDevice";
@@ -239,7 +244,6 @@ public abstract class ChromeFeatureList {
     public static final String NO_CREDIT_CARD_ABORT = "NoCreditCardAbort";
     public static final String NTP_ARTICLE_SUGGESTIONS = "NTPArticleSuggestions";
     public static final String NTP_BUTTON = "NTPButton";
-    public static final String NTP_FOREIGN_SESSIONS_SUGGESTIONS = "NTPForeignSessionsSuggestions";
     public static final String NTP_LAUNCH_AFTER_INACTIVITY = "NTPLaunchAfterInactivity";
     public static final String NTP_SNIPPETS_INCREASED_VISIBILITY = "NTPSnippetsIncreasedVisibility";
     public static final String OFFLINE_INDICATOR = "OfflineIndicator";
@@ -251,8 +255,10 @@ public abstract class ChromeFeatureList {
             "OfflinePagesDescriptivePendingStatus";
     public static final String OFFLINE_PAGES_LIVE_PAGE_SHARING = "OfflinePagesLivePageSharing";
     public static final String OFFLINE_PAGES_PREFETCHING = "OfflinePagesPrefetching";
-    public static final String OMNIBOX_HIDE_SCHEME_DOMAIN_IN_STEADY_STATE =
-            "OmniboxUIExperimentHideSteadyStateUrlSchemeAndSubdomains";
+    public static final String OMNIBOX_HIDE_SCHEME_IN_STEADY_STATE =
+            "OmniboxUIExperimentHideSteadyStateUrlScheme";
+    public static final String OMNIBOX_HIDE_TRIVIAL_SUBDOMAINS_IN_STEADY_STATE =
+            "OmniboxUIExperimentHideSteadyStateUrlTrivialSubdomains";
     public static final String OMNIBOX_SPARE_RENDERER = "OmniboxSpareRenderer";
     public static final String OMNIBOX_VOICE_SEARCH_ALWAYS_VISIBLE =
             "OmniboxVoiceSearchAlwaysVisible";
@@ -264,6 +270,7 @@ public abstract class ChromeFeatureList {
     public static final String PWA_PERSISTENT_NOTIFICATION = "PwaPersistentNotification";
     public static final String READER_MODE_IN_CCT = "ReaderModeInCCT";
     public static final String REMOVE_NAVIGATION_HISTORY = "RemoveNavigationHistory";
+    public static final String SERVICE_MANAGER_FOR_DOWNLOAD = "ServiceManagerForDownload";
     public static final String SERVICE_WORKER_PAYMENT_APPS = "ServiceWorkerPaymentApps";
     public static final String SHOW_TRUSTED_PUBLISHER_URL = "ShowTrustedPublisherURL";
     public static final String SIMPLIFIED_NTP = "SimplifiedNTP";
@@ -273,12 +280,12 @@ public abstract class ChromeFeatureList {
     public static final String SUBRESOURCE_FILTER = "SubresourceFilter";
     public static final String QUERY_IN_OMNIBOX = "QueryInOmnibox";
     public static final String TAB_REPARENTING = "TabReparenting";
+    public static final String TRANSLATE_ANDROID_MANUAL_TRIGGER = "TranslateAndroidManualTrigger";
     public static final String TRUSTED_WEB_ACTIVITY = "TrustedWebActivity";
     public static final String TRUSTED_WEB_ACTIVITY_POST_MESSAGE = "TrustedWebActivityPostMessage";
     public static final String VIDEO_PERSISTENCE = "VideoPersistence";
     public static final String UNIFIED_CONSENT = "UnifiedConsent";
     public static final String VR_BROWSING_FEEDBACK = "VrBrowsingFeedback";
-    public static final String VR_BROWSING_NATIVE_ANDROID_UI = "VrBrowsingNativeAndroidUi";
     public static final String WEB_AUTH = "WebAuthentication";
     public static final String WEB_PAYMENTS = "WebPayments";
     public static final String WEB_PAYMENTS_METHOD_SECTION_ORDER_V2 =

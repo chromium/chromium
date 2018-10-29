@@ -3,10 +3,10 @@
 <link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/md_select_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="network_shared_css.html">
 
 <dom-module id="network-nameservers">
@@ -22,8 +22,8 @@
         margin-inline-start: 38px;
       }
 
-      paper-radio-group {
-        --paper-radio-group-item-padding: 12px;
+      cr-radio-group {
+        --cr-radio-group-item-padding: 12px;
         width: 100%;
       }
 
@@ -46,10 +46,9 @@
     </div>
 
     <div id="radioGroupDiv">
-      <paper-radio-group id="nameserverType" class="layout vertical"
+      <cr-radio-group id="nameserverType" class="layout vertical"
           selected="[[nameserversType_]]"
-          selectable="cr-radio-button"
-          on-paper-radio-group-changed="onTypeChange_"
+          on-selected-changed="onTypeChange_"
           aria-label="[[i18n('networkNameservers')]]">
         <!-- Automatic nameservers -->
         <cr-radio-button name="automatic">
@@ -91,7 +90,7 @@
             </template>
           </div>
         </template>
-      </paper-radio-group>
+      </cr-radio-group>
     </div>
 
   </template>

@@ -12,10 +12,26 @@ ClientChangeTracker::ClientChangeTracker() = default;
 
 ClientChangeTracker::~ClientChangeTracker() = default;
 
-bool ClientChangeTracker::IsProcessingChangeForWindow(aura::Window* window,
-                                                      ClientChangeType type) {
+bool ClientChangeTracker::IsProcessingChangeForWindow(
+    aura::Window* window,
+    ClientChangeType type) const {
+  return DoesCurrentChangeEqual(window, type, nullptr);
+}
+
+bool ClientChangeTracker::IsProcessingPropertyChangeForWindow(
+    aura::Window* window,
+    const void* property_key) const {
+  return DoesCurrentChangeEqual(window, ClientChangeType::kProperty,
+                                property_key);
+}
+
+bool ClientChangeTracker::DoesCurrentChangeEqual(
+    aura::Window* window,
+    ClientChangeType type,
+    const void* property_key) const {
   return current_change_ && current_change_->window() == window &&
-         current_change_->type() == type;
+         current_change_->type() == type &&
+         current_change_->property_key() == property_key;
 }
 
 }  // namespace ws

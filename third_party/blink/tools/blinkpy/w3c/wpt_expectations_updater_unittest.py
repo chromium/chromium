@@ -337,21 +337,21 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_skipped_specifiers_when_test_is_wontfix(self):
         host = self.mock_host()
-        expectations_path = '/test.checkout/LayoutTests/NeverFixTests'
+        expectations_path = '/test.checkout/wtests/NeverFixTests'
         host.filesystem.write_text_file(
             expectations_path,
             'crbug.com/111 [ Linux ] external/wpt/test.html [ WontFix ]\n')
-        host.filesystem.write_text_file('/test.checkout/LayoutTests/external/wpt/test.html', '')
+        host.filesystem.write_text_file('/test.checkout/wtests/external/wpt/test.html', '')
         updater = WPTExpectationsUpdater(host)
         self.assertEqual(updater.skipped_specifiers('external/wpt/test.html'), ['Precise', 'Trusty'])
 
     def test_specifiers_can_extend_to_all_platforms(self):
         host = self.mock_host()
-        expectations_path = '/test.checkout/LayoutTests/NeverFixTests'
+        expectations_path = '/test.checkout/wtests/NeverFixTests'
         host.filesystem.write_text_file(
             expectations_path,
             'crbug.com/111 [ Linux ] external/wpt/test.html [ WontFix ]\n')
-        host.filesystem.write_text_file('/test.checkout/LayoutTests/external/wpt/test.html', '')
+        host.filesystem.write_text_file('/test.checkout/wtests/external/wpt/test.html', '')
         updater = WPTExpectationsUpdater(host)
         self.assertTrue(updater.specifiers_can_extend_to_all_platforms(
             ['Mac10.10', 'Mac10.11', 'Win7', 'Win10'], 'external/wpt/test.html'))
@@ -387,11 +387,11 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_specifier_part_with_skipped_test(self):
         host = self.mock_host()
-        expectations_path = '/test.checkout/LayoutTests/NeverFixTests'
+        expectations_path = '/test.checkout/wtests/NeverFixTests'
         host.filesystem.write_text_file(
             expectations_path,
             'crbug.com/111 [ Linux Mac10.11 ] external/wpt/test.html [ WontFix ]\n')
-        host.filesystem.write_text_file('/test.checkout/LayoutTests/external/wpt/test.html', '')
+        host.filesystem.write_text_file('/test.checkout/wtests/external/wpt/test.html', '')
         updater = WPTExpectationsUpdater(host)
         self.assertEqual(
             updater.specifier_part('external/wpt/test.html', ['test-mac-mac10.10', 'test-win-win7', 'test-win-win10']), '')

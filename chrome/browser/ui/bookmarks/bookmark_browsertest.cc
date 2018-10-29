@@ -5,14 +5,17 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -29,14 +32,17 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/gfx/image/image_skia.h"
 
 using bookmarks::BookmarkModel;
+using bookmarks::BookmarkNode;
 using bookmarks::UrlAndTitle;
 
 namespace {
 const char kPersistBookmarkURL[] = "http://www.cnn.com/";
 const char kPersistBookmarkTitle[] = "CNN";
-} // namespace
+}  // namespace
 
 class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
  public:
@@ -74,9 +80,8 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
 
     base::RepeatingTimer timer;
     timer.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(15),
-        base::Bind(&CheckAnimation, browser(), runner->QuitClosure()));
+        FROM_HERE, base::TimeDelta::FromMilliseconds(15),
+        base::BindRepeating(&CheckAnimation, browser(), runner->QuitClosure()));
     runner->Run();
     return base::Time::Now() - start;
   }
@@ -109,8 +114,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, BookmarkBarVisibleWait) {
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_Persist) {
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
 
-  bookmarks::AddIfNotBookmarked(bookmark_model,
-                                GURL(kPersistBookmarkURL),
+  bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kPersistBookmarkURL),
                                 base::ASCIIToUTF16(kPersistBookmarkTitle));
 }
 
@@ -149,8 +153,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DISABLED_MultiProfile) {
   Browser* browser2 = observer.WaitForSingleNewBrowser();
   BookmarkModel* bookmark_model2 = WaitForBookmarkModel(browser2->profile());
 
-  bookmarks::AddIfNotBookmarked(bookmark_model1,
-                                GURL(kPersistBookmarkURL),
+  bookmarks::AddIfNotBookmarked(bookmark_model1, GURL(kPersistBookmarkURL),
                                 base::ASCIIToUTF16(kPersistBookmarkTitle));
   std::vector<UrlAndTitle> urls1, urls2;
   bookmark_model1->GetBookmarks(&urls1);
@@ -164,10 +167,10 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DISABLED_MultiProfile) {
 // Flaky on Linux: http://crbug.com/504869.
 #if defined(OS_LINUX)
 #define MAYBE_HideStarOnNonbookmarkedInterstitial \
-    DISABLED_HideStarOnNonbookmarkedInterstitial
+  DISABLED_HideStarOnNonbookmarkedInterstitial
 #else
 #define MAYBE_HideStarOnNonbookmarkedInterstitial \
-    HideStarOnNonbookmarkedInterstitial
+  HideStarOnNonbookmarkedInterstitial
 #endif
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
                        MAYBE_HideStarOnNonbookmarkedInterstitial) {
@@ -180,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
 
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
   GURL bookmark_url = embedded_test_server()->GetURL("example.test", "/");
-  bookmarks::AddIfNotBookmarked(bookmark_model,
-                                bookmark_url,
+  bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url,
                                 base::ASCIIToUTF16("Bookmark"));
 
   TestBookmarkTabHelperObserver bookmark_observer;
@@ -206,4 +208,97 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
   EXPECT_FALSE(bookmark_observer.is_starred());
 
   tab_helper->RemoveObserver(&bookmark_observer);
+}
+
+// Provides coverage for the Bookmark Manager bookmark drag and drag image
+// generation for dragging a single bookmark.
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
+  BookmarkModel* model = WaitForBookmarkModel(browser()->profile());
+  const base::string16 page_title(base::ASCIIToUTF16("foo"));
+  const GURL page_url("http://www.google.com");
+  const BookmarkNode* root = model->bookmark_bar_node();
+  const BookmarkNode* node = model->AddURL(root, 0, page_title, page_url);
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+
+  chrome::DoBookmarkDragCallback cb = base::BindLambdaForTesting(
+      [&run_loop, page_title, page_url](
+          const ui::OSExchangeData& drag_data, gfx::NativeView native_view,
+          ui::DragDropTypes::DragEventSource source, int operation) {
+        GURL url;
+        base::string16 title;
+        EXPECT_TRUE(drag_data.provider().GetURLAndTitle(
+            ui::OSExchangeData::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
+            &url, &title));
+        EXPECT_EQ(page_url, url);
+        EXPECT_EQ(page_title, title);
+#if !defined(OS_WIN)
+        // On Windows, GetDragImage() is a NOTREACHED() as the Windows
+        // implementation of OSExchangeData just sets the drag image on the OS
+        // API.
+        // See https://crbug.com/893388.
+        EXPECT_FALSE(drag_data.provider().GetDragImage().isNull());
+#endif
+        run_loop->Quit();
+      });
+
+  constexpr int kDragNodeIndex = 0;
+  chrome::DragBookmarksForTest(
+      browser()->profile(),
+      {{node},
+       kDragNodeIndex,
+       platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()),
+       ui::DragDropTypes::DRAG_EVENT_SOURCE_MOUSE},
+      std::move(cb));
+
+  run_loop->Run();
+}
+
+// Provides coverage for the Bookmark Manager bookmark drag and drag image
+// generation for dragging multiple bookmarks.
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
+  BookmarkModel* model = WaitForBookmarkModel(browser()->profile());
+  const base::string16 page_title(base::ASCIIToUTF16("foo"));
+  const GURL page_url("http://www.google.com");
+  const BookmarkNode* root = model->bookmark_bar_node();
+  const BookmarkNode* node1 = model->AddURL(root, 0, page_title, page_url);
+  const BookmarkNode* node2 = model->AddFolder(root, 0, page_title);
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+
+  chrome::DoBookmarkDragCallback cb = base::BindLambdaForTesting(
+      [&run_loop](const ui::OSExchangeData& drag_data,
+                  gfx::NativeView native_view,
+                  ui::DragDropTypes::DragEventSource source, int operation) {
+#if !defined(OS_MACOSX)
+        GURL url;
+        base::string16 title;
+        // On Mac 10.11 and 10.12, this returns true, even though we set no url.
+        // See https://crbug.com/893432.
+        EXPECT_FALSE(drag_data.provider().GetURLAndTitle(
+            ui::OSExchangeData::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
+            &url, &title));
+#endif
+#if !defined(OS_WIN)
+        // On Windows, GetDragImage() is a NOTREACHED() as the Windows
+        // implementation of OSExchangeData just sets the drag image on the OS
+        // API.
+        // See https://crbug.com/893388.
+        EXPECT_FALSE(drag_data.provider().GetDragImage().isNull());
+#endif
+        run_loop->Quit();
+      });
+
+  constexpr int kDragNodeIndex = 1;
+  chrome::DragBookmarksForTest(browser()->profile(),
+                               {
+                                   {node1, node2},
+                                   kDragNodeIndex,
+                                   platform_util::GetViewForWindow(
+                                       browser()->window()->GetNativeWindow()),
+                                   ui::DragDropTypes::DRAG_EVENT_SOURCE_MOUSE,
+                               },
+                               std::move(cb));
+
+  run_loop->Run();
 }

@@ -301,19 +301,30 @@ TEST_F(QueryTrackerTest, Query) {
   // Store FlushGeneration count after EndQuery is called
   uint32_t gen1 = GetFlushGeneration();
 
-  // Check CheckResultsAvailable.
-  EXPECT_FALSE(query->CheckResultsAvailable(helper_.get()));
+  bool flush_if_pending = false;
+  EXPECT_FALSE(query->CheckResultsAvailable(helper_.get(), flush_if_pending));
   EXPECT_FALSE(query->NeverUsed());
   EXPECT_TRUE(query->Pending());
 
+  // No flush should happen if |flush_if_pending| is false.
   uint32_t gen2 = GetFlushGeneration();
+  EXPECT_EQ(gen1, gen2);
+
+  flush_if_pending = true;
+
+  // Check CheckResultsAvailable.
+  EXPECT_FALSE(query->CheckResultsAvailable(helper_.get(), flush_if_pending));
+  EXPECT_FALSE(query->NeverUsed());
+  EXPECT_TRUE(query->Pending());
+
+  gen2 = GetFlushGeneration();
   EXPECT_NE(gen1, gen2);
 
   // Repeated calls to CheckResultsAvailable should not flush unnecessarily
-  EXPECT_FALSE(query->CheckResultsAvailable(helper_.get()));
+  EXPECT_FALSE(query->CheckResultsAvailable(helper_.get(), flush_if_pending));
   gen1 = GetFlushGeneration();
   EXPECT_EQ(gen1, gen2);
-  EXPECT_FALSE(query->CheckResultsAvailable(helper_.get()));
+  EXPECT_FALSE(query->CheckResultsAvailable(helper_.get(), flush_if_pending));
   gen1 = GetFlushGeneration();
   EXPECT_EQ(gen1, gen2);
 
@@ -323,7 +334,7 @@ TEST_F(QueryTrackerTest, Query) {
   sync->result = kResult;
 
   // Check CheckResultsAvailable.
-  EXPECT_TRUE(query->CheckResultsAvailable(helper_.get()));
+  EXPECT_TRUE(query->CheckResultsAvailable(helper_.get(), flush_if_pending));
   EXPECT_EQ(kResult, query->GetResult());
   EXPECT_FALSE(query->NeverUsed());
   EXPECT_FALSE(query->Pending());

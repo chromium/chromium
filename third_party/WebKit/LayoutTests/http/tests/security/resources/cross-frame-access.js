@@ -145,7 +145,7 @@ function canAccessFrame(iframeURL, iframeId, passMessage, failMessage)
 {
     if (window.testRunner) {
         testRunner.dumpAsText();
-        testRunner.dumpChildFramesAsText();
+        testRunner.dumpChildFrames();
         testRunner.waitUntilDone();
     }
 
@@ -186,7 +186,7 @@ function cannotAccessFrame(iframeURL, iframeId, passMessage, failMessage)
 {
     if (window.testRunner) {
         testRunner.dumpAsText();
-        testRunner.dumpChildFramesAsText();
+        testRunner.dumpChildFrames();
         testRunner.waitUntilDone();
     }
 

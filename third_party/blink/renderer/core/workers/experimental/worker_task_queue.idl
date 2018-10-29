@@ -7,8 +7,11 @@ enum TaskQueueType { "user-interaction", "background" };
 [
     Constructor(TaskQueueType queue_type),
     ConstructorCallWith=ExecutionContext,
+    Exposed=Window,
     RaisesException=Constructor,
-    RuntimeEnabled=WorkerTaskQueue
+    RuntimeEnabled=WorkerTaskQueue,
+    SecureContext
 ] interface WorkerTaskQueue {
-    [CallWith=ScriptState] Promise<any> postTask(CallbackFunctionTreatedAsScriptValue task, optional AbortSignal signal = null, any... arguments);
+    [CallWith=ScriptState] Promise<any> postFunction(CallbackFunctionTreatedAsScriptValue task, optional AbortSignal signal = null, any... arguments);
+    [CallWith=ScriptState] Task postTask(CallbackFunctionTreatedAsScriptValue task, any... arguments);
 };

@@ -40,7 +40,7 @@ class OptimizationGuideService {
   };
 
   explicit OptimizationGuideService(
-      const scoped_refptr<base::SingleThreadTaskRunner>& io_thread_task_runner);
+      const scoped_refptr<base::SingleThreadTaskRunner>& ui_thread_task_runner);
 
   virtual ~OptimizationGuideService();
 
@@ -62,22 +62,22 @@ class OptimizationGuideService {
   // Always called as part of a BEST_EFFORT priority task.
   void ProcessHintsInBackground(const ComponentInfo& component_info);
 
-  // Adds the observer on IO thread.
-  void AddObserverOnIOThread(OptimizationGuideServiceObserver* observer);
+  // Adds the observer on UI thread.
+  void AddObserverOnUIThread(OptimizationGuideServiceObserver* observer);
 
-  // Removes the observer on IO thread, if present.
-  void RemoveObserverOnIOThread(OptimizationGuideServiceObserver* observer);
+  // Removes the observer on UI thread, if present.
+  void RemoveObserverOnUIThread(OptimizationGuideServiceObserver* observer);
 
-  // Dispatches hints to listeners on IO thread.
-  void DispatchHintsOnIOThread(const proto::Configuration& config,
+  // Dispatches hints to listeners on UI thread.
+  void DispatchHintsOnUIThread(const proto::Configuration& config,
                                const ComponentInfo& component_info);
 
   // Runner for indexing tasks.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Runner for IO Thread tasks.
-  scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner_;
+  // Runner for UI Thread tasks.
+  scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
 
   // Observers receiving notifications on hints being processed.
   base::ObserverList<OptimizationGuideServiceObserver>::Unchecked observers_;

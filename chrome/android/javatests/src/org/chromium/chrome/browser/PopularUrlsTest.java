@@ -250,7 +250,7 @@ public class PopularUrlsTest {
             }
 
             @Override
-            public void onCrash(Tab tab, boolean sadTabShown) {
+            public void onCrash(Tab tab) {
                 crashedCallback.notifyCalled();
             }
         });

@@ -20,12 +20,6 @@ UI_BASE_EXPORT std::string ConvertAcceleratorsFromWindowsStyle(
 UI_BASE_EXPORT std::string RemoveWindowsStyleAccelerators(
     const std::string& label);
 
-// Escapes "&" characters by doubling them so that later calling
-// ConvertAcceleratorsFromWindowsStyle() will return the original string (except
-// with "_" characters doubled, to escape them for GTK).
-UI_BASE_EXPORT std::string EscapeWindowsStyleAccelerators(
-    const std::string& label);
-
 }  // namespace ui
 
 #endif  // UI_BASE_ACCELERATORS_MENU_LABEL_ACCELERATOR_UTIL_LINUX_H_

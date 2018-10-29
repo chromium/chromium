@@ -31,6 +31,7 @@
 #include "ash/new_window_controller.h"
 #include "ash/public/cpp/app_list/app_list_constants.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/interfaces/accessibility_controller.mojom.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/window_rotation.h"
@@ -50,7 +51,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/toast/toast_data.h"
 #include "ash/system/toast/toast_manager.h"
-#include "ash/system/tray/system_tray.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/touch/touch_observer_hud.h"
@@ -309,9 +309,7 @@ bool CanHandleCycleMru(const ui::Accelerator& accelerator) {
   // keyboard, but there's no easy way to do so, thus we block Alt+Tab when the
   // virtual keyboard is showing, even if it came from a real keyboard. See
   // http://crbug.com/638269
-  auto* keyboard_controller = keyboard::KeyboardController::Get();
-  return !(keyboard_controller->enabled() &&
-           keyboard_controller->IsKeyboardVisible());
+  return !keyboard::KeyboardController::Get()->IsKeyboardVisible();
 }
 
 void HandleNextIme() {
@@ -349,12 +347,7 @@ display::Display::Rotation GetNextRotation(display::Display::Rotation current) {
   return display::Display::ROTATE_0;
 }
 
-// Rotates the screen.
-void HandleRotateScreen() {
-  if (Shell::Get()->display_manager()->IsInUnifiedMode())
-    return;
-
-  base::RecordAction(UserMetricsAction("Accel_Rotate_Screen"));
+void RotateScreen() {
   gfx::Point point = display::Screen::GetScreen()->GetCursorScreenPoint();
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(point);
@@ -363,6 +356,31 @@ void HandleRotateScreen() {
   Shell::Get()->display_configuration_controller()->SetDisplayRotation(
       display.id(), GetNextRotation(display_info.GetActiveRotation()),
       display::Display::RotationSource::USER);
+}
+
+// Rotates the screen.
+void HandleRotateScreen() {
+  if (Shell::Get()->display_manager()->IsInUnifiedMode())
+    return;
+
+  base::RecordAction(UserMetricsAction("Accel_Rotate_Screen"));
+  const bool dialog_ever_accepted =
+      Shell::Get()
+          ->accessibility_controller()
+          ->HasDisplayRotationAcceleratorDialogBeenAccepted();
+
+  if (!dialog_ever_accepted) {
+    Shell::Get()->accelerator_controller()->MaybeShowConfirmationDialog(
+        IDS_ASH_ROTATE_SCREEN_TITLE, IDS_ASH_ROTATE_SCREEN_BODY,
+        base::BindOnce([]() {
+          RotateScreen();
+          Shell::Get()
+              ->accessibility_controller()
+              ->SetDisplayRotationAcceleratorDialogBeenAccepted();
+        }));
+  } else {
+    RotateScreen();
+  }
 }
 
 void HandleRestoreTab() {
@@ -387,9 +405,8 @@ void HandleRotateActiveWindow() {
           std::make_unique<WindowRotation>(360, active_window->layer())));
 }
 
-void HandleShowKeyboardOverlay() {
-  base::RecordAction(UserMetricsAction("Accel_Show_Keyboard_Overlay"));
-  Shell::Get()->new_window_controller()->ShowKeyboardOverlay();
+void HandleShowKeyboardShortcutViewer() {
+  Shell::Get()->new_window_controller()->ShowKeyboardShortcutViewer();
 }
 
 void HandleTakeWindowScreenshot() {
@@ -408,61 +425,27 @@ void HandleTakeScreenshot() {
   Shell::Get()->screenshot_controller()->TakeScreenshotForAllRootWindows();
 }
 
-bool CanHandleToggleMessageCenterBubble() {
-  if (features::IsSystemTrayUnifiedEnabled())
-    return true;
+void HandleToggleSystemTrayBubbleInternal() {
   aura::Window* target_root = Shell::GetRootWindowForNewWindows();
-  StatusAreaWidget* status_area_widget =
-      Shelf::ForWindow(target_root)->shelf_widget()->status_area_widget();
-  return status_area_widget &&
-         status_area_widget->notification_tray()->visible();
+  UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
+                                ->GetStatusAreaWidget()
+                                ->unified_system_tray();
+  if (tray->IsBubbleShown()) {
+    tray->CloseBubble();
+  } else {
+    tray->ShowBubble(false /* show_by_click */);
+    tray->ActivateBubble();
+  }
 }
 
 void HandleToggleSystemTrayBubble() {
   base::RecordAction(UserMetricsAction("Accel_Toggle_System_Tray_Bubble"));
-  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
-  if (features::IsSystemTrayUnifiedEnabled()) {
-    UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
-                                  ->GetStatusAreaWidget()
-                                  ->unified_system_tray();
-    if (tray->IsBubbleShown()) {
-      tray->CloseBubble();
-    } else {
-      tray->ShowBubble(false /* show_by_click */);
-      tray->ActivateBubble();
-    }
-  } else {
-    SystemTray* tray =
-        RootWindowController::ForWindow(target_root)->GetSystemTray();
-    if (tray->HasSystemBubble()) {
-      tray->CloseBubble();
-    } else {
-      tray->ShowDefaultView(BUBBLE_CREATE_NEW, false /* show_by_click */);
-      tray->ActivateBubble();
-    }
-  }
+  HandleToggleSystemTrayBubbleInternal();
 }
 
 void HandleToggleMessageCenterBubble() {
   base::RecordAction(UserMetricsAction("Accel_Toggle_Message_Center_Bubble"));
-  if (features::IsSystemTrayUnifiedEnabled()) {
-    HandleToggleSystemTrayBubble();
-    return;
-  }
-  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
-  StatusAreaWidget* status_area_widget =
-      Shelf::ForWindow(target_root)->shelf_widget()->status_area_widget();
-  if (!status_area_widget)
-    return;
-  NotificationTray* notification_tray = status_area_widget->notification_tray();
-  if (!notification_tray->visible())
-    return;
-  if (notification_tray->IsMessageCenterVisible()) {
-    notification_tray->CloseBubble();
-  } else {
-    notification_tray->ShowBubble(false /* show_by_click */);
-    notification_tray->ActivateBubble();
-  }
+  HandleToggleSystemTrayBubbleInternal();
 }
 
 void HandleShowTaskManager() {
@@ -812,9 +795,8 @@ bool CanHandleToggleDictation() {
 
 void HandleToggleDictation() {
   base::RecordAction(UserMetricsAction("Accel_Toggle_Dictation"));
-  UserMetricsRecorder::RecordUserToggleDictation(
-      DictationToggleMethod::kToggleByKeyboard);
-  Shell::Get()->accessibility_controller()->ToggleDictation();
+  Shell::Get()->accessibility_controller()->ToggleDictationFromSource(
+      mojom::DictationToggleSource::kKeyboard);
 }
 
 bool CanHandleToggleDockedMagnifier() {
@@ -983,7 +965,7 @@ void HandleVolumeMute(mojom::VolumeController* volume_controller,
     base::RecordAction(UserMetricsAction("Accel_VolumeMute_F8"));
 
   if (volume_controller)
-    volume_controller->VolumeMute();
+    volume_controller->VolumeMuteToggle();
 }
 
 void HandleVolumeUp(mojom::VolumeController* volume_controller,
@@ -1272,6 +1254,7 @@ bool AcceleratorController::CanPerformAction(
     case DEBUG_PRINT_LAYER_HIERARCHY:
     case DEBUG_PRINT_VIEW_HIERARCHY:
     case DEBUG_PRINT_WINDOW_HIERARCHY:
+    case DEBUG_SHOW_QUICK_LAUNCH:
     case DEBUG_SHOW_TOAST:
     case DEBUG_TOGGLE_DEVICE_SCALE_FACTOR:
     case DEBUG_TOGGLE_SHOW_DEBUG_BORDERS:
@@ -1332,7 +1315,7 @@ bool AcceleratorController::CanPerformAction(
     case TOGGLE_FULLSCREEN_MAGNIFIER:
       return true;
     case TOGGLE_MESSAGE_CENTER_BUBBLE:
-      return CanHandleToggleMessageCenterBubble();
+      return true;
     case TOGGLE_MIRROR_MODE:
       return true;
     case TOUCH_HUD_CLEAR:
@@ -1381,7 +1364,7 @@ bool AcceleratorController::CanPerformAction(
     case RESTORE_TAB:
     case ROTATE_WINDOW:
     case SHOW_IME_MENU_BUBBLE:
-    case SHOW_KEYBOARD_OVERLAY:
+    case SHOW_SHORTCUT_VIEWER:
     case SHOW_TASK_MANAGER:
     case SUSPEND:
     case TAKE_PARTIAL_SCREENSHOT:
@@ -1436,6 +1419,7 @@ void AcceleratorController::PerformAction(AcceleratorAction action,
     case DEBUG_PRINT_LAYER_HIERARCHY:
     case DEBUG_PRINT_VIEW_HIERARCHY:
     case DEBUG_PRINT_WINDOW_HIERARCHY:
+    case DEBUG_SHOW_QUICK_LAUNCH:
     case DEBUG_SHOW_TOAST:
     case DEBUG_TOGGLE_DEVICE_SCALE_FACTOR:
       debug::PerformDebugActionIfEnabled(action);
@@ -1609,8 +1593,8 @@ void AcceleratorController::PerformAction(AcceleratorAction action,
     case SHOW_IME_MENU_BUBBLE:
       HandleShowImeMenuBubble();
       break;
-    case SHOW_KEYBOARD_OVERLAY:
-      HandleShowKeyboardOverlay();
+    case SHOW_SHORTCUT_VIEWER:
+      HandleShowKeyboardShortcutViewer();
       break;
     case SHOW_STYLUS_TOOLS:
       HandleShowStylusTools();

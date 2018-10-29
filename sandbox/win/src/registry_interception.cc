@@ -55,7 +55,7 @@ NTSTATUS WINAPI TargetNtCreateKey(NtCreateKeyFunction orig_CreateKey,
     if (!memory)
       break;
 
-    wchar_t* name;
+    std::unique_ptr<wchar_t, NtAllocDeleter> name;
     uint32_t attributes = 0;
     HANDLE root_directory = 0;
     NTSTATUS ret = AllocAndCopyName(object_attributes, &name, &attributes,
@@ -67,21 +67,25 @@ NTSTATUS WINAPI TargetNtCreateKey(NtCreateKeyFunction orig_CreateKey,
     CountedParameterSet<OpenKey> params;
     params[OpenKey::ACCESS] = ParamPickerMake(desired_access_uint32);
 
-    wchar_t* full_name = nullptr;
+    bool query_broker = false;
+    {
+      std::unique_ptr<wchar_t, NtAllocDeleter> full_name;
+      const wchar_t* name_ptr = name.get();
+      const wchar_t* full_name_ptr = nullptr;
 
-    if (root_directory) {
-      ret = sandbox::AllocAndGetFullPath(root_directory, name, &full_name);
-      if (!NT_SUCCESS(ret) || !full_name)
-        break;
-      params[OpenKey::NAME] = ParamPickerMake(full_name);
-    } else {
-      params[OpenKey::NAME] = ParamPickerMake(name);
+      if (root_directory) {
+        ret = sandbox::AllocAndGetFullPath(root_directory, name.get(),
+                                           &full_name);
+        if (!NT_SUCCESS(ret) || !full_name)
+          break;
+        full_name_ptr = full_name.get();
+        params[OpenKey::NAME] = ParamPickerMake(full_name_ptr);
+      } else {
+        params[OpenKey::NAME] = ParamPickerMake(name_ptr);
+      }
+
+      query_broker = QueryBroker(IPC_NTCREATEKEY_TAG, params.GetBase());
     }
-
-    bool query_broker = QueryBroker(IPC_NTCREATEKEY_TAG, params.GetBase());
-
-    if (full_name)
-      operator delete(full_name, NT_ALLOC);
 
     if (!query_broker)
       break;
@@ -89,11 +93,9 @@ NTSTATUS WINAPI TargetNtCreateKey(NtCreateKeyFunction orig_CreateKey,
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
 
-    ResultCode code =
-        CrossCall(ipc, IPC_NTCREATEKEY_TAG, name, attributes, root_directory,
-                  desired_access, title_index, create_options, &answer);
-
-    operator delete(name, NT_ALLOC);
+    ResultCode code = CrossCall(ipc, IPC_NTCREATEKEY_TAG, name.get(),
+                                attributes, root_directory, desired_access,
+                                title_index, create_options, &answer);
 
     if (SBOX_ALL_OK != code)
       break;
@@ -138,7 +140,7 @@ NTSTATUS WINAPI CommonNtOpenKey(NTSTATUS status,
     if (!memory)
       break;
 
-    wchar_t* name;
+    std::unique_ptr<wchar_t, NtAllocDeleter> name;
     uint32_t attributes;
     HANDLE root_directory;
     NTSTATUS ret = AllocAndCopyName(object_attributes, &name, &attributes,
@@ -150,31 +152,33 @@ NTSTATUS WINAPI CommonNtOpenKey(NTSTATUS status,
     CountedParameterSet<OpenKey> params;
     params[OpenKey::ACCESS] = ParamPickerMake(desired_access_uint32);
 
-    wchar_t* full_name = nullptr;
+    bool query_broker = false;
+    {
+      std::unique_ptr<wchar_t, NtAllocDeleter> full_name;
+      const wchar_t* name_ptr = name.get();
+      const wchar_t* full_name_ptr = nullptr;
 
-    if (root_directory) {
-      ret = sandbox::AllocAndGetFullPath(root_directory, name, &full_name);
-      if (!NT_SUCCESS(ret) || !full_name)
-        break;
-      params[OpenKey::NAME] = ParamPickerMake(full_name);
-    } else {
-      params[OpenKey::NAME] = ParamPickerMake(name);
+      if (root_directory) {
+        ret = sandbox::AllocAndGetFullPath(root_directory, name.get(),
+                                           &full_name);
+        if (!NT_SUCCESS(ret) || !full_name)
+          break;
+        full_name_ptr = full_name.get();
+        params[OpenKey::NAME] = ParamPickerMake(full_name_ptr);
+      } else {
+        params[OpenKey::NAME] = ParamPickerMake(name_ptr);
+      }
+
+      query_broker = QueryBroker(IPC_NTOPENKEY_TAG, params.GetBase());
     }
-
-    bool query_broker = QueryBroker(IPC_NTOPENKEY_TAG, params.GetBase());
-
-    if (full_name)
-      operator delete(full_name, NT_ALLOC);
 
     if (!query_broker)
       break;
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IPC_NTOPENKEY_TAG, name, attributes,
+    ResultCode code = CrossCall(ipc, IPC_NTOPENKEY_TAG, name.get(), attributes,
                                 root_directory, desired_access, &answer);
-
-    operator delete(name, NT_ALLOC);
 
     if (SBOX_ALL_OK != code)
       break;

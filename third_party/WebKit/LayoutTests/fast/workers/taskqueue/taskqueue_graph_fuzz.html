@@ -1,0 +1,53 @@
+<body>
+This tests generates a random graph of tasks as a test for race conditions. PASS if it doesn't crash.
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+
+function f() {
+  var sum = 0;
+  for (var i = 0; i < arguments.length; i++)
+    sum += arguments[i];
+  return sum;
+}
+
+var iterations = 500;
+
+promise_test(async () => {
+  var tasks = new Array(iterations);
+  const queue = new WorkerTaskQueue("background");
+  for (var i = 0; i < iterations; i++) {
+    // Pick a random number of arguments, up to sqrt(i).
+    var argCount = Math.random() * Math.sqrt(i);
+    var args = [f];
+
+    // Randomly select tasks to be arguments to the next task.
+    // This can select the same task multiple times.
+    for (var j = 0; j < argCount; j++) {
+      var argIndex = Math.trunc(Math.random() * i);
+      if (tasks[argIndex] != null)
+        args.push(tasks[argIndex]);
+    }
+    // If no arguments were selected, pass in a dummy 1.
+    if (args.length == 1)
+      args[1] = 1;
+
+    const task = queue.postTask.apply(queue, args);
+    const policy = Math.random();
+    // Randomly select one or more of:
+    // * Retain the JS wrapper for the task
+    // * Request the result of the task
+    // * GC unreferenced wrappers
+    if ((policy >= 0.1 && policy < 0.6) || i == (iterations - 1))
+      tasks[i] = task;
+    if (policy < 0.2) {
+      Promise.resolve(task.result).then(i => i);
+    }
+    if (policy > 0.9 && window.gc)
+      window.gc();
+  }
+  const result = await tasks[(iterations - 1)].result;
+  console.log(result);
+});
+</script>
+</body>

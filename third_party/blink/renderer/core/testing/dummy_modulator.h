@@ -37,7 +37,7 @@ class DummyModulator : public Modulator {
   void FetchTree(
       const KURL&,
       FetchClientSettingsObjectSnapshot* fetch_client_settings_object,
-      WebURLRequest::RequestContext destination,
+      mojom::RequestContextType destination,
       const ScriptFetchOptions&,
       ModuleScriptCustomFetchType,
       ModuleTreeClient*) override;
@@ -50,7 +50,7 @@ class DummyModulator : public Modulator {
   void FetchDescendantsForInlineScript(
       ModuleScript*,
       FetchClientSettingsObjectSnapshot* fetch_client_settings_object,
-      WebURLRequest::RequestContext destination,
+      mojom::RequestContextType destination,
       ModuleTreeClient*) override;
   ModuleScript* GetFetchedModuleScript(const KURL&) override;
   KURL ResolveModuleSpecifier(const String&, const KURL&, String*) override;

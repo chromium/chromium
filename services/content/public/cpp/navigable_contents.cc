@@ -72,6 +72,13 @@ void NavigableContents::DidAutoResizeView(const gfx::Size& new_size) {
     observer.DidAutoResizeView(new_size);
 }
 
+void NavigableContents::DidSuppressNavigation(const GURL& url,
+                                              WindowOpenDisposition disposition,
+                                              bool from_user_gesture) {
+  for (auto& observer : observers_)
+    observer.DidSuppressNavigation(url, disposition, from_user_gesture);
+}
+
 void NavigableContents::OnEmbedTokenReceived(
     const base::UnguessableToken& token) {
   DCHECK(view_);

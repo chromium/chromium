@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutBlockFlow {DIV} at (0,0) size 650x40 [border: (5px solid #0000FF) none (5px solid #000000E6) none]
-        LayoutText {#text} at (0,5) size 630x30
-          text run at (0,5) width 630: "This should be black."

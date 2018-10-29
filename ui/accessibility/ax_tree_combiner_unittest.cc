@@ -10,7 +10,7 @@ namespace ui {
 TEST(CombineAXTreesTest, RenumberOneTree) {
   AXTreeUpdate tree;
   tree.has_tree_data = true;
-  tree.tree_data.tree_id = 1;
+  tree.tree_data.tree_id = ui::AXTreeID::FromString("1");
   tree.root_id = 2;
   tree.nodes.resize(3);
   tree.nodes[0].id = 2;
@@ -39,7 +39,7 @@ TEST(CombineAXTreesTest, EmbedChildTree) {
   AXTreeUpdate parent_tree;
   parent_tree.root_id = 1;
   parent_tree.has_tree_data = true;
-  parent_tree.tree_data.tree_id = 1;
+  parent_tree.tree_data.tree_id = ui::AXTreeID::FromString("1");
   parent_tree.nodes.resize(3);
   parent_tree.nodes[0].id = 1;
   parent_tree.nodes[0].child_ids.push_back(2);
@@ -48,14 +48,14 @@ TEST(CombineAXTreesTest, EmbedChildTree) {
   parent_tree.nodes[1].role = ax::mojom::Role::kButton;
   parent_tree.nodes[2].id = 3;
   parent_tree.nodes[2].role = ax::mojom::Role::kIframe;
-  parent_tree.nodes[2].AddIntAttribute(ax::mojom::IntAttribute::kChildTreeId,
-                                       2);
+  parent_tree.nodes[2].AddStringAttribute(
+      ax::mojom::StringAttribute::kChildTreeId, "2");
 
   AXTreeUpdate child_tree;
   child_tree.root_id = 1;
   child_tree.has_tree_data = true;
-  child_tree.tree_data.parent_tree_id = 1;
-  child_tree.tree_data.tree_id = 2;
+  child_tree.tree_data.parent_tree_id = ui::AXTreeID::FromString("1");
+  child_tree.tree_data.tree_id = ui::AXTreeID::FromString("2");
   child_tree.nodes.resize(3);
   child_tree.nodes[0].id = 1;
   child_tree.nodes[0].child_ids.push_back(2);
@@ -97,7 +97,7 @@ TEST(CombineAXTreesTest, MapAllIdAttributes) {
 
   AXTreeUpdate tree;
   tree.has_tree_data = true;
-  tree.tree_data.tree_id = 1;
+  tree.tree_data.tree_id = ui::AXTreeID::FromString("1");
   tree.root_id = 11;
   tree.nodes.resize(2);
   tree.nodes[0].id = 11;
@@ -157,8 +157,8 @@ TEST(CombineAXTreesTest, MapAllIdAttributes) {
 TEST(CombineAXTreesTest, FocusedTree) {
   AXTreeUpdate parent_tree;
   parent_tree.has_tree_data = true;
-  parent_tree.tree_data.tree_id = 1;
-  parent_tree.tree_data.focused_tree_id = 2;
+  parent_tree.tree_data.tree_id = ui::AXTreeID::FromString("1");
+  parent_tree.tree_data.focused_tree_id = ui::AXTreeID::FromString("2");
   parent_tree.tree_data.focus_id = 2;
   parent_tree.root_id = 1;
   parent_tree.nodes.resize(3);
@@ -169,13 +169,13 @@ TEST(CombineAXTreesTest, FocusedTree) {
   parent_tree.nodes[1].role = ax::mojom::Role::kButton;
   parent_tree.nodes[2].id = 3;
   parent_tree.nodes[2].role = ax::mojom::Role::kIframe;
-  parent_tree.nodes[2].AddIntAttribute(ax::mojom::IntAttribute::kChildTreeId,
-                                       2);
+  parent_tree.nodes[2].AddStringAttribute(
+      ax::mojom::StringAttribute::kChildTreeId, "2");
 
   AXTreeUpdate child_tree;
   child_tree.has_tree_data = true;
-  child_tree.tree_data.parent_tree_id = 1;
-  child_tree.tree_data.tree_id = 2;
+  child_tree.tree_data.parent_tree_id = ui::AXTreeID::FromString("1");
+  child_tree.tree_data.tree_id = ui::AXTreeID::FromString("2");
   child_tree.tree_data.focus_id = 3;
   child_tree.root_id = 1;
   child_tree.nodes.resize(3);

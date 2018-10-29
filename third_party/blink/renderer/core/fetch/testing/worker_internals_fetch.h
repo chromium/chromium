@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class WorkerGlobalScope;
 class WorkerInternals;
 class Response;
 
@@ -19,6 +20,9 @@ class WorkerInternalsFetch {
 
  public:
   static Vector<String> getInternalResponseURLList(WorkerInternals&, Response*);
+  static int getResourcePriority(WorkerInternals&,
+                                 const String& url,
+                                 WorkerGlobalScope*);
 };
 
 }  // namespace blink

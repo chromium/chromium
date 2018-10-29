@@ -83,21 +83,3 @@ def CheckChangeOnUpload(input_api, output_api):
 
 def CheckChangeOnCommit(input_api, output_api):
   return CommonChecks(input_api, output_api)
-
-
-def PostUploadHook(cl, change, output_api):
-  """git cl upload will call this hook after the issue is created/modified.
-
-  This hook adds extra try bots to the CL description in order to run network
-  service tests in addition to CQ try bots.
-  """
-  def affects_gn_checker(f):
-    return 'mojo.fyi.network_' in f.LocalPath()
-  if not change.AffectedFiles(file_filter=affects_gn_checker):
-    return []
-  return output_api.EnsureCQIncludeTrybotsAreAdded(
-    cl,
-    [
-      'luci.chromium.try:linux_mojo'
-    ],
-    'Automatically added network service trybots to run tests on CQ.')

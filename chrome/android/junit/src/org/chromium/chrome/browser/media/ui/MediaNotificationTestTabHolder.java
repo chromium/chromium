@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.media.ui;
 
-import android.graphics.Bitmap;
-
 import static org.mockito.Mockito.when;
+
+import android.graphics.Bitmap;
 
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;

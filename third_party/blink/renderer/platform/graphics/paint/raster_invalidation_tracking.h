@@ -25,7 +25,7 @@ namespace blink {
 class DisplayItemClient;
 
 struct RasterInvalidationInfo {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
   // This is for comparison only. Don't dereference because the client may have
   // died.
@@ -54,7 +54,7 @@ inline std::ostream& operator<<(std::ostream& os,
 }
 
 struct RasterUnderInvalidation {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   int x;
   int y;
   SkColor old_pixel;
@@ -63,7 +63,7 @@ struct RasterUnderInvalidation {
 
 class PLATFORM_EXPORT RasterInvalidationTracking {
  public:
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
   // When RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() and
   // SimulateRasterUnderInvalidation(true) is called, all changed pixels will

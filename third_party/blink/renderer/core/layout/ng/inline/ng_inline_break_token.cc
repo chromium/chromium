@@ -13,23 +13,20 @@ NGInlineBreakToken::NGInlineBreakToken(
     const ComputedStyle* style,
     unsigned item_index,
     unsigned text_offset,
-    unsigned flags,  // NGInlineBreakTokenFlags
-    std::unique_ptr<const NGInlineLayoutStateStack> state_stack)
+    unsigned flags /* NGInlineBreakTokenFlags */)
     : NGBreakToken(kInlineBreakToken, kUnfinished, node),
       style_(style),
       item_index_(item_index),
       text_offset_(text_offset),
       flags_(flags),
-      ignore_floats_(false),
-      state_stack_(std::move(state_stack)) {}
+      ignore_floats_(false) {}
 
 NGInlineBreakToken::NGInlineBreakToken(NGLayoutInputNode node)
     : NGBreakToken(kInlineBreakToken, kFinished, node),
       item_index_(0),
       text_offset_(0),
       flags_(kDefault),
-      ignore_floats_(false),
-      state_stack_(nullptr) {}
+      ignore_floats_(false) {}
 
 NGInlineBreakToken::~NGInlineBreakToken() = default;
 

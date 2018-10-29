@@ -5,6 +5,8 @@
 #include "android_webview/browser/aw_gl_functor.h"
 
 #include "android_webview/public/browser/draw_gl.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "jni/AwGLFunctor_jni.h"
 
@@ -35,7 +37,7 @@ AwGLFunctor::AwGLFunctor(const JavaObjectWeakGlobalRef& java_ref)
     : java_ref_(java_ref),
       render_thread_manager_(
           this,
-          BrowserThread::GetTaskRunnerForThread(BrowserThread::UI)) {
+          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI})) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ++g_instance_count;
 }

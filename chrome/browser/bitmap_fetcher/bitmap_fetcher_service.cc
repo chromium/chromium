@@ -28,7 +28,8 @@ const size_t kMaxRequests = 25;  // Maximum number of inflight requests allowed.
 // 12 is double the default number of maximum suggestions so this can
 // accommodate one match image plus one answer image for each result.
 #if defined(OS_ANDROID)
-const int kMaxCacheEntries = 5;
+// Android caches the images in the java layer.
+const int kMaxCacheEntries = 0;
 #else
 const int kMaxCacheEntries = 12;
 #endif

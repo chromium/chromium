@@ -5,9 +5,9 @@
 #ifndef NET_THIRD_PARTY_QUIC_CORE_QUIC_STREAM_SEND_BUFFER_H_
 #define NET_THIRD_PARTY_QUIC_CORE_QUIC_STREAM_SEND_BUFFER_H_
 
-#include "net/base/iovec.h"
 #include "net/third_party/quic/core/frames/quic_stream_frame.h"
 #include "net/third_party/quic/platform/api/quic_containers.h"
+#include "net/third_party/quic/platform/api/quic_iovec.h"
 #include "net/third_party/quic/platform/api/quic_mem_slice.h"
 
 namespace quic {

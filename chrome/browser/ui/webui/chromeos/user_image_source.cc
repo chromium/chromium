@@ -80,7 +80,7 @@ scoped_refptr<base::RefCountedMemory> LoadUserImageFrameForScaleFactor(
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   float scale = ui::GetScaleForScaleFactor(scale_factor);
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes);
-  gfx::PNGCodec::EncodeBGRASkBitmap(image->GetRepresentation(scale).sk_bitmap(),
+  gfx::PNGCodec::EncodeBGRASkBitmap(image->GetRepresentation(scale).GetBitmap(),
                                     false /* discard transparency */,
                                     &data->data());
   return data;

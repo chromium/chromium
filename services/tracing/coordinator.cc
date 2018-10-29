@@ -62,10 +62,10 @@ class Coordinator::TraceStreamer : public base::SupportsWeakPtr<TraceStreamer> {
         stream_is_empty_(true),
         json_field_name_written_(false) {}
 
-  // Destroyed on |background_task_runner_|.
+  // Destroyed on |backend_task_runner_|.
   ~TraceStreamer() = default;
 
-  // Called from |background_task_runner_|.
+  // Called from |backend_task_runner_|.
   void CreateAndSendRecorder(
       const std::string& label,
       mojom::TraceDataType type,
@@ -86,7 +86,7 @@ class Coordinator::TraceStreamer : public base::SupportsWeakPtr<TraceStreamer> {
                                   agent_entry, std::move(ptr)));
   }
 
-  // Called from |background_task_runner_| to close the recorder proxy on the
+  // Called from |backend_task_runner_| to close the recorder proxy on the
   // correct task runner.
   void CloseRecorder(mojom::RecorderPtr recorder) {}
 
@@ -112,7 +112,7 @@ class Coordinator::TraceStreamer : public base::SupportsWeakPtr<TraceStreamer> {
       mojo::BlockingCopyFromString(data, stream_);
   }
 
-  // Called from |background_task_runner_|.
+  // Called from |backend_task_runner_|.
   void OnRecorderDataChange(const std::string& label) {
     // Bail out if we are in the middle of writing events for another label to
     // the stream, since we do not want to interleave chunks for different
@@ -163,7 +163,7 @@ class Coordinator::TraceStreamer : public base::SupportsWeakPtr<TraceStreamer> {
     }
   }
 
-  // Called from |background_task_runner_|.
+  // Called from |backend_task_runner_|.
   bool StreamEventsForCurrentLabel() {
     bool waiting_for_agents = false;
     mojom::TraceDataType data_type =
@@ -228,7 +228,7 @@ class Coordinator::TraceStreamer : public base::SupportsWeakPtr<TraceStreamer> {
     return waiting_for_agents;
   }
 
-  // Called from |background_task_runner_|.
+  // Called from |backend_task_runner_|.
   void StreamMetadata() {
     if (!agent_label_.empty())
       return;
@@ -271,13 +271,17 @@ class Coordinator::TraceStreamer : public base::SupportsWeakPtr<TraceStreamer> {
 Coordinator::Coordinator(AgentRegistry* agent_registry)
     : binding_(this),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      // USER_VISIBLE because the task posted from StopAndFlushAfterClockSync()
+      // is required to stop tracing from the UI.
+      // TODO(fdoray): Once we have support for dynamic priorities
+      // (https://crbug.com/889029), use BEST_EFFORT initially and increase the
+      // priority only when blocking the tracing UI.
+      backend_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
+          {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+           base::WithBaseSyncPrimitives()})),
       agent_registry_(agent_registry),
       weak_ptr_factory_(this) {
   DCHECK(agent_registry_);
-  constexpr base::TaskTraits traits = {base::MayBlock(),
-                                       base::WithBaseSyncPrimitives(),
-                                       base::TaskPriority::BEST_EFFORT};
-  background_task_runner_ = base::CreateSequencedTaskRunnerWithTraits(traits);
 }
 
 Coordinator::~Coordinator() {
@@ -296,11 +300,11 @@ Coordinator::~Coordinator() {
     // We are in the middle of flushing trace data. We need to
     // 1- Close the stream so that the TraceStreamer does not block on writing
     //    to it.
-    // 2- Delete the TraceStreamer on the background task runner; it owns
-    //    recorders that should be destructed on the background task runner
-    //    because they are bound on the background task runner.
+    // 2- Delete the TraceStreamer on the backend task runner; it owns recorders
+    //    that should be destructed on the backend task runner because they are
+    //    bound on the backend task runner.
     trace_streamer_->CloseStream();
-    background_task_runner_->DeleteSoon(FROM_HERE, trace_streamer_.release());
+    backend_task_runner_->DeleteSoon(FROM_HERE, trace_streamer_.release());
   }
 }
 
@@ -454,7 +458,7 @@ void Coordinator::StopAndFlushAfterClockSync() {
         if (!agent_entry->is_tracing())
           return;
         has_tracing_agents = true;
-        background_task_runner_->PostTask(
+        backend_task_runner_->PostTask(
             FROM_HERE,
             base::BindOnce(&Coordinator::TraceStreamer::CreateAndSendRecorder,
                            trace_streamer_->AsWeakPtr(), agent_entry->label(),
@@ -470,8 +474,8 @@ void Coordinator::SendRecorder(
   if (agent_entry) {
     agent_entry->agent()->StopAndFlush(std::move(recorder));
   } else {
-    // Recorders are created and closed on |background_task_runner_|.
-    background_task_runner_->PostTask(
+    // Recorders are created and closed on |backend_task_runner_|.
+    backend_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&Coordinator::TraceStreamer::CloseRecorder,
                        trace_streamer_->AsWeakPtr(), std::move(recorder)));
@@ -481,8 +485,8 @@ void Coordinator::SendRecorder(
 void Coordinator::OnFlushDone() {
   std::move(stop_and_flush_callback_)
       .Run(std::move(*trace_streamer_->GetMetadata()));
-  background_task_runner_->DeleteSoon(FROM_HERE, trace_streamer_.release());
-  agent_registry_->ForAllAgents([this](AgentRegistry::AgentEntry* agent_entry) {
+  backend_task_runner_->DeleteSoon(FROM_HERE, trace_streamer_.release());
+  agent_registry_->ForAllAgents([](AgentRegistry::AgentEntry* agent_entry) {
     agent_entry->set_is_tracing(false);
   });
   is_tracing_ = false;

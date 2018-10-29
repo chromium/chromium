@@ -65,8 +65,8 @@ namespace {
 // ManageSpaceActivity.java.
 const int kMaxImportantSites = 10;
 
-const char* kHttpPortSuffix = ":80";
-const char* kHttpsPortSuffix = ":443";
+const char kHttpPortSuffix[] = ":80";
+const char kHttpsPortSuffix[] = ":443";
 
 Profile* GetActiveUserProfile(bool is_incognito) {
   Profile* profile = ProfileManager::GetActiveUserProfile();

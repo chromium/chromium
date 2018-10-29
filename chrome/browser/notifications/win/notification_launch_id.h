@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_WIN_NOTIFICATION_LAUNCH_ID_H_
 #define CHROME_BROWSER_NOTIFICATIONS_WIN_NOTIFICATION_LAUNCH_ID_H_
 
+#include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "url/gurl.h"
 
@@ -89,6 +90,10 @@ class NotificationLaunchId {
     DCHECK(is_valid());
     return is_for_dismiss_button_;
   }
+
+  // Extracts the profile ID from |launch_id_str|.
+  static std::string GetProfileIdFromLaunchId(
+      const base::string16& launch_id_str);
 
  private:
   // The notification type this launch ID is associated with.

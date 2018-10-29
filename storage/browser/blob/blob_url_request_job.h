@@ -27,7 +27,6 @@ class IOBuffer;
 namespace storage {
 
 class BlobDataHandle;
-class FileStreamReader;
 
 // A request job that handles reading blob URLs.
 class STORAGE_EXPORT BlobURLRequestJob
@@ -59,8 +58,6 @@ class STORAGE_EXPORT BlobURLRequestJob
   ~BlobURLRequestJob() override;
 
  private:
-  typedef std::map<size_t, FileStreamReader*> IndexToReaderMap;
-
   // For preparing for read: get the size, apply the range and perform seek.
   void DidStart();
   void DidCalculateSize(int result);

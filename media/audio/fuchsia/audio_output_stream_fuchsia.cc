@@ -13,9 +13,9 @@
 
 namespace media {
 
-// Current AudioOut implementation allows only one buffer with id=0.
+// Current AudioRenderer implementation allows only one buffer with id=0.
 // TODO(sergeyu): Replace with an incrementing buffer id once AddPayloadBuffer()
-// and RemovePayloadBuffer() are implemented properly in AudioOut.
+// and RemovePayloadBuffer() are implemented properly in AudioRenderer.
 const uint32_t kBufferId = 0;
 
 AudioOutputStreamFuchsia::AudioOutputStreamFuchsia(
@@ -27,36 +27,36 @@ AudioOutputStreamFuchsia::AudioOutputStreamFuchsia(
 
 AudioOutputStreamFuchsia::~AudioOutputStreamFuchsia() {
   // Close() must be called first.
-  DCHECK(!audio_out_);
+  DCHECK(!audio_renderer_);
 }
 
 bool AudioOutputStreamFuchsia::Open() {
-  DCHECK(!audio_out_);
+  DCHECK(!audio_renderer_);
 
-  // Connect |audio_out_| to the audio service.
+  // Connect |audio_renderer_| to the audio service.
   fuchsia::media::AudioPtr audio_server =
       base::fuchsia::ComponentContext::GetDefault()
           ->ConnectToService<fuchsia::media::Audio>();
-  audio_server->CreateAudioOut(audio_out_.NewRequest());
-  audio_out_.set_error_handler(
+  audio_server->CreateAudioRenderer(audio_renderer_.NewRequest());
+  audio_renderer_.set_error_handler(
       fit::bind_member(this, &AudioOutputStreamFuchsia::OnRendererError));
 
-  // Inform the |audio_out_| of the format required by the caller.
+  // Inform the |audio_renderer_| of the format required by the caller.
   fuchsia::media::AudioStreamType format;
   format.sample_format = fuchsia::media::AudioSampleFormat::FLOAT;
   format.channels = parameters_.channels();
   format.frames_per_second = parameters_.sample_rate();
-  audio_out_->SetPcmStreamType(std::move(format));
+  audio_renderer_->SetPcmStreamType(std::move(format));
 
   // Use number of samples to specify media position.
-  audio_out_->SetPtsUnits(parameters_.sample_rate(), 1);
+  audio_renderer_->SetPtsUnits(parameters_.sample_rate(), 1);
 
   // Setup OnMinLeadTimeChanged event listener. This event is used to get
   // |min_lead_time_|, which indicates how far ahead audio samples need to be
   // sent to the renderer.
-  audio_out_.events().OnMinLeadTimeChanged =
+  audio_renderer_.events().OnMinLeadTimeChanged =
       fit::bind_member(this, &AudioOutputStreamFuchsia::OnMinLeadTimeChanged);
-  audio_out_->EnableMinLeadTimeEvents(true);
+  audio_renderer_->EnableMinLeadTimeEvents(true);
 
   // The renderer may fail initialization asynchronously, which is handled in
   // OnRendererError().
@@ -75,8 +75,8 @@ void AudioOutputStreamFuchsia::Start(AudioSourceCallback* callback) {
 void AudioOutputStreamFuchsia::Stop() {
   callback_ = nullptr;
   reference_time_ = base::TimeTicks();
-  audio_out_->PauseNoReply();
-  audio_out_->DiscardAllPacketsNoReply();
+  audio_renderer_->PauseNoReply();
+  audio_renderer_->DiscardAllPacketsNoReply();
   timer_.Stop();
 }
 
@@ -91,7 +91,7 @@ void AudioOutputStreamFuchsia::GetVolume(double* volume) {
 
 void AudioOutputStreamFuchsia::Close() {
   Stop();
-  audio_out_.Unbind();
+  audio_renderer_.Unbind();
 
   // Signal to the manager that we're closed and can be removed. This should be
   // the last call in the function as it deletes |this|.
@@ -125,7 +125,7 @@ bool AudioOutputStreamFuchsia::InitializePayloadBuffer() {
   }
 
   payload_buffer_pos_ = 0;
-  audio_out_->AddPayloadBuffer(
+  audio_renderer_->AddPayloadBuffer(
       kBufferId, zx::vmo(payload_buffer_.handle().Duplicate().GetHandle()));
 
   return true;
@@ -146,7 +146,7 @@ void AudioOutputStreamFuchsia::OnMinLeadTimeChanged(int64_t min_lead_time) {
 }
 
 void AudioOutputStreamFuchsia::OnRendererError() {
-  LOG(WARNING) << "AudioOut has failed.";
+  LOG(WARNING) << "AudioRenderer has failed.";
   ReportError();
 }
 
@@ -158,7 +158,7 @@ void AudioOutputStreamFuchsia::ReportError() {
 }
 
 void AudioOutputStreamFuchsia::PumpSamples() {
-  DCHECK(audio_out_);
+  DCHECK(audio_renderer_);
 
   // Allocate payload buffer if necessary.
   if (!payload_buffer_.mapped_size() && !InitializePayloadBuffer()) {
@@ -187,8 +187,8 @@ void AudioOutputStreamFuchsia::PumpSamples() {
   if (reference_time_.is_null()) {
     stream_position_samples_ = 0;
     reference_time_ = now + min_lead_time_;
-    audio_out_->PlayNoReply(reference_time_.ToZxTime(),
-                            stream_position_samples_);
+    audio_renderer_->PlayNoReply(reference_time_.ToZxTime(),
+                                 stream_position_samples_);
   }
 
   // Request more samples from |callback_|.
@@ -212,7 +212,7 @@ void AudioOutputStreamFuchsia::PumpSamples() {
   packet.payload_offset = payload_buffer_pos_;
   packet.payload_size = packet_size;
   packet.flags = 0;
-  audio_out_->SendPacketNoReply(std::move(packet));
+  audio_renderer_->SendPacketNoReply(std::move(packet));
 
   stream_position_samples_ += frames_filled;
   payload_buffer_pos_ =

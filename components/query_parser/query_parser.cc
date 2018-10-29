@@ -36,8 +36,7 @@ bool SnippetIntersects(const Snippet::MatchPosition& mp1,
 // position at |index|.
 void CoalesceMatchesFrom(size_t index, Snippet::MatchPositions* matches) {
   Snippet::MatchPosition& mp = (*matches)[index];
-  for (Snippet::MatchPositions::iterator i = matches->begin() + index + 1;
-       i != matches->end(); ) {
+  for (auto i = matches->begin() + index + 1; i != matches->end();) {
     if (SnippetIntersects(mp, *i)) {
       mp.second = std::max(mp.second, i->second);
       i = matches->erase(i);

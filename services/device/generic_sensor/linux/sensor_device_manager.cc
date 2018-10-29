@@ -33,7 +33,7 @@ SensorDeviceManager::~SensorDeviceManager() {
 
 void SensorDeviceManager::Start(Delegate* delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
   DCHECK(!delegate_);
 
   delegate_ = delegate;

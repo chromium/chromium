@@ -4,7 +4,7 @@
 
 #include "content/renderer/frame_blame_context.h"
 
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/top_level_blame_context.h"
 #include "third_party/blink/public/platform/platform.h"

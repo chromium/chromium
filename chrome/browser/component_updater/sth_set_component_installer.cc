@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,6 +37,13 @@ using component_updater::ComponentUpdateService;
 
 namespace {
 const base::FilePath::CharType kSTHsDirName[] = FILE_PATH_LITERAL("sths");
+
+network::mojom::NetworkService* g_network_service_for_testing = nullptr;
+
+base::FilePath& GetInstallDir() {
+  static base::NoDestructor<base::FilePath> install_dir;
+  return *install_dir;
+}
 
 base::FilePath GetInstalledPath(const base::FilePath& base) {
   return base.Append(FILE_PATH_LITERAL("_platform_specific"))
@@ -117,6 +125,14 @@ void LoadSTHsFromDisk(
   }
 }
 
+// Indicates that a new STH has been loaded.
+void OnSTHLoaded(const net::ct::SignedTreeHead& sth) {
+  network::mojom::NetworkService* network_service =
+      g_network_service_for_testing ? g_network_service_for_testing
+                                    : content::GetNetworkService();
+  network_service->UpdateSignedTreeHead(sth);
+}
+
 }  // namespace
 
 namespace component_updater {
@@ -130,30 +146,25 @@ const uint8_t kSthSetPublicKeySHA256[32] = {
 
 const char kSTHSetFetcherManifestName[] = "Signed Tree Heads";
 
-STHSetComponentInstallerPolicy::STHSetComponentInstallerPolicy()
-    : weak_ptr_factory_(this) {}
+STHSetComponentInstallerPolicy::STHSetComponentInstallerPolicy() {}
 
 STHSetComponentInstallerPolicy::~STHSetComponentInstallerPolicy() = default;
+
+// static
+void STHSetComponentInstallerPolicy::ReconfigureAfterNetworkRestart() {
+  if (!GetInstallDir().empty())
+    ConfigureNetworkService();
+}
 
 void STHSetComponentInstallerPolicy::SetNetworkServiceForTesting(
     network::mojom::NetworkService* network_service) {
   DCHECK(network_service);
-  network_service_for_testing_ = network_service;
+  g_network_service_for_testing = network_service;
 }
 
 bool STHSetComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
   return false;
-}
-
-void STHSetComponentInstallerPolicy::OnSTHLoaded(
-    const net::ct::SignedTreeHead& sth) {
-  // TODO(rsleevi): https://crbug.com/840444 - Ensure the network service
-  // is notified of the STHs if it crashes/restarts.
-  network::mojom::NetworkService* network_service =
-      network_service_for_testing_ ? network_service_for_testing_
-                                   : content::GetNetworkService();
-  network_service->UpdateSignedTreeHead(sth);
 }
 
 // Public data is delivered via this component, no need for encryption.
@@ -174,19 +185,8 @@ void STHSetComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     std::unique_ptr<base::DictionaryValue> manifest) {
-  // Load and parse the STH JSON on a background task runner, then
-  // dispatch back to the current task runner with all of the successfully
-  // parsed results.
-  auto background_runner = base::MakeRefCounted<AfterStartupTaskUtils::Runner>(
-      base::CreateTaskRunnerWithTraits(
-          {base::TaskPriority::BEST_EFFORT, base::MayBlock()}));
-  background_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LoadSTHsFromDisk, GetInstalledPath(install_dir),
-          base::SequencedTaskRunnerHandle::Get(),
-          base::BindRepeating(&STHSetComponentInstallerPolicy::OnSTHLoaded,
-                              weak_ptr_factory_.GetWeakPtr())));
+  GetInstallDir() = install_dir;
+  ConfigureNetworkService();
 }
 
 // Called during startup and installation before ComponentReady().
@@ -216,6 +216,21 @@ STHSetComponentInstallerPolicy::GetInstallerAttributes() const {
 
 std::vector<std::string> STHSetComponentInstallerPolicy::GetMimeTypes() const {
   return std::vector<std::string>();
+}
+
+// static
+void STHSetComponentInstallerPolicy::ConfigureNetworkService() {
+  // Load and parse the STH JSON on a background task runner, then
+  // dispatch back to the current task runner with all of the successfully
+  // parsed results.
+  auto background_runner = base::MakeRefCounted<AfterStartupTaskUtils::Runner>(
+      base::CreateTaskRunnerWithTraits(
+          {base::TaskPriority::BEST_EFFORT, base::MayBlock()}));
+  background_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&LoadSTHsFromDisk, GetInstalledPath(GetInstallDir()),
+                     base::SequencedTaskRunnerHandle::Get(),
+                     base::BindRepeating(OnSTHLoaded)));
 }
 
 void RegisterSTHSetComponent(ComponentUpdateService* cus,

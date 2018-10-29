@@ -53,6 +53,7 @@
 #include "components/search_provider_logos/logo_common.h"
 #include "components/search_provider_logos/logo_service.h"
 #include "components/search_provider_logos/logo_tracker.h"
+#include "components/search_provider_logos/switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_thread.h"
@@ -267,13 +268,11 @@ std::string GetThemeCSS(Profile* profile) {
                             SkColorGetB(background_color));
 }
 
-std::string ReadBackgroundImageData() {
+std::string ReadBackgroundImageData(const base::FilePath& profile_path) {
   std::string data_string;
-  base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  base::ReadFileToString(user_data_dir.AppendASCII(
-                             chrome::kChromeSearchLocalNtpBackgroundFilename),
-                         &data_string);
+  base::ReadFileToString(
+      profile_path.AppendASCII(chrome::kChromeSearchLocalNtpBackgroundFilename),
+      &data_string);
   return data_string;
 }
 
@@ -507,10 +506,6 @@ class LocalNtpSource::SearchConfigurationProvider
                            content::BrowserAccessibilityState::GetInstance()
                                ->IsAccessibleBrowser());
 
-    bool is_voice_search_enabled =
-        base::FeatureList::IsEnabled(features::kVoiceSearchOnLocalNtp);
-    config_data.SetBoolean("isVoiceSearchEnabled", is_voice_search_enabled);
-
     config_data.SetBoolean("isMDUIEnabled", features::IsMDUIEnabled());
 
     config_data.SetBoolean("isMDIconsEnabled", features::IsMDIconsEnabled());
@@ -722,7 +717,7 @@ void LocalNtpSource::StartDataRequest(
   if (stripped_path == chrome::kChromeSearchLocalNtpBackgroundFilename) {
     base::PostTaskWithTraitsAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&ReadBackgroundImageData),
+        base::BindOnce(&ReadBackgroundImageData, profile_->GetPath()),
         base::BindOnce(&ServeBackgroundImageData, callback));
     return;
   }
@@ -867,6 +862,17 @@ void LocalNtpSource::StartDataRequest(
 
     base::ReplaceFirstSubstringAfterOffset(
         &html, 0, "{{CONTENT_SECURITY_POLICY}}", GetContentSecurityPolicy());
+
+    std::string force_doodle_param;
+    GURL path_url = GURL(chrome::kChromeSearchLocalNtpUrl).Resolve(path);
+    if (net::GetValueForKeyInQuery(path_url, "force-doodle",
+                                   &force_doodle_param)) {
+      base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+      command_line->AppendSwitchASCII(
+          search_provider_logos::switches::kGoogleDoodleUrl,
+          "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_desktop" +
+              force_doodle_param + ".json");
+    }
 
     callback.Run(base::RefCountedString::TakeString(&html));
     return;

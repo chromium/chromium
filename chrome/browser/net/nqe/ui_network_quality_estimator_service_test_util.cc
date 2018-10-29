@@ -6,8 +6,10 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/io_thread.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/url_request/url_request_context.h"
@@ -42,8 +44,8 @@ void OverrideEffectiveConnectionTypeAndWait(net::EffectiveConnectionType type) {
   // Any UI tasks posted by calling OverrideEffectiveConnectionTypeOnIO will
   // complete before the reply unblocks |run_loop|.
   base::RunLoop run_loop;
-  content::BrowserThread::PostTaskAndReply(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReply(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&OverrideEffectiveConnectionTypeOnIO, type,
                      g_browser_process->io_thread()),
       run_loop.QuitClosure());
@@ -55,8 +57,8 @@ void OverrideRTTsAndWait(base::TimeDelta rtt) {
   // Any UI tasks posted by calling OverrideRTTsAndWaitOnIO will complete before
   // the reply unblocks |run_loop|.
   base::RunLoop run_loop;
-  content::BrowserThread::PostTaskAndReply(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReply(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&OverrideRTTsAndWaitOnIO, rtt,
                      g_browser_process->io_thread()),
       run_loop.QuitClosure());

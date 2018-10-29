@@ -4,7 +4,6 @@
 
 #include "ash/system/network/network_icon.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -42,16 +41,6 @@ namespace network_icon {
 
 namespace {
 
-// Constants for offseting the badge displayed on top of the signal strength
-// icon. The badge will extend outside of the base icon bounds by these amounts.
-// All values are in dp.
-
-// The badge offsets are different depending on whether the icon is in the tray
-// or menu.
-const int kTrayIconBadgeOffset = 3;
-const int kMenuIconBadgeOffset = 2;
-
-//------------------------------------------------------------------------------
 // class used for maintaining a map of network state and images.
 class NetworkIconImpl {
  public:
@@ -175,18 +164,12 @@ SkColor GetDefaultColorForIconType(IconType icon_type) {
     return kTrayIconColor;
   if (icon_type == ICON_TYPE_TRAY_OOBE)
     return kOobeTrayIconColor;
-  if (features::IsSystemTrayUnifiedEnabled())
-    return kUnifiedMenuIconColor;
-  else
-    return kMenuIconColor;
+  return kUnifiedMenuIconColor;
 }
 
 bool IconTypeIsDark(IconType icon_type) {
-  if (features::IsSystemTrayUnifiedEnabled()) {
-    // Dark icon is used for OOBE tray icon because the background is white.
-    return icon_type == ICON_TYPE_TRAY_OOBE;
-  }
-  return icon_type != ICON_TYPE_TRAY_REGULAR;
+  // Dark icon is used for OOBE tray icon because the background is white.
+  return icon_type == ICON_TYPE_TRAY_OOBE;
 }
 
 bool IconTypeHasVPNBadge(IconType icon_type) {
@@ -194,12 +177,7 @@ bool IconTypeHasVPNBadge(IconType icon_type) {
 }
 
 gfx::Size GetSizeForBaseIconSize(const gfx::Size& base_icon_size) {
-  gfx::Size size = base_icon_size;
-  const int badge_offset = base_icon_size.width() == kTrayIconSize
-                               ? kTrayIconBadgeOffset
-                               : kMenuIconBadgeOffset;
-  size.Enlarge(badge_offset * 2, badge_offset * 2);
-  return size;
+  return base_icon_size;
 }
 
 gfx::ImageSkia CreateNetworkIconImage(const gfx::ImageSkia& icon,
@@ -241,11 +219,16 @@ gfx::Size GetSizeForIconType(IconType icon_type) {
   int size = kMenuIconSize;
   if (IsTrayIcon(icon_type)) {
     size = TrayConstants::GetTrayIconSize();
-  } else if (features::IsSystemTrayUnifiedEnabled() &&
-             icon_type == ICON_TYPE_DEFAULT_VIEW) {
+  } else if (icon_type == ICON_TYPE_DEFAULT_VIEW) {
     size = kUnifiedFeaturePodVectorIconSize;
   }
   return gfx::Size(size, size);
+}
+
+int GetPaddingForIconType(IconType icon_type) {
+  if (IsTrayIcon(icon_type))
+    return kUnifiedTrayNetworkIconPadding;
+  return kTrayNetworkIconPadding;
 }
 
 gfx::ImageSkia GetImageForIndex(ImageType image_type,
@@ -253,7 +236,7 @@ gfx::ImageSkia GetImageForIndex(ImageType image_type,
                                 int index) {
   return gfx::CanvasImageSource::MakeImageSkia<SignalStrengthImageSource>(
       image_type, GetDefaultColorForIconType(icon_type),
-      GetSizeForIconType(icon_type), index);
+      GetSizeForIconType(icon_type), index, GetPaddingForIconType(icon_type));
 }
 
 // Returns an image to represent either a fully connected network or a
@@ -304,8 +287,7 @@ gfx::ImageSkia ConnectingVpnImage(double animation) {
 }
 
 Badge ConnectingVpnBadge(double animation, IconType icon_type) {
-  return {features::IsSystemTrayUnifiedEnabled() ? &kUnifiedNetworkBadgeVpnIcon
-                                                 : &kNetworkBadgeVpnIcon,
+  return {&kUnifiedNetworkBadgeVpnIcon,
           SkColorSetA(GetDefaultColorForIconType(icon_type), 0xFF * animation)};
 }
 
@@ -354,9 +336,7 @@ gfx::ImageSkia GetIcon(const NetworkState* network,
                        IconType icon_type,
                        int strength_index) {
   if (network->Matches(NetworkTypePattern::Ethernet())) {
-    return gfx::CreateVectorIcon(features::IsSystemTrayUnifiedEnabled()
-                                     ? vector_icons::kEthernetIcon
-                                     : kNetworkEthernetIcon,
+    return gfx::CreateVectorIcon(vector_icons::kEthernetIcon,
                                  GetDefaultColorForIconType(icon_type));
   }
   if (network->Matches(NetworkTypePattern::Wireless())) {
@@ -500,9 +480,7 @@ bool NetworkIconImpl::UpdateVPNBadge() {
           NetworkTypePattern::VPN());
   Badge vpn_badge = {};
   if (vpn)
-    vpn_badge = {features::IsSystemTrayUnifiedEnabled()
-                     ? &kUnifiedNetworkBadgeVpnIcon
-                     : &kNetworkBadgeVpnIcon,
+    vpn_badge = {&kUnifiedNetworkBadgeVpnIcon,
                  GetDefaultColorForIconType(icon_type_)};
   if (vpn_badge != vpn_badge_) {
     vpn_badge_ = vpn_badge;
@@ -519,10 +497,7 @@ void NetworkIconImpl::GetBadges(const NetworkState* network, Badges* badges) {
   if (type == shill::kTypeWifi) {
     if (network->security_class() != shill::kSecurityNone &&
         !IsTrayIcon(icon_type_)) {
-      badges->bottom_right = {features::IsSystemTrayUnifiedEnabled()
-                                  ? &kUnifiedNetworkBadgeSecureIcon
-                                  : &kNetworkBadgeSecureIcon,
-                              icon_color};
+      badges->bottom_right = {&kUnifiedNetworkBadgeSecureIcon, icon_color};
     }
   } else if (type == shill::kTypeWimax) {
     technology_badge_ = {&kNetworkBadgeTechnology4gIcon, icon_color};
@@ -546,9 +521,7 @@ void NetworkIconImpl::GetBadges(const NetworkState* network, Badges* badges) {
     badges->top_left = technology_badge_;
     badges->bottom_left = vpn_badge_;
     if (behind_captive_portal_)
-      badges->bottom_right = {features::IsSystemTrayUnifiedEnabled()
-                                  ? &kUnifiedNetworkBadgeCaptivePortalIcon
-                                  : &kNetworkBadgeCaptivePortalIcon,
+      badges->bottom_right = {&kUnifiedNetworkBadgeCaptivePortalIcon,
                               icon_color};
   }
 }
@@ -603,7 +576,7 @@ gfx::ImageSkia GetImageForNetwork(const NetworkState* network,
 }
 
 gfx::ImageSkia GetImageForWiFiEnabledState(bool enabled, IconType icon_type) {
-  if (features::IsSystemTrayUnifiedEnabled() && !enabled) {
+  if (!enabled) {
     return gfx::CreateVectorIcon(kUnifiedMenuWifiOffIcon,
                                  GetSizeForIconType(icon_type).width(),
                                  GetDefaultColorForIconType(icon_type));

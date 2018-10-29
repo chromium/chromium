@@ -66,7 +66,6 @@ chrome/browser/ui/app_list/app_list_syncable_service_factory.h
 chrome/browser/ui/ash/ash_util.h
 chrome/browser/ui/ash/multi_user/multi_user_util.h
 chrome/browser/ui/network_profile_bubble.h
-chrome/browser/ui/passwords/manage_passwords_icon.h
 chrome/browser/ui/views/frame/browser_frame_header_ash.h
 chrome/browser/ui/webui/large_icon_source.h
 chrome/common/mac/app_shim_launch.h
@@ -123,10 +122,10 @@ components/wifi/wifi_export.h
 components/wifi/wifi_service.h
 content/browser/background_fetch/background_fetch_constants.h
 content/browser/service_worker/service_worker_response_type.h
-content/common/gpu_stream_constants.h
 content/common/mac/attributed_string_coder.h
 content/public/browser/context_factory.h
 content/public/browser/media_observer.h
+content/public/common/gpu_stream_constants.h
 content/renderer/external_popup_menu.h
 content/shell/android/shell_descriptors.h
 device/media_transfer_protocol/media_transfer_protocol_manager.h
@@ -157,7 +156,6 @@ gpu/command_buffer/common/gpu_memory_allocation.h
 gpu/command_buffer/service/gl_stream_texture_image.h
 gpu/command_buffer/service/gles2_cmd_decoder_unittest_extensions_autogen.h
 gpu/command_buffer/service/memory_tracking.h
-gpu/command_buffer/service/progress_reporter.h
 gpu/config/gpu_lists_version.h
 gpu/gles2_conform_support/gtf/gtf_stubs.h
 gpu/gpu_export.h
@@ -360,5 +358,6 @@ ui/gl/gl_bindings_api_autogen_gl.h
 ui/gl/gl_bindings_api_autogen_glx.h
 ui/gl/gpu_preference.h
 ui/gl/gpu_switching_observer.h
+ui/gl/progress_reporter.h
 ui/ozone/ozone_base_export.h
 ui/ozone/public/ozone_switches.h

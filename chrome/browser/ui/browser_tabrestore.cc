@@ -124,7 +124,8 @@ WebContents* AddRestoredTab(
   browser->tab_strip_model()->InsertWebContentsAt(
       tab_index, std::move(web_contents), add_types);
   if (select) {
-    browser->window()->Activate();
+    if (!browser->window()->IsMinimized())
+      browser->window()->Activate();
   } else {
     // We set the size of the view here, before Blink does its initial layout.
     // If we don't, the initial layout of background tabs will be performed
@@ -168,7 +169,7 @@ WebContents* ReplaceRestoredTab(
   int insertion_index = tab_strip->active_index();
   tab_strip->InsertWebContentsAt(
       insertion_index + 1, std::move(web_contents),
-      TabStripModel::ADD_ACTIVE | TabStripModel::ADD_INHERIT_GROUP);
+      TabStripModel::ADD_ACTIVE | TabStripModel::ADD_INHERIT_OPENER);
   tab_strip->CloseWebContentsAt(insertion_index, TabStripModel::CLOSE_NONE);
   return raw_web_contents;
 }

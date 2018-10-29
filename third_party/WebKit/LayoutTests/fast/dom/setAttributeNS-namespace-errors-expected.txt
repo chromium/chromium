@@ -2,7 +2,6 @@ Test that calling setAttributeNS() throws an error when http://www.w3.org/TR/dom
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS elem.setAttributeNS(null, 'foo:bar', 'baz') threw exception NamespaceError: Failed to execute 'setAttributeNS' on 'Element': '' is an invalid namespace for attributes..
 PASS elem.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:abc', 'foo') did not throw exception.
 PASS elem.setAttributeNS('http://www.w3.org/not-XML/1998/namespace', 'xml:abc', 'foo') threw exception NamespaceError: Failed to execute 'setAttributeNS' on 'Element': 'http://www.w3.org/not-XML/1998/namespace' is an invalid namespace for attributes..

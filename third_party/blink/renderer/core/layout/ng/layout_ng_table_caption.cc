@@ -6,8 +6,10 @@
 
 #include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_descendant.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
@@ -15,6 +17,39 @@ namespace blink {
 
 LayoutNGTableCaption::LayoutNGTableCaption(Element* element)
     : LayoutNGMixin<LayoutTableCaption>(element) {}
+
+void LayoutNGTableCaption::CalculateAndSetMargins(
+    const NGConstraintSpace& constraint_space,
+    const NGPhysicalFragment& physical_fragment) {
+  const ComputedStyle& containing_block_style = ContainingBlock()->StyleRef();
+
+  NGBoxFragment box_fragment(containing_block_style.GetWritingMode(),
+                             containing_block_style.Direction(),
+                             ToNGPhysicalBoxFragment(physical_fragment));
+
+  NGPhysicalBoxStrut physical_margins =
+      ComputePhysicalMargins(constraint_space, StyleRef());
+
+  NGBoxStrut logical_margins =
+      physical_margins.ConvertToLogical(containing_block_style.GetWritingMode(),
+                                        containing_block_style.Direction());
+
+  LayoutUnit caption_inline_size_in_cb_writing_mode = box_fragment.InlineSize();
+
+  LayoutUnit available_inline_size_in_cb_writing_mode =
+      constraint_space.AvailableSize()
+          .ConvertToPhysical(constraint_space.GetWritingMode())
+          .ConvertToLogical(containing_block_style.GetWritingMode())
+          .inline_size;
+
+  ResolveInlineMargins(StyleRef(), containing_block_style,
+                       available_inline_size_in_cb_writing_mode,
+                       caption_inline_size_in_cb_writing_mode,
+                       &logical_margins);
+  SetMargin(
+      logical_margins.ConvertToPhysical(containing_block_style.GetWritingMode(),
+                                        containing_block_style.Direction()));
+}
 
 void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
   LayoutAnalyzer::BlockScope analyzer(*this);
@@ -26,6 +61,8 @@ void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
 
   scoped_refptr<NGLayoutResult> result =
       NGBlockNode(this).Layout(constraint_space);
+
+  CalculateAndSetMargins(constraint_space, *result->PhysicalFragment());
 
   // Tell legacy layout there were abspos descendents we couldn't place. We know
   // we have to pass up to legacy here because this method is legacy's entry

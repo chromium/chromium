@@ -1,23 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="../../resources/js-test.js"></script>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
 </head>
-<body onload="runTest()">
+<body>
 <input type="text" id="src" value="abc">
 <input type="text" id="dst">
-<div id="console"></div>
 <script>
-description("This test verifies the order of events fired by drag-and-drop.");
+test(() => {
+    const expected = [
+      {name: 'focus', target: 'src'},
+      {name: 'drop', target: 'dst'},
+      {name: 'input', target: 'src'},
+      {name: 'change', target: 'src'},
+      {name: 'blur', target: 'src'},
+      {name: 'focus', target: 'dst'},
+      {name: 'input', target: 'dst'},
+    ];
 
-function runTest()
-{
+    var fired = 0;
+    function checkEvent(name, target) {
+      assert_equals(name, expected[fired].name);
+      assert_equals(target, expected[fired].target);
+      ++fired;
+    }
+
     var src = document.getElementById('src');
     var dst = document.getElementById('dst');
 
     ['blur', 'change', 'drop', 'focus', 'input'].forEach(function(event) {
-        src.addEventListener(event, debug.bind(null, event + ' src'));
-        dst.addEventListener(event, debug.bind(null, event + ' dst'));
+        src.addEventListener(event, () => checkEvent(event, 'src'));
+        dst.addEventListener(event, () => checkEvent(event, 'dst'));
     });
 
     src.select();
@@ -26,7 +40,7 @@ function runTest()
     eventSender.leapForward(1000);
     eventSender.mouseMoveTo(dst.offsetLeft + dst.offsetWidth / 2, dst.offsetTop + dst.offsetHeight / 2);
     eventSender.mouseUp();
-}
+}, 'Event order by drag-and-drop');
 </script>
 </body>
 </html>

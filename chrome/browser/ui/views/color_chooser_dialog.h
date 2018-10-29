@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COLOR_CHOOSER_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_COLOR_CHOOSER_DIALOG_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/views/color_chooser_dialog.h"
@@ -33,24 +35,19 @@ class ColorChooserDialog
   friend class base::RefCountedThreadSafe<ColorChooserDialog>;
   ~ColorChooserDialog() override;
 
-  struct ExecuteOpenParams {
-    ExecuteOpenParams(SkColor color, RunState run_state, HWND owner);
-    SkColor color;
-    RunState run_state;
-    HWND owner;
-  };
-
   // Called on the dialog thread to show the actual color chooser.  This is
-  // shown modal to |params.owner|.  Once it's closed, calls back to
+  // shown modal to |run_state->owner|.  Once it's closed, calls back to
   // DidCloseDialog() on the UI thread.
-  void ExecuteOpen(const ExecuteOpenParams& params);
+  void ExecuteOpen(SkColor color, std::unique_ptr<RunState> run_state);
 
   // Called on the UI thread when a color chooser is closed.  |chose_color| is
   // true if the user actually chose a color, in which case |color| is the
   // chosen color.  Calls back to the |listener_| (if applicable) to notify it
   // of the results, and copies the modified array of |custom_colors_| back to
   // |g_custom_colors| so future dialogs will see the changes.
-  void DidCloseDialog(bool chose_color, SkColor color, RunState run_state);
+  void DidCloseDialog(bool chose_color,
+                      SkColor color,
+                      std::unique_ptr<RunState> run_state);
 
   // Copies the array of colors in |src| to |dst|.
   void CopyCustomColors(COLORREF*, COLORREF*);

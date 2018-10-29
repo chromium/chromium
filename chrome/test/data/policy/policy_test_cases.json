@@ -640,7 +640,7 @@
     "os": ["win", "linux", "mac"],
     "test_policy": { "SigninAllowed": true },
     "pref_mappings": [
-      { "pref": "signin.allowed" }
+      { "pref": "signin.allowed_on_next_startup" }
     ]
   },
 
@@ -1884,6 +1884,21 @@
     "note": "TODO(bartfab): Flag this with can_be_recommended when http://crbug.com/106682 is fixed."
   },
 
+  "WebUsbAllowDevicesForUrls": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "test_policy": {
+      "WebUsbAllowDevicesForUrls": [
+        {
+          "devices": [{"vendor_id": 1234, "product_id": 5678}],
+          "url_patterns": ["[*.]google.com", "[*.]youtube.com"]
+        }
+      ]
+    },
+    "pref_mappings": [
+      { "pref": "profile.managed_web_usb_allow_devices_for_urls" }
+    ]
+  },
+
   "WebUsbAskForUrls": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "test_policy": { "WebUsbAskForUrls": ["[*.]google.com"] },
@@ -2318,6 +2333,43 @@
     "os": ["win"],
     "test_policy": { "ForceBrowserSignin": false },
     "pref_mappings": [
+      { "pref": "profile.force_browser_signin",
+        "local_state": true
+      }
+    ]
+  },
+
+  "BrowserSignin.DesktopNoForce": {
+    "os": ["win", "linux", "mac"],
+    "test_policy": { "BrowserSignin": 1 },
+    "pref_mappings": [
+      { "pref": "signin.allowed_on_next_startup",
+        "indicator_tests": [
+          { "policy": { "BrowserSignin": 1 } }
+        ]
+      }
+    ]
+  },
+
+  "BrowserSignin.DesktopForce": {
+    "os": ["win", "linux", "mac"],
+    "test_policy": { "BrowserSignin": 2 },
+    "pref_mappings": [
+      { "pref": "signin.allowed_on_next_startup" },
+      { "pref": "profile.force_browser_signin",
+        "local_state": true
+      },
+      { "pref": "profile.browser_guest_enabled",
+        "local_state": true
+      }
+    ]
+  },
+
+  "BrowserSignin.AndroidForce": {
+    "os": ["android"],
+    "test_policy": { "BrowserSignin": 2 },
+    "pref_mappings": [
+      { "pref": "signin.allowed" },
       { "pref": "profile.force_browser_signin",
         "local_state": true
       }
@@ -2803,6 +2855,14 @@
     ]
   },
 
+  "AllowWakeLocks": {
+    "os": ["chromeos"],
+    "test_policy": { "AllowWakeLocks": false },
+    "pref_mappings": [
+      { "pref": "power.allow_wake_locks" }
+    ]
+  },
+
   "AllowScreenWakeLocks": {
     "os": ["chromeos"],
     "test_policy": { "AllowScreenWakeLocks": false },
@@ -3192,11 +3252,28 @@
     ]
   },
 
+  "ReportCrostiniUsageEnabled": {
+    "os": ["chromeos"],
+    "can_be_recommended": false,
+    "test_policy": { "ReportCrostiniUsageEnabled": false },
+    "pref_mappings": [
+      { "pref": "crostini.usage_reporting_enabled" }
+    ]
+  },
+
   "SmsMessagesAllowed": {
     "os": ["chromeos"],
     "test_policy": { "SmsMessagesAllowed": false },
     "pref_mappings": [
       { "pref": "multidevice.sms_connect_allowed" }
+    ]
+  },
+
+  "SmartLockSigninAllowed": {
+    "os": ["chromeos"],
+    "test_policy": { "SmartLockSigninAllowed": false },
+    "pref_mappings": [
+      { "pref": "smart_lock_signin.allowed" }
     ]
   },
 
@@ -3226,12 +3303,12 @@
     ]
   },
 
-  "AllowedUILocales": {
+  "AllowedLanguages": {
     "os": ["chromeos"],
     "can_be_recommended": false,
-    "test_policy": { "AllowedUILocales": ["en-US", "de"] },
+    "test_policy": { "AllowedLanguages": ["en-US", "de"] },
     "pref_mappings": [
-      { "pref": "intl.allowed_ui_locales" }
+      { "pref": "intl.allowed_languages" }
     ]
   },
 
@@ -3299,6 +3376,43 @@
     "test_policy": { "EnterpriseHardwarePlatformAPIEnabled": false },
     "pref_mappings": [
       { "pref": "enterprise_hardware_platform_api.enabled" }
+    ]
+  },
+
+  "NTLMShareAuthenticationEnabled": {
+    "os": ["chromeos"],
+    "test_policy": { "NTLMShareAuthenticationEnabled": true },
+    "pref_mappings": [
+      { "pref": "network_file_shares.ntlm_share_authentication.enabled" }
+    ]
+  },
+
+  "NetworkFileSharesPreconfiguredShares" : {
+    "os": ["chromeos"],
+    "test_policy": {
+      "NetworkFileSharesPreconfiguredShares": [{
+        "share_url": "smb://server/share",
+        "mode": "drop_down"
+      }, {
+        "share_url": "\\\\server\\share",
+        "mode": "drop_down"
+      }]
+    },
+    "pref_mappings": [
+      { "pref": "network_file_shares.preconfigured_shares" }
+    ]
+  },
+  "ScreenBrightnessPercent": {
+    "os": ["chromeos"],
+    "test_policy": {
+      "ScreenBrightnessPercent": {
+        "BrightnessAC": 100,
+        "BrightnessBattery": 90
+      }
+    },
+    "pref_mappings": [
+      { "pref": "power.ac_screen_brightness_percent" },
+      { "pref": "power.battery_screen_brightness_percent" }
     ]
   },
 
@@ -4034,6 +4148,23 @@
     "test_policy": { "ReportUserIDData": false },
     "pref_mappings": [
       { "pref": "enterprise_reporting.report_user_id_data" }
+    ]
+  },
+
+  "CloudReportingEnabled": {
+    "os": ["win", "linux", "mac"],
+    "test_policy": { "CloudReportingEnabled": true },
+    "pref_mappings": [
+      { "pref": "enterprise_reporting.chrome_cloud_reporting" }
+    ]
+  },
+
+  "VpnConfigAllowed": {
+    "os": ["chromeos"],
+    "can_be_recommended": false,
+    "test_policy": { "VpnConfigAllowed": false },
+    "pref_mappings": [
+      { "pref": "vpn_config_allowed" }
     ]
   }
 }

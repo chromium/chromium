@@ -16,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/debug/thread_heap_usage_tracker.h"
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -425,11 +424,11 @@ TEST_F(MemoryDumpManagerTest, RespectTaskRunnerAffinity) {
   // we will pop out one thread/MemoryDumpProvider, each MDP is supposed to be
   // invoked a number of times equal to its index.
   for (uint32_t i = kNumInitialThreads; i > 0; --i) {
-    threads.push_back(WrapUnique(new Thread("test thread")));
+    threads.push_back(std::make_unique<Thread>("test thread"));
     auto* thread = threads.back().get();
     thread->Start();
     scoped_refptr<SingleThreadTaskRunner> task_runner = thread->task_runner();
-    mdps.push_back(WrapUnique(new MockMemoryDumpProvider()));
+    mdps.push_back(std::make_unique<MockMemoryDumpProvider>());
     auto* mdp = mdps.back().get();
     RegisterDumpProvider(mdp, task_runner, kDefaultOptions);
     EXPECT_CALL(*mdp, OnMemoryDump(_, _))
@@ -602,9 +601,8 @@ TEST_F(MemoryDumpManagerTest, UnregisterDumperFromThreadWhileDumping) {
   std::vector<std::unique_ptr<MockMemoryDumpProvider>> mdps;
 
   for (int i = 0; i < 2; i++) {
-    threads.push_back(
-        WrapUnique(new TestIOThread(TestIOThread::kAutoStart)));
-    mdps.push_back(WrapUnique(new MockMemoryDumpProvider()));
+    threads.push_back(std::make_unique<TestIOThread>(TestIOThread::kAutoStart));
+    mdps.push_back(std::make_unique<MockMemoryDumpProvider>());
     RegisterDumpProvider(mdps.back().get(), threads.back()->task_runner(),
                          kDefaultOptions);
   }
@@ -651,9 +649,8 @@ TEST_F(MemoryDumpManagerTest, TearDownThreadWhileDumping) {
   std::vector<std::unique_ptr<MockMemoryDumpProvider>> mdps;
 
   for (int i = 0; i < 2; i++) {
-    threads.push_back(
-        WrapUnique(new TestIOThread(TestIOThread::kAutoStart)));
-    mdps.push_back(WrapUnique(new MockMemoryDumpProvider()));
+    threads.push_back(std::make_unique<TestIOThread>(TestIOThread::kAutoStart));
+    mdps.push_back(std::make_unique<MockMemoryDumpProvider>());
     RegisterDumpProvider(mdps.back().get(), threads.back()->task_runner(),
                          kDefaultOptions);
   }

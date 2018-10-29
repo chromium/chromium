@@ -3,7 +3,6 @@ Test for Issue: 246300: Styles in nested shadows are not recalculated correctly 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS backgroundColor is "rgb(0, 128, 0)"
 PASS successfullyParsed is true
 

@@ -172,15 +172,14 @@ void PlatformThread::SetCurrentThreadPriority(ThreadPriority priority) {
       break;
   }
 
-  [[[NSThread currentThread] threadDictionary]
-      setObject:@(static_cast<int>(priority))
-         forKey:kThreadPriorityKey];
+  [[NSThread currentThread] threadDictionary][kThreadPriorityKey] =
+      @(static_cast<int>(priority));
 }
 
 // static
 ThreadPriority PlatformThread::GetCurrentThreadPriority() {
-  NSNumber* priority = base::mac::ObjCCast<NSNumber>([[[NSThread currentThread]
-      threadDictionary] objectForKey:kThreadPriorityKey]);
+  NSNumber* priority = base::mac::ObjCCast<NSNumber>(
+      [[NSThread currentThread] threadDictionary][kThreadPriorityKey]);
 
   if (!priority)
     return ThreadPriority::NORMAL;

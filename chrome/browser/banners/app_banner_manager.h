@@ -204,7 +204,7 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Callback invoked by the InstallableManager once it has fetched the page's
   // manifest.
-  void OnDidGetManifest(const InstallableData& result);
+  virtual void OnDidGetManifest(const InstallableData& result);
 
   // Returns an InstallableParams object that requests all checks necessary for
   // a web app banner.

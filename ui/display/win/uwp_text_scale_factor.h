@@ -37,6 +37,8 @@ class DISPLAY_EXPORT UwpTextScaleFactor {
   static UwpTextScaleFactor* Instance();
 
   virtual ~UwpTextScaleFactor();
+
+  // Retrieves the Windows Text Zoom scale factor. Guaranteed to be >= 1.
   virtual float GetTextScaleFactor() const;
 
   // Registers and observer that will be notified of any changes to UWP screen

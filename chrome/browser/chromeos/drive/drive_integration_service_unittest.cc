@@ -16,10 +16,6 @@
 
 namespace drive {
 
-namespace{
-const char kTestProfileName[] = "test-profile";
-}
-
 class DriveIntegrationServiceTest : public testing::Test {
  public:
   DriveIntegrationServiceTest()
@@ -36,17 +32,6 @@ class DriveIntegrationServiceTest : public testing::Test {
   // TestProfileManager to be running.
   TestingProfileManager profile_manager_;
 };
-
-TEST_F(DriveIntegrationServiceTest, InitializeAndShutdown) {
-  std::unique_ptr<DriveIntegrationService> integration_service(
-      new DriveIntegrationService(
-          profile_manager_.CreateTestingProfile(kTestProfileName), nullptr,
-          new DummyDriveService, std::string(), base::FilePath(),
-          new DummyFileSystem));
-  integration_service->SetEnabled(true);
-  content::RunAllTasksUntilIdle();
-  integration_service->Shutdown();
-}
 
 TEST_F(DriveIntegrationServiceTest, ServiceInstanceIdentity) {
   TestingProfile* user1 = profile_manager_.CreateTestingProfile("user1");

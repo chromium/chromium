@@ -1141,6 +1141,16 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       base::Time(), base::Time(), base::Time(), false /*secure*/,
       false /*httponly*/, CookieSameSite::DEFAULT_MODE,
       COOKIE_PRIORITY_DEFAULT));
+  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com/foo"), "A", "B", "%2Efoo.com", "/foo",
+      one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::DEFAULT_MODE,
+      COOKIE_PRIORITY_DEFAULT));
+  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://domaintest.%E3%81%BF%E3%82%93%E3%81%AA"), "A", "B",
+      "domaintest.%E3%81%BF%E3%82%93%E3%81%AA", "/foo", base::Time(),
+      base::Time(), base::Time(), false /*secure*/, false /*httponly*/,
+      CookieSameSite::DEFAULT_MODE, COOKIE_PRIORITY_DEFAULT));
 
   std::unique_ptr<CanonicalCookie> cc;
 

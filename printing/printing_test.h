@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PRINTING_PRINTING_TEST_H__
-#define CHROME_BROWSER_PRINTING_PRINTING_TEST_H__
+#ifndef PRINTING_PRINTING_TEST_H_
+#define PRINTING_PRINTING_TEST_H_
 
 #include <windows.h>
 #include <winspool.h>
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/stl_util.h"
 
 // Disable the whole test case when executing on a computer that has no printer
 // installed.
@@ -23,7 +23,7 @@ class PrintingTest : public Parent {
   }
   static std::wstring GetDefaultPrinter() {
     wchar_t printer_name[MAX_PATH];
-    DWORD size = arraysize(printer_name);
+    DWORD size = base::size(printer_name);
     BOOL result = ::GetDefaultPrinter(printer_name, &size);
     if (result == 0) {
       if (GetLastError() == ERROR_FILE_NOT_FOUND) {
@@ -37,4 +37,4 @@ class PrintingTest : public Parent {
   }
 };
 
-#endif  // CHROME_BROWSER_PRINTING_PRINTING_TEST_H__
+#endif  // PRINTING_PRINTING_TEST_H_

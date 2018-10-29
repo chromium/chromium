@@ -18,21 +18,16 @@
         function() {
             // Scripts appended in JS to ensure setResourceTimingBufferSize is called before.
             let counter = performance.getEntriesByType("resource").length;
-            function appendScript() {
-                if (counter > default_buffer_size) {
-                    t.step_timeout(function() {
-                        assert_unreached("Got no buffer full event at " + counter + " resources");
-                    }, 100);
-                    return;
-                }
+            const documentFragment = document.createDocumentFragment();
+            while (counter < default_buffer_size) {
                 const src = "../loading/resources/empty.js?" + counter;
                 const script = document.createElement('script');
                 script.type = 'text/javascript';
-                script.onload = function() { ++counter; appendScript()};
                 script.src = src;
-                document.body.appendChild(script);
+                documentFragment.appendChild(script);
+                ++counter;
             }
-            appendScript();
+            document.body.appendChild(documentFragment);
         });
 </script>
 </body>

@@ -2,7 +2,6 @@ Tests that Node.isEqualNode behaves correctly after an element that originally h
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS e1.isEqualNode(e2) is true
 PASS e1.isEqualNode(e2) is false
 PASS e1.isEqualNode(e2) is true

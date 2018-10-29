@@ -1,0 +1,16 @@
+<!--
+@WAIT-FOR:done
+-->
+<div>
+  Cats
+  <span id="inline" style="display:none;">
+      <input type="checkbox" aria-label="done">
+  </span>
+  <div></div>
+</div>
+
+<script>
+  setTimeout(()=> {
+    document.getElementById('inline').style.display = 'inline';
+  }, 200);
+</script>

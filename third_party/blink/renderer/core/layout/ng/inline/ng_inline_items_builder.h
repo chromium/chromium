@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/empty_offset_mapping_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_height_metrics.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping_builder.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -119,6 +120,19 @@ class NGInlineItemsBuilderTemplate {
   // white space is collapsed.
   OffsetMappingBuilder mapping_builder_;
 
+  // Keep track of inline boxes to compute ShouldCreateBoxFragment.
+  struct BoxInfo {
+    unsigned item_index;
+    bool should_create_box_fragment;
+    const ComputedStyle& style;
+    NGLineHeightMetrics text_metrics;
+
+    BoxInfo(unsigned item_index, const NGInlineItem& item);
+    bool ShouldCreateBoxFragmentForChild(const BoxInfo& child) const;
+    void SetShouldCreateBoxFragment(Vector<NGInlineItem>* items);
+  };
+  Vector<BoxInfo> boxes_;
+
   struct BidiContext {
     LayoutObject* node;
     UChar enter;
@@ -156,6 +170,14 @@ class NGInlineItemsBuilderTemplate {
 
   void RestoreTrailingCollapsibleSpaceIfRemoved();
   void RestoreTrailingCollapsibleSpace(NGInlineItem*);
+
+  void AppendTextItem(const String&,
+                      unsigned start,
+                      unsigned end,
+                      const ComputedStyle* style,
+                      LayoutText* layout_object);
+
+  void AppendGeneratedBreakOpportunity(const ComputedStyle*, LayoutObject*);
 
   void Exit(LayoutObject*);
 };

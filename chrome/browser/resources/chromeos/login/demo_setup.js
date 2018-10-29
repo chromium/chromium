@@ -13,6 +13,12 @@ Polymer({
   behaviors: [I18nBehavior, OobeDialogHostBehavior],
 
   properties: {
+    /** Error message displayed on demoSetupErrorDialog screen. */
+    errorMessage_: {
+      type: String,
+      value: '',
+    },
+
     /** Ordered array of screen ids that are a part of demo setup flow. */
     screens_: {
       type: Array,
@@ -34,16 +40,18 @@ Polymer({
     this.i18nUpdateLocale();
   },
 
+  /** Called when demo mode setup succeeded. */
+  onSetupSucceeded: function() {
+    this.errorMessage_ = '';
+  },
+
   /**
-   * Called when demo mode setup finished.
-   * @param {boolean} isSuccess Whether demo setup finished successfully.
-   * @param {string} message Error message to be displayed to the user if setup
-   *  finished with an error.
+   * Called when demo mode setup failed.
+   * @param {string} message Error message to be displayed to the user.
    */
-  onSetupFinished: function(isSuccess, message) {
-    if (!isSuccess) {
-      this.showScreen_('demoSetupErrorDialog');
-    }
+  onSetupFailed: function(message) {
+    this.errorMessage_ = message;
+    this.showScreen_('demoSetupErrorDialog');
   },
 
   /**

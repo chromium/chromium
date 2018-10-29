@@ -79,7 +79,7 @@ class CORE_EXPORT FontFaceSet : public EventTargetWithInlineData,
   void Unpause() override;
   void ContextDestroyed(ExecutionContext*) override;
 
-  size_t size() const;
+  wtf_size_t size() const;
   virtual AtomicString status() const = 0;
 
   void Trace(blink::Visitor*) override;
@@ -134,7 +134,7 @@ class CORE_EXPORT FontFaceSet : public EventTargetWithInlineData,
     }
 
    private:
-    size_t index_;
+    wtf_size_t index_;
     HeapVector<Member<FontFace>> font_faces_;
   };
 

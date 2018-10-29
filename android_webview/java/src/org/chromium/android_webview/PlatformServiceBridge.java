@@ -5,6 +5,8 @@
 package org.chromium.android_webview;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 
 import org.chromium.base.Callback;
@@ -16,8 +18,13 @@ import org.chromium.base.ThreadUtils;
  */
 public abstract class PlatformServiceBridge {
     private static final String TAG = "PlatformServiceBrid-";
+
     private static PlatformServiceBridge sInstance;
     private static final Object sInstanceLock = new Object();
+
+    private static HandlerThread sHandlerThread;
+    private static Handler sHandler;
+    private static final Object sHandlerLock = new Object();
 
     protected PlatformServiceBridge() {}
 
@@ -41,6 +48,18 @@ public abstract class PlatformServiceBridge {
         synchronized (sInstanceLock) {
             sInstance = testBridge;
         }
+    }
+
+    // Return a handler appropriate for executing blocking Platform Service tasks.
+    public static Handler getHandler() {
+        synchronized (sHandlerLock) {
+            if (sHandler == null) {
+                sHandlerThread = new HandlerThread("PlatformServiceBridgeHandlerThread");
+                sHandlerThread.start();
+                sHandler = new Handler(sHandlerThread.getLooper());
+            }
+        }
+        return sHandler;
     }
 
     // Can WebView use Google Play Services (a.k.a. GMS)?

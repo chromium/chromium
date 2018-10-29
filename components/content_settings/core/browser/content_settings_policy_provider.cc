@@ -117,6 +117,7 @@ void PolicyProvider::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kManagedPluginsBlockedForUrls);
   registry->RegisterListPref(prefs::kManagedPopupsAllowedForUrls);
   registry->RegisterListPref(prefs::kManagedPopupsBlockedForUrls);
+  registry->RegisterListPref(prefs::kManagedWebUsbAllowDevicesForUrls);
   registry->RegisterListPref(prefs::kManagedWebUsbAskForUrls);
   registry->RegisterListPref(prefs::kManagedWebUsbBlockedForUrls);
   // Preferences for default content setting policies. If a policy is not set of

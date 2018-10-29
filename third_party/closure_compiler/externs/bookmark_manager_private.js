@@ -81,9 +81,10 @@ chrome.bookmarkManagerPrivate.getStrings = function(callback) {};
 /**
  * Begins dragging a set of bookmarks
  * @param {Array} idList An array of string-valued ids
+ * @param {number} dragNodeIndex The index of the dragged node in |idList|
  * @param {boolean} isFromTouch True if the drag was initiated from touch
  */
-chrome.bookmarkManagerPrivate.startDrag = function(idList, isFromTouch) {};
+chrome.bookmarkManagerPrivate.startDrag = function(idList, dragNodeIndex, isFromTouch) {};
 
 /**
  * Performs the drop action of the drag and drop session

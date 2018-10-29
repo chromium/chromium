@@ -2,7 +2,6 @@ This test ensures that document content width (height) as reported by scrollWidt
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS body.scrollWidth is originalScrollWidth
 PASS body.scrollHeight is originalScrollHeight
 PASS successfullyParsed is true

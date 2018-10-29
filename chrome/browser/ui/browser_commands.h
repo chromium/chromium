@@ -70,7 +70,7 @@ void Home(Browser* browser, WindowOpenDisposition disposition);
 void OpenCurrentURL(Browser* browser);
 void Stop(Browser* browser);
 void NewWindow(Browser* browser);
-void NewIncognitoWindow(Browser* browser);
+void NewIncognitoWindow(Profile* profile);
 void CloseWindow(Browser* browser);
 void NewTab(Browser* browser);
 void CloseTab(Browser* browser);
@@ -151,7 +151,12 @@ void CopyURL(Browser* browser);
 Browser* OpenInChrome(Browser* hosted_app_browser);
 bool CanViewSource(const Browser* browser);
 
-void CreateBookmarkAppFromCurrentWebContents(Browser* browser);
+// Initiates user flow for creating a bookmark app for the current page.
+// Will install a PWA hosted app if the site meets installability requirements
+// (see |AppBannerManager::PerformInstallableCheck|) unless |force_shortcut_app|
+// is true.
+void CreateBookmarkAppFromCurrentWebContents(Browser* browser,
+                                             bool force_shortcut_app);
 bool CanCreateBookmarkApp(const Browser* browser);
 
 }  // namespace chrome

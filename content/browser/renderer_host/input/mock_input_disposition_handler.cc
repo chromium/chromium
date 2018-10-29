@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/input/mock_input_disposition_handler.h"
 
+#include "base/bind.h"
 #include "content/browser/renderer_host/input/input_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,22 +27,16 @@ MockInputDispositionHandler::MockInputDispositionHandler()
 
 MockInputDispositionHandler::~MockInputDispositionHandler() {}
 
-void MockInputDispositionHandler::OnKeyboardEventAck(
-    const NativeWebKeyboardEventWithLatencyInfo& event,
-    InputEventAckSource ack_source,
-    InputEventAckState ack_result) {
-  VLOG(1) << __FUNCTION__ << " called!";
-  acked_key_event_.reset(new NativeWebKeyboardEvent(event.event));
-  RecordAckCalled(event.event.GetType(), ack_result);
+InputRouter::KeyboardEventCallback
+MockInputDispositionHandler::CreateKeyboardEventCallback() {
+  return base::BindOnce(&MockInputDispositionHandler::OnKeyboardEventAck,
+                        base::Unretained(this));
 }
 
-void MockInputDispositionHandler::OnMouseEventAck(
-    const MouseEventWithLatencyInfo& event,
-    InputEventAckSource ack_source,
-    InputEventAckState ack_result) {
-  VLOG(1) << __FUNCTION__ << " called!";
-  acked_mouse_event_ = event.event;
-  RecordAckCalled(event.event.GetType(), ack_result);
+InputRouter::MouseEventCallback
+MockInputDispositionHandler::CreateMouseEventCallback() {
+  return base::BindOnce(&MockInputDispositionHandler::OnMouseEventAck,
+                        base::Unretained(this));
 }
 
 void MockInputDispositionHandler::OnWheelEventAck(
@@ -94,6 +89,24 @@ void MockInputDispositionHandler::RecordAckCalled(
   ack_event_type_ = type;
   ++ack_count_;
   ack_state_ = ack_result;
+}
+
+void MockInputDispositionHandler::OnKeyboardEventAck(
+    const NativeWebKeyboardEventWithLatencyInfo& event,
+    InputEventAckSource ack_source,
+    InputEventAckState ack_result) {
+  VLOG(1) << __FUNCTION__ << " called!";
+  acked_key_event_ = std::make_unique<NativeWebKeyboardEvent>(event.event);
+  RecordAckCalled(event.event.GetType(), ack_result);
+}
+
+void MockInputDispositionHandler::OnMouseEventAck(
+    const MouseEventWithLatencyInfo& event,
+    InputEventAckSource ack_source,
+    InputEventAckState ack_result) {
+  VLOG(1) << __FUNCTION__ << " called!";
+  acked_mouse_event_ = event.event;
+  RecordAckCalled(event.event.GetType(), ack_result);
 }
 
 }  // namespace content

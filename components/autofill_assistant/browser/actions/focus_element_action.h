@@ -17,11 +17,14 @@ class FocusElementAction : public Action {
   explicit FocusElementAction(const ActionProto& proto);
   ~FocusElementAction() override;
 
-  // Overrides Action:
-  void ProcessAction(ActionDelegate* delegate,
-                     ProcessActionCallback callback) override;
-
  private:
+  // Overrides Action:
+  void InternalProcessAction(ActionDelegate* delegate,
+                             ProcessActionCallback callback) override;
+
+  void OnWaitForElement(ActionDelegate* delegate,
+                        ProcessActionCallback callback,
+                        bool element_found);
   void OnFocusElement(ProcessActionCallback callback, bool status);
 
   base::WeakPtrFactory<FocusElementAction> weak_ptr_factory_;
@@ -29,5 +32,5 @@ class FocusElementAction : public Action {
   DISALLOW_COPY_AND_ASSIGN(FocusElementAction);
 };
 
-}  // namespace autofill_assistant.
+}  // namespace autofill_assistant
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_FOCUS_ELEMENT_ACTION_H_

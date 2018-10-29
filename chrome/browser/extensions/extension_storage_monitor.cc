@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_storage_monitor_factory.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -21,6 +22,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_prefs.h"
@@ -39,6 +41,8 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using content::BrowserThread;
 
@@ -111,7 +115,7 @@ class SingleExtensionStorageObserver : public storage::StorageObserver {
       ExtensionStorageMonitorIOHelper* io_helper,
       const std::string& extension_id,
       scoped_refptr<storage::QuotaManager> quota_manager,
-      const GURL& origin,
+      const url::Origin& origin,
       int64_t next_threshold,
       base::TimeDelta rate,
       bool should_uma)
@@ -179,7 +183,7 @@ class ExtensionStorageMonitorIOHelper
   void StartObservingForExtension(
       scoped_refptr<storage::QuotaManager> quota_manager,
       const std::string& extension_id,
-      const GURL& site_url,
+      const url::Origin& site_origin,
       int64_t next_threshold,
       const base::TimeDelta& rate,
       bool should_uma) {
@@ -190,7 +194,7 @@ class ExtensionStorageMonitorIOHelper
 
     storage_observers_[extension_id] =
         std::make_unique<SingleExtensionStorageObserver>(
-            this, extension_id, std::move(quota_manager), site_url.GetOrigin(),
+            this, extension_id, std::move(quota_manager), site_origin,
             next_threshold, rate, should_uma);
   }
 
@@ -252,9 +256,9 @@ void SingleExtensionStorageObserver::OnStorageEvent(const Event& event) {
     } else {
       // We can't use the quota in the event because it assumes unlimited
       // storage.
-      BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                              base::BindOnce(&LogTemporaryStorageUsage,
-                                             quota_manager_, event.usage));
+      base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                               base::BindOnce(&LogTemporaryStorageUsage,
+                                              quota_manager_, event.usage));
     }
   }
 
@@ -262,8 +266,8 @@ void SingleExtensionStorageObserver::OnStorageEvent(const Event& event) {
     while (event.usage >= next_threshold_)
       next_threshold_ *= 2;
 
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&ExtensionStorageMonitor::OnStorageThresholdExceeded,
                        io_helper_->extension_storage_monitor(), extension_id_,
                        next_threshold_, event.usage));
@@ -329,8 +333,8 @@ void ExtensionStorageMonitor::OnExtensionWillBeInstalled(
     SetNextStorageThreshold(extension->id(), 0);
 
     if (io_helper_) {
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(
               &ExtensionStorageMonitorIOHelper::UpdateThresholdForExtension,
               io_helper_, extension->id(), initial_extension_threshold_));
@@ -496,16 +500,18 @@ void ExtensionStorageMonitor::StartMonitoringStorage(
   scoped_refptr<storage::QuotaManager> quota_manager(
       storage_partition->GetQuotaManager());
 
-  GURL storage_origin(site_url.GetOrigin());
-  if (extension->is_hosted_app())
-    storage_origin = AppLaunchInfo::GetLaunchWebURL(extension).GetOrigin();
+  url::Origin storage_origin = url::Origin::Create(site_url);
+  if (extension->is_hosted_app()) {
+    storage_origin =
+        url::Origin::Create(AppLaunchInfo::GetLaunchWebURL(extension));
+  }
 
   // Don't give a threshold if we're not enforcing.
   int next_threshold =
       should_enforce ? GetNextStorageThreshold(extension->id()) : -1;
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &ExtensionStorageMonitorIOHelper::StartObservingForExtension,
           io_helper_, quota_manager, extension->id(), storage_origin,
@@ -517,8 +523,8 @@ void ExtensionStorageMonitor::StopMonitoringStorage(
   if (!io_helper_.get())
     return;
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &ExtensionStorageMonitorIOHelper::StopObservingForExtension,
           io_helper_, extension_id));
@@ -526,8 +532,7 @@ void ExtensionStorageMonitor::StopMonitoringStorage(
 
 void ExtensionStorageMonitor::RemoveNotificationForExtension(
     const std::string& extension_id) {
-  std::set<std::string>::iterator ext_id =
-      notified_extension_ids_.find(extension_id);
+  auto ext_id = notified_extension_ids_.find(extension_id);
   if (ext_id == notified_extension_ids_.end())
     return;
 

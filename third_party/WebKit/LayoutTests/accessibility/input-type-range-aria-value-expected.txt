@@ -2,7 +2,6 @@ This tests that ARIA attributes can be used to override the value of an input ty
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS axRange1.minValue is 1
 PASS axRange1.maxValue is 10
 PASS axRange1.intValue is 5
@@ -13,4 +12,5 @@ PASS axRange3.valueDescription is 'AXValueDescription: 5 of 10'
 PASS successfullyParsed is true
 
 TEST COMPLETE
-    
+
+  

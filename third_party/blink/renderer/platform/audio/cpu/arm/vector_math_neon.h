@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/platform/audio/vector_math_scalar.h"
 
 namespace blink {
-namespace VectorMath {
+namespace vector_math {
 namespace NEON {
 
 // TODO: Consider optimizing this.
@@ -247,7 +247,7 @@ static ALWAYS_INLINE void Zvmul(const float* real1p,
 }
 
 }  // namespace NEON
-}  // namespace VectorMath
+}  // namespace vector_math
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_ARM_VECTOR_MATH_NEON_H_

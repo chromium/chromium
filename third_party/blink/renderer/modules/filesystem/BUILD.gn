@@ -51,6 +51,8 @@ blink_modules_sources("filesystem") {
     "file_system_directory_handle.h",
     "file_system_directory_iterator.cc",
     "file_system_directory_iterator.h",
+    "file_system_dispatcher.cc",
+    "file_system_dispatcher.h",
     "file_system_file_handle.cc",
     "file_system_file_handle.h",
     "file_system_writer.cc",
@@ -71,5 +73,10 @@ blink_modules_sources("filesystem") {
     "sync_callback_helper.h",
     "worker_global_scope_file_system.cc",
     "worker_global_scope_file_system.h",
+  ]
+
+  deps = [
+    "//components/services/filesystem/public/interfaces:interfaces_blink",
+    "//third_party/blink/renderer/platform",
   ]
 }

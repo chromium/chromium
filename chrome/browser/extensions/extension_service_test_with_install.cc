@@ -228,8 +228,7 @@ const Extension* ExtensionServiceTestWithInstall::VerifyCrxInstall(
           << path.value();
     }
 
-    for (std::vector<base::string16>::iterator err = errors.begin();
-      err != errors.end(); ++err) {
+    for (auto err = errors.begin(); err != errors.end(); ++err) {
       LOG(ERROR) << *err;
     }
   } else {
@@ -374,13 +373,12 @@ void ExtensionServiceTestWithInstall::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   unloaded_id_ = extension->id();
   unloaded_reason_ = reason;
-  extensions::ExtensionList::iterator i =
-      std::find(loaded_.begin(), loaded_.end(), extension);
-      // TODO(erikkay) fix so this can be an assert.  Right now the tests
-      // are manually calling clear() on loaded_, so this isn't doable.
-      if (i == loaded_.end())
-        return;
-      loaded_.erase(i);
+  auto i = std::find(loaded_.begin(), loaded_.end(), extension);
+  // TODO(erikkay) fix so this can be an assert.  Right now the tests
+  // are manually calling clear() on loaded_, so this isn't doable.
+  if (i == loaded_.end())
+    return;
+  loaded_.erase(i);
 }
 
 void ExtensionServiceTestWithInstall::OnExtensionWillBeInstalled(

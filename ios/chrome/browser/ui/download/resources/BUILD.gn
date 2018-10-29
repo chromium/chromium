@@ -30,7 +30,14 @@ imageset("done_badge") {
     "done_badge.imageset/done_badge@3x.png",
   ]
 }
-
+imageset("download_close") {
+  sources = [
+    "download_close.imageset/Contents.json",
+    "download_close.imageset/download_close.png",
+    "download_close.imageset/download_close@2x.png",
+    "download_close.imageset/download_close@3x.png",
+  ]
+}
 imageset("error_badge") {
   sources = [
     "error_badge.imageset/Contents.json",

@@ -1,6 +1,6 @@
 CONSOLE WARNING: line 28: Element.createShadowRoot is deprecated and will be removed in M73, around March 2019. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 for more details.
-
 This tests that layout tests can access shadow DOM.
+
 
 PASS shadow.nodeName is "#document-fragment"
 PASS internals.shadowRoot(shadow) threw exception TypeError: Failed to execute 'shadowRoot' on 'Internals': parameter 1 is not of type 'Element'..

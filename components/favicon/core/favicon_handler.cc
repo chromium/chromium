@@ -52,7 +52,7 @@ bool HasExpiredOrIncompleteResult(
     return false;
 
   // Check if at least one of the bitmaps is expired.
-  std::vector<favicon_base::FaviconRawBitmapResult>::const_iterator it =
+  auto it =
       std::find_if(bitmap_results.begin(), bitmap_results.end(), IsExpired);
   if (it != bitmap_results.end())
     return true;
@@ -75,9 +75,8 @@ bool HasExpiredOrIncompleteResult(
   std::vector<float> favicon_scales = favicon_base::GetFaviconScales();
   for (float favicon_scale : favicon_scales) {
     int edge_size_in_pixel = std::ceil(desired_size_in_dip * favicon_scale);
-    auto it = std::find(favicon_sizes.begin(), favicon_sizes.end(),
-                        gfx::Size(edge_size_in_pixel, edge_size_in_pixel));
-    if (it == favicon_sizes.end())
+    gfx::Size value(edge_size_in_pixel, edge_size_in_pixel);
+    if (!base::ContainsValue(favicon_sizes, value))
       return true;
   }
   return false;

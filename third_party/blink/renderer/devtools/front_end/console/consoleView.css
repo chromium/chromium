@@ -271,6 +271,7 @@
     border-right: 1px solid #a5a5a5;
     position: relative;
     margin-bottom: -1px;
+    margin-top: -1px;
 }
 
 .console-message-wrapper:last-child .nesting-level-marker::before,

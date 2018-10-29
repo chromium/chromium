@@ -55,7 +55,7 @@ class BaseTextInputType : public TextFieldInputType {
   bool SupportsPlaceholder() const final;
   bool SupportsSelectionAPI() const override;
 
-  // m_regexp and m_patternForRegexp are mutable because they are kinds of
+  // regexp_ and pattern_for_regexp_ are mutable because they are kinds of
   // cache.
   mutable std::unique_ptr<ScriptRegexp> regexp_;
   mutable AtomicString pattern_for_regexp_;

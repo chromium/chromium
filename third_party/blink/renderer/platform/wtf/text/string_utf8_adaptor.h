@@ -55,7 +55,7 @@ class StringUTF8Adaptor final {
     // UTF-8 when processing 8 bit strings. If |relative| is entirely ASCII, we
     // luck out and can avoid mallocing a new buffer to hold the UTF-8 data
     // because UTF-8 and Latin-1 use the same code units for ASCII code points.
-    if (string.Is8Bit() && string.ContainsOnlyASCII()) {
+    if (string.Is8Bit() && string.ContainsOnlyASCIIOrEmpty()) {
       data_ = reinterpret_cast<const char*>(string.Characters8());
       length_ = string.length();
     } else {

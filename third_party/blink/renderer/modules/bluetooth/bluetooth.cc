@@ -167,8 +167,8 @@ ScriptPromise Bluetooth::requestDevice(ScriptState* script_state,
 
   // If the algorithm is not allowed to show a popup, reject promise with a
   // SecurityError and abort these steps.
-  Document* doc = ToDocumentOrNull(context);
-  if (!Frame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr)) {
+  auto& doc = *To<Document>(context);
+  if (!LocalFrame::HasTransientUserActivation(doc.GetFrame())) {
     return ScriptPromise::RejectWithDOMException(
         script_state,
         DOMException::Create(
@@ -176,8 +176,8 @@ ScriptPromise Bluetooth::requestDevice(ScriptState* script_state,
             "Must be handling a user gesture to show a permission request."));
   }
 
-  if (!service_ && doc) {
-    LocalFrame* frame = doc->GetFrame();
+  if (!service_) {
+    LocalFrame* frame = doc.GetFrame();
     if (frame) {
       frame->GetInterfaceProvider().GetInterface(mojo::MakeRequest(&service_));
     }
@@ -198,9 +198,7 @@ ScriptPromise Bluetooth::requestDevice(ScriptState* script_state,
     return ScriptPromise();
 
   // Record the eTLD+1 of the frame using the API.
-  Document* document = ToDocument(context);
-  Platform::Current()->RecordRapporURL("Bluetooth.APIUsage.Origin",
-                                       document->Url());
+  Platform::Current()->RecordRapporURL("Bluetooth.APIUsage.Origin", doc.Url());
 
   // Subsequent steps are handled in the browser process.
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);

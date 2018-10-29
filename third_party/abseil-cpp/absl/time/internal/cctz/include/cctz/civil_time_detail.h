@@ -355,11 +355,11 @@ class civil_time {
       : civil_time(ct.f_) {}
 
   // Factories for the maximum/minimum representable civil_time.
-  static civil_time max() {
+  static CONSTEXPR_F civil_time max() {
     const auto max_year = std::numeric_limits<std::int_least64_t>::max();
     return civil_time(max_year, 12, 31, 23, 59, 59);
   }
-  static civil_time min() {
+  static CONSTEXPR_F civil_time min() {
     const auto min_year = std::numeric_limits<std::int_least64_t>::min();
     return civil_time(min_year, 1, 1, 0, 0, 0);
   }
@@ -414,6 +414,12 @@ class civil_time {
   }
   friend CONSTEXPR_F diff_t operator-(civil_time lhs, civil_time rhs) noexcept {
     return difference(T{}, lhs.f_, rhs.f_);
+  }
+
+  template <typename H>
+  friend H AbslHashValue(H h, civil_time a) {
+    return H::combine(std::move(h), a.f_.y, a.f_.m, a.f_.d,
+                                    a.f_.hh, a.f_.mm, a.f_.ss);
   }
 
  private:
@@ -508,12 +514,8 @@ CONSTEXPR_F weekday get_weekday(const civil_day& cd) noexcept {
   CONSTEXPR_D int k_weekday_offsets[1 + 12] = {
       -1, 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4,
   };
-  year_t wd = cd.year() - (cd.month() < 3);
-  if (wd >= 0) {
-    wd += wd / 4 - wd / 100 + wd / 400;
-  } else {
-    wd += (wd - 3) / 4 - (wd - 99) / 100 + (wd - 399) / 400;
-  }
+  year_t wd = 2400 + (cd.year() % 400) - (cd.month() < 3);
+  wd += wd / 4 - wd / 100 + wd / 400;
   wd += k_weekday_offsets[cd.month()] + cd.day();
   return k_weekday_by_sun_off[(wd % 7 + 7) % 7];
 }

@@ -8,13 +8,11 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_input_element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
 class Event;
 class MediaControlsImpl;
-class MouseEvent;
 
 class MODULES_EXPORT MediaControlOverlayPlayButtonElement final
     : public MediaControlInputElement {
@@ -36,20 +34,10 @@ class MODULES_EXPORT MediaControlOverlayPlayButtonElement final
   const char* GetNameForHistograms() const override;
 
  private:
-  friend class MediaControlOverlayPlayButtonElementTest;
-
-  void TapTimerFired(TimerBase*);
-
   void DefaultEventHandler(Event&) override;
   bool KeepEventInNode(const Event&) const override;
 
-  bool ShouldCausePlayPause(const Event&) const;
-  bool IsMouseEventOnInternalButton(const MouseEvent&) const;
   void MaybePlayPause();
-  void MaybeJump(int);
-
-  TaskRunnerTimer<MediaControlOverlayPlayButtonElement> tap_timer_;
-  base::Optional<bool> tap_was_touch_event_;
 
   Member<HTMLDivElement> internal_button_;
 

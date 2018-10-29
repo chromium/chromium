@@ -56,9 +56,9 @@ base::string16 AccessibilityTreeFormatter::DumpAccessibilityTreeFromManager(
     bool internal) {
   std::unique_ptr<AccessibilityTreeFormatter> formatter;
   if (internal)
-    formatter.reset(new AccessibilityTreeFormatterBlink());
+    formatter = std::make_unique<AccessibilityTreeFormatterBlink>();
   else
-    formatter.reset(Create());
+    formatter = Create();
   base::string16 accessibility_contents_utf16;
   std::vector<Filter> filters;
   filters.push_back(Filter(base::ASCIIToUTF16("*"), Filter::ALLOW));

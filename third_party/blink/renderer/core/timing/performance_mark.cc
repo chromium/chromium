@@ -23,7 +23,7 @@ PerformanceMark::PerformanceMark(ScriptState* script_state,
 }
 
 AtomicString PerformanceMark::entryType() const {
-  return PerformanceEntryNames::mark;
+  return performance_entry_names::kMark;
 }
 
 PerformanceEntryType PerformanceMark::EntryTypeEnum() const {

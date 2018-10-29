@@ -10,17 +10,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
+import android.support.customtabs.trusted.TrustedWebActivityService;
 import android.support.customtabs.trusted.TrustedWebActivityServiceConnectionManager;
+import android.support.customtabs.trusted.TrustedWebActivityServiceWrapper;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
-import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 
 import java.util.List;
 import java.util.Set;
@@ -34,9 +38,8 @@ public class TrustedWebActivityClient {
     /**
      * Creates a TrustedWebActivityService.
      */
-    public TrustedWebActivityClient() {
-        mConnection = new TrustedWebActivityServiceConnectionManager(
-                ContextUtils.getApplicationContext());
+    public TrustedWebActivityClient(TrustedWebActivityServiceConnectionManager connection) {
+        mConnection = connection;
     }
 
     /**
@@ -63,13 +66,7 @@ public class TrustedWebActivityClient {
         String channelDisplayName = res.getString(R.string.notification_category_group_general);
 
         mConnection.execute(scope, new Origin(scope).toString(), service -> {
-            if (!builder.hasSmallIconBitmap()) {
-                int smallIconId = service.getSmallIconId();
-                if (smallIconId != -1) {
-                    builder.setSmallIconForRemoteApp(
-                            smallIconId, service.getComponentName().getPackageName());
-                }
-            }
+            fallbackToIconFromServiceIfNecessary(builder, service);
 
             Notification notification = builder.build();
 
@@ -81,6 +78,26 @@ public class TrustedWebActivityClient {
                         NotificationUmaTracker.SystemNotificationType.SITES, notification);
             }
         });
+    }
+
+    private void fallbackToIconFromServiceIfNecessary(NotificationBuilderBase builder,
+            TrustedWebActivityServiceWrapper service) throws RemoteException {
+        if (builder.hasSmallIconForContent() && builder.hasStatusBarIconBitmap()) {
+            return;
+        }
+
+        int id = service.getSmallIconId();
+        if (id == TrustedWebActivityService.NO_ID) {
+            return;
+        }
+
+        Bitmap bitmap = service.getSmallIconBitmap();
+        if (!builder.hasStatusBarIconBitmap()) {
+            builder.setStatusBarIconForUntrustedRemoteApp(id, bitmap);
+        }
+        if (!builder.hasSmallIconForContent()) {
+            builder.setContentSmallIconForUntrustedRemoteApp(bitmap);
+        }
     }
 
     /**
@@ -144,7 +161,9 @@ public class TrustedWebActivityClient {
         Intent intent = new Intent();
         intent.setData(Uri.parse(url));
         intent.setAction(Intent.ACTION_VIEW);
-        intent.setFlags(WebappLauncherActivity.getWebappActivityIntentFlags());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | ApiCompatibilityUtils.getActivityNewDocumentFlag()
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.setComponent(new ComponentName(twaPackageName, twaActivityName));
         return intent;
     }

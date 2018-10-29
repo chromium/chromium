@@ -10,6 +10,7 @@
 #include "gin/public/context_holder.h"
 #include "gin/public/gin_embedders.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
+#include "third_party/blink/renderer/platform/bindings/v8_cross_origin_setter_info.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -113,6 +114,10 @@ class PLATFORM_EXPORT ScriptState final
 
   static ScriptState* ForRelevantRealm(
       const v8::FunctionCallbackInfo<v8::Value>& info) {
+    return From(info.Holder()->CreationContext());
+  }
+
+  static ScriptState* ForRelevantRealm(const V8CrossOriginSetterInfo& info) {
     return From(info.Holder()->CreationContext());
   }
 

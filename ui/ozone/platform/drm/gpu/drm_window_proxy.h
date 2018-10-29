@@ -28,9 +28,6 @@ class DrmWindowProxy {
                         SwapCompletionOnceCallback submission_callback,
                         PresentationOnceCallback presentation_callback);
 
-  void GetVSyncParameters(
-      const gfx::VSyncProvider::UpdateVSyncCallback& callback);
-
   bool SupportsGpuFences() const;
 
  private:

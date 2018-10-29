@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 namespace blink {
 
@@ -368,26 +368,18 @@ void ComputeAbsoluteVertical(const NGConstraintSpace& space,
     // Standard: "If top, bottom, and height are not auto:"
     // Compute margins.
     LayoutUnit margin_space = container_size.height - *top - *bottom - *height;
-    // When both margins are auto.
     if (!margin_top && !margin_bottom) {
-      if (margin_space > 0) {
-        margin_top = margin_space / 2;
-        margin_bottom = margin_space / 2;
-      } else {
-        // Margin space is over-constrained.
-        if (IsTopDominant(container_writing_mode, container_direction)) {
-          margin_top = LayoutUnit();
-          margin_bottom = margin_space;
-        } else {
-          margin_top = margin_space;
-          margin_bottom = LayoutUnit();
-        }
-      }
+      // When both margins are auto.
+      margin_top = margin_space / 2;
+      margin_bottom = margin_space - *margin_top;
     } else if (!margin_top) {
       margin_top = margin_space - *margin_bottom;
     } else if (!margin_bottom) {
       margin_bottom = margin_space - *margin_top;
     } else {
+      // Since none of the margins are auto (and we have non-auto top, bottom
+      // and height), we are over-constrained. Keep the dominant inset and
+      // override the other.
       LayoutUnit margin_extra = margin_space - *margin_top - *margin_bottom;
       if (margin_extra) {
         if (IsTopDominant(container_writing_mode, container_direction))

@@ -4,12 +4,10 @@
 
 #include "chrome/browser/themes/theme_service.h"
 
-#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -33,8 +31,6 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/material_design/material_design_controller.h"
-#include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -120,21 +116,12 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
     theme_change_observer.Wait();
   }
 
-  // Alpha blends a non-opaque foreground color against an opaque background.
-  // This is not the same as color_utils::AlphaBlend() since it gets the opacity
-  // from the foreground color and then does not blend the two colors' alpha
-  // values together.
-  static SkColor AlphaBlend(SkColor foreground, SkColor background) {
-    return color_utils::AlphaBlend(SkColorSetA(foreground, SK_AlphaOPAQUE),
-                                   background, SkColorGetA(foreground));
-  }
-
   // Returns the separator color as the opaque result of blending it atop the
   // frame color (which is the color we use when calculating the contrast of the
   // separator with the tab and frame colors).
   static SkColor GetSeparatorColor(SkColor tab_color, SkColor frame_color) {
-    return AlphaBlend(ThemeService::GetSeparatorColor(tab_color, frame_color),
-                      frame_color);
+    return color_utils::GetResultingPaintColor(
+        ThemeService::GetSeparatorColor(tab_color, frame_color), frame_color);
   }
 
  protected:
@@ -295,6 +282,32 @@ TEST_F(ThemeServiceTest, IncognitoTest) {
 #endif
 }
 
+TEST_F(ThemeServiceTest, GetDefaultThemeProviderForProfile) {
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(profile_.get());
+  theme_service->UseDefaultTheme();
+  // Let the ThemeService uninstall unused themes.
+  base::RunLoop().RunUntilIdle();
+
+  SkColor default_toolbar_color =
+      ThemeService::GetThemeProviderForProfile(profile_.get())
+          .GetColor(ThemeProperties::COLOR_TOOLBAR);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  LoadUnpackedThemeAt(temp_dir.GetPath());
+
+  // Should get a new color after installing a theme.
+  EXPECT_NE(ThemeService::GetThemeProviderForProfile(profile_.get())
+                .GetColor(ThemeProperties::COLOR_TOOLBAR),
+            default_toolbar_color);
+
+  // Should get the same color when requesting a default color.
+  EXPECT_EQ(ThemeService::GetDefaultThemeProviderForProfile(profile_.get())
+                .GetColor(ThemeProperties::COLOR_TOOLBAR),
+            default_toolbar_color);
+}
+
 namespace {
 
 // NotificationObserver which emulates an infobar getting destroyed when the
@@ -423,117 +436,5 @@ TEST_F(ThemeServiceTest, UserThemeTakesPrecedenceOverSystemTheme) {
 }
 #endif // defined(OS_LINUX) && !defined(OS_CHROMEOS)
 #endif // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
-#if !defined(OS_MACOSX)  // Mac uses different colors than other platforms.
-// Check that the function which computes the separator color behaves as
-// expected for a variety of inputs.
-TEST_F(ThemeServiceTest, SeparatorColor) {
-  // Refresh does not draw the toolbar top separator.
-  if (ui::MaterialDesignController::IsRefreshUi())
-    return;
-
-  // Ensure Windows 10 machines use the built-in default colors rather than the
-  // current system native colors.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableDwmComposition);
-
-  {
-    const ui::ThemeProvider& theme_provider =
-        ThemeService::GetThemeProviderForProfile(profile_.get());
-    const SkColor frame_color =
-        theme_provider.GetColor(ThemeProperties::COLOR_FRAME);
-    const SkColor tab_color =
-        theme_provider.GetColor(ThemeProperties::COLOR_TOOLBAR);
-    SCOPED_TRACE(base::StringPrintf("Tab color: 0x%08X, frame color: 0x%08X",
-                                    tab_color, frame_color));
-
-    // Check that the TOOLBAR_TOP_SEPARATOR color is the same whether we ask the
-    // theme provider or compute it manually.
-    const SkColor theme_color = AlphaBlend(
-        theme_provider.GetColor(ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR),
-        frame_color);
-    SkColor separator_color = GetSeparatorColor(tab_color, frame_color);
-    EXPECT_EQ(theme_color, separator_color);
-
-    // For the default theme, the separator should darken the frame.
-    float frame_luminance = color_utils::GetRelativeLuminance(frame_color);
-    EXPECT_LT(color_utils::GetRelativeLuminance(separator_color),
-              frame_luminance);
-
-    // If we reverse the colors, the separator should darken the "frame" (which
-    // in this case is actually the tab color), since otherwise the contrast
-    // with the "frame" would be too minimal.  It should also be darker than the
-    // "tab" (frame color) since otherwise the contrast the contrast with the
-    // "tab color" would be too minimal.
-    separator_color = GetSeparatorColor(frame_color, tab_color);
-    float tab_luminance = color_utils::GetRelativeLuminance(tab_color);
-    float separator_luminance =
-        color_utils::GetRelativeLuminance(separator_color);
-    EXPECT_LT(separator_luminance, tab_luminance);
-    EXPECT_LT(separator_luminance, frame_luminance);
-
-    // When the frame color is black, the separator should lighten the frame,
-    // but it should still be darker than the tab color.
-    separator_color = GetSeparatorColor(tab_color, SK_ColorBLACK);
-    separator_luminance = color_utils::GetRelativeLuminance(separator_color);
-    EXPECT_GT(separator_luminance, 0);
-    EXPECT_LT(separator_luminance, tab_luminance);
-
-    // When the frame color is white, the separator should darken the frame; it
-    // should also be lighter than the tab color since otherwise the contrast
-    // with the tab would be too minimal.
-    separator_color = GetSeparatorColor(tab_color, SK_ColorWHITE);
-    separator_luminance = color_utils::GetRelativeLuminance(separator_color);
-    EXPECT_LT(separator_luminance, 1);
-    EXPECT_LT(separator_luminance, tab_luminance);
-  }
-
-  // Now make similar checks as above but for the incognito theme.
-  {
-    const ui::ThemeProvider& otr_provider =
-        ThemeService::GetThemeProviderForProfile(
-            profile_->GetOffTheRecordProfile());
-    const SkColor frame_color =
-        otr_provider.GetColor(ThemeProperties::COLOR_FRAME);
-    const SkColor tab_color =
-        otr_provider.GetColor(ThemeProperties::COLOR_TOOLBAR);
-    SCOPED_TRACE(base::StringPrintf("Tab color: 0x%08X, frame color: 0x%08X",
-                                    tab_color, frame_color));
-
-    const SkColor theme_color = AlphaBlend(
-        otr_provider.GetColor(ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR),
-        frame_color);
-    SkColor separator_color = GetSeparatorColor(tab_color, frame_color);
-    EXPECT_EQ(theme_color, separator_color);
-
-    // For the default incognito theme, the separator should darken the frame.
-    EXPECT_LT(color_utils::GetRelativeLuminance(separator_color),
-              color_utils::GetRelativeLuminance(frame_color));
-
-    // And if we reverse the colors, the separator should lighten the "frame"
-    // (tab color).
-    separator_color = GetSeparatorColor(frame_color, tab_color);
-    float tab_luminance = color_utils::GetRelativeLuminance(tab_color);
-    EXPECT_GT(color_utils::GetRelativeLuminance(separator_color),
-              tab_luminance);
-
-    // When the frame color is black, the separator should lighten the frame; it
-    // should also be lighter than the tab color since otherwise the contrast
-    // with the tab would be too minimal.
-    separator_color = GetSeparatorColor(tab_color, SK_ColorBLACK);
-    float separator_luminance =
-        color_utils::GetRelativeLuminance(separator_color);
-    EXPECT_GT(separator_luminance, 0);
-    EXPECT_GT(separator_luminance, tab_luminance);
-
-    // When the frame color is white, the separator should darken the frame, but
-    // it should still be lighter than the tab color.
-    separator_color = GetSeparatorColor(tab_color, SK_ColorWHITE);
-    separator_luminance = color_utils::GetRelativeLuminance(separator_color);
-    EXPECT_LT(separator_luminance, 1);
-    EXPECT_GT(separator_luminance, tab_luminance);
-  }
-}
-#endif  // !defined(OS_MACOSX)
 
 }; // namespace theme_service_internal

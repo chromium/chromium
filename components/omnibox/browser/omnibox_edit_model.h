@@ -110,7 +110,7 @@ class OmniboxEditModel {
 
   OmniboxEditController* controller() const { return controller_; }
 
-  OmniboxClient* client() { return client_.get(); }
+  OmniboxClient* client() const { return client_.get(); }
 
   // Returns the current state.  This assumes we are switching tabs, and changes
   // the internal state appropriately.
@@ -136,11 +136,14 @@ class OmniboxEditModel {
   // URL/navigation, as opposed to a search.
   bool CurrentTextIsURL() const;
 
-  // Invoked to adjust the text before writting to the clipboard for a copy
-  // (e.g. by adding 'http' to the front). |sel_min| gives the minimum position
-  // of the selection e.g. min(selection_start, selection_end). |text| is the
-  // currently selected text. If the url should be copied to the clipboard
-  // |write_url| is set to true and |url_from_text| set to the url to write.
+  // Adjusts the copied text before writing it to the clipboard. If the copied
+  // text is a URL with the scheme elided, this method reattaches the scheme.
+  // Copied text that looks like a search query, including the Query in Omnibox
+  // case, will not be modified.
+  //
+  // |sel_min| gives the minimum of the selection, e.g. min(sel_start, sel_end).
+  // |text| is the currently selected text. If the copied text is interpreted
+  // as a URL, |write_url| is set to true and |url_from_text| set to the URL.
   void AdjustTextForCopy(int sel_min,
                          base::string16* text,
                          GURL* url_from_text,
@@ -170,8 +173,14 @@ class OmniboxEditModel {
   // Returns the permanent display text for the current page and Omnibox state.
   base::string16 GetPermanentDisplayText() const;
 
-  // Sets the user_text_ to |text|.  Only the View should call this.
+  // Sets the user_text_ to |text|.
   void SetUserText(const base::string16& text);
+
+  // Unapplies any Steady State Elisions by setting the user text to be
+  // url_for_editing_. This also selects all and enters user-input-in-progress
+  // mode. If |exit_query_in_omnibox| is set to true, this will alse exit
+  // Query in Omnibox mode if the omnibox is showing a query.
+  void Unelide(bool exit_query_in_omnibox);
 
   // Invoked any time the text may have changed in the edit. Notifies the
   // controller.
@@ -363,7 +372,7 @@ class OmniboxEditModel {
 
   // Convenience method for QueryInOmnibox::GetDisplaySearchTerms.
   // Returns true if Query in Omnibox is active. |search_terms| may be nullptr.
-  bool GetQueryInOmniboxSearchTerms(base::string16* search_terms);
+  bool GetQueryInOmniboxSearchTerms(base::string16* search_terms) const;
 
   // Used for testing purposes only.
   base::string16 GetUserTextForTesting() const { return user_text_; }
@@ -414,9 +423,6 @@ class OmniboxEditModel {
 
   // Called whenever user_text_ should change.
   void InternalSetUserText(const base::string16& text);
-
-  // Turns off keyword mode for the current match.
-  void ClearPopupKeywordMode() const;
 
   // Conversion between user text and display text. User text is the text the
   // user has input. Display text is the text being shown in the edit. The

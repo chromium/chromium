@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/notification_observer.h"
@@ -54,13 +53,6 @@ class ThemeServiceTest;
 namespace ui {
 class ResourceBundle;
 }
-
-#ifdef __OBJC__
-@class NSString;
-// Sent whenever the browser theme changes.  Object => NSValue wrapping the
-// ThemeService that changed.
-extern "C" NSString* const kBrowserThemeDidChangeNotification;
-#endif  // __OBJC__
 
 class ThemeService : public content::NotificationObserver, public KeyedService {
  public:
@@ -133,6 +125,11 @@ class ThemeService : public content::NotificationObserver, public KeyedService {
   // the same ThemeService.
   static const ui::ThemeProvider& GetThemeProviderForProfile(Profile* profile);
 
+  // Gets the ThemeProvider for |profile| that represents the default colour
+  // scheme for the OS.
+  static const ui::ThemeProvider& GetDefaultThemeProviderForProfile(
+      Profile* profile);
+
  protected:
   // Set a custom default theme instead of the normal default theme.
   virtual void SetCustomDefaultTheme(
@@ -156,15 +153,6 @@ class ThemeService : public content::NotificationObserver, public KeyedService {
 
   // Let all the browser views know that themes have changed.
   virtual void NotifyThemeChanged();
-
-#if defined(OS_MACOSX)
-  // Let all the browser views know that themes have changed in a platform way.
-  virtual void NotifyPlatformThemeChanged();
-#endif  // OS_MACOSX
-
-  // Clears the platform-specific caches. Do not call directly; it's called
-  // from ClearAllThemeData().
-  virtual void FreePlatformCaches();
 
   // Implementation for ui::ThemeProvider (see block of functions in private
   // section).
@@ -193,7 +181,9 @@ class ThemeService : public content::NotificationObserver, public KeyedService {
   // track of the incognito state of the calling code.
   class BrowserThemeProvider : public ui::ThemeProvider {
    public:
-    BrowserThemeProvider(const ThemeService& theme_service, bool incognito);
+    BrowserThemeProvider(const ThemeService& theme_service,
+                         bool incognito,
+                         bool use_default);
     ~BrowserThemeProvider() override;
 
     // Overridden from ui::ThemeProvider:
@@ -206,20 +196,14 @@ class ThemeService : public content::NotificationObserver, public KeyedService {
     bool HasCustomColor(int id) const override;
     base::RefCountedMemory* GetRawData(int id, ui::ScaleFactor scale_factor)
         const override;
-#if defined(OS_MACOSX)
-    bool UsingSystemTheme() const override;
-    bool InIncognitoMode() const override;
-    NSImage* GetNSImageNamed(int id) const override;
-    NSColor* GetNSImageColorNamed(int id) const override;
-    NSColor* GetNSColor(int id) const override;
-    NSColor* GetNSColorTint(int id) const override;
-    NSGradient* GetNSGradient(int id) const override;
-    bool ShouldIncreaseContrast() const override;
-#endif
 
    private:
+    class DefaultScope;
+    friend class DefaultScope;
+
     const ThemeService& theme_service_;
     bool incognito_;
+    bool use_default_;
 
     DISALLOW_COPY_AND_ASSIGN(BrowserThemeProvider);
   };
@@ -253,13 +237,6 @@ class ThemeService : public content::NotificationObserver, public KeyedService {
   int GetDisplayProperty(int id) const;
   base::RefCountedMemory* GetRawData(int id,
                                      ui::ScaleFactor scale_factor) const;
-#if defined(OS_MACOSX)
-  NSImage* GetNSImageNamed(int id, bool incognito) const;
-  NSColor* GetNSImageColorNamed(int id, bool incognito) const;
-  NSColor* GetNSColor(int id, bool incognito) const;
-  NSColor* GetNSColorTint(int id) const;
-  NSGradient* GetNSGradient(int id) const;
-#endif
 
   // Returns a cross platform image for an id.
   //
@@ -304,19 +281,6 @@ class ThemeService : public content::NotificationObserver, public KeyedService {
   void SetSupervisedUserTheme();
 #endif
 
-#if defined(OS_MACOSX)
-  // |nsimage_cache_| retains the images it has cached.
-  typedef std::map<int, NSImage*> NSImageMap;
-  mutable NSImageMap nsimage_cache_;
-
-  // |nscolor_cache_| retains the colors it has cached.
-  typedef std::map<int, NSColor*> NSColorMap;
-  mutable NSColorMap nscolor_cache_;
-
-  typedef std::map<int, NSGradient*> NSGradientMap;
-  mutable NSGradientMap nsgradient_cache_;
-#endif
-
   ui::ResourceBundle& rb_;
   Profile* profile_;
 
@@ -347,6 +311,7 @@ class ThemeService : public content::NotificationObserver, public KeyedService {
 
   BrowserThemeProvider original_theme_provider_;
   BrowserThemeProvider incognito_theme_provider_;
+  BrowserThemeProvider default_theme_provider_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

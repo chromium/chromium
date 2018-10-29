@@ -306,7 +306,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
     ObserverList() : iterating(false) {}
     bool iterating;
     Vector<NetworkStateObserver*> observers;
-    Vector<size_t> zeroed_observers;  // Indices in observers that are 0.
+    Vector<wtf_size_t> zeroed_observers;  // Indices in observers that are 0.
   };
 
   // This helper scope issues required notifications when mutating the state if

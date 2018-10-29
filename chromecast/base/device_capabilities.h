@@ -120,7 +120,7 @@ class DeviceCapabilities {
     }
 
     // Accessor for complete capabilities string in JSON format.
-    const std::string& json_string() const { return *json_string_.get(); }
+    const std::string& json_string() const { return json_string_; }
 
    private:
     friend class base::RefCountedThreadSafe<Data>;
@@ -135,7 +135,7 @@ class DeviceCapabilities {
     ~Data();
 
     const std::unique_ptr<const base::DictionaryValue> dictionary_;
-    const std::unique_ptr<const std::string> json_string_;
+    const std::string json_string_;
 
     DISALLOW_COPY_AND_ASSIGN(Data);
   };

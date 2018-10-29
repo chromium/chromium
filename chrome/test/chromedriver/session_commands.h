@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "chrome/test/chromedriver/command.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace base {
 class DictionaryValue;
@@ -20,16 +21,15 @@ class Value;
 class DeviceManager;
 struct Session;
 class Status;
-class URLRequestContextGetter;
 
 struct InitSessionParams {
-  InitSessionParams(scoped_refptr<URLRequestContextGetter> context_getter,
+  InitSessionParams(network::mojom::URLLoaderFactory* factory,
                     const SyncWebSocketFactory& socket_factory,
                     DeviceManager* device_manager);
   InitSessionParams(const InitSessionParams& other);
   ~InitSessionParams();
 
-  scoped_refptr<URLRequestContextGetter> context_getter;
+  network::mojom::URLLoaderFactory* url_loader_factory;
   SyncWebSocketFactory socket_factory;
   DeviceManager* device_manager;
 };
@@ -38,7 +38,10 @@ bool MergeCapabilities(const base::DictionaryValue* always_match,
                        const base::DictionaryValue* first_match,
                        base::DictionaryValue* merged);
 
-bool MatchCapabilities(base::DictionaryValue* capabilities);
+bool MatchCapabilities(const base::DictionaryValue* capabilities);
+
+Status ProcessCapabilities(const base::DictionaryValue& params,
+                           base::DictionaryValue* result_capabilities);
 
 // Initializes a session.
 Status ExecuteInitSession(const InitSessionParams& bound_params,
@@ -194,5 +197,9 @@ Status ExecuteSetScreenOrientation(Session* session,
 Status ExecuteDeleteScreenOrientation(Session* session,
                                       const base::DictionaryValue& params,
                                       std::unique_ptr<base::Value>* value);
+
+Status ExecuteGenerateTestReport(Session* session,
+                                 const base::DictionaryValue& params,
+                                 std::unique_ptr<base::Value>* value);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_SESSION_COMMANDS_H_

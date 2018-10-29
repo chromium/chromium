@@ -42,6 +42,10 @@ static const double kMinZoom = 100.0;
 static const double kMaxZoom = 400.0;
 static const double kZoomStep = 1.0;
 
+static const double kMinExposureTime = 10.0;
+static const double kMaxExposureTime = 100.0;
+static const double kExposureTimeStep = 5.0;
+
 // Larger int means better.
 enum class PixelFormatMatchType : int {
   INCOMPATIBLE = 0,
@@ -457,11 +461,21 @@ void FakePhotoDevice::GetPhotoState(
   mojom::PhotoStatePtr photo_state = mojo::CreateEmptyPhotoState();
 
   photo_state->current_white_balance_mode = mojom::MeteringMode::NONE;
-  photo_state->current_exposure_mode = mojom::MeteringMode::NONE;
+
+  photo_state->supported_exposure_modes.push_back(mojom::MeteringMode::MANUAL);
+  photo_state->supported_exposure_modes.push_back(
+      mojom::MeteringMode::CONTINUOUS);
+  photo_state->current_exposure_mode = fake_device_state_->exposure_mode;
   photo_state->current_focus_mode = mojom::MeteringMode::NONE;
 
   photo_state->exposure_compensation = mojom::Range::New();
+
   photo_state->exposure_time = mojom::Range::New();
+  photo_state->exposure_time->current = fake_device_state_->exposure_time;
+  photo_state->exposure_time->max = kMaxExposureTime;
+  photo_state->exposure_time->min = kMinExposureTime;
+  photo_state->exposure_time->step = kExposureTimeStep;
+
   photo_state->color_temperature = mojom::Range::New();
   photo_state->iso = mojom::Range::New();
   photo_state->iso->current = 100.0;
@@ -522,6 +536,12 @@ void FakePhotoDevice::SetPhotoOptions(
     device_state_write_access->zoom =
         std::max(kMinZoom, std::min(settings->zoom, kMaxZoom));
   }
+  if (settings->has_exposure_time) {
+    device_state_write_access->exposure_time = std::max(
+        kMinExposureTime, std::min(settings->exposure_time, kMaxExposureTime));
+  }
+  if (settings->has_exposure_mode)
+    device_state_write_access->exposure_mode = mojom::MeteringMode::MANUAL;
 
   std::move(callback).Run(true);
 }
@@ -529,9 +549,9 @@ void FakePhotoDevice::SetPhotoOptions(
 void FakeVideoCaptureDevice::TakePhoto(TakePhotoCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::Bind(&FakePhotoDevice::TakePhoto,
-                            base::Unretained(photo_device_.get()),
-                            base::Passed(&callback), elapsed_time_));
+      FROM_HERE, base::BindOnce(&FakePhotoDevice::TakePhoto,
+                                base::Unretained(photo_device_.get()),
+                                base::Passed(&callback), elapsed_time_));
 }
 
 OwnBufferFrameDeliverer::OwnBufferFrameDeliverer(
@@ -574,11 +594,15 @@ void ClientBufferFrameDeliverer::PaintAndDeliverNextFrame(
     return;
 
   const int arbitrary_frame_feedback_id = 0;
-  auto capture_buffer = client()->ReserveOutputBuffer(
+  VideoCaptureDevice::Client::Buffer capture_buffer;
+  const auto reserve_result = client()->ReserveOutputBuffer(
       device_state()->format.frame_size, device_state()->format.pixel_format,
-      arbitrary_frame_feedback_id);
-  DLOG_IF(ERROR, !capture_buffer.is_valid())
-      << "Couldn't allocate Capture Buffer";
+      arbitrary_frame_feedback_id, &capture_buffer);
+  if (reserve_result != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
+    client()->OnFrameDropped(
+        ConvertReservationFailureToFrameDropReason(reserve_result));
+    return;
+  }
   auto buffer_access =
       capture_buffer.handle_provider->GetHandleForInProcessAccess();
   DCHECK(buffer_access->data()) << "Buffer has NO backing memory";

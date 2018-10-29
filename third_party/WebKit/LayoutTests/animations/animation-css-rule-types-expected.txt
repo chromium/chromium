@@ -2,7 +2,6 @@ This test checks that the CSSRule RuleTypes for keyframe-related rules are what 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS ruleType is 7
 PASS ruleType is 8
 If we got to this point then we did not crash and the test has passed.

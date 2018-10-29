@@ -66,6 +66,7 @@ static_library("arc") {
     "volume_mounter/arc_volume_mounter_bridge.h",
     "wake_lock/arc_wake_lock_bridge.cc",
     "wake_lock/arc_wake_lock_bridge.h",
+    "wake_lock/wake_lock_observer.h",
   ]
 
   public_deps = [

@@ -7,6 +7,7 @@
 
 #include "cc/input/scroll_snap_data.h"
 #include "cc/input/snap_fling_controller.h"
+#include "cc/input/snap_selection_strategy.h"
 
 // This file defines classes and structs used in SnapCoordinator.h
 
@@ -16,6 +17,7 @@ using SnapAxis = cc::SnapAxis;
 using SearchAxis = cc::SearchAxis;
 using SnapStrictness = cc::SnapStrictness;
 using SnapAlignment = cc::SnapAlignment;
+using SnapSelectionStrategy = cc::SnapSelectionStrategy;
 using ScrollSnapType = cc::ScrollSnapType;
 using ScrollSnapAlign = cc::ScrollSnapAlign;
 using SnapAreaData = cc::SnapAreaData;

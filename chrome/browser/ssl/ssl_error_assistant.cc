@@ -123,19 +123,6 @@ LoadDynamicInterstitialList(
   return dynamic_interstitial_list;
 }
 
-// Reads the SSL error assistant configuration from the resource bundle.
-std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig>
-ReadErrorAssistantProtoFromResourceBundle() {
-  auto proto = std::make_unique<chrome_browser_ssl::SSLErrorAssistantConfig>();
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(proto);
-  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  base::StringPiece data =
-      bundle.GetRawDataResource(IDR_SSL_ERROR_ASSISTANT_PB);
-  google::protobuf::io::ArrayInputStream stream(data.data(), data.size());
-  return proto->ParseFromZeroCopyStream(&stream) ? std::move(proto) : nullptr;
-}
-
 bool RegexMatchesAny(const std::vector<std::string>& organization_names,
                      const std::string& pattern) {
   const re2::RE2 regex(pattern);
@@ -203,9 +190,10 @@ SSLErrorAssistant::~SSLErrorAssistant() {}
 bool SSLErrorAssistant::IsKnownCaptivePortalCertificate(
     const net::SSLInfo& ssl_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  EnsureInitialized();
+  CHECK(error_assistant_proto_);
+
   if (!captive_portal_spki_hashes_) {
-    error_assistant_proto_ = ReadErrorAssistantProtoFromResourceBundle();
-    CHECK(error_assistant_proto_);
     captive_portal_spki_hashes_ =
         LoadCaptivePortalCertHashes(*error_assistant_proto_);
   }
@@ -219,10 +207,10 @@ SSLErrorAssistant::MatchDynamicInterstitial(const net::SSLInfo& ssl_info,
   // Load the dynamic interstitial data from SSL error assistant proto if it's
   // not already loaded.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!dynamic_interstitial_list_) {
-    if (!error_assistant_proto_)
-      error_assistant_proto_ = ReadErrorAssistantProtoFromResourceBundle();
+  EnsureInitialized();
+  CHECK(error_assistant_proto_);
 
+  if (!dynamic_interstitial_list_) {
     DCHECK(error_assistant_proto_);
     dynamic_interstitial_list_ =
         LoadDynamicInterstitialList(*error_assistant_proto_);
@@ -270,11 +258,12 @@ const std::string SSLErrorAssistant::MatchKnownMITMSoftware(
     return std::string();
   }
 
+  EnsureInitialized();
+  CHECK(error_assistant_proto_);
+
   // Load MITM software data from the SSL error assistant proto.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!mitm_software_list_) {
-    if (!error_assistant_proto_)
-      error_assistant_proto_ = ReadErrorAssistantProtoFromResourceBundle();
     DCHECK(error_assistant_proto_);
     mitm_software_list_ = LoadMITMSoftwareList(*error_assistant_proto_);
   }
@@ -322,21 +311,23 @@ const std::string SSLErrorAssistant::MatchKnownMITMSoftware(
   return std::string();
 }
 
+// static
+std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig>
+SSLErrorAssistant::GetErrorAssistantProtoFromResourceBundle() {
+  // Reads the SSL error assistant configuration from the resource bundle.
+  auto proto = std::make_unique<chrome_browser_ssl::SSLErrorAssistantConfig>();
+  DCHECK(proto);
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  base::StringPiece data =
+      bundle.GetRawDataResource(IDR_SSL_ERROR_ASSISTANT_PB);
+  google::protobuf::io::ArrayInputStream stream(data.data(), data.size());
+  return proto->ParseFromZeroCopyStream(&stream) ? std::move(proto) : nullptr;
+}
+
 void SSLErrorAssistant::SetErrorAssistantProto(
     std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig> proto) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(proto);
-  if (!error_assistant_proto_) {
-    // If the user hasn't seen an SSL error and a component update is available,
-    // the local resource bundle won't have been read and error_assistant_proto_
-    // will be null. It's possible that the local resource bundle has a higher
-    // version_id than the component updater component, so load the local
-    // resource bundle once to compare versions.
-    // TODO(meacer): Ideally, ReadErrorAssistantProtoFromResourceBundle should
-    // only be called once and not on the UI thread. Move the call to the
-    // component updater component.
-    error_assistant_proto_ = ReadErrorAssistantProtoFromResourceBundle();
-  }
 
   // Ignore versions that are not new. INT_MAX is used by tests, so always allow
   // it.
@@ -354,6 +345,11 @@ void SSLErrorAssistant::SetErrorAssistantProto(
 
   dynamic_interstitial_list_ =
       LoadDynamicInterstitialList(*error_assistant_proto_);
+}
+
+void SSLErrorAssistant::EnsureInitialized() {
+  if (!error_assistant_proto_)
+    error_assistant_proto_ = GetErrorAssistantProtoFromResourceBundle();
 }
 
 void SSLErrorAssistant::ResetForTesting() {

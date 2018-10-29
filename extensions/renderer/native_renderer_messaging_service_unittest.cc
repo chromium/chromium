@@ -34,15 +34,13 @@ class NativeRendererMessagingServiceTest
     messaging_service_ =
         std::make_unique<NativeRendererMessagingService>(bindings_system());
 
-    scoped_refptr<Extension> mutable_extension =
-        ExtensionBuilder("foo").Build();
-    RegisterExtension(mutable_extension);
-    extension_ = mutable_extension;
+    extension_ = ExtensionBuilder("foo").Build();
+    RegisterExtension(extension_);
 
     v8::HandleScope handle_scope(isolate());
     v8::Local<v8::Context> context = MainContext();
 
-    script_context_ = CreateScriptContext(context, mutable_extension.get(),
+    script_context_ = CreateScriptContext(context, extension_.get(),
                                           Feature::BLESSED_EXTENSION_CONTEXT);
     script_context_->set_url(extension_->url());
     bindings_system()->UpdateBindingsForContext(script_context_);
@@ -465,8 +463,7 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
   const PortId on_message_external_port_id(other_context_id, ++next_port_id,
                                            false);
 
-  auto open_port = [this, &other_context_id](const PortId& port_id,
-                                             const ExtensionId& source_id) {
+  auto open_port = [this](const PortId& port_id, const ExtensionId& source_id) {
     ExtensionMsg_TabConnectionInfo tab_connection_info;
     tab_connection_info.frame_id = 0;
     const int tab_id = 10;

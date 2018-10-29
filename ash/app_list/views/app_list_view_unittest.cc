@@ -122,10 +122,10 @@ class AppListViewTest : public views::ViewsTestBase,
     }
     if (is_new_style_launcher_enabled_) {
       scoped_feature_list_.InitAndEnableFeature(
-          features::kEnableNewStyleLauncher);
+          app_list_features::kEnableNewStyleLauncher);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          features::kEnableNewStyleLauncher);
+          app_list_features::kEnableNewStyleLauncher);
     }
     views::ViewsTestBase::SetUp();
   }
@@ -271,10 +271,10 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     }
     if (is_new_style_launcher_enabled_) {
       scoped_feature_list_.InitAndEnableFeature(
-          features::kEnableNewStyleLauncher);
+          app_list_features::kEnableNewStyleLauncher);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          features::kEnableNewStyleLauncher);
+          app_list_features::kEnableNewStyleLauncher);
     }
 
     views::ViewsTestBase::SetUp();
@@ -549,9 +549,11 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     std::vector<views::View*> suggestions;
     if (is_new_style_launcher_enabled_) {
       for (int i = 0; i < suggestions_container()->child_count(); ++i) {
-        suggestions.emplace_back(static_cast<SearchResultSuggestionChipView*>(
-                                     suggestions_container()->child_at(i))
-                                     ->suggestion_chip_view());
+        SearchResultSuggestionChipView* view =
+            static_cast<SearchResultSuggestionChipView*>(
+                suggestions_container()->child_at(i));
+        if (view->visible())
+          suggestions.emplace_back(view->suggestion_chip_view());
       }
       return suggestions;
     }
@@ -614,7 +616,7 @@ class AppListViewHomeLauncherTest : public AppListViewTest {
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        app_list::features::kEnableHomeLauncher);
+        app_list_features::kEnableHomeLauncher);
     AppListViewTest::SetUp();
   }
 
@@ -632,7 +634,7 @@ class AppListViewNonHomeLauncherTest : public AppListViewTest {
 
   void SetUp() override {
     scoped_feature_list_.InitAndDisableFeature(
-        app_list::features::kEnableHomeLauncher);
+        app_list_features::kEnableHomeLauncher);
     AppListViewTest::SetUp();
   }
 
@@ -1992,27 +1994,6 @@ TEST_F(AppListViewTest, DISABLED_BackTest) {
   contents_view->Layout();
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateStart));
   EXPECT_FALSE(search_box_view->back_button()->visible());
-}
-
-// Tests that the correct views are displayed for showing search results.
-TEST_F(AppListViewTest, DISABLED_AppListOverlayTest) {
-  Initialize(0, false, false);
-  // TODO(newcomer): this test needs to be reevaluated for the fullscreen app
-  // list (http://crbug.com/759779).
-  Show();
-
-  AppListMainView* main_view = view_->app_list_main_view();
-  SearchBoxView* search_box_view = main_view->search_box_view();
-
-  // The search box should not be enabled when the app list overlay is shown.
-  view_->SetAppListOverlayVisible(true);
-  EXPECT_FALSE(search_box_view->enabled());
-
-  // The search box should be refocused when the app list overlay is hidden.
-  view_->SetAppListOverlayVisible(false);
-  EXPECT_TRUE(search_box_view->enabled());
-  EXPECT_EQ(search_box_view->search_box(),
-            view_->GetWidget()->GetFocusManager()->GetFocusedView());
 }
 
 // Tests that even if initialize is called again with a different initial page,

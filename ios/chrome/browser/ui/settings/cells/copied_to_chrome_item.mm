@@ -5,10 +5,9 @@
 #import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
 
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/experimental_flags.h"
 #include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
@@ -54,27 +53,17 @@ const CGFloat kVerticalPadding = 16;
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel.text =
         l10n_util::GetNSString(IDS_IOS_AUTOFILL_DESCRIBE_LOCAL_COPY);
+    _textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
+    _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
     [_textLabel
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
     [contentView addSubview:_textLabel];
 
-    // Fonts, colors, and buttons vary based on the UI reboot experiment.
-    if (experimental_flags::IsSettingsUIRebootEnabled()) {
-      _textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
-      _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
-
-      _button = [UIButton buttonWithType:UIButtonTypeCustom];
-      [_button setTitleColor:UIColorFromRGB(kUIKitFooterLinkColor)
-                    forState:UIControlStateNormal];
-    } else {
-      _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
-      _textLabel.textColor = [[MDCPalette greyPalette] tint900];
-      _button = [[MDCFlatButton alloc] init];
-      [_button setTitleColor:[[MDCPalette cr_bluePalette] tint600]
-                    forState:UIControlStateNormal];
-    }
+    _button = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_button setTitleColor:UIColorFromRGB(kUIKitFooterLinkColor)
+                  forState:UIControlStateNormal];
 
     _button.translatesAutoresizingMaskIntoConstraints = NO;
     [_button

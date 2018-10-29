@@ -211,10 +211,10 @@ void MojoDecryptor::OnKeyAdded() {
   DVLOG(1) << __func__;
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (!new_audio_key_cb_.is_null())
+  if (new_audio_key_cb_)
     new_audio_key_cb_.Run();
 
-  if (!new_video_key_cb_.is_null())
+  if (new_video_key_cb_)
     new_video_key_cb_.Run();
 }
 

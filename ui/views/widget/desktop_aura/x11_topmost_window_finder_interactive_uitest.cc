@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/stl_util.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -42,9 +43,8 @@ class MinimizeWaiter : public X11PropertyChangeWaiter {
   bool ShouldKeepOnWaiting(const ui::PlatformEvent& event) override {
     std::vector<Atom> wm_states;
     if (ui::GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &wm_states)) {
-      auto it = std::find(wm_states.cbegin(), wm_states.cend(),
-                          gfx::GetAtom("_NET_WM_STATE_HIDDEN"));
-      return it == wm_states.cend();
+      return !base::ContainsValue(wm_states,
+                                  gfx::GetAtom("_NET_WM_STATE_HIDDEN"));
     }
     return true;
   }
@@ -80,8 +80,7 @@ class StackingClientListWaiter : public X11PropertyChangeWaiter {
     std::vector<XID> stack;
     ui::GetXWindowStack(ui::GetX11RootWindow(), &stack);
     for (size_t i = 0; i < expected_windows_.size(); ++i) {
-      auto it = std::find(stack.cbegin(), stack.cend(), expected_windows_[i]);
-      if (it == stack.cend())
+      if (!base::ContainsValue(stack, expected_windows_[i]))
         return true;
     }
     return false;

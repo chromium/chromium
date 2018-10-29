@@ -397,8 +397,10 @@ void MetricsWebContentsObserver::DidFinishNavigation(
   if (!navigation_handle->HasCommitted() &&
       navigation_handle->GetNetErrorCode() == net::ERR_ABORTED &&
       navigation_handle->GetResponseHeaders()) {
-    if (finished_nav)
+    if (finished_nav) {
+      finished_nav->DidInternalNavigationAbort(navigation_handle);
       finished_nav->StopTracking();
+    }
     return;
   }
 

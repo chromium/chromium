@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 787 PASS, 213 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after assert_equals: Wrong result returned expected true but got false
 FAIL [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after assert_equals: Wrong result returned expected "" but got "false"
 PASS [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("formatblock") before
@@ -251,7 +251,7 @@ PASS [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" que
 PASS [["subscript",""],["insertorderedlist",""]] "foo[]bar": execCommand("subscript", false, "") return value
 PASS [["subscript",""],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["subscript",""],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["subscript",""],["insertorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foobar<br></li></ol>"
+PASS [["subscript",""],["insertorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("subscript") before
 PASS [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("subscript") before
 FAIL [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("subscript") before assert_equals: Wrong result returned expected "" but got "false"
@@ -268,7 +268,7 @@ PASS [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": 
 PASS [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<sub>a</sub>bar</li></ol>" but got "<ol><li>fooabar<br></li></ol>"
+FAIL [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<sub>a</sub>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
 PASS [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 PASS [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 FAIL [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before assert_equals: Wrong result returned expected "" but got "false"
@@ -329,7 +329,7 @@ PASS [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" que
 PASS [["subscript",""],["insertunorderedlist",""]] "foo[]bar": execCommand("subscript", false, "") return value
 PASS [["subscript",""],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["subscript",""],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["subscript",""],["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foobar<br></li></ul>"
+PASS [["subscript",""],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("subscript") before
 PASS [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("subscript") before
 FAIL [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("subscript") before assert_equals: Wrong result returned expected "" but got "false"
@@ -346,7 +346,7 @@ PASS [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar"
 PASS [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<sub>a</sub>bar</li></ul>" but got "<ul><li>fooabar<br></li></ul>"
+FAIL [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<sub>a</sub>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
 PASS [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 PASS [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 FAIL [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before assert_equals: Wrong result returned expected "" but got "false"
@@ -891,7 +891,7 @@ PASS [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" q
 PASS [["superscript",""],["insertorderedlist",""]] "foo[]bar": execCommand("superscript", false, "") return value
 PASS [["superscript",""],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["superscript",""],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["superscript",""],["insertorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foobar<br></li></ol>"
+PASS [["superscript",""],["insertorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("superscript") before
 PASS [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("superscript") before
 FAIL [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("superscript") before assert_equals: Wrong result returned expected "" but got "false"
@@ -908,7 +908,7 @@ PASS [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar"
 PASS [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<sup>a</sup>bar</li></ol>" but got "<ol><li>fooabar<br></li></ol>"
+FAIL [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<sup>a</sup>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
 PASS [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 PASS [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 FAIL [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before assert_equals: Wrong result returned expected "" but got "false"
@@ -969,7 +969,7 @@ PASS [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" q
 PASS [["superscript",""],["insertunorderedlist",""]] "foo[]bar": execCommand("superscript", false, "") return value
 PASS [["superscript",""],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["superscript",""],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["superscript",""],["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foobar<br></li></ul>"
+PASS [["superscript",""],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("superscript") before
 PASS [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("superscript") before
 FAIL [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("superscript") before assert_equals: Wrong result returned expected "" but got "false"
@@ -986,7 +986,7 @@ PASS [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]ba
 PASS [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<sup>a</sup>bar</li></ul>" but got "<ul><li>fooabar<br></li></ul>"
+FAIL [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<sup>a</sup>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
 PASS [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 PASS [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 FAIL [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before assert_equals: Wrong result returned expected "" but got "false"

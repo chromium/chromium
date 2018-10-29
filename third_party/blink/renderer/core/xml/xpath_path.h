@@ -32,7 +32,7 @@
 
 namespace blink {
 
-namespace XPath {
+namespace xpath {
 
 class Predicate;
 class Step;
@@ -90,7 +90,7 @@ class Path final : public Expression {
   Member<LocationPath> path_;
 };
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_PATH_H_

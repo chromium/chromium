@@ -27,6 +27,18 @@ DISPLAY_EXPORT float GetDPIScale();
 // Returns the equivalent DPI for |device_scaling_factor|.
 DISPLAY_EXPORT int GetDPIFromScalingFactor(float device_scaling_factor);
 
+// Returns a factor to adjust a system font's height by, to adjust for
+// accessibility measures already built into the font, in order to prevent
+// applying the same scale factor twice. Value should be in the range
+// 0.0 (exclusive) to 1.0 (inclusive).
+//
+// Windows will add text scaling factor into the logical size of its default
+// system fonts (which it does *not* do for DPI scaling). Since we're scaling
+// the entire UI by a combination of text scale and DPI scale, this results in
+// double scaling. Call this function to unscale the font before using it in
+// any of our rendering code.
+DISPLAY_EXPORT double GetAccessibilityFontScale();
+
 namespace internal {
 // Note: These methods do not take accessibility adjustments into account.
 

@@ -39,9 +39,13 @@ public class OfflineItemFilterTest {
         }
 
         public void setFilters(Set<OfflineItem> items) {
+            setFiltersSilently(items);
+            onFilterChanged();
+        }
+
+        public void setFiltersSilently(Set<OfflineItem> items) {
             mFilteredItems.clear();
             mFilteredItems.addAll(items);
-            onFilterChanged();
         }
 
         // OfflineItemFilter implementation.
@@ -163,6 +167,7 @@ public class OfflineItemFilterTest {
         OfflineItem newItem2 = new OfflineItem();
         sourceItems.remove(item2);
         sourceItems.add(newItem2);
+        filter.setFiltersSilently(CollectionUtil.newHashSet(item1, newItem2, item4));
         filter.onItemUpdated(item2, newItem2);
         verify(mObserver, never()).onItemUpdated(item2, newItem2);
         Assert.assertEquals(CollectionUtil.newHashSet(item3), filter.getItems());
@@ -187,5 +192,42 @@ public class OfflineItemFilterTest {
         filter.onItemUpdated(item3, newItem3);
         verify(mObserver, times(1)).onItemUpdated(item3, newItem3);
         Assert.assertEquals(CollectionUtil.newHashSet(newItem3), filter.getItems());
+    }
+
+    @Test
+    public void testUpdateFiltering() {
+        OfflineItem item1 = new OfflineItem();
+        OfflineItem item2 = new OfflineItem();
+        Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2);
+        when(mSource.getItems()).thenReturn(sourceItems);
+
+        OfflineItemFilterImpl filter = new OfflineItemFilterImpl(mSource);
+        filter.addObserver(mObserver);
+        verify(mSource, times(1)).addObserver(filter);
+        verify(mSource, times(1)).getItems();
+        Assert.assertEquals(sourceItems, filter.getItems());
+
+        // Filter items.
+        filter.setFilters(CollectionUtil.newHashSet(item2));
+        verify(mObserver, times(1)).onItemsRemoved(CollectionUtil.newHashSet(item2));
+        Assert.assertEquals(CollectionUtil.newHashSet(item1), filter.getItems());
+
+        // Updated item goes from unfiltered to filtered.
+        OfflineItem newItem1 = new OfflineItem();
+        filter.setFiltersSilently(CollectionUtil.newHashSet(newItem1, item2));
+        sourceItems.remove(item1);
+        sourceItems.add(newItem1);
+        filter.onItemUpdated(item1, newItem1);
+        verify(mObserver, times(1)).onItemsRemoved(CollectionUtil.newHashSet(item1));
+        Assert.assertTrue(filter.getItems().isEmpty());
+
+        // Updated item goes from filtered to unfiltered.
+        OfflineItem newItem2 = new OfflineItem();
+        filter.setFiltersSilently(CollectionUtil.newHashSet(newItem1));
+        sourceItems.remove(item2);
+        sourceItems.add(newItem2);
+        filter.onItemUpdated(item2, newItem2);
+        verify(mObserver, times(1)).onItemsAdded(CollectionUtil.newHashSet(newItem2));
+        Assert.assertEquals(CollectionUtil.newHashSet(newItem2), filter.getItems());
     }
 }

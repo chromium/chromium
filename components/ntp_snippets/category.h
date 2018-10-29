@@ -32,7 +32,7 @@ enum class KnownCategories {
   PHYSICAL_WEB_PAGES_DEPRECATED,
 
   // Pages recently browsed to on other devices.
-  FOREIGN_TABS,
+  FOREIGN_TABS_DEPRECATED,
 
   // Pages from the user reading list.
   READING_LIST,

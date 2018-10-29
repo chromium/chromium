@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/app_list/crostini/crostini_app_icon_loader.h"
 
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "chrome/browser/chromeos/crostini/crostini_registry_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,9 +35,8 @@ void CrostiniAppIconLoader::FetchImage(const std::string& app_id) {
   if (icon_map_.find(app_id) != icon_map_.end())
     return;
 
-  std::unique_ptr<CrostiniAppIcon> icon = std::make_unique<CrostiniAppIcon>(
-      profile(), app_id,
-      app_list::AppListConfig::instance().grid_icon_dimension(), this);
+  std::unique_ptr<CrostiniAppIcon> icon =
+      std::make_unique<CrostiniAppIcon>(profile(), app_id, icon_size(), this);
   icon->image_skia().EnsureRepsForSupportedScales();
   icon_map_[app_id] = std::move(icon);
   UpdateImage(app_id);

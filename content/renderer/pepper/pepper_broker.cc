@@ -156,8 +156,7 @@ void PepperBroker::OnBrokerChannelConnected(
   dispatcher_.reset(dispatcher.release());
 
   // Process all pending channel requests from the plugins.
-  for (ClientMap::iterator i = pending_connects_.begin();
-       i != pending_connects_.end();) {
+  for (auto i = pending_connects_.begin(); i != pending_connects_.end();) {
     base::WeakPtr<PPB_Broker_Impl>& weak_ptr = i->second.client;
     if (!i->second.is_authorized) {
       ++i;
@@ -173,7 +172,7 @@ void PepperBroker::OnBrokerChannelConnected(
 
 void PepperBroker::OnBrokerPermissionResult(PPB_Broker_Impl* client,
                                             bool result) {
-  ClientMap::iterator entry = pending_connects_.find(client);
+  auto entry = pending_connects_.find(client);
   if (entry == pending_connects_.end())
     return;
 
@@ -213,9 +212,7 @@ PepperBroker::PendingConnection::~PendingConnection() {}
 
 void PepperBroker::ReportFailureToClients(int error_code) {
   DCHECK_NE(PP_OK, error_code);
-  for (ClientMap::iterator i = pending_connects_.begin();
-       i != pending_connects_.end();
-       ++i) {
+  for (auto i = pending_connects_.begin(); i != pending_connects_.end(); ++i) {
     base::WeakPtr<PPB_Broker_Impl>& weak_ptr = i->second.client;
     if (weak_ptr.get()) {
       weak_ptr->BrokerConnected(

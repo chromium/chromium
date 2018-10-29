@@ -543,7 +543,17 @@ CommandHandler.onCommand = function(command) {
 
         if (EventSourceState.get() == EventSourceType.TOUCH_GESTURE &&
             AutomationPredicate.editText(actionNode)) {
-          actionNode.focus();
+          // Dispatch a click to ensure the VK gets shown.
+          var location = actionNode.location;
+          var event = {
+            type: chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS,
+            x: location.left + Math.round(location.width / 2),
+            y: location.top + Math.round(location.height / 2)
+          };
+          chrome.accessibilityPrivate.sendSyntheticMouseEvent(event);
+          event.type =
+              chrome.accessibilityPrivate.SyntheticMouseEventType.RELEASE;
+          chrome.accessibilityPrivate.sendSyntheticMouseEvent(event);
           return false;
         }
 

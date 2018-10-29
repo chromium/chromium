@@ -7,12 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <limits>
 #include <memory>
 #include <vector>
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
-#include "base/bit_cast.h"
-#include "base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/logging.h"
+#include "base/rand_util.h"
+#include "base/stl_util.h"
 #include "base/sys_info.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,6 +87,35 @@ bool ClearAddressSpaceLimit() {
 #else
   return false;
 #endif
+}
+
+const size_t kTestSizes[] = {
+    1,
+    17,
+    100,
+    base::kSystemPageSize,
+    base::kSystemPageSize + 1,
+    base::internal::PartitionBucket::get_direct_map_size(100),
+    1 << 20,
+    1 << 21,
+};
+constexpr size_t kTestSizesCount = base::size(kTestSizes);
+
+void AllocateRandomly(base::PartitionRootGeneric* root,
+                      size_t count,
+                      int flags) {
+  std::vector<void*> allocations(count, nullptr);
+  for (size_t i = 0; i < count; ++i) {
+    const size_t size = kTestSizes[base::RandGenerator(kTestSizesCount)];
+    allocations[i] = PartitionAllocGenericFlags(root, flags, size, nullptr);
+    EXPECT_NE(nullptr, allocations[i]) << " size: " << size << " i: " << i;
+  }
+
+  for (size_t i = 0; i < count; ++i) {
+    if (allocations[i]) {
+      base::PartitionFree(allocations[i]);
+    }
+  }
 }
 
 }  // namespace
@@ -2156,20 +2188,9 @@ TEST_F(PartitionAllocTest, SmallReallocDoesNotMoveTrailingCookie) {
 }
 
 TEST_F(PartitionAllocTest, ZeroFill) {
-  const size_t test_sizes[] = {
-      1,
-      17,
-      100,
-      kSystemPageSize,
-      kSystemPageSize + 1,
-      internal::PartitionBucket::get_direct_map_size(100),
-      1 << 20,
-      1 << 21,
-  };
-
   constexpr static size_t kAllZerosSentinel =
       std::numeric_limits<size_t>::max();
-  for (size_t size : test_sizes) {
+  for (size_t size : kTestSizes) {
     char* p = static_cast<char*>(PartitionAllocGenericFlags(
         generic_allocator.root(), PartitionAllocZeroFill, size, nullptr));
     size_t non_zero_position = kAllZerosSentinel;
@@ -2183,6 +2204,29 @@ TEST_F(PartitionAllocTest, ZeroFill) {
         << "test allocation size: " << size;
     PartitionFree(p);
   }
+
+  for (int i = 0; i < 10; ++i) {
+    SCOPED_TRACE(i);
+    AllocateRandomly(generic_allocator.root(), 1000, PartitionAllocZeroFill);
+  }
+}
+
+TEST_F(PartitionAllocTest, Bug_897585) {
+  // Need sizes big enough to be direct mapped and a delta small enough to
+  // allow re-use of the page when cookied. These numbers fall out of the
+  // test case in the indicated bug.
+  size_t kInitialSize = 983040;
+  size_t kDesiredSize = 983100;
+  void* ptr = PartitionAllocGenericFlags(generic_allocator.root(),
+                                         PartitionAllocReturnNull, kInitialSize,
+                                         nullptr);
+  ASSERT_NE(nullptr, ptr);
+  ptr = PartitionReallocGenericFlags(generic_allocator.root(),
+                                     PartitionAllocReturnNull, ptr,
+                                     kDesiredSize, nullptr);
+  ASSERT_NE(nullptr, ptr);
+  memset(ptr, 0xbd, kDesiredSize);
+  PartitionFree(ptr);
 }
 
 }  // namespace internal

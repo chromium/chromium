@@ -183,15 +183,14 @@ View* FocusSearch::FindNextFocusableViewImpl(
           focus_traversable_view);
       if (v || *focus_traversable)
         return v;
-    } else {
-      // Check to see if we should navigate into a dialog anchored at this view.
-      BubbleDialogDelegateView* bubble =
-          starting_view->GetProperty(kAnchoredDialogKey);
-      if (bubble) {
-        *focus_traversable = bubble->GetWidget()->GetFocusTraversable();
-        *focus_traversable_view = starting_view;
-        return nullptr;
-      }
+    }
+    // Check to see if we should navigate into a dialog anchored at this view.
+    BubbleDialogDelegateView* bubble =
+        starting_view->GetProperty(kAnchoredDialogKey);
+    if (bubble) {
+      *focus_traversable = bubble->GetWidget()->GetFocusTraversable();
+      *focus_traversable_view = starting_view;
+      return nullptr;
     }
   }
 

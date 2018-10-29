@@ -13,7 +13,6 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace base {
-class MessageLoop;
 class Thread;
 }
 
@@ -35,11 +34,6 @@ class TestBrowserThread {
   // |real_thread_|).
   TestBrowserThread(BrowserThread::ID identifier,
                     scoped_refptr<base::SingleThreadTaskRunner> thread_runner);
-
-  // Deprecated: Forwards |message_loop->task_runner()| to the above
-  // constructor.
-  TestBrowserThread(BrowserThread::ID identifier,
-                    base::MessageLoop* message_loop);
 
   ~TestBrowserThread();
 

@@ -97,12 +97,12 @@ unsigned short GetMaxExposedEnumValue<SVGFEBlendElement::Mode>() {
 }
 
 inline SVGFEBlendElement::SVGFEBlendElement(Document& document)
-    : SVGFilterPrimitiveStandardAttributes(SVGNames::feBlendTag, document),
-      in1_(SVGAnimatedString::Create(this, SVGNames::inAttr)),
-      in2_(SVGAnimatedString::Create(this, SVGNames::in2Attr)),
+    : SVGFilterPrimitiveStandardAttributes(svg_names::kFEBlendTag, document),
+      in1_(SVGAnimatedString::Create(this, svg_names::kInAttr)),
+      in2_(SVGAnimatedString::Create(this, svg_names::kIn2Attr)),
       mode_(SVGAnimatedEnumeration<Mode>::Create(
           this,
-          SVGNames::modeAttr,
+          svg_names::kModeAttr,
           SVGFEBlendElement::kModeNormal)) {
   AddToPropertyMap(in1_);
   AddToPropertyMap(in2_);
@@ -122,7 +122,7 @@ bool SVGFEBlendElement::SetFilterEffectAttribute(
     FilterEffect* effect,
     const QualifiedName& attr_name) {
   FEBlend* blend = static_cast<FEBlend*>(effect);
-  if (attr_name == SVGNames::modeAttr)
+  if (attr_name == svg_names::kModeAttr)
     return blend->SetBlendMode(ToBlendMode(mode_->CurrentValue()->EnumValue()));
 
   return SVGFilterPrimitiveStandardAttributes::SetFilterEffectAttribute(
@@ -130,13 +130,13 @@ bool SVGFEBlendElement::SetFilterEffectAttribute(
 }
 
 void SVGFEBlendElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == SVGNames::modeAttr) {
+  if (attr_name == svg_names::kModeAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }
 
-  if (attr_name == SVGNames::inAttr || attr_name == SVGNames::in2Attr) {
+  if (attr_name == svg_names::kInAttr || attr_name == svg_names::kIn2Attr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;

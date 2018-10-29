@@ -46,8 +46,7 @@ MockAppCacheStorage::MockAppCacheStorage(AppCacheServiceImpl* service)
   last_response_id_ = 0;
 }
 
-MockAppCacheStorage::~MockAppCacheStorage() {
-}
+MockAppCacheStorage::~MockAppCacheStorage() = default;
 
 void MockAppCacheStorage::GetAllInfo(Delegate* delegate) {
   ScheduleTask(base::BindOnce(
@@ -160,24 +159,29 @@ void MockAppCacheStorage::StoreEvictionTimes(AppCacheGroup* group) {
                      group->first_evictable_error_time());
 }
 
-AppCacheResponseReader* MockAppCacheStorage::CreateResponseReader(
-    const GURL& manifest_url,
-    int64_t response_id) {
+std::unique_ptr<AppCacheResponseReader>
+MockAppCacheStorage::CreateResponseReader(const GURL& manifest_url,
+                                          int64_t response_id) {
   if (simulated_reader_)
-    return simulated_reader_.release();
-  return new AppCacheResponseReader(response_id, disk_cache()->GetWeakPtr());
+    return std::move(simulated_reader_);
+
+  // base::WrapUnique needed due to non-public constructor.
+  return base::WrapUnique(
+      new AppCacheResponseReader(response_id, disk_cache()->GetWeakPtr()));
 }
 
-AppCacheResponseWriter* MockAppCacheStorage::CreateResponseWriter(
-    const GURL& manifest_url) {
-  return new AppCacheResponseWriter(NewResponseId(),
-                                    disk_cache()->GetWeakPtr());
+std::unique_ptr<AppCacheResponseWriter>
+MockAppCacheStorage::CreateResponseWriter(const GURL& manifest_url) {
+  // base::WrapUnique needed due to non-public constructor.
+  return base::WrapUnique(
+      new AppCacheResponseWriter(NewResponseId(), disk_cache()->GetWeakPtr()));
 }
 
-AppCacheResponseMetadataWriter*
+std::unique_ptr<AppCacheResponseMetadataWriter>
 MockAppCacheStorage::CreateResponseMetadataWriter(int64_t response_id) {
-  return new AppCacheResponseMetadataWriter(response_id,
-                                            disk_cache()->GetWeakPtr());
+  // base::WrapUnique needed due to non-public constructor.
+  return base::WrapUnique(new AppCacheResponseMetadataWriter(
+      response_id, disk_cache()->GetWeakPtr()));
 }
 
 void MockAppCacheStorage::DoomResponses(

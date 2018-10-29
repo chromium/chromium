@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/arc/accessibility/ax_tree_source_arc.h"
 
+#include "chrome/browser/chromeos/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "components/arc/common/accessibility_helper.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
@@ -65,16 +66,23 @@ class AXTreeSourceArcTest : public testing::Test,
     tree_->NotifyAccessibilityEvent(event_data);
   }
 
-  void CallGetChildren(AXNodeInfoData* node,
-                       std::vector<AXNodeInfoData*>* out_children) const {
-    tree_->GetChildren(node, out_children);
+  void CallGetChildren(
+      mojom::AccessibilityNodeInfoData* node,
+      std::vector<ArcAccessibilityInfoData*>* out_children) const {
+    AccessibilityNodeInfoDataWrapper node_data(tree_.get(), node);
+    tree_->GetChildren(&node_data, out_children);
   }
 
-  void CallSerializeNode(AXNodeInfoData* node,
+  void CallSerializeNode(mojom::AccessibilityNodeInfoData* node,
                          std::unique_ptr<ui::AXNodeData>* out_data) const {
     ASSERT_TRUE(out_data);
+    AccessibilityNodeInfoDataWrapper node_data(tree_.get(), node);
     *out_data = std::make_unique<ui::AXNodeData>();
-    tree_->SerializeNode(node, out_data->get());
+    tree_->SerializeNode(&node_data, out_data->get());
+  }
+
+  ArcAccessibilityInfoData* CallGetFromId(int32_t id) const {
+    return tree_->GetFromId(id);
   }
 
  private:
@@ -119,11 +127,11 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
 
   // Trigger an update which refreshes the computed bounds used for reordering.
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<AXNodeInfoData*> top_to_bottom;
+  std::vector<ArcAccessibilityInfoData*> top_to_bottom;
   CallGetChildren(root, &top_to_bottom);
   ASSERT_EQ(2U, top_to_bottom.size());
-  ASSERT_EQ(2, top_to_bottom[0]->id);
-  ASSERT_EQ(1, top_to_bottom[1]->id);
+  EXPECT_EQ(2, top_to_bottom[0]->GetId());
+  EXPECT_EQ(1, top_to_bottom[1]->GetId());
 
   // Non-overlapping, top to bottom.
   button1->bounds_in_screen = gfx::Rect(0, 0, 50, 50);
@@ -132,18 +140,18 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   top_to_bottom.clear();
   CallGetChildren(event->node_data[0].get(), &top_to_bottom);
   ASSERT_EQ(2U, top_to_bottom.size());
-  ASSERT_EQ(1, top_to_bottom[0]->id);
-  ASSERT_EQ(2, top_to_bottom[1]->id);
+  EXPECT_EQ(1, top_to_bottom[0]->GetId());
+  EXPECT_EQ(2, top_to_bottom[1]->GetId());
 
   // Overlapping; right to left.
   button1->bounds_in_screen = gfx::Rect(101, 100, 99, 100);
   button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<AXNodeInfoData*> left_to_right;
+  std::vector<ArcAccessibilityInfoData*> left_to_right;
   CallGetChildren(root, &left_to_right);
   ASSERT_EQ(2U, left_to_right.size());
-  ASSERT_EQ(2, left_to_right[0]->id);
-  ASSERT_EQ(1, left_to_right[1]->id);
+  EXPECT_EQ(2, left_to_right[0]->GetId());
+  EXPECT_EQ(1, left_to_right[1]->GetId());
 
   // Overlapping; left to right.
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
@@ -152,8 +160,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   left_to_right.clear();
   CallGetChildren(event->node_data[0].get(), &left_to_right);
   ASSERT_EQ(2U, left_to_right.size());
-  ASSERT_EQ(1, left_to_right[0]->id);
-  ASSERT_EQ(2, left_to_right[1]->id);
+  EXPECT_EQ(1, left_to_right[0]->GetId());
+  EXPECT_EQ(2, left_to_right[1]->GetId());
 
   // Overlapping, bottom to top.
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
@@ -162,8 +170,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   top_to_bottom.clear();
   CallGetChildren(event->node_data[0].get(), &top_to_bottom);
   ASSERT_EQ(2U, top_to_bottom.size());
-  ASSERT_EQ(2, top_to_bottom[0]->id);
-  ASSERT_EQ(1, top_to_bottom[1]->id);
+  EXPECT_EQ(2, top_to_bottom[0]->GetId());
+  EXPECT_EQ(1, top_to_bottom[1]->GetId());
 
   // Overlapping, top to bottom.
   button1->bounds_in_screen = gfx::Rect(100, 99, 100, 100);
@@ -172,18 +180,18 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   top_to_bottom.clear();
   CallGetChildren(event->node_data[0].get(), &top_to_bottom);
   ASSERT_EQ(2U, top_to_bottom.size());
-  ASSERT_EQ(1, top_to_bottom[0]->id);
-  ASSERT_EQ(2, top_to_bottom[1]->id);
+  EXPECT_EQ(1, top_to_bottom[0]->GetId());
+  EXPECT_EQ(2, top_to_bottom[1]->GetId());
 
   // Identical. smaller to larger.
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 10);
   button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   CallNotifyAccessibilityEvent(event.get());
-  std::vector<AXNodeInfoData*> dimension;
+  std::vector<ArcAccessibilityInfoData*> dimension;
   CallGetChildren(event->node_data[0].get(), &dimension);
   ASSERT_EQ(2U, dimension.size());
-  ASSERT_EQ(2, dimension[0]->id);
-  ASSERT_EQ(1, dimension[1]->id);
+  EXPECT_EQ(2, dimension[0]->GetId());
+  EXPECT_EQ(1, dimension[1]->GetId());
 
   button1->bounds_in_screen = gfx::Rect(100, 100, 10, 100);
   button2->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
@@ -191,8 +199,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   dimension.clear();
   CallGetChildren(event->node_data[0].get(), &dimension);
   ASSERT_EQ(2U, dimension.size());
-  ASSERT_EQ(2, dimension[0]->id);
-  ASSERT_EQ(1, dimension[1]->id);
+  EXPECT_EQ(2, dimension[0]->GetId());
+  EXPECT_EQ(1, dimension[1]->GetId());
 
   // Identical. Larger to smaller.
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
@@ -201,8 +209,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   dimension.clear();
   CallGetChildren(event->node_data[0].get(), &dimension);
   ASSERT_EQ(2U, dimension.size());
-  ASSERT_EQ(1, dimension[0]->id);
-  ASSERT_EQ(2, dimension[1]->id);
+  EXPECT_EQ(1, dimension[0]->GetId());
+  EXPECT_EQ(2, dimension[1]->GetId());
 
   button1->bounds_in_screen = gfx::Rect(100, 100, 100, 100);
   button2->bounds_in_screen = gfx::Rect(100, 100, 10, 100);
@@ -210,8 +218,8 @@ TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
   dimension.clear();
   CallGetChildren(event->node_data[0].get(), &dimension);
   ASSERT_EQ(2U, dimension.size());
-  ASSERT_EQ(1, dimension[0]->id);
-  ASSERT_EQ(2, dimension[1]->id);
+  EXPECT_EQ(1, dimension[0]->GetId());
+  EXPECT_EQ(2, dimension[1]->GetId());
 }
 
 TEST_F(AXTreeSourceArcTest, AccessibleNameComputation) {
@@ -269,6 +277,68 @@ TEST_F(AXTreeSourceArcTest, AccessibleNameComputation) {
   ASSERT_TRUE(
       data->GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
   ASSERT_EQ("label content description", name);
+}
+
+// TODO(katie): Maybe remove this test when adding AccessibilityWindowInfoData
+// support per go/a11y-arc++-window-mapping if it is no longer needed.
+TEST_F(AXTreeSourceArcTest, MultipleNodeSubtrees) {
+  // Run several times to try source_id from root, middle, or leaf of the tree.
+  int tree_size = 4;
+  for (int i = 0; i < 4; i++) {
+    auto event = AXEventData::New();
+    event->source_id = i + tree_size;
+    event->task_id = 1;
+    event->event_type = AXEventType::VIEW_FOCUSED;
+
+    // Make three non-overlapping trees. The middle tree in the list has the
+    // source_id of interest. Each tree has a root with one child, and that
+    // child has two leaf children.
+    int num_trees = 3;
+    for (int j = 0; j < num_trees; j++) {
+      event->node_data.push_back(AXNodeInfoData::New());
+      AXNodeInfoData* root = event->node_data.back().get();
+      root->id = j * tree_size;
+      SetProperty(root, AXIntListProperty::CHILD_NODE_IDS,
+                  std::vector<int>({j * tree_size + 1}));
+
+      event->node_data.push_back(AXNodeInfoData::New());
+      AXNodeInfoData* child1 = event->node_data.back().get();
+      child1->id = j * tree_size + 1;
+      SetProperty(child1, AXIntListProperty::CHILD_NODE_IDS,
+                  std::vector<int>({j * tree_size + 2, j * tree_size + 3}));
+
+      event->node_data.push_back(AXNodeInfoData::New());
+      AXNodeInfoData* child2 = event->node_data.back().get();
+      child2->id = j * tree_size + 2;
+
+      event->node_data.push_back(AXNodeInfoData::New());
+      AXNodeInfoData* child3 = event->node_data.back().get();
+      child3->id = j * tree_size + 3;
+    }
+
+    CallNotifyAccessibilityEvent(event.get());
+
+    // Check that only the middle tree was added, and that it is correct.
+    std::vector<ArcAccessibilityInfoData*> children;
+    CallGetChildren(event->node_data.at(tree_size).get(), &children);
+    ASSERT_EQ(1U, children.size());
+    EXPECT_EQ(5, children[0]->GetId());
+    children.clear();
+    CallGetChildren(event->node_data.at(tree_size + 1).get(), &children);
+    ASSERT_EQ(2U, children.size());
+    EXPECT_EQ(6, children[0]->GetId());
+    EXPECT_EQ(7, children[1]->GetId());
+
+    // The first and third roots are not part of the tree.
+    EXPECT_EQ(nullptr, CallGetFromId(0));
+    EXPECT_EQ(nullptr, CallGetFromId(1));
+    EXPECT_EQ(nullptr, CallGetFromId(2));
+    EXPECT_EQ(nullptr, CallGetFromId(3));
+    EXPECT_EQ(nullptr, CallGetFromId(8));
+    EXPECT_EQ(nullptr, CallGetFromId(9));
+    EXPECT_EQ(nullptr, CallGetFromId(10));
+    EXPECT_EQ(nullptr, CallGetFromId(11));
+  }
 }
 
 }  // namespace arc

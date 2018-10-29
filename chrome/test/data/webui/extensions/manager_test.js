@@ -10,6 +10,10 @@ cr.define('extension_manager_tests', function() {
     ItemListVisibility: 'item list visibility',
     SplitItems: 'split items',
     UrlNavigationToDetails: 'url navigation to details',
+    UrlNavigationToActivityLogFail:
+        'url navigation to activity log without flag set',
+    UrlNavigationToActivityLogSuccess:
+        'url navigation to activity log with flag set',
   };
 
   function getDataByName(list, name) {
@@ -119,6 +123,50 @@ cr.define('extension_manager_tests', function() {
       });
       Polymer.dom.flush();
       assertViewActive('extensions-detail-view');
+    });
+
+    test(assert(TestNames.UrlNavigationToActivityLogFail), function() {
+      expectFalse(manager.showActivityLog);
+
+      // Try to open activity log with a valid ID.
+      extensions.navigation.navigateTo({
+        page: Page.ACTIVITY_LOG,
+        extensionId: 'ldnnhddmnhbkjipkidpdiheffobcpfmf'
+      });
+      Polymer.dom.flush();
+
+      // Should be re-routed to details page with showActivityLog set to false.
+      assertViewActive('extensions-detail-view');
+      const detailsView = manager.$$('extensions-detail-view');
+      expectFalse(detailsView.showActivityLog);
+
+      // Try to open activity log with an invalid ID.
+      extensions.navigation.navigateTo(
+          {page: Page.ACTIVITY_LOG, extensionId: 'z'.repeat(32)});
+      Polymer.dom.flush();
+      // Should be re-routed to the main page.
+      assertViewActive('extensions-item-list');
+    });
+
+    test(assert(TestNames.UrlNavigationToActivityLogSuccess), function() {
+      expectTrue(manager.showActivityLog);
+
+      // Try to open activity log with a valid ID.
+      extensions.navigation.navigateTo({
+        page: Page.ACTIVITY_LOG,
+        extensionId: 'ldnnhddmnhbkjipkidpdiheffobcpfmf'
+      });
+      Polymer.dom.flush();
+
+      // Should be on activity log page.
+      assertViewActive('extensions-activity-log');
+
+      // Try to open activity log with an invalid ID.
+      extensions.navigation.navigateTo(
+          {page: Page.ACTIVITY_LOG, extensionId: 'z'.repeat(32)});
+      Polymer.dom.flush();
+      // Should be re-routed to the main page.
+      assertViewActive('extensions-item-list');
     });
   });
 

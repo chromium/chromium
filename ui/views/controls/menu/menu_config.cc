@@ -5,11 +5,10 @@
 #include "ui/views/controls/menu/menu_config.h"
 
 #include "base/macros.h"
-#include "ui/base/material_design/material_design_controller.h"
+#include "base/no_destructor.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_image_util.h"
 #include "ui/views/controls/menu/menu_item_view.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/round_rect_painter.h"
 
 namespace views {
@@ -85,13 +84,6 @@ int MenuConfig::CornerRadiusForMenu(const MenuController* controller) const {
   return corner_radius;
 }
 
-int MenuConfig::ShadowElevationForMenu(const MenuController* controller) const {
-  if ((controller && controller->use_touchable_layout()) ||
-      ui::MaterialDesignController::IsRefreshUi())
-    return touchable_menu_shadow_elevation;
-  return 0;
-}
-
 bool MenuConfig::ShouldShowAcceleratorText(const MenuItemView* item,
                                            base::string16* text) const {
   if (!show_accelerators || !item->GetDelegate() || !item->GetCommand())
@@ -109,41 +101,8 @@ bool MenuConfig::ShouldShowAcceleratorText(const MenuItemView* item,
 
 // static
 const MenuConfig& MenuConfig::instance() {
-  CR_DEFINE_STATIC_LOCAL(MenuConfig, instance, ());
-  return instance;
-}
-
-void MenuConfig::InitMaterialMenuConfig() {
-  // These config parameters are from https://crbug.com/829347 and the spec
-  // images linked from that bug.
-  menu_horizontal_border_size = 0;
-  submenu_horizontal_inset = 0;
-  minimum_text_item_height = 28;
-  minimum_container_item_height = 40;
-  minimum_menu_width = 320;
-  label_to_arrow_padding = 0;
-  arrow_to_edge_padding = 16;
-  check_width = 16;
-  check_height = 16;
-  separator_height = 9;
-  separator_lower_height = 4;
-  separator_upper_height = 4;
-  separator_spacing_height = 5;
-  separator_thickness = 1;
-  align_arrow_and_shortcut = true;
-  use_outer_border = false;
-  icons_in_label = true;
-  corner_radius = 8;
-  auxiliary_corner_radius = 4;
-  if (!ui::MaterialDesignController::IsTouchOptimizedUiEnabled()) {
-    touchable_menu_height = minimum_text_item_height;
-    touchable_menu_width = minimum_menu_width;
-    if (LayoutProvider::Get()) {
-      touchable_menu_shadow_elevation =
-          LayoutProvider::Get()->GetShadowElevationMetric(EMPHASIS_MEDIUM);
-    }
-    touchable_anchor_offset = 0;
-  }
+  static base::NoDestructor<MenuConfig> instance;
+  return *instance;
 }
 
 }  // namespace views

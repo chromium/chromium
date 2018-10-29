@@ -20,6 +20,7 @@
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,6 +61,30 @@ class MockPreconnectManagerDelegate
   MOCK_METHOD1(PreconnectFinishedProxy, void(const GURL& url));
 };
 
+class TestResolveHostClient : public network::mojom::ResolveHostHandle {
+ public:
+  using CancelCallback = base::OnceCallback<void(int result)>;
+
+  TestResolveHostClient(
+      network::mojom::ResolveHostClientPtr client,
+      network::mojom::ResolveHostHandleRequest control_handle_request,
+      CancelCallback callback)
+      : callback_(std::move(callback)), client_(std::move(client)) {
+    if (control_handle_request)
+      control_handle_binding_.Bind(std::move(control_handle_request));
+  }
+
+  void Cancel(int result) override { std::move(callback_).Run(result); }
+
+  void OnComplete(int result) { client_->OnComplete(result, base::nullopt); }
+
+ private:
+  CancelCallback callback_;
+  network::mojom::ResolveHostClientPtr client_;
+  mojo::Binding<network::mojom::ResolveHostHandle> control_handle_binding_{
+      this};
+};
+
 class MockNetworkContext : public network::TestNetworkContext {
  public:
   MockNetworkContext() = default;
@@ -73,8 +98,16 @@ class MockNetworkContext : public network::TestNetworkContext {
       network::mojom::ResolveHostParametersPtr optional_parameters,
       network::mojom::ResolveHostClientPtr response_client) override {
     const std::string& host = host_port.host();
-    EXPECT_TRUE(
-        resolve_host_clients_.emplace(host, std::move(response_client)).second);
+    network::mojom::ResolveHostHandleRequest control_handle_request;
+    if (optional_parameters)
+      control_handle_request = std::move(optional_parameters->control_handle);
+    auto test_client = std::make_unique<TestResolveHostClient>(
+        std::move(response_client), std::move(control_handle_request),
+        base::BindOnce(&MockNetworkContext::CompleteHostLookup,
+                       base::Unretained(this), host));
+    EXPECT_TRUE(resolve_host_clients_
+                    .insert(std::make_pair(host, std::move(test_client)))
+                    .second);
     ResolveHostProxy(host);
   }
 
@@ -92,10 +125,10 @@ class MockNetworkContext : public network::TestNetworkContext {
       ADD_FAILURE() << host << " wasn't found";
       return;
     }
-    it->second->OnComplete(result, base::nullopt);
-    resolve_host_clients_.erase(it);
+    it->second->OnComplete(result);
     // Wait for OnComplete() to be executed on the UI thread.
     base::RunLoop().RunUntilIdle();
+    resolve_host_clients_.erase(it);
   }
 
   void CompleteProxyLookup(const GURL& url,
@@ -119,7 +152,7 @@ class MockNetworkContext : public network::TestNetworkContext {
                     bool privacy_mode_enabled));
 
  private:
-  std::map<std::string, network::mojom::ResolveHostClientPtr>
+  std::map<std::string, std::unique_ptr<TestResolveHostClient>>
       resolve_host_clients_;
   std::map<GURL, network::mojom::ProxyLookupClientPtr> proxy_lookup_clients_;
 };
@@ -379,8 +412,6 @@ TEST_F(PreconnectManagerTest, TestSuccessfulProxyLookup) {
                                              GetIndirectProxyInfo());
   // We should preconnect socket before the host lookup is complete.
   Mock::VerifyAndClearExpectations(mock_network_context_.get());
-
-  mock_network_context_->CompleteHostLookup(url_to_preconnect.host(), net::OK);
 }
 
 TEST_F(PreconnectManagerTest, TestSuccessfulProxyLookupAfterPreresolveFailure) {

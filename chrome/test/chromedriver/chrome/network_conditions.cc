@@ -35,9 +35,7 @@ Status FindPresetNetwork(std::string network_name,
   if (!networks_value->GetAsList(&networks))
     return Status(kUnknownError, "malformed networks list");
 
-  for (base::ListValue::iterator it = networks->begin();
-       it != networks->end();
-       ++it) {
+  for (auto it = networks->begin(); it != networks->end(); ++it) {
     base::DictionaryValue* network = NULL;
     if (!it->GetAsDictionary(&network)) {
       return Status(kUnknownError,

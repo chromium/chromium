@@ -17,7 +17,11 @@ std::string AppDistributionProvider::GetDistributionBrandCode() {
 }
 
 void AppDistributionProvider::ScheduleDistributionNotifications(
-    net::URLRequestContextGetter* context,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     bool is_first_run) {}
 
 void AppDistributionProvider::CancelDistributionNotifications() {}
+
+bool AppDistributionProvider::IsPreFirebaseLegacyUser(int64_t install_date) {
+  return false;
+}

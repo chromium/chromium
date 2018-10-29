@@ -2,6 +2,8 @@ Tests that resources panel shows form data parameters.
 
 http://127.0.0.1:8000/devtools/resources/post-target.cgi?queryParam1=queryValue1&queryParam2=
 {
+    _initiator : <object>
+    _priority : <string>
     cache : {
     }
     connection : <string>

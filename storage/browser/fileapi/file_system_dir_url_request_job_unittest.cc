@@ -155,11 +155,11 @@ class FileSystemDirURLRequestJobTest : public testing::Test {
 
     std::vector<std::unique_ptr<storage::FileSystemBackend>>
         additional_providers;
-    additional_providers.push_back(std::make_unique<TestFileSystemBackend>(
+    additional_providers.emplace_back(std::make_unique<TestFileSystemBackend>(
         base::ThreadTaskRunnerHandle::Get().get(), *mnt_point));
 
     std::vector<storage::URLRequestAutoMountHandler> handlers;
-    handlers.push_back(base::Bind(&TestAutoMountForURLRequest));
+    handlers.emplace_back(base::BindRepeating(&TestAutoMountForURLRequest));
 
     file_system_context_ = CreateFileSystemContextWithAutoMountersForTesting(
         nullptr, std::move(additional_providers), handlers,

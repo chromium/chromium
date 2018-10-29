@@ -15,9 +15,9 @@
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/pod_interval.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/wtf/pod_interval.h"
 
 namespace blink {
 
@@ -140,8 +140,8 @@ class CORE_EXPORT InteractiveDetector
   };
 
   // Stores sufficiently long quiet windows on main thread and network.
-  std::vector<PODInterval<TimeTicks>> main_thread_quiet_windows_;
-  std::vector<PODInterval<TimeTicks>> network_quiet_windows_;
+  std::vector<WTF::PODInterval<TimeTicks>> main_thread_quiet_windows_;
+  std::vector<WTF::PODInterval<TimeTicks>> network_quiet_windows_;
 
   // Start times of currently active main thread and network quiet windows.
   // Null TimeTicks values indicate main thread or network is not quiet at the

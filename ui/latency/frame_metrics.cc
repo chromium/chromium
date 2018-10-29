@@ -8,8 +8,9 @@
 #include <limits>
 #include <vector>
 
+#include "base/bit_cast.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 
 namespace ui {
 
@@ -18,7 +19,7 @@ namespace {
 // How often to report results.
 // This needs to be short enough to avoid overflow in the accumulators.
 constexpr base::TimeDelta kDefaultReportPeriod =
-    base::TimeDelta::FromMinutes(1);
+    base::TimeDelta::FromSeconds(1);
 
 // Gives the histogram for skips the highest precision just above a
 // skipped:produced ratio of 1.
@@ -342,11 +343,6 @@ void FrameMetrics::AddFrameDisplayed(base::TimeTicks source_timestamp,
   source_timestamp_prev_ = source_timestamp;
   latency_prev_ = latency;
   latencies_added_++;
-
-  bool tracing_enabled = 0;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kTraceCategories, &tracing_enabled);
-  if (tracing_enabled)
-    TraceStats();
 }
 
 void FrameMetrics::Reset() {
@@ -380,6 +376,11 @@ void FrameMetrics::Reset() {
 void FrameMetrics::StartNewReportPeriod() {
   TRACE_EVENT0(kTraceCategories, "FrameMetrics::StartNewReportPeriod");
 
+  bool tracing_enabled = 0;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kTraceCategories, &tracing_enabled);
+  if (tracing_enabled)
+    TraceStats();
+
   time_since_start_of_report_period_ = base::TimeDelta();
   frames_produced_since_start_of_report_period_ = 0;
 
@@ -387,6 +388,27 @@ void FrameMetrics::StartNewReportPeriod() {
   latency_analyzer_.StartNewReportPeriod();
   latency_speed_analyzer_.StartNewReportPeriod();
   latency_acceleration_analyzer_.StartNewReportPeriod();
+}
+
+double FrameMetrics::FastApproximateSqrt(double x) {
+  if (x <= 0)
+    return 0;
+  // Basically performs x*fastinvSqrt(x) - using high precision (3 steps)
+  double y = x;
+  double xhalf = 0.5f * x;
+  float xf = static_cast<float>(x);
+  int32_t i = bit_cast<int32_t>(xf);
+  // Magic Number for initial guess. Reference:
+  // http://www.lomont.org/Math/Papers/2003/InvSqrt.pdf.
+  i = 0x5f3759df - (i >> 1);
+  x = static_cast<double>(bit_cast<float>(i));
+  // Newton step.
+  x = x * (1.5 - xhalf * x * x);
+  // Newton step.
+  x = x * (1.5 - xhalf * x * x);
+  // Newton step.
+  x = x * (1.5 - xhalf * x * x);
+  return y * x;
 }
 
 namespace {

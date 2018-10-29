@@ -11,6 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/zlib/google/zip.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -114,13 +116,10 @@ void FileSelectHelper::ProcessSelectedFilesMac(
     }
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&FileSelectHelper::ProcessSelectedFilesMacOnUIThread,
-                 base::Unretained(this),
-                 files_out,
-                 temporary_files));
+                 base::Unretained(this), files_out, temporary_files));
 }
 
 void FileSelectHelper::ProcessSelectedFilesMacOnUIThread(

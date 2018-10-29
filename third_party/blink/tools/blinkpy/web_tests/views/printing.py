@@ -28,6 +28,7 @@
 
 """Package that handles non-debug, non-file output for run_web_tests.py."""
 
+import logging
 import math
 import optparse
 
@@ -57,13 +58,15 @@ def print_options():
 class Printer(object):
     """Class handling all non-debug-logging printing done by run_web_tests.py."""
 
-    def __init__(self, port, options, regular_output, logger=None):
+    def __init__(self, host, options, regular_output):
         self.num_completed = 0
         self.num_tests = 0
-        self._port = port
+        self._host = host
         self._options = options
-        self._meter = MeteredStream(regular_output, options.debug_rwt_logging, logger=logger,
-                                    number_of_columns=self._port.host.platform.terminal_width())
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG if options.debug_rwt_logging else logging.INFO)
+        self._meter = MeteredStream(regular_output, options.debug_rwt_logging, logger,
+                                    number_of_columns=host.platform.terminal_width())
         self._running_tests = []
         self._completed_tests = []
 
@@ -73,27 +76,21 @@ class Printer(object):
     def __del__(self):
         self.cleanup()
 
-    def print_config(self, results_directory):
-        self._print_default("Using port '%s'" % self._port.name())
-        self._print_default('Test configuration: %s' % self._port.test_configuration())
-        self._print_default('View the test results at file://%s/results.html' % results_directory)
+    def print_config(self, port):
+        self._print_default("Using port '%s'" % port.name())
+        self._print_default('Test configuration: %s' % port.test_configuration())
+        self._print_default('View the test results at file://%s/results.html' % port.results_directory())
         if self._options.order == 'random':
             self._print_default('Using random order with seed: %d' % self._options.seed)
 
-        fs = self._port.host.filesystem
-        fallback_path = [fs.split(x)[1] for x in self._port.baseline_search_path()]
+        fs = self._host.filesystem
+        fallback_path = [fs.split(x)[1] for x in port.baseline_search_path()]
         self._print_default('Baseline search path: %s -> generic' % ' -> '.join(fallback_path))
-
         self._print_default('Using %s build' % self._options.configuration)
-        if self._options.pixel_tests:
-            self._print_default('Pixel tests enabled')
-        else:
-            self._print_default('Pixel tests disabled')
-
         self._print_default('Regular timeout: %s, slow test timeout: %s' %
                             (self._options.time_out_ms, self._options.slow_time_out_ms))
 
-        self._print_default('Command line: ' + ' '.join(self._port.driver_cmd_line()))
+        self._print_default('Command line: ' + ' '.join(port.driver_cmd_line()))
         self._print_default('')
 
     def print_found(self, num_all_test_files, num_shard_test_files, num_to_run, repeat_each, iterations):
@@ -112,8 +109,8 @@ class Printer(object):
         self._print_expected_results_of_type(run_results, test_expectations.FLAKY, 'flaky', tests_with_result_type_callback)
         self._print_debug('')
 
-    def print_workers_and_shards(self, num_workers, num_shards, num_locked_shards):
-        driver_name = self._port.driver_name()
+    def print_workers_and_shards(self, port, num_workers, num_shards, num_locked_shards):
+        driver_name = port.driver_name()
         if num_workers == 1:
             self._print_default('Running 1 %s.' % driver_name)
             self._print_debug('(%s).' % grammar.pluralize('shard', num_shards))
@@ -220,7 +217,7 @@ class Printer(object):
             ellipsis = '...'
             if len(test_name) < overflow_columns + len(ellipsis) + 2:
                 # We don't have enough space even if we elide, just show the test filename.
-                fs = self._port.host.filesystem
+                fs = self._host.filesystem
                 test_name = fs.split(test_name)[1]
             else:
                 new_length = len(test_name) - overflow_columns - len(ellipsis)
@@ -240,7 +237,7 @@ class Printer(object):
             write = self._meter.write_throttled_update
         write(self._test_status_line(test_name, suffix))
 
-    def print_finished_test(self, result, expected, exp_str, got_str):
+    def print_finished_test(self, port, result, expected, exp_str, got_str):
         self.num_completed += 1
         test_name = result.test_name
 
@@ -248,7 +245,7 @@ class Printer(object):
                                               self._options.timing, result.test_run_time)
 
         if self._options.details:
-            self._print_test_trace(result, exp_str, got_str)
+            self._print_test_trace(port, result, exp_str, got_str)
         elif self._options.verbose or not expected:
             self.writeln(self._test_status_line(test_name, result_message))
         elif self.num_completed == self.num_tests:
@@ -272,35 +269,35 @@ class Printer(object):
         else:
             return ' failed%s (%s)%s' % (exp_string, ', '.join(failure.message() for failure in failures), timing_string)
 
-    def _print_test_trace(self, result, exp_str, got_str):
+    def _print_test_trace(self, port, result, exp_str, got_str):
         test_name = result.test_name
         self._print_default(self._test_status_line(test_name, ''))
 
-        base = self._port.lookup_virtual_test_base(test_name)
+        base = port.lookup_virtual_test_base(test_name)
         if base:
-            args = ' '.join(self._port.lookup_virtual_test_args(test_name))
-            reference_args = ' '.join(self._port.lookup_virtual_reference_args(test_name))
+            args = ' '.join(port.lookup_virtual_test_args(test_name))
+            reference_args = ' '.join(port.lookup_virtual_reference_args(test_name))
             self._print_default(' base: %s' % base)
             self._print_default(' args: %s' % args)
             self._print_default(' reference_args: %s' % reference_args)
 
-        references = self._port.reference_files(test_name)
+        references = port.reference_files(test_name)
         if references:
             for _, filename in references:
-                self._print_default('  ref: %s' % self._port.relative_test_filename(filename))
+                self._print_default('  ref: %s' % port.relative_test_filename(filename))
         else:
             for extension in ('.txt', '.png', '.wav'):
-                self._print_baseline(test_name, extension)
+                self._print_baseline(port, test_name, extension)
 
         self._print_default('  exp: %s' % exp_str)
         self._print_default('  got: %s' % got_str)
         self._print_default(' took: %-.3f' % result.test_run_time)
         self._print_default('')
 
-    def _print_baseline(self, test_name, extension):
-        baseline = self._port.expected_filename(test_name, extension)
-        if self._port.host.filesystem.exists(baseline):
-            relpath = self._port.relative_test_filename(baseline)
+    def _print_baseline(self, port, test_name, extension):
+        baseline = port.expected_filename(test_name, extension)
+        if self._host.filesystem.exists(baseline):
+            relpath = port.relative_test_filename(baseline)
         else:
             relpath = '<none>'
         self._print_default('  %s: %s' % (extension[1:], relpath))

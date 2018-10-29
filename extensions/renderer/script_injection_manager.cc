@@ -152,7 +152,7 @@ void ScriptInjectionManager::RFOHelper::DidCreateDocumentElement() {
 
 void ScriptInjectionManager::RFOHelper::DidFailProvisionalLoad(
     const blink::WebURLError& error) {
-  FrameStatusMap::iterator it = manager_->frame_statuses_.find(render_frame());
+  auto it = manager_->frame_statuses_.find(render_frame());
   if (it != manager_->frame_statuses_.end() &&
       it->second == UserScript::DOCUMENT_START) {
     // Since the provisional load failed, the frame stays at its previous loaded
@@ -347,7 +347,7 @@ void ScriptInjectionManager::InvalidateForFrame(content::RenderFrame* frame) {
 void ScriptInjectionManager::StartInjectScripts(
     content::RenderFrame* frame,
     UserScript::RunLocation run_location) {
-  FrameStatusMap::iterator iter = frame_statuses_.find(frame);
+  auto iter = frame_statuses_.find(frame);
   // We also don't execute if we detect that the run location is somehow out of
   // order. This can happen if:
   // - The first run location reported for the frame isn't DOCUMENT_START, or

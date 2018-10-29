@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/system/fake_input_device_settings.h"
 #include "chrome/common/pref_names.h"
@@ -32,7 +33,9 @@ namespace chromeos {
 class PreferencesTest : public LoginManagerTest {
  public:
   PreferencesTest()
-      : LoginManagerTest(true), input_settings_(nullptr), keyboard_(nullptr) {
+      : LoginManagerTest(true, true),
+        input_settings_(nullptr),
+        keyboard_(nullptr) {
     struct {
       const char* email;
       const char* gaia_id;
@@ -57,7 +60,7 @@ class PreferencesTest : public LoginManagerTest {
     static_cast<input_method::InputMethodManagerImpl*>(
         input_method::InputMethodManager::Get())
         ->SetImeKeyboardForTesting(keyboard_);
-    CrosSettings::Get()->SetString(kDeviceOwner, test_users_[0].GetUserEmail());
+    settings_helper_.SetString(kDeviceOwner, test_users_[0].GetUserEmail());
   }
 
   // Sets set of preferences in given |prefs|. Value of prefernece depends of
@@ -117,6 +120,8 @@ class PreferencesTest : public LoginManagerTest {
   }
 
   std::vector<AccountId> test_users_;
+  ScopedCrosSettingsTestHelper settings_helper_{
+      /* create_settings_service= */ false};
 
  private:
   system::InputDeviceSettings::FakeInterface* input_settings_;

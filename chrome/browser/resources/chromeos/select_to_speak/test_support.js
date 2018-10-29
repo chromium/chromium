@@ -26,6 +26,7 @@ chrome.automation.RoleType = {
   RADIO_BUTTON: 'radioButton',
   ROOT_WEB_AREA: 'rootWebArea',
   STATIC_TEXT: 'staticText',
+  SVG_ROOT: 'svgRoot',
   TEXT_FIELD: 'textField',
   WINDOW: 'window'
 };

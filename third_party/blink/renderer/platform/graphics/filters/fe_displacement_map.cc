@@ -113,16 +113,16 @@ static SkDisplacementMapEffect::ChannelSelectorType ToSkiaMode(
 }
 
 sk_sp<PaintFilter> FEDisplacementMap::CreateImageFilter() {
-  sk_sp<PaintFilter> color =
-      PaintFilterBuilder::Build(InputEffect(0), OperatingInterpolationSpace());
+  sk_sp<PaintFilter> color = paint_filter_builder::Build(
+      InputEffect(0), OperatingInterpolationSpace());
   // FEDisplacementMap must be a pass-through filter if
   // the origin is tainted. See:
   // https://drafts.fxtf.org/filter-effects/#fedisplacemnentmap-restrictions.
   if (InputEffect(1)->OriginTainted())
     return color;
 
-  sk_sp<PaintFilter> displ =
-      PaintFilterBuilder::Build(InputEffect(1), OperatingInterpolationSpace());
+  sk_sp<PaintFilter> displ = paint_filter_builder::Build(
+      InputEffect(1), OperatingInterpolationSpace());
   SkDisplacementMapEffect::ChannelSelectorType type_x =
       ToSkiaMode(x_channel_selector_);
   SkDisplacementMapEffect::ChannelSelectorType type_y =

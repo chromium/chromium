@@ -6,10 +6,6 @@
 <audio controls></audio>
 <script>
 async_test(function(t) {
-    // This test is not valid for modern media controls.
-    if (internals.runtimeFlags.modernMediaControlsEnabled)
-      t.done();
-
     var audio = document.querySelector("audio");
     audio.src = "content/test.oga";
     assert_equals(audio.volume, 1);

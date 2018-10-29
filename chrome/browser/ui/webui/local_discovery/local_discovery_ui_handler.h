@@ -104,9 +104,6 @@ class LocalDiscoveryUIHandler
   // For when the page is ready to receive device notifications.
   void HandleStart(const base::ListValue* args);
 
-  // For when a visibility change occurs.
-  void HandleIsVisible(const base::ListValue* args);
-
   // For when a user choice is made.
   void HandleRegisterDevice(const base::ListValue* args);
 
@@ -136,9 +133,6 @@ class LocalDiscoveryUIHandler
 
   // Singal to the web interface that registration has finished.
   void SendRegisterDone(const std::string& service_name);
-
-  // Set the visibility of the page.
-  void SetIsVisible(bool visible);
 
   // Get the sync account email.
   std::string GetSyncAccount() const;
@@ -195,9 +189,6 @@ class LocalDiscoveryUIHandler
 
   // The device lister used to list devices on the local network.
   std::unique_ptr<cloud_print::PrivetDeviceLister> privet_lister_;
-
-  // Whether or not the page is marked as visible.
-  bool is_visible_;
 
   // List of printers from cloud print.
   std::unique_ptr<cloud_print::GCDApiFlow> cloud_print_printer_list_;

@@ -67,9 +67,10 @@ class KEYBOARD_EXPORT KeyboardControllerObserver {
   virtual void OnKeyboardAppearanceChanged(
       const KeyboardStateDescriptor& state) {}
 
-  // Called when the keyboard was disabled (e.g. when user switches convertible
-  // to laptop mode)
-  virtual void OnKeyboardDisabled() {}
+  // Called when the keyboard is enabled or disabled. NOTE: This is called
+  // when Enabled() or Disabled() is called, not when the requested enabled
+  // state (IsEnableRequested) changes.
+  virtual void OnKeyboardEnabledChanged(bool is_enabled) {}
 
   // Called when the keyboard has been hidden and the hiding animation finished
   // successfully. This is same as |state| == HIDDEN on OnStateChanged.

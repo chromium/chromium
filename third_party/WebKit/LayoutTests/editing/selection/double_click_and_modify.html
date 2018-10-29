@@ -18,7 +18,7 @@ test(() => {
     eventSender.mouseUp();
   }
 
-  assert_exists(window, 'eventSender', 'This test requires eventSender.');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender.');
 
   assert_selection(
     '<span id="sample">xyz</span>',

@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "ui/events/events_export.h"
+#include "ui/events/x/events_x_utils.h"
 #include "ui/gfx/x/x11_types.h"
 
 using Time = unsigned long;
@@ -46,7 +47,7 @@ class X11EventSourceDelegate {
 
 // Receives X11 events and sends them to X11EventSourceDelegate. Handles
 // receiving, pre-process and post-processing XEvents.
-class EVENTS_EXPORT X11EventSource {
+class EVENTS_EXPORT X11EventSource : TimestampServer {
  public:
   X11EventSource(X11EventSourceDelegate* delegate, XDisplay* display);
   ~X11EventSource();
@@ -82,7 +83,7 @@ class EVENTS_EXPORT X11EventSource {
 
   // Explicitly asks the X11 server for the current timestamp, and updates
   // |last_seen_server_time_| with this value.
-  Time GetCurrentServerTime();
+  Time GetCurrentServerTime() override;
 
  protected:
   // Extracts cookie data from |xevent| if it's of GenericType, and dispatches

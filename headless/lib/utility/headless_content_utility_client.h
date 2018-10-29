@@ -7,17 +7,28 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "content/public/utility/content_utility_client.h"
+#include "headless/public/headless_export.h"
 
 namespace headless {
 
-class HeadlessContentUtilityClient : public content::ContentUtilityClient {
+class HEADLESS_EXPORT HeadlessContentUtilityClient
+    : public content::ContentUtilityClient {
  public:
+  using NetworkBinderCreationCallback =
+      base::RepeatingCallback<void(service_manager::BinderRegistry*)>;
+
+  static void SetNetworkBinderCreationCallbackForTests(
+      NetworkBinderCreationCallback callback);
+
   explicit HeadlessContentUtilityClient(const std::string& user_agent);
   ~HeadlessContentUtilityClient() override;
 
   // content::ContentUtilityClient:
   void RegisterServices(StaticServiceMap* services) override;
+  void RegisterNetworkBinders(
+      service_manager::BinderRegistry* registry) override;
 
  private:
   const std::string user_agent_;

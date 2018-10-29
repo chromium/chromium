@@ -17,6 +17,7 @@
 
 namespace cc {
 class Layer;
+class SolidColorLayer;
 }
 
 namespace android {
@@ -53,6 +54,8 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jint bar_banner_ripple_resource_id,
       jint bar_banner_text_resource_id,
       jfloat dp_to_px,
+      jfloat layout_width,
+      jfloat layout_height,
       jfloat base_page_brightness,
       jfloat base_page_offset,
       const base::android::JavaParamRef<jobject>& jweb_contents,
@@ -122,11 +125,12 @@ class ContextualSearchSceneLayer : public SceneLayer,
 
   JNIEnv* env_;
   base::android::ScopedJavaGlobalRef<jobject> object_;
-  float base_page_brightness_;
   std::string thumbnail_url_;
   std::unique_ptr<BitmapFetcher> fetcher_;
 
   scoped_refptr<ContextualSearchLayer> contextual_search_layer_;
+  // Responsible for fading the base page content.
+  scoped_refptr<cc::SolidColorLayer> color_overlay_;
   scoped_refptr<cc::Layer> content_container_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextualSearchSceneLayer);

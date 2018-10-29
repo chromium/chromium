@@ -28,6 +28,8 @@ X11InputMethodContextImplGtk::X11InputMethodContextImplGtk(
     ui::LinuxInputMethodContextDelegate* delegate,
     bool is_simple)
     : delegate_(delegate),
+      is_simple_(is_simple),
+      has_focus_(false),
       gtk_context_(nullptr),
       gdk_last_set_client_window_(nullptr) {
   CHECK(delegate_);
@@ -103,14 +105,23 @@ bool X11InputMethodContextImplGtk::DispatchKeyEvent(
 
 void X11InputMethodContextImplGtk::Reset() {
   gtk_im_context_reset(gtk_context_);
+
+  // Some input methods may not honour the reset call.
+  // Focusing out/in the to make sure it gets reset correctly.
+  if (!is_simple_ && has_focus_) {
+    Blur();
+    Focus();
+  }
 }
 
 void X11InputMethodContextImplGtk::Focus() {
   gtk_im_context_focus_in(gtk_context_);
+  has_focus_ = true;
 }
 
 void X11InputMethodContextImplGtk::Blur() {
   gtk_im_context_focus_out(gtk_context_);
+  has_focus_ = false;
 }
 
 void X11InputMethodContextImplGtk::SetCursorLocation(const gfx::Rect& rect) {
@@ -126,6 +137,10 @@ void X11InputMethodContextImplGtk::SetCursorLocation(const gfx::Rect& rect) {
     last_caret_bounds_ = rect;
   }
 }
+
+void X11InputMethodContextImplGtk::SetSurroundingText(
+    const base::string16& text,
+    const gfx::Range& selection_range) {}
 
 // private:
 

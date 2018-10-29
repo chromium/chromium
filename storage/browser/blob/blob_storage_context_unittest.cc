@@ -483,7 +483,7 @@ TEST_F(BlobStorageContextTest, AddFinishedBlob_LargeOffset) {
   ASSERT_TRUE(blob_data_handle2);
   std::unique_ptr<BlobDataSnapshot> data = blob_data_handle2->CreateSnapshot();
   ASSERT_EQ(1u, data->items().size());
-  const scoped_refptr<BlobDataItem> item = data->items()[0];
+  BlobDataItem* item = data->items()[0].get();
   EXPECT_EQ(kLargeSize - kBlobLength, item->offset());
   EXPECT_EQ(kBlobLength, item->length());
 

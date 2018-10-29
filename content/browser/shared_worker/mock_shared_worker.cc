@@ -61,6 +61,7 @@ void MockSharedWorker::Terminate() {
 }
 
 void MockSharedWorker::BindDevToolsAgent(
+    blink::mojom::DevToolsAgentHostAssociatedPtrInfo host_ptr_info,
     blink::mojom::DevToolsAgentAssociatedRequest request) {
   NOTREACHED();
 }

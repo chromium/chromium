@@ -106,6 +106,9 @@ interface VoiceInteractionController {
   // Called when the locale is changed.
   NotifyLocaleChanged(string locale);
 
+  // Called when the launch with mic open state is changed.
+  NotifyLaunchWithMicOpen(bool launch_with_mic_open);
+
   // Return if the voice interaction setting is enabled/disabled.
   IsSettingEnabled() => (bool enabled);
 

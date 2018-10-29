@@ -14,15 +14,15 @@ function FakeDataMaker() {}
  * @param {string=} url
  * @param {string=} username
  * @param {number=} passwordLength
- * @param {number=} index
+ * @param {number=} id
  * @return {chrome.passwordsPrivate.PasswordUiEntry}
  */
-FakeDataMaker.passwordEntry = function(url, username, passwordLength, index) {
+FakeDataMaker.passwordEntry = function(url, username, passwordLength, id) {
   // Generate fake data if param is undefined.
   url = url || FakeDataMaker.patternMaker_('www.xxxxxx.com', 16);
   username = username || FakeDataMaker.patternMaker_('user_xxxxx', 16);
   passwordLength = passwordLength || Math.floor(Math.random() * 15) + 3;
-  index = index || 0;
+  id = id || 0;
 
   return {
     loginPair: {
@@ -34,26 +34,26 @@ FakeDataMaker.passwordEntry = function(url, username, passwordLength, index) {
       username: username,
     },
     numCharactersInPassword: passwordLength,
-    index: index,
+    id: id,
   };
 };
 
 /**
  * Creates a single item for the list of password exceptions.
  * @param {string=} url
- * @param {number=} index
+ * @param {number=} id
  * @return {chrome.passwordsPrivate.ExceptionEntry}
  */
-FakeDataMaker.exceptionEntry = function(url, index) {
+FakeDataMaker.exceptionEntry = function(url, id) {
   url = url || FakeDataMaker.patternMaker_('www.xxxxxx.com', 16);
-  index = index || 0;
+  id = id || 0;
   return {
     urls: {
       origin: 'http://' + url + '/login',
       shown: url,
       link: 'http://' + url + '/login',
     },
-    index: index,
+    id: id,
   };
 };
 
@@ -203,11 +203,11 @@ TestPasswordManager.prototype = {
   },
 
   /** @override */
-  removeSavedPassword: function(index) {
+  removeSavedPassword: function(id) {
     this.actual_.removed.passwords++;
 
     if (this.onRemoveSavedPassword)
-      this.onRemoveSavedPassword(index);
+      this.onRemoveSavedPassword(id);
   },
 
   /** @override */
@@ -228,15 +228,15 @@ TestPasswordManager.prototype = {
   },
 
   /** @override */
-  removeException: function(index) {
+  removeException: function(id) {
     this.actual_.removed.exceptions++;
 
     if (this.onRemoveException)
-      this.onRemoveException(index);
+      this.onRemoveException(id);
   },
 
   /** @override */
-  getPlaintextPassword: function(index, callback) {
+  getPlaintextPassword: function(id, callback) {
     this.actual_.requested.plaintextPassword++;
     this.lastCallback.getPlaintextPassword = callback;
   },

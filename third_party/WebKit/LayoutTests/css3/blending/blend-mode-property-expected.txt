@@ -2,7 +2,6 @@ Test the parsing of the mix-blend-mode property.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS cssRule.type is 1
 PASS declaration.length is 1
 PASS declaration.getPropertyValue('mix-blend-mode') is 'normal'

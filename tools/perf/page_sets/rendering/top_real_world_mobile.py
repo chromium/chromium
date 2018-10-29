@@ -11,7 +11,7 @@ from page_sets.system_health import platforms
 
 class TopRealWorldMobilePage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
-  TAGS = [story_tags.SYNC_SCROLL, story_tags.TOP_REAL_WORLD_MOBILE]
+  TAGS = [story_tags.TOP_REAL_WORLD_MOBILE]
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
 
   def __init__(self,

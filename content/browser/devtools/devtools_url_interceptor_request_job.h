@@ -135,8 +135,8 @@ class DevToolsURLInterceptorRequestJob : public net::URLRequestJob {
   void ProcessInterceptionResponse(
       std::unique_ptr<DevToolsNetworkInterceptor::Modifications> modification);
 
-  bool ProcessAuthResponse(
-      std::unique_ptr<DevToolsNetworkInterceptor::Modifications> modification);
+  void ProcessAuthResponse(
+      const DevToolsNetworkInterceptor::AuthChallengeResponse& response);
 
   enum class WaitingForUserResponse {
     NOT_WAITING,

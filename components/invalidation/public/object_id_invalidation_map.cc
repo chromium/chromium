@@ -14,7 +14,7 @@ namespace syncer {
 ObjectIdInvalidationMap ObjectIdInvalidationMap::InvalidateAll(
     const ObjectIdSet& ids) {
   ObjectIdInvalidationMap invalidate_all;
-  for (ObjectIdSet::const_iterator it = ids.begin(); it != ids.end(); ++it) {
+  for (auto it = ids.begin(); it != ids.end(); ++it) {
     invalidate_all.Insert(Invalidation::InitUnknownVersion(*it));
   }
   return invalidate_all;
@@ -29,7 +29,7 @@ ObjectIdInvalidationMap::~ObjectIdInvalidationMap() {}
 
 ObjectIdSet ObjectIdInvalidationMap::GetObjectIds() const {
   ObjectIdSet ret;
-  for (IdToListMap::const_iterator it = map_.begin(); it != map_.end(); ++it) {
+  for (auto it = map_.begin(); it != map_.end(); ++it) {
     ret.insert(it->first);
   }
   return ret;
@@ -46,8 +46,8 @@ void ObjectIdInvalidationMap::Insert(const Invalidation& invalidation) {
 ObjectIdInvalidationMap ObjectIdInvalidationMap::GetSubsetWithObjectIds(
     const ObjectIdSet& ids) const {
   IdToListMap new_map;
-  for (ObjectIdSet::const_iterator it = ids.begin(); it != ids.end(); ++it) {
-    IdToListMap::const_iterator lookup = map_.find(*it);
+  for (auto it = ids.begin(); it != ids.end(); ++it) {
+    auto lookup = map_.find(*it);
     if (lookup != map_.end()) {
       new_map[*it] = lookup->second;
     }
@@ -57,7 +57,7 @@ ObjectIdInvalidationMap ObjectIdInvalidationMap::GetSubsetWithObjectIds(
 
 const SingleObjectInvalidationSet& ObjectIdInvalidationMap::ForObject(
     invalidation::ObjectId id) const {
-  IdToListMap::const_iterator lookup = map_.find(id);
+  auto lookup = map_.find(id);
   DCHECK(lookup != map_.end());
   DCHECK(!lookup->second.IsEmpty());
   return lookup->second;
@@ -65,15 +65,13 @@ const SingleObjectInvalidationSet& ObjectIdInvalidationMap::ForObject(
 
 void ObjectIdInvalidationMap::GetAllInvalidations(
     std::vector<syncer::Invalidation>* out) const {
-  for (IdToListMap::const_iterator it = map_.begin(); it != map_.end(); ++it) {
+  for (auto it = map_.begin(); it != map_.end(); ++it) {
     out->insert(out->begin(), it->second.begin(), it->second.end());
   }
 }
 void ObjectIdInvalidationMap::AcknowledgeAll() const {
-  for (IdToListMap::const_iterator it1 = map_.begin();
-       it1 != map_.end(); ++it1) {
-    for (SingleObjectInvalidationSet::const_iterator it2 = it1->second.begin();
-         it2 != it1->second.end(); ++it2) {
+  for (auto it1 = map_.begin(); it1 != map_.end(); ++it1) {
+    for (auto it2 = it1->second.begin(); it2 != it1->second.end(); ++it2) {
       it2->Acknowledge();
     }
   }
@@ -86,10 +84,8 @@ bool ObjectIdInvalidationMap::operator==(
 
 std::unique_ptr<base::ListValue> ObjectIdInvalidationMap::ToValue() const {
   std::unique_ptr<base::ListValue> value(new base::ListValue());
-  for (IdToListMap::const_iterator it1 = map_.begin();
-       it1 != map_.end(); ++it1) {
-    for (SingleObjectInvalidationSet::const_iterator it2 =
-         it1->second.begin(); it2 != it1->second.end(); ++it2) {
+  for (auto it1 = map_.begin(); it1 != map_.end(); ++it1) {
+    for (auto it2 = it1->second.begin(); it2 != it1->second.end(); ++it2) {
       value->Append(it2->ToValue());
     }
   }

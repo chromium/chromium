@@ -41,7 +41,6 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/address_cache.h"
@@ -60,6 +59,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
@@ -159,10 +159,8 @@ const char* StackStateString(BlinkGC::StackState state) {
 
 // Helper function to convert a byte count to a KB count, capping at
 // INT_MAX if the number is larger than that.
-constexpr size_t CappedSizeInKB(size_t size_in_bytes) {
-  const size_t size_in_kb = size_in_bytes / 1024;
-  const size_t limit = std::numeric_limits<int>::max();
-  return size_in_kb > limit ? limit : size_in_kb;
+constexpr base::Histogram::Sample CappedSizeInKB(size_t size_in_bytes) {
+  return base::saturated_cast<base::Histogram::Sample>(size_in_bytes / 1024);
 }
 
 }  // namespace
@@ -224,7 +222,7 @@ void ThreadState::AttachMainThread() {
   new (main_thread_state_storage_) ThreadState();
 
   // PpapiThread doesn't set the current thread.
-  WebThread* current_thread = Platform::Current()->CurrentThread();
+  Thread* current_thread = Platform::Current()->CurrentThread();
   if (current_thread) {
     ThreadScheduler* scheduler = current_thread->Scheduler();
     // Some binaries do not have a scheduler (e.g.
@@ -405,7 +403,7 @@ void ThreadState::VisitWeakPersistents(Visitor* visitor) {
   weak_persistent_region_->TracePersistentNodes(visitor);
 }
 
-ThreadState::GCSnapshotInfo::GCSnapshotInfo(size_t num_object_types)
+ThreadState::GCSnapshotInfo::GCSnapshotInfo(wtf_size_t num_object_types)
     : live_count(Vector<int>(num_object_types)),
       dead_count(Vector<int>(num_object_types)),
       live_size(Vector<size_t>(num_object_types)),
@@ -448,9 +446,9 @@ double ThreadState::HeapGrowingRate() {
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("blink_gc"),
                  "ThreadState::heapEstimatedSizeKB",
                  CappedSizeInKB(estimated_size));
-  TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("blink_gc"),
-                 "ThreadState::heapGrowingRate",
-                 static_cast<int>(100 * growing_rate));
+  TRACE_COUNTER1(
+      TRACE_DISABLED_BY_DEFAULT("blink_gc"), "ThreadState::heapGrowingRate",
+      base::saturated_cast<base::Histogram::Sample>(100 * growing_rate));
   return growing_rate;
 }
 
@@ -467,9 +465,10 @@ double ThreadState::PartitionAllocGrowingRate() {
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("blink_gc"),
                  "ThreadState::partitionAllocEstimatedSizeKB",
                  CappedSizeInKB(estimated_size));
-  TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("blink_gc"),
-                 "ThreadState::partitionAllocGrowingRate",
-                 static_cast<int>(100 * growing_rate));
+  TRACE_COUNTER1(
+      TRACE_DISABLED_BY_DEFAULT("blink_gc"),
+      "ThreadState::partitionAllocGrowingRate",
+      base::saturated_cast<base::Histogram::Sample>(100 * growing_rate));
   return growing_rate;
 }
 
@@ -835,6 +834,7 @@ void UnexpectedGCState(ThreadState::GCState gc_state) {
     UNEXPECTED_GCSTATE(kIdleGCScheduled);
     UNEXPECTED_GCSTATE(kPreciseGCScheduled);
     UNEXPECTED_GCSTATE(kFullGCScheduled);
+    UNEXPECTED_GCSTATE(kIncrementalMarkingStepPaused);
     UNEXPECTED_GCSTATE(kIncrementalMarkingStepScheduled);
     UNEXPECTED_GCSTATE(kIncrementalMarkingFinalizeScheduled);
     UNEXPECTED_GCSTATE(kPageNavigationGCScheduled);
@@ -858,6 +858,7 @@ void ThreadState::SetGCState(GCState gc_state) {
           gc_state_ == kNoGCScheduled || gc_state_ == kIdleGCScheduled ||
           gc_state_ == kPreciseGCScheduled || gc_state_ == kFullGCScheduled ||
           gc_state_ == kPageNavigationGCScheduled ||
+          gc_state_ == kIncrementalMarkingStepPaused ||
           gc_state_ == kIncrementalMarkingStepScheduled ||
           gc_state_ == kIncrementalMarkingFinalizeScheduled ||
           gc_state_ == kIncrementalGCScheduled);
@@ -880,6 +881,7 @@ void ThreadState::SetGCState(GCState gc_state) {
       DCHECK(!IsSweepingInProgress());
       VERIFY_STATE_TRANSITION(
           gc_state_ == kNoGCScheduled || gc_state_ == kIdleGCScheduled ||
+          gc_state_ == kIncrementalMarkingStepPaused ||
           gc_state_ == kIncrementalMarkingStepScheduled ||
           gc_state_ == kIncrementalMarkingFinalizeScheduled ||
           gc_state_ == kPreciseGCScheduled || gc_state_ == kFullGCScheduled ||
@@ -898,6 +900,12 @@ void ThreadState::SetGCState(GCState gc_state) {
       DCHECK(!IsSweepingInProgress());
       VERIFY_STATE_TRANSITION(gc_state_ == kNoGCScheduled ||
                               gc_state_ == kIdleGCScheduled);
+      break;
+    case kIncrementalMarkingStepPaused:
+      DCHECK(CheckThread());
+      DCHECK(IsMarkingInProgress());
+      DCHECK(!IsSweepingInProgress());
+      VERIFY_STATE_TRANSITION(gc_state_ == kIncrementalMarkingStepScheduled);
       break;
     default:
       NOTREACHED();
@@ -1058,7 +1066,8 @@ void ThreadState::CompleteSweep() {
     ScriptForbiddenScope script_forbidden;
     SweepForbiddenScope scope(this);
     ThreadHeapStatsCollector::EnabledScope stats_scope(
-        Heap().stats_collector(), ThreadHeapStatsCollector::kCompleteSweep);
+        Heap().stats_collector(), ThreadHeapStatsCollector::kCompleteSweep,
+        "forced", current_gc_data_.reason == BlinkGC::GCReason::kForcedGC);
     Heap().CompleteSweep();
     if (!was_in_atomic_pause)
       LeaveAtomicPause();
@@ -1133,6 +1142,19 @@ void UpdateTraceCounters(const ThreadHeapStatsCollector& stats_collector) {
 void UpdateHistograms(const ThreadHeapStatsCollector::Event& event) {
   UMA_HISTOGRAM_ENUMERATION("BlinkGC.GCReason", event.reason);
 
+  // Blink GC cycle time.
+  const WTF::TimeDelta cycle_duration =
+      event.scope_data
+          [ThreadHeapStatsCollector::kIncrementalMarkingStartMarking] +
+      event.scope_data[ThreadHeapStatsCollector::kIncrementalMarkingStep] +
+      event.scope_data[ThreadHeapStatsCollector::kAtomicPhase] +
+      event.scope_data[ThreadHeapStatsCollector::kCompleteSweep] +
+      event.scope_data[ThreadHeapStatsCollector::kLazySweepInIdle] +
+      event.scope_data[ThreadHeapStatsCollector::kLazySweepOnAllocation];
+  UMA_HISTOGRAM_TIMES("BlinkGC.TimeForGCCycle", cycle_duration);
+
+  UMA_HISTOGRAM_TIMES("BlinkGC.TimeForNestedInV8", event.gc_nested_in_v8_);
+
   // TODO(mlippautz): Update name of this histogram.
   UMA_HISTOGRAM_TIMES(
       "BlinkGC.CollectGarbage",
@@ -1166,6 +1188,35 @@ void UpdateHistograms(const ThreadHeapStatsCollector::Event& event) {
   UMA_HISTOGRAM_TIMES(
       "BlinkGC.TimeForGlobalWeakProcessing",
       event.scope_data[ThreadHeapStatsCollector::kMarkWeakProcessing]);
+
+  constexpr base::TimeDelta kSlowIncrementalMarkingFinalizeTheshold =
+      base::TimeDelta::FromMilliseconds(40);
+  if (event.scope_data[ThreadHeapStatsCollector::kIncrementalMarkingFinalize] >
+      kSlowIncrementalMarkingFinalizeTheshold) {
+    UMA_HISTOGRAM_TIMES(
+        "BlinkGC.SlowIncrementalMarkingFinalize.IncrementalMarkingFinalize",
+        event
+            .scope_data[ThreadHeapStatsCollector::kIncrementalMarkingFinalize]);
+    UMA_HISTOGRAM_TIMES(
+        "BlinkGC.SlowIncrementalMarkingFinalize.AtomicPhaseMarking",
+        event.scope_data[ThreadHeapStatsCollector::kAtomicPhaseMarking]);
+    UMA_HISTOGRAM_TIMES(
+        "BlinkGC.SlowIncrementalMarkingFinalize.VisitCrossThreadPersistents",
+        event.scope_data
+            [ThreadHeapStatsCollector::kVisitCrossThreadPersistents]);
+    UMA_HISTOGRAM_TIMES(
+        "BlinkGC.SlowIncrementalMarkingFinalize.VisitDOMWrappers",
+        event.scope_data[ThreadHeapStatsCollector::kVisitDOMWrappers]);
+    UMA_HISTOGRAM_TIMES(
+        "BlinkGC.SlowIncrementalMarkingFinalize.MarkWeakProcessing",
+        event.scope_data[ThreadHeapStatsCollector::kMarkWeakProcessing]);
+    UMA_HISTOGRAM_TIMES(
+        "BlinkGC.SlowIncrementalMarkingFinalize.InvokePreFinalizers",
+        event.scope_data[ThreadHeapStatsCollector::kInvokePreFinalizers]);
+    UMA_HISTOGRAM_TIMES(
+        "BlinkGC.SlowIncrementalMarkingFinalize.EagerSweep",
+        event.scope_data[ThreadHeapStatsCollector::kEagerSweep]);
+  }
 
   DEFINE_STATIC_LOCAL(CustomCountHistogram, object_size_before_gc_histogram,
                       ("BlinkGC.ObjectSizeBeforeGC", 1, 4 * 1024 * 1024, 50));
@@ -1221,7 +1272,8 @@ void UpdateHistograms(const ThreadHeapStatsCollector::Event& event) {
     // Only update the counter for the maximum value.
     DEFINE_STATIC_LOCAL(EnumerationHistogram, commited_size_histogram,
                         ("BlinkGC.CommittedSize", kSupportedMaxSizeInMB));
-    commited_size_histogram.Count(size_in_mb);
+    commited_size_histogram.Count(
+        base::saturated_cast<base::Histogram::Sample>(size_in_mb));
     max_committed_size_in_mb = size_in_mb;
   }
 }
@@ -1445,12 +1497,22 @@ void ThreadState::IncrementalMarkingStep() {
           << "IncrementalMarking: Step "
           << "Reason: " << GcReasonString(current_gc_data_.reason);
   AtomicPauseScope atomic_pause_scope(this);
-  bool complete = MarkPhaseAdvanceMarking(
+  const bool complete = MarkPhaseAdvanceMarking(
       CurrentTimeTicks() + next_incremental_marking_step_duration_);
-  if (complete && !IsUnifiedGCMarkingInProgress())
-    ScheduleIncrementalMarkingFinalize();
-  else
+  if (complete) {
+    if (IsUnifiedGCMarkingInProgress()) {
+      // If there are no more objects to mark for unified garbage collections
+      // just bail out of helping incrementally using tasks. V8 will drive
+      // further marking if new objects are discovered. Otherwise, just process
+      // the rest in the atomic pause.
+      DCHECK(IsUnifiedGCMarkingInProgress());
+      SetGCState(kIncrementalMarkingStepPaused);
+    } else {
+      ScheduleIncrementalMarkingFinalize();
+    }
+  } else {
     ScheduleIncrementalMarkingStep();
+  }
   DCHECK(IsMarkingInProgress());
 }
 
@@ -1603,7 +1665,8 @@ void ThreadState::RunAtomicPause(BlinkGC::StackState stack_state,
                                  BlinkGC::GCReason reason) {
   {
     ThreadHeapStatsCollector::DevToolsScope stats1(
-        Heap().stats_collector(), ThreadHeapStatsCollector::kAtomicPhase);
+        Heap().stats_collector(), ThreadHeapStatsCollector::kAtomicPhase,
+        "forced", reason == BlinkGC::GCReason::kForcedGC);
     {
       AtomicPauseScope atomic_pause_scope(this);
       ThreadHeapStatsCollector::EnabledScope stats2(
@@ -1762,13 +1825,13 @@ void ThreadState::MarkPhaseEpilogue(BlinkGC::MarkingType marking_type) {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, total_object_space_histogram,
       ("BlinkGC.TotalObjectSpace", 0, 4 * 1024 * 1024, 50));
-  total_object_space_histogram.Count(ProcessHeap::TotalAllocatedObjectSize() /
-                                     1024);
+  total_object_space_histogram.Count(
+      CappedSizeInKB(ProcessHeap::TotalAllocatedObjectSize()));
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, total_allocated_space_histogram,
       ("BlinkGC.TotalAllocatedSpace", 0, 4 * 1024 * 1024, 50));
-  total_allocated_space_histogram.Count(ProcessHeap::TotalAllocatedSpace() /
-                                        1024);
+  total_allocated_space_histogram.Count(
+      CappedSizeInKB(ProcessHeap::TotalAllocatedSpace()));
 }
 
 void ThreadState::VerifyMarking(BlinkGC::MarkingType marking_type) {

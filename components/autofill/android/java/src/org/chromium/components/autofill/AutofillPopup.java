@@ -24,9 +24,9 @@ import java.util.List;
 /**
  * The Autofill suggestion popup that lists relevant suggestions.
  */
-public class AutofillPopup extends DropdownPopupWindow implements AdapterView.OnItemClickListener,
-        AdapterView.OnItemLongClickListener, PopupWindow.OnDismissListener {
-
+public class AutofillPopup extends DropdownPopupWindow
+        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener,
+                   PopupWindow.OnDismissListener, AutofillDropdownFooter.Observer {
     /**
      * We post a delayed runnable to clear accessibility focus from the autofill popup's list view
      * when we receive a {@code TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED} event because we receive a
@@ -75,15 +75,25 @@ public class AutofillPopup extends DropdownPopupWindow implements AdapterView.On
     public void filterAndShow(AutofillSuggestion[] suggestions, boolean isRtl, boolean isRefresh) {
         mSuggestions = new ArrayList<AutofillSuggestion>(Arrays.asList(suggestions));
         // Remove the AutofillSuggestions with IDs that are not supported by Android
-        ArrayList<DropdownItem> cleanedData = new ArrayList<DropdownItem>();
+        List<DropdownItem> cleanedData = new ArrayList<>();
+        List<DropdownItem> footerRows = new ArrayList<>();
         HashSet<Integer> separators = new HashSet<Integer>();
         for (int i = 0; i < suggestions.length; i++) {
             int itemId = suggestions[i].getSuggestionId();
             if (itemId == PopupItemId.ITEM_ID_SEPARATOR) {
                 separators.add(cleanedData.size());
+            } else if (isFooter(itemId, isRefresh)) {
+                footerRows.add(suggestions[i]);
             } else {
                 cleanedData.add(suggestions[i]);
             }
+        }
+
+        // TODO(crbug.com/896349): Ideally, we would set the footer each time, as this guard assumes
+        // the footer is unchanged between calls to filterAndShow. However, the JellyBean popup
+        // implementation will not draw footers added after the initial call to show().
+        if (!footerRows.isEmpty() && !isShowing()) {
+            setFooterView(new AutofillDropdownFooter(mContext, footerRows, this));
         }
 
         setAdapter(new AutofillDropdownAdapter(mContext, cleanedData, separators, isRefresh));
@@ -128,5 +138,47 @@ public class AutofillPopup extends DropdownPopupWindow implements AdapterView.On
     @Override
     public void onDismiss() {
         mAutofillDelegate.dismissed();
+    }
+
+    @Override
+    public void onFooterSelection(DropdownItem item) {
+        // TODO(crbug.com/896349): Finding the suggestion index by its frontend id is a workaround
+        // for the fact that footer items are not redrawn on each call to filterAndShow, and so
+        // |item| will be identical to, but not equal to, an element in |mSuggestions|. Once this
+        // workaround is no longer needed, this should be changed to simply use
+        // mSuggestions.indexOf(item).
+        int index = -1;
+
+        for (int i = 0; i < mSuggestions.size(); i++) {
+            // Cast from DropdownItem to AutofillSuggestion is safe because filterAndShow creates
+            // the AutofillDropdownFooter which invokes this, and passes an AutofillSuggestion to
+            // the constructor.
+            if ((mSuggestions.get(i).getSuggestionId()
+                        == ((AutofillSuggestion) item).getSuggestionId())) {
+                index = i;
+                break;
+            }
+        }
+
+        assert index > -1;
+        mAutofillDelegate.suggestionSelected(index);
+    }
+
+    private boolean isFooter(int row, boolean isRefresh) {
+        // Footer items are only handled as a special case in the refreshed UI.
+        if (!isRefresh) {
+            return false;
+        }
+
+        switch (row) {
+            case PopupItemId.ITEM_ID_CLEAR_FORM:
+            case PopupItemId.ITEM_ID_AUTOFILL_OPTIONS:
+            case PopupItemId.ITEM_ID_SCAN_CREDIT_CARD:
+            case PopupItemId.ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
+            case PopupItemId.ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
+                return true;
+            default:
+                return false;
+        }
     }
 }

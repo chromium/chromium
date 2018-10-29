@@ -152,7 +152,6 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
   SkColor color = SK_ColorTRANSPARENT;
 
   struct Frame {
-    Frame() = default;
     Frame(PaintOpBuffer::CompositeIterator iter,
           const SkMatrix& original_ctm,
           int save_count)
@@ -214,6 +213,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
                           &is_transparent, &color);
         break;
       }
+      case PaintOpType::DrawSkottie:
       case PaintOpType::DrawTextBlob:
       // Anything that has to do a save layer is probably not solid. As it will
       // likely need more than one draw op.

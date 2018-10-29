@@ -38,7 +38,7 @@ const unsigned kVibrationDurationMsMax = 10000;
 blink::VibrationController::VibrationPattern sanitizeVibrationPatternInternal(
     const blink::VibrationController::VibrationPattern& pattern) {
   blink::VibrationController::VibrationPattern sanitized = pattern;
-  size_t length = sanitized.size();
+  wtf_size_t length = sanitized.size();
 
   // If the pattern is too long then truncate it.
   if (length > kVibrationPatternLengthMax) {
@@ -47,7 +47,7 @@ blink::VibrationController::VibrationPattern sanitizeVibrationPatternInternal(
   }
 
   // If any pattern entry is too long then truncate it.
-  for (size_t i = 0; i < length; ++i) {
+  for (wtf_size_t i = 0; i < length; ++i) {
     if (sanitized[i] > kVibrationDurationMsMax)
       sanitized[i] = kVibrationDurationMsMax;
   }

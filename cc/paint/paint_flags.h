@@ -62,12 +62,6 @@ class CC_PAINT_EXPORT PaintFlags {
   ALWAYS_INLINE void setAntiAlias(bool aa) {
     SetInternalFlag(aa, SkPaint::kAntiAlias_Flag);
   }
-  ALWAYS_INLINE bool isVerticalText() const {
-    return !!(bitfields_.flags_ & SkPaint::kVerticalText_Flag);
-  }
-  ALWAYS_INLINE void setVerticalText(bool vertical) {
-    SetInternalFlag(vertical, SkPaint::kVerticalText_Flag);
-  }
   ALWAYS_INLINE bool isSubpixelText() const {
     return !!(bitfields_.flags_ & SkPaint::kSubpixelText_Flag);
   }

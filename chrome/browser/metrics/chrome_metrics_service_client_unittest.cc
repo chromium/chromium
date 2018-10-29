@@ -74,11 +74,11 @@ TEST(ChromeMetricsServiceClientTest, IsWebstoreExtension) {
       extensions::ExtensionRegistry::Get(test_profile);
   ASSERT_TRUE(registry);
 
-  scoped_refptr<extensions::Extension> extension1 =
+  scoped_refptr<const extensions::Extension> extension1 =
       extensions::ExtensionBuilder("e1").SetID(test_extension_id1).Build();
   registry->AddEnabled(extension1);
 
-  scoped_refptr<extensions::Extension> extension2 =
+  scoped_refptr<const extensions::Extension> extension2 =
       extensions::ExtensionBuilder("e2")
           .SetID(test_extension_id2)
           .AddFlags(extensions::Extension::FROM_WEBSTORE)

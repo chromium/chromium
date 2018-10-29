@@ -29,7 +29,7 @@ class String;
 //
 // See base/strings/string_piece.h for more details.
 class WTF_EXPORT StringView {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // Null string.

@@ -166,8 +166,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataLocalStorageHelperTest,
       callback.result();
 
   ASSERT_EQ(2u, result.size());
-  std::list<BrowsingDataLocalStorageHelper::LocalStorageInfo>::iterator info =
-      result.begin();
+  auto info = result.begin();
   EXPECT_EQ(origin1, info->origin_url);
   info++;
   EXPECT_EQ(origin2, info->origin_url);

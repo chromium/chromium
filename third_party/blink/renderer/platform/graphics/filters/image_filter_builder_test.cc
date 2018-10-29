@@ -69,7 +69,7 @@ class ImageFilterBuilderTest : public Test {
     reference_filter->SetLastEffect(merge_effect);
 
     // Get PaintFilter resulting tree
-    sk_sp<PaintFilter> filter = PaintFilterBuilder::Build(
+    sk_sp<PaintFilter> filter = paint_filter_builder::Build(
         reference_filter->LastEffect(), kInterpolationSpaceSRGB);
 
     // Let's check that the resulting tree looks like this :

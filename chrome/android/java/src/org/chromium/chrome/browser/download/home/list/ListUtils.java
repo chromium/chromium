@@ -8,7 +8,8 @@ import android.support.annotation.IntDef;
 import android.support.annotation.StringRes;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.download.home.list.ListItem.DateListItem;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
+import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.list.ListItem.OfflineItemListItem;
 import org.chromium.chrome.browser.download.home.list.ListItem.ViewListItem;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -26,7 +27,7 @@ public class ListUtils {
     /** The potential types of list items that could be displayed. */
     @IntDef({ViewType.DATE, ViewType.IN_PROGRESS, ViewType.GENERIC, ViewType.VIDEO, ViewType.IMAGE,
             ViewType.CUSTOM_VIEW, ViewType.PREFETCH, ViewType.SECTION_HEADER,
-            ViewType.SEPARATOR_DATE, ViewType.SEPARATOR_SECTION, ViewType.IN_PROGRESS_VIDEO})
+            ViewType.IN_PROGRESS_VIDEO, ViewType.IN_PROGRESS_IMAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ViewType {
         int DATE = 0;
@@ -37,10 +38,20 @@ public class ListUtils {
         int CUSTOM_VIEW = 5;
         int PREFETCH = 6;
         int SECTION_HEADER = 7;
-        int SEPARATOR_DATE = 8;
-        int SEPARATOR_SECTION = 9;
-        int IN_PROGRESS_VIDEO = 10;
+        int IN_PROGRESS_VIDEO = 8;
+        int IN_PROGRESS_IMAGE = 9;
     }
+
+    /**
+     * A visual ordering of the {@link Filters#FilterType}s to determine what order the sections
+     * should appear in the UI.
+     *
+     * Note that this list should have an entry for each {@link Filters#FilterType} that can be
+     * shown visually and asserts will fire if it does not.
+     */
+    private static final int[] FILTER_TYPE_ORDER_LIST =
+            new int[] {FilterType.NONE, FilterType.VIDEOS, FilterType.MUSIC, FilterType.IMAGES,
+                    FilterType.SITES, FilterType.OTHER, FilterType.DOCUMENT, FilterType.PREFETCHED};
 
     /** Converts a given list of {@link ListItem}s to a list of {@link OfflineItem}s. */
     public static List<OfflineItem> toOfflineItems(Collection<ListItem> items) {
@@ -56,44 +67,41 @@ public class ListUtils {
     /**
      * Analyzes a {@link ListItem} and finds the most appropriate {@link ViewType} based on the
      * current state.
-     * @param item The {@link ListItem} to determine the {@link ViewType} for.
-     * @return     The type of {@link ViewType} to use for a particular {@link ListItem}.
-     * @see        ViewType
+     * @param item   The {@link ListItem} to determine the {@link ViewType} for.
+     * @param config The {@link DownloadManagerUiConfig}.
+     * @return       The type of {@link ViewType} to use for a particular {@link ListItem}.
+     * @see          ViewType
      */
-    public static @ViewType int getViewTypeForItem(ListItem item) {
+    public static @ViewType int getViewTypeForItem(ListItem item, DownloadManagerUiConfig config) {
         if (item instanceof ViewListItem) return ViewType.CUSTOM_VIEW;
         if (item instanceof ListItem.SectionHeaderListItem) return ViewType.SECTION_HEADER;
-        if (item instanceof ListItem.SeparatorViewListItem) {
-            ListItem.SeparatorViewListItem separator = (ListItem.SeparatorViewListItem) item;
-            return separator.isDateDivider() ? ViewType.SEPARATOR_DATE : ViewType.SEPARATOR_SECTION;
-        }
 
-        if (item instanceof DateListItem) {
-            if (item instanceof OfflineItemListItem) {
-                OfflineItemListItem offlineItem = (OfflineItemListItem) item;
+        if (item instanceof OfflineItemListItem) {
+            OfflineItemListItem offlineItem = (OfflineItemListItem) item;
 
-                if (offlineItem.item.isSuggested) return ViewType.PREFETCH;
+            boolean inProgress = offlineItem.item.state == OfflineItemState.IN_PROGRESS
+                    || offlineItem.item.state == OfflineItemState.PAUSED
+                    || offlineItem.item.state == OfflineItemState.INTERRUPTED
+                    || offlineItem.item.state == OfflineItemState.PENDING
+                    || offlineItem.item.state == OfflineItemState.FAILED;
 
-                boolean inProgress = offlineItem.item.state == OfflineItemState.IN_PROGRESS
-                        || offlineItem.item.state == OfflineItemState.PAUSED
-                        || offlineItem.item.state == OfflineItemState.INTERRUPTED
-                        || offlineItem.item.state == OfflineItemState.PENDING
-                        || offlineItem.item.state == OfflineItemState.FAILED;
+            if (config.useGenericViewTypes) {
+                return inProgress ? ViewType.IN_PROGRESS : ViewType.GENERIC;
+            }
 
-                switch (offlineItem.item.filter) {
-                    case OfflineItemFilter.FILTER_VIDEO:
-                        return inProgress ? ViewType.IN_PROGRESS_VIDEO : ViewType.VIDEO;
-                    case OfflineItemFilter.FILTER_IMAGE:
-                        return inProgress ? ViewType.IN_PROGRESS : ViewType.IMAGE;
-                    // case OfflineItemFilter.FILTER_PAGE:
-                    // case OfflineItemFilter.FILTER_AUDIO:
-                    // case OfflineItemFilter.FILTER_OTHER:
-                    // case OfflineItemFilter.FILTER_DOCUMENT:
-                    default:
-                        return inProgress ? ViewType.IN_PROGRESS : ViewType.GENERIC;
-                }
-            } else {
-                return ViewType.DATE;
+            if (offlineItem.item.isSuggested) return ViewType.PREFETCH;
+
+            switch (offlineItem.item.filter) {
+                case OfflineItemFilter.FILTER_VIDEO:
+                    return inProgress ? ViewType.IN_PROGRESS_VIDEO : ViewType.VIDEO;
+                case OfflineItemFilter.FILTER_IMAGE:
+                    return inProgress ? ViewType.IN_PROGRESS_IMAGE : ViewType.IMAGE;
+                // case OfflineItemFilter.FILTER_PAGE:
+                // case OfflineItemFilter.FILTER_AUDIO:
+                // case OfflineItemFilter.FILTER_OTHER:
+                // case OfflineItemFilter.FILTER_DOCUMENT:
+                default:
+                    return inProgress ? ViewType.IN_PROGRESS : ViewType.GENERIC;
             }
         }
 
@@ -128,15 +136,44 @@ public class ListUtils {
      * size determines how many columns this {@link ListItem}'s {@link View} will take up in the
      * overall list.
      * @param item      The {@link ListItem} to determine the span size for.
+     * @param config    The {@link DownloadManagerUiConfig}.
      * @param spanCount The maximum span amount of columns {@code item} can take up.
      * @return          The number of columns {@code item} should take.
      * @see             GridLayoutManager.SpanSizeLookup
      */
-    public static int getSpanSize(ListItem item, int spanCount) {
+    public static int getSpanSize(ListItem item, DownloadManagerUiConfig config, int spanCount) {
         if (item instanceof OfflineItemListItem && ((OfflineItemListItem) item).spanFullWidth) {
             return spanCount;
         }
 
-        return getViewTypeForItem(item) == ViewType.IMAGE ? 1 : spanCount;
+        switch (getViewTypeForItem(item, config)) {
+            case ViewType.IMAGE: // Intentional fallthrough.
+            case ViewType.IN_PROGRESS_IMAGE:
+                return 1;
+            default:
+                return spanCount;
+        }
+    }
+
+    /**
+     * Helper method to determine which item type section to show first in the list.
+     * @return -1 if {@code a} should be shown before {@code b}.
+     *          0 if {@code a} == {@code b}.
+     *          1 if {@code a} should be shown after {@code b}.
+     */
+    public static int compareFilterTypesTo(@FilterType int a, @FilterType int b) {
+        int aPriority = getVisualPriorityForFilter(a);
+        int bPriority = getVisualPriorityForFilter(b);
+        return (aPriority < bPriority) ? -1 : ((aPriority == bPriority) ? 0 : 1);
+    }
+
+    private static int getVisualPriorityForFilter(@FilterType int type) {
+        for (int i = 0; i < FILTER_TYPE_ORDER_LIST.length; i++) {
+            if (FILTER_TYPE_ORDER_LIST[i] == type) return i;
+        }
+
+        assert false
+            : "Unexpected Filters.FilterType (did you forget to update FILTER_TYPE_ORDER_LIST?).";
+        return 0;
     }
 }

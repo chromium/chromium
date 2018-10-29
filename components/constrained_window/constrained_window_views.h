@@ -51,12 +51,6 @@ content::WebContents* GetTopLevelWebContents(
 // notify via WillClose() when it is being destroyed.
 void ShowModalDialog(gfx::NativeWindow dialog,
                      content::WebContents* web_contents);
-#if defined(OS_MACOSX)
-// Temporary shim for Polychrome. See bottom of first comment in
-// https://crbug.com/804950 for details.
-void ShowModalDialogCocoa(gfx::NativeWindow dialog,
-                          content::WebContents* web_contents);
-#endif
 
 // Calls CreateWebModalDialogViews, shows the dialog, and returns its widget.
 views::Widget* ShowWebModalDialogViews(
@@ -84,6 +78,12 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
 // appropriately if |parent| is a valid browser window. Currently, |parent| may
 // be null for MODAL_TYPE_WINDOW, but that's a bug and callers shouldn't rely on
 // that working. See http://crbug.com/657293.
+// For dialogs that may appear without direct user interaction (i.e., that may
+// appear while a user is busily accomplishing some other task in the browser),
+// consider providing an override of GetDefaultDialogButton on |dialog| to
+// suppress the normal behavior of choosing a focused-by-default button. This is
+// especially important if the action of the default button has consequences on
+// the user's task at hand.
 views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
                                              gfx::NativeWindow parent);
 

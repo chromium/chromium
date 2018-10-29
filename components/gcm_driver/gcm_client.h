@@ -31,6 +31,7 @@ class IPEndPoint;
 }
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }
 
@@ -248,6 +249,7 @@ class GCMClient {
           void(network::mojom::ProxyResolvingSocketFactoryRequest)>
           get_socket_factory_callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+      network::NetworkConnectionTracker* network_connection_tracker_,
       std::unique_ptr<Encryptor> encryptor,
       Delegate* delegate) = 0;
 

@@ -75,7 +75,7 @@ namespace ui {
 class Accelerator;
 class AcceleratorTarget;
 class KeyEvent;
-}
+}  // namespace ui
 
 namespace views {
 
@@ -176,9 +176,7 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   }
 
   // Get the reason why the focus most recently changed.
-  FocusChangeReason focus_change_reason() const {
-    return focus_change_reason_;
-  }
+  FocusChangeReason focus_change_reason() const { return focus_change_reason_; }
 
   // Clears the focused view. The window associated with the top root view gets
   // the native focus (so we still get keyboard events).
@@ -297,6 +295,13 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
     return arrow_key_traversal_enabled_;
   }
 
+  // TODO(weidongg): converts compatible usages of
+  // |arrow_key_traversal_enabled_| to this (https://crbug.com/899431).
+  // Similar to above, but only for the widget that owns this FocusManager.
+  void set_arrow_key_traversal_enabled_for_widget(bool enabled) {
+    arrow_key_traversal_enabled_for_widget_ = enabled;
+  }
+
   // Returns the next focusable view. Traversal starts at |starting_view|. If
   // |starting_view| is NULL |starting_widget| is consuled to determine which
   // Widget to start from. See
@@ -334,8 +339,12 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // ViewObserver:
   void OnViewIsDeleting(View* view) override;
 
-  // Whether arrow key traversal is enabled.
+  // Whether arrow key traversal is enabled globally.
   static bool arrow_key_traversal_enabled_;
+
+  // Whether arrow key traversal is enabled for all widgets under the top-level
+  // widget that owns the FocusManager.
+  bool arrow_key_traversal_enabled_for_widget_ = false;
 
   // The top-level Widget this FocusManager is associated with.
   Widget* widget_;

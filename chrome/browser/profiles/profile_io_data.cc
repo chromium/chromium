@@ -64,11 +64,11 @@
 #include "components/policy/core/common/cloud/policy_header_service.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/previews/content/previews_decider_impl.h"
 #include "components/signin/core/browser/profile_management_switches.h"
 #include "components/signin/core/browser/signin_pref_names.h"
 #include "components/sync/base/pref_names.h"
 #include "components/url_formatter/url_fixer.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_network_transaction_factory.h"
 #include "content/public/browser/network_service_instance.h"
@@ -130,12 +130,10 @@
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/fileapi/external_file_protocol_handler.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
-#include "chrome/browser/chromeos/net/cert_verify_proc_chromeos.h"
 #include "chrome/browser/chromeos/net/client_cert_filter_chromeos.h"
 #include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
-#include "chrome/browser/chromeos/policy/policy_cert_verifier.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/net/nss_context.h"
@@ -148,6 +146,8 @@
 #include "components/user_manager/user_manager.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
+#include "services/network/cert_verifier_with_trust_anchors.h"
+#include "services/network/cert_verify_proc_chromeos.h"
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(USE_NSS_CERTS)
@@ -253,9 +253,9 @@ void DidGetTPMInfoForUserOnUIThread(
   if (token_info.has_value() && token_info->slot != -1) {
     DVLOG(1) << "Got TPM slot for " << username_hash << ": "
              << token_info->slot;
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            base::Bind(&crypto::InitializeTPMForChromeOSUser,
-                                       username_hash, token_info->slot));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                             base::Bind(&crypto::InitializeTPMForChromeOSUser,
+                                        username_hash, token_info->slot));
   } else {
     NOTREACHED() << "TPMTokenInfoGetter reported invalid token.";
   }
@@ -286,8 +286,8 @@ void StartTPMSlotInitializationOnIOThread(const AccountId& account_id,
                                           const std::string& username_hash) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&GetTPMInfoForUserOnUIThread, account_id, username_hash));
 }
 
@@ -405,8 +405,8 @@ void ProfileIOData::InitializeOnUIThread(Profile* profile) {
     if (user && !user->username_hash().empty()) {
       params->username_hash = user->username_hash();
       DCHECK(!params->username_hash.empty());
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::Bind(&StartNSSInitOnIOThread, user->GetAccountId(),
                      user->username_hash(), profile->GetPath()));
 
@@ -433,16 +433,16 @@ void ProfileIOData::InitializeOnUIThread(Profile* profile) {
 
   force_google_safesearch_.Init(prefs::kForceGoogleSafeSearch, pref_service);
   force_google_safesearch_.MoveToThread(
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
   force_youtube_restrict_.Init(prefs::kForceYouTubeRestrict, pref_service);
   force_youtube_restrict_.MoveToThread(
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
   allowed_domains_for_apps_.Init(prefs::kAllowedDomainsForApps, pref_service);
   allowed_domains_for_apps_.MoveToThread(
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO});
 
   // These members are used only for sign in, which is not enabled
   // in incognito mode.  So no need to initialize them.
@@ -631,14 +631,8 @@ ProfileIOData::~ProfileIOData() {
   if (domain_reliability_monitor_unowned_)
     domain_reliability_monitor_unowned_->Shutdown();
 
-  // TODO(ajwong): These AssertNoURLRequests() calls are unnecessary since they
-  // are already done in the URLRequestContext destructor.
-  if (extensions_request_context_)
-    extensions_request_context_->AssertNoURLRequests();
-
   current_context = 0;
-  for (URLRequestContextMap::iterator it =
-           isolated_media_request_context_map_.begin();
+  for (auto it = isolated_media_request_context_map_.begin();
        it != isolated_media_request_context_map_.end(); ++it) {
     if (current_context < kMaxCachedContexts) {
       CHECK_EQ(media_context_cache[current_context], it->second);
@@ -704,9 +698,7 @@ bool ProfileIOData::IsHandledURL(const GURL& url) {
 void ProfileIOData::InstallProtocolHandlers(
     net::URLRequestJobFactoryImpl* job_factory,
     content::ProtocolHandlerMap* protocol_handlers) {
-  for (content::ProtocolHandlerMap::iterator it =
-           protocol_handlers->begin();
-       it != protocol_handlers->end();
+  for (auto it = protocol_handlers->begin(); it != protocol_handlers->end();
        ++it) {
     bool set_protocol =
         job_factory->SetProtocolHandler(it->first, std::move(it->second));
@@ -746,11 +738,6 @@ net::URLRequestContext* ProfileIOData::GetMediaRequestContext() const {
   net::URLRequestContext* context = AcquireMediaRequestContext();
   DCHECK(context);
   return context;
-}
-
-net::URLRequestContext* ProfileIOData::GetExtensionsRequestContext() const {
-  DCHECK(initialized_);
-  return extensions_request_context_.get();
 }
 
 net::URLRequestContext* ProfileIOData::GetIsolatedAppRequestContext(
@@ -880,7 +867,7 @@ void ProfileIOData::InitializeMetricsEnabledStateOnUIThread() {
   enable_metrics_.Init(metrics::prefs::kMetricsReportingEnabled,
                        g_browser_process->local_state());
   enable_metrics_.MoveToThread(
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO));
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
 }
 
 bool ProfileIOData::GetMetricsEnabledStateOnIOThread() const {
@@ -931,12 +918,6 @@ void ProfileIOData::set_data_reduction_proxy_io_data(
   data_reduction_proxy_io_data_ = std::move(data_reduction_proxy_io_data);
 }
 
-void ProfileIOData::set_previews_decider_impl(
-    std::unique_ptr<previews::PreviewsDeciderImpl> previews_decider_impl)
-    const {
-  previews_decider_impl_ = std::move(previews_decider_impl);
-}
-
 ProfileIOData::ResourceContext::ResourceContext(ProfileIOData* io_data)
     : io_data_(io_data),
       request_context_(NULL) {
@@ -965,10 +946,6 @@ void ProfileIOData::Init(
   IOThread::Globals* const io_thread_globals = io_thread->globals();
 
   account_consistency_ = profile_params_->account_consistency;
-
-  // Create extension request context.  Only used for cookies.
-  extensions_request_context_.reset(new net::URLRequestContext());
-  extensions_request_context_->set_name("extensions");
 
   // Take ownership over these parameters.
   cookie_settings_ = profile_params_->cookie_settings;
@@ -1054,7 +1031,7 @@ void ProfileIOData::Init(
       // The private slot won't be ready by this point. It shouldn't be
       // necessary for cert trust purposes anyway.
       scoped_refptr<net::CertVerifyProc> verify_proc(
-          new chromeos::CertVerifyProcChromeOS(std::move(public_slot)));
+          new network::CertVerifyProcChromeOS(std::move(public_slot)));
       if (profile_params_->policy_cert_verifier) {
         profile_params_->policy_cert_verifier->InitializeOnIOThread(
             verify_proc);
@@ -1272,8 +1249,8 @@ void ProfileIOData::ShutdownOnUIThread(
 
   if (!context_getters->empty()) {
     if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(&NotifyContextGettersOfShutdownOnIO,
                          std::move(context_getters)));
     }

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/download/download_resource_throttle.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/download/download_request_limiter.h"
-#include "chrome/browser/download/download_resource_throttle.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/resource_throttle.h"
@@ -44,8 +46,8 @@ class MockResourceThrottleDelegate
 
 // Posts |quit_closure| to UI thread.
 ACTION_P(QuitLoop, quit_closure) {
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   quit_closure);
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           quit_closure);
 }
 
 class DownloadResourceThrottleTest : public ChromeRenderViewHostTestHarness {
@@ -88,8 +90,8 @@ class DownloadResourceThrottleTest : public ChromeRenderViewHostTestHarness {
   }
 
   void StartThrottle() {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &DownloadResourceThrottleTest::StartThrottleOnIOThread,
             base::Unretained(this),

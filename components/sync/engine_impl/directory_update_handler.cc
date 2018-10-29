@@ -87,7 +87,9 @@ SyncerError DirectoryUpdateHandler::ProcessGetUpdatesResponse(
     CreateTypeRoot(&trans);
   }
 
-  UpdateSyncEntities(&trans, applicable_updates, status);
+  UpdateSyncEntities(&trans, applicable_updates,
+                     /*is_initial_sync=*/dir_->HasEmptyDownloadProgress(type_),
+                     status);
 
   if (IsValidProgressMarker(progress_marker)) {
     ExpireEntriesIfNeeded(&trans, progress_marker);
@@ -242,11 +244,16 @@ bool DirectoryUpdateHandler::IsApplyUpdatesRequired() {
 void DirectoryUpdateHandler::UpdateSyncEntities(
     syncable::ModelNeutralWriteTransaction* trans,
     const SyncEntityList& applicable_updates,
+    bool is_initial_sync,
     StatusController* status) {
   UpdateCounters* counters = debug_info_emitter_->GetMutableUpdateCounters();
-  counters->num_updates_received += applicable_updates.size();
-  ProcessDownloadedUpdates(dir_, trans, type_, applicable_updates, status,
-                           counters);
+  if (is_initial_sync) {
+    counters->num_initial_updates_received += applicable_updates.size();
+  } else {
+    counters->num_non_initial_updates_received += applicable_updates.size();
+  }
+  ProcessDownloadedUpdates(dir_, trans, type_, applicable_updates,
+                           is_initial_sync, status, counters);
 }
 
 bool DirectoryUpdateHandler::IsValidProgressMarker(

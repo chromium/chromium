@@ -53,12 +53,11 @@ void VideoDecodeStatsRecorder::UpdateRecord(
   // Dropped can never exceed decoded.
   DCHECK_LE(targets->frames_dropped, targets->frames_decoded);
   // Power efficient frames can never exceed decoded frames.
-  DCHECK_LE(targets->frames_decoded_power_efficient, targets->frames_decoded);
+  DCHECK_LE(targets->frames_power_efficient, targets->frames_decoded);
   // Should never go backwards.
   DCHECK_GE(targets->frames_decoded, targets_.frames_decoded);
   DCHECK_GE(targets->frames_dropped, targets_.frames_dropped);
-  DCHECK_GE(targets->frames_decoded_power_efficient,
-            targets_.frames_decoded_power_efficient);
+  DCHECK_GE(targets->frames_power_efficient, targets_.frames_power_efficient);
 
   targets_ = *targets;
 }
@@ -74,8 +73,7 @@ void VideoDecodeStatsRecorder::FinalizeRecord() {
            << " fps:" << features_.frames_per_sec
            << " decoded:" << targets_.frames_decoded
            << " dropped:" << targets_.frames_dropped
-           << " power efficient decoded:"
-           << targets_.frames_decoded_power_efficient;
+           << " power efficient decoded:" << targets_.frames_power_efficient;
 
   // Final argument is an empty save-done-callback. No action to take if save
   // fails (DB already records UMAs on failure). Callback mainly used by tests.

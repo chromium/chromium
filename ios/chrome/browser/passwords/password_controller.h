@@ -9,7 +9,7 @@
 #include <memory>
 
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
-#import "components/password_manager/ios/password_controller_helper.h"
+#import "components/password_manager/ios/password_form_helper.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_manager_client.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_manager_driver.h"
 #import "ios/web/public/web_state/web_state_observer_bridge.h"
@@ -42,7 +42,7 @@ class PasswordManagerClient;
 @interface PasswordController : NSObject<CRWWebStateObserver,
                                          PasswordManagerClientDelegate,
                                          PasswordManagerDriverDelegate,
-                                         PasswordControllerHelperDelegate>
+                                         PasswordFormHelperDelegate>
 
 // An object that can provide suggestions from this PasswordController.
 @property(nonatomic, readonly) id<FormSuggestionProvider> suggestionProvider;

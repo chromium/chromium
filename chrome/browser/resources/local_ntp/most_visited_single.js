@@ -103,11 +103,44 @@ var TileVisualType = {
   THUMBNAIL_FAILED: 8,
 };
 
+
 /**
- * Number of tiles per row for Material Design.
+ * Timeout delay for the window.onresize event throttle. Set to 15 frame per
+ * second.
+ * @const {number}
+ */
+const RESIZE_TIMEOUT_DELAY = 66;
+
+
+/**
+ * Maximum number of tiles if custom links is enabled.
+ * @const {number}
+ */
+const MD_MAX_NUM_CUSTOM_LINK_TILES = 10;
+
+
+/**
+ * Maximum number of tiles per row for Material Design.
  * @const {number}
  */
 const MD_MAX_TILES_PER_ROW = 5;
+
+
+/**
+ * Width of a tile for Material Design. Keep in sync with
+ * most_visited_single.css.
+ * @const {number}
+ */
+const MD_TILE_WIDTH = 112;
+
+
+/**
+ * Number of tiles that will always be visible for Material Design. Calculated
+ * by dividing minimum |--content-width| (see local_ntp.css) by |MD_TILE_WIDTH|
+ * and multiplying by 2 rows.
+ * @const {number}
+ */
+const MD_NUM_TILES_ALWAYS_VISIBLE = 6;
 
 
 /**
@@ -115,6 +148,13 @@ const MD_MAX_TILES_PER_ROW = 5;
  * @type {number}
  */
 var NUM_TITLE_LINES = 1;
+
+
+/**
+ * Largest minimum font size in settings.
+ * @const {number}
+ */
+const LARGEST_MINIMUM_FONT_SIZE = 24;
 
 
 /**
@@ -397,9 +437,12 @@ var swapInNewTiles = function() {
         parent.lastChild.querySelectorAll('.' + CLASSES.MD_TITLE));
 
     if (cur.childNodes.length > MD_MAX_TILES_PER_ROW) {
-      cur.style.maxWidth =
-          'calc(var(--md-tile-width) * ' + Math.ceil(cur.childNodes.length / 2);
+      cur.style.maxWidth = 'calc(var(--md-tile-width) * ' +
+          Math.ceil(cur.childNodes.length / 2) + ')';
     }
+
+    // Prevent keyboard navigation to tiles that are not visible.
+    updateTileVisibility();
   }
 
   // getComputedStyle causes the initial style (opacity 0) to be applied, so
@@ -414,6 +457,25 @@ var swapInNewTiles = function() {
   tiles = document.createElement('div');
 };
 
+
+/**
+ * Explicitly hide tiles that are not visible in order to prevent keyboard
+ * navigation.
+ */
+function updateTileVisibility() {
+  const allTiles =
+      document.querySelectorAll('#mv-tiles .' + CLASSES.MD_TILE_CONTAINER);
+  if (allTiles.length === 0)
+    return;
+
+  // Get the current number of tiles per row. Hide any tile after the first two
+  // rows.
+  const tilesPerRow = Math.trunc(document.body.offsetWidth / MD_TILE_WIDTH);
+  for (let i = MD_NUM_TILES_ALWAYS_VISIBLE; i < allTiles.length; i++)
+    allTiles[i].style.display = (i < tilesPerRow * 2) ? 'block' : 'none';
+}
+
+
 /**
  * Truncates titles that are longer than one line and appends an ellipsis. Text
  * overflow in CSS ("text-overflow: ellipsis") requires "overflow: hidden",
@@ -425,7 +487,8 @@ function truncateTitleText(titles) {
     let el = titles[i];
     const originalTitle = el.innerText;
     let truncatedTitle = el.innerText;
-    while (el.scrollHeight > el.offsetHeight && truncatedTitle.length > 0) {
+    while (el.scrollHeight > LARGEST_MINIMUM_FONT_SIZE
+    && truncatedTitle.length > 0) {
       el.innerText = (truncatedTitle = truncatedTitle.slice(0, -1)) + '\u2026';
     }
     if (truncatedTitle.length === 0) {
@@ -433,6 +496,7 @@ function truncateTitleText(titles) {
     }
   }
 }
+
 
 /**
  * Handler for the 'show' message from the host page, called when it wants to
@@ -922,8 +986,19 @@ var init = function() {
 
   // Set the maximum number of tiles to show.
   if (isCustomLinksEnabled) {
-    maxNumTiles = 10;
+    maxNumTiles = MD_MAX_NUM_CUSTOM_LINK_TILES;
   }
+
+  // Throttle the resize event.
+  let resizeTimeout;
+  window.onresize = () => {
+    if (resizeTimeout)
+      return;
+    resizeTimeout = window.setTimeout(() => {
+      resizeTimeout = null;
+      updateTileVisibility();
+    }, RESIZE_TIMEOUT_DELAY);
+  };
 
   window.addEventListener('message', handlePostMessage);
 };

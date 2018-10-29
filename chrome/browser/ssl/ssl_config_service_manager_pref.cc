@@ -41,8 +41,7 @@ std::vector<std::string> ListValueToStringVector(const base::ListValue* value) {
   std::vector<std::string> results;
   results.reserve(value->GetSize());
   std::string s;
-  for (base::ListValue::const_iterator it = value->begin(); it != value->end();
-       ++it) {
+  for (auto it = value->begin(); it != value->end(); ++it) {
     if (!it->GetAsString(&s))
       continue;
     results.push_back(s);
@@ -58,8 +57,7 @@ std::vector<uint16_t> ParseCipherSuites(
   std::vector<uint16_t> cipher_suites;
   cipher_suites.reserve(cipher_strings.size());
 
-  for (std::vector<std::string>::const_iterator it = cipher_strings.begin();
-       it != cipher_strings.end(); ++it) {
+  for (auto it = cipher_strings.begin(); it != cipher_strings.end(); ++it) {
     uint16_t cipher_suite = 0;
     if (!net::ParseSSLCipherString(*it, &cipher_suite)) {
       LOG(ERROR) << "Ignoring unrecognized or unparsable cipher suite: " << *it;

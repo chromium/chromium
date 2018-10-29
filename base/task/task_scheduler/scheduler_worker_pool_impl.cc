@@ -159,8 +159,9 @@ SchedulerWorkerPoolImpl::SchedulerWorkerPoolImpl(
     StringPiece pool_label,
     ThreadPriority priority_hint,
     TrackedRef<TaskTracker> task_tracker,
-    DelayedTaskManager* delayed_task_manager)
-    : SchedulerWorkerPool(std::move(task_tracker), delayed_task_manager),
+    TrackedRef<Delegate> delegate)
+    : SchedulerWorkerPool(std::move(task_tracker),
+                          std::move(delegate)),
       pool_label_(pool_label.as_string()),
       priority_hint_(priority_hint),
       lock_(shared_priority_queue_.container_lock()),
@@ -272,11 +273,16 @@ SchedulerWorkerPoolImpl::~SchedulerWorkerPoolImpl() {
 
 void SchedulerWorkerPoolImpl::OnCanScheduleSequence(
     scoped_refptr<Sequence> sequence) {
+  PushSequenceToPriorityQueue(std::move(sequence));
+  WakeUpOneWorker();
+}
+
+void SchedulerWorkerPoolImpl::PushSequenceToPriorityQueue(
+    scoped_refptr<Sequence> sequence) {
+  DCHECK(sequence);
   const auto sequence_sort_key = sequence->GetSortKey();
   shared_priority_queue_.BeginTransaction()->Push(std::move(sequence),
                                                   sequence_sort_key);
-
-  WakeUpOneWorker();
 }
 
 void SchedulerWorkerPoolImpl::GetHistograms(
@@ -353,6 +359,13 @@ void SchedulerWorkerPoolImpl::JoinForTesting() {
   DCHECK(workers_ == workers_copy);
   // Release |workers_| to clear their TrackedRef against |this|.
   workers_.clear();
+}
+
+void SchedulerWorkerPoolImpl::ReEnqueueSequence(
+    scoped_refptr<Sequence> sequence) {
+  PushSequenceToPriorityQueue(std::move(sequence));
+  if (!IsBoundToCurrentThread())
+    WakeUpOneWorker();
 }
 
 size_t SchedulerWorkerPoolImpl::NumberOfWorkersForTesting() const {
@@ -543,14 +556,7 @@ void SchedulerWorkerPoolImpl::SchedulerWorkerDelegateImpl::DidRunTask() {
 
 void SchedulerWorkerPoolImpl::SchedulerWorkerDelegateImpl::ReEnqueueSequence(
     scoped_refptr<Sequence> sequence) {
-  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-
-  const SequenceSortKey sequence_sort_key = sequence->GetSortKey();
-  outer_->shared_priority_queue_.BeginTransaction()->Push(std::move(sequence),
-                                                          sequence_sort_key);
-  // This worker will soon call GetWork(). Therefore, there is no need to wake
-  // up a worker to run the sequence that was just inserted into
-  // |outer_->shared_priority_queue_|.
+  outer_->delegate_->ReEnqueueSequence(std::move(sequence));
 }
 
 TimeDelta

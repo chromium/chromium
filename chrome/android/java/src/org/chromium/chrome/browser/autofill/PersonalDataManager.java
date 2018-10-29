@@ -615,7 +615,7 @@ public class PersonalDataManager {
      * @param includeNameInLabel Whether to include the name in the profile's label.
      * @return The list of profiles to suggest to the user.
      */
-    public List<AutofillProfile> getProfilesToSuggest(boolean includeNameInLabel) {
+    public ArrayList<AutofillProfile> getProfilesToSuggest(boolean includeNameInLabel) {
         ThreadUtils.assertOnUiThread();
         return getProfilesWithLabels(
                 nativeGetProfileLabelsToSuggest(
@@ -632,7 +632,7 @@ public class PersonalDataManager {
      *
      * @return The list of billing addresses to suggest to the user.
      */
-    public List<AutofillProfile> getBillingAddressesToSuggest() {
+    public ArrayList<AutofillProfile> getBillingAddressesToSuggest() {
         ThreadUtils.assertOnUiThread();
         return getProfilesWithLabels(
                 nativeGetProfileLabelsToSuggest(
@@ -641,9 +641,9 @@ public class PersonalDataManager {
                 nativeGetProfileGUIDsToSuggest(mPersonalDataManagerAndroid));
     }
 
-    private List<AutofillProfile> getProfilesWithLabels(
+    private ArrayList<AutofillProfile> getProfilesWithLabels(
             String[] profileLabels, String[] profileGUIDs) {
-        List<AutofillProfile> profiles = new ArrayList<AutofillProfile>(profileGUIDs.length);
+        ArrayList<AutofillProfile> profiles = new ArrayList<AutofillProfile>(profileGUIDs.length);
         for (int i = 0; i < profileGUIDs.length; i++) {
             AutofillProfile profile =
                     nativeGetProfileByGUID(mPersonalDataManagerAndroid, profileGUIDs[i]);
@@ -688,14 +688,14 @@ public class PersonalDataManager {
      * will have been processed to be more relevant to the user.
      * @param includeServerCards Whether server cards should be included in the response.
      */
-    public List<CreditCard> getCreditCardsToSuggest(boolean includeServerCards) {
+    public ArrayList<CreditCard> getCreditCardsToSuggest(boolean includeServerCards) {
         ThreadUtils.assertOnUiThread();
         return getCreditCards(
                 nativeGetCreditCardGUIDsToSuggest(mPersonalDataManagerAndroid, includeServerCards));
     }
 
-    private List<CreditCard> getCreditCards(String[] creditCardGUIDs) {
-        List<CreditCard> cards = new ArrayList<CreditCard>(creditCardGUIDs.length);
+    private ArrayList<CreditCard> getCreditCards(String[] creditCardGUIDs) {
+        ArrayList<CreditCard> cards = new ArrayList<CreditCard>(creditCardGUIDs.length);
         for (int i = 0; i < creditCardGUIDs.length; i++) {
             cards.add(nativeGetCreditCardByGUID(mPersonalDataManagerAndroid, creditCardGUIDs[i]));
         }

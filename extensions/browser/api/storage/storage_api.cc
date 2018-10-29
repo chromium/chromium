@@ -12,7 +12,9 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/quota_service.h"
@@ -66,9 +68,8 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
 
 void SettingsFunction::AsyncRunWithStorage(ValueStore* storage) {
   ResponseValue response = RunWithStorage(storage);
-  BrowserThread::PostTask(
-      BrowserThread::UI,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&SettingsFunction::Respond, this, base::Passed(&response)));
 }
 
@@ -105,8 +106,7 @@ void AddAllStringValues(const base::ListValue& from,
                         std::vector<std::string>* to) {
   DCHECK(to->empty());
   std::string as_string;
-  for (base::ListValue::const_iterator it = from.begin();
-       it != from.end(); ++it) {
+  for (auto it = from.begin(); it != from.end(); ++it) {
     if (it->GetAsString(&as_string)) {
       to->push_back(as_string);
     }

@@ -12,11 +12,11 @@ GEN_INCLUDE(['../../testing/snippets.js']);
  * @constructor
  * @extends {ChromeVoxE2ETestBase}
  */
-function AutomationTreeWalkerTest() {
+function ChromeVoxAutomationTreeWalkerTest() {
   ChromeVoxNextE2ETest.call(this);
 }
 
-AutomationTreeWalkerTest.prototype = {
+ChromeVoxAutomationTreeWalkerTest.prototype = {
   __proto__: ChromeVoxNextE2ETest.prototype,
 
   flattenTree: function(node, outResult) {
@@ -45,7 +45,7 @@ AutomationTreeWalkerTest.prototype = {
   }
 };
 
-TEST_F('AutomationTreeWalkerTest', 'Forward', function() {
+TEST_F('ChromeVoxAutomationTreeWalkerTest', 'Forward', function() {
   chrome.automation.getDesktop(this.newCallback(function(d) {
     var resultList = [];
     this.flattenTree(d, resultList);
@@ -72,7 +72,7 @@ TEST_F('AutomationTreeWalkerTest', 'Forward', function() {
   }.bind(this)));
 });
 
-TEST_F('AutomationTreeWalkerTest', 'Backward', function() {
+TEST_F('ChromeVoxAutomationTreeWalkerTest', 'Backward', function() {
   chrome.automation.getDesktop(this.newCallback(function(d) {
     var resultList = [];
     this.flattenTree(d, resultList);
@@ -99,7 +99,7 @@ TEST_F('AutomationTreeWalkerTest', 'Backward', function() {
   }.bind(this)));
 });
 
-TEST_F('AutomationTreeWalkerTest', 'RootLeafRestriction', function() {
+TEST_F('ChromeVoxAutomationTreeWalkerTest', 'RootLeafRestriction', function() {
   this.runWithLoadedTree(function() {/*!
       <div role="group" aria-label="1">
         <div role="group" aria-label="2">
@@ -163,7 +163,7 @@ TEST_F('AutomationTreeWalkerTest', 'RootLeafRestriction', function() {
     });
 });
 
-TEST_F('AutomationTreeWalkerTest', 'LeafPredicateSymmetry', function() {
+TEST_F('ChromeVoxAutomationTreeWalkerTest', 'LeafPredicateSymmetry', function() {
   this.runWithLoadedTree(toolbarDoc, function(r) {
     var d = r.root.parent.root;
     var forwardWalker = new AutomationTreeWalker(d, 'forward');
@@ -185,7 +185,7 @@ TEST_F('AutomationTreeWalkerTest', 'LeafPredicateSymmetry', function() {
   });
 });
 
-TEST_F('AutomationTreeWalkerTest', 'RootPredicateEnding', function() {
+TEST_F('ChromeVoxAutomationTreeWalkerTest', 'RootPredicateEnding', function() {
   this.runWithLoadedTree(toolbarDoc, function(r) {
     var backwardWalker = new AutomationTreeWalker(r.firstChild, 'backward',
         {root: function(node) { return node === r; }});

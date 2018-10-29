@@ -51,6 +51,7 @@ class AXTreeSourceMusTest : public ViewsTestBase {
 
   std::unique_ptr<Widget> widget_;
   Label* label_ = nullptr;  // Owned by views hierarchy.
+  const ui::AXTreeID ax_tree_id_ = ui::AXTreeID::FromString("123");
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AXTreeSourceMusTest);
@@ -59,17 +60,17 @@ class AXTreeSourceMusTest : public ViewsTestBase {
 TEST_F(AXTreeSourceMusTest, GetTreeData) {
   AXAuraObjWrapper* root =
       AXAuraObjCache::GetInstance()->GetOrCreate(widget_->GetContentsView());
-  AXTreeSourceMus tree(root);
+  AXTreeSourceMus tree(root, ax_tree_id_);
   ui::AXTreeData tree_data;
   tree.GetTreeData(&tree_data);
-  EXPECT_EQ(AXRemoteHost::kRemoteAXTreeID, tree_data.tree_id);
+  EXPECT_EQ(ax_tree_id_, tree_data.tree_id);
 }
 
 TEST_F(AXTreeSourceMusTest, Serialize) {
   AXAuraObjCache* cache = AXAuraObjCache::GetInstance();
   AXAuraObjWrapper* root = cache->GetOrCreate(widget_->GetContentsView());
 
-  AXTreeSourceMus tree(root);
+  AXTreeSourceMus tree(root, ax_tree_id_);
   EXPECT_EQ(root, tree.GetRoot());
 
   // Serialize the root.
@@ -93,7 +94,7 @@ TEST_F(AXTreeSourceMusTest, ScaleFactor) {
   AXAuraObjWrapper* root = cache->GetOrCreate(widget_->GetContentsView());
 
   // Simulate serializing a widget on a high-dpi display.
-  AXTreeSourceMus tree(root);
+  AXTreeSourceMus tree(root, ax_tree_id_);
   tree.set_device_scale_factor(2.f);
 
   // Serialize the root.

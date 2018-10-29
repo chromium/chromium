@@ -230,8 +230,10 @@ class MODULES_EXPORT RTCPeerConnection final
   void DidGenerateICECandidate(scoped_refptr<WebRTCICECandidate>) override;
   void DidChangeSignalingState(
       webrtc::PeerConnectionInterface::SignalingState) override;
-  void DidChangeICEGatheringState(ICEGatheringState) override;
-  void DidChangeICEConnectionState(ICEConnectionState) override;
+  void DidChangeIceGatheringState(
+      webrtc::PeerConnectionInterface::IceGatheringState) override;
+  void DidChangeIceConnectionState(
+      webrtc::PeerConnectionInterface::IceConnectionState) override;
   void DidAddReceiverPlanB(std::unique_ptr<WebRTCRtpReceiver>) override;
   void DidRemoveReceiverPlanB(std::unique_ptr<WebRTCRtpReceiver>) override;
   void DidModifyTransceivers(std::vector<std::unique_ptr<WebRTCRtpTransceiver>>,
@@ -257,6 +259,18 @@ class MODULES_EXPORT RTCPeerConnection final
   // For testing; exported to testing/InternalWebRTCPeerConnection
   static int PeerConnectionCount();
   static int PeerConnectionCountLimit();
+
+  // SLD/SRD helper method, public for testing.
+  // "Complex" Plan B SDP is SDP that is not compatible with Unified Plan, i.e.
+  // SDP that has multiple tracks listed under the same m= sections. We should
+  // show a deprecation warning when setLocalDescription() or
+  // setRemoteDescription() is called and:
+  // - The SDP is complex Plan B SDP.
+  // - sdpSemantics was not specified at RTCPeerConnection construction.
+  // Such calls would normally succeed, but as soon as the default switches to
+  // Unified Plan they would fail. This decides whether to show deprecation for
+  // WebFeature::kRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics.
+  bool ShouldShowComplexPlanBSdpWarning(const RTCSessionDescriptionInit&) const;
 
   void Trace(blink::Visitor*) override;
 
@@ -288,6 +302,7 @@ class MODULES_EXPORT RTCPeerConnection final
 
   RTCPeerConnection(ExecutionContext*,
                     webrtc::PeerConnectionInterface::RTCConfiguration,
+                    bool sdp_semantics_specified,
                     WebMediaConstraints,
                     ExceptionState&);
   void Dispose();
@@ -380,14 +395,13 @@ class MODULES_EXPORT RTCPeerConnection final
   // that are delayed somehow and cause the application to read a "complete"
   // gathering state twice, missing the "gathering" state in the middle.
   void ChangeIceGatheringState(
-      WebRTCPeerConnectionHandlerClient::ICEGatheringState);
-  bool SetIceGatheringState(
-      WebRTCPeerConnectionHandlerClient::ICEGatheringState);
+      webrtc::PeerConnectionInterface::IceGatheringState);
+  bool SetIceGatheringState(webrtc::PeerConnectionInterface::IceGatheringState);
 
   void ChangeIceConnectionState(
-      WebRTCPeerConnectionHandlerClient::ICEConnectionState);
+      webrtc::PeerConnectionInterface::IceConnectionState);
   bool SetIceConnectionState(
-      WebRTCPeerConnectionHandlerClient::ICEConnectionState);
+      webrtc::PeerConnectionInterface::IceConnectionState);
 
   void CloseInternal();
 
@@ -398,8 +412,8 @@ class MODULES_EXPORT RTCPeerConnection final
                                        String* sdp);
 
   webrtc::PeerConnectionInterface::SignalingState signaling_state_;
-  ICEGatheringState ice_gathering_state_;
-  ICEConnectionState ice_connection_state_;
+  webrtc::PeerConnectionInterface::IceGatheringState ice_gathering_state_;
+  webrtc::PeerConnectionInterface::IceConnectionState ice_connection_state_;
 
   // A map containing any track that is in use by the peer connection. This
   // includes tracks of |rtp_senders_| and |rtp_receivers_|.
@@ -442,6 +456,8 @@ class MODULES_EXPORT RTCPeerConnection final
   // "kUnifiedPlan", if constructed with "kDefault" it is translated to one or
   // the other.
   webrtc::SdpSemantics sdp_semantics_;
+  // Whether sdpSemantics was specified at construction.
+  bool sdp_semantics_specified_;
 };
 
 }  // namespace blink

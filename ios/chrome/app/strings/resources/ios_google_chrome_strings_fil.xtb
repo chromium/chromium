@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Nakakatipid ka ng oras sa Chrome sa pamamagitan ng pagdadala ng iyong mga account sa web. Maaari kang magdagdag o mag-alis ng mga account sa Mga Setting.</translation>
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3345341804167540816">Gamitin ang Chrome sa Lahat ng Lugar</translation>
-<translation id="3678774398092457402">Gusto mo bang i-save ng Chrome ang password mo para sa site?</translation>
 <translation id="384394811301901750">Hindi magamit ng Google Chrome ang camera mo ngayon</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Lumilipat ka mula sa naka-sync na account na <ph name="USER_EMAIL1" /> papunta sa <ph name="USER_EMAIL2" />. Pinamamahalaan ng <ph name="DOMAIN" /> ang kasalukuyan mong data sa Chrome. Ide-delete nito ang data mo sa device na ito, ngunit mananatili ang iyong data sa <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943">Maaaring i-customize ang <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" /> anumang oras. Maaaring gamitin ng Google ang content sa mga site na binibisita mo, mga pakikipag-ugnayan at aktibidad sa browser para i-personalize ang Chrome at ang mga serbisyo ng Google tulad ng Translate, Search at mga ad.</translation>
 <translation id="5639704535586432836">Buksan ang Settings &gt; Privacy &gt; Camera &gt; Google Chrome at i-on ang camera.</translation>
 <translation id="5642200033778930880">Hindi magamit ng Google Chrome ang iyong camera sa Split View mode</translation>
-<translation id="5703130498371792817">Nag-e-enjoy ka ba sa Chrome? <ph name="BEGIN_LINK" />I-rate ang app na ito<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Tip sa Chrome. Nasa ibaba na ng iyong screen ang ilang button, tulad ng Bumalik, Susunod, at Maghanap.</translation>
 <translation id="6036420186814142909">Ang Google Chrome ay may mga feature na nakakatulong sa iyong pamahalaan ang iyong data sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto nang higit pa<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Tuntunin ng Serbisyo ng Google Chrome</translation>
 <translation id="7165736900384873061">Simulan ang paggamit ng QR scanner ng Google Chrome</translation>
 <translation id="7172660552945675509">Tip: <ph name="BEGIN_LINK" />Ilipat ang Chrome sa iyong dock<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Gumagamit ang Chrome ng Face ID para tiyakin ang awtorisadong pag-access sa iyong mga password.</translation>
 <translation id="7265369419224458312">I-access ang mga tab na nakabukas sa iyong computer, dito mismo. Buksan lang ang Chrome sa iyong computer, pumunta sa menu, at piliin ang "Mag-sign in sa Chrome..."</translation>
 <translation id="728488472449859922">I-on ang QR scanner ng Google Chrome</translation>
 <translation id="7400722733683201933">Tungkol sa Google Chrome</translation>

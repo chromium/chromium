@@ -36,15 +36,14 @@ class MockBrowsingDataCacheStorageHelper
   bool AllDeleted();
 
   // BrowsingDataCacheStorageHelper.
-  void StartFetching(const base::Callback<
-                     void(const std::list<content::CacheStorageUsageInfo>&)>&
-                         callback) override;
+  void StartFetching(FetchCallback callback) override;
   void DeleteCacheStorage(const GURL& origin) override;
 
  private:
   ~MockBrowsingDataCacheStorageHelper() override;
 
   FetchCallback callback_;
+  bool fetched_ = false;
   std::map<GURL, bool> origins_;
   std::list<content::CacheStorageUsageInfo> response_;
 

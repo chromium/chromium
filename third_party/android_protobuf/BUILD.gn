@@ -5,6 +5,7 @@
 if (current_toolchain == host_toolchain) {
   config("android_protoc_warnings") {
     cflags = [
+      "-Wno-enum-compare-switch",
       "-Wno-null-conversion",
       "-Wno-tautological-undefined-compare",
       "-Wno-unused-function",

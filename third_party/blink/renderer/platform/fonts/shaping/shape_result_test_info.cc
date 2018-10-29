@@ -43,12 +43,12 @@ bool ShapeResultTestInfo::RunInfoForTesting(unsigned run_index,
 }
 
 uint16_t ShapeResultTestInfo::GlyphForTesting(unsigned run_index,
-                                              size_t glyph_index) const {
+                                              unsigned glyph_index) const {
   return runs_[run_index]->glyph_data_[glyph_index].glyph;
 }
 
 float ShapeResultTestInfo::AdvanceForTesting(unsigned run_index,
-                                             size_t glyph_index) const {
+                                             unsigned glyph_index) const {
   return runs_[run_index]->glyph_data_[glyph_index].advance;
 }
 

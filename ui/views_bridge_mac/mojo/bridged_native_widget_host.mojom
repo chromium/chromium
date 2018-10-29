@@ -17,9 +17,13 @@ interface BridgedNativeWidgetHost {
   // Update the views::Widget, ui::Compositor and ui::Layer's visibility.
   OnVisibilityChanged(bool visible);
 
-  // Resize the underlying views::View to |new_size|. Note that this will not
-  // necessarily match the content bounds from OnWindowGeometryChanged.
-  SetViewSize(gfx.mojom.Size new_size);
+  // Called when the window's native theme changes.
+  OnWindowNativeThemeChanged();
+
+  // Resize the underlying views::View to |new_size| in response to the NSView's
+  // frame changing size. Note that this will not necessarily match the content
+  // bounds from OnWindowGeometryChanged.
+  OnViewSizeChanged(gfx.mojom.Size new_size);
 
   // Indicate if full keyboard accessibility is needed and update focus if
   // needed.
@@ -27,7 +31,7 @@ interface BridgedNativeWidgetHost {
 
   // Indicate if the NSView for this widget is the first responder for the
   // NSWindow for this widget.
-  SetIsFirstResponder(bool is_first_responder);
+  OnIsFirstResponderChanged(bool is_first_responder);
 
   // Indicate if mouse capture is active.
   OnMouseCaptureActiveChanged(bool capture_is_active);
@@ -153,4 +157,13 @@ interface BridgedNativeWidgetHost {
   // the key window (is active, in views terminology).
   [Sync]
   GetCanWindowClose() => (bool can_window_close);
+
+  // Synchronously query if the NSWindow's theme frame overrides the titlebar
+  // height, and, if so, what the overridden height is.
+  [Sync]
+  GetWindowFrameTitlebarHeight() => (bool override_titlebar_height,
+                                     float titlebar_height);
+
+  // Handle "Move focus to the window toolbar" shortcut.
+  OnFocusWindowToolbar();
 };

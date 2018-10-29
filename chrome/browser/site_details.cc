@@ -151,7 +151,7 @@ void SiteDetails::CollectSiteInfo(WebContents* contents,
       url::Origin origin = frame->GetLastCommittedOrigin();
       GURL site = SiteInstance::GetSiteForURL(
           context,
-          origin.unique() ? frame->GetLastCommittedURL() : origin.GetURL());
+          origin.opaque() ? frame->GetLastCommittedURL() : origin.GetURL());
 
       bool should_isolate = ShouldIsolate(context, scenario, site);
 

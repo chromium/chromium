@@ -191,66 +191,33 @@ blink::WebEncryptedMediaInitDataType ConvertToWebInitDataType(
 }
 
 namespace {
-// This class wraps a scoped blink::WebSetSinkIdCallbacks pointer such that
-// copying objects of this class actually performs moving, thus
-// maintaining clear ownership of the blink::WebSetSinkIdCallbacks pointer.
-// The rationale for this class is that the SwichOutputDevice method
-// can make a copy of its base::Callback parameter, which implies
-// copying its bound parameters.
-// SwitchOutputDevice actually wants to move its base::Callback
-// parameter since only the final copy will be run, but base::Callback
-// does not support move semantics and there is no base::MovableCallback.
-// Since scoped pointers are not copyable, we cannot bind them directly
-// to a base::Callback in this case. Thus, we use this helper class,
-// whose copy constructor transfers ownership of the scoped pointer.
 
-class SetSinkIdCallback {
- public:
-  explicit SetSinkIdCallback(blink::WebSetSinkIdCallbacks* web_callback)
-      : web_callback_(web_callback) {}
-  SetSinkIdCallback(const SetSinkIdCallback& other)
-      : web_callback_(std::move(other.web_callback_)) {}
-  ~SetSinkIdCallback() = default;
-  friend void RunSetSinkIdCallback(const SetSinkIdCallback& callback,
-                                   OutputDeviceStatus result);
-
- private:
-  // Mutable is required so that Pass() can be called in the copy
-  // constructor.
-  mutable std::unique_ptr<blink::WebSetSinkIdCallbacks> web_callback_;
-};
-
-void RunSetSinkIdCallback(const SetSinkIdCallback& callback,
-                          OutputDeviceStatus result) {
-  if (!callback.web_callback_)
-    return;
-
+void RunSetSinkIdCallback(
+    std::unique_ptr<blink::WebSetSinkIdCallbacks> web_callbacks,
+    OutputDeviceStatus result) {
   switch (result) {
     case OUTPUT_DEVICE_STATUS_OK:
-      callback.web_callback_->OnSuccess();
+      web_callbacks->OnSuccess();
       break;
     case OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND:
-      callback.web_callback_->OnError(blink::WebSetSinkIdError::kNotFound);
+      web_callbacks->OnError(blink::WebSetSinkIdError::kNotFound);
       break;
     case OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED:
-      callback.web_callback_->OnError(blink::WebSetSinkIdError::kNotAuthorized);
+      web_callbacks->OnError(blink::WebSetSinkIdError::kNotAuthorized);
       break;
+    case OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT:
     case OUTPUT_DEVICE_STATUS_ERROR_INTERNAL:
-      callback.web_callback_->OnError(blink::WebSetSinkIdError::kAborted);
+      web_callbacks->OnError(blink::WebSetSinkIdError::kAborted);
       break;
-    default:
-      NOTREACHED();
   }
-
-  callback.web_callback_ = nullptr;
 }
 
 }  // namespace
 
 OutputDeviceStatusCB ConvertToOutputDeviceStatusCB(
-    blink::WebSetSinkIdCallbacks* web_callbacks) {
+    std::unique_ptr<blink::WebSetSinkIdCallbacks> callbacks) {
   return media::BindToCurrentLoop(
-      base::Bind(RunSetSinkIdCallback, SetSinkIdCallback(web_callbacks)));
+      base::BindOnce(RunSetSinkIdCallback, std::move(callbacks)));
 }
 
 }  // namespace media

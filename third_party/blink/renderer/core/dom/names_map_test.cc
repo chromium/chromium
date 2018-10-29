@@ -29,26 +29,38 @@ TEST(NamesMapTest, Set) {
   Vector<std::pair<String, ExpectedMap>> test_cases({
       // Various valid values.
       {"foo", {{"foo", "foo"}}},
-      {"foo bar", {{"foo", "bar"}}},
-      {"foo bar, foo buz", {{"foo", "bar buz"}}},
-      {"foo bar, buz", {{"foo", "bar"}, {"buz", "buz"}}},
-      {"foo bar, buz bar", {{"foo", "bar"}, {"buz", "bar"}}},
-      {"foo, buz bar", {{"foo", "foo"}, {"buz", "bar"}}},
+      {"foo: bar", {{"foo", "bar"}}},
+      {"foo : bar", {{"foo", "bar"}}},
+      {"foo: bar, foo: buz", {{"foo", "bar buz"}}},
+      {"foo: bar, buz", {{"foo", "bar"}, {"buz", "buz"}}},
+      {"foo: bar, buz: bar", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo, buz: bar", {{"foo", "foo"}, {"buz", "bar"}}},
 
       // This is an error but qux should be ignored.
-      {"foo bar qux, buz bar", {{"foo", "bar"}, {"buz", "bar"}}},
-      {"foo bar, buz bar qux", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: bar qux, buz: bar", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: bar, buz: bar qux", {{"foo", "bar"}, {"buz", "bar"}}},
 
-      // This is an error but the extra comma should be ignored.
-      {",foo bar, buz bar", {{"foo", "bar"}, {"buz", "bar"}}},
-      {"foo bar,, buz bar", {{"foo", "bar"}, {"buz", "bar"}}},
-      {"foo bar, buz bar,", {{"foo", "bar"}, {"buz", "bar"}}},
-      {"foo bar, buz bar,,", {{"foo", "bar"}, {"buz", "bar"}}},
+      // This is an error but the extra commas and colons should be ignored.
+      {"foo:", {{"foo", "foo"}}},
+      {"foo:,", {{"foo", "foo"}}},
+      {"foo :", {{"foo", "foo"}}},
+      {"foo :,", {{"foo", "foo"}}},
+      {"foo: bar, buz:", {{"foo", "bar"}, {"buz", "buz"}}},
+      {"foo: bar, buz :", {{"foo", "bar"}, {"buz", "buz"}}},
+      {",foo: bar, buz: bar", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: bar,, buz: bar", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: bar, buz: bar,", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: bar, buz: bar,,", {{"foo", "bar"}, {"buz", "bar"}}},
+      {":foo: bar, buz: bar", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: bar:, buz: bar", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: :bar, buz: bar", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: bar, buz: bar:", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: bar, buz: bar::", {{"foo", "bar"}, {"buz", "bar"}}},
 
       // Spaces in odd places.
-      {" foo bar, buz bar", {{"foo", "bar"}, {"buz", "bar"}}},
-      {"foo bar,  buz bar", {{"foo", "bar"}, {"buz", "bar"}}},
-      {"foo bar, buz bar ", {{"foo", "bar"}, {"buz", "bar"}}},
+      {" foo: bar, buz: bar", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: bar,  buz: bar", {{"foo", "bar"}, {"buz", "bar"}}},
+      {"foo: bar, buz: bar ", {{"foo", "bar"}, {"buz", "bar"}}},
   });
 
   NamesMap map;

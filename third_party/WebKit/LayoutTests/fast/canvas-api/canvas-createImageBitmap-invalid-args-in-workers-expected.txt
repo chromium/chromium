@@ -2,7 +2,6 @@
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Starting worker: ./resources/canvas-createImageBitmap-invalid-args-in-workers.js
 PASS [Worker] Rejected as expected: null
 PASS [Worker] reason instanceof Error is true

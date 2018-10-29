@@ -68,7 +68,8 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     DCHECK(provider->ContextGL());
     video_renderer->Copy(
         frame.get(), &paint_canvas,
-        media::Context3D(provider->ContextGL(), provider->GrContext()));
+        media::Context3D(provider->ContextGL(), provider->GrContext()),
+        provider->ContextSupport());
 
     SkPixmap pixmap;
     const bool result = bitmap.peekPixels(&pixmap);
@@ -133,9 +134,8 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
         video_frame_compositor_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     const blink::WebMediaStream& web_stream,
-    base::RepeatingCallback<std::unique_ptr<blink::WebVideoFrameSubmitter>()>
-        create_submitter_callback,
-    bool surface_layer_for_video_enabled,
+    std::unique_ptr<blink::WebVideoFrameSubmitter> submitter,
+    blink::WebMediaPlayer::SurfaceLayerMode surface_layer_mode,
     const base::WeakPtr<WebMediaPlayerMS>& player)
     : RefCountedDeleteOnSequence<WebMediaPlayerMSCompositor>(
           video_frame_compositor_task_runner),
@@ -152,8 +152,8 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
       weak_ptr_factory_(this) {
   main_message_loop_ = base::MessageLoopCurrent::Get();
 
-  if (surface_layer_for_video_enabled) {
-    submitter_ = create_submitter_callback.Run();
+  if (surface_layer_mode != blink::WebMediaPlayer::SurfaceLayerMode::kNever) {
+    submitter_ = std::move(submitter);
 
     video_frame_compositor_task_runner_->PostTask(
         FROM_HERE,
@@ -212,31 +212,33 @@ void WebMediaPlayerMSCompositor::UpdateSubmissionState(bool state) {
 // submission. Do this along with the VideoFrameSubmitter refactor.
 void WebMediaPlayerMSCompositor::EnableSubmission(
     const viz::SurfaceId& id,
+    base::TimeTicks local_surface_id_allocation_time,
     media::VideoRotation rotation,
     bool force_submit,
     bool is_opaque,
     blink::WebFrameSinkDestroyedCallback frame_sink_destroyed_callback) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
+
+  // If we're switching to |submitter_| from some other client, then tell it.
+  if (video_frame_provider_client_ &&
+      video_frame_provider_client_ != submitter_.get()) {
+    video_frame_provider_client_->StopUsingProvider();
+  }
+
   submitter_->SetRotation(rotation);
   submitter_->SetForceSubmit(force_submit);
   submitter_->SetIsOpaque(is_opaque);
-  submitter_->EnableSubmission(id, std::move(frame_sink_destroyed_callback));
+  submitter_->EnableSubmission(id, local_surface_id_allocation_time,
+                               std::move(frame_sink_destroyed_callback));
   video_frame_provider_client_ = submitter_.get();
-}
 
-void WebMediaPlayerMSCompositor::UpdateRotation(media::VideoRotation rotation) {
-  DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
-  submitter_->SetRotation(rotation);
+  if (!stopped_)
+    video_frame_provider_client_->StartRendering();
 }
 
 void WebMediaPlayerMSCompositor::SetForceSubmit(bool force_submit) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   submitter_->SetForceSubmit(force_submit);
-}
-
-void WebMediaPlayerMSCompositor::UpdateIsOpaque(bool is_opaque) {
-  DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
-  submitter_->SetIsOpaque(is_opaque);
 }
 
 gfx::Size WebMediaPlayerMSCompositor::GetCurrentSize() {
@@ -352,22 +354,25 @@ bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
   if (rendering_frame_buffer_)
     RenderUsingAlgorithm(deadline_min, deadline_max);
 
-  bool tracing_or_dcheck_enabled = false;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("media", &tracing_or_dcheck_enabled);
+  {
+    bool tracing_or_dcheck_enabled = false;
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED("media", &tracing_or_dcheck_enabled);
 #if DCHECK_IS_ON()
-  tracing_or_dcheck_enabled = true;
+    tracing_or_dcheck_enabled = true;
 #endif  // DCHECK_IS_ON()
-  if (tracing_or_dcheck_enabled) {
-    base::TimeTicks render_time;
-    if (!current_frame_->metadata()->GetTimeTicks(
-            media::VideoFrameMetadata::REFERENCE_TIME, &render_time)) {
-      DCHECK(!rendering_frame_buffer_)
-          << "VideoFrames need REFERENCE_TIME to use "
-             "sophisticated video rendering algorithm.";
+    if (tracing_or_dcheck_enabled) {
+      base::TimeTicks render_time;
+      if (!current_frame_->metadata()->GetTimeTicks(
+              media::VideoFrameMetadata::REFERENCE_TIME, &render_time)) {
+        DCHECK(!rendering_frame_buffer_)
+            << "VideoFrames need REFERENCE_TIME to use "
+               "sophisticated video rendering algorithm.";
+      }
+      TRACE_EVENT_END2("media", "UpdateCurrentFrame", "Ideal Render Instant",
+                       render_time.ToInternalValue(), "Serial", serial_);
     }
-    TRACE_EVENT_END2("media", "UpdateCurrentFrame", "Ideal Render Instant",
-                     render_time.ToInternalValue(), "Serial", serial_);
   }
+
   return !current_frame_rendered_;
 }
 
@@ -519,10 +524,45 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
     ++dropped_frame_count_;
   current_frame_rendered_ = false;
 
-  const bool size_changed = !current_frame_ || current_frame_->natural_size() !=
-                                                   frame->natural_size();
+  scoped_refptr<media::VideoFrame> old_frame = std::move(current_frame_);
   current_frame_ = frame;
-  if (size_changed) {
+  CheckForFrameChanges(old_frame, frame);
+}
+
+void WebMediaPlayerMSCompositor::CheckForFrameChanges(
+    const scoped_refptr<media::VideoFrame>& old_frame,
+    const scoped_refptr<media::VideoFrame>& new_frame) {
+  DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
+
+  const bool new_frame_is_opaque = media::IsOpaque(new_frame->format());
+  media::VideoRotation new_frame_video_rotation = media::VIDEO_ROTATION_0;
+  ignore_result(new_frame->metadata()->GetRotation(
+      media::VideoFrameMetadata::ROTATION, &new_frame_video_rotation));
+  if (!old_frame) {
+    main_message_loop_->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebMediaPlayerMS::OnFirstFrameReceived, player_,
+                       new_frame_video_rotation, new_frame_is_opaque));
+    return;
+  }
+  media::VideoRotation old_frame_video_rotation = media::VIDEO_ROTATION_0;
+  ignore_result(old_frame->metadata()->GetRotation(
+      media::VideoFrameMetadata::ROTATION, &old_frame_video_rotation));
+  if (new_frame_video_rotation != old_frame_video_rotation) {
+    main_message_loop_->task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&WebMediaPlayerMS::OnRotationChanged, player_,
+                                  new_frame_video_rotation));
+    if (submitter_)
+      submitter_->SetRotation(new_frame_video_rotation);
+  }
+  if (new_frame_is_opaque != media::IsOpaque(old_frame->format())) {
+    main_message_loop_->task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&WebMediaPlayerMS::OnOpacityChanged, player_,
+                                  new_frame_is_opaque));
+    if (submitter_)
+      submitter_->SetIsOpaque(new_frame_is_opaque);
+  }
+  if (old_frame->natural_size() != new_frame->natural_size()) {
     main_message_loop_->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&WebMediaPlayerMS::TriggerResize, player_));
   }

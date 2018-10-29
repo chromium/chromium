@@ -5,14 +5,16 @@
 #ifndef UI_VIEWS_COREWM_TOOLTIP_WIN_H_
 #define UI_VIEWS_COREWM_TOOLTIP_WIN_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/views/corewm/tooltip.h"
-
 #include <windows.h>
 #include <commctrl.h>
+
+#include "base/compiler_specific.h"
+#include "base/macros.h"
+#include "base/optional.h"
+#include "base/strings/string16.h"
+#include "ui/gfx/font.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/views/corewm/tooltip.h"
 
 namespace views {
 namespace corewm {
@@ -36,6 +38,9 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   // Sets the position of the tooltip.
   void PositionTooltip();
 
+  // Might override the font size for localization (e.g. Hindi).
+  void MaybeOverrideFont();
+
   // Tooltip:
   int GetMaxWidth(const gfx::Point& location) const override;
   void SetText(aura::Window* window,
@@ -44,6 +49,11 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   void Show() override;
   void Hide() override;
   bool IsVisible() override;
+
+  // Font we're currently overriding our UI font with.
+  // (Lets us keep a handle around so we don't leak.)
+  // Should outlast |tooltip_hwnd_|.
+  base::Optional<gfx::Font> override_font_;
 
   // The window |tooltip_hwnd_| is parented to.
   HWND parent_hwnd_;
@@ -61,6 +71,10 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   // to know the size. The size is only available from TTN_SHOW, so we have to
   // cache it.
   gfx::Point location_;
+
+  // What the scale was the last time we overrode the font, to see if we can
+  // re-use our previous override.
+  float override_scale_ = 0.0f;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipWin);
 };

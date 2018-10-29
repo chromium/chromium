@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/language_ask_row"
+    style="@style/ListItemContainer"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:baselineAligned="true">
+
+    <View
+        style="@style/HorizontalDivider"
+        android:layout_marginEnd="@dimen/list_item_default_margin" />
+</LinearLayout>

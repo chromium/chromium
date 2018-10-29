@@ -168,8 +168,8 @@ void D3D11Decryptor::Decrypt(StreamType stream_type,
     return;
   }
 
-  auto context =
-      cdm_proxy_context_->GetD3D11DecryptContext(decrypt_config->key_id());
+  auto context = cdm_proxy_context_->GetD3D11DecryptContext(
+      CdmProxy::KeyType::kDecryptOnly, decrypt_config->key_id());
   if (!context) {
     decrypt_cb.Run(kNoKey, nullptr);
     return;

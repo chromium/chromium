@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
-#include "third_party/blink/public/web/web_find_options.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -33,7 +32,7 @@ class FindInPageTest : public testing::Test {
   TextFinder& GetTextFinder() const;
 
  private:
-  FrameTestHelpers::WebViewHelper web_view_helper_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
   Persistent<Document> document_;
   Persistent<FindInPage> find_in_page_;
 };
@@ -81,12 +80,13 @@ TEST_F(FindInPageTest, FindMatchRectsReturnsCorrectRects) {
 
   int identifier = 0;
   WebString search_text(String("aA"));
-  WebFindOptions find_options;  // Default + add testing flag.
-  find_options.run_synchronously_for_testing = true;
+  auto find_options =
+      mojom::blink::FindOptions::New();  // Default + add testing flag.
+  find_options->run_synchronously_for_testing = true;
 
   GetTextFinder().ResetMatchCount();
   GetTextFinder().StartScopingStringMatches(identifier, search_text,
-                                            find_options);
+                                            *find_options);
 
   int rects_version = GetTextFinder().FindMatchMarkersVersion();
   FindInPageCallbackReceiver callback_receiver;

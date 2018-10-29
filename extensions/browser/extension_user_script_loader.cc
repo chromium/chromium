@@ -17,8 +17,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "base/version.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
@@ -77,8 +79,8 @@ void VerifyContent(const VerifyContentInfo& info) {
 
 void ForwardVerifyContentToIO(const VerifyContentInfo& info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::BrowserThread::PostTask(content::BrowserThread::IO, FROM_HERE,
-                                   base::BindOnce(&VerifyContent, info));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                           base::BindOnce(&VerifyContent, info));
 }
 
 // Loads user scripts from the extension who owns these scripts.
@@ -114,8 +116,8 @@ bool LoadScriptContent(const HostID& host_id,
     if (verifier.get()) {
       // Call VerifyContent() after yielding on UI thread so it is ensured that
       // ContentVerifierIOData is populated at the time we call VerifyContent().
-      content::BrowserThread::PostTask(
-          content::BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::UI},
           base::BindOnce(
               &ForwardVerifyContentToIO,
               VerifyContentInfo(verifier, host_id.id(),
@@ -147,8 +149,7 @@ bool LoadScriptContent(const HostID& host_id,
 SubstitutionMap* GetLocalizationMessages(
     const ExtensionUserScriptLoader::HostsInfo& hosts_info,
     const HostID& host_id) {
-  ExtensionUserScriptLoader::HostsInfo::const_iterator iter =
-      hosts_info.find(host_id);
+  auto iter = hosts_info.find(host_id);
   if (iter == hosts_info.end())
     return nullptr;
   return file_util::LoadMessageBundleSubstitutionMap(
@@ -193,8 +194,8 @@ void LoadScriptsOnFileTaskRunner(
   LoadUserScripts(user_scripts.get(), hosts_info, added_script_ids, verifier);
   std::unique_ptr<base::SharedMemory> memory =
       UserScriptLoader::Serialize(*user_scripts);
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(std::move(callback), std::move(user_scripts),
                      std::move(memory)));
 }

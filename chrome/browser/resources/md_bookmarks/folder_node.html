@@ -82,7 +82,8 @@
         on-contextmenu="onContextMenu_"
         tabindex$="[[getTabIndex_(selectedFolder_, itemId)]]"
         hidden="[[isRootFolder_(depth)]]"
-        role="treeitem">
+        role="treeitem"
+        aria-owns="descendants">
       <template is="dom-if" if="[[hasChildFolder_]]">
         <paper-icon-button-light id="arrow">
           <button on-click="toggleFolder_"

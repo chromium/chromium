@@ -20,12 +20,11 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/query_in_omnibox.h"
-#include "components/toolbar/toolbar_model.h"
+#include "components/omnibox/browser/toolbar_model.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/material_design/material_design_controller.h"
 
-#if !defined(OS_IOS)
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 #include "ui/gfx/paint_vector_icon.h"
 #endif
 
@@ -108,17 +107,16 @@ bool OmniboxView::IsEditingOrEmpty() const {
 // OmniboxPopupModel::GetMatchIcon. They contain certain inconsistencies
 // concerning what flags are required to display url favicons and bookmark star
 // icons. OmniboxPopupModel::GetMatchIcon also doesn't display default search
-// provider icons. It's possible they have other inconsistencies as well. In the
-// future, once the Material and Favicon flags are always enabled, we may want
-// to consider reusing the same code for both the popup and omnibox icons.
+// provider icons. It's possible they have other inconsistencies as well. We may
+// want to consider reusing the same code for both the popup and omnibox icons.
 gfx::ImageSkia OmniboxView::GetIcon(int dip_size,
                                     SkColor color,
                                     IconFetchedCallback on_icon_fetched) const {
-#if defined(OS_IOS)
-  // OmniboxViewIOS provides its own icon logic. The iOS build also does not
-  // link in the vector icon rendering code.
+#if defined(OS_ANDROID) || defined(OS_IOS)
+  // This is used on desktop only.
+  NOTREACHED();
   return gfx::ImageSkia();
-#else   // !defined(OS_IOS)
+#else
   if (!IsEditingOrEmpty()) {
     // Query in Omnibox.
     if (model_ &&
@@ -137,44 +135,40 @@ gfx::ImageSkia OmniboxView::GetIcon(int dip_size,
   if (!model_) {
     const gfx::VectorIcon& vector_icon = AutocompleteMatch::TypeToVectorIcon(
         AutocompleteMatchType::URL_WHAT_YOU_TYPED, false /*is_bookmark*/,
-        false /*is_tab_match*/, AutocompleteMatch::DocumentType::NONE);
+        AutocompleteMatch::DocumentType::NONE);
     return gfx::CreateVectorIcon(vector_icon, dip_size, color);
   }
 
+  gfx::Image favicon;
+
   AutocompleteMatch match = model_->CurrentMatch(nullptr);
-  bool is_bookmarked = false;
+  if (AutocompleteMatch::IsSearchType(match.type)) {
+    // For search queries, display default search engine's favicon.
+    favicon = model_->client()->GetFaviconForDefaultSearchProvider(
+        std::move(on_icon_fetched));
 
-  if (ui::MaterialDesignController::IsNewerMaterialUi()) {
-    gfx::Image favicon;
-
-    if (AutocompleteMatch::IsSearchType(match.type)) {
-      // For search queries, display default search engine's favicon.
-      favicon = model_->client()->GetFaviconForDefaultSearchProvider(
-          std::move(on_icon_fetched));
-
-    } else if (OmniboxFieldTrial::IsShowSuggestionFaviconsEnabled()) {
-      // For site suggestions, display site's favicon.
-      favicon = model_->client()->GetFaviconForPageUrl(
-          match.destination_url, std::move(on_icon_fetched));
-    }
-
-    if (!favicon.IsEmpty())
-      return model_->client()->GetSizedIcon(favicon).AsImageSkia();
-    // If the client returns an empty favicon, fall through to provide the
-    // generic vector icon. |on_icon_fetched| may or may not be called later.
-    // If it's never called, the vector icon we provide below should remain.
-
-    // For bookmarked suggestions, display bookmark icon.
-    bookmarks::BookmarkModel* bookmark_model =
-        model_->client()->GetBookmarkModel();
-    is_bookmarked =
-        bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
+  } else if (OmniboxFieldTrial::IsShowSuggestionFaviconsEnabled()) {
+    // For site suggestions, display site's favicon.
+    favicon = model_->client()->GetFaviconForPageUrl(
+        match.destination_url, std::move(on_icon_fetched));
   }
 
+  if (!favicon.IsEmpty())
+    return model_->client()->GetSizedIcon(favicon).AsImageSkia();
+  // If the client returns an empty favicon, fall through to provide the
+  // generic vector icon. |on_icon_fetched| may or may not be called later.
+  // If it's never called, the vector icon we provide below should remain.
+
+  // For bookmarked suggestions, display bookmark icon.
+  bookmarks::BookmarkModel* bookmark_model =
+      model_->client()->GetBookmarkModel();
+  const bool is_bookmarked =
+      bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
+
   const gfx::VectorIcon& vector_icon = AutocompleteMatch::TypeToVectorIcon(
-      match.type, is_bookmarked, false /*is_tab_match*/, match.document_type);
+      match.type, is_bookmarked, match.document_type);
   return gfx::CreateVectorIcon(vector_icon, dip_size, color);
-#endif  // defined(OS_IOS)
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
 }
 
 void OmniboxView::SetUserText(const base::string16& text) {

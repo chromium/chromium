@@ -41,7 +41,7 @@ source_set("google_logo") {
     "//components/search_provider_logos",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/search_engines",
-    "//ios/chrome/browser/ui:ui_util",
+    "//ios/chrome/browser/ui/util",
     "//ios/web",
     "//net",
     "//ui/gfx",

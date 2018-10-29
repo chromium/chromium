@@ -16,9 +16,9 @@
 #include "chromeos/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_auth_token_validator.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
+#include "chromeos/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "chromeos/services/multidevice_setup/public/mojom/constants.mojom.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "components/cryptauth/fake_gcm_device_info_provider.h"
 #include "components/cryptauth/remote_device_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -39,8 +39,8 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
       sync_preferences::TestingPrefServiceSyncable*
           expected_testing_pref_service,
       device_sync::FakeDeviceSyncClient* expected_device_sync_client,
-      secure_channel::FakeSecureChannelClient* expected_secure_channel_client,
       FakeAuthTokenValidator* expected_auth_token_validator,
+      OobeCompletionTracker* expected_oobe_completion_tracker,
       FakeAndroidSmsAppHelperDelegate* expected_android_sms_app_helper_delegate,
       FakeAndroidSmsPairingStateTracker*
           expected_android_sms_pairing_state_tracker,
@@ -48,8 +48,8 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
           expected_gcm_device_info_provider)
       : expected_testing_pref_service_(expected_testing_pref_service),
         expected_device_sync_client_(expected_device_sync_client),
-        expected_secure_channel_client_(expected_secure_channel_client),
         expected_auth_token_validator_(expected_auth_token_validator),
+        expected_oobe_completion_tracker_(expected_oobe_completion_tracker),
         expected_android_sms_app_helper_delegate_(
             expected_android_sms_app_helper_delegate),
         expected_android_sms_pairing_state_tracker_(
@@ -61,11 +61,11 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
   FakeMultiDeviceSetup* instance() { return instance_; }
 
  private:
-  std::unique_ptr<mojom::MultiDeviceSetup> BuildInstance(
+  std::unique_ptr<MultiDeviceSetupBase> BuildInstance(
       PrefService* pref_service,
       device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
       AuthTokenValidator* auth_token_validator,
+      OobeCompletionTracker* oobe_completion_tracker,
       std::unique_ptr<AndroidSmsAppHelperDelegate>
           android_sms_app_helper_delegate,
       std::unique_ptr<AndroidSmsPairingStateTracker>
@@ -75,8 +75,8 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(expected_testing_pref_service_, pref_service);
     EXPECT_EQ(expected_device_sync_client_, device_sync_client);
-    EXPECT_EQ(expected_secure_channel_client_, secure_channel_client);
     EXPECT_EQ(expected_auth_token_validator_, auth_token_validator);
+    EXPECT_EQ(expected_oobe_completion_tracker_, oobe_completion_tracker);
     EXPECT_EQ(expected_android_sms_app_helper_delegate_,
               android_sms_app_helper_delegate.get());
     EXPECT_EQ(expected_android_sms_pairing_state_tracker_,
@@ -90,8 +90,8 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
 
   sync_preferences::TestingPrefServiceSyncable* expected_testing_pref_service_;
   device_sync::FakeDeviceSyncClient* expected_device_sync_client_;
-  secure_channel::FakeSecureChannelClient* expected_secure_channel_client_;
   FakeAuthTokenValidator* expected_auth_token_validator_;
+  OobeCompletionTracker* expected_oobe_completion_tracker_;
   FakeAndroidSmsAppHelperDelegate* expected_android_sms_app_helper_delegate_;
   FakeAndroidSmsPairingStateTracker*
       expected_android_sms_pairing_state_tracker_;
@@ -118,9 +118,8 @@ class MultiDeviceSetupServiceTest : public testing::Test {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     fake_device_sync_client_ =
         std::make_unique<device_sync::FakeDeviceSyncClient>();
-    fake_secure_channel_client_ =
-        std::make_unique<secure_channel::FakeSecureChannelClient>();
     fake_auth_token_validator_ = std::make_unique<FakeAuthTokenValidator>();
+    fake_oobe_completion_tracker_ = std::make_unique<OobeCompletionTracker>();
     auto fake_android_sms_app_helper_delegate =
         std::make_unique<FakeAndroidSmsAppHelperDelegate>();
     fake_android_sms_app_helper_delegate_ =
@@ -136,7 +135,8 @@ class MultiDeviceSetupServiceTest : public testing::Test {
     fake_multidevice_setup_factory_ =
         std::make_unique<FakeMultiDeviceSetupFactory>(
             test_pref_service_.get(), fake_device_sync_client_.get(),
-            fake_secure_channel_client_.get(), fake_auth_token_validator_.get(),
+            fake_auth_token_validator_.get(),
+            fake_oobe_completion_tracker_.get(),
             fake_android_sms_app_helper_delegate_,
             fake_android_sms_pairing_state_tracker_,
             fake_gcm_device_info_provider_.get());
@@ -147,15 +147,20 @@ class MultiDeviceSetupServiceTest : public testing::Test {
         service_manager::TestConnectorFactory::CreateForUniqueService(
             std::make_unique<MultiDeviceSetupService>(
                 test_pref_service_.get(), fake_device_sync_client_.get(),
-                fake_secure_channel_client_.get(),
                 fake_auth_token_validator_.get(),
+                fake_oobe_completion_tracker_.get(),
                 std::move(fake_android_sms_app_helper_delegate),
                 std::move(fake_android_sms_pairing_state_tracker),
                 fake_gcm_device_info_provider_.get()));
 
     auto connector = connector_factory_->CreateConnector();
+
     connector->BindInterface(mojom::kServiceName, &multidevice_setup_ptr_);
     multidevice_setup_ptr_.FlushForTesting();
+
+    connector->BindInterface(mojom::kServiceName,
+                             &privileged_host_device_setter_ptr_);
+    privileged_host_device_setter_ptr_.FlushForTesting();
   }
 
   void TearDown() override {
@@ -193,6 +198,10 @@ class MultiDeviceSetupServiceTest : public testing::Test {
     return multidevice_setup_ptr_;
   }
 
+  mojom::PrivilegedHostDeviceSetterPtr& privileged_host_device_setter_ptr() {
+    return privileged_host_device_setter_ptr_;
+  }
+
  private:
   void OnDebugEventTriggered(base::OnceClosure quit_closure, bool success) {
     last_debug_event_success_ = success;
@@ -205,9 +214,8 @@ class MultiDeviceSetupServiceTest : public testing::Test {
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
-  std::unique_ptr<secure_channel::FakeSecureChannelClient>
-      fake_secure_channel_client_;
   std::unique_ptr<FakeAuthTokenValidator> fake_auth_token_validator_;
+  std::unique_ptr<OobeCompletionTracker> fake_oobe_completion_tracker_;
   FakeAndroidSmsAppHelperDelegate* fake_android_sms_app_helper_delegate_;
   FakeAndroidSmsPairingStateTracker* fake_android_sms_pairing_state_tracker_;
   std::unique_ptr<cryptauth::FakeGcmDeviceInfoProvider>
@@ -219,6 +227,7 @@ class MultiDeviceSetupServiceTest : public testing::Test {
   base::Optional<bool> last_debug_event_success_;
 
   mojom::MultiDeviceSetupPtr multidevice_setup_ptr_;
+  mojom::PrivilegedHostDeviceSetterPtr privileged_host_device_setter_ptr_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupServiceTest);
 };
@@ -293,9 +302,13 @@ TEST_F(MultiDeviceSetupServiceTest, CallFunctionsBeforeInitialization) {
 }
 
 TEST_F(MultiDeviceSetupServiceTest, SetThenRemoveBeforeInitialization) {
-  multidevice_setup_ptr()->SetHostDevice("publicKey", "authToken",
+  multidevice_setup_ptr()->SetHostDevice("deviceId1", "authToken",
                                          base::DoNothing());
   multidevice_setup_ptr().FlushForTesting();
+
+  privileged_host_device_setter_ptr()->SetHostDevice("deviceId2",
+                                                     base::DoNothing());
+  privileged_host_device_setter_ptr().FlushForTesting();
 
   multidevice_setup_ptr()->RemoveHostDevice();
   multidevice_setup_ptr().FlushForTesting();
@@ -307,6 +320,7 @@ TEST_F(MultiDeviceSetupServiceTest, SetThenRemoveBeforeInitialization) {
   // forwarded.
   FinishInitialization();
   EXPECT_TRUE(fake_multidevice_setup()->set_host_args().empty());
+  EXPECT_TRUE(fake_multidevice_setup()->set_host_without_auth_args().empty());
   EXPECT_EQ(1u, fake_multidevice_setup()->num_remove_host_calls());
 }
 
@@ -314,11 +328,15 @@ TEST_F(MultiDeviceSetupServiceTest, RemoveThenSetThenSetBeforeInitialization) {
   multidevice_setup_ptr()->RemoveHostDevice();
   multidevice_setup_ptr().FlushForTesting();
 
-  multidevice_setup_ptr()->SetHostDevice("publicKey1", "authToken1",
+  privileged_host_device_setter_ptr()->SetHostDevice("deviceId1",
+                                                     base::DoNothing());
+  privileged_host_device_setter_ptr().FlushForTesting();
+
+  multidevice_setup_ptr()->SetHostDevice("deviceId2", "authToken2",
                                          base::DoNothing());
   multidevice_setup_ptr().FlushForTesting();
 
-  multidevice_setup_ptr()->SetHostDevice("publicKey2", "authToken2",
+  multidevice_setup_ptr()->SetHostDevice("deviceId3", "authToken3",
                                          base::DoNothing());
   multidevice_setup_ptr().FlushForTesting();
 
@@ -327,12 +345,42 @@ TEST_F(MultiDeviceSetupServiceTest, RemoveThenSetThenSetBeforeInitialization) {
   // Finish initialization; only the second SetHostDevice() call should have
   // been forwarded.
   FinishInitialization();
-  EXPECT_EQ(1u, fake_multidevice_setup()->set_host_args().size());
-  EXPECT_EQ("publicKey2",
-            std::get<0>(fake_multidevice_setup()->set_host_args()[0]));
-  EXPECT_EQ("authToken2",
-            std::get<1>(fake_multidevice_setup()->set_host_args()[0]));
   EXPECT_EQ(0u, fake_multidevice_setup()->num_remove_host_calls());
+  EXPECT_TRUE(fake_multidevice_setup()->set_host_without_auth_args().empty());
+  EXPECT_EQ(1u, fake_multidevice_setup()->set_host_args().size());
+  EXPECT_EQ("deviceId3",
+            std::get<0>(fake_multidevice_setup()->set_host_args()[0]));
+  EXPECT_EQ("authToken3",
+            std::get<1>(fake_multidevice_setup()->set_host_args()[0]));
+}
+
+TEST_F(MultiDeviceSetupServiceTest,
+       RemoveThenSetThenSetBeforeInitialization_NoAuthToken) {
+  multidevice_setup_ptr()->RemoveHostDevice();
+  multidevice_setup_ptr().FlushForTesting();
+
+  multidevice_setup_ptr()->SetHostDevice("deviceId1", "authToken1",
+                                         base::DoNothing());
+  multidevice_setup_ptr().FlushForTesting();
+
+  multidevice_setup_ptr()->SetHostDevice("deviceId2", "authToken2",
+                                         base::DoNothing());
+  multidevice_setup_ptr().FlushForTesting();
+
+  privileged_host_device_setter_ptr()->SetHostDevice("deviceId3",
+                                                     base::DoNothing());
+  privileged_host_device_setter_ptr().FlushForTesting();
+
+  EXPECT_FALSE(fake_multidevice_setup());
+
+  // Finish initialization; only the second SetHostDevice() call should have
+  // been forwarded.
+  FinishInitialization();
+  EXPECT_EQ(0u, fake_multidevice_setup()->num_remove_host_calls());
+  EXPECT_TRUE(fake_multidevice_setup()->set_host_args().empty());
+  EXPECT_EQ(1u, fake_multidevice_setup()->set_host_without_auth_args().size());
+  EXPECT_EQ("deviceId3",
+            fake_multidevice_setup()->set_host_without_auth_args()[0].first);
 }
 
 TEST_F(MultiDeviceSetupServiceTest, FinishInitializationFirst) {
@@ -369,7 +417,7 @@ TEST_F(MultiDeviceSetupServiceTest, FinishInitializationFirst) {
   EXPECT_EQ(1u, fake_multidevice_setup()->get_eligible_hosts_args().size());
 
   // SetHostDevice().
-  multidevice_setup_ptr()->SetHostDevice("publicKey", "authToken",
+  multidevice_setup_ptr()->SetHostDevice("deviceId", "authToken",
                                          base::DoNothing());
   multidevice_setup_ptr().FlushForTesting();
   EXPECT_EQ(1u, fake_multidevice_setup()->set_host_args().size());
@@ -400,6 +448,12 @@ TEST_F(MultiDeviceSetupServiceTest, FinishInitializationFirst) {
   multidevice_setup_ptr()->RetrySetHostNow(base::DoNothing());
   multidevice_setup_ptr().FlushForTesting();
   EXPECT_EQ(1u, fake_multidevice_setup()->retry_set_host_now_args().size());
+
+  // SetHostDevice(), without an auth token.
+  privileged_host_device_setter_ptr()->SetHostDevice("deviceId",
+                                                     base::DoNothing());
+  privileged_host_device_setter_ptr().FlushForTesting();
+  EXPECT_EQ(1u, fake_multidevice_setup()->set_host_without_auth_args().size());
 }
 
 }  // namespace multidevice_setup

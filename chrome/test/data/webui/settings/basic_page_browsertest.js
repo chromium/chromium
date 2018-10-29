@@ -22,7 +22,7 @@ SettingsBasicPageBrowserTest.prototype = {
 };
 
 // http://crbug/738146
-TEST_F('SettingsBasicPageBrowserTest', 'DISABLED_Load', function() {
+TEST_F('SettingsBasicPageBrowserTest', 'Load', function() {
   // Assign |self| to |this| instead of binding since 'this' in suite()
   // and test() will be a Mocha 'Suite' or 'Test' instance.
   const self = this;
@@ -55,10 +55,9 @@ TEST_F('SettingsBasicPageBrowserTest', 'DISABLED_Load', function() {
         setTimeout(function() {
           // All the sections must be hidden by the TestSearchManager, just like
           // the real SearchManager. Otherwise, the bug doesn't manifest.
-          const sections =
-              Polymer.dom().querySelectorAll('* /deep/ settings-section');
-          for (let i = 0; i < sections.length; i++)
-            sections[i].hiddenBySearch = !!text;
+          const sections = page.parentNode.querySelectorAll('settings-section');
+          for (let section of sections)
+            section.hiddenBySearch = !!text;
 
           this.searchRequest_.resolver.resolve(this.searchRequest_);
           this.methodCalled('search', text);

@@ -94,7 +94,7 @@ bool GetOrCreateV8Value(v8::Local<v8::Context> context,
   if (ppapi::VarTracker::IsVarTypeRefcounted(var.type)) {
     if (parent_ids->count(var.value.as_id) != 0)
       return false;
-    VarHandleMap::iterator it = visited_ids->find(var.value.as_id);
+    auto it = visited_ids->find(var.value.as_id);
     if (it != visited_ids->end()) {
       *result = it->second;
       return true;
@@ -130,8 +130,10 @@ bool GetOrCreateV8Value(v8::Local<v8::Context> context,
       // in the sense that string primitives in JavaScript can't be referenced
       // in the same way that string vars can in pepper. But that information
       // isn't very useful and primitive strings are a more expected form in JS.
-      *result = v8::String::NewFromUtf8(
-          isolate, value.c_str(), v8::String::kNormalString, value.size());
+      *result =
+          v8::String::NewFromUtf8(isolate, value.c_str(),
+                                  v8::NewStringType::kNormal, value.size())
+              .ToLocalChecked();
       break;
     }
     case PP_VARTYPE_ARRAY_BUFFER: {
@@ -399,10 +401,8 @@ bool V8VarConverter::ToV8Value(const PP_Var& var,
       DCHECK(current_v8->IsObject());
       v8::Local<v8::Object> v8_object = current_v8.As<v8::Object>();
 
-      for (DictionaryVar::KeyValueMap::const_iterator iter =
-               dict_var->key_value_map().begin();
-           iter != dict_var->key_value_map().end();
-           ++iter) {
+      for (auto iter = dict_var->key_value_map().begin();
+           iter != dict_var->key_value_map().end(); ++iter) {
         const std::string& key = iter->first;
         const PP_Var& child_var = iter->second.get();
         v8::Local<v8::Value> child_v8;
@@ -419,10 +419,11 @@ bool V8VarConverter::ToV8Value(const PP_Var& var,
         if (did_create && CanHaveChildren(child_var))
           stack.push_back(child_var);
         v8::TryCatch try_catch(isolate);
-        v8_object->Set(
-            v8::String::NewFromUtf8(
-                isolate, key.c_str(), v8::String::kNormalString, key.length()),
-            child_v8);
+        v8_object->Set(v8::String::NewFromUtf8(isolate, key.c_str(),
+                                               v8::NewStringType::kInternalized,
+                                               key.length())
+                           .ToLocalChecked(),
+                       child_v8);
         if (try_catch.HasCaught()) {
           LOG(ERROR) << "Setter for property " << key.c_str() << " threw an "
                      << "exception.";

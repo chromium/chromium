@@ -17,7 +17,6 @@
 #include "chrome/renderer/safe_browsing/scorer.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "content/public/renderer/document_state.h"
-#include "content/public/renderer/navigation_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -27,7 +26,6 @@
 #include "third_party/blink/public/web/web_view.h"
 
 using content::DocumentState;
-using content::NavigationState;
 using content::RenderThread;
 
 namespace safe_browsing {

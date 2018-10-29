@@ -12,6 +12,7 @@
 #include "chrome/browser/net/dns_probe_test_util.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "net/dns/dns_client.h"
+#include "net/dns/dns_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::RunLoop;

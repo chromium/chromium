@@ -6,7 +6,7 @@
   },
   "1": {
     "benchmarks": {
-      "dummy_benchmark.histogram_benchmark_1": {}
+      "dummy_benchmark.noisy_benchmark_1": {}
     }
   }
 }

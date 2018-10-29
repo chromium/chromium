@@ -13,16 +13,22 @@ BackgroundFetchResponse::BackgroundFetchResponse(
 
 BackgroundFetchResponse::~BackgroundFetchResponse() = default;
 
-BackgroundFetchResult::BackgroundFetchResult(base::Time response_time,
-                                             FailureReason failure_reason)
-    : response_time(response_time), failure_reason(failure_reason) {}
+BackgroundFetchResult::BackgroundFetchResult(
+    std::unique_ptr<BackgroundFetchResponse> response,
+    base::Time response_time,
+    FailureReason failure_reason)
+    : response(std::move(response)),
+      response_time(response_time),
+      failure_reason(failure_reason) {}
 
 BackgroundFetchResult::BackgroundFetchResult(
+    std::unique_ptr<BackgroundFetchResponse> response,
     base::Time response_time,
     const base::FilePath& path,
     base::Optional<storage::BlobDataHandle> blob_handle,
     uint64_t file_size)
-    : response_time(response_time),
+    : response(std::move(response)),
+      response_time(response_time),
       file_path(path),
       blob_handle(blob_handle),
       file_size(file_size),

@@ -2,10 +2,10 @@ Document::nodesFromRect : CSS scale transforms - bug 85792
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Check unscaled area-testing for sanity
 PASS All correct nodes found for rect
 PASS All correct nodes found for rect
@@ -35,4 +35,3 @@ PASS All correct nodes found for rect
 PASS All correct nodes found for rect
 PASS All correct nodes found for rect
 PASS All correct nodes found for rect
-

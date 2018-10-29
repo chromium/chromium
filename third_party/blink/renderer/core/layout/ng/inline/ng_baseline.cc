@@ -10,13 +10,9 @@
 
 namespace blink {
 
-bool operator==(const NGBaselineRequest& lhs, const NGBaselineRequest& rhs) {
-  return lhs.algorithm_type == rhs.algorithm_type &&
-         lhs.baseline_type == rhs.baseline_type;
-}
-
-bool operator!=(const NGBaselineRequest& lhs, const NGBaselineRequest& rhs) {
-  return !(lhs == rhs);
+bool NGBaselineRequest::operator==(const NGBaselineRequest& other) const {
+  return algorithm_type == other.algorithm_type &&
+         baseline_type == other.baseline_type;
 }
 
 bool NGBaseline::ShouldPropagateBaselines(const NGLayoutInputNode node) {

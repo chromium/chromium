@@ -34,7 +34,9 @@ ProcessInternalsUI::ProcessInternalsUI(WebUI* web_ui)
   WebUIDataSource* source =
       WebUIDataSource::Create(kChromeUIProcessInternalsHost);
 
+  source->AddResourcePath("url.mojom.js", IDR_URL_MOJO_JS);
   source->AddResourcePath("process_internals.js", IDR_PROCESS_INTERNALS_JS);
+  source->AddResourcePath("process_internals.css", IDR_PROCESS_INTERNALS_CSS);
   source->AddResourcePath("process_internals.mojom.js",
                           IDR_PROCESS_INTERNALS_MOJO_JS);
   source->SetDefaultResource(IDR_PROCESS_INTERNALS_HTML);
@@ -50,13 +52,15 @@ ProcessInternalsUI::ProcessInternalsUI(WebUI* web_ui)
 ProcessInternalsUI::~ProcessInternalsUI() = default;
 
 void ProcessInternalsUI::BindProcessInternalsHandler(
-    ::mojom::ProcessInternalsHandlerRequest request) {
-  ui_handler_ =
-      std::make_unique<ProcessInternalsHandlerImpl>(std::move(request));
+    ::mojom::ProcessInternalsHandlerRequest request,
+    RenderFrameHost* render_frame_host) {
+  ui_handler_ = std::make_unique<ProcessInternalsHandlerImpl>(
+      render_frame_host->GetSiteInstance()->GetBrowserContext(),
+      std::move(request));
 }
 
 void ProcessInternalsUI::OnInterfaceRequestFromFrame(
-    content::RenderFrameHost* render_frame_host,
+    RenderFrameHost* render_frame_host,
     const std::string& interface_name,
     mojo::ScopedMessagePipeHandle* interface_pipe) {
   // This should not be requested by subframes, so terminate the renderer if
@@ -67,7 +71,7 @@ void ProcessInternalsUI::OnInterfaceRequestFromFrame(
     return;
   }
 
-  registry_.TryBindInterface(interface_name, interface_pipe);
+  registry_.TryBindInterface(interface_name, interface_pipe, render_frame_host);
 }
 
 }  // namespace content

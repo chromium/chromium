@@ -954,44 +954,51 @@ void AUAudioInputStream::SetOutputDeviceForAec(
   }
 
   if (audio_device_id != output_device_id_for_aec_) {
-    log_callback_.Run(
-        base::StringPrintf("AU in: Output device for AEC changed to '%s' (%d)",
-                           output_device_id.c_str(), audio_device_id));
-    SwitchVoiceProcessingOutputDevice(audio_device_id);
+    output_device_id_for_aec_ = audio_device_id;
+    log_callback_.Run(base::StringPrintf(
+        "AU in: Output device for AEC changed to '%s' (%d)",
+        output_device_id.c_str(), output_device_id_for_aec_));
+    // Only restart the stream if it has previously been started.
+    if (audio_unit_)
+      ReinitializeVoiceProcessingAudioUnit();
   }
 }
 
-void AUAudioInputStream::SwitchVoiceProcessingOutputDevice(
-    AudioDeviceID output_device_id) {
+void AUAudioInputStream::ReinitializeVoiceProcessingAudioUnit() {
   DCHECK(use_voice_processing_);
+  DCHECK(audio_unit_);
 
-  output_device_id_for_aec_ = output_device_id;
-  if (!audio_unit_)
-    return;
-
+  const bool was_running = IsRunning();
   OSStatus result = noErr;
-  if (IsRunning()) {
+
+  if (was_running) {
     result = AudioOutputUnitStop(audio_unit_);
     DCHECK_EQ(result, noErr);
   }
 
   CloseAudioUnit();
+
+  // Reset things to a state similar to before the audio unit was opened.
+  // Most of these will be no-ops if the audio unit was opened but not started.
   SetInputCallbackIsActive(false);
   ReportAndResetStats();
   io_buffer_frame_size_ = 0;
   got_input_callback_ = false;
 
   OpenVoiceProcessingAU();
-  result = AudioOutputUnitStart(audio_unit_);
-  if (result != noErr) {
-    OSSTATUS_DLOG(ERROR, result) << "Failed to start acquiring data";
-    Stop();
-    return;
+
+  if (was_running) {
+    result = AudioOutputUnitStart(audio_unit_);
+    if (result != noErr) {
+      OSSTATUS_DLOG(ERROR, result) << "Failed to start acquiring data";
+      Stop();
+      return;
+    }
   }
 
   log_callback_.Run(base::StringPrintf(
       "AU in: Successfully reinitialized AEC for output device id=%d.",
-      output_device_id));
+      output_device_id_for_aec_));
 }
 
 // static

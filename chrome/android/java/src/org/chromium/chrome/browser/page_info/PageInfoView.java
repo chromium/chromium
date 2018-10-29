@@ -13,6 +13,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.Layout;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -170,6 +171,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener, OnLong
 
         public CharSequence url;
         public CharSequence previewLoadOriginalMessage;
+        public CharSequence previewStaleTimestamp;
         public int urlOriginLength;
     }
 
@@ -187,7 +189,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener, OnLong
     public static class ConnectionInfoParams {
         public CharSequence message;
         public CharSequence summary;
-        public CharSequence previewLoadOriginalMessage;
         public Runnable clickCallback;
     }
 
@@ -199,6 +200,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener, OnLong
     private final TextView mConnectionSummary;
     private final TextView mConnectionMessage;
     private final TextView mPreviewMessage;
+    private final TextView mPreviewStaleTimestamp;
     private final TextView mPreviewLoadOriginal;
     private final LinearLayout mPermissionsList;
     private final View mSeparator;
@@ -216,6 +218,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener, OnLong
         mConnectionSummary = (TextView) findViewById(R.id.page_info_connection_summary);
         mConnectionMessage = (TextView) findViewById(R.id.page_info_connection_message);
         mPreviewMessage = (TextView) findViewById(R.id.page_info_preview_message);
+        mPreviewStaleTimestamp = (TextView) findViewById(R.id.page_info_stale_preview_timestamp);
         mPreviewLoadOriginal = (TextView) findViewById(R.id.page_info_preview_load_original);
         mPermissionsList = (LinearLayout) findViewById(R.id.page_info_permissions_list);
         mSeparator = (View) findViewById(R.id.page_info_separator);
@@ -247,8 +250,14 @@ public class PageInfoView extends FrameLayout implements OnClickListener, OnLong
         initializePageInfoViewChild(mPreviewMessage, params.previewUIShown, 0f, null);
         initializePageInfoViewChild(mPreviewLoadOriginal, params.previewUIShown, 0f,
                 params.previewShowOriginalClickCallback);
+        initializePageInfoViewChild(mPreviewStaleTimestamp,
+                params.previewUIShown && !TextUtils.isEmpty(params.previewStaleTimestamp), 0f,
+                null);
         initializePageInfoViewChild(mSeparator, params.separatorShown, 0f, null);
         mPreviewLoadOriginal.setText(params.previewLoadOriginalMessage);
+        if (!TextUtils.isEmpty(params.previewStaleTimestamp)) {
+            mPreviewStaleTimestamp.setText(params.previewStaleTimestamp);
+        }
     }
 
     public void setPermissions(List<PermissionParams> permissionParamsList) {
@@ -365,6 +374,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener, OnLong
         animatableViews.add(mConnectionSummary);
         animatableViews.add(mConnectionMessage);
         animatableViews.add(mPreviewMessage);
+        animatableViews.add(mPreviewStaleTimestamp);
         animatableViews.add(mPreviewLoadOriginal);
         animatableViews.add(mSeparator);
         animatableViews.add(mInstantAppButton);

@@ -10,7 +10,7 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
-#include "jni/AnswersImage_jni.h"
+#include "jni/AnswersImageFetcher_jni.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -49,7 +49,7 @@ class AnswersImageObserverAndroid : public BitmapFetcherService::Observer {
 
 }  // namespace
 
-static void JNI_AnswersImage_CancelAnswersImageRequest(
+static void JNI_AnswersImageFetcher_CancelAnswersImageRequest(
     JNIEnv* env,
     const JavaParamRef<jclass>&,
     const JavaParamRef<jobject>& java_profile,
@@ -61,7 +61,7 @@ static void JNI_AnswersImage_CancelAnswersImageRequest(
   bitmap_fetcher_service->CancelRequest(java_request_id);
 }
 
-static int JNI_AnswersImage_RequestAnswersImage(
+static int JNI_AnswersImageFetcher_RequestAnswersImage(
     JNIEnv* env,
     const JavaParamRef<jclass>&,
     const JavaParamRef<jobject>& java_profile,

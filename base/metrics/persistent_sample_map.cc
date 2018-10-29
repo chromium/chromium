@@ -5,7 +5,6 @@
 #include "base/metrics/persistent_sample_map.h"
 
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/numerics/safe_conversions.h"
@@ -154,7 +153,7 @@ std::unique_ptr<SampleCountIterator> PersistentSampleMap::Iterator() const {
   // Have to override "const" in order to make sure all samples have been
   // loaded before trying to iterate over the map.
   const_cast<PersistentSampleMap*>(this)->ImportSamples(-1, true);
-  return WrapUnique(new PersistentSampleMapIterator(sample_counts_));
+  return std::make_unique<PersistentSampleMapIterator>(sample_counts_);
 }
 
 // static

@@ -1,0 +1,64 @@
+<!doctype HTML>
+
+<!--
+Runs an acquireDisplayLock, which appends the first child and schedules two
+continuations. The continuations append second and third children as well
+as scheduling two more continuations each, for a total of 7 children.
+-->
+
+<style>
+#parent {
+  contain: paint;
+  width: 150px;
+  height: 150px;
+  background: lightblue;
+}
+.child {
+  width: 20px;
+  height: 20px;
+  background: lightgreen;
+}
+</style>
+
+<div id="log"></div>
+<div id="parent"></div>
+
+<script>
+if (window.testRunner)
+  window.testRunner.waitUntilDone();
+
+function createChild(id) {
+  let child = document.createElement("div");
+  child.classList = "child";
+  child.innerHTML = "" + id;
+  return child;
+}
+
+function addChild(id, context) {
+  document.getElementById("parent").appendChild(createChild(id));
+  if (id > 3)
+    return;
+  context.schedule((context) => { addChild(id * 2, context); });
+  context.schedule((context) => { addChild(id * 2 + 1, context); });
+}
+
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  if (window.testRunner)
+    window.testRunner.notifyDone();
+}
+
+function acquire() {
+  document.getElementById("parent").acquireDisplayLock(
+    (context) => { addChild(1, context) }).then(
+    () => { finishTest("PASS"); },
+    () => { finishTest("FAIL"); });
+}
+
+window.onload = acquire;
+
+</script>
+
+
+

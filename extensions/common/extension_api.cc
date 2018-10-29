@@ -173,7 +173,7 @@ bool ExtensionAPI::IsAnyFeatureAvailableToContext(
     Feature::Context context,
     const GURL& url,
     CheckAliasStatus check_alias) {
-  FeatureProviderMap::iterator provider = dependency_providers_.find("api");
+  auto provider = dependency_providers_.find("api");
   CHECK(provider != dependency_providers_.end());
 
   if (api.IsAvailableToContext(extension, context, url).is_available())
@@ -226,7 +226,7 @@ Feature::Availability ExtensionAPI::IsAvailable(const std::string& full_name,
 base::StringPiece ExtensionAPI::GetSchemaStringPiece(
     const std::string& api_name) {
   DCHECK_EQ(api_name, GetAPINameFromFullName(api_name, nullptr));
-  StringPieceMap::iterator cached = schema_strings_.find(api_name);
+  auto cached = schema_strings_.find(api_name);
   if (cached != schema_strings_.end())
     return cached->second;
 
@@ -247,7 +247,7 @@ const base::DictionaryValue* ExtensionAPI::GetSchema(
   std::string api_name = GetAPINameFromFullName(full_name, &child_name);
 
   const base::DictionaryValue* result = NULL;
-  SchemaMap::iterator maybe_schema = schemas_.find(api_name);
+  auto maybe_schema = schemas_.find(api_name);
   if (maybe_schema != schemas_.end()) {
     result = maybe_schema->second.get();
   } else {
@@ -273,8 +273,7 @@ const Feature* ExtensionAPI::GetFeatureDependency(
   std::string feature_name;
   SplitDependencyName(full_name, &feature_type, &feature_name);
 
-  FeatureProviderMap::iterator provider =
-      dependency_providers_.find(feature_type);
+  auto provider = dependency_providers_.find(feature_type);
   if (provider == dependency_providers_.end())
     return NULL;
 
@@ -332,7 +331,7 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
   if (alias.empty())
     return Feature::Availability(Feature::NOT_PRESENT, "Alias not defined");
 
-  FeatureProviderMap::iterator provider = dependency_providers_.find("api");
+  auto provider = dependency_providers_.find("api");
   CHECK(provider != dependency_providers_.end());
 
   // Check if there is a child feature associated with full name for alias API.

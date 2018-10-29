@@ -21,6 +21,7 @@
 <translation id="1270290102613614947">画面キーボードは無効です</translation>
 <translation id="1272079795634619415">中止</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />（<ph name="ANNOTATION" />）</translation>
+<translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" />の <ph name="COME_BACK_TIME" /> になったら利用を再開できます。</translation>
 <translation id="1290331692326790741">電波: 弱い</translation>
 <translation id="1293264513303784526">USB-C デバイス（左側面のポート）</translation>
 <translation id="1294929383540927798">ロック画面の通知設定を変更</translation>
@@ -98,6 +99,7 @@
 <translation id="2501920221385095727">固定キー</translation>
 <translation id="2509468283778169019">Caps Lock がオンになっています</translation>
 <translation id="2532589005999780174">ハイコントラスト モード</translation>
+<translation id="255671100581129685">Google アシスタントは、公開セッションではご利用いただけません。</translation>
 <translation id="2575685495496069081">マルチログインは無効にされています</translation>
 <translation id="2582112259361606227">再起動して更新</translation>
 <translation id="2597972630681408282">夜間モード: <ph name="NIGHT_LIGHT_STATUS" /></translation>
@@ -110,7 +112,6 @@
 <translation id="277257480934873581"><ph name="NAME" /> に再接続しています</translation>
 <translation id="2790844815106384441">ウェブサイトで位置情報サービスまたは端末のマイクやカメラなどの機能を使用できるように指定する</translation>
 <translation id="2792498699870441125">Alt+ 検索</translation>
-<translation id="2808012452536866044">Better Together でスマートフォンが新しいものに切り替えられました</translation>
 <translation id="2819276065543622893">ログアウトします。</translation>
 <translation id="2825619548187458965">シェルフ</translation>
 <translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
@@ -129,6 +130,7 @@
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3009178788565917040">出力</translation>
 <translation id="3019353588588144572">バッテリーがフル充電されるまであと: <ph name="TIME_REMAINING" /></translation>
+<translation id="3055162170959710888">あなたは今日、この端末を <ph name="USED_TIME" />使用しました</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">メニューを展開</translation>
 <translation id="3087734570205094154">下</translation>
@@ -150,9 +152,9 @@
 <translation id="3413817803639110246">通知はありません</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3454224730401036106">より安全なネットワークに接続が切り替えられました</translation>
-<translation id="3465566417615315331">写真をクリックしてください</translation>
 <translation id="3477079411857374384">Control+Shift+Space</translation>
 <translation id="3510164367642747937">マウスカーソルをハイライト表示する</translation>
+<translation id="3510503721818156981">Chromebook が新しいスマートフォンに接続されました</translation>
 <translation id="3513798432020909783">このアカウントは <ph name="MANAGER_EMAIL" /> により管理されています</translation>
 <translation id="3573179567135747900">「<ph name="FROM_LOCALE" />」に戻します（再起動が必要です）</translation>
 <translation id="3595596368722241419">バッテリー残量: 満</translation>
@@ -196,6 +198,7 @@
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">虫メガネ</translation>
 <translation id="4351433414020964307">アシスタントを読み込んでいます...</translation>
+<translation id="435527878592612277">写真を選択</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4379531060876907730">タッチペン ツール</translation>
 <translation id="4421231901400348175">リモート サポート経由で <ph name="HELPER_NAME" /> と画面の制御を共有しています。</translation>
@@ -214,6 +217,7 @@
 <translation id="4659419629803378708">ChromeVox を有効にしました</translation>
 <translation id="4734965478015604180">横</translation>
 <translation id="476166673298332917">この端末の管理者は、パスワードや通信内容を含むすべてのアクティビティにアクセスできます。</translation>
+<translation id="4774338217796918551">明日の <ph name="COME_BACK_TIME" /> になったら利用を再開できます。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> のパスワード</translation>
 <translation id="4778095205580009397">Google アシスタントは、デモセッションではご利用いただけません。</translation>
 <translation id="479989351350248267">検索</translation>
@@ -228,6 +232,7 @@
 <translation id="4918086044614829423">承諾</translation>
 <translation id="4924411785043111640">再起動してリセット</translation>
 <translation id="4961318399572185831">画面をキャスト</translation>
+<translation id="5030687792513154421">時間切れです</translation>
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
 <translation id="5168181903108465623">キャスト デバイスを利用できます</translation>
@@ -248,7 +253,6 @@
 <translation id="554893713779400387">音声入力を切り替え</translation>
 <translation id="5571066253365925590">Bluetooth オン</translation>
 <translation id="5597451508971090205"><ph name="DATE" /> (<ph name="SHORT_WEEKDAY" />)</translation>
-<translation id="5598551463564921617">Better Together がオンになっています</translation>
 <translation id="5600837773213129531">音声フィードバックを無効にするには Ctrl+Alt+Z を押してください。</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
 <translation id="5669267381087807207">有効にしています</translation>
@@ -276,7 +280,6 @@
 <translation id="598882571027504733">アップデートを取得するには、キーボードを接続した状態で Chromebook を再起動してください。</translation>
 <translation id="5992218262414051481">ハイコントラスト モードが有効になりました。無効にするには、Ctrl+検索+H キーをもう一度押します。</translation>
 <translation id="6018164090099858612">ミラーモードを終了しています</translation>
-<translation id="6040143037577758943">閉じる</translation>
 <translation id="6043212731627905357">このモニターは <ph name="DEVICE_TYPE" /> では使用できません（サポートされていません）。</translation>
 <translation id="6043994281159824495">ログアウト</translation>
 <translation id="6047696787498798094">別のユーザーに切り替えると画面の共有は解除されます。続行してもよろしいですか？</translation>
@@ -294,6 +297,7 @@
 <translation id="6297287540776456956">タッチペンを使って部分を選択してください</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> を <ph name="ROTATION" /> に回転しました</translation>
 <translation id="632744581670418035">キーボード オーバーレイ</translation>
+<translation id="6344698853700675736">夜間モードをオンまたはオフにします</translation>
 <translation id="6376931439017688372">Bluetooth がオンです</translation>
 <translation id="639644700271529076">CapsLock 機能はオフになっています</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -339,6 +343,7 @@
 <translation id="7066646422045619941">このネットワークは管理者によって無効にされています。</translation>
 <translation id="7067196344162293536">自動回転</translation>
 <translation id="7068360136237591149">ファイルを開いて</translation>
+<translation id="7076293881109082629">ログイン中</translation>
 <translation id="7092922358121866860">夜間モードの設定を表示</translation>
 <translation id="7098389117866926363">USB-C デバイス（背面左のポート）</translation>
 <translation id="7131634465328662194">制限時間になると自動的にログアウトします。</translation>
@@ -359,6 +364,7 @@
 <translation id="7510334386202674593">Ctrl+Shift+L</translation>
 <translation id="7526573455193969409">ネットワークが監視されている可能性があります</translation>
 <translation id="7536035074519304529">IP アドレス: <ph name="ADDRESS" /></translation>
+<translation id="7548434653388805669">おやすみの時間です</translation>
 <translation id="7561014039265304140"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度は <ph name="FALLBACK_RESOLUTION" /> に変更されました</translation>
 <translation id="7562368315689366235">絵文字パレット</translation>
 <translation id="7564874036684306347">ウィンドウを別のデスクトップに移動すると、予期しない動作が起こることがあります。以降の通知、ウィンドウ、ダイアログは、複数のデスクトップに分かれて表示される可能性があります。</translation>
@@ -401,12 +407,14 @@
 <translation id="8152119955266188852">拡大鏡（全画面）のショートカットを押しました。この機能をオンにしますか？</translation>
 <translation id="8190698733819146287">言語と入力方法をカスタマイズ...</translation>
 <translation id="8192202700944119416">通知は非表示になっています。</translation>
+<translation id="8236042855478648955">休憩の時間です</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8297006494302853456">弱い</translation>
 <translation id="8308637677604853869">前のメニュー</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8351131234907093545">メモを作成</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> のオプション メニュー</translation>
+<translation id="8394567579869570560">保護者の方がこの端末をロックしました</translation>
 <translation id="8406981827175133772">拡大鏡（全画面）</translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8427213022735114808">音声入力では、テキスト欄で音声入力できるように Google に音声を送信します。</translation>
@@ -436,7 +444,6 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8825534185036233643">2 台を超えるディスプレイのミラーリングはサポートされていません。</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8841375032071747811">戻るボタン</translation>
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
@@ -455,7 +462,7 @@
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080206825613744995">マイクは使用中です。</translation>
 <translation id="9089416786594320554">入力方法</translation>
-<translation id="9091626656156419976">ディスプレイ「<ph name="DISPLAY_NAME" />」を削除しました</translation>
+<translation id="9091626656156419976">ディスプレイ「<ph name="DISPLAY_NAME" />」が取り外されました</translation>
 <translation id="9151726767154816831">更新するには、再起動して Powerwash を実行してください</translation>
 <translation id="9179259655489829027">この機能を使用すると、パスワードを入力せずにログイン ユーザーにすばやくアクセスできます。この機能は信頼できるアカウントにのみ使用してください。</translation>
 <translation id="9193626018745640770">不明な受信デバイスにキャストしています</translation>
@@ -463,6 +470,7 @@
 <translation id="9201131092683066720">バッテリー残量: <ph name="PERCENTAGE" />%。</translation>
 <translation id="9210037371811586452">デスクトップ統合モードの終了中</translation>
 <translation id="9215934040295798075">壁紙を設定</translation>
+<translation id="921989828232331238">保護者の方がこの端末を終日ロックしています</translation>
 <translation id="923686485342484400">ログアウトするには、Ctrl Shift Q を 2 回押します。</translation>
 <translation id="938963181863597773">カレンダーに予定は入ってる？</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>

@@ -48,12 +48,11 @@ namespace blink {
 
 class DOMWrapperWorld;
 class Element;
+class ExecutionContext;
 class KURL;
 class LocalFrame;
 class ScriptSourceCode;
 class SecurityOrigin;
-
-typedef WTF::Vector<v8::Extension*> V8Extensions;
 
 // This class exposes methods to run script in a frame (in the main world and
 // in isolated worlds). An instance can be obtained by using
@@ -145,7 +144,7 @@ class CORE_EXPORT ScriptController final
   // affect v8 contexts initialized after this call. Takes ownership of
   // the v8::Extension object passed.
   static void RegisterExtensionIfNeeded(v8::Extension*);
-  static V8Extensions& RegisteredExtensions();
+  static v8::ExtensionConfiguration ExtensionsFor(const ExecutionContext*);
 
  private:
   ScriptController(LocalFrame& frame,

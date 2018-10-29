@@ -24,16 +24,17 @@ extern const char kAutofillCreditCardUploadDescription[];
 extern const char kAutofillDownstreamUseGooglePayBrandingOniOSName[];
 extern const char kAutofillDownstreamUseGooglePayBrandingOniOSDescription[];
 
-// Title and description for the flag to control the usage of iframe messaging
-// for autofill on iOS.
-extern const char kAutofillEnableIFrameSupportOniOSName[];
-extern const char kAutofillEnableIFrameSupportOniOSDescription[];
-
 // Title and description for the flag to control the updated prompt explanation
 // when offering credit card upload.
 extern const char kEnableAutofillCreditCardUploadUpdatePromptExplanationName[];
 extern const char
     kEnableAutofillCreditCardUploadUpdatePromptExplanationDescription[];
+
+// Title and description for the flag to control if credit card save should
+// utilize the Autofill StrikeDatabase when determining whether save should be
+// offered.
+extern const char kEnableAutofillSaveCreditCardUsesStrikeSystemName[];
+extern const char kEnableAutofillSaveCreditCardUsesStrikeSystemDescription[];
 
 // Title and description for the flag to control if Chrome Sync should use the
 // sandbox servers.
@@ -106,6 +107,11 @@ extern const char kAutofillUpstreamUseGooglePayBrandingOnMobileDescription[];
 extern const char kBrowserContainerFullscreenName[];
 extern const char kBrowserContainerFullscreenDescription[];
 
+// Title and description for the flag to make browser container contain the NTP
+// directly.
+extern const char kBrowserContainerContainsNTPName[];
+extern const char kBrowserContainerContainsNTPDescription[];
+
 // Title and description for the flag to control redirection to the task
 // scheduler.
 extern const char kBrowserTaskScheduler[];
@@ -114,6 +120,11 @@ extern const char kBrowserTaskSchedulerDescription[];
 // Title and description for the flag to enable Captive Portal metrics logging.
 extern const char kCaptivePortalMetricsName[];
 extern const char kCaptivePortalMetricsDescription[];
+
+// Title and description for the flag to enable automatically switching to the
+// regular tabs after closing the last incognito tab.
+extern const char kClosingLastIncognitoTabName[];
+extern const char kClosingLastIncognitoTabDescription[];
 
 // Title and description for the flag to enable Contextual Search.
 extern const char kContextualSearch[];
@@ -134,6 +145,10 @@ extern const char kNewClearBrowsingDataUIDescription[];
 // Title and description for the flag to enable External Search.
 extern const char kExternalSearchName[];
 extern const char kExternalSearchDescription[];
+
+// Title and description for the flag to enable invaliations delivery via FCM.
+extern const char kFCMInvalidationsName[];
+extern const char kFCMInvalidationsDescription[];
 
 // Title and description for the command line switch used to determine the
 // active fullscreen viewport adjustment mode.
@@ -172,8 +187,13 @@ extern const char kNewPasswordFormParsingDescription[];
 
 // Title and description for the flag to show most visited sites and collection
 // shortcuts in the omnibox popup instead of ZeroSuggest.
-extern const char kOmniboxPopupShortcutsName[];
-extern const char kOmniboxPopupShortcutsDescription[];
+extern const char kOmniboxPopupShortcutIconsInZeroStateName[];
+extern const char kOmniboxPopupShortcutIconsInZeroStateDescription[];
+
+// Title and description for the flag to enable the "switch to this tab" option
+// in the omnibox suggestion. It doesn't add new suggestions.
+extern const char kOmniboxTabSwitchSuggestionsName[];
+extern const char kOmniboxTabSwitchSuggestionsDescription[];
 
 // Title and description for the flag to enable elision of the URL path, query,
 // and ref in omnibox URL suggestions.
@@ -189,14 +209,18 @@ extern const char kOutOfWebFullscreenDescription[];
 extern const char kPhysicalWeb[];
 extern const char kPhysicalWebDescription[];
 
+// Title and description for the flag to ignore viewport scale limits.
+extern const char kIgnoresViewportScaleLimitsName[];
+extern const char kIgnoresViewportScaleLimitsDescription[];
+
+// Title and description for the flag to toggle the flag of the search button.
+extern const char kSearchIconToggleName[];
+extern const char kSearchIconToggleDescription[];
+
 // Title and description for the flag to enable WKBackForwardList based
 // navigation manager.
 extern const char kSlimNavigationManagerName[];
 extern const char kSlimNavigationManagerDescription[];
-
-// Title and description for the flag to enable web based error pages.
-extern const char kWebErrorPagesName[];
-extern const char kWebErrorPagesDescription[];
 
 // Title and description for the flag to enable annotating web forms with
 // Autofill field type predictions as placeholder.
@@ -207,11 +231,6 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kSSOWithWKWebViewName[];
 extern const char kSSOWithWKWebViewDescription[];
 
-// Title and description for the flag to enable the TabSwitcher to present the
-// BVC.
-extern const char kTabSwitcherPresentsBVCName[];
-extern const char kTabSwitcherPresentsBVCDescription[];
-
 // Title and description for the flag to enable the toolbar container
 // implementation.
 extern const char kToolbarContainerName[];
@@ -220,6 +239,11 @@ extern const char kToolbarContainerDescription[];
 // Title and description for the flag to enable the unified consent.
 extern const char kUnifiedConsentName[];
 extern const char kUnifiedConsentDescription[];
+
+// Title and description for the flag to enable Gaia Auth Mutlilogin endpoint
+// for identity consistency.
+extern const char kUseMultiloginEndpointName[];
+extern const char kUseMultiloginEndpointDescription[];
 
 // Title and description for the flag to force the consent bump.
 extern const char kForceUnifiedConsentBumpName[];
@@ -237,15 +261,6 @@ extern const char kWebFrameMessagingDescription[];
 extern const char kWebPageTextAccessibilityName[];
 extern const char kWebPageTextAccessibilityDescription[];
 
-// Title and description for the flag to enable Web Payments.
-extern const char kWebPaymentsName[];
-extern const char kWebPaymentsDescription[];
-
-// Title and description for the flag to enable third party payment app
-// integration with Web Payments.
-extern const char kWebPaymentsNativeAppsName[];
-extern const char kWebPaymentsNativeAppsDescription[];
-
 // Title and description for the flag to enable WKHTTPSystemCookieStore usage
 // for main context URL requests.
 extern const char kWKHTTPSystemCookieStoreName[];
@@ -254,6 +269,10 @@ extern const char kWKHTTPSystemCookieStoreDescription[];
 // Title and description for the flag to use the WKWebView snapshotting API.
 extern const char kWKWebViewSnapshotsName[];
 extern const char kWKWebViewSnapshotsDescription[];
+
+// Title and description for the flag to allow custom search engines.
+extern const char kCustomSearchEnginesName[];
+extern const char kCustomSearchEnginesDescription[];
 
 // Please insert your name/description above in alphabetical order.
 

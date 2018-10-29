@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "components/cbor/cbor_values.h"
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "device/fido/fido_parsing_utils.h"
 
 namespace device {
@@ -15,8 +15,8 @@ namespace device {
 namespace {
 
 template <typename Container>
-cbor::CBORValue::ArrayValue ToArrayValue(const Container& container) {
-  cbor::CBORValue::ArrayValue value;
+cbor::Value::ArrayValue ToArrayValue(const Container& container) {
+  cbor::Value::ArrayValue value;
   value.reserve(container.size());
   for (const auto& item : container)
     value.emplace_back(item);
@@ -65,12 +65,12 @@ AuthenticatorGetInfoResponse& AuthenticatorGetInfoResponse::SetOptions(
 
 std::vector<uint8_t> EncodeToCBOR(
     const AuthenticatorGetInfoResponse& response) {
-  cbor::CBORValue::ArrayValue version_array;
+  cbor::Value::ArrayValue version_array;
   for (const auto& version : response.versions()) {
     version_array.emplace_back(version == ProtocolVersion::kCtap ? kCtap2Version
                                                                  : kU2fVersion);
   }
-  cbor::CBORValue::MapValue device_info_map;
+  cbor::Value::MapValue device_info_map;
   device_info_map.emplace(1, std::move(version_array));
 
   if (response.extensions())
@@ -89,7 +89,7 @@ std::vector<uint8_t> EncodeToCBOR(
   }
 
   auto encoded_bytes =
-      cbor::CBORWriter::Write(cbor::CBORValue(std::move(device_info_map)));
+      cbor::Writer::Write(cbor::Value(std::move(device_info_map)));
   DCHECK(encoded_bytes);
   return *encoded_bytes;
 }

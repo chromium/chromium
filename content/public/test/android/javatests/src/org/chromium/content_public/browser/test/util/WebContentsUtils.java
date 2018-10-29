@@ -97,7 +97,22 @@ public class WebContentsUtils {
         }
     }
 
+    /**
+     * Injects the passed Javascript code in the current page and evaluates it, supplying a fake
+     * user gesture. This also differs from {@link WebContents#evaluateJavaScript()} in that it
+     * allows for executing script in non-webui frames.
+     *
+     * @param script The Javascript to execute.
+     */
+    public static void evaluateJavaScriptWithUserGesture(WebContents webContents, String script) {
+        if (script == null) return;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> nativeEvaluateJavaScriptWithUserGesture(webContents, script));
+    }
+
     private static native void nativeReportAllFrameSubmissions(
             WebContents webContents, boolean enabled);
     private static native RenderFrameHost nativeGetFocusedFrame(WebContents webContents);
+    private static native void nativeEvaluateJavaScriptWithUserGesture(
+            WebContents webContents, String script);
 }

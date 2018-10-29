@@ -16,9 +16,11 @@
 #include "android_webview/browser/net/aw_web_resource_request.h"
 #include "android_webview/browser/renderer_host/auto_login_parser.h"
 #include "android_webview/common/url_constants.h"
+#include "base/task/post_task.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler.h"
 #include "components/safe_browsing/features.h"
 #include "components/web_restrictions/browser/web_restrictions_resource_throttle.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_dispatcher_host.h"
 #include "content/public/browser/resource_request_info.h"
@@ -346,8 +348,8 @@ void AwResourceDispatcherHostDelegate::RequestComplete(
     if (IsCancelledBySafeBrowsing(request)) {
       safebrowsing_hit = true;
     }
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&OnReceivedErrorOnUiThread,
                        request_info->GetWebContentsGetterForRequest(),
                        AwWebResourceRequest(*request),
@@ -388,8 +390,8 @@ void AwResourceDispatcherHostDelegate::DownloadStarting(
   const content::ResourceRequestInfo* request_info =
       content::ResourceRequestInfo::ForRequest(request);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&DownloadStartingOnUIThread,
                      request_info->GetWebContentsGetterForRequest(), url,
                      user_agent, content_disposition, mime_type,
@@ -412,8 +414,8 @@ void AwResourceDispatcherHostDelegate::OnResponseStarted(
     // Check for x-auto-login header.
     HeaderData header_data;
     if (ParserHeaderInResponse(request, ALLOW_ANY_REALM, &header_data)) {
-      BrowserThread::PostTask(
-          BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
           base::BindOnce(&NewLoginRequestOnUIThread,
                          request_info->GetWebContentsGetterForRequest(),
                          header_data.realm, header_data.account,
@@ -437,8 +439,8 @@ void AwResourceDispatcherHostDelegate::RemovePendingThrottleOnIoThread(
 void AwResourceDispatcherHostDelegate::OnIoThreadClientReady(
     int new_render_process_id,
     int new_render_frame_id) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AwResourceDispatcherHostDelegate::OnIoThreadClientReadyInternal,
           base::Unretained(
@@ -451,8 +453,8 @@ void AwResourceDispatcherHostDelegate::AddPendingThrottle(
     int render_process_id,
     int render_frame_id,
     IoThreadClientThrottle* pending_throttle) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AwResourceDispatcherHostDelegate::AddPendingThrottleOnIoThread,
           base::Unretained(

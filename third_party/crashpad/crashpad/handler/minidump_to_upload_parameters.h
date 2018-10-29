@@ -18,9 +18,9 @@
 #include <map>
 #include <string>
 
-#include "snapshot/process_snapshot.h"
-
 namespace crashpad {
+
+class ProcessSnapshot;
 
 //! \brief Given a ProcessSnapshot, returns a map of key-value pairs to use as
 //!     HTTP form parameters for upload to a Breakpad crash report colleciton

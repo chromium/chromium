@@ -580,7 +580,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   DrawingBuffer* GetDrawingBuffer() const;
 
   class TextureUnitState {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     TraceWrapperMember<WebGLTexture> texture2d_binding_;
@@ -730,7 +730,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   bool destruction_in_progress_ = false;
   bool marked_canvas_dirty_;
-  bool animation_frame_in_progress_;
+  // For performance reasons we must separately track whether we've
+  // copied WebGL's drawing buffer to the canvas's backing store, for
+  // example for printing.
+  bool must_paint_to_canvas_;
 
   // List of bound VBO's. Used to maintain info about sizes for ARRAY_BUFFER and
   // stored values for ELEMENT_ARRAY_BUFFER
@@ -757,19 +760,19 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   Member<XRDevice> compatible_xr_device_;
 
   HeapVector<TextureUnitState> texture_units_;
-  unsigned long active_texture_unit_;
+  wtf_size_t active_texture_unit_;
 
   Vector<GLenum> compressed_texture_formats_;
 
   // Fixed-size cache of reusable resource providers for video texImage2D calls.
   class LRUCanvasResourceProviderCache {
    public:
-    explicit LRUCanvasResourceProviderCache(size_t capacity);
+    explicit LRUCanvasResourceProviderCache(wtf_size_t capacity);
     // The pointer returned is owned by the image buffer map.
     CanvasResourceProvider* GetCanvasResourceProvider(const IntSize&);
 
    private:
-    void BubbleToFront(size_t idx);
+    void BubbleToFront(wtf_size_t idx);
     Vector<std::unique_ptr<CanvasResourceProvider>> resource_providers_;
   };
   LRUCanvasResourceProviderCache generated_image_cache_ =
@@ -823,7 +826,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool synthesized_errors_to_console_ = true;
   int num_gl_errors_to_console_allowed_;
 
-  unsigned long one_plus_max_non_default_texture_unit_ = 0;
+  wtf_size_t one_plus_max_non_default_texture_unit_ = 0;
 
   std::unique_ptr<Extensions3DUtil> extensions_util_;
 
@@ -1669,7 +1672,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                         GLenum format,
                         GLenum type,
                         DOMArrayBufferView* pixels,
-                        GLuint offset);
+                        long long offset);
 
  private:
   WebGLRenderingContextBase(CanvasRenderingContextHost*,

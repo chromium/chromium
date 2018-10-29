@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/metrics/time_to_first_present_recorder_test_api.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/interfaces/shelf_test_api.mojom.h"
 #include "ash/public/interfaces/shell_test_api.mojom.h"
 #include "ash/public/interfaces/status_area_widget_test_api.mojom.h"
@@ -16,7 +15,6 @@
 #include "ash/shelf/shelf_test_api.h"
 #include "ash/shell_test_api.h"
 #include "ash/system/status_area_widget_test_api.h"
-#include "ash/system/tray/system_tray_test_api.h"
 #include "ash/system/unified/unified_system_tray_test_api.h"
 #include "base/bind.h"
 #include "base/single_thread_task_runner.h"
@@ -43,10 +41,7 @@ void BindStatusAreaWidgetTestApiOnMainThread(
 
 void BindSystemTrayTestApiOnMainThread(
     mojom::SystemTrayTestApiRequest request) {
-  if (features::IsSystemTrayUnifiedEnabled())
-    UnifiedSystemTrayTestApi::BindRequest(std::move(request));
-  else
-    SystemTrayTestApi::BindRequest(std::move(request));
+  UnifiedSystemTrayTestApi::BindRequest(std::move(request));
 }
 
 void BindTimeToFirstPresentRecorderTestApiOnMainThread(

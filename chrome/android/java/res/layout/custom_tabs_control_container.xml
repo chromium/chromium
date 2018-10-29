@@ -42,5 +42,12 @@
             android:layout_marginEnd="@dimen/find_in_page_popup_margin_end"
             android:layout_gravity="end|top"
             android:layout="@layout/find_toolbar" />
+        <ViewStub
+            android:id="@+id/topbar_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top"
+            android:inflatedId="@+id/topbar"
+            android:layout="@layout/custom_tabs_topbar" />
     </view>
 </org.chromium.chrome.browser.toolbar.ToolbarControlContainer>

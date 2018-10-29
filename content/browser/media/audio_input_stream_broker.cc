@@ -6,20 +6,24 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
+#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_internals.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/media_observer.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/common/content_client.h"
 #include "media/audio/audio_logging.h"
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
+#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 #if defined(OS_CHROMEOS)
@@ -28,12 +32,42 @@
 
 namespace content {
 
+namespace {
+
+#if defined(OS_CHROMEOS)
+enum KeyboardMicAction { kRegister, kDeregister };
+
+void UpdateKeyboardMicRegistration(KeyboardMicAction action) {
+  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
+        base::BindOnce(&UpdateKeyboardMicRegistration, action));
+    return;
+  }
+  BrowserMainLoop* browser_main_loop = BrowserMainLoop::GetInstance();
+  // May be null in unit tests.
+  if (!browser_main_loop)
+    return;
+  switch (action) {
+    case kRegister:
+      browser_main_loop->keyboard_mic_registration()->Register();
+      return;
+    case kDeregister:
+      browser_main_loop->keyboard_mic_registration()->Deregister();
+      return;
+  }
+}
+#endif
+
+}  // namespace
+
 AudioInputStreamBroker::AudioInputStreamBroker(
     int render_process_id,
     int render_frame_id,
     const std::string& device_id,
     const media::AudioParameters& params,
     uint32_t shared_memory_count,
+    media::UserInputMonitorBase* user_input_monitor,
     bool enable_agc,
     audio::mojom::AudioProcessingConfigPtr processing_config,
     AudioStreamBroker::DeleterCallback deleter,
@@ -42,13 +76,14 @@ AudioInputStreamBroker::AudioInputStreamBroker(
       device_id_(device_id),
       params_(params),
       shared_memory_count_(shared_memory_count),
+      user_input_monitor_(user_input_monitor),
       enable_agc_(enable_agc),
       deleter_(std::move(deleter)),
       processing_config_(std::move(processing_config)),
       renderer_factory_client_(std::move(renderer_factory_client)),
       observer_binding_(this),
       weak_ptr_factory_(this) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(renderer_factory_client_);
   DCHECK(deleter_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "AudioInputStreamBroker", this);
@@ -57,53 +92,37 @@ AudioInputStreamBroker::AudioInputStreamBroker(
   renderer_factory_client_.set_connection_error_handler(base::BindOnce(
       &AudioInputStreamBroker::ClientBindingLost, base::Unretained(this)));
 
-  // Notify RenderProcessHost about input stream so the renderer is not
-  // background.
-  auto* process_host = RenderProcessHost::FromID(render_process_id);
-  if (process_host)
-    process_host->OnMediaStreamAdded();
+  NotifyProcessHostOfStartedStream(render_process_id);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeDeviceForMediaStream)) {
     params_.set_format(media::AudioParameters::AUDIO_FAKE);
   }
 
-  BrowserMainLoop* browser_main_loop = BrowserMainLoop::GetInstance();
-  // May be null in unit tests.
-  if (!browser_main_loop)
-    return;
-
 #if defined(OS_CHROMEOS)
   if (params_.channel_layout() ==
       media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
-      browser_main_loop->keyboard_mic_registration()->Register();
+    UpdateKeyboardMicRegistration(kRegister);
   }
-#else
-  user_input_monitor_ = static_cast<media::UserInputMonitorBase*>(
-      browser_main_loop->user_input_monitor());
 #endif
 }
 
 AudioInputStreamBroker::~AudioInputStreamBroker() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
 #if defined(OS_CHROMEOS)
   if (params_.channel_layout() ==
       media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
-    BrowserMainLoop* browser_main_loop = BrowserMainLoop::GetInstance();
-
-    // May be null in unit tests.
-    if (browser_main_loop)
-      browser_main_loop->keyboard_mic_registration()->Deregister();
+    UpdateKeyboardMicRegistration(kDeregister);
   }
-#else
-  if (user_input_monitor_)
-    user_input_monitor_->DisableKeyPressMonitoring();
 #endif
 
-  auto* process_host = RenderProcessHost::FromID(render_process_id());
-  if (process_host)
-    process_host->OnMediaStreamRemoved();
+  // This relies on CreateStream() being called synchronously right after the
+  // constructor.
+  if (user_input_monitor_)
+    user_input_monitor_->DisableKeyPressMonitoring();
+
+  NotifyProcessHostOfStoppedStream(render_process_id());
 
   // TODO(https://crbug.com/829317) update tab recording indicator.
 
@@ -121,7 +140,7 @@ AudioInputStreamBroker::~AudioInputStreamBroker() {
 
 void AudioInputStreamBroker::CreateStream(
     audio::mojom::StreamFactory* factory) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!observer_binding_.is_bound());
   DCHECK(!client_request_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("audio", "CreateStream", this, "device id",
@@ -151,8 +170,6 @@ void AudioInputStreamBroker::CreateStream(
   // Note that the component id for AudioLog is used to differentiate between
   // several users of the same audio log. Since this audio log is for a single
   // stream, the component id used doesn't matter.
-  // TODO(https://crbug.com/836226) pass valid user input monitor handle when
-  // switching to audio service input streams.
   constexpr int log_component_id = 0;
   factory->CreateInputStream(
       std::move(stream_request), std::move(client), std::move(observer_ptr),
@@ -167,7 +184,7 @@ void AudioInputStreamBroker::CreateStream(
 }
 
 void AudioInputStreamBroker::DidStartRecording() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // TODO(https://crbug.com/829317) update tab recording indicator.
 }
 
@@ -176,7 +193,7 @@ void AudioInputStreamBroker::StreamCreated(
     media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
     bool initially_muted,
     const base::Optional<base::UnguessableToken>& stream_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   awaiting_created_ = false;
   TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",
                                   !!data_pipe);
@@ -197,7 +214,7 @@ void AudioInputStreamBroker::StreamCreated(
 void AudioInputStreamBroker::ObserverBindingLost(
     uint32_t reason,
     const std::string& description) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   const uint32_t maxValidReason = static_cast<uint32_t>(
       media::mojom::AudioInputStreamObserver::DisconnectReason::kMaxValue);
@@ -214,13 +231,14 @@ void AudioInputStreamBroker::ObserverBindingLost(
 }
 
 void AudioInputStreamBroker::ClientBindingLost() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   disconnect_reason_ = media::mojom::AudioInputStreamObserver::
       DisconnectReason::kTerminatedByClient;
   Cleanup();
 }
 
 void AudioInputStreamBroker::Cleanup() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   std::move(deleter_).Run(this);
 }

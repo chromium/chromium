@@ -21,33 +21,6 @@ namespace {
 
 using FontTest = testing::Test;
 
-#if defined(OS_WIN)
-class ScopedMinimumFontSizeCallback {
- public:
-  explicit ScopedMinimumFontSizeCallback(int minimum_size) {
-    minimum_size_ = minimum_size;
-    old_callback_ = PlatformFontWin::get_minimum_font_size_callback;
-    PlatformFontWin::get_minimum_font_size_callback = &GetMinimumFontSize;
-  }
-
-  ~ScopedMinimumFontSizeCallback() {
-    PlatformFontWin::get_minimum_font_size_callback = old_callback_;
-  }
-
- private:
-  static int GetMinimumFontSize() {
-    return minimum_size_;
-  }
-
-  PlatformFontWin::GetMinimumFontSizeCallback old_callback_;
-  static int minimum_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMinimumFontSizeCallback);
-};
-
-int ScopedMinimumFontSizeCallback::minimum_size_ = 0;
-#endif  // defined(OS_WIN)
-
 TEST_F(FontTest, LoadArial) {
   Font cf(kTestFontName, 16);
 #if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_IOS)
@@ -151,8 +124,7 @@ TEST_F(FontTest, DeriveFont) {
 #if defined(OS_WIN)
 TEST_F(FontTest, DeriveResizesIfSizeTooSmall) {
   Font cf(kTestFontName, 8);
-  // The minimum font size is set to 5 in browser_main.cc.
-  ScopedMinimumFontSizeCallback minimum_size(5);
+  PlatformFontWin::SetGetMinimumFontSizeCallback([] { return 5; });
 
   Font derived_font = cf.Derive(-4, cf.GetStyle(), cf.GetWeight());
   EXPECT_EQ(5, derived_font.GetFontSize());
@@ -160,8 +132,7 @@ TEST_F(FontTest, DeriveResizesIfSizeTooSmall) {
 
 TEST_F(FontTest, DeriveKeepsOriginalSizeIfHeightOk) {
   Font cf(kTestFontName, 8);
-  // The minimum font size is set to 5 in browser_main.cc.
-  ScopedMinimumFontSizeCallback minimum_size(5);
+  PlatformFontWin::SetGetMinimumFontSizeCallback([] { return 5; });
 
   Font derived_font = cf.Derive(-2, cf.GetStyle(), cf.GetWeight());
   EXPECT_EQ(6, derived_font.GetFontSize());

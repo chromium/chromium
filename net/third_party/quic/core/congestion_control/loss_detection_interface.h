@@ -28,6 +28,7 @@ class QUIC_EXPORT_PRIVATE LossDetectionInterface {
                             QuicTime time,
                             const RttStats& rtt_stats,
                             QuicPacketNumber largest_newly_acked,
+                            const AckedPacketVector& packets_acked,
                             LostPacketVector* packets_lost) = 0;
 
   // Get the time the LossDetectionAlgorithm wants to re-evaluate losses.

@@ -9,6 +9,7 @@ namespace autofill {
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
 enum class SubmissionSource {
+  NONE,                      // No submission signal was detected.
   SAME_DOCUMENT_NAVIGATION,  // The form was removed in same document
                              // navigation.
   XHR_SUCCEEDED,             // The form was removed whem XHR succeeded.

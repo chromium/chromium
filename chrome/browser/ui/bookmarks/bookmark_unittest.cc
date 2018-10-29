@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -58,7 +59,8 @@ class BookmarkInstantExtendedTest : public BrowserWithTestWindowTest {
     // TemplateURLService is normally NULL during testing. Instant extended
     // needs this service so set a custom factory function.
     TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
-        profile, &BookmarkInstantExtendedTest::CreateTemplateURLService);
+        profile, base::BindRepeating(
+                     &BookmarkInstantExtendedTest::CreateTemplateURLService));
     return profile;
   }
 

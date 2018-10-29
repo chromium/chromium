@@ -53,7 +53,7 @@ class Gpu;
 class HostContextFactory;
 class InputDeviceController;
 namespace gpu_host {
-class DefaultGpuHost;
+class GpuHost;
 }  // namespace gpu_host
 }  // namespace ws
 
@@ -108,7 +108,7 @@ class ASH_EXPORT AshService : public service_manager::Service,
   std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
 
-  std::unique_ptr<ws::gpu_host::DefaultGpuHost> gpu_host_;
+  std::unique_ptr<ws::gpu_host::GpuHost> gpu_host_;
 
   std::unique_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
 

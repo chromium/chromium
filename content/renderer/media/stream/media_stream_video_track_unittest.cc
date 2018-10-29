@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
@@ -308,8 +310,9 @@ TEST_F(MediaStreamVideoTrackTest, GetSettingsWithAdjustment) {
   const int kAdjustedWidth = 600;
   const int kAdjustedHeight = 400;
   const double kAdjustedFrameRate = 20.0;
-  VideoTrackAdapterSettings adapter_settings(kAdjustedWidth, kAdjustedHeight,
-                                             0.0, 10000.0, kAdjustedFrameRate);
+  VideoTrackAdapterSettings adapter_settings(
+      gfx::Size(kAdjustedWidth, kAdjustedHeight), 0.0, 10000.0,
+      kAdjustedFrameRate);
   blink::WebMediaStreamTrack track = CreateTrackWithSettings(adapter_settings);
   MediaStreamVideoTrack* const native_track =
       MediaStreamVideoTrack::GetVideoTrack(track);

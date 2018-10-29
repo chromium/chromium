@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkColorSpaceXform.h"
+#include "third_party/skia/third_party/skcms/skcms.h"
 
 namespace blink {
 namespace {
@@ -26,20 +26,16 @@ class ImageFrameTest : public testing::Test {
     src_8888 = SkPackARGB32(src_8888_a, src_8888_r, src_8888_g, src_8888_b);
     dst_8888 = SkPackARGB32(0xA0, 0x60, 0x70, 0x80);
 
-    typedef SkColorSpaceXform::ColorFormat ColorFormat;
-    color_format_8888 = ColorFormat::kBGRA_8888_ColorFormat;
+    pixel_format_n32 = skcms_PixelFormat_RGBA_8888;
     if (kN32_SkColorType == kRGBA_8888_SkColorType)
-      color_format_8888 = ColorFormat::kRGBA_8888_ColorFormat;
-    color_format_f16 = ColorFormat::kRGBA_F16_ColorFormat;
-    color_format_f32 = ColorFormat::kRGBA_F32_ColorFormat;
+      pixel_format_n32 = skcms_PixelFormat_BGRA_8888;
 
-    sk_sp<SkColorSpace> srgb_linear = SkColorSpace::MakeSRGBLinear();
-    SkColorSpaceXform::Apply(srgb_linear.get(), color_format_f16, &src_f16,
-                             srgb_linear.get(), color_format_8888, &src_8888, 1,
-                             SkColorSpaceXform::AlphaOp::kPreserve_AlphaOp);
-    SkColorSpaceXform::Apply(srgb_linear.get(), color_format_f16, &dst_f16,
-                             srgb_linear.get(), color_format_8888, &dst_8888, 1,
-                             SkColorSpaceXform::AlphaOp::kPreserve_AlphaOp);
+    skcms_Transform(&src_8888, pixel_format_n32, skcms_AlphaFormat_Unpremul,
+                    nullptr, &src_f16, skcms_PixelFormat_RGBA_hhhh,
+                    skcms_AlphaFormat_Unpremul, nullptr, 1);
+    skcms_Transform(&dst_8888, pixel_format_n32, skcms_AlphaFormat_Unpremul,
+                    nullptr, &dst_f16, skcms_PixelFormat_RGBA_hhhh,
+                    skcms_AlphaFormat_Unpremul, nullptr, 1);
   }
 
  protected:
@@ -47,21 +43,19 @@ class ImageFrameTest : public testing::Test {
   unsigned src_8888_a, src_8888_r, src_8888_g, src_8888_b;
   ImageFrame::PixelData src_8888, dst_8888;
   ImageFrame::PixelDataF16 src_f16, dst_f16;
-  SkColorSpaceXform::ColorFormat color_format_8888, color_format_f16,
-      color_format_f32;
+  skcms_PixelFormat pixel_format_n32;
 
   void ConvertN32ToF32(float* dst, ImageFrame::PixelData src) {
-    sk_sp<SkColorSpace> srgb_linear = SkColorSpace::MakeSRGBLinear();
-    SkColorSpaceXform::Apply(srgb_linear.get(), color_format_f32, dst,
-                             srgb_linear.get(), color_format_8888, &src, 1,
-                             SkColorSpaceXform::AlphaOp::kPreserve_AlphaOp);
+    skcms_Transform(&src, pixel_format_n32, skcms_AlphaFormat_Unpremul, nullptr,
+                    dst, skcms_PixelFormat_RGBA_ffff,
+                    skcms_AlphaFormat_Unpremul, nullptr, 1);
   }
 
   void ConvertF16ToF32(float* dst, ImageFrame::PixelDataF16 src) {
-    sk_sp<SkColorSpace> srgb_linear = SkColorSpace::MakeSRGBLinear();
-    SkColorSpaceXform::Apply(srgb_linear.get(), color_format_f32, dst,
-                             srgb_linear.get(), color_format_f16, &src, 1,
-                             SkColorSpaceXform::AlphaOp::kPreserve_AlphaOp);
+    skcms_Transform(&src, skcms_PixelFormat_RGBA_hhhh,
+                    skcms_AlphaFormat_Unpremul, nullptr, dst,
+                    skcms_PixelFormat_RGBA_ffff, skcms_AlphaFormat_Unpremul,
+                    nullptr, 1);
   }
 };
 

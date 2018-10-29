@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/strings/string16.h"
+#include "ui/base/class_property.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
@@ -24,7 +25,7 @@ class PlatformImeController;
 //
 // Each instance of PlatformWindow represents a single window in the
 // underlying platform windowing system (i.e. X11/Win/OSX).
-class PlatformWindow {
+class PlatformWindow : public PropertyHandler {
  public:
   virtual ~PlatformWindow() {}
 

@@ -45,7 +45,7 @@ class PaintLayerCompositor;
 // A GraphicsLayerPaintInfo contains all the info needed to paint a partial
 // subtree of Layers into a GraphicsLayer.
 struct GraphicsLayerPaintInfo {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   PaintLayer* paint_layer;
 
   LayoutRect composited_bounds;
@@ -300,11 +300,18 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // the background can scroll with the content). When the background is also
   // opaque this allows us to composite the scroller even on low DPI as we can
   // draw with subpixel anti-aliasing.
-  bool BackgroundPaintsOntoScrollingContentsLayer() {
+  bool BackgroundPaintsOntoScrollingContentsLayer() const {
     return background_paints_onto_scrolling_contents_layer_;
   }
 
-  bool DrawsBackgroundOntoContentLayer() {
+  // Returns true if the background paints onto the main graphics layer.
+  // In some situations, we may paint background on both the main graphics layer
+  // and the scrolling contents layer.
+  bool BackgroundPaintsOntoGraphicsLayer() const {
+    return background_paints_onto_graphics_layer_;
+  }
+
+  bool DrawsBackgroundOntoContentLayer() const {
     return draws_background_onto_content_layer_;
   }
 
@@ -455,9 +462,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   Color LayoutObjectBackgroundColor() const;
   void UpdateBackgroundColor();
   void UpdateContentsRect();
-  void UpdateContentsOffsetInCompositingLayer(
-      const IntPoint& snapped_offset_from_composited_ancestor,
-      const IntPoint& graphics_layer_parent_location);
   void UpdateAfterPartResize();
   void UpdateCompositingReasons();
 
@@ -666,16 +670,12 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
 
   LayoutRect composited_bounds_;
 
-  LayoutSize content_offset_in_compositing_layer_;
-
   // We keep track of the scrolling contents offset, so that when it changes we
   // can notify the ScrollingCoordinator, which passes on main-thread scrolling
   // updates to the compositor.
   DoubleSize scrolling_contents_offset_;
 
   const PaintLayer* clip_inheritance_ancestor_;
-
-  unsigned content_offset_in_compositing_layer_dirty_ : 1;
 
   unsigned pending_update_scope_ : 2;
   unsigned is_main_frame_layout_view_layer_ : 1;

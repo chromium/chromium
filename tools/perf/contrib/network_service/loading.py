@@ -137,7 +137,7 @@ def _MergeControlChartJsonIntoEnabled(enabled_chart_json, control_chart_json):
   _MergeCharts(enabled_charts, control_charts)
   _MergeCharts(enabled_charts, diff_charts)
 
-@benchmark.Info(emails=['chongz@chromium.org'])
+@benchmark.Info(emails=['juncai@chromium.org'])
 class LoadingDesktopNetworkService(loading.LoadingDesktop):
   """Measures loading performance of desktop sites, with the network service
   enabled.

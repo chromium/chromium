@@ -70,13 +70,22 @@ void FrameCoordinationUnitImpl::SetNetworkAlmostIdle(bool idle) {
 }
 
 void FrameCoordinationUnitImpl::SetLifecycleState(mojom::LifecycleState state) {
-  SetProperty(mojom::PropertyType::kLifecycleState,
-              static_cast<int64_t>(state));
-  // The page will have the same lifecycle state as the main frame.
-  if (IsMainFrame() && GetPageCoordinationUnit()) {
-    GetPageCoordinationUnit()->SetProperty(mojom::PropertyType::kLifecycleState,
-                                           static_cast<int64_t>(state));
-  }
+  if (state == lifecycle_state_)
+    return;
+
+  mojom::LifecycleState old_state = lifecycle_state_;
+  lifecycle_state_ = state;
+
+  // Notify parents of this change.
+  if (process_coordination_unit_)
+    process_coordination_unit_->OnFrameLifecycleStateChanged(this, old_state);
+  if (page_coordination_unit_)
+    page_coordination_unit_->OnFrameLifecycleStateChanged(this, old_state);
+}
+
+void FrameCoordinationUnitImpl::SetHasNonEmptyBeforeUnload(
+    bool has_nonempty_beforeunload) {
+  has_nonempty_beforeunload_ = has_nonempty_beforeunload;
 }
 
 void FrameCoordinationUnitImpl::OnAlertFired() {

@@ -149,7 +149,6 @@ TEST(Make_UniqueTest, NotAmbiguousWithStdMakeUnique) {
 }
 
 #if 0
-// TODO(billydonahue): Make a proper NC test.
 // These tests shouldn't compile.
 TEST(MakeUniqueTestNC, AcceptMoveOnlyLvalue) {
   auto m = MoveOnly();

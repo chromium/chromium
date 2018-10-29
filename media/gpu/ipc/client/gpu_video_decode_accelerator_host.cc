@@ -199,8 +199,8 @@ void GpuVideoDecodeAcceleratorHost::PostNotifyError(Error error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "PostNotifyError(): error=" << error;
   media_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&GpuVideoDecodeAcceleratorHost::OnNotifyError,
-                            weak_this_, error));
+      FROM_HERE, base::BindOnce(&GpuVideoDecodeAcceleratorHost::OnNotifyError,
+                                weak_this_, error));
 }
 
 void GpuVideoDecodeAcceleratorHost::Send(IPC::Message* message) {

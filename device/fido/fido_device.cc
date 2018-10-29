@@ -18,6 +18,15 @@ namespace device {
 FidoDevice::FidoDevice() = default;
 FidoDevice::~FidoDevice() = default;
 
+base::string16 FidoDevice::GetDisplayName() const {
+  const auto id = GetId();
+  return base::string16(id.begin(), id.end());
+}
+
+bool FidoDevice::IsInPairingMode() const {
+  return false;
+}
+
 void FidoDevice::DiscoverSupportedProtocolAndDeviceInfo(
     base::OnceClosure done) {
   if (base::FeatureList::IsEnabled(kNewCtap2Device)) {

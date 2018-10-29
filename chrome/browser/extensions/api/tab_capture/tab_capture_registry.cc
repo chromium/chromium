@@ -184,9 +184,7 @@ void TabCaptureRegistry::OnExtensionUnloaded(
     const Extension* extension,
     UnloadedExtensionReason reason) {
   // Cleanup all the requested media streams for this extension.
-  for (std::vector<std::unique_ptr<LiveRequest>>::iterator it =
-           requests_.begin();
-       it != requests_.end();) {
+  for (auto it = requests_.begin(); it != requests_.end();) {
     if ((*it)->extension_id() == extension->id()) {
       it = requests_.erase(it);
     } else {
@@ -345,9 +343,7 @@ TabCaptureRegistry::LiveRequest* TabCaptureRegistry::FindRequest(
 }
 
 void TabCaptureRegistry::KillRequest(LiveRequest* request) {
-  for (std::vector<std::unique_ptr<LiveRequest>>::iterator it =
-           requests_.begin();
-       it != requests_.end(); ++it) {
+  for (auto it = requests_.begin(); it != requests_.end(); ++it) {
     if (it->get() == request) {
       requests_.erase(it);
       return;

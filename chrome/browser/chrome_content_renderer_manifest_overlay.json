@@ -28,7 +28,8 @@
           "extensions.mojom.AppWindow",
           "safe_browsing.mojom.ThreatReporter",
           "safe_browsing.mojom.PhishingDetector",
-          "spellcheck.mojom.SpellCheckPanel"
+          "spellcheck.mojom.SpellCheckPanel",
+          "subresource_filter.mojom.SubresourceFilterAgent"
         ]
       },
       "requires": {

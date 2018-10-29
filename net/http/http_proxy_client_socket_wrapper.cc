@@ -513,7 +513,7 @@ int HttpProxyClientSocketWrapper::DoSSLConnectComplete(int result) {
   if (IsCertificateError(result)) {
     UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpProxy.ConnectLatency.Secure.Error",
                                base::TimeTicks::Now() - connect_start_time_);
-    if (ssl_params_->load_flags() & LOAD_IGNORE_ALL_CERT_ERRORS) {
+    if (ssl_params_->ignore_certificate_errors()) {
       result = OK;
     } else {
       // TODO(rch): allow the user to deal with proxy cert errors in the
@@ -649,6 +649,7 @@ int HttpProxyClientSocketWrapper::DoQuicProxyCreateSession() {
       initial_socket_tag_, ssl_params_->ssl_config().GetCertVerifyFlags(),
       GURL("https://" + proxy_server.ToString()), net_log_,
       &quic_net_error_details_,
+      /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       base::Bind(&HttpProxyClientSocketWrapper::OnIOComplete,
                  base::Unretained(this)));
 }

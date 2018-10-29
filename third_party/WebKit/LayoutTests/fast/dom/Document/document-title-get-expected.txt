@@ -2,7 +2,6 @@ This test checks the implementation of getting the document.title attribute.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test with no title set
 PASS document.title is ""
 Test with empty title

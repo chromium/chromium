@@ -13,8 +13,10 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
@@ -131,8 +133,8 @@ void EventRouter::DispatchEventToSender(IPC::Sender* ipc_sender,
   } else {
     // This is called from WebRequest API.
     // TODO(lazyboy): Skip this entirely: http://crbug.com/488747.
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::Bind(&EventRouter::DoDispatchEventToSenderBookkeepingOnUI,
                    browser_context_id, extension_id, event_id, histogram_value,
                    event_name));
@@ -240,7 +242,7 @@ void EventRouter::RegisterObserver(Observer* observer,
 }
 
 void EventRouter::UnregisterObserver(Observer* observer) {
-  for (ObserverMap::iterator it = observers_.begin(); it != observers_.end();) {
+  for (auto it = observers_.begin(); it != observers_.end();) {
     if (it->second == observer)
       it = observers_.erase(it);
     else
@@ -262,7 +264,7 @@ void EventRouter::OnListenerAdded(const EventListener* listener) {
                                   listener->listener_url(),
                                   listener->GetBrowserContext());
   std::string base_event_name = GetBaseEventName(listener->event_name());
-  ObserverMap::iterator observer = observers_.find(base_event_name);
+  auto observer = observers_.find(base_event_name);
   if (observer != observers_.end())
     observer->second->OnListenerAdded(details);
 
@@ -280,7 +282,7 @@ void EventRouter::OnListenerRemoved(const EventListener* listener) {
                                   listener->listener_url(),
                                   listener->GetBrowserContext());
   std::string base_event_name = GetBaseEventName(listener->event_name());
-  ObserverMap::iterator observer = observers_.find(base_event_name);
+  auto observer = observers_.find(base_event_name);
   if (observer != observers_.end())
     observer->second->OnListenerRemoved(details);
 }
@@ -511,13 +513,37 @@ void EventRouter::DispatchEventToExtension(const std::string& extension_id,
 void EventRouter::DispatchEventWithLazyListener(const std::string& extension_id,
                                                 std::unique_ptr<Event> event) {
   DCHECK(!extension_id.empty());
+  const Extension* extension = ExtensionRegistry::Get(browser_context_)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  if (!extension)
+    return;
+  const bool is_service_worker_based_background =
+      BackgroundInfo::IsServiceWorkerBased(extension);
+
   std::string event_name = event->event_name;
-  bool has_listener = ExtensionHasEventListener(extension_id, event_name);
-  if (!has_listener)
-    AddLazyEventListener(event_name, extension_id);
+  const bool has_listener = ExtensionHasEventListener(extension_id, event_name);
+  if (!has_listener) {
+    if (is_service_worker_based_background) {
+      AddLazyServiceWorkerEventListener(
+          event_name, extension_id,
+          Extension::GetBaseURLFromExtensionId(extension_id));
+    } else {
+      AddLazyEventListener(event_name, extension_id);
+    }
+  }
+
   DispatchEventToExtension(extension_id, std::move(event));
-  if (!has_listener)
-    RemoveLazyEventListener(event_name, extension_id);
+
+  if (!has_listener) {
+    if (is_service_worker_based_background) {
+      RemoveLazyServiceWorkerEventListener(
+          event_name, extension_id,
+          Extension::GetBaseURLFromExtensionId(extension_id));
+    } else {
+      RemoveLazyEventListener(event_name, extension_id);
+    }
+  }
 }
 
 void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
@@ -823,8 +849,7 @@ void EventRouter::SetRegisteredEvents(const std::string& extension_id,
                                       const std::set<std::string>& events,
                                       RegisteredEventType type) {
   auto events_value = std::make_unique<base::ListValue>();
-  for (std::set<std::string>::const_iterator iter = events.begin();
-       iter != events.end(); ++iter) {
+  for (auto iter = events.cbegin(); iter != events.cend(); ++iter) {
     events_value->AppendString(*iter);
   }
   const char* pref_key = type == RegisteredEventType::kLazy

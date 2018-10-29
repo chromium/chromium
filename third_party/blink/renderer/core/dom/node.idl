@@ -38,6 +38,10 @@ interface Node : EventTarget {
 
     readonly attribute USVString baseURI;
 
+    // Scroll Customization API. See crbug.com/410974 for details.
+    [RuntimeEnabled=ScrollCustomization] void setApplyScroll(ScrollStateCallback scrollStateCallback, NativeScrollBehavior nativeScrollBehavior);
+    [RuntimeEnabled=ScrollCustomization] void setDistributeScroll(ScrollStateCallback scrollStateCallback, NativeScrollBehavior nativeScrollBehavior);
+
     [Affects=Nothing, Measure] readonly attribute boolean isConnected;
     [Affects=Nothing, PerWorldBindings] readonly attribute Document? ownerDocument;
     [Affects=Nothing, PerWorldBindings, ImplementedAs=ParentNodeWithCounting] readonly attribute Node? parentNode;

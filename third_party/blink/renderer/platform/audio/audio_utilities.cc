@@ -29,7 +29,7 @@
 
 namespace blink {
 
-namespace AudioUtilities {
+namespace audio_utilities {
 
 float DecibelsToLinear(float decibels) {
   return powf(10, 0.05f * decibels);
@@ -101,6 +101,6 @@ bool IsPowerOfTwo(size_t x) {
   return x > 0 && ((x & (x - 1)) == 0);
 }
 
-}  // namespace AudioUtilities
+}  // namespace audio_utilities
 
 }  // namespace blink

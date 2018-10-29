@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x146
-  LayoutBlockFlow {HTML} at (0,0) size 800x146
-    LayoutBlockFlow {BODY} at (8,10) size 784x126
-      LayoutBlockFlow {DIV} at (10,0) size 308x58 [border: (4px solid #EEEEEE)]
-layer at (18,78) size 308x58
-  LayoutBlockFlow {DIV} at (10,68) size 308x58 [border: (4px solid #EEEEEE)]

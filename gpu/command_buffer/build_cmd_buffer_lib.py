@@ -2627,7 +2627,7 @@ class DeleteHandler(TypeHandler):
     for arg in func.GetOriginalArgs():
       arg.WriteClientSideValidationCode(f, func)
     f.write(
-        "  GPU_CLIENT_DCHECK(%s != 0);\n" % func.GetOriginalArgs()[-1].name)
+        "  if (%s == 0)\n    return;" % func.GetOriginalArgs()[-1].name);
     f.write("  %sHelper(%s);\n" %
                (func.original_name, func.GetOriginalArgs()[-1].name))
     f.write("  CheckGLError();\n")

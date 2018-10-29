@@ -7,6 +7,8 @@ Polymer({
 
   listeners: {
     'toggle-pause-event': 'onTogglePauseEvent_',
+    'next-track-event': 'onNextTrackEvent_',
+    'previous-track-event': 'onPreviousTrackEvent_',
     'small-forward-skip-event': 'onSmallForwardSkipEvent_',
     'small-backword-skip-event': 'onSmallBackwordSkipEvent_',
     'big-forward-skip-event': 'onBigForwardSkipEvent_',
@@ -80,8 +82,6 @@ Polymer({
    * element is ready.
    */
   ready: function() {
-    this.addEventListener('keydown', this.onKeyDown_.bind(this));
-
     this.$.audioController.addEventListener('dragging-changed',
         this.onDraggingChanged_.bind(this));
 
@@ -412,27 +412,6 @@ Polymer({
   },
 
   /**
-   * Invoked when the 'keydown' event is fired.
-   * @param {Event} event The event object.
-   */
-  onKeyDown_: function(event) {
-    switch (event.key) {
-      case 'MediaTrackNext':
-        this.onControllerNextClicked();
-        break;
-      case 'MediaPlayPause':
-        this.playing = !this.playing;
-        break;
-      case 'MediaTrackPrevious':
-        this.onControllerPreviousClicked();
-        break;
-      case 'MediaStop':
-        // TODO: Define "Stop" behavior.
-        break;
-    }
-  },
-
-  /**
    * Computes volume value for audio element. (should be in [0.0, 1.0])
    * @param {number} volume Volume which is set in the UI. ([0, 100])
    * @return {number}
@@ -479,5 +458,15 @@ Polymer({
    */
   onBigBackwordSkipEvent_: function(event) {
     this.$.audioController.bigSkip(false);
+  },
+
+  /** @private */
+  onNextTrackEvent_: function(event) {
+    this.onControllerNextClicked();
+  },
+
+  /** @private */
+  onPreviousTrackEvent_: function(event) {
+    this.onControllerPreviousClicked();
   },
 });

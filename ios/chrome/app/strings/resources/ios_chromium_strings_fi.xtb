@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Googlen älykkäitä ratkaisuja Chromiumiin</translation>
 <translation id="2730884209570016437">Chromium ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
 <translation id="2797210818057553964">Voit muokata tätä koska tahansa Chromiumin asetuksista</translation>
+<translation id="2915596697727466327">Chromium varmistaa Face ID:llä, että sinulla on lupa käyttää salasanoja.</translation>
 <translation id="3256316712990552818">Kopioitiin Chromiumiin.</translation>
 <translation id="3413120535237193088">Kirjaudu sisään Chromiumiin, niin voit käyttää kirjanmerkkejäsi kaikilla laitteilla.</translation>
 <translation id="3473048256428424907">Ota käyttöön Chromiumin QR-lukija</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Muilla laitteilla Chromiumissa avaamasi välilehdet näytetään täällä.</translation>
 <translation id="495292094137889840">Aloita Chromiumin QR-lukijan käyttö</translation>
 <translation id="5231355151045086930">Kirjaudu ulos Chromiumista</translation>
-<translation id="5416919929805616771">Pidätkö Chromiumista? <ph name="BEGIN_LINK" />Arvostele tämä sovellus<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Tervetuloa Chromiumiin</translation>
 <translation id="5945387852661427312">Olet kirjautumassa sisään verkkotunnuksen <ph name="DOMAIN" /> hallitsemalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chromium-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromiumista uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="6068866989048414399">Chromiumin käyttöehdot</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Muutoksen jälkeen synkronointi käyttää tilin <ph name="USER_EMAIL1" /> sijaan tiliä <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> hallitsee olemassa olevia Chromium-tietojasi. Tiedot poistetaan tältä laitteelta, mutta ne säilyvät tilillä <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Vinkki: <ph name="BEGIN_LINK" />Siirrä Chromium Dockiin<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Saat sijaintitietojen avulla paremman Googlen käyttökokemuksen Chromiumissa.</translation>
-<translation id="8353224596138547809">Haluatko Chromiumin tallentavan tämän sivuston salasanan?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Asetuksia<ph name="END_LINK" /> voi muuttaa milloin tahansa. Google saattaa käyttää selaustietojasi, käyttämiesi sivustojen sisältöä ja muita selaintoimintoja Chromiumin, Kääntäjän, Haun, mainosten ja muiden Google-palveluiden personointiin.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8809780021347235332">Anna Chromiumille lupa käyttää kuviasi valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>

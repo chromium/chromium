@@ -11,10 +11,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "components/signin/core/browser/signin_status_metrics_provider.h"
+#include "services/identity/public/cpp/identity_manager.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/ui/browser_finder.h"
@@ -63,9 +64,9 @@ ChromeSigninStatusMetricsProviderDelegate::GetStatusOfAllAccounts() {
 #endif
     accounts_status.num_opened_accounts++;
 
-    SigninManager* manager =
-        SigninManagerFactory::GetForProfile(profile->GetOriginalProfile());
-    if (manager && manager->IsAuthenticated())
+    identity::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+    if (identity_manager && identity_manager->HasPrimaryAccount())
       accounts_status.num_signed_in_accounts++;
   }
 
@@ -90,14 +91,14 @@ ChromeSigninStatusMetricsProviderDelegate::GetSigninManagersForAllAccounts() {
 
 void ChromeSigninStatusMetricsProviderDelegate::OnBrowserAdded(
     Browser* browser) {
-  SigninManager* manager =
-      SigninManagerFactory::GetForProfile(browser->profile());
+  identity::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser->profile());
 
   // Nothing will change if the opened browser is in incognito mode.
-  if (!manager)
+  if (!identity_manager)
     return;
 
-  const bool signed_in = manager->IsAuthenticated();
+  const bool signed_in = identity_manager->HasPrimaryAccount();
   UpdateStatusWhenBrowserAdded(signed_in);
 }
 

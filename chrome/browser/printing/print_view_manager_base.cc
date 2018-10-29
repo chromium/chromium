@@ -36,6 +36,7 @@
 #include "components/printing/browser/print_manager_utils.h"
 #include "components/printing/common/print_messages.h"
 #include "components/services/pdf_compositor/public/cpp/pdf_service_mojo_types.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
@@ -95,9 +96,8 @@ void OnPrintSettingsDoneWrapper(PrintSettingsCallback settings_callback,
                                 scoped_refptr<PrinterQuery> query) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::BindOnce(std::move(settings_callback), query));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(std::move(settings_callback), query));
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
@@ -144,8 +144,8 @@ void PrintViewManagerBase::PrintForPrintPreview(
       base::BindOnce(&PrintViewManagerBase::OnPrintSettingsDone,
                      weak_ptr_factory_.GetWeakPtr(), print_data, page_count,
                      std::move(callback));
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(CreateQueryWithSettings, std::move(job_settings),
                      rfh->GetProcess()->GetID(), rfh->GetRoutingID(), queue_,
                      base::BindOnce(OnPrintSettingsDoneWrapper,
@@ -185,8 +185,8 @@ void PrintViewManagerBase::OnPrintSettingsDone(
       printer_query->last_status() == PrintingContext::CANCEL) {
     queue_->QueuePrinterQuery(printer_query.get());
 #if defined(OS_WIN)
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&PrintViewManagerBase::SystemDialogCancelled,
                        weak_ptr_factory_.GetWeakPtr()));
 #endif
@@ -205,8 +205,8 @@ void PrintViewManagerBase::OnPrintSettingsDone(
   // Post task so that the query has time to reset the callback before calling
   // OnDidGetPrintedPagesCount.
   queue_->QueuePrinterQuery(printer_query.get());
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&PrintViewManagerBase::StartLocalPrintJob,
                      weak_ptr_factory_.GetWeakPtr(), print_data, page_count,
                      printer_query, std::move(callback)));
@@ -694,8 +694,8 @@ void PrintViewManagerBase::ReleasePrinterQuery() {
   printer_query = queue_->PopPrinterQuery(cookie);
   if (!printer_query)
     return;
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&PrinterQuery::StopWorker, printer_query));
 }
 

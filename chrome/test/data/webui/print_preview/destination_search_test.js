@@ -204,7 +204,7 @@ cr.define('destination_search_test', function() {
       assertEquals(printerId, destinationStore.selectedDestination.id);
     });
 
-    // Tests that if policies are set correctly if they are presenst
+    // Tests that if policies are set correctly if they are present
     // for a destination. ChromeOS only.
     test(assert(TestNames.ReceiveSuccessfulSetupWithPolicies), function() {
       const destId = '00112233DEADBEEF';
@@ -212,7 +212,10 @@ cr.define('destination_search_test', function() {
         printerId: destId,
         capabilities:
             print_preview_test_utils.getCddTemplate(destId).capabilities,
-        policies: {allowedColorModes: print_preview.ColorMode.GRAY},
+        policies: {
+          allowedColorModes: print_preview.ColorMode.GRAY,
+          allowedDuplexModes: print_preview.DuplexModeRestriction.DUPLEX,
+        },
         success: true,
       };
       nativeLayer.setSetupPrinterResponse(response);
@@ -227,6 +230,9 @@ cr.define('destination_search_test', function() {
         assertEquals(
             print_preview.ColorMode.GRAY,
             selectedDestination.policies.allowedColorModes);
+        assertEquals(
+            print_preview.DuplexModeRestriction.DUPLEX,
+            selectedDestination.policies.allowedDuplexModes);
       });
     });
   });

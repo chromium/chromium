@@ -41,7 +41,7 @@ void WriteTransaction::TrackChangesTo(const EntryKernel* entry) {
   }
   // Insert only if it's not already there.
   const int64_t handle = entry->ref(META_HANDLE);
-  EntryKernelMutationMap::iterator it = mutations_.lower_bound(handle);
+  auto it = mutations_.lower_bound(handle);
   if (it == mutations_.end() || it->first != handle) {
     mutations_[handle].original = *entry;
   }
@@ -49,8 +49,7 @@ void WriteTransaction::TrackChangesTo(const EntryKernel* entry) {
 
 ImmutableEntryKernelMutationMap WriteTransaction::RecordMutations() {
   directory_->kernel()->transaction_mutex.AssertAcquired();
-  for (syncable::EntryKernelMutationMap::iterator it = mutations_.begin();
-       it != mutations_.end();) {
+  for (auto it = mutations_.begin(); it != mutations_.end();) {
     EntryKernel* kernel = directory()->GetEntryByHandle(it->first);
     if (!kernel) {
       NOTREACHED();
@@ -152,8 +151,7 @@ WriteTransaction::~WriteTransaction() {
   const ImmutableEntryKernelMutationMap& mutations = RecordMutations();
 
   MetahandleSet modified_handles;
-  for (EntryKernelMutationMap::const_iterator i = mutations.Get().begin();
-       i != mutations.Get().end(); ++i) {
+  for (auto i = mutations.Get().begin(); i != mutations.Get().end(); ++i) {
     modified_handles.insert(i->first);
   }
   directory()->CheckInvariantsOnTransactionClose(this, modified_handles);

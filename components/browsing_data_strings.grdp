@@ -43,6 +43,18 @@
      =1 {1 password (synced)}
      other {# passwords (synced)}}
   </message>
+  <message name="IDS_DEL_SIGNIN_DATA_COUNTER" desc="A counter showing how many sign-in data items the user has.">
+    {COUNT, plural,
+     =0 {None}
+     =1 {sign-in data for 1 account}
+     other {sign-in data for # accounts}}
+  </message>
+  <message name="IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_NONE" desc="A counter showing that the user has no passwords or other sign-in data.">
+    None
+  </message>
+  <message name="IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_COMBINATION" desc="A counter showing that the user has passwords and other sign-in data. The types and their counts will be substituted, this message only provides the semicolon separator.">
+    <ph name="PASSWORDS">$1<ex>2 passwords</ex></ph>; <ph name="SIGNIN_DATA">$2<ex>sign-in data from 1 account</ex></ph>
+  </message>
   <message name="IDS_DEL_SITE_SETTINGS_COUNTER" desc="A counter showing how many sites with site settings the user has.">
     {COUNT, plural,
      =0 {None}

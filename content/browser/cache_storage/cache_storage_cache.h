@@ -62,6 +62,11 @@ class CacheStorageCacheTest;
 // will be called so long as the cache object lives.
 class CONTENT_EXPORT CacheStorageCache {
  public:
+  using CacheEntry = std::pair<std::unique_ptr<ServiceWorkerFetchRequest>,
+                               blink::mojom::FetchAPIResponsePtr>;
+  using CacheEntriesCallback =
+      base::OnceCallback<void(blink::mojom::CacheStorageError,
+                              std::vector<CacheEntry>)>;
   using ErrorCallback =
       base::OnceCallback<void(blink::mojom::CacheStorageError)>;
   using VerboseErrorCallback =
@@ -196,6 +201,11 @@ class CONTENT_EXPORT CacheStorageCache {
   void Put(std::unique_ptr<ServiceWorkerFetchRequest> request,
            blink::mojom::FetchAPIResponsePtr response,
            ErrorCallback callback);
+
+  // Similar to MatchAll, but returns the associated requests as well.
+  void GetAllMatchedEntries(std::unique_ptr<ServiceWorkerFetchRequest> request,
+                            blink::mojom::QueryParamsPtr match_params,
+                            CacheEntriesCallback callback);
 
   // Async operations in progress will cancel and not run their callbacks.
   virtual ~CacheStorageCache();
@@ -392,6 +402,16 @@ class CONTENT_EXPORT CacheStorageCache {
   void UpdateCacheSizeGotSize(CacheStorageCacheHandle,
                               base::OnceClosure callback,
                               int64_t current_cache_size);
+
+  // GetAllMatchedEntries callbacks.
+  void GetAllMatchedEntriesImpl(
+      std::unique_ptr<ServiceWorkerFetchRequest> request,
+      blink::mojom::QueryParamsPtr options,
+      CacheEntriesCallback callback);
+  void GetAllMatchedEntriesDidQueryCache(
+      CacheEntriesCallback callback,
+      blink::mojom::CacheStorageError error,
+      std::unique_ptr<QueryCacheResults> query_cache_results);
 
   // Returns ERROR_NOT_FOUND if not found. Otherwise deletes and returns OK.
   void Delete(blink::mojom::BatchOperationPtr operation,

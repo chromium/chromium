@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
-PASS audio events - pause
-PASS calling play() then pause() on non-autoplay audio should trigger pause event
-PASS video events - pause
-PASS calling play() then pause() on non-autoplay video should trigger pause event
-Harness: the test ran to completion.
-

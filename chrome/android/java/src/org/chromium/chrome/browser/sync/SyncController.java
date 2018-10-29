@@ -146,6 +146,13 @@ public class SyncController implements ProfileSyncService.SyncStateChangedListen
      * Updates sync to reflect the state of the Android sync settings.
      */
     private void updateSyncStateFromAndroid() {
+        // Note: |isChromeSyncEnabled| maps to SyncRequested, and
+        // |isMasterSyncEnabled| maps to *both* SyncRequested and
+        // SyncAllowedByPlatform.
+        // TODO(crbug.com/867901): Don't mix these two concepts.
+
+        mProfileSyncService.setSyncAllowedByPlatform(AndroidSyncSettings.isMasterSyncEnabled());
+
         boolean isSyncEnabled = AndroidSyncSettings.isSyncEnabled();
         if (isSyncEnabled == mProfileSyncService.isSyncRequested()) return;
         if (isSyncEnabled) {

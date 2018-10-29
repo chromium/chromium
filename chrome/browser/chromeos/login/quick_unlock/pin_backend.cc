@@ -258,6 +258,17 @@ void PinBackend::TryAuthenticate(const AccountId& account_id,
   }
 }
 
+bool PinBackend::ShouldUseCryptohome(const AccountId& account_id) {
+  if (!cryptohome_backend_)
+    return false;
+
+  // Even if cryptohome is supported, the user may have registered a PIN with
+  // the prefs backend from a previous version. If that's the case, we should
+  // talk to the prefs backend instead of the cryptohome backend.
+  QuickUnlockStorage* storage = GetPrefsBackend(account_id);
+  return !storage || !storage->pin_storage_prefs()->IsPinSet();
+}
+
 void PinBackend::OnIsCryptohomeBackendSupported(bool is_supported) {
   if (is_supported)
     cryptohome_backend_ = std::make_unique<PinStorageCryptohome>();
@@ -274,17 +285,6 @@ void PinBackend::OnPinMigrationAttemptComplete(Profile* profile, bool success) {
   }
 
   scoped_keep_alive_.reset();
-}
-
-bool PinBackend::ShouldUseCryptohome(const AccountId& account_id) {
-  if (!cryptohome_backend_)
-    return false;
-
-  // Even if cryptohome is supported, the user may have registered a PIN with
-  // the prefs backend from a previous version. If that's the case, we should
-  // talk to the prefs backend instead of the cryptohome backend.
-  QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-  return !storage || !storage->pin_storage_prefs()->IsPinSet();
 }
 
 }  // namespace quick_unlock

@@ -2,43 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var INTERVAL_FOR_WAIT_UNTIL = 100; // ms
-
-/**
- * Invokes a callback function depending on the result of promise.
- *
- * @param {Promise} promise Promise.
- * @param {function(boolean)} callback Callback function. True is passed if the
- *     test failed.
- */
-function reportPromise(promise, callback) {
-  promise.then(function() {
-    callback(/* error */ false);
-  }, function(error) {
-    console.error(error.stack || error);
-    callback(/* error */ true);
-  });
-}
-
-/**
- * Waits until testFunction becomes true.
- * @param {function(): boolean} testFunction A function which is tested.
- * @return {!Promise} A promise which is fullfilled when the testFunction
- *     becomes true.
- */
-function waitUntil(testFunction) {
-  return new Promise(function(resolve) {
-    var tryTestFunction = function() {
-      if (testFunction())
-        resolve();
-      else
-        setTimeout(tryTestFunction, INTERVAL_FOR_WAIT_UNTIL);
-    };
-
-    tryTestFunction();
-  });
-}
-
 /**
  * Asserts that two lists contain the same set of Entries.  Entries are deemed
  * to be the same if they point to the same full path.
@@ -47,7 +10,6 @@ function waitUntil(testFunction) {
  * @param {!Array<!FileEntry>} actual
  */
 function assertFileEntryListEquals(expected, actual) {
-
   var entryToPath = function(entry) {
     assertTrue(entry.isFile);
     return entry.fullPath;
@@ -75,13 +37,11 @@ function assertFileEntryPathsEqual(expectedPaths, fileEntries) {
   expectedPaths = expectedPaths.slice();
   expectedPaths.sort();
 
-  assertEquals(
-      JSON.stringify(expectedPaths),
-      JSON.stringify(actualPaths));
+  assertEquals(JSON.stringify(expectedPaths), JSON.stringify(actualPaths));
 }
 
 /**
- * A class that captures calls to a funtion so that values can be validated.
+ * A class that captures calls to a function so that values can be validated.
  * For use in tests only.
  *
  * <p>Example:
@@ -99,11 +59,11 @@ function TestCallRecorder() {
   this.calls_ = [];
 
   /**
-   * The recording funciton. Bound in our constructor to ensure we always
+   * The recording function. Bound in our constructor to ensure we always
    * return the same object. This is necessary as some clients may make use
    * of object equality.
    *
-   * @type {function()}
+   * @type {function(*)}
    */
   this.callback = this.recordArguments_.bind(this);
 }
@@ -132,9 +92,8 @@ TestCallRecorder.prototype.assertCallCount = function(expected) {
  *    or null if the recorder hasn't been called.
  */
 TestCallRecorder.prototype.getLastArguments = function() {
-  return (this.calls_.length === 0) ?
-      null :
-      this.calls_[this.calls_.length - 1];
+  return (this.calls_.length === 0) ? null :
+                                      this.calls_[this.calls_.length - 1];
 };
 
 /**
@@ -143,47 +102,7 @@ TestCallRecorder.prototype.getLastArguments = function() {
  *    by indexd.
  */
 TestCallRecorder.prototype.getArguments = function(index) {
-  return (index < this.calls_.length) ?
-      this.calls_[index] :
-      null;
-};
-
-/**
- * @constructor
- * @struct
- */
-function MockAPIEvent() {
-  /**
-   * @type {!Array<!Function>}
-   * @const
-   */
-  this.listeners_ = [];
-}
-
-/**
- * @param {!Function} callback
- */
-MockAPIEvent.prototype.addListener = function(callback) {
-  this.listeners_.push(callback);
-};
-
-/**
- * @param {!Function} callback
- */
-MockAPIEvent.prototype.removeListener = function(callback) {
-  var index = this.listeners_.indexOf(callback);
-  if (index < 0)
-    throw new Error('Tried to remove an unregistered listener.');
-  this.listeners_.splice(index, 1);
-};
-
-/**
- * @param {...*} var_args
- */
-MockAPIEvent.prototype.dispatch = function(var_args) {
-  for (var i = 0; i < this.listeners_.length; i++) {
-    this.listeners_[i].apply(null, arguments);
-  }
+  return (index < this.calls_.length) ? this.calls_[index] : null;
 };
 
 /**
@@ -202,7 +121,7 @@ function MockChromeStorageAPI() {
   window.chrome.storage = {
     local: {
       get: this.get_.bind(this),
-      set: this.set_.bind(this)
+      set: this.set_.bind(this),
     }
   };
 }
@@ -215,11 +134,10 @@ function MockChromeStorageAPI() {
 MockChromeStorageAPI.prototype.get_ = function(keys, callback) {
   var keys = keys instanceof Array ? keys : [keys];
   var result = {};
-  keys.forEach(
-      function(key) {
-        if (key in this.state)
-          result[key] = this.state[key];
-      }.bind(this));
+  keys.forEach((key) => {
+    if (key in this.state)
+      result[key] = this.state[key];
+  });
   callback(result);
 };
 
@@ -234,33 +152,4 @@ MockChromeStorageAPI.prototype.set_ = function(values, opt_callback) {
   }
   if (opt_callback)
     opt_callback();
-};
-
-/**
- * Mocks chrome.commandLinePrivate.
- * @constructor
- */
-function MockCommandLinePrivate() {
-  this.flags_ = {};
-  if (!chrome) {
-    /** @suppress {const|checkTypes} */
-    chrome = {};
-  }
-  if (!chrome.commandLinePrivate) {
-    /** @suppress {checkTypes} */
-    chrome.commandLinePrivate = {};
-  }
-  chrome.commandLinePrivate.hasSwitch = function(name, callback) {
-    window.setTimeout(() => {
-      callback(name in this.flags_);
-    }, 0);
-  }.bind(this);
-}
-
-/**
- * Add a switch.
- * @param {string} name of the switch to add.
- */
-MockCommandLinePrivate.prototype.addSwitch = function(name) {
-  this.flags_[name] = true;
 };

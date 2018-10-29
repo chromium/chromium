@@ -22,6 +22,11 @@ static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
 AudioBufferMemoryPool::AudioBufferMemoryPool() = default;
 AudioBufferMemoryPool::~AudioBufferMemoryPool() = default;
 
+size_t AudioBufferMemoryPool::GetPoolSizeForTesting() {
+  base::AutoLock al(entry_lock_);
+  return entries_.size();
+}
+
 AudioBufferMemoryPool::AudioMemory AudioBufferMemoryPool::CreateBuffer(
     size_t size) {
   base::AutoLock al(entry_lock_);

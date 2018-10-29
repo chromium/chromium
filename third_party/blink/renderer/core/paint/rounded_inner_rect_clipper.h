@@ -14,7 +14,7 @@ class GraphicsContext;
 class LayoutRect;
 
 class RoundedInnerRectClipper {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   RoundedInnerRectClipper(GraphicsContext&,

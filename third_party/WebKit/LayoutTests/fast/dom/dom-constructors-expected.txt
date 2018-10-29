@@ -2,7 +2,6 @@ This test checks that all but a handful of dom constructors throw exceptions, an
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS TryAllocate('Attr') is 'exception'
 PASS TryAllocate('CharacterData') is 'exception'
 PASS TryAllocate('CDATASection') is 'exception'

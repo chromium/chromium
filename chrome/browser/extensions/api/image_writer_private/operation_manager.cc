@@ -59,9 +59,7 @@ OperationManager::~OperationManager() {
 }
 
 void OperationManager::Shutdown() {
-  for (OperationMap::iterator iter = operations_.begin();
-       iter != operations_.end();
-       iter++) {
+  for (auto iter = operations_.begin(); iter != operations_.end(); iter++) {
     scoped_refptr<Operation> operation = iter->second;
     operation->PostTask(base::BindOnce(&Operation::Abort, operation));
   }
@@ -77,7 +75,7 @@ void OperationManager::StartWriteFromUrl(
   // Chrome OS can only support a single operation at a time.
   if (operations_.size() > 0) {
 #else
-  OperationMap::iterator existing_operation = operations_.find(extension_id);
+  auto existing_operation = operations_.find(extension_id);
 
   if (existing_operation != operations_.end()) {
 #endif
@@ -110,7 +108,7 @@ void OperationManager::StartWriteFromFile(
   // Chrome OS can only support a single operation at a time.
   if (operations_.size() > 0) {
 #else
-  OperationMap::iterator existing_operation = operations_.find(extension_id);
+  auto existing_operation = operations_.find(extension_id);
 
   if (existing_operation != operations_.end()) {
 #endif
@@ -144,7 +142,7 @@ void OperationManager::DestroyPartitions(
     const ExtensionId& extension_id,
     const std::string& device_path,
     Operation::StartWriteCallback callback) {
-  OperationMap::iterator existing_operation = operations_.find(extension_id);
+  auto existing_operation = operations_.find(extension_id);
 
   if (existing_operation != operations_.end()) {
     std::move(callback).Run(false, error::kOperationAlreadyInProgress);
@@ -226,7 +224,7 @@ base::FilePath OperationManager::GetAssociatedDownloadFolder() {
 }
 
 Operation* OperationManager::GetOperation(const ExtensionId& extension_id) {
-  OperationMap::iterator existing_operation = operations_.find(extension_id);
+  auto existing_operation = operations_.find(extension_id);
 
   if (existing_operation == operations_.end())
     return NULL;
@@ -234,7 +232,7 @@ Operation* OperationManager::GetOperation(const ExtensionId& extension_id) {
 }
 
 void OperationManager::DeleteOperation(const ExtensionId& extension_id) {
-  OperationMap::iterator existing_operation = operations_.find(extension_id);
+  auto existing_operation = operations_.find(extension_id);
   if (existing_operation != operations_.end()) {
     operations_.erase(existing_operation);
   }

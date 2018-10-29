@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1018939186200882850">menüü-üksus</translation>
-<translation id="1020833440720551630">heliraja vaigistamine</translation>
 <translation id="10623998915015855">ümberlülitusnupp</translation>
 <translation id="1088086359088493902">Sekundid</translation>
 <translation id="1171774979989969504">Sisestage meiliaadress.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">tiitrid</translation>
 <translation id="1342835525016946179">artikkel</translation>
 <translation id="1359897965706325498">bänner</translation>
-<translation id="1548116112524424341">esita videot režiimis Pilt pildis</translation>
 <translation id="1589122976691792535">piirkond</translation>
 <translation id="1591562245178063882">See kuu</translation>
 <translation id="1637811476055996098">Vali failid</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">puuruudustik</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">kaugseadmes esitamine</translation>
-<translation id="1838818994221231429">ekraani väljalõike piirkonnas täisekraanrežiimi sisse-/väljalülitamine</translation>
 <translation id="190587075670221089">kustutamine</translation>
 <translation id="1907737156431278478">näide</translation>
 <translation id="1921819250265091946">pp</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">10 sekundi võrra kerimiseks topeltpuudutage vasakul või paremal</translation>
 <translation id="5631759159893697722">abstraktne</translation>
-<translation id="5641012560118721995">taasesituse peatamine</translation>
 <translation id="5643186887447432888">nupp</translation>
 <translation id="5677946354068040947">rohkem valikuid</translation>
 <translation id="576709008726043716">sissejuhatus</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Lähtesta</translation>
 <translation id="5966707198760109579">Nädal</translation>
 <translation id="5987525920412732405">pöördnupp</translation>
+<translation id="6011459053400940133">helitugevuse liugur</translation>
 <translation id="6015796118275082299">Aasta</translation>
 <translation id="6023896073578205740">loendikast</translation>
-<translation id="6101327004457443354">heliraja vaigistamise tühistamine</translation>
 <translation id="6150588977291308318">bibliograafia</translation>
 <translation id="6164829606128959761">mõõdik</translation>
 <translation id="6166809985690652833">järelsõna</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Tunnid</translation>
 <translation id="7681220483256441252">register</translation>
 <translation id="7720026100085573005">järelejäänud aeg</translation>
-<translation id="7740016676195725605">subtiitrite kuvamise peatamine</translation>
 <translation id="7740050170769002709">HTML-sisu</translation>
 <translation id="7750228210027921155">Pilt pildis</translation>
 <translation id="7789962463072032349">peata</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">otsinguteksti väli</translation>
 <translation id="8057695513531652401">teatis</translation>
 <translation id="8105797009065549151">märkuse viide</translation>
-<translation id="8115662671911883373">subtiitrite kuvamise alustamine</translation>
 <translation id="8117451130807776954">See nädal</translation>
-<translation id="819205353528511139">video esitus täisekraani režiimis</translation>
 <translation id="8199524924445686405">aaaa</translation>
 <translation id="8284326494547611709">Subtiitrid</translation>
 <translation id="835897206747267392">Kehtetu väärtus.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">kaugesituse juhtimine</translation>
 <translation id="862370744433916922">alapealkiri</translation>
 <translation id="8750798805984357768">Tehke üks nendest valikutest.</translation>
-<translation id="8785498733064193001">taasesituse alustamine</translation>
 <translation id="8808573423886751634">peatükk</translation>
 <translation id="8845239796550121995">Kantakse nüüd üle telerisse</translation>
 <translation id="8851136666856101339">pea</translation>

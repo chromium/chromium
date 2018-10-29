@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 var dataURL = 'data:text/plain,redirected1';
+var aboutURL = 'about:blank';
 
 function getURLNonWebAccessible() {
   return getURL('manifest.json');
@@ -36,6 +37,19 @@ runTests([
         {urls: [url]}, ['blocking']);
 
     assertRedirectSucceeds(url, dataURL, function() {
+      chrome.webRequest.onHeadersReceived.removeListener(listener);
+    });
+  },
+
+  function redirectToAboutUrlOnHeadersReceived() {
+    var url = getServerURL('echo');
+    var listener = function(details) {
+      return {redirectUrl: aboutURL};
+    };
+    chrome.webRequest.onHeadersReceived.addListener(listener,
+        {urls: [url]}, ['blocking']);
+
+    assertRedirectSucceeds(url, aboutURL, function() {
       chrome.webRequest.onHeadersReceived.removeListener(listener);
     });
   },
@@ -97,6 +111,19 @@ runTests([
     });
   },
 
+  function redirectToAboutUrlOnBeforeRequest() {
+    var url = getServerURL('echo');
+    var listener = function(details) {
+      return {redirectUrl: aboutURL};
+    };
+    chrome.webRequest.onBeforeRequest.addListener(listener,
+        {urls: [url]}, ['blocking']);
+
+    assertRedirectSucceeds(url, aboutURL, function() {
+      chrome.webRequest.onBeforeRequest.removeListener(listener);
+    });
+  },
+
   function redirectToNonWebAccessibleUrlOnBeforeRequest() {
     var url = getServerURL('echo');
     var listener = function(details) {
@@ -139,6 +166,10 @@ runTests([
     assertRedirectSucceeds(url, redirectURL, function() {
       chrome.webRequest.onBeforeRequest.removeListener(listener);
     });
+  },
+
+  function redirectToAboutUrlWithServerRedirect() {
+    assertRedirectFails(getServerURL('server-redirect?' + aboutURL));
   },
 
   function redirectToDataUrlWithServerRedirect() {

@@ -163,17 +163,17 @@ void PannerHandler::Process(size_t frames_to_process) {
 void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
                                                 const AudioBus* source,
                                                 size_t frames_to_process) {
-  CHECK_LE(frames_to_process, AudioUtilities::kRenderQuantumFrames);
+  CHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
 
   // Get the sample accurate values from all of the AudioParams, including the
   // values from the AudioListener.
-  float panner_x[AudioUtilities::kRenderQuantumFrames];
-  float panner_y[AudioUtilities::kRenderQuantumFrames];
-  float panner_z[AudioUtilities::kRenderQuantumFrames];
+  float panner_x[audio_utilities::kRenderQuantumFrames];
+  float panner_y[audio_utilities::kRenderQuantumFrames];
+  float panner_z[audio_utilities::kRenderQuantumFrames];
 
-  float orientation_x[AudioUtilities::kRenderQuantumFrames];
-  float orientation_y[AudioUtilities::kRenderQuantumFrames];
-  float orientation_z[AudioUtilities::kRenderQuantumFrames];
+  float orientation_x[audio_utilities::kRenderQuantumFrames];
+  float orientation_y[audio_utilities::kRenderQuantumFrames];
+  float orientation_z[audio_utilities::kRenderQuantumFrames];
 
   position_x_->CalculateSampleAccurateValues(panner_x, frames_to_process);
   position_y_->CalculateSampleAccurateValues(panner_y, frames_to_process);
@@ -187,30 +187,30 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
 
   // Get the automation values from the listener.
   const float* listener_x =
-      Listener()->GetPositionXValues(AudioUtilities::kRenderQuantumFrames);
+      Listener()->GetPositionXValues(audio_utilities::kRenderQuantumFrames);
   const float* listener_y =
-      Listener()->GetPositionYValues(AudioUtilities::kRenderQuantumFrames);
+      Listener()->GetPositionYValues(audio_utilities::kRenderQuantumFrames);
   const float* listener_z =
-      Listener()->GetPositionZValues(AudioUtilities::kRenderQuantumFrames);
+      Listener()->GetPositionZValues(audio_utilities::kRenderQuantumFrames);
 
   const float* forward_x =
-      Listener()->GetForwardXValues(AudioUtilities::kRenderQuantumFrames);
+      Listener()->GetForwardXValues(audio_utilities::kRenderQuantumFrames);
   const float* forward_y =
-      Listener()->GetForwardYValues(AudioUtilities::kRenderQuantumFrames);
+      Listener()->GetForwardYValues(audio_utilities::kRenderQuantumFrames);
   const float* forward_z =
-      Listener()->GetForwardZValues(AudioUtilities::kRenderQuantumFrames);
+      Listener()->GetForwardZValues(audio_utilities::kRenderQuantumFrames);
 
   const float* up_x =
-      Listener()->GetUpXValues(AudioUtilities::kRenderQuantumFrames);
+      Listener()->GetUpXValues(audio_utilities::kRenderQuantumFrames);
   const float* up_y =
-      Listener()->GetUpYValues(AudioUtilities::kRenderQuantumFrames);
+      Listener()->GetUpYValues(audio_utilities::kRenderQuantumFrames);
   const float* up_z =
-      Listener()->GetUpZValues(AudioUtilities::kRenderQuantumFrames);
+      Listener()->GetUpZValues(audio_utilities::kRenderQuantumFrames);
 
   // Compute the azimuth, elevation, and total gains for each position.
-  double azimuth[AudioUtilities::kRenderQuantumFrames];
-  double elevation[AudioUtilities::kRenderQuantumFrames];
-  float total_gain[AudioUtilities::kRenderQuantumFrames];
+  double azimuth[audio_utilities::kRenderQuantumFrames];
+  double elevation[audio_utilities::kRenderQuantumFrames];
+  float total_gain[audio_utilities::kRenderQuantumFrames];
 
   for (unsigned k = 0; k < frames_to_process; ++k) {
     FloatPoint3D panner_position(panner_x[k], panner_y[k], panner_z[k]);
@@ -236,9 +236,9 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
 }
 
 void PannerHandler::ProcessOnlyAudioParams(size_t frames_to_process) {
-  float values[AudioUtilities::kRenderQuantumFrames];
+  float values[audio_utilities::kRenderQuantumFrames];
 
-  DCHECK_LE(frames_to_process, AudioUtilities::kRenderQuantumFrames);
+  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
 
   position_x_->CalculateSampleAccurateValues(values, frames_to_process);
   position_y_->CalculateSampleAccurateValues(values, frames_to_process);

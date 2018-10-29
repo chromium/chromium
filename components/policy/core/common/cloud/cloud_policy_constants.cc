@@ -10,9 +10,6 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_switches.h"
-#include "components/policy/proto/device_management_backend.pb.h"
-
-namespace em = enterprise_management;
 
 namespace policy {
 

@@ -2,7 +2,6 @@ Test to make sure we remove span tags with no attributes if we removed the last 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS one underline command converted test to <u>test</u>
 PASS one underline command converted <u><b><strike>test</strike></b></u> to <b style=""><strike style="">test</strike></b>
 PASS two underline commands converted test to test

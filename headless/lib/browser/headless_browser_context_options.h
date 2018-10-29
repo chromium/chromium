@@ -34,9 +34,6 @@ class HeadlessBrowserContextOptions {
   // See HeadlessBrowser::Options::proxy_config.
   const net::ProxyConfig* proxy_config() const;
 
-  // See HeadlessBrowser::Options::host_resolver_rules.
-  const std::string& host_resolver_rules() const;
-
   const gfx::Size& window_size() const;
 
   // See HeadlessBrowser::Options::user_data_dir.

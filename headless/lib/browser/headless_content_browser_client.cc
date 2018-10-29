@@ -205,6 +205,15 @@ void HeadlessContentBrowserClient::GetQuotaSettings(
       partition->GetPath(), context->IsOffTheRecord(), std::move(callback));
 }
 
+content::GeneratedCodeCacheSettings
+HeadlessContentBrowserClient::GetGeneratedCodeCacheSettings(
+    content::BrowserContext* context) {
+  // If we pass 0 for size, disk_cache will pick a default size using the
+  // heuristics based on available disk size. These are implemented in
+  // disk_cache::PreferredCacheSize in net/disk_cache/cache_util.cc.
+  return content::GeneratedCodeCacheSettings(true, 0, context->GetPath());
+}
+
 #if defined(OS_POSIX) && !defined(OS_MACOSX)
 void HeadlessContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
     const base::CommandLine& command_line,
@@ -336,6 +345,15 @@ bool HeadlessContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   // production cases like screenshot or pdf generation) based on //headless
   // will use a mode that is actually shipping in Chrome.
   return false;
+}
+
+::network::mojom::NetworkContextPtr
+HeadlessContentBrowserClient::CreateNetworkContext(
+    content::BrowserContext* context,
+    bool in_memory,
+    const base::FilePath& relative_partition_path) {
+  return HeadlessBrowserContextImpl::From(context)->CreateNetworkContext(
+      in_memory, relative_partition_path);
 }
 
 }  // namespace headless

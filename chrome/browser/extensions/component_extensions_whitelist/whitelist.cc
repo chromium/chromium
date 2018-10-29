@@ -17,7 +17,6 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/input_method/component_extension_ime_manager_impl.h"
-#include "components/chrome_apps/grit/chrome_apps_resources.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 #include "ui/keyboard/grit/keyboard_resources.h"
 #endif
@@ -32,10 +31,10 @@ bool IsComponentExtensionWhitelisted(const std::string& extension_id) {
 #if defined(OS_CHROMEOS)
     extension_misc::kAssessmentAssistantExtensionId,
     extension_misc::kChromeVoxExtensionId,
+    extension_misc::kEspeakSpeechSynthesisExtensionId,
+    extension_misc::kGoogleSpeechSynthesisExtensionId,
     extension_misc::kSelectToSpeakExtensionId,
-    extension_misc::kSpeechSynthesisExtensionId,
     extension_misc::kSwitchAccessExtensionId,
-    extension_misc::kZIPUnpackerExtensionId,
     extension_misc::kZipArchiverExtensionId,
 #endif
   };
@@ -83,7 +82,6 @@ bool IsComponentExtensionWhitelisted(int manifest_resource_id) {
     // Separate ChromeOS list, as it is quite large.
     case IDR_ARC_SUPPORT_MANIFEST:
     case IDR_AUDIO_PLAYER_MANIFEST:
-    case IDR_CHROME_APPS_WEBSTORE_WIDGET_MANIFEST:
     case IDR_CONNECTIVITY_DIAGNOSTICS_LAUNCHER_MANIFEST:
     case IDR_CONNECTIVITY_DIAGNOSTICS_MANIFEST:
     case IDR_CROSH_BUILTIN_MANIFEST:

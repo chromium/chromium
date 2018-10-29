@@ -103,7 +103,7 @@ class RequestImpl : public SMSService::Request {
       OAuth2TokenService::ScopeSet oauth_scopes;
       oauth_scopes.insert(kDesktopIOSPromotionOAuthScope);
       identity_manager_->RemoveAccessTokenFromCache(
-          identity_manager_->GetPrimaryAccountInfo().account_id, oauth_scopes,
+          identity_manager_->GetPrimaryAccountId(), oauth_scopes,
           access_token_);
       access_token_.clear();
       Start();

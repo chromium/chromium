@@ -10,6 +10,29 @@
 
 namespace printing {
 
+namespace {
+
+// Checks whether |printable_area| can be used to form a valid symmetrical
+// printable area, so that margin_left equals margin_right, and margin_top
+// equals margin_bottom.  For example if
+// printable_area.x() * 2 >= page_size.width(), then the
+// content_width = page_size.width() - 2 * printable_area.x() would be zero or
+// negative, which is invalid.
+// |page_size| is the physical page size that includes margins.
+bool IsValidPrintableArea(const gfx::Size& page_size,
+                          const gfx::Rect& printable_area) {
+  return !printable_area.IsEmpty() && printable_area.x() >= 0 &&
+         printable_area.y() >= 0 &&
+         printable_area.right() <= page_size.width() &&
+         printable_area.bottom() <= page_size.height() &&
+         printable_area.x() * 2 < page_size.width() &&
+         printable_area.y() * 2 < page_size.height() &&
+         printable_area.right() * 2 > page_size.width() &&
+         printable_area.bottom() * 2 > page_size.height();
+}
+
+}  // namespace
+
 PageMargins::PageMargins()
     : header(0),
       footer(0),
@@ -44,6 +67,26 @@ PageSetup::PageSetup() {
 PageSetup::PageSetup(const PageSetup& other) = default;
 
 PageSetup::~PageSetup() = default;
+
+// static
+gfx::Rect PageSetup::GetSymmetricalPrintableArea(
+    const gfx::Size& page_size,
+    const gfx::Rect& printable_area) {
+  if (!IsValidPrintableArea(page_size, printable_area))
+    return gfx::Rect();
+
+  int left_right_margin =
+      std::max(printable_area.x(), page_size.width() - printable_area.right());
+  int top_bottom_margin = std::max(
+      printable_area.y(), page_size.height() - printable_area.bottom());
+  int width = page_size.width() - 2 * left_right_margin;
+  int height = page_size.height() - 2 * top_bottom_margin;
+
+  gfx::Rect symmetrical_printable_area = gfx::Rect(page_size);
+  symmetrical_printable_area.ClampToCenteredSize(gfx::Size(width, height));
+
+  return symmetrical_printable_area;
+}
 
 void PageSetup::Clear() {
   physical_size_.SetSize(0, 0);

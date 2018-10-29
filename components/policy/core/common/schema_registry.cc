@@ -44,10 +44,8 @@ void SchemaRegistry::RegisterComponents(PolicyDomain domain,
   // Assume that a schema was updated if the namespace was already registered
   // before.
   DomainMap map(schema_map_->GetDomains());
-  for (ComponentMap::const_iterator it = components.begin();
-       it != components.end(); ++it) {
+  for (auto it = components.begin(); it != components.end(); ++it)
     map[domain][it->first] = it->second;
-  }
   schema_map_ = new SchemaMap(map);
   Notify(true);
 }
@@ -150,10 +148,8 @@ void CombinedSchemaRegistry::RegisterComponents(
     const ComponentMap& components) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DomainMap map(own_schema_map_->GetDomains());
-  for (ComponentMap::const_iterator it = components.begin();
-       it != components.end(); ++it) {
+  for (auto it = components.begin(); it != components.end(); ++it)
     map[domain][it->first] = it->second;
-  }
   own_schema_map_ = new SchemaMap(map);
   Combine(true);
 }
@@ -201,13 +197,13 @@ void CombinedSchemaRegistry::Combine(bool has_new_schemas) {
   // way policies are loaded currently, but isn't a problem worth fixing for
   // the time being.
   DomainMap map(own_schema_map_->GetDomains());
-  for (std::set<SchemaRegistry*>::const_iterator reg_it = registries_.begin();
-       reg_it != registries_.end(); ++reg_it) {
+  for (auto reg_it = registries_.begin(); reg_it != registries_.end();
+       ++reg_it) {
     const DomainMap& reg_domain_map = (*reg_it)->schema_map()->GetDomains();
-    for (DomainMap::const_iterator domain_it = reg_domain_map.begin();
+    for (auto domain_it = reg_domain_map.begin();
          domain_it != reg_domain_map.end(); ++domain_it) {
       const ComponentMap& reg_component_map = domain_it->second;
-      for (ComponentMap::const_iterator comp_it = reg_component_map.begin();
+      for (auto comp_it = reg_component_map.begin();
            comp_it != reg_component_map.end(); ++comp_it) {
         map[domain_it->first][comp_it->first] = comp_it->second;
       }

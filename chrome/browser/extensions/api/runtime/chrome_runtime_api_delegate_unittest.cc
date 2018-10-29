@@ -6,6 +6,7 @@
 #include <set>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -194,7 +195,8 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
         std::make_unique<ChromeRuntimeAPIDelegate>(browser_context());
     service()->updater()->SetExtensionCacheForTesting(nullptr);
     EventRouterFactory::GetInstance()->SetTestingFactory(
-        browser_context(), &TestEventRouterFactoryFunction);
+        browser_context(),
+        base::BindRepeating(&TestEventRouterFactoryFunction));
 
     // Setup the ExtensionService so that extension updates won't complete
     // installation until the extension is idle.

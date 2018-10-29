@@ -62,6 +62,53 @@
         "data": "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\notification_helper.exe"
       }
     },
+    "HKEY_LOCAL_MACHINE\\Software\\Classes\\CLSID\\$CHROME_ELEVATOR_CLSID": {
+      "exists": "required",
+      "values": {
+        "AppID": {
+          "type": "SZ",
+          "data": "$CHROME_ELEVATOR_CLSID"
+        }
+      }
+    },
+    "HKEY_LOCAL_MACHINE\\Software\\Classes\\AppID\\$CHROME_ELEVATOR_CLSID": {
+      "exists": "required",
+      "values": {
+        "LocalService": {
+          "type": "SZ",
+          "data": "$CHROME_ELEVATION_SERVICE_NAME"
+        }
+      }
+    },
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\$CHROME_ELEVATION_SERVICE_NAME": {
+      "exists": "required",
+      "values": {
+        "Type": {
+          "type": "DWORD",
+          "data": 16
+        },
+        "Start": {
+          "type": "DWORD",
+          "data": 3
+        },
+        "ErrorControl": {
+          "type": "DWORD",
+          "data": 1
+        },
+        "ImagePath": {
+          "type": "EXPAND_SZ",
+          "data": "\"$PROGRAM_FILES\\$CHROME_DIR\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\elevation_service.exe\""
+        },
+        "DisplayName": {
+          "type": "SZ",
+          "data": "$CHROME_ELEVATION_SERVICE_DISPLAY_NAME"
+        },
+        "ObjectName": {
+          "type": "SZ",
+          "data": "LocalSystem"
+        }
+      }
+    },
     "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_SHORT_NAME": {
       "exists": "forbidden"
     }

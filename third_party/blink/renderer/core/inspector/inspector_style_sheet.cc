@@ -1005,9 +1005,11 @@ String InspectorStyleSheet::FinalURL() {
   return url.IsEmpty() ? document_url_ : url;
 }
 
-bool InspectorStyleSheet::SetText(const String& text, ExceptionState&) {
+bool InspectorStyleSheet::SetText(const String& text,
+                                  ExceptionState& exception_state) {
   InnerSetText(text, true);
-  page_style_sheet_->SetText(text);
+  page_style_sheet_->SetText(text, true /* allow_import_rules */,
+                             exception_state);
   OnStyleSheetTextChanged();
   return true;
 }

@@ -20,10 +20,6 @@ class BookmarkNode;
 // Unfortunately there is already a C++ class named BookmarkMenuController.
 @interface BookmarkMenuCocoaController : NSObject<NSMenuDelegate>
 
-// Return an autoreleased string to be used as a menu title for the
-// given bookmark node.
-+ (NSString*)menuTitleForNode:(const bookmarks::BookmarkNode*)node;
-
 // Make a relevant tooltip string for node.
 + (NSString*)tooltipForNode:(const bookmarks::BookmarkNode*)node;
 

@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
@@ -57,6 +58,12 @@ namespace {
 
 using ReportTimeCallback = blink::WebLayerTreeView::ReportTimeCallback;
 
+// Enables using presentation times instead of swap times in swap promises.
+// Currently, these promises are only used by Paint Timing, but they will be
+// used by other APIs such as Event Timing.
+const base::Feature kUsePresentationTimeInSwapPromise = {
+    "UsePresentationTimeInSwapPromise", base::FEATURE_DISABLED_BY_DEFAULT};
+
 class ReportTimeSwapPromise : public cc::SwapPromise {
  public:
   ReportTimeSwapPromise(ReportTimeCallback callback,
@@ -91,6 +98,11 @@ ReportTimeSwapPromise::~ReportTimeSwapPromise() {}
 void ReportTimeSwapPromise::WillSwap(viz::CompositorFrameMetadata* metadata) {
   DCHECK_GT(metadata->frame_token, 0u);
   metadata->request_presentation_feedback = true;
+  if (!base::FeatureList::IsEnabled(kUsePresentationTimeInSwapPromise))
+    return;
+
+  // If using presentation timestamp, post task here calling
+  // LayerTreeView::AddPresentationCallback.
   auto* task_runner = task_runner_.get();
   task_runner->PostTask(
       FROM_HERE,
@@ -102,8 +114,14 @@ void ReportTimeSwapPromise::WillSwap(viz::CompositorFrameMetadata* metadata) {
 }
 
 void ReportTimeSwapPromise::DidSwap() {
-  // If swap did happen, then the paint-time will be reported when the
-  // presentation feedback is received.
+  if (base::FeatureList::IsEnabled(kUsePresentationTimeInSwapPromise))
+    return;
+
+  // If using swap timestamp, the swap promise should return the current time.
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback_),
+                                blink::WebLayerTreeView::SwapResult::kDidSwap,
+                                base::TimeTicks::Now()));
 }
 
 void ReportTimeSwapPromise::DidNotSwap(
@@ -123,6 +141,8 @@ void ReportTimeSwapPromise::DidNotSwap(
       result = blink::WebLayerTreeView::SwapResult::kDidNotSwapActivationFails;
       break;
   }
+  // During a failed swap, return the current time regardless of whether we're
+  // using presentation or swap timestamps.
   task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(callback_), result,
                                                    base::TimeTicks::Now()));
 }
@@ -250,9 +270,11 @@ bool LayerTreeView::SendMessageToMicroBenchmark(
 void LayerTreeView::SetViewportSizeAndScale(
     const gfx::Size& device_viewport_size,
     float device_scale_factor,
-    const viz::LocalSurfaceId& local_surface_id) {
-  layer_tree_host_->SetViewportSizeAndScale(
-      device_viewport_size, device_scale_factor, local_surface_id);
+    const viz::LocalSurfaceId& local_surface_id,
+    base::TimeTicks allocation_time) {
+  layer_tree_host_->SetViewportSizeAndScale(device_viewport_size,
+                                            device_scale_factor,
+                                            local_surface_id, allocation_time);
 }
 
 void LayerTreeView::RequestNewLocalSurfaceId() {
@@ -459,12 +481,9 @@ void LayerTreeView::CompositeAndReadbackAsync(
   }
 }
 
-void LayerTreeView::SynchronouslyCompositeNoRasterForTesting() {
-  SynchronouslyComposite(false /* raster */, nullptr /* swap_promise */);
-}
-
-void LayerTreeView::CompositeWithRasterForTesting() {
-  SynchronouslyComposite(true /* raster */, nullptr /* swap_promise */);
+void LayerTreeView::UpdateAllLifecyclePhasesAndCompositeForTesting(
+    bool do_raster) {
+  SynchronouslyComposite(do_raster, nullptr /* swap_promise */);
 }
 
 void LayerTreeView::SynchronouslyComposite(
@@ -595,15 +614,9 @@ void LayerTreeView::UpdateLayerTreeHost() {
   delegate_->UpdateVisualState();
 }
 
-void LayerTreeView::ApplyViewportDeltas(
-    const gfx::Vector2dF& inner_delta,
-    const gfx::Vector2dF& outer_delta,
-    const gfx::Vector2dF& elastic_overscroll_delta,
-    float page_scale,
-    float top_controls_delta) {
-  delegate_->ApplyViewportDeltas(inner_delta, outer_delta,
-                                 elastic_overscroll_delta, page_scale,
-                                 top_controls_delta);
+void LayerTreeView::ApplyViewportChanges(
+    const cc::ApplyViewportChangesArgs& args) {
+  delegate_->ApplyViewportChanges(args);
 }
 
 void LayerTreeView::RecordWheelAndTouchScrollingCount(
@@ -649,10 +662,6 @@ void LayerTreeView::DidCommitAndDrawFrame() {
   delegate_->DidCommitAndDrawCompositorFrame();
 }
 
-void LayerTreeView::DidReceiveCompositorFrameAck() {
-  delegate_->DidReceiveCompositorFrameAck();
-}
-
 void LayerTreeView::DidCompletePageScaleAnimation() {
   delegate_->DidCompletePageScaleAnimation();
 }
@@ -671,6 +680,10 @@ void LayerTreeView::DidPresentCompositorFrame(
       std::move(callback).Run(feedback.timestamp);
     presentation_callbacks_.erase(front);
   }
+}
+
+void LayerTreeView::RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) {
+  delegate_->RecordEndOfFrameMetrics(frame_begin_time);
 }
 
 void LayerTreeView::RequestScheduleAnimation() {

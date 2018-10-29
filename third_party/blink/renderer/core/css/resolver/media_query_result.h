@@ -30,7 +30,7 @@
 namespace blink {
 
 class MediaQueryResult {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   MediaQueryResult(const MediaQueryExp& expr, bool result)

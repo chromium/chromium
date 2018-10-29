@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">С Chrome спестявате време, като свързвате профилите си с мрежата. Можете да добавяте или премахвате профили от настройките.</translation>
 <translation id="3282568296779691940">Вход в Chrome</translation>
 <translation id="3345341804167540816">Използвайте Chrome навсякъде</translation>
-<translation id="3678774398092457402">Искате ли Chrome да запази паролата ви за този сайт?</translation>
 <translation id="384394811301901750">В момента Google Chrome не може да използва камерата ви</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Заменяте настоящия профил за синхронизиране (<ph name="USER_EMAIL1" />) с друг (<ph name="USER_EMAIL2" />). Съществуващите ви данни в Chrome се управляват от <ph name="DOMAIN" />. Те ще се изтрият от това устройство, но ще останат в профила <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Настройките<ph name="END_LINK" /> могат да бъдат персонализирани по всяко време. Може да използваме съдържанието на посещаваните от вас сайтове, активността в браузъра и взаимодействията с него, за да персонализираме Chrome и услуги на Google, като Преводач, Търсене и рекламите.</translation>
 <translation id="5639704535586432836">Отворете „Settings“ &gt; „Privacy“ &gt; „Camera“ &gt; „Google Chrome“ и включете камерата.</translation>
 <translation id="5642200033778930880">Google Chrome не може да използва камерата ви в режим на разделен изглед</translation>
-<translation id="5703130498371792817">Харесвате приложението Chrome? <ph name="BEGIN_LINK" />Оценете го<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Съвет за Chrome. Някои бутони, например тези за връщане назад, преминаване напред и търсене, вече са в долната част на екрана.</translation>
 <translation id="6036420186814142909">Google Chrome разполага с функции, които ви помагат да управлявате данните си в интернет и времето, за което можете да зареждате уеб страници.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Общи условия на Google Chrome</translation>
 <translation id="7165736900384873061">Използване на скенера за QR кодове в Google Chrome</translation>
 <translation id="7172660552945675509">Съвет: <ph name="BEGIN_LINK" />Преместете Chrome в лентата „Dock“<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome използва Face ID, за да обезпечи упълномощен достъп до паролите ви.</translation>
 <translation id="7265369419224458312">Осъществявайте оттук достъп до разделите, които сте отворили на компютъра си. Трябва само да стартирате Chrome на компютъра си и да изберете „Вход в Chrome…“ от менюто.</translation>
 <translation id="728488472449859922">Включване на скенера за QR кодове в Google Chrome</translation>
 <translation id="7400722733683201933">Всичко за Google Chrome</translation>

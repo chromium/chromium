@@ -69,7 +69,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
@@ -341,8 +340,10 @@ bool DownloadFileIconExtractorImpl::ExtractIconURLForPath(
 void DownloadFileIconExtractorImpl::OnIconLoadComplete(
     float scale, const IconURLCallback& callback, gfx::Image* icon) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  callback.Run(!icon ? std::string() : webui::GetBitmapDataUrl(
-      icon->ToImageSkia()->GetRepresentation(scale).sk_bitmap()));
+  callback.Run(
+      !icon ? std::string()
+            : webui::GetBitmapDataUrl(
+                  icon->ToImageSkia()->GetRepresentation(scale).GetBitmap()));
 }
 
 IconLoader::IconSize IconLoaderSizeFromPixelSize(int pixel_size) {
@@ -496,8 +497,8 @@ void CompileDownloadQueryOrderBy(
   if (sorter_types.Get().empty())
     InitSortTypeMap(sorter_types.Pointer());
 
-  for (std::vector<std::string>::const_iterator iter = order_by_strs.begin();
-       iter != order_by_strs.end(); ++iter) {
+  for (auto iter = order_by_strs.cbegin(); iter != order_by_strs.cend();
+       ++iter) {
     std::string term_str = *iter;
     if (term_str.empty())
       continue;
@@ -707,8 +708,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
 
   void DeterminerRemoved(const std::string& extension_id) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    for (DeterminerInfoVector::iterator iter = determiners_.begin();
-         iter != determiners_.end();) {
+    for (auto iter = determiners_.begin(); iter != determiners_.end();) {
       if (iter->extension_id == extension_id) {
         iter = determiners_.erase(iter);
       } else {
@@ -833,8 +833,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   // This is safe to call even while not waiting for determiners to call back;
   // in that case, the callbacks will be null so they won't be Run.
   void CheckAllDeterminersCalled() {
-    for (DeterminerInfoVector::iterator iter = determiners_.begin();
-         iter != determiners_.end(); ++iter) {
+    for (auto iter = determiners_.begin(); iter != determiners_.end(); ++iter) {
       if (!iter->reported)
         return;
     }
@@ -999,10 +998,6 @@ bool DownloadsDownloadFunction::RunAsync() {
             &error_))
     return false;
 
-  content::StoragePartition* storage_partition =
-      BrowserContext::GetStoragePartition(
-          render_frame_host()->GetProcess()->GetBrowserContext(),
-          render_frame_host()->GetSiteInstance());
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("downloads_api_run_async", R"(
         semantics {
@@ -1036,8 +1031,7 @@ bool DownloadsDownloadFunction::RunAsync() {
       new download::DownloadUrlParameters(
           download_url, render_frame_host()->GetProcess()->GetID(),
           render_frame_host()->GetRenderViewHost()->GetRoutingID(),
-          render_frame_host()->GetRoutingID(),
-          storage_partition->GetURLRequestContext(), traffic_annotation));
+          render_frame_host()->GetRoutingID(), traffic_annotation));
 
   base::FilePath creator_suggested_filename;
   if (options.filename.get()) {
@@ -1561,8 +1555,7 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
 
   BrowserList* browsers = BrowserList::GetInstance();
   if (browsers) {
-    for (BrowserList::const_iterator iter = browsers->begin();
-        iter != browsers->end(); ++iter) {
+    for (auto iter = browsers->begin(); iter != browsers->end(); ++iter) {
       const Browser* browser = *iter;
       DownloadCoreService* current_service =
           DownloadCoreServiceFactory::GetForBrowserContext(browser->profile());
@@ -1669,8 +1662,7 @@ void ExtensionDownloadsEventRouter::
 
 void ExtensionDownloadsEventRouter::SetShelfEnabled(const Extension* extension,
                                                     bool enabled) {
-  std::set<const Extension*>::iterator iter =
-      shelf_disabling_extensions_.find(extension);
+  auto iter = shelf_disabling_extensions_.find(extension);
   if (iter == shelf_disabling_extensions_.end()) {
     if (!enabled)
       shelf_disabling_extensions_.insert(extension);
@@ -2050,8 +2042,7 @@ void ExtensionDownloadsEventRouter::OnExtensionUnloaded(
     const Extension* extension,
     UnloadedExtensionReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::set<const Extension*>::iterator iter =
-      shelf_disabling_extensions_.find(extension);
+  auto iter = shelf_disabling_extensions_.find(extension);
   if (iter != shelf_disabling_extensions_.end())
     shelf_disabling_extensions_.erase(iter);
 }

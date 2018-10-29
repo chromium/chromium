@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "content/common/content_export.h"
-#include "device/fido/fido_discovery.h"
+#include "device/fido/fido_device_discovery.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "third_party/blink/public/platform/modules/webauthn/virtual_authenticator.mojom.h"
 
@@ -53,7 +53,7 @@ class CONTENT_EXPORT ScopedVirtualAuthenticatorEnvironment
   void ClearAuthenticators(ClearAuthenticatorsCallback callback) override;
 
   // ScopedFidoDiscoveryFactory:
-  std::unique_ptr<::device::FidoDiscovery> CreateFidoDiscovery(
+  std::unique_ptr<::device::FidoDeviceDiscovery> CreateFidoDiscovery(
       device::FidoTransportProtocol transport,
       ::service_manager::Connector* connector) override;
 

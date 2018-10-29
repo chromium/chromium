@@ -225,7 +225,6 @@ TEST_F(TrayUserTest, MultiUserModeDoesNotAllowToAddUser) {
 
   // Move the mouse over the status area and click to open the status menu.
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->set_async(false);
 
   // Verify that nothing is shown.
   EXPECT_FALSE(tray()->IsSystemBubbleVisible());

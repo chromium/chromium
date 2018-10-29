@@ -145,8 +145,7 @@ class StatusBubbleViews::StatusView : public views::View {
 
   StatusView(views::Widget* popup,
              const gfx::Size& popup_size,
-             const ui::ThemeProvider* theme_provider,
-             bool has_client_edge);
+             const ui::ThemeProvider* theme_provider);
   ~StatusView() override;
 
   // Set the bubble text to a certain value, hides the bubble if text is
@@ -209,7 +208,6 @@ class StatusBubbleViews::StatusView : public views::View {
   gfx::Size popup_size_;
 
   const ui::ThemeProvider* theme_provider_;
-  const bool has_client_edge_;
 
   base::WeakPtrFactory<StatusBubbleViews::StatusView> timer_factory_;
 
@@ -219,15 +217,13 @@ class StatusBubbleViews::StatusView : public views::View {
 StatusBubbleViews::StatusView::StatusView(
     views::Widget* popup,
     const gfx::Size& popup_size,
-    const ui::ThemeProvider* theme_provider,
-    bool has_client_edge)
+    const ui::ThemeProvider* theme_provider)
     : state_(BUBBLE_HIDDEN),
       style_(STYLE_STANDARD),
       animation_(new StatusViewAnimation(this, 0, 0)),
       popup_(popup),
       popup_size_(popup_size),
       theme_provider_(theme_provider),
-      has_client_edge_(has_client_edge),
       timer_factory_(this) {}
 
 StatusBubbleViews::StatusView::~StatusView() {
@@ -444,19 +440,15 @@ void StatusBubbleViews::StatusView::OnPaint(gfx::Canvas* canvas) {
   // where the web content is visible.
   const int shadow_thickness_pixels = std::floor(kShadowThickness * scale);
 
-  if (!has_client_edge_) {
-    // When there's no client edge the shadow will overlap the window frame.
-    // Clip it off when the bubble is docked. Otherwise when the bubble is
-    // floating preserve the full shadow so the bubble looks complete.
-    const int clip_left =
-        style_ == STYLE_STANDARD ? shadow_thickness_pixels : 0;
-    const int clip_right =
-        style_ == STYLE_STANDARD_RIGHT ? shadow_thickness_pixels : 0;
-    const int clip_bottom =
-        clip_left || clip_right ? shadow_thickness_pixels : 0;
-    gfx::Rect clip_rect(clip_left, 0, width - clip_right, height - clip_bottom);
-    canvas->ClipRect(clip_rect);
-  }
+  // The shadow will overlap the window frame. Clip it off when the bubble is
+  // docked. Otherwise when the bubble is floating preserve the full shadow so
+  // the bubble looks complete.
+  const int clip_left = style_ == STYLE_STANDARD ? shadow_thickness_pixels : 0;
+  const int clip_right =
+      style_ == STYLE_STANDARD_RIGHT ? shadow_thickness_pixels : 0;
+  const int clip_bottom = clip_left || clip_right ? shadow_thickness_pixels : 0;
+  gfx::Rect clip_rect(clip_left, 0, width - clip_right, height - clip_bottom);
+  canvas->ClipRect(clip_rect);
 
   gfx::RectF bubble_rect(width, height);
   // Reposition() moves the bubble down and to the left in order to overlap the
@@ -629,15 +621,13 @@ void StatusBubbleViews::StatusViewExpander::SetBubbleWidth(int width) {
 
 const int StatusBubbleViews::kShadowThickness = 1;
 
-StatusBubbleViews::StatusBubbleViews(views::View* base_view,
-                                     bool has_client_edge)
+StatusBubbleViews::StatusBubbleViews(views::View* base_view)
     : contains_mouse_(false),
       offset_(0),
       base_view_(base_view),
       view_(NULL),
       download_shelf_is_visible_(false),
       is_expanded_(false),
-      has_client_edge_(has_client_edge),
       expand_timer_factory_(this) {
   expand_view_.reset();
 }
@@ -653,8 +643,7 @@ void StatusBubbleViews::Init() {
     popup_.reset(new views::Widget);
     views::Widget* frame = base_view_->GetWidget();
     if (!view_) {
-      view_ = new StatusView(popup_.get(), size_, frame->GetThemeProvider(),
-                             has_client_edge_);
+      view_ = new StatusView(popup_.get(), size_, frame->GetThemeProvider());
     }
     if (!expand_view_.get())
       expand_view_.reset(new StatusViewExpander(this, view_));

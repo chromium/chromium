@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
@@ -107,8 +108,11 @@ class NGInlineNodeTest : public NGLayoutTest {
         NGConstraintSpaceBuilder(WritingMode::kHorizontalTb, icb_size)
             .SetAvailableSize({LayoutUnit::Max(), LayoutUnit(-1)})
             .ToConstraintSpace(WritingMode::kHorizontalTb);
+    NGInlineChildLayoutContext context;
     scoped_refptr<NGLayoutResult> result =
-        NGInlineLayoutAlgorithm(node, constraint_space).Layout();
+        NGInlineLayoutAlgorithm(node, constraint_space,
+                                nullptr /* break_token */, &context)
+            .Layout();
 
     const NGPhysicalLineBoxFragment* line =
         ToNGPhysicalLineBoxFragment(result->PhysicalFragment().get());

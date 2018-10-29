@@ -21,9 +21,8 @@ namespace extensions {
 namespace {
 
 bool IsSupportedMimeType(const std::string& mime_type) {
-  static const base::flat_set<std::string> kSupportedTypes = {
-      "text/pdf", "application/pdf", "text/csv"};
-  return base::ContainsKey(kSupportedTypes, mime_type);
+  return mime_type == "text/pdf" || mime_type == "application/pdf" ||
+         mime_type == "text/csv";
 }
 
 }  // namespace
@@ -35,6 +34,13 @@ bool MimeHandlerViewFrameContainer::Create(
     const std::string& mime_type,
     const content::WebPluginInfo& plugin_info,
     int32_t element_instance_id) {
+  if (plugin_info.type != content::WebPluginInfo::PLUGIN_TYPE_BROWSER_PLUGIN) {
+    // TODO(ekaramad): Rename this plugin type once https://crbug.com/659750 is
+    // fixed. We only create a MHVFC for the plugin types of BrowserPlugin
+    // (which used to create a MimeHandlerViewContainer).
+    return false;
+  }
+
   if (!IsSupportedMimeType(mime_type))
     return false;
   // Life time is managed by the class itself: when the MimeHandlerViewGuest
@@ -61,10 +67,18 @@ MimeHandlerViewFrameContainer::MimeHandlerViewFrameContainer(
   if (is_embedded_) {
     SendResourceRequest();
   } else {
-    // For non-embedded MimeHandlerViewGuest the stream has already been
-    // intercepted.
-    // TODO(ekaramad): Update |view_id_| before sending this request.
-    CreateMimeHandlerViewGuestIfNecessary();
+    // TODO(ekaramad): Currently the full page version gets the same treatment
+    // as the embedded version of MimeHandlerViewFrameContainer; they both send
+    // a request for the resource. The full page version however should not as
+    // there is already an intercepted stream for the navigation. Change the
+    // logic here to a) IsEmbedded() return false for full page, b) the current
+    // intercepted stream is used and no new URLRequest is sent for the
+    // resource, and c) ensure creation of MimeHandlerViewFrameContainer does
+    // not lead to its destruction right away or the Create() method above would
+    // incorrectly return |true|. Note that currently calling
+    // CreateMimeHandlerViewGuestIfNecessary() could lead to the destruction of
+    // |this| when |plugin_element| does not have a content frame.
+    NOTREACHED();
   }
 }
 
@@ -76,10 +90,20 @@ void MimeHandlerViewFrameContainer::CreateMimeHandlerViewGuestIfNecessary() {
         content::RenderFrame::GetRoutingIdForWebFrame(frame);
   }
   if (plugin_frame_routing_id_ == MSG_ROUTING_NONE) {
-    // TODO(ekaramad): Destroy and cleanup.
+    OnDestroyFrameContainer(element_instance_id_);
     return;
   }
   MimeHandlerViewContainerBase::CreateMimeHandlerViewGuestIfNecessary();
+}
+
+void MimeHandlerViewFrameContainer::OnRetryCreatingMimeHandlerViewGuest(
+    int32_t element_instance_id) {
+  CreateMimeHandlerViewGuestIfNecessary();
+}
+
+void MimeHandlerViewFrameContainer::OnDestroyFrameContainer(
+    int32_t element_instance_id) {
+  delete this;
 }
 
 blink::WebRemoteFrame* MimeHandlerViewFrameContainer::GetGuestProxyFrame()
@@ -98,6 +122,7 @@ gfx::Size MimeHandlerViewFrameContainer::GetElementSize() const {
 blink::WebFrame* MimeHandlerViewFrameContainer::GetContentFrame() const {
   return blink::WebFrame::FromFrameOwnerElement(plugin_element_);
 }
+
 // mime_handler::BeforeUnloadControl implementation.
 void MimeHandlerViewFrameContainer::SetShowBeforeUnloadDialog(
     bool show_dialog,

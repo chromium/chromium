@@ -91,8 +91,7 @@ testing::AssertionResult ChangesEq(
 
   std::set<std::string> keys_seen;
 
-  for (ValueStoreChangeList::const_iterator it = actual.begin();
-      it != actual.end(); ++it) {
+  for (auto it = actual.cbegin(); it != actual.cend(); ++it) {
     if (keys_seen.count(it->key())) {
       return testing::AssertionFailure() <<
           "Multiple changes seen for key: " << it->key();

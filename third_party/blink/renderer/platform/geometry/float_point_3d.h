@@ -47,6 +47,8 @@ class PLATFORM_EXPORT FloatPoint3D {
   constexpr FloatPoint3D(const FloatPoint3D& p)
       : x_(p.X()), y_(p.Y()), z_(p.Z()) {}
 
+  FloatPoint3D(const gfx::Point3F&);
+
   constexpr float X() const { return x_; }
   void SetX(float x) { x_ = x; }
 

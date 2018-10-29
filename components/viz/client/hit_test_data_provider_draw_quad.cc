@@ -10,8 +10,10 @@
 namespace viz {
 
 HitTestDataProviderDrawQuad::HitTestDataProviderDrawQuad(
-    bool should_ask_for_child_region)
-    : should_ask_for_child_region_(should_ask_for_child_region) {}
+    bool should_ask_for_child_region,
+    bool root_accepts_events)
+    : should_ask_for_child_region_(should_ask_for_child_region),
+      root_accepts_events_(root_accepts_events) {}
 
 HitTestDataProviderDrawQuad::~HitTestDataProviderDrawQuad() = default;
 
@@ -19,9 +21,10 @@ HitTestDataProviderDrawQuad::~HitTestDataProviderDrawQuad() = default;
 base::Optional<HitTestRegionList> HitTestDataProviderDrawQuad::GetHitTestData(
     const CompositorFrame& compositor_frame) const {
   base::Optional<HitTestRegionList> hit_test_region_list(base::in_place);
-  hit_test_region_list->flags = HitTestRegionFlags::kHitTestMouse |
-                                HitTestRegionFlags::kHitTestTouch |
-                                HitTestRegionFlags::kHitTestMine;
+  hit_test_region_list->flags =
+      (root_accepts_events_ ? HitTestRegionFlags::kHitTestMine
+                            : HitTestRegionFlags::kHitTestIgnore) |
+      HitTestRegionFlags::kHitTestMouse | HitTestRegionFlags::kHitTestTouch;
   hit_test_region_list->bounds.set_size(compositor_frame.size_in_pixels());
 
   for (const auto& render_pass : compositor_frame.render_pass_list) {

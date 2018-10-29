@@ -83,4 +83,4 @@ You can also make such an installation more permanent by following the
 
 The `CHROME_DEVEL_SANDBOX` variable is intended for developers and won't work
 for a system-wide installation of Chromium. Package maintainers should make sure
-the `setuid` binary is installed and defined in GYP as `linux_sandbox_path`.
+the `setuid` binary is installed.

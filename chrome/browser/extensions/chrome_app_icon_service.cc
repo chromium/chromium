@@ -93,7 +93,7 @@ void ChromeAppIconService::OnAppUpdated(const std::string& app_id) {
 
 void ChromeAppIconService::OnIconDestroyed(ChromeAppIcon* icon) {
   DCHECK(icon);
-  IconMap::iterator it = icon_map_.find(icon->app_id());
+  auto it = icon_map_.find(icon->app_id());
   DCHECK(it != icon_map_.end());
   it->second.erase(icon);
   if (it->second.empty()) {
@@ -105,7 +105,7 @@ void ChromeAppIconService::OnIconDestroyed(ChromeAppIcon* icon) {
 }
 
 void ChromeAppIconService::MaybeCleanupIconSet(const std::string& app_id) {
-  IconMap::iterator it = icon_map_.find(app_id);
+  auto it = icon_map_.find(app_id);
   if (it != icon_map_.end() && it->second.empty())
     icon_map_.erase(it);
 }

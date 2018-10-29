@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/values.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/socket/socket.h"
@@ -28,8 +29,9 @@ class SocketsUdpUnitTest : public ApiUnitTest {
     ApiUnitTest::SetUp();
 
     ApiResourceManager<ResumableUDPSocket>::GetFactoryInstance()
-        ->SetTestingFactoryAndUse(browser_context(),
-                                  ApiResourceManagerTestFactory);
+        ->SetTestingFactoryAndUse(
+            browser_context(),
+            base::BindRepeating(&ApiResourceManagerTestFactory));
   }
 };
 

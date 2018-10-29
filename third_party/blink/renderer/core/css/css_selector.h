@@ -103,6 +103,10 @@ class CORE_EXPORT CSSSelector {
 
   bool operator==(const CSSSelector&) const;
 
+  static constexpr unsigned kIdSpecificity = 0x010000;
+  static constexpr unsigned kClassLikeSpecificity = 0x000100;
+  static constexpr unsigned kTagSpecificity = 0x000001;
+
   // http://www.w3.org/TR/css3-selectors/#specificity
   // We use 256 as the base of the specificity number system.
   unsigned Specificity() const;
@@ -160,7 +164,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoVisited,
     kPseudoAny,
     kPseudoMatches,
-    kPseudoIS,
+    kPseudoWhere,
     kPseudoAnyLink,
     kPseudoWebkitAnyLink,
     kPseudoAutofill,
@@ -382,7 +386,7 @@ class CORE_EXPORT CSSSelector {
   bool HasDeepCombinatorOrShadowPseudo() const;
   bool NeedsUpdatedDistribution() const;
   bool HasPseudoMatches() const;
-  bool HasPseudoIS() const;
+  bool HasPseudoWhere() const;
 
  private:
   unsigned relation_ : 4;     // enum RelationType
@@ -461,7 +465,7 @@ inline CSSSelector::AttributeMatchType CSSSelector::AttributeMatch() const {
 }
 
 inline bool CSSSelector::IsASCIILower(const AtomicString& value) {
-  for (size_t i = 0; i < value.length(); ++i) {
+  for (wtf_size_t i = 0; i < value.length(); ++i) {
     if (IsASCIIUpper(value[i]))
       return false;
   }

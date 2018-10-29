@@ -1,53 +1,4 @@
 {
-  "Android Nexus 5X Perf FYI": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "-v",
-          "--upload-results",
-          "--output-format=histograms",
-          "--browser=android-chromium",
-          "--test-shard-map-filename=android_nexus5x_fyi_4_shard_map.json"
-        ],
-        "isolate_name": "performance_test_suite",
-        "merge": {
-          "args": [
-            "--service-account-file",
-            "/creds/service_accounts/service-account-chromium-perf-histograms.json"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_flavor": "google",
-              "device_type": "bullhead",
-              "os": "Android",
-              "pool": "chrome.tests.perf-fyi"
-            }
-          ],
-          "expiration": 3600,
-          "hard_timeout": 1080,
-          "ignore_task_failure": false,
-          "io_timeout": 360,
-          "shards": 4
-        },
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
-      }
-    ]
-  },
   "One Buildbot Step Test Builder": {
     "isolated_scripts": [
       {
@@ -59,10 +10,6 @@
         ],
         "isolate_name": "load_library_perf_tests",
         "merge": {
-          "args": [
-            "--service-account-file",
-            "/creds/service_accounts/service-account-chromium-perf-histograms.json"
-          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "load_library_perf_tests",
@@ -104,10 +51,6 @@
         ],
         "isolate_name": "telemetry_perf_tests_without_chrome",
         "merge": {
-          "args": [
-            "--service-account-file",
-            "/creds/service_accounts/service-account-chromium-perf-histograms.json"
-          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "telemetry_perf_tests_without_chrome",
@@ -152,10 +95,6 @@
         ],
         "isolate_name": "performance_webview_test_suite",
         "merge": {
-          "args": [
-            "--service-account-file",
-            "/creds/service_accounts/service-account-chromium-perf-histograms.json"
-          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_webview_test_suite",
@@ -190,22 +129,63 @@
       }
     ]
   },
+  "android-nexus5x-perf-fyi": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=android-chrome",
+          "--upload-results",
+          "--output-format=histograms",
+          "--test-shard-map-filename=android_nexus5x_fyi_4_shard_map.json"
+        ],
+        "isolate_name": "performance_test_suite",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite",
+        "override_compile_targets": [
+          "performance_test_suite"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "MMB29Q",
+              "device_os_flavor": "google",
+              "device_type": "bullhead",
+              "os": "Android",
+              "pool": "chrome.tests.perf-fyi"
+            }
+          ],
+          "expiration": 3600,
+          "hard_timeout": 1080,
+          "ignore_task_failure": false,
+          "io_timeout": 360,
+          "shards": 4
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
   "android-pixel2-perf": {
     "isolated_scripts": [
       {
         "args": [
           "-v",
-          "--browser=android-chromium",
+          "--browser=android-chrome",
           "--upload-results",
           "--run-ref-build",
           "--test-shard-map-filename=android_pixel2_shard_map.json"
         ],
         "isolate_name": "performance_test_suite",
         "merge": {
-          "args": [
-            "--service-account-file",
-            "/creds/service_accounts/service-account-chromium-perf-histograms.json"
-          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
@@ -252,10 +232,6 @@
         ],
         "isolate_name": "performance_webview_test_suite",
         "merge": {
-          "args": [
-            "--service-account-file",
-            "/creds/service_accounts/service-account-chromium-perf-histograms.json"
-          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_webview_test_suite",
@@ -294,7 +270,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--benchmarks=blink_perf.layout_ng",
+          "--benchmarks=blink_perf.layout_ng,blink_perf.paint_layout_ng,loading.desktop_layout_ng",
           "-v",
           "--upload-results",
           "--output-format=histograms",
@@ -302,10 +278,6 @@
         ],
         "isolate_name": "performance_test_suite",
         "merge": {
-          "args": [
-            "--service-account-file",
-            "/creds/service_accounts/service-account-chromium-perf-histograms.json"
-          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "blink_perf.layout_ng",
@@ -337,10 +309,6 @@
         ],
         "isolate_name": "performance_test_suite",
         "merge": {
-          "args": [
-            "--service-account-file",
-            "/creds/service_accounts/service-account-chromium-perf-histograms.json"
-          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",

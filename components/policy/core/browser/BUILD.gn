@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/config/jumbo.gni")
 
 assert(!is_ios, "Policy should not be referenced on iOS")
 
@@ -18,7 +19,7 @@ group("browser") {
   }
 }
 
-source_set("internal") {
+jumbo_source_set("internal") {
   visibility = [ "//components/policy/*" ]
   sources = [
     "browser_policy_connector.cc",
@@ -87,7 +88,7 @@ source_set("internal") {
   ]
 }
 
-static_library("test_support") {
+jumbo_static_library("test_support") {
   testonly = true
   sources = [
     "configuration_policy_pref_store_test.cc",

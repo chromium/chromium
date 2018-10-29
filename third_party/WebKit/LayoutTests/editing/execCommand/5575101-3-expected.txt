@@ -2,4 +2,5 @@ This tests for a bug where outdenting a list item twice would incorrectly move i
 
 one
 two
+
 three

@@ -23,8 +23,8 @@ body {
 
 <script>
 function drag(from, to) {
-  assert_exists(window, 'chrome');
-  assert_exists(window.chrome, 'gpuBenchmarking');
+  assert_own_property(window, 'chrome');
+  assert_own_property(window.chrome, 'gpuBenchmarking');
   return new Promise((resolve) => {
     chrome.gpuBenchmarking.pointerActionSequence(
       [{

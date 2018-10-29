@@ -9,12 +9,14 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/io_thread.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/profiles/storage_partition_descriptor.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -59,20 +61,6 @@ class FactoryForMain : public ChromeURLRequestContextFactory {
   const ProfileIOData* const profile_io_data_;
   content::ProtocolHandlerMap protocol_handlers_;
   content::URLRequestInterceptorScopedVector request_interceptors_;
-};
-
-// Factory that creates the URLRequestContext for extensions.
-class FactoryForExtensions : public ChromeURLRequestContextFactory {
- public:
-  explicit FactoryForExtensions(const ProfileIOData* profile_io_data)
-      : profile_io_data_(profile_io_data) {}
-
-  net::URLRequestContext* Create() override {
-    return profile_io_data_->GetExtensionsRequestContext();
-  }
-
- private:
-  const ProfileIOData* const profile_io_data_;
 };
 
 // Factory that creates the URLRequestContext for a given isolated app.
@@ -194,11 +182,10 @@ ChromeURLRequestContextGetter::CreateAndInit(
   // run and complete before the constructor returns, which would reduce the
   // reference count from 1 to 0 on completion, and delete the object
   // immediately.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&ChromeURLRequestContextGetter::Init,
-                     url_request_context_getter,
-                     base::Passed(std::move(factory))));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                           base::BindOnce(&ChromeURLRequestContextGetter::Init,
+                                          url_request_context_getter,
+                                          base::Passed(std::move(factory))));
   return url_request_context_getter;
 }
 
@@ -227,7 +214,7 @@ void ChromeURLRequestContextGetter::NotifyContextShuttingDown() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 ChromeURLRequestContextGetter::GetNetworkTaskRunner() const {
-  return BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+  return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO});
 }
 
 // static
@@ -249,15 +236,6 @@ ChromeURLRequestContextGetter::CreateForMedia(
     const ProfileIOData* profile_io_data) {
   return ChromeURLRequestContextGetter::CreateAndInit(
       std::make_unique<FactoryForMedia>(profile_io_data));
-}
-
-// static
-scoped_refptr<ChromeURLRequestContextGetter>
-ChromeURLRequestContextGetter::CreateForExtensions(
-    Profile* profile,
-    const ProfileIOData* profile_io_data) {
-  return ChromeURLRequestContextGetter::CreateAndInit(
-      std::make_unique<FactoryForExtensions>(profile_io_data));
 }
 
 // static

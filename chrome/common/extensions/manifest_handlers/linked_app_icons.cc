@@ -22,12 +22,6 @@ namespace {
 static base::LazyInstance<LinkedAppIcons>::DestructorAtExit
     g_empty_linked_app_icons = LAZY_INSTANCE_INITIALIZER;
 
-const LinkedAppIcons& GetInfo(const Extension* extension) {
-  LinkedAppIcons* info = static_cast<LinkedAppIcons*>(
-      extension->GetManifestData(keys::kLinkedAppIcons));
-  return info ? *info : g_empty_linked_app_icons.Get();
-}
-
 }  // namespace
 
 LinkedAppIcons::IconInfo::IconInfo() {
@@ -47,7 +41,9 @@ LinkedAppIcons::~LinkedAppIcons() {
 // static
 const LinkedAppIcons& LinkedAppIcons::GetLinkedAppIcons(
     const Extension* extension) {
-  return GetInfo(extension);
+  LinkedAppIcons* info = static_cast<LinkedAppIcons*>(
+      extension->GetManifestData(keys::kLinkedAppIcons));
+  return info ? *info : g_empty_linked_app_icons.Get();
 }
 
 LinkedAppIconsHandler::LinkedAppIconsHandler() {

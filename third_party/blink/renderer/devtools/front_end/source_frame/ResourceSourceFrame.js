@@ -36,7 +36,12 @@ SourceFrame.ResourceSourceFrame = class extends SourceFrame.SourceFrame {
    * @param {boolean=} autoPrettyPrint
    */
   constructor(resource, autoPrettyPrint) {
-    super(resource.requestContent.bind(resource));
+    super(async () => {
+      let content = await resource.requestContent();
+      if (await resource.contentEncoded())
+        content = window.atob(content);
+      return content;
+    });
     this._resource = resource;
     this.setCanPrettyPrint(this._resource.contentType().isDocumentOrScriptOrStyleSheet(), autoPrettyPrint);
   }

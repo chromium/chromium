@@ -76,6 +76,7 @@ struct CONTENT_EXPORT SSLStatus {
   net::HashValueVector public_key_hashes;
   int security_bits;
   uint16_t key_exchange_group;
+  uint16_t peer_signature_algorithm;
   int connection_status;
   // A combination of the ContentStatusFlags above. Flags are cleared when a
   // navigation commits.

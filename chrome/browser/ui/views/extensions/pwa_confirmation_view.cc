@@ -30,7 +30,13 @@
 #include "ui/views/window/dialog_client_view.h"
 #include "url/origin.h"
 
+namespace {
+
 constexpr int kPWAConfirmationViewIconSize = 48;
+
+bool g_auto_accept_pwa_for_testing = false;
+
+}  // namespace
 
 PWAConfirmationView::PWAConfirmationView(
     const WebApplicationInfo& web_app_info,
@@ -44,6 +50,9 @@ PWAConfirmationView::PWAConfirmationView(
   InitializeView();
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::PWA_CONFIRMATION);
+
+  if (g_auto_accept_pwa_for_testing)
+    Accept();
 }
 
 PWAConfirmationView::~PWAConfirmationView() {}
@@ -163,6 +172,10 @@ void ShowPWAInstallDialog(content::WebContents* web_contents,
                           AppInstallationAcceptanceCallback callback) {
   constrained_window::ShowWebModalDialogViews(
       new PWAConfirmationView(web_app_info, std::move(callback)), web_contents);
+}
+
+void SetAutoAcceptPWAInstallDialogForTesting(bool auto_accept) {
+  g_auto_accept_pwa_for_testing = auto_accept;
 }
 
 }  // namespace chrome

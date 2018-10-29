@@ -2371,6 +2371,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostManagerTest, WebUIGetsBindings) {
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID()));
   SiteInstance* site_instance1 = shell()->web_contents()->GetSiteInstance();
+  int process1_id = site_instance1->GetProcess()->GetID();
 
   // Open a new tab. Initially it gets a render view in the original tab's
   // current site instance.
@@ -2383,9 +2384,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostManagerTest, WebUIGetsBindings) {
   WebContentsImpl* new_web_contents = static_cast<WebContentsImpl*>(
       new_shell->web_contents());
   SiteInstance* site_instance2 = new_web_contents->GetSiteInstance();
+  int process2_id = site_instance2->GetProcess()->GetID();
 
+  // The 2nd WebUI page should swap to a different process (and SiteInstance),
+  // but should stay in the same BrowsingInstance as the 1st WebUI page.
+  EXPECT_NE(process1_id, process2_id);
   EXPECT_NE(site_instance2, site_instance1);
   EXPECT_TRUE(site_instance2->IsRelatedSiteInstance(site_instance1));
+
   RenderViewHost* initial_rvh = new_web_contents->
       GetRenderManagerForTesting()->GetSwappedOutRenderViewHost(site_instance1);
   ASSERT_TRUE(initial_rvh);

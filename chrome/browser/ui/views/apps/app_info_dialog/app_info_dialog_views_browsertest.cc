@@ -48,7 +48,7 @@ class AppInfoDialogBrowserTest : public DialogBrowserTest {
 
  private:
   std::unique_ptr<extensions::TestExtensionEnvironment> extension_environment_;
-  scoped_refptr<extensions::Extension> extension_;
+  scoped_refptr<const extensions::Extension> extension_;
 
   DISALLOW_COPY_AND_ASSIGN(AppInfoDialogBrowserTest);
 };

@@ -5,18 +5,10 @@
 
 """Wrapper around
    third_party/blink/tools/run_web_tests.py"""
-import os
-import subprocess
+
 import sys
 
-def main():
+if __name__ == '__main__':
     print '\n    Please use third_party/blink/tools/run_web_tests.*.  ' \
         'This command will be removed.\n'
-    src_dir = os.path.abspath(os.path.join(sys.path[0], '..', '..'))
-    script_dir=os.path.join(src_dir, "third_party", "blink", "tools")
-    script = os.path.join(script_dir, 'run_web_tests.py')
-    cmd = [sys.executable, script] + sys.argv[1:]
-    return subprocess.call(cmd)
-
-if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(1)

@@ -510,43 +510,33 @@ ObjectUI.ObjectPropertyTreeElement = class extends UI.TreeElement {
    * @param {boolean=} flattenProtoChain
    * @param {!Array.<!SDK.RemoteObjectProperty>=} extraProperties
    * @param {!SDK.RemoteObject=} targetValue
+   * @return {!Promise}
    */
-  static _populate(
-      treeElement,
-      value,
-      skipProto,
-      linkifier,
-      emptyPlaceholder,
-      flattenProtoChain,
-      extraProperties,
-      targetValue) {
+  static async _populate(
+      treeElement, value, skipProto, linkifier, emptyPlaceholder, flattenProtoChain, extraProperties, targetValue) {
     if (value.arrayLength() > ObjectUI.ObjectPropertiesSection._arrayLoadThreshold) {
       treeElement.removeChildren();
       ObjectUI.ArrayGroupingTreeElement._populateArray(treeElement, value, 0, value.arrayLength() - 1, linkifier);
       return;
     }
 
-    /**
-     * @param {?Array.<!SDK.RemoteObjectProperty>} properties
-     * @param {?Array.<!SDK.RemoteObjectProperty>} internalProperties
-     */
-    function callback(properties, internalProperties) {
-      treeElement.removeChildren();
-      if (!properties)
-        return;
-
-      extraProperties = extraProperties || [];
-      for (let i = 0; i < extraProperties.length; ++i)
-        properties.push(extraProperties[i]);
-
-      ObjectUI.ObjectPropertyTreeElement.populateWithProperties(
-          treeElement, properties, internalProperties, skipProto, targetValue || value, linkifier, emptyPlaceholder);
-    }
-
+    let allProperties;
     if (flattenProtoChain)
-      value.getAllProperties(false /* accessorPropertiesOnly */, true /* generatePreview */, callback);
+      allProperties = await value.getAllProperties(false /* accessorPropertiesOnly */, true /* generatePreview */);
     else
-      SDK.RemoteObject.loadFromObjectPerProto(value, true /* generatePreview */, callback);
+      allProperties = await SDK.RemoteObject.loadFromObjectPerProto(value, true /* generatePreview */);
+    const properties = allProperties.properties;
+    const internalProperties = allProperties.internalProperties;
+    treeElement.removeChildren();
+    if (!properties)
+      return;
+
+    extraProperties = extraProperties || [];
+    for (let i = 0; i < extraProperties.length; ++i)
+      properties.push(extraProperties[i]);
+
+    ObjectUI.ObjectPropertyTreeElement.populateWithProperties(
+        treeElement, properties, internalProperties, skipProto, targetValue || value, linkifier, emptyPlaceholder);
   }
 
   /**
@@ -628,7 +618,7 @@ ObjectUI.ObjectPropertyTreeElement = class extends UI.TreeElement {
   /**
    * @param {?SDK.RemoteObject} object
    * @param {!Array.<string>} propertyPath
-   * @param {function(?SDK.RemoteObject, boolean=)} callback
+   * @param {function(!SDK.CallFunctionResult)} callback
    * @return {!Element}
    */
   static createRemoteObjectAccessorPropertySpan(object, propertyPath, callback) {
@@ -643,7 +633,20 @@ ObjectUI.ObjectPropertyTreeElement = class extends UI.TreeElement {
 
     function onInvokeGetterClick(event) {
       event.consume();
-      object.getProperty(propertyPath, callback);
+      object.callFunction(invokeGetter, [{value: JSON.stringify(propertyPath)}]).then(callback);
+    }
+
+    /**
+     * @param {string} arrayStr
+     * @suppressReceiverCheck
+     * @this {Object}
+     */
+    function invokeGetter(arrayStr) {
+      let result = this;
+      const properties = JSON.parse(arrayStr);
+      for (let i = 0, n = properties.length; i < n; ++i)
+        result = result[properties[i]];
+      return result;
     }
 
     return rootElement;
@@ -959,14 +962,13 @@ ObjectUI.ObjectPropertyTreeElement = class extends UI.TreeElement {
   }
 
   /**
-   * @param {?SDK.RemoteObject} result
-   * @param {boolean=} wasThrown
+   * @param {!SDK.CallFunctionResult} result
    */
-  _onInvokeGetterClick(result, wasThrown) {
-    if (!result)
+  _onInvokeGetterClick(result) {
+    if (!result.object)
       return;
-    this.property.value = result;
-    this.property.wasThrown = wasThrown;
+    this.property.value = result.object;
+    this.property.wasThrown = result.wasThrown;
 
     this.update();
     this.invalidateChildren();
@@ -1034,14 +1036,15 @@ ObjectUI.ArrayGroupingTreeElement = class extends UI.TreeElement {
    * @this {ObjectUI.ArrayGroupingTreeElement}
    */
   static _populateRanges(treeNode, object, fromIndex, toIndex, topLevel, linkifier) {
-    object.callFunctionJSON(
-        packRanges,
-        [
-          {value: fromIndex}, {value: toIndex}, {value: ObjectUI.ArrayGroupingTreeElement._bucketThreshold},
-          {value: ObjectUI.ArrayGroupingTreeElement._sparseIterationThreshold},
-          {value: ObjectUI.ArrayGroupingTreeElement._getOwnPropertyNamesThreshold}
-        ],
-        callback);
+    object
+        .callFunctionJSON(
+            packRanges,
+            [
+              {value: fromIndex}, {value: toIndex}, {value: ObjectUI.ArrayGroupingTreeElement._bucketThreshold},
+              {value: ObjectUI.ArrayGroupingTreeElement._sparseIterationThreshold},
+              {value: ObjectUI.ArrayGroupingTreeElement._getOwnPropertyNamesThreshold}
+            ])
+        .then(callback);
 
     /**
      * Note: must declare params as optional.
@@ -1149,13 +1152,29 @@ ObjectUI.ArrayGroupingTreeElement = class extends UI.TreeElement {
    * @param {number} fromIndex
    * @param {number} toIndex
    * @param {!Components.Linkifier=} linkifier
+   * @return {!Promise}
    * @this {ObjectUI.ArrayGroupingTreeElement}
    */
-  static _populateAsFragment(treeNode, object, fromIndex, toIndex, linkifier) {
-    object.callFunction(
+  static async _populateAsFragment(treeNode, object, fromIndex, toIndex, linkifier) {
+    const result = await object.callFunction(
         buildArrayFragment,
-        [{value: fromIndex}, {value: toIndex}, {value: ObjectUI.ArrayGroupingTreeElement._sparseIterationThreshold}],
-        processArrayFragment.bind(this));
+        [{value: fromIndex}, {value: toIndex}, {value: ObjectUI.ArrayGroupingTreeElement._sparseIterationThreshold}]);
+    if (!result.object || result.wasThrown)
+      return;
+    const arrayFragment = result.object;
+    const allProperties =
+        await arrayFragment.getAllProperties(false /* accessorPropertiesOnly */, true /* generatePreview */);
+    arrayFragment.release();
+    const properties = allProperties.properties;
+    if (!properties)
+      return;
+    properties.sort(ObjectUI.ObjectPropertiesSection.CompareProperties);
+    for (let i = 0; i < properties.length; ++i) {
+      properties[i].parentObject = this._object;
+      const childTreeElement = new ObjectUI.ObjectPropertyTreeElement(properties[i], linkifier);
+      childTreeElement._readOnly = true;
+      treeNode.appendChild(childTreeElement);
+    }
 
     /**
      * @suppressReceiverCheck
@@ -1182,32 +1201,6 @@ ObjectUI.ArrayGroupingTreeElement = class extends UI.TreeElement {
       }
       return result;
     }
-
-    /**
-     * @param {?SDK.RemoteObject} arrayFragment
-     * @param {boolean=} wasThrown
-     * @this {ObjectUI.ArrayGroupingTreeElement}
-     */
-    function processArrayFragment(arrayFragment, wasThrown) {
-      if (!arrayFragment || wasThrown)
-        return;
-      arrayFragment.getAllProperties(
-          false /* accessorPropertiesOnly */, true /* generatePreview */, processProperties.bind(this));
-    }
-
-    /** @this {ObjectUI.ArrayGroupingTreeElement} */
-    function processProperties(properties, internalProperties) {
-      if (!properties)
-        return;
-
-      properties.sort(ObjectUI.ObjectPropertiesSection.CompareProperties);
-      for (let i = 0; i < properties.length; ++i) {
-        properties[i].parentObject = this._object;
-        const childTreeElement = new ObjectUI.ObjectPropertyTreeElement(properties[i], linkifier);
-        childTreeElement._readOnly = true;
-        treeNode.appendChild(childTreeElement);
-      }
-    }
   }
 
   /**
@@ -1215,10 +1208,25 @@ ObjectUI.ArrayGroupingTreeElement = class extends UI.TreeElement {
    * @param {!SDK.RemoteObject} object
    * @param {boolean} skipGetOwnPropertyNames
    * @param {!Components.Linkifier=} linkifier
+   * @return {!Promise<undefined>}
    * @this {ObjectUI.ArrayGroupingTreeElement}
    */
-  static _populateNonIndexProperties(treeNode, object, skipGetOwnPropertyNames, linkifier) {
-    object.callFunction(buildObjectFragment, [{value: skipGetOwnPropertyNames}], processObjectFragment.bind(this));
+  static async _populateNonIndexProperties(treeNode, object, skipGetOwnPropertyNames, linkifier) {
+    const result = await object.callFunction(buildObjectFragment, [{value: skipGetOwnPropertyNames}]);
+    if (!result.object || result.wasThrown)
+      return;
+    const allProperties = await result.object.getOwnProperties(true /* generatePreview */);
+    result.object.release();
+    if (!allProperties.properties)
+      return;
+    const properties = allProperties.properties;
+    properties.sort(ObjectUI.ObjectPropertiesSection.CompareProperties);
+    for (let i = 0; i < properties.length; ++i) {
+      properties[i].parentObject = this._object;
+      const childTreeElement = new ObjectUI.ObjectPropertyTreeElement(properties[i], linkifier);
+      childTreeElement._readOnly = true;
+      treeNode.appendChild(childTreeElement);
+    }
 
     /**
      * @param {boolean=} skipGetOwnPropertyNames
@@ -1240,34 +1248,6 @@ ObjectUI.ArrayGroupingTreeElement = class extends UI.TreeElement {
           Object.defineProperty(result, name, descriptor);
       }
       return result;
-    }
-
-    /**
-     * @param {?SDK.RemoteObject} arrayFragment
-     * @param {boolean=} wasThrown
-     * @this {ObjectUI.ArrayGroupingTreeElement}
-     */
-    function processObjectFragment(arrayFragment, wasThrown) {
-      if (!arrayFragment || wasThrown)
-        return;
-      arrayFragment.getOwnProperties(true /* generatePreview */, processProperties.bind(this));
-    }
-
-    /**
-     * @param {?Array.<!SDK.RemoteObjectProperty>} properties
-     * @param {?Array.<!SDK.RemoteObjectProperty>=} internalProperties
-     * @this {ObjectUI.ArrayGroupingTreeElement}
-     */
-    function processProperties(properties, internalProperties) {
-      if (!properties)
-        return;
-      properties.sort(ObjectUI.ObjectPropertiesSection.CompareProperties);
-      for (let i = 0; i < properties.length; ++i) {
-        properties[i].parentObject = this._object;
-        const childTreeElement = new ObjectUI.ObjectPropertyTreeElement(properties[i], linkifier);
-        childTreeElement._readOnly = true;
-        treeNode.appendChild(childTreeElement);
-      }
     }
   }
 

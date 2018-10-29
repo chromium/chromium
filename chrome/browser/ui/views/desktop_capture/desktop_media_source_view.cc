@@ -83,7 +83,7 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
     // Unselect all other sources.
     Views neighbours;
     parent()->GetViewsInGroup(GetGroup(), &neighbours);
-    for (Views::iterator i(neighbours.begin()); i != neighbours.end(); ++i) {
+    for (auto i(neighbours.begin()); i != neighbours.end(); ++i) {
       if (*i != this) {
         DCHECK_EQ((*i)->GetClassName(),
                   DesktopMediaSourceView::kDesktopMediaSourceViewClassName);
@@ -134,7 +134,7 @@ views::View* DesktopMediaSourceView::GetSelectedViewForGroup(int group) {
   if (neighbours.empty())
     return nullptr;
 
-  for (Views::iterator i(neighbours.begin()); i != neighbours.end(); ++i) {
+  for (auto i(neighbours.begin()); i != neighbours.end(); ++i) {
     DCHECK_EQ((*i)->GetClassName(),
               DesktopMediaSourceView::kDesktopMediaSourceViewClassName);
     DesktopMediaSourceView* source_view =

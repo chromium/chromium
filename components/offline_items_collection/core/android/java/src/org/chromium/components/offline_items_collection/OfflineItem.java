@@ -75,11 +75,13 @@ public class OfflineItem implements Cloneable {
     public boolean isSuggested;
     public boolean isAccelerated;
     public boolean refreshVisuals;
+    public boolean promoteOrigin;
 
     // Content Metadata.
     public long totalSizeBytes;
     public boolean externallyRemoved;
     public long creationTimeMs;
+    public long completionTimeMs;
     public long lastAccessedTimeMs;
     public boolean isOpenable;
     public String filePath;
@@ -121,9 +123,11 @@ public class OfflineItem implements Cloneable {
         clone.isSuggested = isSuggested;
         clone.isAccelerated = isAccelerated;
         clone.refreshVisuals = refreshVisuals;
+        clone.promoteOrigin = promoteOrigin;
         clone.totalSizeBytes = totalSizeBytes;
         clone.externallyRemoved = externallyRemoved;
         clone.creationTimeMs = creationTimeMs;
+        clone.completionTimeMs = completionTimeMs;
         clone.lastAccessedTimeMs = lastAccessedTimeMs;
         clone.isOpenable = isOpenable;
         clone.filePath = filePath;

@@ -23,14 +23,10 @@
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 #include "chrome/browser/ui/media_router/media_sink_with_cast_modes.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
+#include "chrome/browser/ui/webui/media_router/web_contents_display_observer.h"
 #include "chrome/common/media_router/issue.h"
 #include "chrome/common/media_router/media_source.h"
-#include "ui/base/ui_features.h"
 #include "url/gurl.h"
-
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
-#include "chrome/browser/ui/webui/media_router/web_contents_display_observer.h"
-#endif
 
 namespace content {
 struct PresentationRequest;
@@ -129,13 +125,11 @@ class MediaRouterUIBase
   const std::vector<MediaRoute>& routes() const { return routes_; }
   content::WebContents* initiator() const { return initiator_; }
 
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
   // Used in tests for wired display presentations.
   void set_display_observer_for_test(
       std::unique_ptr<WebContentsDisplayObserver> display_observer) {
     display_observer_ = std::move(display_observer);
   }
-#endif
 
  protected:
   struct RouteRequest {
@@ -359,12 +353,10 @@ class MediaRouterUIBase
 
   std::unique_ptr<IssuesObserver> issues_observer_;
 
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
   // Keeps track of which display the initiator WebContents is on. This is used
   // to make sure we don't show a wired display presentation over the
   // controlling window.
   std::unique_ptr<WebContentsDisplayObserver> display_observer_;
-#endif
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   // Therefore |weak_factory_| must be placed at the end.

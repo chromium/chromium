@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/platform/web_resource_timing_info.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/renderer/core/exported/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
@@ -18,7 +19,8 @@ namespace blink {
 RemoteFrameOwner::RemoteFrameOwner(
     SandboxFlags flags,
     const ParsedFeaturePolicy& container_policy,
-    const WebFrameOwnerProperties& frame_owner_properties)
+    const WebFrameOwnerProperties& frame_owner_properties,
+    FrameOwnerElementType frame_owner_element_type)
     : sandbox_flags_(flags),
       browsing_context_container_name_(
           static_cast<String>(frame_owner_properties.name)),
@@ -30,7 +32,8 @@ RemoteFrameOwner::RemoteFrameOwner(
       allow_payment_request_(frame_owner_properties.allow_payment_request),
       is_display_none_(frame_owner_properties.is_display_none),
       required_csp_(frame_owner_properties.required_csp),
-      container_policy_(container_policy) {}
+      container_policy_(container_policy),
+      frame_owner_element_type_(frame_owner_element_type) {}
 
 void RemoteFrameOwner::Trace(blink::Visitor* visitor) {
   visitor->Trace(frame_);
@@ -63,6 +66,17 @@ void RemoteFrameOwner::DispatchLoad() {
   WebLocalFrameImpl* web_frame =
       WebLocalFrameImpl::FromFrame(ToLocalFrame(*frame_));
   web_frame->Client()->DispatchLoad();
+}
+
+void RemoteFrameOwner::RenderFallbackContent(Frame* failed_frame) {
+  if (frame_owner_element_type_ != FrameOwnerElementType::kObject)
+    return;
+  DCHECK(failed_frame->IsLocalFrame());
+  LocalFrame* local_frame = ToLocalFrame(failed_frame);
+  DCHECK(local_frame->IsProvisional() || ContentFrame() == local_frame);
+  WebLocalFrameImpl::FromFrame(local_frame)
+      ->Client()
+      ->RenderFallbackContentInParentProcess();
 }
 
 void RemoteFrameOwner::IntrinsicSizingInfoChanged() {

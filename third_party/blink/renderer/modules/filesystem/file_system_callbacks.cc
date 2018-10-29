@@ -33,7 +33,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/public/platform/web_file_writer.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -72,17 +71,15 @@ FileSystemCallbacksBase::~FileSystemCallbacksBase() {
     file_system_->RemovePendingCallbacks();
 }
 
-void FileSystemCallbacksBase::DidFail(int code) {
+void FileSystemCallbacksBase::DidFail(base::File::Error error) {
   if (error_callback_) {
     InvokeOrScheduleCallback(&ErrorCallbackBase::Invoke,
-                             error_callback_.Release(),
-                             static_cast<FileError::ErrorCode>(code));
+                             error_callback_.Release(), error);
   }
 }
 
 bool FileSystemCallbacksBase::ShouldScheduleCallback() const {
-  return !ShouldBlockUntilCompletion() && execution_context_ &&
-         execution_context_->IsContextPaused();
+  return execution_context_ && execution_context_->IsContextPaused();
 }
 
 template <typename CallbackMemberFunction,
@@ -122,7 +119,7 @@ void ScriptErrorCallback::Trace(blink::Visitor* visitor) {
   visitor->Trace(callback_);
 }
 
-void ScriptErrorCallback::Invoke(FileError::ErrorCode error) {
+void ScriptErrorCallback::Invoke(base::File::Error error) {
   callback_->InvokeAndReportException(nullptr,
                                       FileError::CreateDOMException(error));
 };
@@ -140,7 +137,7 @@ void PromiseErrorCallback::Trace(Visitor* visitor) {
   visitor->Trace(resolver_);
 }
 
-void PromiseErrorCallback::Invoke(FileError::ErrorCode error) {
+void PromiseErrorCallback::Invoke(base::File::Error error) {
   resolver_->Reject(FileError::CreateDOMException(error));
 }
 
@@ -339,7 +336,7 @@ void ResolveURICallbacks::DidResolveURL(const String& name,
   String absolute_path;
   if (!DOMFileSystemBase::PathToAbsolutePath(type, root, file_path,
                                              absolute_path)) {
-    DidFail(FileError::kInvalidModificationErr);
+    DidFail(base::File::FILE_ERROR_INVALID_OPERATION);
     return;
   }
 
@@ -423,16 +420,13 @@ FileWriterCallbacks::FileWriterCallbacks(
       file_writer_(file_writer),
       success_callback_(success_callback) {}
 
-void FileWriterCallbacks::DidCreateFileWriter(
-    std::unique_ptr<WebFileWriter> file_writer,
-    long long length) {
-  file_writer_->Initialize(std::move(file_writer), length);
-
+void FileWriterCallbacks::DidCreateFileWriter(const KURL& path,
+                                              long long length) {
   if (!success_callback_)
     return;
-
+  file_writer_->Initialize(path, length);
   InvokeOrScheduleCallback(&OnDidCreateFileWriterCallback::OnSuccess,
-                           success_callback_.Release(), file_writer_.Release());
+                           success_callback_.Release(), file_writer_);
 }
 
 // SnapshotFileCallback -------------------------------------------------------

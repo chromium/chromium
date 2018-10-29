@@ -35,7 +35,7 @@ class PreflightCacheTest : public testing::Test {
   bool CheckEntryAndRefreshCache(const std::string& origin, const GURL& url) {
     return cache_.CheckIfRequestCanSkipPreflight(
         origin, url, network::mojom::FetchCredentialsMode::kInclude, "POST",
-        net::HttpRequestHeaders());
+        net::HttpRequestHeaders(), false);
   }
 
   void Advance(int seconds) {

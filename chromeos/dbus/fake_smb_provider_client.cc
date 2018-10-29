@@ -41,6 +41,7 @@ void FakeSmbProviderClient::AddNetBiosPacketParsingForTesting(
 void FakeSmbProviderClient::Init(dbus::Bus* bus) {}
 
 void FakeSmbProviderClient::Mount(const base::FilePath& share_path,
+                                  bool ntlm_enabled,
                                   const std::string& workgroup,
                                   const std::string& username,
                                   base::ScopedFD password_fd,
@@ -51,6 +52,7 @@ void FakeSmbProviderClient::Mount(const base::FilePath& share_path,
 
 void FakeSmbProviderClient::Remount(const base::FilePath& share_path,
                                     int32_t mount_id,
+                                    bool ntlm_enabled,
                                     const std::string& workgroup,
                                     const std::string& username,
                                     base::ScopedFD password_fd,
@@ -225,6 +227,28 @@ void FakeSmbProviderClient::ContinueCopy(int32_t mount_id,
                                          StatusCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), smbprovider::ERROR_OK));
+}
+
+void FakeSmbProviderClient::StartReadDirectory(
+    int32_t mount_id,
+    const base::FilePath& directory_path,
+    StartReadDirectoryCallback callback) {
+  smbprovider::DirectoryEntryListProto entry_list;
+  // Simulate a ReadDirectory that completes during the StartReadDirectory call.
+  // read_dir_token is unset and error is set to ERROR_OK.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), smbprovider::ERROR_OK,
+                                -1 /* read_dir_token */, entry_list));
+}
+
+void FakeSmbProviderClient::ContinueReadDirectory(
+    int32_t mount_id,
+    int32_t read_dir_token,
+    ReadDirectoryCallback callback) {
+  smbprovider::DirectoryEntryListProto entry_list;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), smbprovider::ERROR_OK, entry_list));
 }
 
 void FakeSmbProviderClient::ClearShares() {

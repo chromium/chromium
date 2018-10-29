@@ -160,8 +160,7 @@ TEST_F(ClientControlledStateTest, Maximize) {
   EXPECT_EQ(mojom::WindowStateType::DEFAULT, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::MAXIMIZED, delegate()->new_state());
   // Now enters the new state.
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_TRUE(widget()->IsMaximized());
   // Bounds is controlled by client.
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
@@ -176,8 +175,7 @@ TEST_F(ClientControlledStateTest, Maximize) {
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
   EXPECT_EQ(mojom::WindowStateType::MAXIMIZED, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::NORMAL, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 }
@@ -188,8 +186,7 @@ TEST_F(ClientControlledStateTest, Minimize) {
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
   EXPECT_EQ(mojom::WindowStateType::DEFAULT, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::MINIMIZED, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_TRUE(widget()->IsMinimized());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 
@@ -198,8 +195,7 @@ TEST_F(ClientControlledStateTest, Minimize) {
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
   EXPECT_EQ(mojom::WindowStateType::MINIMIZED, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::NORMAL, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_FALSE(widget()->IsMinimized());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 
@@ -209,8 +205,7 @@ TEST_F(ClientControlledStateTest, Minimize) {
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
   EXPECT_EQ(mojom::WindowStateType::NORMAL, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::MINIMIZED, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_TRUE(widget()->IsMinimized());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 
@@ -222,8 +217,7 @@ TEST_F(ClientControlledStateTest, Minimize) {
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
   EXPECT_EQ(mojom::WindowStateType::MINIMIZED, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::NORMAL, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_FALSE(widget()->IsMinimized());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 }
@@ -234,8 +228,7 @@ TEST_F(ClientControlledStateTest, Fullscreen) {
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
   EXPECT_EQ(mojom::WindowStateType::DEFAULT, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::FULLSCREEN, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_TRUE(widget()->IsFullscreen());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 
@@ -243,8 +236,7 @@ TEST_F(ClientControlledStateTest, Fullscreen) {
   EXPECT_TRUE(widget()->IsFullscreen());
   EXPECT_EQ(mojom::WindowStateType::FULLSCREEN, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::NORMAL, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_FALSE(widget()->IsFullscreen());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 }
@@ -257,8 +249,7 @@ TEST_F(ClientControlledStateTest, MaximizeToFullscreen) {
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
   EXPECT_EQ(mojom::WindowStateType::DEFAULT, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::MAXIMIZED, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_TRUE(widget()->IsMaximized());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 
@@ -267,8 +258,7 @@ TEST_F(ClientControlledStateTest, MaximizeToFullscreen) {
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
   EXPECT_EQ(mojom::WindowStateType::MAXIMIZED, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::FULLSCREEN, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_TRUE(widget()->IsFullscreen());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 
@@ -276,8 +266,7 @@ TEST_F(ClientControlledStateTest, MaximizeToFullscreen) {
   EXPECT_TRUE(widget()->IsFullscreen());
   EXPECT_EQ(mojom::WindowStateType::FULLSCREEN, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::MAXIMIZED, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_TRUE(widget()->IsMaximized());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 
@@ -285,16 +274,14 @@ TEST_F(ClientControlledStateTest, MaximizeToFullscreen) {
   EXPECT_TRUE(widget()->IsMaximized());
   EXPECT_EQ(mojom::WindowStateType::MAXIMIZED, delegate()->old_state());
   EXPECT_EQ(mojom::WindowStateType::NORMAL, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_FALSE(widget()->IsMaximized());
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
 }
 
 TEST_F(ClientControlledStateTest, IgnoreWorkspace) {
   widget()->Maximize();
-  state()->EnterNextState(window_state(), delegate()->new_state(),
-                          ClientControlledState::kAnimationNone);
+  state()->EnterNextState(window_state(), delegate()->new_state());
   EXPECT_TRUE(widget()->IsMaximized());
   delegate()->Reset();
 

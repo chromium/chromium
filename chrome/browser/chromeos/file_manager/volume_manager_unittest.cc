@@ -19,6 +19,7 @@
 #include "chrome/browser/chromeos/file_manager/volume_manager_observer.h"
 #include "chrome/browser/chromeos/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/chromeos/file_system_provider/service.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/fake_power_manager_client.h"
@@ -29,6 +30,7 @@
 #include "components/drive/service/dummy_drive_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/storage_monitor/storage_info.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_service_manager_context.h"
 #include "extensions/browser/extension_registry.h"
@@ -163,6 +165,15 @@ class LoggingObserver : public VolumeManagerObserver {
   DISALLOW_COPY_AND_ASSIGN(LoggingObserver);
 };
 
+class FakeUser : public user_manager::User {
+ public:
+  explicit FakeUser(const AccountId& account_id) : User(account_id) {}
+
+  user_manager::UserType GetType() const override {
+    return user_manager::USER_TYPE_REGULAR;
+  }
+};
+
 }  // namespace
 
 class VolumeManagerTest : public testing::Test {
@@ -194,7 +205,15 @@ class VolumeManagerTest : public testing::Test {
               disk_manager,
               file_system_provider_service_.get(),
               base::Bind(&ProfileEnvironment::GetFakeMtpStorageInfo,
-                         base::Unretained(this)))) {}
+                         base::Unretained(this)))),
+          account_id_(
+              AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(),
+                                             "id")),
+          user_(account_id_) {
+      chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
+      chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+          &user_, profile_.get());
+    }
 
     Profile* profile() const { return profile_.get(); }
     VolumeManager* volume_manager() const { return volume_manager_.get(); }
@@ -212,6 +231,8 @@ class VolumeManagerTest : public testing::Test {
         file_system_provider_service_;
     std::unique_ptr<drive::DriveIntegrationService> drive_integration_service_;
     std::unique_ptr<VolumeManager> volume_manager_;
+    AccountId account_id_;
+    FakeUser user_;
   };
 
   void SetUp() override {
@@ -243,7 +264,9 @@ TEST_F(VolumeManagerTest, OnDriveFileSystemMountAndUnmount) {
   ASSERT_EQ(1U, observer.events().size());
   LoggingObserver::Event event = observer.events()[0];
   EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
-  EXPECT_EQ(drive::util::GetDriveMountPointPath(profile()).AsUTF8Unsafe(),
+  EXPECT_EQ(drive::DriveIntegrationServiceFactory::GetForProfile(profile())
+                ->GetMountPointPath()
+                .AsUTF8Unsafe(),
             event.device_path);
   EXPECT_EQ(chromeos::MOUNT_ERROR_NONE, event.mount_error);
 
@@ -252,7 +275,9 @@ TEST_F(VolumeManagerTest, OnDriveFileSystemMountAndUnmount) {
   ASSERT_EQ(2U, observer.events().size());
   event = observer.events()[1];
   EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type);
-  EXPECT_EQ(drive::util::GetDriveMountPointPath(profile()).AsUTF8Unsafe(),
+  EXPECT_EQ(drive::DriveIntegrationServiceFactory::GetForProfile(profile())
+                ->GetMountPointPath()
+                .AsUTF8Unsafe(),
             event.device_path);
   EXPECT_EQ(chromeos::MOUNT_ERROR_NONE, event.mount_error);
 

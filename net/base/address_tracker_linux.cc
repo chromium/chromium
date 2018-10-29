@@ -297,7 +297,7 @@ void AddressTrackerLinux::ReadMessages(bool* address_changed,
     if (tracking_) {
       // If the loop below takes a long time to run, a new thread should added
       // to the current thread pool to ensure forward progress of all tasks.
-      base::AssertBlockingAllowed();
+      base::AssertBlockingAllowedDeprecated();
       blocking_call.emplace(base::BlockingType::MAY_BLOCK);
     }
 
@@ -360,7 +360,7 @@ void AddressTrackerLinux::HandleMessage(char* buffer,
             msg->ifa_flags |= IFA_F_DEPRECATED;
           // Only indicate change if the address is new or ifaddrmsg info has
           // changed.
-          AddressMap::iterator it = address_map_.find(address);
+          auto it = address_map_.find(address);
           if (it == address_map_.end()) {
             address_map_.insert(it, std::make_pair(address, *msg));
             *address_changed = true;
@@ -464,12 +464,9 @@ void AddressTrackerLinux::UpdateCurrentConnectionType() {
   std::unordered_set<int> online_links = GetOnlineLinks();
 
   // Strip out tunnel interfaces from online_links
-  for (std::unordered_set<int>::const_iterator it = online_links.begin();
-       it != online_links.end();) {
+  for (auto it = online_links.cbegin(); it != online_links.cend();) {
     if (IsTunnelInterface(*it)) {
-      std::unordered_set<int>::const_iterator tunnel_it = it;
-      ++it;
-      online_links.erase(*tunnel_it);
+      it = online_links.erase(it);
     } else {
       ++it;
     }

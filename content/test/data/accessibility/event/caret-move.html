@@ -1,0 +1,25 @@
+<!--
+@RUN-UNTIL-EVENT:EVENT_OBJECT_VALUECHANGE
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+@WIN-DENY:IA2_EVENT_TEXT_REMOVED*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<input id="in1" type="text" value="abcde">
+<script>
+  function go() {
+    const inp = document.getElementById('in1');
+    inp.focus();
+    inp.setSelectionRange(0, 0);
+    setTimeout(() => {
+      inp.setSelectionRange(1, 1);
+      setTimeout(() => {
+        inp.blur();
+        inp.value = 'end'; // Trigger test end.
+      }, 50);
+    }, 50);
+}
+</script>
+</body>
+</html>

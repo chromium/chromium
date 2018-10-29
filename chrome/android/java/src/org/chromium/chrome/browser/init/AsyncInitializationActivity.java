@@ -62,6 +62,9 @@ public abstract class AsyncInitializationActivity extends AppCompatActivity impl
     private final NativeInitializationController mNativeInitializationController =
             new NativeInitializationController(this);
 
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher =
+            new ActivityLifecycleDispatcher();
+
     /** Time at which onCreate is called. This is realtime, counted in ms since device boot. */
     private long mOnCreateTimestampMs;
 
@@ -101,6 +104,7 @@ public abstract class AsyncInitializationActivity extends AppCompatActivity impl
         }
 
         super.onDestroy();
+        mLifecycleDispatcher.dispatchOnDestroy();
     }
 
     @CallSuper
@@ -133,6 +137,7 @@ public abstract class AsyncInitializationActivity extends AppCompatActivity impl
     public void preInflationStartup() {
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(this);
         mHadWarmStart = LibraryLoader.getInstance().isInitialized();
+        mLifecycleDispatcher.dispatchPreInflationStartup();
     }
 
     @Override
@@ -176,6 +181,7 @@ public abstract class AsyncInitializationActivity extends AppCompatActivity impl
             }
         };
         firstDrawView.getViewTreeObserver().addOnPreDrawListener(firstDrawListener);
+        mLifecycleDispatcher.dispatchPostInflationStartup();
     }
 
     /**
@@ -221,6 +227,7 @@ public abstract class AsyncInitializationActivity extends AppCompatActivity impl
                     }
                 });
         mNativeInitializationController.onNativeInitializationComplete();
+        mLifecycleDispatcher.dispatchNativeInitializationFinished();
     }
 
     @CallSuper
@@ -497,17 +504,29 @@ public abstract class AsyncInitializationActivity extends AppCompatActivity impl
         }
     }
 
+    @CallSuper
     @Override
-    public void onStartWithNative() { }
+    public void onStartWithNative() {
+        mLifecycleDispatcher.dispatchOnStartWithNative();
+    }
 
+    @CallSuper
     @Override
-    public void onResumeWithNative() { }
+    public void onResumeWithNative() {
+        mLifecycleDispatcher.dispatchOnResumeWithNative();
+    }
 
+    @CallSuper
     @Override
-    public void onPauseWithNative() { }
+    public void onPauseWithNative() {
+        mLifecycleDispatcher.dispatchOnPauseWithNative();
+    }
 
+    @CallSuper
     @Override
-    public void onStopWithNative() { }
+    public void onStopWithNative() {
+        mLifecycleDispatcher.dispatchOnStopWithNative();
+    }
 
     @Override
     public boolean isActivityDestroyed() {
@@ -694,6 +713,13 @@ public abstract class AsyncInitializationActivity extends AppCompatActivity impl
         if (mOnInflationCompleteCallback == null) return;
         mOnInflationCompleteCallback.run();
         mOnInflationCompleteCallback = null;
+    }
+
+    /**
+     * @return {@link ActivityLifecycleDispatcher} associated with this activity.
+     */
+    protected ActivityLifecycleDispatcher getLifecycleDispatcher() {
+        return mLifecycleDispatcher;
     }
 
     /**

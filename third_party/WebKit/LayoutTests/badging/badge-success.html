@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test that Badge API accepts expected types.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/platform/modules/badging/badging.mojom.js"></script>
+<script src="resources/mock-badge-service.js"></script>
+</head>
+<body>
+<script>
+
+badge_test(() => { Badge.set(); }, 'setBadge');
+
+badge_test(() => { Badge.set(undefined); }, 'setBadge');
+
+badge_test(() => { Badge.set(null); }, 'setBadge');
+
+badge_test(() => { Badge.set(1); }, 'setBadge');
+
+badge_test(() => { Badge.set("a string"); }, 'setBadge');
+
+badge_test(() => { Badge.clear(); }, 'clearBadge');
+
+</script>
+</body>
+</html>

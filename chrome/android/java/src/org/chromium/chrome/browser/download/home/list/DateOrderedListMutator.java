@@ -5,13 +5,14 @@
 package org.chromium.chrome.browser.download.home.list;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
+import org.chromium.chrome.browser.download.home.JustNowProvider;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
-import org.chromium.chrome.browser.download.home.list.ListItem.DateListItem;
 import org.chromium.chrome.browser.download.home.list.ListItem.OfflineItemListItem;
 import org.chromium.chrome.browser.download.home.list.ListItem.SectionHeaderListItem;
-import org.chromium.chrome.browser.download.home.list.ListItem.SeparatorViewListItem;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
 
@@ -36,6 +37,9 @@ import java.util.TreeMap;
  *   for an example since that is close to doing what we want - minus the contains() call).
  */
 class DateOrderedListMutator implements OfflineItemFilterObserver {
+    private static final Date JUST_NOW_DATE = new Date(Long.MAX_VALUE);
+    private final DownloadManagerUiConfig mConfig;
+    private final JustNowProvider mJustNowProvider;
     private final ListItemModel mModel;
 
     private final Map<Date, DateGroup> mDateGroups =
@@ -48,9 +52,14 @@ class DateOrderedListMutator implements OfflineItemFilterObserver {
      * Creates an DateOrderedList instance that will reflect {@code source}.
      * @param source The source of data for this list.
      * @param model  The model that will be the storage for the updated list.
+     * @param config The {@link DownloadManagerUiConfig}.
+     * @param justNowProvider The provider for Just Now section.
      */
-    public DateOrderedListMutator(OfflineItemFilterSource source, ListItemModel model) {
+    public DateOrderedListMutator(OfflineItemFilterSource source, ListItemModel model,
+            DownloadManagerUiConfig config, JustNowProvider justNowProvider) {
         mModel = model;
+        mConfig = config;
+        mJustNowProvider = justNowProvider;
         source.addObserver(this);
         onItemsAdded(source.getItems());
     }
@@ -68,7 +77,7 @@ class DateOrderedListMutator implements OfflineItemFilterObserver {
     @Override
     public void onItemsAdded(Collection<OfflineItem> items) {
         for (OfflineItem item : items) {
-            Date date = getDateFromOfflineItem(item);
+            Date date = getSectionDateFromOfflineItem(item);
             DateGroup dateGroup = mDateGroups.get(date);
             if (dateGroup == null) {
                 dateGroup = new DateGroup();
@@ -83,7 +92,7 @@ class DateOrderedListMutator implements OfflineItemFilterObserver {
     @Override
     public void onItemsRemoved(Collection<OfflineItem> items) {
         for (OfflineItem item : items) {
-            Date date = getDateFromOfflineItem(item);
+            Date date = getSectionDateFromOfflineItem(item);
             DateGroup dateGroup = mDateGroups.get(date);
             if (dateGroup == null) continue;
 
@@ -102,18 +111,24 @@ class DateOrderedListMutator implements OfflineItemFilterObserver {
 
         // If the update changed the creation time or filter type, remove and add the element to get
         // it positioned.
-        if (oldItem.creationTimeMs != item.creationTimeMs || oldItem.filter != item.filter) {
+        if (oldItem.creationTimeMs != item.creationTimeMs || oldItem.filter != item.filter
+                || shouldShowInJustNowSection(oldItem) != shouldShowInJustNowSection((item))) {
             // TODO(shaktisahu): Collect UMA when this happens.
             onItemsRemoved(CollectionUtil.newArrayList(oldItem));
             onItemsAdded(CollectionUtil.newArrayList(item));
         } else {
+            int sectionHeaderIndex = -1;
             for (int i = 0; i < mModel.size(); i++) {
                 ListItem listItem = mModel.get(i);
+                if (listItem instanceof SectionHeaderListItem) sectionHeaderIndex = i;
                 if (!(listItem instanceof OfflineItemListItem)) continue;
 
-                OfflineItem offlineListItem = ((OfflineItemListItem) listItem).item;
-                if (item.id.equals(offlineListItem.id)) {
-                    mModel.update(i, new OfflineItemListItem(item));
+                OfflineItemListItem existingItem = (OfflineItemListItem) listItem;
+                if (item.id.equals(existingItem.item.id)) {
+                    existingItem.item = item;
+                    mModel.update(i, existingItem);
+                    if (oldItem.state != item.state) updateSectionHeader(sectionHeaderIndex, i);
+                    break;
                 }
             }
         }
@@ -121,11 +136,19 @@ class DateOrderedListMutator implements OfflineItemFilterObserver {
         mModel.dispatchLastEvent();
     }
 
+    private void updateSectionHeader(int sectionHeaderIndex, int offlineItemIndex) {
+        if (sectionHeaderIndex < 0) return;
+
+        SectionHeaderListItem sectionHeader =
+                (SectionHeaderListItem) mModel.get(sectionHeaderIndex);
+        OfflineItem offlineItem = ((OfflineItemListItem) mModel.get(offlineItemIndex)).item;
+        sectionHeader.items.set(offlineItemIndex - sectionHeaderIndex - 1, offlineItem);
+        mModel.update(sectionHeaderIndex, sectionHeader);
+    }
+
     // Flattens out the hierarchical data and adds items to the model in the order they should be
-    // displayed. Date header, section header, date separator and section separators are added
-    // wherever necessary. The existing items in the model are replaced by the new set of items
-    // computed.
-    // TODO(shaktisahu): Write a version having no headers for the prefetch tab.
+    // displayed. Date headers and section headers are added wherever necessary. The existing items
+    // in the model are replaced by the new set of items computed.
     private void pushItemsToModel() {
         List<ListItem> listItems = new ArrayList<>();
         int dateIndex = 0;
@@ -133,44 +156,35 @@ class DateOrderedListMutator implements OfflineItemFilterObserver {
             DateGroup dateGroup = mDateGroups.get(date);
             int sectionIndex = 0;
 
-            // Add an item for the date header.
-            if (!mHideAllHeaders) {
-                listItems.add(new DateListItem(CalendarUtils.getStartOfDay(date.getTime())));
-            }
-
             // For each section.
             for (Integer filter : dateGroup.sections.keySet()) {
                 Section section = dateGroup.sections.get(filter);
 
                 // Add a section header.
-                if (!mHideSectionHeaders && !mHideAllHeaders) {
-                    SectionHeaderListItem sectionHeaderItem =
-                            new SectionHeaderListItem(filter, date.getTime());
-                    sectionHeaderItem.isFirstSectionOfDay = sectionIndex == 0;
+                if (!mHideAllHeaders) {
+                    SectionHeaderListItem sectionHeaderItem = new SectionHeaderListItem(filter,
+                            date.getTime(), sectionIndex == 0 /* showDate */,
+                            date.equals(JUST_NOW_DATE) /* isJustNow */,
+                            sectionIndex == 0 && dateIndex > 0 /* showDivider */);
+                    sectionHeaderItem.showTitle = !mHideSectionHeaders;
+                    sectionHeaderItem.showMenu = filter == OfflineItemFilter.FILTER_IMAGE;
+                    sectionHeaderItem.items = new ArrayList<>(section.items.values());
                     listItems.add(sectionHeaderItem);
                 }
 
                 // Add the items in the section.
                 for (OfflineItem offlineItem : section.items.values()) {
                     OfflineItemListItem item = new OfflineItemListItem(offlineItem);
-                    if (section.items.size() == 1
+                    if (mConfig.supportFullWidthImages && section.items.size() == 1
                             && offlineItem.filter == OfflineItemFilter.FILTER_IMAGE) {
                         item.spanFullWidth = true;
                     }
                     listItems.add(item);
                 }
 
-                // Add a section separator if needed.
-                if (!mHideAllHeaders && sectionIndex < dateGroup.sections.size() - 1) {
-                    listItems.add(new SeparatorViewListItem(date.getTime(), filter));
-                }
                 sectionIndex++;
             }
 
-            // Add a date separator if needed.
-            if (!mHideAllHeaders && dateIndex < mDateGroups.size() - 1) {
-                listItems.add(new SeparatorViewListItem(date.getTime()));
-            }
             dateIndex++;
         }
 
@@ -178,8 +192,19 @@ class DateOrderedListMutator implements OfflineItemFilterObserver {
         mModel.dispatchLastEvent();
     }
 
-    private Date getDateFromOfflineItem(OfflineItem offlineItem) {
-        return CalendarUtils.getStartOfDay(offlineItem.creationTimeMs).getTime();
+    private Date getSectionDateFromOfflineItem(OfflineItem offlineItem) {
+        return shouldShowInJustNowSection(offlineItem)
+                ? JUST_NOW_DATE
+                : CalendarUtils.getStartOfDay(offlineItem.creationTimeMs).getTime();
+    }
+
+    private boolean isShowingInJustNowSection(OfflineItem item) {
+        DateGroup justNowGroup = mDateGroups.get(JUST_NOW_DATE);
+        return justNowGroup != null && justNowGroup.contains(item.id);
+    }
+
+    private boolean shouldShowInJustNowSection(OfflineItem item) {
+        return mJustNowProvider.isJustNowItem(item) || isShowingInJustNowSection(item);
     }
 
     /** Represents a group of items which were downloaded on the same day. */
@@ -189,7 +214,8 @@ class DateOrderedListMutator implements OfflineItemFilterObserver {
          * Filters.FilterType}.
          */
         public Map<Integer, Section> sections = new TreeMap<>((lhs, rhs) -> {
-            return Filters.fromOfflineItem(lhs).compareTo(Filters.fromOfflineItem(rhs));
+            return ListUtils.compareFilterTypesTo(
+                    Filters.fromOfflineItem(lhs), Filters.fromOfflineItem(rhs));
         });
 
         public void addItem(OfflineItem item) {
@@ -209,6 +235,15 @@ class DateOrderedListMutator implements OfflineItemFilterObserver {
             if (section.items.isEmpty()) {
                 sections.remove(item.filter);
             }
+        }
+
+        public boolean contains(ContentId id) {
+            for (Section section : sections.values()) {
+                for (OfflineItem item : section.items.values()) {
+                    if (item.id.equals(id)) return true;
+                }
+            }
+            return false;
         }
     }
 

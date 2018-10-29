@@ -35,6 +35,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeDelegate {
     LIVE_REGION_CREATED,
     LIVE_REGION_NODE_CHANGED,  // Fired on a node within a live region.
     LOAD_COMPLETE,
+    LOAD_START,
     MENU_ITEM_SELECTED,
     NAME_CHANGED,
     OTHER_ATTRIBUTE_CHANGED,
@@ -186,6 +187,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeDelegate {
   void FireLiveRegionEvents(AXNode* node);
   void FireActiveDescendantEvents();
   void FireRelationSourceEvents(AXTree* tree, AXNode* target_node);
+  bool ShouldFireLoadEvents(AXNode* node);
 
   AXTree* tree_ = nullptr;  // Not owned.
   std::map<AXNode*, std::set<EventParams>> tree_events_;

@@ -26,22 +26,25 @@
 # SUCH DAMAGE.
 
 from blinkpy.common.host_mock import MockHost
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive_mock import MockExecutive, ScriptError
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.w3c.test_copier import TestCopier
 
 
+MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
+
 FAKE_SOURCE_REPO_DIR = '/blink'
 
 FAKE_FILES = {
-    '/mock-checkout/third_party/Webkit/LayoutTests/external/OWNERS': '',
+    MOCK_WEB_TESTS + 'external/OWNERS': '',
     '/blink/w3c/dir/has_shebang.txt': '#!',
     '/blink/w3c/dir/README.txt': '',
     '/blink/w3c/dir/OWNERS': '',
     '/blink/w3c/dir/reftest.list': '',
-    '/mock-checkout/third_party/WebKit/LayoutTests/external/README.txt': '',
-    '/mock-checkout/third_party/WebKit/LayoutTests/W3CImportExpectations': '',
+    MOCK_WEB_TESTS + 'external/README.txt': '',
+    MOCK_WEB_TESTS + 'W3CImportExpectations': '',
 }
 
 
@@ -95,14 +98,14 @@ class TestCopierTest(LoggingTestCase):
         copier.do_import()
         self.assertEqual(
             host.filesystem.executable_files,
-            set(['/mock-checkout/third_party/WebKit/LayoutTests/external/blink/w3c/dir/has_shebang.txt']))
+            set([MOCK_WEB_TESTS + 'external/blink/w3c/dir/has_shebang.txt']))
 
     def test_ref_test_with_ref_is_copied(self):
         host = MockHost()
         host.filesystem = MockFileSystem(files={
             '/blink/w3c/dir1/my-ref-test.html': '<html><head><link rel="match" href="ref-file.html" />test</head></html>',
             '/blink/w3c/dir1/ref-file.html': '<html><head>test</head></html>',
-            '/mock-checkout/third_party/WebKit/LayoutTests/W3CImportExpectations': '',
+            MOCK_WEB_TESTS + 'W3CImportExpectations': '',
         })
         copier = TestCopier(host, FAKE_SOURCE_REPO_DIR)
         copier.find_importable_tests()

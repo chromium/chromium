@@ -14,7 +14,6 @@
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -39,10 +38,8 @@ namespace ash {
 
 // Provides the non-client frame and contents view for windows created by remote
 // app processes.
-class ASH_EXPORT NonClientFrameController
-    : public views::WidgetDelegate,
-      public aura::WindowObserver,
-      public aura::client::TransientWindowClientObserver {
+class ASH_EXPORT NonClientFrameController : public views::WidgetDelegate,
+                                            public aura::WindowObserver {
  public:
   // Creates a new NonClientFrameController and window to render the non-client
   // frame decorations. This deletes itself when |window| is destroyed. |parent|
@@ -95,12 +92,6 @@ class ASH_EXPORT NonClientFrameController
                                const void* key,
                                intptr_t old) override;
   void OnWindowDestroyed(aura::Window* window) override;
-
-  // aura::client::TransientWindowClientObserver:
-  void OnTransientChildWindowAdded(aura::Window* parent,
-                                   aura::Window* transient_child) override;
-  void OnTransientChildWindowRemoved(aura::Window* parent,
-                                     aura::Window* transient_child) override;
 
  private:
   ~NonClientFrameController() override;

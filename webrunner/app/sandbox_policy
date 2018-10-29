@@ -4,6 +4,7 @@
       "chromium.web.ContextProvider",
       "fuchsia.fonts.Provider",
       "fuchsia.media.Audio",
+      "fuchsia.mediacodec.CodecFactory",
       "fuchsia.net.LegacySocketProvider",
       "fuchsia.netstack.Netstack",
       "fuchsia.process.Launcher",

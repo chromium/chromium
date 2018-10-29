@@ -64,9 +64,9 @@ class DirectoryReaderSync : public DirectoryReaderBase {
 
   DirectoryReaderSync(DOMFileSystemBase*, const String& full_path);
 
-  int callbacks_id_ = 0;
+  bool has_called_read_directory_ = false;
   EntrySyncHeapVector entries_;
-  FileError::ErrorCode error_code_ = FileError::kOK;
+  base::File::Error error_code_ = base::File::FILE_OK;
 };
 
 }  // namespace blink

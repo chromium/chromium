@@ -40,7 +40,7 @@
 
 namespace blink {
 
-namespace DecimalPrivate {
+namespace decimal_private {
 
 static int const kExponentMax = 1023;
 static int const kExponentMin = -1023;
@@ -229,9 +229,9 @@ static uint64_t ScaleUp(uint64_t x, int n) {
   }
 }
 
-}  // namespace DecimalPrivate
+}  // namespace decimal_private
 
-using namespace DecimalPrivate;
+using namespace decimal_private;
 
 Decimal::EncodedData::EncodedData(Sign sign, FormatClass format_class)
     : coefficient_(0), exponent_(0), format_class_(format_class), sign_(sign) {}

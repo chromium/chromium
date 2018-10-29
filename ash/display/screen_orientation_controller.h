@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/public/interfaces/ash_window_manager.mojom.h"
 #include "ash/wm/tablet_mode/tablet_mode_observer.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
@@ -25,17 +26,7 @@ class Window;
 
 namespace ash {
 
-enum class OrientationLockType {
-  kAny = 0,
-  kNatural,
-  kCurrent,
-  kPortrait,
-  kLandscape,
-  kPortraitPrimary,
-  kPortraitSecondary,
-  kLandscapePrimary,
-  kLandscapeSecondary
-};
+using OrientationLockType = mojom::OrientationLockType;
 
 // Test if the orientation lock type is primary/landscape/portrait.
 bool IsPrimaryOrientation(OrientationLockType type);

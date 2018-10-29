@@ -31,8 +31,7 @@
 #include "components/sync/engine/sync_status.h"
 #include "components/sync/protocol/sync_protocol_error.h"
 #include "components/sync/syncable/change_record.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace base {
 namespace trace_event {

@@ -10,7 +10,12 @@ import "third_party/blink/public/platform/referrer.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "url/mojom/url.mojom";
 
+
 // Type of the context associated with a request.
+// https://fetch.spec.whatwg.org/#concept-request-destination.
+// TODO(crbug.com/889751): This is a deprecated spec concept, figure out
+// how to refactor this to match the new spec concepts, 'destination' and
+// 'initiator'.
 enum RequestContextType {
   UNSPECIFIED,
   AUDIO,

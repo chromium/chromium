@@ -151,9 +151,16 @@ void SyncInternalsMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRequestStop,
-      base::BindRepeating(&SyncInternalsMessageHandler::HandleRequestStop,
-                          base::Unretained(this)));
+      syncer::sync_ui_util::kRequestStopKeepData,
+      base::BindRepeating(
+          &SyncInternalsMessageHandler::HandleRequestStopKeepData,
+          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      syncer::sync_ui_util::kRequestStopClearData,
+      base::BindRepeating(
+          &SyncInternalsMessageHandler::HandleRequestStopClearData,
+          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       syncer::sync_ui_util::kTriggerRefresh,
@@ -308,9 +315,24 @@ void SyncInternalsMessageHandler::HandleRequestStart(
     return;
 
   service->RequestStart();
+  // If the service was previously stopped with CLEAR_DATA, then the
+  // "first-setup-complete" bit was also cleared, and now the service wouldn't
+  // fully start up. So set that too.
+  service->SetFirstSetupComplete();
 }
 
-void SyncInternalsMessageHandler::HandleRequestStop(
+void SyncInternalsMessageHandler::HandleRequestStopKeepData(
+    const base::ListValue* args) {
+  DCHECK_EQ(0U, args->GetSize());
+
+  SyncService* service = GetSyncService();
+  if (!service)
+    return;
+
+  service->RequestStop(SyncService::KEEP_DATA);
+}
+
+void SyncInternalsMessageHandler::HandleRequestStopClearData(
     const base::ListValue* args) {
   DCHECK_EQ(0U, args->GetSize());
 

@@ -16,6 +16,7 @@ MockAutocompleteProviderClient::MockAutocompleteProviderClient() {
           /*identity_manager=*/nullptr, GetURLLoaderFactory());
   document_suggestions_service_ = std::make_unique<DocumentSuggestionsService>(
       /*identity_manager=*/nullptr, GetURLLoaderFactory());
+  pedal_provider_ = std::make_unique<OmniboxPedalProvider>();
 }
 
 MockAutocompleteProviderClient::~MockAutocompleteProviderClient() {

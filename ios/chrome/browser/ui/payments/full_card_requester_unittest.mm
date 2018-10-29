@@ -59,8 +59,9 @@ class PaymentRequestFullCardRequesterTest : public PaymentRequestUnitTestBase,
  protected:
   PaymentRequestFullCardRequesterTest() {}
 
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     AddCreditCard(autofill::test::GetCreditCard());  // Visa.
 
@@ -84,10 +85,11 @@ class PaymentRequestFullCardRequesterTest : public PaymentRequestUnitTestBase,
                                          downloadEnabled:NO];
   }
 
+  // PlatformTest:
   void TearDown() override {
     [autofill_controller_ detachFromWebState];
 
-    PaymentRequestUnitTestBase::TearDown();
+    DoTearDown();
   }
 
   // Manages autofill for a single page.

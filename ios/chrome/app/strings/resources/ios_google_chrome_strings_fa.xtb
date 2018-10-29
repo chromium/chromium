@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">‏Chrome با آوردن حساب‌های شما به وب، در وقت شما صرفه‌جویی می‌کند. در «تنظیمات» می‌توانید حساب‌ها را اضافه یا حذف کنید.</translation>
 <translation id="3282568296779691940">‏ورود به Chrome</translation>
 <translation id="3345341804167540816">‏استفاده از Chrome در همه جا</translation>
-<translation id="3678774398092457402">‏می‌خواهید Chrome گذرواژه‌تان را برای این سایت ذخیره کند؟</translation>
 <translation id="384394811301901750">‏Google Chrome اکنون نمی‌تواند از دوربین استفاده کند</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">‏هم‌اکنون حساب‌های همگام‌سازی را از <ph name="USER_EMAIL1" /> به <ph name="USER_EMAIL2" /> تغییر می‌دهید. داده‌های موجود Chrome شما توسط <ph name="DOMAIN" /> مدیریت می‌شود. با این کار، داده‌هایتان از این دستگاه حذف می‌شود اما همچنان در <ph name="USER_EMAIL1" /> باقی می‌ماند.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943">‏هرزمان بخواهید می‌توانید <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> را سفارشی کنید. ممکن است Google از محتوای موجود در سایت‌هایی که بازدید می‌کنید و تعاملات و فعالیت مرورگر برای شخصی‌سازی Chrome و سرویس‌های Google (مانند «مترجم»، «جستجو» و آگهی‌ها) استفاده کند.</translation>
 <translation id="5639704535586432836">‏Settings (تنظیمات) &gt; Privacy (حریم خصوصی) &gt; Camera (دوربین) &gt; Google Chrome را باز کنید و دوربین را روشن کنید.</translation>
 <translation id="5642200033778930880">‏Google Chrome نمی‌تواند از دوربین درحالت Split View (نمای تقسیم) استفاده کند</translation>
-<translation id="5703130498371792817">‏از Chrome لذت می‌برید؟ <ph name="BEGIN_LINK" />به این برنامه رتبه بدهید<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">‏نکته Chrome. بعضی از دکمه‌ها مثل Back (برگشت)، Forward (به جلو) و Search (جستجو) اکنون در پایین صفحه هستند.</translation>
 <translation id="6036420186814142909">‏Google Chrome دارای قابلیت‌هایی است که به شما کمک می‌کند داده‌های اینترنت و سرعت بارگیری صفحه‌های وبتان را مدیریت کنید.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">‏شرایط خدمات Google Chrome</translation>
 <translation id="7165736900384873061">‏استفاده از اسکنر QR در Google Chrome را شروع کنید</translation>
 <translation id="7172660552945675509">‏نکته: <ph name="BEGIN_LINK" />Chrome را به داکتان انتقال دهید<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">‏Chrome برای اطمینان از دسترسی مجاز به گذرواژه‌هایتان از «شناسه تشخیص چهره» استفاده می‌کند.</translation>
 <translation id="7265369419224458312">‏از اینجا به برگه‌هایی که دررایانه‌تان باز کرده‌اید دسترسی داشته باشید. کافیست Chrome را در رایانه‌تان باز کنید، به منو بروید و «ورود به سیستم Chrome» را انتخاب کنید.</translation>
 <translation id="728488472449859922">‏اسکنر QR در Google Chrome را روشن کنید</translation>
 <translation id="7400722733683201933">‏درباره Google Chrome</translation>

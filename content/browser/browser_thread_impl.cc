@@ -11,9 +11,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_executor.h"
 #include "base/threading/platform_thread.h"
@@ -21,61 +21,13 @@
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/task_scheduler/post_task_android.h"
+#endif
+
 namespace content {
 
 namespace {
-
-// An implementation of SingleThreadTaskRunner to be used in conjunction
-// with BrowserThread.
-// TODO(gab): Consider replacing this with |g_globals->task_runners| -- only
-// works if none are requested before starting the threads.
-class BrowserThreadTaskRunner : public base::SingleThreadTaskRunner {
- public:
-  explicit BrowserThreadTaskRunner(BrowserThread::ID identifier)
-      : id_(identifier) {}
-
-  // SingleThreadTaskRunner implementation.
-  bool PostDelayedTask(const base::Location& from_here,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override {
-    return BrowserThread::PostDelayedTask(id_, from_here, std::move(task),
-                                          delay);
-  }
-
-  bool PostNonNestableDelayedTask(const base::Location& from_here,
-                                  base::OnceClosure task,
-                                  base::TimeDelta delay) override {
-    return BrowserThread::PostNonNestableDelayedTask(id_, from_here,
-                                                     std::move(task), delay);
-  }
-
-  bool RunsTasksInCurrentSequence() const override {
-    return BrowserThread::CurrentlyOn(id_);
-  }
-
- protected:
-  ~BrowserThreadTaskRunner() override {}
-
- private:
-  BrowserThread::ID id_;
-  DISALLOW_COPY_AND_ASSIGN(BrowserThreadTaskRunner);
-};
-
-// A separate helper is used just for the task runners, in order to avoid
-// needing to initialize the globals to create a task runner.
-struct BrowserThreadTaskRunners {
-  BrowserThreadTaskRunners() {
-    for (int i = 0; i < BrowserThread::ID_COUNT; ++i) {
-      proxies[i] =
-          new BrowserThreadTaskRunner(static_cast<BrowserThread::ID>(i));
-    }
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> proxies[BrowserThread::ID_COUNT];
-};
-
-base::LazyInstance<BrowserThreadTaskRunners>::Leaky g_task_runners =
-    LAZY_INSTANCE_INITIALIZER;
 
 // State of a given BrowserThread::ID in chronological order throughout the
 // browser process' lifetime.
@@ -125,41 +77,9 @@ struct BrowserThreadGlobals {
   base::subtle::Atomic32 states[BrowserThread::ID_COUNT] = {};
 };
 
-base::LazyInstance<BrowserThreadGlobals>::Leaky
-    g_globals = LAZY_INSTANCE_INITIALIZER;
-
-bool PostTaskHelper(BrowserThread::ID identifier,
-                    const base::Location& from_here,
-                    base::OnceClosure task,
-                    base::TimeDelta delay,
-                    bool nestable) {
-  DCHECK_GE(identifier, 0);
-  DCHECK_LT(identifier, BrowserThread::ID_COUNT);
-
-  BrowserThreadGlobals& globals = g_globals.Get();
-
-  // Tasks should always be posted while the BrowserThread is in a RUNNING or
-  // SHUTDOWN state (will return false if SHUTDOWN).
-  //
-  // Posting tasks before BrowserThreads are initialized is incorrect as it
-  // would silently no-op. If you need to support posting early, gate it on
-  // BrowserThread::IsThreadInitialized(). If you hit this check in unittests,
-  // you most likely posted a task outside the scope of a
-  // TestBrowserThreadBundle (which also completely resets the state after
-  // shutdown in ~TestBrowserThreadBundle(), ref. ResetGlobalsForTesting(),
-  // making sure TestBrowserThreadBundle is the first member of your test
-  // fixture and thus outlives everything is usually the right solution).
-  DCHECK_GE(base::subtle::NoBarrier_Load(&globals.states[identifier]),
-            BrowserThreadState::RUNNING);
-  DCHECK(globals.task_runners[identifier]);
-
-  if (nestable) {
-    return globals.task_runners[identifier]->PostDelayedTask(
-        from_here, std::move(task), delay);
-  } else {
-    return globals.task_runners[identifier]->PostNonNestableDelayedTask(
-        from_here, std::move(task), delay);
-  }
+BrowserThreadGlobals& GetBrowserThreadGlobals() {
+  static base::NoDestructor<BrowserThreadGlobals> globals;
+  return *globals;
 }
 
 }  // namespace
@@ -172,7 +92,7 @@ BrowserThreadImpl::BrowserThreadImpl(
   DCHECK_LT(identifier_, ID_COUNT);
   DCHECK(task_runner);
 
-  BrowserThreadGlobals& globals = g_globals.Get();
+  BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
 
   DCHECK_CALLED_ON_VALID_THREAD(globals.main_thread_checker_);
 
@@ -183,11 +103,23 @@ BrowserThreadImpl::BrowserThreadImpl(
 
   DCHECK(!globals.task_runners[identifier_]);
   globals.task_runners[identifier_] = std::move(task_runner);
+
+#if defined(OS_ANDROID)
+  // TODO(alexclarke): Move this to the BrowserUIThreadScheduler.
+  if (identifier_ == BrowserThread::ID::UI)
+    base::PostTaskAndroid::SignalNativeSchedulerReady();
+#endif
 }
 
 BrowserThreadImpl::~BrowserThreadImpl() {
-  BrowserThreadGlobals& globals = g_globals.Get();
+  BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
   DCHECK_CALLED_ON_VALID_THREAD(globals.main_thread_checker_);
+
+#if defined(OS_ANDROID)
+  // TODO(alexclarke): Move this to the BrowserUIThreadScheduler.
+  if (identifier_ == BrowserThread::ID::UI)
+    base::PostTaskAndroid::SignalNativeSchedulerShutdown();
+#endif
 
   DCHECK_EQ(base::subtle::NoBarrier_Load(&globals.states[identifier_]),
             BrowserThreadState::RUNNING);
@@ -202,7 +134,7 @@ BrowserThreadImpl::~BrowserThreadImpl() {
 
 // static
 void BrowserThreadImpl::ResetGlobalsForTesting(BrowserThread::ID identifier) {
-  BrowserThreadGlobals& globals = g_globals.Get();
+  BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
   DCHECK_CALLED_ON_VALID_THREAD(globals.main_thread_checker_);
 
   DCHECK_EQ(base::subtle::NoBarrier_Load(&globals.states[identifier]),
@@ -241,7 +173,7 @@ bool BrowserThread::IsThreadInitialized(ID identifier) {
   DCHECK_GE(identifier, 0);
   DCHECK_LT(identifier, ID_COUNT);
 
-  BrowserThreadGlobals& globals = g_globals.Get();
+  BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
   return base::subtle::NoBarrier_Load(&globals.states[identifier]) ==
          BrowserThreadState::RUNNING;
 }
@@ -251,7 +183,7 @@ bool BrowserThread::CurrentlyOn(ID identifier) {
   DCHECK_GE(identifier, 0);
   DCHECK_LT(identifier, ID_COUNT);
 
-  BrowserThreadGlobals& globals = g_globals.Get();
+  BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
 
   // Thread-safe since |globals.task_runners| is read-only after being
   // initialized from main thread (which happens before //content and embedders
@@ -275,49 +207,9 @@ std::string BrowserThread::GetDCheckCurrentlyOnErrorMessage(ID expected) {
   return result;
 }
 
-bool BrowserThread::PostTask(ID identifier,
-                             const base::Location& from_here,
-                             base::OnceClosure task) {
-  return PostTaskHelper(identifier, from_here, std::move(task),
-                        base::TimeDelta(), true);
-}
-
-// static
-bool BrowserThread::PostDelayedTask(ID identifier,
-                                    const base::Location& from_here,
-                                    base::OnceClosure task,
-                                    base::TimeDelta delay) {
-  return PostTaskHelper(identifier, from_here, std::move(task), delay, true);
-}
-
-// static
-bool BrowserThread::PostNonNestableTask(ID identifier,
-                                        const base::Location& from_here,
-                                        base::OnceClosure task) {
-  return PostTaskHelper(identifier, from_here, std::move(task),
-                        base::TimeDelta(), false);
-}
-
-// static
-bool BrowserThread::PostNonNestableDelayedTask(ID identifier,
-                                               const base::Location& from_here,
-                                               base::OnceClosure task,
-                                               base::TimeDelta delay) {
-  return PostTaskHelper(identifier, from_here, std::move(task), delay, false);
-}
-
-// static
-bool BrowserThread::PostTaskAndReply(ID identifier,
-                                     const base::Location& from_here,
-                                     base::OnceClosure task,
-                                     base::OnceClosure reply) {
-  return GetTaskRunnerForThread(identifier)
-      ->PostTaskAndReply(from_here, std::move(task), std::move(reply));
-}
-
 // static
 bool BrowserThread::GetCurrentThreadIdentifier(ID* identifier) {
-  BrowserThreadGlobals& globals = g_globals.Get();
+  BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
 
   // Thread-safe since |globals.task_runners| is read-only after being
   // initialized from main thread (which happens before //content and embedders
@@ -337,7 +229,27 @@ bool BrowserThread::GetCurrentThreadIdentifier(ID* identifier) {
 // static
 scoped_refptr<base::SingleThreadTaskRunner>
 BrowserThread::GetTaskRunnerForThread(ID identifier) {
-  return g_task_runners.Get().proxies[identifier];
+  DCHECK_GE(identifier, 0);
+  DCHECK_LT(identifier, ID_COUNT);
+
+  BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
+
+  // Tasks should always be posted while the BrowserThread is in a RUNNING or
+  // SHUTDOWN state (will return false if SHUTDOWN).
+  //
+  // Posting tasks before BrowserThreads are initialized is incorrect as it
+  // would silently no-op. If you need to support posting early, gate it on
+  // BrowserThread::IsThreadInitialized(). If you hit this check in unittests,
+  // you most likely posted a task outside the scope of a
+  // TestBrowserThreadBundle (which also completely resets the state after
+  // shutdown in ~TestBrowserThreadBundle(), ref. ResetGlobalsForTesting(),
+  // making sure TestBrowserThreadBundle is the first member of your test
+  // fixture and thus outlives everything is usually the right solution).
+  DCHECK_GE(base::subtle::NoBarrier_Load(&globals.states[identifier]),
+            BrowserThreadState::RUNNING);
+  DCHECK(globals.task_runners[identifier]);
+
+  return globals.task_runners[identifier];
 }
 
 }  // namespace content

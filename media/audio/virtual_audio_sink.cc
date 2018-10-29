@@ -44,9 +44,8 @@ VirtualAudioSink::~VirtualAudioSink() = default;
 
 void VirtualAudioSink::Close() {
   target_->RemoveInputProvider(this, params_);
-  const AfterCloseCallback& cb = base::ResetAndReturn(&after_close_callback_);
-  if (!cb.is_null())
-    cb.Run(this);
+  if (after_close_callback_)
+    std::move(after_close_callback_).Run(this);
 }
 
 void VirtualAudioSink::OnData(std::unique_ptr<AudioBus> source,

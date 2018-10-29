@@ -51,10 +51,9 @@ void ServiceWorkerScriptLoaderFactory::CreateLoaderAndStart(
   //    (use ServceWorkerInstalledScriptLoader). Typically this case is handled
   //    by ServiceWorkerInstalledScriptsSender, but we can still get here when a
   //    new service worker starts up and becomes installed while it is running.
-  // B) service worker is installed, script is not installed: serve from direct
-  //    network. This happens when the script is newly imported after
-  //    installation.
-  //    TODO(crbug.com/719052): deprecate this.
+  // B) service worker is installed, script is not installed: return a network
+  //    error. This happens when the script is newly imported after
+  //    installation, which is disallowed by the spec.
   // C) service worker is not installed, script is installed: serve from
   //    storage (use ServceWorkerInstalledScriptLoader)
   // D) service worker is not installed, script is not installed: serve from
@@ -78,11 +77,7 @@ void ServiceWorkerScriptLoaderFactory::CreateLoaderAndStart(
 
   // Case B:
   if (ServiceWorkerVersion::IsInstalled(version->status())) {
-    // TODO(kinuko): Record the reason like what we do with netlog in
-    // ServiceWorkerContextRequestHandler.
-    loader_factory_->CreateLoaderAndStart(
-        std::move(request), routing_id, request_id, options, resource_request,
-        std::move(client), traffic_annotation);
+    client->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
     return;
   }
 

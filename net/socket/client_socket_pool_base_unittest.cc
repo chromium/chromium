@@ -642,8 +642,7 @@ class TestClientSocketPool : public ClientSocketPool {
 namespace {
 
 void MockClientSocketFactory::SignalJobs() {
-  for (std::vector<TestConnectJob*>::iterator it = waiting_jobs_.begin();
-       it != waiting_jobs_.end(); ++it) {
+  for (auto it = waiting_jobs_.begin(); it != waiting_jobs_.end(); ++it) {
     (*it)->Signal();
   }
   waiting_jobs_.clear();

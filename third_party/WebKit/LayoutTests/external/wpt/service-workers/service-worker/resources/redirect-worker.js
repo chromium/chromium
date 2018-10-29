@@ -60,11 +60,10 @@ async function getClients(event) {
   for (let key of Object.keys(actual_ids)) {
     const id = actual_ids[key];
     const client = await self.clients.get(id);
-    if (client === undefined) {
+    if (client === undefined)
       result[key] = {found: false};
-      return;
-    }
-    result[key] = {found: true, url: client.url, id: client.id};
+    else
+      result[key] = {found: true, url: client.url, id: client.id};
   }
   event.data.port.postMessage({clients: result});
 }

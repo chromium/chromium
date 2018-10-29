@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import com.google.ipc.invalidation.util.Preconditions;
 
@@ -36,9 +37,11 @@ import org.chromium.chrome.browser.notifications.ChromeNotificationBuilder;
 import org.chromium.chrome.browser.notifications.NotificationBuilderFactory;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.channels.ChannelDefinitions;
+import org.chromium.chrome.browser.util.UrlUtilities;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.PendingState;
+import org.chromium.components.url_formatter.UrlFormatter;
 
 /**
  * Creates and updates notifications related to downloads.
@@ -46,6 +49,10 @@ import org.chromium.components.offline_items_collection.PendingState;
 public final class DownloadNotificationFactory {
     // Limit file name to 25 characters. TODO(qinmin): use different limit for different devices?
     public static final int MAX_FILE_NAME_LENGTH = 25;
+
+    // Limit the origin length so that the eTLD+1 cannot be hidden. If the origin exceeds this
+    // length the eTLD+1 is extracted and shown.
+    public static final int MAX_ORIGIN_LENGTH = 40;
 
     /**
      * Builds a downloads notification based on the status of the download and its information. All
@@ -112,7 +119,6 @@ public final class DownloadNotificationFactory {
                 builder.setOngoing(true)
                         .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setAutoCancel(false)
-                        .setLargeIcon(downloadUpdate.getIcon())
                         .addAction(R.drawable.ic_pause_white_24dp,
                                 context.getResources().getString(
                                         R.string.download_notification_pause_button),
@@ -123,6 +129,9 @@ public final class DownloadNotificationFactory {
                                         R.string.download_notification_cancel_button),
                                 buildPendingIntent(
                                         context, cancelIntent, downloadUpdate.getNotificationId()));
+
+                if (!downloadUpdate.getIsOffTheRecord())
+                    builder.setLargeIcon(downloadUpdate.getIcon());
 
                 if (!downloadUpdate.getIsDownloadPending()) {
                     boolean indeterminate = downloadUpdate.getProgress().isIndeterminate();
@@ -161,7 +170,6 @@ public final class DownloadNotificationFactory {
                         DownloadNotificationUmaHelper.StateAtCancel.PAUSED);
 
                 builder.setAutoCancel(false)
-                        .setLargeIcon(downloadUpdate.getIcon())
                         .addAction(R.drawable.ic_file_download_white_24dp,
                                 context.getResources().getString(
                                         R.string.download_notification_resume_button),
@@ -172,6 +180,9 @@ public final class DownloadNotificationFactory {
                                         R.string.download_notification_cancel_button),
                                 buildPendingIntent(
                                         context, cancelIntent, downloadUpdate.getNotificationId()));
+
+                if (!downloadUpdate.getIsOffTheRecord())
+                    builder.setLargeIcon(downloadUpdate.getIcon());
 
                 if (downloadUpdate.getIsTransient()) {
                     builder.setDeleteIntent(buildPendingIntent(
@@ -229,6 +240,12 @@ public final class DownloadNotificationFactory {
                             PendingIntent.getService(context, downloadUpdate.getNotificationId(),
                                     intent, PendingIntent.FLAG_UPDATE_CURRENT));
                 }
+
+                // It's the job of the service to ensure that the default icon is provided when
+                // in incognito mode.
+                if (downloadUpdate.getIcon() != null)
+                    builder.setLargeIcon(downloadUpdate.getIcon());
+
                 break;
             case DownloadNotificationService2.DownloadStatus.FAILED:
                 iconId = android.R.drawable.stat_sys_download_done;
@@ -243,7 +260,11 @@ public final class DownloadNotificationFactory {
         Bundle extras = new Bundle();
         extras.putInt(EXTRA_NOTIFICATION_BUNDLE_ICON_ID, iconId);
 
-        builder.setSmallIcon(iconId).addExtras(extras);
+        if (downloadUpdate.getIsOffTheRecord()) {
+            builder.setSmallIcon(R.drawable.offline_pin).addExtras(extras);
+        } else {
+            builder.setSmallIcon(iconId).addExtras(extras);
+        }
 
         // Context text is shown as title in incognito mode as the file name is not shown.
         if (downloadUpdate.getIsOffTheRecord()) {
@@ -257,7 +278,7 @@ public final class DownloadNotificationFactory {
             builder.setContentTitle(DownloadUtils.getAbbreviatedFileName(
                     downloadUpdate.getFileName(), MAX_FILE_NAME_LENGTH));
         }
-        if (downloadUpdate.getIcon() != null) builder.setLargeIcon(downloadUpdate.getIcon());
+
         if (!downloadUpdate.getIsTransient() && downloadUpdate.getNotificationId() != -1
                 && downloadStatus != DownloadNotificationService2.DownloadStatus.COMPLETED
                 && downloadStatus != DownloadNotificationService2.DownloadStatus.FAILED) {
@@ -268,11 +289,23 @@ public final class DownloadNotificationFactory {
                             downloadHomeIntent, PendingIntent.FLAG_UPDATE_CURRENT));
         }
 
-        // A sub text to inform the users that they are using incognito mode.
         if (downloadUpdate.getIsOffTheRecord()) {
+            // A sub text to inform the users that they are using incognito mode.
             setSubText(builder,
                     context.getResources().getString(
                             R.string.download_notification_incognito_subtext));
+        } else if (downloadUpdate.getShouldPromoteOrigin()
+                && !TextUtils.isEmpty(downloadUpdate.getOriginalUrl())) {
+            // Always show the origin URL if available (for normal profiles).
+            String formattedUrl = UrlFormatter.formatUrlForSecurityDisplayOmitScheme(
+                    downloadUpdate.getOriginalUrl());
+
+            if (formattedUrl.length() > MAX_ORIGIN_LENGTH) {
+                // The origin is too long. Strip down to eTLD+1.
+                formattedUrl = UrlUtilities.getDomainAndRegistry(
+                        downloadUpdate.getOriginalUrl(), false /* includePrivateRegistries */);
+            }
+            setSubText(builder, formattedUrl);
         }
 
         return builder.build();

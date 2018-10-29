@@ -429,10 +429,8 @@ initTests(function(testParams, errorMessage) {
       var testEventListener = new TestEventListener();
        testEventListener.addExpectedEvent(testParams.entries.dir,
                                           'changed', 'deleted');
-      if (!testParams.isOnDrive) {
-        testEventListener.addExpectedEvent(testParams.entries.file,
-                                           'changed', 'deleted');
-      }
+       testEventListener.addExpectedEvent(
+           testParams.entries.file, 'changed', 'deleted');
       testEventListener.start();
 
       testParams.fileSystem.root.getFile(
@@ -475,10 +473,8 @@ initTests(function(testParams, errorMessage) {
     // there will be no event for the deleted directory.
     function onDeleteWatchedDir() {
       var testEventListener = new TestEventListener();
-      if (!testParams.isOnDrive) {
-        testEventListener.addExpectedEvent(testParams.entries.subdir,
-                                           'changed', 'deleted');
-      }
+      testEventListener.addExpectedEvent(
+          testParams.entries.subdir, 'changed', 'deleted');
       testEventListener.addExpectedEvent(testParams.entries.dir,
                                          'changed', 'deleted');
       testEventListener.start();

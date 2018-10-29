@@ -61,6 +61,11 @@ class PasswordAccessorySheetViewBinder {
                             LayoutInflater.from(parent.getContext())
                                     .inflate(R.layout.password_accessory_sheet_option, parent,
                                             false));
+                case ItemType.TOP_DIVIDER:
+                    return new ItemViewHolder(
+                            LayoutInflater.from(parent.getContext())
+                                    .inflate(R.layout.password_accessory_sheet_top_divider, parent,
+                                            false));
             }
             assert false : viewType;
             return null;
@@ -150,7 +155,9 @@ class PasswordAccessorySheetViewBinder {
             // Jelly Bean, so the padding should be set after the background.
             if (!item.isPassword()) {
                 setIconForBitmap(null); // Set the default icon, then try to get a better one.
-                item.fetchFavicon(this::setIconForBitmap);
+                item.fetchFavicon(itemView.getContext().getResources().getDimensionPixelSize(
+                                          R.dimen.keyboard_accessory_suggestion_icon_size),
+                        this::setIconForBitmap);
                 mSuggestionText.setPadding(mPadding, 0, mPadding, 0);
             } else {
                 ApiCompatibilityUtils.setCompoundDrawablesRelative(

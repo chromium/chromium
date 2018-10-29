@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/common/skia_utils.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/gpu/GrContext.h"
+#include "ui/gl/progress_reporter.h"
 
 namespace gl {
 class GLContext;
@@ -35,7 +36,8 @@ struct GPU_GLES2_EXPORT RasterDecoderContextState
                             bool use_virtualized_gl_contexts);
   void InitializeGrContext(const GpuDriverBugWorkarounds& workarounds,
                            GrContextOptions::PersistentCache* cache,
-                           GpuProcessActivityFlags* activity_flags = nullptr);
+                           GpuProcessActivityFlags* activity_flags = nullptr,
+                           gl::ProgressReporter* progress_reporter = nullptr);
   void PurgeMemory(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 

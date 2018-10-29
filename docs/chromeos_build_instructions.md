@@ -42,6 +42,9 @@ Run the following in your chromium checkout:
     $ autoninja -C out/Default chrome
     $ out/Default/chrome
 
+(`autoninja` is a wrapper that automatically provides optimal values for the
+arguments passed to `ninja`).
+
 Some additional options you may wish to set by passing in `--args` to `gn gen`
 or running `gn args out/Default`:
 

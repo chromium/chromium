@@ -53,4 +53,3 @@ PASS gFocusedDocument.getElementById("start").options[0].selected is false
 PASS gFocusedDocument.getElementById("start").options[1].selected is true
 PASS gFocusedDocument.getElementById("start").options[2].selected is false
 PASS gFocusedDocument.getElementById("start").options[3].selected is true
-

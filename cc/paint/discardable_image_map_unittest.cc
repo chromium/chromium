@@ -65,7 +65,9 @@ class DiscardableImageMapTest : public testing::Test {
           *image, 1.f, PaintImage::kDefaultFrameIndex, target_color_space));
 
     std::vector<PositionScaleDrawImage> position_draw_images;
-    for (DrawImage& image : image_map.images_rtree_.Search(rect)) {
+    std::vector<DrawImage> results;
+    image_map.images_rtree_.Search(rect, &results);
+    for (DrawImage& image : results) {
       auto image_id = image.paint_image().stable_id();
       position_draw_images.push_back(PositionScaleDrawImage(
           image.paint_image(),

@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/content_browser_client.h"
@@ -47,47 +48,16 @@ bool SiteIsolationPolicy::UseDedicatedProcessesForAllSites() {
 }
 
 // static
-SiteIsolationPolicy::CrossSiteDocumentBlockingEnabledState
-SiteIsolationPolicy::IsCrossSiteDocumentBlockingEnabled() {
-  // --disable-web-security also disables cross-origin response blocking (CORB).
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableWebSecurity)) {
-    return XSDB_DISABLED;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          ::features::kCrossSiteDocumentBlockingAlways)) {
-    return XSDB_ENABLED_UNCONDITIONALLY;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          ::features::kCrossSiteDocumentBlockingIfIsolating)) {
-    return XSDB_ENABLED_IF_ISOLATED;
-  }
-
-  return XSDB_DISABLED;
-}
-
-// static
 void SiteIsolationPolicy::PopulateURLLoaderFactoryParamsPtrForCORB(
     network::mojom::URLLoaderFactoryParams* params) {
-  switch (IsCrossSiteDocumentBlockingEnabled()) {
-    case SiteIsolationPolicy::XSDB_ENABLED_UNCONDITIONALLY:
-      params->is_corb_enabled = true;
-      break;
-    case SiteIsolationPolicy::XSDB_ENABLED_IF_ISOLATED: {
-      // TODO(lukasza): Take isolate-origins into account as well.
-      params->is_corb_enabled = UseDedicatedProcessesForAllSites();
-      break;
-    }
-    case SiteIsolationPolicy::XSDB_DISABLED:
-      params->is_corb_enabled = false;
-      break;
+  // --disable-web-security also disables Cross-Origin Read Blocking (CORB).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableWebSecurity)) {
+    params->is_corb_enabled = false;
+    return;
   }
 
-  if (!params->is_corb_enabled)
-    return;
-
+  params->is_corb_enabled = true;
   params->corb_detachable_resource_type = RESOURCE_TYPE_PREFETCH;
   params->corb_excluded_resource_type = RESOURCE_TYPE_PLUGIN_RESOURCE;
 
@@ -97,18 +67,6 @@ void SiteIsolationPolicy::PopulateURLLoaderFactoryParamsPtrForCORB(
           ->GetInitiatorSchemeBypassingDocumentBlocking();
   if (initiator_scheme_exception)
     params->corb_excluded_initiator_scheme = initiator_scheme_exception;
-}
-
-// static
-bool SiteIsolationPolicy::IsTopDocumentIsolationEnabled() {
-  // --site-per-process trumps --top-document-isolation.
-  if (UseDedicatedProcessesForAllSites())
-    return false;
-
-  // The feature needs to be checked last, because checking the feature
-  // activates the field trial and assigns the client either to a control or an
-  // experiment group - such assignment should be final.
-  return base::FeatureList::IsEnabled(::features::kTopDocumentIsolation);
 }
 
 // static
@@ -145,8 +103,7 @@ bool SiteIsolationPolicy::ShouldPdfCompositorBeEnabledForOopifs() {
   // where OOPIF is used such as isolate-extensions, but should be good for
   // feature testing purpose. Eventually, we will remove this check and use pdf
   // compositor service by default for printing.
-  return AreIsolatedOriginsEnabled() || IsTopDocumentIsolationEnabled() ||
-         UseDedicatedProcessesForAllSites();
+  return AreIsolatedOriginsEnabled() || UseDedicatedProcessesForAllSites();
 }
 
 // static
@@ -155,17 +112,18 @@ SiteIsolationPolicy::GetIsolatedOriginsFromEnvironment() {
   std::string cmdline_arg =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kIsolateOrigins);
+  std::vector<url::Origin> origins;
   if (!cmdline_arg.empty()) {
-    std::vector<url::Origin> cmdline_origins =
-        ParseIsolatedOrigins(cmdline_arg);
+    origins = ParseIsolatedOrigins(cmdline_arg);
     UMA_HISTOGRAM_COUNTS_1000("SiteIsolation.IsolateOrigins.Size",
-                              cmdline_origins.size());
-    return cmdline_origins;
+                              origins.size());
   }
 
+  // --isolate-origins (both command-line flag and enterprise policy) trumps
+  // the opt-out flag.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableSiteIsolationTrials)) {
-    return std::vector<url::Origin>();
+    return origins;
   }
 
   // The feature needs to be checked last, because checking the feature
@@ -175,9 +133,13 @@ SiteIsolationPolicy::GetIsolatedOriginsFromEnvironment() {
     std::string field_trial_arg = base::GetFieldTrialParamValueByFeature(
         features::kIsolateOrigins,
         features::kIsolateOriginsFieldTrialParamName);
-    return ParseIsolatedOrigins(field_trial_arg);
+    std::vector<url::Origin> field_trial_origins =
+        ParseIsolatedOrigins(field_trial_arg);
+    origins.reserve(origins.size() + field_trial_origins.size());
+    std::move(field_trial_origins.begin(), field_trial_origins.end(),
+              std::back_inserter(origins));
   }
-  return std::vector<url::Origin>();
+  return origins;
 }
 
 // static
@@ -204,7 +166,7 @@ std::vector<url::Origin> SiteIsolationPolicy::ParseIsolatedOrigins(
   origins.reserve(origin_strings.size());
   for (const base::StringPiece& origin_string : origin_strings) {
     url::Origin origin = url::Origin::Create(GURL(origin_string));
-    if (!origin.unique())
+    if (!origin.opaque())
       origins.push_back(origin);
   }
   return origins;
@@ -217,8 +179,8 @@ void SiteIsolationPolicy::StartRecordingSiteIsolationFlagUsage() {
   // flags can't change dynamically at runtime, collecting these stats daily
   // helps determine the overall population of users who run with a given flag
   // on any given day.
-  CR_DEFINE_STATIC_LOCAL(base::RepeatingTimer, update_stats_timer, ());
-  update_stats_timer.Start(
+  static base::NoDestructor<base::RepeatingTimer> update_stats_timer;
+  update_stats_timer->Start(
       FROM_HERE, base::TimeDelta::FromHours(24),
       base::BindRepeating(&SiteIsolationPolicy::RecordSiteIsolationFlagUsage));
 }

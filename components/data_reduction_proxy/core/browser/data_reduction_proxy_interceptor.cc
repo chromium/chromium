@@ -8,7 +8,6 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_bypass_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_config_service_client.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_event_creator.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "net/base/load_timing_info.h"
@@ -22,17 +21,34 @@
 
 namespace data_reduction_proxy {
 
+namespace {
+
+void MarkProxiesAsBad(net::URLRequest* request,
+                      const std::vector<net::ProxyServer>& bad_proxies,
+                      base::TimeDelta bypass_duration) {
+  // Synthesize a suitable |ProxyInfo| to add the proxies to the
+  // |ProxyRetryInfoMap| of the proxy service.
+  net::ProxyList proxy_list;
+  for (const auto& bad_proxy : bad_proxies)
+    proxy_list.AddProxyServer(bad_proxy);
+  proxy_list.AddProxyServer(net::ProxyServer::Direct());
+
+  net::ProxyInfo proxy_info;
+  proxy_info.UseProxyList(proxy_list);
+
+  request->context()->proxy_resolution_service()->MarkProxiesAsBadUntil(
+      proxy_info, bypass_duration, bad_proxies, request->net_log());
+}
+
+}  // namespace
+
 DataReductionProxyInterceptor::DataReductionProxyInterceptor(
     DataReductionProxyConfig* config,
     DataReductionProxyConfigServiceClient* config_service_client,
-    DataReductionProxyBypassStats* stats,
-    DataReductionProxyEventCreator* event_creator)
+    DataReductionProxyBypassStats* stats)
     : bypass_stats_(stats),
       config_service_client_(config_service_client),
-      event_creator_(event_creator),
-      bypass_protocol_(new DataReductionProxyBypassProtocol(config)) {
-  DCHECK(event_creator_);
-}
+      bypass_protocol_(new DataReductionProxyBypassProtocol(config)) {}
 
 DataReductionProxyInterceptor::~DataReductionProxyInterceptor() {
 }
@@ -72,9 +88,7 @@ DataReductionProxyInterceptor::MaybeInterceptResponseOrRedirect(
   if (request->response_info().was_cached)
     return nullptr;
 
-  const GURL& warmup_url = params::GetWarmupURL();
-  if (request->url().host() == warmup_url.host() &&
-      request->url().path() == warmup_url.path()) {
+  if (params::IsWarmupURL(request->url())) {
     // No need to retry fetch of warmup URLs since it is useful to fetch the
     // warmup URL only via a data saver proxy.
     return nullptr;
@@ -103,13 +117,29 @@ DataReductionProxyInterceptor::MaybeInterceptResponseOrRedirect(
   if (!should_retry) {
     DataReductionProxyInfo data_reduction_proxy_info;
     DataReductionProxyBypassType bypass_type = BYPASS_EVENT_TYPE_MAX;
+
+    std::vector<net::ProxyServer> bad_proxies;
+    bool should_bypass_proxy_and_cache;
+
     should_retry = bypass_protocol_->MaybeBypassProxyAndPrepareToRetry(
-        request, &bypass_type, &data_reduction_proxy_info);
+        request->method(), request->url_chain(), request->response_headers(),
+        request->proxy_server(), request->status().ToNetError(),
+        request->context()->proxy_resolution_service()->proxy_retry_info(),
+        &bypass_type, &data_reduction_proxy_info, &bad_proxies,
+        &should_bypass_proxy_and_cache);
+
+    if (!bad_proxies.empty()) {
+      MarkProxiesAsBad(request, bad_proxies,
+                       data_reduction_proxy_info.bypass_duration);
+    }
+
+    if (should_bypass_proxy_and_cache) {
+      request->SetLoadFlags(request->load_flags() | net::LOAD_BYPASS_CACHE |
+                            net::LOAD_BYPASS_PROXY);
+    }
+
     if (bypass_stats_ && bypass_type != BYPASS_EVENT_TYPE_MAX)
       bypass_stats_->SetBypassType(bypass_type);
-
-    MaybeAddBypassEvent(request, data_reduction_proxy_info, bypass_type,
-                        should_retry);
   }
 
   DataReductionProxyData* data = DataReductionProxyData::GetData(*request);
@@ -125,27 +155,8 @@ DataReductionProxyInterceptor::MaybeInterceptResponseOrRedirect(
   // Returning non-NULL has the effect of restarting the request with the
   // supplied job.
   DCHECK(request->url().SchemeIs(url::kHttpScheme));
-  return net::URLRequestJobManager::GetInstance()->CreateJob(
-      request, network_delegate);
-}
-
-void DataReductionProxyInterceptor::MaybeAddBypassEvent(
-    net::URLRequest* request,
-    const DataReductionProxyInfo& data_reduction_proxy_info,
-    DataReductionProxyBypassType bypass_type,
-    bool should_retry) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  if (data_reduction_proxy_info.bypass_action != BYPASS_ACTION_TYPE_NONE) {
-    event_creator_->AddBypassActionEvent(
-        request->net_log(), data_reduction_proxy_info.bypass_action,
-        request->method(), request->url(), should_retry,
-        data_reduction_proxy_info.bypass_duration);
-  } else if (bypass_type != BYPASS_EVENT_TYPE_MAX) {
-    event_creator_->AddBypassTypeEvent(
-        request->net_log(), bypass_type, request->method(), request->url(),
-        should_retry, data_reduction_proxy_info.bypass_duration);
-  }
+  return net::URLRequestJobManager::GetInstance()->CreateJob(request,
+                                                             network_delegate);
 }
 
 }  // namespace data_reduction_proxy

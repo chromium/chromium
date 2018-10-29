@@ -225,7 +225,7 @@ void PaintCanvasVideoRendererTest::PaintWithoutFrame(cc::PaintCanvas* canvas) {
   cc::PaintFlags flags;
   flags.setFilterQuality(kLow_SkFilterQuality);
   renderer_.Paint(nullptr, canvas, kNaturalRect, flags, VIDEO_ROTATION_0,
-                  Context3D());
+                  Context3D(), nullptr);
 }
 
 void PaintCanvasVideoRendererTest::Paint(
@@ -260,13 +260,13 @@ void PaintCanvasVideoRendererTest::PaintRotated(
   flags.setBlendMode(mode);
   flags.setFilterQuality(kLow_SkFilterQuality);
   renderer_.Paint(video_frame, canvas, dest_rect, flags, video_rotation,
-                  Context3D());
+                  Context3D(), nullptr);
 }
 
 void PaintCanvasVideoRendererTest::Copy(
     const scoped_refptr<VideoFrame>& video_frame,
     cc::PaintCanvas* canvas) {
-  renderer_.Copy(video_frame, canvas, Context3D());
+  renderer_.Copy(video_frame, canvas, Context3D(), nullptr);
 }
 
 TEST_F(PaintCanvasVideoRendererTest, NoFrame) {
@@ -564,7 +564,7 @@ TEST_F(PaintCanvasVideoRendererTest, Y16) {
   flags.setFilterQuality(kNone_SkFilterQuality);
   renderer_.Paint(video_frame, &canvas,
                   gfx::RectF(bitmap.width(), bitmap.height()), flags,
-                  VIDEO_ROTATION_0, Context3D());
+                  VIDEO_ROTATION_0, Context3D(), nullptr);
   for (int j = 0; j < bitmap.height(); j++) {
     for (int i = 0; i < bitmap.width(); i++) {
       const int value = i + j * bitmap.width();
@@ -657,43 +657,32 @@ TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
   cc::PaintFlags flags;
   flags.setFilterQuality(kLow_SkFilterQuality);
   renderer_.Paint(video_frame, &canvas, kNaturalRect, flags, VIDEO_ROTATION_90,
-                  context_3d);
+                  context_3d, nullptr);
 }
 
 void EmptyCallback(const gpu::SyncToken& sync_token) {}
 
 TEST_F(PaintCanvasVideoRendererTest, CorrectFrameSizeToVisibleRect) {
-  int fWidth{16}, fHeight{16};
+  constexpr int fWidth{16}, fHeight{16};
   SkImageInfo imInfo =
       SkImageInfo::MakeN32(fWidth, fHeight, kOpaque_SkAlphaType);
 
-  sk_sp<const GrGLInterface> glInterface(GrGLCreateNullInterface());
-  sk_sp<GrContext> grContext = GrContext::MakeGL(std::move(glInterface));
+  cc::SkiaPaintCanvas canvas(AllocBitmap(kWidth, kHeight));
 
-  sk_sp<SkSurface> surface =
-      SkSurface::MakeRenderTarget(grContext.get(), SkBudgeted::kYes, imInfo);
-  cc::SkiaPaintCanvas canvas(surface->getCanvas());
-
-  TestGLES2Interface gles2;
-  Context3D context_3d(&gles2, grContext.get());
   gfx::Size coded_size(fWidth, fHeight);
   gfx::Size visible_size(fWidth / 2, fHeight / 2);
 
-  gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
-  for (size_t i = 0; i < VideoFrame::kMaxPlanes; i++) {
-    mailbox_holders[i] = gpu::MailboxHolder(
-        gpu::Mailbox::Generate(), gpu::SyncToken(), GL_TEXTURE_RECTANGLE_ARB);
-  }
+  uint8_t memory[fWidth * fHeight * 2] = {0};
 
-  auto video_frame = VideoFrame::WrapNativeTextures(
-      PIXEL_FORMAT_I420, mailbox_holders, base::Bind(EmptyCallback), coded_size,
-      gfx::Rect(visible_size), visible_size,
+  auto video_frame = media::VideoFrame::WrapExternalData(
+      media::PIXEL_FORMAT_Y16, coded_size, gfx::Rect(visible_size),
+      visible_size, &memory[0], fWidth * fHeight * 2,
       base::TimeDelta::FromMilliseconds(4));
 
   gfx::RectF visible_rect(visible_size.width(), visible_size.height());
   cc::PaintFlags flags;
   renderer_.Paint(video_frame, &canvas, visible_rect, flags, VIDEO_ROTATION_0,
-                  context_3d);
+                  Context3D(), nullptr);
 
   EXPECT_EQ(fWidth / 2, renderer_.LastImageDimensionsForTesting().width());
   EXPECT_EQ(fWidth / 2, renderer_.LastImageDimensionsForTesting().height());

@@ -1352,20 +1352,6 @@
       ]
     },
     {
-      "id": 143,
-      "description": "Timer queries crash on Intel GPUs on Linux",
-      "cr_bugs": [540543, 576991],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x8086",
-      "driver_vendor": "Mesa",
-      "disabled_extensions": [
-        "GL_ARB_timer_query",
-        "GL_EXT_timer_query"
-      ]
-    },
-    {
       "id": 144,
       "cr_bugs": [563714],
       "description": "Pack parameters work incorrectly with pack buffer bound",
@@ -1397,21 +1383,6 @@
       },
       "features": [
         "max_texture_size_limit_4096"
-      ]
-    },
-    {
-      "id": 149,
-      "description": "Direct composition flashes black initially on Win <10",
-      "cr_bugs": [588588],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "10.0"
-        }
-      },
-      "features": [
-        "disable_direct_composition"
       ]
     },
     {
@@ -2602,35 +2573,6 @@
       ]
     },
     {
-      "id": 248,
-      "description": "Direct composition causes slow presents on Intel Sandybridge",
-      "cr_bugs": [775898, 785648],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "device_id": ["0x0116"],
-      "features": [
-        "disable_direct_composition"
-      ]
-    },
-    {
-      "id": 249,
-      "description": "Direct composition isn't needed except for Intel GPUs",
-      "cr_bugs": [775898, 800950],
-      "os": {
-        "type": "win"
-      },
-      "exceptions": [
-        {
-          "vendor_id": "0x8086"
-        }
-      ],
-      "features": [
-        "disable_direct_composition"
-      ]
-    },
-    {
       "id": 250,
       "description": "Depth/stencil renderbuffers can't be resized on NVIDIA on early macOS 10.13",
       "cr_bugs": [775202],
@@ -2841,6 +2783,7 @@
       ],
       "disabled_extensions": [
         "GL_ARB_timer_query",
+        "GL_EXT_timer_query",
         "GL_EXT_disjoint_timer_query",
         "GL_EXT_disjoint_timer_query_webgl2"
       ]
@@ -2930,12 +2873,11 @@
     },
     {
       "id":273,
-      "cr_bugs": [866613],
+      "cr_bugs": [866613, 860021],
       "description": "Frequent crashes on Adreno (TM) on L and below",
       "os": {
         "type": "android"
       },
-      "gl_renderer": "Adreno.*",
       "features": [
         "use_es2_for_oopr"
       ]
@@ -2979,6 +2921,35 @@
       "gl_renderer": "Adreno \\(TM\\) 3.*",
       "features": [
         "use_high_priority_for_webgl"
+      ]
+    },
+    {
+      "id": 279,
+      "description": "WindowServer crashes on VMWare bots using CA renderer",
+      "cr_bugs": [828031],
+      "os": {
+        "type": "macosx"
+      },
+      "vendor_id": "0x15ad",
+      "multi_gpu_category": "any",
+      "features": [
+        "disable_overlay_ca_layers"
+      ]
+    },
+    {
+      "id": 280,
+      "description": "ReadPixels is broken with EXT_multisampled_render_to_texture on recent Adreno drivers.",
+      "cr_bugs": [890002],
+      "os": {
+        "type": "android"
+      },
+      "driver_version": {
+        "op": ">",
+        "value": "237.0"
+      },
+      "gl_renderer": "Adreno \\(TM\\) .*",
+      "features": [
+        "use_copyteximage2d_instead_of_readpixels_on_multisampled_textures"
       ]
     }
   ]

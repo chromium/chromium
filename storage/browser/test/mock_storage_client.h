@@ -76,9 +76,6 @@ class MockStorageClient : public QuotaClient {
   bool DoesSupport(StorageType type) const override;
 
  private:
-  using OriginDataMap = std::map<std::pair<url::Origin, StorageType>, int64_t>;
-  using ErrorOriginSet = std::set<std::pair<url::Origin, StorageType>>;
-
   void RunGetOriginUsage(const url::Origin& origin,
                          StorageType type,
                          GetUsageCallback callback);
@@ -95,8 +92,8 @@ class MockStorageClient : public QuotaClient {
   scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
   const ID id_;
 
-  OriginDataMap origin_data_;
-  ErrorOriginSet error_origins_;
+  std::map<std::pair<url::Origin, StorageType>, int64_t> origin_data_;
+  std::set<std::pair<url::Origin, StorageType>> error_origins_;
 
   int mock_time_counter_;
 

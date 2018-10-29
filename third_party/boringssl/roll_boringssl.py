@@ -56,6 +56,38 @@ def UpdateDEPS(deps, from_hash, to_hash):
     f.write(contents)
 
 
+def Log(repo, revspec):
+  """Returns the commits in |repo| covered by |revspec|."""
+  data = subprocess.check_output(['git', 'log', '--pretty=raw', revspec],
+                                 cwd=repo)
+  commits = []
+  chunks = data.split('\n\n')
+  if len(chunks) % 2 != 0:
+    raise ValueError('Invalid log format')
+  for i in range(0, len(chunks), 2):
+    commit = {}
+    # Parse commit properties.
+    for line in chunks[i].split('\n'):
+      name, value = line.split(' ', 1)
+      commit[name] = value
+    if 'commit' not in commit:
+      raise ValueError('Missing commit line')
+    # Parse commit message.
+    message = ""
+    lines = chunks[i+1].split('\n')
+    # Removing the trailing empty entry.
+    if lines and not lines[-1]:
+      lines.pop()
+    for line in lines:
+      INDENT = '    '
+      if not line.startswith(INDENT):
+        raise ValueError('Missing indent')
+      message += line[len(INDENT):] + '\n'
+    commit['message'] = message
+    commits.append(commit)
+  return commits
+
+
 def main():
   if len(sys.argv) > 2:
     sys.stderr.write('Usage: %s [COMMIT]' % sys.argv[0])
@@ -69,22 +101,39 @@ def main():
     return 0
 
   if len(sys.argv) > 1:
-    commit = RevParse(BORINGSSL_SRC_PATH, sys.argv[1])
+    new_head = RevParse(BORINGSSL_SRC_PATH, sys.argv[1])
   else:
     subprocess.check_call(['git', 'fetch', 'origin'], cwd=BORINGSSL_SRC_PATH)
-    commit = RevParse(BORINGSSL_SRC_PATH, 'origin/master')
+    new_head = RevParse(BORINGSSL_SRC_PATH, 'origin/master')
 
-  head = RevParse(BORINGSSL_SRC_PATH, 'HEAD')
-  if head == commit:
+  old_head = RevParse(BORINGSSL_SRC_PATH, 'HEAD')
+  if old_head == new_head:
     print 'BoringSSL already up to date.'
     return 0
 
-  print 'Rolling BoringSSL from %s to %s...' % (head, commit)
+  print 'Rolling BoringSSL from %s to %s...' % (old_head, new_head)
 
-  UpdateDEPS(DEPS_PATH, head, commit)
+  # Look for commits with associated Chromium bugs.
+  crbugs = set()
+  crbug_commits = []
+  log = Log(BORINGSSL_SRC_PATH, '%s..%s' % (old_head, new_head))
+  for commit in log:
+    has_bugs = False
+    for line in commit['message'].split('\n'):
+      lower = line.lower()
+      if lower.startswith('bug:') or lower.startswith('bug='):
+        for bug in lower[4:].split(','):
+          bug = bug.strip()
+          if bug.startswith('chromium:'):
+            crbugs.add(int(bug[len('chromium:'):]))
+            has_bugs = True
+    if has_bugs:
+      crbug_commits.append(commit)
+
+  UpdateDEPS(DEPS_PATH, old_head, new_head)
 
   # Checkout third_party/boringssl/src to generate new files.
-  subprocess.check_call(['git', 'checkout', commit], cwd=BORINGSSL_SRC_PATH)
+  subprocess.check_call(['git', 'checkout', new_head], cwd=BORINGSSL_SRC_PATH)
 
   # Clear the old generated files.
   for (osname, arch, _, _, _) in generate_build_files.OS_ARCH_COMBOS:
@@ -114,12 +163,23 @@ def main():
 
 https://boringssl.googlesource.com/boringssl/+log/%s..%s
 
-BUG=none
-""" % (head[:9], commit[:9], head, commit)
+""" % (old_head[:9], new_head[:9], old_head, new_head)
+  if crbug_commits:
+    message += 'The following commits have Chromium bugs associated:\n'
+    for commit in crbug_commits:
+      rev = commit['commit'][:9]
+      line, _ = commit['message'].split('\n', 1)
+      message += '  %s %s\n' % (rev, line)
+    message += '\n'
+  if crbugs:
+    message += 'Bug: %s\n' % (', '.join(str(bug) for bug in sorted(crbugs)),)
+  else:
+    message += 'Bug: none\n'
+
   subprocess.check_call(['git', 'commit', '-m', message], cwd=SRC_PATH)
 
   # Print update notes.
-  notes = subprocess.check_output(['git', 'log', '--grep', '^Update-Note:', '-i', '%s..%s' % (head, commit)], cwd=BORINGSSL_SRC_PATH).strip()
+  notes = subprocess.check_output(['git', 'log', '--grep', '^Update-Note:', '-i', '%s..%s' % (old_head, new_head)], cwd=BORINGSSL_SRC_PATH).strip()
   if len(notes) > 0:
     print "\x1b[1mThe following changes contain updating notes\x1b[0m:\n\n"
     print notes

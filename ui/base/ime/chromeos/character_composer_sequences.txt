@@ -3525,7 +3525,6 @@ Dead<combining circumflex accent> Dead<combining dot below> <a> <latin small let
 Dead<combining circumflex accent> Dead<combining dot below> <e> <latin small letter e with circumflex and dot below>
 Dead<combining circumflex accent> Dead<combining dot below> <o> <latin small letter o with circumflex and dot below>
 Dead<combining circumflex accent> <space> <^>
-Dead<combining circumflex accent> <space> <superscript two>
 Dead<combining circumflex accent> <(> <superscript left parenthesis>
 Dead<combining circumflex accent> <)> <superscript right parenthesis>
 Dead<combining circumflex accent> <+> <superscript plus sign>

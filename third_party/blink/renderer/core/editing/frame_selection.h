@@ -207,7 +207,6 @@ class CORE_EXPORT FrameSelection final
   void DocumentAttached(Document*);
 
   void DidLayout();
-  bool NeedsLayoutSelectionUpdate() const;
   void CommitAppearanceIfNeeded();
   void SetCaretVisible(bool caret_is_visible);
   void ScheduleVisualUpdate() const;

@@ -99,9 +99,8 @@ static testing::AssertionResult CheckFormat(
   // Note: We use multiset because SocketsManifestPermission does not have to
   // store entries in the order found in the json message.
   std::multiset<CheckFormatEntry> parsed_permissions;
-  for (SocketPermissionEntrySet::const_iterator it =
-           permission->entries().begin();
-       it != permission->entries().end(); ++it) {
+  for (auto it = permission->entries().cbegin();
+       it != permission->entries().cend(); ++it) {
     parsed_permissions.insert(
         CheckFormatEntry(it->pattern().type, it->GetHostPatternAsString()));
   }

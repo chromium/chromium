@@ -49,25 +49,16 @@ class WebString;
 // WebCore/page/Settings.h.
 class WebSettings {
  public:
-  enum ImageAnimationPolicy {
-    kImageAnimationPolicyAllowed,
-    kImageAnimationPolicyAnimateOnce,
-    kImageAnimationPolicyNoAnimation
-  };
+  enum class ImageAnimationPolicy { kAllowed, kAnimateOnce, kNoAnimation };
 
-  enum EditingBehavior {
-    kEditingBehaviorMac,
-    kEditingBehaviorWin,
-    kEditingBehaviorUnix,
-    kEditingBehaviorAndroid
-  };
+  enum class EditingBehavior { kMac, kWin, kUnix, kAndroid };
 
-  enum V8CacheOptions {
-    kV8CacheOptionsDefault,
-    kV8CacheOptionsNone,
-    kV8CacheOptionsCode,
-    kV8CacheOptionsCodeWithoutHeatCheck,
-    kV8CacheOptionsFullCodeWithoutHeatCheck
+  enum class V8CacheOptions {
+    kDefault,
+    kNone,
+    kCode,
+    kCodeWithoutHeatCheck,
+    kFullCodeWithoutHeatCheck
   };
 
   enum class SavePreviousDocumentResources {
@@ -126,7 +117,6 @@ class WebSettings {
   virtual bool ShrinksViewportContentToFit() const = 0;
   virtual bool ViewportEnabled() const = 0;
   virtual void SetAccelerated2dCanvasMSAASampleCount(int) = 0;
-  virtual void SetAcceleratedCompositingEnabled(bool) = 0;
   virtual void SetPreferCompositingToLCDTextEnabled(bool) = 0;
   // Not implemented yet, see http://crbug.com/178119
   virtual void SetAcceleratedCompositingForTransitionEnabled(bool) {}

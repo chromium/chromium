@@ -29,6 +29,24 @@ class UniqueNotifierTest : public testing::Test {
   int notification_count_;
 };
 
+// Need to guarantee that Schedule and Notify happen in the same thread.
+// Multiple schedules may result in multiple runs when notify task is posted to
+// a different thread. So we use thread checker to avoid this.
+// Example which may result in multiple runs:
+//   base::Thread notifier_thread("NotifierThread");
+//   notifier_thread.Start();
+//   UniqueNotifier notifier(
+//       notifier_thread.task_runner().get(),
+//       base::BindRepeating(&UniqueNotifierTest::Notify,
+//       base::Unretained(this)));
+//   EXPECT_EQ(0, NotificationCount());
+//   for (int i = 0; i < 50000; ++i)
+//     notifier.Schedule();
+//   base::RunLoop().RunUntilIdle();
+
+//   notifier_thread.Stop();
+//   EXPECT_LE(1, NotificationCount());
+// 50000 can be any number bigger than 1. The bigger the easier to more runs.
 TEST_F(UniqueNotifierTest, Schedule) {
   {
     UniqueNotifier notifier(
@@ -43,7 +61,8 @@ TEST_F(UniqueNotifierTest, Schedule) {
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(1, NotificationCount());
 
-    // Multiple schedules should only result in one run.
+    // UniqueNotifier can only runs in the main thread, and multiple schedules
+    // should result in one run.
     for (int i = 0; i < 5; ++i)
       notifier.Schedule();
 

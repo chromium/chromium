@@ -487,17 +487,16 @@ class VolumeEntry {
  * FakeEntry is used for entries that used only for UI, that weren't generated
  * by FileSystem API, like Drive, Downloads or Provided.
  *
- * @implements FilesAppEntry
+ * @implements FilesAppDirEntry
  */
 class FakeEntry {
   /**
    * @param {string} label Translated text to be displayed to user.
    * @param {!VolumeManagerCommon.RootType} rootType Root type of this entry.
-   * @param {boolean} isDirectory Is this entry a directory-like entry?
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
    *    used on Recents to filter the source of recent files/directories.
    */
-  constructor(label, rootType, isDirectory, opt_sourceRestriction) {
+  constructor(label, rootType, opt_sourceRestriction) {
     /**
      * @public {string} label: Label to be used when displaying to user, it
      *      should be already translated. */
@@ -509,13 +508,11 @@ class FakeEntry {
     /** @public {!VolumeManagerCommon.RootType} */
     this.rootType = rootType;
 
-    /**
-     * @public {boolean} true if this entry represents a Directory-like entry.
-     */
-    this.isDirectory = isDirectory;
+    /** @public {boolean} true FakeEntry are always directory-like. */
+    this.isDirectory = true;
 
-    /** @public {boolean} true if this entry represents a File-like entry. */
-    this.isFile = !this.isDirectory;
+    /** @public {boolean} false FakeEntry are always directory-like. */
+    this.isFile = false;
 
     /**
      * @public {chrome.fileManagerPrivate.SourceRestriction|undefined} It's used
@@ -563,5 +560,14 @@ class FakeEntry {
   /** @override */
   get isNativeType() {
     return false;
+  }
+
+  /**
+   * @return {!StaticReader} Returns a reader compatible with
+   * DirectoryEntry.createReader (from Web Standards) that reads 0 entries.
+   * @override
+   */
+  createReader() {
+    return new StaticReader([]);
   }
 }

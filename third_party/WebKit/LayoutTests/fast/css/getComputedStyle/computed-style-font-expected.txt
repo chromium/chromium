@@ -2,7 +2,6 @@ This test exercises the 'font' shorthand property in CSS computed styles.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS computedFont('10px sans-serif') is 'normal normal 400 normal 10px / normal sans-serif'
 PASS computedFont('10px sans-serif') is 'normal normal 400 normal 10px / normal sans-serif'
 PASS computedFont('10px SANS-SERIF') is 'normal normal 400 normal 10px / normal sans-serif'

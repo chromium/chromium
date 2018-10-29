@@ -1,0 +1,33 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/linux/pkg_config.gni")
+
+assert(is_linux)
+
+declare_args() {
+  # Controls whether the build should use the version of libdrm
+  # library shipped with the system. In release builds of Chrome OS we
+  # use the system version, but when building on dev workstations we
+  # bundle it because Ubuntu doesn't ship a usable version.
+  # Chromecast will use this as well.
+  use_system_libdrm = false
+}
+
+if (use_system_libdrm) {
+  pkg_config("libdrm_config") {
+    packages = [ "libdrm" ]
+  }
+  group("libdrm") {
+    public_configs = [ ":libdrm_config" ]
+  }
+} else {
+  group("libdrm") {
+    public_deps = [
+      "//third_party/libdrm",
+    ]
+  }
+  config("libdrm_exynos_include_config") {
+    include_dirs = [ "//third_party/libdrm/src/exynos" ]
+  }
+}

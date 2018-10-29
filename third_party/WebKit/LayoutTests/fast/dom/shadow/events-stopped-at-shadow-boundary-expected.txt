@@ -3,7 +3,6 @@ Tests to ensure that all kinds of events are not stopeed at shadow boundary if c
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 None of the events should be stopped at a Shadow boundary if created by users.
 
   abort
@@ -71,4 +70,5 @@ An event fired on a distributed child should not be stopped at the shadow bounda
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

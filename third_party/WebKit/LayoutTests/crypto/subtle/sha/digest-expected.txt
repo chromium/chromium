@@ -2,7 +2,6 @@ Tests the digest() operation for SHA-*
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS: SHA-1 of [] should be [da39a3ee5e6b4b0d3255bfef95601890afd80709] and was
 PASS: SHA-256 of [] should be [e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855] and was
 PASS: SHA-384 of [] should be [38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da274edebfe76f65fbd51ad2f14898b95b] and was

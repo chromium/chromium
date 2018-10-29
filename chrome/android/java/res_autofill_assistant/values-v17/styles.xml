@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Q: Why put style resources under values-v17/ ?
+         A: Problem:
+            1. paddingStart causes a crash on Galaxy Tab&Note b/8351339.
+            2. So we wrote a build script(generate_v14_compatible_resources.py) to convert
+               paddingStart to paddingLeft for pre-v17 (crbug.com/235118).
+            3. However, style files are not overridden by the corresponding generated style files,
+               but merged when we pass them to aapt unlike layout files.
+
+            So we decided to keep style resources under values-v17/ so that it is not merged with
+            the generated style resources under res_v14_compatibility/values/ (crbug.com/243952).
+    -->
+
+    <style
+        name="TextAppearance.AutofillAssistantDetailsTime"
+        parent="@style/BlackBodyDefault">
+        <item name="android:textColor">@color/google_green_700</item>
+    </style>
+</resources>

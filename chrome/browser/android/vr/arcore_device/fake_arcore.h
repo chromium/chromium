@@ -17,16 +17,17 @@ class GLImageAHardwareBuffer;
 
 namespace device {
 
-// Minimal fake ARCore implementation for testing. It can populate
+// Minimal fake ArCore implementation for testing. It can populate
 // the camera texture with a GL_TEXTURE_OES image and do UV transform
 // calculations.
-class FakeARCore : public ARCore {
+class FakeArCore : public ArCore {
  public:
-  FakeARCore();
-  ~FakeARCore() override;
+  FakeArCore();
+  ~FakeArCore() override;
 
-  // ARCoreDriverBase implementation.
-  bool Initialize() override;
+  // ArCore implementation.
+  bool Initialize(
+      base::android::ScopedJavaLocalRef<jobject> application_context) override;
   void SetCameraTexture(GLuint texture) override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
                           display::Display::Rotation display_rotation) override;
@@ -55,7 +56,12 @@ class FakeARCore : public ARCore {
   // Storage for the testing placeholder image to keep it alive.
   scoped_refptr<gl::GLImageAHardwareBuffer> placeholder_camera_image_;
 
-  DISALLOW_COPY_AND_ASSIGN(FakeARCore);
+  DISALLOW_COPY_AND_ASSIGN(FakeArCore);
+};
+
+class FakeArCoreFactory : public ArCoreFactory {
+ public:
+  std::unique_ptr<ArCore> Create() override;
 };
 
 }  // namespace device

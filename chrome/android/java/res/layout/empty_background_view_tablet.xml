@@ -18,18 +18,15 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|start"
         android:paddingTop="@dimen/menu_negative_software_vertical_offset">
-        <view class="org.chromium.chrome.browser.widget.newtab.NewTabButton"
+        <org.chromium.chrome.browser.toolbar.NewTabButton
             android:id="@+id/empty_new_tab_button"
             style="@style/ToolbarButton"
             android:layout_width="wrap_content"
             android:layout_gravity="start|top"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:src="@drawable/btn_new_tab_white"
             android:gravity="center_vertical"
-            android:background="?attr/selectableItemBackground"
-            android:contentDescription="@string/accessibility_tabstrip_btn_empty_new_tab"
-            />
+            android:contentDescription="@string/accessibility_tabstrip_btn_empty_new_tab" />
         <View
             android:layout_weight="1.0"
             android:layout_height="wrap_content"
@@ -43,7 +40,7 @@
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/accessibility_tabstrip_btn_incognito_toggle_standard"
             />
-        <org.chromium.chrome.browser.widget.TintedImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/empty_menu_button"
             style="@style/ToolbarButton"
             android:layout_width="48dp"
@@ -52,7 +49,7 @@
             android:scaleType="center"
             android:contentDescription="@string/accessibility_toolbar_btn_menu"
             android:paddingStart="2dp"
-            app:chrometint="@color/light_mode_tint"
+            app:tint="@color/light_mode_tint"
             />
     </LinearLayout>
 </org.chromium.chrome.browser.widget.emptybackground.EmptyBackgroundViewTablet>

@@ -14,5 +14,21 @@
   "easyUnlockPrivate": {
     "dependencies": ["permission:easyUnlockPrivate"],
     "contexts": ["blessed_extension"]
+  },
+  "mediaGalleries": {
+    "dependencies": ["permission:mediaGalleries"],
+    "contexts": ["blessed_extension"]
+  },
+  "musicManagerPrivate": {
+    "dependencies": ["permission:musicManagerPrivate"],
+    "contexts": ["blessed_extension"]
+  },
+  "syncFileSystem": {
+    "dependencies": ["permission:syncFileSystem"],
+    "contexts": ["blessed_extension"]
+  },
+  "webstoreWidgetPrivate": {
+    "dependencies": ["permission:webstoreWidgetPrivate"],
+    "contexts": ["blessed_extension"]
   }
 }

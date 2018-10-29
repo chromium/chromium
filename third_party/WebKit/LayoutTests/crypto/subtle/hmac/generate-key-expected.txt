@@ -3,7 +3,6 @@ Test generating a HMAC key.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Generating a key with default length...
 error is: TypeError: HmacKeyGenParams: hash: Missing or not an AlgorithmIdentifier
 error is: TypeError: HmacKeyGenParams: hash: Missing or not an AlgorithmIdentifier

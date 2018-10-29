@@ -1,0 +1,11 @@
+Tests profile without hitCounts is parsed correctly.
+
+Profile tree:
+  (root) id:1 total:5 self:0 depth:-1
+    (garbage collector) id:2 total:1 self:1 depth:0
+    foo id:3 total:4 self:1 depth:0
+      bar id:4 total:3 self:3 depth:1
+
+samples: 4, 4, 3, 4, 2
+timestamps: 1.5, 1.75, 2.75, 3, 4, 4.625
+

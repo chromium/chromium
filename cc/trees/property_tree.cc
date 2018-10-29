@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
@@ -784,7 +784,7 @@ void EffectTree::UpdateIsDrawn(EffectNode* node, EffectNode* parent_node) {
   // Exceptions:
   // 1) Nodes that contribute to copy requests, whether hidden or not, must be
   //    drawn.
-  // 2) Nodes that have a background filter.
+  // 2) Nodes that have a backdrop filter.
   // 3) Nodes with animating screen space opacity on main thread or pending tree
   //    are drawn if their parent is drawn irrespective of their opacity.
   if (node->has_copy_request || node->cache_render_surface)
@@ -792,7 +792,7 @@ void EffectTree::UpdateIsDrawn(EffectNode* node, EffectNode* parent_node) {
   else if (EffectiveOpacity(node) == 0.f &&
            (!node->has_potential_opacity_animation ||
             property_trees()->is_active) &&
-           node->background_filters.IsEmpty())
+           node->backdrop_filters.IsEmpty())
     node->is_drawn = false;
   else if (parent_node)
     node->is_drawn = parent_node->is_drawn;
@@ -1436,7 +1436,7 @@ gfx::Vector2dF ScrollTree::ClampScrollToMaxScrollOffset(
 
 const gfx::ScrollOffset ScrollTree::current_scroll_offset(ElementId id) const {
   if (property_trees()->is_main_thread) {
-    ScrollOffsetMap::const_iterator it = scroll_offset_map_.find(id);
+    auto it = scroll_offset_map_.find(id);
     return it != scroll_offset_map_.end() ? it->second : gfx::ScrollOffset();
   }
   return GetSyncedScrollOffset(id)
@@ -1472,10 +1472,17 @@ const gfx::ScrollOffset ScrollTree::GetPixelSnappedScrollOffset(
 }
 
 gfx::ScrollOffset ScrollTree::PullDeltaForMainThread(
-    SyncedScrollOffset* scroll_offset) {
+    SyncedScrollOffset* scroll_offset,
+    bool use_fractional_deltas) {
   DCHECK(property_trees()->is_active);
+
+  // Once this setting is enabled, all the complicated rounding logic below can
+  // go away.
+  if (use_fractional_deltas)
+    return scroll_offset->PullDeltaForMainThread();
+
   // TODO(flackr): We should pass the fractional scroll deltas when Blink fully
-  // supports fractional scrolls.
+  // supports fractional scrolls. crbug.com/414283.
   // TODO(flackr): We should ideally round the fractional scrolls in the same
   // direction as the scroll will be snapped but for common cases this is
   // equivalent to rounding to the nearest integer offset.
@@ -1495,26 +1502,25 @@ gfx::ScrollOffset ScrollTree::PullDeltaForMainThread(
   return delta;
 }
 
-void ScrollTree::CollectScrollDeltas(
-    ScrollAndScaleSet* scroll_info,
-    ElementId inner_viewport_scroll_element_id) {
+void ScrollTree::CollectScrollDeltas(ScrollAndScaleSet* scroll_info,
+                                     ElementId inner_viewport_scroll_element_id,
+                                     bool use_fractional_deltas) {
   DCHECK(!property_trees()->is_main_thread);
   for (auto map_entry : synced_scroll_offset_map_) {
     gfx::ScrollOffset scroll_delta =
-        PullDeltaForMainThread(map_entry.second.get());
+        PullDeltaForMainThread(map_entry.second.get(), use_fractional_deltas);
 
-    gfx::Vector2d scroll_delta_vector(scroll_delta.x(), scroll_delta.y());
     ElementId id = map_entry.first;
 
     if (!scroll_delta.IsZero()) {
       if (id == inner_viewport_scroll_element_id) {
         // Inner (visual) viewport is stored separately.
         scroll_info->inner_viewport_scroll.element_id = id;
-        scroll_info->inner_viewport_scroll.scroll_delta = scroll_delta_vector;
+        scroll_info->inner_viewport_scroll.scroll_delta = scroll_delta;
       } else {
         LayerTreeHostCommon::ScrollUpdateInfo scroll;
         scroll.element_id = id;
-        scroll.scroll_delta = scroll_delta_vector;
+        scroll.scroll_delta = scroll_delta;
         scroll_info->scrolls.push_back(scroll);
       }
     }
@@ -1522,8 +1528,11 @@ void ScrollTree::CollectScrollDeltas(
 }
 
 void ScrollTree::CollectScrollDeltasForTesting() {
+  LayerTreeSettings settings;
+  bool use_fractional_deltas = settings.commit_fractional_scroll_deltas;
+
   for (auto map_entry : synced_scroll_offset_map_) {
-    PullDeltaForMainThread(map_entry.second.get());
+    PullDeltaForMainThread(map_entry.second.get(), use_fractional_deltas);
   }
 }
 

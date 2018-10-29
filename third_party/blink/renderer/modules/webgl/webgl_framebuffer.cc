@@ -416,7 +416,7 @@ bool WebGLFramebuffer::IsBound(GLenum target) const {
 void WebGLFramebuffer::DrawBuffers(const Vector<GLenum>& bufs) {
   draw_buffers_ = bufs;
   filtered_draw_buffers_.resize(draw_buffers_.size());
-  for (size_t i = 0; i < filtered_draw_buffers_.size(); ++i)
+  for (wtf_size_t i = 0; i < filtered_draw_buffers_.size(); ++i)
     filtered_draw_buffers_[i] = GL_NONE;
   DrawBuffersIfNecessary(true);
 }
@@ -426,7 +426,7 @@ void WebGLFramebuffer::DrawBuffersIfNecessary(bool force) {
       Context()->ExtensionEnabled(kWebGLDrawBuffersName)) {
     bool reset = force;
     // This filtering works around graphics driver bugs on Mac OS X.
-    for (size_t i = 0; i < draw_buffers_.size(); ++i) {
+    for (wtf_size_t i = 0; i < draw_buffers_.size(); ++i) {
       if (draw_buffers_[i] != GL_NONE && GetAttachment(draw_buffers_[i])) {
         if (filtered_draw_buffers_[i] != draw_buffers_[i]) {
           filtered_draw_buffers_[i] = draw_buffers_[i];

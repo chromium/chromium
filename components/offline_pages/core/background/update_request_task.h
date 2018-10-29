@@ -32,14 +32,13 @@ class UpdateRequestTask : public Task {
   // Step 1. Reading the requests.
   void ReadRequest();
   // Step 2. Work is done in the implementation step.
-  virtual void UpdateRequestImpl(
-      std::unique_ptr<UpdateRequestsResult> result) = 0;
+  virtual void UpdateRequestImpl(UpdateRequestsResult result) = 0;
   // Step 3. Completes once update is done.
-  void CompleteWithResult(std::unique_ptr<UpdateRequestsResult> result);
+  void CompleteWithResult(UpdateRequestsResult result);
 
   // Function to uniformly validate read request call for store errors and
   // presence of the request.
-  bool ValidateReadResult(UpdateRequestsResult* result);
+  bool ValidateReadResult(const UpdateRequestsResult& result);
 
   RequestQueueStore* store() const { return store_; }
 

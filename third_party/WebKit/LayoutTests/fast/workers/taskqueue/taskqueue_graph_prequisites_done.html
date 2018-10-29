@@ -1,0 +1,16 @@
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+promise_test(async () => {
+  const queue = new WorkerTaskQueue("background");
+  const task = queue.postTask(i => i, 2);
+  const task2 = queue.postTask(i => i, 4);
+  await task.result;
+  await task2.result;
+  const task3 = queue.postTask((i,j) => i+j, task, task2);
+  const result = await task3.result;
+  assert_equals(result, 6);
+});
+</script>
+</body>

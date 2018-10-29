@@ -39,4 +39,12 @@ void CreditCardSaveManagerTestObserverBridge::OnSentUploadCardRequest() {
   [observer_ sentUploadCardRequest];
 }
 
+void CreditCardSaveManagerTestObserverBridge::OnReceivedUploadCardResponse() {
+  [observer_ receivedUploadCardResponse];
+}
+
+void CreditCardSaveManagerTestObserverBridge::OnCCSMStrikeChangeComplete() {
+  [observer_ ccsmStrikeChangeComplete];
+}
+
 }  // namespace autofill

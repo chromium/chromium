@@ -6,12 +6,16 @@ package org.chromium.net;
 
 import org.chromium.base.Log;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import static io.netty.buffer.Unpooled.copiedBuffer;
 import static io.netty.buffer.Unpooled.unreleasableBuffer;
+import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.logging.LogLevel.INFO;
 
@@ -42,6 +46,8 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
     public static final String ECHO_STREAM_PATH = "/echostream";
     public static final String ECHO_TRAILERS_PATH = "/echotrailers";
     public static final String SERVE_SIMPLE_BROTLI_RESPONSE = "/simplebrotli";
+    public static final String REPORTING_COLLECTOR_PATH = "/reporting-collector";
+    public static final String SUCCESS_WITH_NEL_HEADERS_PATH = "/success-with-nel";
 
     private static final String TAG = Http2TestHandler.class.getSimpleName();
     private static final Http2FrameLogger sLogger =
@@ -50,6 +56,9 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
             unreleasableBuffer(copiedBuffer("HTTP/2 Test Server", CharsetUtil.UTF_8));
 
     private HashMap<Integer, RequestResponder> mResponderMap = new HashMap<>();
+
+    private ReportingCollector mReportingCollector;
+    private String mServerUrl;
 
     /**
      * Builder for HTTP/2 test handler.
@@ -60,6 +69,16 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
             frameLogger(sLogger);
         }
 
+        public Builder setReportingCollector(ReportingCollector reportingCollector) {
+            mReportingCollector = reportingCollector;
+            return this;
+        }
+
+        public Builder setServerUrl(String serverUrl) {
+            mServerUrl = serverUrl;
+            return this;
+        }
+
         @Override
         public Http2TestHandler build() {
             return super.build();
@@ -68,10 +87,14 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
         @Override
         protected Http2TestHandler build(Http2ConnectionDecoder decoder,
                 Http2ConnectionEncoder encoder, Http2Settings initialSettings) {
-            Http2TestHandler handler = new Http2TestHandler(decoder, encoder, initialSettings);
+            Http2TestHandler handler = new Http2TestHandler(
+                    decoder, encoder, initialSettings, mReportingCollector, mServerUrl);
             frameListener(handler);
             return handler;
         }
+
+        private ReportingCollector mReportingCollector;
+        private String mServerUrl;
     }
 
     private class RequestResponder {
@@ -193,6 +216,76 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
         }
     }
 
+    // A RequestResponder that implements a Reporting collector.
+    private class ReportingCollectorResponder extends RequestResponder {
+        private ByteArrayOutputStream mPartialPayload = new ByteArrayOutputStream();
+
+        @Override
+        void onHeadersRead(ChannelHandlerContext ctx, int streamId, boolean endOfStream,
+                Http2Headers headers) {}
+
+        @Override
+        int onDataRead(ChannelHandlerContext ctx, int streamId, ByteBuf data, int padding,
+                boolean endOfStream) {
+            int processed = data.readableBytes() + padding;
+            try {
+                data.readBytes(mPartialPayload, data.readableBytes());
+            } catch (IOException e) {
+            }
+            if (endOfStream) {
+                processPayload(ctx, streamId);
+            }
+            return processed;
+        }
+
+        private void processPayload(ChannelHandlerContext ctx, int streamId) {
+            boolean succeeded = false;
+            try {
+                String payload = mPartialPayload.toString(CharsetUtil.UTF_8.name());
+                succeeded = mReportingCollector.addReports(payload);
+            } catch (UnsupportedEncodingException e) {
+            }
+            Http2Headers responseHeaders;
+            if (succeeded) {
+                responseHeaders = new DefaultHttp2Headers().status(OK.codeAsText());
+            } else {
+                responseHeaders = new DefaultHttp2Headers().status(BAD_REQUEST.codeAsText());
+            }
+            encoder().writeHeaders(ctx, streamId, responseHeaders, 0, true, ctx.newPromise());
+            ctx.flush();
+        }
+    }
+
+    // A RequestResponder that serves a successful response with Reporting and NEL headers
+    private class SuccessWithNELHeadersResponder extends RequestResponder {
+        @Override
+        void onHeadersRead(ChannelHandlerContext ctx, int streamId, boolean endOfStream,
+                Http2Headers headers) {
+            Http2Headers responseHeaders = new DefaultHttp2Headers().status(OK.codeAsText());
+            responseHeaders.add("report-to", getReportToHeader());
+            responseHeaders.add("nel", getNELHeader());
+            encoder().writeHeaders(ctx, streamId, responseHeaders, 0, true, ctx.newPromise());
+            ctx.flush();
+        }
+
+        @Override
+        int onDataRead(ChannelHandlerContext ctx, int streamId, ByteBuf data, int padding,
+                boolean endOfStream) {
+            int processed = data.readableBytes() + padding;
+            return processed;
+        }
+
+        private String getReportToHeader() {
+            return String.format("{\"group\": \"nel\", \"max_age\": 86400, "
+                            + "\"endpoints\": [{\"url\": \"%s%s\"}]}",
+                    mServerUrl, REPORTING_COLLECTOR_PATH);
+        }
+
+        private String getNELHeader() {
+            return "{\"report_to\": \"nel\", \"max_age\": 86400, \"success_fraction\": 1.0}";
+        }
+    }
+
     private static Http2Headers createDefaultResponseHeaders() {
         return new DefaultHttp2Headers().status(OK.codeAsText());
     }
@@ -212,8 +305,11 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
     }
 
     private Http2TestHandler(Http2ConnectionDecoder decoder, Http2ConnectionEncoder encoder,
-            Http2Settings initialSettings) {
+            Http2Settings initialSettings, ReportingCollector reportingCollector,
+            String serverUrl) {
         super(decoder, encoder, initialSettings);
+        mReportingCollector = reportingCollector;
+        mServerUrl = serverUrl;
     }
 
     @Override
@@ -251,6 +347,10 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
             responder = new EchoMethodResponder();
         } else if (path.startsWith(SERVE_SIMPLE_BROTLI_RESPONSE)) {
             responder = new ServeSimpleBrotliResponder();
+        } else if (path.startsWith(REPORTING_COLLECTOR_PATH)) {
+            responder = new ReportingCollectorResponder();
+        } else if (path.startsWith(SUCCESS_WITH_NEL_HEADERS_PATH)) {
+            responder = new SuccessWithNELHeadersResponder();
         } else {
             responder = new RequestResponder();
         }

@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "net/third_party/quic/core/http/quic_spdy_client_session.h"
 #include "net/third_party/quic/core/http/spdy_utils.h"
+#include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/core/tls_client_handshaker.h"
 #include "net/third_party/quic/platform/api/quic_logging.h"
 #include "net/third_party/quic/platform/api/quic_ptr_util.h"
@@ -70,7 +71,9 @@ class QuicClientPromisedInfoTest : public QuicTest {
                                                        Perspective::IS_CLIENT)),
         session_(connection_, &push_promise_index_),
         body_("hello world"),
-        promise_id_(kInvalidStreamId) {
+        promise_id_(
+            QuicUtils::GetInvalidStreamId(connection_->transport_version())) {
+    connection_->AdvanceTime(QuicTime::Delta::FromSeconds(1));
     session_.Initialize();
 
     headers_[":status"] = "200";
@@ -78,7 +81,7 @@ class QuicClientPromisedInfoTest : public QuicTest {
 
     stream_ = QuicMakeUnique<QuicSpdyClientStream>(
         QuicSpdySessionPeer::GetNthClientInitiatedStreamId(session_, 0),
-        &session_);
+        &session_, BIDIRECTIONAL);
     stream_visitor_ = QuicMakeUnique<StreamVisitor>();
     stream_->set_visitor(stream_visitor_.get());
 

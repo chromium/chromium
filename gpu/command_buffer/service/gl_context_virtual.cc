@@ -13,6 +13,12 @@
 #include "ui/gl/gpu_preference.h"
 #include "ui/gl/gpu_timing.h"
 
+// TODO(crbug.com/892490): remove this once the cause of this bug is
+// known.
+#if defined(OS_ANDROID)
+#include "base/debug/dump_without_crashing.h"
+#endif
+
 namespace gpu {
 
 GLContextVirtual::GLContextVirtual(gl::GLShareGroup* share_group,
@@ -38,6 +44,11 @@ bool GLContextVirtual::MakeCurrent(gl::GLSurface* surface) {
     return shared_context_->MakeVirtuallyCurrent(this, surface);
 
   LOG(ERROR) << "Trying to make virtual context current without decoder.";
+// TODO(crbug.com/892490): remove this once the cause of this bug is
+// known.
+#if defined(OS_ANDROID)
+  base::debug::DumpWithoutCrashing();
+#endif
   return false;
 }
 

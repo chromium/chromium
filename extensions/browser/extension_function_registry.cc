@@ -27,7 +27,7 @@ ExtensionFunctionRegistry::~ExtensionFunctionRegistry() = default;
 bool ExtensionFunctionRegistry::OverrideFunctionForTesting(
     const std::string& name,
     ExtensionFunctionFactory factory) {
-  FactoryMap::iterator iter = factories_.find(name);
+  auto iter = factories_.find(name);
   if (iter == factories_.end())
     return false;
   iter->second.factory_ = factory;
@@ -36,7 +36,7 @@ bool ExtensionFunctionRegistry::OverrideFunctionForTesting(
 
 ExtensionFunction* ExtensionFunctionRegistry::NewFunction(
     const std::string& name) {
-  FactoryMap::iterator iter = factories_.find(name);
+  auto iter = factories_.find(name);
   if (iter == factories_.end()) {
     return NULL;
   }

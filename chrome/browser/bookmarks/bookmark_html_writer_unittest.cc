@@ -264,7 +264,7 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
   for (size_t i = 0; i < favicons.size(); i++) {
     if (url1_favicon == favicons[i].favicon_url) {
       EXPECT_EQ(1U, favicons[i].urls.size());
-      std::set<GURL>::const_iterator iter = favicons[i].urls.find(url1);
+      auto iter = favicons[i].urls.find(url1);
       ASSERT_TRUE(iter != favicons[i].urls.end());
       ASSERT_TRUE(*iter == url1);
       ASSERT_TRUE(favicons[i].png_data == icon_data);

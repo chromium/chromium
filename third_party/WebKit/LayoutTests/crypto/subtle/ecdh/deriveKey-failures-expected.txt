@@ -2,7 +2,6 @@ Tests deriveKey() with various bad parameters for ECDH
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Importing the private key...
 Importing the public key...
 
@@ -56,6 +55,7 @@ error is: NotSupportedError: ECDH: Unsupported operation: get key length
 
 Deriving an RSA-OAEP key using ECDH...
 error is: NotSupportedError: RSA-OAEP: Unsupported operation: get key length
+
 
 PASS successfullyParsed is true
 

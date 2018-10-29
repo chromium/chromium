@@ -556,7 +556,7 @@ static unsigned LogicalOffsetInTextNode(
   CollectTextBoxesInLogicalOrder(text_line_layout, text_boxes);
 
   DCHECK(start_text_box);
-  size_t index = text_boxes.Find(start_text_box);
+  wtf_size_t index = text_boxes.Find(start_text_box);
   DCHECK_NE(index, kNotFound);
 
   unsigned offset = fragment_offset;

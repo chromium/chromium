@@ -29,7 +29,6 @@ class PpapiBlinkPlatformImpl : public BlinkPlatformImpl {
   void Shutdown();
 
   // BlinkPlatformImpl methods:
-  blink::WebThread* CurrentThread() override;
   blink::WebSandboxSupport* GetSandboxSupport() override;
   unsigned long long VisitedLinkHash(const char* canonical_url,
                                      size_t length) override;

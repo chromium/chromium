@@ -8,7 +8,7 @@ import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
 import org.chromium.chrome.browser.UrlConstants;
-import org.chromium.chrome.browser.download.ui.DownloadFilter;
+import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
 
 import java.lang.annotation.Retention;
@@ -16,26 +16,48 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Helper containing a list of Downloads Home filter types and conversion methods. */
 public class Filters {
-    /** A list of possible filter types on offlined items. */
-    @IntDef({FilterType.NONE, FilterType.VIDEOS, FilterType.MUSIC, FilterType.IMAGES,
-            FilterType.SITES, FilterType.OTHER, FilterType.PREFETCHED})
+    // These statics are used for UMA logging. Please update the AndroidDownloadFilterType enum in
+    // histograms.xml if these change.
+    /**
+     * A list of possible filter types on offlined items. Note that not all of these will show
+     * up in the UI.
+     *
+     * As you add or remove entries from this list, please also update
+     * ListUtils#FILTER_TYPE_ORDER_LIST to specify what order the sections should appear in.
+     */
+    @IntDef({FilterType.NONE, FilterType.SITES, FilterType.VIDEOS, FilterType.MUSIC,
+            FilterType.IMAGES, FilterType.DOCUMENT, FilterType.OTHER, FilterType.PREFETCHED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FilterType {
         int NONE = 0;
-        int VIDEOS = 1;
-        int MUSIC = 2;
-        int IMAGES = 3;
-        int SITES = 4;
-        int OTHER = 5;
-        int PREFETCHED = 6;
-        int NUM_ENTRIES = 7;
+        int SITES = 1;
+        int VIDEOS = 2;
+        int MUSIC = 3;
+        int IMAGES = 4;
+        int DOCUMENT = 5;
+        int OTHER = 6;
+        int PREFETCHED = 7;
+        int NUM_ENTRIES = 8;
     }
 
     /**
-     * Converts from a {@link OfflineItem#filter} to a {@link FilterType}.  Note that not all
-     * {@link OfflineItem#filter} types have a corresponding match and may return {@link #NONE}
+     * Converts from a {@link OfflineItem} to a {@link FilterType}.  Note that not all
+     * {@link OfflineItem}s have a corresponding match and may return {@link #NONE}
      * as they don't correspond to any UI filter.
      *
+     * @param item The {@link OfflineItem} to convert.
+     * @return     The corresponding {@link FilterType}.
+     */
+    public static @FilterType Integer fromOfflineItem(OfflineItem item) {
+        if (item.isSuggested) return FilterType.PREFETCHED;
+
+        return fromOfflineItem(item.filter);
+    }
+
+    /**
+     * A subset of {@link #fromOfflineItem(OfflineItem)} that only uses {@link OfflineItem#filter}
+     * to make the decision on which type of filter to use.  This will not be comprehensive for all
+     * {@link OfflineItem}s.
      * @param filter The {@link OfflineItem#filter} type to convert.
      * @return       The corresponding {@link FilterType}.
      */
@@ -53,26 +75,6 @@ public class Filters {
             // case OfflineItemFilter.FILTER_DOCUMENT
             default:
                 return FilterType.OTHER;
-        }
-    }
-
-    /** Converts between a {@link OfflineItemFilter} and a {@link DownloadFilter.Type}. */
-    public static @DownloadFilter.Type int offlineItemFilterToDownloadFilter(
-            @OfflineItemFilter int filter) {
-        switch (filter) {
-            case OfflineItemFilter.FILTER_PAGE:
-                return DownloadFilter.Type.PAGE;
-            case OfflineItemFilter.FILTER_VIDEO:
-                return DownloadFilter.Type.VIDEO;
-            case OfflineItemFilter.FILTER_AUDIO:
-                return DownloadFilter.Type.AUDIO;
-            case OfflineItemFilter.FILTER_IMAGE:
-                return DownloadFilter.Type.IMAGE;
-            case OfflineItemFilter.FILTER_DOCUMENT:
-                return DownloadFilter.Type.DOCUMENT;
-            // case OfflineItemFilter.FILTER_OTHER
-            default:
-                return DownloadFilter.Type.OTHER;
         }
     }
 

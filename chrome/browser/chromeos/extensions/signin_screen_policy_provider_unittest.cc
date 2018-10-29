@@ -21,7 +21,7 @@ const char kGnubbyExtensionId[] = "beknehfpfkghjoafdifaflglpjkojoco";
 //  smart card connector
 const char kSampleSigninExtensionId[] = "khpfeaanjngmcnplbdlpegiifgpfgdco";
 
-scoped_refptr<extensions::Extension> CreateTestApp(
+scoped_refptr<const extensions::Extension> CreateTestApp(
     const std::string& extension_id,
     extensions::Manifest::Location location) {
   return extensions::ExtensionBuilder()
@@ -64,7 +64,7 @@ class SigninScreenPolicyProviderTest : public testing::Test {
 TEST_F(SigninScreenPolicyProviderTest, AllowPolicyExtensionOnDev) {
   // On dev channel every extension installed via policy should work.
   extensions::ScopedCurrentChannel channel(version_info::Channel::DEV);
-  scoped_refptr<extensions::Extension> extension = CreateTestApp(
+  scoped_refptr<const extensions::Extension> extension = CreateTestApp(
       kRandomExtensionId, extensions::Manifest::Location::EXTERNAL_POLICY);
   base::string16 error;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error));
@@ -75,7 +75,7 @@ TEST_F(SigninScreenPolicyProviderTest, DenyRandomPolicyExtensionOnStable) {
   // On stable channel arbitrary extension (though installed via policy)
   // should be blocked.
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
-  scoped_refptr<extensions::Extension> extension = CreateTestApp(
+  scoped_refptr<const extensions::Extension> extension = CreateTestApp(
       kRandomExtensionId, extensions::Manifest::Location::EXTERNAL_POLICY);
   base::string16 error;
   EXPECT_FALSE(provider_.UserMayLoad(extension.get(), &error));
@@ -85,7 +85,7 @@ TEST_F(SigninScreenPolicyProviderTest, DenyRandomPolicyExtensionOnStable) {
 TEST_F(SigninScreenPolicyProviderTest, AllowEssentialExtensionOnStable) {
   // Essential component extensions for the login screen should always work.
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
-  scoped_refptr<extensions::Extension> extension = CreateTestApp(
+  scoped_refptr<const extensions::Extension> extension = CreateTestApp(
       kGnubbyExtensionId, extensions::Manifest::Location::EXTERNAL_COMPONENT);
   base::string16 error;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error));
@@ -99,7 +99,7 @@ TEST_F(SigninScreenPolicyProviderTest,
   // This test should be changed in future as we evolve feaature
   // requirements.
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
-  scoped_refptr<extensions::Extension> extension =
+  scoped_refptr<const extensions::Extension> extension =
       CreateTestApp(kSampleSigninExtensionId,
                     extensions::Manifest::Location::EXTERNAL_POLICY);
   base::string16 error;
@@ -112,7 +112,7 @@ TEST_F(SigninScreenPolicyProviderTest,
   // Google-developed extensions, if not installed via policy, should
   // be disabled.
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
-  scoped_refptr<extensions::Extension> extension =
+  scoped_refptr<const extensions::Extension> extension =
       CreateTestApp(kSampleSigninExtensionId,
                     extensions::Manifest::Location::EXTERNAL_COMPONENT);
   base::string16 error;
@@ -122,7 +122,7 @@ TEST_F(SigninScreenPolicyProviderTest,
 
 TEST_F(SigninScreenPolicyProviderTest, DenyRandomNonPolicyExtensionOnDev) {
   extensions::ScopedCurrentChannel channel(version_info::Channel::DEV);
-  scoped_refptr<extensions::Extension> extension = CreateTestApp(
+  scoped_refptr<const extensions::Extension> extension = CreateTestApp(
       kRandomExtensionId, extensions::Manifest::Location::EXTERNAL_COMPONENT);
   base::string16 error;
   EXPECT_FALSE(provider_.UserMayLoad(extension.get(), &error));

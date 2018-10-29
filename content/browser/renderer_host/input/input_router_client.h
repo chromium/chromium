@@ -40,9 +40,6 @@ class CONTENT_EXPORT InputRouterClient {
   // Called each time a WebInputEvent ACK IPC is received.
   virtual void DecrementInFlightEventCount(InputEventAckSource ack_source) = 0;
 
-  // Called when the renderer notifies that it has touch event handlers.
-  virtual void OnHasTouchEventHandlers(bool has_handlers) = 0;
-
   // Called when the router has received an overscroll notification from the
   // renderer.
   virtual void DidOverscroll(const ui::DidOverscrollParams& params) = 0;

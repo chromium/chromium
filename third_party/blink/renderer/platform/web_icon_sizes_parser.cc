@@ -38,8 +38,8 @@ static inline wtf_size_t FindEndOfWord(const String& string, wtf_size_t start) {
 }
 
 static inline int PartialStringToInt(const String& string,
-                                     size_t start,
-                                     size_t end) {
+                                     wtf_size_t start,
+                                     wtf_size_t end) {
   if (string.Is8Bit()) {
     return CharactersToInt(string.Characters8() + start, end - start,
                            WTF::NumberParsingOptions::kNone, nullptr);
@@ -57,8 +57,8 @@ WebVector<WebSize> WebIconSizesParser::ParseIconSizes(
   if (sizes_string.IsEmpty())
     return icon_sizes;
 
-  unsigned length = sizes_string.length();
-  for (unsigned i = 0; i < length; ++i) {
+  wtf_size_t length = sizes_string.length();
+  for (wtf_size_t i = 0; i < length; ++i) {
     // Skip whitespaces.
     i = std::min(sizes_string.Find(IsNotWhitespace, i), length);
     if (i >= length)
@@ -77,26 +77,26 @@ WebVector<WebSize> WebIconSizesParser::ParseIconSizes(
       i = FindEndOfWord(sizes_string, i);
       continue;
     }
-    unsigned width_start = i;
+    wtf_size_t width_start = i;
     i = std::min(sizes_string.Find(IsNonDigit, i), length);
     if (i >= length || (sizes_string[i] != 'x' && sizes_string[i] != 'X')) {
       i = FindEndOfWord(sizes_string, i);
       continue;
     }
-    unsigned width_end = i++;
+    wtf_size_t width_end = i++;
 
     // Parse the height.
     if (i >= length || !IsIntegerStart(sizes_string[i])) {
       i = FindEndOfWord(sizes_string, i);
       continue;
     }
-    unsigned height_start = i;
+    wtf_size_t height_start = i;
     i = std::min(sizes_string.Find(IsNonDigit, i), length);
     if (i < length && !IsWhitespace(sizes_string[i])) {
       i = FindEndOfWord(sizes_string, i);
       continue;
     }
-    unsigned height_end = i;
+    wtf_size_t height_end = i;
 
     // Append the parsed size to iconSizes.
     icon_sizes.push_back(

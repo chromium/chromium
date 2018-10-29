@@ -35,6 +35,10 @@ using namespace signin_internals_util;
 
 namespace {
 
+// The maximum number of the refresh token events. Only the last
+// |kMaxRefreshTokenListSize| events are kept in memory.
+const size_t kMaxRefreshTokenListSize = 50;
+
 std::string GetTimeStr(base::Time time) {
   return base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(time));
 }
@@ -91,8 +95,6 @@ std::string SigninStatusFieldToLabel(UntimedSigninStatusField field) {
 std::string TokenServiceLoadCredentialsStateToLabel(
     OAuth2TokenServiceDelegate::LoadCredentialsState state) {
   switch (state) {
-    case OAuth2TokenServiceDelegate::LOAD_CREDENTIALS_UNKNOWN:
-      return "Unknown";
     case OAuth2TokenServiceDelegate::LOAD_CREDENTIALS_NOT_STARTED:
       return "Load credentials not started";
     case OAuth2TokenServiceDelegate::LOAD_CREDENTIALS_IN_PROGRESS:
@@ -292,6 +294,7 @@ void AboutSigninInternals::Initialize(SigninClient* client) {
   signin_error_controller_->AddObserver(this);
   signin_manager_->AddObserver(this);
   signin_manager_->AddSigninDiagnosticsObserver(this);
+  token_service_->AddObserver(this);
   token_service_->AddDiagnosticsObserver(this);
   cookie_manager_service_->AddObserver(this);
 }
@@ -300,6 +303,7 @@ void AboutSigninInternals::Shutdown() {
   signin_error_controller_->RemoveObserver(this);
   signin_manager_->RemoveObserver(this);
   signin_manager_->RemoveSigninDiagnosticsObserver(this);
+  token_service_->RemoveObserver(this);
   token_service_->RemoveDiagnosticsObserver(this);
   cookie_manager_service_->RemoveObserver(this);
 }
@@ -358,7 +362,33 @@ void AboutSigninInternals::OnFetchAccessTokenComplete(
   NotifyObservers();
 }
 
+void AboutSigninInternals::OnRefreshTokenAvailable(
+    const std::string& account_id) {
+  RefreshTokenEvent event;
+  event.account_id = account_id;
+  event.type = AboutSigninInternals::RefreshTokenEventType::kUpdateToRegular;
+  GoogleServiceAuthError token_error = token_service_->GetAuthError(account_id);
+  if (token_error == GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                         GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                             CREDENTIALS_REJECTED_BY_CLIENT)) {
+    event.type = AboutSigninInternals::RefreshTokenEventType::kUpdateToInvalid;
+  }
+  signin_status_.AddRefreshTokenEvent(event);
+}
+
+void AboutSigninInternals::OnRefreshTokenRevoked(
+    const std::string& account_id) {
+  RefreshTokenEvent event;
+  event.account_id = account_id;
+  event.type = AboutSigninInternals::RefreshTokenEventType::kRevokeRegular;
+  signin_status_.AddRefreshTokenEvent(event);
+}
+
 void AboutSigninInternals::OnRefreshTokensLoaded() {
+  RefreshTokenEvent event;
+  event.account_id = "All accounts";
+  event.type = AboutSigninInternals::RefreshTokenEventType::kAllTokensLoaded;
+  signin_status_.AddRefreshTokenEvent(event);
   NotifyObservers();
 }
 
@@ -366,7 +396,7 @@ void AboutSigninInternals::OnEndBatchChanges() {
   NotifyObservers();
 }
 
-void AboutSigninInternals::OnTokenRemoved(
+void AboutSigninInternals::OnAccessTokenRemoved(
     const std::string& account_id,
     const OAuth2TokenService::ScopeSet& scopes) {
   for (const std::unique_ptr<TokenInfo>& token :
@@ -459,9 +489,7 @@ AboutSigninInternals::TokenInfo::ToValue() const {
   token_info->SetString("service", consumer_id);
 
   std::string scopes_str;
-  for (OAuth2TokenService::ScopeSet::const_iterator it = scopes.begin();
-       it != scopes.end();
-       ++it) {
+  for (auto it = scopes.begin(); it != scopes.end(); ++it) {
     scopes_str += *it + "<br/>";
   }
   token_info->SetString("scopes", scopes_str);
@@ -498,6 +526,22 @@ AboutSigninInternals::TokenInfo::ToValue() const {
   return token_info;
 }
 
+AboutSigninInternals::RefreshTokenEvent::RefreshTokenEvent()
+    : timestamp(Time::Now()){};
+
+std::string AboutSigninInternals::RefreshTokenEvent::GetTypeAsString() const {
+  switch (type) {
+    case AboutSigninInternals::RefreshTokenEventType::kUpdateToRegular:
+      return "Updated";
+    case AboutSigninInternals::RefreshTokenEventType::kUpdateToInvalid:
+      return "Invalidated";
+    case AboutSigninInternals::RefreshTokenEventType::kRevokeRegular:
+      return "Revoked";
+    case AboutSigninInternals::RefreshTokenEventType::kAllTokensLoaded:
+      return "Loaded";
+  }
+}
+
 AboutSigninInternals::SigninStatus::SigninStatus()
     : timed_signin_fields(TIMED_FIELDS_COUNT) {}
 
@@ -512,6 +556,14 @@ AboutSigninInternals::TokenInfo* AboutSigninInternals::SigninStatus::FindToken(
       return token.get();
   }
   return nullptr;
+}
+
+void AboutSigninInternals::SigninStatus::AddRefreshTokenEvent(
+    const AboutSigninInternals::RefreshTokenEvent& event) {
+  if (refresh_token_events.size() > kMaxRefreshTokenListSize)
+    refresh_token_events.pop_front();
+
+  refresh_token_events.push_back(event);
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -536,7 +588,7 @@ AboutSigninInternals::SigninStatus::ToValue(
   AddSectionEntry(basic_info, "Signin Status",
       signin_manager->IsAuthenticated() ? "Signed In" : "Not Signed In");
   OAuth2TokenServiceDelegate::LoadCredentialsState load_tokens_state =
-      token_service->GetDelegate()->GetLoadCredentialsState();
+      token_service->GetDelegate()->load_credentials_state();
   AddSectionEntry(basic_info, "TokenService Load Status",
                   TokenServiceLoadCredentialsStateToLabel(load_tokens_state));
 
@@ -630,26 +682,39 @@ AboutSigninInternals::SigninStatus::ToValue(
   }
   signin_status->Set("token_info", std::move(token_info));
 
+  // Account info section
   auto account_info = std::make_unique<base::ListValue>();
   const std::vector<std::string>& accounts_in_token_service =
       token_service->GetAccounts();
-
   if (accounts_in_token_service.size() == 0) {
     auto no_token_entry = std::make_unique<base::DictionaryValue>();
     no_token_entry->SetString("accountId", "No token in Token Service.");
     account_info->Append(std::move(no_token_entry));
+  } else {
+    for (const std::string& account_id : accounts_in_token_service) {
+      auto entry = std::make_unique<base::DictionaryValue>();
+      entry->SetString("accountId", account_id);
+      entry->SetBoolean("hasRefreshToken",
+                        token_service->RefreshTokenIsAvailable(account_id));
+      entry->SetBoolean("hasAuthError",
+                        token_service->RefreshTokenHasError(account_id));
+      account_info->Append(std::move(entry));
+    }
   }
-
-  for (const std::string& account_id : accounts_in_token_service) {
-    auto entry = std::make_unique<base::DictionaryValue>();
-    entry->SetString("accountId", account_id);
-    entry->SetBoolean("hasRefreshToken",
-                      token_service->RefreshTokenIsAvailable(account_id));
-    entry->SetBoolean("hasAuthError",
-                      token_service->RefreshTokenHasError(account_id));
-    account_info->Append(std::move(entry));
-  }
-
   signin_status->Set("accountInfo", std::move(account_info));
+
+  // Refresh token events section
+  auto refresh_token_events_value = std::make_unique<base::ListValue>();
+  for (const auto& event : refresh_token_events) {
+    auto entry = std::make_unique<base::DictionaryValue>();
+    entry->SetString("accountId", event.account_id);
+    entry->SetString("timestamp", GetTimeStr(event.timestamp));
+    entry->SetString("type", event.GetTypeAsString());
+    entry->SetString("source", event.source);
+    refresh_token_events_value->Append(std::move(entry));
+  }
+  signin_status->Set("refreshTokenEvents",
+                     std::move(refresh_token_events_value));
+
   return signin_status;
 }

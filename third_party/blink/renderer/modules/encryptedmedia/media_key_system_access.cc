@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/media_keys_controller.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -70,8 +71,8 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
 // NavigatorRequestMediaKeySystemAccess.
 static Vector<String> ConvertInitDataTypes(
     const WebVector<WebEncryptedMediaInitDataType>& init_data_types) {
-  Vector<String> result(init_data_types.size());
-  for (size_t i = 0; i < init_data_types.size(); i++)
+  Vector<String> result(SafeCast<wtf_size_t>(init_data_types.size()));
+  for (wtf_size_t i = 0; i < result.size(); i++)
     result[i] =
         EncryptedMediaUtils::ConvertFromInitDataType(init_data_types[i]);
   return result;
@@ -79,8 +80,9 @@ static Vector<String> ConvertInitDataTypes(
 
 static HeapVector<MediaKeySystemMediaCapability> ConvertCapabilities(
     const WebVector<WebMediaKeySystemMediaCapability>& capabilities) {
-  HeapVector<MediaKeySystemMediaCapability> result(capabilities.size());
-  for (size_t i = 0; i < capabilities.size(); i++) {
+  HeapVector<MediaKeySystemMediaCapability> result(
+      SafeCast<wtf_size_t>(capabilities.size()));
+  for (wtf_size_t i = 0; i < result.size(); i++) {
     MediaKeySystemMediaCapability capability;
     capability.setContentType(capabilities[i].content_type);
     capability.setRobustness(capabilities[i].robustness);
@@ -119,8 +121,8 @@ static String ConvertMediaKeysRequirement(
 
 static Vector<String> ConvertSessionTypes(
     const WebVector<WebEncryptedMediaSessionType>& session_types) {
-  Vector<String> result(session_types.size());
-  for (size_t i = 0; i < session_types.size(); i++)
+  Vector<String> result(SafeCast<wtf_size_t>(session_types.size()));
+  for (wtf_size_t i = 0; i < result.size(); i++)
     result[i] = EncryptedMediaUtils::ConvertFromSessionType(session_types[i]);
   return result;
 }

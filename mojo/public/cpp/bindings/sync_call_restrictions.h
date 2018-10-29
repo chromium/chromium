@@ -15,14 +15,8 @@
 #define ENABLE_SYNC_CALL_RESTRICTIONS 0
 #endif
 
-class ChromeSelectFileDialogFactory;
-
 namespace sync_preferences {
 class PrefServiceSyncable;
-}
-
-namespace content {
-class BlinkTestController;
 }
 
 namespace leveldb {
@@ -89,15 +83,11 @@ class MOJO_CPP_BINDINGS_EXPORT SyncCallRestrictions {
   // Incognito pref service instances are created synchronously.
   friend class sync_preferences::PrefServiceSyncable;
   friend class mojo::ScopedAllowSyncCallForTesting;
-  // For file open and save dialogs created synchronously.
-  friend class ::ChromeSelectFileDialogFactory;
   // For synchronous system clipboard access.
   friend class ui::ClipboardClient;
   // For destroying the GL context/surface that draw to a platform window before
   // the platform window is destroyed.
   friend class viz::HostFrameSinkManager;
-  // Allow for layout test pixel dumps.
-  friend class content::BlinkTestController;
   // For preventing frame swaps of wrong size during resize on Windows.
   // (https://crbug.com/811945)
   friend class ui::HostContextFactoryPrivate;

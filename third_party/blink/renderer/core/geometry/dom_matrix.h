@@ -33,8 +33,6 @@ class CORE_EXPORT DOMMatrix : public DOMMatrixReadOnly {
                                      ExceptionState&);
   static DOMMatrix* fromMatrix(DOMMatrixInit&, ExceptionState&);
   static DOMMatrix* CreateForSerialization(double[], int size);
-  // Used by Canvas2D, not defined on the IDL.
-  static DOMMatrix* fromMatrix2D(DOMMatrix2DInit&);
 
   void setA(double value) { matrix_->SetM11(value); }
   void setB(double value) { matrix_->SetM12(value); }

@@ -76,10 +76,6 @@ ModelTypeSet FakeSyncService::GetActiveDataTypes() const {
   return ModelTypeSet();
 }
 
-SyncClient* FakeSyncService::GetSyncClient() const {
-  return nullptr;
-}
-
 void FakeSyncService::AddObserver(SyncServiceObserver* observer) {}
 
 void FakeSyncService::RemoveObserver(SyncServiceObserver* observer) {}
@@ -138,8 +134,7 @@ bool FakeSyncService::IsEncryptEverythingEnabled() const {
   return false;
 }
 
-void FakeSyncService::SetEncryptionPassphrase(const std::string& passphrase,
-                                              PassphraseType type) {}
+void FakeSyncService::SetEncryptionPassphrase(const std::string& passphrase) {}
 
 bool FakeSyncService::SetDecryptionPassphrase(const std::string& passphrase) {
   return false;
@@ -153,12 +148,9 @@ UserShare* FakeSyncService::GetUserShare() const {
   return user_share_.get();
 }
 
-const LocalDeviceInfoProvider* FakeSyncService::GetLocalDeviceInfoProvider()
-    const {
-  return nullptr;
-}
-
 void FakeSyncService::ReenableDatatype(ModelType type) {}
+
+void FakeSyncService::ReadyForStartChanged(ModelType type) {}
 
 syncer::SyncTokenStatus FakeSyncService::GetSyncTokenStatus() const {
   return syncer::SyncTokenStatus();
@@ -210,10 +202,6 @@ base::WeakPtr<JsController> FakeSyncService::GetJsController() {
 
 void FakeSyncService::GetAllNodes(
     const base::Callback<void(std::unique_ptr<base::ListValue>)>& callback) {}
-
-GlobalIdMapper* FakeSyncService::GetGlobalIdMapper() const {
-  return nullptr;
-}
 
 bool FakeSyncService::IsPassphraseRequired() const {
   return false;

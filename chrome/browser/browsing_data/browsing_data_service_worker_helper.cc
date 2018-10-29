@@ -9,7 +9,9 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
 
@@ -32,8 +34,8 @@ void GetAllOriginsInfoForServiceWorkerCallback(
     result.push_back(origin);
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, result));
 }
 
 }  // namespace
@@ -50,8 +52,8 @@ void BrowsingDataServiceWorkerHelper::StartFetching(
     const FetchCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&BrowsingDataServiceWorkerHelper::
                          FetchServiceWorkerUsageInfoOnIOThread,
                      this, callback));
@@ -59,8 +61,8 @@ void BrowsingDataServiceWorkerHelper::StartFetching(
 
 void BrowsingDataServiceWorkerHelper::DeleteServiceWorkers(const GURL& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &BrowsingDataServiceWorkerHelper::DeleteServiceWorkersOnIOThread,
           this, origin));
@@ -148,14 +150,13 @@ void CannedBrowsingDataServiceWorkerHelper::StartFetching(
     result.push_back(info);
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, result));
 }
 
 void CannedBrowsingDataServiceWorkerHelper::DeleteServiceWorkers(
     const GURL& origin) {
-  for (std::set<PendingServiceWorkerUsageInfo>::iterator it =
-           pending_service_worker_info_.begin();
+  for (auto it = pending_service_worker_info_.begin();
        it != pending_service_worker_info_.end();) {
     if (it->origin == origin)
       pending_service_worker_info_.erase(it++);

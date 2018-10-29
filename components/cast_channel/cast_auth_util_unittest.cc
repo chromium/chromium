@@ -330,7 +330,7 @@ bool RunTest(const cast_certificate::DeviceCertTest& test_case) {
           cast_trust_store.get(), crl_trust_store.get());
       EXPECT_EQ(result.error_type, AuthResult::ERROR_SIGNED_BLOBS_MISMATCH);
       return result.error_type == AuthResult::ERROR_SIGNED_BLOBS_MISMATCH;
-    case UNSPECIFIED:
+    case cast_certificate::UNSPECIFIED:
       return false;
   }
   return false;

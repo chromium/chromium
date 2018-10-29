@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 
 namespace blink {
-namespace VectorMath {
+namespace vector_math {
 namespace AVX {
 
 constexpr size_t kBitsPerRegister = 256u;
@@ -84,7 +84,7 @@ void Zvmul(const float* real1p,
            size_t frames_to_process);
 
 }  // namespace AVX
-}  // namespace VectorMath
+}  // namespace vector_math
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_X86_VECTOR_MATH_AVX_H_

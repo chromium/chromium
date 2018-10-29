@@ -79,7 +79,7 @@ ExtractResourceRequestBodyFromJavaObject(
     return nullptr;
 
   std::vector<uint8_t> encoded;
-  base::android::JavaByteArrayToByteVector(env, j_encoded.obj(), &encoded);
+  base::android::JavaByteArrayToByteVector(env, j_encoded, &encoded);
 
   return DecodeResourceRequestBody(
       reinterpret_cast<const char*>(encoded.data()), encoded.size());

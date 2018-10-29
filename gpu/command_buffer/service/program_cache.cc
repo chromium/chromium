@@ -184,5 +184,13 @@ void ProgramCache::HandleMemoryPressure(
   }
 }
 
+void ProgramCache::SetCacheProgramCallback(CacheProgramCallback callback) {
+  cache_program_callback_ = callback;
+}  // namespace gles2
+
+void ProgramCache::ResetCacheProgramCallback() {
+  cache_program_callback_.Reset();
+}
+
 }  // namespace gles2
 }  // namespace gpu

@@ -7,7 +7,8 @@
   await TestRunner.loadModule('network_test_runner');
   await TestRunner.showPanel('network');
 
-  function testSearches(view, searches) {
+  async function testSearches(view, searches) {
+    await new Promise(resolve => setTimeout(resolve, 0));
     for (var search of searches) {
       view._searchInputElement.value = search;
       view._regexButton.setToggled(false);
@@ -28,7 +29,7 @@
     }
   }
 
-  function previewViewHandled(searches, callback, view) {
+  async function previewViewHandled(searches, callback, view) {
     var isSearchable = (view instanceof UI.SearchableView);
     var compontentView = view;
     var typeName = 'unknown';
@@ -65,7 +66,7 @@
     TestRunner.addResult('Type: ' + typeName);
 
     if (isSearchable)
-      testSearches(searchableView, searches);
+      await testSearches(searchableView, searches);
 
     callback();
   }

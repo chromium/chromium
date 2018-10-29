@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "volume.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/volume.h"
 
 #include <cstring>
 #include <sstream>
+#include <utility>
 
-#include "char_coding.h"
-#include "request.h"
-#include "volume_archive_minizip.h"
-#include "volume_reader_javascript_stream.h"
+#include "base/strings/string_number_conversions.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/char_coding.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/javascript_message_sender_interface.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/javascript_requestor_interface.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/request.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/volume_archive_minizip.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/volume_reader_javascript_stream.h"
 
 namespace {
-
-#define LOG(x)                                                            \
-  do {                                                                    \
-    std::stringstream fmt;                                                \
-    fmt << x;                                                             \
-    message_sender_->CONSOLE_LOG(file_system_id_, request_id, fmt.str()); \
-  } while (0)
 
 typedef std::map<std::string, VolumeArchive*>::const_iterator
     volume_archive_iterator;
@@ -57,9 +54,11 @@ pp::VarDictionary CreateEntry(int64_t index,
 
 void ConstructMetadata(int64_t index,
                        const std::string& entry_path,
+                       const std::string& raw_path,
                        int64_t size,
                        bool is_directory,
                        time_t modification_time,
+                       bool is_utf8,
                        pp::VarDictionary* parent_metadata) {
   if (entry_path == "")
     return;
@@ -67,12 +66,15 @@ void ConstructMetadata(int64_t index,
   pp::VarDictionary parent_entries =
       pp::VarDictionary(parent_metadata->Get("entries"));
 
-  unsigned int position = entry_path.find(kPathDelimiter);
+  std::string::size_type position = entry_path.find(kPathDelimiter);
+  std::string::size_type position_raw = raw_path.find(kPathDelimiter);
   pp::VarDictionary entry_metadata;
   std::string entry_name;
+  std::string raw_name;
 
   if (position == std::string::npos) {  // The entry itself.
     entry_name = entry_path;
+    raw_name = raw_path;
     entry_metadata =
         CreateEntry(index, entry_name, is_directory, size, modification_time);
 
@@ -87,6 +89,7 @@ void ConstructMetadata(int64_t index,
     }
   } else {  // Get next parent on the way to the entry.
     entry_name = entry_path.substr(0, position);
+    raw_name = raw_path.substr(0, position_raw);
 
     // Get next parent metadata. If none, create a new directory entry for it.
     // Some archives don't have directory information inside and for some the
@@ -101,9 +104,17 @@ void ConstructMetadata(int64_t index,
     // to the entry and for the entry itself.
     std::string entry_path_without_next_parent = entry_path.substr(
         position + sizeof(kPathDelimiter) - 1 /* Last char is '\0'. */);
+    std::string raw_path_without_next_parent =
+        raw_path.substr(position_raw + sizeof(kPathDelimiter) - 1);
 
-    ConstructMetadata(index, entry_path_without_next_parent, size, is_directory,
-                      modification_time, &entry_metadata);
+    ConstructMetadata(index, entry_path_without_next_parent,
+                      raw_path_without_next_parent, size, is_directory,
+                      modification_time, is_utf8, &entry_metadata);
+  }
+
+  if (!is_utf8) {
+    entry_metadata.Set("binary_name",
+                       base::HexEncode(raw_name.c_str(), raw_name.size()));
   }
 
   // Recreate parent_metadata. This is necessary because pp::VarDictionary::Get
@@ -118,16 +129,16 @@ class JavaScriptRequestor : public JavaScriptRequestorInterface {
   // JavaScriptRequestor does not own the volume pointer.
   explicit JavaScriptRequestor(Volume* volume) : volume_(volume) {}
 
-  virtual void RequestFileChunk(const std::string& request_id,
-                                int64_t offset,
-                                int64_t bytes_to_read) {
+  void RequestFileChunk(const std::string& request_id,
+                        int64_t offset,
+                        int64_t bytes_to_read) override {
     PP_DCHECK(offset >= 0);
     PP_DCHECK(bytes_to_read > 0);
     volume_->message_sender()->SendFileChunkRequest(
         volume_->file_system_id(), request_id, offset, bytes_to_read);
   }
 
-  virtual void RequestPassphrase(const std::string& request_id) {
+  void RequestPassphrase(const std::string& request_id) override {
     volume_->message_sender()->SendPassphraseRequest(volume_->file_system_id(),
                                                      request_id);
   }
@@ -140,8 +151,9 @@ class JavaScriptRequestor : public JavaScriptRequestorInterface {
 // Volume constructor.
 class VolumeArchiveFactory : public VolumeArchiveFactoryInterface {
  public:
-  virtual VolumeArchive* Create(VolumeReader* reader) {
-    return new VolumeArchiveMinizip(reader);
+  std::unique_ptr<VolumeArchive> Create(
+      std::unique_ptr<VolumeReader> reader) override {
+    return std::make_unique<VolumeArchiveMinizip>(std::move(reader));
   }
 };
 
@@ -152,8 +164,9 @@ class VolumeReaderFactory : public VolumeReaderFactoryInterface {
   // VolumeReaderFactory does not own the volume pointer.
   explicit VolumeReaderFactory(Volume* volume) : volume_(volume) {}
 
-  virtual VolumeReader* Create(int64_t archive_size) {
-    return new VolumeReaderJavaScriptStream(archive_size, volume_->requestor());
+  std::unique_ptr<VolumeReader> Create(int64_t archive_size) override {
+    return std::make_unique<VolumeReaderJavaScriptStream>(archive_size,
+                                                          volume_->requestor());
   }
 
  private:
@@ -180,43 +193,32 @@ struct Volume::OpenFileArgs {
 Volume::Volume(const pp::InstanceHandle& instance_handle,
                const std::string& file_system_id,
                JavaScriptMessageSenderInterface* message_sender)
-    : volume_archive_(nullptr),
-      file_system_id_(file_system_id),
-      message_sender_(message_sender),
-      worker_(instance_handle),
-      callback_factory_(this) {
-  requestor_ = new JavaScriptRequestor(this);
-  volume_archive_factory_ = new VolumeArchiveFactory();
-  volume_reader_factory_ = new VolumeReaderFactory(this);
-  // Delegating constructors only from c++11.
-}
-
-Volume::Volume(const pp::InstanceHandle& instance_handle,
-               const std::string& file_system_id,
-               JavaScriptMessageSenderInterface* message_sender,
-               VolumeArchiveFactoryInterface* volume_archive_factory,
-               VolumeReaderFactoryInterface* volume_reader_factory)
-    : volume_archive_(nullptr),
-      file_system_id_(file_system_id),
+    : file_system_id_(file_system_id),
       message_sender_(message_sender),
       worker_(instance_handle),
       callback_factory_(this),
-      volume_archive_factory_(volume_archive_factory),
-      volume_reader_factory_(volume_reader_factory) {
-  requestor_ = new JavaScriptRequestor(this);
+      requestor_(std::make_unique<JavaScriptRequestor>(this)),
+      volume_archive_factory_(std::make_unique<VolumeArchiveFactory>()),
+      volume_reader_factory_(std::make_unique<VolumeReaderFactory>(this)) {
+  // Delegating constructors only from c++11.
 }
+
+Volume::Volume(
+    const pp::InstanceHandle& instance_handle,
+    const std::string& file_system_id,
+    JavaScriptMessageSenderInterface* message_sender,
+    std::unique_ptr<VolumeArchiveFactoryInterface> volume_archive_factory,
+    std::unique_ptr<VolumeReaderFactoryInterface> volume_reader_factory)
+    : file_system_id_(file_system_id),
+      message_sender_(message_sender),
+      worker_(instance_handle),
+      callback_factory_(this),
+      requestor_(std::make_unique<JavaScriptRequestor>(this)),
+      volume_archive_factory_(std::move(volume_archive_factory)),
+      volume_reader_factory_(std::move(volume_reader_factory)) {}
 
 Volume::~Volume() {
   worker_.Join();
-
-  if (volume_archive_) {
-    volume_archive_->Cleanup();
-    delete volume_archive_;
-  }
-
-  delete requestor_;
-  delete volume_archive_factory_;
-  delete volume_reader_factory_;
 }
 
 bool Volume::Init() {
@@ -313,8 +315,7 @@ void Volume::ReadMetadataCallback(int32_t /*result*/,
     message_sender_->SendFileSystemError(file_system_id_, request_id,
                                          volume_archive_->error_message());
     ClearJob();
-    delete volume_archive_;
-    volume_archive_ = nullptr;
+    volume_archive_.reset();
     return;
   }
 
@@ -336,8 +337,7 @@ void Volume::ReadMetadataCallback(int32_t /*result*/,
       message_sender_->SendFileSystemError(file_system_id_, request_id,
                                            volume_archive_->error_message());
       ClearJob();
-      delete volume_archive_;
-      volume_archive_ = nullptr;
+      volume_archive_.reset();
       return;
     }
 
@@ -351,20 +351,30 @@ void Volume::ReadMetadataCallback(int32_t /*result*/,
       display_name = Cp437ToUtf8(path_name);
     }
 
-    ConstructMetadata(index, display_name.c_str(), size, is_directory,
-                      modification_time, &root_metadata);
+    // If the path is absolute, which is technically a violation of the ZIP
+    // spec, strip the leading '/' and treat the path as relative.
+    // TODO(amistry): Handle other cases of ill-formed paths such as "//", ".",
+    // and ".."
+    if (display_name[0] == '/') {
+      display_name = display_name.substr(1);
+    }
 
-    index_to_pathname_[index] = path_name;
-
-    ++index;
+    if (!display_name.empty()) {
+      // Some archives have a "/" entry, which turns into the empty string when
+      // the leading '/' is stripped.
+      ConstructMetadata(index, display_name.c_str(), path_name, size,
+                        is_directory, modification_time, is_encoded_in_utf8,
+                        &root_metadata);
+      index_to_pathname_[index] = path_name;
+      ++index;
+    }
 
     int return_value = volume_archive_->GoToNextFile();
     if (return_value == VolumeArchive::RESULT_FAIL) {
       message_sender_->SendFileSystemError(file_system_id_, request_id,
                                            volume_archive_->error_message());
       ClearJob();
-      delete volume_archive_;
-      volume_archive_ = nullptr;
+      volume_archive_.reset();
       return;
     }
     if (return_value == VolumeArchive::RESULT_EOF)

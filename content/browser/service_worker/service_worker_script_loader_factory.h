@@ -27,7 +27,8 @@ class ServiceWorkerProviderHost;
 // service worker. For installed workers, service worker script streaming
 // (ServiceWorkerInstalledScriptsSender) is typically used instead. However,
 // this factory can still be used when an installed worker imports a
-// non-installed script (https://crbug.com/719052).
+// non-installed script. In this case, this factory just returns a network
+// error as the spec disallows it.
 //
 // This factory creates either a ServiceWorkerNewScriptLoader or a
 // ServiceWorkerInstalledScriptLoader to load a script.

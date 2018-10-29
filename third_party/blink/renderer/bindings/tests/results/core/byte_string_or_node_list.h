@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef ByteStringOrNodeList_h
-#define ByteStringOrNodeList_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_BYTE_STRING_OR_NODE_LIST_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_BYTE_STRING_OR_NODE_LIST_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -24,7 +24,7 @@ namespace blink {
 class NodeList;
 
 class CORE_EXPORT ByteStringOrNodeList final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   ByteStringOrNodeList();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -94,4 +94,4 @@ struct V8TypeOf<ByteStringOrNodeList> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::ByteStringOrNodeList);
 
-#endif  // ByteStringOrNodeList_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_BYTE_STRING_OR_NODE_LIST_H_

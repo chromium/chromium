@@ -96,6 +96,8 @@ source_set("win") {
     "rdp_client_window.h",
     "security_descriptor.cc",
     "security_descriptor.h",
+    "session_action_executor.cc",
+    "session_action_executor.h",
     "session_desktop_environment.cc",
     "session_desktop_environment.h",
     "session_input_injector.cc",

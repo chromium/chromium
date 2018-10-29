@@ -79,7 +79,9 @@ class PlatformNotificationServiceTest : public testing::Test {
     mock_logger_ = static_cast<MockNotificationMetricsLogger*>(
         NotificationMetricsLoggerFactory::GetInstance()
             ->SetTestingFactoryAndUse(
-                &profile_, &MockNotificationMetricsLogger::FactoryForTests));
+                &profile_,
+                base::BindRepeating(
+                    &MockNotificationMetricsLogger::FactoryForTests)));
 
     recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
@@ -246,10 +248,10 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEventHistory) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   HistoryServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      &profile_, [](content::BrowserContext* context) {
+      &profile_, base::BindRepeating([](content::BrowserContext* context) {
         return static_cast<std::unique_ptr<KeyedService>>(
             std::make_unique<history::HistoryService>());
-      });
+      }));
 
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(&profile_,
@@ -380,7 +382,7 @@ TEST_F(PlatformNotificationServiceTest, DisplayNameForContextMessage) {
   EXPECT_TRUE(display_name.empty());
 
   // Create a mocked extension.
-  scoped_refptr<extensions::Extension> extension =
+  scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetID("honijodknafkokifofgiaalefdiedpko")
           .SetManifest(extensions::DictionaryBuilder()
@@ -412,7 +414,7 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
   EXPECT_TRUE(notification.context_message().empty());
 
   // Create a mocked extension.
-  scoped_refptr<extensions::Extension> extension =
+  scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetID("honijodknafkokifofgiaalefdiedpko")
           .SetManifest(extensions::DictionaryBuilder()

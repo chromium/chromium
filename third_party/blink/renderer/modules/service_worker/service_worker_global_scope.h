@@ -33,12 +33,11 @@
 #include <memory>
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/cache_storage/cache_storage.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration.h"
 #include "third_party/blink/renderer/bindings/core/v8/request_or_usv_string.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -47,11 +46,14 @@ class RespondWithObserver;
 class RequestInit;
 class ScriptPromise;
 class ScriptState;
+class ServiceWorker;
 class ServiceWorkerClients;
 class ServiceWorkerRegistration;
 class ServiceWorkerThread;
 class WaitUntilObserver;
 struct GlobalScopeCreationParams;
+struct WebServiceWorkerObjectInfo;
+struct WebServiceWorkerRegistrationObjectInfo;
 
 typedef RequestOrUSVString RequestInfo;
 
@@ -66,7 +68,10 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final : public WorkerGlobalScope {
       base::TimeTicks time_origin);
 
   ~ServiceWorkerGlobalScope() override;
+
+  // ExecutionContext overrides:
   bool IsServiceWorkerGlobalScope() const override { return true; }
+  bool ShouldInstallV8Extensions() const final;
 
   // Implements WorkerGlobalScope.
   void EvaluateClassicScript(
@@ -88,7 +93,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final : public WorkerGlobalScope {
   void CountImportedScript(size_t script_size, size_t cached_metadata_size);
 
   // Called when the main worker script is evaluated.
-  void DidEvaluateClassicScript();
+  void DidEvaluateScript();
 
   // ServiceWorkerGlobalScope.idl
   ServiceWorkerClients* clients();
@@ -103,7 +108,12 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final : public WorkerGlobalScope {
 
   void BindServiceWorkerHost(mojom::blink::ServiceWorkerHostAssociatedPtrInfo);
 
-  void SetRegistration(std::unique_ptr<WebServiceWorkerRegistration::Handle>);
+  void SetRegistration(WebServiceWorkerRegistrationObjectInfo info);
+
+  // Returns the ServiceWorker object described by the object info in current
+  // execution context. Creates a new object if needed, or else returns the
+  // existing one.
+  ServiceWorker* GetOrCreateServiceWorker(WebServiceWorkerObjectInfo);
 
   // EventTarget
   const AtomicString& InterfaceName() const override;
@@ -151,12 +161,19 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final : public WorkerGlobalScope {
       const Vector<char>* meta_data) override;
   void ExceptionThrown(ErrorEvent*) override;
 
-  // Records the |script_size| and |cached_metadata_size| for UMA to measure the
+  // Counts the |script_size| and |cached_metadata_size| for UMA to measure the
   // number of scripts and the total bytes of scripts.
-  void RecordScriptSize(size_t script_size, size_t cached_metadata_size);
+  void CountScriptInternal(size_t script_size, size_t cached_metadata_size);
 
   Member<ServiceWorkerClients> clients_;
   Member<ServiceWorkerRegistration> registration_;
+  // Map from service worker version id to JavaScript ServiceWorker object in
+  // current execution context.
+  HeapHashMap<int64_t,
+              WeakMember<ServiceWorker>,
+              WTF::IntHash<int64_t>,
+              WTF::UnsignedWithZeroKeyHashTraits<int64_t>>
+      service_worker_objects_;
   bool did_evaluate_script_ = false;
   size_t script_count_ = 0;
   size_t script_total_size_ = 0;
@@ -175,11 +192,12 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final : public WorkerGlobalScope {
   mojom::blink::CacheStoragePtrInfo cache_storage_info_;
 };
 
-DEFINE_TYPE_CASTS(ServiceWorkerGlobalScope,
-                  ExecutionContext,
-                  context,
-                  context->IsServiceWorkerGlobalScope(),
-                  context.IsServiceWorkerGlobalScope());
+template <>
+struct DowncastTraits<ServiceWorkerGlobalScope> {
+  static bool AllowFrom(const ExecutionContext& context) {
+    return context.IsServiceWorkerGlobalScope();
+  }
+};
 
 }  // namespace blink
 

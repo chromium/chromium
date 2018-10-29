@@ -39,6 +39,9 @@ class ExtensionActionIconFactory : public extensions::IconImage::Observer {
                              Observer* observer);
   ~ExtensionActionIconFactory() override;
 
+  // Controls whether invisible icons will be returned by GetIcon().
+  static void SetAllowInvisibleIconsForTest(bool value);
+
   // extensions::IconImage override.
   void OnExtensionIconImageChanged(extensions::IconImage* image) override;
   void OnExtensionIconImageDestroyed(extensions::IconImage* image) override;
@@ -48,7 +51,7 @@ class ExtensionActionIconFactory : public extensions::IconImage::Observer {
   // Else, if there is a default icon set for the extension action, the icon is
   // created using IconImage. Observer is triggered wheniever the icon gets
   // updated.
-  // Else, extension favicon is returned.
+  // Else, the extension's placeholder icon is returned.
   // In all cases, action's attention and animation icon transformations are
   // applied on the icon.
   gfx::Image GetIcon(int tab_id);
@@ -56,6 +59,8 @@ class ExtensionActionIconFactory : public extensions::IconImage::Observer {
  private:
   const ExtensionAction* action_;
   Observer* observer_;
+  const bool should_check_icons_;
+  gfx::Image cached_default_icon_image_;
 
   ScopedObserver<extensions::IconImage, extensions::IconImage::Observer>
       icon_image_observer_;

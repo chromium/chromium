@@ -152,8 +152,8 @@ size_t GetBrowserCountImpl(Profile* profile,
   BrowserList* browser_list_impl = BrowserList::GetInstance();
   size_t count = 0;
   if (browser_list_impl) {
-    for (BrowserList::const_iterator i = browser_list_impl->begin();
-         i != browser_list_impl->end(); ++i) {
+    for (auto i = browser_list_impl->begin(); i != browser_list_impl->end();
+         ++i) {
       if (BrowserMatches(*i, profile, Browser::FEATURE_NONE, match_types,
                          display_id))
         count++;

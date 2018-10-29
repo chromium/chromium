@@ -5,11 +5,10 @@
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_account_item.h"
 
 #include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -153,8 +152,7 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
   _imageView.layer.masksToBounds = YES;
   _imageView.contentMode = UIViewContentModeScaleAspectFit;
 
-  if (cellStyle == CollectionViewCellStyle::kUIKit &&
-      experimental_flags::IsSettingsUIRebootEnabled()) {
+  if (cellStyle == CollectionViewCellStyle::kUIKit) {
     _textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
     _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
     _detailTextLabel.font =

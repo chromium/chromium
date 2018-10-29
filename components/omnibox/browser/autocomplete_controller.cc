@@ -314,7 +314,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // Start the new query.
   in_start_ = true;
   base::TimeTicks start_time = base::TimeTicks::Now();
-  for (Providers::iterator i(providers_.begin()); i != providers_.end(); ++i) {
+  for (auto i(providers_.begin()); i != providers_.end(); ++i) {
     // TODO(mpearson): Remove timing code once bug 178705 is resolved.
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
     (*i)->Start(input_, minimal_changes);
@@ -395,7 +395,7 @@ void AutocompleteController::DeleteMatch(const AutocompleteMatch& match) {
   DCHECK(match.SupportsDeletion());
 
   // Delete duplicate matches attached to the main match first.
-  for (ACMatches::const_iterator it(match.duplicate_matches.begin());
+  for (auto it(match.duplicate_matches.begin());
        it != match.duplicate_matches.end(); ++it) {
     if (it->deletable)
       it->provider->DeleteMatch(*it);
@@ -429,8 +429,7 @@ void AutocompleteController::OnProviderUpdate(bool updated_matches) {
 void AutocompleteController::AddProvidersInfo(
     ProvidersInfo* provider_info) const {
   provider_info->clear();
-  for (Providers::const_iterator i(providers_.begin()); i != providers_.end();
-       ++i) {
+  for (auto i(providers_.begin()); i != providers_.end(); ++i) {
     // Add per-provider info, if any.
     (*i)->AddProviderInfo(provider_info);
 
@@ -513,11 +512,19 @@ void AutocompleteController::UpdateResult(
        i != providers_.end(); ++i)
     result_.AppendMatches(input_, (*i)->matches());
 
+  if (OmniboxFieldTrial::GetPedalSuggestionMode() ==
+      OmniboxFieldTrial::PedalSuggestionMode::DEDICATED)
+    result_.AppendDedicatedPedalMatches(provider_client_.get(), input_);
+
   // Sort the matches and trim to a small number of "best" matches.
   result_.SortAndCull(input_, template_url_service_);
 
   if (OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled())
     result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
+
+  if (OmniboxFieldTrial::GetPedalSuggestionMode() ==
+      OmniboxFieldTrial::PedalSuggestionMode::IN_SUGGESTION)
+    result_.ConvertInSuggestionPedalMatches(provider_client_.get());
 
   // Need to validate before invoking CopyOldMatches as the old matches are not
   // valid against the current input.
@@ -576,8 +583,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       keyword_provider_->GetKeywordForText(input_.text());
 
   std::set<base::string16> keywords;
-  for (ACMatches::iterator match(result->begin()); match != result->end();
-       ++match) {
+  for (auto match(result->begin()); match != result->end(); ++match) {
     base::string16 keyword(
         match->GetSubstitutingExplicitlyInvokedKeyword(template_url_service_));
     if (!keyword.empty()) {
@@ -619,8 +625,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
 void AutocompleteController::UpdateKeywordDescriptions(
     AutocompleteResult* result) {
   base::string16 last_keyword;
-  for (AutocompleteResult::iterator i(result->begin()); i != result->end();
-       ++i) {
+  for (auto i(result->begin()); i != result->end(); ++i) {
     if (AutocompleteMatch::IsSearchType(i->type)) {
       if (AutocompleteMatchHasCustomDescription(*i))
         continue;
@@ -660,8 +665,7 @@ void AutocompleteController::UpdateAssistedQueryStats(
   int count = 0;
   size_t last_type = base::string16::npos;
   size_t last_subtype = base::string16::npos;
-  for (ACMatches::iterator match(result->begin()); match != result->end();
-       ++match) {
+  for (auto match(result->begin()); match != result->end(); ++match) {
     size_t type = base::string16::npos;
     size_t subtype = base::string16::npos;
     AutocompleteMatchToAssistedQuery(

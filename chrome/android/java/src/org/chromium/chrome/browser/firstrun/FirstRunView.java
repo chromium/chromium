@@ -78,7 +78,7 @@ public class FirstRunView extends FrameLayout {
             contentWrapperLayout.height = LayoutParams.WRAP_CONTENT;
             contentWrapperLayout.topMargin = 0;
 
-            halfContentHeight = getResources().getDimensionPixelSize(R.dimen.headline_size_large)
+            halfContentHeight = getResources().getDimensionPixelSize(R.dimen.headline_size)
                     + getResources().getDimensionPixelSize(R.dimen.fre_vertical_spacing)
                     + getResources().getDimensionPixelSize(R.dimen.fre_image_height) / 2;
 
@@ -90,7 +90,7 @@ public class FirstRunView extends FrameLayout {
             contentWrapperLayout.topMargin =
                     getResources().getDimensionPixelSize(R.dimen.fre_vertical_spacing);
 
-            halfContentHeight = getResources().getDimensionPixelSize(R.dimen.headline_size_large)
+            halfContentHeight = getResources().getDimensionPixelSize(R.dimen.headline_size)
                     + getResources().getDimensionPixelSize(R.dimen.fre_vertical_spacing)
                     + getResources().getDimensionPixelSize(R.dimen.fre_image_height)
                     + getResources().getDimensionPixelSize(R.dimen.fre_vertical_spacing);

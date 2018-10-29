@@ -17,11 +17,11 @@ ExploreSitesSite::ExploreSitesSite(ExploreSitesSite&& other) = default;
 ExploreSitesSite::~ExploreSitesSite() = default;
 
 ExploreSitesCategory::ExploreSitesCategory(int category_id,
-                                           int version,
+                                           std::string version_token,
                                            int category_type,
                                            std::string label)
     : category_id(category_id),
-      version(version),
+      version_token(version_token),
       category_type(category_type),
       label(label) {}
 

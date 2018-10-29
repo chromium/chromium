@@ -53,7 +53,7 @@ DOMUint8Array* ConvertUnsignedDataToUint8Array(
     ExceptionState& exception_state) {
   DOMUint8Array* array = DOMUint8Array::Create(unsigned_data.size());
   DOMUint8Array::ValueType* array_data = array->Data();
-  for (size_t i = 0; i < unsigned_data.size(); ++i) {
+  for (wtf_size_t i = 0; i < unsigned_data.size(); ++i) {
     if (unsigned_data[i] > 0xff) {
       exception_state.ThrowTypeError("The value at index " + String::Number(i) +
                                      " (" + String::Number(unsigned_data[i]) +

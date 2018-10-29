@@ -32,7 +32,7 @@ class DISPLAY_EXPORT DisplayChangeNotifier {
  private:
   // The observers that need to be notified when a display is modified, added
   // or removed.
-  base::ObserverList<DisplayObserver>::Unchecked observer_list_;
+  base::ObserverList<DisplayObserver> observer_list_;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayChangeNotifier);
 };

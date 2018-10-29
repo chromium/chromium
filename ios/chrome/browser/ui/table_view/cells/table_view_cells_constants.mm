@@ -16,4 +16,6 @@ const CGFloat kTableViewCellSelectionAnimationDuration = 0.15;
 const CGFloat kUseDefaultFontSize = 0.0;
 const CGFloat kTableViewLabelVerticalTopSpacing = 13.0;
 
-const CGFloat kTableViewTextLabelColorLightGrey = 0x6D6D72;
+const int kTableViewTextLabelColorLightGrey = 0x6D6D72;
+const int kTableViewSecondaryLabelLightGrayTextColor = 0x8E8E93;
+const int kTableViewSwitchTintColor = 0x1A73E8;

@@ -39,3 +39,8 @@ a {
   cursor: pointer;
   pointer-events: auto;
 }
+
+#illustration {
+  height: 264px;
+  width: 264px;
+}

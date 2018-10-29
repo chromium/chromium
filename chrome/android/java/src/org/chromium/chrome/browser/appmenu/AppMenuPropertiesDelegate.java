@@ -7,17 +7,17 @@ package org.chromium.chrome.browser.appmenu;
 import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.preferences.ManagedPreferencesUtils;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.webapk.lib.client.WebApkValidator;
@@ -133,7 +134,11 @@ public class AppMenuPropertiesDelegate {
                 forwardMenuItem.setEnabled(currentTab.canGoForward());
 
                 mReloadMenuItem = menu.findItem(R.id.reload_menu_id);
-                mReloadMenuItem.setIcon(R.drawable.btn_reload_stop);
+                Drawable icon =
+                        AppCompatResources.getDrawable(mActivity, R.drawable.btn_reload_stop);
+                DrawableCompat.setTintList(icon,
+                        AppCompatResources.getColorStateList(mActivity, R.color.dark_mode_tint));
+                mReloadMenuItem.setIcon(icon);
                 loadingStateChanged(currentTab.isLoading());
 
                 MenuItem bookmarkMenuItem = menu.findItem(R.id.bookmark_this_page_id);
@@ -143,14 +148,6 @@ public class AppMenuPropertiesDelegate {
                 if (offlineMenuItem != null) {
                     offlineMenuItem.setEnabled(
                             DownloadUtils.isAllowedToDownloadPage(currentTab));
-
-                    Drawable drawable = offlineMenuItem.getIcon();
-                    if (drawable != null) {
-                        int iconTint = ApiCompatibilityUtils.getColor(
-                                mActivity.getResources(), R.color.default_icon_color);
-                        drawable.mutate();
-                        drawable.setColorFilter(iconTint, PorterDuff.Mode.SRC_ATOP);
-                    }
                 }
             }
 
@@ -179,6 +176,21 @@ public class AppMenuPropertiesDelegate {
             // Disable find in page on the native NTP.
             menu.findItem(R.id.find_in_page_id).setVisible(
                     !currentTab.isNativePage() && currentTab.getWebContents() != null);
+
+            // Prepare translate menu button.
+            boolean isTranslateVisible = !isChromeScheme && !isFileScheme && !isContentScheme
+                    && !TextUtils.isEmpty(url) && currentTab.getWebContents() != null
+                    && ChromeFeatureList.isInitialized()
+                    && ChromeFeatureList.isEnabled(
+                               ChromeFeatureList.TRANSLATE_ANDROID_MANUAL_TRIGGER)
+                    && TranslateBridge.canManuallyTranslate(currentTab);
+            if (ChromeFeatureList.isInitialized()
+                    && ChromeFeatureList.isEnabled(
+                               ChromeFeatureList.TRANSLATE_ANDROID_MANUAL_TRIGGER)) {
+                RecordHistogram.recordBooleanHistogram(
+                        "Translate.MobileMenuTranslate.Shown", isTranslateVisible);
+            }
+            menu.findItem(R.id.translate_id).setVisible(isTranslateVisible);
 
             // Hide 'Add to homescreen' for the following:
             // * chrome:// pages - Android doesn't know how to direct those URLs.

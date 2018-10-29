@@ -32,12 +32,12 @@ mojom::ActivationState ComputeActivationState(
       "SubresourceFilter.DocumentLoad.Activation.CPUDuration");
 
   auto page_wall_duration_timer = ScopedTimers::StartIf(
-      parent_document_origin.unique(), [](base::TimeDelta delta) {
+      parent_document_origin.opaque(), [](base::TimeDelta delta) {
         UMA_HISTOGRAM_MICRO_TIMES(
             "SubresourceFilter.PageLoad.Activation.WallDuration", delta);
       });
   auto page_cpu_duration_timer = ScopedThreadTimers::StartIf(
-      parent_document_origin.unique(), [](base::TimeDelta delta) {
+      parent_document_origin.opaque(), [](base::TimeDelta delta) {
         UMA_HISTOGRAM_MICRO_TIMES(
             "SubresourceFilter.PageLoad.Activation.CPUDuration", delta);
       });

@@ -42,19 +42,22 @@ static std::atomic<jmethodID> g_java_io_InputStream_available(nullptr);
 static jint Java_InputStream_available(JNIEnv* env, const base::android::JavaRef<jobject>& obj)
     __attribute__ ((unused));
 static jint Java_InputStream_available(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       java_io_InputStream_clazz(env), 0);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, java_io_InputStream_clazz(env),
+          env,
+          clazz,
           "available",
           "()I",
           &g_java_io_InputStream_available);
 
   jint ret =
       env->CallIntMethod(obj.obj(),
-          method_id);
-  jni_generator::CheckException(env);
+          call_context.base.method_id);
   return ret;
 }
 
@@ -62,18 +65,21 @@ static std::atomic<jmethodID> g_java_io_InputStream_close(nullptr);
 static void Java_InputStream_close(JNIEnv* env, const base::android::JavaRef<jobject>& obj)
     __attribute__ ((unused));
 static void Java_InputStream_close(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       java_io_InputStream_clazz(env));
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, java_io_InputStream_clazz(env),
+          env,
+          clazz,
           "close",
           "()V",
           &g_java_io_InputStream_close);
 
      env->CallVoidMethod(obj.obj(),
-          method_id);
-  jni_generator::CheckException(env);
+          call_context.base.method_id);
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_mark(nullptr);
@@ -81,18 +87,21 @@ static void Java_InputStream_mark(JNIEnv* env, const base::android::JavaRef<jobj
     JniIntWrapper p0) __attribute__ ((unused));
 static void Java_InputStream_mark(JNIEnv* env, const base::android::JavaRef<jobject>& obj,
     JniIntWrapper p0) {
+  jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       java_io_InputStream_clazz(env));
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, java_io_InputStream_clazz(env),
+          env,
+          clazz,
           "mark",
           "(I)V",
           &g_java_io_InputStream_mark);
 
      env->CallVoidMethod(obj.obj(),
-          method_id, as_jint(p0));
-  jni_generator::CheckException(env);
+          call_context.base.method_id, as_jint(p0));
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_markSupported(nullptr);
@@ -100,19 +109,22 @@ static jboolean Java_InputStream_markSupported(JNIEnv* env, const base::android:
     obj) __attribute__ ((unused));
 static jboolean Java_InputStream_markSupported(JNIEnv* env, const base::android::JavaRef<jobject>&
     obj) {
+  jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       java_io_InputStream_clazz(env), false);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, java_io_InputStream_clazz(env),
+          env,
+          clazz,
           "markSupported",
           "()Z",
           &g_java_io_InputStream_markSupported);
 
   jboolean ret =
       env->CallBooleanMethod(obj.obj(),
-          method_id);
-  jni_generator::CheckException(env);
+          call_context.base.method_id);
   return ret;
 }
 
@@ -120,19 +132,22 @@ static std::atomic<jmethodID> g_java_io_InputStream_readI(nullptr);
 static jint Java_InputStream_readI(JNIEnv* env, const base::android::JavaRef<jobject>& obj)
     __attribute__ ((unused));
 static jint Java_InputStream_readI(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       java_io_InputStream_clazz(env), 0);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, java_io_InputStream_clazz(env),
+          env,
+          clazz,
           "read",
           "()I",
           &g_java_io_InputStream_readI);
 
   jint ret =
       env->CallIntMethod(obj.obj(),
-          method_id);
-  jni_generator::CheckException(env);
+          call_context.base.method_id);
   return ret;
 }
 
@@ -141,19 +156,22 @@ static jint Java_InputStream_readI_AB(JNIEnv* env, const base::android::JavaRef<
     base::android::JavaRef<jbyteArray>& p0) __attribute__ ((unused));
 static jint Java_InputStream_readI_AB(JNIEnv* env, const base::android::JavaRef<jobject>& obj, const
     base::android::JavaRef<jbyteArray>& p0) {
+  jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       java_io_InputStream_clazz(env), 0);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, java_io_InputStream_clazz(env),
+          env,
+          clazz,
           "read",
           "([B)I",
           &g_java_io_InputStream_readI_AB);
 
   jint ret =
       env->CallIntMethod(obj.obj(),
-          method_id, p0.obj());
-  jni_generator::CheckException(env);
+          call_context.base.method_id, p0.obj());
   return ret;
 }
 
@@ -166,19 +184,22 @@ static jint Java_InputStream_readI_AB_I_I(JNIEnv* env, const base::android::Java
     const base::android::JavaRef<jbyteArray>& p0,
     JniIntWrapper p1,
     JniIntWrapper p2) {
+  jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       java_io_InputStream_clazz(env), 0);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, java_io_InputStream_clazz(env),
+          env,
+          clazz,
           "read",
           "([BII)I",
           &g_java_io_InputStream_readI_AB_I_I);
 
   jint ret =
       env->CallIntMethod(obj.obj(),
-          method_id, p0.obj(), as_jint(p1), as_jint(p2));
-  jni_generator::CheckException(env);
+          call_context.base.method_id, p0.obj(), as_jint(p1), as_jint(p2));
   return ret;
 }
 
@@ -186,18 +207,21 @@ static std::atomic<jmethodID> g_java_io_InputStream_reset(nullptr);
 static void Java_InputStream_reset(JNIEnv* env, const base::android::JavaRef<jobject>& obj)
     __attribute__ ((unused));
 static void Java_InputStream_reset(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       java_io_InputStream_clazz(env));
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, java_io_InputStream_clazz(env),
+          env,
+          clazz,
           "reset",
           "()V",
           &g_java_io_InputStream_reset);
 
      env->CallVoidMethod(obj.obj(),
-          method_id);
-  jni_generator::CheckException(env);
+          call_context.base.method_id);
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_skip(nullptr);
@@ -205,19 +229,22 @@ static jlong Java_InputStream_skip(JNIEnv* env, const base::android::JavaRef<job
     p0) __attribute__ ((unused));
 static jlong Java_InputStream_skip(JNIEnv* env, const base::android::JavaRef<jobject>& obj, jlong
     p0) {
+  jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       java_io_InputStream_clazz(env), 0);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, java_io_InputStream_clazz(env),
+          env,
+          clazz,
           "skip",
           "(J)J",
           &g_java_io_InputStream_skip);
 
   jlong ret =
       env->CallLongMethod(obj.obj(),
-          method_id, p0);
-  jni_generator::CheckException(env);
+          call_context.base.method_id, p0);
   return ret;
 }
 
@@ -225,19 +252,22 @@ static std::atomic<jmethodID> g_java_io_InputStream_Constructor(nullptr);
 static base::android::ScopedJavaLocalRef<jobject> Java_InputStream_Constructor(JNIEnv* env)
     __attribute__ ((unused));
 static base::android::ScopedJavaLocalRef<jobject> Java_InputStream_Constructor(JNIEnv* env) {
-  CHECK_CLAZZ(env, java_io_InputStream_clazz(env),
+  jclass clazz = java_io_InputStream_clazz(env);
+  CHECK_CLAZZ(env, clazz,
       java_io_InputStream_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, java_io_InputStream_clazz(env),
+          env,
+          clazz,
           "<init>",
           "()V",
           &g_java_io_InputStream_Constructor);
 
   jobject ret =
-      env->NewObject(java_io_InputStream_clazz(env),
-          method_id);
-  jni_generator::CheckException(env);
+      env->NewObject(clazz,
+          call_context.base.method_id);
   return base::android::ScopedJavaLocalRef<jobject>(env, ret);
 }
 

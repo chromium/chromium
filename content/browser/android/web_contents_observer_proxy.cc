@@ -138,8 +138,13 @@ void WebContentsObserverProxy::DidStartNavigation(
 void WebContentsObserverProxy::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jstring_url(
-      ConvertUTF8ToJavaString(env, navigation_handle->GetURL().spec()));
+  // Matches logic in
+  // components/navigation_interception/navigation_params_android.cc
+  ScopedJavaLocalRef<jstring> jstring_url(ConvertUTF8ToJavaString(
+      env,
+      navigation_handle->GetBaseURLForDataURL().is_empty()
+          ? navigation_handle->GetURL().spec()
+          : navigation_handle->GetBaseURLForDataURL().possibly_invalid_spec()));
 
   bool is_fragment_navigation = navigation_handle->IsSameDocument();
 
@@ -161,6 +166,7 @@ void WebContentsObserverProxy::DidFinishNavigation(
       env, java_observer_, jstring_url, navigation_handle->IsInMainFrame(),
       navigation_handle->IsErrorPage(), navigation_handle->HasCommitted(),
       navigation_handle->IsSameDocument(), is_fragment_navigation,
+      navigation_handle->IsRendererInitiated(), navigation_handle->IsDownload(),
       navigation_handle->HasCommitted() ? navigation_handle->GetPageTransition()
                                         : -1,
       navigation_handle->GetNetErrorCode(), jerror_description,

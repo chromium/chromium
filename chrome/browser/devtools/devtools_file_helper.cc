@@ -229,7 +229,7 @@ void DevToolsFileHelper::Save(const std::string& url,
                               bool save_as,
                               const SaveCallback& saveCallback,
                               const CancelCallback& cancelCallback) {
-  PathsMap::iterator it = saved_files_.find(url);
+  auto it = saved_files_.find(url);
   if (it != saved_files_.end() && !save_as) {
     SaveAsFileSelected(url, content, saveCallback, it->second);
     return;
@@ -276,7 +276,7 @@ void DevToolsFileHelper::Save(const std::string& url,
 void DevToolsFileHelper::Append(const std::string& url,
                                 const std::string& content,
                                 const AppendCallback& callback) {
-  PathsMap::iterator it = saved_files_.find(url);
+  auto it = saved_files_.find(url);
   if (it == saved_files_.end())
     return;
   callback.Run();

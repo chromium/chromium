@@ -31,6 +31,10 @@
 #include "gpu/raster_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+namespace cc {
+class TransferCacheSerializeHelper;
+}  // namespace cc
+
 namespace gpu {
 
 class GpuControl;
@@ -163,13 +167,20 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                                  GLenum pname,
                                  GLuint64* params);
 
-  void* MapRasterCHROMIUM(GLsizeiptr size);
-  void UnmapRasterCHROMIUM(GLsizeiptr written_size);
-
   // ClientFontManager::Client implementation.
   void* MapFontBuffer(size_t size) override;
 
+  void set_max_inlined_entry_size_for_testing(size_t max_size) {
+    max_inlined_entry_size_ = max_size;
+  }
+
+  std::unique_ptr<cc::TransferCacheSerializeHelper>
+  CreateTransferCacheHelperForTesting();
+  void SetRasterMappedBufferForTesting(ScopedTransferBufferPtr buffer);
+
  private:
+  class TransferCacheSerializeHelperImpl;
+  class PaintOpSerializer;
   friend class RasterImplementationTest;
 
   using IdNamespaces = raster::id_namespaces::IdNamespaces;
@@ -209,6 +220,14 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   void SetGLErrorInvalidEnum(const char* function_name,
                              GLenum value,
                              const char* label);
+
+  void* MapRasterCHROMIUM(GLsizeiptr size);
+
+  // |raster_written_size| is the size of buffer used by raster commands.
+  // |total_written_size| is the total size of the buffer written to, including
+  // any transfer cache entries inlined into the buffer.
+  void UnmapRasterCHROMIUM(GLsizeiptr raster_written_size,
+                           GLsizeiptr total_written_size);
 
   // Returns the last error and clears it. Useful for debugging.
   const std::string& GetLastError() { return last_error_; }
@@ -295,6 +314,11 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   mutable base::Lock lost_lock_;
   bool lost_;
 
+  // To avoid repeated allocations when searching the rtrees, hold onto this
+  // vector between RasterCHROMIUM calls.  It is not valid outside of that
+  // function.
+  std::vector<size_t> temp_raster_offsets_;
+
   struct RasterProperties {
     RasterProperties(SkColor background_color,
                      bool can_use_lcd_text,
@@ -306,7 +330,9 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   };
   base::Optional<RasterProperties> raster_properties_;
 
+  size_t max_inlined_entry_size_;
   ClientTransferCache transfer_cache_;
+  std::string last_active_url_;
 
   // Tracing helpers.
   int raster_chromium_id_ = 0;

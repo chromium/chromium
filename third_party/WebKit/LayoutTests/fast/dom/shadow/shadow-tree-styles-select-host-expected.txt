@@ -3,7 +3,6 @@ Test for issue 247275: shadow tree styles selects shadow host.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test that tag selectors in a shadow tree cannot match without :host.
 PASS borderColorOf('host') is "rgb(0, 0, 0)"
 PASS borderColorOf('host-child') is "rgb(0, 0, 0)"
@@ -35,4 +34,5 @@ PASS borderColorOf('hostB') is "rgb(0, 128, 0)"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

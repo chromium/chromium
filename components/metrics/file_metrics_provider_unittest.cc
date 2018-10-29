@@ -18,6 +18,7 @@
 #include "base/metrics/sparse_histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -109,11 +110,25 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
     provider()->MergeHistogramDeltas();
   }
 
+  bool HasIndependentMetrics() { return provider()->HasIndependentMetrics(); }
+
   bool ProvideIndependentMetrics(
       SystemProfileProto* profile_proto,
       base::HistogramSnapshotManager* snapshot_manager) {
-    return provider()->ProvideIndependentMetrics(profile_proto,
-                                                 snapshot_manager);
+    bool success = false;
+    bool success_set = false;
+    provider()->ProvideIndependentMetrics(
+        base::BindOnce(
+            [](bool* success_ptr, bool* set_ptr, bool s) {
+              *success_ptr = s;
+              *set_ptr = true;
+            },
+            &success, &success_set),
+        profile_proto, snapshot_manager);
+
+    RunTasks();
+    CHECK(success_set);
+    return success;
   }
 
   void RecordInitialHistogramSnapshots(
@@ -139,10 +154,10 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
     HistogramFlattenerDeltaRecorder flattener;
     base::HistogramSnapshotManager snapshot_manager(&flattener);
     SystemProfileProto profile_proto;
-    if (!provider()->ProvideIndependentMetrics(&profile_proto,
-                                               &snapshot_manager)) {
-      return 0;
-    }
+    provider()->ProvideIndependentMetrics(base::BindOnce([](bool success) {}),
+                                          &profile_proto, &snapshot_manager);
+
+    RunTasks();
     return flattener.GetRecordedDeltaHistogramNames().size();
   }
 
@@ -545,18 +560,20 @@ TEST_P(FileMetricsProviderTest, AccessDirectoryWithInvalidFiles) {
   // H1 should be skipped and H2 available.
   OnDidCreateMetricsLog();
   RunTasks();
-  EXPECT_EQ(2U, GetIndependentHistogramCount());
   EXPECT_FALSE(base::PathExists(metrics_files.GetPath().AppendASCII("h1.pma")));
   EXPECT_TRUE(base::PathExists(metrics_files.GetPath().AppendASCII("h2.pma")));
   EXPECT_TRUE(base::PathExists(metrics_files.GetPath().AppendASCII("h3.pma")));
   EXPECT_TRUE(base::PathExists(metrics_files.GetPath().AppendASCII("h4.pma")));
 
+  // H2 should be read and the file deleted.
+  EXPECT_EQ(2U, GetIndependentHistogramCount());
+  RunTasks();
+  EXPECT_FALSE(base::PathExists(metrics_files.GetPath().AppendASCII("h2.pma")));
+
   // Nothing else should be found but the last (valid but empty) file will
   // stick around to be processed later (should it get expanded).
-  OnDidCreateMetricsLog();
-  RunTasks();
   EXPECT_EQ(0U, GetIndependentHistogramCount());
-  EXPECT_FALSE(base::PathExists(metrics_files.GetPath().AppendASCII("h2.pma")));
+  RunTasks();
   EXPECT_FALSE(base::PathExists(metrics_files.GetPath().AppendASCII("h3.pma")));
   EXPECT_TRUE(base::PathExists(metrics_files.GetPath().AppendASCII("h4.pma")));
 }
@@ -888,6 +905,7 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsWithoutProfile) {
     SystemProfileProto profile;
 
     // A read of metrics with internal profiles should return nothing.
+    EXPECT_FALSE(HasIndependentMetrics());
     EXPECT_FALSE(ProvideIndependentMetrics(&profile, &snapshot_manager));
   }
   EXPECT_TRUE(base::PathExists(metrics_file()));
@@ -929,11 +947,11 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsWithProfile) {
 
     // A read of metrics with internal profiles should return one result.
     SystemProfileProto profile;
+    EXPECT_TRUE(HasIndependentMetrics());
     EXPECT_TRUE(ProvideIndependentMetrics(&profile, &snapshot_manager));
+    EXPECT_FALSE(HasIndependentMetrics());
     EXPECT_FALSE(ProvideIndependentMetrics(&profile, &snapshot_manager));
   }
-  EXPECT_TRUE(base::PathExists(metrics_file()));
-  OnDidCreateMetricsLog();
   RunTasks();
   EXPECT_FALSE(base::PathExists(metrics_file()));
 }
@@ -960,6 +978,7 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedFallbackMetricsWithoutProfile) {
 
     // A read of metrics with internal profiles should return nothing.
     SystemProfileProto profile;
+    EXPECT_FALSE(HasIndependentMetrics());
     EXPECT_FALSE(ProvideIndependentMetrics(&profile, &snapshot_manager));
   }
   EXPECT_TRUE(base::PathExists(metrics_file()));
@@ -1002,11 +1021,11 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedFallbackMetricsWithProfile) {
 
     // A read of metrics with internal profiles should return one result.
     SystemProfileProto profile;
+    EXPECT_TRUE(HasIndependentMetrics());
     EXPECT_TRUE(ProvideIndependentMetrics(&profile, &snapshot_manager));
+    EXPECT_FALSE(HasIndependentMetrics());
     EXPECT_FALSE(ProvideIndependentMetrics(&profile, &snapshot_manager));
   }
-  EXPECT_TRUE(base::PathExists(metrics_file()));
-  OnDidCreateMetricsLog();
   RunTasks();
   EXPECT_FALSE(base::PathExists(metrics_file()));
 }
@@ -1055,9 +1074,11 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsFromDir) {
   base::HistogramSnapshotManager snapshot_manager(&flattener);
   SystemProfileProto profile;
   for (int i = 0; i < file_count; ++i) {
+    EXPECT_TRUE(HasIndependentMetrics()) << i;
     EXPECT_TRUE(ProvideIndependentMetrics(&profile, &snapshot_manager)) << i;
     RunTasks();
   }
+  EXPECT_FALSE(HasIndependentMetrics());
   EXPECT_FALSE(ProvideIndependentMetrics(&profile, &snapshot_manager));
 
   OnDidCreateMetricsLog();

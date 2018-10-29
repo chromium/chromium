@@ -210,7 +210,6 @@ class FilesGetRequest : public DriveApiDataRequest<FileResource> {
  public:
   FilesGetRequest(RequestSender* sender,
                   const DriveApiUrlGenerator& url_generator,
-                  bool use_internal_endpoint,
                   const FileResourceCallback& callback);
   ~FilesGetRequest() override;
 
@@ -230,7 +229,6 @@ class FilesGetRequest : public DriveApiDataRequest<FileResource> {
 
  private:
   const DriveApiUrlGenerator url_generator_;
-  const bool use_internal_endpoint_;
   std::string file_id_;
   GURL embed_origin_;
 

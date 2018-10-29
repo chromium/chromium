@@ -8,6 +8,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTab;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A more advanced version of {@link ClearBrowsingDataPreferences} with more dialog options and less
  * explanatory text.
@@ -19,11 +22,11 @@ public class ClearBrowsingDataPreferencesAdvanced extends ClearBrowsingDataPrefe
     }
 
     @Override
-    protected int[] getDialogOptions() {
-        return new int[] {DialogOption.CLEAR_HISTORY, DialogOption.CLEAR_COOKIES_AND_SITE_DATA,
-                DialogOption.CLEAR_CACHE, DialogOption.CLEAR_PASSWORDS,
-                DialogOption.CLEAR_FORM_DATA, DialogOption.CLEAR_SITE_SETTINGS,
-                DialogOption.CLEAR_MEDIA_LICENSES};
+    protected List<Integer> getDialogOptions() {
+        return Arrays.asList(DialogOption.CLEAR_HISTORY, DialogOption.CLEAR_COOKIES_AND_SITE_DATA,
+                DialogOption.CLEAR_MEDIA_LICENSES, DialogOption.CLEAR_CACHE,
+                DialogOption.CLEAR_PASSWORDS, DialogOption.CLEAR_FORM_DATA,
+                DialogOption.CLEAR_SITE_SETTINGS);
     }
 
     @Override

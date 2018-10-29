@@ -2,7 +2,6 @@ This test checks the constants on the XMLHttpRequst object, as well as its proto
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test the constants on the XMLHttpRequest object itself.
 PASS new XMLHttpRequest().UNSENT is 0
 PASS new XMLHttpRequest().OPENED is 1

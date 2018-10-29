@@ -64,6 +64,8 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   WindowEventDispatcher(WindowTreeHost* host, bool are_events_in_pixels);
   ~WindowEventDispatcher() override;
 
+  bool are_events_in_pixels() const { return are_events_in_pixels_; }
+
   // Stops dispatching/synthesizing mouse events.
   void Shutdown();
 
@@ -72,6 +74,8 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   Window* mouse_pressed_handler() { return mouse_pressed_handler_; }
   Window* mouse_moved_handler() { return mouse_moved_handler_; }
   Window* touchpad_pinch_handler() { return touchpad_pinch_handler_; }
+
+  WindowTargeter* event_targeter() { return event_targeter_.get(); }
 
   // Overridden from ui::EventProcessor:
   ui::EventTargeter* GetDefaultEventTargeter() override;

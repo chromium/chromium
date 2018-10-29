@@ -7,6 +7,7 @@
 
 #include "ui/aura/window_port.h"
 
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 
 namespace aura {
@@ -40,12 +41,14 @@ class WindowPortForShutdown : public WindowPort {
                          std::unique_ptr<ui::PropertyData> data) override;
   std::unique_ptr<cc::LayerTreeFrameSink> CreateLayerTreeFrameSink() override;
   void AllocateLocalSurfaceId() override;
-  bool IsLocalSurfaceIdAllocationSuppressed() const override;
   viz::ScopedSurfaceIdAllocator GetSurfaceIdAllocator(
       base::OnceCallback<void()> allocation_task) override;
   void UpdateLocalSurfaceIdFromEmbeddedClient(
-      const viz::LocalSurfaceId& embedded_client_local_surface_id) override;
+      const viz::LocalSurfaceId& embedded_client_local_surface_id,
+      base::TimeTicks embedded_client_local_surface_id_allocation_time)
+      override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() override;
+  base::TimeTicks GetLocalSurfaceIdAllocationTime() const override;
   void OnEventTargetingPolicyChanged() override;
   bool ShouldRestackTransientChildren() override;
 

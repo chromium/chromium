@@ -128,4 +128,26 @@ TEST_F(ViewElementTest, GetCustomProperties) {
   EXPECT_EQ(props[0].second, "This is the tooltip");
 }
 
+TEST_F(ViewElementTest, GetNodeWindowAndBounds) {
+  // For this to be meaningful, the view must be in
+  // a widget.
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::TYPE_WINDOW);
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget->Init(params);
+  widget->Show();
+
+  widget->GetContentsView()->AddChildView(view());
+  gfx::Rect bounds(50, 60, 70, 80);
+  view()->SetBoundsRect(bounds);
+
+  std::pair<gfx::NativeWindow, gfx::Rect> window_and_bounds =
+      element()->GetNodeWindowAndBounds();
+  EXPECT_EQ(window_and_bounds.first, widget->GetNativeWindow());
+  EXPECT_EQ(window_and_bounds.second, view()->GetBoundsInScreen());
+
+  view()->parent()->RemoveChildView(view());
+}
+
 }  // namespace ui_devtools

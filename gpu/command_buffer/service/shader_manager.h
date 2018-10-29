@@ -15,10 +15,12 @@
 #include "gpu/command_buffer/service/shader_translator.h"
 #include "gpu/gpu_gles2_export.h"
 
+namespace gl {
+class ProgressReporter;
+}
+
 namespace gpu {
 namespace gles2 {
-
-class ProgressReporter;
 
 enum ShaderVariableBaseType {
   SHADER_VARIABLE_INT = 0x01,
@@ -279,7 +281,7 @@ class GPU_GLES2_EXPORT Shader : public base::RefCounted<Shader> {
 // need to be shared by multiple GLES2Decoders.
 class GPU_GLES2_EXPORT ShaderManager {
  public:
-  ShaderManager(ProgressReporter* progress_reporter);
+  ShaderManager(gl::ProgressReporter* progress_reporter);
   ~ShaderManager();
 
   // Must call before destruction.
@@ -322,7 +324,7 @@ class GPU_GLES2_EXPORT ShaderManager {
   // Used to notify the watchdog thread of progress during destruction,
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
-  ProgressReporter* progress_reporter_;
+  gl::ProgressReporter* progress_reporter_;
 
   DISALLOW_COPY_AND_ASSIGN(ShaderManager);
 };

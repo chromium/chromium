@@ -213,9 +213,9 @@ void VdaVideoDecoder::Initialize(
   DVLOG(1) << __func__ << "(" << config.AsHumanReadableString() << ")";
   DCHECK(parent_task_runner_->BelongsToCurrentThread());
   DCHECK(config.IsValidConfig());
-  DCHECK(init_cb_.is_null());
-  DCHECK(flush_cb_.is_null());
-  DCHECK(reset_cb_.is_null());
+  DCHECK(!init_cb_);
+  DCHECK(!flush_cb_);
+  DCHECK(!reset_cb_);
   DCHECK(decode_cbs_.empty());
 
   if (has_error_) {
@@ -344,16 +344,16 @@ void VdaVideoDecoder::InitializeDone(bool status) {
     return;
   }
 
-  base::ResetAndReturn(&init_cb_).Run(true);
+  std::move(init_cb_).Run(true);
 }
 
 void VdaVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                              const DecodeCB& decode_cb) {
   DVLOG(3) << __func__ << "(" << (buffer->end_of_stream() ? "EOS" : "") << ")";
   DCHECK(parent_task_runner_->BelongsToCurrentThread());
-  DCHECK(init_cb_.is_null());
-  DCHECK(flush_cb_.is_null());
-  DCHECK(reset_cb_.is_null());
+  DCHECK(!init_cb_);
+  DCHECK(!flush_cb_);
+  DCHECK(!reset_cb_);
   DCHECK(buffer->end_of_stream() || !buffer->decrypt_config());
 
   if (has_error_) {
@@ -401,10 +401,10 @@ void VdaVideoDecoder::DecodeOnGpuThread(scoped_refptr<DecoderBuffer> buffer,
 void VdaVideoDecoder::Reset(const base::RepeatingClosure& reset_cb) {
   DVLOG(2) << __func__;
   DCHECK(parent_task_runner_->BelongsToCurrentThread());
-  DCHECK(init_cb_.is_null());
+  DCHECK(!init_cb_);
   // Note: |flush_cb_| may be non-null. If so, the flush can be completed by
   // NotifyResetDone().
-  DCHECK(reset_cb_.is_null());
+  DCHECK(!reset_cb_);
 
   if (has_error_) {
     parent_task_runner_->PostTask(FROM_HERE, reset_cb);
@@ -620,11 +620,11 @@ void VdaVideoDecoder::NotifyFlushDoneOnParentThread() {
     return;
 
   // Protect against incorrect calls from the VDA.
-  if (flush_cb_.is_null())
+  if (!flush_cb_)
     return;
 
   DCHECK(decode_cbs_.empty());
-  base::ResetAndReturn(&flush_cb_).Run(DecodeStatus::OK);
+  std::move(flush_cb_).Run(DecodeStatus::OK);
 }
 
 void VdaVideoDecoder::NotifyResetDone() {
@@ -662,11 +662,11 @@ void VdaVideoDecoder::NotifyResetDoneOnParentThread() {
       return;
   }
 
-  if (weak_this && !flush_cb_.is_null())
-    base::ResetAndReturn(&flush_cb_).Run(DecodeStatus::ABORTED);
+  if (weak_this && flush_cb_)
+    std::move(flush_cb_).Run(DecodeStatus::ABORTED);
 
   if (weak_this)
-    base::ResetAndReturn(&reset_cb_).Run();
+    std::move(reset_cb_).Run();
 }
 
 void VdaVideoDecoder::NotifyError(VideoDecodeAccelerator::Error error) {
@@ -738,16 +738,16 @@ void VdaVideoDecoder::DestroyCallbacks() {
       return;
   }
 
-  if (weak_this && !flush_cb_.is_null())
-    base::ResetAndReturn(&flush_cb_).Run(DecodeStatus::DECODE_ERROR);
+  if (weak_this && flush_cb_)
+    std::move(flush_cb_).Run(DecodeStatus::DECODE_ERROR);
 
   // Note: |reset_cb_| cannot return failure, so the client won't actually find
   // out about the error until another operation is attempted.
-  if (weak_this && !reset_cb_.is_null())
-    base::ResetAndReturn(&reset_cb_).Run();
+  if (weak_this && reset_cb_)
+    std::move(reset_cb_).Run();
 
-  if (weak_this && !init_cb_.is_null())
-    base::ResetAndReturn(&init_cb_).Run(false);
+  if (weak_this && init_cb_)
+    std::move(init_cb_).Run(false);
 }
 
 }  // namespace media

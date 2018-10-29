@@ -74,6 +74,7 @@ DownloadResponseHandler::DownloadResponseHandler(
       download_source_(download_source),
       has_strong_validators_(false),
       is_partial_request_(save_info_->offset > 0),
+      completed_(false),
       abort_reason_(DOWNLOAD_INTERRUPT_REASON_NONE) {
   if (!is_parallel_request) {
     RecordDownloadCountWithSource(UNTHROTTLED_COUNT, download_source);
@@ -201,6 +202,10 @@ void DownloadResponseHandler::OnStartLoadingResponseBody(
 
 void DownloadResponseHandler::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
+  if (completed_)
+    return;
+
+  completed_ = true;
   DownloadInterruptReason reason = HandleRequestCompletionStatus(
       static_cast<net::Error>(status.error_code), has_strong_validators_,
       cert_status_, abort_reason_);
@@ -215,9 +220,10 @@ void DownloadResponseHandler::OnComplete(
     return;
   }
 
-  // OnComplete() called without OnReceiveResponse(). This should only
+  // OnComplete() called without OnResponseStarted(). This should only
   // happen when the request was aborted.
-  create_info_ = CreateDownloadCreateInfo(network::ResourceResponseHead());
+  if (!create_info_)
+    create_info_ = CreateDownloadCreateInfo(network::ResourceResponseHead());
   create_info_->result = reason;
 
   OnResponseStarted(mojom::DownloadStreamHandlePtr());

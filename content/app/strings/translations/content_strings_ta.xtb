@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1018939186200882850">மெனு உருப்படி</translation>
-<translation id="1020833440720551630">ஆடியோ டிராக்கை முடக்கு</translation>
 <translation id="10623998915015855">நிலைமாற்றுதல் பொத்தான்</translation>
 <translation id="1088086359088493902">வினாடிகள்</translation>
 <translation id="1171774979989969504">ஒரு மின்னஞ்சல் முகவரியை உள்ளிடவும்.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">பங்களித்தவர்கள்</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">பேனர்</translation>
-<translation id="1548116112524424341">பிக்ச்சர்-இன்-பிக்ச்சர் பயன்முறையில் வீடியோவை இயக்கும்</translation>
 <translation id="1589122976691792535">மண்டலம்</translation>
 <translation id="1591562245178063882">இந்த மாதம்</translation>
 <translation id="1637811476055996098">கோப்புகளைத் தேர்வுசெய்க</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">ட்ரீ கிரிட்</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">தொலைநிலைச் சாதனத்தில் இயக்கு</translation>
-<translation id="1838818994221231429">முழுத்திரைக் காட்சியை டிஸ்ப்ளே கட்அவுட் பகுதிக்கு நிலைமாற்றும்</translation>
 <translation id="190587075670221089">நீக்கும்</translation>
 <translation id="1907737156431278478">உதாரணம்</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">நேரம்</translation>
 <translation id="5630795885300617244">10வி தவிர்க்க, இடது அல்லது வலதுபுறம் இருமுறை தட்டவும்</translation>
 <translation id="5631759159893697722">சுருக்கம்</translation>
-<translation id="5641012560118721995">மறுஇயக்கத்தை இடைநிறுத்து</translation>
 <translation id="5643186887447432888">பொத்தான்</translation>
 <translation id="5677946354068040947">கூடுதல் விருப்பங்கள் பொத்தான்</translation>
 <translation id="576709008726043716">அறிமுகம்</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">மீட்டமை</translation>
 <translation id="5966707198760109579">வாரம்</translation>
 <translation id="5987525920412732405">சுழல் பொத்தான்</translation>
+<translation id="6011459053400940133">ஒலியளவு ஸ்லைடர்</translation>
 <translation id="6015796118275082299">ஆண்டு</translation>
 <translation id="6023896073578205740">பட்டியல் பெட்டி</translation>
-<translation id="6101327004457443354">ஆடியோ டிராக்கை இயக்கு</translation>
 <translation id="6150588977291308318">நூல்விவர அட்டவணை</translation>
 <translation id="6164829606128959761">மீட்டர்</translation>
 <translation id="6166809985690652833">பின்னுரை</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">மணிநேரம்</translation>
 <translation id="7681220483256441252">பொருளடக்கம்</translation>
 <translation id="7720026100085573005">மீதமுள்ள நேரம்</translation>
-<translation id="7740016676195725605">விரிவான வசனங்களைக் காட்டுவதை நிறுத்து</translation>
 <translation id="7740050170769002709">HTML உள்ளடக்கம்</translation>
 <translation id="7750228210027921155">பிக்ச்சர்-இன்-பிக்ச்சர்</translation>
 <translation id="7789962463072032349">இடைநிறுத்து</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">தேடல் உரைப் புலம்</translation>
 <translation id="8057695513531652401">அறிவிப்பு</translation>
 <translation id="8105797009065549151">குறிப்பு மேற்கோள்</translation>
-<translation id="8115662671911883373">விரிவான வசனங்களைக் காட்டத் தொடங்கு</translation>
 <translation id="8117451130807776954">இந்த வாரம்</translation>
-<translation id="819205353528511139">மூவியை முழுத்திரைப் பயன்முறையில் இயக்கு</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8284326494547611709">வசனங்கள்</translation>
 <translation id="835897206747267392">செல்லாத மதிப்பு.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">தொலைநிலை இயக்கத்தைக் கட்டுப்படுத்தவும்</translation>
 <translation id="862370744433916922">துணை தலைப்பு</translation>
 <translation id="8750798805984357768">தயவுசெய்து இந்த விருப்பங்களில் ஒன்றைத் தேர்ந்தெடுங்கள்.</translation>
-<translation id="8785498733064193001">மறுஇயக்கத்தைத் தொடங்கு</translation>
 <translation id="8808573423886751634">அத்தியாயம்</translation>
 <translation id="8845239796550121995">டிவிக்கு அனுப்புகிறது</translation>
 <translation id="8851136666856101339">முதன்மை</translation>

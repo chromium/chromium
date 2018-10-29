@@ -116,15 +116,13 @@ AlsReaderImpl::~AlsReaderImpl() = default;
 void AlsReaderImpl::AddObserver(Observer* const observer) {
   DCHECK(observer);
   observers_.AddObserver(observer);
+  if (status_ != AlsInitStatus::kInProgress)
+    observer->OnAlsReaderInitialized(status_);
 }
 
 void AlsReaderImpl::RemoveObserver(Observer* const observer) {
   DCHECK(observer);
   observers_.RemoveObserver(observer);
-}
-
-AlsReader::AlsInitStatus AlsReaderImpl::GetInitStatus() const {
-  return status_;
 }
 
 void AlsReaderImpl::Init() {

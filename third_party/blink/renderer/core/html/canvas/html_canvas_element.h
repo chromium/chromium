@@ -234,8 +234,9 @@ class CORE_EXPORT HTMLCanvasElement final
                            unsigned resource_id) override;
   void Trace(blink::Visitor*) override;
 
-  void SetCanvas2DLayerBridgeForTesting(std::unique_ptr<Canvas2DLayerBridge>,
-                                        const IntSize&);
+  void SetResourceProviderForTesting(std::unique_ptr<CanvasResourceProvider>,
+                                     std::unique_ptr<Canvas2DLayerBridge>,
+                                     const IntSize&);
 
   static void RegisterRenderingContextFactory(
       std::unique_ptr<CanvasRenderingContextFactory>);

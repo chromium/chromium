@@ -300,6 +300,11 @@ class UserCloudPolicyManagerChromeOS : public CloudPolicyManager,
   // fetch the policy OAuth token.
   base::Optional<std::string> user_context_refresh_token_for_tests_;
 
+  // Used to track the reregistration state of the CloudPolicyClient, i.e.
+  // whether this class has triggered a re-registration after the client failed
+  // to load policy with error |DM_STATUS_SERVICE_DEVICE_NOT_FOUND|.
+  bool is_in_reregistration_state_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerChromeOS);
 };
 

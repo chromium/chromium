@@ -294,6 +294,11 @@ content::RenderViewHost* SelectFileDialogExtension::GetRenderViewHost() {
   return NULL;
 }
 
+bool SelectFileDialogExtension::IsResizeable() const {
+  DCHECK(extension_dialog_.get());
+  return extension_dialog_->CanResize();
+}
+
 void SelectFileDialogExtension::NotifyListener() {
   if (!listener_)
     return;

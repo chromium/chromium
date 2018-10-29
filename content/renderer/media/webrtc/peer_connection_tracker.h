@@ -45,8 +45,11 @@ class CONTENT_EXPORT PeerConnectionTracker
     : public RenderThreadObserver,
       public base::SupportsWeakPtr<PeerConnectionTracker> {
  public:
-  PeerConnectionTracker();
-  PeerConnectionTracker(mojom::PeerConnectionTrackerHostAssociatedPtr host);
+  explicit PeerConnectionTracker(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner);
+  PeerConnectionTracker(
+      mojom::PeerConnectionTrackerHostAssociatedPtr host,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner);
   ~PeerConnectionTracker() override;
 
   enum Source {
@@ -170,13 +173,13 @@ class CONTENT_EXPORT PeerConnectionTracker
   // of a PeerConnection has changed.
   virtual void TrackIceConnectionStateChange(
       RTCPeerConnectionHandler* pc_handler,
-      blink::WebRTCPeerConnectionHandlerClient::ICEConnectionState state);
+      webrtc::PeerConnectionInterface::IceConnectionState state);
 
   // Sends an update when the Ice gathering state
   // of a PeerConnection has changed.
   virtual void TrackIceGatheringStateChange(
       RTCPeerConnectionHandler* pc_handler,
-      blink::WebRTCPeerConnectionHandlerClient::ICEGatheringState state);
+      webrtc::PeerConnectionInterface::IceGatheringState state);
 
   // Sends an update when the SetSessionDescription or CreateOffer or
   // CreateAnswer callbacks are called.
@@ -257,10 +260,12 @@ class CONTENT_EXPORT PeerConnectionTracker
 
   // This keeps track of the next available local ID.
   int next_local_id_;
-  base::ThreadChecker main_thread_;
+  THREAD_CHECKER(main_thread_);
   RenderThread* send_target_for_test_;
   mojom::PeerConnectionTrackerHostAssociatedPtr
       peer_connection_tracker_host_ptr_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(PeerConnectionTracker);
 };

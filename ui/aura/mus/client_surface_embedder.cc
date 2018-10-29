@@ -35,19 +35,32 @@ ClientSurfaceEmbedder::ClientSurfaceEmbedder(
 
 ClientSurfaceEmbedder::~ClientSurfaceEmbedder() = default;
 
-void ClientSurfaceEmbedder::SetPrimarySurfaceId(
-    const viz::SurfaceId& surface_id) {
-  surface_layer_owner_->layer()->SetShowPrimarySurface(
+void ClientSurfaceEmbedder::SetSurfaceId(const viz::SurfaceId& surface_id) {
+  surface_layer_owner_->layer()->SetShowSurface(
       surface_id, window_->bounds().size(), SK_ColorWHITE,
       cc::DeadlinePolicy::UseDefaultDeadline(),
       false /* stretch_content_to_fill_bounds */);
 }
 
+bool ClientSurfaceEmbedder::HasPrimarySurfaceId() const {
+  return surface_layer_owner_->layer()->GetSurfaceId() != nullptr;
+}
+
 void ClientSurfaceEmbedder::SetFallbackSurfaceInfo(
     const viz::SurfaceInfo& surface_info) {
   fallback_surface_info_ = surface_info;
-  surface_layer_owner_->layer()->SetFallbackSurfaceId(surface_info.id());
+  surface_layer_owner_->layer()->SetOldestAcceptableFallback(surface_info.id());
   UpdateSizeAndGutters();
+}
+
+void ClientSurfaceEmbedder::SetClientAreaInsets(
+    const gfx::Insets& client_area_insets) {
+  if (client_area_insets_ == client_area_insets)
+    return;
+
+  client_area_insets_ = client_area_insets;
+  if (inject_gutter_)
+    UpdateSizeAndGutters();
 }
 
 void ClientSurfaceEmbedder::UpdateSizeAndGutters() {
@@ -107,9 +120,8 @@ ui::Layer* ClientSurfaceEmbedder::BottomGutterForTesting() {
   return bottom_gutter_owner_ ? bottom_gutter_owner_->layer() : nullptr;
 }
 
-const viz::SurfaceId& ClientSurfaceEmbedder::GetPrimarySurfaceIdForTesting()
-    const {
-  return *surface_layer_owner_->layer()->GetPrimarySurfaceId();
+const viz::SurfaceId& ClientSurfaceEmbedder::GetSurfaceIdForTesting() const {
+  return *surface_layer_owner_->layer()->GetSurfaceId();
 }
 
 }  // namespace aura

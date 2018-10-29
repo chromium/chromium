@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
@@ -45,10 +46,8 @@ class MediaStreamAudioDeliverer {
     DCHECK(thread_checker_.CalledOnValidThread());
     DCHECK(consumer);
     base::AutoLock auto_lock(consumers_lock_);
-    DCHECK(std::find(consumers_.begin(), consumers_.end(), consumer) ==
-           consumers_.end());
-    DCHECK(std::find(pending_consumers_.begin(), pending_consumers_.end(),
-                     consumer) == pending_consumers_.end());
+    DCHECK(!base::ContainsValue(consumers_, consumer));
+    DCHECK(!base::ContainsValue(pending_consumers_, consumer));
     pending_consumers_.push_back(consumer);
   }
 

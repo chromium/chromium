@@ -47,7 +47,8 @@
 
 namespace blink {
 
-HashMap<String, sk_sp<SkTypeface>>* FontCache::sideloaded_fonts_ = nullptr;
+HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>*
+    FontCache::sideloaded_fonts_ = nullptr;
 
 // Cached system font metrics.
 AtomicString* FontCache::menu_font_family_name_ = nullptr;
@@ -71,10 +72,11 @@ int32_t EnsureMinimumFontHeightIfNeeded(int32_t font_height) {
 // static
 void FontCache::AddSideloadedFontForTesting(sk_sp<SkTypeface> typeface) {
   if (!sideloaded_fonts_)
-    sideloaded_fonts_ = new HashMap<String, sk_sp<SkTypeface>>;
+    sideloaded_fonts_ = new HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>;
   SkString name;
   typeface->getFamilyName(&name);
-  sideloaded_fonts_->Set(name.c_str(), std::move(typeface));
+  String name_wtf(name.c_str());
+  sideloaded_fonts_->Set(name_wtf, std::move(typeface));
 }
 
 // static
@@ -352,13 +354,13 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   DCHECK_EQ(creation_params.CreationType(), kCreateFontByFamily);
 
   CString name;
-  PaintTypeface paint_tf =
+  sk_sp<SkTypeface> typeface =
       CreateTypeface(font_description, creation_params, name);
   // Windows will always give us a valid pointer here, even if the face name
   // is non-existent. We have to double-check and see if the family name was
   // really used.
-  if (!paint_tf || !TypefacesMatchesFamily(paint_tf.ToSkTypeface().get(),
-                                           creation_params.Family())) {
+  if (!typeface ||
+      !TypefacesMatchesFamily(typeface.get(), creation_params.Family())) {
     AtomicString adjusted_name;
     FontSelectionValue variant_weight;
     FontSelectionValue variant_stretch;
@@ -378,17 +380,16 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
     }
 
     if (alternate_font_name == AlternateFontName::kLastResort) {
-      if (!paint_tf)
+      if (!typeface)
         return nullptr;
     } else if (TypefacesHasWeightSuffix(creation_params.Family(), adjusted_name,
                                         variant_weight)) {
       FontFaceCreationParams adjusted_params(adjusted_name);
       FontDescription adjusted_font_description = font_description;
       adjusted_font_description.SetWeight(variant_weight);
-      paint_tf =
+      typeface =
           CreateTypeface(adjusted_font_description, adjusted_params, name);
-      if (!paint_tf || !TypefacesMatchesFamily(paint_tf.ToSkTypeface().get(),
-                                               adjusted_name)) {
+      if (!typeface || !TypefacesMatchesFamily(typeface.get(), adjusted_name)) {
         return nullptr;
       }
 
@@ -397,10 +398,9 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
       FontFaceCreationParams adjusted_params(adjusted_name);
       FontDescription adjusted_font_description = font_description;
       adjusted_font_description.SetStretch(variant_stretch);
-      paint_tf =
+      typeface =
           CreateTypeface(adjusted_font_description, adjusted_params, name);
-      if (!paint_tf || !TypefacesMatchesFamily(paint_tf.ToSkTypeface().get(),
-                                               adjusted_name)) {
+      if (!typeface || !TypefacesMatchesFamily(typeface.get(), adjusted_name)) {
         return nullptr;
       }
     } else {
@@ -408,17 +408,17 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
     }
   }
 
-  const auto& tf = paint_tf.ToSkTypeface();
   std::unique_ptr<FontPlatformData> result = std::make_unique<FontPlatformData>(
-      paint_tf, name.data(), font_size,
-      (font_description.Weight() >= BoldThreshold() && !tf->isBold()) ||
+      typeface, name.data(), font_size,
+      (font_description.Weight() >= BoldThreshold() && !typeface->isBold()) ||
           font_description.IsSyntheticBold(),
-      ((font_description.Style() == ItalicSlopeValue()) && !tf->isItalic()) ||
+      ((font_description.Style() == ItalicSlopeValue()) &&
+       !typeface->isItalic()) ||
           font_description.IsSyntheticItalic(),
       font_description.Orientation());
 
   result->SetAvoidEmbeddedBitmaps(
-      BitmapGlyphsBlacklist::AvoidEmbeddedBitmapsForTypeface(tf.get()));
+      BitmapGlyphsBlacklist::AvoidEmbeddedBitmapsForTypeface(typeface.get()));
 
   return result;
 }

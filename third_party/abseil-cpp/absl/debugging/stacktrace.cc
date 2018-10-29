@@ -80,11 +80,13 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline int Unwind(void** result, int* sizes,
 
 }  // anonymous namespace
 
+ABSL_ATTRIBUTE_NOINLINE
 int GetStackFrames(void** result, int* sizes, int max_depth, int skip_count) {
   return Unwind<true, false>(result, sizes, max_depth, skip_count, nullptr,
                              nullptr);
 }
 
+ABSL_ATTRIBUTE_NOINLINE
 int GetStackFramesWithContext(void** result, int* sizes, int max_depth,
                               int skip_count, const void* uc,
                               int* min_dropped_frames) {
@@ -92,11 +94,13 @@ int GetStackFramesWithContext(void** result, int* sizes, int max_depth,
                             min_dropped_frames);
 }
 
+ABSL_ATTRIBUTE_NOINLINE
 int GetStackTrace(void** result, int max_depth, int skip_count) {
   return Unwind<false, false>(result, nullptr, max_depth, skip_count, nullptr,
                               nullptr);
 }
 
+ABSL_ATTRIBUTE_NOINLINE
 int GetStackTraceWithContext(void** result, int max_depth, int skip_count,
                              const void* uc, int* min_dropped_frames) {
   return Unwind<false, true>(result, nullptr, max_depth, skip_count, uc,

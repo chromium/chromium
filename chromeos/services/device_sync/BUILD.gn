@@ -34,6 +34,7 @@ static_library("device_sync") {
     "//base",
     "//chromeos/components/proximity_auth/logging",
     "//chromeos/services/device_sync/public/mojom",
+    "//components/gcm_driver",
     "//net",
     "//services/identity/public/cpp",
     "//services/preferences/public/cpp",

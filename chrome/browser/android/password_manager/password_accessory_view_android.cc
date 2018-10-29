@@ -74,6 +74,16 @@ void PasswordAccessoryViewAndroid::SwapSheetWithKeyboard() {
       base::android::AttachCurrentThread(), java_object_);
 }
 
+void PasswordAccessoryViewAndroid::ShowWhenKeyboardIsVisible() {
+  Java_PasswordAccessoryBridge_showWhenKeyboardIsVisible(
+      base::android::AttachCurrentThread(), java_object_);
+}
+
+void PasswordAccessoryViewAndroid::Hide() {
+  Java_PasswordAccessoryBridge_hide(base::android::AttachCurrentThread(),
+                                    java_object_);
+}
+
 void PasswordAccessoryViewAndroid::OnAutomaticGenerationStatusChanged(
     bool available) {
   if (!available && java_object_.is_null())
@@ -87,8 +97,10 @@ void PasswordAccessoryViewAndroid::OnAutomaticGenerationStatusChanged(
 void PasswordAccessoryViewAndroid::OnFaviconRequested(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
+    jint desiredSizeInPx,
     const base::android::JavaParamRef<jobject>& j_callback) {
   controller_->GetFavicon(
+      desiredSizeInPx,
       base::BindOnce(&PasswordAccessoryViewAndroid::OnImageFetched,
                      base::Unretained(this),  // Outlives or cancels request.
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback)));

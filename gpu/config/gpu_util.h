@@ -17,6 +17,7 @@ namespace gpu {
 
 struct GPUInfo;
 struct GpuPreferences;
+enum class GpuSeriesType;
 
 // Set GPU feature status if hardware acceleration is disabled.
 GPU_EXPORT GpuFeatureInfo
@@ -72,6 +73,9 @@ GPU_EXPORT bool EnableSwiftShaderIfNeeded(
     const GpuFeatureInfo& gpu_feature_info,
     bool disable_software_rasterizer,
     bool blacklist_needs_more_info);
+
+GPU_EXPORT GpuSeriesType GetGpuSeriesType(uint32_t vendor_id,
+                                          uint32_t device_id);
 
 }  // namespace gpu
 

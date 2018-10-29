@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 1: The specified value "inputRadioValue" does not conform to the required format, "yyyy-MM-dd".
+CONSOLE WARNING: The specified value "inputRadioValue" does not conform to the required format, "yyyy-MM-dd".
 This test is for RadioNodeList specified at http://www.whatwg.org/specs/web-apps/current-work/multipage/common-dom-interfaces.html#radionodelist
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

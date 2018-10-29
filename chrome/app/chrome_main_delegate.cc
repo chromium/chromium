@@ -11,20 +11,20 @@
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
+#include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/process/process_info.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/chrome_resource_bundle_helper.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -57,6 +57,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/service_names.mojom.h"
 #include "extensions/common/constants.h"
+#include "net/url_request/url_request.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -73,7 +74,7 @@
 #include "base/debug/close_handle_hook_win.h"
 #include "base/win/atl.h"
 #include "chrome/browser/downgrade/user_data_downgrade.h"
-#include "chrome/child/v8_breakpad_support_win.h"
+#include "chrome/child/v8_crashpad_support_win.h"
 #include "chrome/common/child_process_logging.h"
 #include "chrome_elf/chrome_elf_main.h"
 #include "sandbox/win/src/sandbox.h"
@@ -116,7 +117,6 @@
 #include "base/android/java_exception_reporter.h"
 #include "chrome/browser/android/crash/pure_java_exception_handler.h"
 #include "chrome/common/descriptors_android.h"
-#include "ui/base/resource/resource_bundle_android.h"
 #else
 // Diagnostics is only available on non-android platforms.
 #include "chrome/browser/diagnostics/diagnostics_controller.h"
@@ -474,7 +474,7 @@ void RecordMainStartupMetrics(base::TimeTicks exe_entry_point_ticks) {
 #if defined(OS_MACOSX) || defined(OS_WIN) || defined(OS_LINUX)
   // Record the startup process creation time on supported platforms.
   startup_metric_utils::RecordStartupProcessCreationTime(
-      base::CurrentProcessInfo::CreationTime());
+      base::Process::Current().CreationTime());
 #endif
 
 // On Android the main entry point time is the time when the Java code starts.
@@ -507,10 +507,26 @@ ChromeMainDelegate::~ChromeMainDelegate() {
 }
 
 #if !defined(CHROME_MULTIPLE_DLL_CHILD)
-void ChromeMainDelegate::PostEarlyInitialization() {
+void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
+  // Chrome disallows cookies by default. All code paths that want to use
+  // cookies need to go through one of Chrome's URLRequestContexts which have
+  // a ChromeNetworkDelegate attached that selectively allows cookies again.
+  net::URLRequest::SetDefaultCookiePolicyToBlock();
+
   DCHECK(chrome_feature_list_creator_);
   chrome_feature_list_creator_->CreateFeatureList();
+
+  // Initializes the resouce bundle and determines the locale.
+  std::string actual_locale =
+      LoadLocalState(chrome_feature_list_creator_.get(), is_running_tests);
+  chrome_feature_list_creator_->SetApplicationLocale(actual_locale);
+
   tracing_sampler_profiler_->OnMessageLoopStarted();
+}
+
+bool ChromeMainDelegate::ShouldCreateFeatureList() {
+  // Chrome creates the FeatureList, so content should not.
+  return false;
 }
 #endif
 
@@ -550,7 +566,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
       base::PlatformThread::CurrentId());
 
 #if defined(OS_WIN) && !defined(CHROME_MULTIPLE_DLL_BROWSER)
-  v8_breakpad_support::SetUp();
+  v8_crashpad_support::SetUp();
 #endif
 #if defined(OS_LINUX)
   breakpad::SetFirstChanceExceptionHandler(v8::V8::TryHandleSignal);
@@ -1065,13 +1081,11 @@ ChromeMainDelegate::CreateContentBrowserClient() {
   return NULL;
 #else
   if (chrome_content_browser_client_ == nullptr) {
-    DCHECK(service_manifest_data_pack_);
     DCHECK(!chrome_feature_list_creator_);
     chrome_feature_list_creator_ = std::make_unique<ChromeFeatureListCreator>();
 
     chrome_content_browser_client_ =
         std::make_unique<ChromeContentBrowserClient>(
-            std::move(service_manifest_data_pack_),
             chrome_feature_list_creator_.get());
   }
   return chrome_content_browser_client_.get();
@@ -1102,29 +1116,6 @@ ChromeMainDelegate::CreateContentUtilityClient() {
 #else
   return g_chrome_content_utility_client.Pointer();
 #endif
-}
-
-ui::DataPack* ChromeMainDelegate::LoadServiceManifestDataPack() {
-  DCHECK(!service_manifest_data_pack_ && !chrome_content_browser_client_);
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  std::string process_type =
-      command_line.GetSwitchValueASCII(switches::kProcessType);
-  DCHECK(process_type.empty());
-
-  base::FilePath resources_pack_path;
-  base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);
-
-#if defined(OS_ANDROID)
-  service_manifest_data_pack_ =
-      ui::GetDataPackFromPackFile("assets/resources.pak", resources_pack_path);
-#else
-  if (base::PathExists(resources_pack_path)) {
-    service_manifest_data_pack_.reset(new ui::DataPack(ui::SCALE_FACTOR_NONE));
-    service_manifest_data_pack_->LoadFromPath(resources_pack_path);
-  }
-#endif  // defined(OS_ANDROID)
-  return service_manifest_data_pack_.get();
 }
 
 bool ChromeMainDelegate::ShouldEnableProfilerRecording() {
@@ -1163,5 +1154,15 @@ void ChromeMainDelegate::PreCreateMainMessageLoop() {
 
   // Initialize NSApplication using the custom subclass.
   chrome_browser_application_mac::RegisterBrowserCrApp();
+
+  if (l10n_util::GetLocaleOverride().empty()) {
+    // The browser process only wants to support the language Cocoa will use,
+    // so force the app locale to be overridden with that value. This must
+    // happen before the ResourceBundle is loaded, which happens in
+    // ChromeBrowserMainParts::PreEarlyInitialization().
+    // Don't do this if the locale is already set, which is done by integration
+    // tests to ensure tests always run with the same locale.
+    l10n_util::OverrideLocaleWithCocoaLocale();
+  }
 #endif
 }

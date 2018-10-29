@@ -6,7 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_switch_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/web/public/test/earl_grey/web_view_actions.h"
@@ -35,8 +35,9 @@ id<GREYAction> TurnSettingsSwitchOn(BOOL on) {
          constraints:constraints
         performBlock:^BOOL(id collectionViewCell,
                            __strong NSError** errorOrNil) {
-          SettingsSwitchCell* switchCell =
-              base::mac::ObjCCastStrict<SettingsSwitchCell>(collectionViewCell);
+          LegacySettingsSwitchCell* switchCell =
+              base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(
+                  collectionViewCell);
           UISwitch* switchView = switchCell.switchView;
           if (switchView.on != on) {
             id<GREYAction> longPressAction = [GREYActions
@@ -65,6 +66,12 @@ id<GREYAction> TurnSyncSwitchOn(BOOL on) {
           }
           return YES;
         }];
+}
+
+id<GREYAction> TapWebElement(const std::string& element_id) {
+  return web::WebViewTapElement(
+      chrome_test_util::GetCurrentWebState(),
+      web::test::ElementSelector::ElementSelectorId(element_id));
 }
 
 }  // namespace chrome_test_util

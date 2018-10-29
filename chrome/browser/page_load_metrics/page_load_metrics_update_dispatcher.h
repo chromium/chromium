@@ -170,6 +170,15 @@ class PageLoadMetricsUpdateDispatcher {
   // Time the navigation for this page load was initiated.
   const base::TimeTicks navigation_start_;
 
+  // As FCP++ metrics need to report the last candidate, this attributes are
+  // used as a buffer to store the latest one of the updating candidate. We
+  // buffer them as private members and only merge them back into
+  // current_merged_page_timing_ at the end of the pageload life time.
+  base::Optional<base::TimeDelta> largest_image_paint_;
+  base::Optional<base::TimeDelta> last_image_paint_;
+  base::Optional<base::TimeDelta> largest_text_paint_;
+  base::Optional<base::TimeDelta> last_text_paint_;
+
   // PageLoadTiming for the currently tracked page. The fields in |paint_timing|
   // are merged across all frames in the document. All other fields are from the
   // main frame document. |current_merged_page_timing_| contains the most recent

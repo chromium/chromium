@@ -8,7 +8,9 @@
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/task/post_task.h"
 #include "content/common/content_constants_internal.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
@@ -34,8 +36,8 @@ void MachBroker::EnsureRunning() {
   // Do not attempt to reinitialize in the event of failure.
   initialized_ = true;
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&MachBroker::RegisterNotifications, base::Unretained(this)));
 
   if (!broker_.Init()) {

@@ -119,6 +119,13 @@ bool Scrollbar::IsLeftSideVerticalScrollbar() const {
   return false;
 }
 
+int Scrollbar::Maximum() const {
+  IntSize max_offset = scrollable_area_->MaximumScrollOffsetInt() -
+                       scrollable_area_->MinimumScrollOffsetInt();
+  return orientation_ == kHorizontalScrollbar ? max_offset.Width()
+                                              : max_offset.Height();
+}
+
 void Scrollbar::OffsetDidChange() {
   DCHECK(scrollable_area_);
 

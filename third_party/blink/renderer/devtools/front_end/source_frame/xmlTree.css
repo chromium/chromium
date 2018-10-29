@@ -8,11 +8,11 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    -webkit-padding-start: 16px;
+    padding-inline-start: 16px;
 }
 
 ol.tree-outline {
-    -webkit-padding-start: 0;
+    padding-inline-start: 0;
 }
 
 .tree-outline li {

@@ -17,12 +17,13 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/renderer_host/browser_compositor_view_mac.h"
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
-#include "content/browser/renderer_host/render_widget_host_ns_view_client.h"
+#include "content/browser/renderer_host/render_widget_host_ns_view_client_helper.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_export.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "ipc/ipc_sender.h"
+#include "mojo/public/cpp/bindings/associated_binding.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #include "ui/accelerated_widget_mac/display_link_mac.h"
@@ -41,6 +42,7 @@ class ScopedPasswordInputEnabler;
 namespace content {
 
 class CursorManager;
+class NSViewBridgeFactoryHost;
 class RenderWidgetHost;
 class RenderWidgetHostNSViewBridgeLocal;
 class RenderWidgetHostViewMac;
@@ -65,7 +67,7 @@ class WebCursor;
 // RenderWidgetHostView class hierarchy described in render_widget_host_view.h.
 class CONTENT_EXPORT RenderWidgetHostViewMac
     : public RenderWidgetHostViewBase,
-      public RenderWidgetHostNSViewLocalClient,
+      public RenderWidgetHostNSViewClientHelper,
       public mojom::RenderWidgetHostNSViewClient,
       public BrowserCompositorMacClient,
       public TextInputManager::Observer,
@@ -91,7 +93,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // |delegate| should be set at most once.
   CONTENT_EXPORT void SetDelegate(
     NSObject<RenderWidgetHostViewMacDelegate>* delegate);
-  void SetAllowPauseForResizeOrRepaint(bool allow);
 
   // RenderWidgetHostView implementation.
   void InitAsChild(gfx::NativeView parent_view) override;
@@ -182,16 +183,17 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
+  base::TimeTicks GetLocalSurfaceIdAllocationTime() const override;
   // Returns true when we can do SurfaceHitTesting for the event type.
   bool ShouldRouteEvent(const blink::WebInputEvent& event) const;
-  // This method checks |event| to see if a GesturePinch event can be routed
-  // according to ShouldRouteEvent, and if not, sends it directly to the view's
-  // RenderWidgetHost.
-  // By not just defaulting to sending the GesturePinch events to the mainframe,
-  // we allow the events to be targeted to an oopif subframe, in case some
-  // consumer, such as PDF or maps, wants to intercept them and implement a
-  // custom behavior.
-  void SendGesturePinchEvent(blink::WebGestureEvent* event);
+  // This method checks |event| to see if a GesturePinch or double tap event
+  // can be routed according to ShouldRouteEvent, and if not, sends it directly
+  // to the view's RenderWidgetHost.
+  // By not just defaulting to sending events that change the page scale to the
+  // main frame, we allow the events to be targeted to an oopif subframe, in
+  // case some consumer, such as PDF or maps, wants to intercept them and
+  // implement a custom behavior.
+  void SendTouchpadZoomEvent(const blink::WebGestureEvent* event);
 
   // Inject synthetic touch events.
   void InjectTouchEvent(const blink::WebTouchEvent& event,
@@ -300,7 +302,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // RenderWidgetHostImpl as well.
   void UpdateNSViewAndDisplayProperties();
 
-  // RenderWidgetHostNSViewLocalClient implementation.
+  // RenderWidgetHostNSViewClientHelper implementation.
   BrowserAccessibilityManager* GetRootBrowserAccessibilityManager() override;
   void ForwardKeyboardEvent(const NativeWebKeyboardEvent& key_event,
                             const ui::LatencyInfo& latency_info) override;
@@ -398,7 +400,9 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void DestroyCompositorForShutdown() override;
   bool SynchronizeVisualProperties(
       const base::Optional<viz::LocalSurfaceId>&
-          child_allocated_local_surface_id) override;
+          child_allocated_local_surface_id,
+      const base::Optional<base::TimeTicks>&
+          child_local_surface_id_allocation_time) override;
 
   // AcceleratedWidgetMacNSView implementation.
   void AcceleratedWidgetCALayerParamsUpdated() override;
@@ -446,6 +450,12 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // not be the desired behavior.
   // https://crbug.com/831843
   RenderWidgetHostImpl* GetWidgetForKeyboardEvent();
+
+  // Migrate the NSView for this RenderWidgetHostView to be in the process
+  // hosted by |bridge_factory_host|, and make it a child view of the NSView
+  // referred to by |parent_ns_view_id|.
+  void MigrateNSViewBridge(NSViewBridgeFactoryHost* bridge_factory_host,
+                           uint64_t parent_ns_view_id);
 
  protected:
   // This class is to be deleted through the Destroy method.
@@ -506,6 +516,13 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // used for |this|. Any functionality that uses |new_view_bridge_local_| will
   // not work when the RenderWidgetHostViewCocoa is hosted in an app process.
   std::unique_ptr<RenderWidgetHostNSViewBridgeLocal> ns_view_bridge_local_;
+
+  // If the NSView is hosted in a remote process and accessed via mojo then
+  // - |ns_view_bridge_| will point to |ns_view_bridge_remote_|
+  // - |ns_view_client_binding_| is the binding provided to the bridge.
+  mojom::RenderWidgetHostNSViewBridgeAssociatedPtr ns_view_bridge_remote_;
+  mojo::AssociatedBinding<mojom::RenderWidgetHostNSViewClient>
+      ns_view_client_binding_;
 
   // State tracked by Show/Hide/IsShowing.
   bool is_visible_ = false;

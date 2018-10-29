@@ -46,11 +46,6 @@ cr.define('downloads', function() {
       loading: true,
     },
 
-    listeners: {
-      'downloads-list.scroll': 'onListScroll_',
-      'toolbar.search-changed': 'onSearchChanged_',
-    },
-
     observers: [
       'itemsChanged_(items_.*)',
     ],
@@ -86,7 +81,7 @@ cr.define('downloads', function() {
         this.$.toolbar.downloadsShowing = this.hasDownloads_;
 
       if (this.hasDownloads_)
-        this.$['downloads-list'].fire('iron-resize');
+        this.$.downloadsList.fire('iron-resize');
     },
 
     /**
@@ -172,7 +167,7 @@ cr.define('downloads', function() {
 
     /** @private */
     onListScroll_: function() {
-      const list = this.$['downloads-list'];
+      const list = this.$.downloadsList;
       if (list.scrollHeight - list.scrollTop - list.offsetHeight <= 100) {
         // Approaching the end of the scrollback. Attempt to load more items.
         this.searchService_.loadMore();
@@ -249,7 +244,7 @@ cr.define('downloads', function() {
                            removed: [],
                          }]);
       this.async(() => {
-        const list = /** @type {!IronListElement} */ (this.$['downloads-list']);
+        const list = /** @type {!IronListElement} */ (this.$.downloadsList);
         list.updateSizeForIndex(index);
       });
     },

@@ -69,7 +69,8 @@ DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
 
   for (const Member<PluginInfo>& plugin_info : data->Plugins()) {
     if (plugin_info->Name() == property_name) {
-      size_t index = &plugin_info - &data->Plugins()[0];
+      unsigned index =
+          static_cast<unsigned>(&plugin_info - &data->Plugins()[0]);
       return item(index);
     }
   }
@@ -138,7 +139,8 @@ void DOMPluginArray::UpdatePluginData() {
     if (plugin) {
       for (const Member<PluginInfo>& plugin_info : data->Plugins()) {
         if (plugin->name() == plugin_info->Name()) {
-          size_t index = &plugin_info - &data->Plugins()[0];
+          unsigned index =
+              static_cast<unsigned>(&plugin_info - &data->Plugins()[0]);
           dom_plugins_[index] = plugin;
         }
       }

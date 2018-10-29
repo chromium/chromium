@@ -10,8 +10,8 @@ cr.define('serviceworker', function() {
   }
 
   function update() {
-      chrome.send('GetOptions');
-      chrome.send('getAllRegistrations');
+    chrome.send('GetOptions');
+    chrome.send('getAllRegistrations');
   }
 
   function onOptions(options) {
@@ -28,10 +28,13 @@ cr.define('serviceworker', function() {
     var inputs = container.querySelectorAll('input[type=\'checkbox\']');
     for (var i = 0; i < inputs.length; ++i) {
       if (!inputs[i].hasClickEvent) {
-        inputs[i].addEventListener('click', (function(event) {
-          chrome.send('SetOption',
-                      [event.target.className, event.target.checked]);
-        }).bind(this), false);
+        inputs[i].addEventListener(
+            'click',
+            (function(event) {
+              chrome.send(
+                  'SetOption', [event.target.className, event.target.checked]);
+            }).bind(this),
+            false);
         inputs[i].hasClickEvent = true;
       }
     }
@@ -48,8 +51,9 @@ cr.define('serviceworker', function() {
       var link = event.target;
       progressNodeFor(link).style.display = 'inline';
       sendCommand(command, link.cmdArgs, (function(status) {
-        progressNodeFor(link).style.display = 'none';
-      }).bind(null, link));
+                                           progressNodeFor(link).style.display =
+                                               'none';
+                                         }).bind(null, link));
       return false;
     };
   };
@@ -105,11 +109,9 @@ cr.define('serviceworker', function() {
   // |unregistered_versions| will be filled with the versions which
   // are in |live_versions| but not in |stored_registrations| nor in
   // |live_registrations|.
-  function getUnregisteredWorkers(stored_registrations,
-                                  live_registrations,
-                                  live_versions,
-                                  unregistered_registrations,
-                                  unregistered_versions) {
+  function getUnregisteredWorkers(
+      stored_registrations, live_registrations, live_versions,
+      unregistered_registrations, unregistered_versions) {
     var registration_id_set = {};
     var version_id_set = {};
     stored_registrations.forEach(function(registration) {
@@ -138,18 +140,14 @@ cr.define('serviceworker', function() {
   }
 
   // Fired once per partition from the backend.
-  function onPartitionData(live_registrations,
-                           live_versions,
-                           stored_registrations,
-                           partition_id,
-                           partition_path) {
+  function onPartitionData(
+      live_registrations, live_versions, stored_registrations, partition_id,
+      partition_path) {
     var unregistered_registrations = [];
     var unregistered_versions = [];
-    getUnregisteredWorkers(stored_registrations,
-                           live_registrations,
-                           live_versions,
-                           unregistered_registrations,
-                           unregistered_versions);
+    getUnregisteredWorkers(
+        stored_registrations, live_registrations, live_versions,
+        unregistered_registrations, unregistered_versions);
     var template;
     var container = $('serviceworker-list');
     // Existing templates are keyed by partition_id. This allows
@@ -173,13 +171,15 @@ cr.define('serviceworker', function() {
       [registration.active, registration.waiting].forEach(fillLogFunc);
     });
     unregistered_versions.forEach(fillLogFunc);
-    jstProcess(new JsEvalContext({
-                 stored_registrations: stored_registrations,
-                 unregistered_registrations: unregistered_registrations,
-                 unregistered_versions: unregistered_versions,
-                 partition_id: partition_id,
-                 partition_path: partition_path}),
-               template);
+    jstProcess(
+        new JsEvalContext({
+          stored_registrations: stored_registrations,
+          unregistered_registrations: unregistered_registrations,
+          unregistered_versions: unregistered_versions,
+          partition_id: partition_id,
+          partition_path: partition_path
+        }),
+        template);
     for (var i = 0; i < COMMANDS.length; ++i) {
       var handler = commandHandler(COMMANDS[i]);
       var links = container.querySelectorAll('button.' + COMMANDS[i]);
@@ -196,20 +196,15 @@ cr.define('serviceworker', function() {
     update();
   }
 
-  function onErrorReported(partition_id,
-                           version_id,
-                           error_info) {
-    outputLogMessage(partition_id,
-                     version_id,
-                     'Error: ' + JSON.stringify(error_info) + '\n');
+  function onErrorReported(partition_id, version_id, error_info) {
+    outputLogMessage(
+        partition_id, version_id,
+        'Error: ' + JSON.stringify(error_info) + '\n');
   }
 
-  function onConsoleMessageReported(partition_id,
-                                    version_id,
-                                    message) {
-    outputLogMessage(partition_id,
-                     version_id,
-                     'Console: ' + JSON.stringify(message) + '\n');
+  function onConsoleMessageReported(partition_id, version_id, message) {
+    outputLogMessage(
+        partition_id, version_id, 'Console: ' + JSON.stringify(message) + '\n');
   }
 
   function onVersionStateChanged(partition_id, version_id) {

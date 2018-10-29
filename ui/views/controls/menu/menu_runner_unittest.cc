@@ -413,8 +413,9 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
 TEST_F(MenuRunnerWidgetTest, WidgetDoesntTakeCapture) {
   AddMenuLauncherEventHandler(owner());
 
-  EXPECT_EQ(nullptr, internal::NativeWidgetPrivate::GetGlobalCapture(
-                         widget()->GetNativeView()));
+  EXPECT_EQ(gfx::kNullNativeView,
+            internal::NativeWidgetPrivate::GetGlobalCapture(
+                widget()->GetNativeView()));
   auto generator(EventGeneratorForWidget(widget()));
   // Implicit capture should not be held by |widget|.
   generator->PressLeftButton();

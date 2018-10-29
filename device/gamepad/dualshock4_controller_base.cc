@@ -5,9 +5,9 @@
 #include "device/gamepad/dualshock4_controller_base.h"
 
 namespace {
-const uint32_t kVendorSony = 0x054c;
-const uint32_t kProductDualshock4 = 0x05c4;
-const uint32_t kProductDualshock4Slim = 0x9cc;
+const uint16_t kVendorSony = 0x054c;
+const uint16_t kProductDualshock4 = 0x05c4;
+const uint16_t kProductDualshock4Slim = 0x9cc;
 const uint8_t kRumbleMagnitudeMax = 0xff;
 
 enum ControllerType {
@@ -16,7 +16,8 @@ enum ControllerType {
   DUALSHOCK4_SLIM_CONTROLLER
 };
 
-ControllerType ControllerTypeFromDeviceIds(int vendor_id, int product_id) {
+ControllerType ControllerTypeFromDeviceIds(uint16_t vendor_id,
+                                           uint16_t product_id) {
   if (vendor_id == kVendorSony) {
     switch (product_id) {
       case kProductDualshock4:
@@ -37,7 +38,8 @@ namespace device {
 Dualshock4ControllerBase::~Dualshock4ControllerBase() = default;
 
 // static
-bool Dualshock4ControllerBase::IsDualshock4(int vendor_id, int product_id) {
+bool Dualshock4ControllerBase::IsDualshock4(uint16_t vendor_id,
+                                            uint16_t product_id) {
   return ControllerTypeFromDeviceIds(vendor_id, product_id) !=
          UNKNOWN_CONTROLLER;
 }

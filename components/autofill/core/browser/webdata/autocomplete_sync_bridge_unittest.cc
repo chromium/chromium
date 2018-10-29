@@ -22,8 +22,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata_backend_impl.h"
+#include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -52,14 +51,15 @@ using syncer::EntityDataPtr;
 using syncer::HasInitialSyncDone;
 using syncer::IsEmptyMetadataBatch;
 using syncer::KeyAndData;
+using syncer::MockModelTypeChangeProcessor;
 using syncer::ModelError;
 using syncer::ModelType;
 using syncer::ModelTypeChangeProcessor;
 using syncer::ModelTypeSyncBridge;
-using syncer::MockModelTypeChangeProcessor;
 using testing::_;
 using testing::IsEmpty;
 using testing::Not;
+using testing::Return;
 using testing::SizeIs;
 
 namespace autofill {
@@ -136,26 +136,6 @@ AutofillEntry CreateAutofillEntry(const AutofillSpecifics& autofill_specifics) {
   return AutofillEntry(key, date_created, date_last_used);
 }
 
-class FakeAutofillBackend : public AutofillWebDataBackend {
- public:
-  FakeAutofillBackend() {}
-  ~FakeAutofillBackend() override {}
-  WebDatabase* GetDatabase() override { return db_; }
-  void AddObserver(
-      autofill::AutofillWebDataServiceObserverOnDBSequence* observer) override {
-  }
-  void RemoveObserver(
-      autofill::AutofillWebDataServiceObserverOnDBSequence* observer) override {
-  }
-  void RemoveExpiredFormElements() override {}
-  void NotifyOfMultipleAutofillChanges() override {}
-  void NotifyThatSyncHasStarted(ModelType model_type) override {}
-  void SetWebDatabase(WebDatabase* db) { db_ = db; }
-
- private:
-  WebDatabase* db_;
-};
-
 }  // namespace
 
 class AutocompleteSyncBridgeTest : public testing::Test {
@@ -167,7 +147,7 @@ class AutocompleteSyncBridgeTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
-    backend_.SetWebDatabase(&db_);
+    ON_CALL(*backend(), GetDatabase()).WillByDefault(Return(&db_));
     ResetProcessor();
     ResetBridge();
   }
@@ -311,12 +291,12 @@ class AutocompleteSyncBridgeTest : public testing::Test {
 
   AutofillTable* table() { return &table_; }
 
-  FakeAutofillBackend* backend() { return &backend_; }
+  MockAutofillWebDataBackend* backend() { return &backend_; }
 
  private:
   ScopedTempDir temp_dir_;
   base::test::ScopedTaskEnvironment scoped_task_environment_;
-  FakeAutofillBackend backend_;
+  testing::NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillTable table_;
   WebDatabase db_;
   std::unique_ptr<AutocompleteSyncBridge> bridge_;
@@ -628,7 +608,7 @@ TEST_F(AutocompleteSyncBridgeTest, LoadMetadataCalled) {
 }
 
 TEST_F(AutocompleteSyncBridgeTest, LoadMetadataReportsErrorForMissingDB) {
-  backend()->SetWebDatabase(nullptr);
+  ON_CALL(*backend(), GetDatabase()).WillByDefault(Return(nullptr));
   EXPECT_CALL(mock_processor(), ReportError(_));
   ResetBridge();
 }

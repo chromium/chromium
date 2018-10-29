@@ -47,8 +47,6 @@ namespace {
 bool AreContextualContentSuggestionsEnabled() {
 #if defined(OS_ANDROID)
   return base::FeatureList::IsEnabled(
-             contextual_suggestions::kContextualSuggestionsBottomSheet) ||
-         base::FeatureList::IsEnabled(
              contextual_suggestions::kContextualSuggestionsButton);
 #else
   return false;

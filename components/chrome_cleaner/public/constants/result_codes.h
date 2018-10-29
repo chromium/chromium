@@ -222,6 +222,11 @@ enum ResultCodeValues : ResultCode {
   // while the pipe was still needed by the broker process.
   RESULT_CODE_ZIP_ARCHIVER_SANDBOX_DISCONNECTED_TOO_SOON = 55,
 
+  // Used when attempting to run a 32-bit version of the tool on a 64-bit
+  // machine, and vice versa. Since this can result in crashes and unexpected
+  // result, we don't allow it.
+  RESULT_CODE_WRONG_ARCHITECTURE = 56,
+
   // WHEN YOU ADD NEW EXIT CODES, DON'T FORGET TO UPDATE THE MONITORING RULES.
   // See http://go/chrome-cleaner-exit-codes. (Google internal only - external
   // contributors please ask one of the OWNERS to do the update.)

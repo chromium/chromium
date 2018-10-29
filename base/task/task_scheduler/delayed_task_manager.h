@@ -27,8 +27,6 @@ class TaskRunner;
 
 namespace internal {
 
-struct Task;
-
 // The DelayedTaskManager forwards tasks to post task callbacks when they become
 // ripe for execution. Tasks are not forwarded before Start() is called. This
 // class is thread-safe.
@@ -53,22 +51,45 @@ class BASE_EXPORT DelayedTaskManager {
   void AddDelayedTask(Task task, PostTaskNowCallback post_task_now_callback);
 
  private:
-  using DelayedTask = std::pair<Task, PostTaskNowCallback>;
+  struct DelayedTask {
+    DelayedTask(Task task, PostTaskNowCallback callback);
+    DelayedTask(DelayedTask&& other);
+    ~DelayedTask();
+
+    // Required by std::priority_queue::pop().
+    DelayedTask& operator=(DelayedTask&& other);
+
+    // Required by std::priority_queue.
+    bool operator>(const DelayedTask& other) const;
+
+    Task task;
+    PostTaskNowCallback callback;
+
+    // True iff the delayed task has been marked as scheduled.
+    bool IsScheduled() const;
+
+    // Mark the delayed task as scheduled. Since the sort key is
+    // |task.delayed_run_time|, it does not alter sort order when it is called.
+    void SetScheduled();
+
+   private:
+    bool scheduled_ = false;
+    DISALLOW_COPY_AND_ASSIGN(DelayedTask);
+  };
 
   // Pop and post all the ripe tasks in the delayed task queue.
   void ProcessRipeTasks();
 
-  // Return the run time of the delayed task that needs to be processed the
-  // soonest.
-  const TimeTicks GetNextDelayedTaskRunTimeLockRequired();
+  // Get the time at which to schedule the next |ProcessRipeTasks()| execution,
+  // or TimeTicks::Max() if none needs to be scheduled (i.e. no task, or next
+  // task already scheduled).
+  TimeTicks GetTimeToScheduleProcessRipeTasksLockRequired();
 
-  // Return the run time of the soonest scheduled `ProcessRipeTasks` call.
-  const TimeTicks GetNextProcessRipeTaskTimeLockRequired();
-
-  // Schedule the ProcessRipeTasks method on the service thread to be executed
-  // in the given |next_delayed_task_run_time|.
+  // Schedule |ProcessRipeTasks()| on the service thread to be executed at the
+  // given |process_ripe_tasks_time|, provided the given time is not
+  // TimeTicks::Max().
   void ScheduleProcessRipeTasksOnServiceThread(
-      TimeTicks next_delayed_task_run_time);
+      TimeTicks process_ripe_tasks_time);
 
   const RepeatingClosure process_ripe_tasks_closure_;
 
@@ -76,24 +97,12 @@ class BASE_EXPORT DelayedTaskManager {
 
   scoped_refptr<TaskRunner> service_thread_task_runner_;
 
-  struct TaskDelayedRuntimeComparator {
-    inline bool operator()(const DelayedTask& lhs,
-                           const DelayedTask& rhs) const {
-      return lhs.first.delayed_run_time > rhs.first.delayed_run_time;
-    }
-  };
-
   std::priority_queue<DelayedTask,
                       std::vector<DelayedTask>,
-                      TaskDelayedRuntimeComparator>
+                      std::greater<DelayedTask>>
       delayed_task_queue_;
 
-  std::
-      priority_queue<TimeTicks, std::vector<TimeTicks>, std::greater<TimeTicks>>
-          process_ripe_tasks_time_queue_;
-
-  // Synchronizes access to |delayed_task_queue_|,
-  // |process_ripe_task_time_queue_| and the setting of
+  // Synchronizes access to |delayed_task_queue_| and the setting of
   // |service_thread_task_runner|. Once |service_thread_task_runner_| is set,
   // it is never modified. It is therefore safe to access
   // |service_thread_task_runner_| without synchronization once it is observed

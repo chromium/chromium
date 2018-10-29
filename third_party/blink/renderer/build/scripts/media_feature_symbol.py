@@ -3,23 +3,14 @@
 # found in the LICENSE file.
 
 
+from blinkbuild.name_style_converter import NameStyleConverter
+
+
 def mediaFeatureSymbol(entry, suffix):
     name = entry['name'].original
     if name.startswith('-webkit-'):
         name = name[8:]
-
-    foundDash = False
-    newName = ""
-    for chr in name:
-        if chr == '-':
-            foundDash = True
-            continue
-        if foundDash:
-            chr = chr.upper()
-            foundDash = False
-        newName = newName + chr
-    newName = newName + suffix
-    return newName
+    return 'k' + NameStyleConverter(name).to_upper_camel_case() + suffix
 
 
 def getMediaFeatureSymbolWithSuffix(suffix):

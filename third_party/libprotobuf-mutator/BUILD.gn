@@ -1,4 +1,7 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -10,36 +13,32 @@ config("include_config") {
 source_set("libprotobuf-mutator") {
   testonly = true
 
-  # Dont allow building on windows to avoid tryjob failure. This is OK since
-  # libFuzzer doesn't build on windows anyway.
-  if (!is_win) {
-    configs += [ ":include_config" ]
+  configs += [ ":include_config" ]
 
-    # Remove *San and coverage for a performance boost.
-    configs -= not_fuzzed_remove_configs
-    configs += [ "//build/config/sanitizers:not_fuzzed" ]
+  # Remove *San and coverage for a performance boost.
+  configs -= not_fuzzed_remove_configs
+  configs += [ "//build/config/sanitizers:not_fuzzed" ]
 
-    public_configs = [ ":include_config" ]
-    sources = [
-      "src/src/binary_format.cc",
-      "src/src/libfuzzer/libfuzzer_macro.cc",
-      "src/src/libfuzzer/libfuzzer_mutator.cc",
-      "src/src/mutator.cc",
-      "src/src/text_format.cc",
-      "src/src/utf8_fix.cc",
-    ]
+  public_configs = [ ":include_config" ]
+  sources = [
+    "src/src/binary_format.cc",
+    "src/src/libfuzzer/libfuzzer_macro.cc",
+    "src/src/libfuzzer/libfuzzer_mutator.cc",
+    "src/src/mutator.cc",
+    "src/src/text_format.cc",
+    "src/src/utf8_fix.cc",
+  ]
 
-    # Allow users of LPM to use protobuf reflection and other features from
-    # protobuf_full.
-    public_deps = [
-      "//third_party/protobuf:protobuf_full",
-    ]
+  # Allow users of LPM to use protobuf reflection and other features from
+  # protobuf_full.
+  public_deps = [
+    "//third_party/protobuf:protobuf_full",
+  ]
 
-    # Let ClusterFuzz builders know to not build targets that depend on
-    # libprotobuf-mutator for AFL.
-    if (use_afl) {
-      all_dependent_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-    }
+  # Let ClusterFuzz builders know to not build targets that depend on
+  # libprotobuf-mutator for AFL.
+  if (use_afl) {
+    all_dependent_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
   }
 }
 

@@ -17,8 +17,10 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -189,8 +191,8 @@ class WebRtcLogUploaderTest : public testing::Test {
 
   void FlushIOThread() {
     base::RunLoop run_loop;
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE, run_loop.QuitClosure());
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                             run_loop.QuitClosure());
     run_loop.Run();
   }
 

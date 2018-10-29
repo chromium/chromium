@@ -1,9 +1,9 @@
 Panel 1
 Panel 2
+
 This tests that aria-controls identifies the correct element
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS tab_1.ariaControlsElementAtIndex(0).isEqual(panel_1) is true
 PASS tab_1.ariaControlsElementAtIndex(1).isEqual(panel_2) is true

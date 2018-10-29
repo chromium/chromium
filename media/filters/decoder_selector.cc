@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/audio_decoder.h"
@@ -23,6 +24,8 @@
 #include "media/filters/decrypting_demuxer_stream.h"
 
 namespace media {
+
+const char kSelectDecoderTrace[] = "DecoderSelector::SelectDecoder";
 
 template <DemuxerStream::Type StreamType>
 DecoderSelector<StreamType>::DecoderSelector(
@@ -66,12 +69,13 @@ void DecoderSelector<StreamType>::SelectDecoder(
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(select_decoder_cb);
   DCHECK(!select_decoder_cb_);
-  TRACE_EVENT_ASYNC_BEGIN1("media", "DecoderSelector::SelectDecoder", this,
-                           "type", DemuxerStream::GetTypeName(StreamType));
-
   select_decoder_cb_ = std::move(select_decoder_cb);
   output_cb_ = std::move(output_cb);
   config_ = traits_->GetDecoderConfig(stream_);
+
+  TRACE_EVENT_ASYNC_BEGIN2("media", kSelectDecoderTrace, this, "type",
+                           DemuxerStream::GetTypeName(StreamType), "config",
+                           config_.AsHumanReadableString());
 
   if (!config_.IsValidConfig()) {
     DLOG(ERROR) << "Invalid stream config";
@@ -144,6 +148,8 @@ void DecoderSelector<StreamType>::InitializeDecoder() {
   decoder_ = std::move(decoders_.front());
   decoders_.erase(decoders_.begin());
   is_platform_decoder_ = decoder_->IsPlatformDecoder();
+  TRACE_EVENT_ASYNC_STEP_INTO0("media", kSelectDecoderTrace, this,
+                               decoder_->GetDisplayName());
 
   DVLOG(2) << __func__ << ": initializing " << decoder_->GetDisplayName();
   const bool is_live = stream_->liveness() == DemuxerStream::LIVENESS_LIVE;
@@ -186,6 +192,8 @@ void DecoderSelector<StreamType>::InitializeDecryptingDemuxerStream() {
   DCHECK(decoders_.empty());
   DCHECK(config_.is_encrypted());
   DCHECK(cdm_context_);
+  TRACE_EVENT_ASYNC_STEP_INTO0("media", kSelectDecoderTrace, this,
+                               "DecryptingDemuxerStream");
 
   decrypting_demuxer_stream_ = std::make_unique<DecryptingDemuxerStream>(
       task_runner_, media_log_, waiting_for_decryption_key_cb_);
@@ -227,10 +235,12 @@ void DecoderSelector<StreamType>::OnDecryptingDemuxerStreamInitializeDone(
 template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::RunSelectDecoderCB() {
   DCHECK(select_decoder_cb_);
-  TRACE_EVENT_ASYNC_END2("media", "DecoderSelector::SelectDecoder", this,
-                         "type", DemuxerStream::GetTypeName(StreamType),
-                         "decoder_name",
-                         decoder_ ? decoder_->GetDisplayName() : "null");
+  TRACE_EVENT_ASYNC_END2(
+      "media", kSelectDecoderTrace, this, "type",
+      DemuxerStream::GetTypeName(StreamType), "decoder",
+      base::StringPrintf(
+          "%s (%s)", decoder_ ? decoder_->GetDisplayName().c_str() : "null",
+          decrypting_demuxer_stream_ ? "encrypted" : "unencrypted"));
 
   task_runner_->PostTask(
       FROM_HERE,

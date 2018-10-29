@@ -4,6 +4,7 @@
 
 typemaps = [
   "//gpu/ipc/common/capabilities.typemap",
+  "//gpu/ipc/common/context_result.typemap",
   "//gpu/ipc/common/gpu_feature_info.typemap",
   "//gpu/ipc/common/gpu_info.typemap",
   "//gpu/ipc/common/gpu_preferences.typemap",

@@ -54,12 +54,12 @@ bool WriteCompiledInTestsToFile(const FilePath& path) {
   std::vector<TestIdentifier> tests(GetCompiledInTests());
 
   ListValue root;
-  for (size_t i = 0; i < tests.size(); ++i) {
+  for (const auto& i : tests) {
     std::unique_ptr<DictionaryValue> test_info(new DictionaryValue);
-    test_info->SetString("test_case_name", tests[i].test_case_name);
-    test_info->SetString("test_name", tests[i].test_name);
-    test_info->SetString("file", tests[i].file);
-    test_info->SetInteger("line", tests[i].line);
+    test_info->SetString("test_case_name", i.test_case_name);
+    test_info->SetString("test_name", i.test_name);
+    test_info->SetString("file", i.file);
+    test_info->SetInteger("line", i.line);
     root.Append(std::move(test_info));
   }
 
@@ -82,9 +82,9 @@ bool ReadTestNamesFromFile(const FilePath& path,
     return false;
 
   std::vector<base::TestIdentifier> result;
-  for (base::ListValue::iterator i = tests->begin(); i != tests->end(); ++i) {
-    base::DictionaryValue* test = nullptr;
-    if (!i->GetAsDictionary(&test))
+  for (const auto& i : *tests) {
+    const base::DictionaryValue* test = nullptr;
+    if (!i.GetAsDictionary(&test))
       return false;
 
     TestIdentifier test_data;

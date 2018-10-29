@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGResourceLinearGradient {linearGradient} [id="my_gradient"] [gradientUnits=objectBoundingBox] [stops=( #FF0000@0.00 #008000@0.50 #0000FF@1.00 )] [start=(0,0)] [end=(0,1)]
-    LayoutSVGRect {rect} at (0,0) size 400x300 [transform={m=((0.21,0.21)(-0.21,0.21)) t=(189.39,75.75)}] [fill={[type=LINEAR-GRADIENT] [id="my_gradient"]}] [x=0.00] [y=0.00] [width=400.00] [height=300.00]
-    LayoutSVGResourceRadialGradient {radialGradient} [id="my_gradient2"] [gradientUnits=objectBoundingBox] [stops=( #FF0000@0.00 #008000@0.50 #0000FF@1.00 )] [center=(0.50,0.50)] [focal=(0.50,0.50)] [radius=1.00] [focalRadius=0.00]
-    LayoutSVGRect {rect} at (0,0) size 400x300 [transform={m=((0.30,0.00)(0.08,0.30)) t=(1.94,105.00)}] [fill={[type=RADIAL-GRADIENT] [id="my_gradient2"]}] [x=0.00] [y=0.00] [width=400.00] [height=300.00]

@@ -171,7 +171,7 @@ void PolygonShape::BuildDisplayPaths(DisplayPaths& paths) const {
   if (!polygon_.NumberOfVertices())
     return;
   paths.shape.MoveTo(polygon_.VertexAt(0));
-  for (size_t i = 1; i < polygon_.NumberOfVertices(); ++i)
+  for (wtf_size_t i = 1; i < polygon_.NumberOfVertices(); ++i)
     paths.shape.AddLineTo(polygon_.VertexAt(i));
   paths.shape.CloseSubpath();
 }

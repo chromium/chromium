@@ -68,8 +68,11 @@ struct LayoutBoxRareData {
       : spanner_placeholder_(nullptr),
         override_logical_width_(-1),
         override_logical_height_(-1),
+        // TODO(rego): We should store these based on physical direction.
         has_override_containing_block_content_logical_width_(false),
         has_override_containing_block_content_logical_height_(false),
+        has_override_containing_block_percentage_resolution_logical_height_(
+            false),
         has_previous_content_box_rect_and_layout_overflow_rect_(false),
         percent_height_container_(nullptr),
         snap_container_(nullptr),
@@ -84,10 +87,12 @@ struct LayoutBoxRareData {
 
   bool has_override_containing_block_content_logical_width_ : 1;
   bool has_override_containing_block_content_logical_height_ : 1;
+  bool has_override_containing_block_percentage_resolution_logical_height_ : 1;
   bool has_previous_content_box_rect_and_layout_overflow_rect_ : 1;
 
   LayoutUnit override_containing_block_content_logical_width_;
   LayoutUnit override_containing_block_content_logical_height_;
+  LayoutUnit override_containing_block_percentage_resolution_logical_height_;
 
   LayoutUnit offset_to_next_page_;
 
@@ -429,10 +434,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutSize PhysicalContentBoxOffset() const {
     return LayoutSize(ContentLeft(), ContentTop());
   }
-  // The content box in absolute coords. Ignores transforms.
-  IntRect AbsoluteContentBox() const;
-  // The offset of the content box in absolute coords, ignoring transforms.
-  IntSize AbsoluteContentBoxOffset() const;
   // The content box converted to absolute coords (taking transforms into
   // account).
   FloatQuad AbsoluteContentQuad(MapCoordinatesFlags = 0) const;
@@ -536,10 +537,16 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void AddVisualEffectOverflow();
   LayoutRectOutsets ComputeVisualEffectOverflowOutsets();
-  void AddOverflowFromChild(const LayoutBox& child) {
-    AddOverflowFromChild(child, child.LocationOffset());
+  void AddVisualOverflowFromChild(const LayoutBox& child) {
+    AddVisualOverflowFromChild(child, child.LocationOffset());
   }
-  void AddOverflowFromChild(const LayoutBox& child, const LayoutSize& delta);
+  void AddLayoutOverflowFromChild(const LayoutBox& child) {
+    AddLayoutOverflowFromChild(child, child.LocationOffset());
+  }
+  void AddVisualOverflowFromChild(const LayoutBox& child,
+                                  const LayoutSize& delta);
+  void AddLayoutOverflowFromChild(const LayoutBox& child,
+                                  const LayoutSize& delta);
   void ClearLayoutOverflow();
   void ClearAllOverflows() { overflow_.reset(); }
 
@@ -754,6 +761,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit OverrideContentLogicalWidth() const;
   LayoutUnit OverrideContentLogicalHeight() const;
 
+  LayoutUnit OverrideContainingBlockContentWidth() const override;
+  LayoutUnit OverrideContainingBlockContentHeight() const override;
+  bool HasOverrideContainingBlockContentWidth() const override;
+  bool HasOverrideContainingBlockContentHeight() const override;
   LayoutUnit OverrideContainingBlockContentLogicalWidth() const;
   LayoutUnit OverrideContainingBlockContentLogicalHeight() const;
   bool HasOverrideContainingBlockContentLogicalWidth() const;
@@ -761,6 +772,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void SetOverrideContainingBlockContentLogicalWidth(LayoutUnit);
   void SetOverrideContainingBlockContentLogicalHeight(LayoutUnit);
   void ClearOverrideContainingBlockContentSize();
+
+  LayoutUnit OverrideContainingBlockPercentageResolutionLogicalHeight() const;
+  bool HasOverrideContainingBlockPercentageResolutionLogicalHeight() const;
+  void SetOverrideContainingBlockPercentageResolutionLogicalHeight(LayoutUnit);
+  void ClearOverrideContainingBlockPercentageResolutionLogicalHeight();
 
   LayoutUnit AdjustBorderBoxLogicalWidthForBoxSizing(float width) const;
   LayoutUnit AdjustBorderBoxLogicalHeightForBoxSizing(float height) const;
@@ -1147,9 +1163,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const LayoutPoint& paint_offset) const;
   virtual void PaintMask(const PaintInfo&,
                          const LayoutPoint& paint_offset) const;
-  void ImageChanged(WrappedImagePtr,
-                    CanDeferInvalidation,
-                    const IntRect* = nullptr) override;
+  void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
   ResourcePriority ComputeResourcePriority() const final;
 
   void LogicalExtentAfterUpdatingLogicalWidth(const LayoutUnit& logical_top,
@@ -1203,11 +1217,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   bool IsGridItem() const { return Parent() && Parent()->IsLayoutGrid(); }
-
-  // Return true if this is the "rendered legend" of a fieldset. They get
-  // special treatment, in that they establish a new formatting context, and
-  // shrink to fit if no logical width is specified.
-  bool IsRenderedLegend() const;
 
   LayoutUnit LineHeight(
       bool first_line,
@@ -1426,12 +1435,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool HitTestClippedOutByBorder(const HitTestLocation& location_in_container,
                                  const LayoutPoint& border_box_location) const;
-
-  static bool MustInvalidateFillLayersPaintOnWidthChange(const FillLayer&);
-  static bool MustInvalidateFillLayersPaintOnHeightChange(const FillLayer&);
-
-  bool MustInvalidateBackgroundOrBorderPaintOnHeightChange() const;
-  bool MustInvalidateBackgroundOrBorderPaintOnWidthChange() const;
 
   // Returns true if the box intersects the viewport visible to the user.
   bool IntersectsVisibleViewport() const;

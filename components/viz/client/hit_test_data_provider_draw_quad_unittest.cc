@@ -62,7 +62,8 @@ std::unique_ptr<RenderPass> CreateRenderPassWithChildSurface(
 TEST(HitTestDataProviderDrawQuad, HitTestDataRenderer) {
   std::unique_ptr<HitTestDataProvider> hit_test_data_provider =
       std::make_unique<HitTestDataProviderDrawQuad>(
-          true /* should_ask_for_child_region */);
+          true /* should_ask_for_child_region */,
+          true /* root_accepts_events */);
 
   constexpr gfx::Rect kFrameRect(0, 0, 1024, 768);
 
@@ -125,7 +126,8 @@ TEST(HitTestDataProviderDrawQuad, HitTestDataRenderer) {
 TEST(HitTestDataProviderDrawQuad, HitTestDataSkipQuads) {
   std::unique_ptr<HitTestDataProvider> hit_test_data_provider =
       std::make_unique<HitTestDataProviderDrawQuad>(
-          true /* should_ask_for_child_region */);
+          true /* should_ask_for_child_region */,
+          true /* root_accepts_events */);
 
   constexpr gfx::Rect kFrameRect(0, 0, 1024, 768);
   gfx::Rect child_rect(200, 100);
@@ -188,7 +190,8 @@ TEST(HitTestDataProviderDrawQuad, HitTestDataSkipQuads) {
 TEST(HitTestDataProviderDrawQuad, HitTestDataBrowser) {
   std::unique_ptr<HitTestDataProvider> hit_test_data_provider =
       std::make_unique<HitTestDataProviderDrawQuad>(
-          /*should_ask_for_child_region=*/false);
+          false /* should_ask_for_child_region */,
+          true /* root_accepts_events */);
 
   constexpr gfx::Rect frame_rect(1024, 768);
   SurfaceId child_surface_id = CreateChildSurfaceId(2);
@@ -224,6 +227,47 @@ TEST(HitTestDataProviderDrawQuad, HitTestDataBrowser) {
   EXPECT_TRUE(
       render_to_browser_transform.GetInverse(&browser_to_render_transform));
   EXPECT_EQ(browser_to_render_transform,
+            hit_test_region_list->regions[0].transform);
+}
+
+// Test to ensure that we should set kHitTestIgnore flag for transparent
+// windows.
+TEST(HitTestDataProviderDrawQuad, HitTestDataTransparent) {
+  std::unique_ptr<HitTestDataProvider> hit_test_data_provider =
+      std::make_unique<HitTestDataProviderDrawQuad>(
+          true /* should_ask_for_child_region */,
+          false /* root_accepts_events */);
+
+  constexpr gfx::Rect frame_rect(1024, 768);
+  SurfaceId child_surface_id = CreateChildSurfaceId(2);
+  constexpr gfx::Rect child_rect(200, 100);
+  gfx::Transform child_to_parent_transform;
+  child_to_parent_transform.Translate(-200, -100);
+  auto pass = CreateRenderPassWithChildSurface(child_surface_id, frame_rect,
+                                               child_rect, gfx::Transform(),
+                                               child_to_parent_transform);
+  CompositorFrame compositor_frame =
+      CompositorFrameBuilder().AddRenderPass(std::move(pass)).Build();
+  base::Optional<HitTestRegionList> hit_test_region_list =
+      hit_test_data_provider->GetHitTestData(compositor_frame);
+
+  EXPECT_EQ(HitTestRegionFlags::kHitTestMouse |
+                HitTestRegionFlags::kHitTestTouch |
+                HitTestRegionFlags::kHitTestIgnore,
+            hit_test_region_list->flags);
+  EXPECT_EQ(frame_rect, hit_test_region_list->bounds);
+  EXPECT_EQ(1u, hit_test_region_list->regions.size());
+  EXPECT_EQ(child_surface_id.frame_sink_id(),
+            hit_test_region_list->regions[0].frame_sink_id);
+  EXPECT_EQ(HitTestRegionFlags::kHitTestMouse |
+                HitTestRegionFlags::kHitTestTouch |
+                HitTestRegionFlags::kHitTestChildSurface |
+                HitTestRegionFlags::kHitTestAsk,
+            hit_test_region_list->regions[0].flags);
+  EXPECT_EQ(child_rect, hit_test_region_list->regions[0].rect);
+  gfx::Transform parent_to_child_transform;
+  EXPECT_TRUE(child_to_parent_transform.GetInverse(&parent_to_child_transform));
+  EXPECT_EQ(parent_to_child_transform,
             hit_test_region_list->regions[0].transform);
 }
 

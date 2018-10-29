@@ -16,7 +16,7 @@ To start or stop ChromeVox, press Ctrl+Alt+Z at any time.
 Code location: ```chrome/browser/resources/chromeos/chromevox```
 
 Ninja target: it's built as part of "chrome", but you can build and run
-chromevox_tests to test it (Chrome OS target only - you must have target_os =
+browser_tests to test it (Chrome OS target only - you must have target_os =
 "chromeos" in your GN args first).
 
 ## Developing On Linux
@@ -64,13 +64,15 @@ inspector.
 
 ### Running tests
 
-Build the chromevox_tests target. To run
-lots of tests in parallel, run it like this:
+Build the browser_tests target. To run lots of tests in parallel, run it like
+this:
 
-```out/Release/chromevox_tests --test-launcher-jobs=20```
+```
+out/Release/browser_tests --test-launcher-jobs=20 --gtest_filter=ChromeVox*
+```
 
-Use a test filter if you only want to run some of the tests from a
-particular test suite - for example, most of the ChromeVox Next tests
-have "E2E" in them (for "end-to-end"), so to only run those:
+Use a narrower test filter if you only want to run some of the tests. For
+example, most of the ChromeVox Next tests have "E2E" in them (for "end-to-end"),
+so to only run those:
 
-```out/Release/chromevox_tests --test-launcher-jobs=20 --gtest_filter="*E2E*"```
+```out/Release/browser_tests --test-launcher-jobs=20 --gtest_filter="*E2E*"```

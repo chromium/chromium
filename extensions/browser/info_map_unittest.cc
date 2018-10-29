@@ -25,7 +25,7 @@ class InfoMapTest : public testing::Test {
 };
 
 // Returns a barebones test Extension object with the given name.
-static scoped_refptr<Extension> CreateExtension(const std::string& name) {
+static scoped_refptr<const Extension> CreateExtension(const std::string& name) {
   base::FilePath path;
   base::PathService::Get(DIR_TEST_DATA, &path);
 
@@ -37,9 +37,9 @@ TEST_F(InfoMapTest, RefCounting) {
   scoped_refptr<InfoMap> info_map(new InfoMap());
 
   // New extensions should have a single reference holding onto them.
-  scoped_refptr<Extension> extension1(CreateExtension("extension1"));
-  scoped_refptr<Extension> extension2(CreateExtension("extension2"));
-  scoped_refptr<Extension> extension3(CreateExtension("extension3"));
+  scoped_refptr<const Extension> extension1(CreateExtension("extension1"));
+  scoped_refptr<const Extension> extension2(CreateExtension("extension2"));
+  scoped_refptr<const Extension> extension3(CreateExtension("extension3"));
   EXPECT_TRUE(extension1->HasOneRef());
   EXPECT_TRUE(extension2->HasOneRef());
   EXPECT_TRUE(extension3->HasOneRef());
@@ -68,8 +68,8 @@ TEST_F(InfoMapTest, RefCounting) {
 TEST_F(InfoMapTest, Properties) {
   scoped_refptr<InfoMap> info_map(new InfoMap());
 
-  scoped_refptr<Extension> extension1(CreateExtension("extension1"));
-  scoped_refptr<Extension> extension2(CreateExtension("extension2"));
+  scoped_refptr<const Extension> extension1(CreateExtension("extension1"));
+  scoped_refptr<const Extension> extension2(CreateExtension("extension2"));
 
   info_map->AddExtension(extension1.get(), base::Time(), false, false);
   info_map->AddExtension(extension2.get(), base::Time(), false, false);
@@ -82,7 +82,7 @@ TEST_F(InfoMapTest, Properties) {
 // Tests that extension URLs are properly mapped to local file paths.
 TEST_F(InfoMapTest, MapUrlToLocalFilePath) {
   scoped_refptr<InfoMap> info_map(new InfoMap());
-  scoped_refptr<Extension> app(CreateExtension("platform_app"));
+  scoped_refptr<const Extension> app(CreateExtension("platform_app"));
   info_map->AddExtension(app.get(), base::Time(), false, false);
 
   // Non-extension URLs don't map to anything.

@@ -41,7 +41,7 @@ void DirectoryDataTypeController::BeforeLoadModels(
 }
 
 void DirectoryDataTypeController::RegisterWithBackend(
-    base::Callback<void(bool)> set_downloaded,
+    base::OnceCallback<void(bool)> set_downloaded,
     ModelTypeConfigurer* configurer) {}
 
 void DirectoryDataTypeController::ActivateDataType(
@@ -60,22 +60,21 @@ void DirectoryDataTypeController::DeactivateDataType(
   configurer->UnregisterDirectoryDataType(type());
 }
 
-void DirectoryDataTypeController::Stop(SyncStopMetadataFate metadata_fate,
+void DirectoryDataTypeController::Stop(ShutdownReason shutdown_reason,
                                        StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  Stop(metadata_fate);
+  Stop(shutdown_reason);
   std::move(callback).Run();
 }
 
-void DirectoryDataTypeController::GetAllNodes(
-    const AllNodesCallback& callback) {
+void DirectoryDataTypeController::GetAllNodes(AllNodesCallback callback) {
   std::unique_ptr<base::ListValue> node_list = GetAllNodesForTypeFromDirectory(
       type(), sync_client_->GetSyncService()->GetUserShare()->directory.get());
-  callback.Run(type(), std::move(node_list));
+  std::move(callback).Run(type(), std::move(node_list));
 }
 
 void DirectoryDataTypeController::GetStatusCounters(
-    const StatusCountersCallback& callback) {
+    StatusCountersCallback callback) {
   std::vector<int> num_entries_by_type(syncer::MODEL_TYPE_COUNT, 0);
   std::vector<int> num_to_delete_entries_by_type(syncer::MODEL_TYPE_COUNT, 0);
   sync_client_->GetSyncService()
@@ -87,7 +86,7 @@ void DirectoryDataTypeController::GetStatusCounters(
   counters.num_entries =
       num_entries_by_type[type()] - num_to_delete_entries_by_type[type()];
 
-  callback.Run(type(), counters);
+  std::move(callback).Run(type(), counters);
 }
 
 void DirectoryDataTypeController::RecordMemoryUsageAndCountsHistograms() {
@@ -95,8 +94,8 @@ void DirectoryDataTypeController::RecordMemoryUsageAndCountsHistograms() {
       sync_client_->GetSyncService()->GetUserShare()->directory.get();
   SyncRecordModelTypeMemoryHistogram(
       type(), directory->EstimateMemoryUsageByType(type()));
-  SyncRecordModelTypeCountHistogram(type(),
-                                    directory->CountEntriesByType(type()));
+  int count_excl_root_node = directory->CountEntriesByType(type()) - 1;
+  SyncRecordModelTypeCountHistogram(type(), count_excl_root_node);
 }
 
 // static

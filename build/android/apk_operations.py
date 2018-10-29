@@ -231,11 +231,9 @@ def _RunGdb(device, package_name, debug_process_name, pid, output_directory,
     debug_process_name = _NormalizeProcessName(debug_process_name, package_name)
     pid = device.GetApplicationPids(debug_process_name, at_most_one=True)
   if not pid:
-    logging.warning('App not running. Sending launch intent.')
-    _LaunchUrl([device], package_name)
-    pid = device.GetApplicationPids(debug_process_name, at_most_one=True)
-    if not pid:
-      raise Exception('Unable to find process "%s"' % debug_process_name)
+    # Attaching gdb makes the app run so slow that it takes *minutes* to start
+    # up (as of 2018). Better to just fail than to start & attach.
+    raise Exception('App not running.')
 
   gdb_script_path = os.path.dirname(__file__) + '/adb_gdb'
   cmd = [
@@ -308,8 +306,8 @@ def _DuHelper(device, path_spec, run_as=None):
         run as root.
 
   Returns:
-    A dict of path->size in kb containing all paths in |path_spec| that exist on
-    device. Paths that do not exist are silently ignored.
+    A dict of path->size in KiB containing all paths in |path_spec| that exist
+    on device. Paths that do not exist are silently ignored.
   """
   # Example output for: du -s -k /data/data/org.chromium.chrome/{*,.*}
   # 144     /data/data/org.chromium.chrome/cache
@@ -343,7 +341,7 @@ def _DuHelper(device, path_spec, run_as=None):
     raise
 
 
-def _RunDiskUsage(devices, package_name, verbose):
+def _RunDiskUsage(devices, package_name):
   # Measuring dex size is a bit complicated:
   # https://source.android.com/devices/tech/dalvik/jit-compiler
   #
@@ -393,13 +391,13 @@ def _RunDiskUsage(devices, package_name, verbose):
   def disk_usage_helper(d):
     package_output = '\n'.join(d.RunShellCommand(
         ['dumpsys', 'package', package_name], check_return=True))
-    # Prints a message but does not return error when apk is not installed.
-    if 'Unable to find package:' in package_output:
+    # Does not return error when apk is not installed.
+    if not package_output or 'Unable to find package:' in package_output:
       return None
-    # Ignore system apks.
-    idx = package_output.find('Hidden system packages:')
-    if idx != -1:
-      package_output = package_output[:idx]
+
+    # Ignore system apks that have updates installed.
+    package_output = re.sub(r'Hidden system packages:.*?^\b', '',
+                            package_output, flags=re.S | re.M)
 
     try:
       data_dir = re.search(r'dataDir=(.*)', package_output).group(1)
@@ -408,6 +406,10 @@ def _RunDiskUsage(devices, package_name, verbose):
                            package_output).group(1)
     except AttributeError:
       raise Exception('Error parsing dumpsys output: ' + package_output)
+
+    if code_path.startswith('/system'):
+      logging.warning('Measurement of system image apks can be innacurate')
+
     compilation_filters = set()
     # Match "compilation_filter=value", where a line break can occur at any spot
     # (refer to examples above).
@@ -461,10 +463,9 @@ def _RunDiskUsage(devices, package_name, verbose):
             compilation_filter)
 
   def print_sizes(desc, sizes):
-    print '%s: %dkb' % (desc, sum(sizes.itervalues()))
-    if verbose:
-      for path, size in sorted(sizes.iteritems()):
-        print '    %s: %skb' % (path, size)
+    print '%s: %d KiB' % (desc, sum(sizes.itervalues()))
+    for path, size in sorted(sizes.iteritems()):
+      print '    %s: %s KiB' % (path, size)
 
   parallel_devices = device_utils.DeviceUtils.parallel(devices)
   all_results = parallel_devices.pMap(disk_usage_helper).pGet(None)
@@ -487,7 +488,7 @@ def _RunDiskUsage(devices, package_name, verbose):
     if show_warning:
       logging.warning('For a more realistic odex size, run:')
       logging.warning('    %s compile-dex [speed|speed-profile]', sys.argv[0])
-    print 'Total: %skb (%.1fmb)' % (total, total / 1024.0)
+    print 'Total: %s KiB (%.1f MiB)' % (total, total / 1024.0)
 
 
 class _LogcatProcessor(object):
@@ -908,16 +909,17 @@ class _Command(object):
     args.__dict__.setdefault('apk_path', None)
     args.__dict__.setdefault('incremental_json', None)
 
-    if self.supports_incremental:
-      incremental_apk_path = None
-      if args.incremental_json and not args.non_incremental:
-        with open(args.incremental_json) as f:
-          install_dict = json.load(f)
-          incremental_apk_path = os.path.join(
-              args.output_directory, install_dict['apk_path'])
-          if not os.path.exists(incremental_apk_path):
-            incremental_apk_path = None
+    incremental_apk_path = None
+    if args.incremental_json and not (self.supports_incremental and
+                                      args.non_incremental):
+      with open(args.incremental_json) as f:
+        install_dict = json.load(f)
+        incremental_apk_path = os.path.join(args.output_directory,
+                                            install_dict['apk_path'])
+        if not os.path.exists(incremental_apk_path):
+          incremental_apk_path = None
 
+    if self.supports_incremental:
       if args.incremental and args.non_incremental:
         self._parser.error('Must use only one of --incremental and '
                            '--non-incremental')
@@ -933,13 +935,13 @@ class _Command(object):
         self._parser.error('Both incremental and non-incremental apks exist. '
                            'Select using --incremental or --non-incremental')
 
-    if ((self.needs_apk_path and not self.is_bundle) or args.apk_path
-        or (self.supports_incremental and args.incremental_json)):
-      if self.supports_incremental and incremental_apk_path:
+    if ((self.needs_apk_path and not self.is_bundle) or args.apk_path or
+        incremental_apk_path):
+      if args.apk_path:
+        self.apk_helper = apk_helper.ToHelper(args.apk_path)
+      elif incremental_apk_path:
         self.install_dict = install_dict
         self.apk_helper = apk_helper.ToHelper(incremental_apk_path)
-      elif args.apk_path:
-        self.apk_helper = apk_helper.ToHelper(args.apk_path)
       else:
         self._parser.error('Apk is not built.')
 
@@ -953,11 +955,15 @@ class _Command(object):
 
     self.devices = []
     if self.need_device_args:
+      # See https://crbug.com/887964 regarding bundle support in apk_helper.
+      abis = None
+      if not self.is_bundle and self.apk_helper is not None:
+        abis = self.apk_helper.GetAbis()
       self.devices = device_utils.DeviceUtils.HealthyDevices(
           device_arg=args.devices,
           enable_device_files_cache=bool(args.output_directory),
           default_retries=0,
-          abis=self.apk_helper.GetAbis())
+          abis=abis)
       # TODO(agrieve): Device cache should not depend on output directory.
       #     Maybe put int /tmp?
       _LoadDeviceCaches(self.devices, args.output_directory)
@@ -1179,8 +1185,7 @@ class _DiskUsageCommand(_Command):
   all_devices_by_default = True
 
   def Run(self):
-    _RunDiskUsage(self.devices, self.args.package_name,
-                  bool(self.args.verbose_count))
+    _RunDiskUsage(self.devices, self.args.package_name)
 
 
 class _MemUsageCommand(_Command):

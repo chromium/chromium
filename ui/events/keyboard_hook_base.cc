@@ -23,7 +23,7 @@ KeyboardHookBase::KeyboardHookBase(
 
 KeyboardHookBase::~KeyboardHookBase() = default;
 
-bool KeyboardHookBase::IsKeyLocked(DomCode dom_code) {
+bool KeyboardHookBase::IsKeyLocked(DomCode dom_code) const {
   return ShouldCaptureKeyEvent(dom_code);
 }
 

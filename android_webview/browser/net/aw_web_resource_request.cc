@@ -8,6 +8,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
+#include "ui/base/page_transition_types.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF8ToJavaString;
@@ -38,6 +39,8 @@ AwWebResourceRequest::AwWebResourceRequest(const net::URLRequest& request)
   is_main_frame =
       info && info->GetResourceType() == content::RESOURCE_TYPE_MAIN_FRAME;
   has_user_gesture = info && info->HasUserGesture();
+  is_renderer_initiated =
+      info && ui::PageTransitionIsWebTriggerable(info->GetPageTransition());
 
   net::HttpRequestHeaders headers;
   if (!request.GetFullRequestHeaders(&headers))

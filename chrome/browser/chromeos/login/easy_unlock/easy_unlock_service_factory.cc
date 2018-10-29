@@ -21,6 +21,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/browser_resources.h"
+#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
+#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/extension_system.h"
@@ -46,6 +48,12 @@ base::FilePath GetEasyUnlockAppPath() {
 #endif  // defined(GOOGLE_CHROME_BUILD)
 
   return base::FilePath();
+}
+
+bool IsFeatureAllowed(content::BrowserContext* context) {
+  return multidevice_setup::IsFeatureAllowed(
+      multidevice_setup::mojom::Feature::kSmartLock,
+      Profile::FromBrowserContext(context)->GetPrefs());
 }
 
 }  // namespace
@@ -82,10 +90,14 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
   EasyUnlockService* service = NULL;
   int manifest_id = 0;
 
+  if (!IsFeatureAllowed(context))
+    return nullptr;
+
   if (ProfileHelper::IsLockScreenAppProfile(
           Profile::FromBrowserContext(context))) {
     return nullptr;
   }
+
   if (ProfileHelper::IsSigninProfile(Profile::FromBrowserContext(context))) {
     if (!context->IsOffTheRecord())
       return NULL;

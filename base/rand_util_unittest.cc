@@ -63,8 +63,8 @@ TEST(RandUtilTest, RandBytesAsString) {
   random_string = base::RandBytesAsString(145);
   EXPECT_EQ(145U, random_string.size());
   char accumulator = 0;
-  for (size_t i = 0; i < random_string.size(); ++i)
-    accumulator |= random_string[i];
+  for (auto i : random_string)
+    accumulator |= i;
   // In theory this test can fail, but it won't before the universe dies of
   // heat death.
   EXPECT_NE(0, accumulator);

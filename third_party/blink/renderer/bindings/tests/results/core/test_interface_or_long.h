@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef TestInterfaceOrLong_h
-#define TestInterfaceOrLong_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_TEST_INTERFACE_OR_LONG_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_TEST_INTERFACE_OR_LONG_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -24,7 +24,7 @@ namespace blink {
 class TestInterfaceImplementation;
 
 class CORE_EXPORT TestInterfaceOrLong final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   TestInterfaceOrLong();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -94,4 +94,4 @@ struct V8TypeOf<TestInterfaceOrLong> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::TestInterfaceOrLong);
 
-#endif  // TestInterfaceOrLong_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_TEST_INTERFACE_OR_LONG_H_

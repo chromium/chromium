@@ -43,7 +43,7 @@ enum DroppedReason {
   DROPPED_REASON_MAX
 };
 
-#if defined(OS_POSIX)
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
 
 // Binds/reads the given file path to the given column of the given statement.
 void BindFilePath(sql::Statement& statement,
@@ -536,8 +536,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
 
   QueryDownloadSlices(&info_map);
 
-  for (DownloadRowMap::iterator it = info_map.begin(); it != info_map.end();
-       ++it) {
+  for (auto it = info_map.begin(); it != info_map.end(); ++it) {
     DownloadRow* row = it->second;
     bool empty_url_chain = row->url_chain.empty();
     UMA_HISTOGRAM_BOOLEAN("Download.DatabaseEmptyUrlChain", empty_url_chain);
@@ -844,7 +843,7 @@ void DownloadDatabase::QueryDownloadSlices(DownloadRowMap* download_row_map) {
 
     // Confirm the download_id has already been seen--if it hasn't, discard the
     // record.
-    DownloadRowMap::iterator it = download_row_map->find(info.download_id);
+    auto it = download_row_map->find(info.download_id);
     bool found = (it != download_row_map->end());
     UMA_HISTOGRAM_BOOLEAN(
         "Download.DatabaseDownloadExistsForDownloadSlice", found);

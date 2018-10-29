@@ -90,9 +90,10 @@ void PerformanceMonitorTest::TearDown() {
 String PerformanceMonitorTest::FrameContextURL() {
   // This is reported only if there is a single frameContext URL.
   if (monitor_->task_has_multiple_contexts_)
-    return "";
-  Frame* frame = ToDocument(monitor_->task_execution_context_)->GetFrame();
-  return ToLocalFrame(frame)->GetDocument()->location()->toString();
+    return g_empty_string;
+  return To<Document>(monitor_->task_execution_context_.Get())
+      ->location()
+      ->toString();
 }
 
 int PerformanceMonitorTest::NumUniqueFrameContextsSeen() {

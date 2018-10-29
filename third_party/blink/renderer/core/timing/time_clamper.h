@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_TIME_CLAMPER_H_
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/core_export.h"
 
 #include <stdint.h>
@@ -14,11 +15,17 @@ namespace blink {
 
 class CORE_EXPORT TimeClamper {
  public:
-  static constexpr double kResolutionSeconds = 0.0001;
+// As site isolation is enabled on desktop platforms, we can safely provide
+// more timing resolution. Jittering is still enabled everywhere.
+#if defined(OS_ANDROID)
+  static constexpr double kResolutionSeconds = 100e-6;
+#else
+  static constexpr double kResolutionSeconds = 5e-6;
+#endif
 
   TimeClamper();
 
-  // Deterministically clamp the time value |time_seconds| to a 100us interval
+  // Deterministically clamp the time value |time_seconds| to a fixed interval
   // to prevent timing attacks. See
   // http://www.w3.org/TR/hr-time-2/#privacy-security.
   //

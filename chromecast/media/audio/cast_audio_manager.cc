@@ -13,6 +13,7 @@
 #include "chromecast/media/audio/cast_audio_mixer.h"
 #include "chromecast/media/audio/cast_audio_output_stream.h"
 #include "chromecast/media/cma/backend/cma_backend_factory.h"
+#include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 
 namespace {
@@ -42,11 +43,30 @@ CastAudioManager::CastAudioManager(
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     service_manager::Connector* connector,
     bool use_mixer)
+    : CastAudioManager(std::move(audio_thread),
+                       audio_log_factory,
+                       std::move(backend_factory_getter),
+                       std::move(browser_task_runner),
+                       std::move(media_task_runner),
+                       connector,
+                       use_mixer,
+                       false) {}
+
+CastAudioManager::CastAudioManager(
+    std::unique_ptr<::media::AudioThread> audio_thread,
+    ::media::AudioLogFactory* audio_log_factory,
+    base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
+    scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    service_manager::Connector* connector,
+    bool use_mixer,
+    bool force_use_cma_backend_for_output)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory),
       backend_factory_getter_(std::move(backend_factory_getter)),
       browser_task_runner_(std::move(browser_task_runner)),
       media_task_runner_(std::move(media_task_runner)),
       browser_connector_(connector),
+      force_use_cma_backend_for_output_(force_use_cma_backend_for_output),
       weak_factory_(this) {
   DCHECK(browser_task_runner_->BelongsToCurrentThread());
   DCHECK(backend_factory_getter_);
@@ -115,10 +135,13 @@ CmaBackendFactory* CastAudioManager::cma_backend_factory() {
   DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LINEAR, params.format());
 
   // If |mixer_| exists, return a mixing stream.
-  if (mixer_)
+  if (mixer_) {
     return mixer_->MakeStream(params);
-  else
-    return new CastAudioOutputStream(this, GetConnector(), params);
+  } else {
+    return new CastAudioOutputStream(
+        this, GetConnector(), params,
+        GetMixerServiceConnectionFactoryForOutputStream(params));
+  }
 }
 
 ::media::AudioOutputStream* CastAudioManager::MakeLowLatencyOutputStream(
@@ -128,10 +151,13 @@ CmaBackendFactory* CastAudioManager::cma_backend_factory() {
   DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
 
   // If |mixer_| exists, return a mixing stream.
-  if (mixer_)
+  if (mixer_) {
     return mixer_->MakeStream(params);
-  else
-    return new CastAudioOutputStream(this, GetConnector(), params);
+  } else {
+    return new CastAudioOutputStream(
+        this, GetConnector(), params,
+        GetMixerServiceConnectionFactoryForOutputStream(params));
+  }
 }
 
 ::media::AudioInputStream* CastAudioManager::MakeLinearInputStream(
@@ -180,8 +206,9 @@ CmaBackendFactory* CastAudioManager::cma_backend_factory() {
 
   // Keep a reference to this stream for proper behavior on
   // CastAudioManager::ReleaseOutputStream.
-  mixer_output_stream_.reset(
-      new CastAudioOutputStream(this, GetConnector(), params));
+  mixer_output_stream_.reset(new CastAudioOutputStream(
+      this, GetConnector(), params,
+      GetMixerServiceConnectionFactoryForOutputStream(params)));
   return mixer_output_stream_.get();
 }
 
@@ -204,6 +231,20 @@ service_manager::Connector* CastAudioManager::GetConnector() {
 void CastAudioManager::BindConnectorRequest(
     service_manager::mojom::ConnectorRequest request) {
   browser_connector_->BindConnectorRequest(std::move(request));
+}
+
+MixerServiceConnectionFactory*
+CastAudioManager::GetMixerServiceConnectionFactoryForOutputStream(
+    const ::media::AudioParameters& params) {
+  bool use_cma_backend =
+      (params.effects() & ::media::AudioParameters::MULTIZONE) ||
+      !CastMediaShlib::AddDirectAudioSource ||
+      force_use_cma_backend_for_output_;
+
+  if (use_cma_backend)
+    return nullptr;
+  else
+    return &mixer_service_connection_factory_;
 }
 
 }  // namespace media

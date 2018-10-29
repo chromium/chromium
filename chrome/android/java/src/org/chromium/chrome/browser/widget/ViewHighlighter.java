@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 
@@ -49,9 +50,9 @@ public class ViewHighlighter {
             background = background.getConstantState().newDrawable(resources);
         }
 
-        LayerDrawable drawable =
-                new LayerDrawable(background == null ? new Drawable[] {pulseDrawable}
-                                                     : new Drawable[] {background, pulseDrawable});
+        LayerDrawable drawable = ApiCompatibilityUtils.createLayerDrawable(background == null
+                        ? new Drawable[] {pulseDrawable}
+                        : new Drawable[] {background, pulseDrawable});
         view.setBackground(drawable);
         view.setTag(R.id.highlight_state, true);
 

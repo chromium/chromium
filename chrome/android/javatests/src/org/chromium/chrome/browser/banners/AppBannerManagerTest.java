@@ -292,19 +292,14 @@ public class AppBannerManagerTest {
 
         // Update engagement, then revisit the page to get the banner to appear.
         resetEngagementForUrl(url, 10);
-        InfoBarContainer container = tab.getInfoBarContainer();
+        InfoBarContainer container = mTabbedActivityTestRule.getInfoBarContainer();
         final InfobarListener listener = new InfobarListener();
         container.addAnimationListener(listener);
         new TabLoadObserver(tab).fullyLoadUrl(url);
         waitUntilAppDetailsRetrieved(mTabbedActivityTestRule, 1);
         Assert.assertEquals(mDetailsDelegate.mReferrer, expectedReferrer);
         waitUntilAppBannerInfoBarAppears(mTabbedActivityTestRule, NATIVE_APP_TITLE);
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return listener.mDoneAnimating;
-            }
-        });
+        CriteriaHelper.pollUiThread(() -> listener.mDoneAnimating);
 
         // Check that the button asks if the user wants to install the app.
         InfoBar infobar = container.getInfoBarsForTesting().get(0);
@@ -362,7 +357,7 @@ public class AppBannerManagerTest {
         InfoBarUtil.waitUntilNoInfoBarsExist(rule.getInfoBars());
 
         // Add the animation listener in.
-        InfoBarContainer container = rule.getActivity().getActivityTab().getInfoBarContainer();
+        InfoBarContainer container = rule.getInfoBarContainer();
         final InfobarListener listener = new InfobarListener();
         container.addAnimationListener(listener);
 
@@ -373,12 +368,7 @@ public class AppBannerManagerTest {
 
         if (!installApp) return;
 
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return listener.mDoneAnimating;
-            }
-        });
+        CriteriaHelper.pollUiThread(() -> listener.mDoneAnimating);
 
         // Click the button to trigger the adding of the shortcut.
         InfoBar infobar = container.getInfoBarsForTesting().get(0);
@@ -392,7 +382,7 @@ public class AppBannerManagerTest {
         // Update engagement, then visit a page which triggers a banner.
         Tab tab = rule.getActivity().getActivityTab();
         resetEngagementForUrl(url, 10);
-        InfoBarContainer container = tab.getInfoBarContainer();
+        InfoBarContainer container = rule.getInfoBarContainer();
         final InfobarListener listener = new InfobarListener();
         container.addAnimationListener(listener);
         new TabLoadObserver(tab).fullyLoadUrl(url);
@@ -402,12 +392,7 @@ public class AppBannerManagerTest {
         waitUntilAppBannerInfoBarAppears(rule, expectedTitle);
 
         // Explicitly dismiss the banner.
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return listener.mDoneAnimating;
-            }
-        });
+        CriteriaHelper.pollUiThread(() -> listener.mDoneAnimating);
         ArrayList<InfoBar> infobars = container.getInfoBarsForTesting();
         View close = infobars.get(0).getView().findViewById(R.id.infobar_close_button);
         TouchCommon.singleClickView(close);
@@ -697,17 +682,12 @@ public class AppBannerManagerTest {
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
         waitUntilAmbientBadgeInfoBarAppears(mTabbedActivityTestRule);
 
-        InfoBarContainer container = tab.getInfoBarContainer();
+        InfoBarContainer container = mTabbedActivityTestRule.getInfoBarContainer();
         final InfobarListener listener = new InfobarListener();
         container.addAnimationListener(listener);
 
         // Explicitly dismiss the ambient badge.
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return listener.mDoneAnimating;
-            }
-        });
+        CriteriaHelper.pollUiThread(() -> listener.mDoneAnimating);
 
         ArrayList<InfoBar> infobars = container.getInfoBarsForTesting();
         View close = infobars.get(0).getView().findViewById(R.id.infobar_close_button);
@@ -832,7 +812,7 @@ public class AppBannerManagerTest {
 
         // Update engagement, then revisit the page.
         resetEngagementForUrl(nativeBannerUrl, 10);
-        InfoBarContainer container = tab.getInfoBarContainer();
+        InfoBarContainer container = mTabbedActivityTestRule.getInfoBarContainer();
         final InfobarListener listener = new InfobarListener();
         container.addAnimationListener(listener);
         new TabLoadObserver(tab).fullyLoadUrl(nativeBannerUrl);
@@ -840,12 +820,7 @@ public class AppBannerManagerTest {
         waitUntilAppBannerInfoBarAppears(mTabbedActivityTestRule, NATIVE_APP_TITLE);
 
         // Explicitly dismiss the banner.
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return listener.mDoneAnimating;
-            }
-        });
+        CriteriaHelper.pollUiThread(() -> listener.mDoneAnimating);
         ArrayList<InfoBar> infobars = container.getInfoBarsForTesting();
         View close = infobars.get(0).getView().findViewById(R.id.infobar_close_button);
         TouchCommon.singleClickView(close);
@@ -880,19 +855,14 @@ public class AppBannerManagerTest {
 
         // Update engagement, then visit a page which triggers a banner.
         resetEngagementForUrl(webBannerUrl, 10);
-        InfoBarContainer container = tab.getInfoBarContainer();
+        InfoBarContainer container = mTabbedActivityTestRule.getInfoBarContainer();
         final InfobarListener listener = new InfobarListener();
         container.addAnimationListener(listener);
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
         waitUntilAppBannerInfoBarAppears(mTabbedActivityTestRule, WEB_APP_TITLE);
 
         // Explicitly dismiss the banner.
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return listener.mDoneAnimating;
-            }
-        });
+        CriteriaHelper.pollUiThread(() -> listener.mDoneAnimating);
         ArrayList<InfoBar> infobars = container.getInfoBarsForTesting();
         View close = infobars.get(0).getView().findViewById(R.id.infobar_close_button);
         TouchCommon.singleClickView(close);

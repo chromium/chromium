@@ -4,10 +4,15 @@
 
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -16,6 +21,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/image_loader.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "skia/ext/image_operations.h"
@@ -32,6 +38,8 @@
 #endif
 
 using content::BrowserThread;
+
+namespace web_app {
 
 namespace {
 
@@ -51,8 +59,8 @@ const int kDesiredSizes[] = {32};
 const size_t kNumDesiredSizes = base::size(kDesiredSizes);
 #endif
 
-void OnImageLoaded(std::unique_ptr<web_app::ShortcutInfo> shortcut_info,
-                   web_app::ShortcutInfoCallback callback,
+void OnImageLoaded(std::unique_ptr<ShortcutInfo> shortcut_info,
+                   ShortcutInfoCallback callback,
                    gfx::ImageFamily image_family) {
   // If the image failed to load (e.g. if the resource being loaded was empty)
   // use the standard application icon.
@@ -79,31 +87,28 @@ void OnImageLoaded(std::unique_ptr<web_app::ShortcutInfo> shortcut_info,
 void UpdateAllShortcutsForShortcutInfo(
     const base::string16& old_app_title,
     base::OnceClosure callback,
-    std::unique_ptr<web_app::ShortcutInfo> shortcut_info) {
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
   base::FilePath shortcut_data_dir =
-      web_app::internals::GetShortcutDataDir(*shortcut_info);
-  web_app::internals::PostShortcutIOTaskAndReply(
-      base::BindOnce(&web_app::internals::UpdatePlatformShortcuts,
-                     shortcut_data_dir, old_app_title),
+      internals::GetShortcutDataDir(*shortcut_info);
+  internals::PostShortcutIOTaskAndReply(
+      base::BindOnce(&internals::UpdatePlatformShortcuts, shortcut_data_dir,
+                     old_app_title),
       std::move(shortcut_info), std::move(callback));
 }
 
 void ScheduleCreatePlatformShortcut(
-    web_app::ShortcutCreationReason reason,
-    const web_app::ShortcutLocations& locations,
-    std::unique_ptr<web_app::ShortcutInfo> shortcut_info) {
+    ShortcutCreationReason reason,
+    const ShortcutLocations& locations,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
   base::FilePath shortcut_data_dir =
-      web_app::internals::GetShortcutDataDir(*shortcut_info);
-  web_app::internals::PostShortcutIOTask(
-      base::BindOnce(
-          base::IgnoreResult(&web_app::internals::CreatePlatformShortcuts),
-          shortcut_data_dir, locations, reason),
+      internals::GetShortcutDataDir(*shortcut_info);
+  internals::PostShortcutIOTask(
+      base::BindOnce(base::IgnoreResult(&internals::CreatePlatformShortcuts),
+                     shortcut_data_dir, locations, reason),
       std::move(shortcut_info));
 }
 
 }  // namespace
-
-namespace web_app {
 
 void CreateShortcutsWithInfo(ShortcutCreationReason reason,
                              const ShortcutLocations& locations,
@@ -139,8 +144,8 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
 void GetShortcutInfoForApp(const extensions::Extension* extension,
                            Profile* profile,
                            ShortcutInfoCallback callback) {
-  std::unique_ptr<web_app::ShortcutInfo> shortcut_info(
-      web_app::ShortcutInfoForExtensionAndProfile(extension, profile));
+  std::unique_ptr<ShortcutInfo> shortcut_info(
+      ShortcutInfoForExtensionAndProfile(extension, profile));
 
   std::vector<extensions::ImageLoader::ImageRepresentation> info_list;
   for (size_t i = 0; i < kNumDesiredSizes; ++i) {
@@ -207,7 +212,7 @@ std::unique_ptr<ShortcutInfo> ShortcutInfoForExtensionAndProfile(
   return shortcut_info;
 }
 
-bool ShouldCreateShortcutFor(web_app::ShortcutCreationReason reason,
+bool ShouldCreateShortcutFor(ShortcutCreationReason reason,
                              Profile* profile,
                              const extensions::Extension* extension) {
   // Shortcuts should never be created for component apps, or for apps that
@@ -278,7 +283,7 @@ void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app) {
   std::unique_ptr<ShortcutInfo> shortcut_info(
       ShortcutInfoForExtensionAndProfile(app, profile));
   base::FilePath shortcut_data_dir =
-      web_app::internals::GetShortcutDataDir(*shortcut_info);
+      internals::GetShortcutDataDir(*shortcut_info);
   internals::PostShortcutIOTask(
       base::BindOnce(&internals::DeletePlatformShortcuts, shortcut_data_dir),
       std::move(shortcut_info));
@@ -305,7 +310,7 @@ void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback) {
 void UpdateRelaunchDetailsForApp(Profile* profile,
                                  const extensions::Extension* extension,
                                  HWND hwnd) {
-  web_app::GetShortcutInfoForApp(
+  GetShortcutInfoForApp(
       extension, profile,
       base::BindOnce(&internals::OnShortcutInfoLoadedForSetRelaunchDetails,
                      hwnd));

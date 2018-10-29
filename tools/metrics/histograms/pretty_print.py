@@ -24,7 +24,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import diff_util
 import presubmit_util
 
-import print_style
+import histograms_print_style
 
 
 class Error(Exception):
@@ -102,7 +102,7 @@ def PrettyPrintHistogramsTree(tree):
   DropNodesByTagName(tree, 'enums')
   canonicalizeUnits(tree)
   fixObsoleteOrder(tree)
-  return print_style.GetPrintStyle().PrettyPrintXml(tree)
+  return histograms_print_style.GetPrintStyle().PrettyPrintXml(tree)
 
 
 def PrettyPrintEnums(raw_xml):
@@ -111,7 +111,7 @@ def PrettyPrintEnums(raw_xml):
   # Prevent accidentally adding histograms to enums.xml
   DropNodesByTagName(tree, 'histograms')
   DropNodesByTagName(tree, 'histogram_suffixes_list')
-  return print_style.GetPrintStyle().PrettyPrintXml(tree)
+  return histograms_print_style.GetPrintStyle().PrettyPrintXml(tree)
 
 
 def main():

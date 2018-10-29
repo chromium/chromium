@@ -25,6 +25,17 @@
 
 namespace test_runner {
 
+namespace {
+bool ShouldUseInnerTextDump(const std::string& test_path) {
+  // We are switching the text dump implementation to spec-conformant
+  // Element.innerText. To avoid gigantic patch, we control the rebaseline
+  // progress here in a per-directory manner.
+  // TODO(xiaochengh): Progressively allow more tests to use innerText.
+  // Remove this function once rebaseline is complete.
+  return test_path >= "LayoutTests/a" && test_path < "LayoutTests/fast/e";
+}
+}  // namespace
+
 TestInterfaces::TestInterfaces()
     : gamepad_controller_(new GamepadController()),
       test_runner_(new TestRunner(this)),
@@ -58,7 +69,7 @@ void TestInterfaces::SetDelegate(WebTestDelegate* delegate) {
 
 void TestInterfaces::BindTo(blink::WebLocalFrame* frame) {
   gamepad_controller_->Install(frame);
-  GCController::Install(frame);
+  GCController::Install(this, frame);
 }
 
 void TestInterfaces::ResetTestHelperControllers() {
@@ -83,17 +94,32 @@ void TestInterfaces::SetTestIsRunning(bool running) {
 }
 
 void TestInterfaces::ConfigureForTestWithURL(const blink::WebURL& test_url,
-                                             bool generate_pixels,
-                                             bool initial_configuration) {
+                                             bool protocol_mode) {
   std::string spec = GURL(test_url).spec();
   size_t path_start = spec.rfind("LayoutTests/");
-  if (path_start != std::string::npos)
+  if (path_start != std::string::npos) {
     spec = spec.substr(path_start);
+  } else {
+    path_start = spec.rfind("web_tests/");
+    if (path_start != std::string::npos)
+      spec = spec.substr(path_start);
+  }
+
   bool is_devtools_test = spec.find("/devtools/") != std::string::npos;
   if (is_devtools_test) {
     test_runner_->SetDumpConsoleMessages(false);
   }
-  test_runner_->setShouldGeneratePixelResults(generate_pixels);
+
+  // In protocol mode (see TestInfo::protocol_mode), we dump layout only when
+  // requested by the test. In non-protocol mode, we dump layout by default
+  // because the layout may be the only interesting thing to the user while
+  // we don't dump non-human-readable binary data. In non-protocol mode, we
+  // still generate pixel results (though don't dump them) to let the renderer
+  // execute the same code regardless of the protocol mode, e.g. for ease of
+  // debugging a layout test issue.
+  if (!protocol_mode)
+    test_runner_->setShouldDumpAsLayout(true);
+
   // For http/tests/loading/, which is served via httpd and becomes /loading/.
   if (spec.find("/loading/") != std::string::npos)
     test_runner_->setShouldDumpFrameLoadCallbacks(true);
@@ -114,9 +140,8 @@ void TestInterfaces::ConfigureForTestWithURL(const blink::WebURL& test_url,
       spec.find("/harness-tests/wpt/") != std::string::npos)
     test_runner_->set_is_web_platform_tests_mode();
 
-  // The actions below should only be done *once* per test.
-  if (!initial_configuration)
-    return;
+  const bool should_use_inner_text = ShouldUseInnerTextDump(spec);
+  test_runner_->SetShouldUseInnerTextDump(should_use_inner_text);
 }
 
 void TestInterfaces::WindowOpened(WebViewTestProxyBase* proxy) {

@@ -36,36 +36,55 @@ def main():
     os.makedirs(args.out_dir)
 
   try:
-    if args.iossim and args.platform and args.version:
+    if args.replay_path != 'NO_PATH':
+      tr = test_runner.WprProxySimulatorTestRunner(
+          args.app,
+          args.iossim,
+          args.replay_path,
+          args.platform,
+          args.version,
+          args.wpr_tools_path,
+          args.xcode_build_version,
+          args.out_dir,
+          env_vars=args.env_var,
+          mac_toolchain=args.mac_toolchain_cmd,
+          retries=args.retries,
+          shards=args.shards,
+          test_args=test_args,
+          test_cases=args.test_cases,
+          xcode_path=args.xcode_path,
+          xctest=args.xctest,
+      )
+    elif args.iossim and args.platform and args.version:
       tr = test_runner.SimulatorTestRunner(
-        args.app,
-        args.iossim,
-        args.platform,
-        args.version,
-        args.xcode_build_version,
-        args.out_dir,
-        env_vars=args.env_var,
-        mac_toolchain=args.mac_toolchain_cmd,
-        retries=args.retries,
-        shards=args.shards,
-        test_args=test_args,
-        test_cases=args.test_cases,
-        xcode_path=args.xcode_path,
-        xctest=args.xctest,
+          args.app,
+          args.iossim,
+          args.platform,
+          args.version,
+          args.xcode_build_version,
+          args.out_dir,
+          env_vars=args.env_var,
+          mac_toolchain=args.mac_toolchain_cmd,
+          retries=args.retries,
+          shards=args.shards,
+          test_args=test_args,
+          test_cases=args.test_cases,
+          xcode_path=args.xcode_path,
+          xctest=args.xctest,
       )
     else:
       tr = test_runner.DeviceTestRunner(
-        args.app,
-        args.xcode_build_version,
-        args.out_dir,
-        env_vars=args.env_var,
-        mac_toolchain=args.mac_toolchain_cmd,
-        restart=args.restart,
-        retries=args.retries,
-        test_args=test_args,
-        test_cases=args.test_cases,
-        xcode_path=args.xcode_path,
-        xctest=args.xctest,
+          args.app,
+          args.xcode_build_version,
+          args.out_dir,
+          env_vars=args.env_var,
+          mac_toolchain=args.mac_toolchain_cmd,
+          restart=args.restart,
+          retries=args.retries,
+          test_args=test_args,
+          test_cases=args.test_cases,
+          xcode_path=args.xcode_path,
+          xctest=args.xctest,
       )
 
     return 0 if tr.launch() else 1
@@ -173,6 +192,14 @@ def parse_args():
     metavar='build_id',
   )
   parser.add_argument(
+    '--replay-path',
+    help=('Path to a directory containing WPR replay and recipe files, for '
+          'use with WprProxySimulatorTestRunner to replay a test suite'
+          ' against multiple saved website interactions. Default: %(default)s'),
+    default='NO_PATH',
+    metavar='replay-path',
+  )
+  parser.add_argument(
     '--xcode-path',
     metavar='PATH',
     help=('Path to <Xcode>.app folder where contents of the app will be '
@@ -186,6 +213,13 @@ def parse_args():
     help='Command to run mac_toolchain tool. Default: %(default)s.',
     default='mac_toolchain',
     metavar='mac_toolchain',
+  )
+  parser.add_argument(
+    '--wpr-tools-path',
+    help=('Location of WPR test tools (should be preinstalled, e.g. as part of '
+         'a swarming task requirement). Default: %(default)s.'),
+    default='NO_PATH',
+    metavar='wpr-tools-path',
   )
   parser.add_argument(
     '--xctest',

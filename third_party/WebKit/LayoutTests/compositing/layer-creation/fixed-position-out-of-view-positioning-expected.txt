@@ -2,6 +2,7 @@ PASS layerTree is internals.layerTreeAsText(document)
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 The layer trees before and after should be the same, except for the position of the 50x50 sized composited fixed position layer.
 BEFORE:
 {
@@ -53,6 +54,7 @@ BEFORE:
     }
   ]
 }
+
 AFTER:
 {
   "layers": [

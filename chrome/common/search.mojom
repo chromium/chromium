@@ -66,6 +66,11 @@ interface EmbeddedSearch {
   // instead.
   ResetCustomLinks(int32 page_seq_no);
 
+  // Tells InstantExtended to return true if the URL resolves and the edit
+  // custom link dialog has not timed out.
+  DoesUrlResolve(int32 page_seq_no, url.mojom.Url url)
+      => (bool resolves, bool timeout);
+
   // Logs events from InstantExtended New Tab Pages.
   LogEvent(int32 page_seq_no,
            NTPLoggingEventType event,

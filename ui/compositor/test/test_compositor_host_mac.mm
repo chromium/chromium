@@ -16,6 +16,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/compositor/compositor.h"
@@ -160,7 +161,8 @@ void TestCompositorHostMac::Show() {
       std::make_unique<TestAcceleratedWidgetMacNSView>(view);
   accelerated_widget_.SetNSView(test_accelerated_widget_nsview_.get());
   compositor_.SetAcceleratedWidget(accelerated_widget_.accelerated_widget());
-  compositor_.SetScaleAndSize(1.0f, bounds_.size(), viz::LocalSurfaceId());
+  compositor_.SetScaleAndSize(1.0f, bounds_.size(), viz::LocalSurfaceId(),
+                              base::TimeTicks());
   [view setCompositor:&compositor_];
   [window_ setContentView:view];
   [window_ orderFront:nil];

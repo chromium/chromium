@@ -24,18 +24,18 @@
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
-#include "chrome/browser/mac/keychain_reauthorize.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/mac/mac_startup_profiler.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/grit/chromium_strings.h"
 #include "components/crash/content/app/crashpad.h"
 #include "components/metrics/metrics_service.h"
 #include "components/os_crypt/os_crypt.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
 
@@ -69,10 +69,8 @@ void EnsureMetadataNeverIndexFile(const base::FilePath& user_data_dir) {
 
 ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(
     const content::MainFunctionParams& parameters,
-    std::unique_ptr<ui::DataPack> data_pack,
     ChromeFeatureListCreator* chrome_feature_list_creator)
     : ChromeBrowserMainPartsPosix(parameters,
-                                  std::move(data_pack),
                                   chrome_feature_list_creator) {}
 
 ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() {
@@ -87,15 +85,6 @@ int ChromeBrowserMainPartsMac::PreEarlyInitialization() {
     base::CommandLine* singleton_command_line =
         base::CommandLine::ForCurrentProcess();
     singleton_command_line->AppendSwitch(switches::kNoStartupWindow);
-  }
-
-  // If ui_task is not NULL, the app is actually a browser_test.
-  if (!parameters().ui_task) {
-    // The browser process only wants to support the language Cocoa will use,
-    // so force the app locale to be overriden with that value. This must
-    // happen before the ResourceBundle is loaded, which happens in
-    // ChromeBrowserMainParts::PreEarlyInitialization().
-    l10n_util::OverrideLocaleWithCocoaLocale();
   }
 
   return ChromeBrowserMainPartsPosix::PreEarlyInitialization();
@@ -139,19 +128,9 @@ void ChromeBrowserMainPartsMac::PreMainMessageLoopStart() {
   AppController* app_controller = [[AppController alloc] init];
   [NSApp setDelegate:app_controller];
 
-  chrome::BuildMainMenu(NSApp, app_controller);
+  chrome::BuildMainMenu(NSApp, app_controller,
+                        l10n_util::GetStringUTF16(IDS_PRODUCT_NAME), false);
   [app_controller mainMenuCreated];
-
-  // Do Keychain reauthorization. This gets two chances to run. If the first
-  // try doesn't complete successfully (crashes or is interrupted for any
-  // reason), there will be a second chance. Once this step completes
-  // successfully, it should never have to run again.
-  NSString* const keychain_reauthorize_pref =
-      @"KeychainReauthorizeInAppSpring2017";
-  const int kKeychainReauthorizeMaxTries = 2;
-
-  chrome::KeychainReauthorizeIfNeeded(keychain_reauthorize_pref,
-                                      kKeychainReauthorizeMaxTries);
 
   // Initialize the OSCrypt.
   PrefService* local_state = g_browser_process->local_state();

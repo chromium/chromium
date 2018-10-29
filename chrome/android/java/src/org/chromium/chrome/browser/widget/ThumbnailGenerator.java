@@ -42,7 +42,7 @@ public class ThumbnailGenerator {
         boolean hasFilePath = !TextUtils.isEmpty(request.getFilePath());
         assert hasFilePath;
         nativeRetrieveThumbnail(getNativeThumbnailGenerator(), request.getContentId(),
-                request.getFilePath(), request.getIconSize(), callback);
+                request.getFilePath(), request.getMimeType(), request.getIconSize(), callback);
     }
 
     /**
@@ -80,5 +80,6 @@ public class ThumbnailGenerator {
     private native long nativeInit();
     private native void nativeDestroy(long nativeThumbnailGenerator);
     private native void nativeRetrieveThumbnail(long nativeThumbnailGenerator, String contentId,
-            String filePath, int thumbnailSize, ThumbnailGeneratorCallback callback);
+            String filePath, String mimeType, int thumbnailSize,
+            ThumbnailGeneratorCallback callback);
 }

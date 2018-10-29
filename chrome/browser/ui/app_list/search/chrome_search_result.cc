@@ -65,6 +65,13 @@ void ChromeSearchResult::SetDetailsTags(const Tags& tags) {
     updater->SetSearchResultMetadata(id(), CloneMetadata());
 }
 
+void ChromeSearchResult::SetAccessibleName(const base::string16& name) {
+  metadata_->accessible_name = name;
+  AppListModelUpdater* updater = model_updater();
+  if (updater)
+    updater->SetSearchResultMetadata(id(), CloneMetadata());
+}
+
 void ChromeSearchResult::SetRating(float rating) {
   metadata_->rating = rating;
   AppListModelUpdater* updater = model_updater();
@@ -125,6 +132,14 @@ void ChromeSearchResult::SetPercentDownloaded(int percent_downloaded) {
 void ChromeSearchResult::SetIcon(const gfx::ImageSkia& icon) {
   icon.EnsureRepsForSupportedScales();
   metadata_->icon = icon;
+  AppListModelUpdater* updater = model_updater();
+  if (updater)
+    updater->SetSearchResultMetadata(id(), CloneMetadata());
+}
+
+void ChromeSearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {
+  chip_icon.EnsureRepsForSupportedScales();
+  metadata_->chip_icon = chip_icon;
   AppListModelUpdater* updater = model_updater();
   if (updater)
     updater->SetSearchResultMetadata(id(), CloneMetadata());

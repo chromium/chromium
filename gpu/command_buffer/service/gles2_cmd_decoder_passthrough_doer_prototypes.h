@@ -813,7 +813,6 @@ error::Error DoCopySubTextureCHROMIUM(GLuint source_id,
                                       GLboolean unpack_flip_y,
                                       GLboolean unpack_premultiply_alpha,
                                       GLboolean unpack_unmultiply_alpha);
-error::Error DoCompressedCopyTextureCHROMIUM(GLuint source_id, GLuint dest_id);
 error::Error DoDrawArraysInstancedANGLE(GLenum mode,
                                         GLint first,
                                         GLsizei count,
@@ -828,6 +827,10 @@ error::Error DoProduceTextureDirectCHROMIUM(GLuint texture_client_id,
                                             const volatile GLbyte* mailbox);
 error::Error DoCreateAndConsumeTextureINTERNAL(GLuint texture_client_id,
                                                const volatile GLbyte* mailbox);
+error::Error DoCreateAndTexStorage2DSharedImageINTERNAL(
+    GLuint client_id,
+    GLenum internal_format,
+    const volatile GLbyte* mailbox);
 error::Error DoBindUniformLocationCHROMIUM(GLuint program,
                                            GLint location,
                                            const char* name);
@@ -1067,4 +1070,9 @@ error::Error DoSetReadbackBufferShadowAllocationINTERNAL(GLuint buffer_id,
                                                          GLuint shm_offset,
                                                          GLuint size);
 error::Error DoMaxShaderCompilerThreadsKHR(GLuint count);
+error::Error DoInitializeDiscardableTextureCHROMIUM(
+    GLuint texture_id,
+    ServiceDiscardableHandle&& discardable_handle);
+error::Error DoUnlockDiscardableTextureCHROMIUM(GLuint texture_id);
+error::Error DoLockDiscardableTextureCHROMIUM(GLuint texture_id);
 #endif  // GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_PASSTHROUGH_DOER_PROTOTYPES_H_

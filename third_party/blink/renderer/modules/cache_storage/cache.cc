@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/request_init.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_error.h"
@@ -64,12 +64,11 @@ bool VaryHeaderContainsAsterisk(const Response* response) {
 
 bool ShouldGenerateV8CodeCache(ScriptState* script_state,
                                const Response* response) {
-  if (!RuntimeEnabledFeatures::PWAFullCodeCacheEnabled())
-    return false;
   ExecutionContext* context = ExecutionContext::From(script_state);
-  if (!context->IsServiceWorkerGlobalScope())
+  auto* global_scope = DynamicTo<ServiceWorkerGlobalScope>(context);
+  if (!global_scope)
     return false;
-  if (!ToServiceWorkerGlobalScope(context)->IsInstalling())
+  if (!global_scope->IsInstalling())
     return false;
   if (!MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
           response->InternalMIMEType())) {
@@ -169,7 +168,7 @@ class Cache::FetchResolvedForAdd final : public ScriptFunction {
 class Cache::BarrierCallbackForPut final
     : public GarbageCollectedFinalized<BarrierCallbackForPut> {
  public:
-  BarrierCallbackForPut(int number_of_operations,
+  BarrierCallbackForPut(wtf_size_t number_of_operations,
                         Cache* cache,
                         const String& method_name,
                         ScriptPromiseResolver* resolver)
@@ -181,7 +180,7 @@ class Cache::BarrierCallbackForPut final
     batch_operations_.resize(number_of_operations);
   }
 
-  void OnSuccess(size_t index,
+  void OnSuccess(wtf_size_t index,
                  mojom::blink::BatchOperationPtr batch_operation) {
     DCHECK_LT(index, batch_operations_.size());
     if (!StillActive())
@@ -224,7 +223,7 @@ class Cache::BarrierCallbackForPut final
                   if (error->message.Contains(
                           blink::cache_storage::
                               kDuplicateOperationBaseMessage)) {
-                    UseCounter::Count(
+                    Deprecation::CountDeprecation(
                         context,
                         WebFeature::kCacheStorageAddAllSuccessWithDuplicate);
                   }
@@ -275,10 +274,9 @@ class Cache::BarrierCallbackForPut final
   // execution context and it's in installation phase.
   void MaybeReportInstalledScripts() {
     ExecutionContext* context = resolver_->GetExecutionContext();
-    if (!context || !context->IsServiceWorkerGlobalScope())
+    auto* global_scope = DynamicTo<ServiceWorkerGlobalScope>(context);
+    if (!global_scope)
       return;
-    ServiceWorkerGlobalScope* global_scope =
-        ToServiceWorkerGlobalScope(context);
     if (!global_scope->IsInstalling())
       return;
 
@@ -314,7 +312,7 @@ class Cache::BlobHandleCallbackForPut final
   USING_GARBAGE_COLLECTED_MIXIN(BlobHandleCallbackForPut);
 
  public:
-  BlobHandleCallbackForPut(size_t index,
+  BlobHandleCallbackForPut(wtf_size_t index,
                            BarrierCallbackForPut* barrier_callback,
                            Request* request,
                            Response* response)
@@ -347,7 +345,7 @@ class Cache::BlobHandleCallbackForPut final
   }
 
  private:
-  const size_t index_;
+  const wtf_size_t index_;
   Member<BarrierCallbackForPut> barrier_callback_;
 
   WebServiceWorkerRequest web_request_;
@@ -361,7 +359,7 @@ class Cache::CodeCacheHandleCallbackForPut final
 
  public:
   CodeCacheHandleCallbackForPut(ScriptState* script_state,
-                                size_t index,
+                                wtf_size_t index,
                                 BarrierCallbackForPut* barrier_callback,
                                 Request* request,
                                 Response* response)
@@ -432,7 +430,7 @@ class Cache::CodeCacheHandleCallbackForPut final
 
  private:
   const Member<ScriptState> script_state_;
-  const size_t index_;
+  const wtf_size_t index_;
   Member<BarrierCallbackForPut> barrier_callback_;
   const String mime_type_;
 
@@ -708,7 +706,7 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
   request_infos.resize(requests.size());
   Vector<ScriptPromise> promises;
   promises.resize(requests.size());
-  for (size_t i = 0; i < requests.size(); ++i) {
+  for (wtf_size_t i = 0; i < requests.size(); ++i) {
     if (!requests[i]->url().ProtocolIsInHTTPFamily()) {
       return ScriptPromise::Reject(script_state,
                                    V8ThrowException::CreateTypeError(
@@ -813,7 +811,7 @@ ScriptPromise Cache::PutImpl(ScriptState* script_state,
   BarrierCallbackForPut* barrier_callback =
       new BarrierCallbackForPut(requests.size(), this, method_name, resolver);
 
-  for (size_t i = 0; i < requests.size(); ++i) {
+  for (wtf_size_t i = 0; i < requests.size(); ++i) {
     KURL url(NullURL(), requests[i]->url());
     if (!url.ProtocolIsInHTTPFamily()) {
       barrier_callback->OnError("Request scheme '" + url.Protocol() +

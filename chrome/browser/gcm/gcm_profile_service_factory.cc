@@ -5,6 +5,7 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
@@ -14,7 +15,9 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/gcm/gcm_product_util.h"
@@ -58,17 +61,31 @@ void RequestProxyResolvingSocketFactory(
     Profile* profile,
     base::WeakPtr<GCMProfileService> service,
     network::mojom::ProxyResolvingSocketFactoryRequest request) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread, profile,
                      std::move(service), std::move(request)));
 }
 #endif
 
+BrowserContextKeyedServiceFactory::TestingFactory& GetTestingFactory() {
+  static base::NoDestructor<BrowserContextKeyedServiceFactory::TestingFactory>
+      testing_factory;
+  return *testing_factory;
+}
+
 }  // namespace
 
-BrowserContextKeyedServiceFactory::TestingFactoryFunction
-    GCMProfileServiceFactory::testing_factory_ = nullptr;
+GCMProfileServiceFactory::ScopedTestingFactoryInstaller::
+    ScopedTestingFactoryInstaller(TestingFactory testing_factory) {
+  DCHECK(!GetTestingFactory());
+  GetTestingFactory() = std::move(testing_factory);
+}
+
+GCMProfileServiceFactory::ScopedTestingFactoryInstaller::
+    ~ScopedTestingFactoryInstaller() {
+  GetTestingFactory() = BrowserContextKeyedServiceFactory::TestingFactory();
+}
 
 // static
 GCMProfileService* GCMProfileServiceFactory::GetForProfile(
@@ -84,12 +101,6 @@ GCMProfileService* GCMProfileServiceFactory::GetForProfile(
 // static
 GCMProfileServiceFactory* GCMProfileServiceFactory::GetInstance() {
   return base::Singleton<GCMProfileServiceFactory>::get();
-}
-
-// static
-void GCMProfileServiceFactory::SetGlobalTestingFactory(
-    BrowserContextKeyedServiceFactory::TestingFactoryFunction factory) {
-  testing_factory_ = factory;
 }
 
 GCMProfileServiceFactory::GCMProfileServiceFactory()
@@ -110,8 +121,9 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   DCHECK(!profile->IsOffTheRecord());
 
-  if (testing_factory_)
-    return testing_factory_(context).release();
+  TestingFactory& testing_factory = GetTestingFactory();
+  if (testing_factory)
+    return testing_factory.Run(context).release();
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
       base::CreateSequencedTaskRunnerWithTraits(
@@ -127,14 +139,14 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
       base::BindRepeating(&RequestProxyResolvingSocketFactory, profile),
       content::BrowserContext::GetDefaultStoragePartition(profile)
           ->GetURLLoaderFactoryForBrowserProcess(),
-      chrome::GetChannel(),
+      content::GetNetworkConnectionTracker(), chrome::GetChannel(),
       gcm::GetProductCategoryForSubtypes(profile->GetPrefs()),
       IdentityManagerFactory::GetForProfile(profile),
       std::unique_ptr<GCMClientFactory>(new GCMClientFactory),
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::UI),
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::IO),
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::UI}),
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::IO}),
       blocking_task_runner);
 #endif
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)

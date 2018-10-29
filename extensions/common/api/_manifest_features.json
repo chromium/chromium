@@ -83,6 +83,13 @@
       "81986D4F846CEDDDB962643FA501D1780DD441BB",  // http://crbug.com/407693
       "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/839189
     ]
+  }, {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "platforms": ["chromeos"],
+    "whitelist": [
+      "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/899052
+    ]
   }],
   "content_capabilities": [{
     "channel": "stable",
@@ -111,7 +118,7 @@
     "extension_types": "all"
   },
   "declarative_net_request": {
-    "channel": "trunk",
+    "channel": "dev",
     "extension_types": ["extension"],
     "min_manifest_version": 2
   },

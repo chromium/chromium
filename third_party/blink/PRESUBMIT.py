@@ -16,7 +16,8 @@ try:
     # pylint: disable=C0103
     audit_non_blink_usage = imp.load_source(
         'audit_non_blink_usage',
-        os.path.join(os.path.dirname(inspect.stack()[0][1]), 'tools/audit_non_blink_usage.py'))
+        os.path.join(os.path.dirname(inspect.stack()[0][1]),
+                     'tools/blinkpy/presubmit/audit_non_blink_usage.py'))
 except IOError:
     # One of the presubmit upload tests tries to exec this script, which doesn't interact so well
     # with the import hack... just ignore the exception here and hope for the best.
@@ -94,26 +95,34 @@ def _CommonChecks(input_api, output_api):
     return results
 
 
-def _CheckStyle(input_api, output_api):
-    style_checker_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                                'tools', 'check_blink_style.py')
-    args = [input_api.python_executable, style_checker_path, '--diff-files']
+def _FilterPaths(input_api):
+    """Returns input files with certain paths removed."""
     files = []
     for f in input_api.AffectedFiles():
         file_path = f.LocalPath()
-        # Filter out changes in LayoutTests.
-        if 'web_tests' + input_api.os_path.sep in file_path and 'TestExpectations' not in file_path:
+        # Filter out changes in web_tests/.
+        if ('web_tests' + input_api.os_path.sep in file_path
+            and 'TestExpectations' not in file_path):
             continue
         if '/PRESUBMIT' in file_path:
             continue
         files.append(input_api.os_path.join('..', '..', file_path))
+    return files
+
+
+def _CheckStyle(input_api, output_api):
+    files = _FilterPaths(input_api)
     # Do not call check_blink_style.py with empty affected file list if all
     # input_api.AffectedFiles got filtered.
     if not files:
         return []
-    args += files
-    results = []
 
+    style_checker_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                                'tools', 'check_blink_style.py')
+    args = [input_api.python_executable, style_checker_path, '--diff-files']
+    args += files
+
+    results = []
     try:
         child = input_api.subprocess.Popen(args,
                                            stderr=input_api.subprocess.PIPE)
@@ -157,9 +166,12 @@ def _CheckForForbiddenChromiumCode(input_api, output_api):
         if errors:
             errors = audit_non_blink_usage.check(path, f.ChangedContents())
             if errors:
-                for line_number, disallowed_identifier in errors:
-                    results.append(output_api.PresubmitError(
-                        '%s:%d uses disallowed identifier %s' % (path, line_number, disallowed_identifier)))
+                for error in errors:
+                    msg = '%s:%d uses disallowed identifier %s' % (
+                        path, error.line, error.identifier)
+                    if error.advice:
+                        msg += ". Advice: %s" % "\n".join(error.advice)
+                    results.append(output_api.PresubmitError(msg))
     return results
 
 
@@ -180,82 +192,4 @@ def CheckChangeOnCommit(input_api, output_api):
         json_url='http://chromium-status.appspot.com/current?format=json'))
     results.extend(input_api.canned_checks.CheckChangeHasDescription(
         input_api, output_api))
-    return results
-
-
-def _ArePaintOrCompositingDirectoriesModified(change):  # pylint: disable=C0103
-    """Checks whether CL has changes to paint or compositing directories."""
-    paint_or_compositing_paths = [
-        os.path.join('third_party', 'blink', 'renderer', 'platform', 'graphics'),
-        os.path.join('third_party', 'blink', 'renderer', 'core', 'layout',
-                     'compositing'),
-        os.path.join('third_party', 'blink', 'renderer', 'core', 'svg'),
-        os.path.join('third_party', 'blink', 'renderer', 'core', 'paint'),
-        os.path.join('third_party', 'blink', 'web_tests', 'FlagExpectations',
-                     'enable-slimming-paint-v2'),
-        os.path.join('third_party', 'blink', 'web_tests', 'flag-specific',
-                     'enable-slimming-paint-v2'),
-        os.path.join('third_party', 'blink', 'web_tests', 'FlagExpectations',
-                     'enable-blink-gen-property-trees'),
-        os.path.join('third_party', 'blink', 'web_tests', 'flag-specific',
-                     'enable-blink-gen-property-trees'),
-    ]
-    for affected_file in change.AffectedFiles():
-        file_path = affected_file.LocalPath()
-        if any(x in file_path for x in paint_or_compositing_paths):
-            return True
-    return False
-
-
-def _AreLayoutNGDirectoriesModified(change):  # pylint: disable=C0103
-    """Checks whether CL has changes to a layout ng directory."""
-    layout_ng_paths = [
-        os.path.join('third_party', 'blink', 'renderer', 'core', 'editing'),
-        os.path.join('third_party', 'blink', 'renderer', 'core', 'layout',
-                     'ng'),
-        os.path.join('third_party', 'blink', 'renderer', 'core', 'paint',
-                     'ng'),
-        os.path.join('third_party', 'blink', 'renderer', 'platform', 'fonts',
-                     'shaping'),
-        os.path.join('third_party', 'blink', 'web_tests', 'FlagExpectations',
-                     'enable-blink-features=LayoutNG'),
-        os.path.join('third_party', 'blink', 'web_tests', 'flag-specific',
-                     'enable-blink-features=LayoutNG'),
-    ]
-    for affected_file in change.AffectedFiles():
-        file_path = affected_file.LocalPath()
-        if any(x in file_path for x in layout_ng_paths):
-            return True
-    return False
-
-
-def PostUploadHook(cl, change, output_api):  # pylint: disable=C0103
-    """git cl upload will call this hook after the issue is created/modified.
-
-    This hook adds extra try bots to the CL description in order to run slimming
-    paint v2 tests or LayoutNG tests in addition to the CQ try bots if the
-    change contains changes in a relevant direcotry (see:
-    _ArePaintOrCompositingDirectoriesModified and
-    _AreLayoutNGDirectoriesModified). For more information about
-    slimming-paint-v2 tests see https://crbug.com/601275 and for information
-    about the LayoutNG tests see https://crbug.com/706183.
-    """
-    results = []
-    if _ArePaintOrCompositingDirectoriesModified(change):
-        results.extend(output_api.EnsureCQIncludeTrybotsAreAdded(
-            cl,
-            ['luci.chromium.try:'
-             'linux_layout_tests_slimming_paint_v2',
-             # TODO(kojii): Update linux_trusty_blink_rel to luci when migrated.
-             'master.tryserver.blink:linux_trusty_blink_rel'],
-            'Automatically added linux_layout_tests_slimming_paint_v2 and '
-            'linux_trusty_blink_rel to run on CQ due to changes in paint or '
-            'compositing directories.'))
-    if _AreLayoutNGDirectoriesModified(change):
-        results.extend(output_api.EnsureCQIncludeTrybotsAreAdded(
-            cl,
-            ['luci.chromium.try:'
-             'linux_layout_tests_layout_ng'],
-            'Automatically added linux_layout_tests_layout_ng to run on CQ due '
-            'to changes in LayoutNG directories.'))
     return results

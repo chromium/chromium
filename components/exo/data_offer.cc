@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -77,9 +78,9 @@ bool GetUrlListFromDataFile(FileHelper* file_helper,
 
 ui::Clipboard::FormatType GetClipboardFormatType() {
   static const char kFormatString[] = "chromium/x-file-system-files";
-  CR_DEFINE_STATIC_LOCAL(ui::Clipboard::FormatType, format_type,
-                         (ui::Clipboard::GetFormatType(kFormatString)));
-  return format_type;
+  static base::NoDestructor<ui::Clipboard::FormatType> format_type(
+      ui::Clipboard::GetFormatType(kFormatString));
+  return *format_type;
 }
 
 }  // namespace

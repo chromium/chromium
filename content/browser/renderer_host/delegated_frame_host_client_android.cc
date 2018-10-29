@@ -42,4 +42,8 @@ void DelegatedFrameHostClientAndroid::OnFrameTokenChanged(
   render_widget_host_view_->OnFrameTokenChangedForView(frame_token);
 }
 
+void DelegatedFrameHostClientAndroid::WasEvicted() {
+  render_widget_host_view_->WasEvicted();
+}
+
 }  // namespace content

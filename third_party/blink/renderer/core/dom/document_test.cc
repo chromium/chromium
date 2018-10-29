@@ -341,7 +341,8 @@ TEST_F(DocumentTest, CreateRangeAdjustedToTreeScopeWithPositionInShadowTree) {
       "<div><select><option>012</option></div>");
   Element* const select_element = GetDocument().QuerySelector("select");
   const Position& position =
-      Position::AfterNode(*select_element->UserAgentShadowRoot());
+      Position(*select_element->UserAgentShadowRoot(),
+               select_element->UserAgentShadowRoot()->CountChildren());
   Range* const range =
       Document::CreateRangeAdjustedToTreeScope(GetDocument(), position);
   EXPECT_EQ(range->startContainer(), select_element->parentNode());

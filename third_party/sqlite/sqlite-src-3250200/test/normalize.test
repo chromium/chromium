@@ -1,0 +1,75 @@
+# 2018-01-08
+#
+# The author disclaims copyright to this source code.  In place of
+# a legal notice, here is a blessing:
+#
+#    May you do good and not evil.
+#    May you find forgiveness for yourself and forgive others.
+#    May you share freely, never taking more than you give.
+#
+#***********************************************************************
+#
+# Tests for the sqlite3_normalize() extension function.
+#
+
+set testdir [file dirname $argv0]
+source $testdir/tester.tcl
+set testprefix normalize
+
+foreach {tnum sql norm} {
+  100
+  {SELECT * FROM t1 WHERE a IN (1) AND b=51.42}
+  {select*from t1 where a in(?,?,?)and b=?;}
+
+  110
+  {SELECT a, b+15, c FROM t1 WHERE d NOT IN (SELECT x FROM t2);}
+  {select a,b+?,c from t1 where d not in(select x from t2);}
+
+  120
+  { SELECT NULL, b FROM t1 -- comment text
+     WHERE d IN (WITH t(a) AS (VALUES(5)) /* CTE */
+                 SELECT a FROM t)
+        OR e='hello';
+  }
+  {select?,b from t1 where d in(with t(a)as(values(?))select a from t)or e=?;}
+
+  121
+  {/*Initial comment*/
+   -- another comment line
+   SELECT NULL  /* comment */ , b FROM t1 -- comment text
+     WHERE d IN (WITH t(a) AS (VALUES(5)) /* CTE */
+                 SELECT a FROM t)
+        OR e='hello';
+  }
+  {select?,b from t1 where d in(with t(a)as(values(?))select a from t)or e=?;}
+
+  130
+  {/* Query containing parameters */
+   SELECT x,$::abc(15),y,@abc,z,?99,w FROM t1 /* Trailing comment */}
+  {select x,?,y,?,z,?,w from t1;}
+
+  140
+  {/* Long list on the RHS of IN */
+   SELECT 15 IN (1,2,3,(SELECT * FROM t1),'xyz',x'abcd',22*(x+5),null);}
+  {select?in(?,?,?);}
+
+  150
+  {SELECT x'abc'; -- illegal token}
+  {}
+
+  160
+  {SELECT a,NULL,b FROM t1 WHERE c IS NOT NULL or D is null or e=5}
+  {select a,?,b from t1 where c is not null or d is null or e=?;}
+
+  170
+  {/* IN list exactly 5 bytes long */
+   SELECT * FROM t1 WHERE x IN (1,2,3);}
+  {select*from t1 where x in(?,?,?);}
+  180
+  {    }
+  {}
+} {
+  do_test $tnum [list sqlite3_normalize $sql] $norm
+}
+
+finish_test

@@ -60,9 +60,9 @@ struct RawPrepopulatedPage {
 // Android does not use prepopulated pages.
 const RawPrepopulatedPage kRawPrepopulatedPages[] = {
     {
-        IDS_WEBSTORE_URL, IDS_EXTENSION_WEB_STORE_TITLE, IDR_WEBSTORE_ICON_16,
-        IDR_WEBSTORE_ICON_32, IDR_NEWTAB_WEBSTORE_THUMBNAIL,
-        SkColorSetRGB(63, 132, 197),
+        IDS_WEBSTORE_URL, IDS_EXTENSION_WEB_STORE_TITLE_SHORT,
+        IDR_WEBSTORE_ICON_16, IDR_WEBSTORE_ICON_32,
+        IDR_NEWTAB_WEBSTORE_THUMBNAIL, SkColorSetRGB(63, 132, 197),
     },
 };
 #endif

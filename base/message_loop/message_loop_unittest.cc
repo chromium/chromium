@@ -346,55 +346,14 @@ TEST_F(MessageLoopTest, RunTasksWhileShuttingDownJavaThread) {
 
 #if defined(OS_WIN)
 
-void SubPumpFunc() {
-  MessageLoopCurrent::Get()->SetNestableTasksAllowed(true);
+void SubPumpFunc(OnceClosure on_done) {
+  MessageLoopCurrent::ScopedNestableTaskAllower allow_nestable_tasks;
   MSG msg;
-  while (GetMessage(&msg, NULL, 0, 0)) {
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
+  while (::GetMessage(&msg, NULL, 0, 0)) {
+    ::TranslateMessage(&msg);
+    ::DispatchMessage(&msg);
   }
-  RunLoop::QuitCurrentWhenIdleDeprecated();
-}
-
-void RunTest_PostDelayedTask_SharedTimer_SubPump() {
-  MessageLoop message_loop(MessageLoop::TYPE_UI);
-
-  // Test that the interval of the timer, used to run the next delayed task, is
-  // set to a value corresponding to when the next delayed task should run.
-
-  // By setting num_tasks to 1, we ensure that the first task to run causes the
-  // run loop to exit.
-  int num_tasks = 1;
-  TimeTicks run_time;
-
-  message_loop.task_runner()->PostTask(FROM_HERE, BindOnce(&SubPumpFunc));
-
-  // This very delayed task should never run.
-  message_loop.task_runner()->PostDelayedTask(
-      FROM_HERE, BindOnce(&RecordRunTimeFunc, &run_time, &num_tasks),
-      TimeDelta::FromSeconds(1000));
-
-  // This slightly delayed task should run from within SubPumpFunc.
-  message_loop.task_runner()->PostDelayedTask(FROM_HERE,
-                                              BindOnce(&PostQuitMessage, 0),
-                                              TimeDelta::FromMilliseconds(10));
-
-  Time start_time = Time::Now();
-
-  RunLoop().Run();
-  EXPECT_EQ(1, num_tasks);
-
-  // Ensure that we ran in far less time than the slower timer.
-  TimeDelta total_time = Time::Now() - start_time;
-  EXPECT_GT(5000, total_time.InMilliseconds());
-
-  // In case both timers somehow run at nearly the same time, sleep a little
-  // and then run all pending to force them both to have run.  This is just
-  // encouraging flakiness if there is any.
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
-  RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(run_time.is_null());
+  std::move(on_done).Run();
 }
 
 const wchar_t kMessageBoxTitle[] = L"MessageLoop Unit Test";
@@ -463,93 +422,6 @@ void RecursiveFuncWin(scoped_refptr<SingleThreadTaskRunner> task_runner,
       break;
     }
   }
-}
-
-// TODO(darin): These tests need to be ported since they test critical
-// message loop functionality.
-
-// A side effect of this test is the generation a beep. Sorry.
-void RunTest_RecursiveDenial2(MessageLoop::Type message_loop_type) {
-  MessageLoop loop(message_loop_type);
-
-  Thread worker("RecursiveDenial2_worker");
-  Thread::Options options;
-  options.message_loop_type = message_loop_type;
-  ASSERT_EQ(true, worker.StartWithOptions(options));
-  TaskList order;
-  win::ScopedHandle event(CreateEvent(NULL, FALSE, FALSE, NULL));
-  worker.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&RecursiveFuncWin, ThreadTaskRunnerHandle::Get(),
-                          event.Get(), true, &order, false));
-  // Let the other thread execute.
-  WaitForSingleObject(event.Get(), INFINITE);
-  RunLoop().Run();
-
-  ASSERT_EQ(17u, order.Size());
-  EXPECT_EQ(order.Get(0), TaskItem(RECURSIVE, 1, true));
-  EXPECT_EQ(order.Get(1), TaskItem(RECURSIVE, 1, false));
-  EXPECT_EQ(order.Get(2), TaskItem(MESSAGEBOX, 2, true));
-  EXPECT_EQ(order.Get(3), TaskItem(MESSAGEBOX, 2, false));
-  EXPECT_EQ(order.Get(4), TaskItem(RECURSIVE, 3, true));
-  EXPECT_EQ(order.Get(5), TaskItem(RECURSIVE, 3, false));
-  // When EndDialogFunc is processed, the window is already dismissed, hence no
-  // "end" entry.
-  EXPECT_EQ(order.Get(6), TaskItem(ENDDIALOG, 4, true));
-  EXPECT_EQ(order.Get(7), TaskItem(QUITMESSAGELOOP, 5, true));
-  EXPECT_EQ(order.Get(8), TaskItem(QUITMESSAGELOOP, 5, false));
-  EXPECT_EQ(order.Get(9), TaskItem(RECURSIVE, 1, true));
-  EXPECT_EQ(order.Get(10), TaskItem(RECURSIVE, 1, false));
-  EXPECT_EQ(order.Get(11), TaskItem(RECURSIVE, 3, true));
-  EXPECT_EQ(order.Get(12), TaskItem(RECURSIVE, 3, false));
-  EXPECT_EQ(order.Get(13), TaskItem(RECURSIVE, 1, true));
-  EXPECT_EQ(order.Get(14), TaskItem(RECURSIVE, 1, false));
-  EXPECT_EQ(order.Get(15), TaskItem(RECURSIVE, 3, true));
-  EXPECT_EQ(order.Get(16), TaskItem(RECURSIVE, 3, false));
-}
-
-// A side effect of this test is the generation a beep. Sorry.  This test also
-// needs to process windows messages on the current thread.
-void RunTest_RecursiveSupport2(MessageLoop::Type message_loop_type) {
-  MessageLoop loop(message_loop_type);
-
-  Thread worker("RecursiveSupport2_worker");
-  Thread::Options options;
-  options.message_loop_type = message_loop_type;
-  ASSERT_EQ(true, worker.StartWithOptions(options));
-  TaskList order;
-  win::ScopedHandle event(CreateEvent(NULL, FALSE, FALSE, NULL));
-  worker.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&RecursiveFuncWin, ThreadTaskRunnerHandle::Get(),
-                          event.Get(), false, &order, true));
-  // Let the other thread execute.
-  WaitForSingleObject(event.Get(), INFINITE);
-  RunLoop().Run();
-
-  ASSERT_EQ(18u, order.Size());
-  EXPECT_EQ(order.Get(0), TaskItem(RECURSIVE, 1, true));
-  EXPECT_EQ(order.Get(1), TaskItem(RECURSIVE, 1, false));
-  EXPECT_EQ(order.Get(2), TaskItem(MESSAGEBOX, 2, true));
-  // Note that this executes in the MessageBox modal loop.
-  EXPECT_EQ(order.Get(3), TaskItem(RECURSIVE, 3, true));
-  EXPECT_EQ(order.Get(4), TaskItem(RECURSIVE, 3, false));
-  EXPECT_EQ(order.Get(5), TaskItem(ENDDIALOG, 4, true));
-  EXPECT_EQ(order.Get(6), TaskItem(ENDDIALOG, 4, false));
-  EXPECT_EQ(order.Get(7), TaskItem(MESSAGEBOX, 2, false));
-  /* The order can subtly change here. The reason is that when RecursiveFunc(1)
-     is called in the main thread, if it is faster than getting to the
-     PostTask(FROM_HERE, BindOnce(&QuitFunc) execution, the order of task
-     execution can change. We don't care anyway that the order isn't correct.
-  EXPECT_EQ(order.Get(8), TaskItem(QUITMESSAGELOOP, 5, true));
-  EXPECT_EQ(order.Get(9), TaskItem(QUITMESSAGELOOP, 5, false));
-  EXPECT_EQ(order.Get(10), TaskItem(RECURSIVE, 1, true));
-  EXPECT_EQ(order.Get(11), TaskItem(RECURSIVE, 1, false));
-  */
-  EXPECT_EQ(order.Get(12), TaskItem(RECURSIVE, 3, true));
-  EXPECT_EQ(order.Get(13), TaskItem(RECURSIVE, 3, false));
-  EXPECT_EQ(order.Get(14), TaskItem(RECURSIVE, 1, true));
-  EXPECT_EQ(order.Get(15), TaskItem(RECURSIVE, 1, false));
-  EXPECT_EQ(order.Get(16), TaskItem(RECURSIVE, 3, true));
-  EXPECT_EQ(order.Get(17), TaskItem(RECURSIVE, 3, false));
 }
 
 #endif  // defined(OS_WIN)
@@ -1734,9 +1606,10 @@ INSTANTIATE_TEST_CASE_P(,
                         MessageLoopTypedTest::ParamInfoToString);
 
 #if defined(OS_WIN)
+
 // Verifies that the MessageLoop ignores WM_QUIT, rather than quitting.
 // Users of MessageLoop typically expect to control when their RunLoops stop
-// Run()ning explicitly, via QuitClosure() etc (see https://crbug.com/720078)
+// Run()ning explicitly, via QuitClosure() etc (see https://crbug.com/720078).
 TEST_F(MessageLoopTest, WmQuitIsIgnored) {
   MessageLoop loop(MessageLoop::TYPE_UI);
 
@@ -1786,8 +1659,212 @@ TEST_F(MessageLoopTest, WmQuitIsNotIgnoredWithEnableWmQuit) {
 }
 
 TEST_F(MessageLoopTest, PostDelayedTask_SharedTimer_SubPump) {
-  RunTest_PostDelayedTask_SharedTimer_SubPump();
+  MessageLoop message_loop(MessageLoop::TYPE_UI);
+
+  // Test that the interval of the timer, used to run the next delayed task, is
+  // set to a value corresponding to when the next delayed task should run.
+
+  // By setting num_tasks to 1, we ensure that the first task to run causes the
+  // run loop to exit.
+  int num_tasks = 1;
+  TimeTicks run_time;
+
+  RunLoop run_loop;
+
+  message_loop.task_runner()->PostTask(
+      FROM_HERE, BindOnce(&SubPumpFunc, run_loop.QuitClosure()));
+
+  // This very delayed task should never run.
+  message_loop.task_runner()->PostDelayedTask(
+      FROM_HERE, BindOnce(&RecordRunTimeFunc, &run_time, &num_tasks),
+      TimeDelta::FromSeconds(1000));
+
+  // This slightly delayed task should run from within SubPumpFunc.
+  message_loop.task_runner()->PostDelayedTask(FROM_HERE,
+                                              BindOnce(&::PostQuitMessage, 0),
+                                              TimeDelta::FromMilliseconds(10));
+
+  Time start_time = Time::Now();
+
+  run_loop.Run();
+  EXPECT_EQ(1, num_tasks);
+
+  // Ensure that we ran in far less time than the slower timer.
+  TimeDelta total_time = Time::Now() - start_time;
+  EXPECT_GT(5000, total_time.InMilliseconds());
+
+  // In case both timers somehow run at nearly the same time, sleep a little
+  // and then run all pending to force them both to have run.  This is just
+  // encouraging flakiness if there is any.
+  PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
+  RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(run_time.is_null());
 }
+
+TEST_F(MessageLoopTest, WmQuitIsVisibleToSubPump) {
+  MessageLoop message_loop(MessageLoop::TYPE_UI);
+
+  // Regression test for https://crbug.com/888559. When processing a
+  // kMsgHaveWork we peek and remove the next message and dispatch that ourself,
+  // to minimize impact of these messages on message-queue processing. If we
+  // received kMsgHaveWork dispatched by a nested pump (e.g. ::GetMessage()
+  // loop) then there is a risk that the next message is that loop's WM_QUIT
+  // message, which must be processed directly by ::GetMessage() for the loop to
+  // actually quit. This test verifies that WM_QUIT exits works as expected even
+  // if it happens to immediately follow a kMsgHaveWork in the queue.
+
+  RunLoop run_loop;
+
+  // This application task will enter the subpump.
+  message_loop.task_runner()->PostTask(
+      FROM_HERE, BindOnce(&SubPumpFunc, run_loop.QuitClosure()));
+
+  // This application task will post a native WM_QUIT.
+  message_loop.task_runner()->PostTask(FROM_HERE,
+                                       BindOnce(&::PostQuitMessage, 0));
+
+  // The presence of this application task means that the pump will see a
+  // non-empty queue after processing the previous application task (which
+  // posted the WM_QUIT) and hence will repost a kMsgHaveWork message in the
+  // native event queue. Without the fix to https://crbug.com/888559, this would
+  // previously result in the subpump processing kMsgHaveWork and it stealing
+  // the WM_QUIT message, leaving the test hung in the subpump.
+  message_loop.task_runner()->PostTask(FROM_HERE, DoNothing());
+
+  // Test success is determined by not hanging in this Run() call.
+  run_loop.Run();
+}
+
+TEST_F(MessageLoopTest, RepostingWmQuitDoesntStarveUpcomingNativeLoop) {
+  MessageLoop message_loop(MessageLoop::TYPE_UI);
+
+  // This test ensures that application tasks are being processed by the native
+  // subpump despite the kMsgHaveWork event having already been consumed by the
+  // time the subpump is entered. This is subtly enforced by
+  // MessageLoopCurrent::ScopedNestableTaskAllower which will ScheduleWork()
+  // upon construction (and if it's absent, the MessageLoop shouldn't process
+  // application tasks so kMsgHaveWork is irrelevant).
+  // Note: This test also fails prior to the fix for https://crbug.com/888559
+  // (in fact, the last two tasks are sufficient as a regression test), probably
+  // because of a dangling kMsgHaveWork recreating the effect from
+  // MessageLoopTest.NativeMsgProcessingDoesntStealWmQuit.
+
+  RunLoop run_loop;
+
+  // This application task will post a native WM_QUIT which will be ignored
+  // by the main message pump.
+  message_loop.task_runner()->PostTask(FROM_HERE,
+                                       BindOnce(&::PostQuitMessage, 0));
+
+  // Make sure the pump does a few extra cycles and processes (ignores) the
+  // WM_QUIT.
+  message_loop.task_runner()->PostTask(FROM_HERE, DoNothing());
+  message_loop.task_runner()->PostTask(FROM_HERE, DoNothing());
+
+  // This application task will enter the subpump.
+  message_loop.task_runner()->PostTask(
+      FROM_HERE, BindOnce(&SubPumpFunc, run_loop.QuitClosure()));
+
+  // Post an application task that will post WM_QUIT to the nested loop. The
+  // test will hang if the subpump doesn't process application tasks as it
+  // should.
+  message_loop.task_runner()->PostTask(FROM_HERE,
+                                       BindOnce(&::PostQuitMessage, 0));
+
+  // Test success is determined by not hanging in this Run() call.
+  run_loop.Run();
+}
+
+// TODO(https://crbug.com/890016): Enable once multiple layers of nested loops
+// works.
+TEST_F(MessageLoopTest,
+       DISABLED_UnwindingMultipleSubPumpsDoesntStarveApplicationTasks) {
+  MessageLoop message_loop(MessageLoop::TYPE_UI);
+
+  // Regression test for https://crbug.com/890016.
+  // Tests that the subpump is still processing application tasks after
+  // unwinding from nested subpumps (i.e. that they didn't consume the last
+  // kMsgHaveWork).
+
+  RunLoop run_loop;
+
+  // Enter multiple levels of nested subpumps.
+  message_loop.task_runner()->PostTask(
+      FROM_HERE, BindOnce(&SubPumpFunc, run_loop.QuitClosure()));
+  message_loop.task_runner()->PostTask(
+      FROM_HERE, BindOnce(&SubPumpFunc, DoNothing::Once()));
+  message_loop.task_runner()->PostTask(
+      FROM_HERE, BindOnce(&SubPumpFunc, DoNothing::Once()));
+
+  // Quit two layers (with tasks in between to allow each quit to be handled
+  // before continuing -- ::PostQuitMessage() sets a bit, it's not a real queued
+  // message :
+  // https://blogs.msdn.microsoft.com/oldnewthing/20051104-33/?p=33453).
+  message_loop.task_runner()->PostTask(FROM_HERE,
+                                       BindOnce(&::PostQuitMessage, 0));
+  message_loop.task_runner()->PostTask(FROM_HERE, DoNothing());
+  message_loop.task_runner()->PostTask(FROM_HERE, DoNothing());
+  message_loop.task_runner()->PostTask(FROM_HERE,
+                                       BindOnce(&::PostQuitMessage, 0));
+  message_loop.task_runner()->PostTask(FROM_HERE, DoNothing());
+  message_loop.task_runner()->PostTask(FROM_HERE, DoNothing());
+
+  bool last_task_ran = false;
+  message_loop.task_runner()->PostTask(
+      FROM_HERE, BindOnce([](bool* to_set) { *to_set = true; },
+                          Unretained(&last_task_ran)));
+
+  message_loop.task_runner()->PostTask(FROM_HERE,
+                                       BindOnce(&::PostQuitMessage, 0));
+
+  run_loop.Run();
+
+  EXPECT_TRUE(last_task_ran);
+}
+
+namespace {
+
+// A side effect of this test is the generation a beep. Sorry.
+void RunTest_RecursiveDenial2(MessageLoop::Type message_loop_type) {
+  MessageLoop loop(message_loop_type);
+
+  Thread worker("RecursiveDenial2_worker");
+  Thread::Options options;
+  options.message_loop_type = message_loop_type;
+  ASSERT_EQ(true, worker.StartWithOptions(options));
+  TaskList order;
+  win::ScopedHandle event(CreateEvent(NULL, FALSE, FALSE, NULL));
+  worker.task_runner()->PostTask(
+      FROM_HERE, BindOnce(&RecursiveFuncWin, ThreadTaskRunnerHandle::Get(),
+                          event.Get(), true, &order, false));
+  // Let the other thread execute.
+  WaitForSingleObject(event.Get(), INFINITE);
+  RunLoop().Run();
+
+  ASSERT_EQ(17u, order.Size());
+  EXPECT_EQ(order.Get(0), TaskItem(RECURSIVE, 1, true));
+  EXPECT_EQ(order.Get(1), TaskItem(RECURSIVE, 1, false));
+  EXPECT_EQ(order.Get(2), TaskItem(MESSAGEBOX, 2, true));
+  EXPECT_EQ(order.Get(3), TaskItem(MESSAGEBOX, 2, false));
+  EXPECT_EQ(order.Get(4), TaskItem(RECURSIVE, 3, true));
+  EXPECT_EQ(order.Get(5), TaskItem(RECURSIVE, 3, false));
+  // When EndDialogFunc is processed, the window is already dismissed, hence no
+  // "end" entry.
+  EXPECT_EQ(order.Get(6), TaskItem(ENDDIALOG, 4, true));
+  EXPECT_EQ(order.Get(7), TaskItem(QUITMESSAGELOOP, 5, true));
+  EXPECT_EQ(order.Get(8), TaskItem(QUITMESSAGELOOP, 5, false));
+  EXPECT_EQ(order.Get(9), TaskItem(RECURSIVE, 1, true));
+  EXPECT_EQ(order.Get(10), TaskItem(RECURSIVE, 1, false));
+  EXPECT_EQ(order.Get(11), TaskItem(RECURSIVE, 3, true));
+  EXPECT_EQ(order.Get(12), TaskItem(RECURSIVE, 3, false));
+  EXPECT_EQ(order.Get(13), TaskItem(RECURSIVE, 1, true));
+  EXPECT_EQ(order.Get(14), TaskItem(RECURSIVE, 1, false));
+  EXPECT_EQ(order.Get(15), TaskItem(RECURSIVE, 3, true));
+  EXPECT_EQ(order.Get(16), TaskItem(RECURSIVE, 3, false));
+}
+
+}  // namespace
 
 // This test occasionally hangs. See http://crbug.com/44567.
 TEST_F(MessageLoopTest, DISABLED_RecursiveDenial2) {
@@ -1796,10 +1873,51 @@ TEST_F(MessageLoopTest, DISABLED_RecursiveDenial2) {
   RunTest_RecursiveDenial2(MessageLoop::TYPE_IO);
 }
 
+// A side effect of this test is the generation a beep. Sorry.  This test also
+// needs to process windows messages on the current thread.
 TEST_F(MessageLoopTest, RecursiveSupport2) {
-  // This test requires a UI loop.
-  RunTest_RecursiveSupport2(MessageLoop::TYPE_UI);
+  MessageLoop loop(MessageLoop::TYPE_UI);
+
+  Thread worker("RecursiveSupport2_worker");
+  Thread::Options options;
+  options.message_loop_type = MessageLoop::TYPE_UI;
+  ASSERT_EQ(true, worker.StartWithOptions(options));
+  TaskList order;
+  win::ScopedHandle event(CreateEvent(NULL, FALSE, FALSE, NULL));
+  worker.task_runner()->PostTask(
+      FROM_HERE, BindOnce(&RecursiveFuncWin, ThreadTaskRunnerHandle::Get(),
+                          event.Get(), false, &order, true));
+  // Let the other thread execute.
+  WaitForSingleObject(event.Get(), INFINITE);
+  RunLoop().Run();
+
+  ASSERT_EQ(18u, order.Size());
+  EXPECT_EQ(order.Get(0), TaskItem(RECURSIVE, 1, true));
+  EXPECT_EQ(order.Get(1), TaskItem(RECURSIVE, 1, false));
+  EXPECT_EQ(order.Get(2), TaskItem(MESSAGEBOX, 2, true));
+  // Note that this executes in the MessageBox modal loop.
+  EXPECT_EQ(order.Get(3), TaskItem(RECURSIVE, 3, true));
+  EXPECT_EQ(order.Get(4), TaskItem(RECURSIVE, 3, false));
+  EXPECT_EQ(order.Get(5), TaskItem(ENDDIALOG, 4, true));
+  EXPECT_EQ(order.Get(6), TaskItem(ENDDIALOG, 4, false));
+  EXPECT_EQ(order.Get(7), TaskItem(MESSAGEBOX, 2, false));
+  /* The order can subtly change here. The reason is that when RecursiveFunc(1)
+     is called in the main thread, if it is faster than getting to the
+     PostTask(FROM_HERE, BindOnce(&QuitFunc) execution, the order of task
+     execution can change. We don't care anyway that the order isn't correct.
+  EXPECT_EQ(order.Get(8), TaskItem(QUITMESSAGELOOP, 5, true));
+  EXPECT_EQ(order.Get(9), TaskItem(QUITMESSAGELOOP, 5, false));
+  EXPECT_EQ(order.Get(10), TaskItem(RECURSIVE, 1, true));
+  EXPECT_EQ(order.Get(11), TaskItem(RECURSIVE, 1, false));
+  */
+  EXPECT_EQ(order.Get(12), TaskItem(RECURSIVE, 3, true));
+  EXPECT_EQ(order.Get(13), TaskItem(RECURSIVE, 3, false));
+  EXPECT_EQ(order.Get(14), TaskItem(RECURSIVE, 1, true));
+  EXPECT_EQ(order.Get(15), TaskItem(RECURSIVE, 1, false));
+  EXPECT_EQ(order.Get(16), TaskItem(RECURSIVE, 3, true));
+  EXPECT_EQ(order.Get(17), TaskItem(RECURSIVE, 3, false));
 }
+
 #endif  // defined(OS_WIN)
 
 TEST_F(MessageLoopTest, TaskObserver) {
@@ -2090,7 +2208,7 @@ TEST_F(MessageLoopTest, DeleteUnboundLoop) {
   std::unique_ptr<MessageLoop> unbound_loop(MessageLoop::CreateUnbound(
       MessageLoop::TYPE_DEFAULT, MessageLoop::MessagePumpFactoryCallback()));
   unbound_loop.reset();
-  EXPECT_EQ(&loop, MessageLoop::current());
+  EXPECT_TRUE(loop.IsBoundToCurrentThread());
   EXPECT_EQ(loop.task_runner(), ThreadTaskRunnerHandle::Get());
 }
 

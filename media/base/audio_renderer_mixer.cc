@@ -89,8 +89,7 @@ void AudioRendererMixer::AddMixerInput(const AudioParameters& input_params,
   if (is_master_sample_rate(input_sample_rate)) {
     master_converter_.AddInput(input);
   } else {
-    AudioConvertersMap::iterator converter =
-        converters_.find(input_sample_rate);
+    auto converter = converters_.find(input_sample_rate);
     if (converter == converters_.end()) {
       std::pair<AudioConvertersMap::iterator, bool> result =
           converters_.insert(std::make_pair(
@@ -120,8 +119,7 @@ void AudioRendererMixer::RemoveMixerInput(
   if (is_master_sample_rate(input_sample_rate)) {
     master_converter_.RemoveInput(input);
   } else {
-    AudioConvertersMap::iterator converter =
-        converters_.find(input_sample_rate);
+    auto converter = converters_.find(input_sample_rate);
     DCHECK(converter != converters_.end());
     converter->second->RemoveInput(input);
     if (converter->second->empty()) {
@@ -141,9 +139,7 @@ void AudioRendererMixer::AddErrorCallback(const base::Closure& error_cb) {
 
 void AudioRendererMixer::RemoveErrorCallback(const base::Closure& error_cb) {
   base::AutoLock auto_lock(lock_);
-  for (ErrorCallbackList::iterator it = error_callbacks_.begin();
-       it != error_callbacks_.end();
-       ++it) {
+  for (auto it = error_callbacks_.begin(); it != error_callbacks_.end(); ++it) {
     if (it->Equals(error_cb)) {
       error_callbacks_.erase(it);
       return;
@@ -152,6 +148,11 @@ void AudioRendererMixer::RemoveErrorCallback(const base::Closure& error_cb) {
 
   // An error callback should always exist when called.
   NOTREACHED();
+}
+
+void AudioRendererMixer::SetPauseDelayForTesting(base::TimeDelta delay) {
+  base::AutoLock auto_lock(lock_);
+  pause_delay_ = delay;
 }
 
 OutputDeviceInfo AudioRendererMixer::GetOutputDeviceInfo() {

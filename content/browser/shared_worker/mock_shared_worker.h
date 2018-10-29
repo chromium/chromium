@@ -40,6 +40,7 @@ class MockSharedWorker : public mojom::SharedWorker {
                mojo::ScopedMessagePipeHandle port) override;
   void Terminate() override;
   void BindDevToolsAgent(
+      blink::mojom::DevToolsAgentHostAssociatedPtrInfo host_ptr_info,
       blink::mojom::DevToolsAgentAssociatedRequest request) override;
 
   mojo::Binding<mojom::SharedWorker> binding_;

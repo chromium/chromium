@@ -44,8 +44,7 @@ class MimeTypesHandler {
   const std::set<std::string>& mime_type_set() const { return mime_type_set_; }
 
   // Returns true if this MimeTypesHandler has a plugin associated with it (for
-  // the mimeHandlerPrivate API). Returns false if the MimeTypesHandler is for
-  // the streamsPrivate API.
+  // the mimeHandlerPrivate API).
   bool HasPlugin() const;
 
   // If HasPlugin() returns true, this will return the plugin path for the

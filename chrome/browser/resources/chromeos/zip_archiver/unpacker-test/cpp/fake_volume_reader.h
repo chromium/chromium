@@ -15,12 +15,12 @@
 class FakeVolumeReader : public VolumeReader {
  public:
   FakeVolumeReader();
-  virtual ~FakeVolumeReader();
+  ~FakeVolumeReader() override;
 
-  int64_t Read(int64_t bytes_to_read, const void** destination_buffer);
+  int64_t Read(int64_t bytes_to_read, const void** destination_buffer) override;
   int64_t Skip(int64_t bytes_to_skip);
-  int64_t Seek(int64_t offset, int whence);
-  const char* Passphrase();
+  int64_t Seek(int64_t offset, base::File::Whence whence) override;
+  std::unique_ptr<std::string> Passphrase() override;
 };
 
 #endif  // CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_UNPACKER_TEST_CPP_FAKE_VOLUME_READER_H_

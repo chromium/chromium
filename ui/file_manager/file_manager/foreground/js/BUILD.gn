@@ -10,6 +10,16 @@ visibility = [
   "//ui/file_manager/file_manager/test/*",
 ]
 
+group("closure_compile") {
+  testonly = true
+  visibility += [ "//ui/file_manager:closure_compile" ]
+  deps = [
+    ":closure_compile_module",
+    ":test_support_type_check",
+    ":unit_tests_type_check",
+  ]
+}
+
 js_type_check("closure_compile_module") {
   deps = [
     ":actions_controller",
@@ -78,8 +88,6 @@ js_library("closure_compile_externs") {
     "../../../externs/background/file_browser_background.js",
     "../../../externs/background/file_browser_background_full.js",
     "../../../externs/background/file_operation_manager.js",
-    "../../../externs/background/import_history.js",
-    "../../../externs/background/import_history_enum.js",
     "../../../externs/background/import_runner.js",
     "../../../externs/background/media_import_handler.js",
     "../../../externs/background/media_scanner.js",
@@ -90,13 +98,23 @@ js_library("closure_compile_externs") {
     "../../../externs/command_handler_deps.js",
     "../../../externs/css_rule.js",
     "../../../externs/directory_change_event.js",
-    "../../../externs/drag_target.js",
     "../../../externs/entries_changed_event.js",
     "../../../externs/gallery_foreground.js",
     "../../../externs/menu_item_update_event.js",
     "../../../externs/paper_elements.js",
     "../../../externs/platform.js",
     "../../../externs/search_item.js",
+  ]
+}
+
+js_type_check("test_support_type_check") {
+  testonly = true
+  deps = [
+    ":mock_actions_model",
+    ":mock_directory_model",
+    ":mock_folder_shortcut_data_model",
+    ":mock_navigation_list_model",
+    ":mock_thumbnail_loader",
   ]
 }
 
@@ -121,6 +139,46 @@ js_library("actions_model") {
     "ui:files_alert_dialog",
     "ui:list_container",
     "//ui/webui/resources/js:cr",
+  ]
+  externs_list = [ "../../../externs/background/drive_sync_handler.js" ]
+}
+
+js_library("mock_actions_model") {
+  testonly = true
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr:event_target",
+  ]
+}
+
+js_library("mock_directory_model") {
+  testonly = true
+  deps = [
+    ":directory_contents",
+    ":directory_model",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:util",
+  ]
+}
+
+js_library("mock_folder_shortcut_data_model") {
+  testonly = true
+  deps = [
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+  ]
+}
+
+js_library("mock_navigation_list_model") {
+  testonly = true
+  deps = [
+    ":navigation_list_model",
+  ]
+}
+
+js_library("mock_thumbnail_loader") {
+  testonly = true
+  deps = [
+    ":thumbnail_loader",
   ]
 }
 
@@ -186,6 +244,10 @@ js_library("directory_model") {
     "../../common/js:importer_common",
     "../../common/js:metrics_events",
     "ui:file_list_selection_model",
+  ]
+  externs_list = [
+    "../../../externs/background/file_operation_manager.js",
+    "../../../externs/entries_changed_event.js",
   ]
 }
 
@@ -576,12 +638,11 @@ js_library("thumbnail_loader") {
   ]
 }
 
-js_library("thumbnail_loader_unittest") {
+js_unittest("thumbnail_loader_unittest") {
   deps = [
     ":thumbnail_loader",
     "../../common/js:mock_entry",
-    "../../common/js:unittest_util",
-    "//ui/webui/resources/js:webui_resource_test",
+    "//ui/file_manager/base/js:test_error_reporting",
   ]
 }
 
@@ -611,13 +672,5 @@ js_library("webui_command_extender") {
 js_unit_tests("unit_tests") {
   deps = [
     ":thumbnail_loader_unittest",
-  ]
-}
-
-group("closure_compile") {
-  visibility += [ "*" ]
-  deps = [
-    ":closure_compile_module",
-    ":unit_tests_type_check",
   ]
 }

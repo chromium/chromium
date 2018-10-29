@@ -20,6 +20,7 @@
 #include "content/browser/background_fetch/background_fetch_constants.h"
 #include "content/common/content_export.h"
 #include "content/common/service_worker/service_worker_types.h"
+#include "content/public/browser/background_fetch_response.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -48,10 +49,12 @@ class CONTENT_EXPORT BackgroundFetchRequestInfo
   // retrieved from storage). Can only be used if no GUID is already set.
   void SetDownloadGuid(const std::string& download_guid);
 
-  // Populates the cached state for the in-progress download.
-  void PopulateWithResponse(std::unique_ptr<BackgroundFetchResponse> response);
-
   void SetResult(std::unique_ptr<BackgroundFetchResult> result);
+
+  // Creates an empty result, with no response, and assigns |failure_reason|
+  // as its failure_reason.
+  void SetEmptyResultWithFailureReason(
+      BackgroundFetchResult::FailureReason failure_reason);
 
   // Returns the index of this request within a Background Fetch registration.
   int request_index() const { return request_index_; }
@@ -100,6 +103,9 @@ class CONTENT_EXPORT BackgroundFetchRequestInfo
   friend class base::RefCountedDeleteOnSequence<BackgroundFetchRequestInfo>;
   friend class base::DeleteHelper<BackgroundFetchRequestInfo>;
   friend class BackgroundFetchCrossOriginFilterTest;
+
+  // Extracts the headers and the status code.
+  void PopulateWithResponse(std::unique_ptr<BackgroundFetchResponse> response);
 
   ~BackgroundFetchRequestInfo();
 

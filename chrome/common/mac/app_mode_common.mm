@@ -35,6 +35,7 @@ NSString* const kCFBundleDisplayNameKey = @"CFBundleDisplayName";
 NSString* const kCFBundleShortVersionStringKey = @"CFBundleShortVersionString";
 NSString* const kCrBundleVersionKey = @"CrBundleVersion";
 NSString* const kLSHasLocalizedDisplayNameKey = @"LSHasLocalizedDisplayName";
+NSString* const kNSHighResolutionCapableKey = @"NSHighResolutionCapable";
 NSString* const kBrowserBundleIDKey = @"CrBundleIdentifier";
 NSString* const kCrAppModeShortcutIDKey = @"CrAppModeShortcutID";
 NSString* const kCrAppModeShortcutNameKey = @"CrAppModeShortcutName";

@@ -24,7 +24,7 @@ class TextCodecReplacement final : public TextCodecUTF8 {
 
  private:
   String Decode(const char*,
-                size_t length,
+                wtf_size_t length,
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;

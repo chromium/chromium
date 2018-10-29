@@ -8,7 +8,6 @@ java_group("hamcrest_java") {
   testonly = true
   deps = [
     ":hamcrest_core_java",
-    ":hamcrest_integration_java",
     ":hamcrest_library_java",
   ]
 }
@@ -20,16 +19,12 @@ java_prebuilt("hamcrest_core_java") {
   proguard_configs = [ "//third_party/hamcrest/proguard.flags" ]
 }
 
-java_prebuilt("hamcrest_integration_java") {
-  supports_android = true
-  testonly = true
-  jar_path = "lib/hamcrest-integration.jar"
-  proguard_configs = [ "//third_party/hamcrest/proguard.flags" ]
-}
-
 java_prebuilt("hamcrest_library_java") {
   supports_android = true
   testonly = true
   jar_path = "lib/hamcrest-library.jar"
   proguard_configs = [ "//third_party/hamcrest/proguard.flags" ]
+  deps = [
+    ":hamcrest_core_java",
+  ]
 }

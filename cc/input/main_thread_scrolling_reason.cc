@@ -5,7 +5,7 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 
 #include "base/stl_util.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 
 namespace cc {
 
@@ -47,8 +47,6 @@ void MainThreadScrollingReason::AddToTracedValue(
     traced_value.AppendString("Has transform and LCD text");
   if (reasons & kBackgroundNotOpaqueInRectAndLCDText)
     traced_value.AppendString("Background is not opaque in rect and LCD text");
-  if (reasons & kHasBorderRadius)
-    traced_value.AppendString("Has border radius");
   if (reasons & kHasClipRelatedProperty)
     traced_value.AppendString("Has clip related property");
   if (reasons & kHasBoxShadowFromNonRootLayer)
@@ -71,6 +69,10 @@ void MainThreadScrollingReason::AddToTracedValue(
     traced_value.AppendString("Non-invertible transform");
   if (reasons & kPageBasedScrolling)
     traced_value.AppendString("Page-based scrolling");
+  if (reasons & kWheelEventHandlerRegion)
+    traced_value.AppendString("Wheel event handler region");
+  if (reasons & kTouchEventHandlerRegion)
+    traced_value.AppendString("Touch event handler region");
 
   traced_value.EndArray();
 }

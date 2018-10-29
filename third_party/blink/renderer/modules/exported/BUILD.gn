@@ -5,6 +5,7 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("exported") {
   sources = [
+    "indexed_db_key_builder.cc",
     "web_apply_constraints_request.cc",
     "web_ax_context.cc",
     "web_ax_object.cc",
@@ -16,7 +17,6 @@ blink_modules_sources("exported") {
     "web_idb_key.cc",
     "web_idb_key_range.cc",
     "web_idb_value.cc",
-    "web_media_stream_registry.cc",
     "web_storage_event_dispatcher_impl.cc",
     "web_user_media_request.cc",
   ]

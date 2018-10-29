@@ -20,14 +20,12 @@
 #include "gpu/command_buffer/common/command_buffer.h"
 
 namespace gpu {
-namespace gles2 {
 class MemoryTracker;
-}
 
 class GPU_EXPORT TransferBufferManager
     : public base::trace_event::MemoryDumpProvider {
  public:
-  explicit TransferBufferManager(gles2::MemoryTracker* memory_tracker);
+  explicit TransferBufferManager(MemoryTracker* memory_tracker);
   ~TransferBufferManager() override;
 
   // Overridden from base::trace_event::MemoryDumpProvider:
@@ -46,7 +44,7 @@ class GPU_EXPORT TransferBufferManager
   typedef base::flat_map<int32_t, scoped_refptr<Buffer>> BufferMap;
   BufferMap registered_buffers_;
   size_t shared_memory_bytes_allocated_;
-  gles2::MemoryTracker* memory_tracker_;
+  MemoryTracker* memory_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(TransferBufferManager);
 };

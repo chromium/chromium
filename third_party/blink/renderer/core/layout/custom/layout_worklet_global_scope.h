@@ -9,16 +9,16 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/layout/custom/pending_layout_registry.h"
-#include "third_party/blink/renderer/core/workers/main_thread_worklet_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CSSLayoutDefinition;
 class WorkerReportingProxy;
 
-class CORE_EXPORT LayoutWorkletGlobalScope final
-    : public MainThreadWorkletGlobalScope {
+class CORE_EXPORT LayoutWorkletGlobalScope final : public WorkletGlobalScope {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(LayoutWorkletGlobalScope);
 
@@ -56,11 +56,12 @@ class CORE_EXPORT LayoutWorkletGlobalScope final
   Member<PendingLayoutRegistry> pending_layout_registry_;
 };
 
-DEFINE_TYPE_CASTS(LayoutWorkletGlobalScope,
-                  ExecutionContext,
-                  context,
-                  context->IsLayoutWorkletGlobalScope(),
-                  context.IsLayoutWorkletGlobalScope());
+template <>
+struct DowncastTraits<LayoutWorkletGlobalScope> {
+  static bool AllowFrom(const ExecutionContext& context) {
+    return context.IsLayoutWorkletGlobalScope();
+  }
+};
 
 }  // namespace blink
 

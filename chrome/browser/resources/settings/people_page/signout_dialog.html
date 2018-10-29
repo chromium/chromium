@@ -1,0 +1,78 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="profile_info_browser_proxy.html">
+<link rel="import" href="sync_browser_proxy.html">
+<link rel="import" href="../settings_shared_css.html">
+
+<dom-module id="settings-signout-dialog">
+  <template>
+    <style include="settings-shared">
+      #dialog [slot=footer] .settings-box {
+        --settings-box-row-padding: 0;
+      }
+
+      .delete-profile-warning {
+        padding-bottom: 10px;
+        padding-inline-end: var(--cr-section-padding);
+        /* In order to line up with the checkbox text. */
+        padding-inline-start: var(--cr-section-indent-padding);
+        padding-top: 10px;
+      }
+
+      #wideFooter {
+        /* Override the cr-dialog footer padding. */
+        padding: 16px 0;
+      }
+    </style>
+
+    <cr-dialog id="dialog" ignore-enter-key close-text="$i18n{close}">
+      <div slot="title">$i18n{syncDisconnectTitle}</div>
+      <div slot="body">
+        <div inner-h-t-m-l="[[
+            getDisconnectExplanationHtml_(syncStatus.domain)]]">
+        </div>
+      </div>
+      <div slot="button-container">
+        <paper-button id="disconnectCancel" class="cancel-button"
+            on-click="onDisconnectCancel_" >
+          $i18n{cancel}
+        </paper-button>
+        <paper-button id="disconnectConfirm" class="action-button"
+            hidden="[[syncStatus.domain]]" on-click="onDisconnectConfirm_">
+          $i18n{syncDisconnect}
+        </paper-button>
+        <paper-button id="disconnectManagedProfileConfirm"
+            class="action-button" hidden="[[!syncStatus.domain]]"
+            on-click="onDisconnectConfirm_">
+          $i18n{syncDisconnectConfirm}
+        </paper-button>
+      </div>
+<if expr="(not chromeos and is_posix) or is_win or is_macosx">
+      <template is="dom-if" if="[[!syncStatus.domain]]">
+        <div id="wideFooter" slot="footer">
+          <div class="settings-box first">
+            <cr-checkbox id="deleteProfile" class="start"
+                checked="{{deleteProfile_}}">
+              $i18n{syncDisconnectDeleteProfile}
+            </cr-checkbox>
+            <cr-expand-button expanded="{{deleteProfileWarningVisible_}}"
+                alt="$i18n{deleteProfileWarningExpandA11yLabel}">
+            </cr-expand-button>
+          </div>
+          <iron-collapse opened="[[deleteProfileWarningVisible_]]">
+            <div class="delete-profile-warning">
+              [[deleteProfileWarning_]]
+            </div>
+          </iron-collapse>
+        </div>
+      </template>
+</if>
+    </cr-dialog>
+  </template>
+  <script src="signout_dialog.js"></script>
+</dom-module>

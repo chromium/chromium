@@ -89,6 +89,10 @@ net::URLRequestJob* BlobProtocolHandler::MaybeCreateJob(
                                         LookupBlobHandle(request));
 }
 
+bool BlobProtocolHandler::IsSafeRedirectTarget(const GURL& location) const {
+  return false;
+}
+
 BlobDataHandle* BlobProtocolHandler::LookupBlobHandle(
     net::URLRequest* request) const {
   BlobDataHandle* blob_data_handle = GetRequestBlobDataHandle(request);

@@ -57,7 +57,7 @@ PerformanceLongTaskTiming::PerformanceLongTaskTiming(
 PerformanceLongTaskTiming::~PerformanceLongTaskTiming() = default;
 
 AtomicString PerformanceLongTaskTiming::entryType() const {
-  return PerformanceEntryNames::longtask;
+  return performance_entry_names::kLongtask;
 }
 
 PerformanceEntryType PerformanceLongTaskTiming::EntryTypeEnum() const {

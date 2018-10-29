@@ -192,10 +192,14 @@ class BBJSONGenerator(object):
     self.waterfalls = None
     self.test_suites = None
     self.exceptions = None
-    self.swarming_mixins = None
+    self.mixins = None
 
   def generate_abs_file_path(self, relative_path):
     return os.path.join(self.this_dir, relative_path) # pragma: no cover
+
+  def print_line(self, line):
+    # Exists so that tests can mock
+    print line # pragma: no cover
 
   def read_file(self, relative_path):
     with open(self.generate_abs_file_path(
@@ -418,7 +422,7 @@ class BBJSONGenerator(object):
   def update_and_cleanup_test(self, test, test_name, tester_name, tester_config,
                               waterfall):
     # Apply swarming mixins.
-    test = self.apply_all_swarming_mixins(
+    test = self.apply_all_mixins(
         test, waterfall, tester_name, tester_config)
     # See if there are any exceptions that need to be merged into this
     # test's specification.
@@ -431,11 +435,13 @@ class BBJSONGenerator(object):
 
   def add_common_test_properties(self, test, tester_config):
     if tester_config.get('use_multi_dimension_trigger_script'):
+      # Assumes update_and_cleanup_test has already been called, so the
+      # builder's mixins have been flattened into the test.
       test['trigger_script'] = {
         'script': '//testing/trigger_scripts/trigger_multiple_dimensions.py',
         'args': [
           '--multiple-trigger-configs',
-          json.dumps(tester_config['swarming']['dimension_sets'] +
+          json.dumps(test['swarming']['dimension_sets'] +
                      tester_config.get('alternate_swarming_dimensions', [])),
           '--multiple-dimension-script-verbose',
           'True'
@@ -553,7 +559,7 @@ class BBJSONGenerator(object):
         result, test_name, tester_name, tester_config, waterfall)
     return result
 
-  def substitute_gpu_args(self, tester_config, args):
+  def substitute_gpu_args(self, tester_config, swarming_config, args):
     substitutions = {
       # Any machine in waterfalls.pyl which desires to run GPU tests
       # must provide the os_type key.
@@ -561,7 +567,7 @@ class BBJSONGenerator(object):
       'gpu_vendor_id': '0',
       'gpu_device_id': '0',
     }
-    dimension_set = tester_config['swarming']['dimension_sets'][0]
+    dimension_set = swarming_config['dimension_sets'][0]
     if 'gpu' in dimension_set:
       # First remove the driver version, then split into vendor and device.
       gpu = dimension_set['gpu']
@@ -606,7 +612,7 @@ class BBJSONGenerator(object):
       '--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc',
     ] + args
     result['args'] = self.maybe_fixup_args_array(self.substitute_gpu_args(
-      tester_config, args))
+      tester_config, result['swarming'], args))
     return result
 
   def get_test_generator_map(self):
@@ -637,7 +643,21 @@ class BBJSONGenerator(object):
                            'composition test suites (error found while '
                            'processing %s)' % name)
 
+  def flatten_test_suites(self):
+    new_test_suites = {}
+    for name, value in self.test_suites.get('basic_suites', {}).iteritems():
+      new_test_suites[name] = value
+    for name, value in self.test_suites.get('compound_suites', {}).iteritems():
+      if name in new_test_suites:
+        raise BBGenErr('Composition test suite names may not duplicate basic '
+                       'test suite names (error found while processsing %s' % (
+                       name))
+      new_test_suites[name] = value
+    self.test_suites = new_test_suites
+
   def resolve_composition_test_suites(self):
+    self.flatten_test_suites()
+
     self.check_composition_test_suites()
     for name, value in self.test_suites.iteritems():
       if isinstance(value, list):
@@ -662,7 +682,7 @@ class BBJSONGenerator(object):
     self.waterfalls = self.load_pyl_file('waterfalls.pyl')
     self.test_suites = self.load_pyl_file('test_suites.pyl')
     self.exceptions = self.load_pyl_file('test_suite_exceptions.pyl')
-    self.swarming_mixins = self.load_pyl_file('swarming_mixins.pyl')
+    self.mixins = self.load_pyl_file('mixins.pyl')
 
   def resolve_configuration_files(self):
     self.resolve_composition_test_suites()
@@ -682,64 +702,82 @@ class BBJSONGenerator(object):
       'Unknown test suite type ' + suite_type + ' in bot ' + bot_name +
       ' on waterfall ' + waterfall_name)
 
-  def apply_all_swarming_mixins(self, test, waterfall, builder_name, builder):
+  def apply_all_mixins(self, test, waterfall, builder_name, builder):
     """Applies all present swarming mixins to the test for a given builder.
 
     Checks in the waterfall, builder, and test objects for mixins.
     """
     def valid_mixin(mixin_name):
       """Asserts that the mixin is valid."""
-      if mixin_name not in self.swarming_mixins:
+      if mixin_name not in self.mixins:
         raise BBGenErr("bad mixin %s" % mixin_name)
     def must_be_list(mixins, typ, name):
       """Asserts that given mixins are a list."""
       if not isinstance(mixins, list):
         raise BBGenErr("'%s' in %s '%s' must be a list" % (mixins, typ, name))
 
-    if 'swarming_mixins' in waterfall:
-      must_be_list(waterfall['swarming_mixins'], 'waterfall', waterfall['name'])
-      for mixin in waterfall['swarming_mixins']:
+    if 'mixins' in waterfall:
+      must_be_list(waterfall['mixins'], 'waterfall', waterfall['name'])
+      for mixin in waterfall['mixins']:
         valid_mixin(mixin)
-        test = self.apply_swarming_mixin(self.swarming_mixins[mixin], test)
+        test = self.apply_mixin(self.mixins[mixin], test)
 
-    if 'swarming_mixins' in builder:
-      must_be_list(builder['swarming_mixins'], 'builder', builder_name)
-      for mixin in builder['swarming_mixins']:
+    if 'mixins' in builder:
+      must_be_list(builder['mixins'], 'builder', builder_name)
+      for mixin in builder['mixins']:
         valid_mixin(mixin)
-        test = self.apply_swarming_mixin(self.swarming_mixins[mixin], test)
+        test = self.apply_mixin(self.mixins[mixin], test)
 
-    if not 'swarming_mixins' in test:
+    if not 'mixins' in test:
       return test
 
-    must_be_list(test['swarming_mixins'], 'test', test['test'])
-    for mixin in test['swarming_mixins']:
+    test_name = test.get('name')
+    if not test_name:
+      test_name = test.get('test')
+    if not test_name: # pragma: no cover
+      # Not the best name, but we should say something.
+      test_name = str(test)
+    must_be_list(test['mixins'], 'test', test_name)
+    for mixin in test['mixins']:
       valid_mixin(mixin)
-      test = self.apply_swarming_mixin(self.swarming_mixins[mixin], test)
-      del test['swarming_mixins']
+      test = self.apply_mixin(self.mixins[mixin], test)
+      del test['mixins']
     return test
 
-  def apply_swarming_mixin(self, mixin, test):
-    """Applies a swarming mixin to a test.
+  def apply_mixin(self, mixin, test):
+    """Applies a mixin to a test.
 
     Mixins will not override an existing key. This is to ensure exceptions can
     override a setting a mixin applies.
 
-    Dimensions are handled in a special way. Instead of specifying
+    Swarming dimensions are handled in a special way. Instead of specifying
     'dimension_sets', which is how normal test suites specify their dimensions,
     you specify a 'dimensions' key, which maps to a dictionary. This dictionary
     is then applied to every dimension set in the test.
+
     """
+    # TODO(martiniss): Maybe make lists extend, possibly on a case by case
+    # basis. Motivation is 'args', where you want a common base, and then
+    # different mixins adding different sets of args.
     new_test = copy.deepcopy(test)
     mixin = copy.deepcopy(mixin)
 
-    new_test.setdefault('swarming', {})
-    if 'dimensions' in mixin:
-      new_test['swarming'].setdefault('dimension_sets', [{}])
-      for dimension_set in new_test['swarming']['dimension_sets']:
-        dimension_set.update(mixin['dimensions'])
-      del mixin['dimensions']
+    if 'swarming' in mixin:
+      swarming_mixin = mixin['swarming']
+      new_test.setdefault('swarming', {})
+      if 'dimensions' in swarming_mixin:
+        new_test['swarming'].setdefault('dimension_sets', [{}])
+        for dimension_set in new_test['swarming']['dimension_sets']:
+          dimension_set.update(swarming_mixin['dimensions'])
+        del swarming_mixin['dimensions']
 
-    new_test['swarming'].update(mixin)
+      # python dict update doesn't do recursion at all. Just hard code the
+      # nested update we need (mixin['swarming'] shouldn't clobber
+      # test['swarming'], but should update it).
+      new_test['swarming'].update(swarming_mixin)
+      del mixin['swarming']
+
+    new_test.update(mixin)
 
     return new_test
 
@@ -823,7 +861,6 @@ class BBJSONGenerator(object):
       'Optional Win10 Release (NVIDIA)',
       'Win7 ANGLE Tryserver (AMD)',
       # chromium.fyi
-      'chromeos-amd64-generic-rel-vm-tests',
       'linux-blink-rel-dummy',
       'mac10.10-blink-rel-dummy',
       'mac10.11-blink-rel-dummy',
@@ -842,7 +879,10 @@ class BBJSONGenerator(object):
     ]
 
   def check_input_file_consistency(self, verbose=False):
+    self.check_input_files_sorting(verbose)
+
     self.load_configuration_files()
+    self.flatten_test_suites()
     self.check_composition_test_suites()
 
     # All bots should exist.
@@ -917,9 +957,9 @@ class BBJSONGenerator(object):
     # All mixins must be referenced
     seen_mixins = set()
     for waterfall in self.waterfalls:
-      seen_mixins = seen_mixins.union(waterfall.get('swarming_mixins', set()))
+      seen_mixins = seen_mixins.union(waterfall.get('mixins', set()))
       for bot_name, tester in waterfall['machines'].iteritems():
-        seen_mixins = seen_mixins.union(tester.get('swarming_mixins', set()))
+        seen_mixins = seen_mixins.union(tester.get('mixins', set()))
     for suite in self.test_suites.values():
       if isinstance(suite, list):
         # Don't care about this, it's a composition, which shouldn't include a
@@ -932,65 +972,178 @@ class BBJSONGenerator(object):
           # swarming mixin entries. Ignore them
           continue
 
-        seen_mixins = seen_mixins.union(test.get('swarming_mixins', set()))
+        seen_mixins = seen_mixins.union(test.get('mixins', set()))
 
-    missing_mixins = set(self.swarming_mixins.keys()) - seen_mixins
+    missing_mixins = set(self.mixins.keys()) - seen_mixins
     if missing_mixins:
       raise BBGenErr('The following mixins are unreferenced: %s. They must be'
                      ' referenced in a waterfall, machine, or test suite.' % (
                          str(missing_mixins)))
 
-    self.check_input_files_sorting(verbose)
+
+  def type_assert(self, node, typ, filename, verbose=False):
+    """Asserts that the Python AST node |node| is of type |typ|.
+
+    If verbose is set, it prints out some helpful context lines, showing where
+    exactly the error occurred in the file.
+    """
+    if not isinstance(node, typ):
+      if verbose:
+        lines = [""] + self.read_file(filename).splitlines()
+
+        context = 2
+        lines_start = max(node.lineno - context, 0)
+        # Add one to include the last line
+        lines_end = min(node.lineno + context, len(lines)) + 1
+        lines = (
+            ['== %s ==\n' % filename] +
+            ["<snip>\n"] +
+            ['%d %s' % (lines_start + i, line) for i, line in enumerate(
+                lines[lines_start:lines_start + context])] +
+            ['-' * 80 + '\n'] +
+            ['%d %s' % (node.lineno, lines[node.lineno])] +
+            ['-' * (node.col_offset + 3) + '^' + '-' * (
+                80 - node.col_offset - 4) + '\n'] +
+            ['%d %s' % (node.lineno + 1 + i, line) for i, line in enumerate(
+                lines[node.lineno + 1:lines_end])] +
+            ["<snip>\n"]
+        )
+        # Print out a useful message when a type assertion fails.
+        for l in lines:
+          self.print_line(l.strip())
+
+      node_dumped = ast.dump(node, annotate_fields=False)
+      # If the node is huge, truncate it so everything fits in a terminal
+      # window.
+      if len(node_dumped) > 60: # pragma: no cover
+        node_dumped = node_dumped[:30] + '  <SNIP>  ' + node_dumped[-30:]
+      raise BBGenErr(
+          'Invalid .pyl file %r. Python AST node %r on line %s expected to'
+          ' be %s, is %s' % (
+              filename, node_dumped,
+              node.lineno, typ, type(node)))
+
+  def ensure_ast_dict_keys_sorted(self, node, filename, verbose):
+    is_valid = True
+
+    keys = []
+    # The keys of this dict are ordered as ordered in the file; normal python
+    # dictionary keys are given an arbitrary order, but since we parsed the
+    # file itself, the order as given in the file is preserved.
+    for key in node.keys:
+      self.type_assert(key, ast.Str, filename, verbose)
+      keys.append(key.s)
+
+    keys_sorted = sorted(keys)
+    if keys_sorted != keys:
+      is_valid = False
+      if verbose:
+        for line in difflib.unified_diff(
+            keys,
+            keys_sorted, fromfile='current (%r)' % filename, tofile='sorted'):
+          self.print_line(line)
+
+    if len(set(keys)) != len(keys):
+      for i in range(len(keys_sorted)-1):
+        if keys_sorted[i] == keys_sorted[i+1]:
+          self.print_line('Key %s is duplicated' % keys_sorted[i])
+          is_valid = False
+    return is_valid
 
   def check_input_files_sorting(self, verbose=False):
-    bad_files = []
-    # FIXME: Expand to other files. It's unclear if every other file should be
-    # similarly sorted.
-    for filename in ('swarming_mixins.pyl',):
+    # TODO(https://crbug.com/886993): Add the ability for this script to
+    # actually format the files, rather than just complain if they're
+    # incorrectly formatted.
+    bad_files = set()
+
+    for filename in (
+        'mixins.pyl',
+        'test_suites.pyl',
+        'test_suite_exceptions.pyl',
+    ):
       parsed = ast.parse(self.read_file(self.pyl_file_path(filename)))
 
-      def type_assert(itm, typ): # pragma: no cover
-        if not isinstance(itm, typ):
-          raise BBGenErr(
-              'Invalid .pyl file %s. %s expected to be %s, is %s' % (
-                  filename, itm, typ, type(itm)))
-
       # Must be a module.
-      type_assert(parsed, ast.Module)
+      self.type_assert(parsed, ast.Module, filename, verbose)
       module = parsed.body
 
       # Only one expression in the module.
-      type_assert(module, list)
+      self.type_assert(module, list, filename, verbose)
       if len(module) != 1: # pragma: no cover
         raise BBGenErr('Invalid .pyl file %s' % filename)
       expr = module[0]
-      type_assert(expr, ast.Expr)
+      self.type_assert(expr, ast.Expr, filename, verbose)
 
       # Value should be a dictionary.
       value = expr.value
-      type_assert(value, ast.Dict)
+      self.type_assert(value, ast.Dict, filename, verbose)
 
-      keys = []
-      # The keys of this dict are ordered as ordered in the file; normal python
-      # dictionary keys are given an arbitrary order, but since we parsed the
-      # file itself, the order as given in the file is preserved.
-      for key in value.keys:
-        type_assert(key, ast.Str)
-        keys.append(key.s)
+      if filename == 'test_suites.pyl':
+        expected_keys = ['basic_suites', 'compound_suites']
+        actual_keys = [node.s for node in value.keys]
+        assert all(key in expected_keys for key in actual_keys), (
+                    'Invalid %r file; expected keys %r, got %r' % (
+                        filename, expected_keys, actual_keys))
+        suite_dicts = [node for node in value.values]
+        # Only two keys should mean only 1 or 2 values
+        assert len(suite_dicts) <= 2
+        for suite_group in suite_dicts:
+          if not self.ensure_ast_dict_keys_sorted(
+              suite_group, filename, verbose):
+            bad_files.add(filename)
 
-      if sorted(keys) != keys:
-        bad_files.append(filename)
-        if verbose: # pragma: no cover
-          for line in difflib.unified_diff(
-              sorted(keys),
-              keys):
-            print line
+      else:
+        if not self.ensure_ast_dict_keys_sorted(
+            value, filename, verbose):
+          bad_files.add(filename)
+
+    # waterfalls.pyl is slightly different, just do it manually here
+    filename = 'waterfalls.pyl'
+    parsed = ast.parse(self.read_file(self.pyl_file_path(filename)))
+
+    # Must be a module.
+    self.type_assert(parsed, ast.Module, filename, verbose)
+    module = parsed.body
+
+    # Only one expression in the module.
+    self.type_assert(module, list, filename, verbose)
+    if len(module) != 1: # pragma: no cover
+      raise BBGenErr('Invalid .pyl file %s' % filename)
+    expr = module[0]
+    self.type_assert(expr, ast.Expr, filename, verbose)
+
+    # Value should be a list.
+    value = expr.value
+    self.type_assert(value, ast.List, filename, verbose)
+
+    keys = []
+    for val in value.elts:
+      self.type_assert(val, ast.Dict, filename, verbose)
+      waterfall_name = None
+      for key, val in zip(val.keys, val.values):
+        self.type_assert(key, ast.Str, filename, verbose)
+        if key.s == 'machines':
+          if not self.ensure_ast_dict_keys_sorted(val, filename, verbose):
+            bad_files.add(filename)
+
+        if key.s == "name":
+          self.type_assert(val, ast.Str, filename, verbose)
+          waterfall_name = val.s
+      assert waterfall_name
+      keys.append(waterfall_name)
+
+    if sorted(keys) != keys:
+      bad_files.add(filename)
+      if verbose: # pragma: no cover
+        for line in difflib.unified_diff(
+            keys,
+            sorted(keys), fromfile='current', tofile='sorted'):
+          self.print_line(line)
 
     if bad_files:
       raise BBGenErr(
-          'The following files have unsorted top level keys: %s' % (
-              ', '.join(bad_files)))
-
+          'The following files have invalid keys: %s\n. They are either '
+          'unsorted, or have duplicates.' % ', '.join(bad_files))
 
   def check_output_file_consistency(self, verbose=False):
     self.load_configuration_files()
@@ -1004,20 +1157,21 @@ class BBJSONGenerator(object):
       if expected != current:
         ungenerated_waterfalls.add(waterfall['name'])
         if verbose: # pragma: no cover
-          print ('Waterfall ' +  waterfall['name'] +
+          self.print_line('Waterfall ' +  waterfall['name'] +
                  ' did not have the following expected '
                  'contents:')
           for line in difflib.unified_diff(
               expected.splitlines(),
-              current.splitlines()):
-            print line
+              current.splitlines(),
+              fromfile='expected', tofile='current'):
+            self.print_line(line)
     if ungenerated_waterfalls:
       raise BBGenErr('The following waterfalls have not been properly '
                      'autogenerated by generate_buildbot_json.py: ' +
                      str(ungenerated_waterfalls))
 
   def check_consistency(self, verbose=False):
-    self.check_input_file_consistency() # pragma: no cover
+    self.check_input_file_consistency(verbose) # pragma: no cover
     self.check_output_file_consistency(verbose) # pragma: no cover
 
   def parse_args(self, argv): # pragma: no cover
@@ -1031,6 +1185,9 @@ class BBJSONGenerator(object):
       'Write output files as .new.json. Useful during development so old and '
       'new files can be looked at side-by-side.')
     parser.add_argument(
+      '-v', '--verbose', action='store_true', help=
+      'Increases verbosity. Affects consistency checks.')
+    parser.add_argument(
       'waterfall_filters', metavar='waterfalls', type=str, nargs='*',
       help='Optional list of waterfalls to generate.')
     parser.add_argument(
@@ -1041,7 +1198,7 @@ class BBJSONGenerator(object):
   def main(self, argv): # pragma: no cover
     self.parse_args(argv)
     if self.args.check:
-      self.check_consistency()
+      self.check_consistency(verbose=self.args.verbose)
     else:
       self.generate_waterfalls()
     return 0

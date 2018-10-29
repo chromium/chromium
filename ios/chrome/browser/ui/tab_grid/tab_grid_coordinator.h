@@ -8,14 +8,14 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/ui/main/main_coordinator.h"
+#import "ios/chrome/browser/chrome_root_coordinator.h"
 #import "ios/chrome/browser/ui/main/view_controller_swapping.h"
 
 @protocol ApplicationCommands;
 @class TabModel;
 @protocol TabSwitcher;
 
-@interface TabGridCoordinator : MainCoordinator<ViewControllerSwapping>
+@interface TabGridCoordinator : ChromeRootCoordinator<ViewControllerSwapping>
 
 - (instancetype)initWithWindow:(UIWindow*)window
     applicationCommandEndpoint:

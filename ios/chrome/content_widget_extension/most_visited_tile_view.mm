@@ -56,7 +56,7 @@ const CGFloat kTileWidth = 73;
     [titleLabelEffectView.contentView addSubview:_titleLabel];
     AddSameConstraints(titleLabelEffectView, _titleLabel);
 
-    _faviconView = [[FaviconViewNew alloc] init];
+    _faviconView = [[FaviconView alloc] init];
     _faviconView.isAccessibilityElement = NO;
     _faviconView.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];

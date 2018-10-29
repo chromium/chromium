@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/binding.h"
 #include "services/network/public/mojom/websocket.mojom-blink.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_handle.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -50,7 +51,7 @@ class WebSocketHandleImpl : public WebSocketHandle,
                const String& user_agent_override,
                WebSocketHandleClient*,
                base::SingleThreadTaskRunner*) override;
-  void Send(bool fin, MessageType, const char* data, size_t) override;
+  void Send(bool fin, MessageType, const char* data, wtf_size_t) override;
   void FlowControl(int64_t quota) override;
   void Close(unsigned short code, const String& reason) override;
 

@@ -7,11 +7,13 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/prerender/prerender_final_status.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_util.h"
 #include "chrome/common/prerender_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_dispatcher_host.h"
 #include "content/public/browser/web_contents.h"
@@ -115,8 +117,8 @@ void PrerenderResourceThrottle::WillStartRequest(bool* defer) {
       content::ResourceRequestInfo::ForRequest(request_);
   *defer = true;
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&PrerenderResourceThrottle::WillStartRequestOnUI,
                      AsWeakPtr(), request_->method(), info->GetResourceType(),
                      request_->url(), info->GetWebContentsGetterForRequest(),
@@ -133,8 +135,8 @@ void PrerenderResourceThrottle::WillRedirectRequest(
   std::string header;
   request_->GetResponseHeaderByName(kFollowOnlyWhenPrerenderShown, &header);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&PrerenderResourceThrottle::WillRedirectRequestOnUI,
                      AsWeakPtr(), header, info->GetResourceType(),
                      info->IsAsync(), IsNoStoreResponse(*request_),
@@ -153,8 +155,8 @@ void PrerenderResourceThrottle::WillProcessResponse(bool* defer) {
   int redirect_count =
       base::saturated_cast<int>(request_->url_chain().size()) - 1;
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&PrerenderResourceThrottle::WillProcessResponseOnUI,
                      content::IsResourceTypeFrame(info->GetResourceType()),
                      IsNoStoreResponse(*request_), redirect_count,
@@ -237,8 +239,8 @@ void PrerenderResourceThrottle::WillStartRequestOnUI(
 #endif
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(cancel ? &PrerenderResourceThrottle::Cancel
                             : &PrerenderResourceThrottle::ResumeHandler,
                      throttle));
@@ -284,8 +286,8 @@ void PrerenderResourceThrottle::WillRedirectRequestOnUI(
     }
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(cancel ? &PrerenderResourceThrottle::Cancel
                             : &PrerenderResourceThrottle::ResumeHandler,
                      throttle));

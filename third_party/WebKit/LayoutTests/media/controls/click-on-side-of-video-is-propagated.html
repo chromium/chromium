@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<title>Test that taps on the sides of the video are propagated.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<div id="outer">
+<video controls width=500 preload=none src="../content/60_sec_video.webm"></video>
+</div>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+  const outerDiv = document.getElementById('outer');
+  const events = ['mousedown', 'click', 'mouseup'];
+  let eventsHandled = {};
+
+  video.addEventListener('loadedmetadata', t.step_func(() => {
+    const coords = videoLeftEdgeCoordinates(video);
+    singleTapAtCoordinates(coords[0], coords[1]);
+  }), { once: true });
+
+  // The tap on the edge of the video should get propagated out to the outer div.
+  events.forEach(evtName => {
+    outerDiv.addEventListener(evtName, checkDone.bind(null, evtName), { once: true });
+  });
+
+  function checkDone(evtName) {
+    eventsHandled[evtName] = true;
+    for (let i = 0; i < events.length; i++) {
+      if (!eventsHandled[events[i]])
+        return;
+    }
+    t.done();
+  }
+
+  video.load();
+});
+</script>
+</html>

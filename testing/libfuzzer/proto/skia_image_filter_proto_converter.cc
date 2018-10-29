@@ -1027,7 +1027,7 @@ void Converter::Visit(const GradientDescriptor& gradient_descriptor) {
   flags |= (gradient_descriptor.tile_mode() << kTileModeShift_GSF);
   uint32_t grad_flags =
       (gradient_descriptor.grad_flags() % (kGradFlagsMask_GSF + 1));
-  CHECK_LE(grad_flags, kGradFlagsMask_GSF);
+  CHECK_LE(grad_flags, static_cast<uint32_t>(kGradFlagsMask_GSF));
   WriteNum(flags);
 
   const uint32_t count = gradient_descriptor.colors_size();

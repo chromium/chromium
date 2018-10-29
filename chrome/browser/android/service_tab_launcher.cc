@@ -66,10 +66,10 @@ void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
       std::make_unique<TabLaunchedCallback>(callback));
   DCHECK_GE(request_id, 1);
 
-  Java_ServiceTabLauncher_launchTab(env, request_id,
-                                    browser_context->IsOffTheRecord(), url,
-                                    static_cast<int>(disposition), referrer_url,
-                                    params.referrer.policy, headers, post_data);
+  Java_ServiceTabLauncher_launchTab(
+      env, request_id, browser_context->IsOffTheRecord(), url,
+      static_cast<int>(disposition), referrer_url,
+      static_cast<int>(params.referrer.policy), headers, post_data);
 }
 
 void ServiceTabLauncher::OnTabLaunched(int request_id,

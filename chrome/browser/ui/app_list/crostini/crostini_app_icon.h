@@ -92,6 +92,10 @@ class CrostiniAppIcon {
 
   gfx::ImageSkia image_skia_;
 
+  // TODO(jkardatzke): Remove this for M-72, it's to cleanup from
+  // crbug.com/891588
+  std::set<ui::ScaleFactor> already_requested_icons_;
+
   // Contains pending image decode requests.
   std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;
 

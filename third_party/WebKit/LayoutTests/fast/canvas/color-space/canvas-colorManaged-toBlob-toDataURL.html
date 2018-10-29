@@ -14,7 +14,7 @@ var opaqueReferencePxiels, transparentReferencePixels;
 function testPixels(actualPixels, alpha)
 {
     if (alpha == 1)
-        assert_array_equals(actualPixels, opaqueReferencePxiels);
+        assert_array_approx_equals(actualPixels, opaqueReferencePxiels, 1);
     else
         assert_array_approx_equals(actualPixels, transparentReferencePixels, 2);
 }
@@ -62,13 +62,13 @@ function createCanvas(testScenario)
 }
 
 function testScenarioToString(testScenario) {
-    var str = "ImageFormat: " + testScenario.imageFormat + 
+    var str = "ImageFormat: " + testScenario.imageFormat +
         ", source color space: " + testScenario.colorSpace +
         ", pixel format: " + testScenario.pixelFormat +
         ", alpha: " + testScenario.alpha;
     if (testScenario.hasOwnProperty('colorSpaceConversion'))
         str = str + ", intermediate color space: " +
-                    testScenario.colorSpaceConversion;
+                testScenario.colorSpaceConversion;
     return str;
 }
 
@@ -109,8 +109,6 @@ function runToDataURLTest(testScenario) {
         var actualPixels = ctx.getImageData(0, 0, 2, 2).data;
         testPixels(actualPixels, testScenario.alpha);
     });
-
-    console.log(srcCanvas.toDataURL());
     image.src = srcCanvas.toDataURL();
 }
 
@@ -119,10 +117,12 @@ function runAllTests() {
 
     var imageFormats = ['image/jpeg', 'image/png', 'image/webp'];
     var colorSpaces = [
-        {colorSpace: 'srgb', pixelFormat: '8-8-8-8'},
+        {colorSpace: 'srgb', pixelFormat: 'uint8'},
         {colorSpace: 'srgb', pixelFormat: 'float16'},
+        {colorSpace: 'linear-rgb', pixelFormat: 'float16'},
         {colorSpace: 'rec2020', pixelFormat: 'float16'},
-        {colorSpace: 'p3', pixelFormat: 'float16'}];
+        {colorSpace: 'p3', pixelFormat: 'float16'},
+    ];
     var alphaValues = [0.5, 1];
 
     var testScenarioSet = [];
@@ -137,8 +137,8 @@ function runAllTests() {
                 testScenarioSet.push(testScenario);
             }
 
-    // for (var i = 0; i < testScenarioSet.length; i++)
-    //     runToBlobTest(testScenarioSet[i]);
+    for (var i = 0; i < testScenarioSet.length; i++)
+        runToBlobTest(testScenarioSet[i]);
 
     for (var i = 0; i < testScenarioSet.length; i++)
         runToDataURLTest(testScenarioSet[i]);

@@ -2,7 +2,6 @@ This test ensures that objects with security restrictions are cached correctly
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS Image is Image
 PASS Image.testProperty is "property set successfully"
 PASS Option is Option

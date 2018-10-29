@@ -115,10 +115,11 @@ bool SensorProxy::ShouldSuspendUpdates() const {
     return true;
 
   LocalFrame* focused_frame = GetPage()->GetFocusController().FocusedFrame();
-  if (!focused_frame)
+  LocalFrame* this_frame = provider_->GetSupplementable()->GetFrame();
+
+  if (!focused_frame || !this_frame)
     return true;
 
-  LocalFrame* this_frame = provider_->GetSupplementable()->GetFrame();
   if (focused_frame == this_frame)
     return false;
 

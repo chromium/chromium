@@ -5,80 +5,29 @@
 source_set("history") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "clear_browsing_bar.h",
-    "clear_browsing_bar.mm",
-    "favicon_view.h",
-    "favicon_view.mm",
-    "favicon_view_provider.h",
-    "favicon_view_provider.mm",
     "history_coordinator.h",
     "history_coordinator.mm",
     "history_mediator.h",
     "history_mediator.mm",
-    "history_panel_view_controller.h",
-    "history_panel_view_controller.mm",
-    "history_search_view.h",
-    "history_search_view.mm",
-    "history_search_view_controller.h",
-    "history_search_view_controller.mm",
     "ios_browsing_history_driver.h",
     "ios_browsing_history_driver.mm",
-    "legacy_history_collection_view_controller.h",
-    "legacy_history_collection_view_controller.mm",
-    "legacy_history_entries_status_item.h",
-    "legacy_history_entries_status_item.mm",
-    "legacy_history_entry_item.h",
-    "legacy_history_entry_item.mm",
   ]
   deps = [
     ":clear_browsing_data",
-    ":feature_flags",
     ":history_ui",
     "//base",
-    "//base:i18n",
     "//components/browser_sync",
     "//components/browsing_data/core",
-    "//components/favicon/core",
-    "//components/favicon_base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
-    "//components/prefs",
-    "//components/query_parser",
-    "//components/strings",
-    "//components/sync/protocol",
-    "//components/url_formatter",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/metrics:metrics_internal",
-    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui",
-    "//ios/chrome/browser/ui/collection_view",
-    "//ios/chrome/browser/ui/colors",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/context_menu",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/icons",
-    "//ios/chrome/browser/ui/keyboard",
-    "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/material_components",
-    "//ios/chrome/browser/ui/ntp/recent_tabs/views",
-    "//ios/chrome/browser/ui/popup_menu",
-    "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view/cells",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common",
-    "//ios/third_party/material_components_ios",
-    "//ios/third_party/material_roboto_font_loader_ios",
-    "//ios/web",
-    "//net",
-    "//skia",
-    "//ui/base",
-    "//url",
   ]
   libs = [
     "MobileCoreServices.framework",
@@ -161,80 +110,22 @@ source_set("clear_browsing_data") {
   ]
 }
 
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  deps = [
-    "//base",
-  ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "favicon_view_provider_unittest.mm",
     "history_entry_inserter_unittest.mm",
-    "history_search_view_controller_unittest.mm",
-    "legacy_history_entries_status_item_unittest.mm",
-    "legacy_history_entry_item_unittest.mm",
   ]
   deps = [
-    ":history",
     ":history_ui",
-    ":resources_unit_tests",
     "//base",
     "//base/test:test_support",
-    "//components/browser_sync",
-    "//components/favicon/core",
-    "//components/favicon/core/test:test_support",
-    "//components/favicon_base",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
-    "//components/sessions",
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/history",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:test_support",
-    "//ios/chrome/browser/sync:sync",
-    "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common",
     "//ios/chrome/test:test_support",
-    "//ios/web",
-    "//ios/web/public/test",
-    "//skia",
-    "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
-    "//ui/base",
-    "//ui/gfx",
-    "//url",
-  ]
-}
-
-bundle_data("resources_unit_tests") {
-  visibility = [
-    ":unit_tests",
-    ":unit_tests_arc",
-  ]
-  testonly = true
-  sources = [
-    "//ios/chrome/test/data/favicon/test_favicon.png",
-  ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "ios/chrome/test/data/favicon/{{source_file_part}}",
   ]
 }
 
@@ -258,11 +149,10 @@ source_set("eg_tests") {
     "//ios/chrome/browser/ui:ui",
     "//ios/chrome/browser/ui/authentication:authentication_ui",
     "//ios/chrome/browser/ui/authentication:eg_test_support",
+    "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view/cells",
-    "//ios/chrome/browser/ui/tools_menu",
-    "//ios/chrome/browser/ui/tools_menu/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/chrome/test/app:test_support",

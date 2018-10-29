@@ -2,7 +2,6 @@ Tests that HTMLCollection only properly contains HTML elements
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS select.options.length is 0
 PASS select.selectedOptions.length is 0
 PASS select.options.length is 1

@@ -11,6 +11,7 @@
 #include <link.h>
 
 #include "crazy_linker_defines.h"
+#include "crazy_linker_relr_relocations.h"
 #include "elf_traits.h"
 
 namespace crazy {
@@ -28,7 +29,7 @@ class ElfRelocations {
   typedef ELF::Rel rel_t;
 #endif
  public:
-  ElfRelocations() { ::memset(this, 0, sizeof(*this)); }
+  ElfRelocations();
   ~ElfRelocations() {}
 
   bool Init(const ElfView* view, Error* error);
@@ -137,29 +138,31 @@ class ElfRelocations {
                        Error* error);
 #endif
 
-  const ELF::Phdr* phdr_;
-  size_t phdr_count_;
-  size_t load_bias_;
+  const ELF::Phdr* phdr_ = nullptr;
+  size_t phdr_count_ = 0;
+  size_t load_bias_ = 0;
 
-  ELF::Addr plt_relocations_;
-  size_t plt_relocations_size_;
-  ELF::Addr* plt_got_;
+  ELF::Addr plt_relocations_ = 0;
+  size_t plt_relocations_size_ = 0;
+  ELF::Addr* plt_got_ = nullptr;
 
-  ELF::Addr relocations_;
-  size_t relocations_size_;
+  ELF::Addr relocations_ = 0;
+  size_t relocations_size_ = 0;
+
+  RelrRelocations relr_;
 
 #if defined(__mips__)
   // MIPS-specific relocation fields.
-  ELF::Word mips_symtab_count_;
-  ELF::Word mips_local_got_count_;
-  ELF::Word mips_gotsym_;
+  ELF::Word mips_symtab_count_ = 0;
+  ELF::Word mips_local_got_count_ = 0;
+  ELF::Word mips_gotsym_ = 0;
 #endif
 
-  uint8_t* android_relocations_;
-  size_t android_relocations_size_;
+  uint8_t* android_relocations_ = nullptr;
+  size_t android_relocations_size_ = 0;
 
-  bool has_text_relocations_;
-  bool has_symbolic_;
+  bool has_text_relocations_ = false;
+  bool has_symbolic_ = false;
 };
 
 }  // namespace crazy

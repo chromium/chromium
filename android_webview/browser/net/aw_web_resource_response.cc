@@ -79,9 +79,9 @@ bool AwWebResourceResponse::GetResponseHeaders(
     return false;
   std::vector<std::string> header_names;
   std::vector<std::string> header_values;
-  AppendJavaStringArrayToStringVector(env, jstringArray_headerNames.obj(),
+  AppendJavaStringArrayToStringVector(env, jstringArray_headerNames,
                                       &header_names);
-  AppendJavaStringArrayToStringVector(env, jstringArray_headerValues.obj(),
+  AppendJavaStringArrayToStringVector(env, jstringArray_headerValues,
                                       &header_values);
   DCHECK_EQ(header_values.size(), header_names.size());
   for (size_t i = 0; i < header_names.size(); ++i) {

@@ -4,7 +4,6 @@ Tests to ensure that shadow DOM boundary is not crossed during event propagation
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Move mouse from a node to its sibling node. All nodes are outside of shadow boundary.
 Moving mouse from divB to divC
 PASS dispatchedEvent("mouseover") is ["divC(<-divB)(@divC)", "divC(<-divB)(@divA)"]
@@ -82,4 +81,5 @@ PASS dispatchedEvent("blur") is ["shadowF(<-shadowK)(@divE)(capturing phase)", "
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

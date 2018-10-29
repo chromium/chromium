@@ -70,8 +70,7 @@ bool ServicesMatch(int profile_a, int profile_b) {
     return false;
   }
 
-  for (GUIDToTURLMap::iterator it = a_turls.begin();
-       it != a_turls.end(); ++it) {
+  for (auto it = a_turls.begin(); it != a_turls.end(); ++it) {
     if (b_turls.find(it->first) == b_turls.end()) {
       DVLOG(1) << "TURL GUID from a not found in b's TURLs: " << it->first;
       return false;

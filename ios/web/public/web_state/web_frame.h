@@ -32,7 +32,7 @@ class WebFrame : public base::SupportsUserData {
   virtual bool CanCallJavaScriptFunction() const = 0;
 
   // Calls the JavaScript function |name| in the frame context. For example, to
-  // call __gCrWeb.form.trackFormMutations(delay), pass
+  // call __gCrWeb.formHandlers.trackFormMutations(delay), pass
   // 'form.trackFormMutations' as |name| and the value for the delay parameter
   // to |parameters|. |name| must point to a function in the __gCrWeb object.
   // |parameters| is a vector of values that will be passed to the function.

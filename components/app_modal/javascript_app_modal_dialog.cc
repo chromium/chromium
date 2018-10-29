@@ -177,7 +177,7 @@ void JavaScriptAppModalDialog::NotifyDelegate(bool success,
   // The close callback above may delete web_contents_, thus removing the extra
   // data from the map owned by ::JavaScriptDialogManager. Make sure
   // to only use the data if still present. http://crbug.com/236476
-  ExtraDataMap::iterator extra_data = extra_data_map_->find(web_contents_);
+  auto extra_data = extra_data_map_->find(web_contents_);
   if (extra_data != extra_data_map_->end()) {
     extra_data->second.has_already_shown_a_dialog_ = true;
     extra_data->second.suppress_javascript_messages_ = suppress_js_messages;

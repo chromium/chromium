@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 นาที}other{# นาที}}</translation>
 <translation id="1243314992276662751">อัปโหลด</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">แอปแนะนำ</translation>
 <translation id="1368832886055348810">ซ้ายไปขวา</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">เลื่อนหน้าลง</translation>
 <translation id="8245914219290430011">แท็บ</translation>
+<translation id="8259556432390118667">ค่าสีแบบเลขฐาน 16</translation>
 <translation id="8328145009876646418">ขอบซ้าย</translation>
 <translation id="8331626408530291785">เลื่อนขึ้น</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 ปี}other{# ปี}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
 <translation id="8806053966018712535">โฟลเดอร์ <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">ใส่หมายเหตุในรูปภาพ</translation>
+<translation id="8841375032071747811">ปุ่มกลับ</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="9002566407876343676">เปิด</translation>
 <translation id="9038489124413477075">โฟลเดอร์ที่ไม่มีชื่อ</translation>

@@ -243,7 +243,7 @@ void PlatformThread::Join(PlatformThreadHandle thread_handle) {
   // Joining another thread may block the current thread for a long time, since
   // the thread referred to by |thread_handle| may still be running long-lived /
   // blocking tasks.
-  // AssertBlockingAllowed();
+  // AssertBlockingAllowedDeprecated();
 
   DWORD thread_id = 0;
   thread_id = ::GetThreadId(thread_handle.platform_handle());
@@ -357,6 +357,11 @@ ThreadPriority PlatformThread::GetCurrentThreadPriority() {
 
   NOTREACHED() << "GetCurrentThreadPriority returned " << priority << ".";
   return ThreadPriority::NORMAL;
+}
+
+// static
+size_t PlatformThread::GetDefaultThreadStackSize() {
+  return 0;
 }
 
 }  // namespace base

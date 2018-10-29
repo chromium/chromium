@@ -2,7 +2,6 @@ Blue item box is 10% left in container. Box should display 40px as getComputedSt
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS computedStyle.getPropertyValue('left') is '40px'
 PASS successfullyParsed is true
 

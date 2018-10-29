@@ -9,7 +9,7 @@
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 
 namespace blink {
 namespace scheduler {
@@ -55,7 +55,7 @@ SchedulerHelper::DefaultTaskRunner() {
   return default_task_runner_;
 }
 
-void SchedulerHelper::SetWorkBatchSizeForTesting(size_t work_batch_size) {
+void SchedulerHelper::SetWorkBatchSizeForTesting(int work_batch_size) {
   CheckOnValidThread();
   DCHECK(sequence_manager_.get());
   sequence_manager_->SetWorkBatchSize(work_batch_size);

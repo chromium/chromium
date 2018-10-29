@@ -27,6 +27,7 @@ ResolveHostClientImpl::ResolveHostClientImpl(
       network::mojom::ResolveHostParameters::New();
   parameters->initial_priority = net::RequestPriority::IDLE;
   parameters->is_speculative = true;
+  parameters->control_handle = mojo::MakeRequest(&control_handle_);
   network_context->ResolveHost(net::HostPortPair::FromURL(url),
                                std::move(parameters),
                                std::move(resolve_host_client_ptr));
@@ -35,6 +36,10 @@ ResolveHostClientImpl::ResolveHostClientImpl(
 }
 
 ResolveHostClientImpl::~ResolveHostClientImpl() = default;
+
+void ResolveHostClientImpl::Cancel() {
+  control_handle_->Cancel(net::ERR_ABORTED);
+}
 
 void ResolveHostClientImpl::OnComplete(
     int result,

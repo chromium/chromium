@@ -37,11 +37,8 @@
 namespace blink {
 
 SpeechRecognition* SpeechRecognition::Create(ExecutionContext* context) {
-  DCHECK(context);
-  DCHECK(context->IsDocument());
-  Document* document = ToDocument(context);
-  DCHECK(document);
-  return new SpeechRecognition(document->GetFrame(), context);
+  Document& document = To<Document>(*context);
+  return new SpeechRecognition(document.GetFrame(), context);
 }
 
 void SpeechRecognition::start(ExceptionState& exception_state) {
@@ -96,7 +93,7 @@ void SpeechRecognition::ResultRetrieved(
   auto* it = std::stable_partition(
       results.begin(), results.end(),
       [](const auto& result) { return !result->is_provisional; });
-  size_t provisional_count = results.end() - it;
+  wtf_size_t provisional_count = static_cast<wtf_size_t>(results.end() - it);
 
   // Add the new results to the previous final results.
   HeapVector<Member<SpeechRecognitionResult>> aggregated_results =

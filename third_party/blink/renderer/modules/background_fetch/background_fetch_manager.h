@@ -78,6 +78,7 @@ class MODULES_EXPORT BackgroundFetchManager final
                     Vector<WebServiceWorkerRequest> web_requests,
                     mojom::blink::BackgroundFetchOptionsPtr options,
                     ScriptPromiseResolver* resolver,
+                    BackgroundFetchIconLoader* loader,
                     const SkBitmap& icon,
                     int64_t ideal_to_chosen_icon_size);
   void DidFetch(ScriptPromiseResolver* resolver,
@@ -95,7 +96,7 @@ class MODULES_EXPORT BackgroundFetchManager final
 
   Member<ServiceWorkerRegistration> registration_;
   Member<BackgroundFetchBridge> bridge_;
-  Member<BackgroundFetchIconLoader> loader_;
+  HeapVector<Member<BackgroundFetchIconLoader>> loaders_;
 };
 
 }  // namespace blink

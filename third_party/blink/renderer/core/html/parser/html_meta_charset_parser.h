@@ -50,7 +50,7 @@ class HTMLMetaCharsetParser {
   ~HTMLMetaCharsetParser();
 
   // Returns true if done checking, regardless whether an encoding is found.
-  bool CheckForMetaCharset(const char*, size_t);
+  bool CheckForMetaCharset(const char*, wtf_size_t);
 
   const WTF::TextEncoding& Encoding() { return encoding_; }
 

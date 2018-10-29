@@ -122,7 +122,15 @@ std::string GetBase64EncodedServerId(const std::string& server_id) {
 }
 
 std::string GetSpecificsIdForEntryServerId(const std::string& server_id) {
+  // TODO(jkrcal): This specifics id for wallet_data probably should not be
+  // base64 encoded - this function is only used in printing debug data; should
+  // the storage key for wallet_data below be encoded? (probably yes, as this is
+  // already launched).
   return GetBase64EncodedServerId(server_id);
+}
+
+std::string GetSpecificsIdForMetadataId(const std::string& metadata_id) {
+  return GetBase64EncodedServerId(metadata_id);
 }
 
 std::string GetStorageKeyForSpecificsId(const std::string& specifics_id) {
@@ -132,7 +140,13 @@ std::string GetStorageKeyForSpecificsId(const std::string& specifics_id) {
 }
 
 std::string GetStorageKeyForEntryServerId(const std::string& server_id) {
+  // TODO(jkrcal): This probably needs to stay base64 encoded while specifics id
+  // should not. Fix.
   return GetStorageKeyForSpecificsId(GetSpecificsIdForEntryServerId(server_id));
+}
+
+std::string GetStorageKeyForMetadataId(const std::string& metadata_id) {
+  return GetStorageKeyForSpecificsId(GetSpecificsIdForMetadataId(metadata_id));
 }
 
 std::string GetClientTagForSpecificsId(

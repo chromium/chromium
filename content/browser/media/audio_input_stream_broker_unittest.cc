@@ -145,6 +145,7 @@ struct TestEnvironment {
             kDeviceId,
             TestParams(),
             kShMemCount,
+            nullptr /*user_input_monitor*/,
             kEnableAgc,
             nullptr,
             deleter.Get(),
@@ -169,7 +170,8 @@ TEST(AudioInputStreamBrokerTest, StoresProcessAndFrameId) {
 
   AudioInputStreamBroker broker(
       kRenderProcessId, kRenderFrameId, kDeviceId, TestParams(), kShMemCount,
-      kEnableAgc, nullptr, deleter.Get(), renderer_factory_client.MakePtr());
+      nullptr /*user_input_monitor*/, kEnableAgc, nullptr, deleter.Get(),
+      renderer_factory_client.MakePtr());
 
   EXPECT_EQ(kRenderProcessId, broker.render_process_id());
   EXPECT_EQ(kRenderFrameId, broker.render_frame_id());

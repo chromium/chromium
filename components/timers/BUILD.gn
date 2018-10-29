@@ -23,6 +23,7 @@ source_set("unit_tests") {
   deps = [
     ":timers",
     "//base",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
 }

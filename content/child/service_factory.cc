@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "content/public/common/content_client.h"
-#include "services/service_manager/embedder/embedded_service_runner.h"
+#include "services/service_manager/public/cpp/embedded_service_runner.h"
 
 namespace content {
 

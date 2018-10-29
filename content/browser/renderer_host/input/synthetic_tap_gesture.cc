@@ -46,6 +46,10 @@ SyntheticGesture::Result SyntheticTapGesture::ForwardInputEvents(
                           : SyntheticGesture::GESTURE_RUNNING;
 }
 
+bool SyntheticTapGesture::AllowHighFrequencyDispatch() const {
+  return false;
+}
+
 void SyntheticTapGesture::ForwardTouchOrMouseInputEvents(
     const base::TimeTicks& timestamp, SyntheticGestureTarget* target) {
   switch (state_) {

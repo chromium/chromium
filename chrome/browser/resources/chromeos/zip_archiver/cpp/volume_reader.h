@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_VOLUME_READER_H_
 #define CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_VOLUME_READER_H_
 
+#include <cstdint>
+#include <memory>
 #include <string>
+
+#include "base/files/file.h"
 
 // Defines a reader for archive volumes. This class is used by minizip
 // for custom reads.
@@ -28,7 +32,7 @@ class VolumeReader {
   // Tries to seek to offset from whence. Returns the resulting offset location
   // or -1 in case of errors. Similar to
   // http://www.cplusplus.com/reference/cstdio/fseek/
-  virtual int64_t Seek(int64_t offset, int whence) = 0;
+  virtual int64_t Seek(int64_t offset, base::File::Whence whence) = 0;
 
   // Fetches a passphrase for reading. If the passphrase is not available it
   // returns nullptr.

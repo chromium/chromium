@@ -39,6 +39,8 @@ void SyncRecordModelTypeCountHistogram(syncer::ModelType model_type,
 // in macros, pass in the histogram method directly as a parameter.
 // See http://connect.microsoft.com/VisualStudio/feedback/details/380090/
 // variadic-macro-replacement#details
+// When adding a new datatype in the switch below, also update the SyncModelType
+// and SyncModelTypeByMacro histogram suffixes in histograms.xml.
 #define SYNC_DATA_TYPE_HISTOGRAM(datatype)                       \
   do {                                                           \
     switch (datatype) {                                          \

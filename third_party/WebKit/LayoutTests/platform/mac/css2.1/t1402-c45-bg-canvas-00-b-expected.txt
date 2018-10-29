@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x68
-  LayoutBlockFlow {HTML} at (0,0) size 800x68
-    LayoutBlockFlow {BODY} at (25,25) size 750x18 [color=#FFFFFF] [bgcolor=#000080]
-      LayoutBlockFlow {P} at (0,0) size 750x18
-        LayoutText {#text} at (0,0) size 676x18
-          text run at (0,0) width 386: "This paragraph should be in a blue block near the top of the "
-          text run at (385,0) width 291: "page. Around it on all sides should be purple."

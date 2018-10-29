@@ -42,7 +42,7 @@ class APP_MENU_EXPORT NotificationMenuController
 
   // message_center::SlideOutController::Delegate overrides:
   ui::Layer* GetSlideOutLayer() override;
-  void OnSlideChanged() override;
+  void OnSlideChanged(bool in_progress) override;
   void OnSlideOut() override;
 
   // NotificationMenuView::Delegate overrides:

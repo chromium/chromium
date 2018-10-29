@@ -53,7 +53,7 @@ public final class SafeBrowsingApiBridge {
                             long callbackId, int resultStatus, String metadata, long checkDelta) {
                         nativeOnUrlCheckDone(callbackId, resultStatus, metadata, checkDelta);
                     }
-                });
+                }, nativeAreLocalBlacklistsEnabled());
         return initSuccesssful ? handler : null;
     }
 
@@ -67,6 +67,7 @@ public final class SafeBrowsingApiBridge {
         Log.d(TAG, "Done starting request");
     }
 
+    private static native boolean nativeAreLocalBlacklistsEnabled();
     private static native void nativeOnUrlCheckDone(
             long callbackId, int resultStatus, String metadata, long checkDelta);
 }

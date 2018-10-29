@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -98,7 +99,7 @@ class StartupBrowserCreatorTriggeredResetTest : public InProcessBrowserTest {
  private:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     TriggeredProfileResetterFactory::GetInstance()->SetTestingFactory(
-        context, &BuildMockTriggeredProfileResetter);
+        context, base::BindRepeating(&BuildMockTriggeredProfileResetter));
   }
 
   std::unique_ptr<

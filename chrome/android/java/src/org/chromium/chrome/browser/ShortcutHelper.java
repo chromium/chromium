@@ -29,7 +29,6 @@ import android.text.TextUtils;
 import android.util.Base64;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -37,6 +36,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.blink_public.platform.WebDisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.webapps.WebApkInfo;
@@ -732,8 +732,9 @@ public class ShortcutHelper {
             if (WebApkValidator.isValidWebApk(context, packageInfo.packageName)) {
                 // Pass non-null URL parameter so that {@link WebApkInfo#create()}
                 // return value is non-null
-                WebApkInfo webApkInfo = WebApkInfo.create(packageInfo.packageName, "",
-                        ShortcutSource.UNKNOWN, false /* forceNavigation */);
+                WebApkInfo webApkInfo =
+                        WebApkInfo.create(packageInfo.packageName, "", ShortcutSource.UNKNOWN,
+                                false /* forceNavigation */, false /* useTransparentSplash */);
                 if (webApkInfo != null) {
                     names.add(webApkInfo.name());
                     shortNames.add(webApkInfo.shortName());

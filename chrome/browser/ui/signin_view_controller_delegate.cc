@@ -95,10 +95,11 @@ void SigninViewControllerDelegate::LoadingStateChanged(
   }
 }
 
-void SigninViewControllerDelegate::HandleKeyboardEvent(
+bool SigninViewControllerDelegate::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   NOTREACHED();
+  return false;
 }
 
 bool SigninViewControllerDelegate::CanGoBack(

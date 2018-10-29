@@ -37,7 +37,7 @@
 
 namespace blink {
 
-namespace XPath {
+namespace xpath {
 
 struct CORE_EXPORT EvaluationContext {
   STACK_ALLOCATED();
@@ -108,7 +108,7 @@ class CORE_EXPORT Expression : public ParseNode {
   DISALLOW_COPY_AND_ASSIGN(Expression);
 };
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink
 

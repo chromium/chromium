@@ -362,8 +362,8 @@
     <message name="IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED" desc="The label used underneath a permission listed in the Page Info bubble if the permission was blocked by Chrome on behalf of the user.">
       Automatically blocked
     </message>
-    <message name="IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE" desc="The label used underneath the ads permission in the Page Info UI if the site is being considered for ad blocking. Used on both desktop and Android platforms" formatter_data="android_java">
-      Site tends to show intrusive ads
+    <message name="IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE" desc="A subtitle shown under the ‘Ads’ setting indicating that a site has, in the past, shown intrusive or misleading ads. Shown when user clicks/taps the lock/'Danger' icon in the address bar. Used on both desktop and Android platforms" formatter_data="android_java">
+      Site shows intrusive or misleading ads
     </message>
 
     <!-- Permission change infobar. -->
@@ -383,7 +383,7 @@
       </message>
       <if expr="_google_chrome">
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS" desc="A short paragraph explaining to the user that they has reuse their google password on current website.">
-          You could lose access to your Google Account or experience identity theft. Chrome recommends changing your password now.
+          You could lose access to your Google Account. Chrome recommends changing your password now. You'll be asked to sign in.
         </message>
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_ENTERPRISE" desc="A short paragraph explaining to the user that they have reused their password on the current website.">
           You could lose access to your organization's account or experience identity theft. Chrome recommends changing your password now.
@@ -394,7 +394,7 @@
       </if>
       <if expr="not _google_chrome">
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS" desc="A short paragraph explaining to the user that they has reuse their google password on current website.">
-          You could lose access to your Google Account or experience identity theft. Chromium recommends changing your password now.
+          You could lose access to your Google Account. Chromium recommends changing your password now. You'll be asked to sign in.
         </message>
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_ENTERPRISE" desc="A short paragraph explaining to the user that they have reused their password on the current website.">
           You could lose access to your organization's account or experience identity theft. Chromium recommends changing your password now.
@@ -406,7 +406,7 @@
 
       <if expr="use_titlecase">
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON" desc="In Title Case: The string used in the page info change password button.">
-          Help Me Fix This
+          Change Password
         </message>
         <message name="IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON" desc="In Title Case: The string used in the page info ignore password warning button.">
           Ignore
@@ -414,7 +414,7 @@
       </if>
       <if expr="not use_titlecase">
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON" desc="The string used in the page info change password button.">
-          Help me fix this
+          Change password
         </message>
         <message name="IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON" desc="The string used in the page info ignore password warning button.">
           Ignore

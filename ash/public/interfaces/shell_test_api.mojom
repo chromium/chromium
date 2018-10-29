@@ -15,4 +15,12 @@ interface ShellTestApi {
   // Enables the keyboard and associates it with the primary root window
   // controller. In tablet mode, enables the virtual keyboard.
   EnableVirtualKeyboard() => ();
+
+  // Tells the SplitViewController to snap the given window to the left.
+  // The client name is used to find the client's WindowTree.
+  SnapWindowInSplitView(string client_name, uint64 window_id) => ();
+
+  // Fullscreens the active window, as if the user had pressed the hardware
+  // fullscreen button.
+  ToggleFullscreen() => ();
 };

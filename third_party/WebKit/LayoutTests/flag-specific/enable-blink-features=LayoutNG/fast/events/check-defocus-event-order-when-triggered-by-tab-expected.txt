@@ -13,4 +13,3 @@ PASS fired event is (firstInput, blur).
 PASS fired event is (secondInput, focus).
 
 TEST COMPLETE
-

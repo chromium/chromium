@@ -14,7 +14,7 @@
 #include "ios/web/public/web_thread.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
-#import "ios/web_view/public/cwv_autofill_data_manager_delegate.h"
+#import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -73,9 +73,9 @@ class WebViewPersonalDataManagerObserverBridge
       _fetchProfilesCompletionHandlers;
   NSMutableArray<CWVFetchCreditCardsCompletionHandler>*
       _fetchCreditCardsCompletionHandlers;
+  // Holds weak observers.
+  NSHashTable<id<CWVAutofillDataManagerObserver>>* _observers;
 }
-
-@synthesize delegate = _delegate;
 
 - (instancetype)initWithPersonalDataManager:
     (autofill::PersonalDataManager*)personalDataManager {
@@ -87,6 +87,7 @@ class WebViewPersonalDataManagerObserverBridge
     _personalDataManager->AddObserver(_personalDataManagerObserverBridge.get());
     _fetchProfilesCompletionHandlers = [NSMutableArray array];
     _fetchCreditCardsCompletionHandlers = [NSMutableArray array];
+    _observers = [NSHashTable weakObjectsHashTable];
   }
   return self;
 }
@@ -97,6 +98,14 @@ class WebViewPersonalDataManagerObserverBridge
 }
 
 #pragma mark - Public Methods
+
+- (void)addObserver:(__weak id<CWVAutofillDataManagerObserver>)observer {
+  [_observers addObject:observer];
+}
+
+- (void)removeObserver:(__weak id<CWVAutofillDataManagerObserver>)observer {
+  [_observers removeObject:observer];
+}
 
 - (void)fetchProfilesWithCompletionHandler:
     (void (^)(NSArray<CWVAutofillProfile*>* profiles))completionHandler {
@@ -172,7 +181,9 @@ class WebViewPersonalDataManagerObserverBridge
       [_fetchCreditCardsCompletionHandlers removeAllObjects];
     }
   }
-  [_delegate autofillDataManagerDataDidChange:self];
+  for (id<CWVAutofillDataManagerObserver> observer in _observers) {
+    [observer autofillDataManagerDataDidChange:self];
+  }
 }
 
 - (NSArray<CWVAutofillProfile*>*)profiles {

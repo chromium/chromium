@@ -115,12 +115,6 @@ class TestOneClickSigninSyncObserver : public OneClickSigninSyncObserver {
   DISALLOW_COPY_AND_ASSIGN(TestOneClickSigninSyncObserver);
 };
 
-// A trivial factory to build a null service.
-std::unique_ptr<KeyedService> BuildNullService(
-    content::BrowserContext* context) {
-  return nullptr;
-}
-
 }  // namespace
 
 class OneClickSigninSyncObserverTest : public ChromeRenderViewHostTestHarness {
@@ -135,7 +129,8 @@ class OneClickSigninSyncObserverTest : public ChromeRenderViewHostTestHarness {
     web_contents_observer_.reset(new MockWebContentsObserver(web_contents()));
     sync_service_ = static_cast<OneClickTestProfileSyncService*>(
         ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(), OneClickTestProfileSyncService::Build));
+            profile(),
+            base::BindRepeating(&OneClickTestProfileSyncService::Build)));
   }
 
   void TearDown() override {
@@ -179,9 +174,11 @@ class OneClickSigninSyncObserverTest : public ChromeRenderViewHostTestHarness {
 // observer immediately loads the continue URL.
 TEST_F(OneClickSigninSyncObserverTest, NoSyncService_RedirectsImmediately) {
   // Simulate disabling Sync.
+  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
+
   sync_service_ = static_cast<OneClickTestProfileSyncService*>(
-      ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), BuildNullService));
+      ProfileSyncServiceFactory::GetInstance()->GetForProfile(profile()));
 
   // The observer should immediately redirect to the continue URL.
   EXPECT_CALL(*web_contents_observer_, DidStartNavigation(_));

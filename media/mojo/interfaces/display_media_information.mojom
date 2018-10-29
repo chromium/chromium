@@ -1,0 +1,27 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+// Mojo equivalent to media::DisplayMediaInformation. See also
+// media/base/display_media_information.h
+
+enum DisplayCaptureSurfaceType {
+  MONITOR,
+  WINDOW,
+  APPLICATION,
+  BROWSER,
+};
+
+enum CursorCaptureType {
+  NEVER,
+  ALWAYS,
+  MOTION,
+};
+
+struct DisplayMediaInformation {
+  DisplayCaptureSurfaceType display_surface;
+  bool logical_surface;
+  CursorCaptureType cursor;
+};

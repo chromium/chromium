@@ -2,7 +2,6 @@ This tests checks that all of the input values for -webkit-font-smoothing parse 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS test("-webkit-font-smoothing: auto;") is "auto"
 PASS test("-webkit-font-smoothing: none;") is "none"
 PASS test("-webkit-font-smoothing: antialiased;") is "antialiased"

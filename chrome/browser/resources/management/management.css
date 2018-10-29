@@ -27,3 +27,36 @@ body section {
 #main-section {
   padding-inline-start: 0;
 }
+
+#extensions-table {
+  border: 0;
+}
+
+#extensions-table li {
+  padding: 2px;
+}
+
+#extensions-table ul {
+  list-style: none;
+  padding: 0;
+}
+
+#extensions-table th {
+  border: 0;
+  color: grey;
+  padding: 7px;
+  text-align: start;
+}
+
+#extensions-table td {
+  border: 0;
+  padding: 0 5px 0;
+}
+
+#reporting-info-list li {
+  padding: 2px;
+}
+
+.section-title {
+  font-weight: bold;
+}

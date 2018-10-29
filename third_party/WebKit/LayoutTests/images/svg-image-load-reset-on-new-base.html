@@ -1,0 +1,19 @@
+<!doctype HTML>
+
+<iframe id="frame"></iframe>
+<script>
+if (window.testRunner)
+  window.testRunner.waitUntilDone();
+function test() {
+  var content = '<head><base href="resources/"></head><body>' +
+    '<svg width="100" height="100">' +
+    '  <image xlink:href="base-test-resources/success.png" />' +
+    '</svg></body>';
+  var doc = document.getElementById("frame").contentDocument;
+  doc.firstChild.innerHTML = content;
+  if (window.testRunner)
+    window.testRunner.notifyDone();
+}
+window.onload = test;
+</script>
+

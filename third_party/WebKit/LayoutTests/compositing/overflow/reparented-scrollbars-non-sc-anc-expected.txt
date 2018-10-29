@@ -18,27 +18,9 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Ancestor Clipping Layer",
-      "position": [8, 8],
-      "bounds": [1200, 800],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow (relative positioned) DIV id='positioned'",
       "position": [8, 8],
       "bounds": [1200, 800]
-    },
-    {
-      "name": "Child Containment Layer",
-      "position": [8, 8],
-      "bounds": [1200, 800],
-      "drawsContent": false
-    },
-    {
-      "name": "Ancestor Clipping Layer",
-      "position": [8, 8],
-      "bounds": [1200, 1000],
-      "drawsContent": false
     },
     {
       "name": "LayoutBlockFlow DIV id='scroller'",
@@ -60,12 +42,6 @@
       "name": "LayoutBlockFlow (relative positioned) DIV id='foreground'",
       "position": [8, 10008],
       "contentsOpaque": true,
-      "drawsContent": false
-    },
-    {
-      "name": "Overflow Controls Ancestor Clipping Layer",
-      "position": [8, 8],
-      "bounds": [1200, 1000],
       "drawsContent": false
     },
     {

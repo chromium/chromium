@@ -7,13 +7,12 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task_runner.h"
+#include "base/threading/thread.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
 
 #include <windows.h>
 
 namespace gpu {
-
-struct SharedData;
 
 // The window DirectComposition renders into needs to be owned by the process
 // that's currently doing the rendering. The class creates and owns a window
@@ -25,15 +24,13 @@ class ChildWindowWin {
   ~ChildWindowWin();
 
   bool Initialize();
-  void ClearInvalidContents();
   HWND window() const { return window_; }
 
   scoped_refptr<base::TaskRunner> GetTaskRunnerForTesting();
 
  private:
-  // This member contains all the data that can be accessed from the main or
-  // window owner threads.
-  std::unique_ptr<SharedData> shared_data_;
+  // The window owner thread.
+  std::unique_ptr<base::Thread> thread_;
   // The eventual parent of the window living in the browser process.
   HWND parent_window_;
   HWND window_;

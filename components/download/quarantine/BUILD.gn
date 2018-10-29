@@ -12,7 +12,6 @@ static_library("quarantine") {
   sources = [
     "quarantine.cc",
     "quarantine.h",
-    "quarantine_constants_linux.h",
     "quarantine_features_win.cc",
     "quarantine_features_win.h",
     "quarantine_linux.cc",
@@ -21,6 +20,7 @@ static_library("quarantine") {
   ]
 
   deps = [
+    ":common",
     "//base",
     "//net",
     "//url",
@@ -34,8 +34,57 @@ static_library("quarantine") {
   }
 }
 
+source_set("common") {
+  sources = [
+    "common_linux.cc",
+    "common_linux.h",
+    "common_mac.h",
+    "common_mac.mm",
+    "common_win.cc",
+    "common_win.h",
+  ]
+
+  deps = [
+    "//base",
+  ]
+
+  if (is_mac) {
+    libs = [
+      "Carbon.framework",
+      "Foundation.framework",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_support.cc",
+    "test_support.h",
+    "test_support_linux.cc",
+    "test_support_mac.mm",
+    "test_support_win.cc",
+  ]
+
+  deps = [
+    ":common",
+    ":quarantine",
+    "//base",
+    "//url",
+  ]
+
+  if (is_mac) {
+    libs = [
+      "Carbon.framework",
+      "Foundation.framework",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
+
   sources = [
     "quarantine_linux_unittest.cc",
     "quarantine_mac_unittest.mm",
@@ -51,11 +100,20 @@ source_set("unit_tests") {
   }
 
   deps = [
+    ":common",
     ":quarantine",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//net",
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_mac) {
+    libs = [
+      "Carbon.framework",
+      "Foundation.framework",
+    ]
+  }
 }

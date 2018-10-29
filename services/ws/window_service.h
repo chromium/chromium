@@ -32,6 +32,7 @@
 namespace aura {
 class Env;
 class Window;
+class WindowTreeHost;
 namespace client {
 class FocusClient;
 }
@@ -56,7 +57,10 @@ class ClipboardHost;
 namespace ws {
 
 class EventInjector;
+class EventQueue;
 class GpuInterfaceProvider;
+class HostEventDispatcher;
+class HostEventQueue;
 class RemotingEventInjector;
 class ScreenProvider;
 class ServerWindow;
@@ -103,6 +107,9 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) WindowService
   // Whether |window| hosts a remote client.
   static bool HasRemoteClient(const aura::Window* window);
 
+  // Returns true if |window| hosts a remote client and is a toplevel window.
+  static bool IsTopLevelWindow(const aura::Window* window);
+
   struct TreeAndWindowId {
     ClientWindowId id;
     WindowTree* tree = nullptr;
@@ -147,6 +154,12 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) WindowService
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics);
 
+  // Registers the HostEventDispatcher for a WindowTreeHost and returns the
+  // HostEventQueue that |window_tree_host| should use to dispatch events.
+  std::unique_ptr<HostEventQueue> RegisterHostEventDispatcher(
+      aura::WindowTreeHost* window_tree_host,
+      HostEventDispatcher* dispatcher);
+
   // Returns an id useful for debugging. See ServerWindow::GetIdForDebugging()
   // for details.
   std::string GetIdForDebugging(aura::Window* window);
@@ -164,6 +177,8 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) WindowService
   const std::set<WindowTree*>& window_trees() const { return window_trees_; }
 
   service_manager::BinderRegistry* registry() { return &registry_; }
+
+  EventQueue* event_queue() { return event_queue_.get(); }
 
   // service_manager::Service:
   void OnStart() override;
@@ -244,6 +259,8 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) WindowService
 
   // Returns true if various test interfaces are exposed.
   bool test_config_ = false;
+
+  std::unique_ptr<EventQueue> event_queue_;
 
   base::OnceCallback<void(const std::string&)> surface_activation_callback_;
 

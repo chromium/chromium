@@ -221,16 +221,13 @@ TEST(HttpContentDispositionTest, tc2231) {
       // http://greenbytes.de/tech/tc2231/#inlonlyquoted
       {"\"inline\"", HttpContentDisposition::INLINE, L""},
       // http://greenbytes.de/tech/tc2231/#inlwithasciifilename
-      {"inline; filename=\"foo.html\"",
-       HttpContentDisposition::INLINE,
+      {"inline; filename=\"foo.html\"", HttpContentDisposition::INLINE,
        L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#inlwithfnattach
       {"inline; filename=\"Not an attachment!\"",
-       HttpContentDisposition::INLINE,
-       L"Not an attachment!"},
+       HttpContentDisposition::INLINE, L"Not an attachment!"},
       // http://greenbytes.de/tech/tc2231/#inlwithasciifilenamepdf
-      {"inline; filename=\"foo.pdf\"",
-       HttpContentDisposition::INLINE,
+      {"inline; filename=\"foo.pdf\"", HttpContentDisposition::INLINE,
        L"foo.pdf"},
       // http://greenbytes.de/tech/tc2231/#attonly
       {"attachment", HttpContentDisposition::ATTACHMENT, L""},
@@ -241,132 +238,109 @@ TEST(HttpContentDispositionTest, tc2231) {
       // http://greenbytes.de/tech/tc2231/#attonlyucase
       {"ATTACHMENT", HttpContentDisposition::ATTACHMENT, L""},
       // http://greenbytes.de/tech/tc2231/#attwithasciifilename
-      {"attachment; filename=\"foo.html\"",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; filename=\"foo.html\"", HttpContentDisposition::ATTACHMENT,
        L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attwithasciifnescapedchar
       {"attachment; filename=\"f\\oo.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo.html"},
+       HttpContentDisposition::ATTACHMENT, L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attwithasciifnescapedquote
       {"attachment; filename=\"\\\"quoting\\\" tested.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"\"quoting\" tested.html"},
+       HttpContentDisposition::ATTACHMENT, L"\"quoting\" tested.html"},
       // http://greenbytes.de/tech/tc2231/#attwithquotedsemicolon
       {"attachment; filename=\"Here's a semicolon;.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"Here's a semicolon;.html"},
+       HttpContentDisposition::ATTACHMENT, L"Here's a semicolon;.html"},
       // http://greenbytes.de/tech/tc2231/#attwithfilenameandextparam
       {"attachment; foo=\"bar\"; filename=\"foo.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo.html"},
+       HttpContentDisposition::ATTACHMENT, L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attwithfilenameandextparamescaped
       {"attachment; foo=\"\\\"\\\\\";filename=\"foo.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo.html"},
+       HttpContentDisposition::ATTACHMENT, L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attwithasciifilenameucase
-      {"attachment; FILENAME=\"foo.html\"",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; FILENAME=\"foo.html\"", HttpContentDisposition::ATTACHMENT,
        L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attwithasciifilenamenq
-      {"attachment; filename=foo.html",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; filename=foo.html", HttpContentDisposition::ATTACHMENT,
        L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attwithasciifilenamenqs
       // Note: tc2231 says we should fail to parse this header.
-      {"attachment; filename=foo.html ;",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; filename=foo.html ;", HttpContentDisposition::ATTACHMENT,
        L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attemptyparam
       // Note: tc2231 says we should fail to parse this header.
       {"attachment; ;filename=foo", HttpContentDisposition::ATTACHMENT, L"foo"},
       // http://greenbytes.de/tech/tc2231/#attwithasciifilenamenqws
       // Note: tc2231 says we should fail to parse this header.
-      {"attachment; filename=foo bar.html",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; filename=foo bar.html", HttpContentDisposition::ATTACHMENT,
        L"foo bar.html"},
       // http://greenbytes.de/tech/tc2231/#attwithfntokensq
-      {
-       "attachment; filename='foo.bar'",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo.bar"  // Should be L"'foo.bar'"
-      },
+      {"attachment; filename='foo.bar'", HttpContentDisposition::ATTACHMENT,
+       L"'foo.bar'"},
 #ifdef ICU_SHOULD_FAIL_CONVERSION_ON_INVALID_CHARACTER
       // http://greenbytes.de/tech/tc2231/#attwithisofnplain
       {
-       "attachment; filename=\"foo-\xE4html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L""  // Should be L"foo-\xE4.html"
+          "attachment; filename=\"foo-\xE4html\"",
+          HttpContentDisposition::ATTACHMENT,
+          L""  // Should be L"foo-\xE4.html"
       },
 #endif
       // http://greenbytes.de/tech/tc2231/#attwithutf8fnplain
       // Note: We'll UTF-8 decode the file name, even though tc2231 says not to.
       {"attachment; filename=\"foo-\xC3\xA4.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo-\xE4.html"},
+       HttpContentDisposition::ATTACHMENT, L"foo-\xE4.html"},
       // http://greenbytes.de/tech/tc2231/#attwithfnrawpctenca
       {
-       "attachment; filename=\"foo-%41.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo-A.html"  // Should be L"foo-%41.html"
+          "attachment; filename=\"foo-%41.html\"",
+          HttpContentDisposition::ATTACHMENT,
+          L"foo-A.html"  // Should be L"foo-%41.html"
       },
       // http://greenbytes.de/tech/tc2231/#attwithfnusingpct
-      {"attachment; filename=\"50%.html\"",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; filename=\"50%.html\"", HttpContentDisposition::ATTACHMENT,
        L"50%.html"},
       // http://greenbytes.de/tech/tc2231/#attwithfnrawpctencaq
       {
-       "attachment; filename=\"foo-%\\41.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo-A.html"  // Should be L"foo-%41.html"
+          "attachment; filename=\"foo-%\\41.html\"",
+          HttpContentDisposition::ATTACHMENT,
+          L"foo-A.html"  // Should be L"foo-%41.html"
       },
       // http://greenbytes.de/tech/tc2231/#attwithnamepct
       // Value is skipped like other UAs.
-      {
-       "attachment; name=\"foo-%41.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L""
-      },
+      {"attachment; name=\"foo-%41.html\"", HttpContentDisposition::ATTACHMENT,
+       L""},
 #ifdef ICU_SHOULD_FAIL_CONVERSION_ON_INVALID_CHARACTER
       // http://greenbytes.de/tech/tc2231/#attwithfilenamepctandiso
       {
-       "attachment; filename=\"\xE4-%41.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L""  // Should be L"\xE4-%41.htm"
+          "attachment; filename=\"\xE4-%41.html\"",
+          HttpContentDisposition::ATTACHMENT,
+          L""  // Should be L"\xE4-%41.htm"
       },
 #endif
       // http://greenbytes.de/tech/tc2231/#attwithfnrawpctenclong
       {
-       "attachment; filename=\"foo-%c3%a4-%e2%82%ac.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo-\xE4-\u20AC.html"  // Should be L"foo-%c3%a4-%e2%82%ac.html"
+          "attachment; filename=\"foo-%c3%a4-%e2%82%ac.html\"",
+          HttpContentDisposition::ATTACHMENT,
+          L"foo-\xE4-\u20AC.html"  // Should be L"foo-%c3%a4-%e2%82%ac.html"
       },
       // http://greenbytes.de/tech/tc2231/#attwithasciifilenamews1
-      {"attachment; filename =\"foo.html\"",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; filename =\"foo.html\"", HttpContentDisposition::ATTACHMENT,
        L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attwith2filenames
       // Note: tc2231 says we should fail to parse this header.
       {"attachment; filename=\"foo.html\"; filename=\"bar.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo.html"},
+       HttpContentDisposition::ATTACHMENT, L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attfnbrokentoken
       // Note: tc2231 says we should fail to parse this header.
       {"attachment; filename=foo[1](2).html",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo[1](2).html"},
+       HttpContentDisposition::ATTACHMENT, L"foo[1](2).html"},
 #ifdef ICU_SHOULD_FAIL_CONVERSION_ON_INVALID_CHARACTER
       // http://greenbytes.de/tech/tc2231/#attfnbrokentokeniso
       // Note: tc2231 says we should fail to parse this header.
-      {"attachment; filename=foo-\xE4.html",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; filename=foo-\xE4.html", HttpContentDisposition::ATTACHMENT,
        L""},
 #endif
       // http://greenbytes.de/tech/tc2231/#attfnbrokentokenutf
       // Note: tc2231 says we should fail to parse this header.
       {"attachment; filename=foo-\xC3\xA4.html",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo-\xE4.html"},
+       HttpContentDisposition::ATTACHMENT, L"foo-\xE4.html"},
       // http://greenbytes.de/tech/tc2231/#attmissingdisposition
       // Note: tc2231 says we should fail to parse this header.
       {"filename=foo.html", HttpContentDisposition::INLINE, L"foo.html"},
@@ -376,79 +350,65 @@ TEST(HttpContentDispositionTest, tc2231) {
       // http://greenbytes.de/tech/tc2231/#attmissingdisposition3
       // Note: tc2231 says we should fail to parse this header.
       {
-       "\"foo; filename=bar;baz\"; filename=qux",
-       HttpContentDisposition::INLINE,
-       L""  // Firefox gets qux
+          "\"foo; filename=bar;baz\"; filename=qux",
+          HttpContentDisposition::INLINE,
+          L""  // Firefox gets qux
       },
       // http://greenbytes.de/tech/tc2231/#attmissingdisposition4
       // Note: tc2231 says we should fail to parse this header.
-      {"filename=foo.html, filename=bar.html",
-       HttpContentDisposition::INLINE,
+      {"filename=foo.html, filename=bar.html", HttpContentDisposition::INLINE,
        L"foo.html, filename=bar.html"},
       // http://greenbytes.de/tech/tc2231/#emptydisposition
       // Note: tc2231 says we should fail to parse this header.
       {"; filename=foo.html", HttpContentDisposition::INLINE, L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attandinline
       // Note: tc2231 says we should fail to parse this header.
-      {"inline; attachment; filename=foo.html",
-       HttpContentDisposition::INLINE,
+      {"inline; attachment; filename=foo.html", HttpContentDisposition::INLINE,
        L""},
       // http://greenbytes.de/tech/tc2231/#attandinline2
       // Note: tc2231 says we should fail to parse this header.
       {"attachment; inline; filename=foo.html",
-       HttpContentDisposition::ATTACHMENT,
-       L""},
+       HttpContentDisposition::ATTACHMENT, L""},
       // http://greenbytes.de/tech/tc2231/#attbrokenquotedfn
       // Note: tc2231 says we should fail to parse this header.
       {"attachment; filename=\"foo.html\".txt",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo.html\".txt"},
+       HttpContentDisposition::ATTACHMENT, L"foo.html\".txt"},
       // http://greenbytes.de/tech/tc2231/#attbrokenquotedfn2
       // Note: tc2231 says we should fail to parse this header.
-      {"attachment; filename=\"bar",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; filename=\"bar", HttpContentDisposition::ATTACHMENT,
        L"bar"},
       // http://greenbytes.de/tech/tc2231/#attbrokenquotedfn3
       // Note: tc2231 says we should fail to parse this header.
       {"attachment; filename=foo\"bar;baz\"qux",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo\"bar;baz\"qux"},
+       HttpContentDisposition::ATTACHMENT, L"foo\"bar;baz\"qux"},
       // http://greenbytes.de/tech/tc2231/#attmultinstances
       // Note: tc2231 says we should fail to parse this header.
       {"attachment; filename=foo.html, attachment; filename=bar.html",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo.html, attachment"},
+       HttpContentDisposition::ATTACHMENT, L"foo.html, attachment"},
       // http://greenbytes.de/tech/tc2231/#attmissingdelim
-      {"attachment; foo=foo filename=bar",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; foo=foo filename=bar", HttpContentDisposition::ATTACHMENT,
        L""},
       // http://greenbytes.de/tech/tc2231/#attreversed
       // Note: tc2231 says we should fail to parse this header.
-      {"filename=foo.html; attachment",
-       HttpContentDisposition::INLINE,
+      {"filename=foo.html; attachment", HttpContentDisposition::INLINE,
        L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attconfusedparam
-      {"attachment; xfilename=foo.html",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; xfilename=foo.html", HttpContentDisposition::ATTACHMENT,
        L""},
       // http://greenbytes.de/tech/tc2231/#attabspath
-      {"attachment; filename=\"/foo.html\"",
-       HttpContentDisposition::ATTACHMENT,
+      {"attachment; filename=\"/foo.html\"", HttpContentDisposition::ATTACHMENT,
        L"/foo.html"},
       // http://greenbytes.de/tech/tc2231/#attabspathwin
       {"attachment; filename=\"\\\\foo.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"\\foo.html"},
+       HttpContentDisposition::ATTACHMENT, L"\\foo.html"},
       // http://greenbytes.de/tech/tc2231/#dispext
       {"foobar", HttpContentDisposition::ATTACHMENT, L""},
       // http://greenbytes.de/tech/tc2231/#dispextbadfn
       {"attachment; example=\"filename=example.txt\"",
-       HttpContentDisposition::ATTACHMENT,
-       L""},
+       HttpContentDisposition::ATTACHMENT, L""},
       // http://greenbytes.de/tech/tc2231/#attnewandfn
       {"attachment; foobar=x; filename=\"foo.html\"",
-       HttpContentDisposition::ATTACHMENT,
-       L"foo.html"},
+       HttpContentDisposition::ATTACHMENT, L"foo.html"},
       // TODO(abarth): Add the filename* tests, but check
       //              HttpContentDispositionTest.Filename for overlap.
       // TODO(abarth): http://greenbytes.de/tech/tc2231/#attrfc2047token
@@ -468,61 +428,63 @@ TEST(HttpContentDispositionTest, ParseResult) {
     const char* header;
     int expected_flags;
   } kTestCases[] = {
-    // Basic feature tests
-    { "", HttpContentDisposition::INVALID },
-    { "example=x", HttpContentDisposition::INVALID },
-    { "attachment; filename=", HttpContentDisposition::HAS_DISPOSITION_TYPE },
-    { "attachment; name=", HttpContentDisposition::HAS_DISPOSITION_TYPE },
-    { "attachment; filename*=", HttpContentDisposition::HAS_DISPOSITION_TYPE },
-    { "attachment; filename==?utf-8?Q?\?=",
-      HttpContentDisposition::HAS_DISPOSITION_TYPE },
-    { "filename=x", HttpContentDisposition::HAS_FILENAME },
-    { "example; filename=x",
-      HttpContentDisposition::HAS_DISPOSITION_TYPE |
-      HttpContentDisposition::HAS_UNKNOWN_DISPOSITION_TYPE |
-      HttpContentDisposition::HAS_FILENAME},
-    { "attachment; filename=x",
-      HttpContentDisposition::HAS_DISPOSITION_TYPE |
-      HttpContentDisposition::HAS_FILENAME },
-    { "attachment; filename=x; name=y",
-      HttpContentDisposition::HAS_DISPOSITION_TYPE |
-      HttpContentDisposition::HAS_FILENAME },
-    { "attachment; name=y; filename*=utf-8''foo; name=x",
-      HttpContentDisposition::HAS_DISPOSITION_TYPE |
-      HttpContentDisposition::HAS_EXT_FILENAME },
+      // Basic feature tests
+      {"", HttpContentDisposition::INVALID},
+      {"example=x", HttpContentDisposition::INVALID},
+      {"attachment; filename=", HttpContentDisposition::HAS_DISPOSITION_TYPE},
+      {"attachment; name=", HttpContentDisposition::HAS_DISPOSITION_TYPE},
+      {"attachment; filename*=", HttpContentDisposition::HAS_DISPOSITION_TYPE},
+      {"attachment; filename==?utf-8?Q?\?=",
+       HttpContentDisposition::HAS_DISPOSITION_TYPE},
+      {"filename=x", HttpContentDisposition::HAS_FILENAME},
+      {"example; filename=x",
+       HttpContentDisposition::HAS_DISPOSITION_TYPE |
+           HttpContentDisposition::HAS_UNKNOWN_DISPOSITION_TYPE |
+           HttpContentDisposition::HAS_FILENAME},
+      {"attachment; filename=x", HttpContentDisposition::HAS_DISPOSITION_TYPE |
+                                     HttpContentDisposition::HAS_FILENAME},
+      {"attachment; filename='x'",
+       HttpContentDisposition::HAS_DISPOSITION_TYPE |
+           HttpContentDisposition::HAS_FILENAME |
+           HttpContentDisposition::HAS_SINGLE_QUOTED_FILENAME},
+      {"attachment; filename=x; name=y",
+       HttpContentDisposition::HAS_DISPOSITION_TYPE |
+           HttpContentDisposition::HAS_FILENAME},
+      {"attachment; name=y; filename*=utf-8''foo; name=x",
+       HttpContentDisposition::HAS_DISPOSITION_TYPE |
+           HttpContentDisposition::HAS_EXT_FILENAME},
 
-    // Feature tests for 'filename' attribute.
-    { "filename=foo\xcc\x88",
-      HttpContentDisposition::HAS_FILENAME |
-      HttpContentDisposition::HAS_NON_ASCII_STRINGS },
-    { "filename=foo%cc%88",
-      HttpContentDisposition::HAS_FILENAME |
-      HttpContentDisposition::HAS_PERCENT_ENCODED_STRINGS },
-    { "filename==?utf-8?Q?foo?=",
-      HttpContentDisposition::HAS_FILENAME |
-      HttpContentDisposition::HAS_RFC2047_ENCODED_STRINGS },
-    { "filename=\"=?utf-8?Q?foo?=\"",
-      HttpContentDisposition::HAS_FILENAME |
-      HttpContentDisposition::HAS_RFC2047_ENCODED_STRINGS },
-    { "filename==?utf-8?Q?foo?", HttpContentDisposition::INVALID },
+      // Feature tests for 'filename' attribute.
+      {"filename=foo\xcc\x88",
+       HttpContentDisposition::HAS_FILENAME |
+           HttpContentDisposition::HAS_NON_ASCII_STRINGS},
+      {"filename=foo%cc%88",
+       HttpContentDisposition::HAS_FILENAME |
+           HttpContentDisposition::HAS_PERCENT_ENCODED_STRINGS},
+      {"filename==?utf-8?Q?foo?=",
+       HttpContentDisposition::HAS_FILENAME |
+           HttpContentDisposition::HAS_RFC2047_ENCODED_STRINGS},
+      {"filename=\"=?utf-8?Q?foo?=\"",
+       HttpContentDisposition::HAS_FILENAME |
+           HttpContentDisposition::HAS_RFC2047_ENCODED_STRINGS},
+      {"filename==?utf-8?Q?foo?", HttpContentDisposition::INVALID},
 
-    // Test 'name' isn't a synonym for 'filename'.
-    { "name=foo\xcc\x88", HttpContentDisposition::INVALID },
+      // Test 'name' isn't a synonym for 'filename'.
+      {"name=foo\xcc\x88", HttpContentDisposition::INVALID},
 
-    // Shouldn't set |has_non_ascii_strings| based on 'name' attribute.
-    { "filename=x; name=foo\xcc\x88",
-      HttpContentDisposition::HAS_FILENAME },
-    { "filename=foo\xcc\x88 foo%cc%88 =?utf-8?Q?foo?=",
-      HttpContentDisposition::HAS_FILENAME |
-      HttpContentDisposition::HAS_NON_ASCII_STRINGS |
-      HttpContentDisposition::HAS_PERCENT_ENCODED_STRINGS |
-      HttpContentDisposition::HAS_RFC2047_ENCODED_STRINGS },
+      // Shouldn't set |has_non_ascii_strings| based on 'name' attribute.
+      {"filename=x; name=foo\xcc\x88", HttpContentDisposition::HAS_FILENAME},
+      {"filename=foo\xcc\x88 foo%cc%88 =?utf-8?Q?foo?=",
+       HttpContentDisposition::HAS_FILENAME |
+           HttpContentDisposition::HAS_NON_ASCII_STRINGS |
+           HttpContentDisposition::HAS_PERCENT_ENCODED_STRINGS |
+           HttpContentDisposition::HAS_RFC2047_ENCODED_STRINGS},
 
-    // If 'filename' attribute is invalid, should set any flags based on it.
-    { "filename=foo\xcc\x88 foo%cc%88 =?utf-8?Q?foo?",
-      HttpContentDisposition::INVALID },
-    { "filename=foo\xcc\x88 foo%cc%88 =?utf-8?Q?foo?; name=x",
-      HttpContentDisposition::INVALID },
+      // If 'filename' attribute is invalid, should set any flags based on it.
+      {"filename=foo\xcc\x88 foo%cc%88 =?utf-8?Q?foo?",
+       HttpContentDisposition::INVALID},
+      {"filename=foo\xcc\x88 foo%cc%88 =?utf-8?Q?foo?; name=x",
+       HttpContentDisposition::INVALID},
   };
 
   for (size_t i = 0; i < arraysize(kTestCases); ++i) {

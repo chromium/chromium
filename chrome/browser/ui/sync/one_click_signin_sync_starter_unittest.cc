@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/sync/one_click_signin_sync_starter.h"
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -65,7 +66,8 @@ class OneClickSigninSyncStarterTest : public ChromeRenderViewHostTestHarness {
     TestingProfile::Builder builder;
     builder.AddTestingFactory(
         SigninManagerFactory::GetInstance(),
-        &OneClickSigninSyncStarterTest::BuildSigninManager);
+        base::BindRepeating(
+            &OneClickSigninSyncStarterTest::BuildSigninManager));
     return builder.Build().release();
   }
 

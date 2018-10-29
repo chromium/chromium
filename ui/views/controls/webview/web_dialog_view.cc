@@ -287,12 +287,13 @@ void WebDialogView::SetContentsBounds(WebContents* source,
 // A simplified version of BrowserView::HandleKeyboardEvent().
 // We don't handle global keyboard shortcuts here, but that's fine since
 // they're all browser-specific. (This may change in the future.)
-void WebDialogView::HandleKeyboardEvent(content::WebContents* source,
+bool WebDialogView::HandleKeyboardEvent(content::WebContents* source,
                                         const NativeWebKeyboardEvent& event) {
   if (!event.os_event)
-    return;
+    return false;
 
   GetWidget()->native_widget_private()->RepostNativeEvent(event.os_event);
+  return true;
 }
 
 void WebDialogView::CloseContents(WebContents* source) {

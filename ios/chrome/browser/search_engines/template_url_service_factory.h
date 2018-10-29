@@ -32,7 +32,7 @@ class TemplateURLServiceFactory : public BrowserStateKeyedServiceFactory {
 
   // Returns the default factory used to build TemplateURLServices. Can be
   // registered with SetTestingFactory to use real instances during testing.
-  static TestingFactoryFunction GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend struct base::DefaultSingletonTraits<TemplateURLServiceFactory>;

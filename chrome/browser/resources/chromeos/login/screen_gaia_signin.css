@@ -70,6 +70,7 @@
   height: 44px;
   justify-content: center;
   left: 0;
+  min-height: 0;
   position: absolute;
   right: 0;
   top: 0;
@@ -136,10 +137,18 @@
   padding-top: 44px;
 }
 
-#signin-frame-dialog #navigation-buttons[disabled] {
-  background: rgba(0, 0, 0, 0.6);
+#signin-frame-dialog #buttons-container {
+  padding: 0 calc(32px - 4px); /* real width - button margin */
 }
 
-#navigation-buttons {
+#signin-frame-dialog[full-screen-dialog] #buttons-container {
+  padding: 0 calc(64px - 4px); /* real width - button margin */
+}
+
+#gaia-screen-navigation-buttons {
   height: 100%;
+}
+
+#gaia-screen-buttons-overlay {
+  background: rgba(0, 0, 0, 0.6);
 }

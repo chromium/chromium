@@ -16,6 +16,7 @@ critical-request-chains
 dom-size
 efficient-animated-content
 estimated-input-latency
+final-screenshot
 first-contentful-paint
 first-cpu-idle
 first-meaningful-paint

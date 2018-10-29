@@ -90,8 +90,7 @@ class WebAXSparseAttributeClientAdapter : public AXSparseAttributeClient {
   void AddObjectVectorAttribute(AXObjectVectorAttribute attribute,
                                 HeapVector<Member<AXObject>>& value) override {
     WebVector<WebAXObject> result(value.size());
-    for (size_t i = 0; i < value.size(); i++)
-      result[i] = WebAXObject(value[i]);
+    std::copy(value.begin(), value.end(), result.begin());
     attribute_map_.AddObjectVectorAttribute(
         static_cast<WebAXObjectVectorAttribute>(attribute), result);
   }
@@ -156,11 +155,11 @@ bool WebAXObject::UpdateLayoutAndCheckValidity() {
   return !IsDetached();
 }
 
-WebAXDefaultActionVerb WebAXObject::Action() const {
+ax::mojom::DefaultActionVerb WebAXObject::Action() const {
   if (IsDetached())
-    return WebAXDefaultActionVerb::kNone;
+    return ax::mojom::DefaultActionVerb::kNone;
 
-  return static_cast<WebAXDefaultActionVerb>(private_->Action());
+  return private_->Action();
 }
 
 bool WebAXObject::CanPress() const {
@@ -239,18 +238,18 @@ WebString WebAXObject::AriaAutoComplete() const {
   return private_->AriaAutoComplete();
 }
 
-WebAXAriaCurrentState WebAXObject::AriaCurrentState() const {
+ax::mojom::AriaCurrentState WebAXObject::AriaCurrentState() const {
   if (IsDetached())
-    return kWebAXAriaCurrentStateUndefined;
+    return ax::mojom::AriaCurrentState::kNone;
 
-  return static_cast<WebAXAriaCurrentState>(private_->GetAriaCurrentState());
+  return private_->GetAriaCurrentState();
 }
 
-WebAXCheckedState WebAXObject::CheckedState() const {
+ax::mojom::CheckedState WebAXObject::CheckedState() const {
   if (IsDetached())
-    return kWebAXCheckedUndefined;
+    return ax::mojom::CheckedState::kNone;
 
-  return static_cast<WebAXCheckedState>(private_->CheckedState());
+  return private_->CheckedState();
 }
 
 bool WebAXObject::IsClickable() const {
@@ -421,11 +420,11 @@ WebAXObject WebAXObject::AriaActiveDescendant() const {
   return WebAXObject(private_->ActiveDescendant());
 }
 
-WebAXHasPopup WebAXObject::HasPopup() const {
+ax::mojom::HasPopup WebAXObject::HasPopup() const {
   if (IsDetached())
-    return kWebAXHasPopupFalse;
+    return ax::mojom::HasPopup::kFalse;
 
-  return static_cast<WebAXHasPopup>(private_->HasPopup());
+  return private_->HasPopup();
 }
 
 bool WebAXObject::IsEditableRoot() const {
@@ -574,11 +573,11 @@ WebString WebAXObject::ImageDataUrl(const WebSize& max_size) const {
   return private_->ImageDataUrl(max_size);
 }
 
-WebAXInvalidState WebAXObject::InvalidState() const {
+ax::mojom::InvalidState WebAXObject::InvalidState() const {
   if (IsDetached())
-    return kWebAXInvalidStateUndefined;
+    return ax::mojom::InvalidState::kNone;
 
-  return static_cast<WebAXInvalidState>(private_->GetInvalidState());
+  return private_->GetInvalidState();
 }
 
 // Only used when invalidState() returns WebAXInvalidStateOther.
@@ -718,8 +717,8 @@ WebVector<WebAXObject> WebAXObject::RadioButtonsInGroup() const {
 
   AXObject::AXObjectVector radio_buttons = private_->RadioButtonsInGroup();
   WebVector<WebAXObject> web_radio_buttons(radio_buttons.size());
-  for (size_t i = 0; i < radio_buttons.size(); ++i)
-    web_radio_buttons[i] = WebAXObject(radio_buttons[i]);
+  std::copy(radio_buttons.begin(), radio_buttons.end(),
+            web_radio_buttons.begin());
   return web_radio_buttons;
 }
 
@@ -730,30 +729,41 @@ ax::mojom::Role WebAXObject::Role() const {
   return private_->RoleValue();
 }
 
+static ax::mojom::TextAffinity ToAXAffinity(TextAffinity affinity) {
+  switch (affinity) {
+    case TextAffinity::kUpstream:
+      return ax::mojom::TextAffinity::kUpstream;
+    case TextAffinity::kDownstream:
+      return ax::mojom::TextAffinity::kDownstream;
+    default:
+      NOTREACHED();
+      return ax::mojom::TextAffinity::kDownstream;
+  }
+}
+
 void WebAXObject::Selection(WebAXObject& anchor_object,
                             int& anchor_offset,
-                            WebAXTextAffinity& anchor_affinity,
+                            ax::mojom::TextAffinity& anchor_affinity,
                             WebAXObject& focus_object,
                             int& focus_offset,
-                            WebAXTextAffinity& focus_affinity) const {
+                            ax::mojom::TextAffinity& focus_affinity) const {
   if (IsDetached()) {
     anchor_object = WebAXObject();
     anchor_offset = -1;
-    anchor_affinity = kWebAXTextAffinityDownstream;
+    anchor_affinity = ax::mojom::TextAffinity::kDownstream;
     focus_object = WebAXObject();
     focus_offset = -1;
-    focus_affinity = kWebAXTextAffinityDownstream;
+    focus_affinity = ax::mojom::TextAffinity::kDownstream;
     return;
   }
 
   AXObject::AXSelection ax_selection = private_->Selection();
   anchor_object = WebAXObject(ax_selection.anchor_object);
   anchor_offset = ax_selection.anchor_offset;
-  anchor_affinity =
-      static_cast<WebAXTextAffinity>(ax_selection.anchor_affinity);
+  anchor_affinity = ToAXAffinity(ax_selection.anchor_affinity);
   focus_object = WebAXObject(ax_selection.focus_object);
   focus_offset = ax_selection.focus_offset;
-  focus_affinity = static_cast<WebAXTextAffinity>(ax_selection.focus_affinity);
+  focus_affinity = ToAXAffinity(ax_selection.focus_affinity);
   return;
 }
 
@@ -866,18 +876,18 @@ WebString WebAXObject::StringValue() const {
   return private_->StringValue();
 }
 
-WebAXTextDirection WebAXObject::GetTextDirection() const {
+ax::mojom::TextDirection WebAXObject::GetTextDirection() const {
   if (IsDetached())
-    return kWebAXTextDirectionLR;
+    return ax::mojom::TextDirection::kLtr;
 
-  return static_cast<WebAXTextDirection>(private_->GetTextDirection());
+  return private_->GetTextDirection();
 }
 
-WebAXTextPosition WebAXObject::GetTextPosition() const {
+ax::mojom::TextPosition WebAXObject::GetTextPosition() const {
   if (IsDetached())
-    return kWebAXTextPositionNone;
+    return ax::mojom::TextPosition::kNone;
 
-  return static_cast<WebAXTextPosition>(private_->GetTextPosition());
+  return private_->GetTextPosition();
 }
 
 WebAXTextStyle WebAXObject::TextStyle() const {
@@ -894,20 +904,19 @@ WebURL WebAXObject::Url() const {
   return private_->Url();
 }
 
-WebString WebAXObject::GetName(WebAXNameFrom& out_name_from,
+WebString WebAXObject::GetName(ax::mojom::NameFrom& out_name_from,
                                WebVector<WebAXObject>& out_name_objects) const {
   if (IsDetached())
     return WebString();
 
-  AXNameFrom name_from = kAXNameFromUninitialized;
+  ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kUninitialized;
   HeapVector<Member<AXObject>> name_objects;
   WebString result = private_->GetName(name_from, &name_objects);
-  out_name_from = static_cast<WebAXNameFrom>(name_from);
+  out_name_from = name_from;
 
-  WebVector<WebAXObject> web_name_objects(name_objects.size());
-  for (size_t i = 0; i < name_objects.size(); i++)
-    web_name_objects[i] = WebAXObject(name_objects[i]);
-  out_name_objects.Swap(web_name_objects);
+  out_name_objects.reserve(name_objects.size());
+  out_name_objects.resize(name_objects.size());
+  std::copy(name_objects.begin(), name_objects.end(), out_name_objects.begin());
 
   return result;
 }
@@ -916,37 +925,38 @@ WebString WebAXObject::GetName() const {
   if (IsDetached())
     return WebString();
 
-  AXNameFrom name_from;
+  ax::mojom::NameFrom name_from;
   HeapVector<Member<AXObject>> name_objects;
   return private_->GetName(name_from, &name_objects);
 }
 
 WebString WebAXObject::Description(
-    WebAXNameFrom name_from,
-    WebAXDescriptionFrom& out_description_from,
+    ax::mojom::NameFrom name_from,
+    ax::mojom::DescriptionFrom& out_description_from,
     WebVector<WebAXObject>& out_description_objects) const {
   if (IsDetached())
     return WebString();
 
-  AXDescriptionFrom description_from = kAXDescriptionFromUninitialized;
+  ax::mojom::DescriptionFrom description_from =
+      ax::mojom::DescriptionFrom::kUninitialized;
   HeapVector<Member<AXObject>> description_objects;
-  String result = private_->Description(static_cast<AXNameFrom>(name_from),
-                                        description_from, &description_objects);
-  out_description_from = static_cast<WebAXDescriptionFrom>(description_from);
+  String result =
+      private_->Description(name_from, description_from, &description_objects);
+  out_description_from = description_from;
 
-  WebVector<WebAXObject> web_description_objects(description_objects.size());
-  for (size_t i = 0; i < description_objects.size(); i++)
-    web_description_objects[i] = WebAXObject(description_objects[i]);
-  out_description_objects.Swap(web_description_objects);
+  out_description_objects.reserve(description_objects.size());
+  out_description_objects.resize(description_objects.size());
+  std::copy(description_objects.begin(), description_objects.end(),
+            out_description_objects.begin());
 
   return result;
 }
 
-WebString WebAXObject::Placeholder(WebAXNameFrom name_from) const {
+WebString WebAXObject::Placeholder(ax::mojom::NameFrom name_from) const {
   if (IsDetached())
     return WebString();
 
-  return private_->Placeholder(static_cast<AXNameFrom>(name_from));
+  return private_->Placeholder(name_from);
 }
 
 bool WebAXObject::SupportsRangeValue() const {
@@ -1064,13 +1074,7 @@ bool WebAXObject::LineBreaks(WebVector<int>& result) const {
 
   Vector<int> line_breaks_vector;
   private_->LineBreaks(line_breaks_vector);
-
-  size_t vector_size = line_breaks_vector.size();
-  WebVector<int> line_breaks_web_vector(vector_size);
-  for (size_t i = 0; i < vector_size; i++)
-    line_breaks_web_vector[i] = line_breaks_vector[i];
-  result.Swap(line_breaks_web_vector);
-
+  result = line_breaks_vector;
   return true;
 }
 
@@ -1157,14 +1161,9 @@ void WebAXObject::RowHeaders(
 
   AXObject::AXObjectVector headers;
   private_->RowHeaders(headers);
-
-  size_t header_count = headers.size();
-  WebVector<WebAXObject> result(header_count);
-
-  for (size_t i = 0; i < header_count; i++)
-    result[i] = WebAXObject(headers[i]);
-
-  row_header_elements.Swap(result);
+  row_header_elements.reserve(headers.size());
+  row_header_elements.resize(headers.size());
+  std::copy(headers.begin(), headers.end(), row_header_elements.begin());
 }
 
 unsigned WebAXObject::ColumnIndex() const {
@@ -1197,14 +1196,9 @@ void WebAXObject::ColumnHeaders(
 
   AXObject::AXObjectVector headers;
   private_->ColumnHeaders(headers);
-
-  size_t header_count = headers.size();
-  WebVector<WebAXObject> result(header_count);
-
-  for (size_t i = 0; i < header_count; i++)
-    result[i] = WebAXObject(headers[i]);
-
-  column_header_elements.Swap(result);
+  column_header_elements.reserve(headers.size());
+  column_header_elements.resize(headers.size());
+  std::copy(headers.begin(), headers.end(), column_header_elements.begin());
 }
 
 unsigned WebAXObject::CellColumnIndex() const {
@@ -1235,11 +1229,11 @@ unsigned WebAXObject::CellRowSpan() const {
   return private_->IsTableCellLikeRole() ? private_->RowSpan() : 0;
 }
 
-WebAXSortDirection WebAXObject::SortDirection() const {
+ax::mojom::SortDirection WebAXObject::SortDirection() const {
   if (IsDetached())
-    return kWebAXSortDirectionUndefined;
+    return ax::mojom::SortDirection::kNone;
 
-  return static_cast<WebAXSortDirection>(private_->GetSortDirection());
+  return private_->GetSortDirection();
 }
 
 void WebAXObject::LoadInlineTextBoxes() const {
@@ -1263,7 +1257,25 @@ WebAXObject WebAXObject::PreviousOnLine() const {
   return WebAXObject(private_.Get()->PreviousOnLine());
 }
 
-void WebAXObject::Markers(WebVector<WebAXMarkerType>& types,
+static ax::mojom::MarkerType ToAXMarkerType(
+    DocumentMarker::MarkerType marker_type) {
+  switch (marker_type) {
+    case DocumentMarker::kSpelling:
+      return ax::mojom::MarkerType::kSpelling;
+    case DocumentMarker::kGrammar:
+      return ax::mojom::MarkerType::kGrammar;
+    case DocumentMarker::kTextMatch:
+      return ax::mojom::MarkerType::kTextMatch;
+    case DocumentMarker::kActiveSuggestion:
+      return ax::mojom::MarkerType::kActiveSuggestion;
+    case DocumentMarker::kSuggestion:
+      return ax::mojom::MarkerType::kSuggestion;
+    default:
+      return ax::mojom::MarkerType::kNone;
+  }
+}
+
+void WebAXObject::Markers(WebVector<ax::mojom::MarkerType>& types,
                           WebVector<int>& starts,
                           WebVector<int>& ends) const {
   if (IsDetached())
@@ -1274,11 +1286,11 @@ void WebAXObject::Markers(WebVector<WebAXMarkerType>& types,
   private_->Markers(marker_types, marker_ranges);
   DCHECK_EQ(marker_types.size(), marker_ranges.size());
 
-  WebVector<WebAXMarkerType> web_marker_types(marker_types.size());
+  WebVector<ax::mojom::MarkerType> web_marker_types(marker_types.size());
   WebVector<int> start_offsets(marker_ranges.size());
   WebVector<int> end_offsets(marker_ranges.size());
-  for (size_t i = 0; i < marker_types.size(); ++i) {
-    web_marker_types[i] = static_cast<WebAXMarkerType>(marker_types[i]);
+  for (wtf_size_t i = 0; i < marker_types.size(); ++i) {
+    web_marker_types[i] = ToAXMarkerType(marker_types[i]);
     DCHECK(marker_ranges[i].IsValid());
     DCHECK_EQ(marker_ranges[i].Start().ContainerObject(),
               marker_ranges[i].End().ContainerObject());
@@ -1297,12 +1309,7 @@ void WebAXObject::CharacterOffsets(WebVector<int>& offsets) const {
 
   Vector<int> offsets_vector;
   private_->TextCharacterOffsets(offsets_vector);
-
-  size_t vector_size = offsets_vector.size();
-  WebVector<int> offsets_web_vector(vector_size);
-  for (size_t i = 0; i < vector_size; i++)
-    offsets_web_vector[i] = offsets_vector[i];
-  offsets.Swap(offsets_web_vector);
+  offsets = offsets_vector;
 }
 
 void WebAXObject::GetWordBoundaries(WebVector<int>& starts,
@@ -1315,7 +1322,7 @@ void WebAXObject::GetWordBoundaries(WebVector<int>& starts,
 
   WebVector<int> word_start_offsets(word_boundaries.size());
   WebVector<int> word_end_offsets(word_boundaries.size());
-  for (size_t i = 0; i < word_boundaries.size(); ++i) {
+  for (wtf_size_t i = 0; i < word_boundaries.size(); ++i) {
     DCHECK(word_boundaries[i].IsValid());
     DCHECK_EQ(word_boundaries[i].Start().ContainerObject(),
               word_boundaries[i].End().ContainerObject());

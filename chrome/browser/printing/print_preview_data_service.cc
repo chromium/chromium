@@ -55,7 +55,7 @@ class PrintPreviewDataStore {
     if (IsInvalidIndex(index))
       return;
 
-    PreviewPageDataMap::const_iterator it = page_data_map_.find(index);
+    auto it = page_data_map_.find(index);
     if (it != page_data_map_.end())
       *data = it->second.get();
   }
@@ -108,7 +108,7 @@ void PrintPreviewDataService::GetDataEntry(
     int index,
     scoped_refptr<base::RefCountedMemory>* data_bytes) const {
   *data_bytes = nullptr;
-  PreviewDataStoreMap::const_iterator it = data_store_map_.find(preview_ui_id);
+  auto it = data_store_map_.find(preview_ui_id);
   if (it != data_store_map_.end())
     it->second->GetPreviewDataForIndex(index, data_bytes);
 }

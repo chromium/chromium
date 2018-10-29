@@ -290,9 +290,9 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
 
   // WorkerGlobalScope::close() in Worker onmessage handler should prevent
   // the next message from dispatching.
-  if (GetExecutionContext()->IsWorkerGlobalScope() &&
-      ToWorkerGlobalScope(GetExecutionContext())->IsClosing()) {
-    return true;
+  if (auto* scope = DynamicTo<WorkerGlobalScope>(GetExecutionContext())) {
+    if (scope->IsClosing())
+      return true;
   }
 
   Event* evt;

@@ -15,7 +15,7 @@ namespace blink {
 
 namespace blink {
 
-CSSTokenizer::CSSTokenizer(const String& string, size_t offset)
+CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
     : input_(string) {
   // According to the spec, we should perform preprocessing here.
   // See: https://drafts.csswg.org/css-syntax/#input-preprocessing
@@ -63,7 +63,7 @@ CSSParserToken CSSTokenizer::TokenizeSingleWithComments() {
   return NextToken();
 }
 
-unsigned CSSTokenizer::TokenCount() {
+wtf_size_t CSSTokenizer::TokenCount() {
   return token_count_;
 }
 

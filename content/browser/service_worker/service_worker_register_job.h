@@ -150,11 +150,12 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   std::unique_ptr<ServiceWorkerUpdateChecker> update_checker_;
 
   RegistrationJobType job_type_;
-  const GURL pattern_;
+  const GURL scope_;
   GURL script_url_;
   // "A job has a worker type ("classic" or "module")."
   // https://w3c.github.io/ServiceWorker/#dfn-job-worker-type
-  const blink::mojom::ScriptType worker_script_type_;
+  blink::mojom::ScriptType worker_script_type_ =
+      blink::mojom::ScriptType::kClassic;
   const blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   std::vector<RegistrationCallback> callbacks_;
   Phase phase_;

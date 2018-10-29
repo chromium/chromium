@@ -127,6 +127,7 @@ class CORE_EXPORT ScriptLoader final
   void FetchClassicScript(const KURL&,
                           Document&,
                           const ScriptFetchOptions&,
+                          CrossOriginAttributeValue,
                           const WTF::TextEncoding&);
   // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-module-script-tree
   void FetchModuleScriptTree(const KURL&,

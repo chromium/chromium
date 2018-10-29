@@ -1,6 +1,4 @@
 Checkboxes and radio boxes are replaced elements, so they should avoid floats.
 
-
 PASS
-
 PASS

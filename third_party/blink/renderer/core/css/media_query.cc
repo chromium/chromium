@@ -56,13 +56,13 @@ String MediaQuery::Serialize() const {
     return result.ToString();
   }
 
-  if (media_type_ != MediaTypeNames::all || restrictor_ != kNone) {
+  if (media_type_ != media_type_names::kAll || restrictor_ != kNone) {
     result.Append(media_type_);
     result.Append(" and ");
   }
 
   result.Append(expressions_.at(0).Serialize());
-  for (size_t i = 1; i < expressions_.size(); ++i) {
+  for (wtf_size_t i = 1; i < expressions_.size(); ++i) {
     result.Append(" and ");
     result.Append(expressions_.at(i).Serialize());
   }
@@ -74,7 +74,7 @@ static bool ExpressionCompare(const MediaQueryExp& a, const MediaQueryExp& b) {
 }
 
 std::unique_ptr<MediaQuery> MediaQuery::CreateNotAll() {
-  return std::make_unique<MediaQuery>(MediaQuery::kNot, MediaTypeNames::all,
+  return std::make_unique<MediaQuery>(MediaQuery::kNot, media_type_names::kAll,
                                       ExpressionHeapVector());
 }
 

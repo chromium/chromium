@@ -29,7 +29,7 @@ var thisOrigin = location.protocol + "//" + location.host;
 
 function injectIframeTest() {
     if (window.testRunner)
-        testRunner.dumpChildFramesAsText();
+        testRunner.dumpChildFrames();
     var which = window.location.href.match(/(\d\d).html/)[1];
     var frame = document.createElement('iframe');
     frame.src = "http://localhost:8000/xmlhttprequest/resources/origin-exact-matching-iframe.html?" + which;

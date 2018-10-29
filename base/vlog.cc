@@ -105,12 +105,11 @@ base::StringPiece GetModule(const base::StringPiece& file) {
 int VlogInfo::GetVlogLevel(const base::StringPiece& file) const {
   if (!vmodule_levels_.empty()) {
     base::StringPiece module(GetModule(file));
-    for (std::vector<VmodulePattern>::const_iterator it =
-             vmodule_levels_.begin(); it != vmodule_levels_.end(); ++it) {
+    for (const auto& it : vmodule_levels_) {
       base::StringPiece target(
-          (it->match_target == VmodulePattern::MATCH_FILE) ? file : module);
-      if (MatchVlogPattern(target, it->pattern))
-        return it->vlog_level;
+          (it.match_target == VmodulePattern::MATCH_FILE) ? file : module);
+      if (MatchVlogPattern(target, it.pattern))
+        return it.vlog_level;
     }
   }
   return GetMaxVlogLevel();

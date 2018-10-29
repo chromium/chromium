@@ -93,6 +93,15 @@ bool GetReactivationBrand(std::string* brand) {
 
 #endif
 
+bool GetRlzBrand(std::string* brand) {
+#if defined(OS_CHROMEOS)
+  brand->assign(google_brand::chromeos::GetRlzBrand());
+  return true;
+#else
+  return GetBrand(brand);
+#endif
+}
+
 bool IsOrganic(const std::string& brand) {
 #if defined(OS_MACOSX)
   if (brand.empty()) {

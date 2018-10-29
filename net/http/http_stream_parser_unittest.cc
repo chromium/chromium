@@ -1435,6 +1435,31 @@ TEST(HttpStreamParser, Http09PortTests) {
   }
 }
 
+TEST(HttpStreamParser, NullFails) {
+  const char kTestHeaders[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Foo: Bar\r\n"
+      "Content-Length: 4\r\n\r\n";
+
+  // Try inserting a null at each position in kTestHeaders. Every location
+  // should result in an error.
+  //
+  // Need to start at 4 because HttpStreamParser will treat the response as
+  // HTTP/0.9 if it doesn't see "HTTP", and need to end at -1 because "\r\n\r"
+  // is currently treated as a valid end of header marker.
+  for (size_t i = 4; i < base::size(kTestHeaders) - 1; ++i) {
+    std::string read_data(kTestHeaders);
+    read_data.insert(i, 1, '\0');
+    read_data.append("body");
+    SimpleGetRunner get_runner;
+    get_runner.set_url(GURL("http://foo.test/"));
+    get_runner.AddRead(read_data);
+    get_runner.SetupParserAndSendRequest();
+
+    get_runner.ReadHeadersExpectingError(ERR_INVALID_HTTP_RESPONSE);
+  }
+}
+
 // Make sure that Shoutcast is recognized when receiving one byte at a time.
 TEST(HttpStreamParser, ShoutcastSingleByteReads) {
   SimpleGetRunner get_runner;

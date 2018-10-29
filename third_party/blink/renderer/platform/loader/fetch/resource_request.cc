@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -49,7 +48,6 @@ ResourceRequest::ResourceRequest(const String& url_string)
 ResourceRequest::ResourceRequest(const KURL& url)
     : url_(url),
       timeout_interval_(default_timeout_interval_),
-      requestor_origin_(nullptr),
       http_method_(HTTPNames::GET),
       allow_stored_credentials_(true),
       report_upload_progress_(false),
@@ -62,13 +60,14 @@ ResourceRequest::ResourceRequest(const KURL& url)
       allow_stale_response_(false),
       cache_mode_(mojom::FetchCacheMode::kDefault),
       skip_service_worker_(false),
+      download_to_cache_only_(false),
       priority_(ResourceLoadPriority::kLowest),
       intra_priority_value_(0),
       requestor_id_(0),
       plugin_child_id_(-1),
       app_cache_host_id_(0),
       previews_state_(WebURLRequest::kPreviewsUnspecified),
-      request_context_(WebURLRequest::kRequestContextUnspecified),
+      request_context_(mojom::RequestContextType::UNSPECIFIED),
       frame_type_(network::mojom::RequestContextFrameType::kNone),
       fetch_request_mode_(network::mojom::FetchRequestMode::kNoCORS),
       fetch_importance_mode_(mojom::FetchImportanceMode::kImportanceAuto),
@@ -98,6 +97,7 @@ std::unique_ptr<ResourceRequest> ResourceRequest::CreateRedirectRequest(
     bool skip_service_worker) const {
   std::unique_ptr<ResourceRequest> request =
       std::make_unique<ResourceRequest>(new_url);
+  request->SetRequestorOrigin(RequestorOrigin());
   request->SetHTTPMethod(new_method);
   request->SetSiteForCookies(new_site_for_cookies);
   String referrer =
@@ -128,6 +128,8 @@ std::unique_ptr<ResourceRequest> ResourceRequest::CreateRedirectRequest(
     request->SetIsAdResource();
   request->SetInitiatorCSP(GetInitiatorCSP());
   request->SetUpgradeIfInsecure(UpgradeIfInsecure());
+  request->SetIsAutomaticUpgrade(IsAutomaticUpgrade());
+  request->SetRequestedWith(GetRequestedWith());
 
   return request;
 }
@@ -175,15 +177,6 @@ const KURL& ResourceRequest::SiteForCookies() const {
 
 void ResourceRequest::SetSiteForCookies(const KURL& site_for_cookies) {
   site_for_cookies_ = site_for_cookies;
-}
-
-scoped_refptr<const SecurityOrigin> ResourceRequest::RequestorOrigin() const {
-  return requestor_origin_;
-}
-
-void ResourceRequest::SetRequestorOrigin(
-    scoped_refptr<const SecurityOrigin> requestor_origin) {
-  requestor_origin_ = std::move(requestor_origin);
 }
 
 const AtomicString& ResourceRequest::HttpMethod() const {
@@ -315,7 +308,7 @@ void ResourceRequest::SetExternalRequestStateFromRequestorAddressSpace(
   }
 
   mojom::IPAddressSpace target_space = mojom::IPAddressSpace::kPublic;
-  if (NetworkUtils::IsReservedIPAddress(url_.Host()))
+  if (network_utils::IsReservedIPAddress(url_.Host()))
     target_space = mojom::IPAddressSpace::kPrivate;
   if (SecurityOrigin::Create(url_)->IsLocalhost())
     target_space = mojom::IPAddressSpace::kLocal;

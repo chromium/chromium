@@ -29,6 +29,10 @@ class CHROMEOS_EXPORT FakeSeneschalClient : public SeneschalClient {
     share_path_response_ = share_path_response;
   }
 
+  const vm_tools::seneschal::SharePathRequest& last_request() const {
+    return last_request_;
+  }
+
  protected:
   void Init(dbus::Bus* bus) override {}
 
@@ -37,6 +41,7 @@ class CHROMEOS_EXPORT FakeSeneschalClient : public SeneschalClient {
 
   bool share_path_called_ = false;
 
+  vm_tools::seneschal::SharePathRequest last_request_;
   vm_tools::seneschal::SharePathResponse share_path_response_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeSeneschalClient);

@@ -70,8 +70,8 @@ void SystemWebDialogDelegate::ShowSystemDialog(bool is_minimal_style) {
   int container_id = GetDialogModalType() == ui::MODAL_TYPE_NONE
                          ? ash::kShellWindowId_AlwaysOnTopContainer
                          : ash::kShellWindowId_LockSystemModalContainer;
-  chrome::ShowWebDialogInContainer(container_id, browser_context, this,
-                                   is_minimal_style);
+  dialog_window_ = chrome::ShowWebDialogInContainer(
+      container_id, browser_context, this, is_minimal_style);
 }
 
 }  // namespace chromeos

@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_metadata.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -310,6 +311,25 @@ void CreditCard::SetServerStatus(ServerStatus status) {
 CreditCard::ServerStatus CreditCard::GetServerStatus() const {
   DCHECK_NE(LOCAL_CARD, record_type());
   return server_status_;
+}
+
+AutofillMetadata CreditCard::GetMetadata() const {
+  AutofillMetadata metadata = AutofillDataModel::GetMetadata();
+  metadata.id = (record_type_ == LOCAL_CARD ? guid() : server_id_);
+  metadata.billing_address_id = billing_address_id_;
+  return metadata;
+}
+
+bool CreditCard::SetMetadata(const AutofillMetadata metadata) {
+  // Make sure the ids matches.
+  if (metadata.id != (record_type_ == LOCAL_CARD ? guid() : server_id_))
+    return false;
+
+  if (!AutofillDataModel::SetMetadata(metadata))
+    return false;
+
+  billing_address_id_ = metadata.billing_address_id;
+  return true;
 }
 
 base::string16 CreditCard::GetRawInfo(ServerFieldType type) const {
@@ -796,16 +816,32 @@ base::string16 CreditCard::NetworkOrBankNameAndLastFourDigits() const {
                             : BankNameAndLastFourDigits();
 }
 
-base::string16 CreditCard::AbbreviatedExpirationDateForDisplay() const {
+base::string16
+CreditCard::NetworkOrBankNameLastFourDigitsAndDescriptiveExpiration(
+    const std::string& app_locale) const {
+  return l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME,
+      NetworkOrBankNameAndLastFourDigits(),
+      GetInfo(AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale));
+}
+
+base::string16 CreditCard::DescriptiveExpiration(
+    const std::string& app_locale) const {
+  return l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_CARD_NUMBER,
+      GetInfo(AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale));
+}
+
+base::string16 CreditCard::AbbreviatedExpirationDateForDisplay(
+    bool with_prefix) const {
   base::string16 month = ExpirationMonthAsString();
   base::string16 year = Expiration2DigitYearAsString();
   if (month.empty() || year.empty())
     return base::string16();
 
   return l10n_util::GetStringFUTF16(
-      features::IsAutofillSaveCardDialogUnlabeledExpirationDateEnabled()
-          ? IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR_V2
-          : IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR,
+      with_prefix ? IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR
+                  : IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR_V2,
       month, year);
 }
 

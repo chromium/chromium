@@ -5,7 +5,6 @@
 source_set("ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "app_rating_prompt.h",
     "default_ios_web_view_factory.h",
     "default_ios_web_view_factory.mm",
     "fullscreen_provider.h",

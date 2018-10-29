@@ -74,7 +74,7 @@ public class GoogleServicesManager implements ApplicationStateListener {
             mContext = context.getApplicationContext();
 
             mChromeSigninController = ChromeSigninController.get();
-            mSigninHelper = SigninHelper.get(mContext);
+            mSigninHelper = SigninHelper.get();
 
             // The sign out flow starts by clearing the signed in user in the ChromeSigninController
             // on the Java side, and then performs a sign out on the native side. If there is a
@@ -105,7 +105,7 @@ public class GoogleServicesManager implements ApplicationStateListener {
     public void onMainActivityStart() {
         try {
             TraceEvent.begin("GoogleServicesManager.onMainActivityStart");
-            boolean accountsChanged = SigninHelper.checkAndClearAccountsChangedPref(mContext);
+            boolean accountsChanged = SigninHelper.checkAndClearAccountsChangedPref();
             mSigninHelper.validateAccountSettings(accountsChanged);
         } finally {
             TraceEvent.end("GoogleServicesManager.onMainActivityStart");

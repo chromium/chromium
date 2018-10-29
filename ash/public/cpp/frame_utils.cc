@@ -8,10 +8,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
-#include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/views/view_properties.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/hit_test_utils.h"
@@ -62,59 +59,6 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
 
   // Caption is a safe default.
   return HTCAPTION;
-}
-
-void PaintThemedFrame(gfx::Canvas* canvas,
-                      const gfx::ImageSkia& frame_image,
-                      const gfx::ImageSkia& frame_overlay_image,
-                      SkColor background_color,
-                      const gfx::Rect& bounds,
-                      int image_inset_x,
-                      int image_inset_y,
-                      int alpha) {
-  SkColor opaque_background_color =
-      SkColorSetA(background_color, SK_AlphaOPAQUE);
-
-  // When no images are used, just draw a color, with the animation |alpha|
-  // applied.
-  if (frame_image.isNull() && frame_overlay_image.isNull()) {
-    // We use kPlus blending mode so that between the active and inactive
-    // background colors, the result is 255 alpha (i.e. opaque).
-    canvas->DrawColor(SkColorSetA(opaque_background_color, alpha),
-                      SkBlendMode::kPlus);
-    return;
-  }
-
-  // This handles the case where blending is required between one or more images
-  // and the background color. In this case we use a SaveLayerWithFlags() call
-  // to draw all 2-3 components into a single layer then apply the alpha to them
-  // together.
-  const bool blending_required =
-      alpha < 0xFF || (!frame_image.isNull() && !frame_overlay_image.isNull());
-  if (blending_required) {
-    cc::PaintFlags flags;
-    // We use kPlus blending mode so that between the active and inactive
-    // background colors, the result is 255 alpha (i.e. opaque).
-    flags.setBlendMode(SkBlendMode::kPlus);
-    flags.setAlpha(alpha);
-    canvas->SaveLayerWithFlags(flags);
-  }
-
-  // Images can be transparent and we expect the background color to be present
-  // behind them. Here the |alpha| will be applied to the background color by
-  // the SaveLayer call, so use |opaque_background_color|.
-  canvas->DrawColor(opaque_background_color);
-  if (!frame_image.isNull()) {
-    canvas->TileImageInt(frame_image, image_inset_x, image_inset_y, 0, 0,
-                         bounds.width(), bounds.height(), 1.0f,
-                         SkShader::kRepeat_TileMode,
-                         SkShader::kMirror_TileMode);
-  }
-  if (!frame_overlay_image.isNull())
-    canvas->DrawImageInt(frame_overlay_image, 0, 0);
-
-  if (blending_required)
-    canvas->Restore();
 }
 
 }  // namespace ash

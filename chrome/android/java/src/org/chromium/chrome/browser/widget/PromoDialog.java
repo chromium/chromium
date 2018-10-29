@@ -84,10 +84,10 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
      * Force the promo dialog to have a fully opaque background hiding any underlying content.
      */
     protected void forceOpaqueBackground() {
-        LayerDrawable background = new LayerDrawable(new Drawable[] {
-                new ColorDrawable(Color.WHITE),
-                new ColorDrawable(ApiCompatibilityUtils.getColor(
-                        getContext().getResources(), R.color.modal_dialog_scrim_color))});
+        LayerDrawable background = ApiCompatibilityUtils.createLayerDrawable(
+                new Drawable[] {new ColorDrawable(Color.WHITE),
+                        new ColorDrawable(ApiCompatibilityUtils.getColor(
+                                getContext().getResources(), R.color.modal_dialog_scrim_color))});
         mScrimView.setBackground(background);
     }
 

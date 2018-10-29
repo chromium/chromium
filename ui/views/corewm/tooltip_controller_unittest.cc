@@ -463,10 +463,8 @@ namespace {
 
 // Returns the index of |window| in its parent's children.
 int IndexInParent(const aura::Window* window) {
-  aura::Window::Windows::const_iterator i =
-      std::find(window->parent()->children().begin(),
-                window->parent()->children().end(),
-                window);
+  auto i = std::find(window->parent()->children().begin(),
+                     window->parent()->children().end(), window);
   return i == window->parent()->children().end() ? -1 :
       static_cast<int>(i - window->parent()->children().begin());
 }
@@ -714,8 +712,10 @@ class TooltipControllerTest3 : public ViewsTestBase {
     auto tooltip = std::make_unique<TestTooltip>();
     test_tooltip_ = tooltip.get();
     controller_ = std::make_unique<TooltipController>(std::move(tooltip));
-    GetRootWindow()->RemovePreTargetHandler(static_cast<TooltipController*>(
-        wm::GetTooltipClient(widget_->GetNativeWindow()->GetRootWindow())));
+    auto* tooltip_controller = static_cast<TooltipController*>(
+        wm::GetTooltipClient(widget_->GetNativeWindow()->GetRootWindow()));
+    if (tooltip_controller)
+      GetRootWindow()->RemovePreTargetHandler(tooltip_controller);
     GetRootWindow()->AddPreTargetHandler(controller_.get());
     helper_.reset(new TooltipControllerTestHelper(controller_.get()));
     SetTooltipClient(GetRootWindow(), controller_.get());

@@ -5,18 +5,22 @@
 #ifndef ASH_SYSTEM_UNIFIED_NOTIFICATION_COUNTER_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_NOTIFICATION_COUNTER_VIEW_H_
 
+#include "ash/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/macros.h"
 
 namespace ash {
 
 // A notification counter view in UnifiedSystemTray button.
-class NotificationCounterView : public TrayItemView {
+class NotificationCounterView : public TrayItemView, public SessionObserver {
  public:
   NotificationCounterView();
   ~NotificationCounterView() override;
 
   void Update();
+
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
  private:
   // The type / number of the icon that is currently set to the image view.
@@ -29,12 +33,15 @@ class NotificationCounterView : public TrayItemView {
 };
 
 // A do-not-distrub icon view in UnifiedSystemTray button.
-class QuietModeView : public TrayItemView {
+class QuietModeView : public TrayItemView, public SessionObserver {
  public:
   QuietModeView();
   ~QuietModeView() override;
 
   void Update();
+
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(QuietModeView);

@@ -144,8 +144,11 @@ require you to set `CHROMIUM_OUTPUT_DIR=out/Default`.
 Build `cast_shell_apk` with Ninja using the command:
 
 ```shell
-$ ninja -C out/Default cast_shell_apk
+$ autoninja -C out/Default cast_shell_apk
 ```
+
+(`autoninja` is a wrapper that automatically provides optimal values for the
+arguments passed to `ninja`.)
 
 ## Installing and Running `cast_shell_apk` on a device
 
@@ -176,7 +179,7 @@ unplugging and reattaching your device.
 ### Build the APK
 
 ```shell
-ninja -C out/Release cast_shell_apk
+autoninja -C out/Release cast_shell_apk
 ```
 
 And deploy it to your Android device:

@@ -1,0 +1,2 @@
+CONSOLE MESSAGE: line 49: background-color for the first target is: rgb(0, 255, 0)
+

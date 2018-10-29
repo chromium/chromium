@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -45,7 +46,17 @@ class ProfileManager : public ::ProfileManagerWithoutInit {
 TestingProfileManager::TestingProfileManager(TestingBrowserProcess* process)
     : called_set_up_(false),
       browser_process_(process),
-      local_state_(process),
+      owned_local_state_(std::make_unique<ScopedTestingLocalState>(process)),
+      profile_manager_(nullptr) {
+  local_state_ = owned_local_state_.get();
+}
+
+TestingProfileManager::TestingProfileManager(
+    TestingBrowserProcess* process,
+    ScopedTestingLocalState* local_state)
+    : called_set_up_(false),
+      browser_process_(process),
+      local_state_(local_state),
       profile_manager_(nullptr) {}
 
 TestingProfileManager::~TestingProfileManager() {
@@ -65,7 +76,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     const base::string16& user_name,
     int avatar_id,
     const std::string& supervised_user_id,
-    const TestingProfile::TestingFactories& factories) {
+    TestingProfile::TestingFactories testing_factories) {
   DCHECK(called_set_up_);
 
   // Create a path for the profile based on the name.
@@ -91,10 +102,9 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   builder.SetSupervisedUserId(supervised_user_id);
   builder.SetProfileName(profile_name);
 
-  for (TestingProfile::TestingFactories::const_iterator it = factories.begin();
-       it != factories.end(); ++it) {
-    builder.AddTestingFactory(it->first, it->second);
-  }
+  for (TestingProfile::TestingFactories::value_type& pair : testing_factories)
+    builder.AddTestingFactory(pair.first, std::move(pair.second));
+  testing_factories.clear();
 
   TestingProfile* profile = builder.Build().release();
   profile_manager_->AddProfile(profile);  // Takes ownership.
@@ -166,7 +176,7 @@ TestingProfile* TestingProfileManager::CreateSystemProfile() {
 void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
   DCHECK(called_set_up_);
 
-  TestingProfilesMap::iterator it = testing_profiles_.find(name);
+  auto it = testing_profiles_.find(name);
   DCHECK(it != testing_profiles_.end());
 
   TestingProfile* profile = it->second;
@@ -182,8 +192,8 @@ void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
 void TestingProfileManager::DeleteAllTestingProfiles() {
   ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
-  for (TestingProfilesMap::iterator it = testing_profiles_.begin();
-       it != testing_profiles_.end(); ++it) {
+  for (auto it = testing_profiles_.begin(); it != testing_profiles_.end();
+       ++it) {
     TestingProfile* profile = it->second;
     storage.RemoveProfile(profile->GetPath());
   }
@@ -194,7 +204,7 @@ void TestingProfileManager::DeleteAllTestingProfiles() {
 void TestingProfileManager::DeleteGuestProfile() {
   DCHECK(called_set_up_);
 
-  TestingProfilesMap::iterator it = testing_profiles_.find(kGuestProfileName);
+  auto it = testing_profiles_.find(kGuestProfileName);
   DCHECK(it != testing_profiles_.end());
 
   profile_manager_->profiles_info_.erase(ProfileManager::GetGuestProfilePath());
@@ -203,7 +213,7 @@ void TestingProfileManager::DeleteGuestProfile() {
 void TestingProfileManager::DeleteSystemProfile() {
   DCHECK(called_set_up_);
 
-  TestingProfilesMap::iterator it = testing_profiles_.find(kSystemProfileName);
+  auto it = testing_profiles_.find(kSystemProfileName);
   DCHECK(it != testing_profiles_.end());
 
   profile_manager_->profiles_info_.erase(

@@ -154,8 +154,7 @@ TEST_F(StructTraitsTest, GpuInfo) {
   const bool in_process_gpu = true;
   const bool passthrough_cmd_decoder = true;
 #if defined(OS_WIN)
-  const bool direct_composition = true;
-  const bool supports_overlays = true;
+  const bool direct_composition_overlays = true;
   const gpu::OverlayCapabilities overlay_capabilities = {
       {OverlayFormat::kBGRA, false}, {OverlayFormat::kNV12, true}};
   const DxDiagNode dx_diagnostics;
@@ -198,8 +197,7 @@ TEST_F(StructTraitsTest, GpuInfo) {
   input.in_process_gpu = in_process_gpu;
   input.passthrough_cmd_decoder = passthrough_cmd_decoder;
 #if defined(OS_WIN)
-  input.direct_composition = direct_composition;
-  input.supports_overlays = supports_overlays;
+  input.direct_composition_overlays = direct_composition_overlays;
   input.overlay_capabilities = overlay_capabilities;
   input.dx_diagnostics = dx_diagnostics;
 #endif
@@ -257,8 +255,7 @@ TEST_F(StructTraitsTest, GpuInfo) {
   EXPECT_EQ(in_process_gpu, output.in_process_gpu);
   EXPECT_EQ(passthrough_cmd_decoder, output.passthrough_cmd_decoder);
 #if defined(OS_WIN)
-  EXPECT_EQ(direct_composition, output.direct_composition);
-  EXPECT_EQ(supports_overlays, output.supports_overlays);
+  EXPECT_EQ(direct_composition_overlays, output.direct_composition_overlays);
   EXPECT_EQ(overlay_capabilities, output.overlay_capabilities);
   EXPECT_EQ(dx_diagnostics.values, output.dx_diagnostics.values);
 #endif

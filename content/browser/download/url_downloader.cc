@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -16,6 +17,7 @@
 #include "components/download/public/common/url_download_request_handle.h"
 #include "content/browser/byte_stream.h"
 #include "content/browser/download/byte_stream_input_stream.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
@@ -188,8 +190,8 @@ void UrlDownloader::OnStart(
   create_info->request_handle.reset(new download::UrlDownloadRequestHandle(
       weak_ptr_factory_.GetWeakPtr(), base::SequencedTaskRunnerHandle::Get()));
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &download::UrlDownloadHandler::Delegate::OnUrlDownloadStarted,
           delegate_, std::move(create_info),
@@ -214,8 +216,8 @@ void UrlDownloader::CancelRequest() {
 }
 
 void UrlDownloader::Destroy() {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &download::UrlDownloadHandler::Delegate::OnUrlDownloadStopped,
           delegate_, this));

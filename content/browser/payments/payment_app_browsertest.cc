@@ -167,8 +167,7 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
             shell()->web_contents()->GetBrowserContext()))
         ->ClearData(StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS,
                     StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-                    StoragePartition::OriginMatcherFunction(), base::Time(),
-                    base::Time::Max(), run_loop.QuitClosure());
+                    base::Time(), base::Time::Max(), run_loop.QuitClosure());
 
     run_loop.Run();
   }

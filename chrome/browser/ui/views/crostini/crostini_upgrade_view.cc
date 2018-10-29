@@ -29,14 +29,15 @@ constexpr char kCrostiniUpgradeSourceHistogram[] = "Crostini.UpgradeSource";
 
 }  // namespace
 
-void ShowCrostiniUpgradeView(Profile* profile, CrostiniUISurface ui_surface) {
+void crostini::ShowCrostiniUpgradeView(Profile* profile,
+                                       crostini::CrostiniUISurface ui_surface) {
   base::UmaHistogramEnumeration(kCrostiniUpgradeSourceHistogram, ui_surface,
-                                CrostiniUISurface::kCount);
+                                crostini::CrostiniUISurface::kCount);
   return CrostiniUpgradeView::Show(profile);
 }
 
 void CrostiniUpgradeView::Show(Profile* profile) {
-  DCHECK(IsCrostiniUIAllowedForProfile(profile));
+  DCHECK(crostini::IsCrostiniUIAllowedForProfile(profile));
   if (!g_crostini_upgrade_view) {
     g_crostini_upgrade_view = new CrostiniUpgradeView;
     CreateDialogWidget(g_crostini_upgrade_view, nullptr, nullptr);

@@ -20,9 +20,9 @@ const char kTokenHandleStatusPref[] = "TokenHandleStatus";
 
 const char kHandleStatusValid[] = "valid";
 const char kHandleStatusInvalid[] = "invalid";
-const char* kDefaultHandleStatus = kHandleStatusValid;
+const char* const kDefaultHandleStatus = kHandleStatusValid;
 
-static const int kMaxRetries = 3;
+constexpr int kMaxRetries = 3;
 
 }  // namespace
 

@@ -20,6 +20,8 @@ function Runner(outerContainerId, opt_config) {
   this.outerContainerEl = document.querySelector(outerContainerId);
   this.containerEl = null;
   this.snackbarEl = null;
+  // A div to intercept touch events. Only set while (playing && useTouch).
+  this.touchController = null;
 
   this.config = opt_config || Runner.config;
   // Logical dimensions of the container.
@@ -49,7 +51,6 @@ function Runner(outerContainerId, opt_config) {
   this.inverted = false;
   this.invertTimer = 0;
   this.resizeTimerId_ = null;
-  this.bdayFlashTimer = null;
 
   this.playCount = 0;
 
@@ -105,9 +106,8 @@ Runner.config = {
   ACCELERATION: 0.001,
   BG_CLOUD_SPEED: 0.2,
   BOTTOM_PAD: 10,
-  BOTTOM_PAD_BDAY: 26,
-  BDAY_FLASH_DURATION: 1000,
-  BDAY_Y_POS_ADJUST: 16,
+  // Scroll Y threshold at which the game can be activated.
+  CANVAS_IN_VIEW_OFFSET: -10,
   CLEAR_TIME: 3000,
   CLOUD_FREQUENCY: 0.5,
   GAMEOVER_CLEAR_TIME: 750,
@@ -164,7 +164,6 @@ Runner.classes = {
  */
 Runner.spriteDefinition = {
   LDPI: {
-    BALLOON: {x: 417, y: 29},
     CACTUS_LARGE: {x: 332, y: 2},
     CACTUS_SMALL: {x: 228, y: 2},
     CLOUD: {x: 86, y: 2},
@@ -174,12 +173,9 @@ Runner.spriteDefinition = {
     RESTART: {x: 2, y: 2},
     TEXT_SPRITE: {x: 655, y: 2},
     TREX: {x: 848, y: 2},
-    TREX_BDAY: {x: 0, y: 0},
-    SNACK: {x: 384, y: 22},
     STAR: {x: 645, y: 2}
   },
   HDPI: {
-    BALLOON: {x: 834, y: 58},
     CACTUS_LARGE: {x: 652, y: 2},
     CACTUS_SMALL: {x: 446, y: 2},
     CLOUD: {x: 166, y: 2},
@@ -189,8 +185,6 @@ Runner.spriteDefinition = {
     RESTART: {x: 2, y: 2},
     TEXT_SPRITE: {x: 1294, y: 2},
     TREX: {x: 1678, y: 2},
-    TREX_BDAY: {x: 0, y: 0},
-    SNACK: {x: 768, y: 44},
     STAR: {x: 1276, y: 2}
   }
 };
@@ -297,13 +291,9 @@ Runner.prototype = {
   loadImages: function() {
     if (IS_HIDPI) {
       Runner.imageSprite = document.getElementById('offline-resources-2x');
-      Runner.bdayImageSprite =
-          document.getElementById('offline-resources-bday-2x');
       this.spriteDef = Runner.spriteDefinition.HDPI;
     } else {
       Runner.imageSprite = document.getElementById('offline-resources-1x');
-      Runner.bdayImageSprite =
-          document.getElementById('offline-resources-bday-1x');
       this.spriteDef = Runner.spriteDefinition.LDPI;
     }
 
@@ -408,6 +398,7 @@ Runner.prototype = {
     this.touchController.className = Runner.classes.TOUCH_CONTROLLER;
     this.touchController.addEventListener(Runner.events.TOUCHSTART, this);
     this.touchController.addEventListener(Runner.events.TOUCHEND, this);
+    this.outerContainerEl.appendChild(this.touchController);
   },
 
   /**
@@ -491,10 +482,7 @@ Runner.prototype = {
       this.containerEl.style.webkitAnimation = 'intro .4s ease-out 1 both';
       this.containerEl.style.width = this.dimensions.WIDTH + 'px';
 
-      if (this.touchController) {
-        this.outerContainerEl.appendChild(this.touchController);
-      }
-      this.playing = true;
+      this.setPlayStatus(true);
       this.activated = true;
     } else if (this.crashed) {
       this.restart();
@@ -532,6 +520,16 @@ Runner.prototype = {
   },
 
   /**
+   * Checks whether the canvas area is in the viewport of the browser
+   * through the current scroll position.
+   * @return boolean.
+   */
+  isCanvasInView: function() {
+    return this.containerEl.getBoundingClientRect().top >
+        Runner.config.CANVAS_IN_VIEW_OFFSET;
+  },
+
+  /**
    * Update the game frame and schedules the next one.
    */
   update: function() {
@@ -539,19 +537,6 @@ Runner.prototype = {
 
     var now = getTimeStamp();
     var deltaTime = now - (this.time || now);
-
-    // Flashing.
-    if (this.bdayFlashTimer != null) {
-      if (this.bdayFlashTimer <= 0) {
-        this.bdayFlashTimer = null;
-        this.tRex.setFlashing(false);
-        this.tRex.enableBdayMode(this.spriteDef.TREX_BDAY);
-      } else {
-        this.bdayFlashTimer -= deltaTime;
-        this.tRex.update(deltaTime);
-        deltaTime = 0;
-      }
-    }
 
     this.time = now;
 
@@ -582,15 +567,6 @@ Runner.prototype = {
       // Check for collisions.
       var collision = hasObstacles &&
           checkForCollision(this.horizon.obstacles[0], this.tRex);
-
-      // Ate snack.
-      if (Runner.isBdayModeEnabled() && collision &&
-          this.horizon.obstacles[0].typeConfig.type == 'SNACK') {
-        this.horizon.enableBdayMode();
-        this.tRex.setFlashing(true);
-        collision = false;
-        this.bdayFlashTimer = this.config.BDAY_FLASH_DURATION;
-      }
 
       if (!collision) {
         this.distanceRan += this.currentSpeed * deltaTime / this.msPerFrame;
@@ -700,41 +676,43 @@ Runner.prototype = {
       e.preventDefault();
     }
 
-    if (!this.crashed && !this.paused) {
-      if (Runner.keycodes.JUMP[e.keyCode] ||
-          e.type == Runner.events.TOUCHSTART) {
-        e.preventDefault();
-        // Starting the game for the first time.
-        if (!this.playing) {
-          // Started by touch so create a touch controller.
-          if (!this.touchController && e.type == Runner.events.TOUCHSTART) {
-            this.createTouchController();
+    if (this.isCanvasInView()) {
+      if (!this.crashed && !this.paused) {
+        if (Runner.keycodes.JUMP[e.keyCode] ||
+            e.type == Runner.events.TOUCHSTART) {
+          e.preventDefault();
+          // Starting the game for the first time.
+          if (!this.playing) {
+            // Started by touch so create a touch controller.
+            if (!this.touchController && e.type == Runner.events.TOUCHSTART) {
+              this.createTouchController();
+            }
+            this.loadSounds();
+            this.setPlayStatus(true);
+            this.update();
+            if (window.errorPageController) {
+              errorPageController.trackEasterEgg();
+            }
           }
-          this.loadSounds();
-          this.playing = true;
-          this.update();
-          if (window.errorPageController) {
-            errorPageController.trackEasterEgg();
+          // Start jump.
+          if (!this.tRex.jumping && !this.tRex.ducking) {
+            this.playSound(this.soundFx.BUTTON_PRESS);
+            this.tRex.startJump(this.currentSpeed);
+          }
+        } else if (this.playing && Runner.keycodes.DUCK[e.keyCode]) {
+          e.preventDefault();
+          if (this.tRex.jumping) {
+            // Speed drop, activated only when jump key is not pressed.
+            this.tRex.setSpeedDrop();
+          } else if (!this.tRex.jumping && !this.tRex.ducking) {
+            // Duck.
+            this.tRex.setDuck(true);
           }
         }
-        // Start jump.
-        if (!this.tRex.jumping && !this.tRex.ducking) {
-          this.playSound(this.soundFx.BUTTON_PRESS);
-          this.tRex.startJump(this.currentSpeed);
-        }
-      } else if (this.playing && Runner.keycodes.DUCK[e.keyCode]) {
-        e.preventDefault();
-        if (this.tRex.jumping) {
-          // Speed drop, activated only when jump key is not pressed.
-          this.tRex.setSpeedDrop();
-        } else if (!this.tRex.jumping && !this.tRex.ducking) {
-          // Duck.
-          this.tRex.setDuck(true);
-        }
+      } else if (this.crashed && e.type == Runner.events.TOUCHSTART &&
+          e.currentTarget == this.containerEl) {
+        this.restart();
       }
-    } else if (this.crashed && e.type == Runner.events.TOUCHSTART &&
-        e.currentTarget == this.containerEl) {
-      this.restart();
     }
   },
 
@@ -758,9 +736,10 @@ Runner.prototype = {
       // Check that enough time has elapsed before allowing jump key to restart.
       var deltaTime = getTimeStamp() - this.time;
 
-      if (Runner.keycodes.RESTART[keyCode] || this.isLeftClickOnCanvas(e) ||
+      if (this.isCanvasInView() &&
+          (Runner.keycodes.RESTART[keyCode] || this.isLeftClickOnCanvas(e) ||
           (deltaTime >= this.config.GAMEOVER_CLEAR_TIME &&
-          Runner.keycodes.JUMP[keyCode])) {
+          Runner.keycodes.JUMP[keyCode]))) {
         this.restart();
       }
     } else if (this.paused && isjumpKey) {
@@ -832,7 +811,7 @@ Runner.prototype = {
   },
 
   stop: function() {
-    this.playing = false;
+    this.setPlayStatus(false);
     this.paused = true;
     cancelAnimationFrame(this.raqId);
     this.raqId = 0;
@@ -840,7 +819,7 @@ Runner.prototype = {
 
   play: function() {
     if (!this.crashed) {
-      this.playing = true;
+      this.setPlayStatus(true);
       this.paused = false;
       this.tRex.update(0, Trex.status.RUNNING);
       this.time = getTimeStamp();
@@ -852,7 +831,7 @@ Runner.prototype = {
     if (!this.raqId) {
       this.playCount++;
       this.runningTime = 0;
-      this.playing = true;
+      this.setPlayStatus(true);
       this.paused = false;
       this.crashed = false;
       this.distanceRan = 0;
@@ -868,6 +847,12 @@ Runner.prototype = {
       this.bdayFlashTimer = null;
       this.update();
     }
+  },
+
+  setPlayStatus: function(isPlaying) {
+    if (this.touchController)
+      this.touchController.classList.toggle(HIDDEN_CLASS, !isPlaying);
+    this.playing = isPlaying;
   },
 
   /**
@@ -992,15 +977,6 @@ Runner.updateCanvasScaling = function(canvas, opt_width, opt_height) {
   }
   return false;
 };
-
-
-/**
- * Whether the bday mode is enabled.
- * @return {boolean}
- */
-Runner.isBdayModeEnabled = function() {
-  return loadTimeData && loadTimeData.valueExists('bdayMode');
-}
 
 
 /**
@@ -1189,7 +1165,7 @@ function checkForCollision(obstacle, tRex, opt_canvasCtx) {
       tRex.xPos + 1,
       tRex.yPos + 1,
       tRex.config.WIDTH - 2,
-      (tRex.bdayModeActive ? tRex.config.HEIGHT_BDAY : tRex.config.HEIGHT) - 2);
+      tRex.config.HEIGHT - 2);
 
   var obstacleBox = new CollisionBox(
       obstacle.xPos + 1,
@@ -1217,10 +1193,6 @@ function checkForCollision(obstacle, tRex, opt_canvasCtx) {
         var adjObstacleBox =
             createAdjustedCollisionBox(collisionBoxes[i], obstacleBox);
         var crashed = boxCompare(adjTrexBox, adjObstacleBox);
-
-        if (tRex.bdayModeActive) {
-          adjTrexBox.y += Runner.config.BDAY_Y_POS_ADJUST;
-        }
 
         // Draw boxes for debug.
         if (opt_canvasCtx) {
@@ -1338,8 +1310,6 @@ function Obstacle(canvasCtx, type, spriteImgPos, dimensions,
   this.collisionBoxes = [];
   this.gap = 0;
   this.speedOffset = 0;
-  this.imageSprite = this.typeConfig.type == 'SNACK' ? Runner.bdayImageSprite :
-        Runner.imageSprite;
 
   // For animated obstacles.
   this.currentFrame = 0;
@@ -1431,7 +1401,7 @@ Obstacle.prototype = {
       sourceX += sourceWidth * this.currentFrame;
     }
 
-    this.canvasCtx.drawImage(this.imageSprite,
+    this.canvasCtx.drawImage(Runner.imageSprite,
       sourceX, this.spritePos.y,
       sourceWidth * this.size, sourceHeight,
       this.xPos, this.yPos,
@@ -1561,18 +1531,6 @@ Obstacle.types = [
     numFrames: 2,
     frameRate: 1000/6,
     speedOffset: .8
-  },
-  {
-    type: 'SNACK',
-    width: 33,
-    height: 42,
-    yPos: 85,
-    multipleSpeed: 999,
-    minGap: 999,
-    minSpeed: 0,
-    collisionBoxes: [
-      new CollisionBox(0, 0, 40, 40)
-    ]
   }
 ];
 
@@ -1587,7 +1545,6 @@ Obstacle.types = [
 function Trex(canvas, spritePos) {
   this.canvas = canvas;
   this.canvasCtx = canvas.getContext('2d');
-  this.imageSprite = Runner.imageSprite;
   this.spritePos = spritePos;
   this.xPos = 0;
   this.yPos = 0;
@@ -1611,8 +1568,6 @@ function Trex(canvas, spritePos) {
   this.speedDrop = false;
   this.jumpCount = 0;
   this.jumpspotX = 0;
-  this.bdayModeActive = false;
-  this.flashing = false;
 
   this.init();
 };
@@ -1624,11 +1579,8 @@ function Trex(canvas, spritePos) {
  */
 Trex.config = {
   DROP_VELOCITY: -5,
-  FLASH_OFF: 175,
-  FLASH_ON: 100,
   GRAVITY: 0.6,
   HEIGHT: 47,
-  HEIGHT_BDAY: 63,
   HEIGHT_DUCK: 25,
   INIITAL_JUMP_VELOCITY: -10,
   INTRO_DURATION: 1500,
@@ -1724,25 +1676,6 @@ Trex.prototype = {
   },
 
   /**
-   * @param {Object} spritePos New positioning within image sprite.
-   */
-  enableBdayMode: function(spritePos) {
-    this.bdayModeActive = true;
-    this.spritePos = spritePos;
-    this.imageSprite = Runner.bdayImageSprite;
-    this.groundYPos = Runner.defaultDimensions.HEIGHT - this.config.HEIGHT -
-        Runner.config.BOTTOM_PAD_BDAY;
-    this.yPos -= Runner.config.BDAY_Y_POS_ADJUST;
-  },
-
-  /**
-   * @param {boolean} status Whether dino is flashing.
-   */
-  setFlashing: function(status) {
-    this.flashing = status;
-  },
-
-  /**
    * Setter for the jump velocity.
    * The approriate drop velocity is also set.
    */
@@ -1785,7 +1718,7 @@ Trex.prototype = {
     }
 
     // Update the frame position.
-    if (!this.flashing && this.timer >= this.msPerFrame) {
+    if (this.timer >= this.msPerFrame) {
       this.currentFrame = this.currentFrame ==
           this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
       this.timer = 0;
@@ -1808,10 +1741,8 @@ Trex.prototype = {
     var sourceY = y;
     var sourceWidth = this.ducking && this.status != Trex.status.CRASHED ?
         this.config.WIDTH_DUCK : this.config.WIDTH;
-    var sourceHeight = this.bdayModeActive ? this.config.HEIGHT_BDAY :
-        this.config.HEIGHT;
+    var sourceHeight = this.config.HEIGHT;
     var outputHeight = sourceHeight;
-
 
     if (IS_HIDPI) {
       sourceX *= 2;
@@ -1824,18 +1755,9 @@ Trex.prototype = {
     sourceX += this.spritePos.x;
     sourceY += this.spritePos.y;
 
-    // Flashing.
-    if (this.flashing) {
-      if (this.timer < this.config.FLASH_ON) {
-        this.canvasCtx.globalAlpha = 0.5;
-      } else if (this.timer > this.config.FLASH_OFF) {
-        this.timer = 0;
-      }
-    }
-
     // Ducking.
     if (this.ducking && this.status != Trex.status.CRASHED) {
-      this.canvasCtx.drawImage(this.imageSprite, sourceX, sourceY,
+      this.canvasCtx.drawImage(Runner.imageSprite, sourceX, sourceY,
           sourceWidth, sourceHeight,
           this.xPos, this.yPos,
           this.config.WIDTH_DUCK, outputHeight);
@@ -1845,7 +1767,7 @@ Trex.prototype = {
         this.xPos++;
       }
       // Standing / running
-      this.canvasCtx.drawImage(this.imageSprite, sourceX, sourceY,
+      this.canvasCtx.drawImage(Runner.imageSprite, sourceX, sourceY,
           sourceWidth, sourceHeight,
           this.xPos, this.yPos,
           this.config.WIDTH, outputHeight);
@@ -2245,10 +2167,9 @@ DistanceMeter.prototype = {
  * Similar to an obstacle object but without collision boxes.
  * @param {HTMLCanvasElement} canvas Canvas element.
  * @param {Object} spritePos Position of image in sprite.
- * @param {boolean} isBalloon Switch Cloud to balloon.
  * @param {number} containerWidth
  */
-function Cloud(canvas, spritePos, containerWidth, isBalloon) {
+function Cloud(canvas, spritePos, containerWidth) {
   this.canvas = canvas;
   this.canvasCtx = this.canvas.getContext('2d');
   this.spritePos = spritePos;
@@ -2258,8 +2179,6 @@ function Cloud(canvas, spritePos, containerWidth, isBalloon) {
   this.remove = false;
   this.cloudGap = getRandomNum(Cloud.config.MIN_CLOUD_GAP,
       Cloud.config.MAX_CLOUD_GAP);
-  this.isBalloon = isBalloon;
-  this.imageSprite = isBalloon ? Runner.bdayImageSprite : Runner.imageSprite;
 
   this.init();
 };
@@ -2271,13 +2190,11 @@ function Cloud(canvas, spritePos, containerWidth, isBalloon) {
  */
 Cloud.config = {
   HEIGHT: 14,
-  HEIGHT_BALLOON: 34,
   MAX_CLOUD_GAP: 400,
   MAX_SKY_LEVEL: 30,
   MIN_CLOUD_GAP: 100,
   MIN_SKY_LEVEL: 71,
-  WIDTH: 46,
-  WIDTH_BALLOON: 16
+  WIDTH: 46
 };
 
 
@@ -2296,10 +2213,8 @@ Cloud.prototype = {
    */
   draw: function() {
     this.canvasCtx.save();
-    var sourceWidth = this.isBalloon ? Cloud.config.WIDTH_BALLOON :
-        Cloud.config.WIDTH;
-    var sourceHeight = this.isBalloon ? Cloud.config.HEIGHT_BALLOON :
-        Cloud.config.HEIGHT;
+    var sourceWidth = Cloud.config.WIDTH;
+    var sourceHeight = Cloud.config.HEIGHT;
     var outputWidth = sourceWidth;
     var outputHeight = sourceHeight;
     if (IS_HIDPI) {
@@ -2307,7 +2222,7 @@ Cloud.prototype = {
       sourceHeight = sourceHeight * 2;
     }
 
-    this.canvasCtx.drawImage(this.imageSprite, this.spritePos.x,
+    this.canvasCtx.drawImage(Runner.imageSprite, this.spritePos.x,
         this.spritePos.y,
         sourceWidth, sourceHeight,
         this.xPos, this.yPos,
@@ -2649,7 +2564,6 @@ function Horizon(canvas, spritePos, dimensions, gapCoefficient) {
   this.cloudFrequency = this.config.CLOUD_FREQUENCY;
   this.spritePos = spritePos;
   this.nightMode = null;
-  this.bdayModeActive = false;
 
   // Cloud
   this.clouds = [];
@@ -2683,14 +2597,6 @@ Horizon.prototype = {
     this.horizonLine = new HorizonLine(this.canvas, this.spritePos.HORIZON);
     this.nightMode = new NightMode(this.canvas, this.spritePos.MOON,
         this.dimensions.WIDTH);
-  },
-
-  /**
-   * Enable additional items.
-   */
-  enableBdayMode: function() {
-    this.bdayModeActive = true;
-    this.removeFirstObstacle();
   },
 
   /**
@@ -2789,10 +2695,7 @@ Horizon.prototype = {
    * @param {number} currentSpeed
    */
   addNewObstacle: function(currentSpeed) {
-    var obstacleCount = Runner.isBdayModeEnabled() &&
-        !this.bdayModeActive ? Obstacle.types.length - 1 :
-        Obstacle.types.length - 2;
-    var obstacleTypeIndex = getRandomNum(0, obstacleCount);
+    var obstacleTypeIndex = getRandomNum(0, Obstacle.types.length - 1);
     var obstacleType = Obstacle.types[obstacleTypeIndex];
 
     // Check for multiples of the same type of obstacle.
@@ -2854,10 +2757,8 @@ Horizon.prototype = {
    * Add a new cloud to the horizon.
    */
   addCloud: function() {
-    var cloudType = this.bdayModeActive && getRandomNum(0, 1) > 0 ?
-        this.spritePos.BALLOON : this.spritePos.CLOUD;
-    this.clouds.push(new Cloud(this.canvas, cloudType,
-        this.dimensions.WIDTH, cloudType == this.spritePos.BALLOON));
+    this.clouds.push(new Cloud(this.canvas, this.spritePos.CLOUD,
+        this.dimensions.WIDTH));
   }
 };
 })();

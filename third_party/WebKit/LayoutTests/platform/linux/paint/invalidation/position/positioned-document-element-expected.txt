@@ -18,9 +18,9 @@
       "backgroundColor": "#008000",
       "paintInvalidations": [
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [0, 0, 800, 600],
-          "reason": "background on scrolling contents layer"
+          "reason": "background"
         },
         {
           "object": "InlineTextBox 'Tests that the entire viewport is painted with a floated html element.'",

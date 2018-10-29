@@ -45,7 +45,7 @@ ResourceMessageFilter::ResourceMessageFilter(
     storage::FileSystemContext* file_system_context,
     ServiceWorkerContextWrapper* service_worker_context,
     PrefetchURLLoaderService* prefetch_url_loader_service,
-    SharedCorsOriginAccessList* shared_cors_origin_access_list,
+    const SharedCorsOriginAccessList* shared_cors_origin_access_list,
     const GetContextsCallback& get_contexts_callback,
     const scoped_refptr<base::SingleThreadTaskRunner>& io_thread_runner)
     : BrowserMessageFilter(ResourceMsgStart),

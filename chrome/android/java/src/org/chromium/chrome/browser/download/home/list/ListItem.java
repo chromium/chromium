@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.download.home.list;
 import android.view.View;
 
 import org.chromium.base.VisibleForTesting;
+import org.chromium.chrome.browser.download.home.StableIds;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /** An abstract class that represents a variety of possible list items to show in downloads home. */
 public abstract class ListItem {
@@ -43,7 +45,7 @@ public abstract class ListItem {
     }
 
     /** A {@link ListItem} that involves a {@link Date}. */
-    public static class DateListItem extends ListItem {
+    private abstract static class DateListItem extends ListItem {
         public final Date date;
 
         /**
@@ -73,15 +75,26 @@ public abstract class ListItem {
     /** A {@link ListItem} representing a section header. */
     public static class SectionHeaderListItem extends DateListItem {
         public final int filter;
-        public boolean isFirstSectionOfDay;
+        public boolean showDate;
+        public boolean showTitle;
+        public boolean showMenu;
+        public boolean isJustNow;
+        public boolean showDivider;
+        public List<OfflineItem> items;
 
         /**
          * Creates a {@link SectionHeaderListItem} instance for a given {@code filter} and
          * {@code timestamp}.
          */
-        public SectionHeaderListItem(int filter, long timestamp) {
-            super(generateStableId(timestamp, filter), new Date(timestamp));
+        public SectionHeaderListItem(int filter, long timestamp, boolean showDate,
+                boolean isJustNow, boolean showDivider) {
+            super(isJustNow && showDate ? StableIds.JUST_NOW_SECTION
+                                        : generateStableId(timestamp, filter),
+                    new Date(timestamp));
             this.filter = filter;
+            this.showDate = showDate;
+            this.isJustNow = isJustNow;
+            this.showDivider = showDivider;
         }
 
         @VisibleForTesting
@@ -91,47 +104,9 @@ public abstract class ListItem {
         }
     }
 
-    /** A {@link ListItem} representing a divider that separates sections and dates. */
-    public static class SeparatorViewListItem extends DateListItem {
-        private final boolean mIsDateDivider;
-
-        /**
-         * Creates a separator to be shown at the end of a given date.
-         * @param timestamp The date corresponding to this group of downloads.
-         */
-        public SeparatorViewListItem(long timestamp) {
-            super(generateStableId(timestamp), new Date(timestamp));
-            mIsDateDivider = true;
-        }
-
-        /**
-         * Creates a separator to be shown at the end of a section for a given section on a given
-         * date.
-         * @param timestamp The date corresponding to the section.
-         * @param filter The type of downloads contained in this section.
-         */
-        public SeparatorViewListItem(long timestamp, int filter) {
-            super(generateStableId(timestamp, filter), new Date(timestamp));
-            mIsDateDivider = false;
-        }
-
-        /** Whether this view represents a date divider. */
-        public boolean isDateDivider() {
-            return mIsDateDivider;
-        }
-
-        private static long generateStableId(long timestamp) {
-            return ((long) (new Date(timestamp).hashCode())) + DATE_SEPARATOR_HASH_CODE_OFFSET;
-        }
-
-        private static long generateStableId(long timestamp, int filter) {
-            return generateStableId(timestamp) + filter + SECTION_SEPARATOR_HASH_CODE_OFFSET;
-        }
-    }
-
     /** A {@link ListItem} that involves a {@link OfflineItem}. */
     public static class OfflineItemListItem extends DateListItem {
-        public final OfflineItem item;
+        public OfflineItem item;
         public boolean spanFullWidth;
 
         /** Creates an {@link OfflineItemListItem} wrapping {@code item}. */

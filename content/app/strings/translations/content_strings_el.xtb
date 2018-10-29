@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
 <translation id="1018939186200882850">στοιχείο μενού</translation>
-<translation id="1020833440720551630">σίγαση ήχου</translation>
 <translation id="10623998915015855">κουμπί εναλλαγής</translation>
 <translation id="1088086359088493902">Δευτερόλεπτα</translation>
 <translation id="1171774979989969504">Εισαγάγετε μια διεύθυνση ηλεκτρονικού ταχυδρομείου.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">συντελεστές</translation>
 <translation id="1342835525016946179">άρθρο</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="1548116112524424341">αναπαραγωγή βίντεο σε λειτουργία picture-in-picture</translation>
 <translation id="1589122976691792535">περιοχή</translation>
 <translation id="1591562245178063882">Αυτόν το μήνα</translation>
 <translation id="1637811476055996098">Επιλογή αρχείων</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">πλέγμα δέντρου</translation>
 <translation id="1822429046913737220">Π.Μ./Μ.Μ.</translation>
 <translation id="1832974991323546415">αναπαραγωγή σε απομακρυσμένη συσκευή</translation>
-<translation id="1838818994221231429">εναλλαγή πλήρους οθόνης σε περιοχή εγκοπής οθόνης</translation>
 <translation id="190587075670221089">διαγραφή</translation>
 <translation id="1907737156431278478">παράδειγμα</translation>
 <translation id="1921819250265091946">ηη</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">ώρα</translation>
 <translation id="5630795885300617244">Πατήστε δύο φορές αριστερά ή δεξιά, για να παραβλέψετε 10 δευτ.</translation>
 <translation id="5631759159893697722">περίληψη</translation>
-<translation id="5641012560118721995">παύση αναπαραγωγής</translation>
 <translation id="5643186887447432888">κουμπί</translation>
 <translation id="5677946354068040947">περισσότερες επιλογές</translation>
 <translation id="576709008726043716">εισαγωγή</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Επαναφορά</translation>
 <translation id="5966707198760109579">Εβδομάδα</translation>
 <translation id="5987525920412732405">κουμπί αυξομείωσης</translation>
+<translation id="6011459053400940133">ρυθμιστικό έντασης ήχου</translation>
 <translation id="6015796118275082299">Έτος</translation>
 <translation id="6023896073578205740">πλαίσιο λίστας</translation>
-<translation id="6101327004457443354">κατάργηση σίγασης ήχου</translation>
 <translation id="6150588977291308318">βιβλιογραφία</translation>
 <translation id="6164829606128959761">μετρητής</translation>
 <translation id="6166809985690652833">επίλογος</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Ώρες</translation>
 <translation id="7681220483256441252">ευρετήριο</translation>
 <translation id="7720026100085573005">χρόνος που απομένει</translation>
-<translation id="7740016676195725605">διακοπή προβολής υπότιτλων</translation>
 <translation id="7740050170769002709">Περιεχόμενο HTML</translation>
 <translation id="7750228210027921155">Picture in picture</translation>
 <translation id="7789962463072032349">παύση</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">αναζήτηση πεδίου κειμένου</translation>
 <translation id="8057695513531652401">ειδοποίηση</translation>
 <translation id="8105797009065549151">παραπομπή</translation>
-<translation id="8115662671911883373">έναρξη προβολής υπότιτλων</translation>
 <translation id="8117451130807776954">Αυτήν την εβδομάδα</translation>
-<translation id="819205353528511139">αναπαραγωγή ταινίας σε λειτουργία πλήρους οθόνης</translation>
 <translation id="8199524924445686405">εεεε</translation>
 <translation id="8284326494547611709">Υπότιτλοι</translation>
 <translation id="835897206747267392">Μη έγκυρη τιμή.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">έλεγχος απομακρυσμένης αναπαραγωγής</translation>
 <translation id="862370744433916922">υπότιτλος</translation>
 <translation id="8750798805984357768">Ορίστε μία από αυτές τις επιλογές.</translation>
-<translation id="8785498733064193001">έναρξη αναπαραγωγής</translation>
 <translation id="8808573423886751634">κεφάλαιο</translation>
 <translation id="8845239796550121995">Γίνεται μετάδοση στην TV</translation>
 <translation id="8851136666856101339">κύριο</translation>

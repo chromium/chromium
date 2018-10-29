@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Touch-generated events should have the same target</title>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<body onload="inject_input()">
+<p>Touch letter 'O' below to run the test. If a "PASS" result appears the test passes, otherwise it fails</p>
+<p><a href="#" id="link" style="margin:3px">Link</a> <span id="target">O</span></p>
+<div id="log"></div>
+</body>
+<script>
+const target = document.getElementById('target');
+const xPosition = target.offsetLeft + 2;
+const yPosition = target.offsetTop + 2;
+
+async_test(t => {
+    const link = document.getElementById('link');
+    const expectedEventLog = ['pointerdown-link', 'touchstart-link', 'pointerup-link', 'touchend-link', 'click-link'];
+    const eventLogRecorder = [];
+
+    const eventNames = ['touchstart', 'touchmove', 'touchend', 'pointerdown', 'pointermove', 'pointerup', 'click'];
+    for (eventName of eventNames) {
+        document.addEventListener(eventName, t.step_func(event => {
+            // TouchEvent and PointerEvent should have the same un-adjusted coordinates.
+            // click event should have coordinates adjusted to link element.
+            const eventClientX = event.clientX || (event.touches.length > 0 ? event.touches[0].clientX : 0);
+            const eventClientY = event.clientY || (event.touches.length > 0 ? event.touches[0].clientY : 0);
+
+            if (event.type === 'click') {
+                assert_equals(document.elementFromPoint(eventClientX, eventClientY), link,
+                    'click should have clientX/Y adjusted to link.');
+            } else if (event.type != 'touchend') {
+                assert_equals(eventClientX, xPosition,
+                    `${event.type} should have un-adjusted x coordinates.`);
+                assert_equals(eventClientY, yPosition,
+                    `${event.type} should have un-adjusted y coordinates.`);
+            }
+
+            // All events should have target adjusted to link.
+            const targetName = event.target.id || event.target.nodeName || '[null]';
+            eventLogRecorder.push(`${event.type}-${targetName}`);
+            if (event.type === 'click') {
+                assert_array_equals(eventLogRecorder, expectedEventLog);
+                t.done();
+            }
+        }));
+    }
+});
+</script>
+<script>
+    function inject_input() {
+      return new Promise(function(resolve, reject) {
+        if (window.chrome && chrome.gpuBenchmarking) {
+          chrome.gpuBenchmarking.pointerActionSequence( [
+            {source: 'touch',
+             actions: [
+                { name: 'pointerDown', x: xPosition, y: yPosition },
+                { name: 'pointerUp' }
+            ]}], resolve);
+        } else {
+          reject();
+        }
+      });
+    }
+</script>

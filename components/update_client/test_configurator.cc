@@ -12,6 +12,7 @@
 #include "components/services/patch/patch_service.h"
 #include "components/services/unzip/unzip_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/protocol_handler.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/service.h"
@@ -199,6 +200,11 @@ std::vector<uint8_t> TestConfigurator::GetRunActionKeyHash() const {
 
 std::string TestConfigurator::GetAppGuid() const {
   return app_guid_;
+}
+
+std::unique_ptr<ProtocolHandlerFactory>
+TestConfigurator::GetProtocolHandlerFactory() const {
+  return std::make_unique<ProtocolHandlerFactoryXml>();
 }
 
 }  // namespace update_client

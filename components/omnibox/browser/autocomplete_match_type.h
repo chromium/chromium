@@ -64,6 +64,7 @@ struct AutocompleteMatchType {
     TAB_SEARCH_DEPRECATED       = 23,  // A suggested open tab, based on its
                                        // URL or title, via HQP (deprecated).
     DOCUMENT_SUGGESTION         = 24,  // A suggested document.
+    PEDAL                       = 25,  // An omnibox pedal suggestion.
     NUM_TYPES,
   };
   // clang-format on

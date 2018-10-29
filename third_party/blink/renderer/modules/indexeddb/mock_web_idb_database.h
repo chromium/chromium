@@ -7,10 +7,10 @@
 
 #include <gmock/gmock.h>
 #include <memory>
-#include "third_party/blink/public/platform/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/public/platform/modules/indexeddb/web_idb_key_range.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 
 namespace blink {
 
@@ -23,7 +23,7 @@ class MockWebIDBDatabase : public testing::StrictMock<WebIDBDatabase> {
   MOCK_METHOD5(CreateObjectStore,
                void(long long transaction_id,
                     long long object_store_id,
-                    const WebString& name,
+                    const String& name,
                     const WebIDBKeyPath&,
                     bool auto_increment));
   MOCK_METHOD2(DeleteObjectStore,
@@ -31,10 +31,10 @@ class MockWebIDBDatabase : public testing::StrictMock<WebIDBDatabase> {
   MOCK_METHOD3(RenameObjectStore,
                void(long long transaction_id,
                     long long object_store_id,
-                    const WebString& new_name));
+                    const String& new_name));
   MOCK_METHOD3(CreateTransaction,
                void(long long id,
-                    const WebVector<long long>& scope,
+                    const Vector<int64_t>& scope,
                     WebIDBTransactionMode));
   MOCK_METHOD0(Close, void());
   MOCK_METHOD0(VersionChangeIgnored, void());
@@ -44,7 +44,7 @@ class MockWebIDBDatabase : public testing::StrictMock<WebIDBDatabase> {
                void(long long transaction_id,
                     long long object_store_id,
                     long long index_id,
-                    const WebString& name,
+                    const String& name,
                     const WebIDBKeyPath&,
                     bool unique,
                     bool multi_entry));
@@ -56,7 +56,7 @@ class MockWebIDBDatabase : public testing::StrictMock<WebIDBDatabase> {
                void(long long transaction_id,
                     long long object_store_id,
                     long long index_id,
-                    const WebString& new_name));
+                    const String& new_name));
   MOCK_METHOD6(
       AddObserver,
       void(long long transaction_id,
@@ -67,7 +67,7 @@ class MockWebIDBDatabase : public testing::StrictMock<WebIDBDatabase> {
            const std::bitset<kWebIDBOperationTypeCount>& operation_types));
   MOCK_CONST_METHOD1(ContainsObserverId, bool(int32_t id));
   MOCK_METHOD1(RemoveObservers,
-               void(const WebVector<int32_t>& observer_ids_to_remove));
+               void(const Vector<int32_t>& observer_ids_to_remove));
   MOCK_METHOD6(Get,
                void(long long transaction_id,
                     long long object_store_id,
@@ -84,27 +84,25 @@ class MockWebIDBDatabase : public testing::StrictMock<WebIDBDatabase> {
                     bool key_only,
                     WebIDBCallbacks*));
 
-  MOCK_METHOD9(Put,
+  MOCK_METHOD8(Put,
                void(long long transaction_id,
                     long long object_store_id,
                     const WebData& value,
-                    const WebVector<WebBlobInfo>&,
+                    const Vector<WebBlobInfo>&,
                     WebIDBKeyView primary_key,
                     WebIDBPutMode,
                     WebIDBCallbacks*,
-                    const WebVector<long long>& index_ids,
-                    const WebVector<WebIndexKeys>));
+                    const Vector<WebIDBIndexKeys>&));
 
-  MOCK_METHOD5(SetIndexKeys,
+  MOCK_METHOD4(SetIndexKeys,
                void(long long transaction_id,
                     long long object_store_id,
                     WebIDBKeyView primary_key,
-                    const WebVector<long long>& index_ids,
-                    const WebVector<WebIndexKeys>&));
+                    const Vector<WebIDBIndexKeys>&));
   MOCK_METHOD3(SetIndexesReady,
                void(long long transaction_id,
                     long long object_store_id,
-                    const WebVector<long long>& index_ids));
+                    const Vector<int64_t>& index_ids));
   MOCK_METHOD8(OpenCursor,
                void(long long transaction_id,
                     long long object_store_id,

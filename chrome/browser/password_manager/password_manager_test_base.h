@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -85,9 +84,8 @@ class BubbleObserver {
   // PasswordManagerBrowserTestBase.
   bool IsUpdatePromptShownAutomatically() const;
 
-  // Dismisses the prompt currently open and moves the controller to the
-  // inactive state.
-  void Dismiss() const;
+  // Hide the currently open prompt.
+  void Hide() const;
 
   // Expecting that the prompt is available, saves the password. At the end,
   // checks that the prompt is no longer available afterwards.
@@ -138,6 +136,18 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
   void TearDownInProcessBrowserTestFixture() override;
+
+  // Bring up a new Chrome tab set up with password manager test hooks.
+  // @param[in] browser the browser running the password manager test, upon
+  // which this function will perform the setup steps.
+  // @param[out] a new tab on the browser set up with password manager test
+  // hooks.
+  static void SetUpOnMainThreadAndGetNewTab(
+      Browser* browser,
+      content::WebContents** web_contents);
+  // Make sure that the password store associated with the given browser
+  // processed all the previous calls, calls executed on another thread.
+  static void WaitForPasswordStore(Browser* browser);
 
  protected:
   // Wrapper around ui_test_utils::NavigateToURL that waits until
@@ -201,7 +211,6 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   net::EmbeddedTestServer& https_test_server() { return https_test_server_; }
 
  private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
   net::EmbeddedTestServer https_test_server_;
   // A tab with some hooks injected.
   content::WebContents* web_contents_;

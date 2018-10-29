@@ -1,0 +1,14 @@
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+promise_test(async () => {
+  await taskWorklet.addModule("resources/sum.js");
+  const task = taskWorklet.postTask('repeat', 2);
+  const task2 = taskWorklet.postTask('repeat', 4);
+  const task3 = taskWorklet.postTask('sum', task, task2);
+  const result = await task3.result;
+  assert_equals(result, 6);
+});
+</script>
+</body>

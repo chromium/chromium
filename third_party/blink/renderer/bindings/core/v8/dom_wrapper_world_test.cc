@@ -23,9 +23,9 @@ Vector<scoped_refptr<DOMWrapperWorld>> CreateIsolatedWorlds(
     v8::Isolate* isolate) {
   Vector<scoped_refptr<DOMWrapperWorld>> worlds;
   worlds.push_back(DOMWrapperWorld::EnsureIsolatedWorld(
-      isolate, DOMWrapperWorld::WorldId::kMainWorldId + 1));
+      isolate, DOMWrapperWorld::kMainWorldId + 1));
   worlds.push_back(DOMWrapperWorld::EnsureIsolatedWorld(
-      isolate, DOMWrapperWorld::WorldId::kIsolatedWorldIdLimit - 1));
+      isolate, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit - 1));
   EXPECT_TRUE(worlds[0]->IsIsolatedWorld());
   EXPECT_TRUE(worlds[1]->IsIsolatedWorld());
   return worlds;
@@ -37,11 +37,11 @@ Vector<scoped_refptr<DOMWrapperWorld>> CreateWorlds(v8::Isolate* isolate) {
       DOMWrapperWorld::Create(isolate, DOMWrapperWorld::WorldType::kWorker));
   worlds.push_back(
       DOMWrapperWorld::Create(isolate, DOMWrapperWorld::WorldType::kWorker));
-  worlds.push_back(DOMWrapperWorld::Create(
-      isolate, DOMWrapperWorld::WorldType::kGarbageCollector));
+  worlds.push_back(
+      DOMWrapperWorld::Create(isolate, DOMWrapperWorld::WorldType::kWorker));
   EXPECT_TRUE(worlds[0]->IsWorkerWorld());
   EXPECT_TRUE(worlds[1]->IsWorkerWorld());
-  EXPECT_FALSE(worlds[2]->IsWorkerWorld());
+  EXPECT_TRUE(worlds[2]->IsWorkerWorld());
 
   // World ids should be unique.
   HashSet<int> world_ids;
@@ -69,11 +69,6 @@ void WorkerThreadFunc(
   DOMWrapperWorld::AllWorldsInCurrentThread(retrieved_worlds);
   EXPECT_EQ(worlds.size(), retrieved_worlds.size());
   retrieved_worlds.clear();
-
-  // Dispose of the last world.
-  worlds.pop_back();
-  DOMWrapperWorld::AllWorldsInCurrentThread(retrieved_worlds);
-  EXPECT_EQ(worlds.size(), retrieved_worlds.size());
 
   // Dispose of remaining worlds.
   for (scoped_refptr<DOMWrapperWorld>& world : worlds) {
@@ -118,7 +113,7 @@ TEST(DOMWrapperWorldTest, Basic) {
 
   // Start a worker thread and create worlds on that.
   std::unique_ptr<WorkerBackingThread> thread = WorkerBackingThread::Create(
-      WebThreadCreationParams(WebThreadType::kTestThread)
+      ThreadCreationParams(WebThreadType::kTestThread)
           .SetThreadNameForTest("DOMWrapperWorld test thread"));
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
       Platform::Current()->CurrentThread()->GetTaskRunner();

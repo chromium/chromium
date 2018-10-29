@@ -5,6 +5,7 @@
 # found in the LICENSE file.
 
 import distutils.spawn
+import itertools
 import optparse
 import os
 import shutil
@@ -194,16 +195,6 @@ def _ConvertToJMakeArgs(javac_cmd, pdb_path):
   return new_args
 
 
-def _FixTempPathsInIncrementalMetadata(pdb_path, temp_dir):
-  # The .pdb records absolute paths. Fix up paths within /tmp (srcjars).
-  if os.path.exists(pdb_path):
-    # Although its a binary file, search/replace still seems to work fine.
-    with open(pdb_path) as fileobj:
-      pdb_data = fileobj.read()
-    with open(pdb_path, 'w') as fileobj:
-      fileobj.write(re.sub(r'/tmp/[^/]*', temp_dir, pdb_data))
-
-
 def _ParsePackageAndClassNames(java_file):
   package_name = ''
   class_names = []
@@ -235,7 +226,7 @@ def _CheckPathMatchesClassName(java_file, package_name, class_name):
                     (java_file, expected_path_suffix))
 
 
-def _CreateInfoFile(java_files, options, srcjar_files):
+def _CreateInfoFile(java_files, options, srcjar_files, javac_generated_sources):
   """Writes a .jar.info file.
 
   This maps fully qualified names for classes to either the java file that they
@@ -245,7 +236,7 @@ def _CreateInfoFile(java_files, options, srcjar_files):
   .jar.info files of its transitive dependencies.
   """
   info_data = dict()
-  for java_file in java_files:
+  for java_file in itertools.chain(java_files, javac_generated_sources):
     package_name, class_names = _ParsePackageAndClassNames(java_file)
     for class_name in class_names:
       fully_qualified_name = '{}.{}'.format(package_name, class_name)
@@ -258,6 +249,7 @@ def _CreateInfoFile(java_files, options, srcjar_files):
         'Chromium java files must only have one class: {}'.format(source))
     if options.chromium_code:
       _CheckPathMatchesClassName(java_file, package_name, class_names[0])
+
   with build_utils.AtomicOutput(options.jar_path + '.info') as f:
     jar_info_utils.WriteJarInfoFile(f.name, info_data, srcjar_files)
 
@@ -299,33 +291,36 @@ def _OnStaleMd5(changes, options, javac_cmd, java_files, classpath_inputs,
       # sources are stale by having their .class files be missing entirely
       # (by not extracting them).
       javac_cmd = _ConvertToJMakeArgs(javac_cmd, pdb_path)
-      if srcjars:
-        _FixTempPathsInIncrementalMetadata(pdb_path, temp_dir)
 
-    srcjar_files = dict()
+    generated_java_dir = options.generated_dir
+    # Incremental means not all files will be extracted, so don't bother
+    # clearing out stale generated files.
+    if not incremental:
+      shutil.rmtree(generated_java_dir, True)
+
+    srcjar_files = {}
     if srcjars:
-      java_dir = os.path.join(temp_dir, 'java')
-      os.makedirs(java_dir)
+      build_utils.MakeDirectory(generated_java_dir)
+      jar_srcs = []
       for srcjar in options.java_srcjars:
         if changed_paths:
-          changed_paths.update(os.path.join(java_dir, f)
+          changed_paths.update(os.path.join(generated_java_dir, f)
                                for f in changes.IterChangedSubpaths(srcjar))
         extracted_files = build_utils.ExtractAll(
-            srcjar, path=java_dir, pattern='*.java')
+            srcjar, no_clobber=not incremental, path=generated_java_dir,
+            pattern='*.java')
         for path in extracted_files:
           # We want the path inside the srcjar so the viewer can have a tree
           # structure.
           srcjar_files[path] = '{}/{}'.format(
-              srcjar, os.path.relpath(path, java_dir))
-      jar_srcs = build_utils.FindInDirectory(java_dir, '*.java')
+              srcjar, os.path.relpath(path, generated_java_dir))
+        jar_srcs.extend(extracted_files)
       java_files.extend(jar_srcs)
       if changed_paths:
         # Set the mtime of all sources to 0 since we use the absence of .class
         # files to tell jmake which files are stale.
         for path in jar_srcs:
           os.utime(path, (0, 0))
-
-    _CreateInfoFile(java_files, options, srcjar_files)
 
     if java_files:
       if changed_paths:
@@ -380,6 +375,18 @@ def _OnStaleMd5(changes, options, javac_cmd, java_files, classpath_inputs,
         os.unlink(pdb_path)
         attempt_build()
 
+    # Move any Annotation Processor-generated .java files into $out/gen
+    # so that codesearch can find them.
+    javac_generated_sources = []
+    for src_path in build_utils.FindInDirectory(classes_dir, '*.java'):
+      dst_path = os.path.join(
+          generated_java_dir, os.path.relpath(src_path, classes_dir))
+      build_utils.MakeDirectory(os.path.dirname(dst_path))
+      shutil.move(src_path, dst_path)
+      javac_generated_sources.append(dst_path)
+
+    _CreateInfoFile(java_files, options, srcjar_files, javac_generated_sources)
+
     if options.incremental and (not java_files or not incremental):
       # Make sure output exists.
       build_utils.Touch(pdb_path)
@@ -407,6 +414,10 @@ def _ParseOptions(argv):
       action='append',
       default=[],
       help='List of srcjars to include in compilation.')
+  parser.add_option(
+      '--generated-dir',
+      help='Subdirectory within target_gen_dir to place extracted srcjars and '
+           'annotation processor output for codesearch to find.')
   parser.add_option(
       '--bootclasspath',
       action='append',

@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/lazy_task_runner.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -29,6 +30,7 @@
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
 
@@ -41,7 +43,7 @@ constexpr base::FilePath::CharType kExternalExtensionJson[] =
 
 std::set<base::FilePath> GetPrefsCandidateFilesFromFolder(
       const base::FilePath& external_extension_search_path) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   std::set<base::FilePath> external_extension_paths;
 
@@ -233,7 +235,7 @@ ExternalPrefLoader::ExtractExtensionPrefs(base::ValueDeserializer* deserializer,
 }
 
 void ExternalPrefLoader::LoadOnFileThread() {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   auto prefs = std::make_unique<base::DictionaryValue>();
 
@@ -264,14 +266,14 @@ void ExternalPrefLoader::LoadOnFileThread() {
   if (!prefs->empty())
     CHECK(!base_path_.empty());
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&ExternalPrefLoader::LoadFinished,
-                                         this, std::move(prefs)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(&ExternalPrefLoader::LoadFinished,
+                                          this, std::move(prefs)));
 }
 
 void ExternalPrefLoader::ReadExternalExtensionPrefFile(
     base::DictionaryValue* prefs) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
   CHECK(NULL != prefs);
 
   base::FilePath json_file = base_path_.Append(kExternalExtensionJson);
@@ -309,7 +311,7 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
 
 void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
     base::DictionaryValue* prefs) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
   CHECK(NULL != prefs);
 
   // First list the potential .json candidates.
@@ -322,9 +324,7 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
 
   // For each file read the json description & build the proper
   // associated prefs.
-  for (std::set<base::FilePath>::const_iterator it = candidates.begin();
-       it != candidates.end();
-       ++it) {
+  for (auto it = candidates.begin(); it != candidates.end(); ++it) {
     base::FilePath extension_candidate_path = base_path_.Append(*it);
 
     std::string id =

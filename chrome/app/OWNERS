@@ -7,7 +7,7 @@
 cpu@chromium.org
 grt@chromium.org
 jcivelli@chromium.org
-rockot@chromium.org
+rockot@google.com
 
 per-file bookmarks_strings.grdp=*
 per-file chromeos_strings.grdp=*
@@ -17,8 +17,9 @@ per-file generated_resources.grd=*
 per-file google_chrome_strings.grd=*
 per-file md_extensions_strings.grdp=*
 
-per-file media_router_strings.grdp*=imcheng@chromium.org
-per-file media_router_strings.grdp*=mfoltz@chromium.org
+per-file media_router_strings.grdp=file://chrome/browser/media/router/OWNERS
+
+per-file onboarding_welcome_strings.grdp=file://chrome/browser/ui/webui/welcome/nux/OWNERS
 
 per-file printing_strings.grdp=file://printing/OWNERS
 

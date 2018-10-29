@@ -1,0 +1,4 @@
+include_rules = [
+  "+ui/base/class_property.h",
+  "+ui/platform_window/platform_window.h",
+]

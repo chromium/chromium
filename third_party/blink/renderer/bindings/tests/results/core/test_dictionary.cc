@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/dictionary_impl.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/dictionary_impl.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -22,6 +22,7 @@ TestDictionary::TestDictionary() {
   setDoubleOrStringMember(DoubleOrString::FromDouble(3.14));
   setEnumMember("foo");
   setLongMember(1);
+  setMemberWithHyphenInName(false);
   setOtherDoubleOrStringMember(DoubleOrString::FromString("default string value"));
   setRestrictedDoubleMember(3.14);
   setStringOrNullMember("default string value");
@@ -193,6 +194,10 @@ void TestDictionary::setUnionOrNullSequenceMember(const HeapVector<DoubleOrStrin
   has_union_or_null_sequence_member_ = true;
 }
 
+void TestDictionary::setUnionWithAnnotatedTypeMember(const StringTreatNullAsEmptyStringOrLong& value) {
+  union_with_annotated_type_member_ = value;
+}
+
 void TestDictionary::setUnionWithTypedefs(const FloatOrBoolean& value) {
   union_with_typedefs_ = value;
 }
@@ -223,6 +228,7 @@ void TestDictionary::Trace(blink::Visitor* visitor) {
   visitor->Trace(union_member_with_sequence_default_);
   visitor->Trace(union_or_null_record_member_);
   visitor->Trace(union_or_null_sequence_member_);
+  visitor->Trace(union_with_annotated_type_member_);
   visitor->Trace(union_with_typedefs_);
   IDLDictionaryBase::Trace(visitor);
 }

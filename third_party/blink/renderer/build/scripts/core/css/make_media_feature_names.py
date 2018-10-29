@@ -14,9 +14,12 @@ import media_feature_symbol
 
 
 class MakeMediaFeatureNamesWriter(make_names.MakeNamesWriter):
-    pass
 
-MakeMediaFeatureNamesWriter.filters['symbol'] = media_feature_symbol.getMediaFeatureSymbolWithSuffix('MediaFeature')
+    def __init__(self, json5_file_path, output_dir):
+        super(MakeMediaFeatureNamesWriter, self).__init__(json5_file_path, output_dir)
+        MakeMediaFeatureNamesWriter.filters['symbol'] = (
+            media_feature_symbol.getMediaFeatureSymbolWithSuffix('MediaFeature'))
+
 
 if __name__ == "__main__":
     json5_generator.Maker(MakeMediaFeatureNamesWriter).main()

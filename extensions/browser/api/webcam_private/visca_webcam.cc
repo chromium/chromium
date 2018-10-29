@@ -12,7 +12,9 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/service_manager_connection.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
@@ -73,6 +75,24 @@ const char kGetZoomCommand[] = {0x81, 0x09, 0x04, 0x47, 0xFF};
 // target device address; pqrs: zoom position;
 const char kSetZoomCommand[] = {0x81, 0x01, 0x04, 0x47, 0x00,
                                 0x00, 0x00, 0x00, 0xFF};
+
+// Command: {0x8X, 0x01, 0x04, 0x38, 0x02, 0xFF}, X = 1 to 7: target device
+// address.
+const char kSetAutoFocusCommand[] = {0x81, 0x01, 0x04, 0x38, 0x02, 0xFF};
+
+// Command: {0x8X, 0x01, 0x04, 0x38, 0x03, 0xFF}, X = 1 to 7: target device
+// address.
+const char kSetManualFocusCommand[] = {0x81, 0x01, 0x04, 0x38, 0x03, 0xFF};
+
+// Command: {0x8X, 0x09, 0x04, 0x48, 0xFF}, X = 1 to 7: target device address.
+// Response: {0xY0, 0x50, 0x0p, 0x0q, 0x0r, 0x0s, 0xFF}, Y = socket number;
+// pqrs: focus position.
+const char kGetFocusCommand[] = {0x81, 0x09, 0x04, 0x48, 0xFF};
+
+// Command: {0x8X, 0x01, 0x04, 0x48, 0x0p, 0x0q, 0x0r, 0x0s, 0xFF}, X = 1 to 7:
+// target device address; pqrs: focus position;
+const char kSetFocusCommand[] = {0x81, 0x01, 0x04, 0x48, 0x00,
+                                 0x00, 0x00, 0x00, 0xFF};
 
 // Command: {0x8X, 0x01, 0x06, 0x01, 0x0p, 0x0t, 0x03, 0x01, 0xFF}, X = 1 to 7:
 // target device address; p: pan speed; t: tilt speed.
@@ -157,8 +177,8 @@ void ViscaWebcam::Open(const std::string& path,
       ->GetConnector()
       ->BindInterface(device::mojom::kServiceName,
                       mojo::MakeRequest(&io_handler_info));
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::Bind(&ViscaWebcam::OpenOnIOThread, weak_ptr_factory_.GetWeakPtr(),
                  path, extension_id, base::Passed(&io_handler_info),
                  open_callback));
@@ -228,8 +248,8 @@ void ViscaWebcam::OnClearAllCompleted(const OpenCompleteCallback& open_callback,
     return;
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::Bind(open_callback, true));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::Bind(open_callback, true));
 }
 
 void ViscaWebcam::Send(const std::vector<char>& command,
@@ -237,8 +257,8 @@ void ViscaWebcam::Send(const std::vector<char>& command,
   commands_.push_back(std::make_pair(command, callback));
   // If this is the only command in the queue, send it now.
   if (commands_.size() == 1) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::Bind(&ViscaWebcam::SendOnIOThread, weak_ptr_factory_.GetWeakPtr(),
                    command, callback));
   }
@@ -261,8 +281,8 @@ void ViscaWebcam::OnSendCompleted(const CommandCompleteCallback& callback,
   if (error == api::serial::SEND_ERROR_NONE) {
     ReceiveLoop(callback);
   } else {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::Bind(callback, false, std::vector<char>()));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::Bind(callback, false, std::vector<char>()));
   }
 }
 
@@ -282,8 +302,8 @@ void ViscaWebcam::OnReceiveCompleted(const CommandCompleteCallback& callback,
     // Clear |data_buffer_|.
     std::vector<char> response;
     response.swap(data_buffer_);
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::Bind(callback, false, response));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::Bind(callback, false, response));
     return;
   }
 
@@ -303,13 +323,13 @@ void ViscaWebcam::OnReceiveCompleted(const CommandCompleteCallback& callback,
 
   if (response.size() < 2 ||
       (static_cast<int>(response[1]) & 0xF0) == kViscaResponseError) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::Bind(callback, false, response));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::Bind(callback, false, response));
   } else if ((static_cast<int>(response[1]) & 0xF0) != kViscaResponseAck &&
              (static_cast<int>(response[1]) & 0xFF) !=
                  kViscaResponseNetworkChange) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::Bind(callback, true, response));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::Bind(callback, true, response));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::Bind(&ViscaWebcam::ReceiveLoop,
@@ -348,6 +368,9 @@ void ViscaWebcam::OnInquiryCompleted(InquiryType type,
     case INQUIRY_ZOOM:
       is_valid_response = CanBuildResponseInt(response, 2);
       break;
+    case INQUIRY_FOCUS:
+      is_valid_response = CanBuildResponseInt(response, 2);
+      break;
   }
   if (!is_valid_response) {
     callback.Run(false, 0 /* value */, 0 /* min_value */, 0 /* max_value */);
@@ -371,6 +394,10 @@ void ViscaWebcam::OnInquiryCompleted(InquiryType type,
       // See kGetZoomCommand for the format of response.
       value = BuildResponseInt(response, 2);
       break;
+    case INQUIRY_FOCUS:
+      // See kGetFocusCommand for the format of response.
+      value = BuildResponseInt(response, 2);
+      break;
   }
   // TODO(pbos): Add support for valid ranges.
   callback.Run(true, value, 0, 0);
@@ -386,16 +413,16 @@ void ViscaWebcam::ProcessNextCommand() {
   // If there are pending commands, process the next one.
   const std::vector<char> next_command = commands_.front().first;
   const CommandCompleteCallback next_callback = commands_.front().second;
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::Bind(&ViscaWebcam::SendOnIOThread, weak_ptr_factory_.GetWeakPtr(),
                  next_command, next_callback));
 }
 
 void ViscaWebcam::PostOpenFailureTask(
     const OpenCompleteCallback& open_callback) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::Bind(open_callback, false /* success? */));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::Bind(open_callback, false /* success? */));
 }
 
 void ViscaWebcam::GetPan(const GetPTZCompleteCallback& callback) {
@@ -414,6 +441,12 @@ void ViscaWebcam::GetZoom(const GetPTZCompleteCallback& callback) {
   Send(CHAR_VECTOR_FROM_ARRAY(kGetZoomCommand),
        base::Bind(&ViscaWebcam::OnInquiryCompleted,
                   weak_ptr_factory_.GetWeakPtr(), INQUIRY_ZOOM, callback));
+}
+
+void ViscaWebcam::GetFocus(const GetPTZCompleteCallback& callback) {
+  Send(CHAR_VECTOR_FROM_ARRAY(kGetFocusCommand),
+       base::Bind(&ViscaWebcam::OnInquiryCompleted,
+                  weak_ptr_factory_.GetWeakPtr(), INQUIRY_FOCUS, callback));
 }
 
 void ViscaWebcam::SetPan(int value,
@@ -452,6 +485,26 @@ void ViscaWebcam::SetZoom(int value, const SetPTZCompleteCallback& callback) {
   int actual_value = std::max(value, 0);
   std::vector<char> command = CHAR_VECTOR_FROM_ARRAY(kSetZoomCommand);
   ResponseToCommand(&command, 4, actual_value);
+  Send(command, base::Bind(&ViscaWebcam::OnCommandCompleted,
+                           weak_ptr_factory_.GetWeakPtr(), callback));
+}
+
+void ViscaWebcam::SetFocus(int value, const SetPTZCompleteCallback& callback) {
+  int actual_value = std::max(value, 0);
+  std::vector<char> command = CHAR_VECTOR_FROM_ARRAY(kSetFocusCommand);
+  ResponseToCommand(&command, 4, actual_value);
+  Send(command, base::Bind(&ViscaWebcam::OnCommandCompleted,
+                           weak_ptr_factory_.GetWeakPtr(), callback));
+}
+
+void ViscaWebcam::SetAutofocusState(AutofocusState state,
+                                    const SetPTZCompleteCallback& callback) {
+  std::vector<char> command;
+  if (state == AUTOFOCUS_ON) {
+    command = CHAR_VECTOR_FROM_ARRAY(kSetAutoFocusCommand);
+  } else {
+    command = CHAR_VECTOR_FROM_ARRAY(kSetManualFocusCommand);
+  }
   Send(command, base::Bind(&ViscaWebcam::OnCommandCompleted,
                            weak_ptr_factory_.GetWeakPtr(), callback));
 }

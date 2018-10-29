@@ -26,8 +26,7 @@ int CountEntriesWithName(BaseTransaction* rtrans,
   }
 
   int number_of_entries_with_name = 0;
-  for (Directory::Metahandles::iterator i = child_handles.begin();
-       i != child_handles.end(); ++i) {
+  for (auto i = child_handles.begin(); i != child_handles.end(); ++i) {
     Entry e(rtrans, GET_BY_HANDLE, *i);
     DCHECK(e.good());
     if (e.GetNonUniqueName() == name) {
@@ -43,8 +42,7 @@ Id GetFirstEntryWithName(BaseTransaction* rtrans,
   Directory::Metahandles child_handles;
   rtrans->directory()->GetChildHandlesById(rtrans, parent_id, &child_handles);
 
-  for (Directory::Metahandles::iterator i = child_handles.begin();
-       i != child_handles.end(); ++i) {
+  for (auto i = child_handles.begin(); i != child_handles.end(); ++i) {
     Entry e(rtrans, GET_BY_HANDLE, *i);
     DCHECK(e.good());
     if (e.GetNonUniqueName() == name) {

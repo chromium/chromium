@@ -6,7 +6,9 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/post_task.h"
 #include "components/discardable_memory/public/interfaces/discardable_shared_memory_manager.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_client.h"
 #include "content/public/browser/gpu_interface_provider_factory.h"
@@ -28,8 +30,8 @@ class GpuInterfaceProvider::InterfaceBinderImpl
     auto gpu_client = content::CreateGpuClient(
         std::move(request),
         base::BindOnce(&InterfaceBinderImpl::OnGpuClientConnectionError, this),
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::IO));
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::IO}));
     gpu_clients_.push_back(std::move(gpu_client));
   }
 
@@ -64,8 +66,8 @@ GpuInterfaceProvider::~GpuInterfaceProvider() = default;
 void GpuInterfaceProvider::RegisterGpuInterfaces(
     service_manager::BinderRegistry* registry) {
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner =
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::IO);
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::IO});
   registry->AddInterface(
       base::BindRepeating(&InterfaceBinderImpl::
                               BindDiscardableSharedMemoryManagerOnGpuTaskRunner,

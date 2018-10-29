@@ -20,7 +20,7 @@
         {
           "object": "LayoutBlockFlow BODY",
           "rect": [8, 240, 784, 288],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

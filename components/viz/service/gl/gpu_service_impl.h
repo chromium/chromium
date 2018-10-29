@@ -117,6 +117,10 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
     return gpu_channel_manager_->mailbox_manager();
   }
 
+  gpu::SharedImageManager* shared_image_manager() {
+    return gpu_channel_manager_->shared_image_manager();
+  }
+
   gl::GLShareGroup* share_group() {
     return gpu_channel_manager_->share_group();
   }
@@ -216,9 +220,11 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
                               const gpu::SyncToken& sync_token) override;
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override;
+#if defined(OS_WIN)
   void RequestCompleteGpuInfo(RequestCompleteGpuInfoCallback callback) override;
   void GetGpuSupportedRuntimeVersion(
       GetGpuSupportedRuntimeVersionCallback callback) override;
+#endif
   void RequestHDRStatus(RequestHDRStatusCallback callback) override;
   void LoadedShader(int32_t client_id,
                     const std::string& key,

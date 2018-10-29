@@ -45,11 +45,13 @@ DirectoryFetchInfo::~DirectoryFetchInfo() = default;
 DirectoryFetchInfo::DirectoryFetchInfo(const std::string& local_id,
                                        const std::string& resource_id,
                                        const std::string& start_page_token,
-                                       const base::FilePath& root_entry_path)
+                                       const base::FilePath& root_entry_path,
+                                       const base::FilePath& directory_path)
     : local_id_(local_id),
       resource_id_(resource_id),
       start_page_token_(start_page_token),
-      root_entry_path_(root_entry_path) {}
+      root_entry_path_(root_entry_path),
+      directory_path_(directory_path) {}
 
 DirectoryFetchInfo::DirectoryFetchInfo(const DirectoryFetchInfo& other) =
     default;
@@ -57,7 +59,8 @@ DirectoryFetchInfo::DirectoryFetchInfo(const DirectoryFetchInfo& other) =
 std::string DirectoryFetchInfo::ToString() const {
   return ("local_id: " + local_id_ + ", resource_id: " + resource_id_ +
           ", start_page_token: " + start_page_token_ +
-          ", root_entry_path: " + root_entry_path_.value());
+          ", root_entry_path: " + root_entry_path_.value() +
+          ", directory_path: " + directory_path_.value());
 }
 
 ChangeList::ChangeList() = default;

@@ -19,8 +19,11 @@ PageResourceDataUse::PageResourceDataUse()
       is_complete_(false),
       is_canceled_(false),
       reported_as_ad_resource_(false),
-      is_main_frame_resource_(false) {}
+      is_main_frame_resource_(false),
+      was_fetched_via_cache_(false) {}
 
+PageResourceDataUse::PageResourceDataUse(const PageResourceDataUse& other) =
+    default;
 PageResourceDataUse::~PageResourceDataUse() = default;
 
 void PageResourceDataUse::DidStartResponse(
@@ -29,8 +32,10 @@ void PageResourceDataUse::DidStartResponse(
   resource_id_ = resource_id;
   data_reduction_proxy_compression_ratio_estimate_ =
       data_reduction_proxy::EstimateCompressionRatioFromHeaders(&response_head);
+  mime_type_ = response_head.mime_type;
   total_received_bytes_ = 0;
   last_update_bytes_ = 0;
+  was_fetched_via_cache_ = response_head.was_fetched_via_cache;
 }
 
 void PageResourceDataUse::DidReceiveTransferSizeUpdate(
@@ -42,6 +47,7 @@ bool PageResourceDataUse::DidCompleteResponse(
     const network::URLLoaderCompletionStatus& status) {
   // Report the difference in received bytes.
   is_complete_ = true;
+  encoded_body_length_ = status.encoded_body_length;
   int64_t delta_bytes = status.encoded_data_length - total_received_bytes_;
   if (delta_bytes > 0) {
     total_received_bytes_ += delta_bytes;
@@ -85,6 +91,9 @@ mojom::ResourceDataUpdatePtr PageResourceDataUse::GetResourceDataUpdate() {
       data_reduction_proxy_compression_ratio_estimate_;
   resource_data_update->reported_as_ad_resource = reported_as_ad_resource_;
   resource_data_update->is_main_frame_resource = is_main_frame_resource_;
+  resource_data_update->mime_type = mime_type_;
+  resource_data_update->encoded_body_length = encoded_body_length_;
+  resource_data_update->was_fetched_via_cache = was_fetched_via_cache_;
   return resource_data_update;
 }
 }  // namespace page_load_metrics

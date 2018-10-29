@@ -8,3 +8,4 @@ rootWebArea
 ++++staticText name='Complex button '
 ++++++inlineTextBox name='Complex button '
 ++++textField
+++++++genericContainer

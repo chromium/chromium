@@ -60,8 +60,9 @@ class PreEventDispatchHandler : public ui::EventHandler {
  public:
   explicit PreEventDispatchHandler(View* owner)
       : owner_(owner) {
+    owner_->AddPreTargetHandler(this);
   }
-  ~PreEventDispatchHandler() override {}
+  ~PreEventDispatchHandler() override { owner_->RemovePreTargetHandler(this); }
 
  private:
   // ui::EventHandler:
@@ -170,7 +171,6 @@ RootView::RootView(Widget* widget)
       focus_traversable_parent_view_(NULL),
       event_dispatch_target_(NULL),
       old_dispatch_target_(NULL) {
-  AddPreTargetHandler(pre_dispatch_handler_.get());
   AddPostTargetHandler(post_dispatch_handler_.get());
   SetEventTargeter(
       std::unique_ptr<ViewTargeter>(new RootViewTargeter(this, this)));

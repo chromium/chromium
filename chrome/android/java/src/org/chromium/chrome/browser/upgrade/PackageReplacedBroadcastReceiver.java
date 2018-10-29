@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import org.chromium.base.AsyncTask;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 
 /**

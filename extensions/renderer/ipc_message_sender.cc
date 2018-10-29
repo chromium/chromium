@@ -208,8 +208,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
   }
 
   void SendOnRequestResponseReceivedIPC(int request_id) override {
-    std::map<int, std::string>::iterator iter =
-        request_id_to_guid_.find(request_id);
+    auto iter = request_id_to_guid_.find(request_id);
     DCHECK(iter != request_id_to_guid_.end());
     dispatcher_->Send(new ExtensionHostMsg_DecrementServiceWorkerActivity(
         service_worker_version_id_, iter->second));

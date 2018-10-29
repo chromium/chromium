@@ -244,6 +244,8 @@ class VIEWS_EXPORT Textfield : public View,
   // Set extra spacing placed between glyphs; used for obscured text styling.
   void SetGlyphSpacing(int spacing);
 
+  int GetPasswordCharRevealIndex() const { return password_char_reveal_index_; }
+
   // View overrides:
   int GetBaseline() const override;
   gfx::Size CalculatePreferredSize() const override;
@@ -470,7 +472,8 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Reveals the password character at |index| for a set duration.
   // If |index| is -1, the existing revealed character will be reset.
-  void RevealPasswordChar(int index);
+  // |duration| is the time to remain the password char to be visible.
+  void RevealPasswordChar(int index, base::TimeDelta duration);
 
   void CreateTouchSelectionControllerAndNotifyIt();
 
@@ -627,6 +630,9 @@ class VIEWS_EXPORT Textfield : public View,
 
   // The focus ring for this TextField.
   std::unique_ptr<FocusRing> focus_ring_;
+
+  // The password char reveal index, for testing only.
+  int password_char_reveal_index_ = -1;
 
   // Used to bind callback functions to this object.
   base::WeakPtrFactory<Textfield> weak_ptr_factory_;

@@ -1,0 +1,75 @@
+Name
+
+    CHROMIUM_shared_image
+
+Name Strings
+
+    GL_CHROMIUM_shared_image
+
+Version
+
+    Last Modified Date: Oct 15, 2018
+
+Dependencies
+
+    OpenGL ES 2.0 is required.
+    CHROMIUM_texture_mailbox is required.
+
+Overview
+
+    This extensions defines a way of importing into GL texture image data
+    produced externally to GL via Chromium's SharedImage system.
+
+New Procedures and Functions
+
+    GLuint glCreateAndTexStorage2DSharedImageCHROMIUM (GLenum internal_format,
+                                                       const GLbyte *mailbox)
+    
+    This function takes two arguments:
+    internal_format - Must match the internal format of the SharedImage at
+      creation time, with the exception that a caller may pass GL_RGB or
+      GL_RGBA for a SharedImage created as RGBA_8888.
+
+    mailbox - the mailbox referring to the SharedImage to assign to the
+      first level of the mailbox.
+
+    Logically, this function does three things:
+    1) Creates a texture name and returns it to the caller.
+    2) Creates a texture object for the name.
+    3) Assigns the SharedImage represented by mailbox to the first level of
+       the texture object.
+
+    Note that the texutre created by this function is immutable.
+
+    On success, this function extends the lifetime of the SharedImage
+    referenced by mailbox by taking a ref. The texture object is deleted and
+    the ref released once the calling context delete the texture name
+    associated with the texture object, and detaches it from all framebuffer
+    objects as well as texture unit bindings.
+
+    Does not alter the texture bindings or alter the currently
+    bound texture in any way.
+
+    INVALID_OPERATION is generated if <mailbox> is not associated with a
+    texture object. In this case the new texture name remains unbound.  It is
+    treated in the same way as a new texture name returned by GenTextures.
+
+New Tokens
+
+    None.
+
+Errors
+
+    None.
+
+New Tokens
+
+    None.
+
+New State
+
+    None.
+
+Revision History
+
+    2018-10-15   Created.

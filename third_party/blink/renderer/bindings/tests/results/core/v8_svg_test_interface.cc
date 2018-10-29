@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -63,14 +63,14 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace SVGTestInterfaceV8Internal {
+namespace svg_test_interface_v8_internal {
 
 static void typeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
 
   SVGTestInterface* impl = V8SVGTestInterface::ToImpl(holder);
 
-  V8SetReturnValueString(info, impl->FastGetAttribute(SVGNames::typeAttr), info.GetIsolate());
+  V8SetReturnValueString(info, impl->FastGetAttribute(svg_names::kTypeAttr), info.GetIsolate());
 }
 
 static void typeAttributeSetter(v8::Local<v8::Value> v8Value, const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -89,15 +89,15 @@ static void typeAttributeSetter(v8::Local<v8::Value> v8Value, const v8::Function
   if (!cppValue.Prepare())
     return;
 
-  impl->setAttribute(SVGNames::typeAttr, cppValue);
+  impl->setAttribute(svg_names::kTypeAttr, cppValue);
 }
 
-} // namespace SVGTestInterfaceV8Internal
+}  // namespace svg_test_interface_v8_internal
 
 void V8SVGTestInterface::typeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_SVGTestInterface_type_Getter");
 
-  SVGTestInterfaceV8Internal::typeAttributeGetter(info);
+  svg_test_interface_v8_internal::typeAttributeGetter(info);
 }
 
 void V8SVGTestInterface::typeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -105,7 +105,7 @@ void V8SVGTestInterface::typeAttributeSetterCallback(const v8::FunctionCallbackI
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  SVGTestInterfaceV8Internal::typeAttributeSetter(v8Value, info);
+  svg_test_interface_v8_internal::typeAttributeSetter(v8Value, info);
 }
 
 static const V8DOMConfiguration::AccessorConfiguration V8SVGTestInterfaceAccessors[] = {

@@ -4,8 +4,6 @@
 
 #include "content/public/renderer/document_state.h"
 
-#include "content/public/renderer/navigation_state.h"
-
 namespace content {
 
 DocumentState::DocumentState()
@@ -31,10 +29,6 @@ std::unique_ptr<DocumentState> DocumentState::Clone() {
   new_document_state->set_data_url(data_url_);
   new_document_state->set_can_load_local_resources(can_load_local_resources_);
   return new_document_state;
-}
-
-void DocumentState::set_navigation_state(NavigationState* navigation_state) {
-  navigation_state_.reset(navigation_state);
 }
 
 }  // namespace content

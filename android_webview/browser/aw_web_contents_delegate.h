@@ -29,6 +29,7 @@ class AwWebContentsDelegate
                    const std::string& request_method,
                    const base::Callback<void(bool)>& callback) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      std::unique_ptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
@@ -65,8 +66,14 @@ class AwWebContentsDelegate
   void UpdateUserGestureCarryoverInfo(
       content::WebContents* web_contents) override;
 
+  std::unique_ptr<content::FileSelectListener> TakeFileSelectListener();
+
  private:
   bool is_fullscreen_;
+
+  // Maintain a FileSelectListener instance passed to RunFileChooser() until
+  // a callback is called.
+  std::unique_ptr<content::FileSelectListener> file_select_listener_;
 };
 
 }  // namespace android_webview

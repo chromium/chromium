@@ -6,6 +6,7 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="../site_favicon.html">
 <link rel="import" href="local_data_browser_proxy.html">
 <link rel="import" href="site_settings_behavior.html">
 
@@ -48,9 +49,7 @@
       <div class$="settings-box list-item [[getClassForIndex_(listIndex)]]">
         <div id="toggleButton" class="start row-aligned two-line"
             on-click="onSiteEntryTap_" actionable aria-expanded="false">
-          <div class="favicon-image"
-              style$="[[getSiteGroupIcon_(siteGroup)]]">
-          </div>
+          <site-favicon url="[[getSiteGroupIcon_(siteGroup)]]"></site-favicon>
           <div class="middle text-elide" id="displayName">
             <div class="site-representation">
               <span class="url-directionality">[[displayName_]]</span>
@@ -94,9 +93,7 @@
           <template is="dom-repeat" items="[[siteGroup.origins]]">
             <div class="settings-box list-item" on-click="onOriginTap_"
                 actionable>
-              <div class="favicon-image"
-                  style$="[[computeSiteIcon(item.origin)]]">
-              </div>
+              <site-favicon url="[[item.origin]]"></site-favicon>
               <div class="site-representation middle text-elide">
                 <span id="originSiteRepresentation" class="url-directionality">
                   [[siteRepresentation_(siteGroup, index)]]

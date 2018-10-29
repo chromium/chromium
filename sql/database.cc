@@ -1139,7 +1139,7 @@ void Database::Poison() {
 //
 // static
 bool Database::Delete(const base::FilePath& path) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   base::FilePath journal_path = Database::JournalPath(path);
   base::FilePath wal_path = Database::WriteAheadLogPath(path);

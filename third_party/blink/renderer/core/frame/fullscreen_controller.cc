@@ -64,7 +64,8 @@ std::unique_ptr<FullscreenController> FullscreenController::Create(
 }
 
 FullscreenController::FullscreenController(WebViewImpl* web_view_base)
-    : web_view_base_(web_view_base) {}
+    : web_view_base_(web_view_base),
+      pending_frames_(new PendingFullscreenSet) {}
 
 void FullscreenController::DidEnterFullscreen() {
   // |Browser::EnterFullscreenModeForTab()| can enter fullscreen without going
@@ -80,7 +81,7 @@ void FullscreenController::DidEnterFullscreen() {
   state_ = State::kFullscreen;
 
   // Notify all pending local frames in order that we have entered fullscreen.
-  for (LocalFrame* frame : pending_frames_) {
+  for (LocalFrame* frame : *pending_frames_) {
     if (frame) {
       if (Document* document = frame->GetDocument())
         Fullscreen::DidEnterFullscreen(*document);
@@ -95,7 +96,7 @@ void FullscreenController::DidEnterFullscreen() {
     if (Document* document = ToLocalFrame(frame)->GetDocument())
       Fullscreen::DidEnterFullscreen(*document);
   }
-  pending_frames_.clear();
+  pending_frames_->clear();
 
   // TODO(foolip): If the top level browsing context (main frame) ends up with
   // no fullscreen element, exit fullscreen again to recover.
@@ -162,7 +163,7 @@ void FullscreenController::EnterFullscreen(LocalFrame& frame,
         web_view_base_->BackgroundColorOverride();
   }
 
-  pending_frames_.insert(&frame);
+  pending_frames_->insert(&frame);
 
   // If already entering fullscreen, just wait.
   if (state_ == State::kEnteringFullscreen)

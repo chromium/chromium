@@ -201,12 +201,6 @@ TEST_F(PositionTest, ToPositionInFlatTreeWithShadowRoot) {
   EXPECT_EQ(PositionInFlatTree(host, PositionAnchorType::kBeforeChildren),
             ToPositionInFlatTree(
                 Position(shadow_root, PositionAnchorType::kBeforeChildren)));
-  EXPECT_EQ(PositionInFlatTree(host, PositionAnchorType::kAfterAnchor),
-            ToPositionInFlatTree(
-                Position(shadow_root, PositionAnchorType::kAfterAnchor)));
-  EXPECT_EQ(PositionInFlatTree(host, PositionAnchorType::kBeforeAnchor),
-            ToPositionInFlatTree(
-                Position(shadow_root, PositionAnchorType::kBeforeAnchor)));
 }
 
 TEST_F(PositionTest,

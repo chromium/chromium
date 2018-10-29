@@ -25,6 +25,12 @@ Resource:{
     }
 }
 HAR:{
+    _initiator : {
+        lineNumber : 117
+        type : "parser"
+        url : "http://example.com/inspector-test.js"
+    }
+    _priority : "VeryHigh"
     cache : {
     }
     request : {
@@ -69,6 +75,16 @@ HAR:{
     serverIPAddress : ""
     startedDateTime : <string>
     time : <number>
-    timings : <object>
+    timings : {
+        _blocked_proxy : 0.752
+        _blocked_queueing : 0.9689999860711396
+        blocked : 3.8059999860711398
+        connect : 229.12300000000002
+        dns : 84.076
+        receive : 5.23900002008304
+        send : 0.5549999999999784
+        ssl : 98.702
+        wait : 568.4820000130125
+    }
 }
 

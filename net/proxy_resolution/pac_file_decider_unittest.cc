@@ -83,8 +83,7 @@ class Rules {
   }
 
   const Rule& GetRuleByUrl(const GURL& url) const {
-    for (RuleList::const_iterator it = rules_.begin(); it != rules_.end();
-         ++it) {
+    for (auto it = rules_.begin(); it != rules_.end(); ++it) {
       if (it->url == url)
         return *it;
     }
@@ -93,8 +92,7 @@ class Rules {
   }
 
   const Rule& GetRuleByText(const base::string16& text) const {
-    for (RuleList::const_iterator it = rules_.begin(); it != rules_.end();
-         ++it) {
+    for (auto it = rules_.begin(); it != rules_.end(); ++it) {
       if (it->text() == text)
         return *it;
     }

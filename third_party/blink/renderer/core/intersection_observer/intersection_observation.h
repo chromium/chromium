@@ -55,18 +55,15 @@ class IntersectionObservation final
     last_is_visible_ = last_is_visible ? 1 : 0;
   }
 
-  // If trackVisibility is true, don't compute observations more frequently
-  // than this many milliseconds.
-  static const DOMHighResTimeStamp s_v2_throttle_delay_;
-
   Member<IntersectionObserver> observer_;
   WeakMember<Element> target_;
   HeapVector<Member<IntersectionObserverEntry>> entries_;
   DOMHighResTimeStamp last_run_time_;
 
   unsigned last_is_visible_ : 1;
-  unsigned last_threshold_index_ : 31;
-  static const unsigned kMaxThresholdIndex = (unsigned)0x80000000;
+  unsigned needs_update_ : 1;
+  unsigned last_threshold_index_ : 30;
+  static const unsigned kMaxThresholdIndex = (unsigned)0x40000000;
 };
 
 }  // namespace blink

@@ -18,7 +18,7 @@ Polymer({
     searchQuery: Object,
 
     /** @type {boolean} */
-    hasActionLink: {
+    hasManageLink: {
       type: Boolean,
       value: false,
     },
@@ -27,6 +27,7 @@ Polymer({
     loadingDestinations: {
       type: Boolean,
       value: false,
+      observer: 'forceIronResize',
     },
 
     listName: String,
@@ -41,7 +42,6 @@ Polymer({
     hasDestinations_: {
       type: Boolean,
       value: true,
-      observer: 'hasDestinationsChanged_',
     },
 
     /** @private {boolean} */
@@ -55,6 +55,30 @@ Polymer({
     'updateMatchingDestinations_(destinations.*, searchQuery)',
     'matchingDestinationsChanged_(matchingDestinations_.*)',
   ],
+
+  /** @private {?ResizeObserver} */
+  resizeObserver_: null,
+
+  attached: function() {
+    this.resizeObserver_ = new ResizeObserver(entries => {
+      if (entries === null)
+        return;
+
+      const entry = assert(entries[0]);
+      // Don't set maxHeight below the minimum height.
+      const fullHeight = Math.max(entry.contentRect.height, 64);
+      this.$.list.style.maxHeight = `${fullHeight}px`;
+      this.forceIronResize();
+    });
+    this.resizeObserver_.observe(this.$.listContainer);
+  },
+
+  detached: function() {
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
+    }
+  },
 
   // This is a workaround to ensure that the iron-list correctly updates the
   // displayed destination information when the elements in the
@@ -79,6 +103,7 @@ Polymer({
             this.destinations.filter(
                 d => d.matches(/** @type {!RegExp} */ (this.searchQuery))) :
             this.destinations.slice());
+    this.forceIronResize();
   },
 
   /** @private */
@@ -86,11 +111,6 @@ Polymer({
     const count = this.matchingDestinations_.length;
     this.hasDestinations_ = count > 0;
     this.showDestinationsTotal_ = count > 4;
-  },
-
-  /** @private */
-  onActionLinkClick_: function() {
-    print_preview.NativeLayer.getInstance().managePrinters();
   },
 
   /**
@@ -109,14 +129,10 @@ Polymer({
    * @private
    */
   onDestinationSelected_: function(e) {
-    this.fire('destination-selected', e.target);
-  },
+    if (e.composedPath()[0].tagName === 'A')
+      return;
 
-  /** @private */
-  hasDestinationsChanged_: function() {
-    // If there are no destinations, leave space for "no destinations" message.
-    this.$.list.style.height = this.hasDestinations_ ?
-        'calc(100% - 1rem - 9px)' : 'calc(100% - 2rem - 9px)';
+    this.fire('destination-selected', e.target);
   },
 });
 })();

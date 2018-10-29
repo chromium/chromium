@@ -141,7 +141,7 @@ void OfflineAudioDestinationHandler::InitializeOfflineRenderThread(
 
   render_target_ = render_target;
   render_bus_ = AudioBus::Create(render_target->numberOfChannels(),
-                                 AudioUtilities::kRenderQuantumFrames);
+                                 audio_utilities::kRenderQuantumFrames);
   DCHECK(render_bus_);
 
   PrepareTaskRunnerForRendering();
@@ -166,7 +166,7 @@ void OfflineAudioDestinationHandler::StartOfflineRendering() {
     return;
 
   bool is_render_bus_allocated =
-      render_bus_->length() >= AudioUtilities::kRenderQuantumFrames;
+      render_bus_->length() >= audio_utilities::kRenderQuantumFrames;
   DCHECK(is_render_bus_allocated);
   if (!is_render_bus_allocated)
     return;
@@ -209,12 +209,12 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
     // Suspend the rendering if a scheduled suspend found at the current
     // sample frame. Otherwise render one quantum.
     if (RenderIfNotSuspended(nullptr, render_bus_.get(),
-                             AudioUtilities::kRenderQuantumFrames))
+                             audio_utilities::kRenderQuantumFrames))
       return;
 
     size_t frames_available_to_copy =
         std::min(frames_to_process_,
-                 static_cast<size_t>(AudioUtilities::kRenderQuantumFrames));
+                 static_cast<size_t>(audio_utilities::kRenderQuantumFrames));
 
     for (unsigned channel_index = 0; channel_index < number_of_channels;
          ++channel_index) {
@@ -373,7 +373,7 @@ void OfflineAudioDestinationHandler::PrepareTaskRunnerForRendering() {
     if (!render_thread_) {
       // The context started from the non-AudioWorklet mode.
       render_thread_ = Platform::Current()->CreateThread(
-          WebThreadCreationParams(WebThreadType::kOfflineAudioRenderThread));
+          ThreadCreationParams(WebThreadType::kOfflineAudioRenderThread));
       render_thread_task_runner_ = render_thread_->GetTaskRunner();
     }
   }

@@ -79,12 +79,9 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
   // Method called on the render thread.
   bool HasSingleOrigin();
 
-  // Returns true if the media resource passed a CORS access control check.
-  bool DidPassCORSAccessCheck() const;
-
-  // Returns true if a service worker provided the media resource response,
-  // and the response was opaque.
-  bool DidGetOpaqueResponseViaServiceWorker() const;
+  // https://html.spec.whatwg.org/#cors-cross-origin
+  // This must be called after the response arrives.
+  bool IsCorsCrossOrigin() const;
 
   // Notifies changes in playback state for controlling media buffering
   // behavior.
@@ -123,6 +120,8 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
   }
 
  protected:
+  UrlData* url_data() const { return url_data_and_loading_state_.url_data(); }
+
   void OnRedirect(const scoped_refptr<UrlData>& destination);
 
   // A factory method to create a BufferedResourceLoader based on the read
@@ -211,7 +210,7 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource : public DataSource {
   const scoped_refptr<base::SingleThreadTaskRunner> render_task_runner_;
 
   // URL of the resource requested.
-  scoped_refptr<UrlData> url_data_;
+  UrlData::UrlDataWithLoadingState url_data_and_loading_state_;
 
   // A resource reader for the media resource.
   std::unique_ptr<MultiBufferReader> reader_;

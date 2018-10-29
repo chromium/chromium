@@ -5,14 +5,11 @@
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_mac.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 
 // static
 extensions::NativeAppWindow* ChromeAppWindowClient::CreateNativeAppWindowImpl(
     extensions::AppWindow* app_window,
     const extensions::AppWindow::CreateParams& params) {
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    return CreateNativeAppWindowImplCocoa(app_window, params);
   ChromeNativeAppWindowViewsMac* window = new ChromeNativeAppWindowViewsMac;
   window->Init(app_window, params);
   return window;

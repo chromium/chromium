@@ -22,7 +22,7 @@ enum BackgroundFetchResult { "", "success", "failure" };
 
 [
     Exposed=(Window,Worker),
-    RuntimeEnabled=BackgroundFetch
+    OriginTrialEnabled=BackgroundFetch
 ] interface BackgroundFetchRegistration : EventTarget {
     readonly attribute DOMString id;
     readonly attribute unsigned long long uploadTotal;
@@ -35,10 +35,10 @@ enum BackgroundFetchResult { "", "success", "failure" };
 
     attribute EventHandler onprogress;
 
-    [CallWith=ScriptState] Promise<boolean> abort();
+    [CallWith=ScriptState, MeasureAs=BackgroundFetchRegistrationAbort] Promise<boolean> abort();
 
     // TODO(crbug.com/875201): Change to (Window,Worker) once we support
     // match() and matchAll() for active fetches.
-    [CallWith=ScriptState, Exposed=ServiceWorker, RaisesException] Promise<BackgroundFetchRecord> match(RequestInfo request, optional CacheQueryOptions options);
-    [CallWith=ScriptState, Exposed=ServiceWorker, RaisesException] Promise<sequence<BackgroundFetchRecord>> matchAll(optional RequestInfo request, optional CacheQueryOptions options);
+    [CallWith=ScriptState, Exposed=ServiceWorker, RaisesException, MeasureAs=BackgroundFetchRegistrationMatch] Promise<BackgroundFetchRecord> match(RequestInfo request, optional CacheQueryOptions options);
+    [CallWith=ScriptState, Exposed=ServiceWorker, RaisesException, MeasureAs=BackgroundFetchRegistrationMatchAll] Promise<sequence<BackgroundFetchRecord>> matchAll(optional RequestInfo request, optional CacheQueryOptions options);
 };

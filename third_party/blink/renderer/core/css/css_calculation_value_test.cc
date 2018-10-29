@@ -69,7 +69,7 @@ CSSLengthArray& SetLengthArray(CSSLengthArray& length_array, String text) {
 }
 
 bool LengthArraysEqual(CSSLengthArray& a, CSSLengthArray& b) {
-  for (size_t i = 0; i < CSSPrimitiveValue::kLengthUnitTypeCount; ++i) {
+  for (wtf_size_t i = 0; i < CSSPrimitiveValue::kLengthUnitTypeCount; ++i) {
     if (a.values.at(i) != b.values.at(i))
       return false;
   }

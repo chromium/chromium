@@ -209,7 +209,7 @@ void AddColorsFromImageStyle(const ComputedStyle& style,
                              bool& found_non_transparent_color,
                              const LayoutObject& layout_object) {
   const FillLayer& background_layers = style.BackgroundLayers();
-  if (!background_layers.HasImage())
+  if (!background_layers.AnyLayerHasImage())
     return;
 
   StyleImage* style_image = background_layers.GetImage();
@@ -1162,9 +1162,19 @@ Response InspectorCSSAgent::getComputedStyleForNode(
 
 void InspectorCSSAgent::CollectPlatformFontsForLayoutObject(
     LayoutObject* layout_object,
-    HashCountedSet<std::pair<int, String>>* font_stats) {
-  if (!layout_object->IsText())
+    HashCountedSet<std::pair<int, String>>* font_stats,
+    unsigned descendants_depth) {
+  if (!layout_object->IsText()) {
+    if (!descendants_depth)
+      return;
+    if (!layout_object->IsAnonymous())
+      --descendants_depth;
+    for (LayoutObject* child = layout_object->SlowFirstChild(); child;
+         child = child->NextSibling()) {
+      CollectPlatformFontsForLayoutObject(child, font_stats, descendants_depth);
+    }
     return;
+  }
 
   FontCachePurgePreventer preventer;
   LayoutText* layout_text = ToLayoutText(layout_object);
@@ -1214,15 +1224,9 @@ Response InspectorCSSAgent::getPlatformFontsForNode(
   HashCountedSet<std::pair<int, String>> font_stats;
   LayoutObject* root = node->GetLayoutObject();
   if (root) {
-    CollectPlatformFontsForLayoutObject(root, &font_stats);
     // Iterate upto two layers deep.
-    for (LayoutObject* child = root->SlowFirstChild(); child;
-         child = child->NextSibling()) {
-      CollectPlatformFontsForLayoutObject(child, &font_stats);
-      for (LayoutObject* child2 = child->SlowFirstChild(); child2;
-           child2 = child2->NextSibling())
-        CollectPlatformFontsForLayoutObject(child2, &font_stats);
-    }
+    const unsigned descendants_depth = 2;
+    CollectPlatformFontsForLayoutObject(root, &font_stats, descendants_depth);
   }
   *platform_fonts = protocol::Array<protocol::CSS::PlatformFontUsage>::create();
   for (auto& font : font_stats) {
@@ -1617,7 +1621,7 @@ Response InspectorCSSAgent::forcePseudoState(
     node_id_to_forced_pseudo_state_.erase(node_id);
   element->ownerDocument()->SetNeedsStyleRecalc(
       kSubtreeStyleChange,
-      StyleChangeReasonForTracing::Create(StyleChangeReason::kInspector));
+      StyleChangeReasonForTracing::Create(style_change_reason::kInspector));
   return Response::OK();
 }
 
@@ -2078,7 +2082,7 @@ void InspectorCSSAgent::DidAddDocument(Document* document) {
   document->GetStyleEngine().SetRuleUsageTracker(tracker_);
   document->SetNeedsStyleRecalc(
       kSubtreeStyleChange,
-      StyleChangeReasonForTracing::Create(StyleChangeReason::kInspector));
+      StyleChangeReasonForTracing::Create(style_change_reason::kInspector));
 }
 
 void InspectorCSSAgent::DidRemoveDocument(Document* document) {}
@@ -2129,10 +2133,11 @@ void InspectorCSSAgent::ResetPseudoStates() {
   }
 
   node_id_to_forced_pseudo_state_.clear();
-  for (auto& document : documents_to_change)
+  for (auto& document : documents_to_change) {
     document->SetNeedsStyleRecalc(
         kSubtreeStyleChange,
-        StyleChangeReasonForTracing::Create(StyleChangeReason::kInspector));
+        StyleChangeReasonForTracing::Create(style_change_reason::kInspector));
+  }
 }
 
 HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
@@ -2352,7 +2357,7 @@ Response InspectorCSSAgent::getBackgroundColors(
   *background_colors = protocol::Array<String>::create();
   for (auto color : colors) {
     background_colors->fromJust()->addItem(
-        color.SerializedAsCSSComponentValue());
+        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(color));
   }
 
   CSSComputedStyleDeclaration* computed_style_info =
@@ -2408,7 +2413,7 @@ Response InspectorCSSAgent::startRuleUsageTracking() {
   for (Document* document : dom_agent_->Documents()) {
     document->SetNeedsStyleRecalc(
         kSubtreeStyleChange,
-        StyleChangeReasonForTracing::Create(StyleChangeReason::kInspector));
+        StyleChangeReasonForTracing::Create(style_change_reason::kInspector));
     document->UpdateStyleAndLayoutTree();
   }
 
@@ -2417,6 +2422,8 @@ Response InspectorCSSAgent::startRuleUsageTracking() {
 
 Response InspectorCSSAgent::stopRuleUsageTracking(
     std::unique_ptr<protocol::Array<protocol::CSS::RuleUsage>>* result) {
+  for (Document* document : dom_agent_->Documents())
+    document->UpdateStyleAndLayoutTree();
   Response response = takeCoverageDelta(result);
   SetCoverageEnabled(false);
   return response;

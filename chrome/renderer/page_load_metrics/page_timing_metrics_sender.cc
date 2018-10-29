@@ -35,6 +35,7 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       last_timing_(std::move(initial_timing)),
       metadata_(mojom::PageLoadMetadata::New()),
       new_features_(mojom::PageLoadFeatures::New()),
+      render_data_(),
       buffer_timer_delay_ms_(kBufferTimerDelayMillis) {
   page_resource_data_use_.emplace(
       std::piecewise_construct,
@@ -88,6 +89,12 @@ void PageTimingMetricsSender::DidObserveNewCssPropertyUsage(int css_property,
     new_features_->css_properties.push_back(css_property);
     EnsureSendTimer();
   }
+}
+
+void PageTimingMetricsSender::DidObserveLayoutJank(double jank_fraction) {
+  DCHECK(jank_fraction > 0);
+  render_data_.layout_jank_score += jank_fraction;
+  EnsureSendTimer();
 }
 
 void PageTimingMetricsSender::DidStartResponse(
@@ -200,7 +207,7 @@ void PageTimingMetricsSender::SendNow() {
     }
   }
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
-                      std::move(resources));
+                      std::move(resources), render_data_);
   new_features_ = mojom::PageLoadFeatures::New();
   modified_resources_.clear();
 }

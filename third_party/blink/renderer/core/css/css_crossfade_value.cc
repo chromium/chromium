@@ -35,26 +35,26 @@
 namespace blink {
 namespace cssvalue {
 
-static bool SubimageIsPending(CSSValue* value) {
-  if (value->IsImageValue())
-    return ToCSSImageValue(value)->IsCachePending();
+static bool SubimageIsPending(const CSSValue& value) {
+  if (value.IsImageValue())
+    return ToCSSImageValue(value).IsCachePending();
 
-  if (value->IsImageGeneratorValue())
-    return ToCSSImageGeneratorValue(value)->IsPending();
+  if (value.IsImageGeneratorValue())
+    return ToCSSImageGeneratorValue(value).IsPending();
 
   NOTREACHED();
 
   return false;
 }
 
-static bool SubimageKnownToBeOpaque(CSSValue* value,
+static bool SubimageKnownToBeOpaque(const CSSValue& value,
                                     const Document& document,
                                     const ComputedStyle& style) {
-  if (value->IsImageValue())
-    return ToCSSImageValue(value)->KnownToBeOpaque(document, style);
+  if (value.IsImageValue())
+    return ToCSSImageValue(value).KnownToBeOpaque(document, style);
 
-  if (value->IsImageGeneratorValue())
-    return ToCSSImageGeneratorValue(value)->KnownToBeOpaque(document, style);
+  if (value.IsImageGeneratorValue())
+    return ToCSSImageGeneratorValue(value).KnownToBeOpaque(document, style);
 
   NOTREACHED();
 
@@ -98,11 +98,11 @@ static Image* RenderableImageForCSSValue(CSSValue* value,
   return cached_image->GetImage();
 }
 
-static KURL UrlForCSSValue(const CSSValue* value) {
-  if (!value->IsImageValue())
+static KURL UrlForCSSValue(const CSSValue& value) {
+  if (!value.IsImageValue())
     return KURL();
 
-  return KURL(ToCSSImageValue(*value).Url());
+  return KURL(ToCSSImageValue(value).Url());
 }
 
 CSSCrossfadeValue::CSSCrossfadeValue(CSSValue* from_value,
@@ -189,14 +189,13 @@ FloatSize CSSCrossfadeValue::FixedSize(
 }
 
 bool CSSCrossfadeValue::IsPending() const {
-  return SubimageIsPending(from_value_.Get()) ||
-         SubimageIsPending(to_value_.Get());
+  return SubimageIsPending(*from_value_) || SubimageIsPending(*to_value_);
 }
 
 bool CSSCrossfadeValue::KnownToBeOpaque(const Document& document,
                                         const ComputedStyle& style) const {
-  return SubimageKnownToBeOpaque(from_value_.Get(), document, style) &&
-         SubimageKnownToBeOpaque(to_value_.Get(), document, style);
+  return SubimageKnownToBeOpaque(*from_value_, document, style) &&
+         SubimageKnownToBeOpaque(*to_value_, document, style);
 }
 
 void CSSCrossfadeValue::LoadSubimages(const Document& document) {
@@ -240,13 +239,15 @@ scoped_refptr<Image> CSSCrossfadeValue::GetImage(
   scoped_refptr<Image> from_image_ref(from_image);
   scoped_refptr<Image> to_image_ref(to_image);
 
-  if (from_image->IsSVGImage())
+  if (from_image->IsSVGImage()) {
     from_image_ref = SVGImageForContainer::Create(
-        ToSVGImage(from_image), size, 1, UrlForCSSValue(from_value_.Get()));
+        ToSVGImage(from_image), size, 1, UrlForCSSValue(*from_value_));
+  }
 
-  if (to_image->IsSVGImage())
-    to_image_ref = SVGImageForContainer::Create(
-        ToSVGImage(to_image), size, 1, UrlForCSSValue(to_value_.Get()));
+  if (to_image->IsSVGImage()) {
+    to_image_ref = SVGImageForContainer::Create(ToSVGImage(to_image), size, 1,
+                                                UrlForCSSValue(*to_value_));
+  }
 
   return CrossfadeGeneratedImage::Create(from_image_ref, to_image_ref,
                                          percentage_value_->GetFloatValue(),
@@ -254,7 +255,6 @@ scoped_refptr<Image> CSSCrossfadeValue::GetImage(
 }
 
 void CSSCrossfadeValue::CrossfadeChanged(
-    const IntRect&,
     ImageResourceObserver::CanDeferInvalidation defer) {
   for (const auto& curr : Clients()) {
     ImageResourceObserver* client =
@@ -273,10 +273,9 @@ bool CSSCrossfadeValue::WillRenderImage() const {
 
 void CSSCrossfadeValue::CrossfadeSubimageObserverProxy::ImageChanged(
     ImageResourceContent*,
-    CanDeferInvalidation defer,
-    const IntRect* rect) {
+    CanDeferInvalidation defer) {
   if (ready_)
-    owner_value_->CrossfadeChanged(*rect, defer);
+    owner_value_->CrossfadeChanged(defer);
 }
 
 bool CSSCrossfadeValue::CrossfadeSubimageObserverProxy::WillRenderImage() {

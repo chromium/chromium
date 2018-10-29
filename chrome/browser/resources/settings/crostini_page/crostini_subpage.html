@@ -10,6 +10,13 @@
 <dom-module id="settings-crostini-subpage">
   <template>
     <style include="settings-shared"></style>
+    <div id="crostini-shared-paths" class="settings-box"
+        actionable on-click="onSharedPathsTap_">
+      <div class="start">$i18n{crostiniSharedPaths}</div>
+      <paper-icon-button-light class="subpage-arrow">
+        <button aria-label="$i18n{crostiniSharedPaths}"></button>
+      </paper-icon-button-light>
+    </div>
     <div id="remove" class="settings-box first"
         actionable on-click="onRemoveTap_">
       <div class="start">$i18n{crostiniRemove}</div>

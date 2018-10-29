@@ -339,7 +339,8 @@ public class OverlayPanelContent {
                     @Override
                     public void didFinishNavigation(String url, boolean isInMainFrame,
                             boolean isErrorPage, boolean hasCommitted, boolean isSameDocument,
-                            boolean isFragmentNavigation, Integer pageTransition, int errorCode,
+                            boolean isFragmentNavigation, boolean isRendererInitiated,
+                            boolean isDownload, Integer pageTransition, int errorCode,
                             String errorDescription, int httpStatusCode) {
                         if (hasCommitted && isInMainFrame) {
                             mIsProcessingPendingNavigation = false;

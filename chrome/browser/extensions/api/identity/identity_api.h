@@ -12,11 +12,13 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
 #include "chrome/browser/extensions/api/identity/gaia_web_auth_flow.h"
 #include "chrome/browser/extensions/api/identity/identity_get_accounts_function.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "chrome/browser/extensions/chrome_extension_function.h"
 #include "components/signin/core/browser/account_tracker_service.h"
+#include "components/signin/core/browser/signin_buildflags.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
@@ -40,6 +43,11 @@ class BrowserContext;
 class Profile;
 
 namespace extensions {
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Enables all accounts in extensions.
+extern const base::Feature kExtensionsAllAccountsFeature;
+#endif
 
 class IdentityTokenCacheValue {
  public:
@@ -111,6 +119,10 @@ class IdentityAPI : public BrowserContextKeyedAPI,
       const OnSignInChangedCallback& callback) {
     on_signin_changed_callback_for_testing_ = callback;
   }
+
+  // Whether the chrome.identity API should use all accounts or the primary
+  // account only.
+  bool AreExtensionsRestrictedToPrimaryAccount();
 
  private:
   friend class BrowserContextKeyedAPIFactory<IdentityAPI>;

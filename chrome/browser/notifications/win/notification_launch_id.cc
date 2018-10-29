@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace {
 
@@ -164,4 +165,14 @@ std::string NotificationLaunchId::Serialize() const {
       "%d%s|%d|%s|%d|%s|%s", type, prefix.c_str(),
       static_cast<int>(notification_type_), profile_id_.c_str(), incognito_,
       origin_url_.spec().c_str(), notification_id_.c_str());
+}
+
+// static
+std::string NotificationLaunchId::GetProfileIdFromLaunchId(
+    const base::string16& launch_id_str) {
+  NotificationLaunchId launch_id(base::UTF16ToUTF8(launch_id_str));
+
+  // The launch_id_invalid failure is logged via HandleActivation(). We don't
+  // re-log it here, which would skew the UMA failure metrics.
+  return launch_id.is_valid() ? launch_id.profile_id() : std::string();
 }

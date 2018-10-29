@@ -57,10 +57,10 @@ void ExtensionKeybindingRegistry::SetShortcutHandlingSuspended(bool suspended) {
 void ExtensionKeybindingRegistry::RemoveExtensionKeybinding(
     const Extension* extension,
     const std::string& command_name) {
-  EventTargets::iterator it = event_targets_.begin();
+  auto it = event_targets_.begin();
   while (it != event_targets_.end()) {
     TargetList& target_list = it->second;
-    TargetList::iterator target = target_list.begin();
+    auto target = target_list.begin();
     while (target != target_list.end()) {
       if (target->first == extension->id() &&
           (command_name.empty() || command_name == target->second))
@@ -69,7 +69,7 @@ void ExtensionKeybindingRegistry::RemoveExtensionKeybinding(
         target++;
     }
 
-    EventTargets::iterator old = it++;
+    auto old = it++;
     if (target_list.empty()) {
       // Let each platform-specific implementation get a chance to clean up.
       RemoveExtensionKeybindingImpl(old->first, command_name);
@@ -167,12 +167,12 @@ bool ExtensionKeybindingRegistry::GetFirstTarget(
     const ui::Accelerator& accelerator,
     std::string* extension_id,
     std::string* command_name) const {
-  EventTargets::const_iterator targets = event_targets_.find(accelerator);
+  auto targets = event_targets_.find(accelerator);
   if (targets == event_targets_.end())
     return false;
 
   DCHECK(!targets->second.empty());
-  TargetList::const_iterator first_target = targets->second.begin();
+  auto first_target = targets->second.begin();
   *extension_id = first_target->first;
   *command_name = first_target->second;
   return true;
@@ -268,7 +268,7 @@ bool ExtensionKeybindingRegistry::ExtensionMatchesFilter(
 bool ExtensionKeybindingRegistry::ExecuteCommands(
     const ui::Accelerator& accelerator,
     const std::string& extension_id) {
-  EventTargets::iterator targets = event_targets_.find(accelerator);
+  auto targets = event_targets_.find(accelerator);
   if (targets == event_targets_.end() || targets->second.empty())
     return false;
 

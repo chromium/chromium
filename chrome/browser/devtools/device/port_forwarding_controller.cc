@@ -20,10 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -145,51 +142,41 @@ net::NetworkTrafficAnnotationTag kPortForwardingControllerTrafficAnnotation =
             "here."
         })");
 
-class SocketTunnel : public network::mojom::ResolveHostClient {
+class SocketTunnel {
  public:
-  static void StartTunnel(Profile* profile,
-                          const std::string& host,
+  static void StartTunnel(const std::string& host,
                           int port,
                           int result,
                           std::unique_ptr<net::StreamSocket> socket) {
     if (result == net::OK)
-      new SocketTunnel(profile, std::move(socket), host, port);
+      new SocketTunnel(std::move(socket), host, port);
   }
 
  private:
-  SocketTunnel(Profile* profile,
-               std::unique_ptr<net::StreamSocket> socket,
+  SocketTunnel(std::unique_ptr<net::StreamSocket> socket,
                const std::string& host,
                int port)
-      : binding_(this),
-        remote_socket_(std::move(socket)),
+      : remote_socket_(std::move(socket)),
         pending_writes_(0),
         pending_destruction_(false) {
-    DCHECK(!binding_);
-    network::mojom::ResolveHostClientPtr client_ptr;
-    binding_.Bind(mojo::MakeRequest(&client_ptr));
-    binding_.set_connection_error_handler(
-        base::BindOnce(&SocketTunnel::OnComplete, base::Unretained(this),
-                       net::ERR_FAILED, base::nullopt));
-    net::HostPortPair host_port_pair(host, port);
-    content::BrowserContext::GetDefaultStoragePartition(profile)
-        ->GetNetworkContext()
-        ->ResolveHost(host_port_pair, nullptr, std::move(client_ptr));
+    host_resolver_ = net::HostResolver::CreateDefaultResolver(nullptr);
+    net::HostResolver::RequestInfo request_info(net::HostPortPair(host, port));
+    int result = host_resolver_->Resolve(
+        request_info, net::DEFAULT_PRIORITY, &address_list_,
+        base::Bind(&SocketTunnel::OnResolved, base::Unretained(this)),
+        &request_, net::NetLogWithSource());
+    if (result != net::ERR_IO_PENDING)
+      OnResolved(result);
   }
 
-  // network::mojom::ResolveHostClient:
-  void OnComplete(
-      int result,
-      const base::Optional<net::AddressList>& resolved_addresses) override {
+  void OnResolved(int result) {
     if (result < 0) {
       SelfDestruct();
       return;
     }
 
-    DCHECK(resolved_addresses && !resolved_addresses->empty());
-
-    host_socket_.reset(new net::TCPClientSocket(
-        resolved_addresses.value(), nullptr, nullptr, net::NetLogSource()));
+    host_socket_.reset(new net::TCPClientSocket(address_list_, nullptr, nullptr,
+                                                net::NetLogSource()));
     result = host_socket_->Connect(base::Bind(&SocketTunnel::OnConnected,
                                               base::Unretained(this)));
     if (result != net::ERR_IO_PENDING)
@@ -284,9 +271,11 @@ class SocketTunnel : public network::mojom::ResolveHostClient {
     delete this;
   }
 
-  mojo::Binding<network::mojom::ResolveHostClient> binding_;
   std::unique_ptr<net::StreamSocket> remote_socket_;
   std::unique_ptr<net::StreamSocket> host_socket_;
+  std::unique_ptr<net::HostResolver> host_resolver_;
+  std::unique_ptr<net::HostResolver::Request> request_;
+  net::AddressList address_list_;
   int pending_writes_;
   bool pending_destruction_;
 };
@@ -296,8 +285,7 @@ class SocketTunnel : public network::mojom::ResolveHostClient {
 class PortForwardingController::Connection
     : public AndroidDeviceManager::AndroidWebSocket::Delegate {
  public:
-  Connection(Profile* profile,
-             Registry* registry,
+  Connection(Registry* registry,
              scoped_refptr<AndroidDeviceManager::Device> device,
              scoped_refptr<DevToolsAndroidBridge::RemoteBrowser> browser,
              const ForwardingMap& forwarding_map);
@@ -335,7 +323,6 @@ class PortForwardingController::Connection
   void OnFrameRead(const std::string& message) override;
   void OnSocketClosed() override;
 
-  Profile* profile_;
   PortForwardingController::Registry* registry_;
   scoped_refptr<AndroidDeviceManager::Device> device_;
   scoped_refptr<DevToolsAndroidBridge::RemoteBrowser> browser_;
@@ -350,13 +337,11 @@ class PortForwardingController::Connection
 };
 
 PortForwardingController::Connection::Connection(
-    Profile* profile,
     Registry* registry,
     scoped_refptr<AndroidDeviceManager::Device> device,
     scoped_refptr<DevToolsAndroidBridge::RemoteBrowser> browser,
     const ForwardingMap& forwarding_map)
-    : profile_(profile),
-      registry_(registry),
+    : registry_(registry),
       device_(device),
       browser_(browser),
       command_id_(0),
@@ -389,11 +374,10 @@ void PortForwardingController::Connection::SerializeChanges(
     const ForwardingMap& old_map,
     const ForwardingMap& new_map) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (ForwardingMap::const_iterator new_it(new_map.begin());
-      new_it != new_map.end(); ++new_it) {
+  for (auto new_it(new_map.begin()); new_it != new_map.end(); ++new_it) {
     int port = new_it->first;
     const std::string& location = new_it->second;
-    ForwardingMap::const_iterator old_it = old_map.find(port);
+    auto old_it = old_map.find(port);
     if (old_it != old_map.end() && old_it->second == location)
       continue;  // The port points to the same location in both configs, skip.
 
@@ -421,7 +405,7 @@ void PortForwardingController::Connection::SendCommand(
     port_status_[port] = kStatusConnecting;
 #endif  // BUILDFLAG(DEBUG_DEVTOOLS)
   } else {
-    PortStatusMap::iterator it = port_status_.find(port);
+    auto it = port_status_.find(port);
     if (it != port_status_.end() && it->second == kStatusError) {
       // The bind command failed on this port, do not attempt unbind.
       port_status_.erase(it);
@@ -446,7 +430,7 @@ bool PortForwardingController::Connection::ProcessResponse(
   if (!ParseResponse(message, &id, &error_code))
     return false;
 
-  CommandCallbackMap::iterator it = pending_responses_.find(id);
+  auto it = pending_responses_.find(id);
   if (it == pending_responses_.end())
     return false;
 
@@ -462,7 +446,7 @@ void PortForwardingController::Connection::ProcessBindResponse(
 
 void PortForwardingController::Connection::ProcessUnbindResponse(
     int port, PortStatus status) {
-  PortStatusMap::iterator it = port_status_.find(port);
+  auto it = port_status_.find(port);
   if (it == port_status_.end())
     return;
   if (status == kStatusError)
@@ -507,7 +491,7 @@ void PortForwardingController::Connection::OnFrameRead(
       !params->GetString(kConnectionIdParam, &connection_id))
     return;
 
-  std::map<int, std::string>::iterator it = forwarding_map_.find(port);
+  auto it = forwarding_map_.find(port);
   if (it == forwarding_map_.end())
     return;
 
@@ -519,13 +503,15 @@ void PortForwardingController::Connection::OnFrameRead(
     return;
   std::string destination_host = tokens[0];
 
-  device_->OpenSocket(connection_id.c_str(),
-                      base::Bind(&SocketTunnel::StartTunnel, profile_,
-                                 destination_host, destination_port));
+  device_->OpenSocket(
+      connection_id.c_str(),
+      base::Bind(&SocketTunnel::StartTunnel,
+                 destination_host,
+                 destination_port));
 }
 
 PortForwardingController::PortForwardingController(Profile* profile)
-    : profile_(profile), pref_service_(profile->GetPrefs()) {
+    : pref_service_(profile->GetPrefs()) {
   pref_change_registrar_.Init(pref_service_);
   base::Closure callback = base::Bind(
       &PortForwardingController::OnPrefsChange, base::Unretained(this));
@@ -549,11 +535,11 @@ PortForwardingController::DeviceListChanged(
         pair.second);
     if (!remote_device->is_connected())
       continue;
-    Registry::iterator rit = registry_.find(remote_device->serial());
+    auto rit = registry_.find(remote_device->serial());
     if (rit == registry_.end()) {
       if (remote_device->browsers().size() > 0) {
-        new Connection(profile_, &registry_, device,
-                       remote_device->browsers()[0], forwarding_map_);
+        new Connection(&registry_, device, remote_device->browsers()[0],
+                       forwarding_map_);
       }
     } else {
       status.push_back(std::make_pair(rit->second->browser(),
@@ -592,6 +578,6 @@ void PortForwardingController::OnPrefsChange() {
 }
 
 void PortForwardingController::UpdateConnections() {
-  for (Registry::iterator it = registry_.begin(); it != registry_.end(); ++it)
+  for (auto it = registry_.begin(); it != registry_.end(); ++it)
     it->second->UpdateForwardingMap(forwarding_map_);
 }

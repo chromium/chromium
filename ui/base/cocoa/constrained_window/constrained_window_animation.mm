@@ -5,6 +5,7 @@
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -83,7 +84,7 @@ NSPoint GetCGSWindowScreenOrigin(NSWindow* window) {
   // Origin is relative to the screen with the menu bar (the screen at index 0).
   // Note, this is not the same as mainScreen which is the screen with the key
   // window.
-  NSScreen* main_screen = [screens objectAtIndex:0];
+  NSScreen* main_screen = screens[0];
 
   NSRect window_frame = [window frame];
   NSRect screen_frame = [main_screen frame];
@@ -189,6 +190,15 @@ void UpdateWindowShowHideAnimationState(NSWindow* window, CGFloat value) {
   SetWindowWarp(window, y_offset, scale, perspective_offset);
 }
 
+bool AreWindowServerEffectsDisabled() {
+  // If the CHROME_HEADLESS env variable is set, this code is running in a
+  // test environment. The custom constrained window animations may be
+  // causing the WindowServer to crash (https://crbug.com/828031), so use the
+  // simple animations.
+  static bool is_headless = getenv("CHROME_HEADLESS") != nullptr;
+  return is_headless;
+}
+
 }  // namespace
 
 @interface ConstrainedWindowAnimationBase ()
@@ -201,7 +211,7 @@ void UpdateWindowShowHideAnimationState(NSWindow* window, CGFloat value) {
 
 @implementation ConstrainedWindowAnimationBase
 
-- (id)initWithWindow:(NSWindow*)window {
+- (instancetype)initWithWindow:(NSWindow*)window {
   if ((self = [self initWithDuration:kAnimationDuration
                       animationCurve:NSAnimationEaseInOut])) {
     window_.reset([window retain]);
@@ -256,14 +266,26 @@ void UpdateWindowShowHideAnimationState(NSWindow* window, CGFloat value) {
 @implementation ConstrainedWindowAnimationShow
 
 - (void)setWindowStateForStart {
+  if (AreWindowServerEffectsDisabled()) {
+    [window_ setAlphaValue:0.0];
+    return;
+  }
   SetWindowAlpha(window_, 0.0);
 }
 
 - (void)setWindowStateForValue:(float)value {
+  if (AreWindowServerEffectsDisabled()) {
+    [window_ setAlphaValue:value];
+    return;
+  }
   UpdateWindowShowHideAnimationState(window_, value);
 }
 
 - (void)setWindowStateForEnd {
+  if (AreWindowServerEffectsDisabled()) {
+    [window_ setAlphaValue:1.0];
+    return;
+  }
   SetWindowAlpha(window_, 1.0);
   ClearWindowWarp(window_);
 }
@@ -273,10 +295,18 @@ void UpdateWindowShowHideAnimationState(NSWindow* window, CGFloat value) {
 @implementation ConstrainedWindowAnimationHide
 
 - (void)setWindowStateForValue:(float)value {
+  if (AreWindowServerEffectsDisabled()) {
+    [window_ setAlphaValue:1.0 - value];
+    return;
+  }
   UpdateWindowShowHideAnimationState(window_, 1.0 - value);
 }
 
 - (void)setWindowStateForEnd {
+  if (AreWindowServerEffectsDisabled()) {
+    [window_ setAlphaValue:0.0];
+    return;
+  }
   SetWindowAlpha(window_, 0.0);
   ClearWindowWarp(window_);
 }
@@ -287,6 +317,9 @@ void UpdateWindowShowHideAnimationState(NSWindow* window, CGFloat value) {
 
 // Sets the window scale based on the animation progress.
 - (void)setWindowStateForValue:(float)value {
+  if (AreWindowServerEffectsDisabled())
+    return;
+
   KeyFrame frames[] = {
       {0.00, 1.0}, {0.40, 1.02}, {0.60, 1.02}, {1.00, 1.0},
   };
@@ -306,6 +339,11 @@ void UpdateWindowShowHideAnimationState(NSWindow* window, CGFloat value) {
 }
 
 - (void)setWindowStateForEnd {
+  if (AreWindowServerEffectsDisabled()) {
+    NSBeep();
+    return;
+  }
+
   SetWindowScale(window_, 1.0);
 }
 

@@ -13,8 +13,10 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string16.h"
+#include "base/task/post_task.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "gpu/ipc/common/memory_stats.h"
@@ -53,8 +55,8 @@ class FakeTask : public Task {
 class TaskGroupTest : public testing::Test {
  public:
   TaskGroupTest()
-      : io_task_runner_(content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::IO)),
+      : io_task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::IO})),
         run_loop_(std::make_unique<base::RunLoop>()),
         task_group_(base::Process::Current().Handle(),
                     base::Process::Current().Pid(),

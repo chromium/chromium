@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_view_proxy_observer.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/web/public/navigation_item.h"
 #import "ios/web/public/navigation_manager.h"
 #include "ios/web/public/ssl_status.h"
@@ -98,11 +98,9 @@ void FullscreenWebStateObserver::DidFinishNavigation(
   // - For normal pages, using |contentInset| breaks the layout of fixed-
   //   position DOM elements, so top padding must be accomplished by updating
   //   the WKWebView's frame.
-  ViewportAdjustmentExperiment viewport_experiment =
-      fullscreen::features::GetActiveViewportExperiment();
   bool force_content_inset =
-      viewport_experiment == ViewportAdjustmentExperiment::CONTENT_INSET ||
-      viewport_experiment == ViewportAdjustmentExperiment::SMOOTH_SCROLLING;
+      fullscreen::features::GetActiveViewportExperiment() ==
+      ViewportAdjustmentExperiment::CONTENT_INSET;
   web_state->GetWebViewProxy().shouldUseViewContentInset =
       force_content_inset ||
       web_state->GetContentsMimeType() == "application/pdf";

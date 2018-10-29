@@ -157,6 +157,14 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
   }
 }
 
+void ToolbarLayer::SetOpacity(float opacity) {
+  toolbar_background_layer_->SetOpacity(opacity);
+  url_bar_background_layer_->SetOpacity(opacity);
+  bitmap_layer_->SetOpacity(opacity);
+  progress_bar_layer_->SetOpacity(opacity);
+  progress_bar_background_layer_->SetOpacity(opacity);
+}
+
 ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
     : resource_manager_(resource_manager),
       layer_(cc::Layer::Create()),

@@ -1,10 +1,10 @@
 One
 Two
 Three
+
 This test ensures that scrolling the window sends a notification.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS window.pageXOffset is 0
 Got notification on web area

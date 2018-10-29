@@ -28,12 +28,6 @@
       "backgroundColor": "#C0C0C0"
     },
     {
-      "name": "Child Containment Layer",
-      "position": [2, 2],
-      "bounds": [300, 300],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
       "bounds": [210, 210],
       "contentsOpaque": true,

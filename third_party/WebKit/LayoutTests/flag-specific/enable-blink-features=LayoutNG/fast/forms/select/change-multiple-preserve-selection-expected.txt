@@ -17,4 +17,3 @@ PASS selectElement.options[2].selected is false
 PASS selectElement.options[0].selected is true
 PASS selectElement.options[1].selected is false
 PASS selectElement.options[2].selected is false
-

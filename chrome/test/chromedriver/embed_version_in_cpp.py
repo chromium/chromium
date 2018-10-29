@@ -25,26 +25,35 @@ def get_release_version(chrome_version_file, version_info):
     version_info: VersionInfo object returned from lastchange.FetchVersionInfo.
   """
 
-  # Release branch revision has the format
-  # '26c10db8bff36a8b6fc073c0f38b1e9493cabb04-refs/branch-heads/3515@{#5}'.
-  match = re.match('[0-9a-fA-F]+-refs/branch-heads/\d+@{#\d+}',
-                   version_info.revision)
-  if not match:
-    # revision is not the expected format, probably not in a release branch.
-    return None
-
   # Parse Chrome version file, which should have four lines of key=value,
   # giving the major, minor, build, and patch number.
-  values = {}
+  version = {}
   for line in open(chrome_version_file, 'r').readlines():
     key, val = line.rstrip('\r\n').split('=', 1)
-    values[key] = val
+    version[key] = val
 
-  # Result is based on Chrome version number, e.g.,
-  # '70.0.3516.0 (26c10db8bff36a8b6fc073c0f38b1e9493cabb04)'.
-  return '%s.%s.%s.%s (%s)' % (
-      values['MAJOR'], values['MINOR'], values['BUILD'], values['PATCH'],
-      version_info.revision_id)
+  if version_info is not None:
+    # Release branch revision has the format
+    # '26c10db8bff36a8b6fc073c0f38b1e9493cabb04-refs/branch-heads/3515@{#5}'.
+    match = re.match('[0-9a-fA-F]+-refs/branch-heads/\d+@{#\d+}',
+                     version_info.revision)
+    if not match:
+      # revision is not the expected format, probably not in a release branch.
+      return None
+
+    # Result is based on Chrome version number, e.g.,
+    # '70.0.3516.0 (26c10db8bff36a8b6fc073c0f38b1e9493cabb04)'.
+    return '%s.%s.%s.%s (%s)' % (
+        version['MAJOR'], version['MINOR'], version['BUILD'], version['PATCH'],
+        version_info.revision_id)
+  else:
+    # No version_info from Git. Assume we are in a release branch if Chrome
+    # patch number is not 0.
+    if version['PATCH'] == '0':
+      return None
+
+    return '%s.%s.%s.%s' % (
+        version['MAJOR'], version['MINOR'], version['BUILD'], version['PATCH'])
 
 
 def get_master_version(chromedriver_version, version_info):
@@ -54,6 +63,9 @@ def get_master_version(chromedriver_version, version_info):
     chromedriver_version: ChromeDriver version, e.g., '2.41'.
     version_info: VersionInfo object returned from lastchange.FetchVersionInfo.
   """
+
+  if version_info is None:
+    return None
 
   # Master branch revision has the format
   # 'cc009559c91323445dec7e2f545298bf10726eaf-refs/heads/master@{#581331}'.
@@ -91,18 +103,18 @@ def main():
   # On failure, version_info is None.
   version_info = lastchange.FetchGitRevision(None, '^Change-Id:')
 
-  if version_info:
-    version = get_release_version(options.chrome_version_file, version_info)
+  version = get_release_version(options.chrome_version_file, version_info)
 
-    if not version:
-      version = get_master_version(chromedriver_version, version_info)
+  if version is None:
+    version = get_master_version(chromedriver_version, version_info)
 
-    if not version:
+  if version is None:
+    if version_info is not None:
       # Not in a known branch, but has Git revision.
       version = '%s (%s)' % (chromedriver_version, version_info.revision_id)
-  else:
-    # Git command failed for some reason. Just use ChromeDriver version string.
-    version = chromedriver_version
+    else:
+      # Git command failed. Just use ChromeDriver version string.
+      version = chromedriver_version
 
   global_string_map = {
       'kChromeDriverVersion': version

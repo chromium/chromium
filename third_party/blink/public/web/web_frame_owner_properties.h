@@ -8,7 +8,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/scroll/scroll_types.h"
+#include "third_party/blink/renderer/platform/scroll/scroll_types.h"  // nogncheck
 #endif
 
 namespace blink {

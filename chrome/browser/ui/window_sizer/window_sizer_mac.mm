@@ -22,7 +22,7 @@ gfx::Point WindowSizer::GetDefaultPopupOrigin(const gfx::Size& size) {
   NSPoint corner = NSMakePoint(NSMinX(work_area), NSMaxY(work_area));
 
   if (Browser* browser = chrome::FindLastActive()) {
-    NSWindow* window = browser->window()->GetNativeWindow();
+    NSWindow* window = browser->window()->GetNativeWindow().GetNativeNSWindow();
     NSRect window_frame = [window frame];
 
     // Limit to not overflow the work area right and bottom edges.

@@ -1,5 +1,5 @@
 CONSOLE WARNING: line 24: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
-CONSOLE ERROR: line 1: Access to XMLHttpRequest at 'http://127.0.0.1:8000/xmlhttprequest/resources/access-control-allow-lists.php?origin=http%3A%2F%2Flocalhost%3A8000%20%2F' from origin 'http://localhost:8000' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header contains multiple values 'http://localhost:8000 /', but only one is allowed.
+CONSOLE ERROR: Access to XMLHttpRequest at 'http://127.0.0.1:8000/xmlhttprequest/resources/access-control-allow-lists.php?origin=http%3A%2F%2Flocalhost%3A8000%20%2F' from origin 'http://localhost:8000' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header contains multiple values 'http://localhost:8000 /', but only one is allowed.
 
 
 --------

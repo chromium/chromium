@@ -12,6 +12,9 @@ namespace switches {
 // transparent.
 const char kDefaultBackgroundColor[] = "default-background-color";
 
+// Whether cookies stored as part of user profile are encrypted.
+const char kDisableCookieEncryption[] = "disable-cookie-encryption";
+
 // Whether or not begin frames should be issued over DevToolsProtocol
 // (experimental).
 const char kEnableBeginFrameControl[] = "enable-begin-frame-control";

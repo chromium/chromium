@@ -20,6 +20,7 @@
 #include "cc/layers/video_frame_provider.h"
 #include "content/common/content_export.h"
 #include "media/base/media_log.h"
+#include "media/blink/webmediaplayer_params.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 
 namespace base {
@@ -66,9 +67,8 @@ class CONTENT_EXPORT WebMediaPlayerMSCompositor
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       const blink::WebMediaStream& web_stream,
-      base::RepeatingCallback<std::unique_ptr<blink::WebVideoFrameSubmitter>()>
-          create_submitter_callback,
-      bool surface_layer_for_video_enabled,
+      std::unique_ptr<blink::WebVideoFrameSubmitter> submitter,
+      blink::WebMediaPlayer::SurfaceLayerMode surface_layer_mode,
       const base::WeakPtr<WebMediaPlayerMS>& player);
 
   // Can be called from any thread.
@@ -88,19 +88,14 @@ class CONTENT_EXPORT WebMediaPlayerMSCompositor
   // submit video frames given by WebMediaPlayerMSCompositor.
   virtual void EnableSubmission(
       const viz::SurfaceId& id,
+      base::TimeTicks local_surface_id_allocation_time,
       media::VideoRotation rotation,
       bool force_submit,
       bool is_opaque,
       blink::WebFrameSinkDestroyedCallback frame_sink_destroyed_callback);
 
-  // Updates the rotation information for frames given to |submitter_|.
-  void UpdateRotation(media::VideoRotation rotation);
-
   // Notifies the |submitter_| that the frames must be submitted.
-  void SetForceSubmit(bool);
-
-  // Updates the opacity information for frames given to |submitter_|.
-  void UpdateIsOpaque(bool);
+  void SetForceSubmit(bool force_submit);
 
   // VideoFrameProvider implementation.
   void SetVideoFrameProviderClient(
@@ -160,6 +155,10 @@ class CONTENT_EXPORT WebMediaPlayerMSCompositor
 
   // Update |current_frame_| and |dropped_frame_count_|
   void SetCurrentFrame(const scoped_refptr<media::VideoFrame>& frame);
+  // Following the update to |current_frame_|, this will check for changes that
+  // require updating video layer.
+  void CheckForFrameChanges(const scoped_refptr<media::VideoFrame>& old_frame,
+                            const scoped_refptr<media::VideoFrame>& new_frame);
 
   void StartRenderingInternal();
   void StopRenderingInternal();

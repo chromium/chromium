@@ -13,6 +13,8 @@ static_library("native_app_window") {
     "native_app_window_views.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//content/public/browser",

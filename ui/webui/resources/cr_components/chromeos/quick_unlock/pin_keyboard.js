@@ -110,7 +110,15 @@ Polymer({
     forceUnderline_: {
       type: Boolean,
       value: false,
-    }
+    },
+
+    /**
+     * Enables pin placeholder.
+     */
+    enablePlaceholder: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   listeners: {
@@ -378,9 +386,13 @@ Polymer({
   /**
    * Computes the value of the pin input placeholder.
    * @param {boolean} enablePassword
+   * @param {boolean} enablePlaceholder
    * @private
    */
-  getInputPlaceholder_: function(enablePassword) {
+  getInputPlaceholder_: function(enablePassword, enablePlaceholder) {
+    if (!enablePlaceholder)
+      return '';
+
     return enablePassword ? this.i18n('pinKeyboardPlaceholderPinPassword') :
                             this.i18n('pinKeyboardPlaceholderPin');
   },

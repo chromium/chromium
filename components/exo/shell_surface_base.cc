@@ -23,7 +23,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -63,8 +63,6 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kApplicationIdKey, nullptr);
 
 // Application Id set by the client.
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kStartupIdKey, nullptr);
-
-const int32_t kInvalidChildAxTreeId = -1;
 
 // The accelerator keys used to close ShellSurfaces.
 const struct {
@@ -501,7 +499,7 @@ void ShellSurfaceBase::SetStartupId(const char* startup_id) {
     SetStartupId(widget_->GetNativeWindow(), startup_id_);
 }
 
-void ShellSurfaceBase::SetChildAxTreeId(int32_t child_ax_tree_id) {
+void ShellSurfaceBase::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
   child_ax_tree_id_ = child_ax_tree_id;
 
   this->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
@@ -892,11 +890,11 @@ gfx::Size ShellSurfaceBase::GetMaximumSize() const {
 void ShellSurfaceBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kClient;
 
-  if (child_ax_tree_id_ == kInvalidChildAxTreeId)
+  if (child_ax_tree_id_ == ui::AXTreeIDUnknown())
     return;
 
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kChildTreeId,
-                             child_ax_tree_id_);
+  node_data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
+                                child_ax_tree_id_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

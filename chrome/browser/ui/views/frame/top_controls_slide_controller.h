@@ -42,9 +42,18 @@ class TopControlsSlideController {
   virtual void OnBrowserFullscreenStateWillChange(
       bool new_fullscreen_state) = 0;
 
+  // Whether or not the renderer's viewport size has been shrunk by the height
+  // of the browser's top controls.
+  // See BrowserWindow::DoBrowserControlsShrinkRendererSize() for more details.
+  virtual bool DoBrowserControlsShrinkRendererSize(
+      const content::WebContents* contents) const = 0;
+
   // Called from the renderer to inform the controller that gesture scrolling
   // changed state.
   virtual void SetTopControlsGestureScrollInProgress(bool in_progress) = 0;
+
+  // Returns true while gesture scrolls are in progress.
+  virtual bool IsTopControlsGestureScrollInProgress() const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TopControlsSlideController);

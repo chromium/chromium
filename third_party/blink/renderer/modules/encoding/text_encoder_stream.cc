@@ -12,16 +12,14 @@
 
 #include "base/optional.h"
 #include "base/stl_util.h"
-#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/streams/retain_wrapper_during_construction.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -103,8 +101,8 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
   static DOMUint8Array* CreateDOMUint8ArrayFromTwoCStringsConcatenated(
       const CString& string1,
       const CString& string2) {
-    const size_t length1 = string1.length();
-    const size_t length2 = string2.length();
+    const wtf_size_t length1 = string1.length();
+    const wtf_size_t length2 = string2.length();
     DOMUint8Array* const array = DOMUint8Array::Create(length1 + length2);
     if (length1 > 0)
       memcpy(array->Data(), string1.data(), length1);
@@ -146,8 +144,8 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
     }
 
     // Third argument is ignored, as above.
-    *result =
-        encoder_->Encode(begin, end - begin, WTF::kEntitiesForUnencodables);
+    *result = encoder_->Encode(begin, static_cast<wtf_size_t>(end - begin),
+                               WTF::kEntitiesForUnencodables);
     DCHECK_NE(result->length(), 0u);
     return true;
   }
@@ -187,22 +185,14 @@ void TextEncoderStream::Trace(Visitor* visitor) {
   ScriptWrappable::Trace(visitor);
 }
 
-// static
-void TextEncoderStream::Noop(ScriptValue) {}
-
-void TextEncoderStream::RetainWrapperUntilV8WrapperGetReturnedToV8(
-    ScriptState* script_state) {
-  ExecutionContext::From(script_state)
-      ->GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(Noop, ScriptValue(script_state, ToV8(this, script_state))));
-}
-
 TextEncoderStream::TextEncoderStream(ScriptState* script_state,
                                      ExceptionState& exception_state)
     : transform_(new TransformStream()) {
-  RetainWrapperUntilV8WrapperGetReturnedToV8(script_state);
+  if (!RetainWrapperDuringConstruction(this, script_state)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot queue task to retain wrapper");
+    return;
+  }
   transform_->Init(new Transformer(script_state), script_state,
                    exception_state);
 }

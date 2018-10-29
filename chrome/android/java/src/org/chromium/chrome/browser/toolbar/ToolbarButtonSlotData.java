@@ -13,11 +13,11 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatImageButton;
 import android.view.View;
 import android.view.View.OnClickListener;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.TintedImageButton;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 /**
@@ -47,8 +47,8 @@ class ToolbarButtonSlotData {
      */
     static class ToolbarButtonData {
         private final Drawable mDrawable;
-        private final CharSequence mLightAccessibilityString;
-        private final CharSequence mDarkAccessibilityString;
+        private final CharSequence mIncognitoAccessibilityString;
+        private final CharSequence mNormalAccessibilityString;
         private final OnClickListener mOnClickListener;
 
         private final ColorStateList mLightTint;
@@ -56,37 +56,38 @@ class ToolbarButtonSlotData {
 
         /**
          * @param drawable The {@link Drawable} that will be shown in the button slot.
-         * @param lightAccessibilityString The accessibility string to be used in light mode.
-         * @param darkAccessibilityString The accessibility string to be used in dark mode.
+         * @param normalAccessibilityString The accessibility string to be used in normal mode.
+         * @param incognitoAccessibilityString The accessibility string to be used in incognito
+         *                                     mode.
          * @param onClickListener The listener that will be fired when this button is clicked.
          * @param context The {@link Context} that is used to obtain tinting information.
          */
-        ToolbarButtonData(Drawable drawable, CharSequence lightAccessibilityString,
-                CharSequence darkAccessibilityString, OnClickListener onClickListener,
+        ToolbarButtonData(Drawable drawable, CharSequence normalAccessibilityString,
+                CharSequence incognitoAccessibilityString, OnClickListener onClickListener,
                 Context context) {
             mLightTint = AppCompatResources.getColorStateList(context, R.color.light_mode_tint);
             mDarkTint = AppCompatResources.getColorStateList(context, R.color.dark_mode_tint);
 
             mDrawable = drawable != null ? DrawableCompat.wrap(drawable) : null;
-            mLightAccessibilityString = lightAccessibilityString;
-            mDarkAccessibilityString = darkAccessibilityString;
+            mNormalAccessibilityString = normalAccessibilityString;
+            mIncognitoAccessibilityString = incognitoAccessibilityString;
             mOnClickListener = onClickListener;
         }
 
         /**
-         * @param imageButton The {@link TintedImageButton} this button data will fill.
+         * @param imageButton The {@link AppCompatImageButton} this button data will fill.
          * @param isLight Whether or not to use light mode.
          */
-        void updateButton(TintedImageButton imageButton, boolean isLight) {
+        void updateButton(AppCompatImageButton imageButton, boolean isLight) {
             imageButton.setOnClickListener(mOnClickListener);
             updateButtonDrawable(imageButton, isLight);
         }
 
         /**
-         * @param imageButton The {@link TintedImageButton} this button data will fill.
+         * @param imageButton The {@link AppCompatImageButton} this button data will fill.
          * @param isLight Whether or not to use light mode.
          */
-        void updateButtonDrawable(TintedImageButton imageButton, boolean isLight) {
+        void updateButtonDrawable(AppCompatImageButton imageButton, boolean isLight) {
             ObjectAnimator fadeOutAnim =
                     ObjectAnimator.ofFloat(imageButton, View.ALPHA, 1.0f, 0.0f);
             fadeOutAnim.setDuration(FADE_DURATION / 2);
@@ -100,17 +101,19 @@ class ToolbarButtonSlotData {
                 public void onAnimationStart(Animator animator) {
                     if (mDrawable != null) {
                         imageButton.setEnabled(true);
+                        imageButton.setVisibility(View.VISIBLE);
                         DrawableCompat.setTintList(mDrawable, isLight ? mLightTint : mDarkTint);
                     }
                     imageButton.setImageDrawable(mDrawable);
                     imageButton.setContentDescription(
-                            isLight ? mLightAccessibilityString : mDarkAccessibilityString);
+                            isLight ? mIncognitoAccessibilityString : mNormalAccessibilityString);
                     imageButton.invalidate();
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
                     imageButton.setEnabled(mDrawable != null);
+                    imageButton.setVisibility(mDrawable != null ? View.VISIBLE : View.INVISIBLE);
                     imageButton.setOnClickListener(mOnClickListener);
                 }
             });
@@ -121,7 +124,7 @@ class ToolbarButtonSlotData {
             animatorSet.start();
         }
 
-        static void clearButton(TintedImageButton button) {
+        static void clearButton(AppCompatImageButton button) {
             ToolbarButtonData emptyButtonData =
                     new ToolbarButtonData(null, "", "", null, button.getContext());
             emptyButtonData.updateButton(button, false);

@@ -1,8 +1,8 @@
     
+
 Check whether ARIA mixed state is reported properly
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 Role: AXRole: AXCheckBox
 Mixed: true

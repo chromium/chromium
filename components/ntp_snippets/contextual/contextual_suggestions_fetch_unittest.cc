@@ -46,7 +46,7 @@ TEST(ContextualSuggestionsFetch, GetFetchEndpoint_CommandLine_ProperEndpoint) {
 
 TEST(ContextualSuggestionsFetch, GetFetchEndpoint_Feature_NoParameter) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kContextualSuggestionsBottomSheet);
+  feature_list.InitAndEnableFeature(kContextualSuggestionsButton);
   EXPECT_EQ("https://www.google.com/httpservice/web/ExploreService/GetPivots/",
             ContextualSuggestionsFetch::GetFetchEndpoint());
 }
@@ -55,8 +55,8 @@ TEST(ContextualSuggestionsFetch, GetFetchEndpoint_Feature_EmptyParameter) {
   base::test::ScopedFeatureList feature_list;
   std::map<std::string, std::string> parameters;
   parameters["contextual-suggestions-fetch-endpoint"] = "";
-  feature_list.InitAndEnableFeatureWithParameters(
-      kContextualSuggestionsBottomSheet, parameters);
+  feature_list.InitAndEnableFeatureWithParameters(kContextualSuggestionsButton,
+                                                  parameters);
   EXPECT_EQ("https://www.google.com/httpservice/web/ExploreService/GetPivots/",
             ContextualSuggestionsFetch::GetFetchEndpoint());
 }
@@ -65,8 +65,8 @@ TEST(ContextualSuggestionsFetch, GetFetchEndpoint_Feature_NonHTTPS) {
   base::test::ScopedFeatureList feature_list;
   std::map<std::string, std::string> parameters;
   parameters["contextual-suggestions-fetch-endpoint"] = "http://test.com";
-  feature_list.InitAndEnableFeatureWithParameters(
-      kContextualSuggestionsBottomSheet, parameters);
+  feature_list.InitAndEnableFeatureWithParameters(kContextualSuggestionsButton,
+                                                  parameters);
   EXPECT_EQ("https://www.google.com/httpservice/web/ExploreService/GetPivots/",
             ContextualSuggestionsFetch::GetFetchEndpoint());
 }
@@ -75,8 +75,8 @@ TEST(ContextualSuggestionsFetch, GetFetchEndpoint_Feature_WithParameter) {
   base::test::ScopedFeatureList feature_list;
   std::map<std::string, std::string> parameters;
   parameters["contextual-suggestions-fetch-endpoint"] = "https://test.com";
-  feature_list.InitAndEnableFeatureWithParameters(
-      kContextualSuggestionsBottomSheet, parameters);
+  feature_list.InitAndEnableFeatureWithParameters(kContextualSuggestionsButton,
+                                                  parameters);
   EXPECT_EQ("https://test.com/httpservice/web/ExploreService/GetPivots/",
             ContextualSuggestionsFetch::GetFetchEndpoint());
 }

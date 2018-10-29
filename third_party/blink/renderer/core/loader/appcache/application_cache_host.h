@@ -99,7 +99,7 @@ class CORE_EXPORT ApplicationCacheHost final
   };
 
   struct ResourceInfo {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
     ResourceInfo(const KURL& resource,
                  bool is_master,
                  bool is_manifest,

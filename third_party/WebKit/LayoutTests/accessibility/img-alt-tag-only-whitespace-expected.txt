@@ -2,10 +2,11 @@ CONSOLE MESSAGE: line 26: Image description:  Image
 
 
 
+
+
 This tests that images with alt tags that only have white space are not ignored.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS imagesGroup.childrenCount is 6
 PASS successfullyParsed is true

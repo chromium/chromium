@@ -4,6 +4,10 @@
 <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+/* The imports below are needed as an action-link is added to the promo-text
+ * div to create the cloud print "Sign in" link when this element is
+ * attached. */
+<link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/html/action_link_css.html">
 <link rel="import" href="chrome://resources/html/event_tracker.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
@@ -50,7 +54,7 @@
       }
 
       .user-info {
-        font-size: calc(13/15 * 1em);
+        font-size: calc(13 / 15 * 1em);
         line-height: normal;
         margin-bottom: 14px;
         margin-top: 8px;
@@ -64,22 +68,34 @@
         width: auto
       }
 
-      /* Height = 3 * destination item (28px) + 10px padding + 1 line text */
+      cr-dialog [slot=body] {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      /* Height = 3 * destination item + 10px padding + 1 line text */
+      #recentList,
+      #printList {
+        min-height:
+            calc(2 * var(--destination-item-height) + 10px + 20 / 13 * 1rem);
+      }
+
       #recentList {
-        height: calc(94px + 1rem);
+        flex: 1;
+        max-height:
+            calc(3 * var(--destination-item-height) + 10px + 20 / 13 * 1rem);
         padding-bottom: 18px;
       }
 
-      /* Height = 100vh - recent (94px + 1 line + 18px) - padding (68px) - */
-      /* header (82px + 1 line) - button (64px) - 2px spinner - 2px extra */
       #printList {
-        height: calc(100vh - 330px - 2rem);
-        min-height: calc(94px + 1rem);
+        flex: 1;
         padding-bottom: 0;
       }
 
       paper-button {
-        font-size: calc(12/13 * 1em);
+        font-size: calc(12 / 13 * 1em);
       }
 
       #dialog #promos {
@@ -129,7 +145,7 @@
 
       #invitationPromo invitation-details {
         color: var(--google-grey-refresh-700);
-        font-size: calc(10/13 * 1em);
+        font-size: calc(10 / 13 * 1em);
         font-weight: 500;
       }
     </style>
@@ -157,21 +173,19 @@
         </print-preview-search-box>
       </div>
       <div slot="body">
-        <div>
-          <print-preview-destination-list id="recentList"
-              destinations="[[recentDestinationList_]]"
-              search-query="[[searchQuery_]]"
-              list-name="$i18n{recentDestinationsTitle}"
-              on-destination-selected="onDestinationSelected_">
-          </print-preview-destination-list>
-          <print-preview-destination-list id="printList"
-              destinations="[[destinations_]]"
-              has-action-link loading-destinations="[[loadingDestinations_]]"
-              search-query="[[searchQuery_]]"
-              list-name="$i18n{printDestinationsTitle}"
-              on-destination-selected="onDestinationSelected_">
-          </print-preview-destination-list>
-        </div>
+        <print-preview-destination-list id="recentList"
+            destinations="[[recentDestinationList_]]"
+            search-query="[[searchQuery_]]"
+            list-name="$i18n{recentDestinationsTitle}"
+            on-destination-selected="onDestinationSelected_">
+        </print-preview-destination-list>
+        <print-preview-destination-list id="printList"
+            destinations="[[destinations_]]"
+            has-manage-link loading-destinations="[[loadingDestinations_]]"
+            search-query="[[searchQuery_]]"
+            list-name="$i18n{printDestinationsTitle}"
+            on-destination-selected="onDestinationSelected_">
+        </print-preview-destination-list>
         <print-preview-provisional-destination-resolver id="provisionalResolver"
             destination-store="[[destinationStore]]">
         </print-preview-provisional-destination-resolver>

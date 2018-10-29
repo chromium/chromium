@@ -6,26 +6,33 @@ window.onload = function() {
   var FILES_APP_ORIGIN = 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj';
   var messageSource;
 
-  var content = document.getElementById('content');
+  var content = document.querySelector('#content');
 
   window.addEventListener('message', function(event) {
     if (event.origin !== FILES_APP_ORIGIN) {
       console.error('Unknown origin: ' + event.origin);
       return;
     }
+
     messageSource = event.source;
     switch (event.data.type) {
       case 'html':
         content.textContent = '';
-        fetch(event.data.src)
-            .then(function(response) {
-              return response.text();
-            })
-            .then(function(text) {
-              content.textContent = text;
-            });
+        contentChanged(null);
+        fetch(event.data.src).then((response) => {
+          return response.text();
+        }).then((text) => {
+          content.textContent = text;
+          contentChanged(text);
+        });
+        break;
+      case 'audio':
+      case 'video':
+        content.onloadeddata = (e) => contentChanged(e.target.src);
+        content.src = event.data.src;
         break;
       default:
+        content.onload = (e) => contentChanged(e.target.src);
         content.src = event.data.src;
         break;
     }
@@ -37,16 +44,18 @@ window.onload = function() {
   });
 
   document.addEventListener('click', function(e) {
-    var data;
-    if (e.target === content) {
-      data = 'tap-inside';
-    } else {
-      data = 'tap-outside';
-    }
-
-    if (messageSource)
-      messageSource.postMessage(data, FILES_APP_ORIGIN);
+    sendMessage((e.target === content) ? 'tap-inside' : 'tap-outside');
   });
+
+  function contentChanged(src) {
+    sendMessage(src ? 'webview-loaded' : 'webview-cleared');
+  }
+
+  function sendMessage(message) {
+    if (messageSource) {
+      messageSource.postMessage(message, FILES_APP_ORIGIN);
+    }
+  }
 
   // TODO(oka): This is a workaround to fix FOUC problem, where sometimes
   // immature view with smaller window size than outer window is rendered for a
@@ -63,5 +72,4 @@ window.onload = function() {
   setTimeout(function() {
     content.removeAttribute('hidden');
   }, 500);
-
 };

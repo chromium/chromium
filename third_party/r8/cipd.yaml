@@ -1,5 +1,7 @@
 package: chromium/third_party/r8
 description: >
   D8 is a dexer that converts java byte code to dex code (part of the R8 repo).
+  R8 is a proguard-like optimizer that also has the option to dex.
 data:
   - file: lib/d8.jar
+  - file: lib/r8.jar

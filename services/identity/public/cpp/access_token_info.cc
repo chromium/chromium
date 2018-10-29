@@ -8,7 +8,8 @@ namespace identity {
 
 bool operator==(const AccessTokenInfo& lhs, const AccessTokenInfo& rhs) {
   return (lhs.token == rhs.token) &&
-         (lhs.expiration_time == rhs.expiration_time);
+         (lhs.expiration_time == rhs.expiration_time) &&
+         (lhs.id_token == rhs.id_token);
 }
 
 }  // namespace identity

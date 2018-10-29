@@ -334,6 +334,24 @@ class CustomTabBottomBarDelegate implements FullscreenListener {
     }
 
     @Override
+    public void onUpdateViewportSize() {
+        if (mBottomBarView == null) return; // Check bottom bar view but don't inflate it.
+        // Hide the container of the bottom bar while the extension is showing. This doesn't
+        // affect the content.
+        boolean keyboardExtensionHidesBottomBar = mActivity.getManualFillingController()
+                                                          .getKeyboardExtensionSizeManager()
+                                                          .getKeyboardExtensionHeight()
+                > 0;
+        if (keyboardExtensionHidesBottomBar) {
+            getBottomBarView().setVisibility(View.GONE);
+            mFullscreenManager.setBottomControlsHeight(0);
+        } else {
+            getBottomBarView().setVisibility(View.VISIBLE);
+            mFullscreenManager.setBottomControlsHeight(getBottomBarHeight());
+        }
+    }
+
+    @Override
     public void onContentOffsetChanged(float offset) { }
 
     @Override

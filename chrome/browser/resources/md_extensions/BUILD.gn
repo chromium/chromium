@@ -50,6 +50,7 @@ grit("flattened_resources") {
 }
 js_type_check("closure_compile") {
   deps = [
+    ":activity_log",
     ":code_section",
     ":detail_view",
     ":drag_and_drop_handler",
@@ -86,6 +87,12 @@ js_library("code_section") {
     "//ui/webui/resources/js:load_time_data",
   ]
   externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("activity_log") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
 }
 
 js_library("detail_view") {
@@ -228,6 +235,7 @@ js_library("load_error") {
 
 js_library("manager") {
   deps = [
+    ":activity_log",
     ":detail_view",
     ":item",
     ":item_list",

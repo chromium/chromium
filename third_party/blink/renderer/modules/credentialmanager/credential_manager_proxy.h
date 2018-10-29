@@ -35,7 +35,7 @@ class MODULES_EXPORT CredentialManagerProxy
  public:
   static const char kSupplementName[];
 
-  explicit CredentialManagerProxy(Document*);
+  explicit CredentialManagerProxy(Document&);
   virtual ~CredentialManagerProxy();
 
   mojom::blink::CredentialManager* CredentialManager() {
@@ -51,7 +51,7 @@ class MODULES_EXPORT CredentialManagerProxy
   // Both flavors must be called only with arguments representing a valid
   // context corresponding to an attached Document.
   static CredentialManagerProxy* From(ScriptState*);
-  static CredentialManagerProxy* From(Document*);
+  static CredentialManagerProxy* From(Document&);
 
  private:
   mojom::blink::AuthenticatorPtr authenticator_;

@@ -655,8 +655,7 @@ void LogSigninAccountReconciliation(int total_number_accounts,
                                     bool primary_accounts_same,
                                     bool is_first_reconcile,
                                     int pre_count_gaia_cookies) {
-  UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfAccountsPerProfile",
-                           total_number_accounts);
+  RecordAccountsPerProfile(total_number_accounts);
   // We want to include zeroes in the counts of added or removed accounts to
   // easily capture _relatively_ how often we merge accounts.
   if (is_first_reconcile) {
@@ -679,6 +678,11 @@ void LogSigninAccountReconciliation(int total_number_accounts,
         ComparePrimaryAccounts(primary_accounts_same, pre_count_gaia_cookies),
         NUM_DIFFERENT_PRIMARY_ACCOUNT_METRICS);
   }
+}
+
+void RecordAccountsPerProfile(int total_number_accounts) {
+  UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfAccountsPerProfile",
+                           total_number_accounts);
 }
 
 void LogSigninAccountReconciliationDuration(base::TimeDelta duration,

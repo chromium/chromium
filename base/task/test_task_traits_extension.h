@@ -20,21 +20,26 @@ class TestTaskTraitsExtension {
   static constexpr uint8_t kExtensionId =
       TaskTraitsExtensionStorage::kFirstEmbedderExtensionId;
 
-  struct ValidTrait {
-    ValidTrait(TestExtensionEnumTrait) {}
-    ValidTrait(TestExtensionBoolTrait) {}
+  struct ValidTrait : public TaskTraits::ValidTrait {
+    using TaskTraits::ValidTrait::ValidTrait;
+
+    ValidTrait(TestExtensionEnumTrait);
+    ValidTrait(TestExtensionBoolTrait);
   };
+
+  using TestExtensionEnumFilter =
+      trait_helpers::EnumTraitFilter<TestExtensionEnumTrait,
+                                     TestExtensionEnumTrait::kA>;
+  using TestExtensionBoolFilter =
+      trait_helpers::BooleanTraitFilter<TestExtensionBoolTrait>;
 
   template <class... ArgTypes,
             class CheckArgumentsAreValid = std::enable_if_t<
                 trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
   constexpr TestTaskTraitsExtension(ArgTypes... args)
-      : enum_trait_(trait_helpers::GetValueFromArgList(
-            trait_helpers::EnumArgGetter<TestExtensionEnumTrait,
-                                         TestExtensionEnumTrait::kA>(),
+      : enum_trait_(trait_helpers::GetTraitFromArgList<TestExtensionEnumFilter>(
             args...)),
-        bool_trait_(trait_helpers::GetValueFromArgList(
-            trait_helpers::BooleanArgGetter<TestExtensionBoolTrait>(),
+        bool_trait_(trait_helpers::GetTraitFromArgList<TestExtensionBoolFilter>(
             args...)) {}
 
   constexpr TaskTraitsExtensionStorage Serialize() const {
@@ -65,8 +70,7 @@ template <class... ArgTypes,
           class = std::enable_if_t<
               trait_helpers::AreValidTraits<TestTaskTraitsExtension::ValidTrait,
                                             ArgTypes...>::value>>
-constexpr TaskTraitsExtensionStorage MakeTaskTraitsExtension(
-    ArgTypes&&... args) {
+constexpr TaskTraitsExtensionStorage MakeTaskTraitsExtension(ArgTypes... args) {
   return TestTaskTraitsExtension(std::forward<ArgTypes>(args)...).Serialize();
 }
 

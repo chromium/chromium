@@ -10,8 +10,8 @@
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#include "ios/chrome/browser/ui/rtl_geometry.h"
-#include "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
@@ -68,8 +68,6 @@ const CGFloat kDisplayActionAnimationDuration = 0.5;
 const CGFloat kActionLabelFadeDuration = 0.1;
 // The final scale of the animation played when an action is triggered.
 const CGFloat kDisplayActionAnimationScale = 20;
-// The height of the shadow view.
-const CGFloat kShadowHeight = 2;
 // This controls how much the selection needs to be moved from the action center
 // in order to be snapped to the next action.
 // This value must stay in the interval [0,1].
@@ -95,8 +93,6 @@ const CGFloat kActionLabelSidePadding = 15.0;
 // The value to use as the R, B, and B components for the action label text and
 // selection layer animation.
 const CGFloat kSelectionColor = 0.4;
-// The values to use for the R, G, and B components for the
-const CGFloat kSelectionColorLegacy[] = {66.0 / 256, 133.0 / 256, 244.0 / 256};
 
 // This function maps a value from a range to another.
 CGFloat MapValueToRange(FloatRange from, FloatRange to, CGFloat value) {
@@ -189,8 +185,6 @@ enum class OverscrollViewState {
 @property(nonatomic, assign) CGFloat horizontalOffset;
 // The internal state of the OverscrollActionsView.
 @property(nonatomic, assign) OverscrollViewState overscrollState;
-// A shadow image view displayed at the bottom.
-@property(nonatomic, strong) UIImageView* shadowView;
 // Redefined to readwrite.
 @property(nonatomic, strong, readwrite) UIView* backgroundView;
 // Snapshot view added on top of the background image view.
@@ -269,7 +263,6 @@ enum class OverscrollViewState {
 @synthesize verticalOffset = _verticalOffset;
 @synthesize horizontalOffset = _horizontalOffset;
 @synthesize overscrollState = _overscrollState;
-@synthesize shadowView = _shadowView;
 @synthesize backgroundView = _backgroundView;
 @synthesize snapshotView = _snapshotView;
 @synthesize selectionCircleCroppingLayer = _selectionCircleCroppingLayer;
@@ -319,51 +312,42 @@ enum class OverscrollViewState {
     [_highlightMaskLayer addSublayer:_reloadActionImageViewHighlighted.layer];
     [_highlightMaskLayer addSublayer:_closeTabActionImageViewHighlighted.layer];
 
-    if (IsUIRefreshPhase1Enabled()) {
-      _addTabLabel = [[UILabel alloc] init];
-      _addTabLabel.numberOfLines = 0;
-      _addTabLabel.lineBreakMode = NSLineBreakByWordWrapping;
-      _addTabLabel.textAlignment = NSTextAlignmentLeft;
-      _addTabLabel.alpha = 0.0;
-      _addTabLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-      _addTabLabel.adjustsFontForContentSizeCategory = NO;
-      _addTabLabel.textColor =
-          [UIColor colorWithWhite:kSelectionColor alpha:1.0];
-      _addTabLabel.text =
-          l10n_util::GetNSString(IDS_IOS_OVERSCROLL_NEW_TAB_LABEL);
-      [self addSubview:_addTabLabel];
-      _reloadLabel = [[UILabel alloc] init];
-      _reloadLabel.numberOfLines = 0;
-      _reloadLabel.lineBreakMode = NSLineBreakByWordWrapping;
-      _reloadLabel.textAlignment = NSTextAlignmentCenter;
-      _reloadLabel.alpha = 0.0;
-      _reloadLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-      _reloadLabel.adjustsFontForContentSizeCategory = NO;
-      _reloadLabel.textColor =
-          [UIColor colorWithWhite:kSelectionColor alpha:1.0];
-      _reloadLabel.text =
-          l10n_util::GetNSString(IDS_IOS_OVERSCROLL_RELOAD_LABEL);
-      [self addSubview:_reloadLabel];
-      _closeTabLabel = [[UILabel alloc] init];
-      _closeTabLabel.numberOfLines = 0;
-      _closeTabLabel.lineBreakMode = NSLineBreakByWordWrapping;
-      _closeTabLabel.textAlignment = NSTextAlignmentRight;
-      _closeTabLabel.alpha = 0.0;
-      _closeTabLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-      _closeTabLabel.adjustsFontForContentSizeCategory = NO;
-      _closeTabLabel.textColor =
-          [UIColor colorWithWhite:kSelectionColor alpha:1.0];
-      _closeTabLabel.text =
-          l10n_util::GetNSString(IDS_IOS_OVERSCROLL_CLOSE_TAB_LABEL);
-      [self addSubview:_closeTabLabel];
-    }
-
-    _shadowView =
-        [[UIImageView alloc] initWithImage:NativeImage(IDR_IOS_TOOLBAR_SHADOW)];
-    [self addSubview:_shadowView];
+    _addTabLabel = [[UILabel alloc] init];
+    _addTabLabel.numberOfLines = 0;
+    _addTabLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    _addTabLabel.textAlignment = NSTextAlignmentLeft;
+    _addTabLabel.alpha = 0.0;
+    _addTabLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+    _addTabLabel.adjustsFontForContentSizeCategory = NO;
+    _addTabLabel.textColor = [UIColor colorWithWhite:kSelectionColor alpha:1.0];
+    _addTabLabel.text =
+        l10n_util::GetNSString(IDS_IOS_OVERSCROLL_NEW_TAB_LABEL);
+    [self addSubview:_addTabLabel];
+    _reloadLabel = [[UILabel alloc] init];
+    _reloadLabel.numberOfLines = 0;
+    _reloadLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    _reloadLabel.textAlignment = NSTextAlignmentCenter;
+    _reloadLabel.alpha = 0.0;
+    _reloadLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+    _reloadLabel.adjustsFontForContentSizeCategory = NO;
+    _reloadLabel.textColor = [UIColor colorWithWhite:kSelectionColor alpha:1.0];
+    _reloadLabel.text = l10n_util::GetNSString(IDS_IOS_OVERSCROLL_RELOAD_LABEL);
+    [self addSubview:_reloadLabel];
+    _closeTabLabel = [[UILabel alloc] init];
+    _closeTabLabel.numberOfLines = 0;
+    _closeTabLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    _closeTabLabel.textAlignment = NSTextAlignmentRight;
+    _closeTabLabel.alpha = 0.0;
+    _closeTabLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+    _closeTabLabel.adjustsFontForContentSizeCategory = NO;
+    _closeTabLabel.textColor =
+        [UIColor colorWithWhite:kSelectionColor alpha:1.0];
+    _closeTabLabel.text =
+        l10n_util::GetNSString(IDS_IOS_OVERSCROLL_CLOSE_TAB_LABEL);
+    [self addSubview:_closeTabLabel];
 
     _backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
     [self addSubview:_backgroundView];
@@ -497,10 +481,6 @@ enum class OverscrollViewState {
   _selectionCircleCroppingLayer.frame = self.bounds;
   _highlightMaskLayer.frame = self.bounds;
 
-  CGRect shadowFrame = self.bounds;
-  shadowFrame.origin.y = self.bounds.size.height;
-  shadowFrame.size.height = kShadowHeight;
-  self.shadowView.frame = shadowFrame;
   [CATransaction commit];
 
   const BOOL disableActionsOnInitialLayout =
@@ -592,9 +572,6 @@ enum class OverscrollViewState {
 }
 
 - (void)layoutActionLabels {
-  if (!IsUIRefreshPhase1Enabled())
-    return;
-
   // The text is truncated to be a maximum of half the width of the view.
   CGSize boundingSize = self.bounds.size;
   boundingSize.width /= 2.0;
@@ -962,22 +939,18 @@ enum class OverscrollViewState {
 - (void)setStyle:(OverscrollStyle)style {
   switch (style) {
     case OverscrollStyle::NTP_NON_INCOGNITO:
-      [self.shadowView setHidden:YES];
       self.backgroundColor = ntp_home::kNTPBackgroundColor();
       break;
     case OverscrollStyle::NTP_INCOGNITO:
-      [self.shadowView setHidden:YES];
       self.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
       break;
     case OverscrollStyle::REGULAR_PAGE_NON_INCOGNITO:
-      [self.shadowView setHidden:NO];
       self.backgroundColor = [UIColor colorWithRed:242.0 / 256
                                              green:242.0 / 256
                                               blue:242.0 / 256
                                              alpha:1.0];
       break;
     case OverscrollStyle::REGULAR_PAGE_INCOGNITO:
-      [self.shadowView setHidden:NO];
       self.backgroundColor = [UIColor colorWithRed:80.0 / 256
                                              green:80.0 / 256
                                               blue:80.0 / 256
@@ -1013,13 +986,7 @@ enum class OverscrollViewState {
         setImage:[UIImage imageNamed:kCloseActionActiveImage]];
 
     _selectionCircleLayer.fillColor =
-        IsUIRefreshPhase1Enabled()
-            ? [UIColor colorWithWhite:kSelectionColor alpha:1.0].CGColor
-            : [UIColor colorWithRed:kSelectionColorLegacy[0]
-                              green:kSelectionColorLegacy[1]
-                               blue:kSelectionColorLegacy[2]
-                              alpha:1]
-                  .CGColor;
+        [UIColor colorWithWhite:kSelectionColor alpha:1.0].CGColor;
     _selectionCircleMaskLayer.fillColor = [[UIColor blackColor] CGColor];
   }
   [_addTabActionImageView sizeToFit];
@@ -1097,7 +1064,7 @@ enum class OverscrollViewState {
 - (void)fadeInActionLabel:(UILabel*)actionLabel
       previousActionLabel:(UILabel*)previousLabel {
   NSUInteger labelCount = (actionLabel ? 1 : 0) + (previousLabel ? 1 : 0);
-  if (!IsUIRefreshPhase1Enabled() || !labelCount)
+  if (!labelCount)
     return;
 
   NSTimeInterval duration = labelCount * kActionLabelFadeDuration;

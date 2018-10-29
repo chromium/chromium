@@ -44,7 +44,7 @@ void DisplayChangeNotifier::NotifyDisplaysChanged(
     const std::vector<Display>& old_displays,
     const std::vector<Display>& new_displays) {
   // Display present in old_displays but not in new_displays has been removed.
-  std::vector<Display>::const_iterator old_it = old_displays.begin();
+  auto old_it = old_displays.begin();
   for (; old_it != old_displays.end(); ++old_it) {
     if (std::find_if(new_displays.begin(), new_displays.end(),
                      DisplayComparator(*old_it)) == new_displays.end()) {
@@ -55,10 +55,10 @@ void DisplayChangeNotifier::NotifyDisplaysChanged(
 
   // Display present in new_displays but not in old_displays has been added.
   // Display present in both might have been modified.
-  for (std::vector<Display>::const_iterator new_it = new_displays.begin();
-       new_it != new_displays.end(); ++new_it) {
-    std::vector<Display>::const_iterator old_it = std::find_if(
-        old_displays.begin(), old_displays.end(), DisplayComparator(*new_it));
+  for (auto new_it = new_displays.begin(); new_it != new_displays.end();
+       ++new_it) {
+    auto old_it = std::find_if(old_displays.begin(), old_displays.end(),
+                               DisplayComparator(*new_it));
 
     if (old_it == old_displays.end()) {
       for (DisplayObserver& observer : observer_list_)

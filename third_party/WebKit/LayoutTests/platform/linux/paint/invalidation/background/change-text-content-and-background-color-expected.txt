@@ -20,7 +20,7 @@
         {
           "object": "LayoutTextControl (positioned) INPUT id='input'",
           "rect": [8, 8, 244, 68],
-          "reason": "style change"
+          "reason": "background"
         },
         {
           "object": "InlineTextBox 'NEW'",

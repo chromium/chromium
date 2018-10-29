@@ -90,6 +90,8 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
     // may be used by ServiceWorkerNavigationLoader for navigations handled
     // by this service worker.
     options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
+
+    resource_request.headers.SetHeader("Service-Worker", "script");
   }
 
   // Bypass the browser cache if needed, e.g., updateViaCache demands it or 24
@@ -102,8 +104,6 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
       version_->force_bypass_cache_for_scripts()) {
     resource_request.load_flags |= net::LOAD_BYPASS_CACHE;
   }
-
-  resource_request.headers.SetHeader("Service-Worker", "script");
 
   // Create response readers only when we have to do the byte-for-byte check.
   std::unique_ptr<ServiceWorkerResponseReader> compare_reader;
@@ -248,6 +248,8 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
     version_->SetMainScriptHttpResponseInfo(*response_info);
   }
 
+  network_loader_state_ = NetworkLoaderState::kWaitingForBody;
+
   WriteHeaders(
       base::MakeRefCounted<HttpResponseInfoIOBuffer>(std::move(response_info)));
 
@@ -259,11 +261,9 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
     network::ResourceResponseHead new_response_head = response_head;
     new_response_head.ssl_info.reset();
     client_->OnReceiveResponse(new_response_head);
-  } else {
-    client_->OnReceiveResponse(response_head);
+    return;
   }
-
-  network_loader_state_ = NetworkLoaderState::kWaitingForBody;
+  client_->OnReceiveResponse(response_head);
 }
 
 void ServiceWorkerNewScriptLoader::OnReceiveRedirect(

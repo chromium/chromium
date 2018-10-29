@@ -12,6 +12,8 @@ static_library("browser") {
     "language_model.h",
     "language_model_manager.cc",
     "language_model_manager.h",
+    "locale_util.cc",
+    "locale_util.h",
     "pref_names.cc",
     "pref_names.h",
     "url_language_histogram.cc",
@@ -23,6 +25,7 @@ static_library("browser") {
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
+    "//ui/base",
   ]
 }
 

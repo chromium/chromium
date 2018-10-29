@@ -110,6 +110,14 @@
              file="cr_elements/cr_radio_button/cr_radio_button_style_css.html"
              type="chrome_html"
              compress="gzip" />
+  <structure name="IDR_CR_ELEMENTS_CR_RADIO_GROUP_HTML"
+             file="cr_elements/cr_radio_group/cr_radio_group.html"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_CR_ELEMENTS_CR_RADIO_GROUP_JS"
+             file="cr_elements/cr_radio_group/cr_radio_group.js"
+             type="chrome_html"
+             compress="gzip" />
   <structure name="IDR_CR_ELEMENTS_CR_SLIDER_HTML"
              file="cr_elements/cr_slider/cr_slider.html"
              type="chrome_html"

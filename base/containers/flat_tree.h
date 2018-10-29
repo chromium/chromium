@@ -273,6 +273,9 @@ class flat_tree {
   const_iterator find(const K& key) const;
 
   template <typename K>
+  bool contains(const K& key) const;
+
+  template <typename K>
   std::pair<iterator, iterator> equal_range(const K& key);
 
   template <typename K>
@@ -860,6 +863,14 @@ auto flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::find(
     const K& key) const -> const_iterator {
   auto eq_range = equal_range(key);
   return (eq_range.first == eq_range.second) ? end() : eq_range.first;
+}
+
+template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
+template <typename K>
+bool flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::contains(
+    const K& key) const {
+  auto lower = lower_bound(key);
+  return lower != end() && !key_comp()(key, GetKeyFromValue()(*lower));
 }
 
 template <class Key, class Value, class GetKeyFromValue, class KeyCompare>

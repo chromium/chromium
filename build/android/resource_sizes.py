@@ -177,23 +177,8 @@ def _ParseManifestAttributes(apk_path):
   # Dex decompression overhead varies by Android version.
   m = re.search(r'android:minSdkVersion\(\w+\)=\(type \w+\)(\w+)\n', output)
   sdk_version = int(m.group(1), 16)
-  # Pre-L: Dalvik - .odex file is simply decompressed/optimized dex file (~1x).
-  # L, M: ART - .odex file is compiled version of the dex file (~4x).
-  # N: ART - Uses Dalvik-like JIT for normal apps (~1x), full compilation for
-  #    shared apps (~4x).
-  # Actual multipliers calculated using "apk_operations.py disk-usage".
-  # Will need to update multipliers once apk obfuscation is enabled.
-  # E.g. with obfuscation, the 4.04 changes to 4.46.
-  if sdk_version < 21:
-    dex_multiplier = 1.16
-  elif sdk_version < 24:
-    dex_multiplier = 4.04
-  elif 'Monochrome' in apk_path or 'WebView' in apk_path:
-    dex_multiplier = 4.04  # compilation_filter=speed
-  else:
-    dex_multiplier = 1.17  # compilation_filter=speed-profile
 
-  return dex_multiplier, skip_extract_lib
+  return sdk_version, skip_extract_lib
 
 
 def CountStaticInitializers(so_path, tool_prefix):
@@ -376,7 +361,31 @@ def GenerateApkAnalysis(apk_filename, tool_prefix, out_dir,
   finally:
     apk.close()
 
-  dex_multiplier, skip_extract_lib = _ParseManifestAttributes(apk_filename)
+  sdk_version, skip_extract_lib = _ParseManifestAttributes(apk_filename)
+
+  # Pre-L: Dalvik - .odex file is simply decompressed/optimized dex file (~1x).
+  # L, M: ART - .odex file is compiled version of the dex file (~4x).
+  # N: ART - Uses Dalvik-like JIT for normal apps (~1x), full compilation for
+  #    shared apps (~4x).
+  # Actual multipliers calculated using "apk_operations.py disk-usage".
+  # Will need to update multipliers once apk obfuscation is enabled.
+  # E.g. with obfuscation, the 4.04 changes to 4.46.
+  speed_profile_dex_multiplier = 1.17
+  is_shared_apk = sdk_version >= 24 and (
+      'Monochrome' in apk_filename or 'WebView' in apk_filename)
+  if sdk_version < 21:
+    # JellyBean & KitKat
+    dex_multiplier = 1.16
+  elif sdk_version < 24:
+    # Lollipop & Marshmallow
+    dex_multiplier = 4.04
+  elif is_shared_apk:
+    # Oreo and above, compilation_filter=speed
+    dex_multiplier = 4.04
+  else:
+    # Oreo and above, compilation_filter=speed-profile
+    dex_multiplier = speed_profile_dex_multiplier
+
   total_apk_size = os.path.getsize(apk_filename)
   for member in apk_contents:
     filename = member.filename
@@ -417,23 +426,33 @@ def GenerateApkAnalysis(apk_filename, tool_prefix, out_dir,
       unknown.AddZipInfo(member)
 
   total_install_size = total_apk_size
+  total_install_size_android_go = total_apk_size
   zip_overhead = total_apk_size
 
   for group in file_groups:
     actual_size = group.ComputeZippedSize()
     install_size = group.ComputeInstallSize()
     uncompressed_size = group.ComputeUncompressedSize()
-
-    total_install_size += group.ComputeExtractedSize()
+    extracted_size = group.ComputeExtractedSize()
+    total_install_size += extracted_size
     zip_overhead -= actual_size
 
     yield ('Breakdown', group.name + ' size', actual_size, 'bytes')
-    yield ('InstallBreakdown', group.name + ' size', install_size, 'bytes')
+    yield ('InstallBreakdown', group.name + ' size', int(install_size), 'bytes')
     # Only a few metrics are compressed in the first place.
     # To avoid over-reporting, track uncompressed size only for compressed
     # entries.
     if uncompressed_size != actual_size:
       yield ('Uncompressed', group.name + ' size', uncompressed_size, 'bytes')
+
+    if group is java_code and is_shared_apk:
+      # Updates are compiled using quicken, but system image uses speed-profile.
+      extracted_size = uncompressed_size * speed_profile_dex_multiplier
+      total_install_size_android_go += extracted_size
+      yield ('InstallBreakdownGo', group.name + ' size',
+             actual_size + extracted_size, 'bytes')
+    else:
+      total_install_size_android_go += extracted_size
 
   # Per-file zip overhead is caused by:
   # * 30 byte entry header + len(file name)
@@ -441,7 +460,11 @@ def GenerateApkAnalysis(apk_filename, tool_prefix, out_dir,
   # * 0-3 bytes for zipalign.
   yield ('Breakdown', 'Zip Overhead', zip_overhead, 'bytes')
   yield ('InstallSize', 'APK size', total_apk_size, 'bytes')
-  yield ('InstallSize', 'Estimated installed size', total_install_size, 'bytes')
+  yield ('InstallSize', 'Estimated installed size', int(total_install_size),
+         'bytes')
+  if is_shared_apk:
+    yield ('InstallSize', 'Estimated installed size (Android Go)',
+           int(total_install_size_android_go), 'bytes')
   transfer_size = _CalculateCompressedSize(apk_filename)
   yield ('TransferSize', 'Transfer size (deflate)', transfer_size, 'bytes')
 

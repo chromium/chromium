@@ -157,6 +157,10 @@ class PLATFORM_EXPORT V8PerIsolateData {
   V8ContextSnapshotMode GetV8ContextSnapshotMode() const {
     return v8_context_snapshot_mode_;
   }
+  void BailoutAndDisableV8ContextSnapshot() {
+    DCHECK_EQ(V8ContextSnapshotMode::kUseSnapshot, v8_context_snapshot_mode_);
+    v8_context_snapshot_mode_ = V8ContextSnapshotMode::kDontUseSnapshot;
+  }
 
   // Accessor to the cache of cross-origin accessible operation's templates.
   // Created templates get automatically cached.

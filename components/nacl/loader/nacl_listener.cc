@@ -249,8 +249,7 @@ bool NaClListener::OnOpenResource(
   // This callback is executed only on |io_thread_| with NaClIPCAdapter's
   // |lock_| not being held.
   DCHECK(!cb.is_null());
-  PrefetchedResourceFilesMap::iterator it =
-      prefetched_resource_files_.find(key);
+  auto it = prefetched_resource_files_.find(key);
 
   if (it != prefetched_resource_files_.end()) {
     // Fast path for prefetched FDs.

@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/stl_util.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -123,10 +124,8 @@ class SigninMetricsTest : public ::testing::Test {
   }
 
   static bool AccessPointSupportsPersonalizedPromo(AccessPoint access_point) {
-    return std::find(std::begin(kAccessPointsThatSupportPersonalizedPromos),
-                     std::end(kAccessPointsThatSupportPersonalizedPromos),
-                     access_point) !=
-           std::end(kAccessPointsThatSupportPersonalizedPromos);
+    return base::ContainsValue(kAccessPointsThatSupportPersonalizedPromos,
+                               access_point);
   }
 };
 

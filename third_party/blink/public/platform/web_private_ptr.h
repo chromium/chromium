@@ -36,9 +36,9 @@
 
 #if INSIDE_BLINK
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/type_traits.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"      // nogncheck
+#include "third_party/blink/renderer/platform/heap/persistent.h"  // nogncheck
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"  // nogncheck
 #endif
 
 namespace WTF {

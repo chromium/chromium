@@ -10,7 +10,7 @@ FAIL The serialization of border: 1px; border-top: 1px !important; should be can
 FAIL The serialization of border: 1px; border-top-color: red; should be canonical. assert_equals: expected "border-width: 1px; border-top-color: red;" but got "border-width: 1px; border-style: initial; border-right-color: initial; border-bottom-color: initial; border-left-color: initial; border-image: initial; border-top-color: red;"
 PASS The serialization of border: solid; border-style: dotted should be canonical.
 PASS The serialization of border-width: 1px; should be canonical.
-FAIL The serialization of overflow-x: scroll; overflow-y: hidden; should be canonical. assert_equals: expected "overflow: hidden scroll;" but got "overflow: scroll hidden;"
+PASS The serialization of overflow-x: scroll; overflow-y: hidden; should be canonical.
 PASS The serialization of overflow-x: scroll; overflow-y: scroll; should be canonical.
 PASS The serialization of outline-width: 2px; outline-style: dotted; outline-color: blue; should be canonical.
 PASS The serialization of margin-top: 1px; margin-right: 2px; margin-bottom: 3px; margin-left: 4px; should be canonical.

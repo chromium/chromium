@@ -25,6 +25,7 @@
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/shell_test_api.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/window_factory.h"
@@ -39,6 +40,7 @@
 #include "ash/wm/workspace/backdrop_delegate.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "ash/wm/workspace_controller_test_api.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "chromeos/audio/chromeos_sounds.h"
 #include "ui/aura/client/aura_constants.h"
@@ -59,6 +61,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/keyboard/keyboard_controller.h"
+#include "ui/keyboard/keyboard_switches.h"
 #include "ui/keyboard/keyboard_ui.h"
 #include "ui/keyboard/keyboard_util.h"
 #include "ui/keyboard/test/keyboard_test_util.h"
@@ -646,6 +649,7 @@ TEST_F(WorkspaceLayoutManagerTest, AdjustSnappedBoundsWidth) {
   const gfx::Rect new_work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   EXPECT_NE(work_area, new_work_area);
+
   const gfx::Rect new_expected_left_snapped_bounds =
       gfx::Rect(new_work_area.x(), new_work_area.y(), new_work_area.width() / 2,
                 new_work_area.height());
@@ -1825,6 +1829,144 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
   EXPECT_EQ(window2.get(), default_container()->children()[2]);
   EXPECT_EQ(default_container()->bounds(),
             default_container()->children()[0]->bounds());
+}
+
+namespace {
+
+class TestState : public wm::WindowState::State {
+ public:
+  TestState() = default;
+  ~TestState() override = default;
+
+  // WindowState::State overrides:
+  void OnWMEvent(wm::WindowState* window_state,
+                 const wm::WMEvent* event) override {
+    if (event->type() == wm::WM_EVENT_SYSTEM_UI_AREA_CHANGED)
+      num_system_ui_area_changes_++;
+  }
+  mojom::WindowStateType GetType() const override {
+    return mojom::WindowStateType::NORMAL;
+  }
+  void AttachState(wm::WindowState* window_state,
+                   wm::WindowState::State* previous_state) override {}
+  void DetachState(wm::WindowState* window_state) override {}
+
+  int num_system_ui_area_changes() const { return num_system_ui_area_changes_; }
+
+  void reset_num_system_ui_area_changes() { num_system_ui_area_changes_ = 0; }
+
+ private:
+  int num_system_ui_area_changes_ = 0;
+
+  DISALLOW_COPY_AND_ASSIGN(TestState);
+};
+
+}  // namespace
+
+class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
+ public:
+  WorkspaceLayoutManagerSystemUiAreaTest() = default;
+  ~WorkspaceLayoutManagerSystemUiAreaTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        keyboard::switches::kEnableVirtualKeyboard);
+    AshTestBase::SetUp();
+    keyboard::SetTouchKeyboardEnabled(true);
+    Shell::Get()->EnableKeyboard();
+
+    window_ = CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100));
+    wm::WindowState* window_state = wm::GetWindowState(window_);
+    test_state_ = new TestState();
+    window_state->SetStateObject(
+        std::unique_ptr<wm::WindowState::State>(test_state_));
+  }
+
+  void TearDown() override {
+    keyboard::SetTouchKeyboardEnabled(false);
+    AshTestBase::TearDown();
+  }
+
+ protected:
+  aura::Window* window() { return window_; }
+  TestState* test_state() { return test_state_; }
+
+ private:
+  aura::Window* window_ = nullptr;
+  TestState* test_state_ = nullptr;
+
+  DISALLOW_COPY_AND_ASSIGN(WorkspaceLayoutManagerSystemUiAreaTest);
+};
+
+// Expect that showing and hiding the unified system tray triggers a system ui
+// area change event.
+TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
+       SystemUiAreaChangeOnUnifiedSystemTrayVisibilityChange) {
+  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
+  EXPECT_FALSE(unified_system_tray->IsBubbleShown());
+  EXPECT_EQ(0, test_state()->num_system_ui_area_changes());
+
+  unified_system_tray->ShowBubble(/*show_by_click=*/false);
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+  test_state()->reset_num_system_ui_area_changes();
+
+  unified_system_tray->CloseBubble();
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+}
+
+// Expect that showing and hiding the keyboard triggers a system ui area
+// change event.
+TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
+       SystemUiAreaChangeOnVirtualKeyboardVisibilityChange) {
+  auto* keyboard_controller = keyboard::KeyboardController::Get();
+  EXPECT_EQ(0, test_state()->num_system_ui_area_changes());
+
+  keyboard_controller->ShowKeyboard(/*lock=*/true);
+  keyboard_controller->NotifyKeyboardWindowLoaded();
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+  test_state()->reset_num_system_ui_area_changes();
+
+  keyboard_controller->HideKeyboardExplicitlyBySystem();
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+}
+
+// Expect that changing the keyboard bounds triggers a system ui area
+// change event.
+TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
+       SystemUiAreaChangeOnVirtualKeyboardSizeChange) {
+  auto* keyboard_controller = keyboard::KeyboardController::Get();
+  EXPECT_EQ(0, test_state()->num_system_ui_area_changes());
+
+  keyboard_controller->ShowKeyboard(/*lock=*/true);
+  keyboard_controller->NotifyKeyboardWindowLoaded();
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+  test_state()->reset_num_system_ui_area_changes();
+
+  keyboard_controller->SetKeyboardWindowBounds(gfx::Rect(0, 0, 100, 100));
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+}
+
+// Expect that changing the keyboard container type triggers a system ui area
+// change event.
+TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
+       SystemUiAreaChangeOnVirtualKeyboardContainerTypeChange) {
+  auto* keyboard_controller = keyboard::KeyboardController::Get();
+  EXPECT_EQ(0, test_state()->num_system_ui_area_changes());
+
+  keyboard_controller->ShowKeyboard(/*lock=*/true);
+  keyboard_controller->NotifyKeyboardWindowLoaded();
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+  test_state()->reset_num_system_ui_area_changes();
+
+  keyboard_controller->SetContainerType(keyboard::ContainerType::FLOATING,
+                                        base::nullopt, base::DoNothing());
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+  test_state()->reset_num_system_ui_area_changes();
+
+  keyboard_controller->SetContainerType(keyboard::ContainerType::FULL_WIDTH,
+                                        base::nullopt, base::DoNothing());
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
 }
 
 }  // namespace ash

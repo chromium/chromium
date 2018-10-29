@@ -52,7 +52,7 @@ class NFC final : public ScriptWrappable,
   ScriptPromise watch(ScriptState*, V8MessageCallback*, const NFCWatchOptions&);
 
   // Cancels watch operation with id.
-  ScriptPromise cancelWatch(ScriptState*, long id);
+  ScriptPromise cancelWatch(ScriptState*, int32_t id);
 
   // Cancels all watch operations.
   ScriptPromise cancelWatch(ScriptState*);

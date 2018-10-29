@@ -8,12 +8,11 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_buffer.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -103,7 +102,7 @@ TEST_F(TraceEventAnalyzerTest, TraceEvent) {
   event.arg_numbers["int"] = static_cast<double>(int_num);
   event.arg_numbers["double"] = double_num;
   event.arg_strings["string"] = str;
-  event.arg_values["dict"] = WrapUnique(new base::DictionaryValue());
+  event.arg_values["dict"] = std::make_unique<base::DictionaryValue>();
 
   ASSERT_TRUE(event.HasNumberArg("false"));
   ASSERT_TRUE(event.HasNumberArg("true"));
@@ -823,8 +822,8 @@ TEST_F(TraceEventAnalyzerTest, FindOf) {
 
   std::vector<TraceEvent> events;
   events.resize(num_events);
-  for (size_t i = 0; i < events.size(); ++i)
-    event_ptrs.push_back(&events[i]);
+  for (auto& i : events)
+    event_ptrs.push_back(&i);
   size_t bam_index = num_events/2;
   events[bam_index].name = "bam";
   Query query_bam = Query::EventName() == Query::String(events[bam_index].name);
@@ -908,8 +907,8 @@ TEST_F(TraceEventAnalyzerTest, CountMatches) {
   size_t num_named = 3;
   std::vector<TraceEvent> events;
   events.resize(num_events);
-  for (size_t i = 0; i < events.size(); ++i)
-    event_ptrs.push_back(&events[i]);
+  for (auto& i : events)
+    event_ptrs.push_back(&i);
   events[0].name = "one";
   events[2].name = "two";
   events[4].name = "three";

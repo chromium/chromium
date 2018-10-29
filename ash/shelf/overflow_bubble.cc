@@ -11,7 +11,6 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -44,37 +43,26 @@ void OverflowBubble::Show(OverflowButton* overflow_button,
   bubble_->GetWidget()->AddObserver(this);
   bubble_->GetWidget()->Show();
   Shell::Get()->focus_cycler()->AddWidget(bubble_->GetWidget());
-
-  overflow_button->OnOverflowBubbleShown();
 }
 
 void OverflowBubble::Hide() {
   if (!IsShowing())
     return;
 
-  OverflowButton* overflow_button = overflow_button_;
-
   Shell::Get()->focus_cycler()->RemoveWidget(bubble_->GetWidget());
   bubble_->GetWidget()->RemoveObserver(this);
   bubble_->GetWidget()->Close();
   bubble_ = nullptr;
   overflow_button_ = nullptr;
-
-  overflow_button->OnOverflowBubbleHidden();
 }
 
 void OverflowBubble::ProcessPressedEvent(ui::LocatedEvent* event) {
   if (!IsShowing() || bubble_->shelf_view()->IsShowingMenu())
     return;
 
-  aura::Window* target = static_cast<aura::Window*>(event->target());
-  gfx::Point event_location_in_screen = event->location();
-  aura::client::GetScreenPositionClient(target->GetRootWindow())
-      ->ConvertPointToScreen(target, &event_location_in_screen);
-
-  if (bubble_->GetBoundsInScreen().Contains(event_location_in_screen) ||
-      overflow_button_->GetBoundsInScreen().Contains(
-          event_location_in_screen)) {
+  const gfx::Point screen_location = event->target()->GetScreenLocation(*event);
+  if (bubble_->GetBoundsInScreen().Contains(screen_location) ||
+      overflow_button_->GetBoundsInScreen().Contains(screen_location)) {
     return;
   }
 
@@ -84,7 +72,7 @@ void OverflowBubble::ProcessPressedEvent(ui::LocatedEvent* event) {
   if (bubble_->shelf_view()
           ->main_shelf()
           ->GetVisibleItemsBoundsInScreen()
-          .Contains(event_location_in_screen)) {
+          .Contains(screen_location)) {
     return;
   }
 

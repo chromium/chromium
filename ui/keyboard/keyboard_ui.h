@@ -5,6 +5,7 @@
 #ifndef UI_KEYBOARD_KEYBOARD_UI_H_
 #define UI_KEYBOARD_KEYBOARD_UI_H_
 
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/keyboard/keyboard_export.h"
@@ -26,17 +27,21 @@ class KeyboardController;
 // Interface representing a window containing virtual keyboard UI.
 class KEYBOARD_EXPORT KeyboardUI {
  public:
+  using LoadCallback = base::OnceCallback<void()>;
+
   KeyboardUI();
   virtual ~KeyboardUI();
 
-  // Gets the virtual keyboard window i.e. the WebContents window where
-  // keyboard extensions are loaded. May return null if the window has not yet
-  // been created.
-  // This class owns the window.
-  virtual aura::Window* GetKeyboardWindow() = 0;
+  // Begin loading the virtual keyboard window asynchronously.
+  // Returns a window immediately, but the UI within the window is not
+  // guaranteed to be fully loaded until |callback| is called.
+  // This function can only be called once.
+  virtual aura::Window* LoadKeyboardWindow(LoadCallback callback) = 0;
 
-  // Whether the keyboard window has been created.
-  virtual bool HasKeyboardWindow() const = 0;
+  // Gets the virtual keyboard window i.e. the WebContents window where
+  // keyboard extensions are loaded. Returns null if the window has not started
+  // loading.
+  virtual aura::Window* GetKeyboardWindow() const = 0;
 
   // Gets the InputMethod that will provide notifications about changes in the
   // text input context.
@@ -52,11 +57,6 @@ class KEYBOARD_EXPORT KeyboardUI {
   // the visibility change.
   virtual void HideKeyboardWindow();
 
-  // KeyboardController owns the KeyboardUI instance so KeyboardUI subclasses
-  // should not take ownership of the |controller|. |controller| can be null
-  // when KeyboardController is destroying.
-  virtual void SetController(KeyboardController* controller);
-
   // Reloads virtual keyboard URL if the current keyboard's web content URL is
   // different. The URL can be different if user switch from password field to
   // any other type input field.
@@ -66,6 +66,7 @@ class KEYBOARD_EXPORT KeyboardUI {
   // other input fields, the virtual keyboard should switch back to the IME
   // provided keyboard, or keep using the system virtual keyboard if IME doesn't
   // provide one.
+  // TODO(https://crbug.com/845780): Change this to accept a callback.
   virtual void ReloadKeyboardIfNeeded() = 0;
 
   // When the embedder changes the keyboard bounds, asks the keyboard to adjust
@@ -74,6 +75,9 @@ class KEYBOARD_EXPORT KeyboardUI {
 
   // Resets insets for affected windows.
   virtual void ResetInsets() = 0;
+
+  // |controller| may be null when KeyboardController is being destroyed.
+  void SetController(KeyboardController* controller);
 
  protected:
   KeyboardController* keyboard_controller() { return keyboard_controller_; }

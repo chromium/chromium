@@ -19,6 +19,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/download_protection/file_analyzer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
@@ -79,7 +80,7 @@ class CheckClientDownloadRequest
   // Performs file feature extraction and SafeBrowsing ping for downloads that
   // don't match the URL whitelist.
   void AnalyzeFile();
-  void OnFileFeatureExtractionDone();
+  void OnFileFeatureExtractionDone(FileAnalyzer::Results results);
   void StartExtractFileFeatures();
   void ExtractFileFeatures(const base::FilePath& file_path);
   void StartExtractRarFeatures();
@@ -114,8 +115,6 @@ class CheckClientDownloadRequest
   bool CertificateChainIsWhitelisted(
       const ClientDownloadRequest_CertificateChain& chain);
 
-  enum class ArchiveValid { UNSET, VALID, INVALID };
-
   // The DownloadItem we are checking. Will be NULL if the request has been
   // canceled. Must be accessed only on UI thread.
   download::DownloadItem* item_;
@@ -129,7 +128,7 @@ class CheckClientDownloadRequest
   GURL tab_referrer_url_;
 
   bool archived_executable_;
-  ArchiveValid archive_is_valid_;
+  FileAnalyzer::ArchiveValid archive_is_valid_;
 
 #if defined(OS_MACOSX)
   std::unique_ptr<std::vector<uint8_t>> disk_image_signature_;
@@ -148,14 +147,7 @@ class CheckClientDownloadRequest
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   const bool pingback_enabled_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
-  scoped_refptr<SandboxedRarAnalyzer> rar_analyzer_;
-  scoped_refptr<SandboxedZipAnalyzer> zip_analyzer_;
-  base::TimeTicks rar_analysis_start_time_;
-  base::TimeTicks zip_analysis_start_time_;
-#if defined(OS_MACOSX)
-  scoped_refptr<SandboxedDMGAnalyzer> dmg_analyzer_;
-  base::TimeTicks dmg_analysis_start_time_;
-#endif
+  std::unique_ptr<FileAnalyzer> file_analyzer_;
   bool finished_;
   ClientDownloadRequest::DownloadType type_;
   std::string client_download_request_data_;

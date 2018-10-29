@@ -5,7 +5,7 @@
 :host {
   --card-box-height: 208px;
   --card-box-width: 312px;
-  --card-rows: 2;
+  --card-rows: 3;
   --card-spacing: 16px;  /* Spacing between cards. */
   --dialog-height: 640px;
   --highlight-card-box-width: 640px;

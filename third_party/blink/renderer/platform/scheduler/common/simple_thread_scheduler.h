@@ -36,9 +36,9 @@ class SimpleThreadScheduler : public ThreadScheduler {
   bool CanExceedIdleDeadlineIfRequired() const override;
 
   // Those tasks are simply ignored (we assume there's no idle period).
-  void PostIdleTask(const base::Location&, WebThread::IdleTask) override;
+  void PostIdleTask(const base::Location&, Thread::IdleTask) override;
   void PostNonNestableIdleTask(const base::Location&,
-                               WebThread::IdleTask) override;
+                               Thread::IdleTask) override;
 
   // Do nothing (the observer won't get notified).
   void AddRAILModeObserver(WebRAILModeObserver*) override;
@@ -46,6 +46,7 @@ class SimpleThreadScheduler : public ThreadScheduler {
   // Return the thread task runner (there's no separate task runner for them).
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> IPCTaskRunner() override;
 
   // Unsupported. Return nullptr, and it may cause a crash.
   std::unique_ptr<PageScheduler> CreatePageScheduler(

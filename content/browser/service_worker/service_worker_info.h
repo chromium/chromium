@@ -58,11 +58,11 @@ struct CONTENT_EXPORT ServiceWorkerRegistrationInfo {
  public:
   enum DeleteFlag { IS_NOT_DELETED, IS_DELETED };
   ServiceWorkerRegistrationInfo();
-  ServiceWorkerRegistrationInfo(const GURL& pattern,
+  ServiceWorkerRegistrationInfo(const GURL& scope,
                                 int64_t registration_id,
                                 DeleteFlag delete_flag);
   ServiceWorkerRegistrationInfo(
-      const GURL& pattern,
+      const GURL& scope,
       blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
       int64_t registration_id,
       DeleteFlag delete_flag,
@@ -75,7 +75,7 @@ struct CONTENT_EXPORT ServiceWorkerRegistrationInfo {
   ServiceWorkerRegistrationInfo(const ServiceWorkerRegistrationInfo& other);
   ~ServiceWorkerRegistrationInfo();
 
-  GURL pattern;
+  GURL scope;
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache;
   int64_t registration_id;
   DeleteFlag delete_flag;

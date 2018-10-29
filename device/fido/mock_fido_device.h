@@ -27,19 +27,19 @@ class MockFidoDevice : public ::testing::StrictMock<FidoDevice> {
  public:
   // MakeU2f returns a fully initialized U2F device. This represents the state
   // after |DiscoverSupportedProtocolAndDeviceInfo| has been called by the
-  // FidoDiscovery.
+  // FidoDeviceDiscovery.
   static std::unique_ptr<MockFidoDevice> MakeU2f();
   // MakeCtap returns a fully initialized CTAP device. This represents the
   // state after |DiscoverSupportedProtocolAndDeviceInfo| has been called by
-  // the FidoDiscovery.
+  // the FidoDeviceDiscovery.
   static std::unique_ptr<MockFidoDevice> MakeCtap(
       base::Optional<AuthenticatorGetInfoResponse> device_info = base::nullopt);
   // MakeU2fWithDeviceInfoExpectation returns a uninitialized U2F device
-  // suitable for injecting into a FidoDiscovery, which will determine its
+  // suitable for injecting into a FidoDeviceDiscovery, which will determine its
   // protocol version by invoking |DiscoverSupportedProtocolAndDeviceInfo|.
   static std::unique_ptr<MockFidoDevice> MakeU2fWithGetInfoExpectation();
   // MakeCtapWithDeviceInfoExpectation returns a uninitialized CTAP device
-  // suitable for injecting into a FidoDiscovery, which will determine its
+  // suitable for injecting into a FidoDeviceDiscovery, which will determine its
   // protocol version by invoking |DiscoverSupportedProtocolAndDeviceInfo|. If a
   // response is supplied, the mock will use that to reply; otherwise it will
   // use |test_data::kTestAuthenticatorGetInfoResponse|.

@@ -5,6 +5,7 @@
 #include "services/ws/injected_event_handler.h"
 
 #include "base/memory/ptr_util.h"
+#include "services/ws/event_queue.h"
 #include "services/ws/window_service.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -12,6 +13,25 @@
 #include "ui/aura/window_tree_host.h"
 
 namespace ws {
+
+// RAII style class whose constructor adds a pre-target handler, and destructor
+// removes it.
+class InjectedEventHandler::ScopedPreTargetRegister {
+ public:
+  ScopedPreTargetRegister(ui::EventTarget* target, ui::EventHandler* handler)
+      : target_(target), handler_(handler) {
+    target->AddPreTargetHandler(handler,
+                                ui::EventTarget::Priority::kAccessibility);
+  }
+
+  ~ScopedPreTargetRegister() { target_->RemovePreTargetHandler(handler_); }
+
+ private:
+  ui::EventTarget* target_;
+  ui::EventHandler* handler_;
+
+  DISALLOW_COPY_AND_ASSIGN(ScopedPreTargetRegister);
+};
 
 InjectedEventHandler::InjectedEventHandler(
     WindowService* window_service,
@@ -33,17 +53,16 @@ void InjectedEventHandler::Inject(std::unique_ptr<ui::Event> event,
   result_callback_ = std::move(result_callback);
   DCHECK(result_callback_);
 
-  aura::Window* window_tree_host_window = window_tree_host_->window();
-  window_tree_host_window->AddPreTargetHandler(
-      this, ui::EventTarget::Priority::kAccessibility);
-  // No need to do anything with the result of sending the event.
-  ignore_result(
-      window_tree_host_->event_sink()->OnEventFromSource(event.get()));
-
-  // WARNING: it's possible |this| has been destroyed. Make sure you don't
-  // access any locals after this. The use of |this| here is safe as it's only
-  // used to remove from a list.
-  window_tree_host_window->RemovePreTargetHandler(this);
+  auto this_ref = weak_factory_.GetWeakPtr();
+  pre_target_register_ = std::make_unique<ScopedPreTargetRegister>(
+      window_tree_host_->window(), this);
+  EventQueue::DispatchOrQueueEvent(window_service_, window_tree_host_,
+                                   event.get());
+  if (!this_ref)
+    return;
+  // |pre_target_register_| needs to be a member to ensure it's destroyed
+  // if |this| is destroyed.
+  pre_target_register_.reset();
 }
 
 void InjectedEventHandler::NotifyCallback() {
@@ -86,7 +105,8 @@ void InjectedEventHandler::OnWindowDestroying(aura::Window* window) {
 }
 
 void InjectedEventHandler::OnWillSendEventToClient(ClientSpecificId client_id,
-                                                   uint32_t event_id) {
+                                                   uint32_t event_id,
+                                                   const ui::Event& event) {
   if (event_id_)
     return;  // Already waiting.
 

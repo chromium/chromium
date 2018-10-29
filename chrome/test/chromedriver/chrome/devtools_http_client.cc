@@ -21,7 +21,7 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 #include "chrome/test/chromedriver/net/net_util.h"
-#include "chrome/test/chromedriver/net/url_request_context_getter.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 WebViewInfo::WebViewInfo(const std::string& id,
                          const std::string& debugger_url,
@@ -67,12 +67,12 @@ const WebViewInfo* WebViewsInfo::GetForId(const std::string& id) const {
 
 DevToolsHttpClient::DevToolsHttpClient(
     const NetAddress& address,
-    scoped_refptr<URLRequestContextGetter> context_getter,
+    network::mojom::URLLoaderFactory* factory,
     const SyncWebSocketFactory& socket_factory,
     std::unique_ptr<DeviceMetrics> device_metrics,
     std::unique_ptr<std::set<WebViewInfo::Type>> window_types,
     std::string page_load_strategy)
-    : context_getter_(context_getter),
+    : url_loader_factory_(factory),
       socket_factory_(socket_factory),
       server_url_("http://" + address.ToString()),
       web_socket_url_prefix_(base::StringPrintf("ws://%s/devtools/page/",
@@ -92,8 +92,7 @@ Status DevToolsHttpClient::Init(const base::TimeDelta& timeout) {
   std::string version_url = server_url_ + "/json/version";
   std::string data;
 
-  while (!FetchUrlAndLog(version_url, context_getter_.get(), &data)
-      || data.empty()) {
+  while (!FetchUrlAndLog(version_url, &data) || data.empty()) {
     if (base::TimeTicks::Now() > deadline)
       return Status(kChromeNotReachable);
     base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
@@ -104,7 +103,7 @@ Status DevToolsHttpClient::Init(const base::TimeDelta& timeout) {
 
 Status DevToolsHttpClient::GetWebViewsInfo(WebViewsInfo* views_info) {
   std::string data;
-  if (!FetchUrlAndLog(server_url_ + "/json", context_getter_.get(), &data))
+  if (!FetchUrlAndLog(server_url_ + "/json", &data))
     return Status(kChromeNotReachable);
 
   return internal::ParseWebViewsInfo(data, views_info);
@@ -120,8 +119,7 @@ std::unique_ptr<DevToolsClient> DevToolsHttpClient::CreateClient(
 
 Status DevToolsHttpClient::CloseWebView(const std::string& id) {
   std::string data;
-  if (!FetchUrlAndLog(
-          server_url_ + "/json/close/" + id, context_getter_.get(), &data)) {
+  if (!FetchUrlAndLog(server_url_ + "/json/close/" + id, &data)) {
     return Status(kOk);  // Closing the last web view leads chrome to quit.
   }
 
@@ -144,8 +142,7 @@ Status DevToolsHttpClient::CloseWebView(const std::string& id) {
 
 Status DevToolsHttpClient::ActivateWebView(const std::string& id) {
   std::string data;
-  if (!FetchUrlAndLog(
-          server_url_ + "/json/activate/" + id, context_getter_.get(), &data))
+  if (!FetchUrlAndLog(server_url_ + "/json/activate/" + id, &data))
     return Status(kUnknownError, "cannot activate web view");
   return Status(kOk);
 }
@@ -239,10 +236,9 @@ Status DevToolsHttpClient::CloseFrontends(const std::string& for_client_id) {
 }
 
 bool DevToolsHttpClient::FetchUrlAndLog(const std::string& url,
-                                        URLRequestContextGetter* getter,
                                         std::string* response) {
   VLOG(1) << "DevTools HTTP Request: " << url;
-  bool ok = FetchUrl(url, getter, response);
+  bool ok = FetchUrl(url, url_loader_factory_, response);
   if (ok) {
     VLOG(1) << "DevTools HTTP Response: " << *response;
   } else {

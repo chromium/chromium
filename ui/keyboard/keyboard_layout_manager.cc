@@ -21,7 +21,7 @@ KeyboardLayoutManager::~KeyboardLayoutManager() = default;
 void KeyboardLayoutManager::OnWindowAddedToLayout(aura::Window* child) {
   // Reset the keyboard window bounds when it gets added to the keyboard
   // container to ensure that its bounds are valid.
-  SetChildBounds(child, gfx::Rect());
+  SetChildBounds(child, child->GetBoundsInRootWindow());
 }
 
 void KeyboardLayoutManager::SetChildBounds(aura::Window* child,

@@ -22,14 +22,16 @@ AuditorResult::AuditorResult(Type type,
          type == AuditorResult::Type::ERROR_HASH_CODE_COLLISION ||
          type == AuditorResult::Type::ERROR_REPEATED_ID ||
          type == AuditorResult::Type::ERROR_MERGE_FAILED ||
-         type == AuditorResult::Type::ERROR_ANNOTATIONS_XML_UPDATE);
+         type == AuditorResult::Type::ERROR_ANNOTATIONS_XML_UPDATE ||
+         type == AuditorResult::Type::ERROR_INVALID_OS);
   DCHECK(!message.empty() || type == AuditorResult::Type::RESULT_OK ||
          type == AuditorResult::Type::RESULT_IGNORE ||
          type == AuditorResult::Type::ERROR_MISSING_TAG_USED ||
          type == AuditorResult::Type::ERROR_NO_ANNOTATION ||
          type == AuditorResult::Type::ERROR_MISSING_SECOND_ID ||
          type == AuditorResult::Type::ERROR_DIRECT_ASSIGNMENT ||
-         type == AuditorResult::Type::ERROR_TEST_ANNOTATION);
+         type == AuditorResult::Type::ERROR_TEST_ANNOTATION ||
+         type == AuditorResult::Type::ERROR_INVALID_OS);
   if (!message.empty())
     details_.push_back(message);
 };
@@ -167,6 +169,17 @@ std::string AuditorResult::ToText() const {
     case AuditorResult::Type::ERROR_TEST_ANNOTATION:
       return base::StringPrintf("Annotation for tests is used in '%s:%i'.",
                                 file_path_.c_str(), line_);
+
+    case AuditorResult::Type::ERROR_INVALID_OS:
+      return base::StringPrintf("Invalid OS '%s' in annotation '%s' at %s",
+                                details_[0].c_str(), details_[1].c_str(),
+                                file_path_.c_str());
+
+    case AuditorResult::Type::ERROR_DEPRECATED_WITH_OS:
+      return base::StringPrintf(
+          "Annotation '%s' has a deprecation date and at least one active OS "
+          "at %s.",
+          details_[0].c_str(), file_path_.c_str());
 
     default:
       return std::string();

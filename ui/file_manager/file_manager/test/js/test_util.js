@@ -11,6 +11,8 @@ var test = test || {};
 constants.FILES_QUICK_VIEW_HTML = 'test/gen/foreground/elements/files_quick_view.html';
 constants.DRIVE_WELCOME_CSS = FILE_MANAGER_ROOT + constants.DRIVE_WELCOME_CSS;
 
+test.FILE_MANAGER_EXTENSION_ID = 'hhaomjibdihmijegdhdafkllkbggdgoj';
+
 // Stores Blobs loaded from src/chrome/test/data/chromeos/file_manager.
 test.DATA = {
   'archive.zip': null,
@@ -18,6 +20,7 @@ test.DATA = {
   'image2.png': null,
   'image3.jpg': null,
   'music.ogg': null,
+  'package.deb': null,
   'random.bin': null,
   'text.txt': null,
   'video.ogv': null,
@@ -140,19 +143,19 @@ test.TestEntryInfo.prototype.getMockFileSystemPopulateRow = function(prefix) {
  */
 test.ENTRIES = {
   hello: new test.TestEntryInfo(
-      test.EntryType.FILE, 'text.txt', 'hello.txt',
-      'text/plain', test.SharedOption.NONE, 'Sep 4, 1998, 12:34 PM',
-      'hello.txt', '51 bytes', 'Plain text'),
+      test.EntryType.FILE, 'text.txt', 'hello.txt', 'text/plain',
+      test.SharedOption.NONE, 'Sep 4, 1998, 12:34 PM', 'hello.txt', '51 bytes',
+      'Plain text'),
 
   world: new test.TestEntryInfo(
-      test.EntryType.FILE, 'video.ogv', 'world.ogv',
-      'video/ogg', test.SharedOption.NONE, 'Jul 4, 2012, 10:35 AM',
-      'world.ogv', '59 KB', 'OGG video'),
+      test.EntryType.FILE, 'video.ogv', 'world.ogv', 'video/ogg',
+      test.SharedOption.NONE, 'Jul 4, 2012, 10:35 AM', 'world.ogv', '59 KB',
+      'OGG video'),
 
   unsupported: new test.TestEntryInfo(
-      test.EntryType.FILE, 'random.bin', 'unsupported.foo',
-      'application/x-foo', test.SharedOption.NONE, 'Jul 4, 2012, 10:36 AM',
-      'unsupported.foo', '8 KB', 'FOO file'),
+      test.EntryType.FILE, 'random.bin', 'unsupported.foo', 'application/x-foo',
+      test.SharedOption.NONE, 'Jul 4, 2012, 10:36 AM', 'unsupported.foo',
+      '8 KB', 'FOO file'),
 
   desktop: new test.TestEntryInfo(
       test.EntryType.FILE, 'image.png', 'My Desktop Background.png',
@@ -162,88 +165,90 @@ test.ENTRIES = {
   // An image file without an extension, to confirm that file type detection
   // using mime types works fine.
   image2: new test.TestEntryInfo(
-      test.EntryType.FILE, 'image2.png', 'image2',
-      'image/png', test.SharedOption.NONE, 'Jan 18, 2038, 1:02 AM',
-      'image2', '4 KB', 'PNG image'),
+      test.EntryType.FILE, 'image2.png', 'image2', 'image/png',
+      test.SharedOption.NONE, 'Jan 18, 2038, 1:02 AM', 'image2', '4 KB',
+      'PNG image'),
 
   image3: new test.TestEntryInfo(
-      test.EntryType.FILE, 'image3.jpg', 'image3.jpg',
-      'image/jpeg', test.SharedOption.NONE, 'Jan 18, 2038, 1:02 AM',
-      'image3.jpg', '3 KB', 'JPEG image'),
+      test.EntryType.FILE, 'image3.jpg', 'image3.jpg', 'image/jpeg',
+      test.SharedOption.NONE, 'Jan 18, 2038, 1:02 AM', 'image3.jpg', '3 KB',
+      'JPEG image'),
 
   // An ogg file without a mime type, to confirm that file type detection using
   // file extensions works fine.
   beautiful: new test.TestEntryInfo(
-      test.EntryType.FILE, 'music.ogg', 'Beautiful Song.ogg',
-      '', test.SharedOption.NONE, 'Nov 12, 2086, 12:00 PM',
-      'Beautiful Song.ogg', '14 KB', 'OGG audio'),
+      test.EntryType.FILE, 'music.ogg', 'Beautiful Song.ogg', '',
+      test.SharedOption.NONE, 'Nov 12, 2086, 12:00 PM', 'Beautiful Song.ogg',
+      '14 KB', 'OGG audio'),
 
   photos: new test.TestEntryInfo(
-      test.EntryType.DIRECTORY, '', 'photos',
-      '', test.SharedOption.NONE, 'Jan 1, 1980, 11:59 PM',
-      'photos', '--', 'Folder'),
+      test.EntryType.DIRECTORY, '', 'photos', '', test.SharedOption.NONE,
+      'Jan 1, 1980, 11:59 PM', 'photos', '--', 'Folder'),
 
   testDocument: new test.TestEntryInfo(
       test.EntryType.FILE, '', 'Test Document',
-      'application/vnd.google-apps.document',
-      test.SharedOption.NONE, 'Apr 10, 2013, 4:20 PM',
-      'Test Document.gdoc', '--', 'Google document'),
+      'application/vnd.google-apps.document', test.SharedOption.NONE,
+      'Apr 10, 2013, 4:20 PM', 'Test Document.gdoc', '--', 'Google document'),
 
   testSharedDocument: new test.TestEntryInfo(
       test.EntryType.FILE, '', 'Test Shared Document',
-      'application/vnd.google-apps.document',
-      test.SharedOption.SHARED, 'Mar 20, 2013, 10:40 PM',
-      'Test Shared Document.gdoc', '--', 'Google document'),
+      'application/vnd.google-apps.document', test.SharedOption.SHARED,
+      'Mar 20, 2013, 10:40 PM', 'Test Shared Document.gdoc', '--',
+      'Google document'),
 
   newlyAdded: new test.TestEntryInfo(
-      test.EntryType.FILE, 'music.ogg', 'newly added file.ogg',
-      'audio/ogg', test.SharedOption.NONE, 'Sep 4, 1998, 12:00 AM',
-      'newly added file.ogg', '14 KB', 'OGG audio'),
+      test.EntryType.FILE, 'music.ogg', 'newly added file.ogg', 'audio/ogg',
+      test.SharedOption.NONE, 'Sep 4, 1998, 12:00 AM', 'newly added file.ogg',
+      '14 KB', 'OGG audio'),
 
   directoryA: new test.TestEntryInfo(
-      test.EntryType.DIRECTORY, '', 'A',
-      '', test.SharedOption.NONE, 'Jan 1, 2000, 1:00 AM',
-      'A', '--', 'Folder'),
+      test.EntryType.DIRECTORY, '', 'A', '', test.SharedOption.NONE,
+      'Jan 1, 2000, 1:00 AM', 'A', '--', 'Folder'),
 
   directoryB: new test.TestEntryInfo(
-      test.EntryType.DIRECTORY, '', 'A/B',
-      '', test.SharedOption.NONE, 'Jan 1, 2000, 1:00 AM',
-      'B', '--', 'Folder'),
+      test.EntryType.DIRECTORY, '', 'A/B', '', test.SharedOption.NONE,
+      'Jan 1, 2000, 1:00 AM', 'B', '--', 'Folder'),
 
   directoryC: new test.TestEntryInfo(
-      test.EntryType.DIRECTORY, '', 'A/B/C',
-      '', test.SharedOption.NONE, 'Jan 1, 2000, 1:00 AM',
-      'C', '--', 'Folder'),
+      test.EntryType.DIRECTORY, '', 'A/B/C', '', test.SharedOption.NONE,
+      'Jan 1, 2000, 1:00 AM', 'C', '--', 'Folder'),
 
   directoryD: new test.TestEntryInfo(
-      test.EntryType.DIRECTORY, '', 'D',
-      '', test.SharedOption.NONE, 'Jan 1, 2000, 1:00 AM',
-      'D', '--', 'Folder'),
+      test.EntryType.DIRECTORY, '', 'D', '', test.SharedOption.NONE,
+      'Jan 1, 2000, 1:00 AM', 'D', '--', 'Folder'),
 
   directoryE: new test.TestEntryInfo(
-      test.EntryType.DIRECTORY, '', 'D/E',
-      '', test.SharedOption.NONE, 'Jan 1, 2000, 1:00 AM',
-      'E', '--', 'Folder'),
+      test.EntryType.DIRECTORY, '', 'D/E', '', test.SharedOption.NONE,
+      'Jan 1, 2000, 1:00 AM', 'E', '--', 'Folder'),
 
   directoryF: new test.TestEntryInfo(
-      test.EntryType.DIRECTORY, '', 'D/E/F',
-      '', test.SharedOption.NONE, 'Jan 1, 2000, 1:00 AM',
-      'F', '--', 'Folder'),
+      test.EntryType.DIRECTORY, '', 'D/E/F', '', test.SharedOption.NONE,
+      'Jan 1, 2000, 1:00 AM', 'F', '--', 'Folder'),
 
   zipArchive: new test.TestEntryInfo(
-      test.EntryType.FILE, 'archive.zip', 'archive.zip',
-      'application/x-zip', test.SharedOption.NONE, 'Jan 1, 2014, 1:00 AM',
-      'archive.zip', '533 bytes', 'Zip archive'),
+      test.EntryType.FILE, 'archive.zip', 'archive.zip', 'application/x-zip',
+      test.SharedOption.NONE, 'Jan 1, 2014, 1:00 AM', 'archive.zip',
+      '533 bytes', 'Zip archive'),
+
+  debPackage: new test.TestEntryInfo(
+      test.EntryType.FILE, 'package.deb', 'package.deb',
+      'application/vnd.debian.binary-package', test.SharedOption.NONE,
+      'Jan 1, 2014, 1:00 AM', 'package.deb', '724 bytes', 'DEB file'),
 
   hiddenFile: new test.TestEntryInfo(
-    test.EntryType.FILE, 'text.txt', '.hiddenfile.txt',
-    'text/plain', test.SharedOption.NONE, 'Sep 30, 2014, 3:30 PM',
-    '.hiddenfile.txt', '51 bytes', 'Plain text'),
+      test.EntryType.FILE, 'text.txt', '.hiddenfile.txt', 'text/plain',
+      test.SharedOption.NONE, 'Sep 30, 2014, 3:30 PM', '.hiddenfile.txt',
+      '51 bytes', 'Plain text'),
 
   mhtml: new test.TestEntryInfo(
       test.EntryType.FILE, 'text.txt', 'hello.mhtml', 'text/html',
       test.SharedOption.NONE, 'Sep 4, 1998, 12:34 PM', 'hello.mhtml',
       '51 bytes', 'HTML document'),
+
+  helloInA: new test.TestEntryInfo(
+      test.EntryType.FILE, 'text.txt', 'hello.txt', 'text/plain',
+      test.SharedOption.NONE, 'Sep 4, 1998, 12:34 PM', 'A/hello.txt',
+      '51 bytes', 'Plain text'),
 };
 
 /**
@@ -500,10 +505,17 @@ test.waitForFiles = function(expected, opt_options) {
  * Opens a Files app's main window and waits until it is initialized. Fills
  * the window with initial files. Should be called for the first window only.
  *
+ * @param {Array<!test.TestEntryInfo>=} opt_downloads Entries for downloads.
+ * @param {Array<!test.TestEntryInfo>=} opt_drive Entries for drive.
+ * @param {Array<!test.TestEntryInfo>=} opt_crostini Entries for crostini.
  * @return {Promise} Promise to be fulfilled with the result object, which
  *     contains the file list.
  */
-test.setupAndWaitUntilReady = function() {
+test.setupAndWaitUntilReady = function(opt_downloads, opt_drive, opt_crostini) {
+  const entriesDownloads = opt_downloads || test.BASIC_LOCAL_ENTRY_SET;
+  const entriesDrive = opt_drive || test.BASIC_DRIVE_ENTRY_SET;
+  const entriesCrostini = opt_crostini || test.BASIC_CROSTINI_ENTRY_SET;
+
   // Copy some functions from test.util.sync and bind to main window.
   test.fakeMouseClick = test.util.sync.fakeMouseClick.bind(null, window);
   test.fakeMouseDoubleClick =
@@ -518,9 +530,7 @@ test.setupAndWaitUntilReady = function() {
 
   return test.loadData()
       .then(() => {
-        test.addEntries(
-            test.BASIC_LOCAL_ENTRY_SET, test.BASIC_DRIVE_ENTRY_SET,
-            test.BASIC_CROSTINI_ENTRY_SET);
+        test.addEntries(entriesDownloads, entriesDrive, entriesCrostini);
         return test.waitForElement(
             '#directory-tree [volume-type-icon="downloads"]');
       })
@@ -531,7 +541,7 @@ test.setupAndWaitUntilReady = function() {
                 '#refresh-button' :
                 '#directory-tree [volume-type-icon="downloads"]'));
         return test.waitForFiles(
-            test.TestEntryInfo.getExpectedRows(test.BASIC_LOCAL_ENTRY_SET));
+            test.TestEntryInfo.getExpectedRows(entriesDownloads));
       });
 };
 

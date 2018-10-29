@@ -222,10 +222,14 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestComplexHypertext) {
 
   EXPECT_EQ(4, atk_hypertext_get_n_links(atk_hypertext));
 
-  auto verify_atk_link_text = [&](const char* expected_text, int link_index) {
+  auto verify_atk_link_text = [&](const char* expected_text, int link_index,
+                                  int expected_start_index) {
     AtkHyperlink* link = atk_hypertext_get_link(atk_hypertext, link_index);
     ASSERT_NE(nullptr, link);
     ASSERT_TRUE(ATK_IS_HYPERLINK(link));
+
+    ASSERT_EQ(atk_hyperlink_get_start_index(link), expected_start_index);
+    ASSERT_EQ(atk_hyperlink_get_end_index(link), expected_start_index + 1);
 
     AtkObject* object = atk_hyperlink_get_object(link, 0);
     ASSERT_TRUE(ATK_IS_TEXT(object));
@@ -240,16 +244,16 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestComplexHypertext) {
   ASSERT_TRUE(ATK_IS_HYPERLINK(combo_box_link));
 
   // Get the text of the combo box. It should be its value.
-  verify_atk_link_text(combo_box_value.c_str(), 0);
+  verify_atk_link_text(combo_box_value.c_str(), 0, 14);
 
   // Get the text of the check box. It should be its name.
-  verify_atk_link_text(check_box_name.c_str(), 1);
+  verify_atk_link_text(check_box_name.c_str(), 1, 30);
 
   // Get the text of the button.
-  verify_atk_link_text(button_text_name.c_str(), 2);
+  verify_atk_link_text(button_text_name.c_str(), 2, 31);
 
   // Get the text of the link.
-  verify_atk_link_text(link_text_name.c_str(), 3);
+  verify_atk_link_text(link_text_name.c_str(), 3, 32);
 
   // Now test that all the object indices map back to the correct link indices.
   EXPECT_EQ(-1, atk_hypertext_get_link_index(atk_hypertext, -1));

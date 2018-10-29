@@ -18,14 +18,12 @@
 #import "ios/chrome/browser/ui/authentication/signin_earlgrey_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
-#import "ios/chrome/browser/ui/history/legacy_history_entry_item.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_collection_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
-#include "ios/chrome/browser/ui/tools_menu/public/tools_menu_constants.h"
-#import "ios/chrome/browser/ui/tools_menu/tools_popup_controller.h"
-#include "ios/chrome/browser/ui/ui_util.h"
 #import "ios/chrome/browser/ui/util/transparent_link_button.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/common/string_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -66,7 +64,6 @@ id<GREYMatcher> HistoryEntry(const GURL& url, const std::string& title) {
   NSString* url_spec_text = nil;
   NSString* title_text = base::SysUTF8ToNSString(title);
 
-  if (IsUIRefreshPhase1Enabled()) {
     url_spec_text = base::SysUTF8ToNSString(url.GetOrigin().spec());
 
     MatchesBlock matches = ^BOOL(TableViewURLCell* cell) {
@@ -85,26 +82,6 @@ id<GREYMatcher> HistoryEntry(const GURL& url, const std::string& title) {
         [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
                                              descriptionBlock:describe],
         grey_sufficientlyVisible(), nil);
-  } else {
-    url_spec_text = base::SysUTF8ToNSString(url.spec());
-
-    MatchesBlock matches = ^BOOL(LegacyHistoryEntryCell* cell) {
-      return [cell.textLabel.text isEqual:title_text] &&
-             [cell.detailTextLabel.text isEqual:url_spec_text];
-    };
-
-    DescribeToBlock describe = ^(id<GREYDescription> description) {
-      [description appendText:@"view containing URL text: "];
-      [description appendText:url_spec_text];
-      [description appendText:@" title text: "];
-      [description appendText:title_text];
-    };
-    return grey_allOf(
-        grey_kindOfClass([LegacyHistoryEntryCell class]),
-        [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
-                                             descriptionBlock:describe],
-        grey_sufficientlyVisible(), nil);
-  }
 }
 // Matcher for the history button in the tools menu.
 id<GREYMatcher> HistoryButton() {
@@ -120,11 +97,7 @@ id<GREYMatcher> DeleteHistoryEntriesButton() {
 }
 // Matcher for the search button.
 id<GREYMatcher> SearchIconButton() {
-  if (IsUIRefreshPhase1Enabled()) {
     return grey_accessibilityID(kHistorySearchControllerSearchBarIdentifier);
-  } else {
-    return ButtonWithAccessibilityLabelId(IDS_IOS_ICON_SEARCH);
-  }
 }
 // Matcher for the cancel button.
 id<GREYMatcher> CancelButton() {
@@ -256,29 +229,21 @@ id<GREYMatcher> OpenInNewIncognitoTabButton() {
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
       performAction:grey_tap()];
 
-  if (IsUIRefreshPhase1Enabled()) {
     // Verify that scrim is visible.
     [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                             kHistorySearchScrimIdentifier)]
         assertWithMatcher:grey_notNil()];
-  }
 
   NSString* searchString =
       [NSString stringWithFormat:@"%s", _URL1.path().c_str()];
-  if (IsUIRefreshPhase1Enabled()) {
-    [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-        performAction:grey_typeText(searchString)];
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
-        performAction:grey_typeText(searchString)];
-  }
 
-  if (IsUIRefreshPhase1Enabled()) {
-    // Verify that scrim is not visible.
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kHistorySearchScrimIdentifier)]
-        assertWithMatcher:grey_nil()];
-  }
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_typeText(searchString)];
+
+  // Verify that scrim is not visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistorySearchScrimIdentifier)]
+      assertWithMatcher:grey_nil()];
 
   [[EarlGrey selectElementWithMatcher:HistoryEntry(_URL1, kTitle1)]
       assertWithMatcher:grey_notNil()];
@@ -414,14 +379,9 @@ id<GREYMatcher> OpenInNewIncognitoTabButton() {
   [self openHistoryPanel];
   chrome_test_util::VerifyAccessibilityForCurrentScreen();
   // Close history.
-  if (IsUIRefreshPhase1Enabled()) {
     id<GREYMatcher> exitMatcher =
         grey_accessibilityID(kHistoryNavigationControllerDoneButtonIdentifier);
     [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
-        performAction:grey_tap()];
-  }
 }
 
 #pragma mark Helper Methods

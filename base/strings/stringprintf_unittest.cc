@@ -79,12 +79,12 @@ TEST(StringPrintfTest, StringAppendfInt) {
 TEST(StringPrintfTest, StringPrintfBounds) {
   const int kSrcLen = 1026;
   char src[kSrcLen];
-  for (size_t i = 0; i < arraysize(src); i++)
-    src[i] = 'A';
+  for (auto& i : src)
+    i = 'A';
 
   wchar_t srcw[kSrcLen];
-  for (size_t i = 0; i < arraysize(srcw); i++)
-    srcw[i] = 'A';
+  for (auto& i : srcw)
+    i = 'A';
 
   for (int i = 1; i < 3; i++) {
     src[kSrcLen - i] = 0;
@@ -104,8 +104,8 @@ TEST(StringPrintfTest, StringPrintfBounds) {
 // Test very large sprintfs that will cause the buffer to grow.
 TEST(StringPrintfTest, Grow) {
   char src[1026];
-  for (size_t i = 0; i < arraysize(src); i++)
-    src[i] = 'A';
+  for (auto& i : src)
+    i = 'A';
   src[1025] = 0;
 
   const char fmt[] = "%sB%sB%sB%sB%sB%sB%s";

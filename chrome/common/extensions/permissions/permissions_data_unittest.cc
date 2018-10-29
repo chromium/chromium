@@ -510,7 +510,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, Permissions) {
                                     "extension_wildcard_chrome.json",
                                     Manifest::INTERNAL, Extension::NO_FLAGS,
                                     &error);
-  std::vector<InstallWarning> warnings = extension->install_warnings();
+  const std::vector<InstallWarning>& warnings = extension->install_warnings();
   EXPECT_FALSE(warnings.empty());
   EXPECT_EQ(ErrorUtils::FormatErrorMessage(
                 manifest_errors::kInvalidPermissionScheme,

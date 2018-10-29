@@ -58,6 +58,7 @@ class OverlayWindow {
   virtual void SetPlaybackState(PlaybackState playback_state) = 0;
   virtual void SetPictureInPictureCustomControls(
       const std::vector<blink::PictureInPictureControlInfo>& controls) = 0;
+  virtual void SetAlwaysHidePlayPauseButton(bool is_visible) = 0;
 
   // Retrieves the ui::Layers corresponding to the window and video.
   virtual ui::Layer* GetWindowBackgroundLayer() = 0;

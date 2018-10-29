@@ -1,0 +1,26 @@
+# These tests currently fail with SingleProcessMash enabled.
+# Bug: crbug.com/874089
+
+
+# CopyOutputRequests not allowed. https://crbug.com/877172
+-AuraWindowVideoCaptureDeviceBrowserTest.DeliversRefreshFramesUponRequest
+-AuraWindowVideoCaptureDeviceBrowserTest.ErrorsOutWhenWindowIsDestroyed
+-AuraWindowVideoCaptureDeviceBrowserTestP.CapturesContentChanges/0
+-AuraWindowVideoCaptureDeviceBrowserTestP.CapturesContentChanges/1
+-AuraWindowVideoCaptureDeviceBrowserTest.SuspendsAndResumes
+-CaptureScreenshotTest.CaptureScreenshot
+-CaptureScreenshotTest.CaptureScreenshotJpeg
+-CaptureScreenshotTest.SetDefaultBackgroundColorOverride
+-CaptureScreenshotTest.TransparentScreenshots
+-CompositedScrollingBrowserTest.Scroll3DTransformedScroller
+
+
+# InputEventAckWaiter::Wait() times out,
+# or RenderWidgetHostMouseEventMonitor::EventWasReceived fails.
+# https://crbug.com/884360
+-SitePerProcessHitTestBrowserTest.CrossProcessTooltipTest*
+-SitePerProcessHitTestBrowserTest.SubframeGestureEventRouting*
+
+
+# Flaky. https://crbug.com/889878
+-SyntheticKeyEventTest.KeyboardEventAck

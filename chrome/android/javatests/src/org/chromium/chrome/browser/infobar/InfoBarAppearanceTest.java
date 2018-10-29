@@ -56,7 +56,7 @@ public class InfoBarAppearanceTest {
         mListener = new InfoBarTestAnimationListener();
 
         mTab = mActivityTestRule.getActivity().getActivityTab();
-        mTab.getInfoBarContainer().addAnimationListener(mListener);
+        mActivityTestRule.getInfoBarContainer().addAnimationListener(mListener);
     }
 
     @Test
@@ -79,7 +79,7 @@ public class InfoBarAppearanceTest {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mTab.getTabWebContentsDelegateAndroid().showFramebustBlockInfobarForTesting(url1);
         });
-        infobars = mTab.getInfoBarContainer().getInfoBarsForTesting();
+        infobars = mActivityTestRule.getInfoBarContainer().getInfoBarsForTesting();
         assertEquals(1, infobars.size());
         infoBar = (FramebustBlockInfoBar) infobars.get(0);
         assertEquals(url1, infoBar.getBlockedUrl());
@@ -87,7 +87,7 @@ public class InfoBarAppearanceTest {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mTab.getTabWebContentsDelegateAndroid().showFramebustBlockInfobarForTesting(url2);
         });
-        infobars = mTab.getInfoBarContainer().getInfoBarsForTesting();
+        infobars = mActivityTestRule.getInfoBarContainer().getInfoBarsForTesting();
         assertEquals(1, infobars.size());
         infoBar = (FramebustBlockInfoBar) infobars.get(0);
         assertEquals(url2, infoBar.getBlockedUrl());
@@ -113,7 +113,9 @@ public class InfoBarAppearanceTest {
             mTab.getTabWebContentsDelegateAndroid().showFramebustBlockInfobarForTesting(url);
         });
         FramebustBlockInfoBar infoBar =
-                (FramebustBlockInfoBar) mTab.getInfoBarContainer().getInfoBarsForTesting().get(0);
+                (FramebustBlockInfoBar) mActivityTestRule.getInfoBarContainer()
+                        .getInfoBarsForTesting()
+                        .get(0);
 
         ThreadUtils.runOnUiThreadBlocking(infoBar::onLinkClicked); // Once to expand the infobar
         assertEquals(0, callbackHelper.getCallCount());
@@ -122,7 +124,7 @@ public class InfoBarAppearanceTest {
         callbackHelper.waitForCallback(0);
 
         CriteriaHelper.pollUiThread(
-                () -> mTab.getInfoBarContainer().getInfoBarsForTesting().isEmpty());
+                () -> InfoBarContainer.get(mTab).getInfoBarsForTesting().isEmpty());
     }
 
     @Test
@@ -136,11 +138,13 @@ public class InfoBarAppearanceTest {
             mTab.getTabWebContentsDelegateAndroid().showFramebustBlockInfobarForTesting(url);
         });
         FramebustBlockInfoBar infoBar =
-                (FramebustBlockInfoBar) mTab.getInfoBarContainer().getInfoBarsForTesting().get(0);
+                (FramebustBlockInfoBar) mActivityTestRule.getInfoBarContainer()
+                        .getInfoBarsForTesting()
+                        .get(0);
 
         ThreadUtils.runOnUiThreadBlocking(() -> infoBar.onButtonClicked(true));
         CriteriaHelper.pollUiThread(
-                () -> mTab.getInfoBarContainer().getInfoBarsForTesting().isEmpty());
+                () -> InfoBarContainer.get(mTab).getInfoBarsForTesting().isEmpty());
     }
 
     @Test
@@ -157,7 +161,7 @@ public class InfoBarAppearanceTest {
     @Feature({"InfoBars", "UiCatalogue"})
     public void testOomInfoBar() throws TimeoutException, InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mTab.getInfoBarContainer().addInfoBarForTesting(new NearOomInfoBar()));
+                () -> InfoBarContainer.get(mTab).addInfoBarForTesting(new NearOomInfoBar()));
         mListener.addInfoBarAnimationFinished("InfoBar was not added.");
         mScreenShooter.shoot("oom_infobar");
     }
@@ -165,7 +169,7 @@ public class InfoBarAppearanceTest {
     private void captureMiniAndRegularInfobar(InfoBar infobar)
             throws TimeoutException, InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mTab.getInfoBarContainer().addInfoBarForTesting(infobar));
+                () -> InfoBarContainer.get(mTab).addInfoBarForTesting(infobar));
         mListener.addInfoBarAnimationFinished("InfoBar was not added.");
         mScreenShooter.shoot("compact");
 

@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -58,6 +59,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/unified_consent_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -119,8 +121,8 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
         badurls_[gurl.spec()] == SB_THREAT_TYPE_SAFE)
       return true;
 
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&FakeSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
                        this, gurl, client));
     return false;
@@ -180,8 +182,8 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   // Overrides SafeBrowsingUIManager
   void SendSerializedThreatDetails(const std::string& serialized) override {
     // Notify the UI thread that we got a report.
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&FakeSafeBrowsingUIManager::OnThreatDetailsDone, this,
                        serialized));
   }
@@ -311,8 +313,12 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
 class TestSafeBrowsingBlockingPageFactory
     : public SafeBrowsingBlockingPageFactory {
  public:
-  TestSafeBrowsingBlockingPageFactory() { }
+  TestSafeBrowsingBlockingPageFactory() : always_show_back_to_safety_(true) {}
   ~TestSafeBrowsingBlockingPageFactory() override {}
+
+  void SetAlwaysShowBackToSafety(bool value) {
+    always_show_back_to_safety_ = value;
+  }
 
   SafeBrowsingBlockingPage* CreateSafeBrowsingPage(
       BaseUIManager* delegate,
@@ -337,15 +343,17 @@ class TestSafeBrowsingBlockingPageFactory
         is_extended_reporting_opt_in_allowed,
         web_contents->GetBrowserContext()->IsOffTheRecord(),
         is_unified_consent_given, IsExtendedReportingEnabled(*prefs),
-        IsScout(*prefs), IsExtendedReportingPolicyManaged(*prefs),
-        is_proceed_anyway_disabled,
-        true,   // should_open_links_in_new_tab
-        false,  // check_can_go_back_to_safety
+        IsExtendedReportingPolicyManaged(*prefs), is_proceed_anyway_disabled,
+        true,  // should_open_links_in_new_tab
+        always_show_back_to_safety_,
         "cpn_safe_browsing" /* help_center_article_link */);
     return new TestSafeBrowsingBlockingPage(delegate, web_contents,
                                             main_frame_url, unsafe_resources,
                                             display_options);
   }
+
+ private:
+  bool always_show_back_to_safety_;
 };
 
 // Tests the safe browsing blocking page in a browser.
@@ -396,8 +404,8 @@ class SafeBrowsingBlockingPageBrowserTest
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&chrome_browser_net::SetUrlRequestMocksEnabled, true));
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -423,6 +431,12 @@ class SafeBrowsingBlockingPageBrowserTest
   // The basic version of this method, which uses an HTTP test URL.
   GURL SetupWarningAndNavigate(Browser* browser) {
     return SetupWarningAndNavigateToURL(
+        embedded_test_server()->GetURL(kEmptyPage), browser);
+  }
+
+  // The basic version of this method, which uses an HTTP test URL.
+  GURL SetupWarningAndNavigateInNewTab(Browser* browser) {
+    return SetupWarningAndNavigateToURLInNewTab(
         embedded_test_server()->GetURL(kEmptyPage), browser);
   }
 
@@ -774,6 +788,10 @@ class SafeBrowsingBlockingPageBrowserTest
         https_server_.GetURL("/title1.html"));
   }
 
+  void SetAlwaysShowBackToSafety(bool val) {
+    blocking_page_factory_.SetAlwaysShowBackToSafety(val);
+  }
+
  protected:
   TestThreatDetailsFactory details_factory_;
 
@@ -784,6 +802,17 @@ class SafeBrowsingBlockingPageBrowserTest
   GURL SetupWarningAndNavigateToURL(GURL url, Browser* browser) {
     SetURLThreatType(url, testing::get<0>(GetParam()));
     ui_test_utils::NavigateToURL(browser, url);
+    EXPECT_TRUE(WaitForReady(browser));
+    return url;
+  }
+  // Adds a safebrowsing result of the current test threat to the fake
+  // safebrowsing service, navigates to that page, and returns the url.
+  // The various wrappers supply different URLs.
+  GURL SetupWarningAndNavigateToURLInNewTab(GURL url, Browser* browser) {
+    SetURLThreatType(url, testing::get<0>(GetParam()));
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
     EXPECT_TRUE(WaitForReady(browser));
     return url;
   }
@@ -1146,6 +1175,20 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, ProceedDisabled) {
   AssertNoInterstitial(true);
   EXPECT_EQ(GURL(url::kAboutBlankURL),  // Back to "about:blank"
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, NoBackToSafety) {
+  SetAlwaysShowBackToSafety(false);
+  SetupWarningAndNavigateInNewTab(browser());
+
+  EXPECT_EQ(HIDDEN, GetVisibility("primary-button"));
+  EXPECT_EQ(HIDDEN, GetVisibility("details"));
+  EXPECT_EQ(HIDDEN, GetVisibility("proceed-link"));
+  EXPECT_EQ(HIDDEN, GetVisibility("error-code"));
+  EXPECT_TRUE(Click("details-button"));
+  EXPECT_EQ(VISIBLE, GetVisibility("details"));
+  EXPECT_EQ(VISIBLE, GetVisibility("proceed-link"));
+  EXPECT_EQ(HIDDEN, GetVisibility("error-code"));
 }
 
 // Verifies that the reporting checkbox is hidden when opt-in is

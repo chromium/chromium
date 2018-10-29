@@ -409,7 +409,7 @@ bool AudioOutputResampler::StartStream(
   DCHECK(dispatcher_);
 
   OnMoreDataConverter* resampler_callback = nullptr;
-  CallbackMap::iterator it = callbacks_.find(stream_proxy);
+  auto it = callbacks_.find(stream_proxy);
   if (it == callbacks_.end()) {
     // If a register callback has been given, register and pass the returned
     // recoder to the converter. Data is fed to same recorder for the lifetime
@@ -440,7 +440,7 @@ void AudioOutputResampler::StreamVolumeSet(AudioOutputProxy* stream_proxy,
 void AudioOutputResampler::StopStream(AudioOutputProxy* stream_proxy) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
 
-  CallbackMap::iterator it = callbacks_.find(stream_proxy);
+  auto it = callbacks_.find(stream_proxy);
   DCHECK(it != callbacks_.end());
   StopStreamInternal(*it);
 }

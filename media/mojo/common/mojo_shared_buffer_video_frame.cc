@@ -13,13 +13,15 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace media {
 
 // static
 scoped_refptr<MojoSharedBufferVideoFrame>
-MojoSharedBufferVideoFrame::CreateDefaultI420(const gfx::Size& dimensions,
-                                              base::TimeDelta timestamp) {
+MojoSharedBufferVideoFrame::CreateDefaultI420ForTesting(
+    const gfx::Size& dimensions,
+    base::TimeDelta timestamp) {
   const VideoPixelFormat format = PIXEL_FORMAT_I420;
   const gfx::Rect visible_rect(dimensions);
 
@@ -54,6 +56,62 @@ MojoSharedBufferVideoFrame::CreateDefaultI420(const gfx::Size& dimensions,
                 allocation_size, 0 /* y_offset */, coded_size.GetArea(),
                 coded_size.GetArea() * 5 / 4, coded_size.width(),
                 coded_size.width() / 2, coded_size.width() / 2, timestamp);
+}
+
+scoped_refptr<MojoSharedBufferVideoFrame>
+MojoSharedBufferVideoFrame::CreateFromYUVFrame(const VideoFrame& frame) {
+  DCHECK_EQ(VideoFrame::NumPlanes(frame.format()), 3u);
+
+  const size_t y_stride = frame.stride(VideoFrame::kYPlane);
+  const size_t u_stride = frame.stride(VideoFrame::kUPlane);
+  const size_t v_stride = frame.stride(VideoFrame::kVPlane);
+
+  const size_t y_size =
+      VideoFrame::Rows(kYPlane, frame.format(), frame.coded_size().height()) *
+      y_stride;
+  const size_t u_size =
+      VideoFrame::Rows(kUPlane, frame.format(), frame.coded_size().height()) *
+      u_stride;
+  const size_t v_size =
+      VideoFrame::Rows(kVPlane, frame.format(), frame.coded_size().height()) *
+      v_stride;
+
+  size_t allocation_size = y_size + u_size + v_size;
+
+  mojo::ScopedSharedBufferHandle handle =
+      mojo::SharedBufferHandle::Create(allocation_size);
+
+  // Computes the offset of planes in shared memory buffer.
+  const size_t y_offset = 0u;
+  const size_t u_offset = y_offset + y_size;
+  const size_t v_offset = y_offset + y_size + u_size;
+
+  // The data from |frame| may not be consecutive between planes. Copy data into
+  // a shared memory buffer which is tightly packed. Padding inside each planes
+  // are preserved.
+  scoped_refptr<MojoSharedBufferVideoFrame> mojo_frame =
+      MojoSharedBufferVideoFrame::Create(
+          frame.format(), frame.coded_size(), frame.visible_rect(),
+          frame.natural_size(), std::move(handle), allocation_size, y_offset,
+          u_offset, v_offset, y_stride, u_stride, v_stride, frame.timestamp());
+
+  // Copy Y plane.
+  memcpy(mojo_frame->shared_buffer_data(),
+         static_cast<const void*>(frame.data(VideoFrame::kYPlane)), y_size);
+
+  // Copy U plane.
+  memcpy(mojo_frame->shared_buffer_data() + u_offset,
+         static_cast<const void*>(frame.data(VideoFrame::kUPlane)), u_size);
+
+  // Copy V plane.
+  memcpy(mojo_frame->shared_buffer_data() + v_offset,
+         static_cast<const void*>(frame.data(VideoFrame::kVPlane)), v_size);
+
+  // TODO(xingliu): Maybe also copy the alpha plane in
+  // |MojoSharedBufferVideoFrame|. The alpha plane is ignored here, but
+  // the |shared_memory| should contain the space for alpha plane.
+
+  return mojo_frame;
 }
 
 // static
@@ -134,12 +192,15 @@ scoped_refptr<MojoSharedBufferVideoFrame> MojoSharedBufferVideoFrame::Create(
     DLOG(ERROR) << __func__ << " Invalid offset";
     return nullptr;
   }
-
+  auto layout = VideoFrameLayout::CreateWithStrides(
+      format, coded_size, {y_stride, u_stride, v_stride});
+  if (!layout) {
+    return nullptr;
+  }
   // Now allocate the frame and initialize it.
   scoped_refptr<MojoSharedBufferVideoFrame> frame(
-      new MojoSharedBufferVideoFrame(
-          VideoFrameLayout(format, coded_size, {y_stride, u_stride, v_stride}),
-          visible_rect, natural_size, std::move(handle), data_size, timestamp));
+      new MojoSharedBufferVideoFrame(*layout, visible_rect, natural_size,
+                                     std::move(handle), data_size, timestamp));
   if (!frame->Init(y_offset, u_offset, v_offset)) {
     DLOG(ERROR) << __func__ << " MojoSharedBufferVideoFrame::Init failed.";
     return nullptr;
@@ -185,7 +246,7 @@ bool MojoSharedBufferVideoFrame::Init(size_t y_offset,
 MojoSharedBufferVideoFrame::~MojoSharedBufferVideoFrame() {
   // Call |mojo_shared_buffer_done_cb_| to take ownership of
   // |shared_buffer_handle_|.
-  if (!mojo_shared_buffer_done_cb_.is_null())
+  if (mojo_shared_buffer_done_cb_)
     mojo_shared_buffer_done_cb_.Run(std::move(shared_buffer_handle_),
                                     shared_buffer_size_);
 }

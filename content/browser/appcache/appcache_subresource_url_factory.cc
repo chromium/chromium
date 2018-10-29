@@ -318,8 +318,8 @@ AppCacheSubresourceURLFactory::AppCacheSubresourceURLFactory(
       appcache_host_(host),
       weak_factory_(this) {
   bindings_.set_connection_error_handler(
-      base::Bind(&AppCacheSubresourceURLFactory::OnConnectionError,
-                 base::Unretained(this)));
+      base::BindRepeating(&AppCacheSubresourceURLFactory::OnConnectionError,
+                          base::Unretained(this)));
 }
 
 AppCacheSubresourceURLFactory::~AppCacheSubresourceURLFactory() {}

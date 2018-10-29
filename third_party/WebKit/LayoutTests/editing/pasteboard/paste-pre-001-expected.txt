@@ -1,6 +1,6 @@
-Tests: 
+Tests:
 Copying and pasting content inside of a PRE tag. This test was created after fixing 3918056.
-Expected Results: 
+Expected Results:
 The PRE tag and the formatting of the text inside of the PRE should be maintained. Should see this content in the red box below:
 foo
 bar

@@ -16,11 +16,22 @@ struct UDPSocketOptions {
   // If true, this enables SO_REUSEADDR on the underlying socket.
   bool allow_address_reuse = false;
 
-  // It true, allows sending and receiving packets to and from broadcast
+  // If true, allows sending and receiving packets to and from broadcast
   // addresses. It's recommended this be used instead of SetBroadcast(), as
   // Bind() may fail on some platforms when reusing a UDP port and broadcast
   // is not enabled when the socket is created.
   bool allow_broadcast = false;
+
+  // If true, allows the socket to share the local address to which the socket
+  // will be bound with other processes and attempts to allow all such sockets
+  // to receive the same multicast messages.
+  //
+  // For best cross-platform results in allowing the messages to be shared, all
+  // sockets sharing the same address should join the same multicast group (via
+  // UDPSocket::JoinGroup()) and set the same |multicast_interface|. Also, the
+  // socket should bind to the specific multicast group address rather than a
+  // wildcard address (e.g. 0.0.0.0) on platforms where doing so is allowed.
+  bool allow_address_sharing_for_multicast = false;
 
   // Sets interface to use for multicast. Default value is 0, in which case the
   // default interface is used.

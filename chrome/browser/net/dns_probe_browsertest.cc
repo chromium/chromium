@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/io_thread.h"
@@ -25,6 +26,7 @@
 #include "components/error_page/common/net_error_info.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -68,10 +70,10 @@ namespace chrome_browser_net {
 namespace {
 
 // Postable function to run a Closure on the UI thread.  Since
-// BrowserThread::PostTask returns a bool, it can't directly be posted to
+// base::PostTaskWithTraits returns a bool, it can't directly be posted to
 // another thread.
 void RunClosureOnUIThread(const base::Closure& closure) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, closure);
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, closure);
 }
 
 // Wraps DnsProbeService and delays callbacks until someone calls
@@ -510,8 +512,8 @@ void DnsProbeBrowserTest::SetUpOnMainThread() {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAlternateErrorPagesEnabled, true);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       BindOnce(&DnsProbeBrowserTestIOThreadHelper::SetUpOnIOThread,
                Unretained(helper_), g_browser_process->io_thread()));
 
@@ -529,8 +531,8 @@ void DnsProbeBrowserTest::SetUpOnMainThread() {
 }
 
 void DnsProbeBrowserTest::TearDownOnMainThread() {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       BindOnce(
           &DnsProbeBrowserTestIOThreadHelper::CleanUpOnIOThreadAndDeleteHelper,
           Unretained(helper_)));
@@ -573,16 +575,16 @@ void DnsProbeBrowserTest::SetCorrectionServiceBroken(bool broken) {
   int net_error = broken ? net::ERR_NAME_NOT_RESOLVED : net::OK;
   corrections_service_working_ = (net_error == net::OK);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       BindOnce(&DnsProbeBrowserTestIOThreadHelper::SetCorrectionServiceNetError,
                Unretained(helper_), net_error));
 }
 
 void DnsProbeBrowserTest::SetCorrectionServiceDelayRequests(
     bool delay_requests) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       BindOnce(
           &DnsProbeBrowserTestIOThreadHelper::SetCorrectionServiceDelayRequests,
           Unretained(helper_), delay_requests));
@@ -590,8 +592,8 @@ void DnsProbeBrowserTest::SetCorrectionServiceDelayRequests(
 
 void DnsProbeBrowserTest::WaitForDelayedRequestDestruction() {
   base::RunLoop run_loop;
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       BindOnce(
           &DnsProbeBrowserTestIOThreadHelper::SetRequestDestructionCallback,
           Unretained(helper_),
@@ -616,16 +618,16 @@ void DnsProbeBrowserTest::NavigateToOtherError(int num_navigations) {
 void DnsProbeBrowserTest::SetMockDnsClientRules(
     MockDnsClientRule::ResultType system_result,
     MockDnsClientRule::ResultType public_result) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       BindOnce(&DnsProbeBrowserTestIOThreadHelper::SetMockDnsClientRules,
                Unretained(helper_), system_result, public_result));
 }
 
 void DnsProbeBrowserTest::StartDelayedProbes(
     int expected_delayed_probe_count) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       BindOnce(&DnsProbeBrowserTestIOThreadHelper::StartDelayedProbes,
                Unretained(helper_), expected_delayed_probe_count));
 }

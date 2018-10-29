@@ -188,8 +188,8 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
 
   PrefService* profile_prefs = profile->GetPrefs();
   if (profile_prefs) {  // May be NULL during testing.
-    DictionaryPrefUpdate update_excluded_schemas_profile(
-        profile_prefs, prefs::kExcludedSchemes);
+    const base::DictionaryValue* update_excluded_schemas_profile =
+        profile_prefs->GetDictionary(prefs::kExcludedSchemes);
     bool should_block;
     // Ignore stored block decisions. These are now not possible through the UI,
     // and previous block decisions should be ignored to allow users to recover

@@ -103,7 +103,7 @@ void GCInfoTable::Resize() {
   }
 #endif  // DCHECK_IS_ON()
 
-  limit_ = new_limit;
+  limit_ = static_cast<uint32_t>(new_limit);
 }
 
 GCInfoTable::GCInfoTable() {

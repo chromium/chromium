@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
                    const base::Closure& failure_callback);
   ~ExpectCTReporter() override;
 
-  // net::ExpectCTReporter:
+  // net::TransportSecurityState::ExpectCTReporter:
   void OnExpectCTFailed(const net::HostPortPair& host_port_pair,
                         const GURL& report_uri,
                         base::Time expiration,

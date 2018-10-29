@@ -12,10 +12,12 @@
                    "<a href='javascript:top.location=\"/security/frameNavigation/resources/fail.html\";'>click</a>";
 
         window.onmessage = t.step_func_done(e => {
-            // It was a SecurityError, but the error event got sanitized to
-            // "Script error." because the frames are cross-origin.
-            // See also: https://bugzilla.mozilla.org/show_bug.cgi?id=363897
-            assert_equals(e.data, "Script error.", "The 'javascript:' navigation threw.");
+            const expected =
+                 "Uncaught SecurityError: Failed to set the 'href' " +
+                 "property on 'Location': The current window does not " +
+                 "have permission to navigate the target frame to " +
+                 "'/security/frameNavigation/resources/fail.html'.";
+            assert_equals(e.data, expected, "The 'javascript:' navigation threw.");
             assert_equals(i.contentDocument.body.innerText, "click", "The page contents did not change.");
         });
 

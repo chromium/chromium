@@ -390,16 +390,6 @@ util.runningInBrowser = function() {
 };
 
 /**
- * Attach page load handler.
- * @param {function()} handler Application-specific load handler.
- */
-util.addPageLoadHandler = function(handler) {
-  document.addEventListener('DOMContentLoaded', function() {
-    handler();
-  });
-};
-
-/**
  * Save app launch data to the local storage.
  */
 util.saveAppState = function() {
@@ -1158,6 +1148,9 @@ util.getRootTypeLabel = function(locationInfo) {
     // By this reason, we return the label of the Team Drives grand root here.
     case VolumeManagerCommon.RootType.TEAM_DRIVES_GRAND_ROOT:
       return str('DRIVE_TEAM_DRIVES_LABEL');
+    case VolumeManagerCommon.RootType.COMPUTER:
+    case VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT:
+      return str('DRIVE_COMPUTERS_LABEL');
     case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
       return str('DRIVE_OFFLINE_COLLECTION_LABEL');
     case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
@@ -1400,21 +1393,6 @@ util.isTouchModeEnabled = function() {
         });
   });
 };
-
-/**
- * Returns if the My Files navigation should be disabled.
- * @return {!Promise<boolean>} Resolves with true if flag
- * "disable-my-files-navigation" is set to true.
- */
-util.isMyFilesNavigationDisabled = function() {
-  return new Promise(resolve => {
-    chrome.commandLinePrivate.hasSwitch(
-        'disable-my-files-navigation', isDisabled => {
-          resolve(isDisabled);
-        });
-  });
-};
-
 
 /**
  * Retrieves all entries inside the given |rootEntry|.

@@ -3,7 +3,6 @@ Test TreeWalker with skipping
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Testing nextNode
 PASS walker.nextNode(); walker.currentNode.id is 'A1'
 PASS walker.nextNode(); walker.currentNode.id is 'C1'

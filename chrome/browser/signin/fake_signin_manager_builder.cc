@@ -15,7 +15,7 @@
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
 
-std::unique_ptr<KeyedService> BuildFakeSigninManagerBase(
+std::unique_ptr<KeyedService> BuildFakeSigninManagerForTesting(
     content::BrowserContext* context) {
   std::unique_ptr<SigninManagerBase> manager;
   Profile* profile = static_cast<Profile*>(context);

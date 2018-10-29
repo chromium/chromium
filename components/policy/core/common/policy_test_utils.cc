@@ -37,7 +37,7 @@ void PolicyDetailsMap::SetDetails(const std::string& policy,
 }
 
 const PolicyDetails* PolicyDetailsMap::Lookup(const std::string& policy) const {
-  PolicyDetailsMapping::const_iterator it = map_.find(policy);
+  auto it = map_.find(policy);
   return it == map_.end() ? NULL : it->second;
 }
 
@@ -46,7 +46,7 @@ bool PolicyServiceIsEmpty(const PolicyService* service) {
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   if (!map.empty()) {
     base::DictionaryValue dict;
-    for (PolicyMap::const_iterator it = map.begin(); it != map.end(); ++it)
+    for (auto it = map.begin(); it != map.end(); ++it)
       dict.SetKey(it->first, it->second.value->Clone());
     LOG(WARNING) << "There are pre-existing policies in this machine: " << dict;
   }
@@ -147,10 +147,8 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
 
 std::ostream& operator<<(std::ostream& os, const policy::PolicyBundle& bundle) {
   os << "{" << std::endl;
-  for (policy::PolicyBundle::const_iterator iter = bundle.begin();
-       iter != bundle.end(); ++iter) {
+  for (auto iter = bundle.begin(); iter != bundle.end(); ++iter)
     os << "  \"" << iter->first << "\": " << *iter->second << "," << std::endl;
-  }
   os << "}";
   return os;
 }

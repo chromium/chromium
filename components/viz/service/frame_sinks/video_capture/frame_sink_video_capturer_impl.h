@@ -97,7 +97,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // mojom::FrameSinkVideoCapturer implementation:
   void SetFormat(media::VideoPixelFormat format,
-                 media::ColorSpace color_space) final;
+                 const gfx::ColorSpace& color_space) final;
   void SetMinCapturePeriod(base::TimeDelta min_capture_period) final;
   void SetMinSizeChangePeriod(base::TimeDelta min_period) final;
   void SetResolutionConstraints(const gfx::Size& min_size,
@@ -114,8 +114,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // Default configuration.
   static constexpr media::VideoPixelFormat kDefaultPixelFormat =
       media::PIXEL_FORMAT_I420;
-  static constexpr media::ColorSpace kDefaultColorSpace =
-      media::COLOR_SPACE_HD_REC709;
+  static constexpr gfx::ColorSpace kDefaultColorSpace =
+      gfx::ColorSpace::CreateREC709();
 
   // The maximum number of frames in-flight in the capture pipeline, reflecting
   // the storage capacity dedicated for this purpose. Example numbers, for a
@@ -231,7 +231,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // Current image format.
   media::VideoPixelFormat pixel_format_ = kDefaultPixelFormat;
-  media::ColorSpace color_space_ = kDefaultColorSpace;
+  gfx::ColorSpace color_space_ = kDefaultColorSpace;
 
   // Models current content change/draw behavior and proposes when to capture
   // frames, and at what size and frame rate.

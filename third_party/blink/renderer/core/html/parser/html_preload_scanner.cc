@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
+#include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/link_rel_attribute.h"
@@ -115,6 +116,15 @@ static bool MediaAttributeMatches(const MediaValuesCached& media_values,
   return media_query_evaluator.Eval(*media_queries);
 }
 
+static bool IsDimensionSmallAndAbsoluteForLazyLoad(
+    const String& attribute_value) {
+  // Minimum height or width of the image to start lazyloading.
+  const unsigned kMinDimensionToLazyLoad = 10;
+  HTMLDimension dimension;
+  return ParseDimensionValue(attribute_value, dimension) &&
+         dimension.IsAbsolute() && dimension.Value() <= kMinDimensionToLazyLoad;
+}
+
 class TokenPreloadScanner::StartTagScanner {
   STACK_ALLOCATED();
 
@@ -144,6 +154,8 @@ class TokenPreloadScanner::StartTagScanner {
         integrity_attr_set_(false),
         integrity_features_(features),
         lazyload_attr_set_to_off_(false),
+        width_attr_small_absolute_(false),
+        height_attr_small_absolute_(false),
         scanner_type_(scanner_type) {
     if (Match(tag_impl_, imgTag) || Match(tag_impl_, sourceTag)) {
       source_size_ = SizesAttributeParser(media_values_, String()).length();
@@ -188,11 +200,11 @@ class TokenPreloadScanner::StartTagScanner {
   void HandlePictureSourceURL(PictureData& picture_data) {
     if (Match(tag_impl_, sourceTag) && matched_ &&
         picture_data.source_url.IsEmpty()) {
-      // Must create an isolatedCopy() since the srcset attribute value will get
+      // Must create an IsolatedCopy() since the srcset attribute value will get
       // sent back to the main thread between when we set this, and when we
-      // process the closing tag which would clear m_pictureData. Having any ref
+      // process the closing tag which would clear picture_data_. Having any ref
       // to a string we're going to send will fail
-      // isSafeToSendToAnotherThread().
+      // IsSafeToSendToAnotherThread().
       picture_data.source_url =
           srcset_image_candidate_.ToString().IsolatedCopy();
       picture_data.source_size_set = source_size_set_;
@@ -208,7 +220,7 @@ class TokenPreloadScanner::StartTagScanner {
       const SegmentedString& source,
       const ClientHintsPreferences& client_hints_preferences,
       const PictureData& picture_data,
-      const ReferrerPolicy document_referrer_policy) {
+      const CachedDocumentParameters& document_parameters) {
     PreloadRequest::RequestType request_type =
         PreloadRequest::kRequestTypePreload;
     base::Optional<ResourceType> type;
@@ -254,8 +266,9 @@ class TokenPreloadScanner::StartTagScanner {
     // The element's 'referrerpolicy' attribute (if present) takes precedence
     // over the document's referrer policy.
     ReferrerPolicy referrer_policy =
-        (referrer_policy_ != kReferrerPolicyDefault) ? referrer_policy_
-                                                     : document_referrer_policy;
+        (referrer_policy_ != kReferrerPolicyDefault)
+            ? referrer_policy_
+            : document_parameters.referrer_policy;
     auto request = PreloadRequest::CreateIfNeeded(
         InitiatorFor(tag_impl_), position, url_to_load_, predicted_base_url,
         type.value(), referrer_policy, PreloadRequest::kDocumentIsReferrer,
@@ -273,7 +286,14 @@ class TokenPreloadScanner::StartTagScanner {
     request->SetNonce(nonce_);
     request->SetCharset(Charset());
     request->SetDefer(defer_);
-    request->SetIsLazyloadAttrOff(lazyload_attr_set_to_off_);
+
+    // If the 'lazyload' feature policy is enforced, the attribute value "off"
+    // for the 'lazyload' attribute is considered as 'auto'.
+    if ((lazyload_attr_set_to_off_ &&
+         !document_parameters.lazyload_policy_enforced) ||
+        (width_attr_small_absolute_ && height_attr_small_absolute_)) {
+      request->SetIsLazyloadImageDisabled(true);
+    }
 
     // The only link tags that should keep the integrity metadata are
     // stylesheets until crbug.com/677022 is resolved.
@@ -343,6 +363,16 @@ class TokenPreloadScanner::StartTagScanner {
                RuntimeEnabledFeatures::LazyImageLoadingEnabled() &&
                EqualIgnoringASCIICase(attribute_value, "off")) {
       lazyload_attr_set_to_off_ = true;
+    } else if (!width_attr_small_absolute_ &&
+               Match(attribute_name, widthAttr) &&
+               RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
+      width_attr_small_absolute_ =
+          IsDimensionSmallAndAbsoluteForLazyLoad(attribute_value);
+    } else if (!height_attr_small_absolute_ &&
+               Match(attribute_name, heightAttr) &&
+               RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
+      height_attr_small_absolute_ =
+          IsDimensionSmallAndAbsoluteForLazyLoad(attribute_value);
     }
   }
 
@@ -637,6 +667,8 @@ class TokenPreloadScanner::StartTagScanner {
   IntegrityMetadataSet integrity_metadata_;
   SubresourceIntegrity::IntegrityFeatures integrity_features_;
   bool lazyload_attr_set_to_off_;
+  bool width_attr_small_absolute_;
+  bool height_attr_small_absolute_;
   TokenPreloadScanner::ScannerType scanner_type_;
 };
 
@@ -873,7 +905,7 @@ void TokenPreloadScanner::ScanCommon(const Token& token,
         scanner.HandlePictureSourceURL(picture_data_);
       std::unique_ptr<PreloadRequest> request = scanner.CreatePreloadRequest(
           predicted_base_element_url_, source, client_hints_preferences_,
-          picture_data_, document_parameters_->referrer_policy);
+          picture_data_, *document_parameters_);
       if (request)
         requests.push_back(std::move(request));
       return;
@@ -960,6 +992,7 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
                           document->GetSettings()->GetViewportMetaEnabled();
   referrer_policy = document->GetReferrerPolicy();
   integrity_features = SubresourceIntegrityHelper::GetFeatures(document);
+  lazyload_policy_enforced = document->IsLazyLoadPolicyEnforced();
 }
 
 }  // namespace blink

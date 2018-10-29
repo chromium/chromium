@@ -57,7 +57,7 @@ TEST_F(SyncCreatePassphraseCollectionViewControllerTest,
        TestConstructorDestructor) {
   CreateController();
   CheckController();
-  EXPECT_CALL(*fake_sync_service_, SetEncryptionPassphrase(_, _)).Times(0);
+  EXPECT_CALL(*fake_sync_service_, SetEncryptionPassphrase(_)).Times(0);
   // Simulate the view appearing.
   [controller() viewDidAppear:YES];
 }
@@ -98,7 +98,7 @@ TEST_F(SyncCreatePassphraseCollectionViewControllerTest,
        TestCredentialsOkPressed) {
   SyncCreatePassphraseCollectionViewController* sync_controller =
       SyncController();
-  EXPECT_CALL(*fake_sync_service_, SetEncryptionPassphrase(_, _)).Times(0);
+  EXPECT_CALL(*fake_sync_service_, SetEncryptionPassphrase(_)).Times(0);
   EXPECT_FALSE([[sync_controller navigationItem].rightBarButtonItem isEnabled]);
   [sync_controller signInPressed];
 }
@@ -110,9 +110,7 @@ TEST_F(SyncCreatePassphraseCollectionViewControllerTest, TestNextTextField) {
   // With matching text, this should cause an attempt to set the passphrase.
   EXPECT_CALL(*fake_sync_service_, AddObserver(_)).Times(AtLeast(1));
   EXPECT_CALL(*fake_sync_service_, RemoveObserver(_)).Times(AtLeast(1));
-  EXPECT_CALL(*fake_sync_service_,
-              SetEncryptionPassphrase(
-                  "decodeme", browser_sync::ProfileSyncService::EXPLICIT));
+  EXPECT_CALL(*fake_sync_service_, SetEncryptionPassphrase("decodeme"));
   [[sync_controller passphrase] setText:@"decodeme"];
   [sync_controller textFieldDidChange:[sync_controller passphrase]];
   [sync_controller textFieldDidEndEditing:[sync_controller passphrase]];
@@ -125,7 +123,7 @@ TEST_F(SyncCreatePassphraseCollectionViewControllerTest,
        TestOneTextFieldEmpty) {
   SyncCreatePassphraseCollectionViewController* sync_controller =
       SyncController();
-  EXPECT_CALL(*fake_sync_service_, SetEncryptionPassphrase(_, _)).Times(0);
+  EXPECT_CALL(*fake_sync_service_, SetEncryptionPassphrase(_)).Times(0);
   [[sync_controller passphrase] setText:@"decodeme"];
   [sync_controller textFieldDidChange:[sync_controller passphrase]];
   // Expect the right button to be visible.
@@ -141,7 +139,7 @@ TEST_F(SyncCreatePassphraseCollectionViewControllerTest,
   // Mismatching text fields should not get to the point of trying to set the
   // passphrase and adding the sync observer.
   EXPECT_CALL(*fake_sync_service_, AddObserver(_)).Times(0);
-  EXPECT_CALL(*fake_sync_service_, SetEncryptionPassphrase(_, _)).Times(0);
+  EXPECT_CALL(*fake_sync_service_, SetEncryptionPassphrase(_)).Times(0);
   [[sync_controller passphrase] setText:@"decodeme"];
   [[sync_controller confirmPassphrase] setText:@"donothing"];
   [sync_controller textFieldDidChange:[sync_controller passphrase]];
@@ -161,9 +159,7 @@ TEST_F(SyncCreatePassphraseCollectionViewControllerTest, TestTextFieldsMatch) {
   // Matching text should cause an attempt to set it and add a sync observer.
   EXPECT_CALL(*fake_sync_service_, AddObserver(_)).Times(AtLeast(1));
   EXPECT_CALL(*fake_sync_service_, RemoveObserver(_)).Times(AtLeast(1));
-  EXPECT_CALL(*fake_sync_service_,
-              SetEncryptionPassphrase(
-                  "decodeme", browser_sync::ProfileSyncService::EXPLICIT));
+  EXPECT_CALL(*fake_sync_service_, SetEncryptionPassphrase("decodeme"));
   [[sync_controller passphrase] setText:@"decodeme"];
   [[sync_controller confirmPassphrase] setText:@"decodeme"];
   [sync_controller textFieldDidChange:[sync_controller passphrase]];

@@ -191,11 +191,11 @@ sk_sp<PaintFilter> FEComposite::CreateImageFilterWithoutValidation() {
 sk_sp<PaintFilter> FEComposite::CreateImageFilterInternal(
     bool requires_pm_color_validation) {
   sk_sp<PaintFilter> foreground(
-      PaintFilterBuilder::Build(InputEffect(0), OperatingInterpolationSpace(),
-                                !MayProduceInvalidPreMultipliedPixels()));
+      paint_filter_builder::Build(InputEffect(0), OperatingInterpolationSpace(),
+                                  !MayProduceInvalidPreMultipliedPixels()));
   sk_sp<PaintFilter> background(
-      PaintFilterBuilder::Build(InputEffect(1), OperatingInterpolationSpace(),
-                                !MayProduceInvalidPreMultipliedPixels()));
+      paint_filter_builder::Build(InputEffect(1), OperatingInterpolationSpace(),
+                                  !MayProduceInvalidPreMultipliedPixels()));
   PaintFilter::CropRect crop_rect = GetCropRect();
 
   if (type_ == FECOMPOSITE_OPERATOR_ARITHMETIC) {

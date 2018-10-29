@@ -80,7 +80,6 @@ float GetPointerEventPressure(float force, int buttons) {
     return 0.5;
   return force;
 }
-
 void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
                                   LocalDOMWindow* dom_window,
                                   PointerEventInit* pointer_event_init) {
@@ -114,6 +113,34 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
   pointer_event_init->setTangentialPressure(
       web_pointer_event.tangential_pressure);
   pointer_event_init->setTwist(web_pointer_event.twist);
+}
+
+HeapVector<Member<PointerEvent>> CreateEventSequence(
+    const WebPointerEvent& web_pointer_event,
+    const PointerEventInit& pointer_event_init,
+    const Vector<WebPointerEvent>& event_list,
+    LocalDOMWindow* view) {
+  AtomicString type = PointerEventNameForEventType(web_pointer_event.GetType());
+  HeapVector<Member<PointerEvent>> result;
+  for (const auto& event : event_list) {
+    DCHECK_EQ(web_pointer_event.id, event.id);
+    DCHECK_EQ(web_pointer_event.GetType(), event.GetType());
+    DCHECK_EQ(web_pointer_event.pointer_type, event.pointer_type);
+
+    PointerEventInit new_event_init = pointer_event_init;
+    new_event_init.setCancelable(false);
+    new_event_init.setBubbles(false);
+    UpdateCommonPointerEventInit(event, view, &new_event_init);
+    PointerEvent* pointer_event =
+        PointerEvent::Create(type, new_event_init, event.TimeStamp());
+    // Set the trusted flag for these events at the creation time as oppose to
+    // the normal events which is done at the dispatch time. This is because we
+    // don't want to go over all these events at every dispatch and add the
+    // implementation complexity while it has no sensible usecase at this time.
+    pointer_event->SetTrusted(true);
+    result.push_back(pointer_event);
+  }
+  return result;
 }
 
 }  // namespace
@@ -184,6 +211,7 @@ void PointerEventFactory::SetEventSpecificFields(
 PointerEvent* PointerEventFactory::Create(
     const WebPointerEvent& web_pointer_event,
     const Vector<WebPointerEvent>& coalesced_events,
+    const Vector<WebPointerEvent>& predicted_events,
     LocalDOMWindow* view) {
   const WebInputEvent::Type event_type = web_pointer_event.GetType();
   DCHECK(event_type == WebInputEvent::kPointerDown ||
@@ -228,31 +256,19 @@ PointerEvent* PointerEventFactory::Create(
 
   SetEventSpecificFields(pointer_event_init, type);
 
+  HeapVector<Member<PointerEvent>> coalesced_pointer_events,
+      predicted_pointer_events;
   if (type == EventTypeNames::pointermove ||
       type == EventTypeNames::pointerrawmove) {
-    HeapVector<Member<PointerEvent>> coalesced_pointer_events;
-    for (const auto& coalesced_event : coalesced_events) {
-      DCHECK_EQ(web_pointer_event.id, coalesced_event.id);
-      DCHECK_EQ(web_pointer_event.GetType(), coalesced_event.GetType());
-      DCHECK_EQ(web_pointer_event.pointer_type, coalesced_event.pointer_type);
-
-      PointerEventInit coalesced_event_init = pointer_event_init;
-      coalesced_event_init.setCancelable(false);
-      coalesced_event_init.setBubbles(false);
-      UpdateCommonPointerEventInit(coalesced_event, view,
-                                   &coalesced_event_init);
-      PointerEvent* event = PointerEvent::Create(type, coalesced_event_init,
-                                                 coalesced_event.TimeStamp());
-      // Set the trusted flag for the coalesced events at the creation time
-      // as oppose to the normal events which is done at the dispatch time. This
-      // is because we don't want to go over all the coalesced events at every
-      // dispatch and add the implementation complexity while it has no sensible
-      // usecase at this time.
-      event->SetTrusted(true);
-      coalesced_pointer_events.push_back(event);
-    }
-    pointer_event_init.setCoalescedEvents(coalesced_pointer_events);
+    coalesced_pointer_events = CreateEventSequence(
+        web_pointer_event, pointer_event_init, coalesced_events, view);
   }
+  if (type == EventTypeNames::pointermove) {
+    predicted_pointer_events = CreateEventSequence(
+        web_pointer_event, pointer_event_init, predicted_events, view);
+  }
+  pointer_event_init.setCoalescedEvents(coalesced_pointer_events);
+  pointer_event_init.setPredictedEvents(predicted_pointer_events);
 
   return PointerEvent::Create(type, pointer_event_init,
                               web_pointer_event.TimeStamp());

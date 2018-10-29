@@ -45,7 +45,6 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
                             bool enable_blend,
                             std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   bool IsOffscreen() override;
-  gfx::VSyncProvider* GetVSyncProvider() override;
   bool SupportsPresentationCallback() override;
   bool SupportsAsyncSwap() override;
   bool SupportsPostSubBuffer() override;

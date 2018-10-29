@@ -230,8 +230,8 @@ class DOMEditor::SetOuterHTMLAction final : public InspectorHistory::Action {
 
   bool Perform(ExceptionState& exception_state) override {
     old_html_ = CreateMarkup(node_.Get());
-    Document* document =
-        node_->IsDocumentNode() ? ToDocument(node_) : node_->ownerDocument();
+    Document* document = IsA<Document>(node_.Get()) ? To<Document>(node_.Get())
+                                                    : node_->ownerDocument();
     DCHECK(document);
     if (!document->documentElement())
       return false;

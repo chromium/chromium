@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -58,7 +59,8 @@
 using testing::_;
 using testing::PrintToString;
 using testing::Mock;
-using blink::URLTestHelpers::ToKURL;
+using testing::UnorderedElementsAre;
+using blink::url_test_helpers::ToKURL;
 
 namespace blink {
 
@@ -69,8 +71,7 @@ namespace blink {
 
 namespace {
 
-void configureAndroidCompositing(WebSettings* settings) {
-  settings->SetAcceleratedCompositingEnabled(true);
+void ConfigureAndroidCompositing(WebSettings* settings) {
   settings->SetPreferCompositingToLCDTextEnabled(true);
   settings->SetViewportMetaEnabled(true);
   settings->SetViewportEnabled(true);
@@ -108,20 +109,20 @@ class VisualViewportTest : public testing::Test,
   }
 
   void NavigateTo(const std::string& url) {
-    FrameTestHelpers::LoadFrame(WebView()->MainFrameImpl(), url);
+    frame_test_helpers::LoadFrame(WebView()->MainFrameImpl(), url);
   }
 
   void ForceFullCompositingUpdate() { WebView()->UpdateAllLifecyclePhases(); }
 
   void RegisterMockedHttpURLLoad(const std::string& fileName) {
-    URLTestHelpers::RegisterMockedURLLoadFromBase(
+    url_test_helpers::RegisterMockedURLLoadFromBase(
         WebString::FromUTF8(base_url_), blink::test::CoreTestDataPath(),
         WebString::FromUTF8(fileName));
   }
 
   void RegisterMockedHttpURLLoad(const std::string& url,
                                  const std::string& fileName) {
-    URLTestHelpers::RegisterMockedURLLoad(
+    url_test_helpers::RegisterMockedURLLoad(
         ToKURL(url),
         blink::test::CoreTestDataPath(WebString::FromUTF8(fileName)));
   }
@@ -142,12 +143,70 @@ class VisualViewportTest : public testing::Test,
     settings->SetMainFrameResizesAreOrientationChanges(true);
   }
 
+  const GraphicsLayer* MainGraphicsLayer(const Document* document) {
+    const auto* layer = document->GetLayoutView()->Layer();
+    return layer->GetCompositedLayerMapping()
+               ? layer->GetCompositedLayerMapping()->MainGraphicsLayer()
+               : nullptr;
+  }
+
+  const GraphicsLayer* ScrollingContentsLayer(const Document* document) {
+    const auto* layer = document->GetLayoutView()->Layer();
+    return layer->GetCompositedLayerMapping()
+               ? layer->GetCompositedLayerMapping()->ScrollingContentsLayer()
+               : nullptr;
+  }
+
+  const DisplayItemClient& ScrollingBackgroundClient(const Document* document) {
+    return document->GetLayoutView()
+        ->GetScrollableArea()
+        ->GetScrollingBackgroundDisplayItemClient();
+  }
+
+  const RasterInvalidationTracking* MainGraphicsLayerRasterInvalidationTracking(
+      const Document* document) {
+    const auto* layer = MainGraphicsLayer(document);
+    return layer ? layer->GetRasterInvalidationTracking() : nullptr;
+  }
+
+  const RasterInvalidationTracking*
+  ScrollingContentsLayerRasterInvalidationTracking(const Document* document) {
+    const auto* layer = ScrollingContentsLayer(document);
+    return layer ? layer->GetRasterInvalidationTracking() : nullptr;
+  }
+
+  bool MainGraphicsLayerHasRasterInvalidations(const Document* document) {
+    const auto* tracking =
+        MainGraphicsLayerRasterInvalidationTracking(document);
+    return tracking && tracking->HasInvalidations();
+  }
+
+  bool ScrollingContentsLayerHasRasterInvalidations(const Document* document) {
+    const auto* tracking =
+        ScrollingContentsLayerRasterInvalidationTracking(document);
+    return tracking && tracking->HasInvalidations();
+  }
+
+  const Vector<RasterInvalidationInfo>& MainGraphicsLayerRasterInvalidations(
+      const Document* document) {
+    DCHECK(MainGraphicsLayerHasRasterInvalidations(document));
+    return MainGraphicsLayerRasterInvalidationTracking(document)
+        ->Invalidations();
+  }
+
+  const Vector<RasterInvalidationInfo>&
+  ScrollingContentsLayerRasterInvalidations(const Document* document) {
+    DCHECK(ScrollingContentsLayerHasRasterInvalidations(document));
+    return ScrollingContentsLayerRasterInvalidationTracking(document)
+        ->Invalidations();
+  }
+
  protected:
   std::string base_url_;
-  FrameTestHelpers::TestWebViewClient mock_web_view_client_;
+  frame_test_helpers::TestWebViewClient mock_web_view_client_;
 
  private:
-  FrameTestHelpers::WebViewHelper helper_;
+  frame_test_helpers::WebViewHelper helper_;
 };
 
 INSTANTIATE_PAINT_TEST_CASE_P(VisualViewportTest);
@@ -311,6 +370,20 @@ TEST_P(VisualViewportTest, TestResizeAfterVerticalScroll) {
   EXPECT_FLOAT_SIZE_EQ(FloatSize(50, 100),
                        visual_viewport.VisibleRect().Size());
 
+  // Verify the paint property nodes and GeometryMapper cache.
+  if (RuntimeEnabledFeatures::SlimmingPaintV2Enabled() ||
+      RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled()) {
+    WebView()->UpdateAllLifecyclePhases();
+    EXPECT_EQ(TransformationMatrix().Scale(2),
+              visual_viewport.GetPageScaleNode()->Matrix());
+    EXPECT_EQ(TransformationMatrix().Translate(0, -300),
+              visual_viewport.GetScrollTranslationNode()->Matrix());
+    EXPECT_EQ(TransformationMatrix().Scale(2).Translate(0, -300),
+              GeometryMapper::SourceToDestinationProjection(
+                  visual_viewport.GetScrollTranslationNode(),
+                  &TransformPaintPropertyNode::Root()));
+  }
+
   // Perform the resizing
   WebView()->Resize(IntSize(200, 100));
 
@@ -320,6 +393,20 @@ TEST_P(VisualViewportTest, TestResizeAfterVerticalScroll) {
   EXPECT_EQ(ScrollOffset(0, 625),
             GetFrame()->View()->LayoutViewport()->GetScrollOffset());
   EXPECT_FLOAT_SIZE_EQ(FloatSize(0, 75), visual_viewport.GetScrollOffset());
+
+  // Verify the paint property nodes and GeometryMapper cache.
+  if (RuntimeEnabledFeatures::SlimmingPaintV2Enabled() ||
+      RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled()) {
+    WebView()->UpdateAllLifecyclePhases();
+    EXPECT_EQ(TransformationMatrix().Scale(4),
+              visual_viewport.GetPageScaleNode()->Matrix());
+    EXPECT_EQ(TransformationMatrix().Translate(0, -75),
+              visual_viewport.GetScrollTranslationNode()->Matrix());
+    EXPECT_EQ(TransformationMatrix().Scale(4).Translate(0, -75),
+              GeometryMapper::SourceToDestinationProjection(
+                  visual_viewport.GetScrollTranslationNode(),
+                  &TransformPaintPropertyNode::Root()));
+  }
 }
 
 // Test that the VisualViewport works as expected in case if a scaled
@@ -371,6 +458,20 @@ TEST_P(VisualViewportTest, TestResizeAfterHorizontalScroll) {
   EXPECT_FLOAT_SIZE_EQ(FloatSize(50, 100),
                        visual_viewport.VisibleRect().Size());
 
+  // Verify the paint property nodes and GeometryMapper cache.
+  if (RuntimeEnabledFeatures::SlimmingPaintV2Enabled() ||
+      RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled()) {
+    WebView()->UpdateAllLifecyclePhases();
+    EXPECT_EQ(TransformationMatrix().Scale(2),
+              visual_viewport.GetPageScaleNode()->Matrix());
+    EXPECT_EQ(TransformationMatrix().Translate(-150, 0),
+              visual_viewport.GetScrollTranslationNode()->Matrix());
+    EXPECT_EQ(TransformationMatrix().Scale(2).Translate(-150, 0),
+              GeometryMapper::SourceToDestinationProjection(
+                  visual_viewport.GetScrollTranslationNode(),
+                  &TransformPaintPropertyNode::Root()));
+  }
+
   WebView()->Resize(IntSize(200, 100));
 
   // After resizing the scale changes 2.0 -> 4.0
@@ -379,6 +480,20 @@ TEST_P(VisualViewportTest, TestResizeAfterHorizontalScroll) {
   EXPECT_EQ(ScrollOffset(0, 0),
             GetFrame()->View()->LayoutViewport()->GetScrollOffset());
   EXPECT_FLOAT_SIZE_EQ(FloatSize(150, 0), visual_viewport.GetScrollOffset());
+
+  // Verify the paint property nodes and GeometryMapper cache.
+  if (RuntimeEnabledFeatures::SlimmingPaintV2Enabled() ||
+      RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled()) {
+    WebView()->UpdateAllLifecyclePhases();
+    EXPECT_EQ(TransformationMatrix().Scale(4),
+              visual_viewport.GetPageScaleNode()->Matrix());
+    EXPECT_EQ(TransformationMatrix().Translate(-150, 0),
+              visual_viewport.GetScrollTranslationNode()->Matrix());
+    EXPECT_EQ(TransformationMatrix().Scale(4).Translate(-150, 0),
+              GeometryMapper::SourceToDestinationProjection(
+                  visual_viewport.GetScrollTranslationNode(),
+                  &TransformPaintPropertyNode::Root()));
+  }
 }
 
 // Test that the container layer gets sized properly if the WebView is resized
@@ -511,8 +626,8 @@ TEST_P(VisualViewportTest, TestOffsetClamping) {
   InitializeWithAndroidSettings();
   WebView()->Resize(IntSize(320, 240));
 
-  WebURL base_url = URLTestHelpers::ToKURL("http://example.com/");
-  FrameTestHelpers::LoadHTMLString(
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
       WebView()->MainFrameImpl(),
       "<!DOCTYPE html>"
       "<meta name='viewport' content='width=2000'>",
@@ -872,13 +987,14 @@ TEST_P(VisualViewportTest, TestRestoredFromHistoryItem) {
 
   WebHistoryItem item;
   item.Initialize();
-  WebURL destination_url(URLTestHelpers::ToKURL(base_url_ + "200-by-300.html"));
+  WebURL destination_url(
+      url_test_helpers::ToKURL(base_url_ + "200-by-300.html"));
   item.SetURLString(destination_url.GetString());
   item.SetVisualViewportScrollOffset(WebFloatPoint(100, 120));
   item.SetPageScaleFactor(2);
 
-  FrameTestHelpers::LoadHistoryItem(WebView()->MainFrameImpl(), item,
-                                    mojom::FetchCacheMode::kDefault);
+  frame_test_helpers::LoadHistoryItem(WebView()->MainFrameImpl(), item,
+                                      mojom::FetchCacheMode::kDefault);
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   EXPECT_EQ(2, visual_viewport.Scale());
@@ -899,7 +1015,7 @@ TEST_P(VisualViewportTest, TestRestoredFromLegacyHistoryItem) {
   WebHistoryItem item;
   item.Initialize();
   WebURL destination_url(
-      URLTestHelpers::ToKURL(base_url_ + "200-by-300-viewport.html"));
+      url_test_helpers::ToKURL(base_url_ + "200-by-300-viewport.html"));
   item.SetURLString(destination_url.GetString());
   // (-1, -1) will be used if the HistoryItem is an older version prior to
   // having visual viewport scroll offset.
@@ -907,8 +1023,8 @@ TEST_P(VisualViewportTest, TestRestoredFromLegacyHistoryItem) {
   item.SetScrollOffset(WebPoint(120, 180));
   item.SetPageScaleFactor(2);
 
-  FrameTestHelpers::LoadHistoryItem(WebView()->MainFrameImpl(), item,
-                                    mojom::FetchCacheMode::kDefault);
+  frame_test_helpers::LoadHistoryItem(WebView()->MainFrameImpl(), item,
+                                      mojom::FetchCacheMode::kDefault);
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   EXPECT_EQ(2, visual_viewport.Scale());
@@ -1018,7 +1134,7 @@ TEST_P(VisualViewportTest, TestWebViewResizeCausesViewportConstrainedLayout) {
 }
 
 class VisualViewportMockWebFrameClient
-    : public FrameTestHelpers::TestWebFrameClient {
+    : public frame_test_helpers::TestWebFrameClient {
  public:
   MOCK_METHOD1(ShowContextMenu, void(const WebContextMenuData&));
   MOCK_METHOD0(DidChangeScrollOffset, void());
@@ -1214,8 +1330,8 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustment) {
   EXPECT_EQ(IntSize(1000, 900), frame_view.FrameRect().Size());
 
   // Simulate bringing down the browser controls by 20px.
-  WebView()->ApplyViewportDeltas(WebFloatSize(), WebFloatSize(), WebFloatSize(),
-                                 1, 1);
+  WebView()->ApplyViewportChanges({gfx::ScrollOffset(), gfx::Vector2dF(), 1, 1,
+                                   cc::BrowserControlsState::kBoth});
   EXPECT_EQ(FloatSize(500, 430), visual_viewport.VisibleRect().Size());
 
   // Test that the scroll bounds are adjusted appropriately: the visual viewport
@@ -1232,8 +1348,9 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustment) {
             frame_view.LayoutViewport()->GetScrollOffset());
 
   // Simulate bringing up the browser controls by 10.5px.
-  WebView()->ApplyViewportDeltas(WebFloatSize(), WebFloatSize(), WebFloatSize(),
-                                 1, -10.5f / 20);
+  WebView()->ApplyViewportChanges({gfx::ScrollOffset(), gfx::Vector2dF(), 1,
+                                   -10.5f / 20,
+                                   cc::BrowserControlsState::kBoth});
   EXPECT_FLOAT_SIZE_EQ(FloatSize(500, 440.5f),
                        visual_viewport.VisibleRect().Size());
 
@@ -1267,8 +1384,8 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentWithScale) {
   // Simulate bringing down the browser controls by 20px. Since we're zoomed in,
   // the browser controls take up half as much space (in document-space) than
   // they do at an unzoomed level.
-  WebView()->ApplyViewportDeltas(WebFloatSize(), WebFloatSize(), WebFloatSize(),
-                                 1, 1);
+  WebView()->ApplyViewportChanges({gfx::ScrollOffset(), gfx::Vector2dF(), 1, 1,
+                                   cc::BrowserControlsState::kBoth});
   EXPECT_EQ(FloatSize(250, 215), visual_viewport.VisibleRect().Size());
 
   // Test that the scroll bounds are adjusted appropriately.
@@ -1284,8 +1401,8 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentWithScale) {
 
   // Scale back out, LocalFrameView max scroll shouldn't have changed. Visual
   // viewport should be moved up to accomodate larger view.
-  WebView()->ApplyViewportDeltas(WebFloatSize(), WebFloatSize(), WebFloatSize(),
-                                 0.5f, 0);
+  WebView()->ApplyViewportChanges({gfx::ScrollOffset(), gfx::Vector2dF(), 0.5f,
+                                   0, cc::BrowserControlsState::kBoth});
   EXPECT_EQ(1, visual_viewport.Scale());
   EXPECT_EQ(expected, frame_view.LayoutViewport()->GetScrollOffset());
   frame_view.LayoutViewport()->ScrollBy(ScrollOffset(10000, 10000),
@@ -1297,13 +1414,13 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentWithScale) {
   EXPECT_EQ(FloatSize(500, 860 - 430), visual_viewport.GetScrollOffset());
 
   // Scale out, use a scale that causes fractional rects.
-  WebView()->ApplyViewportDeltas(WebFloatSize(), WebFloatSize(), WebFloatSize(),
-                                 0.8f, -1);
+  WebView()->ApplyViewportChanges({gfx::ScrollOffset(), gfx::Vector2dF(), 0.8f,
+                                   -1, cc::BrowserControlsState::kBoth});
   EXPECT_EQ(FloatSize(625, 562.5), visual_viewport.VisibleRect().Size());
 
   // Bring out the browser controls by 11
-  WebView()->ApplyViewportDeltas(WebFloatSize(), WebFloatSize(), WebFloatSize(),
-                                 1, 11 / 20.f);
+  WebView()->ApplyViewportChanges({gfx::ScrollOffset(), gfx::Vector2dF(), 1,
+                                   11 / 20.f, cc::BrowserControlsState::kBoth});
   EXPECT_EQ(FloatSize(625, 548.75), visual_viewport.VisibleRect().Size());
 
   // Ensure max scroll offsets are updated properly.
@@ -1469,8 +1586,8 @@ TEST_P(VisualViewportTest, TestBrowserControlsShrinkAdjustmentAndResize) {
 TEST_P(VisualViewportTest, TestTopControlHidingResizeDoesntClampMainFrame) {
   InitializeWithAndroidSettings();
   WebView()->ResizeWithBrowserControls(WebView()->Size(), 500, 0, false);
-  WebView()->ApplyViewportDeltas(WebFloatSize(), WebFloatSize(), WebFloatSize(),
-                                 1, 1);
+  WebView()->ApplyViewportChanges({gfx::ScrollOffset(), gfx::Vector2dF(), 1, 1,
+                                   cc::BrowserControlsState::kBoth});
   WebView()->ResizeWithBrowserControls(WebSize(1000, 1000), 500, 0, true);
 
   RegisterMockedHttpURLLoad("content-width-1000.html");
@@ -1480,8 +1597,8 @@ TEST_P(VisualViewportTest, TestTopControlHidingResizeDoesntClampMainFrame) {
   // Scroll the LocalFrameView to the bottom of the page but "hide" the browser
   // controls on the compositor side so the max scroll position should account
   // for the full viewport height.
-  WebView()->ApplyViewportDeltas(WebFloatSize(), WebFloatSize(), WebFloatSize(),
-                                 1, -1);
+  WebView()->ApplyViewportChanges({gfx::ScrollOffset(), gfx::Vector2dF(), 1, -1,
+                                   cc::BrowserControlsState::kBoth});
   LocalFrameView& frame_view = *WebView()->MainFrameImpl()->GetFrameView();
   frame_view.LayoutViewport()->SetScrollOffset(ScrollOffset(0, 10000),
                                                kProgrammaticScroll);
@@ -1627,14 +1744,14 @@ TEST_P(VisualViewportTest, ElementVisibleBoundsInVisualViewport) {
 // Test that the various window.scroll and document.body.scroll properties and
 // methods don't change with the visual viewport.
 TEST_P(VisualViewportTest, visualViewportIsInert) {
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl = web_view_helper.Initialize(
-      nullptr, nullptr, nullptr, &configureAndroidCompositing);
+      nullptr, nullptr, nullptr, &ConfigureAndroidCompositing);
 
   web_view_impl->Resize(IntSize(200, 300));
 
-  WebURL base_url = URLTestHelpers::ToKURL("http://example.com/");
-  FrameTestHelpers::LoadHTMLString(
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
       web_view_impl->MainFrameImpl(),
       "<!DOCTYPE html>"
       "<meta name='viewport' content='width=200,minimum-scale=1'>"
@@ -1755,8 +1872,9 @@ TEST_P(VisualViewportTest, SlowScrollAfterImplScroll) {
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
 
   // Apply some scroll and scale from the impl-side.
-  WebView()->ApplyViewportDeltas(WebFloatSize(300, 200), WebFloatSize(0, 0),
-                                 WebFloatSize(0, 0), 2, 0);
+  WebView()->ApplyViewportChanges({gfx::ScrollOffset(300, 200),
+                                   gfx::Vector2dF(0, 0), 2, 0,
+                                   cc::BrowserControlsState::kBoth});
 
   EXPECT_EQ(FloatSize(300, 200), visual_viewport.GetScrollOffset());
 
@@ -1812,7 +1930,7 @@ TEST_P(VisualViewportTest, AccessibilityHitTestWhileZoomedIn) {
   // right target (target 4).
   WebAXObject hitNode =
       WebAXObject::FromWebDocument(web_doc).HitTest(WebPoint(154, 165));
-  WebAXNameFrom name_from;
+  ax::mojom::NameFrom name_from;
   WebVector<WebAXObject> name_objects;
   EXPECT_EQ(std::string("Target4"),
             hitNode.GetName(name_from, name_objects).Utf8());
@@ -1981,9 +2099,9 @@ TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
   if (RuntimeEnabledFeatures::SlimmingPaintV2Enabled())
     return;
 
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl = web_view_helper.Initialize(
-      nullptr, nullptr, nullptr, &configureAndroidCompositing);
+      nullptr, nullptr, nullptr, &ConfigureAndroidCompositing);
 
   int page_width = 640;
   int page_height = 480;
@@ -1994,20 +2112,20 @@ TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
                                            browser_controls_height, 0, false);
 
   RegisterMockedHttpURLLoad("http://example.com/foo.png", "white-1x1.png");
-  WebURL base_url = URLTestHelpers::ToKURL("http://example.com/");
-  FrameTestHelpers::LoadHTMLString(web_view_impl->MainFrameImpl(),
-                                   "<!DOCTYPE html>"
-                                   "<style>"
-                                   "  body {"
-                                   "    background: url('foo.png');"
-                                   "    background-attachment: fixed;"
-                                   "    background-size: cover;"
-                                   "    background-repeat: no-repeat;"
-                                   "  }"
-                                   "  div { height:1000px; width: 200px; }"
-                                   "</style>"
-                                   "<div></div>",
-                                   base_url);
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view_impl->MainFrameImpl(),
+                                     "<!DOCTYPE html>"
+                                     "<style>"
+                                     "  body {"
+                                     "    background: url('foo.png');"
+                                     "    background-attachment: fixed;"
+                                     "    background-size: cover;"
+                                     "    background-repeat: no-repeat;"
+                                     "  }"
+                                     "  div { height:1000px; width: 200px; }"
+                                     "</style>"
+                                     "<div></div>",
+                                     base_url);
   web_view_impl->UpdateAllLifecyclePhases();
 
   Document* document =
@@ -2042,8 +2160,7 @@ TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
   EXPECT_EQ(page_height, backgroundLayer->Size().height());
 }
 
-static void configureAndroidNonCompositing(WebSettings* settings) {
-  settings->SetAcceleratedCompositingEnabled(true);
+static void ConfigureAndroidNonCompositing(WebSettings* settings) {
   settings->SetPreferCompositingToLCDTextEnabled(false);
   settings->SetViewportMetaEnabled(true);
   settings->SetViewportEnabled(true);
@@ -2057,9 +2174,9 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
   if (RuntimeEnabledFeatures::SlimmingPaintV2Enabled())
     return;
 
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl = web_view_helper.Initialize(
-      nullptr, nullptr, nullptr, &configureAndroidNonCompositing);
+      nullptr, nullptr, nullptr, &ConfigureAndroidNonCompositing);
 
   int page_width = 640;
   int page_height = 480;
@@ -2070,21 +2187,21 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
                                            browser_controls_height, 0, false);
 
   RegisterMockedHttpURLLoad("http://example.com/foo.png", "white-1x1.png");
-  WebURL base_url = URLTestHelpers::ToKURL("http://example.com/");
-  FrameTestHelpers::LoadHTMLString(web_view_impl->MainFrameImpl(),
-                                   "<!DOCTYPE html>"
-                                   "<style>"
-                                   "  body {"
-                                   "    margin: 0px;"
-                                   "    background: url('foo.png');"
-                                   "    background-attachment: fixed;"
-                                   "    background-size: cover;"
-                                   "    background-repeat: no-repeat;"
-                                   "  }"
-                                   "  div { height:1000px; width: 200px; }"
-                                   "</style>"
-                                   "<div></div>",
-                                   base_url);
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view_impl->MainFrameImpl(),
+                                     "<!DOCTYPE html>"
+                                     "<style>"
+                                     "  body {"
+                                     "    margin: 0px;"
+                                     "    background: url('foo.png');"
+                                     "    background-attachment: fixed;"
+                                     "    background-size: cover;"
+                                     "    background-repeat: no-repeat;"
+                                     "  }"
+                                     "  div { height:1000px; width: 200px; }"
+                                     "</style>"
+                                     "<div></div>",
+                                     base_url);
   web_view_impl->UpdateAllLifecyclePhases();
 
   Document* document =
@@ -2097,41 +2214,31 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
   ASSERT_EQ(page_width, document->View()->GetLayoutSize().Width());
   ASSERT_EQ(smallest_height, document->View()->GetLayoutSize().Height());
 
-  const RasterInvalidationTracking* invalidation_tracking =
-      document->GetLayoutView()
-          ->Layer()
-          ->GraphicsLayerBacking(document->GetLayoutView())
-          ->GetRasterInvalidationTracking();
-  // If no invalidations occured, this will be a nullptr.
-  ASSERT_TRUE(invalidation_tracking);
-
-  const auto* raster_invalidations = &invalidation_tracking->Invalidations();
-  // No raster invalidation is needed because of no change within the root
-  // scrolling layer.
-  EXPECT_EQ(0u, raster_invalidations->size());
+  // Fixed-attachment background is affected by viewport size.
+  EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
+  ASSERT_TRUE(ScrollingContentsLayerHasRasterInvalidations(document));
+  EXPECT_THAT(
+      ScrollingContentsLayerRasterInvalidations(document),
+      UnorderedElementsAre(RasterInvalidationInfo{
+          &ScrollingBackgroundClient(document),
+          ScrollingBackgroundClient(document).DebugName(),
+          IntRect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
 
   document->View()->SetTracksPaintInvalidations(false);
-
-  invalidation_tracking = document->GetLayoutView()
-                              ->Layer()
-                              ->GraphicsLayerBacking(document->GetLayoutView())
-                              ->GetRasterInvalidationTracking();
-  ASSERT_FALSE(invalidation_tracking);
 
   document->View()->SetTracksPaintInvalidations(true);
   web_view_impl->ResizeWithBrowserControls(WebSize(page_width, page_height),
                                            browser_controls_height, 0, true);
 
-  invalidation_tracking = document->GetLayoutView()
-                              ->Layer()
-                              ->GraphicsLayerBacking(document->GetLayoutView())
-                              ->GetRasterInvalidationTracking();
-  ASSERT_TRUE(invalidation_tracking);
-  raster_invalidations = &invalidation_tracking->Invalidations();
-
-  // No raster invalidation is needed because of no change within the root
-  // scrolling layer.
-  EXPECT_EQ(0u, raster_invalidations->size());
+  // Fixed-attachment background is affected by viewport size.
+  EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
+  ASSERT_TRUE(ScrollingContentsLayerHasRasterInvalidations(document));
+  EXPECT_THAT(
+      ScrollingContentsLayerRasterInvalidations(document),
+      UnorderedElementsAre(RasterInvalidationInfo{
+          &ScrollingBackgroundClient(document),
+          ScrollingBackgroundClient(document).DebugName(),
+          IntRect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
 
   document->View()->SetTracksPaintInvalidations(false);
 }
@@ -2139,9 +2246,9 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
 // Make sure a browser control resize with background-attachment:not-fixed
 // background doesn't cause invalidation or layout.
 TEST_P(VisualViewportTest, ResizeNonFixedBackgroundNoLayoutOrInvalidation) {
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl = web_view_helper.Initialize(
-      nullptr, nullptr, nullptr, &configureAndroidCompositing);
+      nullptr, nullptr, nullptr, &ConfigureAndroidCompositing);
 
   int page_width = 640;
   int page_height = 480;
@@ -2152,21 +2259,21 @@ TEST_P(VisualViewportTest, ResizeNonFixedBackgroundNoLayoutOrInvalidation) {
                                            browser_controls_height, 0, false);
 
   RegisterMockedHttpURLLoad("http://example.com/foo.png", "white-1x1.png");
-  WebURL base_url = URLTestHelpers::ToKURL("http://example.com/");
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   // This time the background is the default attachment.
-  FrameTestHelpers::LoadHTMLString(web_view_impl->MainFrameImpl(),
-                                   "<!DOCTYPE html>"
-                                   "<style>"
-                                   "  body {"
-                                   "    margin: 0px;"
-                                   "    background: url('foo.png');"
-                                   "    background-size: cover;"
-                                   "    background-repeat: no-repeat;"
-                                   "  }"
-                                   "  div { height:1000px; width: 200px; }"
-                                   "</style>"
-                                   "<div></div>",
-                                   base_url);
+  frame_test_helpers::LoadHTMLString(web_view_impl->MainFrameImpl(),
+                                     "<!DOCTYPE html>"
+                                     "<style>"
+                                     "  body {"
+                                     "    margin: 0px;"
+                                     "    background: url('foo.png');"
+                                     "    background-size: cover;"
+                                     "    background-repeat: no-repeat;"
+                                     "  }"
+                                     "  div { height:1000px; width: 200px; }"
+                                     "</style>"
+                                     "<div></div>",
+                                     base_url);
   web_view_impl->UpdateAllLifecyclePhases();
 
   Document* document =
@@ -2195,23 +2302,19 @@ TEST_P(VisualViewportTest, ResizeNonFixedBackgroundNoLayoutOrInvalidation) {
   ASSERT_EQ(smallest_height, document->View()->GetLayoutSize().Height());
 
   if (!RuntimeEnabledFeatures::SlimmingPaintV2Enabled()) {
-    const RasterInvalidationTracking* invalidation_tracking =
-        document->GetLayoutView()
-            ->Layer()
-            ->GraphicsLayerBacking(document->GetLayoutView())
-            ->GetRasterInvalidationTracking();
-
-    // No invalidations should have occured.
-    EXPECT_FALSE(invalidation_tracking->HasInvalidations());
+    // No invalidations should have occurred on either main layer or scrolling
+    // contents layer.
+    EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
+    EXPECT_FALSE(ScrollingContentsLayerHasRasterInvalidations(document));
   }
 
   document->View()->SetTracksPaintInvalidations(false);
 }
 
 TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl = web_view_helper.Initialize(
-      nullptr, nullptr, nullptr, &configureAndroidCompositing);
+      nullptr, nullptr, nullptr, &ConfigureAndroidCompositing);
 
   int page_width = 320;
   int page_height = 590;
@@ -2221,7 +2324,7 @@ TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
   web_view_impl->ResizeWithBrowserControls(WebSize(page_width, page_height),
                                            browser_controls_height, 0, true);
 
-  FrameTestHelpers::LoadFrame(web_view_impl->MainFrameImpl(), "about:blank");
+  frame_test_helpers::LoadFrame(web_view_impl->MainFrameImpl(), "about:blank");
   web_view_impl->UpdateAllLifecyclePhases();
 
   Document* document =
@@ -2237,16 +2340,30 @@ TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
   ASSERT_EQ(page_height, document->View()->GetLayoutSize().Height());
 
   if (!RuntimeEnabledFeatures::SlimmingPaintV2Enabled()) {
-    const RasterInvalidationTracking* invalidation_tracking =
-        document->GetLayoutView()
-            ->Layer()
-            ->GraphicsLayerBacking(document->GetLayoutView())
-            ->GetRasterInvalidationTracking();
-    ASSERT_TRUE(invalidation_tracking);
-    const auto* raster_invalidations = &invalidation_tracking->Invalidations();
+    // Incremental raster invalidation is needed because the resize exposes
+    // unpainted area of background.
+    EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
+    ASSERT_TRUE(ScrollingContentsLayerHasRasterInvalidations(document));
+    EXPECT_THAT(
+        ScrollingContentsLayerRasterInvalidations(document),
+        UnorderedElementsAre(RasterInvalidationInfo{
+            &ScrollingBackgroundClient(document),
+            ScrollingBackgroundClient(document).DebugName(),
+            IntRect(0, 590, 320, 50), PaintInvalidationReason::kIncremental}));
+  }
+
+  document->View()->SetTracksPaintInvalidations(false);
+
+  // Resize back to the original size.
+  document->View()->SetTracksPaintInvalidations(true);
+  web_view_impl->ResizeWithBrowserControls(WebSize(page_width, page_height),
+                                           browser_controls_height, 0, false);
+
+  if (!RuntimeEnabledFeatures::SlimmingPaintV2Enabled()) {
     // No raster invalidation is needed because of no change within the root
     // scrolling layer.
-    EXPECT_EQ(0u, raster_invalidations->size());
+    EXPECT_FALSE(MainGraphicsLayerHasRasterInvalidations(document));
+    EXPECT_FALSE(ScrollingContentsLayerHasRasterInvalidations(document));
   }
 
   document->View()->SetTracksPaintInvalidations(false);
@@ -2320,17 +2437,17 @@ TEST_P(VisualViewportTest, AutoResizeNoHeightUsesMinimumHeight) {
   InitializeWithDesktopSettings();
   WebView()->ResizeWithBrowserControls(WebSize(0, 0), 0, 0, false);
   WebView()->EnableAutoResizeMode(WebSize(25, 25), WebSize(100, 100));
-  WebURL base_url = URLTestHelpers::ToKURL("http://example.com/");
-  FrameTestHelpers::LoadHTMLString(WebView()->MainFrameImpl(),
-                                   "<!DOCTYPE html>"
-                                   "<style>"
-                                   "  body {"
-                                   "    margin: 0px;"
-                                   "  }"
-                                   "  div { height:110vh; width: 110vw; }"
-                                   "</style>"
-                                   "<div></div>",
-                                   base_url);
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(WebView()->MainFrameImpl(),
+                                     "<!DOCTYPE html>"
+                                     "<style>"
+                                     "  body {"
+                                     "    margin: 0px;"
+                                     "  }"
+                                     "  div { height:110vh; width: 110vw; }"
+                                     "</style>"
+                                     "<div></div>",
+                                     base_url);
 }
 
 class VisualViewportSimTest : public SimTest {
@@ -2342,7 +2459,6 @@ class VisualViewportSimTest : public SimTest {
 
     // Use settings that resemble the Android configuration.
     WebView().GetSettings()->SetViewportEnabled(true);
-    WebView().GetSettings()->SetAcceleratedCompositingEnabled(true);
     WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
     WebView().GetSettings()->SetViewportMetaEnabled(true);
     WebView().GetSettings()->SetViewportEnabled(true);
@@ -2386,8 +2502,8 @@ TEST_F(VisualViewportSimTest, ScrollingContentsSmallerThanContainer) {
               visual_viewport.GetScrollNode()->ContentsSize());
   }
 
-  WebView().ApplyViewportDeltas(WebFloatSize(1, 1), WebFloatSize(),
-                                WebFloatSize(), 2, 1);
+  WebView().ApplyViewportChanges({gfx::ScrollOffset(1, 1), gfx::Vector2dF(), 2,
+                                  1, cc::BrowserControlsState::kBoth});
   EXPECT_EQ(gfx::Size(400, 600), visual_viewport.ContainerLayer()->Size());
   EXPECT_EQ(gfx::Size(400, 600),
             visual_viewport.ContainerLayer()->CcLayer()->bounds());

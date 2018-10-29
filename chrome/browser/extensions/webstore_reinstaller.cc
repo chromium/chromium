@@ -43,10 +43,6 @@ bool WebstoreReinstaller::CheckRequestorAlive() const {
   return web_contents() != NULL;
 }
 
-const GURL& WebstoreReinstaller::GetRequestorURL() const {
-  return GURL::EmptyGURL();
-}
-
 std::unique_ptr<ExtensionInstallPrompt::Prompt>
 WebstoreReinstaller::CreateInstallPrompt() const {
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt(
@@ -69,18 +65,6 @@ bool WebstoreReinstaller::ShouldShowAppInstalledBubble() const {
 
 content::WebContents* WebstoreReinstaller::GetWebContents() const {
   return web_contents();
-}
-
-bool WebstoreReinstaller::CheckInlineInstallPermitted(
-    const base::DictionaryValue& webstore_data,
-    std::string* error) const {
-  return true;
-}
-
-bool WebstoreReinstaller::CheckRequestorPermitted(
-    const base::DictionaryValue& webstore_data,
-    std::string* error) const {
-  return true;
 }
 
 void WebstoreReinstaller::WebContentsDestroyed() {

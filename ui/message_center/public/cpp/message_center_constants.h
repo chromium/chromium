@@ -142,14 +142,6 @@ constexpr int kMarginBetweenPopups = 10;
 // The corners are only rounded in Chrome OS.
 constexpr int kNotificationCornerRadius = 2;
 
-// Layout parameters for swipe control of notifications in message center.
-constexpr int kSwipeControlButtonImageSize = 20;
-constexpr int kSwipeControlButtonSize = 36;
-constexpr int kSwipeControlButtonVerticalMargin = 24;
-constexpr int kSwipeControlButtonHorizontalMargin = 8;
-constexpr SkColor kSwipeControlBackgroundColor =
-    SkColorSetRGB(0xee, 0xee, 0xee);
-
 // Close if notification is slided more than this amount in addition to the
 // width of the buttons and their margins.
 constexpr int kSwipeCloseMargin = 64;

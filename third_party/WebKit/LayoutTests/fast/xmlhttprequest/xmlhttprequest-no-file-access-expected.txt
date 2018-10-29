@@ -1,4 +1,0 @@
-CONSOLE WARNING: line 22: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
-CONSOLE ERROR: line 23: Access to XMLHttpRequest at 'xmlhttprequest-no-file-access-expected.txt' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
-
-The child iframe cannot paste its textual results into this iframe because it is considered a different domain - that's the point of this test! Therefore, success is denoted by the child iframe calling notifyDone. The test will hang if something goes amiss with the access control checks.

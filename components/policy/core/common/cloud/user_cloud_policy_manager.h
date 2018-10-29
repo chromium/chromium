@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/policy_export.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 class AccountId;
 class PrefService;
@@ -40,7 +41,9 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
       std::unique_ptr<UserCloudPolicyStore> store,
       const base::FilePath& component_policy_cache_path,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      network::NetworkConnectionTrackerGetter
+          network_connection_tracker_getter);
   ~UserCloudPolicyManager() override;
 
   // ConfigurationPolicyProvider overrides:

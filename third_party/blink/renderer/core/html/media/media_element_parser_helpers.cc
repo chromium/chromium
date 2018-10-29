@@ -17,7 +17,7 @@
 
 namespace blink {
 
-namespace MediaElementParserHelpers {
+namespace media_element_parser_helpers {
 
 bool IsMediaElement(const Element* element) {
   if ((IsHTMLImageElement(element) || IsSVGImageElement(element)) &&
@@ -29,8 +29,10 @@ bool IsMediaElement(const Element* element) {
 }
 
 bool IsUnsizedMediaEnabled(const Document& document) {
-  if (auto* frame = document.GetFrame())
-    return frame->IsFeatureEnabled(mojom::FeaturePolicyFeature::kUnsizedMedia);
+  if (auto* frame = document.GetFrame()) {
+    return frame->DeprecatedIsFeatureEnabled(
+        mojom::FeaturePolicyFeature::kUnsizedMedia);
+  }
   // Unsized media is by default enabled every where, so when the frame is not
   // available return default policy (true).
   return true;
@@ -75,11 +77,11 @@ void ReportUnsizedMediaViolation(const LayoutObject* layout_object) {
   const ComputedStyle& style = layout_object->StyleRef();
   if (!style.LogicalWidth().IsSpecified() &&
       !style.LogicalHeight().IsSpecified() && layout_object->GetFrame()) {
-    layout_object->GetFrame()->ReportFeaturePolicyViolation(
+    layout_object->GetFrame()->DeprecatedReportFeaturePolicyViolation(
         mojom::FeaturePolicyFeature::kUnsizedMedia);
   }
 }
 
-}  // namespace MediaElementParserHelpers
+}  // namespace media_element_parser_helpers
 
 }  // namespace blink

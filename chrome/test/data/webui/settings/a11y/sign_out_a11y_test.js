@@ -27,6 +27,7 @@ SettingsA11ySignOut.prototype = {
   extraLibraries: SettingsAccessibilityTest.prototype.extraLibraries.concat([
     '../../test_browser_proxy.js',
     '../sync_test_util.js',
+    '../test_util.js',
     '../test_sync_browser_proxy.js',
   ]),
 };
@@ -74,28 +75,38 @@ AccessibilityTest.define('SettingsA11ySignOut', {
   /** @override */
   tests: {
     'Accessible Dialog': function() {
-      return this.browserProxy.getSyncStatus().then((syncStatus) => {
-        // Navigate to the sign out dialog.
-        Polymer.dom.flush();
-        disconnectButton = null;
-        if (this.peoplePage.diceEnabled_) {
-          const syncAccountControl =
-              this.peoplePage.$$('settings-sync-account-control');
-          syncAccountControl.syncStatus = {
-            signedIn: true,
-            signedInUsername: 'bar@bar.com',
-            statusAction: settings.StatusAction.NO_ACTION,
-            hasError: false,
-            disabled: false,
-          };
-          disconnectButton = syncAccountControl.$$('#turn-off');
-        } else {
-          disconnectButton = this.peoplePage.$$('#disconnectButton');
-        }
-        assert(!!disconnectButton);
-        disconnectButton.click();
-        Polymer.dom.flush();
-      });
+      let parent = null;
+      let disconnectButtonSelector = null;
+
+      return this.browserProxy.getSyncStatus()
+          .then(syncStatus => {
+            // Navigate to the sign out dialog.
+            Polymer.dom.flush();
+
+            if (this.peoplePage.diceEnabled_) {
+              const syncAccountControl =
+                  this.peoplePage.$$('settings-sync-account-control');
+              syncAccountControl.syncStatus = {
+                signedIn: true,
+                signedInUsername: 'bar@bar.com',
+                statusAction: settings.StatusAction.NO_ACTION,
+                hasError: false,
+                disabled: false,
+              };
+              parent = syncAccountControl;
+              disconnectButtonSelector = '#turn-off';
+            } else {
+              parent = this.peoplePage;
+              disconnectButtonSelector = '#disconnectButton';
+            }
+            return test_util.waitForRender(parent);
+          })
+          .then(() => {
+            disconnectButton = parent.$$(disconnectButtonSelector);
+            assert(!!disconnectButton);
+            disconnectButton.click();
+            Polymer.dom.flush();
+          });
     }
   },
   /** @override */

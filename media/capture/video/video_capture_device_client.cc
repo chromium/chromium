@@ -183,13 +183,12 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
   libyuv::RotationMode rotation_mode = TranslateRotation(rotation);
 
   const gfx::Size dimensions(destination_width, destination_height);
-  Buffer buffer =
-      ReserveOutputBuffer(dimensions, PIXEL_FORMAT_I420, frame_feedback_id);
-  // Failed to reserve I420 output buffer, so drop the frame.
-  if (!buffer.is_valid()) {
+  Buffer buffer;
+  auto reservation_result_code = ReserveOutputBuffer(
+      dimensions, PIXEL_FORMAT_I420, frame_feedback_id, &buffer);
+  if (reservation_result_code != ReserveResult::kSucceeded) {
     receiver_->OnFrameDropped(
-        VideoCaptureFrameDropReason::
-            kDeviceClientFailedToReserveBufferFromBufferPool);
+        ConvertReservationFailureToFrameDropReason(reservation_result_code));
     return;
   }
 
@@ -338,14 +337,14 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
   libyuv::RotationMode rotation_mode = TranslateRotation(clockwise_rotation);
 
   const gfx::Size dimensions(destination_width, destination_height);
-  auto output_buffer =
-      ReserveOutputBuffer(dimensions, PIXEL_FORMAT_I420, frame_feedback_id);
+  Buffer output_buffer;
+  const auto reservation_result_code = ReserveOutputBuffer(
+      dimensions, PIXEL_FORMAT_I420, frame_feedback_id, &output_buffer);
 
   // Failed to reserve I420 output buffer, so drop the frame.
-  if (!output_buffer.is_valid()) {
+  if (reservation_result_code != ReserveResult::kSucceeded) {
     receiver_->OnFrameDropped(
-        VideoCaptureFrameDropReason::
-            kDeviceClientFailedToReserveBufferFromBufferPool);
+        ConvertReservationFailureToFrameDropReason(reservation_result_code));
     return;
   }
 
@@ -383,18 +382,21 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
                            reference_time, timestamp);
 }
 
-VideoCaptureDevice::Client::Buffer
+VideoCaptureDevice::Client::ReserveResult
 VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
                                               VideoPixelFormat pixel_format,
-                                              int frame_feedback_id) {
+                                              int frame_feedback_id,
+                                              Buffer* buffer) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   DCHECK_GT(frame_size.width(), 0);
   DCHECK_GT(frame_size.height(), 0);
   DCHECK(IsFormatSupported(pixel_format));
 
   int buffer_id_to_drop = VideoCaptureBufferPool::kInvalidId;
-  const int buffer_id = buffer_pool_->ReserveForProducer(
-      frame_size, pixel_format, nullptr, frame_feedback_id, &buffer_id_to_drop);
+  int buffer_id = VideoCaptureBufferPool::kInvalidId;
+  auto reservation_result_code = buffer_pool_->ReserveForProducer(
+      frame_size, pixel_format, nullptr, frame_feedback_id, &buffer_id,
+      &buffer_id_to_drop);
   if (buffer_id_to_drop != VideoCaptureBufferPool::kInvalidId) {
     // |buffer_pool_| has decided to release a buffer. Notify receiver in case
     // the buffer has already been shared with it.
@@ -406,8 +408,10 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
       receiver_->OnBufferRetired(buffer_id_to_drop);
     }
   }
-  if (buffer_id == VideoCaptureBufferPool::kInvalidId)
-    return Buffer();
+  if (reservation_result_code != ReserveResult::kSucceeded)
+    return reservation_result_code;
+
+  DCHECK_NE(VideoCaptureBufferPool::kInvalidId, buffer_id);
 
   if (!base::ContainsValue(buffer_ids_known_by_receiver_, buffer_id)) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
@@ -431,7 +435,8 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
     buffer_ids_known_by_receiver_.push_back(buffer_id);
   }
 
-  return MakeBufferStruct(buffer_pool_, buffer_id, frame_feedback_id);
+  *buffer = MakeBufferStruct(buffer_pool_, buffer_id, frame_feedback_id);
+  return ReserveResult::kSucceeded;
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedBuffer(
@@ -511,16 +516,16 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     int frame_feedback_id) {
-  Buffer buffer = ReserveOutputBuffer(format.frame_size, PIXEL_FORMAT_Y16,
-                                      frame_feedback_id);
+  Buffer buffer;
+  const auto reservation_result_code = ReserveOutputBuffer(
+      format.frame_size, PIXEL_FORMAT_Y16, frame_feedback_id, &buffer);
   // The input |length| can be greater than the required buffer size because of
   // paddings and/or alignments, but it cannot be smaller.
   DCHECK_GE(static_cast<size_t>(length), format.ImageAllocationSize());
   // Failed to reserve output buffer, so drop the frame.
-  if (!buffer.is_valid()) {
+  if (reservation_result_code != ReserveResult::kSucceeded) {
     receiver_->OnFrameDropped(
-        VideoCaptureFrameDropReason::
-            kDeviceClientFailedToReserveBufferFromBufferPool);
+        ConvertReservationFailureToFrameDropReason(reservation_result_code));
     return;
   }
   auto buffer_access = buffer.handle_provider->GetHandleForInProcessAccess();

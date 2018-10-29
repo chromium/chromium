@@ -250,8 +250,8 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "audio_buffer_stream_unittest.cc",
     "audio_clock_unittest.cc",
+    "audio_decoder_stream_unittest.cc",
     "audio_renderer_algorithm_unittest.cc",
     "audio_timestamp_validator_unittest.cc",
     "chunk_demuxer_unittest.cc",
@@ -273,7 +273,7 @@ source_set("unit_tests") {
     "source_buffer_state_unittest.cc",
     "source_buffer_stream_unittest.cc",
     "video_cadence_estimator_unittest.cc",
-    "video_frame_stream_unittest.cc",
+    "video_decoder_stream_unittest.cc",
     "video_renderer_algorithm_unittest.cc",
     "vp8_bool_decoder_unittest.cc",
     "vp8_parser_unittest.cc",

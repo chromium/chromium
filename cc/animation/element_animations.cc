@@ -76,14 +76,17 @@ void ElementAnimations::ClearAffectedElementTypes() {
   disabled_state_mask.currently_running = disable_properties;
   disabled_state_mask.potentially_animating = disable_properties;
 
-  if (has_element_in_active_list()) {
+  // This method may get called from AnimationHost dtor so it is possible for
+  // mutator_host_client() to be null.
+  if (has_element_in_active_list() && animation_host()->mutator_host_client()) {
     animation_host()->mutator_host_client()->ElementIsAnimatingChanged(
         element_id(), ElementListType::ACTIVE, disabled_state_mask,
         disabled_state);
   }
   set_has_element_in_active_list(false);
 
-  if (has_element_in_pending_list()) {
+  if (has_element_in_pending_list() &&
+      animation_host()->mutator_host_client()) {
     animation_host()->mutator_host_client()->ElementIsAnimatingChanged(
         element_id(), ElementListType::PENDING, disabled_state_mask,
         disabled_state);

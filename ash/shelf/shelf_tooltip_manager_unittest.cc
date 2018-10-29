@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shelf/app_list_button.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_tooltip_bubble_base.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
@@ -122,10 +123,6 @@ TEST_F(ShelfTooltipManagerTest, HideWhenShelfIsAutoHideHidden) {
   ASSERT_EQ(SHELF_AUTO_HIDE_BEHAVIOR_ALWAYS,
             GetPrimaryShelf()->auto_hide_behavior());
   ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, GetPrimaryShelf()->GetAutoHideState());
-
-  // Tooltip visibility change for auto hide may take time.
-  EXPECT_TRUE(tooltip_manager_->IsVisible());
-  RunAllPendingInMessageLoop();
   EXPECT_FALSE(tooltip_manager_->IsVisible());
 
   // Do not show the view if the shelf is hidden.

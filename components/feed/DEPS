@@ -18,6 +18,7 @@ include_rules = [
   "+services/network/public/mojom",
   "+services/network/test",
   "+third_party/zlib/google",
+  "+ui/base/mojo",
   "+ui/gfx/geometry",
   "+ui/gfx/image",
  ]

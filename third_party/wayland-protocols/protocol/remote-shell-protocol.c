@@ -71,12 +71,13 @@ static const struct wl_message zcr_remote_shell_v1_events[] = {
 	{ "workspace", "5uuiiiiiiiiifu", types + 0 },
 	{ "configure", "5u", types + 0 },
 	{ "default_device_scale_factor", "8i", types + 0 },
+	{ "display_info", "19uuiia", types + 0 },
 };
 
 WL_EXPORT const struct wl_interface zcr_remote_shell_v1_interface = {
-	"zcr_remote_shell_v1", 18,
+	"zcr_remote_shell_v1", 19,
 	4, zcr_remote_shell_v1_requests,
-	5, zcr_remote_shell_v1_events,
+	6, zcr_remote_shell_v1_events,
 };
 
 static const struct wl_message zcr_remote_surface_v1_requests[] = {

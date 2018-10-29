@@ -44,6 +44,10 @@ bool IsIncludedInFREPromoFieldTrial();
 // is in effect.
 bool IsIncludedInHoldbackFieldTrial();
 
+// Returns true if this client is part of a holdback experiment that disables
+// the use of secure data compression proxies. Insecure proxies remain enabled.
+bool IsIncludedInSecureProxyHoldbackFieldTrial();
+
 // The name of the Holdback experiment group, this can return an empty string if
 // not included in a group.
 std::string HoldbackFieldTrialGroup();
@@ -60,6 +64,10 @@ const char* GetLoFiFlagFieldTrialName();
 // Returns true if this client is part of the field trial that should enable
 // server experiments for the data reduction proxy.
 bool IsIncludedInServerExperimentsFieldTrial();
+
+// Returns true if Chrome should use on-device safe browsing checks, and
+// disable safe browsing checks provided by data saver proxy.
+bool IsIncludedInOnDeviceSafeBrowsingFieldTrial();
 
 // Returns true if this client has the command line switch to enable forced
 // pageload metrics pingbacks on every page load.
@@ -81,9 +89,6 @@ const char* GetQuicFieldTrialName();
 // Returns true if Brotli should be added to the accept-encoding header.
 bool IsBrotliAcceptEncodingEnabled();
 
-// Returns true if the Data Reduction Proxy config client should be used.
-bool IsConfigClientEnabled();
-
 // If the Data Reduction Proxy is used for a page load, the URL for the
 // Data Reduction Proxy Pageload Metrics service.
 GURL GetPingbackURL();
@@ -95,15 +100,6 @@ GURL GetConfigServiceURL();
 // Returns true if the Data Reduction Proxy is forced to be enabled from the
 // command line.
 bool ShouldForceEnableDataReductionProxy();
-
-// Returns whether the proxy should be bypassed for requests that are proxied
-// but missing the via header based on if the connection is cellular.
-bool ShouldBypassMissingViaHeader(bool connection_is_cellular);
-
-// Returns the range of acceptable bypass lengths for requests that are proxied
-// but missing the via header based on if the connection is cellular.
-std::pair<base::TimeDelta, base::TimeDelta>
-GetMissingViaHeaderBypassDurationRange(bool connection_is_cellular);
 
 // The current LitePage experiment blacklist version.
 int LitePageVersion();
@@ -135,14 +131,18 @@ bool FetchWarmupProbeURLEnabled();
 // Returns the warmup URL.
 GURL GetWarmupURL();
 
+// Returns true if the warmup URL fetcher should callback into DRP to report the
+// result of the warmup fetch.
+bool IsWarmupURLFetchCallbackEnabled();
+
+// Returns true if |url| is the warmup url.
+bool IsWarmupURL(const GURL& url);
+
 // Returns true if the |http_response_code| is in the whitelist of HTTP response
 // codes that are considered as successful for fetching the warmup probe URL.
 // If this method returns false, then the probe should be considered as
 // unsuccessful.
 bool IsWhitelistedHttpResponseCodeForProbes(int http_response_code);
-
-// Returns the experiment parameter name to enable the warmup fetch callback.
-const char* GetWarmupCallbackParamName();
 
 // Returns the experiment parameter name to disable missing via header bypasses.
 const char* GetMissingViaBypassParamName();
@@ -151,6 +151,10 @@ const char* GetMissingViaBypassParamName();
 // metrics harness.
 bool IsDataSaverSiteBreakdownUsingPLMEnabled();
 
+// Returns whether network service is enabled and data reduction proxy should be
+// used.
+bool IsEnabledWithNetworkService();
+
 // Returns the experiment parameter name to discard the cached result for canary
 // check probe.
 const char* GetDiscardCanaryCheckResultParam();
@@ -158,6 +162,12 @@ const char* GetDiscardCanaryCheckResultParam();
 // Returns true if canary check result should not be cached or reused across
 // network changes.
 bool ShouldDiscardCanaryCheckResult();
+
+// Helper function to locate |proxy_server| in |proxies| if it exists. This
+// function is exposed publicly so that DataReductionProxyParams can use it.
+base::Optional<DataReductionProxyTypeInfo> FindConfiguredProxyInVector(
+    const std::vector<DataReductionProxyServer>& proxies,
+    const net::ProxyServer& proxy_server);
 
 }  // namespace params
 
@@ -185,12 +195,7 @@ class DataReductionProxyParams : public DataReductionProxyConfigValues {
   // if any exist.
   base::Optional<DataReductionProxyTypeInfo> FindConfiguredDataReductionProxy(
       const net::ProxyServer& proxy_server) const override;
-
-  // Helper function to locate |proxy_server| in |proxies| if it exists. This
-  // function is exposed publicly so that DataReductionProxyParams can use it.
-  static base::Optional<DataReductionProxyTypeInfo> FindConfiguredProxyInVector(
-      const std::vector<DataReductionProxyServer>& proxies,
-      const net::ProxyServer& proxy_server);
+  net::ProxyList GetAllConfiguredProxies() const override;
 
  private:
   std::vector<DataReductionProxyServer> proxies_for_http_;

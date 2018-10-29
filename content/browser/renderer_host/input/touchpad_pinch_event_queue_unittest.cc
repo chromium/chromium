@@ -88,6 +88,19 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool> {
     QueueEvent(event);
   }
 
+  void QueueDoubleTap() {
+    blink::WebGestureEvent event(
+        blink::WebInputEvent::kGestureDoubleTap,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests(),
+        blink::kWebGestureDeviceTouchpad);
+    event.SetPositionInWidget(gfx::PointF(1, 1));
+    event.SetPositionInScreen(gfx::PointF(1, 1));
+    event.data.tap.tap_count = 1;
+    event.SetNeedsWheelEvent(true);
+    QueueEvent(event);
+  }
+
   void SendWheelEventAck(InputEventAckSource ack_source,
                          InputEventAckState ack_result) {
     queue_->ProcessMouseWheelAck(ack_source, ack_result, ui::LatencyInfo());
@@ -113,6 +126,14 @@ MATCHER_P(EventHasPhase,
           std::string(negation ? "does not have" : "has") + " phase " +
               ::testing::PrintToString(phase)) {
   return arg.event.phase == phase;
+}
+
+MATCHER_P(EventHasScale,
+          expected_scale,
+          std::string(negation ? "does not have" : "has") + " scale " +
+              ::testing::PrintToString(expected_scale)) {
+  const float actual_scale = exp(arg.event.delta_y / 100.0f);
+  return ::testing::Matches(::testing::FloatEq(expected_scale))(actual_scale);
 }
 
 MATCHER(EventHasCtrlModifier,
@@ -568,6 +589,26 @@ TEST_P(TouchpadPinchEventQueueTest, MultipleCanceledUpdatesInSequence) {
   QueuePinchEnd();
   SendWheelEventAck(InputEventAckSource::BROWSER,
                     INPUT_EVENT_ACK_STATE_IGNORED);
+}
+
+// Ensure that when the queue receives a touchpad double tap, it sends a
+// synthetic mouse wheel event and acks the double tap back to the client.
+TEST_P(TouchpadPinchEventQueueTest, DoubleTap) {
+  ::testing::InSequence sequence;
+  EXPECT_CALL(mock_client_,
+              SendMouseWheelEventForPinchImmediately(::testing::AllOf(
+                  EventHasCtrlModifier(), EventIsBlocking(),
+                  EventHasPhase(blink::WebMouseWheelEvent::kPhaseNone),
+                  EventHasScale(1.0f))));
+  EXPECT_CALL(
+      mock_client_,
+      OnGestureEventForPinchAck(
+          EventHasType(blink::WebInputEvent::kGestureDoubleTap),
+          InputEventAckSource::MAIN_THREAD, INPUT_EVENT_ACK_STATE_CONSUMED));
+
+  QueueDoubleTap();
+  SendWheelEventAck(InputEventAckSource::MAIN_THREAD,
+                    INPUT_EVENT_ACK_STATE_CONSUMED);
 }
 
 }  // namespace content

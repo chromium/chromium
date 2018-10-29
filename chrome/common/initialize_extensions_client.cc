@@ -20,7 +20,7 @@ void EnsureExtensionsClientInitialized() {
   if (!initialized) {
     initialized = true;
     extensions_client->AddAPIProvider(
-        std::make_unique<apps::ChromeAppsAPIProvider>());
+        std::make_unique<chrome_apps::ChromeAppsAPIProvider>());
     extensions::ExtensionsClient::Set(extensions_client.get());
   }
 

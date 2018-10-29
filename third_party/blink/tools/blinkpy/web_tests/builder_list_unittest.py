@@ -71,7 +71,7 @@ class BuilderListTest(unittest.TestCase):
 
     def test_bucket_for_builder_default_bucket(self):
         builders = self.sample_builder_list()
-        self.assertEqual('master.tryserver.blink', builders.bucket_for_builder('Try A'))
+        self.assertEqual('', builders.bucket_for_builder('Try A'))
 
     def test_bucket_for_builder_configured_bucket(self):
         builders = self.sample_builder_list()

@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include "base/lazy_instance.h"
+#include "base/stl_util.h"
 
 namespace ui {
 
@@ -17,6 +18,8 @@ base::LazyInstance<std::unordered_set<int32_t>>::Leaky g_assigned_ids =
     LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
+
+AXUniqueId::AXUniqueId() : AXUniqueId(INT32_MAX) {}
 
 AXUniqueId::AXUniqueId(const int32_t max_id) : id_(GetNextAXUniqueId(max_id)) {}
 
@@ -32,9 +35,8 @@ bool AXUniqueId::operator!=(const AXUniqueId& other) const {
   return !(*this == other);
 }
 
-bool AXUniqueId::IsAssigned(int32_t id) const {
-  auto id_map = g_assigned_ids.Get();
-  return id_map.find(id) != id_map.end();
+bool AXUniqueId::IsAssigned(const int32_t id) const {
+  return base::ContainsKey(g_assigned_ids.Get(), id);
 }
 
 int32_t AXUniqueId::GetNextAXUniqueId(const int32_t max_id) {
@@ -42,22 +44,23 @@ int32_t AXUniqueId::GetNextAXUniqueId(const int32_t max_id) {
   static bool has_wrapped = false;
 
   const int32_t prev_id = current_id;
-
-  while (true) {
+  do {
     if (current_id == max_id) {
       current_id = 1;
       has_wrapped = true;
     } else {
-      current_id++;
+      ++current_id;
     }
-    if (current_id == prev_id)
-      LOG(FATAL) << "Over 2 billion active ids, something is wrong.";
-    if (!has_wrapped || !IsAssigned(current_id))
-      break;
-  }
+    if (current_id == prev_id) {
+      LOG(FATAL) << "There are over 2 billion available IDs, so the newly "
+                    "created ID cannot be equal to the most recently created "
+                    "ID.";
+    }
+    // If it |has_wrapped| then we need to continue until we find the first
+    // unassigned ID.
+  } while (has_wrapped && IsAssigned(current_id));
 
   g_assigned_ids.Get().insert(current_id);
-
   return current_id;
 }
 

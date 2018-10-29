@@ -38,7 +38,7 @@ class DemoSetupScreen : public BaseScreen {
   void StartEnrollment();
 
   // Called when the setup flow finished with error.
-  void OnSetupError(DemoSetupController::DemoSetupError error);
+  void OnSetupError(const DemoSetupController::DemoSetupError& error);
 
   // Called when the setup flow finished successfully.
   void OnSetupSuccess();

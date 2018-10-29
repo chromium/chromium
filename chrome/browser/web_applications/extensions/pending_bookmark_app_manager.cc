@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/install_result_code.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_shortcut_installation_task.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -124,7 +124,7 @@ void PendingBookmarkAppManager::UninstallApps(
 }
 
 std::vector<GURL> PendingBookmarkAppManager::GetInstalledAppUrls(
-    InstallSource install_source) const {
+    web_app::InstallSource install_source) const {
   return web_app::ExtensionIdsMap::GetInstalledAppUrls(profile_,
                                                        install_source);
 }
@@ -167,21 +167,26 @@ void PendingBookmarkAppManager::MaybeStartNextInstallation() {
         std::move(pending_tasks_and_callbacks_.front());
     pending_tasks_and_callbacks_.pop_front();
 
+    const web_app::PendingAppManager::AppInfo& app_info =
+        front->task->app_info();
     base::Optional<std::string> extension_id =
-        extension_ids_map_.LookupExtensionId(front->task->app_info().url);
+        extension_ids_map_.LookupExtensionId(app_info.url);
 
     if (extension_id) {
       base::Optional<bool> opt =
           IsExtensionPresentAndInstalled(extension_id.value());
       if (opt.has_value()) {
-        // TODO(crbug.com/878262): Handle the case where the app is already
-        // installed but from a different source.
-        std::move(front->callback)
-            .Run(front->task->app_info().url,
-                 opt.value()
-                     ? web_app::InstallResultCode::kAlreadyInstalled
-                     : web_app::InstallResultCode::kPreviouslyUninstalled);
-        continue;
+        bool installed = opt.value();
+        if (installed || !app_info.override_previous_user_uninstall) {
+          // TODO(crbug.com/878262): Handle the case where the app is already
+          // installed but from a different source.
+          std::move(front->callback)
+              .Run(app_info.url,
+                   installed
+                       ? web_app::InstallResultCode::kAlreadyInstalled
+                       : web_app::InstallResultCode::kPreviouslyUninstalled);
+          continue;
+        }
       }
     }
 

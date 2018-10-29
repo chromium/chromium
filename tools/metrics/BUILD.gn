@@ -88,10 +88,9 @@ group("metrics_python_tests") {
     "//tools/metrics/metrics_python_tests.py",
 
     "//tools/metrics/actions/action_utils.py",
+    "//tools/metrics/actions/actions_print_style.py",
     "//tools/metrics/actions/extract_actions.py",
     "//tools/metrics/actions/extract_actions_test.py",
-    "//tools/metrics/actions/pretty_print.py",
-    "//tools/metrics/actions/print_style.py",
 
     "//tools/metrics/common/diff_util.py",
     "//tools/metrics/common/models.py",
@@ -102,13 +101,16 @@ group("metrics_python_tests") {
     "//tools/metrics/histograms/extract_histograms.py",
     "//tools/metrics/histograms/generate_expired_histograms_array.py",
     "//tools/metrics/histograms/generate_expired_histograms_array_unittest.py",
+    "//tools/metrics/histograms/histograms_print_style.py",
     "//tools/metrics/histograms/merge_xml.py",
+    "//tools/metrics/histograms/pretty_print.py",
+    "//tools/metrics/histograms/pretty_print_test.py",
 
-    "//tools/metrics/rappor/model.py",
-    "//tools/metrics/rappor/pretty_print_test.py",
+    "//tools/metrics/rappor/rappor_model.py",
+    "//tools/metrics/rappor/rappor_model_test.py",
 
-    "//tools/metrics/ukm/model.py",
-    "//tools/metrics/ukm/pretty_print_test.py",
+    "//tools/metrics/ukm/ukm_model.py",
+    "//tools/metrics/ukm/ukm_model_test.py",
 
     "//tools/python/google/path_utils.py",
 

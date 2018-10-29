@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -64,8 +65,9 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(kTestProfileName);
     profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestArcProfile"));
-    profile_builder.AddTestingFactory(ConsentAuditorFactory::GetInstance(),
-                                      BuildFakeConsentAuditor);
+    profile_builder.AddTestingFactory(
+        ConsentAuditorFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeConsentAuditor));
     profile_ = profile_builder.Build();
 
     arc_session_manager_ = std::make_unique<ArcSessionManager>(

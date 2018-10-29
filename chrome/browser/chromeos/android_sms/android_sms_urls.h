@@ -15,9 +15,11 @@ namespace android_sms {
 GURL GetAndroidMessagesURL();
 
 // Returns URL to Android Messages for Web page used by AndroidSmsService.
-// Includes the experiment URL params for the ChromeOS integrations.
-// This is temporary for dogfood until these flags are rolled out to prod.
-GURL GetAndroidMessagesURLWithExperiments();
+// This includes a URL param indicating that it should default to persist the
+// connection. If still using the sandbox URL, this will also include the
+// experiment URL params for the ChromeOS integrations.  This is temporary for
+// dogfood until these flags are rolled out to prod.
+GURL GetAndroidMessagesURLWithParams();
 
 }  // namespace android_sms
 

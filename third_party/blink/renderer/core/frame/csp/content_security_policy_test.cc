@@ -273,21 +273,18 @@ TEST_F(ContentSecurityPolicyTest, ObjectSrc) {
   csp->DidReceiveHeader("object-src 'none';",
                         kContentSecurityPolicyHeaderTypeEnforce,
                         kContentSecurityPolicyHeaderSourceMeta);
-  EXPECT_FALSE(
-      csp->AllowRequest(WebURLRequest::kRequestContextObject, url, String(),
-                        IntegrityMetadataSet(), kParserInserted,
-                        ResourceRequest::RedirectStatus::kNoRedirect,
-                        SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_FALSE(
-      csp->AllowRequest(WebURLRequest::kRequestContextEmbed, url, String(),
-                        IntegrityMetadataSet(), kParserInserted,
-                        ResourceRequest::RedirectStatus::kNoRedirect,
-                        SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_TRUE(
-      csp->AllowRequest(WebURLRequest::kRequestContextPlugin, url, String(),
-                        IntegrityMetadataSet(), kParserInserted,
-                        ResourceRequest::RedirectStatus::kNoRedirect,
-                        SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(csp->AllowRequest(
+      mojom::RequestContextType::OBJECT, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(csp->AllowRequest(
+      mojom::RequestContextType::EMBED, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_TRUE(csp->AllowRequest(
+      mojom::RequestContextType::PLUGIN, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
 }
 
 TEST_F(ContentSecurityPolicyTest, ConnectSrc) {
@@ -297,30 +294,27 @@ TEST_F(ContentSecurityPolicyTest, ConnectSrc) {
                         kContentSecurityPolicyHeaderTypeEnforce,
                         kContentSecurityPolicyHeaderSourceMeta);
   EXPECT_FALSE(
-      csp->AllowRequest(WebURLRequest::kRequestContextSubresource, url,
+      csp->AllowRequest(mojom::RequestContextType::SUBRESOURCE, url, String(),
+                        IntegrityMetadataSet(), kParserInserted,
+                        ResourceRequest::RedirectStatus::kNoRedirect,
+                        SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(
+      csp->AllowRequest(mojom::RequestContextType::XML_HTTP_REQUEST, url,
                         String(), IntegrityMetadataSet(), kParserInserted,
                         ResourceRequest::RedirectStatus::kNoRedirect,
                         SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_FALSE(
-      csp->AllowRequest(WebURLRequest::kRequestContextXMLHttpRequest, url,
-                        String(), IntegrityMetadataSet(), kParserInserted,
-                        ResourceRequest::RedirectStatus::kNoRedirect,
-                        SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_FALSE(
-      csp->AllowRequest(WebURLRequest::kRequestContextBeacon, url, String(),
-                        IntegrityMetadataSet(), kParserInserted,
-                        ResourceRequest::RedirectStatus::kNoRedirect,
-                        SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_FALSE(
-      csp->AllowRequest(WebURLRequest::kRequestContextFetch, url, String(),
-                        IntegrityMetadataSet(), kParserInserted,
-                        ResourceRequest::RedirectStatus::kNoRedirect,
-                        SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_TRUE(
-      csp->AllowRequest(WebURLRequest::kRequestContextPlugin, url, String(),
-                        IntegrityMetadataSet(), kParserInserted,
-                        ResourceRequest::RedirectStatus::kNoRedirect,
-                        SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(csp->AllowRequest(
+      mojom::RequestContextType::BEACON, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(csp->AllowRequest(
+      mojom::RequestContextType::FETCH, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_TRUE(csp->AllowRequest(
+      mojom::RequestContextType::PLUGIN, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
 }
 // Tests that requests for scripts and styles are blocked
 // if `require-sri-for` delivered in HTTP header requires integrity be present
@@ -333,39 +327,34 @@ TEST_F(ContentSecurityPolicyTest, RequireSRIForInHeaderMissingIntegrity) {
                            kContentSecurityPolicyHeaderTypeEnforce,
                            kContentSecurityPolicyHeaderSourceHTTP);
   EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextScript, url, String(),
+      mojom::RequestContextType::SCRIPT, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(policy->AllowRequest(
+      mojom::RequestContextType::IMPORT, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(policy->AllowRequest(
+      mojom::RequestContextType::STYLE, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(policy->AllowRequest(
+      mojom::RequestContextType::SERVICE_WORKER, url, String(),
       IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImport, url, String(),
+      mojom::RequestContextType::SHARED_WORKER, url, String(),
       IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextStyle, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextServiceWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextSharedWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
+      mojom::RequestContextType::WORKER, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImage, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
+      mojom::RequestContextType::IMAGE, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   // Report
   policy = ContentSecurityPolicy::Create();
@@ -374,39 +363,34 @@ TEST_F(ContentSecurityPolicyTest, RequireSRIForInHeaderMissingIntegrity) {
                            kContentSecurityPolicyHeaderTypeReport,
                            kContentSecurityPolicyHeaderSourceHTTP);
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextScript, url, String(),
+      mojom::RequestContextType::SCRIPT, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_TRUE(policy->AllowRequest(
+      mojom::RequestContextType::IMPORT, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_TRUE(policy->AllowRequest(
+      mojom::RequestContextType::STYLE, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_TRUE(policy->AllowRequest(
+      mojom::RequestContextType::SERVICE_WORKER, url, String(),
       IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImport, url, String(),
+      mojom::RequestContextType::SHARED_WORKER, url, String(),
       IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextStyle, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
+      mojom::RequestContextType::WORKER, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextServiceWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextSharedWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImage, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
+      mojom::RequestContextType::IMAGE, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
 }
 
@@ -425,33 +409,33 @@ TEST_F(ContentSecurityPolicyTest, RequireSRIForInHeaderPresentIntegrity) {
                            kContentSecurityPolicyHeaderTypeEnforce,
                            kContentSecurityPolicyHeaderSourceHTTP);
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextScript, url, String(), integrity_metadata,
+      mojom::RequestContextType::SCRIPT, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImport, url, String(), integrity_metadata,
+      mojom::RequestContextType::IMPORT, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextStyle, url, String(), integrity_metadata,
+      mojom::RequestContextType::STYLE, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextServiceWorker, url, String(),
+      mojom::RequestContextType::SERVICE_WORKER, url, String(),
       integrity_metadata, kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextSharedWorker, url, String(),
+      mojom::RequestContextType::SHARED_WORKER, url, String(),
       integrity_metadata, kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextWorker, url, String(), integrity_metadata,
+      mojom::RequestContextType::WORKER, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImage, url, String(), integrity_metadata,
+      mojom::RequestContextType::IMAGE, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   // Content-Security-Policy-Report-Only is not supported in meta element,
@@ -462,33 +446,33 @@ TEST_F(ContentSecurityPolicyTest, RequireSRIForInHeaderPresentIntegrity) {
                            kContentSecurityPolicyHeaderTypeReport,
                            kContentSecurityPolicyHeaderSourceHTTP);
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextScript, url, String(), integrity_metadata,
+      mojom::RequestContextType::SCRIPT, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImport, url, String(), integrity_metadata,
+      mojom::RequestContextType::IMPORT, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextStyle, url, String(), integrity_metadata,
+      mojom::RequestContextType::STYLE, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextServiceWorker, url, String(),
+      mojom::RequestContextType::SERVICE_WORKER, url, String(),
       integrity_metadata, kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextSharedWorker, url, String(),
+      mojom::RequestContextType::SHARED_WORKER, url, String(),
       integrity_metadata, kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextWorker, url, String(), integrity_metadata,
+      mojom::RequestContextType::WORKER, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImage, url, String(), integrity_metadata,
+      mojom::RequestContextType::IMAGE, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
 }
@@ -504,39 +488,34 @@ TEST_F(ContentSecurityPolicyTest, RequireSRIForInMetaMissingIntegrity) {
                            kContentSecurityPolicyHeaderTypeEnforce,
                            kContentSecurityPolicyHeaderSourceMeta);
   EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextScript, url, String(),
+      mojom::RequestContextType::SCRIPT, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(policy->AllowRequest(
+      mojom::RequestContextType::IMPORT, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(policy->AllowRequest(
+      mojom::RequestContextType::STYLE, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_FALSE(policy->AllowRequest(
+      mojom::RequestContextType::SERVICE_WORKER, url, String(),
       IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImport, url, String(),
+      mojom::RequestContextType::SHARED_WORKER, url, String(),
       IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextStyle, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextServiceWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextSharedWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_FALSE(policy->AllowRequest(
-      WebURLRequest::kRequestContextWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
+      mojom::RequestContextType::WORKER, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImage, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
+      mojom::RequestContextType::IMAGE, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   // Content-Security-Policy-Report-Only is not supported in meta element,
   // so nothing should be blocked
@@ -546,39 +525,34 @@ TEST_F(ContentSecurityPolicyTest, RequireSRIForInMetaMissingIntegrity) {
                            kContentSecurityPolicyHeaderTypeReport,
                            kContentSecurityPolicyHeaderSourceMeta);
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextScript, url, String(),
+      mojom::RequestContextType::SCRIPT, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_TRUE(policy->AllowRequest(
+      mojom::RequestContextType::IMPORT, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_TRUE(policy->AllowRequest(
+      mojom::RequestContextType::STYLE, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      SecurityViolationReportingPolicy::kSuppressReporting));
+  EXPECT_TRUE(policy->AllowRequest(
+      mojom::RequestContextType::SERVICE_WORKER, url, String(),
       IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImport, url, String(),
+      mojom::RequestContextType::SHARED_WORKER, url, String(),
       IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextStyle, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
+      mojom::RequestContextType::WORKER, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextServiceWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextSharedWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextWorker, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
-      SecurityViolationReportingPolicy::kSuppressReporting));
-  EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImage, url, String(),
-      IntegrityMetadataSet(), kParserInserted,
-      ResourceRequest::RedirectStatus::kNoRedirect,
+      mojom::RequestContextType::IMAGE, url, String(), IntegrityMetadataSet(),
+      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
 }
 
@@ -597,33 +571,33 @@ TEST_F(ContentSecurityPolicyTest, RequireSRIForInMetaPresentIntegrity) {
                            kContentSecurityPolicyHeaderTypeEnforce,
                            kContentSecurityPolicyHeaderSourceMeta);
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextScript, url, String(), integrity_metadata,
+      mojom::RequestContextType::SCRIPT, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImport, url, String(), integrity_metadata,
+      mojom::RequestContextType::IMPORT, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextStyle, url, String(), integrity_metadata,
+      mojom::RequestContextType::STYLE, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextServiceWorker, url, String(),
+      mojom::RequestContextType::SERVICE_WORKER, url, String(),
       integrity_metadata, kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextSharedWorker, url, String(),
+      mojom::RequestContextType::SHARED_WORKER, url, String(),
       integrity_metadata, kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextWorker, url, String(), integrity_metadata,
+      mojom::RequestContextType::WORKER, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImage, url, String(), integrity_metadata,
+      mojom::RequestContextType::IMAGE, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   // Content-Security-Policy-Report-Only is not supported in meta element,
@@ -634,33 +608,33 @@ TEST_F(ContentSecurityPolicyTest, RequireSRIForInMetaPresentIntegrity) {
                            kContentSecurityPolicyHeaderTypeReport,
                            kContentSecurityPolicyHeaderSourceMeta);
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextScript, url, String(), integrity_metadata,
+      mojom::RequestContextType::SCRIPT, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImport, url, String(), integrity_metadata,
+      mojom::RequestContextType::IMPORT, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextStyle, url, String(), integrity_metadata,
+      mojom::RequestContextType::STYLE, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextServiceWorker, url, String(),
+      mojom::RequestContextType::SERVICE_WORKER, url, String(),
       integrity_metadata, kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextSharedWorker, url, String(),
+      mojom::RequestContextType::SHARED_WORKER, url, String(),
       integrity_metadata, kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextWorker, url, String(), integrity_metadata,
+      mojom::RequestContextType::WORKER, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
   EXPECT_TRUE(policy->AllowRequest(
-      WebURLRequest::kRequestContextImage, url, String(), integrity_metadata,
+      mojom::RequestContextType::IMAGE, url, String(), integrity_metadata,
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
 }
@@ -1082,30 +1056,30 @@ TEST_F(ContentSecurityPolicyTest, RequestsAllowedWhenBypassingCSP) {
                         kContentSecurityPolicyHeaderSourceHTTP);
 
   EXPECT_TRUE(csp->AllowRequest(
-      WebURLRequest::kRequestContextObject, KURL(base, "https://example.com/"),
+      mojom::RequestContextType::OBJECT, KURL(base, "https://example.com/"),
       String(), IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
 
   EXPECT_FALSE(csp->AllowRequest(
-      WebURLRequest::kRequestContextObject,
-      KURL(base, "https://not-example.com/"), String(), IntegrityMetadataSet(),
-      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      mojom::RequestContextType::OBJECT, KURL(base, "https://not-example.com/"),
+      String(), IntegrityMetadataSet(), kParserInserted,
+      ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
 
   // Register "https" as bypassing CSP, which should now bypass it entirely
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy("https");
 
   EXPECT_TRUE(csp->AllowRequest(
-      WebURLRequest::kRequestContextObject, KURL(base, "https://example.com/"),
+      mojom::RequestContextType::OBJECT, KURL(base, "https://example.com/"),
       String(), IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
 
   EXPECT_TRUE(csp->AllowRequest(
-      WebURLRequest::kRequestContextObject,
-      KURL(base, "https://not-example.com/"), String(), IntegrityMetadataSet(),
-      kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
+      mojom::RequestContextType::OBJECT, KURL(base, "https://not-example.com/"),
+      String(), IntegrityMetadataSet(), kParserInserted,
+      ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
 
   SchemeRegistry::RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicy(
@@ -1122,14 +1096,14 @@ TEST_F(ContentSecurityPolicyTest, FilesystemAllowedWhenBypassingCSP) {
                         kContentSecurityPolicyHeaderSourceHTTP);
 
   EXPECT_FALSE(
-      csp->AllowRequest(WebURLRequest::kRequestContextObject,
+      csp->AllowRequest(mojom::RequestContextType::OBJECT,
                         KURL(base, "filesystem:https://example.com/file.txt"),
                         String(), IntegrityMetadataSet(), kParserInserted,
                         ResourceRequest::RedirectStatus::kNoRedirect,
                         SecurityViolationReportingPolicy::kSuppressReporting));
 
   EXPECT_FALSE(csp->AllowRequest(
-      WebURLRequest::kRequestContextObject,
+      mojom::RequestContextType::OBJECT,
       KURL(base, "filesystem:https://not-example.com/file.txt"), String(),
       IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
@@ -1139,14 +1113,14 @@ TEST_F(ContentSecurityPolicyTest, FilesystemAllowedWhenBypassingCSP) {
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy("https");
 
   EXPECT_TRUE(
-      csp->AllowRequest(WebURLRequest::kRequestContextObject,
+      csp->AllowRequest(mojom::RequestContextType::OBJECT,
                         KURL(base, "filesystem:https://example.com/file.txt"),
                         String(), IntegrityMetadataSet(), kParserInserted,
                         ResourceRequest::RedirectStatus::kNoRedirect,
                         SecurityViolationReportingPolicy::kSuppressReporting));
 
   EXPECT_TRUE(csp->AllowRequest(
-      WebURLRequest::kRequestContextObject,
+      mojom::RequestContextType::OBJECT,
       KURL(base, "filesystem:https://not-example.com/file.txt"), String(),
       IntegrityMetadataSet(), kParserInserted,
       ResourceRequest::RedirectStatus::kNoRedirect,
@@ -1167,13 +1141,13 @@ TEST_F(ContentSecurityPolicyTest, BlobAllowedWhenBypassingCSP) {
                         kContentSecurityPolicyHeaderSourceHTTP);
 
   EXPECT_FALSE(csp->AllowRequest(
-      WebURLRequest::kRequestContextObject,
+      mojom::RequestContextType::OBJECT,
       KURL(base, "blob:https://example.com/"), String(), IntegrityMetadataSet(),
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
 
   EXPECT_FALSE(
-      csp->AllowRequest(WebURLRequest::kRequestContextObject,
+      csp->AllowRequest(mojom::RequestContextType::OBJECT,
                         KURL(base, "blob:https://not-example.com/"), String(),
                         IntegrityMetadataSet(), kParserInserted,
                         ResourceRequest::RedirectStatus::kNoRedirect,
@@ -1183,13 +1157,13 @@ TEST_F(ContentSecurityPolicyTest, BlobAllowedWhenBypassingCSP) {
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy("https");
 
   EXPECT_TRUE(csp->AllowRequest(
-      WebURLRequest::kRequestContextObject,
+      mojom::RequestContextType::OBJECT,
       KURL(base, "blob:https://example.com/"), String(), IntegrityMetadataSet(),
       kParserInserted, ResourceRequest::RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy::kSuppressReporting));
 
   EXPECT_TRUE(
-      csp->AllowRequest(WebURLRequest::kRequestContextObject,
+      csp->AllowRequest(mojom::RequestContextType::OBJECT,
                         KURL(base, "blob:https://not-example.com/"), String(),
                         IntegrityMetadataSet(), kParserInserted,
                         ResourceRequest::RedirectStatus::kNoRedirect,
@@ -1381,6 +1355,95 @@ TEST_F(ContentSecurityPolicyTest, IsValidCSPAttrTest) {
       "base\r-uri http://example.com", ""));
   EXPECT_FALSE(ContentSecurityPolicy::IsValidCSPAttr(
       "\rbase-uri http://example.com", ""));
+}
+
+TEST_F(ContentSecurityPolicyTest, TrustedTypesNoDirective) {
+  csp->BindToExecutionContext(execution_context.Get());
+  csp->DidReceiveHeader("", kContentSecurityPolicyHeaderTypeEnforce,
+                        kContentSecurityPolicyHeaderSourceHTTP);
+  EXPECT_TRUE(csp->AllowTrustedTypePolicy("somepolicy"));
+}
+
+TEST_F(ContentSecurityPolicyTest, TrustedTypesSimpleDirective) {
+  csp->BindToExecutionContext(execution_context.Get());
+  csp->DidReceiveHeader("trusted-types one two three",
+                        kContentSecurityPolicyHeaderTypeEnforce,
+                        kContentSecurityPolicyHeaderSourceHTTP);
+  EXPECT_TRUE(csp->AllowTrustedTypePolicy("one"));
+  EXPECT_TRUE(csp->AllowTrustedTypePolicy("two"));
+  EXPECT_TRUE(csp->AllowTrustedTypePolicy("three"));
+  EXPECT_FALSE(csp->AllowTrustedTypePolicy("four"));
+}
+
+TEST_F(ContentSecurityPolicyTest, TrustedTypesWhitespace) {
+  csp->BindToExecutionContext(execution_context.Get());
+  csp->DidReceiveHeader("trusted-types one\ntwo\rthree",
+                        kContentSecurityPolicyHeaderTypeEnforce,
+                        kContentSecurityPolicyHeaderSourceHTTP);
+  EXPECT_TRUE(csp->AllowTrustedTypePolicy("one"));
+  EXPECT_TRUE(csp->AllowTrustedTypePolicy("two"));
+  EXPECT_TRUE(csp->AllowTrustedTypePolicy("three"));
+}
+
+TEST_F(ContentSecurityPolicyTest, TrustedTypesEmpty) {
+  csp->BindToExecutionContext(execution_context.Get());
+  csp->DidReceiveHeader("trusted-types",
+                        kContentSecurityPolicyHeaderTypeEnforce,
+                        kContentSecurityPolicyHeaderSourceHTTP);
+  EXPECT_FALSE(csp->AllowTrustedTypePolicy("somepolicy"));
+}
+
+TEST_F(ContentSecurityPolicyTest, TrustedTypesStar) {
+  csp->BindToExecutionContext(execution_context.Get());
+  csp->DidReceiveHeader("trusted-types *",
+                        kContentSecurityPolicyHeaderTypeEnforce,
+                        kContentSecurityPolicyHeaderSourceHTTP);
+  EXPECT_TRUE(csp->AllowTrustedTypePolicy("somepolicy"));
+}
+
+TEST_F(ContentSecurityPolicyTest, TrustedTypesReserved) {
+  csp->BindToExecutionContext(execution_context.Get());
+  csp->DidReceiveHeader("trusted-types one \"two\" 'three'",
+                        kContentSecurityPolicyHeaderTypeEnforce,
+                        kContentSecurityPolicyHeaderSourceHTTP);
+  EXPECT_TRUE(csp->AllowTrustedTypePolicy("one"));
+
+  // Quoted strings are considered 'reserved':
+  EXPECT_FALSE(csp->AllowTrustedTypePolicy("two"));
+  EXPECT_FALSE(csp->AllowTrustedTypePolicy("\"two\""));
+  EXPECT_FALSE(csp->AllowTrustedTypePolicy("three"));
+  EXPECT_FALSE(csp->AllowTrustedTypePolicy("'three'"));
+}
+
+TEST_F(ContentSecurityPolicyTest, DirectiveNameCaseInsensitive) {
+  KURL example_url("http://example.com");
+  KURL not_example_url("http://not-example.com");
+
+  // Directive name is case insensitive.
+  csp = ContentSecurityPolicy::Create();
+  csp->DidReceiveHeader("sCrIpt-sRc http://example.com",
+                        kContentSecurityPolicyHeaderTypeEnforce,
+                        kContentSecurityPolicyHeaderSourceHTTP);
+  csp->BindToExecutionContext(execution_context.Get());
+
+  EXPECT_TRUE(csp->AllowScriptFromSource(
+      example_url, String(), IntegrityMetadataSet(), kParserInserted));
+  EXPECT_FALSE(csp->AllowScriptFromSource(
+      not_example_url, String(), IntegrityMetadataSet(), kParserInserted));
+
+  // Duplicate directive that is in a different case pattern is
+  // correctly treated as a duplicate directive and ignored.
+  csp = ContentSecurityPolicy::Create();
+  csp->DidReceiveHeader(
+      "SCRipt-SRC http://example.com; script-src http://not-example.com;",
+      kContentSecurityPolicyHeaderTypeEnforce,
+      kContentSecurityPolicyHeaderSourceHTTP);
+  csp->BindToExecutionContext(execution_context.Get());
+
+  EXPECT_TRUE(csp->AllowScriptFromSource(
+      example_url, String(), IntegrityMetadataSet(), kParserInserted));
+  EXPECT_FALSE(csp->AllowScriptFromSource(
+      not_example_url, String(), IntegrityMetadataSet(), kParserInserted));
 }
 
 }  // namespace blink

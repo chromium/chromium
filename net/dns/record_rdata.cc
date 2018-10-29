@@ -16,6 +16,26 @@ static const size_t kSrvRecordMinimumSize = 6;
 
 RecordRdata::RecordRdata() = default;
 
+bool RecordRdata::HasValidSize(const base::StringPiece& data, uint16_t type) {
+  switch (type) {
+    case dns_protocol::kTypeSRV:
+      return data.size() >= kSrvRecordMinimumSize;
+    case dns_protocol::kTypeA:
+      return data.size() == IPAddress::kIPv4AddressSize;
+    case dns_protocol::kTypeAAAA:
+      return data.size() == IPAddress::kIPv6AddressSize;
+    case dns_protocol::kTypeCNAME:
+    case dns_protocol::kTypePTR:
+    case dns_protocol::kTypeTXT:
+    case dns_protocol::kTypeNSEC:
+    case dns_protocol::kTypeOPT:
+      return true;
+    default:
+      VLOG(1) << "Unsupported RDATA type.";
+      return false;
+  }
+}
+
 SrvRecordRdata::SrvRecordRdata() : priority_(0), weight_(0), port_(0) {
 }
 
@@ -25,7 +45,7 @@ SrvRecordRdata::~SrvRecordRdata() = default;
 std::unique_ptr<SrvRecordRdata> SrvRecordRdata::Create(
     const base::StringPiece& data,
     const DnsRecordParser& parser) {
-  if (data.size() < kSrvRecordMinimumSize)
+  if (!HasValidSize(data, kType))
     return std::unique_ptr<SrvRecordRdata>();
 
   std::unique_ptr<SrvRecordRdata> rdata(new SrvRecordRdata);
@@ -64,7 +84,7 @@ ARecordRdata::~ARecordRdata() = default;
 std::unique_ptr<ARecordRdata> ARecordRdata::Create(
     const base::StringPiece& data,
     const DnsRecordParser& parser) {
-  if (data.size() != IPAddress::kIPv4AddressSize)
+  if (!HasValidSize(data, kType))
     return std::unique_ptr<ARecordRdata>();
 
   std::unique_ptr<ARecordRdata> rdata(new ARecordRdata);
@@ -91,7 +111,7 @@ AAAARecordRdata::~AAAARecordRdata() = default;
 std::unique_ptr<AAAARecordRdata> AAAARecordRdata::Create(
     const base::StringPiece& data,
     const DnsRecordParser& parser) {
-  if (data.size() != IPAddress::kIPv6AddressSize)
+  if (!HasValidSize(data, kType))
     return std::unique_ptr<AAAARecordRdata>();
 
   std::unique_ptr<AAAARecordRdata> rdata(new AAAARecordRdata);

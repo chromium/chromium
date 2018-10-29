@@ -80,7 +80,6 @@ QuicErrorCode QuicStreamSequencerBuffer::OnStreamData(
   if (starting_offset + size > total_bytes_read_ + max_buffer_capacity_bytes_ ||
       starting_offset + size < starting_offset) {
     *error_details = "Received data beyond available range.";
-    RecordInternalErrorLocation(QUIC_STREAM_SEQUENCER_BUFFER);
     return QUIC_INTERNAL_ERROR;
   }
   if (bytes_received_.Empty() ||

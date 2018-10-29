@@ -2,7 +2,6 @@ Test that only exactly 'font-family: monospace;' causes use of fixed-width font 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS fontSizeForFamilies('monospace') is "13px"
 PASS fontSizeForFamilies('monospace, times') is "16px"
 PASS fontSizeForFamilies('times, monospace') is "16px"

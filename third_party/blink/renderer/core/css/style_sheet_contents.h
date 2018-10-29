@@ -44,6 +44,7 @@ class StyleRuleBase;
 class StyleRuleFontFace;
 class StyleRuleImport;
 class StyleRuleNamespace;
+enum class ParseSheetResult;
 
 class CORE_EXPORT StyleSheetContents
     : public GarbageCollectedFinalized<StyleSheetContents> {
@@ -72,8 +73,10 @@ class CORE_EXPORT StyleSheetContents
 
   void ParseAuthorStyleSheet(const CSSStyleSheetResource*,
                              const SecurityOrigin*);
-  void ParseString(const String&);
-  void ParseStringAtPosition(const String&, const TextPosition&);
+  ParseSheetResult ParseString(const String&, bool allow_import_rules = true);
+  ParseSheetResult ParseStringAtPosition(const String&,
+                                         const TextPosition&,
+                                         bool allow_import_rules = true);
 
   bool IsCacheableForResource() const;
   bool IsCacheableForStyleElement() const;

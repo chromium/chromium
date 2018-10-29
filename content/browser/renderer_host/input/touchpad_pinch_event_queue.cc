@@ -20,7 +20,8 @@ blink::WebMouseWheelEvent CreateSyntheticWheelFromTouchpadPinchEvent(
     blink::WebMouseWheelEvent::Phase phase,
     bool cancelable) {
   DCHECK(pinch_event.GetType() == blink::WebInputEvent::kGesturePinchUpdate ||
-         pinch_event.GetType() == blink::WebInputEvent::kGesturePinchEnd);
+         pinch_event.GetType() == blink::WebInputEvent::kGesturePinchEnd ||
+         pinch_event.GetType() == blink::WebInputEvent::kGestureDoubleTap);
   float delta_y = 0.0f;
   float wheel_ticks_y = 0.0f;
 
@@ -172,6 +173,10 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
     first_event_prevented_.reset();
     phase = blink::WebMouseWheelEvent::kPhaseEnded;
     cancelable = false;
+  } else if (pinch_event_awaiting_ack_->event.GetType() ==
+             blink::WebInputEvent::kGestureDoubleTap) {
+    phase = blink::WebMouseWheelEvent::kPhaseNone;
+    cancelable = true;
   } else {
     DCHECK_EQ(pinch_event_awaiting_ack_->event.GetType(),
               blink::WebInputEvent::kGesturePinchUpdate);
@@ -187,7 +192,6 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
     }
   }
 
-  DCHECK_NE(phase, blink::WebMouseWheelEvent::kPhaseNone);
   const MouseWheelEventWithLatencyInfo synthetic_wheel(
       CreateSyntheticWheelFromTouchpadPinchEvent(
           pinch_event_awaiting_ack_->event, phase, cancelable),

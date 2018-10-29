@@ -241,7 +241,7 @@ std::unique_ptr<base::DictionaryValue> PrefService::GetPreferenceValues(
 const PrefService::Preference* PrefService::FindPreference(
     const std::string& pref_name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PreferenceMap::iterator it = prefs_map_.find(pref_name);
+  auto it = prefs_map_.find(pref_name);
   if (it != prefs_map_.end())
     return &(it->second);
   const base::Value* default_value = nullptr;

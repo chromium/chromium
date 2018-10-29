@@ -201,42 +201,47 @@ def main(argv):
   if not symbol.CHROME_SYMBOLS_DIR:
     constants.CheckOutputDirectory()
 
-  if not arguments or arguments[0] == "-":
-    print "Reading native crash info from stdin"
-    f = sys.stdin
-  else:
-    print "Searching for native crashes in: " + os.path.realpath(arguments[0])
-    f = open(arguments[0], "r")
-
-  lines = f.readlines()
-  f.close()
+  print ("Reading Android symbols from: "
+         + os.path.normpath(symbol.SYMBOLS_DIR))
+  chrome_search_path = symbol.GetLibrarySearchPaths()
+  print ("Searching for Chrome symbols from within: "
+         + ':'.join((os.path.normpath(d) for d in chrome_search_path)))
 
   rootdir = None
   if zip_arg:
     rootdir, symbol.SYMBOLS_DIR = UnzipSymbols(zip_arg)
 
-  version = stack_libs.GetTargetAndroidVersionNumber(lines)
-  if version is None:
-    print ("Unknown Android release, "
-           "consider passing --packed-lib.")
-  elif version < _ANDROID_M_MAJOR_VERSION and not packed_libs:
-    print ("Pre-M Android release detected, "
-           "but --packed-lib not specified. Stack symbolization may fail.")
-
-  if (version is None or version < _ANDROID_M_MAJOR_VERSION) and packed_libs:
-    load_vaddrs = stack_libs.GetLoadVaddrs(stripped_libs=packed_libs)
+  if not arguments or arguments[0] == "-":
+    print "Reading native crash info from stdin"
+    with llvm_symbolizer.LLVMSymbolizer() as symbolizer:
+      stack_core.StreamingConvertTrace(sys.stdin, {}, more_info,
+                                       fallback_monochrome, arch_defined,
+                                       symbolizer)
   else:
-    load_vaddrs = {}
+    print "Searching for native crashes in: " + os.path.realpath(arguments[0])
+    f = open(arguments[0], "r")
 
-  print ("Reading Android symbols from: "
-         + os.path.normpath(symbol.SYMBOLS_DIR))
-  chrome_search_path = symbol.GetLibrarySearchPaths()
+    lines = f.readlines()
+    f.close()
 
-  with llvm_symbolizer.LLVMSymbolizer() as symbolizer:
-    print ("Searching for Chrome symbols from within: "
-           + ':'.join((os.path.normpath(d) for d in chrome_search_path)))
-    stack_core.ConvertTrace(lines, load_vaddrs, more_info, fallback_monochrome,
-                            arch_defined, symbolizer)
+    version = stack_libs.GetTargetAndroidVersionNumber(lines)
+    if version is None:
+      print ("Unknown Android release, "
+             "consider passing --packed-lib.")
+    elif version < _ANDROID_M_MAJOR_VERSION and not packed_libs:
+      print ("Pre-M Android release detected, "
+             "but --packed-lib not specified. Stack symbolization may fail.")
+
+    if (version is None or version < _ANDROID_M_MAJOR_VERSION) and packed_libs:
+      load_vaddrs = stack_libs.GetLoadVaddrs(stripped_libs=packed_libs)
+    else:
+      load_vaddrs = {}
+
+    with llvm_symbolizer.LLVMSymbolizer() as symbolizer:
+      print ("Searching for Chrome symbols from within: "
+             + ':'.join((os.path.normpath(d) for d in chrome_search_path)))
+      stack_core.ConvertTrace(lines, load_vaddrs, more_info, fallback_monochrome,
+                              arch_defined, symbolizer)
 
   if rootdir:
     # be a good citizen and clean up...os.rmdir and os.removedirs() don't work

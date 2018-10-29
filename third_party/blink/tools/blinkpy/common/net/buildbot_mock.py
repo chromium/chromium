@@ -37,6 +37,7 @@ class MockBuildBot(BuildBot):
         self._canned_results = {}
         self._canned_retry_summary_json = {}
         self.fetched_builds = []
+        self._layout_test_step_name = 'webkit_layout_tests (with patch)'
 
     def set_results(self, build, results):
         self._canned_results[build] = results
@@ -50,3 +51,9 @@ class MockBuildBot(BuildBot):
 
     def fetch_retry_summary_json(self, build):
         return self._canned_retry_summary_json.get(build)
+
+    def set_layout_test_step_name(self, name):
+        self._layout_test_step_name = name
+
+    def get_layout_test_step_name(self, build):
+        return self._layout_test_step_name

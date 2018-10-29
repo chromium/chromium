@@ -4,6 +4,7 @@
 
 #include "components/leveldb_proto/leveldb_database.h"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -178,6 +179,34 @@ bool LevelDB::LoadWithFilter(const KeyFilter& filter,
                              std::vector<std::string>* entries,
                              const leveldb::ReadOptions& options,
                              const std::string& target_prefix) {
+  std::map<std::string, std::string> keys_entries;
+  bool result = LoadKeysAndEntriesWithFilter(filter, &keys_entries, options,
+                                             target_prefix);
+  if (!result)
+    return false;
+
+  for (const auto& pair : keys_entries)
+    entries->push_back(pair.second);
+  return true;
+}
+
+bool LevelDB::LoadKeysAndEntries(
+    std::map<std::string, std::string>* keys_entries) {
+  return LoadKeysAndEntriesWithFilter(KeyFilter(), keys_entries);
+}
+
+bool LevelDB::LoadKeysAndEntriesWithFilter(
+    const KeyFilter& filter,
+    std::map<std::string, std::string>* keys_entries) {
+  return LoadKeysAndEntriesWithFilter(filter, keys_entries,
+                                      leveldb::ReadOptions(), std::string());
+}
+
+bool LevelDB::LoadKeysAndEntriesWithFilter(
+    const KeyFilter& filter,
+    std::map<std::string, std::string>* keys_entries,
+    const leveldb::ReadOptions& options,
+    const std::string& target_prefix) {
   DFAKE_SCOPED_LOCK(thread_checker_);
   if (!db_)
     return false;
@@ -187,30 +216,30 @@ bool LevelDB::LoadWithFilter(const KeyFilter& filter,
   for (db_iterator->Seek(target);
        db_iterator->Valid() && db_iterator->key().starts_with(target);
        db_iterator->Next()) {
-    if (!filter.is_null()) {
-      leveldb::Slice key_slice = db_iterator->key();
-      if (!filter.Run(std::string(key_slice.data(), key_slice.size())))
-        continue;
+    leveldb::Slice key_slice = db_iterator->key();
+    std::string key_slice_str(key_slice.data(), key_slice.size());
+    if (!filter.is_null() && !filter.Run(key_slice_str)) {
+      continue;
     }
+
     leveldb::Slice value_slice = db_iterator->value();
-    std::string entry(value_slice.data(), value_slice.size());
-    entries->push_back(entry);
+    keys_entries->insert(std::make_pair(
+        key_slice_str, std::string(value_slice.data(), value_slice.size())));
   }
   return true;
 }
 
 bool LevelDB::LoadKeys(std::vector<std::string>* keys) {
-  DFAKE_SCOPED_LOCK(thread_checker_);
-  if (!db_)
-    return false;
-
   leveldb::ReadOptions options;
   options.fill_cache = false;
-  std::unique_ptr<leveldb::Iterator> db_iterator(db_->NewIterator(options));
-  for (db_iterator->SeekToFirst(); db_iterator->Valid(); db_iterator->Next()) {
-    leveldb::Slice key_slice = db_iterator->key();
-    keys->push_back(std::string(key_slice.data(), key_slice.size()));
-  }
+  std::map<std::string, std::string> keys_entries;
+  bool result = LoadKeysAndEntriesWithFilter(KeyFilter(), &keys_entries,
+                                             options, std::string());
+  if (!result)
+    return false;
+
+  for (const auto& pair : keys_entries)
+    keys->push_back(pair.first);
   return true;
 }
 

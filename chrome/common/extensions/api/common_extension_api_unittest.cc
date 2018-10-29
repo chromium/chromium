@@ -429,8 +429,7 @@ scoped_refptr<Extension> CreateExtensionWithPermissions(
   manifest.SetInteger("manifest_version", 2);
   {
     std::unique_ptr<base::ListValue> permissions_list(new base::ListValue());
-    for (std::set<std::string>::const_iterator i = permissions.begin();
-        i != permissions.end(); ++i) {
+    for (auto i = permissions.begin(); i != permissions.end(); ++i) {
       permissions_list->AppendString(*i);
     }
     manifest.Set("permissions", std::move(permissions_list));
@@ -542,8 +541,7 @@ scoped_refptr<Extension> CreatePackagedAppWithPermissions(
   values.Set(manifest_keys::kApp, std::move(app));
   {
     auto permissions_list = std::make_unique<base::ListValue>();
-    for (std::set<std::string>::const_iterator i = permissions.begin();
-        i != permissions.end(); ++i) {
+    for (auto i = permissions.begin(); i != permissions.end(); ++i) {
       permissions_list->AppendString(*i);
     }
     values.Set("permissions", std::move(permissions_list));
@@ -916,7 +914,7 @@ TEST(ExtensionAPITest, NoPermissions) {
 
   std::unique_ptr<ExtensionAPI> extension_api(
       ExtensionAPI::CreateWithDefaultConfiguration());
-  scoped_refptr<Extension> extension = ExtensionBuilder("Test").Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
 
   for (size_t i = 0; i < arraysize(kTests); ++i) {
     EXPECT_EQ(kTests[i].expect_success,
@@ -935,7 +933,7 @@ TEST(ExtensionAPITest, ManifestKeys) {
   std::unique_ptr<ExtensionAPI> extension_api(
       ExtensionAPI::CreateWithDefaultConfiguration());
 
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test")
           .SetAction(ExtensionBuilder::ActionType::BROWSER_ACTION)
           .Build();

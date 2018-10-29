@@ -126,7 +126,11 @@ interface AudioContext : BaseAudioContext
     getter baseLatency
     method close
     method constructor
+    method createMediaElementSource
+    method createMediaStreamDestination
+    method createMediaStreamSource
     method getOutputTimestamp
+    method resume
     method suspend
 interface AudioDestinationNode : AudioNode
     attribute @@toStringTag
@@ -251,9 +255,6 @@ interface BaseAudioContext : EventTarget
     method createDynamicsCompressor
     method createGain
     method createIIRFilter
-    method createMediaElementSource
-    method createMediaStreamDestination
-    method createMediaStreamSource
     method createOscillator
     method createPanner
     method createPeriodicWave
@@ -261,7 +262,6 @@ interface BaseAudioContext : EventTarget
     method createStereoPanner
     method createWaveShaper
     method decodeAudioData
-    method resume
     setter onstatechange
 interface BatteryManager : EventTarget
     attribute @@toStringTag
@@ -1524,13 +1524,9 @@ interface Element : Node
     getter onbeforecopy
     getter onbeforecut
     getter onbeforepaste
-    getter oncopy
-    getter oncut
     getter onfullscreenchange
     getter onfullscreenerror
-    getter onpaste
     getter onsearch
-    getter onselectstart
     getter onwebkitfullscreenchange
     getter onwebkitfullscreenerror
     getter outerHTML
@@ -1603,19 +1599,19 @@ interface Element : Node
     setter onbeforecopy
     setter onbeforecut
     setter onbeforepaste
-    setter oncopy
-    setter oncut
     setter onfullscreenchange
     setter onfullscreenerror
-    setter onpaste
     setter onsearch
-    setter onselectstart
     setter onwebkitfullscreenchange
     setter onwebkitfullscreenerror
     setter outerHTML
     setter scrollLeft
     setter scrollTop
     setter slot
+interface EnterPictureInPictureEvent : Event
+    attribute @@toStringTag
+    getter pictureInPictureWindow
+    method constructor
 interface ErrorEvent : Event
     attribute @@toStringTag
     getter colno
@@ -2105,7 +2101,9 @@ interface HTMLElement : Element
     getter onclick
     getter onclose
     getter oncontextmenu
+    getter oncopy
     getter oncuechange
+    getter oncut
     getter ondblclick
     getter ondrag
     getter ondragend
@@ -2138,6 +2136,7 @@ interface HTMLElement : Element
     getter onmouseover
     getter onmouseup
     getter onmousewheel
+    getter onpaste
     getter onpause
     getter onplay
     getter onplaying
@@ -2157,6 +2156,8 @@ interface HTMLElement : Element
     getter onseeked
     getter onseeking
     getter onselect
+    getter onselectionchange
+    getter onselectstart
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -2199,7 +2200,9 @@ interface HTMLElement : Element
     setter onclick
     setter onclose
     setter oncontextmenu
+    setter oncopy
     setter oncuechange
+    setter oncut
     setter ondblclick
     setter ondrag
     setter ondragend
@@ -2232,6 +2235,7 @@ interface HTMLElement : Element
     setter onmouseover
     setter onmouseup
     setter onmousewheel
+    setter onpaste
     setter onpause
     setter onplay
     setter onplaying
@@ -2251,6 +2255,8 @@ interface HTMLElement : Element
     setter onseeked
     setter onseeking
     setter onselect
+    setter onselectionchange
+    setter onselectstart
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -4219,6 +4225,7 @@ interface OfflineAudioContext : BaseAudioContext
     getter length
     getter oncomplete
     method constructor
+    method resume
     method startRendering
     method suspend
     setter oncomplete
@@ -5225,7 +5232,9 @@ interface SVGElement : Element
     getter onclick
     getter onclose
     getter oncontextmenu
+    getter oncopy
     getter oncuechange
+    getter oncut
     getter ondblclick
     getter ondrag
     getter ondragend
@@ -5258,6 +5267,7 @@ interface SVGElement : Element
     getter onmouseover
     getter onmouseup
     getter onmousewheel
+    getter onpaste
     getter onpause
     getter onplay
     getter onplaying
@@ -5277,6 +5287,8 @@ interface SVGElement : Element
     getter onseeked
     getter onseeking
     getter onselect
+    getter onselectionchange
+    getter onselectstart
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -5307,7 +5319,9 @@ interface SVGElement : Element
     setter onclick
     setter onclose
     setter oncontextmenu
+    setter oncopy
     setter oncuechange
+    setter oncut
     setter ondblclick
     setter ondrag
     setter ondragend
@@ -5340,6 +5354,7 @@ interface SVGElement : Element
     setter onmouseover
     setter onmouseup
     setter onmousewheel
+    setter onpaste
     setter onpause
     setter onplay
     setter onplaying
@@ -5359,6 +5374,8 @@ interface SVGElement : Element
     setter onseeked
     setter onseeking
     setter onselect
+    setter onselectionchange
+    setter onselectstart
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -6331,6 +6348,10 @@ interface SourceBufferList : EventTarget
     method constructor
     setter onaddsourcebuffer
     setter onremovesourcebuffer
+interface SpeechSynthesisErrorEvent : SpeechSynthesisEvent
+    attribute @@toStringTag
+    getter error
+    method constructor
 interface SpeechSynthesisEvent : Event
     attribute @@toStringTag
     getter charIndex
@@ -8115,12 +8136,6 @@ interface WebGLUniformLocation
 interface WebGLVertexArrayObject
     attribute @@toStringTag
     method constructor
-interface WebKitAnimationEvent : Event
-    attribute @@toStringTag
-    getter animationName
-    getter elapsedTime
-    getter pseudoElement
-    method constructor
 interface WebKitCSSMatrix : DOMMatrixReadOnly
     attribute @@toStringTag
     getter a
@@ -8641,6 +8656,8 @@ interface webkitURL
     getter onseeked
     getter onseeking
     getter onselect
+    getter onselectionchange
+    getter onselectstart
     getter onstalled
     getter onstorage
     getter onsubmit
@@ -8711,6 +8728,7 @@ interface webkitURL
     method postMessage
     method print
     method prompt
+    method queueMicrotask
     method releaseEvents
     method requestAnimationFrame
     method requestIdleCallback
@@ -8822,6 +8840,8 @@ interface webkitURL
     setter onseeked
     setter onseeking
     setter onselect
+    setter onselectionchange
+    setter onselectstart
     setter onstalled
     setter onstorage
     setter onsubmit

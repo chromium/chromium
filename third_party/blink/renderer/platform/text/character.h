@@ -78,12 +78,12 @@ class PLATFORM_EXPORT Character {
   }
 
   static unsigned ExpansionOpportunityCount(const LChar*,
-                                            size_t length,
+                                            unsigned length,
                                             TextDirection,
                                             bool& is_after_expansion,
                                             const TextJustify);
   static unsigned ExpansionOpportunityCount(const UChar*,
-                                            size_t length,
+                                            unsigned length,
                                             TextDirection,
                                             bool& is_after_expansion,
                                             const TextJustify);

@@ -7,20 +7,13 @@
 namespace ui {
 namespace test {
 
-MaterialDesignControllerTestAPI::MaterialDesignControllerTestAPI(
-    MaterialDesignController::Mode mode)
-    : previous_mode_(MaterialDesignController::mode_),
-      previous_initialized_(MaterialDesignController::is_mode_initialized_) {
-  MaterialDesignController::SetMode(mode);
+MaterialDesignControllerTestAPI::MaterialDesignControllerTestAPI(bool touch_ui)
+    : previous_touch_ui_(MaterialDesignController::touch_ui_) {
+  MaterialDesignController::SetTouchUi(touch_ui);
 }
 
 MaterialDesignControllerTestAPI::~MaterialDesignControllerTestAPI() {
-  MaterialDesignController::is_mode_initialized_ = previous_initialized_;
-  MaterialDesignController::mode_ = previous_mode_;
-}
-
-void MaterialDesignControllerTestAPI::Uninitialize() {
-  MaterialDesignController::Uninitialize();
+  MaterialDesignController::touch_ui_ = previous_touch_ui_;
 }
 
 }  // namespace test

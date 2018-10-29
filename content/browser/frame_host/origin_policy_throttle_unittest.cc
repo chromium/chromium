@@ -135,7 +135,8 @@ TEST_P(OriginPolicyThrottleTest, RunRequestEndToEnd) {
             nav_handle_
                 ->CallWillProcessResponseForTesting(
                     main_rfh(),
-                    net::HttpUtil::AssembleRawHeaders(headers, strlen(headers)))
+                    net::HttpUtil::AssembleRawHeaders(headers, strlen(headers)),
+                    false, net::ProxyServer::Direct())
                 .action());
   EXPECT_EQ(NavigationHandleImpl::DEFERRING_RESPONSE,
             nav_handle_->state_for_testing());

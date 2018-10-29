@@ -252,7 +252,7 @@ int32_t PepperURLLoaderHost::InternalOnHostMsgOpen(
     return PP_ERROR_FAILED;
   }
 
-  web_request.SetRequestContext(WebURLRequest::kRequestContextPlugin);
+  web_request.SetRequestContext(blink::mojom::RequestContextType::PLUGIN);
   web_request.SetPluginChildID(renderer_ppapi_host_->GetPluginChildId());
 
   // Requests from plug-ins must skip service workers, see the comment in

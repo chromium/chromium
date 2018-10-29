@@ -16,7 +16,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/extensions/image_writer/image_writer_util_mac.h"
 
 namespace extensions {
@@ -24,7 +24,7 @@ namespace extensions {
 // static
 scoped_refptr<StorageDeviceList>
 RemovableStorageProvider::PopulateDeviceList() {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   // Match only writable whole-disks.
   CFMutableDictionaryRef matching = IOServiceMatching(kIOMediaClass);
   CFDictionaryAddValue(matching, CFSTR(kIOMediaWholeKey), kCFBooleanTrue);

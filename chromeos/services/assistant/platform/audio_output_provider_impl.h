@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_OUTPUT_PROVIDER_IMPL_H_
 #define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_OUTPUT_PROVIDER_IMPL_H_
 
+#include <memory>
+#include <vector>
+
 #include "ash/public/interfaces/assistant_volume_control.mojom.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
@@ -43,11 +46,17 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
   void OnMuteStateChanged(bool mute) override;
 
  private:
+  void SetSystemVolumeOnMainThread(float new_volume, bool user_initiated);
+  void SetSystemMutedOnMainThread(bool muted);
+
   ash::mojom::AssistantVolumeControlPtr volume_control_ptr_;
   mojo::Binding<ash::mojom::VolumeObserver> binding_;
+  scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
 
   int volume_ = 100;
   bool mute_ = false;
+
+  base::WeakPtrFactory<VolumeControlImpl> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(VolumeControlImpl);
 };

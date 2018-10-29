@@ -36,13 +36,14 @@ FileWriterDelegate::FileWriterDelegate(
       bytes_written_(0),
       bytes_read_(0),
       io_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(kReadBufSize)),
+      data_pipe_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       weak_factory_(this) {}
 
 FileWriterDelegate::~FileWriterDelegate() = default;
 
 void FileWriterDelegate::Start(std::unique_ptr<BlobReader> blob_reader,
-                               const DelegateWriteCallback& write_callback) {
-  write_callback_ = write_callback;
+                               DelegateWriteCallback write_callback) {
+  write_callback_ = std::move(write_callback);
 
   if (!blob_reader) {
     OnReadError(base::File::FILE_ERROR_FAILED);
@@ -66,14 +67,34 @@ void FileWriterDelegate::Start(std::unique_ptr<BlobReader> blob_reader,
   NOTREACHED();
 }
 
+void FileWriterDelegate::Start(mojo::ScopedDataPipeConsumerHandle data_pipe,
+                               DelegateWriteCallback write_callback) {
+  write_callback_ = std::move(write_callback);
+
+  if (!data_pipe) {
+    OnReadError(base::File::FILE_ERROR_FAILED);
+    return;
+  }
+
+  data_pipe_ = std::move(data_pipe);
+  data_pipe_watcher_.Watch(
+      data_pipe_.get(),
+      MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+      base::BindRepeating(&FileWriterDelegate::OnDataPipeReady,
+                          weak_factory_.GetWeakPtr()));
+  data_pipe_watcher_.ArmOrNotify();
+}
+
 void FileWriterDelegate::Cancel() {
   // Destroy the reader and invalidate weak ptrs to prevent pending callbacks.
   blob_reader_ = nullptr;
+  data_pipe_watcher_.Cancel();
+  data_pipe_.reset();
   weak_factory_.InvalidateWeakPtrs();
 
-  const int status = file_stream_writer_->Cancel(
-      base::Bind(&FileWriterDelegate::OnWriteCancelled,
-                 weak_factory_.GetWeakPtr()));
+  const int status = file_stream_writer_->Cancel(base::BindOnce(
+      &FileWriterDelegate::OnWriteCancelled, weak_factory_.GetWeakPtr()));
   // Return true to finish immediately if we have no pending writes.
   // Otherwise we'll do the final cleanup in the Cancel callback.
   if (status != net::ERR_IO_PENDING) {
@@ -104,24 +125,49 @@ void FileWriterDelegate::OnReadCompleted(int bytes_read) {
 
 void FileWriterDelegate::Read() {
   bytes_written_ = 0;
-  BlobReader::Status status =
-      blob_reader_->Read(io_buffer_.get(), io_buffer_->size(), &bytes_read_,
-                         base::BindOnce(&FileWriterDelegate::OnReadCompleted,
-                                        weak_factory_.GetWeakPtr()));
-  switch (status) {
-    case BlobReader::Status::NET_ERROR:
-      OnReadCompleted(blob_reader_->net_error());
-      return;
-    case BlobReader::Status::DONE:
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&FileWriterDelegate::OnReadCompleted,
-                                    weak_factory_.GetWeakPtr(), bytes_read_));
-      return;
-    case BlobReader::Status::IO_PENDING:
-      // Do nothing.
-      return;
+  if (blob_reader_) {
+    BlobReader::Status status =
+        blob_reader_->Read(io_buffer_.get(), io_buffer_->size(), &bytes_read_,
+                           base::BindOnce(&FileWriterDelegate::OnReadCompleted,
+                                          weak_factory_.GetWeakPtr()));
+    switch (status) {
+      case BlobReader::Status::NET_ERROR:
+        OnReadCompleted(blob_reader_->net_error());
+        return;
+      case BlobReader::Status::DONE:
+        base::ThreadTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE, base::BindOnce(&FileWriterDelegate::OnReadCompleted,
+                                      weak_factory_.GetWeakPtr(), bytes_read_));
+        return;
+      case BlobReader::Status::IO_PENDING:
+        // Do nothing.
+        return;
+    }
+    NOTREACHED();
+    return;
   }
+
+  DCHECK(data_pipe_);
+  uint32_t num_bytes = io_buffer_->size();
+  MojoResult result = data_pipe_->ReadData(io_buffer_->data(), &num_bytes,
+                                           MOJO_READ_DATA_FLAG_NONE);
+  if (result == MOJO_RESULT_SHOULD_WAIT) {
+    data_pipe_watcher_.ArmOrNotify();
+    return;
+  }
+  if (result == MOJO_RESULT_OK) {
+    bytes_read_ = num_bytes;
+    OnReadCompleted(bytes_read_);
+    return;
+  }
+  if (result == MOJO_RESULT_FAILED_PRECONDITION) {
+    // Pipe closed, done reading.
+    OnReadCompleted(0);
+    return;
+  }
+  // Some unknown error, this shouldn't happen.
   NOTREACHED();
+  OnReadError(base::File::FILE_ERROR_FAILED);
 }
 
 void FileWriterDelegate::OnDataReceived(int bytes_read) {
@@ -141,11 +187,10 @@ void FileWriterDelegate::OnDataReceived(int bytes_read) {
 void FileWriterDelegate::Write() {
   writing_started_ = true;
   int64_t bytes_to_write = bytes_read_ - bytes_written_;
-  int write_response =
-      file_stream_writer_->Write(cursor_.get(),
-                                 static_cast<int>(bytes_to_write),
-                                 base::Bind(&FileWriterDelegate::OnDataWritten,
-                                            weak_factory_.GetWeakPtr()));
+  int write_response = file_stream_writer_->Write(
+      cursor_.get(), static_cast<int>(bytes_to_write),
+      base::BindOnce(&FileWriterDelegate::OnDataWritten,
+                     weak_factory_.GetWeakPtr()));
   if (write_response > 0) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&FileWriterDelegate::OnDataWritten,
@@ -192,6 +237,8 @@ void FileWriterDelegate::OnReadError(base::File::Error error) {
 
   // Destroy the reader and invalidate weak ptrs to prevent pending callbacks.
   blob_reader_.reset();
+  data_pipe_watcher_.Cancel();
+  data_pipe_.reset();
   weak_factory_.InvalidateWeakPtrs();
 
   if (writing_started_)
@@ -203,6 +250,8 @@ void FileWriterDelegate::OnReadError(base::File::Error error) {
 void FileWriterDelegate::OnWriteError(base::File::Error error) {
   // Destroy the reader and invalidate weak ptrs to prevent pending callbacks.
   blob_reader_.reset();
+  data_pipe_watcher_.Cancel();
+  data_pipe_.reset();
   weak_factory_.InvalidateWeakPtrs();
 
   // Errors when writing are not recoverable, so don't bother flushing.
@@ -251,8 +300,8 @@ void FileWriterDelegate::MaybeFlushForCompletion(
   DCHECK(flush_policy_ == FlushPolicy::FLUSH_ON_COMPLETION);
 
   int flush_error = file_stream_writer_->Flush(
-      base::Bind(&FileWriterDelegate::OnFlushed, weak_factory_.GetWeakPtr(),
-                 error, bytes_written, progress_status));
+      base::BindOnce(&FileWriterDelegate::OnFlushed, weak_factory_.GetWeakPtr(),
+                     error, bytes_written, progress_status));
   if (flush_error != net::ERR_IO_PENDING)
     OnFlushed(error, bytes_written, progress_status, flush_error);
 }
@@ -268,6 +317,12 @@ void FileWriterDelegate::OnFlushed(base::File::Error error,
     progress_status = GetCompletionStatusOnError();
   }
   write_callback_.Run(error, bytes_written, progress_status);
+}
+
+void FileWriterDelegate::OnDataPipeReady(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  Read();
 }
 
 }  // namespace storage

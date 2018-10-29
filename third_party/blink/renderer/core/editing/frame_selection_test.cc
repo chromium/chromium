@@ -1075,4 +1075,20 @@ TEST_F(FrameSelectionTest, SelectionBounds) {
             frame_view->FrameToDocument(Selection().AbsoluteUnclippedBounds()));
 }
 
+TEST_F(FrameSelectionTest, SelectionContainsBidiBoundary) {
+  InsertStyleElement("div{font:10px/10px Ahem}");
+  // Rendered as abcFED
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div dir=ltr>^abc<bdo dir=trl>DEF|</bdo></div>"),
+      SetSelectionOptions());
+
+  // Check the right half of 'c'
+  const LayoutPoint c_right(35, 13);
+  EXPECT_TRUE(Selection().Contains(c_right));
+
+  // Check the left half of "F"
+  const LayoutPoint f_left(45, 13);
+  EXPECT_TRUE(Selection().Contains(f_left));
+}
+
 }  // namespace blink

@@ -62,6 +62,7 @@ Polymer({
       computed: 'computeRecentDestinationList_(' +
           'destinationStore, recentDestinations, recentDestinations.*, ' +
           'userInfo, destinations_.*)',
+      observer: 'onRecentDestinationListChange_',
     },
 
     /** @private {?RegExp} */
@@ -70,11 +71,6 @@ Polymer({
       value: null,
     },
   },
-
-  observers: [
-    'adjustHeight_(invitation_, showCloudPrintPromo, userInfo.loggedIn, ' +
-        'loadingDestinations_)',
-  ],
 
   listeners: {
     'keydown': 'onKeydown_',
@@ -126,30 +122,6 @@ Polymer({
   },
 
   /** @private */
-  adjustHeight_: function() {
-    // Baseline size of recent list + buttons + title + search box + 2px extra
-    let px = 328;
-    let lines = 2;
-    if (this.invitation_) {
-      // Invitation promo size
-      px += 56;
-      lines += 4;
-    }
-    // Icon size + padding
-    if (this.showCloudPrintPromo)
-      px += 56;
-    // Dropdown menu size + margin
-    if (this.userInfo && this.userInfo.loggedIn)
-      px += 44;
-    // Spinner extra height
-    if (this.loadingDestinations_)
-      px += 2;
-
-    // Compute sizing
-    this.$.printList.style.height = `calc(100vh - ${px}px - ${lines}rem)`;
-  },
-
-  /** @private */
   onDestinationStoreSet_: function() {
     assert(this.destinations_.length == 0);
     const destinationStore = assert(this.destinationStore);
@@ -157,6 +129,10 @@ Polymer({
         destinationStore,
         print_preview.DestinationStore.EventType.DESTINATIONS_INSERTED,
         this.updateDestinations_.bind(this));
+    this.tracker_.add(
+        destinationStore,
+        print_preview.DestinationStore.EventType.DESTINATIONS_RESET,
+        () => this.destinations_ = []);
     this.tracker_.add(
         destinationStore,
         print_preview.DestinationStore.EventType.DESTINATION_SEARCH_DONE,
@@ -229,6 +205,13 @@ Polymer({
   },
 
   /** @private */
+  onRecentDestinationListChange_: function() {
+    const numRecent = Math.max(2, this.recentDestinationList_.length);
+    this.$.recentList.style.maxHeight = `calc(${numRecent} *
+            var(--destination-item-height) + 10px + 20 / 13 * 1rem)`;
+  },
+
+  /** @private */
   onCloseOrCancel_: function() {
     if (this.searchQuery_)
       this.$.searchBox.setValue('');
@@ -269,7 +252,7 @@ Polymer({
       this.$.provisionalResolver.resolveDestination(destination)
           .then(this.selectDestination_.bind(this))
           .catch(function() {
-            console.error(
+            console.warn(
                 'Failed to resolve provisional destination: ' + destination.id);
           })
           .then(() => {

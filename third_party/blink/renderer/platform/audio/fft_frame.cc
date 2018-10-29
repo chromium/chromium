@@ -265,8 +265,8 @@ void FFTFrame::Multiply(const FFTFrame& frame) {
   float real0 = real_p1[0];
   float imag0 = imag_p1[0];
 
-  VectorMath::Zvmul(real_p1, imag_p1, real_p2, imag_p2, real_p1, imag_p1,
-                    half_size);
+  vector_math::Zvmul(real_p1, imag_p1, real_p2, imag_p2, real_p1, imag_p1,
+                     half_size);
 
   // Multiply the packed DC/nyquist component
   real_p1[0] = real0 * real_p2[0];

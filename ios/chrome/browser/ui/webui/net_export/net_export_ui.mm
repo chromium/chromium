@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/grit/components_resources.h"
-#include "components/net_log/chrome_net_log.h"
 #include "components/net_log/net_export_file_writer.h"
 #include "components/net_log/net_export_ui_constants.h"
 #include "ios/chrome/browser/application_context.h"
@@ -79,8 +78,8 @@ class NetExportMessageHandler
   void NotifyUIWithState(
       std::unique_ptr<base::DictionaryValue> file_writer_state);
 
-  // Cache of GetApplicationContex()->GetNetLog()->net_export_file_writer().
-  // This is owned by ChromeNetLog which is owned by BrowserProcessImpl.
+  // Cache of GetApplicationContext()->GetNetExportFileWriter().
+  // This is owned by the ApplicationContext.
   net_log::NetExportFileWriter* file_writer_;
 
   ScopedObserver<net_log::NetExportFileWriter,
@@ -93,8 +92,7 @@ class NetExportMessageHandler
 };
 
 NetExportMessageHandler::NetExportMessageHandler()
-    : file_writer_(
-          GetApplicationContext()->GetNetLog()->net_export_file_writer()),
+    : file_writer_(GetApplicationContext()->GetNetExportFileWriter()),
       state_observer_manager_(this),
       weak_ptr_factory_(this) {
   file_writer_->Initialize();

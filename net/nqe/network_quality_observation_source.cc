@@ -18,7 +18,8 @@ static constexpr const char* kObservationSourceMapping[] = {
     "HttpPlatform",
     "HttpExternalEstimate",
     "TransportCachedEstimate",
-    "TransportPlatform"};
+    "TransportPlatform",
+    "H2Pings"};
 
 static_assert(static_cast<size_t>(NETWORK_QUALITY_OBSERVATION_SOURCE_MAX) ==
                   arraysize(kObservationSourceMapping),

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+ Copyright 2018 The Chromium Authors. All rights reserved.
+ Use of this source code is governed by a BSD-style license that can be
+ found in the LICENSE file.
+-->
+
+<head>
+  <title>Super Size Tiger View</title>
+  <script src="start-worker.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4285f4">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,500" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="options.css">
+  <link rel="icon" href="favicon.ico" sizes="16x16 32x32 256x256" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">
+  <script defer src="shared.js"></script>
+  <script defer src="state.js"></script>
+  <script defer src="infocard-ui.js"></script>
+  <script defer src="tree-ui.js"></script>
+  <script defer async>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+      .catch(() => console.warn('ServiceWorker not loaded.'));
+}
+  </script>
+</head>
+
+<body>
+  <div class="scrim toggle-options" hidden></div>
+  <!-- App Toolbar -->
+  <header class="appbar">
+    <div class="appbar-inner">
+      <h1 class="headline">Super Size Tiger View</h1>
+      <input type="file" name="upload" id="upload" accept=".ndjson" >
+      <label for="upload" class="text-button filled-button with-icon">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#fff">
+            <!--
+            Icons from https://material.io/tools/icons/?style=outline
+            with some custom icons designed in the same style
+            -->
+            <path d="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm0 2h7v5h5v11H6V4zm6 7l-4 4h3v4h2v-4h3l-4-4z" />
+        </svg>
+        <span class="label-text">Upload data</span>
+      </label>
+      <a href="https://chromium.googlesource.com/chromium/src/+/master/tools/binary_size/html_report_faq.md" class="icon-button"
+          title="FAQ" id="faq" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368">
+            <path d="M11,18h2v-2h-2V18z M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8
+                    s3.59-8,8-8s8,3.59,8,8S16.41,20,12,20z M12,6c-2.21,0-4,1.79-4,4h2c0-1.1,0.9-2,2-2s2,0.9,2,2c0,2-3,1.75-3,5h2c0-2.25,3-2.5,3-5
+                    C16,7.79,14.21,6,12,6z" />
+        </svg>
+      </a>
+      <button type="button" class="icon-button toggle-options" title="Settings">
+        <svg class="settings" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368">
+          <path d="M19.43,12.98c0.04-0.32,0.07-0.64,0.07-0.98c0-0.34-0.03-0.66-0.07-0.98l2.11-1.65c0.19-0.15,0.24-0.42,0.12-0.64l-2-3.46
+                   c-0.09-0.16-0.26-0.25-0.44-0.25c-0.06,0-0.12,0.01-0.17,0.03l-2.49,1c-0.52-0.4-1.08-0.73-1.69-0.98l-0.38-2.65
+                   C14.46,2.18,14.25,2,14,2h-4C9.75,2,9.54,2.18,9.51,2.42L9.13,5.07C8.52,5.32,7.96,5.66,7.44,6.05l-2.49-1
+                   C4.89,5.03,4.83,5.02,4.77,5.02c-0.17,0-0.34,0.09-0.43,0.25l-2,3.46C2.21,8.95,2.27,9.22,2.46,9.37l2.11,1.65
+                   C4.53,11.34,4.5,11.67,4.5,12c0,0.33,0.03,0.66,0.07,0.98l-2.11,1.65c-0.19,0.15-0.24,0.42-0.12,0.64l2,3.46
+                   c0.09,0.16,0.26,0.25,0.44,0.25c0.06,0,0.12-0.01,0.17-0.03l2.49-1c0.52,0.4,1.08,0.73,1.69,0.98l0.38,2.65
+                   C9.54,21.82,9.75,22,10,22h4c0.25,0,0.46-0.18,0.49-0.42l0.38-2.65c0.61-0.25,1.17-0.59,1.69-0.98l2.49,1
+                   c0.06,0.02,0.12,0.03,0.18,0.03c0.17,0,0.34-0.09,0.43-0.25l2-3.46c0.12-0.22,0.07-0.49-0.12-0.64L19.43,12.98z M17.45,11.27
+                   c0.04,0.31,0.05,0.52,0.05,0.73c0,0.21-0.02,0.43-0.05,0.73l-0.14,1.13l0.89,0.7l1.08,0.84l-0.7,1.21l-1.27-0.51l-1.04-0.42
+                   l-0.9,0.68c-0.43,0.32-0.84,0.56-1.25,0.73l-1.06,0.43l-0.16,1.13L12.7,20H11.3l-0.19-1.35l-0.16-1.13l-1.06-0.43
+                   c-0.43-0.18-0.83-0.41-1.23-0.71l-0.91-0.7l-1.06,0.43l-1.27,0.51l-0.7-1.21l1.08-0.84l0.89-0.7l-0.14-1.13
+                   C6.52,12.43,6.5,12.2,6.5,12s0.02-0.43,0.05-0.73l0.14-1.13L5.8,9.44L4.72,8.6l0.7-1.21l1.27,0.51l1.04,0.42l0.9-0.68
+                   c0.43-0.32,0.84-0.56,1.25-0.73l1.06-0.43l0.16-1.13L11.3,4h1.39l0.19,1.35l0.16,1.13l1.06,0.43c0.43,0.18,0.83,0.41,1.23,0.71
+                   l0.91,0.7l1.06-0.43l1.27-0.51l0.7,1.21L18.2,9.44l-0.89,0.7L17.45,11.27z" />
+          <path d="M12,8c-2.21,0-4,1.79-4,4s1.79,4,4,4s4-1.79,4-4S14.21,8,12,8z M12,14c-1.1,0-2-0.9-2-2s0.9-2,2-2s2,0.9,2,2
+                  S13.1,14,12,14z" />
+        </svg>
+      </button>
+    </div>
+    <progress value="0" id="progress" class="appbar-progress"></progress>
+  </header>
+  <!-- Options side panel -->
+  <form id="options" class="options" method="GET">
+    <header class="form-bar">
+      <button type="button" class="icon-button toggle-options" title="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+          </svg>
+      </button>
+    </header>
+
+    <input type="hidden" name="load_url" data-dynamic>
+
+    <fieldset>
+      <legend class="subhead">Size options</legend>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="methodcount" name="method_count" value="on">
+        <label class="checkbox-label" for="methodcount">Method Count Mode</label>
+      </div>
+      <p class="select-wrapper">
+        <select id="byteunit" class="sel-big" name="byteunit" data-dynamic>
+          <option value="B">B - bytes</option>
+          <option value="KiB" selected>KiB - kibibytes</option>
+          <option value="MiB">MiB - mebibytes</option>
+          <option value="GiB">GiB - gibibytes</option>
+        </select>
+        <label class="select-label" for="byteunit">Byte unit</label>
+      </p>
+      <p class="input-wrapper">
+        <input type="number" id="minsize" name="min_size" value="0" min="0">
+        <label class="input-label" for="minsize">
+            Minimum size (bytes)
+        </label>
+      </p>
+    </fieldset>
+
+    <fieldset>
+      <legend class="subhead">Group symbols by</legend>
+      <div class="radio-wrapper">
+        <input type="radio" id="sourcepath" name="group_by" value="source_path" checked>
+        <label class="radio-label" for="sourcepath">Source path</label>
+      </div>
+      <div class="radio-wrapper">
+        <input type="radio" id="component" name="group_by" value="component">
+        <label class="radio-label" for="component">Component</label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="subhead">Search by regex</legend>
+      <div class="input-wrapper">
+        <input class="input-regex" type="text" id="includeregex" name="include" placeholder=".+@.+" aria-describedby="include-error">
+        <label class="input-label" for="includeregex">
+            Symbols must contain
+        </label>
+        <p class="input-error" id="include-error"></p>
+      </div>
+      <div class="input-wrapper">
+        <input class="input-regex" type="text" id="excluderegex" name="exclude" placeholder="\(.+\)" aria-describedby="exclude-error">
+        <label class="input-label" for="excluderegex">
+            Symbols must exclude
+        </label>
+        <p class="input-error" id="exclude-error"></p>
+      </div>
+    </fieldset>
+
+    <fieldset id="types-filter">
+      <legend class="subhead">Symbol types to show</legend>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="filtertext" name="type" value="t" checked>
+        <label class="checkbox-label" for="filtertext">
+            Native code: .text
+        </label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="filterdata" name="type" value="d" checked>
+        <label class="checkbox-label" for="filterdata">
+            Native code: .data
+        </label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="filterrodata" name="type" value="r" checked>
+        <label class="checkbox-label" for="filterrodata">
+            Native code: .rodata
+        </label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="filterrelro" name="type" value="R" checked>
+        <label class="checkbox-label" for="filterrelro">
+            Native code: .data.rel.ro
+        </label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="filterdex" name="type" value="m" checked>
+        <label class="checkbox-label" for="filterdex">
+            Dex: Methods
+        </label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="filterdexnon" name="type" value="x" checked>
+        <label class="checkbox-label" for="filterdexnon">
+            Dex: Other
+        </label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="filterpak" name="type" value="p" checked>
+        <label class="checkbox-label" for="filterpak">
+            Pak: Translations
+        </label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="filterpaknon" name="type" value="P" checked>
+        <label class="checkbox-label" for="filterpaknon">
+            Pak: Non-translations
+        </label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="filterother" name="type" value="o" checked>
+        <label class="checkbox-label" for="filterother">
+            Assets &amp; Miscellaneous Entries
+        </label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="filterbss" name="type" value="b">
+        <label class="checkbox-label" for="filterbss">
+            Native Code: .bss
+        </label>
+      </div>
+      <button type="button" class="text-button" id="type-all">Select all</button>
+      <button type="button" class="text-button" id="type-none">Select none</button>
+    </fieldset>
+
+    <fieldset id="highlight-container">
+      <legend class="subhead">Highlight symbols</legend>
+      <div class="radio-wrapper">
+        <input type="radio" id="clearhighlight" name="highlight" value="clear" checked>
+        <label class="radio-label" for="clearhighlight">None</label>
+      </div>
+      <div class="radio-wrapper">
+        <input type="radio" id="hothighlight" name="highlight" value="hot">
+        <label class="radio-label" for="hothighlight">Hot code</label>
+      </div>
+      <div class="radio-wrapper">
+        <input type="radio" id="generatedhighlight" name="highlight" value="generated">
+        <label class="radio-label" for="generatedhighlight">Generated files</label>
+      </div>
+      <div class="radio-wrapper">
+        <input type="radio" id="coveragehightlight" name="highlight" value="coverage">
+        <label class="radio-label" for="coveragehightlight">Code coverage (not implemented)</label>
+      </div>
+      <div class="radio-wrapper">
+        <input type="radio" id="uncompressedhighlight" name="highlight" value="uncompressed">
+        <label class="radio-label" for="uncompressedhighlight">Uncompressed .pak files</label>
+      </div>
+    </fieldset>
+
+    <p class="checkbox-wrapper">
+      <input type="checkbox" id="generatedfilter" name="generated_filter" value="on">
+      <label class="checkbox-label" for="generatedfilter">Show only generated files</label>
+    </p>
+  </form>
+  <div class="symbols">
+    <!-- Icons for symbols are stored here and cloned. -->
+    <div hidden id="icons">
+      <svg class="icon foldericon" height="24" width="24" fill="#5f6368">
+        <title>Directory</title>
+        <path d="M9.17,6l2,2H20v10L4,18V6H9.17 M10,4H4C2.9,4,2.01,4.9,2.01,6L2,18c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8c0-1.1-0.9-2-2-2
+                 h-8L10,4L10,4z" />
+      </svg>
+      <svg class="icon componenticon" height="24" width="24" fill="#5f6368">
+        <title>Component</title>
+        <path d="M9,13.75c-2.34,0-7,1.17-7,3.5V19h14v-1.75C16,14.92,11.34,13.75,9,13.75z M4.34,17c0.84-0.58,2.87-1.25,4.66-1.25
+                 s3.82,0.67,4.66,1.25H4.34z" />
+        <path d="M9,12c1.93,0,3.5-1.57,3.5-3.5C12.5,6.57,10.93,5,9,5S5.5,6.57,5.5,8.5C5.5,10.43,7.07,12,9,12z M9,7
+                 c0.83,0,1.5,0.67,1.5,1.5S9.83,10,9,10S7.5,9.33,7.5,8.5S8.17,7,9,7z" />
+        <path d="M16.04,13.81C17.2,14.65,18,15.77,18,17.25V19h4v-1.75C22,15.23,18.5,14.08,16.04,13.81z" />
+        <path d="M15,12c1.93,0,3.5-1.57,3.5-3.5C18.5,6.57,16.93,5,15,5c-0.54,0-1.04,0.13-1.5,0.35c0.63,0.89,1,1.98,1,3.15
+                 s-0.37,2.26-1,3.15C13.96,11.87,14.46,12,15,12z" />
+      </svg>
+      <svg class="icon javaclassicon" height="24" width="24" fill="#5f6368">
+        <title>Java class</title>
+        <path d="M6.6 1.44l-.82.83 2.1 2.1A6.96 6.96 0 0 0 5 10v1h14v-1a6.96 6.96 0 0 0-2.88-5.63l2.1-2.1-.82-.83-2.3 2.31a6.81 6.81 0 0 0-6.19 0L6.6 1.44zM9 7a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zm6 0a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zM5 12v4.27C5 20 8.17 23 12 23s7-3 7-6.73V12H5zm2 2h10v2.27c0 2.6-2.2 4.73-5 4.73s-5-2.13-5-4.73V14z"
+        />
+      </svg>
+      <svg class="icon fileicon" height="24" width="24" fill="#5f6368">
+        <title>File</title>
+        <path d="M14,2H6C4.9,2,4.01,2.9,4.01,4L4,20c0,1.1,0.89,2,1.99,2H18c1.1,0,2-0.9,2-2V8L14,2z M6,20V4h7v5h5v11
+                 L6,20z" />
+      </svg>
+      <svg class="icon bssicon" height="24" width="24" fill="#a142f4">
+        <title>Uninitialized data</title>
+        <path d="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm0 2h7v5h5v11H6V4zm4 6v4h2v-4h-2zm0 6v2h2v-2h-2z"
+        />
+      </svg>
+      <svg class="icon dataicon" height="24" width="24" fill="#fa7b17">
+        <title>Initialized data</title>
+        <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6m0 2h7v5h5v11H6V4m2 8v2h8v-2H8m0 4v2h5v-2z" />
+      </svg>
+      <svg class="icon readonlyicon" height="24" width="24" fill="#24c1e0">
+        <title>Read-only data</title>
+        <path d="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm0 2h7v5h5v11H6V4zm5.9 8c-2 0-3.7 1.2-4.4 3a4.7 4.7 0 0 0 8.8 0c-.7-1.8-2.4-3-4.4-3zm0 1a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2zm0 .8a1.2 1.2 0 0 0-1.2 1.2 1.2 1.2 0 0 0 1.2 1.2 1.2 1.2 0 0 0 1.2-1.2 1.2 1.2 0 0 0-1.2-1.2z"
+        />
+      </svg>
+      <svg class="icon codeicon" height="24" width="24" fill="#1a73e8">
+        <title>Code</title>
+        <path d="M9.4,16.6L4.8,12l4.6-4.6L8,6l-6,6l6,6L9.4,16.6z M14.6,16.6l4.6-4.6l-4.6-4.6L16,6l6,6l-6,6L14.6,16.6z" />
+      </svg>
+      <svg class="icon relroicon" height="24" width="24" fill="#fbbc04">
+        <title>Vtable entry</title>
+        <path d="M20,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h15c1.1,0,2-0.9,2-2V5C22,3.9,21.1,3,20,3z M20,5v3H5V5H20z M15,19h-5v-9h5V19z
+                 M5,10h3v9H5V10z M17,19v-9h3v9H17z" />
+      </svg>
+      <svg class="icon dexicon" height="24" width="24" fill="#ea4335">
+        <title>Dex non-method entry</title>
+        <path d="M6.6 1.44l-.82.83 2.1 2.1A6.96 6.96 0 0 0 5 10v1h14v-1a6.96 6.96 0 0 0-2.88-5.63l2.1-2.1-.82-.83-2.3 2.31a6.81 6.81 0 0 0-6.19 0L6.6 1.44zM9 7a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zm6 0a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zM5 12v4.27C5 20 8.17 23 12 23s7-3 7-6.73V12H5zm2 2h10v2.27c0 2.6-2.2 4.73-5 4.73s-5-2.13-5-4.73V14z"
+        />
+      </svg>
+      <svg class="icon dexmethodicon" height="24" width="24" fill="#a50e0e">
+        <title>Dex method</title>
+        <path d="M6.6 1.44l-.82.83 2.1 2.1A6.96 6.96 0 0 0 5 10v1h14v-1a6.96 6.96 0 0 0-2.88-5.63l2.1-2.1-.82-.83-2.3 2.31a6.81 6.81 0 0 0-6.19 0L6.6 1.44zM9 7a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zm6 0a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zM5 12v4.27C5 20 8.17 23 12 23s7-3 7-6.73V12H5zm2 2h10v2.27c0 2.6-2.2 4.73-5 4.73s-5-2.13-5-4.73V14z"
+        />
+      </svg>
+      <svg class="icon localpakicon" height="24" width="24" fill="#34a853">
+        <title>Locale pak entry</title>
+        <path d="M5 3a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5zm0 2h5v2h2V5h7v14H5V5zm7 2v2h2V7h-2zm0 2h-2v2h2V9zm0 2v2h2v-2h-2zm0 2h-2v2h2v-2zm0 2v2h2v-2h-2z"
+        />
+      </svg>
+      <svg class="icon nonlocalpakicon" height="24" width="24" fill="#0d652d">
+        <title>Non-locale pak entry</title>
+        <path d="M5 3a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5zm0 2h5v2h2V5h7v14H5V5zm7 2v2h2V7h-2zm0 2h-2v2h2V9zm0 2v2h2v-2h-2zm0 2h-2v2h2v-2zm0 2v2h2v-2h-2z"
+        />
+      </svg>
+      <svg class="icon othericon" height="24" width="24" fill="#5f6368">
+        <title>Other entry</title>
+        <path d="M10.88 2l-.85 1.36L4 13h6v-2H7.6l3.28-5.23L12.28 8h2.35l-3.75-6zM12 10v10h10V10H12zm2 2h6v6h-6v-6zM2.21 15A5.52 5.52 0 0 0 10 21.4v-2.45A3.48 3.48 0 0 1 7.5 20a3.48 3.48 0 0 1-3.15-5H2.2z"
+        />
+      </svg>
+    </div>
+    <!-- Template for trees and leaves -->
+    <template id="treenode-container">
+      <li role="treeitem" aria-expanded="false" aria-describedby="infocard-container">
+        <a class="node" href="#" tabindex="-1" role="presentation">
+          <span class="symbol-name"></span>
+          <span class="size"></span>
+        </a>
+        <ul role="group"></ul>
+      </li>
+    </template>
+    <template id="treenode-symbol">
+      <li role="treeitem" aria-describedby="infocard-symbol">
+        <span class="node" tabindex="-1">
+          <span class="symbol-name"></span>
+          <span class="size"></span>
+        </span>
+      </li>
+    </template>
+    <!-- Tree view -->
+    <main class="tree-container">
+      <header class="tree-header">
+        <span class="subtitle">Name</span>
+        <span class="subtitle size-header" id="size-header">Size</span>
+      </header>
+      <ul id="symboltree" class="tree" role="tree" aria-labelledby="headline"></ul>
+    </main>
+    <!-- Symbol and container breakdown cards -->
+    <link href="infocard.css" rel="stylesheet">
+    <footer class="infocards">
+      <div class="infocard infocard-container open" id="infocard-container" hidden>
+        <div class="icon-info container-icon-info">
+          <canvas class="type-pie-info" height="80" width="80"></canvas>
+          <div></div>
+        </div>
+        <header class="header-info">
+          <h4 class="subhead size-info"></h4>
+          <p class="body-2 path-info"></p>
+          <p class="caption type-info-container">
+            <span class="type-info"></span>
+            <span class="flags-info"></span>
+          </p>
+        </header>
+        <div class="type-breakdown-info">
+          <table>
+            <thead>
+              <tr>
+                <th class="subhead-2">Icon</th>
+                <th class="subhead-2">Type</th>
+                <th class="subhead-2 count">Count</th>
+                <th class="subhead-2 size">Total size</th>
+                <th class="subhead-2 percent">Percent</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="bss-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#a142f4">
+                    <path d="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm0 2h7v5h5v11H6V4zm4 6v4h2v-4h-2zm0 6v2h2v-2h-2z"
+                      />
+                  </svg>
+                </td>
+                <th scope="row">.bss</th>
+                <td class="count"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
+              <tr class="data-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#fa7b17">
+                    <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6m0 2h7v5h5v11H6V4m2 8v2h8v-2H8m0 4v2h5v-2z" />
+                  </svg>
+                </td>
+                <th scope="row">.data and .data.*</th>
+                <td class="count"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
+              <tr class="rodata-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#24c1e0">
+                    <path d="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm0 2h7v5h5v11H6V4zm5.9 8c-2 0-3.7 1.2-4.4 3a4.7 4.7 0 0 0 8.8 0c-.7-1.8-2.4-3-4.4-3zm0 1a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2zm0 .8a1.2 1.2 0 0 0-1.2 1.2 1.2 1.2 0 0 0 1.2 1.2 1.2 1.2 0 0 0 1.2-1.2 1.2 1.2 0 0 0-1.2-1.2z"
+                    />
+                  </svg>
+                </td>
+                <th scope="row">.rodata</th>
+                <td class="count"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
+              <tr class="relro-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#fbbc04">
+                    <path d="M20,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h15c1.1,0,2-0.9,2-2V5C22,3.9,21.1,3,20,3z M20,5v3H5V5H20z M15,19h-5v-9h5V19z
+                             M5,10h3v9H5V10z M17,19v-9h3v9H17z" />
+                  </svg>
+                </td>
+                <th scope="row">Vtable entry</th>
+                <td class="count"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
+              <tr class="text-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#1a73e8">
+                    <path d="M9.4,16.6L4.8,12l4.6-4.6L8,6l-6,6l6,6L9.4,16.6z M14.6,16.6l4.6-4.6l-4.6-4.6L16,6l6,6l-6,6L14.6,16.6z" />
+                  </svg>
+                </td>
+                <th scope="row">.text</th>
+                <td class="count"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
+              <tr class="dexnon-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#ea4335">
+                    <path d="M6.6 1.44l-.82.83 2.1 2.1A6.96 6.96 0 0 0 5 10v1h14v-1a6.96 6.96 0 0 0-2.88-5.63l2.1-2.1-.82-.83-2.3 2.31a6.81 6.81 0 0 0-6.19 0L6.6 1.44zM9 7a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zm6 0a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zM5 12v4.27C5 20 8.17 23 12 23s7-3 7-6.73V12H5zm2 2h10v2.27c0 2.6-2.2 4.73-5 4.73s-5-2.13-5-4.73V14z"
+                    />
+                  </svg>
+                </td>
+                <th scope="row">Dex non-method entries</th>
+                <td class="count"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
+              <tr class="dex-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#a50e0e">
+                    <path d="M6.6 1.44l-.82.83 2.1 2.1A6.96 6.96 0 0 0 5 10v1h14v-1a6.96 6.96 0 0 0-2.88-5.63l2.1-2.1-.82-.83-2.3 2.31a6.81 6.81 0 0 0-6.19 0L6.6 1.44zM9 7a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zm6 0a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zM5 12v4.27C5 20 8.17 23 12 23s7-3 7-6.73V12H5zm2 2h10v2.27c0 2.6-2.2 4.73-5 4.73s-5-2.13-5-4.73V14z"
+                    />
+                  </svg>
+                </td>
+                <th scope="row">Dex methods</th>
+                <td class="count"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
+              <tr class="pak-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#34a853">
+                    <path d="M5 3a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5zm0 2h5v2h2V5h7v14H5V5zm7 2v2h2V7h-2zm0 2h-2v2h2V9zm0 2v2h2v-2h-2zm0 2h-2v2h2v-2zm0 2v2h2v-2h-2z"
+                    />
+                  </svg>
+                </td>
+                <th scope="row">Locale pak entries</th>
+                <td class="count"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
+              <tr class="paknon-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#0d652d">
+                    <path d="M5 3a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5zm0 2h5v2h2V5h7v14H5V5zm7 2v2h2V7h-2zm0 2h-2v2h2V9zm0 2v2h2v-2h-2zm0 2h-2v2h2v-2zm0 2v2h2v-2h-2z"
+                    />
+                  </svg>
+                </td>
+                <th scope="row">Non-locale pak entries</th>
+                <td class="count"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
+              <tr class="other-info">
+                <td>
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#5f6368">
+                    <path d="M10.88 2l-.85 1.36L4 13h6v-2H7.6l3.28-5.23L12.28 8h2.35l-3.75-6zM12 10v10h10V10H12zm2 2h6v6h-6v-6zM2.21 15A5.52 5.52 0 0 0 10 21.4v-2.45A3.48 3.48 0 0 1 7.5 20a3.48 3.48 0 0 1-3.15-5H2.2z"
+                    />
+                  </svg>
+                </td>
+                <th scope="row">Other entries</th>
+                <td class="count"></td>
+                <td class="size"></td>
+                <td class="percent"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="infocard infocard-symbol" id="infocard-symbol" hidden>
+        <div class="icon-info">
+          <div></div>
+        </div>
+        <header class="header-info">
+          <h4 class="subhead size-info"></h4>
+          <p class="body-2 path-info"></p>
+        </header>
+        <p class="caption type-info-container">
+          <span class="type-info"></span>
+          <span class="flags-info"></span>
+        </p>
+      </div>
+    </footer>
+  </div>
+</body>
+
+</html>

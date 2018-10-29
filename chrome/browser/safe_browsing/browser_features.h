@@ -9,7 +9,6 @@
 #define CHROME_BROWSER_SAFE_BROWSING_BROWSER_FEATURES_H_
 
 namespace safe_browsing {
-namespace features {
 
 // IMPORTANT: when adding new features, you must update kAllowedFeatures in
 // chrome/browser/safe_browsing/client_side_detection_service.cc if the feature
@@ -76,7 +75,6 @@ extern const char kSafeBrowsingMaliciousUrl[];
 extern const char kSafeBrowsingOriginalUrl[];
 extern const char kSafeBrowsingIsSubresource[];
 extern const char kSafeBrowsingThreatType[];
-}  // namespace features
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_BROWSER_FEATURES_H_

@@ -9,9 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/status_bubble_views_browsertest_mac.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "ui/views/widget/widget.h"
 
 class StatusBubbleViewsTest : public InProcessBrowserTest {
@@ -20,9 +18,6 @@ class StatusBubbleViewsTest : public InProcessBrowserTest {
   views::Widget* GetWidget() {
     return static_cast<StatusBubbleViews*>(GetBubble())->popup();
   }
-
- private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
 };
 
 // Ensure the status bubble does not hide itself on Mac. Doing so can trigger

@@ -1,0 +1,63 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/fuchsia/fidl_library.gni")
+import("//testing/test.gni")
+
+test("fidlgen_js_unittests") {
+  testonly = true
+
+  sources = [
+    "test/fidlgen_js_unittest.cc",
+  ]
+
+  deps = [
+    ":fidljstest",
+    ":runtime",
+    "//base/test:test_support",
+    "//gin:gin_test",
+    "//testing/gtest",
+    "//v8",
+  ]
+
+  configs += [
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+    "//v8:external_startup_data",
+  ]
+
+  data_deps = [
+    "//tools/v8_context_snapshot:v8_context_snapshot",
+  ]
+
+  data = [
+    "runtime/fidl.mjs",
+  ]
+}
+
+static_library("runtime") {
+  sources = [
+    "runtime/zircon.cc",
+    "runtime/zircon.h",
+  ]
+
+  deps = [
+    "//base",
+    "//gin",
+    "//third_party/fuchsia-sdk/sdk:async",
+    "//third_party/fuchsia-sdk/sdk:async_default",
+    "//v8",
+  ]
+}
+
+fidl_library("fidljstest") {
+  testonly = true
+  sources = [
+    "test/simple.fidl",
+  ]
+
+  languages = [
+    "cpp",
+    "js",
+  ]
+}

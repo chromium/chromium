@@ -22,7 +22,9 @@
 class PrefService;
 
 namespace base {
+class HistogramFlattener;
 class HistogramSamples;
+class HistogramSnapshotManager;
 }
 
 namespace metrics {
@@ -43,6 +45,33 @@ class MetricsLog {
     INITIAL_STABILITY_LOG,  // The initial log containing stability stats.
     ONGOING_LOG,            // Subsequent logs in a session.
     INDEPENDENT_LOG,        // An independent log from a previous session.
+  };
+
+  // Loads "independent" metrics from a metrics provider and executes a
+  // callback when complete, which could be immediate or after some
+  // execution on a background thread.
+  class IndependentMetricsLoader {
+   public:
+    explicit IndependentMetricsLoader(std::unique_ptr<MetricsLog> log);
+    ~IndependentMetricsLoader();
+
+    // Call ProvideIndependentMetrics (which may execute on a background thread)
+    // for the |metrics_provider| and execute the |done_callback| when complete
+    // with the result (true if successful). Though this can be called multiple
+    // times to include data from multiple providers, later calls will override
+    // system profile information set by earlier calls.
+    void Run(base::OnceCallback<void(bool)> done_callback,
+             MetricsProvider* metrics_provider);
+
+    // Extract the filled log. No more Run() operations can be done after this.
+    std::unique_ptr<MetricsLog> ReleaseLog();
+
+   private:
+    std::unique_ptr<MetricsLog> log_;
+    std::unique_ptr<base::HistogramFlattener> flattener_;
+    std::unique_ptr<base::HistogramSnapshotManager> snapshot_manager_;
+
+    DISALLOW_COPY_AND_ASSIGN(IndependentMetricsLoader);
   };
 
   // Creates a new metrics log of the specified type.
@@ -95,11 +124,6 @@ class MetricsLog {
   // returned as a SystemProfileProto.
   const SystemProfileProto& RecordEnvironment(
       DelegatingProvider* delegating_provider);
-
-  // Loads a saved system profile and the associated metrics into the log.
-  // Returns true on success. Keep calling it with fresh logs until it returns
-  // false.
-  bool LoadIndependentMetrics(MetricsProvider* metrics_provider);
 
   // Loads the environment proto that was saved by the last RecordEnvironment()
   // call from prefs. On success, returns true and |app_version| contains the

@@ -2,17 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//media/cdm/library_cdm/cdm_paths.gni")
 import("//media/media_options.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 
-# Internal Cast builds set enable_widevine=true to bring in Widevine support.
-# TODO(xhwang): Support component updated CDM on other platforms and remove this
-# assert.
-assert(!enable_widevine || is_win || is_mac || is_chromecast,
-       "Component updated CDM only supported on Windows and Mac for now.")
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [
+    "ENABLE_WIDEVINE=$enable_widevine",
+    "BUNDLE_WIDEVINE_CDM=$bundle_widevine_cdm",
+    "ENABLE_WIDEVINE_CDM_COMPONENT=$enable_widevine_cdm_component",
+  ]
+}
 
 widevine_arch = current_cpu
 if (widevine_arch == "x86") {
@@ -22,7 +27,9 @@ if (widevine_arch == "x86") {
 widevine_cdm_binary_files = []
 widevine_cdm_manifest_file = []
 
-if (should_bundle_widevine_cdm) {
+# TODO(xhwang): widevine_cdm_version.h is only used in few places. Clean this up
+# so we don't need to copy it in most cases.
+if (bundle_widevine_cdm) {
   if (is_chromeos) {
     widevine_cdm_version_h_file =
         "chromeos/$widevine_arch/widevine_cdm_version.h"
@@ -32,10 +39,7 @@ if (should_bundle_widevine_cdm) {
     widevine_cdm_binary_files = [ "linux/$widevine_arch/libwidevinecdm.so" ]
   } else if (is_win) {
     widevine_cdm_version_h_file = "win/$widevine_arch/widevine_cdm_version.h"
-    widevine_cdm_binary_files = [
-      "win/$widevine_arch/widevinecdm.dll",
-      "win/$widevine_arch/widevinecdm.dll.lib",
-    ]
+    widevine_cdm_binary_files = [ "win/$widevine_arch/widevinecdm.dll" ]
     widevine_cdm_manifest_file = [ "win/$widevine_arch/manifest.json" ]
   } else if (is_mac) {
     widevine_cdm_version_h_file = "mac/$widevine_arch/widevine_cdm_version.h"
@@ -44,19 +48,12 @@ if (should_bundle_widevine_cdm) {
   } else {
     assert(false, "Platform not supported to bundle Widevine CDM.")
   }
-} else if (is_android) {
-  # Always available on Android regardless of branding.
-  widevine_cdm_version_h_file = "android/widevine_cdm_version.h"
-} else if (enable_widevine) {
-  # TODO(crbug.com/349182): Remove after we replace WIDEVINE_CDM_AVAILABLE with
-  # ENABLE_WIDEVINE build flag.
-  widevine_cdm_version_h_file = "stub/widevine_cdm_version.h"
 } else {
   # No branding, use the default one.
   widevine_cdm_version_h_file = "widevine_cdm_version.h"
 }
 
-if (should_bundle_widevine_cdm && enable_widevine_cdm_host_verification) {
+if (bundle_widevine_cdm && enable_widevine_cdm_host_verification) {
   if (is_win) {
     widevine_cdm_binary_files += [ "win/$widevine_arch/widevinecdm.dll.sig" ]
   } else if (is_mac) {
@@ -126,6 +123,7 @@ group("cdm") {
     ":widevine_cdm_binary",
     ":widevine_cdm_manifest",
   ]
+
   # Needed at build time e.g. for mac bundle (//chrome:chrome_framework).
   public_deps = [
     ":widevine_cdm_binary",

@@ -9,6 +9,9 @@ static_library("leveldb_proto") {
     "proto_database.cc",
     "proto_database.h",
     "proto_database_impl.h",
+    "proto_leveldb_wrapper.cc",
+    "proto_leveldb_wrapper.h",
+    "unique_proto_database.h",
   ]
 
   public_deps = [
@@ -26,6 +29,7 @@ source_set("test_support") {
   public_deps = [
     ":leveldb_proto",
     "//base",
+    "//base/test:test_support",
     "//components/leveldb_proto/testing/proto",
   ]
 }
@@ -33,7 +37,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "proto_database_impl_unittest.cc",
+    "unique_proto_database_unittest.cc",
   ]
   deps = [
     ":test_support",

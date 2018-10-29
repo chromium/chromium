@@ -73,7 +73,7 @@ function runBasicTest(testCase, extraStep) {
             testRunner.queueNonLoadingScript("fillTestForm()");
             testRunner.queueLoadingScript("submitFormWithPostRedirect()");
         } else if (extraStep == "relativeanchor") {
-            testRunner.queueNonLoadingScript("jumpToAnchor()");
+            testRunner.queueLoadingScript("jumpToAnchor()");
         }
     }
 }
@@ -100,7 +100,7 @@ function runBackTest(testCase, howFarBack, extraStep) {
         } else if (extraStep == "postredirect") {
             testRunner.queueLoadingScript("submitFormWithPostRedirect()");
         } else if (extraStep == "relativeanchor") {
-            testRunner.queueNonLoadingScript("jumpToAnchor()");
+            testRunner.queueLoadingScript("jumpToAnchor()");
         }
         testRunner.queueLoad("resources/otherpage.html");
         testRunner.queueBackNavigation(howFarBack);

@@ -116,7 +116,7 @@ void TestRapporServiceImpl::GetReports(RapporReports* reports) {
 
 TestSample::Shadow* TestRapporServiceImpl::GetRecordedSampleForMetric(
     const std::string& metric_name) {
-  ShadowMap::iterator it = shadows_.find(metric_name);
+  auto it = shadows_.find(metric_name);
   if (it == shadows_.end())
     return nullptr;
   return &it->second;
@@ -126,7 +126,7 @@ bool TestRapporServiceImpl::GetRecordedSampleForMetric(
     const std::string& metric_name,
     std::string* sample,
     RapporType* type) {
-  SamplesMap::iterator it = samples_.find(metric_name);
+  auto it = samples_.find(metric_name);
   if (it == samples_.end())
     return false;
   *sample = it->second.value;

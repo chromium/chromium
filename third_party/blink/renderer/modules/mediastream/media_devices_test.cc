@@ -223,7 +223,7 @@ class MediaDevicesTest : public testing::Test {
 
   void DevicesEnumerated(const MediaDeviceInfoVector& device_infos) {
     devices_enumerated_ = true;
-    for (size_t i = 0; i < device_infos.size(); i++) {
+    for (wtf_size_t i = 0; i < device_infos.size(); i++) {
       device_infos_->push_back(MediaDeviceInfo::Create(
           device_infos[i]->deviceId(), device_infos[i]->label(),
           device_infos[i]->groupId(), device_infos[i]->DeviceType()));

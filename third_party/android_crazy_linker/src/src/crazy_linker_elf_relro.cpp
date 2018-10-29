@@ -89,14 +89,15 @@ bool SharedRelro::CopyFrom(size_t relro_start,
                            size_t relro_size,
                            Error* error) {
   // Map it in the process.
-  ScopedMemoryMapping map;
-  if (!map.Allocate(NULL, relro_size, MemoryMapping::CAN_WRITE, ashmem_.fd())) {
+  MemoryMapping map = MemoryMapping::Create(
+      nullptr, relro_size, MemoryMapping::CAN_WRITE, ashmem_.fd());
+  if (!map.IsValid()) {
     error->Format("Could not allocate RELRO mapping: %s", strerror(errno));
     return false;
   }
 
   // Copy process' RELRO into it.
-  ::memcpy(map.Get(), reinterpret_cast<void*>(relro_start), relro_size);
+  ::memcpy(map.address(), reinterpret_cast<void*>(relro_start), relro_size);
 
   // Unmap it.
   map.Deallocate();
@@ -120,18 +121,17 @@ bool SharedRelro::CopyFromRelocated(const ElfView* view,
     return false;
 
   // Map the region in memory (any address).
-  ScopedMemoryMapping map;
-  if (!map.Allocate(
-           NULL, relro_size, MemoryMapping::CAN_READ_WRITE, ashmem_.fd())) {
+  MemoryMapping map = MemoryMapping::Create(
+      nullptr, relro_size, MemoryMapping::CAN_READ_WRITE, ashmem_.fd());
+  if (!map.IsValid()) {
     error->Format("Could not allocate RELRO mapping for: %s", strerror(errno));
     return false;
   }
 
   // Copy and relocate.
   relocations.CopyAndRelocate(relro_start,
-                              reinterpret_cast<size_t>(map.Get()),
-                              load_address + relro_offset,
-                              relro_size);
+                              reinterpret_cast<size_t>(map.address()),
+                              load_address + relro_offset, relro_size);
   // Unmap it.
   map.Deallocate();
   start_ = load_address + relro_offset;
@@ -154,8 +154,6 @@ bool SharedRelro::InitFrom(size_t relro_start,
                            int ashmem_fd,
                            Error* error) {
   // Create temporary mapping of the ashmem region.
-  ScopedMemoryMapping fd_map;
-
   LOG("Entering addr=%p size=%p fd=%d", (void*)relro_start, (void*)relro_size,
       ashmem_fd);
 
@@ -166,16 +164,18 @@ bool SharedRelro::InitFrom(size_t relro_start,
     return false;
   }
 
-  if (!fd_map.Allocate(NULL, relro_size, MemoryMapping::CAN_READ, ashmem_fd)) {
+  MemoryMapping fd_map = MemoryMapping::Create(
+      nullptr, relro_size, MemoryMapping::CAN_READ, ashmem_fd);
+  if (!fd_map.IsValid()) {
     error->Format("Cannot map RELRO ashmem region as read-only: %s",
                   strerror(errno));
     return false;
   }
 
-  LOG("mapping allocated at %p", fd_map.Get());
+  LOG("mapping allocated at %p", fd_map.address());
 
   char* cur_page = reinterpret_cast<char*>(relro_start);
-  char* fd_page = static_cast<char*>(fd_map.Get());
+  char* fd_page = static_cast<char*>(fd_map.address());
   size_t p = 0;
   size_t size = relro_size;
   size_t similar_size = 0;

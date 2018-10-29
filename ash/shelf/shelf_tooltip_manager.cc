@@ -9,7 +9,6 @@
 #include "ash/shelf/shelf_tooltip_preview_bubble.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
-#include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/strings/string16.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -32,31 +31,29 @@ const int kTooltipAppearanceDelay = 1000;  // msec
 ShelfTooltipManager::ShelfTooltipManager(ShelfView* shelf_view)
     : timer_delay_(kTooltipAppearanceDelay),
       shelf_view_(shelf_view),
-      bubble_(nullptr),
       weak_factory_(this) {
   shelf_view_->shelf()->AddObserver(this);
-  Shell::Get()->AddPointerWatcher(this, views::PointerWatcherEventTypes::BASIC);
+  Shell::Get()->AddPreTargetHandler(this);
 }
 
 ShelfTooltipManager::~ShelfTooltipManager() {
-  Shell::Get()->RemovePointerWatcher(this);
+  Shell::Get()->RemovePreTargetHandler(this);
   shelf_view_->shelf()->RemoveObserver(this);
-  aura::Window* window = nullptr;
-  if (shelf_view_->GetWidget())
-    window = shelf_view_->GetWidget()->GetNativeWindow();
-  if (window)
-    wm::RemoveLimitedPreTargetHandlerForWindow(this, window);
+  if (shelf_view_->GetWidget() && shelf_view_->GetWidget()->GetNativeWindow())
+    shelf_view_->GetWidget()->GetNativeWindow()->RemovePreTargetHandler(this);
 }
 
-void ShelfTooltipManager::Init() {
-  wm::AddLimitedPreTargetHandlerForWindow(
-      this, shelf_view_->GetWidget()->GetNativeWindow());
-}
-
-void ShelfTooltipManager::Close() {
+void ShelfTooltipManager::Close(bool animate) {
+  // Cancel any timer set to show a tooltip after a delay.
   timer_.Stop();
-  if (bubble_)
-    bubble_->GetWidget()->Close();
+  if (!bubble_)
+    return;
+  if (!animate) {
+    // Cancel the typical hiding animation to hide the bubble immediately.
+    ::wm::SetWindowVisibilityAnimationTransition(
+        bubble_->GetWidget()->GetNativeWindow(), ::wm::ANIMATE_NONE);
+  }
+  bubble_->GetWidget()->Close();
   bubble_ = nullptr;
 }
 
@@ -69,13 +66,8 @@ views::View* ShelfTooltipManager::GetCurrentAnchorView() const {
 }
 
 void ShelfTooltipManager::ShowTooltip(views::View* view) {
-  timer_.Stop();
-  if (bubble_) {
-    // Cancel the hiding animation to hide the old bubble immediately.
-    ::wm::SetWindowVisibilityAnimationTransition(
-        bubble_->GetWidget()->GetNativeWindow(), ::wm::ANIMATE_NONE);
-    Close();
-  }
+  // Hide the old bubble immediately, skipping the typical closing animation.
+  Close(false /*animate*/);
 
   if (!ShouldShowTooltipForView(view))
     return;
@@ -120,37 +112,23 @@ void ShelfTooltipManager::ShowTooltipWithDelay(views::View* view) {
   }
 }
 
-void ShelfTooltipManager::OnPointerEventObserved(
-    const ui::PointerEvent& event,
-    const gfx::Point& location_in_screen,
-    gfx::NativeView target) {
-  if (event.type() != ui::ET_POINTER_DOWN || !bubble_)
-    return;
-
-  // If the click was outside the tooltip, always close it.
-  if (!bubble_->GetWidget()->GetWindowBoundsInScreen().Contains(
-          location_in_screen)) {
-    Close();
-    return;
-  }
-
-  // Close the bubble if appropriate.
-  if (bubble_->ShouldCloseOnPressDown())
-    Close();
-}
-
 void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_EXITED) {
-    if (bubble_ && bubble_->ShouldCloseOnMouseExit())
-      Close();
-
-    // Don't show any tooltip we were planning on showing after a delay.
-    timer_.Stop();
+  if (bubble_ && event->type() == ui::ET_MOUSE_PRESSED) {
+    ProcessPressedEvent(*event);
     return;
   }
 
-  if (event->type() != ui::ET_MOUSE_MOVED)
+  if (bubble_ && event->type() == ui::ET_MOUSE_EXITED &&
+      bubble_->ShouldCloseOnMouseExit()) {
+    Close();
     return;
+  }
+
+  // The code below handles mouse move events within the shelf window.
+  if (event->type() != ui::ET_MOUSE_MOVED ||
+      event->target() != shelf_view_->GetWidget()->GetNativeWindow()) {
+    return;
+  }
 
   gfx::Point point = event->location();
   views::View::ConvertPointFromWidget(shelf_view_, &point);
@@ -166,6 +144,11 @@ void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
     Close();
 }
 
+void ShelfTooltipManager::OnTouchEvent(ui::TouchEvent* event) {
+  if (bubble_ && event->type() == ui::ET_TOUCH_PRESSED)
+    ProcessPressedEvent(*event);
+}
+
 void ShelfTooltipManager::WillChangeVisibilityState(
     ShelfVisibilityState new_state) {
   if (new_state == SHELF_HIDDEN)
@@ -173,15 +156,8 @@ void ShelfTooltipManager::WillChangeVisibilityState(
 }
 
 void ShelfTooltipManager::OnAutoHideStateChanged(ShelfAutoHideState new_state) {
-  if (new_state == SHELF_AUTO_HIDE_HIDDEN) {
-    timer_.Stop();
-    // AutoHide state change happens during an event filter, so immediate close
-    // may cause a crash in the HandleMouseEvent() after the filter.  So we just
-    // schedule the Close here.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::Bind(&ShelfTooltipManager::Close, weak_factory_.GetWeakPtr()));
-  }
+  if (new_state == SHELF_AUTO_HIDE_HIDDEN)
+    Close();
 }
 
 bool ShelfTooltipManager::ShouldShowTooltipForView(views::View* view) {
@@ -191,6 +167,14 @@ bool ShelfTooltipManager::ShouldShowTooltipForView(views::View* view) {
          (shelf->GetVisibilityState() == SHELF_VISIBLE ||
           (shelf->GetVisibilityState() == SHELF_AUTO_HIDE &&
            shelf->GetAutoHideState() == SHELF_AUTO_HIDE_SHOWN));
+}
+
+void ShelfTooltipManager::ProcessPressedEvent(const ui::LocatedEvent& event) {
+  // Always close the tooltip on press events outside the tooltip.
+  if (bubble_->ShouldCloseOnPressDown() ||
+      event.target() != bubble_->GetWidget()->GetNativeWindow()) {
+    Close();
+  }
 }
 
 }  // namespace ash

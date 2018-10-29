@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<title>Test that clicks on audio elements are not propagated.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<div id="outer">
+<audio controls></audio>
+<!-- Also test for a video acting as an audio element.  -->
+<video controls src="../content/test.oga"></video>
+</div>
+<script>
+async_test(t => {
+  const audio = document.querySelector('audio');
+  const video = document.querySelector('video');
+  const outerDiv = document.getElementById('outer');
+  const events = ['mousedown', 'click', 'mouseup'];
+
+  // The taps should not get propagated out to the outer div.
+  events.forEach(evtName => {
+    outerDiv.addEventListener(evtName, t.unreached_func(), { once: true });
+  });
+
+  window.addEventListener("load", t.step_func(() => {
+    singleTapOnControl(playButton(audio), t.step_func(() => {
+      singleTapOnControl(playButton(video), t.step_func(() => {
+        // Give the tap a chance to (hopefully not) propagate.
+        setTimeout(t.done.bind(t));
+      }));
+    }));
+  }));
+});
+</script>
+</html>

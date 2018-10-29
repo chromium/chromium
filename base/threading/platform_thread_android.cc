@@ -34,6 +34,13 @@ const ThreadPriorityToNiceValuePair kThreadPriorityToNiceValueMap[4] = {
     {ThreadPriority::REALTIME_AUDIO, -16},
 };
 
+Optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
+    ThreadPriority priority) {
+  if (priority == ThreadPriority::REALTIME_AUDIO)
+    return base::make_optional(true);
+  return base::nullopt;
+}
+
 bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority) {
   // On Android, we set the Audio priority through JNI as Audio priority
   // will also allow the process to run while it is backgrounded.
@@ -45,16 +52,13 @@ bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority) {
   return false;
 }
 
-bool GetCurrentThreadPriorityForPlatform(ThreadPriority* priority) {
-  DCHECK(priority);
-  *priority = ThreadPriority::NORMAL;
+Optional<ThreadPriority> GetCurrentThreadPriorityForPlatform() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (Java_ThreadUtils_isThreadPriorityAudio(
       env, PlatformThread::CurrentId())) {
-    *priority = ThreadPriority::REALTIME_AUDIO;
-    return true;
+    return base::make_optional(ThreadPriority::REALTIME_AUDIO);
   }
-  return false;
+  return base::nullopt;
 }
 
 }  // namespace internal

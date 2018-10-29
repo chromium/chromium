@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "ui/display/display_observer.h"
-#include "ui/views/pointer_watcher.h"
+#include "ui/events/event_observer.h"
 
 namespace views {
 class AuraInit;
@@ -26,7 +26,7 @@ class TapRenderer;
 // Application that paints touch tap points as circles. Creates a fullscreen
 // transparent widget on each display to draw the taps.
 class TapVisualizerApp : public service_manager::Service,
-                         public views::PointerWatcher,
+                         public ui::EventObserver,
                          public display::DisplayObserver {
  public:
   TapVisualizerApp();
@@ -41,10 +41,8 @@ class TapVisualizerApp : public service_manager::Service,
   // service_manager::Service:
   void OnStart() override;
 
-  // views::PointerWatcher:
-  void OnPointerEventObserved(const ui::PointerEvent& event,
-                              const gfx::Point& location_in_screen,
-                              gfx::NativeView target) override;
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override;
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;

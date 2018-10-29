@@ -2,7 +2,6 @@ Check that an already imported key with empty usages can be deserialized.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS key.type is "secret"
 PASS key.extractable is true
 PASS key.algorithm.name is "AES-CBC"

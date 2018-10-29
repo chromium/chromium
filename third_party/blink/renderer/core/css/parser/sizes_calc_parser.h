@@ -14,7 +14,7 @@
 namespace blink {
 
 struct SizesCalcValue {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   double value;
   bool is_length;
   UChar operation;

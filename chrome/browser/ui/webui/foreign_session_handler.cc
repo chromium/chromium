@@ -198,7 +198,7 @@ void ForeignSessionHandler::OpenForeignSessionWindows(
   }
   std::vector<const ::sessions::SessionWindow*>::const_iterator iter_begin =
       windows.begin() + (window_num < 0 ? 0 : window_num);
-  std::vector<const ::sessions::SessionWindow*>::const_iterator iter_end =
+  auto iter_end =
       window_num < 0
           ? std::vector<const ::sessions::SessionWindow*>::const_iterator(
                 windows.end())

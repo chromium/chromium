@@ -37,7 +37,7 @@ class QuicSpdyClientBase : public QuicClientBase,
     virtual void OnCompleteResponse(
         QuicStreamId id,
         const spdy::SpdyHeaderBlock& response_headers,
-        const std::string& response_body) = 0;
+        const QuicString& response_body) = 0;
   };
 
   // The client uses these objects to keep track of any data to resend upon
@@ -99,7 +99,7 @@ class QuicSpdyClientBase : public QuicClientBase,
 
   // Sends a request simple GET for each URL in |url_list|, and then waits for
   // each to complete.
-  void SendRequestsAndWaitForResponse(const std::vector<std::string>& url_list);
+  void SendRequestsAndWaitForResponse(const std::vector<QuicString>& url_list);
 
   // Returns a newly created QuicSpdyClientStream.
   QuicSpdyClientStream* CreateClientStream();
@@ -126,11 +126,11 @@ class QuicSpdyClientBase : public QuicClientBase,
   void set_store_response(bool val) { store_response_ = val; }
 
   size_t latest_response_code() const;
-  const std::string& latest_response_headers() const;
-  const std::string& preliminary_response_headers() const;
+  const QuicString& latest_response_headers() const;
+  const QuicString& preliminary_response_headers() const;
   const spdy::SpdyHeaderBlock& latest_response_header_block() const;
-  const std::string& latest_response_body() const;
-  const std::string& latest_response_trailers() const;
+  const QuicString& latest_response_body() const;
+  const QuicString& latest_response_trailers() const;
 
   void set_response_listener(std::unique_ptr<ResponseListener> listener) {
     response_listener_ = std::move(listener);
@@ -190,15 +190,15 @@ class QuicSpdyClientBase : public QuicClientBase,
   // HTTP response code from most recent response.
   int latest_response_code_;
   // HTTP/2 headers from most recent response.
-  std::string latest_response_headers_;
+  QuicString latest_response_headers_;
   // preliminary 100 Continue HTTP/2 headers from most recent response, if any.
-  std::string preliminary_response_headers_;
+  QuicString preliminary_response_headers_;
   // HTTP/2 headers from most recent response.
   spdy::SpdyHeaderBlock latest_response_header_block_;
   // Body of most recent response.
-  std::string latest_response_body_;
+  QuicString latest_response_body_;
   // HTTP/2 trailers from most recent response.
-  std::string latest_response_trailers_;
+  QuicString latest_response_trailers_;
 
   // Listens for full responses.
   std::unique_ptr<ResponseListener> response_listener_;

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/usv_string_or_trusted_url.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_display_lock_callback.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -131,12 +133,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
-#include "third_party/blink/renderer/core/page/scrolling/root_scroller_util.h"
-#include "third_party/blink/renderer/core/page/scrolling/scroll_customization_callbacks.h"
-#include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
-#include "third_party/blink/renderer/core/page/scrolling/scroll_state_callback.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
-#include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -164,26 +161,7 @@
 
 namespace blink {
 
-namespace {
-
-// We need to retain the scroll customization callbacks until the element
-// they're associated with is destroyed. It would be simplest if the callbacks
-// could be stored in ElementRareData, but we can't afford the space increase.
-// Instead, keep the scroll customization callbacks here. The other option would
-// be to store these callbacks on the Page or document, but that necessitates a
-// bunch more logic for transferring the callbacks between Pages when elements
-// are moved around.
-ScrollCustomizationCallbacks& GetScrollCustomizationCallbacks() {
-  DEFINE_STATIC_LOCAL(ScrollCustomizationCallbacks,
-                      scroll_customization_callbacks,
-                      (new ScrollCustomizationCallbacks));
-  return scroll_customization_callbacks;
-}
-
-}  // namespace
-
 using namespace HTMLNames;
-using namespace XMLNames;
 
 enum class ClassStringContent { kEmpty, kWhiteSpaceOnly, kHasClasses };
 
@@ -395,9 +373,9 @@ bool Element::hasAttribute(const QualifiedName& name) const {
 void Element::SynchronizeAllAttributes() const {
   if (!GetElementData())
     return;
-  // NOTE: anyAttributeMatches in SelectorChecker.cpp
-  // currently assumes that all lazy attributes have a null namespace.
-  // If that ever changes we'll need to fix that code.
+  // NOTE: AnyAttributeMatches in selector_checker.cc currently assumes that all
+  // lazy attributes have a null namespace.  If that ever changes we'll need to
+  // fix that code.
   if (GetElementData()->style_attribute_is_dirty_) {
     DCHECK(IsStyledElement());
     SynchronizeStyleAttributeInternal();
@@ -441,10 +419,10 @@ void Element::SynchronizeAttribute(const AtomicString& local_name) const {
     // animated SVG Attribute. It would seem we should only call this method
     // if SVGElement::isAnimatableAttribute is true, but the list of
     // animatable attributes in isAnimatableAttribute does not suffice to
-    // pass all layout tests. Also, m_animatedSVGAttributesAreDirty stays
-    // dirty unless synchronizeAnimatedSVGAttribute is called with
-    // anyQName(). This means that even if Element::synchronizeAttribute()
-    // is called on all attributes, m_animatedSVGAttributesAreDirty remains
+    // pass all layout tests. Also, animated_svg_attributes_are_dirty_ stays
+    // dirty unless SynchronizeAnimatedSVGAttribute is called with
+    // AnyQName(). This means that even if Element::SynchronizeAttribute()
+    // is called on all attributes, animated_svg_attributes_are_dirty_ remains
     // true.
     ToSVGElement(this)->SynchronizeAnimatedSVGAttribute(
         QualifiedName(g_null_atom, local_name, g_null_atom));
@@ -583,182 +561,6 @@ void Element::scrollIntoViewIfNeeded(bool center_if_needed) {
         {ScrollAlignment::kAlignToEdgeIfNeeded,
          ScrollAlignment::kAlignToEdgeIfNeeded, kProgrammaticScroll, false});
   }
-}
-
-void Element::setDistributeScroll(V8ScrollStateCallback* scroll_state_callback,
-                                  const String& native_scroll_behavior) {
-  GetScrollCustomizationCallbacks().SetDistributeScroll(
-      this, ScrollStateCallbackV8Impl::Create(scroll_state_callback,
-                                              native_scroll_behavior));
-}
-
-void Element::setApplyScroll(V8ScrollStateCallback* scroll_state_callback,
-                             const String& native_scroll_behavior) {
-  SetApplyScroll(ScrollStateCallbackV8Impl::Create(scroll_state_callback,
-                                                   native_scroll_behavior));
-}
-
-void Element::SetApplyScroll(ScrollStateCallback* scroll_state_callback) {
-  GetScrollCustomizationCallbacks().SetApplyScroll(this, scroll_state_callback);
-}
-
-void Element::RemoveApplyScroll() {
-  GetScrollCustomizationCallbacks().RemoveApplyScroll(this);
-}
-
-ScrollStateCallback* Element::GetApplyScroll() {
-  return GetScrollCustomizationCallbacks().GetApplyScroll(this);
-}
-
-void Element::NativeDistributeScroll(ScrollState& scroll_state) {
-  if (scroll_state.FullyConsumed())
-    return;
-
-  scroll_state.distributeToScrollChainDescendant();
-
-  // The scroll doesn't propagate, and we're currently scrolling an element
-  // other than this one, prevent the scroll from propagating to this element.
-  if (scroll_state.DeltaConsumedForScrollSequence() &&
-      scroll_state.CurrentNativeScrollingElement() != this) {
-    return;
-  }
-
-  const double delta_x = scroll_state.deltaX();
-  const double delta_y = scroll_state.deltaY();
-
-  CallApplyScroll(scroll_state);
-
-  if (delta_x != scroll_state.deltaX() || delta_y != scroll_state.deltaY())
-    scroll_state.SetCurrentNativeScrollingElement(this);
-}
-
-void Element::CallDistributeScroll(ScrollState& scroll_state) {
-  TRACE_EVENT0("input", "Element::CallDistributeScroll");
-  ScrollStateCallback* callback =
-      GetScrollCustomizationCallbacks().GetDistributeScroll(this);
-
-  // TODO(bokan): Need to add tests before we allow calling custom callbacks
-  // for non-touch modalities. For now, just call into the native callback but
-  // allow the viewport scroll callback so we don't disable overscroll.
-  // crbug.com/623079.
-  bool disable_custom_callbacks = !scroll_state.isDirectManipulation() &&
-                                  !GetDocument()
-                                       .GetPage()
-                                       ->GlobalRootScrollerController()
-                                       .IsViewportScrollCallback(callback);
-
-  disable_custom_callbacks |=
-      !RootScrollerUtil::IsGlobal(this) &&
-      RuntimeEnabledFeatures::ScrollCustomizationEnabled() &&
-      !GetScrollCustomizationCallbacks().InScrollPhase(this);
-
-  if (!callback || disable_custom_callbacks) {
-    NativeDistributeScroll(scroll_state);
-    return;
-  }
-  if (callback->NativeScrollBehavior() !=
-      WebNativeScrollBehavior::kPerformAfterNativeScroll)
-    callback->Invoke(&scroll_state);
-  if (callback->NativeScrollBehavior() !=
-      WebNativeScrollBehavior::kDisableNativeScroll)
-    NativeDistributeScroll(scroll_state);
-  if (callback->NativeScrollBehavior() ==
-      WebNativeScrollBehavior::kPerformAfterNativeScroll)
-    callback->Invoke(&scroll_state);
-}
-
-void Element::NativeApplyScroll(ScrollState& scroll_state) {
-  // All elements in the scroll chain should be boxes.
-  DCHECK(!GetLayoutObject() || GetLayoutObject()->IsBox());
-
-  if (scroll_state.FullyConsumed())
-    return;
-
-  FloatSize delta(scroll_state.deltaX(), scroll_state.deltaY());
-
-  if (delta.IsZero())
-    return;
-
-  // TODO(esprehn): This should use
-  // updateStyleAndLayoutIgnorePendingStylesheetsForNode.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
-
-  LayoutBox* box_to_scroll = nullptr;
-
-  if (this == GetDocument().documentElement())
-    box_to_scroll = GetDocument().GetLayoutView();
-  else if (GetLayoutObject())
-    box_to_scroll = ToLayoutBox(GetLayoutObject());
-
-  if (!box_to_scroll)
-    return;
-
-  ScrollableArea* scrollable_area =
-      box_to_scroll->EnclosingBox()->GetScrollableArea();
-
-  if (!scrollable_area)
-    return;
-
-  ScrollResult result = scrollable_area->UserScroll(
-      ScrollGranularity(static_cast<int>(scroll_state.deltaGranularity())),
-      delta);
-
-  if (!result.DidScroll())
-    return;
-
-  // FIXME: Native scrollers should only consume the scroll they
-  // apply. See crbug.com/457765.
-  scroll_state.ConsumeDeltaNative(delta.Width(), delta.Height());
-
-  // We need to setCurrentNativeScrollingElement in both the
-  // distributeScroll and applyScroll default implementations so
-  // that if JS overrides one of these methods, but not the
-  // other, this bookkeeping remains accurate.
-  scroll_state.SetCurrentNativeScrollingElement(this);
-};
-
-void Element::CallApplyScroll(ScrollState& scroll_state) {
-  TRACE_EVENT0("input", "Element::CallApplyScroll");
-  // Hits ASSERTs when trying to determine whether we need to scroll on main
-  // or CC. http://crbug.com/625676.
-  DisableCompositingQueryAsserts disabler;
-
-  if (!GetDocument().GetPage()) {
-    // We should always have a Page if we're scrolling. See
-    // crbug.com/689074 for details.
-    return;
-  }
-
-  ScrollStateCallback* callback =
-      GetScrollCustomizationCallbacks().GetApplyScroll(this);
-
-  // TODO(bokan): Need to add tests before we allow calling custom callbacks
-  // for non-touch modalities. For now, just call into the native callback but
-  // allow the viewport scroll callback so we don't disable overscroll.
-  // crbug.com/623079.
-  bool disable_custom_callbacks = !scroll_state.isDirectManipulation() &&
-                                  !GetDocument()
-                                       .GetPage()
-                                       ->GlobalRootScrollerController()
-                                       .IsViewportScrollCallback(callback);
-  disable_custom_callbacks |=
-      !RootScrollerUtil::IsGlobal(this) &&
-      RuntimeEnabledFeatures::ScrollCustomizationEnabled() &&
-      !GetScrollCustomizationCallbacks().InScrollPhase(this);
-
-  if (!callback || disable_custom_callbacks) {
-    NativeApplyScroll(scroll_state);
-    return;
-  }
-  if (callback->NativeScrollBehavior() !=
-      WebNativeScrollBehavior::kPerformAfterNativeScroll)
-    callback->Invoke(&scroll_state);
-  if (callback->NativeScrollBehavior() !=
-      WebNativeScrollBehavior::kDisableNativeScroll)
-    NativeApplyScroll(scroll_state);
-  if (callback->NativeScrollBehavior() ==
-      WebNativeScrollBehavior::kPerformAfterNativeScroll)
-    callback->Invoke(&scroll_state);
 }
 
 int Element::OffsetLeft() {
@@ -962,9 +764,12 @@ void Element::setScrollLeft(double new_left) {
     FloatPoint end_point(new_left * box->Style()->EffectiveZoom(),
                          box->ScrollTop().ToFloat());
     if (RuntimeEnabledFeatures::CSSScrollSnapPointsEnabled()) {
+      std::unique_ptr<SnapSelectionStrategy> strategy =
+          SnapSelectionStrategy::CreateForEndPosition(
+              gfx::ScrollOffset(end_point), true, false);
       end_point = GetDocument()
                       .GetSnapCoordinator()
-                      ->GetSnapPositionForPoint(*box, end_point, true, false)
+                      ->GetSnapPosition(*box, *strategy)
                       .value_or(end_point);
     }
     box->SetScrollLeft(LayoutUnit::FromFloatRound(end_point.X()));
@@ -993,9 +798,12 @@ void Element::setScrollTop(double new_top) {
     FloatPoint end_point(box->ScrollLeft().ToFloat(),
                          new_top * box->Style()->EffectiveZoom());
     if (RuntimeEnabledFeatures::CSSScrollSnapPointsEnabled()) {
+      std::unique_ptr<SnapSelectionStrategy> strategy =
+          SnapSelectionStrategy::CreateForEndPosition(
+              gfx::ScrollOffset(end_point), false, true);
       end_point = GetDocument()
                       .GetSnapCoordinator()
-                      ->GetSnapPositionForPoint(*box, end_point, false, true)
+                      ->GetSnapPosition(*box, *strategy)
                       .value_or(end_point);
     }
     box->SetScrollTop(LayoutUnit::FromFloatRound(end_point.Y()));
@@ -1091,38 +899,37 @@ void Element::scrollTo(const ScrollToOptions& scroll_to_options) {
 }
 
 void Element::ScrollLayoutBoxBy(const ScrollToOptions& scroll_to_options) {
-  double left =
-      scroll_to_options.hasLeft()
-          ? ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.left())
-          : 0.0;
-  double top =
-      scroll_to_options.hasTop()
-          ? ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.top())
-          : 0.0;
+  gfx::ScrollOffset displacement;
+  if (scroll_to_options.hasLeft()) {
+    displacement.set_x(
+        ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.left()));
+  }
+  if (scroll_to_options.hasTop()) {
+    displacement.set_y(
+        ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.top()));
+  }
 
   ScrollBehavior scroll_behavior = kScrollBehaviorAuto;
   ScrollableArea::ScrollBehaviorFromString(scroll_to_options.behavior(),
                                            scroll_behavior);
   LayoutBox* box = GetLayoutBox();
   if (box) {
-    float current_scaled_left = box->ScrollLeft().ToFloat();
-    float current_scaled_top = box->ScrollTop().ToFloat();
-    float new_scaled_left =
-        left * box->Style()->EffectiveZoom() + current_scaled_left;
-    float new_scaled_top =
-        top * box->Style()->EffectiveZoom() + current_scaled_top;
+    gfx::ScrollOffset current_position(box->ScrollLeft().ToFloat(),
+                                       box->ScrollTop().ToFloat());
+    displacement.Scale(box->Style()->EffectiveZoom());
+    gfx::ScrollOffset new_offset(current_position + displacement);
+    FloatPoint new_position(new_offset.x(), new_offset.y());
 
-    FloatPoint new_scaled_position(new_scaled_left, new_scaled_top);
     if (RuntimeEnabledFeatures::CSSScrollSnapPointsEnabled()) {
-      new_scaled_position =
-          GetDocument()
-              .GetSnapCoordinator()
-              ->GetSnapPositionForPoint(*box, new_scaled_position,
-                                        scroll_to_options.hasLeft(),
-                                        scroll_to_options.hasTop())
-              .value_or(new_scaled_position);
+      std::unique_ptr<SnapSelectionStrategy> strategy =
+          SnapSelectionStrategy::CreateForEndAndDirection(current_position,
+                                                          displacement);
+      new_position = GetDocument()
+                         .GetSnapCoordinator()
+                         ->GetSnapPosition(*box, *strategy)
+                         .value_or(new_position);
     }
-    box->ScrollToPosition(new_scaled_position, scroll_behavior);
+    box->ScrollToPosition(new_position, scroll_behavior);
   }
 }
 
@@ -1133,40 +940,43 @@ void Element::ScrollLayoutBoxTo(const ScrollToOptions& scroll_to_options) {
 
   LayoutBox* box = GetLayoutBox();
   if (box) {
-    float scaled_left = box->ScrollLeft().ToFloat();
-    float scaled_top = box->ScrollTop().ToFloat();
-    if (scroll_to_options.hasLeft())
-      scaled_left =
+    FloatPoint new_position(box->ScrollLeft().ToFloat(),
+                            box->ScrollTop().ToFloat());
+    if (scroll_to_options.hasLeft()) {
+      new_position.SetX(
           ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.left()) *
-          box->Style()->EffectiveZoom();
-    if (scroll_to_options.hasTop())
-      scaled_top =
-          ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.top()) *
-          box->Style()->EffectiveZoom();
-
-    FloatPoint new_scaled_position(scaled_left, scaled_top);
-    if (RuntimeEnabledFeatures::CSSScrollSnapPointsEnabled()) {
-      new_scaled_position =
-          GetDocument()
-              .GetSnapCoordinator()
-              ->GetSnapPositionForPoint(*box, new_scaled_position,
-                                        scroll_to_options.hasLeft(),
-                                        scroll_to_options.hasTop())
-              .value_or(new_scaled_position);
+          box->Style()->EffectiveZoom());
     }
-    box->ScrollToPosition(new_scaled_position, scroll_behavior);
+    if (scroll_to_options.hasTop()) {
+      new_position.SetY(
+          ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.top()) *
+          box->Style()->EffectiveZoom());
+    }
+
+    if (RuntimeEnabledFeatures::CSSScrollSnapPointsEnabled()) {
+      std::unique_ptr<SnapSelectionStrategy> strategy =
+          SnapSelectionStrategy::CreateForEndPosition(
+              gfx::ScrollOffset(new_position), scroll_to_options.hasLeft(),
+              scroll_to_options.hasTop());
+      new_position = GetDocument()
+                         .GetSnapCoordinator()
+                         ->GetSnapPosition(*box, *strategy)
+                         .value_or(new_position);
+    }
+    box->ScrollToPosition(new_position, scroll_behavior);
   }
 }
 
 void Element::ScrollFrameBy(const ScrollToOptions& scroll_to_options) {
-  double left =
-      scroll_to_options.hasLeft()
-          ? ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.left())
-          : 0.0;
-  double top =
-      scroll_to_options.hasTop()
-          ? ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.top())
-          : 0.0;
+  gfx::ScrollOffset displacement;
+  if (scroll_to_options.hasLeft()) {
+    displacement.set_x(
+        ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.left()));
+  }
+  if (scroll_to_options.hasTop()) {
+    displacement.set_y(
+        ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.top()));
+  }
 
   ScrollBehavior scroll_behavior = kScrollBehaviorAuto;
   ScrollableArea::ScrollBehaviorFromString(scroll_to_options.behavior(),
@@ -1179,25 +989,23 @@ void Element::ScrollFrameBy(const ScrollToOptions& scroll_to_options) {
   if (!viewport)
     return;
 
-  float new_scaled_left =
-      left * frame->PageZoomFactor() + viewport->GetScrollOffset().Width();
-  float new_scaled_top =
-      top * frame->PageZoomFactor() + viewport->GetScrollOffset().Height();
+  displacement.Scale(frame->PageZoomFactor());
+  FloatPoint new_position = viewport->ScrollPosition() +
+                            FloatPoint(displacement.x(), displacement.y());
 
-  FloatPoint new_scaled_position = viewport->ScrollOffsetToPosition(
-      ScrollOffset(new_scaled_left, new_scaled_top));
   if (RuntimeEnabledFeatures::CSSScrollSnapPointsEnabled()) {
-    new_scaled_position =
+    gfx::ScrollOffset current_position(viewport->ScrollPosition());
+    std::unique_ptr<SnapSelectionStrategy> strategy =
+        SnapSelectionStrategy::CreateForEndAndDirection(current_position,
+                                                        displacement);
+    new_position =
         GetDocument()
             .GetSnapCoordinator()
-            ->GetSnapPositionForPoint(
-                *GetDocument().GetLayoutView(), new_scaled_position,
-                scroll_to_options.hasLeft(), scroll_to_options.hasTop())
-            .value_or(new_scaled_position);
+            ->GetSnapPosition(*GetDocument().GetLayoutView(), *strategy)
+            .value_or(new_position);
   }
-  viewport->SetScrollOffset(
-      viewport->ScrollPositionToOffset(new_scaled_position),
-      kProgrammaticScroll, scroll_behavior);
+  viewport->SetScrollOffset(viewport->ScrollPositionToOffset(new_position),
+                            kProgrammaticScroll, scroll_behavior);
 }
 
 void Element::ScrollFrameTo(const ScrollToOptions& scroll_to_options) {
@@ -1212,31 +1020,32 @@ void Element::ScrollFrameTo(const ScrollToOptions& scroll_to_options) {
   if (!viewport)
     return;
 
-  float scaled_left = viewport->GetScrollOffset().Width();
-  float scaled_top = viewport->GetScrollOffset().Height();
-  if (scroll_to_options.hasLeft())
-    scaled_left =
+  ScrollOffset new_offset = viewport->GetScrollOffset();
+  if (scroll_to_options.hasLeft()) {
+    new_offset.SetWidth(
         ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.left()) *
-        frame->PageZoomFactor();
-  if (scroll_to_options.hasTop())
-    scaled_top =
+        frame->PageZoomFactor());
+  }
+  if (scroll_to_options.hasTop()) {
+    new_offset.SetHeight(
         ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.top()) *
-        frame->PageZoomFactor();
+        frame->PageZoomFactor());
+  }
 
-  FloatPoint new_scaled_position =
-      viewport->ScrollOffsetToPosition(ScrollOffset(scaled_left, scaled_top));
   if (RuntimeEnabledFeatures::CSSScrollSnapPointsEnabled()) {
-    new_scaled_position =
+    FloatPoint new_position = viewport->ScrollOffsetToPosition(new_offset);
+    std::unique_ptr<SnapSelectionStrategy> strategy =
+        SnapSelectionStrategy::CreateForEndPosition(
+            gfx::ScrollOffset(new_position), scroll_to_options.hasLeft(),
+            scroll_to_options.hasTop());
+    new_position =
         GetDocument()
             .GetSnapCoordinator()
-            ->GetSnapPositionForPoint(
-                *GetDocument().GetLayoutView(), new_scaled_position,
-                scroll_to_options.hasLeft(), scroll_to_options.hasTop())
-            .value_or(new_scaled_position);
+            ->GetSnapPosition(*GetDocument().GetLayoutView(), *strategy)
+            .value_or(new_position);
+    new_offset = viewport->ScrollPositionToOffset(new_position);
   }
-  viewport->SetScrollOffset(
-      viewport->ScrollPositionToOffset(new_scaled_position),
-      kProgrammaticScroll, scroll_behavior);
+  viewport->SetScrollOffset(new_offset, kProgrammaticScroll, scroll_behavior);
 }
 
 bool Element::HasNonEmptyLayoutSize() const {
@@ -1299,9 +1108,9 @@ IntRect Element::VisibleBoundsInVisualViewport() const {
   rect.Intersect(frame_clip_rect);
 
   // MapToVisualRectInAncestorSpace, called with a null ancestor argument,
-  // returns the viewport-visible rect in the local frame root's coordinates,
-  // accounting for clips and transformed in embedding containers. This
-  // includes clips that might be applied by out-of-process frame ancestors.
+  // returns the viewport-visible rect in the root frame's coordinate space.
+  // MapToVisualRectInAncestorSpace applies ancestors' frame's clipping but does
+  // not apply (overflow) element clipping.
   GetDocument().View()->GetLayoutView()->MapToVisualRectInAncestorSpace(
       nullptr, rect, kUseTransforms | kTraverseDocumentBoundaries,
       kDefaultVisualRectFlags);
@@ -1466,7 +1275,7 @@ void Element::InvisibleAttributeChanged(const AtomicString& old_value,
   if (old_value.IsNull() != new_value.IsNull()) {
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::Create(
-                            StyleChangeReason::kInvisibleChange));
+                            style_change_reason::kInvisibleChange));
   }
   if (EqualIgnoringASCIICase(old_value, "static") &&
       !IsInsideInvisibleStaticSubtree()) {
@@ -1636,16 +1445,18 @@ void Element::setAttribute(
     const StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURLOrTrustedURL&
         string_or_TT,
     ExceptionState& exception_state) {
-  if (GetCheckedAttributeNames().Contains(name)) {
+  // TODO(vogelheim): Check whether this applies to non-HTML documents, too.
+  AtomicString name_lowercase = LowercaseIfNecessary(name);
+  if (GetCheckedAttributeNames().Contains(name_lowercase)) {
     String attr_value =
         GetStringFromTrustedType(string_or_TT, &GetDocument(), exception_state);
     if (!exception_state.HadException())
-      setAttribute(name, AtomicString(attr_value), exception_state);
+      setAttribute(name_lowercase, AtomicString(attr_value), exception_state);
     return;
   }
   AtomicString value_string =
       AtomicString(GetStringFromTrustedTypeWithoutCheck(string_or_TT));
-  setAttribute(name, value_string, exception_state);
+  setAttribute(name_lowercase, value_string, exception_state);
 }
 
 const HashSet<AtomicString>& Element::GetCheckedAttributeNames() const {
@@ -1771,10 +1582,10 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       EnsureElementRareData().SetPart(params.new_value);
       GetDocument().GetStyleEngine().PartChangedForElement(*this);
     }
-  } else if (name == HTMLNames::partmapAttr) {
+  } else if (name == HTMLNames::exportpartsAttr) {
     if (RuntimeEnabledFeatures::CSSPartPseudoElementEnabled()) {
       EnsureElementRareData().SetPartNamesMap(params.new_value);
-      GetDocument().GetStyleEngine().PartmapChangedForElement(*this);
+      GetDocument().GetStyleEngine().ExportpartsChangedForElement(*this);
     }
   } else if (IsStyledElement()) {
     if (name == styleAttr) {
@@ -1972,8 +1783,8 @@ void Element::ParserSetAttributes(const Vector<Attribute>& attribute_vector) {
 
   ParserDidSetAttributes();
 
-  // Use attributeVector instead of m_elementData because attributeChanged might
-  // modify m_elementData.
+  // Use attribute_vector instead of element_data_ because AttributeChanged
+  // might modify element_data_.
   for (const auto& attribute : attribute_vector) {
     AttributeChanged(AttributeModificationParams(
         attribute.GetName(), g_null_atom, attribute.Value(),
@@ -2308,6 +2119,13 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject() {
   // not inside RecalcStyle.
   if (ElementAnimations* element_animations = GetElementAnimations())
     element_animations->CssAnimations().ClearPendingUpdate();
+
+  if (RuntimeEnabledFeatures::InvisibleDOMEnabled() &&
+      hasAttribute(HTMLNames::invisibleAttr)) {
+    auto style = ComputedStyle::Create();
+    style->SetDisplay(EDisplay::kNone);
+    return style;
+  }
 
   scoped_refptr<ComputedStyle> style = HasCustomStyleCallbacks()
                                            ? CustomStyleForLayoutObject()
@@ -2721,14 +2539,13 @@ ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootType type) {
   shadow_root->InsertedInto(*this);
   SetChildNeedsStyleRecalc();
   SetNeedsStyleRecalc(kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                               StyleChangeReason::kShadow));
+                                               style_change_reason::kShadow));
 
   probe::didPushShadowRoot(this, shadow_root);
 
   return *shadow_root;
 }
 
-// TODO(kochi): inline this.
 ShadowRoot* Element::GetShadowRoot() const {
   return HasRareData() ? GetElementRareData()->GetShadowRoot() : nullptr;
 }
@@ -2766,7 +2583,7 @@ void Element::SetNeedsAnimationStyleRecalc() {
     return;
 
   SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                             StyleChangeReason::kAnimation));
+                                             style_change_reason::kAnimation));
   SetAnimationStyleChange(true);
 }
 
@@ -3158,7 +2975,7 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
       // We only set when value is in integer range.
       SetTabIndexExplicitly();
     }
-  } else if (params.name == XMLNames::langAttr) {
+  } else if (params.name == xml_names::kLangAttr) {
     PseudoStateChanged(CSSSelector::kPseudoLang);
   }
 }
@@ -3693,22 +3510,12 @@ void Element::SetNeedsResizeObserverUpdate() {
   }
 }
 
-void Element::WillBeginCustomizedScrollPhase(
-    ScrollCustomization::ScrollDirection direction) {
-  DCHECK(!GetScrollCustomizationCallbacks().InScrollPhase(this));
-  LayoutBox* box = GetLayoutBox();
-  if (!box)
-    return;
-
-  ScrollCustomization::ScrollDirection scroll_customization =
-      box->Style()->ScrollCustomization();
-
-  GetScrollCustomizationCallbacks().SetInScrollPhase(
-      this, direction & scroll_customization);
-}
-
-void Element::DidEndCustomizedScrollPhase() {
-  GetScrollCustomizationCallbacks().SetInScrollPhase(this, false);
+ScriptPromise Element::acquireDisplayLock(ScriptState* script_state,
+                                          V8DisplayLockCallback* callback) {
+  auto* context =
+      EnsureElementRareData().EnsureDisplayLockContext(GetExecutionContext());
+  context->ScheduleTask(callback, script_state);
+  return context->Promise();
 }
 
 // Step 1 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
@@ -3781,8 +3588,9 @@ void Element::setPointerCapture(int pointer_id,
   if (GetDocument().GetFrame()) {
     if (!GetDocument().GetFrame()->GetEventHandler().IsPointerEventActive(
             pointer_id)) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidPointerId,
-                                        "InvalidPointerId");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotFoundError,
+          "No active pointer with the given id is found.");
     } else if (!isConnected() ||
                (GetDocument().GetPage() && GetDocument()
                                                .GetPage()
@@ -3802,8 +3610,9 @@ void Element::releasePointerCapture(int pointer_id,
   if (GetDocument().GetFrame()) {
     if (!GetDocument().GetFrame()->GetEventHandler().IsPointerEventActive(
             pointer_id)) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidPointerId,
-                                        "InvalidPointerId");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotFoundError,
+          "No active pointer with the given id is found.");
     } else {
       GetDocument().GetFrame()->GetEventHandler().ReleasePointerCapture(
           pointer_id, this);
@@ -3912,6 +3721,16 @@ const ComputedStyle* Element::EnsureComputedStyle(
     return nullptr;
   }
 
+  // EnsureComputedStyle is expected to be called to forcibly compute style for
+  // elements in display:none subtrees on otherwise style-clean documents. If
+  // you hit this DCHECK, consider if you really need ComputedStyle for
+  // display:none elements. If not, use GetComputedStyle() instead.
+  // Regardlessly, you need to UpdateStyleAndLayoutTree() before calling
+  // EnsureComputedStyle. In some cases you might be fine using GetComputedStyle
+  // without updating the style, but in most cases you want a clean tree for
+  // that as well.
+  DCHECK(!GetDocument().NeedsLayoutTreeUpdateForNode(*this));
+
   // FIXME: Find and use the layoutObject from the pseudo element instead of the
   // actual element so that the 'length' properties, which are only known by the
   // layoutObject because it did the layout, will be correct and so that the
@@ -4003,15 +3822,15 @@ AtomicString Element::ComputeInheritedLanguage() const {
       if (const ElementData* element_data = ToElement(n)->GetElementData()) {
         AttributeCollection attributes = element_data->Attributes();
         // Spec: xml:lang takes precedence -- http://www.w3.org/TR/xhtml1/#C_7
-        if (const Attribute* attribute = attributes.Find(XMLNames::langAttr))
+        if (const Attribute* attribute = attributes.Find(xml_names::kLangAttr))
           value = attribute->Value();
         else if (const Attribute* attribute =
                      attributes.Find(HTMLNames::langAttr))
           value = attribute->Value();
       }
-    } else if (n->IsDocumentNode()) {
+    } else if (auto* document = DynamicTo<Document>(n)) {
       // checking the MIME content-language
-      value = ToDocument(n)->ContentLanguage();
+      value = document->ContentLanguage();
     }
 
     n = n->ParentOrShadowHostNode();
@@ -4394,7 +4213,8 @@ double Element::GetFloatingPointAttribute(const QualifiedName& attribute_name,
 
 void Element::SetFloatingPointAttribute(const QualifiedName& attribute_name,
                                         double value) {
-  setAttribute(attribute_name, AtomicString::Number(value));
+  String serialized_value = SerializeForNumberType(value);
+  setAttribute(attribute_name, AtomicString(serialized_value));
 }
 
 void Element::SetContainsFullScreenElement(bool flag) {
@@ -4989,14 +4809,14 @@ void Element::StyleAttributeChanged(
 
   SetNeedsStyleRecalc(kLocalStyleChange,
                       StyleChangeReasonForTracing::Create(
-                          StyleChangeReason::kStyleSheetChange));
+                          style_change_reason::kStyleSheetChange));
   probe::didInvalidateStyleAttr(this);
 }
 
 void Element::InlineStyleChanged() {
   DCHECK(IsStyledElement());
   SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                             StyleChangeReason::kInline));
+                                             style_change_reason::kInline));
   DCHECK(GetElementData());
   GetElementData()->style_attribute_is_dirty_ = true;
   probe::didInvalidateStyleAttr(this);

@@ -12,6 +12,7 @@ function DeserializeKeyEvent(dict) {
   var e = document.createEvent('Event');
   e.initEvent('keydown', true, true);
   e.keyCode = dict.keyCode;
+  e.code = dict.code;
   e.shiftKey = dict.shiftKey;
   e.ctrlKey = dict.ctrlKey;
   e.altKey = dict.altKey;
@@ -29,6 +30,7 @@ function DeserializeKeyEvent(dict) {
 function SerializeKeyEvent(event) {
   return {
     keyCode: event.keyCode,
+    code: event.code,
     shiftKey: event.shiftKey,
     ctrlKey: event.ctrlKey,
     altKey: event.altKey,

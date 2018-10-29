@@ -180,7 +180,7 @@ TEST_F(ManifestHandlerTest, DependentHandlers) {
       Register();
   ManifestHandler::FinalizeRegistration();
 
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(DictionaryBuilder()
                            .Set("name", "no name")
@@ -218,12 +218,9 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
 
   // Succeeds when "a" is not recognized.
   std::string error;
-  scoped_refptr<Extension> extension = Extension::Create(
-      base::FilePath(),
-      Manifest::INVALID_LOCATION,
-      *manifest_a,
-      Extension::NO_FLAGS,
-      &error);
+  scoped_refptr<Extension> extension =
+      Extension::Create(base::FilePath(), Manifest::INVALID_LOCATION,
+                        *manifest_a, Extension::NO_FLAGS, &error);
   EXPECT_TRUE(extension.get());
 
   // Register a handler for "a" that fails.
@@ -244,7 +241,7 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
 
 TEST_F(ManifestHandlerTest, Validate) {
   ScopedTestingManifestHandlerRegistry registry;
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(DictionaryBuilder()
                            .Set("name", "no name")

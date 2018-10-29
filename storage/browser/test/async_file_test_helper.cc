@@ -18,7 +18,7 @@
 
 namespace content {
 
-typedef storage::FileSystemOperation::FileEntryList FileEntryList;
+using FileEntryList = storage::FileSystemOperation::FileEntryList;
 
 namespace {
 
@@ -29,10 +29,10 @@ void AssignAndQuit(base::RunLoop* run_loop,
   run_loop->Quit();
 }
 
-base::Callback<void(base::File::Error)> AssignAndQuitCallback(
+base::OnceCallback<void(base::File::Error)> AssignAndQuitCallback(
     base::RunLoop* run_loop,
     base::File::Error* result) {
-  return base::Bind(&AssignAndQuit, run_loop, base::Unretained(result));
+  return base::BindOnce(&AssignAndQuit, run_loop, base::Unretained(result));
 }
 
 void GetMetadataCallback(base::RunLoop* run_loop,
@@ -221,7 +221,7 @@ base::File::Error AsyncFileTestHelper::GetMetadata(
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
           storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
           storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
-      base::Bind(&GetMetadataCallback, &run_loop, &result, file_info));
+      base::BindOnce(&GetMetadataCallback, &run_loop, &result, file_info));
   run_loop.Run();
   return result;
 }
@@ -233,8 +233,8 @@ base::File::Error AsyncFileTestHelper::GetPlatformPath(
   base::File::Error result = base::File::FILE_ERROR_FAILED;
   base::RunLoop run_loop;
   context->operation_runner()->CreateSnapshotFile(
-      url, base::Bind(&CreateSnapshotFileCallback, &run_loop, &result,
-                      platform_path));
+      url, base::BindOnce(&CreateSnapshotFileCallback, &run_loop, &result,
+                          platform_path));
   run_loop.Run();
   return result;
 }
@@ -258,7 +258,7 @@ bool AsyncFileTestHelper::DirectoryExists(storage::FileSystemContext* context,
 
 blink::mojom::QuotaStatusCode AsyncFileTestHelper::GetUsageAndQuota(
     storage::QuotaManager* quota_manager,
-    const GURL& origin,
+    const url::Origin& origin,
     storage::FileSystemType type,
     int64_t* usage,
     int64_t* quota) {

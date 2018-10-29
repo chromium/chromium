@@ -15,6 +15,7 @@
 namespace blink {
 
 class IceTransportProxy;
+class QuicTransportHost;
 
 // This class is the host side correspondent to the IceTransportProxy. See the
 // IceTransportProxy documentation for background. This class lives on the host
@@ -41,11 +42,15 @@ class IceTransportProxy;
 class IceTransportHost final : public IceTransportAdapter::Delegate {
  public:
   IceTransportHost(scoped_refptr<base::SingleThreadTaskRunner> proxy_thread,
+                   scoped_refptr<base::SingleThreadTaskRunner> host_thread,
                    base::WeakPtr<IceTransportProxy> proxy);
   ~IceTransportHost() override;
 
   void Initialize(
       std::unique_ptr<IceTransportAdapterCrossThreadFactory> adapter_factory);
+
+  scoped_refptr<base::SingleThreadTaskRunner> proxy_thread() const;
+  scoped_refptr<base::SingleThreadTaskRunner> host_thread() const;
 
   void StartGathering(
       const cricket::IceParameters& local_parameters,
@@ -58,15 +63,29 @@ class IceTransportHost final : public IceTransportAdapter::Delegate {
   void HandleRemoteRestart(const cricket::IceParameters& new_remote_parameters);
   void AddRemoteCandidate(const cricket::Candidate& candidate);
 
+  // A QuicTransportHost can be connected to this IceTransportHost. Only one can
+  // be connected at a time, and the caller must ensure that the consumer is
+  // disconnected before destroying the IceTransportHost.
+  // ConnectConsumer returns an implementation of IceTransportAdapter that
+  // should only be used on the host thread.
+  bool HasConsumer() const;
+  IceTransportAdapter* ConnectConsumer(QuicTransportHost* consumer_host);
+  void DisconnectConsumer(QuicTransportHost* consumer_host);
+
  private:
   // IceTransportAdapter::Delegate overrides.
   void OnGatheringStateChanged(cricket::IceGatheringState new_state) override;
   void OnCandidateGathered(const cricket::Candidate& candidate) override;
   void OnStateChanged(cricket::IceTransportState new_state) override;
+  void OnSelectedCandidatePairChanged(
+      const std::pair<cricket::Candidate, cricket::Candidate>&
+          selected_candidate_pair) override;
 
   const scoped_refptr<base::SingleThreadTaskRunner> proxy_thread_;
+  const scoped_refptr<base::SingleThreadTaskRunner> host_thread_;
   std::unique_ptr<IceTransportAdapter> transport_;
   base::WeakPtr<IceTransportProxy> proxy_;
+  QuicTransportHost* consumer_host_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
 };

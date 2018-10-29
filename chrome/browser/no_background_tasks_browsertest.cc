@@ -59,11 +59,9 @@ class NoBackgroundTasksTest : public InProcessBrowserTest {
 // background tasks.
 //
 // TODO(fdoray) https://crbug.com/833989:
-// - Flaky timeout on Mac
 // - Flaky timeout on ChromeOS ASAN
 // - Consistent timeout on Win ASAN
-#if defined(OS_MACOSX) || \
-    (defined(ADDRESS_SANITIZER) && (defined(OS_CHROMEOS) || defined(OS_WIN)))
+#if defined(ADDRESS_SANITIZER) && (defined(OS_CHROMEOS) || defined(OS_WIN))
 #define MAYBE_FirstNonEmptyPaintWithoutBackgroundTasks \
   DISABLED_FirstNonEmptyPaintWithoutBackgroundTasks
 #else

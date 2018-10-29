@@ -8,8 +8,6 @@
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "components/history/core/browser/web_history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/signin/core/browser/profile_oauth2_token_service.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"

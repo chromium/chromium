@@ -8,9 +8,9 @@
 #include "base/task/post_task.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/web_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -32,11 +32,12 @@ class BlobBytesStreamer {
                  mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
                  std::move(task_runner)) {
     watcher_.Watch(pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+                   MOJO_WATCH_CONDITION_SATISFIED,
                    WTF::BindRepeating(&BlobBytesStreamer::OnWritable,
                                       WTF::Unretained(this)));
   }
 
-  void OnWritable(MojoResult result) {
+  void OnWritable(MojoResult result, const mojo::HandleSignalsState& state) {
     if (result == MOJO_RESULT_CANCELLED ||
         result == MOJO_RESULT_FAILED_PRECONDITION) {
       delete this;

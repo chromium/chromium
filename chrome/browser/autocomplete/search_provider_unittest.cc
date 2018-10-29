@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
@@ -63,7 +64,7 @@ namespace {
 // Returns the first match in |matches| with |allowed_to_be_default_match|
 // set to true.
 ACMatches::const_iterator FindDefaultMatch(const ACMatches& matches) {
-  ACMatches::const_iterator it = matches.begin();
+  auto it = matches.begin();
   while ((it != matches.end()) && !it->allowed_to_be_default_match)
     ++it;
   return it;
@@ -294,7 +295,8 @@ void SearchProviderTest::SetUp() {
   // We need both the history service and template url model loaded.
   ASSERT_TRUE(profile_.CreateHistoryService(true, false));
   TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      &profile_, &TemplateURLServiceFactory::BuildInstanceFor);
+      &profile_,
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
 
   TemplateURLService* turl_model =
       TemplateURLServiceFactory::GetForProfile(&profile_);
@@ -331,7 +333,8 @@ void SearchProviderTest::SetUp() {
   profile_.BlockUntilHistoryProcessesPendingRequests();
 
   AutocompleteClassifierFactory::GetInstance()->SetTestingFactoryAndUse(
-      &profile_, &AutocompleteClassifierFactory::BuildInstanceFor);
+      &profile_,
+      base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
 
   client_.reset(
       new TestAutocompleteProviderClient(&profile_, &test_url_loader_factory_));
@@ -477,8 +480,8 @@ GURL SearchProviderTest::AddSearchToHistory(TemplateURL* t_url,
 
 bool SearchProviderTest::FindMatchWithContents(const base::string16& contents,
                                                AutocompleteMatch* match) {
-  for (ACMatches::const_iterator i = provider_->matches().begin();
-       i != provider_->matches().end(); ++i) {
+  for (auto i = provider_->matches().begin(); i != provider_->matches().end();
+       ++i) {
     if (i->contents == contents) {
       *match = *i;
       return true;
@@ -489,8 +492,8 @@ bool SearchProviderTest::FindMatchWithContents(const base::string16& contents,
 
 bool SearchProviderTest::FindMatchWithDestination(const GURL& url,
                                                   AutocompleteMatch* match) {
-  for (ACMatches::const_iterator i = provider_->matches().begin();
-       i != provider_->matches().end(); ++i) {
+  for (auto i = provider_->matches().begin(); i != provider_->matches().end();
+       ++i) {
     if (i->destination_url == url) {
       *match = *i;
       return true;
@@ -1970,7 +1973,7 @@ TEST_F(SearchProviderTest, KeywordFetcherSuggestRelevance) {
     ASSERT_FALSE(matches.empty());
     // Find the first match that's allowed to be the default match and check
     // its inline_autocompletion.
-    ACMatches::const_iterator it = FindDefaultMatch(matches);
+    auto it = FindDefaultMatch(matches);
     ASSERT_NE(matches.end(), it);
     EXPECT_EQ(ASCIIToUTF16(cases[i].inline_autocompletion),
               it->inline_autocompletion);
@@ -3612,30 +3615,54 @@ TEST_F(SearchProviderTest, DoesNotProvideOnFocus) {
   EXPECT_TRUE(provider_->matches().empty());
 }
 
-TEST_F(SearchProviderTest, SendsWarmUpRequestOnFocus) {
+// SearchProviderWarmUpTest --------------------------------------------------
+//
+// Like SearchProviderTest.  The only addition is that it's a
+// TestWithParam<bool>, where the boolean parameter represents whether the
+// omnibox::kSearchProviderWarmUpOnFocus feature flag should be enabled.
+class SearchProviderWarmUpTest : public SearchProviderTest,
+                                 public testing::WithParamInterface<bool> {
+ public:
+  SearchProviderWarmUpTest() {}
+  void SetUp() override;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(SearchProviderWarmUpTest);
+};
+
+void SearchProviderWarmUpTest::SetUp() {
+  if (GetParam())
+    feature_list_.InitAndEnableFeature(omnibox::kSearchProviderWarmUpOnFocus);
+  else
+    feature_list_.InitAndDisableFeature(omnibox::kSearchProviderWarmUpOnFocus);
+  SearchProviderTest::SetUp();
+}
+
+#if defined(THREAD_SANITIZER)
+// SearchProviderTest.SendsWarmUpRequestOnFocus is flaky on Linux TSan Tests
+// crbug.com/891959.
+#define MAYBE_SendsWarmUpRequestOnFocus DISABLED_SendsWarmUpRequestOnFocus
+#else
+#define MAYBE_SendsWarmUpRequestOnFocus SendsWarmUpRequestOnFocus
+#endif  // defined(THREAD_SANITIZER)
+TEST_P(SearchProviderWarmUpTest, MAYBE_SendsWarmUpRequestOnFocus) {
   AutocompleteInput input(base::ASCIIToUTF16("f"),
                           metrics::OmniboxEventProto::OTHER,
                           ChromeAutocompleteSchemeClassifier(&profile_));
   input.set_prefer_keyword(true);
   input.set_from_omnibox_focus(true);
 
-  {
-    // First, verify that without the warm-up feature enabled, the provider
-    // immediately terminates with no matches.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(omnibox::kSearchProviderWarmUpOnFocus);
+  if (!GetParam()) {  // The warm-up feature ought to be disabled.
+    // The provider immediately terminates with no matches.
     provider_->Start(input, false);
     // RunUntilIdle so that SearchProvider has a chance to create the
     // URLFetchers (if it wants to, which it shouldn't in this case).
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(provider_->done());
     EXPECT_TRUE(provider_->matches().empty());
-  }
-
-  {
-    // Then, check the behavior with the warm-up feature enabled.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(omnibox::kSearchProviderWarmUpOnFocus);
+  } else {  // The warm-up feature ought to be enabled.
     provider_->Start(input, false);
     // RunUntilIdle so that SearchProvider create the URLFetcher.
     base::RunLoop().RunUntilIdle();
@@ -3653,3 +3680,7 @@ TEST_F(SearchProviderTest, SendsWarmUpRequestOnFocus) {
     EXPECT_TRUE(provider_->matches().empty());
   }
 }
+
+INSTANTIATE_TEST_CASE_P(SearchProviderTest,
+                        SearchProviderWarmUpTest,
+                        testing::Values(false, true));

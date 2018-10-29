@@ -78,19 +78,9 @@ public class PermissionUpdateInfobarTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         // Register for animation notifications
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                if (mActivityTestRule.getActivity().getActivityTab() == null) return false;
-                if (mActivityTestRule.getActivity().getActivityTab().getInfoBarContainer()
-                        == null) {
-                    return false;
-                }
-                return true;
-            }
-        });
-        InfoBarContainer container =
-                mActivityTestRule.getActivity().getActivityTab().getInfoBarContainer();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> mActivityTestRule.getInfoBarContainer() != null);
+        InfoBarContainer container = mActivityTestRule.getInfoBarContainer();
         mListener =  new InfoBarTestAnimationListener();
         container.addAnimationListener(mListener);
 

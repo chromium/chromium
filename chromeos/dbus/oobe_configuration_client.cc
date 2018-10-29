@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "chromeos/dbus/oobe_config/oobe_config.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -27,13 +28,20 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
 
   // OobeConfigurationClient override:
   void CheckForOobeConfiguration(ConfigurationCallback callback) override {
-    // TODO (antrim): do a method call once https://crbug.com/869209 is fixed.
-    OnData(std::move(callback), nullptr);
+    dbus::MethodCall method_call(
+        oobe_config::kOobeConfigRestoreInterface,
+        oobe_config::kProcessAndGetOobeAutoConfigMethod);
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&OobeConfigurationClientImpl::OnData,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
  protected:
   void Init(dbus::Bus* bus) override {
-    // TODO (antrim): get proxy object once https://crbug.com/869209 is fixed.
+    proxy_ = bus->GetObjectProxy(
+        oobe_config::kOobeConfigRestoreServiceName,
+        dbus::ObjectPath(oobe_config::kOobeConfigRestoreServicePath));
   }
 
  private:
@@ -42,10 +50,34 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
       std::move(callback).Run(false, std::string());
       return;
     }
-
-    // TODO (antrim): read response once https://crbug.com/869209 is fixed.
-    NOTREACHED();
+    oobe_config::OobeRestoreData response_proto;
+    dbus::MessageReader reader(response);
+    int error_code;
+    if (!reader.PopInt32(&error_code)) {
+      LOG(ERROR) << "Failed to parse error code from DBus Response.";
+      std::move(callback).Run(false, std::string());
+      return;
+    }
+    if (error_code) {
+      LOG(ERROR) << "Error during DBus call " << error_code;
+      std::move(callback).Run(false, std::string());
+      return;
+    }
+    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+      LOG(ERROR) << "Failed to parse proto from DBus Response.";
+      std::move(callback).Run(false, std::string());
+      return;
+    }
+    VLOG(0) << "Got oobe config, size = "
+            << response_proto.chrome_config_json().size();
+    if (response_proto.chrome_config_json().empty()) {
+      std::move(callback).Run(false, std::string());
+      return;
+    }
+    std::move(callback).Run(true, response_proto.chrome_config_json());
   }
+
+  dbus::ObjectProxy* proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

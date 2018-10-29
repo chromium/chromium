@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
@@ -118,6 +119,8 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
   if (BlobUtils::MojoBlobURLsEnabled())
     blob = registrable->AsMojoBlob();
   if (blob) {
+    // Measure how much jank the following synchronous IPC introduces.
+    SCOPED_UMA_HISTOGRAM_TIMER("Storage.Blob.RegisterPublicURLTime");
     if (!url_store_) {
       BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
           origin, MakeRequest(&url_store_));

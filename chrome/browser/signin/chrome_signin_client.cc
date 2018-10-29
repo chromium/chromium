@@ -65,6 +65,50 @@
 #include "chrome/browser/ui/user_manager.h"
 #endif
 
+namespace {
+SigninClient::SignoutDecision IsSignoutAllowed(
+    Profile* profile,
+    const signin_metrics::ProfileSignout signout_source_metric) {
+  // TODO(msarda): This logic should be reworked to only prohibit user-
+  // initiated sign-out. For now signin_util::IsUserSignoutAllowedForProfile()
+  // prohibits ALL sign-outs with the exception of ACCOUNT_REMOVED_FROM_DEVICE
+  // because this preserves the original behavior. A follow-up CL will make the
+  // slightly riskier change described above.
+  if (signin_util::IsUserSignoutAllowedForProfile(profile))
+    return SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+
+  switch (signout_source_metric) {
+    case signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE:
+      return SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+
+    case signin_metrics::ProfileSignout::ABORT_SIGNIN:
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      // Allowed, because data has not been synced yet.
+      return SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+#else
+      // ABORT_SIGNIN is only used on Dice platforms.
+      NOTREACHED();
+      return SigninClient::SignoutDecision::DISALLOW_SIGNOUT;
+#endif
+
+    case signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED:
+    case signin_metrics::ProfileSignout::GOOGLE_SERVICE_NAME_PATTERN_CHANGED:
+    case signin_metrics::ProfileSignout::SIGNIN_PREF_CHANGED_DURING_SIGNIN:
+    case signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_SETTINGS:
+    case signin_metrics::ProfileSignout::SERVER_FORCED_DISABLE:
+    case signin_metrics::ProfileSignout::TRANSFER_CREDENTIALS:
+    case signin_metrics::ProfileSignout::
+        AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN:
+    case signin_metrics::ProfileSignout::USER_TUNED_OFF_SYNC_FROM_DICE_UI:
+      return SigninClient::SignoutDecision::DISALLOW_SIGNOUT;
+
+    case signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS:
+      NOTREACHED();
+      return SigninClient::SignoutDecision::DISALLOW_SIGNOUT;
+  }
+}
+}  // namespace
+
 ChromeSigninClient::ChromeSigninClient(
     Profile* profile,
     SigninErrorController* signin_error_controller)
@@ -186,8 +230,12 @@ void ChromeSigninClient::PostSignedIn(const std::string& account_id,
 }
 
 void ChromeSigninClient::PreSignOut(
-    const base::Callback<void()>& sign_out,
+    base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
     signin_metrics::ProfileSignout signout_source_metric) {
+  DCHECK(on_signout_decision_reached);
+  DCHECK(!on_signout_decision_reached_) << "SignOut already in-progress!";
+  on_signout_decision_reached_ = std::move(on_signout_decision_reached);
+
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
   // These sign out won't remove the policy cache, keep the window opened.
@@ -206,13 +254,12 @@ void ChromeSigninClient::PreSignOut(
       // Call OnCloseBrowsersSuccess to continue sign out and show UserManager
       // afterwards.
       should_display_user_manager_ = false;  // Don't show UserManager twice.
-      OnCloseBrowsersSuccess(sign_out, signout_source_metric,
-                             profile_->GetPath());
+      OnCloseBrowsersSuccess(signout_source_metric, profile_->GetPath());
     } else {
       BrowserList::CloseAllBrowsersWithProfile(
           profile_,
           base::Bind(&ChromeSigninClient::OnCloseBrowsersSuccess,
-                     base::Unretained(this), sign_out, signout_source_metric),
+                     base::Unretained(this), signout_source_metric),
           base::Bind(&ChromeSigninClient::OnCloseBrowsersAborted,
                      base::Unretained(this)),
           signout_source_metric == signin_metrics::ABORT_SIGNIN ||
@@ -224,7 +271,8 @@ void ChromeSigninClient::PreSignOut(
 #else
   {
 #endif
-    SigninClient::PreSignOut(sign_out, signout_source_metric);
+    std::move(on_signout_decision_reached_)
+        .Run(IsSignoutAllowed(profile_, signout_source_metric));
   }
 }
 
@@ -390,7 +438,6 @@ void ChromeSigninClient::SetURLLoaderFactoryForTest(
 }
 
 void ChromeSigninClient::OnCloseBrowsersSuccess(
-    const base::Callback<void()>& sign_out,
     const signin_metrics::ProfileSignout signout_source_metric,
     const base::FilePath& profile_path) {
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
@@ -398,7 +445,9 @@ void ChromeSigninClient::OnCloseBrowsersSuccess(
     force_signin_verifier_->Cancel();
   }
 #endif
-  SigninClient::PreSignOut(sign_out, signout_source_metric);
+
+  std::move(on_signout_decision_reached_)
+      .Run(IsSignoutAllowed(profile_, signout_source_metric));
 
   LockForceSigninProfile(profile_path);
   // After sign out, lock the profile and show UserManager if necessary.
@@ -412,6 +461,10 @@ void ChromeSigninClient::OnCloseBrowsersSuccess(
 void ChromeSigninClient::OnCloseBrowsersAborted(
     const base::FilePath& profile_path) {
   should_display_user_manager_ = true;
+
+  // Disallow sign-out (aborted).
+  std::move(on_signout_decision_reached_)
+      .Run(SignoutDecision::DISALLOW_SIGNOUT);
 }
 
 void ChromeSigninClient::LockForceSigninProfile(

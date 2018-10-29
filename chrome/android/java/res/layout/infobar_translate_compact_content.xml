@@ -23,7 +23,7 @@
         app:tabGravity="fill"
         app:tabMode="scrollable" />
 
-    <org.chromium.chrome.browser.widget.TintedImageButton
+    <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/translate_infobar_menu_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -33,5 +33,5 @@
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/accessibility_toolbar_btn_menu"
         android:src="@drawable/ic_more_vert_black_24dp"
-        app:chrometint="@color/dark_mode_tint" />
+        app:tint="@color/dark_mode_tint" />
 </LinearLayout>

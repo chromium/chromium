@@ -38,7 +38,7 @@ class EVENTS_EXPORT KeyboardHook {
       KeyEventCallback callback);
 
   // True if |dom_code| is reserved for an active KeyboardLock request.
-  virtual bool IsKeyLocked(DomCode dom_code) = 0;
+  virtual bool IsKeyLocked(DomCode dom_code) const = 0;
 };
 
 }  // namespace ui

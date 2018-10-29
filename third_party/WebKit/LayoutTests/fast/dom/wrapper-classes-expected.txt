@@ -2,11 +2,12 @@ This tests wrapper class names for JavaScript.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Basics
+
 
 PASS classString(document.createAttribute('x')) is "Attr"
 FAIL classString(document.createAttribute('x').__proto__) should be AttrPrototype. Was Attr.
@@ -49,7 +50,9 @@ FAIL classString(document.createTreeWalker(root, 0, null, false).__proto__) shou
 PASS classString(document.createTreeWalker(root, 0, null, false).constructor) is "Function"
 PASS document.createTreeWalker(root, 0, null, false).constructor.name is "TreeWalker"
 
+
 XML
+
 
 PASS classString(xmlDocument) is "XMLDocument"
 FAIL classString(xmlDocument.__proto__) should be XMLDocumentPrototype. Was XMLDocument.
@@ -68,7 +71,9 @@ FAIL classString(xmlDocument.createProcessingInstruction('x', '').__proto__) sho
 PASS classString(xmlDocument.createProcessingInstruction('x', '').constructor) is "Function"
 PASS xmlDocument.createProcessingInstruction('x', '').constructor.name is "ProcessingInstruction"
 
+
 Events
+
 
 PASS classString(document.createEvent('Event')) is "Event"
 FAIL classString(document.createEvent('Event').__proto__) should be EventPrototype. Was Event.
@@ -99,7 +104,9 @@ FAIL classString(document.createEvent('WheelEvent').__proto__) should be WheelEv
 PASS classString(document.createEvent('WheelEvent').constructor) is "Function"
 PASS document.createEvent('WheelEvent').constructor.name is "WheelEvent"
 
+
 CSS DOM
+
 
 PASS classString(document.styleSheets) is "StyleSheetList"
 FAIL classString(document.styleSheets.__proto__) should be StyleSheetListPrototype. Was StyleSheetList.
@@ -126,7 +133,9 @@ FAIL classString(stylesheet.media.__proto__) should be MediaListPrototype. Was M
 PASS classString(stylesheet.media.constructor) is "Function"
 PASS stylesheet.media.constructor.name is "MediaList"
 
+
 XPath
+
 
 PASS classString(document.createExpression('//*', document.createNSResolver(document))) is "XPathExpression"
 FAIL classString(document.createExpression('//*', document.createNSResolver(document)).__proto__) should be XPathExpressionPrototype. Was XPathExpression.
@@ -137,14 +146,18 @@ FAIL classString(document.evaluate('//*', document, document.createNSResolver(do
 PASS classString(document.evaluate('//*', document, document.createNSResolver(document), 0, null).constructor) is "Function"
 PASS document.evaluate('//*', document, document.createNSResolver(document), 0, null).constructor.name is "XPathResult"
 
+
 Other
+
 
 PASS classString(window) is "Window"
 FAIL classString(window.__proto__) should be WindowPrototype. Was Window.
 PASS classString(window.constructor) is "Function"
 PASS window.constructor.name is "Window"
 
+
 HTML DOM
+
 
 PASS classString(root.children) is "HTMLCollection"
 FAIL classString(root.children.__proto__) should be HTMLCollectionPrototype. Was HTMLCollection.
@@ -159,7 +172,9 @@ FAIL classString(document.createElement('select').options.__proto__) should be H
 PASS classString(document.createElement('select').options.constructor) is "Function"
 PASS document.createElement('select').options.constructor.name is "HTMLOptionsCollection"
 
+
 HTML Elements
+
 
 PASS tagClassString('a') is "HTMLAnchorElement"
 FAIL tagPrototypeClassString('a') should be HTMLAnchorElementPrototype. Was HTMLAnchorElement.

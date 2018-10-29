@@ -84,7 +84,6 @@ size_t SequenceManagerForTest::QueuesToDeleteCount() const {
 }
 
 size_t SequenceManagerForTest::QueuesToShutdownCount() {
-  TakeQueuesToGracefullyShutdownFromHelper();
   return main_thread_only().queues_to_gracefully_shutdown.size();
 }
 

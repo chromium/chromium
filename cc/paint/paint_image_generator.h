@@ -14,7 +14,8 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSize.h"
-#include "third_party/skia/include/core/SkYUVSizeInfo.h"
+#include "third_party/skia/include/core/SkYUVAIndex.h"
+#include "third_party/skia/include/core/SkYUVASizeInfo.h"
 
 namespace cc {
 
@@ -44,21 +45,25 @@ class CC_PAINT_EXPORT PaintImageGenerator : public SkRefCnt {
 
   // Returns true if the generator supports YUV decoding, providing the output
   // information in |info| and |color_space|.
-  virtual bool QueryYUV8(SkYUVSizeInfo* info,
-                         SkYUVColorSpace* color_space) const = 0;
+  virtual bool QueryYUVA8(SkYUVASizeInfo* info,
+                          SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
+                          SkYUVColorSpace* color_space) const = 0;
 
   // Decodes to YUV into the provided |planes| for each of the Y, U, and V
   // planes, and returns true on success. The method should only be used if
-  // QueryYUV8 returns true.
-  // |info| needs to exactly match the values returned by the query, except the
-  // WidthBytes may be larger than the recommendation (but not smaller).
+  // QueryYUVA8 returns true.
+  // |info| and |indices| need to exactly match the values returned by the
+  // query, except the info.fWidthBytes may be larger than the recommendation
+  // (but not smaller).
   //
   // TODO(khushalsagar): |lazy_pixel_ref| is only present for
   // DecodingImageGenerator tracing needs. Remove it.
-  virtual bool GetYUV8Planes(const SkYUVSizeInfo& info,
-                             void* planes[3],
-                             size_t frame_index,
-                             uint32_t lazy_pixel_ref) = 0;
+  virtual bool GetYUVA8Planes(
+      const SkYUVASizeInfo& info,
+      const SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
+      void* planes[3],
+      size_t frame_index,
+      uint32_t lazy_pixel_ref) = 0;
 
   // Returns the smallest size that is at least as big as the requested size,
   // such that we can decode to exactly that scale.

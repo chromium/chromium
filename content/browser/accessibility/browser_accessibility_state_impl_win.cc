@@ -15,8 +15,64 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "ui/accessibility/platform/ax_platform_node_win.h"
 
 namespace content {
+
+namespace {
+
+// Enables accessibility based on three possible clues that indicate
+// accessibility API usage.
+//
+// TODO(dmazzoni): Rename IAccessible2UsageObserver to something more general.
+class WindowsAccessibilityEnabler : public ui::IAccessible2UsageObserver {
+ public:
+  WindowsAccessibilityEnabler() {}
+
+ private:
+  // IAccessible2UsageObserver
+  void OnIAccessible2Used() override {
+    // When IAccessible2 APIs have been used elsewhere in the codebase,
+    // enable basic web accessibility support. (Full screen reader support is
+    // detected later when specific more advanced APIs are accessed.)
+    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
+        ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+  }
+
+  void OnScreenReaderHoneyPotQueried() override {
+    // We used to trust this as a signal that a screen reader is running,
+    // but it's been abused. Now only enable accessibility if we also
+    // detect a call to get_accName.
+    if (screen_reader_honeypot_queried_)
+      return;
+    screen_reader_honeypot_queried_ = true;
+    if (acc_name_called_) {
+      BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
+          ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+    }
+  }
+
+  void OnAccNameCalled() override {
+    // See OnScreenReaderHoneyPotQueried, above.
+    if (acc_name_called_)
+      return;
+    acc_name_called_ = true;
+    if (screen_reader_honeypot_queried_) {
+      BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
+          ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+    }
+  }
+
+  bool screen_reader_honeypot_queried_ = false;
+  bool acc_name_called_ = false;
+};
+
+}  // namespace
+
+void BrowserAccessibilityStateImpl::PlatformInitialize() {
+  ui::GetIAccessible2UsageObserverList().AddObserver(
+      new WindowsAccessibilityEnabler());
+}
 
 void BrowserAccessibilityStateImpl::UpdatePlatformSpecificHistograms() {
   // NOTE: this method is run from the file thread to reduce jank, since

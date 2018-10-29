@@ -9,10 +9,13 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
     
 
 
+
+
 PASS getColorProperty("div-child") is "rgb(0, 0, 255)"
 PASS getColorProperty("span-child") is "rgb(0, 0, 0)"
 PASS getColorProperty("div-child") is "rgb(0, 0, 0)"
 PASS getColorProperty("span-child") is "rgb(0, 0, 255)"
+
 
 
 

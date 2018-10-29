@@ -236,7 +236,7 @@ void MockCdmFactory::Create(
   }
 
   // Since there is a CDM, call |before_creation_cb_| first.
-  if (!before_creation_cb_.is_null())
+  if (before_creation_cb_)
     before_creation_cb_.Run();
 
   // Create and return a new MockCdm. Keep a pointer to the created CDM so

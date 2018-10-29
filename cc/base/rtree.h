@@ -61,12 +61,12 @@ class RTree {
 
   // Given a query rect, returns elements that intersect the rect. Elements are
   // returned in the order they appeared in the initial container.
-  std::vector<T> Search(const gfx::Rect& query) const;
+  void Search(const gfx::Rect& query, std::vector<T>* results) const;
 
   // Given a query rect, returns non-owning pointers to elements that intersect
   // the rect. Elements are returned in the order they appeared in the initial
   // container.
-  std::vector<const T*> SearchRefs(const gfx::Rect& query) const;
+  void SearchRefs(const gfx::Rect& query, std::vector<const T*>* results) const;
 
   // Returns the total bounds of all items in this rtree.
   gfx::Rect GetBounds() const;
@@ -288,19 +288,18 @@ auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, int level)
 }
 
 template <typename T>
-std::vector<T> RTree<T>::Search(const gfx::Rect& query) const {
-  std::vector<T> results;
+void RTree<T>::Search(const gfx::Rect& query, std::vector<T>* results) const {
+  results->clear();
   if (num_data_elements_ > 0 && query.Intersects(root_.bounds))
-    SearchRecursive(root_.subtree, query, &results);
-  return results;
+    SearchRecursive(root_.subtree, query, results);
 }
 
 template <typename T>
-std::vector<const T*> RTree<T>::SearchRefs(const gfx::Rect& query) const {
-  std::vector<const T*> results;
+void RTree<T>::SearchRefs(const gfx::Rect& query,
+                          std::vector<const T*>* results) const {
+  results->clear();
   if (num_data_elements_ > 0 && query.Intersects(root_.bounds))
-    SearchRefsRecursive(root_.subtree, query, &results);
-  return results;
+    SearchRefsRecursive(root_.subtree, query, results);
 }
 
 template <typename T>

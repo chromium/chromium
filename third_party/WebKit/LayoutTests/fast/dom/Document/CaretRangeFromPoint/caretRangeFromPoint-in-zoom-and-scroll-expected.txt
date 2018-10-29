@@ -2,5 +2,5 @@ A long text to test document caretRangeFromPoint. Test scroll, zoom, zoomAndScro
 PASS successfullyParsed is true
 
 TEST COMPLETE
-PASS Test completed successfully
 
+PASS Test completed successfully

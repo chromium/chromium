@@ -56,6 +56,11 @@ void TestTCPSocketPrivate::RunTests(const std::string& filter) {
   RUN_CALLBACK_TEST(TestTCPSocketPrivate, ConnectAddress, filter);
   RUN_CALLBACK_TEST(TestTCPSocketPrivate, SetOption, filter);
   RUN_CALLBACK_TEST(TestTCPSocketPrivate, LargeRead, filter);
+
+  RUN_CALLBACK_TEST(TestTCPSocketPrivate, SSLHandshakeFails, filter);
+  RUN_CALLBACK_TEST(TestTCPSocketPrivate, SSLHandshakeHangs, filter);
+  RUN_CALLBACK_TEST(TestTCPSocketPrivate, SSLWriteFails, filter);
+  RUN_CALLBACK_TEST(TestTCPSocketPrivate, SSLReadFails, filter);
 }
 
 std::string TestTCPSocketPrivate::TestBasic() {
@@ -210,6 +215,93 @@ std::string TestTCPSocketPrivate::TestLargeRead() {
   ASSERT_LE(0, cb.result());
 
   delete [] buffer;
+
+  PASS();
+}
+
+std::string TestTCPSocketPrivate::TestSSLHandshakeFails() {
+  pp::TCPSocketPrivate socket(instance_);
+  TestCompletionCallback cb(instance_->pp_instance(), callback_type());
+
+  cb.WaitForResult(socket.Connect("foo.test", 443, cb.GetCallback()));
+  CHECK_CALLBACK_BEHAVIOR(cb);
+  ASSERT_EQ(PP_OK, cb.result());
+
+  cb.WaitForResult(socket.SSLHandshake("foo.test", 443, cb.GetCallback()));
+  CHECK_CALLBACK_BEHAVIOR(cb);
+  ASSERT_EQ(PP_ERROR_FAILED, cb.result());
+
+  // Writes and reads should both fail after an SSL handshake fails.
+
+  char byte = 'a';
+  cb.WaitForResult(socket.Write(&byte, 1, cb.GetCallback()));
+  CHECK_CALLBACK_BEHAVIOR(cb);
+  ASSERT_EQ(PP_ERROR_FAILED, cb.result());
+
+  cb.WaitForResult(socket.Read(&byte, 1, cb.GetCallback()));
+  CHECK_CALLBACK_BEHAVIOR(cb);
+  ASSERT_EQ(PP_ERROR_FAILED, cb.result());
+
+  PASS();
+}
+
+std::string TestTCPSocketPrivate::TestSSLHandshakeHangs() {
+  pp::TCPSocketPrivate socket(instance_);
+  TestCompletionCallback cb(instance_->pp_instance(), callback_type());
+
+  cb.WaitForResult(socket.Connect("foo.test", 443, cb.GetCallback()));
+  CHECK_CALLBACK_BEHAVIOR(cb);
+  ASSERT_EQ(PP_OK, cb.result());
+
+  socket.SSLHandshake("foo.test", 443, DoNothingCallback());
+  PASS();
+}
+
+std::string TestTCPSocketPrivate::TestSSLWriteFails() {
+  pp::TCPSocketPrivate socket(instance_);
+  TestCompletionCallback cb(instance_->pp_instance(), callback_type());
+
+  cb.WaitForResult(socket.Connect("foo.test", 443, cb.GetCallback()));
+  CHECK_CALLBACK_BEHAVIOR(cb);
+  ASSERT_EQ(PP_OK, cb.result());
+
+  cb.WaitForResult(socket.SSLHandshake("foo.test", 443, cb.GetCallback()));
+  CHECK_CALLBACK_BEHAVIOR(cb);
+  ASSERT_EQ(PP_OK, cb.result());
+
+  // Write to the socket until there's an error. Some writes may succeed, since
+  // Mojo writes complete before the socket tries to send data.
+  char write_data[32 * 1024] = {0};
+  while (true) {
+    TestCompletionCallback cb(instance_->pp_instance(), callback_type());
+    cb.WaitForResult(socket.Write(write_data,
+                                  static_cast<int32_t>(sizeof(write_data)),
+                                  cb.GetCallback()));
+    CHECK_CALLBACK_BEHAVIOR(cb);
+    if (cb.result() > 0)
+      continue;
+
+    ASSERT_EQ(PP_ERROR_FAILED, cb.result());
+    PASS();
+  }
+}
+
+std::string TestTCPSocketPrivate::TestSSLReadFails() {
+  pp::TCPSocketPrivate socket(instance_);
+  TestCompletionCallback cb(instance_->pp_instance(), callback_type());
+
+  cb.WaitForResult(socket.Connect("foo.test", 443, cb.GetCallback()));
+  CHECK_CALLBACK_BEHAVIOR(cb);
+  ASSERT_EQ(PP_OK, cb.result());
+
+  cb.WaitForResult(socket.SSLHandshake("foo.test", 443, cb.GetCallback()));
+  CHECK_CALLBACK_BEHAVIOR(cb);
+  ASSERT_EQ(PP_OK, cb.result());
+
+  char byte;
+  cb.WaitForResult(socket.Read(&byte, 1, cb.GetCallback()));
+  CHECK_CALLBACK_BEHAVIOR(cb);
+  ASSERT_EQ(PP_ERROR_FAILED, cb.result());
 
   PASS();
 }

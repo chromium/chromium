@@ -4,7 +4,7 @@
 
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 
 namespace viz {
 

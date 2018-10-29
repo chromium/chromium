@@ -57,8 +57,8 @@ class ChromeBrowserState;
 // tab model. This class creates and manages the state of the sharing manager.
 - (void)updateDeviceSharingManager;
 
-// Delete the incognito tab model state.
-- (void)deleteIncognitoTabModelState;
+// Destroy and rebuild the incognito tab model.
+- (void)destroyAndRebuildIncognitoTabModel;
 
 // Called before the instance is deallocated.
 - (void)shutdown;

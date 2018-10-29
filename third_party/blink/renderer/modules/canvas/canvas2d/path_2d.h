@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/path_2d_or_string.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix_2d_init.h"
-#include "third_party/blink/renderer/core/svg/svg_matrix_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -39,6 +38,8 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
+
+class ExceptionState;
 
 class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
   DEFINE_WRAPPERTYPEINFO();
@@ -59,17 +60,14 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
 
   const Path& GetPath() const { return path_; }
 
-  void addPath(Path2D* path) {
-    DOMMatrix2DInit transform;
-    addPath(path, transform);
-  }
-
-  void addPath(Path2D* path, DOMMatrix2DInit& transform) {
-    Path src = path->GetPath();
-    DOMMatrixReadOnly* m = nullptr;
-    m = DOMMatrixReadOnly::fromMatrix2D(transform);
-    path_.AddPath(
-        src, m ? m->GetAffineTransform() : AffineTransform(1, 0, 0, 1, 0, 0));
+  void addPath(Path2D* path,
+               DOMMatrix2DInit& transform,
+               ExceptionState& exception_state) {
+    DOMMatrixReadOnly* matrix =
+        DOMMatrixReadOnly::fromMatrix2D(transform, exception_state);
+    if (!matrix)
+      return;
+    path_.AddPath(path->GetPath(), matrix->GetAffineTransform());
   }
 
   ~Path2D() override = default;

@@ -25,7 +25,9 @@ namespace video_capture {
 class ServiceImpl : public service_manager::Service,
                     public service_manager::ServiceKeepalive::TimeoutObserver {
  public:
-  ServiceImpl(float shutdown_delay_in_seconds = 5.0f);
+  // If |shutdown_delay| is provided, the service will shut itself down as soon
+  // as no client was connect for the corresponding duration.
+  explicit ServiceImpl(base::Optional<base::TimeDelta> shutdown_delay);
   ~ServiceImpl() override;
 
   static std::unique_ptr<service_manager::Service> Create();
@@ -58,7 +60,7 @@ class ServiceImpl : public service_manager::Service,
   void LazyInitializeDeviceFactoryProvider();
   void OnProviderClientDisconnected();
 
-  const float shutdown_delay_in_seconds_;
+  const base::Optional<base::TimeDelta> shutdown_delay_;
 #if defined(OS_WIN)
   // COM must be initialized in order to access the video capture devices.
   base::win::ScopedCOMInitializer com_initializer_;

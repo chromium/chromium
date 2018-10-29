@@ -9,8 +9,8 @@ if (window.testRunner) {
 window.onload = function() {
   if (!window.testRunner)
     return;
-  // Force a pixel dump to cover raterization issues if any.
-  testRunner.capturePixelsAsyncThen(function() {
+  // Force a full lifecycle update to cover rasterization issues if any.
+  testRunner.updateAllLifecyclePhasesAndCompositeThen(function() {
     testRunner.notifyDone();
   });
 };

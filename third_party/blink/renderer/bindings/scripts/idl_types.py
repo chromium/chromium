@@ -11,6 +11,7 @@ IdlTypeBase
   IdlSequenceType
   IdlFrozenArrayType
  IdlNullableType
+ IdlAnnotatedType
 
 IdlTypes are picklable because we store them in interfaces_info.
 """
@@ -91,6 +92,11 @@ NON_STANDARD_CALLBACK_FUNCTIONS = frozenset([
     'CallbackFunctionTreatedAsScriptValue',
 ])
 
+EXTENDED_ATTRIBUTES_APPLICABLE_TO_TYPES = frozenset([
+    'Clamp',
+    'EnforceRange',
+    'TreatNullAs',
+])
 
 ################################################################################
 # Inheritance
@@ -143,13 +149,12 @@ class IdlType(IdlTypeBase):
     dictionaries = set()
     enums = {}  # name -> values
 
-    def __init__(self, base_type, is_unrestricted=False, extended_attributes=None):
+    def __init__(self, base_type, is_unrestricted=False):
         super(IdlType, self).__init__()
         if is_unrestricted:
             self.base_type = 'unrestricted %s' % base_type
         else:
             self.base_type = base_type
-        self.extended_attributes = extended_attributes
 
     def __str__(self):
         return self.base_type
@@ -157,15 +162,10 @@ class IdlType(IdlTypeBase):
     def __getstate__(self):
         return {
             'base_type': self.base_type,
-            'extended_attributes': self.extended_attributes,
         }
 
     def __setstate__(self, state):
         self.base_type = state['base_type']
-        self.extended_attributes = state['extended_attributes']
-
-    def set_extended_attributes(self, extended_attributes):
-        self.extended_attributes = extended_attributes
 
     @property
     def is_basic_type(self):
@@ -581,3 +581,59 @@ class IdlNullableType(IdlTypeBase):
         yield self
         for idl_type in self.inner_type.idl_types():
             yield idl_type
+
+
+################################################################################
+# IdlAnnotatedType
+################################################################################
+
+class IdlAnnotatedType(IdlTypeBase):
+    """IdlAnnoatedType represents an IDL type with extended attributes.
+    [Clamp], [EnforceRange], and [TreatNullAs] are applicable to types.
+    https://heycam.github.io/webidl/#idl-annotated-types
+    """
+
+    def __init__(self, inner_type, extended_attributes):
+        super(IdlAnnotatedType, self).__init__()
+        self.inner_type = inner_type
+        self.extended_attributes = extended_attributes
+
+        if any(key not in EXTENDED_ATTRIBUTES_APPLICABLE_TO_TYPES
+               for key in extended_attributes):
+            raise ValueError('Extended attributes not applicable to types: %s' % self)
+
+    def __str__(self):
+        annotation = ', '.join((key + ('' if val is None else '=' + val))
+                               for key, val in self.extended_attributes.iteritems())
+        return '[%s] %s' % (annotation, str(self.inner_type))
+
+    def __getattr__(self, name):
+        return getattr(self.inner_type, name)
+
+    def __getstate__(self):
+        return {
+            'inner_type': self.inner_type,
+            'extended_attributes': self.extended_attributes,
+        }
+
+    def __setstate__(self, state):
+        self.inner_type = state['inner_type']
+        self.extended_attributes = state['extended_attributes']
+
+    @property
+    def is_annotated_type(self):
+        return True
+
+    @property
+    def name(self):
+        annotation = ''.join((key + ('' if val is None else val))
+                             for key, val in sorted(self.extended_attributes.iteritems()))
+        return self.inner_type.name + annotation
+
+    def resolve_typedefs(self, typedefs):
+        self.inner_type = self.inner_type.resolve_typedefs(typedefs)
+        return self
+
+    def idl_types(self):
+        yield self
+        yield self.inner_type

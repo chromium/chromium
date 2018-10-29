@@ -31,6 +31,7 @@ class FakeSyncClient : public SyncClient {
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
+  sync_sessions::SessionSyncService* GetSessionSyncService() override;
   bool HasPasswordStore() override;
   base::Closure GetPasswordStateChangedCallback() override;
   DataTypeController::TypeVector CreateDataTypeControllers(
@@ -39,7 +40,6 @@ class FakeSyncClient : public SyncClient {
   BookmarkUndoService* GetBookmarkUndoServiceIfExists() override;
   invalidation::InvalidationService* GetInvalidationService() override;
   scoped_refptr<ExtensionsActivity> GetExtensionsActivity() override;
-  sync_sessions::SyncSessionsClient* GetSyncSessionsClient() override;
   base::WeakPtr<SyncableService> GetSyncableServiceForType(
       ModelType type) override;
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegateForModelType(

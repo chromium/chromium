@@ -77,6 +77,8 @@
     CallOrNoop1,
     CreateAlgorithmFromUnderlyingMethod,
     CreateAlgorithmFromUnderlyingMethodPassingController,
+    CreateCrossRealmTransformReadable,
+    CreateCrossRealmTransformWritable,
     DequeueValue,
     EnqueueValueWithSize,
     MakeSizeAlgorithmFromSizeFunction,
@@ -129,6 +131,9 @@
   const errPipeThroughUndefinedReadable =
         'Failed to execute \'pipeThrough\' on \'ReadableStream\': parameter ' +
         '1\'s \'readable\' property is undefined.';
+  const errCannotTransferLockedStream = 'Cannot transfer a locked stream';
+  const errCannotTransferUnsupportedContext =
+        'Cannot transfer from this context';
 
   let useCounted = false;
 
@@ -1127,6 +1132,34 @@
   }
 
   //
+  // Functions for transferable streams.
+  //
+
+  function ReadableStreamSerialize(readable) {
+    // assert(IsReadableStream(readable),
+    //        `! IsReadableStream(_readable_) is true`);
+    if (IsReadableStreamLocked(readable)) {
+      throw new TypeError(errCannotTransferLockedStream);
+    }
+
+    if (!binding.MessageChannel) {
+      throw new TypeError(errCannotTransferUnsupportedContext);
+    }
+
+    const mc = new binding.MessageChannel();
+    const writable = CreateCrossRealmTransformWritable(
+        callFunction(binding.MessageChannel_port1_get, mc));
+    const promise =
+          ReadableStreamPipeTo(readable, writable, false, false, false);
+    markPromiseAsHandled(promise);
+    return callFunction(binding.MessageChannel_port2_get, mc);
+  }
+
+  function ReadableStreamDeserialize(port) {
+    return CreateCrossRealmTransformReadable(port);
+  }
+
+  //
   // Internal functions. Not part of the standard.
   //
 
@@ -1187,8 +1220,8 @@
 
   // TODO(ricea): Remove this once the C++ code switches to calling
   // CreateReadableStream().
-  function createReadableStreamWithExternalController(underlyingSource,
-                                                      strategy) {
+  function createReadableStreamWithExternalController(
+      underlyingSource, strategy) {
     return new ReadableStream(
         underlyingSource, strategy, createWithExternalControllerSentinel);
   }
@@ -1220,6 +1253,8 @@
     IsReadableStreamDefaultReader,
     ReadableStreamDefaultReaderRead,
     ReadableStreamTee,
+    ReadableStreamSerialize,
+    ReadableStreamDeserialize,
 
     //
     // Controller exports to Blink C++

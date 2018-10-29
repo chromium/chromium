@@ -5,12 +5,12 @@
 #include "ash/wm/default_state.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_state_type.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/screen_pinning_controller.h"
-#include "ash/wm/window_animation_types.h"
 #include "ash/wm/window_parenting_utils.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
@@ -214,6 +214,8 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
         window_state->SetBoundsDirectAnimated(bounds);
       return;
     }
+    case WM_EVENT_SYSTEM_UI_AREA_CHANGED:
+      break;
     default:
       NOTREACHED() << "Unknown event:" << event->type();
   }
@@ -392,7 +394,8 @@ void DefaultState::SetBounds(WindowState* window_state,
     window_state->SetBoundsDirect(event->requested_bounds());
   } else if (!SetMaximizedOrFullscreenBounds(window_state)) {
     if (event->animate()) {
-      window_state->SetBoundsDirectAnimated(event->requested_bounds());
+      window_state->SetBoundsDirectAnimated(event->requested_bounds(),
+                                            event->duration());
     } else {
       window_state->SetBoundsConstrained(event->requested_bounds());
     }
@@ -457,6 +460,8 @@ void DefaultState::EnterToNextState(WindowState* window_state,
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(
         window_state->window());
   }
+
+  window_state->UpdatePipState();
 }
 
 void DefaultState::ReenterToCurrentState(

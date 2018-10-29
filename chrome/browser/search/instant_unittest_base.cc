@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -76,6 +77,7 @@ void InstantUnitTestBase::NotifyGoogleBaseURLUpdate(
 TestingProfile* InstantUnitTestBase::CreateProfile() {
   TestingProfile* profile = BrowserWithTestWindowTest::CreateProfile();
   TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile, &TemplateURLServiceFactory::BuildInstanceFor);
+      profile,
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
   return profile;
 }

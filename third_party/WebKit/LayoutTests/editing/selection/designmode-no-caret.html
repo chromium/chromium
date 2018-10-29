@@ -4,8 +4,10 @@ function log(msg)
 document.getElementById("console").appendChild(document.createTextNode(msg + "\n"));
 }
 
-if (window.testRunner)
-     testRunner.dumpEditingCallbacks();
+if (window.testRunner) {
+    testRunner.dumpEditingCallbacks();
+    testRunner.dumpAsLayoutWithPixelResults();
+}
 </script>
 This tests to see that a caret is placed inside an editable document that is entirely editable even when no caret is requested programmatically.  We do this as a convenience.  Right now, we only do this convenience when a document's frame becomes first responder or when a document's window becomes key.
 <pre id="console"></pre>

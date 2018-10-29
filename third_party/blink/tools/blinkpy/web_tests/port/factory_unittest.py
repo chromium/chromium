@@ -45,7 +45,7 @@ class FactoryTest(unittest.TestCase):
     # instead of passing generic "options".
 
     def setUp(self):
-        self.webkit_options = optparse.Values({'pixel_tests': False})
+        self.webkit_options = optparse.Values({})
 
     def assert_port(self, port_name=None, os_name=None, os_version=None, options=None, cls=None):
         host = MockHost(os_name=os_name, os_version=os_version)

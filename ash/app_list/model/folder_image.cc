@@ -178,7 +178,8 @@ const size_t FolderImage::kNumFolderTopItems = 4;
 
 FolderImage::FolderImage(AppListItemList* item_list)
     : item_list_(item_list),
-      is_new_style_launcher_enabled_(features::IsNewStyleLauncherEnabled()) {
+      is_new_style_launcher_enabled_(
+          app_list_features::IsNewStyleLauncherEnabled()) {
   item_list_->AddObserver(this);
 }
 
@@ -217,7 +218,7 @@ void FolderImage::UpdateDraggedItem(const AppListItem* dragged_item) {
 std::vector<gfx::Rect> FolderImage::GetTopIconsBounds(
     const gfx::Rect& folder_icon_bounds,
     size_t num_items) {
-  if (!features::IsNewStyleLauncherEnabled())
+  if (!app_list_features::IsNewStyleLauncherEnabled())
     return GetTopIconsBoundsLegacy(folder_icon_bounds, num_items);
 
   DCHECK_LE(num_items, kNumFolderTopItems);

@@ -83,23 +83,12 @@ class LayoutGrid final : public LayoutBlock {
     return grid_->Cell(row, column);
   }
 
-  const Vector<LayoutBox*>& ItemsOverflowingGridArea() const {
-    SECURITY_DCHECK(!grid_->NeedsItemsPlacement());
-    return grid_items_overflowing_grid_area_;
-  }
-
-  int PaintIndexForGridItem(const LayoutBox* layout_box) const {
-    SECURITY_DCHECK(!grid_->NeedsItemsPlacement());
-    return grid_->GridItemPaintOrder(*layout_box);
-  }
-
   size_t AutoRepeatCountForDirection(GridTrackSizingDirection direction) const {
     return grid_->AutoRepeatTracks(direction);
   }
 
   LayoutUnit TranslateOutOfFlowRTLCoordinate(const LayoutBox&,
                                              LayoutUnit) const;
-  LayoutUnit TranslateRTLCoordinate(LayoutUnit) const;
 
   // TODO(svillar): We need these for the GridTrackSizingAlgorithm. Let's figure
   // it out how to remove this dependency.
@@ -295,8 +284,6 @@ class LayoutGrid final : public LayoutBlock {
   LayoutUnit FirstLineBoxBaseline() const override;
   LayoutUnit InlineBlockBaseline(LineDirectionMode) const override;
 
-  void ComputeBaselineAlignmentContext();
-
   LayoutUnit ColumnAxisBaselineOffsetForChild(const LayoutBox&) const;
   LayoutUnit RowAxisBaselineOffsetForChild(const LayoutBox&) const;
 
@@ -307,6 +294,8 @@ class LayoutGrid final : public LayoutBlock {
 
   size_t NonCollapsedTracks(GridTrackSizingDirection) const;
   size_t NumTracks(GridTrackSizingDirection, const Grid&) const;
+
+  LayoutUnit TranslateRTLCoordinate(LayoutUnit) const;
 
   static LayoutUnit OverrideContainingBlockContentSizeForChild(
       const LayoutBox& child,
@@ -324,7 +313,6 @@ class LayoutGrid final : public LayoutBlock {
   Vector<LayoutUnit> column_positions_;
   ContentAlignmentData offset_between_columns_;
   ContentAlignmentData offset_between_rows_;
-  Vector<LayoutBox*> grid_items_overflowing_grid_area_;
 
   typedef HashMap<const LayoutBox*, base::Optional<size_t>>
       OutOfFlowPositionsMap;
@@ -335,6 +323,7 @@ class LayoutGrid final : public LayoutBlock {
   LayoutUnit max_content_height_{-1};
 
   bool has_any_orthogonal_item_{false};
+  bool baseline_items_cached_{false};
   base::Optional<bool> has_definite_logical_height_;
 };
 

@@ -78,8 +78,8 @@ class WEBDATA_EXPORT WebDatabase {
   bool MigrateToVersion(int version,
                         bool* update_compatible_version);
 
-  // Migration method for version 58.
   bool MigrateToVersion58DropWebAppsAndIntents();
+  bool MigrateToVersion79DropLoginsTable();
 
   sql::Database db_;
   sql::MetaTable meta_table_;

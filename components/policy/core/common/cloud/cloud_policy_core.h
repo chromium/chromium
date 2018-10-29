@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "components/policy/policy_export.h"
 #include "components/prefs/pref_member.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 class PrefService;
 
@@ -60,7 +61,9 @@ class POLICY_EXPORT CloudPolicyCore {
   CloudPolicyCore(const std::string& policy_type,
                   const std::string& settings_entity_id,
                   CloudPolicyStore* store,
-                  const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+                  const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+                  network::NetworkConnectionTrackerGetter
+                      network_connection_tracker_getter);
   ~CloudPolicyCore();
 
   CloudPolicyClient* client() { return client_.get(); }
@@ -124,6 +127,7 @@ class POLICY_EXPORT CloudPolicyCore {
   std::string settings_entity_id_;
   CloudPolicyStore* store_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  network::NetworkConnectionTrackerGetter network_connection_tracker_getter_;
   std::unique_ptr<CloudPolicyClient> client_;
   std::unique_ptr<CloudPolicyService> service_;
   std::unique_ptr<CloudPolicyRefreshScheduler> refresh_scheduler_;

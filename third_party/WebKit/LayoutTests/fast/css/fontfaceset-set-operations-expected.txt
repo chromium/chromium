@@ -2,7 +2,6 @@ Tests Set operations of FontFaceSet.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.fonts.size is 3
 check forEach
 PASS callbackArgs[0] is an instance of FontFace

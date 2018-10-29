@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 
 namespace offline_pages {
 
@@ -44,35 +43,29 @@ class Task {
   // Sets the callback normally used by |TaskQueue| for testing. See
   // |SetTaskCompletionCallback| for details.
   void SetTaskCompletionCallbackForTesting(
-      scoped_refptr<base::SingleThreadTaskRunner> task_completion_runner,
       TaskCompletionCallback task_completion_callback);
 
  protected:
-  // Call |TaskComplete| as the last call, before the task is terminated. This
-  // ensures that |TaskQueue| can pick up another task.
-  // |task_completion_callback_| will be scheduled on the provided
-  // |task_completion_runner_|, which means task code is no longer going to be
-  // on stack, when the next call is made.
+  // Tasks must call |TaskComplete| as their last step. This will cause
+  // |TaskQueue| to schedule the task's destruction and start another task if
+  // one is available.
   void TaskComplete();
 
  private:
   friend class TaskQueue;
 
-  // Allows task queue to Set the |task_completion_callback| and single thread
-  // task |task_completion_runner| that will be used to inform the |TaskQueue|
-  // when the task is done.
+  // Allows |TaskQueue| to set the |task_completion_callback| that will be used
+  // to inform it when the task is done. If the task is run outside of the
+  // |TaskQueue| and completion callback is not set, it will also work.
   //
-  // If the task is run outside of the |TaskQueue| and completion callback is
-  // not set, it will also work.
+  // Note: The callback implementation is responsible for scheduling work with
+  // the appropriate task runner and not to cause side effects to the |Task|
+  // calling into |TaskComplete|.
   void SetTaskCompletionCallback(
-      scoped_refptr<base::SingleThreadTaskRunner> task_completion_runner,
       TaskCompletionCallback task_completion_callback);
 
   // Completion callback for this task set by |SetTaskCompletionCallback|.
   TaskCompletionCallback task_completion_callback_;
-  // Task runner for calling completion callback. Set by
-  // |SetTaskCompletionCallback|.
-  scoped_refptr<base::SingleThreadTaskRunner> task_completion_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(Task);
 };

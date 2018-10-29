@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_store_signin_notifier_impl.h"
 
+#include "base/bind.h"
 #include "chrome/browser/signin/account_tracker_service_factory.h"
 #include "chrome/browser/signin/fake_signin_manager_builder.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
@@ -21,8 +22,9 @@ class PasswordStoreSigninNotifierImplTest : public testing::Test {
  public:
   PasswordStoreSigninNotifierImplTest() {
     TestingProfile::Builder builder;
-    builder.AddTestingFactory(SigninManagerFactory::GetInstance(),
-                              BuildFakeSigninManagerBase);
+    builder.AddTestingFactory(
+        SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeSigninManagerForTesting));
     testing_profile_.reset(builder.Build().release());
     fake_signin_manager_ = static_cast<FakeSigninManagerForTesting*>(
         SigninManagerFactory::GetForProfile(testing_profile_.get()));

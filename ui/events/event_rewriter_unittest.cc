@@ -125,8 +125,7 @@ class TestStateMachineEventRewriter : public EventRewriter {
   EventRewriteStatus RewriteEvent(
       const Event& event,
       std::unique_ptr<Event>* rewritten_event) override {
-    RewriteRules::iterator find =
-        rules_.find(RewriteCase(state_, event.type()));
+    auto find = rules_.find(RewriteCase(state_, event.type()));
     if (find == rules_.end())
       return EVENT_REWRITE_CONTINUE;
     if ((find->second.status == EVENT_REWRITE_REWRITTEN) ||

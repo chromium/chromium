@@ -36,7 +36,7 @@
         {
           "object": "LayoutBlockFlow DIV id='imgElement'",
           "rect": [392, 400, 200, 200],
-          "reason": "image"
+          "reason": "background"
         }
       ]
     }

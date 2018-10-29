@@ -14,7 +14,6 @@ namespace remoting {
 
 namespace {
 
-constexpr char kWebM[] = "video/webm; codecs=\"vp8,vorbis\"";
 constexpr int kAppendTimeSec = 1;
 
 class TestRendererFactory final : public PipelineTestRendererFactory {
@@ -65,7 +64,7 @@ TEST_F(MediaRemotingIntegrationTest, BasicPlayback) {
 }
 
 TEST_F(MediaRemotingIntegrationTest, BasicPlayback_MediaSource) {
-  MockMediaSource source("bear-320x240.webm", kWebM, 219229);
+  MockMediaSource source("bear-320x240.webm", 219229);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
 
@@ -76,8 +75,7 @@ TEST_F(MediaRemotingIntegrationTest, BasicPlayback_MediaSource) {
 }
 
 TEST_F(MediaRemotingIntegrationTest, MediaSource_ConfigChange_WebM) {
-  MockMediaSource source("bear-320x240-16x9-aspect.webm", kWebM,
-                         kAppendWholeFile);
+  MockMediaSource source("bear-320x240-16x9-aspect.webm", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
 
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(gfx::Size(640, 360))).Times(1);

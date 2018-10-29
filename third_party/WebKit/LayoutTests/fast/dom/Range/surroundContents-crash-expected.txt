@@ -2,7 +2,6 @@ DOM mutation events should not be dispatched during DOM mutations in surroundCon
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS textContainer.childNodes.length is 2
 PASS range.startContainer === textContainer is true
 PASS range.startOffset is 1

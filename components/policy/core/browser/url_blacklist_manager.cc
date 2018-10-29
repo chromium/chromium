@@ -218,9 +218,8 @@ URLBlacklist::URLBlacklistState URLBlacklist::GetURLBlacklistState(
       url_matcher_->MatchURL(url);
 
   const FilterComponents* max = nullptr;
-  for (std::set<URLMatcherConditionSet::ID>::iterator id = matching_ids.begin();
-       id != matching_ids.end(); ++id) {
-    std::map<int, FilterComponents>::const_iterator it = filters_.find(*id);
+  for (auto id = matching_ids.begin(); id != matching_ids.end(); ++id) {
+    auto it = filters_.find(*id);
     DCHECK(it != filters_.end());
     const FilterComponents& filter = it->second;
     if (!max || FilterTakesPrecedence(filter, *max))

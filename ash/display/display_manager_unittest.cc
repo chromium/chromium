@@ -1190,7 +1190,7 @@ TEST_F(DisplayManagerTest, TouchCalibrationTest) {
   display::test::TouchDeviceManagerTestApi tdm_test_api(touch_device_manager);
 
   const ui::TouchscreenDevice touchdevice(
-      11, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
+      11, ui::InputDeviceType::INPUT_DEVICE_USB,
       std::string("test touch device"), gfx::Size(123, 456), 1);
   const display::TouchDeviceIdentifier touch_device_identifier_2 =
       display::TouchDeviceIdentifier::FromDevice(touchdevice);
@@ -1265,7 +1265,7 @@ TEST_F(DisplayManagerTest, TouchCalibrationTest) {
                             touchdevice, GetDisplayInfoAt(1).id()));
 
   const ui::TouchscreenDevice touchdevice_2(
-      12, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
+      12, ui::InputDeviceType::INPUT_DEVICE_USB,
       std::string("test touch device 2"), gfx::Size(234, 567), 1);
   display::TouchDeviceIdentifier touch_device_identifier_2_2 =
       display::TouchDeviceIdentifier::FromDevice(touchdevice_2);

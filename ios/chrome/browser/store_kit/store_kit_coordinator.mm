@@ -27,8 +27,9 @@
 - (void)start {
   DCHECK(self.iTunesProductParameters
              [SKStoreProductParameterITunesItemIdentifier]);
-  // StoreKit shouldn't be launched, if there is one already presented.
-  if (_viewController)
+  // StoreKit shouldn't be launched, if there is one already presented or if
+  // there is another view presented by the base view controller.
+  if (_viewController || self.baseViewController.presentedViewController)
     return;
   _viewController = [[SKStoreProductViewController alloc] init];
   _viewController.delegate = self;

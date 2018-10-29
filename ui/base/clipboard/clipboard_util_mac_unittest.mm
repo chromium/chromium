@@ -21,7 +21,7 @@ class ClipboardUtilMacTest : public PlatformTest {
     NSArray* types = [pboard types];
     NSMutableDictionary* data = [NSMutableDictionary dictionary];
     for (NSString* type in types) {
-      [data setObject:[pboard dataForType:type] forKey:type];
+      data[type] = [pboard dataForType:type];
     }
     return data;
   }
@@ -46,9 +46,9 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemFromUrl) {
          convertingTextToURL:NO];
 
   ASSERT_EQ(1u, [urls count]);
-  EXPECT_NSEQ(urlString, [urls objectAtIndex:0]);
+  EXPECT_NSEQ(urlString, urls[0]);
   ASSERT_EQ(1u, [titles count]);
-  EXPECT_NSEQ(urlString, [titles objectAtIndex:0]);
+  EXPECT_NSEQ(urlString, titles[0]);
 
   NSURL* url = [NSURL URLFromPasteboard:pasteboard->get()];
   EXPECT_NSEQ([url absoluteString], urlString);
@@ -71,9 +71,9 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemWithTitle) {
          convertingTextToURL:NO];
 
   ASSERT_EQ(1u, [urls count]);
-  EXPECT_NSEQ(urlString, [urls objectAtIndex:0]);
+  EXPECT_NSEQ(urlString, urls[0]);
   ASSERT_EQ(1u, [titles count]);
-  EXPECT_NSEQ(title, [titles objectAtIndex:0]);
+  EXPECT_NSEQ(title, titles[0]);
 
   NSURL* url = [NSURL URLFromPasteboard:pasteboard->get()];
   EXPECT_NSEQ([url absoluteString], urlString);
@@ -97,9 +97,9 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemWithFilePath) {
          convertingTextToURL:NO];
 
   ASSERT_EQ(1u, [urls count]);
-  EXPECT_NSEQ(urlString, [urls objectAtIndex:0]);
+  EXPECT_NSEQ(urlString, urls[0]);
   ASSERT_EQ(1u, [titles count]);
-  EXPECT_NSEQ(urlString, [titles objectAtIndex:0]);
+  EXPECT_NSEQ(urlString, titles[0]);
 
   NSURL* urlFromPasteboard = [NSURL URLFromPasteboard:pasteboard->get()];
   EXPECT_NSEQ(urlFromPasteboard, url);

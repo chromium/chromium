@@ -2,7 +2,6 @@ Test importing and exporting an EC public key in raw format.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Importing raw (uncompressed) public key...
 PASS publicKey.toString() is '[object CryptoKey]'
 PASS publicKey.type is 'public'

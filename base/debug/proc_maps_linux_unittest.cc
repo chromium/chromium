@@ -207,29 +207,29 @@ void CheckProcMapsRegions(const std::vector<MappedMemoryRegion> &regions) {
   bool found_stack = false;
   bool found_address = false;
 
-  for (size_t i = 0; i < regions.size(); ++i) {
-    if (regions[i].path == exe_path.value()) {
+  for (const auto& i : regions) {
+    if (i.path == exe_path.value()) {
       // It's OK to find the executable mapped multiple times as there'll be
       // multiple sections (e.g., text, data).
       found_exe = true;
     }
 
-    if (regions[i].path == "[stack]") {
+    if (i.path == "[stack]") {
 // On Android the test is run on a background thread, since [stack] is for
 // the main thread, we cannot test this.
 #if !defined(OS_ANDROID)
-      EXPECT_GE(address, regions[i].start);
-      EXPECT_LT(address, regions[i].end);
+      EXPECT_GE(address, i.start);
+      EXPECT_LT(address, i.end);
 #endif
-      EXPECT_TRUE(regions[i].permissions & MappedMemoryRegion::READ);
-      EXPECT_TRUE(regions[i].permissions & MappedMemoryRegion::WRITE);
-      EXPECT_FALSE(regions[i].permissions & MappedMemoryRegion::EXECUTE);
-      EXPECT_TRUE(regions[i].permissions & MappedMemoryRegion::PRIVATE);
+      EXPECT_TRUE(i.permissions & MappedMemoryRegion::READ);
+      EXPECT_TRUE(i.permissions & MappedMemoryRegion::WRITE);
+      EXPECT_FALSE(i.permissions & MappedMemoryRegion::EXECUTE);
+      EXPECT_TRUE(i.permissions & MappedMemoryRegion::PRIVATE);
       EXPECT_FALSE(found_stack) << "Found duplicate stacks";
       found_stack = true;
     }
 
-    if (address >= regions[i].start && address < regions[i].end) {
+    if (address >= i.start && address < i.end) {
       EXPECT_FALSE(found_address) << "Found same address in multiple regions";
       found_address = true;
     }

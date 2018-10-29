@@ -44,6 +44,7 @@
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_application_cache_host.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/platform/web_insecure_request_policy.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
@@ -54,7 +55,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -231,7 +231,6 @@ struct FrameFetchContext::FrozenState final
               const base::Optional<mojom::IPAddressSpace>& address_space,
               const ContentSecurityPolicy* content_security_policy,
               KURL site_for_cookies,
-              scoped_refptr<const SecurityOrigin> requestor_origin,
               const ClientHintsPreferences& client_hints_preferences,
               float device_pixel_ratio,
               const String& user_agent,
@@ -242,7 +241,6 @@ struct FrameFetchContext::FrozenState final
         address_space(address_space),
         content_security_policy(content_security_policy),
         site_for_cookies(site_for_cookies),
-        requestor_origin(requestor_origin),
         client_hints_preferences(client_hints_preferences),
         device_pixel_ratio(device_pixel_ratio),
         user_agent(user_agent),
@@ -254,7 +252,6 @@ struct FrameFetchContext::FrozenState final
   const base::Optional<mojom::IPAddressSpace> address_space;
   const Member<const ContentSecurityPolicy> content_security_policy;
   const KURL site_for_cookies;
-  const scoped_refptr<const SecurityOrigin> requestor_origin;
   const ClientHintsPreferences client_hints_preferences;
   const float device_pixel_ratio;
   const String user_agent;
@@ -285,7 +282,11 @@ ResourceFetcher* FrameFetchContext::CreateFetcher(DocumentLoader* loader,
 }
 
 FrameFetchContext::FrameFetchContext(DocumentLoader* loader, Document* document)
-    : document_loader_(loader),
+    : BaseFetchContext(
+          document ? document->GetTaskRunner(blink::TaskType::kNetworking)
+                   : loader->GetFrame()->GetTaskRunner(
+                         blink::TaskType::kNetworking)),
+      document_loader_(loader),
       document_(document),
       save_data_enabled_(GetNetworkStateNotifier().SaveDataEnabled() &&
                          !GetSettings()->GetDataSaverHoldbackWebApi()) {
@@ -339,15 +340,15 @@ LocalFrame* FrameFetchContext::FrameOfImportsController() const {
 scoped_refptr<base::SingleThreadTaskRunner>
 FrameFetchContext::GetLoadingTaskRunner() {
   if (IsDetached())
-    return FetchContext::GetLoadingTaskRunner();
-  return GetFrame()->GetTaskRunner(TaskType::kNetworking);
+    return Platform::Current()->CurrentThread()->GetTaskRunner();
+  return FetchContext::GetLoadingTaskRunner();
 }
 
 std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
 FrameFetchContext::CreateResourceLoadingTaskRunnerHandle() {
   if (IsDetached()) {
     return scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-        FetchContext::GetLoadingTaskRunner());
+        GetLoadingTaskRunner());
   }
   return GetFrame()
       ->GetFrameScheduler()
@@ -435,6 +436,14 @@ void FrameFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request,
   }
 
   if (GetLocalFrameClient()->GetPreviewsStateForFrame() &
+      WebURLRequest::kResourceLoadingHintsOn) {
+    request.AddHTTPHeaderField(
+        "Intervention",
+        "<https://www.chromestatus.com/features/4510564810227712>; "
+        "level=\"warning\"");
+  }
+
+  if (GetLocalFrameClient()->GetPreviewsStateForFrame() &
       WebURLRequest::kClientLoFiOn) {
     request.AddHTTPHeaderField(
         "Intervention",
@@ -516,7 +525,7 @@ void FrameFetchContext::DispatchDidChangeResourcePriority(
 
 void FrameFetchContext::PrepareRequest(ResourceRequest& request,
                                        RedirectType redirect_type) {
-  SetFirstPartyCookieAndRequestorOrigin(request);
+  SetFirstPartyCookie(request);
 
   String user_agent = GetUserAgent();
   request.SetHTTPUserAgent(AtomicString(user_agent));
@@ -573,7 +582,7 @@ void FrameFetchContext::DispatchDidReceiveResponse(
     unsigned long identifier,
     const ResourceResponse& response,
     network::mojom::RequestContextFrameType frame_type,
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     Resource* resource,
     ResourceResponseType response_type) {
   if (IsDetached())
@@ -711,14 +720,14 @@ void FrameFetchContext::DispatchDidFail(const KURL& url,
     return;
 
   if (DocumentLoader* loader = MasterDocumentLoader()) {
-    if (NetworkUtils::IsCertificateTransparencyRequiredError(
+    if (network_utils::IsCertificateTransparencyRequiredError(
             error.ErrorCode())) {
       loader->GetUseCounter().Count(
           WebFeature::kCertificateTransparencyRequiredErrorOnResourceLoad,
           GetFrame());
     }
 
-    if (NetworkUtils::IsLegacySymantecCertError(error.ErrorCode())) {
+    if (network_utils::IsLegacySymantecCertError(error.ErrorCode())) {
       loader->GetUseCounter().Count(
           WebFeature::kDistrustedLegacySymantecSubresource, GetFrame());
       GetLocalFrameClient()->ReportLegacySymantecCert(url, true /* did_fail */);
@@ -833,8 +842,9 @@ void FrameFetchContext::AddResourceTiming(const ResourceTimingInfo& info) {
 bool FrameFetchContext::AllowImage(bool images_enabled, const KURL& url) const {
   if (IsDetached())
     return true;
-
-  return GetContentSettingsClient()->AllowImage(images_enabled, url);
+  if (auto* settings_client = GetContentSettingsClient())
+    images_enabled = settings_client->AllowImage(images_enabled, url);
+  return images_enabled;
 }
 
 blink::mojom::ControllerServiceWorkerMode
@@ -994,8 +1004,14 @@ void FrameFetchContext::AddClientHintsIfNecessary(
 
   if (ShouldSendClientHint(mojom::WebClientHintsType::kRtt, hints_preferences,
                            enabled_hints)) {
-    unsigned long rtt = GetNetworkStateNotifier().RoundRtt(
-        request.Url().Host(), GetNetworkStateNotifier().HttpRtt());
+    base::Optional<TimeDelta> http_rtt =
+        GetNetworkStateNotifier().GetWebHoldbackHttpRtt();
+    if (!http_rtt) {
+      http_rtt = GetNetworkStateNotifier().HttpRtt();
+    }
+
+    unsigned long rtt =
+        GetNetworkStateNotifier().RoundRtt(request.Url().Host(), http_rtt);
     request.AddHTTPHeaderField(
         blink::kClientHintsHeaderMapping[static_cast<size_t>(
             mojom::WebClientHintsType::kRtt)],
@@ -1004,9 +1020,14 @@ void FrameFetchContext::AddClientHintsIfNecessary(
 
   if (ShouldSendClientHint(mojom::WebClientHintsType::kDownlink,
                            hints_preferences, enabled_hints)) {
-    double mbps = GetNetworkStateNotifier().RoundMbps(
-        request.Url().Host(),
-        GetNetworkStateNotifier().DownlinkThroughputMbps());
+    base::Optional<double> throughput_mbps =
+        GetNetworkStateNotifier().GetWebHoldbackDownlinkThroughputMbps();
+    if (!throughput_mbps) {
+      throughput_mbps = GetNetworkStateNotifier().DownlinkThroughputMbps();
+    }
+
+    double mbps = GetNetworkStateNotifier().RoundMbps(request.Url().Host(),
+                                                      throughput_mbps);
     request.AddHTTPHeaderField(
         blink::kClientHintsHeaderMapping[static_cast<size_t>(
             mojom::WebClientHintsType::kDownlink)],
@@ -1015,11 +1036,16 @@ void FrameFetchContext::AddClientHintsIfNecessary(
 
   if (ShouldSendClientHint(mojom::WebClientHintsType::kEct, hints_preferences,
                            enabled_hints)) {
+    base::Optional<WebEffectiveConnectionType> holdback_ect =
+        GetNetworkStateNotifier().GetWebHoldbackEffectiveType();
+    if (!holdback_ect)
+      holdback_ect = GetNetworkStateNotifier().EffectiveType();
+
     request.AddHTTPHeaderField(
         blink::kClientHintsHeaderMapping[static_cast<size_t>(
             mojom::WebClientHintsType::kEct)],
         AtomicString(NetworkStateNotifier::EffectiveConnectionTypeToString(
-            GetNetworkStateNotifier().EffectiveType())));
+            holdback_ect.value())));
   }
 }
 
@@ -1036,8 +1062,7 @@ void FrameFetchContext::PopulateResourceRequest(
     request.AddHTTPHeaderField("CSP", "active");
 }
 
-void FrameFetchContext::SetFirstPartyCookieAndRequestorOrigin(
-    ResourceRequest& request) {
+void FrameFetchContext::SetFirstPartyCookie(ResourceRequest& request) {
   // Set the first party for cookies url if it has not been set yet (new
   // requests). This value will be updated during redirects, consistent with
   // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site-00#section-2.1.1?
@@ -1048,18 +1073,6 @@ void FrameFetchContext::SetFirstPartyCookieAndRequestorOrigin(
     } else {
       request.SetSiteForCookies(GetSiteForCookies());
     }
-  }
-
-  // * For subresources, the initiator origin is the origin of the
-  //   |document_| that contains them.
-  // * For loading a new document in the frame, the initiator is not set here.
-  //   In most of the cases, it is set in the FrameLoadRequest constructor.
-  //   Otherwise, it must be set immediately after the request has been created.
-  //   See the calls to ResourceRequest::SetRequestorOrigin().
-  if (request.GetFrameType() ==
-      network::mojom::RequestContextFrameType::kNone) {
-    if (!request.RequestorOrigin())
-      request.SetRequestorOrigin(GetRequestorOrigin());
   }
 }
 
@@ -1081,7 +1094,7 @@ MHTMLArchive* FrameFetchContext::Archive() const {
 bool FrameFetchContext::AllowScriptFromSource(const KURL& url) const {
   if (AllowScriptFromSourceWithoutNotifying(url))
     return true;
-  ContentSettingsClient* settings_client = GetContentSettingsClient();
+  WebContentSettingsClient* settings_client = GetContentSettingsClient();
   if (settings_client)
     settings_client->DidNotAllowScript();
   return false;
@@ -1089,13 +1102,11 @@ bool FrameFetchContext::AllowScriptFromSource(const KURL& url) const {
 
 bool FrameFetchContext::AllowScriptFromSourceWithoutNotifying(
     const KURL& url) const {
-  ContentSettingsClient* settings_client = GetContentSettingsClient();
   Settings* settings = GetSettings();
-  if (settings_client && !settings_client->AllowScriptFromSource(
-                             !settings || settings->GetScriptEnabled(), url)) {
-    return false;
-  }
-  return true;
+  bool allow_script = !settings || settings->GetScriptEnabled();
+  if (auto* settings_client = GetContentSettingsClient())
+    allow_script = settings_client->AllowScriptFromSource(allow_script, url);
+  return allow_script;
 }
 
 bool FrameFetchContext::IsFirstPartyOrigin(const KURL& url) const {
@@ -1182,7 +1193,7 @@ FrameFetchContext::CreateWebSocketHandshakeThrottle() {
 }
 
 bool FrameFetchContext::ShouldBlockFetchByMixedContentCheck(
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     network::mojom::RequestContextFrameType frame_type,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url,
@@ -1212,7 +1223,7 @@ bool FrameFetchContext::ShouldBlockFetchAsCredentialedSubresource(
     return false;
 
   if (resource_request.GetRequestContext() ==
-      WebURLRequest::kRequestContextXMLHttpRequest) {
+      mojom::RequestContextType::XML_HTTP_REQUEST) {
     return false;
   }
 
@@ -1279,7 +1290,7 @@ void FrameFetchContext::AddConsoleMessage(ConsoleMessage* message) const {
     GetFrame()->Console().AddMessage(message);
 }
 
-ContentSettingsClient* FrameFetchContext::GetContentSettingsClient() const {
+WebContentSettingsClient* FrameFetchContext::GetContentSettingsClient() const {
   if (IsDetached())
     return nullptr;
   return GetFrame()->GetContentSettingsClient();
@@ -1296,26 +1307,6 @@ String FrameFetchContext::GetUserAgent() const {
   if (IsDetached())
     return frozen_state_->user_agent;
   return GetFrame()->Loader().UserAgent();
-}
-
-scoped_refptr<const SecurityOrigin> FrameFetchContext::GetRequestorOrigin() {
-  if (IsDetached())
-    return frozen_state_->requestor_origin;
-
-  // Should not be called during the document load, and |document_| should be
-  // always set beforehand for a subresource loading.
-  DCHECK(document_);
-
-  // If sandbox is enabled and allow-same-origin is not set in the attribute,
-  // |document|'s SecurityOrigin is set to the unique opaque origin, and
-  // FrameFetchContext::GetSecurityOrigin also respects the unique origin.
-  // But, we still need to set the unveiled document origin to the requestor
-  // origin. See also sandbox's spec;
-  // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-sandbox.
-  if (document_->IsSandboxed(kSandboxOrigin))
-    return SecurityOrigin::Create(document_->Url());
-
-  return GetSecurityOrigin();
 }
 
 const ClientHintsPreferences FrameFetchContext::GetClientHintsPreferences()
@@ -1377,8 +1368,10 @@ void FrameFetchContext::ParseAndPersistClientHints(
     return;
   }
 
-  GetContentSettingsClient()->PersistClientHints(
-      enabled_client_hints, persist_duration, response.Url());
+  if (auto* settings_client = GetContentSettingsClient()) {
+    settings_client->PersistClientHints(enabled_client_hints, persist_duration,
+                                        response.Url());
+  }
 }
 
 std::unique_ptr<WebURLLoader> FrameFetchContext::CreateURLLoader(
@@ -1409,8 +1402,7 @@ std::unique_ptr<WebURLLoader> FrameFetchContext::CreateURLLoader(
   // callsite when we make Shared Worker loading off-main-thread.
   if (document_ && request.Url().ProtocolIs("blob") &&
       BlobUtils::MojoBlobURLsEnabled() && !url_loader_factory &&
-      request.GetRequestContext() !=
-          WebURLRequest::kRequestContextSharedWorker) {
+      request.GetRequestContext() != mojom::RequestContextType::SHARED_WORKER) {
     document_->GetPublicURLManager().Resolve(request.Url(),
                                              MakeRequest(&url_loader_factory));
   }
@@ -1439,7 +1431,7 @@ FetchContext* FrameFetchContext::Detach() {
   if (document_) {
     frozen_state_ = new FrozenState(
         Url(), GetParentSecurityOrigin(), GetAddressSpace(),
-        GetContentSecurityPolicy(), GetSiteForCookies(), GetRequestorOrigin(),
+        GetContentSecurityPolicy(), GetSiteForCookies(),
         GetClientHintsPreferences(), GetDevicePixelRatio(), GetUserAgent(),
         IsMainFrame(), IsSVGImageChromeClient());
     fetch_client_settings_object_ =
@@ -1449,9 +1441,8 @@ FetchContext* FrameFetchContext::Detach() {
     frozen_state_ = new FrozenState(
         NullURL(), GetParentSecurityOrigin(), GetAddressSpace(),
         GetContentSecurityPolicy(), GetSiteForCookies(),
-        SecurityOrigin::CreateUniqueOpaque(), GetClientHintsPreferences(),
-        GetDevicePixelRatio(), GetUserAgent(), IsMainFrame(),
-        IsSVGImageChromeClient());
+        GetClientHintsPreferences(), GetDevicePixelRatio(), GetUserAgent(),
+        IsMainFrame(), IsSVGImageChromeClient());
     fetch_client_settings_object_ = new FetchClientSettingsObjectSnapshot(
         NullURL(), nullptr, kReferrerPolicyDefault, String());
   }

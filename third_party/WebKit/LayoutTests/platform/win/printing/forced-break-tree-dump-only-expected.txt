@@ -15,4 +15,3 @@ layer at (0,0) size 1066x827 backgroundClip at (0,0) size 800x600 clip at (0,0) 
       LayoutBlockFlow {DIV} at (0,783) size 1050x20
         LayoutText {#text} at (0,0) size 155x19
           text run at (0,0) width 155: "This should be on page 2."
-

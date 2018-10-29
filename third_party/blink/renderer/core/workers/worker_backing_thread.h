@@ -10,15 +10,14 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-class WebThread;
 class WebThreadSupportingGC;
-struct WebThreadCreationParams;
 struct WorkerBackingThreadStartupData;
 
 // WorkerBackingThread represents a WebThread with Oilpan and V8. A client of
@@ -28,11 +27,8 @@ struct WorkerBackingThreadStartupData;
 class CORE_EXPORT WorkerBackingThread final {
  public:
   static std::unique_ptr<WorkerBackingThread> Create(
-      const WebThreadCreationParams& params) {
+      const ThreadCreationParams& params) {
     return base::WrapUnique(new WorkerBackingThread(params));
-  }
-  static std::unique_ptr<WorkerBackingThread> Create(WebThread* thread) {
-    return base::WrapUnique(new WorkerBackingThread(thread));
   }
 
   ~WorkerBackingThread();
@@ -57,12 +53,10 @@ class CORE_EXPORT WorkerBackingThread final {
   static void SetRAILModeOnWorkerThreadIsolates(v8::RAILMode);
 
  private:
-  explicit WorkerBackingThread(const WebThreadCreationParams&);
-  explicit WorkerBackingThread(WebThread*);
+  explicit WorkerBackingThread(const ThreadCreationParams&);
 
   std::unique_ptr<WebThreadSupportingGC> backing_thread_;
   v8::Isolate* isolate_ = nullptr;
-  bool is_owning_thread_;
 };
 
 }  // namespace blink

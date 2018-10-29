@@ -125,23 +125,24 @@ ChromeBubbleManager::~ChromeBubbleManager() {
   RemoveBubbleManagerObserver(&chrome_bubble_metrics_);
 }
 
-void ChromeBubbleManager::TabDetachedAt(content::WebContents* contents,
-                                        int index,
-                                        bool was_active) {
-  CloseAllBubbles(BUBBLE_CLOSE_TABDETACHED);
-  // Any bubble that didn't close should update its anchor position.
-  UpdateAllBubbleAnchors();
-}
+void ChromeBubbleManager::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() == TabStripModelChange::kRemoved) {
+    CloseAllBubbles(BUBBLE_CLOSE_TABDETACHED);
+    // Any bubble that didn't close should update its anchor position.
+    UpdateAllBubbleAnchors();
+  }
 
-void ChromeBubbleManager::TabDeactivated(content::WebContents* contents) {
-  CloseAllBubbles(BUBBLE_CLOSE_TABSWITCHED);
-}
+  if (tab_strip_model->empty() || !selection.active_tab_changed())
+    return;
 
-void ChromeBubbleManager::ActiveTabChanged(content::WebContents* old_contents,
-                                           content::WebContents* new_contents,
-                                           int index,
-                                           int reason) {
-  Observe(new_contents);
+  if (selection.old_contents)
+    CloseAllBubbles(BUBBLE_CLOSE_TABSWITCHED);
+
+  if (selection.new_contents)
+    Observe(selection.new_contents);
 }
 
 void ChromeBubbleManager::FrameDeleted(

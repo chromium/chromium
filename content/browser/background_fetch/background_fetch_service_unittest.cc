@@ -155,7 +155,7 @@ class BackgroundFetchServiceTest : public BackgroundFetchTestBase {
 
     base::RunLoop run_loop;
     context_->data_manager_->CreateRegistration(
-        registration_id, requests, options, icon,
+        registration_id, requests, options, icon, /* start_paused = */ false,
         base::BindOnce(&BackgroundFetchServiceTest::DidStartFetch,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -184,7 +184,7 @@ class BackgroundFetchServiceTest : public BackgroundFetchTestBase {
         base::BindOnce(&BackgroundFetchServiceTest::DidGetRegistration,
                        base::Unretained(this), run_loop.QuitClosure(),
                        out_error, out_registration));
-    UnregisterServiceWorker();
+    UnregisterServiceWorker(service_worker_registration_id);
     run_loop.Run();
   }
 
@@ -215,7 +215,7 @@ class BackgroundFetchServiceTest : public BackgroundFetchTestBase {
     DCHECK(out_error);
 
     base::RunLoop run_loop;
-    service_->UpdateUI(service_worker_registration_id, unique_id, developer_id,
+    service_->UpdateUI(service_worker_registration_id, developer_id, unique_id,
                        title, SkBitmap(),
                        base::BindOnce(&BackgroundFetchServiceTest::DidGetError,
                                       base::Unretained(this),
@@ -326,6 +326,12 @@ class BackgroundFetchServiceTest : public BackgroundFetchTestBase {
   }
 
  protected:
+  ServiceWorkerFetchRequest CreateDefaultRequest() {
+    return CreateRequestWithProvidedResponse(
+        "GET", GURL("https://example.com/funny_cat.txt"),
+        TestResponseBuilder(200).MakeIndefinitelyPending().Build());
+  }
+
   scoped_refptr<BackgroundFetchContext> context_;
 
  private:
@@ -391,8 +397,7 @@ TEST_F(BackgroundFetchServiceTest, FetchInvalidArguments) {
   // The |developer_id| must be a non-empty string.
   {
     BadMessageObserver bad_message_observer;
-    std::vector<ServiceWorkerFetchRequest> requests;
-    requests.emplace_back();  // empty, but valid
+    std::vector<ServiceWorkerFetchRequest> requests = {CreateDefaultRequest()};
 
     blink::mojom::BackgroundFetchError error;
     BackgroundFetchRegistration registration;
@@ -428,8 +433,7 @@ TEST_F(BackgroundFetchServiceTest, FetchRegistrationProperties) {
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             service_worker_registration_id);
 
-  std::vector<ServiceWorkerFetchRequest> requests;
-  requests.emplace_back();  // empty, but valid
+  std::vector<ServiceWorkerFetchRequest> requests = {CreateDefaultRequest()};
 
   BackgroundFetchOptions options;
   options.icons.push_back(
@@ -473,8 +477,7 @@ TEST_F(BackgroundFetchServiceTest, FetchDuplicatedRegistrationFailure) {
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             service_worker_registration_id);
 
-  std::vector<ServiceWorkerFetchRequest> requests;
-  requests.emplace_back();  // empty, but valid
+  std::vector<ServiceWorkerFetchRequest> requests = {CreateDefaultRequest()};
 
   BackgroundFetchOptions options;
 
@@ -668,23 +671,26 @@ TEST_F(BackgroundFetchServiceTest, FetchFailEventDispatch) {
   std::vector<BackgroundFetchSettledFetch> fetches;
   MatchAllRequests(service_worker_registration_id, registration.developer_id,
                    registration.unique_id, &fetches);
-  ASSERT_EQ(fetches.size(), requests.size());
+  ASSERT_EQ(fetches.size(), 2u);
+
+  // Make sure the 404 request is first, which has a response.
+  if (!fetches[0].response)
+    std::swap(fetches[0], fetches[1]);
 
   for (size_t i = 0; i < fetches.size(); ++i) {
     ASSERT_EQ(fetches[i].request.url, requests[i].url);
     EXPECT_EQ(fetches[i].request.method, requests[i].method);
 
-    EXPECT_EQ(fetches[i].response->url_list[0], fetches[i].request.url);
-    EXPECT_EQ(fetches[i].response->response_type,
-              network::mojom::FetchResponseType::kDefault);
-
     switch (i) {
       case 0:
         EXPECT_EQ(fetches[i].response->status_code, 404);
+        EXPECT_EQ(fetches[i].response->url_list[0], fetches[i].request.url);
+        EXPECT_EQ(fetches[i].response->response_type,
+                  network::mojom::FetchResponseType::kDefault);
         break;
       case 1:
-        EXPECT_EQ(fetches[i].response->status_code, 0);
-        break;
+        EXPECT_FALSE(fetches[i].response);
+        continue;
       default:
         NOTREACHED();
     }
@@ -711,8 +717,7 @@ TEST_F(BackgroundFetchServiceTest, UpdateUI) {
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             service_worker_registration_id);
 
-  std::vector<ServiceWorkerFetchRequest> requests;
-  requests.emplace_back();  // empty, but valid
+  std::vector<ServiceWorkerFetchRequest> requests = {CreateDefaultRequest()};
 
   BackgroundFetchOptions options;
   options.title = "1st title";
@@ -730,7 +735,7 @@ TEST_F(BackgroundFetchServiceTest, UpdateUI) {
 
   // Immediately update the title. This should succeed.
   UpdateUI(registration_id.service_worker_registration_id(),
-           registration_id.unique_id(), registration_id.developer_id(),
+           registration_id.developer_id(), registration_id.unique_id(),
            second_title, &error);
   EXPECT_EQ(blink::mojom::BackgroundFetchError::NONE, error);
 
@@ -750,8 +755,7 @@ TEST_F(BackgroundFetchServiceTest, Abort) {
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             service_worker_registration_id);
 
-  std::vector<ServiceWorkerFetchRequest> requests;
-  requests.emplace_back();  // empty, but valid
+  std::vector<ServiceWorkerFetchRequest> requests = {CreateDefaultRequest()};
 
   BackgroundFetchOptions options;
 
@@ -887,8 +891,7 @@ TEST_F(BackgroundFetchServiceTest, UniqueId) {
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             service_worker_registration_id);
 
-  std::vector<ServiceWorkerFetchRequest> requests;
-  requests.emplace_back();  // empty, but valid
+  std::vector<ServiceWorkerFetchRequest> requests = {CreateDefaultRequest()};
 
   blink::mojom::BackgroundFetchError error;
 
@@ -932,8 +935,8 @@ TEST_F(BackgroundFetchServiceTest, UniqueId) {
   // title of the second registration only.
   std::string updated_second_registration_title = "Foo";
   UpdateUI(second_registration_id.service_worker_registration_id(),
-           second_registration_id.unique_id(),
            second_registration_id.developer_id(),
+           second_registration_id.unique_id(),
            updated_second_registration_title, &error);
   EXPECT_EQ(blink::mojom::BackgroundFetchError::NONE, error);
 
@@ -942,8 +945,8 @@ TEST_F(BackgroundFetchServiceTest, UniqueId) {
   // backgroundfetchsuccess or backgroundfetchfail event, both of which should
   // work even though that registration is no longer active).
   UpdateUI(aborted_registration_id.service_worker_registration_id(),
-           aborted_registration_id.unique_id(),
-           aborted_registration_id.developer_id(), "Bar", &error);
+           aborted_registration_id.developer_id(),
+           aborted_registration_id.unique_id(), "Bar", &error);
   EXPECT_EQ(blink::mojom::BackgroundFetchError::INVALID_ID, error);
 
   // Verify that the second registration's title was indeed updated, and that it
@@ -994,8 +997,7 @@ TEST_F(BackgroundFetchServiceTest, GetDeveloperIds) {
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             service_worker_registration_id);
 
-  std::vector<ServiceWorkerFetchRequest> requests;
-  requests.emplace_back();  // empty, but valid
+  std::vector<ServiceWorkerFetchRequest> requests = {CreateDefaultRequest()};
 
   BackgroundFetchOptions options;
 

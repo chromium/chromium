@@ -21,7 +21,6 @@
 #include "content/public/common/service_names.mojom.h"
 #include "services/resource_coordinator/public/cpp/page_resource_coordinator.h"
 #include "services/resource_coordinator/public/cpp/process_resource_coordinator.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_features.h"
 #include "services/resource_coordinator/public/mojom/coordination_unit.mojom.h"
 #include "services/resource_coordinator/public/mojom/service_constants.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -39,8 +38,7 @@ ResourceCoordinatorTabHelper::ResourceCoordinatorTabHelper(
   TabLoadTracker::Get()->StartTracking(web_contents);
 
   service_manager::Connector* connector = nullptr;
-  if (resource_coordinator::IsResourceCoordinatorEnabled() &&
-      content::ServiceManagerConnection::GetForProcess()) {
+  if (content::ServiceManagerConnection::GetForProcess()) {
     connector =
         content::ServiceManagerConnection::GetForProcess()->GetConnector();
     page_resource_coordinator_ =

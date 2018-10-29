@@ -4,6 +4,9 @@
 
 #include "chrome/browser/android/download/available_offline_content_provider.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/base64.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -14,26 +17,33 @@
 #include "chrome/common/chrome_features.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_item.h"
+#include "components/offline_items_collection/core/offline_item_state.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "ui/base/l10n/time_format.h"
 
 namespace android {
 using chrome::mojom::AvailableContentType;
 using offline_items_collection::OfflineItem;
+using offline_items_collection::OfflineItemState;
 
 namespace {
-bool ItemHasBeenOpened(const OfflineItem& item) {
-  // Typically, items are initialized with an accessed_time equal to the
-  // creation_time.
-  return !item.last_accessed_time.is_null() &&
-         item.last_accessed_time > item.creation_time;
-}
+
+// Minimum number of interesting offline items required to be available for any
+// content card to be presented in the dino page.
+const int kMinInterestingItemCount = 4;
+// Maximum number of items that should be presented in the list of offline
+// items.
+const int kMaxListItemsToReturn = 3;
+static_assert(
+    kMaxListItemsToReturn <= kMinInterestingItemCount,
+    "The number of items to list must be less or equal to the minimum number "
+    "of items that allow offline content to be presented");
 
 // Returns a value that represents the priority of the content type.
 // Smaller priority values are more important.
 int ContentTypePriority(AvailableContentType type) {
   switch (type) {
-    case AvailableContentType::kPrefetchedUnopenedPage:
+    case AvailableContentType::kPrefetchedPage:
       return 0;
     case AvailableContentType::kVideo:
       return 1;
@@ -48,13 +58,14 @@ int ContentTypePriority(AvailableContentType type) {
 }
 
 AvailableContentType ContentType(const OfflineItem& item) {
+  if (item.is_transient || item.is_off_the_record ||
+      item.state != OfflineItemState::COMPLETE || item.is_dangerous) {
+    return AvailableContentType::kUninteresting;
+  }
   switch (item.filter) {
-    case offline_items_collection::FILTER_PAGE:  // fallthrough
-    case offline_items_collection::FILTER_DOCUMENT:
+    case offline_items_collection::FILTER_PAGE:
       if (item.is_suggested)
-        return ItemHasBeenOpened(item)
-                   ? AvailableContentType::kUninteresting
-                   : AvailableContentType::kPrefetchedUnopenedPage;
+        return AvailableContentType::kPrefetchedPage;
       return AvailableContentType::kOtherPage;
       break;
     case offline_items_collection::FILTER_VIDEO:
@@ -171,7 +182,7 @@ chrome::mojom::AvailableOfflineContentPtr CreateAvailableOfflineContent(
     const GURL& thumbnail_url) {
   return chrome::mojom::AvailableOfflineContent::New(
       item.id.id, item.id.name_space, item.title, item.description,
-      base::UTF16ToASCII(ui::TimeFormat::Simple(
+      base::UTF16ToUTF8(ui::TimeFormat::Simple(
           ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
           base::Time::Now() - item.creation_time)),
       "",  // TODO(crbug.com/852872): Add attribution
@@ -218,9 +229,10 @@ void AvailableOfflineContentProvider::LaunchItem(
       offline_items_collection::ContentId(name_space, item_id));
 }
 
-void AvailableOfflineContentProvider::LaunchDownloadsPage() {
+void AvailableOfflineContentProvider::LaunchDownloadsPage(
+    bool open_prefetched_articles_tab) {
   DownloadManagerService::GetInstance()->ShowDownloadManager(
-      has_prefetched_content_);
+      open_prefetched_articles_tab);
 }
 
 void AvailableOfflineContentProvider::Create(
@@ -239,20 +251,32 @@ void AvailableOfflineContentProvider::SummarizeFinalize(
     const std::vector<OfflineItem>& all_items) {
   auto summary = chrome::mojom::AvailableOfflineContentSummary::New();
   summary->total_items = base::saturated_cast<uint32_t>(all_items.size());
+  // Decrement the total item count to find the interesting item count.
+  size_t interesting_items = all_items.size();
   for (const OfflineItem& item : all_items) {
-    if (item.filter == offline_items_collection::FILTER_PAGE) {
-      if (item.is_suggested)
+    switch (ContentType(item)) {
+      case AvailableContentType::kPrefetchedPage:
         summary->has_prefetched_page = true;
-      summary->has_offline_page = true;
-    }
-    if (item.filter == offline_items_collection::FILTER_VIDEO) {
-      summary->has_video = true;
-    }
-    if (item.filter == offline_items_collection::FILTER_AUDIO) {
-      summary->has_audio = true;
+        break;
+      case AvailableContentType::kVideo:
+        summary->has_video = true;
+        break;
+      case AvailableContentType::kAudio:
+        summary->has_audio = true;
+        break;
+      case AvailableContentType::kOtherPage:
+        summary->has_offline_page = true;
+        break;
+      case AvailableContentType::kUninteresting:
+        interesting_items--;
+        break;
     }
   }
-  has_prefetched_content_ = summary->has_prefetched_page;
+
+  // If the number of interesting items is lower then the minimum required then
+  // reset all summary data so avoid presenting the card.
+  if (interesting_items < kMinInterestingItemCount)
+    summary = chrome::mojom::AvailableOfflineContentSummary::New();
   std::move(callback).Run(std::move(summary));
 }
 
@@ -261,17 +285,20 @@ void AvailableOfflineContentProvider::ListFinalize(
     AvailableOfflineContentProvider::ListCallback callback,
     offline_items_collection::OfflineContentAggregator* aggregator,
     const std::vector<OfflineItem>& all_items) {
-  // Save the best 3 or fewer times to |selected|.
-  const int kMaxItemsToReturn = 3;
-  std::vector<OfflineItem> selected(kMaxItemsToReturn);
+  std::vector<OfflineItem> selected(kMinInterestingItemCount);
   const auto end = std::partial_sort_copy(all_items.begin(), all_items.end(),
                                           selected.begin(), selected.end(),
                                           CompareItemsByUsefulness);
-  selected.resize(end - selected.begin());
-
-  while (!selected.empty() &&
-         ContentType(selected.back()) == AvailableContentType::kUninteresting)
-    selected.pop_back();
+  // If the number of interesting items is lower then the minimum don't show any
+  // suggestions. Otherwise trim it down to the number of expected items.
+  size_t copied_count = end - selected.begin();
+  DCHECK(copied_count <= kMinInterestingItemCount);
+  if (copied_count < kMinInterestingItemCount ||
+      ContentType(selected.back()) == AvailableContentType::kUninteresting) {
+    selected.clear();
+  } else {
+    selected.resize(kMaxListItemsToReturn);
+  }
 
   std::vector<offline_items_collection::ContentId> selected_ids;
   for (const OfflineItem& item : selected)

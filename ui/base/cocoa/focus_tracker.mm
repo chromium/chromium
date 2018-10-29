@@ -7,7 +7,7 @@
 
 @implementation FocusTracker
 
-- (id)initWithWindow:(NSWindow*)window {
+- (instancetype)initWithWindow:(NSWindow*)window {
   if ((self = [super init])) {
     NSResponder* current_focus = [window firstResponder];
 

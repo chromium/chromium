@@ -164,12 +164,6 @@ void PpapiBlinkPlatformImpl::Shutdown() {
 #endif
 }
 
-blink::WebThread* PpapiBlinkPlatformImpl::CurrentThread() {
-  if (IsMainThread())
-    return main_thread_;
-  return BlinkPlatformImpl::CurrentThread();
-}
-
 blink::WebSandboxSupport* PpapiBlinkPlatformImpl::GetSandboxSupport() {
 #if !defined(OS_ANDROID) && !defined(OS_WIN)
   return sandbox_support_.get();

@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutText {#text} at (20,1) size 470x19
-        text run at (20,1) width 470: " This checkbox should look 50% transparent and should be in the mixed state."
-layer at (12,11) size 13x13 transparent
-  LayoutBlockFlow {INPUT} at (4,3) size 13x13

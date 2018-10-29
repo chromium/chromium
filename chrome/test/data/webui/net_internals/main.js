@@ -14,29 +14,13 @@ GEN_INCLUDE(['net_internals_test.js']);
  * goes.
  */
 TEST_F('NetInternalsTest', 'netInternalsTourTabs', function() {
-  // Prevent sending any events to the browser as we flip through tabs, since
-  // this test is just intended to make sure everything's created and hooked
-  // up properly Javascript side.
-  g_browser.disable();
-
   // Expected visibility state of each tab.
   var tabVisibilityState = {
-    capture: true,
-    import: true,
-    proxy: true,
     events: true,
-    timeline: true,
+    proxy: true,
     dns: true,
     sockets: true,
-    http2: true,
-    quic: true,
-    reporting: true,
-    'alt-svc': true,
-    httpCache: true,
-    modules: true,
     hsts: true,
-    prerender: true,
-    bandwidth: true,
     chromeos: cr.isChromeOS
   };
 

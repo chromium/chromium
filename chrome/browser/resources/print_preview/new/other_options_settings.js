@@ -38,15 +38,6 @@ Polymer({
       type: Number,
       value: 0,
     },
-
-    /**
-     * The index of the last visible checkbox.
-     * @private {number}
-     */
-    lastIndex_: {
-      type: Number,
-      value: 0,
-    },
   },
 
   observers: [
@@ -94,13 +85,10 @@ Polymer({
     this.set(`options_.${index}.value`, setting.value);
     this.set(`options_.${index}.managed`, setting.setByPolicy);
 
-    // Update last/first
+    // Update first index
     const availableOptions = this.options_.filter(option => !!option.available);
-    if (availableOptions.length > 0) {
+    if (availableOptions.length > 0)
       this.firstIndex_ = this.options_.indexOf(availableOptions[0]);
-      this.lastIndex_ =
-          this.options_.indexOf(availableOptions[availableOptions.length - 1]);
-    }
   },
 
   /**
@@ -149,16 +137,11 @@ Polymer({
 
   /**
    * @param {number} index The index of the settings section.
-   * @return {string} Class string containing 'first-visible' and/or
-   *     'last-visible' if the settings section is the first or last visible.
+   * @return {string} Class string containing 'first-visible' if the settings
+   *     section is the first visible.
    * @private
    */
   getClass_: function(index) {
-    let classString = '';
-    if (index === this.firstIndex_)
-      classString += 'first-visible';
-    if (index === this.lastIndex_)
-      classString += ' last-visible';
-    return classString;
+    return index === this.firstIndex_ ? 'first-visible' : '';
   },
 });

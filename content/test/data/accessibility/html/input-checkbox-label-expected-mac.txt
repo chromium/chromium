@@ -1,4 +1,4 @@
 AXWebArea
 ++AXGroup
 ++++AXGroup
-++++++AXCheckBox AXTitle=' Checkbox Title' AXValue='0'
+++++++AXCheckBox AXTitle='Checkbox Title' AXValue='0'

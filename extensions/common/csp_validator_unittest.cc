@@ -5,6 +5,8 @@
 #include <stddef.h>
 
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "extensions/common/csp_validator.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/install_warning.h"
@@ -533,4 +535,60 @@ TEST(ExtensionCSPValidator, EffectiveSandboxedPageCSP) {
       "child-src 'self'; script-src 'none';",
       InsecureValueWarning("child-src", "http://bar.com"),
       InsecureValueWarning("child-src", "http://foo.com")));
+}
+
+namespace extensions {
+namespace csp_validator {
+
+void PrintTo(const CSPParser::Directive& directive, ::std::ostream* os) {
+  *os << base::StringPrintf(
+      "[[%s] [%s] [%s]]", directive.directive_string.as_string().c_str(),
+      directive.directive_name.c_str(),
+      base::JoinString(directive.directive_values, ",").c_str());
+}
+
+}  // namespace csp_validator
+}  // namespace extensions
+
+TEST(ExtensionCSPValidator, ParseCSP) {
+  using CSPParser = extensions::csp_validator::CSPParser;
+  using DirectiveList = CSPParser::DirectiveList;
+
+  struct TestCase {
+    TestCase(const char* policy, DirectiveList expected_directives)
+        : policy(policy), expected_directives(std::move(expected_directives)) {}
+    const char* policy;
+    DirectiveList expected_directives;
+  };
+
+  std::vector<TestCase> cases;
+
+  cases.emplace_back("   \n \r \t ", DirectiveList());
+  cases.emplace_back("  ; \n ;\r \t ;;", DirectiveList());
+
+  const char* policy = R"(  deFAULt-src   'self' ;
+  img-src * ; media-src media1.com MEDIA2.com;
+  img-src 'self';
+  )";
+  DirectiveList expected_directives;
+  expected_directives.emplace_back("deFAULt-src   'self'", "default-src",
+                                   std::vector<base::StringPiece>({"'self'"}));
+  expected_directives.emplace_back("img-src *", "img-src",
+                                   std::vector<base::StringPiece>({"*"}));
+  expected_directives.emplace_back(
+      "media-src media1.com MEDIA2.com", "media-src",
+      std::vector<base::StringPiece>({"media1.com", "MEDIA2.com"}));
+  expected_directives.emplace_back("img-src 'self'", "img-src",
+                                   std::vector<base::StringPiece>({"'self'"}));
+  cases.emplace_back(policy, std::move(expected_directives));
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.policy);
+
+    CSPParser parser(test_case.policy);
+
+    // Cheat and compare serialized versions of the directives.
+    EXPECT_EQ(::testing::PrintToString(parser.directives()),
+              ::testing::PrintToString(test_case.expected_directives));
+  }
 }

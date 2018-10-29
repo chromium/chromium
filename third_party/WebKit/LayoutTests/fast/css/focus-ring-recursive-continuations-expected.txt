@@ -2,12 +2,11 @@ When adding focus ring rects, we should avoid adding duplicated rect for continu
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS internals.focusRingRects(document.getElementById('focus')).length is 5
 SPAN0
 DIV1 SPAN1
 DIV2
-

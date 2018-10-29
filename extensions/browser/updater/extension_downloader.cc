@@ -111,7 +111,7 @@ ExtensionDownloaderTestDelegate* g_test_delegate = nullptr;
                                 kMaxRetries + 1);                         \
   }
 
-bool ShouldRetryRequest(network::SimpleURLLoader* loader) {
+bool ShouldRetryRequest(const network::SimpleURLLoader* loader) {
   DCHECK(loader);
 
   // Since HTTP errors are now presented as ERR_FAILED by default, this will
@@ -291,8 +291,7 @@ void ExtensionDownloader::DoStartAllPending() {
   ReportStats();
   url_stats_ = URLStats();
 
-  for (FetchMap::iterator it = fetches_preparing_.begin();
-       it != fetches_preparing_.end();
+  for (auto it = fetches_preparing_.begin(); it != fetches_preparing_.end();
        ++it) {
     std::vector<std::unique_ptr<ManifestFetchData>>& list = it->second;
     for (size_t i = 0; i < list.size(); ++i)
@@ -392,7 +391,7 @@ bool ExtensionDownloader::AddExtensionData(
 
   // Find or create a ManifestFetchData to add this extension to.
   bool added = false;
-  FetchMap::iterator existing_iter =
+  auto existing_iter =
       fetches_preparing_.find(std::make_pair(request_id, update_url));
   if (existing_iter != fetches_preparing_.end() &&
       !existing_iter->second.empty()) {
@@ -576,7 +575,9 @@ void ExtensionDownloader::CreateManifestLoader() {
 
 void ExtensionDownloader::OnManifestLoadComplete(
     std::unique_ptr<std::string> response_body) {
-  GURL url = manifest_loader_->GetFinalURL();
+  const GURL url = manifest_loader_->GetFinalURL();
+  DCHECK(manifests_queue_.active_request());
+
   int response_code = -1;
   if (manifest_loader_->ResponseInfo() &&
       manifest_loader_->ResponseInfo()->headers)
@@ -585,13 +586,13 @@ void ExtensionDownloader::OnManifestLoadComplete(
   VLOG(2) << response_code << " " << url;
 
   const base::TimeDelta& backoff_delay = base::TimeDelta::FromMilliseconds(0);
+  const int request_failure_count =
+      manifests_queue_.active_request_failure_count();
 
   // We want to try parsing the manifest, and if it indicates updates are
   // available, we want to fire off requests to fetch those updates.
   if (response_body && !response_body->empty()) {
-    RETRY_HISTOGRAM("ManifestFetchSuccess",
-                    manifests_queue_.active_request_failure_count(),
-                    url);
+    RETRY_HISTOGRAM("ManifestFetchSuccess", request_failure_count, url);
     VLOG(2) << "beginning manifest parse for " << url;
     auto callback = base::BindOnce(&ExtensionDownloader::HandleManifestResults,
                                    weak_ptr_factory_.GetWeakPtr(),
@@ -600,8 +601,28 @@ void ExtensionDownloader::OnManifestLoadComplete(
   } else {
     VLOG(1) << "Failed to fetch manifest '" << url.possibly_invalid_spec()
             << "' response code:" << response_code;
-    if (ShouldRetryRequest(manifest_loader_.get()) &&
-        manifests_queue_.active_request_failure_count() < kMaxRetries) {
+    const auto* loader = manifest_loader_.get();
+    if (request_failure_count == 0) {
+      DCHECK(loader);
+      // This is the first failure for this batch request, record the
+      // http/network error for each extension in the batch request.
+      const int error =
+          response_code == -1 ? loader->NetError() : response_code;
+      const std::string uma_histogram_name =
+          url.DomainIs(kGoogleDotCom)
+              ? std::string(
+                    "Extensions."
+                    "ExtensionUpdaterFirstUpdateCheckErrorsGoogleUrl")
+              : std::string(
+                    "Extensions."
+                    "ExtensionUpdaterFirstUpdateCheckErrorsNonGoogleUrl");
+      const auto& extension_ids =
+          manifests_queue_.active_request()->extension_ids();
+      for (auto it = extension_ids.begin(); it != extension_ids.end(); ++it) {
+        base::UmaHistogramSparse(uma_histogram_name, error);
+      }
+    }
+    if (ShouldRetryRequest(loader) && request_failure_count < kMaxRetries) {
       manifests_queue_.RetryRequest(backoff_delay);
     } else {
       RETRY_HISTOGRAM("ManifestFetchFailure",
@@ -1043,9 +1064,7 @@ void ExtensionDownloader::NotifyExtensionsDownloadFailed(
     const std::set<std::string>& extension_ids,
     const std::set<int>& request_ids,
     ExtensionDownloaderDelegate::Error error) {
-  for (std::set<std::string>::const_iterator it = extension_ids.begin();
-       it != extension_ids.end();
-       ++it) {
+  for (auto it = extension_ids.cbegin(); it != extension_ids.cend(); ++it) {
     const ExtensionDownloaderDelegate::PingResult& ping = ping_results_[*it];
     delegate_->OnExtensionDownloadFailed(*it, error, ping, request_ids);
     ping_results_.erase(*it);

@@ -46,8 +46,7 @@ void IPPattern::ComponentPattern::AppendRange(uint32_t min, uint32_t max) {
 bool IPPattern::ComponentPattern::Match(uint32_t value) const {
   // Simple linear search should be fine, as we usually only have very few
   // distinct ranges to test.
-  for (RangeVector::const_iterator range_it = ranges_.begin();
-       range_it != ranges_.end(); ++range_it) {
+  for (auto range_it = ranges_.begin(); range_it != ranges_.end(); ++range_it) {
     if (range_it->maximum >= value && range_it->minimum <= value)
       return true;
   }
@@ -64,7 +63,7 @@ bool IPPattern::Match(const IPAddress& address) const {
   if (address.IsIPv4() != is_ipv4_)
     return false;
 
-  ComponentPatternList::const_iterator pattern_it(component_patterns_.begin());
+  auto pattern_it(component_patterns_.begin());
   int fixed_value_index = 0;
   // IPv6 |address| vectors have 16 pieces, while our  |ip_mask_| has only
   // 8, so it is easier to count separately.

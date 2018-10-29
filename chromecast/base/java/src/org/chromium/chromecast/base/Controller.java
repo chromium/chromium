@@ -4,7 +4,6 @@
 
 package org.chromium.chromecast.base;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,32 +96,5 @@ public class Controller<T> extends Observable<T> {
         assert scope != null;
         mScopeMap.remove(observer);
         scope.close();
-    }
-
-    // TODO(sanfin): make this its own public class and add tests.
-    private static class Sequencer {
-        private boolean mIsRunning;
-        private final ArrayDeque<Runnable> mMessageQueue = new ArrayDeque<>();
-
-        /**
-         * Runs the task synchronously, or, if a sequence()d task is already running, posts the task
-         * to a queue, whose items will be run synchronously when the current task is finished.
-         */
-        public void sequence(Runnable impl) {
-            if (mIsRunning) {
-                mMessageQueue.add(() -> sequence(impl));
-                return;
-            }
-            mIsRunning = true;
-            impl.run();
-            mIsRunning = false;
-            while (!mMessageQueue.isEmpty()) {
-                mMessageQueue.removeFirst().run();
-            }
-        }
-
-        public boolean inSequence() {
-            return mIsRunning;
-        }
     }
 }

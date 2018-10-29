@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/resolution_units.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 #include <hb-ot.h>
 #include <hb.h>
@@ -199,10 +200,6 @@ static hb_position_t HarfBuzzGetGlyphHorizontalKerning(
     void*) {
   HarfBuzzFontData* hb_font_data =
       reinterpret_cast<HarfBuzzFontData*>(font_data);
-  if (hb_font_data->paint_.isVerticalText()) {
-    // We don't support cross-stream kerning
-    return 0;
-  }
 
   SkTypeface* typeface = hb_font_data->paint_.getTypeface();
 
@@ -338,7 +335,8 @@ static hb_blob_t* HarfBuzzSkiaGetTable(hb_face_t* face,
                                        void* user_data) {
   SkTypeface* typeface = reinterpret_cast<SkTypeface*>(user_data);
 
-  const size_t table_size = typeface->getTableSize(tag);
+  const wtf_size_t table_size =
+      SafeCast<wtf_size_t>(typeface->getTableSize(tag));
   if (!table_size) {
     return nullptr;
   }
@@ -387,8 +385,8 @@ hb_face_t* HarfBuzzFace::CreateFace() {
     std::unique_ptr<hb_blob_t, void (*)(hb_blob_t*)> face_blob(
         hb_blob_create(
             reinterpret_cast<const char*>(typeface_stream->getMemoryBase()),
-            typeface_stream->getLength(), HB_MEMORY_MODE_READONLY,
-            typeface_stream, DeleteTypefaceStream),
+            SafeCast<unsigned int>(typeface_stream->getLength()),
+            HB_MEMORY_MODE_READONLY, typeface_stream, DeleteTypefaceStream),
         hb_blob_destroy);
     face = hb_face_create(face_blob.get(), ttc_index);
   }
@@ -433,12 +431,12 @@ static_assert(
 hb_font_t* HarfBuzzFace::GetScaledFont(
     scoped_refptr<UnicodeRangeSet> range_set,
     VerticalLayoutCallbacks vertical_layout) const {
-  PaintFont paint_font;
-  platform_data_->SetupPaintFont(&paint_font);
-  paint_font.SetTextEncoding(SkPaint::kGlyphID_TextEncoding);
+  SkPaint paint;
+  platform_data_->SetupSkPaint(&paint);
+  paint.setTextEncoding(SkPaint::kGlyphID_TextEncoding);
   harfbuzz_font_data_->range_set_ = std::move(range_set);
-  harfbuzz_font_data_->UpdateFallbackMetricsAndScale(
-      *platform_data_, paint_font.ToSkPaint(), vertical_layout);
+  harfbuzz_font_data_->UpdateFallbackMetricsAndScale(*platform_data_, paint,
+                                                     vertical_layout);
 
   int scale =
       SkiaTextMetrics::SkiaScalarToHarfBuzzPosition(platform_data_->size());

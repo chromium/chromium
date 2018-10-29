@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_H_
 
-#include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -53,7 +52,6 @@ class MODULES_EXPORT MediaStreamObserver : public GarbageCollectedMixin {
 
 class MODULES_EXPORT MediaStream final : public EventTargetWithInlineData,
                                          public ContextClient,
-                                         public URLRegistrable,
                                          public MediaStreamDescriptorClient {
   USING_GARBAGE_COLLECTED_MIXIN(MediaStream);
   DEFINE_WRAPPERTYPEINFO();
@@ -126,9 +124,6 @@ class MODULES_EXPORT MediaStream final : public EventTargetWithInlineData,
   ExecutionContext* GetExecutionContext() const override {
     return ContextClient::GetExecutionContext();
   }
-
-  // URLRegistrable
-  URLRegistry& Registry() const override;
 
   void Trace(blink::Visitor*) override;
 

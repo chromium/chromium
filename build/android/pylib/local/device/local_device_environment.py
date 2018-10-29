@@ -133,7 +133,8 @@ class LocalDeviceEnvironment(environment.Environment):
       device_arg = self._device_serials
 
     self._devices = device_utils.DeviceUtils.HealthyDevices(
-        self._blacklist, enable_device_files_cache=self._enable_device_cache,
+        self._blacklist, retries=5,
+        enable_device_files_cache=self._enable_device_cache,
         default_retries=self._max_tries - 1, device_arg=device_arg)
 
     if self._logcat_output_file:

@@ -229,6 +229,9 @@ Output.ROLE_INFO_ = {
     msgId: 'role_img',
   },
   inputTime: {msgId: 'input_type_time', inherits: 'abstractContainer'},
+  layoutTable: {inherits: 'table'},
+  layoutTableCell: {msgId: '', inherits: 'cell'},
+  layoutTableRow: {msgId: 'role_row', inherits: 'row'},
   link: {msgId: 'role_link', earconId: 'LINK'},
   list: {msgId: 'role_list'},
   listBox: {msgId: 'role_listbox', earconId: 'LISTBOX'},
@@ -278,7 +281,7 @@ Output.ROLE_INFO_ = {
   time: {msgId: 'tag_time', inherits: 'abstractContainer'},
   timer: {msgId: 'role_timer', inherits: 'abstractNameFromContents'},
   toolbar: {msgId: 'role_toolbar', ignoreAncestry: true},
-  toggleButton: {msgId: 'role_button', inherits: 'checkBox'},
+  toggleButton: {msgId: 'role_toggle_button', inherits: 'checkBox'},
   tree: {msgId: 'role_tree'},
   treeItem: {msgId: 'role_treeitem'},
   window: {ignoreAncestry: true}
@@ -459,8 +462,8 @@ Output.RULES = {
     },
     list: {
       enter: `$role @@list_with_items($countChildren(listItem))`,
-      speak: `$descendants $role @@list_with_items($countChildren(listItem))
-          $description $state`
+      speak: `$nameFromNode $descendants $role
+          @@list_with_items($countChildren(listItem)) $description $state`
     },
     listBox: {
       enter: `$nameFromNode
@@ -999,7 +1002,7 @@ Output.prototype = {
    */
   go: function() {
     // Speech.
-    var queueMode = cvox.QueueMode.CATEGORY_FLUSH;
+    var queueMode = cvox.QueueMode.QUEUE;
     if (Output.forceModeForNextSpeechUtterance_ !== undefined) {
       queueMode = /** @type{cvox.QueueMode} */ (
           Output.forceModeForNextSpeechUtterance_);
@@ -1010,8 +1013,21 @@ Output.prototype = {
     if (this.speechBuffer_.length > 0)
       Output.forceModeForNextSpeechUtterance_ = undefined;
 
+    var encounteredNonWhitespace = false;
     for (var i = 0; i < this.speechBuffer_.length; i++) {
       var buff = this.speechBuffer_[i];
+      var text = buff.toString();
+
+      // Consider empty strings as non-whitespace; they often have earcons
+      // associated with them, so need to be "spoken".
+      var isNonWhitespace = text === '' || /\S+/.test(text);
+      encounteredNonWhitespace = isNonWhitespace || encounteredNonWhitespace;
+
+      // Skip whitespace if we've already encountered non-whitespace. This
+      // prevents output like 'foo', 'space', 'bar'.
+      if (!isNonWhitespace && encounteredNonWhitespace)
+        continue;
+
       var speechProps = /** @type {Object} */ (
                             buff.getSpanInstanceOf(Output.SpeechProperties)) ||
           {};
@@ -1060,7 +1076,6 @@ Output.prototype = {
 
       var output = new cvox.NavBraille(
           {text: buff, startIndex: startIndex, endIndex: endIndex});
-      output.brailleLogging();
 
       cvox.ChromeVox.braille.write(output);
       if (this.brailleRulesStr_.str) {

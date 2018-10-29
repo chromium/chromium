@@ -137,6 +137,11 @@ void U2fSignOperation::OnCheckForKeyHandlePresence(
   auto return_code = apdu_response ? apdu_response->status()
                                    : apdu::ApduResponse::Status::SW_WRONG_DATA;
 
+  // Older U2F devices may respond with the length of the input as an error
+  // response if the length is unexpected.
+  if (return_code == static_cast<apdu::ApduResponse::Status>(it->id().size()))
+    return_code = apdu::ApduResponse::Status::SW_WRONG_LENGTH;
+
   switch (return_code) {
     case apdu::ApduResponse::Status::SW_NO_ERROR:
     case apdu::ApduResponse::Status::SW_CONDITIONS_NOT_SATISFIED: {

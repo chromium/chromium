@@ -118,10 +118,18 @@ function waitForEventAndRunStep(eventName, element, func, stepTest)
 
 // Copied from LayoutTests/resources/js-test.js.
 // See it for details of why this is necessary.
-function asyncGC(callback)
-{
-    GCController.collectAll();
-    setTimeout(callback, 0);
+function asyncGC(callback) {
+  if (!callback) {
+      return new Promise(resolve => asyncGC(resolve));
+  }
+  var documentsBefore = internals.numberOfLiveDocuments();
+  GCController.asyncCollectAll(function () {
+      var documentsAfter = internals.numberOfLiveDocuments();
+      if (documentsAfter < documentsBefore)
+          asyncGC(callback);
+      else
+          callback();
+  });
 }
 
 function createGCPromise()

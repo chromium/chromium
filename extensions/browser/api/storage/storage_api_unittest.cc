@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
@@ -83,13 +84,13 @@ class StorageApiUnittest : public ApiUnitTest {
 };
 
 TEST_F(StorageApiUnittest, RestoreCorruptedStorage) {
-  EventRouterFactory::GetInstance()->SetTestingFactory(browser_context(),
-                                                       &BuildEventRouter);
+  EventRouterFactory::GetInstance()->SetTestingFactory(
+      browser_context(), base::BindRepeating(&BuildEventRouter));
 
   // Ensure a StorageFrontend can be created on demand. The StorageFrontend
   // will be owned by the KeyedService system.
   StorageFrontend::GetFactoryInstance()->SetTestingFactory(
-      browser_context(), &CreateStorageFrontendForTesting);
+      browser_context(), base::BindRepeating(&CreateStorageFrontendForTesting));
 
   const char kKey[] = "key";
   const char kValue[] = "value";

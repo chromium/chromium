@@ -34,7 +34,6 @@
 #include <utility>
 
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
-#include "third_party/blink/public/platform/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -59,6 +58,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -141,7 +141,7 @@ class GetDatabaseNamesCallback final : public EventListener {
     DOMStringList* database_names_list = request_result->DomStringList();
     std::unique_ptr<protocol::Array<String>> database_names =
         protocol::Array<String>::create();
-    for (size_t i = 0; i < database_names_list->length(); ++i)
+    for (uint32_t i = 0; i < database_names_list->length(); ++i)
       database_names->addItem(database_names_list->item(i));
     request_callback_->sendSuccess(std::move(database_names));
   }
@@ -401,7 +401,7 @@ std::unique_ptr<KeyPath> KeyPathFromIDBKeyPath(const IDBKeyPath& idb_key_path) {
       std::unique_ptr<protocol::Array<String>> array =
           protocol::Array<String>::create();
       const Vector<String>& string_array = idb_key_path.Array();
-      for (size_t i = 0; i < string_array.size(); ++i)
+      for (wtf_size_t i = 0; i < string_array.size(); ++i)
         array->addItem(string_array[i]);
       key_path->setArray(std::move(array));
       break;
@@ -463,7 +463,7 @@ class DatabaseLoader final
     std::unique_ptr<DatabaseWithObjectStores> result =
         DatabaseWithObjectStores::create()
             .setName(idb_database->name())
-            .setVersion(idb_database->version())
+            .setVersion(static_cast<int>(idb_database->version()))
             .setObjectStores(std::move(object_stores))
             .build();
 
@@ -608,7 +608,7 @@ class OpenCursorCallback final : public EventListener {
       return;
     }
 
-    Document* document = ToDocument(ExecutionContext::From(script_state_));
+    Document* document = To<Document>(ExecutionContext::From(script_state_));
     if (!document)
       return;
     ScriptState::Scope scope(script_state_);

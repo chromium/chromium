@@ -896,7 +896,7 @@ function assembleDescription() {
   for (const line of getStack()) {
     const match = RE_IN_ASSERT_SELECTION.exec(line);
     if (!match) {
-      const RE_LAYOUTTESTS = new RegExp('LayoutTests.*');
+      const RE_LAYOUTTESTS = new RegExp('(?:LayoutTests|web_tests).*');
       return RE_LAYOUTTESTS.exec(line);
     }
   }
@@ -950,7 +950,7 @@ function commonPrefixOf(str1, str2) {
  * @param {Object=} opt_options
  * @return {!Sample}
  */
-function assertSelection(
+function assertSelectionAndReturnSample(
     passedInputText, tester, passedExpectedText, opt_options = {}) {
   const kDescription = 'description';
   const kDumpAs = 'dumpAs';
@@ -1031,6 +1031,18 @@ function assertSelection(
     `\t sameupto ${commonPrefixOf(expectedText, actualText)}`);
 }
 
+/** Like `assertSelectionAndReturnSample` but without return value.
+ *
+ * @param {string} passedInputText
+ * @param {function(!Selection)|string} tester
+ * @param {string} expectedText
+ * @param {Object=} opt_options
+ */
+function assertSelection(
+  passedInputText, tester, passedExpectedText, opt_options) {
+    assertSelectionAndReturnSample(passedInputText, tester, passedExpectedText, opt_options);
+}
+
 /**
  * @param {string} inputText
  * @param {function(!Selection)|string} tester
@@ -1050,6 +1062,7 @@ function selectionTest(inputText, tester, expectedText, opt_options,
 // Export symbols
 window.Sample = Sample;
 window.assert_selection = assertSelection;
+window.assert_selection_and_return_sample = assertSelectionAndReturnSample;
 window.selection_test = selectionTest;
 window.DOMTreeTraversal = DOMTreeTraversal;
 })();

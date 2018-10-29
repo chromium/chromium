@@ -317,8 +317,7 @@ bool DirectoryBackingStore::DeleteEntries(EntryTable from,
       break;
   }
 
-  for (MetahandleSet::const_iterator i = handles.begin(); i != handles.end();
-       ++i) {
+  for (auto i = handles.begin(); i != handles.end(); ++i) {
     statement.BindInt64(0, *i);
     if (!statement.Run())
       return false;
@@ -1710,7 +1709,7 @@ bool DirectoryBackingStore::VerifyReferenceIntegrity(
     is_ok = is_ok && !is_duplicate_id;
   }
 
-  IdsSet::iterator end = ids_set.end();
+  auto end = ids_set.end();
   for (auto it = handles_map->begin(); it != handles_map->end(); ++it) {
     EntryKernel* entry = it->second.get();
     if (!entry->ref(PARENT_ID).IsNull()) {

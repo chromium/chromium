@@ -29,7 +29,6 @@
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/device_form_factor.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -345,13 +344,11 @@ bool SearchSuggestionParser::Results::HasServerProvidedScores() const {
   // Right now either all results of one type will be server-scored or they will
   // all be locally scored, but in case we change this later, we'll just check
   // them all.
-  for (SuggestResults::const_iterator i(suggest_results.begin());
-       i != suggest_results.end(); ++i) {
+  for (auto i(suggest_results.begin()); i != suggest_results.end(); ++i) {
     if (i->relevance_from_server())
       return true;
   }
-  for (NavigationResults::const_iterator i(navigation_results.begin());
-       i != navigation_results.end(); ++i) {
+  for (auto i(navigation_results.begin()); i != navigation_results.end(); ++i) {
     if (i->relevance_from_server())
       return true;
   }

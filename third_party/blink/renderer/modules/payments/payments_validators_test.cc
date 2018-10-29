@@ -296,7 +296,7 @@ PaymentValidationErrors toPaymentValidationErrors(
     ValidationErrorsTestCase test_case) {
   PaymentValidationErrors errors;
 
-  PayerErrorFields payer;
+  PayerErrors payer;
   payer.setEmail(test_case.m_payer_email);
   payer.setName(test_case.m_payer_name);
   payer.setPhone(test_case.m_payer_phone);

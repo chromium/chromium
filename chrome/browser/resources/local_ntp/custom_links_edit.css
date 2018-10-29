@@ -19,9 +19,9 @@ body {
       0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
   font-family: 'Roboto', arial, sans-serif;
   margin: auto;
+  min-width: 320px;
   padding: 16px;
   top: 0;
-  width: 320px;
   z-index: 10000;
 }
 
@@ -128,7 +128,12 @@ input:focus + .underline {
   margin-top: 24px;
 }
 
-.buttons-container .right {
+html:not([dir=rtl]) .buttons-container span + span {
+  margin-left: 16px;
+}
+
+html[dir=rtl] .buttons-container span + span {
+  margin-right: 16px;
 }
 
 button {
@@ -192,6 +197,10 @@ button.secondary:active:not(:disabled) {
       0 3px 6px 2px rgba(60, 64, 67, 0.15);
 }
 
-#cancel {
+html:not([dir=rtl]) #cancel {
   margin-right: 8px;
+}
+
+html[dir=rtl] #cancel {
+  margin-left: 8px;
 }

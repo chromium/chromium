@@ -36,7 +36,7 @@
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='content'",
           "rect": [0, 0, 1000, 1000],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "transform": 1

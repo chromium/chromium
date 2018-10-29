@@ -87,12 +87,6 @@ class CONTENT_EXPORT BrowsingInstance final
   // SiteInstance per site.
   scoped_refptr<SiteInstanceImpl> GetSiteInstanceForURL(const GURL& url);
 
-  // Returns a SiteInstance that should be used for subframes when an oopif is
-  // required, but a dedicated process is not. This SiteInstance will be created
-  // if it doesn't already exist. There is at most one of these per
-  // BrowsingInstance.
-  scoped_refptr<SiteInstanceImpl> GetDefaultSubframeSiteInstance();
-
   // Adds the given SiteInstance to our map, to ensure that we do not create
   // another SiteInstance for the same site.
   void RegisterSiteInstance(SiteInstanceImpl* site_instance);
@@ -130,8 +124,6 @@ class CONTENT_EXPORT BrowsingInstance final
 
   // Number of WebContentses currently using this BrowsingInstance.
   size_t active_contents_count_;
-
-  SiteInstanceImpl* default_subframe_site_instance_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingInstance);
 };

@@ -7,10 +7,6 @@
 
 #include <stddef.h>
 
-#if !defined(__BIONIC_HAVE_UCONTEXT_T)
-#if !defined(__native_client_nonsfi__)
-#include <asm/sigcontext.h>
-#else
 // In PNaCl toolchain, sigcontext and stack_t is not defined. So here declare
 // them.
 struct sigcontext {
@@ -43,7 +39,6 @@ typedef struct sigaltstack {
   size_t ss_size;
 } stack_t;
 
-#endif
 
 // We also need greg_t for the sandbox, include it in this header as well.
 typedef unsigned long greg_t;
@@ -61,9 +56,5 @@ typedef struct ucontext {
      coprocessors require eight byte alignment.  */
   unsigned long uc_regspace[128] __attribute__((__aligned__(8)));
 } ucontext_t;
-
-#else
-#include <sys/ucontext.h>
-#endif  // __BIONIC_HAVE_UCONTEXT_T
 
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_ARM_LINUX_UCONTEXT_H_

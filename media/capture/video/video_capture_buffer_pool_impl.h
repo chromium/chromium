@@ -44,11 +44,13 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
   CreateSharedMemoryViaRawFileDescriptorStruct(int buffer_id) override;
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess(
       int buffer_id) override;
-  int ReserveForProducer(const gfx::Size& dimensions,
-                         VideoPixelFormat format,
-                         const mojom::PlaneStridesPtr& strides,
-                         int frame_feedback_id,
-                         int* buffer_id_to_drop) override;
+  VideoCaptureDevice::Client::ReserveResult ReserveForProducer(
+      const gfx::Size& dimensions,
+      VideoPixelFormat format,
+      const mojom::PlaneStridesPtr& strides,
+      int frame_feedback_id,
+      int* buffer_id,
+      int* buffer_id_to_drop) override;
   void RelinquishProducerReservation(int buffer_id) override;
   double GetBufferPoolUtilization() const override;
   void HoldForConsumers(int buffer_id, int num_clients) override;
@@ -58,11 +60,13 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
   friend class base::RefCountedThreadSafe<VideoCaptureBufferPoolImpl>;
   ~VideoCaptureBufferPoolImpl() override;
 
-  int ReserveForProducerInternal(const gfx::Size& dimensions,
-                                 VideoPixelFormat format,
-                                 const mojom::PlaneStridesPtr& strides,
-                                 int frame_feedback_id,
-                                 int* tracker_id_to_drop);
+  VideoCaptureDevice::Client::ReserveResult ReserveForProducerInternal(
+      const gfx::Size& dimensions,
+      VideoPixelFormat format,
+      const mojom::PlaneStridesPtr& strides,
+      int frame_feedback_id,
+      int* buffer_id,
+      int* tracker_id_to_drop);
 
   VideoCaptureBufferTracker* GetTracker(int buffer_id);
 

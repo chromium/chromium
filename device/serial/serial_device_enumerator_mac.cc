@@ -22,7 +22,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 
 namespace device {
 
@@ -104,7 +104,8 @@ int Clamp(int value, int min, int max) {
 // about the devices than the old method.
 std::vector<mojom::SerialDeviceInfoPtr> GetDevicesNew() {
   std::vector<mojom::SerialDeviceInfoPtr> devices;
-
+  
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   // Make a service query to find all serial devices.
   CFMutableDictionaryRef matchingDict =
       IOServiceMatching(kIOSerialBSDServiceValue);
@@ -182,6 +183,7 @@ std::vector<mojom::SerialDeviceInfoPtr> GetDevicesOld() {
   valid_patterns.insert("/dev/tty.*");
   valid_patterns.insert("/dev/cu.*");
 
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
   std::vector<mojom::SerialDeviceInfoPtr> devices;
   base::FileEnumerator enumerator(kDevRoot, false, kFilesAndSymLinks);
   do {
@@ -217,8 +219,6 @@ SerialDeviceEnumeratorMac::~SerialDeviceEnumeratorMac() {}
 
 std::vector<mojom::SerialDeviceInfoPtr>
 SerialDeviceEnumeratorMac::GetDevices() {
-  base::AssertBlockingAllowed();
-
   std::vector<mojom::SerialDeviceInfoPtr> devices = GetDevicesNew();
   std::vector<mojom::SerialDeviceInfoPtr> old_devices = GetDevicesOld();
 

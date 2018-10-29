@@ -18,13 +18,11 @@ int MaterialRefreshLayoutProvider::GetDistanceMetric(int metric) const {
 }
 
 gfx::Insets MaterialRefreshLayoutProvider::GetInsetsMetric(int metric) const {
-  switch (metric) {
-    case INSETS_BOOKMARKS_BAR_BUTTON:
-      // The paddings here are chosen so that the resulting inkdrops are
-      // circular for favicon-only bookmarks.
-      if (ui::MaterialDesignController::IsTouchOptimizedUiEnabled())
-        return gfx::Insets(8, 10);
-      break;
+  if ((metric == INSETS_BOOKMARKS_BAR_BUTTON) &&
+      ui::MaterialDesignController::touch_ui()) {
+    // The paddings here are chosen so that the resulting inkdrops are
+    // circular for favicon-only bookmarks.
+    return gfx::Insets(8, 10);
   }
   return ChromeLayoutProvider::GetInsetsMetric(metric);
 }

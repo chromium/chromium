@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/modules/payments/address_errors.h"
-#include "third_party/blink/renderer/modules/payments/payer_error_fields.h"
+#include "third_party/blink/renderer/modules/payments/payer_errors.h"
 #include "third_party/blink/renderer/modules/payments/payment_validation_errors.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
@@ -163,7 +163,7 @@ bool PaymentsValidators::IsValidAddressErrorsFormat(
 
 // static
 bool PaymentsValidators::IsValidPayerErrorsFormat(
-    const PayerErrorFields& errors,
+    const PayerErrors& errors,
     String* optional_error_message) {
   return (!errors.hasEmail() ||
           IsValidErrorMsgFormat(errors.email(), optional_error_message)) &&

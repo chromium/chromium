@@ -374,6 +374,13 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
             base::Unretained(this)));
   }
 
+  void FocusElement(std::string element_id) {
+    std::string script =
+        "document.getElementById('" + element_id + "').focus()";
+    ExecuteJavaScriptForTests(script.c_str());
+    GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
+  }
+
   void SetFillOnAccountSelect() {
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kFillOnAccountSelect);
@@ -1680,13 +1687,19 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedReadonlyTextField) {
 }
 
 // Tests that |FillIntoFocusedField| properly fills user-provided credentials.
-TEST_F(PasswordAutofillAgentTest, FillIntoFocusedWritableTextField) {
+// Leaks under ASan. Disabled due to https://crbug.com/855383.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_FillIntoFocusedWritableTextField \
+  DISABLED_FillIntoFocusedWritableTextField
+#else
+#define MAYBE_FillIntoFocusedWritableTextField FillIntoFocusedWritableTextField
+#endif
+TEST_F(PasswordAutofillAgentTest, MAYBE_FillIntoFocusedWritableTextField) {
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
 
   // The same field should be filled if it is writable.
-  SetFocused(username_element_);
-
+  FocusElement(kUsernameName);
   SetElementReadOnly(username_element_, false);
 
   base::MockCallback<base::OnceCallback<void(FillingStatus)>> mock_callback;
@@ -1727,7 +1740,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldForNonClickFocus) {
 
   // Click the username but shift the focus without click to the password.
   SimulateElementClick(kUsernameName);
-  SetFocused(password_element_);
+  FocusElement(kPasswordName);
   // The completion should now affect ONLY the password field. Don't fill a
   // password so the error on failure shows where the filling happened.
   // (see FillIntoFocusedFieldOnlyIntoPasswordFields).
@@ -2906,7 +2919,7 @@ TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutUnfillableField) {
   EXPECT_TRUE(fake_driver_.last_focused_element_was_fillable());
 
   SetElementReadOnly(username_element_, true);
-  SetFocused(username_element_);
+  FocusElement(kUsernameName);
   fake_driver_.Flush();
   EXPECT_FALSE(fake_driver_.last_focused_element_was_fillable());
 }

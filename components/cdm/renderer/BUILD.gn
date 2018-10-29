@@ -3,13 +3,20 @@
 # found in the LICENSE file.
 
 import("//build/config/jumbo.gni")
+import("//third_party/widevine/cdm/widevine.gni")
 
 jumbo_static_library("renderer") {
   sources = [
     "external_clear_key_key_system_properties.cc",
     "external_clear_key_key_system_properties.h",
-    "widevine_key_system_properties.cc",
-    "widevine_key_system_properties.h",
+  ]
+  deps = [
+    "//base",
+    "//components/cdm/common",
+    "//content/public/renderer",
+    "//media",
+    "//media:media_buildflags",
+    "//third_party/widevine/cdm:buildflags",
   ]
 
   if (is_android) {
@@ -19,12 +26,11 @@ jumbo_static_library("renderer") {
     ]
   }
 
-  deps = [
-    "//base",
-    "//components/cdm/common",
-    "//content/public/renderer",
-    "//media",
-    "//media:media_buildflags",
-    "//third_party/widevine/cdm:headers",
-  ]
+  if (enable_widevine) {
+    sources += [
+      "widevine_key_system_properties.cc",
+      "widevine_key_system_properties.h",
+    ]
+    deps += [ "//third_party/widevine/cdm:headers" ]
+  }
 }

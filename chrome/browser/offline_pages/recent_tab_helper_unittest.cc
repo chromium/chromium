@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -214,10 +215,10 @@ void RecentTabHelperTest::SetUp() {
 
   // Sets up the factories for testing.
   OfflinePageModelFactory::GetInstance()->SetTestingFactoryAndUse(
-      browser_context(), BuildTestOfflinePageModel);
+      browser_context(), base::BindRepeating(&BuildTestOfflinePageModel));
   RunUntilIdle();
   RequestCoordinatorFactory::GetInstance()->SetTestingFactoryAndUse(
-      browser_context(), BuildTestRequestCoordinator);
+      browser_context(), base::BindRepeating(&BuildTestRequestCoordinator));
   RunUntilIdle();
 
   RecentTabHelper::CreateForWebContents(web_contents());

@@ -12,6 +12,10 @@ LocalSurfaceIdProvider::LocalSurfaceIdProvider() = default;
 
 LocalSurfaceIdProvider::~LocalSurfaceIdProvider() = default;
 
+void LocalSurfaceIdProvider::ForceAllocateNewId() {
+  parent_local_surface_id_allocator_.GenerateId();
+}
+
 DefaultLocalSurfaceIdProvider::DefaultLocalSurfaceIdProvider() = default;
 
 const LocalSurfaceId& DefaultLocalSurfaceIdProvider::GetLocalSurfaceIdForFrame(

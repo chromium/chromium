@@ -105,7 +105,7 @@ class WebRtcAudioProcessorTest : public ::testing::Test {
       // |audio_processor| does nothing when the audio processing is off in
       // the processor.
       webrtc::AudioProcessing* ap = audio_processor->audio_processing_.get();
-      const bool is_aec_enabled = ap && ap->echo_cancellation()->is_enabled();
+      const bool is_aec_enabled = ap && ap->GetConfig().echo_canceller.enabled;
       if (is_aec_enabled) {
         if (params.channels() > kMaxNumberOfPlayoutDataChannels) {
           for (int i = 0; i < kMaxNumberOfPlayoutDataChannels; ++i) {
@@ -128,17 +128,14 @@ class WebRtcAudioProcessorTest : public ::testing::Test {
   void VerifyEnabledComponents(AudioProcessor* audio_processor) {
     webrtc::AudioProcessing* audio_processing =
         audio_processor->audio_processing_.get();
-    EXPECT_TRUE(audio_processing->echo_cancellation()->is_enabled());
-    EXPECT_TRUE(audio_processing->echo_cancellation()->suppression_level() ==
-                webrtc::EchoCancellation::kHighSuppression);
-    EXPECT_TRUE(audio_processing->echo_cancellation()->are_metrics_enabled());
-    EXPECT_TRUE(
-        audio_processing->echo_cancellation()->is_delay_logging_enabled());
+    webrtc::AudioProcessing::Config ap_config = audio_processing->GetConfig();
+    EXPECT_TRUE(ap_config.echo_canceller.enabled);
+    EXPECT_FALSE(ap_config.echo_canceller.mobile_mode);
+    EXPECT_TRUE(ap_config.high_pass_filter.enabled);
 
     EXPECT_TRUE(audio_processing->noise_suppression()->is_enabled());
     EXPECT_TRUE(audio_processing->noise_suppression()->level() ==
                 webrtc::NoiseSuppression::kHigh);
-    EXPECT_TRUE(audio_processing->high_pass_filter()->is_enabled());
     EXPECT_TRUE(audio_processing->gain_control()->is_enabled());
     EXPECT_TRUE(audio_processing->gain_control()->mode() ==
                 webrtc::GainControl::kAdaptiveAnalog);

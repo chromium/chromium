@@ -118,36 +118,18 @@ UI.ShortcutRegistry = class {
    * @param {string} domKey
    * @param {!KeyboardEvent=} event
    */
-  handleKey(key, domKey, event) {
+  async handleKey(key, domKey, event) {
     const keyModifiers = key >> 8;
     const actions = this._applicableActions(key);
-    if (!actions.length)
+    if (!actions.length || isPossiblyInputKey())
       return;
-    if (UI.Dialog.hasInstance()) {
-      if (event && !isPossiblyInputKey())
-        event.consume(true);
+    if (event)
+      event.consume(true);
+    if (UI.Dialog.hasInstance())
       return;
-    }
-
-    if (!isPossiblyInputKey()) {
-      if (event)
-        event.consume(true);
-      processNextAction.call(this, false);
-    } else {
-      this._pendingActionTimer = setTimeout(processNextAction.bind(this, false), 0);
-    }
-
-    /**
-     * @param {boolean} handled
-     * @this {UI.ShortcutRegistry}
-     */
-    function processNextAction(handled) {
-      delete this._pendingActionTimer;
-      const action = actions.shift();
-      if (!action || handled)
+    for (const action of actions) {
+      if (await action.execute())
         return;
-
-      action.execute().then(processNextAction.bind(this));
     }
 
     /**
@@ -203,18 +185,10 @@ UI.ShortcutRegistry = class {
     this._defaultKeyToActions.set(String(descriptor.key), actionId);
   }
 
-  dismissPendingShortcutAction() {
-    if (this._pendingActionTimer) {
-      clearTimeout(this._pendingActionTimer);
-      delete this._pendingActionTimer;
-    }
-  }
-
   /**
    * @param {!Document} document
    */
   _registerBindings(document) {
-    document.addEventListener('input', this.dismissPendingShortcutAction.bind(this), true);
     const extensions = self.runtime.extensions('action');
     extensions.forEach(registerExtension, this);
 

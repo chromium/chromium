@@ -41,6 +41,8 @@ generate_event_interfaces("modules_bindings_generated_event_interfaces") {
     "//third_party/blink/renderer/modules/peerconnection/rtc_data_channel_event.idl",
     "//third_party/blink/renderer/modules/peerconnection/rtc_dtmf_tone_change_event.idl",
     "//third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event.idl",
+    "//third_party/blink/renderer/modules/peerconnection/rtc_quic_stream_event.idl",
+    "//third_party/blink/renderer/modules/picture_in_picture/enter_picture_in_picture_event.idl",
     "//third_party/blink/renderer/modules/presentation/presentation_connection_available_event.idl",
     "//third_party/blink/renderer/modules/presentation/presentation_connection_close_event.idl",
     "//third_party/blink/renderer/modules/push_messaging/push_event.idl",
@@ -51,6 +53,7 @@ generate_event_interfaces("modules_bindings_generated_event_interfaces") {
     "//third_party/blink/renderer/modules/service_worker/install_event.idl",
     "//third_party/blink/renderer/modules/speech/speech_recognition_error.idl",
     "//third_party/blink/renderer/modules/speech/speech_recognition_event.idl",
+    "//third_party/blink/renderer/modules/speech/speech_synthesis_error_event.idl",
     "//third_party/blink/renderer/modules/speech/speech_synthesis_event.idl",
     "//third_party/blink/renderer/modules/storage/storage_event.idl",
     "//third_party/blink/renderer/modules/vr/vr_display_event.idl",
@@ -75,10 +78,6 @@ make_event_factory("event_modules") {
     "$blink_modules_output_dir/event_modules_factory.cc",
   ]
   deps = make_core_generated_deps + [ "//third_party/blink/renderer/bindings/modules:modules_bindings_generated_event_interfaces" ]
-  deps += [
-    "//device/gamepad/public/mojom:mojom_blink",
-    "//media/midi:mojo_blink",
-  ]
 }
 
 make_names("event_modules_names") {

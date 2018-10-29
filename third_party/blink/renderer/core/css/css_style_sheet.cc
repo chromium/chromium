@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -204,6 +205,14 @@ void CSSStyleSheet::DidMutateRules() {
   DCHECK_LE(contents_->ClientSize(), 1u);
 
   Document* owner = OwnerDocument();
+
+  if ((associated_document_ || owner) && !custom_element_tag_names_.IsEmpty()) {
+    Document* document =
+        associated_document_ ? associated_document_.Get() : owner;
+    document->GetStyleEngine().ScheduleCustomElementInvalidations(
+        custom_element_tag_names_);
+  }
+
   if (owner && ownerNode() && ownerNode()->isConnected()) {
     owner->GetStyleEngine().SetNeedsActiveStyleUpdate(
         ownerNode()->GetTreeScope());
@@ -519,12 +528,19 @@ void CSSStyleSheet::SetLoadCompleted(bool completed) {
     contents_->ClientLoadStarted(this);
 }
 
-void CSSStyleSheet::SetText(const String& text) {
+void CSSStyleSheet::SetText(const String& text,
+                            bool allow_import_rules,
+                            ExceptionState& exception_state) {
   child_rule_cssom_wrappers_.clear();
 
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
   contents_->ClearRules();
-  contents_->ParseString(text);
+  if (contents_->ParseString(text, allow_import_rules) ==
+      ParseSheetResult::kHasUnallowedImportRule) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      "@import rules are not allowed when "
+                                      "creating stylesheet synchronously.");
+  }
 }
 
 void CSSStyleSheet::SetAlternateFromConstructor(

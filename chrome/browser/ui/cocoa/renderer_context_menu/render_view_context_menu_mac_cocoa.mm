@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/message_loop/message_loop_current.h"
 #import "base/message_loop/message_pump_mac.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #import "chrome/browser/mac/nsprocessinfo_additions.h"
 #import "ui/base/cocoa/menu_controller.h"
@@ -129,11 +130,10 @@ NSMenuItem* GetMenuItemByID(ui::MenuModel* model,
     // a static so that it never goes out of scope, because the scoper's
     // destructor undoes the swizzling.
     Class swizzleClass = [ChromeSwizzleServicesMenuUpdater class];
-    CR_DEFINE_STATIC_LOCAL(base::mac::ScopedObjCClassSwizzler,
-                           servicesMenuFilter,
-                           (targetClass, swizzleClass, targetSelector));
+    static base::NoDestructor<base::mac::ScopedObjCClassSwizzler>
+        servicesMenuFilter(targetClass, swizzleClass, targetSelector);
     g_original_populatemenu_implementation =
-        servicesMenuFilter.GetOriginalImplementation();
+        servicesMenuFilter->GetOriginalImplementation();
   });
 }
 

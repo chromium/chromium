@@ -102,13 +102,12 @@ class DatabaseManager {
 
   static void LogErrorMessage(ExecutionContext*, const String& message);
 
-  // m_contextMap can have two or more entries even though we don't support
+  // context_map_ can have two or more entries even though we don't support
   // Web SQL on workers because single Blink process can have multiple main
   // contexts.
-  typedef PersistentHeapHashMap<Member<ExecutionContext>,
-                                Member<DatabaseContext>>
+  typedef HeapHashMap<Member<ExecutionContext>, Member<DatabaseContext>>
       ContextMap;
-  ContextMap context_map_;
+  Persistent<ContextMap> context_map_;
 #if DCHECK_IS_ON()
   int database_context_registered_count_ = 0;
   int database_context_instance_count_ = 0;

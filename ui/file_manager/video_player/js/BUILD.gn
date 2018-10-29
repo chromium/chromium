@@ -20,13 +20,10 @@ js_library("closure_compile_externs") {
   sources = []
   externs_list = [
     "$externs_path/chrome_extensions.js",
-    "$externs_path/command_line_private.js",
     "$externs_path/media_player_private.js",
     "$externs_path/metrics_private.js",
     "../../externs/chrome_cast.js",
-    "../../externs/entry_location.js",
     "../../externs/platform.js",
-    "//third_party/analytics/externs.js",
   ]
 }
 
@@ -61,7 +58,7 @@ js_library("video_player") {
     "cast:cast_video_element",
     "cast:media_manager",
     "//ui/file_manager/base/js:filtered_volume_manager",
-    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:metrics_base",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/image_loader:image_loader_client",
     "//ui/webui/resources/js:i18n_template_no_process",

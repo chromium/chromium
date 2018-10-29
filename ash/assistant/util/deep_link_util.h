@@ -27,6 +27,7 @@ enum class DeepLinkType {
   kReminders,
   kScreenshot,
   kSettings,
+  kTaskManager,
   kWhatsOnMyScreen,
 };
 

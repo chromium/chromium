@@ -107,21 +107,20 @@ base::string16 GetUpgradeDialogMenuItemName() {
   }
 }
 
-// Returns the appropriate menu label for the IDC_CREATE_HOSTED_APP command.
-base::string16 GetCreateHostedAppMenuItemName(Browser* browser) {
-  if (browser->tab_strip_model()) {
-    WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    if (web_contents) {
-      base::string16 app_name =
-          banners::AppBannerManager::GetInstallableAppName(web_contents);
-      if (!app_name.empty()) {
-        return l10n_util::GetStringFUTF16(IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
-                                          app_name);
-      }
-    }
-  }
-  return l10n_util::GetStringUTF16(IDS_ADD_TO_OS_LAUNCH_SURFACE);
+// Returns the appropriate menu label for the IDC_INSTALL_PWA command if
+// available.
+base::Optional<base::string16> GetInstallPWAAppMenuItemName(Browser* browser) {
+  if (!browser->tab_strip_model())
+    return base::nullopt;
+  WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents)
+    return base::nullopt;
+  base::string16 app_name =
+      banners::AppBannerManager::GetInstallableAppName(web_contents);
+  if (app_name.empty())
+    return base::nullopt;
+  return l10n_util::GetStringFUTF16(IDS_INSTALL_TO_OS_LAUNCH_SURFACE, app_name);
 }
 
 }  // namespace
@@ -202,12 +201,8 @@ ToolsMenuModel::~ToolsMenuModel() {}
 void ToolsMenuModel::Build(Browser* browser) {
   AddItemWithStringId(IDC_SAVE_PAGE, IDS_SAVE_PAGE);
 
-  if (extensions::util::IsNewBookmarkAppsEnabled() &&
-      // If kExperimentalAppBanners is enabled, this is moved to the top level
-      // menu.
-      !banners::AppBannerManager::IsExperimentalAppBannersEnabled()) {
-    AddItemWithStringId(IDC_CREATE_HOSTED_APP, IDS_ADD_TO_OS_LAUNCH_SURFACE);
-  }
+  if (extensions::util::IsNewBookmarkAppsEnabled())
+    AddItemWithStringId(IDC_CREATE_SHORTCUT, IDS_ADD_TO_OS_LAUNCH_SURFACE);
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringId(IDC_CLEAR_BROWSING_DATA, IDS_CLEAR_BROWSING_DATA);
@@ -266,8 +261,7 @@ bool AppMenuModel::IsItemForCommandIdDynamic(int command_id) const {
 #elif defined(OS_WIN)
          command_id == IDC_PIN_TO_START_SCREEN ||
 #endif
-         command_id == IDC_CREATE_HOSTED_APP ||
-         command_id == IDC_UPGRADE_DIALOG;
+         command_id == IDC_INSTALL_PWA || command_id == IDC_UPGRADE_DIALOG;
 }
 
 base::string16 AppMenuModel::GetLabelForCommandId(int command_id) const {
@@ -289,8 +283,8 @@ base::string16 AppMenuModel::GetLabelForCommandId(int command_id) const {
       return l10n_util::GetStringUTF16(string_id);
     }
 #endif
-    case IDC_CREATE_HOSTED_APP:
-      return GetCreateHostedAppMenuItemName(browser_);
+    case IDC_INSTALL_PWA:
+      return GetInstallPWAAppMenuItemName(browser_).value();
     case IDC_UPGRADE_DIALOG:
       return GetUpgradeDialogMenuItemName();
     default:
@@ -443,7 +437,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
 
     // Tools menu.
-    case IDC_CREATE_HOSTED_APP:
+    case IDC_CREATE_SHORTCUT:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CreateHostedApp",
                                    delta);
@@ -540,7 +534,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_DOWNLOADS);
       break;
-    case IDC_SHOW_SYNC_SETUP:
+    case IDC_SHOW_SIGNIN:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowSyncSetup",
                                    delta);
@@ -675,20 +669,18 @@ bool AppMenuModel::GetAcceleratorForCommandId(
   return provider_->GetAcceleratorForCommandId(command_id, accelerator);
 }
 
-void AppMenuModel::ActiveTabChanged(WebContents* old_contents,
-                                    WebContents* new_contents,
-                                    int index,
-                                    int reason) {
-  // The user has switched between tabs and the new tab may have a different
-  // zoom setting.
-  UpdateZoomControls();
-}
+void AppMenuModel::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (tab_strip_model->empty())
+    return;
 
-void AppMenuModel::TabReplacedAt(TabStripModel* tab_strip_model,
-                                 WebContents* old_contents,
-                                 WebContents* new_contents,
-                                 int index) {
-  UpdateZoomControls();
+  if (selection.active_tab_changed()) {
+    // The user has switched between tabs and the new tab may have a different
+    // zoom setting. Or web contents for a tab has been replaced.
+    UpdateZoomControls();
+  }
 }
 
 void AppMenuModel::Observe(int type,
@@ -767,7 +759,10 @@ void AppMenuModel::Build() {
               gfx::TruncateString(base::UTF8ToUTF16(pwa->name()),
                                   kMaxAppNameLength, gfx::CHARACTER_BREAK)));
     } else {
-      AddItem(IDC_CREATE_HOSTED_APP, GetCreateHostedAppMenuItemName(browser_));
+      base::Optional<base::string16> install_pwa_item_name =
+          GetInstallPWAAppMenuItemName(browser_);
+      if (install_pwa_item_name)
+        AddItem(IDC_INSTALL_PWA, *install_pwa_item_name);
     }
   }
 
@@ -880,8 +875,7 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
   const GlobalErrorService::GlobalErrorList& errors =
       GlobalErrorServiceFactory::GetForProfile(browser_->profile())->errors();
   bool menu_items_added = false;
-  for (GlobalErrorService::GlobalErrorList::const_iterator it = errors.begin();
-       it != errors.end(); ++it) {
+  for (auto it = errors.begin(); it != errors.end(); ++it) {
     GlobalError* error = *it;
     DCHECK(error);
     if (error->HasMenuItem()) {

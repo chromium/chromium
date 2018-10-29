@@ -43,7 +43,7 @@ std::unique_ptr<Renderer> MojoRendererFactory::CreateRenderer(
 
   // |get_gpu_factories_cb_| can be null in the HLS/MediaPlayerRenderer case,
   // when we do not need to create video overlays.
-  if (!get_gpu_factories_cb_.is_null()) {
+  if (get_gpu_factories_cb_) {
     overlay_factory =
         std::make_unique<VideoOverlayFactory>(get_gpu_factories_cb_.Run());
   }

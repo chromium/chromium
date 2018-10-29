@@ -10,7 +10,7 @@ enum VREye {
 // https://w3c.github.io/webvr/#interface-vrdisplay
 [
     ActiveScriptWrappable,
-    RuntimeEnabled=WebVR
+    OriginTrialEnabled=WebVR
 ] interface VRDisplay : EventTarget {
     // An identifier for this device unique across VRDisplays.
     readonly attribute unsigned long displayId;

@@ -60,6 +60,7 @@ class TestDownloadService : public DownloadService {
 
   // Notify the observer a download has failed.
   void OnDownloadFailed(const std::string& guid,
+                        const CompletionInfo& completion_info,
                         Client::FailureReason failure_reason);
 
   std::unique_ptr<ServiceConfig> service_config_;

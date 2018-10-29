@@ -1,10 +1,8 @@
-engedy@chromium.org
+file://device/fido/OWNERS
 mkwst@chromium.org
-kpaulhamus@chromium.org
-hongjunchoi@chromium.org
 
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
 
-# Component: Blink>WebAuthentication
 # TEAM: identity-dev@chromium.org
+# Component: Blink>WebAuthentication

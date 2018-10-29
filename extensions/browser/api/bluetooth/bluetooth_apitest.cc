@@ -106,7 +106,7 @@ class BluetoothApiTest : public extensions::ExtensionApiTest {
   }
 
  private:
-  scoped_refptr<Extension> empty_extension_;
+  scoped_refptr<const Extension> empty_extension_;
 };
 
 static void StopDiscoverySessionCallback(const base::Closure& callback,

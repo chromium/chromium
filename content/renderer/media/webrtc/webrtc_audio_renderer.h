@@ -125,7 +125,7 @@ class CONTENT_EXPORT WebRtcAudioRenderer
   base::TimeDelta GetCurrentRenderTime() const override;
   bool IsLocalRenderer() const override;
   void SwitchOutputDevice(const std::string& device_id,
-                          const media::OutputDeviceStatusCB& callback) override;
+                          media::OutputDeviceStatusCB callback) override;
 
   // Called when an audio renderer, either the main or a proxy, starts playing.
   // Here we maintain a reference count of how many renderers are currently
@@ -156,7 +156,7 @@ class CONTENT_EXPORT WebRtcAudioRenderer
       SourcePlayingStates;
 
   // Used to DCHECK that we are called on the correct thread.
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   // Flag to keep track the state of the renderer.
   State state_;

@@ -97,7 +97,7 @@ class WEBVIEW_EXPORT WebDialogView : public views::ClientView,
   // Overridden from content::WebContentsDelegate:
   void SetContentsBounds(content::WebContents* source,
                          const gfx::Rect& bounds) override;
-  void HandleKeyboardEvent(
+  bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
   void CloseContents(content::WebContents* source) override;

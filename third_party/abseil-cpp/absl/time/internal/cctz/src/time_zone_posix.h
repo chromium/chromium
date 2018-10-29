@@ -89,7 +89,7 @@ struct PosixTransition {
   } time;
 };
 
-// The entirety of a POSIX-std::string specified time-zone rule. The standard
+// The entirety of a POSIX-string specified time-zone rule. The standard
 // abbreviation and offset are always given. If the time zone includes
 // daylight saving, then the daylight abbrevation is non-empty and the
 // remaining fields are also valid. Note that the start/end transitions

@@ -14,6 +14,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "net/base/ip_address.h"
+#include "net/dns/dns_config.h"
 #include "net/dns/dns_config_service_posix.h"
 #include "net/dns/dns_protocol.h"
 

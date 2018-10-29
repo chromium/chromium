@@ -82,7 +82,7 @@ void ChromeFeaturesServiceProvider::IsCrostiniEnabled(
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
-  writer.AppendBool(IsCrostiniAllowedForProfile(profile));
+  writer.AppendBool(crostini::IsCrostiniAllowedForProfile(profile));
   response_sender.Run(std::move(response));
 }
 

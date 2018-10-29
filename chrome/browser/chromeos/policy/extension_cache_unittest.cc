@@ -62,7 +62,7 @@ class ExtensionCacheTest : public testing::Test {
 };
 
 TEST_F(ExtensionCacheTest, SizePolicy) {
-  settings_helper_.ReplaceProvider(chromeos::kExtensionCacheSize);
+  settings_helper_.ReplaceDeviceSettingsProviderWithStub();
   settings_helper_.SetInteger(chromeos::kExtensionCacheSize, kMaxCacheSize);
 
   // Create and initialize local cache.

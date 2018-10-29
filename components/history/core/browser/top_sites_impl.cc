@@ -374,7 +374,7 @@ bool TopSitesImpl::AddForcedURL(const GURL& url, const base::Time& time) {
   // Add forced URLs and sort. Added to the end of the list of forced URLs
   // since this is almost always where it needs to go, unless the user's local
   // clock is fiddled with.
-  MostVisitedURLList::iterator mid = new_list.begin() + num_forced;
+  auto mid = new_list.begin() + num_forced;
   mid = new_list.insert(mid, new_url);
   std::inplace_merge(new_list.begin(), mid, mid + 1, ForcedURLComparator);
   SetTopSites(new_list, CALL_LOCATION_FROM_FORCED_URLS);
@@ -452,7 +452,7 @@ void TopSitesImpl::DiffMostVisited(const MostVisitedURLList& old_list,
       rank++;
     DCHECK(new_list[i].last_forced_time.is_null() == (rank != -1))
         << "Forced URLs must all appear before non-forced URLs.";
-    std::map<GURL, size_t>::iterator found = all_old_urls.find(new_list[i].url);
+    auto found = all_old_urls.find(new_list[i].url);
     if (found == all_old_urls.end()) {
       MostVisitedURLWithRank added;
       added.url = new_list[i];
@@ -591,8 +591,7 @@ bool TopSitesImpl::EncodeBitmap(const gfx::Image& bitmap,
 }
 
 void TopSitesImpl::RemoveTemporaryThumbnailByURL(const GURL& url) {
-  for (TempImages::iterator i = temp_images_.begin(); i != temp_images_.end();
-       ++i) {
+  for (auto i = temp_images_.begin(); i != temp_images_.end(); ++i) {
     if (i->first == url) {
       temp_images_.erase(i);
       return;
@@ -765,8 +764,7 @@ void TopSitesImpl::SetTopSites(const MostVisitedURLList& new_top_sites,
       const GURL& canonical_url = cache_->GetCanonicalURL(mv.url);
       // At the time we get the thumbnail redirects aren't known, so we have to
       // iterate through all the images.
-      for (TempImages::iterator it = temp_images_.begin();
-           it != temp_images_.end(); ++it) {
+      for (auto it = temp_images_.begin(); it != temp_images_.end(); ++it) {
         if (canonical_url == cache_->GetCanonicalURL(it->first)) {
           bool success = SetPageThumbnailEncoded(
               mv.url, it->second.thumbnail.get(), it->second.thumbnail_score);
@@ -908,8 +906,8 @@ void TopSitesImpl::OnURLsDeleted(HistoryService* history_service,
       return;
 
     MostVisitedURLList new_top_sites(cache_->top_sites());
-    for (std::set<size_t>::reverse_iterator i = indices_to_delete.rbegin();
-         i != indices_to_delete.rend(); i++) {
+    for (auto i = indices_to_delete.rbegin(); i != indices_to_delete.rend();
+         i++) {
       new_top_sites.erase(new_top_sites.begin() + *i);
     }
     SetTopSites(new_top_sites, CALL_LOCATION_FROM_OTHER_PLACES);

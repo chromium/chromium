@@ -31,6 +31,8 @@ class SearchBoxExtension {
                                              bool success);
   static void DispatchDeleteCustomLinkResult(blink::WebLocalFrame* frame,
                                              bool success);
+  static void DispatchDoesUrlResolveResult(blink::WebLocalFrame* frame,
+                                           bool resolves);
   static void DispatchInputCancel(blink::WebLocalFrame* frame);
   static void DispatchInputStart(blink::WebLocalFrame* frame);
   static void DispatchKeyCaptureChange(blink::WebLocalFrame* frame);

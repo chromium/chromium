@@ -24,8 +24,6 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-class OAuth2TokenService;
-
 namespace base {
 class SequencedTaskRunner;
 }
@@ -38,6 +36,10 @@ class DriveUploaderInterface;
 
 namespace extensions {
 class ExtensionServiceInterface;
+}
+
+namespace identity {
+class IdentityManager;
 }
 
 namespace leveldb {
@@ -76,7 +78,7 @@ class SyncEngine
     DriveServiceFactory() {}
     virtual ~DriveServiceFactory() {}
     virtual std::unique_ptr<drive::DriveServiceInterface> CreateDriveService(
-        OAuth2TokenService* oauth2_token_service,
+        identity::IdentityManager* identity_manager,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         base::SequencedTaskRunner* blocking_task_runner);
 
@@ -135,7 +137,8 @@ class SyncEngine
                         const SyncStatusCallback& callback) override;
 
   // drive::DriveNotificationObserver overrides.
-  void OnNotificationReceived(const std::set<std::string>& ids) override;
+  void OnNotificationReceived(
+      const std::map<std::string, int64_t>& invalidations) override;
   void OnNotificationTimerFired() override;
   void OnPushNotificationEnabled(bool enabled) override;
 
@@ -168,7 +171,7 @@ class SyncEngine
              drive::DriveNotificationManager* notification_manager,
              extensions::ExtensionServiceInterface* extension_service,
              SigninManagerBase* signin_manager,
-             OAuth2TokenService* token_service,
+             identity::IdentityManager* identity_manager,
              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
              std::unique_ptr<DriveServiceFactory> drive_service_factory,
              leveldb::Env* env_override);
@@ -199,7 +202,7 @@ class SyncEngine
   drive::DriveNotificationManager* notification_manager_;
   extensions::ExtensionServiceInterface* extension_service_;
   SigninManagerBase* signin_manager_;
-  OAuth2TokenService* token_service_;
+  identity::IdentityManager* identity_manager_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

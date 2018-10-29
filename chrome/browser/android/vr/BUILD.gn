@@ -55,8 +55,6 @@ static_library("vr_android") {
     "vr_shell.h",
     "vr_shell_delegate.cc",
     "vr_shell_delegate.h",
-    "vr_web_contents_observer.cc",
-    "vr_web_contents_observer.h",
     "web_xr_presentation_state.cc",
     "web_xr_presentation_state.h",
   ]
@@ -78,12 +76,13 @@ static_library("vr_android") {
       "arcore_device/arcore_gl_thread.h",
       "arcore_device/arcore_impl.cc",
       "arcore_device/arcore_impl.h",
+      "arcore_device/arcore_install_utils.h",
       "arcore_device/arcore_java_utils.cc",
       "arcore_device/arcore_java_utils.h",
+      "arcore_device/arcore_permission_helper.cc",
+      "arcore_device/arcore_permission_helper.h",
       "arcore_device/arcore_shim.cc",
       "arcore_device/arcore_shim.h",
-      "arcore_device/fake_arcore.cc",
-      "arcore_device/fake_arcore.h",
     ]
   }
 
@@ -92,7 +91,6 @@ static_library("vr_android") {
     "//base",
     "//cc",
     "//chrome/browser/ui:ui",
-    "//chrome/browser/vr:vr_base",
     "//chrome/browser/vr:vr_common",
     "//chrome/common:common",
     "//chrome/common:constants",
@@ -217,4 +215,34 @@ if (current_toolchain == default_toolchain) {
     output = "$target_gen_dir/${target_name}.h"
     namespace = "vr"
   }
+}
+
+test("vr_android_unittests") {
+  sources = [
+    "arcore_device/arcore_device_unittest.cc",
+    "arcore_device/fake_arcore.cc",
+    "arcore_device/fake_arcore.h",
+    "register_jni.cc",
+    "test/ar_test_suite.cc",
+    "test/ar_test_suite.h",
+    "test/run_all_unittests.cc",
+  ]
+
+  libs = [ "android" ]
+
+  deps = [
+    ":jni_registration",
+    ":vr_android",
+    "//base/test:test_support",
+    "//chrome/browser:browser",
+    "//components/translate/core/language_detection:language_detection",
+    "//device/vr:fakes",
+    "//device/vr/public/mojom",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//services/network:test_support",
+    "//testing/android/native_test:native_test_native_code",
+    "//testing/gmock",
+    "//testing/gtest:gtest",
+  ]
 }

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 71 tests; 44 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 71 tests; 43 PASS, 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup.
 PASS "data://test/,X"
 FAIL "data://test:test/,X" assert_unreached: Should have rejected: undefined Reached unreachable code
@@ -41,7 +41,7 @@ PASS "data:application/xml,X X"
 PASS "data:text/javascript,X X"
 PASS "data:text/plain,X X"
 FAIL "data:unknown/unknown,X X" assert_array_equals: lengths differ, expected 3 got 2
-PASS "data:text/plain;a=\",\",X"
+FAIL "data:text/plain;a=\",\",X" assert_equals: expected "text/plain;a=\"\"" but got "text/plain"
 FAIL "data:text/plain;a=%2C,X" assert_equals: expected "text/plain;a=%2C" but got "text/plain"
 FAIL "data:;base64;base64,WA" assert_equals: expected "text/plain" but got "text/plain;charset=US-ASCII"
 PASS "data:x/x;base64;base64,WA"

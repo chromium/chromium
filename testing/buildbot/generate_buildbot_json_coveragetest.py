@@ -19,8 +19,8 @@ def main():
   cov = coverage.coverage(include='*generate_buildbot_json.py')
   cov.start()
   import generate_buildbot_json_unittest
-  suite = unittest.TestLoader().loadTestsFromTestCase(
-    generate_buildbot_json_unittest.UnitTest)
+  suite = unittest.TestLoader().loadTestsFromModule(
+    generate_buildbot_json_unittest)
   unittest.TextTestRunner(stream=FakeStream()).run(suite)
   cov.stop()
   outf = cStringIO.StringIO()

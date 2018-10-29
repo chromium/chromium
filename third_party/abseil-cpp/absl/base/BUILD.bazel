@@ -19,6 +19,7 @@ load(
     "ABSL_DEFAULT_COPTS",
     "ABSL_TEST_COPTS",
     "ABSL_EXCEPTIONS_FLAG",
+    "ABSL_EXCEPTIONS_FLAG_LINKOPTS",
 )
 
 package(default_visibility = ["//visibility:public"])
@@ -29,6 +30,7 @@ cc_library(
     name = "spinlock_wait",
     srcs = [
         "internal/spinlock_akaros.inc",
+        "internal/spinlock_linux.inc",
         "internal/spinlock_posix.inc",
         "internal/spinlock_wait.cc",
         "internal/spinlock_win32.inc",
@@ -179,6 +181,7 @@ cc_library(
     srcs = ["internal/throw_delegate.cc"],
     hdrs = ["internal/throw_delegate.h"],
     copts = ABSL_DEFAULT_COPTS + ABSL_EXCEPTIONS_FLAG,
+    linkopts = ABSL_EXCEPTIONS_FLAG_LINKOPTS,
     visibility = [
         "//absl:__subpackages__",
     ],
@@ -193,6 +196,7 @@ cc_test(
     name = "throw_delegate_test",
     srcs = ["throw_delegate_test.cc"],
     copts = ABSL_TEST_COPTS + ABSL_EXCEPTIONS_FLAG,
+    linkopts = ABSL_EXCEPTIONS_FLAG_LINKOPTS,
     deps = [
         ":throw_delegate",
         "@com_google_googletest//:gtest_main",
@@ -225,6 +229,7 @@ cc_library(
     srcs = ["internal/exception_safety_testing.cc"],
     hdrs = ["internal/exception_safety_testing.h"],
     copts = ABSL_TEST_COPTS + ABSL_EXCEPTIONS_FLAG,
+    linkopts = ABSL_EXCEPTIONS_FLAG_LINKOPTS,
     deps = [
         ":base",
         ":config",
@@ -241,6 +246,7 @@ cc_test(
     name = "exception_safety_testing_test",
     srcs = ["exception_safety_testing_test.cc"],
     copts = ABSL_TEST_COPTS + ABSL_EXCEPTIONS_FLAG,
+    linkopts = ABSL_EXCEPTIONS_FLAG_LINKOPTS,
     deps = [
         ":exception_safety_testing",
         "//absl/memory",
@@ -299,6 +305,7 @@ cc_test(
     size = "medium",
     srcs = ["spinlock_test_common.cc"],
     copts = ABSL_TEST_COPTS,
+    tags = ["no_test_wasm"],
     deps = [
         ":base",
         ":core_headers",
@@ -337,6 +344,9 @@ cc_test(
     name = "config_test",
     srcs = ["config_test.cc"],
     copts = ABSL_TEST_COPTS,
+    tags = [
+        "no_test_wasm",
+    ],
     deps = [
         ":config",
         "//absl/synchronization:thread_pool",
@@ -348,6 +358,9 @@ cc_test(
     name = "call_once_test",
     srcs = ["call_once_test.cc"],
     copts = ABSL_TEST_COPTS,
+    tags = [
+        "no_test_wasm",
+    ],
     deps = [
         ":base",
         ":core_headers",
@@ -401,6 +414,9 @@ cc_test(
         "//absl:windows": [],
         "//conditions:default": ["-pthread"],
     }),
+    tags = [
+        "no_test_wasm",
+    ],
     deps = [
         ":base",
         ":core_headers",
@@ -419,5 +435,25 @@ cc_test(
         ":base",
         "//absl/synchronization",
         "@com_github_google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_library(
+    name = "bits",
+    hdrs = ["internal/bits.h"],
+    visibility = [
+        "//absl:__subpackages__",
+    ],
+    deps = [":core_headers"],
+)
+
+cc_test(
+    name = "bits_test",
+    size = "small",
+    srcs = ["internal/bits_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    deps = [
+        ":bits",
+        "@com_google_googletest//:gtest_main",
     ],
 )

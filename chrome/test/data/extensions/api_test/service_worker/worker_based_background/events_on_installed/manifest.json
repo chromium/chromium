@@ -1,0 +1,6 @@
+{
+  "name": "Service worker with chrome.runtime.onInstalled event",
+  "version": "1.0",
+  "manifest_version": 2,
+  "background": {"service_worker_script": "service_worker_background.js"}
+}

@@ -10,6 +10,7 @@
       :host {
         --cr-radio-button-ink-size: 40px;
         --cr-radio-button-size: 16px;
+        --cr-radio-button-unchecked-color: var(--google-grey-refresh-700);
         --cr-radio-button-checked-color: var(--google-blue-600);
 
         --ink-to-circle: calc((var(--cr-radio-button-ink-size) -
@@ -65,7 +66,7 @@
       }
 
       .disc-border {
-        border: 2px solid var(--google-grey-refresh-700);
+        border: 2px solid var(--cr-radio-button-unchecked-color);
       }
 
       :host([checked]) .disc-border {

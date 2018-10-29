@@ -420,7 +420,7 @@ class NativeBackendLibsecretTest : public testing::Test {
     // We serialize unique origins as "", in order to make other systems that
     // read from the login database happy. https://crbug.com/591310
     CheckStringAttribute(item, "federation_url",
-                         form.federation_origin.unique()
+                         form.federation_origin.opaque()
                              ? ""
                              : form.federation_origin.Serialize());
     CheckUint32Attribute(item, "should_skip_zero_click", form.skip_zero_click);

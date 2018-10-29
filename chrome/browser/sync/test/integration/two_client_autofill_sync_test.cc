@@ -337,19 +337,53 @@ IN_PROC_BROWSER_TEST_P(TwoClientAutofillProfileSyncTest, DeleteAndUpdate) {
 
   // Make the two clients have the same profile.
   AddProfile(0, CreateAutofillProfile(PROFILE_HOMER));
-  EXPECT_TRUE(AutofillProfileChecker(0, 1).Wait());
-  EXPECT_EQ(1U, GetAllAutoFillProfiles(0).size());
+  ASSERT_TRUE(AutofillProfileChecker(0, 1).Wait());
+  ASSERT_EQ(1U, GetAllAutoFillProfiles(0).size());
 
   RemoveProfile(0, GetAllAutoFillProfiles(0)[0]->guid());
-  UpdateProfile(1,
-                GetAllAutoFillProfiles(1)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST),
-                base::ASCIIToUTF16("Bart"));
+  UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(),
+                AutofillType(autofill::NAME_FIRST), base::ASCIIToUTF16("Bart"));
 
   EXPECT_TRUE(AutofillProfileChecker(0, 1).Wait());
-  // TODO(crbug.com/870333): The result should be deterministic for USS (either
-  // update or delete, but always do the same).
+  // The exact result is non-deterministic without a strong consistency model
+  // server-side, but both clients should converge (either update or delete).
   EXPECT_EQ(GetAllAutoFillProfiles(0).size(), GetAllAutoFillProfiles(1).size());
+}
+
+// Tests that modifying a profile at the same time on two clients while
+// syncing results in a conflict where the update wins. This only works with
+// a server that supports a strong consistency model and is hence capable of
+// detecting conflicts server-side.
+IN_PROC_BROWSER_TEST_P(TwoClientAutofillProfileSyncTest,
+                       DeleteAndUpdateWithStrongConsistency) {
+  if (GetParam() == false) {
+    // TODO(crbug.com/890746): There seems to be a bug in directory code that
+    // resolves conflicts in a way that local deletion wins over a remote
+    // update, which makes this test non-deterministic, because the logic is
+    // asymmetric (so the outcome depends on which client commits first).
+    // For now, we "disable" the test.
+    return;
+  }
+
+  ASSERT_TRUE(SetupSync());
+  GetFakeServer()->EnableStrongConsistencyWithConflictDetectionModel();
+
+  // Make the two clients have the same profile.
+  AddProfile(0, CreateAutofillProfile(PROFILE_HOMER));
+  ASSERT_TRUE(AutofillProfileChecker(0, 1).Wait());
+  ASSERT_EQ(1U, GetAllAutoFillProfiles(0).size());
+
+  RemoveProfile(0, GetAllAutoFillProfiles(0)[0]->guid());
+  UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(),
+                AutofillType(autofill::NAME_FIRST), base::ASCIIToUTF16("Bart"));
+
+  // One of the two clients (the second one committing) will be requested by the
+  // server to resolve the conflict and recommit. The conflict resolution should
+  // be undeletion wins, which can mean local wins or remote wins, depending on
+  // which client is involved.
+  EXPECT_TRUE(AutofillProfileChecker(0, 1).Wait());
+  EXPECT_EQ(1U, GetAllAutoFillProfiles(0).size());
+  EXPECT_EQ(1U, GetAllAutoFillProfiles(1).size());
 }
 
 IN_PROC_BROWSER_TEST_P(TwoClientAutofillProfileSyncTest, MaxLength) {

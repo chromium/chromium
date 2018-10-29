@@ -96,6 +96,9 @@ class ImageResource::ImageResourceInfoImpl final
   bool ShouldShowPlaceholder() const override {
     return resource_->ShouldShowPlaceholder();
   }
+  bool ShouldShowLazyImagePlaceholder() const override {
+    return resource_->ShouldShowLazyImagePlaceholder();
+  }
   bool IsCacheValidator() const override {
     return resource_->IsCacheValidator();
   }
@@ -130,9 +133,8 @@ class ImageResource::ImageResourceInfoImpl final
       ResourceFetcher* fetcher,
       const KURL& url,
       const AtomicString& initiator_name) override {
-    fetcher->EmulateLoadStartedForInspector(resource_.Get(), url,
-                                            WebURLRequest::kRequestContextImage,
-                                            initiator_name);
+    fetcher->EmulateLoadStartedForInspector(
+        resource_.Get(), url, mojom::RequestContextType::IMAGE, initiator_name);
   }
 
   void LoadDeferredImage(ResourceFetcher* fetcher) override {
@@ -170,8 +172,8 @@ class ImageResource::ImageResourceFactory : public NonTextResourceFactory {
 ImageResource* ImageResource::Fetch(FetchParameters& params,
                                     ResourceFetcher* fetcher) {
   if (params.GetResourceRequest().GetRequestContext() ==
-      WebURLRequest::kRequestContextUnspecified) {
-    params.SetRequestContext(WebURLRequest::kRequestContextImage);
+      mojom::RequestContextType::UNSPECIFIED) {
+    params.SetRequestContext(mojom::RequestContextType::IMAGE);
   }
 
   ImageResource* resource = ToImageResource(
@@ -185,8 +187,7 @@ ImageResource* ImageResource::Fetch(FetchParameters& params,
 }
 
 Resource::MatchStatus ImageResource::CanReuse(
-    const FetchParameters& params,
-    scoped_refptr<const SecurityOrigin> new_source_origin) const {
+    const FetchParameters& params) const {
   // If the image is a placeholder, but this fetch doesn't allow a
   // placeholder, then do not reuse this resource.
   if (params.GetImageRequestOptimization() !=
@@ -195,7 +196,7 @@ Resource::MatchStatus ImageResource::CanReuse(
     return MatchStatus::kImagePlaceholder;
   }
 
-  return Resource::CanReuse(params, std::move(new_source_origin));
+  return Resource::CanReuse(params);
 }
 
 bool ImageResource::CanUseCacheValidator() const {
@@ -336,7 +337,14 @@ void ImageResource::AppendData(const char* data, size_t length) {
     Resource::AppendData(data, length);
 
     // Update the image immediately if needed.
-    if (GetContent()->ShouldUpdateImageImmediately()) {
+    //
+    // ImageLoader is not available when this image is loaded via ImageDocument.
+    // In this case, as the task runner is not available, update the image
+    // immediately.
+    //
+    // TODO(hajimehoshi): updating/flushing image should be throttled when
+    // necessary, so such tasks should be done on a throttleable task runner.
+    if (GetContent()->ShouldUpdateImageImmediately() || !Loader()) {
       UpdateImage(Data(), ImageResourceContent::kUpdateImage, false);
       return;
     }
@@ -346,7 +354,7 @@ void ImageResource::AppendData(const char* data, size_t length) {
     // inform the clients which causes an invalidation of this image. In other
     // words, we only invalidate this image every |kFlushDelay| seconds
     // while loading.
-    if (Loader() && !is_pending_flushing_) {
+    if (!is_pending_flushing_) {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner =
           Loader()->GetLoadingTaskRunner();
       TimeTicks now = CurrentTimeTicks();
@@ -391,7 +399,9 @@ void ImageResource::DecodeError(bool all_data_received) {
   if (!all_data_received && Loader()) {
     // Observers are notified via ImageResource::finish().
     // TODO(hiroshige): Do not call didFinishLoading() directly.
-    Loader()->DidFinishLoading(CurrentTimeTicks(), size, size, size, false);
+    Loader()->DidFinishLoading(
+        CurrentTimeTicks(), size, size, size, false,
+        std::vector<network::cors::PreflightTimingInfo>());
   } else {
     auto result = GetContent()->UpdateImage(
         nullptr, GetStatus(),
@@ -546,6 +556,21 @@ bool ImageResource::ShouldShowPlaceholder() const {
   return false;
 }
 
+bool ImageResource::ShouldShowLazyImagePlaceholder() const {
+  switch (placeholder_option_) {
+    case PlaceholderOption::kShowAndReloadPlaceholderAlways:
+    case PlaceholderOption::kShowAndDoNotReloadPlaceholder:
+      return RuntimeEnabledFeatures::LazyImageLoadingEnabled() &&
+             (GetResourceRequest().GetPreviewsState() &
+              WebURLRequest::kLazyImageLoadDeferred);
+    case PlaceholderOption::kReloadPlaceholderOnDecodeError:
+    case PlaceholderOption::kDoNotReloadPlaceholder:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
 bool ImageResource::ShouldReloadBrokenPlaceholder() const {
   switch (placeholder_option_) {
     case PlaceholderOption::kShowAndReloadPlaceholderAlways:
@@ -583,6 +608,11 @@ void ImageResource::ReloadIfLoFiOrPlaceholderImage(
   // prematurely.
   DCHECK(!is_scheduling_reload_);
   is_scheduling_reload_ = true;
+
+  if (GetResourceRequest().GetPreviewsState() &
+      (WebURLRequest::kClientLoFiOn | WebURLRequest::kServerLoFiOn)) {
+    SetCachePolicyBypassingCache();
+  }
 
   // The reloaded image should not use any previews transformations.
   WebURLRequest::PreviewsState previews_state_for_reload =

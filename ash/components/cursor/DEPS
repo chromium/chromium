@@ -1,7 +1,6 @@
 include_rules = [
   "+ash/components/fast_ink",
   "+base",
-  "+cc/paint",
   "+components/viz/common",
   "+ui/aura",
   "+ui/events",

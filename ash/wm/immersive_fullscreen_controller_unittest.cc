@@ -178,9 +178,10 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
     top_container_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     widget_->GetContentsView()->AddChildView(top_container_);
 
-    delegate_.reset(
-        new MockImmersiveFullscreenControllerDelegate(top_container_));
-    controller_.reset(new ImmersiveFullscreenController);
+    delegate_ = std::make_unique<MockImmersiveFullscreenControllerDelegate>(
+        top_container_);
+    controller_ = std::make_unique<ImmersiveFullscreenController>(
+        Shell::Get()->immersive_context());
     controller_->Init(delegate_.get(), widget_, top_container_);
     ImmersiveFullscreenControllerTestApi(controller_.get()).SetupForTest();
 

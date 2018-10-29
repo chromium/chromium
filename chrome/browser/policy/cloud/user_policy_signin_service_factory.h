@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_FACTORY_H_
 
-#include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,10 +13,6 @@ class Profile;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
-
-namespace network {
-class SharedURLLoaderFactory;
 }
 
 namespace policy {
@@ -44,9 +38,6 @@ class UserPolicySigninServiceFactory
   static void SetDeviceManagementServiceForTesting(
       DeviceManagementService* device_management_service);
 
-  static void SetSystemURLLoaderFactoryForTesting(
-      scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
-
  protected:
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
@@ -61,9 +52,6 @@ class UserPolicySigninServiceFactory
 
  private:
   friend struct base::DefaultSingletonTraits<UserPolicySigninServiceFactory>;
-
-  static base::LazyInstance<scoped_refptr<network::SharedURLLoaderFactory>>::
-      Leaky system_url_loader_factory_for_tests_;
 
   UserPolicySigninServiceFactory();
   ~UserPolicySigninServiceFactory() override;

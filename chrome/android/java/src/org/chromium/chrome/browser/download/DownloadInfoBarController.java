@@ -747,7 +747,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
         Tab currentTab = getCurrentTab();
         if (currentTab == null) return;
 
-        currentTab.getInfoBarContainer().addObserver(mInfoBarContainerObserver);
+        InfoBarContainer.get(currentTab).addObserver(mInfoBarContainerObserver);
         DownloadProgressInfoBar.createInfoBar(mClient, currentTab, info);
         recordInfoBarCreated();
     }
@@ -764,7 +764,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
 
         Tab prevTab = mCurrentInfoBar.getTab();
         if (prevTab != null) {
-            prevTab.getInfoBarContainer().removeObserver(mInfoBarContainerObserver);
+            InfoBarContainer.get(prevTab).removeObserver(mInfoBarContainerObserver);
         }
 
         mCurrentInfoBar.closeInfoBar();

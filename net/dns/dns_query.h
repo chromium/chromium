@@ -15,13 +15,17 @@
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
+namespace base {
+class BigEndianReader;
+}  // namespace base
+
 namespace net {
 
 class OptRecordRdata;
 
 namespace dns_protocol {
 struct Header;
-}
+}  // namespace dns_protocol
 
 class IOBufferWithSize;
 
@@ -36,10 +40,27 @@ class NET_EXPORT_PRIVATE DnsQuery {
            const base::StringPiece& qname,
            uint16_t qtype,
            const OptRecordRdata* opt_rdata = nullptr);
+
+  // Constructs an empty query from a raw packet in |buffer|. If the raw packet
+  // represents a valid DNS query in the wire format (RFC 1035), Parse() will
+  // populate the empty query.
+  DnsQuery(scoped_refptr<IOBufferWithSize> buffer);
+
   ~DnsQuery();
 
   // Clones |this| verbatim, with ID field of the header set to |id|.
   std::unique_ptr<DnsQuery> CloneWithNewId(uint16_t id) const;
+
+  // Returns true and populates the query if the internally stored raw packet
+  // can be parsed. This should only be called when DnsQuery is constructed from
+  // the raw buffer.
+  // |valid_bytes| indicates the number of initialized bytes in the raw buffer.
+  // E.g. if the buffer holds a packet received from the network, the buffer may
+  // be allocated with the maximum size of a UDP packet, but |valid_bytes|
+  // indicates the number of bytes actually received from the network. If the
+  // parsing requires reading more than the number of initialized bytes, this
+  // method fails and returns false.
+  bool Parse(size_t valid_bytes);
 
   // DnsQuery field accessors.
   uint16_t id() const;
@@ -50,7 +71,14 @@ class NET_EXPORT_PRIVATE DnsQuery {
   // response.
   base::StringPiece question() const;
 
-  // IOBuffer accessor to be used for writing out the query.
+  // Returns the size of the question section.
+  size_t question_size() const {
+    // QNAME + QTYPE + QCLASS
+    return qname_size_ + sizeof(uint16_t) + sizeof(uint16_t);
+  }
+
+  // IOBuffer accessor to be used for writing out the query. The buffer has
+  // the same byte layout as the DNS query wire format.
   IOBufferWithSize* io_buffer() const { return io_buffer_.get(); }
 
   void set_flags(uint16_t flags);
@@ -58,21 +86,21 @@ class NET_EXPORT_PRIVATE DnsQuery {
  private:
   DnsQuery(const DnsQuery& orig, uint16_t id);
 
-  // Returns the size of the question section.
-  size_t question_size() const {
-    // QNAME + QTYPE + QCLASS
-    return qname_size_ + sizeof(uint16_t) + sizeof(uint16_t);
-  }
+  bool ReadHeader(base::BigEndianReader* reader, dns_protocol::Header* out);
+  // After read, |out| is in the DNS format, e.g.
+  // "\x03""www""\x08""chromium""\x03""com""\x00". Use DNSDomainToString to
+  // convert to the dotted format "www.chromium.com" with no trailing dot.
+  bool ReadName(base::BigEndianReader* reader, std::string* out);
 
   // Size of the DNS name (*NOT* hostname) we are trying to resolve; used
   // to calculate offsets.
-  size_t qname_size_;
+  size_t qname_size_ = 0;
 
   // Contains query bytes to be consumed by higher level Write() call.
   scoped_refptr<IOBufferWithSize> io_buffer_;
 
   // Pointer to the dns header section.
-  dns_protocol::Header* header_;
+  dns_protocol::Header* header_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(DnsQuery);
 };

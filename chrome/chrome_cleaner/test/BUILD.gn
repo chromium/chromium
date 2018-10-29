@@ -33,6 +33,20 @@ source_set("test_branding_header") {
   ]
 }
 
+source_set("test_component") {
+  testonly = true
+
+  sources = [
+    "test_component.cc",
+    "test_component.h",
+  ]
+
+  deps = [
+    "//chrome/chrome_cleaner/components:components",
+    "//chrome/chrome_cleaner/constants:uws_id",
+  ]
+}
+
 source_set("test_executables") {
   testonly = true
 

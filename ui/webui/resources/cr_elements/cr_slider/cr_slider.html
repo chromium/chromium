@@ -1,52 +1,197 @@
 <link rel="import" href="../../html/polymer.html">
 
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-behaviors/paper-ripple-behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../html/cr.html">
+<link rel="import" href="../../html/event_tracker.html">
+<link rel="import" href="../hidden_style_css.html">
 <link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-slider/paper-slider.html">
 
 <dom-module id="cr-slider">
   <template>
-    <style>
-      paper-slider {
-        --paper-slider-active-color: var(--google-blue-600);
-        --paper-slider-container-color: var(--google-blue-600-opacity-24);
-        --paper-slider-knob-color: var(--google-blue-600);
-        --paper-slider-knob-start-color: var(--google-blue-600);
-        --paper-slider-knob-start-border-color: var(--google-blue-600);
-        --paper-slider-pin-color: var(--google-blue-600);
-        --paper-slider-pin-start-color: var(--google-blue-600);
-        --paper-slider-markers-color: rgba(255, 255, 255, 0.54);
-        --paper-slider-disabled-active-color: var(--google-grey-600);
-        --paper-slider-disabled-knob-color: var(--google-grey-600);
-        width: 100%;
-
-        --paper-slider-pin-text: {
-          font-family:  Roboto;
-          font-size: 12px;
-          font-weight: 500;
-          line-height: 14px;
-        };
+    <style include="cr-hidden-style">
+      :host {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        cursor: default;
+        user-select: none;
       }
 
-      :host-context([dir=rtl]) paper-slider {
-        --paper-slider-pin-text: {
-          font-family:  Roboto;
-          font-size: 12px;
-          font-weight: 500;
-          line-height: 14px;
-          transform: scale(-1, 1) translate(0, -17px);
-        };
+      :host([dragging]) {
+        touch-action: none;
       }
 
-      paper-slider[disabled] {
-        --paper-slider-container-color: var(--google-grey-600-opacity-24);
+      #container {
+        height: 32px;
+        position: relative;
+      }
+
+      #barContainer {
+        background-color: var(--google-blue-600-opacity-24);
+        border-radius: 1px;
+        height: 2px;
+        margin: 0 16px;
+        position: absolute;
+        top: 15px;
+        width: calc(100% - 32px);
+      }
+
+      #bar {
+        background-color: var(--google-blue-600);
+        border-radius: 1px;
+        height: 2px;
+        left: 0;
+        position: absolute;
+        transition: width 80ms ease;
+        width: 0;
+      }
+
+      :host-context([dir=rtl]) #bar {
+        left: initial;
+        right: 0;
+      }
+
+      #knobContainer {
+        margin-inline-start: 12px;
+        position: absolute;
+        top: 11px;
+        width: calc(100% - 32px);
+      }
+
+      #knob {
+        background-color: var(--google-blue-600);
+        border: 0;
+        border-radius: 50%;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+        height: 10px;
+        margin-inline-start: 0;
+        outline: none;
+        position: absolute;
+        transition: margin-inline-start 80ms ease;
+        width: 10px;
+      }
+
+      paper-ripple {
+        color: var(--google-blue-600);
+        height: 32px;
+        left: -11px;
+        pointer-events: none;
+        top: -11px;
+        transition: color linear 80ms;
+        width: 32px;
+      }
+
+      :host-context([dir=rtl]) paper-ripple {
+        left: auto;
+        right: -11px;
+      }
+
+      #markers {
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        @apply --layout-horizontal;
+      }
+
+      .active-marker,
+      .inactive-marker {
+        @apply --layout-flex;
+      }
+      #markers::before,
+      #markers::after,
+      .active-marker::after,
+      .inactive-marker::after {
+        border-radius: 50%;
+        content: '';
+        display: block;
+        height: 2px;
+        margin-left: -1px;
+        width: 2px;
+      }
+
+      #markers::before,
+      .active-marker::after {
+        background-color: rgba(255, 255, 255, 0.54);
+      }
+
+      #markers::after,
+      .inactive-marker::after {
+        background-color: rgba(26, 115, 232, 0.54);
+      }
+
+      #labelContainer {
+        cursor: default;
+        margin-inline-start: 1px;
+        opacity: 0;
+        transition: opacity 80ms ease-in-out;
+        user-select: none;
+        width: calc(100% - 32px);
+      }
+
+      #container:hover #labelContainer,
+      .hover #labelContainer,
+      :host([hold-down_]) #labelContainer {
+        opacity: 1;
+      }
+
+      #label {
+        background: var(--google-blue-600);
+        border-radius: 14px;
+        bottom: 28px;
+        color: white;
+        font-size: 12px;
+        line-height: 1.5em;
+        padding: 0 8px;
+        position: absolute;
+        transition: margin-inline-start 80ms ease;
+        white-space: nowrap;
+      }
+
+      :host([disabled_]) {
+        pointer-events: none;
+      }
+
+      :host([disabled_]) #barContainer {
+        background-color: var(--google-grey-600-opacity-24);
+      }
+
+      :host([disabled_]) #bar {
+        background-color: var(--google-grey-600);
+      }
+
+      :host([disabled_]) inactive-marker::after,
+      :host([disabled_]) #markers::after {
+        background-color: rgba(255, 255, 255, 0.54);
+      }
+
+      :host([disabled_]) #knobContainer {
+        margin-inline-start: 9px;
+        top: 9px;
+      }
+      :host([disabled_]) #knob {
+        background-color: var(--google-grey-600);
+        border: 2px solid white;
+        box-shadow: unset;
       }
     </style>
-    <paper-slider id="slider"
-        disabled$="[[disabled]]" snaps="[[snaps]]" on-change="onChange_"
-        max="[[max]]" min="[[min]]" on-up="resetTrackLock_" value="{{value}}"
-        max-markers="[[maxMarkers]]" immediate-value="{{immediateValue}}"
-        dragging="{{dragging}}">
-    </paper-slider>
+    <div id="container">
+      <div id="barContainer">
+        <div id="bar"></div>
+        <div id="markers" hidden$="[[!markerCount]]">
+          <template is="dom-repeat" items="[[getMarkers_(markerCount)]]">
+            <div class$="[[getMarkerClass_(index, immediateValue_, min, max,
+                                           markerCount)]]"></div>
+          </template>
+        </div>
+      </div>
+      <div id="knobContainer">
+        <div id="knob" tabindex="0"></div>
+      </div>
+      <div id="labelContainer" aria-label="[[label_]]">
+        <div id="label">[[label_]]</div>
+      </div>
+    </div>
   </template>
   <script src="cr_slider.js"></script>
 </dom-module>

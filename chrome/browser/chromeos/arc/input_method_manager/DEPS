@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # TODO(mash): Remove. http://crbug.com/890677
+  "arc_input_method_manager_service_unittest\.cc": [
+    "+ash/keyboard/ash_keyboard_controller.h",
+    "+ash/shell.h",
+  ],
+}

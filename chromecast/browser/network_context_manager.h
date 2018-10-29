@@ -53,6 +53,14 @@ class NetworkContextManager {
   // calling thread. The caller owns the returned interface pointer.
   network::mojom::URLLoaderFactoryPtr GetURLLoaderFactory();
 
+  // Creates a ProxyResolvingSocketFactory asynchronously on the IO thread, and
+  // binds it to |request|. This may be called from any thread.
+  void GetProxyResolvingSocketFactory(
+      network::mojom::ProxyResolvingSocketFactoryRequest request);
+
+  // Get a WeakPtr to this object.
+  base::WeakPtr<NetworkContextManager> GetWeakPtr() { return weak_ptr_; }
+
   // Creates a NetworkContextManager for testing, so that a fake NetworkService
   // can be created on the IO thread and injected into this class. Caller owns
   // the returned instance. Returns the object unwrapped so that it can be
@@ -70,11 +78,17 @@ class NetworkContextManager {
       std::unique_ptr<network::NetworkService> network_service);
 
   // Initializes the NetworkContext. Posted to the IO thread from the ctor.
-  void InitializeOnIoThread();
+  void InitializeOnIOThread();
 
   // Posted to the IO thread whenever GetURLLoaderFactoryPtr() is called.
   // Guaranteed to be called after InitializeOnIoThread().
   void BindRequestOnIOThread(network::mojom::URLLoaderFactoryRequest request);
+
+  // Create a proxy-resolving socket factory using the |network_context_| on the
+  // IO thread. Posted from RequestProxyResolvingSocketFactory(). Guaranteed to
+  // be called after InitializeOnIoThread().
+  void GetProxyResolvingSocketFactoryOnIOThread(
+      network::mojom::ProxyResolvingSocketFactoryRequest request);
 
   // The underlying URLRequestContextGetter. The reference may only be released
   // after the NetworkContext has been destroyed.
@@ -89,6 +103,7 @@ class NetworkContextManager {
   std::unique_ptr<network::NetworkContext> network_context_;
   network::mojom::NetworkContextPtr network_context_ptr_;
 
+  base::WeakPtr<NetworkContextManager> weak_ptr_;
   base::WeakPtrFactory<NetworkContextManager> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkContextManager);

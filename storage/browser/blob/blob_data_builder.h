@@ -55,12 +55,9 @@ class STORAGE_EXPORT BlobDataBuilder {
   // it's a 'bytes' element. Data elements of BYTES_DESCRIPTION or
   // DISK_CACHE_ENTRY types are not valid IPC data element types, and cannot be
   // given to this method.
-  // |file_system_context| needs to be set if data element is of type
-  // FILE_FILESYSTEM.
   // |blob_registry| is needed for data elements of type BLOB.
   void AppendIPCDataElement(
       const network::DataElement& ipc_data,
-      const scoped_refptr<FileSystemContext>& file_system_context,
       const BlobStorageRegistry& blob_registry);
 
   // Copies the given data into the blob.
@@ -161,16 +158,15 @@ class STORAGE_EXPORT BlobDataBuilder {
       const base::Time& expected_modification_time,
       scoped_refptr<FileSystemContext> file_system_context);
 
-  void AppendDiskCacheEntry(const scoped_refptr<DataHandle>& data_handle,
+  void AppendDiskCacheEntry(scoped_refptr<DataHandle> data_handle,
                             disk_cache::Entry* disk_cache_entry,
                             int disk_cache_stream_index);
 
   // The content of the side data is accessible with BlobReader::ReadSideData().
-  void AppendDiskCacheEntryWithSideData(
-      const scoped_refptr<DataHandle>& data_handle,
-      disk_cache::Entry* disk_cache_entry,
-      int disk_cache_stream_index,
-      int disk_cache_side_stream_index);
+  void AppendDiskCacheEntryWithSideData(scoped_refptr<DataHandle> data_handle,
+                                        disk_cache::Entry* disk_cache_entry,
+                                        int disk_cache_stream_index,
+                                        int disk_cache_side_stream_index);
 
   void set_content_type(const std::string& content_type) {
     content_type_ = content_type;

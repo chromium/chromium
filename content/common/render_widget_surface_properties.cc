@@ -13,9 +13,9 @@ RenderWidgetSurfaceProperties::FromCompositorFrame(
   RenderWidgetSurfaceProperties properties;
   properties.size = frame.size_in_pixels();
   properties.device_scale_factor = frame.device_scale_factor();
-#ifdef OS_ANDROID
   properties.top_controls_height = frame.metadata.top_controls_height;
   properties.top_controls_shown_ratio = frame.metadata.top_controls_shown_ratio;
+#ifdef OS_ANDROID
   properties.bottom_controls_height = frame.metadata.bottom_controls_height;
   properties.bottom_controls_shown_ratio =
       frame.metadata.bottom_controls_shown_ratio;
@@ -39,9 +39,9 @@ RenderWidgetSurfaceProperties& RenderWidgetSurfaceProperties::operator=(
 bool RenderWidgetSurfaceProperties::operator==(
     const RenderWidgetSurfaceProperties& other) const {
   return other.device_scale_factor == device_scale_factor &&
-#ifdef OS_ANDROID
          other.top_controls_height == top_controls_height &&
          other.top_controls_shown_ratio == top_controls_shown_ratio &&
+#ifdef OS_ANDROID
          other.bottom_controls_height == bottom_controls_height &&
          other.bottom_controls_shown_ratio == bottom_controls_shown_ratio &&
          other.selection == selection &&
@@ -77,7 +77,6 @@ std::string RenderWidgetSurfaceProperties::ToDiffString(
     ++changed_properties;
   }
 
-#ifdef OS_ANDROID
   if (top_controls_height != other.top_controls_height) {
     if (changed_properties > 0)
       stream << ", ";
@@ -93,6 +92,8 @@ std::string RenderWidgetSurfaceProperties::ToDiffString(
            << ", other: " << other.top_controls_shown_ratio << ")";
     ++changed_properties;
   }
+
+#ifdef OS_ANDROID
 
   if (bottom_controls_height != other.bottom_controls_height) {
     if (changed_properties > 0)

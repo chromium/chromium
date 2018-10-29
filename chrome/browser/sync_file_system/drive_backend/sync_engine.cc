@@ -17,7 +17,7 @@
 #include "chrome/browser/drive/drive_notification_manager_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/browser/sync_file_system/drive_backend/callback_helper.h"
 #include "chrome/browser/sync_file_system/drive_backend/conflict_resolver.h"
@@ -46,7 +46,6 @@
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/drive_api_service.h"
 #include "components/drive/service/drive_service_interface.h"
-#include "components/signin/core/browser/profile_oauth2_token_service.h"
 #include "components/signin/core/browser/signin_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -61,6 +60,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "storage/browser/blob/scoped_file.h"
 #include "storage/common/fileapi/file_system_util.h"
@@ -96,12 +96,12 @@ constexpr net::NetworkTrafficAnnotationTag kSyncFileSystemTrafficAnnotation =
 
 std::unique_ptr<drive::DriveServiceInterface>
 SyncEngine::DriveServiceFactory::CreateDriveService(
-    OAuth2TokenService* oauth2_token_service,
+    identity::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::SequencedTaskRunner* blocking_task_runner) {
   return std::unique_ptr<
       drive::DriveServiceInterface>(new drive::DriveAPIService(
-      oauth2_token_service, url_loader_factory, blocking_task_runner,
+      identity_manager, url_loader_factory, blocking_task_runner,
       GURL(google_apis::DriveApiUrlGenerator::kBaseUrlForProduction),
       GURL(google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction),
       std::string(), /* custom_user_agent */
@@ -213,8 +213,8 @@ std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
       extensions::ExtensionSystem::Get(context)->extension_service();
   SigninManagerBase* signin_manager =
       SigninManagerFactory::GetForProfile(profile);
-  OAuth2TokenService* token_service =
-      ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
+  identity::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       content::BrowserContext::GetDefaultStoragePartition(context)
           ->GetURLLoaderFactoryForBrowserProcess();
@@ -222,7 +222,7 @@ std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
   std::unique_ptr<drive_backend::SyncEngine> sync_engine(new SyncEngine(
       ui_task_runner.get(), worker_task_runner.get(), drive_task_runner.get(),
       GetSyncFileSystemDir(context->GetPath()), task_logger,
-      notification_manager, extension_service, signin_manager, token_service,
+      notification_manager, extension_service, signin_manager, identity_manager,
       url_loader_factory, std::make_unique<DriveServiceFactory>(),
       nullptr /* env_override */));
 
@@ -237,7 +237,7 @@ void SyncEngine::AppendDependsOnFactories(
   factories->insert(SigninManagerFactory::GetInstance());
   factories->insert(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
-  factories->insert(ProfileOAuth2TokenServiceFactory::GetInstance());
+  factories->insert(IdentityManagerFactory::GetInstance());
 }
 
 SyncEngine::~SyncEngine() {
@@ -277,7 +277,7 @@ void SyncEngine::Initialize() {
   DCHECK(drive_service_factory_);
   std::unique_ptr<drive::DriveServiceInterface> drive_service =
       drive_service_factory_->CreateDriveService(
-          token_service_, url_loader_factory_, drive_task_runner_.get());
+          identity_manager_, url_loader_factory_, drive_task_runner_.get());
 
   device::mojom::WakeLockProviderPtr wake_lock_provider(nullptr);
   DCHECK(content::ServiceManagerConnection::GetForProcess());
@@ -362,10 +362,11 @@ void SyncEngine::InitializeInternal(
 
   service_state_ = REMOTE_SERVICE_TEMPORARY_UNAVAILABLE;
   auto connection_type = network::mojom::ConnectionType::CONNECTION_NONE;
-  content::GetNetworkConnectionTracker()->GetConnectionType(
-      &connection_type, base::BindOnce(&SyncEngine::OnConnectionChanged,
-                                       weak_ptr_factory_.GetWeakPtr()));
-  OnConnectionChanged(connection_type);
+  if (content::GetNetworkConnectionTracker()->GetConnectionType(
+          &connection_type, base::BindOnce(&SyncEngine::OnConnectionChanged,
+                                           weak_ptr_factory_.GetWeakPtr()))) {
+    OnConnectionChanged(connection_type);
+  }
   if (drive_service_->HasRefreshToken())
     OnReadyToSendRequests();
   else
@@ -644,7 +645,8 @@ void SyncEngine::ApplyLocalChange(const FileChange& local_change,
                      local_path, local_metadata, url, relayed_callback));
 }
 
-void SyncEngine::OnNotificationReceived(const std::set<std::string>& ids) {
+void SyncEngine::OnNotificationReceived(
+    const std::map<std::string, int64_t>& invalidations) {
   OnNotificationTimerFired();
 }
 
@@ -731,7 +733,7 @@ SyncEngine::SyncEngine(
     drive::DriveNotificationManager* notification_manager,
     extensions::ExtensionServiceInterface* extension_service,
     SigninManagerBase* signin_manager,
-    OAuth2TokenService* token_service,
+    identity::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<DriveServiceFactory> drive_service_factory,
     leveldb::Env* env_override)
@@ -743,7 +745,7 @@ SyncEngine::SyncEngine(
       notification_manager_(notification_manager),
       extension_service_(extension_service),
       signin_manager_(signin_manager),
-      token_service_(token_service),
+      identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       drive_service_factory_(std::move(drive_service_factory)),
       remote_change_processor_(nullptr),

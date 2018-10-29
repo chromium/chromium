@@ -25,6 +25,12 @@ class ChromeUserManager : public user_manager::UserManagerBase,
 
   // user_manager::UserManagerBase:
   bool IsCurrentUserNew() const override;
+  void UpdateLoginState(const user_manager::User* active_user,
+                        const user_manager::User* primary_user,
+                        bool is_current_user_owner) const override;
+  bool GetPlatformKnownUserId(const std::string& user_email,
+                              const std::string& gaia_id,
+                              AccountId* out_account_id) const override;
 
   // Returns current ChromeUserManager or NULL if instance hasn't been
   // yet initialized.

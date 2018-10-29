@@ -31,7 +31,8 @@ void SetImageFromVectorIcon(ImageButton* button,
                             SkColor related_text_color) {
   const SkColor icon_color =
       color_utils::DeriveDefaultIconColor(related_text_color);
-  const SkColor disabled_color = SkColorSetA(icon_color, 0xff / 2);
+  const SkColor disabled_color =
+      SkColorSetA(icon_color, gfx::kDisabledControlAlpha);
   button->SetImage(Button::STATE_NORMAL,
                    gfx::CreateVectorIcon(icon, icon_color));
   button->SetImage(Button::STATE_DISABLED,

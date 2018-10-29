@@ -20,6 +20,7 @@ enum PermissionName {
   CLIPBOARD_READ,
   CLIPBOARD_WRITE,
   PAYMENT_HANDLER,
+  BACKGROUND_FETCH,
 };
 
 struct MidiPermissionDescriptor {

@@ -9,7 +9,9 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
@@ -29,8 +31,8 @@ class PepperProxyLookupHelper::UIThreadHelper
       : binding_(this),
         look_up_complete_callback_(std::move(look_up_complete_callback)),
         callback_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&UIThreadHelper::StartLookup, base::Unretained(this),
                        url, std::move(look_up_proxy_for_url_callback)));
   }

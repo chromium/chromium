@@ -11,7 +11,7 @@
 description('Test that history.pushState can be called between scheduling and firing of a client redirect and still create just one new history entry. This was regressed in r149960');
 
 if (window.testRunner)
-    testRunner.dumpChildFramesAsText(true);
+    testRunner.dumpChildFrames(true);
 
 function run()
 {

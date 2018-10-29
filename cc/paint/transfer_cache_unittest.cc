@@ -177,12 +177,41 @@ TEST_F(TransferCacheTest, CountEviction) {
   EXPECT_EQ(service_cache->cache_size_for_testing(), 20u);
 }
 
-TEST_F(TransferCacheTest, RawMemoryTransfer) {
+// This tests a size that is small enough that the transfer buffer is used
+// inside of RasterImplementation::MapTransferCacheEntry.
+TEST_F(TransferCacheTest, RawMemoryTransferSmall) {
   auto* service_cache = ServiceTransferCache();
 
   // Create an entry with some initialized data.
   std::vector<uint8_t> data;
   data.resize(100);
+  for (size_t i = 0; i < data.size(); ++i) {
+    data[i] = i;
+  }
+
+  // Add the entry to the transfer cache
+  ClientRawMemoryTransferCacheEntry client_entry(data);
+  CreateEntry(client_entry);
+  ri()->Finish();
+
+  // Validate service-side data matches.
+  ServiceTransferCacheEntry* service_entry =
+      service_cache->GetEntry(gpu::ServiceTransferCache::EntryKey(
+          decoder_id(), client_entry.Type(), client_entry.Id()));
+  EXPECT_EQ(service_entry->Type(), client_entry.Type());
+  const std::vector<uint8_t> service_data =
+      static_cast<ServiceRawMemoryTransferCacheEntry*>(service_entry)->data();
+  EXPECT_EQ(data, service_data);
+}
+
+// This tests a size that is large enough that mapped memory is used inside
+// of RasterImplementation::MapTransferCacheEntry.
+TEST_F(TransferCacheTest, RawMemoryTransferLarge) {
+  auto* service_cache = ServiceTransferCache();
+
+  // Create an entry with some initialized data.
+  std::vector<uint8_t> data;
+  data.resize(1500);
   for (size_t i = 0; i < data.size(); ++i) {
     data[i] = i;
   }

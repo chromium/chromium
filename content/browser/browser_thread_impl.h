@@ -39,6 +39,10 @@ class CONTENT_EXPORT BrowserThreadImpl : public BrowserThread {
   // |identifier|.
   static void ResetGlobalsForTesting(BrowserThread::ID identifier);
 
+  // Exposed for BrowserTaskExecutor. Other code should use
+  // base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI/IO}).
+  using BrowserThread::GetTaskRunnerForThread;
+
  private:
   // Restrict instantiation to BrowserProcessSubThread as it performs important
   // initialization that shouldn't be bypassed (except by BrowserMainLoop for

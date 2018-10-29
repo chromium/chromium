@@ -81,7 +81,7 @@ class ConsentBumpActivator : public BrowserListObserver,
           UnifiedConsentServiceFactory::GetForProfile(profile_);
       if (consent_service->ShouldShowConsentBump()) {
         consent_service->RecordConsentBumpSuppressReason(
-            unified_consent::ConsentBumpSuppressReason::kSyncPaused);
+            unified_consent::metrics::ConsentBumpSuppressReason::kSyncPaused);
       }
       return;
     }

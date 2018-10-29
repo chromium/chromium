@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
@@ -571,7 +572,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   TestingProfile profile;
   MockEventRouter* mock_event_router = static_cast<MockEventRouter*>(
       EventRouterFactory::GetInstance()->SetTestingFactoryAndUse(
-          &profile, &MockEventRouterFactoryFunction));
+          &profile, base::BindRepeating(&MockEventRouterFactoryFunction)));
 
   content::ContextMenuParams params;
   params.media_type = blink::WebContextMenuData::kMediaTypeImage;

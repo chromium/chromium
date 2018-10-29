@@ -11,6 +11,7 @@ options:
 -I<dir>        Add include path.
 -D<sym>        Define a macro for the preprocessor.
 /fo<out>       Set path of output .res file.
+/nologo        Ignored (rc.py doesn't print a logo by default).
 /showIncludes  Print referenced header and resource files."""
 
 from __future__ import print_function
@@ -51,6 +52,8 @@ def ParseFlags():
               file=sys.stderr)
         sys.exit(1)
       output = flag[3:]
+    elif flag == '/nologo':
+      pass
     elif flag == '/showIncludes':
       show_includes = True
     elif (flag.startswith('-') or

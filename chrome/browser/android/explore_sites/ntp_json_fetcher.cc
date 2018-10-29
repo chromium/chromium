@@ -12,7 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/values.h"
 #include "chrome/browser/android/chrome_feature_list.h"
-#include "chrome/browser/android/explore_sites/url_util.h"
+#include "chrome/browser/android/explore_sites/url_util_experimental.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/service_manager_connection.h"
@@ -66,7 +66,7 @@ void NTPJsonFetcher::Start(Callback callback) {
               "This feature is only enabled explicitly by flag."
           })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GetNtpURL();
+  resource_request->url = GetNtpPrototypeURL();
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);
   network::mojom::URLLoaderFactory* loader_factory =
@@ -119,7 +119,7 @@ void NTPJsonFetcher::OnJsonParseSuccess(
 }
 
 void NTPJsonFetcher::OnJsonParseError(const std::string& error) {
-  DVLOG(1) << "Unable to parse NTP JSON from " << GetNtpURL()
+  DVLOG(1) << "Unable to parse NTP JSON from " << GetNtpPrototypeURL()
            << " error: " << error;
   std::move(callback_).Run(nullptr);
 }

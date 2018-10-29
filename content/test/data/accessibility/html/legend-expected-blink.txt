@@ -7,7 +7,9 @@ rootWebArea
 ++++++staticText name='Browser: '
 ++++++++inlineTextBox name='Browser: '
 ++++++textField
+++++++++genericContainer
 ++++++staticText name=' Rendering Engine: '
 ++++++++inlineTextBox name=' '
 ++++++++inlineTextBox name='Rendering Engine: '
 ++++++textField
+++++++++genericContainer

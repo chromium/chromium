@@ -128,6 +128,7 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   // Platform Fullscreen ///////////////////////////////////////////////////////
 
   // Overrde from ExclusiveAccessControllerBase.
+  void OnTabDeactivated(content::WebContents* web_contents) override;
   void OnTabDetachedFromView(content::WebContents* web_contents) override;
   void OnTabClosing(content::WebContents* web_contents) override;
   bool HandleUserPressedEscape() override;
@@ -203,6 +204,10 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // True if this controller has toggled into tab OR browser fullscreen.
   bool toggled_into_fullscreen_;
+
+  // Set in OnTabDeactivated(). Used to see if we're in the middle of
+  // deactivation of a tab.
+  content::WebContents* deactivated_contents_;
 
   // Used in testing to confirm proper behavior for specific, privileged
   // fullscreen cases.

@@ -613,8 +613,8 @@ TEST(FlatTree, Iterators) {
   EXPECT_EQ(size, std::distance(cont.crbegin(), cont.crend()));
 
   {
-    IntTree::iterator it = cont.begin();
-    IntTree::const_iterator c_it = cont.cbegin();
+    auto it = cont.begin();
+    auto c_it = cont.cbegin();
     EXPECT_EQ(it, c_it);
     for (int j = 1; it != cont.end(); ++it, ++c_it, ++j) {
       EXPECT_EQ(j, *it);
@@ -622,8 +622,8 @@ TEST(FlatTree, Iterators) {
     }
   }
   {
-    IntTree::reverse_iterator rit = cont.rbegin();
-    IntTree::const_reverse_iterator c_rit = cont.crbegin();
+    auto rit = cont.rbegin();
+    auto c_rit = cont.crbegin();
     EXPECT_EQ(rit, c_rit);
     for (int j = static_cast<int>(size); rit != cont.rend();
          ++rit, ++c_rit, --j) {
@@ -705,7 +705,7 @@ TEST(FlatTree, InsertRValue) {
 TEST(FlatTree, InsertPositionLValue) {
   IntTree cont;
 
-  IntTree::iterator result = cont.insert(cont.cend(), 2);
+  auto result = cont.insert(cont.cend(), 2);
   EXPECT_EQ(cont.begin(), result);
   EXPECT_EQ(1U, cont.size());
   EXPECT_EQ(2, *result);
@@ -731,7 +731,7 @@ TEST(FlatTree, InsertPositionLValue) {
 TEST(FlatTree, InsertPositionRValue) {
   MoveOnlyTree cont;
 
-  MoveOnlyTree::iterator result = cont.insert(cont.cend(), MoveOnlyInt(2));
+  auto result = cont.insert(cont.cend(), MoveOnlyInt(2));
   EXPECT_EQ(cont.begin(), result);
   EXPECT_EQ(1U, cont.size());
   EXPECT_EQ(2, result->data());
@@ -893,7 +893,7 @@ TEST(FlatTree, EmplacePosition) {
   {
     EmplaceableTree cont;
 
-    EmplaceableTree::iterator result = cont.emplace_hint(cont.cend());
+    auto result = cont.emplace_hint(cont.cend());
     EXPECT_EQ(cont.begin(), result);
     EXPECT_EQ(1U, cont.size());
     EXPECT_EQ(Emplaceable(), *cont.begin());
@@ -911,7 +911,7 @@ TEST(FlatTree, EmplacePosition) {
   {
     IntTree cont;
 
-    IntTree::iterator result = cont.emplace_hint(cont.cend(), 2);
+    auto result = cont.emplace_hint(cont.cend(), 2);
     EXPECT_EQ(cont.begin(), result);
     EXPECT_EQ(1U, cont.size());
     EXPECT_EQ(2, *result);
@@ -927,7 +927,7 @@ TEST(FlatTree, ErasePosition) {
   {
     IntTree cont({1, 2, 3, 4, 5, 6, 7, 8});
 
-    IntTree::iterator it = cont.erase(std::next(cont.cbegin(), 3));
+    auto it = cont.erase(std::next(cont.cbegin(), 3));
     EXPECT_EQ(std::next(cont.begin(), 3), it);
     EXPECT_THAT(cont, ElementsAre(1, 2, 3, 5, 6, 7, 8));
 
@@ -979,7 +979,7 @@ TEST(FlatTree, ErasePosition) {
 TEST(FlatTree, EraseRange) {
   IntTree cont({1, 2, 3, 4, 5, 6, 7, 8});
 
-  IntTree::iterator it =
+  auto it =
       cont.erase(std::next(cont.cbegin(), 5), std::next(cont.cbegin(), 5));
   EXPECT_EQ(std::next(cont.begin(), 5), it);
   EXPECT_THAT(cont, ElementsAre(1, 2, 3, 4, 5, 6, 7, 8));
@@ -1110,6 +1110,22 @@ TEST(FlatTree, Find) {
     EXPECT_EQ(std::next(cont.begin(), 7), cont.find(12));
     EXPECT_EQ(std::next(cont.begin(), 8), cont.find(4));
   }
+}
+
+// bool contains(const key_type& key) const
+
+TEST(FlatTree, Contains) {
+  const IntTree cont({5, 6, 7, 8, 9, 10, 11, 12});
+
+  EXPECT_TRUE(cont.contains(5));
+  EXPECT_TRUE(cont.contains(6));
+  EXPECT_TRUE(cont.contains(7));
+  EXPECT_TRUE(cont.contains(8));
+  EXPECT_TRUE(cont.contains(9));
+  EXPECT_TRUE(cont.contains(10));
+  EXPECT_TRUE(cont.contains(11));
+  EXPECT_TRUE(cont.contains(12));
+  EXPECT_FALSE(cont.contains(4));
 }
 
 // pair<iterator, iterator> equal_range(const key_type& key)

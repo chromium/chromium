@@ -116,13 +116,14 @@ USBDevice::USBDevice(UsbDeviceInfoPtr device_info,
       device_(std::move(device)),
       opened_(false),
       device_state_change_in_progress_(false),
-      configuration_index_(-1) {
+      configuration_index_(kNotFound) {
   if (device_) {
     device_.set_connection_error_handler(
         WTF::Bind(&USBDevice::OnConnectionError, WrapWeakPersistent(this)));
   }
-  int configuration_index = FindConfigurationIndex(Info().active_configuration);
-  if (configuration_index != -1)
+  wtf_size_t configuration_index =
+      FindConfigurationIndex(Info().active_configuration);
+  if (configuration_index != kNotFound)
     OnConfigurationSelected(true /* success */, configuration_index);
 }
 
@@ -132,27 +133,28 @@ USBDevice::~USBDevice() {
   DCHECK(device_requests_.IsEmpty());
 }
 
-bool USBDevice::IsInterfaceClaimed(size_t configuration_index,
-                                   size_t interface_index) const {
-  return configuration_index_ != -1 &&
-         static_cast<size_t>(configuration_index_) == configuration_index &&
+bool USBDevice::IsInterfaceClaimed(wtf_size_t configuration_index,
+                                   wtf_size_t interface_index) const {
+  return configuration_index_ != kNotFound &&
+         configuration_index_ == configuration_index &&
          claimed_interfaces_.Get(interface_index);
 }
 
-size_t USBDevice::SelectedAlternateInterface(size_t interface_index) const {
+wtf_size_t USBDevice::SelectedAlternateInterface(
+    wtf_size_t interface_index) const {
   return selected_alternates_[interface_index];
 }
 
 USBConfiguration* USBDevice::configuration() const {
-  if (configuration_index_ != -1)
+  if (configuration_index_ != kNotFound)
     return USBConfiguration::Create(this, configuration_index_);
   return nullptr;
 }
 
 HeapVector<Member<USBConfiguration>> USBDevice::configurations() const {
-  size_t num_configurations = Info().configurations.size();
+  wtf_size_t num_configurations = Info().configurations.size();
   HeapVector<Member<USBConfiguration>> configurations(num_configurations);
-  for (size_t i = 0; i < num_configurations; ++i)
+  for (wtf_size_t i = 0; i < num_configurations; ++i)
     configurations[i] = USBConfiguration::Create(this, i);
   return configurations;
 }
@@ -198,8 +200,9 @@ ScriptPromise USBDevice::selectConfiguration(ScriptState* script_state,
       resolver->Reject(DOMException::Create(
           DOMExceptionCode::kInvalidStateError, kOpenRequired));
     } else {
-      int configuration_index = FindConfigurationIndex(configuration_value);
-      if (configuration_index == -1) {
+      wtf_size_t configuration_index =
+          FindConfigurationIndex(configuration_value);
+      if (configuration_index == kNotFound) {
         resolver->Reject(DOMException::Create(DOMExceptionCode::kNotFoundError,
                                               "The configuration value "
                                               "provided is not supported by "
@@ -225,8 +228,8 @@ ScriptPromise USBDevice::claimInterface(ScriptState* script_state,
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
   if (EnsureDeviceConfigured(resolver)) {
-    int interface_index = FindInterfaceIndex(interface_number);
-    if (interface_index == -1) {
+    wtf_size_t interface_index = FindInterfaceIndex(interface_number);
+    if (interface_index == kNotFound) {
       resolver->Reject(DOMException::Create(DOMExceptionCode::kNotFoundError,
                                             kInterfaceNotFound));
     } else if (interface_state_change_in_progress_.Get(interface_index)) {
@@ -261,8 +264,8 @@ ScriptPromise USBDevice::releaseInterface(ScriptState* script_state,
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
   if (EnsureDeviceConfigured(resolver)) {
-    int interface_index = FindInterfaceIndex(interface_number);
-    if (interface_index == -1) {
+    wtf_size_t interface_index = FindInterfaceIndex(interface_number);
+    if (interface_index == kNotFound) {
       resolver->Reject(DOMException::Create(DOMExceptionCode::kNotFoundError,
                                             "The interface number provided is "
                                             "not supported by the device in "
@@ -295,11 +298,11 @@ ScriptPromise USBDevice::selectAlternateInterface(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
   if (EnsureInterfaceClaimed(interface_number, resolver)) {
     // TODO(reillyg): This is duplicated work.
-    int interface_index = FindInterfaceIndex(interface_number);
-    DCHECK_NE(interface_index, -1);
-    int alternate_index =
+    wtf_size_t interface_index = FindInterfaceIndex(interface_number);
+    DCHECK_NE(interface_index, kNotFound);
+    wtf_size_t alternate_index =
         FindAlternateIndex(interface_index, alternate_setting);
-    if (alternate_index == -1) {
+    if (alternate_index == kNotFound) {
       resolver->Reject(DOMException::Create(DOMExceptionCode::kNotFoundError,
                                             "The alternate setting provided is "
                                             "not supported by the device in "
@@ -484,43 +487,44 @@ void USBDevice::Trace(blink::Visitor* visitor) {
   ContextLifecycleObserver::Trace(visitor);
 }
 
-int USBDevice::FindConfigurationIndex(uint8_t configuration_value) const {
+wtf_size_t USBDevice::FindConfigurationIndex(
+    uint8_t configuration_value) const {
   const auto& configurations = Info().configurations;
-  for (size_t i = 0; i < configurations.size(); ++i) {
+  for (wtf_size_t i = 0; i < configurations.size(); ++i) {
     if (configurations[i]->configuration_value == configuration_value)
       return i;
   }
-  return -1;
+  return kNotFound;
 }
 
-int USBDevice::FindInterfaceIndex(uint8_t interface_number) const {
-  DCHECK_NE(configuration_index_, -1);
+wtf_size_t USBDevice::FindInterfaceIndex(uint8_t interface_number) const {
+  DCHECK_NE(configuration_index_, kNotFound);
   const auto& interfaces =
       Info().configurations[configuration_index_]->interfaces;
-  for (size_t i = 0; i < interfaces.size(); ++i) {
+  for (wtf_size_t i = 0; i < interfaces.size(); ++i) {
     if (interfaces[i]->interface_number == interface_number)
       return i;
   }
-  return -1;
+  return kNotFound;
 }
 
-int USBDevice::FindAlternateIndex(size_t interface_index,
-                                  uint8_t alternate_setting) const {
-  DCHECK_NE(configuration_index_, -1);
+wtf_size_t USBDevice::FindAlternateIndex(uint32_t interface_index,
+                                         uint8_t alternate_setting) const {
+  DCHECK_NE(configuration_index_, kNotFound);
   const auto& alternates = Info()
                                .configurations[configuration_index_]
                                ->interfaces[interface_index]
                                ->alternates;
-  for (size_t i = 0; i < alternates.size(); ++i) {
+  for (wtf_size_t i = 0; i < alternates.size(); ++i) {
     if (alternates[i]->alternate_setting == alternate_setting)
       return i;
   }
-  return -1;
+  return kNotFound;
 }
 
-bool USBDevice::IsProtectedInterfaceClass(int interface_index) const {
-  DCHECK_NE(configuration_index_, -1);
-  DCHECK_NE(interface_index, -1);
+bool USBDevice::IsProtectedInterfaceClass(wtf_size_t interface_index) const {
+  DCHECK_NE(configuration_index_, kNotFound);
+  DCHECK_NE(interface_index, kNotFound);
 
   // USB Class Codes are defined by the USB-IF:
   // http://www.usb.org/developers/defined_class
@@ -578,7 +582,7 @@ bool USBDevice::EnsureDeviceConfigured(ScriptPromiseResolver* resolver) const {
   } else if (!opened_) {
     resolver->Reject(DOMException::Create(DOMExceptionCode::kInvalidStateError,
                                           kOpenRequired));
-  } else if (configuration_index_ == -1) {
+  } else if (configuration_index_ == kNotFound) {
     resolver->Reject(
         DOMException::Create(DOMExceptionCode::kInvalidStateError,
                              "The device must have a configuration selected."));
@@ -592,8 +596,8 @@ bool USBDevice::EnsureInterfaceClaimed(uint8_t interface_number,
                                        ScriptPromiseResolver* resolver) const {
   if (!EnsureDeviceConfigured(resolver))
     return false;
-  int interface_index = FindInterfaceIndex(interface_number);
-  if (interface_index == -1) {
+  wtf_size_t interface_index = FindInterfaceIndex(interface_number);
+  if (interface_index == kNotFound) {
     resolver->Reject(DOMException::Create(DOMExceptionCode::kNotFoundError,
                                           kInterfaceNotFound));
   } else if (interface_state_change_in_progress_.Get(interface_index)) {
@@ -632,7 +636,7 @@ bool USBDevice::EnsureEndpointAvailable(bool in_transfer,
 }
 
 bool USBDevice::AnyInterfaceChangeInProgress() const {
-  for (size_t i = 0; i < interface_state_change_in_progress_.size(); ++i) {
+  for (wtf_size_t i = 0; i < interface_state_change_in_progress_.size(); ++i) {
     if (interface_state_change_in_progress_.QuickGet(i))
       return true;
   }
@@ -660,13 +664,13 @@ UsbControlTransferParamsPtr USBDevice::ConvertControlTransferParameters(
   if (parameters.recipient() == "device") {
     mojo_parameters->recipient = UsbControlTransferRecipient::DEVICE;
   } else if (parameters.recipient() == "interface") {
-    size_t interface_number = parameters.index() & 0xff;
+    uint8_t interface_number = parameters.index() & 0xff;
     if (!EnsureInterfaceClaimed(interface_number, resolver))
       return nullptr;
     mojo_parameters->recipient = UsbControlTransferRecipient::INTERFACE;
   } else if (parameters.recipient() == "endpoint") {
     bool in_transfer = parameters.index() & 0x80;
-    size_t endpoint_number = parameters.index() & 0x0f;
+    uint8_t endpoint_number = parameters.index() & 0x0f;
     if (!EnsureEndpointAvailable(in_transfer, endpoint_number, resolver))
       return nullptr;
     mojo_parameters->recipient = UsbControlTransferRecipient::ENDPOINT;
@@ -685,7 +689,7 @@ UsbControlTransferParamsPtr USBDevice::ConvertControlTransferParameters(
   return mojo_parameters;
 }
 
-void USBDevice::SetEndpointsForInterface(size_t interface_index, bool set) {
+void USBDevice::SetEndpointsForInterface(wtf_size_t interface_index, bool set) {
   const auto& configuration = *Info().configurations[configuration_index_];
   const auto& interface = *configuration.interfaces[interface_index];
   const auto& alternate =
@@ -744,7 +748,7 @@ void USBDevice::OnDeviceOpenedOrClosed(bool opened) {
   device_state_change_in_progress_ = false;
 }
 
-void USBDevice::AsyncSelectConfiguration(size_t configuration_index,
+void USBDevice::AsyncSelectConfiguration(wtf_size_t configuration_index,
                                          ScriptPromiseResolver* resolver,
                                          bool success) {
   if (!MarkRequestComplete(resolver))
@@ -761,10 +765,10 @@ void USBDevice::AsyncSelectConfiguration(size_t configuration_index,
 }
 
 void USBDevice::OnConfigurationSelected(bool success,
-                                        size_t configuration_index) {
+                                        wtf_size_t configuration_index) {
   if (success) {
     configuration_index_ = configuration_index;
-    size_t num_interfaces =
+    wtf_size_t num_interfaces =
         Info().configurations[configuration_index_]->interfaces.size();
     claimed_interfaces_.ClearAll();
     claimed_interfaces_.Resize(num_interfaces);
@@ -778,7 +782,7 @@ void USBDevice::OnConfigurationSelected(bool success,
   device_state_change_in_progress_ = false;
 }
 
-void USBDevice::AsyncClaimInterface(size_t interface_index,
+void USBDevice::AsyncClaimInterface(wtf_size_t interface_index,
                                     ScriptPromiseResolver* resolver,
                                     bool success) {
   if (!MarkRequestComplete(resolver))
@@ -793,7 +797,7 @@ void USBDevice::AsyncClaimInterface(size_t interface_index,
   }
 }
 
-void USBDevice::AsyncReleaseInterface(size_t interface_index,
+void USBDevice::AsyncReleaseInterface(wtf_size_t interface_index,
                                       ScriptPromiseResolver* resolver,
                                       bool success) {
   if (!MarkRequestComplete(resolver))
@@ -809,7 +813,7 @@ void USBDevice::AsyncReleaseInterface(size_t interface_index,
 }
 
 void USBDevice::OnInterfaceClaimedOrUnclaimed(bool claimed,
-                                              size_t interface_index) {
+                                              wtf_size_t interface_index) {
   if (claimed) {
     claimed_interfaces_.Set(interface_index);
   } else {
@@ -820,8 +824,8 @@ void USBDevice::OnInterfaceClaimedOrUnclaimed(bool claimed,
   interface_state_change_in_progress_.Clear(interface_index);
 }
 
-void USBDevice::AsyncSelectAlternateInterface(size_t interface_index,
-                                              size_t alternate_index,
+void USBDevice::AsyncSelectAlternateInterface(wtf_size_t interface_index,
+                                              wtf_size_t alternate_index,
                                               ScriptPromiseResolver* resolver,
                                               bool success) {
   if (!MarkRequestComplete(resolver))

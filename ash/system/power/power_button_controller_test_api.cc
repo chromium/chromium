@@ -103,4 +103,8 @@ void PowerButtonControllerTestApi::SetShowMenuAnimationDone(
   controller_->show_menu_animation_done_ = show_menu_animation_done;
 }
 
+bool PowerButtonControllerTestApi::ShowMenuAnimationDone() const {
+  return controller_->show_menu_animation_done_;
+}
+
 }  // namespace ash

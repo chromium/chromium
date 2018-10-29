@@ -20,7 +20,7 @@
 namespace cc {
 class Layer;
 class SolidColorLayer;
-}
+}  // namespace cc
 
 namespace content {
 class Compositor;
@@ -30,7 +30,7 @@ namespace ui {
 class WindowAndroid;
 class ResourceManager;
 class UIResourceProvider;
-}
+}  // namespace ui
 
 namespace android {
 
@@ -87,6 +87,7 @@ class CompositorView : public content::CompositorClient,
       const base::android::JavaParamRef<jobject>& window_android);
 
   // CompositorClient implementation:
+  void RecreateSurface() override;
   void UpdateLayerTreeHost() override;
   void DidSwapFrame(int pending_frames) override;
   void DidSwapBuffers(const gfx::Size& swap_size) override;

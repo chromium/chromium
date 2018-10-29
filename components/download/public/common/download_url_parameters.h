@@ -14,14 +14,12 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/download_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "url/gurl.h"
@@ -78,7 +76,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   // non-privileged frame.
   DownloadUrlParameters(
       const GURL& url,
-      net::URLRequestContextGetter* url_request_context_getter,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   // The RenderView routing ID must correspond to the RenderView of the
@@ -89,7 +86,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
       int render_process_host_id,
       int render_view_host_routing_id,
       int render_frame_host_routing_id,
-      net::URLRequestContextGetter* url_request_context_getter,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   ~DownloadUrlParameters();
@@ -102,11 +98,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   }
   void add_request_header(const std::string& name, const std::string& value) {
     request_headers_.push_back(make_pair(name, value));
-  }
-
-  void set_url_request_context_getter(
-      net::URLRequestContextGetter* url_request_context_getter) {
-    url_request_context_getter_ = url_request_context_getter;
   }
 
   // HTTP Referrer, referrer policy and encoding.
@@ -276,9 +267,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   }
 
   const RequestHeadersType& request_headers() const { return request_headers_; }
-  net::URLRequestContextGetter* url_request_context_getter() {
-    return url_request_context_getter_.get();
-  }
   const base::FilePath& file_path() const { return save_info_.file_path; }
   const base::string16& suggested_name() const {
     return save_info_.suggested_name;
@@ -327,7 +315,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   int render_process_host_id_;
   int render_view_host_routing_id_;
   int render_frame_host_routing_id_;
-  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter_;
   DownloadSaveInfo save_info_;
   GURL url_;
   bool do_not_prompt_for_login_;

@@ -98,17 +98,4 @@ TEST(WebCanonicalCookieTest, Properties) {
   }
 }
 
-TEST(WebCanonicalCookieTest, BuildLine) {
-  const WebURL url(KURL("http://example.com"));
-  Vector<WebCanonicalCookie> cookies;
-
-  cookies.push_back(
-      WebCanonicalCookie::Create(url, "a=1", base::Time::Now()).value());
-  EXPECT_EQ("a=1", WebCanonicalCookie::BuildCookieLine(cookies));
-
-  cookies.push_back(
-      WebCanonicalCookie::Create(url, "b=2", base::Time::Now()).value());
-  EXPECT_EQ("a=1; b=2", WebCanonicalCookie::BuildCookieLine(cookies));
-}
-
 }  // namespace blink

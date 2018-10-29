@@ -86,6 +86,12 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
       buildbucket['build'].get('bucket') == 'luci.chrome.ci'):
     is_luci = True
 
+  if 'build' in buildbucket:
+    args += [
+      '--project', buildbucket['build'].get('project'),
+      '--buildbucket', buildbucket['build'].get('bucket'),
+    ]
+
   if service_account_file and not is_luci:
     args += ['--service-account-file', service_account_file]
 
@@ -528,7 +534,7 @@ def main():
   """ See collect_task.collect_task for more on the merge script API. """
   parser = argparse.ArgumentParser()
   # configuration-name (previously perf-id) is the name of bot the tests run on
-  # For example, buildbot-test is the name of the obbs_fyi bot
+  # For example, buildbot-test is the name of the android-go-perf bot
   # configuration-name and results-url are set in the json file which is going
   # away tools/perf/core/chromium.perf.fyi.extras.json
   parser.add_argument('--configuration-name', help=argparse.SUPPRESS)

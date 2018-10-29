@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1018939186200882850">menüelem</translation>
-<translation id="1020833440720551630">hangsáv némítása</translation>
 <translation id="10623998915015855">átkapcsológomb</translation>
 <translation id="1088086359088493902">Másodperc</translation>
 <translation id="1171774979989969504">Kérjük, adjon meg egy e-mail címet.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">készítők</translation>
 <translation id="1342835525016946179">cikk</translation>
 <translation id="1359897965706325498">szalaghirdetés</translation>
-<translation id="1548116112524424341">videó lejátszása kép a képben módban</translation>
 <translation id="1589122976691792535">régió</translation>
 <translation id="1591562245178063882">Ebben a hónapban</translation>
 <translation id="1637811476055996098">Fájlok kiválasztása</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">farács</translation>
 <translation id="1822429046913737220">de./du.</translation>
 <translation id="1832974991323546415">lejátszás távoli eszközön</translation>
-<translation id="1838818994221231429">váltás teljes képernyőre a képernyőkivágás területén</translation>
 <translation id="190587075670221089">törlés</translation>
 <translation id="1907737156431278478">példa</translation>
 <translation id="1921819250265091946">nn</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">idő</translation>
 <translation id="5630795885300617244">A jobb/bal oldalon duplán koppintva ugorhat előre/vissza 10 másodpercet</translation>
 <translation id="5631759159893697722">absztrakt</translation>
-<translation id="5641012560118721995">lejátszás szüneteltetése</translation>
 <translation id="5643186887447432888">gomb</translation>
 <translation id="5677946354068040947">további beállítások</translation>
 <translation id="576709008726043716">bevezetés</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Visszaállítás</translation>
 <translation id="5966707198760109579">Hét</translation>
 <translation id="5987525920412732405">léptetőnyíl</translation>
+<translation id="6011459053400940133">hangerőcsúszka</translation>
 <translation id="6015796118275082299">Év</translation>
 <translation id="6023896073578205740">listamező</translation>
-<translation id="6101327004457443354">hangsáv némításának feloldása</translation>
 <translation id="6150588977291308318">bibliográfia</translation>
 <translation id="6164829606128959761">mérő</translation>
 <translation id="6166809985690652833">utószó</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Óra</translation>
 <translation id="7681220483256441252">tárgymutató</translation>
 <translation id="7720026100085573005">hátralévő idő</translation>
-<translation id="7740016676195725605">feliratok elrejtése</translation>
 <translation id="7740050170769002709">HTML-tartalom</translation>
 <translation id="7750228210027921155">Kép a képben</translation>
 <translation id="7789962463072032349">szüneteltetés</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">keresés a szövegmezőben</translation>
 <translation id="8057695513531652401">közlés</translation>
 <translation id="8105797009065549151">jegyzethivatkozás</translation>
-<translation id="8115662671911883373">feliratok megjelenítése</translation>
 <translation id="8117451130807776954">Ezen a héten</translation>
-<translation id="819205353528511139">film lejátszása teljes képernyős nézetben</translation>
 <translation id="8199524924445686405">éééé</translation>
 <translation id="8284326494547611709">Feliratok</translation>
 <translation id="835897206747267392">Érvénytelen érték.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">távoli lejátszás kezelése</translation>
 <translation id="862370744433916922">felirat</translation>
 <translation id="8750798805984357768">Kérjük, válassza ki az egyik opciót.</translation>
-<translation id="8785498733064193001">lejátszás indítása</translation>
 <translation id="8808573423886751634">fejezet</translation>
 <translation id="8845239796550121995">Átküldés a tévére folyamatban</translation>
 <translation id="8851136666856101339">fő</translation>

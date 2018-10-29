@@ -57,17 +57,20 @@ const int64_t CloudPolicyRefreshScheduler::kRefreshDelayMaxMs =
 CloudPolicyRefreshScheduler::CloudPolicyRefreshScheduler(
     CloudPolicyClient* client,
     CloudPolicyStore* store,
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner)
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
     : client_(client),
       store_(store),
       task_runner_(task_runner),
+      network_connection_tracker_(network_connection_tracker_getter.Run()),
       error_retry_delay_ms_(kInitialErrorRetryDelayMs),
       refresh_delay_ms_(kDefaultRefreshDelayMs),
       invalidations_available_(false),
-      creation_time_(base::Time::NowFromSystemTime()) {
+      creation_time_(base::Time::NowFromSystemTime()),
+      weak_factory_(this) {
   client_->AddObserver(this);
   store_->AddObserver(this);
-  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  network_connection_tracker_->AddNetworkConnectionObserver(this);
 
   UpdateLastRefreshFromPolicy();
   ScheduleRefresh();
@@ -76,7 +79,8 @@ CloudPolicyRefreshScheduler::CloudPolicyRefreshScheduler(
 CloudPolicyRefreshScheduler::~CloudPolicyRefreshScheduler() {
   store_->RemoveObserver(this);
   client_->RemoveObserver(this);
-  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  if (network_connection_tracker_)
+    network_connection_tracker_->RemoveNetworkConnectionObserver(this);
 }
 
 void CloudPolicyRefreshScheduler::SetDesiredRefreshDelay(
@@ -177,9 +181,9 @@ void CloudPolicyRefreshScheduler::OnStoreError(CloudPolicyStore* store) {
   // error is required. NB: Changes to is_managed fire OnStoreLoaded().
 }
 
-void CloudPolicyRefreshScheduler::OnNetworkChanged(
-    net::NetworkChangeNotifier::ConnectionType type) {
-  if (type == net::NetworkChangeNotifier::CONNECTION_NONE)
+void CloudPolicyRefreshScheduler::OnConnectionChanged(
+    network::mojom::ConnectionType type) {
+  if (type == network::mojom::ConnectionType::CONNECTION_NONE)
     return;
 
   if (client_->status() == DM_STATUS_REQUEST_FAILED) {

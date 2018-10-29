@@ -9,24 +9,26 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/sync_change_processor.h"
+#include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/model/sync_merge_result.h"
 
 namespace syncer {
 
+class SyncChangeProcessor;
 class SyncErrorFactory;
 
 // TODO(zea): remove SupportsWeakPtr in favor of having all SyncableService
 // implementers provide a way of getting a weak pointer to themselves.
 // See crbug.com/100114.
-class SyncableService : public SyncChangeProcessor,
-                        public base::SupportsWeakPtr<SyncableService> {
+class SyncableService : public base::SupportsWeakPtr<SyncableService> {
  public:
+  SyncableService();
+  virtual ~SyncableService();
+
   // A StartSyncFlare is useful when your SyncableService has a need for sync
   // to start ASAP. This is typically for one of three reasons:
   // 1) Because a local change event has occurred but MergeDataAndStartSyncing
@@ -64,11 +66,15 @@ class SyncableService : public SyncChangeProcessor,
   // Returns: A default SyncError (IsSet() == false) if no errors were
   //          encountered, and a filled SyncError (IsSet() == true)
   //          otherwise.
-  SyncError ProcessSyncChanges(const base::Location& from_here,
-                               const SyncChangeList& change_list) override = 0;
+  virtual SyncError ProcessSyncChanges(const base::Location& from_here,
+                                       const SyncChangeList& change_list) = 0;
 
- protected:
-  ~SyncableService() override;
+  // TODO(crbug.com/870624): We don't seem to use this function anywhere, so
+  // we should simply remove it and simplify all implementations.
+  virtual SyncDataList GetAllSyncData(ModelType type) const = 0;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SyncableService);
 };
 
 }  // namespace syncer

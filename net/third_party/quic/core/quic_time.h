@@ -6,7 +6,9 @@
 // QuicTime is monotonically increasing, even across system clock adjustments.
 // The epoch (time 0) of QuicTime is unspecified.
 //
-// This implementation wraps the classes base::TimeTicks and base::TimeDelta.
+// This implementation wraps a int64_t of usec since the epoch.  While
+// the epoch is the Unix epoch, do not depend on this fact because other
+// implementations, like Chrome's, do NOT have the same epoch.
 
 #ifndef NET_THIRD_PARTY_QUIC_CORE_QUIC_TIME_H_
 #define NET_THIRD_PARTY_QUIC_CORE_QUIC_TIME_H_
@@ -16,12 +18,15 @@
 #include <limits>
 #include <ostream>
 
-#include "base/compiler_specific.h"
-#include "base/time/time.h"
 #include "net/third_party/quic/platform/api/quic_export.h"
 #include "net/third_party/quic/platform/api/quic_string.h"
 
-#define QUICTIME_CONSTEXPR inline
+// TODO(vasilvv): replace with with ABSL_MUST_USE_RESULT once we're using absl.
+#if defined(__clang__)
+#define QUIC_TIME_WARN_UNUSED_RESULT __attribute__((warn_unused_result))
+#else
+#define QUIC_TIME_WARN_UNUSED_RESULT
+#endif /* defined(__clang__) */
 
 namespace quic {
 
@@ -36,30 +41,24 @@ class QUIC_EXPORT_PRIVATE QuicTime {
   // time, stored in microsecond resolution.
   class QUIC_EXPORT_PRIVATE Delta {
    public:
-    explicit Delta(base::TimeDelta delta);
-
     // Create a object with an offset of 0.
-    static QUICTIME_CONSTEXPR Delta Zero() { return Delta(0); }
+    static constexpr Delta Zero() { return Delta(0); }
 
     // Create a object with infinite offset time.
-    static QUICTIME_CONSTEXPR Delta Infinite() {
-      return Delta(kQuicInfiniteTimeUs);
-    }
+    static constexpr Delta Infinite() { return Delta(kQuicInfiniteTimeUs); }
 
     // Converts a number of seconds to a time offset.
-    static QUICTIME_CONSTEXPR Delta FromSeconds(int64_t secs) {
+    static constexpr Delta FromSeconds(int64_t secs) {
       return Delta(secs * 1000 * 1000);
     }
 
     // Converts a number of milliseconds to a time offset.
-    static QUICTIME_CONSTEXPR Delta FromMilliseconds(int64_t ms) {
+    static constexpr Delta FromMilliseconds(int64_t ms) {
       return Delta(ms * 1000);
     }
 
     // Converts a number of microseconds to a time offset.
-    static QUICTIME_CONSTEXPR Delta FromMicroseconds(int64_t us) {
-      return Delta(us);
-    }
+    static constexpr Delta FromMicroseconds(int64_t us) { return Delta(us); }
 
     // Converts the time offset to a rounded number of seconds.
     inline int64_t ToSeconds() const { return time_offset_ / 1000 / 1000; }
@@ -79,7 +78,6 @@ class QUIC_EXPORT_PRIVATE QuicTime {
     QuicString ToDebugValue() const;
 
    private:
-    base::TimeDelta delta_;
     friend inline bool operator==(QuicTime::Delta lhs, QuicTime::Delta rhs);
     friend inline bool operator<(QuicTime::Delta lhs, QuicTime::Delta rhs);
     friend inline QuicTime::Delta operator<<(QuicTime::Delta lhs, size_t rhs);
@@ -99,20 +97,18 @@ class QUIC_EXPORT_PRIVATE QuicTime {
     static const int64_t kQuicInfiniteTimeUs =
         std::numeric_limits<int64_t>::max();
 
-    explicit QUICTIME_CONSTEXPR Delta(int64_t time_offset)
-        : time_offset_(time_offset) {}
+    explicit constexpr Delta(int64_t time_offset) : time_offset_(time_offset) {}
 
     int64_t time_offset_;
     friend class QuicTime;
-    friend class QuicClock;
   };
 
   // Creates a new QuicTime with an internal value of 0.  IsInitialized()
   // will return false for these times.
-  static QUICTIME_CONSTEXPR QuicTime Zero() { return QuicTime(0); }
+  static constexpr QuicTime Zero() { return QuicTime(0); }
 
   // Creates a new QuicTime with an infinite time.
-  static QUICTIME_CONSTEXPR QuicTime Infinite() {
+  static constexpr QuicTime Infinite() {
     return QuicTime(Delta::kQuicInfiniteTimeUs);
   }
 
@@ -133,7 +129,7 @@ class QUIC_EXPORT_PRIVATE QuicTime {
   friend inline QuicTime operator-(QuicTime lhs, QuicTime::Delta rhs);
   friend inline QuicTime::Delta operator-(QuicTime lhs, QuicTime rhs);
 
-  explicit QUICTIME_CONSTEXPR QuicTime(int64_t time) : time_(time) {}
+  explicit constexpr QuicTime(int64_t time) : time_(time) {}
 
   int64_t time_;
 };
@@ -145,18 +141,17 @@ class QUIC_EXPORT_PRIVATE QuicWallTime {
  public:
   // FromUNIXSeconds constructs a QuicWallTime from a count of the seconds
   // since the UNIX epoch.
-  static QUICTIME_CONSTEXPR QuicWallTime FromUNIXSeconds(uint64_t seconds) {
+  static constexpr QuicWallTime FromUNIXSeconds(uint64_t seconds) {
     return QuicWallTime(seconds * 1000000);
   }
 
-  static QUICTIME_CONSTEXPR QuicWallTime
-  FromUNIXMicroseconds(uint64_t microseconds) {
+  static constexpr QuicWallTime FromUNIXMicroseconds(uint64_t microseconds) {
     return QuicWallTime(microseconds);
   }
 
   // Zero returns a QuicWallTime set to zero. IsZero will return true for this
   // value.
-  static QUICTIME_CONSTEXPR QuicWallTime Zero() { return QuicWallTime(0); }
+  static constexpr QuicWallTime Zero() { return QuicWallTime(0); }
 
   // Returns the number of seconds since the UNIX epoch.
   uint64_t ToUNIXSeconds() const;
@@ -175,14 +170,15 @@ class QUIC_EXPORT_PRIVATE QuicWallTime {
 
   // Add returns a new QuicWallTime that represents the time of |this| plus
   // |delta|.
-  QuicWallTime Add(QuicTime::Delta delta) const WARN_UNUSED_RESULT;
+  QUIC_TIME_WARN_UNUSED_RESULT QuicWallTime Add(QuicTime::Delta delta) const;
 
   // Subtract returns a new QuicWallTime that represents the time of |this|
   // minus |delta|.
-  QuicWallTime Subtract(QuicTime::Delta delta) const WARN_UNUSED_RESULT;
+  QUIC_TIME_WARN_UNUSED_RESULT QuicWallTime
+  Subtract(QuicTime::Delta delta) const;
 
  private:
-  explicit QUICTIME_CONSTEXPR QuicWallTime(uint64_t microseconds)
+  explicit constexpr QuicWallTime(uint64_t microseconds)
       : microseconds_(microseconds) {}
 
   uint64_t microseconds_;

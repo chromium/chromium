@@ -17,6 +17,7 @@
 #include "components/ntp_tiles/custom_links_manager.h"
 #include "components/ntp_tiles/custom_links_store.h"
 #include "components/ntp_tiles/ntp_tile.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 
@@ -60,6 +61,11 @@ class CustomLinksManagerImpl : public CustomLinksManager,
 
  private:
   void ClearLinks();
+
+  // Stores the current list to the profile's preferences. Does not notify
+  // |OnPreferenceChanged|.
+  void StoreLinks();
+
   // Returns an iterator into |custom_links_|.
   std::vector<Link>::iterator FindLinkWithUrl(const GURL& url);
 
@@ -70,6 +76,11 @@ class CustomLinksManagerImpl : public CustomLinksManager,
                      const history::DeletionInfo& deletion_info) override;
   void HistoryServiceBeingDeleted(
       history::HistoryService* history_service) override;
+
+  // Called when the current list of links and/or initialization state in
+  // PrefService is modified. Saves the new set of links in |current_links_|
+  // and notifies |callback_list_|.
+  void OnPreferenceChanged();
 
   PrefService* const prefs_;
   CustomLinksStore store_;
@@ -85,6 +96,13 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   // Observer for the HistoryService.
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
       history_service_observer_;
+
+  // Observer for Chrome sync changes to |prefs::kCustomLinksList| and
+  // |prefs::kCustomLinksInitialized|.
+  PrefChangeRegistrar pref_change_registrar_;
+  // Used to ignore notifications from |pref_change_registrar_| that we trigger
+  // ourselves when updating the preferences.
+  bool updating_preferences_ = false;
 
   base::WeakPtrFactory<CustomLinksManagerImpl> weak_ptr_factory_;
 

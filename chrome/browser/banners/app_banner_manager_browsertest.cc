@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
@@ -16,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/banners/app_banner_manager.h"
+#include "chrome/browser/banners/app_banner_manager_browsertest_base.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
@@ -26,25 +26,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/test/browser_test_utils.h"
-#include "net/base/url_util.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-
-namespace {
-
-void ExecuteScript(Browser* browser, std::string script, bool with_gesture) {
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (with_gesture)
-    EXPECT_TRUE(content::ExecuteScript(web_contents, script));
-  else
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(web_contents, script));
-}
-
-}  // namespace
 
 namespace banners {
 
@@ -132,8 +114,8 @@ class AppBannerManagerTest : public AppBannerManager {
     AppBannerManager::OnBannerPromptReply(std::move(controller), reply,
                                           referrer);
     if (on_banner_prompt_reply_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    on_banner_prompt_reply_);
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, std::move(on_banner_prompt_reply_));
     }
   }
 
@@ -150,49 +132,24 @@ class AppBannerManagerTest : public AppBannerManager {
   DISALLOW_COPY_AND_ASSIGN(AppBannerManagerTest);
 };
 
-class AppBannerManagerBrowserTest : public InProcessBrowserTest {
+class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
  public:
+  AppBannerManagerBrowserTest() : AppBannerManagerBrowserTestBase() {}
+
   void SetUpOnMainThread() override {
-    feature_list_.InitWithFeatures({}, {features::kExperimentalAppBanners,
-                                        features::kDesktopPWAWindowing});
     AppBannerSettingsHelper::SetTotalEngagementToTrigger(10);
     SiteEngagementScore::SetParamValuesForTesting();
-    ASSERT_TRUE(embedded_test_server()->Start());
+
+    feature_list_.InitWithFeatures({}, {features::kExperimentalAppBanners,
+                                        features::kDesktopPWAWindowing});
 
     // Make sure app banners are disabled in the browser, otherwise they will
     // interfere with the test.
     AppBannerManagerDesktop::DisableTriggeringForTesting();
-    InProcessBrowserTest::SetUpOnMainThread();
+    AppBannerManagerBrowserTestBase::SetUpOnMainThread();
   }
 
  protected:
-  // Returns a test server URL to a page with generates a banner.
-  GURL GetBannerURL() {
-    return embedded_test_server()->GetURL("/banners/manifest_test_page.html");
-  }
-
-  // Returns a test server URL with "action" = |value| set in the query string.
-  GURL GetBannerURLWithAction(const std::string& action) {
-    GURL url = GetBannerURL();
-    return net::AppendQueryParameter(url, "action", action);
-  }
-
-  // Returns a test server URL with |manifest_url| injected as the manifest tag.
-  GURL GetBannerURLWithManifest(const std::string& manifest_url) {
-    GURL url = GetBannerURL();
-    return net::AppendQueryParameter(
-        url, "manifest", embedded_test_server()->GetURL(manifest_url).spec());
-  }
-
-  // Returns a test server URL with |manifest_url| injected as the manifest tag
-  // and |key| = |value| in the query string.
-  GURL GetBannerURLWithManifestAndQuery(const std::string& manifest_url,
-                                        const std::string& key,
-                                        const std::string& value) {
-    GURL url = GetBannerURLWithManifest(manifest_url);
-    return net::AppendQueryParameter(url, key, value);
-  }
-
   std::unique_ptr<AppBannerManagerTest> CreateAppBannerManager(
       Browser* browser) {
     content::WebContents* web_contents =
@@ -294,9 +251,10 @@ class AppBannerManagerBrowserTest : public InProcessBrowserTest {
     // with Bind.
     TriggerBannerFlow(
         browser, manager,
-        base::BindOnce(&ui_test_utils::NavigateToURLWithDisposition, browser,
-                       url, WindowOpenDisposition::CURRENT_TAB,
-                       ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION),
+        base::BindOnce(
+            base::IgnoreResult(&ui_test_utils::NavigateToURLWithDisposition),
+            browser, url, WindowOpenDisposition::CURRENT_TAB,
+            ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION),
         expected_will_show, expected_state);
   }
 
@@ -317,6 +275,8 @@ class AppBannerManagerBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(AppBannerManagerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerCreated) {
@@ -614,8 +574,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
   // Now let the page call prompt with a gesture. The banner should be shown.
   TriggerBannerFlow(
       browser(), manager.get(),
-      base::BindOnce(&ExecuteScript, browser(), "callStashedPrompt();",
-                     true /* with_gesture */),
+      base::BindOnce(&AppBannerManagerBrowserTest::ExecuteScript, browser(),
+                     "callStashedPrompt();", true /* with_gesture */),
       true /* expected_will_show */, State::COMPLETE);
 
   histograms.ExpectTotalCount(banners::kMinutesHistogram, 1);
@@ -656,8 +616,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
   // Trigger prompt() and expect the banner to be shown.
   TriggerBannerFlow(
       browser(), manager.get(),
-      base::BindOnce(&ExecuteScript, browser(), "callStashedPrompt();",
-                     true /* with_gesture */),
+      base::BindOnce(&AppBannerManagerBrowserTest::ExecuteScript, browser(),
+                     "callStashedPrompt();", true /* with_gesture */),
       true /* expected_will_show */, State::COMPLETE);
 
   histograms.ExpectTotalCount(banners::kMinutesHistogram, 1);
@@ -686,8 +646,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
   // Call prompt to show the banner.
   TriggerBannerFlow(
       browser(), manager.get(),
-      base::BindOnce(&ExecuteScript, browser(), "callStashedPrompt();",
-                     true /* with_gesture */),
+      base::BindOnce(&AppBannerManagerBrowserTest::ExecuteScript, browser(),
+                     "callStashedPrompt();", true /* with_gesture */),
       true /* expected_will_show */, State::COMPLETE);
 
   // Dismiss the banner.
@@ -700,8 +660,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
   // Call prompt again to show the banner again.
   TriggerBannerFlow(
       browser(), manager.get(),
-      base::BindOnce(&ExecuteScript, browser(), "callStashedPrompt();",
-                     true /* with_gesture */),
+      base::BindOnce(&AppBannerManagerBrowserTest::ExecuteScript, browser(),
+                     "callStashedPrompt();", true /* with_gesture */),
       true /* expected_will_show */, State::COMPLETE);
 
   histograms.ExpectTotalCount(banners::kMinutesHistogram, 1);

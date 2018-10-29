@@ -46,7 +46,6 @@ V0CustomElementDefinition* V0CustomElementRegistry::RegisterElement(
     Document* document,
     V0CustomElementConstructorBuilder* constructor_builder,
     const AtomicString& user_supplied_name,
-    V0CustomElement::NameSet valid_names,
     ExceptionState& exception_state) {
   AtomicString type = user_supplied_name.LowerASCII();
 
@@ -57,7 +56,7 @@ V0CustomElementDefinition* V0CustomElementRegistry::RegisterElement(
     return nullptr;
   }
 
-  if (!V0CustomElement::IsValidName(type, valid_names)) {
+  if (!V0CustomElement::IsValidName(type)) {
     V0CustomElementException::ThrowException(
         V0CustomElementException::kInvalidName, type, exception_state);
     return nullptr;
@@ -75,7 +74,7 @@ V0CustomElementDefinition* V0CustomElementRegistry::RegisterElement(
     return nullptr;
 
   DCHECK(tag_name.NamespaceURI() == HTMLNames::xhtmlNamespaceURI ||
-         tag_name.NamespaceURI() == SVGNames::svgNamespaceURI);
+         tag_name.NamespaceURI() == svg_names::kNamespaceURI);
 
   DCHECK(!document_was_detached_);
 
@@ -110,10 +109,7 @@ V0CustomElementDefinition* V0CustomElementRegistry::RegisterElement(
     return nullptr;
   }
 
-  if (valid_names & V0CustomElement::kEmbedderNames) {
-    UseCounter::Count(document,
-                      WebFeature::kV0CustomElementsRegisterEmbedderElement);
-  } else if (tag_name.NamespaceURI() == SVGNames::svgNamespaceURI) {
+  if (tag_name.NamespaceURI() == svg_names::kNamespaceURI) {
     UseCounter::Count(document,
                       WebFeature::kV0CustomElementsRegisterSVGElement);
   } else {

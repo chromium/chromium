@@ -24,8 +24,7 @@ const char kOsPasswordLastChanged[] =
 
 #if defined(OS_MACOSX)
 const char kKeychainMigrationStatus[] = "password_manager.keychain_migration";
-const char kSyncUsersPasswordRecovery[] =
-    "password_manager.sync_users_password_recovery";
+const char kPasswordRecovery[] = "password_manager.password_recovery";
 #endif
 
 const char kWasAutoSignInFirstRunExperienceShown[] =
@@ -44,6 +43,12 @@ const char kSyncPasswordLengthAndHashSalt[] =
 
 const char kDuplicatedBlacklistedCredentialsRemoved[] =
     "profile.duplicated_blacklisted_credentials_removed";
+
+const char kCredentialsWithWrongSignonRealmRemoved[] =
+    "profile.credentials_with_wrong_signon_realm_removed";
+
+const char kLastTimeObsoleteHttpCredentialsRemoved[] =
+    "profile.last_time_obsolete_http_credentials_removed";
 
 const char kPasswordHashDataList[] = "profile.password_hash_data_list";
 

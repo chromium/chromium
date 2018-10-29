@@ -27,35 +27,12 @@ class VideoDecodeStatsDBProvider;
 // VideoDecodeStatsDBProvider gives incognito profiles a hook to read the stats
 // of the of the originating profile. Guest profiles are conceptually a blank
 // slate and will not have a "seed" DB.
-class MEDIA_EXPORT InMemoryVideoDecodeStatsDBFactory
-    : public VideoDecodeStatsDBFactory {
+class MEDIA_EXPORT InMemoryVideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
  public:
   // |seed_db_provider| provides access to a seed (read-only) DB instance.
   // Callers must ensure the |seed_db_provider| outlives this factory and any
   // databases it creates via CreateDB(). |seed_db_provider| may be null when no
   // seed DB is available.
-  explicit InMemoryVideoDecodeStatsDBFactory(
-      VideoDecodeStatsDBProvider* seed_db_provider);
-  ~InMemoryVideoDecodeStatsDBFactory() override;
-
-  // DB is not thread-safe and is bound to the sequence used at construction.
-  std::unique_ptr<VideoDecodeStatsDB> CreateDB() override;
-
- private:
-  // Provided at construction. Callers must ensure that object outlives this
-  // class.
-  VideoDecodeStatsDBProvider* seed_db_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryVideoDecodeStatsDBFactory);
-};
-
-class MEDIA_EXPORT InMemoryVideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
- public:
-  // Constructs the database. NOTE: must call Initialize() before using.
-  // |db| injects the level_db database instance for storing capabilities info.
-  // |dir| specifies where to store LevelDB files to disk. LevelDB generates a
-  // handful of files, so its recommended to provide a dedicated directory to
-  // keep them isolated.
   explicit InMemoryVideoDecodeStatsDBImpl(
       VideoDecodeStatsDBProvider* seed_db_provider);
   ~InMemoryVideoDecodeStatsDBImpl() override;
@@ -67,7 +44,7 @@ class MEDIA_EXPORT InMemoryVideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
                          AppendDecodeStatsCB append_done_cb) override;
   void GetDecodeStats(const VideoDescKey& key,
                       GetDecodeStatsCB get_stats_cb) override;
-  void DestroyStats(base::OnceClosure destroy_done_cb) override;
+  void ClearStats(base::OnceClosure destroy_done_cb) override;
 
  private:
   // Called when the |seed_db_provider_| returns an initialized seed DB. Will

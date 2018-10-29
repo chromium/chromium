@@ -73,17 +73,12 @@ bool GetDeviceName(int fd, const base::FilePath& path, std::string* name) {
   return true;
 }
 
-bool GetDeviceIdentifiers(int fd,
-                          const base::FilePath& path,
-                          uint16_t* vendor,
-                          uint16_t* product) {
-  struct input_id evdev_id;
-  if (ioctl(fd, EVIOCGID, &evdev_id) < 0) {
+bool GetDeviceIdentifiers(int fd, const base::FilePath& path, input_id* id) {
+  *id = {};
+  if (ioctl(fd, EVIOCGID, id) < 0) {
     PLOG(INFO) << "Failed EVIOCGID (path=" << path.value() << ")";
     return false;
   }
-  *vendor = evdev_id.vendor;
-  *product = evdev_id.product;
   return true;
 }
 
@@ -190,12 +185,14 @@ bool EventDeviceInfo::Initialize(int fd, const base::FilePath& path) {
   if (!GetDeviceName(fd, path, &name_))
     return false;
 
-  if (!GetDeviceIdentifiers(fd, path, &vendor_id_, &product_id_))
+  if (!GetDeviceIdentifiers(fd, path, &input_id_))
     return false;
 
   GetDevicePhysInfo(fd, path, &phys_);
 
-  device_type_ = GetInputDeviceTypeFromPath(path);
+  device_type_ = GetInputDeviceTypeFromId(input_id_);
+  if (device_type_ == InputDeviceType::INPUT_DEVICE_UNKNOWN)
+    device_type_ = GetInputDeviceTypeFromPath(path);
 
   return true;
 }
@@ -262,9 +259,8 @@ void EventDeviceInfo::SetDeviceType(InputDeviceType type) {
   device_type_ = type;
 }
 
-void EventDeviceInfo::SetId(uint16_t vendor_id, uint16_t product_id) {
-  vendor_id_ = vendor_id;
-  product_id_ = product_id;
+void EventDeviceInfo::SetId(input_id id) {
+  input_id_ = id;
 }
 
 bool EventDeviceInfo::HasEventType(unsigned int type) const {
@@ -458,6 +454,27 @@ bool EventDeviceInfo::HasGamepad() const {
   }
 
   return support_gamepad_btn && !HasTablet() && !HasKeyboard();
+}
+
+// static
+ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
+  constexpr uint16_t kGoogleVendorId = 0x18d1;
+  constexpr uint16_t kHammerProductId = 0x5030;
+  if (id.bustype == BUS_USB && id.vendor == kGoogleVendorId &&
+      id.product == kHammerProductId)
+    return InputDeviceType::INPUT_DEVICE_INTERNAL;
+
+  switch (id.bustype) {
+    case BUS_I2C:
+    case BUS_I8042:
+      return ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
+    case BUS_USB:
+      return ui::InputDeviceType::INPUT_DEVICE_USB;
+    case BUS_BLUETOOTH:
+      return ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH;
+    default:
+      return ui::InputDeviceType::INPUT_DEVICE_UNKNOWN;
+  }
 }
 
 EventDeviceInfo::LegacyAbsoluteDeviceType

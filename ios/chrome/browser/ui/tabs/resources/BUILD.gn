@@ -45,38 +45,6 @@ imageset("tabstrip_incognito_foreground_tab") {
   ]
 }
 
-imageset("tabstrip_background_tab_legacy") {
-  sources = [
-    "tabstrip_background_tab_legacy.imageset/Contents.json",
-    "tabstrip_background_tab_legacy.imageset/tabstrip_background_tab_legacy@2x~ipad.png",
-    "tabstrip_background_tab_legacy.imageset/tabstrip_background_tab_legacy~ipad.png",
-  ]
-}
-
-imageset("tabstrip_foreground_tab_legacy") {
-  sources = [
-    "tabstrip_foreground_tab_legacy.imageset/Contents.json",
-    "tabstrip_foreground_tab_legacy.imageset/tabstrip_foreground_tab_legacy@2x~ipad.png",
-    "tabstrip_foreground_tab_legacy.imageset/tabstrip_foreground_tab_legacy~ipad.png",
-  ]
-}
-
-imageset("tabstrip_incognito_background_tab_legacy") {
-  sources = [
-    "tabstrip_incognito_background_tab_legacy.imageset/Contents.json",
-    "tabstrip_incognito_background_tab_legacy.imageset/tabstrip_incognito_background_tab_legacy@2x~ipad.png",
-    "tabstrip_incognito_background_tab_legacy.imageset/tabstrip_incognito_background_tab_legacy~ipad.png",
-  ]
-}
-
-imageset("tabstrip_incognito_foreground_tab_legacy") {
-  sources = [
-    "tabstrip_incognito_foreground_tab_legacy.imageset/Contents.json",
-    "tabstrip_incognito_foreground_tab_legacy.imageset/tabstrip_incognito_foreground_tab_legacy@2x~ipad.png",
-    "tabstrip_incognito_foreground_tab_legacy.imageset/tabstrip_incognito_foreground_tab_legacy~ipad.png",
-  ]
-}
-
 imageset("tabstrip_new_tab") {
   sources = [
     "tabstrip_new_tab.imageset/Contents.json",
@@ -109,67 +77,19 @@ imageset("tabstrip_new_tab_pressed") {
   ]
 }
 
-imageset("tabstrip_new_tab_legacy") {
+imageset("tabstrip_tab_switcher_count_button") {
   sources = [
-    "tabstrip_new_tab_legacy.imageset/Contents.json",
-    "tabstrip_new_tab_legacy.imageset/tabstrip_new_tab_legacy@2x~ipad.png",
-    "tabstrip_new_tab_legacy.imageset/tabstrip_new_tab_legacy~ipad.png",
+    "tabstrip_tab_switcher_count_button.imageset/Contents.json",
+    "tabstrip_tab_switcher_count_button.imageset/tabstrip_tab_switcher_count_button.png",
+    "tabstrip_tab_switcher_count_button.imageset/tabstrip_tab_switcher_count_button@2x.png",
   ]
 }
 
-imageset("tabstrip_new_tab_incognito_legacy") {
+imageset("tabstrip_tab_switcher_count_button_pressed") {
   sources = [
-    "tabstrip_new_tab_incognito_legacy.imageset/Contents.json",
-    "tabstrip_new_tab_incognito_legacy.imageset/tabstrip_new_tab_incognito_legacy@2x~ipad.png",
-    "tabstrip_new_tab_incognito_legacy.imageset/tabstrip_new_tab_incognito_legacy~ipad.png",
-  ]
-}
-
-imageset("tabstrip_new_tab_incognito_pressed_legacy") {
-  sources = [
-    "tabstrip_new_tab_incognito_pressed_legacy.imageset/Contents.json",
-    "tabstrip_new_tab_incognito_pressed_legacy.imageset/tabstrip_new_tab_incognito_pressed_legacy@2x~ipad.png",
-    "tabstrip_new_tab_incognito_pressed_legacy.imageset/tabstrip_new_tab_incognito_pressed_legacy~ipad.png",
-  ]
-}
-
-imageset("tabstrip_new_tab_pressed_legacy") {
-  sources = [
-    "tabstrip_new_tab_pressed_legacy.imageset/Contents.json",
-    "tabstrip_new_tab_pressed_legacy.imageset/tabstrip_new_tab_pressed_legacy@2x~ipad.png",
-    "tabstrip_new_tab_pressed_legacy.imageset/tabstrip_new_tab_pressed_legacy~ipad.png",
-  ]
-}
-
-imageset("tabstrip_tab_close_legacy") {
-  sources = [
-    "tabstrip_tab_close_legacy.imageset/Contents.json",
-    "tabstrip_tab_close_legacy.imageset/tabstrip_tab_close_legacy@2x~ipad.png",
-    "tabstrip_tab_close_legacy.imageset/tabstrip_tab_close_legacy~ipad.png",
-  ]
-}
-
-imageset("tabstrip_tab_close_incognito_legacy") {
-  sources = [
-    "tabstrip_tab_close_incognito_legacy.imageset/Contents.json",
-    "tabstrip_tab_close_incognito_legacy.imageset/tabstrip_tab_close_incognito_legacy@2x~ipad.png",
-    "tabstrip_tab_close_incognito_legacy.imageset/tabstrip_tab_close_incognito_legacy~ipad.png",
-  ]
-}
-
-imageset("tabstrip_tab_close_incognito_pressed_legacy") {
-  sources = [
-    "tabstrip_tab_close_incognito_pressed_legacy.imageset/Contents.json",
-    "tabstrip_tab_close_incognito_pressed_legacy.imageset/tabstrip_tab_close_incognito_pressed_legacy@2x~ipad.png",
-    "tabstrip_tab_close_incognito_pressed_legacy.imageset/tabstrip_tab_close_incognito_pressed_legacy~ipad.png",
-  ]
-}
-
-imageset("tabstrip_tab_close_pressed_legacy") {
-  sources = [
-    "tabstrip_tab_close_pressed_legacy.imageset/Contents.json",
-    "tabstrip_tab_close_pressed_legacy.imageset/tabstrip_tab_close_pressed_legacy@2x~ipad.png",
-    "tabstrip_tab_close_pressed_legacy.imageset/tabstrip_tab_close_pressed_legacy~ipad.png",
+    "tabstrip_tab_switcher_count_button_pressed.imageset/Contents.json",
+    "tabstrip_tab_switcher_count_button_pressed.imageset/tabstrip_tab_switcher_count_button_pressed.png",
+    "tabstrip_tab_switcher_count_button_pressed.imageset/tabstrip_tab_switcher_count_button_pressed@2x.png",
   ]
 }
 

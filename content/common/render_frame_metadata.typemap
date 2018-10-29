@@ -7,6 +7,7 @@ public_headers = [ "//cc/trees/render_frame_metadata.h" ]
 traits_headers = [ "//content/common/render_frame_metadata_struct_traits.h" ]
 deps = [
   "//cc",
+  "//ui/gfx/geometry/mojo:struct_traits",
 ]
 sources = [
   "//content/common/render_frame_metadata_struct_traits.cc",

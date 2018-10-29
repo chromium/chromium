@@ -192,7 +192,7 @@ static int CheckForValidDouble(const CharacterType* string,
                                const CharacterType* end,
                                const bool terminated_by_space,
                                const char terminator) {
-  int length = end - string;
+  int length = static_cast<int>(end - string);
   if (length < 1)
     return 0;
 
@@ -388,7 +388,7 @@ static inline bool ParseAlphaValue(const CharacterType*& string,
 
   value = 0;
 
-  int length = end - string;
+  size_t length = end - string;
   if (length < 2)
     return false;
 
@@ -1063,8 +1063,8 @@ static bool ParseTransformTranslateArguments(
     unsigned expected_count,
     CSSFunctionValue* transform_value) {
   while (expected_count) {
-    size_t delimiter =
-        WTF::Find(pos, end - pos, expected_count == 1 ? ')' : ',');
+    wtf_size_t delimiter = WTF::Find(pos, static_cast<wtf_size_t>(end - pos),
+                                     expected_count == 1 ? ')' : ',');
     if (delimiter == kNotFound)
       return false;
     unsigned argument_length = static_cast<unsigned>(delimiter);
@@ -1089,8 +1089,8 @@ static bool ParseTransformNumberArguments(CharType*& pos,
                                           unsigned expected_count,
                                           CSSFunctionValue* transform_value) {
   while (expected_count) {
-    size_t delimiter =
-        WTF::Find(pos, end - pos, expected_count == 1 ? ')' : ',');
+    wtf_size_t delimiter = WTF::Find(pos, static_cast<wtf_size_t>(end - pos),
+                                     expected_count == 1 ? ')' : ',');
     if (delimiter == kNotFound)
       return false;
     unsigned argument_length = static_cast<unsigned>(delimiter);
@@ -1223,7 +1223,7 @@ static bool TransformCanLikelyUseFastPath(const CharType* chars,
         // All other things, ex. rotate.
         return false;
     }
-    size_t arguments_end = WTF::Find(chars, length, ')', i);
+    wtf_size_t arguments_end = WTF::Find(chars, length, ')', i);
     if (arguments_end == kNotFound)
       return false;
     // Advance to the end of the arguments.

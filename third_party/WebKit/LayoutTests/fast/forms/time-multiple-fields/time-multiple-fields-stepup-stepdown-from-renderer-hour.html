@@ -67,8 +67,8 @@ function assert_input_value_after_down(initial, step, expected, expectedDisplayV
 
 // Hours, 1-12
 test(() => {
-  assert_exists(window, 'internals');
-  assert_exists(window, 'eventSender');
+  assert_own_property(window, 'internals');
+  assert_own_property(window, 'eventSender');
 
   assert_input_value_after_up('07:00', 1, '08:00');
   assert_input_value_after_down('07:00', 1, '06:00');
@@ -120,8 +120,8 @@ test(() => {
 
 // Hours, 0-11
 test(() => {
-  assert_exists(window, 'internals');
-  assert_exists(window, 'eventSender');
+  assert_own_property(window, 'internals');
+  assert_own_property(window, 'eventSender');
   setDateTimeFormat('KK:mm a');
 
   assert_input_value_after_up('11:00', 1, '00:00', '00:00 AM');
@@ -156,8 +156,8 @@ test(() => {
 
 // Hours, 0-23
 test(() => {
-  assert_exists(window, 'internals');
-  assert_exists(window, 'eventSender');
+  assert_own_property(window, 'internals');
+  assert_own_property(window, 'eventSender');
   setDateTimeFormat('HH:mm');
 
   assert_input_value_after_up('07:00', 1, '08:00');
@@ -208,8 +208,8 @@ test(() => {
 
 // Hours, 1-24
 test(() => {
-  assert_exists(window, 'internals');
-  assert_exists(window, 'eventSender');
+  assert_own_property(window, 'internals');
+  assert_own_property(window, 'eventSender');
   setDateTimeFormat('kk:mm');
 
   assert_input_value_after_up('11:00', 1, '12:00', '12:00');

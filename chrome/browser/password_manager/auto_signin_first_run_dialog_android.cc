@@ -10,8 +10,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/browser_sync/profile_sync_service.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -45,16 +45,9 @@ void AutoSigninFirstRunDialogAndroid::ShowDialog() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 
-  bool is_smartlock_branding_enabled =
-      password_bubble_experiment::IsSmartLockUser(
-          ProfileSyncServiceFactory::GetForProfile(profile));
-  base::string16 explanation;
-  gfx::Range explanation_link_range = gfx::Range();
-  GetBrandedTextAndLinkRange(
-      is_smartlock_branding_enabled,
-      IDS_AUTO_SIGNIN_FIRST_RUN_SMART_LOCK_TEXT,
-      IDS_AUTO_SIGNIN_FIRST_RUN_TEXT, &explanation,
-      &explanation_link_range);
+  base::string16 explanation = l10n_util::GetStringFUTF16(
+      IDS_AUTO_SIGNIN_FIRST_RUN_TEXT,
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TITLE_BRAND));
   gfx::NativeWindow native_window = web_contents_->GetTopLevelNativeWindow();
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_global;
   base::string16 message = l10n_util::GetStringUTF16(
@@ -69,8 +62,7 @@ void AutoSigninFirstRunDialogAndroid::ShowDialog() {
   dialog_jobject_.Reset(Java_AutoSigninFirstRunDialog_createAndShowDialog(
       env, native_window->GetJavaObject(), reinterpret_cast<intptr_t>(this),
       base::android::ConvertUTF16ToJavaString(env, message),
-      base::android::ConvertUTF16ToJavaString(env, explanation),
-      explanation_link_range.start(), explanation_link_range.end(),
+      base::android::ConvertUTF16ToJavaString(env, explanation), 0, 0,
       base::android::ConvertUTF16ToJavaString(env, ok_button_text),
       base::android::ConvertUTF16ToJavaString(env, turn_off_button_text)));
 }

@@ -46,20 +46,19 @@ void ProxyDataTypeController::LoadModels(
 }
 
 void ProxyDataTypeController::RegisterWithBackend(
-    base::Callback<void(bool)> set_downloaded,
+    base::OnceCallback<void(bool)> set_downloaded,
     ModelTypeConfigurer* configurer) {}
 
-void ProxyDataTypeController::StartAssociating(
-    const StartCallback& start_callback) {
+void ProxyDataTypeController::StartAssociating(StartCallback start_callback) {
   DCHECK(CalledOnValidThread());
   SyncMergeResult local_merge_result(type());
   SyncMergeResult syncer_merge_result(type());
   state_ = RUNNING;
-  start_callback.Run(DataTypeController::OK, local_merge_result,
-                     syncer_merge_result);
+  std::move(start_callback)
+      .Run(DataTypeController::OK, local_merge_result, syncer_merge_result);
 }
 
-void ProxyDataTypeController::Stop(SyncStopMetadataFate metadata_fate,
+void ProxyDataTypeController::Stop(ShutdownReason shutdown_reason,
                                    StopCallback callback) {
   state_ = NOT_RUNNING;
   std::move(callback).Run();
@@ -77,14 +76,14 @@ void ProxyDataTypeController::DeactivateDataType(
   configurer->UnregisterDirectoryDataType(type());
 }
 
-void ProxyDataTypeController::GetAllNodes(const AllNodesCallback& callback) {
-  callback.Run(type(), std::make_unique<base::ListValue>());
+void ProxyDataTypeController::GetAllNodes(AllNodesCallback callback) {
+  std::move(callback).Run(type(), std::make_unique<base::ListValue>());
 }
 
 void ProxyDataTypeController::GetStatusCounters(
-    const StatusCountersCallback& callback) {
+    StatusCountersCallback callback) {
   syncer::StatusCounters counters;
-  callback.Run(type(), counters);
+  std::move(callback).Run(type(), counters);
 }
 
 void ProxyDataTypeController::RecordMemoryUsageAndCountsHistograms() {}

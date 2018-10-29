@@ -132,6 +132,12 @@ class LanguageHelper {
   canDisableLanguage(languageCode) {}
 
   /**
+   * @param {!chrome.languageSettingsPrivate.Language} language
+   * @return {boolean} true if the given language can be enabled
+   */
+  canEnableLanguage(language) {}
+
+  /**
    * Moves the language in the list of enabled languages by the given offset.
    * @param {string} languageCode
    * @param {boolean} upDirection True if we need to move toward the front,

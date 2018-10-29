@@ -12,10 +12,12 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/offline_pages/content/renovations/render_frame_script_injector.h"
 #include "components/offline_pages/core/renovations/page_renovation_loader.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -191,11 +193,15 @@ void PageRenovatorBrowserTest::InitializeWithRealRenovations(
 void PageRenovatorBrowserTest::QuitRunLoop() {
   base::Closure quit_task =
       content::GetDeferredQuitTaskForRunLoop(run_loop_.get());
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   quit_task);
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI}, quit_task);
 }
 
-IN_PROC_BROWSER_TEST_F(PageRenovatorBrowserTest, CorrectRenovationsRun) {
+#if defined(OS_WIN)
+#define MAYBE_CorrectRenovationsRun DISABLED_CorrectRenovationsRun
+#else
+#define MAYBE_CorrectRenovationsRun CorrectRenovationsRun
+#endif
+IN_PROC_BROWSER_TEST_F(PageRenovatorBrowserTest, MAYBE_CorrectRenovationsRun) {
   Navigate(kTestPagePath);
   InitializeWithTestingRenovations(GURL("http://foo.bar/"));
   // This should run FooPageRenovation and AlwaysRenovation, but not
@@ -220,7 +226,13 @@ IN_PROC_BROWSER_TEST_F(PageRenovatorBrowserTest, CorrectRenovationsRun) {
   EXPECT_TRUE(alwaysResult->GetBool());
 }
 
-IN_PROC_BROWSER_TEST_F(PageRenovatorBrowserTest, WikipediaRenovationRuns) {
+#if defined(OS_WIN)
+#define MAYBE_WikipediaRenovationRuns DISABLED_WikipediaRenovationRuns
+#else
+#define MAYBE_WikipediaRenovationRuns WikipediaRenovationRuns
+#endif
+IN_PROC_BROWSER_TEST_F(PageRenovatorBrowserTest,
+                       MAYBE_WikipediaRenovationRuns) {
   Navigate(kWikipediaTestPagePath);
   InitializeWithRealRenovations(GURL("http://en.m.wikipedia.org/"));
   page_renovator_->RunRenovations(base::BindOnce(

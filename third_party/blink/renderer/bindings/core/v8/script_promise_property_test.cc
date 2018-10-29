@@ -130,7 +130,9 @@ class ScriptPromisePropertyTestBase {
   }
 
   void Gc() {
-    V8GCController::CollectAllGarbageForTesting(v8::Isolate::GetCurrent());
+    V8GCController::CollectAllGarbageForTesting(
+        v8::Isolate::GetCurrent(),
+        v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
   }
 
   v8::Local<v8::Function> NotReached(ScriptState* script_state) {
@@ -170,6 +172,7 @@ class ScriptPromisePropertyGarbageCollectedTest
   ScriptPromisePropertyGarbageCollectedTest()
       : holder_(new GarbageCollectedHolder(&GetDocument())) {}
 
+  void ClearHolder() { holder_.Clear(); }
   GarbageCollectedHolder* Holder() { return holder_; }
   Property* GetProperty() { return holder_->GetProperty(); }
   ScriptPromise Promise(DOMWrapperWorld& world) {
@@ -290,10 +293,9 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   EXPECT_FALSE(observation->wasCollected());
 
   holder_wrapper.Clear();
+  ClearHolder();
   Gc();
   EXPECT_TRUE(observation->wasCollected());
-
-  EXPECT_EQ(Property::kPending, GetProperty()->GetState());
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,

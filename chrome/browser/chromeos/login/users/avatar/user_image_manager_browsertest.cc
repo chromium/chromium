@@ -172,7 +172,7 @@ class UserImageManagerTest : public LoginManagerTest,
   }
 
  protected:
-  UserImageManagerTest() : LoginManagerTest(true) {}
+  UserImageManagerTest() : LoginManagerTest(true, true) {}
 
   // LoginManagerTest overrides:
   void SetUpInProcessBrowserTestFixture() override {
@@ -567,8 +567,9 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest,
 // images while the profile image download is still in progress. Verifies that
 // when the download completes, the profile image is ignored and does not
 // clobber the default image chosen in the meantime.
+// TODO(crbug.com/888784) disabled due to flaky timeouts.
 IN_PROC_BROWSER_TEST_F(UserImageManagerTest,
-                       ProfileImageDownloadDoesNotClobber) {
+                       DISABLED_ProfileImageDownloadDoesNotClobber) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(test_account_id1_);
   ASSERT_TRUE(user);

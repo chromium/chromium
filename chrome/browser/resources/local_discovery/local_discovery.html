@@ -65,28 +65,6 @@
           </div>
         </div>
 
-        <div id="register-device-page-adding1" class="register-page">
-          <h1>$i18n{addingDevice}</h1>
-          <div class="dialog-contents">
-            <div>$i18n{addingDeviceMessage1}</div>
-            <div class="button-list">
-              <button class="register-cancel">$i18n{cancel}</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="register-device-page-adding2" class="register-page">
-          <h1>$i18n{addingDevice}</h1>
-          <div class="dialog-contents">
-            <div>$i18n{addingDeviceConfirmCodeMessage}</div>
-            <h1 id="register-device-page-code"></h1>
-            <div class="button-list">
-              <button class="register-cancel">$i18n{cancel}</button>
-              <button class="confirm-code">$i18n{confirmCode}</button>
-            </div>
-          </div>
-        </div>
-
         <div id="register-page-error" class="register-page">
           <h1>$i18n{addingError}</h1>
           <div class="dialog-contents">
@@ -100,9 +78,6 @@
     </div>
 
     <header>
-      <a is="action-link" id="back-link" hidden>
-        <span>$i18n{backButton}</span>
-      </a>
       <h1>$i18n{devicesTitle}</h1>
     </header>
 
@@ -126,9 +101,9 @@
         <section id="cloud-print-connector-section">
           <h2>$i18n{titleConnector}</h2>
           <div>
-            <p id="cloudPrintConnectorLabel" class="settings-row"></p>
+            <p id="cloudPrintConnectorLabel"></p>
 
-          <div class="settings-row">
+          <div>
             <button id="cloudPrintConnectorSetupButton"></button>
           </div>
         </div>

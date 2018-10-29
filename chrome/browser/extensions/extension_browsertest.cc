@@ -58,7 +58,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/disable_reason.h"
-#include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
@@ -306,7 +305,8 @@ Browser* ExtensionBrowserTest::LaunchAppBrowser(const Extension* extension) {
 }
 
 base::FilePath ExtensionBrowserTest::PackExtension(
-    const base::FilePath& dir_path) {
+    const base::FilePath& dir_path,
+    int extra_run_flags) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath crx_path = temp_dir_.GetPath().AppendASCII("temp.crx");
   if (!base::DeleteFile(crx_path, false)) {
@@ -328,14 +328,16 @@ base::FilePath ExtensionBrowserTest::PackExtension(
     }
   }
 
-  return PackExtensionWithOptions(dir_path, crx_path, pem_path, pem_path_out);
+  return PackExtensionWithOptions(dir_path, crx_path, pem_path, pem_path_out,
+                                  extra_run_flags);
 }
 
 base::FilePath ExtensionBrowserTest::PackExtensionWithOptions(
     const base::FilePath& dir_path,
     const base::FilePath& crx_path,
     const base::FilePath& pem_path,
-    const base::FilePath& pem_out_path) {
+    const base::FilePath& pem_out_path,
+    int extra_run_flags) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   if (!base::PathExists(dir_path)) {
     ADD_FAILURE() << "Extension dir not found: " << dir_path.value();
@@ -348,11 +350,8 @@ base::FilePath ExtensionBrowserTest::PackExtensionWithOptions(
   }
 
   std::unique_ptr<ExtensionCreator> creator(new ExtensionCreator());
-  if (!creator->Run(dir_path,
-                    crx_path,
-                    pem_path,
-                    pem_out_path,
-                    ExtensionCreator::kOverwriteCRX)) {
+  if (!creator->Run(dir_path, crx_path, pem_path, pem_out_path,
+                    extra_run_flags | ExtensionCreator::kOverwriteCRX)) {
     ADD_FAILURE() << "ExtensionCreator::Run() failed: "
                   << creator->error_message();
     return base::FilePath();
@@ -452,7 +451,14 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     //                 and then always pack the extension here.
     base::FilePath crx_path = path;
     if (crx_path.Extension() != FILE_PATH_LITERAL(".crx")) {
-      crx_path = PackExtension(path);
+      int run_flags = ExtensionCreator::kNoRunFlags;
+      if (creation_flags & Extension::FROM_BOOKMARK) {
+        run_flags = ExtensionCreator::kBookmarkApp;
+        if (install_source == Manifest::EXTERNAL_COMPONENT)
+          run_flags |= ExtensionCreator::kSystemApp;
+      }
+
+      crx_path = PackExtension(path, run_flags);
     }
     if (crx_path.empty())
       return NULL;
@@ -496,8 +502,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     VLOG(1) << "Errors follow:";
     const std::vector<base::string16>* errors =
         LoadErrorReporter::GetInstance()->GetErrors();
-    for (std::vector<base::string16>::const_iterator iter = errors->begin();
-         iter != errors->end(); ++iter)
+    for (auto iter = errors->begin(); iter != errors->end(); ++iter)
       VLOG(1) << *iter;
 
     return NULL;

@@ -2,7 +2,6 @@ This tests that only elements that allow the user to edit rich text in them are 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS axElement.isRichlyEditable is true
 PASS axElement.isRichlyEditable is true
 PASS axElement.isRichlyEditable is true
@@ -20,15 +19,21 @@ PASS axElement.isRichlyEditable is false
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 Some text.
 
 Some text.
+
 
 Some text.
  
 
     
+
 Some text.
+
+
 
 
 Some text.

@@ -2,7 +2,6 @@ HTMLIsIndexElement should inherit directly from HTMLElement and be an HTMLUnknow
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS isIndex.__proto__ is HTMLUnknownElement.prototype
 PASS isIndex.__proto__.__proto__ is HTMLElement.prototype
 PASS isIndex.prompt is undefined.

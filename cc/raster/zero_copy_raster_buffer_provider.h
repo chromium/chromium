@@ -49,6 +49,7 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
       const base::Closure& callback,
       uint64_t pending_callback_id) const override;
   void Shutdown() override;
+  bool CheckRasterFinishedQueries() override;
 
  private:
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()

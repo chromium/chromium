@@ -33,6 +33,7 @@ class CastNetworkRequestInterceptor {
   virtual bool IsWhiteListed(const GURL& gurl,
                              const std::string& session_id,
                              int render_process_id,
+                             int render_frame_id,
                              bool for_device_auth) const;
   virtual void Initialize();
   virtual bool IsInitialized();
@@ -40,6 +41,7 @@ class CastNetworkRequestInterceptor {
   virtual int OnBeforeURLRequest(net::URLRequest* request,
                                  const std::string& session_id,
                                  int render_process_id,
+                                 int render_frame_id,
                                  net::CompletionOnceCallback callback,
                                  GURL* new_url);
 

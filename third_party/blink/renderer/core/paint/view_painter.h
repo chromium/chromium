@@ -23,6 +23,8 @@ class ViewPainter {
 
  private:
   const LayoutView& layout_view_;
+
+  void PaintBoxDecorationBackgroundInternal(const PaintInfo&);
 };
 
 }  // namespace blink

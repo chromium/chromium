@@ -227,11 +227,11 @@ TEST_F(ImageTest, MultiResolutionPNGToImageSkia) {
   scales.push_back(1.0f);
   scales.push_back(2.0f);
   gfx::ImageSkia image_skia = image.AsImageSkia();
-  EXPECT_TRUE(gt::ArePNGBytesCloseToBitmap(bytes1x,
-      image_skia.GetRepresentation(1.0f).sk_bitmap(),
+  EXPECT_TRUE(gt::ArePNGBytesCloseToBitmap(
+      bytes1x, image_skia.GetRepresentation(1.0f).GetBitmap(),
       gt::MaxColorSpaceConversionColorShift()));
-  EXPECT_TRUE(gt::ArePNGBytesCloseToBitmap(bytes2x,
-      image_skia.GetRepresentation(2.0f).sk_bitmap(),
+  EXPECT_TRUE(gt::ArePNGBytesCloseToBitmap(
+      bytes2x, image_skia.GetRepresentation(2.0f).GetBitmap(),
       gt::MaxColorSpaceConversionColorShift()));
   EXPECT_TRUE(gt::ImageSkiaStructureMatches(image_skia, kSize1x, kSize1x,
                                             scales));

@@ -38,12 +38,13 @@ class MojoPageTimingSender : public PageTimingSender {
         &page_load_metrics_);
   }
   ~MojoPageTimingSender() override {}
-  void SendTiming(
-      const mojom::PageLoadTimingPtr& timing,
-      const mojom::PageLoadMetadataPtr& metadata,
-      mojom::PageLoadFeaturesPtr new_features,
-      std::vector<mojom::ResourceDataUpdatePtr> resources) override {
+  void SendTiming(const mojom::PageLoadTimingPtr& timing,
+                  const mojom::PageLoadMetadataPtr& metadata,
+                  mojom::PageLoadFeaturesPtr new_features,
+                  std::vector<mojom::ResourceDataUpdatePtr> resources,
+                  const mojom::PageRenderData& render_data) override {
     DCHECK(page_load_metrics_);
+    // TODO: Include render_data in IPC.
     page_load_metrics_->UpdateTiming(timing->Clone(), metadata->Clone(),
                                      std::move(new_features),
                                      std::move(resources));
@@ -87,6 +88,11 @@ void MetricsRenderFrameObserver::DidObserveNewCssPropertyUsage(
     page_timing_metrics_sender_->DidObserveNewCssPropertyUsage(css_property,
                                                                is_animated);
   }
+}
+
+void MetricsRenderFrameObserver::DidObserveLayoutJank(double jank_fraction) {
+  if (page_timing_metrics_sender_)
+    page_timing_metrics_sender_->DidObserveLayoutJank(jank_fraction);
 }
 
 void MetricsRenderFrameObserver::DidStartResponse(
@@ -315,6 +321,22 @@ mojom::PageLoadTimingPtr MetricsRenderFrameObserver::GetTiming() const {
   if (perf.FirstMeaningfulPaint() > 0.0) {
     timing->paint_timing->first_meaningful_paint =
         ClampDelta(perf.FirstMeaningfulPaint(), start);
+  }
+  if (perf.LargestImagePaint() > 0.0) {
+    timing->paint_timing->largest_image_paint =
+        ClampDelta(perf.LargestImagePaint(), start);
+  }
+  if (perf.LastImagePaint() > 0.0) {
+    timing->paint_timing->last_image_paint =
+        ClampDelta(perf.LastImagePaint(), start);
+  }
+  if (perf.LargestTextPaint() > 0.0) {
+    timing->paint_timing->largest_text_paint =
+        ClampDelta(perf.LargestTextPaint(), start);
+  }
+  if (perf.LastTextPaint() > 0.0) {
+    timing->paint_timing->last_text_paint =
+        ClampDelta(perf.LastTextPaint(), start);
   }
   if (perf.ParseStart() > 0.0)
     timing->parse_timing->parse_start = ClampDelta(perf.ParseStart(), start);

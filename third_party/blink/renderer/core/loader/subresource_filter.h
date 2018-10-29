@@ -32,12 +32,12 @@ class CORE_EXPORT SubresourceFilter final
   ~SubresourceFilter();
 
   bool AllowLoad(const KURL& resource_url,
-                 WebURLRequest::RequestContext,
+                 mojom::RequestContextType,
                  SecurityViolationReportingPolicy);
   bool AllowWebSocketConnection(const KURL&);
 
   // Returns if |resource_url| is an ad resource.
-  bool IsAdResource(const KURL& resource_url, WebURLRequest::RequestContext);
+  bool IsAdResource(const KURL& resource_url, mojom::RequestContextType);
   // Reports the resource request id as an ad to the |subresource_filter_|.
   void ReportAdRequestId(int request_id);
 
@@ -54,7 +54,7 @@ class CORE_EXPORT SubresourceFilter final
   std::unique_ptr<WebDocumentSubresourceFilter> subresource_filter_;
 
   // Save the last resource check's result in the single element cache.
-  std::pair<std::pair<KURL, WebURLRequest::RequestContext>,
+  std::pair<std::pair<KURL, mojom::RequestContextType>,
             WebDocumentSubresourceFilter::LoadPolicy>
       last_resource_check_result_;
 };

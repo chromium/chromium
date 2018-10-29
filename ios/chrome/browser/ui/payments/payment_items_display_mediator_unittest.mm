@@ -22,9 +22,11 @@ class PaymentRequestPaymentItemsDisplayMediatorTest
     : public PaymentRequestUnitTestBase,
       public PlatformTest {
  protected:
-  void SetUp() override { PaymentRequestUnitTestBase::SetUp(); }
+  // PlatformTest:
+  void SetUp() override { DoSetUp(); }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 };
 
 // Tests that the expected total item is created.

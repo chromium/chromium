@@ -37,6 +37,12 @@
     },
     "HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\$CHROME_TOAST_ACTIVATOR_CLSID": {
       "exists": "forbidden"
+    },
+    "HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\$CHROME_ELEVATOR_CLSID": {
+      "exists": "forbidden"
+    },
+    "HKEY_CURRENT_USER\\Software\\Classes\\AppID\\$CHROME_ELEVATOR_CLSID": {
+      "exists": "forbidden"
     }
   }
 }

@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/test/trace_event_analyzer.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "content/browser/frame_host/frame_tree.h"
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/common/frame_owner_properties.h"
@@ -103,7 +103,7 @@ class FrameTreeNodeBlameContextTest : public RenderViewHostImplTestHarness {
           blink::WebTreeScopeType::kDocument, std::string(),
           base::StringPrintf("uniqueName%d", child_id), false,
           base::UnguessableToken::Create(), blink::FramePolicy(),
-          FrameOwnerProperties(), false);
+          FrameOwnerProperties(), false, blink::FrameOwnerElementType::kIframe);
       FrameTreeNode* child = node->child_at(child_num - 1);
       consumption += CreateSubframes(child, child_id, shape + consumption);
     }

@@ -80,21 +80,20 @@ class RemoteViewHostTest : public aura::test::AuraTestBase {
   DISALLOW_COPY_AND_ASSIGN(RemoteViewHostTest);
 };
 
-// Tests that the embed operation fails with an unknown token and RemoteViewHost
-// will not be attached.
+// Tests that the embed operation fails with an unknown token.
 TEST_F(RemoteViewHostTest, BadEmbed) {
   const base::UnguessableToken unknown_token = base::UnguessableToken::Create();
 
   // Ownership will be passed to |widget| later.
   RemoteViewHost* host = new RemoteViewHost();
   std::unique_ptr<views::Widget> widget = CreateTestWidget(host);
-  EXPECT_FALSE(host->native_view());
+  EXPECT_TRUE(host->native_view());
 
   // Embed fails with unknown token.
   EXPECT_FALSE(Embed(host, unknown_token));
 
-  // |host| is not attached after adding to a widget.
-  EXPECT_FALSE(host->native_view());
+  // |host| is still attached despite the Embed failure.
+  EXPECT_TRUE(host->native_view());
 }
 
 // Tests when RemoveViewHost is added to a widget before embedding.
@@ -105,15 +104,15 @@ TEST_F(RemoteViewHostTest, AddToWidgetBeforeEmbed) {
   // Ownership will be passed to |widget| later.
   RemoteViewHost* host = new RemoteViewHost();
 
-  // |host| is not attached because embed operation is not performed.
+  // |host| is not attached until the widget is created.
   EXPECT_FALSE(host->native_view());
   std::unique_ptr<views::Widget> widget = CreateTestWidget(host);
-  EXPECT_FALSE(host->native_view());
+  EXPECT_TRUE(host->native_view());
 
   // Embed succeeds.
   EXPECT_TRUE(Embed(host, token));
 
-  // |host| is now attached to the embedding window.
+  // |host| is still attached to the embedding window.
   EXPECT_TRUE(host->native_view());
 }
 

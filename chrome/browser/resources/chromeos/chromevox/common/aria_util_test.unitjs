@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxAriaUtilUnitTest() {}
+function ChromeVoxAriaUtilUnitTest() {}
 
-CvoxAriaUtilUnitTest.prototype = {
+ChromeVoxAriaUtilUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -22,7 +22,7 @@ CvoxAriaUtilUnitTest.prototype = {
     'cvox.DomUtil',]
 };
 
-TEST_F('CvoxAriaUtilUnitTest', 'GetStateGridWithActiveCell', function() {
+TEST_F('ChromeVoxAriaUtilUnitTest', 'GetStateGridWithActiveCell', function() {
   this.loadDoc(function() {/*!
     <div id="grid" role="grid" aria-activedescendant="cell">
       <div role="row">
@@ -35,7 +35,7 @@ TEST_F('CvoxAriaUtilUnitTest', 'GetStateGridWithActiveCell', function() {
       eqJSON([['role_gridcell_pos', 1, 1]]));
 });
 
-TEST_F('CvoxAriaUtilUnitTest', 'GetActiveDescendant', function() {
+TEST_F('ChromeVoxAriaUtilUnitTest', 'GetActiveDescendant', function() {
   this.loadDoc(function() {/*!
     <div id="top" aria-activedescendant="child">
       <div id="child" />
@@ -75,7 +75,7 @@ TEST_F('CvoxAriaUtilUnitTest', 'GetActiveDescendant', function() {
   assertEquals(null, cvox.AriaUtil.getActiveDescendant(circleAElt));
 });
 
-TEST_F('CvoxAriaUtilUnitTest', 'ListIndexAndState', function() {
+TEST_F('ChromeVoxAriaUtilUnitTest', 'ListIndexAndState', function() {
   this.loadDoc(function() {/*!
     <div id="l" role="listbox" tabindex="0" aria-activedescendant="l2">
       <div id="l1" role="option">A</div>
@@ -110,7 +110,7 @@ TEST_F('CvoxAriaUtilUnitTest', 'ListIndexAndState', function() {
       eqJSON([['list_position', 1, 3]]));
 });
 
-TEST_F('CvoxAriaUtilUnitTest', 'GetLiveRegions', function() {
+TEST_F('ChromeVoxAriaUtilUnitTest', 'GetLiveRegions', function() {
   this.loadDoc(function() {/*!
    <div id="outer">
     <div id="progress" role="progressbar" aria-live="polite" aria-valuenow="1">

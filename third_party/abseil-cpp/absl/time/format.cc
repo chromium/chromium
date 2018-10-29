@@ -88,7 +88,7 @@ bool ParseTime(const std::string& format, const std::string& input, absl::Time* 
   return absl::ParseTime(format, input, absl::UTCTimeZone(), time, err);
 }
 
-// If the input std::string does not contain an explicit UTC offset, interpret
+// If the input string does not contain an explicit UTC offset, interpret
 // the fields with respect to the given TimeZone.
 bool ParseTime(const std::string& format, const std::string& input, absl::TimeZone tz,
                absl::Time* time, std::string* err) {

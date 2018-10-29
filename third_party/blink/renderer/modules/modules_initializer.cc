@@ -26,14 +26,12 @@
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/core/workers/worker_content_settings_client.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
-#include "third_party/blink/renderer/modules/animationworklet/animation_worklet_thread.h"
 #include "third_party/blink/renderer/modules/app_banner/app_banner_controller.h"
-#include "third_party/blink/renderer/modules/audio_output_devices/audio_output_device_client.h"
-#include "third_party/blink/renderer/modules/audio_output_devices/audio_output_device_client_impl.h"
 #include "third_party/blink/renderer/modules/audio_output_devices/html_media_element_audio_output_device.h"
 #include "third_party/blink/renderer/modules/cache_storage/inspector_cache_storage_agent.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
@@ -75,7 +73,7 @@
 #include "third_party/blink/renderer/modules/speech/speech_recognition_controller.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage_controller.h"
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
-#include "third_party/blink/renderer/modules/storage/storage_namespace_controller.h"
+#include "third_party/blink/renderer/modules/storage/storage_namespace.h"
 #include "third_party/blink/renderer/modules/time_zone_monitor/time_zone_monitor_client.h"
 #include "third_party/blink/renderer/modules/vr/navigator_vr.h"
 #include "third_party/blink/renderer/modules/vr/vr_controller.h"
@@ -83,24 +81,26 @@
 #include "third_party/blink/renderer/modules/webdatabase/database_manager.h"
 #include "third_party/blink/renderer/modules/webdatabase/inspector_database_agent.h"
 #include "third_party/blink/renderer/modules/webdatabase/web_database_impl.h"
+#include "third_party/blink/renderer/modules/worklet/animation_and_paint_worklet_thread.h"
 #if defined(SUPPORT_WEBGL2_COMPUTE_CONTEXT)
 #include "third_party/blink/renderer/modules/webgl/webgl2_compute_rendering_context.h"
 #endif
+#include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_presentation_context.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 void ModulesInitializer::Initialize() {
   // Strings must be initialized before calling CoreInitializer::init().
   const unsigned kModulesStaticStringsCount =
-      EventNames::EventModulesNamesCount +
-      EventTargetNames::EventTargetModulesNamesCount +
-      IndexedDBNames::IndexedDBNamesCount;
+      EventNames::kModulesNamesCount + EventTargetNames::kModulesNamesCount +
+      IndexedDBNames::kNamesCount;
   StringImpl::ReserveStaticStringsCapacityForSize(kModulesStaticStringsCount);
 
   EventNames::initModules();
@@ -182,12 +182,9 @@ void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {
   ScreenOrientationControllerImpl::ProvideTo(frame);
   if (RuntimeEnabledFeatures::PresentationEnabled())
     PresentationController::ProvideTo(frame);
-  if (RuntimeEnabledFeatures::AudioOutputDevicesEnabled()) {
-    ProvideAudioOutputDeviceClientTo(frame,
-                                     new AudioOutputDeviceClientImpl(frame));
-  }
   InstalledAppController::ProvideTo(frame, client->GetRelatedAppsFetcher());
   ::blink::ProvideSpeechRecognitionTo(frame);
+  InspectorAccessibilityAgent::ProvideTo(&frame);
 }
 
 void ModulesInitializer::ProvideLocalFileSystemToWorker(
@@ -225,7 +222,7 @@ void ModulesInitializer::InitInspectorAgentSession(
   session->Append(new InspectorDOMStorageAgent(inspected_frames));
   if (allow_view_agents) {
     session->Append(InspectorDatabaseAgent::Create(page));
-    session->Append(new InspectorAccessibilityAgent(page, dom_agent));
+    session->Append(new InspectorAccessibilityAgent(inspected_frames, dom_agent));
     session->Append(InspectorCacheStorageAgent::Create(inspected_frames));
   }
 }
@@ -239,7 +236,7 @@ void ModulesInitializer::OnClearWindowObjectInMainWorld(
   NavigatorGamepad::From(document);
   NavigatorServiceWorker::From(document);
   DOMWindowStorageController::From(document);
-  if (RuntimeEnabledFeatures::WebVREnabled())
+  if (OriginTrials::WebVREnabled(document.GetExecutionContext()))
     NavigatorVR::From(document);
   if (RuntimeEnabledFeatures::PresentationEnabled() &&
       settings.GetPresentationReceiver()) {
@@ -274,15 +271,23 @@ void ModulesInitializer::ProvideModulesToPage(Page& page,
   MediaKeysController::ProvideMediaKeysTo(page);
   ::blink::ProvideContextFeaturesTo(page, ContextFeaturesClientImpl::Create());
   ::blink::ProvideDatabaseClientTo(page, new DatabaseClient);
-  StorageNamespaceController::ProvideStorageNamespaceTo(page, client);
+  StorageNamespace::ProvideSessionStorageNamespaceTo(page, client);
 }
 
 void ModulesInitializer::ForceNextWebGLContextCreationToFail() const {
   WebGLRenderingContext::ForceNextWebGLContextCreationToFail();
 }
 
-void ModulesInitializer::CollectAllGarbageForAnimationWorklet() const {
-  AnimationWorkletThread::CollectAllGarbage();
+void ModulesInitializer::CollectAllGarbageForAnimationAndPaintWorklet() const {
+  AnimationAndPaintWorkletThread::CollectAllGarbage();
+}
+
+void ModulesInitializer::CloneSessionStorage(
+    Page* clone_from_page,
+    const SessionStorageNamespaceId& clone_to_namespace) {
+  StorageNamespace* storage_namespace = StorageNamespace::From(clone_from_page);
+  if (storage_namespace)
+    storage_namespace->CloneTo(WebString::FromLatin1(clone_to_namespace));
 }
 
 void ModulesInitializer::RegisterInterfaces(

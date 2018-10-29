@@ -14,8 +14,7 @@ import org.chromium.chrome.R;
 import org.chromium.net.NetError;
 
 /**
- * A dialog to notify users that WebAPKs and Trusted Web Activities need a network connection to
- * launch.
+ * A dialog to notify users that WebAPKs need a network connection to launch.
  */
 public class WebappOfflineDialog {
     private Dialog mDialog;

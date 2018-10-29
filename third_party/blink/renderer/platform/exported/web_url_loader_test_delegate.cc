@@ -44,9 +44,10 @@ void WebURLLoaderTestDelegate::DidFinishLoading(
     int64_t total_encoded_data_length,
     int64_t total_encoded_body_length,
     int64_t total_decoded_body_length) {
-  original_client->DidFinishLoading(finish_time, total_encoded_data_length,
-                                    total_encoded_body_length,
-                                    total_decoded_body_length, false);
+  original_client->DidFinishLoading(
+      finish_time, total_encoded_data_length, total_encoded_body_length,
+      total_decoded_body_length, false,
+      std::vector<network::cors::PreflightTimingInfo>());
 }
 
 }  // namespace blink

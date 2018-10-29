@@ -3,7 +3,6 @@ Tests structured de-cloning of empty HMAC keys
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Deserializing empty HMAC SHA-1 key...
 PASS key.type is "secret"
 PASS typeof key.extractable is 'boolean'

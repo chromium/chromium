@@ -61,12 +61,12 @@ class FakeBackend : public QuotaReservationManager::QuotaBackend {
   void ReserveQuota(const url::Origin& origin,
                     storage::FileSystemType type,
                     int64_t delta,
-                    const ReserveQuotaCallback& callback) override {
+                    ReserveQuotaCallback callback) override {
     EXPECT_EQ(kOrigin, origin);
     EXPECT_EQ(kType, type);
     on_memory_usage_ += delta;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(base::IgnoreResult(callback),
+        FROM_HERE, base::BindOnce(base::IgnoreResult(std::move(callback)),
                                   base::File::FILE_OK, delta));
   }
 
@@ -176,7 +176,7 @@ void RefreshReservation(QuotaReservation* reservation, int64_t size) {
   DCHECK(reservation);
 
   bool done = false;
-  reservation->RefreshReservation(size, base::Bind(&ExpectSuccess, &done));
+  reservation->RefreshReservation(size, base::BindOnce(&ExpectSuccess, &done));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(done);
 }

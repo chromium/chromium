@@ -111,7 +111,7 @@ void PinnedTabCodec::WritePinnedTabs(Profile* profile,
   ListPrefUpdate update(prefs, prefs::kPinnedTabs);
   base::ListValue* values = update.Get();
   values->Clear();
-  for (StartupTabs::const_iterator i = tabs.begin(); i != tabs.end(); ++i)
+  for (auto i = tabs.begin(); i != tabs.end(); ++i)
     EncodeTab(*i, values);
 }
 

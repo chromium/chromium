@@ -19,11 +19,12 @@ class FakeAreaSource : public GarbageCollectedFinalized<FakeAreaSource>,
   explicit FakeAreaSource(const KURL& page_url) : page_url_(page_url) {}
 
   KURL GetPageUrl() const override { return page_url_; }
-  void EnqueueStorageEvent(const String& key,
+  bool EnqueueStorageEvent(const String& key,
                            const String& old_value,
                            const String& new_value,
                            const String& url) override {
     events.push_back(Event{key, old_value, new_value, url});
+    return true;
   }
 
   blink::WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(

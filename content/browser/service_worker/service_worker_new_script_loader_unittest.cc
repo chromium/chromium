@@ -173,7 +173,6 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
                 "this is an import script response body from the network")));
 
     // Initialize URLLoaderFactory.
-    network::mojom::URLLoaderFactoryPtr test_loader_factory;
     mock_url_loader_factory_ =
         std::make_unique<MockNetworkURLLoaderFactory>(mock_server_.get());
     helper_->SetNetworkFactory(mock_url_loader_factory_.get());

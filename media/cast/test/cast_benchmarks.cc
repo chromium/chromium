@@ -683,8 +683,9 @@ class CastBenchmark {
       a.latency.grade = 1.0;
       a.packet_drop.grade = 1.0;
       threads[0]->message_loop()->task_runner()->PostTask(
-          FROM_HERE, base::Bind(base::IgnoreResult(&CastBenchmark::RunOnePoint),
-                                base::Unretained(this), a, 1.0));
+          FROM_HERE,
+          base::BindOnce(base::IgnoreResult(&CastBenchmark::RunOnePoint),
+                         base::Unretained(this), a, 1.0));
     } else {
       SearchVector a, b, c;
       a.bitrate.base = b.bitrate.base = c.bitrate.base = 100.0;

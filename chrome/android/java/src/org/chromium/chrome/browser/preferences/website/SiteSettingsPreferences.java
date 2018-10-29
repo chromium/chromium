@@ -136,6 +136,8 @@ public class SiteSettingsPreferences extends PreferenceFragment
             if (SiteSettingsCategory.adsCategoryEnabled()) {
                 websitePrefs.add(Type.ADS);
             }
+            websitePrefs.add(Type.AUTOMATIC_DOWNLOADS);
+
             // When showing the main menu, if Protected Content is not available, only Autoplay
             // will be visible.
             if (!mProtectedContentMenuAvailable) {

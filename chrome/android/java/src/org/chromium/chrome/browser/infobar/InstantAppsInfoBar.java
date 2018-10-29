@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.infobar;
 
+import android.support.v7.content.res.AppCompatResources;
 import android.widget.ImageView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.instantapps.InstantAppsBannerData;
@@ -33,9 +33,8 @@ public class InstantAppsInfoBar extends ConfirmInfoBar {
         layout.setMessage(mData.getAppName());
         layout.getMessageLayout().addDescription(
                 UrlFormatter.formatUrlForSecurityDisplayOmitScheme(mData.getUrl()));
-        layout.getPrimaryButton()
-                .setButtonColor(ApiCompatibilityUtils.getColor(getContext().getResources(),
-                        R.color.app_banner_install_button_bg));
+        layout.getPrimaryButton().setButtonColor(AppCompatResources.getColorStateList(
+                getContext(), R.color.app_banner_install_button_bg));
     }
 
     @Override

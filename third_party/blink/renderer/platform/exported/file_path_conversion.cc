@@ -12,11 +12,10 @@
 
 namespace blink {
 
-base::FilePath WebStringToFilePath(const WebString& web_string) {
-  if (web_string.IsEmpty())
+base::FilePath StringToFilePath(const String& str) {
+  if (str.IsEmpty())
     return base::FilePath();
 
-  String str = web_string;
   if (!str.Is8Bit()) {
     return base::FilePath::FromUTF16Unsafe(
         base::StringPiece16(str.Characters16(), str.length()));
@@ -32,6 +31,10 @@ base::FilePath WebStringToFilePath(const WebString& web_string) {
 #endif
 }
 
+base::FilePath WebStringToFilePath(const WebString& web_string) {
+  return StringToFilePath(web_string);
+}
+
 WebString FilePathToWebString(const base::FilePath& path) {
   if (path.empty())
     return WebString();
@@ -41,6 +44,10 @@ WebString FilePathToWebString(const base::FilePath& path) {
 #else
   return WebString::FromUTF16(path.AsUTF16Unsafe());
 #endif
+}
+
+String FilePathToString(const base::FilePath& path) {
+  return FilePathToWebString(path);
 }
 
 }  // namespace blink

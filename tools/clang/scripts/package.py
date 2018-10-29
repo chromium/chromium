@@ -253,7 +253,7 @@ def main():
                  # runtime libraries:
                  'lib/clang/*/lib/darwin/*asan_osx*',
                  'lib/clang/*/lib/darwin/*asan_iossim*',
-                 'lib/clang/*/lib/darwin/*fuzzer*',
+                 'lib/clang/*/lib/darwin/*fuzzer_no_main*',
                  'lib/clang/*/lib/darwin/*profile_osx*',
                  'lib/clang/*/lib/darwin/*profile_iossim*',
                  # And the OSX and ios builtin libraries (iossim is lipo'd into
@@ -270,7 +270,7 @@ def main():
     # but not dfsan.
     want.extend(['lib/clang/*/lib/linux/*[atm]san*',
                  'lib/clang/*/lib/linux/*ubsan*',
-                 'lib/clang/*/lib/linux/*libclang_rt.fuzzer*',
+                 'lib/clang/*/lib/linux/*libclang_rt.fuzzer_no_main*',
                  'lib/clang/*/lib/linux/*libclang_rt.san*',
                  'lib/clang/*/lib/linux/*profile*',
                  'lib/clang/*/share/msan_blacklist.txt',
@@ -278,7 +278,7 @@ def main():
   elif sys.platform == 'win32':
     want.extend(['lib/clang/*/lib/windows/clang_rt.asan*.dll',
                  'lib/clang/*/lib/windows/clang_rt.asan*.lib',
-                 'lib/clang/*/lib/windows/clang_rt.fuzzer*.lib',
+                 'lib/clang/*/lib/windows/clang_rt.fuzzer_no_main*.lib',
                  'lib/clang/*/lib/windows/clang_rt.profile*.lib',
                  'lib/clang/*/lib/windows/clang_rt.ubsan*.lib',
                  ])

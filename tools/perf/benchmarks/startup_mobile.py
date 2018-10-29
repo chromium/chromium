@@ -25,11 +25,27 @@ from devil.android.sdk import intent # pylint: disable=import-error
 # should be disabled on non-Android to avoid failures at
 # benchmark_smoke_unittest.BenchmarkSmokeTest.
 #
-# The recommended way to run this benchmark is:
-# shell> CHROMIUM_OUTPUT_DIR=gn_android/Release tools/perf/run_benchmark \
-#   -v startup.mobile --browser=android-chrome \
-#   --output-dir=/tmp/avoid-polluting-chrome-tree
-
+# === Mini-HOWTO.
+#
+# 1. Configure for Release Official flavor to get the most representative
+#    results:
+#    shell> gn gen --args='use_goma=true target_os="android" target_cpu="arm" \
+#           is_debug=false is_official_build=true' gn_android/ReleaseOfficial
+#
+# 2. Build Monochrome:
+#    shell> autoninja -C gn_android/ReleaseOfficial monochrome_apk
+#
+# 3. Invoke Telemetry:
+#    shell> CHROMIUM_OUTPUT_DIR=gn_android/ReleaseOfficial \
+#               tools/perf/run_benchmark -v startup.mobile \
+#               --browser=android-chrome \
+#               --output-dir=/tmp/avoid-polluting-chrome-tree \
+#               --also-run-disabled-tests
+#
+# The "--also-run-disabled-tests" is necessary because the benchmark is disabled
+# in expectations.config to avoid failures on Android versions below M. This
+# override is also used on internal bots. See: http://crbug.com/894744 and
+# http://crbug.com/849907.
 class _MobileStartupSharedState(story_module.SharedState):
 
   def __init__(self, test, finder_options, story_set):
@@ -159,7 +175,8 @@ class _MobileStartupStorySet(story_module.StorySet):
 
 
 @benchmark.Info(emails=['pasko@chromium.org',
-                        'chrome-android-perf-status@chromium.org'])
+                        'chrome-android-perf-status@chromium.org'],
+                component='Speed>Metrics>SystemHealthRegressions')
 class MobileStartupBenchmark(perf_benchmark.PerfBenchmark):
   SUPPORTED_PLATFORMS = [story_module.expectations.ANDROID_NOT_WEBVIEW]
 
@@ -174,6 +191,7 @@ class MobileStartupBenchmark(perf_benchmark.PerfBenchmark):
 
     options = timeline_based_measurement.Options(cat_filter)
     options.config.enable_chrome_trace = True
+    options.config.enable_atrace_trace = True
     options.SetTimelineBasedMetrics([
         'tracingMetric',
         'androidStartupMetric',

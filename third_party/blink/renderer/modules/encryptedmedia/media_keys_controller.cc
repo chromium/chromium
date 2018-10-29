@@ -18,7 +18,7 @@ MediaKeysController::MediaKeysController() = default;
 
 WebEncryptedMediaClient* MediaKeysController::EncryptedMediaClient(
     ExecutionContext* context) {
-  Document* document = ToDocument(context);
+  Document* document = To<Document>(context);
   WebLocalFrameImpl* web_frame =
       WebLocalFrameImpl::FromFrame(document->GetFrame());
   return web_frame->Client()->EncryptedMediaClient();

@@ -44,9 +44,8 @@ void SVGModelObjectPainter::RecordHitTestData(
 
   auto rect =
       LayoutRect(layout_svg_model_object.VisualRectInLocalSVGCoordinates());
-  HitTestData::RecordTouchActionRect(paint_info.context,
-                                     layout_svg_model_object,
-                                     TouchActionRect(rect, touch_action));
+  HitTestData::RecordHitTestRect(paint_info.context, layout_svg_model_object,
+                                 HitTestRect(rect, touch_action));
 }
 
 void SVGModelObjectPainter::PaintOutline(const PaintInfo& paint_info) {

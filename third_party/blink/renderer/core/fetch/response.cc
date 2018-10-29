@@ -352,7 +352,7 @@ Response* Response::redirect(ScriptState* script_state,
     return nullptr;
   }
 
-  if (!NetworkUtils::IsRedirectResponseCode(status)) {
+  if (!network_utils::IsRedirectResponseCode(status)) {
     exception_state.ThrowRangeError("Invalid status code");
     return nullptr;
   }

@@ -4,6 +4,8 @@
 
 #include "ui/latency/windowed_analyzer.h"
 
+#include "ui/latency/frame_metrics.h"
+
 namespace ui {
 
 void FrameRegionResult::AsValueInto(
@@ -57,9 +59,10 @@ void WindowedAnalyzer::AddSample(uint32_t value,
     accumulator_ -= static_cast<uint64_t>(old_weight) * old_value;
     // Casting the whole rhs is important to ensure rounding happens at a place
     // equivalent to when it was added.
-    root_accumulator_ -= static_cast<uint64_t>(
-        old_weight *
-        std::sqrt(static_cast<uint64_t>(old_value) << kFixedPointRootShift));
+    root_accumulator_ -=
+        static_cast<uint64_t>(old_weight * FrameMetrics::FastApproximateSqrt(
+                                               static_cast<uint64_t>(old_value)
+                                               << kFixedPointRootShift));
     square_accumulator_.Subtract(Accumulator96b(old_value, old_weight));
   }
 
@@ -107,7 +110,8 @@ FrameRegionResult WindowedAnalyzer::ComputeWorstRMS() const {
   } else {
     UpdateWorst(square_accumulator_, &result, true);
   }
-  result.value = client_->TransformResult(std::sqrt(result.value));
+  result.value =
+      client_->TransformResult(FrameMetrics::FastApproximateSqrt(result.value));
   return result;
 }
 

@@ -4,7 +4,7 @@
 
 #include "ui/events/blink/prediction/least_squares_predictor.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/blink/prediction/input_predictor_unittest.cc"
+#include "ui/events/blink/prediction/input_predictor_unittest_helpers.h"
 
 namespace ui {
 namespace test {

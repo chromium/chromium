@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1018939186200882850">element de meniu</translation>
-<translation id="1020833440720551630">dezactivați sunetul înregistrării audio</translation>
 <translation id="10623998915015855">buton de comutare</translation>
 <translation id="1088086359088493902">Secunde</translation>
 <translation id="1171774979989969504">Introdu o adresă de e-mail.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">mulțumiri</translation>
 <translation id="1342835525016946179">articol</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="1548116112524424341">redă videoclipul în modul picture-in-picture</translation>
 <translation id="1589122976691792535">regiune</translation>
 <translation id="1591562245178063882">Luna aceasta</translation>
 <translation id="1637811476055996098">Alege fișierele</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">grilă arbore</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">redă pe dispozitiv la distanță</translation>
-<translation id="1838818994221231429">decupaj inclus în ecranul complet</translation>
 <translation id="190587075670221089">ștergere</translation>
 <translation id="1907737156431278478">exemplu</translation>
 <translation id="1921819250265091946">zz</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">oră</translation>
 <translation id="5630795885300617244">Atinge de două ori spre stânga sau spre dreapta pentru a derula cu 10 secunde</translation>
 <translation id="5631759159893697722">rezumat</translation>
-<translation id="5641012560118721995">întrerupeți redarea</translation>
 <translation id="5643186887447432888">buton</translation>
 <translation id="5677946354068040947">mai multe opțiuni</translation>
 <translation id="576709008726043716">introducere</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Resetează</translation>
 <translation id="5966707198760109579">Săptămână</translation>
 <translation id="5987525920412732405">buton incrementare/decrementare</translation>
+<translation id="6011459053400940133">glisor de volum</translation>
 <translation id="6015796118275082299">An</translation>
 <translation id="6023896073578205740">casetă listă</translation>
-<translation id="6101327004457443354">activați sunetul înregistrării audio</translation>
 <translation id="6150588977291308318">bibliografie</translation>
 <translation id="6164829606128959761">instrument de măsurare</translation>
 <translation id="6166809985690652833">postfață</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Ore</translation>
 <translation id="7681220483256441252">index</translation>
 <translation id="7720026100085573005">timp rămas</translation>
-<translation id="7740016676195725605">nu mai afișați subtitrările</translation>
 <translation id="7740050170769002709">Conținut HTML</translation>
 <translation id="7750228210027921155">Picture-in-picture</translation>
 <translation id="7789962463072032349">întrerupe</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">câmp pentru căutarea textului</translation>
 <translation id="8057695513531652401">anunț</translation>
 <translation id="8105797009065549151">trimitere la notă</translation>
-<translation id="8115662671911883373">începeți să afișați subtitrările</translation>
 <translation id="8117451130807776954">Săptămâna aceasta</translation>
-<translation id="819205353528511139">redați filmul în modul ecran complet</translation>
 <translation id="8199524924445686405">aaaa</translation>
 <translation id="8284326494547611709">Subtitrări</translation>
 <translation id="835897206747267392">Valoare nevalidă.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">controlează redarea la distanță</translation>
 <translation id="862370744433916922">subtitlu</translation>
 <translation id="8750798805984357768">Selectează una dintre aceste opțiuni.</translation>
-<translation id="8785498733064193001">începeți redarea</translation>
 <translation id="8808573423886751634">capitol</translation>
 <translation id="8845239796550121995">Acum se proiectează pe televizor</translation>
 <translation id="8851136666856101339">principal</translation>

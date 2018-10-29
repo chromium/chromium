@@ -138,7 +138,7 @@ SourceBufferState::SourceBufferState(
       create_demuxer_stream_cb_(create_demuxer_stream_cb),
       media_log_(media_log),
       state_(UNINITIALIZED) {
-  DCHECK(!create_demuxer_stream_cb_.is_null());
+  DCHECK(create_demuxer_stream_cb_);
   DCHECK(frame_processor_);
 }
 
@@ -190,8 +190,8 @@ void SourceBufferState::SetGroupStartTimestampIfInSequenceMode(
 
 void SourceBufferState::SetTracksWatcher(
     const Demuxer::MediaTracksUpdatedCB& tracks_updated_cb) {
-  DCHECK(init_segment_received_cb_.is_null());
-  DCHECK(!tracks_updated_cb.is_null());
+  DCHECK(!init_segment_received_cb_);
+  DCHECK(tracks_updated_cb);
   init_segment_received_cb_ = tracks_updated_cb;
 }
 
@@ -545,7 +545,7 @@ void SourceBufferState::InitializeParser(const std::string& expected_codecs) {
   expected_video_codecs_.clear();
 
   std::vector<std::string> expected_codecs_parsed;
-  SplitCodecsToVector(expected_codecs, &expected_codecs_parsed, false);
+  SplitCodecs(expected_codecs, &expected_codecs_parsed);
 
   std::vector<AudioCodec> expected_acodecs;
   std::vector<VideoCodec> expected_vcodecs;
@@ -570,7 +570,7 @@ void SourceBufferState::InitializeParser(const std::string& expected_codecs) {
                           base::Unretained(this), expected_codecs),
       base::BindRepeating(&SourceBufferState::OnNewBuffers,
                           base::Unretained(this)),
-      new_text_track_cb_.is_null(),
+      !new_text_track_cb_,
       base::BindRepeating(&SourceBufferState::OnEncryptedMediaInitData,
                           base::Unretained(this)),
       base::BindRepeating(&SourceBufferState::OnNewMediaSegment,
@@ -842,7 +842,7 @@ bool SourceBufferState::OnNewConfigs(
       state_ = PENDING_PARSER_INIT;
     if (state_ == PENDING_PARSER_RECONFIG)
       state_ = PENDING_PARSER_REINIT;
-    DCHECK(!init_segment_received_cb_.is_null());
+    DCHECK(init_segment_received_cb_);
     init_segment_received_cb_.Run(std::move(tracks));
   }
 
@@ -968,8 +968,8 @@ void SourceBufferState::OnSourceInitDone(
     const StreamParser::InitParameters& params) {
   // We've either yet-to-run |init_cb_| if pending init, or we've previously
   // run it if pending reinit.
-  DCHECK((!init_cb_.is_null() && state_ == PENDING_PARSER_INIT) ||
-         (init_cb_.is_null() && state_ == PENDING_PARSER_REINIT));
+  DCHECK((init_cb_ && state_ == PENDING_PARSER_INIT) ||
+         (!init_cb_ && state_ == PENDING_PARSER_REINIT));
   State old_state = state_;
   state_ = PARSER_INITIALIZED;
 

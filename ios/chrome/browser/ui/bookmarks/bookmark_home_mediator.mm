@@ -11,7 +11,6 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/sync/synced_sessions_bridge.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_shared_state.h"
@@ -19,6 +18,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_promo_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_promo_item.h"
+#import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
 #import "ios/chrome/browser/ui/signin_interaction/public/signin_presenter.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
@@ -38,13 +38,13 @@ const int kMaxBookmarksSearchResults = 50;
                                    BookmarkModelBridgeObserver,
                                    BookmarkPromoControllerDelegate,
                                    SigninPresenter,
-                                   SyncedSessionsObserver> {
+                                   SyncObserverModelBridge> {
   // Bridge to register for bookmark changes.
   std::unique_ptr<bookmarks::BookmarkModelBridge> _modelBridge;
 
   // Observer to keep track of the signin and syncing status.
-  std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
-      _syncedSessionsObserver;
+  std::unique_ptr<sync_bookmarks::SyncedBookmarksObserverBridge>
+      _syncedBookmarksObserver;
 }
 
 // Shared state between Bookmark home classes.
@@ -81,8 +81,8 @@ const int kMaxBookmarksSearchResults = 50;
   // Set up observers.
   _modelBridge = std::make_unique<bookmarks::BookmarkModelBridge>(
       self, self.sharedState.bookmarkModel);
-  _syncedSessionsObserver =
-      std::make_unique<synced_sessions::SyncedSessionsObserverBridge>(
+  _syncedBookmarksObserver =
+      std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
           self, self.browserState);
   _bookmarkPromoController =
       [[BookmarkPromoController alloc] initWithBrowserState:self.browserState
@@ -95,7 +95,7 @@ const int kMaxBookmarksSearchResults = 50;
 
 - (void)disconnect {
   _modelBridge = nullptr;
-  _syncedSessionsObserver = nullptr;
+  _syncedBookmarksObserver = nullptr;
   self.browserState = nullptr;
   self.consumer = nil;
   self.sharedState = nil;
@@ -199,9 +199,6 @@ const int kMaxBookmarksSearchResults = 50;
 
   int count = 0;
   for (const BookmarkNode* node : nodes) {
-    if (!node->is_url())
-      continue;
-
     BookmarkHomeNodeItem* nodeItem =
         [[BookmarkHomeNodeItem alloc] initWithType:BookmarkHomeItemTypeBookmark
                                       bookmarkNode:node];
@@ -222,6 +219,8 @@ const int kMaxBookmarksSearchResults = 50;
         toSectionWithIdentifier:BookmarkHomeSectionIdentifierMessages];
     return;
   }
+
+  [self updateTableViewBackground];
 }
 
 - (void)updateTableViewBackground {
@@ -231,7 +230,7 @@ const int kMaxBookmarksSearchResults = 50;
   if (self.sharedState.tableViewDisplayedRootNode ==
       self.sharedState.bookmarkModel->root_node()) {
     if (self.sharedState.bookmarkModel->HasNoUserCreatedBookmarksOrFolders() &&
-        _syncedSessionsObserver->IsSyncing()) {
+        _syncedBookmarksObserver->IsPerformingInitialSync()) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarkHomeBackgroundStyleLoading];
     } else {
@@ -241,7 +240,8 @@ const int kMaxBookmarksSearchResults = 50;
     return;
   }
 
-  if (![self hasBookmarksOrFolders]) {
+  if (![self hasBookmarksOrFolders] &&
+      !self.sharedState.currentlyShowingSearchResults) {
     [self.consumer
         updateTableViewBackgroundStyle:BookmarkHomeBackgroundStyleEmpty];
   } else {
@@ -257,7 +257,8 @@ const int kMaxBookmarksSearchResults = 50;
   // the permanent nodes.
   BOOL promoVisible = ((self.sharedState.tableViewDisplayedRootNode ==
                         self.sharedState.bookmarkModel->root_node()) &&
-                       self.bookmarkPromoController.shouldShowSigninPromo);
+                       self.bookmarkPromoController.shouldShowSigninPromo &&
+                       !self.sharedState.currentlyShowingSearchResults);
 
   if (promoVisible == self.sharedState.promoVisible) {
     return;
@@ -378,7 +379,7 @@ const int kMaxBookmarksSearchResults = 50;
   }
 
   // Get the favicon from cache directly. (no need to fetch from server)
-  [self.consumer loadFaviconAtIndexPath:indexPath continueToGoogleServer:NO];
+  [self.consumer loadFaviconAtIndexPath:indexPath fallbackToGoogleServer:NO];
 }
 
 - (BookmarkHomeNodeItem*)itemForNode:
@@ -432,11 +433,7 @@ const int kMaxBookmarksSearchResults = 50;
   [self.consumer showSignin:command];
 }
 
-#pragma mark - SyncedSessionsObserver
-
-- (void)reloadSessions {
-  // Nothing to do.
-}
+#pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
   // Permanent nodes ("Bookmarks Bar", "Other Bookmarks") at the root node might

@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ru">
+<translation id="1296843352074373664">Пользователь Google</translation>
+<translation id="1383286653814676580">Используется для перехода на страницу входа поставщика учетных данных Google.</translation>
+<translation id="2119303206591679297">Вход с использованием этого аккаунта Google запрещен.</translation>
+<translation id="3374277789313311065">Произошла внутренняя ошибка. Если сообщение появится снова, отправьте отчет в Google.</translation>
+<translation id="3713454256426064844">Войти, используя аккаунт Google</translation>
+<translation id="440343981193409132">Войти, используя новый пароль аккаунта Google</translation>
+<translation id="4735679347289592174">Не удалось войти в аккаунт Google. Убедитесь, что компьютер подключен к Интернету и повторите попытку. Если ошибка появится снова, отправьте отчет в Google.</translation>
+<translation id="7000592418234387954">Вход в аккаунт Google</translation>
+<translation id="8474372283141585908">Поставщик учетных данных Google</translation>
+<translation id="866458870819756755">Не удалось создать пользователя.</translation>
+<translation id="8860262547644202689">Мастер поставщика учетных данных Google</translation>
+<translation id="8912362522468806198">Аккаунт Google</translation>
+<translation id="9094033019050270033">Обновить пароль</translation>
+</translationbundle>

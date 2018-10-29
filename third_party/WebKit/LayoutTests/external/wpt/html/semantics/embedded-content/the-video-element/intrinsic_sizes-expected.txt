@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS default object size is 300x150
+PASS default height is half the width
+PASS default width is twice the height
+FAIL default object size after src is removed assert_equals: expected "320px" but got "300px"
+FAIL default object size after poster is removed assert_equals: expected "102px" but got "300px"
+Harness: the test ran to completion.
+

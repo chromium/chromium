@@ -17,6 +17,7 @@ import com.google.vr.keyboard.IGvrKeyboardLoader;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -31,6 +32,7 @@ public class GvrKeyboardLoaderClient {
 
     private static IGvrKeyboardLoader sLoader;
     private static ClassLoader sRemoteClassLoader;
+    private static boolean sFailLoadForTesting;
     // GVR doesn't support setting the context twice in the application's lifetime and crashes if we
     // do so. Setting the same context wrapper is a no-op, so we keep a reference to the one we
     // create and use it across re-initialization of the keyboard api.
@@ -67,7 +69,13 @@ public class GvrKeyboardLoaderClient {
         }
     }
 
+    @VisibleForTesting
+    public static void setFailLoadForTesting(boolean shouldFail) {
+        sFailLoadForTesting = shouldFail;
+    }
+
     private static IGvrKeyboardLoader getLoader() {
+        if (sFailLoadForTesting) return null;
         if (sLoader == null) {
             ClassLoader remoteClassLoader = (ClassLoader) getRemoteClassLoader();
             if (remoteClassLoader != null) {

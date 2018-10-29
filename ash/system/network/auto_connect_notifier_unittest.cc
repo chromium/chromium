@@ -12,10 +12,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/cert_loader.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill_service_client.h"
 #include "chromeos/network/auto_connect_handler.h"
+#include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "dbus/object_path.h"
@@ -39,8 +39,8 @@ class AutoConnectNotifierTest : public AshTestBase {
   ~AutoConnectNotifierTest() override = default;
 
   void SetUp() override {
-    chromeos::CertLoader::Initialize();
-    chromeos::CertLoader::ForceHardwareBackedForTesting();
+    chromeos::NetworkCertLoader::Initialize();
+    chromeos::NetworkCertLoader::ForceHardwareBackedForTesting();
     chromeos::DBusThreadManager::Initialize();
     chromeos::NetworkHandler::Initialize();
     CHECK(chromeos::NetworkHandler::Get()->auto_connect_handler());
@@ -65,7 +65,7 @@ class AutoConnectNotifierTest : public AshTestBase {
     AshTestBase::TearDown();
     chromeos::NetworkHandler::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
-    chromeos::CertLoader::Shutdown();
+    chromeos::NetworkCertLoader::Shutdown();
   }
 
   void NotifyConnectToNetworkRequested() {

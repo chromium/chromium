@@ -51,7 +51,8 @@ v8::Local<v8::Object> ObjectBackedNativeHandler::NewInstance() {
   DCHECK_EQ(kInitialized, init_state_)
       << "Initialize() must be called before a new instance is created!";
   return v8::Local<v8::ObjectTemplate>::New(GetIsolate(), object_template_)
-      ->NewInstance();
+      ->NewInstance(GetIsolate()->GetCurrentContext())
+      .ToLocalChecked();
 }
 
 // static
@@ -204,10 +205,13 @@ void ObjectBackedNativeHandler::SetPrivate(v8::Local<v8::Context> context,
                                            v8::Local<v8::Object> obj,
                                            const char* key,
                                            v8::Local<v8::Value> value) {
-  obj->SetPrivate(context, v8::Private::ForApi(context->GetIsolate(),
-                                               v8::String::NewFromUtf8(
-                                                   context->GetIsolate(), key)),
-                  value)
+  obj->SetPrivate(
+         context,
+         v8::Private::ForApi(context->GetIsolate(),
+                             v8::String::NewFromUtf8(context->GetIsolate(), key,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()),
+         value)
       .FromJust();
 }
 
@@ -222,10 +226,12 @@ bool ObjectBackedNativeHandler::GetPrivate(v8::Local<v8::Context> context,
                                            v8::Local<v8::Object> obj,
                                            const char* key,
                                            v8::Local<v8::Value>* result) {
-  return obj->GetPrivate(context,
-                         v8::Private::ForApi(context->GetIsolate(),
-                                             v8::String::NewFromUtf8(
-                                                 context->GetIsolate(), key)))
+  return obj
+      ->GetPrivate(context, v8::Private::ForApi(context->GetIsolate(),
+                                                v8::String::NewFromUtf8(
+                                                    context->GetIsolate(), key,
+                                                    v8::NewStringType::kNormal)
+                                                    .ToLocalChecked()))
       .ToLocal(result);
 }
 
@@ -238,10 +244,12 @@ void ObjectBackedNativeHandler::DeletePrivate(v8::Local<v8::Object> obj,
 void ObjectBackedNativeHandler::DeletePrivate(v8::Local<v8::Context> context,
                                               v8::Local<v8::Object> obj,
                                               const char* key) {
-  obj->DeletePrivate(context,
-                     v8::Private::ForApi(
-                         context->GetIsolate(),
-                         v8::String::NewFromUtf8(context->GetIsolate(), key)))
+  obj->DeletePrivate(
+         context,
+         v8::Private::ForApi(context->GetIsolate(),
+                             v8::String::NewFromUtf8(context->GetIsolate(), key,
+                                                     v8::NewStringType::kNormal)
+                                 .ToLocalChecked()))
       .FromJust();
 }
 

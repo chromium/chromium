@@ -48,6 +48,13 @@ class LayoutRubyText final : public LayoutBlockFlow {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
+  bool CreatesNewFormattingContext() const final {
+    // Ruby text objects are pushed around after layout, to become flush with
+    // the associated ruby base. As such, we cannot let floats leak out from
+    // ruby text objects.
+    return true;
+  }
+
  private:
   ETextAlign TextAlignmentForLine(bool ends_with_soft_break) const override;
   void AdjustInlineDirectionLineBounds(

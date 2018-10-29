@@ -45,6 +45,26 @@ testcase.installLinuxPackageDialog = function() {
     function() {
       remoteCall.waitForElement(appId, dialog).then(this.next);
     },
+    function() {
+      repeatUntil(function() {
+        return remoteCall
+            .callRemoteTestUtil(
+                'queryAllElements', appId,
+                ['.install-linux-package-details-frame'])
+            .then(function(elements) {
+              // The details are in separate divs on multiple lines, which the
+              // test api returns as a single string. These values come from
+              // fake_cicerone_client.cc.
+              return elements[0] &&
+                  elements[0].text ==
+                      ('Details' +
+                       'Application: Fake Package' +
+                       'Version: 1.0' +
+                       'Description: A package that is fake') ||
+                  pending('Waiting for installation to start.');
+            });
+      }).then(this.next);
+    },
     // Begin installation.
     function() {
       remoteCall.callRemoteTestUtil(

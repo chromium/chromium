@@ -120,8 +120,8 @@ bool PlatformWindowAndroid::TouchEvent(JNIEnv* env,
       event_type, gfx::Point(),
       base::TimeTicks() + base::TimeDelta::FromMilliseconds(time_ms),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, pointer_id,
-                         touch_major, touch_minor, pressure),
-      ui::EF_NONE, orientation);
+                         touch_major, touch_minor, pressure, orientation),
+      ui::EF_NONE);
   touch.set_location_f(gfx::PointF(x, y));
   touch.set_root_location_f(gfx::PointF(x, y));
   delegate()->DispatchEvent(&touch);

@@ -10,14 +10,17 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/content_browser_client.h"
@@ -206,8 +209,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
 
     // Initialize the cookie store pointer on the IO thread.
     base::RunLoop run_loop;
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &ClearSiteDataHandlerBrowserTest::InitializeCookieStore,
             base::Unretained(this),
@@ -277,8 +280,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
     blink::mojom::ServiceWorkerRegistrationOptions options(
         scope_url, blink::mojom::ScriptType::kClassic,
         blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &ServiceWorkerContextWrapper::RegisterServiceWorker,
             base::Unretained(service_worker_context), js_url, options,
@@ -288,8 +291,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
 
     // Wait for its activation.
     base::RunLoop run_loop;
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&ServiceWorkerActivationObserver::SignalActivation,
                        base::Unretained(service_worker_context),
                        run_loop.QuitClosure()));
@@ -307,8 +310,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
     std::vector<ServiceWorkerUsageInfo> service_workers;
     base::RunLoop run_loop;
 
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &ServiceWorkerContextWrapper::GetAllOriginsInfo,
             base::Unretained(service_worker_context),
@@ -338,9 +341,7 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
                               0 /* process_id */, 0 /* render_frame_id */,
                               net::LOAD_ONLY_FROM_CACHE) == net::OK;
     } else {
-      std::vector<std::string> cache_keys = cache_test_util_->GetEntryKeys();
-      return std::find(cache_keys.begin(), cache_keys.end(), url.spec()) !=
-             cache_keys.end();
+      return base::ContainsValue(cache_test_util_->GetEntryKeys(), url.spec());
     }
   }
 
@@ -932,8 +933,10 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
 // TODO(msramek): Add integration tests for other storage data types, such as
 // local storage, indexed DB, etc.
 
+// Disabled due to flakiness. See https://crbug.com/894572.
 // Integration test for the deletion of cache entries.
-IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, CacheIntegrationTest) {
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
+                       DISABLED_CacheIntegrationTest) {
   GURL url1 = GetURLForHTTPSHost1("/cachetime/foo");
   GURL url2 = GetURLForHTTPSHost1("/cachetime/bar");
   GURL url3 = GetURLForHTTPSHost2("/cachetime/foo");

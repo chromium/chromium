@@ -29,8 +29,6 @@ class ASH_EXPORT CapsLockNotificationController
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
 
  private:
-  bool notification_shown_ = false;
-
   DISALLOW_COPY_AND_ASSIGN(CapsLockNotificationController);
 };
 

@@ -59,19 +59,21 @@ class ASH_EXPORT StatusAreaWidget : public views::Widget,
   void SetSystemTrayVisibility(bool visible);
 
   // Get the tray button that the system tray bubble and the notification center
-  // bubble will be anchored. Usually |system_tray_|, but when the overview
-  // button is visible (i.e. tablet mode is enabled), it returns
+  // bubble will be anchored. Usually |unified_system_tray_|, but when the
+  // overview button is visible (i.e. tablet mode is enabled), it returns
   // |overview_button_tray_|.
   TrayBackgroundView* GetSystemTrayAnchor() const;
 
   StatusAreaWidgetDelegate* status_area_widget_delegate() {
     return status_area_widget_delegate_;
   }
-  SystemTray* system_tray() { return system_tray_.get(); }
+  // TODO(tetsui): Remove this getter.  https://crbug.com/898419
+  SystemTray* system_tray() { return nullptr; }
   UnifiedSystemTray* unified_system_tray() {
     return unified_system_tray_.get();
   }
-  NotificationTray* notification_tray() { return notification_tray_.get(); }
+  // TODO(tetsui): Remove this getter.  https://crbug.com/898419
+  NotificationTray* notification_tray() { return nullptr; }
   DictationButtonTray* dictation_button_tray() {
     return dictation_button_tray_.get();
   }
@@ -121,13 +123,15 @@ class ASH_EXPORT StatusAreaWidget : public views::Widget,
  private:
   friend class StatusAreaWidgetTestApi;
 
+  // views::Widget:
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+
   StatusAreaWidgetDelegate* status_area_widget_delegate_;
 
   std::unique_ptr<OverviewButtonTray> overview_button_tray_;
   std::unique_ptr<DictationButtonTray> dictation_button_tray_;
-  std::unique_ptr<SystemTray> system_tray_;
   std::unique_ptr<UnifiedSystemTray> unified_system_tray_;
-  std::unique_ptr<NotificationTray> notification_tray_;
   std::unique_ptr<LogoutButtonTray> logout_button_tray_;
   std::unique_ptr<PaletteTray> palette_tray_;
   std::unique_ptr<VirtualKeyboardTray> virtual_keyboard_tray_;

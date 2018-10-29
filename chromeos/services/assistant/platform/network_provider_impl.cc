@@ -10,15 +10,26 @@ using ConnectionStatus = assistant_client::NetworkProvider::ConnectionStatus;
 namespace chromeos {
 namespace assistant {
 
-NetworkProviderImpl::NetworkProviderImpl()
-    : connection_type_(net::NetworkChangeNotifier::GetConnectionType()) {
-  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+NetworkProviderImpl::NetworkProviderImpl(
+    network::NetworkConnectionTracker* network_connection_tracker)
+    : network_connection_tracker_(network_connection_tracker),
+      weak_factory_(this) {
+  if (network_connection_tracker_) {
+    network_connection_tracker_->AddNetworkConnectionObserver(this);
+    network_connection_tracker_->GetConnectionType(
+        &connection_type_,
+        base::BindOnce(&NetworkProviderImpl::OnConnectionChanged,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
-NetworkProviderImpl::~NetworkProviderImpl() = default;
+NetworkProviderImpl::~NetworkProviderImpl() {
+  if (network_connection_tracker_)
+    network_connection_tracker_->RemoveNetworkConnectionObserver(this);
+}
 
-void NetworkProviderImpl::OnNetworkChanged(
-    net::NetworkChangeNotifier::ConnectionType type) {
+void NetworkProviderImpl::OnConnectionChanged(
+    network::mojom::ConnectionType type) {
   connection_type_ = type;
 }
 
@@ -26,16 +37,16 @@ ConnectionStatus NetworkProviderImpl::GetConnectionStatus() {
   // TODO(updowndota): Check actual internect connectivity in addition to the
   // physical connectivity.
   switch (connection_type_) {
-    case net::NetworkChangeNotifier::CONNECTION_UNKNOWN:
+    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
       return ConnectionStatus::UNKNOWN;
-    case net::NetworkChangeNotifier::CONNECTION_ETHERNET:
-    case net::NetworkChangeNotifier::CONNECTION_WIFI:
-    case net::NetworkChangeNotifier::CONNECTION_2G:
-    case net::NetworkChangeNotifier::CONNECTION_3G:
-    case net::NetworkChangeNotifier::CONNECTION_4G:
-    case net::NetworkChangeNotifier::CONNECTION_BLUETOOTH:
+    case network::mojom::ConnectionType::CONNECTION_ETHERNET:
+    case network::mojom::ConnectionType::CONNECTION_WIFI:
+    case network::mojom::ConnectionType::CONNECTION_2G:
+    case network::mojom::ConnectionType::CONNECTION_3G:
+    case network::mojom::ConnectionType::CONNECTION_4G:
+    case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
       return ConnectionStatus::CONNECTED;
-    case net::NetworkChangeNotifier::CONNECTION_NONE:
+    case network::mojom::ConnectionType::CONNECTION_NONE:
       return ConnectionStatus::DISCONNECTED_FROM_INTERNET;
   }
 }

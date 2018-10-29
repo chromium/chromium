@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -394,9 +395,9 @@ const DisplayLayout& DisplayManager::GetCurrentDisplayLayout() const {
   }
   DLOG(ERROR) << "DisplayLayout is requested for single display";
   // On release build, just fallback to default instead of blowing up.
-  static DisplayLayout layout;
-  layout.primary_id = active_display_list_[0].id();
-  return layout;
+  static base::NoDestructor<DisplayLayout> layout;
+  layout->primary_id = active_display_list_[0].id();
+  return *layout;
 }
 
 const DisplayLayout& DisplayManager::GetCurrentResolvedDisplayLayout() const {
@@ -714,8 +715,7 @@ void DisplayManager::RegisterDisplayRotationProperties(
 bool DisplayManager::GetSelectedModeForDisplayId(
     int64_t display_id,
     ManagedDisplayMode* mode) const {
-  std::map<int64_t, ManagedDisplayMode>::const_iterator iter =
-      display_modes_.find(display_id);
+  auto iter = display_modes_.find(display_id);
   if (iter == display_modes_.end())
     return false;
   *mode = iter->second;
@@ -741,8 +741,7 @@ bool DisplayManager::IsDisplayUIScalingEnabled() const {
 }
 
 gfx::Insets DisplayManager::GetOverscanInsets(int64_t display_id) const {
-  std::map<int64_t, ManagedDisplayInfo>::const_iterator it =
-      display_info_.find(display_id);
+  auto it = display_info_.find(display_id);
   return (it != display_info_.end()) ? it->second.overscan_insets_in_dip()
                                      : gfx::Insets();
 }
@@ -943,7 +942,7 @@ void DisplayManager::UpdateDisplaysWith(
   std::map<size_t, uint32_t> display_changes;
   std::vector<size_t> added_display_indices;
 
-  Displays::iterator curr_iter = active_display_list_.begin();
+  auto curr_iter = active_display_list_.begin();
   DisplayInfoList::const_iterator new_info_iter = new_display_info_list.begin();
 
   while (curr_iter != active_display_list_.end() ||
@@ -1068,8 +1067,8 @@ void DisplayManager::UpdateDisplaysWith(
   bool notify_primary_change =
       delegate_ ? old_primary.id() != screen_->GetPrimaryDisplay().id() : false;
 
-  for (std::map<size_t, uint32_t>::iterator iter = display_changes.begin();
-       iter != display_changes.end(); ++iter) {
+  for (auto iter = display_changes.begin(); iter != display_changes.end();
+       ++iter) {
     uint32_t metrics = iter->second;
     const Display& updated_display = active_display_list_[iter->first];
 
@@ -1240,8 +1239,7 @@ const ManagedDisplayInfo& DisplayManager::GetDisplayInfo(
     int64_t display_id) const {
   DCHECK_NE(kInvalidDisplayId, display_id);
 
-  std::map<int64_t, ManagedDisplayInfo>::const_iterator iter =
-      display_info_.find(display_id);
+  auto iter = display_info_.find(display_id);
   CHECK(iter != display_info_.end()) << display_id;
   return iter->second;
 }
@@ -1260,8 +1258,7 @@ std::string DisplayManager::GetDisplayNameForId(int64_t id) const {
   if (id == kInvalidDisplayId)
     return l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_UNKNOWN);
 
-  std::map<int64_t, ManagedDisplayInfo>::const_iterator iter =
-      display_info_.find(id);
+  auto iter = display_info_.find(id);
   if (iter != display_info_.end() && !iter->second.name().empty())
     return iter->second.name();
 

@@ -38,6 +38,12 @@ const char kEffectiveConnectionTypeThreshold[] =
 const char kNoScriptInflationPercent[] = "NoScriptInflationPercent";
 const char kNoScriptInflationBytes[] = "NoScriptInflationBytes";
 
+// Inflation parameters for estimating ResourceLoadingHints data savings.
+const char kResourceLoadingHintsInflationPercent[] =
+    "ResourceLoadingHintsInflationPercent";
+const char kResourceLoadingHintsInflationBytes[] =
+    "ResourceLoadingHintsInflationBytes";
+
 size_t GetParamValueAsSizeT(const std::string& trial_name,
                             const std::string& param_name,
                             size_t default_value) {
@@ -229,6 +235,10 @@ bool ArePreviewsAllowed() {
   return base::FeatureList::IsEnabled(features::kPreviews);
 }
 
+bool IsPreviewsOmniboxUiEnabled() {
+  return base::FeatureList::IsEnabled(features::kAndroidOmniboxPreviewsBadge);
+}
+
 bool IsOfflinePreviewsEnabled() {
   return base::FeatureList::IsEnabled(features::kOfflinePreviews);
 }
@@ -307,6 +317,17 @@ int NoScriptPreviewsInflationPercent() {
 int NoScriptPreviewsInflationBytes() {
   return GetFieldTrialParamByFeatureAsInt(features::kNoScriptPreviews,
                                           kNoScriptInflationBytes, 0);
+}
+
+int ResourceLoadingHintsPreviewsInflationPercent() {
+  return GetFieldTrialParamByFeatureAsInt(features::kResourceLoadingHints,
+                                          kResourceLoadingHintsInflationPercent,
+                                          20);
+}
+
+int ResourceLoadingHintsPreviewsInflationBytes() {
+  return GetFieldTrialParamByFeatureAsInt(
+      features::kResourceLoadingHints, kResourceLoadingHintsInflationBytes, 0);
 }
 
 }  // namespace params

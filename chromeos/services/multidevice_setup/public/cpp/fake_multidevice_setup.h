@@ -74,6 +74,13 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
     return triggered_debug_events_;
   }
 
+  std::vector<
+      std::pair<std::string,
+                mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback>>&
+  set_host_without_auth_args() {
+    return set_host_without_auth_args_;
+  }
+
  private:
   // mojom::MultiDeviceSetup:
   void SetAccountStatusChangeDelegate(
@@ -97,6 +104,12 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
       mojom::EventTypeForDebugging type,
       TriggerEventForDebuggingCallback callback) override;
 
+  // MultiDeviceSetupBase:
+  void SetHostDeviceWithoutAuthToken(
+      const std::string& host_device_id,
+      mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback)
+      override;
+
   mojom::AccountStatusChangeDelegatePtr delegate_;
   mojo::InterfacePtrSet<mojom::HostStatusObserver> host_status_observers_;
   mojo::InterfacePtrSet<mojom::FeatureStateObserver> feature_state_observers_;
@@ -116,6 +129,10 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
   std::vector<
       std::pair<mojom::EventTypeForDebugging, TriggerEventForDebuggingCallback>>
       triggered_debug_events_;
+  std::vector<
+      std::pair<std::string,
+                mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback>>
+      set_host_without_auth_args_;
 
   mojo::BindingSet<mojom::MultiDeviceSetup> bindings_;
 

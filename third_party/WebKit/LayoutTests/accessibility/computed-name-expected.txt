@@ -1,6 +1,5 @@
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS name is "alert name"
 PASS name is "alertdialog name"
 PASS name is "application name"

@@ -1,4 +1,4 @@
-Test that constructing a Blob with a sparse array doesn't trigger an assertion failure. 
+Test that constructing a Blob with a sparse array doesn't trigger an assertion failure.
 https://bugs.webkit.org/show_bug.cgi?id=101869
 DONE
 

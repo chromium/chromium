@@ -39,7 +39,7 @@ class MojoSharedMemory;
 // * Add a new data source name in perfetto_service.mojom.
 // * Register the data source with Perfetto in ProducerHost::OnConnect.
 // * Construct the new implementation when requested to
-//   in ProducerClient::CreateDataSourceInstance.
+//   in ProducerClient::StartDataSource.
 class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
     : public mojom::ProducerClient,
       public perfetto::TracingService::ProducerEndpoint {
@@ -96,13 +96,10 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
   // Called through Mojo by the ProducerHost on the service-side to control
   // tracing and toggle specific DataSources.
   void OnTracingStart(mojo::ScopedSharedBufferHandle shared_memory) override;
-  void CreateDataSourceInstance(
-      uint64_t id,
-      mojom::DataSourceConfigPtr data_source_config) override;
+  void StartDataSource(uint64_t id,
+                       mojom::DataSourceConfigPtr data_source_config) override;
 
-  void TearDownDataSourceInstance(
-      uint64_t id,
-      TearDownDataSourceInstanceCallback callback) override;
+  void StopDataSource(uint64_t id, StopDataSourceCallback callback) override;
   void Flush(uint64_t flush_request_id,
              const std::vector<uint64_t>& data_source_ids) override;
 

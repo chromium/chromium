@@ -15,8 +15,11 @@
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/dns/dns_client.h"
-#include "net/dns/dns_config_service.h"
 #include "net/socket/socket_test_util.h"
+
+namespace net {
+struct DnsConfig;
+}
 
 namespace certificate_transparency {
 

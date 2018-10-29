@@ -110,7 +110,7 @@ class TextRendererTest : public testing::Test {
                            const std::string& id,
                            const std::string& content,
                            const std::string& settings) {
-    for (TextTrackStreams::iterator itr = text_track_streams_.begin();
+    for (auto itr = text_track_streams_.begin();
          itr != text_track_streams_.end(); ++itr) {
       (*itr)->SatisfyPendingRead(start, duration, id, content, settings);
     }

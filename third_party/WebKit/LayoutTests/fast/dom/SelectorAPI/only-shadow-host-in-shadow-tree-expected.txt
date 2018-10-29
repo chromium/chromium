@@ -3,9 +3,9 @@ crbug.com/359854: test for traversing elements in shadow tree.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.querySelector('body /deep/ #target').id is "target"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

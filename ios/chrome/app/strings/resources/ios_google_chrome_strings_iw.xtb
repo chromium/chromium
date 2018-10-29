@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">‏Chromium מאפשר גישה לחשבונות באינטרנט וכך חוסך לך זמן. ניתן להוסיף או להסיר חשבונות בקטע 'הגדרות'.</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
 <translation id="3345341804167540816">‏להשתמש ב-Chrome בכל מקום</translation>
-<translation id="3678774398092457402">‏האם אתה מעוניין ש-Chrome ישמור את הסיסמה שלך עבור אתר זה?</translation>
 <translation id="384394811301901750">‏Google Chrome לא יכול להשתמש עכשיו במצלמה</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">‏אתה מחליף חשבונות סינכרון מ-<ph name="USER_EMAIL1" /> ל-<ph name="USER_EMAIL2" />. הנתונים הקיימים שלך ב-Chrome מנוהלים על-ידי <ph name="DOMAIN" />. פעולה זו תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו ב-<ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943">‏אפשר תמיד להתאים אישית את <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />. Google עשויה להשתמש בתוכן מאתרים שאליהם נכנסת, באינטראקציות בדפדפן ובפעילות גלישה כדי להתאים אישית את Chrome ואת שירותי Google, כמו Translate, החיפוש ומודעות.</translation>
 <translation id="5639704535586432836">‏עבור אל 'הגדרות' &gt; 'פרטיות' &gt; 'מצלמה' &gt; Google Chrome והפעל את המצלמה.</translation>
 <translation id="5642200033778930880">‏Google Chrome אינו יכול להשתמש במצלמה במצב תצוגה מפוצלת</translation>
-<translation id="5703130498371792817">‏נהנה מ-Chrome? ‏<ph name="BEGIN_LINK" />דרג את האפליקציה<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">‏טיפ למשתמשי Chrome. חלק מהלחצנים נמצאים עכשיו בחלק התחתון של המסך, כמו 'הקודם', 'קדימה' ו'חיפוש'.</translation>
 <translation id="6036420186814142909">‏Google Chrome כולל תכונות שעוזרות לך לנהל את נתוני האינטרנט שלך ואת המהירות שבה תוכל לטעון דפים.
 <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">‏התנאים וההגבלות של Google Chrome</translation>
 <translation id="7165736900384873061">‏התחלת השימוש בסורק ה-QR של Google Chrome</translation>
 <translation id="7172660552945675509">‏טיפ: <ph name="BEGIN_LINK" />העבר את Chrome לשורת המשימות<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">‏Chrome משתמש ב-Face ID כדי להבטיח גישה מאושרת לסיסמאות שלך.</translation>
 <translation id="7265369419224458312">‏גש מכאן ישירות לכרטיסיות שפתחת במחשב. פתח את Chrome במחשב, עבור אל התפריט ובחר באפשרות 'היכנס אל Chrome...'</translation>
 <translation id="728488472449859922">‏הפעלת סורק ה-QR של Google Chrome</translation>
 <translation id="7400722733683201933">‏אודות Google Chrome</translation>

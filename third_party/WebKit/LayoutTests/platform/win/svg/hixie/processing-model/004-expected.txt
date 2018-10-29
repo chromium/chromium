@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x20
-  LayoutBlockFlow {svg} at (0,0) size 800x20 [color=#008000]
-    LayoutInline {rect} at (0,0) size 0x0
-    LayoutText {#text} at (0,0) size 152x19
-      text run at (0,0) width 152: "This line should be green."

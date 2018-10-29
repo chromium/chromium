@@ -264,8 +264,6 @@ TEST_F(BbrSenderTest, SimpleTransfer) {
   EXPECT_EQ(kDefaultWindowTCP, sender_->GetCongestionWindow());
   // At startup make sure we can send.
   EXPECT_TRUE(sender_->CanSend(0));
-  // Make sure we can send.
-  EXPECT_TRUE(sender_->CanSend(0));
   // And that window is un-affected.
   EXPECT_EQ(kDefaultWindowTCP, sender_->GetCongestionWindow());
 
@@ -299,6 +297,46 @@ TEST_F(BbrSenderTest, SimpleTransferSmallBuffer) {
   ExpectApproxEq(kTestLinkBandwidth, sender_->ExportDebugState().max_bandwidth,
                  0.01f);
   EXPECT_GE(bbr_sender_.connection()->GetStats().packets_lost, 0u);
+  EXPECT_FALSE(sender_->ExportDebugState().last_sample_is_app_limited);
+}
+
+TEST_F(BbrSenderTest, SimpleTransferEarlyPacketLoss) {
+  SetQuicReloadableFlag(quic_bbr_no_bytes_acked_in_startup_recovery, true);
+  // Enable rate based startup so the recovery window doesn't hide the true
+  // congestion_window_ in GetCongestionWindow().
+  SetConnectionOption(kBBS1);
+  // Disable Ack Decimation on the receiver, because it can increase srtt.
+  QuicConnectionPeer::SetAckMode(receiver_.connection(),
+                                 QuicConnection::AckMode::TCP_ACKING);
+  CreateDefaultSetup();
+
+  // At startup make sure we are at the default.
+  EXPECT_EQ(kDefaultWindowTCP, sender_->GetCongestionWindow());
+  // Verify that Sender is in slow start.
+  EXPECT_TRUE(sender_->InSlowStart());
+  // At startup make sure we can send.
+  EXPECT_TRUE(sender_->CanSend(0));
+  // And that window is un-affected.
+  EXPECT_EQ(kDefaultWindowTCP, sender_->GetCongestionWindow());
+
+  // Transfer 12MB.
+  bbr_sender_.AddBytesToTransfer(12 * 1024 * 1024);
+  // Drop the first packet.
+  receiver_.DropNextIncomingPacket();
+  bool simulator_result = simulator_.RunUntilOrTimeout(
+      [this]() {
+        if (sender_->InRecovery()) {
+          // Two packets are acked before the first is declared lost.
+          EXPECT_LE(sender_->GetCongestionWindow(),
+                    (kDefaultWindowTCP + 2 * kDefaultTCPMSS));
+        }
+        return bbr_sender_.bytes_to_transfer() == 0 || !sender_->InSlowStart();
+      },
+      QuicTime::Delta::FromSeconds(30));
+  EXPECT_TRUE(simulator_result) << "Simple transfer failed.  Bytes remaining: "
+                                << bbr_sender_.bytes_to_transfer();
+  EXPECT_EQ(BbrSender::DRAIN, sender_->ExportDebugState().mode);
+  EXPECT_EQ(1u, bbr_sender_.connection()->GetStats().packets_lost);
   EXPECT_FALSE(sender_->ExportDebugState().last_sample_is_app_limited);
 }
 
@@ -1214,16 +1252,14 @@ TEST_F(BbrSenderTest, SimpleCompetition) {
   // Transfer 10% of data in first transfer.
   bbr_sender_.AddBytesToTransfer(transfer_size);
   bool simulator_result = simulator_.RunUntilOrTimeout(
-      [this, transfer_size]() {
-        return receiver_.bytes_received() >= 0.1 * transfer_size;
-      },
+      [this]() { return receiver_.bytes_received() >= 0.1 * transfer_size; },
       transfer_time);
   ASSERT_TRUE(simulator_result);
 
   // Start the second transfer and wait until both finish.
   competing_sender_.AddBytesToTransfer(transfer_size);
   simulator_result = simulator_.RunUntilOrTimeout(
-      [this, transfer_size]() {
+      [this]() {
         return receiver_.bytes_received() == transfer_size &&
                competing_receiver_.bytes_received() == transfer_size;
       },

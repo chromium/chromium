@@ -75,7 +75,7 @@ void AutocompleteController::OnResultChanged(bool default_match_changed) {
   auto suggestions = std::make_unique<OmniboxSuggestions>();
   for (const auto& match : autocomplete_controller_->result()) {
     const gfx::VectorIcon* icon = &AutocompleteMatch::TypeToVectorIcon(
-        match.type, false, false, match.document_type);
+        match.type, false, match.document_type);
     suggestions->suggestions.emplace_back(OmniboxSuggestion(
         match.contents, match.description, match.contents_class,
         match.description_class, icon, match.destination_url,

@@ -26,7 +26,7 @@ smb_client::SmbService* GetSmbService(Profile* profile) {
 base::Value BuildShareList(const std::vector<smb_client::SmbUrl>& shares) {
   base::Value shares_list(base::Value::Type::LIST);
   for (const auto& share : shares) {
-    shares_list.GetList().push_back(base::Value(share.ToString()));
+    shares_list.GetList().push_back(base::Value(share.GetWindowsUNCString()));
   }
   return shares_list;
 }
@@ -49,15 +49,17 @@ void SmbHandler::RegisterMessages() {
 }
 
 void SmbHandler::HandleSmbMount(const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetSize());
+  CHECK_EQ(5U, args->GetSize());
   std::string mount_url;
   std::string mount_name;
   std::string username;
   std::string password;
+  bool use_kerberos;
   CHECK(args->GetString(0, &mount_url));
   CHECK(args->GetString(1, &mount_name));
   CHECK(args->GetString(2, &username));
   CHECK(args->GetString(3, &password));
+  CHECK(args->GetBoolean(4, &use_kerberos));
 
   smb_client::SmbService* const service = GetSmbService(profile_);
   if (!service) {
@@ -70,9 +72,10 @@ void SmbHandler::HandleSmbMount(const base::ListValue* args) {
 
   auto mount_response = base::BindOnce(&SmbHandler::HandleSmbMountResponse,
                                        weak_ptr_factory_.GetWeakPtr());
-  auto mount_call = base::BindOnce(
-      &smb_client::SmbService::Mount, base::Unretained(service), mo,
-      base::FilePath(mount_url), username, password, std::move(mount_response));
+  auto mount_call =
+      base::BindOnce(&smb_client::SmbService::Mount, base::Unretained(service),
+                     mo, base::FilePath(mount_url), username, password,
+                     use_kerberos, std::move(mount_response));
 
   if (host_discovery_done_) {
     std::move(mount_call).Run();

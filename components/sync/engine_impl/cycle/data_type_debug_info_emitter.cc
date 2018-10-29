@@ -14,7 +14,7 @@ namespace syncer {
 namespace {
 
 const char kModelTypeEntityChangeHistogramPrefix[] =
-    "Sync.ModelTypeEntityChange.";
+    "Sync.ModelTypeEntityChange2.";
 
 // Values corrospond to a UMA histogram, do not modify, or delete any values.
 // Add new values only directly before COUNT.
@@ -23,8 +23,9 @@ enum ModelTypeEntityChange {
   LOCAL_CREATION = 1,
   LOCAL_UPDATE = 2,
   REMOTE_DELETION = 3,
-  REMOTE_UPDATE = 4,
-  MODEL_TYPE_ENTITY_CHANGE_COUNT = 5
+  REMOTE_NON_INITIAL_UPDATE = 4,
+  REMOTE_INITIAL_UPDATE = 5,
+  MODEL_TYPE_ENTITY_CHANGE_COUNT = 6
 };
 
 void EmitNewChangesToUma(int count,
@@ -108,19 +109,25 @@ void DataTypeDebugInfoEmitter::EmitUpdateCountersUpdate() {
 
   // Emit the newly added counts to UMA.
   EmitNewChangesToUma(
-      /*count=*/update_counters_.num_tombstone_updates_received -
-          emitted_update_counters_.num_tombstone_updates_received,
-      /*bucket=*/REMOTE_DELETION, histogram_);
-  // The REMOTE_UPDATE type is not explicitly stored, we need to compute it as a
-  // diff of (all - deletions).
-  int emitted_remote_updates_count =
-      emitted_update_counters_.num_updates_received -
-      emitted_update_counters_.num_tombstone_updates_received;
-  int remote_updates_count = update_counters_.num_updates_received -
-                             update_counters_.num_tombstone_updates_received;
+      /*count=*/update_counters_.num_initial_updates_received -
+          emitted_update_counters_.num_initial_updates_received,
+      /*bucket=*/REMOTE_INITIAL_UPDATE, histogram_);
   EmitNewChangesToUma(
-      /*count=*/remote_updates_count - emitted_remote_updates_count,
-      /*bucket=*/REMOTE_UPDATE, histogram_);
+      /*count=*/update_counters_.num_non_initial_tombstone_updates_received -
+          emitted_update_counters_.num_non_initial_tombstone_updates_received,
+      /*bucket=*/REMOTE_DELETION, histogram_);
+  // The remote_non_initial_update type is not explicitly stored, we need to
+  // compute it as a diff of (all - deletions).
+  int emitted_remote_non_initial_updates_count =
+      emitted_update_counters_.num_non_initial_updates_received -
+      emitted_update_counters_.num_non_initial_tombstone_updates_received;
+  int remote_non_initial_updates_count =
+      update_counters_.num_non_initial_updates_received -
+      update_counters_.num_non_initial_tombstone_updates_received;
+  EmitNewChangesToUma(
+      /*count=*/remote_non_initial_updates_count -
+          emitted_remote_non_initial_updates_count,
+      /*bucket=*/REMOTE_NON_INITIAL_UPDATE, histogram_);
 
   // Mark the current state of the counters as uploaded to UMA.
   emitted_update_counters_ = update_counters_;

@@ -70,7 +70,7 @@ bool AppViewGuest::CompletePendingRequest(
     const std::string& guest_extension_id,
     content::RenderProcessHost* guest_render_process_host) {
   PendingResponseMap* response_map = pending_response_map.Pointer();
-  PendingResponseMap::iterator it = response_map->find(guest_instance_id);
+  auto it = response_map->find(guest_instance_id);
   // Kill the requesting process if it is not the real guest.
   if (it == response_map->end()) {
     // The requester used an invalid |guest_instance_id|.

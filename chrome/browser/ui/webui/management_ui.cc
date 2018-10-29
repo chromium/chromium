@@ -19,8 +19,17 @@ content::WebUIDataSource* CreateManagementUIHtmlSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIManagementHost);
   source->AddLocalizedString("title", IDS_MANAGEMENT_TITLE);
+  source->AddLocalizedString("deviceReporting",
+                             IDS_MANAGEMENT_DEVICE_REPORTING);
   source->AddLocalizedString("deviceConfiguration",
                              IDS_MANAGEMENT_DEVICE_CONFIGURATION);
+  source->AddLocalizedString("extensionReporting",
+                             IDS_MANAGEMENT_EXTENSION_REPORTING);
+  source->AddLocalizedString("extensionsInstalled",
+                             IDS_MANAGEMENT_EXTENSIONS_INSTALLED);
+  source->AddLocalizedString("extensionName", IDS_MANAGEMENT_EXTENSIONS_NAME);
+  source->AddLocalizedString("extensionPermissions",
+                             IDS_MANAGEMENT_EXTENSIONS_PERMISSIONS);
   source->AddLocalizedString(kManagementLogUploadEnabled,
                              IDS_MANAGEMENT_LOG_UPLOAD_ENABLED);
   source->AddLocalizedString(kManagementReportActivityTimes,

@@ -23,5 +23,8 @@ const char kInvalidatorSavedInvalidations[] = "invalidator.saved_invalidations";
 const char kInvalidationServiceUseGCMChannel[] =
     "invalidation_service.use_gcm_channel";
 
+// The prefference for storing client ID for the invalidator.
+const char kFCMInvalidationClientIDCache[] = "fcm.invalidation.client_id_cache";
+
 }  // namespace prefs
 }  // namespace invalidation

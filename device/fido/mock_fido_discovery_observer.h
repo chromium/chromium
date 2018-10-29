@@ -5,24 +5,32 @@
 #ifndef DEVICE_FIDO_MOCK_FIDO_DISCOVERY_OBSERVER_H_
 #define DEVICE_FIDO_MOCK_FIDO_DISCOVERY_OBSERVER_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "device/fido/fido_discovery.h"
+#include "device/fido/fido_device_discovery.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace device {
 
-class FidoDevice;
+class FidoAuthenticator;
 
-class MockFidoDiscoveryObserver : public FidoDiscovery::Observer {
+class MockFidoDiscoveryObserver : public FidoDiscoveryBase::Observer {
  public:
   MockFidoDiscoveryObserver();
   ~MockFidoDiscoveryObserver() override;
 
-  MOCK_METHOD2(DiscoveryStarted, void(FidoDiscovery*, bool));
-  MOCK_METHOD2(DiscoveryStopped, void(FidoDiscovery*, bool));
-  MOCK_METHOD2(DeviceAdded, void(FidoDiscovery*, FidoDevice*));
-  MOCK_METHOD2(DeviceRemoved, void(FidoDiscovery*, FidoDevice*));
+  MOCK_METHOD2(DiscoveryStarted, void(FidoDiscoveryBase*, bool));
+  MOCK_METHOD2(DiscoveryStopped, void(FidoDiscoveryBase*, bool));
+  MOCK_METHOD2(AuthenticatorAdded,
+               void(FidoDiscoveryBase*, FidoAuthenticator*));
+  MOCK_METHOD2(AuthenticatorRemoved,
+               void(FidoDiscoveryBase*, FidoAuthenticator*));
+  MOCK_METHOD3(AuthenticatorIdChanged,
+               void(FidoDiscoveryBase*, const std::string&, std::string));
+  MOCK_METHOD3(AuthenticatorPairingModeChanged,
+               void(FidoDiscoveryBase*, const std::string&, bool));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockFidoDiscoveryObserver);

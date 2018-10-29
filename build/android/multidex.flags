@@ -6,9 +6,3 @@
 # can be used to create the main dex list.
 -keepattributes *Annotations*
 -keep @interface org.chromium.base.annotations.MainDex
-
-# Keep the members only if the class is kept. Also required for the annotation
-# itself to be kept, which is necessary for main dex list processing.
--keepclassmembers,allowobfuscation class * {
-  @**.MainDex *;
-}

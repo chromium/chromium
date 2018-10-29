@@ -14,8 +14,6 @@ class ImmersiveHandlerFactoryMus : public ash::ImmersiveHandlerFactory {
   ~ImmersiveHandlerFactoryMus() override;
 
   // ImmersiveHandlerFactory:
-  std::unique_ptr<ash::ImmersiveFocusWatcher> CreateFocusWatcher(
-      ash::ImmersiveFullscreenController* controller) override;
   std::unique_ptr<ash::ImmersiveGestureHandler> CreateGestureHandler(
       ash::ImmersiveFullscreenController* controller) override;
 

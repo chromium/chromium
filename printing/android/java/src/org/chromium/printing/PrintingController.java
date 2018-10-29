@@ -68,7 +68,7 @@ public interface PrintingController {
      * counterpart is created, and then the Java. PrintingController implementation
      * needs this to interact with the native side, since JNI is built on PrintingContext.
      **/
-    void setPrintingContext(final PrintingContextInterface printingContext);
+    void setPrintingContext(final PrintingContext printingContext);
 
     /**
      * @return Whether a complete PDF generation cycle inside Chromium has been completed.

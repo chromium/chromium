@@ -23,7 +23,7 @@ class AbortController final : public ScriptWrappable {
   static AbortController* Create(ExecutionContext*);
   ~AbortController() override;
 
-  // AbortController.idl
+  // abort_controller.idl
 
   // https://dom.spec.whatwg.org/#dom-abortcontroller-signal
   AbortSignal* signal() const { return signal_.Get(); }

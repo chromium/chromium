@@ -47,7 +47,16 @@ struct WebFloatPoint;
 
 class WebFrameWidget : public WebWidget {
  public:
-  BLINK_EXPORT static WebFrameWidget* Create(WebWidgetClient*, WebLocalFrame*);
+  // Makes a WebFrameWidget that wraps a pre-existing WebWidget from the
+  // RenderView/WebView, for a new local main frame.
+  BLINK_EXPORT static WebFrameWidget* CreateForMainFrame(
+      WebWidgetClient*,
+      WebLocalFrame* main_frame);
+  // Makes a WebFrameWidget that wraps a WebLocalFrame that is not a main frame,
+  // providing a WebWidget to interact with the child local root frame.
+  BLINK_EXPORT static WebFrameWidget* CreateForChildLocalRoot(
+      WebWidgetClient*,
+      WebLocalFrame* local_root);
 
   // Sets the visibility of the WebFrameWidget.
   // We still track page-level visibility, but additionally we need to notify a

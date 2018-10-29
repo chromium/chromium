@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_store_default.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
+#include "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/sync/web_view_profile_sync_service_factory.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #include "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
@@ -63,6 +64,7 @@ void WebViewPasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged(
   password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
       password_store.get(), sync_service,
       browser_state->GetSharedURLLoaderFactory(),
+      ApplicationContext::GetInstance()->GetNetworkConnectionTracker(),
       browser_state->GetStatePath());
 }
 

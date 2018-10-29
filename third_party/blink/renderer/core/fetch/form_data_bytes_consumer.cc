@@ -185,15 +185,23 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
       if (!data_pipe_consumer_) {
         network::mojom::blink::DataPipeGetterPtr* data_pipe_getter =
             iter_->data_pipe_getter_->GetPtr();
-        mojo::DataPipe data_pipe;
+
+        mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
+        mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
+        MojoResult rv = mojo::CreateDataPipe(nullptr, &pipe_producer_handle,
+                                             &pipe_consumer_handle);
+        if (rv != MOJO_RESULT_OK) {
+          return Result::kError;
+        }
+
         (*data_pipe_getter)
             ->Read(
-                std::move(data_pipe.producer_handle),
+                std::move(pipe_producer_handle),
                 WTF::Bind(&DataPipeAndDataBytesConsumer::DataPipeGetterCallback,
                           WrapWeakPersistent(this)));
         std::unique_ptr<WebDataConsumerHandle> consumer_handle =
             Platform::Current()->CreateDataConsumerHandle(
-                std::move(data_pipe.consumer_handle));
+                std::move(pipe_consumer_handle));
         data_pipe_consumer_ = new BytesConsumerForDataConsumerHandle(
             execution_context_, std::move(consumer_handle));
         if (client_)
@@ -468,7 +476,7 @@ class ComplexFormDataBytesConsumer final : public BytesConsumer {
 
  private:
   scoped_refptr<EncodedFormData> form_data_;
-  Member<BytesConsumer> blob_bytes_consumer_;
+  TraceWrapperMember<BytesConsumer> blob_bytes_consumer_;
 };
 
 }  // namespace

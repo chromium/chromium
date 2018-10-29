@@ -348,11 +348,11 @@ void WindowSelector::Init(const WindowList& windows,
     for (std::unique_ptr<WindowGrid>& window_grid : grid_list_) {
       window_grid->PrepareForOverview();
 
-      // Check if there is any window that's being dragged in the grid. If so,
-      // do not do the animation when entering overview.
-      aura::Window* dragged_window =
-          GetDraggedWindow(window_grid->root_window(), mru_window_list);
-      if (dragged_window) {
+      // Do not animate if there is any window that is being dragged in the
+      // grid.
+      if (enter_exit_overview_type_ == EnterExitOverviewType::kWindowDragged) {
+        if (!mru_window_list.empty())
+          DCHECK(GetDraggedWindow(window_grid->root_window(), mru_window_list));
         window_grid->PositionWindows(/*animate=*/false);
       } else if (enter_exit_overview_type_ ==
                  EnterExitOverviewType::kWindowsMinimized) {
@@ -361,7 +361,8 @@ void WindowSelector::Init(const WindowList& windows,
       } else {
         // EnterExitOverviewType::kSwipeFromShelf is an exit only type, so it
         // should not appear here.
-        DCHECK_EQ(enter_exit_overview_type_, EnterExitOverviewType::kNormal);
+        DCHECK_NE(enter_exit_overview_type_,
+                  EnterExitOverviewType::kSwipeFromShelf);
         window_grid->CalculateWindowListAnimationStates(
             /*selected_item=*/nullptr, OverviewTransition::kEnter);
         window_grid->PositionWindows(/*animate=*/true, /*ignore_item=*/nullptr,
@@ -463,6 +464,11 @@ void WindowSelector::CancelSelection() {
 }
 
 void WindowSelector::OnGridEmpty(WindowGrid* grid) {
+  // TODO(crbug.com/881089): Speculative fix based on the crash stack, needs
+  // confirming.
+  if (IsShuttingDown())
+    return;
+
   size_t index = 0;
   // If there are no longer any items on any of the grids, shutdown,
   // otherwise the empty grids will remain blurred but will have no items.
@@ -723,17 +729,22 @@ void WindowSelector::SetWindowListNotAnimatedWhenExiting(
 }
 
 void WindowSelector::UpdateGridAtLocationYPositionAndOpacity(
-    const gfx::Point& location,
+    int64_t display_id,
     int new_y,
     float opacity,
     const gfx::Rect& work_area,
     UpdateAnimationSettingsCallback callback) {
-  WindowGrid* grid =
-      GetGridWithRootWindow(display::Screen::GetScreen()
-                                ->GetWindowAtScreenPoint(location)
-                                ->GetRootWindow());
+  WindowGrid* grid = GetGridWithRootWindow(
+      ash::Shell::Get()->GetRootWindowForDisplayId(display_id));
   if (grid)
     grid->UpdateYPositionAndOpacity(new_y, opacity, work_area, callback);
+}
+
+void WindowSelector::UpdateMaskAndShadow(bool show) {
+  for (auto& grid : grid_list_) {
+    for (auto& window : grid->window_list())
+      window->UpdateMaskAndShadow(show);
+  }
 }
 
 void WindowSelector::OnDisplayRemoved(const display::Display& display) {
@@ -814,9 +825,14 @@ void WindowSelector::OnWindowActivated(ActivationReason reason,
     return;
   }
 
-  // Do not cancel the overview mode if the window activation was caused by
+  // Do not cancel overview mode if the window activation was caused by
   // snapping window to one side of the screen.
   if (Shell::Get()->IsSplitViewModeActive())
+    return;
+
+  // Do not cancel overview mode if the window activation was caused while
+  // dragging overview mode offscreen.
+  if (IsSlidingOutOverviewFromShelf())
     return;
 
   // Don't restore focus on exit if a window was just activated.
@@ -870,9 +886,9 @@ void WindowSelector::ContentsChanged(views::Textfield* sender,
   for (std::unique_ptr<WindowGrid>& grid : grid_list_)
     grid->FilterItems(new_contents);
 
-  // If the selection widget is not active, execute a Move() command so that it
-  // shows up on the first undimmed item.
-  if (grid_list_[selected_grid_index_]->is_selecting())
+  // If the selection widget is not active and the filter string is not empty,
+  // execute a Move() command so that it shows up on the first undimmed item.
+  if (grid_list_[selected_grid_index_]->is_selecting() || new_contents.empty())
     return;
   Move(WindowSelector::RIGHT, false);
 }

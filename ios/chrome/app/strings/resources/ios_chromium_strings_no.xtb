@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Få smarte funksjoner fra Google i Chromium</translation>
 <translation id="2730884209570016437">Chromium kan ikke bruke kameraet fordi det brukes av en annen app</translation>
 <translation id="2797210818057553964">Du kan når som helst tilpasse dette i Chromium-innstillingene</translation>
+<translation id="2915596697727466327">Chromium bruker Face ID til å sikre at bare godkjente personer får tilgang til passordene dine.</translation>
 <translation id="3256316712990552818">Kopiert til Chromium</translation>
 <translation id="3413120535237193088">Logg på Chromium for å få bokmerkene dine på alle enhetene du bruker.</translation>
 <translation id="3473048256428424907">Slå på Chromium QR-skanneren</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Faner du har åpnet i Chromium på de andre enhetene dine, vises her.</translation>
 <translation id="495292094137889840">Begynn å bruke Chromium QR-skanneren</translation>
 <translation id="5231355151045086930">Vil du logge av Chromium?</translation>
-<translation id="5416919929805616771">Liker du Chromium? <ph name="BEGIN_LINK" />Vurder denne appen<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5945387852661427312">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir dermed administratoren for dette domenet kontroll over Chromium-dataene dine. Dataene dine blir knyttet til denne kontoen permanent. Når du logger av Chromium, slettes dataene dine fra denne enheten, men de er fortsatt lagret i Google-kontoen din.</translation>
 <translation id="6068866989048414399">Vilkår for Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Du bytter synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. De eksisterende Chromium-dataene dine administreres av <ph name="DOMAIN" />. Dette fører til at dataene dine slettes fra denne enheten, men de blir værende i <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Flytt Chromium til dokken<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Få en bedre Google-opplevelse i Chromium basert på hvor du er.</translation>
-<translation id="8353224596138547809">Vil du at Chromium skal lagre passordet du bruker på dette nettstedet?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" /> kan tilpasses når som helst. Google kan bruke innhold på nettsteder du besøker, nettleserinteraksjoner og annen aktivitet for å gi Chromium og Google-tjenester (som Oversetter, Søk og annonser) et personlig preg</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="8809780021347235332">For å lagre bilder, trykk på Innstillinger for å la Chromium bruke bildene dine.</translation>

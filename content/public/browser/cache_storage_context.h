@@ -17,12 +17,12 @@ namespace content {
 class CacheStorageContext
     : public base::RefCountedThreadSafe<CacheStorageContext> {
  public:
-  using GetUsageInfoCallback = base::Callback<void(
+  using GetUsageInfoCallback = base::OnceCallback<void(
       const std::vector<CacheStorageUsageInfo>& usage_info)>;
 
   // Methods used in response to browsing data and quota manager requests.
   // Must be called on the IO thread.
-  virtual void GetAllOriginsInfo(const GetUsageInfoCallback& callback) = 0;
+  virtual void GetAllOriginsInfo(GetUsageInfoCallback callback) = 0;
   virtual void DeleteForOrigin(const GURL& origin_url) = 0;
 
  protected:

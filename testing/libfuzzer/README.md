@@ -11,10 +11,11 @@
 
 This directory contains integration between [libFuzzer] and Chromium.
 LibFuzzer is an in-process coverage-driven evolutionary fuzzing engine. It helps
-engineers to uncover potential security & stability problems earlier.
+engineers to uncover potential security & stability problems.
 
 *** note
-**Requirements:** libFuzzer in Chromium is supported with Linux and Mac only.
+**Requirements:** libFuzzer in Chromium is supported with Linux, Mac, and
+Windows only.
 ***
 
 ## Integration Status

@@ -12,7 +12,6 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.WindowInsets;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ObserverList;
 
 import java.lang.reflect.Method;
@@ -50,7 +49,7 @@ public class InsetObserverView extends View {
      * @return an instance of a InsetObserverView.
      */
     public static InsetObserverView create(Context context) {
-        if (BuildInfo.isAtLeastP()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return new InsetObserverViewApi28(context);
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return new InsetObserverView(context);

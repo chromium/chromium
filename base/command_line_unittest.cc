@@ -84,7 +84,7 @@ TEST(CommandLineTest, CommandLineConstructor) {
   const CommandLine::StringVector& args = cl.GetArgs();
   ASSERT_EQ(8U, args.size());
 
-  std::vector<CommandLine::StringType>::const_iterator iter = args.begin();
+  auto iter = args.begin();
   EXPECT_EQ(FILE_PATH_LITERAL("flim"), *iter);
   ++iter;
   EXPECT_EQ(FILE_PATH_LITERAL("-"), *iter);

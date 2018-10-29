@@ -102,6 +102,10 @@ class LockManager::LockRequestImpl final
   }
 
   void Failed() override {
+    // Ensure a local reference to the callback's wrapper is retained, as it
+    // can no longer be traced once removed from |manager_|'s list.
+    auto* callback = ToV8PersistentCallbackFunction(callback_.Release());
+
     manager_->RemovePendingRequest(this);
     binding_.Close();
 
@@ -113,7 +117,7 @@ class LockManager::LockRequestImpl final
     // the lock was not available.
     ScriptState::Scope scope(script_state);
     v8::TryCatch try_catch(script_state->GetIsolate());
-    v8::Maybe<ScriptValue> result = callback_->Invoke(nullptr, nullptr);
+    v8::Maybe<ScriptValue> result = callback->Invoke(nullptr, nullptr);
     if (try_catch.HasCaught()) {
       resolver_->Reject(try_catch.Exception());
     } else if (!result.IsNothing()) {
@@ -124,6 +128,10 @@ class LockManager::LockRequestImpl final
   void Granted(mojom::blink::LockHandlePtr handle) override {
     DCHECK(binding_.is_bound());
     DCHECK(handle.is_bound());
+
+    // Ensure a local reference to the callback's wrapper is retained, as it
+    // can no longer be traced once removed from |manager_|'s list.
+    auto* callback = ToV8PersistentCallbackFunction(callback_.Release());
 
     manager_->RemovePendingRequest(this);
     binding_.Close();
@@ -140,7 +148,7 @@ class LockManager::LockRequestImpl final
 
     ScriptState::Scope scope(script_state);
     v8::TryCatch try_catch(script_state->GetIsolate());
-    v8::Maybe<ScriptValue> result = callback_->Invoke(nullptr, lock);
+    v8::Maybe<ScriptValue> result = callback->Invoke(nullptr, lock);
     if (try_catch.HasCaught()) {
       lock->HoldUntil(
           ScriptPromise::Reject(script_state, try_catch.Exception()),

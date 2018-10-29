@@ -35,7 +35,7 @@ class VrTestContext : public vr::UiBrowserInterface {
   explicit VrTestContext(GraphicsDelegate* compositor_delgate);
   ~VrTestContext() override;
 
-  // TODO(acondor): Make use of BrowserRenderer (http://crbug.com/767282).
+  // TODO(crbug/895313): Make use of BrowserRenderer.
   void DrawFrame();
   void HandleInput(ui::Event* event);
 

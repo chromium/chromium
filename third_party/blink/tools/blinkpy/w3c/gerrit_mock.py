@@ -12,14 +12,22 @@ class MockGerritAPI(object):
 
     def __init__(self):
         self.exportable_open_cls = []
+        self.request_posted = []
+        self.cl = ''
+        self.cls_queried = []
 
     def query_exportable_open_cls(self):
         return self.exportable_open_cls
+
+    def query_cl(self, change_id):
+        self.cls_queried.append(change_id)
+        return self.cl
 
     def get(self, path, raw=False):
         return '' if raw else {}
 
     def post(self, path, data):
+        self.request_posted.append((path, data))
         return {}
 
 

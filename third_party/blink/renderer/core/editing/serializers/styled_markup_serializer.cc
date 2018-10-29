@@ -206,7 +206,7 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
     }
   }
 
-  // If there is no the highest node in the selected nodes, |m_lastClosed| can
+  // If there is no the highest node in the selected nodes, |last_closed_| can
   // be #text when its parent is a formatting tag. In this case, #text is
   // wrapped by <span> tag, but this text should be wrapped by the formatting
   // tag. See http://crbug.com/634482
@@ -446,8 +446,8 @@ void StyledMarkupTraverser<Strategy>::WrapWithNode(ContainerNode& node,
   if (!accumulator_)
     return;
   StringBuilder markup;
-  if (node.IsDocumentNode()) {
-    MarkupFormatter::AppendXMLDeclaration(markup, ToDocument(node));
+  if (auto* document = DynamicTo<Document>(node)) {
+    MarkupFormatter::AppendXMLDeclaration(markup, *document);
     accumulator_->PushMarkup(markup.ToString());
     return;
   }

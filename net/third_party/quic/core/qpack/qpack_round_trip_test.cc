@@ -4,6 +4,8 @@
 
 #include <tuple>
 
+#include "net/third_party/quic/core/qpack/qpack_decoder_test_utils.h"
+#include "net/third_party/quic/core/qpack/qpack_encoder_test_utils.h"
 #include "net/third_party/quic/core/qpack/qpack_test_utils.h"
 #include "net/third_party/quic/platform/api/quic_string.h"
 #include "net/third_party/quic/platform/api/quic_string_piece.h"
@@ -27,16 +29,14 @@ class QpackRoundTripTest
 
   spdy::SpdyHeaderBlock EncodeThenDecode(
       const spdy::SpdyHeaderBlock& header_list) {
-    QuicString encoded_header_block = QpackTestUtils::Encode(
-        QpackTestUtils::FragmentModeToFragmentSizeGenerator(
-            encoding_fragment_mode_),
+    QuicString encoded_header_block = QpackEncode(
+        FragmentModeToFragmentSizeGenerator(encoding_fragment_mode_),
         &header_list);
 
     TestHeadersHandler handler;
-    QpackTestUtils::Decode(&handler,
-                           QpackTestUtils::FragmentModeToFragmentSizeGenerator(
-                               decoding_fragment_mode_),
-                           encoded_header_block);
+    QpackDecode(&handler,
+                FragmentModeToFragmentSizeGenerator(decoding_fragment_mode_),
+                encoded_header_block);
 
     EXPECT_TRUE(handler.decoding_completed());
     EXPECT_FALSE(handler.decoding_error_detected());

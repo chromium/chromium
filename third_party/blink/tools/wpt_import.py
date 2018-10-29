@@ -5,15 +5,14 @@
 
 """Pulls the latest revisions of the web-platform-tests."""
 
-import os
-import sys
-
 from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
+from blinkpy.common.path_finder import add_depot_tools_dir_to_os_path
 from blinkpy.w3c.test_importer import TestImporter
 
 
 def main():
+    add_depot_tools_dir_to_os_path()
     host = Host()
     importer = TestImporter(host)
     try:

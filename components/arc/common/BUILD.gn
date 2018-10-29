@@ -33,6 +33,7 @@ if (is_chromeos) {
       "intent_helper.mojom",
       "kiosk.mojom",
       "lock_screen.mojom",
+      "media_session.mojom",
       "metrics.mojom",
       "midis.mojom",
       "net.mojom",
@@ -65,6 +66,7 @@ if (is_chromeos) {
       ":notifications",
       "//device/usb/public/mojom",
       "//mojo/public/mojom/base",
+      "//services/media_session/public/mojom",
       "//ui/accessibility/mojom",
       "//ui/gfx/geometry/mojo",
       "//url/mojom:url_mojom_gurl",
@@ -98,6 +100,17 @@ if (is_chromeos) {
 
     public_deps = [
       "//ui/gfx/geometry/mojo",
+    ]
+  }
+
+  source_set("struct_traits") {
+    sources = [
+      "ime_struct_traits.h",
+    ]
+
+    deps = [
+      ":common",
+      "//ui/base/ime:text_input_types",
     ]
   }
 }

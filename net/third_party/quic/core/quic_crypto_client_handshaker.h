@@ -15,10 +15,6 @@
 
 namespace quic {
 
-namespace test {
-class QuicChromiumClientSessionPeer;
-}  // namespace test
-
 // An implementation of QuicCryptoClientStream::HandshakerDelegate which uses
 // QUIC crypto as the crypto handshake protocol.
 class QUIC_EXPORT_PRIVATE QuicCryptoClientHandshaker
@@ -95,8 +91,6 @@ class QUIC_EXPORT_PRIVATE QuicCryptoClientHandshaker
    private:
     QuicCryptoClientHandshaker* parent_;
   };
-
-  friend class test::QuicChromiumClientSessionPeer;
 
   enum State {
     STATE_IDLE,

@@ -38,9 +38,9 @@ class TextAutosizerTest : public RenderingTest {
     return GetTextAutosizerClient();
   }
   TextAutosizerClient& GetTextAutosizerClient() const {
-    DEFINE_STATIC_LOCAL(TextAutosizerClient, client,
+    DEFINE_STATIC_LOCAL(Persistent<TextAutosizerClient>, client,
                         (TextAutosizerClient::Create()));
-    return client;
+    return *client;
   }
   void set_device_scale_factor(float device_scale_factor) {
     GetTextAutosizerClient().set_device_scale_factor(device_scale_factor);

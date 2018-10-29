@@ -15,12 +15,12 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "storage/browser/fileapi/file_system_operation_runner.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "url/gurl.h"
 
 class Profile;
 
 namespace content {
-struct FileChooserFileInfo;
 class RenderFrameHost;
 }
 
@@ -61,7 +61,8 @@ struct EntryDefinition {
 typedef std::vector<FileDefinition> FileDefinitionList;
 typedef std::vector<EntryDefinition> EntryDefinitionList;
 typedef std::vector<ui::SelectedFileInfo> SelectedFileInfoList;
-typedef std::vector<content::FileChooserFileInfo> FileChooserFileInfoList;
+typedef std::vector<blink::mojom::FileChooserFileInfoPtr>
+    FileChooserFileInfoList;
 
 // The callback used by ConvertFileDefinitionToEntryDefinition. Returns the
 // result of the conversion.
@@ -77,7 +78,7 @@ typedef base::OnceCallback<void(
 // The callback used by
 // ConvertFileSelectedInfoListToFileChooserFileInfoList. Returns the result of
 // the conversion as a list.
-typedef base::OnceCallback<void(const FileChooserFileInfoList&)>
+typedef base::OnceCallback<void(FileChooserFileInfoList)>
     FileChooserFileInfoListCallback;
 
 // Returns a file system context associated with the given profile and the
@@ -160,14 +161,14 @@ std::unique_ptr<base::ListValue> ConvertEntryDefinitionListToListValue(
 void CheckIfDirectoryExists(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const base::FilePath& directory_path,
-    const storage::FileSystemOperationRunner::StatusCallback& callback);
+    storage::FileSystemOperationRunner::StatusCallback callback);
 
 // Get metadata for an entry at |entry_path| absolute path.
 void GetMetadataForPath(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const base::FilePath& entry_path,
     int fields,
-    const storage::FileSystemOperationRunner::GetMetadataCallback& callback);
+    storage::FileSystemOperationRunner::GetMetadataCallback callback);
 
 // Obtains isolated file system URL from |virtual_path| pointing a file in the
 // external file system.

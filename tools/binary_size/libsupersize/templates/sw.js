@@ -8,7 +8,7 @@
 const cacheName = '{{cache_hash}}';
 const filesToCache = [
   'favicon.ico',
-  'index.html',
+  'viewer.html',
   'infocard-ui.js',
   'infocard.css',
   'main.css',

@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/post_task.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -20,6 +21,7 @@
 #include "components/cast_channel/cast_test_util.h"
 #include "components/cast_channel/logger.h"
 #include "components/cast_channel/proto/cast_channel.pb.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/cast_channel/cast_channel_api.h"
 #include "extensions/common/api/cast_channel.h"
@@ -201,8 +203,8 @@ class CastChannelAPITest : public extensions::ExtensionApiTest {
 
  protected:
   void CallOnMessage(const std::string& message) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::Bind(&CastChannelAPITest::DoCallOnMessage, base::Unretained(this),
                    GetApi(), mock_cast_socket_, message));
   }
@@ -217,8 +219,8 @@ class CastChannelAPITest : public extensions::ExtensionApiTest {
 
   // Fires a timer on the IO thread.
   void FireTimeout() {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::Bind(&CastChannelAPITest::DoFireTimeout, base::Unretained(this),
                    mock_cast_socket_));
   }
@@ -229,7 +231,7 @@ class CastChannelAPITest : public extensions::ExtensionApiTest {
   }
 
   extensions::CastChannelOpenFunction* CreateOpenFunction(
-        scoped_refptr<Extension> extension) {
+      scoped_refptr<const Extension> extension) {
     extensions::CastChannelOpenFunction* cast_channel_open_function =
       new extensions::CastChannelOpenFunction;
     cast_channel_open_function->set_extension(extension.get());
@@ -237,7 +239,7 @@ class CastChannelAPITest : public extensions::ExtensionApiTest {
   }
 
   extensions::CastChannelSendFunction* CreateSendFunction(
-        scoped_refptr<Extension> extension) {
+      scoped_refptr<const Extension> extension) {
     extensions::CastChannelSendFunction* cast_channel_send_function =
       new extensions::CastChannelSendFunction;
     cast_channel_send_function->set_extension(extension.get());
@@ -253,8 +255,8 @@ class CastChannelAPITest : public extensions::ExtensionApiTest {
 };
 
 ACTION_P2(InvokeObserverOnError, api_test, cast_socket_service) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&CastChannelAPITest::DoCallOnError, base::Unretained(api_test),
                  base::Unretained(cast_socket_service)));
 }
@@ -407,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestOpenError) {
 }
 
 IN_PROC_BROWSER_TEST_F(CastChannelAPITest, TestOpenInvalidConnectInfo) {
-  scoped_refptr<Extension> empty_extension =
+  scoped_refptr<const Extension> empty_extension =
       extensions::ExtensionBuilder("Test").Build();
   scoped_refptr<extensions::CastChannelOpenFunction> cast_channel_open_function;
 
@@ -431,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(CastChannelAPITest, TestOpenInvalidConnectInfo) {
 }
 
 IN_PROC_BROWSER_TEST_F(CastChannelAPITest, TestSendInvalidMessageInfo) {
-  scoped_refptr<Extension> empty_extension(
+  scoped_refptr<const Extension> empty_extension(
       extensions::ExtensionBuilder("Test").Build());
   scoped_refptr<extensions::CastChannelSendFunction> cast_channel_send_function;
 

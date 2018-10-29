@@ -29,6 +29,11 @@ class Webcam : public base::RefCounted<Webcam> {
     TILT_STOP,
   };
 
+  enum AutofocusState {
+    AUTOFOCUS_ON,
+    AUTOFOCUS_OFF,
+  };
+
   Webcam();
 
   using GetPTZCompleteCallback = base::Callback<
@@ -38,6 +43,7 @@ class Webcam : public base::RefCounted<Webcam> {
   virtual void GetPan(const GetPTZCompleteCallback& callback) = 0;
   virtual void GetTilt(const GetPTZCompleteCallback& callback) = 0;
   virtual void GetZoom(const GetPTZCompleteCallback& callback) = 0;
+  virtual void GetFocus(const GetPTZCompleteCallback& callback) = 0;
   virtual void SetPan(int value,
                       int pan_speed,
                       const SetPTZCompleteCallback& callback) = 0;
@@ -51,6 +57,9 @@ class Webcam : public base::RefCounted<Webcam> {
   virtual void SetTiltDirection(TiltDirection direction,
                                 int tilt_speed,
                                 const SetPTZCompleteCallback& callback) = 0;
+  virtual void SetFocus(int value, const SetPTZCompleteCallback& callback) = 0;
+  virtual void SetAutofocusState(AutofocusState state,
+                                 const SetPTZCompleteCallback& callback) = 0;
   virtual void Reset(bool pan,
                      bool tilt,
                      bool zoom,

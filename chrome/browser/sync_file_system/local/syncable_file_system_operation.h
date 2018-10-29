@@ -34,66 +34,70 @@ class SyncableFileSystemOperation : public storage::FileSystemOperation {
   // storage::FileSystemOperation overrides.
   void CreateFile(const storage::FileSystemURL& url,
                   bool exclusive,
-                  const StatusCallback& callback) override;
+                  StatusCallback callback) override;
   void CreateDirectory(const storage::FileSystemURL& url,
                        bool exclusive,
                        bool recursive,
-                       const StatusCallback& callback) override;
+                       StatusCallback callback) override;
   void Copy(const storage::FileSystemURL& src_url,
             const storage::FileSystemURL& dest_url,
             CopyOrMoveOption option,
             ErrorBehavior error_behavior,
             const CopyProgressCallback& progress_callback,
-            const StatusCallback& callback) override;
+            StatusCallback callback) override;
   void Move(const storage::FileSystemURL& src_url,
             const storage::FileSystemURL& dest_url,
             CopyOrMoveOption option,
-            const StatusCallback& callback) override;
+            StatusCallback callback) override;
   void DirectoryExists(const storage::FileSystemURL& url,
-                       const StatusCallback& callback) override;
+                       StatusCallback callback) override;
   void FileExists(const storage::FileSystemURL& url,
-                  const StatusCallback& callback) override;
+                  StatusCallback callback) override;
   void GetMetadata(const storage::FileSystemURL& url,
                    int fields,
-                   const GetMetadataCallback& callback) override;
+                   GetMetadataCallback callback) override;
   void ReadDirectory(const storage::FileSystemURL& url,
                      const ReadDirectoryCallback& callback) override;
   void Remove(const storage::FileSystemURL& url,
               bool recursive,
-              const StatusCallback& callback) override;
+              StatusCallback callback) override;
+  void WriteBlob(const storage::FileSystemURL& url,
+                 std::unique_ptr<storage::FileWriterDelegate> writer_delegate,
+                 std::unique_ptr<storage::BlobReader> blob_reader,
+                 const WriteCallback& callback) override;
   void Write(const storage::FileSystemURL& url,
              std::unique_ptr<storage::FileWriterDelegate> writer_delegate,
-             std::unique_ptr<storage::BlobReader> blob_reader,
+             mojo::ScopedDataPipeConsumerHandle data_pipe,
              const WriteCallback& callback) override;
   void Truncate(const storage::FileSystemURL& url,
                 int64_t length,
-                const StatusCallback& callback) override;
+                StatusCallback callback) override;
   void TouchFile(const storage::FileSystemURL& url,
                  const base::Time& last_access_time,
                  const base::Time& last_modified_time,
-                 const StatusCallback& callback) override;
+                 StatusCallback callback) override;
   void OpenFile(const storage::FileSystemURL& url,
                 int file_flags,
-                const OpenFileCallback& callback) override;
-  void Cancel(const StatusCallback& cancel_callback) override;
+                OpenFileCallback callback) override;
+  void Cancel(StatusCallback cancel_callback) override;
   void CreateSnapshotFile(const storage::FileSystemURL& path,
                           SnapshotFileCallback callback) override;
   void CopyInForeignFile(const base::FilePath& src_local_disk_path,
                          const storage::FileSystemURL& dest_url,
-                         const StatusCallback& callback) override;
+                         StatusCallback callback) override;
   void RemoveFile(const storage::FileSystemURL& url,
-                  const StatusCallback& callback) override;
+                  StatusCallback callback) override;
   void RemoveDirectory(const storage::FileSystemURL& url,
-                       const StatusCallback& callback) override;
+                       StatusCallback callback) override;
   void CopyFileLocal(const storage::FileSystemURL& src_url,
                      const storage::FileSystemURL& dest_url,
                      CopyOrMoveOption option,
                      const CopyFileProgressCallback& progress_callback,
-                     const StatusCallback& callback) override;
+                     StatusCallback callback) override;
   void MoveFileLocal(const storage::FileSystemURL& src_url,
                      const storage::FileSystemURL& dest_url,
                      CopyOrMoveOption option,
-                     const StatusCallback& callback) override;
+                     StatusCallback callback) override;
   base::File::Error SyncGetPlatformPath(const storage::FileSystemURL& url,
                                         base::FilePath* platform_path) override;
 

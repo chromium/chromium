@@ -6,6 +6,8 @@
 
 #include <cstring>
 
+#include "base/command_line.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/native_theme_observer.h"
 
 namespace ui {
@@ -46,5 +48,10 @@ NativeTheme::NativeTheme()
 }
 
 NativeTheme::~NativeTheme() {}
+
+bool NativeTheme::SystemDarkModeEnabled() const {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kForceDarkMode);
+}
 
 }  // namespace ui

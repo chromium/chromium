@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -490,6 +491,43 @@ TEST(ReadableStreamOperationsTest, Tee) {
   EXPECT_TRUE(it2->IsValid());
   EXPECT_FALSE(it2->IsDone());
   EXPECT_EQ("hello", it2->Value());
+}
+
+TEST(ReadableStreamOperationsTest, Serialize) {
+  V8TestingScope scope;
+  TryCatchScope try_catch_scope(scope.GetIsolate());
+  ScriptValue original = EvalWithPrintingError(&scope,
+                                               "new ReadableStream({"
+                                               "  start(c) {"
+                                               "    c.enqueue('hello');"
+                                               "  }"
+                                               "})");
+  ASSERT_FALSE(original.IsEmpty());
+  MessagePort* port = ReadableStreamOperations::ReadableStreamSerialize(
+      scope.GetScriptState(), original, ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(port);
+  EXPECT_TRUE(ReadableStreamOperations::IsLocked(
+      scope.GetScriptState(), original, ASSERT_NO_EXCEPTION));
+  ScriptValue transferred = ReadableStreamOperations::ReadableStreamDeserialize(
+      scope.GetScriptState(), port, ASSERT_NO_EXCEPTION);
+  ASSERT_FALSE(transferred.IsEmpty());
+  ScriptValue reader = ReadableStreamOperations::GetReader(
+      scope.GetScriptState(), transferred, ASSERT_NO_EXCEPTION);
+  ASSERT_FALSE(reader.IsEmpty());
+  Iteration* it = new Iteration();
+  ReadableStreamOperations::DefaultReaderRead(scope.GetScriptState(), reader)
+      .Then(ReaderFunction::CreateFunction(scope.GetScriptState(), it),
+            ReadableStreamOperationsTestNotReached::CreateFunction(
+                scope.GetScriptState()));
+  // Let the message pass through the MessagePort.
+  test::RunPendingTasks();
+  // Let the Read promise resolve.
+  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+
+  EXPECT_TRUE(it->IsSet());
+  EXPECT_TRUE(it->IsValid());
+  EXPECT_FALSE(it->IsDone());
+  EXPECT_EQ("hello", it->Value());
 }
 
 }  // namespace

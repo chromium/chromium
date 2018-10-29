@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_MODEL_SEARCH_SEARCH_MODEL_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -37,11 +38,13 @@ class APP_LIST_MODEL_EXPORT SearchModel {
     return search_box_->search_engine_is_google();
   }
 
-  // Filters the given |results| by |display_type|. The returned list is
+  // Filters the given |results| by |display_type| and with exclusion of
+  // results in the |excludes|. The returned list is
   // truncated to |max_results|.
   static std::vector<SearchResult*> FilterSearchResultsByDisplayType(
       SearchResults* results,
       SearchResult::DisplayType display_type,
+      const std::set<std::string>& excludes,
       size_t max_results);
 
   SearchBoxModel* search_box() { return search_box_.get(); }

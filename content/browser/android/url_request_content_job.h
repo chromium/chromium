@@ -31,6 +31,9 @@ class FileStream;
 namespace content {
 
 // A request job that handles reading content URIs
+//
+// Note that when the Network Service is enabled, ContentUrlLoaderFactory is
+// used instead.
 class CONTENT_EXPORT URLRequestContentJob : public net::URLRequestJob {
  public:
   URLRequestContentJob(

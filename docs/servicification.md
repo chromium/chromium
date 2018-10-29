@@ -34,8 +34,12 @@ The Service Manager can either:
 
 Which of these policies the Service Manager employs is determined by the
 contents of your service manifest: the former is the default, while the latter
-is selected by informing the Service Manager that your service requires the
-service_manager:all_users capability([example](https://cs.chromium.org/chromium/src/services/device/manifest.json)).
+is selected by informing the Service Manager that your service has the
+"instance_sharing" option value set to "shared_instance_across_users"
+([example](https://cs.chromium.org/chromium/src/services/device/manifest.json)).
+
+Service manifests are described in more detail in this
+[document](https://chromium.googlesource.com/chromium/src/+/master/services/service_manager/service_manifests.md).
 
 In practice, there is one user ID per-BrowserContext, so the question becomes:
 Is your Service a global or keyed by BrowserContext?  In considering this

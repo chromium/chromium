@@ -134,6 +134,8 @@ const MultiDeviceFeatureBehaviorImpl = {
     switch (feature) {
       case settings.MultiDeviceFeature.SMART_LOCK:
         return this.i18nAdvanced('multideviceSmartLockItemSummary');
+      case settings.MultiDeviceFeature.INSTANT_TETHERING:
+        return this.i18nAdvanced('multideviceInstantTetheringItemSummary');
       case settings.MultiDeviceFeature.MESSAGES:
         return this.i18nAdvanced('multideviceAndroidMessagesItemSummary');
       default:

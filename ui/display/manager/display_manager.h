@@ -655,7 +655,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 
   base::Closure created_mirror_window_;
 
-  base::ObserverList<DisplayObserver>::Unchecked observers_;
+  base::ObserverList<DisplayObserver> observers_;
 
   // Not empty if mixed mirror mode should be turned on (the specified source
   // display is mirrored to the specified destination displays). Empty if mixed

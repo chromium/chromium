@@ -182,7 +182,8 @@ void FormDataImporter::ImportFormData(const FormStructure& submitted_form,
     // If upload save is not allowed, new cards should be saved locally.
     DCHECK(imported_credit_card_record_type_ ==
            ImportedCreditCardRecordType::NEW_CARD);
-    credit_card_save_manager_->OfferCardLocalSave(*imported_credit_card);
+    credit_card_save_manager_->AttemptToOfferCardLocalSave(
+        *imported_credit_card);
   }
 }
 

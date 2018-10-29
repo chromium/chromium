@@ -56,7 +56,9 @@ def SplitParagraphs(text):
     if paragraphs[-1] and not l.strip():
       paragraphs.append([])
     else:
-      paragraphs[-1].append(l)
+      # Replace runs of repeated whitespace with a single space.
+      transformed_line = ' '.join(l.split())
+      paragraphs[-1].append(transformed_line)
   # Remove trailing empty paragraph if present.
   if paragraphs and not paragraphs[-1]:
     paragraphs = paragraphs[:-1]

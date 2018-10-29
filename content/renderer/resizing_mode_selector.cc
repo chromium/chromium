@@ -20,12 +20,15 @@ bool ResizingModeSelector::NeverUsesSynchronousResize() const {
 bool ResizingModeSelector::ShouldAbortOnResize(
     RenderWidget* widget,
     const VisualProperties& visual_properties) {
-  return is_synchronous_mode_ &&
-         visual_properties.is_fullscreen_granted ==
-             widget->is_fullscreen_granted() &&
-         visual_properties.display_mode == widget->display_mode() &&
-         visual_properties.screen_info.device_scale_factor ==
-             widget->GetScreenInfo().device_scale_factor;
+  if (!is_synchronous_mode_)
+    return false;
+  if (visual_properties.is_fullscreen_granted !=
+      widget->is_fullscreen_granted())
+    return false;
+  if (visual_properties.display_mode != widget->display_mode())
+    return false;
+  return visual_properties.screen_info.device_scale_factor ==
+         widget->screen_info().device_scale_factor;
 }
 
 void ResizingModeSelector::set_is_synchronous_mode(bool mode) {

@@ -19,15 +19,6 @@ class WebContents;
 // don't cleanly fit elsewhere.
 class CoreTabHelperDelegate {
  public:
-  // The return parameter also passes ownership of |old_contents|.
-  // |did_finish_load| is true if WebContentsObserver::DidFinishLoad() has
-  // already been called for |new_contents|.
-  virtual std::unique_ptr<content::WebContents> SwapTabContents(
-      content::WebContents* old_contents,
-      std::unique_ptr<content::WebContents> new_contents,
-      bool did_start_load,
-      bool did_finish_load);
-
   // Whether the specified WebContents can be reloaded.
   // Reloading can be disabled e.g. for the DevTools window.
   virtual bool CanReloadContents(content::WebContents* web_contents) const;

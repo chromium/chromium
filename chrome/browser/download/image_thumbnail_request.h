@@ -33,7 +33,7 @@ class ImageThumbnailRequest : public ImageDecoder::ImageRequest {
 
   void OnLoadComplete(const std::string& data);
 
-  void FinishRequest(const SkBitmap& thumbnail);
+  void FinishRequest(SkBitmap thumbnail);
 
   const int icon_size_;
   base::OnceCallback<void(const SkBitmap&)> callback_;

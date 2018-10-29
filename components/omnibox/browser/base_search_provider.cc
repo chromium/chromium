@@ -314,11 +314,13 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   DCHECK(search_url.SupportsReplacement(search_terms_data));
   base::string16 query(suggestion.suggestion());
   base::string16 original_query(input.text());
+  base::string16 fill_into_edit(suggestion.suggestion());
   if (suggestion.type() == AutocompleteMatchType::CALCULATOR) {
+    // Use query text, rather than the calculator answer suggestion, to search.
     query = original_query;
     original_query.clear();
   }
-  match.fill_into_edit.append(query);
+  match.fill_into_edit.append(fill_into_edit);
   match.search_terms_args.reset(new TemplateURLRef::SearchTermsArgs(query));
   match.search_terms_args->original_query = original_query;
   match.search_terms_args->accepted_suggestion = accepted_suggestion;
@@ -512,7 +514,7 @@ bool BaseSearchProvider::ParseSuggestResults(
 
 void BaseSearchProvider::DeleteMatchFromMatches(
     const AutocompleteMatch& match) {
-  for (ACMatches::iterator i(matches_.begin()); i != matches_.end(); ++i) {
+  for (auto i(matches_.begin()); i != matches_.end(); ++i) {
     // Find the desired match to delete by checking the type and contents.
     // We can't check the destination URL, because the autocomplete controller
     // may have reformulated that. Not that while checking for matching

@@ -37,7 +37,7 @@
 namespace blink {
 
 struct PLATFORM_EXPORT UnicodeRange final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   UnicodeRange(UChar32 from, UChar32 to) : from_(from), to_(to) {}
 
   UChar32 From() const { return from_; }
@@ -64,8 +64,8 @@ class PLATFORM_EXPORT UnicodeRangeSet : public RefCounted<UnicodeRangeSet> {
   bool Contains(UChar32) const;
   bool IntersectsWith(const String&) const;
   bool IsEntireRange() const { return ranges_.IsEmpty(); }
-  size_t size() const { return ranges_.size(); }
-  const UnicodeRange& RangeAt(size_t i) const { return ranges_[i]; }
+  wtf_size_t size() const { return ranges_.size(); }
+  const UnicodeRange& RangeAt(wtf_size_t i) const { return ranges_[i]; }
   bool operator==(const UnicodeRangeSet& other) const;
 
  private:

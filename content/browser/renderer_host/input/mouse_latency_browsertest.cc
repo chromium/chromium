@@ -151,7 +151,7 @@ class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {
 
 class MouseLatencyBrowserTest : public ContentBrowserTest {
  public:
-  MouseLatencyBrowserTest() : loop_(base::MessageLoop::TYPE_UI) {}
+  MouseLatencyBrowserTest() {}
   ~MouseLatencyBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -306,7 +306,6 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::MessageLoop loop_;
   std::unique_ptr<base::RunLoop> runner_;
   base::Value trace_data_;
   TracingRenderWidgetHostFactory widget_factory_;

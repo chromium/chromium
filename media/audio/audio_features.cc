@@ -11,6 +11,8 @@ namespace features {
 // Default disabled (crbug.com/554168).
 const base::Feature kEnumerateAudioDevices{"EnumerateAudioDevices",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kCrOSSystemAEC{"CrOSSystemAEC",
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_WIN)

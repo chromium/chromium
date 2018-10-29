@@ -4,7 +4,7 @@
   "description": "Times how long it takes to send a message to a content script and back.",
   "content_scripts": [
     {
-      "matches": ["http://*/*"],
+      "matches": ["http://*/*", "https://*/*"],
       "js": ["page.js"]
     }
   ],

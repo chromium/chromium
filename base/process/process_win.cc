@@ -125,6 +125,18 @@ ProcessId Process::Pid() const {
   return GetProcId(Handle());
 }
 
+Time Process::CreationTime() const {
+  FILETIME creation_time = {};
+  FILETIME ignore1 = {};
+  FILETIME ignore2 = {};
+  FILETIME ignore3 = {};
+  if (!::GetProcessTimes(Handle(), &creation_time, &ignore1, &ignore2,
+                         &ignore3)) {
+    return Time();
+  }
+  return Time::FromFileTime(creation_time);
+}
+
 bool Process::is_current() const {
   return is_current_process_;
 }

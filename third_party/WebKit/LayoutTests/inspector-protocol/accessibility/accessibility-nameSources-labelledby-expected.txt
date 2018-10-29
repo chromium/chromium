@@ -71,6 +71,13 @@ Tests name sources when used with aria-labelledby.
         "type": "token",
         "value": "false"
       }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
     }
   ],
   "domNode": "button#self"
@@ -136,6 +143,13 @@ Tests name sources when used with aria-labelledby.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -215,6 +229,13 @@ Tests name sources when used with aria-labelledby.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -302,6 +323,13 @@ Tests name sources when used with aria-labelledby.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "labelledby",
       "value": {
         "type": "nodeList",
@@ -386,6 +414,13 @@ Tests name sources when used with aria-labelledby.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "labelledby",
       "value": {
         "type": "nodeList",
@@ -449,6 +484,13 @@ Tests name sources when used with aria-labelledby.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     }
   ],
@@ -515,6 +557,13 @@ Tests name sources when used with aria-labelledby.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -597,6 +646,13 @@ Tests name sources when used with aria-labelledby.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "labelledby",
       "value": {
         "type": "nodeList",
@@ -676,6 +732,13 @@ Tests name sources when used with aria-labelledby.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "labelledby",
       "value": {
         "type": "nodeList",
@@ -745,6 +808,13 @@ Tests name sources when used with aria-labelledby.
         "type": "token",
         "value": "false"
       }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
     }
   ],
   "domNode": "button#labelOnly"
@@ -793,6 +863,13 @@ Tests name sources when used with aria-labelledby.
         "type": "token",
         "value": "false"
       }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
     }
   ],
   "domNode": "button#emptyLabel1"
@@ -840,6 +917,13 @@ Tests name sources when used with aria-labelledby.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     }
   ],
@@ -914,6 +998,13 @@ Tests name sources when used with aria-labelledby.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -996,6 +1087,13 @@ Tests name sources when used with aria-labelledby.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "labelledby",
       "value": {
         "type": "nodeList",
@@ -1072,6 +1170,13 @@ Tests name sources when used with aria-labelledby.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {
@@ -1154,6 +1259,13 @@ Tests name sources when used with aria-labelledby.
       }
     },
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "labelledby",
       "value": {
         "type": "nodeList",
@@ -1232,6 +1344,27 @@ Tests name sources when used with aria-labelledby.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
+      "name": "editable",
+      "value": {
+        "type": "token",
+        "value": "plaintext"
+      }
+    },
+    {
+      "name": "settable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {

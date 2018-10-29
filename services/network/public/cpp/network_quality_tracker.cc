@@ -16,6 +16,7 @@ NetworkQualityTracker::NetworkQualityTracker(
     : get_network_service_callback_(callback),
       effective_connection_type_(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
       downlink_bandwidth_kbps_(std::numeric_limits<int32_t>::max()),
+      network_quality_overridden_for_testing_(false),
       binding_(this) {
   InitializeMojoChannel();
   DCHECK(binding_.is_bound());
@@ -76,15 +77,20 @@ void NetworkQualityTracker::ReportEffectiveConnectionTypeForTesting(
     net::EffectiveConnectionType effective_connection_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  network_quality_overridden_for_testing_ = true;
+
   effective_connection_type_ = effective_connection_type;
-  for (auto& observer : effective_connection_type_observer_list_)
+  for (auto& observer : effective_connection_type_observer_list_) {
     observer.OnEffectiveConnectionTypeChanged(effective_connection_type);
+  }
 }
 
 void NetworkQualityTracker::ReportRTTsAndThroughputForTesting(
     base::TimeDelta http_rtt,
     int32_t downstream_throughput_kbps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  network_quality_overridden_for_testing_ = true;
 
   http_rtt_ = http_rtt;
   downlink_bandwidth_kbps_ = downstream_throughput_kbps;
@@ -107,6 +113,9 @@ void NetworkQualityTracker::OnNetworkQualityChanged(
     base::TimeDelta transport_rtt,
     int32_t bandwidth_kbps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (network_quality_overridden_for_testing_)
+    return;
 
   // If the RTT values are unavailable, set them to value 0.
   if (http_rtt < base::TimeDelta())

@@ -5,7 +5,8 @@
     "service_manager:connector": {
       "provides": {
         "multidevice_setup" : [
-          "chromeos.multidevice_setup.mojom.MultiDeviceSetup"
+          "chromeos.multidevice_setup.mojom.MultiDeviceSetup",
+          "chromeos.multidevice_setup.mojom.PrivilegedHostDeviceSetter"
         ]
       }
     }

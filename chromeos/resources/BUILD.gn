@@ -14,6 +14,8 @@ grit("resources") {
 
   outputs = [
     "grit/chromeos_resources.h",
+    "grit/chromeos_resources_map.cc",
+    "grit/chromeos_resources_map.h",
     "chromeos_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
@@ -28,6 +30,5 @@ grit("resources") {
   deps = [
     "//chromeos/services/device_sync/public/mojom:mojom_js",
     "//chromeos/services/multidevice_setup/public/mojom:mojom_js",
-    "//mojo/public/mojom/base:base_js",
   ]
 }

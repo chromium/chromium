@@ -74,7 +74,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/stl_util.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 
@@ -337,6 +337,7 @@ ALWAYS_INLINE internal::PartitionBucket* PartitionGenericSizeToBucket(
   internal::PartitionBucket* bucket =
       root->bucket_lookups[(order << kGenericNumBucketsPerOrderBits) +
                            order_index + !!sub_order_index];
+  CHECK(bucket);
   DCHECK(!bucket->slot_size || bucket->slot_size >= size);
   DCHECK(!(bucket->slot_size % kGenericSmallestBucket));
   return bucket;
@@ -347,9 +348,9 @@ ALWAYS_INLINE void* PartitionAllocGenericFlags(PartitionRootGeneric* root,
                                                size_t size,
                                                const char* type_name) {
   DCHECK_LT(flags, PartitionAllocLastFlag << 1);
-  const bool zero_fill = flags & PartitionAllocZeroFill;
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  const bool zero_fill = flags & PartitionAllocZeroFill;
   void* result = zero_fill ? calloc(1, size) : malloc(size);
   CHECK(result || flags & PartitionAllocReturnNull);
   return result;
@@ -364,13 +365,6 @@ ALWAYS_INLINE void* PartitionAllocGenericFlags(PartitionRootGeneric* root,
     ret = root->AllocFromBucket(bucket, flags, size);
   }
   PartitionAllocHooks::AllocationHookIfEnabled(ret, requested_size, type_name);
-
-  // TODO(crbug.com/864462): This is suboptimal. Change `AllocFromBucket` such
-  // that it tells callers if the allocation was satisfied with a fresh mapping
-  // from the OS, so that we can skip this step and save some time.
-  if (ret && zero_fill) {
-    memset(ret, 0, requested_size);
-  }
 
   return ret;
 #endif
@@ -437,7 +431,7 @@ class SizeSpecificPartitionAllocator {
  public:
   SizeSpecificPartitionAllocator() {
     memset(actual_buckets_, 0,
-           sizeof(internal::PartitionBucket) * arraysize(actual_buckets_));
+           sizeof(internal::PartitionBucket) * base::size(actual_buckets_));
   }
   ~SizeSpecificPartitionAllocator() = default;
   static const size_t kMaxAllocation = N - kAllocationGranularity;

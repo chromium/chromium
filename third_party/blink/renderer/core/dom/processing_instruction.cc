@@ -81,7 +81,7 @@ Node::NodeType ProcessingInstruction::getNodeType() const {
 }
 
 Node* ProcessingInstruction::Clone(Document& factory, CloneChildrenFlag) const {
-  // FIXME: Is it a problem that this does not copy m_localHref?
+  // FIXME: Is it a problem that this does not copy local_href_?
   // What about other data members?
   return Create(factory, target_, data_);
 }

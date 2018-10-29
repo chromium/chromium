@@ -7,7 +7,9 @@
 #include <stddef.h>
 #include <sys/mman.h>
 
+#include "base/bits.h"
 #include "base/logging.h"
+#include "base/process/process_metrics.h"
 #include "third_party/ashmem/ashmem.h"
 
 namespace base {
@@ -20,13 +22,16 @@ namespace base {
 bool SharedMemory::Create(const SharedMemoryCreateOptions& options) {
   DCHECK(!shm_.IsValid());
 
-  if (options.size > static_cast<size_t>(std::numeric_limits<int>::max()))
+  // Align size as required by ashmem_create_region() API documentation.
+  size_t rounded_size = bits::Align(options.size, GetPageSize());
+
+  if (rounded_size > static_cast<size_t>(std::numeric_limits<int>::max()))
     return false;
 
   // "name" is just a label in ashmem. It is visible in /proc/pid/maps.
   int fd = ashmem_create_region(
       options.name_deprecated ? options.name_deprecated->c_str() : "",
-      options.size);
+      rounded_size);
   shm_ = SharedMemoryHandle::ImportHandle(fd, options.size);
   if (!shm_.IsValid()) {
     DLOG(ERROR) << "Shared memory creation failed";

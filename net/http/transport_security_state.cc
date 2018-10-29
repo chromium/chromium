@@ -501,7 +501,7 @@ TransportSecurityState::CheckCTRequirements(
   if (IsDynamicExpectCTEnabled() && GetDynamicExpectCTState(hostname, &state)) {
     UMA_HISTOGRAM_ENUMERATION(
         "Net.ExpectCTHeader.PolicyComplianceOnConnectionSetup",
-        policy_compliance, ct::CTPolicyCompliance::CT_POLICY_MAX);
+        policy_compliance, ct::CTPolicyCompliance::CT_POLICY_COUNT);
     if (!complies && expect_ct_reporter_ && !state.report_uri.is_empty() &&
         report_status == ENABLE_EXPECT_CT_REPORTS) {
       MaybeNotifyExpectCTFailed(host_port_pair, state.report_uri, state.expiry,
@@ -867,20 +867,19 @@ bool TransportSecurityState::DeleteDynamicDataForHost(const std::string& host) {
 
   const std::string hashed_host = HashHost(canonicalized_host);
   bool deleted = false;
-  STSStateMap::iterator sts_interator = enabled_sts_hosts_.find(hashed_host);
+  auto sts_interator = enabled_sts_hosts_.find(hashed_host);
   if (sts_interator != enabled_sts_hosts_.end()) {
     enabled_sts_hosts_.erase(sts_interator);
     deleted = true;
   }
 
-  PKPStateMap::iterator pkp_iterator = enabled_pkp_hosts_.find(hashed_host);
+  auto pkp_iterator = enabled_pkp_hosts_.find(hashed_host);
   if (pkp_iterator != enabled_pkp_hosts_.end()) {
     enabled_pkp_hosts_.erase(pkp_iterator);
     deleted = true;
   }
 
-  ExpectCTStateMap::iterator expect_ct_iterator =
-      enabled_expect_ct_hosts_.find(hashed_host);
+  auto expect_ct_iterator = enabled_expect_ct_hosts_.find(hashed_host);
   if (expect_ct_iterator != enabled_expect_ct_hosts_.end()) {
     enabled_expect_ct_hosts_.erase(expect_ct_iterator);
     deleted = true;
@@ -902,7 +901,7 @@ void TransportSecurityState::DeleteAllDynamicDataSince(const base::Time& time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   bool dirtied = false;
-  STSStateMap::iterator sts_iterator = enabled_sts_hosts_.begin();
+  auto sts_iterator = enabled_sts_hosts_.begin();
   while (sts_iterator != enabled_sts_hosts_.end()) {
     if (sts_iterator->second.last_observed >= time) {
       dirtied = true;
@@ -913,7 +912,7 @@ void TransportSecurityState::DeleteAllDynamicDataSince(const base::Time& time) {
     ++sts_iterator;
   }
 
-  PKPStateMap::iterator pkp_iterator = enabled_pkp_hosts_.begin();
+  auto pkp_iterator = enabled_pkp_hosts_.begin();
   while (pkp_iterator != enabled_pkp_hosts_.end()) {
     if (pkp_iterator->second.last_observed >= time) {
       dirtied = true;
@@ -924,8 +923,7 @@ void TransportSecurityState::DeleteAllDynamicDataSince(const base::Time& time) {
     ++pkp_iterator;
   }
 
-  ExpectCTStateMap::iterator expect_ct_iterator =
-      enabled_expect_ct_hosts_.begin();
+  auto expect_ct_iterator = enabled_expect_ct_hosts_.begin();
   while (expect_ct_iterator != enabled_expect_ct_hosts_.end()) {
     if (expect_ct_iterator->second.last_observed >= time) {
       dirtied = true;
@@ -974,29 +972,6 @@ bool TransportSecurityState::AddHSTSHeader(const std::string& host,
   return true;
 }
 
-bool TransportSecurityState::AddHPKPHeader(const std::string& host,
-                                           const std::string& value,
-                                           const SSLInfo& ssl_info) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  base::Time now = base::Time::Now();
-  base::TimeDelta max_age;
-  bool include_subdomains;
-  HashValueVector spki_hashes;
-  GURL report_uri;
-
-  if (!ParseHPKPHeader(value, ssl_info.public_key_hashes, &max_age,
-                       &include_subdomains, &spki_hashes, &report_uri)) {
-    return false;
-  }
-  // Handle max-age == 0.
-  if (max_age.InSeconds() == 0)
-    spki_hashes.clear();
-  AddHPKPInternal(host, now, now + max_age, include_subdomains, spki_hashes,
-                  report_uri);
-  return true;
-}
-
 void TransportSecurityState::AddHSTS(const std::string& host,
                                      const base::Time& expiry,
                                      bool include_subdomains) {
@@ -1020,39 +995,6 @@ void TransportSecurityState::AddExpectCT(const std::string& host,
                                          const GURL& report_uri) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AddExpectCTInternal(host, base::Time::Now(), expiry, enforce, report_uri);
-}
-
-bool TransportSecurityState::ProcessHPKPReportOnlyHeader(
-    const std::string& value,
-    const HostPortPair& host_port_pair,
-    const SSLInfo& ssl_info) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  base::Time now = base::Time::Now();
-  bool include_subdomains;
-  HashValueVector spki_hashes;
-  GURL report_uri;
-  std::string unused_failure_log;
-
-  if (!ParseHPKPReportOnlyHeader(value, &include_subdomains, &spki_hashes,
-                                 &report_uri) ||
-      !report_uri.is_valid() || report_uri.is_empty()) {
-    return false;
-  }
-
-  PKPState pkp_state;
-  pkp_state.last_observed = now;
-  pkp_state.expiry = now;
-  pkp_state.include_subdomains = include_subdomains;
-  pkp_state.spki_hashes = spki_hashes;
-  pkp_state.report_uri = report_uri;
-  pkp_state.domain = DNSDomainToString(CanonicalizeHost(host_port_pair.host()));
-
-  CheckPinsAndMaybeSendReport(
-      host_port_pair, ssl_info.is_issued_by_known_root, pkp_state,
-      ssl_info.public_key_hashes, ssl_info.unverified_cert.get(),
-      ssl_info.cert.get(), ENABLE_PIN_REPORTS, &unused_failure_log);
-  return true;
 }
 
 void TransportSecurityState::ProcessExpectCTHeader(
@@ -1106,7 +1048,7 @@ void TransportSecurityState::ProcessExpectCTHeader(
     return;
   UMA_HISTOGRAM_ENUMERATION(
       "Net.ExpectCTHeader.PolicyComplianceOnHeaderProcessing",
-      ssl_info.ct_policy_compliance, ct::CTPolicyCompliance::CT_POLICY_MAX);
+      ssl_info.ct_policy_compliance, ct::CTPolicyCompliance::CT_POLICY_COUNT);
   if (ssl_info.ct_policy_compliance !=
       ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS) {
     // If an Expect-CT header is observed over a non-compliant connection, the
@@ -1259,7 +1201,7 @@ bool TransportSecurityState::GetDynamicSTSState(const std::string& host,
   for (size_t i = 0; canonicalized_host[i]; i += canonicalized_host[i] + 1) {
     std::string host_sub_chunk(&canonicalized_host[i],
                                canonicalized_host.size() - i);
-    STSStateMap::iterator j = enabled_sts_hosts_.find(HashHost(host_sub_chunk));
+    auto j = enabled_sts_hosts_.find(HashHost(host_sub_chunk));
     if (j == enabled_sts_hosts_.end())
       continue;
 
@@ -1300,7 +1242,7 @@ bool TransportSecurityState::GetDynamicPKPState(const std::string& host,
   for (size_t i = 0; canonicalized_host[i]; i += canonicalized_host[i] + 1) {
     std::string host_sub_chunk(&canonicalized_host[i],
                                canonicalized_host.size() - i);
-    PKPStateMap::iterator j = enabled_pkp_hosts_.find(HashHost(host_sub_chunk));
+    auto j = enabled_pkp_hosts_.find(HashHost(host_sub_chunk));
     if (j == enabled_pkp_hosts_.end())
       continue;
 
@@ -1337,8 +1279,7 @@ bool TransportSecurityState::GetDynamicExpectCTState(const std::string& host,
     return false;
 
   base::Time current_time(base::Time::Now());
-  ExpectCTStateMap::iterator j =
-      enabled_expect_ct_hosts_.find(HashHost(canonicalized_host));
+  auto j = enabled_expect_ct_hosts_.find(HashHost(canonicalized_host));
   if (j == enabled_expect_ct_hosts_.end())
     return false;
   // If the entry is invalid, drop it.
@@ -1358,14 +1299,6 @@ void TransportSecurityState::AddOrUpdateEnabledSTSHosts(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(state.ShouldUpgradeToSSL());
   enabled_sts_hosts_[hashed_host] = state;
-}
-
-void TransportSecurityState::AddOrUpdateEnabledPKPHosts(
-    const std::string& hashed_host,
-    const PKPState& state) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(state.HasPublicKeyPins());
-  enabled_pkp_hosts_[hashed_host] = state;
 }
 
 void TransportSecurityState::AddOrUpdateEnabledExpectCTHosts(
@@ -1453,13 +1386,5 @@ bool TransportSecurityState::PKPState::CheckPublicKeyPins(
 bool TransportSecurityState::PKPState::HasPublicKeyPins() const {
   return spki_hashes.size() > 0 || bad_spki_hashes.size() > 0;
 }
-
-TransportSecurityState::PKPStateIterator::PKPStateIterator(
-    const TransportSecurityState& state)
-    : iterator_(state.enabled_pkp_hosts_.begin()),
-      end_(state.enabled_pkp_hosts_.end()) {
-}
-
-TransportSecurityState::PKPStateIterator::~PKPStateIterator() = default;
 
 }  // namespace net

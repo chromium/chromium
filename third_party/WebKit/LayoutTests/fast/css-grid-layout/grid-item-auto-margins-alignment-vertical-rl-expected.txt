@@ -3,24 +3,31 @@ This test checks on a vertical-rl grid that aling-self and justify-self properti
 Direction: LTR | Self Alignment: center | fixed size items | 1 auto-margin
 
 PASS
+
 Direction: LTR | Self Alignment: stretch | fixed size items | 4 auto-margin
 
 PASS
+
 Direction: LTR | Self Alignment: center | auto size items | 1 auto-margin
 
 PASS
+
 Direction: LTR | Self Alignment: stretch | auto size items | 4 auto-margin
 
 PASS
+
 Direction: RTL | Self Alignment: center | fixed size items | 1 auto-margin
 
 PASS
+
 Direction: RTL | Self Alignment: stretch | fixed size items | 4 auto-margin
 
 PASS
+
 Direction: RTL | Self Alignment: center | auto size items | 1 auto-margin
 
 PASS
+
 Direction: RTL | Self Alignment: stretch | auto size items | 4 auto-margin
 
 PASS

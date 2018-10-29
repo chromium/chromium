@@ -44,6 +44,9 @@ class AutofillDriver {
   // Returns whether the user is currently operating in an incognito context.
   virtual bool IsIncognito() const = 0;
 
+  // Returns whether AutofillDriver instance is associated to the main frame.
+  virtual bool IsInMainFrame() const = 0;
+
   // Returns the URL request context information associated with this driver.
   virtual net::URLRequestContextGetter* GetURLRequestContext() = 0;
 

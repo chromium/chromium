@@ -246,12 +246,18 @@ std::unique_ptr<ppapi::host::ResourceHost>
 ContentBrowserPepperHostFactory::CreateAcceptedTCPSocket(
     PP_Instance instance,
     ppapi::TCPSocketVersion version,
-    std::unique_ptr<net::TCPSocket> socket) {
+    network::mojom::TCPConnectedSocketPtrInfo connected_socket,
+    network::mojom::SocketObserverRequest socket_observer_request,
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream) {
   if (!CanCreateSocket())
     return std::unique_ptr<ppapi::host::ResourceHost>();
-  scoped_refptr<ppapi::host::ResourceMessageFilter> tcp_socket(
-      new PepperTCPSocketMessageFilter(host_, instance, version,
-                                       std::move(socket)));
+  scoped_refptr<PepperTCPSocketMessageFilter> tcp_socket(
+      base::MakeRefCounted<PepperTCPSocketMessageFilter>(
+          nullptr /* factory */, host_, instance, version));
+  tcp_socket->SetConnectedSocket(
+      std::move(connected_socket), std::move(socket_observer_request),
+      std::move(receive_stream), std::move(send_stream));
   return std::unique_ptr<ppapi::host::ResourceHost>(
       new ppapi::host::MessageFilterHost(host_->GetPpapiHost(), instance, 0,
                                          tcp_socket));

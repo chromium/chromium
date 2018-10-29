@@ -2,7 +2,6 @@ Tests generating AES keys
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS typeof generatedKey.extractable is 'boolean'
 PASS generatedKey.extractable is true
 PASS generatedKey.algorithm.name is "AES-CBC"

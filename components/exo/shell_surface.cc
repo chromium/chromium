@@ -181,8 +181,10 @@ void ShellSurface::SetParent(ShellSurface* parent) {
 void ShellSurface::Maximize() {
   TRACE_EVENT0("exo", "ShellSurface::Maximize");
 
-  if (!widget_)
-    CreateShellSurfaceWidget(ui::SHOW_STATE_MAXIMIZED);
+  if (!widget_) {
+    initial_show_state_ = ui::SHOW_STATE_MAXIMIZED;
+    return;
+  }
 
   // Note: This will ask client to configure its surface even if already
   // maximized.
@@ -193,8 +195,10 @@ void ShellSurface::Maximize() {
 void ShellSurface::Minimize() {
   TRACE_EVENT0("exo", "ShellSurface::Minimize");
 
-  if (!widget_)
-    CreateShellSurfaceWidget(ui::SHOW_STATE_MINIMIZED);
+  if (!widget_) {
+    initial_show_state_ = ui::SHOW_STATE_MINIMIZED;
+    return;
+  }
 
   // Note: This will ask client to configure its surface even if already
   // minimized.
@@ -205,8 +209,10 @@ void ShellSurface::Minimize() {
 void ShellSurface::Restore() {
   TRACE_EVENT0("exo", "ShellSurface::Restore");
 
-  if (!widget_)
+  if (!widget_) {
+    initial_show_state_ = ui::SHOW_STATE_NORMAL;
     return;
+  }
 
   // Note: This will ask client to configure its surface even if not already
   // maximized or minimized.
@@ -217,8 +223,10 @@ void ShellSurface::Restore() {
 void ShellSurface::SetFullscreen(bool fullscreen) {
   TRACE_EVENT1("exo", "ShellSurface::SetFullscreen", "fullscreen", fullscreen);
 
-  if (!widget_)
-    CreateShellSurfaceWidget(ui::SHOW_STATE_FULLSCREEN);
+  if (!widget_) {
+    initial_show_state_ = ui::SHOW_STATE_FULLSCREEN;
+    return;
+  }
 
   // Note: This will ask client to configure its surface even if fullscreen
   // state doesn't change.
@@ -478,7 +486,7 @@ bool ShellSurface::OnPreWidgetCommit() {
       return false;
     }
 
-    CreateShellSurfaceWidget(ui::SHOW_STATE_NORMAL);
+    CreateShellSurfaceWidget(initial_show_state_);
   }
 
   // Apply the accumulated pending origin offset to reflect acknowledged

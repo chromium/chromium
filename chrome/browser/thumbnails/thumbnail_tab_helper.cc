@@ -13,6 +13,7 @@
 #include "chrome/browser/thumbnails/thumbnail_service_factory.h"
 #include "chrome/browser/thumbnails/thumbnail_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
@@ -313,9 +314,8 @@ void ThumbnailTabHelper::ProcessCapturedBitmap(TriggerReason trigger,
     // that cleanup happens on that thread.
     // TODO(treib): Figure out whether it actually happen that we get called
     // back on something other than the UI thread.
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI,
-        FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::Bind(&ThumbnailTabHelper::CleanUpFromThumbnailGeneration,
                    weak_factory_.GetWeakPtr()));
   }

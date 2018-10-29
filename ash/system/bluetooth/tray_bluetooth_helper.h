@@ -5,18 +5,13 @@
 #ifndef ASH_SYSTEM_BLUETOOTH_TRAY_BLUETOOTH_HELPER_H_
 #define ASH_SYSTEM_BLUETOOTH_TRAY_BLUETOOTH_HELPER_H_
 
-#include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
-#include "device/bluetooth/bluetooth_adapter.h"
-
-namespace device {
-class BluetoothDiscoverySession;
-}
+#include "device/bluetooth/bluetooth_common.h"
+#include "services/device/public/mojom/bluetooth_system.mojom.h"
 
 namespace ash {
 
@@ -30,9 +25,9 @@ struct ASH_EXPORT BluetoothDeviceInfo {
 
   std::string address;
   base::string16 display_name;
-  bool connected;
-  bool connecting;
-  bool paired;
+  bool connected = false;
+  bool connecting = false;
+  bool paired = false;
   device::BluetoothDeviceType device_type;
 };
 
@@ -41,72 +36,46 @@ using BluetoothDeviceList = std::vector<BluetoothDeviceInfo>;
 // Maps UI concepts from the Bluetooth system tray (e.g. "Bluetooth is on") into
 // device concepts ("Bluetooth adapter enabled"). Note that most Bluetooth
 // device operations are asynchronous, hence the two step initialization.
-// Exported for test.
-class ASH_EXPORT TrayBluetoothHelper
-    : public device::BluetoothAdapter::Observer {
+//
+// This is a temporary virtual class used during the migration to the new
+// BluetoothSystem Mojo interface. Once the migration is over, we'll
+// de-virtualize this class and remove its legacy implementation.
+class TrayBluetoothHelper {
  public:
   TrayBluetoothHelper();
-  ~TrayBluetoothHelper() override;
+  virtual ~TrayBluetoothHelper();
 
   // Initializes and gets the adapter asynchronously.
-  void Initialize();
-
-  // Completes initialization after the Bluetooth adapter is ready.
-  void InitializeOnAdapterReady(
-      scoped_refptr<device::BluetoothAdapter> adapter);
+  virtual void Initialize() = 0;
 
   // Returns a list of available bluetooth devices.
-  BluetoothDeviceList GetAvailableBluetoothDevices() const;
+  virtual BluetoothDeviceList GetAvailableBluetoothDevices() const = 0;
 
   // Requests bluetooth start discovering devices, which happens asynchronously.
-  void StartBluetoothDiscovering();
+  virtual void StartBluetoothDiscovering() = 0;
 
   // Requests bluetooth stop discovering devices.
-  void StopBluetoothDiscovering();
+  virtual void StopBluetoothDiscovering() = 0;
 
   // Connect to a specific bluetooth device.
-  void ConnectToBluetoothDevice(const std::string& address);
+  virtual void ConnectToBluetoothDevice(const std::string& address) = 0;
 
-  // Returns whether bluetooth capability is available (e.g. the device has
-  // hardware support).
-  bool GetBluetoothAvailable();
+  // Returns the state of Bluetooth in the system e.g. has hardware support,
+  // is enabled, etc.
+  virtual device::mojom::BluetoothSystem::State GetBluetoothState() = 0;
 
-  // Returns whether bluetooth is enabled.
-  bool GetBluetoothEnabled();
+  // Returns true if there is a Bluetooth radio present.
+  bool IsBluetoothStateAvailable();
 
   // Changes bluetooth state to |enabled|. If the current state and |enabled|
   // are same, it does nothing. If they're different, it toggles the state and
   // records UMA.
-  void SetBluetoothEnabled(bool enabled);
+  virtual void SetBluetoothEnabled(bool enabled) = 0;
 
   // Returns whether the delegate has initiated a bluetooth discovery session.
-  bool HasBluetoothDiscoverySession();
-
-  // BluetoothAdapter::Observer:
-  void AdapterPresentChanged(device::BluetoothAdapter* adapter,
-                             bool present) override;
-  void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
-                             bool powered) override;
-  void AdapterDiscoveringChanged(device::BluetoothAdapter* adapter,
-                                 bool discovering) override;
-  void DeviceAdded(device::BluetoothAdapter* adapter,
-                   device::BluetoothDevice* device) override;
-  void DeviceChanged(device::BluetoothAdapter* adapter,
-                     device::BluetoothDevice* device) override;
-  void DeviceRemoved(device::BluetoothAdapter* adapter,
-                     device::BluetoothDevice* device) override;
+  virtual bool HasBluetoothDiscoverySession() = 0;
 
  private:
-  void OnStartDiscoverySession(
-      std::unique_ptr<device::BluetoothDiscoverySession> discovery_session);
-
-  bool should_run_discovery_ = false;
-  scoped_refptr<device::BluetoothAdapter> adapter_;
-  std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
-
-  // Object could be deleted during a prolonged Bluetooth operation.
-  base::WeakPtrFactory<TrayBluetoothHelper> weak_ptr_factory_;
-
   DISALLOW_COPY_AND_ASSIGN(TrayBluetoothHelper);
 };
 

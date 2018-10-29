@@ -202,16 +202,26 @@ cr.define('cr.ui', function() {
     },
 
     /**
-     * Returns if the menu has any visible item.
+     * Returns whether the menu has any visible items.  Hides any separators
+     * where all items below it until the next separator are hidden.
      * @return {boolean} True if the menu has visible item. Otherwise, false.
      */
     hasVisibleItems: function() {
       var menuItems = this.menuItems;  // Cache.
-      for (var i = 0, menuItem; menuItem = menuItems[i]; i++) {
-        if (!menuItem.isSeparator() && this.isItemVisible_(menuItem))
-          return true;
+      var result = false;
+      var separatorRequired = false;
+      // Inspect items in reverse order to determine if the separator above each
+      // set of items is required.
+      for (var i = menuItems.length - 1; i >= 0; i--) {
+        var menuItem = menuItems[i];
+        if (menuItem.isSeparator()) {
+          menuItem.hidden = !separatorRequired;
+          separatorRequired = false;
+        }
+        if (this.isItemVisible_(menuItem))
+          result = separatorRequired = true;
       }
-      return false;
+      return result;
     },
 
     /**

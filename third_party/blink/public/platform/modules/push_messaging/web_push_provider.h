@@ -12,7 +12,6 @@
 
 namespace blink {
 
-class WebServiceWorkerRegistration;
 struct WebPushError;
 struct WebPushSubscriptionOptions;
 
@@ -25,21 +24,18 @@ class WebPushProvider {
   virtual ~WebPushProvider() = default;
 
   // Takes ownership of the WebPushSubscriptionCallbacks.
-  // Does not take ownership of the WebServiceWorkerRegistration.
-  virtual void Subscribe(WebServiceWorkerRegistration*,
+  virtual void Subscribe(int64_t service_worker_registration_id,
                          const WebPushSubscriptionOptions&,
                          bool user_gesture,
                          std::unique_ptr<WebPushSubscriptionCallbacks>) = 0;
 
   // Takes ownership of the WebPushSubscriptionCallbacks.
-  // Does not take ownership of the WebServiceWorkerRegistration.
   virtual void GetSubscription(
-      WebServiceWorkerRegistration*,
+      int64_t service_worker_registration_id,
       std::unique_ptr<WebPushSubscriptionCallbacks>) = 0;
 
   // Takes ownership if the WebPushUnsubscribeCallbacks.
-  // Does not take ownership of the WebServiceWorkerRegistration.
-  virtual void Unsubscribe(WebServiceWorkerRegistration*,
+  virtual void Unsubscribe(int64_t service_worker_registration_id,
                            std::unique_ptr<WebPushUnsubscribeCallbacks>) = 0;
 };
 

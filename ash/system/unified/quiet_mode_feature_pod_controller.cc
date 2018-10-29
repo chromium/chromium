@@ -10,6 +10,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
@@ -55,6 +57,13 @@ void QuietModeFeaturePodController::OnIconPressed() {
   MessageCenter* message_center = MessageCenter::Get();
   bool is_quiet_mode = message_center->IsQuietMode();
   message_center->SetQuietMode(!is_quiet_mode);
+
+  if (message_center->IsQuietMode()) {
+    base::RecordAction(base::UserMetricsAction("StatusArea_QuietMode_Enabled"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("StatusArea_QuietMode_Disabled"));
+  }
 }
 
 void QuietModeFeaturePodController::OnLabelPressed() {
@@ -62,7 +71,7 @@ void QuietModeFeaturePodController::OnLabelPressed() {
 }
 
 SystemTrayItemUmaType QuietModeFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_NOT_RECORDED;
+  return SystemTrayItemUmaType::UMA_QUIET_MODE;
 }
 
 void QuietModeFeaturePodController::OnQuietModeChanged(bool in_quiet_mode) {

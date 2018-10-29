@@ -74,20 +74,17 @@ void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
 #if defined(USE_AURA)
   wm_state_.reset(new wm::WMState);
 #endif
+
+  // TODO(pkasting): Try to move ViewsDelegate creation here as well;
+  // see https://crbug.com/691894#c1
+  if (!views::LayoutProvider::Get())
+    layout_provider_ = ChromeLayoutProvider::CreateLayoutProvider();
 }
 
 void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
 #if defined(USE_AURA)
   views::InstallDesktopScreenIfNecessary();
 #endif
-
-  // TODO(pkasting): Try to move ViewsDelegate creation here as well;
-  // see https://crbug.com/691894#c1
-  // The layout_provider_ must be intialized here instead of in
-  // ToolkitInitialized() because it relies on
-  // ui::MaterialDesignController::Intialize() having already been called.
-  if (!views::LayoutProvider::Get())
-    layout_provider_ = ChromeLayoutProvider::CreateLayoutProvider();
 }
 
 void ChromeBrowserMainExtraPartsViews::PreProfileInit() {

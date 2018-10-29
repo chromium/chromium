@@ -29,7 +29,7 @@ namespace blink {
 // A SVGTextFragment describes a text fragment of a LayoutSVGInlineText which
 // can be laid out at once.
 struct SVGTextFragment {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   SVGTextFragment()
       : character_offset(0),
         metrics_list_offset(0),

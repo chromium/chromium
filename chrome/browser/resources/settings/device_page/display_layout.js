@@ -35,7 +35,10 @@ Polymer({
      * The ratio of the display area div (in px) to DisplayUnitInfo.bounds.
      * @type {number}
      */
-    visualScale: 1,
+    visualScale: {
+      type: Number,
+      value: 1,
+    },
 
     /**
      * Ids for mirroring destination displays.

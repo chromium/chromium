@@ -44,7 +44,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/window/dialog_client_view.h"
 
-using crostini::ConciergeClientResult;
+using crostini::CrostiniResult;
 
 namespace {
 CrostiniInstallerView* g_crostini_installer_view = nullptr;
@@ -81,14 +81,16 @@ void RecordTimeFromDeviceSetupToInstallMetric() {
 
 }  // namespace
 
-void ShowCrostiniInstallerView(Profile* profile, CrostiniUISurface ui_surface) {
+void crostini::ShowCrostiniInstallerView(
+    Profile* profile,
+    crostini::CrostiniUISurface ui_surface) {
   base::UmaHistogramEnumeration(kCrostiniSetupSourceHistogram, ui_surface,
-                                CrostiniUISurface::kCount);
+                                crostini::CrostiniUISurface::kCount);
   return CrostiniInstallerView::Show(profile);
 }
 
 void CrostiniInstallerView::Show(Profile* profile) {
-  DCHECK(IsCrostiniUIAllowedForProfile(profile));
+  DCHECK(crostini::IsCrostiniUIAllowedForProfile(profile));
   if (!g_crostini_installer_view) {
     g_crostini_installer_view = new CrostiniInstallerView(profile);
     views::DialogDelegate::CreateDialogWidget(g_crostini_installer_view,
@@ -162,7 +164,8 @@ bool CrostiniInstallerView::Accept() {
   // Kick off the Crostini Restart sequence. We will be added as an observer.
   restart_id_ =
       crostini::CrostiniManager::GetForProfile(profile_)->RestartCrostini(
-          kCrostiniDefaultVmName, kCrostiniDefaultContainerName,
+          crostini::kCrostiniDefaultVmName,
+          crostini::kCrostiniDefaultContainerName,
           base::BindOnce(&CrostiniInstallerView::MountContainerFinished,
                          weak_ptr_factory_.GetWeakPtr()),
           this);
@@ -197,10 +200,10 @@ void CrostiniInstallerView::LinkClicked(views::Link* source, int event_flags) {
   Navigate(&params);
 }
 
-void CrostiniInstallerView::OnComponentLoaded(ConciergeClientResult result) {
+void CrostiniInstallerView::OnComponentLoaded(CrostiniResult result) {
   DCHECK_EQ(state_, State::INSTALL_IMAGE_LOADER);
 
-  if (result != ConciergeClientResult::SUCCESS) {
+  if (result != CrostiniResult::SUCCESS) {
     LOG(ERROR) << "Failed to install the cros-termina component";
     HandleError(
         l10n_util::GetStringUTF16(IDS_CROSTINI_INSTALLER_LOAD_TERMINA_ERROR),
@@ -212,9 +215,9 @@ void CrostiniInstallerView::OnComponentLoaded(ConciergeClientResult result) {
   StepProgress();
 }
 
-void CrostiniInstallerView::OnConciergeStarted(ConciergeClientResult result) {
+void CrostiniInstallerView::OnConciergeStarted(CrostiniResult result) {
   DCHECK_EQ(state_, State::START_CONCIERGE);
-  if (result != ConciergeClientResult::SUCCESS) {
+  if (result != CrostiniResult::SUCCESS) {
     LOG(ERROR) << "Failed to install start Concierge with error code: "
                << static_cast<int>(result);
     HandleError(
@@ -227,9 +230,9 @@ void CrostiniInstallerView::OnConciergeStarted(ConciergeClientResult result) {
   StepProgress();
 }
 
-void CrostiniInstallerView::OnDiskImageCreated(ConciergeClientResult result) {
+void CrostiniInstallerView::OnDiskImageCreated(CrostiniResult result) {
   DCHECK_EQ(state_, State::CREATE_DISK_IMAGE);
-  if (result != ConciergeClientResult::SUCCESS) {
+  if (result != CrostiniResult::SUCCESS) {
     LOG(ERROR) << "Failed to create disk imagewith error code: "
                << static_cast<int>(result);
     HandleError(l10n_util::GetStringUTF16(
@@ -242,9 +245,9 @@ void CrostiniInstallerView::OnDiskImageCreated(ConciergeClientResult result) {
   StepProgress();
 }
 
-void CrostiniInstallerView::OnVmStarted(ConciergeClientResult result) {
+void CrostiniInstallerView::OnVmStarted(CrostiniResult result) {
   DCHECK_EQ(state_, State::START_TERMINA_VM);
-  if (result != ConciergeClientResult::SUCCESS) {
+  if (result != CrostiniResult::SUCCESS) {
     LOG(ERROR) << "Failed to start Termina VM with error code: "
                << static_cast<int>(result);
     HandleError(l10n_util::GetStringUTF16(
@@ -264,18 +267,18 @@ void CrostiniInstallerView::OnContainerDownloading(int32_t download_percent) {
   StepProgress();
 }
 
-void CrostiniInstallerView::OnContainerCreated(ConciergeClientResult result) {
+void CrostiniInstallerView::OnContainerCreated(CrostiniResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::CREATE_CONTAINER);
   UpdateState(State::START_CONTAINER);
   StepProgress();
 }
 
-void CrostiniInstallerView::OnContainerStarted(ConciergeClientResult result) {
+void CrostiniInstallerView::OnContainerStarted(CrostiniResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::START_CONTAINER);
 
-  if (result != ConciergeClientResult::SUCCESS) {
+  if (result != CrostiniResult::SUCCESS) {
     LOG(ERROR) << "Failed to start container with error code: "
                << static_cast<int>(result);
     HandleError(
@@ -284,15 +287,32 @@ void CrostiniInstallerView::OnContainerStarted(ConciergeClientResult result) {
     return;
   }
   VLOG(1) << "Started container successfully";
+  UpdateState(State::SETUP_CONTAINER);
+  StepProgress();
+}
+
+void CrostiniInstallerView::OnContainerSetup(CrostiniResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_EQ(state_, State::SETUP_CONTAINER);
+
+  if (result != CrostiniResult::SUCCESS) {
+    LOG(ERROR) << "Failed to set up container with error code: "
+               << static_cast<int>(result);
+    HandleError(
+        l10n_util::GetStringUTF16(IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_ERROR),
+        SetupResult::kErrorSettingUpContainer);
+    return;
+  }
+  VLOG(1) << "Set up container successfully";
   UpdateState(State::FETCH_SSH_KEYS);
   StepProgress();
 }
 
-void CrostiniInstallerView::OnSshKeysFetched(ConciergeClientResult result) {
+void CrostiniInstallerView::OnSshKeysFetched(CrostiniResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::FETCH_SSH_KEYS);
 
-  if (result != ConciergeClientResult::SUCCESS) {
+  if (result != CrostiniResult::SUCCESS) {
     LOG(ERROR) << "Failed to fetch ssh keys with error code: "
                << static_cast<int>(result);
     HandleError(
@@ -315,7 +335,7 @@ CrostiniInstallerView::CrostiniInstallerView(Profile* profile)
   // Layout constants from the spec.
   constexpr gfx::Insets kDialogInsets(60, 64, 32, 64);
   constexpr int kDialogSpacingVertical = 32;
-  constexpr gfx::Size kLogoImageSize(32, 32);
+  constexpr gfx::Size kLogoImageSize(48, 48);
 
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -427,10 +447,9 @@ void CrostiniInstallerView::HandleError(const base::string16& error_message,
   GetWidget()->GetRootView()->Layout();
 }
 
-void CrostiniInstallerView::MountContainerFinished(
-    ConciergeClientResult result) {
+void CrostiniInstallerView::MountContainerFinished(CrostiniResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (result != ConciergeClientResult::SUCCESS) {
+  if (result != CrostiniResult::SUCCESS) {
     LOG(ERROR) << "Failed to mount container with error code: "
                << static_cast<int>(result);
     HandleError(
@@ -446,12 +465,15 @@ void CrostiniInstallerView::ShowLoginShell() {
   DCHECK_EQ(state_, State::MOUNT_CONTAINER);
   UpdateState(State::SHOW_LOGIN_SHELL);
 
-  crostini::CrostiniManager::GetForProfile(profile_)->LaunchContainerTerminal(
-      kCrostiniDefaultVmName, kCrostiniDefaultContainerName,
+  crostini::CrostiniManager* crostini_manager =
+      crostini::CrostiniManager::GetForProfile(profile_);
+  crostini_manager->LaunchContainerTerminal(
+      crostini::kCrostiniDefaultVmName, crostini::kCrostiniDefaultContainerName,
       std::vector<std::string>());
 
   StepProgress();
   RecordSetupResultHistogram(SetupResult::kSuccess);
+  crostini_manager->UpdateLaunchMetricsForEnterpriseReporting();
   RecordTimeFromDeviceSetupToInstallMetric();
   GetWidget()->Close();
 }
@@ -490,10 +512,15 @@ void CrostiniInstallerView::StepProgress() {
       break;
     case State::CREATE_CONTAINER:
       state_start_mark = 0.35;
-      state_end_mark = 0.95;
+      state_end_mark = 0.90;
       state_max_seconds = 180;
       break;
     case State::START_CONTAINER:
+      state_start_mark = 0.90;
+      state_end_mark = 0.95;
+      state_max_seconds = 8;
+      break;
+    case State::SETUP_CONTAINER:
       state_start_mark = 0.95;
       state_end_mark = 0.99;
       state_max_seconds = 8;
@@ -570,6 +597,9 @@ void CrostiniInstallerView::SetMessageLabel() {
       break;
     case State::START_CONTAINER:
       message_id = IDS_CROSTINI_INSTALLER_START_CONTAINER_MESSAGE;
+      break;
+    case State::SETUP_CONTAINER:
+      message_id = IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_MESSAGE;
       break;
     case State::FETCH_SSH_KEYS:
       message_id = IDS_CROSTINI_INSTALLER_FETCH_SSH_KEYS_MESSAGE;

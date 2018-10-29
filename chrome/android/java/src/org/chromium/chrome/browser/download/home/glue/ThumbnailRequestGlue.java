@@ -5,20 +5,21 @@
 package org.chromium.chrome.browser.download.home.glue;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.widget.ThumbnailProvider;
 import org.chromium.chrome.browser.widget.ThumbnailProvider.ThumbnailRequest;
+import org.chromium.chrome.browser.widget.ThumbnailProviderImpl;
+import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
-import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.components.offline_items_collection.VisualsCallback;
+import org.chromium.ui.display.DisplayAndroid;
 
 /**
  * Glue class responsible for connecting the current downloads and {@link OfflineContentProvider}
- * thumbnail work to the {@link ThumbnailProvider} via a custon {@link ThumbnailProviderImpl}.
+ * thumbnail work to the {@link ThumbnailProvider} via a custom {@link ThumbnailProviderImpl}.
  */
 public class ThumbnailRequestGlue implements ThumbnailRequest {
     private final OfflineContentProviderGlue mProvider;
@@ -29,11 +30,15 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
 
     /** Creates a {@link ThumbnailRequestGlue} instance. */
     public ThumbnailRequestGlue(OfflineContentProviderGlue provider, OfflineItem item,
-            int iconWidthPx, int iconHeightPx, VisualsCallback callback) {
+            int iconWidthPx, int iconHeightPx, float maxThumbnailScaleFactor,
+            VisualsCallback callback) {
         mProvider = provider;
         mItem = item;
-        mIconWidthPx = iconWidthPx;
-        mIconHeightPx = iconHeightPx;
+
+        // Scale the thumbnail quality to mdpi for high dpi devices.
+        mIconWidthPx = downscaleThumbnailSize(iconWidthPx, maxThumbnailScaleFactor);
+        mIconHeightPx = downscaleThumbnailSize(iconHeightPx, maxThumbnailScaleFactor);
+
         mCallback = callback;
     }
 
@@ -41,6 +46,11 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
     @Override
     public String getFilePath() {
         return mItem.filePath;
+    }
+
+    @Override
+    public String getMimeType() {
+        return mItem.mimeType;
     }
 
     @Override
@@ -66,21 +76,38 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
 
     @Override
     public boolean getThumbnail(Callback<Bitmap> callback) {
-        // TODO(shaktisahu, xingliu): Remove this after video thumbnail generation pipeline is done.
-        if (mItem.filter == OfflineItemFilter.FILTER_VIDEO) {
-            callback.onResult(BitmapFactory.decodeResource(
-                    ContextUtils.getApplicationContext().getResources(),
-                    R.drawable.audio_playing_square));
-            return true;
-        }
-
         return mProvider.getVisualsForItem(mItem.id, (id, visuals) -> {
-            if (visuals == null) {
+            if (visuals == null || visuals.icon == null) {
                 callback.onResult(null);
             } else {
-                callback.onResult(Bitmap.createScaledBitmap(
-                        visuals.icon, mIconWidthPx, mIconHeightPx, false));
+                Bitmap bitmap = visuals.icon;
+
+                int minDimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
+                // Note that we have to use width here because the ThumbnailProviderImpl only keys
+                // off of width as well.
+                if (minDimension > mIconWidthPx) {
+                    int newWidth = (int) (((long) bitmap.getWidth()) * mIconWidthPx / minDimension);
+                    int newHeight =
+                            (int) (((long) bitmap.getHeight()) * mIconWidthPx / minDimension);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
+                }
+
+                callback.onResult(bitmap);
             }
         });
+    }
+
+    /**
+     * Returns size in pixel used by the thumbnail request, considering dip scale factor.
+     * @param currentSize The current size before considering the dip scale factor.
+     * @param maxScaleFactor The maximum scale factor we expected to show as the thumbnail. Device
+     *                       with higher scale factor will be downscaled to this level.
+     */
+    private int downscaleThumbnailSize(int currentSize, float maxScaleFactor) {
+        DisplayAndroid display =
+                DisplayAndroid.getNonMultiDisplay(ContextUtils.getApplicationContext());
+        float scale = display.getDipScale();
+        if (scale <= maxScaleFactor) return currentSize;
+        return (int) (maxScaleFactor * currentSize / scale);
     }
 }

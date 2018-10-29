@@ -58,8 +58,8 @@ void LogoView::SetState(BaseLogoView::State state, bool animate) {
     case BaseLogoView::State::kListening:
       animator_state = StateModel::State::kListening;
       break;
-    case BaseLogoView::State::kMicFab:
-      animator_state = StateModel::State::kMicFab;
+    case BaseLogoView::State::kMic:
+      animator_state = StateModel::State::kMic;
       break;
     case BaseLogoView::State::kMoleculeWavy:
       animator_state = StateModel::State::kMoleculeWavy;
@@ -72,7 +72,7 @@ void LogoView::SetState(BaseLogoView::State state, bool animate) {
 }
 
 void LogoView::SetSpeechLevel(float speech_level) {
-  sound_level_input_value_provider_.set_speech_level(speech_level);
+  sound_level_input_value_provider_.SetSpeechLevel(speech_level);
 }
 
 int64_t LogoView::StartTimer() {

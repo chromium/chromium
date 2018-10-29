@@ -4,13 +4,21 @@ Explicit Item 3
 Implicit Item 1
 Implicit Item 2
 Implicit Item 3
-       
+Explicit Option 1
+Explicit Option 2
+Implicit Option 1
+Implicit Option 2
+Explicit dropdown 1
+Explicit dropdown 2
+Implicit dropdown 1
+Implicit dropdown 2
+   
+
 End of test
 
 This tests that the role attribute is not missed.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 AXRole: AXWebArea
     AXRole: AXRadioGroup
@@ -53,6 +61,7 @@ AXRole: AXWebArea
             AXRole: AXSliderThumb
     AXRole: AXParagraph
         AXRole: AXStaticText "End of test"
+
 PASS successfullyParsed is true
 
 TEST COMPLETE

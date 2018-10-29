@@ -44,10 +44,8 @@ class XRWebGLLayer final : public XRLayer,
       WebGLRenderingContextOrWebGL2RenderingContext&) const;
 
   WebGLFramebuffer* framebuffer() const { return framebuffer_; }
-  unsigned long framebufferWidth() const {
-    return drawing_buffer_->size().Width();
-  }
-  unsigned long framebufferHeight() const {
+  uint32_t framebufferWidth() const { return drawing_buffer_->size().Width(); }
+  uint32_t framebufferHeight() const {
     return drawing_buffer_->size().Height();
   }
 

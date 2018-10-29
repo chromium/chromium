@@ -77,8 +77,7 @@ static_library("client") {
 
   public_configs = [ "..:crashpad_config" ]
 
-  deps = [
-    "../compat",
+  public_deps = [
     "../third_party/mini_chromium:base",
     "../util",
   ]
@@ -89,7 +88,7 @@ static_library("client") {
   }
 
   if (crashpad_is_fuchsia) {
-    deps += [ "../third_party/fuchsia:zx" ]
+    deps = [ "../third_party/fuchsia:zx" ]
     if (crashpad_is_in_fuchsia) {
       deps += [ "//zircon/public/lib/fdio" ]
     }

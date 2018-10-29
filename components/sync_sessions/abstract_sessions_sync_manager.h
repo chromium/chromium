@@ -18,7 +18,7 @@ class FaviconCache;
 class OpenTabsUIDelegate;
 class SessionsGlobalIdMapper;
 
-// TODO(crbug.com/681921): Remove this interface once the migration to USS
+// TODO(crbug.com/895455): Remove this interface once the migration to USS
 // is completed and the old code removed.
 class AbstractSessionsSyncManager {
  public:

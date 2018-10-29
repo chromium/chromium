@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Dapatkan ciri-ciri pintar Google di Chromium</translation>
 <translation id="2730884209570016437">Chromium tidak dapat menggunakan kamera anda kerana kamera sedang digunakan oleh aplikasi lain</translation>
 <translation id="2797210818057553964">Anda boleh menyesuaikan pilihan ini pada bila-bila masa dalam Tetapan Chromium</translation>
+<translation id="2915596697727466327">Chromium menggunakan ID Wajah untuk memastikan akses yang dibenarkan kepada kata laluan anda.</translation>
 <translation id="3256316712990552818">Disalin ke Chromium</translation>
 <translation id="3413120535237193088">Log masuk ke Chromium untuk mendapatkan penanda halaman pada semua peranti anda.</translation>
 <translation id="3473048256428424907">Hidupkan pengimbas QR Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Tab yang telah dibuka dalam Chromium pada peranti anda yang lain akan dipaparkan di sini.</translation>
 <translation id="495292094137889840">Mula menggunakan pengimbas QR Chromium</translation>
 <translation id="5231355151045086930">Log keluar daripada Chromium</translation>
-<translation id="5416919929805616771">Seronok menggunakan Chromium? <ph name="BEGIN_LINK" />Nilaikan apl ini<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Selamat datang ke Chromium</translation>
 <translation id="5945387852661427312">Anda mengelog masuk dengan akaun yang diurus oleh <ph name="DOMAIN" /> dan memberi kawalan terhadap data Chromium anda kepada pentadbirnya. Data anda akan terikat secara kekal kepada akaun ini. Tindakan mengelog keluar daripada Chromium akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam Akaun Google anda.</translation>
 <translation id="6068866989048414399">Syarat Perkhidmatan Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Anda sedang menukar akaun penyegerakan daripada <ph name="USER_EMAIL1" /> kepada <ph name="USER_EMAIL2" />. Data Chromium sedia ada diurus oleh <ph name="DOMAIN" />. Tindakan ini akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Petua: <ph name="BEGIN_LINK" />Alihkan Chromium ke dok anda<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Dapatkan pengalaman yang lebih baik di Chromium berdasarkan lokasi anda.</translation>
-<translation id="8353224596138547809">Adakah anda mahu Chromium menyimpan kata laluan anda untuk tapak ini?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" /> boleh disesuaikan pada bila-bila masa. Google boleh menggunakan kandungan di tapak yang anda lawati, interaksi dan aktiviti penyemak imbas untuk memperibadikan Chromium dan perkhidmatan Google seperti Terjemahan, Carian dan iklan.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="8809780021347235332">Untuk menyimpan imej, ketik pada Tetapan untuk membolehkan Chromium menggunakan foto anda</translation>

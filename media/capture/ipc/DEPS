@@ -1,4 +1,0 @@
-include_rules = [
-  "+ipc",
-  "-media/capture/capture_export.h",
-]

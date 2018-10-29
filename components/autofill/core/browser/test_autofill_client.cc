@@ -36,6 +36,10 @@ identity::IdentityManager* TestAutofillClient::GetIdentityManager() {
   return identity_test_env_.identity_manager();
 }
 
+StrikeDatabase* TestAutofillClient::GetStrikeDatabase() {
+  return test_strike_database_.get();
+}
+
 ukm::UkmRecorder* TestAutofillClient::GetUkmRecorder() {
   return ukm::UkmRecorder::Get();
 }
@@ -100,14 +104,20 @@ void TestAutofillClient::ConfirmSaveAutofillProfile(
 
 void TestAutofillClient::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
-    const base::Closure& callback) {
+    bool show_prompt,
+    base::OnceClosure callback) {
+  confirm_save_credit_card_locally_called_ = true;
+  offer_to_save_credit_card_bubble_was_shown_ = show_prompt;
+  std::move(callback).Run();
 }
 
 void TestAutofillClient::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     std::unique_ptr<base::DictionaryValue> legal_message,
     bool should_request_name_from_user,
+    bool show_prompt,
     base::OnceCallback<void(const base::string16&)> callback) {
+  offer_to_save_credit_card_bubble_was_shown_ = show_prompt;
   std::move(callback).Run(base::string16());
 }
 
@@ -118,8 +128,8 @@ void TestAutofillClient::ConfirmCreditCardFillAssist(
 }
 
 void TestAutofillClient::LoadRiskData(
-    const base::Callback<void(const std::string&)>& callback) {
-  callback.Run("some risk data");
+    base::OnceCallback<void(const std::string&)> callback) {
+  std::move(callback).Run("some risk data");
 }
 
 bool TestAutofillClient::HasCreditCardScanFeature() {
@@ -171,10 +181,6 @@ bool TestAutofillClient::ShouldShowSigninPromo() {
 }
 
 void TestAutofillClient::ExecuteCommand(int id) {}
-
-bool TestAutofillClient::IsAutofillSupported() {
-  return true;
-}
 
 bool TestAutofillClient::AreServerCardsSupported() {
   return true;

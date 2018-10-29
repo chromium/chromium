@@ -1143,10 +1143,8 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
   if (current_style.TextAutosizingMultiplier() == multiplier)
     return;
 
-  // We need to clone the layoutObject style to avoid breaking style sharing.
   scoped_refptr<ComputedStyle> style = ComputedStyle::Clone(current_style);
   style->SetTextAutosizingMultiplier(multiplier);
-  style->SetUnique();
 
   switch (relayout_behavior) {
     case kAlreadyInLayout:

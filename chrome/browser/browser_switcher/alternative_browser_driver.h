@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSER_SWITCHER_ALTERNATIVE_BROWSER_DRIVER_H_
 #define CHROME_BROWSER_BROWSER_SWITCHER_ALTERNATIVE_BROWSER_DRIVER_H_
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
@@ -51,17 +52,13 @@ class AlternativeBrowserDriverImpl : public AlternativeBrowserDriver {
   void SetBrowserParameters(const base::ListValue* parameters) override;
   bool TryLaunch(const GURL& url) override;
 
-  using StringType = base::FilePath::StringType;
-
-  // Appends the arguments in |raw_args| to |argv|, performing substitution of
-  // "${url}" at the same time. If none of |raw_args| contains "${url}", the URL
-  // is appended as the last argument.
-  static void AppendCommandLineArguments(
-      std::vector<StringType>* argv,
-      const std::vector<StringType>& raw_args,
-      const GURL& url);
+  // Create the CommandLine object that would be used to launch an external
+  // process.
+  base::CommandLine CreateCommandLine(const GURL& url);
 
  private:
+  using StringType = base::FilePath::StringType;
+
 #if defined(OS_WIN)
   bool TryLaunchWithDde(const GURL& url);
   bool TryLaunchWithExec(const GURL& url);

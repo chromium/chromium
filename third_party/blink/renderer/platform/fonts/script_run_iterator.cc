@@ -76,7 +76,7 @@ void ICUScriptData::GetScripts(UChar32 ch, UScriptCodeList& dst) const {
     // Ignore common. Find the preferred script of the multiple scripts that
     // remain, and ensure it is at the head. Just keep swapping them in,
     // there aren't likely to be many.
-    for (size_t i = 1; i < dst.size(); ++i) {
+    for (wtf_size_t i = 1; i < dst.size(); ++i) {
       if (dst.at(0) == USCRIPT_LATIN || dst.at(i) < dst.at(0)) {
         std::swap(dst.at(0), dst.at(i));
       }
@@ -92,7 +92,7 @@ void ICUScriptData::GetScripts(UChar32 ch, UScriptCodeList& dst) const {
   // just sorted in alphabetic order.
   dst.push_back(dst.at(0));
   dst.at(0) = primary_script;
-  for (size_t i = 2; i < dst.size(); ++i) {
+  for (wtf_size_t i = 2; i < dst.size(); ++i) {
     if (dst.at(1) == USCRIPT_LATIN || dst.at(i) < dst.at(1)) {
       std::swap(dst.at(1), dst.at(i));
     }
@@ -115,7 +115,7 @@ const ICUScriptData* ICUScriptData::Instance() {
 }
 
 ScriptRunIterator::ScriptRunIterator(const UChar* text,
-                                     size_t length,
+                                     wtf_size_t length,
                                      const ScriptData* data)
     : text_(text),
       length_(length),
@@ -141,7 +141,7 @@ ScriptRunIterator::ScriptRunIterator(const UChar* text,
   }
 }
 
-ScriptRunIterator::ScriptRunIterator(const UChar* text, size_t length)
+ScriptRunIterator::ScriptRunIterator(const UChar* text, wtf_size_t length)
     : ScriptRunIterator(text, length, ICUScriptData::Instance()) {}
 
 bool ScriptRunIterator::Consume(unsigned& limit, UScriptCode& script) {
@@ -149,7 +149,7 @@ bool ScriptRunIterator::Consume(unsigned& limit, UScriptCode& script) {
     return false;
   }
 
-  size_t pos;
+  wtf_size_t pos;
   UChar32 ch;
   while (Fetch(&pos, &ch)) {
     PairedBracketType paired_type = script_data_->GetPairedBracketType(ch);
@@ -200,12 +200,13 @@ void ScriptRunIterator::CloseBracket(UChar32 ch) {
         next_set_->push_back(script);
 
         // And pop stack to this point.
-        int num_popped = std::distance(brackets_.rbegin(), it);
+        int num_popped =
+            static_cast<int>(std::distance(brackets_.rbegin(), it));
         // TODO: No resize operation in WTF::Deque?
         for (int i = 0; i < num_popped; ++i)
           brackets_.pop_back();
-        brackets_fixup_depth_ = std::max(static_cast<size_t>(0),
-                                         brackets_fixup_depth_ - num_popped);
+        brackets_fixup_depth_ = static_cast<wtf_size_t>(
+            std::max(0, static_cast<int>(brackets_fixup_depth_) - num_popped));
         return;
       }
     }
@@ -291,7 +292,8 @@ bool ScriptRunIterator::MergeSets() {
   }
 
   // Only change current if the run continues.
-  int written = std::distance(current_set_.begin(), current_write_it);
+  int written =
+      static_cast<int>(std::distance(current_set_.begin(), current_write_it));
   if (written > 0) {
     current_set_.resize(written);
     return true;
@@ -314,7 +316,7 @@ void ScriptRunIterator::FixupStack(UScriptCode resolved_script) {
       brackets_fixup_depth_ = brackets_.size();
     }
     auto it = brackets_.rbegin();
-    for (size_t i = 0; i < brackets_fixup_depth_; ++i) {
+    for (wtf_size_t i = 0; i < brackets_fixup_depth_; ++i) {
       it->script = resolved_script;
       ++it;
     }
@@ -322,7 +324,7 @@ void ScriptRunIterator::FixupStack(UScriptCode resolved_script) {
   }
 }
 
-bool ScriptRunIterator::Fetch(size_t* pos, UChar32* ch) {
+bool ScriptRunIterator::Fetch(wtf_size_t* pos, UChar32* ch) {
   if (ahead_pos_ > length_) {
     return false;
   }

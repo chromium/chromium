@@ -4,12 +4,8 @@
 
 source_set("reading_list") {
   sources = [
-    "legacy_reading_list_coordinator.h",
-    "legacy_reading_list_coordinator.mm",
     "offline_page_native_content.h",
     "offline_page_native_content.mm",
-    "reading_list_collection_view_item.h",
-    "reading_list_collection_view_item.mm",
     "reading_list_coordinator.h",
     "reading_list_coordinator.mm",
     "reading_list_list_item.h",
@@ -33,6 +29,7 @@ source_set("reading_list") {
   ]
   deps = [
     ":reading_list_ui",
+    "resources:distillation_fail_new",
     "//base",
     "//components/favicon/core",
     "//components/feature_engagement",
@@ -76,22 +73,10 @@ source_set("reading_list") {
 source_set("reading_list_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "empty_reading_list_background_view.h",
-    "empty_reading_list_background_view.mm",
     "empty_reading_list_message_util.h",
     "empty_reading_list_message_util.mm",
-    "legacy_reading_list_toolbar.h",
-    "legacy_reading_list_toolbar.mm",
-    "legacy_reading_list_toolbar_button.h",
-    "legacy_reading_list_toolbar_button.mm",
-    "legacy_reading_list_view_controller.h",
-    "legacy_reading_list_view_controller.mm",
     "number_badge_view.h",
     "number_badge_view.mm",
-    "reading_list_collection_view_cell.h",
-    "reading_list_collection_view_cell.mm",
-    "reading_list_collection_view_controller.h",
-    "reading_list_collection_view_controller.mm",
     "reading_list_data_sink.h",
     "reading_list_data_source.h",
     "reading_list_list_item_accessibility_delegate.h",
@@ -110,13 +95,9 @@ source_set("reading_list_ui") {
     "text_badge_view.mm",
   ]
   deps = [
-    "resources:distillation_fail",
-    "resources:distillation_success",
     "resources:reading_list_empty_state",
     "resources:reading_list_empty_state_new",
-    "resources:reading_list_share_icon",
     "resources:reading_list_side_swipe",
-    "resources:reading_list_toolbar_icon",
     "resources:reading_list_tools_icon",
     "//base",
     "//base:i18n",
@@ -126,8 +107,6 @@ source_set("reading_list_ui") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/alert_coordinator",
-    "//ios/chrome/browser/ui/collection_view/cells",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/material_components",
@@ -137,14 +116,9 @@ source_set("reading_list_ui") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/chrome/common/favicon",
-    "//ios/third_party/material_components_ios",
-    "//ios/third_party/material_roboto_font_loader_ios",
     "//ui/base",
     "//ui/strings:ui_strings_grit",
     "//url",
-  ]
-  public_deps = [
-    "//ios/chrome/browser/ui/collection_view",
   ]
   libs = [ "UIKit.framework" ]
 }
@@ -153,9 +127,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "legacy_reading_list_coordinator_unittest.mm",
     "offline_page_native_content_unittest.mm",
-    "reading_list_collection_view_controller_unittest.mm",
     "reading_list_list_item_factory_unittest.mm",
     "reading_list_mediator_unittest.mm",
     "text_badge_view_unittest.mm",
@@ -210,7 +182,6 @@ source_set("eg_tests") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:views",
     "//ios/chrome/browser/ui/table_view/cells",
-    "//ios/chrome/browser/ui/tools_menu/public",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
     "//ios/testing/earl_grey:earl_grey_support",

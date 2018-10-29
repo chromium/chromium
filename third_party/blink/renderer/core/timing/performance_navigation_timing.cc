@@ -36,7 +36,7 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
 PerformanceNavigationTiming::~PerformanceNavigationTiming() = default;
 
 AtomicString PerformanceNavigationTiming::entryType() const {
-  return PerformanceEntryNames::navigation;
+  return performance_entry_names::kNavigation;
 }
 
 PerformanceEntryType PerformanceNavigationTiming::EntryTypeEnum() const {
@@ -119,7 +119,7 @@ AtomicString PerformanceNavigationTiming::GetNavigationType(
 }
 
 AtomicString PerformanceNavigationTiming::initiatorType() const {
-  return PerformanceEntryNames::navigation;
+  return performance_entry_names::kNavigation;
 }
 
 bool PerformanceNavigationTiming::GetAllowRedirectDetails() const {

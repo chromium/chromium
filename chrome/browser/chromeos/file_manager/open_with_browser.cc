@@ -193,8 +193,7 @@ bool OpenFileWithBrowser(Profile* profile,
           integration_service->GetDriveFsInterface() &&
           integration_service->GetRelativeDrivePath(file_path, &path)) {
         integration_service->GetDriveFsInterface()->GetMetadata(
-            path, false,
-            base::BindOnce(&OpenHostedDriveFsFile, file_path, profile));
+            path, base::BindOnce(&OpenHostedDriveFsFile, file_path, profile));
         return true;
       }
       OpenGDocUrlFromFile(file_path, profile);

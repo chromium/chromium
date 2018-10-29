@@ -1,0 +1,17 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+
+trichrome_library_package = "org.chromium.trichromelibrary"
+trichrome_certdigest =
+    "1975b2f17177bc89a5dff31f9e64a6cae281a53dc1d1d59b1d147fe1c82afa00"
+
+trichrome_jinja_variables = [
+  "min_sdk_version=26",
+  "target_sdk_version=$android_sdk_version",
+  "trichrome_library=$trichrome_library_package",
+  "trichrome_version=$android_default_version_code",
+  "trichrome_certdigest=$trichrome_certdigest",
+]

@@ -20,17 +20,17 @@
         {
           "object": "LayoutBlockFlow DIV id='elm'",
           "rect": [8, 8, 792, 500],
-          "reason": "style change"
+          "reason": "background"
         },
         {
           "object": "LayoutBlockFlow DIV id='elm'",
           "rect": [0, 8, 508, 500],
-          "reason": "style change"
+          "reason": "background"
         },
         {
           "object": "LayoutBlockFlow DIV id='elm'",
           "rect": [8, 8, 500, 500],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

@@ -13,14 +13,14 @@
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_uuid.h"
-#include "device/fido/fido_discovery.h"
+#include "device/fido/fido_device_discovery.h"
 
 namespace device {
 
 class BluetoothDiscoverySession;
 
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleDiscoveryBase
-    : public FidoDiscovery,
+    : public FidoDeviceDiscovery,
       public BluetoothAdapter::Observer {
  public:
   explicit FidoBleDiscoveryBase(FidoTransportProtocol transport);
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleDiscoveryBase
  private:
   void OnGetAdapter(scoped_refptr<BluetoothAdapter> adapter);
 
-  // FidoDiscovery:
+  // FidoDeviceDiscovery:
   void StartInternal() override;
 
   scoped_refptr<BluetoothAdapter> adapter_;

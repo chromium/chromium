@@ -12,8 +12,9 @@ class TestSmbBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  smbMount(smbUrl, smbName, username, password) {
-    this.methodCalled('smbMount', [smbUrl, smbName, username, password]);
+  smbMount(smbUrl, smbName, username, password, authMethod) {
+    this.methodCalled(
+        'smbMount', [smbUrl, smbName, username, password, authMethod]);
   }
 
   /** @override */
@@ -71,6 +72,7 @@ suite('AddSmbShareDialogTests', function() {
     const expectedSmbName = 'testname';
     const expectedUsername = 'username';
     const expectedPassword = 'password';
+    const expectedAuthMethod = 'credentials';
 
     const url = addDialog.$$('#address');
     expectTrue(!!url);
@@ -91,12 +93,15 @@ suite('AddSmbShareDialogTests', function() {
     const addButton = addDialog.$$('.action-button');
     expectTrue(!!addButton);
 
+    addDialog.authenticationMethod_ = expectedAuthMethod;
+
     addButton.click();
     return smbBrowserProxy.whenCalled('smbMount').then(function(args) {
       expectEquals(expectedSmbUrl, args[0]);
       expectEquals(expectedSmbName, args[1]);
       expectEquals(expectedUsername, args[2]);
       expectEquals(expectedPassword, args[3]);
+      expectEquals(expectedAuthMethod, args[4]);
     });
   });
 
@@ -118,4 +123,40 @@ suite('AddSmbShareDialogTests', function() {
     assertTrue(!!page.$$('cr-policy-pref-indicator'));
     assertTrue(button.disabled);
   });
+
+  test('AuthenticationSelectorVisibility', function() {
+    const authenticationMethod = addDialog.$$('#authentication-method');
+    expectTrue(!!authenticationMethod);
+
+    expectTrue(authenticationMethod.hidden);
+
+    addDialog.isActiveDirectory_ = true;
+
+    expectFalse(authenticationMethod.hidden);
+  });
+
+  test('AuthenticationSelectorControlsCredentialFields', function() {
+    addDialog.isActiveDirectory_ = true;
+
+    expectFalse(addDialog.$$('#authentication-method').hidden);
+
+    const dropDown = addDialog.$$('.md-select');
+    expectTrue(!!dropDown);
+
+    const credentials = addDialog.$$('#credentials');
+    expectTrue(!!credentials);
+
+    dropDown.value = 'kerberos';
+    dropDown.dispatchEvent(new CustomEvent('change'));
+    Polymer.dom.flush();
+
+    expectTrue(credentials.hidden);
+
+    dropDown.value = 'credentials';
+    dropDown.dispatchEvent(new CustomEvent('change'));
+    Polymer.dom.flush();
+
+    expectFalse(credentials.hidden);
+  });
+
 });

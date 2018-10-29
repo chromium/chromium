@@ -8,6 +8,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 // Runs code synchronously on the UI thread. Should never be called directly
@@ -22,9 +24,10 @@ class RunOnUIThreadBlocking {
     base::WaitableEvent finished(
         base::WaitableEvent::ResetPolicy::AUTOMATIC,
         base::WaitableEvent::InitialState::NOT_SIGNALED);
-    content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-          base::Bind(&RunOnUIThreadBlocking::RunOnUIThread<Signature>,
-                     runnable, &finished));
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
+        base::Bind(&RunOnUIThreadBlocking::RunOnUIThread<Signature>, runnable,
+                   &finished));
     finished.Wait();
   }
 

@@ -6,7 +6,7 @@
 #define ASH_TOUCH_TOUCH_OBSERVER_UMA_H_
 
 #include "ash/ash_export.h"
-#include "ash/metrics/gesture_action_type.h"
+#include "ash/public/cpp/gesture_action_type.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 

@@ -24,7 +24,8 @@ class SocketsTcpServerApiTest : public ShellApiTest {};
 IN_PROC_BROWSER_TEST_F(SocketsTcpServerApiTest, SocketTCPCreateGood) {
   scoped_refptr<api::SocketsTcpServerCreateFunction> socket_create_function(
       new api::SocketsTcpServerCreateFunction());
-  scoped_refptr<Extension> empty_extension(ExtensionBuilder("Test").Build());
+  scoped_refptr<const Extension> empty_extension(
+      ExtensionBuilder("Test").Build());
 
   socket_create_function->set_extension(empty_extension.get());
   socket_create_function->set_has_callback(true);

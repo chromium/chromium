@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<style>
+::-webkit-scrollbar { display: none; }
+</style>
+<div id="target" contenteditable
+     style="position: relative; top: 100px; width: 200px; height: 200px; overflow: scroll; will-change: transform;
+            font-size: 100px; border: 1px solid black; outline-style: none">
+<br>
+<br>
+<br>
+<br>
+</div>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script>
+target.focus();
+target.scrollTop = 50;
+runAfterLayoutAndPaint(function() {
+  target.style.color = 'green';
+}, true);
+</script>

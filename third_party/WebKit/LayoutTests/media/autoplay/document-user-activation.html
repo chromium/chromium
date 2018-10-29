@@ -88,7 +88,7 @@ promise_test(t => {
 // TODO(mlamouri): should not allowed to autoplay if the document was scrolled
 // with touch events.
 
-promise_test(t => {
+promise_test(async t => {
   t.add_cleanup(() => {
     internals.settings.setAutoplayPolicy('no-user-gesture-required');
   });
@@ -111,6 +111,13 @@ promise_test(t => {
   video.src = '../content/test.ogv';
   document.body.appendChild(video);  // Moved to `window.document`.
   document.body.removeChild(video);  // To avoid polluting the DOM.
+
+  await new Promise(resolve => {
+    video.addEventListener('volumechange', resolve, { once: true });
+
+    video.volume = 0.5;
+  });
+
   return video.play();
 }, 'After being moved to a document with user gesture, autoplay is allowed');
 

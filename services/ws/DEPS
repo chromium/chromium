@@ -4,6 +4,7 @@ include_rules = [
   "+components/discardable_memory/public",
   "+components/viz/common",
   "+components/viz/host",
+  "+components/viz/test",
   "+services/viz/public/interfaces",
   "+third_party/skia/include",
   "+ui",

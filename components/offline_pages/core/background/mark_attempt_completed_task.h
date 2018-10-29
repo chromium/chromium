@@ -27,7 +27,7 @@ class MarkAttemptCompletedTask : public UpdateRequestTask {
 
  protected:
   // UpdateRequestTask implementation:
-  void UpdateRequestImpl(std::unique_ptr<UpdateRequestsResult> result) override;
+  void UpdateRequestImpl(UpdateRequestsResult result) override;
 
  private:
   // Reason attempt failed, if any.

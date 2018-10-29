@@ -73,10 +73,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
     // OfflineContentProvider.Observer implementation.
     @Override
     public void onItemsAdded(ArrayList<OfflineItem> items) {
-        for (int i = 0; i < items.size(); i++) {
-            OfflineItem item = items.get(i);
-            if (shouldPushNewItemToUi(item)) getVisualsAndUpdateItem(item);
-        }
+        for (int i = 0; i < items.size(); ++i) getVisualsAndUpdateItem(items.get(i));
     }
 
     @Override
@@ -172,7 +169,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
                 mUi.notifyDownloadPaused(info);
                 break;
             case OfflineItemState.FAILED:
-                mUi.notifyDownloadFailed(info, item.failState);
+                mUi.notifyDownloadFailed(info);
                 break;
             case OfflineItemState.PENDING:
                 mUi.notifyDownloadPaused(info);
@@ -191,19 +188,6 @@ public class OfflineContentAggregatorNotificationBridgeUi
             case OfflineItemState.FAILED:
             case OfflineItemState.PAUSED:
                 return true;
-            // OfflineItemState.CANCELLED
-            default:
-                return false;
-        }
-    }
-
-    private boolean shouldPushNewItemToUi(OfflineItem item) {
-        switch (item.state) {
-            case OfflineItemState.IN_PROGRESS:
-            case OfflineItemState.PENDING:
-                return true;
-            // OfflineItemState.COMPLETE, OfflineItemState.INTERRUPTED,
-            // OfflineItemState.FAILED, OfflineItemState.PAUSED,
             // OfflineItemState.CANCELLED
             default:
                 return false;

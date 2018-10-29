@@ -5,6 +5,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Pred 1 dnevom}one{Pred # dnevom}two{Pred # dnevoma}few{Pred # dnevi}other{Pred # dnevi}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Pred 1 minuto}one{Pred # minuto}two{Pred # minutama}few{Pred # minutami}other{Pred # minutami}}</translation>
 <translation id="1243314992276662751">Prenesi</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">PRIPOROČENE APLIKACIJE</translation>
 <translation id="1368832886055348810">Od leve proti desni</translation>
@@ -150,6 +151,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Stran dol</translation>
 <translation id="8245914219290430011">Zavihek</translation>
+<translation id="8259556432390118667">Vrednost barve v šestnajstiškem zapisu</translation>
 <translation id="8328145009876646418">Levi rob</translation>
 <translation id="8331626408530291785">Pomik gor</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 leto}one{# leto}two{# leti}few{# leta}other{# let}}</translation>
@@ -162,6 +164,7 @@
 <translation id="8798099450830957504">Privzeto</translation>
 <translation id="8806053966018712535">Mapa <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">Dodaj pripis sliki</translation>
+<translation id="8841375032071747811">Gumb za nazaj</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="9002566407876343676">odpreti</translation>
 <translation id="9038489124413477075">Neimenovana mapa</translation>

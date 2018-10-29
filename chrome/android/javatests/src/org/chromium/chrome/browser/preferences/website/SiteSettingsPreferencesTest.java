@@ -96,9 +96,7 @@ public class SiteSettingsPreferencesTest {
                 new Callable<InfoBarTestAnimationListener>() {
                     @Override
                     public InfoBarTestAnimationListener call() throws Exception {
-                        InfoBarContainer container = mActivityTestRule.getActivity()
-                                                             .getActivityTab()
-                                                             .getInfoBarContainer();
+                        InfoBarContainer container = mActivityTestRule.getInfoBarContainer();
                         InfoBarTestAnimationListener listener =  new InfoBarTestAnimationListener();
                         container.addAnimationListener(listener);
                         return listener;
@@ -220,8 +218,7 @@ public class SiteSettingsPreferencesTest {
                 websitePreferences.onPreferenceChange(thirdPartyCookies, enabled);
                 Assert.assertEquals(
                         "Third-party cookies should be " + (enabled ? "allowed" : "blocked"),
-                        !PrefServiceBridge.getInstance().isBlockThirdPartyCookiesEnabled(),
-                        enabled);
+                        PrefServiceBridge.getInstance().isBlockThirdPartyCookiesEnabled(), enabled);
             }
         });
     }
@@ -477,13 +474,14 @@ public class SiteSettingsPreferencesTest {
     }
 
     /**
-     * Tests Reset Site not crashing on host names (issue 600232).
+     * Tests that {@link SingleWebsitePreferences#resetSite} doesn't crash
+     * (see e.g. the crash on host names in issue 600232).
      * @throws Exception
      */
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetCrash600232() throws Exception {
+    public void testResetDoesntCrash() throws Exception {
         WebsiteAddress address = WebsiteAddress.create("example.com");
         Website website = new Website(address, address);
         final Preferences preferenceActivity = startSingleWebsitePreferences(website);
@@ -665,6 +663,39 @@ public class SiteSettingsPreferencesTest {
     @Feature({"Preferences"})
     public void testBlockUsb() {
         doTestUsbGuardPermission(false);
+    }
+
+    /**
+     * Helper function to test allowing and blocking automatic downloads.
+     * @param enabled true to test enabling automatic downloads, false to test disabling the
+     * feature.
+     */
+    private void doTestAutomaticDownloadsPermission(final boolean enabled) {
+        setGlobalToggleForCategory(SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS, enabled);
+        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
+            @Override
+            public void run() {
+                Assert.assertEquals(
+                        "Automatic Downloads should be " + (enabled ? "enabled" : "disabled"),
+                        PrefServiceBridge.getInstance().isCategoryEnabled(
+                                ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS),
+                        enabled);
+            }
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testAllowAutomaticDownloads() {
+        doTestAutomaticDownloadsPermission(true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockAutomaticDownloads() {
+        doTestAutomaticDownloadsPermission(false);
     }
 
     private int getTabCount() {

@@ -79,6 +79,7 @@ bool InputMethodWinTSF::OnUntranslatedIMEMessage(
 }
 
 void InputMethodWinTSF::OnTextInputTypeChanged(const TextInputClient* client) {
+  InputMethodBase::OnTextInputTypeChanged(client);
   if (!IsTextInputClientFocused(client) || !IsWindowFocused(client))
     return;
   ui::TSFBridge::GetInstance()->CancelComposition();

@@ -340,7 +340,7 @@ static bool ZeroOrMore(ParseFunc parse_func, State *state) {
 }
 
 // Append "str" at "out_cur_idx".  If there is an overflow, out_cur_idx is
-// set to out_end_idx+1.  The output std::string is ensured to
+// set to out_end_idx+1.  The output string is ensured to
 // always terminate with '\0' as long as there is no overflow.
 static void Append(State *state, const char *const str, const int length) {
   for (int i = 0; i < length; ++i) {
@@ -840,7 +840,7 @@ static bool ParseNumber(State *state, int *number_out) {
 }
 
 // Floating-point literals are encoded using a fixed-length lowercase
-// hexadecimal std::string.
+// hexadecimal string.
 static bool ParseFloatNumber(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;

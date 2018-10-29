@@ -122,7 +122,7 @@ void SetWindowBounds(gfx::NativeWindow window, const gfx::Rect& bounds) {
                           new_bounds.origin.y - new_bounds.size.height;
   }
 
-  [window setFrame:new_bounds display:NO];
+  [window.GetNativeNSWindow() setFrame:new_bounds display:NO];
 }
 
 void GetStringAtPointForRenderWidget(

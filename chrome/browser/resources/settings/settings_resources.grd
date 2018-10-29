@@ -34,6 +34,10 @@
         <structure name="IDR_SETTINGS_TTS_SUBPAGE_HTML"
                    file="a11y_page/tts_subpage.html"
                    type="chrome_html" />
+        <structure name="IDR_MD_SETTINGS_MANIFEST"
+                   file="manifest.json"
+                   type="chrome_html" />
+
       </if>
       <structure name="IDR_SETTINGS_ABOUT_PAGE_BROWSER_PROXY_HTML"
                  file="about_page/about_page_browser_proxy.html"
@@ -368,7 +372,8 @@
                  type="chrome_html" />
       <structure name="IDR_SETTINGS_CLEAR_BROWSING_DATA_DIALOG_JS"
                  file="clear_browsing_data_dialog/clear_browsing_data_dialog.js"
-                 type="chrome_html" />
+                 type="chrome_html"
+                 preprocess="true" />
       <structure name="IDR_SETTINGS_HISTORY_DELETION_DIALOG_HTML"
                  file="clear_browsing_data_dialog/history_deletion_dialog.html"
                  type="chrome_html" />
@@ -562,13 +567,6 @@
         <structure name="IDR_SETTINGS_DEVICE_NIGHT_LIGHT_SLIDER_JS"
                    file="device_page/night_light_slider.js"
                    type="chrome_html" />
-        <structure name="IDR_SETTINGS_DEVICE_DISPLAY_SIZE_SLIDER_HTML"
-                   file="device_page/display_size_slider.html"
-                   type="chrome_html" />
-        <structure name="IDR_SETTINGS_DEVICE_DISPLAY_SIZE_SLIDER_JS"
-                   file="device_page/display_size_slider.js"
-                   type="chrome_html" />
-
       </if>
       <structure name="IDR_SETTINGS_DOWNLOADS_BROWSER_PROXY_HTML"
                  file="downloads_page/downloads_browser_proxy.html"
@@ -740,7 +738,8 @@
                  type="chrome_html" />
       <structure name="IDR_SETTINGS_PASSWORD_LIST_ITEM_HTML"
                  file="passwords_and_forms_page/password_list_item.html"
-                 type="chrome_html" />
+                 type="chrome_html"
+                 preprocess="true" />
       <structure name="IDR_SETTINGS_PASSWORD_LIST_ITEM_JS"
                  file="passwords_and_forms_page/password_list_item.js"
                  type="chrome_html" />
@@ -759,7 +758,8 @@
                  preprocess="true" />
       <structure name="IDR_SETTINGS_PASSWORD_EDIT_DIALOG_HTML"
                  file="passwords_and_forms_page/password_edit_dialog.html"
-                 type="chrome_html" />
+                 type="chrome_html"
+                 preprocess="true" />
       <structure name="IDR_SETTINGS_PASSWORD_EDIT_DIALOG_JS"
                  file="passwords_and_forms_page/password_edit_dialog.js"
                  type="chrome_html" />
@@ -821,6 +821,14 @@
                    file="people_page/manage_profile_browser_proxy.js"
                    type="chrome_html" />
       </if>
+      <structure name="IDR_SETTINGS_PEOPLE_PAGE_SIGNOUT_DIALOG_HTML"
+                 file="people_page/signout_dialog.html"
+                 type="chrome_html"
+                 preprocess="true" />
+      <structure name="IDR_SETTINGS_PEOPLE_PAGE_SIGNOUT_DIALOG_JS"
+                 file="people_page/signout_dialog.js"
+                 type="chrome_html"
+                 preprocess="true" />
       <structure name="IDR_SETTINGS_PEOPLE_PAGE_PROFILE_INFO_BROWSER_PROXY_HTML"
                  file="people_page/profile_info_browser_proxy.html"
                  type="chrome_html" />
@@ -994,6 +1002,12 @@
                  file="route.js"
                  type="chrome_html"
                  preprocess="true" />
+      <structure name="IDR_SETTINGS_SITE_FAVICON_HTML"
+                 file="site_favicon.html"
+                 type="chrome_html" />
+      <structure name="IDR_SETTINGS_SITE_FAVICON_JS"
+                 file="site_favicon.js"
+                 type="chrome_html" />
       <structure name="IDR_SETTINGS_SITE_DATA_HTML"
                  file="site_settings/site_data.html"
                  type="chrome_html" />
@@ -1014,15 +1028,18 @@
                  type="chrome_html" />
       <structure name="IDR_SETTINGS_SITE_LIST_HTML"
                  file="site_settings/site_list.html"
+                 preprocess="true"
                  type="chrome_html" />
       <structure name="IDR_SETTINGS_SITE_LIST_JS"
                  file="site_settings/site_list.js"
+                 preprocess="true"
                  type="chrome_html" />
       <structure name="IDR_SETTINGS_SITE_LIST_ENTRY_HTML"
                  file="site_settings/site_list_entry.html"
                  type="chrome_html" />
       <structure name="IDR_SETTINGS_SITE_LIST_ENTRY_JS"
                  file="site_settings/site_list_entry.js"
+                 preprocess="true"
                  type="chrome_html" />
       <structure name="IDR_SETTINGS_SITE_SETTINGS_BEHAVIOR_HTML"
                  file="site_settings/site_settings_behavior.html"
@@ -1235,6 +1252,12 @@
         <structure name="IDR_SETTINGS_CROSTINI_SUBPAGE_JS"
                    file="crostini_page/crostini_subpage.js"
                    type="chrome_html" />
+        <structure name="IDR_SETTINGS_CROSTINI_SHARED_PATHS_HTML"
+                   file="crostini_page/crostini_shared_paths.html"
+                   type="chrome_html" />
+        <structure name="IDR_SETTINGS_CROSTINI_SHARED_PATHS_JS"
+                   file="crostini_page/crostini_shared_paths.js"
+                   type="chrome_html" />
         <structure name="IDR_SETTINGS_CROSTINI_BROWSER_PROXY_JS"
                    file="crostini_page/crostini_browser_proxy.js"
                    type="chrome_html"
@@ -1362,11 +1385,17 @@
         <structure name="IDR_SETTINGS_MULTIDEVICE_PAGE_JS"
                    file="multidevice_page/multidevice_page.js"
                    type="chrome_html" />
-        <structure name="IDR_SETTINGS_MULTIDEVICE_PAGE_CONTAINER_HTML"
-                   file="multidevice_page/multidevice_page_container.html"
+        <structure name="IDR_SETTINGS_MULTIDEVICE_RADIO_BUTTON_HTML"
+                   file="multidevice_page/multidevice_radio_button.html"
                    type="chrome_html" />
-        <structure name="IDR_SETTINGS_MULTIDEVICE_PAGE_CONTAINER_JS"
-                   file="multidevice_page/multidevice_page_container.js"
+        <structure name="IDR_SETTINGS_MULTIDEVICE_RADIO_BUTTON_JS"
+                   file="multidevice_page/multidevice_radio_button.js"
+                   type="chrome_html" />
+        <structure name="IDR_SETTINGS_MULTIDEVICE_SMARTLOCK_SUBPAGE_HTML"
+                   file="multidevice_page/multidevice_smartlock_subpage.html"
+                   type="chrome_html" />
+        <structure name="IDR_SETTINGS_MULTIDEVICE_SMARTLOCK_SUBPAGE_JS"
+                   file="multidevice_page/multidevice_smartlock_subpage.js"
                    type="chrome_html" />
         <structure name="IDR_SETTINGS_MULTIDEVICE_SUBPAGE_HTML"
                    file="multidevice_page/multidevice_subpage.html"

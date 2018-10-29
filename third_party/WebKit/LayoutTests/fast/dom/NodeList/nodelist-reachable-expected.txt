@@ -7,4 +7,5 @@ PASS document.querySelector("input").labels.customProperty is 6
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
  

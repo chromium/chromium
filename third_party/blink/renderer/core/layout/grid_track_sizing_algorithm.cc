@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/layout/grid.h"
 #include "third_party/blink/renderer/core/layout/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_grid.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 namespace blink {
 
@@ -420,9 +420,9 @@ LayoutUnit GridTrackSizingAlgorithmStrategy::MinSizeForChild(
 bool GridTrackSizingAlgorithm::CanParticipateInBaselineAlignment(
     const LayoutBox& child,
     GridAxis baseline_axis) const {
-  if (child.NeedsLayout() ||
-      !layout_grid_->IsBaselineAlignmentForChild(child, baseline_axis))
-    return false;
+  DCHECK(baseline_axis == kGridColumnAxis
+             ? column_baseline_items_map_.Contains(&child)
+             : row_baseline_items_map_.Contains(&child));
 
   // Baseline cyclic dependencies only happen with synthesized
   // baselines. These cases include orthogonal or empty grid items
@@ -445,8 +445,16 @@ bool GridTrackSizingAlgorithm::CanParticipateInBaselineAlignment(
                    !child.StyleRef().LogicalWidth().IsAuto();
 }
 
+bool GridTrackSizingAlgorithm::ParticipateInBaselineAlignment(
+    const LayoutBox& child,
+    GridAxis baseline_axis) const {
+  return baseline_axis == kGridColumnAxis
+             ? column_baseline_items_map_.at(&child)
+             : row_baseline_items_map_.at(&child);
+}
+
 void GridTrackSizingAlgorithm::UpdateBaselineAlignmentContext(
-    LayoutBox& child,
+    const LayoutBox& child,
     GridAxis baseline_axis) {
   DCHECK(WasSetup());
   DCHECK(CanParticipateInBaselineAlignment(child, baseline_axis));
@@ -463,7 +471,7 @@ void GridTrackSizingAlgorithm::UpdateBaselineAlignmentContext(
 LayoutUnit GridTrackSizingAlgorithm::BaselineOffsetForChild(
     const LayoutBox& child,
     GridAxis baseline_axis) const {
-  if (!CanParticipateInBaselineAlignment(child, baseline_axis))
+  if (!ParticipateInBaselineAlignment(child, baseline_axis))
     return LayoutUnit();
 
   ItemPosition align =
@@ -472,6 +480,29 @@ LayoutUnit GridTrackSizingAlgorithm::BaselineOffsetForChild(
       grid_.GridItemSpan(child, GridDirectionForAxis(baseline_axis));
   return baseline_alignment_.BaselineOffsetForChild(align, span.StartLine(),
                                                     child, baseline_axis);
+}
+
+void GridTrackSizingAlgorithm::ClearBaselineItemsCache() {
+  column_baseline_items_map_.clear();
+  row_baseline_items_map_.clear();
+}
+
+void GridTrackSizingAlgorithm::CacheBaselineAlignedItem(const LayoutBox& item,
+                                                        GridAxis axis) {
+  DCHECK(layout_grid_->IsBaselineAlignmentForChild(item, axis));
+  if (axis == kGridColumnAxis)
+    column_baseline_items_map_.insert(&item, true);
+  else
+    row_baseline_items_map_.insert(&item, true);
+}
+
+void GridTrackSizingAlgorithm::CopyBaselineItemsCache(
+    const GridTrackSizingAlgorithm& source,
+    GridAxis axis) {
+  if (axis == kGridColumnAxis)
+    column_baseline_items_map_ = source.column_baseline_items_map_;
+  else
+    row_baseline_items_map_ = source.row_baseline_items_map_;
 }
 
 LayoutUnit GridTrackSizingAlgorithmStrategy::ComputeTrackBasedSize() const {
@@ -1596,10 +1627,19 @@ void GridTrackSizingAlgorithm::ComputeBaselineAlignmentContext() {
   GridAxis axis = GridAxisForDirection(direction_);
   baseline_alignment_.Clear(axis);
   baseline_alignment_.SetBlockFlow(layout_grid_->StyleRef().GetWritingMode());
-  for (auto* child = layout_grid_->FirstInFlowChildBox(); child;
-       child = child->NextInFlowSiblingBox()) {
-    if (CanParticipateInBaselineAlignment(*child, axis))
+  BaselineItemsCache& baseline_items_cache = axis == kGridColumnAxis
+                                                 ? column_baseline_items_map_
+                                                 : row_baseline_items_map_;
+  for (auto* child : baseline_items_cache.Keys()) {
+    // TODO (jfernandez): We may have to get rid of the baseline participation
+    // flag (hence just using a HashSet) depending on the CSS WG resolution on
+    // https://github.com/w3c/csswg-drafts/issues/3046
+    if (CanParticipateInBaselineAlignment(*child, axis)) {
       UpdateBaselineAlignmentContext(*child, axis);
+      baseline_items_cache.Set(child, true);
+    } else {
+      baseline_items_cache.Set(child, false);
+    }
   }
 }
 

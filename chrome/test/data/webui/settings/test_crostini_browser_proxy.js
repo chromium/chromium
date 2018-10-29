@@ -8,23 +8,33 @@ class TestCrostiniBrowserProxy extends TestBrowserProxy {
     super([
       'requestCrostiniInstallerView',
       'requestRemoveCrostini',
+      'getCrostiniSharedPathsDisplayText',
+      'removeCrostiniSharedPath',
     ]);
-    this.prefs = {crostini: {enabled: {value: false}}};
+    this.enabled = false;
+    this.sharedPaths = ['path1', 'path2'];
   }
 
   /** @override */
   requestCrostiniInstallerView() {
     this.methodCalled('requestCrostiniInstallerView');
-    this.setCrostiniEnabledValue(true);
+    this.enabled = true;
   }
 
   /** override */
   requestRemoveCrostini() {
     this.methodCalled('requestRemoveCrostini');
-    this.setCrostiniEnabledValue(false);
+    this.enabled = false;
   }
 
-  setCrostiniEnabledValue(newValue) {
-    this.prefs = {crostini: {enabled: {value: newValue}}};
+  /** override */
+  getCrostiniSharedPathsDisplayText(paths) {
+    this.methodCalled('getCrostiniSharedPathsDisplayText');
+    return Promise.resolve(paths.map(path => path + '-displayText'));
+  }
+
+  /** override */
+  removeCrostiniSharedPath(path) {
+    this.sharedPaths = this.sharedPaths.filter(p => p !== path);
   }
 }

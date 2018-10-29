@@ -28,9 +28,19 @@ class PreviewsAndroidBridge {
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_web_contents);
 
+  base::android::ScopedJavaLocalRef<jstring> GetStalePreviewTimestamp(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& j_web_contents);
+
   void LoadOriginal(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
                     const base::android::JavaParamRef<jobject>& j_web_contents);
+
+  base::android::ScopedJavaLocalRef<jstring> GetPreviewsType(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& j_web_contents);
 
  private:
   base::WeakPtrFactory<PreviewsAndroidBridge> weak_factory_;

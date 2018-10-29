@@ -39,9 +39,9 @@ FakeNavigationManager.prototype = {
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxBrailleTextHandlerUnitTest() {}
+function ChromeVoxBrailleTextHandlerUnitTest() {}
 
-CvoxBrailleTextHandlerUnitTest.prototype = {
+ChromeVoxBrailleTextHandlerUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -61,7 +61,7 @@ CvoxBrailleTextHandlerUnitTest.prototype = {
   }
 };
 
-TEST_F('CvoxBrailleTextHandlerUnitTest', 'UpdateByUser', function() {
+TEST_F('ChromeVoxBrailleTextHandlerUnitTest', 'UpdateByUser', function() {
   var navBraille = new cvox.NavBraille({ text: 'Hello, world!' });
   this.navigationManager.setNavBraille(navBraille);
 

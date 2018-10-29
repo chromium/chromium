@@ -1,10 +1,10 @@
 location: about:blank
 href: about:blank
 pathname: blank
-host: 
-hostname: 
-hash: 
-port: 
+host:
+hostname:
+hash:
+port:
 protocol: about:
-search: 
+search:
 

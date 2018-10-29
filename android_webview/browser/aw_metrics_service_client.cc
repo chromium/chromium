@@ -88,19 +88,6 @@ AwMetricsServiceClient* AwMetricsServiceClient::GetInstance() {
   return g_lazy_instance_.Pointer();
 }
 
-bool AwMetricsServiceClient::GetPreloadedClientId(std::string* client_id) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jbyteArray> client_id_java =
-      Java_AwMetricsServiceClient_getPreloadedClientId(env);
-  if (client_id_java.is_null())
-    return false;
-  std::vector<uint8_t> client_id_vector;
-  base::android::JavaByteArrayToByteVector(env, client_id_java.obj(),
-                                           &client_id_vector);
-  *client_id = std::string(client_id_vector.begin(), client_id_vector.end());
-  return true;
-}
-
 void AwMetricsServiceClient::LoadOrCreateClientId() {
   // This function should only be called once at start up.
   DCHECK_NE(g_client_id.Get().length(), kGuidSize);
@@ -121,8 +108,7 @@ void AwMetricsServiceClient::LoadOrCreateClientId() {
       user_data_dir.Append(FILE_PATH_LITERAL(kGuidFileName));
 
   // Try to get an existing GUID.
-  if (GetPreloadedClientId(&g_client_id.Get()) ||
-      base::ReadFileToStringWithMaxSize(guid_file_path, &g_client_id.Get(),
+  if (base::ReadFileToStringWithMaxSize(guid_file_path, &g_client_id.Get(),
                                         kGuidSize)) {
     if (base::IsValidGUID(g_client_id.Get()))
       return;
@@ -147,15 +133,16 @@ std::string AwMetricsServiceClient::GetClientId() {
   return g_client_id.Get();
 }
 
-void AwMetricsServiceClient::Initialize(
-    PrefService* pref_service,
-    net::URLRequestContextGetter* request_context) {
+void AwMetricsServiceClient::Initialize(PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DCHECK(pref_service_ == nullptr);  // Initialize should only happen once.
-  DCHECK(request_context_ == nullptr);
   pref_service_ = pref_service;
-  request_context_ = request_context;
+
+  metrics_state_manager_ = metrics::MetricsStateManager::Create(
+      pref_service_, this, base::string16(),
+      base::BindRepeating(&StoreClientInfo),
+      base::BindRepeating(&LoadClientInfo));
 
   base::PostTaskWithTraitsAndReply(
       FROM_HERE, {base::MayBlock()},
@@ -165,14 +152,13 @@ void AwMetricsServiceClient::Initialize(
 }
 
 void AwMetricsServiceClient::InitializeWithClientId() {
-  DCHECK_EQ(g_client_id.Get().length(), kGuidSize);  // Must have client ID
+  // The client ID must be loaded (because LoadOrCreateClientId() finished), but
+  // not yet stored in prefs.
+  DCHECK_EQ(g_client_id.Get().length(), kGuidSize);
+  DCHECK(!pref_service_->HasPrefPath(metrics::prefs::kMetricsClientID));
+
   pref_service_->SetString(metrics::prefs::kMetricsClientID, g_client_id.Get());
   in_sample_ = IsInSample(g_client_id.Get());
-
-  metrics_state_manager_ = metrics::MetricsStateManager::Create(
-      pref_service_, this, base::string16(),
-      base::BindRepeating(&StoreClientInfo),
-      base::BindRepeating(&LoadClientInfo));
 
   metrics_service_.reset(new ::metrics::MetricsService(
       metrics_state_manager_.get(), this, pref_service_));
@@ -197,6 +183,11 @@ void AwMetricsServiceClient::InitializeWithClientId() {
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AwMetricsServiceClient_nativeInitialized(env);
+}
+
+std::unique_ptr<const base::FieldTrial::EntropyProvider>
+AwMetricsServiceClient::CreateLowEntropyProvider() {
+  return metrics_state_manager_->CreateLowEntropyProvider();
 }
 
 bool AwMetricsServiceClient::IsConsentGiven() const {
@@ -278,7 +269,6 @@ base::TimeDelta AwMetricsServiceClient::GetStandardUploadInterval() {
 
 AwMetricsServiceClient::AwMetricsServiceClient()
     : pref_service_(nullptr),
-      request_context_(nullptr),
       consent_(false),
       in_sample_(false) {}
 

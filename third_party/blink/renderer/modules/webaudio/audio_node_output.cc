@@ -47,7 +47,7 @@ inline AudioNodeOutput::AudioNodeOutput(AudioHandler* handler,
   DCHECK_LE(number_of_channels, BaseAudioContext::MaxNumberOfChannels());
 
   internal_bus_ = AudioBus::Create(number_of_channels,
-                                   AudioUtilities::kRenderQuantumFrames);
+                                   audio_utilities::kRenderQuantumFrames);
 }
 
 std::unique_ptr<AudioNodeOutput> AudioNodeOutput::Create(
@@ -88,7 +88,7 @@ void AudioNodeOutput::UpdateInternalBus() {
     return;
 
   internal_bus_ = AudioBus::Create(NumberOfChannels(),
-                                   AudioUtilities::kRenderQuantumFrames);
+                                   audio_utilities::kRenderQuantumFrames);
 }
 
 void AudioNodeOutput::UpdateRenderingState() {

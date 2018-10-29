@@ -26,41 +26,15 @@ namespace blink {
 // causes object paint properties to DCHECK that property values are not
 // changed.
 
-#define DUMP_PROPERTIES(original, updated)                           \
-  "\nOriginal:\n"                                                    \
-      << (original ? (original)->ToString().Ascii().data() : "null") \
-      << "\nUpdated:\n"                                              \
-      << (updated ? (updated)->ToString().Ascii().data() : "null")
-
-#define CHECK_PROPERTY_EQ(thing, original, updated)                   \
-  do {                                                                \
-    DCHECK(!!original == !!updated)                                   \
-        << "Property was created or deleted "                         \
-        << "without " << thing << " needing a paint property update." \
-        << DUMP_PROPERTIES(original, updated);                        \
-    if (!!original && !!updated) {                                    \
-      DCHECK(*original == *updated)                                   \
-          << "Property was updated without " << thing                 \
-          << " needing a paint property update."                      \
-          << DUMP_PROPERTIES(original, updated);                      \
-    }                                                                 \
-  } while (0)
-
-#define DCHECK_OBJECT_PROPERTY_EQ(object, original, updated)            \
-  CHECK_PROPERTY_EQ("the layout object (" << object.DebugName() << ")", \
-                    original, updated)
-
-class FindObjectPropertiesNeedingUpdateScope {
+class FindPropertiesNeedingUpdateScope {
  public:
-  FindObjectPropertiesNeedingUpdateScope(const LayoutObject& object,
-                                         const FragmentData& fragment_data,
-                                         bool force_subtree_update)
+  FindPropertiesNeedingUpdateScope(const LayoutObject& object,
+                                   const FragmentData& fragment_data,
+                                   bool force_subtree_update)
       : object_(object),
         fragment_data_(fragment_data),
         needed_paint_property_update_(object.NeedsPaintPropertyUpdate()),
-        needed_forced_subtree_update_(force_subtree_update),
-        original_paint_offset_(fragment_data.PaintOffset()) {
-    // No need to check if an update was already needed.
+        needed_forced_subtree_update_(force_subtree_update) {
     if (needed_paint_property_update_ || needed_forced_subtree_update_)
       return;
 
@@ -80,13 +54,7 @@ class FindObjectPropertiesNeedingUpdateScope {
     }
   }
 
-  ~FindObjectPropertiesNeedingUpdateScope() {
-    // Paint offset and paintOffsetTranslation should not change under
-    // FindObjectPropertiesNeedingUpdateScope no matter if we needed paint
-    // property update.
-    LayoutPoint paint_offset = fragment_data_.PaintOffset();
-    DCHECK_OBJECT_PROPERTY_EQ(object_, &original_paint_offset_, &paint_offset);
-
+  ~FindPropertiesNeedingUpdateScope() {
     // No need to check if an update was already needed.
     if (needed_paint_property_update_ || needed_forced_subtree_update_)
       return;
@@ -103,19 +71,19 @@ class FindObjectPropertiesNeedingUpdateScope {
     if (original_local_border_box_properties_ &&
         fragment_data_.HasLocalBorderBoxProperties()) {
       const auto object_border_box = fragment_data_.LocalBorderBoxProperties();
-      DCHECK_OBJECT_PROPERTY_EQ(
-          object_, original_local_border_box_properties_->Transform(),
-          object_border_box.Transform());
-      DCHECK_OBJECT_PROPERTY_EQ(object_,
-                                original_local_border_box_properties_->Clip(),
-                                object_border_box.Clip());
-      DCHECK_OBJECT_PROPERTY_EQ(object_,
-                                original_local_border_box_properties_->Effect(),
-                                object_border_box.Effect());
+      DCHECK_EQ(original_local_border_box_properties_->Transform(),
+                object_border_box.Transform())
+          << object_.DebugName();
+      DCHECK_EQ(original_local_border_box_properties_->Clip(),
+                object_border_box.Clip())
+          << object_.DebugName();
+      DCHECK_EQ(original_local_border_box_properties_->Effect(),
+                object_border_box.Effect())
+          << object_.DebugName();
     } else {
       DCHECK_EQ(!!original_local_border_box_properties_,
                 fragment_data_.HasLocalBorderBoxProperties())
-          << " Object: " << object_.DebugName();
+          << object_.DebugName();
     }
 
     // Restore original clean bit.
@@ -127,7 +95,6 @@ class FindObjectPropertiesNeedingUpdateScope {
   const FragmentData& fragment_data_;
   bool needed_paint_property_update_ = false;
   bool needed_forced_subtree_update_ = false;
-  LayoutPoint original_paint_offset_;
   std::unique_ptr<const PropertyTreeState>
       original_local_border_box_properties_;
   bool had_original_properties_ = false;

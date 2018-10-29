@@ -24,6 +24,7 @@
 
 class GURL;
 class PrefService;
+class Profile;
 
 namespace content {
 class BrowserContext;
@@ -70,7 +71,7 @@ class ExtensionManagement : public KeyedService {
     INSTALLATION_RECOMMENDED,
   };
 
-  ExtensionManagement(PrefService* pref_service, bool is_signin_profile);
+  explicit ExtensionManagement(Profile* profile);
   ~ExtensionManagement() override;
 
   // KeyedService implementations:
@@ -224,6 +225,7 @@ class ExtensionManagement : public KeyedService {
   // Extension settings applicable to all extensions.
   std::unique_ptr<internal::GlobalSettings> global_settings_;
 
+  Profile* const profile_ = nullptr;
   PrefService* pref_service_ = nullptr;
   bool is_signin_profile_ = false;
 

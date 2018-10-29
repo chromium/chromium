@@ -47,7 +47,8 @@ class HeadlessWindowTreeHost : public aura::WindowTreeHost,
   void HideImpl() override;
   gfx::Rect GetBoundsInPixels() const override;
   void SetBoundsInPixels(const gfx::Rect& bounds,
-                         const viz::LocalSurfaceId& local_surface_id) override;
+                         const viz::LocalSurfaceId& local_surface_id,
+                         base::TimeTicks allocation_time) override;
   gfx::Point GetLocationOnScreenInPixels() const override;
   void SetCapture() override;
   void ReleaseCapture() override;

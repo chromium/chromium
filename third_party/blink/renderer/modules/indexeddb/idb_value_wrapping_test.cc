@@ -184,7 +184,7 @@ TEST(IDBValueWrapperTest, WriteBytes) {
 // Friend class of IDBValueUnwrapper with access to its internals.
 class IDBValueUnwrapperReadTestHelper {
  public:
-  void ReadVarInt(const char* start, size_t buffer_size) {
+  void ReadVarInt(const char* start, uint32_t buffer_size) {
     IDBValueUnwrapper unwrapper;
 
     const uint8_t* buffer_start = reinterpret_cast<const uint8_t*>(start);
@@ -197,10 +197,10 @@ class IDBValueUnwrapperReadTestHelper {
         << "ReadVarInt should not change end_";
     ASSERT_LE(unwrapper.current_, unwrapper.end_)
         << "ReadVarInt should not move current_ past end_";
-    consumed_bytes_ = unwrapper.current_ - buffer_start;
+    consumed_bytes_ = static_cast<uint32_t>(unwrapper.current_ - buffer_start);
   }
 
-  void ReadBytes(const char* start, size_t buffer_size) {
+  void ReadBytes(const char* start, uint32_t buffer_size) {
     IDBValueUnwrapper unwrapper;
 
     const uint8_t* buffer_start = reinterpret_cast<const uint8_t*>(start);
@@ -212,7 +212,7 @@ class IDBValueUnwrapperReadTestHelper {
     ASSERT_EQ(unwrapper.end_, buffer_end) << "ReadBytes should not change end_";
     ASSERT_LE(unwrapper.current_, unwrapper.end_)
         << "ReadBytes should not move current_ past end_";
-    consumed_bytes_ = unwrapper.current_ - buffer_start;
+    consumed_bytes_ = static_cast<uint32_t>(unwrapper.current_ - buffer_start);
   }
 
   bool success() { return success_; }
@@ -488,7 +488,8 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
   wrapped_value->SetIsolate(scope.GetIsolate());
   EXPECT_TRUE(IDBValueUnwrapper::IsWrapped(wrapped_value.get()));
 
-  Vector<char> wrapped_marker_bytes(wrapped_marker_buffer->size());
+  Vector<char> wrapped_marker_bytes(
+      static_cast<wtf_size_t>(wrapped_marker_buffer->size()));
   ASSERT_TRUE(wrapped_marker_buffer->GetBytes(wrapped_marker_bytes.data(),
                                               wrapped_marker_bytes.size()));
 
@@ -496,7 +497,7 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
   // Truncating the array to fewer than 3 bytes should cause IsWrapped() to
   // return false.
   ASSERT_LT(3U, wrapped_marker_bytes.size());
-  for (size_t i = 0; i < 3; ++i) {
+  for (wtf_size_t i = 0; i < 3; ++i) {
     std::unique_ptr<IDBValue> mutant_value = IDBValue::Create(
         SharedBuffer::Create(wrapped_marker_bytes.data(), i), blob_infos);
     mutant_value->SetIsolate(scope.GetIsolate());
@@ -507,7 +508,7 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
   // IsWrapped() looks at the first 3 bytes in the value. Flipping any bit in
   // these 3 bytes should cause IsWrapped() to return false.
   ASSERT_LT(3U, wrapped_marker_bytes.size());
-  for (size_t i = 0; i < 3; ++i) {
+  for (wtf_size_t i = 0; i < 3; ++i) {
     for (int j = 0; j < 8; ++j) {
       char mask = 1 << j;
       wrapped_marker_bytes[i] ^= mask;

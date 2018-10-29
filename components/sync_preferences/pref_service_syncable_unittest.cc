@@ -20,6 +20,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/sync/model/sync_change.h"
+#include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/sync_error_factory_mock.h"
 #include "components/sync/model/syncable_service.h"
@@ -163,7 +164,7 @@ class PrefServiceSyncableTest : public testing::Test {
 
   std::unique_ptr<base::Value> FindValue(const std::string& name,
                                          const syncer::SyncChangeList& list) {
-    syncer::SyncChangeList::const_iterator it = list.begin();
+    auto it = list.begin();
     for (; it != list.end(); ++it) {
       if (syncer::SyncDataLocal(it->sync_data()).GetTag() == name) {
         return base::JSONReader::Read(
@@ -407,7 +408,7 @@ class PrefServiceSyncableMergeTest : public testing::Test {
 
   std::unique_ptr<base::Value> FindValue(const std::string& name,
                                          const syncer::SyncChangeList& list) {
-    syncer::SyncChangeList::const_iterator it = list.begin();
+    auto it = list.begin();
     for (; it != list.end(); ++it) {
       if (syncer::SyncDataLocal(it->sync_data()).GetTag() == name) {
         return base::JSONReader::Read(

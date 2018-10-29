@@ -1,75 +1,5 @@
 {
-  "x-version": 32,
-  "google-talk": {
-    "mime_types": [
-    ],
-    "versions": [
-      {
-        "version": "0",
-        "status": "requires_authorization",
-        "comment": "'Google Talk Plugin' and 'Google Talk Plugin Video Accelerator' use two completely different versioning schemes, so we can't define a minimum version."
-      }
-    ],
-    "name": "Google Talk",
-    "group_name_matcher": "*Google Talk*"
-  },
-  "java-runtime-environment": {
-    "mime_types": [
-      "application/x-java-applet",
-      "application/x-java-applet,version=1.1",
-      "application/x-java-applet,version=1.1.1",
-      "application/x-java-applet,version=1.1.2",
-      "application/x-java-applet,version=1.1.3",
-      "application/x-java-applet,version=1.2",
-      "application/x-java-applet,version=1.2.1",
-      "application/x-java-applet,version=1.2.2",
-      "application/x-java-applet,version=1.3",
-      "application/x-java-applet,version=1.3.1",
-      "application/x-java-applet,version=1.4",
-      "application/x-java-applet,version=1.4.1",
-      "application/x-java-applet,version=1.4.2",
-      "application/x-java-applet,version=1.5",
-      "application/x-java-applet,version=1.6",
-      "application/x-java-applet,version=1.7",
-      "application/x-java-bean",
-      "application/x-java-bean,version=1.1",
-      "application/x-java-bean,version=1.1.1",
-      "application/x-java-bean,version=1.1.2",
-      "application/x-java-bean,version=1.1.3",
-      "application/x-java-bean,version=1.2",
-      "application/x-java-bean,version=1.2.1",
-      "application/x-java-bean,version=1.2.2",
-      "application/x-java-bean,version=1.3",
-      "application/x-java-bean,version=1.3.1",
-      "application/x-java-bean,version=1.4",
-      "application/x-java-bean,version=1.4.1",
-      "application/x-java-bean,version=1.4.2",
-      "application/x-java-bean,version=1.5",
-      "application/x-java-bean,version=1.6",
-      "application/x-java-bean,version=1.7",
-      "application/x-java-vm"
-    ],
-    "versions": [
-      {
-        "version": "1.6.0.45",
-        "status": "requires_authorization"
-      },
-      {
-        "version": "1.7",
-        "status": "out_of_date"
-      },
-      {
-        "version": "1.7.0.21",
-        "status": "requires_authorization"
-      }
-    ],
-    "lang": "en-US",
-    "name": "Java(TM)",
-    "help_url": "https://support.google.com/chrome/?p=plugin_java",
-    "url": "http://java.com/download",
-    "displayurl": true,
-    "group_name_matcher": "Java*"
-  },
+  "x-version": 35,
   "adobe-flash-player": {
     "mime_types": [
       "application/futuresplash",
@@ -80,9 +10,9 @@
     ],
     "versions": [
       {
-        "version": "30.0.0.154",
+        "version": "31.0.0.122",
         "status": "up_to_date",
-        "reference": "https://helpx.adobe.com/security/products/flash-player/apsb18-25.html"
+        "reference": "https://helpx.adobe.com/security/products/flash-player/apsb18-35.html"
       }
     ],
     "lang": "en-US",
@@ -90,25 +20,6 @@
     "help_url": "https://support.google.com/chrome/?p=plugin_flash",
     "url": "https://support.google.com/chrome/answer/6258784",
     "displayurl": true,
-    "group_name_matcher": "*Shockwave Flash*"
-  },
-  "lightspark": {
-    "mime_types": [
-      "application/x-lightspark"
-    ],
-    "matching_mime_types": [
-      "application/x-lightspark"
-    ],
-    "versions": [
-      {
-        "version": "0",
-        "status": "requires_authorization"
-      }
-    ],
-    "lang": "en-US",
-    "name": "Lightspark",
-    "displayurl": true,
-    "url": "https://launchpad.net/lightspark",
     "group_name_matcher": "*Shockwave Flash*"
   },
   "google-chrome-pdf": {

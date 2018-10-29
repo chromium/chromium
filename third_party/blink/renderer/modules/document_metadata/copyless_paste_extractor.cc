@@ -45,11 +45,11 @@ constexpr int kMaxDepth = 4;
 // Some strings are very long, and we don't currently use those, so limit string
 // length to something reasonable to avoid undue pressure on Icing. Note that
 // App Indexing supports strings up to length 20k.
-constexpr int kMaxStringLength = 200;
+constexpr wtf_size_t kMaxStringLength = 200;
 // Enforced by App Indexing, so stop processing early if possible.
-constexpr size_t kMaxNumFields = 20;
+constexpr wtf_size_t kMaxNumFields = 20;
 // Enforced by App Indexing, so stop processing early if possible.
-constexpr size_t kMaxRepeatedSize = 100;
+constexpr wtf_size_t kMaxRepeatedSize = 100;
 
 constexpr char kJSONLDKeyType[] = "@type";
 constexpr char kJSONLDKeyGraph[] = "@graph";
@@ -101,7 +101,7 @@ bool parseRepeatedValue(const JSONArray& arr,
     default:
       break;
   }
-  for (size_t j = 0; j < std::min(arr.size(), kMaxRepeatedSize); ++j) {
+  for (wtf_size_t j = 0; j < std::min(arr.size(), kMaxRepeatedSize); ++j) {
     const JSONValue* innerVal = arr.at(j);
     if (innerVal->GetType() != type) {
       // App Indexing doesn't support mixed types. If there are mixed
@@ -157,7 +157,7 @@ void extractEntity(const JSONObject& val, Entity& entity, int recursionLevel) {
     type = "Thing";
   }
   entity.type = type;
-  for (size_t i = 0; i < std::min(val.size(), kMaxNumFields); ++i) {
+  for (wtf_size_t i = 0; i < std::min(val.size(), kMaxNumFields); ++i) {
     PropertyPtr property = Property::New();
     const JSONObject::Entry& entry = val.at(i);
     property->name = entry.first;
@@ -231,7 +231,7 @@ void extractTopLevelEntity(const JSONObject& val, Vector<EntityPtr>& entities) {
 
 void extractEntitiesFromArray(const JSONArray& arr,
                               Vector<EntityPtr>& entities) {
-  for (size_t i = 0; i < arr.size(); ++i) {
+  for (wtf_size_t i = 0; i < arr.size(); ++i) {
     const JSONValue* val = arr.at(i);
     if (val->GetType() == JSONValue::ValueType::kTypeObject) {
       extractTopLevelEntity(*(JSONObject::Cast(val)), entities);

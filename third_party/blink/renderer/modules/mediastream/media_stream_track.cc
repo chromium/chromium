@@ -296,7 +296,7 @@ void MediaStreamTrack::stopTrack(ExecutionContext* execution_context) {
     return;
 
   ready_state_ = MediaStreamSource::kReadyStateEnded;
-  Document* document = ToDocument(execution_context);
+  Document* document = To<Document>(execution_context);
   UserMediaController* user_media =
       UserMediaController::From(document->GetFrame());
   if (user_media)
@@ -392,8 +392,8 @@ void MediaStreamTrack::getCapabilities(MediaTrackCapabilities& capabilities) {
 }
 
 void MediaStreamTrack::getConstraints(MediaTrackConstraints& constraints) {
-  MediaConstraintsImpl::ConvertConstraints(component_->Constraints(),
-                                           constraints);
+  media_constraints_impl::ConvertConstraints(component_->Constraints(),
+                                             constraints);
 
   if (!image_capture_)
     return;
@@ -543,8 +543,8 @@ ScriptPromise MediaStreamTrack::applyConstraints(
 
   MediaErrorState error_state;
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  WebMediaConstraints web_constraints =
-      MediaConstraintsImpl::Create(execution_context, constraints, error_state);
+  WebMediaConstraints web_constraints = media_constraints_impl::Create(
+      execution_context, constraints, error_state);
   if (error_state.HadException()) {
     resolver->Reject(
         OverconstrainedError::Create(String(), "Cannot parse constraints"));
@@ -583,7 +583,7 @@ ScriptPromise MediaStreamTrack::applyConstraints(
     return promise;
   }
 
-  Document* document = ToDocument(execution_context);
+  Document* document = To<Document>(execution_context);
   UserMediaController* user_media =
       UserMediaController::From(document->GetFrame());
   if (!user_media) {

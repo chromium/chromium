@@ -14,10 +14,6 @@
 #include "base/time/time.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace ui {
 
 class ACCELERATED_WIDGET_MAC_EXPORT DisplayLinkMac
@@ -51,20 +47,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT DisplayLinkMac
 
   // Processes the display link callback.
   void UpdateVSyncParameters(const CVTimeStamp& time);
-
-  // Each display link instance consumes a non-negligible number of cycles, so
-  // make all display links on the same screen share the same object. This map
-  // must only be changed from the main thread.
-  //
-  // Note that this is a weak map, holding non-owning pointers to the
-  // DisplayLinkMac objects. DisplayLinkMac is a ref-counted class, and is
-  // jointly owned by the various callers that got a copy by calling
-  // GetForDisplay().
-  using DisplayLinkMap = std::map<CGDirectDisplayID, DisplayLinkMac*>;
-  static DisplayLinkMap& GetAllDisplayLinks();
-
-  // The task runner to post tasks to from the display link thread.
-  static scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner();
 
   // Called by the system on the display link thread, and posts a call to
   // DoUpdateVSyncParameters() to the UI thread.

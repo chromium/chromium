@@ -34,7 +34,15 @@ class ThumbnailFetcher;
 // custom versions that have test-specific hooks.
 class PrefetchServiceTestTaco {
  public:
-  PrefetchServiceTestTaco();
+  // Zine/Feed
+  // Chooses whether to configure the taco to be compatible with a Zine or Feed
+  // suggestion source.
+  enum SuggestionSource {
+    kContentSuggestions,
+    kFeed,
+  };
+  explicit PrefetchServiceTestTaco(
+      SuggestionSource source = kContentSuggestions);
   ~PrefetchServiceTestTaco();
 
   // These methods must be called before CreatePrefetchService() is invoked.

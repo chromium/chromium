@@ -44,7 +44,7 @@ void inline ScopedGenericArObject<ArPose*>::Free(ArPose* ar_pose) {
 
 template <>
 void inline ScopedGenericArObject<ArCamera*>::Free(ArCamera* ar_camera) {
-  // Do nothing - ArCamera has no destroy method and is managed by ARCore.
+  // Do nothing - ArCamera has no destroy method and is managed by ArCore.
 }
 
 template <>
@@ -65,12 +65,13 @@ using ScopedArCoreObject = base::ScopedGeneric<T, ScopedGenericArObject<T>>;
 }  // namespace internal
 
 // This class should be created and accessed entirely on a Gl thread.
-class ARCoreImpl : public ARCore {
+class ArCoreImpl : public ArCore {
  public:
-  ARCoreImpl();
-  ~ARCoreImpl() override;
+  ArCoreImpl();
+  ~ArCoreImpl() override;
 
-  bool Initialize() override;
+  bool Initialize(
+      base::android::ScopedJavaLocalRef<jobject> application_context) override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
                           display::Display::Rotation display_rotation) override;
   void SetCameraTexture(GLuint camera_texture_id) override;
@@ -89,25 +90,27 @@ class ARCoreImpl : public ARCore {
                                  const gfx::Size& image_size,
                                  gfx::PointF* screen_point);
 
-  bool ArHitResultToXRHitResult(ArHitResult* ar_hit,
-                                mojom::XRHitResult* hit_result);
-
   bool IsOnGlThread();
-  base::WeakPtr<ARCoreImpl> GetWeakPtr() {
+  base::WeakPtr<ArCoreImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;
 
-  // An ARCore session, which is distinct and independent of XRSessions.
+  // An ArCore session, which is distinct and independent of XRSessions.
   // There will only ever be one in Chrome even when supporting
   // multiple XRSessions.
   internal::ScopedArCoreObject<ArSession*> arcore_session_;
   internal::ScopedArCoreObject<ArFrame*> arcore_frame_;
 
   // Must be last.
-  base::WeakPtrFactory<ARCoreImpl> weak_ptr_factory_;
-  DISALLOW_COPY_AND_ASSIGN(ARCoreImpl);
+  base::WeakPtrFactory<ArCoreImpl> weak_ptr_factory_;
+  DISALLOW_COPY_AND_ASSIGN(ArCoreImpl);
+};
+
+class ArCoreImplFactory : public ArCoreFactory {
+ public:
+  std::unique_ptr<ArCore> Create() override;
 };
 
 }  // namespace device

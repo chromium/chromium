@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/web/web_find_options.h"
+#include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/scroll_into_view_options_or_boolean.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/frame/find_in_page.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/frame/scroll_to_options.h"
@@ -488,10 +489,10 @@ TEST_F(ScrollIntoViewTest, FindDoesNotScrollOverflowHidden) {
   Compositor().BeginFrame();
   ASSERT_EQ(container->scrollTop(), 0);
   const int kFindIdentifier = 12345;
-  WebFindOptions options;
-  options.run_synchronously_for_testing = true;
-  MainFrame().Find(kFindIdentifier, WebString::FromUTF8("hello"), options,
-                   false);
+  auto options = mojom::blink::FindOptions::New();
+  options->run_synchronously_for_testing = true;
+  MainFrame().GetFindInPage()->FindInternal(
+      kFindIdentifier, WebString::FromUTF8("hello"), *options, false);
   ASSERT_EQ(container->scrollTop(), 0);
 }
 

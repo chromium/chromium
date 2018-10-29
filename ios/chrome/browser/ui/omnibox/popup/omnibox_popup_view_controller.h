@@ -22,6 +22,15 @@
 @interface OmniboxPopupViewController
     : UIViewController<AutocompleteResultConsumer, OmniboxSuggestionCommands>
 
+// When enabled, this view controller will display shortcuts when no suggestions
+// are available. When enabling this, |shortcutsViewController| must be set.
+// This can be toggled at runtime, for example to only show shortcuts on regular
+// pages and not show them on NTP.
+@property(nonatomic, assign) BOOL shortcutsEnabled;
+// The view controller to display when no suggestions is available. See also:
+// |shortcutsEnabled|.
+@property(nonatomic, weak) UIViewController* shortcutsViewController;
+
 @property(nonatomic, assign) BOOL incognito;
 @property(nonatomic, weak) id<AutocompleteResultConsumerDelegate> delegate;
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;

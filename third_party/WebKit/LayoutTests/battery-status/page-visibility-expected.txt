@@ -2,7 +2,6 @@ Test with page visibility.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 page is visible
 PASS batteryInfo is defined.
 PASS lastSetMockBatteryInfo is defined.

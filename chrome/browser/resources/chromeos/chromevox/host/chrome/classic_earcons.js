@@ -11,6 +11,8 @@
 
 goog.provide('cvox.ClassicEarcons');
 
+goog.require('LogStore');
+goog.require('TextLog');
 goog.require('cvox.AbstractEarcons');
 
 
@@ -54,7 +56,10 @@ cvox.ClassicEarcons.prototype.playEarcon = function(earcon, opt_location) {
   if (!cvox.AbstractEarcons.enabled) {
     return;
   }
-  console.log('Earcon ' + earcon);
+  if (localStorage['enableEarconLogging'] == 'true') {
+    LogStore.getInstance().writeTextLog(earcon, TextLog.LogType.EARCON);
+    console.log('Earcon ' + earcon);
+  }
 
   this.currentAudio = this.audioMap[earcon];
   if (!this.currentAudio) {

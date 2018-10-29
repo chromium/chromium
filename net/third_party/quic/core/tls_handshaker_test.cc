@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/core/tls_client_handshaker.h"
 #include "net/third_party/quic/core/tls_server_handshaker.h"
 #include "net/third_party/quic/platform/api/quic_arraysize.h"
@@ -171,7 +172,9 @@ class TestQuicCryptoStream : public QuicCryptoStream {
   void SendFramesToStream(QuicCryptoStream* stream) {
     QUIC_LOG(INFO) << "Sending " << pending_writes_.size() << " frames";
     for (size_t i = 0; i < pending_writes_.size(); ++i) {
-      QuicStreamFrame frame(kCryptoStreamId, false, stream->stream_bytes_read(),
+      QuicStreamFrame frame(QuicUtils::GetCryptoStreamId(
+                                session()->connection()->transport_version()),
+                            false, stream->stream_bytes_read(),
                             pending_writes_[i]);
       stream->OnStreamFrame(frame);
     }
@@ -377,9 +380,10 @@ TEST_F(TlsHandshakerTest, ClientConnectionClosedOnTlsAlert) {
       2,   // AlertLevel fatal
       80,  // AlertDescription internal_error
   };
-  QuicStreamFrame alert(kCryptoStreamId, false,
-                        client_stream_->stream_bytes_read(),
-                        QuicStringPiece(alert_msg, QUIC_ARRAYSIZE(alert_msg)));
+  QuicStreamFrame alert(
+      QuicUtils::GetCryptoStreamId(client_conn_->transport_version()), false,
+      client_stream_->stream_bytes_read(),
+      QuicStringPiece(alert_msg, QUIC_ARRAYSIZE(alert_msg)));
   client_stream_->OnStreamFrame(alert);
 
   EXPECT_FALSE(client_stream_->handshake_confirmed());
@@ -398,9 +402,10 @@ TEST_F(TlsHandshakerTest, ServerConnectionClosedOnTlsAlert) {
       2,   // AlertLevel fatal
       80,  // AlertDescription internal_error
   };
-  QuicStreamFrame alert(kCryptoStreamId, false,
-                        server_stream_->stream_bytes_read(),
-                        QuicStringPiece(alert_msg, QUIC_ARRAYSIZE(alert_msg)));
+  QuicStreamFrame alert(
+      QuicUtils::GetCryptoStreamId(server_conn_->transport_version()), false,
+      server_stream_->stream_bytes_read(),
+      QuicStringPiece(alert_msg, QUIC_ARRAYSIZE(alert_msg)));
   server_stream_->OnStreamFrame(alert);
 
   EXPECT_FALSE(server_stream_->handshake_confirmed());

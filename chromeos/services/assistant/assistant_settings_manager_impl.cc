@@ -39,5 +39,21 @@ void AssistantSettingsManagerImpl::UpdateSettings(
                                                           std::move(callback));
 }
 
+void AssistantSettingsManagerImpl::StartSpeakerIdEnrollment(
+    bool skip_cloud_enrollment,
+    mojom::SpeakerIdEnrollmentClientPtr client) {
+  DCHECK(assistant_manager_service_->GetState() ==
+         AssistantManagerService::State::RUNNING);
+  assistant_manager_service_->StartSpeakerIdEnrollment(skip_cloud_enrollment,
+                                                       std::move(client));
+}
+
+void AssistantSettingsManagerImpl::StopSpeakerIdEnrollment(
+    StopSpeakerIdEnrollmentCallback callback) {
+  DCHECK(assistant_manager_service_->GetState() ==
+         AssistantManagerService::State::RUNNING);
+  assistant_manager_service_->StopSpeakerIdEnrollment(std::move(callback));
+}
+
 }  // namespace assistant
 }  // namespace chromeos

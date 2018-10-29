@@ -73,6 +73,7 @@ Not scaled:
     }
   ]
 }
+
 Scale=0.5:
 {
   "layers": [
@@ -148,6 +149,7 @@ Scale=0.5:
     }
   ]
 }
+
 Scale=1.5:
 {
   "layers": [

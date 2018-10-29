@@ -622,7 +622,7 @@ class AppCacheURLRequestJobTest : public testing::Test {
         base::BindOnce(&AppCacheURLRequestJobTest::RequestAppCachedResource,
                        base::Unretained(this), false));
 
-    writer_.reset(service_->storage()->CreateResponseWriter(GURL()));
+    writer_ = service_->storage()->CreateResponseWriter(GURL());
     written_response_id_ = writer_->response_id();
     WriteBasicResponse();
     // Continues async
@@ -694,7 +694,7 @@ class AppCacheURLRequestJobTest : public testing::Test {
         base::BindOnce(&AppCacheURLRequestJobTest::RequestAppCachedResource,
                        base::Unretained(this), true));
 
-    writer_.reset(service_->storage()->CreateResponseWriter(GURL()));
+    writer_ = service_->storage()->CreateResponseWriter(GURL());
     written_response_id_ = writer_->response_id();
     WriteLargeResponse();
     // Continues async
@@ -737,7 +737,7 @@ class AppCacheURLRequestJobTest : public testing::Test {
                        base::Unretained(this)));
     PushNextTask(base::BindOnce(&AppCacheURLRequestJobTest::MakeRangeRequest,
                                 base::Unretained(this)));
-    writer_.reset(service_->storage()->CreateResponseWriter(GURL()));
+    writer_ = service_->storage()->CreateResponseWriter(GURL());
     written_response_id_ = writer_->response_id();
     WriteBasicResponse();
     // Continues async
@@ -804,7 +804,7 @@ class AppCacheURLRequestJobTest : public testing::Test {
         base::BindOnce(&AppCacheURLRequestJobTest::RequestAppCachedResource,
                        base::Unretained(this), true));
 
-    writer_.reset(service_->storage()->CreateResponseWriter(GURL()));
+    writer_ = service_->storage()->CreateResponseWriter(GURL());
     written_response_id_ = writer_->response_id();
     WriteLargeResponse();
 
@@ -832,7 +832,7 @@ class AppCacheURLRequestJobTest : public testing::Test {
         base::BindOnce(&AppCacheURLRequestJobTest::RequestAppCachedResource,
                        base::Unretained(this), true));
 
-    writer_.reset(service_->storage()->CreateResponseWriter(GURL()));
+    writer_ = service_->storage()->CreateResponseWriter(GURL());
     written_response_id_ = writer_->response_id();
     WriteLargeResponse();
 

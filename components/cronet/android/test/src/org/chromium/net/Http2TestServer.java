@@ -45,10 +45,13 @@ public final class Http2TestServer {
     // Server port.
     private static final int PORT = 8443;
 
+    private static ReportingCollector sReportingCollector;
+
     public static boolean shutdownHttp2TestServer() throws Exception {
         if (sServerChannel != null) {
             sServerChannel.close().sync();
             sServerChannel = null;
+            sReportingCollector = null;
             return true;
         }
         return false;
@@ -64,6 +67,10 @@ public final class Http2TestServer {
 
     public static String getServerUrl() {
         return "https://" + HOST + ":" + PORT;
+    }
+
+    public static ReportingCollector getReportingCollector() {
+        return sReportingCollector;
     }
 
     public static String getEchoAllHeadersUrl() {
@@ -99,8 +106,23 @@ public final class Http2TestServer {
         return getServerUrl() + Http2TestHandler.SERVE_SIMPLE_BROTLI_RESPONSE;
     }
 
+    /**
+     * @return url of the reporting collector
+     */
+    public static String getReportingCollectorUrl() {
+        return getServerUrl() + Http2TestHandler.REPORTING_COLLECTOR_PATH;
+    }
+
+    /**
+     * @return url of a resource that includes Reporting and NEL policy headers in its response
+     */
+    public static String getSuccessWithNELHeadersUrl() {
+        return getServerUrl() + Http2TestHandler.SUCCESS_WITH_NEL_HEADERS_PATH;
+    }
+
     public static boolean startHttp2TestServer(
             Context context, String certFileName, String keyFileName) throws Exception {
+        sReportingCollector = new ReportingCollector();
         Http2TestServerRunnable http2TestServerRunnable =
                 new Http2TestServerRunnable(new File(CertTestUtil.CERTS_DIRECTORY + certFileName),
                         new File(CertTestUtil.CERTS_DIRECTORY + keyFileName));
@@ -185,7 +207,10 @@ public final class Http2TestServer {
         protected void configurePipeline(ChannelHandlerContext ctx, String protocol)
                 throws Exception {
             if (ApplicationProtocolNames.HTTP_2.equals(protocol)) {
-                ctx.pipeline().addLast(new Http2TestHandler.Builder().build());
+                ctx.pipeline().addLast(new Http2TestHandler.Builder()
+                                               .setReportingCollector(sReportingCollector)
+                                               .setServerUrl(getServerUrl())
+                                               .build());
                 return;
             }
 

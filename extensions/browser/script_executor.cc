@@ -4,11 +4,12 @@
 
 #include "extensions/browser/script_executor.h"
 
+#include <set>
+#include <string>
+
 #include "base/bind.h"
-#include "base/callback.h"
 #include "base/hash.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -16,7 +17,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/script_execution_observer.h"
+#include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/extension_messages.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
@@ -50,15 +51,14 @@ const std::string GenerateInjectionKey(const HostID& host_id,
 // corresponding response comes from the renderer, or the renderer is destroyed.
 class Handler : public content::WebContentsObserver {
  public:
-  Handler(
-      base::ObserverList<ScriptExecutionObserver>::Unchecked* script_observers,
-      content::WebContents* web_contents,
-      const ExtensionMsg_ExecuteCode_Params& params,
-      ScriptExecutor::FrameScope scope,
-      int frame_id,
-      const ScriptExecutor::ExecuteScriptCallback& callback)
+  Handler(ScriptsExecutedNotification observer,
+          content::WebContents* web_contents,
+          const ExtensionMsg_ExecuteCode_Params& params,
+          ScriptExecutor::FrameScope scope,
+          int frame_id,
+          const ScriptExecutor::ScriptFinishedCallback& callback)
       : content::WebContentsObserver(web_contents),
-        script_observers_(AsWeakPtr(script_observers)),
+        observer_(std::move(observer)),
         host_id_(params.host_id),
         request_id_(params.request_id),
         include_sub_frames_(scope == ScriptExecutor::INCLUDE_SUB_FRAMES),
@@ -125,6 +125,7 @@ class Handler : public content::WebContentsObserver {
     if (!root_is_main_frame_ && !ShouldIncludeFrame(frame))
       return;
     pending_render_frames_.insert(frame);
+    URLLoaderFactoryManager::WillExecuteCode(frame, host_id_);
     frame->Send(new ExtensionMsg_ExecuteCode(frame->GetRoutingID(), params));
   }
 
@@ -179,12 +180,9 @@ class Handler : public content::WebContentsObserver {
       results_.Clear();
     }
 
-    if (script_observers_.get() && root_frame_error_.empty() &&
+    if (!observer_.is_null() && root_frame_error_.empty() &&
         host_id_.type() == HostID::EXTENSIONS) {
-      ScriptExecutionObserver::ExecutingScriptsMap id_map;
-      id_map[host_id_.id()] = std::set<std::string>();
-      for (auto& observer : *script_observers_)
-        observer.OnScriptsExecuted(web_contents(), id_map, root_frame_url_);
+      observer_.Run(web_contents(), {{host_id_.id(), {}}}, root_frame_url_);
     }
 
     if (!callback_.is_null())
@@ -192,8 +190,7 @@ class Handler : public content::WebContentsObserver {
     delete this;
   }
 
-  base::WeakPtr<base::ObserverList<ScriptExecutionObserver>::Unchecked>
-      script_observers_;
+  ScriptsExecutedNotification observer_;
 
   // The id of the host (the extension or the webui) doing the injection.
   HostID host_id_;
@@ -224,27 +221,19 @@ class Handler : public content::WebContentsObserver {
   GURL root_frame_url_;
 
   // The callback to run after all injections complete.
-  ScriptExecutor::ExecuteScriptCallback callback_;
+  ScriptExecutor::ScriptFinishedCallback callback_;
 
   DISALLOW_COPY_AND_ASSIGN(Handler);
 };
 
 }  // namespace
 
-ScriptExecutionObserver::~ScriptExecutionObserver() {
-}
-
-ScriptExecutor::ScriptExecutor(
-    content::WebContents* web_contents,
-    base::ObserverList<ScriptExecutionObserver>::Unchecked* script_observers)
-    : next_request_id_(0),
-      web_contents_(web_contents),
-      script_observers_(script_observers) {
+ScriptExecutor::ScriptExecutor(content::WebContents* web_contents)
+    : web_contents_(web_contents) {
   CHECK(web_contents_);
 }
 
-ScriptExecutor::~ScriptExecutor() {
-}
+ScriptExecutor::~ScriptExecutor() {}
 
 void ScriptExecutor::ExecuteScript(const HostID& host_id,
                                    ScriptExecutor::ScriptType script_type,
@@ -260,7 +249,7 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
                                    bool user_gesture,
                                    base::Optional<CSSOrigin> css_origin,
                                    ScriptExecutor::ResultType result_type,
-                                   const ExecuteScriptCallback& callback) {
+                                   const ScriptFinishedCallback& callback) {
   if (host_id.type() == HostID::EXTENSIONS) {
     // Don't execute if the extension has been unloaded.
     const Extension* extension =
@@ -293,7 +282,7 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
     params.injection_key = GenerateInjectionKey(host_id, file_url, code);
 
   // Handler handles IPCs and deletes itself on completion.
-  new Handler(script_observers_, web_contents_, params, frame_scope, frame_id,
+  new Handler(observer_, web_contents_, params, frame_scope, frame_id,
               callback);
 }
 

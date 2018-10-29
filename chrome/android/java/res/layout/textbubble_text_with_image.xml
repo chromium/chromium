@@ -16,14 +16,14 @@
     android:padding="16dp"
     android:gravity="center" >
 
-    <org.chromium.chrome.browser.widget.TintedImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/image"
         android:layout_width="20sp"
         android:layout_height="20sp"
         android:layout_marginEnd="12dp"
         tools:ignore="ContentDescription"
         android:scaleType="centerInside"
-        app:chrometint="@color/white_mode_tint" />
+        app:tint="@color/white_mode_tint" />
 
     <TextView
         android:id="@+id/message"

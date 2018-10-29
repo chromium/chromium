@@ -193,7 +193,7 @@ void TouchExplorationManager::OnKeyboardVisibleBoundsChanged(
   UpdateTouchExplorationState();
 }
 
-void TouchExplorationManager::OnKeyboardDisabled() {
+void TouchExplorationManager::OnKeyboardEnabledChanged(bool is_enabled) {
   UpdateTouchExplorationState();
 }
 
@@ -238,7 +238,7 @@ void TouchExplorationManager::UpdateTouchExplorationState() {
 
     // Virtual keyboard.
     auto* keyboard_controller = keyboard::KeyboardController::Get();
-    if (keyboard_controller->enabled()) {
+    if (keyboard_controller->IsEnabled()) {
       touch_exploration_controller_->SetLiftActivationBounds(
           keyboard_controller->visual_bounds_in_screen());
     }

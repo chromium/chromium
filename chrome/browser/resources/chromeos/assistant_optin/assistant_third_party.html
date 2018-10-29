@@ -5,6 +5,7 @@
 <dom-module id="assistant-third-party">
   <template>
     <link rel="stylesheet" href="../login/oobe_flex_layout.css">
+    <link rel="stylesheet" href="../login/oobe_popup_overlay.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="assistant_third_party.css">
     <oobe-dialog id="third-party-dialog" role="dialog" has-buttons hide-shadow
@@ -26,5 +27,19 @@
         </oobe-next-button>
       </div>
     </oobe-dialog>
+
+    <div id="third-party-overlay" class="popup-overlay" hidden>
+      <div id="overlay-container" class="oobe-popup not-resizable">
+        <div id="webview-container">
+          <webview id="overlay-webview"></webview>
+        </div>
+        <div class="button-strip">
+          <oobe-text-button inverse id="overlay-close-button">
+            <div i18n-content="assistantOptinOKButton" id="close-button-text">
+            </div>
+          </oobe-text-button>
+        </div>
+      </div>
+    </div>
   </template>
 </dom-module>

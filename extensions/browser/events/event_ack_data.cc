@@ -6,6 +6,8 @@
 
 #include "base/callback.h"
 #include "base/guid.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
 
@@ -99,8 +101,8 @@ void EventAckData::IncrementInflightEvent(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::ServiceWorkerContext::RunTask(
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::IO),
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::IO}),
       FROM_HERE, context,
       base::BindOnce(&EventAckData::StartExternalRequestOnIO, context,
                      render_process_id, version_id, event_id, unacked_events_));
@@ -115,8 +117,8 @@ void EventAckData::DecrementInflightEvent(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::ServiceWorkerContext::RunTask(
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::IO),
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::IO}),
       FROM_HERE, context,
       base::BindOnce(&EventAckData::FinishExternalRequestOnIO, context,
                      render_process_id, version_id, event_id, unacked_events_,

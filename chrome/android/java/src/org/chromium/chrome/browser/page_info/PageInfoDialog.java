@@ -21,6 +21,7 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.chromium.chrome.browser.modaldialog.DialogDismissalCause;
 import org.chromium.chrome.browser.modaldialog.ModalDialogManager;
 import org.chromium.chrome.browser.modaldialog.ModalDialogView;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -157,7 +158,7 @@ class PageInfoDialog {
         sheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                mController.onDismiss();
+                mController.onDismiss(DialogDismissalCause.UNKNOWN);
             }
         });
 

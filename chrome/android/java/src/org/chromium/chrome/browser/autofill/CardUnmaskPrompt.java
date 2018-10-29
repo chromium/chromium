@@ -35,10 +35,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.VisibleForTesting;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.modaldialog.DialogDismissalCause;
 import org.chromium.chrome.browser.modaldialog.ModalDialogManager;
 import org.chromium.chrome.browser.modaldialog.ModalDialogView;
 
@@ -746,15 +747,13 @@ public class CardUnmaskPrompt implements TextWatcher, OnClickListener, ModalDial
                     mMonthInput.getText().toString(), Integer.toString(getFourDigitYear()),
                     mStoreLocallyCheckbox != null && mStoreLocallyCheckbox.isChecked());
         } else if (buttonType == ModalDialogView.ButtonType.NEGATIVE) {
-            mModalDialogManager.cancelDialog(mDialog);
+            mModalDialogManager.dismissDialog(
+                    mDialog, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         }
     }
 
     @Override
-    public void onCancel() {}
-
-    @Override
-    public void onDismiss() {
+    public void onDismiss(@DialogDismissalCause int dismissalCause) {
         mDelegate.dismissed();
     }
 

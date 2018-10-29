@@ -6,14 +6,19 @@
 #define CONTENT_COMMON_URL_LOADER_FACTORY_BUNDLE_H_
 
 #include <map>
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/macros.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "url/origin.h"
 
-class GURL;
+namespace network {
+struct ResourceRequest;
+};
 
 namespace content {
 
@@ -22,11 +27,23 @@ namespace content {
 class CONTENT_EXPORT URLLoaderFactoryBundleInfo
     : public network::SharedURLLoaderFactoryInfo {
  public:
+  // Map from URL scheme to URLLoaderFactoryPtrInfo for handling URL requests
+  // for schemes not handled by the |default_factory_info|. See also
+  // URLLoaderFactoryBundle::SchemeMap.
+  using SchemeMap =
+      std::map<std::string, network::mojom::URLLoaderFactoryPtrInfo>;
+
+  // Map from origin of request initiator to URLLoaderFactoryPtrInfo for
+  // handling this initiator's requests (e.g. for relaxing CORB for requests
+  // initiated from content scripts).
+  using OriginMap =
+      std::map<url::Origin, network::mojom::URLLoaderFactoryPtrInfo>;
+
   URLLoaderFactoryBundleInfo();
   URLLoaderFactoryBundleInfo(
       network::mojom::URLLoaderFactoryPtrInfo default_factory_info,
-      std::map<std::string, network::mojom::URLLoaderFactoryPtrInfo>
-          factories_info,
+      SchemeMap scheme_specific_factory_infos,
+      OriginMap initiator_specific_factory_infos,
       bool bypass_redirect_checks);
   ~URLLoaderFactoryBundleInfo() override;
 
@@ -34,9 +51,11 @@ class CONTENT_EXPORT URLLoaderFactoryBundleInfo
     return default_factory_info_;
   }
 
-  std::map<std::string, network::mojom::URLLoaderFactoryPtrInfo>&
-  factories_info() {
-    return factories_info_;
+  SchemeMap& scheme_specific_factory_infos() {
+    return scheme_specific_factory_infos_;
+  }
+  OriginMap& initiator_specific_factory_infos() {
+    return initiator_specific_factory_infos_;
   }
 
   bool bypass_redirect_checks() const { return bypass_redirect_checks_; }
@@ -49,8 +68,8 @@ class CONTENT_EXPORT URLLoaderFactoryBundleInfo
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override;
 
   network::mojom::URLLoaderFactoryPtrInfo default_factory_info_;
-  std::map<std::string, network::mojom::URLLoaderFactoryPtrInfo>
-      factories_info_;
+  SchemeMap scheme_specific_factory_infos_;
+  OriginMap initiator_specific_factory_infos_;
   bool bypass_redirect_checks_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryBundleInfo);
@@ -69,15 +88,6 @@ class CONTENT_EXPORT URLLoaderFactoryBundle
   // Sets the default factory to use when no registered factories match a given
   // |url|.
   void SetDefaultFactory(network::mojom::URLLoaderFactoryPtr factory);
-
-  // Registers a new factory to handle requests matching scheme |scheme|.
-  void RegisterFactory(const base::StringPiece& scheme,
-                       network::mojom::URLLoaderFactoryPtr factory);
-
-  // Returns a factory which can be used to acquire a loader for |url|. If no
-  // registered factory matches |url|'s scheme, the default factory is used. It
-  // is undefined behavior to call this when no default factory is set.
-  virtual network::mojom::URLLoaderFactory* GetFactoryForURL(const GURL& url);
 
   // SharedURLLoaderFactory implementation.
   void CreateLoaderAndStart(network::mojom::URLLoaderRequest loader,
@@ -99,8 +109,39 @@ class CONTENT_EXPORT URLLoaderFactoryBundle
  protected:
   ~URLLoaderFactoryBundle() override;
 
+  // Returns a factory which can be used to acquire a loader for |request|.
+  virtual network::mojom::URLLoaderFactory* GetFactory(
+      const network::ResourceRequest& request);
+
+  template <typename TKey>
+  static std::map<TKey, network::mojom::URLLoaderFactoryPtrInfo>
+  ClonePtrMapToPtrInfoMap(
+      const std::map<TKey, network::mojom::URLLoaderFactoryPtr>& input) {
+    std::map<TKey, network::mojom::URLLoaderFactoryPtrInfo> output;
+    for (const auto& it : input) {
+      const TKey& key = it.first;
+      const network::mojom::URLLoaderFactoryPtr& factory = it.second;
+      network::mojom::URLLoaderFactoryPtrInfo factory_info;
+      factory->Clone(mojo::MakeRequest(&factory_info));
+      output.emplace(key, std::move(factory_info));
+    }
+    return output;
+  }
+
   network::mojom::URLLoaderFactoryPtr default_factory_;
-  std::map<std::string, network::mojom::URLLoaderFactoryPtr> factories_;
+
+  // Map from URL scheme to URLLoaderFactoryPtr for handling URL requests for
+  // schemes not handled by the |default_factory_|.  See also
+  // URLLoaderFactoryBundleInfo::SchemeMap and
+  // ContentBrowserClient::SchemeToURLLoaderFactoryMap.
+  using SchemeMap = std::map<std::string, network::mojom::URLLoaderFactoryPtr>;
+  SchemeMap scheme_specific_factories_;
+
+  // Map from origin of request initiator to URLLoaderFactoryPtr for handling
+  // this initiator's requests. See also URLLoaderFactoryBundleInfo::OriginMap.
+  using OriginMap = std::map<url::Origin, network::mojom::URLLoaderFactoryPtr>;
+  OriginMap initiator_specific_factories_;
+
   bool bypass_redirect_checks_ = false;
 };
 

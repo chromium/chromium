@@ -13,6 +13,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_url_loader_factory_getter.h"
+#include "net/url_request/url_request_context_getter.h"
 
 namespace download {
 

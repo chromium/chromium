@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "media/base/video_codecs.h"
-#include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
+#include "third_party/webrtc/media/engine/webrtcvideoencoderfactory.h"
 
 namespace media {
 class GpuVideoAcceleratorFactories;
@@ -23,27 +23,26 @@ namespace content {
 // This class creates RTCVideoEncoder instances (each wrapping a
 // media::VideoEncodeAccelerator) on behalf of the WebRTC stack.
 class CONTENT_EXPORT RTCVideoEncoderFactory
-    : public webrtc::VideoEncoderFactory {
+    : public cricket::WebRtcVideoEncoderFactory {
  public:
   explicit RTCVideoEncoderFactory(
       media::GpuVideoAcceleratorFactories* gpu_factories);
   ~RTCVideoEncoderFactory() override;
 
-  // webrtc::VideoEncoderFactory implementation.
-  std::unique_ptr<webrtc::VideoEncoder> CreateVideoEncoder(
-      const webrtc::SdpVideoFormat& format) override;
-  std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
-  webrtc::VideoEncoderFactory::CodecInfo QueryVideoEncoder(
-      const webrtc::SdpVideoFormat& format) const override;
+  // cricket::WebRtcVideoEncoderFactory implementation.
+  webrtc::VideoEncoder* CreateVideoEncoder(
+      const cricket::VideoCodec& codec) override;
+  const std::vector<cricket::VideoCodec>& supported_codecs() const override;
+  void DestroyVideoEncoder(webrtc::VideoEncoder* encoder) override;
 
  private:
   media::GpuVideoAcceleratorFactories* gpu_factories_;
 
-  // List of supported webrtc::SdpVideoFormat. |profiles_| and
-  // |supported_formats_| have the same length and the profile for
-  // |supported_formats_[i]| is |profiles_[i]|.
+  // List of supported cricket::WebRtcVideoEncoderFactory::VideoCodec.
+  // |profiles_| and |supported_codecs_| have the same length and the profile
+  // for |supported_codecs_[i]| is |profiles_[i]|.
   std::vector<media::VideoCodecProfile> profiles_;
-  std::vector<webrtc::SdpVideoFormat> supported_formats_;
+  std::vector<cricket::VideoCodec> supported_codecs_;
 
   DISALLOW_COPY_AND_ASSIGN(RTCVideoEncoderFactory);
 };

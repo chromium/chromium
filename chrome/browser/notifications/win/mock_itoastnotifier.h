@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NOTIFICATIONS_WIN_MOCK_ITOASTNOTIFIER_H_
 
 #include <windows.ui.notifications.h>
-
 #include <wrl/implements.h>
 
 #include "base/callback.h"

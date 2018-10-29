@@ -19,14 +19,6 @@ class TabModalConfirmDialog : public TabModalConfirmDialogCloseDelegate {
   // the dialog.
   static TabModalConfirmDialog* Create(TabModalConfirmDialogDelegate* delegate,
                                        content::WebContents* web_contents);
-#if defined(OS_MACOSX)
-  // Temporary shim for Polychrome. See bottom of first comment in
-  // https://crbug.com/80495 for details.
-  static TabModalConfirmDialog* CreateCocoa(
-      TabModalConfirmDialogDelegate* delegate,
-      content::WebContents* web_contents);
-#endif
-
   // Accepts the dialog.
   virtual void AcceptTabModalDialog() = 0;
 

@@ -6,7 +6,9 @@
 
 #include <cmath>
 
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/stl_util.h"
 
 namespace app_list {
@@ -16,12 +18,10 @@ constexpr int kHoursADay = 24;
 constexpr base::TimeDelta kSaveInternal = base::TimeDelta::FromHours(1);
 
 // A bin with index i has 5 adjacent bins as: i + 0, i + 1, i + 2, i + 22, and
-// i + 23. They each contributes to the final Rank score with different level:
-// 0.6 for i-th bin itself, 0.15 for i + 1 (one hour later) and i + 23 (
-// one hour earlier), 0.05 for i + 2 (two hours later) and i + 22 (two hours
-// earlier).
+// i + 23 which stand for the bin i itself, 1 hour later, 2 hours later,
+// 2 hours earlier and 1 hour earlier. Each adjacent bin contributes to the
+// final Rank score with weights from BinWeightsFromFlagOrDefault();
 constexpr int kAdjacentHourBin[] = {0, 1, 2, 22, 23};
-constexpr float kAdjacentHourWeight[] = {0.6, 0.15, 0.05, 0.05, 0.15};
 
 }  // namespace
 
@@ -157,6 +157,7 @@ base::flat_map<std::string, float> HourAppLaunchPredictor::Rank() {
   const auto& frequency_table_map =
       proto_.hour_app_launch_predictor().binned_frequency_table();
 
+  const std::vector<float> weights = BinWeightsFromFlagOrDefault();
   for (size_t i = 0; i < base::size(kAdjacentHourBin); ++i) {
     // Finds adjacent bin and weight.
     const int adj_bin =
@@ -166,7 +167,7 @@ base::flat_map<std::string, float> HourAppLaunchPredictor::Rank() {
       continue;
 
     const auto& frequency_table = find_frequency_table->second;
-    const float weight = kAdjacentHourWeight[i];
+    const float weight = weights[i];
 
     // Accumulates the frequency to the output.
     if (frequency_table.total_counts() > 0) {
@@ -203,7 +204,41 @@ bool HourAppLaunchPredictor::FromProto(const AppLaunchPredictorProto& proto) {
       AppLaunchPredictorProto::kHourAppLaunchPredictor) {
     return false;
   }
-  proto_ = proto;
+
+  const HourAppLaunchPredictorProto& predictor_proto =
+      proto.hour_app_launch_predictor();
+
+  const int today = base::Time::Now().ToDeltaSinceWindowsEpoch().InDays();
+
+  // If last_decay_timestamp is not set, just copy the proto.
+  if (!predictor_proto.has_last_decay_timestamp()) {
+    proto_ = proto;
+    proto_.mutable_hour_app_launch_predictor()->set_last_decay_timestamp(today);
+    return true;
+  }
+
+  // If last decay is within 7 days, just copy the proto.
+  if (today - predictor_proto.last_decay_timestamp() <= 7) {
+    proto_ = proto;
+    return true;
+  }
+
+  proto_.Clear();
+  for (const auto& table : predictor_proto.binned_frequency_table()) {
+    auto& new_table = (*proto_.mutable_hour_app_launch_predictor()
+                            ->mutable_binned_frequency_table())[table.first];
+
+    int total_counts = 0;
+    for (const auto& frequency : table.second.frequency()) {
+      const int new_frequency = frequency.second * kWeeklyDecayCoeff;
+      if (new_frequency > 0) {
+        total_counts += new_frequency;
+        (*new_table.mutable_frequency())[frequency.first] = new_frequency;
+      }
+    }
+    new_table.set_total_counts(total_counts);
+  }
+  proto_.mutable_hour_app_launch_predictor()->set_last_decay_timestamp(today);
   return true;
 }
 
@@ -220,6 +255,44 @@ int HourAppLaunchPredictor::GetBin() const {
   } else {
     return now.hour + kHoursADay;
   }
+}
+
+std::vector<float> HourAppLaunchPredictor::BinWeightsFromFlagOrDefault() {
+  const std::vector<float> default_weights = {0.6, 0.15, 0.05, 0.05, 0.15};
+  std::vector<float> weights(5);
+
+  // Get weights for adjacent bins. Every weight has to be within [0.0, 1.0]
+  // And the sum weights[1] + ..., + weights[4] also needs to be in [0.0, 1.0]
+  // so that the weight[0] is set to be 1.0 - (weights[1] + ..., + weights[4]).
+  weights[1] = static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
+      app_list_features::kEnableAppSearchResultRanker,
+      "weight_1_hour_later_bin", -1.0));
+  if (weights[1] < 0.0 || weights[1] > 1.0)
+    return default_weights;
+
+  weights[2] = static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
+      app_list_features::kEnableAppSearchResultRanker,
+      "weight_2_hour_later_bin", -1.0));
+  if (weights[2] < 0.0 || weights[2] > 1.0)
+    return default_weights;
+
+  weights[3] = static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
+      app_list_features::kEnableAppSearchResultRanker,
+      "weight_2_hour_earlier_bin", -1.0));
+  if (weights[3] < 0.0 || weights[3] > 1.0)
+    return default_weights;
+
+  weights[4] = static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
+      app_list_features::kEnableAppSearchResultRanker,
+      "weight_1_hour_earlier_bin", -1.0));
+  if (weights[4] < 0.0 || weights[4] > 1.0)
+    return default_weights;
+
+  weights[0] = 1.0 - weights[1] - weights[2] - weights[3] - weights[4];
+  if (weights[0] < 0.0 || weights[0] > 1.0)
+    return default_weights;
+
+  return weights;
 }
 
 void FakeAppLaunchPredictor::SetShouldSave(bool should_save) {

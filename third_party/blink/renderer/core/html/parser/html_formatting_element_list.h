@@ -48,7 +48,7 @@ class HTMLFormattingElementList {
   // between the HTMLFormattingElementList and HTMLElementStack and needs access
   // to Entry::isMarker() and Entry::replaceElement() to do so.
   class Entry {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     // Inline because they're hot and Vector<T> uses them.
@@ -61,8 +61,8 @@ class HTMLFormattingElementList {
 
     HTMLStackItem* StackItem() const { return item_; }
     Element* GetElement() const {
-      // The fact that !m_item == isMarker() is an implementation detail callers
-      // should check isMarker() before calling element().
+      // The fact that !item_ == IsMarker() is an implementation detail callers
+      // should check IsMarker() before calling GetElement().
       DCHECK(item_);
       return item_->GetElement();
     }
@@ -102,7 +102,7 @@ class HTMLFormattingElementList {
   };
 
   bool IsEmpty() const { return !size(); }
-  size_t size() const { return entries_.size(); }
+  wtf_size_t size() const { return entries_.size(); }
 
   Element* ClosestElementInScopeWithName(const AtomicString&);
 
@@ -118,8 +118,8 @@ class HTMLFormattingElementList {
   // clearToLastMarker also clears the marker (per the HTML5 spec).
   void ClearToLastMarker();
 
-  const Entry& at(size_t i) const { return entries_[i]; }
-  Entry& at(size_t i) { return entries_[i]; }
+  const Entry& at(wtf_size_t i) const { return entries_[i]; }
+  Entry& at(wtf_size_t i) { return entries_[i]; }
 
   void Trace(blink::Visitor* visitor) { visitor->Trace(entries_); }
 

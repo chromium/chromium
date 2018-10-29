@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/drive/task_util.h"
 #include "storage/browser/blob/shareable_file_reference.h"
@@ -80,8 +81,8 @@ void ComputeSpaceNeedToBeFreed(
     const storage::FileSystemURL& url,
     GetNecessaryFreeSpaceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&GetMetadataOnIOThread, profile->GetPath(), context, url,
                      google_apis::CreateRelayCallback(std::move(callback))));
 }
@@ -221,8 +222,8 @@ void SnapshotManager::CreateManagedSnapshotAfterSpaceComputed(
   DCHECK(context.get());
 
   // Free up space if needed and start creating the snapshot.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&FileRefsHolder::FreeSpaceAndCreateSnapshotFile, holder_,
                      context, filesystem_url, needed_space,
                      google_apis::CreateRelayCallback(std::move(callback))));

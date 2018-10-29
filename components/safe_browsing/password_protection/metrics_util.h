@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "components/safe_browsing/proto/csd.pb.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace base {
 class TimeTicks;
@@ -38,7 +39,6 @@ extern const char kSyncPasswordEntryVerdictHistogram[];
 extern const char kSyncPasswordInterstitialHistogram[];
 extern const char kSyncPasswordPageInfoHistogram[];
 extern const char kSyncPasswordWarningDialogHistogram[];
-extern const char kVerdictMigrationHistogram[];
 
 using PasswordReuseEvent = LoginReputationClientRequest::PasswordReuseEvent;
 using ReusedPasswordType =
@@ -183,6 +183,9 @@ void LogNumberOfReuseBeforeSyncPasswordChange(size_t reuse_count);
 void LogReferrerChainSize(
     LoginReputationClientResponse::VerdictType verdict_type,
     int referrer_chain_size);
+
+// Logs the content area size in DIPs.
+void LogContentsSize(const gfx::Size& size);
 
 }  // namespace safe_browsing
 

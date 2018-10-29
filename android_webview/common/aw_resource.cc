@@ -19,7 +19,7 @@ std::vector<std::string> GetConfigKeySystemUuidMapping() {
   std::vector<std::string> key_system_uuid_mappings;
   ScopedJavaLocalRef<jobjectArray> mappings =
       Java_AwResource_getConfigKeySystemUuidMapping(env);
-  base::android::AppendJavaStringArrayToStringVector(env, mappings.obj(),
+  base::android::AppendJavaStringArrayToStringVector(env, mappings,
                                                      &key_system_uuid_mappings);
   return key_system_uuid_mappings;
 }

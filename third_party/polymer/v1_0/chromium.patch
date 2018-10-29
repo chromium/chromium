@@ -115,18 +115,6 @@ index 43c59653a39b..26652936735c 100644
      },
 
      _forwardItemPath: function(path, value) {
-diff --git a/components-chromium/paper-radio-group/paper-radio-group.html b/components-chromium/paper-radio-group/paper-radio-group.html
-index f50638bf6175..d38cde355822 100644
---- a/components-chromium/paper-radio-group/paper-radio-group.html
-+++ b/components-chromium/paper-radio-group/paper-radio-group.html
-@@ -9,7 +9,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
- --><html><head><link rel="import" href="../polymer/polymer.html">
- <link rel="import" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
- <link rel="import" href="../iron-menu-behavior/iron-menubar-behavior.html">
--<link rel="import" href="../paper-radio-button/paper-radio-button.html">
- 
- <!--
- Material design: [Radio button](https://www.google.com/design/spec/components/selection-controls.html#selection-controls-radio-button)
 diff --git a/components-chromium/iron-flex-layout/iron-flex-layout.html b/components-chromium/iron-flex-layout/iron-flex-layout.html
 index 082b0c1e4af2..d985829702a2 100644
 --- a/components-chromium/iron-flex-layout/iron-flex-layout.html

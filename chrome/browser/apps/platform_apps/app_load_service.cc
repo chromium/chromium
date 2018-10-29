@@ -103,8 +103,7 @@ void AppLoadService::Observe(int type,
   // It is possible for an extension to be unloaded before it stops loading.
   if (!extension)
     return;
-  std::map<std::string, PostReloadAction>::iterator it =
-      post_reload_actions_.find(extension->id());
+  auto it = post_reload_actions_.find(extension->id());
   if (it == post_reload_actions_.end())
     return;
 

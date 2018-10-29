@@ -53,4 +53,9 @@ ScopedWebInputEventWithLatencyInfo::coalesced_event() const {
   return *event_;
 }
 
+blink::WebCoalescedInputEvent&
+ScopedWebInputEventWithLatencyInfo::coalesced_event() {
+  return *event_;
+}
+
 }  // namespace content

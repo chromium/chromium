@@ -36,7 +36,9 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
   MOCK_METHOD1(OnModelStarting, void(ModelTypeSyncBridge* bridge));
   MOCK_METHOD1(ModelReadyToSync, void(std::unique_ptr<MetadataBatch> batch));
   MOCK_METHOD0(IsTrackingMetadata, bool());
+  MOCK_METHOD0(TrackedAccountId, std::string());
   MOCK_METHOD1(ReportError, void(const ModelError& error));
+  MOCK_CONST_METHOD0(GetError, base::Optional<ModelError>());
   MOCK_METHOD0(GetControllerDelegate,
                base::WeakPtr<ModelTypeControllerDelegate>());
 

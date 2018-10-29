@@ -8,7 +8,7 @@
 
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "net/base/ip_address.h"
-#include "net/dns/dns_config_service.h"
+#include "net/dns/dns_config.h"
 #include "net/dns/dns_protocol.h"
 
 using net::DnsClient;

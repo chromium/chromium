@@ -446,7 +446,7 @@ blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
       return blink::WebRect();
 
     switch (inline_text_box.GetTextDirection()) {
-      case blink::kWebAXTextDirectionLR: {
+      case ax::mojom::TextDirection::kLtr: {
         if (localIndex) {
           int left = inline_text_box_rect.x + character_offsets[localIndex - 1];
           int width =
@@ -458,7 +458,7 @@ blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
                               character_offsets[0],
                               inline_text_box_rect.height);
       }
-      case blink::kWebAXTextDirectionRL: {
+      case ax::mojom::TextDirection::kRtl: {
         int right = inline_text_box_rect.x + inline_text_box_rect.width;
 
         if (localIndex) {
@@ -473,7 +473,7 @@ blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
                               character_offsets[0],
                               inline_text_box_rect.height);
       }
-      case blink::kWebAXTextDirectionTB: {
+      case ax::mojom::TextDirection::kTtb: {
         if (localIndex) {
           int top = inline_text_box_rect.y + character_offsets[localIndex - 1];
           int height =
@@ -484,7 +484,7 @@ blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
         return blink::WebRect(inline_text_box_rect.x, inline_text_box_rect.y,
                               inline_text_box_rect.width, character_offsets[0]);
       }
-      case blink::kWebAXTextDirectionBT: {
+      case ax::mojom::TextDirection::kBtt: {
         int bottom = inline_text_box_rect.y + inline_text_box_rect.height;
 
         if (localIndex) {
@@ -498,6 +498,9 @@ blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
         return blink::WebRect(inline_text_box_rect.x, top,
                               inline_text_box_rect.width, character_offsets[0]);
       }
+      default:
+        NOTREACHED();
+        return blink::WebRect();
     }
   }
 
@@ -509,7 +512,7 @@ std::vector<std::string> GetMisspellings(blink::WebAXObject& object) {
   std::vector<std::string> misspellings;
   std::string text(object.GetName().Utf8());
 
-  blink::WebVector<blink::WebAXMarkerType> marker_types;
+  blink::WebVector<ax::mojom::MarkerType> marker_types;
   blink::WebVector<int> marker_starts;
   blink::WebVector<int> marker_ends;
   object.Markers(marker_types, marker_starts, marker_ends);
@@ -517,7 +520,7 @@ std::vector<std::string> GetMisspellings(blink::WebAXObject& object) {
   DCHECK_EQ(marker_starts.size(), marker_ends.size());
 
   for (size_t i = 0; i < marker_types.size(); ++i) {
-    if (marker_types[i] & blink::kWebAXMarkerTypeSpelling) {
+    if (marker_types[i] == ax::mojom::MarkerType::kSpelling) {
       misspellings.push_back(
           text.substr(marker_starts[i], marker_ends[i] - marker_starts[i]));
     }
@@ -949,10 +952,10 @@ v8::Local<v8::Value> WebAXObjectProxy::SelectionAnchorObject() {
 
   blink::WebAXObject anchorObject;
   int anchorOffset = -1;
-  blink::WebAXTextAffinity anchorAffinity;
+  ax::mojom::TextAffinity anchorAffinity;
   blink::WebAXObject focusObject;
   int focusOffset = -1;
-  blink::WebAXTextAffinity focusAffinity;
+  ax::mojom::TextAffinity focusAffinity;
   accessibility_object_.Selection(anchorObject, anchorOffset, anchorAffinity,
                                   focusObject, focusOffset, focusAffinity);
   if (anchorObject.IsNull())
@@ -966,10 +969,10 @@ int WebAXObjectProxy::SelectionAnchorOffset() {
 
   blink::WebAXObject anchorObject;
   int anchorOffset = -1;
-  blink::WebAXTextAffinity anchorAffinity;
+  ax::mojom::TextAffinity anchorAffinity;
   blink::WebAXObject focusObject;
   int focusOffset = -1;
-  blink::WebAXTextAffinity focusAffinity;
+  ax::mojom::TextAffinity focusAffinity;
   accessibility_object_.Selection(anchorObject, anchorOffset, anchorAffinity,
                                   focusObject, focusOffset, focusAffinity);
   if (anchorOffset < 0)
@@ -983,14 +986,14 @@ std::string WebAXObjectProxy::SelectionAnchorAffinity() {
 
   blink::WebAXObject anchorObject;
   int anchorOffset = -1;
-  blink::WebAXTextAffinity anchorAffinity;
+  ax::mojom::TextAffinity anchorAffinity;
   blink::WebAXObject focusObject;
   int focusOffset = -1;
-  blink::WebAXTextAffinity focusAffinity;
+  ax::mojom::TextAffinity focusAffinity;
   accessibility_object_.Selection(anchorObject, anchorOffset, anchorAffinity,
                                   focusObject, focusOffset, focusAffinity);
-  return anchorAffinity == blink::kWebAXTextAffinityUpstream ? "upstream"
-                                                             : "downstream";
+  return anchorAffinity == ax::mojom::TextAffinity::kUpstream ? "upstream"
+                                                              : "downstream";
 }
 
 v8::Local<v8::Value> WebAXObjectProxy::SelectionFocusObject() {
@@ -998,10 +1001,10 @@ v8::Local<v8::Value> WebAXObjectProxy::SelectionFocusObject() {
 
   blink::WebAXObject anchorObject;
   int anchorOffset = -1;
-  blink::WebAXTextAffinity anchorAffinity;
+  ax::mojom::TextAffinity anchorAffinity;
   blink::WebAXObject focusObject;
   int focusOffset = -1;
-  blink::WebAXTextAffinity focusAffinity;
+  ax::mojom::TextAffinity focusAffinity;
   accessibility_object_.Selection(anchorObject, anchorOffset, anchorAffinity,
                                   focusObject, focusOffset, focusAffinity);
   if (focusObject.IsNull())
@@ -1015,10 +1018,10 @@ int WebAXObjectProxy::SelectionFocusOffset() {
 
   blink::WebAXObject anchorObject;
   int anchorOffset = -1;
-  blink::WebAXTextAffinity anchorAffinity;
+  ax::mojom::TextAffinity anchorAffinity;
   blink::WebAXObject focusObject;
   int focusOffset = -1;
-  blink::WebAXTextAffinity focusAffinity;
+  ax::mojom::TextAffinity focusAffinity;
   accessibility_object_.Selection(anchorObject, anchorOffset, anchorAffinity,
                                   focusObject, focusOffset, focusAffinity);
   if (focusOffset < 0)
@@ -1032,14 +1035,14 @@ std::string WebAXObjectProxy::SelectionFocusAffinity() {
 
   blink::WebAXObject anchorObject;
   int anchorOffset = -1;
-  blink::WebAXTextAffinity anchorAffinity;
+  ax::mojom::TextAffinity anchorAffinity;
   blink::WebAXObject focusObject;
   int focusOffset = -1;
-  blink::WebAXTextAffinity focusAffinity;
+  ax::mojom::TextAffinity focusAffinity;
   accessibility_object_.Selection(anchorObject, anchorOffset, anchorAffinity,
                                   focusObject, focusOffset, focusAffinity);
-  return focusAffinity == blink::kWebAXTextAffinityUpstream ? "upstream"
-                                                            : "downstream";
+  return focusAffinity == ax::mojom::TextAffinity::kUpstream ? "upstream"
+                                                             : "downstream";
 }
 
 int WebAXObjectProxy::SelectionStart() {
@@ -1162,11 +1165,11 @@ bool WebAXObjectProxy::IsExpanded() {
 std::string WebAXObjectProxy::Checked() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   switch (accessibility_object_.CheckedState()) {
-    case blink::kWebAXCheckedTrue:
+    case ax::mojom::CheckedState::kTrue:
       return "true";
-    case blink::kWebAXCheckedMixed:
+    case ax::mojom::CheckedState::kMixed:
       return "mixed";
-    case blink::kWebAXCheckedFalse:
+    case ax::mojom::CheckedState::kFalse:
       return "false";
     default:
       return std::string();
@@ -1242,19 +1245,19 @@ std::string WebAXObjectProxy::Autocomplete() {
 std::string WebAXObjectProxy::Current() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   switch (accessibility_object_.AriaCurrentState()) {
-    case blink::kWebAXAriaCurrentStateFalse:
+    case ax::mojom::AriaCurrentState::kFalse:
       return "false";
-    case blink::kWebAXAriaCurrentStateTrue:
+    case ax::mojom::AriaCurrentState::kTrue:
       return "true";
-    case blink::kWebAXAriaCurrentStatePage:
+    case ax::mojom::AriaCurrentState::kPage:
       return "page";
-    case blink::kWebAXAriaCurrentStateStep:
+    case ax::mojom::AriaCurrentState::kStep:
       return "step";
-    case blink::kWebAXAriaCurrentStateLocation:
+    case ax::mojom::AriaCurrentState::kLocation:
       return "location";
-    case blink::kWebAXAriaCurrentStateDate:
+    case ax::mojom::AriaCurrentState::kDate:
       return "date";
-    case blink::kWebAXAriaCurrentStateTime:
+    case ax::mojom::AriaCurrentState::kTime:
       return "time";
     default:
       return std::string();
@@ -1264,17 +1267,17 @@ std::string WebAXObjectProxy::Current() {
 std::string WebAXObjectProxy::HasPopup() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   switch (accessibility_object_.HasPopup()) {
-    case blink::kWebAXHasPopupTrue:
+    case ax::mojom::HasPopup::kTrue:
       return "true";
-    case blink::kWebAXHasPopupMenu:
+    case ax::mojom::HasPopup::kMenu:
       return "menu";
-    case blink::kWebAXHasPopupListbox:
+    case ax::mojom::HasPopup::kListbox:
       return "listbox";
-    case blink::kWebAXHasPopupTree:
+    case ax::mojom::HasPopup::kTree:
       return "tree";
-    case blink::kWebAXHasPopupGrid:
+    case ax::mojom::HasPopup::kGrid:
       return "grid";
-    case blink::kWebAXHasPopupDialog:
+    case ax::mojom::HasPopup::kDialog:
       return "dialog";
     default:
       return std::string();
@@ -1284,15 +1287,15 @@ std::string WebAXObjectProxy::HasPopup() {
 std::string WebAXObjectProxy::Invalid() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   switch (accessibility_object_.InvalidState()) {
-    case blink::kWebAXInvalidStateFalse:
+    case ax::mojom::InvalidState::kFalse:
       return "false";
-    case blink::kWebAXInvalidStateTrue:
+    case ax::mojom::InvalidState::kTrue:
       return "true";
-    case blink::kWebAXInvalidStateSpelling:
+    case ax::mojom::InvalidState::kSpelling:
       return "spelling";
-    case blink::kWebAXInvalidStateGrammar:
+    case ax::mojom::InvalidState::kGrammar:
       return "grammar";
-    case blink::kWebAXInvalidStateOther:
+    case ax::mojom::InvalidState::kOther:
       return "other";
     default:
       return std::string();
@@ -1341,11 +1344,11 @@ std::string WebAXObjectProxy::RoleDescription() {
 std::string WebAXObjectProxy::Sort() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   switch (accessibility_object_.SortDirection()) {
-    case blink::kWebAXSortDirectionAscending:
+    case ax::mojom::SortDirection::kAscending:
       return "ascending";
-    case blink::kWebAXSortDirectionDescending:
+    case ax::mojom::SortDirection::kDescending:
       return "descending";
-    case blink::kWebAXSortDirectionOther:
+    case ax::mojom::SortDirection::kOther:
       return "other";
     default:
       return std::string();
@@ -1805,27 +1808,28 @@ std::string WebAXObjectProxy::Name() {
 
 std::string WebAXObjectProxy::NameFrom() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  blink::WebAXNameFrom nameFrom = blink::kWebAXNameFromUninitialized;
+  ax::mojom::NameFrom nameFrom = ax::mojom::NameFrom::kUninitialized;
   blink::WebVector<blink::WebAXObject> nameObjects;
   accessibility_object_.GetName(nameFrom, nameObjects);
   switch (nameFrom) {
-    case blink::kWebAXNameFromUninitialized:
+    case ax::mojom::NameFrom::kUninitialized:
+    case ax::mojom::NameFrom::kNone:
       return "";
-    case blink::kWebAXNameFromAttribute:
+    case ax::mojom::NameFrom::kAttribute:
       return "attribute";
-    case blink::kWebAXNameFromAttributeExplicitlyEmpty:
+    case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
       return "attributeExplicitlyEmpty";
-    case blink::kWebAXNameFromCaption:
+    case ax::mojom::NameFrom::kCaption:
       return "caption";
-    case blink::kWebAXNameFromContents:
+    case ax::mojom::NameFrom::kContents:
       return "contents";
-    case blink::kWebAXNameFromPlaceholder:
+    case ax::mojom::NameFrom::kPlaceholder:
       return "placeholder";
-    case blink::kWebAXNameFromRelatedElement:
+    case ax::mojom::NameFrom::kRelatedElement:
       return "relatedElement";
-    case blink::kWebAXNameFromValue:
+    case ax::mojom::NameFrom::kValue:
       return "value";
-    case blink::kWebAXNameFromTitle:
+    case ax::mojom::NameFrom::kTitle:
       return "title";
   }
 
@@ -1835,7 +1839,7 @@ std::string WebAXObjectProxy::NameFrom() {
 
 int WebAXObjectProxy::NameElementCount() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  blink::WebAXNameFrom nameFrom;
+  ax::mojom::NameFrom nameFrom;
   blink::WebVector<blink::WebAXObject> nameObjects;
   accessibility_object_.GetName(nameFrom, nameObjects);
   return static_cast<int>(nameObjects.size());
@@ -1843,7 +1847,7 @@ int WebAXObjectProxy::NameElementCount() {
 
 v8::Local<v8::Object> WebAXObjectProxy::NameElementAtIndex(unsigned index) {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  blink::WebAXNameFrom nameFrom;
+  ax::mojom::NameFrom nameFrom;
   blink::WebVector<blink::WebAXObject> nameObjects;
   accessibility_object_.GetName(nameFrom, nameObjects);
   if (index >= nameObjects.size())
@@ -1853,10 +1857,10 @@ v8::Local<v8::Object> WebAXObjectProxy::NameElementAtIndex(unsigned index) {
 
 std::string WebAXObjectProxy::Description() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  blink::WebAXNameFrom nameFrom;
+  ax::mojom::NameFrom nameFrom;
   blink::WebVector<blink::WebAXObject> nameObjects;
   accessibility_object_.GetName(nameFrom, nameObjects);
-  blink::WebAXDescriptionFrom descriptionFrom;
+  ax::mojom::DescriptionFrom descriptionFrom;
   blink::WebVector<blink::WebAXObject> descriptionObjects;
   return accessibility_object_
       .Description(nameFrom, descriptionFrom, descriptionObjects)
@@ -1865,22 +1869,25 @@ std::string WebAXObjectProxy::Description() {
 
 std::string WebAXObjectProxy::DescriptionFrom() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  blink::WebAXNameFrom nameFrom;
+  ax::mojom::NameFrom nameFrom;
   blink::WebVector<blink::WebAXObject> nameObjects;
   accessibility_object_.GetName(nameFrom, nameObjects);
-  blink::WebAXDescriptionFrom descriptionFrom =
-      blink::kWebAXDescriptionFromUninitialized;
+  ax::mojom::DescriptionFrom descriptionFrom =
+      ax::mojom::DescriptionFrom::kUninitialized;
   blink::WebVector<blink::WebAXObject> descriptionObjects;
   accessibility_object_.Description(nameFrom, descriptionFrom,
                                     descriptionObjects);
   switch (descriptionFrom) {
-    case blink::kWebAXDescriptionFromUninitialized:
+    case ax::mojom::DescriptionFrom::kUninitialized:
+    case ax::mojom::DescriptionFrom::kNone:
       return "";
-    case blink::kWebAXDescriptionFromAttribute:
+    case ax::mojom::DescriptionFrom::kAttribute:
       return "attribute";
-    case blink::kWebAXDescriptionFromContents:
+    case ax::mojom::DescriptionFrom::kContents:
       return "contents";
-    case blink::kWebAXDescriptionFromRelatedElement:
+    case ax::mojom::DescriptionFrom::kPlaceholder:
+      return "placeholder";
+    case ax::mojom::DescriptionFrom::kRelatedElement:
       return "relatedElement";
   }
 
@@ -1890,7 +1897,7 @@ std::string WebAXObjectProxy::DescriptionFrom() {
 
 std::string WebAXObjectProxy::Placeholder() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  blink::WebAXNameFrom nameFrom;
+  ax::mojom::NameFrom nameFrom;
   blink::WebVector<blink::WebAXObject> nameObjects;
   accessibility_object_.GetName(nameFrom, nameObjects);
   return accessibility_object_.Placeholder(nameFrom).Utf8();
@@ -1903,10 +1910,10 @@ int WebAXObjectProxy::MisspellingsCount() {
 
 int WebAXObjectProxy::DescriptionElementCount() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  blink::WebAXNameFrom nameFrom;
+  ax::mojom::NameFrom nameFrom;
   blink::WebVector<blink::WebAXObject> nameObjects;
   accessibility_object_.GetName(nameFrom, nameObjects);
-  blink::WebAXDescriptionFrom descriptionFrom;
+  ax::mojom::DescriptionFrom descriptionFrom;
   blink::WebVector<blink::WebAXObject> descriptionObjects;
   accessibility_object_.Description(nameFrom, descriptionFrom,
                                     descriptionObjects);
@@ -1916,10 +1923,10 @@ int WebAXObjectProxy::DescriptionElementCount() {
 v8::Local<v8::Object> WebAXObjectProxy::DescriptionElementAtIndex(
     unsigned index) {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  blink::WebAXNameFrom nameFrom;
+  ax::mojom::NameFrom nameFrom;
   blink::WebVector<blink::WebAXObject> nameObjects;
   accessibility_object_.GetName(nameFrom, nameObjects);
-  blink::WebAXDescriptionFrom descriptionFrom;
+  ax::mojom::DescriptionFrom descriptionFrom;
   blink::WebVector<blink::WebAXObject> descriptionObjects;
   accessibility_object_.Description(nameFrom, descriptionFrom,
                                     descriptionObjects);

@@ -7,12 +7,13 @@
 <script>
 async_test(function(t) {
     var video = document.querySelector("video");
+    enableTestMode(video);
 
     video.oncanplaythrough = t.step_func(function() {
         assert_true(video.paused);
 
         // Hover the control with the mouse.
-        var coords = mediaControlsButtonCoordinates(video, "overlay-play-button");
+        var coords = elementCoordinates(enabledPlayButton(video));
         eventSender.mouseMoveTo(coords[0], coords[1]);
 
         // And then tap (touch input) the play button.

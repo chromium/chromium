@@ -57,8 +57,9 @@ class WebUsbServiceImpl : public blink::mojom::WebUsbService,
       std::vector<device::mojom::UsbDeviceInfoPtr> device_info_list);
 
   // UsbChooserContext::Observer implementation:
-  void OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device_info) override;
-  void OnDeviceRemoved(device::mojom::UsbDeviceInfoPtr device_info) override;
+  void OnDeviceAdded(const device::mojom::UsbDeviceInfo& device_info) override;
+  void OnDeviceRemoved(
+      const device::mojom::UsbDeviceInfo& device_info) override;
   void OnDeviceManagerConnectionError() override;
 
   // device::mojom::UsbDeviceClient implementation:

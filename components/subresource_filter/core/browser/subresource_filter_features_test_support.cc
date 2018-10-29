@@ -12,7 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "base/values.h"
 
 namespace subresource_filter {

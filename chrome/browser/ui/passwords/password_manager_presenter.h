@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
@@ -32,11 +31,14 @@ class PasswordUIView;
 // PasswordStore operations and updates the view on PasswordStore changes.
 class PasswordManagerPresenter
     : public password_manager::PasswordStore::Observer,
+      public password_manager::PasswordStoreConsumer,
       public password_manager::CredentialProviderInterface {
  public:
   // |password_view| the UI view that owns this presenter, must not be NULL.
   explicit PasswordManagerPresenter(PasswordUIView* password_view);
   ~PasswordManagerPresenter() override;
+
+  void Initialize();
 
   // PasswordStore::Observer implementation.
   void OnLoginsChanged(
@@ -45,32 +47,37 @@ class PasswordManagerPresenter
   // Repopulates the password and exception entries.
   void UpdatePasswordLists();
 
-  void Initialize();
-
   // Gets the password entry at |index|.
-  const autofill::PasswordForm* GetPassword(size_t index);
+  const autofill::PasswordForm* GetPassword(size_t index) const;
 
   // password::manager::CredentialProviderInterface:
   std::vector<std::unique_ptr<autofill::PasswordForm>> GetAllPasswords()
       override;
 
   // Gets the password exception entry at |index|.
-  const autofill::PasswordForm* GetPasswordException(size_t index);
+  const autofill::PasswordForm* GetPasswordException(size_t index) const;
 
-  // Removes the saved password entry at |index|.
-  // |index| the entry index to be removed.
+  // Removes the saved password entries at |index|, or corresponding to
+  // |sort_key|, respectively.
+  // TODO(https://crbug.com/778146): Unify these methods and the implementation
+  // across Desktop and Android.
   void RemoveSavedPassword(size_t index);
+  void RemoveSavedPassword(const std::string& sort_key);
 
-  // Removes the saved password exception entry at |index|.
-  // |index| the entry index to be removed.
+  // Removes the saved exception entries at |index|, or corresponding to
+  // |sort_key|, respectively.
+  // TODO(https://crbug.com/778146): Unify these methods and the implementation
+  // across Desktop and Android.
   void RemovePasswordException(size_t index);
+  void RemovePasswordException(const std::string& sort_key);
 
   // Undoes the last saved password or exception removal.
   void UndoRemoveSavedPasswordOrException();
 
-  // Requests the plain text password for entry at |index| to be revealed.
-  // |index| The index of the entry.
-  void RequestShowPassword(size_t index);
+  // Requests to reveal the plain text password corresponding to |sort_key|.
+  // TODO(https://crbug.com/778146): Update this method to take a DisplayEntry
+  // instead.
+  void RequestShowPassword(const std::string& sort_key);
 
   // Wrapper around |PasswordStore::AddLogin| that adds the corresponding undo
   // action to |undo_manager_|.
@@ -81,7 +88,36 @@ class PasswordManagerPresenter
   void RemoveLogin(const autofill::PasswordForm& form);
 
  private:
-  friend class PasswordManagerPresenterTest;
+  // Convenience typedef for a map containing PasswordForms grouped into
+  // equivalence classes. Each equivalence class corresponds to one entry shown
+  // in the UI, and deleting an UI entry will delete all PasswordForms that are
+  // a member of the corresponding equivalence class. The keys of the map are
+  // sort keys, obtained by password_manager::CreateSortKey(). Each value of the
+  // map contains forms with the same sort key.
+  using PasswordFormMap =
+      std::map<std::string,
+               std::vector<std::unique_ptr<autofill::PasswordForm>>>;
+
+  // Attempts to remove the entries corresponding to |index| from |form_map|.
+  // This will also add a corresponding undo operation to |undo_manager_|.
+  // Returns whether removing the entry succeeded.
+  bool TryRemovePasswordEntries(PasswordFormMap* form_map, size_t index);
+
+  // Attempts to remove the entries corresponding to |sort_key| from |form_map|.
+  // This will also add a corresponding undo operation to |undo_manager_|.
+  // Returns whether removing the entry succeeded.
+  bool TryRemovePasswordEntries(PasswordFormMap* form_map,
+                                const std::string& sort_key);
+
+  // Attempts to remove the entries pointed to by |forms_iter| from |form_map|.
+  // This will also add a corresponding undo operation to |undo_manager_|.
+  // Returns whether removing the entry succeeded.
+  bool TryRemovePasswordEntries(PasswordFormMap* form_map,
+                                PasswordFormMap::const_iterator forms_iter);
+
+  // PasswordStoreConsumer:
+  void OnGetPasswordStoreResults(
+      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
 
   // Sets the password and exception list of the UI view.
   void SetPasswordList();
@@ -90,53 +126,8 @@ class PasswordManagerPresenter
   // Returns the password store associated with the currently active profile.
   password_manager::PasswordStore* GetPasswordStore();
 
-  // A short class to mediate requests to the password store.
-  class ListPopulater : public password_manager::PasswordStoreConsumer {
-   public:
-    explicit ListPopulater(PasswordManagerPresenter* page);
-    ~ListPopulater() override;
-
-    // Send a query to the password store to populate a list.
-    virtual void Populate() = 0;
-
-   protected:
-    PasswordManagerPresenter* page_;
-  };
-
-  // A short class to mediate requests to the password store for passwordlist.
-  class PasswordListPopulater : public ListPopulater {
-   public:
-    explicit PasswordListPopulater(PasswordManagerPresenter* page);
-
-    // Send a query to the password store to populate a password list.
-    void Populate() override;
-
-    // Send the password store's reply back to the handler.
-    void OnGetPasswordStoreResults(
-        std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
-  };
-
-  // A short class to mediate requests to the password store for exceptions.
-  class PasswordExceptionListPopulater : public ListPopulater {
-   public:
-    explicit PasswordExceptionListPopulater(PasswordManagerPresenter* page);
-
-    // Send a query to the password store to populate a passwordException list.
-    void Populate() override;
-
-    // Send the password store's reply back to the handler.
-    void OnGetPasswordStoreResults(
-        std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
-  };
-
-  // Password store consumer for populating the password list and exceptions.
-  PasswordListPopulater populater_;
-  PasswordExceptionListPopulater exception_populater_;
-
-  std::vector<std::unique_ptr<autofill::PasswordForm>> password_list_;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> password_exception_list_;
-  password_manager::DuplicatesMap password_duplicates_;
-  password_manager::DuplicatesMap password_exception_duplicates_;
+  PasswordFormMap password_map_;
+  PasswordFormMap exception_map_;
 
   UndoManager undo_manager_;
 

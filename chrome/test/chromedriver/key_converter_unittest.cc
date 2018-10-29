@@ -28,7 +28,7 @@ void CheckEvents(const base::string16& keys,
   EXPECT_EQ(kOk, ConvertKeysToKeyEvents(keys, release_modifiers,
                                         &modifiers, &events).code());
   EXPECT_EQ(expected_events.size(), events.size());
-  std::list<KeyEvent>::const_iterator expected = expected_events.begin();
+  auto expected = expected_events.begin();
   std::list<KeyEvent>::const_iterator actual = events.begin();
   while (expected != expected_events.end() && actual != events.end()) {
     EXPECT_EQ(expected->type, actual->type);

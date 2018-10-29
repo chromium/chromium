@@ -21,6 +21,8 @@ class OutputSurface;
 
 namespace cc {
 
+struct ApplyViewportChangesArgs;
+
 // Used by test stubs to notify the test when something interesting happens.
 class TestHooks : public AnimationDelegate {
  public:
@@ -95,12 +97,7 @@ class TestHooks : public AnimationDelegate {
   virtual void DisplayDidDrawAndSwapOnThread() {}
 
   // Main thread hooks.
-  virtual void ApplyViewportDeltas(
-      const gfx::Vector2dF& inner_delta,
-      const gfx::Vector2dF& outer_delta,
-      const gfx::Vector2dF& elastic_overscroll_delta,
-      float scale,
-      float top_controls_delta) {}
+  virtual void ApplyViewportChanges(const ApplyViewportChangesArgs& args) {}
   virtual void BeginMainFrameNotExpectedSoon() {}
   virtual void BeginMainFrame(const viz::BeginFrameArgs& args) {}
   virtual void WillBeginMainFrame() {}

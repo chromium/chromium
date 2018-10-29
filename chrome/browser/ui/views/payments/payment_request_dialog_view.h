@@ -125,7 +125,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
 
   void Pay();
   void GoBack();
-  void GoBackToPaymentSheet();
+  void GoBackToPaymentSheet(bool animate = true);
   void ShowContactProfileSheet();
   void ShowOrderSummary();
   void ShowShippingProfileSheet();

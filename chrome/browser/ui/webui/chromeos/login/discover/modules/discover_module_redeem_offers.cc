@@ -56,7 +56,7 @@ bool DiscoverModuleRedeemOffers::IsCompleted() const {
 }
 
 std::unique_ptr<DiscoverHandler>
-DiscoverModuleRedeemOffers::CreateWebUIHandler() const {
+DiscoverModuleRedeemOffers::CreateWebUIHandler() {
   return std::make_unique<DiscoverModuleRedeemOffersHandler>();
 }
 

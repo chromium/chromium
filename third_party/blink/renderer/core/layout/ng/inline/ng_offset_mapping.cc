@@ -54,7 +54,7 @@ std::pair<const Node&, unsigned> ToNodeOffsetPair(const Position& position) {
 
 }  // namespace
 
-const LayoutBlockFlow* NGInlineFormattingContextOf(const Position& position) {
+LayoutBlockFlow* NGInlineFormattingContextOf(const Position& position) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return nullptr;
   if (!NGOffsetMapping::AcceptsPosition(position))
@@ -62,14 +62,7 @@ const LayoutBlockFlow* NGInlineFormattingContextOf(const Position& position) {
   const auto node_offset_pair = ToNodeOffsetPair(position);
   const LayoutObject* layout_object =
       AssociatedLayoutObjectOf(node_offset_pair.first, node_offset_pair.second);
-  // For an atomic inline, EnclosingNGBlockFlow() may return itself. Example:
-  // <div><span style='display: inline-block'>foo</span></div>
-  // EnclosingNGBlockFlow() on SPAN returns SPAN itself. However, the inline
-  // formatting context of SPAN@Before/After is DIV, not SPAN.
-  // Therefore, we return its parent's EnclosingNGBlockFlow() instead.
-  if (layout_object->IsAtomicInlineLevel())
-    layout_object = layout_object->Parent();
-  return layout_object->EnclosingNGBlockFlow();
+  return layout_object->ContainingNGBlockFlow();
 }
 
 NGOffsetMappingUnit::NGOffsetMappingUnit(NGOffsetMappingUnitType type,
@@ -174,7 +167,7 @@ const NGOffsetMapping* NGOffsetMapping::GetFor(const Position& position) {
     return nullptr;
   if (!NGOffsetMapping::AcceptsPosition(position))
     return nullptr;
-  return GetFor(NGInlineFormattingContextOf(position));
+  return GetForContainingBlockFlow(NGInlineFormattingContextOf(position));
 }
 
 // static
@@ -184,7 +177,12 @@ const NGOffsetMapping* NGOffsetMapping::GetFor(
     return nullptr;
   if (!layout_object)
     return nullptr;
-  LayoutBlockFlow* block_flow = layout_object->EnclosingNGBlockFlow();
+  return GetForContainingBlockFlow(layout_object->ContainingNGBlockFlow());
+}
+
+// static
+const NGOffsetMapping* NGOffsetMapping::GetForContainingBlockFlow(
+    LayoutBlockFlow* block_flow) {
   if (!block_flow || !block_flow->ChildrenInline())
     return nullptr;
   NGBlockNode block_node = NGBlockNode(block_flow);
@@ -268,6 +266,32 @@ NGMappingUnitRange NGOffsetMapping::GetMappingUnitsForDOMRange(
                          return offset < unit.DOMStart();
                        });
 
+  return {result_begin, result_end};
+}
+
+NGMappingUnitRange NGOffsetMapping::GetMappingUnitsForTextContentOffsetRange(
+    unsigned start,
+    unsigned end) const {
+  DCHECK_LE(start, end);
+  if (units_.front().TextContentStart() >= end ||
+      units_.back().TextContentEnd() <= start)
+    return {};
+
+  // Find the first unit where unit.text_content_end > start
+  const NGOffsetMappingUnit* result_begin =
+      std::lower_bound(units_.begin(), units_.end(), start,
+                       [](const NGOffsetMappingUnit& unit, unsigned offset) {
+                         return unit.TextContentEnd() <= offset;
+                       });
+  if (result_begin == units_.end() || result_begin->TextContentStart() >= end)
+    return {};
+
+  // Find the next of the last unit where unit.text_content_start < end
+  const NGOffsetMappingUnit* result_end =
+      std::upper_bound(units_.begin(), units_.end(), end,
+                       [](unsigned offset, const NGOffsetMappingUnit& unit) {
+                         return offset <= unit.TextContentStart();
+                       });
   return {result_begin, result_end};
 }
 

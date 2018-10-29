@@ -12,11 +12,11 @@ namespace offline_pages {
 
 LoadTerminationListenerImpl::LoadTerminationListenerImpl()
     : weak_ptr_factory_(this) {
-  if (base::SysInfo::IsLowEndDevice()) {
-    app_listener_ = std::make_unique<base::android::ApplicationStatusListener>(
-        base::Bind(&LoadTerminationListenerImpl::OnApplicationStateChange,
-                   weak_ptr_factory_.GetWeakPtr()));
-  }
+  if (base::SysInfo::IsLowEndDevice())
+    app_listener_ =
+        base::android::ApplicationStatusListener::New(base::BindRepeating(
+            &LoadTerminationListenerImpl::OnApplicationStateChange,
+            weak_ptr_factory_.GetWeakPtr()));
 }
 
 LoadTerminationListenerImpl::~LoadTerminationListenerImpl() {

@@ -29,24 +29,24 @@ class BrowserState;
 class KEYED_SERVICE_EXPORT BrowserStateKeyedServiceFactory
     : public KeyedServiceFactory {
  public:
-  // A function that supplies the instance of a KeyedService for a given
+  // A callback that supplies the instance of a KeyedService for a given
   // BrowserState. This is used primarily for testing, where we want to feed
-  // a specific mock into the BSKSF system.
-  using TestingFactoryFunction =
-      std::unique_ptr<KeyedService> (*)(web::BrowserState* context);
+  // a specific test double into the BSKSF system.
+  using TestingFactory = base::RepeatingCallback<std::unique_ptr<KeyedService>(
+      web::BrowserState* context)>;
 
-  // Associates |factory| with |context| so that |factory| is used to create
-  // the KeyedService when requested.  |factory| can be NULL to signal that
-  // KeyedService should be NULL. Multiple calls to SetTestingFactory() are
-  // allowed; previous services will be shut down.
+  // Associates |testing_factory| with |context| so that |testing_factory| is
+  // used to create the KeyedService when requested.  |testing_factory| can be
+  // empty to signal that KeyedService should be null. Multiple calls to
+  // SetTestingFactory() are allowed; previous services will be shut down.
   void SetTestingFactory(web::BrowserState* context,
-                         TestingFactoryFunction factory);
+                         TestingFactory testing_factory);
 
-  // Associates |factory| with |context| and immediately returns the created
-  // KeyedService. Since the factory will be used immediately, it may not be
-  // NULL.
+  // Associates |testing_factory| with |context| and immediately returns the
+  // created KeyedService. Since the factory will be used immediately, it may
+  // not be empty.
   KeyedService* SetTestingFactoryAndUse(web::BrowserState* context,
-                                        TestingFactoryFunction factory);
+                                        TestingFactory testing_factory);
 
  protected:
   // BrowserStateKeyedServiceFactories must communicate with a

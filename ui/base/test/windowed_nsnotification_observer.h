@@ -28,15 +28,16 @@ class RunLoop;
 
 // Watch for an NSNotification on the default notification center for the given
 // |notificationSender|, or a nil object if omitted.
-- (id)initForNotification:(NSString*)name;
+- (instancetype)initForNotification:(NSString*)name;
 
 // Watch for an NSNotification on the default notification center from a
 // particular object.
-- (id)initForNotification:(NSString*)name object:(id)sender;
+- (instancetype)initForNotification:(NSString*)name object:(id)sender;
 
 // Watch for an NSNotification on the shared workspace notification center for
 // the given application.
-- (id)initForWorkspaceNotification:(NSString*)name bundleId:(NSString*)bundleId;
+- (instancetype)initForWorkspaceNotification:(NSString*)name
+                                    bundleId:(NSString*)bundleId;
 
 // Waits for |minimumCount| notifications to be observed and returns YES.
 // Returns NO on a timeout. This can be called multiple times.

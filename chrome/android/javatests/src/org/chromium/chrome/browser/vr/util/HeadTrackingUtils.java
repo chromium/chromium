@@ -152,7 +152,7 @@ public class HeadTrackingUtils {
      * @param rule The VrTestRule used by the current test case.
      * @param mode The HeadTrackingMode.SupportedMode value to set the fake head tracker mode to.
      */
-    public static void applyHeadTrackingMode(VrTestRule rule, SupportedMode mode) {
+    public static void applyHeadTrackingMode(VrTestRule rule, @SupportedMode int mode) {
         applyHeadTrackingModeInternal(rule, mode);
         // TODO(bsheedy): Remove this sleep if the head tracking service ever exposes a way to be
         // notified when a setting has been applied.
@@ -198,24 +198,24 @@ public class HeadTrackingUtils {
         InstrumentationRegistry.getContext().startService(typeIntent);
     }
 
-    public static String supportedModeToString(SupportedMode mode) {
+    public static String supportedModeToString(@SupportedMode int mode) {
         switch (mode) {
-            case FROZEN:
+            case SupportedMode.FROZEN:
                 return "frozen";
-            case SWEEP:
+            case SupportedMode.SWEEP:
                 return "sweep";
-            case ROTATE:
+            case SupportedMode.ROTATE:
                 return "rotate";
-            case CIRCLE_STRAFE:
+            case SupportedMode.CIRCLE_STRAFE:
                 return "circle_strafe";
-            case MOTION_SICKNESS:
+            case SupportedMode.MOTION_SICKNESS:
                 return "motion_sickness";
             default:
                 return "unknown_mode";
         }
     }
 
-    private static void applyHeadTrackingModeInternal(VrTestRule rule, SupportedMode mode) {
+    private static void applyHeadTrackingModeInternal(VrTestRule rule, @SupportedMode int mode) {
         restartHeadTrackingServiceIfNecessary(rule);
         // Set the fake tracker mode to the given value.
         Intent modeIntent = new Intent(ACTION_SET_FAKE_TRACKER_MODE);

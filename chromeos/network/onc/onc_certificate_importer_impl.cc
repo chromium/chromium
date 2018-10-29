@@ -243,7 +243,8 @@ bool CertificateImporterImpl::StoreClientCertificate(
   CERTCertificate* cert_result = imported_certs[0].get();
 
   // Find the private key associated with this certificate, and set the
-  // nickname on it.
+  // nickname on it. This is used by |ClientCertResolver| as a handle to resolve
+  // onc ClientCertRef GUID references.
   SECKEYPrivateKey* private_key = PK11_FindPrivateKeyFromCert(
       cert_result->slot, cert_result, nullptr /* wincx */);
   if (private_key) {

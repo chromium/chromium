@@ -28,7 +28,7 @@ void AppendToVectorTestTask(std::vector<std::string>* vector,
   vector->push_back(value);
 }
 
-void RunChainedTask(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+void RunChainedTask(scoped_refptr<base::sequence_manager::TaskQueue> task_queue,
                     int count,
                     base::TimeDelta duration,
                     scoped_refptr<base::TestMockTimeTaskRunner> environment,
@@ -42,9 +42,9 @@ void RunChainedTask(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
 
   // Add a delay of 50ms to ensure that wake-up based throttling does not affect
   // us.
-  task_runner->PostDelayedTask(
+  task_queue->task_runner()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&RunChainedTask, task_runner, count - 1, duration,
+      base::BindOnce(&RunChainedTask, task_queue, count - 1, duration,
                      environment, base::Unretained(tasks)),
       base::TimeDelta::FromMilliseconds(50));
 }
@@ -220,7 +220,7 @@ TEST_F(WorkerSchedulerTest, ThrottleWorkerScheduler_RunThrottledTasks) {
 
   std::vector<base::TimeTicks> tasks;
 
-  worker_scheduler_->ThrottleableTaskQueue()->PostTask(
+  worker_scheduler_->ThrottleableTaskQueue()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&RunChainedTask,
                                 worker_scheduler_->ThrottleableTaskQueue(), 5,
                                 base::TimeDelta(), mock_task_runner_,
@@ -252,7 +252,7 @@ TEST_F(WorkerSchedulerTest,
 
   std::vector<base::TimeTicks> tasks;
 
-  worker_scheduler_->ThrottleableTaskQueue()->PostTask(
+  worker_scheduler_->ThrottleableTaskQueue()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&RunChainedTask,
                                 worker_scheduler_->ThrottleableTaskQueue(), 5,
                                 base::TimeDelta::FromMilliseconds(100),

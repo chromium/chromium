@@ -12,6 +12,8 @@
 
 namespace autofill {
 
+TestSubmitDocumentInfo::TestSubmitDocumentInfo() {}
+
 TestFormActivityObserver::TestFormActivityObserver(web::WebState* web_state)
     : web_state_(web_state) {}
 TestFormActivityObserver::~TestFormActivityObserver() {}
@@ -27,6 +29,7 @@ TestFormActivityInfo* TestFormActivityObserver::form_activity_info() {
 void TestFormActivityObserver::DocumentSubmitted(web::WebState* web_state,
                                                  web::WebFrame* sender_frame,
                                                  const std::string& form_name,
+                                                 const std::string& form_data,
                                                  bool has_user_gesture,
                                                  bool form_in_main_frame) {
   ASSERT_EQ(web_state_, web_state);
@@ -34,6 +37,7 @@ void TestFormActivityObserver::DocumentSubmitted(web::WebState* web_state,
   submit_document_info_->web_state = web_state;
   submit_document_info_->sender_frame = sender_frame;
   submit_document_info_->form_name = form_name;
+  submit_document_info_->form_data = form_data;
   submit_document_info_->has_user_gesture = has_user_gesture;
   submit_document_info_->form_in_main_frame = form_in_main_frame;
 }

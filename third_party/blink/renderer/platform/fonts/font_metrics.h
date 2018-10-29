@@ -21,7 +21,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_METRICS_H_
 
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -62,7 +62,7 @@ class FontMetrics {
 
   void SetAscent(float ascent) {
     ascent_ = ascent;
-    ascent_int_ = lroundf(ascent);
+    ascent_int_ = static_cast<int>(lroundf(ascent));
   }
 
   float FloatDescent(FontBaseline baseline_type = kAlphabeticBaseline) const {
@@ -73,7 +73,7 @@ class FontMetrics {
 
   void SetDescent(float descent) {
     descent_ = descent;
-    descent_int_ = lroundf(descent);
+    descent_int_ = static_cast<int>(lroundf(descent));
   }
 
   float FloatHeight(FontBaseline baseline_type = kAlphabeticBaseline) const {
@@ -112,8 +112,8 @@ class FontMetrics {
     return Ascent() + Descent();
   }
 
-  int LineGap() const { return lroundf(line_gap_); }
-  int LineSpacing() const { return lroundf(line_spacing_); }
+  int LineGap() const { return static_cast<int>(lroundf(line_gap_)); }
+  int LineSpacing() const { return static_cast<int>(lroundf(line_spacing_)); }
 
   // LayoutUnit variants of certain metrics.
   // LayoutNG should use LayoutUnit for the block progression metrics.

@@ -6,10 +6,12 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -29,11 +31,15 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
+#if defined(OS_WIN)
+#include "ui/base/win/shell.h"
+#endif
+
 namespace message_center {
 
 namespace {
 
-const SkColor kBorderColor = SkColorSetARGB(0x1F, 0x0, 0x0, 0x0);
+constexpr SkColor kBorderColor = SkColorSetARGB(0x1F, 0x0, 0x0, 0x0);
 
 // Creates a text for spoken feedback from the data contained in the
 // notification.
@@ -51,6 +57,14 @@ base::string16 CreateAccessibleName(const Notification& notification) {
                                items[i].message);
   }
   return base::JoinString(accessible_lines, base::ASCIIToUTF16("\n"));
+}
+
+bool ShouldShowAeroShadowBorder() {
+#if defined(OS_WIN)
+  return ui::win::IsAeroGlassEnabled();
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -72,6 +86,16 @@ MessageView::MessageView(const Notification& notification)
   UpdateWithNotification(notification);
 
   UpdateCornerRadius(0, 0);
+
+  // If Aero is enabled, set shadow border.
+  if (ShouldShowAeroShadowBorder()) {
+    const auto& shadow = gfx::ShadowDetails::Get(2, 0);
+    gfx::Insets ninebox_insets = gfx::ShadowValue::GetBlurRegion(shadow.values);
+    SetBorder(views::CreateBorderPainter(
+        views::Painter::CreateImagePainter(shadow.ninebox_image,
+                                           ninebox_insets),
+        -gfx::ShadowValue::GetMargin(shadow.values)));
+  }
 }
 
 MessageView::~MessageView() {
@@ -94,20 +118,10 @@ void MessageView::SetIsNested() {
   is_nested_ = true;
   // Update enability since it might be changed by "is_nested" flag.
   slide_out_controller_.set_slide_mode(CalculateSlideMode());
+  slide_out_controller_.set_update_opacity(false);
 
   SetBorder(views::CreateRoundedRectBorder(
       kNotificationBorderThickness, kNotificationCornerRadius, kBorderColor));
-
-  auto* control_buttons_view = GetControlButtonsView();
-  if (control_buttons_view) {
-    int control_button_count =
-        (control_buttons_view->settings_button() ? 1 : 0) +
-        (control_buttons_view->snooze_button() ? 1 : 0);
-    if (control_button_count)
-      slide_out_controller_.EnableSwipeControl(control_button_count);
-    // TODO(crbug.com/1177464): support updating the swipe control when
-    // should_show_setting_buttons is changed after notification creation.
-  }
 }
 
 void MessageView::CloseSwipeControl() {
@@ -218,9 +232,23 @@ bool MessageView::OnKeyReleased(const ui::KeyEvent& event) {
   return true;
 }
 
+void MessageView::PaintChildren(const views::PaintInfo& paint_info) {
+  views::View::PaintChildren(paint_info);
+
+  // Paint focus ring on top of all the children.
+  ui::PaintRecorder recorder(paint_info.context(), size());
+  views::Painter::PaintFocusPainter(this, recorder.canvas(),
+                                    focus_painter_.get());
+}
+
 void MessageView::OnPaint(gfx::Canvas* canvas) {
-  views::View::OnPaint(canvas);
-  views::Painter::PaintFocusPainter(this, canvas, focus_painter_.get());
+  if (ShouldShowAeroShadowBorder()) {
+    // If the border is shadow, paint border first.
+    OnPaintBorder(canvas);
+    OnPaintBackground(canvas);
+  } else {
+    views::View::OnPaint(canvas);
+  }
 }
 
 void MessageView::OnFocus() {
@@ -286,7 +314,7 @@ ui::Layer* MessageView::GetSlideOutLayer() {
   return is_nested_ ? layer() : GetWidget()->GetLayer();
 }
 
-void MessageView::OnSlideChanged() {
+void MessageView::OnSlideChanged(bool in_progress) {
   for (auto* observer : slide_observers_) {
     observer->OnSlideChanged(notification_id_);
   }
@@ -354,18 +382,20 @@ void MessageView::DisableSlideForcibly(bool disable) {
   slide_out_controller_.set_slide_mode(CalculateSlideMode());
 }
 
+void MessageView::SetSlideButtonWidth(int control_button_width) {
+  slide_out_controller_.SetSwipeControlWidth(control_button_width);
+}
+
 void MessageView::OnCloseButtonPressed() {
   MessageCenter::Get()->RemoveNotification(notification_id_,
                                            true /* by_user */);
 }
 
 void MessageView::OnSettingsButtonPressed(const ui::Event& event) {
-  slide_out_controller_.CloseSwipeControl();
   MessageCenter::Get()->ClickOnSettingsButton(notification_id_);
 }
 
 void MessageView::OnSnoozeButtonPressed(const ui::Event& event) {
-  slide_out_controller_.CloseSwipeControl();
   // No default implementation for snooze.
 }
 

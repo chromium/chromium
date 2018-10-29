@@ -17,14 +17,14 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/experimental_flags.h"
-#import "ios/chrome/browser/ui/animation_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
-#import "ios/chrome/browser/ui/reversed_animation.h"
-#include "ios/chrome/browser/ui/rtl_geometry.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/features.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/animation_util.h"
+#import "ios/chrome/browser/ui/util/reversed_animation.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/material_timing.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
@@ -42,7 +42,6 @@
 
 namespace {
 
-const CGFloat kFontSize = 16;
 const CGFloat kEditingRectWidthInset = 12;
 const CGFloat kClearButtonRightMarginIphone = 7;
 
@@ -66,9 +65,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 // Font to use in regular x regular size class. If not set, the regular font is
 // used instead.
-@property(nonatomic, strong) UIFont* largerFont;
+@property(nonatomic, strong, readonly) UIFont* largerFont;
 // Font to use in Compact x Any and Any x Compact size class.
-@property(nonatomic, strong) UIFont* normalFont;
+@property(nonatomic, strong, readonly) UIFont* normalFont;
 
 // Gets the bounds of the rect covering the URL.
 - (CGRect)preEditLabelRectForBounds:(CGRect)bounds;
@@ -105,39 +104,21 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 @synthesize selectedTextBackgroundColor = _selectedTextBackgroundColor;
 @synthesize placeholderTextColor = _placeholderTextColor;
 @synthesize incognito = _incognito;
-@synthesize largerFont = _largerFont;
-@synthesize normalFont = _normalFont;
 @synthesize suggestionCommandsEndpoint = _suggestionCommandsEndpoint;
 
 #pragma mark - Public methods
 // Overload to allow for code-based initialization.
 - (instancetype)initWithFrame:(CGRect)frame {
   return [self initWithFrame:frame
-                        font:[UIFont systemFontOfSize:kFontSize]
                    textColor:TextColor()
                    tintColor:nil];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
-                         font:(UIFont*)font
-                   largerFont:(UIFont*)largerFont
-                    textColor:(UIColor*)textColor
-                    tintColor:(UIColor*)tintColor {
-  self = [self initWithFrame:frame
-                        font:font
-                   textColor:textColor
-                   tintColor:tintColor];
-  _largerFont = largerFont;
-  return self;
-}
-
-- (instancetype)initWithFrame:(CGRect)frame
-                         font:(UIFont*)font
                     textColor:(UIColor*)textColor
                     tintColor:(UIColor*)tintColor {
   self = [super initWithFrame:frame];
   if (self) {
-    _normalFont = font;
     _displayedTextColor = textColor;
     if (tintColor) {
       [self setTintColor:tintColor];
@@ -162,11 +143,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       [self setRightViewMode:UITextFieldViewModeAlways];
     }
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
     if (@available(iOS 11.0, *)) {
       [self setSmartQuotesType:UITextSmartQuotesTypeNo];
     }
-#endif
 
     // Sanity check:
     DCHECK([self conformsToProtocol:@protocol(UITextInput)]);
@@ -352,8 +331,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
   [animator addAnimations:^{
     self.clearButtonView.alpha = 0;
-    self.clearButtonView.frame = CGRectLayoutOffset(
-        self.clearButtonView.frame, kToolbarButtonAnimationOffset);
   }];
   [animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
     [self resetClearButton];
@@ -369,7 +346,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   // default to a reasonable prefix string to give a plausible offset.
   NSString* prefixString = @"https://";
 
-  if ([self.text containsString:string]) {
+  if (string.length > 0 && [self.text containsString:string]) {
     NSRange range = [self.text rangeOfString:string];
     NSRange prefixRange = NSMakeRange(0, range.location);
     prefixString = [self.text substringWithRange:prefixRange];
@@ -461,11 +438,15 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [super setDelegate:delegate];
 }
 
-- (UIFont*)currentFont {
-  if (!self.largerFont) {
-    return self.normalFont;
-  }
+- (UIFont*)largerFont {
+  return [UIFont systemFontOfSize:kLocationBarRegularRegularFontSize];
+}
 
+- (UIFont*)normalFont {
+  return [UIFont systemFontOfSize:kLocationBarSteadyFontSize];
+}
+
+- (UIFont*)currentFont {
   return IsCompactWidth() ? self.normalFont : self.largerFont;
 }
 
@@ -1090,12 +1071,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (CGFloat)clearButtonAnimationOffset {
   DCHECK(!IsRefreshLocationBarEnabled());
-
-  if ([self isTextFieldLTR]) {
-    return kToolbarButtonAnimationOffset;
-  } else {
-    return -kToolbarButtonAnimationOffset;
-  }
+  return 0;
 }
 
 // Calculates editing rect from |bounds| rect by adjusting for in-bounds

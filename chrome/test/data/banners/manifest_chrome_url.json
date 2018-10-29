@@ -1,0 +1,14 @@
+{
+  "short_name": "Manifest",
+  "name": "",
+  "icons": [
+    {
+      "src": "image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "chrome://settings",
+  "display": "standalone",
+  "orientation": "landscape"
+}

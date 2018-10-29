@@ -77,6 +77,11 @@ void VoiceInteractionController::NotifyLocaleChanged(
       [locale](auto* observer) { observer->OnLocaleChanged(locale); });
 }
 
+void VoiceInteractionController::NotifyLaunchWithMicOpen(
+    bool launch_with_mic_open) {
+  launch_with_mic_open_ = launch_with_mic_open;
+}
+
 void VoiceInteractionController::IsSettingEnabled(
     IsSettingEnabledCallback callback) {
   std::move(callback).Run(settings_enabled_);

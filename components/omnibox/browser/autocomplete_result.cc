@@ -8,6 +8,7 @@
 #include <functional>
 #include <iterator>
 #include <string>
+#include <unordered_set>
 
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -22,6 +23,8 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_pedal.h"
+#include "components/omnibox/browser/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/omnibox_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
@@ -73,7 +76,7 @@ void AutocompleteResult::CopyOldMatches(
   if (empty()) {
     // If we've got no matches we can copy everything from the last result.
     Swap(old_matches);
-    for (ACMatches::iterator i(begin()); i != end(); ++i)
+    for (auto i(begin()); i != end(); ++i)
       i->from_previous = true;
     return;
   }
@@ -152,7 +155,7 @@ void AutocompleteResult::AppendMatches(const AutocompleteInput& input,
 void AutocompleteResult::SortAndCull(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service) {
-  for (ACMatches::iterator i(matches_.begin()); i != matches_.end(); ++i)
+  for (auto i(matches_.begin()); i != matches_.end(); ++i)
     i->ComputeStrippedDestinationURL(input, template_url_service);
 
 #if !(defined(OS_ANDROID) || defined(OS_IOS))
@@ -167,7 +170,7 @@ void AutocompleteResult::SortAndCull(
   std::sort(matches_.begin(), matches_.end(), comparing_object);
   // Top match is not allowed to be the default match.  Find the most
   // relevant legal match and shift it to the front.
-  ACMatches::iterator it = FindTopMatch(&matches_);
+  auto it = FindTopMatch(&matches_);
   if (it != matches_.end())
     std::rotate(matches_.begin(), it, it + 1);
   // In the process of trimming, drop all matches with a demoted relevance
@@ -226,6 +229,49 @@ void AutocompleteResult::SortAndCull(
       GURL() : ComputeAlternateNavUrl(input, *default_match_);
 }
 
+void AutocompleteResult::AppendDedicatedPedalMatches(
+    AutocompleteProviderClient* client,
+    const AutocompleteInput& input) {
+  ACMatches pedal_suggestions;
+  const OmniboxPedalProvider* provider = client->GetPedalProvider();
+  for (const auto& match : matches_) {
+    if (match.pedal)
+      continue;
+    OmniboxPedal* pedal = provider->FindPedalMatch(match.contents);
+    if (pedal) {
+      AutocompleteMatch suggestion = match;
+      suggestion.relevance--;
+      suggestion.pedal = pedal;
+      suggestion.ApplyPedal();
+      pedal_suggestions.push_back(suggestion);
+    }
+  }
+  if (!pedal_suggestions.empty()) {
+    AppendMatches(input, pedal_suggestions);
+  }
+}
+
+void AutocompleteResult::ConvertInSuggestionPedalMatches(
+    AutocompleteProviderClient* client) {
+  const OmniboxPedalProvider* provider = client->GetPedalProvider();
+  // Used to ensure we keep only one Pedal of each kind.
+  std::unordered_set<OmniboxPedal*> pedals_found;
+  for (auto& match : matches_) {
+    // Skip matches that will not show Pedal because they already
+    // have a tab match or associated keyword.  Also skip matches
+    // that have already detected their Pedal.
+    if (match.has_tab_match || match.associated_keyword || match.pedal)
+      continue;
+
+    OmniboxPedal* const pedal = provider->FindPedalMatch(match.contents);
+    if (pedal) {
+      const auto result = pedals_found.insert(pedal);
+      if (result.second)
+        match.pedal = pedal;
+    }
+  }
+}
+
 void AutocompleteResult::ConvertOpenTabMatches(
     AutocompleteProviderClient* client,
     const AutocompleteInput* input) {
@@ -239,8 +285,9 @@ void AutocompleteResult::ConvertOpenTabMatches(
       match.has_tab_match = true;
   }
 }
+
 bool AutocompleteResult::HasCopiedMatches() const {
-  for (ACMatches::const_iterator i(begin()); i != end(); ++i) {
+  for (auto i(begin()); i != end(); ++i) {
     if (i->from_previous)
       return true;
   }
@@ -289,7 +336,7 @@ bool AutocompleteResult::TopMatchIsStandaloneVerbatimMatch() const {
   // Skip any copied matches, under the assumption that they'll be expired and
   // disappear.  We don't want this disappearance to cause the visibility of the
   // top match to change.
-  for (const_iterator i(begin() + 1); i != end(); ++i) {
+  for (auto i(begin() + 1); i != end(); ++i) {
     if (!i->from_previous)
       return !i->IsVerbatimType();
   }
@@ -299,7 +346,7 @@ bool AutocompleteResult::TopMatchIsStandaloneVerbatimMatch() const {
 // static
 ACMatches::const_iterator AutocompleteResult::FindTopMatch(
     const ACMatches& matches) {
-  ACMatches::const_iterator it = matches.begin();
+  auto it = matches.begin();
   while ((it != matches.end()) && !it->allowed_to_be_default_match)
     ++it;
   return it;
@@ -307,7 +354,7 @@ ACMatches::const_iterator AutocompleteResult::FindTopMatch(
 
 // static
 ACMatches::iterator AutocompleteResult::FindTopMatch(ACMatches* matches) {
-  ACMatches::iterator it = matches->begin();
+  auto it = matches->begin();
   while ((it != matches->end()) && !it->allowed_to_be_default_match)
     ++it;
   return it;
@@ -344,7 +391,7 @@ void AutocompleteResult::CopyFrom(const AutocompleteResult& rhs) {
 
 #if DCHECK_IS_ON()
 void AutocompleteResult::Validate() const {
-  for (const_iterator i(begin()); i != end(); ++i)
+  for (auto i(begin()); i != end(); ++i)
     i->Validate();
 }
 #endif  // DCHECK_IS_ON()
@@ -466,7 +513,7 @@ size_t AutocompleteResult::EstimateMemoryUsage() const {
 // static
 bool AutocompleteResult::HasMatchByDestination(const AutocompleteMatch& match,
                                                const ACMatches& matches) {
-  for (ACMatches::const_iterator i(matches.begin()); i != matches.end(); ++i) {
+  for (auto i(matches.begin()); i != matches.end(); ++i) {
     if (i->destination_url == match.destination_url)
       return true;
   }
@@ -527,7 +574,7 @@ void AutocompleteResult::MaybeCullTailSuggestions(ACMatches* matches) {
 
 void AutocompleteResult::BuildProviderToMatches(
     ProviderToMatches* provider_to_matches) const {
-  for (ACMatches::const_iterator i(begin()); i != end(); ++i)
+  for (auto i(begin()); i != end(); ++i)
     (*provider_to_matches)[i->provider].push_back(*i);
 }
 
@@ -541,11 +588,9 @@ void AutocompleteResult::MergeMatchesByProvider(
   // Prevent old matches from this provider from outranking new ones and
   // becoming the default match by capping old matches' scores to be less than
   // the highest-scoring allowed-to-be-default match from this provider.
-  ACMatches::const_iterator i = std::find_if(
+  auto i = std::find_if(
       new_matches.begin(), new_matches.end(),
-      [] (const AutocompleteMatch& m) {
-        return m.allowed_to_be_default_match;
-      });
+      [](const AutocompleteMatch& m) { return m.allowed_to_be_default_match; });
 
   // If the provider doesn't have any matches that are allowed-to-be-default,
   // cap scores below the global allowed-to-be-default match.
@@ -564,8 +609,8 @@ void AutocompleteResult::MergeMatchesByProvider(
   // "overwrite" the initial matches from that provider's previous results,
   // minimally disturbing the rest of the matches.
   size_t delta = old_matches.size() - new_matches.size();
-  for (ACMatches::const_reverse_iterator i(old_matches.rbegin());
-       i != old_matches.rend() && delta > 0; ++i) {
+  for (auto i(old_matches.rbegin()); i != old_matches.rend() && delta > 0;
+       ++i) {
     if (!HasMatchByDestination(*i, new_matches)) {
       AutocompleteMatch match = *i;
       match.relevance = std::min(max_relevance, match.relevance);

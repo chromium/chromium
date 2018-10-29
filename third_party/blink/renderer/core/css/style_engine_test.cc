@@ -1146,7 +1146,7 @@ TEST_F(StyleEngineTest, StyleSheetsForStyleSheetList_ShadowRoot) {
   EXPECT_FALSE(GetStyleEngine().NeedsActiveStyleUpdate());
 }
 
-class StyleEngineClient : public FrameTestHelpers::TestWebViewClient {
+class StyleEngineClient : public frame_test_helpers::TestWebViewClient {
  public:
   StyleEngineClient() : device_scale_factor_(1.f) {}
   void ConvertWindowToViewport(WebFloatRect* rect) override {
@@ -1167,7 +1167,7 @@ TEST_F(StyleEngineTest, ViewportDescriptionForZoomDSF) {
   StyleEngineClient client;
   client.set_device_scale_factor(1.f);
 
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl =
       web_view_helper.Initialize(nullptr, &client, nullptr, nullptr);
   web_view_impl->UpdateAllLifecyclePhases();

@@ -38,9 +38,9 @@ void PageLoadMetricsTestWaiter::AddSubFrameExpectation(TimingField field) {
     page_expected_fields_.Set(field);
 }
 
-void PageLoadMetricsTestWaiter::AddCompleteResourcesExpectation(
-    int expected_num_complete_resources) {
-  expected_num_complete_resources_ = expected_num_complete_resources;
+void PageLoadMetricsTestWaiter::AddMinimumCompleteResourcesExpectation(
+    int expected_minimum_complete_resources) {
+  expected_minimum_complete_resources_ = expected_minimum_complete_resources;
 }
 
 void PageLoadMetricsTestWaiter::AddMinimumResourceBytesExpectation(
@@ -183,8 +183,9 @@ void PageLoadMetricsTestWaiter::OnCommit(
 }
 
 bool PageLoadMetricsTestWaiter::ResourceUseExpectationsSatisfied() const {
-  return (expected_num_complete_resources_ == 0 ||
-          current_complete_resources_ == expected_num_complete_resources_) &&
+  return (expected_minimum_complete_resources_ == 0 ||
+          current_complete_resources_ >=
+              expected_minimum_complete_resources_) &&
          (expected_minimum_resource_bytes_ == 0 ||
           current_resource_bytes_ >= expected_minimum_resource_bytes_);
 }

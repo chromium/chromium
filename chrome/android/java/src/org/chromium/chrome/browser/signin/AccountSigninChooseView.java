@@ -45,8 +45,7 @@ public class AccountSigninChooseView extends FirstRunChooserView {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mRootChildView =
-                (LinearLayout) findViewById(R.id.account_signin_choose_view_root_child_view);
+        mRootChildView = findViewById(R.id.account_signin_choose_view_root_child_view);
         mAccountViewStartIndex = mRootChildView.getChildCount();
     }
 

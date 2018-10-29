@@ -15,7 +15,6 @@
 #include "chrome/browser/permissions/permission_result.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/permission_bubble/mock_permission_prompt_factory.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -40,10 +39,6 @@ using blink::mojom::PermissionStatus;
 using content::PermissionType;
 
 namespace {
-
-#if defined(OS_ANDROID)
-int kNoPendingOperation = -1;
-#endif
 
 class PermissionManagerTestingProfile final : public TestingProfile {
  public:
@@ -526,36 +521,6 @@ TEST_F(PermissionManagerTest, SubscribeMIDIPermission) {
 
   GetPermissionControllerDelegate()->UnsubscribePermissionStatusChange(
       subscription_id);
-}
-
-TEST_F(PermissionManagerTest, SuppressPermissionRequests) {
-#if defined(OS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      chrome::android::kVrBrowsingNativeAndroidUi);
-
-  content::WebContents* contents = web_contents();
-  vr::VrTabHelper::CreateForWebContents(contents);
-  NavigateAndCommit(url());
-
-  SetPermission(CONTENT_SETTINGS_TYPE_NOTIFICATIONS, CONTENT_SETTING_ALLOW);
-  RequestPermission(PermissionType::NOTIFICATIONS, main_rfh(), url());
-  EXPECT_TRUE(callback_called());
-  EXPECT_EQ(PermissionStatus::GRANTED, callback_result());
-
-  vr::VrTabHelper* vr_tab_helper = vr::VrTabHelper::FromWebContents(contents);
-  vr_tab_helper->SetIsInVr(true);
-  EXPECT_EQ(kNoPendingOperation,
-            RequestPermission(PermissionType::NOTIFICATIONS,
-                              contents->GetMainFrame(), url()));
-  EXPECT_TRUE(callback_called());
-  EXPECT_EQ(PermissionStatus::DENIED, callback_result());
-
-  vr_tab_helper->SetIsInVr(false);
-  RequestPermission(PermissionType::NOTIFICATIONS, main_rfh(), url());
-  EXPECT_TRUE(callback_called());
-  EXPECT_EQ(PermissionStatus::GRANTED, callback_result());
-#endif
 }
 
 TEST_F(PermissionManagerTest, PermissionIgnoredCleanup) {

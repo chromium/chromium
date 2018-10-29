@@ -6,9 +6,11 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Event on a simple div
 ---------------------
 Initial: 0+0
@@ -88,4 +90,5 @@ DoubleFingerTouch: 2+0
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

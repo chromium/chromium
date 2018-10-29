@@ -168,7 +168,7 @@ bool AutomationHandler::Parse(Extension* extension, base::string16* error) {
   if (!error->empty())
     return false;
 
-  extension->AddInstallWarnings(install_warnings);
+  extension->AddInstallWarnings(std::move(install_warnings));
 
   if (!info)
     return true;
@@ -243,8 +243,7 @@ std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
     } else {
       specified_matches = true;
 
-      for (std::vector<std::string>::iterator it =
-               automation_object.matches->begin();
+      for (auto it = automation_object.matches->begin();
            it != automation_object.matches->end(); ++it) {
         // TODO(aboxhall): Refactor common logic from content_scripts_handler,
         // manifest_url_handler and user_script.cc into a single location and

@@ -37,6 +37,8 @@ js_library("privacy_page") {
     "..:page_visibility",
     "..:route",
     "../controls:settings_toggle_button",
+    "../people_page:signout_dialog",
+    "../people_page:sync_browser_proxy",
     "../settings_page:settings_animated_pages",
     "../site_settings:constants",
     "../site_settings:site_data_details_subpage",

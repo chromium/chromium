@@ -100,14 +100,15 @@ std::vector<uint8_t> HyphenationMinikin::Hyphenate(
   return result;
 }
 
-size_t HyphenationMinikin::LastHyphenLocation(const StringView& text,
-                                              size_t before_index) const {
+wtf_size_t HyphenationMinikin::LastHyphenLocation(
+    const StringView& text,
+    wtf_size_t before_index) const {
   unsigned num_leading_spaces;
   StringView word = SkipLeadingSpaces(text, &num_leading_spaces);
   if (before_index <= num_leading_spaces)
     return 0;
-  before_index = std::min<size_t>(before_index - num_leading_spaces,
-                                  word.length() - kMinimumSuffixLength);
+  before_index = std::min<wtf_size_t>(before_index - num_leading_spaces,
+                                      word.length() - kMinimumSuffixLength);
 
   if (word.length() < kMinimumPrefixLength + kMinimumSuffixLength ||
       before_index <= kMinimumPrefixLength)
@@ -117,26 +118,26 @@ size_t HyphenationMinikin::LastHyphenLocation(const StringView& text,
   CHECK_LE(before_index, result.size());
   CHECK_GE(before_index, 1u);
   static_assert(kMinimumPrefixLength >= 1, "|beforeIndex - 1| can underflow");
-  for (size_t i = before_index - 1; i >= kMinimumPrefixLength; i--) {
+  for (wtf_size_t i = before_index - 1; i >= kMinimumPrefixLength; i--) {
     if (result[i])
       return i + num_leading_spaces;
   }
   return 0;
 }
 
-Vector<size_t, 8> HyphenationMinikin::HyphenLocations(
+Vector<wtf_size_t, 8> HyphenationMinikin::HyphenLocations(
     const StringView& text) const {
   unsigned num_leading_spaces;
   StringView word = SkipLeadingSpaces(text, &num_leading_spaces);
 
-  Vector<size_t, 8> hyphen_locations;
+  Vector<wtf_size_t, 8> hyphen_locations;
   if (word.length() < kMinimumPrefixLength + kMinimumSuffixLength)
     return hyphen_locations;
 
   std::vector<uint8_t> result = Hyphenate(word);
   static_assert(kMinimumPrefixLength >= 1,
                 "Change the 'if' above if this fails");
-  for (size_t i = word.length() - kMinimumSuffixLength - 1;
+  for (wtf_size_t i = word.length() - kMinimumSuffixLength - 1;
        i >= kMinimumPrefixLength; i--) {
     if (result[i])
       hyphen_locations.push_back(i + num_leading_spaces);

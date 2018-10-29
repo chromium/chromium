@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
+
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -58,6 +61,8 @@ std::string CreateNextAppId(const std::string& app_id) {
 
 constexpr char kUnset[] = "__unset__";
 constexpr char kDefault[] = "__default__";
+constexpr char kOemAppName[] = "oem_app";
+constexpr char kSomeAppName[] = "some_app";
 
 // These constants are defined as functions so their values can be derived via
 // function calls.  The constant naming scheme is kept to maintain readability.
@@ -190,6 +195,8 @@ class AppListSyncableServiceTest : public AppListTestBase {
     app_list_syncable_service_ =
         std::make_unique<app_list::AppListSyncableService>(profile_.get(),
                                                            extension_system);
+    content::RunAllTasksUntilIdle();
+
     model_updater_test_api_ =
         std::make_unique<AppListModelUpdater::TestApi>(model_updater());
   }
@@ -249,7 +256,7 @@ TEST_F(AppListSyncableServiceTest, OEMFolderForConflictingPos) {
   // order to move app in case of conflicting pos after web store app.
   const std::string some_app_id = CreateNextAppId(extensions::kWebStoreAppId);
   scoped_refptr<extensions::Extension> some_app =
-      MakeApp("some_app", some_app_id,
+      MakeApp(kSomeAppName, some_app_id,
               extensions ::Extension::WAS_INSTALLED_BY_DEFAULT);
   service_->AddExtension(some_app.get());
 
@@ -267,7 +274,7 @@ TEST_F(AppListSyncableServiceTest, OEMFolderForConflictingPos) {
   // case of app of the same position should be shifted next.
   const std::string oem_app_id = CreateNextAppId(some_app_id);
   scoped_refptr<extensions::Extension> oem_app = MakeApp(
-      "oem_app", oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
+      kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
   service_->AddExtension(oem_app.get());
 
   size_t web_store_app_index;
@@ -284,6 +291,63 @@ TEST_F(AppListSyncableServiceTest, OEMFolderForConflictingPos) {
   ChromeAppListItem* oem_folder = model_updater()->FindItem(ash::kOemFolderId);
   EXPECT_NE(nullptr, oem_folder);
   EXPECT_EQ(oem_folder->folder_id(), "");
+}
+
+// Verifies that OEM item preserves parent and doesn't change parent in case
+// sync change says this.
+TEST_F(AppListSyncableServiceTest, OEMItemIgnoreSyncParent) {
+  const std::string oem_app_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> oem_app = MakeApp(
+      kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
+  service_->AddExtension(oem_app.get());
+
+  // OEM item is not top level element.
+  ChromeAppListItem* oem_app_item = model_updater()->FindItem(oem_app_id);
+  ASSERT_TRUE(oem_app_item);
+  EXPECT_EQ(ash::kOemFolderId, oem_app_item->folder_id());
+
+  // Send sync that OEM app is top-level item.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateAppRemoteData(
+      oem_app_id, kOemAppName, std::string() /* parent_id */,
+      oem_app_item->position().ToInternalValue(),
+      std::string() /* item_pin_ordinal */));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  // Parent folder is not changed.
+  EXPECT_EQ(ash::kOemFolderId, oem_app_item->folder_id());
+}
+
+// Verifies that non-OEM item is not moved to OEM folder by sync.
+TEST_F(AppListSyncableServiceTest, NonOEMItemIgnoreSyncToOEMFolder) {
+  const std::string app_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> app = MakeApp(
+      kSomeAppName, app_id, extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+  service_->AddExtension(app.get());
+
+  ChromeAppListItem* app_item = model_updater()->FindItem(app_id);
+  ASSERT_TRUE(app_item);
+  // It is in the top list.
+  EXPECT_EQ(std::string(), app_item->folder_id());
+
+  // Send sync that this app is in OEM folder.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(
+      CreateAppRemoteData(app_id, kSomeAppName, ash::kOemFolderId,
+                          app_item->position().ToInternalValue(),
+                          std::string() /* item_pin_ordinal */));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  // Parent folder is not changed.
+  EXPECT_EQ(std::string(), app_item->folder_id());
 }
 
 TEST_F(AppListSyncableServiceTest, InitialMerge) {
@@ -317,6 +381,67 @@ TEST_F(AppListSyncableServiceTest, InitialMerge) {
   EXPECT_EQ("ordinal", GetSyncItem(kItemId2)->item_ordinal.ToDebugString());
   EXPECT_EQ("pinordinal",
             GetSyncItem(kItemId2)->item_pin_ordinal.ToDebugString());
+
+  // Default page breaks are not installed for non-first time users that don't
+  // have them in their sync.
+  EXPECT_FALSE(GetSyncItem(app_list::kDefaultPageBreak1));
+}
+
+TEST_F(AppListSyncableServiceTest, ExistingDefaultPageBreak) {
+  // Non-first time users have items in their remote sync data.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateAppRemoteData(
+      app_list::kDefaultPageBreak1, "page_break_1", "", "ordinal", "pinordinal",
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  // Existing page break item in remote sync will be added, and its data will be
+  // updated with the item's remote sync data.
+  auto* page_break_sync_item = GetSyncItem(app_list::kDefaultPageBreak1);
+  ASSERT_TRUE(page_break_sync_item);
+  EXPECT_EQ(page_break_sync_item->item_type,
+            sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
+  EXPECT_EQ("page_break_1", page_break_sync_item->item_name);
+  EXPECT_EQ("", page_break_sync_item->parent_id);
+  EXPECT_EQ("ordinal", page_break_sync_item->item_ordinal.ToDebugString());
+  EXPECT_EQ("pinordinal",
+            page_break_sync_item->item_pin_ordinal.ToDebugString());
+}
+
+TEST_F(AppListSyncableServiceTest, DefaultPageBreakFirstTimeUser) {
+  // Empty sync list simulates a first time user.
+  syncer::SyncDataList sync_list;
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  auto* page_break_sync_item = GetSyncItem(app_list::kDefaultPageBreak1);
+  ASSERT_TRUE(page_break_sync_item);
+  EXPECT_EQ(page_break_sync_item->item_type,
+            sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
+
+  // Since internal apps are added by default, we'll use the camera and the
+  // settings apps to test the ordering.
+  auto* settings_app_sync_item = GetSyncItem(app_list::kInternalAppIdSettings);
+  auto* camera_app_sync_item = GetSyncItem(app_list::kInternalAppIdCamera);
+  ASSERT_TRUE(settings_app_sync_item);
+  ASSERT_TRUE(camera_app_sync_item);
+
+  // The default page break should be between the camera app, and the settings
+  // app; i.e. the camera app is in the first page, and the settings app is in
+  // the second page.
+  EXPECT_TRUE(page_break_sync_item->item_ordinal.LessThan(
+      settings_app_sync_item->item_ordinal));
+  EXPECT_TRUE(page_break_sync_item->item_ordinal.GreaterThan(
+      camera_app_sync_item->item_ordinal));
 }
 
 TEST_F(AppListSyncableServiceTest, InitialMerge_BadData) {
@@ -444,24 +569,6 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate_BadData) {
   content::RunAllTasksUntilIdle();
 
   ASSERT_TRUE(GetSyncItem(kItemId));
-}
-
-TEST_F(AppListSyncableServiceTest, InitialMerge_NoDriveAppData) {
-  // Note that Drive app item id must start with "drive-app-" prefix as defined
-  // in kDriveAppSyncIdPrefix in AppListSyncableService.
-  constexpr char kDriveAppItemId[] = "drive-app-fake-drive-app";
-
-  syncer::SyncDataList sync_list;
-  sync_list.push_back(CreateAppRemoteData(
-      kDriveAppItemId, "Fake Drive App", kParentId(), "ordinal", "pinordinal"));
-
-  app_list_syncable_service()->MergeDataAndStartSyncing(
-      syncer::APP_LIST, sync_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
-  content::RunAllTasksUntilIdle();
-
-  ASSERT_FALSE(GetSyncItem(kDriveAppItemId));
 }
 
 TEST_F(AppListSyncableServiceTest, PruneEmptySyncFolder) {

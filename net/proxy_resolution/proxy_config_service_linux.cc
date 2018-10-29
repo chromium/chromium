@@ -646,7 +646,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   }
 
   bool GetString(StringSetting key, std::string* result) override {
-    string_map_type::iterator it = string_table_.find(key);
+    auto it = string_table_.find(key);
     if (it == string_table_.end())
       return false;
     *result = it->second;
@@ -662,7 +662,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   }
   bool GetStringList(StringListSetting key,
                      std::vector<std::string>* result) override {
-    strings_map_type::iterator it = strings_table_.find(key);
+    auto it = strings_table_.find(key);
     if (it == strings_table_.end())
       return false;
     *result = it->second;
@@ -774,7 +774,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   }
 
   void ResolveIndirect(StringSetting key) {
-    string_map_type::iterator it = string_table_.find(key);
+    auto it = string_table_.find(key);
     if (it != string_table_.end()) {
       std::string value;
       if (env_var_getter_->GetVar(it->second.c_str(), &value))
@@ -785,7 +785,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   }
 
   void ResolveIndirectList(StringListSetting key) {
-    strings_map_type::iterator it = strings_table_.find(key);
+    auto it = strings_table_.find(key);
     if (it != strings_table_.end()) {
       std::string value;
       if (!it->second.empty() &&

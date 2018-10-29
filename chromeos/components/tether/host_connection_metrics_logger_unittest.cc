@@ -42,8 +42,8 @@ class HostConnectionMetricsLoggerTest : public testing::Test {
     metrics_logger_->SetClockForTesting(&test_clock_);
   }
 
-  void SetMultiDeviceApiEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(features::kMultiDeviceApi);
+  void SetMultiDeviceApiDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(features::kMultiDeviceApi);
   }
 
   void VerifyProvisioningFailure(
@@ -147,6 +147,8 @@ class HostConnectionMetricsLoggerTest : public testing::Test {
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultProvisioningFailure) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -162,6 +164,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest, RecordConnectionResultSuccess) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -198,8 +202,6 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultSuccess_MultiDeviceApiEnabled) {
-  SetMultiDeviceApiEnabled();
-
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -217,6 +219,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultSuccess_Background_DifferentDevice) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), true /* is_background_advertisement */);
 
@@ -234,6 +238,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest, RecordConnectionResultFailure) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -276,8 +282,6 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailure_MultiDeviceApiEnabled) {
-  SetMultiDeviceApiEnabled();
-
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -298,6 +302,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailure_Background_DifferentDevice) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), true /* is_background_advertisement */);
 
@@ -319,6 +325,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureClientConnection_Timeout) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -343,6 +351,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureClientConnection_CanceledByUser) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -368,6 +378,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureClientConnection_InternalError) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -393,6 +405,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureTetheringTimeout_SetupRequired) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -418,6 +432,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureTetheringTimeout_SetupNotRequired) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -443,6 +459,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureTetheringUnsupported) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -461,6 +479,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureNoCellData) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -478,6 +498,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureEnablingHotspotFailed) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -496,6 +518,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureEnablingHotspotTimeout) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -513,6 +537,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest, RecordConnectToHostDuration) {
+  SetMultiDeviceApiDisabled();
+
   VerifyConnectToHostDuration(false /* is_background_advertisement */);
 }
 
@@ -528,6 +554,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureNoResponse) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 
@@ -545,6 +573,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
 
 TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureInvalidHotspotCredentials) {
+  SetMultiDeviceApiDisabled();
+
   SetActiveHostToConnectingAndReceiveAdvertisement(
       test_devices_[0].GetDeviceId(), false /* is_background_advertisement */);
 

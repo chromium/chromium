@@ -351,8 +351,6 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
     search_box_->DestroyTouchSelection();
   }
 
-  search_box_right_space_->SetVisible(!active);
-
   UpdateSearchBoxBorder();
   UpdateKeyboardVisibility();
   UpdateButtonsVisisbility();
@@ -481,19 +479,25 @@ void SearchBoxViewBase::SetSearchBoxColor(SkColor color) {
 void SearchBoxViewBase::UpdateButtonsVisisbility() {
   DCHECK(close_button_ && assistant_button_);
 
-  bool should_show_close_button =
+  const bool should_show_close_button =
       !search_box_->text().empty() ||
       (show_close_button_when_active_ && is_search_box_active_);
-  bool should_show_assistant_button =
+  const bool should_show_assistant_button =
       show_assistant_button_ && !should_show_close_button;
+  const bool should_show_search_box_right_space =
+      !(should_show_close_button || should_show_assistant_button);
 
   if (close_button_->visible() == should_show_close_button &&
-      assistant_button_->visible() == should_show_assistant_button) {
+      assistant_button_->visible() == should_show_assistant_button &&
+      search_box_right_space_->visible() ==
+          should_show_search_box_right_space) {
     return;
   }
 
   close_button_->SetVisible(should_show_close_button);
   assistant_button_->SetVisible(should_show_assistant_button);
+  search_box_right_space_->SetVisible(should_show_search_box_right_space);
+
   content_container_->Layout();
 }
 
@@ -503,7 +507,8 @@ void SearchBoxViewBase::ContentsChanged(views::Textfield* sender,
   search_box_->RequestFocus();
   UpdateModel(true);
   NotifyQueryChanged();
-  SetSearchBoxActive(true, ui::ET_KEY_PRESSED);
+  if (!new_contents.empty())
+    SetSearchBoxActive(true, ui::ET_KEY_PRESSED);
   UpdateButtonsVisisbility();
 }
 

@@ -44,6 +44,7 @@ class MetricsRenderFrameObserver
   void DidObserveNewFeatureUsage(blink::mojom::WebFeature feature) override;
   void DidObserveNewCssPropertyUsage(int css_property,
                                      bool is_animated) override;
+  void DidObserveLayoutJank(double jank_fraction) override;
   void DidStartResponse(int request_id,
                         const network::ResourceResponseHead& response_head,
                         content::ResourceType resource_type) override;

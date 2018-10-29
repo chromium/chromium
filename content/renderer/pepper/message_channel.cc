@@ -211,13 +211,17 @@ v8::Local<v8::Value> MessageChannel::GetNamedProperty(
 
   PepperTryCatchV8 try_catch(instance_, &var_converter_, isolate);
   if (identifier == kPostMessage) {
+    v8::Local<v8::Context> context = isolate->GetCurrentContext();
     return GetFunctionTemplate(isolate, identifier,
                                &MessageChannel::PostMessageToNative)
-        ->GetFunction();
+        ->GetFunction(context)
+        .ToLocalChecked();
   } else if (identifier == kPostMessageAndAwaitResponse) {
+    v8::Local<v8::Context> context = isolate->GetCurrentContext();
     return GetFunctionTemplate(isolate, identifier,
                                &MessageChannel::PostBlockingMessageToNative)
-        ->GetFunction();
+        ->GetFunction(context)
+        .ToLocalChecked();
   }
 
   std::map<std::string, ScopedPPVar>::const_iterator it =

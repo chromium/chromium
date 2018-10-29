@@ -24,7 +24,7 @@ function focusLinkAndAssertLinkIsTargetOfContextMenu() {
 
 <script>
 test(function() {
-  assert_exists(window, 'eventSender', 'This test requires eventSender.');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender.');
 
   document.querySelector('INPUT').focus();
   eventSender.keyDown('ContextMenu');
@@ -34,7 +34,7 @@ test(function() {
 }, 'ContextMenu should target the focused link (not the unfocused field).');
 
 test(function() {
-  assert_exists(window, 'eventSender', 'This test requires eventSender.');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender.');
 
   document.querySelector('div').focus();
   eventSender.keyDown('ContextMenu');
@@ -44,7 +44,7 @@ test(function() {
 }, 'ContextMenu should target the focused link (not the div\'s caret).');
 
 test(function() {
-  assert_exists(window, 'eventSender', 'This test requires eventSender.');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender.');
 
   const div = document.querySelector('div');
   div.focus();
@@ -56,7 +56,7 @@ test(function() {
 }, 'ContextMenu should target the focused link (not the div\'s selection).');
 
 test(function() {
-  assert_exists(window, 'eventSender', 'This test requires eventSender.');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender.');
 
   const span = document.querySelector('span');
   window.getSelection().selectAllChildren(span);

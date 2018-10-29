@@ -20,17 +20,12 @@
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow div id='contentBox'",
           "rect": [8, 52, 602, 422],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow div id='contentBox'",
-          "rect": [8, 52, 422, 422],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "LayoutImage img",
           "rect": [9, 53, 420, 420],
-          "reason": "subtree"
+          "reason": "geometry"
         }
       ]
     }

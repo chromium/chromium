@@ -137,8 +137,8 @@ TEST_F(MetricsLogTest, BasicRecord) {
   system_profile->set_channel(client.GetChannel());
   system_profile->set_application_locale(client.GetApplicationLocale());
 
-#if defined(ADDRESS_SANITIZER)
-  system_profile->set_is_asan_build(true);
+#if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()
+  system_profile->set_is_instrumented_build(true);
 #endif
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile->mutable_hardware();

@@ -10,7 +10,17 @@
 #import "cwv_navigation_type.h"
 
 @protocol CRIWVTranslateDelegate;
+@class CWVSSLStatus;
 @class CWVWebView;
+
+// The decision to pass back to the decision handler from
+// -webView:didFailNavigationWithSSLError:overridable:decisionHandler:.
+typedef NS_ENUM(NSInteger, CWVSSLErrorDecision) {
+  // Leave the failure as is and take no further action.
+  CWVSSLErrorDecisionDoNothing = 0,
+  // Ignore the error and reload the page.
+  CWVSSLErrorDecisionOverrideErrorAndReload,
+};
 
 // Navigation delegate protocol for CWVWebViews.  Allows embedders to hook
 // page loading and receive events for navigation.
@@ -41,7 +51,26 @@
 - (void)webViewDidFinishNavigation:(CWVWebView*)webView;
 
 // Notifies the delegate that page load has failed.
+// When the page load has failed due to an SSL certification error,
+// -webView:didFailNavigationWithSSLError:overridable:decisionHandler:
+// is called instead of this method.
 - (void)webView:(CWVWebView*)webView didFailNavigationWithError:(NSError*)error;
+
+// Notifies the delegate that the page load has failed due to an SSL error. If
+// |overridable| is YES, the method can ignore the error and reload the page by
+// calling |decisionHandler| with CWVSSLErrorDecisionOverrideErrorAndReload. The
+// method can leave the failure as is by calling |decisionHandler| with
+// CWVSSLErrorDecisionDoNothing.
+//
+// Note: When |decisionHandler| is called with
+// CWVSSLErrorDecisionOverrideErrorAndReload, it must not be called
+// synchronously in the method. It breaks status management and causes an
+// assertion failure. It must be called asynchronously to avoid it.
+- (void)webView:(CWVWebView*)webView
+    didFailNavigationWithSSLError:(NSError*)error
+                      overridable:(BOOL)overridable
+                  decisionHandler:
+                      (void (^)(CWVSSLErrorDecision))decisionHandler;
 
 // Notifies the delegate that web view process was terminated
 // (usually by crashing, though possibly by other means).

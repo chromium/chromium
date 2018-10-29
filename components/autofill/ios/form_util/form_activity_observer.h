@@ -40,6 +40,13 @@ class FormActivityObserver {
   // |has_user_gesture| is true if the user interacted with the page.
   // |form_in_main_frame| is true if the submitted form is hosted in the main
   // frame.
+  // |form_data| contains information on the form that has been submitted.
+  // It is in a JSON format and can be decoded by autofill::ExtractFormsData.
+  // It is a list (for compatibility reason) containing 0 or 1 dictionary.
+  // The dictionary has some element containing some form attributes (HTML or
+  // computed ('name', 'action', 'is_formless_checkout'...) and a 'field'
+  // element containing a list of dictionaries, each representing a field of the
+  // form and contianing some attributes ('name', 'type',...).
   // |sender_frame| is the WebFrame that sent the form submission message.
   // |sender_frame| can be null if frame messaging is not enabled (see
   // web::WebState::ScriptCommandCallback comment for details).
@@ -49,6 +56,7 @@ class FormActivityObserver {
   virtual void DocumentSubmitted(web::WebState* web_state,
                                  web::WebFrame* sender_frame,
                                  const std::string& form_name,
+                                 const std::string& form_data,
                                  bool has_user_gesture,
                                  bool form_in_main_frame) {}
 

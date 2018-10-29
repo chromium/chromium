@@ -412,8 +412,7 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
                    "new Promise(x => setTimeout(() => setTimeout(x, 20), 20)");
   params.SetBoolean("awaitPromise", true);
   client_->SendCommand("Runtime.evaluate", params);
-  for (std::list<MouseEvent>::const_iterator it = events.begin();
-       it != events.end(); ++it) {
+  for (auto it = events.begin(); it != events.end(); ++it) {
     base::DictionaryValue params;
 
     switch (it->type) {
@@ -453,8 +452,7 @@ Status WebViewImpl::DispatchMouseEvents(const std::list<MouseEvent>& events,
     return DispatchTouchEventsForMouseEvents(events, frame);
 
   double page_scale_factor = 1.0;
-  for (std::list<MouseEvent>::const_iterator it = events.begin();
-       it != events.end(); ++it) {
+  for (auto it = events.begin(); it != events.end(); ++it) {
     base::DictionaryValue params;
     params.SetString("type", GetAsString(it->type));
     params.SetInteger("x", it->x * page_scale_factor);
@@ -479,8 +477,7 @@ Status WebViewImpl::DispatchTouchEvent(const TouchEvent& event) {
 }
 
 Status WebViewImpl::DispatchTouchEvents(const std::list<TouchEvent>& events) {
-  for (std::list<TouchEvent>::const_iterator it = events.begin();
-       it != events.end(); ++it) {
+  for (auto it = events.begin(); it != events.end(); ++it) {
     Status status = DispatchTouchEvent(*it);
     if (status.IsError())
       return status;
@@ -489,8 +486,7 @@ Status WebViewImpl::DispatchTouchEvents(const std::list<TouchEvent>& events) {
 }
 
 Status WebViewImpl::DispatchKeyEvents(const std::list<KeyEvent>& events) {
-  for (std::list<KeyEvent>::const_iterator it = events.begin();
-       it != events.end(); ++it) {
+  for (auto it = events.begin(); it != events.end(); ++it) {
     base::DictionaryValue params;
     params.SetString("type", GetAsString(it->type));
     if (it->modifiers & kNumLockKeyModifierMask) {

@@ -44,7 +44,6 @@ constexpr int kStatusIndicatorActiveSize = 8;
 constexpr int kStatusIndicatorRunningSize = 4;
 constexpr int kStatusIndicatorThickness = 2;
 constexpr int kNotificationIndicatorRadiusDip = 7;
-constexpr SkColor kIndicatorBorderColor = SkColorSetA(SK_ColorBLACK, 0x4D);
 constexpr SkColor kIndicatorColor = SK_ColorWHITE;
 
 // Slightly different colors and alpha in the new UI.
@@ -211,50 +210,32 @@ class ShelfButton::AppStatusIndicatorView
     }
 
     const float dsf = canvas->UndoDeviceScaleFactor();
-    const int kStrokeWidthPx = 1;
     gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
     cc::PaintFlags flags;
-    if (chromeos::switches::ShouldUseShelfNewUi()) {
-      // Active and running indicators look a little different in the new UI.
-      flags.setColor(active_ ? kIndicatorColorActive : kIndicatorColorRunning);
-      float indicator_width;
-      float indicator_height;
-      gfx::PointF origin;
-      if (horizontal_shelf_) {
-        indicator_width =
-            active_ ? kStatusIndicatorActiveSize : kStatusIndicatorRunningSize;
-        indicator_height = kStatusIndicatorThickness;
-      } else {
-        indicator_width = kStatusIndicatorThickness;
-        indicator_height =
-            active_ ? kStatusIndicatorActiveSize : kStatusIndicatorRunningSize;
-      }
-      origin = gfx::PointF(center.x() - indicator_width / 2,
-                           center.y() - indicator_height / 2);
-      canvas->DrawRect(
-          gfx::ScaleRect(
-              gfx::RectF(origin, gfx::SizeF(indicator_width, indicator_height)),
-              dsf),
-          flags);
+    // Active and running indicators look a little different in the new UI.
+    flags.setColor(active_ ? kIndicatorColorActive : kIndicatorColorRunning);
+    flags.setAntiAlias(true);
+    flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
+    flags.setStrokeJoin(cc::PaintFlags::Join::kRound_Join);
+    flags.setStrokeWidth(kStatusIndicatorThickness);
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    float stroke_length =
+        active_ ? kStatusIndicatorActiveSize : kStatusIndicatorRunningSize;
+    gfx::PointF start;
+    gfx::PointF end;
+    if (horizontal_shelf_) {
+      start = gfx::PointF(center.x() - stroke_length / 2, center.y());
+      end = start;
+      end.Offset(stroke_length, 0);
     } else {
-      // This branch of the code expects an already scaled center point.
-      center.Scale(dsf);
-      DCHECK_EQ(width(), height());
-      DCHECK_EQ(kStatusIndicatorMaxSize, width() / 2);
-
-      // Fill the center.
-      flags.setColor(kIndicatorColor);
-      flags.setAntiAlias(true);
-      canvas->DrawCircle(
-          center, dsf * kStatusIndicatorRadiusDip - kStrokeWidthPx, flags);
-
-      // Stroke the border.
-      flags.setColor(kIndicatorBorderColor);
-      flags.setStyle(cc::PaintFlags::kStroke_Style);
-      canvas->DrawCircle(
-          center, dsf * kStatusIndicatorRadiusDip - kStrokeWidthPx / 2.0f,
-          flags);
+      start = gfx::PointF(center.x(), center.y() - stroke_length / 2);
+      end = start;
+      end.Offset(0, stroke_length);
     }
+    gfx::Path path;
+    path.moveTo(start.x() * dsf, start.y() * dsf);
+    path.lineTo(end.x() * dsf, end.y() * dsf);
+    canvas->DrawPath(path, flags);
   }
 
   // ShelfButtonAnimation::Observer

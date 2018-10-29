@@ -115,6 +115,7 @@ class CORE_EXPORT InspectorPageAgent final
       const String& identifier) override;
   protocol::Response addScriptToEvaluateOnNewDocument(
       const String& source,
+      Maybe<String> world_name,
       String* identifier) override;
   protocol::Response removeScriptToEvaluateOnNewDocument(
       const String& identifier) override;
@@ -163,7 +164,7 @@ class CORE_EXPORT InspectorPageAgent final
 
   protocol::Response setProduceCompilationCache(bool enabled) override;
   protocol::Response addCompilationCache(const String& url,
-                                         const String& data) override;
+                                         const protocol::Binary& data) override;
   protocol::Response clearCompilationCache() override;
 
   // InspectorInstrumentation API
@@ -213,7 +214,6 @@ class CORE_EXPORT InspectorPageAgent final
                      InspectorResourceContentLoader*,
                      v8_inspector::V8InspectorSession*);
 
-  void FinishReload();
   void GetResourceContentAfterResourcesContentLoaded(
       const String& frame_id,
       const String& url,
@@ -236,12 +236,11 @@ class CORE_EXPORT InspectorPageAgent final
   std::unique_ptr<protocol::Page::FrameResourceTree> BuildObjectForResourceTree(
       LocalFrame*);
   Member<InspectedFrames> inspected_frames_;
-  HashMap<String, Vector<char>> compilation_cache_;
+  HashMap<String, protocol::Binary> compilation_cache_;
   v8_inspector::V8InspectorSession* v8_session_;
   Client* client_;
   String pending_script_to_evaluate_on_load_once_;
   String script_to_evaluate_on_load_once_;
-  bool reloading_;
   Member<InspectorResourceContentLoader> inspector_resource_content_loader_;
   int resource_content_loader_client_id_;
   InspectorAgentState::Boolean enabled_;
@@ -249,6 +248,7 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::Boolean lifecycle_events_enabled_;
   InspectorAgentState::Boolean bypass_csp_enabled_;
   InspectorAgentState::StringMap scripts_to_evaluate_on_load_;
+  InspectorAgentState::StringMap worlds_to_evaluate_on_load_;
   InspectorAgentState::String standard_font_family_;
   InspectorAgentState::String fixed_font_family_;
   InspectorAgentState::String serif_font_family_;

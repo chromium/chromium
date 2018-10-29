@@ -15,6 +15,7 @@
 -DefaultKeyboardExtensionBrowserTest.*
 -KeyboardEndToEndFocusTest.*
 -KeyboardEndToEndFormTest.*
+-KeyboardEndToEndOverscrollTest.*
 -KioskVirtualKeyboardTest.*
 -VirtualKeyboardAppWindowTest.*
 -VirtualKeyboardStateTest.*
@@ -26,11 +27,9 @@
 -AutomationApiTestWithDeviceScaleFactor.*
 -AutomationManagerAuraBrowserTest.*
 
-# The browser frame is a work in progress.
--BrowserNonClientFrameViewAshTest.AvatarDisplayOnTeleportedWindow/*
--BrowserNonClientFrameViewAshTest.HeaderHeightForSnappedBrowserInSplitView/*
--BrowserNonClientFrameViewAshTest.ImmersiveModeTopViewInset/*
--BrowserNonClientFrameViewAshTest.TopViewInset/*
+# ChromeVox and Select-to-Speak not yet supported. https://crbug.com/594887
+-ChromeVox*
+-SelectToSpeak*
 
 # Touch gestures don't work in webcontents. https://crbug.com/866991.
 -TopControlsSlideControllerTest.DisplayRotation
@@ -39,14 +38,6 @@
 -TopControlsSlideControllerTest.TestScrollingMaximizedPageBeforeGoingToTabletMode
 -TopControlsSlideControllerTest.TestScrollingPage
 -TopControlsSlideControllerTest.TestScrollingPageAndSwitchingToNTP
-
-# Direct access to ash window frames, tablet mode, overview mode, etc.
--NonHomeLauncherBrowserNonClientFrameViewAshTest.*
-
-# Fix immersive fullscreen mode in mash. https://crbug.com/844748.
-# Needs EventGenerator to work across window tree hosts. crbug.com/814675
--ImmersiveModeBrowserViewTest.TestCaptionButtonsReceiveEventsInAppImmersiveMode*
--ImmersiveModeBrowserViewTest.TestCaptionButtonsReceiveEventsInBrowserImmersiveMode*
 
 # Need pixel copy support. http://crbug.com/754864 http://crbug.com/754872
 -CastMirroringServiceHostBrowserTest.CaptureTabVideo
@@ -61,30 +52,12 @@
 -PDFExtensionTest.*
 -PDFExtensionHitTestTest.*
 
-# ash::Shell access for LogoutConfirmationController
--DeviceLocalAccountTest.*
-
-# Fails: immersive_controller->IsRevealed() returns false.
-# http://crbug.com/791148
--vZoomBubbleBrowserTest.*
-
-# ash::Shell::display_manager() to update displays.
-# http://crbug.com/831826
--PolicyDisplayRotationDefault/DisplayRotationDefaultTest.*
-
 # JS failure: hasAccessToCurrentWindow: FAIL (no message)
 -LockScreenNoteTakingTest.*
-
-# desktop_window_tree_host_mus.cc(796) Check failed: !window->GetRootWindow() || this->window() == window->GetRootWindow().
--LoginFeedbackTest.*
 
 # Missing magnification manager and also RefCounted check failed:
 # CalledOnValidSequence() from SchedulerWorkerDelegate::OnMainExit
 -LoginScreenDefaultPolicyLoginScreenBrowsertest.*
-
-# ash::Shell access in test for display configuration.
-# http://crbug.com/831826
--ShelfAppBrowserTest.LaunchAppFromDisplayWithoutFocus*
 
 # Timeout because first non-empty paint isn't triggered.
 # https://crbug.com/885318
@@ -97,7 +70,7 @@
 -WebViewTest.*
 
 # Needs EventGenerator to work across window tree hosts. crbug.com/814675
--RoundedOmniboxPopupContentsViewTest.ClickOmnibox*
+-OmniboxPopupContentsViewTest.ClickOmnibox
 
 # RenderFrameMetadata observation not supported: https://crbug.com/820974
 -WebViewFocusBrowserPluginSpecificTest.*
@@ -118,19 +91,6 @@
 -PlatformAppBrowserTest.PictureInPicture
 -PictureInPictureLazyBackgroundPageApiTest.PictureInPictureInBackgroundPage
 
-# These started failing with the switch to ws2.
-# https:://crbug.com/855767
--AppWindowApiTest.OnRestoredEvent
--BrowserActionApiTest.BrowserActionPopupWithIframe
--FirstRunUIBrowserTest.ModalWindowDoesNotBlock
--LauncherPlatformAppBrowserTest.AltNumberAppsTabbing
--LauncherPlatformAppBrowserTest.PackagedAppClickBehaviorInMinimizeMode
--LoginWebDialogTest.CannotMinimize
--LoginWebDialogTest.CloseDialogByAccelerator
--ShelfAppBrowserTest.AltNumberTabsTabbing
--ShelfAppBrowserTestNoDefaultBrowser.AltNumberBrowserTabbing
--ShelfAppBrowserTestNoDefaultBrowser.BrowserShortcutLauncherItemController
-
 # Excluded from Mash because pointer events from EventGenerator aren't seen.
 # https://crbug.com/814675
 -ChromeOSInfoPrivateTest.StylusSeen
@@ -138,9 +98,6 @@
 # --------------------------------------------------
 # Tests failing only for SingleProcessMash.
 # --------------------------------------------------
-
-# Uses ash::WindowState in browser process.
--AcceleratorCommandsBrowserTest.ToggleMaximized
 
 # Crashes on exit, even without SingleProcessMash.
 -AffiliationCheck/EnterpriseDeviceAttributesTest.Success/*
@@ -152,17 +109,12 @@
 -Blub/UnaffiliatedArcAllowedTest.ProfileTest/0
 -Blub/UnaffiliatedArcAllowedTest.ProfileTest/1
 
-# Browser command controller tests.
--BrowserCommandControllerBrowserTest.LockedFullscreen
-
 # Enterprise keys tests.
 -CheckSystemTokenAvailability/EnterprisePlatformKeysTest.Basic/*
 
-# Ash native views tests.
--ChromeNativeAppWindowViewsAuraAshBrowserTest.*
-
-# Context menu tests.
--ContextMenuBrowserTest.ContextMenuEntriesAreDisabledInLockedFullscreen
+# Flaky.  crbug.com/888188.
+-ChromeSessionManagerTest.LoginExistingUsers
+-ChromeSessionManagerTest.PRE_LoginExistingUsers
 
 # Flaky test. crbug.com/880584
 # Not implemented reached in virtual base::i18n::TextDirection content::RenderWidgetHostViewAura::GetTextDirection()
@@ -171,7 +123,7 @@
 # Default extension tests.
 -DefaultProfileExtensionBrowserTest.NoExtensionHosts
 
-# Encrypted media tests are flaky due to race condition. crbug.com/880584
+# Encrypted media tests are failing on Asan/Lsan bot due to memory leak. crbug.com/889993
 -ECKEncryptedMediaTest.*
 -EncryptedMediaTest.*
 -CDM_9/ECKEncryptedMediaTest.*
@@ -186,31 +138,19 @@
 # Failing on ASAN bot. crbug.com/882631
 -ExtensionWebRequestApiTest.WebRequestTypes
 
-# Crashing flakily. https://crbug.com/883371
--ExtensionDisabledGlobalErrorTest.UninstallWhilePromptBeingShown
-
-# Immersive mode tests.
--ImmersiveModeBrowserViewTest.TabNavigationAcceleratorsFullscreenBrowser/material
-
 # Flaky on ASAN bot. crbug.com/884216
 -KeyboardOverlayUIBrowserTest.*
 
 # Lock screen tests.
 -LockScreenNoteTakingTest.Launch
 
-# Login screen tests.
--LoginScreenPolicyTest.DisableSupervisedUsers
-
 # PRE steps crash on shutdown.
 # FATAL:ref_counted.h(85)] Check failed: CalledOnValidSequence()
 -ManagedWithoutPermission/ManagedWithoutPermissionPlatformKeysTest.*
 -ManagedWithPermission/ManagedWithPermissionPlatformKeysTest.*
 
-# Timeout. https://crbug.com/883884
--MediaEngagementBrowserTest.SessionNewTabNavigateSameURL
-
-# Full screen button tests.
--PresentationReceiverWindowViewBrowserTest.ChromeOSHardwareFullscreenButton
+# Flaky https://crbug.com/887175
+-PrerenderBrowserTest.PrerenderHTML5VideoJs
 
 # Service worker tests.
 -ServiceWorkerTestWithJSBindings/ServiceWorkerTest.SWServedBackgroundPageReceivesEvent/*
@@ -223,9 +163,6 @@
 -SigninExtensionsDeviceCloudPolicyBrowserTest.InstallAndRunInWindow
 -SigninProfileAppsPolicyPerChannelTest.*
 -SigninProfileAppsPolicyTest.*
-
-# Clock policy tests.
--SystemUse24HourClockPolicyTest.*
 
 # Unmanaged platform keys tests.
 -Unmanaged/UnmanagedPlatformKeysTest.*
@@ -240,5 +177,8 @@
 -WindowOpenApiTest.UpdateWindowToLockedFullscreen
 -WindowOpenApiTest.VerifyCommandsInLockedFullscreen
 
-# Value of: immersive_controller->IsRevealed()
--ZoomBubbleBrowserTest.ImmersiveFullscreen
+# Flaky tests. crbug.com/833144
+-GetAuthTokenFunctionPublicSessionTest.NonWhitelisted
+
+# Test hangs in single process mash crbug.com/897012
+-SelectFileDialogExtensionBrowserTest.SelectFileVirtualKeyboard_TabletMode

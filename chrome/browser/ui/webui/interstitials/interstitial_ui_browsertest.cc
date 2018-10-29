@@ -11,9 +11,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/l10n/l10n_util.h"
 
 class InterstitialUITest : public InProcessBrowserTest {
  public:
@@ -21,7 +23,14 @@ class InterstitialUITest : public InProcessBrowserTest {
    ~InterstitialUITest() override {}
 
  protected:
-  void TestInterstitial(GURL url, const std::string& page_title) {
+  // Tests interstitial displayed at url to verify that it has the given
+  // page title and body content that is expected.
+  //
+  // page_title must be an exact match, while body content may appear anywhere
+  // in the rendered page. Thus an empty body_text never fails.
+  void TestInterstitial(GURL url,
+                        const std::string& page_title,
+                        const base::string16& body_text) {
     ui_test_utils::NavigateToURL(browser(), url);
     EXPECT_EQ(
       base::ASCIIToUTF16(page_title),
@@ -32,6 +41,30 @@ class InterstitialUITest : public InProcessBrowserTest {
         DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), true);
     EXPECT_TRUE(window);
     DevToolsWindowTesting::CloseDevToolsWindowSync(window);
+
+    if (body_text.empty())
+      return;
+
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    EXPECT_GE(ui_test_utils::FindInPage(contents, body_text, true, true,
+                                        nullptr, nullptr),
+              1);
+  }
+
+  // Convenience function to test interstitial pages without provided body_text.
+  void TestInterstitial(GURL url,
+                        const std::string& page_title) {
+    TestInterstitial(url, page_title, base::string16());
+  }
+
+  // Convenience function to test interstitial pages with l10n message_ids as
+  // body_text strings.
+  void TestInterstitial(GURL url,
+                        const std::string& page_title,
+                        int message_id) {
+    TestInterstitial(url, page_title, l10n_util::GetStringUTF16(message_id));
   }
 };
 
@@ -57,88 +90,88 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, SSLInterstitial) {
-  TestInterstitial(
-      GURL("chrome://interstitials/ssl"),
-      "Privacy error");
+  TestInterstitial(GURL("chrome://interstitials/ssl"), "Privacy error",
+                   IDS_SSL_V2_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, SuperfishInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/superfish-ssl"),
-                   "Privacy error");
+                   "Privacy error", IDS_SSL_SUPERFISH_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, MITMSoftwareInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/mitm-software-ssl"),
-                   "Privacy error");
+                   "Privacy error", IDS_MITM_SOFTWARE_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, PinnedCertInterstitial) {
-  TestInterstitial(GURL("chrome://interstitials/ssl?type=hpkp_failure"),
-                   "Privacy error");
+  TestInterstitial(
+      GURL("chrome://interstitials/ssl?type=hpkp_failure"),
+      "Privacy error",
+      base::ASCIIToUTF16("NET::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN"));
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, CTInterstitial) {
-  TestInterstitial(GURL("chrome://interstitials/ssl?type=ct_failure"),
-                   "Privacy error");
-  bool found_ct_error = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send(document.body.textContent.indexOf('"
-      "CERTIFICATE_TRANSPARENCY') != -1);",
-      &found_ct_error));
-  EXPECT_TRUE(found_ct_error);
+  TestInterstitial(
+      GURL("chrome://interstitials/ssl?type=ct_failure"),
+      "Privacy error",
+      base::ASCIIToUTF16("NET::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED"));
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, MalwareInterstitial) {
-  TestInterstitial(
-      GURL("chrome://interstitials/safebrowsing?type=malware"),
-      "Security error");
+  TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=malware"),
+                   "Security error", IDS_MALWARE_V3_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, PhishingInterstitial) {
-  TestInterstitial(
-      GURL("chrome://interstitials/safebrowsing?type=phishing"),
-      "Security error");
+  TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=phishing"),
+                   "Security error", IDS_PHISHING_V4_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, UnwantedSoftwareInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=unwanted"),
-                   "Security error");
+                   "Security error", IDS_HARMFUL_V3_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, MalwareInterstitialQuiet) {
   TestInterstitial(
       GURL("chrome://interstitials/quietsafebrowsing?type=malware"),
-      "Security error");
+      "Security error", IDS_MALWARE_WEBVIEW_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, PhishingInterstitialQuiet) {
   TestInterstitial(
       GURL("chrome://interstitials/quietsafebrowsing?type=phishing"),
-      "Security error");
+      "Security error", IDS_PHISHING_WEBVIEW_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, UnwantedSoftwareInterstitialQuiet) {
   TestInterstitial(
       GURL("chrome://interstitials/quietsafebrowsing?type=unwanted"),
-      "Security error");
+      "Security error", IDS_HARMFUL_WEBVIEW_HEADING);
+}
+
+IN_PROC_BROWSER_TEST_F(InterstitialUITest, BillingInterstitialQuiet) {
+  TestInterstitial(
+      GURL("chrome://interstitials/quietsafebrowsing?type=billing"),
+      "Security error", IDS_BILLING_WEBVIEW_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, ClientsideMalwareInterstitial) {
   TestInterstitial(
       GURL("chrome://interstitials/safebrowsing?type=clientside_malware"),
-      "Security error");
+      "Security error", IDS_MALWARE_V3_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, ClientsidePhishingInterstitial) {
   TestInterstitial(
       GURL("chrome://interstitials/safebrowsing?type=clientside_phishing"),
-      "Security error");
+      "Security error", IDS_PHISHING_V4_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, BillingInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=billing"),
-                   "Security error");
+                   "Security error", IDS_BILLING_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, CaptivePortalInterstitial) {

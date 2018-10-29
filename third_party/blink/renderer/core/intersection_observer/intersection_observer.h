@@ -13,8 +13,8 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/length.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -50,6 +50,7 @@ class CORE_EXPORT IntersectionObserver final
                                       const Vector<float>& thresholds,
                                       Document*,
                                       EventCallback,
+                                      DOMHighResTimeStamp delay = 0,
                                       bool track_visbility = false,
                                       ExceptionState& = ASSERT_NO_EXCEPTION);
   static void ResumeSuspendedObservers();
@@ -64,6 +65,7 @@ class CORE_EXPORT IntersectionObserver final
   Element* root() const { return root_.Get(); }
   String rootMargin() const;
   const Vector<float>& thresholds() const { return thresholds_; }
+  DOMHighResTimeStamp delay() const { return delay_; }
   bool trackVisibility() const { return track_visibility_; }
 
   // An observer can either track intersections with an explicit root Element,
@@ -74,6 +76,7 @@ class CORE_EXPORT IntersectionObserver final
   bool RootIsImplicit() const { return root_is_implicit_; }
 
   DOMHighResTimeStamp GetTimeStamp() const;
+  DOMHighResTimeStamp GetEffectiveDelay() const;
   const Length& TopMargin() const { return top_margin_; }
   const Length& RightMargin() const { return right_margin_; }
   const Length& BottomMargin() const { return bottom_margin_; }
@@ -91,15 +94,15 @@ class CORE_EXPORT IntersectionObserver final
   void Trace(blink::Visitor*) override;
 
   // Enable/disable throttling of visibility checking, so we don't have to add
-  // 100ms sleep() calls to tests.
-  static bool V2ThrottleDelayEnabled();
-  static void SetV2ThrottleDelayEnabledForTesting(bool);
+  // sleep() calls to tests to wait for notifications to show up.
+  static void SetThrottleDelayEnabledForTesting(bool);
 
  private:
   explicit IntersectionObserver(IntersectionObserverDelegate&,
                                 Element*,
                                 const Vector<Length>& root_margin,
                                 const Vector<float>& thresholds,
+                                DOMHighResTimeStamp delay,
                                 bool track_visibility);
   void ClearWeakMembers(Visitor*);
 
@@ -107,6 +110,7 @@ class CORE_EXPORT IntersectionObserver final
   WeakMember<Element> root_;
   HeapLinkedHashSet<WeakMember<IntersectionObservation>> observations_;
   Vector<float> thresholds_;
+  DOMHighResTimeStamp delay_;
   Length top_margin_;
   Length right_margin_;
   Length bottom_margin_;

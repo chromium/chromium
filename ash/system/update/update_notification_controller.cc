@@ -4,7 +4,6 @@
 
 #include "ash/system/update/update_notification_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -29,7 +28,6 @@ const char UpdateNotificationController::kNotificationId[] = "chrome://update";
 
 UpdateNotificationController::UpdateNotificationController()
     : model_(Shell::Get()->system_tray_model()->update_model()) {
-  DCHECK(features::IsSystemTrayUnifiedEnabled());
   model_->AddObserver(this);
   OnUpdateAvailable();
 }

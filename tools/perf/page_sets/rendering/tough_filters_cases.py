@@ -27,12 +27,6 @@ class ToughFiltersCasesPage(rendering_story.RenderingStory):
       action_runner.Wait(10)
 
 
-class MotionMarkPage(ToughFiltersCasesPage):
-  BASE_NAME = 'motion_mark_focus'
-  # pylint: disable=line-too-long
-  URL = 'http://rawgit.com/WebKit/webkit/master/PerformanceTests/Animometer/developer.html?test-interval=20&display=minimal&controller=fixed&frame-rate=50&kalman-process-error=1&kalman-measurement-error=4&time-measurement=performance&suite-name=Animometer&test-name=Focus&complexity=100'
-
-
 class FilterTerrainSVGPage(ToughFiltersCasesPage):
   BASE_NAME = 'filter_terrain_svg'
   URL = 'http://letmespellitoutforyou.com/samples/svg/filter_terrain.svg'

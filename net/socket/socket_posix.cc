@@ -255,7 +255,7 @@ bool SocketPosix::IsConnected() const {
   //   1. Check if the connection is alive using poll(POLLRDHUP).
   //   2. If closed, then use ioctl(FIONREAD) to check if there is data to be
   //   read.
-  // TODO(bug 738275): Remove once MSG_PEEK is implemented on Fuchsia.
+  // TODO(crbug.com/887587): Remove once MSG_PEEK is implemented on Fuchsia.
   struct pollfd pollfd;
   pollfd.fd = socket_fd_;
   pollfd.events = POLLRDHUP;
@@ -297,7 +297,7 @@ bool SocketPosix::IsConnectedAndIdle() const {
   // socket. POLLIN is signaled if the socket is readable or if it was closed by
   // the peer, i.e. the socket is connected and idle if and only if POLLIN is
   // not signaled.
-  // TODO(bug 738275): Remove once MSG_PEEK is implemented.
+  // TODO(crbug.com/887587): Remove once MSG_PEEK is implemented.
   struct pollfd pollfd;
   pollfd.fd = socket_fd_;
   pollfd.events = POLLIN;

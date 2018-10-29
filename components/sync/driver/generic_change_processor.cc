@@ -104,8 +104,7 @@ void GenericChangeProcessor::ApplyChangesFromSyncModel(
     const ImmutableChangeRecordList& changes) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(syncer_changes_.empty());
-  for (ChangeRecordList::const_iterator it = changes.Get().begin();
-       it != changes.Get().end(); ++it) {
+  for (auto it = changes.Get().begin(); it != changes.Get().end(); ++it) {
     if (it->action == ChangeRecord::ACTION_DELETE) {
       std::unique_ptr<sync_pb::EntitySpecifics> specifics;
       if (it->specifics.has_password()) {
@@ -373,8 +372,8 @@ SyncError GenericChangeProcessor::ProcessSyncChanges(
 
   WriteTransaction trans(from_here, share_handle());
 
-  for (SyncChangeList::const_iterator iter = list_of_changes.begin();
-       iter != list_of_changes.end(); ++iter) {
+  for (auto iter = list_of_changes.begin(); iter != list_of_changes.end();
+       ++iter) {
     const SyncChange& change = *iter;
     DCHECK_EQ(change.sync_data().GetDataType(), type_);
     std::string type_str = ModelTypeToString(type_);
@@ -569,10 +568,6 @@ bool GenericChangeProcessor::CryptoReadyIfNecessary() {
   ReadTransaction trans(FROM_HERE, share_handle());
   const ModelTypeSet encrypted_types = trans.GetEncryptedTypes();
   return !encrypted_types.Has(type_) || trans.GetCryptographer()->is_ready();
-}
-
-void GenericChangeProcessor::Disconnect() {
-  local_service_.reset();
 }
 
 void GenericChangeProcessor::StartImpl() {}

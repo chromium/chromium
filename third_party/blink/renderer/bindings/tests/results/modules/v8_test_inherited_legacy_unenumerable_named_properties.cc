@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -61,7 +61,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInheritedLegacyUnenumerableNamedPropertiesV8Internal {
+namespace test_inherited_legacy_unenumerable_named_properties_v8_internal {
 
 static void longAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -111,7 +111,7 @@ static void namedPropertyDescriptor(uint32_t index, const v8::PropertyCallbackIn
   // TODO(rakuco): remove this hack once we switch named property handlers to
   // using descriptor and definer callbacks (bug 764633).
   const AtomicString& indexAsName = AtomicString::Number(index);
-  TestInheritedLegacyUnenumerableNamedPropertiesV8Internal::namedPropertyQuery(indexAsName, info);
+  test_inherited_legacy_unenumerable_named_properties_v8_internal::namedPropertyQuery(indexAsName, info);
   v8::Local<v8::Value> getterValue = info.GetReturnValue().Get();
   if (!getterValue->IsUndefined()) {
     DCHECK(getterValue->IsInt32());
@@ -139,12 +139,12 @@ static void namedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& i
   V8SetReturnValue(info, ToV8(names, info.Holder(), info.GetIsolate()).As<v8::Array>());
 }
 
-} // namespace TestInheritedLegacyUnenumerableNamedPropertiesV8Internal
+}  // namespace test_inherited_legacy_unenumerable_named_properties_v8_internal
 
 void V8TestInheritedLegacyUnenumerableNamedProperties::longAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInheritedLegacyUnenumerableNamedProperties_longAttribute_Getter");
 
-  TestInheritedLegacyUnenumerableNamedPropertiesV8Internal::longAttributeAttributeGetter(info);
+  test_inherited_legacy_unenumerable_named_properties_v8_internal::longAttributeAttributeGetter(info);
 }
 
 void V8TestInheritedLegacyUnenumerableNamedProperties::namedPropertyGetterCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -154,7 +154,7 @@ void V8TestInheritedLegacyUnenumerableNamedProperties::namedPropertyGetterCallba
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestInheritedLegacyUnenumerableNamedPropertiesV8Internal::namedPropertyGetter(propertyName, info);
+  test_inherited_legacy_unenumerable_named_properties_v8_internal::namedPropertyGetter(propertyName, info);
 }
 
 void V8TestInheritedLegacyUnenumerableNamedProperties::namedPropertyQueryCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Integer>& info) {
@@ -164,11 +164,11 @@ void V8TestInheritedLegacyUnenumerableNamedProperties::namedPropertyQueryCallbac
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestInheritedLegacyUnenumerableNamedPropertiesV8Internal::namedPropertyQuery(propertyName, info);
+  test_inherited_legacy_unenumerable_named_properties_v8_internal::namedPropertyQuery(propertyName, info);
 }
 
 void V8TestInheritedLegacyUnenumerableNamedProperties::namedPropertyEnumeratorCallback(const v8::PropertyCallbackInfo<v8::Array>& info) {
-  TestInheritedLegacyUnenumerableNamedPropertiesV8Internal::namedPropertyEnumerator(info);
+  test_inherited_legacy_unenumerable_named_properties_v8_internal::namedPropertyEnumerator(info);
 }
 
 void V8TestInheritedLegacyUnenumerableNamedProperties::indexedPropertyGetterCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -176,11 +176,11 @@ void V8TestInheritedLegacyUnenumerableNamedProperties::indexedPropertyGetterCall
 
   const AtomicString& propertyName = AtomicString::Number(index);
 
-  TestInheritedLegacyUnenumerableNamedPropertiesV8Internal::namedPropertyGetter(propertyName, info);
+  test_inherited_legacy_unenumerable_named_properties_v8_internal::namedPropertyGetter(propertyName, info);
 }
 
 void V8TestInheritedLegacyUnenumerableNamedProperties::indexedPropertyDescriptorCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
-  TestInheritedLegacyUnenumerableNamedPropertiesV8Internal::namedPropertyDescriptor(index, info);
+  test_inherited_legacy_unenumerable_named_properties_v8_internal::namedPropertyDescriptor(index, info);
 }
 
 static const V8DOMConfiguration::AccessorConfiguration V8TestInheritedLegacyUnenumerableNamedPropertiesAccessors[] = {

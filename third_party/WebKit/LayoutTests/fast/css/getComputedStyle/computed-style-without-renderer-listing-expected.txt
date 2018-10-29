@@ -2,7 +2,6 @@ This test documents all computed styles on a display: none element.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 -webkit-app-region: none
 -webkit-appearance: none
 -webkit-border-horizontal-spacing: 0px

@@ -27,21 +27,12 @@
 
 namespace blink {
 
-SpeechSynthesisEvent* SpeechSynthesisEvent::Create() {
-  return new SpeechSynthesisEvent;
-}
-
 SpeechSynthesisEvent* SpeechSynthesisEvent::Create(
     const AtomicString& type,
-    SpeechSynthesisUtterance* utterance,
-    unsigned char_index,
-    float elapsed_time,
-    const String& name) {
-  return new SpeechSynthesisEvent(type, utterance, char_index, elapsed_time,
-                                  name);
+    const SpeechSynthesisEventInit& init) {
+  return new SpeechSynthesisEvent(type, init.utterance(), init.charIndex(),
+                                  init.elapsedTime(), init.name());
 }
-
-SpeechSynthesisEvent::SpeechSynthesisEvent() = default;
 
 SpeechSynthesisEvent::SpeechSynthesisEvent(const AtomicString& type,
                                            SpeechSynthesisUtterance* utterance,

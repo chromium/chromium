@@ -38,8 +38,13 @@ class HostContextFactoryPrivate : public ContextFactoryPrivate {
       scoped_refptr<base::SingleThreadTaskRunner> resize_task_runner);
   ~HostContextFactoryPrivate() override;
 
+  // Call this when a compositor is created to ensure a data map entry exists
+  // for it, so that the data can be accessed before the compositor is
+  // configured. Could be called twice, e.g. if the GPU process crashes.
+  void AddCompositor(Compositor* compositor);
+
   void ConfigureCompositor(
-      base::WeakPtr<Compositor> compositor_weak_ptr,
+      Compositor* compositor,
       scoped_refptr<viz::ContextProvider> context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider);
 
@@ -97,6 +102,10 @@ class HostContextFactoryPrivate : public ContextFactoryPrivate {
     // BeginFrames are enabled for the compositor.
     std::unique_ptr<ExternalBeginFrameControllerClientImpl>
         external_begin_frame_controller_client;
+
+    // SetOutputIsSecure is called before the compositor is ready, so remember
+    // the status and apply it during configuration.
+    bool output_is_secure = false;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(CompositorData);

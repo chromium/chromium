@@ -18,12 +18,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/loader/mojo_async_resource_handler.h"
 #include "content/browser/loader/resource_dispatcher_host_impl.h"
 #include "content/browser/loader/resource_message_filter.h"
 #include "content/browser/loader/resource_request_info_impl.h"
 #include "content/browser/loader_delegate_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/resource_dispatcher_host_delegate.h"
 #include "content/public/common/content_paths.h"
@@ -78,7 +80,8 @@ class URLLoaderFactoryImplTest : public ::testing::TestWithParam<size_t> {
                 browser_context_.get()),
             base::Bind(&URLLoaderFactoryImplTest::GetContexts,
                        base::Unretained(this)),
-            BrowserThread::GetTaskRunnerForThread(BrowserThread::IO))) {
+            base::CreateSingleThreadTaskRunnerWithTraits(
+                {BrowserThread::IO}))) {
     // Some tests specify request.report_raw_headers, but the RDH checks the
     // CanReadRawCookies permission before enabling it.
     ChildProcessSecurityPolicyImpl::GetInstance()->Add(kChildId);

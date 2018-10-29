@@ -7,5 +7,6 @@ body {
   display: flex;
   justify-content: center;
   margin: unset;
+  min-height: 0;
   padding: unset;
 }

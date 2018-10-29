@@ -146,7 +146,7 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeLists(
   num_free_blocks_ += span->length_;
 
   // Merge with previous span if possible.
-  SpanMap::iterator prev_it = spans_.find(span->start_ - 1);
+  auto prev_it = spans_.find(span->start_ - 1);
   if (prev_it != spans_.end() && IsInFreeList(prev_it->second)) {
     std::unique_ptr<Span> prev = RemoveFromFreeList(prev_it->second);
     DCHECK_EQ(prev->start_ + prev->length_, span->start_);
@@ -159,7 +159,7 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeLists(
   }
 
   // Merge with next span if possible.
-  SpanMap::iterator next_it = spans_.find(span->start_ + span->length_);
+  auto next_it = spans_.find(span->start_ + span->length_);
   if (next_it != spans_.end() && IsInFreeList(next_it->second)) {
     std::unique_ptr<Span> next = RemoveFromFreeList(next_it->second);
     DCHECK_EQ(next->start_, span->start_ + span->length_);

@@ -111,7 +111,7 @@ void PagedViewStructure::Move(AppListItemView* view,
                               bool clear_overflow,
                               bool clear_empty_pages) {
   Remove(view, false /* clear_overflow */, false /* clear_empty_pages */);
-  Add(view, target_index, clear_empty_pages, clear_empty_pages);
+  Add(view, target_index, clear_overflow, clear_empty_pages);
 }
 
 void PagedViewStructure::Remove(AppListItemView* view,
@@ -137,9 +137,9 @@ void PagedViewStructure::Add(AppListItemView* view,
                              bool clear_overflow,
                              bool clear_empty_pages) {
   const int view_structure_size = total_pages();
-  DCHECK((target_index.page < view_structure_size &&
-          target_index.slot <= items_on_page(target_index.page)) ||
-         (target_index.page == view_structure_size && target_index.slot == 0));
+  CHECK((target_index.page < view_structure_size &&
+         target_index.slot <= items_on_page(target_index.page)) ||
+        (target_index.page == view_structure_size && target_index.slot == 0));
 
   if (target_index.page == view_structure_size)
     pages_.emplace_back();

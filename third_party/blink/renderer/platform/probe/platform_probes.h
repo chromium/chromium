@@ -36,6 +36,6 @@ inline PlatformProbeSink* ToPlatformProbeSink(FetchContext* context) {
 }  // namespace probe
 }  // namespace blink
 
-#include "third_party/blink/renderer/platform/PlatformProbesInl.h"
+#include "third_party/blink/renderer/platform/platform_probes_inl.h"
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PROBE_PLATFORM_PROBES_H_

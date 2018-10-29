@@ -109,8 +109,6 @@ class NET_EXPORT NetworkDelegate {
   bool CanEnablePrivacyMode(const GURL& url,
                             const GURL& site_for_cookies) const;
 
-  bool AreExperimentalCookieFeaturesEnabled() const;
-
   bool CancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
       const GURL& target_url,
@@ -321,10 +319,6 @@ class NET_EXPORT NetworkDelegate {
   // settings block cookies from being get or set.
   virtual bool OnCanEnablePrivacyMode(const GURL& url,
                                       const GURL& site_for_cookies) const = 0;
-
-  // Returns true if the embedder has enabled the experimental features, and
-  // false otherwise.
-  virtual bool OnAreExperimentalCookieFeaturesEnabled() const = 0;
 
   // Called when the |referrer_url| for requesting |target_url| during handling
   // of the |request| is does not comply with the referrer policy (e.g. a

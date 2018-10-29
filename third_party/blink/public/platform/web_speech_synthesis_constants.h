@@ -8,12 +8,10 @@
 namespace blink {
 
 // Constants used in Text-to-Speech.
-namespace SpeechSynthesisConstants {
-const double kDefaultTextToSpeechRate = 1.0;
-const double kDefaultTextToSpeechPitch = 1.0;
-const double kDefaultTextToSpeechVolume = 1.0;
-const double kDoublePrefNotSet = -1.0;
-}  // namespace SpeechSynthesisConstants
+const double kWebSpeechSynthesisDefaultTextToSpeechRate = 1.0;
+const double kWebSpeechSynthesisDefaultTextToSpeechPitch = 1.0;
+const double kWebSpeechSynthesisDefaultTextToSpeechVolume = 1.0;
+const double kWebSpeechSynthesisDoublePrefNotSet = -1.0;
 
 }  // namespace blink
 

@@ -32,7 +32,7 @@ TEST_P(PaintControllerPaintTest, FullDocumentPaintingWithCaret) {
       *ToLayoutText(div.firstChild()->GetLayoutObject())->FirstTextBox();
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 2,
-      TestDisplayItem(ViewBackgroundClient(), kDocumentBackgroundType),
+      TestDisplayItem(ViewScrollingBackgroundClient(), kDocumentBackgroundType),
       TestDisplayItem(text_inline_box, kForegroundType));
 
   div.focus();
@@ -40,7 +40,7 @@ TEST_P(PaintControllerPaintTest, FullDocumentPaintingWithCaret) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 3,
-      TestDisplayItem(ViewBackgroundClient(), kDocumentBackgroundType),
+      TestDisplayItem(ViewScrollingBackgroundClient(), kDocumentBackgroundType),
       TestDisplayItem(text_inline_box, kForegroundType),
       TestDisplayItem(CaretDisplayItemClientForTesting(),
                       DisplayItem::kCaret));  // New!
@@ -58,7 +58,7 @@ TEST_P(PaintControllerPaintTest, InlineRelayout) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 2,
-      TestDisplayItem(ViewBackgroundClient(), kDocumentBackgroundType),
+      TestDisplayItem(ViewScrollingBackgroundClient(), kDocumentBackgroundType),
       TestDisplayItem(first_text_box, kForegroundType));
 
   div.setAttribute(HTMLNames::styleAttr, "width: 10px; height: 200px");
@@ -71,7 +71,7 @@ TEST_P(PaintControllerPaintTest, InlineRelayout) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 3,
-      TestDisplayItem(ViewBackgroundClient(), kDocumentBackgroundType),
+      TestDisplayItem(ViewScrollingBackgroundClient(), kDocumentBackgroundType),
       TestDisplayItem(new_first_text_box, kForegroundType),
       TestDisplayItem(second_text_box, kForegroundType));
 }
@@ -91,7 +91,7 @@ TEST_P(PaintControllerPaintTest, ChunkIdClientCacheFlag) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 3,
-      TestDisplayItem(ViewBackgroundClient(), kDocumentBackgroundType),
+      TestDisplayItem(ViewScrollingBackgroundClient(), kDocumentBackgroundType),
       TestDisplayItem(sub_div, kBackgroundType),
       TestDisplayItem(sub_div2, kBackgroundType));
 
@@ -133,7 +133,7 @@ TEST_P(PaintControllerPaintTest, CompositingNoFold) {
 
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 2,
-      TestDisplayItem(ViewBackgroundClient(), kDocumentBackgroundType),
+      TestDisplayItem(ViewScrollingBackgroundClient(), kDocumentBackgroundType),
       TestDisplayItem(sub_div, kBackgroundType));
 }
 

@@ -4,17 +4,18 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
+#include "ui/base/material_design/material_design_controller.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_paths.h"
 
 #if defined(OS_MACOSX)
 #include "base/files/file_path.h"
 #include "base/mac/bundle_locations.h"
-#include "base/path_service.h"
 #include "base/test/mock_chrome_application_mac.h"
-#include "ui/base/material_design/material_design_controller.h"
-#include "ui/base/resource/resource_bundle.h"
 #endif
 
 namespace {
@@ -47,17 +48,21 @@ void ShellDialogsTestSuite::Initialize() {
   path = path.Append(
       FILE_PATH_LITERAL("shell_dialogs_unittests_bundle.framework"));
   base::mac::SetOverrideFrameworkBundlePath(path);
+#endif
 
   // Setup resource bundle.
   ui::MaterialDesignController::Initialize();
-  ui::ResourceBundle::InitSharedInstanceWithLocale(
-      "en-US", nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
-#endif
+  ui::RegisterPathProvider();
+
+  base::FilePath ui_test_pak_path;
+  base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path);
+  ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
 }
 
 void ShellDialogsTestSuite::Shutdown() {
-#if defined(OS_MACOSX)
   ui::ResourceBundle::CleanupSharedInstance();
+
+#if defined(OS_MACOSX)
   base::mac::SetOverrideFrameworkBundle(NULL);
 #endif
   base::TestSuite::Shutdown();

@@ -7,9 +7,9 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "components/cbor/cbor_reader.h"
-#include "components/cbor/cbor_values.h"
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/hkdf.h"
@@ -19,9 +19,9 @@ namespace device {
 namespace fido {
 namespace mac {
 
-using cbor::CBORWriter;
-using cbor::CBORReader;
-using cbor::CBORValue;
+using cbor::Writer;
+using cbor::Reader;
+using cbor::Value;
 
 // static
 std::string CredentialMetadata::GenerateRandomSecret() {
@@ -93,13 +93,12 @@ base::Optional<std::vector<uint8_t>> CredentialMetadata::SealCredentialId(
 
   // The remaining bytes are the CBOR-encoded UserEntity, encrypted with
   // AES-256-GCM and authenticated with the version and RP ID.
-  CBORValue::ArrayValue cbor_user;
-  cbor_user.emplace_back(CBORValue(user.id));
-  cbor_user.emplace_back(CBORValue(user.name, CBORValue::Type::BYTE_STRING));
-  cbor_user.emplace_back(
-      CBORValue(user.display_name, CBORValue::Type::BYTE_STRING));
+  Value::ArrayValue cbor_user;
+  cbor_user.emplace_back(Value(user.id));
+  cbor_user.emplace_back(Value(user.name, Value::Type::BYTE_STRING));
+  cbor_user.emplace_back(Value(user.display_name, Value::Type::BYTE_STRING));
   base::Optional<std::vector<uint8_t>> pt =
-      CBORWriter::Write(CBORValue(std::move(cbor_user)));
+      Writer::Write(Value(std::move(cbor_user)));
   if (!pt) {
     return base::nullopt;
   }
@@ -138,12 +137,12 @@ CredentialMetadata::UnsealCredentialId(
   }
 
   // The recovered plaintext should decode into the UserEntity struct.
-  base::Optional<CBORValue> maybe_array = CBORReader::Read(base::make_span(
+  base::Optional<Value> maybe_array = Reader::Read(base::make_span(
       reinterpret_cast<const uint8_t*>(plaintext->data()), plaintext->size()));
   if (!maybe_array || !maybe_array->is_array()) {
     return base::nullopt;
   }
-  const CBORValue::ArrayValue& array = maybe_array->GetArray();
+  const Value::ArrayValue& array = maybe_array->GetArray();
   if (array.size() != 3 || !array[0].is_bytestring() ||
       !array[1].is_bytestring() || !array[2].is_bytestring()) {
     return base::nullopt;

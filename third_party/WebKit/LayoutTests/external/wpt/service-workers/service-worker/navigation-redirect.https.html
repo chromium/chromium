@@ -185,7 +185,7 @@ function redirect_test(url,
     }
 
     return default_variant_test(url, expected_last_url, expected_request_infos,
-                                expected_final_client_tag, test_name);
+                                frame, test_name);
   }, test_name);
 }
 
@@ -194,13 +194,8 @@ function redirect_test(url,
 async function default_variant_test(url,
                                     expected_last_url,
                                     expected_request_infos,
-                                    expected_final_client_tag,
+                                    frame,
                                     test_name) {
-  const message_promise = new Promise(resolve => {
-      // A message with ID 'last_url' will be sent from the iframe.
-      message_resolvers['last_url'] = resolve;
-  });
-
   const expected_intercepted_urls = expected_request_infos.map(
       requests_for_worker => {
     return requests_for_worker.map(info => {
@@ -208,7 +203,7 @@ async function default_variant_test(url,
     });
   });
   await check_all_intercepted_urls(expected_intercepted_urls);
-  const last_url = await message_promise;
+  const last_url = await send_to_iframe(frame, 'getLocation');
   assert_equals(last_url, expected_last_url, 'Last URL should match.');
 }
 
@@ -218,10 +213,6 @@ async function client_variant_test(url,
                                    expected_request_infos,
                                    expected_final_client_tag,
                                    test_name) {
-  // A message with ID 'last_url' will be sent from the iframe, but this
-  // variant doesn't use it. Just define a resolver so it doesn't crash.
-  message_resolvers['last_url'] = () => {};
-
   // Request infos is an array like:
   // [
   //   [{url: url1, resultingClientIdTag: tag1}],
@@ -311,7 +302,7 @@ function send_to_iframe(frame, message) {
     message_resolvers[message_id] = resolve;
     frame.contentWindow.postMessage(
         {id: message_id, message},
-        host_info['HTTPS_REMOTE_ORIGIN']);
+        '*');
   });
 }
 

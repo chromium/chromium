@@ -10,6 +10,7 @@
 #include "net/third_party/quic/core/crypto/aes_128_gcm_12_encrypter.h"
 #include "net/third_party/quic/core/http/quic_spdy_client_stream.h"
 #include "net/third_party/quic/core/http/spdy_utils.h"
+#include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/core/tls_client_handshaker.h"
 #include "net/third_party/quic/platform/api/quic_arraysize.h"
 #include "net/third_party/quic/platform/api/quic_ptr_util.h"
@@ -55,12 +56,12 @@ class TestQuicSpdyClientSession : public QuicSpdyClientSession {
 
   std::unique_ptr<QuicSpdyClientStream> CreateClientStream() override {
     return QuicMakeUnique<MockQuicSpdyClientStream>(GetNextOutgoingStreamId(),
-                                                    this);
+                                                    this, BIDIRECTIONAL);
   }
 
-  MockQuicSpdyClientStream* CreateIncomingDynamicStream(
-      QuicStreamId id) override {
-    MockQuicSpdyClientStream* stream = new MockQuicSpdyClientStream(id, this);
+  MockQuicSpdyClientStream* CreateIncomingStream(QuicStreamId id) override {
+    MockQuicSpdyClientStream* stream =
+        new MockQuicSpdyClientStream(id, this, READ_UNIDIRECTIONAL);
     ActivateStream(QuicWrapUnique(stream));
     return stream;
   }
@@ -71,8 +72,10 @@ class QuicSpdyClientSessionTest : public QuicTestWithParam<ParsedQuicVersion> {
   QuicSpdyClientSessionTest()
       : crypto_config_(crypto_test_utils::ProofVerifierForTesting(),
                        TlsClientHandshaker::CreateSslCtx()),
-        promised_stream_id_(kInvalidStreamId),
-        associated_stream_id_(kInvalidStreamId) {
+        promised_stream_id_(
+            QuicUtils::GetInvalidStreamId(GetParam().transport_version)),
+        associated_stream_id_(
+            QuicUtils::GetInvalidStreamId(GetParam().transport_version)) {
     Initialize();
     // Advance the time, because timers do not like uninitialized times.
     connection_->AdvanceTime(QuicTime::Delta::FromSeconds(1));
@@ -159,9 +162,10 @@ TEST_P(QuicSpdyClientSessionTest, NoEncryptionAfterInitialEncryption) {
   // established and will allow streams to be created.
   session_->CryptoConnect();
   EXPECT_TRUE(session_->IsEncryptionEstablished());
-  QuicSpdyClientStream* stream = session_->CreateOutgoingDynamicStream();
+  QuicSpdyClientStream* stream = session_->CreateOutgoingBidirectionalStream();
   ASSERT_TRUE(stream != nullptr);
-  EXPECT_NE(kCryptoStreamId, stream->id());
+  EXPECT_NE(QuicUtils::GetCryptoStreamId(connection_->transport_version()),
+            stream->id());
 
   // Process an "inchoate" REJ from the server which will cause
   // an inchoate CHLO to be sent and will leave the encryption level
@@ -176,7 +180,7 @@ TEST_P(QuicSpdyClientSessionTest, NoEncryptionAfterInitialEncryption) {
             QuicPacketCreatorPeer::GetEncryptionLevel(
                 QuicConnectionPeer::GetPacketCreator(connection_)));
   // Verify that no new streams may be created.
-  EXPECT_TRUE(session_->CreateOutgoingDynamicStream() == nullptr);
+  EXPECT_TRUE(session_->CreateOutgoingBidirectionalStream() == nullptr);
   // Verify that no data may be send on existing streams.
   char data[] = "hello world";
   QuicConsumedData consumed = session_->WritevData(
@@ -198,16 +202,16 @@ TEST_P(QuicSpdyClientSessionTest, MaxNumStreamsWithNoFinOrRst) {
   const uint32_t kServerMaxIncomingStreams = 1;
   CompleteCryptoHandshake(kServerMaxIncomingStreams);
 
-  QuicSpdyClientStream* stream = session_->CreateOutgoingDynamicStream();
+  QuicSpdyClientStream* stream = session_->CreateOutgoingBidirectionalStream();
   ASSERT_TRUE(stream);
-  EXPECT_FALSE(session_->CreateOutgoingDynamicStream());
+  EXPECT_FALSE(session_->CreateOutgoingBidirectionalStream());
 
   // Close the stream, but without having received a FIN or a RST_STREAM
   // and check that a new one can not be created.
   session_->CloseStream(stream->id());
   EXPECT_EQ(1u, session_->GetNumOpenOutgoingStreams());
 
-  stream = session_->CreateOutgoingDynamicStream();
+  stream = session_->CreateOutgoingBidirectionalStream();
   EXPECT_FALSE(stream);
 }
 
@@ -224,9 +228,9 @@ TEST_P(QuicSpdyClientSessionTest, MaxNumStreamsWithRst) {
   const uint32_t kServerMaxIncomingStreams = 1;
   CompleteCryptoHandshake(kServerMaxIncomingStreams);
 
-  QuicSpdyClientStream* stream = session_->CreateOutgoingDynamicStream();
+  QuicSpdyClientStream* stream = session_->CreateOutgoingBidirectionalStream();
   ASSERT_NE(nullptr, stream);
-  EXPECT_EQ(nullptr, session_->CreateOutgoingDynamicStream());
+  EXPECT_EQ(nullptr, session_->CreateOutgoingBidirectionalStream());
 
   // Close the stream and receive an RST frame to remove the unfinished stream
   session_->CloseStream(stream->id());
@@ -234,7 +238,7 @@ TEST_P(QuicSpdyClientSessionTest, MaxNumStreamsWithRst) {
                                            QUIC_RST_ACKNOWLEDGEMENT, 0));
   // Check that a new one can be created.
   EXPECT_EQ(0u, session_->GetNumOpenOutgoingStreams());
-  stream = session_->CreateOutgoingDynamicStream();
+  stream = session_->CreateOutgoingBidirectionalStream();
   EXPECT_NE(nullptr, stream);
 }
 
@@ -252,9 +256,9 @@ TEST_P(QuicSpdyClientSessionTest, ResetAndTrailers) {
   const uint32_t kServerMaxIncomingStreams = 1;
   CompleteCryptoHandshake(kServerMaxIncomingStreams);
 
-  QuicSpdyClientStream* stream = session_->CreateOutgoingDynamicStream();
+  QuicSpdyClientStream* stream = session_->CreateOutgoingBidirectionalStream();
   ASSERT_NE(nullptr, stream);
-  EXPECT_FALSE(session_->CreateOutgoingDynamicStream());
+  EXPECT_FALSE(session_->CreateOutgoingBidirectionalStream());
 
   QuicStreamId stream_id = stream->id();
   EXPECT_CALL(*connection_, SendControlFrame(_)).Times(1);
@@ -264,7 +268,7 @@ TEST_P(QuicSpdyClientSessionTest, ResetAndTrailers) {
   // A new stream cannot be created as the reset stream still counts as an open
   // outgoing stream until closed by the server.
   EXPECT_EQ(1u, session_->GetNumOpenOutgoingStreams());
-  stream = session_->CreateOutgoingDynamicStream();
+  stream = session_->CreateOutgoingBidirectionalStream();
   EXPECT_EQ(nullptr, stream);
 
   // The stream receives trailers with final byte offset: this is one of three
@@ -279,7 +283,7 @@ TEST_P(QuicSpdyClientSessionTest, ResetAndTrailers) {
   // The stream is now complete from the client's perspective, and it should
   // be able to create a new outgoing stream.
   EXPECT_EQ(0u, session_->GetNumOpenOutgoingStreams());
-  stream = session_->CreateOutgoingDynamicStream();
+  stream = session_->CreateOutgoingBidirectionalStream();
   EXPECT_NE(nullptr, stream);
 }
 
@@ -288,7 +292,7 @@ TEST_P(QuicSpdyClientSessionTest, ReceivedMalformedTrailersAfterSendingRst) {
   // received trailing headers with a malformed final byte offset value.
   CompleteCryptoHandshake();
 
-  QuicSpdyClientStream* stream = session_->CreateOutgoingDynamicStream();
+  QuicSpdyClientStream* stream = session_->CreateOutgoingBidirectionalStream();
   ASSERT_NE(nullptr, stream);
 
   // Send the RST, which results in the stream being closed locally (but some
@@ -309,9 +313,8 @@ TEST_P(QuicSpdyClientSessionTest, ReceivedMalformedTrailersAfterSendingRst) {
   session_->OnStreamHeaderList(stream_id, /*fin=*/false, 0, trailers);
 }
 
-TEST_P(QuicSpdyClientSessionTest, OnHeaderListWithStaticStream) {
-  // Test situation where OnStreamHeadList is called by stream with static id.
-  FLAGS_quic_restart_flag_quic_check_stream_nonstatic_on_header_list = true;
+TEST_P(QuicSpdyClientSessionTest, OnStreamHeaderListWithStaticStream) {
+  // Test situation where OnStreamHeaderList is called by stream with static id.
   CompleteCryptoHandshake();
 
   QuicHeaderList trailers;
@@ -320,7 +323,25 @@ TEST_P(QuicSpdyClientSessionTest, OnHeaderListWithStaticStream) {
   trailers.OnHeaderBlockEnd(0, 0);
 
   EXPECT_CALL(*connection_, CloseConnection(_, _, _)).Times(1);
-  session_->OnStreamHeaderList(kCryptoStreamId, /*fin=*/false, 0, trailers);
+  session_->OnStreamHeaderList(
+      QuicUtils::GetCryptoStreamId(connection_->transport_version()),
+      /*fin=*/false, 0, trailers);
+}
+
+TEST_P(QuicSpdyClientSessionTest, OnPromiseHeaderListWithStaticStream) {
+  // Test situation where OnPromiseHeaderList is called by stream with static
+  // id.
+  CompleteCryptoHandshake();
+
+  QuicHeaderList trailers;
+  trailers.OnHeaderBlockStart();
+  trailers.OnHeader(kFinalOffsetHeaderKey, "0");
+  trailers.OnHeaderBlockEnd(0, 0);
+
+  EXPECT_CALL(*connection_, CloseConnection(_, _, _)).Times(1);
+  session_->OnPromiseHeaderList(
+      QuicUtils::GetCryptoStreamId(connection_->transport_version()),
+      promised_stream_id_, 0, trailers);
 }
 
 TEST_P(QuicSpdyClientSessionTest, GoAwayReceived) {
@@ -330,7 +351,7 @@ TEST_P(QuicSpdyClientSessionTest, GoAwayReceived) {
   // streams.
   session_->connection()->OnGoAwayFrame(QuicGoAwayFrame(
       kInvalidControlFrameId, QUIC_PEER_GOING_AWAY, 1u, "Going away."));
-  EXPECT_EQ(nullptr, session_->CreateOutgoingDynamicStream());
+  EXPECT_EQ(nullptr, session_->CreateOutgoingBidirectionalStream());
 }
 
 static bool CheckForDecryptionError(QuicFramer* framer) {
@@ -410,7 +431,7 @@ TEST_P(QuicSpdyClientSessionTest, PushPromiseOnPromiseHeaders) {
   CompleteCryptoHandshake();
 
   MockQuicSpdyClientStream* stream = static_cast<MockQuicSpdyClientStream*>(
-      session_->CreateOutgoingDynamicStream());
+      session_->CreateOutgoingBidirectionalStream());
 
   EXPECT_CALL(*stream, OnPromiseHeaderList(_, _, _));
   session_->OnPromiseHeaderList(associated_stream_id_, promised_stream_id_, 0,
@@ -421,7 +442,7 @@ TEST_P(QuicSpdyClientSessionTest, PushPromiseOnPromiseHeadersAlreadyClosed) {
   // Initialize crypto before the client session will create a stream.
   CompleteCryptoHandshake();
 
-  session_->CreateOutgoingDynamicStream();
+  session_->CreateOutgoingBidirectionalStream();
 
   EXPECT_CALL(*connection_, SendControlFrame(_));
   EXPECT_CALL(*connection_,
@@ -437,7 +458,7 @@ TEST_P(QuicSpdyClientSessionTest, PushPromiseOutOfOrder) {
   CompleteCryptoHandshake();
 
   MockQuicSpdyClientStream* stream = static_cast<MockQuicSpdyClientStream*>(
-      session_->CreateOutgoingDynamicStream());
+      session_->CreateOutgoingBidirectionalStream());
 
   EXPECT_CALL(*stream, OnPromiseHeaderList(promised_stream_id_, _, _));
   session_->OnPromiseHeaderList(associated_stream_id_, promised_stream_id_, 0,
@@ -457,10 +478,11 @@ TEST_P(QuicSpdyClientSessionTest, PushPromiseOutgoingStreamId) {
   CompleteCryptoHandshake();
 
   MockQuicSpdyClientStream* stream = static_cast<MockQuicSpdyClientStream*>(
-      session_->CreateOutgoingDynamicStream());
+      session_->CreateOutgoingBidirectionalStream());
 
   // Promise an illegal (outgoing) stream id.
-  promised_stream_id_ = 1;
+  promised_stream_id_ =
+      QuicSpdySessionPeer::GetNthClientInitiatedStreamId(*session_, 0);
   EXPECT_CALL(
       *connection_,
       CloseConnection(QUIC_INVALID_STREAM_ID,
@@ -474,7 +496,7 @@ TEST_P(QuicSpdyClientSessionTest, PushPromiseHandlePromise) {
   // Initialize crypto before the client session will create a stream.
   CompleteCryptoHandshake();
 
-  session_->CreateOutgoingDynamicStream();
+  session_->CreateOutgoingBidirectionalStream();
 
   EXPECT_TRUE(session_->HandlePromised(associated_stream_id_,
                                        promised_stream_id_, push_promise_));
@@ -487,7 +509,7 @@ TEST_P(QuicSpdyClientSessionTest, PushPromiseAlreadyClosed) {
   // Initialize crypto before the client session will create a stream.
   CompleteCryptoHandshake();
 
-  session_->CreateOutgoingDynamicStream();
+  session_->CreateOutgoingBidirectionalStream();
   session_->GetOrCreateStream(promised_stream_id_);
 
   EXPECT_CALL(*connection_, SendControlFrame(_));
@@ -508,7 +530,7 @@ TEST_P(QuicSpdyClientSessionTest, PushPromiseDuplicateUrl) {
   // Initialize crypto before the client session will create a stream.
   CompleteCryptoHandshake();
 
-  session_->CreateOutgoingDynamicStream();
+  session_->CreateOutgoingBidirectionalStream();
 
   EXPECT_TRUE(session_->HandlePromised(associated_stream_id_,
                                        promised_stream_id_, push_promise_));
@@ -598,7 +620,7 @@ TEST_P(QuicSpdyClientSessionTest, OnInitialHeadersCompleteIsPush) {
 TEST_P(QuicSpdyClientSessionTest, OnInitialHeadersCompleteIsNotPush) {
   // Initialize crypto before the client session will create a stream.
   CompleteCryptoHandshake();
-  session_->CreateOutgoingDynamicStream();
+  session_->CreateOutgoingBidirectionalStream();
   session_->OnInitialHeadersComplete(promised_stream_id_, SpdyHeaderBlock());
 }
 
@@ -640,7 +662,7 @@ TEST_P(QuicSpdyClientSessionTest, PushPromiseInvalidMethod) {
   // Initialize crypto before the client session will create a stream.
   CompleteCryptoHandshake();
 
-  session_->CreateOutgoingDynamicStream();
+  session_->CreateOutgoingBidirectionalStream();
 
   EXPECT_CALL(*connection_, SendControlFrame(_));
   EXPECT_CALL(*connection_,
@@ -658,7 +680,7 @@ TEST_P(QuicSpdyClientSessionTest, PushPromiseInvalidHost) {
   // Initialize crypto before the client session will create a stream.
   CompleteCryptoHandshake();
 
-  session_->CreateOutgoingDynamicStream();
+  session_->CreateOutgoingBidirectionalStream();
 
   EXPECT_CALL(*connection_, SendControlFrame(_));
   EXPECT_CALL(*connection_,

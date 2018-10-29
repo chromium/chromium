@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome bespaart je tijd door je accounts beschikbaar te maken op internet. Je kunt accounts toevoegen of verwijderen bij Instellingen.</translation>
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
 <translation id="3345341804167540816">Chrome overal gebruiken</translation>
-<translation id="3678774398092457402">Wil je dat Chrome je wachtwoord voor deze site opslaat?</translation>
 <translation id="384394811301901750">Google Chrome kan je camera momenteel niet gebruiken</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chrome-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943">De <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" /> kunnen op elk gewenst moment worden aangepast. Google kan content op sites die je bezoekt en je browseractiviteit en interacties gebruiken om Chrome en Google-services (zoals Translate, Zoeken en advertenties) te personaliseren.</translation>
 <translation id="5639704535586432836">Open Instellingen &gt; Privacy &gt; Camera &gt; Google Chrome en zet de camera aan.</translation>
 <translation id="5642200033778930880">Google Chrome kan je camera niet gebruiken in de modus 'Gesplitste weergave'</translation>
-<translation id="5703130498371792817">Ben je fan van Chrome? <ph name="BEGIN_LINK" />Beoordeel deze app<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Chrome-tip. Sommige knoppen zoals Terug, Vooruit en Zoeken worden nu onderaan het scherm weergegeven.</translation>
 <translation id="6036420186814142909">Google Chrome bevat functies die je helpen je internetgegevens te beheren en te bepalen hoe snel je webpagina's kunt laden.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Servicevoorwaarden van Google Chrome</translation>
 <translation id="7165736900384873061">QR-scanner van Google Chrome gebruiken</translation>
 <translation id="7172660552945675509">Tip: <ph name="BEGIN_LINK" />Verplaats Chrome naar je dock<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome gebruikt Face ID om geautoriseerde toegang tot je wachtwoorden mogelijk te maken.</translation>
 <translation id="7265369419224458312">Bekijk hier de tabbladen die je op je computer hebt geopend. Open Chrome op je computer, ga naar het menu en selecteer 'Inloggen bij Chrome'.</translation>
 <translation id="728488472449859922">QR-scanner van Google Chrome inschakelen</translation>
 <translation id="7400722733683201933">Over Google Chrome</translation>

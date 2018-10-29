@@ -21,8 +21,7 @@ class MODULES_EXPORT BackgroundFetchRecord final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit BackgroundFetchRecord(Request* request,
-                                 Response* response = nullptr);
+  BackgroundFetchRecord(Request* request, Response* response, bool aborted);
   ~BackgroundFetchRecord() override;
 
   Request* request() const;
@@ -38,6 +37,9 @@ class MODULES_EXPORT BackgroundFetchRecord final : public ScriptWrappable {
   Member<Request> request_;
   Member<Response> response_;
   Member<ResponseReadyProperty> response_ready_property_;
+
+  // Whether this record belongs to a fetch that was aborted.
+  bool aborted_;
 };
 
 }  // namespace blink

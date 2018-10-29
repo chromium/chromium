@@ -43,20 +43,21 @@ void AudioOutputStreamSink::Start() {
   }
   started_ = true;
   audio_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&AudioOutputStreamSink::DoStart, this, params_));
+      FROM_HERE,
+      base::BindOnce(&AudioOutputStreamSink::DoStart, this, params_));
 }
 
 void AudioOutputStreamSink::Stop() {
   ClearCallback();
   started_ = false;
   audio_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&AudioOutputStreamSink::DoStop, this));
+      FROM_HERE, base::BindOnce(&AudioOutputStreamSink::DoStop, this));
 }
 
 void AudioOutputStreamSink::Pause() {
   ClearCallback();
   audio_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&AudioOutputStreamSink::DoPause, this));
+      FROM_HERE, base::BindOnce(&AudioOutputStreamSink::DoPause, this));
 }
 
 void AudioOutputStreamSink::Play() {
@@ -65,12 +66,13 @@ void AudioOutputStreamSink::Play() {
     active_render_callback_ = render_callback_;
   }
   audio_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&AudioOutputStreamSink::DoPlay, this));
+      FROM_HERE, base::BindOnce(&AudioOutputStreamSink::DoPlay, this));
 }
 
 bool AudioOutputStreamSink::SetVolume(double volume) {
   audio_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&AudioOutputStreamSink::DoSetVolume, this, volume));
+      FROM_HERE,
+      base::BindOnce(&AudioOutputStreamSink::DoSetVolume, this, volume));
   return true;
 }
 

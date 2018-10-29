@@ -8,6 +8,7 @@ PASS selection.anchorNode is null
 PASS selection.focusNode is null
 PASS document.execCommand("delete") did not crash.
 
+
 Move mouse from AFTER to HOST
 PASS selection.anchorNode is null
 PASS selection.focusNode is null

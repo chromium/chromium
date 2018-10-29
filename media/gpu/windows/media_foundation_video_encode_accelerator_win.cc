@@ -247,9 +247,9 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
   RETURN_ON_HR_FAILURE(hr, "Couldn't set ProcessMessage", false);
 
   main_client_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&Client::RequireBitstreamBuffers, main_client_,
-                            kNumInputBuffers, input_visible_size_,
-                            bitstream_buffer_size_));
+      FROM_HERE, base::BindOnce(&Client::RequireBitstreamBuffers, main_client_,
+                                kNumInputBuffers, input_visible_size_,
+                                bitstream_buffer_size_));
   return SUCCEEDED(hr);
 }
 
@@ -260,9 +260,10 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
   DCHECK(main_client_task_runner_->BelongsToCurrentThread());
 
   encoder_thread_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&MediaFoundationVideoEncodeAccelerator::EncodeTask,
-                            encoder_task_weak_factory_.GetWeakPtr(), frame,
-                            force_keyframe));
+      FROM_HERE,
+      base::BindOnce(&MediaFoundationVideoEncodeAccelerator::EncodeTask,
+                     encoder_task_weak_factory_.GetWeakPtr(), frame,
+                     force_keyframe));
 }
 
 void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
@@ -524,7 +525,7 @@ void MediaFoundationVideoEncodeAccelerator::NotifyError(
          main_client_task_runner_->BelongsToCurrentThread());
 
   main_client_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&Client::NotifyError, main_client_, error));
+      FROM_HERE, base::BindOnce(&Client::NotifyError, main_client_, error));
 }
 
 void MediaFoundationVideoEncodeAccelerator::EncodeTask(

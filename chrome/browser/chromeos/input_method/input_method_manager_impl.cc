@@ -1128,7 +1128,7 @@ void InputMethodManagerImpl::ChangeInputMethodInternal(
     // KeyboardController in the browser process under MASH.
     if (!features::IsUsingWindowService()) {
       auto* keyboard_controller = keyboard::KeyboardController::Get();
-      if (keyboard_controller->enabled())
+      if (keyboard_controller->IsEnabled())
         keyboard_controller->Reload();
     }
   }
@@ -1343,7 +1343,7 @@ void InputMethodManagerImpl::OverrideKeyboardKeyset(mojom::ImeKeyset keyset) {
     // changed to VK.
     state_->input_view_url = state_->current_input_method.input_view_url();
     auto* keyboard_controller = keyboard::KeyboardController::Get();
-    if (keyboard_controller->enabled())
+    if (keyboard_controller->IsEnabled())
       keyboard_controller->Reload();
     return;
   }
@@ -1365,7 +1365,7 @@ void InputMethodManagerImpl::OverrideKeyboardKeyset(mojom::ImeKeyset keyset) {
   state_->input_view_url = url.ReplaceComponents(replacements);
 
   auto* keyboard_controller = keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled())
+  if (keyboard_controller->IsEnabled())
     keyboard_controller->Reload();
 }
 
@@ -1406,7 +1406,7 @@ InputMethodManagerImpl::GetInputMethodKeyboardController() {
   // Callers expect a nullptr when the keyboard is disabled. See
   // https://crbug.com/850020.
   return keyboard::KeyboardController::HasInstance() &&
-                 keyboard::KeyboardController::Get()->enabled()
+                 keyboard::KeyboardController::Get()->IsEnabled()
              ? keyboard::KeyboardController::Get()
              : nullptr;
 }

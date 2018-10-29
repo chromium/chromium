@@ -1319,8 +1319,8 @@ void CookiesTreeModel::PopulateAppCacheInfoWithFilter(
       CookieTreeAppCachesNode* appcaches_node =
           host_node->GetOrCreateAppCachesNode();
 
-      for (std::list<AppCacheInfo>::iterator info = origin.second.begin();
-           info != origin.second.end(); ++info) {
+      for (auto info = origin.second.begin(); info != origin.second.end();
+           ++info) {
         appcaches_node->AddAppCacheNode(
             std::make_unique<CookieTreeAppCacheNode>(origin.first, info));
       }
@@ -1335,7 +1335,7 @@ void CookiesTreeModel::PopulateCookieInfoWithFilter(
   CookieTreeRootNode* root = static_cast<CookieTreeRootNode*>(GetRoot());
 
   notifier->StartBatchUpdate();
-  for (CookieList::iterator it = container->cookie_list_.begin();
+  for (auto it = container->cookie_list_.begin();
        it != container->cookie_list_.end(); ++it) {
     std::string domain = it->Domain();
     if (domain.length() > 1 && domain[0] == '.')
@@ -1365,10 +1365,8 @@ void CookiesTreeModel::PopulateDatabaseInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (DatabaseInfoList::iterator database_info =
-           container->database_info_list_.begin();
-       database_info != container->database_info_list_.end();
-       ++database_info) {
+  for (auto database_info = container->database_info_list_.begin();
+       database_info != container->database_info_list_.end(); ++database_info) {
     GURL origin(database_info->identifier.ToOrigin());
 
     if (filter.empty() || (CookieTreeHostNode::TitleForUrl(origin)
@@ -1392,8 +1390,7 @@ void CookiesTreeModel::PopulateLocalStorageInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (LocalStorageInfoList::iterator local_storage_info =
-           container->local_storage_info_list_.begin();
+  for (auto local_storage_info = container->local_storage_info_list_.begin();
        local_storage_info != container->local_storage_info_list_.end();
        ++local_storage_info) {
     const GURL& origin(local_storage_info->origin_url);
@@ -1419,7 +1416,7 @@ void CookiesTreeModel::PopulateSessionStorageInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (LocalStorageInfoList::iterator session_storage_info =
+  for (auto session_storage_info =
            container->session_storage_info_list_.begin();
        session_storage_info != container->session_storage_info_list_.end();
        ++session_storage_info) {
@@ -1446,8 +1443,7 @@ void CookiesTreeModel::PopulateIndexedDBInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (IndexedDBInfoList::iterator indexed_db_info =
-           container->indexed_db_info_list_.begin();
+  for (auto indexed_db_info = container->indexed_db_info_list_.begin();
        indexed_db_info != container->indexed_db_info_list_.end();
        ++indexed_db_info) {
     const GURL& origin = indexed_db_info->origin;
@@ -1473,8 +1469,7 @@ void CookiesTreeModel::PopulateChannelIDInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (ChannelIDList::iterator channel_id_info =
-           container->channel_id_list_.begin();
+  for (auto channel_id_info = container->channel_id_list_.begin();
        channel_id_info != container->channel_id_list_.end();
        ++channel_id_info) {
     GURL origin(channel_id_info->server_identifier());
@@ -1506,8 +1501,7 @@ void CookiesTreeModel::PopulateServiceWorkerUsageInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (ServiceWorkerUsageInfoList::iterator service_worker_info =
-           container->service_worker_info_list_.begin();
+  for (auto service_worker_info = container->service_worker_info_list_.begin();
        service_worker_info != container->service_worker_info_list_.end();
        ++service_worker_info) {
     const GURL& origin = service_worker_info->origin;
@@ -1533,8 +1527,7 @@ void CookiesTreeModel::PopulateSharedWorkerInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (SharedWorkerInfoList::iterator shared_worker_info =
-           container->shared_worker_info_list_.begin();
+  for (auto shared_worker_info = container->shared_worker_info_list_.begin();
        shared_worker_info != container->shared_worker_info_list_.end();
        ++shared_worker_info) {
     const GURL& worker = shared_worker_info->worker;
@@ -1560,8 +1553,7 @@ void CookiesTreeModel::PopulateCacheStorageUsageInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (CacheStorageUsageInfoList::iterator cache_storage_info =
-           container->cache_storage_info_list_.begin();
+  for (auto cache_storage_info = container->cache_storage_info_list_.begin();
        cache_storage_info != container->cache_storage_info_list_.end();
        ++cache_storage_info) {
     const GURL& origin = cache_storage_info->origin;
@@ -1587,8 +1579,7 @@ void CookiesTreeModel::PopulateFileSystemInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (FileSystemInfoList::iterator file_system_info =
-           container->file_system_info_list_.begin();
+  for (auto file_system_info = container->file_system_info_list_.begin();
        file_system_info != container->file_system_info_list_.end();
        ++file_system_info) {
     GURL origin(file_system_info->origin);
@@ -1614,9 +1605,8 @@ void CookiesTreeModel::PopulateQuotaInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (QuotaInfoList::iterator quota_info = container->quota_info_list_.begin();
-       quota_info != container->quota_info_list_.end();
-       ++quota_info) {
+  for (auto quota_info = container->quota_info_list_.begin();
+       quota_info != container->quota_info_list_.end(); ++quota_info) {
     if (filter.empty() || (base::UTF8ToUTF16(quota_info->host).find(filter) !=
                            base::string16::npos)) {
       CookieTreeHostNode* host_node =
@@ -1637,8 +1627,7 @@ void CookiesTreeModel::PopulateFlashLSOInfoWithFilter(
 
   std::string filter_utf8 = base::UTF16ToUTF8(filter);
   notifier->StartBatchUpdate();
-  for (std::vector<std::string>::iterator it =
-           container->flash_lso_domain_list_.begin();
+  for (auto it = container->flash_lso_domain_list_.begin();
        it != container->flash_lso_domain_list_.end(); ++it) {
     if (filter_utf8.empty() || it->find(filter_utf8) != std::string::npos) {
       // Create a fake origin for GetOrCreateHostNode().
@@ -1659,8 +1648,7 @@ void CookiesTreeModel::PopulateMediaLicenseInfoWithFilter(
     return;
 
   notifier->StartBatchUpdate();
-  for (MediaLicenseInfoList::iterator media_license_info =
-           container->media_license_info_list_.begin();
+  for (auto media_license_info = container->media_license_info_list_.begin();
        media_license_info != container->media_license_info_list_.end();
        ++media_license_info) {
     GURL origin(media_license_info->origin);

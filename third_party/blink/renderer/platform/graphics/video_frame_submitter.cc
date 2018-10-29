@@ -60,13 +60,14 @@ void VideoFrameSubmitter::SetIsOpaque(bool is_opaque) {
 
 void VideoFrameSubmitter::EnableSubmission(
     viz::SurfaceId surface_id,
+    base::TimeTicks local_surface_id_allocation_time,
     WebFrameSinkDestroyedCallback frame_sink_destroyed_callback) {
   // TODO(lethalantidote): Set these fields earlier in the constructor. Will
   // need to construct VideoFrameSubmitter later in order to do this.
   frame_sink_id_ = surface_id.frame_sink_id();
   frame_sink_destroyed_callback_ = frame_sink_destroyed_callback;
   child_local_surface_id_allocator_.UpdateFromParent(
-      surface_id.local_surface_id());
+      surface_id.local_surface_id(), local_surface_id_allocation_time);
   if (resource_provider_->IsInitialized())
     StartSubmitting();
 }
@@ -267,6 +268,8 @@ bool VideoFrameSubmitter::SubmitFrame(
   resource_provider_->PrepareSendToParent(resources,
                                           &compositor_frame.resource_list);
   compositor_frame.render_pass_list.push_back(std::move(render_pass));
+  compositor_frame.metadata.local_surface_id_allocation_time =
+      child_local_surface_id_allocator_.allocation_time();
 
   // TODO(lethalantidote): Address third/fourth arg in SubmitCompositorFrame.
   compositor_frame_sink_->SubmitCompositorFrame(
@@ -406,10 +409,11 @@ void VideoFrameSubmitter::DidDeleteSharedBitmap(const viz::SharedBitmapId& id) {
 }
 
 void VideoFrameSubmitter::SetSurfaceIdForTesting(
-    const viz::SurfaceId& surface_id) {
+    const viz::SurfaceId& surface_id,
+    base::TimeTicks allocation_time) {
   frame_sink_id_ = surface_id.frame_sink_id();
   child_local_surface_id_allocator_.UpdateFromParent(
-      surface_id.local_surface_id());
+      surface_id.local_surface_id(), allocation_time);
 }
 
 }  // namespace blink

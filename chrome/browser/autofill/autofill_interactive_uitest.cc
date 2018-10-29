@@ -14,6 +14,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -87,7 +88,6 @@ namespace autofill {
 
 namespace {
 
-static const char kDataURIPrefix[] = "data:text/html;charset=utf-8,";
 static const char kTestShippingFormString[] =
     "<form action=\"http://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname\">First name:</label>"
@@ -246,6 +246,8 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &AutofillInteractiveTestBase::HandleTestURL, base::Unretained(this)));
     ASSERT_TRUE(https_server_.InitializeAndListen());
     https_server_.StartAcceptingConnections();
 
@@ -256,6 +258,8 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
     // Ensure that |embedded_test_server()| serves both domains used below.
     host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &AutofillInteractiveTestBase::HandleTestURL, base::Unretained(this)));
     embedded_test_server()->StartAcceptingConnections();
 
     // By default, all SSL cert checks are valid. Can be overriden in tests if
@@ -276,6 +280,18 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   void TearDownInProcessBrowserTestFixture() override {
     cert_verifier_.TearDownInProcessBrowserTestFixture();
     AutofillUiTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleTestURL(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != kTestUrlPath)
+      return nullptr;
+
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content_type("text/html;charset=utf-8");
+    response->set_content(test_url_content_);
+    return std::move(response);
   }
 
   content::WebContents* GetWebContents() {
@@ -599,7 +615,15 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
                           {ObservedUiEvents::kFormDataFilled}, widget);
   }
 
+  GURL GetTestUrl() const { return https_server_.GetURL(kTestUrlPath); }
+
+  void SetTestUrlResponse(std::string content) {
+    test_url_content_ = std::move(content);
+  }
+
   net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  static const char kTestUrlPath[];
 
  private:
   net::EmbeddedTestServer https_server_;
@@ -624,8 +648,14 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       controllable_http_response_;
 
+  // The response to return for queries to |kTestUrlPath|
+  std::string test_url_content_;
+
   DISALLOW_COPY_AND_ASSIGN(AutofillInteractiveTestBase);
 };
+
+const char AutofillInteractiveTestBase::kTestUrlPath[] =
+    "/internal/test_url_path";
 
 // AutofillInteractiveTest ----------------------------------------------------
 
@@ -648,8 +678,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicFormFill) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Invoke Autofill.
   TryBasicFormFill();
@@ -658,9 +689,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicFormFill) {
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicClear) {
   CreateTestProfile();
 
+  SetTestUrlResponse(kTestShippingFormString);
+
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   TryBasicFormFill();
 
@@ -671,9 +704,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ClearTwoSection) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString +
-                      kTestBillingFormString)));
+  SetTestUrlResponse(
+      base::StrCat({kTestShippingFormString, kTestBillingFormString}));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Fill first section.
   TryBasicFormFill();
@@ -707,8 +741,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextFieldAndFill) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Modify a field.
   FocusFieldByName("city");
@@ -735,8 +770,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectFieldAndFill) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Modify a field.
   FocusFieldByName("state");
@@ -770,10 +806,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, PrefillFormAndFill) {
       "document.getElementById('phone').value = '15142223344';"
       "</script>";
 
-  // Load the test page and prefill it with the above script.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString +
-                      kPrefillScript)));
+  // Load the test page.
+  SetTestUrlResponse(base::StrCat({kTestShippingFormString, kPrefillScript}));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   CreateTestProfile();
 
@@ -791,8 +827,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   TryBasicFormFill();
 
@@ -851,8 +888,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   TryBasicFormFill();
 
@@ -891,8 +929,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
   TryBasicFormFill();
 
   // Change the last name.
@@ -933,8 +972,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   CreateSecondTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   TryBasicFormFill();
 
@@ -966,8 +1006,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillViaDownArrow) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Focus a fillable field.
   FocusFirstNameField();
@@ -982,8 +1023,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillSelectViaTab) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Focus a fillable field.
   FocusFirstNameField();
@@ -998,8 +1040,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillViaClick) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
   // Focus a fillable field.
   ASSERT_NO_FATAL_FAILURE(FocusFirstNameField());
 
@@ -1074,8 +1118,9 @@ IN_PROC_BROWSER_TEST_P(AutofillSingleClickTest, Click) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // If AutofillSingleClick is NOT enabled, then the first time we click on the
   // first name field, nothing should happen.
@@ -1107,13 +1152,15 @@ IN_PROC_BROWSER_TEST_P(AutofillSingleClickTest, Click) {
 // Makes sure that clicking outside the focused field doesn't activate
 // the popup.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DontAutofillForOutsideClick) {
+  static const char kDisabledButton[] =
+      "<button disabled id='disabled-button'>Cant click this</button>";
+
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL(std::string(kDataURIPrefix) + kTestShippingFormString +
-           "<button disabled id='disabled-button'>Cant click this</button>")));
+  SetTestUrlResponse(base::StrCat({kTestShippingFormString, kDisabledButton}));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   ASSERT_NO_FATAL_FAILURE(FocusFirstNameField());
 
@@ -1134,8 +1181,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnDeleteValueAfterAutofill) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Invoke and accept the Autofill popup and verify the form was filled.
   FocusFirstNameField();
@@ -1174,18 +1222,21 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnDeleteValueAfterAutofill) {
 #endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        MAYBE_OnSelectOptionFromDatalist) {
+  static const char kTestForm[] =
+      "<form action=\"http://www.example.com/\" method=\"POST\">"
+      "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
+      "  <datalist id=\"dl\">"
+      "  <option value=\"Adam\"></option>"
+      "  <option value=\"Bob\"></option>"
+      "  <option value=\"Carl\"></option>"
+      "  </datalist>"
+      "</form>";
+
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL(std::string(kDataURIPrefix) +
-           "<form action=\"http://www.example.com/\" method=\"POST\">"
-           "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
-           "  <datalist id=\"dl\">"
-           "  <option value=\"Adam\"></option>"
-           "  <option value=\"Bob\"></option>"
-           "  <option value=\"Carl\"></option>"
-           "  </datalist>"
-           "</form>")));
+  SetTestUrlResponse(kTestForm);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
   std::string orginalcolor;
   GetFieldBackgroundColor("firstname", &orginalcolor);
 
@@ -1202,9 +1253,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
 // Test that a JavaScript oninput event is fired after auto-filling a form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnInputAfterAutofill) {
-  CreateTestProfile();
-
-  const char kOnInputScript[] =
+  static const char kOnInputScript[] =
       "<script>"
       "focused_fired = false;"
       "unfocused_fired = false;"
@@ -1225,10 +1274,12 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnInputAfterAutofill) {
       "document.getElementById('country').value = 'US';"
       "</script>";
 
+  CreateTestProfile();
+
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString +
-                      kOnInputScript)));
+  SetTestUrlResponse(base::StrCat({kTestShippingFormString, kOnInputScript}));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Invoke Autofill.
   FocusFirstNameField();
@@ -1273,9 +1324,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnInputAfterAutofill) {
 
 // Test that a JavaScript onchange event is fired after auto-filling a form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnChangeAfterAutofill) {
-  CreateTestProfile();
-
-  const char kOnChangeScript[] =
+  static const char kOnChangeScript[] =
       "<script>"
       "focused_fired = false;"
       "unfocused_fired = false;"
@@ -1296,10 +1345,12 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnChangeAfterAutofill) {
       "document.getElementById('country').value = 'US';"
       "</script>";
 
+  CreateTestProfile();
+
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString +
-                      kOnChangeScript)));
+  SetTestUrlResponse(base::StrCat({kTestShippingFormString, kOnChangeScript}));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Invoke Autofill.
   FocusFirstNameField();
@@ -1343,9 +1394,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnChangeAfterAutofill) {
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
-  CreateTestProfile();
-
-  const char kInputFiresBeforeChangeScript[] =
+  static const char kInputFiresBeforeChangeScript[] =
       "<script>"
       "inputElementEvents = [];"
       "function recordInputElementEvent(e) {"
@@ -1363,10 +1412,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
       "document.getElementById('country').onchange = recordSelectElementEvent;"
       "</script>";
 
+  CreateTestProfile();
+
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString +
-                      kInputFiresBeforeChangeScript)));
+  SetTestUrlResponse(
+      base::StrCat({kTestShippingFormString, kInputFiresBeforeChangeScript}));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Invoke and accept the Autofill popup and verify the form was filled.
   FocusFirstNameField();
@@ -1421,11 +1473,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
 // Test that we can autofill forms distinguished only by their |id| attribute.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        AutofillFormsDistinguishedById) {
-  CreateTestProfile();
-
-  // Load the test page.
-  const std::string kURL =
-      std::string(kDataURIPrefix) + kTestShippingFormString +
+  static const char kScript[] =
       "<script>"
       "var mainForm = document.forms[0];"
       "mainForm.id = 'mainForm';"
@@ -1435,7 +1483,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
       "newForm.id = 'newForm';"
       "mainForm.parentNode.insertBefore(newForm, mainForm);"
       "</script>";
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), GURL(kURL)));
+
+  CreateTestProfile();
+
+  // Load the test page.
+  SetTestUrlResponse(base::StrCat({kTestShippingFormString, kScript}));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Invoke Autofill.
   TryBasicFormFill();
@@ -1446,43 +1500,46 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 // (duplicated for "confirmation"); or variants that are hot-swapped via
 // JavaScript, with only one actually visible at any given time.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillFormWithRepeatedField) {
+  static const char kForm[] =
+      "<form action=\"http://www.example.com/\" method=\"POST\">"
+      "<label for=\"firstname\">First name:</label>"
+      " <input type=\"text\" id=\"firstname\""
+      "        onfocus=\"domAutomationController.send(true)\"><br>"
+      "<label for=\"lastname\">Last name:</label>"
+      " <input type=\"text\" id=\"lastname\"><br>"
+      "<label for=\"address1\">Address line 1:</label>"
+      " <input type=\"text\" id=\"address1\"><br>"
+      "<label for=\"address2\">Address line 2:</label>"
+      " <input type=\"text\" id=\"address2\"><br>"
+      "<label for=\"city\">City:</label>"
+      " <input type=\"text\" id=\"city\"><br>"
+      "<label for=\"state\">State:</label>"
+      " <select id=\"state\">"
+      " <option value=\"\" selected=\"yes\">--</option>"
+      " <option value=\"CA\">California</option>"
+      " <option value=\"TX\">Texas</option>"
+      " </select><br>"
+      "<label for=\"state_freeform\" style=\"display:none\">State:</label>"
+      " <input type=\"text\" id=\"state_freeform\""
+      "        style=\"display:none\"><br>"
+      "<label for=\"zip\">ZIP code:</label>"
+      " <input type=\"text\" id=\"zip\"><br>"
+      "<label for=\"country\">Country:</label>"
+      " <select id=\"country\">"
+      " <option value=\"\" selected=\"yes\">--</option>"
+      " <option value=\"CA\">Canada</option>"
+      " <option value=\"US\">United States</option>"
+      " </select><br>"
+      "<label for=\"phone\">Phone number:</label>"
+      " <input type=\"text\" id=\"phone\"><br>"
+      "</form>";
+
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(),
-      GURL(std::string(kDataURIPrefix) +
-           "<form action=\"http://www.example.com/\" method=\"POST\">"
-           "<label for=\"firstname\">First name:</label>"
-           " <input type=\"text\" id=\"firstname\""
-           "        onfocus=\"domAutomationController.send(true)\"><br>"
-           "<label for=\"lastname\">Last name:</label>"
-           " <input type=\"text\" id=\"lastname\"><br>"
-           "<label for=\"address1\">Address line 1:</label>"
-           " <input type=\"text\" id=\"address1\"><br>"
-           "<label for=\"address2\">Address line 2:</label>"
-           " <input type=\"text\" id=\"address2\"><br>"
-           "<label for=\"city\">City:</label>"
-           " <input type=\"text\" id=\"city\"><br>"
-           "<label for=\"state\">State:</label>"
-           " <select id=\"state\">"
-           " <option value=\"\" selected=\"yes\">--</option>"
-           " <option value=\"CA\">California</option>"
-           " <option value=\"TX\">Texas</option>"
-           " </select><br>"
-           "<label for=\"state_freeform\" style=\"display:none\">State:</label>"
-           " <input type=\"text\" id=\"state_freeform\""
-           "        style=\"display:none\"><br>"
-           "<label for=\"zip\">ZIP code:</label>"
-           " <input type=\"text\" id=\"zip\"><br>"
-           "<label for=\"country\">Country:</label>"
-           " <select id=\"country\">"
-           " <option value=\"\" selected=\"yes\">--</option>"
-           " <option value=\"CA\">Canada</option>"
-           " <option value=\"US\">United States</option>"
-           " </select><br>"
-           "<label for=\"phone\">Phone number:</label>"
-           " <input type=\"text\" id=\"phone\"><br>"
-           "</form>")));
+  SetTestUrlResponse(kForm);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Invoke Autofill.
   TryBasicFormFill();
@@ -1492,42 +1549,45 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillFormWithRepeatedField) {
 // Test that we properly autofill forms with non-autofillable fields.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        AutofillFormWithNonAutofillableField) {
+  static const char kForm[] =
+      "<form action=\"http://www.example.com/\" method=\"POST\">"
+      "<label for=\"firstname\">First name:</label>"
+      " <input type=\"text\" id=\"firstname\""
+      "        onfocus=\"domAutomationController.send(true)\"><br>"
+      "<label for=\"middlename\">Middle name:</label>"
+      " <input type=\"text\" id=\"middlename\" autocomplete=\"off\" /><br>"
+      "<label for=\"lastname\">Last name:</label>"
+      " <input type=\"text\" id=\"lastname\"><br>"
+      "<label for=\"address1\">Address line 1:</label>"
+      " <input type=\"text\" id=\"address1\"><br>"
+      "<label for=\"address2\">Address line 2:</label>"
+      " <input type=\"text\" id=\"address2\"><br>"
+      "<label for=\"city\">City:</label>"
+      " <input type=\"text\" id=\"city\"><br>"
+      "<label for=\"state\">State:</label>"
+      " <select id=\"state\">"
+      " <option value=\"\" selected=\"yes\">--</option>"
+      " <option value=\"CA\">California</option>"
+      " <option value=\"TX\">Texas</option>"
+      " </select><br>"
+      "<label for=\"zip\">ZIP code:</label>"
+      " <input type=\"text\" id=\"zip\"><br>"
+      "<label for=\"country\">Country:</label>"
+      " <select id=\"country\">"
+      " <option value=\"\" selected=\"yes\">--</option>"
+      " <option value=\"CA\">Canada</option>"
+      " <option value=\"US\">United States</option>"
+      " </select><br>"
+      "<label for=\"phone\">Phone number:</label>"
+      " <input type=\"text\" id=\"phone\"><br>"
+      "</form>";
+
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(),
-      GURL(std::string(kDataURIPrefix) +
-           "<form action=\"http://www.example.com/\" method=\"POST\">"
-           "<label for=\"firstname\">First name:</label>"
-           " <input type=\"text\" id=\"firstname\""
-           "        onfocus=\"domAutomationController.send(true)\"><br>"
-           "<label for=\"middlename\">Middle name:</label>"
-           " <input type=\"text\" id=\"middlename\" autocomplete=\"off\" /><br>"
-           "<label for=\"lastname\">Last name:</label>"
-           " <input type=\"text\" id=\"lastname\"><br>"
-           "<label for=\"address1\">Address line 1:</label>"
-           " <input type=\"text\" id=\"address1\"><br>"
-           "<label for=\"address2\">Address line 2:</label>"
-           " <input type=\"text\" id=\"address2\"><br>"
-           "<label for=\"city\">City:</label>"
-           " <input type=\"text\" id=\"city\"><br>"
-           "<label for=\"state\">State:</label>"
-           " <select id=\"state\">"
-           " <option value=\"\" selected=\"yes\">--</option>"
-           " <option value=\"CA\">California</option>"
-           " <option value=\"TX\">Texas</option>"
-           " </select><br>"
-           "<label for=\"zip\">ZIP code:</label>"
-           " <input type=\"text\" id=\"zip\"><br>"
-           "<label for=\"country\">Country:</label>"
-           " <select id=\"country\">"
-           " <option value=\"\" selected=\"yes\">--</option>"
-           " <option value=\"CA\">Canada</option>"
-           " <option value=\"US\">United States</option>"
-           " </select><br>"
-           "<label for=\"phone\">Phone number:</label>"
-           " <input type=\"text\" id=\"phone\"><br>"
-           "</form>")));
+  SetTestUrlResponse(kForm);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Invoke Autofill.
   TryBasicFormFill();
@@ -1535,84 +1595,87 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
 // Test that we can Autofill dynamically generated forms.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DynamicFormFill) {
+  static const char kDynamicForm[] =
+      "<form id=\"form\" action=\"http://www.example.com/\""
+      "      method=\"POST\"></form>"
+      "<script>"
+      "function AddElement(name, label) {"
+      "  var form = document.getElementById('form');"
+      ""
+      "  var label_text = document.createTextNode(label);"
+      "  var label_element = document.createElement('label');"
+      "  label_element.setAttribute('for', name);"
+      "  label_element.appendChild(label_text);"
+      "  form.appendChild(label_element);"
+      ""
+      "  if (name === 'state' || name === 'country') {"
+      "    var select_element = document.createElement('select');"
+      "    select_element.setAttribute('id', name);"
+      "    select_element.setAttribute('name', name);"
+      ""
+      "    /* Add an empty selected option. */"
+      "    var default_option = new Option('--', '', true);"
+      "    select_element.appendChild(default_option);"
+      ""
+      "    /* Add the other options. */"
+      "    if (name == 'state') {"
+      "      var option1 = new Option('California', 'CA');"
+      "      select_element.appendChild(option1);"
+      "      var option2 = new Option('Texas', 'TX');"
+      "      select_element.appendChild(option2);"
+      "    } else {"
+      "      var option1 = new Option('Canada', 'CA');"
+      "      select_element.appendChild(option1);"
+      "      var option2 = new Option('United States', 'US');"
+      "      select_element.appendChild(option2);"
+      "    }"
+      ""
+      "    form.appendChild(select_element);"
+      "  } else {"
+      "    var input_element = document.createElement('input');"
+      "    input_element.setAttribute('id', name);"
+      "    input_element.setAttribute('name', name);"
+      ""
+      "    /* Add the onfocus listener to the 'firstname' field. */"
+      "    if (name === 'firstname') {"
+      "      input_element.onfocus = function() {"
+      "        domAutomationController.send(true);"
+      "      };"
+      "    }"
+      ""
+      "    form.appendChild(input_element);"
+      "  }"
+      ""
+      "  form.appendChild(document.createElement('br'));"
+      "};"
+      ""
+      "function BuildForm() {"
+      "  var elements = ["
+      "    ['firstname', 'First name:'],"
+      "    ['lastname', 'Last name:'],"
+      "    ['address1', 'Address line 1:'],"
+      "    ['address2', 'Address line 2:'],"
+      "    ['city', 'City:'],"
+      "    ['state', 'State:'],"
+      "    ['zip', 'ZIP code:'],"
+      "    ['country', 'Country:'],"
+      "    ['phone', 'Phone number:'],"
+      "  ];"
+      ""
+      "  for (var i = 0; i < elements.length; i++) {"
+      "    var name = elements[i][0];"
+      "    var label = elements[i][1];"
+      "    AddElement(name, label);"
+      "  }"
+      "};"
+      "</script>";
+
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(),
-      GURL(std::string(kDataURIPrefix) +
-           "<form id=\"form\" action=\"http://www.example.com/\""
-           "      method=\"POST\"></form>"
-           "<script>"
-           "function AddElement(name, label) {"
-           "  var form = document.getElementById('form');"
-           ""
-           "  var label_text = document.createTextNode(label);"
-           "  var label_element = document.createElement('label');"
-           "  label_element.setAttribute('for', name);"
-           "  label_element.appendChild(label_text);"
-           "  form.appendChild(label_element);"
-           ""
-           "  if (name === 'state' || name === 'country') {"
-           "    var select_element = document.createElement('select');"
-           "    select_element.setAttribute('id', name);"
-           "    select_element.setAttribute('name', name);"
-           ""
-           "    /* Add an empty selected option. */"
-           "    var default_option = new Option('--', '', true);"
-           "    select_element.appendChild(default_option);"
-           ""
-           "    /* Add the other options. */"
-           "    if (name == 'state') {"
-           "      var option1 = new Option('California', 'CA');"
-           "      select_element.appendChild(option1);"
-           "      var option2 = new Option('Texas', 'TX');"
-           "      select_element.appendChild(option2);"
-           "    } else {"
-           "      var option1 = new Option('Canada', 'CA');"
-           "      select_element.appendChild(option1);"
-           "      var option2 = new Option('United States', 'US');"
-           "      select_element.appendChild(option2);"
-           "    }"
-           ""
-           "    form.appendChild(select_element);"
-           "  } else {"
-           "    var input_element = document.createElement('input');"
-           "    input_element.setAttribute('id', name);"
-           "    input_element.setAttribute('name', name);"
-           ""
-           "    /* Add the onfocus listener to the 'firstname' field. */"
-           "    if (name === 'firstname') {"
-           "      input_element.onfocus = function() {"
-           "        domAutomationController.send(true);"
-           "      };"
-           "    }"
-           ""
-           "    form.appendChild(input_element);"
-           "  }"
-           ""
-           "  form.appendChild(document.createElement('br'));"
-           "};"
-           ""
-           "function BuildForm() {"
-           "  var elements = ["
-           "    ['firstname', 'First name:'],"
-           "    ['lastname', 'Last name:'],"
-           "    ['address1', 'Address line 1:'],"
-           "    ['address2', 'Address line 2:'],"
-           "    ['city', 'City:'],"
-           "    ['state', 'State:'],"
-           "    ['zip', 'ZIP code:'],"
-           "    ['country', 'Country:'],"
-           "    ['phone', 'Phone number:'],"
-           "  ];"
-           ""
-           "  for (var i = 0; i < elements.length; i++) {"
-           "    var name = elements[i][0];"
-           "    var label = elements[i][1];"
-           "    AddElement(name, label);"
-           "  }"
-           "};"
-           "</script>")));
+  SetTestUrlResponse(kDynamicForm);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Dynamically construct the form.
   ASSERT_TRUE(content::ExecuteScript(GetWebContents(), "BuildForm();"));
@@ -1626,8 +1689,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterReload) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Reload the page.
   content::WebContents* web_contents = GetWebContents();
@@ -1644,8 +1708,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestEventFormString)));
+  SetTestUrlResponse(kTestEventFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Invoke Autofill.
   TryBasicFormFill();
@@ -1750,49 +1815,51 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_AutofillAfterTranslate) {
 
   CreateTestProfile();
 
-  GURL url(std::string(kDataURIPrefix) +
-               "<form action=\"http://www.example.com/\" method=\"POST\">"
-               "<label for=\"fn\">なまえ</label>"
-               " <input type=\"text\" id=\"fn\""
-               "        onfocus=\"domAutomationController.send(true)\""
-               "><br>"
-               "<label for=\"ln\">みょうじ</label>"
-               " <input type=\"text\" id=\"ln\"><br>"
-               "<label for=\"a1\">Address line 1:</label>"
-               " <input type=\"text\" id=\"a1\"><br>"
-               "<label for=\"a2\">Address line 2:</label>"
-               " <input type=\"text\" id=\"a2\"><br>"
-               "<label for=\"ci\">City:</label>"
-               " <input type=\"text\" id=\"ci\"><br>"
-               "<label for=\"st\">State:</label>"
-               " <select id=\"st\">"
-               " <option value=\"\" selected=\"yes\">--</option>"
-               " <option value=\"CA\">California</option>"
-               " <option value=\"TX\">Texas</option>"
-               " </select><br>"
-               "<label for=\"z\">ZIP code:</label>"
-               " <input type=\"text\" id=\"z\"><br>"
-               "<label for=\"co\">Country:</label>"
-               " <select id=\"co\">"
-               " <option value=\"\" selected=\"yes\">--</option>"
-               " <option value=\"CA\">Canada</option>"
-               " <option value=\"US\">United States</option>"
-               " </select><br>"
-               "<label for=\"ph\">Phone number:</label>"
-               " <input type=\"text\" id=\"ph\"><br>"
-               "</form>"
-               // Add additional Japanese characters to ensure the translate bar
-               // will appear.
-               "我々は重要な、興味深いものになるが、時折状況が発生するため苦労や痛みは"
-               "彼にいくつかの素晴らしいを調達することができます。それから、いくつかの利");
+  static const char kForm[] =
+      "<form action=\"http://www.example.com/\" method=\"POST\">"
+      "<label for=\"fn\">なまえ</label>"
+      " <input type=\"text\" id=\"fn\""
+      "        onfocus=\"domAutomationController.send(true)\""
+      "><br>"
+      "<label for=\"ln\">みょうじ</label>"
+      " <input type=\"text\" id=\"ln\"><br>"
+      "<label for=\"a1\">Address line 1:</label>"
+      " <input type=\"text\" id=\"a1\"><br>"
+      "<label for=\"a2\">Address line 2:</label>"
+      " <input type=\"text\" id=\"a2\"><br>"
+      "<label for=\"ci\">City:</label>"
+      " <input type=\"text\" id=\"ci\"><br>"
+      "<label for=\"st\">State:</label>"
+      " <select id=\"st\">"
+      " <option value=\"\" selected=\"yes\">--</option>"
+      " <option value=\"CA\">California</option>"
+      " <option value=\"TX\">Texas</option>"
+      " </select><br>"
+      "<label for=\"z\">ZIP code:</label>"
+      " <input type=\"text\" id=\"z\"><br>"
+      "<label for=\"co\">Country:</label>"
+      " <select id=\"co\">"
+      " <option value=\"\" selected=\"yes\">--</option>"
+      " <option value=\"CA\">Canada</option>"
+      " <option value=\"US\">United States</option>"
+      " </select><br>"
+      "<label for=\"ph\">Phone number:</label>"
+      " <input type=\"text\" id=\"ph\"><br>"
+      "</form>"
+      // Add additional Japanese characters to ensure the translate bar
+      // will appear.
+      "我々は重要な、興味深いものになるが、時折状況が発生するため苦労や痛みは"
+      "彼にいくつかの素晴らしいを調達することができます。それから、いくつかの"
+      "利";
 
   // Set up an observer to be able to wait for the bubble to be shown.
   content::Source<content::WebContents> source(GetWebContents());
   content::WindowedNotificationObserver language_detected_signal(
       chrome::NOTIFICATION_TAB_LANGUAGE_DETERMINED, source);
 
+  SetTestUrlResponse(kForm);
   ASSERT_NO_FATAL_FAILURE(
-      ui_test_utils::NavigateToURL(browser(), url));
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Wait for the translate bubble to appear.
   language_detected_signal.Wait();
@@ -2054,8 +2121,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   CreateTestProfile();
 
   // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestShippingFormString)));
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Invoke Autofill: Start filling the first name field with "M" and wait for
   // the popup to be shown.

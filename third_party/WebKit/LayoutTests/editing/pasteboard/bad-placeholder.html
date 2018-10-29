@@ -1,6 +1,8 @@
 <script>
-if (window.testRunner)
-     testRunner.dumpEditingCallbacks();
+if (window.testRunner) {
+    testRunner.dumpEditingCallbacks();
+    testRunner.dumpAsLayoutWithPixelResults();
+}
 </script>
 <p>This is a test to make sure that a placeholder, even one without our special class on it, is removed only when it has been collapsed away or when it has been displaced by pasted content.</p>
 <p>Placeholders with our special class can, through bugs in deletion, be inserted into the document unnecessarily.  Once that happens, we don't want to make matters worse by removing them if they are acting as line breaks instead of placeholders.</p>

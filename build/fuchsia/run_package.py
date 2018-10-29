@@ -58,7 +58,7 @@ def _ReadMergedLines(streams):
         del streams_by_fd[fileno]
 
 
-def DrainStreamToStdout(stream, quit_event):
+def _DrainStreamToStdout(stream, quit_event):
   """Outputs the contents of |stream| until |quit_event| is set."""
 
   while not quit_event.is_set():
@@ -70,34 +70,57 @@ def DrainStreamToStdout(stream, quit_event):
       print line.rstrip()
 
 
+class RunPackageArgs:
+  """RunPackage() configuration arguments structure.
+
+  install_only: If set, skips the package execution step.
+  symbolizer_config: A newline delimited list of source files contained
+      in the package. Omitting this parameter will disable symbolization.
+  system_logging: If set, connects a system log reader to the target.
+  target_staging_path: Path to which package FARs will be staged, during
+      installation. Defaults to staging into '/data'.
+  """
+  def __init__(self):
+    self.install_only = False
+    self.symbolizer_config = None
+    self.system_logging = False
+    self.target_staging_path = '/data'
+
+  @staticmethod
+  def FromCommonArgs(args):
+    run_package_args = RunPackageArgs()
+    run_package_args.install_only = args.install_only
+    run_package_args.symbolizer_config = args.package_manifest
+    run_package_args.system_logging = args.include_system_logs
+    run_package_args.target_staging_path = args.target_staging_path
+    return run_package_args
+
+
 def RunPackage(output_dir, target, package_path, package_name, package_deps,
-               run_args, system_logging, install_only, symbolizer_config=None):
+               package_args, args):
   """Copies the Fuchsia package at |package_path| to the target,
-  executes it with |run_args|, and symbolizes its output.
+  executes it with |package_args|, and symbolizes its output.
 
   output_dir: The path containing the build output files.
   target: The deployment Target object that will run the package.
   package_path: The path to the .far package file.
   package_name: The name of app specified by package metadata.
-  run_args: The arguments which will be passed to the Fuchsia process.
-  system_logging: If set, connects a system log reader to the target.
-  install_only: If set, skips the package execution step.
-  symbolizer_config: A newline delimited list of source files contained
-                     in the package. Omitting this parameter will disable
-                     symbolization.
+  package_args: The arguments which will be passed to the Fuchsia process.
+  args: Structure of arguments to configure how the package will be run.
 
   Returns the exit code of the remote package process."""
 
 
-  system_logger = _AttachKernelLogReader(target) if system_logging else None
+  system_logger = (
+      _AttachKernelLogReader(target) if args.system_logging else None)
   try:
     if system_logger:
       # Spin up a thread to asynchronously dump the system log to stdout
       # for easier diagnoses of early, pre-execution failures.
       log_output_quit_event = multiprocessing.Event()
       log_output_thread = threading.Thread(
-          target=lambda: DrainStreamToStdout(system_logger.stdout,
-                                             log_output_quit_event))
+          target=lambda: _DrainStreamToStdout(system_logger.stdout,
+                                              log_output_quit_event))
       log_output_thread.daemon = True
       log_output_thread.start()
 
@@ -105,7 +128,8 @@ def RunPackage(output_dir, target, package_path, package_name, package_deps,
       logging.info('Installing ' + os.path.basename(next_package_path) + '.')
 
       # Copy the package archive.
-      install_path = os.path.join('/data', os.path.basename(next_package_path))
+      install_path = os.path.join(args.target_staging_path,
+                                  os.path.basename(next_package_path))
       target.PutFile(next_package_path, install_path)
 
       # Install the package.
@@ -125,12 +149,12 @@ def RunPackage(output_dir, target, package_path, package_name, package_deps,
       log_output_quit_event.set()
       log_output_thread.join(timeout=_JOIN_TIMEOUT_SECS)
 
-    if install_only:
+    if args.install_only:
       logging.info('Installation complete.')
       return
 
     logging.info('Running application.')
-    command = ['run', package_name] + run_args
+    command = ['run', package_name] + package_args
     process = target.RunCommandPiped(command,
                                      stdin=open(os.devnull, 'r'),
                                      stdout=subprocess.PIPE,
@@ -141,9 +165,9 @@ def RunPackage(output_dir, target, package_path, package_name, package_deps,
     else:
       task_output = process.stdout
 
-    if symbolizer_config:
+    if args.symbolizer_config:
       # Decorate the process output stream with the symbolizer.
-      output = FilterStream(task_output, package_name, symbolizer_config,
+      output = FilterStream(task_output, package_name, args.symbolizer_config,
                             output_dir)
     else:
       logging.warn('Symbolization is DISABLED.')
@@ -167,6 +191,5 @@ def RunPackage(output_dir, target, package_path, package_name, package_deps,
       log_output_quit_event.set()
       log_output_thread.join()
       system_logger.kill()
-
 
   return process.returncode

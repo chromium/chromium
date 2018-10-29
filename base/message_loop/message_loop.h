@@ -175,6 +175,9 @@ class BASE_EXPORT MessageLoop : public MessagePump::Delegate,
 
   // TODO(https://crbug.com/825327): Remove users of TaskObservers through
   // MessageLoop::current() and migrate the type back here.
+  //
+  // This alias is deprecated. Use base::TaskObserver instead.
+  // TODO(yutak): Replace all the use sites with base::TaskObserver.
   using TaskObserver = MessageLoopCurrent::TaskObserver;
 
   // These functions can only be called on the same thread that |this| is
@@ -186,6 +189,9 @@ class BASE_EXPORT MessageLoop : public MessagePump::Delegate,
   // When this functionality is enabled, the queue time will be recorded for
   // posted tasks.
   void SetAddQueueTimeToTasks(bool enable);
+
+  // Returns true if this is the active MessageLoop for the current thread.
+  bool IsBoundToCurrentThread() const;
 
   // Returns true if the message loop is idle (ignoring delayed tasks). This is
   // the same condition which triggers DoWork() to return false: i.e.
@@ -240,6 +246,11 @@ class BASE_EXPORT MessageLoop : public MessagePump::Delegate,
       Type type,
       MessagePumpFactoryCallback pump_factory);
 
+  // Return the pointer to MessageLoop for internal needs.
+  // All other callers should call MessageLoopCurrent::Get().
+  // TODO(altimin): Remove this.
+  static MessageLoop* GetCurrentDeprecated();
+
   // Sets the ThreadTaskRunnerHandle for the current thread to point to the
   // task runner for this message loop.
   void SetThreadTaskRunnerHandle();
@@ -260,8 +271,10 @@ class BASE_EXPORT MessageLoop : public MessagePump::Delegate,
   // destructor to make sure all the task's destructors get called.
   void DeletePendingTasks();
 
-  // Wakes up the message pump. Can be called on any thread. The caller is
-  // responsible for synchronizing ScheduleWork() calls.
+  // Wakes up the message pump. Thread-safe (and callers should avoid holding a
+  // Lock at all cost while making this call as some platforms' priority
+  // boosting features have been observed to cause the caller to get descheduled
+  // : https://crbug.com/890978).
   void ScheduleWork();
 
   // Returns |next_run_time| capped at 1 day from |recent_time_|. This is used

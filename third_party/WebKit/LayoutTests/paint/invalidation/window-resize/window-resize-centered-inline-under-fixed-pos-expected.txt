@@ -99,7 +99,7 @@
           "reason": "geometry"
         },
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [0, 250, 400, 350],
           "reason": "incremental"
         },
@@ -147,7 +147,7 @@
           "reason": "geometry"
         },
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [400, 0, 400, 600],
           "reason": "incremental"
         },

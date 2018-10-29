@@ -20,14 +20,15 @@ class USBInterface : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static USBInterface* Create(const USBConfiguration*, size_t interface_index);
   static USBInterface* Create(const USBConfiguration*,
-                              size_t interface_number,
+                              wtf_size_t interface_index);
+  static USBInterface* Create(const USBConfiguration*,
+                              uint8_t interface_number,
                               ExceptionState&);
 
   USBInterface(const USBDevice*,
-               size_t configuration_index,
-               size_t interface_index);
+               wtf_size_t configuration_index,
+               wtf_size_t interface_index);
 
   const device::mojom::blink::UsbInterfaceInfo& Info() const;
 
@@ -40,8 +41,8 @@ class USBInterface : public ScriptWrappable {
 
  private:
   Member<const USBDevice> device_;
-  const size_t configuration_index_;
-  const size_t interface_index_;
+  const wtf_size_t configuration_index_;
+  const wtf_size_t interface_index_;
 };
 
 }  // namespace blink

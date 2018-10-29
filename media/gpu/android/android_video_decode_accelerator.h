@@ -22,9 +22,9 @@
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/base/content_decryption_module.h"
-#include "media/gpu/android/avda_codec_allocator.h"
 #include "media/gpu/android/avda_picture_buffer_manager.h"
 #include "media/gpu/android/avda_state_provider.h"
+#include "media/gpu/android/codec_allocator.h"
 #include "media/gpu/android/device_info.h"
 #include "media/gpu/android/surface_chooser_helper.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
@@ -44,13 +44,13 @@ class PromotionHintAggregator;
 class MEDIA_GPU_EXPORT AndroidVideoDecodeAccelerator
     : public VideoDecodeAccelerator,
       public AVDAStateProvider,
-      public AVDACodecAllocatorClient {
+      public CodecAllocatorClient {
  public:
   static VideoDecodeAccelerator::Capabilities GetCapabilities(
       const gpu::GpuPreferences& gpu_preferences);
 
   AndroidVideoDecodeAccelerator(
-      AVDACodecAllocator* codec_allocator,
+      CodecAllocator* codec_allocator,
       std::unique_ptr<AndroidVideoSurfaceChooser> surface_chooser,
       const MakeGLContextCurrentCallback& make_context_current_cb,
       const GetContextGroupCallback& get_context_group_cb,
@@ -83,7 +83,7 @@ class MEDIA_GPU_EXPORT AndroidVideoDecodeAccelerator
   void NotifyError(Error error) override;
   PromotionHintAggregator::NotifyPromotionHintCB GetPromotionHintCB() override;
 
-  // AVDACodecAllocatorClient implementation:
+  // CodecAllocatorClient implementation:
   void OnCodecConfigured(
       std::unique_ptr<MediaCodecBridge> media_codec,
       scoped_refptr<AVDASurfaceBundle> surface_bundle) override;
@@ -266,7 +266,7 @@ class MEDIA_GPU_EXPORT AndroidVideoDecodeAccelerator
   // To expose client callbacks from VideoDecodeAccelerator.
   Client* client_;
 
-  AVDACodecAllocator* codec_allocator_;
+  CodecAllocator* codec_allocator_;
 
   // Callback to set the correct gl context.
   MakeGLContextCurrentCallback make_context_current_cb_;

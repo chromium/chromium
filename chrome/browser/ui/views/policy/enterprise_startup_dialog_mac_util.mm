@@ -9,7 +9,7 @@
 namespace policy {
 
 void StartModal(gfx::NativeWindow dialog) {
-  [NSApp runModalForWindow:dialog];
+  [NSApp runModalForWindow:dialog.GetNativeNSWindow()];
 }
 void StopModal() {
   [NSApp stopModal];

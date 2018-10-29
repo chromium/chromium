@@ -157,4 +157,26 @@ TEST(TestInstanceTracker, ExistingInstances) {
   EXPECT_EQ(1, tracker.moves());
 }
 
+TEST(TestInstanceTracker, Comparisons) {
+  InstanceTracker tracker;
+  MovableOnlyInstance one(1), two(2);
+
+  EXPECT_EQ(0, tracker.comparisons());
+  EXPECT_FALSE(one == two);
+  EXPECT_EQ(1, tracker.comparisons());
+  EXPECT_TRUE(one != two);
+  EXPECT_EQ(2, tracker.comparisons());
+  EXPECT_TRUE(one < two);
+  EXPECT_EQ(3, tracker.comparisons());
+  EXPECT_FALSE(one > two);
+  EXPECT_EQ(4, tracker.comparisons());
+  EXPECT_TRUE(one <= two);
+  EXPECT_EQ(5, tracker.comparisons());
+  EXPECT_FALSE(one >= two);
+  EXPECT_EQ(6, tracker.comparisons());
+
+  tracker.ResetCopiesMovesSwaps();
+  EXPECT_EQ(0, tracker.comparisons());
+}
+
 }  // namespace

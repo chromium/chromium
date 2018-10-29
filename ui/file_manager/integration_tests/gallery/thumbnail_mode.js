@@ -96,7 +96,7 @@ function deleteAllImagesInThumbnailMode(testVolumeName, volumeType, operation) {
         }).then(function() {
           return gallery.callRemoteTestUtil(
               'fakeKeyDown', appId,
-              ['button.delete', 'Enter', 'Enter', false, false, false]);
+              ['button.delete', 'Enter', false, false, false]);
         }).then(function() {
           // When user has pressed enter key on button, click event is
           // dispatched after keydown event.
@@ -107,8 +107,7 @@ function deleteAllImagesInThumbnailMode(testVolumeName, volumeType, operation) {
       case 'delete-key':
         // Press delete key.
         return gallery.callRemoteTestUtil(
-            'fakeKeyDown', appId,
-            ['body', 'Delete', 'U+007F' /* Delete */, false, false, false]);
+            'fakeKeyDown', appId, ['body', 'Delete', false, false, false]);
         break;
     }
   }).then(function(result) {
@@ -119,6 +118,9 @@ function deleteAllImagesInThumbnailMode(testVolumeName, volumeType, operation) {
     chrome.test.assertTrue(!!result);
     // Wait until error banner is shown.
     return gallery.waitForElement(appId, '.gallery[error] .error-banner');
+  }).then(function() {
+    // Check: The edit name field should hide.
+    return gallery.waitForElement(appId, '#rename-input[hidden]');
   });
 }
 
@@ -162,6 +164,9 @@ function emptySpaceClickUnselectsInThumbnailMode(testVolumeName, volumeType) {
     // Confirm slideshow button is disabled.
     return gallery.waitForElement(appId, 'button.slideshow[disabled]');
   }).then(function() {
+    // Check: The edit name field should hide.
+    return gallery.waitForElement(appId, '#rename-input[hidden]');
+  }).then(function() {
     // Switch back to slide mode by clicking mode button.
     return gallery.waitAndClickElement(appId, 'button.mode:not([disabled])');
   }).then(function(result) {
@@ -198,8 +203,7 @@ function selectMultipleImagesWithShiftKey(testVolumeName, volumeType) {
 
     // Press Right key with shift.
     return gallery.fakeKeyDown(
-        appId, '.thumbnail-view', 'ArrowRight', 'Right', false,
-        true /* Shift */, false);
+        appId, '.thumbnail-view', 'ArrowRight', false, true /* Shift */, false);
   }).then(function() {
     // Confirm 2 images are selected: [1][2] 3
     return gallery.callRemoteTestUtil('queryAllElements', appId,
@@ -211,8 +215,7 @@ function selectMultipleImagesWithShiftKey(testVolumeName, volumeType) {
 
     // Press Right key with shift.
     return gallery.fakeKeyDown(
-        appId, '.thumbnail-view', 'ArrowRight', 'Right', false,
-        true /* Shift */, false);
+        appId, '.thumbnail-view', 'ArrowRight', false, true /* Shift */, false);
   }).then(function() {
     // Confirm 3 images are selected: [1][2][3]
     return gallery.callRemoteTestUtil('queryAllElements', appId,
@@ -226,8 +229,7 @@ function selectMultipleImagesWithShiftKey(testVolumeName, volumeType) {
 
     // Press Left key with shift.
     return gallery.fakeKeyDown(
-        appId, '.thumbnail-view', 'ArrowLeft', 'Left', false,
-        true /* Shift */, false);
+        appId, '.thumbnail-view', 'ArrowLeft', false, true /* Shift */, false);
   }).then(function() {
     // Confirm 2 images are selected: [1][2] 3
     return gallery.callRemoteTestUtil('queryAllElements', appId,
@@ -239,8 +241,7 @@ function selectMultipleImagesWithShiftKey(testVolumeName, volumeType) {
 
     // Press Right key without shift.
     return gallery.fakeKeyDown(
-        appId, '.thumbnail-view', 'ArrowRight', 'Right', false,
-        false, false);
+        appId, '.thumbnail-view', 'ArrowRight', false, false, false);
   }).then(function() {
     // Confirm only the last image is selected: 1  2 [3]
     return gallery.callRemoteTestUtil('queryAllElements', appId,
@@ -285,8 +286,7 @@ function selectAllImagesAfterImageDeletionOnDownloads(
   }).then(function() {
     // Press Ctrl+A to select all images.
     return gallery.fakeKeyDown(appId, '.thumbnail-view',
-        'a', 'U+0041' /* A */, true /* Ctrl*/, false /* Shift */,
-        false /* Alt */);
+        'a', true /* Ctrl*/, false /* Shift */, false /* Alt */);
   }).then(function() {
     // Confirm that 2 images are selected.
     return gallery.callRemoteTestUtil('queryAllElements', appId,

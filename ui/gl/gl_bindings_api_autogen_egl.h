@@ -150,21 +150,6 @@ EGLBoolean eglPostSubBufferNVFn(EGLDisplay dpy,
                                 EGLint y,
                                 EGLint width,
                                 EGLint height) override;
-EGLint eglProgramCacheGetAttribANGLEFn(EGLDisplay dpy, EGLenum attrib) override;
-void eglProgramCachePopulateANGLEFn(EGLDisplay dpy,
-                                    const void* key,
-                                    EGLint keysize,
-                                    const void* binary,
-                                    EGLint binarysize) override;
-void eglProgramCacheQueryANGLEFn(EGLDisplay dpy,
-                                 EGLint index,
-                                 void* key,
-                                 EGLint* keysize,
-                                 void* binary,
-                                 EGLint* binarysize) override;
-EGLint eglProgramCacheResizeANGLEFn(EGLDisplay dpy,
-                                    EGLint limit,
-                                    EGLenum mode) override;
 EGLenum eglQueryAPIFn(void) override;
 EGLBoolean eglQueryContextFn(EGLDisplay dpy,
                              EGLContext ctx,
@@ -192,6 +177,9 @@ EGLBoolean eglReleaseTexImageFn(EGLDisplay dpy,
                                 EGLSurface surface,
                                 EGLint buffer) override;
 EGLBoolean eglReleaseThreadFn(void) override;
+void eglSetBlobCacheFuncsANDROIDFn(EGLDisplay dpy,
+                                   EGLSetBlobFuncANDROID set,
+                                   EGLGetBlobFuncANDROID get) override;
 EGLBoolean eglStreamAttribKHRFn(EGLDisplay dpy,
                                 EGLStreamKHR stream,
                                 EGLenum attribute,

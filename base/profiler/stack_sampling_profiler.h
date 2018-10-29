@@ -79,6 +79,16 @@ class BASE_EXPORT StackSamplingProfiler {
     // Interval between samples during a sampling profile. This is the desired
     // duration from the start of one sample to the start of the next sample.
     TimeDelta sampling_interval = TimeDelta::FromMilliseconds(100);
+
+    // When true, keeps the average sampling interval = |sampling_interval|,
+    // irrespective of how long each sample takes. If a sample takes too long,
+    // keeping the interval constant will lock out the sampled thread. When
+    // false, sample is created with an interval of |sampling_interval|,
+    // excluding the time taken by a sample. The metrics collected will not be
+    // accurate, since sampling could take arbitrary amount of time, but makes
+    // sure that the sampled thread gets at least the interval amount of time to
+    // run between samples.
+    bool keep_consistent_sampling_interval = true;
   };
 
   // The ProfileBuilder interface allows the user to record profile information

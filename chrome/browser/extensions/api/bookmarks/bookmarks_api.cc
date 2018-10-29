@@ -741,9 +741,9 @@ void BookmarksIOFunction::ShowSelectFileDialog(
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.resize(1);
   file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("html"));
-  gfx::NativeWindow owning_window = web_contents ?
-      platform_util::GetTopLevel(web_contents->GetNativeView())
-          : NULL;
+  gfx::NativeWindow owning_window =
+      web_contents ? platform_util::GetTopLevel(web_contents->GetNativeView())
+                   : gfx::kNullNativeWindow;
   // |web_contents| can be NULL (for background pages), which is fine. In such
   // a case if file-selection dialogs are forbidden by policy, we will not
   // show an InfoBar, which is better than letting one appear out of the blue.

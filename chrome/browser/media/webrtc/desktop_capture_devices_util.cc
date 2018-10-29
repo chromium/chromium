@@ -14,17 +14,19 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/audio/audio_device_description.h"
-#include "media/base/display_media_information.h"
+#include "media/mojo/interfaces/display_media_information.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-media::DisplayMediaInformation DesktopMediaIDToDisplayMediaInformation(
+media::mojom::DisplayMediaInformationPtr
+DesktopMediaIDToDisplayMediaInformation(
     const content::DesktopMediaID& media_id) {
-  media::DisplayCaptureSurfaceType display_surface =
-      media::DisplayCaptureSurfaceType::MONITOR;
+  media::mojom::DisplayCaptureSurfaceType display_surface =
+      media::mojom::DisplayCaptureSurfaceType::MONITOR;
   bool logical_surface = true;
-  media::CursorCaptureType cursor = media::CursorCaptureType::NEVER;
+  media::mojom::CursorCaptureType cursor =
+      media::mojom::CursorCaptureType::NEVER;
 #if defined(USE_AURA)
   const bool uses_aura =
       media_id.aura_id != content::DesktopMediaID::kNullId ? true : false;
@@ -33,25 +35,25 @@ media::DisplayMediaInformation DesktopMediaIDToDisplayMediaInformation(
 #endif  // defined(USE_AURA)
   switch (media_id.type) {
     case content::DesktopMediaID::TYPE_SCREEN:
-      display_surface = media::DisplayCaptureSurfaceType::MONITOR;
-      cursor = uses_aura ? media::CursorCaptureType::MOTION
-                         : media::CursorCaptureType::ALWAYS;
+      display_surface = media::mojom::DisplayCaptureSurfaceType::MONITOR;
+      cursor = uses_aura ? media::mojom::CursorCaptureType::MOTION
+                         : media::mojom::CursorCaptureType::ALWAYS;
       break;
     case content::DesktopMediaID::TYPE_WINDOW:
-      display_surface = media::DisplayCaptureSurfaceType::WINDOW;
-      cursor = uses_aura ? media::CursorCaptureType::MOTION
-                         : media::CursorCaptureType::ALWAYS;
+      display_surface = media::mojom::DisplayCaptureSurfaceType::WINDOW;
+      cursor = uses_aura ? media::mojom::CursorCaptureType::MOTION
+                         : media::mojom::CursorCaptureType::ALWAYS;
       break;
     case content::DesktopMediaID::TYPE_WEB_CONTENTS:
-      display_surface = media::DisplayCaptureSurfaceType::BROWSER;
-      cursor = media::CursorCaptureType::MOTION;
+      display_surface = media::mojom::DisplayCaptureSurfaceType::BROWSER;
+      cursor = media::mojom::CursorCaptureType::MOTION;
       break;
     case content::DesktopMediaID::TYPE_NONE:
       break;
   }
 
-  return media::DisplayMediaInformation(display_surface, logical_surface,
-                                        cursor);
+  return media::mojom::DisplayMediaInformation::New(display_surface,
+                                                    logical_surface, cursor);
 }
 
 base::string16 GetStopSharingUIString(

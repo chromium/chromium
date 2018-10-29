@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_
 
+#include <memory>
+
 #include "base/macros.h"
+#include "base/strings/string16.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "chrome/browser/webauthn/transport_list_model.h"
 
 namespace ui {
 class MenuModel;
@@ -262,6 +264,8 @@ class AuthenticatorBlePinEntrySheetModel : public AuthenticatorSheetModelBase {
  public:
   using AuthenticatorSheetModelBase::AuthenticatorSheetModelBase;
 
+  void SetPinCode(base::string16 pin_code);
+
  private:
   // AuthenticatorSheetModelBase:
   gfx::ImageSkia* GetStepIllustration() const override;
@@ -270,6 +274,9 @@ class AuthenticatorBlePinEntrySheetModel : public AuthenticatorSheetModelBase {
   bool IsAcceptButtonVisible() const override;
   bool IsAcceptButtonEnabled() const override;
   base::string16 GetAcceptButtonLabel() const override;
+  void OnAccept() override;
+
+  base::string16 pin_code_;
 };
 
 class AuthenticatorBleVerifyingSheetModel : public AuthenticatorSheetModelBase {

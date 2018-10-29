@@ -22,16 +22,10 @@ void NewWindowController::SetClient(
   client_.Bind(std::move(client));
 }
 
-// TODO(crbug.com/755448): Remove this when the new shortcut viewer is enabled.
-void NewWindowController::ShowKeyboardOverlay() {
-  // TODO(estade): implement this here rather than passing off to |client_|.
+void NewWindowController::NewTabWithUrl(const GURL& url,
+                                        bool from_user_interaction) {
   if (client_)
-    client_->ShowKeyboardOverlay();
-}
-
-void NewWindowController::NewTabWithUrl(const GURL& url) {
-  if (client_)
-    client_->NewTabWithUrl(url);
+    client_->NewTabWithUrl(url, from_user_interaction);
 }
 
 void NewWindowController::NewTab() {

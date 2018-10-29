@@ -5,19 +5,35 @@
 #ifndef CHROME_BROWSER_VR_SERVICE_BROWSER_XR_RUNTIME_H_
 #define CHROME_BROWSER_VR_SERVICE_BROWSER_XR_RUNTIME_H_
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_device.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/associated_binding.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace vr {
 
 class XRDeviceImpl;
 
+// This interface is implemented by classes that wish to observer the state of
+// the XR service for a particular runtime.  In particular, observers may
+// currently know when the browser considers a WebContents presenting to an
+// immersive headset.  Implementers of this interface will be called on the main
+// browser thread.  Currently this is used on Windows to drive overlays.
+class BrowserXRRuntimeObserver : public base::CheckedObserver {
+ public:
+  virtual void SetWebXRWebContents(content::WebContents* contents) = 0;
+};
+
 // This class wraps a physical device's interfaces, and registers for events.
-// There is one BrowserXRRuntime per physical device runtime.
-// It manages browser-side handling of state, like which XRDeviceImpl is
-// listening for device activation.
+// There is one BrowserXRRuntime per physical device runtime.  It manages
+// browser-side handling of state, like which XRDeviceImpl is listening for
+// device activation.
 class BrowserXRRuntime : public device::mojom::XRRuntimeEventListener {
  public:
   explicit BrowserXRRuntime(device::mojom::XRRuntimePtr runtime,
@@ -40,6 +56,16 @@ class BrowserXRRuntime : public device::mojom::XRRuntimeEventListener {
   device::mojom::VRDisplayInfoPtr GetVRDisplayInfo() {
     return display_info_.Clone();
   }
+  void InitializeAndGetDisplayInfo(
+      device::mojom::XRDevice::GetImmersiveVRDisplayInfoCallback callback);
+
+  // Methods called to support metrics/overlays on Windows.
+  void AddObserver(BrowserXRRuntimeObserver* observer) {
+    observers_.AddObserver(observer);
+  }
+  void RemoveObserver(BrowserXRRuntimeObserver* observer) {
+    observers_.RemoveObserver(observer);
+  }
 
  private:
   // device::XRRuntimeEventListener
@@ -60,6 +86,8 @@ class BrowserXRRuntime : public device::mojom::XRRuntimeEventListener {
       device::mojom::XRDevice::RequestSessionCallback callback,
       device::mojom::XRSessionPtr session,
       device::mojom::XRSessionControllerPtr immersive_session_controller);
+  void OnImmersiveSessionError();
+  void OnInitialized();
 
   device::mojom::XRRuntimePtr runtime_;
   device::mojom::XRSessionControllerPtr immersive_session_controller_;
@@ -70,7 +98,11 @@ class BrowserXRRuntime : public device::mojom::XRRuntimeEventListener {
   XRDeviceImpl* listening_for_activation_renderer_device_ = nullptr;
   XRDeviceImpl* presenting_renderer_device_ = nullptr;
 
-  mojo::Binding<device::mojom::XRRuntimeEventListener> binding_;
+  mojo::AssociatedBinding<device::mojom::XRRuntimeEventListener> binding_;
+  std::vector<device::mojom::XRDevice::GetImmersiveVRDisplayInfoCallback>
+      pending_initialization_callbacks_;
+
+  base::ObserverList<BrowserXRRuntimeObserver> observers_;
 
   base::WeakPtrFactory<BrowserXRRuntime> weak_ptr_factory_;
 };

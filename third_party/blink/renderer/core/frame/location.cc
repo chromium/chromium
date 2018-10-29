@@ -304,10 +304,12 @@ void Location::SetLocation(const String& url,
     argv.push_back(completed_url);
     activity_logger->LogEvent("blinkSetAttribute", argv.size(), argv.data());
   }
-  dom_window_->GetFrame()->ScheduleNavigation(
-      *current_window->document(), completed_url,
-      set_location_policy == SetLocationPolicy::kReplaceThisFrame,
-      UserGestureStatus::kNone);
+  WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
+  if (set_location_policy == SetLocationPolicy::kReplaceThisFrame)
+    frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
+  dom_window_->GetFrame()->ScheduleNavigation(*current_window->document(),
+                                              completed_url, frame_load_type,
+                                              UserGestureStatus::kNone);
 }
 
 Document* Location::GetDocument() const {

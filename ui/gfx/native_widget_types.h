@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "ui/gfx/gfx_export.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -117,21 +118,80 @@ typedef ui::Cursor NativeCursor;
 typedef aura::Window* NativeView;
 typedef aura::Window* NativeWindow;
 typedef ui::Event* NativeEvent;
+constexpr NativeView kNullNativeView = nullptr;
+constexpr NativeWindow kNullNativeWindow = nullptr;
 #elif defined(OS_IOS)
 typedef void* NativeCursor;
 typedef UIView* NativeView;
 typedef UIWindow* NativeWindow;
 typedef UIEvent* NativeEvent;
+constexpr NativeView kNullNativeView = nullptr;
+constexpr NativeWindow kNullNativeWindow = nullptr;
 #elif defined(OS_MACOSX)
 typedef NSCursor* NativeCursor;
-typedef NSView* NativeView;
-typedef NSWindow* NativeWindow;
 typedef NSEvent* NativeEvent;
+// NativeViews and NativeWindows on macOS are not necessarily in the same
+// process as the NSViews and NSWindows that they represent. Require an
+// explicit function call (GetNativeNSView or GetNativeNSWindow) to retrieve
+// the underlying NSView or NSWindow.
+// https://crbug.com/893719
+class GFX_EXPORT NativeView {
+ public:
+  constexpr NativeView() {}
+  // TODO(ccameron): Make this constructor explicit.
+  constexpr NativeView(NSView* ns_view) : ns_view_(ns_view) {}
+
+  // This function name is verbose (that is, not just GetNSView) so that it
+  // is easily grep-able.
+  NSView* GetNativeNSView() const { return ns_view_; }
+
+  operator bool() const { return ns_view_ != 0; }
+  bool operator==(const NativeView& other) const {
+    return ns_view_ == other.ns_view_;
+  }
+  bool operator!=(const NativeView& other) const {
+    return ns_view_ != other.ns_view_;
+  }
+  bool operator<(const NativeView& other) const {
+    return ns_view_ < other.ns_view_;
+  }
+
+ private:
+  NSView* ns_view_ = nullptr;
+};
+class GFX_EXPORT NativeWindow {
+ public:
+  constexpr NativeWindow() {}
+  // TODO(ccameron): Make this constructor explicit.
+  constexpr NativeWindow(NSWindow* ns_window) : ns_window_(ns_window) {}
+
+  // This function name is verbose (that is, not just GetNSWindow) so that it
+  // is easily grep-able.
+  NSWindow* GetNativeNSWindow() const { return ns_window_; }
+
+  operator bool() const { return ns_window_ != 0; }
+  bool operator==(const NativeWindow& other) const {
+    return ns_window_ == other.ns_window_;
+  }
+  bool operator!=(const NativeWindow& other) const {
+    return ns_window_ != other.ns_window_;
+  }
+  bool operator<(const NativeWindow& other) const {
+    return ns_window_ < other.ns_window_;
+  }
+
+ private:
+  NSWindow* ns_window_ = nullptr;
+};
+constexpr NativeView kNullNativeView = NativeView(nullptr);
+constexpr NativeWindow kNullNativeWindow = NativeWindow(nullptr);
 #elif defined(OS_ANDROID)
 typedef void* NativeCursor;
 typedef ui::ViewAndroid* NativeView;
 typedef ui::WindowAndroid* NativeWindow;
 typedef base::android::ScopedJavaGlobalRef<jobject> NativeEvent;
+constexpr NativeView kNullNativeView = nullptr;
+constexpr NativeWindow kNullNativeWindow = nullptr;
 #else
 #error Unknown build environment.
 #endif

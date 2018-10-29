@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/path.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -33,7 +34,7 @@ class VIEWS_EXPORT InkDropMask : public ui::LayerDelegate {
   explicit InkDropMask(const gfx::Size& layer_size);
 
  private:
-  // Overriden from ui::LayerDelegate:
+  // ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
 
@@ -50,7 +51,7 @@ class VIEWS_EXPORT RoundRectInkDropMask : public InkDropMask {
                        float corner_radius);
 
  private:
-  // Overriden from InkDropMask:
+  // InkDropMask:
   void OnPaintLayer(const ui::PaintContext& context) override;
 
   gfx::InsetsF mask_insets_;
@@ -67,13 +68,27 @@ class VIEWS_EXPORT CircleInkDropMask : public InkDropMask {
                     int mask_radius);
 
  private:
-  // Overriden from InkDropMask:
+  // InkDropMask:
   void OnPaintLayer(const ui::PaintContext& context) override;
 
   gfx::Point mask_center_;
   int mask_radius_;
 
   DISALLOW_COPY_AND_ASSIGN(CircleInkDropMask);
+};
+
+// An ink-drop mask that paints a specified path.
+class VIEWS_EXPORT PathInkDropMask : public InkDropMask {
+ public:
+  PathInkDropMask(const gfx::Size& layer_size, const SkPath& path);
+
+ private:
+  // InkDropMask:
+  void OnPaintLayer(const ui::PaintContext& context) override;
+
+  SkPath path_;
+
+  DISALLOW_COPY_AND_ASSIGN(PathInkDropMask);
 };
 
 }  // namespace views

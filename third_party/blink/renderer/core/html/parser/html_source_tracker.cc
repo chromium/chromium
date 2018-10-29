@@ -58,7 +58,7 @@ void HTMLSourceTracker::end(SegmentedString& current_input,
   cached_source_for_token_ = String();
 
   // FIXME: This work should really be done by the HTMLTokenizer.
-  size_t number_of_buffered_characters = 0u;
+  wtf_size_t number_of_buffered_characters = 0u;
   if (NeedToCheckTokenizerBuffer(tokenizer)) {
     number_of_buffered_characters = tokenizer->NumberOfBufferedCharacters();
   }
@@ -70,14 +70,14 @@ String HTMLSourceTracker::SourceForToken(const HTMLToken& token) {
   if (!cached_source_for_token_.IsEmpty())
     return cached_source_for_token_;
 
-  size_t length;
+  wtf_size_t length;
   if (token.GetType() == HTMLToken::kEndOfFile) {
     // Consume the remainder of the input, omitting the null character we use to
     // mark the end of the file.
     length = previous_source_.length() + current_source_.length() - 1;
   } else {
     DCHECK(!token.StartIndex());
-    length = static_cast<size_t>(token.EndIndex() - token.StartIndex());
+    length = static_cast<wtf_size_t>(token.EndIndex() - token.StartIndex());
   }
 
   StringBuilder source;

@@ -330,4 +330,19 @@ IN_PROC_BROWSER_TEST_F(GalleryBrowserTest, ActivateVideoFromThumbnailMode) {
   StartTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GalleryBrowserTest, DeleteSingleOpenPhotoOnDownloads) {
+  set_test_case_name("deleteSingleOpenPhotoOnDownloads");
+  StartTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GalleryBrowserTest, OneImageSlideshowNoPauseButtonOnDownloads) {
+  set_test_case_name("oneImageSlideshowNoPauseButtonOnDownloads");
+  StartTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GalleryBrowserTest, OneImageSlideshowNoPauseButtonOnDrive) {
+  set_test_case_name("oneImageSlideshowNoPauseButtonOnDrive");
+  StartTest();
+}
+
 }  // namespace file_manager

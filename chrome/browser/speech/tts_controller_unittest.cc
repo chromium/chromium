@@ -5,6 +5,7 @@
 // Unit tests for the TTS Controller.
 
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/speech/tts_controller_impl.h"
 #include "chrome/browser/speech/tts_platform.h"
 #include "chrome/common/pref_names.h"
@@ -80,7 +81,7 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
       std::make_unique<TestableTtsController>();
 #if defined(OS_CHROMEOS)
   TestingPrefServiceSimple pref_service_;
-  // Uses default pref voices
+  // Uses default pref voices.
   std::unique_ptr<base::DictionaryValue> lang_to_voices =
       std::make_unique<base::DictionaryValue>();
   lang_to_voices->SetKey(
@@ -204,6 +205,47 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
     EXPECT_EQ(8, tts_controller->GetMatchingVoice(&utterance, voices));
 #endif  // defined(OS_CHROMEOS)
   }
+
+  {
+    // Check voices against system language.
+    std::vector<VoiceData> voices;
+    VoiceData voice0;
+    voice0.extension_id = "id0";
+    voice0.name = "voice0";
+    voice0.lang = "en-GB";
+    voices.push_back(voice0);
+    VoiceData voice1;
+    voice1.extension_id = "id1";
+    voice1.name = "voice1";
+    voice1.lang = "en-US";
+    voices.push_back(voice1);
+    Utterance utterance(nullptr);
+
+    // voice1 is matched against the exact default system language.
+    g_browser_process->SetApplicationLocale("en-US");
+    utterance.set_lang("");
+    EXPECT_EQ(1, tts_controller->GetMatchingVoice(&utterance, voices));
+
+    // voice0 is matched against the system language which has no region piece.
+    g_browser_process->SetApplicationLocale("en");
+    utterance.set_lang("");
+    EXPECT_EQ(0, tts_controller->GetMatchingVoice(&utterance, voices));
+
+#if defined(OS_CHROMEOS)
+    // Add another preference.
+    std::unique_ptr<base::DictionaryValue> lang_to_voices =
+        std::make_unique<base::DictionaryValue>();
+    lang_to_voices->SetKey(
+        "en", base::Value("{\"name\":\"voice0\",\"extension\":\"id0\"}"));
+
+    pref_service_.SetUserPref(prefs::kTextToSpeechLangToVoiceName,
+                              std::move(lang_to_voices));
+
+    // voice0 is matched against the pref over the system language.
+    g_browser_process->SetApplicationLocale("en-US");
+    EXPECT_EQ(0, tts_controller->GetMatchingVoice(&utterance, voices));
+#endif  // defined(OS_CHROMEOS)
+  }
 }
 
 #if defined(OS_CHROMEOS)
@@ -213,20 +255,20 @@ TEST_F(TtsControllerTest, TestTtsControllerUtteranceDefaults) {
 
   std::unique_ptr<Utterance> utterance1 = std::make_unique<Utterance>(nullptr);
   // Initialized to default (unset constant) values.
-  EXPECT_EQ(blink::SpeechSynthesisConstants::kDoublePrefNotSet,
+  EXPECT_EQ(blink::kWebSpeechSynthesisDoublePrefNotSet,
             utterance1->continuous_parameters().rate);
-  EXPECT_EQ(blink::SpeechSynthesisConstants::kDoublePrefNotSet,
+  EXPECT_EQ(blink::kWebSpeechSynthesisDoublePrefNotSet,
             utterance1->continuous_parameters().pitch);
-  EXPECT_EQ(blink::SpeechSynthesisConstants::kDoublePrefNotSet,
+  EXPECT_EQ(blink::kWebSpeechSynthesisDoublePrefNotSet,
             utterance1->continuous_parameters().volume);
 
   controller->UpdateUtteranceDefaults(utterance1.get());
   // Updated to global defaults.
-  EXPECT_EQ(blink::SpeechSynthesisConstants::kDefaultTextToSpeechRate,
+  EXPECT_EQ(blink::kWebSpeechSynthesisDefaultTextToSpeechRate,
             utterance1->continuous_parameters().rate);
-  EXPECT_EQ(blink::SpeechSynthesisConstants::kDefaultTextToSpeechPitch,
+  EXPECT_EQ(blink::kWebSpeechSynthesisDefaultTextToSpeechPitch,
             utterance1->continuous_parameters().pitch);
-  EXPECT_EQ(blink::SpeechSynthesisConstants::kDefaultTextToSpeechVolume,
+  EXPECT_EQ(blink::kWebSpeechSynthesisDefaultTextToSpeechVolume,
             utterance1->continuous_parameters().volume);
 
   // Now we will set prefs and expect those to be used as defaults.

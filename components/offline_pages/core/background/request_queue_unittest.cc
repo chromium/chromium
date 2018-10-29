@@ -107,7 +107,7 @@ class RequestQueueTest : public testing::Test {
                        std::vector<std::unique_ptr<SavePageRequest>> requests);
 
   void UpdateRequestDone(UpdateRequestResult result);
-  void UpdateRequestsDone(std::unique_ptr<UpdateRequestsResult> result);
+  void UpdateRequestsDone(UpdateRequestsResult result);
 
   void ClearResults();
 
@@ -185,9 +185,9 @@ void RequestQueueTest::UpdateRequestDone(UpdateRequestResult result) {
   last_update_result_ = result;
 }
 
-void RequestQueueTest::UpdateRequestsDone(
-    std::unique_ptr<UpdateRequestsResult> result) {
-  update_requests_result_ = std::move(result);
+void RequestQueueTest::UpdateRequestsDone(UpdateRequestsResult result) {
+  update_requests_result_ =
+      std::make_unique<UpdateRequestsResult>(std::move(result));
 }
 
 void RequestQueueTest::ClearResults() {

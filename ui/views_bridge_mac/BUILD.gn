@@ -4,6 +4,27 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+component("views_bridge_mac") {
+  assert(is_mac)
+
+  sources = [
+    "bridged_native_widget_host_helper.h",
+    "cocoa_mouse_capture.h",
+    "cocoa_mouse_capture.mm",
+    "cocoa_mouse_capture_delegate.h",
+    "drag_drop_client.h",
+    "views_bridge_mac_export.h",
+  ]
+  defines = [ "VIEWS_BRIDGE_MAC_IMPLEMENTATION" ]
+  deps = [
+    "//base",
+    "//ui/base",
+    "//ui/events",
+    "//ui/gfx",
+  ]
+  libs = [ "Cocoa.framework" ]
+}
+
 mojom("mojo") {
   assert(is_mac)
 

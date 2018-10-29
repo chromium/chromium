@@ -76,12 +76,13 @@ bool DateTimeStringBuilder::Build(const String& format_string) {
 }
 
 String DateTimeStringBuilder::ZeroPadString(const String& string,
-                                            size_t width) {
-  if (string.length() >= width)
+                                            size_t pad_width) {
+  if (string.length() >= pad_width)
     return string;
+  wtf_size_t width = static_cast<wtf_size_t>(pad_width);
   StringBuilder zero_padded_string_builder;
   zero_padded_string_builder.ReserveCapacity(width);
-  for (size_t i = string.length(); i < width; ++i)
+  for (wtf_size_t i = string.length(); i < width; ++i)
     zero_padded_string_builder.Append('0');
   zero_padded_string_builder.Append(string);
   return zero_padded_string_builder.ToString();
@@ -263,7 +264,7 @@ void Locale::SetLocaleData(const Vector<String, kDecimalSymbolsSize>& symbols,
                            const String& positive_suffix,
                            const String& negative_prefix,
                            const String& negative_suffix) {
-  for (size_t i = 0; i < symbols.size(); ++i) {
+  for (wtf_size_t i = 0; i < symbols.size(); ++i) {
     DCHECK(!symbols[i].IsEmpty());
     decimal_symbols_[i] = symbols[i];
   }

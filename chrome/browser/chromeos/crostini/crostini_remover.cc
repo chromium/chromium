@@ -35,12 +35,18 @@ CrostiniRemover::~CrostiniRemover() = default;
 
 void CrostiniRemover::RemoveCrostini() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CrostiniManager::GetForProfile(profile_)->InstallTerminaComponent(
-      base::BindOnce(&CrostiniRemover::OnComponentLoaded, this));
+  if (CrostiniManager::GetForProfile(profile_)->IsCrosTerminaInstalled()) {
+    CrostiniManager::GetForProfile(profile_)->InstallTerminaComponent(
+        base::BindOnce(&CrostiniRemover::OnComponentLoaded, this));
+  } else {
+    // Crostini installation didn't install the component. Concierge should not
+    // be running, nor should there be any VMs.
+    CrostiniRemover::StopConciergeFinished(true);
+  }
 }
 
-void CrostiniRemover::OnComponentLoaded(ConciergeClientResult result) {
-  if (result != ConciergeClientResult::SUCCESS) {
+void CrostiniRemover::OnComponentLoaded(CrostiniResult result) {
+  if (result != CrostiniResult::SUCCESS) {
     std::move(callback_).Run(result);
     return;
   }
@@ -50,16 +56,16 @@ void CrostiniRemover::OnComponentLoaded(ConciergeClientResult result) {
 
 void CrostiniRemover::OnConciergeStarted(bool is_successful) {
   if (!is_successful) {
-    std::move(callback_).Run(ConciergeClientResult::UNKNOWN_ERROR);
+    std::move(callback_).Run(CrostiniResult::UNKNOWN_ERROR);
     return;
   }
   CrostiniManager::GetForProfile(profile_)->StopVm(
       vm_name_, base::BindOnce(&CrostiniRemover::StopVmFinished, this));
 }
 
-void CrostiniRemover::StopVmFinished(ConciergeClientResult result) {
+void CrostiniRemover::StopVmFinished(CrostiniResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (result != ConciergeClientResult::SUCCESS) {
+  if (result != CrostiniResult::SUCCESS) {
     std::move(callback_).Run(result);
     return;
   }
@@ -73,9 +79,9 @@ void CrostiniRemover::StopVmFinished(ConciergeClientResult result) {
       base::BindOnce(&CrostiniRemover::DestroyDiskImageFinished, this));
 }
 
-void CrostiniRemover::DestroyDiskImageFinished(ConciergeClientResult result) {
+void CrostiniRemover::DestroyDiskImageFinished(CrostiniResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (result != ConciergeClientResult::SUCCESS) {
+  if (result != CrostiniResult::SUCCESS) {
     std::move(callback_).Run(result);
     return;
   }
@@ -85,15 +91,13 @@ void CrostiniRemover::DestroyDiskImageFinished(ConciergeClientResult result) {
 }
 
 void CrostiniRemover::StopConciergeFinished(bool is_successful) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // The is_successful parameter is never set by debugd.
-  auto* cros_component_manager =
-      g_browser_process->platform_part()->cros_component_manager();
-  if (cros_component_manager) {
-    if (cros_component_manager->Unload("cros-termina")) {
-      profile_->GetPrefs()->SetBoolean(prefs::kCrostiniEnabled, false);
-    }
+  if (CrostiniManager::GetForProfile(profile_)->UninstallTerminaComponent()) {
+    profile_->GetPrefs()->SetBoolean(prefs::kCrostiniEnabled, false);
+    profile_->GetPrefs()->ClearPref(prefs::kCrostiniLastDiskSize);
   }
-  std::move(callback_).Run(ConciergeClientResult::SUCCESS);
+  std::move(callback_).Run(CrostiniResult::SUCCESS);
 }
 
 }  // namespace crostini

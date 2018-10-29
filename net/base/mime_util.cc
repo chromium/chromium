@@ -577,8 +577,7 @@ void UnorderedSetToVector(std::unordered_set<T>* source,
   size_t old_target_size = target->size();
   target->resize(old_target_size + source->size());
   size_t i = 0;
-  for (typename std::unordered_set<T>::iterator iter = source->begin();
-       iter != source->end(); ++iter, ++i)
+  for (auto iter = source->begin(); iter != source->end(); ++iter, ++i)
     (*target)[old_target_size + i] = *iter;
 }
 

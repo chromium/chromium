@@ -9,8 +9,6 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_PROFILE_MANAGEMENT_SWITCHES_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_PROFILE_MANAGEMENT_SWITCHES_H_
 
-#include "base/feature_list.h"
-
 namespace signin {
 
 // TODO(https://crbug.com/777774): Cleanup this enum and remove related
@@ -40,12 +38,6 @@ enum class AccountConsistencyMethod : int {
 // Should not be used for Mirror.
 bool DiceMethodGreaterOrEqual(AccountConsistencyMethod a,
                               AccountConsistencyMethod b);
-
-////////////////////////////////////////////////////////////////////////////////
-// Other functions:
-
-// Whether the chrome.identity API should be multi-account.
-bool IsExtensionsMultiAccount();
 
 }  // namespace signin
 

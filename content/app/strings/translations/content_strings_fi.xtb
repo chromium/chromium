@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1018939186200882850">valikkokohde</translation>
-<translation id="1020833440720551630">mykistä ääniraita</translation>
 <translation id="10623998915015855">vaihtopainike</translation>
 <translation id="1088086359088493902">Sekuntia</translation>
 <translation id="1171774979989969504">Anna sähköpostiosoite.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">tunnustukset</translation>
 <translation id="1342835525016946179">artikkeli</translation>
 <translation id="1359897965706325498">banneri</translation>
-<translation id="1548116112524424341">toista video kuva kuvassa ‑tilassa</translation>
 <translation id="1589122976691792535">alue</translation>
 <translation id="1591562245178063882">Tässä kuussa</translation>
 <translation id="1637811476055996098">Valitse tiedostot</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">puuruudukko</translation>
 <translation id="1822429046913737220">AP/IP</translation>
 <translation id="1832974991323546415">toista etälaitteella</translation>
-<translation id="1838818994221231429">näyttölovi on/ei ole osa koko näytön tilaa</translation>
 <translation id="190587075670221089">poisto</translation>
 <translation id="1907737156431278478">esimerkki</translation>
 <translation id="1921819250265091946">pp</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">Ohita 10 sekuntia kaksoisnapauttamalla vasemmalle tai oikealle.</translation>
 <translation id="5631759159893697722">tiivistelmä</translation>
-<translation id="5641012560118721995">keskeytä toisto</translation>
 <translation id="5643186887447432888">painike</translation>
 <translation id="5677946354068040947">lisäasetukset</translation>
 <translation id="576709008726043716">johdanto</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Tyhjennä</translation>
 <translation id="5966707198760109579">Viikko</translation>
 <translation id="5987525920412732405">pyöräytyspainike</translation>
+<translation id="6011459053400940133">äänenvoimakkuuden liukusäädin</translation>
 <translation id="6015796118275082299">Vuosi</translation>
 <translation id="6023896073578205740">luetteloruutu</translation>
-<translation id="6101327004457443354">peruuta ääniraidan mykistys</translation>
 <translation id="6150588977291308318">lähdeluettelo</translation>
 <translation id="6164829606128959761">mittari</translation>
 <translation id="6166809985690652833">jälkipuhe</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Tuntia</translation>
 <translation id="7681220483256441252">hakemisto</translation>
 <translation id="7720026100085573005">jäljellä oleva aika</translation>
-<translation id="7740016676195725605">älä näytä tekstityksiä</translation>
 <translation id="7740050170769002709">HTML-sisältö</translation>
 <translation id="7750228210027921155">Kuva kuvassa</translation>
 <translation id="7789962463072032349">tauko</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">hakutekstikenttä</translation>
 <translation id="8057695513531652401">ilmoitus</translation>
 <translation id="8105797009065549151">muistiinpanoviittaus</translation>
-<translation id="8115662671911883373">näytä tekstitykset</translation>
 <translation id="8117451130807776954">Tällä viikolla</translation>
-<translation id="819205353528511139">toista elokuva koko näytön tilassa</translation>
 <translation id="8199524924445686405">vvvv</translation>
 <translation id="8284326494547611709">Tekstitykset</translation>
 <translation id="835897206747267392">Virheellinen arvo.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">hallinnoi etätoistoa</translation>
 <translation id="862370744433916922">alaotsikko</translation>
 <translation id="8750798805984357768">Valitse yksi vaihtoehdoista.</translation>
-<translation id="8785498733064193001">aloita toisto</translation>
 <translation id="8808573423886751634">luku</translation>
 <translation id="8845239796550121995">Suoratoistetaan televisioosi</translation>
 <translation id="8851136666856101339">pää</translation>

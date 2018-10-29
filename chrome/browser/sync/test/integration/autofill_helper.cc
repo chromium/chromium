@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -124,6 +125,14 @@ void SetServerProfilesOnDBSequence(
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
   AutofillTable::FromWebDatabase(wds->GetDatabase())
       ->SetServerProfiles(profiles);
+}
+
+void SetPaymentsCustomerDataOnDBSequence(
+    AutofillWebDataService* wds,
+    const autofill::PaymentsCustomerData& customer_data) {
+  DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
+  AutofillTable::FromWebDatabase(wds->GetDatabase())
+      ->SetPaymentsCustomerData(&customer_data);
 }
 
 bool ProfilesMatchImpl(
@@ -316,6 +325,16 @@ void SetServerProfiles(int profile,
   wds->GetDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&SetServerProfilesOnDBSequence,
                                 base::Unretained(wds.get()), profiles));
+  WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
+}
+
+void SetPaymentsCustomerData(
+    int profile,
+    const autofill::PaymentsCustomerData& customer_data) {
+  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+  wds->GetDBTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&SetPaymentsCustomerDataOnDBSequence,
+                                base::Unretained(wds.get()), customer_data));
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
 }
 

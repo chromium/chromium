@@ -66,7 +66,7 @@ ParsedContentHeaderFieldParameters::Parse(HeaderFieldTokenizer tokenizer,
 
 String ParsedContentHeaderFieldParameters::ParameterValueForName(
     const String& name) const {
-  if (!name.ContainsOnlyASCII())
+  if (!name.ContainsOnlyASCIIOrEmpty())
     return String();
   String lower_name = name.LowerASCII();
 

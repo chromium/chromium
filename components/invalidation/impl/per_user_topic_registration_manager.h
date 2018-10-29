@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -17,6 +18,7 @@
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_object_id.h"
 #include "components/invalidation/public/invalidation_util.h"
+#include "components/invalidation/public/invalidator_state.h"
 #include "net/base/backoff_entry.h"
 #include "net/url_request/url_request_context_getter.h"
 
@@ -41,6 +43,12 @@ namespace syncer {
 // names in this class.
 class INVALIDATION_EXPORT PerUserTopicRegistrationManager {
  public:
+  class Observer {
+   public:
+    virtual void OnSubscriptionChannelStateChanged(
+        InvalidatorState invalidator_state) = 0;
+  };
+
   PerUserTopicRegistrationManager(
       invalidation::IdentityProvider* identity_provider,
       PrefService* local_state,
@@ -56,6 +64,11 @@ class INVALIDATION_EXPORT PerUserTopicRegistrationManager {
 
   virtual void Init();
   TopicSet GetRegisteredIds() const;
+
+  // Classes interested in subscription channel state changes should implement
+  // PerUserTopicRegistrationManager::Observer and register here.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   struct RegistrationEntry;
@@ -78,6 +91,10 @@ class INVALIDATION_EXPORT PerUserTopicRegistrationManager {
   void OnAccessTokenRequestSucceeded(std::string access_token);
   void OnAccessTokenRequestFailed(GoogleServiceAuthError error);
 
+  void DropAllSavedRegistrationsOnTokenChange(
+      const std::string& instance_id_token);
+  void NotifySubscriptionChannelStateChange(InvalidatorState invalidator_state);
+
   std::map<Topic, std::unique_ptr<RegistrationEntry>> registration_statuses_;
 
   // For registered ids it maps the id value to the topic value.
@@ -98,6 +115,8 @@ class INVALIDATION_EXPORT PerUserTopicRegistrationManager {
   // The callback for Parsing JSON.
   ParseJSONCallback parse_json_;
   network::mojom::URLLoaderFactory* url_loader_factory_;
+
+  base::ObserverList<Observer>::Unchecked observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

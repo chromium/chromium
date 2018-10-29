@@ -15,7 +15,7 @@
         {
           "object": "LayoutTableRow TR id='target'",
           "rect": [0, 0, 186, 64],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     },

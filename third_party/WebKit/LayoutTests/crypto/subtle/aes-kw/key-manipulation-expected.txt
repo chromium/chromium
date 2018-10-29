@@ -3,7 +3,6 @@ Test generating, importing and exporting keys for AES-KW. Test that they can't b
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Generating a key...
 SUCCESS
 PASS key.toString() is '[object CryptoKey]'

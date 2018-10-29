@@ -1,0 +1,292 @@
+<h2 id="manifest">Manifest</h2>
+
+<p>
+You must declare the <code>"declarativeNetRequest"</code> permission in the
+extension <a href="manifest">manifest</a> to use this API.
+<a href="declare_permissions">Host permissions</a> are required if the extension
+wants to redirect requests. You must also declare the
+<code>"declarative_net_request"</code> manifest key, which should be a
+dictionary with a single key called <code>"rule_resources"</code>. It should be
+a list containing a single element, the path to a JSON file containing the
+declarative rules to use, as shown below.
+</p>
+
+<pre data-filename="manifest.json">
+{
+  "name": "My extension",
+  ...
+<b>
+  "declarative_net_request" : {
+    "rule_resources" : ["rules.json"]
+  },
+  "permissions": [
+    "declarativeNetRequest",
+    "*://example.com/*"
+  ],</b>
+  ...
+}
+</pre>
+
+<h2 id="rule-resources">Rule Resources</h2>
+
+<p>
+The JSON file specified as part of <code>"rule_resources"</code> in the manifest
+contains a list of rules. The number of rules that an extension can specify is
+bound by the <a href="#property-MAX_NUMBER_OF_RULES">
+chrome.declarativeNetRequest.MAX_NUMBER_OF_RULES</a> constant.
+</p>
+
+<h2 id="rules">Rules</h2>
+
+<p>
+A single declarative rule consists of four fields: <code>id</code>,
+<code>priority</code>, <code>condition</code> and <code>action</code>. See the
+<a href="#type-Rule">Rule</a> section below for more information on the format.
+There are three kinds of rules:
+</p>
+
+<ul>
+  <li>
+    Rules that block a network request.
+  </li>
+  <li>
+    Rules that prevent a request from getting blocked by negating any matching
+    blocked rules.
+  </li>
+  <li>
+    Rules that redirect a network request.
+  </li>
+</ul>
+
+<p>An example rule:</p>
+<pre>
+{
+  "id" : 1,
+  "action" : { "type" : "block" },
+  "condition" : {
+    "urlFilter" : "abc",
+    "domains" : ["foo.com"],
+    "resource_types" : ["script"]
+  }
+}
+</pre>
+
+<p>
+The above rule will block all script requests originating from
+<code>"foo.com"</code> to any URL with <code>"abc"</code> as a substring.
+</p>
+
+<p>
+The <code>urlFilter</code> field of a rule condition is used to specify the
+pattern which is matched against the request URL. Some examples of URL filters:
+</p>
+
+<table>
+  <tr>
+    <th><code><b>urlFilter</b></code></th>
+    <th>Matches</th>
+    <th>Does not match</th>
+  </tr>
+
+  <tr>
+    <td><code>"abc"</code></td>
+    <td>
+      https://abcd.com<br/>
+      https://example.com/abcd
+    </td>
+    <td>http://ab.com</td>
+  </tr>
+
+  <tr>
+    <td><code>"abc*d"</code></td>
+    <td>
+      https://abcd.com<br/>
+      https://example.com/abcxyzd
+    </td>
+    <td>http://abc.com</td>
+  </tr>
+
+  <tr>
+    <td><code>"||a.example.com"</code></td>
+    <td>
+      https://a.example.com/<br/>
+      https://b.a.example.com/xyz
+    </td>
+    <td>http://example.com/</td>
+  </tr>
+
+  <tr>
+    <td><code>"|https*"</code></td>
+    <td>https://example.com</td>
+    <td>
+      http://example.com/<br/>
+      http://https.com
+    </td>
+  </tr>
+
+  <tr>
+    <td><code>"example*^123|"</code></td>
+    <td>
+      https://example.com/123<br/>
+      http://abc.com/example?123
+    </td>
+    <td>
+      https://example.com/1234<br/>
+      https://abc.com/example0123
+    </td>
+  </tr>
+</table>
+
+<h2 id="page-allowlisting">Page allowlisting</h2>
+
+<p>
+To disable the extension ruleset on a particular page, extensions can use the
+<a href="#method-addAllowedPages">
+chrome.declarativeNetRequest.addAllowedPages</a> API. This allows
+extensions to specify match patterns that are compared against the tab URL. Any
+requests originating from these pages are not evaluated against the extension
+ruleset. The number of such patterns an extension can add is bound by the
+<a href="#property-MAX_NUMBER_OF_ALLOWED_PAGES">chrome.declarativeNetRequest.MAX_NUMBER_OF_ALLOWED_PAGES</a> constant.
+</p>
+
+<h2 id="implementation-details">Implementation details</h2>
+
+<h3 id="matching-algorithm">Matching algorithm</h3>
+
+<ul>
+  <li>
+    If any extension ruleset wants to block a request<sup>[1]</sup>, the network
+    request is blocked.
+  </li>
+  <li>
+    If the request is not blocked, the request is redirected if any extension
+    ruleset wants to redirect the request<sup>[2]</sup>. The most recently
+    installed extension gets preference here. If multiple redirect rules from an
+    extension’s ruleset match, the rule with the greatest priority determines
+    the redirect URL.
+  </li>
+</ul>
+
+[1] An extension wants to block a request, if all the following are true:
+<ul>
+  <li>The extension has a matching <code>block</code> rule.</li>
+  <li>The extension has no matching <code>allow</code> rule.</li>
+  <li>
+    The page from which the request originated is not allow-listed by the
+    extension using <a href="#method-addAllowedPages">
+    chrome.declarativeNetRequest.addAllowedPages</a>.
+  </li>
+</ul>
+
+[2] An extension wants to redirect a request, if all the following are true:
+<ul>
+  <li>The extension has a matching <code>redirect</code> rule.</li>
+  <li>
+    The page from which the request originated is not allow-listed by the
+    extension using <a href="#method-addAllowedPages">
+    chrome.declarativeNetRequest.addAllowedPages</a>.
+  </li>
+</ul>
+
+<h3 id="web-request-comparison">
+  Comparison with the <a href="webRequest">webRequest</a> API
+</h3>
+
+<ul>
+  <li>
+    The declarativeNetRequest API allows for evaluating network requests in the
+    browser itself. This makes it more performant than the webRequest API, where
+    each network request is evaluated in JavaScript in the extension process.
+  </li>
+  <li>
+    Because the requests are not intercepted by the extension process,
+    declarativeNetRequest removes the need for extensions to have a background
+    page; resulting in less memory consumption.
+  </li>
+  <li>
+    Unlike the webRequest API, blocking requests using the declarativeNetRequest
+    API requires no host permissions.
+  </li>
+  <li>
+    Unlike the webRequest API, redirecting requests using the
+    declarativeNetRequest API requires host permissions to both the request URL
+    and the request initiator.
+  </li>
+  <li>
+    The declarativeNetRequest API provides better privacy to users because
+    extensions can't actually read the network requests made on the user's
+    behalf.
+  </li>
+  <li>
+    Unlike the webRequest API, any images or iframes blocked using the
+    declarativeNetRequest API are automatically collapsed in the DOM.
+  </li>
+  <li>
+    While deciding whether a request is to be blocked or redirected, the
+    declarativeNetRequest API is given priority over the webRequest API because
+    it allows for synchronous interception.
+  </li>
+  <li>
+    Evaluation of declarativeNetRequest rulesets is performed during the
+    <code>onBeforeRequest</code> stage of a network request. Extensions using
+    the webRequest API can intercept requests at different stages of the
+    request.
+  </li>
+  <li>
+    The declarativeNetRequest API only allows extensions to block or redirect
+    requests. The webRequest api is more flexible as compared to the
+    declarativeNetRequest API because it allows extensions to evaluate a request
+    programmatically.
+  </li>
+</ul>
+
+<h2 id="examples">Example</h2>
+
+<p><b>manifest.json</b></p>
+<pre data-filename="manifest.json">
+{
+  "name" : "declarativeNetRequest extension",
+  "version" : "1",
+  "declarative_net_request" : {
+    "rule_resources" : ["rules.json"]
+  },
+  "permissions" : ["*://google.com/*", "declarativeNetRequest"],
+  "manifest_version" : 2
+}
+</pre>
+
+<p><b>rules.json</b></p>
+<pre data-filename="rules.json">
+[
+  {
+    "id" : 1,
+    "action": { "type" : "block" },
+    "condition" : {"urlFilter" : "google.com", "resourceTypes" : ["main_frame"] }
+  },
+  {
+    "id" : 2,
+    "action" : { "type" : "allow" },
+    "condition" : { "urlFilter" : "google.com/123", "resourceTypes" : ["main_frame"] }
+  },
+  {
+    "id" : 3,
+    "priority" : 1,
+    "action" : { "type" : "redirect", "redirectUrl" : "https://example.com" },
+    "condition" : { "urlFilter" : "google.com", "resourceTypes" : ["main_frame"] }
+  }
+]
+</pre>
+
+<ul>
+  <li>
+    Consider a navigation to <code>"http://google.com"</code>. Rules with id (1)
+    and (3) match. The request will be blocked because blocking rules have
+    higher priority than redirect rules.
+  </li>
+  <li>
+    Consider a navigation to <code>"http://google.com/1234"</code>. Rules with
+    id (1), (2), and (3) match. Because the request has a matching
+    <code>allow</code> rule, the request is not blocked and instead redirected
+    to <code>"https://example.com"</code>.
+  </li>
+</ul>

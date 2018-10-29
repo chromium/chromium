@@ -6,8 +6,9 @@
 #define NGFragment_h
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_border_edges.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
@@ -29,13 +30,29 @@ class CORE_EXPORT NGFragment {
   }
 
   // Returns the border-box size.
-  LayoutUnit InlineSize() const;
-  LayoutUnit BlockSize() const;
-  NGLogicalSize Size() const;
+  LayoutUnit InlineSize() const {
+    return GetWritingMode() == WritingMode::kHorizontalTb
+               ? physical_fragment_.Size().width
+               : physical_fragment_.Size().height;
+  }
+  LayoutUnit BlockSize() const {
+    return GetWritingMode() == WritingMode::kHorizontalTb
+               ? physical_fragment_.Size().height
+               : physical_fragment_.Size().width;
+  }
+  NGLogicalSize Size() const {
+    return physical_fragment_.Size().ConvertToLogical(
+        static_cast<WritingMode>(writing_mode_));
+  }
 
-  NGBorderEdges BorderEdges() const;
+  NGBorderEdges BorderEdges() const {
+    return NGBorderEdges::FromPhysical(physical_fragment_.BorderEdges(),
+                                       GetWritingMode());
+  }
 
-  NGPhysicalFragment::NGFragmentType Type() const;
+  NGPhysicalFragment::NGFragmentType Type() const {
+    return physical_fragment_.Type();
+  }
   const ComputedStyle& Style() const { return physical_fragment_.Style(); }
 
  protected:

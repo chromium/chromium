@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -21,6 +23,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,8 +35,11 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
+#include "extensions/test/test_extension_dir.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/network/public/cpp/features.h"
 
 class ChromeNavigationBrowserTest : public InProcessBrowserTest {
  public:
@@ -93,12 +99,22 @@ class DidStartNavigationObserver : public content::WebContentsObserver {
   DISALLOW_COPY_AND_ASSIGN(DidStartNavigationObserver);
 };
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Fails on chromium.memory/Linux Chromium OS ASan LSan:
+// https://crbug.com/897879
+#define MAYBE_TransientEntryPreservedOnMultipleNavigationsDuringInterstitial \
+  DISABLED_TransientEntryPreservedOnMultipleNavigationsDuringInterstitial
+#else
+#define MAYBE_TransientEntryPreservedOnMultipleNavigationsDuringInterstitial \
+  TransientEntryPreservedOnMultipleNavigationsDuringInterstitial
+#endif
+
 // Test to verify that navigations are not deleting the transient
 // NavigationEntry when showing an interstitial page and the old renderer
 // process is trying to navigate. See https://crbug.com/600046.
 IN_PROC_BROWSER_TEST_F(
     ChromeNavigationBrowserTest,
-    TransientEntryPreservedOnMultipleNavigationsDuringInterstitial) {
+    MAYBE_TransientEntryPreservedOnMultipleNavigationsDuringInterstitial) {
   StartServerWithExpiredCert();
 
   GURL setup_url =
@@ -449,6 +465,32 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationPortMappedBrowserTest,
   EXPECT_EQ(GURL(), new_web_contents->GetLastCommittedURL());
 }
 
+// Ensure that a failed navigation in a new tab will not leave an invalid
+// visible URL, which may be formatted in an unsafe way in the omnibox.
+// See https://crbug.com/850824.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       ClearInvalidPendingURLOnFail) {
+  GURL initial_url = embedded_test_server()->GetURL(
+      "/frame_tree/invalid_link_to_new_window.html");
+
+  // Navigate to a page with a link that opens an invalid URL in a new window.
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+  content::WebContents* main_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Simulate a click on the link and wait for the new window.
+  content::WebContentsAddedObserver new_tab_observer;
+  EXPECT_TRUE(ExecuteScript(main_contents, "simulateClick()"));
+  content::WebContents* new_contents = new_tab_observer.GetWebContents();
+
+  // The load in the new window should fail.
+  EXPECT_FALSE(WaitForLoadStop(new_contents));
+
+  // Ensure that there is no pending entry or visible URL.
+  EXPECT_EQ(nullptr, new_contents->GetController().GetPendingEntry());
+  EXPECT_EQ(GURL(), new_contents->GetVisibleURL());
+}
+
 // A test performing two simultaneous navigations, to ensure code in chrome/,
 // such as tab helpers, can handle those cases.
 // This test starts a browser-initiated cross-process navigation, which is
@@ -621,6 +663,64 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
+  }
+}
+
+// Test for https://crbug.com/866549#c2. It verifies that about:blank does not
+// commit in the error page process when it is redirected to.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       RedirectErrorPageReloadToAboutBlank) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  std::unique_ptr<content::URLLoaderInterceptor> url_interceptor =
+      content::URLLoaderInterceptor::SetupRequestFailForURL(
+          url, net::ERR_DNS_TIMED_OUT);
+
+  // Start off with navigation to a.com, which results in an error page.
+  {
+    content::TestNavigationObserver observer(web_contents);
+    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_FALSE(observer.last_navigation_succeeded());
+    EXPECT_EQ(url, observer.last_navigation_url());
+    EXPECT_EQ(GURL(content::kUnreachableWebDataURL),
+              web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL());
+  }
+
+  // Install an extension, which will redirect all navigations to a.com URLs to
+  // about:blank. In general, web servers cannot redirect to about:blank, but
+  // extensions with webRequest API permissions can.
+  extensions::TestExtensionDir test_extension_dir;
+  test_extension_dir.WriteManifest(
+      R"({
+           "name": "Redirect a.com to about:blank",
+           "manifest_version": 2,
+           "version": "0.1",
+           "permissions": ["webRequest", "webRequestBlocking", "*://a.com/*"],
+           "background": { "scripts": ["background.js"] }
+         })");
+  test_extension_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      R"(chrome.webRequest.onBeforeRequest.addListener(function(d) {
+          console.log("onBeforeRequest: ", d);
+          return {redirectUrl:"about:blank"};
+        }, {urls: ["*://a.com/*"]}, ["blocking"]);
+      )");
+  extensions::ChromeTestExtensionLoader extension_loader(browser()->profile());
+  extension_loader.LoadExtension(test_extension_dir.UnpackedPath());
+
+  // Remove the interceptor to allow a reload to succeed, which the extension
+  // will intercept and redirect. The navigation should complete successfully
+  // and commit in a process that is different than the error page one.
+  url_interceptor.reset();
+  {
+    content::TestNavigationObserver observer(web_contents);
+    EXPECT_TRUE(ExecuteScript(web_contents, "location.reload();"));
+    observer.Wait();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    EXPECT_EQ(GURL(url::kAboutBlankURL), observer.last_navigation_url());
+    EXPECT_NE(GURL(content::kUnreachableWebDataURL),
+              web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL());
   }
 }
 

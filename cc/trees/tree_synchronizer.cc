@@ -19,63 +19,7 @@
 #include "cc/trees/layer_tree_impl.h"
 
 namespace cc {
-
-template <typename LayerTreeType>
-void SynchronizeTreesInternal(LayerTreeType* source_tree,
-                              LayerTreeImpl* tree_impl,
-                              PropertyTrees* property_trees) {
-  DCHECK(tree_impl);
-
-  TRACE_EVENT0("cc", "TreeSynchronizer::SynchronizeTrees");
-  std::unique_ptr<OwnedLayerImplList> old_layers(tree_impl->DetachLayers());
-
-  OwnedLayerImplMap old_layer_map;
-  for (auto& it : *old_layers) {
-    DCHECK(it);
-    old_layer_map[it->id()] = std::move(it);
-  }
-
-  PushLayerList(&old_layer_map, source_tree, tree_impl);
-
-  for (int id : property_trees->effect_tree.mask_layer_ids()) {
-    std::unique_ptr<LayerImpl> layer_impl(ReuseOrCreateLayerImpl(
-        &old_layer_map, source_tree->LayerById(id), tree_impl));
-    tree_impl->AddLayer(std::move(layer_impl));
-  }
-}
-
-void TreeSynchronizer::SynchronizeTrees(Layer* layer_root,
-                                        LayerTreeImpl* tree_impl) {
-  if (!layer_root) {
-    tree_impl->DetachLayers();
-  } else {
-    SynchronizeTreesInternal(layer_root->layer_tree_host(), tree_impl,
-                             layer_root->layer_tree_host()->property_trees());
-  }
-}
-
-void TreeSynchronizer::SynchronizeTrees(LayerTreeImpl* pending_tree,
-                                        LayerTreeImpl* active_tree) {
-  if (pending_tree->LayerListIsEmpty()) {
-    active_tree->DetachLayers();
-  } else {
-    SynchronizeTreesInternal(pending_tree, active_tree,
-                             pending_tree->property_trees());
-  }
-}
-
-template <typename LayerType>
-std::unique_ptr<LayerImpl> ReuseOrCreateLayerImpl(OwnedLayerImplMap* old_layers,
-                                                  LayerType* layer,
-                                                  LayerTreeImpl* tree_impl) {
-  if (!layer)
-    return nullptr;
-  std::unique_ptr<LayerImpl> layer_impl = std::move((*old_layers)[layer->id()]);
-  if (!layer_impl)
-    layer_impl = layer->CreateLayerImpl(tree_impl);
-  return layer_impl;
-}
-
+namespace {
 #if DCHECK_IS_ON()
 template <typename LayerType>
 static void AssertValidPropertyTreeIndices(LayerType* layer) {
@@ -106,6 +50,18 @@ static bool LayerWillPushProperties(LayerTreeImpl* tree, LayerImpl* layer) {
 }
 #endif
 
+template <typename LayerType>
+std::unique_ptr<LayerImpl> ReuseOrCreateLayerImpl(OwnedLayerImplMap* old_layers,
+                                                  LayerType* layer,
+                                                  LayerTreeImpl* tree_impl) {
+  if (!layer)
+    return nullptr;
+  std::unique_ptr<LayerImpl> layer_impl = std::move((*old_layers)[layer->id()]);
+  if (!layer_impl)
+    layer_impl = layer->CreateLayerImpl(tree_impl);
+  return layer_impl;
+}
+
 template <typename LayerTreeType>
 void PushLayerList(OwnedLayerImplMap* old_layers,
                    LayerTreeType* host,
@@ -128,6 +84,52 @@ void PushLayerList(OwnedLayerImplMap* old_layers,
     tree_impl->AddLayer(std::move(layer_impl));
   }
   tree_impl->OnCanDrawStateChangedForTree();
+}
+
+template <typename LayerTreeType>
+void SynchronizeTreesInternal(LayerTreeType* source_tree,
+                              LayerTreeImpl* tree_impl,
+                              PropertyTrees* property_trees) {
+  DCHECK(tree_impl);
+
+  TRACE_EVENT0("cc", "TreeSynchronizer::SynchronizeTrees");
+  std::unique_ptr<OwnedLayerImplList> old_layers(tree_impl->DetachLayers());
+
+  OwnedLayerImplMap old_layer_map;
+  for (auto& it : *old_layers) {
+    DCHECK(it);
+    old_layer_map[it->id()] = std::move(it);
+  }
+
+  PushLayerList(&old_layer_map, source_tree, tree_impl);
+
+  for (int id : property_trees->effect_tree.mask_layer_ids()) {
+    std::unique_ptr<LayerImpl> layer_impl(ReuseOrCreateLayerImpl(
+        &old_layer_map, source_tree->LayerById(id), tree_impl));
+    tree_impl->AddLayer(std::move(layer_impl));
+  }
+}
+
+}  // namespace
+
+void TreeSynchronizer::SynchronizeTrees(Layer* layer_root,
+                                        LayerTreeImpl* tree_impl) {
+  if (!layer_root) {
+    tree_impl->DetachLayers();
+  } else {
+    SynchronizeTreesInternal(layer_root->layer_tree_host(), tree_impl,
+                             layer_root->layer_tree_host()->property_trees());
+  }
+}
+
+void TreeSynchronizer::SynchronizeTrees(LayerTreeImpl* pending_tree,
+                                        LayerTreeImpl* active_tree) {
+  if (pending_tree->LayerListIsEmpty()) {
+    active_tree->DetachLayers();
+  } else {
+    SynchronizeTreesInternal(pending_tree, active_tree,
+                             pending_tree->property_trees());
+  }
 }
 
 template <typename Iterator>

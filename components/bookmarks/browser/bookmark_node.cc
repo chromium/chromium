@@ -67,7 +67,7 @@ bool BookmarkNode::SetMetaInfo(const std::string& key,
   if (!meta_info_map_)
     meta_info_map_.reset(new MetaInfoMap);
 
-  MetaInfoMap::iterator it = meta_info_map_->find(key);
+  auto it = meta_info_map_->find(key);
   if (it == meta_info_map_->end()) {
     (*meta_info_map_)[key] = value;
     return true;

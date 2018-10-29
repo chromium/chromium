@@ -298,6 +298,12 @@ static jboolean JNI_PrefServiceBridge_GetBackgroundSyncEnabled(
   return GetBooleanForContentSetting(CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC);
 }
 
+static jboolean JNI_PrefServiceBridge_GetAutomaticDownloadsEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  return GetBooleanForContentSetting(CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS);
+}
+
 static jboolean JNI_PrefServiceBridge_GetBlockThirdPartyCookiesEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
@@ -400,12 +406,6 @@ static jboolean JNI_PrefServiceBridge_GetSearchSuggestManaged(
   return GetPrefService()->IsManagedPreference(prefs::kSearchSuggestEnabled);
 }
 
-static jboolean JNI_PrefServiceBridge_IsScoutExtendedReportingActive(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  return safe_browsing::IsScout(*GetPrefService());
-}
-
 static jboolean JNI_PrefServiceBridge_GetSafeBrowsingExtendedReportingEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
@@ -426,7 +426,7 @@ static jboolean JNI_PrefServiceBridge_GetSafeBrowsingExtendedReportingManaged(
     const JavaParamRef<jobject>& obj) {
   PrefService* pref_service = GetPrefService();
   return pref_service->IsManagedPreference(
-      safe_browsing::GetExtendedReportingPrefName(*pref_service));
+      prefs::kSafeBrowsingScoutReportingEnabled);
 }
 
 static jboolean JNI_PrefServiceBridge_GetSafeBrowsingEnabled(
@@ -747,6 +747,17 @@ static void JNI_PrefServiceBridge_SetBackgroundSyncEnabled(
   host_content_settings_map->SetDefaultContentSetting(
       CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC,
       allow ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+}
+
+static void JNI_PrefServiceBridge_SetAutomaticDownloadsEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jboolean allow) {
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(GetOriginalProfile());
+  host_content_settings_map->SetDefaultContentSetting(
+      CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
+      allow ? CONTENT_SETTING_ASK : CONTENT_SETTING_BLOCK);
 }
 
 static void JNI_PrefServiceBridge_SetBlockThirdPartyCookiesEnabled(
@@ -1165,9 +1176,9 @@ void PrefServiceBridge::GetAndroidPermissionsForContentSetting(
     std::vector<std::string>* out) {
   JNIEnv* env = AttachCurrentThread();
   base::android::AppendJavaStringArrayToStringVector(
-      env, Java_PrefServiceBridge_getAndroidPermissionsForContentSetting(
-               env, content_type)
-               .obj(),
+      env,
+      Java_PrefServiceBridge_getAndroidPermissionsForContentSetting(
+          env, content_type),
       out);
 }
 

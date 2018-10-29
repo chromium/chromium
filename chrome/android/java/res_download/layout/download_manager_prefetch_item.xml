@@ -15,7 +15,7 @@
     app:columnCount="4"
     app:rowCount="4">
 
-    <org.chromium.ui.widget.RoundedCornerImageView
+    <org.chromium.chrome.browser.download.home.list.view.AsyncImageView
         android:id="@+id/thumbnail"
         android:layout_width="113dp"
         android:layout_height="112dp"
@@ -27,8 +27,9 @@
         app:layout_column="0"
         app:layout_row="0"
         app:layout_rowSpan="4"
-        app:cornerRadiusTopStart="@dimen/download_manager_prefetch_thumbnail_corner_radius"
-        app:cornerRadiusBottomStart="@dimen/download_manager_prefetch_thumbnail_corner_radius"
+        app:cornerRadiusTopStart="@dimen/download_manager_thumbnail_corner_radius"
+        app:cornerRadiusBottomStart="@dimen/download_manager_thumbnail_corner_radius"
+        style="@style/AsyncImageView"
         tools:ignore="ContentDescription" />
 
     <org.chromium.chrome.browser.download.home.view.SelectionView

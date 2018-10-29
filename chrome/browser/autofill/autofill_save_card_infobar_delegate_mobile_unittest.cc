@@ -68,7 +68,8 @@ AutofillSaveCardInfoBarDelegateMobileTest::
 void AutofillSaveCardInfoBarDelegateMobileTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
-  PersonalDataManagerFactory::GetInstance()->SetTestingFactory(profile(), NULL);
+  PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
   personal_data_.reset(new TestPersonalDataManager());
   personal_data_->SetPrefService(profile()->GetPrefs());
@@ -117,6 +118,7 @@ AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegateWithLegalMessage(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate(
         new AutofillSaveCardInfoBarDelegateMobile(
             is_uploading, credit_card, std::move(legal_message),
+            /*strike_database=*/nullptr,
             /*upload_save_card_callback=*/
             base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
                                UploadSaveCardCallback,
@@ -129,6 +131,7 @@ AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegateWithLegalMessage(
   std::unique_ptr<ConfirmInfoBarDelegate> delegate(
       new AutofillSaveCardInfoBarDelegateMobile(
           is_uploading, credit_card, std::move(legal_message),
+          /*strike_database=*/nullptr,
           /*upload_save_card_callback=*/
           base::OnceCallback<void(const base::string16&)>(),
           /*local_save_card_callback=*/

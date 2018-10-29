@@ -8,6 +8,10 @@
   line-height: 18px;
 }
 
+oobe-dialog {
+  outline: unset;
+}
+
 .update-subtitle {
   color: #333;
 }
@@ -24,5 +28,7 @@
 }
 
 .update-illustration {
+  height: 264px;
   padding-bottom: 82px;
+  width: 264px;
 }

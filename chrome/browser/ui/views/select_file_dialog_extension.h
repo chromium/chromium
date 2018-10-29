@@ -97,6 +97,10 @@ class SelectFileDialogExtension
   // Returns true if the dialog has multiple file type choices.
   bool HasMultipleFileTypeChoicesImpl() override;
 
+  // Returns true if |extension_dialog_| is resizable; the dialog must be
+  // non-null at the time of this call.
+  bool IsResizeable() const;
+
   bool has_multiple_file_type_choices_;
 
   // Host for the extension that implements this dialog.

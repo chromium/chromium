@@ -51,6 +51,7 @@ VideoFrameFactoryImpl::~VideoFrameFactoryImpl() {
 }
 
 void VideoFrameFactoryImpl::Initialize(bool wants_promotion_hint,
+                                       bool use_texture_owner_as_overlays,
                                        InitCb init_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!gpu_video_frame_factory_);
@@ -59,7 +60,8 @@ void VideoFrameFactoryImpl::Initialize(bool wants_promotion_hint,
       gpu_task_runner_.get(), FROM_HERE,
       base::Bind(&GpuVideoFrameFactory::Initialize,
                  base::Unretained(gpu_video_frame_factory_.get()),
-                 wants_promotion_hint, get_stub_cb_),
+                 wants_promotion_hint, use_texture_owner_as_overlays,
+                 get_stub_cb_),
       std::move(init_cb));
 }
 
@@ -98,15 +100,16 @@ void VideoFrameFactoryImpl::CreateVideoFrame(
     base::TimeDelta timestamp,
     gfx::Size natural_size,
     PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
-    VideoDecoder::OutputCB output_cb) {
+    OnceOutputCb output_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   gpu_task_runner_->PostTask(
       FROM_HERE,
-      base::Bind(&GpuVideoFrameFactory::CreateVideoFrame,
-                 base::Unretained(gpu_video_frame_factory_.get()),
-                 base::Passed(&output_buffer), texture_owner_, timestamp,
-                 natural_size, std::move(promotion_hint_cb),
-                 std::move(output_cb), base::ThreadTaskRunnerHandle::Get()));
+      base::BindOnce(&GpuVideoFrameFactory::CreateVideoFrame,
+                     base::Unretained(gpu_video_frame_factory_.get()),
+                     base::Passed(&output_buffer), texture_owner_, timestamp,
+                     natural_size, std::move(promotion_hint_cb),
+                     std::move(output_cb),
+                     base::ThreadTaskRunnerHandle::Get()));
 }
 
 void VideoFrameFactoryImpl::RunAfterPendingVideoFrames(
@@ -129,9 +132,11 @@ GpuVideoFrameFactory::~GpuVideoFrameFactory() {
 
 scoped_refptr<TextureOwner> GpuVideoFrameFactory::Initialize(
     bool wants_promotion_hint,
+    bool use_texture_owner_as_overlays,
     VideoFrameFactoryImpl::GetStubCb get_stub_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   wants_promotion_hint_ = wants_promotion_hint;
+  use_texture_owner_as_overlays_ = use_texture_owner_as_overlays;
   stub_ = get_stub_cb.Run();
   if (!MakeContextCurrent(stub_))
     return nullptr;
@@ -149,7 +154,7 @@ void GpuVideoFrameFactory::CreateVideoFrame(
     base::TimeDelta timestamp,
     gfx::Size natural_size,
     PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
-    VideoDecoder::OutputCB output_cb,
+    VideoFrameFactory::OnceOutputCb output_cb,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   scoped_refptr<VideoFrame> frame;
@@ -159,6 +164,7 @@ void GpuVideoFrameFactory::CreateVideoFrame(
                            timestamp, natural_size,
                            std::move(promotion_hint_cb), &frame, &texture,
                            &codec_image);
+  TRACE_EVENT0("media", "GpuVideoFrameFactory::CreateVideoFrame");
   if (!frame || !texture)
     return;
 
@@ -195,7 +201,8 @@ void GpuVideoFrameFactory::CreateVideoFrame(
   auto release_cb = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       BindToCurrentLoop(std::move(drop_texture_ref)), gpu::SyncToken());
   frame->SetReleaseMailboxCB(std::move(release_cb));
-  task_runner->PostTask(FROM_HERE, base::BindOnce(output_cb, std::move(frame)));
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(output_cb), std::move(frame)));
 }
 
 void GpuVideoFrameFactory::CreateVideoFrameInternal(
@@ -273,10 +280,16 @@ void GpuVideoFrameFactory::CreateVideoFrameInternal(
   if (group->gpu_preferences().enable_threaded_texture_mailboxes)
     frame->metadata()->SetBoolean(VideoFrameMetadata::COPY_REQUIRED, true);
 
-  // We unconditionally mark the picture as overlayable, even if
-  // |!texture_owner_|, if we want to get hints.  It's required, else we won't
-  // get hints.
-  const bool allow_overlay = !texture_owner_ || wants_promotion_hint_;
+  bool allow_overlay = false;
+  if (use_texture_owner_as_overlays_) {
+    DCHECK(texture_owner_);
+    allow_overlay = true;
+  } else {
+    // We unconditionally mark the picture as overlayable, even if
+    // |!texture_owner_|, if we want to get hints.  It's required, else we won't
+    // get hints.
+    allow_overlay = !texture_owner_ || wants_promotion_hint_;
+  }
 
   frame->metadata()->SetBoolean(VideoFrameMetadata::ALLOW_OVERLAY,
                                 allow_overlay);

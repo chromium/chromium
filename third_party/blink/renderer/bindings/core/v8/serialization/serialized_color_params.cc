@@ -17,6 +17,9 @@ SerializedColorParams::SerializedColorParams(CanvasColorParams color_params) {
     case kSRGBCanvasColorSpace:
       color_space_ = SerializedColorSpace::kSRGB;
       break;
+    case kLinearRGBCanvasColorSpace:
+      color_space_ = SerializedColorSpace::kLinearRGB;
+      break;
     case kRec2020CanvasColorSpace:
       color_space_ = SerializedColorSpace::kRec2020;
       break;
@@ -27,8 +30,6 @@ SerializedColorParams::SerializedColorParams(CanvasColorParams color_params) {
 
   switch (color_params.PixelFormat()) {
     case kRGBA8CanvasPixelFormat:
-    case kRGB10A2CanvasPixelFormat:
-    case kRGBA12CanvasPixelFormat:
       pixel_format_ = SerializedPixelFormat::kRGBA8;
       break;
     case kF16CanvasPixelFormat:
@@ -76,6 +77,9 @@ CanvasColorParams SerializedColorParams::GetCanvasColorParams() const {
     case SerializedColorSpace::kLegacyObsolete:
     case SerializedColorSpace::kSRGB:
       color_space = kSRGBCanvasColorSpace;
+      break;
+    case SerializedColorSpace::kLinearRGB:
+      color_space = kLinearRGBCanvasColorSpace;
       break;
     case SerializedColorSpace::kRec2020:
       color_space = kRec2020CanvasColorSpace;

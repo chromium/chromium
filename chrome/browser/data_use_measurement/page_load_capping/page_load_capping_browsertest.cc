@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -25,6 +26,7 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/infobars/core/infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -44,6 +46,26 @@ namespace {
 const base::FilePath::CharType kDocRoot[] =
     FILE_PATH_LITERAL("chrome/test/data/data_use_measurement");
 const char kImagePrefix[] = "/image";
+
+class TestInfoBarObserver : public infobars::InfoBarManager::Observer {
+ public:
+  explicit TestInfoBarObserver(base::RunLoop* run_loop) : run_loop_(run_loop) {}
+  ~TestInfoBarObserver() override {}
+
+  void OnInfoBarAdded(infobars::InfoBar* infobar) override {}
+  void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override {
+    run_loop_->QuitWhenIdle();
+  }
+  void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
+                         infobars::InfoBar* new_infobar) override {}
+  void OnManagerShuttingDown(infobars::InfoBarManager* manager) override {
+    NOTREACHED();
+  }
+
+ private:
+  base::RunLoop* run_loop_;
+};
+
 }  // namespace
 
 class PageLoadCappingBrowserTest : public InProcessBrowserTest {
@@ -51,8 +73,10 @@ class PageLoadCappingBrowserTest : public InProcessBrowserTest {
   PageLoadCappingBrowserTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  ~PageLoadCappingBrowserTest() override {}
+
   void PostToSelf() {
-    EXPECT_FALSE(waiting_);
+    EXPECT_FALSE(waiting_for_infobar_event_ || waiting_for_request_);
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   run_loop.QuitClosure());
@@ -60,10 +84,22 @@ class PageLoadCappingBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForRequest() {
-    EXPECT_FALSE(waiting_);
-    waiting_ = true;
+    EXPECT_FALSE(waiting_for_infobar_event_ || waiting_for_request_);
+    waiting_for_request_ = true;
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
+    run_loop_.reset();
+  }
+
+  void WaitForInfoBarRemoved() {
+    EXPECT_FALSE(waiting_for_infobar_event_ || waiting_for_request_);
+    waiting_for_infobar_event_ = true;
+    run_loop_ = std::make_unique<base::RunLoop>();
+    TestInfoBarObserver test_observer(run_loop_.get());
+    InfoBarService::FromWebContents(contents())->AddObserver(&test_observer);
+    run_loop_->Run();
+    InfoBarService::FromWebContents(contents())->RemoveObserver(&test_observer);
+    waiting_for_infobar_event_ = false;
     run_loop_.reset();
   }
 
@@ -115,7 +151,10 @@ class PageLoadCappingBrowserTest : public InProcessBrowserTest {
     std::map<std::string, std::string> feature_parameters = {
         {"PageCapMiB", "0"},
         {"PageFuzzingKiB", "0"},
-        {"OptOutStoreDisabled", "true"}};
+        {"OptOutStoreDisabled", "true"},
+        {"InfoBarTimeoutInMilliseconds", "500000"}};
+    ChangeParams(&feature_parameters);
+
     base::FieldTrialParamAssociator::GetInstance()->AssociateFieldTrialParams(
         "TrialName1", "GroupName1", feature_parameters);
 
@@ -134,6 +173,8 @@ class PageLoadCappingBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  virtual void ChangeParams(std::map<std::string, std::string>* params) {}
+
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     // Check if this matches the image requests from the test suite.
@@ -149,16 +190,17 @@ class PageLoadCappingBrowserTest : public InProcessBrowserTest {
     std::unique_ptr<net::test_server::BasicHttpResponse> not_found_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
     not_found_response->set_code(net::HTTP_NOT_FOUND);
-    if (waiting_) {
+    if (waiting_for_request_) {
       run_loop_->QuitWhenIdle();
-      waiting_ = false;
+      waiting_for_request_ = false;
     }
     return not_found_response;
   }
 
   net::EmbeddedTestServer https_test_server_;
   size_t images_attempted_ = 0u;
-  bool waiting_ = false;
+  bool waiting_for_request_ = false;
+  bool waiting_for_infobar_event_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -428,4 +470,43 @@ IN_PROC_BROWSER_TEST_F(PageLoadCappingBrowserTest, DataSaverOffTest) {
   NavigateToHeavyPage();
 
   EXPECT_EQ(0u, InfoBarCount());
+}
+
+class PageLoadCappingBrowserTestDismissAfterNetworkUse
+    : public PageLoadCappingBrowserTest {
+ public:
+  PageLoadCappingBrowserTestDismissAfterNetworkUse() {}
+  ~PageLoadCappingBrowserTestDismissAfterNetworkUse() override {}
+
+  void ChangeParams(std::map<std::string, std::string>* params) override {
+    (*params)["InfoBarTimeoutInMilliseconds"] = "50";
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PageLoadCappingBrowserTestDismissAfterNetworkUse,
+                       TestInfoBarDismiss) {
+  // Verifies the InfoBar dismisses shortly (5ms) after the last resource is
+  // loaded.
+  EnableDataSaver(true);
+
+  base::HistogramTester histogram_tester;
+
+  // Load a page and ignore the InfoBar.
+  NavigateToHeavyPage();
+
+  // Verify the InfoBar was shown (it might be dismissed already by the
+  // InfoBarTimeout logic).
+  histogram_tester.ExpectBucketCount("HeavyPageCapping.InfoBarInteraction", 0,
+                                     1);
+  bool is_dismissed = histogram_tester.GetBucketCount(
+                          "HeavyPageCapping.InfoBarInteraction", 3) > 0;
+  if (!is_dismissed) {
+    ASSERT_EQ(1u, InfoBarCount());
+    WaitForInfoBarRemoved();
+  }
+
+  histogram_tester.ExpectBucketCount("HeavyPageCapping.InfoBarInteraction", 3,
+                                     1);
+
+  ASSERT_EQ(0u, InfoBarCount());
 }

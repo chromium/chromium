@@ -143,7 +143,9 @@ class PackedCache {
   // Decrease the size map cache if running in the small memory mode.
   static const int kHashbits = 12;
 #else
-  static const int kHashbits = 16;
+  // We don't want the hash map to occupy 512K memory at Chromium, so
+  // kHashbits is decreased from 16 to 12.
+  static const int kHashbits = 12;
 #endif
   static const int kValuebits = 7;
   // one bit after value bits

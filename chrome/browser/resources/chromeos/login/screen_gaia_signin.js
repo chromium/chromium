@@ -304,6 +304,10 @@ login.createScreen('GaiaSigninScreen', 'gaia-signin', function() {
             this.screenMode = ScreenMode.DEFAULT;
             this.loadGaiaAuthHost_(false /* doSamlRedirect */);
           }.bind(this));
+
+      $('offline-ad-auth').addEventListener('cancel', function() {
+        this.cancel();
+      }.bind(this));
     },
 
     /**
@@ -584,6 +588,7 @@ login.createScreen('GaiaSigninScreen', 'gaia-signin', function() {
       this.lastBackMessageValue_ = false;
       this.updateControlsState();
 
+      $('offline-ad-auth').onBeforeShow();
       return $('signin-frame-dialog').onBeforeShow();
     },
 
@@ -595,9 +600,9 @@ login.createScreen('GaiaSigninScreen', 'gaia-signin', function() {
       this.navigation_.disabled = value;
 
       if (value)
-        $('navigation-buttons').setAttribute('disabled', null);
+        $('gaia-screen-buttons-overlay').removeAttribute('hidden');
       else
-        $('navigation-buttons').removeAttribute('disabled');
+        $('gaia-screen-buttons-overlay').setAttribute('hidden', null);
 
       if ($('signin-back-button'))
         $('signin-back-button').disabled = value;
@@ -723,6 +728,10 @@ login.createScreen('GaiaSigninScreen', 'gaia-signin', function() {
             .insertBefore($('offline-gaia'), $('gaia-step-contents'));
         $('offline-gaia').removeAttribute('not-a-dialog');
         $('offline-gaia').classList.toggle('fit', false);
+        $('gaia-signin')
+            .insertBefore($('offline-ad-auth'), $('gaia-step-contents'));
+        $('offline-ad-auth').removeAttribute('not-a-dialog');
+        $('offline-ad-auth').classList.toggle('fit', false);
       } else {
         $('gaia-signin-form-container').appendChild($('signin-frame'));
         $('gaia-signin-form-container')
@@ -789,7 +798,8 @@ login.createScreen('GaiaSigninScreen', 'gaia-signin', function() {
       let oldState = this.classList.contains('v2');
       this.classList.toggle('v2', false);
       if ((this.screenMode_ == ScreenMode.DEFAULT ||
-           this.screenMode_ == ScreenMode.OFFLINE) &&
+           this.screenMode_ == ScreenMode.OFFLINE ||
+           this.screenMode_ == ScreenMode.AD_AUTH) &&
           this.chromeOSApiVersion_ == 2) {
         this.classList.toggle('v2', true);
       }
@@ -1091,16 +1101,10 @@ login.createScreen('GaiaSigninScreen', 'gaia-signin', function() {
         chrome.send(
             'completeOfflineAuthentication',
             [credentials.email, credentials.password]);
-      } else if (credentials.authCode) {
+      } else {
         chrome.send('completeAuthentication', [
           credentials.gaiaId, credentials.email, credentials.password,
-          credentials.authCode, credentials.usingSAML, credentials.gapsCookie,
-          credentials.services
-        ]);
-      } else {
-        chrome.send('completeLogin', [
-          credentials.gaiaId, credentials.email, credentials.password,
-          credentials.usingSAML
+          credentials.usingSAML, credentials.services
         ]);
       }
 
@@ -1261,16 +1265,14 @@ login.createScreen('GaiaSigninScreen', 'gaia-signin', function() {
     loadAdAuth: function(params) {
       this.loading = true;
       this.startLoadingTimer_();
-      var ADAuthUI = this.getSigninFrame_();
-      if ('realm' in params)
-        ADAuthUI.realm = params['realm'];
+      var adAuthUI = this.getSigninFrame_();
+      adAuthUI.realm = params['realm'];
 
       if ('emailDomain' in params)
-        ADAuthUI.userRealm = '@' + params['emailDomain'];
-      else if ('realm' in params)
-        ADAuthUI.userRealm = '@' + params['realm'];
+        adAuthUI.userRealm = '@' + params['emailDomain'];
 
-      ADAuthUI.setUser(params['email']);
+      adAuthUI.userName = params['email'];
+      adAuthUI.focus();
       this.onAuthReady_();
     },
 
@@ -1307,8 +1309,8 @@ login.createScreen('GaiaSigninScreen', 'gaia-signin', function() {
       if (this.screenMode_ != ScreenMode.AD_AUTH)
         return;
       var adAuthUI = this.getSigninFrame_();
-      adAuthUI.setUser(username);
-      adAuthUI.setInvalid(errorState);
+      adAuthUI.userName = username;
+      adAuthUI.errorState = errorState;
       this.authCompleted_ = false;
       this.loading = false;
       Oobe.getInstance().headerHidden = false;

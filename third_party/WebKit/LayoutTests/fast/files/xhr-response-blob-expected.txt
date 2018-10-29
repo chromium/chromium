@@ -18,4 +18,3 @@ PASS xhr.responseType is "blob"
 PASS xhr.response is null
 PASS xhr.response instanceof Blob is true
 PASS xhr.response.type is "text/plain"
-

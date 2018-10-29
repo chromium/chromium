@@ -20,4 +20,5 @@
 
     // https://w3c.github.io/pointerevents/extension.html#extensions-to-the-pointerevent-interface
     sequence<PointerEvent> getCoalescedEvents();
+    [RuntimeEnabled=PredictedEvents] sequence<PointerEvent> getPredictedEvents();
 };

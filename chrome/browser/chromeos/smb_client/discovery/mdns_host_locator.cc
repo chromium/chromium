@@ -55,6 +55,10 @@ bool MDnsHostLocator::StartListening() {
 }
 
 void MDnsHostLocator::FindHosts(FindHostsCallback callback) {
+  if (running_) {
+    Reset();
+  }
+
   if (!(StartListening() && CreatePtrTransaction())) {
     LOG(ERROR) << "Failed to start MDnsHostLocator";
 

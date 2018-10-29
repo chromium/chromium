@@ -467,8 +467,7 @@ int MultiThreadedProxyResolver::GetProxyForURL(
 
 Executor* MultiThreadedProxyResolver::FindIdleExecutor() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  for (ExecutorList::iterator it = executors_.begin();
-       it != executors_.end(); ++it) {
+  for (auto it = executors_.begin(); it != executors_.end(); ++it) {
     Executor* executor = it->get();
     if (!executor->outstanding_job())
       return executor;

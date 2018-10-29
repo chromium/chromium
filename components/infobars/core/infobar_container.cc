@@ -79,7 +79,7 @@ void InfoBarContainer::OnInfoBarStateChanged(bool is_animating) {
 
 void InfoBarContainer::RemoveInfoBar(InfoBar* infobar) {
   infobar->set_container(nullptr);
-  InfoBars::iterator i(std::find(infobars_.begin(), infobars_.end(), infobar));
+  auto i(std::find(infobars_.begin(), infobars_.end(), infobar));
   DCHECK(i != infobars_.end());
   PlatformSpecificRemoveInfoBar(infobar);
   infobars_.erase(i);

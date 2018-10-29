@@ -20,7 +20,6 @@
 #include "content/renderer/service_worker/embedded_worker_instance_client_impl.h"
 #include "content/renderer/service_worker/service_worker_timeout_timer.h"
 #include "content/renderer/service_worker/service_worker_type_util.h"
-#include "content/renderer/service_worker/web_service_worker_impl.h"
 #include "content/renderer/worker_thread_registry.h"
 #include "mojo/public/cpp/bindings/associated_binding_set.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr.h"
@@ -35,6 +34,7 @@
 #include "third_party/blink/public/platform/modules/payments/web_payment_request_event_data.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_clients_info.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration_object_info.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_request.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_data_consumer_handle.h"
@@ -69,9 +69,11 @@ class MockWebServiceWorkerContextProxy
   void BindServiceWorkerHost(
       mojo::ScopedInterfaceEndpointHandle service_worker_host) override {}
   void SetRegistration(
-      std::unique_ptr<blink::WebServiceWorkerRegistration::Handle> handle)
-      override {
-    registration_handle_ = std::move(handle);
+      blink::WebServiceWorkerRegistrationObjectInfo info) override {
+    DCHECK(!registration_object_info_);
+    registration_object_info_ =
+        std::make_unique<blink::WebServiceWorkerRegistrationObjectInfo>(
+            std::move(info));
   }
   void ReadyToEvaluateScript() override {}
   bool HasFetchEventHandler() override { return false; }
@@ -119,7 +121,7 @@ class MockWebServiceWorkerContextProxy
       int event_id,
       blink::TransferableMessage message,
       const blink::WebSecurityOrigin& source_origin,
-      std::unique_ptr<blink::WebServiceWorker::Handle>) override {
+      blink::WebServiceWorkerObjectInfo) override {
     NOTREACHED();
   }
   void DispatchInstallEvent(int event_id) override { NOTREACHED(); }
@@ -158,7 +160,7 @@ class MockWebServiceWorkerContextProxy
   void OnNavigationPreloadResponse(
       int fetch_event_id,
       std::unique_ptr<blink::WebURLResponse>,
-      std::unique_ptr<blink::WebDataConsumerHandle>) override {
+      mojo::ScopedDataPipeConsumerHandle) override {
     NOTREACHED();
   }
   void OnNavigationPreloadError(
@@ -181,8 +183,8 @@ class MockWebServiceWorkerContextProxy
   }
 
  private:
-  std::unique_ptr<blink::WebServiceWorkerRegistration::Handle>
-      registration_handle_;
+  std::unique_ptr<blink::WebServiceWorkerRegistrationObjectInfo>
+      registration_object_info_;
   std::vector<std::pair<int /* event_id */, blink::WebServiceWorkerRequest>>
       fetch_events_;
 };
@@ -303,11 +305,6 @@ class ServiceWorkerContextClientTest : public testing::Test {
     return context_client;
   }
 
-  bool ContainsServiceWorkerObject(ServiceWorkerContextClient* context_client,
-                                   int64_t version_id) {
-    return context_client->ContainsServiceWorkerObjectForTesting(version_id);
-  }
-
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner() const {
     return task_runner_;
   }
@@ -335,7 +332,7 @@ TEST_F(ServiceWorkerContextClientTest, DispatchFetchEvent) {
   MockWebServiceWorkerContextProxy mock_proxy;
   std::unique_ptr<ServiceWorkerContextClient> context_client =
       CreateContextClient(&pipes, &mock_proxy);
-  context_client->DidEvaluateClassicScript(true /* success */);
+  context_client->DidEvaluateScript(true /* success */);
   task_runner()->RunUntilIdle();
   EXPECT_TRUE(mock_proxy.fetch_events().empty());
 
@@ -373,7 +370,7 @@ TEST_F(ServiceWorkerContextClientTest, DispatchFetchEvent_Headers) {
   MockWebServiceWorkerContextProxy mock_proxy;
   std::unique_ptr<ServiceWorkerContextClient> context_client =
       CreateContextClient(&pipes, &mock_proxy);
-  context_client->DidEvaluateClassicScript(true /* success */);
+  context_client->DidEvaluateScript(true /* success */);
   task_runner()->RunUntilIdle();
   EXPECT_TRUE(mock_proxy.fetch_events().empty());
 
@@ -415,7 +412,7 @@ TEST_F(ServiceWorkerContextClientTest,
   MockWebServiceWorkerContextProxy mock_proxy;
   std::unique_ptr<ServiceWorkerContextClient> context_client =
       CreateContextClient(&pipes, &mock_proxy);
-  context_client->DidEvaluateClassicScript(true /* success */);
+  context_client->DidEvaluateScript(true /* success */);
   task_runner()->RunUntilIdle();
   EXPECT_TRUE(mock_proxy.fetch_events().empty());
 
@@ -453,7 +450,7 @@ TEST_F(ServiceWorkerContextClientTest,
   MockWebServiceWorkerContextProxy mock_proxy;
   std::unique_ptr<ServiceWorkerContextClient> context_client =
       CreateContextClient(&pipes, &mock_proxy);
-  context_client->DidEvaluateClassicScript(true /* success */);
+  context_client->DidEvaluateScript(true /* success */);
   task_runner()->RunUntilIdle();
   EXPECT_TRUE(mock_proxy.fetch_events().empty());
 
@@ -501,7 +498,7 @@ TEST_F(ServiceWorkerContextClientTest,
   MockWebServiceWorkerContextProxy mock_proxy;
   std::unique_ptr<ServiceWorkerContextClient> context_client =
       CreateContextClient(&pipes, &mock_proxy);
-  context_client->DidEvaluateClassicScript(true /* success */);
+  context_client->DidEvaluateScript(true /* success */);
   task_runner()->RunUntilIdle();
   EXPECT_TRUE(mock_proxy.fetch_events().empty());
   bool is_idle = false;
@@ -564,60 +561,6 @@ TEST_F(ServiceWorkerContextClientTest,
             static_cast<GURL>(mock_proxy.fetch_events()[0].second.Url()));
   EXPECT_EQ(expected_url_2,
             static_cast<GURL>(mock_proxy.fetch_events()[1].second.Url()));
-}
-
-TEST_F(ServiceWorkerContextClientTest, GetOrCreateServiceWorkerObject) {
-  ContextClientPipes pipes;
-  MockWebServiceWorkerContextProxy mock_proxy;
-  std::unique_ptr<ServiceWorkerContextClient> context_client =
-      CreateContextClient(&pipes, &mock_proxy);
-  scoped_refptr<WebServiceWorkerImpl> worker1;
-  scoped_refptr<WebServiceWorkerImpl> worker2;
-  const int64_t version_id = 200;
-  auto mock_service_worker_object_host =
-      std::make_unique<MockServiceWorkerObjectHost>(version_id);
-  ASSERT_EQ(0, mock_service_worker_object_host->GetBindingCount());
-
-  // Should return a worker object newly created with the 1st given |info|.
-  {
-    blink::mojom::ServiceWorkerObjectInfoPtr info =
-        mock_service_worker_object_host->CreateObjectInfo();
-    // ServiceWorkerObjectHost Mojo connection has been added.
-    EXPECT_EQ(1, mock_service_worker_object_host->GetBindingCount());
-    EXPECT_FALSE(ContainsServiceWorkerObject(context_client.get(), version_id));
-    worker1 = context_client->GetOrCreateServiceWorkerObject(std::move(info));
-    EXPECT_TRUE(worker1);
-    EXPECT_TRUE(ContainsServiceWorkerObject(context_client.get(), version_id));
-    // |worker1| is holding the 1st blink::mojom::ServiceWorkerObjectHost Mojo
-    // connection to |mock_service_worker_object_host|.
-    EXPECT_EQ(1, mock_service_worker_object_host->GetBindingCount());
-  }
-
-  // Should return the same worker object and release the 2nd given |info|.
-  {
-    blink::mojom::ServiceWorkerObjectInfoPtr info =
-        mock_service_worker_object_host->CreateObjectInfo();
-    EXPECT_EQ(2, mock_service_worker_object_host->GetBindingCount());
-    worker2 = context_client->GetOrCreateServiceWorkerObject(std::move(info));
-    EXPECT_EQ(worker1, worker2);
-    task_runner()->RunUntilIdle();
-    // The 2nd ServiceWorkerObjectHost Mojo connection in |info| has been
-    // dropped.
-    EXPECT_EQ(1, mock_service_worker_object_host->GetBindingCount());
-  }
-
-  // The dtor decrements the refcounts.
-  worker1 = nullptr;
-  worker2 = nullptr;
-  task_runner()->RunUntilIdle();
-  EXPECT_FALSE(ContainsServiceWorkerObject(context_client.get(), version_id));
-  // The 1st ServiceWorkerObjectHost Mojo connection got broken.
-  EXPECT_EQ(0, mock_service_worker_object_host->GetBindingCount());
-
-  // Should return nullptr when given nullptr.
-  scoped_refptr<WebServiceWorkerImpl> invalid_worker =
-      context_client->GetOrCreateServiceWorkerObject(nullptr);
-  EXPECT_FALSE(invalid_worker);
 }
 
 }  // namespace content

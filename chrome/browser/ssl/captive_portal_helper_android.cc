@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ssl/captive_portal_helper_android.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/ssl/captive_portal_helper.h"
+#include "content/public/browser/browser_task_traits.h"
 
 #include <stddef.h>
 
@@ -12,6 +14,7 @@
 #include "base/android/jni_string.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ssl/ssl_error_assistant.h"
 #include "chrome/browser/ssl/ssl_error_handler.h"
 #include "content/public/browser/browser_thread.h"
 #include "jni/CaptivePortalHelper_jni.h"
@@ -24,14 +27,21 @@ void JNI_CaptivePortalHelper_SetCaptivePortalCertificateForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jclass>& jcaller,
     const base::android::JavaParamRef<jstring>& jhash) {
+  auto default_proto =
+      SSLErrorAssistant::GetErrorAssistantProtoFromResourceBundle();
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
+      base::BindOnce(SSLErrorHandler::SetErrorAssistantProto,
+                     std::move(default_proto)));
+
   const std::string hash = ConvertJavaStringToUTF8(env, jhash);
   auto config_proto =
       std::make_unique<chrome_browser_ssl::SSLErrorAssistantConfig>();
   config_proto->set_version_id(INT_MAX);
   config_proto->add_captive_portal_cert()->set_sha256_hash(hash);
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(SSLErrorHandler::SetErrorAssistantProto,
                      std::move(config_proto)));
 }
@@ -40,8 +50,8 @@ void JNI_CaptivePortalHelper_SetOSReportsCaptivePortalForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jclass>& jcaller,
     jboolean os_reports_captive_portal) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(SSLErrorHandler::SetOSReportsCaptivePortalForTesting,
                      os_reports_captive_portal));
 }

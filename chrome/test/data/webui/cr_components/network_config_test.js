@@ -13,11 +13,12 @@ suite('network-config', function() {
     CrOncTest.overrideCrOncStrings();
   });
 
-  function setNetworkConfig(networkProperties) {
+  function setNetworkConfig(properties) {
     PolymerTest.clearBody();
     networkConfig = document.createElement('network-config');
     networkConfig.networkingPrivate = api_;
-    networkConfig.networkProperties = networkProperties;
+    networkConfig.managedProperties =
+        CrOncTest.convertToManagedProperties(properties);
   }
 
   function initNetworkConfig() {
@@ -73,8 +74,10 @@ suite('network-config', function() {
 
     test('Default', function() {
       return flushAsync().then(() => {
-        assertEquals('someguid', networkConfig.networkProperties.GUID);
-        assertEquals('somename', networkConfig.networkProperties.Name);
+        assertEquals('someguid', networkConfig.managedProperties.GUID);
+        assertEquals(
+            'somename',
+            CrOnc.getActiveValue(networkConfig.managedProperties.Name));
         assertFalse(!!networkConfig.$$('#share'));
         assertTrue(!!networkConfig.$$('#ssid'));
         assertTrue(!!networkConfig.$$('#security'));
@@ -225,8 +228,10 @@ suite('network-config', function() {
         assertEquals('WPA-EAP', networkConfig.security_);
         assertEquals(
             'PEAP',
-            networkConfig.get(
-                'Ethernet.EAP.Outer', networkConfig.networkProperties));
+            CrOnc.getActiveValue(
+                /** @type {chrome.networkingPrivate.ManagedDOMString|undefined} */
+                (networkConfig.get(
+                    'Ethernet.EAP.Outer', networkConfig.managedProperties))));
         let outer = networkConfig.$$('#outer');
         assertTrue(!!outer);
         assertTrue(!outer.disabled);

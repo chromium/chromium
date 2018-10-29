@@ -164,6 +164,8 @@ int main(int argc, char** argv) {
   // We do not want to retry failures as a failed test should signify an error
   // to be investigated.
   command_line->AppendSwitchASCII(switches::kTestLauncherRetryLimit, "0");
+  command_line->AppendSwitchASCII(
+      switches::kIsolatedScriptTestLauncherRetryLimit, "0");
 
   // We do not want to run the tests in parallel and we do not want to retry
   // failures.  The reason for running in a single process is that some tests

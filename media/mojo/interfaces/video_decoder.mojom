@@ -8,7 +8,27 @@ import "gpu/ipc/common/sync_token.mojom";
 import "media/mojo/interfaces/media_log.mojom";
 import "media/mojo/interfaces/media_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/geometry/mojo/geometry.mojom";
 import "ui/gfx/mojo/color_space.mojom";
+
+// Serializable rule for matching VideoDecoderConfigs.
+struct SupportedVideoDecoderConfig {
+  // Range of VideoCodecProfiles to match, inclusive.
+  VideoCodecProfile profile_min;
+  VideoCodecProfile profile_max;
+
+  // Range of coded sizes to match, inclusive in each dimension.
+  gfx.mojom.Size coded_size_min;
+  gfx.mojom.Size coded_size_max;
+
+  // Match configs that have encryption configured.
+  bool allow_encrypted;
+
+  // Do not match configs that do not have encryption configured. This is used
+  // on Android when the internal software decoder is preferred over the
+  // platform decoder (eg. when the platform decoder is a software decoder).
+  bool require_encrypted;
+};
 
 // Identifies a CommandBufferStub. MediaGpuChannelManager is responsible
 // for minting |channel_token| values.
@@ -17,6 +37,11 @@ struct CommandBufferId {
   int32 route_id;
 };
 
+[Native]
+struct OverlayInfo;
+
+// Interface for releasing remote VideoFrames. It is separated from VideoDecoder
+// so that VideoFrames can outlive their VideoDecoder.
 interface VideoFrameHandleReleaser {
   // Signals that the VideoFrame identified by |release_token| should be
   // released. |release_sync_token| indicates the last use of the VideoFrame
@@ -28,14 +53,19 @@ interface VideoFrameHandleReleaser {
                     gpu.mojom.SyncToken release_sync_token);
 };
 
-[Native]
-struct OverlayInfo;
-
 // A Mojo equivalent of media::VideoDecoder. In practice, this is used for
 // hardware decode offloading; in this case the client is a <video> tag running
 // in a renderer, and the implementation is running in the GPU process.
 interface VideoDecoder {
-  // Initialize the decoder. This must be called before any other method.
+  // Returns a list of supported configs. It is expected that Initialize() will
+  // fail for any config that does not match an entry in this list.
+  //
+  // May be called before Construct().
+  GetSupportedConfigs() =>
+      (array<SupportedVideoDecoderConfig> supported_configs);
+
+  // Initialize the decoder. This must be called before any method other than
+  // GetSupportedConfigs().
   //
   // |client| provides asynchronous client methods to the VideoDecoder, such
   // as delivery of decoded VideoFrame outputs.

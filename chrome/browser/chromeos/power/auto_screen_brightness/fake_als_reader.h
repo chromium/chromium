@@ -25,7 +25,6 @@ class FakeAlsReader : public AlsReader {
   void ReportAmbientLightUpdate(int lux);
 
   // AlsReader overrides:
-  AlsInitStatus GetInitStatus() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

@@ -201,7 +201,7 @@ WebWorkerFetchContextImpl::CloneForNestedWorker() {
 
   mojom::ServiceWorkerContainerHostPtrInfo host_ptr_info;
   if (blink::ServiceWorkerUtils::IsServicificationEnabled()) {
-    service_worker_container_host_->CloneForWorker(
+    service_worker_container_host_->CloneContainerHost(
         mojo::MakeRequest(&host_ptr_info));
   }
 
@@ -324,7 +324,7 @@ void WebWorkerFetchContextImpl::WillSendRequest(blink::WebURLRequest& request) {
 
   if (!renderer_preferences_.enable_referrers) {
     request.SetHTTPReferrer(blink::WebString(),
-                            blink::kWebReferrerPolicyDefault);
+                            network::mojom::ReferrerPolicy::kDefault);
   }
 }
 
@@ -449,7 +449,7 @@ void WebWorkerFetchContextImpl::ResetServiceWorkerURLLoaderFactory() {
 
   network::mojom::URLLoaderFactoryPtr service_worker_url_loader_factory;
   mojom::ServiceWorkerContainerHostPtrInfo host_ptr_info;
-  service_worker_container_host_->CloneForWorker(
+  service_worker_container_host_->CloneContainerHost(
       mojo::MakeRequest(&host_ptr_info));
   // To avoid potential dead-lock while synchronous loading, create the
   // SubresourceLoaderFactory on a background thread.

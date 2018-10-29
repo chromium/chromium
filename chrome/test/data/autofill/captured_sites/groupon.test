@@ -1,0 +1,139 @@
+{
+  "startingURL": "https://www.groupon.com/deals/n-splash-wines-fall-wines-of-the-world/confirmation?pledge_id=80378309",
+  "autofillProfile": [
+    {
+      "type": "HTML_TYPE_ADDRESS_LEVEL1",
+      "value": "TX"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LEVEL2",
+      "value": "Austin"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_EXP",
+      "value": "05/2027"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_NUMBER",
+      "value": "9621327911759602"
+    },
+    {
+      "type": "HTML_TYPE_NAME",
+      "value": "Milton C. Waddams"
+    },
+    {
+      "type": "HTML_TYPE_POSTAL_CODE",
+      "value": "78744"
+    },
+    {
+      "type": "HTML_TYPE_STREET_ADDRESS",
+      "value": "4120 Freidrich Lane, Apt 8"
+    }
+  ],
+  "passwordManagerProfiles": [],
+  "actions": [
+    {
+      "url": "https://www.groupon.com/deals/n-splash-wines-fall-wines-of-the-world/confirmation?pledge_id=80378309",
+      "context": {
+        "isIframe": false
+      },
+      "type": "loadPage",
+      "action_index": 2
+    },
+    {
+      "selector": "//input[@id=\"full_name\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 3
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane, Apt 8",
+      "selector": "//input[@id=\"billing_ad\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_STREET_ADDRESS",
+      "action_index": 4
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Austin",
+      "selector": "//input[@id=\"cc_city\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LEVEL2",
+      "action_index": 5
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "TX",
+      "selector": "//select[@id=\"cc_state\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LEVEL1",
+      "action_index": 6
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@id=\"cc_zip\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_POSTAL_CODE",
+      "action_index": 7
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton C. Waddams",
+      "selector": "//input[@id=\"full_name\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_NAME",
+      "action_index": 8
+    },
+    {
+      "selector": "//input[@id=\"cc_number\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 9
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "05/2027",
+      "selector": "//input[@id=\"cc_expiration\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_CREDIT_CARD_EXP",
+      "action_index": 10
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "9621327911759602",
+      "selector": "//input[@id=\"cc_number\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_CREDIT_CARD_NUMBER",
+      "action_index": 13
+    }
+  ]
+}

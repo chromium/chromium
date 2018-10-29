@@ -38,12 +38,6 @@ TEST_F(DataReductionProxyDataTest, BasicSettersAndGetters) {
   data->set_used_data_reduction_proxy(false);
   EXPECT_FALSE(data->used_data_reduction_proxy());
 
-  EXPECT_FALSE(data->lofi_requested());
-  data->set_lofi_requested(true);
-  EXPECT_TRUE(data->lofi_requested());
-  data->set_lofi_requested(false);
-  EXPECT_FALSE(data->lofi_requested());
-
   EXPECT_FALSE(data->lite_page_received());
   data->set_lite_page_received(true);
   EXPECT_TRUE(data->lite_page_received());
@@ -154,7 +148,6 @@ TEST_F(DataReductionProxyDataTest, DeepCopy) {
         base::TimeDelta(), base::TimeDelta(), base::TimeDelta()));
     std::unique_ptr<DataReductionProxyData> data(new DataReductionProxyData());
     data->set_used_data_reduction_proxy(tests[i].data_reduction_used);
-    data->set_lofi_requested(tests[i].lofi_test_value);
     data->set_lite_page_received(tests[i].lofi_test_value);
     data->set_lofi_received(tests[i].lofi_test_value);
     data->set_black_listed(tests[i].lofi_test_value);
@@ -165,7 +158,6 @@ TEST_F(DataReductionProxyDataTest, DeepCopy) {
     data->set_request_info(request_info);
     data->set_page_id(2u);
     std::unique_ptr<DataReductionProxyData> copy = data->DeepCopy();
-    EXPECT_EQ(tests[i].lofi_test_value, copy->lofi_requested());
     EXPECT_EQ(tests[i].lofi_test_value, copy->lite_page_received());
     EXPECT_EQ(tests[i].lofi_test_value, copy->lofi_received());
     EXPECT_EQ(tests[i].lofi_test_value, copy->black_listed());

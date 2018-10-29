@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1018939186200882850">елемент от меню</translation>
-<translation id="1020833440720551630">заглушаване на аудиозаписа</translation>
 <translation id="10623998915015855">бутон за превключване</translation>
 <translation id="1088086359088493902">Секунди</translation>
 <translation id="1171774979989969504">Моля, въведете имейл адрес.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">признания за източника</translation>
 <translation id="1342835525016946179">статия</translation>
 <translation id="1359897965706325498">банер</translation>
-<translation id="1548116112524424341">възпроизвеждане на видеоклипа в режим „картина в картината“</translation>
 <translation id="1589122976691792535">регион</translation>
 <translation id="1591562245178063882">Този месец</translation>
 <translation id="1637811476055996098">Избор на файлове</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">дървовидна таблица</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">възпроизвеждане на отдалечено устройство</translation>
-<translation id="1838818994221231429">превключване между цял екран и екран с прорез</translation>
 <translation id="190587075670221089">изтриване</translation>
 <translation id="1907737156431278478">пример</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">Докоснете два пъти стрелката наляво или надясно, за да пропуснете 10 сек</translation>
 <translation id="5631759159893697722">резюме</translation>
-<translation id="5641012560118721995">поставяне на възпроизвеждането на пауза</translation>
 <translation id="5643186887447432888">бутон</translation>
 <translation id="5677946354068040947">още опции</translation>
 <translation id="576709008726043716">въведение</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="5966707198760109579">Седмица</translation>
 <translation id="5987525920412732405">брояч</translation>
+<translation id="6011459053400940133">плъзгач за силата на звука</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6023896073578205740">списъчно поле</translation>
-<translation id="6101327004457443354">пускане на аудиозаписа</translation>
 <translation id="6150588977291308318">библиография</translation>
 <translation id="6164829606128959761">индикатор</translation>
 <translation id="6166809985690652833">послеслов</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Часове</translation>
 <translation id="7681220483256441252">показалец</translation>
 <translation id="7720026100085573005">оставащо време</translation>
-<translation id="7740016676195725605">спиране на показването на надписите</translation>
 <translation id="7740050170769002709">HTML съдържание</translation>
 <translation id="7750228210027921155">Картина в картината</translation>
 <translation id="7789962463072032349">поставяне на пауза</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">текстово поле за търсене</translation>
 <translation id="8057695513531652401">известие</translation>
 <translation id="8105797009065549151">препратка към бележка</translation>
-<translation id="8115662671911883373">започване на показването на надписите</translation>
 <translation id="8117451130807776954">Тази седмица</translation>
-<translation id="819205353528511139">пускане на филма в режим на цял екран</translation>
 <translation id="8199524924445686405">гггг</translation>
 <translation id="8284326494547611709">Надписи</translation>
 <translation id="835897206747267392">Невалидна стойност.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">управление на отдалеченото възпроизвеждане</translation>
 <translation id="862370744433916922">подзаглавие</translation>
 <translation id="8750798805984357768">Моля, изберете една от тези опции.</translation>
-<translation id="8785498733064193001">начало на възпроизвеждането</translation>
 <translation id="8808573423886751634">глава</translation>
 <translation id="8845239796550121995">В момента се предава към телевизора ви</translation>
 <translation id="8851136666856101339">основен елемент</translation>

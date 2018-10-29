@@ -123,7 +123,7 @@
 
 // Show various bits of UI
 #define IDC_OPEN_FILE                   40000
-#define IDC_CREATE_HOSTED_APP           40002
+#define IDC_CREATE_SHORTCUT             40002
 #define IDC_DEVELOPER_MENU              40003
 #define IDC_DEV_TOOLS                   40004
 #define IDC_DEV_TOOLS_CONSOLE           40005
@@ -148,12 +148,8 @@
 #define IDC_MANAGE_EXTENSIONS           40022
 #define IDC_DEV_TOOLS_INSPECT           40023
 #define IDC_UPGRADE_DIALOG              40024
-#define IDC_SHOW_KEYBOARD_OVERLAY       40027
 #define IDC_PROFILING_ENABLED           40028
 #define IDC_BOOKMARKS_MENU              40029
-// TODO(atwilson): Remove IDC_SHOW_SYNC_SETUP when we officially allow signin
-// when sync is disabled.
-#define IDC_SHOW_SYNC_SETUP             40030
 #define IDC_SHOW_SIGNIN                 40030
 #define IDC_EXTENSION_ERRORS            40031
 #define IDC_SHOW_SIGNIN_ERROR           40032
@@ -179,6 +175,7 @@
 #define IDC_CUSTOMIZE_TOUCH_BAR         40251
 #define IDC_SHOW_BETA_FORUM             40252
 #define IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS 40253
+#define IDC_INSTALL_PWA                 40254
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

@@ -84,7 +84,7 @@ class VideoTrackRecorderTest
     // Paranoia checks.
     EXPECT_EQ(blink_track_.Source().GetExtraData(),
               blink_source_.GetExtraData());
-    EXPECT_TRUE(scoped_task_environment_.GetMainThreadTaskRunner()
+    EXPECT_TRUE(blink::scheduler::GetSingleThreadTaskRunnerForTesting()
                     ->BelongsToCurrentThread());
   }
 
@@ -125,7 +125,7 @@ class VideoTrackRecorderTest
 
   void Encode(const scoped_refptr<VideoFrame>& frame,
               base::TimeTicks capture_time) {
-    EXPECT_TRUE(scoped_task_environment_.GetMainThreadTaskRunner()
+    EXPECT_TRUE(blink::scheduler::GetSingleThreadTaskRunnerForTesting()
                     ->BelongsToCurrentThread());
     video_track_recorder_->OnVideoFrameForTesting(frame, capture_time);
   }

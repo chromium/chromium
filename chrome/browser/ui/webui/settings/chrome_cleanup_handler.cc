@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -17,6 +18,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/reporter_runner_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -26,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "extensions/browser/extension_system.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using safe_browsing::ChromeCleanerController;
@@ -38,9 +41,12 @@ namespace {
 std::unique_ptr<base::ListValue> GetFilesAsListStorage(
     const std::set<base::FilePath>& files) {
   auto value = std::make_unique<base::ListValue>();
-  for (const base::FilePath& path : files)
-    value->AppendString(path.value());
-
+  for (const base::FilePath& path : files) {
+    auto item = std::make_unique<base::DictionaryValue>();
+    item->SetString("dirname", path.DirName().AsEndingWithSeparator().value());
+    item->SetString("basename", path.BaseName().value());
+    value->Append(std::move(item));
+  }
   return value;
 }
 
@@ -280,8 +286,11 @@ void ChromeCleanupHandler::HandleStartCleanup(const base::ListValue* args) {
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_StartCleanup"));
 
+  extensions::ExtensionService* extension_service =
+      extensions::ExtensionSystem::Get(profile_)->extension_service();
+
   controller_->ReplyWithUserResponse(
-      profile_,
+      profile_, extension_service,
       allow_logs_upload
           ? ChromeCleanerController::UserResponse::kAcceptedWithLogs
           : ChromeCleanerController::UserResponse::kAcceptedWithoutLogs);

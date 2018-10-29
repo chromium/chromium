@@ -20,13 +20,30 @@ class TabletModeWindowManager;
 // Use the api in this class to test TabletModeController.
 class TabletModeControllerTestApi {
  public:
+  static constexpr float kDegreesToRadians = 3.1415926f / 180.0f;
+  static constexpr float kMeanGravity = 9.8066f;
+
   TabletModeControllerTestApi();
   ~TabletModeControllerTestApi();
 
   // Enters or exits tablet mode. Use these instead when stuff such as tray
   // visibilty depends on the event blocker instead of the actual tablet mode.
   void EnterTabletMode();
-  void LeaveTabletMode(bool called_by_device_update);
+  void LeaveTabletMode();
+
+  // Called to attach an external mouse. If we're currently in tablet mode,
+  // tablet mode will be ended because of this.
+  void AttachExternalMouse();
+
+  void TriggerLidUpdate(const gfx::Vector3dF& lid);
+  void TriggerBaseAndLidUpdate(const gfx::Vector3dF& base,
+                               const gfx::Vector3dF& lid);
+
+  void OpenLidToAngle(float degrees);
+  void HoldDeviceVertical();
+  void OpenLid();
+  void CloseLid();
+  void SetTabletMode(bool on);
 
   // Sets the event blocker on the tablet mode controller.
   void set_event_blocker(
@@ -56,6 +73,14 @@ class TabletModeControllerTestApi {
 
   TabletModeController::UiMode force_ui_mode() const {
     return tablet_mode_controller_->force_ui_mode_;
+  }
+
+  bool IsTabletModeStarted() const {
+    return tablet_mode_controller_->IsTabletModeWindowManagerEnabled();
+  }
+
+  bool AreEventsBlocked() const {
+    return tablet_mode_controller_->AreInternalInputDeviceEventsBlocked();
   }
 
  private:

@@ -26,9 +26,6 @@ class NotificationController {
   // should be used for EasyUnlock from now on.
   virtual void ShowPairingChangeAppliedNotification(
       const std::string& phone_name) = 0;
-
-  // Shows the notification to promote EasyUnlock to the user.
-  virtual void ShowPromotionNotification() = 0;
 };
 
 }  // namespace proximity_auth

@@ -25,6 +25,8 @@ class DataUseUserData : public base::SupportsUserData::Data {
   // Please keep them synced after any updates. Also add service name to
   // GetServiceNameAsString function and the same service name to
   // DataUse.Service.Types histogram suffixes in histograms.xml
+  // TODO(rajendrant): Remove this once all AttachToFetcher() callsites are
+  // removed.
   enum ServiceName {
     NOT_TAGGED,
     SUGGESTIONS,
@@ -95,7 +97,7 @@ class DataUseUserData : public base::SupportsUserData::Data {
   // platforms it is always FOREGROUND.
   enum AppState { UNKNOWN, BACKGROUND, FOREGROUND };
 
-  DataUseUserData(ServiceName service_name, AppState app_state);
+  explicit DataUseUserData(AppState app_state);
   ~DataUseUserData() override;
 
   // Helper function to create DataUseUserData.
@@ -107,10 +109,9 @@ class DataUseUserData : public base::SupportsUserData::Data {
 
   // Services should use this function to attach their |service_name| to the
   // URLFetcher serving them.
+  // TODO(rajendrant): Remove this once all callsites are removed.
   static void AttachToFetcher(net::URLFetcher* fetcher,
                               ServiceName service_name);
-
-  ServiceName service_name() const { return service_name_; }
 
   AppState app_state() const { return app_state_; }
 
@@ -126,8 +127,6 @@ class DataUseUserData : public base::SupportsUserData::Data {
   static const void* const kUserDataKey;
 
  private:
-  const ServiceName service_name_;
-
   // App state when network access was performed for the request previously.
   AppState app_state_;
 

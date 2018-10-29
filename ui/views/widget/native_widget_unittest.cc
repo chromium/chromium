@@ -62,7 +62,7 @@ class NativeWidgetTest : public ViewsTestBase {
 
 TEST_F(NativeWidgetTest, CreateNativeWidget) {
   ScopedTestWidget widget(CreateNativeWidget());
-  EXPECT_TRUE(widget->GetWidget()->GetNativeView() != NULL);
+  EXPECT_TRUE(widget->GetWidget()->GetNativeView());
 }
 
 TEST_F(NativeWidgetTest, GetNativeWidgetForNativeView) {

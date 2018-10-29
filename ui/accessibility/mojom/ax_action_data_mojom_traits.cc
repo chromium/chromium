@@ -12,7 +12,8 @@ bool StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData>::Read(
     ui::AXActionData* out) {
   if (!data.ReadAction(&out->action))
     return false;
-  out->target_tree_id = data.target_tree_id();
+  if (!data.ReadTargetTreeId(&out->target_tree_id))
+    return false;
   if (!data.ReadSourceExtensionId(&out->source_extension_id))
     return false;
   out->target_node_id = data.target_node_id();

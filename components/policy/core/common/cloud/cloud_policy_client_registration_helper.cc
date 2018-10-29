@@ -14,7 +14,10 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "google_apis/gaia/oauth2_token_service.h"
+#include "services/identity/public/cpp/access_token_fetcher.h"
+#include "services/identity/public/cpp/access_token_info.h"
+#include "services/identity/public/cpp/identity_manager.h"
+#include "services/identity/public/cpp/scope_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(OS_ANDROID)
@@ -34,61 +37,55 @@ typedef base::Callback<void(const std::string&)> StringCallback;
 // On Android, we use a special API to allow us to fetch a token for an account
 // that is not yet logged in to allow fetching the token before the sign-in
 // process is finished.
-class CloudPolicyClientRegistrationHelper::TokenServiceHelper
-    : public OAuth2TokenService::Consumer {
+class CloudPolicyClientRegistrationHelper::IdentityManagerHelper {
  public:
-  TokenServiceHelper();
+  IdentityManagerHelper() = default;
 
-  void FetchAccessToken(
-      OAuth2TokenService* token_service,
-      const std::string& username,
-      const StringCallback& callback);
+  void FetchAccessToken(identity::IdentityManager* identity_manager,
+                        const std::string& username,
+                        const StringCallback& callback);
 
  private:
-  // OAuth2TokenService::Consumer implementation:
-  void OnGetTokenSuccess(
-      const OAuth2TokenService::Request* request,
-      const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
-  void OnGetTokenFailure(const OAuth2TokenService::Request* request,
-                         const GoogleServiceAuthError& error) override;
+  void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
+                                  identity::AccessTokenInfo token_info);
 
   StringCallback callback_;
-  std::unique_ptr<OAuth2TokenService::Request> token_request_;
+  std::unique_ptr<identity::AccessTokenFetcher> access_token_fetcher_;
 };
 
-CloudPolicyClientRegistrationHelper::TokenServiceHelper::TokenServiceHelper()
-    : OAuth2TokenService::Consumer("cloud_policy") {}
-
-void CloudPolicyClientRegistrationHelper::TokenServiceHelper::FetchAccessToken(
-    OAuth2TokenService* token_service,
-    const std::string& account_id,
-    const StringCallback& callback) {
-  DCHECK(!token_request_);
-  // Either the caller must supply a username, or the user must be signed in
-  // already.
+void CloudPolicyClientRegistrationHelper::IdentityManagerHelper::
+    FetchAccessToken(identity::IdentityManager* identity_manager,
+                     const std::string& account_id,
+                     const StringCallback& callback) {
+  DCHECK(!access_token_fetcher_);
+  // The caller must supply a username.
   DCHECK(!account_id.empty());
-  DCHECK(token_service->RefreshTokenIsAvailable(account_id));
+  DCHECK(identity_manager->HasAccountWithRefreshToken(account_id));
 
   callback_ = callback;
 
-  OAuth2TokenService::ScopeSet scopes;
+  identity::ScopeSet scopes;
   scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
   scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
-  token_request_ = token_service->StartRequest(account_id, scopes, this);
+
+  access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
+      account_id, "cloud_policy", scopes,
+      base::BindOnce(&CloudPolicyClientRegistrationHelper::
+                         IdentityManagerHelper::OnAccessTokenFetchComplete,
+                     base::Unretained(this)),
+      identity::AccessTokenFetcher::Mode::kImmediate);
 }
 
-void CloudPolicyClientRegistrationHelper::TokenServiceHelper::OnGetTokenSuccess(
-    const OAuth2TokenService::Request* request,
-    const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
-  DCHECK_EQ(token_request_.get(), request);
-  callback_.Run(token_response.access_token);
-}
+void CloudPolicyClientRegistrationHelper::IdentityManagerHelper::
+    OnAccessTokenFetchComplete(GoogleServiceAuthError error,
+                               identity::AccessTokenInfo token_info) {
+  DCHECK(access_token_fetcher_);
+  access_token_fetcher_.reset();
 
-void CloudPolicyClientRegistrationHelper::TokenServiceHelper::OnGetTokenFailure(
-    const OAuth2TokenService::Request* request,
-    const GoogleServiceAuthError& error) {
-  DCHECK_EQ(token_request_.get(), request);
-  callback_.Run("");
+  if (error.state() == GoogleServiceAuthError::NONE)
+    callback_.Run(token_info.token);
+  else
+    callback_.Run("");
 }
 
 #if !defined(OS_ANDROID)
@@ -163,9 +160,8 @@ CloudPolicyClientRegistrationHelper::~CloudPolicyClientRegistrationHelper() {
     client_->RemoveObserver(this);
 }
 
-
 void CloudPolicyClientRegistrationHelper::StartRegistration(
-    OAuth2TokenService* token_service,
+    identity::IdentityManager* identity_manager,
     const std::string& account_id,
     const base::Closure& callback) {
   DVLOG(1) << "Starting registration process with account_id";
@@ -173,10 +169,9 @@ void CloudPolicyClientRegistrationHelper::StartRegistration(
   callback_ = callback;
   client_->AddObserver(this);
 
-  token_service_helper_.reset(new TokenServiceHelper());
-  token_service_helper_->FetchAccessToken(
-      token_service,
-      account_id,
+  identity_manager_helper_.reset(new IdentityManagerHelper());
+  identity_manager_helper_->FetchAccessToken(
+      identity_manager, account_id,
       base::Bind(&CloudPolicyClientRegistrationHelper::OnTokenFetched,
                  base::Unretained(this)));
 }
@@ -224,7 +219,7 @@ void CloudPolicyClientRegistrationHelper::OnTokenFetched(
 #if !defined(OS_ANDROID)
   login_token_helper_.reset();
 #endif
-  token_service_helper_.reset();
+  identity_manager_helper_.reset();
 
   if (access_token.empty()) {
     DLOG(WARNING) << "Could not fetch access token for "

@@ -34,7 +34,7 @@ bool BuildPathFromString(const String& d, Path& result) {
 
   SVGPathBuilder builder(result);
   SVGPathStringSource source(d);
-  return SVGPathParser::ParsePath(source, builder);
+  return svg_path_parser::ParsePath(source, builder);
 }
 
 bool BuildPathFromByteStream(const SVGPathByteStream& stream, Path& result) {
@@ -43,7 +43,7 @@ bool BuildPathFromByteStream(const SVGPathByteStream& stream, Path& result) {
 
   SVGPathBuilder builder(result);
   SVGPathByteStreamSource source(stream);
-  return SVGPathParser::ParsePath(source, builder);
+  return svg_path_parser::ParsePath(source, builder);
 }
 
 String BuildStringFromByteStream(const SVGPathByteStream& stream,
@@ -55,9 +55,9 @@ String BuildStringFromByteStream(const SVGPathByteStream& stream,
   SVGPathByteStreamSource source(stream);
   if (format == kTransformToAbsolute) {
     SVGPathAbsolutizer absolutizer(&builder);
-    SVGPathParser::ParsePath(source, absolutizer);
+    svg_path_parser::ParsePath(source, absolutizer);
   } else {
-    SVGPathParser::ParsePath(source, builder);
+    svg_path_parser::ParsePath(source, builder);
   }
   return builder.Result();
 }
@@ -74,7 +74,7 @@ SVGParsingError BuildByteStreamFromString(const String& d,
 
   SVGPathByteStreamBuilder builder(result);
   SVGPathStringSource source(d);
-  SVGPathParser::ParsePath(source, builder);
+  svg_path_parser::ParsePath(source, builder);
   result.ShrinkToFit();
   return source.ParseError();
 }

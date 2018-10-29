@@ -36,13 +36,17 @@
             label="$i18n{googleAssistantEnableHotword}"
             sub-label="$i18n{googleAssistantEnableHotwordDescription}">
         </settings-toggle-button>
-      </template>
-      <template is="dom-if" if="[[assistantFeatureEnabled_]]">
         <settings-toggle-button id="googleAssistantNotificationEnable"
             class="continuation indented"
             pref="{{prefs.settings.voice_interaction.notification.enabled}}"
             label="$i18n{googleAssistantEnableNotification}"
             sub-label="$i18n{googleAssistantEnableNotificationDescription}">
+        </settings-toggle-button>
+        <settings-toggle-button id="googleAssistantLaunchWithMicOpen"
+            class="continuation indented"
+            pref="{{prefs.settings.voice_interaction.launch_with_mic_open}}"
+            label="$i18n{googleAssistantLaunchWithMicOpen}"
+            sub-label="$i18n{googleAssistantLaunchWithMicOpenDescription}">
         </settings-toggle-button>
       </template>
       <div id="googleAssistantSettings" class="settings-box"

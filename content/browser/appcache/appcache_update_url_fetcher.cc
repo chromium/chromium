@@ -106,7 +106,7 @@ void AppCacheUpdateJob::URLFetcher::OnResponseStarted(int net_error) {
   // Write response info to storage for URL fetches. Wait for async write
   // completion before reading any response data.
   if (fetch_type_ == URL_FETCH || fetch_type_ == MASTER_ENTRY_FETCH) {
-    response_writer_.reset(job_->CreateResponseWriter());
+    response_writer_ = job_->CreateResponseWriter();
     scoped_refptr<HttpResponseInfoIOBuffer> io_buffer =
         base::MakeRefCounted<HttpResponseInfoIOBuffer>(
             std::make_unique<net::HttpResponseInfo>(

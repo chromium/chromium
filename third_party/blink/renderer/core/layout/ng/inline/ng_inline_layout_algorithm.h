@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float_vector.h"
@@ -21,6 +21,7 @@ namespace blink {
 class NGConstraintSpace;
 class NGExclusionSpace;
 class NGInlineBreakToken;
+class NGInlineChildLayoutContext;
 class NGInlineNode;
 class NGInlineItem;
 class NGInlineLayoutStateStack;
@@ -42,7 +43,8 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
  public:
   NGInlineLayoutAlgorithm(NGInlineNode,
                           const NGConstraintSpace&,
-                          NGInlineBreakToken* = nullptr);
+                          const NGInlineBreakToken*,
+                          NGInlineChildLayoutContext* context);
   ~NGInlineLayoutAlgorithm() override;
 
   void CreateLine(NGLineInfo*, NGExclusionSpace*);
@@ -57,9 +59,16 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   bool IsHorizontalWritingMode() const { return is_horizontal_writing_mode_; }
 
   void PrepareBoxStates(const NGLineInfo&, const NGInlineBreakToken*);
+  void RebuildBoxStates(const NGLineInfo&,
+                        const NGInlineBreakToken*,
+                        NGInlineLayoutStateStack*) const;
+#if DCHECK_IS_ON()
+  void CheckBoxStates(const NGLineInfo&, const NGInlineBreakToken*) const;
+#endif
 
   NGInlineBoxState* HandleOpenTag(const NGInlineItem&,
-                                  const NGInlineItemResult&);
+                                  const NGInlineItemResult&,
+                                  NGInlineLayoutStateStack*) const;
 
   void BidiReorder();
 
@@ -91,7 +100,8 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                                 LayoutUnit line_height);
 
   NGLineBoxFragmentBuilder::ChildList line_box_;
-  std::unique_ptr<NGInlineLayoutStateStack> box_states_;
+  NGInlineLayoutStateStack* box_states_;
+  NGInlineChildLayoutContext* context_;
 
   FontBaseline baseline_type_ = FontBaseline::kAlphabeticBaseline;
 
@@ -100,6 +110,12 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
 
   Vector<NGPositionedFloat> positioned_floats_;
   NGUnpositionedFloatVector unpositioned_floats_;
+
+#if DCHECK_IS_ON()
+  // True if |box_states_| is taken from |context_|, to check the |box_states_|
+  // is the same as when it is rebuilt.
+  bool is_box_states_from_context_ = false;
+#endif
 };
 
 }  // namespace blink

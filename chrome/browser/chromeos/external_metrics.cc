@@ -23,6 +23,7 @@
 #include "chromeos/chromeos_switches.h"
 #include "components/metrics/serialization/metric_sample.h"
 #include "components/metrics/serialization/serialization_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -94,9 +95,8 @@ void ExternalMetrics::RecordActionUI(const std::string& action_string) {
 }
 
 void ExternalMetrics::RecordAction(const std::string& action) {
-  BrowserThread::PostTask(
-      BrowserThread::UI,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&ExternalMetrics::RecordActionUI, this, action));
 }
 
@@ -105,8 +105,8 @@ void ExternalMetrics::RecordCrashUI(const std::string& crash_kind) {
 }
 
 void ExternalMetrics::RecordCrash(const std::string& crash_kind) {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&ExternalMetrics::RecordCrashUI, this, crash_kind));
 }
 

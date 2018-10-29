@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 
 class OutdatedUpgradeBubbleTest : public DialogBrowserTest {
  public:
@@ -29,8 +28,6 @@ class OutdatedUpgradeBubbleTest : public DialogBrowserTest {
   }
 
  private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
-
   DISALLOW_COPY_AND_ASSIGN(OutdatedUpgradeBubbleTest);
 };
 

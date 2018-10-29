@@ -42,12 +42,6 @@ config("runtime_library") {
         defines += [ "_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS" ]
       }
     }
-    if (!is_clang) {
-      # Gcc has a built-in abs() definition with default visibility.
-      # If it was not disabled, it would conflict with libc++'s abs()
-      # with hidden visibility.
-      cflags += [ "-fno-builtin-abs" ]
-    }
     cflags_cc += [
       "-nostdinc++",
       "-isystem" + rebase_path("$libcxx_prefix/include", root_build_dir),
@@ -56,6 +50,7 @@ config("runtime_library") {
     defines += [
       "CR_LIBCXX_REVISION=$libcxx_svn_revision",
       "CR_LIBCXXABI_REVISION=$libcxxabi_svn_revision",
+      "_LIBCPP_ENABLE_NODISCARD",
     ]
 
     # Make sure we don't link against libc++ or libstdc++.
@@ -67,6 +62,11 @@ config("runtime_library") {
         ldflags += [ "-nostdlib++" ]
       }
     } else {
+      # Gcc has a built-in abs() definition with default visibility.
+      # If it was not disabled, it would conflict with libc++'s abs()
+      # with hidden visibility.
+      cflags += [ "-fno-builtin-abs" ]
+
       ldflags += [ "-nodefaultlibs" ]
 
       # Unfortunately, there's no way to disable linking against just libc++

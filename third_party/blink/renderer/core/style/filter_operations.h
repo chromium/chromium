@@ -55,8 +55,8 @@ class CORE_EXPORT FilterOperations {
   const FilterOperationVector& Operations() const { return operations_; }
 
   bool IsEmpty() const { return !operations_.size(); }
-  size_t size() const { return operations_.size(); }
-  const FilterOperation* at(size_t index) const {
+  wtf_size_t size() const { return operations_.size(); }
+  const FilterOperation* at(wtf_size_t index) const {
     return index < operations_.size() ? operations_.at(index).Get() : nullptr;
   }
 

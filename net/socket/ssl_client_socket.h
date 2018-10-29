@@ -18,7 +18,6 @@
 #include "net/base/net_export.h"
 #include "net/socket/ssl_socket.h"
 #include "net/socket/stream_socket.h"
-#include "net/ssl/token_binding.h"
 
 namespace net {
 
@@ -73,10 +72,6 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
   // TODO(davidben): Switch this to a parameter on the SSLClientSocketContext
   // once https://crbug.com/458365 is resolved.
   static void SetSSLKeyLogger(std::unique_ptr<SSLKeyLogger> logger);
-
-  // Returns true if |error| is OK or |load_flags| ignores certificate errors
-  // and |error| is a certificate error.
-  static bool IgnoreCertError(int error, int load_flags);
 
   // ClearSessionCache clears the SSL session cache, used to resume SSL
   // sessions.

@@ -15,10 +15,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
+#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/tracing/background_startup_tracing_observer.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/content_browser_test.h"
@@ -152,10 +154,11 @@ class BackgroundTracingManagerUploadConfigWrapper {
     EXPECT_EQ(Z_STREAM_END, result);
 
     last_file_contents_.assign(output_str.data(), bytes_written);
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(std::move(done_callback), true));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(std::move(done_callback), true));
     CHECK(callback_);
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, std::move(callback_));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             std::move(callback_));
   }
 
   void SetUploadCallback(base::OnceClosure callback) {
@@ -583,6 +586,18 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                        MAYBE_ToggleBlinkScenarios) {
   {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    ASSERT_TRUE(command_line);
+
+    // Early bailout in the case command line arguments have been explicitly set
+    // for the runner.
+    if (!command_line->GetSwitchValueASCII(switches::kEnableBlinkFeatures)
+             .empty() ||
+        !command_line->GetSwitchValueASCII(switches::kDisableBlinkFeatures)
+             .empty()) {
+      return;
+    }
+
     SetupBackgroundTracingManager();
 
     base::RunLoop run_loop;
@@ -616,10 +631,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
             BackgroundTracingManager::NO_DATA_FILTERING);
 
     EXPECT_TRUE(scenario_activated);
-
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    EXPECT_TRUE(command_line);
-
     EXPECT_EQ(command_line->GetSwitchValueASCII(switches::kEnableBlinkFeatures),
               "FasterWeb1,FasterWeb2");
     EXPECT_EQ(

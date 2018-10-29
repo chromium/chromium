@@ -137,7 +137,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   DOMArrayBufferBase* BufferBase() const;
   CanvasColorParams GetCanvasColorParams();
 
-  // DataU8ColorType param specifies if the converted pixels in 8-8-8-8 pixel
+  // DataU8ColorType param specifies if the converted pixels in uint8 pixel
   // format should respect the "native" 32bit ARGB format of Skia's blitters.
   // For example, if ImageDataInCanvasColorSettings() is called to fill an
   // ImageBuffer, kRGBAColorType should be used. If the converted pixels are

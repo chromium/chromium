@@ -92,16 +92,19 @@ class FeedJournalDatabase {
   void PerformOperations(std::unique_ptr<JournalStorageProto> journal,
                          std::unique_ptr<JournalMutation> journal_mutation,
                          ConfirmationCallback callback);
-  void CommitOperations(std::unique_ptr<JournalStorageProto> journal,
+  void CommitOperations(base::TimeTicks start_time,
+                        std::unique_ptr<JournalStorageProto> journal,
                         JournalMap copy_to_journal,
                         ConfirmationCallback callback);
 
   // Callback methods given to |storage_database_| for async responses.
   void OnDatabaseInitialized(bool success);
-  void OnGetEntryForLoadJournal(JournalLoadCallback callback,
+  void OnGetEntryForLoadJournal(base::TimeTicks start_time,
+                                JournalLoadCallback callback,
                                 bool success,
                                 std::unique_ptr<JournalStorageProto> journal);
   void OnGetEntryForDoesJournalExist(
+      base::TimeTicks start_time,
       CheckExistingCallback callback,
       bool success,
       std::unique_ptr<JournalStorageProto> journal);
@@ -111,10 +114,13 @@ class FeedJournalDatabase {
       bool success,
       std::unique_ptr<JournalStorageProto> journal);
   void OnLoadKeysForLoadAllJournalKeys(
+      base::TimeTicks start_time,
       JournalLoadCallback callback,
       bool success,
       std::unique_ptr<std::vector<std::string>> keys);
-  void OnOperationCommitted(ConfirmationCallback callback, bool success);
+  void OnOperationCommitted(base::TimeTicks start_time,
+                            ConfirmationCallback callback,
+                            bool success);
 
   JournalStorageProto CopyJouarnal(const std::string& new_journal_name,
                                    const JournalStorageProto& source_journal);

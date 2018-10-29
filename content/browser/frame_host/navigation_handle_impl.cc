@@ -14,7 +14,7 @@
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/appcache/appcache_service_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/frame_host/ancestor_throttle.h"
 #include "content/browser/frame_host/blocked_scheme_navigation_throttle.h"
 #include "content/browser/frame_host/debug_urls.h"
@@ -234,6 +234,7 @@ NavigationHandleImpl::NavigationHandleImpl(
       is_download_(false),
       is_stream_(false),
       is_signed_exchange_inner_response_(false),
+      was_cached_(false),
       started_from_context_menu_(started_from_context_menu),
       is_same_process_(true),
       weak_factory_(this) {
@@ -552,17 +553,20 @@ NavigationHandleImpl::CallWillFailRequestForTesting(
 NavigationThrottle::ThrottleCheckResult
 NavigationHandleImpl::CallWillProcessResponseForTesting(
     RenderFrameHost* render_frame_host,
-    const std::string& raw_response_headers) {
+    const std::string& raw_response_headers,
+    bool was_cached,
+    const net::ProxyServer& proxy_server) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       new net::HttpResponseHeaders(raw_response_headers);
   NavigationThrottle::ThrottleCheckResult result = NavigationThrottle::DEFER;
+  set_proxy_server(proxy_server);
   WillProcessResponse(static_cast<RenderFrameHostImpl*>(render_frame_host),
                       headers, net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
                       net::HostPortPair(), net::SSLInfo(), GlobalRequestID(),
                       /* should_replace_current_entry=*/false,
                       /* is_download=*/false,
                       /* is_stream=*/false,
-                      /* is_signed_exchange_inner_response=*/false,
+                      /* is_signed_exchange_inner_response=*/false, was_cached,
                       base::Bind(&UpdateThrottleCheckResult, &result));
 
   // Reset the callback to ensure it will not be called later.
@@ -654,6 +658,14 @@ bool NavigationHandleImpl::IsFormSubmission() {
 
 bool NavigationHandleImpl::IsSignedExchangeInnerResponse() {
   return is_signed_exchange_inner_response_;
+}
+
+bool NavigationHandleImpl::WasResponseCached() {
+  return was_cached_;
+}
+
+const net::ProxyServer& NavigationHandleImpl::GetProxyServer() {
+  return proxy_server_;
 }
 
 void NavigationHandleImpl::InitServiceWorkerHandle(
@@ -818,6 +830,7 @@ void NavigationHandleImpl::WillProcessResponse(
     bool is_download,
     bool is_stream,
     bool is_signed_exchange_inner_response,
+    bool was_cached,
     const ThrottleChecksFinishedCallback& callback) {
   TRACE_EVENT_ASYNC_STEP_INTO0("navigation", "NavigationHandle", this,
                                "WillProcessResponse");
@@ -831,6 +844,7 @@ void NavigationHandleImpl::WillProcessResponse(
   is_download_ = is_download;
   is_stream_ = is_stream;
   is_signed_exchange_inner_response_ = is_signed_exchange_inner_response;
+  was_cached_ = was_cached;
   state_ = WILL_PROCESS_RESPONSE;
   ssl_info_ = ssl_info;
   socket_address_ = socket_address;
@@ -1360,7 +1374,7 @@ void NavigationHandleImpl::RegisterNavigationThrottles() {
   AddThrottle(OriginPolicyThrottle::MaybeCreateThrottleFor(this));
 
   for (auto& throttle :
-       RenderFrameDevToolsAgentHost::CreateNavigationThrottles(this)) {
+       devtools_instrumentation::CreateNavigationThrottles(this)) {
     AddThrottle(std::move(throttle));
   }
 

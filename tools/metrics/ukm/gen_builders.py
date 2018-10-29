@@ -13,7 +13,7 @@ entries and metrics.
 import argparse
 import sys
 
-import model
+import ukm_model
 import builders_template
 import decode_template
 
@@ -24,7 +24,7 @@ parser.add_argument('--output', help='Path to generated files.')
 
 def main(argv):
   args = parser.parse_args()
-  data = model.UKM_XML_TYPE.Parse(open(args.input).read())
+  data = ukm_model.UKM_XML_TYPE.Parse(open(args.input).read())
   relpath = 'services/metrics/public/cpp/'
   builders_template.WriteFiles(args.output, relpath, data)
   decode_template.WriteFiles(args.output, relpath, data)

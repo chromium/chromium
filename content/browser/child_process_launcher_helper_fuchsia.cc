@@ -58,12 +58,6 @@ void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
   sandbox_policy_.Initialize(delegate_->GetSandboxType());
 }
 
-base::Optional<mojo::NamedPlatformChannel>
-ChildProcessLauncherHelper::CreateNamedPlatformChannelOnClientThread() {
-  DCHECK_CURRENTLY_ON(client_thread_id_);
-  return base::nullopt;
-}
-
 std::unique_ptr<FileMappedForLaunch>
 ChildProcessLauncherHelper::GetFilesToMap() {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());

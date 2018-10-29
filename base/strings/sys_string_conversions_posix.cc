@@ -47,8 +47,7 @@ std::string SysWideToNativeMB(const std::wstring& wide) {
   // without writing the output, counting the number of multi-byte characters.
   size_t num_out_chars = 0;
   memset(&ps, 0, sizeof(ps));
-  for (size_t i = 0; i < wide.size(); ++i) {
-    const wchar_t src = wide[i];
+  for (auto src : wide) {
     // Use a temp buffer since calling wcrtomb with an output of NULL does not
     // calculate the output length.
     char buf[16];

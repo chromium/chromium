@@ -1,6 +1,8 @@
 <script>
-if (window.testRunner)
-     testRunner.dumpEditingCallbacks();
+if (window.testRunner) {
+    testRunner.dumpEditingCallbacks();
+    testRunner.dumpAsLayoutWithPixelResults();
+}
 </script>
 <p>This places the caret before the 'b' in 'bar' and Deletes.  'foo' and 'bar' should end up on the same line, but neither should change style.</p>
 <div contenteditable="true">

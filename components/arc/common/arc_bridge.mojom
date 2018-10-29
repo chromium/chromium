@@ -24,6 +24,7 @@ import "components/arc/common/input_method_manager.mojom";
 import "components/arc/common/intent_helper.mojom";
 import "components/arc/common/kiosk.mojom";
 import "components/arc/common/lock_screen.mojom";
+import "components/arc/common/media_session.mojom";
 import "components/arc/common/metrics.mojom";
 import "components/arc/common/midis.mojom";
 import "components/arc/common/net.mojom";
@@ -50,9 +51,9 @@ import "components/arc/common/volume_mounter.mojom";
 import "components/arc/common/wake_lock.mojom";
 import "components/arc/common/wallpaper.mojom";
 
-// Next MinVersion: 43
+// Next MinVersion: 44
 // Deprecated method IDs: 101, 105
-// Next method ID: 148
+// Next method ID: 149
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -126,6 +127,9 @@ interface ArcBridgeHost {
 
   // Notifies Chrome that the LockScreenInstance interface is ready.
   [MinVersion=29] OnLockScreenInstanceReady@134(LockScreenInstance instance_ptr);
+
+  // Notifies Chrome that the MediaSessionInstance interface is ready.
+  [MinVersion=43] OnMediaSessionInstanceReady@148(MediaSessionInstance instance_ptr);
 
   // Notifies Chrome that the MetricsInstance interface is ready.
   [MinVersion=10] OnMetricsInstanceReady@116(MetricsInstance instance_ptr);

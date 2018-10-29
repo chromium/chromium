@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.feed.action;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +32,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.feed.FeedLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedOfflineIndicator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
@@ -56,6 +59,8 @@ public class FeedActionHandlerTest {
     private FeedOfflineIndicator mOfflineIndicator;
     @Mock
     private OfflinePageBridge mOfflinePageBridge;
+    @Mock
+    private FeedLoggingBridge mLoggingBridge;
 
     @Captor
     private ArgumentCaptor<Integer> mDispositionCapture;
@@ -89,8 +94,8 @@ public class FeedActionHandlerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mActionHandler = new FeedActionHandler(
-                mDelegate, mSuggestionConsumedObserver, mOfflineIndicator, mOfflinePageBridge);
+        mActionHandler = new FeedActionHandler(mDelegate, mSuggestionConsumedObserver,
+                mOfflineIndicator, mOfflinePageBridge, mLoggingBridge);
 
         doAnswer(invocation -> {
             LoadUrlParams params = new LoadUrlParams("");
@@ -101,6 +106,7 @@ public class FeedActionHandlerTest {
                 .when(mOfflinePageBridge)
                 .getLoadUrlParamsByOfflineId(mOfflineIdCapture.capture(), anyInt(),
                         mLoadUrlParamsCallbackCapture.capture());
+        doNothing().when(mLoggingBridge).onContentTargetVisited(anyLong());
 
         Map<String, Boolean> featureMap = new ArrayMap<>();
         featureMap.put(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS, true);

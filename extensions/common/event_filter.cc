@@ -122,7 +122,7 @@ bool EventFilter::AddDictionaryAsConditionSet(
 }
 
 std::string EventFilter::RemoveEventMatcher(MatcherID id) {
-  std::map<MatcherID, std::string>::iterator it = id_to_event_name_.find(id);
+  auto it = id_to_event_name_.find(id);
   std::string event_name = it->second;
   // EventMatcherEntry's destructor causes the condition set ids to be removed
   // from url_matcher_.
@@ -153,7 +153,7 @@ std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
       continue;
     }
     MatcherID id = matcher_id->second;
-    EventMatcherMap::const_iterator matcher_entry = matcher_map.find(id);
+    auto matcher_entry = matcher_map.find(id);
     if (matcher_entry == matcher_map.end()) {
       // Matcher must be for a different event.
       continue;
@@ -176,7 +176,7 @@ std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
 
 int EventFilter::GetMatcherCountForEventForTesting(
     const std::string& name) const {
-  EventMatcherMultiMap::const_iterator it = event_matchers_.find(name);
+  auto it = event_matchers_.find(name);
   return it != event_matchers_.end() ? it->second.size() : 0;
 }
 

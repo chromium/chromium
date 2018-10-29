@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/xml/document_xpath_evaluator.h"
 #include "third_party/blink/renderer/core/xml/xpath_result.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -307,8 +308,8 @@ void InspectorDOMAgent::Unbind(Node* node, NodeToIdMap* nodes_map) {
   id_to_node_.erase(id);
   id_to_nodes_map_.erase(id);
 
-  if (node->IsDocumentNode() && dom_listener_)
-    dom_listener_->DidRemoveDocument(ToDocument(node));
+  if (IsA<Document>(node) && dom_listener_)
+    dom_listener_->DidRemoveDocument(To<Document>(node));
 
   if (node->IsFrameOwnerElement()) {
     Document* content_document =
@@ -752,11 +753,15 @@ Response InspectorDOMAgent::setAttributesAsText(int element_id,
       element->GetDocument().IsHTMLDocument() && element->IsHTMLElement();
   // Not all elements can represent the context (i.e. IFRAME), hence using
   // document.body.
-  if (should_ignore_case && element->GetDocument().body())
+  if (should_ignore_case && element->GetDocument().body()) {
     fragment->ParseHTML(markup, element->GetDocument().body(),
                         kAllowScriptingContent);
-  else
-    fragment->ParseXML(markup, nullptr, kAllowScriptingContent);
+  } else {
+    Element* contextElement = nullptr;
+    if (element->IsSVGElement())
+      contextElement = ToSVGElement(element)->ownerSVGElement();
+    fragment->ParseXML(markup, contextElement, kAllowScriptingContent);
+  }
 
   Element* parsed_element =
       fragment->firstChild() && fragment->firstChild()->IsElementNode()
@@ -888,7 +893,7 @@ Response InspectorDOMAgent::setOuterHTML(int node_id,
     return response;
 
   Document* document =
-      node->IsDocumentNode() ? ToDocument(node) : node->ownerDocument();
+      IsA<Document>(node) ? To<Document>(node) : node->ownerDocument();
   if (!document || (!document->IsHTMLDocument() && !document->IsXMLDocument()))
     return Response::Error("Not an HTML/XML document");
 
@@ -1310,22 +1315,18 @@ Response InspectorDOMAgent::getNodeForLocation(
     int x,
     int y,
     Maybe<bool> optional_include_user_agent_shadow_dom,
-    int* node_id) {
-  if (!enabled_.Get())
-    return Response::Error("DOM agent is not enabled");
+    int* backend_node_id,
+    Maybe<int>* node_id) {
   bool include_user_agent_shadow_dom =
       optional_include_user_agent_shadow_dom.fromMaybe(false);
-  Response response = PushDocumentUponHandlelessOperation();
-  if (!response.isSuccess())
-    return response;
-
+  Document* document = inspected_frames_->Root()->GetDocument();
   LayoutPoint document_point(x * inspected_frames_->Root()->PageZoomFactor(),
                              y * inspected_frames_->Root()->PageZoomFactor());
   HitTestRequest request(HitTestRequest::kMove | HitTestRequest::kReadOnly |
                          HitTestRequest::kAllowChildFrameContent);
-  HitTestLocation location(document_->View()->DocumentToFrame(document_point));
+  HitTestLocation location(document->View()->DocumentToFrame(document_point));
   HitTestResult result(request, location);
-  document_->GetFrame()->ContentLayoutObject()->HitTest(location, result);
+  document->GetFrame()->ContentLayoutObject()->HitTest(location, result);
   if (!include_user_agent_shadow_dom)
     result.SetToShadowHostIfInRestrictedShadowRoot();
   Node* node = result.InnerPossiblyPseudoNode();
@@ -1333,7 +1334,13 @@ Response InspectorDOMAgent::getNodeForLocation(
     node = node->parentNode();
   if (!node)
     return Response::Error("No node found at given location");
-  *node_id = PushNodePathToFrontend(node);
+  *backend_node_id = DOMNodeIds::IdForNode(node);
+  if (enabled_.Get()) {
+    Response response = PushDocumentUponHandlelessOperation();
+    if (!response.isSuccess())
+      return response;
+    *node_id = PushNodePathToFrontend(node);
+  }
   return Response::OK();
 }
 
@@ -1528,8 +1535,7 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
         force_push_children = true;
       }
     }
-  } else if (node->IsDocumentNode()) {
-    Document* document = ToDocument(node);
+  } else if (auto* document = DynamicTo<Document>(node)) {
     value->setDocumentURL(DocumentURLString(document));
     value->setBaseURL(DocumentBaseURLString(document));
     value->setXmlVersion(document->xmlVersion());
@@ -1678,23 +1684,7 @@ InspectorDOMAgent::BuildDistributedNodesForSlot(HTMLSlotElement* slot_element) {
   // is removed.
   std::unique_ptr<protocol::Array<protocol::DOM::BackendNode>>
       distributed_nodes = protocol::Array<protocol::DOM::BackendNode>::create();
-  if (RuntimeEnabledFeatures::IncrementalShadowDOMEnabled()) {
-    for (auto& node : slot_element->AssignedNodes()) {
-      if (IsWhitespace(node))
-        continue;
-
-      std::unique_ptr<protocol::DOM::BackendNode> backend_node =
-          protocol::DOM::BackendNode::create()
-              .setNodeType(node->getNodeType())
-              .setNodeName(node->nodeName())
-              .setBackendNodeId(IdentifiersFactory::IntIdForNode(node))
-              .build();
-      distributed_nodes->addItem(std::move(backend_node));
-    }
-    return distributed_nodes;
-  }
-  for (Node* node = slot_element->FirstDistributedNode(); node;
-       node = slot_element->DistributedNodeNextTo(*node)) {
+  for (auto& node : slot_element->AssignedNodes()) {
     if (IsWhitespace(node))
       continue;
 
@@ -1746,8 +1736,7 @@ unsigned InspectorDOMAgent::InnerChildNodeCount(Node* node) {
 
 // static
 Node* InspectorDOMAgent::InnerParentNode(Node* node) {
-  if (node->IsDocumentNode()) {
-    Document* document = ToDocument(node);
+  if (auto* document = DynamicTo<Document>(node)) {
     if (HTMLImportLoader* loader = document->ImportLoader())
       return loader->FirstImport()->Link();
     return document->LocalOwner();
@@ -1883,7 +1872,10 @@ void InspectorDOMAgent::DidInsertDOMNode(Node* node) {
 void InspectorDOMAgent::WillRemoveDOMNode(Node* node) {
   if (IsWhitespace(node))
     return;
+  DOMNodeRemoved(node);
+}
 
+void InspectorDOMAgent::DOMNodeRemoved(Node* node) {
   ContainerNode* parent = node->parentNode();
 
   // If parent is not mapped yet -> ignore the event.
@@ -1961,6 +1953,10 @@ void InspectorDOMAgent::StyleAttributeInvalidated(
 }
 
 void InspectorDOMAgent::CharacterDataModified(CharacterData* character_data) {
+  if (IsWhitespace(character_data)) {
+    DOMNodeRemoved(character_data);
+    return;
+  }
   int id = document_node_to_id_map_->at(character_data);
   if (!id) {
     // Push text node if it is being created.
@@ -2156,6 +2152,11 @@ Response InspectorDOMAgent::pushNodesByBackendIdsToFrontend(
     std::unique_ptr<protocol::Array<int>>* result) {
   if (!enabled_.Get())
     return Response::Error("DOM agent is not enabled");
+
+  Response response = PushDocumentUponHandlelessOperation();
+  if (!response.isSuccess())
+    return response;
+
   *result = protocol::Array<int>::create();
   for (size_t index = 0; index < backend_node_ids->length(); ++index) {
     Node* node = DOMNodeIds::NodeForId(backend_node_ids->get(index));
@@ -2230,8 +2231,10 @@ protocol::Response InspectorDOMAgent::describeNode(
   return Response::OK();
 }
 
-protocol::Response InspectorDOMAgent::getFrameOwner(const String& frame_id,
-                                                    int* node_id) {
+protocol::Response InspectorDOMAgent::getFrameOwner(
+    const String& frame_id,
+    int* backend_node_id,
+    protocol::Maybe<int>* node_id) {
   Frame* frame = inspected_frames_->Root();
   for (; frame; frame = frame->Tree().TraverseNext(inspected_frames_->Root())) {
     if (IdentifiersFactory::FrameId(frame) == frame_id)
@@ -2242,8 +2245,14 @@ protocol::Response InspectorDOMAgent::getFrameOwner(const String& frame_id,
   HTMLFrameOwnerElement* frame_owner = ToHTMLFrameOwnerElement(frame->Owner());
   if (!frame_owner)
     return Response::Error("No iframe owner for given node");
-  *node_id =
-      PushNodePathToFrontend(frame_owner, document_node_to_id_map_.Get());
+
+  *backend_node_id = DOMNodeIds::IdForNode(frame_owner);
+  if (enabled_.Get()) {
+    Response response = PushDocumentUponHandlelessOperation();
+    if (!response.isSuccess())
+      return response;
+    *node_id = PushNodePathToFrontend(frame_owner);
+  }
   return Response::OK();
 }
 

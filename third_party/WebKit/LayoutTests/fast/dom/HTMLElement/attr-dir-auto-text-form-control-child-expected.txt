@@ -2,7 +2,6 @@ Test that directionality of an element with dir=auto set is not determined by th
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.defaultView.getComputedStyle(el, null).getPropertyValue('border-right-color') is 'rgb(255, 0, 0)'
 PASS document.defaultView.getComputedStyle(el, null).getPropertyValue('border-right-color') is 'rgb(0, 128, 0)'
 PASS document.defaultView.getComputedStyle(el, null).getPropertyValue('border-right-color') is 'rgb(0, 128, 0)'

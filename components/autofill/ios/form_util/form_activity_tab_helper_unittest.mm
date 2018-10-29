@@ -21,7 +21,7 @@ class FormTestClient : public web::TestWebClient {
  public:
   NSString* GetDocumentStartScriptForAllFrames(
       web::BrowserState* browser_state) const override {
-    return web::test::GetPageScript(@"form");
+    return web::test::GetPageScript(@"form_util_js");
   }
 };
 
@@ -61,6 +61,9 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
        "</form>");
   ASSERT_FALSE(observer_->submit_document_info());
   const std::string kTestFormName("form-name");
+  const std::string kTestFormData(
+      "[{\"name\":\"form-name\",\"origin\":\"https://chromium.test/"
+      "\",\"action\":\"https://chromium.test/\"}]");
   bool has_user_gesture = false;
   bool form_in_main_frame = true;
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -74,6 +77,7 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
   EXPECT_EQ(web_state(), observer_->submit_document_info()->web_state);
   EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
   EXPECT_EQ(kTestFormName, observer_->submit_document_info()->form_name);
+  EXPECT_EQ(kTestFormData, observer_->submit_document_info()->form_data);
   EXPECT_EQ(has_user_gesture,
             observer_->submit_document_info()->has_user_gesture);
   EXPECT_EQ(form_in_main_frame,
@@ -105,8 +109,6 @@ TEST_F(FormActivityTabHelperTest, TestObserverFormActivityFrameMessaging) {
   EXPECT_EQ(main_frame, observer_->form_activity_info()->sender_frame);
   EXPECT_EQ("form-name",
             observer_->form_activity_info()->form_activity.form_name);
-  EXPECT_EQ("field-name",
-            observer_->form_activity_info()->form_activity.field_name);
   EXPECT_EQ("text", observer_->form_activity_info()->form_activity.field_type);
   EXPECT_EQ("focus", observer_->form_activity_info()->form_activity.type);
   EXPECT_EQ("", observer_->form_activity_info()->form_activity.value);

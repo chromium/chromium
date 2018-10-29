@@ -11,7 +11,7 @@
 #include <sys/sysctl.h>
 #include <string>
 
-#include "base/macros.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -60,14 +60,14 @@ const UAVersions& GetUAVersionsForCurrentOS() {
 
   // Return the versions corresponding to the first (and thus highest) OS
   // version less than or equal to the given OS version.
-  for (unsigned int i = 0; i < arraysize(version_map); ++i) {
+  for (unsigned int i = 0; i < base::size(version_map); ++i) {
     if (os_major_version > version_map[i].major_os_version ||
         (os_major_version == version_map[i].major_os_version &&
          os_minor_version >= version_map[i].minor_os_version))
       return version_map[i].ua_versions;
   }
   NOTREACHED();
-  return version_map[arraysize(version_map) - 1].ua_versions;
+  return version_map[base::size(version_map) - 1].ua_versions;
 }
 
 std::string BuildKernelVersion() {

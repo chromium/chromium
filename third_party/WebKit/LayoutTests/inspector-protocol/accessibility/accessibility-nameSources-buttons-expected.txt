@@ -38,6 +38,13 @@ Tests name sources in buttons.
         "type": "token",
         "value": "false"
       }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
     }
   ],
   "domNode": "button#button1"
@@ -86,6 +93,13 @@ Tests name sources in buttons.
         "type": "token",
         "value": "false"
       }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
     }
   ],
   "domNode": "button#button2"
@@ -128,6 +142,13 @@ Tests name sources in buttons.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     }
   ],
@@ -177,6 +198,13 @@ Tests name sources in buttons.
         "type": "token",
         "value": "false"
       }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
     }
   ],
   "domNode": "button#button4"
@@ -225,6 +253,13 @@ Tests name sources in buttons.
         "type": "token",
         "value": "false"
       }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
     }
   ],
   "domNode": "button#button5"
@@ -238,7 +273,7 @@ Tests name sources in buttons.
   },
   "name": {
     "type": "computedString",
-    "value": "I love cake!",
+    "value": "I love cake !",
     "sources": [
       {
         "type": "relatedElement",
@@ -256,7 +291,7 @@ Tests name sources in buttons.
         "type": "contents",
         "value": {
           "type": "computedString",
-          "value": "I love cake!"
+          "value": "I love cake !"
         }
       },
       {
@@ -272,6 +307,13 @@ Tests name sources in buttons.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     }
   ],
@@ -319,6 +361,13 @@ Tests name sources in buttons.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     }
   ],
@@ -376,6 +425,13 @@ Tests name sources in buttons.
         "type": "token",
         "value": "false"
       }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
     }
   ],
   "domNode": "button#button8"
@@ -422,6 +478,13 @@ Tests name sources in buttons.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     }
   ],
@@ -478,6 +541,13 @@ Tests name sources in buttons.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     }
   ],
@@ -540,6 +610,13 @@ Tests name sources in buttons.
       "value": {
         "type": "token",
         "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
       }
     },
     {

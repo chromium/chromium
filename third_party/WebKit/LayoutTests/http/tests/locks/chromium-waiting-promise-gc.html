@@ -2,6 +2,7 @@
 <meta charset=utf-8>
 <title>Web Locks API: Lock held with Promise that is GC'd (Chromium-specific, relies on gc/internals)</title>
 <link rel=help href="https://github.com/inexorabletash/web-locks">
+<script src="/js-test-resources/gc.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
@@ -36,17 +37,18 @@ promise_test(async t => {
 
   // Drain the microtask queue and trigger a GC.
   await task(t);
-  gc();
-  assert_true(observe_lock.wasCollected, 'Lock should be collected');
-  assert_true(observe_promise.wasCollected, 'Promise should be collected');
 
-  // Now try and request the lock.
-  let lock = 'should be overwritten';
-  await navigator.locks.request(res, {ifAvailable: true}, l => {
-    lock = l;
+  asyncGC(async function () {
+    assert_true(observe_lock.wasCollected, 'Lock should be collected');
+    assert_true(observe_promise.wasCollected, 'Promise should be collected');
+
+    // Now try and request the lock.
+    let lock = 'should be overwritten';
+    await navigator.locks.request(res, {ifAvailable: true}, l => {
+      lock = l;
+    });
+    assert_equals(lock, null, 'Lock acquisition should have failed');
   });
-  assert_equals(lock, null, 'Lock acquisition should have failed');
-
 }, 'GC of waiting promise does not cause lock to be released');
 
 </script>

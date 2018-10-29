@@ -247,6 +247,17 @@ void SearchIPCRouter::ResetCustomLinks(int page_seq_no) {
   delegate_->OnResetCustomLinks();
 }
 
+void SearchIPCRouter::DoesUrlResolve(int page_seq_no,
+                                     const GURL& url,
+                                     DoesUrlResolveCallback callback) {
+  if (page_seq_no == commit_counter_ &&
+      policy_->ShouldProcessDoesUrlResolve()) {
+    delegate_->OnDoesUrlResolve(url, std::move(callback));
+  } else {
+    std::move(callback).Run(/*resolves=*/true, /*timeout=*/false);
+  }
+}
+
 void SearchIPCRouter::LogEvent(int page_seq_no,
                                NTPLoggingEventType event,
                                base::TimeDelta time) {

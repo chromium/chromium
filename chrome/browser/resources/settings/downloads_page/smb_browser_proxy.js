@@ -22,6 +22,12 @@ const SmbMountResult = {
   INVALID_URL: 6,
 };
 
+/** @enum {string} */
+const SmbAuthMethod = {
+  KERBEROS: 'kerberos',
+  CREDENTIALS: 'credentials',
+};
+
 cr.define('settings', function() {
   /** @interface */
   class SmbBrowserProxy {
@@ -31,8 +37,9 @@ cr.define('settings', function() {
      * @param {string} smbName Display name for the File Share.
      * @param {string} username
      * @param {string} password
+     * @param {string} authMethod
      */
-    smbMount(smbUrl, smbName, username, password) {}
+    smbMount(smbUrl, smbName, username, password, authMethod) {}
 
     /**
      * Starts the file share discovery process.
@@ -43,8 +50,11 @@ cr.define('settings', function() {
   /** @implements {settings.SmbBrowserProxy} */
   class SmbBrowserProxyImpl {
     /** @override */
-    smbMount(smbUrl, smbName, username, password) {
-      chrome.send('smbMount', [smbUrl, smbName, username, password]);
+    smbMount(smbUrl, smbName, username, password, authMethod) {
+      chrome.send('smbMount', [
+        smbUrl, smbName, username, password,
+        authMethod == SmbAuthMethod.KERBEROS
+      ]);
     }
 
     /** @override */

@@ -6,7 +6,8 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/scoped_task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
@@ -18,10 +19,10 @@ namespace content {
 class BackgroundTracingConfigTest : public testing::Test {
  public:
   BackgroundTracingConfigTest()
-      : ui_thread_(BrowserThread::UI, &message_loop_) {}
+      : ui_thread_(BrowserThread::UI, base::ThreadTaskRunnerHandle::Get()) {}
 
  protected:
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
   TestBrowserThread ui_thread_;
 };
 
@@ -288,6 +289,7 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveCategoryToString) {
       BackgroundTracingConfigImpl::BENCHMARK_MEMORY_LIGHT,
       BackgroundTracingConfigImpl::BENCHMARK_EXECUTION_METRIC,
       BackgroundTracingConfigImpl::BENCHMARK_NAVIGATION,
+      BackgroundTracingConfigImpl::BENCHMARK_RENDERERS,
       BackgroundTracingConfigImpl::BLINK_STYLE,
   };
 
@@ -301,6 +303,7 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveCategoryToString) {
                                     "BENCHMARK_MEMORY_LIGHT",
                                     "BENCHMARK_EXECUTION_METRIC",
                                     "BENCHMARK_NAVIGATION",
+                                    "BENCHMARK_RENDERERS",
                                     "BLINK_STYLE"};
   for (size_t i = 0;
        i <

@@ -52,22 +52,15 @@ class WebstoreInstallWithPrompt : public WebstoreStandaloneInstaller {
 
   // extensions::WebstoreStandaloneInstaller overrides:
   bool CheckRequestorAlive() const override;
-  const GURL& GetRequestorURL() const override;
   bool ShouldShowPostInstallUI() const override;
   bool ShouldShowAppInstalledBubble() const override;
   content::WebContents* GetWebContents() const override;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> CreateInstallPrompt()
       const override;
   std::unique_ptr<ExtensionInstallPrompt> CreateInstallUI() override;
-  bool CheckInlineInstallPermitted(const base::DictionaryValue& webstore_data,
-                                   std::string* error) const override;
-  bool CheckRequestorPermitted(const base::DictionaryValue& webstore_data,
-                               std::string* error) const override;
 
  private:
   bool show_post_install_ui_;
-
-  GURL dummy_requestor_url_;
 
   // A non-visible WebContents used to download data from the webstore.
   std::unique_ptr<content::WebContents> dummy_web_contents_;

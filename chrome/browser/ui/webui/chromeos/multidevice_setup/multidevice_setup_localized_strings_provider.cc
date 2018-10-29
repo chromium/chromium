@@ -37,8 +37,10 @@ constexpr struct {
   int id;
 } const kLocalizedStringsWithoutPlaceholders[] = {
     {"accept", IDS_MULTIDEVICE_SETUP_ACCEPT_LABEL},
+    {"back", IDS_MULTIDEVICE_SETUP_BACK_LABEL},
     {"cancel", IDS_CANCEL},
     {"done", IDS_DONE},
+    {"noThanks", IDS_NO_THANKS},
     {"passwordPageHeader", IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_HEADER},
     {"enterPassword", IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_ENTER_PASSWORD_LABEL},
     {"wrongPassword", IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_WRONG_PASSWORD_LABEL},
@@ -59,7 +61,6 @@ constexpr struct {
     {"setupSucceededPageMessage",
      IDS_MULTIDEVICE_SETUP_SETUP_SUCCEEDED_PAGE_MESSAGE},
     {"startSetupPageHeader", IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_HEADER},
-    {"title", IDS_MULTIDEVICE_SETUP_DIALOG_TITLE},
     {"tryAgain", IDS_MULTIDEVICE_SETUP_TRY_AGAIN_LABEL},
 };
 

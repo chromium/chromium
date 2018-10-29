@@ -59,7 +59,8 @@ let RawSiteException;
  *            displayName: string,
  *            setting: !settings.ContentSetting,
  *            enforcement: ?chrome.settingsPrivate.Enforcement,
- *            controlledBy: !chrome.settingsPrivate.ControlledBy}}
+ *            controlledBy: !chrome.settingsPrivate.ControlledBy,
+ *            showAndroidSmsNote: (boolean|undefined)}}
  */
 let SiteException;
 

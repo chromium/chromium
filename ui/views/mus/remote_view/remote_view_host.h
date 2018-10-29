@@ -36,8 +36,10 @@ class RemoteViewHost : public views::NativeViewHost {
                        EmbedCallback callback);
 
  private:
+  bool IsEmbedPending() const { return !embed_token_.is_empty(); }
+
   // Creates the embedding aura::Window and attach to it.
-  void CreateEmbeddingRoot();
+  void EmbedImpl();
 
   // Invoked after the embed operation.
   void OnEmbedResult(bool success);
@@ -49,7 +51,7 @@ class RemoteViewHost : public views::NativeViewHost {
   int embed_flags_ = 0;
   EmbedCallback embed_callback_;
 
-  std::unique_ptr<aura::Window> embedding_root_;
+  const std::unique_ptr<aura::Window> embedding_root_;
   base::WeakPtrFactory<RemoteViewHost> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RemoteViewHost);

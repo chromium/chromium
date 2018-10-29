@@ -64,7 +64,7 @@ class OfflinePageSuggestedArticlesObserverTest : public testing::Test {
 
   SuggestedArticlesObserver* observer() {
     return prefetch_service_test_taco_->prefetch_service()
-        ->GetSuggestedArticlesObserver();
+        ->GetSuggestedArticlesObserverForTesting();
   }
 
   TestPrefetchDispatcher* test_prefetch_dispatcher() {

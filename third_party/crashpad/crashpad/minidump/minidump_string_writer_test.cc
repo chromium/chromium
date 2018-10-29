@@ -100,6 +100,12 @@ TEST(MinidumpStringWriter, MinidumpUTF16StringWriter) {
   }
 }
 
+// Related tracking issues:
+// https://fuchsia.atlassian.net/browse/DX-487
+// https://bugs.chromium.org/p/chromium/issues/detail?id=872892
+// https://bugs.chromium.org/p/chromium/issues/detail?id=889582
+// TODO: Re-enable test once LUCI supports invalid UTF8 characters in test logs.
+#if !defined(CRASHPAD_IS_IN_FUCHSIA)
 TEST(MinidumpStringWriter, ConvertInvalidUTF8ToUTF16) {
   StringFile string_file;
 
@@ -139,6 +145,7 @@ TEST(MinidumpStringWriter, ConvertInvalidUTF8ToUTF16) {
     EXPECT_NE(output_string.find(0xfffd), base::string16::npos);
   }
 }
+#endif  // !defined(CRASHPAD_IS_IN_FUCHSIA)
 
 TEST(MinidumpStringWriter, MinidumpUTF8StringWriter) {
   StringFile string_file;

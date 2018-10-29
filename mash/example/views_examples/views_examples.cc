@@ -46,7 +46,9 @@ class ViewsExamples : public service_manager::Service,
 
   // mash::mojom::Launchable:
   void Launch(uint32_t what, mash::mojom::LaunchMode how) override {
-    views::examples::ShowExamplesWindow(views::examples::QUIT_ON_CLOSE);
+    views::examples::ShowExamplesWindow(
+        base::BindOnce(&service_manager::ServiceContext::QuitNow,
+                       base::Unretained(context())));
   }
 
   void Create(mash::mojom::LaunchableRequest request) {

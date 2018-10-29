@@ -143,7 +143,7 @@ class TestMultiBuffer : public MultiBuffer {
 
   void CheckPresentState() {
     IntervalMap<MultiBufferBlockId, int32_t> tmp;
-    for (DataMap::iterator i = data_.begin(); i != data_.end(); ++i) {
+    for (auto i = data_.begin(); i != data_.end(); ++i) {
       CHECK(i->second);  // Null poineters are not allowed in data_
       CHECK_NE(!!pinned_[i->first], lru_->Contains(this, i->first))
           << " i->first = " << i->first;
@@ -166,7 +166,7 @@ class TestMultiBuffer : public MultiBuffer {
   }
 
   void CheckLRUState() {
-    for (DataMap::iterator i = data_.begin(); i != data_.end(); ++i) {
+    for (auto i = data_.begin(); i != data_.end(); ++i) {
       CHECK(i->second);  // Null poineters are not allowed in data_
       CHECK_NE(!!pinned_[i->first], lru_->Contains(this, i->first))
           << " i->first = " << i->first;

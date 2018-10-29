@@ -26,6 +26,7 @@
           "device.mojom.SerialIoHandler"
         ],
         "device:time_zone_monitor": [ "device.mojom.TimeZoneMonitor" ],
+        "device:usb": [ "device.mojom.UsbDeviceManager" ],
         "device:vibration": [ "device.mojom.VibrationManager" ],
         "device:wake_lock": [ "device.mojom.WakeLockProvider" ]
       }

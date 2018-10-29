@@ -32,10 +32,12 @@
 #include "content/public/renderer/render_view.h"
 #include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "net/base/escape.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/metafile_skia.h"
 #include "printing/metafile_skia_wrapper.h"
 #include "printing/units.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/sandbox_flags.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -69,9 +71,11 @@ namespace printing {
 
 namespace {
 
+#ifndef STATIC_ASSERT_ENUM
 #define STATIC_ASSERT_ENUM(a, b)                            \
   static_assert(static_cast<int>(a) == static_cast<int>(b), \
                 "mismatching enums: " #a)
+#endif
 
 // Check blink and printing enums are kept in sync.
 STATIC_ASSERT_ENUM(blink::kWebUnknownDuplexMode, UNKNOWN_DUPLEX_MODE);
@@ -544,6 +548,51 @@ PrintMsg_Print_Params CalculatePrintParamsForCss(
 
   return result_params;
 }
+
+// Helper to compute the site (scheme and eTLD+1) for the provided frame, based
+// on the frame's origin.
+std::string GetSiteForFrame(blink::WebFrame* frame) {
+  return frame->GetSecurityOrigin().Protocol().Utf8() + "://" +
+         net::registry_controlled_domains::GetDomainAndRegistry(
+             frame->GetSecurityOrigin().Host().Utf8(),
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+// Records metrics on how frequently printed frames contain RemoteFrames and/or
+// cross-origin frames, to help estimate how often site isolation might
+// affect printing.
+void RecordSiteIsolationPrintMetrics(blink::WebFrame* printed_frame) {
+  int remote_frame_count = 0;
+  int cross_site_frame_count = 0;
+  int cross_site_visible_frame_count = 0;
+  for (blink::WebFrame* frame = printed_frame; frame;
+       frame = frame->TraverseNext()) {
+    if (frame->IsWebRemoteFrame())
+      remote_frame_count++;
+
+    // For platforms that don't yet have site isolation, estimate how often
+    // printing would involve OOPIFs once site isolation is deployed.  Note
+    // that we want to only compare eTLD+1 and skip cross-origin but same-site
+    // cases (e.g., https://subdomain.example.com and https://example.com), as
+    // those do not typically end up in separate processes.
+    if (!frame->GetSecurityOrigin().CanAccess(
+            printed_frame->GetSecurityOrigin()) &&
+        GetSiteForFrame(frame) != GetSiteForFrame(printed_frame)) {
+      cross_site_frame_count++;
+      if (frame->IsWebLocalFrame() &&
+          frame->ToWebLocalFrame()->HasVisibleContent())
+        cross_site_visible_frame_count++;
+    }
+  }
+  UMA_HISTOGRAM_COUNTS_100("PrintPreview.SiteIsolation.RemoteFrameCount",
+                           remote_frame_count);
+  UMA_HISTOGRAM_COUNTS_100("PrintPreview.SiteIsolation.CrossSiteFrameCount",
+                           cross_site_frame_count);
+  UMA_HISTOGRAM_COUNTS_100(
+      "PrintPreview.SiteIsolation.CrossSiteVisibleFrameCount",
+      cross_site_visible_frame_count);
+}
+
 }  // namespace
 
 FrameReference::FrameReference(blink::WebLocalFrame* frame) {
@@ -632,21 +681,18 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
     blink::WebLocalFrame* frame_;
   };
 
-  HeaderAndFooterClient frame_client;
-  blink::WebLocalFrame* frame = blink::WebLocalFrame::CreateMainFrame(
-      web_view, &frame_client, nullptr, nullptr);
-
   class NonCompositingWebWidgetClient : public blink::WebWidgetClient {
    public:
     // blink::WebWidgetClient implementation.
     bool AllowsBrokenNullLayerTreeView() const override { return true; }
-    blink::WebLayerTreeView* InitializeLayerTreeView() override {
-      return nullptr;
-    }
   };
 
+  HeaderAndFooterClient frame_client;
+  blink::WebLocalFrame* frame = blink::WebLocalFrame::CreateMainFrame(
+      web_view, &frame_client, nullptr, nullptr);
+
   NonCompositingWebWidgetClient web_widget_client;
-  blink::WebFrameWidget::Create(&web_widget_client, frame);
+  blink::WebFrameWidget::CreateForMainFrame(&web_widget_client, frame);
 
   base::Value html(ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
       IDR_PRINT_HEADER_FOOTER_TEMPLATE_PAGE));
@@ -728,10 +774,10 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
  private:
   // blink::WebViewClient:
   void DidStopLoading() override;
-  // TODO(ojan): Remove this override and have this class use a non-null
-  // layerTreeView.
+  // TODO(ojan): Remove this override and have this class give a LayerTreeView
+  // to the WebWidget.
   bool AllowsBrokenNullLayerTreeView() const override;
-  blink::WebLayerTreeView* InitializeLayerTreeView() override;
+  blink::WebScreenInfo GetScreenInfo() override;
   WebWidgetClient* WidgetClient() override { return this; }
 
   // blink::WebLocalFrameClient:
@@ -742,7 +788,8 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
       const blink::WebString& fallback_name,
       blink::WebSandboxFlags sandbox_flags,
       const blink::ParsedFeaturePolicy& container_policy,
-      const blink::WebFrameOwnerProperties& frame_owner_properties) override;
+      const blink::WebFrameOwnerProperties& frame_owner_properties,
+      blink::FrameOwnerElementType owner_type) override;
   void FrameDetached(DetachType detach_type) override;
   std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory() override;
 
@@ -876,7 +923,7 @@ void PrepareFrameAndViewForPrint::CopySelection(
   blink::WebLocalFrame* main_frame =
       blink::WebLocalFrame::CreateMainFrame(web_view, this, nullptr, nullptr);
   frame_.Reset(main_frame);
-  blink::WebFrameWidget::Create(this, main_frame);
+  blink::WebFrameWidget::CreateForMainFrame(this, main_frame);
   node_to_print_.Reset();
 
   // When loading is done this will call didStopLoading() and that will do the
@@ -889,9 +936,8 @@ bool PrepareFrameAndViewForPrint::AllowsBrokenNullLayerTreeView() const {
   return true;
 }
 
-blink::WebLayerTreeView*
-PrepareFrameAndViewForPrint::InitializeLayerTreeView() {
-  return nullptr;
+blink::WebScreenInfo PrepareFrameAndViewForPrint::GetScreenInfo() {
+  return blink::WebScreenInfo();
 }
 
 void PrepareFrameAndViewForPrint::DidStopLoading() {
@@ -910,7 +956,8 @@ blink::WebLocalFrame* PrepareFrameAndViewForPrint::CreateChildFrame(
     const blink::WebString& fallback_name,
     blink::WebSandboxFlags sandbox_flags,
     const blink::ParsedFeaturePolicy& container_policy,
-    const blink::WebFrameOwnerProperties& frame_owner_properties) {
+    const blink::WebFrameOwnerProperties& frame_owner_properties,
+    blink::FrameOwnerElementType frame_owner_type) {
   // This is called when printing a selection and when this selection contains
   // an iframe. This is not supported yet. An empty rectangle will be displayed
   // instead.
@@ -1697,6 +1744,8 @@ void PrintRenderFrameHelper::PrintPages() {
     UMA_HISTOGRAM_COUNTS_1M("PrintPreview.PageCount.SystemDialog",
                             printed_count);
   }
+
+  RecordSiteIsolationPrintMetrics(prep_frame_view_->frame());
 
   bool is_pdf = PrintingNodeOrPdfFrame(prep_frame_view_->frame(),
                                        prep_frame_view_->node());

@@ -18,6 +18,7 @@ cr.define('print_preview', function() {
         'print',
         'saveAppState',
         'setupPrinter',
+        'showSystemDialog',
       ]);
 
       /**
@@ -27,11 +28,16 @@ cr.define('print_preview', function() {
       this.initialSettings_ = null;
 
       /**
-       *
        * @private {!Array<!print_preview.LocalDestinationInfo>} Local
        *     destination list to be used for the response to |getPrinters|.
        */
       this.localDestinationInfos_ = [];
+
+      /**
+       * @private {!Array<!print_preview.ProvisionalDestinationInfo>} Local
+       *     destination list to be used for the response to |getPrinters|.
+       */
+      this.extensionDestinationInfos_ = [];
 
       /**
        * @private {!Map<string,
@@ -84,6 +90,11 @@ cr.define('print_preview', function() {
       if (type == print_preview.PrinterType.LOCAL_PRINTER) {
         cr.webUIListenerCallback(
             'printers-added', type, this.localDestinationInfos_);
+      } else if (
+          type == print_preview.PrinterType.EXTENSION_PRINTER &&
+          this.extensionDestinationInfos_.length > 0) {
+        cr.webUIListenerCallback(
+            'printers-added', type, this.extensionDestinationInfos_);
       }
       return Promise.resolve();
     }
@@ -155,6 +166,11 @@ cr.define('print_preview', function() {
     }
 
     /** @override */
+    showSystemDialog() {
+      this.methodCalled('showSystemDialog');
+    }
+
+    /** @override */
     recordAction() {}
 
     /** @override */
@@ -179,6 +195,15 @@ cr.define('print_preview', function() {
      */
     setLocalDestinations(localDestinations) {
       this.localDestinationInfos_ = localDestinations;
+    }
+
+    /**
+     * @param {!Array<!print_preview.ProvisionalDestinationInfo>}
+     *     extensionDestinations The extension destinations to return as a
+     *     response to |getPrinters|.
+     */
+    setExtensionDestinations(extensionDestinations) {
+      this.extensionDestinationInfos_ = extensionDestinations;
     }
 
     /**

@@ -38,8 +38,7 @@ constexpr int kInherit = INT_MIN;
 // of the font. Where possible, RenderText uses this additional space to
 // vertically center the cap height of the font instead of centering the
 // entire font.
-static constexpr int kVerticalPadding = 4;
-static constexpr int kRefreshVerticalPadding = 3;
+static constexpr int kVerticalPadding = 3;
 
 struct TextStyle {
   OmniboxPart part;
@@ -117,7 +116,7 @@ TextStyle GetTextStyle(int text_type) {
 const gfx::FontList& GetFontForType(int text_type) {
   const gfx::FontList& omnibox_font =
       views::style::GetFont(CONTEXT_OMNIBOX_PRIMARY, kTextStyle);
-  if (ui::MaterialDesignController::IsTouchOptimizedUiEnabled()) {
+  if (ui::MaterialDesignController::touch_ui()) {
     int delta = GetTextStyle(text_type).touchable_size_delta;
     if (delta == 0)
       return omnibox_font;
@@ -220,9 +219,7 @@ int OmniboxTextView::GetHeightForWidth(int width) const {
   }
   render_text_->SetDisplayRect(gfx::Rect(width, 0));
   gfx::Size string_size = render_text_->GetStringSize();
-  return string_size.height() + (ui::MaterialDesignController::IsRefreshUi()
-                                     ? kRefreshVerticalPadding
-                                     : kVerticalPadding);
+  return string_size.height() + kVerticalPadding;
 }
 
 void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
@@ -404,7 +401,7 @@ void OmniboxTextView::AppendText(const SuggestionAnswer::TextField& field,
 
     // Baselines are always aligned under the touch UI. Font sizes change
     // instead.
-    if (!ui::MaterialDesignController::IsTouchOptimizedUiEnabled()) {
+    if (!ui::MaterialDesignController::touch_ui()) {
       render_text_->ApplyBaselineStyle(text_style.baseline, range);
     } else if (text_style.touchable_size_delta != 0) {
       render_text_->ApplyFontSizeOverride(
@@ -422,7 +419,5 @@ void OmniboxTextView::UpdateLineHeight() {
                                 gfx::Font::NORMAL, gfx::Font::Weight::BOLD)
           .GetHeight();
   font_height_ = std::max(height_normal, height_bold);
-  font_height_ += ui::MaterialDesignController::IsRefreshUi()
-                      ? kRefreshVerticalPadding
-                      : kVerticalPadding;
+  font_height_ += kVerticalPadding;
 }

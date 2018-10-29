@@ -4,7 +4,10 @@
 
 #include "storage/browser/blob/blob_impl.h"
 
+#include <limits>
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
@@ -270,6 +273,36 @@ TEST_F(BlobImplTest, ReadRange_TooLargeLength) {
 
   std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
   EXPECT_EQ(kContents.substr(2, 15), received);
+
+  client_binding.FlushForTesting();
+  EXPECT_TRUE(client.calculated_size_);
+  EXPECT_EQ(kContents.size(), client.total_size_);
+  EXPECT_EQ(kContents.size() - 2, client.expected_content_size_);
+
+  EXPECT_TRUE(client.completed_);
+  EXPECT_EQ(net::OK, client.status_);
+  EXPECT_EQ(kContents.size() - 2, client.data_length_);
+}
+
+TEST_F(BlobImplTest, ReadRange_UnboundedLength) {
+  const std::string kId = "id";
+  const std::string kContents = "hello world";
+  auto handle = CreateBlobFromString(kId, kContents);
+
+  blink::mojom::BlobPtr ptr;
+  BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+
+  MockBlobReaderClient client;
+  blink::mojom::BlobReaderClientPtr client_ptr;
+  mojo::Binding<blink::mojom::BlobReaderClient> client_binding(
+      &client, MakeRequest(&client_ptr));
+
+  mojo::DataPipe pipe;
+  ptr->ReadRange(2, std::numeric_limits<uint64_t>::max(),
+                 std::move(pipe.producer_handle), std::move(client_ptr));
+
+  std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
+  EXPECT_EQ(kContents.substr(2, kContents.size()), received);
 
   client_binding.FlushForTesting();
   EXPECT_TRUE(client.calculated_size_);

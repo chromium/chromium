@@ -11,52 +11,51 @@ namespace {
 static std::string OfflinerRequestStatusToString(
     Offliner::RequestStatus request_status) {
   switch (request_status) {
-    case Offliner::UNKNOWN:
+    case Offliner::RequestStatus::UNKNOWN:
       return "UNKNOWN";
-    case Offliner::LOADED:
+    case Offliner::RequestStatus::LOADED:
       return "LOADED";
-    case Offliner::SAVED:
+    case Offliner::RequestStatus::SAVED:
       return "SAVED";
-    case Offliner::REQUEST_COORDINATOR_CANCELED:
+    case Offliner::RequestStatus::REQUEST_COORDINATOR_CANCELED:
       return "REQUEST_COORDINATOR_CANCELED";
-    case Offliner::LOADING_CANCELED:
+    case Offliner::RequestStatus::LOADING_CANCELED:
       return "LOADING_CANCELED";
-    case Offliner::LOADING_FAILED:
+    case Offliner::RequestStatus::LOADING_FAILED:
       return "LOADING_FAILED";
-    case Offliner::SAVE_FAILED:
+    case Offliner::RequestStatus::SAVE_FAILED:
       return "SAVE_FAILED";
-    case Offliner::FOREGROUND_CANCELED:
+    case Offliner::RequestStatus::FOREGROUND_CANCELED:
       return "FOREGROUND_CANCELED";
-    case Offliner::REQUEST_COORDINATOR_TIMED_OUT:
+    case Offliner::RequestStatus::REQUEST_COORDINATOR_TIMED_OUT:
       return "REQUEST_COORDINATOR_TIMED_OUT";
-    case Offliner::DEPRECATED_LOADING_NOT_STARTED:
-      return "DEPRECATED_LOADING_NOT_STARTED";
-    case Offliner::LOADING_FAILED_NO_RETRY:
-      return "LOADING_FAILED_NO_RETRY";
-    case Offliner::LOADING_FAILED_NO_NEXT:
-      return "LOADING_FAILED_NO_NEXT";
-    case Offliner::LOADING_NOT_ACCEPTED:
-      return "LOADING_NOT_ACCEPTED";
-    case Offliner::QUEUE_UPDATE_FAILED:
-      return "QUEUE_UPDATE_FAILED";
-    case Offliner::BACKGROUND_SCHEDULER_CANCELED:
-      return "BACKGROUND_SCHEDULER_CANCELED";
-    case Offliner::SAVED_ON_LAST_RETRY:
-      return "SAVED_ON_LAST_RETRY";
-    case Offliner::BROWSER_KILLED:
-      return "BROWSER_KILLED";
-    case Offliner::LOADING_FAILED_DOWNLOAD:
-      return "LOADING_FAILED_DOWNLOAD";
-    case Offliner::DOWNLOAD_THROTTLED:
-      return "DOWNLOAD_THROTTLED";
-    case Offliner::LOADING_FAILED_NET_ERROR:
-      return "LOADING_FAILED_NET_ERROR";
-    case Offliner::LOADING_FAILED_HTTP_ERROR:
-      return "LOADING_FAILED_HTTP_ERROR";
-    default:
+    case Offliner::RequestStatus::DEPRECATED_LOADING_NOT_STARTED:
       NOTREACHED();
-      return std::to_string(static_cast<int>(request_status));
+      return "DEPRECATED_LOADING_NOT_STARTED";
+    case Offliner::RequestStatus::LOADING_FAILED_NO_RETRY:
+      return "LOADING_FAILED_NO_RETRY";
+    case Offliner::RequestStatus::LOADING_FAILED_NO_NEXT:
+      return "LOADING_FAILED_NO_NEXT";
+    case Offliner::RequestStatus::LOADING_NOT_ACCEPTED:
+      return "LOADING_NOT_ACCEPTED";
+    case Offliner::RequestStatus::QUEUE_UPDATE_FAILED:
+      return "QUEUE_UPDATE_FAILED";
+    case Offliner::RequestStatus::BACKGROUND_SCHEDULER_CANCELED:
+      return "BACKGROUND_SCHEDULER_CANCELED";
+    case Offliner::RequestStatus::SAVED_ON_LAST_RETRY:
+      return "SAVED_ON_LAST_RETRY";
+    case Offliner::RequestStatus::BROWSER_KILLED:
+      return "BROWSER_KILLED";
+    case Offliner::RequestStatus::LOADING_FAILED_DOWNLOAD:
+      return "LOADING_FAILED_DOWNLOAD";
+    case Offliner::RequestStatus::DOWNLOAD_THROTTLED:
+      return "DOWNLOAD_THROTTLED";
+    case Offliner::RequestStatus::LOADING_FAILED_NET_ERROR:
+      return "LOADING_FAILED_NET_ERROR";
+    case Offliner::RequestStatus::LOADING_FAILED_HTTP_ERROR:
+      return "LOADING_FAILED_HTTP_ERROR";
   }
+  return "UNKNOWN";
 }
 
 static std::string BackgroundSavePageResultToString(

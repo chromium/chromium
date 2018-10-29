@@ -15,7 +15,7 @@ namespace blink {
 // Represents the smooth interpolation between an adjacent pair of
 // PropertySpecificKeyframes.
 struct PairwiseInterpolationValue {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
   PairwiseInterpolationValue(
       std::unique_ptr<InterpolableValue> start_interpolable_value,

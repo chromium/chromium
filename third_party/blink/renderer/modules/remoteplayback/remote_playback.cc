@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
 #include "third_party/blink/renderer/modules/remoteplayback/availability_callback_wrapper.h"
 #include "third_party/blink/renderer/platform/memory_coordinator.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 namespace blink {
@@ -58,8 +59,8 @@ KURL GetAvailabilityUrl(const WebURL& source, bool is_source_supported) {
   // remote-playback://<encoded-data> where |encoded-data| is base64 URL
   // encoded string representation of the source URL.
   std::string source_string = source.GetString().Utf8();
-  String encoded_source =
-      WTF::Base64URLEncode(source_string.data(), source_string.length());
+  String encoded_source = WTF::Base64URLEncode(
+      source_string.data(), SafeCast<unsigned>(source_string.length()));
 
   return KURL("remote-playback://" + encoded_source);
 }
@@ -184,7 +185,7 @@ ScriptPromise RemotePlayback::prompt(ScriptState* script_state) {
     return promise;
   }
 
-  if (!Frame::HasTransientUserActivation(media_element_->GetFrame())) {
+  if (!LocalFrame::HasTransientUserActivation(media_element_->GetFrame())) {
     resolver->Reject(DOMException::Create(
         DOMExceptionCode::kInvalidAccessError,
         "RemotePlayback::prompt() requires user gesture."));
@@ -227,8 +228,7 @@ bool RemotePlayback::HasPendingActivity() const {
 }
 
 void RemotePlayback::ContextDestroyed(ExecutionContext*) {
-  target_presentation_connection_.reset();
-  presentation_connection_binding_.Close();
+  CleanupConnections();
 }
 
 void RemotePlayback::PromptInternal() {
@@ -369,7 +369,9 @@ void RemotePlayback::StateChanged(WebRemotePlaybackState state) {
               ->MediaRemotingStopped(
                   WebLocalizedString::kMediaRemotingStopNoText);
         }
+        CleanupConnections();
         presentation_id_ = "";
+        presentation_url_ = KURL();
         media_element_->FlingingStopped();
       }
       break;
@@ -465,6 +467,11 @@ void RemotePlayback::RemotePlaybackDisabled() {
   }
 }
 
+void RemotePlayback::CleanupConnections() {
+  target_presentation_connection_.reset();
+  presentation_connection_binding_.Close();
+}
+
 void RemotePlayback::AvailabilityChanged(
     mojom::blink::ScreenAvailability availability) {
   DCHECK(RuntimeEnabledFeatures::NewRemotePlaybackPipelineEnabled());
@@ -511,7 +518,6 @@ void RemotePlayback::OnConnectionSuccess(
 
   StateChanged(WebRemotePlaybackState::kConnecting);
 
-  // TODO(imcheng): Reset binding when remote playback stops.
   DCHECK(!presentation_connection_binding_.is_bound());
   auto* presentation_controller =
       PresentationController::FromContext(GetExecutionContext());

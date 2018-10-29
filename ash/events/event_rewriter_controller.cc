@@ -89,6 +89,10 @@ void EventRewriterController::CaptureAllKeysForSpokenFeedback(bool capture) {
   spoken_feedback_event_rewriter_->set_capture_all_keys(capture);
 }
 
+void EventRewriterController::SetSendMouseEventsToDelegate(bool value) {
+  spoken_feedback_event_rewriter_->set_send_mouse_events(value);
+}
+
 void EventRewriterController::OnHostInitialized(aura::WindowTreeHost* host) {
   for (const auto& rewriter : rewriters_)
     host->GetEventSource()->AddEventRewriter(rewriter.get());

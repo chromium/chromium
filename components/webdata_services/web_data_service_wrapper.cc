@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/webdata/autofill_wallet_syncable_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/password_manager/core/browser/webdata/logins_table.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/core/browser/webdata/token_service_table.h"
@@ -82,25 +81,42 @@ void InitSyncableAccountServicesOnDBSequence(
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
 
+  base::RepeatingCallback<void(bool)> wallet_active_callback;
+  if (base::FeatureList::IsEnabled(switches::kSyncUSSAutofillWalletMetadata)) {
+    autofill::AutofillWalletMetadataSyncBridge::
+        CreateForWebDataServiceAndBackend(app_locale, autofill_backend,
+                                          autofill_web_data.get());
+    wallet_active_callback = base::BindRepeating(
+        &autofill::AutofillWalletMetadataSyncBridge::
+            OnWalletDataTrackingStateChanged,
+        autofill::AutofillWalletMetadataSyncBridge::FromWebDataService(
+            autofill_web_data.get())
+            ->GetWeakPtr());
+  } else {
+    autofill::AutofillWalletMetadataSyncableService::
+        CreateForWebDataServiceAndBackend(autofill_web_data.get(),
+                                          autofill_backend, app_locale);
+    wallet_active_callback = base::BindRepeating(
+        &autofill::AutofillWalletMetadataSyncableService::
+            OnWalletDataTrackingStateChanged,
+        autofill::AutofillWalletMetadataSyncableService::FromWebDataService(
+            autofill_web_data.get())
+            ->GetWeakPtr());
+  }
+
   if (base::FeatureList::IsEnabled(switches::kSyncUSSAutofillWalletData)) {
     autofill::AutofillWalletSyncBridge::CreateForWebDataServiceAndBackend(
-        app_locale, is_full_sync, autofill_backend, autofill_web_data.get());
+        app_locale, wallet_active_callback, is_full_sync, autofill_backend,
+        autofill_web_data.get());
   } else {
     autofill::AutofillWalletSyncableService::CreateForWebDataServiceAndBackend(
         autofill_web_data.get(), autofill_backend, app_locale);
     autofill::AutofillWalletSyncableService::FromWebDataService(
         autofill_web_data.get())
         ->InjectStartSyncFlare(sync_flare);
-  }
-
-  if (base::FeatureList::IsEnabled(switches::kSyncUSSAutofillWalletMetadata)) {
-    autofill::AutofillWalletMetadataSyncBridge::
-        CreateForWebDataServiceAndBackend(app_locale, autofill_backend,
-                                          autofill_web_data.get());
-  } else {
-    autofill::AutofillWalletMetadataSyncableService::
-        CreateForWebDataServiceAndBackend(autofill_web_data.get(),
-                                          autofill_backend, app_locale);
+    // For non-USS wallet, the metadata is always checking the existence of
+    // wallet data to add/remove metadata entries.
+    wallet_active_callback.Run(true);
   }
 }
 
@@ -128,10 +144,6 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   // be added here.
   profile_database_->AddTable(std::make_unique<autofill::AutofillTable>());
   profile_database_->AddTable(std::make_unique<KeywordTable>());
-  // TODO(mdm): We only really need the LoginsTable on Windows for IE7 password
-  // access, but for now, we still create it on all platforms since it deletes
-  // the old logins table. We can remove this after a while, e.g. in M22 or so.
-  profile_database_->AddTable(std::make_unique<LoginsTable>());
   profile_database_->AddTable(std::make_unique<TokenServiceTable>());
 #if !defined(OS_IOS)
   profile_database_->AddTable(

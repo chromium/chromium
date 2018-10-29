@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MOCK_DEMO_SETUP_SCREEN_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MOCK_DEMO_SETUP_SCREEN_H_
 
+#include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/chromeos/login/screens/demo_setup_screen.h"
 #include "chrome/browser/chromeos/login/screens/demo_setup_screen_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,8 +27,9 @@ class MockDemoSetupScreenView : public DemoSetupScreenView {
   MOCK_METHOD0(Show, void());
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD1(MockBind, void(DemoSetupScreen* screen));
-  MOCK_METHOD2(OnSetupFinished,
-               void(bool is_success, const std::string& message));
+  MOCK_METHOD0(OnSetupSucceeded, void());
+  MOCK_METHOD1(OnSetupFailed,
+               void(const DemoSetupController::DemoSetupError& error));
 
   void Bind(DemoSetupScreen* screen) override;
 

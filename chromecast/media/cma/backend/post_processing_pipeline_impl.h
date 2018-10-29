@@ -61,13 +61,13 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
   void UpdateCastVolume(float multiplier);
 
   std::string name_;
-  int sample_rate_;
+  int sample_rate_ = 0;
   int ringing_time_in_frames_ = 0;
   int silence_frames_processed_ = 0;
   int total_delay_frames_ = 0;
-  float current_multiplier_;
-  float cast_volume_;
-  float current_dbfs_;
+  float current_multiplier_ = 0.0;
+  float cast_volume_ = 0.0;
+  float current_dbfs_ = 0.0;
   int num_output_channels_ = 0;
   float* output_buffer_ = nullptr;
 

@@ -255,8 +255,8 @@ syncer::SyncMergeResult FaviconCache::MergeDataAndStartSyncing(
   }
 
   syncer::SyncChangeList local_changes;
-  for (syncer::SyncDataList::const_iterator iter = initial_sync_data.begin();
-       iter != initial_sync_data.end(); ++iter) {
+  for (auto iter = initial_sync_data.begin(); iter != initial_sync_data.end();
+       ++iter) {
     GURL remote_url = GetFaviconURLFromSpecifics(iter->GetSpecifics());
     GURL favicon_url = GetLocalFaviconFromSyncedData(*iter);
     if (favicon_url.is_valid()) {
@@ -276,7 +276,7 @@ syncer::SyncMergeResult FaviconCache::MergeDataAndStartSyncing(
   // they'll be re-added and the appropriate synced favicons will be evicted.
   // TODO(zea): implement a smarter ordering of the which favicons to drop.
   int available_favicons = max_sync_favicon_limit_ - initial_sync_data.size();
-  for (std::set<GURL>::const_iterator iter = unsynced_favicon_urls.begin();
+  for (auto iter = unsynced_favicon_urls.begin();
        iter != unsynced_favicon_urls.end(); ++iter) {
     if (available_favicons > 0) {
       local_changes.push_back(
@@ -285,7 +285,7 @@ syncer::SyncMergeResult FaviconCache::MergeDataAndStartSyncing(
                              CreateSyncDataFromLocalFavicon(type, *iter)));
       available_favicons--;
     } else {
-      FaviconMap::iterator favicon_iter = synced_favicons_.find(*iter);
+      auto favicon_iter = synced_favicons_.find(*iter);
       DVLOG(1) << "Dropping local favicon "
                << favicon_iter->second->favicon_url.spec();
       DropPartialFavicon(favicon_iter, type);
@@ -314,8 +314,8 @@ void FaviconCache::StopSyncing(syncer::ModelType type) {
 syncer::SyncDataList FaviconCache::GetAllSyncData(syncer::ModelType type)
     const {
   syncer::SyncDataList data_list;
-  for (FaviconMap::const_iterator iter = synced_favicons_.begin();
-       iter != synced_favicons_.end(); ++iter) {
+  for (auto iter = synced_favicons_.begin(); iter != synced_favicons_.end();
+       ++iter) {
     if ((type == syncer::FAVICON_IMAGES &&
          FaviconInfoHasImages(*iter->second)) ||
         (type == syncer::FAVICON_TRACKING &&
@@ -340,8 +340,7 @@ syncer::SyncError FaviconCache::ProcessSyncChanges(
   syncer::SyncChangeList new_changes;
   syncer::SyncError error;
   syncer::ModelType type = syncer::UNSPECIFIED;
-  for (syncer::SyncChangeList::const_iterator iter = change_list.begin();
-      iter != change_list.end(); ++iter) {
+  for (auto iter = change_list.begin(); iter != change_list.end(); ++iter) {
     type = iter->sync_data().GetDataType();
     DCHECK(type == syncer::FAVICON_IMAGES || type == syncer::FAVICON_TRACKING);
     GURL favicon_url =
@@ -350,7 +349,7 @@ syncer::SyncError FaviconCache::ProcessSyncChanges(
       error.Reset(FROM_HERE, "Received invalid favicon url.", type);
       break;
     }
-    FaviconMap::iterator favicon_iter = synced_favicons_.find(favicon_url);
+    auto favicon_iter = synced_favicons_.find(favicon_url);
     if (iter->change_type() == syncer::SyncChange::ACTION_DELETE) {
       if (favicon_iter == synced_favicons_.end()) {
         // Two clients might wind up deleting different parts of the same
@@ -474,7 +473,7 @@ bool FaviconCache::GetSyncedFaviconForFaviconURL(
     scoped_refptr<base::RefCountedMemory>* favicon_png) const {
   if (!favicon_url.is_valid())
     return false;
-  FaviconMap::const_iterator iter = synced_favicons_.find(favicon_url);
+  auto iter = synced_favicons_.find(favicon_url);
 
   UMA_HISTOGRAM_BOOLEAN("Sync.FaviconCacheLookupSucceeded",
                         iter != synced_favicons_.end());
@@ -494,7 +493,7 @@ bool FaviconCache::GetSyncedFaviconForPageURL(
     scoped_refptr<base::RefCountedMemory>* favicon_png) const {
   if (!page_url.is_valid())
     return false;
-  PageFaviconMap::const_iterator iter = page_favicon_map_.find(page_url);
+  auto iter = page_favicon_map_.find(page_url);
 
   if (iter == page_favicon_map_.end())
     return false;
@@ -531,7 +530,7 @@ size_t FaviconCache::NumTasksForTest() const {
 
 base::Time FaviconCache::GetLastVisitTimeForTest(
     const GURL& favicon_url) const {
-  FaviconMap::const_iterator iter = synced_favicons_.find(favicon_url);
+  auto iter = synced_favicons_.find(favicon_url);
   DCHECK(iter != synced_favicons_.end());
   return iter->second->last_visit_time;
 }
@@ -551,7 +550,7 @@ void FaviconCache::OnFaviconDataAvailable(
     const GURL& page_url,
     base::Time mtime,
     const std::vector<favicon_base::FaviconRawBitmapResult>& bitmap_results) {
-  PageTaskMap::iterator page_iter = page_task_map_.find(page_url);
+  auto page_iter = page_task_map_.find(page_url);
   if (page_iter == page_task_map_.end())
     return;
   page_task_map_.erase(page_iter);
@@ -698,8 +697,8 @@ void FaviconCache::UpdateFaviconVisitTime(const GURL& icon_url,
   recent_favicons_.insert(iter->second);
 
   if (VLOG_IS_ON(2)) {
-    for (RecencySet::const_iterator iter = recent_favicons_.begin();
-         iter != recent_favicons_.end(); ++iter) {
+    for (auto iter = recent_favicons_.begin(); iter != recent_favicons_.end();
+         ++iter) {
       DVLOG(2) << "Favicon " << iter->get()->favicon_url.spec() << ": "
                << syncer::GetTimeDebugString(iter->get()->last_visit_time);
     }
@@ -865,7 +864,7 @@ syncer::SyncData FaviconCache::CreateSyncDataFromLocalFavicon(
     const GURL& favicon_url) const {
   DCHECK(type == syncer::FAVICON_IMAGES || type == syncer::FAVICON_TRACKING);
   DCHECK(favicon_url.is_valid());
-  FaviconMap::const_iterator iter = synced_favicons_.find(favicon_url);
+  auto iter = synced_favicons_.find(favicon_url);
   DCHECK(iter != synced_favicons_.end());
   SyncedFaviconInfo* favicon_info = iter->second.get();
 
@@ -888,9 +887,8 @@ syncer::SyncData FaviconCache::CreateSyncDataFromLocalFavicon(
 
 void FaviconCache::DeleteSyncedFavicons(const std::set<GURL>& favicon_urls) {
   syncer::SyncChangeList image_deletions, tracking_deletions;
-  for (std::set<GURL>::const_iterator iter = favicon_urls.begin();
-       iter != favicon_urls.end(); ++iter) {
-    FaviconMap::iterator favicon_iter = synced_favicons_.find(*iter);
+  for (auto iter = favicon_urls.begin(); iter != favicon_urls.end(); ++iter) {
+    auto favicon_iter = synced_favicons_.find(*iter);
     if (favicon_iter == synced_favicons_.end())
       continue;
     DeleteSyncedFavicon(favicon_iter,

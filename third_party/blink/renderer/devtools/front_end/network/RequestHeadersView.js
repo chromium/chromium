@@ -399,7 +399,9 @@ Network.RequestHeadersView = class extends UI.VBox {
       } else if (this._request.fetchedViaServiceWorker) {
         statusText += ' ' + Common.UIString('(from ServiceWorker)');
         statusTextElement.classList.add('status-from-cache');
-      } else if (this._request.redirectSource() && this._request.redirectSource().signedExchangeInfo()) {
+      } else if (
+          this._request.redirectSource() && this._request.redirectSource().signedExchangeInfo() &&
+          !this._request.redirectSource().signedExchangeInfo().errors) {
         statusText += ' ' + Common.UIString('(from signed-exchange)');
         statusTextElement.classList.add('status-from-cache');
       } else if (this._request.cached()) {

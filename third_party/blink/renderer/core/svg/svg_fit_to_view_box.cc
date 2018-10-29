@@ -39,7 +39,7 @@ class SVGAnimatedViewBoxRect : public SVGAnimatedRect {
 
  protected:
   SVGAnimatedViewBoxRect(SVGElement* context_element)
-      : SVGAnimatedRect(context_element, SVGNames::viewBoxAttr) {}
+      : SVGAnimatedRect(context_element, svg_names::kViewBoxAttr) {}
 };
 
 SVGParsingError SVGAnimatedViewBoxRect::AttributeChanged(const String& value) {
@@ -57,7 +57,7 @@ SVGFitToViewBox::SVGFitToViewBox(SVGElement* element)
     : view_box_(SVGAnimatedViewBoxRect::Create(element)),
       preserve_aspect_ratio_(SVGAnimatedPreserveAspectRatio::Create(
           element,
-          SVGNames::preserveAspectRatioAttr)) {
+          svg_names::kPreserveAspectRatioAttr)) {
   DCHECK(element);
   element->AddToPropertyMap(view_box_);
   element->AddToPropertyMap(preserve_aspect_ratio_);
@@ -83,8 +83,8 @@ AffineTransform SVGFitToViewBox::ViewBoxToViewTransform(
 }
 
 bool SVGFitToViewBox::IsKnownAttribute(const QualifiedName& attr_name) {
-  return attr_name == SVGNames::viewBoxAttr ||
-         attr_name == SVGNames::preserveAspectRatioAttr;
+  return attr_name == svg_names::kViewBoxAttr ||
+         attr_name == svg_names::kPreserveAspectRatioAttr;
 }
 
 }  // namespace blink

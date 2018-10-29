@@ -39,7 +39,7 @@ struct CC_EXPORT EffectNode {
   float screen_space_opacity;
 
   FilterOperations filters;
-  FilterOperations background_filters;
+  FilterOperations backdrop_filters;
   gfx::PointF filters_origin;
 
   SkBlendMode blend_mode;

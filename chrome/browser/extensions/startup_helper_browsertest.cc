@@ -46,9 +46,7 @@ IN_PROC_BROWSER_TEST_F(StartupHelperBrowserTest, ValidateCrx) {
   expectations.push_back(
       std::make_pair(test_data_dir_.AppendASCII("bad_magic.crx"), false));
 
-  for (std::vector<std::pair<base::FilePath, bool> >::iterator i =
-           expectations.begin();
-       i != expectations.end(); ++i) {
+  for (auto i = expectations.begin(); i != expectations.end(); ++i) {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     const base::FilePath& path = i->first;
     command_line.AppendSwitchPath(switches::kValidateCrx, path);

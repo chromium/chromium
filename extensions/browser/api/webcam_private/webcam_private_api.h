@@ -150,6 +150,12 @@ class WebcamPrivateGetFunction : public UIThreadExtensionFunction {
     INQUIRY_PAN,
     INQUIRY_TILT,
     INQUIRY_ZOOM,
+    INQUIRY_FOCUS,
+  };
+
+  enum AutofocusState {
+    AUTOFOCUSSTATE_ON,
+    AUTOFOCUSSTATE_OFF,
   };
 
   void OnGetWebcamParameters(InquiryType type,
@@ -167,9 +173,13 @@ class WebcamPrivateGetFunction : public UIThreadExtensionFunction {
   int min_zoom_;
   int max_zoom_;
   int zoom_;
+  int min_focus_;
+  int max_focus_;
+  int focus_;
   bool get_pan_;
   bool get_tilt_;
   bool get_zoom_;
+  bool get_focus_;
   bool success_;
 
   DISALLOW_COPY_AND_ASSIGN(WebcamPrivateGetFunction);

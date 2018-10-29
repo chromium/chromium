@@ -11,7 +11,8 @@
 namespace feed {
 
 JournalMutation::JournalMutation(std::string journal_name)
-    : journal_name_(std::move(journal_name)) {}
+    : journal_name_(std::move(journal_name)),
+      start_time_(base::TimeTicks::Now()) {}
 
 JournalMutation::~JournalMutation() = default;
 
@@ -35,6 +36,14 @@ const std::string& JournalMutation::journal_name() {
 
 bool JournalMutation::Empty() {
   return operations_list_.empty();
+}
+
+size_t JournalMutation::Size() const {
+  return operations_list_.size();
+}
+
+base::TimeTicks JournalMutation::GetStartTime() const {
+  return start_time_;
 }
 
 JournalOperation JournalMutation::TakeFristOperation() {

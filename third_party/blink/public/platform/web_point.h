@@ -35,7 +35,7 @@
 #include "ui/gfx/geometry/point.h"
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
+#include "third_party/blink/renderer/platform/geometry/int_point.h"  // nogncheck
 #endif
 
 namespace blink {

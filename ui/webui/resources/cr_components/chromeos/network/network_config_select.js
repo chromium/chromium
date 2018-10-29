@@ -8,15 +8,14 @@
 Polymer({
   is: 'network-config-select',
 
-  behaviors: [I18nBehavior],
+  behaviors: [
+    I18nBehavior,
+    CrPolicyNetworkBehavior,
+    NetworkConfigElementBehavior,
+  ],
 
   properties: {
     label: String,
-
-    disabled: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
 
     /** Set to true if |items| is a list of certificates. */
     certList: Boolean,

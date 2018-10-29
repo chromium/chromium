@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,9 +33,10 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/toolbar_field_trial.h"
+#include "components/omnibox/browser/toolbar_model.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/toolbar/toolbar_model.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/escape.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -49,7 +51,6 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
@@ -163,11 +164,10 @@ void OmniboxViewViews::Init() {
     SetReadOnly(true);
 
   if (location_bar_view_) {
-    if (ui::MaterialDesignController::IsNewerMaterialUi()) {
-      InstallPlaceholderText();
-      scoped_template_url_service_observer_.Add(
-          model()->client()->GetTemplateURLService());
-    }
+    InstallPlaceholderText();
+    scoped_template_url_service_observer_.Add(
+        model()->client()->GetTemplateURLService());
+
     // Initialize the popup view using the same font.
     popup_view_.reset(
         new OmniboxPopupContentsView(this, model(), location_bar_view_));
@@ -315,6 +315,18 @@ void OmniboxViewViews::RevertAll() {
 }
 
 void OmniboxViewViews::SetFocus() {
+  // Temporarily reveal the top-of-window views (if not already revealed) so
+  // that the location bar view is visible and is considered focusable. When it
+  // actually receives focus, ImmersiveFocusWatcher will add another lock to
+  // keep it revealed. |location_bar_view_| can be nullptr in unit tests.
+  std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock;
+  if (location_bar_view_) {
+    focus_reveal_lock.reset(
+        BrowserView::GetBrowserViewForBrowser(location_bar_view_->browser())
+            ->immersive_mode_controller()
+            ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES));
+  }
+
   RequestFocus();
   // Restore caret visibility if focus is explicitly requested. This is
   // necessary because if we already have invisible focus, the RequestFocus()
@@ -631,14 +643,18 @@ void OmniboxViewViews::ClearAccessibilityLabel() {
 }
 
 bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
-  if (!OmniboxFieldTrial::IsHideSteadyStateUrlSchemeAndSubdomainsEnabled())
+  // Early exit if no steady state elision features are enabled.
+  if (!toolbar::features::IsHideSteadyStateUrlSchemeEnabled() &&
+      !toolbar::features::IsHideSteadyStateUrlTrivialSubdomainsEnabled()) {
     return false;
+  }
 
   // No need to update the text if the user is already inputting text.
   if (model()->user_input_in_progress())
     return false;
 
-  // Don't unelide if we are currently displaying Query in Omnibox search terms.
+  // Don't unelide if we are currently displaying Query in Omnibox search terms,
+  // as otherwise, it would be impossible to refine query terms.
   if (model()->GetQueryInOmniboxSearchTerms(nullptr /* search_terms */))
     return false;
 
@@ -680,10 +696,8 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
     OffsetDoubleClickWord(offset);
   }
 
-  // Update the text to the full unelided URL. The caret is positioned at 0, as
-  // otherwise we will spuriously scroll the text to the end of the new string.
-  model()->SetUserText(full_url);
-  SetWindowTextAndCaretPos(full_url, 0, false, false);
+  // We have already early-exited if Query in Omnibox is active.
+  model()->Unelide(false /* exit_query_in_omnibox */);
   SelectRange(gfx::Range(start, end));
   return true;
 }
@@ -762,7 +776,8 @@ void OmniboxViewViews::ShowVirtualKeyboardIfEnabled() {
 
 void OmniboxViewViews::HideImeIfNeeded() {
   if (auto* input_method = GetInputMethod()) {
-    input_method->GetInputMethodKeyboardController()->DismissVirtualKeyboard();
+    if (auto* keyboard = input_method->GetInputMethodKeyboardController())
+      keyboard->DismissVirtualKeyboard();
   }
 }
 
@@ -1277,6 +1292,10 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       break;
 
     case ui::VKEY_UP:
+      // Shift-up is handled by the text field class to enable text selection.
+      if (shift)
+        return false;
+
       if (IsTextEditCommandEnabled(ui::TextEditCommand::MOVE_UP)) {
         ExecuteTextEditCommand(ui::TextEditCommand::MOVE_UP);
         return true;
@@ -1284,6 +1303,10 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       break;
 
     case ui::VKEY_DOWN:
+      // Shift-down is handled by the text field class to enable text selection.
+      if (shift)
+        return false;
+
       if (IsTextEditCommandEnabled(ui::TextEditCommand::MOVE_DOWN)) {
         ExecuteTextEditCommand(ui::TextEditCommand::MOVE_DOWN);
         return true;

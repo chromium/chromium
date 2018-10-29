@@ -61,20 +61,16 @@ std::string DumpLayout(WebLocalFrame* frame,
 
   if (flags.dump_as_text()) {
     result = DumpFrameHeaderIfNeeded(frame);
-    if (flags.is_printing() && frame->GetDocument().IsHTMLDocument()) {
-      result += WebFrameContentDumper::DumpLayoutTreeAsText(
-                    frame, WebFrameContentDumper::kLayoutAsTextPrinting)
-                    .Utf8();
-    } else {
-      result += frame->GetDocument().ContentAsTextForTesting().Utf8();
-    }
+    result += frame->GetDocument()
+                  .ContentAsTextForTesting(flags.should_use_inner_text_dump())
+                  .Utf8();
     result += "\n";
   } else if (flags.dump_as_markup()) {
     DCHECK(!flags.is_printing());
     result = DumpFrameHeaderIfNeeded(frame);
     result += WebFrameContentDumper::DumpAsMarkup(frame).Utf8();
     result += "\n";
-  } else {
+  } else if (flags.dump_as_layout()) {
     if (frame->Parent() == nullptr) {
       WebFrameContentDumper::LayoutAsTextControls layout_text_behavior =
           WebFrameContentDumper::kLayoutAsTextNormal;

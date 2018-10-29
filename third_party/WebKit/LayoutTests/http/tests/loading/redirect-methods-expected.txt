@@ -11,16 +11,16 @@ frame "0" - didReceiveTitle:
 frame "0" - didFinishDocumentLoadForFrame
 frame "0" - didHandleOnloadEventsForFrame
 frame "0" - didFinishLoadForFrame
-frame "0" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-form.html - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-form.html, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method GET>
+frame "0" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-form.html - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/loading/resources/redirect-methods-form.html, http status code 200>
 frame "0" - didCommitLoadForFrame
 frame "0" - didReceiveTitle: 
 frame "0" - didFinishDocumentLoadForFrame
 frame "0" - didHandleOnloadEventsForFrame
 frame "0" - didFinishLoadForFrame
-frame "0" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-result.php, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method POST>
+frame "0" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method GET>
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true, http status code 200>
 frame "0" - didCommitLoadForFrame
@@ -35,16 +35,16 @@ frame "1" - didHandleOnloadEventsForFrame
 frame "1" - didFinishLoadForFrame
 frame "0" - didHandleOnloadEventsForFrame
 frame "0" - didFinishLoadForFrame
-frame "1" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-form.html - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-form.html, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method GET>
+frame "1" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-form.html - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/loading/resources/redirect-methods-form.html, http status code 200>
 frame "1" - didCommitLoadForFrame
 frame "1" - didReceiveTitle: 
 frame "1" - didFinishDocumentLoadForFrame
 frame "1" - didHandleOnloadEventsForFrame
 frame "1" - didFinishLoadForFrame
-frame "1" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-result.php, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method POST>
+frame "1" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method GET>
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true, http status code 200>
 frame "1" - didCommitLoadForFrame
@@ -59,16 +59,16 @@ frame "2" - didHandleOnloadEventsForFrame
 frame "2" - didFinishLoadForFrame
 frame "1" - didHandleOnloadEventsForFrame
 frame "1" - didFinishLoadForFrame
-frame "2" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-form.html - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-form.html, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method GET>
+frame "2" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-form.html - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/loading/resources/redirect-methods-form.html, http status code 200>
 frame "2" - didCommitLoadForFrame
 frame "2" - didReceiveTitle: 
 frame "2" - didFinishDocumentLoadForFrame
 frame "2" - didHandleOnloadEventsForFrame
 frame "2" - didFinishLoadForFrame
-frame "2" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-result.php, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method POST>
+frame "2" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method GET>
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true, http status code 200>
 frame "2" - didCommitLoadForFrame
@@ -83,16 +83,16 @@ frame "3" - didHandleOnloadEventsForFrame
 frame "3" - didFinishLoadForFrame
 frame "2" - didHandleOnloadEventsForFrame
 frame "2" - didFinishLoadForFrame
-frame "3" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-form.html - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-form.html, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method GET>
+frame "3" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-form.html - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/loading/resources/redirect-methods-form.html, http status code 200>
 frame "3" - didCommitLoadForFrame
 frame "3" - didReceiveTitle: 
 frame "3" - didFinishDocumentLoadForFrame
 frame "3" - didHandleOnloadEventsForFrame
 frame "3" - didFinishLoadForFrame
-frame "3" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-result.php, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method POST>
+frame "3" - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true, main document URL http://127.0.0.1:8000/loading/redirect-methods.html, http method POST>
 http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/loading/resources/redirect-methods-result.php?redirected=true, http status code 200>
 frame "3" - didCommitLoadForFrame

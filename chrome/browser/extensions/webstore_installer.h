@@ -58,6 +58,9 @@ class WebstoreInstaller : public content::NotificationObserver,
   enum InstallSource {
     // Inline installs trigger slightly different behavior (install source
     // is different, download referrers are the item's page in the gallery).
+    // TODO(ackermanb): Remove once server side metrics (omaha) tracking with
+    // this enum is figured out with any of the subclasses of
+    // WebstoreStandaloneInstaller.
     INSTALL_SOURCE_INLINE,
     INSTALL_SOURCE_APP_LAUNCHER,
     INSTALL_SOURCE_OTHER

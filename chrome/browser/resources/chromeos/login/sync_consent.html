@@ -3,8 +3,9 @@
      found in the LICENSE file. -->
 
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-radio-group/paper-radio-group.html">
 <if expr="_google_chrome">
 <link rel="import" href="chrome://oobe/sync-consent-icons.html">
 </if>
@@ -160,9 +161,8 @@
         </div>
       </div>
       <div slot="footer" class="layout vertical">
-        <paper-radio-group id="optionsGroup" selected="reviewOptions"
-            on-paper-radio-group-changed="onOptionsSelectionChanged_">
-          <paper-radio-button name="reviewOptions"
+        <cr-radio-group id="optionsGroup" selected="reviewOptions">
+          <cr-radio-button name="reviewOptions"
               class="options-list-item flex layout horizontal center
                   focus-on-show" consent-option>
             <div class="options-list-item-text flex layout vertical
@@ -174,8 +174,8 @@
                   [[i18nDynamic(locale, 'syncConsentNewOptionReviewDsc')]]
                 </div>
             </div>
-          </paper-radio-button>
-          <paper-radio-button name="justSync" name="justSync"
+          </cr-radio-button>
+          <cr-radio-button name="justSync" name="justSync"
               class="options-list-item flex layout horizontal center"
               consent-option>
             <div class="options-list-item-text flex layout vertical
@@ -188,8 +188,8 @@
                                   'productName')]]
                 </div>
             </div>
-          </paper-radio-button>
-          <paper-radio-button name="syncAndPersonalization"
+          </cr-radio-button>
+          <cr-radio-button name="syncAndPersonalization"
               class="options-list-item flex layout horizontal center"
               consent-option>
             <div class="options-list-item-text flex layout vertical
@@ -203,8 +203,8 @@
                       'syncConsentNewOptionSyncAndPersonalizationDsc')]]
                 </div>
             </div>
-          </paper-radio-button>
-        </paper-radio-group>
+          </cr-radio-button>
+        </cr-radio-group>
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button

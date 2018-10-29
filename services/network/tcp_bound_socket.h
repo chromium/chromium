@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
+#include "net/base/ip_endpoint.h"
 #include "net/socket/tcp_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -52,13 +53,22 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPBoundSocket
   void Listen(uint32_t backlog,
               mojom::TCPServerSocketRequest request,
               ListenCallback callback) override;
-  void Connect(const net::IPEndPoint& remote_addr,
+  void Connect(const net::AddressList& remote_addr,
+               mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
                mojom::TCPConnectedSocketRequest request,
                mojom::SocketObserverPtr observer,
                ConnectCallback callback) override;
 
  private:
-  void OnConnectComplete(int result);
+  void OnConnectComplete(int result,
+                         const base::Optional<net::IPEndPoint>& local_addr,
+                         const base::Optional<net::IPEndPoint>& peer_addr,
+                         mojo::ScopedDataPipeConsumerHandle receive_stream,
+                         mojo::ScopedDataPipeProducerHandle send_stream);
+
+  virtual int ListenInternal(int backlog);
+
+  net::IPEndPoint bind_address_;
 
   mojo::BindingId binding_id_ = -1;
   SocketFactory* const socket_factory_;
@@ -66,8 +76,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPBoundSocket
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   mojom::TCPConnectedSocketRequest connected_socket_request_;
-  mojom::SocketObserverPtr socket_observer_;
   ConnectCallback connect_callback_;
+
+  // Takes ownership of |socket_| if Connect() is called.
+  std::unique_ptr<TCPConnectedSocket> connecting_socket_;
 
   base::WeakPtrFactory<TCPBoundSocket> weak_factory_;
 

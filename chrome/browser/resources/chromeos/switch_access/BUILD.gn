@@ -31,12 +31,12 @@ run_jsbundler("switch_access_copied_files") {
     "../select_to_speak/closure_shim.js",
     "//third_party/chromevox/third_party/closure-library/closure/goog/base.js",
     "auto_scan_manager.js",
-    "automation_manager.js",
     "background.js",
     "commands.js",
     "context_menu_manager.js",
     "keyboard_handler.js",
     "message_handler.js",
+    "navigation_manager.js",
     "options.css",
     "options.html",
     "options.js",
@@ -120,12 +120,12 @@ manifest("switch_access_guest_manifest") {
 js_type_check("closure_compile") {
   deps = [
     ":auto_scan_manager",
-    ":automation_manager",
     ":background",
     ":commands",
     ":context_menu_manager",
     ":keyboard_handler",
     ":message_handler",
+    ":navigation_manager",
     ":options",
     ":prefs",
     ":switch_access_predicate",
@@ -144,7 +144,7 @@ js_library("auto_scan_manager") {
   ]
 }
 
-js_library("automation_manager") {
+js_library("navigation_manager") {
   deps = [
     ":switch_access_predicate",
     "../chromevox:constants",
@@ -203,10 +203,10 @@ js_library("prefs") {
 js_library("switch_access") {
   deps = [
     ":auto_scan_manager",
-    ":automation_manager",
     ":commands",
     ":keyboard_handler",
     ":message_handler",
+    ":navigation_manager",
     ":prefs",
   ]
   externs_list = [

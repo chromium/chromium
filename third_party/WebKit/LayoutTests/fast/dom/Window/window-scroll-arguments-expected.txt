@@ -6,6 +6,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 window.scrollTo Tests
 
+
 Testing - scrollTo with 0 arguments
 PASS window.scrollTo() did not throw exception.
 Testing - scrollTo with 1 non-dictionary argument
@@ -26,7 +27,9 @@ PASS window.scrollTo({ behavior: "" }) threw exception TypeError: Failed to exec
 PASS window.scrollTo({ left: x, top: y, behavior: "abcd" }) threw exception TypeError: Failed to execute 'scrollTo' on 'Window': The provided value 'abcd' is not a valid enum value of type ScrollBehavior..
 PASS window.scrollTo({ left: x, top: y, behavior: 200 }) threw exception TypeError: Failed to execute 'scrollTo' on 'Window': The provided value '200' is not a valid enum value of type ScrollBehavior..
 
+
 window.scroll Tests
+
 
 Testing - scroll with 0 arguments
 PASS window.scroll() did not throw exception.
@@ -48,7 +51,9 @@ PASS window.scroll({ behavior: "" }) threw exception TypeError: Failed to execut
 PASS window.scroll({ left: x, top: y, behavior: "abcd" }) threw exception TypeError: Failed to execute 'scroll' on 'Window': The provided value 'abcd' is not a valid enum value of type ScrollBehavior..
 PASS window.scroll({ left: x, top: y, behavior: 200 }) threw exception TypeError: Failed to execute 'scroll' on 'Window': The provided value '200' is not a valid enum value of type ScrollBehavior..
 
+
 window.scrollBy Tests
+
 
 Testing - scrollBy with 0 arguments
 PASS window.scrollBy() did not throw exception.
@@ -72,4 +77,5 @@ PASS window.scrollBy({ left: x, top: y, behavior: 200 }) threw exception TypeErr
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 This box should force the window to have a scrollable area to test.

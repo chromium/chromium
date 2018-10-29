@@ -40,6 +40,7 @@
         <structure name="IDR_KEYBOARD_UTILS_JS" file="resources\chromeos\keyboard\keyboard_utils.js" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_CHROMEOS_DISCOVER_APP_HTML" file="resources\chromeos\login\discover\discover_app.html" flattenhtml="true" type="chrome_html"/>
         <structure name="IDR_CHROMEOS_DISCOVER_APP_JS" file="resources\chromeos\login\discover\discover_app.js" flattenhtml="true" type="chrome_html"/>
+        <structure name="IDR_CHROMEOS_DISCOVER_MANIFEST" file="resources\chromeos\login\discover\manifest.json" flattenhtml="true" type="chrome_html"/>
         <structure name="IDR_CUSTOM_ELEMENTS_OOBE_HTML" file="resources\chromeos\login\custom_elements_oobe.html" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_CUSTOM_ELEMENTS_OOBE_JS" file="resources\chromeos\login\custom_elements_oobe.js" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_CUSTOM_ELEMENTS_LOCK_HTML" file="resources\chromeos\login\custom_elements_lock.html" flattenhtml="true" type="chrome_html" />
@@ -80,6 +81,10 @@
         <include name="IDR_DISCARDS_JS" file="resources\discards\discards.js" type="BINDATA" />
         <include name="IDR_DISCARDS_LIFECYCLE_UNIT_STATE_MOJO_JS" file="${root_gen_dir}\chrome\browser\resource_coordinator\lifecycle_unit_state.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_DISCARDS_MOJO_JS" file="${root_gen_dir}\chrome\browser\ui\webui\discards\discards.mojom.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_DISCARDS_MOJO_PUBLIC_BASE_PROCESS_ID_MOJOM_JS" file="${root_gen_dir}\mojo\public\mojom\base\process_id.mojom.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_DISCARDS_SORTED_TABLE_BEHAVIOR_HTML" file="resources\discards\sorted_table_behavior.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_DISCARDS_SORTED_TABLE_BEHAVIOR_JS" file="resources\discards\sorted_table_behavior.js" type="BINDATA" />
+        <include name="IDR_DISCARDS_WEBUI_GRAPH_DUMP_MOJO_JS" file="${root_gen_dir}\services\resource_coordinator\public\mojom\webui_graph_dump.mojom.js" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="is_win">
         <include name="IDR_ABOUT_CONFLICTS_HTML" file="resources\conflicts\about_conflicts.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
@@ -230,8 +235,6 @@
             <include name="IDR_MD_BOOKMARKS_DEBOUNCER_JS" file="resources\md_bookmarks\debouncer.js" type="BINDATA" />
             <include name="IDR_MD_BOOKMARKS_DIALOG_FOCUS_MANAGER_HTML" file="resources\md_bookmarks\dialog_focus_manager.html" type="BINDATA" />
             <include name="IDR_MD_BOOKMARKS_DIALOG_FOCUS_MANAGER_JS" file="resources\md_bookmarks\dialog_focus_manager.js" type="BINDATA" />
-            <include name="IDR_MD_BOOKMARKS_DND_CHIP_HTML" file="resources\md_bookmarks\dnd_chip.html" type="BINDATA" />
-            <include name="IDR_MD_BOOKMARKS_DND_CHIP_JS" file="resources\md_bookmarks\dnd_chip.js" type="BINDATA" />
             <include name="IDR_MD_BOOKMARKS_DND_MANAGER_HTML" file="resources\md_bookmarks\dnd_manager.html" type="BINDATA" />
             <include name="IDR_MD_BOOKMARKS_DND_MANAGER_JS" file="resources\md_bookmarks\dnd_manager.js" type="BINDATA" />
             <include name="IDR_MD_BOOKMARKS_EDIT_DIALOG_HTML" file="resources\md_bookmarks\edit_dialog.html" type="BINDATA" />
@@ -368,6 +371,9 @@
       <include name="IDR_CUSTOM_LINKS_EDIT_MENU_SVG" file="resources\local_ntp\icons\edit_menu.svg" type="BINDATA" />
       <include name="IDR_OMNIBOX_HTML" file="resources\omnibox\omnibox.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" compress="gzip" />
       <include name="IDR_OMNIBOX_CSS" file="resources\omnibox\omnibox.css" type="BINDATA" compress="gzip" />
+      <include name="IDR_OMNIBOX_ELEMENT_JS" file="resources\omnibox\omnibox_element.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_OMNIBOX_INPUTS_JS" file="resources\omnibox\omnibox_inputs.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_OMNIBOX_OUTPUT_JS" file="resources\omnibox\omnibox_output.js" type="BINDATA" compress="gzip" />
       <include name="IDR_OMNIBOX_JS" file="resources\omnibox\omnibox.js" type="BINDATA" compress="gzip" />
       <include name="IDR_OMNIBOX_MOJO_JS" file="${root_gen_dir}\chrome\browser\ui\webui\omnibox\omnibox.mojom.js" use_base_dir="false" type="BINDATA" compress="gzip" />
       <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}\url\mojom\origin.mojom.js" use_base_dir="false" type="BINDATA" compress="gzip"/>
@@ -484,9 +490,6 @@
         <include name="IDR_DRIVE_INTERNALS_HTML" file="resources\chromeos\drive_internals.html" flattenhtml="true" type="BINDATA" />
         <include name="IDR_DRIVE_INTERNALS_JS" file="resources\chromeos\drive_internals.js" type="BINDATA" />
          <include name="IDR_GUEST_SESSION_TAB_HTML" file="resources\chromeos\guest_session_tab.html" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_KEYBOARD_OVERLAY_CSS" file="resources\chromeos\keyboard_overlay.css" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_KEYBOARD_OVERLAY_HTML" file="resources\chromeos\keyboard_overlay.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_KEYBOARD_OVERLAY_JS" file="resources\chromeos\keyboard_overlay.js" flattenhtml="true" type="BINDATA" />
         <include name="IDR_MOBILE_MANIFEST" file="resources\chromeos\mobile_app\manifest.json" type="BINDATA" />
         <include name="IDR_MOBILE_SETUP_PAGE_HTML" file="resources\chromeos\mobile_setup.html" flattenhtml="true" type="BINDATA" />
         <include name="IDR_MOBILE_SETUP_PORTAL_PAGE_HTML" file="resources\chromeos\mobile_setup_portal.html" flattenhtml="true" type="BINDATA" />
@@ -658,6 +661,43 @@
       <if expr="is_win">
         <include name="IDR_NACL_BROKER_MANIFEST" file="../../components/nacl/broker/nacl_broker_manifest.json" type="BINDATA" />
       </if>
+      <if expr="not is_android and not chromeos">
+        <include name="IDR_NUX_EMAIL_AOL_1X" file="resources\welcome\onboarding_welcome\images\aol_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_AOL_2X" file="resources\welcome\onboarding_welcome\images\aol_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_GMAIL_1X" file="resources\welcome\onboarding_welcome\images\gmail_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_GMAIL_2X" file="resources\welcome\onboarding_welcome\images\gmail_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_ICLOUD_1X" file="resources\welcome\onboarding_welcome\images\icloud_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_ICLOUD_2X" file="resources\welcome\onboarding_welcome\images\icloud_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_OUTLOOK_1X" file="resources\welcome\onboarding_welcome\images\outlook_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_OUTLOOK_2X" file="resources\welcome\onboarding_welcome\images\outlook_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_PROVIDER_LOGO_1X" file="resources\welcome\onboarding_welcome\images\email_provider_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_PROVIDER_LOGO_2X" file="resources\welcome\onboarding_welcome\images\email_provider_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_YAHOO_1X" file="resources\welcome\onboarding_welcome\images\yahoo_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_EMAIL_YAHOO_2X" file="resources\welcome\onboarding_welcome\images\yahoo_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_CHROME_STORE_1X" file="resources\welcome\onboarding_welcome\images\chrome_store_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_CHROME_STORE_2X" file="resources\welcome\onboarding_welcome\images\chrome_store_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_LOGO_1X" file="resources\welcome\onboarding_welcome\images\google_apps_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_LOGO_2X" file="resources\welcome\onboarding_welcome\images\google_apps_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_MAPS_1X" file="resources\welcome\onboarding_welcome\images\maps_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_MAPS_2X" file="resources\welcome\onboarding_welcome\images\maps_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_NEWS_1X" file="resources\welcome\onboarding_welcome\images\news_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_NEWS_2X" file="resources\welcome\onboarding_welcome\images\news_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_TRANSLATE_1X" file="resources\welcome\onboarding_welcome\images\translate_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_TRANSLATE_2X" file="resources\welcome\onboarding_welcome\images\translate_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_YOUTUBE_1X" file="resources\welcome\onboarding_welcome\images\youtube_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_GOOGLE_APPS_YOUTUBE_2X" file="resources\welcome\onboarding_welcome\images\youtube_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_SET_AS_DEFAULT_LOGO_1X" file="resources\welcome\onboarding_welcome\images\set_as_default_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_SET_AS_DEFAULT_LOGO_2X" file="resources\welcome\onboarding_welcome\images\set_as_default_2x.png" type="BINDATA" />
+        <include name="IDR_NUX_SET_AS_DEFAULT_ILLUSTRATION_1X" file="resources\welcome\onboarding_welcome\images\set_as_default_illustration_1x.png" type="BINDATA" />
+        <include name="IDR_NUX_SET_AS_DEFAULT_ILLUSTRATION_2X" file="resources\welcome\onboarding_welcome\images\set_as_default_illustration_2x.png" type="BINDATA" />
+        <include name="IDR_WELCOME_ONBOARDING_WELCOME_IMAGES_BACKGROUND_SVGS_BLUE_CIRCLE_SVG" file="resources\welcome\onboarding_welcome\images\background_svgs\blue_circle.svg" type="BINDATA" />
+        <include name="IDR_WELCOME_ONBOARDING_WELCOME_IMAGES_BACKGROUND_SVGS_GREEN_RECTANGLE_SVG" file="resources\welcome\onboarding_welcome\images\background_svgs\green_rectangle.svg" type="BINDATA" />
+        <include name="IDR_WELCOME_ONBOARDING_WELCOME_IMAGES_BACKGROUND_SVGS_GREY_OVAL_SVG" file="resources\welcome\onboarding_welcome\images\background_svgs\grey_oval.svg" type="BINDATA" />
+        <include name="IDR_WELCOME_ONBOARDING_WELCOME_IMAGES_BACKGROUND_SVGS_GREY_ROUNDED_RECTANGLE_SVG" file="resources\welcome\onboarding_welcome\images\background_svgs\grey_rounded_rectangle.svg" type="BINDATA" />
+        <include name="IDR_WELCOME_ONBOARDING_WELCOME_IMAGES_BACKGROUND_SVGS_RED_TRIANGLE_SVG" file="resources\welcome\onboarding_welcome\images\background_svgs\red_triangle.svg" type="BINDATA" />
+        <include name="IDR_WELCOME_ONBOARDING_WELCOME_IMAGES_BACKGROUND_SVGS_YELLOW_DOTS_SVG" file="resources\welcome\onboarding_welcome\images\background_svgs\yellow_dots.svg" type="BINDATA" />
+        <include name="IDR_WELCOME_ONBOARDING_WELCOME_IMAGES_BACKGROUND_SVGS_YELLOW_SEMICIRCLE_SVG" file="resources\welcome\onboarding_welcome\images\background_svgs\yellow_semicircle.svg" type="BINDATA" />
+      </if>
       <if expr="is_win">
         <include name="IDR_WELCOME_WIN10_DEFAULT_WEBP" file="resources\welcome\default.webp" type="BINDATA" />
         <include name="IDR_WELCOME_WIN10_PIN_WEBP" file="resources\welcome\pin.webp" type="BINDATA" />
@@ -670,6 +710,7 @@
       <include name="IDR_MEDIA_ENGAGEMENT_HTML" file="resources\media\media_engagement.html" flattenhtml="true" type="BINDATA" compress="gzip" allowexternalscript="true" />
       <include name="IDR_MEDIA_ENGAGEMENT_JS" file="resources\media\media_engagement.js" flattenhtml="true" type="BINDATA" compress="gzip" />
       <include name="IDR_MEDIA_ENGAGEMENT_MOJO_JS" file="${root_gen_dir}\chrome\browser\media\media_engagement_score_details.mojom.js" use_base_dir="false" type="BINDATA" compress="gzip" />
+      <include name="IDR_PWA_HTML" file="resources\pwa.html" type="BINDATA" />
       <if expr="chromeos">
         <include name="IDR_SYS_INTERNALS_HTML" file="resources\chromeos\sys_internals\index.html" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_CSS" file="resources\chromeos\sys_internals\index.css" type="BINDATA" />

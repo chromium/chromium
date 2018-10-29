@@ -156,18 +156,38 @@ void AddPublicSessionDetailsToUserDictionaryEntry(
                         has_multiple_locales);
 }
 
-// Returns true if the fingerprint icon should be displayed for the given
-// |user|.
-bool AllowFingerprintForUser(const user_manager::User* user) {
+// Determines the initial fingerprint state for the given user.
+ash::mojom::FingerprintState GetInitialFingerprintState(
+    const user_manager::User* user) {
+  // User must be logged in.
   if (!user->is_logged_in())
-    return false;
+    return ash::mojom::FingerprintState::UNAVAILABLE;
 
+  // Quick unlock storage must be available.
   quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       quick_unlock::QuickUnlockFactory::GetForUser(user);
   if (!quick_unlock_storage)
-    return false;
+    return ash::mojom::FingerprintState::UNAVAILABLE;
 
-  return quick_unlock_storage->IsFingerprintAuthenticationAvailable();
+  // Fingerprint is not registered for this account.
+  if (!quick_unlock_storage->fingerprint_storage()->HasRecord())
+    return ash::mojom::FingerprintState::UNAVAILABLE;
+
+  // Fingerprint unlock attempts should not be exceeded, as the lock screen has
+  // not been displayed yet.
+  DCHECK(
+      !quick_unlock_storage->fingerprint_storage()->ExceededUnlockAttempts());
+
+  // It has been too long since the last authentication.
+  if (!quick_unlock_storage->HasStrongAuth())
+    return ash::mojom::FingerprintState::DISABLED_FROM_TIMEOUT;
+
+  // Auth is available.
+  if (quick_unlock_storage->IsFingerprintAuthenticationAvailable())
+    return ash::mojom::FingerprintState::AVAILABLE;
+
+  // Default to unavailabe.
+  return ash::mojom::FingerprintState::UNAVAILABLE;
 }
 
 // Returns true if dircrypto migration check should be performed.
@@ -385,7 +405,9 @@ void UserSelectionScreen::FillUserDictionary(
   user_dict->SetBoolean(kKeySignedIn, user->is_logged_in());
   user_dict->SetBoolean(kKeyIsOwner, is_owner);
   user_dict->SetBoolean(kKeyIsActiveDirectory, user->IsActiveDirectoryUser());
-  user_dict->SetBoolean(kKeyAllowFingerprint, AllowFingerprintForUser(user));
+  user_dict->SetBoolean(kKeyAllowFingerprint,
+                        GetInitialFingerprintState(user) ==
+                            ash::mojom::FingerprintState::AVAILABLE);
 
   FillMultiProfileUserPrefs(user, user_dict, is_signin_to_add);
 
@@ -730,13 +752,6 @@ void UserSelectionScreen::AttemptEasyUnlock(const AccountId& account_id) {
   service->AttemptAuth(account_id);
 }
 
-void UserSelectionScreen::RecordClickOnLockIcon(const AccountId& account_id) {
-  EasyUnlockService* service = GetEasyUnlockServiceForUser(account_id);
-  if (!service)
-    return;
-  service->RecordClickOnLockIcon();
-}
-
 std::unique_ptr<base::ListValue>
 UserSelectionScreen::UpdateAndReturnUserListForWebUI() {
   std::unique_ptr<base::ListValue> users_list =
@@ -814,7 +829,7 @@ UserSelectionScreen::UpdateAndReturnUserListForMojo() {
     user_info->is_signed_in = user->is_logged_in();
     user_info->is_device_owner = is_owner;
     user_info->can_remove = CanRemoveUser(user);
-    user_info->allow_fingerprint_unlock = AllowFingerprintForUser(user);
+    user_info->fingerprint_state = GetInitialFingerprintState(user);
 
     // Fill multi-profile data.
     if (!is_signin_to_add) {

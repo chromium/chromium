@@ -113,7 +113,7 @@ class CORE_EXPORT LayoutGeometryMap {
 
   typedef Vector<LayoutGeometryMapStep, 32> LayoutGeometryMapSteps;
 
-  size_t insertion_position_;
+  wtf_size_t insertion_position_;
   int non_uniform_steps_count_;
   int transformed_steps_count_;
   int fixed_steps_count_;

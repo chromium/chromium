@@ -130,12 +130,12 @@ static inline void FilterProperties(
     bool important,
     const HeapVector<CSSPropertyValue, 256>& input,
     HeapVector<CSSPropertyValue, 256>& output,
-    size_t& unused_entries,
+    wtf_size_t& unused_entries,
     std::bitset<numCSSProperties>& seen_properties,
     HashSet<AtomicString>& seen_custom_properties) {
   // Add properties in reverse order so that highest priority definitions are
   // reached first. Duplicate definitions can then be ignored when found.
-  for (size_t i = input.size(); i--;) {
+  for (wtf_size_t i = input.size(); i--;) {
     const CSSPropertyValue& property = input[i];
     if (property.IsImportant() != important)
       continue;
@@ -160,7 +160,7 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     HeapVector<CSSPropertyValue, 256>& parsed_properties,
     CSSParserMode mode) {
   std::bitset<numCSSProperties> seen_properties;
-  size_t unused_entries = parsed_properties.size();
+  wtf_size_t unused_entries = parsed_properties.size();
   HeapVector<CSSPropertyValue, 256> results(unused_entries);
   HashSet<AtomicString> seen_custom_properties;
 
@@ -207,7 +207,7 @@ bool CSSParserImpl::ParseDeclarationList(
     return false;
 
   std::bitset<numCSSProperties> seen_properties;
-  size_t unused_entries = parser.parsed_properties_.size();
+  wtf_size_t unused_entries = parser.parsed_properties_.size();
   HeapVector<CSSPropertyValue, 256> results(unused_entries);
   HashSet<AtomicString> seen_custom_properties;
   FilterProperties(true, parser.parsed_properties_, results, unused_entries,
@@ -242,11 +242,12 @@ StyleRuleBase* CSSParserImpl::ParseRule(const String& string,
   return rule;
 }
 
-void CSSParserImpl::ParseStyleSheet(
+ParseSheetResult CSSParserImpl::ParseStyleSheet(
     const String& string,
     const CSSParserContext* context,
     StyleSheetContents* style_sheet,
-    CSSDeferPropertyParsing defer_property_parsing) {
+    CSSDeferPropertyParsing defer_property_parsing,
+    bool allow_import_rules) {
   TRACE_EVENT_BEGIN2("blink,blink_style", "CSSParserImpl::parseStyleSheet",
                      "baseUrl", context->BaseURL().GetString().Utf8(), "mode",
                      context->Mode());
@@ -260,10 +261,16 @@ void CSSParserImpl::ParseStyleSheet(
     parser.lazy_state_ =
         new CSSLazyParsingState(context, string, parser.style_sheet_);
   }
+  ParseSheetResult result = ParseSheetResult::kSucceeded;
   bool first_rule_valid = parser.ConsumeRuleList(
-      stream, kTopLevelRuleList, [&style_sheet](StyleRuleBase* rule) {
+      stream, kTopLevelRuleList,
+      [&style_sheet, &result, allow_import_rules](StyleRuleBase* rule) {
         if (rule->IsCharsetRule())
           return;
+        if (rule->IsImportRule() && !allow_import_rules) {
+          result = ParseSheetResult::kHasUnallowedImportRule;
+          return;
+        }
         style_sheet->ParserAppendRule(rule);
       });
   style_sheet->SetHasSyntacticallyValidCSSHeader(first_rule_valid);
@@ -272,6 +279,7 @@ void CSSParserImpl::ParseStyleSheet(
   TRACE_EVENT_END2("blink,blink_style", "CSSParserImpl::parseStyleSheet",
                    "tokenCount", tokenizer.TokenCount(), "length",
                    string.length());
+  return result;
 }
 
 CSSSelectorList CSSParserImpl::ParsePageSelector(
@@ -375,7 +383,7 @@ void CSSParserImpl::ParseStyleSheetForInspector(const String& string,
 
 CSSPropertyValueSet* CSSParserImpl::ParseDeclarationListForLazyStyle(
     const String& string,
-    size_t offset,
+    wtf_size_t offset,
     const CSSParserContext* context) {
   CSSTokenizer tokenizer(string, offset);
   CSSParserTokenStream stream(tokenizer);
@@ -466,7 +474,7 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
     import_prelude_uri = ConsumeStringOrURI(stream);
 
   stream.EnsureLookAhead();
-  const size_t prelude_offset_start = stream.LookAheadOffset();
+  const wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   const CSSParserTokenRange prelude =
       stream.ConsumeUntilPeekedTypeIs<kLeftBraceToken, kSemicolonToken>();
   const RangeOffset prelude_offset(prelude_offset_start,
@@ -529,7 +537,7 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
 
   if (allowed_rules == kKeyframeRules) {
     stream.EnsureLookAhead();
-    const size_t prelude_offset_start = stream.LookAheadOffset();
+    const wtf_size_t prelude_offset_start = stream.LookAheadOffset();
     const CSSParserTokenRange prelude =
         stream.ConsumeUntilPeekedTypeIs<kLeftBraceToken>();
     const RangeOffset prelude_offset(prelude_offset_start,
@@ -816,8 +824,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
     return nullptr;  // Parse error, invalid selector list
 
   // TODO(csharrison): How should we lazily parse css that needs the observer?
-  if (!observer_ && lazy_state_ &&
-      lazy_state_->ShouldLazilyParseProperties(selector_list)) {
+  if (!observer_ && lazy_state_) {
     DCHECK(style_sheet_);
     return StyleRule::CreateLazy(
         std::move(selector_list),
@@ -846,7 +853,7 @@ void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
 
     if (use_observer && !stream.HasLookAhead()) {
       while (true) {
-        size_t start_offset = stream.Offset();
+        wtf_size_t start_offset = stream.Offset();
         if (!stream.ConsumeCommentOrNothing())
           break;
         observer_->ObserveComment(start_offset, stream.Offset());
@@ -863,7 +870,7 @@ void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
         break;
       case kIdentToken: {
         // TODO(crbug.com/661854): Use streams instead of ranges
-        const size_t decl_offset_start = stream.Offset();
+        const wtf_size_t decl_offset_start = stream.Offset();
         const CSSParserTokenRange decl =
             stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
         // We want the offset of the kSemicolonToken, which is peeked but not

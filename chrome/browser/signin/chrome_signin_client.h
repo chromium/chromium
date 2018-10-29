@@ -46,6 +46,9 @@ class ChromeSigninClient
 
   // SigninClient implementation.
   PrefService* GetPrefs() override;
+  void PreSignOut(
+      base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
+      signin_metrics::ProfileSignout signout_source_metric) override;
   void OnSignedOut() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::CookieManager* GetCookieManager() override;
@@ -74,9 +77,6 @@ class ChromeSigninClient
   void PostSignedIn(const std::string& account_id,
                     const std::string& username,
                     const std::string& password) override;
-  void PreSignOut(
-      const base::Callback<void()>& sign_out,
-      signin_metrics::ProfileSignout signout_source_metric) override;
 
   // SigninErrorController::Observer implementation.
   void OnErrorChanged() override;
@@ -116,7 +116,6 @@ class ChromeSigninClient
   void MaybeFetchSigninTokenHandle();
   void VerifySyncToken();
   void OnCloseBrowsersSuccess(
-      const base::Callback<void()>& sign_out,
       const signin_metrics::ProfileSignout signout_source_metric,
       const base::FilePath& profile_path);
   void OnCloseBrowsersAborted(const base::FilePath& profile_path);
@@ -124,6 +123,10 @@ class ChromeSigninClient
   Profile* profile_;
 
   SigninErrorController* signin_error_controller_;
+
+  // Stored callback from PreSignOut();
+  base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached_;
+
 #if !defined(OS_CHROMEOS)
   std::list<base::Closure> delayed_callbacks_;
 #endif

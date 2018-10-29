@@ -22,16 +22,14 @@ struct SessionStorageUsageInfo;
 // Represents the per-BrowserContext Local Storage data.
 class DOMStorageContext {
  public:
-  typedef base::Callback<
-      void(const std::vector<LocalStorageUsageInfo>&)>
-          GetLocalStorageUsageCallback;
+  using GetLocalStorageUsageCallback =
+      base::OnceCallback<void(const std::vector<LocalStorageUsageInfo>&)>;
 
-  typedef base::OnceCallback<void(const std::vector<SessionStorageUsageInfo>&)>
-      GetSessionStorageUsageCallback;
+  using GetSessionStorageUsageCallback =
+      base::OnceCallback<void(const std::vector<SessionStorageUsageInfo>&)>;
 
   // Returns a collection of origins using local storage to the given callback.
-  virtual void GetLocalStorageUsage(
-      const GetLocalStorageUsageCallback& callback) = 0;
+  virtual void GetLocalStorageUsage(GetLocalStorageUsageCallback callback) = 0;
 
   // Returns a collection of origins using session storage to the given
   // callback.
@@ -43,6 +41,9 @@ class DOMStorageContext {
   // will not return entries for |origin_url| anymore.
   virtual void DeleteLocalStorage(const GURL& origin_url,
                                   base::OnceClosure callback) = 0;
+
+  // Removes traces of deleted data from the local storage backend.
+  virtual void PerformLocalStorageCleanup(base::OnceClosure callback) = 0;
 
   // Deletes the session storage data identified by |usage_info|.
   virtual void DeleteSessionStorage(

@@ -178,6 +178,9 @@
       <message name="IDS_EXTENSION_LOAD_ICON_FAILED" desc="">
         Could not load extension icon '<ph name="ICON">$1<ex>icon.png</ex></ph>'.
       </message>
+      <message name="IDS_EXTENSION_LOAD_ICON_NOT_SUFFICIENTLY_VISIBLE" desc="">
+        The icon is not sufficiently visible '<ph name="ICON">$1<ex>icon.png</ex></ph>'.
+      </message>
       <message name="IDS_EXTENSION_LOAD_JAVASCRIPT_FAILED" desc="">
         Could not load javascript '<ph name="RELATIVE_PATH">$1<ex>javas.js</ex></ph>' for content script.
       </message>

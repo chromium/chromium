@@ -50,7 +50,8 @@ class CORE_EXPORT FontFaceCache final {
 
   void Add(const StyleRuleFontFace*, FontFace*);
   void Remove(const StyleRuleFontFace*);
-  void ClearCSSConnected();
+  // Returns true if at least one font was removed.
+  bool ClearCSSConnected();
   void ClearAll();
   void AddFontFace(FontFace*, bool css_connected);
   void RemoveFontFace(FontFace*, bool css_connected);

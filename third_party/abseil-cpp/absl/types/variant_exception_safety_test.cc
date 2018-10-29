@@ -53,13 +53,13 @@ void ToValuelessByException(ThrowingVariant& v) {  // NOLINT
   try {
     v.emplace<Thrower>();
     v.emplace<Thrower>(ExceptionOnConversion<Thrower>());
-  } catch (ConversionException& /*e*/) {
+  } catch (const ConversionException&) {
     // This space intentionally left blank.
   }
 }
 
 // Check that variant is still in a usable state after an exception is thrown.
-testing::AssertionResult CheckInvariants(ThrowingVariant* v) {
+testing::AssertionResult VariantInvariants(ThrowingVariant* v) {
   using testing::AssertionFailure;
   using testing::AssertionSuccess;
 
@@ -100,7 +100,7 @@ testing::AssertionResult CheckInvariants(ThrowingVariant* v) {
     auto unused = absl::get<Thrower>(*v);
     static_cast<void>(unused);
     return AssertionFailure() << "Variant should not contain Thrower";
-  } catch (absl::bad_variant_access) {
+  } catch (const absl::bad_variant_access&) {
   } catch (...) {
     return AssertionFailure() << "Unexpected exception throw from absl::get";
   }
@@ -213,8 +213,8 @@ TEST(VariantExceptionSafetyTest, CopyAssign) {
         MakeExceptionSafetyTester()
             .WithInitialValue(WithThrower())
             .WithOperation([&rhs](ThrowingVariant* lhs) { *lhs = rhs; });
-    EXPECT_TRUE(tester.WithInvariants(CheckInvariants).Test());
-    EXPECT_FALSE(tester.WithInvariants(strong_guarantee).Test());
+    EXPECT_TRUE(tester.WithContracts(VariantInvariants).Test());
+    EXPECT_FALSE(tester.WithContracts(strong_guarantee).Test());
   }
   {
     const ThrowingVariant rhs(ExpectedThrowerVec());
@@ -222,8 +222,8 @@ TEST(VariantExceptionSafetyTest, CopyAssign) {
         MakeExceptionSafetyTester()
             .WithInitialValue(WithThrowerVec())
             .WithOperation([&rhs](ThrowingVariant* lhs) { *lhs = rhs; });
-    EXPECT_TRUE(tester.WithInvariants(CheckInvariants).Test());
-    EXPECT_FALSE(tester.WithInvariants(strong_guarantee).Test());
+    EXPECT_TRUE(tester.WithContracts(VariantInvariants).Test());
+    EXPECT_FALSE(tester.WithContracts(strong_guarantee).Test());
   }
   // libstdc++ std::variant has bugs on copy assignment regarding exception
   // safety.
@@ -251,12 +251,12 @@ TEST(VariantExceptionSafetyTest, CopyAssign) {
             .WithInitialValue(WithCopyNoThrow())
             .WithOperation([&rhs](ThrowingVariant* lhs) { *lhs = rhs; });
     EXPECT_TRUE(tester
-                    .WithInvariants(CheckInvariants,
-                                    [](ThrowingVariant* lhs) {
-                                      return lhs->valueless_by_exception();
-                                    })
+                    .WithContracts(VariantInvariants,
+                                   [](ThrowingVariant* lhs) {
+                                     return lhs->valueless_by_exception();
+                                   })
                     .Test());
-    EXPECT_FALSE(tester.WithInvariants(strong_guarantee).Test());
+    EXPECT_FALSE(tester.WithContracts(strong_guarantee).Test());
   }
 #endif  // !(defined(ABSL_HAVE_STD_VARIANT) && defined(__GLIBCXX__))
   {
@@ -268,7 +268,7 @@ TEST(VariantExceptionSafetyTest, CopyAssign) {
     const ThrowingVariant rhs(MoveNothrow{});
     EXPECT_TRUE(MakeExceptionSafetyTester()
                     .WithInitialValue(WithThrower())
-                    .WithInvariants(CheckInvariants, strong_guarantee)
+                    .WithContracts(VariantInvariants, strong_guarantee)
                     .Test([&rhs](ThrowingVariant* lhs) { *lhs = rhs; }));
   }
 }
@@ -304,11 +304,11 @@ TEST(VariantExceptionSafetyTest, MoveAssign) {
                         *lhs = std::move(copy);
                       });
     EXPECT_TRUE(tester
-                    .WithInvariants(
-                        CheckInvariants,
+                    .WithContracts(
+                        VariantInvariants,
                         [&](ThrowingVariant* lhs) { return lhs->index() == j; })
                     .Test());
-    EXPECT_FALSE(tester.WithInvariants(strong_guarantee).Test());
+    EXPECT_FALSE(tester.WithContracts(strong_guarantee).Test());
   }
   {
     // - otherwise (index() != j), equivalent to
@@ -318,10 +318,10 @@ TEST(VariantExceptionSafetyTest, MoveAssign) {
     ThrowingVariant rhs(CopyNothrow{});
     EXPECT_TRUE(MakeExceptionSafetyTester()
                     .WithInitialValue(WithThrower())
-                    .WithInvariants(CheckInvariants,
-                                    [](ThrowingVariant* lhs) {
-                                      return lhs->valueless_by_exception();
-                                    })
+                    .WithContracts(VariantInvariants,
+                                   [](ThrowingVariant* lhs) {
+                                     return lhs->valueless_by_exception();
+                                   })
                     .Test([&](ThrowingVariant* lhs) {
                       auto copy = rhs;
                       *lhs = std::move(copy);
@@ -347,12 +347,12 @@ TEST(VariantExceptionSafetyTest, ValueAssign) {
             .WithInitialValue(WithThrower())
             .WithOperation([rhs](ThrowingVariant* lhs) { *lhs = rhs; });
     EXPECT_TRUE(copy_tester
-                    .WithInvariants(CheckInvariants,
-                                    [](ThrowingVariant* lhs) {
-                                      return !lhs->valueless_by_exception();
-                                    })
+                    .WithContracts(VariantInvariants,
+                                   [](ThrowingVariant* lhs) {
+                                     return !lhs->valueless_by_exception();
+                                   })
                     .Test());
-    EXPECT_FALSE(copy_tester.WithInvariants(strong_guarantee).Test());
+    EXPECT_FALSE(copy_tester.WithContracts(strong_guarantee).Test());
     // move assign
     auto move_tester = MakeExceptionSafetyTester()
                            .WithInitialValue(WithThrower())
@@ -361,13 +361,13 @@ TEST(VariantExceptionSafetyTest, ValueAssign) {
                              *lhs = std::move(copy);
                            });
     EXPECT_TRUE(move_tester
-                    .WithInvariants(CheckInvariants,
-                                    [](ThrowingVariant* lhs) {
-                                      return !lhs->valueless_by_exception();
-                                    })
+                    .WithContracts(VariantInvariants,
+                                   [](ThrowingVariant* lhs) {
+                                     return !lhs->valueless_by_exception();
+                                   })
                     .Test());
 
-    EXPECT_FALSE(move_tester.WithInvariants(strong_guarantee).Test());
+    EXPECT_FALSE(move_tester.WithContracts(strong_guarantee).Test());
   }
   // Otherwise (*this holds something else), if is_nothrow_constructible_v<Tj,
   // T> || !is_nothrow_move_constructible_v<Tj> is true, equivalent to
@@ -400,12 +400,12 @@ TEST(VariantExceptionSafetyTest, ValueAssign) {
             .WithInitialValue(WithCopyNoThrow())
             .WithOperation([&rhs](ThrowingVariant* lhs) { *lhs = rhs; });
     EXPECT_TRUE(copy_tester
-                    .WithInvariants(CheckInvariants,
-                                    [](ThrowingVariant* lhs) {
-                                      return lhs->valueless_by_exception();
-                                    })
+                    .WithContracts(VariantInvariants,
+                                   [](ThrowingVariant* lhs) {
+                                     return lhs->valueless_by_exception();
+                                   })
                     .Test());
-    EXPECT_FALSE(copy_tester.WithInvariants(strong_guarantee).Test());
+    EXPECT_FALSE(copy_tester.WithContracts(strong_guarantee).Test());
     // move
     auto move_tester = MakeExceptionSafetyTester()
                            .WithInitialValue(WithCopyNoThrow())
@@ -413,12 +413,12 @@ TEST(VariantExceptionSafetyTest, ValueAssign) {
                              *lhs = ExpectedThrower(testing::nothrow_ctor);
                            });
     EXPECT_TRUE(move_tester
-                    .WithInvariants(CheckInvariants,
-                                    [](ThrowingVariant* lhs) {
-                                      return lhs->valueless_by_exception();
-                                    })
+                    .WithContracts(VariantInvariants,
+                                   [](ThrowingVariant* lhs) {
+                                     return lhs->valueless_by_exception();
+                                   })
                     .Test());
-    EXPECT_FALSE(move_tester.WithInvariants(strong_guarantee).Test());
+    EXPECT_FALSE(move_tester.WithContracts(strong_guarantee).Test());
   }
   // Otherwise (if is_nothrow_constructible_v<Tj, T> == false &&
   // is_nothrow_move_constructible<Tj> == true),
@@ -432,7 +432,7 @@ TEST(VariantExceptionSafetyTest, ValueAssign) {
     MoveNothrow rhs;
     EXPECT_TRUE(MakeExceptionSafetyTester()
                     .WithInitialValue(WithThrower())
-                    .WithInvariants(CheckInvariants, strong_guarantee)
+                    .WithContracts(VariantInvariants, strong_guarantee)
                     .Test([&rhs](ThrowingVariant* lhs) { *lhs = rhs; }));
   }
 #endif  // !(defined(ABSL_HAVE_STD_VARIANT) && defined(__GLIBCXX__))
@@ -450,12 +450,12 @@ TEST(VariantExceptionSafetyTest, Emplace) {
                         v->emplace<Thrower>(args);
                       });
     EXPECT_TRUE(tester
-                    .WithInvariants(CheckInvariants,
-                                    [](ThrowingVariant* v) {
-                                      return v->valueless_by_exception();
-                                    })
+                    .WithContracts(VariantInvariants,
+                                   [](ThrowingVariant* v) {
+                                     return v->valueless_by_exception();
+                                   })
                     .Test());
-    EXPECT_FALSE(tester.WithInvariants(strong_guarantee).Test());
+    EXPECT_FALSE(tester.WithContracts(strong_guarantee).Test());
   }
 }
 
@@ -472,7 +472,7 @@ TEST(VariantExceptionSafetyTest, Swap) {
     ThrowingVariant rhs = ExpectedThrower();
     EXPECT_TRUE(MakeExceptionSafetyTester()
                     .WithInitialValue(WithThrower())
-                    .WithInvariants(CheckInvariants)
+                    .WithContracts(VariantInvariants)
                     .Test([&](ThrowingVariant* lhs) {
                       auto copy = rhs;
                       lhs->swap(copy);
@@ -486,7 +486,7 @@ TEST(VariantExceptionSafetyTest, Swap) {
     ThrowingVariant rhs = ExpectedThrower();
     EXPECT_TRUE(MakeExceptionSafetyTester()
                     .WithInitialValue(WithCopyNoThrow())
-                    .WithInvariants(CheckInvariants)
+                    .WithContracts(VariantInvariants)
                     .Test([&](ThrowingVariant* lhs) {
                       auto copy = rhs;
                       lhs->swap(copy);
@@ -496,7 +496,7 @@ TEST(VariantExceptionSafetyTest, Swap) {
     ThrowingVariant rhs = ExpectedThrower();
     EXPECT_TRUE(MakeExceptionSafetyTester()
                     .WithInitialValue(WithCopyNoThrow())
-                    .WithInvariants(CheckInvariants)
+                    .WithContracts(VariantInvariants)
                     .Test([&](ThrowingVariant* lhs) {
                       auto copy = rhs;
                       copy.swap(*lhs);

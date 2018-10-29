@@ -102,7 +102,16 @@ are treated in different ways during painting:
     concept.
 
 *   Visual rect: the bounding box of all pixels that will be painted by a
-    display item client.
+    [display item client](../../platform/graphics/paint/README.md#display-items).
+    It's in the space of the containing transform property node (see [Building
+    paint property trees](#building-paint-property-trees)).
+
+*   Isolation nodes/boundary: In certain situations, it is possible to put in
+    place a barrier that isolates a subtree from being affected by its
+    ancestors. This barrier is called an isolation boundary and is implemented
+    in the property trees as isolation nodes that serve as roots for any
+    descendant property nodes. Currently, the `contain: paint` css property
+    establishes an isolation boundary.
 
 ## Overview
 
@@ -369,38 +378,157 @@ Layerization                     | PLC/CLM            | PLC/CLM               | 
 cc property tree builder         | on                 | off                   | off
 ```
 
-## PaintInvalidation (Deprecated by [PrePaint](#PrePaint))
+## PrePaint
+[`PrePaintTreeWalk`](pre_paint_tree_walk.h)
 
-Paint invalidation marks anything that need to be painted differently from the
+During `InPrePaint` document lifecycle state, this class is called to walk the
+whole layout tree, beginning from the root FrameView, across frame boundaries.
+We do the following during the tree walk:
+
+### Building paint property trees
+[`PaintPropertyTreeBuilder`](paint_property_tree_builder.h)
+
+This class is responsible for building property trees
+(see [the platform paint README file](../../platform/graphics/paint/README.md)).
+
+Each `PaintLayer`'s `LayoutObject` has one or more `FragmentData` objects (see
+below for more on fragments). Every `FragmentData` has an
+`ObjectPaintProperties` object if any property nodes are induced by it. For
+example, if the object has a transform, its `ObjectPaintProperties::Transform()`
+field points at the `TransformPaintPropertyNode` representing that transform.
+
+The `NeedsPaintPropertyUpdate`, `SubtreeNeedsPaintPropertyUpdate` and
+`DescendantNeedsPaintPropertyUpdate` dirty bits on `LayoutObject` control how
+much of the layout tree is traversed during each `PrePaintTreeWalk`.
+
+Additionally, some dirty bits are cleared at an isolation boundary. For example
+if the paint property tree topology has changed by adding or removing nodes
+for an element, we typically force a subtree walk for all descendants since
+the descendant nodes may now refer to new parent nodes. However, at an
+isolation boundary, we can reason that none of the descendants of an isolation
+element would be affected, since the highest node that the paint property nodes
+of an isolation element's subtree can reference are the isolation
+nodes established at this element itself.
+
+Implementation note: the isolation boundary is achieved using alias nodes, which
+are nodes that are put in place on an isolated element for clip, transform, and
+effect trees. These nodes do not themselves contribute to any painted output,
+but serve as parents to the subtree nodes. The alias nodes and isolation nodes
+are synonymous and are used interchangeably. Also note that these nodes are
+placed as children of the regular nodes of the element. This means that the
+element itself is not isolated against ancestor mutations; it only isolates the
+element's subtree.
+
+Example tree:
++----------------------+
+| 1. Root LayoutObject |
++----------------------+
+      |       |
+      |       +-----------------+
+      |                         |
+      v                         v
++-----------------+       +-----------------+
+| 2. LayoutObject |       | 3. LayoutObject |
++-----------------+       +-----------------+
+      |                         |
+      v                         |
++-----------------+             |
+| 4. LayoutObject |             |
++-----------------+             |
+                                |
+      +-------------------------+
+      |                         |
++-----------------+       +-----------------+
+| 5. LayoutObject |       | 6. LayoutObject |
++-----------------+       +-----------------+
+      |   |
+      |   +---------------------+
+      |                         |
+      v                         v
++-----------------+       +-----------------+
+| 7. LayoutObject |       | 8. LayoutObject |
++-----------------+       +-----------------+
+
+Suppose that element 3's style changes to include a transform (e.g.
+"transform: translateX(10px);").
+
+Typically, here is the order of the walk (depth first) and updates:
+*    Root element 1 is visited since some descendant needs updates
+*    Element 2 is visited since it is one of the descendants, but it doesn't
+     need updates.
+*    Element 4 is skipped since the above step didn't need to recurse.
+*    Element 3 is visited since it's a descendant of the root element, and its
+     property trees are updated to include a new transform. This causes a flag
+     to be flipped that all subtree nodes need an update.
+*    Elements are then visited in the depth order: 5, 7, 8, 6. Elements 5 and 6
+     reparent their transform nodes to point to the transform node of element 3.
+     Elements 7 and 8 are visited and updated but no changes occur.
+
+Now suppose that element 5 has "contain: paint" style, which establishes an
+isolation boundary. The walk changes in the following way:
+
+*    Root element 1 is visited since some descendant needs updates
+*    Element 2 is visited since it is one of the descendants, but it doesn't
+     need updates.
+*    Element 4 is skipped since the above step didn't need to recurse.
+*    Element 3 is visited since it's a descendant of the root element, and its
+     property trees are updated to include a new transform. This causes a flag
+     to be flipped that all subtree nodes need an update.
+*    Element 5 is visited and updated by reparenting the transform nodes.
+     However, now the element is an isolation boundary so elements 7 and 8 are
+     not visited (i.e. the forced subtree update flag is ignored).
+*    Element 6 is visited as before and is updated to reparent the transform
+     node.
+
+Note that there are subtleties when deciding whether we can skip the subtree
+walk. Specifically, not all subtree walks can be stopped at an isolation
+boundary. For more information, see
+[`PaintPropertyTreeBuilder`](paint_property_tree_builder.h) and its use of
+IsolationPiercing vs IsolationBlocked subtree update reasons.
+
+
+#### Fragments
+
+In the absence of multicolumn/pagination, there is a 1:1 correspondence between
+self-painting `PaintLayer`s and `FragmentData`. If there is
+multicolumn/pagination, there may be more `FragmentData`s.. If a `PaintLayer`
+has a property node, each of its fragments will have one. The parent of a
+fragment's property node is the property node that belongs to the ancestor
+`PaintLayer` which is part of the same column. For example, if there are 3
+columns and both a parent and child `PaintLayer` have a transform, there will be
+3 `FragmentData` objects for the parent, 3 for the child, each `FragmentData`
+will have its own `TransformPaintPropertyNode`, and the child's ith fragment's
+transform will point to the ith parent's transform.
+
+Each `FragmentData` receives its own `ClipPaintPropertyNode`. They
+also store a unique `PaintOffset, `PaginationOffset and
+`LocalBordreBoxProperties` object.
+
+See [`LayoutMultiColumnFlowThread.h`](../layout/layout_multi_column_flow_thread.h)
+for a much more detail about multicolumn/pagination.
+
+### Paint invalidation
+[`PaintInvalidator`](paint_invalidator.h)
+
+Paint invalidator marks anything that need to be painted differently from the
 original cached painting.
 
-Paint invalidation is a document cycle stage after compositing update and before
-paint. During the previous stages, objects are marked for needing paint
-invalidation checking if needed by style change, layout change, compositing
-change, etc. In paint invalidation stage, we traverse the layout tree in
-pre-order, crossing frame boundaries, for marked subtrees and objects and send
-the following information to `GraphicsLayer`s and `PaintController`s:
+During the document lifecycle stages prior to PrePaint, objects are marked for
+needing paint invalidation checking if needed by style change, layout change,
+compositing change, etc. In PrePaint stage, we traverse the layout tree in
+pre-order, crossing frame boundaries, for marked subtrees and objects and
+invalidate display item clients that will generate different display items.
 
-*   invalidated display item clients: must invalidate all display item clients
-    that will generate different display items.
-
-*   paint invalidation rects: must cover all areas that will generate different
-    pixels. They are generated based on visual rects of invalidated display item
-    clients.
-
-### `PaintInvalidationState`
-
-`PaintInvalidationState` is an optimization used during the paint invalidation
-phase. Before the paint invalidation tree walk, a root `PaintInvalidationState`
+At the beginning of the PrePaint tree walk, a root `PaintInvalidatorContext`
 is created for the root `LayoutView`. During the tree walk, one
-`PaintInvalidationState` is created for each visited object based on the
-`PaintInvalidationState` passed from the parent object. It tracks the following
+`PaintInvalidatorContext` is created for each visited object based on the
+`PaintInvalidatorContext` passed from the parent object. It tracks the following
 information to provide O(1) complexity access to them if possible:
 
-*   Paint invalidation container: Since as indicated by the definitions in
-    [Glossaries](#other-glossaries), the paint invalidation container for
-    stacked objects can differ from normal objects, we have to track both
-    separately. Here is an example:
+*   Paint invalidation container (Slimming Paint v1 only): Since as indicated by
+    the definitions in [Glossaries](#other-glossaries), the paint invalidation
+    container for stacked objects can differ from normal objects, we have to
+    track both separately. Here is an example:
 
         <div style="overflow: scroll">
             <div id=A style="position: absolute"></div>
@@ -410,46 +538,17 @@ information to provide O(1) complexity access to them if possible:
     If the scroller is composited (for high-DPI screens for example), it is the
     paint invalidation container for div B, but not A.
 
-*   Paint offset and clip rect: if possible, `PaintInvalidationState`
-    accumulates paint offsets and overflow clipping rects from the paint
-    invalidation container to provide O(1) complexity to map a point or a rect
-    in current object's local space to paint invalidation container's space.
-    Because locations of objects are determined by their containing blocks, and
-    the containing block for absolute-position objects differs from
-    non-absolute, we track paint offsets and overflow clipping rects for
-    absolute-position objects separately.
+*   Painting layer: the layer which will initiate painting of the current
+    object. It's the same value as `LayoutObject::PaintingLayer()`.
 
-In cases that accurate accumulation of paint offsets and clipping rects is
-impossible, we will fall back to slow-path using
-`LayoutObject::localToAncestorPoint()` or
-`LayoutObject::mapToVisualRectInAncestorSpace()`. This includes the following
-cases:
+`PaintInvalidator`[PaintInvalidator.h] initializes `PaintInvalidatorContext`
+for the current object, then calls `LayoutObject::InvalidatePaint()` which
+calls the object's paint invalidator (e.g. `BoxPaintInvalidator`) to complete
+paint invalidation of the object.
 
-*   An object has transform related property, is multi-column or has flipped
-    blocks writing-mode, causing we can't simply accumulate paint offset for
-    mapping a local rect to paint invalidation container;
+#### Paint invalidation of text
 
-*   An object has has filter (including filter induced by reflection), which
-    needs to expand visual rect for descendants, because currently we don't
-    include and filter extents into visual overflow;
-
-*   For a fixed-position object we calculate its offset using
-    `LayoutObject::localToAncestorPoint()`, but map for its descendants in
-    fast-path if no other things prevent us from doing this;
-
-*   Because we track paint offset from the normal paint invalidation container
-    only, if we are going to use
-    `m_paintInvalidationContainerForStackedContents` and it's different from the
-    normal paint invalidation container, we have to force slow-path because the
-    accumulated paint offset is not usable;
-
-*   We also stop to track paint offset and clipping rect for absolute-position
-    objects when `m_paintInvalidationContainerForStackedContents` becomes
-    different from `m_paintInvalidationContainer`.
-
-### Paint invalidation of texts
-
-Texts are painted by `InlineTextBoxPainter` using `InlineTextBox` as display
+Text is painted by `InlineTextBoxPainter` using `InlineTextBox` as display
 item client. Text backgrounds and masks are painted by `InlineTextFlowPainter`
 using `InlineFlowBox` as display item client. We should invalidate these display
 item clients when their painting will change.
@@ -462,9 +561,10 @@ the `LayoutText` in `LayoutText::InvalidateDisplayItemClients()`. We don't need
 to traverse into the subtree of `InlineFlowBox`s in
 `LayoutInline::InvalidateDisplayItemClients()` because the descendant
 `InlineFlowBox`s and `InlineTextBox`s will be handled by their owning
-`LayoutInline`s and `LayoutText`s, respectively, when changed style is propagated.
+`LayoutInline`s and `LayoutText`s, respectively, when changed style is
+propagated.
 
-### Specialty of `::first-line`
+#### Specialty of `::first-line`
 
 `::first-line` pseudo style dynamically applies to all `InlineBox`'s in the
 first line in the block having `::first-line` style. The actual applied style is
@@ -486,59 +586,6 @@ We have a special path for first line style change: the style system informs the
 layout system when the computed first-line style changes through
 `LayoutObject::FirstLineStyleDidChange()`. When this happens, we invalidate all
 `InlineBox`es in the first line.
-
-## PrePaint (Slimming paint invalidation/v2 only)
-[`PrePaintTreeWalk`](PrePaintTreeWalk.h)
-
-During `InPrePaint` document lifecycle state, this class is called to walk the
-whole layout tree, beginning from the root FrameView, across frame boundaries.
-We do the following during the tree walk:
-
-### Building paint property trees
-[`PaintPropertyTreeBuilder`](PaintPropertyTreeBuilder.h)
-
-This class is responsible for building property trees
-(see [the platform paint README file](../../platform/graphics/paint/README.md)).
-
-Each `PaintLayer`'s `LayoutObject` has one or more `FragmentData` objects (see
-below for more on fragments). Every `FragmentData` has an
-`ObjectPaintProperties` object if any property nodes are induced by it. For
-example, if the object has a transform, its `ObjectPaintProperties::Transform()`
-field points at the `TransformPaintPropertyNode` representing that transform.
-
-The `NeedsPaintPropertyUpdate`, `SubtreeNeedsPaintPropertyUpdate` and
-`DescendantNeedsPaintPropertyUpdate` dirty bits on `LayoutObject` control how
-much of the layout tree is traversed during each `PrePaintTreeWalk`.
-
-#### Fragments
-
-In the absence of multicolumn/pagination, there is a 1:1 correspondence between
-self-painting `PaintLayer`s and `FragmentData`. If there is
-multicolumn/pagination, there may be more `FragmentData`s.. If a `PaintLayer`
-has a property node, each of its fragments will have one. The parent of a
-fragment's property node is the property node that belongs to the ancestor
-`PaintLayer` which is part of the same column. For example, if there are 3
-columns and both a parent and child `PaintLayer` have a transform, there will be
-3 `FragmentData` objects for the parent, 3 for the child, each `FragmentData`
-will have its own `TransformPaintPropertyNode`, and the child's ith fragment's
-transform will point to the ith parent's transform.
-
-Each `FragmentData` receives its own `ClipPaintPropertyNode`. They
-also store a unique `PaintOffset, `PaginationOffset and
-`LocalBordreBoxProperties` object.
-
-See [`LayoutMultiColumnFlowThread.h`](../layout/LayoutMultiColumnFlowThread.h)
-for a much more detail about multicolumn/pagination.
-
-### Paint invalidation
-[`PaintInvalidator`](PaintInvalidator.h)
-
-This class replaces [`PaintInvalidationState`] for SlimmingPaintInvalidation.
-The main difference is that in PaintInvalidator, visual rects and locations
-are computed by `GeometryMapper`(../../platform/graphics/paint/GeometryMapper.h),
-based on paint properties produced by `PaintPropertyTreeBuilder`.
-
-TODO(wangxianzhu): Combine documentation of PaintInvalidation phase into here.
 
 ## Paint
 

@@ -36,6 +36,7 @@
 #include "third_party/blink/public/platform/web_loading_behavior_flag.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_global_object_reuse_policy.h"
+#include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -84,17 +85,14 @@ class CORE_EXPORT DocumentLoader
   USING_GARBAGE_COLLECTED_MIXIN(DocumentLoader);
 
  public:
-  static DocumentLoader* Create(
-      LocalFrame* frame,
-      const ResourceRequest& request,
-      const SubstituteData& data,
-      ClientRedirectPolicy client_redirect_policy,
-      const base::UnguessableToken& devtools_navigation_token) {
-    DCHECK(frame);
-
-    return new DocumentLoader(frame, request, data, client_redirect_policy,
-                              devtools_navigation_token);
-  }
+  DocumentLoader(LocalFrame*,
+                 const ResourceRequest&,
+                 const SubstituteData&,
+                 ClientRedirectPolicy,
+                 const base::UnguessableToken& devtools_navigation_token,
+                 WebFrameLoadType load_type,
+                 WebNavigationType navigation_type,
+                 std::unique_ptr<WebNavigationParams> navigation_params);
   ~DocumentLoader() override;
 
   LocalFrame* GetFrame() const { return frame_; }
@@ -227,7 +225,6 @@ class CORE_EXPORT DocumentLoader
   }
 
   // Allows to specify the SourceLocation that triggered the navigation.
-  void SetSourceLocation(const WebSourceLocation& source_location);
   void ResetSourceLocation();
   std::unique_ptr<SourceLocation> CopySourceLocation() const;
 
@@ -266,25 +263,9 @@ class CORE_EXPORT DocumentLoader
     return content_security_policy_.Get();
   }
 
-  // Updates navigation timings with provided values. This
-  // should be called before WebLocalFrameClient::didCommitProvisionalLoad.
-  // Calling it later may confuse users, because JavaScript may have run and
-  // the user may have already recorded the original value.
-  // Note: if |redirect_start_time| is null, redirect timings are not updated.
-  void UpdateNavigationTimings(base::TimeTicks navigation_start_time,
-                               base::TimeTicks redirect_start_time,
-                               base::TimeTicks redirect_end_time,
-                               base::TimeTicks fetch_start_time,
-                               base::TimeTicks input_start_time);
   UseCounter& GetUseCounter() { return use_counter_; }
 
  protected:
-  DocumentLoader(LocalFrame*,
-                 const ResourceRequest&,
-                 const SubstituteData&,
-                 ClientRedirectPolicy,
-                 const base::UnguessableToken& devtools_navigation_token);
-
   static bool ShouldClearWindowName(
       const LocalFrame&,
       const SecurityOrigin* previous_security_origin,
@@ -308,7 +289,7 @@ class CORE_EXPORT DocumentLoader
                           InstallNewDocumentReason,
                           ParserSynchronizationPolicy,
                           const KURL& overriding_url);
-  void DidInstallNewDocument(Document*);
+  void DidInstallNewDocument(Document*, const ContentSecurityPolicy*);
   void WillCommitNavigation();
   void DidCommitNavigation(WebGlobalObjectReusePolicy);
 

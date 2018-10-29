@@ -75,11 +75,12 @@ class MockAppCacheStorage : public AppCacheStorage {
                          Delegate* delegate,
                          int response_code) override;
   void StoreEvictionTimes(AppCacheGroup* group) override;
-  AppCacheResponseReader* CreateResponseReader(const GURL& manifest_url,
-                                               int64_t response_id) override;
-  AppCacheResponseWriter* CreateResponseWriter(
+  std::unique_ptr<AppCacheResponseReader> CreateResponseReader(
+      const GURL& manifest_url,
+      int64_t response_id) override;
+  std::unique_ptr<AppCacheResponseWriter> CreateResponseWriter(
       const GURL& manifest_url) override;
-  AppCacheResponseMetadataWriter* CreateResponseMetadataWriter(
+  std::unique_ptr<AppCacheResponseMetadataWriter> CreateResponseMetadataWriter(
       int64_t response_id) override;
   void DoomResponses(const GURL& manifest_url,
                      const std::vector<int64_t>& response_ids) override;

@@ -1,6 +1,5 @@
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS roleElement.computedRole is "alert"
 PASS roleElement.computedRole is "alertdialog"
 PASS roleElement.computedRole is "application"

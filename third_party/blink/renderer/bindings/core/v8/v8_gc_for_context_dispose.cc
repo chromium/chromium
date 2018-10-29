@@ -62,7 +62,8 @@ V8GCForContextDispose::V8GCForContextDispose()
     : pseudo_idle_timer_(
           Platform::Current()->MainThread()->Scheduler()->V8TaskRunner(),
           this,
-          &V8GCForContextDispose::PseudoIdleTimerFired) {
+          &V8GCForContextDispose::PseudoIdleTimerFired),
+      force_page_navigation_gc_(false) {
   Reset();
 }
 
@@ -76,8 +77,9 @@ void V8GCForContextDispose::NotifyContextDisposed(
   // memory use and trigger a V8+Blink GC. However, on Android, if the frame
   // will not be reused, the process will likely to be killed soon so skip this.
   if (is_main_frame && frame_reuse_status == WindowProxy::kFrameWillBeReused &&
-      MemoryCoordinator::IsLowEndDevice() &&
-      MemoryCoordinator::IsCurrentlyLowMemory()) {
+      ((MemoryCoordinator::IsLowEndDevice() &&
+        MemoryCoordinator::IsCurrentlyLowMemory()) ||
+       force_page_navigation_gc_)) {
     size_t pre_gc_memory_usage = GetMemoryUsage();
     V8PerIsolateData::MainThreadIsolate()->MemoryPressureNotification(
         v8::MemoryPressureLevel::kCritical);
@@ -88,6 +90,8 @@ void V8GCForContextDispose::NotifyContextDisposed(
         CustomCountHistogram, reduction_histogram,
         ("BlinkGC.LowMemoryPageNavigationGC.Reduction", 1, 512, 50));
     reduction_histogram.Count(reduction / 1024 / 1024);
+
+    force_page_navigation_gc_ = false;
   }
 #endif
   V8PerIsolateData::MainThreadIsolate()->ContextDisposedNotification(
@@ -118,6 +122,10 @@ void V8GCForContextDispose::PseudoIdleTimerFired(TimerBase*) {
 void V8GCForContextDispose::Reset() {
   did_dispose_context_for_main_frame_ = false;
   last_context_disposal_time_ = -1;
+}
+
+void V8GCForContextDispose::SetForcePageNavigationGC() {
+  force_page_navigation_gc_ = true;
 }
 
 }  // namespace blink

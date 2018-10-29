@@ -10,7 +10,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/geometry",
     "+third_party/blink/renderer/platform/graphics",
     "+third_party/blink/renderer/platform/heap",
-    "+third_party/blink/renderer/platform/layout_unit.h",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/runtime_enabled_features.h",
     "+third_party/blink/renderer/platform/testing",

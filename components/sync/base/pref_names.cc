@@ -90,10 +90,6 @@ const char kSyncEncryptionBootstrapToken[] = "sync.encryption_bootstrap_token";
 const char kSyncKeystoreEncryptionBootstrapToken[] =
     "sync.keystore_encryption_bootstrap_token";
 
-// The GUID session sync will use to identify this client, even across sync
-// disable/enable events.
-const char kSyncSessionsGUID[] = "sync.session_sync_guid";
-
 #if defined(OS_CHROMEOS)
 // A string that is used to store first-time sync startup after once sync is
 // disabled. This will be refreshed every sign-in.

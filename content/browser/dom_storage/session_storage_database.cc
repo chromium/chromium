@@ -730,9 +730,7 @@ bool SessionStorageDatabase::ReadMap(const std::string& map_id,
 void SessionStorageDatabase::WriteValuesToMap(const std::string& map_id,
                                               const DOMStorageValuesMap& values,
                                               leveldb::WriteBatch* batch) {
-  for (DOMStorageValuesMap::const_iterator it = values.begin();
-       it != values.end();
-       ++it) {
+  for (auto it = values.begin(); it != values.end(); ++it) {
     base::NullableString16 value = it->second;
     std::string key = MapKey(map_id, base::UTF16ToUTF8(it->first));
     if (value.is_null()) {

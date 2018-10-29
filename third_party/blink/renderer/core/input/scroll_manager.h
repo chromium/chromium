@@ -96,8 +96,8 @@ class CORE_EXPORT ScrollManager
 
   // SnapFlingClient implementation.
   bool GetSnapFlingInfo(const gfx::Vector2dF& natural_displacement,
-                        gfx::Vector2dF* out_initial_offset,
-                        gfx::Vector2dF* out_target_offset) const override;
+                        gfx::Vector2dF* out_initial_position,
+                        gfx::Vector2dF* out_target_position) const override;
   gfx::Vector2dF ScrollByForSnapFling(const gfx::Vector2dF& delta) override;
   void ScrollEndForSnapFling() override;
   void RequestAnimationForSnapFling() override;
@@ -117,14 +117,12 @@ class CORE_EXPORT ScrollManager
 
   Page* GetPage() const;
 
-  bool IsViewportScrollingElement(const Element&) const;
-
   bool HandleScrollGestureOnResizer(Node*, const WebGestureEvent&);
 
   void RecomputeScrollChain(const Node& start_node,
                             const ScrollState&,
                             std::deque<DOMNodeId>& scroll_chain);
-  bool CanScroll(const ScrollState&, const Element& current_element);
+  bool CanScroll(const ScrollState&, const Node& current_node);
 
   // scroller_size is set only when scrolling non root scroller.
   void ComputeScrollRelatedMetrics(
@@ -153,11 +151,11 @@ class CORE_EXPORT ScrollManager
 
   bool last_gesture_scroll_over_embedded_content_view_;
 
-  // The most recent element to scroll natively during this scroll
+  // The most recent Node to scroll natively during this scroll
   // sequence. Null if no native element has scrolled this scroll
   // sequence, or if the most recent element to scroll used scroll
   // customization.
-  Member<Element> previous_gesture_scrolled_element_;
+  Member<Node> previous_gesture_scrolled_node_;
 
   // True iff some of the delta has been consumed for the current
   // scroll sequence in this frame, or any child frames. Only used

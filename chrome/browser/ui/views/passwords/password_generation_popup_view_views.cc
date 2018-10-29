@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -79,11 +78,12 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
   static void BuildColumnSet(views::GridLayout* layout) {
     views::ColumnSet* column_set = layout->AddColumnSet(0);
     column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                          1.0, views::GridLayout::USE_PREF, 0, 0);
+                          0 /* resize_percent */, views::GridLayout::USE_PREF,
+                          0, 0);
     column_set->AddPaddingColumn(0 /* resize_percent */,
                                  AutofillPopupBaseView::kValueLabelPadding);
     column_set->AddColumn(views::GridLayout::TRAILING,
-                          views::GridLayout::CENTER, 1.0,
+                          views::GridLayout::CENTER, 1.0 /* resize_percent */,
                           views::GridLayout::USE_PREF, 0, 0);
   }
 

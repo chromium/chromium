@@ -2,7 +2,6 @@ Test HTMLTemplateElement content ownerDocument
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS template.ownerDocument is document
 PASS template.content is content
 PASS templateContentOwnerDocument instanceof HTMLDocument is true

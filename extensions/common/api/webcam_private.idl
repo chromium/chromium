@@ -7,6 +7,7 @@ namespace webcamPrivate {
   enum PanDirection { stop, right, left };
   enum TiltDirection { stop, up, down };
   enum Protocol { visca };
+  enum AutofocusState { on, off };
 
   dictionary ProtocolConfiguration {
     Protocol? protocol;
@@ -20,6 +21,8 @@ namespace webcamPrivate {
     double? tiltSpeed;
     TiltDirection? tiltDirection;
     double? zoom;
+    AutofocusState? autofocusState;
+    double? focus;
   };
 
   dictionary Range { double min; double max; };
@@ -28,11 +31,13 @@ namespace webcamPrivate {
     double pan;
     double tilt;
     double zoom;
+    double focus;
 
     // Supported range of pan, tilt and zoom values.
     Range? panRange;
     Range? tiltRange;
     Range? zoomRange;
+    Range? focusRange;
   };
 
   callback WebcamIdCallback = void(DOMString webcamId);

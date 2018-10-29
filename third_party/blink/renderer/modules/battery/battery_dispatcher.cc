@@ -13,9 +13,9 @@
 namespace blink {
 
 BatteryDispatcher& BatteryDispatcher::Instance() {
-  DEFINE_STATIC_LOCAL(BatteryDispatcher, battery_dispatcher,
+  DEFINE_STATIC_LOCAL(Persistent<BatteryDispatcher>, battery_dispatcher,
                       (new BatteryDispatcher));
-  return battery_dispatcher;
+  return *battery_dispatcher;
 }
 
 BatteryDispatcher::BatteryDispatcher() : has_latest_data_(false) {}

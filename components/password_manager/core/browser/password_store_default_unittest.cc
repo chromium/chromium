@@ -281,7 +281,7 @@ TEST(PasswordStoreDefaultTest, OperationsOnABadDatabaseSilentlyFail) {
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
 
   // Report metrics.
-  bad_store->ReportMetrics("Test Username", true);
+  bad_store->ReportMetrics("Test Username", true, false);
   delegate.FinishAsyncProcessing();
 
   // Change the login.

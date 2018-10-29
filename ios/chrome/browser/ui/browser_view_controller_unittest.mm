@@ -11,13 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/payments/core/features.h"
+#include "components/omnibox/browser/test_toolbar_model.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/tab_restore_service.h"
-#include "components/toolbar/test_toolbar_model.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_paths.h"
@@ -27,9 +25,9 @@
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/tab.h"
+#import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/tabs/tab_model_observer.h"
-#import "ios/chrome/browser/tabs/tab_private.h"
 #import "ios/chrome/browser/ui/activity_services/share_protocol.h"
 #import "ios/chrome/browser/ui/activity_services/share_to_data.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
@@ -40,10 +38,11 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller.h"
 #import "ios/chrome/browser/ui/page_not_available_controller.h"
 #import "ios/chrome/browser/ui/toolbar/public/omnibox_focuser.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/web/error_page_content.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_state_list_web_usage_enabler.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_state_list_web_usage_enabler_factory.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -53,7 +52,11 @@
 #import "ios/net/protocol_handler_util.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
 #include "ios/web/public/referrer.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/test_navigation_manager.h"
+#import "ios/web/public/test/fakes/test_web_state.h"
 #include "ios/web/public/test/test_web_thread_bundle.h"
+#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
 #import "ios/web/public/web_state/ui/crw_native_content_provider.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -243,6 +246,18 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     BlockCleanupTest::TearDown();
   }
 
+  // Returns a new unique_ptr containing a test webstate.
+  std::unique_ptr<web::TestWebState> CreateTestWebState() {
+    auto web_state = std::make_unique<web::TestWebState>();
+    web_state->SetBrowserState(chrome_browser_state_.get());
+    web_state->SetNavigationManager(
+        std::make_unique<web::TestNavigationManager>());
+    id mockJsInjectionReceiver = OCMClassMock([CRWJSInjectionReceiver class]);
+    web_state->SetJSInjectionReceiver(mockJsInjectionReceiver);
+    AttachTabHelpers(web_state.get(), true);
+    return web_state;
+  }
+
   MOCK_METHOD0(OnCompletionCalled, void());
 
   web::TestWebThreadBundle thread_bundle_;
@@ -257,6 +272,33 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   BrowserViewController* bvc_;
   UIWindow* window_;
 };
+
+TEST_F(BrowserViewControllerTest, TestSwitchToTab) {
+  WebStateList* web_state_list = tabModel_.webStateList;
+  ASSERT_EQ(0, web_state_list->count());
+
+  std::unique_ptr<web::TestWebState> web_state = CreateTestWebState();
+  web::WebState* web_state_ptr = web_state.get();
+  web_state->SetCurrentURL(GURL("http://test/1"));
+  web_state_list->InsertWebState(0, std::move(web_state),
+                                 WebStateList::INSERT_FORCE_INDEX,
+                                 WebStateOpener());
+
+  std::unique_ptr<web::TestWebState> web_state_2 = CreateTestWebState();
+  web::WebState* web_state_ptr_2 = web_state_2.get();
+  GURL url("http://test/2");
+  web_state_2->SetCurrentURL(url);
+  web_state_list->InsertWebState(1, std::move(web_state_2),
+                                 WebStateList::INSERT_FORCE_INDEX,
+                                 WebStateOpener());
+
+  web_state_list->ActivateWebStateAt(0);
+
+  ASSERT_EQ(web_state_ptr, web_state_list->GetActiveWebState());
+
+  [bvc_.dispatcher unfocusOmniboxAndSwitchToTabWithURL:url];
+  EXPECT_EQ(web_state_ptr_2, web_state_list->GetActiveWebState());
+}
 
 TEST_F(BrowserViewControllerTest, TestTabSelected) {
   [bvc_ tabSelected:tab_ notifyToolbar:YES];
@@ -284,31 +326,15 @@ TEST_F(BrowserViewControllerTest, TestNativeContentController) {
   id<CRWNativeContent> controller =
       [bvc_ controllerForURL:GURL(kChromeUINewTabURL)
                     webState:webStateImpl_.get()];
-  EXPECT_TRUE(controller != nil);
-  EXPECT_TRUE([controller isMemberOfClass:[NewTabPageController class]]);
+  if (!base::FeatureList::IsEnabled(kBrowserContainerContainsNTP)) {
+    EXPECT_TRUE(controller != nil);
+    EXPECT_TRUE([controller isMemberOfClass:[NewTabPageController class]]);
+  }
 
   controller = [bvc_ controllerForURL:GURL(kChromeUISettingsURL)
                              webState:webStateImpl_.get()];
   EXPECT_TRUE(controller != nil);
   EXPECT_TRUE([controller isMemberOfClass:[PageNotAvailableController class]]);
-}
-
-TEST_F(BrowserViewControllerTest, TestErrorController) {
-  const GURL badUrl("http://floofywhizbangzzz.com");
-  NSString* badURLString = base::SysUTF8ToNSString(badUrl.spec());
-  NSDictionary* userInfoDic = [NSDictionary
-      dictionaryWithObjectsAndKeys:badURLString,
-                                   NSURLErrorFailingURLStringErrorKey,
-                                   [NSError errorWithDomain:net::kNSErrorDomain
-                                                       code:-104
-                                                   userInfo:nil],
-                                   NSUnderlyingErrorKey, nil];
-  NSError* testError =
-      [NSError errorWithDomain:@"testdomain" code:-1 userInfo:userInfoDic];
-  id<CRWNativeContent> controller =
-      [bvc_ controllerForURL:badUrl withError:testError isPost:NO];
-  EXPECT_TRUE(controller != nil);
-  EXPECT_TRUE([controller isMemberOfClass:[ErrorPageContent class]]);
 }
 
 // TODO(altse): Needs a testing |Profile| that implements AutocompleteClassifier
@@ -348,27 +374,6 @@ TEST_F(BrowserViewControllerTest, TestClearPresentedState) {
     this->OnCompletionCalled();
   }
                            dismissOmnibox:YES];
-}
-
-// Tests for the browser view controller when Payment Request is enabled.
-class PaymentRequestBrowserViewControllerTest
-    : public BrowserViewControllerTest {
- public:
-  PaymentRequestBrowserViewControllerTest() {}
-
- protected:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(payments::features::kWebPayments);
-    BrowserViewControllerTest::SetUp();
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Verifies that the controller starts up and shuts down cleanly with Payment
-// Request enabled.
-TEST_F(PaymentRequestBrowserViewControllerTest, TestStartupAndShutdown) {
-  // The body of this test is deliberately left empty.
 }
 
 }  // namespace

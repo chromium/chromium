@@ -52,6 +52,10 @@ class ExternalVideoEncoder : public VideoEncoder {
  private:
   class VEAClientImpl;
 
+  // Called from the destructor (or earlier on error), to schedule destruction
+  // of |client_| via the encoder task runner.
+  void DestroyClientSoon();
+
   // Method invoked by the CreateVideoEncodeAcceleratorCallback to construct a
   // VEAClientImpl to own and interface with a new |vea|.  Upon return,
   // |client_| holds a reference to the new VEAClientImpl.

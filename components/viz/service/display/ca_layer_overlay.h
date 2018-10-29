@@ -80,7 +80,7 @@ bool ProcessForCALayerOverlays(
     const base::flat_map<RenderPassId, cc::FilterOperations*>&
         render_pass_filters,
     const base::flat_map<RenderPassId, cc::FilterOperations*>&
-        render_pass_background_filters,
+        render_pass_backdrop_filters,
     CALayerOverlayList* ca_layer_overlays);
 
 }  // namespace viz

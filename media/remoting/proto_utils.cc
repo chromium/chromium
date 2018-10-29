@@ -311,8 +311,25 @@ void ConvertVideoDecoderConfigToProto(const VideoDecoderConfig& video_config,
       ToProtoVideoDecoderConfigProfile(video_config.profile()).value());
   video_message->set_format(
       ToProtoVideoDecoderConfigFormat(video_config.format()).value());
-  video_message->set_color_space(
-      ToProtoVideoDecoderConfigColorSpace(video_config.color_space()).value());
+
+  // TODO(hubbe): Update proto to use color_space_info()
+  if (video_config.color_space_info() == VideoColorSpace::JPEG()) {
+    video_message->set_color_space(
+        ToProtoVideoDecoderConfigColorSpace(ColorSpace::COLOR_SPACE_JPEG)
+            .value());
+  } else if (video_config.color_space_info() == VideoColorSpace::REC709()) {
+    video_message->set_color_space(
+        ToProtoVideoDecoderConfigColorSpace(ColorSpace::COLOR_SPACE_HD_REC709)
+            .value());
+  } else if (video_config.color_space_info() == VideoColorSpace::REC601()) {
+    video_message->set_color_space(
+        ToProtoVideoDecoderConfigColorSpace(ColorSpace::COLOR_SPACE_SD_REC601)
+            .value());
+  } else {
+    video_message->set_color_space(
+        ToProtoVideoDecoderConfigColorSpace(ColorSpace::COLOR_SPACE_UNSPECIFIED)
+            .value());
+  }
 
   pb::Size* coded_size_message = video_message->mutable_coded_size();
   coded_size_message->set_width(video_config.coded_size().width());

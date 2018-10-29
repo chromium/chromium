@@ -9,11 +9,11 @@ import android.support.annotation.IntDef;
 import android.view.View;
 
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.download.home.PrefetchStatusProvider;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.filter.chips.ChipsCoordinator;
 import org.chromium.chrome.browser.modelutil.PropertyModel;
 import org.chromium.chrome.browser.modelutil.PropertyModelChangeProcessor;
+import org.chromium.chrome.browser.offlinepages.prefetch.PrefetchConfiguration;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,8 +44,7 @@ public class FilterCoordinator {
      * Builds a new FilterCoordinator.
      * @param context The context to build the views and pull parameters from.
      */
-    public FilterCoordinator(Context context, PrefetchStatusProvider prefetchStatusProvider,
-            OfflineItemFilterSource chipFilterSource) {
+    public FilterCoordinator(Context context, OfflineItemFilterSource chipFilterSource) {
         mChipsProvider = new FilterChipsProvider(type -> handleChipSelected(), chipFilterSource);
         mChipsCoordinator = new ChipsCoordinator(context, mChipsProvider);
 
@@ -55,7 +54,7 @@ public class FilterCoordinator {
         mModel.set(FilterProperties.CHANGE_LISTENER, this::handleTabSelected);
         selectTab(TabType.FILES);
 
-        mModel.set(FilterProperties.SHOW_TABS, prefetchStatusProvider.enabled());
+        mModel.set(FilterProperties.SHOW_TABS, PrefetchConfiguration.isPrefetchingFlagEnabled());
     }
 
     /** @return The {@link View} representing this widget. */
@@ -78,7 +77,8 @@ public class FilterCoordinator {
      * components might need to update the UI state.
      */
     public void setSelectedFilter(@FilterType int filter) {
-        if (filter == Filters.FilterType.PREFETCHED) {
+        if (filter == Filters.FilterType.PREFETCHED
+                && PrefetchConfiguration.isPrefetchingFlagEnabled()) {
             selectTab(TabType.PREFETCH);
         } else {
             mChipsProvider.setFilterSelected(filter);

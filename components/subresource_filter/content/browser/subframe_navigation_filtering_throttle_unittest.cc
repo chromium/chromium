@@ -158,10 +158,8 @@ class SubframeNavigationFilteringThrottleTest
   }
 
   std::string GetFilterConsoleMessage(const GURL& filtered_url) {
-    std::ostringstream oss(kDisallowSubframeConsoleMessagePrefix);
-    oss << filtered_url;
-    oss << kDisallowSubframeConsoleMessageSuffix;
-    return oss.str();
+    return base::StringPrintf(kDisallowSubframeConsoleMessageFormat,
+                              filtered_url.possibly_invalid_spec().c_str());
   }
 
  private:

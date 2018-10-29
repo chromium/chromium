@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "cc/base/synced_property.h"
 #include "cc/input/event_listener_properties.h"
@@ -319,9 +320,15 @@ class CC_EXPORT LayerTreeImpl {
   void set_content_source_id(uint32_t id) { content_source_id_ = id; }
   uint32_t content_source_id() { return content_source_id_; }
 
-  void SetLocalSurfaceIdFromParent(const viz::LocalSurfaceId& id);
+  void SetLocalSurfaceIdFromParent(
+      const viz::LocalSurfaceId& local_surface_id_from_parent,
+      base::TimeTicks local_surface_id_allocation_time_from_parent);
   const viz::LocalSurfaceId& local_surface_id_from_parent() const {
     return local_surface_id_from_parent_;
+  }
+
+  base::TimeTicks local_surface_id_allocation_time_from_parent() const {
+    return local_surface_id_allocation_time_from_parent_;
   }
 
   void RequestNewLocalSurfaceId();
@@ -502,7 +509,7 @@ class CC_EXPORT LayerTreeImpl {
   void UnregisterScrollbar(ScrollbarLayerImplBase* scrollbar_layer);
   ScrollbarSet ScrollbarsFor(ElementId scroll_element_id) const;
 
-  LayerImpl* FindFirstScrollingLayerOrDrawnScrollbarThatIsHitByPoint(
+  LayerImpl* FindFirstScrollingLayerOrScrollbarThatIsHitByPoint(
       const gfx::PointF& screen_space_point);
 
   LayerImpl* FindLayerThatIsHitByPoint(const gfx::PointF& screen_space_point);
@@ -646,6 +653,7 @@ class CC_EXPORT LayerTreeImpl {
 
   uint32_t content_source_id_;
   viz::LocalSurfaceId local_surface_id_from_parent_;
+  base::TimeTicks local_surface_id_allocation_time_from_parent_;
   bool new_local_surface_id_request_ = false;
   gfx::Size device_viewport_size_;
 

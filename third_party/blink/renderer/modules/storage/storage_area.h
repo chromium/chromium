@@ -29,6 +29,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -40,16 +41,30 @@ class LocalFrame;
 class WebStorageArea;
 class WebStorageNamespace;
 
-class StorageArea final : public ScriptWrappable, public ContextClient {
+class StorageArea final : public ScriptWrappable,
+                          public ContextClient,
+                          public CachedStorageArea::Source {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(StorageArea);
 
  public:
   enum class StorageType { kLocalStorage, kSessionStorage };
 
+  // TODO(dmurph): Remove this after onion souping. crbug.com/781870
   static StorageArea* Create(LocalFrame*,
                              std::unique_ptr<WebStorageArea>,
                              StorageType);
+
+  // Creates the onion-souped version.
+  static StorageArea* Create(LocalFrame*,
+                             scoped_refptr<CachedStorageArea>,
+                             StorageType);
+
+  // This storage area doesn't enqueue any events. This avoids duplicate event
+  // dispatch when an inspector agent is present.
+  static StorageArea* CreateForInspectorAgent(LocalFrame*,
+                                              scoped_refptr<CachedStorageArea>,
+                                              StorageType);
 
   unsigned length(ExceptionState&) const;
   String key(unsigned index, ExceptionState&) const;
@@ -68,12 +83,25 @@ class StorageArea final : public ScriptWrappable, public ContextClient {
 
   void Trace(blink::Visitor*) override;
 
+  // CachedStorageArea::Source:
+  KURL GetPageUrl() const override;
+  bool EnqueueStorageEvent(const String& key,
+                           const String& old_value,
+                           const String& new_value,
+                           const String& url) override;
+
+  blink::WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
+      const char* name,
+      WebScopedVirtualTimePauser::VirtualTaskDuration duration) override;
+
+  // TODO(dmurph): Remove this after onion souping. crbug.com/781870
   static void DispatchLocalStorageEvent(const String& key,
                                         const String& old_value,
                                         const String& new_value,
                                         const SecurityOrigin*,
                                         const KURL& page_url,
                                         WebStorageArea* source_area_instance);
+  // TODO(dmurph): Remove this after onion souping. crbug.com/781870
   static void DispatchSessionStorageEvent(const String& key,
                                           const String& old_value,
                                           const String& new_value,
@@ -83,13 +111,23 @@ class StorageArea final : public ScriptWrappable, public ContextClient {
                                           WebStorageArea* source_area_instance);
 
  private:
+  // TODO(dmurph): Remove this after onion souping. crbug.com/781870
   StorageArea(LocalFrame*, std::unique_ptr<WebStorageArea>, StorageType);
 
+  StorageArea(LocalFrame*,
+              scoped_refptr<CachedStorageArea>,
+              StorageType,
+              bool should_enqueue_events);
+
+  // TODO(dmurph): Remove this after onion souping. crbug.com/781870
   std::unique_ptr<WebStorageArea> storage_area_;
+
+  scoped_refptr<CachedStorageArea> cached_area_;
   StorageType storage_type_;
+  const bool should_enqueue_events_;
 
   mutable bool did_check_can_access_storage_ = false;
-  mutable bool can_access_storage_cached_result_;
+  mutable bool can_access_storage_cached_result_ = false;
 };
 
 }  // namespace blink

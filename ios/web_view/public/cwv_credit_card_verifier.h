@@ -12,6 +12,31 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CWVCreditCard;
+@protocol CWVCreditCardVerifierDataSource;
+@protocol CWVCreditCardVerifierDelegate;
+
+// The error domain for credit card verification errors.
+FOUNDATION_EXPORT CWV_EXPORT
+    NSErrorDomain const CWVCreditCardVerifierErrorDomain;
+// The key for the error message value in the error's |userInfo| dictionary.
+FOUNDATION_EXPORT CWV_EXPORT
+    NSString* const CWVCreditCardVerifierErrorMessageKey;
+// The key for the retry allowed value in the error's |userInfo| dictionary.
+FOUNDATION_EXPORT CWV_EXPORT
+    NSString* const CWVCreditCardVerifierRetryAllowedKey;
+
+// Possible error codes during credit card verification.
+typedef NS_ENUM(NSInteger, CWVCreditCardVerificationError) {
+  // No errors.
+  CWVCreditCardVerificationErrorNone = 0,
+  // Request failed; try again.
+  CWVCreditCardVerificationErrorTryAgainFailure = -100,
+  // Request failed; don't try again.
+  CWVCreditCardVerificationErrorPermanentFailure = -200,
+  // Unable to connect to Payments servers. Prompt user to check internet
+  // connection.
+  CWVCreditCardVerificationErrorNetworkFailure = -300,
+};
 
 CWV_EXPORT
 // Helps with verifying credit cards for autofill, updating expired expiration
@@ -53,22 +78,23 @@ CWV_EXPORT
 // Attempts |creditCard| verification.
 // |CVC| Card verification code. e.g. 3 digit code on the back of Visa cards or
 // 4 digit code in the front of American Express cards.
-// |month| 1 or 2 digit expiration month. e.g. 8 or 08 for August. Ignored if
+// |month| 1 or 2 digit expiration month. e.g. 8 or 08 for August. Can be nil if
 // |needsUpdateForExpirationDate| is NO.
-// |year| 2 or 4 digit expiration year. e.g. 19 or 2019. Ignored if
+// |year| 2 or 4 digit expiration year. e.g. 19 or 2019. Can be nil if
 // |needsUpdateForExpirationDate| is NO.
 // |storeLocally| Whether or not to save |creditCard| locally. If YES, user will
 // not be asked again to verify this card. Ignored if |canSaveLocally| is NO.
-// |completionHandler| Use to receive verification results. Must wait for
-// handler to return before attempting another verification.
-// |error| Contains the error message if unsuccessful. Empty if successful.
-// |retryAllowed| YES if user may attempt verification again.
+// |dataSource| will be asked to return risk data needed for verification.
+// |delegate| will be passed the verification result.
+// If |delegate| is passed an error object indicating retry is not allowed,
+// additional verifications will be ignored.
 - (void)verifyWithCVC:(NSString*)CVC
-      expirationMonth:(NSString*)expirationMonth
-       expirationYear:(NSString*)expirationYear
+      expirationMonth:(nullable NSString*)expirationMonth
+       expirationYear:(nullable NSString*)expirationYear
          storeLocally:(BOOL)storeLocally
-    completionHandler:
-        (void (^)(NSString* errorMessage, BOOL retryAllowed))completionHandler;
+           dataSource:(__weak id<CWVCreditCardVerifierDataSource>)dataSource
+             delegate:
+                 (nullable __weak id<CWVCreditCardVerifierDelegate>)delegate;
 
 // Returns YES if |CVC| is all digits and matches |expectedCVCLength|.
 - (BOOL)isCVCValid:(NSString*)CVC;

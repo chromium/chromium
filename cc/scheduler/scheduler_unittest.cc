@@ -4142,5 +4142,23 @@ TEST_F(SchedulerTest, NoInvalidationForAnimateOnlyFrames) {
   EXPECT_ACTIONS();
 }
 
+TEST_F(SchedulerTest, SendEarlyDidNotProduceFrameIfIdle) {
+  SetUpScheduler(EXTERNAL_BFS);
+  scheduler_->SetNeedsBeginMainFrame();
+
+  client_->Reset();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  auto begin_main_frame_args = client_->last_begin_main_frame_args();
+  EXPECT_NE(client_->last_begin_frame_ack().sequence_number,
+            begin_main_frame_args.sequence_number);
+
+  client_->Reset();
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::FINISHED_NO_UPDATES);
+  EXPECT_EQ(client_->last_begin_frame_ack().sequence_number,
+            begin_main_frame_args.sequence_number);
+}
+
 }  // namespace
 }  // namespace cc

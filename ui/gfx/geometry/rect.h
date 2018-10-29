@@ -33,7 +33,7 @@ namespace gfx {
 
 class Insets;
 
-class GFX_EXPORT Rect {
+class GEOMETRY_EXPORT Rect {
  public:
   constexpr Rect() = default;
   constexpr Rect(int width, int height) : size_(width, height) {}
@@ -258,16 +258,16 @@ inline bool operator!=(const Rect& lhs, const Rect& rhs) {
   return !(lhs == rhs);
 }
 
-GFX_EXPORT Rect operator+(const Rect& lhs, const Vector2d& rhs);
-GFX_EXPORT Rect operator-(const Rect& lhs, const Vector2d& rhs);
+GEOMETRY_EXPORT Rect operator+(const Rect& lhs, const Vector2d& rhs);
+GEOMETRY_EXPORT Rect operator-(const Rect& lhs, const Vector2d& rhs);
 
 inline Rect operator+(const Vector2d& lhs, const Rect& rhs) {
   return rhs + lhs;
 }
 
-GFX_EXPORT Rect IntersectRects(const Rect& a, const Rect& b);
-GFX_EXPORT Rect UnionRects(const Rect& a, const Rect& b);
-GFX_EXPORT Rect SubtractRects(const Rect& a, const Rect& b);
+GEOMETRY_EXPORT Rect IntersectRects(const Rect& a, const Rect& b);
+GEOMETRY_EXPORT Rect UnionRects(const Rect& a, const Rect& b);
+GEOMETRY_EXPORT Rect SubtractRects(const Rect& a, const Rect& b);
 
 // Constructs a rectangle with |p1| and |p2| as opposite corners.
 //
@@ -275,7 +275,7 @@ GFX_EXPORT Rect SubtractRects(const Rect& a, const Rect& b);
 // points", except that we consider points on the right/bottom edges of the
 // rect to be outside the rect.  So technically one or both points will not be
 // contained within the rect, because they will appear on one of these edges.
-GFX_EXPORT Rect BoundingRect(const Point& p1, const Point& p2);
+GEOMETRY_EXPORT Rect BoundingRect(const Point& p1, const Point& p2);
 
 // Scales the rect and returns the enclosing rect.  Use this only the inputs are
 // known to not overflow.  Use ScaleToEnclosingRectSafe if the inputs are

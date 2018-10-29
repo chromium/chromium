@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome menjimatkan masa anda dengan membawa akaun anda ke web. Anda boleh menambahkan atau mengalih keluar akaun dalam Tetapan.</translation>
 <translation id="3282568296779691940">Log masuk ke Chrome</translation>
 <translation id="3345341804167540816">Gunakan Chrome Everywhere</translation>
-<translation id="3678774398092457402">Adakah anda mahu Chrome menyimpan kata laluan anda untuk tapak ini?</translation>
 <translation id="384394811301901750">Google Chrome tidak dapat menggunakan kamera anda sekarang</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Anda bertukar akaun penyegerakan daripada <ph name="USER_EMAIL1" /> kepada <ph name="USER_EMAIL2" />. Data Chrome sedia ada anda diurus oleh <ph name="DOMAIN" />. Ini akan memadamkan data anda daripada peranti ini, tetapi data anda akan kekal dalam <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" /> boleh disesuaikan pada bila-bila masa. Google boleh menggunakan kandungan di tapak yang anda lawati, interaksi dan aktiviti penyemak imbas untuk memperibadikan Chrome dan Perkhidmatan Google seperti Terjemahan, Carian dan iklan.</translation>
 <translation id="5639704535586432836">Buka Tetapan &gt; Privasi &gt; Kamera &gt; Google Chrome dan hidupkan kamera.</translation>
 <translation id="5642200033778930880">Google Chrome tidak dapat menggunakan kamera anda dalam mod Paparan Pisah</translation>
-<translation id="5703130498371792817">Seronok menggunakan Chrome? <ph name="BEGIN_LINK" />Nilaikan apl ini<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Petua Chrome. Sesetengah butang kini terletak di bahagian bawah skrin anda, seperti Kembali, Ke Hadapan dan Carian.</translation>
 <translation id="6036420186814142909">Google Chrome mempunyai ciri-ciri yang membantu anda mengurus data internet anda dan berapa cepat anda mampu memuatkan halaman web.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Syarat Perkhidmatan Google Chrome</translation>
 <translation id="7165736900384873061">Mula menggunakan pengimbas QR Google Chrome</translation>
 <translation id="7172660552945675509">Petua: <ph name="BEGIN_LINK" />Alihkan Chrome ke dok anda<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome menggunakan ID Wajah untuk memastikan akses yang dibenarkan kepada kata laluan anda.</translation>
 <translation id="7265369419224458312">Akses tab yang telah anda buka pada komputer anda, terus dari sini. Cuma buka Chrome pada komputer anda, pergi ke menu dan pilih  “Log masuk ke Chrome…”</translation>
 <translation id="728488472449859922">Hidupkan pengimbas QR Google Chrome</translation>
 <translation id="7400722733683201933">Mengenai Google Chrome</translation>

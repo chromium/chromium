@@ -76,6 +76,10 @@ void GpuClient::SetConnectionErrorHandler(
   connection_error_handler_ = std::move(connection_error_handler);
 }
 
+base::WeakPtr<GpuClient> GpuClient::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void GpuClient::OnEstablishGpuChannel(
     mojo::ScopedMessagePipeHandle channel_handle,
     const gpu::GPUInfo& gpu_info,

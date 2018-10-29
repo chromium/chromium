@@ -39,16 +39,14 @@ VirtualKeyboardTray::VirtualKeyboardTray(Shelf* shelf)
   if (Shell::HasInstance()) {
     Shell::Get()->accessibility_controller()->AddObserver(this);
     Shell::Get()->AddShellObserver(this);
+    keyboard::KeyboardController::Get()->AddObserver(this);
   }
-  // Try observing keyboard controller, in case it is already constructed.
-  ObserveKeyboardController();
 }
 
 VirtualKeyboardTray::~VirtualKeyboardTray() {
-  // Try unobserving keyboard controller, in case it still exists.
-  UnobserveKeyboardController();
   // The Shell may not exist in some unit tests.
   if (Shell::HasInstance()) {
+    keyboard::KeyboardController::Get()->RemoveObserver(this);
     Shell::Get()->RemoveShellObserver(this);
     Shell::Get()->accessibility_controller()->RemoveObserver(this);
   }
@@ -60,7 +58,7 @@ base::string16 VirtualKeyboardTray::GetAccessibleNameForTray() {
 }
 
 void VirtualKeyboardTray::HideBubbleWithView(
-    const views::TrayBubbleView* bubble_view) {}
+    const TrayBubbleView* bubble_view) {}
 
 void VirtualKeyboardTray::ClickedOutsideBubble() {}
 
@@ -69,18 +67,26 @@ bool VirtualKeyboardTray::PerformAction(const ui::Event& event) {
       LoginMetricsRecorder::TrayClickTarget::kVirtualKeyboardTray);
 
   auto* keyboard_controller = keyboard::KeyboardController::Get();
+
   // Keyboard may not always be enabled. https://crbug.com/749989
-  if (keyboard_controller->enabled()) {
-    keyboard_controller->ShowKeyboardInDisplay(
-        display::Screen::GetScreen()->GetDisplayNearestWindow(
-            shelf_->GetWindow()));
-  }
+  if (!keyboard_controller->IsEnabled())
+    return true;
+
   // Normally, active status is set when virtual keyboard is shown/hidden,
   // however, showing virtual keyboard happens asynchronously and, especially
   // the first time, takes some time. We need to set active status here to
   // prevent bad things happening if user clicked the button before keyboard is
   // shown.
-  SetIsActive(true);
+  if (is_active()) {
+    keyboard_controller->HideKeyboardByUser();
+    SetIsActive(false);
+  } else {
+    keyboard_controller->ShowKeyboardInDisplay(
+        display::Screen::GetScreen()->GetDisplayNearestWindow(
+            shelf_->GetWindow()));
+    SetIsActive(true);
+  }
+
   return true;
 }
 
@@ -88,14 +94,6 @@ void VirtualKeyboardTray::OnAccessibilityStatusChanged() {
   bool new_enabled =
       Shell::Get()->accessibility_controller()->IsVirtualKeyboardEnabled();
   SetVisible(new_enabled);
-  if (new_enabled) {
-    // Observe keyboard controller to detect when the virtual keyboard is
-    // shown/hidden.
-    ObserveKeyboardController();
-  } else {
-    // Try unobserving keyboard controller, in case it is not yet destroyed.
-    UnobserveKeyboardController();
-  }
 }
 
 void VirtualKeyboardTray::OnKeyboardVisibilityStateChanged(
@@ -103,36 +101,18 @@ void VirtualKeyboardTray::OnKeyboardVisibilityStateChanged(
   SetIsActive(is_visible);
 }
 
-void VirtualKeyboardTray::OnKeyboardControllerCreated() {
-  ObserveKeyboardController();
-}
-
 void VirtualKeyboardTray::OnSessionStateChanged(
     session_manager::SessionState state) {
   UpdateIcon();
 }
 
-void VirtualKeyboardTray::ObserveKeyboardController() {
-  auto* keyboard_controller = keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled() && !keyboard_controller->HasObserver(this))
-    keyboard_controller->AddObserver(this);
-}
-
-void VirtualKeyboardTray::UnobserveKeyboardController() {
-  auto* keyboard_controller = keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled())
-    keyboard_controller->RemoveObserver(this);
-}
-
 void VirtualKeyboardTray::UpdateIcon() {
-  const gfx::VectorIcon& icon = chromeos::switches::ShouldUseShelfNewUi()
-                                    ? kShelfKeyboardNewuiIcon
-                                    : kShelfKeyboardIcon;
+  const gfx::VectorIcon& icon = kShelfKeyboardNewuiIcon;
   gfx::ImageSkia image = gfx::CreateVectorIcon(
       icon,
       TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
   icon_->SetImage(image);
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(
+  icon_->set_tooltip_text(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
   const int vertical_padding = (kTrayItemSize - image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - image.width()) / 2;

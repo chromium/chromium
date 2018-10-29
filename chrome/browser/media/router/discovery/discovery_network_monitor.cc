@@ -109,11 +109,20 @@ DiscoveryNetworkMonitor::DiscoveryNetworkMonitor(NetworkInfoFunction strategy)
   content::GetNetworkConnectionTracker()
       ->AddLeakyNetworkConnectionObserver(this);
 
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::IgnoreResult(&DiscoveryNetworkMonitor::UpdateNetworkInfo),
-          base::Unretained(this)));
+  // If the current connection type is available, call UpdateNetworkInfo,
+  // otherwise let OnConnectionChanged call it when the connection type is
+  // ready.
+  auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  if (content::GetNetworkConnectionTracker()->GetConnectionType(
+          &connection_type,
+          base::BindOnce(&DiscoveryNetworkMonitor::OnConnectionChanged,
+                         base::Unretained(this)))) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(&DiscoveryNetworkMonitor::UpdateNetworkInfo),
+            base::Unretained(this)));
+  }
 }
 
 DiscoveryNetworkMonitor::~DiscoveryNetworkMonitor() {

@@ -21,14 +21,22 @@ struct PaymentsCustomerData;
 // Returns the specified |server_id| encoded in base 64.
 std::string GetBase64EncodedServerId(const std::string& server_id);
 
-// Returns the wallet specifics id for the specified |server_id|.
+// Returns the wallet data specifics id for the specified |server_id|.
 std::string GetSpecificsIdForEntryServerId(const std::string& server_id);
 
-// Returns the storage key for the specified |server_id|.
+// Returns the wallet metadata specifics id for the specified |metadata_id|.
+std::string GetSpecificsIdForMetadataId(const std::string& metadata_id);
+
+// Returns the storage key for the specified |specifics_id|.
 std::string GetStorageKeyForSpecificsId(const std::string& specifics_id);
 
-// Returns the wallet specifics storage key for the specified |server_id|.
+// Returns the wallet data specifics storage key for the specified
+// |server_id|.
 std::string GetStorageKeyForEntryServerId(const std::string& server_id);
+
+// Returns the wallet metadata specifics storage key for the specified
+// |metadata_id|.
+std::string GetStorageKeyForMetadataId(const std::string& metadata_id);
 
 // Returns the client tag for the specified wallet |type| and
 // |wallet_data_specifics_id|.

@@ -34,7 +34,7 @@
 
 namespace blink {
 
-namespace XPath {
+namespace xpath {
 
 Number::Number(double value) : value_(value) {}
 
@@ -275,6 +275,6 @@ bool Predicate::Evaluate(EvaluationContext& context) const {
   return result.ToBoolean();
 }
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink

@@ -18,8 +18,8 @@
 #include "components/browser_sync/profile_sync_service.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/password_model_worker.h"
 #include "components/password_manager/core/browser/password_store.h"
-#include "components/password_manager/sync/browser/password_model_worker.h"
 #include "components/sync/driver/sync_api_component_factory.h"
 #include "components/sync/driver/sync_util.h"
 #include "components/sync/engine/passive_model_worker.h"
@@ -48,11 +48,11 @@ namespace ios_web_view {
 
 namespace {
 syncer::ModelTypeSet GetDisabledTypes() {
-  syncer::ModelTypeSet disabled_types = syncer::UserSelectableTypes();
-  // Don't need to sync preferences.
-  disabled_types.Put(syncer::PRIORITY_PREFERENCES);
   // Only want autofill and passwords.
-  disabled_types.Remove(syncer::AUTOFILL);
+  syncer::ModelTypeSet disabled_types = syncer::UserTypes();
+  disabled_types.Remove(syncer::AUTOFILL_PROFILE);
+  disabled_types.Remove(syncer::AUTOFILL_WALLET_DATA);
+  disabled_types.Remove(syncer::AUTOFILL_WALLET_METADATA);
   disabled_types.Remove(syncer::PASSWORDS);
   return disabled_types;
 }
@@ -120,6 +120,10 @@ history::HistoryService* WebViewSyncClient::GetHistoryService() {
   return nullptr;
 }
 
+sync_sessions::SessionSyncService* WebViewSyncClient::GetSessionSyncService() {
+  return nullptr;
+}
+
 bool WebViewSyncClient::HasPasswordStore() {
   return true;
 }
@@ -162,28 +166,25 @@ WebViewSyncClient::GetExtensionsActivity() {
   return nullptr;
 }
 
-sync_sessions::SyncSessionsClient* WebViewSyncClient::GetSyncSessionsClient() {
-  return nullptr;
-}
-
 base::WeakPtr<syncer::SyncableService>
 WebViewSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
-  if (!profile_web_data_service_) {
+  auto service = account_web_data_service_ ?: profile_web_data_service_;
+  if (!service) {
     NOTREACHED();
     return base::WeakPtr<syncer::SyncableService>();
   }
   switch (type) {
     case syncer::AUTOFILL_PROFILE:
       return autofill::AutofillProfileSyncableService::FromWebDataService(
-                 profile_web_data_service_.get())
+                 service.get())
           ->AsWeakPtr();
     case syncer::AUTOFILL_WALLET_DATA:
       return autofill::AutofillWalletSyncableService::FromWebDataService(
-                 profile_web_data_service_.get())
+                 service.get())
           ->AsWeakPtr();
     case syncer::AUTOFILL_WALLET_METADATA:
       return autofill::AutofillWalletMetadataSyncableService::
-          FromWebDataService(profile_web_data_service_.get())
+          FromWebDataService(service.get())
               ->AsWeakPtr();
     case syncer::PASSWORDS:
       return password_store_ ? password_store_->GetPasswordSyncableService()

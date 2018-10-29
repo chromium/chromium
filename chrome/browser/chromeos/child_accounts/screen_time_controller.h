@@ -35,9 +35,9 @@ class ScreenTimeController : public KeyedService,
   explicit ScreenTimeController(content::BrowserContext* context);
   ~ScreenTimeController() override;
 
-  // Returns the screen time duration. This includes time in
-  // kScreenTimeMinutesUsed plus time passed since |current_screen_start_time_|.
-  base::TimeDelta GetScreenTimeDuration() const;
+  // Returns the child's screen time duration. This is how long the child has
+  // used the device today (since the last reset).
+  base::TimeDelta GetScreenTimeDuration();
 
  private:
   // The types of time limit notifications. |SCREEN_TIME| is used when the
@@ -66,23 +66,12 @@ class ScreenTimeController : public KeyedService,
   void ShowNotification(ScreenTimeController::TimeLimitNotificationType type,
                         const base::TimeDelta& time_remaining);
 
-  // Reset time tracking relevant prefs and local timestamps.
-  void RefreshScreenLimit();
-
   // Called when the policy of time limits changes.
   void OnPolicyChanged();
 
   // Reset any currently running timers.
   void ResetStateTimers();
   void ResetInSessionTimers();
-
-  // Save the screen time progress when screen is locked, or user sign out or
-  // power down the device.
-  void SaveScreenTimeProgressBeforeExit();
-
-  // Save the screen time progress periodically in case of a crash or power
-  // outage.
-  void SaveScreenTimeProgressPeriodically();
 
   // Save the |state| to |prefs::kScreenTimeLastState|.
   void SaveCurrentStateToPref(const usage_time_limit::State& state);
@@ -104,25 +93,10 @@ class ScreenTimeController : public KeyedService,
   base::OneShotTimer warning_notification_timer_;
   base::OneShotTimer exit_notification_timer_;
 
-  // Called to record the current amount of time spent in-session.
-  base::RepeatingTimer save_screen_time_timer_;
-
   // Timers that are called when lock screen state change event happens, ie,
   // bedtime is over or the usage limit ends.
   base::OneShotTimer next_state_timer_;
   base::OneShotTimer reset_screen_time_timer_;
-
-  // Timestamp to keep track of the screen start time for the current active
-  // screen. This timestamp is periodically updated by
-  // SaveScreenTimeProgressPeriodically(), and is cleared when user exits the
-  // active screen(lock, sign out, shutdown).
-  base::Time current_screen_start_time_;
-
-  // Timestamp to keep track of the screen start time when user starts using
-  // the device for the first time of the day.
-  // Used to calculate the screen time limit and this will be refreshed by
-  // RefreshScreenLimit();
-  base::Time first_screen_start_time_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

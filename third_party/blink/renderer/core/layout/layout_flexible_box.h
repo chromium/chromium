@@ -38,6 +38,8 @@
 namespace blink {
 
 class FlexItem;
+class FlexItemVectorView;
+class FlexLayoutAlgorithm;
 class FlexLine;
 struct MinMaxSize;
 
@@ -157,8 +159,6 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   bool CanAvoidLayoutForNGChild(const LayoutBox& child) const;
 
   void LayoutFlexItems(bool relayout_children, SubtreeLayoutScope&);
-  LayoutUnit AutoMarginOffsetInMainAxis(const Vector<FlexItem>&,
-                                        LayoutUnit& available_free_space);
   bool HasAutoMarginsInCrossAxis(const LayoutBox& child) const;
   bool UpdateAutoMarginsInCrossAxis(LayoutBox& child,
                                     LayoutUnit available_alignment_space);
@@ -167,11 +167,14 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
 
   LayoutUnit ComputeChildMarginValue(Length margin);
   void PrepareOrderIteratorAndMargins();
-  MinMaxSize ComputeMinAndMaxSizesForChild(const LayoutBox& child) const;
+  MinMaxSize ComputeMinAndMaxSizesForChild(const FlexLayoutAlgorithm& algorithm,
+                                           const LayoutBox& child) const;
   LayoutUnit AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
       const LayoutBox& child,
       LayoutUnit child_size) const;
-  FlexItem ConstructFlexItem(LayoutBox& child, ChildLayoutType);
+  void ConstructAndAppendFlexItem(FlexLayoutAlgorithm* algorithm,
+                                  LayoutBox& child,
+                                  ChildLayoutType);
 
   bool ResolveFlexibleLengths(FlexLine*,
                               LayoutUnit initial_free_space,
@@ -182,7 +185,7 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   void PrepareChildForPositionedLayout(LayoutBox& child);
   void LayoutLineItems(FlexLine*, bool relayout_children, SubtreeLayoutScope&);
   void ApplyLineItemsPosition(FlexLine*);
-  void LayoutColumnReverse(Vector<FlexItem>&,
+  void LayoutColumnReverse(FlexItemVectorView&,
                            LayoutUnit cross_axis_offset,
                            LayoutUnit available_free_space);
   void AlignFlexLines(Vector<FlexLine>&);

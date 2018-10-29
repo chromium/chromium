@@ -17,7 +17,7 @@ FAIL console namespace: operation group(any...) assert_equals: operation has wro
 FAIL console namespace: operation groupCollapsed(any...) assert_equals: operation has wrong .length expected 0 but got 1
 FAIL console namespace: operation groupEnd() assert_equals: operation has wrong .length expected 0 but got 1
 FAIL console namespace: operation time(DOMString) assert_equals: operation has wrong .length expected 0 but got 1
-FAIL console namespace: operation timeLog(DOMString, any...) assert_own_property: namespace object missing operation "timeLog" expected property "timeLog" missing
+FAIL console namespace: operation timeLog(DOMString, any...) assert_equals: operation has wrong .length expected 0 but got 1
 FAIL console namespace: operation timeEnd(DOMString) assert_equals: operation has wrong .length expected 0 but got 1
 Harness: the test ran to completion.
 

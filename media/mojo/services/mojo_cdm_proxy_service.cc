@@ -57,15 +57,18 @@ void MojoCdmProxyService::CreateMediaCryptoSession(
 void MojoCdmProxyService::SetKey(uint32_t crypto_session_id,
                                  const std::vector<uint8_t>& key_id,
                                  media::CdmProxy::KeyType key_type,
-                                 const std::vector<uint8_t>& key_blob) {
+                                 const std::vector<uint8_t>& key_blob,
+                                 SetKeyCallback callback) {
   DVLOG(3) << __func__;
-  cdm_proxy_->SetKey(crypto_session_id, key_id, key_type, key_blob);
+  cdm_proxy_->SetKey(crypto_session_id, key_id, key_type, key_blob,
+                     std::move(callback));
 }
 
 void MojoCdmProxyService::RemoveKey(uint32_t crypto_session_id,
-                                    const std::vector<uint8_t>& key_id) {
+                                    const std::vector<uint8_t>& key_id,
+                                    RemoveKeyCallback callback) {
   DVLOG(3) << __func__;
-  cdm_proxy_->RemoveKey(crypto_session_id, key_id);
+  cdm_proxy_->RemoveKey(crypto_session_id, key_id, std::move(callback));
 }
 
 void MojoCdmProxyService::NotifyHardwareReset() {

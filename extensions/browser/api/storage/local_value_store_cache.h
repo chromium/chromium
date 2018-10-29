@@ -21,8 +21,7 @@ class ValueStoreFactory;
 // another for extensions. Each backend takes care of persistence.
 class LocalValueStoreCache : public ValueStoreCache {
  public:
-  explicit LocalValueStoreCache(
-      const scoped_refptr<ValueStoreFactory>& factory);
+  explicit LocalValueStoreCache(scoped_refptr<ValueStoreFactory> factory);
   ~LocalValueStoreCache() override;
 
   // ValueStoreCache implementation:

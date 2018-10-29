@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 
 namespace blink {
@@ -140,10 +141,13 @@ QueueingTimeEstimatorForTest::QueueingTimeEstimatorForTest(
     base::TimeDelta window_duration,
     int steps_per_window,
     base::TimeTicks time)
-    : QueueingTimeEstimator(client, window_duration, steps_per_window) {
-  // If initial state is not foregrounded, foreground.
+    : QueueingTimeEstimator(client,
+                            window_duration,
+                            steps_per_window,
+                            kLaunchingProcessIsBackgrounded) {
+  // If initial state is disabled, enable the estimator.
   if (kLaunchingProcessIsBackgrounded) {
-    this->OnRendererStateChanged(false, time);
+    this->OnRecordingStateChanged(false, time);
   }
 }
 

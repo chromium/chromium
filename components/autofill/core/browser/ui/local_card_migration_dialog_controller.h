@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/legal_message_line.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -31,6 +32,7 @@ class LocalCardMigrationDialogController {
       const std::vector<std::string>& selected_cards_guids) = 0;
   virtual void OnCancelButtonClicked() = 0;
   virtual void OnViewCardsButtonClicked() = 0;
+  virtual void OnLegalMessageLinkClicked(const GURL& url) = 0;
   virtual void OnDialogClosed() = 0;
 
  private:

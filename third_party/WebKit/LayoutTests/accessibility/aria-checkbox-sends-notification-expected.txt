@@ -1,8 +1,8 @@
 Test Checkbox
+
 This tests that checking of an aria checkbox sends a notification.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 Got notification: CheckedStateChanged
 Got notification: CheckedStateChanged

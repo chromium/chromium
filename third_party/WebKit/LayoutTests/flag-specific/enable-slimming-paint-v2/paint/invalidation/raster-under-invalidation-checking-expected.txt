@@ -9,7 +9,7 @@
         {
           "object": "LayoutBlockFlow DIV id='target1'",
           "rect": [18, 10, 60, 40],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "underPaintInvalidations": [
@@ -325,7 +325,7 @@
         {
           "object": "LayoutBlockFlow DIV id='target2'",
           "rect": [0, 0, 60, 40],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "underPaintInvalidations": [
@@ -641,7 +641,7 @@
         {
           "object": "LayoutBlockFlow (relative positioned) DIV id='target3'",
           "rect": [40, 70, 60, 40],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "underPaintInvalidations": [
@@ -954,7 +954,7 @@
         {
           "object": "LayoutBlockFlow (relative positioned) DIV id='target4'",
           "rect": [0, 60, 50, 40],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "underPaintInvalidations": [

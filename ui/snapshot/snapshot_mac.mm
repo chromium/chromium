@@ -15,9 +15,10 @@
 
 namespace ui {
 
-bool GrabViewSnapshot(gfx::NativeView view,
+bool GrabViewSnapshot(gfx::NativeView native_view,
                       const gfx::Rect& snapshot_bounds,
                       gfx::Image* image) {
+  NSView* view = native_view.GetNativeNSView();
   NSWindow* window = [view window];
   NSScreen* screen = [[NSScreen screens] firstObject];
   gfx::Rect screen_bounds = gfx::Rect(NSRectToCGRect([screen frame]));
@@ -55,11 +56,12 @@ bool GrabViewSnapshot(gfx::NativeView view,
   return true;
 }
 
-bool GrabWindowSnapshot(gfx::NativeWindow window,
+bool GrabWindowSnapshot(gfx::NativeWindow native_window,
                         const gfx::Rect& snapshot_bounds,
                         gfx::Image* image) {
   // Make sure to grab the "window frame" view so we get current tab +
   // tabstrip.
+  NSWindow* window = native_window.GetNativeNSWindow();
   return GrabViewSnapshot([[window contentView] superview], snapshot_bounds,
                           image);
 }
@@ -78,9 +80,10 @@ void GrabViewSnapshotAsync(gfx::NativeView view,
   callback.Run(gfx::Image());
 }
 
-void GrabWindowSnapshotAsync(gfx::NativeWindow window,
+void GrabWindowSnapshotAsync(gfx::NativeWindow native_window,
                              const gfx::Rect& source_rect,
                              const GrabWindowSnapshotAsyncCallback& callback) {
+  NSWindow* window = native_window.GetNativeNSWindow();
   return GrabViewSnapshotAsync([[window contentView] superview], source_rect,
                                callback);
 }

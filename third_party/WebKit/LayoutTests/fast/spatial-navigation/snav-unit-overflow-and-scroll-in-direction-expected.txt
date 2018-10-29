@@ -6,4 +6,3 @@ TEST COMPLETE
 PASS gFocusedDocument.activeElement.getAttribute("id") is "start"
 PASS true is true
 FAIL gFocusedDocument.activeElement.getAttribute("id") should be end. Was start.
-

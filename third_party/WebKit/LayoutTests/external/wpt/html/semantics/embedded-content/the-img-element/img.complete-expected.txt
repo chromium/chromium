@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-PASS img src omitted
-PASS img src empty
+PASS img src and srcset omitted
+PASS img src and srcset empty
 PASS async src complete test
+PASS async srcset complete test
 FAIL IDL attribute complete returns true when image resource has been fetched but not run yet & image is not in broken state assert_unreached: .complete didn't change to true Reached unreachable code
 PASS async src broken test
 Harness: the test ran to completion.

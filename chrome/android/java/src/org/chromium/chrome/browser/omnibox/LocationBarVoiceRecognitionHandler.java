@@ -18,6 +18,8 @@ import android.text.TextUtils;
 import org.chromium.base.metrics.CachedMetrics;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.VoiceSuggestionProvider.VoiceResult;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.search_engines.TemplateUrlService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -107,11 +109,14 @@ public class LocationBarVoiceRecognitionHandler {
         ToolbarDataProvider getToolbarDataProvider();
 
         /**
-         * Grabs a reference to the autocomplete controller from the location bar.
-         * @return The {@link AutocompleteController} currently in use by the
+         * Grabs a reference to the autocomplete coordinator from the location bar.
+         * @return The {@link AutocompleteCoordinator} currently in use by the
          *         {@link LocationBarLayout}.
          */
-        AutocompleteController getAutocompleteController();
+        // TODO(tedchoc): Limit the visibility of what is passed in here.  This does not need the
+        //                full coordinator.  It simply needs a way to pass voice suggestions to the
+        //                AutocompleteController.
+        AutocompleteCoordinator getAutocompleteCoordinator();
 
         /**
          * @return The current {@link WindowAndroid}.
@@ -155,8 +160,8 @@ public class LocationBarVoiceRecognitionHandler {
         @Override
         public void didFinishNavigation(String url, boolean isInMainFrame, boolean isErrorPage,
                 boolean hasCommitted, boolean isSameDocument, boolean isFragmentNavigation,
-                @Nullable Integer pageTransition, int errorCode, String errorDescription,
-                int httpStatusCode) {
+                boolean isRendererInitiated, boolean isDownload, @Nullable Integer pageTransition,
+                int errorCode, String errorDescription, int httpStatusCode) {
             if (hasCommitted && isInMainFrame && !isErrorPage) setReceivedUserGesture(url);
             destroy();
         }
@@ -185,12 +190,13 @@ public class LocationBarVoiceRecognitionHandler {
                 return;
             }
 
-            AutocompleteController autocompleteController = mDelegate.getAutocompleteController();
-            assert autocompleteController != null;
+            AutocompleteCoordinator autocompleteCoordinator =
+                    mDelegate.getAutocompleteCoordinator();
+            assert autocompleteCoordinator != null;
 
             recordVoiceSearchFinishEventSource(mSource);
 
-            VoiceResult topResult = autocompleteController.onVoiceResults(data.getExtras());
+            VoiceResult topResult = autocompleteCoordinator.onVoiceResults(data.getExtras());
             if (topResult == null) {
                 recordVoiceSearchResult(false);
                 return;

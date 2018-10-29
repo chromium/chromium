@@ -6,6 +6,7 @@ module device.mojom;
 
 import "device/vr/public/mojom/vr_service.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojo/geometry.mojom";
 
 const string kVrIsolatedServiceName = "xr_device_service";
 
@@ -71,8 +72,13 @@ interface XRRuntime {
 
   // The browser may register for changes to a device. Initial VRDisplayInfo
   // will immediately be returned to the listener to prevent races.
-  ListenToDeviceChanges(XRRuntimeEventListener listener) =>
-      (VRDisplayInfo display_info);
+  ListenToDeviceChanges(associated XRRuntimeEventListener listener) =>
+      (VRDisplayInfo? display_info);
+
+  // Ensure that the runtime has installed all prerequisites, and is ready to
+  // start. May result in updated display info being sent to registered
+  // listeners. RequestSession will fail if this hasn't been called.
+  EnsureInitialized() => ();
 
   SetListeningForActivate(bool listen_for_activation);
 };
@@ -139,6 +145,31 @@ interface IsolatedXRGamepadProviderFactory {
   GetIsolatedXRGamepadProvider(IsolatedXRGamepadProvider& provider);
 };
 
+// Represents an overlay that the browser may show on top of or instead of WebXR
+// content.  Consumed in the browser process, and implemented in the XRRuntime
+// process.
+interface ImmersiveOverlay {
+  // Request a pose.  If there is WebXR and an overlay visible at the same time,
+  // the same pose will be given to both.
+  RequestNextOverlayPose() => (device.mojom.XRFrameData pose);
+
+  // Submit a frame to show in the headset.  Only can be called when an overlay
+  // is visible.  The frame will be composited on top of WebXR content.
+  SubmitOverlayTexture(int16 frame_id, handle texture,
+      gfx.mojom.RectF left_bounds, gfx.mojom.RectF right_bounds) =>
+      (bool success);
+
+  // Allows the browser to hide WebXR content or overlays temporarily.
+  SetOverlayAndWebXRVisibility(bool overlay_visible, bool webxr_visible);
+};
+
+// XRCompositorHost lives in the XRRuntime process, and allows the browser to
+// obtain an ImmersiveOverlay to show overlay UI.  The obtained overlay will
+// disconnect when presentation ends.
+interface XRCompositorHost {
+  CreateImmersiveOverlay(ImmersiveOverlay& overlay);
+};
+
 // Notify the browser process about a set of runtimes.  The browser process
 // implements this interface to be notified about runtime changes from the XR
 // device service.
@@ -147,6 +178,7 @@ interface IsolatedXRRuntimeProviderClient {
   // attached and become available.
   OnDeviceAdded(XRRuntime runtime,
       IsolatedXRGamepadProviderFactory gamepad_factory,
+      XRCompositorHost compositor_host,
       device.mojom.VRDisplayInfo display_info);
 
   // Called when runtimes become unavailable - for example if the hardware is

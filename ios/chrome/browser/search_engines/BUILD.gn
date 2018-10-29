@@ -2,15 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/js_compile.gni")
 import("//build/config/features.gni")
 import("//rlz/buildflags/buildflags.gni")
+
+source_set("feature_flags") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feature_flags.cc",
+    "feature_flags.h",
+  ]
+  deps = [
+    "//base",
+  ]
+}
 
 source_set("search_engines") {
   sources = [
     "search_engine_observer_bridge.h",
     "search_engine_observer_bridge.mm",
+    "search_engine_tab_helper.h",
+    "search_engine_tab_helper.mm",
     "search_engines_util.cc",
     "search_engines_util.h",
+    "template_url_fetcher_factory.cc",
+    "template_url_fetcher_factory.h",
     "template_url_service_client_impl.cc",
     "template_url_service_client_impl.h",
     "template_url_service_factory.cc",
@@ -45,4 +61,28 @@ source_set("search_engines") {
   if (enable_rlz) {
     deps += [ "//components/rlz" ]
   }
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "search_engine_js_unittest.mm",
+  ]
+  deps = [
+    ":search_engine_js",
+    "//base:base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/web:test_support",
+    "//ios/web",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}
+
+js_compile_checked("search_engine_js") {
+  sources = [
+    "resources/search_engine.js",
+  ]
 }

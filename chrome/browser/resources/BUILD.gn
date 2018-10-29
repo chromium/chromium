@@ -22,10 +22,12 @@ if (closure_compile) {
         "md_history:closure_compile",
         "media_router:closure_compile",
         "ntp4:closure_compile",
+        "omnibox:closure_compile",
         "pdf:closure_compile",
         "print_preview:closure_compile",
         "settings:closure_compile",
         "signin/dice_sync_confirmation:closure_compile",
+        "welcome/onboarding_welcome:closure_compile",
       ]
     }
     if (is_chromeos) {
@@ -150,6 +152,21 @@ if (!is_android) {
       "grit/settings_resources_map.cc",
       "grit/settings_resources_map.h",
       "settings_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+}
+
+if (!is_android && !is_chromeos) {
+  grit("onboarding_welcome_resources") {
+    source = "welcome/onboarding_welcome/onboarding_welcome_resources.grd"
+
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/onboarding_welcome_resources.h",
+      "grit/onboarding_welcome_resources_map.cc",
+      "grit/onboarding_welcome_resources_map.h",
+      "onboarding_welcome_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

@@ -14,7 +14,8 @@
 #include "ui/ozone/platform/wayland/gpu/wayland_connection_proxy.h"
 #include "ui/ozone/platform/wayland/wayland_connection.h"
 #include "ui/ozone/platform/wayland/wayland_connection_connector.h"
-#include "ui/ozone/platform/wayland/wayland_native_display_delegate.h"
+#include "ui/ozone/platform/wayland/wayland_input_method_context_factory.h"
+#include "ui/ozone/platform/wayland/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/wayland_window.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
@@ -30,6 +31,7 @@
 #endif
 
 #if defined(WAYLAND_GBM)
+#include "ui/base/ui_base_features.h"
 #include "ui/ozone/common/linux/gbm_wrapper.h"
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_handle.h"
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
@@ -49,6 +51,10 @@ class OzonePlatformWayland : public OzonePlatform {
     // https://github.com/wayland-project/wayland-protocols/commit/76d1ae8c65739eff3434ef219c58a913ad34e988
     properties_.custom_frame_pref_default = true;
     properties_.use_system_title_bar = false;
+    // Ozone/Wayland relies on the mojo communication when running in
+    // !single_process.
+    // TODO(msisov, rjkroege): Remove after http://crbug.com/806092.
+    properties_.requires_mojo = true;
   }
   ~OzonePlatformWayland() override {}
 
@@ -80,6 +86,15 @@ class OzonePlatformWayland : public OzonePlatform {
   std::unique_ptr<PlatformWindow> CreatePlatformWindow(
       PlatformWindowDelegate* delegate,
       PlatformWindowInitProperties properties) override {
+    // Some unit tests may try to set custom input method context factory
+    // after InitializeUI. Thus instead of creating factory in InitializeUI
+    // it is set at this point if none exists
+    if (!LinuxInputMethodContextFactory::instance() &&
+        !wayland_input_method_context_factory_) {
+      wayland_input_method_context_factory_.reset(
+          new WaylandInputMethodContextFactory(connection_.get()));
+    }
+
     auto window = std::make_unique<WaylandWindow>(delegate, connection_.get());
     if (!window->Initialize(std::move(properties)))
       return nullptr;
@@ -88,7 +103,14 @@ class OzonePlatformWayland : public OzonePlatform {
 
   std::unique_ptr<display::NativeDisplayDelegate> CreateNativeDisplayDelegate()
       override {
-    return std::make_unique<WaylandNativeDisplayDelegate>(connection_.get());
+    return std::make_unique<display::FakeDisplayDelegate>();
+  }
+
+  std::unique_ptr<PlatformScreen> CreateScreen() override {
+    // The WaylandConnection and the WaylandOutputManager must be created before
+    // PlatformScreen.
+    DCHECK(connection_ && connection_->wayland_output_manager());
+    return connection_->wayland_output_manager()->CreateWaylandScreen();
   }
 
   void InitializeUI(const InitParams& args) override {
@@ -141,8 +163,7 @@ class OzonePlatformWayland : public OzonePlatform {
   }
 
   const PlatformProperties& GetPlatformProperties() override {
-    DCHECK(connection_.get());
-    if (properties_.supported_buffer_formats.empty()) {
+    if (connection_ && properties_.supported_buffer_formats.empty()) {
       properties_.supported_buffer_formats =
           connection_->GetSupportedBufferFormats();
     }
@@ -168,6 +189,8 @@ class OzonePlatformWayland : public OzonePlatform {
   std::unique_ptr<StubOverlayManager> overlay_manager_;
   std::unique_ptr<InputController> input_controller_;
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
+  std::unique_ptr<WaylandInputMethodContextFactory>
+      wayland_input_method_context_factory_;
 
 #if BUILDFLAG(USE_XKBCOMMON)
   XkbEvdevCodes xkb_evdev_code_converter_;

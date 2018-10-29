@@ -18,7 +18,7 @@
   var target = TestRunner.mainTarget;
 
   function uiSourceCodeURL(uiSourceCode) {
-    return uiSourceCode.url().replace(/.*LayoutTests/, 'LayoutTests');
+    return uiSourceCode.url().replace(/.*(LayoutTests|web_tests)./, '');
   }
 
   function dumpUISourceCode(uiSourceCode, callback) {

@@ -57,7 +57,7 @@ struct UsbInterfaceAssociationDescriptor {
 void ParseInterfaceAssociationDescriptors(
     const std::vector<uint8_t>& buffer,
     std::vector<UsbInterfaceAssociationDescriptor>* functions) {
-  std::vector<uint8_t>::const_iterator it = buffer.begin();
+  auto it = buffer.begin();
 
   while (it != buffer.end()) {
     // All descriptors must be at least 2 byte which means the length and type
@@ -422,8 +422,7 @@ bool UsbDeviceDescriptor::Parse(const std::vector<uint8_t>& buffer) {
   UsbInterfaceDescriptor* last_interface = nullptr;
   UsbEndpointDescriptor* last_endpoint = nullptr;
 
-  for (std::vector<uint8_t>::const_iterator it = buffer.begin();
-       it != buffer.end();
+  for (auto it = buffer.begin(); it != buffer.end();
        /* incremented internally */) {
     const uint8_t* data = &it[0];
     uint8_t length = data[0];

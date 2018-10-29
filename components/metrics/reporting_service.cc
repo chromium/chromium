@@ -81,13 +81,13 @@ bool ReportingService::reporting_active() const {
   return reporting_active_;
 }
 
-void ReportingService::UpdateMetricsUsagePrefs(const std::string& service_name,
-                                               int message_size,
-                                               bool is_cellular) {
+void ReportingService::UpdateMetricsUsagePrefs(int message_size,
+                                               bool is_cellular,
+                                               bool is_metrics_service_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (data_use_tracker_) {
-    data_use_tracker_->UpdateMetricsUsagePrefs(service_name, message_size,
-                                               is_cellular);
+    data_use_tracker_->UpdateMetricsUsagePrefs(message_size, is_cellular,
+                                               is_metrics_service_usage);
   }
 }
 
@@ -98,10 +98,13 @@ void ReportingService::UpdateMetricsUsagePrefs(const std::string& service_name,
 void ReportingService::SendNextLog() {
   DVLOG(1) << "SendNextLog";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!last_upload_finish_time_.is_null()) {
-    LogActualUploadInterval(base::TimeTicks::Now() - last_upload_finish_time_);
-    last_upload_finish_time_ = base::TimeTicks();
-  }
+
+  LogActualUploadInterval(last_upload_finish_time_.is_null()
+                              ? base::TimeDelta()
+                              : base::TimeTicks::Now() -
+                                    last_upload_finish_time_);
+  last_upload_finish_time_ = base::TimeTicks();
+
   if (!reporting_active()) {
     upload_scheduler_->StopAndUploadCancelled();
     return;

@@ -31,10 +31,9 @@ class FullscreenController : public KeyedService {
 
   // The WebStateList for the Browser whose fullscreen state is managed by this
   // controller.
-  // TODO(crbug.com/790886): Once FullscreenController is a BrowserUserData,
-  // remove this, as the Browser's WebStateList can be used directly rather than
-  // being set.
   virtual void SetWebStateList(WebStateList* web_state_list) = 0;
+  virtual const WebStateList* GetWebStateList() const = 0;
+  virtual WebStateList* GetWebStateList() = 0;
 
   // Adds and removes FullscreenControllerObservers.
   virtual void AddObserver(FullscreenControllerObserver* observer) = 0;

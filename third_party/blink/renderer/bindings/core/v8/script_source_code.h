@@ -46,7 +46,7 @@ class ScriptResource;
 class SingleCachedMetadataHandler;
 
 class CORE_EXPORT ScriptSourceCode final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // For inline scripts.
@@ -57,13 +57,6 @@ class CORE_EXPORT ScriptSourceCode final {
       const KURL& = KURL(),
       const TextPosition& = TextPosition::MinimumPosition());
 
-  ScriptSourceCode(
-      const ParkableString& source,
-      ScriptSourceLocationType = ScriptSourceLocationType::kUnknown,
-      SingleCachedMetadataHandler* cache_handler = nullptr,
-      const KURL& = KURL(),
-      const TextPosition& start_position = TextPosition::MinimumPosition());
-
   // For external scripts.
   //
   // We lose the encoding information from ScriptResource.
@@ -71,6 +64,19 @@ class CORE_EXPORT ScriptSourceCode final {
   ScriptSourceCode(ScriptStreamer*,
                    ScriptResource*,
                    ScriptStreamer::NotStreamingReason);
+
+  // For (external) worker scripts. Leaves url fragment intact.
+  //
+  // If we move worker top-level script fetch to the worker thread, this could
+  // probably be merged in to the main external script constructor.
+  //
+  // NOTE: It is import to keep the url fragment in this case so that errors in
+  // worker scripts can include the fragment when reporting the location of the
+  // failure. This is enforced by several tests in
+  // external/wpt/workers/interfaces/WorkerGlobalScope/onerror/.
+  ScriptSourceCode(const String& source,
+                   SingleCachedMetadataHandler*,
+                   const KURL&);
 
   ~ScriptSourceCode();
   void Trace(blink::Visitor*);
@@ -90,6 +96,13 @@ class CORE_EXPORT ScriptSourceCode final {
   }
 
  private:
+  ScriptSourceCode(
+      const ParkableString& source,
+      ScriptSourceLocationType = ScriptSourceLocationType::kUnknown,
+      SingleCachedMetadataHandler* cache_handler = nullptr,
+      const KURL& = KURL(),
+      const TextPosition& start_position = TextPosition::MinimumPosition());
+
   const ParkableString source_;
   Member<SingleCachedMetadataHandler> cache_handler_;
   Member<ScriptStreamer> streamer_;

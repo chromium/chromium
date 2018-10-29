@@ -24,6 +24,8 @@ class ExecutionContext;
 // BytesConsumer has four states: waiting, readable, closed and errored. Once
 // the state becomes closed or errored, it will never change. |readable| means
 // that the BytesConsumer is ready to read non-empty bytes synchronously.
+// A BytesConsumer should be retained by TraceWrapperMember, not Member, as
+// a subclass has a reference to a v8::Value.
 class CORE_EXPORT BytesConsumer
     : public GarbageCollectedFinalized<BytesConsumer> {
  public:
@@ -126,6 +128,20 @@ class CORE_EXPORT BytesConsumer
   // This function returns a non-null form data when the handle is made
   // from an EncodedFormData-convertible value.
   virtual scoped_refptr<EncodedFormData> DrainAsFormData() { return nullptr; }
+
+  // Drains the data as a ScopedDataPipeConsumerHandle.
+  // When this function returns a valid handle, the returned pipe handle
+  // contains bytes that would be read through the BeginRead and
+  // EndRead functions without calling this function. The consumer may
+  // become closed or remain in the open state depending on if it has
+  // received an explicit completion signal.  If the consumer becomes
+  // closed OnstateChange() will *not* be called.  Instead manually
+  // call GetPublicState() to check if draining closed the consumer.
+  //
+  // When this function returns an invalid handle, this function does nothing.
+  virtual mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe() {
+    return mojo::ScopedDataPipeConsumerHandle();
+  }
 
   // Sets a client. This can be called only when no client is set. When
   // this object is already closed or errored, this function does nothing.

@@ -28,6 +28,22 @@ class InvalidationObjectId;
 
 namespace syncer {
 
+// Used by UMA histogram, so entries shouldn't be reordered or removed.
+enum class HandlerOwnerType {
+  kCloud = 0,
+  kFake = 1,
+  kRemoteCommands = 2,
+  kDrive = 3,
+  kSync = 4,
+  kTicl = 5,
+  kChildAccount = 6,
+  kNotificationPrinter = 7,
+  kInvalidatorShim = 8,
+  kSyncBackendHostImpl = 9,
+  kUnknown = 10,
+  kMaxValue = kUnknown,
+};
+
 class Invalidation;
 
 // TODO(https://crbug.com/842655): Convert Repeating to Once.
@@ -52,7 +68,8 @@ typedef std::map<invalidation::ObjectId, int, ObjectIdLessThan>
     ObjectIdCountMap;
 
 using Topic = std::string;
-using TopicSet = std::unordered_set<std::string>;
+// It should be std::set, since std::set_difference is used for it.
+using TopicSet = std::set<std::string>;
 
 // Caller owns the returned DictionaryValue.
 std::unique_ptr<base::DictionaryValue> ObjectIdToValue(
@@ -94,6 +111,8 @@ INVALIDATION_EXPORT std::string InvalidationObjectIdToString(
 TopicSet ConvertIdsToTopics(ObjectIdSet ids);
 ObjectIdSet ConvertTopicsToIds(TopicSet topics);
 invalidation::ObjectId ConvertTopicToId(const Topic& topic);
+
+HandlerOwnerType OwnerNameToHandlerType(const std::string& owner_name);
 
 }  // namespace syncer
 

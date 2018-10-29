@@ -91,9 +91,9 @@ TEST_F(HTMLSelectElementTest, SaveRestoreSelectMultipleFormControlState) {
 }
 
 TEST_F(HTMLSelectElementTest, RestoreUnmatchedFormControlState) {
-  // We had a bug that selectedOption() and m_lastOnChangeOption were
-  // mismatched in optionToBeShown(). It happened when
-  // restoreFormControlState() couldn't find matched OPTIONs.
+  // We had a bug that SelectedOption() and last_on_change_option_ were
+  // mismatched in OptionToBeShown(). It happened when
+  // RestoreFormControlState() couldn't find matched OPTIONs.
   // crbug.com/627833.
 
   SetHtmlInnerHTML(R"HTML(

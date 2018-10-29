@@ -8,9 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-
-#ifndef V8AnyCallbackFunctionVariadicAnyArgs_h
-#define V8AnyCallbackFunctionVariadicAnyArgs_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_ANY_CALLBACK_FUNCTION_VARIADIC_ANY_ARGS_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_ANY_CALLBACK_FUNCTION_VARIADIC_ANY_ARGS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
@@ -77,4 +76,4 @@ Persistent<V8AnyCallbackFunctionVariadicAnyArgs> WrapPersistent(V8AnyCallbackFun
 
 }  // namespace blink
 
-#endif  // V8AnyCallbackFunctionVariadicAnyArgs_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_ANY_CALLBACK_FUNCTION_VARIADIC_ANY_ARGS_H_

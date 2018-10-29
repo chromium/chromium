@@ -12,16 +12,14 @@
 
 namespace blink {
 
-class WebServiceWorkerRegistration;
 struct WebPushSubscriptionOptions;
 
 class WebPushClient {
  public:
   virtual ~WebPushClient() = default;
 
-  // Ownership of the WebServiceWorkerRegistration is not transferred.
   // Ownership of the callbacks is transferred to the client.
-  virtual void Subscribe(WebServiceWorkerRegistration*,
+  virtual void Subscribe(int64_t service_worker_registration_id,
                          const WebPushSubscriptionOptions&,
                          bool user_gesture,
                          std::unique_ptr<WebPushSubscriptionCallbacks>) = 0;

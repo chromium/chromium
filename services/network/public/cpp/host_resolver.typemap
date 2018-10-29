@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 mojom = "//services/network/public/mojom/host_resolver.mojom"
-public_headers = [ "//net/dns/host_resolver.h" ]
+public_headers = [
+  "//net/dns/dns_config_overrides.h",
+  "//net/dns/host_resolver.h",
+]
 traits_headers =
     [ "//services/network/public/cpp/host_resolver_mojom_traits.h" ]
 sources = [
@@ -13,6 +16,7 @@ public_deps = [
   "//net",
 ]
 type_mappings = [
+  "network.mojom.DnsConfigOverrides=net::DnsConfigOverrides",
   "network.mojom.ResolveHostParameters.DnsQueryType=net::HostResolver::DnsQueryType",
   "network.mojom.ResolveHostParameters.Source=net::HostResolverSource",
 ]

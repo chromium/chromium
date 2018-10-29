@@ -412,7 +412,7 @@ class LocalDevicePerfTestRun(local_device_test_run.LocalDeviceTestRun):
     return sorted(devices)
 
   #override
-  def RunTests(self):
+  def RunTests(self, results):
     def run_no_devices_tests():
       if not self._no_device_tests:
         return []
@@ -451,7 +451,12 @@ class LocalDevicePerfTestRun(local_device_test_run.LocalDeviceTestRun):
     host_test_results, device_test_results = reraiser_thread.RunAsync(
         [run_no_devices_tests, run_devices_tests])
 
-    return host_test_results + device_test_results
+    # Ideally, results would be populated as early as possible, so that in the
+    # event of an exception or timeout, the caller will still have partially
+    # populated results. This looks like it can be done prior to dispatching
+    # tests, but will hold off on making this change unless it looks like it
+    # might provide utility.
+    results.extend(host_test_results + device_test_results)
 
   # override
   def TestPackage(self):
@@ -480,12 +485,16 @@ class OutputJsonList(LocalDevicePerfTestRun):
     pass
 
   # override
-  def RunTests(self):
+  def RunTests(self, results):
     result_type = self._test_instance.OutputJsonList()
     result = base_test_result.TestRunResults()
     result.AddResult(
         base_test_result.BaseTestResult('OutputJsonList', result_type))
-    return [result]
+
+    # Ideally, results would be populated as early as possible, so that in the
+    # event of an exception or timeout, the caller will still have partially
+    # populated results.
+    results.append(result)
 
   # override
   def _CreateShards(self, _tests):
@@ -502,12 +511,16 @@ class PrintStep(LocalDevicePerfTestRun):
     pass
 
   # override
-  def RunTests(self):
+  def RunTests(self, results):
     result_type = self._test_instance.PrintTestOutput()
     result = base_test_result.TestRunResults()
     result.AddResult(
         base_test_result.BaseTestResult('PrintStep', result_type))
-    return [result]
+
+    # Ideally, results would be populated as early as possible, so that in the
+    # event of an exception or timeout, the caller will still have partially
+    # populated results.
+    results.append(result)
 
   # override
   def _CreateShards(self, _tests):

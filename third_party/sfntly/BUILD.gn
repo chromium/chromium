@@ -16,6 +16,12 @@ config("sfntly_public_config") {
 config("sfntly_common_config") {
   defines = [ "SFNTLY_NO_EXCEPTION" ]
   include_dirs = [ "src/cpp/src" ]
+
+  if (is_clang) {
+    # TODO(tikuta): Remove this once the PR is merged.
+    # https://github.com/googlei18n/sfntly/pull/104
+    cflags = [ "-Wno-user-defined-warnings" ]
+  }
 }
 
 source_set("sfntly_chromium") {

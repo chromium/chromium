@@ -12,12 +12,22 @@ import("//testing/test.gni")
 
 source_set("lib") {
   sources = [
+    "audio_focus_manager.cc",
+    "audio_focus_manager.h",
+    "audio_focus_manager_metrics_helper.cc",
+    "audio_focus_manager_metrics_helper.h",
+    "media_controller.cc",
+    "media_controller.h",
     "media_session_service.cc",
     "media_session_service.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//mojo/public/cpp/bindings",
+    "//services/media_session/public/cpp",
+    "//services/media_session/public/mojom",
   ]
 
   public_deps = [
@@ -34,13 +44,20 @@ service_manifest("manifest") {
 source_set("tests") {
   testonly = true
   sources = [
+    "audio_focus_manager_unittest.cc",
+    "media_controller_unittest.cc",
     "media_session_service_unittest.cc",
+    "mock_media_session.cc",
+    "mock_media_session.h",
   ]
 
   deps = [
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//services/media_session/public/cpp",
+    "//services/media_session/public/cpp/test:test_support",
+    "//services/media_session/public/mojom",
     "//services/service_manager/public/cpp/test:test_support",
     "//testing/gtest",
   ]

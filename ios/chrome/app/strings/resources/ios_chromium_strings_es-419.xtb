@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Obtener las funciones inteligentes de Google en Chromium</translation>
 <translation id="2730884209570016437">Chromium no puede utilizar tu cámara porque la está usando otra aplicación</translation>
 <translation id="2797210818057553964">Puedes personalizar esta opción en la configuración de Chromium en cualquier momento</translation>
+<translation id="2915596697727466327">Chromium usa Face ID para garantizar el acceso autorizado a tus contraseñas.</translation>
 <translation id="3256316712990552818">Se copió en Chromium.</translation>
 <translation id="3413120535237193088">Para obtener tus favoritos en todos tus dispositivos, accede a Chromium.</translation>
 <translation id="3473048256428424907">Activar el escáner QR en Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Aquí se mostrarán las pestañas que hayas abierto en Chromium en tus otros dispositivos.</translation>
 <translation id="495292094137889840">Usar el escáner QR de Chromium</translation>
 <translation id="5231355151045086930">Salir de Chromium</translation>
-<translation id="5416919929805616771">¿Te gusta Chromium? <ph name="BEGIN_LINK" />Califica esta app<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Bienvenido a Chromium</translation>
 <translation id="5945387852661427312">Estás accediendo con una cuenta que administra <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chromium. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chromium, los datos se borrarán de este dispositivo, pero quedarán almacenados en tu cuenta de Google.</translation>
 <translation id="6068866989048414399">Condiciones del servicio de Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">La cuenta de sincronización cambiará de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. El dominio <ph name="DOMAIN" /> administra tus datos existentes de Chromium. Esta acción borrará los datos de este dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Sugerencia: <ph name="BEGIN_LINK" />Lleva Chromium a tu Dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Obtén una mejor experiencia de Google en Chromium según tu ubicación.</translation>
-<translation id="8353224596138547809">¿Quieres que Chromium guarde tu contraseña para este sitio?</translation>
 <translation id="8508544542427105412">Se puede modificar la <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> en cualquier momento. Es posible que Google use el contenido de los sitios que visitas, tu actividad de navegación y otras interacciones para personalizar Chromium y los servicios de Google, como el Traductor, la Búsqueda y los anuncios.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8809780021347235332">Para guardar imágenes, presiona Configuración para permitir que Chromium use tus fotos</translation>

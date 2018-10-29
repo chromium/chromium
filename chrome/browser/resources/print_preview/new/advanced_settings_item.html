@@ -29,26 +29,24 @@
 
       .label,
       .value {
+        align-self: center;
         color: var(--google-grey-900);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .label {
+        flex: 1;
+        margin-inline-end: 10px;
         opacity: 0.87;
-        padding-inline-end: 104px;
-        width: 125px;
       }
 
       .value {
-        flex: none;
-        width: 239px;
+        flex: 0;
+        min-width: 239px;
       }
 
       cr-input {
-        height: 28px;
-        line-height: 24px;
         width: 239px;
         --cr-input-error-display: none;
       }

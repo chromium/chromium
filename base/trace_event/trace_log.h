@@ -125,7 +125,9 @@ class BASE_EXPORT TraceLog : public MemoryDumpProvider {
     // TraceLog::IsEnabled() is false at this point.
     virtual void OnTraceLogDisabled() = 0;
   };
+  // Adds an observer. Cannot be called from within the observer callback.
   void AddEnabledStateObserver(EnabledStateObserver* listener);
+  // Removes an observer. Cannot be called from within the observer callback.
   void RemoveEnabledStateObserver(EnabledStateObserver* listener);
   // Adds an observer that is owned by TraceLog. This is useful for agents that
   // implement tracing feature that needs to stay alive as long as TraceLog
@@ -478,12 +480,15 @@ class BASE_EXPORT TraceLog : public MemoryDumpProvider {
   int num_traces_recorded_;
   std::unique_ptr<TraceBuffer> logged_events_;
   std::vector<std::unique_ptr<TraceEvent>> metadata_events_;
-  bool dispatching_to_observer_list_;
-  std::vector<EnabledStateObserver*> enabled_state_observer_list_;
+
+  // The lock protects observers access.
+  mutable Lock observers_lock_;
+  bool dispatching_to_observers_ = false;
+  std::vector<EnabledStateObserver*> enabled_state_observers_;
   std::map<AsyncEnabledStateObserver*, RegisteredAsyncObserver>
       async_observers_;
   // Manages ownership of the owned observers. The owned observers will also be
-  // added to |enabled_state_observer_list_|.
+  // added to |enabled_state_observers_|.
   std::vector<std::unique_ptr<EnabledStateObserver>>
       owned_enabled_state_observer_copy_;
 

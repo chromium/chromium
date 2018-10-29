@@ -126,7 +126,7 @@ class MEDIA_EXPORT AudioRendererImpl
   };
 
   // Callback from the audio decoder delivering decoded audio samples.
-  void DecodedAudioReady(AudioBufferStream::Status status,
+  void DecodedAudioReady(AudioDecoderStream::Status status,
                          const scoped_refptr<AudioBuffer>& buffer);
 
   // Handles buffers that come out of decoder (MSE: after passing through
@@ -179,9 +179,9 @@ class MEDIA_EXPORT AudioRendererImpl
   // This can only return true while in the kPlaying state.
   bool IsBeforeStartTime(const scoped_refptr<AudioBuffer>& buffer);
 
-  // Called upon AudioBufferStream initialization, or failure thereof (indicated
-  // by the value of |success|).
-  void OnAudioBufferStreamInitialized(bool succes);
+  // Called upon AudioDecoderStream initialization, or failure thereof
+  // (indicated by the value of |success|).
+  void OnAudioDecoderStreamInitialized(bool succes);
 
   void FinishInitialization(PipelineStatus status);
   void FinishFlush();
@@ -193,7 +193,7 @@ class MEDIA_EXPORT AudioRendererImpl
   void OnBufferingStateChange(BufferingState state);
   void OnWaitingForDecryptionKey();
 
-  // Generally called by the AudioBufferStream when a config change occurs. May
+  // Generally called by the AudioDecoderStream when a config change occurs. May
   // also be called internally with an empty config to reset config-based state.
   // Will notify RenderClient when called with a valid config.
   void OnConfigChange(const AudioDecoderConfig& config);
@@ -229,7 +229,7 @@ class MEDIA_EXPORT AudioRendererImpl
   // may deadlock between |task_runner_| and the audio callback thread.
   scoped_refptr<media::AudioRendererSink> sink_;
 
-  std::unique_ptr<AudioBufferStream> audio_buffer_stream_;
+  std::unique_ptr<AudioDecoderStream> audio_decoder_stream_;
 
   MediaLog* media_log_;
 

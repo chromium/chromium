@@ -155,7 +155,7 @@ void ExampleMenuModel::ExecuteCommand(int command_id, int event_flags) {
         checked_fruit = "Kiwi";
 
       // Update the check status.
-      std::set<int>::iterator iter = checked_fruits_.find(command_id);
+      auto iter = checked_fruits_.find(command_id);
       if (iter == checked_fruits_.end()) {
         DVLOG(1) << "Checked " << checked_fruit;
         checked_fruits_.insert(command_id);

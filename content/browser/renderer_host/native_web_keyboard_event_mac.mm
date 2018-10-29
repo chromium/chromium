@@ -77,7 +77,8 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
                           modifierFlags:flags
                               timestamp:ui::EventTimeStampToSeconds(
                                             web_event.TimeStamp())
-                           windowNumber:[[native_view window] windowNumber]
+                           windowNumber:[[native_view.GetNativeNSView() window]
+                                            windowNumber]
                                 context:nil
                              characters:text
             charactersIgnoringModifiers:unmodified_text

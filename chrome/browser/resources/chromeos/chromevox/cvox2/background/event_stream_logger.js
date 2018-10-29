@@ -52,41 +52,15 @@ EventStreamLogger.prototype = {
   },
 
   /**
-   * @param {!AutomationNode} target
-   */
-  isDescendantOfConsole: function(target) {
-    /** Event log should not be written when event is dispatched from console or
-     * chromevox log page.
-     */
-    if (target.docUrl &&
-        (target.docUrl.indexOf('chrome-devtools://') == 0 ||
-         target.docUrl == chrome.runtime.getURL('cvox2/background/log.html')))
-      return true;
-
-    if (!target.parent)
-      return false;
-
-    return this.isDescendantOfConsole(target.parent);
-  },
-
-  /**
    * @param {!AutomationEvent} evt
    */
   eventStreamLogging: function(evt) {
-    /**
-     * If evt is dispatched to console, don't show.
-     * Console event log are unnecessary for developers.
-     */
-    if (this.isDescendantOfConsole(evt.target))
-      return;
-
     var logStr = 'EventType = ' + evt.type;
     logStr += ', TargetName = ' + evt.target.name;
     logStr += ', RootName = ' + evt.target.root.name;
     logStr += ', DocumentURL = ' + evt.target.docUrl;
 
     LogStore.getInstance().writeTextLog(logStr, TextLog.LogType.EVENT);
-    console.log(logStr);
   },
 
   /**

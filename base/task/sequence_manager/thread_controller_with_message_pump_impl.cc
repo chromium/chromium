@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace sequence_manager {
@@ -52,7 +53,7 @@ void ThreadControllerWithMessagePumpImpl::SetMessageLoop(
 void ThreadControllerWithMessagePumpImpl::SetWorkBatchSize(
     int work_batch_size) {
   DCHECK_GE(work_batch_size, 1);
-  main_thread_only().batch_size = work_batch_size;
+  main_thread_only().work_batch_size = work_batch_size;
 }
 
 void ThreadControllerWithMessagePumpImpl::SetTimerSlack(
@@ -66,18 +67,34 @@ void ThreadControllerWithMessagePumpImpl::WillQueueTask(
 }
 
 void ThreadControllerWithMessagePumpImpl::ScheduleWork() {
+  // This assumes that cross thread ScheduleWork isn't frequent enough to
+  // warrant ScheduleWork deduplication.
+  if (RunsTasksInCurrentSequence()) {
+    // Don't post a DoWork if there's an immediate DoWork in flight or if we're
+    // inside a top level DoWork. We can rely on a continuation being posted as
+    // needed.
+    if (main_thread_only().immediate_do_work_posted || InTopLevelDoWork())
+      return;
+    main_thread_only().immediate_do_work_posted = true;
+  }
   pump_->ScheduleWork();
 }
 
 void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
     LazyNow* lazy_now,
     TimeTicks run_time) {
-  // Since this method must be called on the main thread, we're probably
-  // inside of DoWork() except some initialization code.
-  // DoWork() will schedule next wake-up if necessary.
-  if (is_doing_work())
-    return;
   DCHECK_LT(time_source_->NowTicks(), run_time);
+
+  if (main_thread_only().next_delayed_do_work == run_time)
+    return;
+
+  // Don't post a DoWork if there's an immediate DoWork in flight or if we're
+  // inside a top level DoWork. We can rely on a continuation being posted as
+  // needed.
+  if (main_thread_only().immediate_do_work_posted || InTopLevelDoWork())
+    return;
+
+  main_thread_only().next_delayed_do_work = run_time;
   pump_->ScheduleDelayedWork(run_time);
 }
 
@@ -102,16 +119,17 @@ void ThreadControllerWithMessagePumpImpl::RestoreDefaultTaskRunner() {
 
 void ThreadControllerWithMessagePumpImpl::AddNestingObserver(
     RunLoop::NestingObserver* observer) {
-  DCHECK_LE(main_thread_only().run_depth, 1);
   DCHECK(!main_thread_only().nesting_observer);
   DCHECK(observer);
   main_thread_only().nesting_observer = observer;
+  RunLoop::AddNestingObserverOnCurrentThread(this);
 }
 
 void ThreadControllerWithMessagePumpImpl::RemoveNestingObserver(
     RunLoop::NestingObserver* observer) {
   DCHECK_EQ(main_thread_only().nesting_observer, observer);
   main_thread_only().nesting_observer = nullptr;
+  RunLoop::RemoveNestingObserverOnCurrentThread(this);
 }
 
 const scoped_refptr<AssociatedThreadId>&
@@ -120,59 +138,94 @@ ThreadControllerWithMessagePumpImpl::GetAssociatedThread() const {
 }
 
 bool ThreadControllerWithMessagePumpImpl::DoWork() {
+  base::TimeTicks next_run_time;
+  main_thread_only().immediate_do_work_posted = false;
+  return DoWorkImpl(&next_run_time);
+}
+
+bool ThreadControllerWithMessagePumpImpl::DoDelayedWork(
+    TimeTicks* next_run_time) {
+  main_thread_only().next_delayed_do_work = TimeTicks::Max();
+  return DoWorkImpl(next_run_time);
+}
+
+bool ThreadControllerWithMessagePumpImpl::DoWorkImpl(
+    base::TimeTicks* next_run_time) {
   DCHECK(main_thread_only().task_source);
   bool task_ran = false;
 
-  {
-    AutoReset<int> do_work_scope(&main_thread_only().do_work_depth,
-                                 main_thread_only().do_work_depth + 1);
+  main_thread_only().do_work_running_count++;
 
-    for (int i = 0; i < main_thread_only().batch_size; i++) {
-      Optional<PendingTask> task = main_thread_only().task_source->TakeTask();
-      if (!task)
-        break;
+  for (int i = 0; i < main_thread_only().work_batch_size; i++) {
+    Optional<PendingTask> task = main_thread_only().task_source->TakeTask();
+    if (!task)
+      break;
 
-      TRACE_TASK_EXECUTION("ThreadController::Task", *task);
-      task_annotator_.RunTask("ThreadController::Task", &*task);
-      task_ran = true;
+    TRACE_TASK_EXECUTION("ThreadController::Task", *task);
+    task_annotator_.RunTask("ThreadController::Task", &*task);
+    task_ran = true;
 
-      main_thread_only().task_source->DidRunTask();
+    main_thread_only().task_source->DidRunTask();
 
-      if (main_thread_only().quit_do_work) {
-        // When Quit() is called we must stop running the batch because
-        // caller expects per-task granularity.
-        main_thread_only().quit_do_work = false;
-        return true;
-      }
-    }
-  }  // DoWorkScope.
+    // When Quit() is called we must stop running the batch because the caller
+    // expects per-task granularity.
+    if (main_thread_only().quit_do_work)
+      break;
+  }
+
+  main_thread_only().do_work_running_count--;
+
+  if (main_thread_only().quit_do_work) {
+    main_thread_only().quit_do_work = false;
+    return task_ran;
+  }
 
   LazyNow lazy_now(time_source_);
   TimeDelta do_work_delay =
       main_thread_only().task_source->DelayTillNextTask(&lazy_now);
   DCHECK_GE(do_work_delay, TimeDelta());
   // Schedule a continuation.
+  // TODO(altimin, gab): Make this more efficient by merging DoWork
+  // and DoDelayedWork and allowing returing base::TimeTicks() when we have
+  // immediate work.
   if (do_work_delay.is_zero()) {
-    // Need to run new work immediately.
-    pump_->ScheduleWork();
+    // Need to run new work immediately, but due to the contract of DoWork we
+    // only need to return true to ensure that happens.
+    *next_run_time = lazy_now.Now();
+    main_thread_only().immediate_do_work_posted = true;
+    return true;
   } else if (do_work_delay != TimeDelta::Max()) {
+    *next_run_time = lazy_now.Now() + do_work_delay;
     // Cancels any previously scheduled delayed wake-ups.
-    pump_->ScheduleDelayedWork(lazy_now.Now() + do_work_delay);
+    pump_->ScheduleDelayedWork(*next_run_time);
+  } else {
+    *next_run_time = base::TimeTicks::Max();
   }
 
   return task_ran;
 }
 
-bool ThreadControllerWithMessagePumpImpl::DoDelayedWork(
-    TimeTicks* next_run_time) {
-  // Delayed work is getting processed in DoWork().
-  return false;
+bool ThreadControllerWithMessagePumpImpl::InTopLevelDoWork() const {
+  return main_thread_only().do_work_running_count >
+         main_thread_only().nesting_depth;
 }
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   // RunLoop::Delegate knows whether we called Run() or RunUntilIdle().
   if (ShouldQuitWhenIdle())
     Quit();
+#if defined(OS_WIN)
+  bool need_high_res_mode =
+      main_thread_only().task_source->HasPendingHighResolutionTasks();
+  if (main_thread_only().in_high_res_mode != need_high_res_mode) {
+    // On Windows we activate the high resolution timer so that the wait
+    // _if_ triggered by the timer happens with good resolution. If we don't
+    // do this the default resolution is 15ms which might not be acceptable
+    // for some tasks.
+    main_thread_only().in_high_res_mode = need_high_res_mode;
+    Time::ActivateHighResolutionTimer(need_high_res_mode);
+  }
+#endif  // defined(OS_WIN)
   return false;
 }
 
@@ -180,32 +233,34 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed) {
   // No system messages are being processed by this class.
   DCHECK(application_tasks_allowed);
 
-  // We already have a MessagePump::Run() running, so we're in a nested RunLoop.
-  if (main_thread_only().run_depth > 0 && main_thread_only().nesting_observer)
+  // MessagePump::Run() blocks until Quit() called, but previously started
+  // Run() calls continue to block.
+  pump_->Run(this);
+}
+
+void ThreadControllerWithMessagePumpImpl::OnBeginNestedRunLoop() {
+  main_thread_only().nesting_depth++;
+  if (main_thread_only().nesting_observer)
     main_thread_only().nesting_observer->OnBeginNestedRunLoop();
+}
 
-  {
-    AutoReset<int> run_scope(&main_thread_only().run_depth,
-                             main_thread_only().run_depth + 1);
-    // MessagePump::Run() blocks until Quit() called, but previously started
-    // Run() calls continue to block.
-    pump_->Run(this);
-  }
-
-  // We'll soon continue to run an outer MessagePump::Run() loop.
-  if (main_thread_only().run_depth > 0 && main_thread_only().nesting_observer)
+void ThreadControllerWithMessagePumpImpl::OnExitNestedRunLoop() {
+  main_thread_only().nesting_depth--;
+  DCHECK_GE(main_thread_only().nesting_depth, 0);
+  if (main_thread_only().nesting_observer)
     main_thread_only().nesting_observer->OnExitNestedRunLoop();
 }
 
 void ThreadControllerWithMessagePumpImpl::Quit() {
   // Interrupt a batch of work.
-  if (is_doing_work())
+  if (InTopLevelDoWork())
     main_thread_only().quit_do_work = true;
   // If we're in a nested RunLoop, continuation will be posted if necessary.
   pump_->Quit();
 }
 
 void ThreadControllerWithMessagePumpImpl::EnsureWorkScheduled() {
+  main_thread_only().immediate_do_work_posted = true;
   ScheduleWork();
 }
 

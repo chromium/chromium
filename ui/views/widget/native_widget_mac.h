@@ -18,6 +18,7 @@ class NativeWidgetMacNSWindow;
 namespace views_bridge_mac {
 namespace mojom {
 class BridgedNativeWidget;
+class CreateWindowParams;
 }  // namespace mojom
 }  // namespace views_bridge_mac
 
@@ -28,6 +29,7 @@ class MockNativeWidgetMac;
 class WidgetTest;
 }
 
+class BridgeFactoryHost;
 class BridgedNativeWidgetImpl;
 class BridgedNativeWidgetHostImpl;
 
@@ -50,8 +52,16 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
   // from the bottom of the window.
   virtual int SheetPositionY();
 
+  // Returns in |override_titlebar_height| whether or not to override the
+  // titlebar height and in |titlebar_height| the height of the titlebar.
+  virtual void GetWindowFrameTitlebarHeight(bool* override_titlebar_height,
+                                            float* titlebar_height);
+
   // Notifies that the widget starts to enter or exit fullscreen mode.
   virtual void OnWindowFullscreenStateChange() {}
+
+  // Handle "Move focus to the window toolbar" shortcut.
+  virtual void OnFocusWindowToolbar() {}
 
   // internal::NativeWidgetPrivate:
   void InitNativeWidget(const Widget::InitParams& params) override;
@@ -143,6 +153,10 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
   std::string GetName() const override;
 
  protected:
+  virtual void PopulateCreateWindowParams(
+      const Widget::InitParams& widget_params,
+      views_bridge_mac::mojom::CreateWindowParams* params) {}
+
   // Creates the NSWindow that will be passed to the BridgedNativeWidgetImpl.
   // Called by InitNativeWidget. The return value will be autoreleased.
   // Note that some tests (in particular, views_unittests that interact
@@ -150,10 +164,19 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
   // are autoreleased, and will crash if the window has a more precise
   // lifetime.
   virtual NativeWidgetMacNSWindow* CreateNSWindow(
-      const Widget::InitParams& params);
+      const views_bridge_mac::mojom::CreateWindowParams* params);
+
+  // Return the BridgeFactoryHost that is to be used for creating this window
+  // and all of its child windows. This will return nullptr if the native
+  // windows are to be created in the current process.
+  virtual BridgeFactoryHost* GetBridgeFactoryHost();
 
   // Optional hook for subclasses invoked by WindowDestroying().
-  virtual void OnWindowDestroying(NSWindow* window) {}
+  virtual void OnWindowDestroying(gfx::NativeWindow window) {}
+
+  // Redispatch a keyboard event using the widget's window's CommandDispatcher.
+  // Return true if the event is handled.
+  bool RedispatchKeyEvent(NSEvent* event);
 
   internal::NativeWidgetDelegate* delegate() { return delegate_; }
   views_bridge_mac::mojom::BridgedNativeWidget* bridge() const;

@@ -149,15 +149,10 @@ void ArcNotificationView::OnContainerAnimationStarted() {
 }
 
 void ArcNotificationView::OnSettingsButtonPressed(const ui::Event& event) {
-  // TODO(yamaguchi): remove this line and call CloseSwipeControl() from parent
-  // view of this view. The parent view should activate the swipe control of
-  // the slider attached to this view. Same for OnShoozeButtonPressed().
-  CloseSwipeControl();
   MessageView::OnSettingsButtonPressed(event);
 }
 
 void ArcNotificationView::OnSnoozeButtonPressed(const ui::Event& event) {
-  CloseSwipeControl();
   if (item_)
     return item_->OpenSnooze();
 }
@@ -166,8 +161,9 @@ void ArcNotificationView::OnContainerAnimationEnded() {
   content_view_->OnContainerAnimationEnded();
 }
 
-void ArcNotificationView::OnSlideChanged() {
-  content_view_->OnSlideChanged();
+void ArcNotificationView::OnSlideChanged(bool in_progress) {
+  MessageView::OnSlideChanged(in_progress);
+  content_view_->OnSlideChanged(in_progress);
 }
 
 gfx::Size ArcNotificationView::CalculatePreferredSize() const {
@@ -190,7 +186,7 @@ void ArcNotificationView::Layout() {
 }
 
 bool ArcNotificationView::HasFocus() const {
-  // In case that focus handling is defered to the content view, asking the
+  // In case that focus handling is deferred to the content view, asking the
   // content view about focus.
   return content_view_->IsFocusable() ? content_view_->HasFocus()
                                       : message_center::MessageView::HasFocus();

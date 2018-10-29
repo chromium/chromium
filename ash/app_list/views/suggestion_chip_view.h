@@ -42,10 +42,13 @@ class APP_LIST_EXPORT SuggestionChipView : public views::Button {
   SuggestionChipView(const Params& params, views::ButtonListener* listener);
   ~SuggestionChipView() override;
 
+  // Enables background blur for folder icon if |enabled| is true.
+  void SetBackgroundBlurEnabled(bool enabled);
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void ChildVisibilityChanged(views::View* child) override;
   int GetHeightForWidth(int width) const override;
+  void ChildVisibilityChanged(views::View* child) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnFocus() override;
   void OnBlur() override;

@@ -7,9 +7,10 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "content/public/test/test_browser_thread.h"
 #include "net/base/net_errors.h"
@@ -28,7 +29,8 @@ class DigitalAssetLinksHandlerTest : public ::testing::Test {
   DigitalAssetLinksHandlerTest()
       : num_invocations_(0),
         result_(RelationshipCheckResult::SUCCESS),
-        io_thread_(content::BrowserThread::IO, &message_loop_) {}
+        io_thread_(content::BrowserThread::IO,
+                   base::ThreadTaskRunnerHandle::Get()) {}
 
   void OnRelationshipCheckComplete(RelationshipCheckResult result) {
     ++num_invocations_;
@@ -89,7 +91,7 @@ class DigitalAssetLinksHandlerTest : public ::testing::Test {
   RelationshipCheckResult result_;
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
   data_decoder::TestingJsonParser::ScopedFactoryOverride factory_override_;
   content::TestBrowserThread io_thread_;
   network::TestURLLoaderFactory test_url_loader_factory_;

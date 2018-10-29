@@ -46,7 +46,7 @@ bool CheckForDuplicatePins(const Pinsets& pinsets) {
 
     std::string hash =
         std::string(pin.second.data(), pin.second.data() + pin.second.size());
-    std::map<std::string, std::string>::iterator it = seen_hashes.find(hash);
+    auto it = seen_hashes.find(hash);
     if (it != seen_hashes.cend()) {
       LOG(ERROR) << "Duplicate pin hash for " << pin.first
                  << ", already seen as " << it->second;

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/data_use_measurement/page_load_capping/chrome_page_load_capping_features.h"
 #include "chrome/browser/data_use_measurement/page_load_capping/page_load_capping_blacklist.h"
@@ -52,12 +53,17 @@ class TestPageCappingPageLoadMetricsObserver
     : public PageCappingPageLoadMetricsObserver {
  public:
   using SizeUpdateCallback = base::RepeatingCallback<void(int64_t)>;
-  TestPageCappingPageLoadMetricsObserver(int64_t fuzzing_offset,
-                                         PageLoadCappingBlacklist* blacklist,
-                                         const SizeUpdateCallback& callback)
+  TestPageCappingPageLoadMetricsObserver(
+      int64_t fuzzing_offset,
+      PageLoadCappingBlacklist* blacklist,
+      std::unique_ptr<base::SimpleTestTickClock> simple_test_tick_clock,
+      const SizeUpdateCallback& callback)
       : fuzzing_offset_(fuzzing_offset),
         blacklist_(blacklist),
-        size_callback_(callback) {}
+        simple_test_tick_clock_(std::move(simple_test_tick_clock)),
+        size_callback_(callback) {
+    SetTickClockForTesting(simple_test_tick_clock_.get());
+  }
   ~TestPageCappingPageLoadMetricsObserver() override {}
 
   void WriteToSavings(int64_t bytes_saved) override {
@@ -73,6 +79,7 @@ class TestPageCappingPageLoadMetricsObserver
  private:
   int64_t fuzzing_offset_;
   PageLoadCappingBlacklist* blacklist_;
+  std::unique_ptr<base::SimpleTestTickClock> simple_test_tick_clock_;
   SizeUpdateCallback size_callback_;
 };
 
@@ -113,22 +120,23 @@ class PageCappingObserverTest
 
   // Load a resource of size |bytes|.
   void SimulateBytes(int bytes) {
-    page_load_metrics::ExtraRequestCompleteInfo resource(
-        GURL(kTestURL), net::HostPortPair(), -1 /* frame_tree_node_id */,
-        false /* was_cached */, bytes /* raw_body_bytes */,
-        0 /* original_network_content_length */, nullptr,
-        content::ResourceType::RESOURCE_TYPE_SCRIPT, 0,
-        {} /* load_timing_info */);
-    SimulateLoadedResource(resource);
+    std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
+    auto resource_data_update =
+        page_load_metrics::mojom::ResourceDataUpdate::New();
+    resource_data_update->delta_bytes = bytes;
+    resources.push_back(std::move(resource_data_update));
+    SimulateResourceDataUseUpdate(resources);
   }
 
  protected:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     auto observer = std::make_unique<TestPageCappingPageLoadMetricsObserver>(
         fuzzing_offset_, test_blacklist_.get(),
+        std::make_unique<base::SimpleTestTickClock>(),
         base::BindRepeating(&PageCappingObserverTest::UpdateSavings,
                             base::Unretained(this)));
     observer_ = observer.get();
+    // Keep the clock frozen.
     tracker->AddObserver(std::move(observer));
   }
 

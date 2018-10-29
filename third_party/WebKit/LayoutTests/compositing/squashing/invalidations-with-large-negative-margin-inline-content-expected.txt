@@ -20,7 +20,7 @@
         {
           "object": "LayoutBlockFlow DIV id='chip'",
           "rect": [408, 108, 20, 20],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

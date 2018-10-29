@@ -1,0 +1,10 @@
+{
+  "name": "webNavigation",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests the webNavigation API - pending deletion frame.",
+  "background": {
+    "page": "test_pendingDeletion.html"
+  },
+  "permissions": ["webNavigation", "tabs"]
+}

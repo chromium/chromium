@@ -22,7 +22,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateNativeCredential(
           ? password_form.origin.GetOrigin().spec()
           : std::string();
   std::string federation =
-      password_form.federation_origin.unique()
+      password_form.federation_origin.opaque()
           ? std::string()
           : l10n_util::GetStringFUTF8(
                 IDS_PASSWORDS_VIA_FEDERATION,

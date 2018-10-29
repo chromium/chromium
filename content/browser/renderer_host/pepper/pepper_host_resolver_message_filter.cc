@@ -9,9 +9,11 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/task/post_task.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_socket_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -96,7 +98,7 @@ scoped_refptr<base::TaskRunner>
 PepperHostResolverMessageFilter::OverrideTaskRunnerForMessage(
     const IPC::Message& message) {
   if (message.type() == PpapiHostMsg_HostResolver_Resolve::ID)
-    return BrowserThread::GetTaskRunnerForThread(BrowserThread::UI);
+    return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
   return nullptr;
 }
 
@@ -163,8 +165,8 @@ void PepperHostResolverMessageFilter::OnComplete(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   binding_.Close();
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&PepperHostResolverMessageFilter::OnLookupFinished, this,
                      result, std::move(resolved_addresses),
                      host_resolve_context_));

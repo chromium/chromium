@@ -40,6 +40,7 @@ config("cronet_static_config") {
 _cronet_deps = [
   ":generate_accept_languages",
   "//base:base",
+  "//components/cronet:cronet_buildflags",
   "//components/cronet:cronet_common",
   "//components/cronet:cronet_version_header",
   "//components/cronet/native:cronet_native_impl",
@@ -141,7 +142,6 @@ test("cronet_unittests_ios") {
     "//base/test:test_support",
     "//components/cronet:cronet_common_unittests",
     "//components/cronet/native:cronet_native_unittests",
-    "//components/metrics",
     "//net",
     "//testing/gtest",
   ]

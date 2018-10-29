@@ -74,7 +74,10 @@ TranslateHelper::TranslateHelper(content::RenderFrame* render_frame,
       world_id_(world_id),
       extension_scheme_(extension_scheme),
       binding_(this),
-      weak_method_factory_(this) {}
+      weak_method_factory_(this) {
+  translate_task_runner_ = this->render_frame()->GetTaskRunner(
+      blink::TaskType::kInternalTranslation);
+}
 
 TranslateHelper::~TranslateHelper() {
 }
@@ -386,7 +389,7 @@ void TranslateHelper::CheckTranslateStatus() {
   }
 
   // The translation is still pending, check again later.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  translate_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&TranslateHelper::CheckTranslateStatus,
                      weak_method_factory_.GetWeakPtr()),
@@ -430,7 +433,7 @@ void TranslateHelper::TranslatePageImpl(int count) {
     return;
   }
   // Check the status of the translation.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  translate_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&TranslateHelper::CheckTranslateStatus,
                      weak_method_factory_.GetWeakPtr()),

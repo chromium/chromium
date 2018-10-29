@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome ietaupa jūsu laiku, pievienojot jūsu kontus tīmeklim. Kontus varat pievienot vai noņemt sadaļā Iestatījumi.</translation>
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3345341804167540816">Izmantojiet Chrome visur</translation>
-<translation id="3678774398092457402">Vai vēlaties, lai pārlūkā Chrome tiktu saglabāta parole šai vietnei?</translation>
 <translation id="384394811301901750">Google Chrome pašlaik nevar izmantot kameru.</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Jūs pārslēdzat sinhronizējamos kontus no konta <ph name="USER_EMAIL1" /> uz kontu <ph name="USER_EMAIL2" />. Jūsu esošie Chrome dati tiek pārvaldīti domēnā <ph name="DOMAIN" />. Pārslēdzot kontus, jūsu dati tiks dzēsti no šīs ierīces, taču tie paliks kontā <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Iestatījumus<ph name="END_LINK" /> var pielāgot jebkurā laikā. Google var izmantot jūsu apmeklēto vietņu saturu, pārlūkā veiktās mijiedarbības un darbības, lai personalizētu pārlūku Chrome un tādus Google pakalpojumus kā Tulkotājs, Meklēšana un reklāmas.</translation>
 <translation id="5639704535586432836">Atveriet sadaļu Iestatījumi &gt; Konfidencialitāte &gt; Kamera &gt; Google Chrome un ieslēdziet kameru.</translation>
 <translation id="5642200033778930880">Google Chrome nevar izmantot kameru dalītā skata režīmā.</translation>
-<translation id="5703130498371792817">Vai jums patīk izmantot Chrome? <ph name="BEGIN_LINK" />Novērtējiet šo lietotni<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Chrome padoms. Tagad ekrāna apakšdaļā ir dažas pogas, piemēram, Atpakaļ, Pārsūtīt un Meklēt.</translation>
 <translation id="6036420186814142909">Pārlūkā Google Chrome ir funkcijas, ko varat izmantot, lai pārvaldītu interneta datus un tīmekļa lapu ielādes ātrumu.
 <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Google Chrome pakalpojumu sniegšanas noteikumi</translation>
 <translation id="7165736900384873061">Darba sākšana ar Google Chrome QR skeneri</translation>
 <translation id="7172660552945675509">Padoms. <ph name="BEGIN_LINK" />Pārvietojiet pārlūku Chrome uz savu doku<ph name="END_LINK" />.</translation>
+<translation id="7173660919484573146">Chrome izmanto Face ID, lai jūsu parolēm varētu piekļūt tikai pilnvarotas personas.</translation>
 <translation id="7265369419224458312">Šeit varat piekļūt cilnēm, kas ir atvērtas jūsu datorā. Vienkārši atveriet pārlūku Chrome savā datorā, pārejiet uz izvēlni un atlasiet “Pierakstīties pakalpojumā Chrome…”</translation>
 <translation id="728488472449859922">Google Chrome QR skenera ieslēgšana</translation>
 <translation id="7400722733683201933">Par Google Chrome</translation>

@@ -2,7 +2,6 @@ Check if calling navigator.getBattery() on a detached frame doesn't leak.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS DONE
 PASS successfullyParsed is true
 

@@ -5,22 +5,24 @@
 package org.chromium.chrome.browser.feed;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.annotation.DrawableRes;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 
 import com.google.android.libraries.feed.common.functional.Consumer;
+import com.google.android.libraries.feed.host.imageloader.BundledAssets;
 import com.google.android.libraries.feed.host.imageloader.ImageLoaderApi;
 
-import org.chromium.base.Callback;
-import org.chromium.chrome.browser.feed.FeedImageLoaderBridge.ImageResponse;
+import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.ThumbnailGradient;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -61,109 +63,115 @@ public class FeedImageLoader implements ImageLoaderApi {
         mActivityContext = activityContext;
     }
 
+    // TODO(gangwu): Handle widthPx and heightPx.
     @Override
-    public void loadDrawable(List<String> urls, Consumer<Drawable> consumer) {
+    public void loadDrawable(
+            List<String> urls, int widthPx, int heightPx, Consumer<Drawable> consumer) {
         assert mFeedImageLoaderBridge != null;
-        List<String> assetUrls = new ArrayList<>();
-        List<String> networkUrls = new ArrayList<>();
-
-        // Maps position in the networkUrls list to overlay image direction.
-        HashMap<Integer, Integer> overlayImages = new HashMap<>();
-
-        // Since loading APK resource("asset://"") only can be done in Java side, we filter out
-        // asset urls, and pass the other URLs to C++ side. This will change the order of |urls|,
-        // because we will process asset:// URLs after network URLs, but once
-        // https://crbug.com/840578 resolved, we can process URLs ordering same as |urls|.
-        for (String url : urls) {
-            if (url.startsWith(ASSET_PREFIX)) {
-                assetUrls.add(url);
-            } else if (url.startsWith(OVERLAY_IMAGE_PREFIX)) {
-                Uri uri = Uri.parse(url);
-
-                String sourceUrl = uri.getQueryParameter(OVERLAY_IMAGE_URL_PARAM);
-                if (!TextUtils.isEmpty(sourceUrl)) {
-                    networkUrls.add(sourceUrl);
-                    addOverlayDirectionToMap(overlayImages, networkUrls.size() - 1, uri);
-                } else {
-                    assert false : "Overlay image source URL empty";
-                }
-            } else {
-                // Assume this is a regular web image.
-                networkUrls.add(url);
-            }
-        }
-
-        if (networkUrls.size() == 0) {
-            Drawable drawable = getAssetDrawable(assetUrls);
-            consumer.accept(drawable);
-            return;
-        }
-
-        mFeedImageLoaderBridge.fetchImage(networkUrls, new Callback<ImageResponse>() {
-            @Override
-            public void onResult(ImageResponse response) {
-                if (response.bitmap != null) {
-                    Drawable drawable;
-                    if (overlayImages.containsKey(response.imagePositionInList)) {
-                        drawable = ThumbnailGradient.createDrawableWithGradientIfNeeded(
-                                response.bitmap, overlayImages.get(response.imagePositionInList),
-                                mActivityContext.getResources());
-                    } else {
-                        drawable = new BitmapDrawable(
-                                mActivityContext.getResources(), response.bitmap);
-                    }
-
-                    consumer.accept(drawable);
-                    return;
-                }
-
-                // Since no image was available for downloading over the network, attempt to load a
-                // drawable locally.
-                Drawable drawable = getAssetDrawable(assetUrls);
-                consumer.accept(drawable);
-            }
-        });
+        loadDrawableWithIter(urls.iterator(), widthPx, heightPx, consumer);
     }
 
     /** Cleans up FeedImageLoaderBridge. */
     public void destroy() {
         assert mFeedImageLoaderBridge != null;
-
         mFeedImageLoaderBridge.destroy();
         mFeedImageLoaderBridge = null;
     }
 
-    private Drawable getAssetDrawable(List<String> assetUrls) {
-        for (String url : assetUrls) {
-            String resourceName = url.substring(ASSET_PREFIX.length());
-            int resourceId = mActivityContext.getResources().getIdentifier(
-                    resourceName, DRAWABLE_RESOURCE_TYPE, mActivityContext.getPackageName());
-            if (resourceId != 0) {
-                Drawable drawable = AppCompatResources.getDrawable(mActivityContext, resourceId);
-                if (drawable != null) {
-                    return drawable;
-                }
-            }
+    /**
+     * Tries to load the next value in urlsIter, and recursively calls itself on failure to
+     * continue processing. Being recursive allows resuming after an async call across the bridge.
+     *
+     * @param urlsIter The stateful iterator of all urls to load. Each call removes one value.
+     * @param widthPx The width of the image in pixels. Will be {@link #DIMENSION_UNKNOWN} if
+     * unknown.
+     * @param heightPx The height of the image in pixels. Will be {@link #DIMENSION_UNKNOWN} if
+     * unknown.
+     * @param consumer The callback to be given the first successful image.
+     */
+    private void loadDrawableWithIter(
+            Iterator<String> urlsIter, int widthPx, int heightPx, Consumer<Drawable> consumer) {
+        assert mFeedImageLoaderBridge != null;
+        if (!urlsIter.hasNext()) {
+            // Post to ensure callback is not run synchronously.
+            ThreadUtils.postOnUiThread(() -> consumer.accept(null));
+            return;
         }
-        return null;
+
+        String url = urlsIter.next();
+        if (url.startsWith(ASSET_PREFIX)) {
+            Drawable drawable = getAssetDrawable(url);
+            if (drawable == null) {
+                loadDrawableWithIter(urlsIter, widthPx, heightPx, consumer);
+            } else {
+                // Post to ensure callback is not run synchronously.
+                ThreadUtils.postOnUiThread(() -> consumer.accept(drawable));
+            }
+        } else if (url.startsWith(OVERLAY_IMAGE_PREFIX)) {
+            Uri uri = Uri.parse(url);
+            int direction = overlayDirection(uri);
+            String sourceUrl = uri.getQueryParameter(OVERLAY_IMAGE_URL_PARAM);
+            assert !TextUtils.isEmpty(sourceUrl) : "Overlay image source URL empty";
+            mFeedImageLoaderBridge.fetchImage(sourceUrl, widthPx, heightPx, (Bitmap bitmap) -> {
+                if (bitmap == null) {
+                    loadDrawableWithIter(urlsIter, widthPx, heightPx, consumer);
+                } else {
+                    consumer.accept(ThumbnailGradient.createDrawableWithGradientIfNeeded(
+                            bitmap, direction, mActivityContext.getResources()));
+                }
+            });
+        } else {
+            mFeedImageLoaderBridge.fetchImage(url, widthPx, heightPx, (Bitmap bitmap) -> {
+                if (bitmap == null) {
+                    loadDrawableWithIter(urlsIter, widthPx, heightPx, consumer);
+                } else {
+                    consumer.accept(new BitmapDrawable(mActivityContext.getResources(), bitmap));
+                }
+            });
+        }
     }
 
     /**
-     * Determine where the thumbnail is located in the card using the "direction" param and add it
-     * to the provided HashMap.
-     * @param overlayImageMap The HashMap used to store the overlay direction.
-     * @param key The key for the overlay image.
-     * @param overlayImageUri The URI for the overlay image.
+     * @param url The fully qualified name of the resource.
+     * @return The resource as a Drawable on success, null otherwise.
      */
-    private void addOverlayDirectionToMap(
-            HashMap<Integer, Integer> overlayImageMap, int key, Uri overlayImageUri) {
-        String direction = overlayImageUri.getQueryParameter(OVERLAY_IMAGE_DIRECTION_PARAM);
-        if (TextUtils.equals(direction, OVERLAY_IMAGE_DIRECTION_START)) {
-            overlayImageMap.put(key, ThumbnailGradient.ThumbnailLocation.START);
-        } else if (TextUtils.equals(direction, OVERLAY_IMAGE_DIRECTION_END)) {
-            overlayImageMap.put(key, ThumbnailGradient.ThumbnailLocation.END);
-        } else {
-            assert false : "Overlay image direction must be either start or end";
+    private Drawable getAssetDrawable(String url) {
+        String resourceName = url.substring(ASSET_PREFIX.length());
+        @DrawableRes
+        int id = lookupDrawableIdenfier(resourceName);
+        return id == 0 ? null : AppCompatResources.getDrawable(mActivityContext, id);
+    }
+
+    /**
+     * Translate {@Link BundledAssets} to android drawable resource. This method only translate
+     * resource name defined in {@Link BundledAssets}.
+     *
+     * @param resourceName The name of the drawable asset.
+     * @return The id of the drawable asset. May be 0 if it could not be found.
+     */
+    private @DrawableRes int lookupDrawableIdenfier(String resourceName) {
+        switch (resourceName) {
+            case BundledAssets.OFFLINE_INDICATOR_BADGE:
+                return R.drawable.offline_pin_round;
+            case BundledAssets.VIDEO_INDICATOR_BADGE:
+                return R.drawable.ic_play_circle_filled_grey;
         }
+
+        return 0;
+    }
+
+    /**
+     * Returns where the thumbnail is located in the card using the "direction" query param.
+     * @param overlayImageUri The URI for the overlay image.
+     * @return The direction in which the thumbnail is located relative to the card.
+     */
+    private int overlayDirection(Uri overlayImageUri) {
+        String direction = overlayImageUri.getQueryParameter(OVERLAY_IMAGE_DIRECTION_PARAM);
+        assert TextUtils.equals(direction, OVERLAY_IMAGE_DIRECTION_START)
+                || TextUtils.equals(direction, OVERLAY_IMAGE_DIRECTION_END)
+            : "Overlay image direction must be either start or end";
+        return TextUtils.equals(direction, OVERLAY_IMAGE_DIRECTION_START)
+                ? ThumbnailGradient.ThumbnailLocation.START
+                : ThumbnailGradient.ThumbnailLocation.END;
     }
 }

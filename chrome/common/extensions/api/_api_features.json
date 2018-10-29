@@ -137,7 +137,7 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
-      "chrome://welcome/email"
+      "chrome://welcome/*"
     ]
   }],
   "bookmarks.export": [{
@@ -253,7 +253,8 @@
       "chrome://chrome-signin/*",
       "chrome://media-router/*",
       "chrome://mobilesetup/*",
-      "chrome://oobe/*"
+      "chrome://oobe/*",
+      "chrome://assistant-optin/*"
     ]
   }],
   "cloudPrintPrivate": {
@@ -523,10 +524,6 @@
     "dependencies": ["permission:idltest"],
     "contexts": ["blessed_extension"]
   },
-  "inlineInstallPrivate": {
-    "dependencies": ["permission:inlineInstallPrivate"],
-    "contexts": ["blessed_extension"]
-  },
   "input.ime": {
     "dependencies": ["permission:input"],
     "contexts": ["blessed_extension"]
@@ -570,10 +567,6 @@
     "channel": "stable",
     "contexts": ["blessed_extension"]
   },
-  "mediaGalleries": {
-    "dependencies": ["permission:mediaGalleries"],
-    "contexts": ["blessed_extension"]
-  },
   "mediaPlayerPrivate": {
     "dependencies": ["permission:mediaPlayerPrivate"],
     "contexts": ["blessed_extension"]
@@ -587,10 +580,6 @@
     "contexts": "all",
     "channel": "stable",
     "matches": ["<all_urls>"]
-  },
-  "musicManagerPrivate": {
-    "dependencies": ["permission:musicManagerPrivate"],
-    "contexts": ["blessed_extension"]
   },
   "networking.castPrivate": {
     "channel": "stable",
@@ -666,7 +655,8 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://multidevice-setup/*",
-      "chrome://settings/*"
+      "chrome://settings/*",
+      "chrome://oobe/*"
     ],
     "platforms": ["chromeos"]
   },
@@ -704,14 +694,6 @@
   }],
   "signedInDevices": {
     "dependencies": ["permission:signedInDevices"],
-    "contexts": ["blessed_extension"]
-  },
-  "streamsPrivate": {
-    "dependencies": ["permission:streamsPrivate"],
-    "contexts": ["blessed_extension"]
-  },
-  "syncFileSystem": {
-    "dependencies": ["permission:syncFileSystem"],
     "contexts": ["blessed_extension"]
   },
   "systemIndicator": {
@@ -803,27 +785,11 @@
       "81986D4F846CEDDDB962643FA501D1780DD441BB"   // http://crbug.com/775961
     ]
   },
-  "webstore": {
-    // Hosted apps can use the webstore API from within a blessed context.
-    "channel": "stable",
-    // Set extension_types to 'all' to prevent webstore from being filtered.
-    // Technically, webstore is not in apps or extensions, but it is currently
-    // displayed on /extensions/webstore and /apps/webstore. The "contexts"
-    // restriction effectively restricts this to hosted apps and webpages.
-    "extension_types": "all",
-    "contexts": ["blessed_web_page", "web_page"],
-    // Any webpage can use the webstore API.
-    "matches": ["<all_urls>"]
-  },
   "webstorePrivate": {
     "dependencies": ["permission:webstorePrivate"],
     // NOTE: even though this is only used by the webstore hosted app, which
     // normally would mean blessed_web_page, component hosted apps are actually
     // given the blessed_extension denomination. Confusing.
-    "contexts": ["blessed_extension"]
-  },
-  "webstoreWidgetPrivate": {
-    "dependencies": ["permission:webstoreWidgetPrivate"],
     "contexts": ["blessed_extension"]
   },
   "webviewTag": {

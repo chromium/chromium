@@ -16,6 +16,9 @@ class FullscreenProvider {
 
   // Initializes the provider to respond to scroll events from |controller|.
   virtual void InitializeFullscreen(FullscreenController* controller);
+
+  // Whether or not the provider has been initialized.
+  virtual bool IsInitialized() const;
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_UI_FULLSCREEN_PROVIDER_H_

@@ -128,6 +128,7 @@ class MockHostResolverBase
   bool HasCached(base::StringPiece hostname,
                  HostCache::Entry::Source* source_out,
                  HostCache::EntryStaleness* stale_out) const override;
+  void SetDnsConfigOverrides(const DnsConfigOverrides& overrides) override {}
 
   // Detach cancelled request.
   void DetachRequest(size_t id);

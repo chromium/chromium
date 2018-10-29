@@ -2,10 +2,10 @@ This tests wrapper identity for JavaScript
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS var object = [ ]; isEqualJS(object, object); is true
 PASS var object = { }; isEqualJS(object, object); is true
 PASS var object = new Array(); isEqualJS(object, object); is true
@@ -172,4 +172,3 @@ PASS var object = window['test']; isEqualJS(object, object); is true
 PASS var object = window['toolbar']; isEqualJS(object, object); is true
 PASS var object = window['top']; isEqualJS(object, object); is true
 PASS var object = window['window']; isEqualJS(object, object); is true
-

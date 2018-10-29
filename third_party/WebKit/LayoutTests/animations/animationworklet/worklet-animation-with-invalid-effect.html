@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<style>
+#target {
+  width: 100px;
+  height: 100px;
+}
+</style>
+
+<div id="target"></div>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+
+<script>
+test(function() {
+  let playFunc = function() {
+    let effect = new KeyframeEffect(
+        document.getElementById('target'),
+        [
+          // No keyframe.
+        ],
+        { duration: 1000 }
+    );
+    let animation = new WorkletAnimation('test', effect);
+    animation.play();
+  }
+  assert_throws('InvalidStateError', playFunc);
+}, 'Trying to play invalid worklet animation should throw an exception.');
+</script>

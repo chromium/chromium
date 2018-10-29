@@ -331,7 +331,7 @@ CrSettingsPeoplePageLockScreenTest.prototype = {
   extraLibraries: CrSettingsBrowserTest.prototype.extraLibraries.concat([
     '../fake_chrome_event.js', 'fake_quick_unlock_private.js',
     'fake_settings_private.js', 'fake_quick_unlock_uma.js',
-    'quick_unlock_authenticate_browsertest_chromeos.js'
+    'quick_unlock_authenticate_browsertest_chromeos.js', 'test_util.js'
   ]),
 };
 
@@ -881,6 +881,7 @@ TEST_F('CrSettingsCertificateManagerTest', 'All', function() {
 
 GEN('#endif  // defined(USE_NSS_CERTS)');
 
+GEN('#if defined(GOOGLE_CHROME_BUILD)');
 /**
  * Test fixture for chrome/browser/resources/settings/privacy_page/.
  * @constructor
@@ -904,14 +905,8 @@ CrSettingsPersonalizationOptionsTest.prototype = {
   ]),
 };
 
-TEST_F('CrSettingsPersonalizationOptionsTest', 'NonOfficialBuild', function() {
-  settings_personalization_options.registerTests();
-  mocha.run();
-});
 
-GEN('#if defined(GOOGLE_CHROME_BUILD)');
 TEST_F('CrSettingsPersonalizationOptionsTest', 'OfficialBuild', function() {
-  settings_personalization_options.registerOfficialBuildTests();
   mocha.run();
 });
 GEN('#endif');
@@ -935,6 +930,7 @@ CrSettingsPrivacyPageTest.prototype = {
     'test_util.js',
     '../test_browser_proxy.js',
     'test_privacy_page_browser_proxy.js',
+    'test_sync_browser_proxy.js',
     'privacy_page_test.js',
   ]),
 };
@@ -1156,6 +1152,7 @@ CrSettingsSiteListTest.prototype = {
     '../test_browser_proxy.js',
     'test_util.js',
     'test_site_settings_prefs_browser_proxy.js',
+    'test_multidevice_browser_proxy.js',
     'site_list_tests.js',
   ]),
 };
@@ -1389,6 +1386,7 @@ CrSettingsInternetPageTest.prototype = {
     ROOT_PATH + 'ui/webui/resources/js/assert.js',
     '../fake_chrome_event.js',
     '../chromeos/fake_networking_private.js',
+    '../chromeos/cr_onc_strings.js',
     'internet_page_tests.js',
   ]),
 };
@@ -1417,6 +1415,7 @@ CrSettingsInternetDetailPageTest.prototype = {
     ROOT_PATH + 'ui/webui/resources/js/util.js',
     '../fake_chrome_event.js',
     '../chromeos/fake_networking_private.js',
+    '../chromeos/cr_onc_strings.js',
     'internet_detail_page_tests.js',
   ]),
 };
@@ -1936,31 +1935,6 @@ TEST_F('CrSettingsMultideviceFeatureToggleTest', 'All', function() {
 });
 
 /**
- * Test fixture for the multidevice settings page container.
- * @constructor
- * @extends {CrSettingsBrowserTest}
- */
-function CrSettingsMultidevicePageContainerTest() {}
-
-CrSettingsMultidevicePageContainerTest.prototype = {
-  __proto__: CrSettingsBrowserTest.prototype,
-
-  /** @override */
-  browsePreload:
-      'chrome://settings/multidevice_page/multidevice_page_container.html',
-
-  /** @override */
-  extraLibraries: CrSettingsBrowserTest.prototype.extraLibraries.concat([
-    '../test_browser_proxy.js',
-    'multidevice_page_container_tests.js',
-  ]),
-};
-
-TEST_F('CrSettingsMultidevicePageContainerTest', 'All', function() {
-  mocha.run();
-});
-
-/**
  * Test fixture for the multidevice settings page.
  * @constructor
  * @extends {CrSettingsBrowserTest}
@@ -1976,11 +1950,39 @@ CrSettingsMultidevicePageTest.prototype = {
   /** @override */
   extraLibraries: CrSettingsBrowserTest.prototype.extraLibraries.concat([
     '../test_browser_proxy.js',
+    'test_multidevice_browser_proxy.js',
     'multidevice_page_tests.js',
   ]),
 };
 
 TEST_F('CrSettingsMultidevicePageTest', 'All', function() {
+  mocha.run();
+});
+
+/**
+ * Test fixture for the multidevice Smart Lock subpage.
+ * @constructor
+ * @extends {CrSettingsBrowserTest}
+ */
+function CrSettingsMultideviceSmartLockSubpageTest() {}
+
+CrSettingsMultideviceSmartLockSubpageTest.prototype = {
+  __proto__: CrSettingsBrowserTest.prototype,
+
+  /** @override */
+  browsePreload:
+      'chrome://settings/multidevice_page/multidevice_smartlock_subpage.html',
+
+  /** @override */
+  extraLibraries: CrSettingsBrowserTest.prototype.extraLibraries.concat([
+    '../test_browser_proxy.js',
+    'test_multidevice_browser_proxy.js',
+    'test_util.js',
+    'multidevice_smartlock_subpage_test.js',
+  ]),
+};
+
+TEST_F('CrSettingsMultideviceSmartLockSubpageTest', 'All', function() {
   mocha.run();
 });
 
@@ -2000,6 +2002,7 @@ CrSettingsMultideviceSubpageTest.prototype = {
   /** @override */
   extraLibraries: CrSettingsBrowserTest.prototype.extraLibraries.concat([
     '../test_browser_proxy.js',
+    'test_multidevice_browser_proxy.js',
     'multidevice_subpage_tests.js',
   ]),
 };
@@ -2186,30 +2189,6 @@ CrSettingsOnStartupPageTest.prototype = {
 TEST_F('CrSettingsOnStartupPageTest', 'All', function() {
   mocha.run();
 });
-GEN('#if defined(OS_CHROMEOS)');
-
-/**
- * @constructor
- * @extends {CrSettingsBrowserTest}
- */
-function CrSettingsDisplaySizeSliderTest() {}
-
-CrSettingsDisplaySizeSliderTest.prototype = {
-  __proto__: CrSettingsBrowserTest.prototype,
-
-  /** @override */
-  browsePreload: 'chrome://settings/device_page/display_size_slider.html',
-
-  /** @override */
-  extraLibraries: CrSettingsBrowserTest.prototype.extraLibraries.concat([
-    'display_size_slider_test.js',
-  ]),
-};
-
-TEST_F('CrSettingsDisplaySizeSliderTest', 'All', function() {
-  mocha.run();
-});
-GEN('#endif  // defined(OS_CHROMEOS)');
 
 /**
  * Test fixture for FindShortcutBehavior.
@@ -2236,5 +2215,27 @@ CrSettingsFindShortcutBehavior.prototype = {
 };
 
 TEST_F('CrSettingsFindShortcutBehavior', 'All', function() {
+  mocha.run();
+});
+
+/**
+ * @constructor
+ * @extends {CrSettingsBrowserTest}
+ */
+function CrSettingsSiteFaviconTest() {}
+
+CrSettingsSiteFaviconTest.prototype = {
+  __proto__: CrSettingsBrowserTest.prototype,
+
+  /** @override */
+  browsePreload: 'chrome://settings/site_favicon.html',
+
+  /** @override */
+  extraLibraries: CrSettingsBrowserTest.prototype.extraLibraries.concat([
+    'site_favicon_test.js',
+  ]),
+};
+
+TEST_F('CrSettingsSiteFaviconTest', 'All', function() {
   mocha.run();
 });

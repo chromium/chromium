@@ -25,6 +25,7 @@
 #include "ash/wallpaper/wallpaper_controller.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
+#include "ash/wm/overview/drop_target_view.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/rounded_rect_view.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
@@ -102,12 +103,8 @@ constexpr SkColor kNoItemsIndicatorBackgroundColor = SK_ColorBLACK;
 constexpr SkColor kNoItemsIndicatorTextColor = SK_ColorWHITE;
 constexpr float kNoItemsIndicatorBackgroundOpacity = 0.8f;
 
-// Values for the new selector item (+) in overview.
-constexpr SkColor kNewSelectorItemColor = SK_ColorWHITE;
-constexpr float kNewSelectorItemOpacity = 0.1f;
-constexpr float kNewSelectorPlusSignLongRatio = 0.2f;
-constexpr float kNewSelectorPlusSignShortRatio = 0.03f;
-constexpr int kNewSelectorItemTransitionMilliseconds = 250;
+// Time duration of the show animation of the drop target.
+constexpr int kDropTargetTransitionMilliseconds = 250;
 
 // Returns the vector for the fade in animation.
 gfx::Vector2d GetSlideVectorForFadeIn(WindowSelector::Direction direction,
@@ -126,61 +123,10 @@ gfx::Vector2d GetSlideVectorForFadeIn(WindowSelector::Direction direction,
   return vector;
 }
 
-// The views implementaion for |new_selector_item_widget_|.
-class NewSelectorItemView : public views::View {
- public:
-  NewSelectorItemView() {
-    background_view_ = new views::View();
-    background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    background_view_->layer()->SetColor(kNewSelectorItemColor);
-    background_view_->layer()->SetOpacity(kNewSelectorItemOpacity);
-    AddChildView(background_view_);
-
-    vertical_line_ = new views::View();
-    vertical_line_->SetPaintToLayer();
-    vertical_line_->SetBackground(
-        views::CreateSolidBackground(kNewSelectorItemColor));
-
-    horizontal_line_ = new views::View();
-    horizontal_line_->SetPaintToLayer();
-    horizontal_line_->SetBackground(
-        views::CreateSolidBackground(kNewSelectorItemColor));
-
-    AddChildView(vertical_line_);
-    AddChildView(horizontal_line_);
-  }
-  ~NewSelectorItemView() override = default;
-
-  // views::View:
-  void Layout() override {
-    const gfx::Rect local_bounds = GetLocalBounds();
-    background_view_->SetBoundsRect(local_bounds);
-
-    gfx::Rect vertical_bounds = local_bounds;
-    vertical_bounds.ClampToCenteredSize(
-        gfx::Size(local_bounds.height() * kNewSelectorPlusSignShortRatio,
-                  local_bounds.height() * kNewSelectorPlusSignLongRatio));
-    vertical_line_->SetBoundsRect(vertical_bounds);
-
-    gfx::Rect horizontal_bounds = local_bounds;
-    horizontal_bounds.ClampToCenteredSize(
-        gfx::Size(local_bounds.height() * kNewSelectorPlusSignLongRatio,
-                  local_bounds.height() * kNewSelectorPlusSignShortRatio));
-    horizontal_line_->SetBoundsRect(horizontal_bounds);
-  }
-
- private:
-  views::View* background_view_;
-  views::View* vertical_line_;    // The vertical line of the plus sign (+)
-  views::View* horizontal_line_;  // The horizontal line of the plus sign (+)
-
-  DISALLOW_COPY_AND_ASSIGN(NewSelectorItemView);
-};
-
-// Creates |new_selector_item_widget_|. It's created when a window (not from
-// overview) is dragged around and destroyed when the drag ends. If |animate|
-// is true, do the opacity animation for the new selector item.
-std::unique_ptr<views::Widget> CreateNewSelectorItemWidget(
+// Creates |drop_target_widget_|. It's created when a window (not from overview)
+// is dragged around and destroyed when the drag ends. If |animate| is true, do
+// the opacity animation for the drop target.
+std::unique_ptr<views::Widget> CreateDropTargetWidget(
     aura::Window* dragged_window,
     bool animate) {
   views::Widget::InitParams params;
@@ -195,15 +141,17 @@ std::unique_ptr<views::Widget> CreateNewSelectorItemWidget(
   widget->set_focus_on_creation(false);
   widget->Init(params);
 
-  widget->SetContentsView(new NewSelectorItemView());
+  // Show plus icon if drag a tab from a multi-tab window.
+  widget->SetContentsView(new DropTargetView(
+      dragged_window->GetProperty(ash::kTabDraggingSourceWindowKey)));
   widget->Show();
 
   if (animate) {
     widget->SetOpacity(0.f);
     ui::ScopedLayerAnimationSettings animation_settings(
         widget->GetNativeWindow()->layer()->GetAnimator());
-    animation_settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-        kNewSelectorItemTransitionMilliseconds));
+    animation_settings.SetTransitionDuration(
+        base::TimeDelta::FromMilliseconds(kDropTargetTransitionMilliseconds));
     animation_settings.SetTweenType(gfx::Tween::EASE_IN);
     animation_settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
@@ -445,9 +393,9 @@ void WindowGrid::PositionWindows(
     // might need animation even if the grid needs animation.
     if (animate && transition == WindowSelector::OverviewTransition::kEnter)
       should_animate_item = window_item->should_animate_when_entering();
-    // Do not do the bounds animation for the new selector item. We'll do the
-    // opacity animation by ourselves.
-    if (IsNewSelectorItemWindow(window_item->GetWindow()))
+    // Do not do the bounds animation for the drop target. We'll do the opacity
+    // animation by ourselves.
+    if (IsDropTargetWindow(window_item->GetWindow()))
       should_animate_item = false;
 
     window_item->SetBounds(rects[i], should_animate_item
@@ -631,10 +579,9 @@ void WindowGrid::OnSelectorItemDragEnded() {
 void WindowGrid::OnWindowDragStarted(aura::Window* dragged_window,
                                      bool animate) {
   DCHECK_EQ(dragged_window->GetRootWindow(), root_window_);
-  DCHECK(!new_selector_item_widget_);
-  new_selector_item_widget_ =
-      CreateNewSelectorItemWidget(dragged_window, animate);
-  window_selector_->AddItem(new_selector_item_widget_->GetNativeWindow(),
+  DCHECK(!drop_target_widget_);
+  drop_target_widget_ = CreateDropTargetWidget(dragged_window, animate);
+  window_selector_->AddItem(drop_target_widget_->GetNativeWindow(),
                             /*reposition=*/true, animate);
 
   // Stack the |dragged_window| at top during drag.
@@ -649,18 +596,18 @@ void WindowGrid::OnWindowDragContinued(aura::Window* dragged_window,
                                        IndicatorState indicator_state) {
   DCHECK_EQ(dragged_window->GetRootWindow(), root_window_);
 
-  // Adjust the window grid's bounds and the new selector item's visibility
+  // Adjust the window grid's bounds and the drop target's visibility
   // according to |indicator_state| if split view is not active at the moment.
   if (!Shell::Get()->split_view_controller()->IsSplitViewModeActive()) {
-    WindowSelectorItem* new_selector_item = GetNewSelectorItem();
+    WindowSelectorItem* drop_target = GetDropTarget();
     const bool should_visible =
         (indicator_state != IndicatorState::kPreviewAreaLeft &&
          indicator_state != IndicatorState::kPreviewAreaRight);
-    if (new_selector_item) {
-      const bool visible = new_selector_item_widget_->IsVisible();
+    if (drop_target) {
+      const bool visible = drop_target_widget_->IsVisible();
       if (should_visible != visible) {
-        new_selector_item_widget_->GetLayer()->SetVisible(should_visible);
-        new_selector_item->SetOpacity(should_visible ? 1.f : 0.f);
+        drop_target_widget_->GetLayer()->SetVisible(should_visible);
+        drop_target->SetOpacity(should_visible ? 1.f : 0.f);
       }
     }
 
@@ -669,19 +616,16 @@ void WindowGrid::OnWindowDragContinued(aura::Window* dragged_window,
         GetGridBoundsInScreenDuringDragging(dragged_window, indicator_state);
     if (bounds_ != expected_bounds) {
       SetBoundsAndUpdatePositionsIgnoringWindow(
-          expected_bounds, should_visible ? nullptr : new_selector_item);
+          expected_bounds, should_visible ? nullptr : drop_target);
     }
   }
 
-  // Find the window selector item that contains |location_in_screen|.
-  auto iter = std::find_if(
-      window_list_.begin(), window_list_.end(),
-      [location_in_screen](std::unique_ptr<WindowSelectorItem>& item) {
-        return item->target_bounds().Contains(location_in_screen);
-      });
-
-  aura::Window* target_window =
-      (iter != window_list_.end()) ? (*iter)->GetWindow() : nullptr;
+  aura::Window* target_window = GetTargetWindowOnLocation(location_in_screen);
+  DropTargetView* drop_target_view =
+      static_cast<DropTargetView*>(drop_target_widget_->GetContentsView());
+  DCHECK(drop_target_view);
+  drop_target_view->UpdateBackgroundVisibility(
+      target_window && IsDropTargetWindow(target_window));
 
   if (indicator_state == IndicatorState::kPreviewAreaLeft ||
       indicator_state == IndicatorState::kPreviewAreaRight) {
@@ -695,19 +639,19 @@ void WindowGrid::OnWindowDragContinued(aura::Window* dragged_window,
     // Also clear ash::kIsDeferredTabDraggingTargetWindowKey key on the target
     // window selector item so that it can't merge into this window selector
     // item if the dragged window is currently in preview window area.
-    if (target_window && !IsNewSelectorItemWindow(target_window))
+    if (target_window && !IsDropTargetWindow(target_window))
       target_window->ClearProperty(ash::kIsDeferredTabDraggingTargetWindowKey);
 
     return;
   }
 
-  // If |location_in_screen| is contained by one of the eligible window selector
-  // item in overview, show the selection widget.
-  if (target_window && (IsNewSelectorItemWindow(target_window) ||
-                        target_window->GetProperty(
-                            ash::kIsDeferredTabDraggingTargetWindowKey))) {
+  // Show the selection widget if |location_in_screen| is contained by the
+  // browser windows' selector items in overview.
+  if (target_window &&
+      target_window->GetProperty(ash::kIsDeferredTabDraggingTargetWindowKey)) {
     size_t previous_selected_index = selected_index_;
-    selected_index_ = iter - window_list_.begin();
+    selected_index_ = GetWindowSelectorItemIterContainingWindow(target_window) -
+                      window_list_.begin();
     if (previous_selected_index == selected_index_ && selection_widget_)
       return;
 
@@ -734,16 +678,14 @@ void WindowGrid::OnWindowDragEnded(aura::Window* dragged_window,
                                    const gfx::Point& location_in_screen,
                                    bool should_drop_window_into_overview) {
   DCHECK_EQ(dragged_window->GetRootWindow(), root_window_);
-  DCHECK(new_selector_item_widget_.get());
+  DCHECK(drop_target_widget_.get());
 
-  // Add the dragged window into new selector item area in overview if it has
-  // been dragged into it or |should_drop_window_into_overview| is true. Only
-  // consider |should_drop_window_into_overview| if SelectedWindow is false
-  // since tab dragging might drag the widnow to merge it into a browser window
-  // in overview.
+  // Add the dragged window into drop target in overview if
+  // |should_drop_window_into_overview| is true. Only consider add the dragged
+  // window into drop target if SelectedWindow is false since drop target will
+  // not be selected and tab dragging might drag a tab window to merge it into a
+  // browser window in overview.
   if (SelectedWindow()) {
-    if (IsNewSelectorItemWindow(SelectedWindow()->GetWindow()))
-      AddDraggedWindowIntoOverviewOnDragEnd(dragged_window);
     SelectedWindow()->set_selected(false);
     selection_widget_.reset();
   } else if (should_drop_window_into_overview) {
@@ -751,10 +693,9 @@ void WindowGrid::OnWindowDragEnded(aura::Window* dragged_window,
   }
 
   window_selector_->RemoveWindowSelectorItem(
-      GetWindowSelectorItemContaining(
-          new_selector_item_widget_->GetNativeWindow()),
+      GetWindowSelectorItemContaining(drop_target_widget_->GetNativeWindow()),
       /*reposition=*/false);
-  new_selector_item_widget_.reset();
+  drop_target_widget_.reset();
 
   // Called to reset caption and title visibility after dragging.
   OnSelectorItemDragEnded();
@@ -766,18 +707,17 @@ void WindowGrid::OnWindowDragEnded(aura::Window* dragged_window,
       GetGridBoundsInScreenAfterDragging(dragged_window));
 }
 
-bool WindowGrid::IsNewSelectorItemWindow(aura::Window* window) const {
-  return new_selector_item_widget_ &&
-         new_selector_item_widget_->GetNativeWindow() == window;
+bool WindowGrid::IsDropTargetWindow(aura::Window* window) const {
+  return drop_target_widget_ &&
+         drop_target_widget_->GetNativeWindow() == window;
 }
 
-WindowSelectorItem* WindowGrid::GetNewSelectorItem() {
-  if (!new_selector_item_widget_ || window_list_.empty())
+WindowSelectorItem* WindowGrid::GetDropTarget() {
+  if (!drop_target_widget_ || window_list_.empty())
     return nullptr;
 
   WindowSelectorItem* first_item = window_list_.front().get();
-  return IsNewSelectorItemWindow(first_item->GetWindow()) ? first_item
-                                                          : nullptr;
+  return IsDropTargetWindow(first_item->GetWindow()) ? first_item : nullptr;
 }
 
 void WindowGrid::OnWindowDestroying(aura::Window* window) {
@@ -1129,6 +1069,18 @@ void WindowGrid::UpdateYPositionAndOpacity(
   }
 }
 
+aura::Window* WindowGrid::GetTargetWindowOnLocation(
+    const gfx::Point& location_in_screen) {
+  // Find the window selector item that contains |location_in_screen|.
+  auto iter = std::find_if(
+      window_list_.begin(), window_list_.end(),
+      [&location_in_screen](std::unique_ptr<WindowSelectorItem>& item) {
+        return item->target_bounds().Contains(location_in_screen);
+      });
+
+  return (iter != window_list_.end()) ? (*iter)->GetWindow() : nullptr;
+}
+
 void WindowGrid::InitShieldWidget() {
   // TODO(varkha): The code assumes that SHELF_BACKGROUND_MAXIMIZED is
   // synonymous with a black shelf background. Update this code if that
@@ -1139,11 +1091,14 @@ void WindowGrid::InitShieldWidget() {
           ? 1.f
           : 0.f;
   shield_widget_ = CreateBackgroundWidget(
-      root_window_, ui::LAYER_SOLID_COLOR, SK_ColorTRANSPARENT, 0, 0,
+      root_window_, ui::LAYER_NOT_DRAWN, SK_ColorTRANSPARENT, 0, 0,
       SK_ColorTRANSPARENT, initial_opacity, /*parent=*/nullptr,
       /*stack_on_top=*/true);
   aura::Window* widget_window = shield_widget_->GetNativeWindow();
-  const gfx::Rect bounds = widget_window->parent()->bounds();
+  aura::Window* parent_window = widget_window->parent();
+  const gfx::Rect bounds = ash::screen_util::SnapBoundsToDisplayEdge(
+      parent_window->bounds(), parent_window);
+  parent_window->SetBounds(bounds);
   widget_window->SetBounds(bounds);
   widget_window->SetName("OverviewModeShield");
 
@@ -1527,7 +1482,7 @@ void WindowGrid::AddDraggedWindowIntoOverviewOnDragEnd(
     // its changed bounds.
     dragged_window->SetProperty(ash::kCanAttachToAnotherWindowKey, false);
     TabletModeWindowState::UpdateWindowPosition(
-        wm::GetWindowState(dragged_window));
+        wm::GetWindowState(dragged_window), /*animate=*/false);
     const gfx::Rect new_bounds = dragged_window->bounds();
     if (old_bounds != new_bounds) {
       // It's for smoother animation.

@@ -2,7 +2,6 @@ Test deriving HKDF keys with deriveKey()
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Derive an HKDF key from ECDH keys
 PASS hkdfKey.algorithm.name is "HKDF"
 PASS typeof hkdfKey.extractable is 'boolean'

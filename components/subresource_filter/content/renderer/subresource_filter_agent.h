@@ -13,6 +13,7 @@
 #include "components/subresource_filter/mojom/subresource_filter.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "mojo/public/cpp/bindings/associated_binding.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -21,7 +22,6 @@ class WebDocumentSubresourceFilter;
 
 namespace subresource_filter {
 
-struct DocumentLoadStatistics;
 class UnverifiedRulesetDealer;
 class WebDocumentSubresourceFilterImpl;
 
@@ -32,6 +32,7 @@ class WebDocumentSubresourceFilterImpl;
 class SubresourceFilterAgent
     : public content::RenderFrameObserver,
       public content::RenderFrameObserverTracker<SubresourceFilterAgent>,
+      public mojom::SubresourceFilterAgent,
       public base::SupportsWeakPtr<SubresourceFilterAgent> {
  public:
   // The |ruleset_dealer| must not be null and must outlive this instance. The
@@ -62,7 +63,7 @@ class SubresourceFilterAgent
 
   // Sends statistics about the DocumentSubresourceFilter's work to the browser.
   virtual void SendDocumentLoadStatistics(
-      const DocumentLoadStatistics& statistics);
+      const mojom::DocumentLoadStatistics& statistics);
 
   // Tells the browser that the frame is an ad subframe.
   virtual void SendFrameIsAdSubframe();
@@ -71,21 +72,25 @@ class SubresourceFilterAgent
   virtual bool IsAdSubframe();
   virtual void SetIsAdSubframe();
 
+  // mojom::SubresourceFilterAgent:
+  void ActivateForNextCommittedLoad(mojom::ActivationStatePtr activation_state,
+                                    bool is_ad_subframe) override;
+
  private:
   // Assumes that the parent will be in a local frame relative to this one, upon
   // construction.
   static mojom::ActivationState GetParentActivationState(
       content::RenderFrame* render_frame);
 
-  void OnActivateForNextCommittedLoad(
-      const mojom::ActivationState& activation_state,
-      bool is_ad_subframe);
   void RecordHistogramsOnLoadCommitted(
       const mojom::ActivationState& activation_state);
   void RecordHistogramsOnLoadFinished();
   void ResetInfoForNextCommit();
 
   const mojom::SubresourceFilterHostAssociatedPtr& GetSubresourceFilterHost();
+
+  void OnSubresourceFilterAgentRequest(
+      mojom::SubresourceFilterAgentAssociatedRequest request);
 
   // content::RenderFrameObserver:
   void OnDestruct() override;
@@ -94,7 +99,6 @@ class SubresourceFilterAgent
                                 ui::PageTransition transition) override;
   void DidFailProvisionalLoad(const blink::WebURLError& error) override;
   void DidFinishLoad() override;
-  bool OnMessageReceived(const IPC::Message& message) override;
   void WillCreateWorkerFetchContext(blink::WebWorkerFetchContext*) override;
 
   // Owned by the ChromeContentRendererClient and outlives us.
@@ -108,6 +112,8 @@ class SubresourceFilterAgent
   // Use associated interface to make sure mojo messages are ordered with regard
   // to legacy IPC messages.
   mojom::SubresourceFilterHostAssociatedPtr subresource_filter_host_;
+
+  mojo::AssociatedBinding<mojom::SubresourceFilterAgent> binding_;
 
   // If a document has been created for this frame before. The first document
   // for a new local subframe should be about:blank.

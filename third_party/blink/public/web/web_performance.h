@@ -36,7 +36,7 @@
 #include "third_party/blink/public/web/web_navigation_type.h"
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"  // nogncheck
 #endif
 
 namespace blink {
@@ -92,6 +92,10 @@ class WebPerformance {
   BLINK_EXPORT double FirstContentfulPaint() const;
   BLINK_EXPORT double FirstMeaningfulPaint() const;
   BLINK_EXPORT double FirstMeaningfulPaintCandidate() const;
+  BLINK_EXPORT double LargestImagePaint() const;
+  BLINK_EXPORT double LastImagePaint() const;
+  BLINK_EXPORT double LargestTextPaint() const;
+  BLINK_EXPORT double LastTextPaint() const;
   BLINK_EXPORT double PageInteractive() const;
   BLINK_EXPORT double PageInteractiveDetection() const;
   BLINK_EXPORT double FirstInputInvalidatingInteractive() const;

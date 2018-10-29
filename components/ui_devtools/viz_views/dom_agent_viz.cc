@@ -79,13 +79,15 @@ void DOMAgentViz::OnInvalidatedFrameSinkId(
   auto it = frame_sink_elements_.find(frame_sink_id);
   DCHECK(it != frame_sink_elements_.end());
 
-  FrameSinkElement* element = it->second;
+  // Destroy the FrameSinkElement |element| after updating the frame-tree.
+  std::unique_ptr<FrameSinkElement> element(it->second);
   element->SetRegistered(false);
 
-  // If a FrameSink is destroyed and invalidated we should remove it from the
-  // tree.
-  RemoveFrameSinkSubtree(element);
-  DestroyChildSubtree(element->parent(), element);
+  // A FrameSinkElement with |frame_sink_id| can only be invalidated after
+  // being destroyed.
+  DCHECK(!element->is_client_connected());
+  RemoveFrameSinkSubtree(element.get());
+  frame_sink_elements_.erase(frame_sink_id);
 }
 
 void DOMAgentViz::OnCreatedCompositorFrameSink(
@@ -105,12 +107,8 @@ void DOMAgentViz::OnDestroyedCompositorFrameSink(
   DCHECK(it != frame_sink_elements_.end());
 
   FrameSinkElement* element = it->second;
+  // Set FrameSinkElement to not connected to make it as destroyed.
   element->SetClientConnected(false);
-
-  // If a FrameSink is invalidated and destroyed we should remove it from the
-  // tree.
-  RemoveFrameSinkSubtree(element);
-  DestroyChildSubtree(element->parent(), element);
 }
 
 void DOMAgentViz::OnRegisteredFrameSinkHierarchy(
@@ -259,14 +257,6 @@ std::unique_ptr<DOM::Node> DOMAgentViz::BuildTreeForUIElement(
   return nullptr;
 }
 
-void DOMAgentViz::DestroyChildSubtree(UIElement* parent, UIElement* child) {
-  std::vector<UIElement*> direct_children = child->children();
-  for (auto* kid : direct_children)
-    DestroyChildSubtree(child, kid);
-  parent->RemoveChild(child);
-  std::unique_ptr<UIElement> to_destroy(child);
-}
-
 void DOMAgentViz::Clear() {
   attached_frame_sinks_.clear();
   frame_sink_elements_.clear();
@@ -301,20 +291,11 @@ void DOMAgentViz::RemoveFrameSinkSubtree(UIElement* root) {
   // detach all its children and attach them to RootElement and then delete the
   // node we were asked for.
   std::vector<viz::FrameSinkId> children;
-  frame_sink_elements_.erase(FrameSinkElement::From(root));
-  for (auto* child : root->children()) {
-    RemoveFrameSinkElement(child);
+  for (auto* child : root->children())
     child->set_parent(element_root());
-  }
 
   if (root->parent())
     root->parent()->RemoveChild(root);
-}
-
-void DOMAgentViz::RemoveFrameSinkElement(UIElement* element) {
-  frame_sink_elements_.erase(FrameSinkElement::From(element));
-  for (auto* child : element->children())
-    RemoveFrameSinkElement(child);
 }
 
 }  // namespace ui_devtools

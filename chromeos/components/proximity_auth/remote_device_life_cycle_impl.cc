@@ -203,11 +203,24 @@ void RemoteDeviceLifeCycleImpl::OnConnectionAttemptFailure(
     chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason) {
   DCHECK(base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi));
 
-  PA_LOG(ERROR) << "Failed to create connection to remote device: "
-                << remote_device_.GetTruncatedDeviceIdForLogs()
-                << ", for reason: " << reason << ". Giving up.";
   connection_attempt_.reset();
-  TransitionToState(RemoteDeviceLifeCycle::State::AUTHENTICATION_FAILED);
+
+  if (reason == chromeos::secure_channel::mojom::
+                    ConnectionAttemptFailureReason::ADAPTER_DISABLED ||
+      reason == chromeos::secure_channel::mojom::
+                    ConnectionAttemptFailureReason::ADAPTER_NOT_PRESENT) {
+    // Transition to state STOPPED, and wait for Bluetooth to become powered.
+    // If it does, UnlockManager will start RemoteDeviceLifeCycle again.
+    PA_LOG(WARNING) << "Life cycle for "
+                    << remote_device_.GetTruncatedDeviceIdForLogs()
+                    << " stopped because Bluetooth is not available.";
+    TransitionToState(RemoteDeviceLifeCycle::State::STOPPED);
+  } else {
+    PA_LOG(ERROR) << "Failed to authenticate with remote device: "
+                  << remote_device_.GetTruncatedDeviceIdForLogs()
+                  << ", for reason: " << reason << ". Giving up.";
+    TransitionToState(RemoteDeviceLifeCycle::State::AUTHENTICATION_FAILED);
+  }
 }
 
 void RemoteDeviceLifeCycleImpl::OnConnection(

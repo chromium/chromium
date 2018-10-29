@@ -15,14 +15,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.LocationBarVoiceRecognitionHandler;
-import org.chromium.chrome.browser.omnibox.OmniboxSuggestion;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.ToolbarPhone;
-
-import java.util.List;
 
 /** Implementation of the {@link LocationBarLayout} that is displayed for widget searches. */
 public class SearchActivityLocationBarLayout extends LocationBarLayout {
@@ -45,6 +42,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         setBackground(ToolbarPhone.createModernLocationBarBackground(getResources()));
 
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
+        getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
+                mPendingSearchPromoDecision);
     }
 
     /** Set the {@link Delegate}. */
@@ -53,7 +52,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     @Override
-    protected void loadUrl(String url, int transition, long inputStart) {
+    public void loadUrl(String url, int transition, long inputStart) {
         mDelegate.loadUrl(url);
         LocaleManager.getInstance().recordLocaleBasedSearchMetrics(true, url, transition);
     }
@@ -61,11 +60,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     @Override
     public void backKeyPressed() {
         mDelegate.backKeyPressed();
-    }
-
-    @Override
-    public boolean mustQueryUrlBarLocationForSuggestions() {
-        return true;
     }
 
     @Override
@@ -79,13 +73,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         setAutocompleteProfile(Profile.getLastUsedProfile().getOriginalProfile());
 
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
-    }
-
-    @Override
-    public void onSuggestionsReceived(
-            List<OmniboxSuggestion> newSuggestions, String inlineAutocompleteText) {
-        if (mPendingSearchPromoDecision) return;
-        super.onSuggestionsReceived(newSuggestions, inlineAutocompleteText);
+        getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
+                mPendingSearchPromoDecision);
     }
 
     /** Called when the SearchActivity has finished initialization. */
@@ -95,12 +84,14 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
                     mVoiceRecognitionHandler.isVoiceSearchEnabled());
         }
         if (isVoiceSearchIntent && mUrlBar.isFocused()) onUrlFocusChange(true);
-        if (!TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete())) {
-            onTextChangedForAutocomplete();
-        }
 
         assert !LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mPendingSearchPromoDecision = false;
+        getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
+                mPendingSearchPromoDecision);
+        if (!TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete())) {
+            mAutocompleteCoordinator.onTextChangedForAutocomplete();
+        }
 
         if (mPendingBeginQuery) {
             beginQueryInternal(isVoiceSearchIntent);
@@ -153,7 +144,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     //                is finalized after native has been initialized.
     private void focusTextBox() {
         if (!mUrlBar.hasFocus()) mUrlBar.requestFocus();
-        setShowCachedZeroSuggestResults(true);
+        getAutocompleteCoordinator().setShowCachedZeroSuggestResults(true);
 
         new Handler().post(new Runnable() {
             @Override

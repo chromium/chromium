@@ -32,7 +32,7 @@ class CrosSettingsTest : public testing::Test {
  protected:
   CrosSettingsTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
-        settings_(DeviceSettingsService::Get()),
+        settings_(DeviceSettingsService::Get(), local_state_.Get()),
         weak_factory_(this) {}
 
   ~CrosSettingsTest() override {}

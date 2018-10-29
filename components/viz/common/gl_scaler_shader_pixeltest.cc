@@ -74,7 +74,8 @@ class GLScalerShaderPixelTest
         is_swizzling_output() ? GL_BGRA_EXT : GL_RGBA,
         is_swizzling_output() ? GL_BGRA_EXT : GL_RGBA,
     };
-    return scaler_->GetShaderProgram(shader, GL_RGBA, transform.get(), swizzle);
+    return scaler_->GetShaderProgram(shader, GL_UNSIGNED_BYTE, transform.get(),
+                                     swizzle);
   }
 
   GLuint CreateTexture(const gfx::Size& size) {
@@ -135,7 +136,9 @@ class GLScalerShaderPixelTest
     GLuint result = texture;
     if (is_swizzling_output()) {
       const GLenum swizzle[2] = {GL_BGRA_EXT, GL_BGRA_EXT};
-      scaler_->GetShaderProgram(Shader::BILINEAR, GL_RGBA, nullptr, swizzle)
+      scaler_
+          ->GetShaderProgram(Shader::BILINEAR, GL_UNSIGNED_BYTE, nullptr,
+                             swizzle)
           ->UseProgram(size, gfx::RectF(gfx::Rect(size)), size,
                        Axis::HORIZONTAL, false);
       result = RenderToNewTexture(result, size);
@@ -146,8 +149,8 @@ class GLScalerShaderPixelTest
           gfx::ColorTransform::Intent::INTENT_ABSOLUTE);
       const GLenum swizzle[2] = {GL_RGBA, GL_RGBA};
       scaler_
-          ->GetShaderProgram(Shader::BILINEAR, GL_RGBA, transform.get(),
-                             swizzle)
+          ->GetShaderProgram(Shader::BILINEAR, GL_UNSIGNED_BYTE,
+                             transform.get(), swizzle)
           ->UseProgram(size, gfx::RectF(gfx::Rect(size)), size,
                        Axis::HORIZONTAL, false);
       result = RenderToNewTexture(result, size);

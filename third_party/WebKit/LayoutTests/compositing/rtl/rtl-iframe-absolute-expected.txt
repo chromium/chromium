@@ -27,11 +27,6 @@
       "backgroundColor": "#FF0000"
     },
     {
-      "name": "Child Containment Layer",
-      "bounds": [400, 400],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow (positioned) DIV class='positioned layer'",
       "bounds": [100, 100],
       "contentsOpaque": true,

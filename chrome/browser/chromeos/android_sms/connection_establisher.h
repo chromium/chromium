@@ -16,10 +16,13 @@ namespace android_sms {
 // service worker to the Tachyon server.
 class ConnectionEstablisher {
  public:
+  enum class ConnectionMode { kStartConnection, kResumeExistingConnection };
+
   virtual ~ConnectionEstablisher() = default;
 
   virtual void EstablishConnection(
-      content::ServiceWorkerContext* service_worker_context) = 0;
+      content::ServiceWorkerContext* service_worker_context,
+      ConnectionMode connection_mode) = 0;
 
  protected:
   ConnectionEstablisher() = default;

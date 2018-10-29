@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS Stylesheet loading using <link> with no Content-Type, same-origin, and no nosniff
+PASS Stylesheet loading using <link> with no Content-Type, same-origin, and nosniff
+PASS Stylesheet loading using <link> with wrong Content-Type, same-origin, and no nosniff
+PASS Stylesheet loading using <link> with wrong Content-Type, same-origin, and nosniff
+PASS Stylesheet loading using <link> with broken Content-Type, same-origin, and no nosniff
+PASS Stylesheet loading using <link> with broken Content-Type, same-origin, and nosniff
+PASS Stylesheet loading using <link> with no Content-Type, cross-origin, and no nosniff
+PASS Stylesheet loading using <link> with no Content-Type, cross-origin, and nosniff
+FAIL Stylesheet loading using <link> with wrong Content-Type, cross-origin, and no nosniff assert_unreached: error event should have fired Reached unreachable code
+FAIL Stylesheet loading using <link> with wrong Content-Type, cross-origin, and nosniff assert_unreached: error event should have fired Reached unreachable code
+PASS Stylesheet loading using <link> with broken Content-Type, cross-origin, and no nosniff
+PASS Stylesheet loading using <link> with broken Content-Type, cross-origin, and nosniff
+PASS Stylesheet loading using @import with no Content-Type, same-origin, and no nosniff
+PASS Stylesheet loading using @import with no Content-Type, same-origin, and nosniff
+PASS Stylesheet loading using @import with wrong Content-Type, same-origin, and no nosniff
+PASS Stylesheet loading using @import with wrong Content-Type, same-origin, and nosniff
+PASS Stylesheet loading using @import with broken Content-Type, same-origin, and no nosniff
+PASS Stylesheet loading using @import with broken Content-Type, same-origin, and nosniff
+PASS Stylesheet loading using @import with no Content-Type, cross-origin, and no nosniff
+PASS Stylesheet loading using @import with no Content-Type, cross-origin, and nosniff
+FAIL Stylesheet loading using @import with wrong Content-Type, cross-origin, and no nosniff assert_unreached: error event should have fired Reached unreachable code
+FAIL Stylesheet loading using @import with wrong Content-Type, cross-origin, and nosniff assert_unreached: error event should have fired Reached unreachable code
+PASS Stylesheet loading using @import with broken Content-Type, cross-origin, and no nosniff
+PASS Stylesheet loading using @import with broken Content-Type, cross-origin, and nosniff
+Harness: the test ran to completion.
+

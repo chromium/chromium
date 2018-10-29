@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,7 +19,9 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/input/actions_parser.h"
 #include "content/common/input/synthetic_gesture_params.h"
+#include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/common/input_messages.h"
 #include "content/public/browser/render_view_host.h"
@@ -168,9 +171,6 @@ class TouchActionBrowserTest : public ContentBrowserTest {
   void SetUpCommandLine(base::CommandLine* cmd) override {
     cmd->AppendSwitchASCII(switches::kTouchEventFeatureDetection,
                            switches::kTouchEventFeatureDetectionEnabled);
-    // TODO(rbyers): Remove this switch once touch-action ships.
-    // http://crbug.com/241964
-    cmd->AppendSwitch(switches::kEnableExperimentalWebPlatformFeatures);
   }
 
   // ContentBrowserTest:
@@ -317,6 +317,45 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
     CheckScrollOffset(wait_until_scrolled,
                       expected_scroll_position_after_scroll);
+  }
+
+  // Generate touch events for a double tap and drag zoom gesture at
+  // coordinates (50, 50).
+  void DoDoubleTapDragZoom() {
+    DCHECK(URLLoaded());
+
+    const std::string pointer_actions_json = R"HTML(
+        [{
+          "source": "touch",
+          "actions": [
+            { "name": "pointerDown", "x": 50, "y": 50 },
+            { "name": "pointerUp" },
+            { "name": "pause", "duration": 0.05 },
+            { "name": "pointerDown", "x": 50, "y": 50 },
+            { "name": "pointerMove", "x": 50, "y": 150 },
+            { "name": "pointerUp" }
+          ]
+        }]
+        )HTML";
+
+    base::JSONReader json_reader;
+    std::unique_ptr<base::Value> params =
+        json_reader.ReadToValue(pointer_actions_json);
+    ASSERT_TRUE(params.get()) << json_reader.GetErrorMessage();
+    ActionsParser actions_parser(params.get());
+
+    ASSERT_TRUE(actions_parser.ParsePointerActionSequence());
+
+    run_loop_ = std::make_unique<base::RunLoop>();
+
+    GetWidgetHost()->QueueSyntheticGesture(
+        SyntheticGesture::Create(actions_parser.gesture_params()),
+        base::BindOnce(&TouchActionBrowserTest::OnSyntheticGestureCompleted,
+                       base::Unretained(this)));
+
+    // Runs until we get the OnSyntheticGestureCompleted callback
+    run_loop_->Run();
+    run_loop_.reset();
   }
 
  private:
@@ -533,6 +572,45 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
 
   DoTouchScroll(gfx::Point(125, 75), gfx::Vector2d(45, 20), false, 10000,
                 gfx::Vector2d(45, 0), kShortJankTime);
+}
+
+namespace {
+
+const std::string kDoubleTapZoomDataURL = R"HTML(
+    data:text/html,<!DOCTYPE html>
+    <meta name='viewport' content='width=device-width'/>
+    <style>
+      html, body {
+        margin: 0;
+      }
+      .spacer { height: 10000px; }
+      .touchaction { width: 75px; height: 75px; touch-action: none; }
+    </style>
+    <div class="touchaction"></div>
+    <div class=spacer></div>
+    <script>
+      document.title='ready';
+    </script>)HTML";
+
+}  // namespace
+
+// Test that |touch-action: none| correctly blocks a double-tap and drag zoom
+// gesture.
+IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, BlockDoubleTapDragZoom) {
+  LoadURL(kDoubleTapZoomDataURL.c_str());
+
+  ASSERT_EQ(1, ExecuteScriptAndExtractDouble("window.visualViewport.scale"));
+
+  DoDoubleTapDragZoom();
+
+  // Since we don't expect anything to change, we don't know how long to wait
+  // before we're sure the zoom was blocked.  Do a scroll so that we can wait
+  // until the offset changes. At that point, we know the zoom should have
+  // taken effect if it wasn't blocked by touch-action.
+  DoTouchScroll(gfx::Point(300, 300), gfx::Vector2d(0, 200), true, 10075,
+                gfx::Vector2d(0, 200), kNoJankTime);
+
+  EXPECT_EQ(1, ExecuteScriptAndExtractDouble("window.visualViewport.scale"));
 }
 
 }  // namespace content

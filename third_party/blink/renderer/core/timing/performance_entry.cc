@@ -61,26 +61,28 @@ DOMHighResTimeStamp PerformanceEntry::duration() const {
 
 PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
     const AtomicString& entry_type) {
-  if (entry_type == PerformanceEntryNames::longtask)
+  if (entry_type == performance_entry_names::kLongtask)
     return kLongTask;
-  if (entry_type == PerformanceEntryNames::mark)
+  if (entry_type == performance_entry_names::kMark)
     return kMark;
-  if (entry_type == PerformanceEntryNames::measure)
+  if (entry_type == performance_entry_names::kMeasure)
     return kMeasure;
-  if (entry_type == PerformanceEntryNames::resource)
+  if (entry_type == performance_entry_names::kResource)
     return kResource;
-  if (entry_type == PerformanceEntryNames::navigation)
+  if (entry_type == performance_entry_names::kNavigation)
     return kNavigation;
-  if (entry_type == PerformanceEntryNames::taskattribution)
+  if (entry_type == performance_entry_names::kTaskattribution)
     return kTaskAttribution;
-  if (entry_type == PerformanceEntryNames::paint)
+  if (entry_type == performance_entry_names::kPaint)
     return kPaint;
-  if (entry_type == PerformanceEntryNames::event)
+  if (entry_type == performance_entry_names::kEvent)
     return kEvent;
-  if (entry_type == PerformanceEntryNames::firstInput)
+  if (entry_type == performance_entry_names::kFirstInput)
     return kFirstInput;
-  if (entry_type == PerformanceEntryNames::element)
+  if (entry_type == performance_entry_names::kElement)
     return kElement;
+  if (entry_type == performance_entry_names::kLayoutJank)
+    return kLayoutJank;
   return kInvalid;
 }
 

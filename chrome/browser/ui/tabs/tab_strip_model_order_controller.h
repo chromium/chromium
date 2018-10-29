@@ -31,10 +31,10 @@ class TabStripModelOrderController : public TabStripModelObserver {
   int DetermineNewSelectedIndex(int removed_index) const;
 
   // Overridden from TabStripModelObserver:
-  void ActiveTabChanged(content::WebContents* old_contents,
-                        content::WebContents* new_contents,
-                        int index,
-                        int reason) override;
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  private:
   // Returns a valid index to be selected after the tab at |removing_index| is

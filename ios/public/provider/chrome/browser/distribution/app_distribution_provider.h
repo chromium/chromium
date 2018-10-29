@@ -8,10 +8,11 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 
-namespace net {
-class URLRequestContextGetter;
-}
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 class AppDistributionProvider {
  public:
@@ -23,11 +24,15 @@ class AppDistributionProvider {
 
   // Schedules distribution notifications to be sent using the given |context|.
   virtual void ScheduleDistributionNotifications(
-      net::URLRequestContextGetter* context,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       bool is_first_run);
 
   // Cancels any pending distribution notifications.
   virtual void CancelDistributionNotifications();
+
+  // Returns whether user who installed Chrome on |install_date| predates
+  // integration with Firebase for installation attribution.
+  virtual bool IsPreFirebaseLegacyUser(int64_t install_date);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AppDistributionProvider);

@@ -125,8 +125,7 @@ void BuildSubmenuFromModel(ui::MenuModel* model,
         break;
 
       case ui::MenuModel::TYPE_RADIO: {
-        std::map<int, GtkWidget*>::iterator iter =
-            radio_groups.find(model->GetGroupIdAt(i));
+        auto iter = radio_groups.find(model->GetGroupIdAt(i));
 
         if (iter == radio_groups.end()) {
           menu_item =

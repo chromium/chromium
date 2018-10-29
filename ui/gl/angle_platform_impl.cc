@@ -19,13 +19,6 @@ namespace angle {
 
 namespace {
 
-// This platform context stores user data accessible inside the impl methods.
-struct PlatformContext {
-  CacheProgramCallback cache_program_callback;
-};
-
-base::LazyInstance<PlatformContext>::DestructorAtExit g_platform_context =
-    LAZY_INSTANCE_INITIALIZER;
 // Place the function pointers for ANGLEGetDisplayPlatform and
 // ANGLEResetDisplayPlatform in read-only memory after being resolved to prevent
 // them from being tampered with. See crbug.com/771365 for details.
@@ -133,26 +126,6 @@ void ANGLEPlatformImpl_histogramBoolean(PlatformMethods* platform,
   ANGLEPlatformImpl_histogramEnumeration(platform, name, sample ? 1 : 0, 2);
 }
 
-void ANGLEPlatformImpl_cacheProgram(PlatformMethods* platform,
-                                    const ProgramKeyType& key,
-                                    size_t program_size,
-                                    const uint8_t* program_bytes) {
-  PlatformContext* context =
-      reinterpret_cast<PlatformContext*>(platform->context);
-  if (context && context->cache_program_callback) {
-    // Convert the key and binary to string form.
-    std::string key_string(reinterpret_cast<const char*>(&key[0]),
-                           sizeof(ProgramKeyType));
-    std::string value_string(reinterpret_cast<const char*>(program_bytes),
-                             program_size);
-    std::string key_string_64;
-    std::string value_string_64;
-    base::Base64Encode(key_string, &key_string_64);
-    base::Base64Encode(value_string, &value_string_64);
-    context->cache_program_callback.Run(key_string_64, value_string_64);
-  }
-}
-
 }  // anonymous namespace
 
 bool InitializePlatform(EGLDisplay display) {
@@ -175,7 +148,7 @@ bool InitializePlatform(EGLDisplay display) {
   PlatformMethods* platformMethods = nullptr;
   if (!base::UnsanitizedCfiCall(g_angle_get_platform)(
           static_cast<EGLDisplayType>(display), g_PlatformMethodNames,
-          g_NumPlatformMethods, &g_platform_context.Get(), &platformMethods))
+          g_NumPlatformMethods, nullptr, &platformMethods))
     return false;
   platformMethods->currentTime = ANGLEPlatformImpl_currentTime;
   platformMethods->addTraceEvent = ANGLEPlatformImpl_addTraceEvent;
@@ -194,7 +167,6 @@ bool InitializePlatform(EGLDisplay display) {
       ANGLEPlatformImpl_monotonicallyIncreasingTime;
   platformMethods->updateTraceEventDuration =
       ANGLEPlatformImpl_updateTraceEventDuration;
-  platformMethods->cacheProgram = ANGLEPlatformImpl_cacheProgram;
   return true;
 }
 
@@ -203,19 +175,10 @@ void ResetPlatform(EGLDisplay display) {
     return;
   base::UnsanitizedCfiCall(g_angle_reset_platform)(
       static_cast<EGLDisplayType>(display));
-  ResetCacheProgramCallback();
   {
     auto writer = base::AutoWritableMemory::Create(g_angle_reset_platform);
     *g_angle_reset_platform = nullptr;
   }
-}
-
-void SetCacheProgramCallback(CacheProgramCallback callback) {
-  g_platform_context.Get().cache_program_callback = callback;
-}
-
-void ResetCacheProgramCallback() {
-  g_platform_context.Get().cache_program_callback.Reset();
 }
 
 }  // namespace angle

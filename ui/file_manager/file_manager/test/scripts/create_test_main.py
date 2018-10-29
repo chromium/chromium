@@ -105,10 +105,6 @@ main_html = (read('main.html')
              .replace('src="', 'src="' + ROOT)
              .replace(ROOT + 'chrome://resources/css/text_defaults.css',
                       'test/gen/css/text_defaults.css')
-             .replace(('chrome-extension://fbjakikfhfdajcamjleinfciajelkpek/'
-                       'cws_widget/cws_widget_container.css'),
-                      ('../../../components/chrome_apps/'
-                       'webstore_widget/cws_widget/cws_widget_container.css'))
              .split('\n'))
 
 # Fix text_defaults.css.  Copy and replace placeholders.

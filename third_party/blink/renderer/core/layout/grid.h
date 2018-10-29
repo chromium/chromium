@@ -273,6 +273,8 @@ class CORE_EXPORT ListGrid final : public Grid {
 };
 
 class ListGridIterator final : public Grid::GridIterator {
+  USING_FAST_MALLOC(ListGridIterator);
+
  public:
   ListGridIterator(const ListGrid& grid,
                    GridTrackSizingDirection,

@@ -43,6 +43,7 @@ class NullImageResourceInfo final
   bool IsSchedulingReload() const override { return false; }
   const ResourceResponse& GetResponse() const override { return response_; }
   bool ShouldShowPlaceholder() const override { return false; }
+  bool ShouldShowLazyImagePlaceholder() const override { return false; }
   bool IsCacheValidator() const override { return false; }
   bool SchedulingReloadOrShouldReloadBrokenPlaceholder() const override {
     return false;
@@ -103,9 +104,9 @@ ImageResourceContent::ImageResourceContent(scoped_refptr<blink::Image> image)
       device_pixel_ratio_header_value_(1.0),
       has_device_pixel_ratio_header_value_(false),
       image_(std::move(image)) {
-  DEFINE_STATIC_LOCAL(NullImageResourceInfo, null_info,
+  DEFINE_STATIC_LOCAL(Persistent<NullImageResourceInfo>, null_info,
                       (new NullImageResourceInfo()));
-  info_ = &null_info;
+  info_ = null_info;
 }
 
 ImageResourceContent* ImageResourceContent::CreateLoaded(
@@ -254,8 +255,7 @@ IntSize ImageResourceContent::IntrinsicSize(
 
 void ImageResourceContent::NotifyObservers(
     NotifyFinishOption notifying_finish_option,
-    CanDeferInvalidation defer,
-    const IntRect* change_rect) {
+    CanDeferInvalidation defer) {
   {
     Vector<ImageResourceObserver*> finished_observers_as_vector;
     {
@@ -266,7 +266,7 @@ void ImageResourceContent::NotifyObservers(
 
     for (auto* observer : finished_observers_as_vector) {
       if (finished_observers_.Contains(observer))
-        observer->ImageChanged(this, defer, change_rect);
+        observer->ImageChanged(this, defer);
     }
   }
   {
@@ -279,7 +279,7 @@ void ImageResourceContent::NotifyObservers(
 
     for (auto* observer : observers_as_vector) {
       if (observers_.Contains(observer)) {
-        observer->ImageChanged(this, defer, change_rect);
+        observer->ImageChanged(this, defer);
         if (notifying_finish_option == kShouldNotifyFinish &&
             observers_.Contains(observer) &&
             !info_->SchedulingReloadOrShouldReloadBrokenPlaceholder()) {
@@ -292,10 +292,14 @@ void ImageResourceContent::NotifyObservers(
 }
 
 scoped_refptr<Image> ImageResourceContent::CreateImage(bool is_multipart) {
+  String content_dpr_value =
+      info_->GetResponse().HttpHeaderField(HTTPNames::Content_DPR);
+  size_t comma = content_dpr_value.ReverseFind(',');
+  if (comma != kNotFound && comma < content_dpr_value.length() - 1) {
+    content_dpr_value = content_dpr_value.Substring(comma + 1);
+  }
   device_pixel_ratio_header_value_ =
-      info_->GetResponse()
-          .HttpHeaderField(HTTPNames::Content_DPR)
-          .ToFloat(&has_device_pixel_ratio_header_value_);
+      content_dpr_value.ToFloat(&has_device_pixel_ratio_header_value_);
   if (!has_device_pixel_ratio_header_value_ ||
       device_pixel_ratio_header_value_ <= 0.0) {
     device_pixel_ratio_header_value_ = 1.0;
@@ -431,13 +435,19 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
       if (size_available_ == Image::kSizeUnavailable && !all_data_received)
         return UpdateImageResult::kNoDecodeError;
 
-      if (info_->ShouldShowPlaceholder() && all_data_received) {
+      if ((info_->ShouldShowPlaceholder() ||
+           info_->ShouldShowLazyImagePlaceholder()) &&
+          all_data_received) {
         if (image_ && !image_->IsNull()) {
           IntSize dimensions = image_->Size();
           ClearImage();
-          image_ = PlaceholderImage::Create(
-              this, dimensions,
-              EstimateOriginalImageSizeForPlaceholder(info_->GetResponse()));
+          if (info_->ShouldShowLazyImagePlaceholder()) {
+            image_ = PlaceholderImage::CreateForLazyImages(this, dimensions);
+          } else {
+            image_ = PlaceholderImage::Create(
+                this, dimensions,
+                EstimateOriginalImageSizeForPlaceholder(info_->GetResponse()));
+          }
         }
       }
 
@@ -499,9 +509,10 @@ bool ImageResourceContent::IsAcceptableCompressionRatio() {
   uint64_t pixels = IntrinsicSize(kDoNotRespectImageOrientation).Area();
   if (!pixels)
     return true;
-  long long resource_length = GetResponse().DecodedBodyLength();
+  DCHECK(image_);
+  double resource_length = image_->Data() ? image_->Data()->size() : 0;
   // Allow no more than 10 bits per compressed pixel
-  return (double)resource_length / pixels <= 1.25;
+  return resource_length / pixels <= 1.25;
 }
 
 void ImageResourceContent::DecodedSizeChangedTo(const blink::Image* image,
@@ -531,12 +542,6 @@ bool ImageResourceContent::ShouldPauseAnimation(const blink::Image* image) {
   return true;
 }
 
-void ImageResourceContent::AnimationAdvanced(const blink::Image* image) {
-  if (!image || image != image_)
-    return;
-  NotifyObservers(kDoNotNotifyFinish, CanDeferInvalidation::kYes);
-}
-
 void ImageResourceContent::UpdateImageAnimationPolicy() {
   if (!image_)
     return;
@@ -558,11 +563,10 @@ void ImageResourceContent::UpdateImageAnimationPolicy() {
   image_->SetAnimationPolicy(new_policy);
 }
 
-void ImageResourceContent::ChangedInRect(const blink::Image* image,
-                                         const IntRect& rect) {
+void ImageResourceContent::Changed(const blink::Image* image) {
   if (!image || image != image_)
     return;
-  NotifyObservers(kDoNotNotifyFinish, CanDeferInvalidation::kYes, &rect);
+  NotifyObservers(kDoNotNotifyFinish, CanDeferInvalidation::kYes);
 }
 
 bool ImageResourceContent::IsAccessAllowed(

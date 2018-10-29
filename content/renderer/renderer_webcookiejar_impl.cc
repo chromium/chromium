@@ -23,8 +23,7 @@ void RendererWebCookieJarImpl::SetCookie(const WebURL& url,
   std::string value_utf8 =
       value.Utf8(WebString::UTF8ConversionMode::kStrictReplacingErrorsWithFFFD);
   RenderThreadImpl::current()->render_frame_message_filter()->SetCookie(
-      sender_->GetRoutingID(), url, site_for_cookies, value_utf8,
-      base::DoNothing());
+      sender_->GetRoutingID(), url, site_for_cookies, value_utf8);
 }
 
 WebString RendererWebCookieJarImpl::Cookies(const WebURL& url,

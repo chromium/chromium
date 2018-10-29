@@ -17,7 +17,7 @@ extern const char kViewportAdjustmentExperimentCommandLineSwitch[];
 // The available viewport adjustment experiments.  The choices in this array
 // correspond with the ViewportAdjustmentExperiment values.
 extern const flags_ui::FeatureEntry::Choice
-    kViewportAdjustmentExperimentChoices[5];
+    kViewportAdjustmentExperimentChoices[6];
 
 // Enum type describing viewport adjustment experiments.
 enum class ViewportAdjustmentExperiment : short {

@@ -8,8 +8,8 @@
 namespace blink {
 
 std::string IcuFoldCase(const std::string& name_request) {
-  icu_62::UnicodeString name_request_unicode =
-      icu_62::UnicodeString::fromUTF8(name_request);
+  icu::UnicodeString name_request_unicode =
+      icu::UnicodeString::fromUTF8(name_request);
   name_request_unicode.foldCase();
   std::string name_request_lower;
   name_request_unicode.toUTF8String(name_request_lower);

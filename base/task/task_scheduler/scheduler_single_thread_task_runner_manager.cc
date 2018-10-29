@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/task_scheduler/delayed_task_manager.h"
+#include "base/task/task_scheduler/priority_queue.h"
 #include "base/task/task_scheduler/scheduler_worker.h"
 #include "base/task/task_scheduler/sequence.h"
 #include "base/task/task_scheduler/task.h"
@@ -102,24 +103,19 @@ class SchedulerWorkerDelegate : public SchedulerWorker::Delegate {
   }
 
   scoped_refptr<Sequence> GetWork(SchedulerWorker* worker) override {
-    AutoSchedulerLock auto_lock(sequence_lock_);
-    bool has_work = has_work_;
-    has_work_ = false;
-    return has_work ? sequence_ : nullptr;
+    std::unique_ptr<PriorityQueue::Transaction> transaction(
+        priority_queue_.BeginTransaction());
+    return transaction->IsEmpty() ? nullptr : transaction->PopSequence();
   }
 
   void DidRunTask() override {}
 
   void ReEnqueueSequence(scoped_refptr<Sequence> sequence) override {
-    AutoSchedulerLock auto_lock(sequence_lock_);
-    // We've shut down, so no-op this work request. Any sequence cleanup will
-    // occur in the caller's context.
-    if (!sequence_)
-      return;
-
-    DCHECK_EQ(sequence, sequence_);
-    DCHECK(!has_work_);
-    has_work_ = true;
+    DCHECK(sequence);
+    const SequenceSortKey sequence_sort_key = sequence->GetSortKey();
+    std::unique_ptr<PriorityQueue::Transaction> transaction(
+        priority_queue_.BeginTransaction());
+    transaction->Push(std::move(sequence), sequence_sort_key);
   }
 
   TimeDelta GetSleepTimeout() override { return TimeDelta::Max(); }
@@ -130,27 +126,7 @@ class SchedulerWorkerDelegate : public SchedulerWorker::Delegate {
     return thread_ref_checker_.IsCurrentThreadSameAsSetThread();
   }
 
-  void OnMainExit(SchedulerWorker* /* worker */) override {
-    // Move |sequence_| to |local_sequence| so that if we have the last
-    // reference to the sequence we don't destroy it (and its tasks) within
-    // |sequence_lock_|.
-    scoped_refptr<Sequence> local_sequence;
-    {
-      AutoSchedulerLock auto_lock(sequence_lock_);
-      // To reclaim skipped tasks on shutdown, we null out the sequence to allow
-      // the tasks to destroy themselves.
-      local_sequence = std::move(sequence_);
-    }
-  }
-
-  // SchedulerWorkerDelegate:
-
-  // Consumers should release their sequence reference as soon as possible to
-  // ensure timely cleanup for general shutdown.
-  scoped_refptr<Sequence> sequence() {
-    AutoSchedulerLock auto_lock(sequence_lock_);
-    return sequence_;
-  }
+  void OnMainExit(SchedulerWorker* /* worker */) override {}
 
  private:
   const std::string thread_name_;
@@ -161,11 +137,7 @@ class SchedulerWorkerDelegate : public SchedulerWorker::Delegate {
   // OnMainEntry() and OnCanScheduleSequence() (called when a sequence held up
   // by WillScheduleSequence() in PostTaskNow() can be scheduled).
   SchedulerWorker* worker_ = nullptr;
-
-  // Synchronizes access to |sequence_| and |has_work_|.
-  SchedulerLock sequence_lock_;
-  scoped_refptr<Sequence> sequence_ = new Sequence;
-  bool has_work_ = false;
+  PriorityQueue priority_queue_;
 
   AtomicThreadRefChecker thread_ref_checker_;
 
@@ -248,8 +220,9 @@ class SchedulerWorkerCOMDelegate : public SchedulerWorkerDelegate {
                                    DispatchMessage(&msg);
                                  },
                                  std::move(msg)),
-                             TaskTraits(MayBlock()), TimeDelta());
-      if (task_tracker_->WillPostTask(&pump_message_task)) {
+                             TimeDelta());
+      if (task_tracker_->WillPostTask(&pump_message_task,
+                                      TaskShutdownBehavior::SKIP_ON_SHUTDOWN)) {
         bool was_empty =
             message_pump_sequence_->PushTask(std::move(pump_message_task));
         DCHECK(was_empty) << "GetWorkFromWindowsMessageQueue() does not expect "
@@ -261,7 +234,8 @@ class SchedulerWorkerCOMDelegate : public SchedulerWorkerDelegate {
   }
 
   bool get_work_first_ = true;
-  const scoped_refptr<Sequence> message_pump_sequence_ = new Sequence;
+  const scoped_refptr<Sequence> message_pump_sequence_ =
+      MakeRefCounted<Sequence>(TaskTraits(MayBlock()));
   const TrackedRef<TaskTracker> task_tracker_;
   std::unique_ptr<win::ScopedCOMInitializer> scoped_com_initializer_;
 
@@ -283,9 +257,9 @@ class SchedulerSingleThreadTaskRunnerManager::SchedulerSingleThreadTaskRunner
       SchedulerWorker* worker,
       SingleThreadTaskRunnerThreadMode thread_mode)
       : outer_(outer),
-        traits_(traits),
         worker_(worker),
-        thread_mode_(thread_mode) {
+        thread_mode_(thread_mode),
+        sequence_(MakeRefCounted<Sequence>(traits)) {
     DCHECK(outer_);
     DCHECK(worker_);
   }
@@ -297,11 +271,13 @@ class SchedulerSingleThreadTaskRunnerManager::SchedulerSingleThreadTaskRunner
     if (!g_manager_is_alive)
       return false;
 
-    Task task(from_here, std::move(closure), traits_, delay);
+    Task task(from_here, std::move(closure), delay);
     task.single_thread_task_runner_ref = this;
 
-    if (!outer_->task_tracker_->WillPostTask(&task))
+    if (!outer_->task_tracker_->WillPostTask(
+            &task, sequence_->traits().shutdown_behavior())) {
       return false;
+    }
 
     if (task.delayed_run_time.is_null()) {
       PostTaskNow(std::move(task));
@@ -354,18 +330,11 @@ class SchedulerSingleThreadTaskRunnerManager::SchedulerSingleThreadTaskRunner
   }
 
   void PostTaskNow(Task task) {
-    scoped_refptr<Sequence> sequence = GetDelegate()->sequence();
-    // If |sequence| is null, then the thread is effectively gone (either
-    // shutdown or joined).
-    if (!sequence)
-      return;
-
-    const bool sequence_was_empty = sequence->PushTask(std::move(task));
+    const bool sequence_was_empty = sequence_->PushTask(std::move(task));
     if (sequence_was_empty) {
-      sequence = outer_->task_tracker_->WillScheduleSequence(
-          std::move(sequence), GetDelegate());
-      if (sequence) {
-        GetDelegate()->ReEnqueueSequence(std::move(sequence));
+      if (outer_->task_tracker_->WillScheduleSequence(sequence_,
+                                                      GetDelegate())) {
+        GetDelegate()->ReEnqueueSequence(sequence_);
         worker_->WakeUp();
       }
     }
@@ -376,9 +345,9 @@ class SchedulerSingleThreadTaskRunnerManager::SchedulerSingleThreadTaskRunner
   }
 
   SchedulerSingleThreadTaskRunnerManager* const outer_;
-  const TaskTraits traits_;
   SchedulerWorker* const worker_;
   const SingleThreadTaskRunnerThreadMode thread_mode_;
+  const scoped_refptr<Sequence> sequence_;
 
   DISALLOW_COPY_AND_ASSIGN(SchedulerSingleThreadTaskRunner);
 };

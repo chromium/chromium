@@ -19,10 +19,11 @@
 #import "ios/chrome/browser/autofill/form_input_accessory_view_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
 #import "ios/chrome/browser/passwords/password_generation_utils.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/web/public/url_scheme_util.h"
 #import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
 #import "ios/web/public/web_state/ui/crw_web_view_proxy.h"
+#import "ios/web/public/web_state/web_frames_manager.h"
 #import "ios/web/public/web_state/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -34,14 +35,11 @@ namespace {
 // Struct that describes suggestion state.
 struct AutofillSuggestionState {
   AutofillSuggestionState(const std::string& form_name,
-                          const std::string& field_name,
                           const std::string& field_identifier,
                           const std::string& frame_identifier,
                           const std::string& typed_value);
   // The name of the form for autofill.
   std::string form_name;
-  // The name of the field for autofill.
-  std::string field_name;
   // The identifier of the field for autofill.
   std::string field_identifier;
   // The identifier of the frame for autofill.
@@ -54,12 +52,10 @@ struct AutofillSuggestionState {
 
 AutofillSuggestionState::AutofillSuggestionState(
     const std::string& form_name,
-    const std::string& field_name,
     const std::string& field_identifier,
     const std::string& frame_identifier,
     const std::string& typed_value)
     : form_name(form_name),
-      field_name(field_name),
       field_identifier(field_identifier),
       frame_identifier(frame_identifier),
       typed_value(typed_value) {}
@@ -133,6 +129,8 @@ AutofillSuggestionState::AutofillSuggestionState(
       base::mac::ObjCCast<JsSuggestionManager>(
           [webState->GetJSInjectionReceiver()
               instanceOfClass:[JsSuggestionManager class]]);
+  [jsSuggestionManager
+      setWebFramesManager:web::WebFramesManager::FromWebState(webState)];
   return [self initWithWebState:webState
                       providers:providers
             JsSuggestionManager:jsSuggestionManager];
@@ -169,17 +167,6 @@ AutofillSuggestionState::AutofillSuggestionState(
 
 - (void)processPage:(web::WebState*)webState {
   [self resetSuggestionState];
-
-  web::URLVerificationTrustLevel trustLevel =
-      web::URLVerificationTrustLevel::kNone;
-  const GURL pageURL(webState->GetCurrentURL(&trustLevel));
-  if (trustLevel != web::URLVerificationTrustLevel::kAbsolute) {
-    DLOG(WARNING) << "Page load not handled on untrusted page";
-    return;
-  }
-
-  if (web::UrlHasWebScheme(pageURL) && webState->ContentIsHTML())
-    [_jsSuggestionManager inject];
 }
 
 - (void)setWebViewProxy:(id<CRWWebViewProxy>)webViewProxy {
@@ -190,7 +177,6 @@ AutofillSuggestionState::AutofillSuggestionState(
                           webState:(web::WebState*)webState {
   __weak FormSuggestionController* weakSelf = self;
   NSString* strongFormName = base::SysUTF8ToNSString(params.form_name);
-  NSString* strongFieldName = base::SysUTF8ToNSString(params.field_name);
   NSString* strongFieldIdentifier =
       base::SysUTF8ToNSString(params.field_identifier);
   NSString* strongFrameId = base::SysUTF8ToNSString(params.frame_id);
@@ -218,7 +204,6 @@ AutofillSuggestionState::AutofillSuggestionState(
           id<FormSuggestionProvider> provider =
               strongSelf->_suggestionProviders[i];
           [provider checkIfSuggestionsAvailableForForm:strongFormName
-                                             fieldName:strongFieldName
                                        fieldIdentifier:strongFieldIdentifier
                                              fieldType:strongFieldType
                                                   type:strongType
@@ -251,7 +236,6 @@ AutofillSuggestionState::AutofillSuggestionState(
     id<FormSuggestionProvider> provider =
         strongSelf->_suggestionProviders[providerIndex];
     [provider retrieveSuggestionsForForm:strongFormName
-                               fieldName:strongFieldName
                          fieldIdentifier:strongFieldIdentifier
                                fieldType:strongFieldType
                                     type:strongType
@@ -346,10 +330,9 @@ AutofillSuggestionState::AutofillSuggestionState(
   __weak FormSuggestionController* weakSelf = self;
   [_provider
       didSelectSuggestion:suggestion
-                fieldName:base::SysUTF8ToNSString(_suggestionState->field_name)
+                     form:base::SysUTF8ToNSString(_suggestionState->form_name)
           fieldIdentifier:base::SysUTF8ToNSString(
                               _suggestionState->field_identifier)
-                     form:base::SysUTF8ToNSString(_suggestionState->form_name)
                   frameID:base::SysUTF8ToNSString(
                               _suggestionState->frame_identifier)
         completionHandler:^{
@@ -376,9 +359,9 @@ AutofillSuggestionState::AutofillSuggestionState(
             accessoryViewUpdateBlock:
                 (AccessoryViewReadyCompletion)accessoryViewUpdateBlock {
   [self processPage:webState];
-  _suggestionState.reset(new AutofillSuggestionState(
-      params.form_name, params.field_name, params.field_identifier,
-      params.frame_id, params.value));
+  _suggestionState.reset(
+      new AutofillSuggestionState(params.form_name, params.field_identifier,
+                                  params.frame_id, params.value));
   accessoryViewUpdateBlock_ = [accessoryViewUpdateBlock copy];
   [self retrieveSuggestionsForForm:params webState:webState];
 }

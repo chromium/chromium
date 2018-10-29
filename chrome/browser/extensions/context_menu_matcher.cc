@@ -337,8 +337,7 @@ void ContextMenuMatcher::RecursivelyAppendExtensionItems(
 
 MenuItem* ContextMenuMatcher::GetExtensionMenuItem(int id) const {
   MenuManager* manager = MenuManager::Get(browser_context_);
-  std::map<int, MenuItem::Id>::const_iterator i =
-      extension_item_map_.find(id);
+  auto i = extension_item_map_.find(id);
   if (i != extension_item_map_.end()) {
     MenuItem* item = manager->GetItemById(i->second);
     if (item)

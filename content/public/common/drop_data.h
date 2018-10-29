@@ -20,7 +20,7 @@
 #include "base/strings/nullable_string16.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_message.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "ui/base/dragdrop/file_info.h"
 #include "url/gurl.h"
 
@@ -87,7 +87,7 @@ struct CONTENT_EXPORT DropData {
 
   // Referrer policy to use when dragging a link out of the webview results in
   // a download.
-  blink::WebReferrerPolicy referrer_policy;
+  network::mojom::ReferrerPolicy referrer_policy;
 
   // User is dropping one or more files on the webview. This field is only
   // populated if the drag is not renderer tainted, as this allows File access

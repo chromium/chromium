@@ -11,6 +11,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -55,14 +56,14 @@ const ServerFieldType kProfileFieldTypes[] = {NAME_FIRST,
                                               PHONE_HOME_WHOLE_NUMBER};
 
 const base::FilePath& GetTestDataDir() {
-  CR_DEFINE_STATIC_LOCAL(base::FilePath, dir, ());
-  if (dir.empty()) {
+  static base::NoDestructor<base::FilePath> dir([]() {
+    base::FilePath dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
-    dir = dir.AppendASCII("components");
-    dir = dir.AppendASCII("test");
-    dir = dir.AppendASCII("data");
-  }
-  return dir;
+    return dir.AppendASCII("components")
+        .AppendASCII("test")
+        .AppendASCII("data");
+  }());
+  return *dir;
 }
 
 const std::vector<base::FilePath> GetTestFiles() {

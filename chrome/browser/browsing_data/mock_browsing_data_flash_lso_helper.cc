@@ -21,8 +21,7 @@ void MockBrowsingDataFlashLSOHelper::StartFetching(
 void MockBrowsingDataFlashLSOHelper::DeleteFlashLSOsForSite(
     const std::string& site,
     base::OnceClosure callback) {
-  std::vector<std::string>::iterator entry =
-      std::find(domains_.begin(), domains_.end(), site);
+  auto entry = std::find(domains_.begin(), domains_.end(), site);
   ASSERT_TRUE(entry != domains_.end());
   domains_.erase(entry);
   if (!callback.is_null())

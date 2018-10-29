@@ -34,9 +34,11 @@ class ExtensionCreator {
 
   // Settings to specify treatment of special or ignorable error conditions.
   enum RunFlags {
-    kNoRunFlags = 0x0,
-    kOverwriteCRX = 0x1,
-    kRequireModernManifestVersion = 0x2,
+    kNoRunFlags = 0,
+    kOverwriteCRX = 1 << 0,
+    kRequireModernManifestVersion = 1 << 1,
+    kBookmarkApp = 1 << 2,
+    kSystemApp = 1 << 3,
   };
 
   // Categories of error that may need special handling on the UI end.

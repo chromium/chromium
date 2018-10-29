@@ -27,10 +27,14 @@
 
   var NodeTracker = await testRunner.loadScript('../resources/node-tracker.js');
   var nodeTracker = new NodeTracker(dp);
-  dp.DOM.enable();
-  await dp.DOM.getNodeForLocation({x: 100, y: 200});
-  await dp.DOM.getNodeForLocation({x: 250, y: 250});
-  await dp.DOM.getNodeForLocation({x: 500, y: 500});
+  const bn1 = (await dp.DOM.getNodeForLocation({x: 100, y: 200})).result.backendNodeId;
+  const bn2 = (await dp.DOM.getNodeForLocation({x: 250, y: 250})).result.backendNodeId;
+  const bn3 = (await dp.DOM.getNodeForLocation({x: 500, y: 500})).result.backendNodeId;
+
+  await dp.DOM.enable();
+  await nodeTracker.nodeForBackendId(bn1);
+  await nodeTracker.nodeForBackendId(bn2);
+  await nodeTracker.nodeForBackendId(bn3);
 
   for (var nodeId of nodeTracker.nodeIds()) {
     var node = nodeTracker.nodeForId(nodeId);

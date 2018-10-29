@@ -296,7 +296,7 @@ TEST_P(HttpServerPropertiesManagerTest,
       http_server_props_manager_->alternative_service_map();
   ASSERT_EQ(2u, map.size());
 
-  AlternativeServiceMap::const_iterator map_it = map.begin();
+  auto map_it = map.begin();
   EXPECT_EQ("www.google.com", map_it->first.host());
   ASSERT_EQ(2u, map_it->second.size());
   EXPECT_EQ(kProtoHTTP2, map_it->second[0].alternative_service().protocol);
@@ -1257,7 +1257,7 @@ TEST_P(HttpServerPropertiesManagerTest, AddToAlternativeServiceMap) {
   EXPECT_TRUE(http_server_props_manager_->AddToAlternativeServiceMap(
       server, *server_dict, &alternative_service_map));
 
-  AlternativeServiceMap::iterator it = alternative_service_map.Get(server);
+  auto it = alternative_service_map.Get(server);
   ASSERT_NE(alternative_service_map.end(), it);
   AlternativeServiceInfoVector alternative_service_info_vector = it->second;
   ASSERT_EQ(3u, alternative_service_info_vector.size());
@@ -1306,7 +1306,7 @@ TEST_P(HttpServerPropertiesManagerTest, DoNotLoadAltSvcForInsecureOrigins) {
   EXPECT_FALSE(http_server_props_manager_->AddToAlternativeServiceMap(
       server, *server_dict, &alternative_service_map));
 
-  AlternativeServiceMap::iterator it = alternative_service_map.Get(server);
+  auto it = alternative_service_map.Get(server);
   EXPECT_EQ(alternative_service_map.end(), it);
 }
 
@@ -1359,7 +1359,7 @@ TEST_P(HttpServerPropertiesManagerTest, DoNotPersistExpiredAlternativeService) {
 
   const base::ListValue* servers_list = nullptr;
   ASSERT_TRUE(pref_dict->GetListWithoutPathExpansion("servers", &servers_list));
-  base::ListValue::const_iterator it = servers_list->begin();
+  auto it = servers_list->begin();
   const base::DictionaryValue* server_pref_dict;
   ASSERT_TRUE(it->GetAsDictionary(&server_pref_dict));
 
@@ -1415,7 +1415,7 @@ TEST_P(HttpServerPropertiesManagerTest, DoNotLoadExpiredAlternativeService) {
   ASSERT_TRUE(http_server_props_manager_->AddToAlternativeServiceMap(
       server, server_pref_dict, &alternative_service_map));
 
-  AlternativeServiceMap::iterator it = alternative_service_map.Get(server);
+  auto it = alternative_service_map.Get(server);
   ASSERT_NE(alternative_service_map.end(), it);
   AlternativeServiceInfoVector alternative_service_info_vector = it->second;
   ASSERT_EQ(1u, alternative_service_info_vector.size());
@@ -1530,7 +1530,7 @@ TEST_P(HttpServerPropertiesManagerTest, ReadAdvertisedVersionsFromPref) {
   EXPECT_TRUE(http_server_props_manager_->AddToAlternativeServiceMap(
       server, *server_dict, &alternative_service_map));
 
-  AlternativeServiceMap::iterator it = alternative_service_map.Get(server);
+  auto it = alternative_service_map.Get(server);
   ASSERT_NE(alternative_service_map.end(), it);
   AlternativeServiceInfoVector alternative_service_info_vector = it->second;
   ASSERT_EQ(2u, alternative_service_info_vector.size());

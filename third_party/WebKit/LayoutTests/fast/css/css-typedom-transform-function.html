@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style id=style></style>
+<div id=target></div>
+<script>
+
+// This test verifies that <transform-function> has reasonable behavior while
+// we wait for https://github.com/w3c/css-houdini-drafts/issues/290 to be
+// resolved.
+//
+// Ultimately, properties registered with <transform-function> should be
+// representable as stand-alone CSSTransformComponents, in which case this
+// test file will no longer be valid.
+
+CSS.registerProperty({
+  name: '--tf',
+  syntax: '<transform-function>',
+  initialValue: 'rotateX(0deg)',
+  inherits: false
+});
+
+test(() => {
+  let value = CSSStyleValue.parse('--tf', 'translateX(0px)');
+  assert_equals(value.constructor, CSSStyleValue);
+}, 'Result of CSSStyleValue.parse for <transform-function> is a direct CSSStyleValue');
+
+test(() => {
+  target.style = '--tf: translateX(0px)';
+  let value = target.attributeStyleMap.get('--tf');
+  assert_equals(value.constructor, CSSStyleValue);
+  target.style = '';
+}, 'Result of attributeStyleMap.get for <transform-function> is a direct CSSStyleValue');
+
+test(() => {
+  style.textContent = '#target { --tf: translateX(0px); }';
+  let styleMap = style.sheet.rules[0].styleMap;
+  let value = styleMap.get('--tf');
+  assert_equals(value.constructor, CSSStyleValue);
+  style.textContent = '';
+}, 'Result of styleMap.get for <transform-function> is a direct CSSStyleValue');
+
+test(() => {
+  let value = target.computedStyleMap().get('--tf');
+  assert_equals(value.constructor, CSSStyleValue);
+}, 'Result of computedstyleMap.get for <transform-function> is a direct CSSStyleValue');
+
+</script>

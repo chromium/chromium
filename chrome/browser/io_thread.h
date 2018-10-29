@@ -25,7 +25,6 @@
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/buildflags.h"
-#include "components/metrics/data_use_tracker.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browser_thread_delegate.h"
 #include "extensions/buildflags/buildflags.h"
@@ -53,7 +52,6 @@ namespace net {
 class CertVerifier;
 class HostResolver;
 class NetworkQualityEstimator;
-class RTTAndThroughputEstimatesObserver;
 class URLRequestContext;
 class URLRequestContextGetter;
 }  // namespace net
@@ -109,9 +107,6 @@ class IOThread : public content::BrowserThreadDelegate {
     // URLRequestContext when network service is enabled.
     std::unique_ptr<net::HostResolver> deprecated_host_resolver;
 
-    std::unique_ptr<net::RTTAndThroughputEstimatesObserver>
-        network_quality_observer;
-
     // When the network service is enabled, this holds on to a
     // content::NetworkContext class that owns |system_request_context|.
     std::unique_ptr<network::mojom::NetworkContext> system_network_context;
@@ -153,9 +148,6 @@ class IOThread : public content::BrowserThreadDelegate {
   // simplicity and requires a browser restart. May only be called on the IO
   // thread.
   void DisableQuic();
-
-  // Returns the callback for updating data use prefs.
-  metrics::UpdateUsagePrefCallbackType GetMetricsDataUseForwarder();
 
   // Configures |builder|'s ProxyResolutionService based on prefs and policies.
   void SetUpProxyService(network::URLRequestContextBuilderMojo* builder) const;

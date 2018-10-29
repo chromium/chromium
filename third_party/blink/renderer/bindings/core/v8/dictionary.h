@@ -40,7 +40,7 @@ namespace blink {
 // from a V8 object. Instances of this class must not outlive V8's handle scope
 // because they hold a V8 value without putting it on persistent handles.
 class CORE_EXPORT Dictionary final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   Dictionary() : isolate_(nullptr) {}

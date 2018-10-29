@@ -39,7 +39,8 @@ class AuthenticationFlowTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFake::CreateAuthenticationService);
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
     builder.SetPrefService(CreatePrefService());
     browser_state_ = builder.Build();
     ios::FakeChromeIdentityService* identityService =

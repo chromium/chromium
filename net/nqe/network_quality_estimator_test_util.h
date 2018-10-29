@@ -64,11 +64,11 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
       const std::string& network_id);
 
   // Returns a GURL hosted at the embedded test server.
-  const GURL GetEchoURL() const;
+  const GURL GetEchoURL();
 
   // Returns a GURL hosted at the embedded test server which contains redirect
   // to another HTTPS URL.
-  const GURL GetRedirectURL() const;
+  const GURL GetRedirectURL();
 
   void set_effective_connection_type(EffectiveConnectionType type) {
     effective_connection_type_ = type;
@@ -193,12 +193,6 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   const std::vector<base::TimeDelta>& GetAccuracyRecordingIntervals()
       const override;
 
-  void set_bandwidth_delay_product_kbits(int32_t value) {
-    bandwidth_delay_product_kbits_ = value;
-  }
-
-  base::Optional<int32_t> GetBandwidthDelayProductKbits() const override;
-
   // Returns the number of entries in |net_log_| that have type set to |type|.
   int GetEntriesCount(NetLogEventType type) const;
 
@@ -223,6 +217,9 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
     transport_rtt_observation_count_last_ect_computation_ = count;
   }
 
+  // Returns count of ping RTTs received from H2/spdy connections.
+  size_t ping_rtt_received_count() const { return ping_rtt_received_count_; }
+
   const NetworkQualityEstimatorParams* params() const;
 
   using NetworkQualityEstimator::SetTickClockForTesting;
@@ -241,6 +238,9 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   TestNetworkQualityEstimator(
       std::unique_ptr<NetworkQualityEstimatorParams> params,
       std::unique_ptr<BoundTestNetLog> net_log);
+
+  void RecordSpdyPingLatency(const HostPortPair& host_port_pair,
+                             base::TimeDelta rtt) override;
 
   // NetworkQualityEstimator implementation that returns the overridden
   // network
@@ -286,14 +286,12 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   // If set, GetRTTEstimateInternal() would return the set value.
   base::Optional<base::TimeDelta> start_time_null_end_to_end_rtt_;
 
-  // If set, GetBandwidthDelayProductKbits() would return its set value.
-  // Otherwise, the base implementation is called.
-  base::Optional<int32_t> bandwidth_delay_product_kbits_;
-
   LocalHttpTestServer embedded_test_server_;
 
   // If true, notifications are not sent to any of the observers.
   const bool suppress_notifications_for_testing_;
+
+  size_t ping_rtt_received_count_ = 0;
 
   base::Optional<size_t> transport_rtt_observation_count_last_ect_computation_;
 

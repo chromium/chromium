@@ -26,7 +26,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SURROUNDING_TEXT_H_
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/editing/forward.h"  // nogncheck
 #endif
 #include "third_party/blink/public/platform/web_string.h"
 

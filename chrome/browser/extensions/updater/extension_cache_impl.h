@@ -24,7 +24,7 @@ template <typename T> struct DefaultSingletonTraits;
 
 namespace extensions {
 
-class ExtensionCacheDelegate;
+class ChromeOSExtensionCacheDelegate;
 class LocalExtensionCache;
 
 // Singleton call that caches extensions .crx files to share them between
@@ -32,7 +32,8 @@ class LocalExtensionCache;
 class ExtensionCacheImpl : public ExtensionCache,
                            public content::NotificationObserver {
  public:
-  explicit ExtensionCacheImpl(std::unique_ptr<ExtensionCacheDelegate> delegate);
+  explicit ExtensionCacheImpl(
+      std::unique_ptr<ChromeOSExtensionCacheDelegate> delegate);
   ~ExtensionCacheImpl() override;
 
   // Implementation of ExtensionCache.

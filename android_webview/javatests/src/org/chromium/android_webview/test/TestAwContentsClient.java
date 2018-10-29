@@ -48,6 +48,7 @@ public class TestAwContentsClient extends NullContentsClient {
     private final OnReceivedTitleHelper mOnReceivedTitleHelper;
     private final PictureListenerHelper mPictureListenerHelper;
     private final ShouldOverrideUrlLoadingHelper mShouldOverrideUrlLoadingHelper;
+    private final OnLoadResourceHelper mOnLoadResourceHelper;
     private final DoUpdateVisitedHistoryHelper mDoUpdateVisitedHistoryHelper;
     private final OnCreateWindowHelper mOnCreateWindowHelper;
     private final FaviconHelper mFaviconHelper;
@@ -70,6 +71,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mOnReceivedTitleHelper = new OnReceivedTitleHelper();
         mPictureListenerHelper = new PictureListenerHelper();
         mShouldOverrideUrlLoadingHelper = new ShouldOverrideUrlLoadingHelper();
+        mOnLoadResourceHelper = new OnLoadResourceHelper();
         mDoUpdateVisitedHistoryHelper = new DoUpdateVisitedHistoryHelper();
         mOnCreateWindowHelper = new OnCreateWindowHelper();
         mFaviconHelper = new FaviconHelper();
@@ -119,6 +121,10 @@ public class TestAwContentsClient extends NullContentsClient {
 
     public ShouldOverrideUrlLoadingHelper getShouldOverrideUrlLoadingHelper() {
         return mShouldOverrideUrlLoadingHelper;
+    }
+
+    public OnLoadResourceHelper getOnLoadResourceHelper() {
+        return mOnLoadResourceHelper;
     }
 
     public AddMessageToConsoleHelper getAddMessageToConsoleHelper() {
@@ -509,6 +515,29 @@ public class TestAwContentsClient extends NullContentsClient {
         return returnValue;
     }
 
+    /**
+     * Callback helper for OnLoadedResource.
+     */
+    public static class OnLoadResourceHelper extends CallbackHelper {
+        private String mLastLoadedResource;
+
+        public String getLastLoadedResource() {
+            assert getCallCount() > 0;
+            return mLastLoadedResource;
+        }
+
+        public void notifyCalled(String url) {
+            mLastLoadedResource = url;
+            notifyCalled();
+        }
+    }
+
+    @Override
+    public void onLoadResource(String url) {
+        if (TRACE) Log.i(TAG, "onLoadResource " + url);
+        super.onLoadResource(url);
+        mOnLoadResourceHelper.notifyCalled(url);
+    }
 
     /**
      * Callback helper for doUpdateVisitedHistory.

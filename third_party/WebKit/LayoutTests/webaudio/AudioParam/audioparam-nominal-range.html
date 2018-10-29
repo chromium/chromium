@@ -14,9 +14,10 @@
       // Some arbitrary sample rate for the offline context.
       let sampleRate = 48000;
 
-      // The actual contexts to use
+      // The actual contexts to use.  Generally use the offline context for
+      // testing except for the media nodes which require an AudioContext.
       let offlineContext;
-      let onlineContext;
+      let audioContext;
 
       // The set of all methods that we've tested for verifying that we tested
       // all of the necessary objects.

@@ -139,10 +139,10 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
       // html contents use UTF-8 encoding.
       WebData data(contents.data(), contents.length());
       GetMainFrame()->CommitDataNavigation(
-          data, "text/html", encoding_info, base_url, WebURL(),
-          false /* replace */, blink::WebFrameLoadType::kStandard,
-          blink::WebHistoryItem(), false /* is_client_redirect */,
-          nullptr /* navigation_params */, nullptr /* navigation_data */);
+          blink::WebURLRequest(base_url), data, "text/html", encoding_info,
+          WebURL(), blink::WebFrameLoadType::kStandard, blink::WebHistoryItem(),
+          false /* is_client_redirect */, nullptr /* navigation_params */,
+          nullptr /* navigation_data */);
     }
     base::MessageLoopCurrent::ScopedNestableTaskAllower allow;
     waiter.Wait();

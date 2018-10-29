@@ -4,6 +4,7 @@
 
 #include "chrome/installer/setup/install_service_work_item.h"
 
+#include "base/command_line.h"
 #include "chrome/installer/setup/install_service_work_item_impl.h"
 
 namespace installer {
@@ -11,7 +12,7 @@ namespace installer {
 InstallServiceWorkItem::InstallServiceWorkItem(
     const base::string16& service_name,
     const base::string16& display_name,
-    const base::string16& service_cmd_line)
+    const base::CommandLine& service_cmd_line)
     : impl_(std::make_unique<InstallServiceWorkItemImpl>(service_name,
                                                          display_name,
                                                          service_cmd_line)) {}
@@ -24,6 +25,14 @@ bool InstallServiceWorkItem::DoImpl() {
 
 void InstallServiceWorkItem::RollbackImpl() {
   impl_->RollbackImpl();
+}
+
+// static
+bool InstallServiceWorkItem::DeleteService(const base::string16& service_name) {
+  return InstallServiceWorkItemImpl(
+             service_name, base::string16(),
+             base::CommandLine(base::CommandLine::NO_PROGRAM))
+      .DeleteServiceImpl();
 }
 
 }  // namespace installer

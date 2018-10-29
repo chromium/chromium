@@ -94,7 +94,6 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
   void DirectoryEnumerationFinished(
       int request_id,
       const std::vector<base::FilePath>& files) override;
-  void DisableScrollbarsForThreshold(const gfx::Size& size) override;
   void EnablePreferredSizeMode() override;
   void ExecutePluginActionAtLocation(
       const gfx::Point& location,
@@ -109,16 +108,10 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
   WebPreferences GetWebkitPreferences() override;
   void UpdateWebkitPreferences(const WebPreferences& prefs) override;
   void OnWebkitPreferencesChanged() override;
-  void SelectWordAroundCaret() override;
 
   // RenderProcessHostObserver implementation
   void RenderProcessExited(RenderProcessHost* host,
                            const ChildProcessTerminationInfo& info) override;
-
-  void set_delegate(RenderViewHostDelegate* d) {
-    CHECK(d);  // http://crbug.com/82827
-    delegate_ = d;
-  }
 
   // Set up the RenderView child process. Virtual because it is overridden by
   // TestRenderViewHost.
@@ -225,9 +218,12 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
 
  protected:
   // RenderWidgetHostOwnerDelegate overrides.
-  bool OnMessageReceived(const IPC::Message& msg) override;
   void RenderWidgetDidInit() override;
+  void RenderWidgetDidClose() override;
+  void RenderWidgetNeedsToRouteCloseEvent() override;
   void RenderWidgetWillSetIsLoading(bool is_loading) override;
+  void RenderWidgetDidFirstVisuallyNonEmptyPaint() override;
+  void RenderWidgetDidCommitAndDrawCompositorFrame() override;
   void RenderWidgetGotFocus() override;
   void RenderWidgetLostFocus() override;
   void RenderWidgetDidForwardMouseEvent(
@@ -245,11 +241,9 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
   void OnShowWidget(int widget_route_id, const gfx::Rect& initial_rect);
   void OnShowFullscreenWidget(int widget_route_id);
   void OnUpdateTargetURL(const GURL& url);
-  void OnClose();
   void OnDocumentAvailableInMainFrame(bool uses_temporary_zoom_level);
   void OnDidContentsPreferredSizeChange(const gfx::Size& new_size);
   void OnPasteFromSelectionClipboard();
-  void OnRouteCloseEvent();
   void OnTakeFocus(bool reverse);
   void OnClosePageACK();
   void OnDidZoomURL(double zoom_level, const GURL& url);
@@ -269,6 +263,9 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
                            CloseWithPendingWhileUnresponsive);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            NavigateMainFrameToChildSite);
+
+  // IPC::Listener implementation.
+  bool OnMessageReceived(const IPC::Message& msg) override;
 
   void RenderViewReady();
 

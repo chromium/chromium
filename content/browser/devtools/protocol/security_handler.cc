@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "content/browser/devtools/devtools_session.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -86,6 +86,12 @@ void AddExplanations(
       }
     }
 
+    std::unique_ptr<protocol::Array<String>> recommendations =
+        protocol::Array<String>::create();
+    for (const auto& recommendation : it.recommendations) {
+      recommendations->addItem(recommendation);
+    }
+
     explanations->addItem(
         Security::SecurityStateExplanation::Create()
             .SetSecurityState(security_style)
@@ -95,6 +101,7 @@ void AddExplanations(
             .SetCertificate(std::move(certificate))
             .SetMixedContentType(MixedContentTypeToProtocolMixedContentType(
                 it.mixed_content_type))
+            .SetRecommendations(std::move(recommendations))
             .Build());
   }
 }
@@ -104,8 +111,7 @@ void AddExplanations(
 // static
 std::vector<SecurityHandler*> SecurityHandler::ForAgentHost(
     DevToolsAgentHostImpl* host) {
-  return DevToolsSession::HandlersForAgentHost<SecurityHandler>(
-      host, Security::Metainfo::domainName);
+  return host->HandlersByName<SecurityHandler>(Security::Metainfo::domainName);
 }
 
 SecurityHandler::SecurityHandler()

@@ -198,14 +198,17 @@ class AppsGridViewTest : public views::ViewsTestBase,
       is_new_style_launcher_enabled_ = GetParam().is_new_style_launcher_enabled;
     }
     if (is_apps_grid_gap_enabled_) {
-      enabled_features.emplace_back(features::kEnableAppsGridGapFeature);
+      enabled_features.emplace_back(
+          app_list_features::kEnableAppsGridGapFeature);
     } else {
-      disabled_features.emplace_back(features::kEnableAppsGridGapFeature);
+      disabled_features.emplace_back(
+          app_list_features::kEnableAppsGridGapFeature);
     }
     if (is_new_style_launcher_enabled_) {
-      enabled_features.emplace_back(features::kEnableNewStyleLauncher);
+      enabled_features.emplace_back(app_list_features::kEnableNewStyleLauncher);
     } else {
-      disabled_features.emplace_back(features::kEnableNewStyleLauncher);
+      disabled_features.emplace_back(
+          app_list_features::kEnableNewStyleLauncher);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     views::ViewsTestBase::SetUp();
@@ -1087,7 +1090,7 @@ class AppsGridGapTest : public AppsGridViewTest {
   // testing::Test overrides:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {app_list::features::kEnableAppsGridGapFeature}, {});
+        {app_list_features::kEnableAppsGridGapFeature}, {});
     AppsGridViewTest::SetUp();
     apps_grid_view_->set_page_flip_delay_in_ms_for_testing(10);
     GetPaginationModel()->SetTransitionDurations(10, 10);

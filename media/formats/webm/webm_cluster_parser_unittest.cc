@@ -699,10 +699,7 @@ TEST_F(WebMClusterParserTest, ParseMultipleTextTracks) {
 
   const WebMClusterParser::TextBufferQueueMap& text_map =
       parser_->GetTextBuffers();
-  for (WebMClusterParser::TextBufferQueueMap::const_iterator itr =
-           text_map.begin();
-       itr != text_map.end();
-       ++itr) {
+  for (auto itr = text_map.begin(); itr != text_map.end(); ++itr) {
     const TextTracks::const_iterator find_result =
         text_tracks.find(itr->first);
     ASSERT_TRUE(find_result != text_tracks.end());

@@ -18,6 +18,7 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/grit/content_resources.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
@@ -119,8 +120,8 @@ void IndexedDBInternalsUI::GetAllOriginsOnIndexedDBThread(
       context_impl->GetAllOriginsDetails());
   bool is_incognito = context_impl->is_incognito();
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&IndexedDBInternalsUI::OnOriginsReady,
                      base::Unretained(this), std::move(info_list),
                      is_incognito ? base::FilePath() : context_path));
@@ -261,8 +262,8 @@ void IndexedDBInternalsUI::DownloadOriginDataOnIndexedDBThread(
   zip::ZipWithFilterCallback(context->data_path(), zip_path,
                              base::Bind(AllowWhitelistedPaths, paths));
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&IndexedDBInternalsUI::OnDownloadDataReady,
                      base::Unretained(this), partition_path, origin, temp_path,
                      zip_path, connection_count));
@@ -281,8 +282,8 @@ void IndexedDBInternalsUI::ForceCloseOriginOnIndexedDBThread(
   context->ForceClose(origin, IndexedDBContextImpl::FORCE_CLOSE_INTERNALS_PAGE);
   size_t connection_count = context->GetConnectionCount(origin);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&IndexedDBInternalsUI::OnForcedSchemaDowngrade,
                      base::Unretained(this), partition_path, origin,
                      connection_count));
@@ -303,8 +304,8 @@ void IndexedDBInternalsUI::ForceSchemaDowngradeOriginOnIndexedDBThread(
       origin, IndexedDBContextImpl::FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE);
   size_t connection_count = context->GetConnectionCount(origin);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&IndexedDBInternalsUI::OnForcedSchemaDowngrade,
                      base::Unretained(this), partition_path, origin,
                      connection_count));
@@ -363,7 +364,7 @@ void IndexedDBInternalsUI::OnDownloadDataReady(
           web_contents, url, traffic_annotation));
   content::Referrer referrer = content::Referrer::SanitizeForRequest(
       url, content::Referrer(web_contents->GetLastCommittedURL(),
-                             blink::kWebReferrerPolicyDefault));
+                             network::mojom::ReferrerPolicy::kDefault));
   dl_params->set_referrer(referrer.url);
   dl_params->set_referrer_policy(
       Referrer::ReferrerPolicyForUrlRequest(referrer.policy));

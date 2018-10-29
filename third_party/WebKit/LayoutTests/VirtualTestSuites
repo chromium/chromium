@@ -26,7 +26,7 @@
   },
   {
     "prefix": "threaded",
-    "base": "fast/animationworklet",
+    "base": "animations/animationworklet",
     "args": ["--enable-threaded-compositing"]
   },
   {
@@ -136,6 +136,11 @@
   {
     "prefix": "stable",
     "base": "media/stable",
+    "args": ["--stable-release-mode"]
+  },
+  {
+    "prefix": "stable",
+    "base": "fast/css/stable",
     "args": ["--stable-release-mode"]
   },
   {
@@ -327,26 +332,6 @@
     "args": ["--force-device-scale-factor=1.5"]
   },
   {
-    "prefix": "enable_wasm",
-    "base": "http/tests/wasm",
-    "args": ["--enable-features=WebAssembly"]
-  },
-  {
-    "prefix": "enable_wasm",
-    "base": "external/wpt/wasm",
-    "args": ["--enable-features=WebAssembly"]
-  },
-  {
-    "prefix": "enable_wasm_streaming",
-    "base": "http/tests/wasm_streaming",
-    "args": ["--enable-features=WebAssemblyStreaming"]
-  },
-  {
-    "prefix": "enable_asmjs",
-    "base": "http/tests/asmjs",
-    "args": ["--enable-features=AsmJsToWebAssembly"]
-  },
-  {
     "prefix": "layout_ng",
     "base": "fast/block/basic",
     "args": ["--enable-blink-features=LayoutNG"]
@@ -440,6 +425,16 @@
     "prefix": "layout_ng_experimental",
     "base": "external/wpt/css/css-flexbox",
     "args": ["--enable-blink-features=LayoutNGFlexBox"]
+  },
+  {
+    "prefix": "layout_ng_experimental",
+    "base": "external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements",
+    "args": ["--enable-blink-features=LayoutNGFieldset"]
+  },
+  {
+    "prefix": "layout_ng_experimental",
+    "base": "fast/forms/fieldset",
+    "args": ["--enable-blink-features=LayoutNGFieldset"]
   },
   {
     "prefix": "print_browser",
@@ -608,11 +603,6 @@
     "args": ["--renderer-process-limit=1"]
   },
   {
-    "prefix": "import-meta-url",
-    "base": "external/wpt/html/semantics/scripting-1/the-script-element/module/import-meta",
-    "args": ["--enable-features=ModuleScriptsImportMetaUrl"]
-  },
-  {
     "prefix": "reporting-api",
     "base": "external/wpt/content-security-policy/reporting-api",
     "args": ["--enable-features=Reporting"]
@@ -626,6 +616,21 @@
     "prefix": "mouseevent_fractional",
     "base": "fast/events",
     "args": ["--enable-blink-features=FractionalMouseEvent"]
+  },
+  {
+    "prefix": "fractional_scrolling_threaded",
+    "base": "fast/scrolling",
+    "args": ["--enable-blink-features=FractionalScrollOffsets", "--enable-threaded-compositing"]
+  },
+  {
+    "prefix": "fractional_scrolling",
+    "base": "fast/scrolling",
+    "args": ["--enable-blink-features=FractionalScrollOffsets"]
+  },
+  {
+    "prefix": "speech-with-unified-autoplay",
+    "base": "external/wpt/speech-api",
+    "args": ["--autoplay-policy=document-user-activation-required"]
   },
   {
     "prefix": "unified-autoplay",
@@ -653,6 +658,11 @@
     "args": ["--enable-features=SignedHTTPExchange"]
   },
   {
+    "prefix": "sxg",
+    "base": "external/wpt/signed-exchange",
+    "args": ["--enable-features=SignedHTTPExchange"]
+  },
+  {
     "prefix": "sxg-with-network-service",
     "base": "http/tests/loading/sxg",
     "args": ["--enable-features=SignedHTTPExchange,NetworkService"]
@@ -660,6 +670,11 @@
   {
     "prefix": "sxg-with-network-service",
     "base": "http/tests/devtools/sxg",
+    "args": ["--enable-features=SignedHTTPExchange,NetworkService"]
+  },
+  {
+    "prefix": "sxg-with-network-service",
+    "base": "external/wpt/signed-exchange",
     "args": ["--enable-features=SignedHTTPExchange,NetworkService"]
   },
   {
@@ -687,7 +702,7 @@
   {
     "prefix": "webrtc-wpt-unified-plan",
     "base": "external/wpt/webrtc",
-    "args": ["--enable-blink-features=RTCUnifiedPlanByDefault"]
+    "args": ["--enable-features=RTCUnifiedPlanByDefault"]
   },
   {
     "prefix": "video-surface-layer",
@@ -704,6 +719,12 @@
   {
     "prefix": "video-surface-layer",
     "base": "external/wpt/feature-policy",
+    "args": ["--enable-features=UseSurfaceLayerForVideo",
+             "--enable-display-compositor-pixel-dump"]
+  },
+  {
+    "prefix": "video-surface-layer",
+    "base": "http/tests/devtools/sources/debugger-breakpoints",
     "args": ["--enable-features=UseSurfaceLayerForVideo",
              "--enable-display-compositor-pixel-dump"]
   },
@@ -766,6 +787,31 @@
   {
     "prefix" : "lazyload-policy",
     "base": "external/wpt/feature-policy/experimental-features/lazyload",
-    "args": ["--enable-blink-features=LazyFrameLoading"]
+    "args": ["--enable-blink-features=LazyFrameLoading,LazyImageLoading"]
+  },
+  {
+    "prefix": "display-lock",
+    "base": "display-lock",
+    "args": ["--enable-blink-features=DisplayLocking"]
+  },
+  {
+    "prefix" : "autoupgrade-optionally-blockable-mixed-content",
+    "base": "http/tests/mixed-autoupgrade/optionally",
+    "args": ["--enable-features=AutoupgradeMixedContent<AU --force-fieldtrials=AU/G1 --force-fieldtrial-params=AU.G1:mode/optionally-blockable"]
+  },
+  {
+    "prefix" : "autoupgrade-blockable-mixed-content",
+    "base": "http/tests/mixed-autoupgrade/blockable",
+    "args": ["--enable-features=AutoupgradeMixedContent<AU --force-fieldtrials=AU/G1 --force-fieldtrial-params=AU.G1:mode/blockable"]
+  },
+  {
+    "prefix" : "autoupgrade-all-mixed-content",
+    "base": "http/tests/mixed-autoupgrade/all",
+    "args": ["--enable-features=AutoupgradeMixedContent"]
+  },
+  {
+    "prefix": "webgl-extra-video-texture-metadata",
+    "base": "fast/webgl/video-metadata",
+    "args": ["--enable-blink-features=ExtraWebGLVideoTextureMetadata"]
   }
 ]

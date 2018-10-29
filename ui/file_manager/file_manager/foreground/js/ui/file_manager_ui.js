@@ -563,6 +563,14 @@ FileManagerUI.prototype.decorateSplitter_ = function(splitterElement,
 };
 
 /**
+ * Mark |element| with "loaded" attribute to indicate that File Manager has
+ * finished loading.
+ */
+FileManagerUI.prototype.addLoadedAttribute = function() {
+  this.element.setAttribute('loaded', '');
+};
+
+/**
  * Sets up and shows the alert to inform a user the task is opened in the
  * desktop of the running profile.
  *

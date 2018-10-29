@@ -6,11 +6,15 @@
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 
 namespace blink {
@@ -168,9 +172,14 @@ void JankTracker::NotifyPrePaintFinished() {
   IntRect viewport = frame_view_->GetScrollableArea()->VisibleContentRect();
   double granularity_scale = RegionGranularityScale(viewport);
   viewport.Scale(granularity_scale);
-  double viewport_area = double(viewport.Width()) * double(viewport.Height());
 
+  if (viewport.IsEmpty())
+    return;
+
+  double viewport_area = double(viewport.Width()) * double(viewport.Height());
   double jank_fraction = region_.Area() / viewport_area;
+  DCHECK_GT(jank_fraction, 0);
+
   score_ += jank_fraction;
 
   DVLOG(1) << "viewport " << (jank_fraction * 100)
@@ -180,6 +189,18 @@ void JankTracker::NotifyPrePaintFinished() {
                        "data",
                        PerFrameTraceData(jank_fraction, granularity_scale),
                        "frame", ToTraceValue(&frame_view_->GetFrame()));
+
+  frame_view_->GetFrame().Client()->DidObserveLayoutJank(jank_fraction);
+
+  if (RuntimeEnabledFeatures::LayoutJankAPIEnabled() &&
+      frame_view_->GetFrame().DomWindow()) {
+    WindowPerformance* performance =
+        DOMWindowPerformance::performance(*frame_view_->GetFrame().DomWindow());
+    if (performance &&
+        performance->HasObserverFor(PerformanceEntry::kLayoutJank)) {
+      performance->AddLayoutJankFraction(jank_fraction);
+    }
+  }
 
   region_ = Region();
 }

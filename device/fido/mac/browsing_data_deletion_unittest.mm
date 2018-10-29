@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/mac/browsing_data_deletion.h"
+#include "device/fido/mac/credential_store.h"
 
 #include <Foundation/Foundation.h>
 #include <Security/Security.h>
@@ -17,6 +17,7 @@
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/mac/authenticator.h"
+#include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/keychain.h"
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,6 +45,7 @@ namespace {
 constexpr char kKeychainAccessGroup[] =
     "EQHXZ8M8AV.com.google.chrome.webauthn.test";
 constexpr char kMetadataSecret[] = "supersecret";
+constexpr char kOtherMetadataSecret[] = "reallynotsosecret";
 
 constexpr std::array<uint8_t, kClientDataHashLength> kClientDataHash = {};
 constexpr char kRpId[] = "rp.example.com";
@@ -89,7 +91,7 @@ base::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
 
 // Returns the number of WebAuthn credentials in the keychain (for all
 // profiles), or -1 if an error occurs.
-ssize_t CredentialCount() {
+ssize_t KeychainItemCount() {
   base::ScopedCFTypeRef<CFArrayRef> items = QueryAllCredentials();
   return items ? CFArrayGetCount(items) : -1;
 }
@@ -147,10 +149,17 @@ class BrowsingDataDeletionTest : public testing::Test {
   }
 
   bool DeleteCredentials() { return DeleteCredentials(kMetadataSecret); }
-
   bool DeleteCredentials(const std::string& metadata_secret) {
-    return DeleteWebAuthnCredentials(kKeychainAccessGroup, metadata_secret,
-                                     base::Time(), base::Time::Max());
+    return TouchIdCredentialStore(
+               AuthenticatorConfig{kKeychainAccessGroup, metadata_secret})
+        .DeleteCredentials(base::Time(), base::Time::Max());
+  }
+
+  size_t CountCredentials() { return CountCredentials(kMetadataSecret); }
+  size_t CountCredentials(const std::string& metadata_secret) {
+    return TouchIdCredentialStore(
+               AuthenticatorConfig{kKeychainAccessGroup, metadata_secret})
+        .CountCredentials(base::Time(), base::Time::Max());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -163,31 +172,30 @@ class BrowsingDataDeletionTest : public testing::Test {
 // running macOS 10.12.2 or later, and require user input (Touch ID).
 
 TEST_F(BrowsingDataDeletionTest, DISABLED_Basic) {
-  ASSERT_EQ(0, CredentialCount());
+  ASSERT_EQ(0, KeychainItemCount());
   ASSERT_TRUE(MakeCredential());
-  ASSERT_EQ(1, CredentialCount());
+  ASSERT_EQ(1, KeychainItemCount());
 
   EXPECT_TRUE(DeleteCredentials());
-  EXPECT_EQ(0, CredentialCount());
+  EXPECT_EQ(0, KeychainItemCount());
 }
 
 TEST_F(BrowsingDataDeletionTest, DISABLED_DifferentProfiles) {
   // Create credentials in two different profiles.
-  EXPECT_EQ(0, CredentialCount());
+  EXPECT_EQ(0, KeychainItemCount());
   ASSERT_TRUE(MakeCredential());
-  std::string other_metadata_secret = "reallynotsosecret";
-  auto other_authenticator = MakeAuthenticator(other_metadata_secret);
+  auto other_authenticator = MakeAuthenticator(kOtherMetadataSecret);
   ASSERT_TRUE(MakeCredential(other_authenticator.get()));
-  ASSERT_EQ(2, CredentialCount());
+  ASSERT_EQ(2, KeychainItemCount());
 
   // Delete credential from the first profile.
   EXPECT_TRUE(DeleteCredentials());
-  EXPECT_EQ(1, CredentialCount());
+  EXPECT_EQ(1, KeychainItemCount());
   // Only providing the correct secret removes the second credential.
   EXPECT_TRUE(DeleteCredentials());
-  EXPECT_EQ(1, CredentialCount());
-  EXPECT_TRUE(DeleteCredentials(other_metadata_secret));
-  EXPECT_EQ(0, CredentialCount());
+  EXPECT_EQ(1, KeychainItemCount());
+  EXPECT_TRUE(DeleteCredentials(kOtherMetadataSecret));
+  EXPECT_EQ(0, KeychainItemCount());
 }
 
 TEST_F(BrowsingDataDeletionTest, DISABLED_FeatureFlag) {
@@ -196,12 +204,23 @@ TEST_F(BrowsingDataDeletionTest, DISABLED_FeatureFlag) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(device::kWebAuthTouchId);
 
-  ASSERT_EQ(0, CredentialCount());
+  ASSERT_EQ(0, KeychainItemCount());
   ASSERT_TRUE(MakeCredential());
 
   // DeleteCredentials() has no effect with the feature flag flipped off.
   EXPECT_TRUE(DeleteCredentials());
-  EXPECT_EQ(1, CredentialCount());
+  EXPECT_EQ(1, KeychainItemCount());
+}
+
+TEST_F(BrowsingDataDeletionTest, DISABLED_Count) {
+  EXPECT_EQ(0u, CountCredentials());
+  EXPECT_EQ(0u, CountCredentials(kOtherMetadataSecret));
+  EXPECT_TRUE(MakeCredential());
+  EXPECT_EQ(1u, CountCredentials());
+  EXPECT_EQ(0u, CountCredentials(kOtherMetadataSecret));
+
+  EXPECT_TRUE(DeleteCredentials());
+  EXPECT_EQ(0u, CountCredentials());
 }
 
 }  // namespace

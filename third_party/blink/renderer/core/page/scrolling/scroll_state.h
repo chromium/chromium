@@ -9,7 +9,7 @@
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
-#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state_init.h"
 #include "third_party/blink/renderer/core/scroll/scroll_state_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -17,8 +17,6 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
-
-class Element;
 
 class CORE_EXPORT ScrollState final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -73,8 +71,8 @@ class CORE_EXPORT ScrollState final : public ScriptWrappable {
     scroll_chain_ = scroll_chain;
   }
 
-  Element* CurrentNativeScrollingElement();
-  void SetCurrentNativeScrollingElement(Element*);
+  Node* CurrentNativeScrollingNode();
+  void SetCurrentNativeScrollingNode(Node*);
 
   bool DeltaConsumedForScrollSequence() const {
     return data_->delta_consumed_for_scroll_sequence;
@@ -90,7 +88,7 @@ class CORE_EXPORT ScrollState final : public ScriptWrappable {
   ScrollStateData* Data() const { return data_.get(); }
 
   void Trace(blink::Visitor* visitor) override {
-    visitor->Trace(element_);
+    visitor->Trace(node_);
     ScriptWrappable::Trace(visitor);
   }
 
@@ -100,7 +98,7 @@ class CORE_EXPORT ScrollState final : public ScriptWrappable {
 
   std::unique_ptr<ScrollStateData> data_;
   std::deque<DOMNodeId> scroll_chain_;
-  Member<Element> element_;
+  Member<Node> node_;
 };
 
 }  // namespace blink

@@ -17,6 +17,14 @@ interface FileWriter {
   Write(uint64 position, Blob blob) => (mojo_base.mojom.FileError result,
                                         uint64 bytes_written);
 
+  // Write data from |stream| to the given |position| in the file being written
+  // to. Returns whether the operation succeeded and if so how many bytes were
+  // written.
+  // TODO(mek): This might need some way of reporting progress events back to
+  // the renderer.
+  WriteStream(uint64 position, handle<data_pipe_consumer> stream) =>
+        (mojo_base.mojom.FileError result, uint64 bytes_written);
+
   // Changes the length of the file to be |length|. If |length| is larger than
   // the current size of the file, the file will be extended, and the extended
   // part is filled with null bytes.

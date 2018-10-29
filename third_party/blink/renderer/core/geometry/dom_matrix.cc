@@ -97,15 +97,6 @@ DOMMatrix::DOMMatrix(T sequence, int size)
 DOMMatrix::DOMMatrix(const TransformationMatrix& matrix, bool is2d)
     : DOMMatrixReadOnly(matrix, is2d) {}
 
-DOMMatrix* DOMMatrix::fromMatrix2D(DOMMatrix2DInit& other) {
-  if (!ValidateAndFixup2D(other)) {
-    return nullptr;
-  }
-  return new DOMMatrix({other.m11(), other.m12(), other.m21(), other.m22(),
-                        other.m41(), other.m42()},
-                       true);
-}
-
 DOMMatrix* DOMMatrix::fromMatrix(DOMMatrixInit& other,
                                  ExceptionState& exception_state) {
   if (!ValidateAndFixup(other, exception_state)) {

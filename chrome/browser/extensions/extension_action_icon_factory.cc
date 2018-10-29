@@ -4,20 +4,39 @@
 
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/extensions/extension_action.h"
 #include "chrome/browser/profiles/profile.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/image_util.h"
+#include "extensions/common/manifest.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
 using extensions::Extension;
 using extensions::IconImage;
 
+namespace {
+
+bool g_allow_invisible_icons = true;
+
+}  // namespace
+
+// static
+void ExtensionActionIconFactory::SetAllowInvisibleIconsForTest(bool value) {
+  g_allow_invisible_icons = value;
+}
+
 ExtensionActionIconFactory::ExtensionActionIconFactory(
     Profile* profile,
     const Extension* extension,
     ExtensionAction* action,
     Observer* observer)
-    : action_(action), observer_(observer), icon_image_observer_(this) {
+    : action_(action),
+      observer_(observer),
+      should_check_icons_(extension->location() !=
+                          extensions::Manifest::UNPACKED),
+      icon_image_observer_(this) {
   if (action->default_icon_image())
     icon_image_observer_.Add(action->default_icon_image());
 }
@@ -44,5 +63,23 @@ gfx::Image ExtensionActionIconFactory::GetIcon(int tab_id) {
   if (!icon.IsEmpty())
     return icon;
 
-  return action_->GetDefaultIconImage();
+  if (cached_default_icon_image_.IsEmpty()) {
+    icon = action_->GetDefaultIconImage();
+    // If the extension is packed, then check the icon for visibility. Icons
+    // for unpacked extensions are checked at load time, so we ignore them
+    // here.
+    if (should_check_icons_) {
+      const SkBitmap* const bitmap = icon.ToSkBitmap();
+      const bool is_sufficiently_visible =
+          extensions::image_util::IsIconSufficientlyVisible(*bitmap);
+      UMA_HISTOGRAM_BOOLEAN("Extensions.ManifestIconSetIconWasVisibleForPacked",
+                            is_sufficiently_visible);
+      if (!is_sufficiently_visible && !g_allow_invisible_icons) {
+        icon = action_->GetPlaceholderIconImage();
+      }
+    }
+    cached_default_icon_image_ = icon;
+  }
+
+  return cached_default_icon_image_;
 }

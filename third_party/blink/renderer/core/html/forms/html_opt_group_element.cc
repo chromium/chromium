@@ -42,9 +42,9 @@ using namespace HTMLNames;
 inline HTMLOptGroupElement::HTMLOptGroupElement(Document& document)
     : HTMLElement(optgroupTag, document) {}
 
-// An explicit empty destructor should be in HTMLOptGroupElement.cpp, because
+// An explicit empty destructor should be in html_opt_group_element.cc, because
 // if an implicit destructor is used or an empty destructor is defined in
-// HTMLOptGroupElement.h, when including HTMLOptGroupElement.h,
+// html_opt_group_element.h, when including html_opt_group_element.h,
 // msvc tries to expand the destructor and causes
 // a compile error because of lack of ComputedStyle definition.
 HTMLOptGroupElement::~HTMLOptGroupElement() = default;

@@ -2,7 +2,7 @@
 per-file DEPS=set noparent
 per-file DEPS=benwells@chromium.org
 per-file DEPS=derat@chromium.org
-per-file DEPS=rockot@chromium.org
+per-file DEPS=rockot@google.com
 per-file DEPS=rdevlin.cronin@chromium.org
 
 per-file extension_event_histogram_value.h=set noparent

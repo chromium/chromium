@@ -222,7 +222,7 @@ int DefaultChannelIDStore::GetChannelID(
     return ERR_IO_PENDING;
   }
 
-  ChannelIDMap::iterator it = channel_ids_.find(server_identifier);
+  auto it = channel_ids_.find(server_identifier);
 
   if (it == channel_ids_.end())
     return ERR_FILE_NOT_FOUND;
@@ -291,8 +291,7 @@ DefaultChannelIDStore::~DefaultChannelIDStore() {
 void DefaultChannelIDStore::DeleteAllInMemory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  for (ChannelIDMap::iterator it = channel_ids_.begin();
-       it != channel_ids_.end(); ++it) {
+  for (auto it = channel_ids_.begin(); it != channel_ids_.end(); ++it) {
     delete it->second;
   }
   channel_ids_.clear();
@@ -310,9 +309,7 @@ void DefaultChannelIDStore::InitStore() {
 void DefaultChannelIDStore::OnLoaded(
     std::unique_ptr<std::vector<std::unique_ptr<ChannelID>>> channel_ids) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  for (std::vector<std::unique_ptr<ChannelID>>::iterator it =
-           channel_ids->begin();
-       it != channel_ids->end(); ++it) {
+  for (auto it = channel_ids->begin(); it != channel_ids->end(); ++it) {
     DCHECK(channel_ids_.find((*it)->server_identifier()) ==
            channel_ids_.end());
     std::string ident = (*it)->server_identifier();
@@ -349,9 +346,8 @@ void DefaultChannelIDStore::SyncDeleteForDomainsCreatedBetween(
     base::Time delete_end) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(loaded_);
-  for (ChannelIDMap::iterator it = channel_ids_.begin();
-       it != channel_ids_.end();) {
-    ChannelIDMap::iterator cur = it;
+  for (auto it = channel_ids_.begin(); it != channel_ids_.end();) {
+    auto cur = it;
     ++it;
     ChannelID* channel_id = cur->second;
 
@@ -371,8 +367,7 @@ void DefaultChannelIDStore::SyncGetAllChannelIDs(
     ChannelIDList* channel_id_list) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(loaded_);
-  for (ChannelIDMap::iterator it = channel_ids_.begin();
-       it != channel_ids_.end(); ++it)
+  for (auto it = channel_ids_.begin(); it != channel_ids_.end(); ++it)
     channel_id_list->push_back(*it->second);
 }
 
@@ -399,7 +394,7 @@ void DefaultChannelIDStore::InternalDeleteChannelID(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(loaded_);
 
-  ChannelIDMap::iterator it = channel_ids_.find(server_identifier);
+  auto it = channel_ids_.find(server_identifier);
   if (it == channel_ids_.end())
     return;  // There is nothing to delete.
 

@@ -11,7 +11,7 @@
 #include "base/containers/hash_tables.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
@@ -28,7 +28,7 @@ class TickClock;
 namespace net {
 
 class NetworkQualityEstimatorParams;
-class NetworkQualityProvider;
+class NetworkQualityEstimator;
 class URLRequest;
 
 namespace nqe {
@@ -59,7 +59,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // estimation.
   // Virtualized for testing.
   ThroughputAnalyzer(
-      const NetworkQualityProvider* network_quality_provider,
+      const NetworkQualityEstimator* network_quality_estimator,
       const NetworkQualityEstimatorParams* params,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       ThroughputObservationCallback throughput_observation_callback,
@@ -162,7 +162,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   void BoundRequestsSize();
 
   // Guaranteed to be non-null during the duration of |this|.
-  const NetworkQualityProvider* network_quality_provider_;
+  const NetworkQualityEstimator* network_quality_estimator_;
 
   // Guaranteed to be non-null during the duration of |this|.
   const NetworkQualityEstimatorParams* params_;
@@ -208,7 +208,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // network quality. Set to true only for tests.
   bool use_localhost_requests_for_tests_;
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   NetLogWithSource net_log_;
 

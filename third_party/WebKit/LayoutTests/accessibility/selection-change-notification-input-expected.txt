@@ -1,8 +1,6 @@
-
 Tests that a 'selected text changed' notification fires on an input element when the user moves the cursor.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 Got SelectedTextChanged notification on input element.
 Got DocumentSelectionChanged notification on root element.

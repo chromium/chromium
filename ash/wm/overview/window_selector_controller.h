@@ -22,6 +22,11 @@ class WindowSelectorTest;
 // allows selecting a window to activate it.
 class ASH_EXPORT WindowSelectorController : public WindowSelectorDelegate {
  public:
+  enum class AnimationCompleteReason {
+    kCompleted,
+    kCanceled,
+  };
+
   WindowSelectorController();
   ~WindowSelectorController() override;
 
@@ -42,6 +47,10 @@ class ASH_EXPORT WindowSelectorController : public WindowSelectorDelegate {
 
   // Returns true if window selection mode is active.
   bool IsSelecting() const;
+
+  // Returns true if overview has been shutdown, but is still animating to the
+  // end state ui.
+  bool IsCompletingShutdownAnimations();
 
   // Moves the current selection by |increment| items. Positive values of
   // |increment| move the selection forward, negative values move it backward.
@@ -68,6 +77,10 @@ class ASH_EXPORT WindowSelectorController : public WindowSelectorDelegate {
       std::unique_ptr<DelayedAnimationObserver> animation) override;
   void RemoveAndDestroyAnimationObserver(
       DelayedAnimationObserver* animation) override;
+  void AddStartAnimationObserver(
+      std::unique_ptr<DelayedAnimationObserver> animation_observer) override;
+  void RemoveAndDestroyStartAnimationObserver(
+      DelayedAnimationObserver* animation_observer) override;
 
   WindowSelector* window_selector() { return window_selector_.get(); }
 
@@ -76,6 +89,7 @@ class ASH_EXPORT WindowSelectorController : public WindowSelectorDelegate {
   friend class WindowSelectorTest;
   FRIEND_TEST_ALL_PREFIXES(TabletModeControllerTest,
                            DisplayDisconnectionDuringOverview);
+  FRIEND_TEST_ALL_PREFIXES(WindowSelectorTest, OverviewExitAnimationObserver);
 
   // There is no need to blur or unblur the wallpaper for tests.
   static void SetDoNotChangeWallpaperBlurForTests();
@@ -88,6 +102,10 @@ class ASH_EXPORT WindowSelectorController : public WindowSelectorDelegate {
   // those animations are in progress, the animations are shut down and the
   // widgets destroyed.
   std::vector<std::unique_ptr<DelayedAnimationObserver>> delayed_animations_;
+  // Collection of DelayedAnimationObserver objects. When this becomes empty,
+  // notify shell that the starting animations have been completed.
+  std::vector<std::unique_ptr<DelayedAnimationObserver>> start_animations_;
+
   std::unique_ptr<WindowSelector> window_selector_;
   base::Time last_selection_time_;
 

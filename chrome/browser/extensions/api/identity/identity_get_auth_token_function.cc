@@ -21,9 +21,10 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/extensions/api/identity.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_tracker_service.h"
-#include "components/signin/core/browser/profile_management_switches.h"
 #include "components/signin/core/browser/profile_oauth2_token_service.h"
+#include "components/signin/core/browser/signin_pref_names.h"
 #include "content/public/common/service_manager_connection.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -55,6 +56,10 @@ const char* const kPublicSessionAllowedOrigins[] = {
     // Chrome Remote Desktop - Official branding.
     "chrome-extension://gbchcmhmhahfdphkhkmpfmihenigjmpp/"};
 #endif
+
+bool IsBrowserSigninAllowed(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed);
+}
 
 }  // namespace
 
@@ -92,7 +97,8 @@ bool IdentityGetAuthTokenFunction::RunAsync() {
       *params->details->interactive;
 
   should_prompt_for_scopes_ = interactive_;
-  should_prompt_for_signin_ = interactive_;
+  should_prompt_for_signin_ =
+      interactive_ && IsBrowserSigninAllowed(GetProfile());
 
   const OAuth2Info& oauth2_info = OAuth2Info::GetOAuth2Info(extension());
 
@@ -144,7 +150,10 @@ void IdentityGetAuthTokenFunction::OnReceivedPrimaryAccountInfo(
   // Detect and handle the case where the extension is using an account other
   // than the primary account.
   if (!extension_gaia_id.empty() && extension_gaia_id != primary_gaia_id) {
-    if (!signin::IsExtensionsMultiAccount()) {
+    bool primary_account_only = IdentityAPI::GetFactoryInstance()
+                                    ->Get(GetProfile())
+                                    ->AreExtensionsRestrictedToPrimaryAccount();
+    if (primary_account_only) {
       // TODO(courage): should this be a different error?
       CompleteFunctionWithError(identity_constants::kUserNotSignedIn);
       return;
@@ -203,7 +212,10 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
 
   if (!account_state.has_refresh_token) {
     if (!ShouldStartSigninFlow()) {
-      CompleteFunctionWithError(identity_constants::kUserNotSignedIn);
+      CompleteFunctionWithError(
+          IsBrowserSigninAllowed(GetProfile())
+              ? identity_constants::kUserNotSignedIn
+              : identity_constants::kBrowserSigninNotAllowed);
       return;
     }
     // Display a login prompt.

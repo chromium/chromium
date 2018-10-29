@@ -91,6 +91,7 @@ class OZONE_EXPORT OzonePlatform {
     PlatformProperties(bool needs_request,
                        bool custom_frame_default,
                        bool can_use_system_title_bar,
+                       bool requires_mojo_for_ipc,
                        std::vector<gfx::BufferFormat> buffer_formats);
     ~PlatformProperties();
     PlatformProperties(const PlatformProperties& other);
@@ -107,6 +108,10 @@ class OZONE_EXPORT OzonePlatform {
     // Determine whether switching between system and custom frames is
     // supported.
     bool use_system_title_bar = false;
+
+    // Determines if the platform requires mojo communication for the IPC.
+    // Currently used only by the Ozone/Wayland platform.
+    bool requires_mojo = false;
 
     // Wayland only: carries buffer formats supported by a Wayland server.
     std::vector<gfx::BufferFormat> supported_buffer_formats;

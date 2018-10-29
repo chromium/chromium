@@ -47,6 +47,12 @@ class QuicFramerPeer {
                                     const QuicStreamFrame& frame,
                                     bool last_frame_in_packet,
                                     QuicDataWriter* writer);
+  static bool ProcessCryptoFrame(QuicFramer* framer,
+                                 QuicDataReader* reader,
+                                 QuicCryptoFrame* frame);
+  static bool AppendCryptoFrame(QuicFramer* framer,
+                                const QuicCryptoFrame& frame,
+                                QuicDataWriter* writer);
 
   static bool AppendIetfConnectionCloseFrame(
       QuicFramer* framer,
@@ -64,6 +70,7 @@ class QuicFramerPeer {
                                            QuicApplicationCloseFrame* frame);
   static bool ProcessIetfAckFrame(QuicFramer* framer,
                                   QuicDataReader* reader,
+                                  uint64_t frame_type,
                                   QuicAckFrame* ack_frame);
   static bool AppendIetfAckFrameAndTypeByte(QuicFramer* framer,
                                             const QuicAckFrame& frame,
@@ -145,6 +152,14 @@ class QuicFramerPeer {
   static bool ProcessNewConnectionIdFrame(QuicFramer* framer,
                                           QuicDataReader* reader,
                                           QuicNewConnectionIdFrame* frame);
+  static bool AppendRetireConnectionIdFrame(
+      QuicFramer* framer,
+      const QuicRetireConnectionIdFrame& frame,
+      QuicDataWriter* writer);
+  static bool ProcessRetireConnectionIdFrame(
+      QuicFramer* framer,
+      QuicDataReader* reader,
+      QuicRetireConnectionIdFrame* frame);
   static size_t ComputeFrameLength(QuicFramer* framer,
                                    const QuicFrame& frame,
                                    bool last_frame_in_packet,

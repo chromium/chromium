@@ -48,7 +48,7 @@ enum CALayerResult {
   CA_LAYER_FAILED_DIFFERENT_CLIP_SETTINGS,
   CA_LAYER_FAILED_DIFFERENT_VERTEX_OPACITIES,
   CA_LAYER_FAILED_RENDER_PASS_FILTER_SCALE,
-  CA_LAYER_FAILED_RENDER_PASS_BACKGROUND_FILTERS,
+  CA_LAYER_FAILED_RENDER_PASS_BACKDROP_FILTERS,
   CA_LAYER_FAILED_RENDER_PASS_MASK,
   CA_LAYER_FAILED_RENDER_PASS_FILTER_OPERATION,
   CA_LAYER_FAILED_RENDER_PASS_SORTING_CONTEXT_ID,
@@ -80,10 +80,10 @@ CALayerResult FromRenderPassQuad(
     const base::flat_map<RenderPassId, cc::FilterOperations*>&
         render_pass_filters,
     const base::flat_map<RenderPassId, cc::FilterOperations*>&
-        render_pass_background_filters,
+        render_pass_backdrop_filters,
     CALayerOverlay* ca_layer_overlay) {
-  if (render_pass_background_filters.count(quad->render_pass_id)) {
-    return CA_LAYER_FAILED_RENDER_PASS_BACKGROUND_FILTERS;
+  if (render_pass_backdrop_filters.count(quad->render_pass_id)) {
+    return CA_LAYER_FAILED_RENDER_PASS_BACKDROP_FILTERS;
   }
 
   if (quad->shared_quad_state->sorting_context_id != 0)
@@ -182,7 +182,7 @@ class CALayerOverlayProcessor {
       const base::flat_map<RenderPassId, cc::FilterOperations*>&
           render_pass_filters,
       const base::flat_map<RenderPassId, cc::FilterOperations*>&
-          render_pass_background_filters,
+          render_pass_backdrop_filters,
       CALayerOverlay* ca_layer_overlay,
       bool* skip,
       bool* render_pass_draw_quad) {
@@ -249,7 +249,7 @@ class CALayerOverlayProcessor {
       case DrawQuad::RENDER_PASS:
         return FromRenderPassQuad(
             resource_provider, RenderPassDrawQuad::MaterialCast(quad),
-            render_pass_filters, render_pass_background_filters,
+            render_pass_filters, render_pass_backdrop_filters,
             ca_layer_overlay);
       case DrawQuad::SURFACE_CONTENT:
         return CA_LAYER_FAILED_SURFACE_CONTENT;
@@ -282,7 +282,7 @@ bool ProcessForCALayerOverlays(
     const base::flat_map<RenderPassId, cc::FilterOperations*>&
         render_pass_filters,
     const base::flat_map<RenderPassId, cc::FilterOperations*>&
-        render_pass_background_filters,
+        render_pass_backdrop_filters,
     CALayerOverlayList* ca_layer_overlays) {
   CALayerResult result = CA_LAYER_SUCCESS;
   ca_layer_overlays->reserve(quad_list.size());
@@ -295,10 +295,9 @@ bool ProcessForCALayerOverlays(
     CALayerOverlay ca_layer;
     bool skip = false;
     bool render_pass_draw_quad = false;
-    result = processor.FromDrawQuad(resource_provider, display_rect, quad,
-                                    render_pass_filters,
-                                    render_pass_background_filters, &ca_layer,
-                                    &skip, &render_pass_draw_quad);
+    result = processor.FromDrawQuad(
+        resource_provider, display_rect, quad, render_pass_filters,
+        render_pass_backdrop_filters, &ca_layer, &skip, &render_pass_draw_quad);
     if (result != CA_LAYER_SUCCESS)
       break;
 

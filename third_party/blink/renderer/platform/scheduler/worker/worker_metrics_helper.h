@@ -7,8 +7,8 @@
 
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/common/metrics_helper.h"
+#include "third_party/blink/renderer/platform/scheduler/common/thread_load_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_origin_type.h"
-#include "third_party/blink/renderer/platform/scheduler/util/thread_load_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_task_queue.h"
 
 namespace blink {
@@ -22,7 +22,7 @@ class PLATFORM_EXPORT WorkerMetricsHelper : public MetricsHelper {
 
   void RecordTaskMetrics(
       NonMainThreadTaskQueue* queue,
-      const base::sequence_manager::TaskQueue::Task& task,
+      const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
   void SetParentFrameType(FrameOriginType frame_type);

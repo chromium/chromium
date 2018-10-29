@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/ui_features.h"
 #include "ui/views/widget/widget.h"
 
 ChromeWebContentsViewDelegateViewsMac::ChromeWebContentsViewDelegateViewsMac(
@@ -50,11 +49,7 @@ bool ChromeWebContentsViewDelegateViewsMac::TakeFocus(bool reverse) {
   return GetFocusHelper()->TakeFocus(reverse);
 }
 
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-
 content::WebContentsViewDelegate* CreateWebContentsViewDelegate(
     content::WebContents* web_contents) {
   return new ChromeWebContentsViewDelegateViewsMac(web_contents);
 }
-
-#endif  // MAC_VIEWS_BROWSER

@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_permission_context.h"
+#include "chrome/browser/background_fetch/background_fetch_permission_context.h"
 #include "chrome/browser/background_sync/background_sync_permission_context.h"
 #include "chrome/browser/clipboard/clipboard_read_permission_context.h"
 #include "chrome/browser/clipboard/clipboard_write_permission_context.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/storage/durable_storage_permission_context.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -42,7 +42,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "ppapi/buildflags/buildflags.h"
 
@@ -123,6 +122,8 @@ ContentSettingsType PermissionTypeToContentSetting(PermissionType permission) {
       return CONTENT_SETTINGS_TYPE_CLIPBOARD_WRITE;
     case PermissionType::PAYMENT_HANDLER:
       return CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER;
+    case PermissionType::BACKGROUND_FETCH:
+      return CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH;
     case PermissionType::NUM:
       // This will hit the NOTREACHED below.
       break;
@@ -307,6 +308,8 @@ PermissionManager::PermissionManager(Profile* profile) : profile_(profile) {
       std::make_unique<ClipboardWritePermissionContext>(profile);
   permission_contexts_[CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER] =
       std::make_unique<payments::PaymentHandlerPermissionContext>(profile);
+  permission_contexts_[CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH] =
+      std::make_unique<BackgroundFetchPermissionContext>(profile);
 }
 
 PermissionManager::~PermissionManager() {
@@ -380,13 +383,6 @@ int PermissionManager::RequestPermissions(
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-
-  if (vr::VrTabHelper::IsUiSuppressedInVr(
-          web_contents, vr::UiSuppressedElement::kPermissionRequest)) {
-    callback.Run(
-        std::vector<ContentSetting>(permissions.size(), CONTENT_SETTING_BLOCK));
-    return content::PermissionController::kNoPendingOperation;
-  }
 
   GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
   GURL canonical_requesting_origin =

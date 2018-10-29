@@ -168,10 +168,12 @@ void V8V0CustomElementLifecycleCallbacks::Created(Element* element) {
 
   // Swizzle the prototype of the wrapper.
   v8::Local<v8::Object> prototype = prototype_.NewLocal(isolate);
-  if (prototype.IsEmpty())
+  bool set_prototype;
+  if (prototype.IsEmpty() ||
+      !receiver->SetPrototype(context, prototype).To(&set_prototype) ||
+      !set_prototype) {
     return;
-  if (!V8CallBoolean(receiver->SetPrototype(context, prototype)))
-    return;
+  }
 
   v8::Local<v8::Function> callback = created_.NewLocal(isolate);
   if (callback.IsEmpty())

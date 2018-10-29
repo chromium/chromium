@@ -23,8 +23,6 @@ namespace {
 
 const char kNavigationEventCleanUpHistogramName[] =
     "SafeBrowsing.NavigationObserver.NavigationEventCleanUpCount";
-const char kIPAddressCleanUpHistogramName[] =
-    "SafeBrowsing.NavigationObserver.IPAddressCleanUpCount";
 }  // namespace
 
 namespace safe_browsing {
@@ -300,9 +298,6 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleIPAddresses) {
       ResolvedIPAddress(in_an_hour, "3.3.3.3"));
   ASSERT_EQ(2U, host_to_ip_map()->size());
 
-  base::HistogramTester histograms;
-  histograms.ExpectTotalCount(kIPAddressCleanUpHistogramName, 0);
-
   // Cleans up host_to_ip_map()
   CleanUpIpAddresses();
 
@@ -311,8 +306,6 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleIPAddresses) {
   EXPECT_EQ(host_to_ip_map()->end(), host_to_ip_map()->find(host_1));
   ASSERT_EQ(1U, (*host_to_ip_map())[host_0].size());
   EXPECT_EQ(now, (*host_to_ip_map())[host_0].front().timestamp);
-  EXPECT_THAT(histograms.GetAllSamples(kIPAddressCleanUpHistogramName),
-              testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 TEST_F(SBNavigationObserverTest, TestRecordHostToIpMapping) {

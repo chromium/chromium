@@ -8,11 +8,16 @@
 #include <string>
 
 #include "base/optional.h"
+#include "content/browser/web_package/origins_list.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/content_export.h"
 
 class GURL;
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace network {
 struct ResourceResponseHead;
@@ -32,6 +37,15 @@ void ReportErrorAndTraceEvent(
     const std::string& error_message,
     base::Optional<SignedExchangeError::FieldIndexPair> error_field =
         base::nullopt);
+
+// Returns true when SignedHTTPExchange feature is NOT enabled and
+// SignedHTTPExchangeOriginTrial and SignedHTTPExchangeAcceptHeader features are
+// enabled.
+bool NeedToCheckRedirectedURLForAcceptHeader();
+
+// Returns true if Accept headers should be sent with
+// "application/signed-exchange".
+CONTENT_EXPORT bool ShouldAdvertiseAcceptHeader(const url::Origin& origin);
 
 // Returns true when SignedHTTPExchange feature or SignedHTTPExchangeOriginTrial
 // feature is enabled.

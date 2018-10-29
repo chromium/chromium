@@ -15,6 +15,10 @@
 #include "base/sequence_checker.h"
 #include "components/offline_pages/task/task.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
+
 namespace offline_pages {
 
 // Class for coordinating |Task|s in relation to access to a specific resource.
@@ -35,7 +39,7 @@ class TaskQueue {
  public:
   class Delegate {
    public:
-    virtual ~Delegate(){};
+    virtual ~Delegate() {}
 
     // Invoked once when TaskQueue reached 0 tasks.
     virtual void OnTaskQueueIsIdle() = 0;
@@ -57,10 +61,22 @@ class TaskQueue {
   // queue.
   void StartTaskIfAvailable();
 
-  // Callback for informing the queue that a task was completed.
+  void RunCurrentTask();
+
+  // Callback for informing the queue that a task was completed. Can be called
+  // from any thread.
+  static void TaskCompletedCallback(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      base::WeakPtr<TaskQueue> task_queue,
+      Task* task);
+
   void TaskCompleted(Task* task);
 
   void InformTaskQueueIsIdle();
+
+  // This TaskQueue's task runner, set on construction using the instance
+  // assigned to the current thread.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Owns and outlives this TaskQueue.
   Delegate* delegate_;

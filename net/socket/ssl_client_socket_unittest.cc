@@ -26,6 +26,7 @@
 #include "crypto/rsa_private_key.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -45,6 +46,7 @@
 #include "net/der/tag.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/transport_security_state.h"
+#include "net/http/transport_security_state_test_util.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/test_net_log.h"
@@ -94,6 +96,17 @@ namespace net {
 class NetLogWithSource;
 
 namespace {
+
+// When passed to |MakeHashValueVector|, this will generate a key pin that is
+// sha256/AA...=, and hence will cause pin validation success with the TestSPKI
+// pin from transport_security_state_static.pins. ("A" is the 0th element of the
+// base-64 alphabet.)
+const uint8_t kGoodHashValueVectorInput = 0;
+
+// When passed to |MakeHashValueVector|, this will generate a key pin that is
+// not sha256/AA...=, and hence will cause pin validation failure with the
+// TestSPKI pin.
+const uint8_t kBadHashValueVectorInput = 3;
 
 // ReadBufferingStreamSocket is a wrapper for an existing StreamSocket that
 // will ensure a certain amount of data is internally buffered before
@@ -888,16 +901,22 @@ class SSLClientSocketTest : public PlatformTest,
         std::move(connection), host_and_port, ssl_config, context_);
   }
 
-  // Create an SSLClientSocket object and use it to connect to a test
-  // server, then wait for connection results. This must be called after
-  // a successful StartTestServer() call.
-  // |ssl_config| the SSL configuration to use.
+  // Create an SSLClientSocket object and use it to connect to a test server,
+  // then wait for connection results. This must be called after a successful
+  // StartTestServer() call.
+  //
+  // |ssl_config| The SSL configuration to use.
+  // |host_port_pair| The hostname and port to use at the SSL layer. (The
+  //     socket connection will still be made to |spawned_test_server_|.)
   // |result| will retrieve the ::Connect() result value.
-  // Returns true on success, false otherwise. Success means that the SSL socket
-  // could be created and its Connect() was called, not that the connection
-  // itself was a success.
-  bool CreateAndConnectSSLClientSocket(const SSLConfig& ssl_config,
-                                       int* result) {
+  //
+  // Returns true on success, false otherwise. Success means that the SSL
+  // socket could be created and its Connect() was called, not that the
+  // connection itself was a success.
+  bool CreateAndConnectSSLClientSocketWithHost(
+      const SSLConfig& ssl_config,
+      const HostPortPair& host_port_pair,
+      int* result) {
     std::unique_ptr<StreamSocket> transport(
         new TCPClientSocket(addr_, NULL, &log_, NetLogSource()));
     int rv = callback_.GetResult(transport->Connect(callback_.callback()));
@@ -906,13 +925,18 @@ class SSLClientSocketTest : public PlatformTest,
       return false;
     }
 
-    sock_ = CreateSSLClientSocket(std::move(transport),
-                                  spawned_test_server_->host_port_pair(),
-                                  ssl_config);
+    sock_ =
+        CreateSSLClientSocket(std::move(transport), host_port_pair, ssl_config);
     EXPECT_FALSE(sock_->IsConnected());
 
     *result = callback_.GetResult(sock_->Connect(callback_.callback()));
     return true;
+  }
+
+  bool CreateAndConnectSSLClientSocket(const SSLConfig& ssl_config,
+                                       int* result) {
+    return CreateAndConnectSSLClientSocketWithHost(
+        ssl_config, spawned_test_server()->host_port_pair(), result);
   }
 
   // Adds the server certificate with provided cert status.
@@ -3066,52 +3090,6 @@ TEST_F(SSLClientSocketTest, RequireECDHE) {
   EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
 }
 
-TEST_F(SSLClientSocketTest, TokenBindingEnabled) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.supported_token_binding_params.push_back(TB_PARAM_ECDSAP256);
-  ASSERT_TRUE(StartTestServer(ssl_options));
-
-  SSLConfig ssl_config;
-  ssl_config.token_binding_params.push_back(TB_PARAM_ECDSAP256);
-
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  EXPECT_THAT(rv, IsOk());
-  SSLInfo info;
-  EXPECT_TRUE(sock_->GetSSLInfo(&info));
-  EXPECT_TRUE(info.token_binding_negotiated);
-  EXPECT_EQ(TB_PARAM_ECDSAP256, info.token_binding_key_param);
-}
-
-TEST_F(SSLClientSocketTest, TokenBindingFailsWithEmsDisabled) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.supported_token_binding_params.push_back(TB_PARAM_ECDSAP256);
-  ssl_options.disable_extended_master_secret = true;
-  ASSERT_TRUE(StartTestServer(ssl_options));
-
-  SSLConfig ssl_config;
-  ssl_config.token_binding_params.push_back(TB_PARAM_ECDSAP256);
-
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  EXPECT_THAT(rv, IsError(ERR_SSL_PROTOCOL_ERROR));
-}
-
-TEST_F(SSLClientSocketTest, TokenBindingEnabledWithoutServerSupport) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  ASSERT_TRUE(StartTestServer(ssl_options));
-
-  SSLConfig ssl_config;
-  ssl_config.token_binding_params.push_back(TB_PARAM_ECDSAP256);
-
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  EXPECT_THAT(rv, IsOk());
-  SSLInfo info;
-  EXPECT_TRUE(sock_->GetSSLInfo(&info));
-  EXPECT_FALSE(info.token_binding_negotiated);
-}
-
 TEST_F(SSLClientSocketFalseStartTest, FalseStartEnabled) {
   // False Start requires ALPN, ECDHE, and an AEAD.
   SpawnedTestServer::SSLOptions server_options;
@@ -3559,19 +3537,19 @@ TEST_F(SSLClientSocketTest, PKPBypassedSet) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = false;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kBadHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
-  // Set up HPKP
-  HashValueVector expected_hashes = MakeHashValueVector(1);
-  context_.transport_security_state->AddHPKP(
-      spawned_test_server()->host_port_pair().host(),
-      base::Time::Now() + base::TimeDelta::FromSeconds(10000), true,
-      expected_hashes, GURL());
+  context_.transport_security_state->EnableStaticPinsForTesting();
+  ScopedTransportSecurityStateSource scoped_security_state_source;
 
   SSLConfig ssl_config;
   int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  HostPortPair host_port_pair("example.test",
+                              spawned_test_server()->host_port_pair().port());
+  ASSERT_TRUE(
+      CreateAndConnectSSLClientSocketWithHost(ssl_config, host_port_pair, &rv));
   SSLInfo ssl_info;
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
 
@@ -3593,19 +3571,19 @@ TEST_F(SSLClientSocketTest, PKPEnforced) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = true;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kBadHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
-  // Set up HPKP
-  HashValueVector expected_hashes = MakeHashValueVector(1);
-  context_.transport_security_state->AddHPKP(
-      spawned_test_server()->host_port_pair().host(),
-      base::Time::Now() + base::TimeDelta::FromSeconds(10000), true,
-      expected_hashes, GURL());
+  context_.transport_security_state->EnableStaticPinsForTesting();
+  ScopedTransportSecurityStateSource scoped_security_state_source;
 
   SSLConfig ssl_config;
   int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  HostPortPair host_port_pair("example.test",
+                              spawned_test_server()->host_port_pair().port());
+  ASSERT_TRUE(
+      CreateAndConnectSSLClientSocketWithHost(ssl_config, host_port_pair, &rv));
   SSLInfo ssl_info;
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
 
@@ -3628,7 +3606,8 @@ TEST_F(SSLClientSocketTest, CTIsRequired) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = true;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kGoodHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   // Set up CT
@@ -3745,7 +3724,8 @@ TEST_F(SSLClientSocketTest, CTRequiredHistogramCompliant) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = true;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kGoodHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   // Set up the Expect-CT opt-in.
@@ -3789,7 +3769,8 @@ TEST_F(SSLClientSocketTest, CTNotRequiredHistogram) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = false;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kGoodHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(server_cert.get(), _, _))
@@ -3828,7 +3809,8 @@ TEST_F(SSLClientSocketTest, CTRequiredHistogramNonCompliant) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = true;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kGoodHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   // Set up the Expect-CT opt-in.
@@ -3870,7 +3852,8 @@ TEST_F(SSLClientSocketTest, CTRequirementsFlagNotMet) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = true;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kGoodHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   // Set up the Expect-CT opt-in.
@@ -3904,7 +3887,8 @@ TEST_F(SSLClientSocketTest, CTRequirementsFlagMet) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = true;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kGoodHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   // Set up the Expect-CT opt-in.
@@ -3945,7 +3929,8 @@ TEST_F(SSLClientSocketTest, CTRequiredHistogramNonCompliantLocalRoot) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = false;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kGoodHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   // Set up the CT requirement and failure to comply.
@@ -3989,7 +3974,8 @@ TEST_F(SSLClientSocketTest, CTIsRequiredByExpectCT) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = true;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kGoodHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   // Set up the Expect-CT opt-in.
@@ -4069,8 +4055,8 @@ TEST_F(SSLClientSocketTest, CTIsRequiredByExpectCT) {
   EXPECT_EQ(2u, reporter.num_failures());
 }
 
-// When both HPKP and CT are required for a host, and both fail, the more
-// serious error is that the HPKP pin validation failed.
+// When both PKP and CT are required for a host, and both fail, the more
+// serious error is that the pin validation failed.
 TEST_F(SSLClientSocketTest, PKPMoreImportantThanCT) {
   SpawnedTestServer::SSLOptions ssl_options;
   ASSERT_TRUE(StartTestServer(ssl_options));
@@ -4082,15 +4068,14 @@ TEST_F(SSLClientSocketTest, PKPMoreImportantThanCT) {
   CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = true;
   verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes = MakeHashValueVector(0);
+  verify_result.public_key_hashes =
+      MakeHashValueVector(kBadHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
-  // Set up HPKP.
-  HashValueVector expected_hashes = MakeHashValueVector(1);
-  context_.transport_security_state->AddHPKP(
-      spawned_test_server()->host_port_pair().host(),
-      base::Time::Now() + base::TimeDelta::FromSeconds(10000), true,
-      expected_hashes, GURL());
+  context_.transport_security_state->EnableStaticPinsForTesting();
+  ScopedTransportSecurityStateSource scoped_security_state_source;
+
+  const char kCTHost[] = "pkp-expect-ct.preloaded.test";
 
   // Set up CT.
   MockRequireCTDelegate require_ct_delegate;
@@ -4098,9 +4083,7 @@ TEST_F(SSLClientSocketTest, PKPMoreImportantThanCT) {
   EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(_, _, _))
       .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
                                  CTRequirementLevel::NOT_REQUIRED));
-  EXPECT_CALL(
-      require_ct_delegate,
-      IsCTRequiredForHost(spawned_test_server()->host_port_pair().host(), _, _))
+  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(kCTHost, _, _))
       .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
                                  CTRequirementLevel::REQUIRED));
   EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(server_cert.get(), _, _))
@@ -4109,7 +4092,10 @@ TEST_F(SSLClientSocketTest, PKPMoreImportantThanCT) {
 
   SSLConfig ssl_config;
   int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  HostPortPair host_port_pair(kCTHost,
+                              spawned_test_server()->host_port_pair().port());
+  ASSERT_TRUE(
+      CreateAndConnectSSLClientSocketWithHost(ssl_config, host_port_pair, &rv));
   SSLInfo ssl_info;
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
 
@@ -4795,6 +4781,288 @@ TEST_F(SSLClientSocketTest, Tag) {
   sock->ApplySocketTag(tag);
   EXPECT_EQ(tagging_sock->tag(), tag);
 #endif  // OS_ANDROID
+}
+
+// Test downgrade enforcement works for the 1.3 to 1.2 downgrade.
+TEST_F(SSLClientSocketTest, TLS13DowngradeEnforcedAtTLS12) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEnforceTLS13Downgrade);
+
+  SpawnedTestServer::SSLOptions ssl_options;
+  ssl_options.simulate_tls13_downgrade = true;
+  ssl_options.tls_max_version =
+      SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_2;
+  ASSERT_TRUE(StartTestServer(ssl_options));
+
+  SSLConfig config;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_TLS13_DOWNGRADE_DETECTED));
+  EXPECT_FALSE(sock_->IsConnected());
+}
+
+// Test downgrade enforcement works for the 1.3 to 1.1 downgrade.
+TEST_F(SSLClientSocketTest, TLS13DowngradeEnforcedAtTLS11) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEnforceTLS13Downgrade);
+
+  SpawnedTestServer::SSLOptions ssl_options;
+  ssl_options.simulate_tls12_downgrade = true;
+  ssl_options.tls_max_version =
+      SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_1;
+  ASSERT_TRUE(StartTestServer(ssl_options));
+
+  SSLConfig config;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_TLS13_DOWNGRADE_DETECTED));
+  EXPECT_FALSE(sock_->IsConnected());
+}
+
+// Test downgrade enforcement works for the 1.3 to 1.0 downgrade.
+TEST_F(SSLClientSocketTest, TLS13DowngradeEnforcedAtTLS10) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEnforceTLS13Downgrade);
+
+  SpawnedTestServer::SSLOptions ssl_options;
+  ssl_options.simulate_tls12_downgrade = true;
+  ssl_options.tls_max_version =
+      SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_0;
+  ASSERT_TRUE(StartTestServer(ssl_options));
+
+  SSLConfig config;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_TLS13_DOWNGRADE_DETECTED));
+  EXPECT_FALSE(sock_->IsConnected());
+}
+
+// Test downgrade enforcement lets valid connections through.
+TEST_F(SSLClientSocketTest, TLS13DowngradeValid) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEnforceTLS13Downgrade);
+
+  SpawnedTestServer::SSLOptions ssl_options;
+  ssl_options.tls_max_version =
+      SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_2;
+  ASSERT_TRUE(StartTestServer(ssl_options));
+
+  SSLConfig config;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(sock_->IsConnected());
+
+  SSLInfo info;
+  EXPECT_TRUE(sock_->GetSSLInfo(&info));
+  EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_2,
+            SSLConnectionStatusToVersion(info.connection_status));
+}
+
+// Test the downgrade is not enforced for the TLS 1.3 to TLS 1.2 downgrade if
+// disabled.
+TEST_F(SSLClientSocketTest, TLS13DowngradeIgnoredAtTLS12) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kEnforceTLS13Downgrade);
+
+  SpawnedTestServer::SSLOptions ssl_options;
+  ssl_options.tls_max_version =
+      SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_2;
+  ssl_options.simulate_tls13_downgrade = true;
+  ASSERT_TRUE(StartTestServer(ssl_options));
+
+  SSLConfig config;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(sock_->IsConnected());
+
+  SSLInfo info;
+  EXPECT_TRUE(sock_->GetSSLInfo(&info));
+  EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_2,
+            SSLConnectionStatusToVersion(info.connection_status));
+}
+
+// Test the downgrade is not enforced for the TLS 1.3 to TLS 1.1 downgrade if
+// disabled.
+TEST_F(SSLClientSocketTest, TLS13DowngradeIgnoredAtTLS11) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kEnforceTLS13Downgrade);
+
+  SpawnedTestServer::SSLOptions ssl_options;
+  ssl_options.simulate_tls12_downgrade = true;
+  ssl_options.tls_max_version =
+      SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_1;
+  ASSERT_TRUE(StartTestServer(ssl_options));
+
+  SSLConfig config;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(sock_->IsConnected());
+
+  SSLInfo info;
+  EXPECT_TRUE(sock_->GetSSLInfo(&info));
+  EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_1,
+            SSLConnectionStatusToVersion(info.connection_status));
+}
+
+// Test the downgrade is not enforced for the TLS 1.3 to TLS 1.0 downgrade if
+// disabled.
+TEST_F(SSLClientSocketTest, TLS13DowngradeIgnoredAtTLS10) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kEnforceTLS13Downgrade);
+
+  SpawnedTestServer::SSLOptions ssl_options;
+  ssl_options.simulate_tls13_downgrade = true;
+  ssl_options.tls_max_version =
+      SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_0;
+  ASSERT_TRUE(StartTestServer(ssl_options));
+
+  SSLConfig config;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(sock_->IsConnected());
+
+  SSLInfo info;
+  EXPECT_TRUE(sock_->GetSSLInfo(&info));
+  EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1,
+            SSLConnectionStatusToVersion(info.connection_status));
+}
+
+struct TLS13DowngradeMetricsParams {
+  bool downgrade;
+  bool known_root;
+  SpawnedTestServer::SSLOptions::KeyExchange key_exchanges;
+  bool tls13_experiment_host;
+  int expect_downgrade_type;
+};
+
+const TLS13DowngradeMetricsParams kTLS13DowngradeMetricsParams[] = {
+    // Not a downgrade.
+    {false, true, SpawnedTestServer::SSLOptions::KeyExchange::KEY_EXCHANGE_ANY,
+     false, -1},
+    {false, true, SpawnedTestServer::SSLOptions::KeyExchange::KEY_EXCHANGE_ANY,
+     true, -1},
+    // Downgrades with a known root.
+    {true, true, SpawnedTestServer::SSLOptions::KeyExchange::KEY_EXCHANGE_RSA,
+     false, 0},
+    {true, true, SpawnedTestServer::SSLOptions::KeyExchange::KEY_EXCHANGE_RSA,
+     true, 0},
+    {true, true,
+     SpawnedTestServer::SSLOptions::KeyExchange::KEY_EXCHANGE_ECDHE_RSA, false,
+     1},
+    {true, true,
+     SpawnedTestServer::SSLOptions::KeyExchange::KEY_EXCHANGE_ECDHE_RSA, true,
+     1},
+    // Downgrades with an unknown root.
+    {true, false, SpawnedTestServer::SSLOptions::KeyExchange::KEY_EXCHANGE_RSA,
+     false, 2},
+    {true, false, SpawnedTestServer::SSLOptions::KeyExchange::KEY_EXCHANGE_RSA,
+     true, 2},
+    {true, false,
+     SpawnedTestServer::SSLOptions::KeyExchange::KEY_EXCHANGE_ECDHE_RSA, false,
+     3},
+    {true, false,
+     SpawnedTestServer::SSLOptions::KeyExchange::KEY_EXCHANGE_ECDHE_RSA, true,
+     3},
+};
+
+namespace {
+namespace test_default {
+#include "net/http/transport_security_state_static_unittest_default.h"
+}  // namespace test_default
+}  // namespace
+
+class TLS13DowngradeMetricsTest
+    : public SSLClientSocketTest,
+      public ::testing::WithParamInterface<TLS13DowngradeMetricsParams> {
+ public:
+  TLS13DowngradeMetricsTest() {
+    // Switch the static preload list, so the tests using mail.google.com below
+    // do not trip the usual pins.
+    SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
+  }
+  ~TLS13DowngradeMetricsTest() {
+    SetTransportSecurityStateSourceForTesting(nullptr);
+  }
+};
+
+INSTANTIATE_TEST_CASE_P(/* no prefix */,
+                        TLS13DowngradeMetricsTest,
+                        ::testing::ValuesIn(kTLS13DowngradeMetricsParams));
+
+TEST_P(TLS13DowngradeMetricsTest, Metrics) {
+  const TLS13DowngradeMetricsParams& params = GetParam();
+  base::HistogramTester histograms;
+
+  // Metrics are only gathered when enforcement is disabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kEnforceTLS13Downgrade);
+
+  SpawnedTestServer::SSLOptions ssl_options;
+  ssl_options.simulate_tls13_downgrade = params.downgrade;
+  ssl_options.key_exchanges = params.key_exchanges;
+  ASSERT_TRUE(StartTestServer(ssl_options));
+
+  HostPortPair host_port_pair = spawned_test_server()->host_port_pair();
+  if (params.tls13_experiment_host) {
+    host_port_pair.set_host("mail.google.com");
+  }
+
+  if (params.known_root) {
+    scoped_refptr<X509Certificate> server_cert =
+        spawned_test_server()->GetCertificate();
+
+    // Certificate is trusted and chains to a public root.
+    CertVerifyResult verify_result;
+    verify_result.is_issued_by_known_root = true;
+    verify_result.verified_cert = server_cert;
+    cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
+  }
+
+  auto transport =
+      std::make_unique<TCPClientSocket>(addr(), nullptr, &log_, NetLogSource());
+  TestCompletionCallback callback;
+  int rv = callback.GetResult(transport->Connect(callback.callback()));
+  ASSERT_THAT(rv, IsOk());
+
+  SSLConfig config;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  std::unique_ptr<SSLClientSocket> ssl_socket =
+      CreateSSLClientSocket(std::move(transport), host_port_pair, config);
+  rv = callback.GetResult(ssl_socket->Connect(callback.callback()));
+  EXPECT_THAT(rv, IsOk());
+
+  histograms.ExpectUniqueSample("Net.SSLTLS13Downgrade", params.downgrade, 1);
+  if (params.tls13_experiment_host) {
+    histograms.ExpectUniqueSample("Net.SSLTLS13DowngradeTLS13Experiment",
+                                  params.downgrade, 1);
+  } else {
+    histograms.ExpectTotalCount("Net.SSLTLS13DowngradeTLS13Experiment", 0);
+  }
+
+  if (params.downgrade) {
+    histograms.ExpectUniqueSample("Net.SSLTLS13DowngradeType",
+                                  params.expect_downgrade_type, 1);
+  } else {
+    histograms.ExpectTotalCount("Net.SSLTLS13DowngradeType", 0);
+  }
+
+  if (params.tls13_experiment_host && params.downgrade) {
+    histograms.ExpectUniqueSample("Net.SSLTLS13DowngradeTypeTLS13Experiment",
+                                  params.expect_downgrade_type, 1);
+  } else {
+    histograms.ExpectTotalCount("Net.SSLTLS13DowngradeTypeTLS13Experiment", 0);
+  }
 }
 
 }  // namespace net

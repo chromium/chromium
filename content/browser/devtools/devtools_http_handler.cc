@@ -29,6 +29,7 @@
 #include "content/browser/devtools/devtools_http_handler.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/grit/devtools_resources.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
 #include "content/public/browser/devtools_frontend_host.h"
@@ -295,8 +296,8 @@ void StartServerOnHandlerThread(
 #endif
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ServerStartedOnUI, std::move(handler), thread.release(),
                      server_wrapper.release(), socket_factory.release(),
                      std::move(ip_address)));
@@ -427,16 +428,16 @@ void ServerWrapper::OnHttpRequest(int connection_id,
   server_->SetSendBufferSize(connection_id, kSendBufferSizeForDevTools);
 
   if (base::StartsWith(info.path, "/json", base::CompareCase::SENSITIVE)) {
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(&DevToolsHttpHandler::OnJsonRequest,
-                                           handler_, connection_id, info));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(&DevToolsHttpHandler::OnJsonRequest,
+                                            handler_, connection_id, info));
     return;
   }
 
   if (info.path.empty() || info.path == "/") {
     // Discovery page request.
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&DevToolsHttpHandler::OnDiscoveryPageRequest, handler_,
                        connection_id));
     return;
@@ -461,8 +462,8 @@ void ServerWrapper::OnHttpRequest(int connection_id,
   }
 
   if (bundles_resources_) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&DevToolsHttpHandler::OnFrontendResourceRequest,
                        handler_, connection_id, filename));
     return;
@@ -473,23 +474,23 @@ void ServerWrapper::OnHttpRequest(int connection_id,
 void ServerWrapper::OnWebSocketRequest(
     int connection_id,
     const net::HttpServerRequestInfo& request) {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&DevToolsHttpHandler::OnWebSocketRequest, handler_,
                      connection_id, request));
 }
 
 void ServerWrapper::OnWebSocketMessage(int connection_id,
                                        const std::string& data) {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&DevToolsHttpHandler::OnWebSocketMessage, handler_,
                      connection_id, data));
 }
 
 void ServerWrapper::OnClose(int connection_id) {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&DevToolsHttpHandler::OnClose, handler_, connection_id));
 }
 
@@ -764,8 +765,7 @@ void DevToolsHttpHandler::OnWebSocketRequest(
 void DevToolsHttpHandler::OnWebSocketMessage(
     int connection_id,
     const std::string& data) {
-  ConnectionToClientMap::iterator it =
-      connection_to_client_.find(connection_id);
+  auto it = connection_to_client_.find(connection_id);
   if (it != connection_to_client_.end())
     it->second->OnMessage(data);
 }

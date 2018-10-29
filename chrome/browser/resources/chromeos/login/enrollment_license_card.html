@@ -6,8 +6,8 @@
 
 <link rel="import" href="chrome://oobe/custom_elements.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-radio-group/paper-radio-group.html">
 <!--
   UI for the Enrollment license type selection.
 
@@ -29,6 +29,7 @@
     <style
         include="shared-style iron-flex iron-flex-alignment iron-positioning">
     </style>
+    <link rel="stylesheet" href="oobe_iron_flex_layout_fix.css">
 
     <oobe-dialog id="license-selection-prompt-card" has-buttons>
       <hd-iron-icon slot="oobe-icon"
@@ -39,17 +40,15 @@
         [[i18nDynamic(locale, 'licenseSelectionCardExplanation')]]
       </div>
       <div slot="footer" class="flex layout vertical justified">
-        <paper-radio-group selected="{{selected}}"
-                           selectable="cr-radio-button">
-          <template is="dom-repeat" items="[[licenses]]"
-                    id="repeatTemplate">
+        <cr-radio-group selected="{{selected}}">
+          <template is="dom-repeat" items="[[licenses]]" id="repeatTemplate">
             <cr-radio-button class="license-radio-button"
-                             disabled$="[[or_(item.disabled, disabled)]]"
-                             hidden$="[[item.hidden]]" name="[[item.id]]">
+                disabled="[[or_(item.disabled, disabled)]]"
+                hidden$="[[item.hidden]]" name="[[item.id]]">
               [[formatTitle_(item)]]
             </cr-radio-button>
           </template>
-        </paper-radio-group>
+        </cr-radio-group>
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
         <oobe-next-button disabled="[[disabled]]" on-tap="buttonClicked_"

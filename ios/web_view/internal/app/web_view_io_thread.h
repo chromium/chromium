@@ -11,9 +11,9 @@
 
 class PrefService;
 
-namespace net_log {
-class ChromeNetLog;
-}  // namespace net_log
+namespace net {
+class NetLog;
+}  // namespace net
 
 namespace ios_web_view {
 
@@ -21,7 +21,7 @@ namespace ios_web_view {
 // primarily used on, the IO thread.
 class WebViewIOThread : public io_thread::IOSIOThread {
  public:
-  WebViewIOThread(PrefService* local_state, net_log::ChromeNetLog* net_log);
+  WebViewIOThread(PrefService* local_state, net::NetLog* net_log);
   ~WebViewIOThread() override;
 
  protected:

@@ -4,6 +4,7 @@
 
 #include "net/third_party/quic/test_tools/simple_session_notifier.h"
 
+#include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/platform/api/quic_map_util.h"
 #include "net/third_party/quic/test_tools/quic_test_utils.h"
 
@@ -70,7 +71,8 @@ void SimpleSessionNotifier::OnStreamDataConsumed(QuicStreamId id,
                                                  QuicByteCount data_length,
                                                  bool fin) {
   StreamState& state = stream_map_.find(id)->second;
-  if (id == kCryptoStreamId && data_length > 0) {
+  if (id == QuicUtils::GetCryptoStreamId(connection_->transport_version()) &&
+      data_length > 0) {
     crypto_bytes_transferred_[connection_->encryption_level()].Add(
         offset, offset + data_length);
   }
@@ -101,8 +103,9 @@ void SimpleSessionNotifier::WriteOrBufferRstStream(
 
 void SimpleSessionNotifier::NeuterUnencryptedData() {
   for (const auto& interval : crypto_bytes_transferred_[ENCRYPTION_NONE]) {
-    QuicStreamFrame stream_frame(kCryptoStreamId, false, interval.min(),
-                                 interval.max() - interval.min());
+    QuicStreamFrame stream_frame(
+        QuicUtils::GetCryptoStreamId(connection_->transport_version()), false,
+        interval.min(), interval.max() - interval.min());
     OnFrameAcked(QuicFrame(stream_frame), QuicTime::Delta::Zero());
   }
 }
@@ -248,7 +251,8 @@ void SimpleSessionNotifier::RetransmitFrames(const QuicFrames& frames,
     EncryptionLevel retransmission_encryption_level =
         connection_->encryption_level();
     EncryptionLevel current_encryption_level = connection_->encryption_level();
-    if (frame.stream_frame.stream_id == kCryptoStreamId) {
+    if (frame.stream_frame.stream_id ==
+        QuicUtils::GetCryptoStreamId(connection_->transport_version())) {
       for (size_t i = 0; i < NUM_ENCRYPTION_LEVELS; ++i) {
         if (retransmission.Intersects(crypto_bytes_transferred_[i])) {
           retransmission_encryption_level = static_cast<EncryptionLevel>(i);
@@ -266,7 +270,8 @@ void SimpleSessionNotifier::RetransmitFrames(const QuicFrames& frames,
       const bool can_bundle_fin =
           retransmit_fin &&
           (retransmission_offset + retransmission_length == state.bytes_sent);
-      if (frame.stream_frame.stream_id == kCryptoStreamId) {
+      if (frame.stream_frame.stream_id ==
+          QuicUtils::GetCryptoStreamId(connection_->transport_version())) {
         // Set appropriate encryption level for crypto stream.
         connection_->SetDefaultEncryptionLevel(retransmission_encryption_level);
       }
@@ -282,7 +287,8 @@ void SimpleSessionNotifier::RetransmitFrames(const QuicFrames& frames,
       if (can_bundle_fin) {
         retransmit_fin = !consumed.fin_consumed;
       }
-      if (frame.stream_frame.stream_id == kCryptoStreamId) {
+      if (frame.stream_frame.stream_id ==
+          QuicUtils::GetCryptoStreamId(connection_->transport_version())) {
         // Restore encryption level.
         connection_->SetDefaultEncryptionLevel(current_encryption_level);
       }
@@ -317,10 +323,14 @@ bool SimpleSessionNotifier::IsFrameOutstanding(const QuicFrame& frame) const {
 }
 
 bool SimpleSessionNotifier::HasUnackedCryptoData() const {
-  if (!QuicContainsKey(stream_map_, kCryptoStreamId)) {
+  if (!QuicContainsKey(stream_map_, QuicUtils::GetCryptoStreamId(
+                                        connection_->transport_version()))) {
     return false;
   }
-  const auto& state = stream_map_.find(kCryptoStreamId)->second;
+  const auto& state =
+      stream_map_
+          .find(QuicUtils::GetCryptoStreamId(connection_->transport_version()))
+          ->second;
   if (state.bytes_total > state.bytes_sent) {
     return true;
   }
@@ -396,10 +406,14 @@ bool SimpleSessionNotifier::RetransmitLostControlFrames() {
 }
 
 bool SimpleSessionNotifier::RetransmitLostCryptoData() {
-  if (!QuicContainsKey(stream_map_, kCryptoStreamId)) {
+  if (!QuicContainsKey(stream_map_, QuicUtils::GetCryptoStreamId(
+                                        connection_->transport_version()))) {
     return true;
   }
-  auto& state = stream_map_.find(kCryptoStreamId)->second;
+  auto& state =
+      stream_map_
+          .find(QuicUtils::GetCryptoStreamId(connection_->transport_version()))
+          ->second;
   while (!state.pending_retransmissions.Empty()) {
     connection_->SetTransmissionType(HANDSHAKE_RETRANSMISSION);
     QuicIntervalSet<QuicStreamOffset> retransmission(
@@ -420,7 +434,8 @@ bool SimpleSessionNotifier::RetransmitLostCryptoData() {
     // Set appropriate encryption level.
     connection_->SetDefaultEncryptionLevel(retransmission_encryption_level);
     QuicConsumedData consumed = connection_->SendStreamData(
-        kCryptoStreamId, retransmission_length, retransmission_offset, NO_FIN);
+        QuicUtils::GetCryptoStreamId(connection_->transport_version()),
+        retransmission_length, retransmission_offset, NO_FIN);
     // Restore encryption level.
     connection_->SetDefaultEncryptionLevel(current_encryption_level);
     state.pending_retransmissions.Difference(

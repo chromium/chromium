@@ -163,14 +163,14 @@ class ServiceWorkerContext {
   // be called on the UI thread.
   virtual void ClearAllServiceWorkersForTest(base::OnceClosure callback) = 0;
 
-  // Starts the active worker of the registration whose scope is |pattern|. If
+  // Starts the active worker of the registration for the given |scope|. If
   // there is no active worker, starts the installing worker.
   // |info_callback| is passed information about the started worker.
   //
   // Must be called on IO thread.
-  virtual void StartWorkerForPattern(const GURL& pattern,
-                                     StartWorkerCallback info_callback,
-                                     base::OnceClosure failure_callback) = 0;
+  virtual void StartWorkerForScope(const GURL& scope,
+                                   StartWorkerCallback info_callback,
+                                   base::OnceClosure failure_callback) = 0;
 
   // Deprecated: DO NOT USE
   // This is a temporary addition only to be used for the Android Messages
@@ -179,11 +179,11 @@ class ServiceWorkerContext {
   // (content/browser/service_worker/OWNERS) if you have questions.
   //
   // This method MUST be called on the IO thread.  It starts the active worker
-  // of the registration whose scope is |pattern|, sets its timeout to 999 days,
+  // of the registration for the given |scope|, sets its timeout to 999 days,
   // and passes in the given |message|.  The |result_callback| will be executed
   // upon success or failure and pass back the boolean result.
   virtual void StartServiceWorkerAndDispatchLongRunningMessage(
-      const GURL& pattern,
+      const GURL& scope,
       blink::TransferableMessage message,
       ResultCallback result_callback) = 0;
 

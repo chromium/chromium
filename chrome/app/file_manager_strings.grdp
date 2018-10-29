@@ -47,6 +47,9 @@
   <message name="IDS_FILE_BROWSER_DRIVE_TEAM_DRIVES_LABEL" desc="A label for the 'Team Drives' collection of Google Drive.">
     Team Drives
   </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_COMPUTERS_LABEL" desc="A label for the 'Computers' collection of Google Drive.">
+    Computers
+  </message>
   <message name="IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL" desc="A label for the 'shared with me' collection of Google Drive.">
     Shared with me
   </message>
@@ -269,6 +272,24 @@
 
   <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_TITLE" desc="In the File Manager, the title shown in the dialog for installing a Linux application.">
     Install app with Linux (Beta)
+  </message>
+  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_LABEL" desc="In the File Manager, the label shown above the app information (name, version, etc.) in the dialog for installing a Linux application.">
+    Details
+  </message>
+  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_APPLICATION_LABEL" desc="In the File Manager, the label shown next to the application name in the dialog for installing a Linux application.">
+    Application
+  </message>
+  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_VERSION_LABEL" desc="In the File Manager, the label shown next to the version string in the dialog for installing a Linux application.">
+    Version
+  </message>
+  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_DESCRIPTION_LABEL" desc="In the File Manager, the label shown next to a block of text describing the application in the dialog for installing a Linux application.">
+    Description
+  </message>
+  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_LOADING" desc="In the File Manager, the message shown to indicate we are loading information about the application (name, version, etc.) in the dialog for installing a Linux application.">
+    Loading information...
+  </message>
+  <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DETAILS_NOT_AVAILABLE" desc="In the File Manager, the message shown to indicate we failed to load information about the application in the dialog for installing a Linux application.">
+    Failed to retrieve app info.
   </message>
   <message name="IDS_FILE_BROWSER_INSTALL_LINUX_PACKAGE_DESCRIPTION" desc="In the File Manager, the message shown in the dialog for installing a Linux application.">
     The Linux application will be available within your Terminal and may also show an icon in your Launcher.
@@ -513,6 +534,9 @@
   <message name="IDS_FILE_BROWSER_SHARE_WITH_LINUX_BUTTON_LABEL" desc="Label for menu that will share a folder with the crostini Linux container.">
     Share with Linux
   </message>
+  <message name="IDS_FILE_BROWSER_MANAGE_LINUX_SHARING_BUTTON_LABEL" desc="Label for menu that will take users to the settings page where they can manage which files and folders are shared with the crostini Linux container.">
+    Manage Linux sharing
+  </message>
   <message name="IDS_FILE_BROWSER_TOGGLE_HIDDEN_FILES_COMMAND_LABEL" desc="Label for menu or button with checkmark that toggles visibility of hidden files.">
     Show hidden files
   </message>
@@ -742,7 +766,7 @@
   </message>
 
   <message name="IDS_FILE_BROWSER_DEFAULT_NEW_FOLDER_NAME" desc="The default name for a newly created folder.">
-    New Folder
+    New folder
   </message>
 
  <message name="IDS_FILE_BROWSER_CONFIRM_DELETE_ONE" desc="Asks the user if they are sure they want to delete a single file.">
@@ -1036,10 +1060,10 @@
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_CRX" desc="Message shown when a user tries to open a *.crx file, which we don't handle in the Files app.">
     We're constantly looking for ways to make your browsing safer. Previously, any website could prompt you to add an extension into your browser. In the latest versions of Google Chrome, you must explicitly tell Chrome that you want to install these extensions by adding them through the Extensions page. <ph name="BEGIN_LINK">&lt;a target='_blank' href='https://support.google.com/chrome_webstore/answer/2664769?p=crx_warning&amp;rd=1'&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_FILE_BROWSER_UNABLE_TO_OPEN_CROSTINI_TITLE" desc="Message title shown when a user tries to use a crostini app to open a file outside the crostini container (e.g. in Downloads).  This message will be removed once we support this action.">
+  <message name="IDS_FILE_BROWSER_UNABLE_TO_OPEN_CROSTINI_TITLE" desc="Message title shown when a user tries to use a crostini app to open a file which cannot be shared with the crostini container (e.g. in Play or USB).  This message will be removed once we support this action.">
     Unable to open with $1
   </message>
-  <message name="IDS_FILE_BROWSER_UNABLE_TO_OPEN_CROSTINI" desc="Message shown when a user tries to use a crostini app to open a file outside the crostini container (e.g. in Downloads).  This message will be removed once we support this action.">
+  <message name="IDS_FILE_BROWSER_UNABLE_TO_OPEN_CROSTINI" desc="Message shown when a user tries to use a crostini app to open a file which cannot be shared with the crostini container (e.g. in Play or USB).  This message will be removed once we support this action.">
     To open files with $1, first copy to Linux files folder.
   </message>
 

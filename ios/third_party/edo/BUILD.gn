@@ -1,0 +1,89 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+config("config") {
+  include_dirs = [ "//ios/third_party/edo/eDistantObject" ]
+}
+
+source_set("edo") {
+  testonly = true
+
+  sources = [
+    "src/Channel/Sources/EDOChannel.h",
+    "src/Channel/Sources/EDOListenSocket.h",
+    "src/Channel/Sources/EDOListenSocket.m",
+    "src/Channel/Sources/EDOSocket.h",
+    "src/Channel/Sources/EDOSocket.m",
+    "src/Channel/Sources/EDOSocketChannel.h",
+    "src/Channel/Sources/EDOSocketChannel.m",
+    "src/Channel/Sources/EDOSocketChannelPool.h",
+    "src/Channel/Sources/EDOSocketChannelPool.m",
+    "src/Channel/Sources/EDOSocketPort.h",
+    "src/Channel/Sources/EDOSocketPort.m",
+    "src/Session/Sources/EDOClassMessage.h",
+    "src/Session/Sources/EDOClassMessage.m",
+    "src/Session/Sources/EDOExecutor.h",
+    "src/Session/Sources/EDOExecutor.m",
+    "src/Session/Sources/EDOInvocationMessage.h",
+    "src/Session/Sources/EDOInvocationMessage.m",
+    "src/Session/Sources/EDOMessage.h",
+    "src/Session/Sources/EDOMessage.m",
+    "src/Session/Sources/EDOMessageQueue.h",
+    "src/Session/Sources/EDOMessageQueue.m",
+    "src/Session/Sources/EDOMethodSignatureMessage.h",
+    "src/Session/Sources/EDOMethodSignatureMessage.m",
+    "src/Session/Sources/EDOObject+EDOParameter.m",
+    "src/Session/Sources/EDOObject+Invocation.m",
+    "src/Session/Sources/EDOObject+Private.h",
+    "src/Session/Sources/EDOObject.h",
+    "src/Session/Sources/EDOObject.m",
+    "src/Session/Sources/EDOObjectAliveMessage.h",
+    "src/Session/Sources/EDOObjectAliveMessage.m",
+    "src/Session/Sources/EDOObjectMessage.h",
+    "src/Session/Sources/EDOObjectMessage.m",
+    "src/Session/Sources/EDOObjectReleaseMessage.h",
+    "src/Session/Sources/EDOObjectReleaseMessage.m",
+    "src/Session/Sources/EDOParameter.h",
+    "src/Session/Sources/EDOParameter.m",
+    "src/Session/Sources/EDOProtocolObject.h",
+    "src/Session/Sources/EDOProtocolObject.m",
+    "src/Session/Sources/EDORemoteVariable.h",
+    "src/Session/Sources/EDORemoteVariable.m",
+    "src/Session/Sources/EDOSession+Handlers.h",
+    "src/Session/Sources/EDOSession+Handlers.m",
+    "src/Session/Sources/EDOSession+Private.h",
+    "src/Session/Sources/EDOSession.h",
+    "src/Session/Sources/EDOSession.m",
+    "src/Session/Sources/EDOSessionPort.h",
+    "src/Session/Sources/EDOSessionPort.m",
+    "src/Session/Sources/EDOSessionRequest.h",
+    "src/Session/Sources/EDOSessionRequest.m",
+    "src/Session/Sources/EDOValueObject+EDOParameter.m",
+    "src/Session/Sources/EDOValueObject.h",
+    "src/Session/Sources/EDOValueObject.m",
+    "src/Session/Sources/EDOValueType.m",
+    "src/Session/Sources/NSObject+EDOParameter.h",
+    "src/Session/Sources/NSObject+EDOParameter.m",
+    "src/Session/Sources/NSObject+EDOValue.h",
+    "src/Session/Sources/NSObject+EDOValue.m",
+    "src/Session/Sources/NSObject+EDOValueObject.h",
+    "src/Session/Sources/NSObject+EDOValueObject.m",
+    "src/Session/Sources/NSProxy+EDOParameter.h",
+    "src/Session/Sources/NSProxy+EDOParameter.m",
+  ]
+
+  public_configs = [ ":config" ]
+
+  configs -= [
+    "//build/config/gcc:symbol_visibility_hidden",
+    "//build/config/compiler:chromium_code",
+  ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:enable_arc",
+    "//build/config/gcc:symbol_visibility_default",
+  ]
+}

@@ -3,13 +3,20 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/modules/peerconnection/rtc_quic_stream.h"
 
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_quic_transport.h"
 
 namespace blink {
 
-RTCQuicStream::RTCQuicStream(RTCQuicTransport* transport)
-    : transport_(transport) {
+RTCQuicStream::RTCQuicStream(ExecutionContext* context,
+                             RTCQuicTransport* transport,
+                             QuicStreamProxy* stream_proxy)
+    : EventTargetWithInlineData(),
+      ContextClient(context),
+      transport_(transport),
+      proxy_(stream_proxy) {
   DCHECK(transport_);
+  DCHECK(proxy_);
 }
 
 RTCQuicStream::~RTCQuicStream() = default;
@@ -42,13 +49,75 @@ uint32_t RTCQuicStream::writeBufferedAmount() const {
   return write_buffered_amount_;
 }
 
+void RTCQuicStream::finish() {
+  if (!writeable_) {
+    return;
+  }
+  proxy_->Finish();
+  writeable_ = false;
+  if (readable_) {
+    DCHECK_EQ(state_, RTCQuicStreamState::kOpen);
+    state_ = RTCQuicStreamState::kClosing;
+  } else {
+    DCHECK_EQ(state_, RTCQuicStreamState::kClosing);
+    Close();
+  }
+}
+
+void RTCQuicStream::reset() {
+  if (IsClosed()) {
+    return;
+  }
+  proxy_->Reset();
+  writeable_ = false;
+  readable_ = false;
+  Close();
+}
+
 void RTCQuicStream::Stop() {
+  readable_ = false;
+  writeable_ = false;
   state_ = RTCQuicStreamState::kClosed;
+  proxy_ = nullptr;
+}
+
+void RTCQuicStream::Close() {
+  Stop();
+  transport_->RemoveStream(this);
+}
+
+void RTCQuicStream::OnRemoteReset() {
+  DCHECK_NE(state_, RTCQuicStreamState::kClosed);
+  Close();
+  DispatchEvent(*Event::Create(EventTypeNames::statechange));
+}
+
+void RTCQuicStream::OnRemoteFinish() {
+  DCHECK_NE(state_, RTCQuicStreamState::kClosed);
+  DCHECK(readable_);
+  readable_ = false;
+  if (writeable_) {
+    DCHECK_EQ(state_, RTCQuicStreamState::kOpen);
+    state_ = RTCQuicStreamState::kClosing;
+  } else {
+    DCHECK_EQ(state_, RTCQuicStreamState::kClosing);
+    Close();
+  }
+  DispatchEvent(*Event::Create(EventTypeNames::statechange));
+}
+
+const AtomicString& RTCQuicStream::InterfaceName() const {
+  return EventTargetNames::RTCQuicStream;
+}
+
+ExecutionContext* RTCQuicStream::GetExecutionContext() const {
+  return ContextClient::GetExecutionContext();
 }
 
 void RTCQuicStream::Trace(blink::Visitor* visitor) {
   visitor->Trace(transport_);
-  ScriptWrappable::Trace(visitor);
+  EventTargetWithInlineData::Trace(visitor);
+  ContextClient::Trace(visitor);
 }
 
 }  // namespace blink

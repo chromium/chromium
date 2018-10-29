@@ -15,9 +15,8 @@ const CSSValue* Ry::ParseSingleValue(CSSParserTokenRange& range,
                                      const CSSParserLocalContext&) const {
   if (range.Peek().Id() == CSSValueAuto)
     return CSSPropertyParserHelpers::ConsumeIdent(range);
-  return CSSPropertyParserHelpers::ConsumeLengthOrPercent(
-      range, kSVGAttributeMode, kValueRangeAll,
-      CSSPropertyParserHelpers::UnitlessQuirk::kForbid);
+  return CSSPropertyParserHelpers::ConsumeSVGGeometryPropertyLength(range,
+                                                                    context);
 }
 
 const CSSValue* Ry::CSSValueFromComputedStyleInternal(

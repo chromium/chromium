@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/credit_card.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
+#include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/model/sync_error_factory_mock.h"
@@ -145,35 +146,21 @@ class MockService : public AutofillWalletMetadataSyncableService {
   DISALLOW_COPY_AND_ASSIGN(MockService);
 };
 
-class NoOpWebData : public AutofillWebDataBackend {
- public:
-  NoOpWebData() {}
-  ~NoOpWebData() override {}
-
- private:
-  // AutofillWebDataBackend implementation.
-  WebDatabase* GetDatabase() override { return nullptr; }
-  void AddObserver(
-      AutofillWebDataServiceObserverOnDBSequence* observer) override {}
-  void RemoveObserver(
-      AutofillWebDataServiceObserverOnDBSequence* observer) override {}
-  void RemoveExpiredFormElements() override {}
-  void NotifyOfMultipleAutofillChanges() override {}
-  void NotifyThatSyncHasStarted(syncer::ModelType /* model_type */) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(NoOpWebData);
-};
-
 class AutofillWalletMetadataSyncableServiceTest : public Test {
  public:
   AutofillWalletMetadataSyncableServiceTest()
-      : local_(&no_op_web_data_), remote_(&no_op_web_data_) {}
+      : local_(&backend_), remote_(&backend_) {}
   ~AutofillWalletMetadataSyncableServiceTest() override {}
 
-  // Outlives local_ and remote_.
-  NoOpWebData no_op_web_data_;
+  void SetUp() {
+    local_.OnWalletDataTrackingStateChanged(true);
+    remote_.OnWalletDataTrackingStateChanged(true);
+  }
 
-  // Outlived by no_op_web_data_.
+  // Outlives local_ and remote_.
+  NiceMock<MockAutofillWebDataBackend> backend_;
+
+  // Outlived by backend_.
   NiceMock<MockService> local_;
   NiceMock<MockService> remote_;
 
@@ -315,6 +302,45 @@ TEST_F(AutofillWalletMetadataSyncableServiceTest, DeleteFromServerOnMerge) {
                             kCard1SyncTag))));
 
   MergeMetadata(&local_, &remote_);
+}
+
+// Verify that remote data without local counterpart is kept when we're not
+// tracking wallet data.
+TEST_F(AutofillWalletMetadataSyncableServiceTest,
+       DeleteFromServerOnMerge_NotWhenNotTracking) {
+  local_.OnWalletDataTrackingStateChanged(false);
+
+  remote_.UpdateAddressStats(BuildAddress(kAddr1, 1, 2, true));
+  remote_.UpdateCardStats(BuildCard(kCard1, 3, 4, kAddr1));
+
+  EXPECT_CALL(local_, UpdateAddressStats(_)).Times(0);
+  EXPECT_CALL(local_, UpdateCardStats(_)).Times(0);
+  EXPECT_CALL(local_, SendChangesToSyncServer(_)).Times(0);
+
+  MergeMetadata(&local_, &remote_);
+}
+
+// Verify that remote data without local counterpart is deleted when we start
+// tracking wallet data after the initial merge happened.
+TEST_F(AutofillWalletMetadataSyncableServiceTest,
+       DeleteFromServerOnMerge_MergeBeforeTracking) {
+  local_.OnWalletDataTrackingStateChanged(false);
+
+  remote_.UpdateAddressStats(BuildAddress(kAddr1, 1, 2, true));
+  remote_.UpdateCardStats(BuildCard(kCard1, 3, 4, kAddr1));
+
+  EXPECT_CALL(local_, UpdateAddressStats(_)).Times(0);
+  EXPECT_CALL(local_, UpdateCardStats(_)).Times(0);
+  EXPECT_CALL(
+      local_,
+      SendChangesToSyncServer(UnorderedElementsAre(
+          SyncChangeMatches(syncer::SyncChange::ACTION_DELETE, kAddr1SyncTag),
+          SyncChangeMatches(syncer::SyncChange::ACTION_DELETE,
+                            kCard1SyncTag))));
+
+  MergeMetadata(&local_, &remote_);
+
+  local_.OnWalletDataTrackingStateChanged(true);
 }
 
 MATCHER_P7(SyncAddressChangeAndDataMatch,
@@ -609,6 +635,50 @@ TEST_F(AutofillWalletMetadataSyncableServiceTest,
                             kCard1SyncTag))));
 
   local_.AutofillMultipleChanged();
+}
+
+// Verify that erased local metadata is not erased from the sync server when
+// the service is not tracking Wallet data.
+TEST_F(AutofillWalletMetadataSyncableServiceTest,
+       DeleteFromServerOnMultiChange_NotWhenNotTracking) {
+  local_.OnWalletDataTrackingStateChanged(false);
+
+  local_.UpdateAddressStats(BuildAddress(kAddr1, 1, 2, true));
+  local_.UpdateCardStats(BuildCard(kCard1, 3, 4, kAddr1));
+  remote_.UpdateAddressStats(BuildAddress(kAddr1, 1, 2, true));
+  remote_.UpdateCardStats(BuildCard(kCard1, 3, 4, kAddr1));
+  MergeMetadata(&local_, &remote_);
+  // This method dooes not trigger notifications or sync:
+  local_.ClearServerData();
+
+  EXPECT_CALL(local_, SendChangesToSyncServer(_)).Times(0);
+
+  local_.AutofillMultipleChanged();
+}
+
+// Verify that erased local metadata is also erased from the sync server when
+// we start tracking Wallet data after multiple metadata values change at once.
+TEST_F(AutofillWalletMetadataSyncableServiceTest,
+       DeleteFromServerOnMultiChange_ChangeBeforeTracking) {
+  local_.OnWalletDataTrackingStateChanged(false);
+
+  local_.UpdateAddressStats(BuildAddress(kAddr1, 1, 2, true));
+  local_.UpdateCardStats(BuildCard(kCard1, 3, 4, kAddr1));
+  remote_.UpdateAddressStats(BuildAddress(kAddr1, 1, 2, true));
+  remote_.UpdateCardStats(BuildCard(kCard1, 3, 4, kAddr1));
+  MergeMetadata(&local_, &remote_);
+  // This method dooes not trigger notifications or sync:
+  local_.ClearServerData();
+
+  EXPECT_CALL(
+      local_,
+      SendChangesToSyncServer(UnorderedElementsAre(
+          SyncChangeMatches(syncer::SyncChange::ACTION_DELETE, kAddr1SyncTag),
+          SyncChangeMatches(syncer::SyncChange::ACTION_DELETE,
+                            kCard1SyncTag))));
+
+  local_.AutofillMultipleChanged();
+  local_.OnWalletDataTrackingStateChanged(true);
 }
 
 // Verify that empty sync change from the sync server does not trigger writing

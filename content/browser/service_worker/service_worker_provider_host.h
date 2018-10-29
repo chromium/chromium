@@ -128,7 +128,7 @@ class CONTENT_EXPORT ServiceWorkerProviderHost
       public mojom::ServiceWorkerContainerHost,
       public service_manager::mojom::InterfaceProvider {
  public:
-  using WebContentsGetter = base::Callback<WebContents*(void)>;
+  using WebContentsGetter = base::RepeatingCallback<WebContents*()>;
 
   // Used to pre-create a ServiceWorkerProviderHost for a navigation. The
   // ServiceWorkerNetworkProvider will later be created in the renderer, should
@@ -144,7 +144,7 @@ class CONTENT_EXPORT ServiceWorkerProviderHost
   static base::WeakPtr<ServiceWorkerProviderHost> PreCreateNavigationHost(
       base::WeakPtr<ServiceWorkerContextCore> context,
       bool are_ancestors_secure,
-      const WebContentsGetter& web_contents_getter);
+      WebContentsGetter web_contents_getter);
 
   // Used for starting a service worker. Returns a provider host for the service
   // worker and partially fills |out_provider_info|.  The host stays alive as
@@ -541,7 +541,7 @@ class CONTENT_EXPORT ServiceWorkerProviderHost
   void EnsureControllerServiceWorker(
       mojom::ControllerServiceWorkerRequest controller_request,
       mojom::ControllerServiceWorkerPurpose purpose) override;
-  void CloneForWorker(
+  void CloneContainerHost(
       mojom::ServiceWorkerContainerHostRequest container_host_request) override;
   void Ping(PingCallback callback) override;
   void HintToUpdateServiceWorker() override;
@@ -615,7 +615,7 @@ class CONTENT_EXPORT ServiceWorkerProviderHost
   // Keyed by registration scope URL length.
   using ServiceWorkerRegistrationMap =
       std::map<size_t, scoped_refptr<ServiceWorkerRegistration>>;
-  // Contains all living registrations whose pattern this document's URL
+  // Contains all living registrations whose scope this document's URL
   // starts with, used for .ready and claim(). It is empty if
   // IsContextSecureForServiceWorker() is false. See also
   // AddMatchingRegistration().
@@ -673,17 +673,10 @@ class CONTENT_EXPORT ServiceWorkerProviderHost
   // content::ServiceWorkerProviderHost will be destroyed.
   mojo::AssociatedBinding<mojom::ServiceWorkerContainerHost> binding_;
 
-  // Mojo bindings for provider host pointers which are used from (dedicated or
-  // shared) worker threads.
-  // When this is hosting a shared worker, |bindings_for_worker_threads_|
-  // contains exactly one element for the shared worker thread. This binding is
-  // needed because the host pointer which is bound to |binding_| can only be
-  // used from the main thread.
-  // When this is hosting a document, |bindings_for_worker_threads_| contains
-  // all dedicated workers associated with the document. This binding is needed
-  // for the host pointers which are used from the dedicated worker threads.
-  mojo::BindingSet<mojom::ServiceWorkerContainerHost>
-      bindings_for_worker_threads_;
+  // Container host bindings other than the original |binding_|. These include
+  // bindings for container host pointers used from (dedicated or shared) worker
+  // threads, or from ServiceWorkerSubresourceLoaderFactory.
+  mojo::BindingSet<mojom::ServiceWorkerContainerHost> additional_bindings_;
 
   // For service worker execution contexts.
   mojo::Binding<service_manager::mojom::InterfaceProvider>

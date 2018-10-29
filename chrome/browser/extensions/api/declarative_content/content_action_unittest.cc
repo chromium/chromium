@@ -61,10 +61,10 @@ class RequestContentScriptTest : public ExtensionServiceTestBase {
   }
 
   Profile* profile() { return profile_.get(); }
-  Extension* extension() { return extension_.get(); }
+  const Extension* extension() { return extension_.get(); }
 
  private:
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
 };
 
 TEST(DeclarativeContentActionTest, InvalidCreation) {
@@ -204,6 +204,41 @@ TEST(DeclarativeContentActionTest, SetIcon) {
   EXPECT_FALSE(page_action->GetDeclarativeIcon(tab_id).IsEmpty());
   result->Revert(apply_info);
   EXPECT_TRUE(page_action->GetDeclarativeIcon(tab_id).IsEmpty());
+}
+
+TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
+  TestExtensionEnvironment env;
+
+  // Simulate the process of passing ImageData to SetIcon::Create.
+  SkBitmap bitmap;
+  EXPECT_TRUE(bitmap.tryAllocN32Pixels(19, 19));
+  bitmap.eraseARGB(0, 0, 0, 0);
+  uint32_t* pixels = bitmap.getAddr32(0, 0);
+  // Set a single pixel, which isn't enough to consider the icon visible.
+  pixels[0] = SkColorSetARGB(0xFF, 0xFF, 0xFF, 0xFF);
+  IPC::Message bitmap_pickle;
+  IPC::WriteParam(&bitmap_pickle, bitmap);
+  std::string binary_data = std::string(
+      static_cast<const char*>(bitmap_pickle.data()), bitmap_pickle.size());
+  std::string data64;
+  base::Base64Encode(binary_data, &data64);
+
+  std::unique_ptr<base::DictionaryValue> dict =
+      DictionaryBuilder()
+          .Set("instanceType", "declarativeContent.SetIcon")
+          .Set("imageData", DictionaryBuilder().Set("19", data64).Build())
+          .Build();
+
+  // Expect an error and no instance to be created.
+  const Extension* extension = env.MakeExtension(
+      *ParseJson(R"({"page_action": {"default_title": "Extension"}})"));
+  ContentAction::SetAllowInvisibleIconsForTest(false);
+  std::string error;
+  std::unique_ptr<const ContentAction> result =
+      ContentAction::Create(nullptr, extension, *dict, &error);
+  EXPECT_EQ("The specified icon is not sufficiently visible", error);
+  EXPECT_FALSE(result);
+  ContentAction::SetAllowInvisibleIconsForTest(true);
 }
 
 TEST_F(RequestContentScriptTest, MissingScripts) {

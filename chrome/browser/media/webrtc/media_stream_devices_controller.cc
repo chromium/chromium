@@ -5,7 +5,9 @@
 #include "chrome/browser/media/webrtc/media_stream_devices_controller.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -37,8 +39,6 @@
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
 
 #if defined(OS_ANDROID)
-#include <vector>
-
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/preferences/pref_service_bridge.h"
 #include "chrome/browser/permissions/permission_dialog_delegate.h"
@@ -135,22 +135,36 @@ void MediaStreamDevicesController::RequestPermissions(
   bool will_prompt_for_video = false;
 
   if (controller->ShouldRequestAudio()) {
+    PermissionResult permission_status =
+        permission_manager->GetPermissionStatusForFrame(
+            CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC, rfh,
+            request.security_origin);
+    if (permission_status.content_setting == CONTENT_SETTING_BLOCK) {
+      controller->denial_reason_ = content::MEDIA_DEVICE_PERMISSION_DENIED;
+      controller->RunCallback(permission_status.source ==
+                              PermissionStatusSource::FEATURE_POLICY);
+      return;
+    }
+
     content_settings_types.push_back(CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC);
     will_prompt_for_audio =
-        permission_manager->GetPermissionStatusForFrame(
-                                CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC,
-                                rfh,
-                                request.security_origin).content_setting ==
-        CONTENT_SETTING_ASK;
+        permission_status.content_setting == CONTENT_SETTING_ASK;
   }
   if (controller->ShouldRequestVideo()) {
+    PermissionResult permission_status =
+        permission_manager->GetPermissionStatusForFrame(
+            CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA, rfh,
+            request.security_origin);
+    if (permission_status.content_setting == CONTENT_SETTING_BLOCK) {
+      controller->denial_reason_ = content::MEDIA_DEVICE_PERMISSION_DENIED;
+      controller->RunCallback(permission_status.source ==
+                              PermissionStatusSource::FEATURE_POLICY);
+      return;
+    }
+
     content_settings_types.push_back(CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA);
     will_prompt_for_video =
-        permission_manager->GetPermissionStatusForFrame(
-                                CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA,
-                                rfh,
-                                request.security_origin).content_setting ==
-        CONTENT_SETTING_ASK;
+        permission_status.content_setting == CONTENT_SETTING_ASK;
   }
 
   permission_manager->RequestPermissions(
@@ -417,20 +431,24 @@ void MediaStreamDevicesController::RunCallback(bool blocked_by_feature_policy) {
     UpdateTabSpecificContentSettings(audio_setting_, video_setting_);
   }
 
-  content::MediaStreamDevices devices =
-      GetDevices(audio_setting_, video_setting_);
+  content::MediaStreamDevices devices;
 
-  // If either audio or video are allowed then the callback should report
+  // If all requested permissions are allowed then the callback should report
   // success, otherwise we report |denial_reason_|.
   content::MediaStreamRequestResult request_result = content::MEDIA_DEVICE_OK;
-  if (audio_setting_ != CONTENT_SETTING_ALLOW &&
-      video_setting_ != CONTENT_SETTING_ALLOW) {
+  if ((audio_setting_ == CONTENT_SETTING_ALLOW ||
+       audio_setting_ == CONTENT_SETTING_DEFAULT) &&
+      (video_setting_ == CONTENT_SETTING_ALLOW ||
+       video_setting_ == CONTENT_SETTING_DEFAULT)) {
+    devices = GetDevices(audio_setting_, video_setting_);
+    if (devices.empty()) {
+      // Even if all requested permissions are allowed, if there are no devices
+      // at this point we still report a failure.
+      request_result = content::MEDIA_DEVICE_NO_HARDWARE;
+    }
+  } else {
     DCHECK_NE(content::MEDIA_DEVICE_OK, denial_reason_);
     request_result = denial_reason_;
-  } else if (devices.empty()) {
-    // Even if one of the content settings was allowed, if there are no devices
-    // at this point we still report a failure.
-    request_result = content::MEDIA_DEVICE_NO_HARDWARE;
   }
 
   std::unique_ptr<content::MediaStreamUI> ui;

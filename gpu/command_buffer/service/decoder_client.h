@@ -58,7 +58,6 @@ class GPU_EXPORT DecoderClient {
   virtual void ScheduleGrContextCleanup() = 0;
 
   virtual void SetActiveURL(GURL url) {}
-  virtual void ResetActiveURL() {}
 };
 
 }  // namespace gpu

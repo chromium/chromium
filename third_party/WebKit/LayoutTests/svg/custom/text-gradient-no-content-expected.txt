@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGResourceLinearGradient {linearGradient} [id="Gradient"] [gradientUnits=userSpaceOnUse] [stops=( #FF0000@0.00 #FF0000@1.00 )] [start=(0,0)] [end=(800,0)]
-    LayoutSVGRect {rect} at (0,0) size 800x600 [fill={[type=SOLID] [color=#008000]}] [x=0.00] [y=0.00] [width=800.00] [height=600.00]
-    LayoutSVGText {text} at (0,0) size 0x0
-    LayoutSVGText {text} at (0,0) size 0x0

@@ -19,8 +19,8 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/cbor/cbor_reader.h"
-#include "components/cbor/cbor_values.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/values.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -32,6 +32,7 @@
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fake_fido_discovery.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
 #include "device/fido/mock_fido_device.h"
 #include "device/fido/scoped_virtual_fido_device.h"
@@ -70,8 +71,8 @@ using blink::mojom::PublicKeyCredentialType;
 using blink::mojom::PublicKeyCredentialUserEntity;
 using blink::mojom::PublicKeyCredentialUserEntityPtr;
 using blink::mojom::AuthenticatorTransport;
-using cbor::CBORValue;
-using cbor::CBORReader;
+using cbor::Value;
+using cbor::Reader;
 
 namespace {
 
@@ -399,6 +400,11 @@ class AuthenticatorImplTest : public content::RenderViewHostTestHarness {
     scoped_feature_list_->InitAndEnableFeature(feature);
   }
 
+  void DisableFeature(const base::Feature& feature) {
+    scoped_feature_list_.emplace();
+    scoped_feature_list_->InitAndDisableFeature(feature);
+  }
+
  protected:
   std::unique_ptr<AuthenticatorImpl> authenticator_impl_;
   service_manager::mojom::ConnectorRequest request_;
@@ -526,8 +532,8 @@ TEST_F(AuthenticatorImplTest, MakeCredentialUserVerification) {
   EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, callback_receiver.status());
 }
 
-// Test that MakeCredential request times out with NOT_ALLOWED_ERROR if resident
-// key is requested for U2F devices on create().
+// Test that MakeCredential request returns if resident
+// key is requested on create().
 TEST_F(AuthenticatorImplTest, MakeCredentialResidentKey) {
   SimulateNavigation(GURL(kTestOrigin1));
   device::test::ScopedVirtualFidoDevice scoped_virtual_device;
@@ -546,7 +552,10 @@ TEST_F(AuthenticatorImplTest, MakeCredentialResidentKey) {
   base::RunLoop().RunUntilIdle();
   task_runner->FastForwardBy(base::TimeDelta::FromMinutes(1));
   callback_receiver.WaitForCallback();
-  EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, callback_receiver.status());
+  EXPECT_EQ(AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED,
+            callback_receiver.status());
+
+  // TODO add CTAP device
 }
 
 // Test that MakeCredential request times out with NOT_ALLOWED_ERROR if a
@@ -830,19 +839,16 @@ TEST_F(AuthenticatorImplTest, OversizedCredentialId) {
 
 TEST_F(AuthenticatorImplTest, TestCableDiscoveryByDefault) {
   auto authenticator = ConnectToAuthenticator();
-// On Windows caBLE should be disabled by default.
-#if defined(OS_WIN)
-  EXPECT_FALSE(SupportsTransportProtocol(
-      device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy));
-#else
-  EXPECT_TRUE(SupportsTransportProtocol(
-      device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy));
-#endif
+
+  // caBLE should be enabled by default if BLE is supported.
+  EXPECT_EQ(
+      device::BluetoothAdapterFactory::Get().IsLowEnergySupported(),
+      SupportsTransportProtocol(
+          device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy));
 }
 
 TEST_F(AuthenticatorImplTest, TestCableDiscoveryDisabledWithFlag) {
-  scoped_feature_list_.emplace();
-  scoped_feature_list_->InitAndDisableFeature(features::kWebAuthCable);
+  DisableFeature(features::kWebAuthCable);
 
   auto authenticator = ConnectToAuthenticator();
   EXPECT_FALSE(SupportsTransportProtocol(
@@ -854,8 +860,12 @@ TEST_F(AuthenticatorImplTest, TestCableDiscoveryEnabledWithWinFlag) {
   EnableFeature(features::kWebAuthCableWin);
 
   auto authenticator = ConnectToAuthenticator();
-  EXPECT_TRUE(SupportsTransportProtocol(
-      device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy));
+
+  // Should be enabled if the new Windows BLE stack is.
+  EXPECT_EQ(
+      device::BluetoothAdapterFactory::Get().IsLowEnergySupported(),
+      SupportsTransportProtocol(
+          device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy));
 }
 
 // Tests that caBLE is not supported when features::kWebAuthCable is disabled,
@@ -904,6 +914,9 @@ TEST_F(AuthenticatorImplTest, GetAssertionWithEmptyAllowCredentials) {
   EXPECT_CALL(*mock_adapter, IsPresent())
       .WillRepeatedly(::testing::Return(true));
   device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
+  auto bluetooth_adapter_factory_overrides =
+      device::BluetoothAdapterFactory::Get().InitGlobalValuesForTesting();
+  bluetooth_adapter_factory_overrides->SetLESupported(true);
 
   SimulateNavigation(GURL(kTestOrigin1));
   PublicKeyCredentialRequestOptionsPtr options =
@@ -921,7 +934,7 @@ TEST_F(AuthenticatorImplTest, GetAssertionWithEmptyAllowCredentials) {
   base::RunLoop().RunUntilIdle();
   task_runner->FastForwardBy(base::TimeDelta::FromMinutes(1));
   callback_receiver.WaitForCallback();
-  EXPECT_EQ(AuthenticatorStatus::CREDENTIAL_NOT_RECOGNIZED,
+  EXPECT_EQ(AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED,
             callback_receiver.status());
 }
 
@@ -1114,7 +1127,9 @@ class TestAuthenticatorRequestDelegate
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
-      base::RepeatingClosure bluetooth_adapter_power_on_callback) override {
+      base::RepeatingClosure bluetooth_adapter_power_on_callback,
+      device::FidoRequestHandlerBase::BlePairingCallback ble_pairing_callback)
+      override {
     ASSERT_TRUE(action_callbacks_registered_callback_)
         << "RegisterActionCallbacks called twice.";
     std::move(action_callbacks_registered_callback_).Run();
@@ -1242,8 +1257,8 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
         continue;
       }
 
-      base::Optional<CBORValue> attestation_value =
-          CBORReader::Read(callback_receiver.value()->attestation_object);
+      base::Optional<Value> attestation_value =
+          Reader::Read(callback_receiver.value()->attestation_object);
       ASSERT_TRUE(attestation_value);
       ASSERT_TRUE(attestation_value->is_map());
       const auto& attestation = attestation_value->GetMap();
@@ -1272,19 +1287,19 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
 
           // A self-attestation should not include an X.509 chain nor ECDAA key.
           const auto attestation_statement_it =
-              attestation.find(CBORValue("attStmt"));
+              attestation.find(Value("attStmt"));
           ASSERT_TRUE(attestation_statement_it != attestation.end());
           ASSERT_TRUE(attestation_statement_it->second.is_map());
           const auto& attestation_statement =
               attestation_statement_it->second.GetMap();
 
-          ASSERT_TRUE(attestation_statement.find(CBORValue("x5c")) ==
+          ASSERT_TRUE(attestation_statement.find(Value("x5c")) ==
                       attestation_statement.end());
-          ASSERT_TRUE(attestation_statement.find(CBORValue("ecdaaKeyId")) ==
+          ASSERT_TRUE(attestation_statement.find(Value("ecdaaKeyId")) ==
                       attestation_statement.end());
 
           // The AAGUID should be all zero.
-          const auto auth_data_it = attestation.find(CBORValue("authData"));
+          const auto auth_data_it = attestation.find(Value("authData"));
           ASSERT_TRUE(auth_data_it != attestation.end());
           ASSERT_TRUE(auth_data_it->second.is_bytestring());
           const std::vector<uint8_t>& auth_data =
@@ -1325,10 +1340,10 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
 
   // Expects that |map| contains the given key with a string-value equal to
   // |expected|.
-  static void ExpectMapHasKeyWithStringValue(const CBORValue::MapValue& map,
+  static void ExpectMapHasKeyWithStringValue(const Value::MapValue& map,
                                              const char* key,
                                              const char* expected) {
-    const auto it = map.find(CBORValue(key));
+    const auto it = map.find(Value(key));
     ASSERT_TRUE(it != map.end()) << "No such key '" << key << "'";
     const auto& value = it->second;
     EXPECT_TRUE(value.is_string())
@@ -1342,15 +1357,14 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
   // Asserts that the webauthn attestation CBOR map in
   // |attestation| contains a single X.509 certificate containing |substring|.
   static void ExpectCertificateContainingSubstring(
-      const CBORValue::MapValue& attestation,
+      const Value::MapValue& attestation,
       const std::string& substring) {
-    const auto& attestation_statement_it =
-        attestation.find(CBORValue("attStmt"));
+    const auto& attestation_statement_it = attestation.find(Value("attStmt"));
     ASSERT_TRUE(attestation_statement_it != attestation.end());
     ASSERT_TRUE(attestation_statement_it->second.is_map());
     const auto& attestation_statement =
         attestation_statement_it->second.GetMap();
-    const auto& x5c_it = attestation_statement.find(CBORValue("x5c"));
+    const auto& x5c_it = attestation_statement.find(Value("x5c"));
     ASSERT_TRUE(x5c_it != attestation_statement.end());
     ASSERT_TRUE(x5c_it->second.is_array());
     const auto& x5c = x5c_it->second.GetArray();
@@ -1694,6 +1708,7 @@ TEST_F(AuthenticatorContentBrowserClientTest,
 TEST_F(AuthenticatorContentBrowserClientTest, IsUVPAAFalseIfFeatureFlagOff) {
   if (__builtin_available(macOS 10.12.2, *)) {
     // Touch ID is hardware-supported and embedder-enabled, but the flag is off.
+    DisableFeature(device::kWebAuthTouchId);
     device::fido::mac::ScopedTouchIdTestEnvironment touch_id_test_environment;
     touch_id_test_environment.SetTouchIdAvailable(true);
     test_client_.supports_touch_id = true;
@@ -1859,6 +1874,9 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
   EXPECT_CALL(*mock_adapter, IsPresent())
       .WillRepeatedly(::testing::Return(true));
   device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
+  auto bluetooth_adapter_factory_overrides =
+      device::BluetoothAdapterFactory::Get().InitGlobalValuesForTesting();
+  bluetooth_adapter_factory_overrides->SetLESupported(true);
 
   device::test::ScopedFakeFidoDiscoveryFactory discovery_factory;
   auto* fake_ble_discovery = discovery_factory.ForgeNextBleDiscovery();
@@ -2023,6 +2041,62 @@ TEST_F(AuthenticatorImplTest, Transports) {
     // VirtualFidoDevice generates an attestation certificate that asserts NFC
     // support via an extension.
     EXPECT_EQ(blink::mojom::AuthenticatorTransport::NFC, transports[1]);
+  }
+}
+
+TEST_F(AuthenticatorImplTest, ExtensionHMACSecret) {
+  TestServiceManagerContext smc;
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  for (const bool include_extension : {false, true}) {
+    SCOPED_TRACE(include_extension);
+
+    device::test::ScopedVirtualFidoDevice scoped_virtual_device;
+    scoped_virtual_device.SetSupportedProtocol(device::ProtocolVersion::kCtap);
+
+    AuthenticatorPtr authenticator = ConnectToAuthenticator();
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->hmac_create_secret = include_extension;
+    TestMakeCredentialCallback callback_receiver;
+    authenticator->MakeCredential(std::move(options),
+                                  callback_receiver.callback());
+    callback_receiver.WaitForCallback();
+    EXPECT_EQ(AuthenticatorStatus::SUCCESS, callback_receiver.status());
+
+    base::Optional<Value> attestation_value =
+        Reader::Read(callback_receiver.value()->attestation_object);
+    ASSERT_TRUE(attestation_value);
+    ASSERT_TRUE(attestation_value->is_map());
+    const auto& attestation = attestation_value->GetMap();
+
+    const auto auth_data_it = attestation.find(Value(device::kAuthDataKey));
+    ASSERT_TRUE(auth_data_it != attestation.end());
+    ASSERT_TRUE(auth_data_it->second.is_bytestring());
+    const std::vector<uint8_t>& auth_data =
+        auth_data_it->second.GetBytestring();
+    base::Optional<device::AuthenticatorData> parsed_auth_data =
+        device::AuthenticatorData::DecodeAuthenticatorData(auth_data);
+
+    // The virtual CTAP2 device always echos the hmac-secret extension on
+    // registrations. Therefore, if |hmac_secret| was set above it should be
+    // serialised in the CBOR and correctly passed all the way back around to
+    // the reply's authenticator data.
+    bool has_hmac_secret = false;
+    const auto& extensions = parsed_auth_data->extensions();
+    if (extensions) {
+      CHECK(extensions->is_map());
+      const cbor::Value::MapValue& extensions_map = extensions->GetMap();
+      const auto hmac_secret_it =
+          extensions_map.find(cbor::Value(device::kExtensionHmacSecret));
+      if (hmac_secret_it != extensions_map.end()) {
+        ASSERT_TRUE(hmac_secret_it->second.is_bool());
+        EXPECT_TRUE(hmac_secret_it->second.GetBool());
+        has_hmac_secret = true;
+      }
+    }
+
+    EXPECT_EQ(include_extension, has_hmac_secret);
   }
 }
 

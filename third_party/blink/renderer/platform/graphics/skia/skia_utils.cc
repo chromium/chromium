@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/skia/include/effects/SkCornerPathEffect.h"
+#include "third_party/skia/third_party/skcms/skcms.h"
 #include "ui/gfx/icc_profile.h"
 
 #include <algorithm>
@@ -339,6 +340,19 @@ gfx::ColorSpace SkColorSpaceToGfxColorSpace(
       return icc_profile.GetColorSpace();
   }
   return gfx::ColorSpace::CreateSRGB();
+}
+
+bool ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
+                                     sk_sp<SkColorSpace> dst_color_space) {
+  if ((!src_color_space && dst_color_space) ||
+      (src_color_space && !dst_color_space))
+    return false;
+  if (!src_color_space && !dst_color_space)
+    return true;
+  skcms_ICCProfile src_profile, dst_profile;
+  src_color_space->toProfile(&src_profile);
+  dst_color_space->toProfile(&dst_profile);
+  return skcms_ApproximatelyEqualProfiles(&src_profile, &dst_profile);
 }
 
 template <typename PrimitiveType>

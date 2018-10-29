@@ -257,7 +257,7 @@ bool StartupMaintenanceSync(
   result = CheckTemporaryPageConsistencySync(db, temporary_namespaces,
                                              temporary_archives_dir);
   UMA_HISTOGRAM_ENUMERATION("OfflinePages.ConsistencyCheck.Temporary.Result",
-                            result, SyncOperationResult::RESULT_COUNT);
+                            result);
 
   // Report storage usage UMA, |temporary_namespaces| + |persistent_namespaces|
   // should be all namespaces. This is implicitly checked by the

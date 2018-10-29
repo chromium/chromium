@@ -75,12 +75,12 @@ TEST(VersionTest, GetVersionFromString) {
     {"15.5.28.130162", 4, 15, true},
   };
 
-  for (size_t i = 0; i < arraysize(cases); ++i) {
-    base::Version version(cases[i].input);
-    EXPECT_EQ(cases[i].success, version.IsValid());
-    if (cases[i].success) {
-      EXPECT_EQ(cases[i].parts, version.components().size());
-      EXPECT_EQ(cases[i].firstpart, version.components()[0]);
+  for (const auto& i : cases) {
+    base::Version version(i.input);
+    EXPECT_EQ(i.success, version.IsValid());
+    if (i.success) {
+      EXPECT_EQ(i.parts, version.components().size());
+      EXPECT_EQ(i.firstpart, version.components()[0]);
     }
   }
 }
@@ -105,44 +105,43 @@ TEST(VersionTest, Compare) {
       {"11.0.10", "15.5.28.130162", -1},
       {"15.5.28.130162", "15.5.28.130162", 0},
   };
-  for (size_t i = 0; i < arraysize(cases); ++i) {
-    base::Version lhs(cases[i].lhs);
-    base::Version rhs(cases[i].rhs);
-    EXPECT_EQ(lhs.CompareTo(rhs), cases[i].expected) <<
-        cases[i].lhs << " ? " << cases[i].rhs;
+  for (const auto& i : cases) {
+    base::Version lhs(i.lhs);
+    base::Version rhs(i.rhs);
+    EXPECT_EQ(lhs.CompareTo(rhs), i.expected) << i.lhs << " ? " << i.rhs;
     // CompareToWildcardString() should have same behavior as CompareTo() when
     // no wildcards are present.
-    EXPECT_EQ(lhs.CompareToWildcardString(cases[i].rhs), cases[i].expected)
-        << cases[i].lhs << " ? " << cases[i].rhs;
-    EXPECT_EQ(rhs.CompareToWildcardString(cases[i].lhs), -cases[i].expected)
-        << cases[i].lhs << " ? " << cases[i].rhs;
+    EXPECT_EQ(lhs.CompareToWildcardString(i.rhs), i.expected)
+        << i.lhs << " ? " << i.rhs;
+    EXPECT_EQ(rhs.CompareToWildcardString(i.lhs), -i.expected)
+        << i.lhs << " ? " << i.rhs;
 
     // Test comparison operators
-    switch (cases[i].expected) {
-    case -1:
-      EXPECT_LT(lhs, rhs);
-      EXPECT_LE(lhs, rhs);
-      EXPECT_NE(lhs, rhs);
-      EXPECT_FALSE(lhs == rhs);
-      EXPECT_FALSE(lhs >= rhs);
-      EXPECT_FALSE(lhs > rhs);
-      break;
-    case 0:
-      EXPECT_FALSE(lhs < rhs);
-      EXPECT_LE(lhs, rhs);
-      EXPECT_FALSE(lhs != rhs);
-      EXPECT_EQ(lhs, rhs);
-      EXPECT_GE(lhs, rhs);
-      EXPECT_FALSE(lhs > rhs);
-      break;
-    case 1:
-      EXPECT_FALSE(lhs < rhs);
-      EXPECT_FALSE(lhs <= rhs);
-      EXPECT_NE(lhs, rhs);
-      EXPECT_FALSE(lhs == rhs);
-      EXPECT_GE(lhs, rhs);
-      EXPECT_GT(lhs, rhs);
-      break;
+    switch (i.expected) {
+      case -1:
+        EXPECT_LT(lhs, rhs);
+        EXPECT_LE(lhs, rhs);
+        EXPECT_NE(lhs, rhs);
+        EXPECT_FALSE(lhs == rhs);
+        EXPECT_FALSE(lhs >= rhs);
+        EXPECT_FALSE(lhs > rhs);
+        break;
+      case 0:
+        EXPECT_FALSE(lhs < rhs);
+        EXPECT_LE(lhs, rhs);
+        EXPECT_FALSE(lhs != rhs);
+        EXPECT_EQ(lhs, rhs);
+        EXPECT_GE(lhs, rhs);
+        EXPECT_FALSE(lhs > rhs);
+        break;
+      case 1:
+        EXPECT_FALSE(lhs < rhs);
+        EXPECT_FALSE(lhs <= rhs);
+        EXPECT_NE(lhs, rhs);
+        EXPECT_FALSE(lhs == rhs);
+        EXPECT_GE(lhs, rhs);
+        EXPECT_GT(lhs, rhs);
+        break;
     }
   }
 }
@@ -167,10 +166,10 @@ TEST(VersionTest, CompareToWildcardString) {
     {"1.3.9", "1.3.*", 0},
     {"1.2.0.0.0.0", "1.2.*", 0},
   };
-  for (size_t i = 0; i < arraysize(cases); ++i) {
-    const base::Version version(cases[i].lhs);
-    const int result = version.CompareToWildcardString(cases[i].rhs);
-    EXPECT_EQ(result, cases[i].expected) << cases[i].lhs << "?" << cases[i].rhs;
+  for (const auto& i : cases) {
+    const base::Version version(i.lhs);
+    const int result = version.CompareToWildcardString(i.rhs);
+    EXPECT_EQ(result, i.expected) << i.lhs << "?" << i.rhs;
   }
 }
 
@@ -191,9 +190,9 @@ TEST(VersionTest, IsValidWildcardString) {
     {"*", false},
     {"*.2", false},
   };
-  for (size_t i = 0; i < arraysize(cases); ++i) {
-    EXPECT_EQ(base::Version::IsValidWildcardString(cases[i].version),
-        cases[i].expected) << cases[i].version << "?" << cases[i].expected;
+  for (const auto& i : cases) {
+    EXPECT_EQ(base::Version::IsValidWildcardString(i.version), i.expected)
+        << i.version << "?" << i.expected;
   }
 }
 

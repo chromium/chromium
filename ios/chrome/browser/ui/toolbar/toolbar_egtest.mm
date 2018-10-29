@@ -11,11 +11,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_constants.h"
-#import "ios/chrome/browser/ui/toolbar/clean/toolbar_view.h"
-#import "ios/chrome/browser/ui/toolbar/legacy/toolbar_controller.h"
-#include "ios/chrome/browser/ui/tools_menu/public/tools_menu_constants.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -31,21 +29,9 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::OmniboxText;
 using chrome_test_util::SystemSelectionCallout;
 using chrome_test_util::SystemSelectionCalloutCopyButton;
-
-namespace {
-// Returns matcher for the Paste and Go button on the system callout.
-id<GREYMatcher> PasteAndGoCalloutButton() {
-  return grey_allOf(
-      grey_accessibilityLabel(@"Paste and Go"),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitButton)),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitStaticText)), nil);
-}
-
-}  // namespace
 
 // Toolbar integration tests for Chrome.
 @interface ToolbarTestCase : ChromeTestCase
@@ -118,10 +104,7 @@ id<GREYMatcher> PasteAndGoCalloutButton() {
       performAction:grey_typeText(@"foo")];
 
   id<GREYMatcher> cancelButton =
-      IsUIRefreshPhase1Enabled()
-          ? grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier)
-          : grey_allOf(chrome_test_util::CancelButton(),
-                       grey_not(grey_accessibilityID(@"Typing Shield")), nil);
+      grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
   [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -186,56 +169,6 @@ id<GREYMatcher> PasteAndGoCalloutButton() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText(URL.GetContent())];
-}
-
-// Verifies the existence and state of toolbar UI elements.
-- (void)testPreRefreshToolbarUI {
-  if (IsUIRefreshPhase1Enabled()) {
-    EARL_GREY_TEST_SKIPPED(
-        @"This test is specific to the pre-refresh toolbar layout");
-  }
-
-  id<GREYMatcher> reloadButton =
-      chrome_test_util::ButtonWithAccessibilityLabelId(IDS_IOS_ACCNAME_RELOAD);
-  id<GREYMatcher> bookmarkButton =
-      chrome_test_util::ButtonWithAccessibilityLabelId(IDS_TOOLTIP_STAR);
-  id<GREYMatcher> voiceSearchButton =
-      grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                     IDS_IOS_ACCNAME_VOICE_SEARCH),
-                 grey_ancestor(grey_kindOfClass([ToolbarView class])), nil);
-  NSString* ntpOmniboxLabel = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
-  NSString* focusedOmniboxLabel = l10n_util::GetNSString(IDS_ACCNAME_LOCATION);
-  NSString* omniboxLabel =
-      IsIPadIdiom() ? focusedOmniboxLabel : ntpOmniboxLabel;
-  id<GREYMatcher> locationbarButton =
-      grey_allOf(grey_accessibilityLabel(omniboxLabel),
-                 grey_minimumVisiblePercent(0.2), nil);
-
-  [[EarlGrey selectElementWithMatcher:locationbarButton]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  if (IsIPadIdiom()) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:reloadButton]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:bookmarkButton]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:voiceSearchButton]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
-
-  // Navigate to a page and verify the back button is enabled.
-  [ChromeEarlGrey loadURL:GURL("chrome://version")];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      assertWithMatcher:grey_interactable()];
 }
 
 // Verifies that the keyboard is properly dismissed when a toolbar button
@@ -370,28 +303,6 @@ id<GREYMatcher> PasteAndGoCalloutButton() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText(URL.spec().c_str())];
-}
-
-// Verifies that PasteAndGo removes javascript scheme from the URL before
-// navigation.
-- (void)testJavascriptPasteAndGo {
-  if (!IsUIRefreshPhase1Enabled()) {
-    EARL_GREY_TEST_SKIPPED(@"Paste and Go is only availble for UI Refresh.");
-  }
-  // Clear generalPasteboard after the test.
-  [self setTearDownHandler:^{
-    [UIPasteboard generalPasteboard].string = @"";
-  }];
-  [UIPasteboard generalPasteboard].string = @"javascript:notavalidurl";
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:PasteAndGoCalloutButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText(
-                            "www.google.com/search?q=notavalidurl")];
 }
 
 // Verifies that the clear text button clears any text in the omnibox.
@@ -536,17 +447,8 @@ id<GREYMatcher> PasteAndGoCalloutButton() {
                                    nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  id<GREYMatcher> cancelButton = nil;
-  if (IsUIRefreshPhase1Enabled()) {
-    cancelButton =
-        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
-  } else if (IsIPadIdiom()) {
-    NSString* typingShield = @"Hide keyboard";
-    cancelButton = grey_accessibilityLabel(typingShield);
-  } else {
-    NSString* cancelText = l10n_util::GetNSString(IDS_CANCEL);
-    cancelButton = grey_accessibilityLabel(cancelText);
-  }
+  id<GREYMatcher> cancelButton =
+      grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
   DCHECK(cancelButton);
 
   [[EarlGrey

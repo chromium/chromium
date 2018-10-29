@@ -19,4 +19,3 @@ PASS msg is "[EventHandler 4] type: click phase: BUBBLING target: [object SVGUse
 PASS successfullyParsed is true
 
 TEST COMPLETE
-

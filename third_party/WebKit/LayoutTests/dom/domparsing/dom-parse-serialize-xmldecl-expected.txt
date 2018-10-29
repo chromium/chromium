@@ -2,7 +2,6 @@ This test verifies that the xml declaration gets serialized if present.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS new XMLSerializer().serializeToString(xmldoc).replace(/"/g,"'") is "<?xml version='1.0' encoding='UTF-8'?><root><test/></root>"
 PASS new XMLSerializer().serializeToString(xmldoc).replace(/"/g,"'") is "<?xml version='1.0' encoding='UTF-8' standalone='yes'?><root><test/></root>"
 PASS new XMLSerializer().serializeToString(xmldoc).replace(/"/g,"'") is "<?xml version='1.0' encoding='UTF-8' standalone='no'?><root><test/></root>"

@@ -31,7 +31,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/loader",
     "+third_party/blink/renderer/platform/network",
     "+third_party/blink/renderer/platform/platform_export.h",
-    "+third_party/blink/renderer/platform/pod_arena.h",
     "+third_party/blink/renderer/platform/runtime_enabled_features.h",
     "+third_party/blink/renderer/platform/scheduler",
     "+third_party/blink/renderer/platform/scroll",

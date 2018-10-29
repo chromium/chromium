@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 6725 tests; 6710 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 6725 tests; 6722 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS form.title: 32 tests
 PASS form.lang: 32 tests
 PASS form.dir: 62 tests
@@ -179,32 +179,17 @@ PASS meter.className (<meter class>): 32 tests
 PASS meter.hidden: 33 tests
 PASS meter.accessKey: 32 tests
 PASS meter.tabIndex: 24 tests
-PASS meter.value: 2 tests
-NOTRUN test
-PASS meter.value: 4 tests
-NOTRUN test
-PASS meter.min: 2 tests
-NOTRUN test
-PASS meter.min: 4 tests
-NOTRUN test
-NOTRUN test
-NOTRUN test
-NOTRUN test
-PASS meter.max: 4 tests
-NOTRUN test
-PASS meter.low: 2 tests
-NOTRUN test
-PASS meter.low: 4 tests
-NOTRUN test
-NOTRUN test
-NOTRUN test
-NOTRUN test
-PASS meter.high: 4 tests
-NOTRUN test
-NOTRUN test
-NOTRUN test
-NOTRUN test
-PASS meter.optimum: 4 tests
-NOTRUN test
+PASS meter.value: 8 tests
+PASS meter.min: 8 tests
+PASS meter.max: typeof IDL attribute
+FAIL meter.max: IDL get with DOM attribute unset assert_equals: expected 0 but got 1
+PASS meter.max: 6 tests
+PASS meter.low: 8 tests
+PASS meter.high: typeof IDL attribute
+FAIL meter.high: IDL get with DOM attribute unset assert_equals: expected 0 but got 1
+PASS meter.high: 6 tests
+PASS meter.optimum: typeof IDL attribute
+FAIL meter.optimum: IDL get with DOM attribute unset assert_equals: expected 0 but got 0.5
+PASS meter.optimum: 6 tests
 Harness: the test ran to completion.
 

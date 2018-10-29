@@ -9,7 +9,8 @@ import "ui/gfx/geometry/mojo/geometry.mojom";
 // Corresponds to ui::InputDeviceType
 enum InputDeviceType {
   INPUT_DEVICE_INTERNAL,
-  INPUT_DEVICE_EXTERNAL,
+  INPUT_DEVICE_USB,
+  INPUT_DEVICE_BLUETOOTH,
   INPUT_DEVICE_UNKNOWN,
 };
 

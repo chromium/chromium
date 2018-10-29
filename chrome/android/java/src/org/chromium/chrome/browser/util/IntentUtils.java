@@ -17,6 +17,7 @@ import android.os.TransactionTooLargeException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.BundleCompat;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.VisibleForTesting;
 
@@ -378,6 +379,13 @@ public class IntentUtils {
         } catch (ActivityNotFoundException e) {
             return false;
         }
+    }
+
+    /** Returns whether the intent starts an activity in a new task or a new document. */
+    public static boolean isIntentForNewTaskOrNewDocument(Intent intent) {
+        int testFlags =
+                Intent.FLAG_ACTIVITY_NEW_TASK | ApiCompatibilityUtils.getActivityNewDocumentFlag();
+        return (intent.getFlags() & testFlags) != 0;
     }
 
     /**

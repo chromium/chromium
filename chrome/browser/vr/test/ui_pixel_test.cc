@@ -13,9 +13,6 @@
 #include "chrome/browser/vr/text_input_delegate.h"
 #include "third_party/skia/include/core/SkImageEncoder.h"
 #include "third_party/skia/include/core/SkStream.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/test/gl_test_helper.h"
 
 namespace vr {
 
@@ -24,32 +21,24 @@ UiPixelTest::UiPixelTest() : frame_buffer_size_(kPixelHalfScreen) {}
 UiPixelTest::~UiPixelTest() = default;
 
 void UiPixelTest::SetUp() {
-// TODO(crbug/771794): Test temporarily disabled on Windows because it crashes
-// on trybots. Fix before enabling Windows support.
-#ifndef OS_WIN
   gl_test_environment_ =
       std::make_unique<GlTestEnvironment>(frame_buffer_size_);
 
   // Make content texture.
-  content_texture_ = gl::GLTestHelper::CreateTexture(GL_TEXTURE_2D);
-  content_overlay_texture_ = gl::GLTestHelper::CreateTexture(GL_TEXTURE_2D);
+  content_texture_ = gl_test_environment_->CreateTexture(GL_TEXTURE_2D);
+  content_overlay_texture_ = gl_test_environment_->CreateTexture(GL_TEXTURE_2D);
 
   // TODO(tiborg): Make GL_TEXTURE_EXTERNAL_OES texture for content and fill it
   // with fake content.
   ASSERT_EQ(glGetError(), (GLenum)GL_NO_ERROR);
 
   browser_ = std::make_unique<MockUiBrowserInterface>();
-#endif
 }
 
 void UiPixelTest::TearDown() {
-// TODO(crbug/771794): Test temporarily disabled on Windows because it crashes
-// on trybots. Fix before enabling Windows support.
-#ifndef OS_WIN
   ui_.reset();
   glDeleteTextures(1, &content_texture_);
   gl_test_environment_.reset();
-#endif
 }
 
 void UiPixelTest::MakeUi(const UiInitialState& ui_initial_state,

@@ -4,6 +4,9 @@
 //
 // Sync protocol datatype extension for the reading list items.
 
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;

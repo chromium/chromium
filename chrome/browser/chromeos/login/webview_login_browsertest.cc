@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/test/local_policy_test_server.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -37,6 +39,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -162,6 +165,7 @@ class WebviewLoginTest : public OobeBaseTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kOobeSkipPostLogin);
     command_line->AppendSwitch(::switches::kUseFakeDeviceForMediaStream);
+    command_line->AppendSwitch(switches::kStubCrosSettings);
     OobeBaseTest::SetUpCommandLine(command_line);
   }
 
@@ -221,6 +225,10 @@ class WebviewLoginTest : public OobeBaseTest {
 
     return web_view_found;
   }
+
+ protected:
+  ScopedCrosSettingsTestHelper settings_helper_{
+      /* create_settings_service= */ false};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebviewLoginTest);
@@ -286,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, DISABLED_BackButton) {
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest, AllowGuest) {
   WaitForGaiaPageLoad();
   JsExpect("!$('guest-user-header-bar-item').hidden");
-  CrosSettings::Get()->SetBoolean(kAccountsPrefAllowGuest, false);
+  settings_helper_.SetBoolean(kAccountsPrefAllowGuest, false);
   JsExpect("$('guest-user-header-bar-item').hidden");
 }
 
@@ -299,8 +307,8 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, AllowNewUser) {
   JsExpect(frame_url + ".search('flow=nosignup') == -1");
 
   // Disallow new users - we also need to set a whitelist due to weird logic.
-  CrosSettings::Get()->Set(kAccountsPrefUsers, base::ListValue());
-  CrosSettings::Get()->SetBoolean(kAccountsPrefAllowNewUser, false);
+  settings_helper_.Set(kAccountsPrefUsers, base::ListValue());
+  settings_helper_.SetBoolean(kAccountsPrefAllowNewUser, false);
   WaitForGaiaPageReload();
 
   // flow=nosignup indicates that user creation is not allowed.
@@ -411,8 +419,8 @@ class WebviewClientCertsLoginTest : public WebviewLoginTest {
     {
       bool system_slot_constructed_successfully = false;
       base::RunLoop loop;
-      content::BrowserThread::PostTaskAndReply(
-          content::BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraitsAndReply(
+          FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(&WebviewClientCertsLoginTest::SetUpTestSystemSlotOnIO,
                          base::Unretained(this),
                          &system_slot_constructed_successfully),
@@ -554,8 +562,8 @@ class WebviewClientCertsLoginTest : public WebviewLoginTest {
       return;
 
     base::RunLoop loop;
-    content::BrowserThread::PostTaskAndReply(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraitsAndReply(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&WebviewClientCertsLoginTest::TearDownTestSystemSlotOnIO,
                        base::Unretained(this)),
         loop.QuitClosure());

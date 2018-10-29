@@ -504,8 +504,7 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
 
     accounts_settings_helper_ = std::make_unique<ScopedCrosSettingsTestHelper>(
         false /*create_service*/);
-    accounts_settings_helper_->ReplaceProvider(
-        kAccountsPrefDeviceLocalAccounts);
+    accounts_settings_helper_->ReplaceDeviceSettingsProviderWithStub();
 
     auto account = std::make_unique<base::DictionaryValue>();
     account->SetKey(kAccountsPrefDeviceLocalAccountsKeyId,

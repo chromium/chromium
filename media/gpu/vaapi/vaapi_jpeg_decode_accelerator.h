@@ -28,6 +28,10 @@ class UnalignedSharedMemory;
 class VaapiWrapper;
 class VaapiJpegDecodeAcceleratorTest;
 
+// Alternative notation for the VA_FOURCC_YUY2 format, <va/va.h> doesn't provide
+// this specific packing/ordering.
+constexpr uint32_t VA_FOURCC_YUYV = 0x56595559;
+
 // Class to provide JPEG decode acceleration for Intel systems with hardware
 // support for it, and on which libva is available.
 // Decoding tasks are performed in a separate decoding thread.
@@ -70,6 +74,7 @@ class MEDIA_GPU_EXPORT VaapiJpegDecodeAccelerator
   // surface and passes the |input_buffer_id| of the resulting picture to
   // client for output.
   bool OutputPicture(VASurfaceID va_surface_id,
+                     uint32_t va_surface_format,
                      int32_t input_buffer_id,
                      const scoped_refptr<VideoFrame>& video_frame);
 
@@ -108,8 +113,6 @@ class MEDIA_GPU_EXPORT VaapiJpegDecodeAccelerator
   gfx::Size coded_size_;
   // The VA RT format associated with |va_surface_id_|.
   unsigned int va_rt_format_;
-  // The VA image format that will be requested from the VA API.
-  std::unique_ptr<VAImageFormat> va_image_format_;
 
   // WeakPtr factory for use in posting tasks from |decoder_task_runner_| back
   // to |task_runner_|.  Since |decoder_thread_| is a fully owned member of

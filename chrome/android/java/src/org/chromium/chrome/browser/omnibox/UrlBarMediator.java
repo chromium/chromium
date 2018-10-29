@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlDirectionListener;
+import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
@@ -55,6 +56,11 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
      */
     public void setDelegate(UrlBarDelegate delegate) {
         mModel.set(UrlBarProperties.DELEGATE, delegate);
+    }
+
+    /** Set the listener to be notified when the url text chagnes. */
+    public void setUrlTextChangeListener(UrlTextChangeListener listener) {
+        mModel.set(UrlBarProperties.URL_TEXT_CHANGE_LISTENER, listener);
     }
 
     /**

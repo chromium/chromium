@@ -196,6 +196,10 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
   // in each OnMoreData() callback.
   size_t packet_size_frames_;
 
+  // If requesting an explicitly-lower frame size using the IAudioClient3
+  // interface this is the requested size.
+  size_t requested_iaudioclient3_buffer_size_;
+
   // Size in bytes of each audio packet.
   size_t packet_size_bytes_;
 

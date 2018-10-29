@@ -7,6 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/histograms.h"
@@ -17,13 +20,31 @@
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
 
+namespace {
+
+base::HistogramBase* GetHistogramNamed(const char* histogram_name_format,
+                                       const char* client_name) {
+  if (!client_name)
+    return nullptr;
+
+  return base::LinearHistogram::FactoryMicrosecondsTimeGet(
+      base::StringPrintf(histogram_name_format, client_name),
+      base::TimeDelta::FromMicroseconds(1),
+      base::TimeDelta::FromMilliseconds(200), 50,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+}
+}  // namespace
+
 namespace cc {
 namespace mojo_embedder {
 
 AsyncLayerTreeFrameSink::PipelineReporting::PipelineReporting(
     const viz::BeginFrameArgs args,
-    base::TimeTicks now)
-    : trace_id_(args.trace_id), frame_time_(now) {}
+    base::TimeTicks now,
+    base::HistogramBase* submit_begin_frame_histogram)
+    : trace_id_(args.trace_id),
+      frame_time_(now),
+      submit_begin_frame_histogram_(submit_begin_frame_histogram) {}
 
 AsyncLayerTreeFrameSink::PipelineReporting::~PipelineReporting() = default;
 
@@ -32,16 +53,10 @@ void AsyncLayerTreeFrameSink::PipelineReporting::Report() {
                          TRACE_ID_GLOBAL(trace_id_),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "step", "SubmitCompositorFrame");
+  auto report_time = base::TimeTicks::Now() - frame_time_;
 
-  // Note that client_name is constant during the lifetime of the process and
-  // it's either "Browser" or "Renderer".
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      base::StringPrintf(
-          "GraphicsPipeline.%s.SubmitCompositorFrameAfterBeginFrame",
-          GetClientNameForMetrics()),
-      base::TimeTicks::Now() - frame_time_,
-      base::TimeDelta::FromMicroseconds(1),
-      base::TimeDelta::FromMilliseconds(200), 50);
+  if (submit_begin_frame_histogram_)
+    submit_begin_frame_histogram_->AddTimeMicrosecondsGranularity(report_time);
 }
 
 AsyncLayerTreeFrameSink::InitParams::InitParams() = default;
@@ -75,6 +90,12 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
       client_binding_(this),
       enable_surface_synchronization_(params->enable_surface_synchronization),
       wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
+      receive_begin_frame_histogram_(
+          GetHistogramNamed("GraphicsPipeline.%s.ReceivedBeginFrame",
+                            params->client_name)),
+      submit_begin_frame_histogram_(GetHistogramNamed(
+          "GraphicsPipeline.%s.SubmitCompositorFrameAfterBeginFrame",
+          params->client_name)),
       weak_factory_(this) {
   DETACH_FROM_THREAD(thread_checker_);
 }
@@ -197,6 +218,14 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
         "SubmitCompositorFrame", "surface_id", local_surface_id_.ToString());
   }
 
+  // The trace_id is negated in order to keep the Graphics.Pipeline and
+  // Event.Pipeline flows separated.
+  const int64_t trace_id = ~frame.metadata.begin_frame_ack.trace_id;
+  TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
+                         "Event.Pipeline", TRACE_ID_GLOBAL(trace_id),
+                         TRACE_EVENT_FLAG_FLOW_OUT, "step",
+                         "SubmitHitTestData");
+
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::move(hit_test_region_list),
       tracing_enabled ? base::TimeTicks::Now().since_origin().InMicroseconds()
@@ -231,6 +260,11 @@ void AsyncLayerTreeFrameSink::DidDeleteSharedBitmap(
   compositor_frame_sink_ptr_->DidDeleteSharedBitmap(id);
 }
 
+void AsyncLayerTreeFrameSink::ForceAllocateNewId() {
+  DCHECK(!enable_surface_synchronization_);
+  local_surface_id_provider_->ForceAllocateNewId();
+}
+
 void AsyncLayerTreeFrameSink::DidReceiveCompositorFrameAck(
     const std::vector<viz::ReturnedResource>& resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -247,26 +281,22 @@ void AsyncLayerTreeFrameSink::DidPresentCompositorFrame(
 
 void AsyncLayerTreeFrameSink::OnBeginFrame(const viz::BeginFrameArgs& args) {
   DCHECK_LE(pipeline_reporting_frame_times_.size(), 25u);
-  // Note that client_name is constant during the lifetime of the process and
-  // it's either "Browser" or "Renderer".
-  const char* client_name = GetClientNameForMetrics();
-  if (client_name && args.trace_id != -1) {
+  if (args.trace_id != -1) {
     base::TimeTicks current_time = base::TimeTicks::Now();
-    PipelineReporting report(args, current_time);
+    PipelineReporting report(args, current_time, submit_begin_frame_histogram_);
     pipeline_reporting_frame_times_.emplace(args.trace_id, report);
     // Missed BeginFrames use the frame time of the last received BeginFrame
     // which is bogus from a reporting perspective if nothing has been updating
     // on screen for a while.
     if (args.type != viz::BeginFrameArgs::MISSED) {
       base::TimeDelta frame_difference = current_time - args.frame_time;
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          base::StringPrintf("GraphicsPipeline.%s.ReceivedBeginFrame",
-                             client_name),
-          frame_difference, base::TimeDelta::FromMicroseconds(1),
-          base::TimeDelta::FromMilliseconds(100), 50);
+
+      if (receive_begin_frame_histogram_) {
+        receive_begin_frame_histogram_->AddTimeMicrosecondsGranularity(
+            frame_difference);
+      }
     }
   }
-
   if (!needs_begin_frames_) {
     TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
                            TRACE_ID_GLOBAL(args.trace_id),

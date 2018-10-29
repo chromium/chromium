@@ -13,6 +13,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -91,6 +92,8 @@
 #include "ash/test/ui_controls_factory_ash.h"
 #include "chrome/browser/chromeos/input_method/input_method_configuration.h"
 #include "chrome/test/base/default_ash_event_generator_delegate.h"
+#include "chromeos/services/device_sync/device_sync_impl.h"
+#include "chromeos/services/device_sync/fake_device_sync.h"
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/aura/window.h"
 #include "ui/base/test/ui_controls.h"
@@ -114,6 +117,31 @@ namespace {
 
 // Passed as value of kTestType.
 const char kBrowserTestType[] = "browser";
+
+#if defined(OS_CHROMEOS)
+class FakeDeviceSyncImplFactory
+    : public chromeos::device_sync::DeviceSyncImpl::Factory {
+ public:
+  FakeDeviceSyncImplFactory() = default;
+  ~FakeDeviceSyncImplFactory() override = default;
+
+  // chromeos::device_sync::DeviceSyncImpl::Factory:
+  std::unique_ptr<chromeos::device_sync::DeviceSyncBase> BuildInstance(
+      identity::IdentityManager* identity_manager,
+      gcm::GCMDriver* gcm_driver,
+      service_manager::Connector* connector,
+      const cryptauth::GcmDeviceInfoProvider* gcm_device_info_provider,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<base::OneShotTimer> timer) override {
+    return std::make_unique<chromeos::device_sync::FakeDeviceSync>();
+  }
+};
+
+FakeDeviceSyncImplFactory* GetFakeDeviceSyncImplFactory() {
+  static base::NoDestructor<FakeDeviceSyncImplFactory> factory;
+  return factory.get();
+}
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace
 
@@ -172,8 +200,7 @@ InProcessBrowserTest::InProcessBrowserTest()
 #endif
 }
 
-InProcessBrowserTest::~InProcessBrowserTest() {
-}
+InProcessBrowserTest::~InProcessBrowserTest() = default;
 
 void InProcessBrowserTest::SetUp() {
   // Browser tests will create their own g_browser_process later.
@@ -213,11 +240,9 @@ void InProcessBrowserTest::SetUp() {
     command_line->AppendSwitchASCII(switches::kHostWindowBounds,
                                     "0+0-1280x800");
   }
-#elif defined(USE_X11)
-  DCHECK(!display::Screen::GetScreen());
-  display::Screen::SetScreenInstance(
-      views::test::TestDesktopScreenX11::GetInstance());
 #endif
+
+  SetScreenInstance();
 
   // Always use a mocked password storage if OS encryption is used (which is
   // when anything sensitive gets stored, including Cookies). Without this on
@@ -235,6 +260,9 @@ void InProcessBrowserTest::SetUp() {
   google_util::SetMockLinkDoctorBaseURLForTesting();
 
 #if defined(OS_CHROMEOS)
+  chromeos::device_sync::DeviceSyncImpl::Factory::SetInstanceForTesting(
+      GetFakeDeviceSyncImplFactory());
+
   // On Chrome OS, access to files via file: scheme is restricted. Enable
   // access to all files here since browser_tests and interactive_ui_tests
   // rely on the ability to open any files via file: scheme.
@@ -297,6 +325,7 @@ void InProcessBrowserTest::TearDown() {
 #if defined(OS_WIN)
   com_initializer_.reset();
 #endif
+
   BrowserTestBase::TearDown();
   OSCryptMocker::TearDown();
   ChromeContentBrowserClient::SetDefaultQuotaSettingsForTesting(nullptr);
@@ -307,6 +336,11 @@ void InProcessBrowserTest::TearDown() {
   EXPECT_EQ(
       0u,
       extensions::ExtensionApiFrameIdMap::Get()->GetFrameDataCountForTesting());
+#endif
+
+#if defined(OS_CHROMEOS)
+  chromeos::device_sync::DeviceSyncImpl::Factory::SetInstanceForTesting(
+      nullptr);
 #endif
 }
 
@@ -371,6 +405,14 @@ void InProcessBrowserTest::AddTabAtIndex(
 
 bool InProcessBrowserTest::SetUpUserDataDirectory() {
   return true;
+}
+
+void InProcessBrowserTest::SetScreenInstance() {
+#if defined(USE_X11) && !defined(OS_CHROMEOS)
+  DCHECK(!display::Screen::GetScreen());
+  display::Screen::SetScreenInstance(
+      views::test::TestDesktopScreenX11::GetInstance());
+#endif
 }
 
 #if !defined(OS_MACOSX)
@@ -487,13 +529,18 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   }
 
 #if defined(OS_CHROMEOS)
-  if (features::IsUsingWindowService()) {
-    aura::WindowTreeHost* host =
-        browser_ ? browser_->window()->GetNativeWindow()->GetHost() : nullptr;
+  // OobeTest and LoginCursorTest do not have the browser window but wants to
+  // interact with its UI through UIControls -- and those UI are actually for
+  // Ash (login / lock screen / oobe). Thus AshUIControls should be created for
+  // such test.
+  aura::WindowTreeHost* host = nullptr;
+  if (features::IsUsingWindowService() && browser_)
+    host = browser_->window()->GetNativeWindow()->GetHost();
+
+  if (host)
     ui_controls::InstallUIControlsAura(aura::test::CreateUIControlsAura(host));
-  } else {
+  else
     ui_controls::InstallUIControlsAura(ash::test::CreateAshUIControls());
-  }
 #endif
 
 #if !defined(OS_ANDROID)

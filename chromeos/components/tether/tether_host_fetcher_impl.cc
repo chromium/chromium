@@ -15,39 +15,6 @@ namespace chromeos {
 
 namespace tether {
 
-namespace {
-
-enum class TetherHostSource {
-  UNKNOWN,
-  MULTIDEVICE_SETUP_CLIENT,
-  DEVICE_SYNC_CLIENT,
-  REMOTE_DEVICE_PROVIDER
-};
-
-TetherHostSource GetTetherHostSourceBasedOnFlags() {
-  if (base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
-      base::FeatureList::IsEnabled(
-          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
-    return TetherHostSource::MULTIDEVICE_SETUP_CLIENT;
-  }
-  if (base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
-      !base::FeatureList::IsEnabled(
-          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
-    return TetherHostSource::DEVICE_SYNC_CLIENT;
-  }
-  if (!base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
-      !base::FeatureList::IsEnabled(
-          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
-    return TetherHostSource::REMOTE_DEVICE_PROVIDER;
-  }
-  NOTREACHED() << "TetherHostFetcherImpl: Unexpected feature flag state of "
-               << "kMultiDeviceApi disabled and kEnableUnifiedMultiDeviceSetup "
-               << "enabled.";
-  return TetherHostSource::UNKNOWN;
-}
-
-}  // namespace
-
 // static
 TetherHostFetcherImpl::Factory*
     TetherHostFetcherImpl::Factory::factory_instance_ = nullptr;
@@ -89,35 +56,36 @@ TetherHostFetcherImpl::TetherHostFetcherImpl(
       device_sync_client_(device_sync_client),
       multidevice_setup_client_(multidevice_setup_client),
       weak_ptr_factory_(this) {
-  switch (GetTetherHostSourceBasedOnFlags()) {
-    case TetherHostSource::MULTIDEVICE_SETUP_CLIENT:
-      multidevice_setup_client_->AddObserver(this);
-      break;
-    case TetherHostSource::DEVICE_SYNC_CLIENT:
-      device_sync_client_->AddObserver(this);
-      break;
-    case TetherHostSource::REMOTE_DEVICE_PROVIDER:
-      remote_device_provider_->AddObserver(this);
-      break;
-    case TetherHostSource::UNKNOWN:
-      break;
+  if (base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi))
+    device_sync_client_->AddObserver(this);
+
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+    multidevice_setup_client_->AddObserver(this);
   }
+
+  if (!base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
+      !base::FeatureList::IsEnabled(
+          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+    remote_device_provider_->AddObserver(this);
+  }
+
   CacheCurrentTetherHosts();
 }
 
 TetherHostFetcherImpl::~TetherHostFetcherImpl() {
-  switch (GetTetherHostSourceBasedOnFlags()) {
-    case TetherHostSource::MULTIDEVICE_SETUP_CLIENT:
-      multidevice_setup_client_->RemoveObserver(this);
-      break;
-    case TetherHostSource::DEVICE_SYNC_CLIENT:
-      device_sync_client_->RemoveObserver(this);
-      break;
-    case TetherHostSource::REMOTE_DEVICE_PROVIDER:
-      remote_device_provider_->RemoveObserver(this);
-      break;
-    case TetherHostSource::UNKNOWN:
-      break;
+  if (base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi))
+    device_sync_client_->RemoveObserver(this);
+
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+    multidevice_setup_client_->RemoveObserver(this);
+  }
+
+  if (!base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
+      !base::FeatureList::IsEnabled(
+          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+    remote_device_provider_->RemoveObserver(this);
   }
 }
 
@@ -154,6 +122,10 @@ void TetherHostFetcherImpl::OnHostStatusChanged(
 void TetherHostFetcherImpl::OnFeatureStatesChanged(
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
+  CacheCurrentTetherHosts();
+}
+
+void TetherHostFetcherImpl::OnReady() {
   CacheCurrentTetherHosts();
 }
 
@@ -216,6 +188,63 @@ cryptauth::RemoteDeviceRefList TetherHostFetcherImpl::GenerateHostDeviceList() {
   }
 
   return host_list;
+}
+
+bool TetherHostFetcherImpl::IsInLegacyHostMode() {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) ||
+      !device_sync_client_->is_ready()) {
+    return false;
+  }
+
+  bool has_supported_tether_host = false;
+  for (const cryptauth::RemoteDeviceRef& remote_device_ref :
+       device_sync_client_->GetSyncedDevices()) {
+    cryptauth::SoftwareFeatureState better_together_host_state =
+        remote_device_ref.GetSoftwareFeatureState(
+            cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST);
+    // If there's any valid Better Together host, don't support legacy mode.
+    if (better_together_host_state ==
+            cryptauth::SoftwareFeatureState::kSupported ||
+        better_together_host_state ==
+            cryptauth::SoftwareFeatureState::kEnabled) {
+      return false;
+    }
+
+    cryptauth::SoftwareFeatureState magic_tether_host_state =
+        remote_device_ref.GetSoftwareFeatureState(
+            cryptauth::SoftwareFeature::MAGIC_TETHER_HOST);
+    if (magic_tether_host_state ==
+            cryptauth::SoftwareFeatureState::kSupported ||
+        magic_tether_host_state == cryptauth::SoftwareFeatureState::kEnabled) {
+      has_supported_tether_host = true;
+    }
+  }
+
+  return has_supported_tether_host;
+}
+
+TetherHostFetcherImpl::TetherHostSource
+TetherHostFetcherImpl::GetTetherHostSourceBasedOnFlags() {
+  if (base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
+      !base::FeatureList::IsEnabled(
+          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+    return TetherHostSource::DEVICE_SYNC_CLIENT;
+  }
+  if (!base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
+      !base::FeatureList::IsEnabled(
+          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+    return TetherHostSource::REMOTE_DEVICE_PROVIDER;
+  }
+  if (base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
+      base::FeatureList::IsEnabled(
+          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+    return IsInLegacyHostMode() ? TetherHostSource::DEVICE_SYNC_CLIENT
+                                : TetherHostSource::MULTIDEVICE_SETUP_CLIENT;
+  }
+  NOTREACHED() << "TetherHostFetcherImpl: Unexpected feature flag state of "
+               << "kMultiDeviceApi disabled and kEnableUnifiedMultiDeviceSetup "
+               << "enabled.";
+  return TetherHostSource::UNKNOWN;
 }
 
 }  // namespace tether

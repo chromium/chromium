@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<title>Test that an audio element does not stretch past its set height.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<style>
+video, audio {
+  height: 2px;
+}
+</style>
+<audio controls preload=none src="../content/test.oga"></audio>
+<!-- Also test for a video acting as an audio element. -->
+<video controls preload=none src="../content/test.oga"></video>
+<script>
+async_test(t => {
+  const audio = document.querySelector('audio');
+  const video = document.querySelector('video');
+
+  video.addEventListener("loadedmetadata", t.step_func_done(() => {
+    assert_equals(getComputedStyle(panelElement(audio)).height, "2px", "audio tag panel height");
+    assert_equals(getComputedStyle(panelElement(video)).height, "2px", "video tag panel height");
+  }), { once: true });
+
+  video.load();
+});
+</script>
+</html>

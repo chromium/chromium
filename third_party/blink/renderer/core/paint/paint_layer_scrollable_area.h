@@ -284,7 +284,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   GraphicsLayer* LayerForScrollCorner() const override;
 
   bool ShouldScrollOnMainThread() const override;
-  bool ShouldUseIntegerScrollOffset() const override;
   bool IsActive() const override;
   bool IsScrollCornerVisible() const override;
   IntRect ScrollCornerRect() const override;
@@ -548,6 +547,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void Trace(blink::Visitor*) override;
 
+  const DisplayItemClient& GetScrollingBackgroundDisplayItemClient() const {
+    return scrolling_background_display_item_client_;
+  }
+
  private:
   explicit PaintLayerScrollableArea(PaintLayer&);
 
@@ -697,6 +700,27 @@ class CORE_EXPORT PaintLayerScrollableArea final
   LayoutRect horizontal_scrollbar_visual_rect_;
   LayoutRect vertical_scrollbar_visual_rect_;
   LayoutRect scroll_corner_and_resizer_visual_rect_;
+
+  class ScrollingBackgroundDisplayItemClient : public DisplayItemClient {
+    DISALLOW_NEW();
+
+   public:
+    ScrollingBackgroundDisplayItemClient(
+        const PaintLayerScrollableArea& scrollable_area)
+        : scrollable_area_(&scrollable_area) {}
+
+    LayoutRect VisualRect() const override;
+    String DebugName() const override;
+    bool PaintedOutputOfObjectHasNoEffectRegardlessOfSize() const override;
+
+    void Trace(Visitor* visitor) { visitor->Trace(scrollable_area_); }
+
+   private:
+    Member<const PaintLayerScrollableArea> scrollable_area_;
+  };
+
+  ScrollingBackgroundDisplayItemClient
+      scrolling_background_display_item_client_;
 };
 
 DEFINE_TYPE_CASTS(PaintLayerScrollableArea,

@@ -63,6 +63,8 @@ class OrderfileStorySet(story.StorySet):
   _BLACKLIST = set([
       'browse:chrome:newtab',
       'browse:shopping:flipkart',
+      'long_running:tools:gmail-foreground',
+      'long_running:tools:gmail-background',
   ])
 
   # The random seed used for reproducible runs.

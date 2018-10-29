@@ -43,13 +43,13 @@ class SearchResultTileItemListViewTest
     // feature.
     if (IsPlayStoreAppSearchEnabled()) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kEnablePlayStoreAppSearch}, {});
+          {app_list_features::kEnablePlayStoreAppSearch}, {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {}, {features::kEnablePlayStoreAppSearch});
+          {}, {app_list_features::kEnablePlayStoreAppSearch});
     }
     ASSERT_EQ(IsPlayStoreAppSearchEnabled(),
-              features::IsPlayStoreAppSearchEnabled());
+              app_list_features::IsPlayStoreAppSearchEnabled());
 
     // Sets up the views.
     textfield_ = std::make_unique<views::Textfield>();

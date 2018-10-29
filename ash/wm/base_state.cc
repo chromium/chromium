@@ -4,11 +4,11 @@
 
 #include "ash/wm/base_state.h"
 
+#include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_state_type.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/window_animation_types.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/wm_event.h"
 #include "ui/aura/client/aura_constants.h"
@@ -24,6 +24,8 @@ BaseState::~BaseState() = default;
 void BaseState::OnWMEvent(WindowState* window_state, const WMEvent* event) {
   if (event->IsWorkspaceEvent()) {
     HandleWorkspaceEvents(window_state, event);
+    if (window_state->IsPip())
+      window_state->UpdatePipBounds();
     return;
   }
   if ((window_state->IsTrustedPinned() || window_state->IsPinned()) &&
@@ -39,6 +41,7 @@ void BaseState::OnWMEvent(WindowState* window_state, const WMEvent* event) {
 
   if (event->IsBoundsEvent()) {
     HandleBoundsEvents(window_state, event);
+    window_state->UpdatePipRoundedCorners();
     return;
   }
   DCHECK(event->IsTransitionEvent());
@@ -148,8 +151,13 @@ void BaseState::UpdateMinimizedState(
       window->SetProperty(aura::client::kPreMinimizedShowStateKey,
                           ToWindowShowState(previous_state_type));
     }
+    // Count minimizing a PIP window as dismissing it. Android apps in PIP mode
+    // don't exit when they are dismissed, they just go back to being a regular
+    // app, but minimized.
     ::wm::SetWindowVisibilityAnimationType(
-        window, WINDOW_VISIBILITY_ANIMATION_TYPE_MINIMIZE);
+        window, previous_state_type == mojom::WindowStateType::PIP
+                    ? WINDOW_VISIBILITY_ANIMATION_TYPE_SLIDE_OUT
+                    : WINDOW_VISIBILITY_ANIMATION_TYPE_MINIMIZE);
 
     window->Hide();
     if (window_state->IsActive())

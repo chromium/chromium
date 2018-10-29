@@ -41,7 +41,6 @@ namespace service_worker_provider_context_unittest {
 class ServiceWorkerProviderContextTest;
 }  // namespace service_worker_provider_context_unittest
 
-class WebServiceWorkerImpl;
 class WebServiceWorkerRegistrationImpl;
 struct ServiceWorkerProviderContextDeleter;
 
@@ -101,23 +100,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   int provider_id() const { return provider_id_; }
 
-  // For service worker execution contexts. Sets the registration for
-  // ServiceWorkerGlobalScope#registration. Unlike
-  // TakeRegistrationForServiceWorkerGlobalScope(), called on the main thread.
-  // SetRegistrationForServiceWorkerGlobalScope() is called during the setup for
-  // service worker startup, so it is guaranteed to be called before
-  // TakeRegistrationForServiceWorkerGlobalScope().
-  void SetRegistrationForServiceWorkerGlobalScope(
-      blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration);
-
-  // For service worker execution contexts. Used for initializing
-  // ServiceWorkerGlobalScope#registration. Called on the worker thread.
-  // This takes the registration that was passed to
-  // SetRegistrationForServiceWorkerScope(), then creates a new
-  // WebServiceWorkerRegistrationImpl instance and returns it.
-  scoped_refptr<WebServiceWorkerRegistrationImpl>
-  TakeRegistrationForServiceWorkerGlobalScope();
-
   // For service worker clients. Returns version id of the controller service
   // worker object (ServiceWorkerContainer#controller).
   int64_t GetControllerVersionId() const;
@@ -156,23 +138,9 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       mojom::ServiceWorkerWorkerClientRegistryRequest request) override;
 
   // S13nServiceWorker:
-  // For service worker clients. Creates a ServiceWorkerContainerHostPtrInfo
-  // which can be bound to a ServiceWorkerContainerHostPtr in a (dedicated or
-  // shared) worker thread. WebWorkerFetchContextImpl will use the host pointer
-  // to get the controller service worker by GetControllerServiceWorker() and
-  // send FetchEvents to the service worker.
+  // For service worker clients. Returns a ServiceWorkerContainerHostPtrInfo
+  // to this client's container host.
   mojom::ServiceWorkerContainerHostPtrInfo CloneContainerHostPtrInfo();
-
-  // For service worker clients. Returns the registration object described by
-  // |info|. Creates a new object if needed, or else returns the existing one.
-  scoped_refptr<WebServiceWorkerRegistrationImpl>
-  GetOrCreateServiceWorkerRegistrationObject(
-      blink::mojom::ServiceWorkerRegistrationObjectInfoPtr info);
-
-  // For service worker clients. Returns the service worker object described by
-  // |info|. Creates a new object if needed, or else returns the existing one.
-  scoped_refptr<WebServiceWorkerImpl> GetOrCreateServiceWorkerObject(
-      blink::mojom::ServiceWorkerObjectInfoPtr info);
 
   // Called when ServiceWorkerNetworkProvider is destructed. This function
   // severs the Mojo binding to the browser-side ServiceWorkerProviderHost. The
@@ -206,7 +174,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
                                           ServiceWorkerProviderContextDeleter>;
   friend class service_worker_provider_context_unittest::
       ServiceWorkerProviderContextTest;
-  friend class WebServiceWorkerImpl;
   friend class WebServiceWorkerRegistrationImpl;
   friend struct ServiceWorkerProviderContextDeleter;
 
@@ -224,21 +191,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   void PostMessageToClient(blink::mojom::ServiceWorkerObjectInfoPtr source,
                            blink::TransferableMessage message) override;
   void CountFeature(blink::mojom::WebFeature feature) override;
-
-  // For service worker clients. Keeps the mapping from registration_id to
-  // ServiceWorkerRegistration object.
-  void AddServiceWorkerRegistrationObject(
-      int64_t registration_id,
-      WebServiceWorkerRegistrationImpl* registration);
-  void RemoveServiceWorkerRegistrationObject(int64_t registration_id);
-  bool ContainsServiceWorkerRegistrationObjectForTesting(
-      int64_t registration_id);
-
-  // For service worker clients. Keeps the mapping from version id to
-  // ServiceWorker object.
-  void AddServiceWorkerObject(int64_t version_id, WebServiceWorkerImpl* worker);
-  void RemoveServiceWorkerObject(int64_t version_id);
-  bool ContainsServiceWorkerObjectForTesting(int64_t version_id);
 
   // S13nServiceWorker:
   // For service worker clients.

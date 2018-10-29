@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Získajte inteligentné doplnky Googlu v prehliadači Chromium</translation>
 <translation id="2730884209570016437">Chromium nemôže použiť váš fotoaparát, pretože ho práve používa iná aplikácia</translation>
 <translation id="2797210818057553964">Môžete to kedykoľvek prispôsobiť v Nastaveniach prehliadača Chromium</translation>
+<translation id="2915596697727466327">Chromium používa overenie Face ID na zaistenie oprávneného prístupu k heslám.</translation>
 <translation id="3256316712990552818">Skopírovaná do prehliadača Chromium</translation>
 <translation id="3413120535237193088">Ak chcete mať záložky na všetkých zariadeniach, prihláste sa do prehliadača Chromium.</translation>
 <translation id="3473048256428424907">Zapnite čítačku kódov QR Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Tu sa zobrazia karty, ktoré ste otvorili v prehliadači Chromium na iných zariadeniach.</translation>
 <translation id="495292094137889840">Začnite používať čítačku kódov QR Chromium</translation>
 <translation id="5231355151045086930">Odhlásenie sa z prehliadača Chromium</translation>
-<translation id="5416919929805616771">Páči sa vám prehliadač Chromium? <ph name="BEGIN_LINK" />Ohodnoťte túto aplikáciu<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Vitajte v prehliadači Chromium</translation>
 <translation id="5945387852661427312">Prihlasujete sa pomocou účtu spravovaného doménou <ph name="DOMAIN" /> a jej správcovi tým dávate kontrolu nad vašimi údajmi prehliadača Chromium. Vaše údaje budú natrvalo prepojené s týmto účtom. Odhlásením z prehliadača Chromium odstránite údaje z príslušného zariadenia, avšak naďalej zostanú uložené vo vašom účte Google.</translation>
 <translation id="6068866989048414399">Zmluvné podmienky prehliadača Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Účet na synchronizáciu <ph name="USER_EMAIL1" /> prepínate na <ph name="USER_EMAIL2" />. Vaše existujúce údaje prehliadača Chromium spravuje doména <ph name="DOMAIN" />. Touto akciou odstránite údaje z vášho zariadenia, avšak zostanú naďalej v účte <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Presuňte Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Získajte lepšie prostredie Google v prehliadači Chromium na základe svojej polohy.</translation>
-<translation id="8353224596138547809">Chcete, aby aplikácia Chromium uložila heslo pre tieto stránky?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Nastavenia<ph name="END_LINK" /> si môžete kedykoľvek prispôsobiť. Google môže použiť obsah na weboch, ktoré navštívite, interakcie a aktivitu v prehliadači na prispôsobenie prehliadača Chromium a služieb Googlu, ako sú Prekladač, Vyhľadávanie a reklamy.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
 <translation id="8809780021347235332">Ak chcete ukladať fotky, klepnite na Nastavenia a povoľte prehliadaču Chromium používať fotky</translation>

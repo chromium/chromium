@@ -5,13 +5,29 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ARC_AUTH_ARC_FETCHER_BASE_H_
 #define CHROME_BROWSER_CHROMEOS_ARC_AUTH_ARC_FETCHER_BASE_H_
 
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
 namespace arc {
 
 // Base class for Arc*Fetcher classes, only used to manage the lifetime of their
 // instances.
 class ArcFetcherBase {
  public:
-  virtual ~ArcFetcherBase() = default;
+  ArcFetcherBase();
+  virtual ~ArcFetcherBase();
+
+  void SetURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> factory);
+
+ protected:
+  scoped_refptr<network::SharedURLLoaderFactory>
+  url_loader_factory_for_testing() {
+    return url_loader_factory_for_testing_;
+  }
+
+ private:
+  scoped_refptr<network::SharedURLLoaderFactory>
+      url_loader_factory_for_testing_;
 };
 
 }  // namespace arc

@@ -183,12 +183,11 @@ void InstallShutdownSignalHandlers(
   g_pipe_pid = getpid();
   g_shutdown_pipe_read_fd = pipefd[0];
   g_shutdown_pipe_write_fd = pipefd[1];
-#if !defined(ADDRESS_SANITIZER) && !defined(KEEP_SHADOW_STACKS)
+#if !defined(ADDRESS_SANITIZER)
   const size_t kShutdownDetectorThreadStackSize = PTHREAD_STACK_MIN * 2;
 #else
-  // ASan instrumentation and -finstrument-functions (used for keeping the
-  // shadow stacks) bloat the stack frames, so we need to increase the stack
-  // size to avoid hitting the guard page.
+  // ASan instrumentation bloats the stack frames, so we need to increase the
+  // stack size to avoid hitting the guard page.
   const size_t kShutdownDetectorThreadStackSize = PTHREAD_STACK_MIN * 4;
 #endif
   ShutdownDetector* detector = new ShutdownDetector(

@@ -9,7 +9,7 @@
 Polymer({
   is: 'oobe-update-md',
 
-  behaviors: [OobeDialogHostBehavior],
+  behaviors: [I18nBehavior, OobeDialogHostBehavior],
 
   properties: {
     /**
@@ -18,6 +18,15 @@ Polymer({
     checkingForUpdate: {
       type: Boolean,
       value: true,
+    },
+
+    /**
+     * Shows a warning to the user the update is about to proceed over a
+     * cellular network, and asks the user to confirm.
+     */
+    requiresPermissionForCellular: {
+      type: Boolean,
+      value: false,
     },
 
     /**
@@ -102,5 +111,18 @@ Polymer({
    */
   isNotAllowedOrUpdateCompleted_: function(isAllowed, updateCompleted) {
     return !isAllowed || updateCompleted;
+  },
+
+  hideUpdatingScreen_: function(
+      checkingForUpdate, requiresPermissionForCellular) {
+    return checkingForUpdate || requiresPermissionForCellular;
+  },
+
+  onBackClicked_: function() {
+    chrome.send('login.UpdateScreen.userActed', ['update-reject-cellular']);
+  },
+
+  onNextClicked_: function() {
+    chrome.send('login.UpdateScreen.userActed', ['update-accept-cellular']);
   },
 });

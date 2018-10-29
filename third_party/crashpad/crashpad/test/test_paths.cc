@@ -50,7 +50,7 @@ base::FilePath TestDataRootInternal() {
   // not appear as expected at /pkg/assets. Override the default so that tests
   // can find their data for now.
   // https://crashpad.chromium.org/bug/196.
-  asset_path = base::FilePath("/system/data/crashpad_test_data");
+  asset_path = base::FilePath("/system/data/crashpad_tests");
 #endif
   if (!IsTestDataRoot(asset_path)) {
     LOG(WARNING) << "Test data root seems invalid, continuing anyway";
@@ -133,7 +133,7 @@ base::FilePath TestPaths::Executable() {
   // not appear as expected at /pkg/bin. Override the default of /pkg/bin/app
   // so that tests can find the correct location for now.
   // https://crashpad.chromium.org/bug/196.
-  executable_path = base::FilePath("/system/test/crashpad_test_data/app");
+  executable_path = base::FilePath("/system/bin/crashpad_tests/app");
 #endif
   return executable_path;
 }
@@ -208,7 +208,7 @@ base::FilePath TestPaths::BuildArtifact(
       // /pkg/bin/app so that tests can find the correct location for now.
       // https://crashpad.chromium.org/bug/196.
       directory =
-          base::FilePath(FILE_PATH_LITERAL("/system/test/crashpad_test_data"));
+          base::FilePath(FILE_PATH_LITERAL("/system/bin/crashpad_tests"));
 #else
       directory = base::FilePath(FILE_PATH_LITERAL("/pkg/bin"));
 #endif
@@ -238,7 +238,7 @@ base::FilePath TestPaths::BuildArtifact(
       // things are actually run from a package.
       // https://crashpad.chromium.org/bug/196.
       directory =
-          base::FilePath(FILE_PATH_LITERAL("/system/test/crashpad_test_data"));
+          base::FilePath(FILE_PATH_LITERAL("/system/data/crashpad_tests"));
 #endif
       extension = FILE_PATH_LITERAL(".pem");
       break;

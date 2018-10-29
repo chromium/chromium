@@ -57,7 +57,7 @@ class DOMTimerTest : public RenderingTest {
         .GetFrame()
         ->GetScriptController()
         .ExecuteScriptInMainWorldAndReturnValue(ScriptSourceCode(expr), KURL(),
-                                                kNotSharableCrossOrigin);
+                                                kOpaqueResource);
   }
 
   Vector<double> ToDoubleArray(v8::Local<v8::Value> value,
@@ -75,7 +75,7 @@ class DOMTimerTest : public RenderingTest {
   void ExecuteScriptAndWaitUntilIdle(const char* script_text) {
     ScriptSourceCode script(script_text);
     GetDocument().GetFrame()->GetScriptController().ExecuteScriptInMainWorld(
-        script, KURL(), kNotSharableCrossOrigin);
+        script, KURL(), kOpaqueResource);
     platform_->RunUntilIdle();
   }
 };

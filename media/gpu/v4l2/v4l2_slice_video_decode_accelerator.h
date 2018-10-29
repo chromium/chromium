@@ -91,6 +91,7 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
     ~OutputRecord();
     bool at_device;
     bool at_client;
+    size_t num_times_sent_to_client;
     int32_t picture_id;
     GLuint client_texture_id;
     GLuint texture_id;

@@ -7,31 +7,11 @@
 #include "base/bind.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "third_party/blink/public/platform/scheduler/child/webthread_base.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/waitable_event.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
-
-namespace {
-
-struct ThreadLocalStorage {
-  WebThread* current_thread = nullptr;
-};
-
-ThreadLocalStorage* GetThreadLocalStorage() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<ThreadLocalStorage>, tls, ());
-  return tls;
-}
-
-void PrepareCurrentThread(WaitableEvent* event, WebThread* thread) {
-  GetThreadLocalStorage()->current_thread = thread;
-  event->Signal();
-}
-
-}  // namespace
 
 TestingPlatformSupportWithMockScheduler::
     TestingPlatformSupportWithMockScheduler()
@@ -46,7 +26,8 @@ TestingPlatformSupportWithMockScheduler::
 
   scheduler_ = std::make_unique<scheduler::MainThreadSchedulerImpl>(
       std::move(sequence_manager), base::nullopt);
-  thread_ = scheduler_->CreateMainThread();
+  main_thread_overrider_ = std::make_unique<ScopedMainThreadOverrider>(
+      scheduler_->CreateMainThread());
   // Set the work batch size to one so TakePendingTasks behaves as expected.
   scheduler_->GetSchedulerHelperForTesting()->SetWorkBatchSizeForTesting(1);
 
@@ -57,31 +38,6 @@ TestingPlatformSupportWithMockScheduler::
     ~TestingPlatformSupportWithMockScheduler() {
   WTF::SetTimeFunctionsForTesting(nullptr);
   scheduler_->Shutdown();
-}
-
-std::unique_ptr<WebThread>
-TestingPlatformSupportWithMockScheduler::CreateThread(
-    const WebThreadCreationParams& params) {
-  std::unique_ptr<scheduler::WebThreadBase> thread =
-      scheduler::WebThreadBase::CreateWorkerThread(params);
-  thread->Init();
-  WaitableEvent event;
-  thread->GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(PrepareCurrentThread, base::Unretained(&event),
-                                base::Unretained(thread.get())));
-  event.Wait();
-  return std::move(thread);
-}
-
-WebThread* TestingPlatformSupportWithMockScheduler::CurrentThread() {
-  DCHECK_EQ(thread_->IsCurrentThread(), IsMainThread());
-
-  if (thread_->IsCurrentThread()) {
-    return thread_.get();
-  }
-  ThreadLocalStorage* storage = GetThreadLocalStorage();
-  DCHECK(storage->current_thread);
-  return storage->current_thread;
 }
 
 void TestingPlatformSupportWithMockScheduler::RunSingleTask() {

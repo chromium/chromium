@@ -19,12 +19,17 @@ class GURL;
 namespace url {
 class Origin;
 }
+namespace net {
+struct RedirectInfo;
+}  // namespace net
 namespace network {
+struct ResourceResponseHead;
 class SimpleURLLoader;
 }  // namespace network
 
 namespace content {
 class NavigationHandle;
+enum class OriginPolicyErrorReason;
 
 // The OriginPolicyThrottle is responsible for deciding whether an origin
 // policy should be fetched, and doing so when that is positive.
@@ -63,15 +68,25 @@ class CONTENT_EXPORT OriginPolicyThrottle : public NavigationThrottle {
 
  private:
   using FetchCallback = base::OnceCallback<void(std::unique_ptr<std::string>)>;
+  using RedirectCallback =
+      base::RepeatingCallback<void(const net::RedirectInfo&,
+                                   const network::ResourceResponseHead&,
+                                   std::vector<std::string>*)>;
 
   explicit OriginPolicyThrottle(NavigationHandle* handle);
 
   static KnownVersionMap& GetKnownVersions();
 
   const url::Origin GetRequestOrigin();
-  void FetchPolicy(const GURL& url, FetchCallback done);
+  void FetchPolicy(const GURL& url,
+                   FetchCallback done,
+                   RedirectCallback redirect);
   void OnTheGloriousPolicyHasArrived(
       std::unique_ptr<std::string> policy_content);
+  void OnRedirect(const net::RedirectInfo& redirect_info,
+                  const network::ResourceResponseHead& response_head,
+                  std::vector<std::string>* to_be_removed_headers);
+  void CancelNavigation(OriginPolicyErrorReason reason);
 
   // We may need the SimpleURLLoader to download the policy. The loader must
   // be kept alive while the load is ongoing.

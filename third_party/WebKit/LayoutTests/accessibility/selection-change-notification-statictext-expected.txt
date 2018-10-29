@@ -4,7 +4,6 @@ Tests that a 'selected text changed' notification fires on a contentEditable ele
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Got SelectedTextChanged notification on root element.
 PASS successfullyParsed is true
 

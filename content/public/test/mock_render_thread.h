@@ -46,7 +46,7 @@ class RenderMessageFilter;
 // This class is a very simple mock of RenderThread. It simulates an IPC channel
 // which supports only three messages:
 // ViewHostMsg_CreateWidget : sync message sent by the Widget.
-// ViewMsg_Close : async, send to the Widget.
+// WidgetMsg_Close : async, send to the Widget.
 class MockRenderThread : public RenderThread {
  public:
   MockRenderThread();
@@ -79,6 +79,7 @@ class MockRenderThread : public RenderThread {
   bool ResolveProxy(const GURL& url, std::string* proxy_list) override;
   base::WaitableEvent* GetShutdownEvent() override;
   int32_t GetClientId() override;
+  bool IsOnline() override;
   void SetRendererProcessType(
       blink::scheduler::RendererProcessType type) override;
   blink::WebString GetUserAgent() const override;

@@ -101,17 +101,18 @@ public class AutofillPaymentMethodsFragment
 
         // Add 'Add credit card' button. Tap of it brings up card editor which allows users type in
         // new credit cards.
-        Preference add_card_pref = new Preference(getActivity());
-        Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
-        plusIcon.mutate();
-        plusIcon.setColorFilter(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.pref_accent_color),
-                PorterDuff.Mode.SRC_IN);
-        add_card_pref.setIcon(plusIcon);
-        add_card_pref.setTitle(R.string.autofill_create_credit_card);
-        add_card_pref.setFragment(AutofillLocalCardEditor.class.getName());
-        add_card_pref.setEnabled(PersonalDataManager.isAutofillCreditCardEnabled());
-        getPreferenceScreen().addPreference(add_card_pref);
+        if (PersonalDataManager.isAutofillCreditCardEnabled()) {
+            Preference add_card_pref = new Preference(getActivity());
+            Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
+            plusIcon.mutate();
+            plusIcon.setColorFilter(
+                    ApiCompatibilityUtils.getColor(getResources(), R.color.pref_accent_color),
+                    PorterDuff.Mode.SRC_IN);
+            add_card_pref.setIcon(plusIcon);
+            add_card_pref.setTitle(R.string.autofill_create_credit_card);
+            add_card_pref.setFragment(AutofillLocalCardEditor.class.getName());
+            getPreferenceScreen().addPreference(add_card_pref);
+        }
 
         // Add the link to payment apps only after the credit card list is rebuilt.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_PAYMENT_APPS)

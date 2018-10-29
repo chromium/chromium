@@ -19,7 +19,7 @@ async_test(function(t) {
 
         // User gesture initiated.
         userGestureInitiated = true;
-        var playCoords = mediaControlsButtonCoordinates(video, "overlay-play-button");
+        var playCoords = elementCoordinates(enabledPlayButton(video));
         eventSender.mouseMoveTo(playCoords[0], playCoords[1]);
         eventSender.mouseDown();
         eventSender.mouseUp();

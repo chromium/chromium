@@ -17,7 +17,7 @@
 // File: strip.h
 // -----------------------------------------------------------------------------
 //
-// This file contains various functions for stripping substrings from a std::string.
+// This file contains various functions for stripping substrings from a string.
 #ifndef ABSL_STRINGS_STRIP_H_
 #define ABSL_STRINGS_STRIP_H_
 
@@ -33,7 +33,7 @@ namespace absl {
 
 // ConsumePrefix()
 //
-// Strips the `expected` prefix from the start of the given std::string, returning
+// Strips the `expected` prefix from the start of the given string, returning
 // `true` if the strip operation succeeded or false otherwise.
 //
 // Example:
@@ -48,7 +48,7 @@ inline bool ConsumePrefix(absl::string_view* str, absl::string_view expected) {
 }
 // ConsumeSuffix()
 //
-// Strips the `expected` suffix from the end of the given std::string, returning
+// Strips the `expected` suffix from the end of the given string, returning
 // `true` if the strip operation succeeded or false otherwise.
 //
 // Example:
@@ -64,9 +64,9 @@ inline bool ConsumeSuffix(absl::string_view* str, absl::string_view expected) {
 
 // StripPrefix()
 //
-// Returns a view into the input std::string 'str' with the given 'prefix' removed,
-// but leaving the original std::string intact. If the prefix does not match at the
-// start of the std::string, returns the original std::string instead.
+// Returns a view into the input string 'str' with the given 'prefix' removed,
+// but leaving the original string intact. If the prefix does not match at the
+// start of the string, returns the original string instead.
 ABSL_MUST_USE_RESULT inline absl::string_view StripPrefix(
     absl::string_view str, absl::string_view prefix) {
   if (absl::StartsWith(str, prefix)) str.remove_prefix(prefix.size());
@@ -75,9 +75,9 @@ ABSL_MUST_USE_RESULT inline absl::string_view StripPrefix(
 
 // StripSuffix()
 //
-// Returns a view into the input std::string 'str' with the given 'suffix' removed,
-// but leaving the original std::string intact. If the suffix does not match at the
-// end of the std::string, returns the original std::string instead.
+// Returns a view into the input string 'str' with the given 'suffix' removed,
+// but leaving the original string intact. If the suffix does not match at the
+// end of the string, returns the original string instead.
 ABSL_MUST_USE_RESULT inline absl::string_view StripSuffix(
     absl::string_view str, absl::string_view suffix) {
   if (absl::EndsWith(str, suffix)) str.remove_suffix(suffix.size());

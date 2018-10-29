@@ -231,7 +231,7 @@ const char kApplicationLocaleBackup[] = "intl.app_locale_backup";
 
 // List of locales the UI is allowed to be displayed in by policy. The list is
 // empty if no restriction is being enforced.
-const char kAllowedUILocales[] = "intl.allowed_ui_locales";
+const char kAllowedLanguages[] = "intl.allowed_languages";
 #endif
 
 // The default character encoding to assume for a web page in the
@@ -829,19 +829,6 @@ const char kTextToSpeechPitch[] = "settings.tts.speech_pitch";
 // system volume, and higher than 1.0 is louder.
 const char kTextToSpeechVolume[] = "settings.tts.speech_volume";
 
-// This is a timestamp to keep track of the screen start time when a unichrome
-// user starts using the device for the first time of the day. Used to calculate
-// the screen time limit and this will be refreshed daily.
-const char kFirstScreenStartTime[] = "screen_time.first_screen.start_time";
-
-// This is a timestamp to keep track of the screen start time for the current
-// active screen. The pref is used to restore the screen start time after
-// browser crashes and device reboots.
-const char kCurrentScreenStartTime[] = "screen_time.current_screen.start_time";
-
-// How much screen time in minutes has been used.
-const char kScreenTimeMinutesUsed[] = "screen_time.time_usage";
-
 // A dictionary preference holding the usage time limit definitions for a user.
 const char kUsageTimeLimit[] = "screen_time.limit";
 
@@ -872,6 +859,25 @@ const char kTPMFirmwareUpdateCleanupDismissed[] =
 // Shares for Chrome OS feature.
 const char kNetBiosShareDiscoveryEnabled[] =
     "network_file_shares.netbios_discovery.enabled";
+
+// Amount of screen time that a child user has used in the current day.
+const char kChildScreenTimeMilliseconds[] = "child_screen_time";
+
+// Last time the kChildScreenTimeMilliseconds was saved.
+const char kLastChildScreenTimeSaved[] = "last_child_screen_time_saved";
+
+// Last time that the kChildScreenTime pref was reset.
+const char kLastChildScreenTimeReset[] = "last_child_screen_time_reset";
+
+// Boolean pref indicating whether the NTLM authentication protocol should be
+// enabled when mounting an SMB share with a user credential by the Network File
+// Shares for Chrome OS feature.
+const char kNTLMShareAuthenticationEnabled[] =
+    "network_file_shares.ntlm_share_authentication.enabled";
+
+// List of preconfigured network file shares.
+const char kNetworkFileSharesPreconfiguredShares[] =
+    "network_file_shares.preconfigured_shares";
 
 #endif  // defined(OS_CHROMEOS)
 
@@ -1185,10 +1191,6 @@ const char kPrintingSizeDefault[] = "printing.size_default";
 const char kDefaultSupervisedUserFilteringBehavior[] =
     "profile.managed.default_filtering_behavior";
 
-// Whether this user is permitted to create supervised users.
-const char kSupervisedUserCreationAllowed[] =
-    "profile.managed_user_creation_allowed";
-
 // List pref containing the users supervised by this user.
 const char kSupervisedUsers[] = "profile.managed_users";
 
@@ -1277,13 +1279,6 @@ const char kHasSeenWelcomePage[] = "browser.has_seen_welcome_page";
 const char kHasSeenWin10PromoPage[] = "browser.has_seen_win10_promo_page";
 
 #if defined(GOOGLE_CHROME_BUILD)
-// Whether or not this profile has been shown the new user experience promo
-// page for google apps.
-const char kHasSeenGoogleAppsPromoPage[] =
-    "browser.has_seen_google_apps_promo_page";
-// Whether or not this profile has been shown the new user experience promo
-// page for adding email provider to bookmark.
-const char kHasSeenEmailPromoPage[] = "browser.has_seen_email_promo_page";
 // Whether or not this user went through the first-run experience after NUX
 // launched. This is necessary for determining which users to keep "tagging"
 // with the NUX finch experiment group, and allows a more accurate analysis.
@@ -1736,6 +1731,9 @@ const char kVideoCaptureAllowedUrls[] = "hardware.video_capture_allowed_urls";
 // Values are defined by DemoSession::DemoModeConfig enum.
 const char kDemoModeConfig[] = "demo_mode.config";
 
+// A string pref holding the value of the default locale for demo sessions.
+const char kDemoModeDefaultLocale[] = "demo_mode.default_locale";
+
 // Dictionary for transient storage of settings that should go into device
 // settings storage before owner has been assigned.
 const char kDeviceSettingsCache[] = "signed_settings_cache";
@@ -1841,9 +1839,10 @@ const char kOobeScreenPending[] = "OobeScreenPending";
 // and get enrolled into a domain automatically.
 const char kOobeControllerDetected[] = "OobeControllerDetected";
 
-// A boolean pref to indicate if the Recommend App screen in OOBE is finished
+// A boolean pref to indicate if the marketing opt-in screen in OOBE is finished
 // for the user.
-const char kOobeRecommendAppScreenFinished[] = "OobeRecommendAppScreenFinished";
+const char kOobeMarketingOptInScreenFinished[] =
+    "OobeMarketingOptInScreenFinished";
 
 // A boolean pref for whether the Goodies promotion webpage has been displayed,
 // or otherwise disqualified for auto-display, on this device.
@@ -1880,7 +1879,7 @@ const char kLogoutStartedLast[] = "chromeos.logout-started";
 // be an Android app).
 const char kIsBootstrappingSlave[] = "is_oobe_bootstrapping_slave";
 
-// A preference that controlles Android status reporting.
+// A boolean preference controlling Android status reporting.
 const char kReportArcStatusEnabled[] = "arc.status_reporting_enabled";
 
 // Dictionary indicating current network bandwidth throttling settings.
@@ -1915,6 +1914,9 @@ const char kRemoveUsersRemoteCommand[] = "remove_users_remote_command";
 
 // Whether camera-produced media files have been consolidated to one place.
 const char kCameraMediaConsolidated[] = "camera_media_consolidated";
+
+// Whether the user is allowed to disconnect and configure VPN connections.
+const char kVpnConfigAllowed[] = "vpn_config_allowed";
 #endif  // defined(OS_CHROMEOS)
 
 // Whether there is a Flash version installed that supports clearing LSO data.
@@ -2217,6 +2219,10 @@ const char kBrowserAddPersonEnabled[] = "profile.add_person_enabled";
 // Whether profile can be used before sign in.
 const char kForceBrowserSignin[] = "profile.force_browser_signin";
 
+// Boolean which indicates if the user is allowed to sign into Chrome on the
+// next startup.
+const char kSigninAllowedOnNextStartup[] = "signin.allowed_on_next_startup";
+
 // Device identifier used by CryptAuth stored in local state. This ID is
 // combined with a user ID before being registered with the CryptAuth server,
 // so it can't correlate users on the same device.
@@ -2249,6 +2255,13 @@ const char kRegisteredSupervisedUserWhitelists[] =
 // Boolean that specifies whether the cloud policy will override conflicting
 // machine policy.
 const char kCloudPolicyOverridesMachinePolicy[] = "policy.cloud_override";
+
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+// Boolean that indicates whether Chrome enterprise cloud reporting is enabled
+// or not.
+const char kCloudReportingEnabled[] =
+    "enterprise_reporting.chrome_cloud_reporting";
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Policy that indicates how to handle animated images.

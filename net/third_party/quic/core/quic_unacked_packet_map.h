@@ -16,6 +16,10 @@
 
 namespace quic {
 
+namespace test {
+class QuicUnackedPacketMapPeer;
+}  // namespace test
+
 // Class which tracks unacked packets for three purposes:
 // 1) Track retransmittable data, including multiple transmissions of frames.
 // 2) Track packets and bytes in flight for congestion control.
@@ -77,12 +81,12 @@ class QUIC_EXPORT_PRIVATE QuicUnackedPacketMap {
   // acked.
   bool HasRetransmittableFrames(const QuicTransmissionInfo& info) const;
 
-  // Returns true if there are any unacked packets.
-  bool HasUnackedPackets() const;
-
   // Returns true if there are any unacked packets which have retransmittable
   // frames.
   bool HasUnackedRetransmittableFrames() const;
+
+  // Returns true if there are no packets present in the unacked packet map.
+  bool empty() const { return unacked_packets_.empty(); }
 
   // Returns the largest packet number that has been sent.
   QuicPacketNumber largest_sent_packet() const { return largest_sent_packet_; }
@@ -190,6 +194,8 @@ class QUIC_EXPORT_PRIVATE QuicUnackedPacketMap {
   }
 
  private:
+  friend class test::QuicUnackedPacketMapPeer;
+
   // Called when a packet is retransmitted with a new packet number.
   // |old_packet_number| will remain unacked, but will have no
   // retransmittable data associated with it. Retransmittable frames will be

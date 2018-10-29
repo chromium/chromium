@@ -22,12 +22,6 @@ declare_args() {
   cast_test_extra_flags = ""
 }
 
-config("playready_config") {
-  if (use_playready) {
-    defines = [ "PLAYREADY_CDM_AVAILABLE" ]
-  }
-}
-
 # Depends on all non-test targets that should be built by the Chromecast
 # internal build infrastructure.
 group("all") {
@@ -141,6 +135,15 @@ cast_test_group("cast_tests") {
         "--enable-local-file-accesses",
         "--test-launcher-jobs=1",
       ]
+
+      gtest_excludes = []
+
+      # TODO(b/112440248): This test was failing:
+      #   * On v1 and Cast Audio devices since 2017-03-15.
+      #   * On desktop builds since 2018-08-22
+      # Also see: b/36238710, b/36239051, hotlist/461351
+      gtest_excludes += [ "RendererPrelauncherTest.ReusedRenderer" ]
+
       if (!is_cast_desktop_build) {
         args += [ "--use-gpu-in-tests" ]
 
@@ -148,19 +151,10 @@ cast_test_group("cast_tests") {
         #    Once all of the CastMediaBlockerTest.* have been un-DISABLEd and
         #    are running successfully, revisit these tests and see if they pass
         #    on devices. (crbug/665118, internal b/32023194)
-        gtest_excludes = [
+        gtest_excludes += [
           "CastMediaBlockerBrowserTest.Video_BlockUnblock",
           "CastMediaBlockerBrowserTest.Audio_BlockUnblock",
         ]
-
-        # TODO(mbjorge): The ReusedRenderer test is failing on v1 and cast audio
-        # devices. Temporarily disable them as part of an effort_to re-green
-        # the unittests. Current failures (2017-03-15) are being disabled to get
-        # back to a green state. Re-enable once the tests have been fixed.
-        # Limitations in the build mean this unfortunately is getting disabled
-        # across all devices, even though it is only failing on some.
-        # b/36238710, b/36239051, hotlist/461351
-        gtest_excludes += [ "RendererPrelauncherTest.ReusedRenderer" ]
       }
 
       if (!is_cast_desktop_build && !is_cast_audio_only && !enable_assistant) {
@@ -208,11 +202,8 @@ cast_test_group("cast_tests") {
     gtest_excludes = []
     if (target_os == "linux") {
       if (is_cast_desktop_build) {
-        # Disable PartitionAllocDeathTest.Repeated*ReturnNullDirect (b/67975693)
-        gtest_excludes += [
-          "PartitionAllocDeathTest.RepeatedAllocReturnNullDirect",
-          "PartitionAllocDeathTest.RepeatedReallocReturnNullDirect",
-        ]
+        # Disable PartitionAllocDeathTest.* (b/67975693)
+        gtest_excludes += [ "PartitionAllocDeathTest.*" ]
       } else {
         # Disable ProcessMetricsTest.GetNumberOfThreads (b/15610509)
         # Disable ProcessUtilTest.* (need to define OS_ANDROID)
@@ -241,11 +232,15 @@ cast_test_group("cast_tests") {
 
   cc_unittests_filter = {
     test_name = "cc_unittests"
+
+    # Temporarily disable all test cases (b/113324890)
+    gtest_excludes = [ "*" ]
+
     if (!is_cast_desktop_build) {
       #Disable ToColorSpace/ColorTransformPixelTest*  (b/64346790)
       #Disable ImageBackgroundFilter* (b/64346875)
       #Disable LayerTreeHostTilesTestPartialInvalidation* (b/65844132)
-      gtest_excludes = [
+      gtest_excludes += [
         "ToColorSpace/ColorTransformPixelTest.*",
         "ImageBackgroundFilter.*",
         "LayerTreeHostTilesTestPartialInvalidation.*",
@@ -577,21 +572,23 @@ group("chromecast_locales_pak") {
 buildflag_header("chromecast_buildflags") {
   header = "chromecast_buildflags.h"
   flags = [
+    "DEFAULT_COMMAND_LINE_FLAGS=\"$default_command_line_flags\"",
+    "DISABLE_SECURE_FLAC_OPUS_DECODING=$disable_secure_flac_and_opus_decoding",
     "ENABLE_ASSISTANT=$enable_assistant",
+    "ENABLE_CAST_FRAGMENT=$enable_cast_fragment",
+    "ENABLE_CHROMECAST_EXTENSIONS=$enable_chromecast_extensions",
+    "ENABLE_HEADLESS_MUSIC_MODE=$enable_headless_music_mode",
+    "ENABLE_PLAYREADY=$enable_playready",
     "ENABLE_VOLUME_TABLES_ACCESS=$enable_volume_tables_access",
     "IS_ANDROID_THINGS=$is_android_things",
+    "IS_ANDROID_THINGS_NON_PUBLIC=$is_android_things_non_public",
     "IS_CAST_AUDIO_ONLY=$is_cast_audio_only",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
     "IS_CAST_USING_CMA_BACKEND=$is_cast_using_cma_backend",
-    "SUPPORTS_MULTIZONE=$supports_multizone",
-    "ENABLE_HEADLESS_MUSIC_MODE=$enable_headless_music_mode",
-    "ENABLE_CHROMECAST_EXTENSIONS=$enable_chromecast_extensions",
-    "ENABLE_CAST_FRAGMENT=$enable_cast_fragment",
-    "IS_ANDROID_THINGS_NON_PUBLIC=$is_android_things_non_public",
     "IS_SINGLE_VOLUME=$is_single_volume",
+    "SUPPORTS_MULTIZONE=$supports_multizone",
     "USE_ANDROID_USER_AGENT=$use_android_user_agent",
     "USE_CHROMECAST_CDMS=$use_chromecast_cdms",
-    "DEFAULT_COMMAND_LINE_FLAGS=\"$default_command_line_flags\"",
   ]
 }
 

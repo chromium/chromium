@@ -168,7 +168,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   std::vector<ui::LatencyInfo> stored_latency_info_;
   std::vector<SurfaceId> surfaces_to_ack_on_next_draw_;
 
-  base::circular_deque<std::vector<Surface::PresentedCallback>>
+  base::circular_deque<
+      std::pair<base::TimeTicks, std::vector<Surface::PresentedCallback>>>
       pending_presented_callbacks_;
 
   int64_t swapped_trace_id_ = 0;

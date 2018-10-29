@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
+#include "headless/lib/browser/headless_web_contents_impl.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace headless {

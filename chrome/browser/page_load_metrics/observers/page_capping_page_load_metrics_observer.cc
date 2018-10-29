@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/default_tick_clock.h"
 #include "chrome/browser/data_use_measurement/page_load_capping/chrome_page_load_capping_features.h"
 #include "chrome/browser/data_use_measurement/page_load_capping/page_load_capping_blacklist.h"
 #include "chrome/browser/data_use_measurement/page_load_capping/page_load_capping_infobar_delegate.h"
@@ -38,6 +39,8 @@ const char kMediaPageTypical[] = "MediaPageTypicalLargePageMiB";
 const char kPageTypical[] = "PageTypicalLargePageMiB";
 
 const char kPageFuzzing[] = "PageFuzzingKiB";
+
+const char kInfoBarTimeoutInMilliseconds[] = "InfoBarTimeoutInMilliseconds";
 
 // The page load capping bytes threshold for the page. There are seperate
 // thresholds for media and non-media pages. Returns empty optional if the
@@ -77,16 +80,25 @@ int64_t GetEstimatedSavings(int64_t network_bytes,
   return std::max<int64_t>((typical_size - network_bytes), 0);
 }
 
+base::TimeDelta GetPageLoadCappingTimeout() {
+  return base::TimeDelta::FromMilliseconds(
+      base::GetFieldTrialParamByFeatureAsInt(
+          data_use_measurement::page_load_capping::features::
+              kDetectingHeavyPages,
+          kInfoBarTimeoutInMilliseconds, 8000));
+}
+
 }  // namespace
 
 PageCappingPageLoadMetricsObserver::PageCappingPageLoadMetricsObserver()
-    : weak_factory_(this) {}
+    : clock_(base::DefaultTickClock::GetInstance()), weak_factory_(this) {}
 PageCappingPageLoadMetricsObserver::~PageCappingPageLoadMetricsObserver() {}
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PageCappingPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id) {
+  last_data_use_time_ = clock_->NowTicks();
   web_contents_ = navigation_handle->GetWebContents();
   page_cap_ = GetPageLoadCappingBytesThreshold(false /* media_page_load */);
   url_host_ = navigation_handle->GetURL().host();
@@ -98,12 +110,14 @@ PageCappingPageLoadMetricsObserver::OnCommit(
   return page_load_metrics::PageLoadMetricsObserver::CONTINUE_OBSERVING;
 }
 
-void PageCappingPageLoadMetricsObserver::OnLoadedResource(
-    const page_load_metrics::ExtraRequestCompleteInfo&
-        extra_request_complete_info) {
-  if (extra_request_complete_info.was_cached)
-    return;
-  network_bytes_ += extra_request_complete_info.raw_body_bytes;
+void PageCappingPageLoadMetricsObserver::OnResourceDataUseObserved(
+    const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
+        resources) {
+  last_data_use_time_ = clock_->NowTicks();
+  for (auto const& resource : resources)
+    network_bytes_ += resource->delta_bytes;
+
+  DCHECK_LE(0u, network_bytes_);
   MaybeCreate();
 }
 
@@ -116,21 +130,25 @@ void PageCappingPageLoadMetricsObserver::MaybeCreate() {
   if (!web_contents_)
     return;
 
-  // If there is no capping threshold, the threshold or the threshold is not
-  // met, do not show an InfoBar. Use the fuzzing offset to increase the number
-  // of bytes needed.
+  // If there is no capping threshold or the threshold is not met, do not show
+  // an InfoBar. Use the fuzzing offset to increase the number of bytes needed.
   if (!page_cap_ || (network_bytes_ - fuzzing_offset_) < page_cap_.value())
     return;
 
   if (IsBlacklisted())
     return;
 
-  if (PageLoadCappingInfoBarDelegate::Create(
+  // Set the state preemptively in case one of the callbacks is called
+  // synchronously, if the InfoBar is not created, set it back.
+  page_capping_state_ = PageCappingState::kInfoBarShown;
+  if (!PageLoadCappingInfoBarDelegate::Create(
           web_contents_,
           base::BindRepeating(
               &PageCappingPageLoadMetricsObserver::PauseSubresourceLoading,
-              weak_factory_.GetWeakPtr()))) {
-    page_capping_state_ = PageCappingState::kInfoBarShown;
+              weak_factory_.GetWeakPtr()),
+          base::BindRepeating(&PageCappingPageLoadMetricsObserver::TimeToExpire,
+                              weak_factory_.GetWeakPtr()))) {
+    page_capping_state_ = PageCappingState::kInfoBarNotShown;
   }
 }
 
@@ -332,4 +350,23 @@ PageCappingPageLoadMetricsObserver::GetPageLoadCappingBlacklist() const {
     return nullptr;
 
   return page_capping_service->page_load_capping_blacklist();
+}
+
+void PageCappingPageLoadMetricsObserver::TimeToExpire(
+    base::TimeDelta* time_to_expire) const {
+  DCHECK(time_to_expire);
+  DCHECK_EQ(*time_to_expire, base::TimeDelta());
+  DCHECK_EQ(PageCappingState::kInfoBarShown, page_capping_state_);
+  DCHECK(last_data_use_time_);
+  auto expiration_time =
+      (last_data_use_time_.value() + GetPageLoadCappingTimeout());
+  if (expiration_time < clock_->NowTicks())
+    return;
+
+  *time_to_expire = expiration_time - clock_->NowTicks();
+}
+
+void PageCappingPageLoadMetricsObserver::SetTickClockForTesting(
+    base::TickClock* clock) {
+  clock_ = clock;
 }

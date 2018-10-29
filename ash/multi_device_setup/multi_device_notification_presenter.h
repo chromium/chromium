@@ -36,9 +36,8 @@ namespace ash {
 //
 // The behavior caused by clicking a notification depends its content as
 // described above:
-// (1) triggers the setup UI to appear to prompt setup flow,
-// (2) opens Settings/Connected Devices/Change Device, and
-// (3) opens Setting/Connected Devices.
+// (1) triggers the setup UI to appear to prompt setup flow and
+// (2) & (3) open the Connected Devices subpage in Settings.
 //
 // Note that if one notification is showing and another one is triggered, the
 // old text is replaced (if it's different) and the notification pops up again.
@@ -53,15 +52,16 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
 
   // Removes the notification created by NotifyPotentialHostExists() or does
   // nothing if that notification is not currently displayed.
-  // TODO(khorimoto): Change this to Mojo function.
   void RemoveMultiDeviceSetupNotification();
 
  protected:
   // multidevice_setup::mojom::AccountStatusChangeDelegate:
   void OnPotentialHostExistsForNewUser() override;
+  void OnNoLongerNewUser() override;
   void OnConnectedHostSwitchedForExistingUser(
       const std::string& new_host_device_name) override;
-  void OnNewChromebookAddedForExistingUser() override;
+  void OnNewChromebookAddedForExistingUser(
+      const std::string& new_host_device_name) override;
 
   // SessionObserver:
   void OnUserSessionAdded(const AccountId& account_id) override;
@@ -80,7 +80,6 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
    public:
     virtual ~OpenUiDelegate();
     virtual void OpenMultiDeviceSetupUi();
-    virtual void OpenChangeConnectedPhoneSettings();
     virtual void OpenConnectedDevicesSettings();
   };
 

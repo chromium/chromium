@@ -73,9 +73,6 @@ const char kUseGL[]                         = "use-gl";
 // context will never be lost in any situations, say, a GPU reset.
 const char kGpuNoContextLost[]              = "gpu-no-context-lost";
 
-// Disables the use of DirectComposition to draw to the screen.
-const char kDisableDirectComposition[] = "disable-direct-composition";
-
 // Flag used for Linux tests: for desktop GL bindings, try to load this GL
 // library first, but fall back to regular library if loading fails.
 const char kTestGLLib[]                     = "test-gl-lib";
@@ -114,7 +111,6 @@ const char kDisableDirectCompositionLayers[] =
 // GpuProcessHost to the GPU Process. Add your switch to this list if you need
 // to read it in the GPU process, else don't add it.
 const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
-    kDisableDirectComposition,
     kDisableGpuVsync,
     kDisableD3D11,
     kDisableES3GLContext,

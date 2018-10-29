@@ -35,6 +35,7 @@ class UI_BASE_IME_EXPORT InputMethodAuraLinux
 
   // Overriden from ui::LinuxInputMethodContextDelegate
   void OnCommit(const base::string16& text) override;
+  void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
   void OnPreeditChanged(const CompositionText& composition_text) override;
   void OnPreeditEnd() override;
   void OnPreeditStart() override {}

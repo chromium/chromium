@@ -33,6 +33,7 @@ class TestConnectorFactory;
 namespace update_client {
 
 class ActivityDataService;
+class ProtocolHandlerFactory;
 
 #define POST_INTERCEPT_SCHEME "https"
 #define POST_INTERCEPT_HOSTNAME "localhost2"
@@ -100,6 +101,8 @@ class TestConfigurator : public Configurator {
   bool IsPerUserInstall() const override;
   std::vector<uint8_t> GetRunActionKeyHash() const override;
   std::string GetAppGuid() const override;
+  std::unique_ptr<ProtocolHandlerFactory> GetProtocolHandlerFactory()
+      const override;
 
   void SetBrand(const std::string& brand);
   void SetOnDemandTime(int seconds);

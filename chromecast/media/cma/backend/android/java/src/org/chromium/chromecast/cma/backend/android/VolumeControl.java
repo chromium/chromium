@@ -45,7 +45,7 @@ class VolumeControl {
         Settings(int streamType) {
             mStreamType = streamType;
             mMaxVolumeIndexAsFloat = (float) mAudioManager.getStreamMaxVolume(mStreamType);
-            mMinVolumeIndex = mAudioManager.getStreamMinVolume(mStreamType);
+            mMinVolumeIndex = getStreamMinVolume(mAudioManager, mStreamType);
             refreshVolume();
             refreshMuteState();
         }
@@ -259,6 +259,14 @@ class VolumeControl {
     @CalledByNative
     void setMuted(int castType, boolean muted) {
         mSettings.get(castType).setMuted(muted);
+    }
+
+    @SuppressWarnings("NewApi")
+    private static int getStreamMinVolume(AudioManager audioManager, int streamType) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return audioManager.getStreamMinVolume(streamType);
+        }
+        return 0;
     }
 
     //

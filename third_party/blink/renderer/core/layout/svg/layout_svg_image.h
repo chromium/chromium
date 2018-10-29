@@ -58,18 +58,17 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
  private:
   FloatRect StrokeBoundingBox() const override { return object_bounding_box_; }
 
-  void ImageChanged(WrappedImagePtr,
-                    CanDeferInvalidation,
-                    const IntRect* = nullptr) override;
+  void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
   void UpdateLayout() override;
   void Paint(const PaintInfo&) const override;
 
   bool UpdateBoundingBox();
 
-  bool NodeAtFloatPoint(HitTestResult&,
-                        const FloatPoint& point_in_parent,
-                        HitTestAction) override;
+  bool NodeAtPoint(HitTestResult&,
+                   const HitTestLocation& location_in_parent,
+                   const LayoutPoint& accumulated_offset,
+                   HitTestAction) override;
 
   AffineTransform LocalSVGTransform() const override {
     return local_transform_;

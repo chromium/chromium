@@ -25,10 +25,7 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface {
 #include "gpu/command_buffer/client/webgpu_implementation_autogen.h"
 
  private:
-  const std::string& GetLogPrefix() const {
-    static const std::string prefix = "webgpu";
-    return prefix;
-  }
+  const char* GetLogPrefix() const { return "webgpu"; }
 
   WebGPUCmdHelper* helper_;
   LogSettings log_settings_;

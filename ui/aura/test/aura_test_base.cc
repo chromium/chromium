@@ -15,7 +15,6 @@
 #include "ui/aura/window.h"
 #include "ui/base/ime/input_method_initializer.h"
 #include "ui/base/material_design/material_design_controller.h"
-#include "ui/base/test/material_design_controller_test_api.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
@@ -42,9 +41,6 @@ AuraTestBase::~AuraTestBase() {
 void AuraTestBase::SetUp() {
   setup_called_ = true;
   testing::Test::SetUp();
-  // ContentTestSuiteBase might have already initialized
-  // MaterialDesignController in unit_tests suite.
-  ui::test::MaterialDesignControllerTestAPI::Uninitialize();
   ui::MaterialDesignController::Initialize();
   ui::InitializeInputMethodForTesting();
   ui::GestureConfiguration* gesture_config =
@@ -75,7 +71,6 @@ void AuraTestBase::SetUp() {
   gesture_config->set_semi_long_press_time_in_ms(400);
   gesture_config->set_show_press_delay_in_ms(5);
   gesture_config->set_swipe_enabled(true);
-  gesture_config->set_tab_scrub_activation_delay_in_ms(200);
   gesture_config->set_two_finger_tap_enabled(true);
   gesture_config->set_velocity_tracker_strategy(
       ui::VelocityTracker::Strategy::LSQ2_RESTRICTED);
@@ -161,13 +156,6 @@ void AuraTestBase::OnUnembed(Window* root) {}
 void AuraTestBase::OnEmbedRootDestroyed(WindowTreeHostMus* window_tree_host) {}
 
 void AuraTestBase::OnLostConnection(WindowTreeClient* client) {}
-
-void AuraTestBase::OnPointerEventObserved(const ui::PointerEvent& event,
-                                          const gfx::Point& location_in_screen,
-                                          Window* target) {
-  observed_pointer_events_.push_back(std::unique_ptr<ui::PointerEvent>(
-      static_cast<ui::PointerEvent*>(ui::Event::Clone(event).release())));
-}
 
 PropertyConverter* AuraTestBase::GetPropertyConverter() {
   return &property_converter_;

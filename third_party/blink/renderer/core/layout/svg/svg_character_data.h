@@ -27,7 +27,7 @@
 namespace blink {
 
 struct SVGCharacterData {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   SVGCharacterData();
 
   static float EmptyValue() { return std::numeric_limits<float>::quiet_NaN(); }

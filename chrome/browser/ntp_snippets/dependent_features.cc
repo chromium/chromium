@@ -46,10 +46,4 @@ bool IsBookmarkProviderEnabled() {
              ntp_snippets::kBookmarkSuggestionsFeature);
 }
 
-bool IsForeignSessionsProviderEnabled() {
-  return !IsSimplifiedNtpEnabled() &&
-         base::FeatureList::IsEnabled(
-             ntp_snippets::kForeignSessionsSuggestionsFeature);
-}
-
 }  // namespace ntp_snippets

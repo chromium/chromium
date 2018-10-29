@@ -10,13 +10,13 @@ import threading
 class ResultType(object):
   """Class enumerating test types."""
   # The test passed.
-  PASS = 'PASS'
+  PASS = 'SUCCESS'
 
   # The test was intentionally skipped.
-  SKIP = 'SKIP'
+  SKIP = 'SKIPPED'
 
   # The test failed.
-  FAIL = 'FAIL'
+  FAIL = 'FAILURE'
 
   # The test caused the containing process to crash.
   CRASH = 'CRASH'

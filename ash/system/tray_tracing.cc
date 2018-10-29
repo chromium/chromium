@@ -48,7 +48,7 @@ class DefaultTracingView : public ActionableView {
     image->SetImage(
         gfx::CreateVectorIcon(kSystemMenuTracingIcon, style.GetIconColor()));
 
-    SetInkDropMode(InkDropHostView::InkDropMode::ON);
+    SetInkDropMode(InkDropMode::ON);
   }
 
   ~DefaultTracingView() override = default;

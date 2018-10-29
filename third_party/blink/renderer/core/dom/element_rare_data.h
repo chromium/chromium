@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -187,6 +188,13 @@ class ElementRareData : public NodeRareData {
   }
   ResizeObserverDataMap& EnsureResizeObserverData();
 
+  DisplayLockContext* EnsureDisplayLockContext(ExecutionContext* context) {
+    if (!display_lock_context_ || display_lock_context_->IsResolved()) {
+      display_lock_context_ = new DisplayLockContext(context);
+    }
+    return display_lock_context_.Get();
+  }
+
   const AtomicString& GetNonce() const { return nonce_; }
   void SetNonce(const AtomicString& nonce) { nonce_ = nonce; }
 
@@ -220,6 +228,8 @@ class ElementRareData : public NodeRareData {
   Member<PseudoElementData> pseudo_element_data_;
 
   TraceWrapperMember<AccessibleNode> accessible_node_;
+
+  Member<DisplayLockContext> display_lock_context_;
 
   explicit ElementRareData(NodeRenderingData*);
 };

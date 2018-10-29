@@ -12,9 +12,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/media_galleries/chromeos/snapshot_file_details.h"
 #include "components/storage_monitor/storage_monitor.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -29,7 +29,6 @@ namespace {
 uint32_t WriteDataChunkIntoSnapshotFileOnFileThread(
     const base::FilePath& snapshot_file_path,
     const std::string& data) {
-  base::AssertBlockingAllowed();
   return base::AppendToFile(snapshot_file_path, data.c_str(), data.size())
              ? base::checked_cast<uint32_t>(data.size())
              : 0;
@@ -123,16 +122,13 @@ void MTPReadFileWorker::OnDidWriteIntoSnapshotFile(
   DCHECK(snapshot_file_details.get());
 
   if (snapshot_file_details->error_occurred()) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO,
-        FROM_HERE,
-        base::Bind(snapshot_file_details->error_callback(),
-                   base::File::FILE_ERROR_FAILED));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                             base::Bind(snapshot_file_details->error_callback(),
+                                        base::File::FILE_ERROR_FAILED));
     return;
   }
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(snapshot_file_details->success_callback(),
                  snapshot_file_details->file_info(),
                  snapshot_file_details->snapshot_file_path()));

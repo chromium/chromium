@@ -1,6 +1,6 @@
 lazyboy@chromium.org
 rdevlin.cronin@chromium.org
-rockot@chromium.org
+rockot@google.com
 
 # Modifying app.yaml needs a corresponding push of the new version to AppEngine.
 per-file app.yaml=set noparent

@@ -12,6 +12,7 @@
 #include "components/download/public/common/download_utils.h"
 #include "components/download/public/common/input_stream.h"
 #include "components/download/public/common/url_download_handler_factory.h"
+#include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -45,10 +46,11 @@ void CreateUrlDownloadHandler(
     base::WeakPtr<UrlDownloadHandler::Delegate> delegate,
     scoped_refptr<download::DownloadURLLoaderFactoryGetter>
         url_loader_factory_getter,
+    scoped_refptr<net::URLRequestContextGetter> url_request_context_getter,
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
   auto downloader = UrlDownloadHandlerFactory::Create(
       std::move(params), delegate, std::move(url_loader_factory_getter),
-      task_runner);
+      std::move(url_request_context_getter), task_runner);
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&UrlDownloadHandler::Delegate::OnUrlDownloadHandlerCreated,
@@ -76,11 +78,13 @@ DownloadWorker::~DownloadWorker() = default;
 void DownloadWorker::SendRequest(
     std::unique_ptr<DownloadUrlParameters> params,
     scoped_refptr<download::DownloadURLLoaderFactoryGetter>
-        url_loader_factory_getter) {
+        url_loader_factory_getter,
+    scoped_refptr<net::URLRequestContextGetter> url_request_context_getter) {
   GetIOTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&CreateUrlDownloadHandler, std::move(params),
                                 weak_factory_.GetWeakPtr(),
                                 std::move(url_loader_factory_getter),
+                                std::move(url_request_context_getter),
                                 base::ThreadTaskRunnerHandle::Get()));
 }
 

@@ -424,8 +424,7 @@ void SyncWorker::QueryAppStatusOnUIThread(
     return;
   }
 
-  for (std::vector<std::string>::const_iterator itr = app_ids->begin();
-       itr != app_ids->end(); ++itr) {
+  for (auto itr = app_ids->begin(); itr != app_ids->end(); ++itr) {
     const std::string& app_id = *itr;
     if (!extension_service->GetInstalledExtension(app_id))
       (*status)[app_id] = APP_STATUS_UNINSTALLED;
@@ -445,8 +444,7 @@ void SyncWorker::DidQueryAppStatus(const AppStatusMap* app_status) {
   DCHECK(metadata_db);
 
   // Update the status of every origin using status from ExtensionService.
-  for (AppStatusMap::const_iterator itr = app_status->begin();
-       itr != app_status->end(); ++itr) {
+  for (auto itr = app_status->begin(); itr != app_status->end(); ++itr) {
     const std::string& app_id = itr->first;
     GURL origin = extensions::Extension::GetBaseURLFromExtensionId(app_id);
 

@@ -21,15 +21,14 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/core/browser/signin_buildflags.h"
-#include "components/signin/core/browser/signin_manager_base.h"
 #include "components/sync/driver/sync_service_observer.h"
+#include "services/identity/public/cpp/identity_manager.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "components/signin/core/browser/account_tracker_service.h"
 #endif
 
 class LoginUIService;
-class SigninManagerBase;
 
 namespace browser_sync {
 class ProfileSyncService;
@@ -50,7 +49,7 @@ class SyncSetupInProgressHandle;
 namespace settings {
 
 class PeopleHandler : public SettingsPageUIHandler,
-                      public SigninManagerBase::Observer,
+                      public identity::IdentityManager::Observer,
                       public SyncStartupTracker::Observer,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
                       public AccountTrackerService::Observer,
@@ -121,6 +120,8 @@ class PeopleHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(
       PeopleHandlerTest,
       RestartSyncAfterDashboardClearWithStandaloneTransport);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerDiceUnifiedConsentTest,
+                           StoredAccountsList);
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
@@ -134,11 +135,10 @@ class PeopleHandler : public SettingsPageUIHandler,
   // LoginUIService::LoginUI implementation.
   void FocusUI() override;
 
-  // SigninManagerBase::Observer implementation.
-  void GoogleSigninSucceeded(const std::string& account_id,
-                             const std::string& username) override;
-  void GoogleSignedOut(const std::string& account_id,
-                       const std::string& username) override;
+  // IdentityManager::Observer implementation.
+  void OnPrimaryAccountSet(const AccountInfo& primary_account_info) override;
+  void OnPrimaryAccountCleared(
+      const AccountInfo& previous_primary_account_info) override;
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -146,6 +146,8 @@ class PeopleHandler : public SettingsPageUIHandler,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // AccountTrackerService::Observer implementation.
   void OnAccountUpdated(const AccountInfo& info) override;
+  void OnAccountImageUpdated(const std::string& account_id,
+                             const gfx::Image& image) override;
   void OnAccountRemoved(const AccountInfo& info) override;
 #endif
 
@@ -170,10 +172,14 @@ class PeopleHandler : public SettingsPageUIHandler,
 #if defined(OS_CHROMEOS)
   void HandleRequestPinLoginState(const base::ListValue* args);
 #endif
+#if !defined(OS_CHROMEOS)
   void HandleStartSignin(const base::ListValue* args);
   void HandleSignout(const base::ListValue* args);
+  void HandlePauseSync(const base::ListValue* args);
+#endif
   void HandleGetSyncStatus(const base::ListValue* args);
   void HandleManageOtherPeople(const base::ListValue* args);
+  void OnUnifiedConsentToggleChanged(const base::ListValue* args);
 
 #if !defined(OS_CHROMEOS)
   // Displays the GAIA login form.
@@ -250,7 +256,8 @@ class PeopleHandler : public SettingsPageUIHandler,
   PrefChangeRegistrar profile_pref_registrar_;
 
   // Manages observer lifetimes.
-  ScopedObserver<SigninManagerBase, PeopleHandler> signin_observer_;
+  ScopedObserver<identity::IdentityManager, PeopleHandler>
+      identity_manager_observer_;
   ScopedObserver<browser_sync::ProfileSyncService, PeopleHandler>
       sync_service_observer_;
 

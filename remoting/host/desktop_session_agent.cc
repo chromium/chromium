@@ -19,6 +19,7 @@
 #include "ipc/ipc_message_macros.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
+#include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/desktop_environment.h"
@@ -27,6 +28,7 @@
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/host/screen_resolution.h"
+#include "remoting/proto/action.pb.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
@@ -188,6 +190,8 @@ bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
                           OnInjectMouseEvent)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectTouchEvent,
                           OnInjectTouchEvent)
+      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_ExecuteActionRequest,
+                          OnExecuteActionRequestEvent)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_SetScreenResolution,
                           SetScreenResolution)
       IPC_MESSAGE_HANDLER(ChromotingNetworkToAnyMsg_StartProcessStatsReport,
@@ -288,6 +292,8 @@ void DesktopSessionAgent::OnStartSessionAgent(
 
   // Create the input injector.
   input_injector_ = desktop_environment_->CreateInputInjector();
+
+  action_executor_ = desktop_environment_->CreateActionExecutor();
 
   // Hook up the input filter.
   input_tracker_.reset(new protocol::InputEventTracker(input_injector_.get()));
@@ -431,6 +437,7 @@ void DesktopSessionAgent::Stop() {
     input_tracker_.reset();
 
     desktop_environment_.reset();
+    action_executor_.reset();
     input_injector_.reset();
     screen_controls_.reset();
 
@@ -539,6 +546,13 @@ void DesktopSessionAgent::OnInjectTouchEvent(
   }
 
   remote_input_filter_->InjectTouchEvent(event);
+}
+
+void DesktopSessionAgent::OnExecuteActionRequestEvent(
+    const protocol::ActionRequest& request) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  action_executor_->ExecuteAction(request);
 }
 
 void DesktopSessionAgent::SetScreenResolution(

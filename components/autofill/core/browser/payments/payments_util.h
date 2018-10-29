@@ -17,9 +17,11 @@ namespace payments {
 
 // Returns the billing customer ID (a.k.a. the customer number) for the Google
 // Payments account for this user. Obtains it from the synced data. Returns 0
-// if the customer ID was not found.
+// if the customer ID was not found. If |should_log_validity| is true, will
+// report on the validity state of the customer ID in PaymentsCustomerData.
 int64_t GetBillingCustomerId(PersonalDataManager* personal_data_manager,
-                             PrefService* pref_service);
+                             PrefService* pref_service,
+                             bool should_log_validity = false);
 
 }  // namespace payments
 }  // namespace autofill

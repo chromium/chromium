@@ -57,6 +57,7 @@ const CGFloat kMaxHeight = 100;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     cell = [[PopupMenuNavigationCell alloc] init];
+    [cell registerForContentSizeUpdates];
   });
 
   [self configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
@@ -91,7 +92,8 @@ const CGFloat kMaxHeight = 100;
 
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _titleLabel.font = [self titleFont];
+    _titleLabel.adjustsFontForContentSizeCategory = YES;
 
     UIView* faviconBackground = [[UIView alloc] init];
     faviconBackground.translatesAutoresizingMaskIntoConstraints = NO;
@@ -152,9 +154,31 @@ const CGFloat kMaxHeight = 100;
   }
 }
 
+- (void)registerForContentSizeUpdates {
+  // This is needed because if the cell is static (used for height),
+  // adjustsFontForContentSizeCategory isn't working.
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(preferredContentSizeDidChange:)
+             name:UIContentSizeCategoryDidChangeNotification
+           object:nil];
+}
+
 - (void)prepareForReuse {
   [super prepareForReuse];
   [self setFavicon:nil];
+}
+
+#pragma mark - Private
+
+// Callback when the preferred Content Size change.
+- (void)preferredContentSizeDidChange:(NSNotification*)notification {
+  self.titleLabel.font = [self titleFont];
+}
+
+// Font to be used for the title.
+- (UIFont*)titleFont {
+  return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 @end

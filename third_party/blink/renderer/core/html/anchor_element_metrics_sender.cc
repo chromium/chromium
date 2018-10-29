@@ -64,10 +64,10 @@ void AnchorElementMetricsSender::SendAnchorMetricsVectorToBrowser(
 void AnchorElementMetricsSender::AddAnchorElement(HTMLAnchorElement& element) {
   if (has_onload_report_sent_)
     return;
-  anchor_elements_.push_back(element);
+  anchor_elements_.insert(&element);
 }
 
-const HeapVector<Member<HTMLAnchorElement>>&
+const HeapHashSet<Member<HTMLAnchorElement>>&
 AnchorElementMetricsSender::GetAnchorElements() const {
   return anchor_elements_;
 }

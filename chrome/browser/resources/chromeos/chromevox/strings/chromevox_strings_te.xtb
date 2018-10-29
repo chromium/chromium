@@ -6,7 +6,7 @@
 <translation id="1012173283529841972">జాబితా అంశం</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">రెండు వేళ్లతో కుడివైపునకు స్వైప్ చేయండి</translation>
-<translation id="1022586497894531524">మీరు ChromeVox ప్రసంగ రూప అభిప్రాయాన్ని మొదటిసారిగా ఉపయోగిస్తున్నారా? ఈ శీఘ్ర ట్యుటోరియల్ ChromeVoxను ప్రారంభించడం కోసం అవసరమైన ముఖ్యమైన వాటి గురించి వివరిస్తుంది.</translation>
+<translation id="1022586497894531524">మీరు ChromeVox ప్రసంగ రూప ప్రతిస్పందనను మొదటిసారిగా ఉపయోగిస్తున్నారా? ఈ త్వరిత ట్యుటోరియల్ ChromeVoxను ప్రారంభించడం కోసం అవసరమైన వాటిని వివరిస్తుంది.</translation>
 <translation id="1023866615269196768">వ్యాపించింది.</translation>
 <translation id="1025074108959230262">స్టిక్కీ మోడ్ నిలిపివేయబడింది</translation>
 <translation id="1031961866430398710">తర్వాత</translation>
@@ -157,7 +157,7 @@
 <translation id="2417948780551741035">ఎండ్‌నోట్‌లు</translation>
 <translation id="2421113964388408478">తొలగింపు</translation>
 <translation id="2422937916923936891">మెను అంశం తనిఖీపెట్టె</translation>
-<translation id="2428534162001909979">ఆదేశ మెనులు</translation>
+<translation id="2428534162001909979">ఆదేశ మెనూలు</translation>
 <translation id="2429669115401274487">PM</translation>
 <translation id="2435413342408885429"><ph name="KEY" /> ఇప్పుడు కొత్త ChromeVox మాడిఫైయర్.</translation>
 <translation id="2450814015951372393">తనిఖీపెట్టె</translation>
@@ -218,7 +218,7 @@
 <translation id="2894654529758326923">సమాచారం</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{ఎడమ ధనుర్బంధ గుర్తు}other{# ఎడమ ధనుర్బంధ గుర్తులు}}</translation>
 <translation id="2909478709401302630">సూపర్‌స్క్రిప్ట్ ప్రారంభం</translation>
-<translation id="2911433807131383493">ChromeVox ట్యుటోరియల్‌ను తెరవండి</translation>
+<translation id="2911433807131383493">ChromeVox ట్యుటోరియల్‌ను తెరుస్తుంది</translation>
 <translation id="2912405967290226587">మూడు వేళ్లతో కుడివైపునకు స్వైప్ చేయండి</translation>
 <translation id="2932083475399492303">ఆకృతీకరణ లేదా లేఅవుట్ మధ్య పంక్తి రకాన్ని టోగుల్ చేయండి</translation>
 <translation id="2944762337049891859">పేజీ పూర్తిగా లోడ్ అయిన తర్వాత స్వయంచాలకంగా చదువుతుంది.</translation>
@@ -379,8 +379,9 @@
 <translation id="3897092660631435901">మెను</translation>
 <translation id="3909320334364316587">మునుపటి స్థాయి 6 శీర్షిక</translation>
 <translation id="3914173277599553213">అవసరమైనవి</translation>
-<translation id="3914732343065571127">ChromeVox ఆదేశం సూచన</translation>
+<translation id="3914732343065571127">ChromeVox ఆదేశ సూచన</translation>
 <translation id="3930498801443296724">పుల్‌కోట్</translation>
+<translation id="3941269780691800708">మౌస్ కింద ఉన్న వచనాన్ని చదవచ్చు.</translation>
 <translation id="3962990492275676168">ప్రస్తుత స్థానం నుండి చదవడం ప్రారంభించండి</translation>
 <translation id="4004802134384979325">ఎంచుకోబడింది</translation>
 <translation id="4006140876663370126">చిత్రం</translation>
@@ -630,7 +631,7 @@
 <translation id="5851548754964597211">ట్యాబ్ జాబితా</translation>
 <translation id="5859752971144398932">పేజీలో కనుగొనడం నుండి నిష్క్రమించారు.</translation>
 <translation id="5866042630553435010">పాక్షికంగా తనిఖీ చేయబడింది</translation>
-<translation id="5867591286054666064">ఈ ట్యుటోరియల్ జరుగుతున్నప్పుడు, ఏదైనా కీ పేరును వినడానికి దానిపై నొక్కండి.</translation>
+<translation id="5867591286054666064">ఈ ట్యుటోరియల్ జరుగుతున్నప్పుడు, ఏదైనా కీ పేరును వినడానికి దానిని నొక్కండి.</translation>
 <translation id="5869546221129391014">గ్రిడ్</translation>
 <translation id="5876817486144482042">ప్రసంగ వాల్యూమ్‌ను తగ్గించండి</translation>
 <translation id="5887397643266327462">బ్రెయిలీ శీర్షికలు ప్రారంభించబడ్డాయి.</translation>
@@ -906,7 +907,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8520472399088452386">స్పిన్ బటన్</translation>
 <translation id="8538744478902126321">ప్రస్తుత సెల్ యొక్క అడ్డు వరుస శీర్షిక వద్ద అంచనా వేయండి</translation>
 <translation id="8540054775867439484">ఎగువకు సర్దుబాటు చేయబడింది</translation>
-<translation id="8542271685829952264">అన్ని ChromeVox ఆదేశాలు మరియు సత్వరమార్గాలను విశ్లేషించడానికి, శోధన + పూర్ణ విరామం నొక్కండి, ఆపై మెనులను నావిగేట్ చేయడానికి బాణం కీలను ఉపయోగించండి మరియు ఆదేశాన్ని సక్రియం చేయడానికి Enter నొక్కండి. శోధన+o, ఆపై t నొక్కడం ద్వారా ఇక్కడికి తిరిగి రండి.</translation>
+<translation id="8542271685829952264">అన్ని ChromeVox ఆదేశాలు మరియు షార్ట్‌కట్లను విశ్లేషించడానికి, శోధన + పూర్ణ విరామం నొక్కండి, ఆపై మెనూలను నావిగేట్ చేయడానికి బాణం కీలను ఉపయోగించండి మరియు ఆదేశాన్ని సక్రియం చేయడానికి Enter నొక్కండి. శోధన+o, ఆపై t నొక్కడం ద్వారా ఇక్కడికి తిరిగి రండి.</translation>
 <translation id="8548973727659841685">అక్షరం</translation>
 <translation id="8561322612995434619">పాప్ అప్‌ను కలిగి ఉంది</translation>
 <translation id="8571096049907249734">బహు ఎంపి</translation>

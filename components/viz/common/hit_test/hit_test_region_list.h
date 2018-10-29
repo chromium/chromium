@@ -14,6 +14,8 @@
 
 namespace viz {
 
+// New flags must be added to GetFlagNames in hit_test_query.cc in order to be
+// displayed in hit-test debug logging.
 enum HitTestRegionFlags : uint32_t {
   // Region maps to this surface (me).
   kHitTestMine = 0x01,

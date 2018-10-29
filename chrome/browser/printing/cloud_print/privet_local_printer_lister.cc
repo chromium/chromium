@@ -55,7 +55,7 @@ void PrivetLocalPrinterLister::DeviceChanged(
   if (description.type != kPrivetTypePrinter)
     return;
 
-  DeviceContextMap::iterator it = device_contexts_.find(name);
+  auto it = device_contexts_.find(name);
   if (it != device_contexts_.end()) {
     it->second->description = description;
     delegate_->LocalPrinterChanged(name, it->second->has_local_printing,
@@ -89,7 +89,7 @@ void PrivetLocalPrinterLister::OnPrivetResolved(
     device_contexts_.erase(name);
     return;
   }
-  DeviceContextMap::iterator it = device_contexts_.find(http_client->GetName());
+  auto it = device_contexts_.find(http_client->GetName());
   DCHECK(it != device_contexts_.end());
 
   it->second->info_operation = http_client->CreateInfoOperation(base::Bind(
@@ -129,7 +129,7 @@ void PrivetLocalPrinterLister::DeviceRemoved(const std::string& device_name) {
 
 const DeviceDescription* PrivetLocalPrinterLister::GetDeviceDescription(
     const std::string& name) {
-  DeviceContextMap::iterator it = device_contexts_.find(name);
+  auto it = device_contexts_.find(name);
   return (it != device_contexts_.end()) ? &it->second->description : nullptr;
 }
 

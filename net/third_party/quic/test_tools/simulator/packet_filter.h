@@ -39,7 +39,7 @@ class PacketFilter : public Endpoint, public ConstrainedPortInterface {
  public:
   // Initialize the filter by wrapping around |input|.  Does not take the
   // ownership of |input|.
-  PacketFilter(Simulator* simulator, std::string name, Endpoint* input);
+  PacketFilter(Simulator* simulator, QuicString name, Endpoint* input);
   PacketFilter(const PacketFilter&) = delete;
   PacketFilter& operator=(const PacketFilter&) = delete;
   ~PacketFilter() override;

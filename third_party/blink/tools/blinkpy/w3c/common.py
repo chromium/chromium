@@ -7,6 +7,8 @@
 import json
 import logging
 
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
+
 
 WPT_GH_ORG = 'web-platform-tests'
 WPT_GH_REPO_NAME = 'wpt'
@@ -17,8 +19,13 @@ WPT_REVISION_FOOTER = 'WPT-Export-Revision:'
 EXPORT_PR_LABEL = 'chromium-export'
 PROVISIONAL_PR_LABEL = 'do not merge yet'
 
+# These are only set in a new WPT checkout, and they should be consistent with
+# the bot's GitHub account (chromium-wpt-export-bot).
+DEFAULT_WPT_COMMITTER_NAME = 'Chromium WPT Sync'
+DEFAULT_WPT_COMMITTER_EMAIL = 'blink-w3c-test-autoroller@chromium.org'
+
 # TODO(qyearsley): Avoid hard-coding third_party/WebKit/LayoutTests.
-CHROMIUM_WPT_DIR = 'third_party/WebKit/LayoutTests/external/wpt/'
+CHROMIUM_WPT_DIR = RELATIVE_WEB_TESTS + 'external/wpt/'
 
 _log = logging.getLogger(__name__)
 

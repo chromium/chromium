@@ -48,7 +48,8 @@ TEST_F(InsertListCommandTest, ShouldCleanlyRemoveSpuriousTextNode) {
   // This should not DCHECK.
   EXPECT_TRUE(command->Apply())
       << "The insert ordered list command should have succeeded";
-  EXPECT_EQ("<ol><li>d</li></ol>", GetDocument().body()->InnerHTMLAsString());
+  EXPECT_EQ("<ol><li>\nd\n</li></ol>",
+            GetDocument().body()->InnerHTMLAsString());
 }
 
 // Refer https://crbug.com/794356
@@ -80,19 +81,14 @@ TEST_F(InsertListCommandTest, CleanupNodeSameAsDestinationNode) {
   Selection().SetSelection(SetSelectionTextToBody("^<table><col></table>"
                                                   "<button></button>|"),
                            SetSelectionOptions());
-
   InsertListCommand* command = InsertListCommand::Create(
       GetDocument(), InsertListCommand::kUnorderedList);
-
   // Crash happens here.
-  EXPECT_FALSE(command->Apply());
+  EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "<ul><li><br></li></ul>"
-      "<br>"
-      "<table>|<colgroup><col>"
-      "<ul><li><br></li></ul>"
-      "</col></colgroup></table>"
-      "<button></button>",
+      "<ul><li><table><colgroup><col>"
+      "</colgroup></table></li>"
+      "<li><button>|</button></li></ul><br>",
       GetSelectionTextFromBody());
 }
 

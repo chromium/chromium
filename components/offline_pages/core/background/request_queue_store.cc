@@ -282,10 +282,9 @@ void PostStoreUpdateResultForIds(
     const std::vector<int64_t>& item_ids,
     ItemActionStatus action_status,
     RequestQueueStore::UpdateCallback callback) {
-  std::unique_ptr<UpdateRequestsResult> result(
-      new UpdateRequestsResult(store_state));
+  UpdateRequestsResult result(store_state);
   for (const auto& item_id : item_ids)
-    result->item_statuses.push_back(std::make_pair(item_id, action_status));
+    result.item_statuses.emplace_back(item_id, action_status);
   runner->PostTask(FROM_HERE,
                    base::BindOnce(std::move(callback), std::move(result)));
 }
@@ -356,8 +355,7 @@ void GetRequestsByIdsSync(sql::Database* db,
                           scoped_refptr<base::SingleThreadTaskRunner> runner,
                           const std::vector<int64_t>& request_ids,
                           RequestQueueStore::UpdateCallback callback) {
-  std::unique_ptr<UpdateRequestsResult> result(
-      new UpdateRequestsResult(StoreState::LOADED));
+  UpdateRequestsResult result(StoreState::LOADED);
 
   // If you create a transaction but don't Commit() it is automatically
   // rolled back by its destructor when it falls out of scope.
@@ -375,10 +373,10 @@ void GetRequestsByIdsSync(sql::Database* db,
       continue;
     std::unique_ptr<SavePageRequest> request = GetOneRequest(db, request_id);
     if (request)
-      result->updated_items.push_back(*request);
+      result.updated_items.push_back(*request);
     ItemActionStatus status =
         request ? ItemActionStatus::SUCCESS : ItemActionStatus::NOT_FOUND;
-    result->item_statuses.push_back(std::make_pair(request_id, status));
+    result.item_statuses.emplace_back(request_id, status);
   }
 
   if (!transaction.Commit()) {
@@ -402,8 +400,7 @@ void UpdateRequestsSync(sql::Database* db,
                         scoped_refptr<base::SingleThreadTaskRunner> runner,
                         const std::vector<SavePageRequest>& requests,
                         RequestQueueStore::UpdateCallback callback) {
-  std::unique_ptr<UpdateRequestsResult> result(
-      new UpdateRequestsResult(StoreState::LOADED));
+  UpdateRequestsResult result(StoreState::LOADED);
 
   sql::Transaction transaction(db);
   if (!transaction.Begin()) {
@@ -413,10 +410,9 @@ void UpdateRequestsSync(sql::Database* db,
 
   for (const auto& request : requests) {
     ItemActionStatus status = Update(db, request);
-    result->item_statuses.push_back(
-        std::make_pair(request.request_id(), status));
+    result.item_statuses.emplace_back(request.request_id(), status);
     if (status == ItemActionStatus::SUCCESS)
-      result->updated_items.push_back(request);
+      result.updated_items.push_back(request);
   }
 
   if (!transaction.Commit()) {
@@ -432,8 +428,7 @@ void RemoveRequestsSync(sql::Database* db,
                         scoped_refptr<base::SingleThreadTaskRunner> runner,
                         const std::vector<int64_t>& request_ids,
                         RequestQueueStore::UpdateCallback callback) {
-  std::unique_ptr<UpdateRequestsResult> result(
-      new UpdateRequestsResult(StoreState::LOADED));
+  UpdateRequestsResult result(StoreState::LOADED);
 
   // If you create a transaction but don't Commit() it is automatically
   // rolled back by its destructor when it falls out of scope.
@@ -448,9 +443,9 @@ void RemoveRequestsSync(sql::Database* db,
   for (int64_t request_id : request_ids) {
     std::unique_ptr<SavePageRequest> request = GetOneRequest(db, request_id);
     ItemActionStatus status = DeleteRequestById(db, request_id);
-    result->item_statuses.push_back(std::make_pair(request_id, status));
+    result.item_statuses.push_back(std::make_pair(request_id, status));
     if (status == ItemActionStatus::SUCCESS)
-      result->updated_items.push_back(*request);
+      result.updated_items.push_back(*request);
   }
 
   if (!transaction.Commit()) {

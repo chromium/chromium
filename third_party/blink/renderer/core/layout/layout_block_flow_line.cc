@@ -2312,7 +2312,7 @@ bool LayoutBlockFlow::GeneratesLineBoxesForInlineChild(LayoutObject* inline_obj)
   return !it.AtEnd();
 }
 
-void LayoutBlockFlow::AddOverflowFromInlineChildren() {
+void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
   LayoutUnit end_padding = HasOverflowClip() ? PaddingEnd() : LayoutUnit();
   // FIXME: Need to find another way to do this, since scrollbars could show
   // when we don't want them to.
@@ -2320,7 +2320,6 @@ void LayoutBlockFlow::AddOverflowFromInlineChildren() {
       IsRootEditableElement(*GetNode()) && StyleRef().IsLeftToRightDirection())
     end_padding = LayoutUnit(1);
   for (RootInlineBox* curr = FirstRootBox(); curr; curr = curr->NextRootBox()) {
-    AddLayoutOverflow(curr->PaddedLayoutOverflowRect(end_padding));
     LayoutRect visual_overflow =
         curr->VisualOverflowRect(curr->LineTop(), curr->LineBottom());
     AddContentsVisualOverflow(visual_overflow);
@@ -2349,6 +2348,17 @@ void LayoutBlockFlow::AddOverflowFromInlineChildren() {
     }
   }
   AddContentsVisualOverflow(outline_bounds_of_all_continuations);
+}
+
+void LayoutBlockFlow::AddLayoutOverflowFromInlineChildren() {
+  LayoutUnit end_padding = HasOverflowClip() ? PaddingEnd() : LayoutUnit();
+  // FIXME: Need to find another way to do this, since scrollbars could show
+  // when we don't want them to.
+  if (HasOverflowClip() && !end_padding && GetNode() &&
+      IsRootEditableElement(*GetNode()) && StyleRef().IsLeftToRightDirection())
+    end_padding = LayoutUnit(1);
+  for (RootInlineBox* curr = FirstRootBox(); curr; curr = curr->NextRootBox())
+    AddLayoutOverflow(curr->PaddedLayoutOverflowRect(end_padding));
 }
 
 void LayoutBlockFlow::DeleteEllipsisLineBoxes() {

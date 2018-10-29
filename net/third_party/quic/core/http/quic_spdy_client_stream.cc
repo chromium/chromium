@@ -18,8 +18,9 @@ using spdy::SpdyHeaderBlock;
 namespace quic {
 
 QuicSpdyClientStream::QuicSpdyClientStream(QuicStreamId id,
-                                           QuicSpdyClientSession* session)
-    : QuicSpdyStream(id, session),
+                                           QuicSpdyClientSession* session,
+                                           StreamType type)
+    : QuicSpdyStream(id, session, type),
       content_length_(-1),
       response_code_(0),
       header_bytes_read_(0),

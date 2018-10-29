@@ -10,6 +10,10 @@
 #include "base/component_export.h"
 #include "services/ws/common/types.h"
 
+namespace ui {
+class Event;
+}
+
 namespace ws {
 
 class COMPONENT_EXPORT(WINDOW_SERVICE) WindowServiceObserver {
@@ -18,7 +22,8 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) WindowServiceObserver {
   // |event_id| is a unique identifier for the event. Once the client responds
   // to the event OnClientAckedEvent() is called.
   virtual void OnWillSendEventToClient(ClientSpecificId client_id,
-                                       uint32_t event_id) {}
+                                       uint32_t event_id,
+                                       const ui::Event& event) {}
 
   // Called when the client identified by |client_id| responds to an event. See
   // OnWillSendEventToClient() for more details.

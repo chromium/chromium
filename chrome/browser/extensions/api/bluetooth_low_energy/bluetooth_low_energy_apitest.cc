@@ -219,7 +219,7 @@ class BluetoothLowEnergyApiTest : public extensions::ExtensionApiTest {
   std::unique_ptr<testing::NiceMock<MockBluetoothGattDescriptor>> desc1_;
 
  private:
-  scoped_refptr<extensions::Extension> empty_extension_;
+  scoped_refptr<const extensions::Extension> empty_extension_;
 };
 
 ACTION_TEMPLATE(InvokeCallbackArgument,

@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -87,7 +88,11 @@ TestCompositorHostOzone::TestCompositorHostOzone(
                   false /* enable_surface_synchronization */,
                   false /* enable_pixel_canvas */) {}
 
-TestCompositorHostOzone::~TestCompositorHostOzone() {}
+TestCompositorHostOzone::~TestCompositorHostOzone() {
+  // |window_| should be destroyed earlier than |window_delegate_| as it refers
+  // to its delegate on destroying.
+  window_.reset();
+}
 
 void TestCompositorHostOzone::Show() {
   ui::PlatformWindowInitProperties properties;
@@ -99,7 +104,8 @@ void TestCompositorHostOzone::Show() {
   DCHECK_NE(window_delegate_.widget(), gfx::kNullAcceleratedWidget);
 
   compositor_.SetAcceleratedWidget(window_delegate_.widget());
-  compositor_.SetScaleAndSize(1.0f, bounds_.size(), viz::LocalSurfaceId());
+  compositor_.SetScaleAndSize(1.0f, bounds_.size(), viz::LocalSurfaceId(),
+                              base::TimeTicks());
   compositor_.SetVisible(true);
 }
 

@@ -48,6 +48,7 @@
 
 namespace blink {
 
+class ComputedStyle;
 class Element;
 class KeyframeEffectModelTest;
 
@@ -164,6 +165,26 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   // Lazily computes the groups of property-specific keyframes.
   void EnsureKeyframeGroups() const;
   void EnsureInterpolationEffectPopulated() const;
+
+  using ShouldSnapshotPropertyCallback =
+      std::function<bool(const PropertyHandle&)>;
+  using ShouldSnapshotKeyframeCallback =
+      std::function<bool(const PropertySpecificKeyframe&)>;
+
+  bool SnapshotCompositableProperties(
+      Element& element,
+      const ComputedStyle& computed_style,
+      const ComputedStyle* parent_style,
+      ShouldSnapshotPropertyCallback should_process_property_callback,
+      ShouldSnapshotKeyframeCallback should_process_keyframe_callback) const;
+
+  bool SnapshotCompositorKeyFrames(
+      const PropertyHandle& property,
+      Element& element,
+      const ComputedStyle& computed_style,
+      const ComputedStyle* parent_style,
+      ShouldSnapshotPropertyCallback should_process_property_callback,
+      ShouldSnapshotKeyframeCallback should_process_keyframe_callback) const;
 
   KeyframeVector keyframes_;
   // The spec describes filtering the normalized keyframes at sampling time

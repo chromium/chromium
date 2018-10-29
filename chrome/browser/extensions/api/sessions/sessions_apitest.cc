@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/sync/chrome_sync_client.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/profile_sync_test_util.h"
+#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -35,6 +37,7 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/test/engine/mock_model_type_worker.h"
 #include "components/sync_sessions/session_store.h"
+#include "components/sync_sessions/session_sync_service.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
 
@@ -48,6 +51,7 @@ namespace extensions {
 
 namespace {
 
+const char kTestCacheGuid[] = "TestCacheGuid";
 // Fake session tabs (used to construct arbitrary device info) and tab IDs
 // (used to construct arbitrary tab info) to use in all tests.
 const char* const kSessionTags[] = {"tag0", "tag1", "tag2", "tag3", "tag4"};
@@ -69,8 +73,7 @@ void BuildWindowSpecifics(int window_id,
   window->set_window_id(window_id);
   window->set_selected_tab_index(0);
   window->set_browser_type(sync_pb::SessionWindow_BrowserType_TYPE_TABBED);
-  for (std::vector<int>::const_iterator iter = tab_list.begin();
-       iter != tab_list.end(); ++iter) {
+  for (auto iter = tab_list.cbegin(); iter != tab_list.cend(); ++iter) {
     window->add_tab(*iter);
   }
 }
@@ -173,7 +176,7 @@ class ExtensionSessionsTest : public InProcessBrowserTest {
   }
 
   Browser* browser_;
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
 };
 
 void ExtensionSessionsTest::SetUpCommandLine(base::CommandLine* command_line) {
@@ -196,7 +199,7 @@ std::unique_ptr<KeyedService> ExtensionSessionsTest::BuildProfileSyncService(
   ON_CALL(*factory, CreateLocalDeviceInfoProvider())
       .WillByDefault(testing::Invoke([]() {
         return std::make_unique<syncer::LocalDeviceInfoProviderMock>(
-            kSessionTags[0], "machine name", "Chromium 10k", "Chrome 10k",
+            kTestCacheGuid, "machine name", "Chromium 10k", "Chrome 10k",
             sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id");
       }));
 
@@ -224,7 +227,8 @@ void ExtensionSessionsTest::CreateTestProfileSyncService() {
   browser_sync::ProfileSyncServiceMock* service =
       static_cast<browser_sync::ProfileSyncServiceMock*>(
           ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              profile, &ExtensionSessionsTest::BuildProfileSyncService));
+              profile, base::BindRepeating(
+                           &ExtensionSessionsTest::BuildProfileSyncService)));
 
   syncer::ModelTypeSet preferred_types(syncer::SESSIONS, syncer::PROXY_TABS);
   GoogleServiceAuthError no_error(GoogleServiceAuthError::NONE);
@@ -262,13 +266,13 @@ void ExtensionSessionsTest::CreateTestExtension() {
 void ExtensionSessionsTest::CreateSessionModels() {
   syncer::DataTypeActivationRequest request;
   request.error_handler = base::DoNothing();
-  request.cache_guid = "TestCacheGuid";
+  request.cache_guid = kTestCacheGuid;
   request.authenticated_account_id = "SomeAccountId";
 
   std::unique_ptr<syncer::DataTypeActivationResponse> activation_response;
   base::RunLoop loop;
-  ProfileSyncServiceFactory::GetForProfile(browser_->profile())
-      ->GetSessionSyncControllerDelegate()
+  SessionSyncServiceFactory::GetForProfile(browser_->profile())
+      ->GetControllerDelegate()
       ->OnSyncStarting(
           request, base::BindLambdaForTesting(
                        [&](std::unique_ptr<syncer::DataTypeActivationResponse>

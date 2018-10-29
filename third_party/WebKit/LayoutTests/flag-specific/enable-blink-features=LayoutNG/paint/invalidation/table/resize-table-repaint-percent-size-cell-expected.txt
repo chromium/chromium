@@ -35,22 +35,22 @@
         {
           "object": "NGPhysicalTextFragment 'ROW2'",
           "rect": [3, 400, 46, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'ROW1'",
           "rect": [3, 161, 46, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'ROW2'",
           "rect": [3, 115, 46, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'ROW1'",
           "rect": [3, 66, 46, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

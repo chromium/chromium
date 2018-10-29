@@ -26,10 +26,9 @@ namespace blink {
 // To avoid symbol collisions in jumbo builds.
 namespace flat_tree_traversal_test {
 
-class FlatTreeTraversalTest : public PageTestBase,
-                              ScopedIncrementalShadowDOMForTest {
+class FlatTreeTraversalTest : public PageTestBase {
  public:
-  FlatTreeTraversalTest() : ScopedIncrementalShadowDOMForTest(true) {}
+  FlatTreeTraversalTest() {}
 
  protected:
   // Sets |mainHTML| to BODY element with |innerHTML| property and attaches

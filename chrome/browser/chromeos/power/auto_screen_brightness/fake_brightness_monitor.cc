@@ -35,15 +35,15 @@ void FakeBrightnessMonitor::ReportUserBrightnessChangeRequested() const {
 void FakeBrightnessMonitor::AddObserver(Observer* const observer) {
   DCHECK(observer);
   observers_.AddObserver(observer);
+  if (brightness_monitor_status_ != Status::kInitializing) {
+    observer->OnBrightnessMonitorInitialized(brightness_monitor_status_ ==
+                                             Status::kSuccess);
+  }
 }
 
 void FakeBrightnessMonitor::RemoveObserver(Observer* const observer) {
   DCHECK(observer);
   observers_.RemoveObserver(observer);
-}
-
-BrightnessMonitor::Status FakeBrightnessMonitor::GetStatus() const {
-  return brightness_monitor_status_;
 }
 
 }  // namespace auto_screen_brightness

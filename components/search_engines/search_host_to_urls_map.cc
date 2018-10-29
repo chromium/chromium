@@ -66,7 +66,7 @@ SearchHostToURLsMap::TemplateURLSet* SearchHostToURLsMap::GetURLsForHost(
     base::StringPiece host) {
   DCHECK(initialized_);
 
-  HostToURLsMap::iterator urls_for_host = host_to_urls_map_.find(host);
+  auto urls_for_host = host_to_urls_map_.find(host);
   if (urls_for_host == host_to_urls_map_.end() || urls_for_host->second.empty())
     return nullptr;
   return &urls_for_host->second;

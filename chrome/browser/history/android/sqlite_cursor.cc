@@ -8,7 +8,9 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/task/post_task.h"
 #include "components/history/core/browser/android/android_history_types.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "jni/SQLiteCursor_jni.h"
 #include "sql/statement.h"
@@ -124,9 +126,9 @@ jboolean SQLiteCursor::IsNull(JNIEnv* env,
 jint SQLiteCursor::MoveTo(JNIEnv* env,
                           const JavaParamRef<jobject>& obj,
                           jint pos) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-      base::Bind(&SQLiteCursor::RunMoveStatementOnUIThread,
-      base::Unretained(this), pos));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::Bind(&SQLiteCursor::RunMoveStatementOnUIThread,
+                                      base::Unretained(this), pos));
   if (test_observer_)
     test_observer_->OnPostMoveToTask();
 
@@ -147,9 +149,10 @@ void SQLiteCursor::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   // objects out there.
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     DestroyOnUIThread();
-  } else if (!BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
+  } else if (!base::PostTaskWithTraits(
+                 FROM_HERE, {BrowserThread::UI},
                  base::Bind(&SQLiteCursor::DestroyOnUIThread,
-                     base::Unretained(this)))) {
+                            base::Unretained(this)))) {
     delete this;
   }
 }
@@ -181,13 +184,12 @@ void SQLiteCursor::DestroyOnUIThread() {
 bool SQLiteCursor::GetFavicon(favicon_base::FaviconID id,
                               std::vector<unsigned char>* image_data) {
   if (id) {
-    BrowserThread::PostTask(
-        BrowserThread::UI,
-        FROM_HERE,
-        base::Bind(&SQLiteCursor::GetFaviconForIDInUIThread,
-                   base::Unretained(this), id,
-                   base::Bind(&SQLiteCursor::OnFaviconData,
-                              base::Unretained(this))));
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
+        base::Bind(
+            &SQLiteCursor::GetFaviconForIDInUIThread, base::Unretained(this),
+            id,
+            base::Bind(&SQLiteCursor::OnFaviconData, base::Unretained(this))));
 
     if (test_observer_)
       test_observer_->OnPostGetFaviconTask();

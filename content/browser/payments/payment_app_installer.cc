@@ -9,11 +9,13 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/post_task.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_watcher.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -82,9 +84,8 @@ class SelfDeleteInstaller
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
     for (const auto& worker : info) {
-      if (worker.pattern.EqualsIgnoringRef(scope_)) {
+      if (worker.scope.EqualsIgnoringRef(scope_))
         registration_id_ = worker.registration_id;
-      }
     }
   }
 
@@ -137,8 +138,8 @@ class SelfDeleteInstaller
     scoped_refptr<PaymentAppContextImpl> payment_app_context =
         partition->GetPaymentAppContext();
 
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&SelfDeleteInstaller::SetPaymentAppInfoOnIO, this,
                        payment_app_context, registration_id_, scope_.spec(),
                        app_name_, app_icon_, method_));
@@ -162,8 +163,8 @@ class SelfDeleteInstaller
   void OnSetPaymentAppInfo(payments::mojom::PaymentHandlerStatus status) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&SelfDeleteInstaller::FinishInstallation, this,
                        status == payments::mojom::PaymentHandlerStatus::SUCCESS
                            ? true

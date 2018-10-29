@@ -462,7 +462,7 @@ TEST_F(ServiceManagerTest, CreatePackagedRegularInstances) {
   StartService(instance_identity, /*expect_service_started=*/true);
 }
 
-// Tests that starting an all_users packaged service works, and that when
+// Tests that starting a shared instance packaged service works, and that when
 // starting that service again, a new service is created only when a different
 // instance name is specified.
 TEST_F(ServiceManagerTest, CreatePackagedAllUsersInstances) {

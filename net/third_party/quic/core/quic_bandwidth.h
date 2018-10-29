@@ -12,7 +12,6 @@
 #include <limits>
 #include <ostream>
 
-#include "base/compiler_specific.h"
 #include "net/third_party/quic/core/quic_constants.h"
 #include "net/third_party/quic/core/quic_time.h"
 #include "net/third_party/quic/core/quic_types.h"

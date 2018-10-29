@@ -10,6 +10,8 @@ import static org.junit.Assert.assertEquals;
 import android.os.Build;
 import android.os.Bundle;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -23,6 +25,13 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class GCMMessageTest {
+    private void assertMessageEquals(GCMMessage m1, GCMMessage m2) {
+        assertEquals(m1.getSenderId(), m2.getSenderId());
+        assertEquals(m1.getAppId(), m2.getAppId());
+        assertEquals(m1.getCollapseKey(), m2.getCollapseKey());
+        assertArrayEquals(m1.getDataKeysAndValuesArray(), m2.getDataKeysAndValuesArray());
+    }
+
     /**
      * Tests that a message object can be created based on data received from GCM. Note that the raw
      * data field is tested separately.
@@ -106,13 +115,8 @@ public class GCMMessageTest {
 
         {
             GCMMessage message = new GCMMessage("MySenderId", extras);
-            GCMMessage copiedMessage = new GCMMessage(message.toBundle());
-
-            assertEquals(message.getSenderId(), copiedMessage.getSenderId());
-            assertEquals(message.getAppId(), copiedMessage.getAppId());
-            assertEquals(message.getCollapseKey(), copiedMessage.getCollapseKey());
-            assertArrayEquals(
-                    message.getDataKeysAndValuesArray(), copiedMessage.getDataKeysAndValuesArray());
+            GCMMessage copiedMessage = GCMMessage.createFromBundle(message.toBundle());
+            assertMessageEquals(message, copiedMessage);
         }
 
         // Add the optional fields: collapse key, raw binary data and a custom property.
@@ -121,13 +125,8 @@ public class GCMMessageTest {
 
         {
             GCMMessage message = new GCMMessage("MySenderId", extras);
-            GCMMessage copiedMessage = new GCMMessage(message.toBundle());
-
-            assertEquals(message.getSenderId(), copiedMessage.getSenderId());
-            assertEquals(message.getAppId(), copiedMessage.getAppId());
-            assertEquals(message.getCollapseKey(), copiedMessage.getCollapseKey());
-            assertArrayEquals(
-                    message.getDataKeysAndValuesArray(), copiedMessage.getDataKeysAndValuesArray());
+            GCMMessage copiedMessage = GCMMessage.createFromBundle(message.toBundle());
+            assertMessageEquals(message, copiedMessage);
         }
     }
 
@@ -146,7 +145,7 @@ public class GCMMessageTest {
         // Case 1: No raw data supplied. Should be NULL.
         {
             GCMMessage message = new GCMMessage("MySenderId", extras);
-            GCMMessage copiedMessage = new GCMMessage(message.toBundle());
+            GCMMessage copiedMessage = GCMMessage.createFromBundle(message.toBundle());
 
             assertArrayEquals(null, message.getRawData());
             assertArrayEquals(null, copiedMessage.getRawData());
@@ -157,7 +156,7 @@ public class GCMMessageTest {
         // Case 2: Empty byte array of raw data supplied. Should be just that.
         {
             GCMMessage message = new GCMMessage("MySenderId", extras);
-            GCMMessage copiedMessage = new GCMMessage(message.toBundle());
+            GCMMessage copiedMessage = GCMMessage.createFromBundle(message.toBundle());
 
             assertArrayEquals(new byte[] {}, message.getRawData());
             assertArrayEquals(new byte[] {}, copiedMessage.getRawData());
@@ -168,10 +167,86 @@ public class GCMMessageTest {
         // Case 3: Byte array with data supplied.
         {
             GCMMessage message = new GCMMessage("MySenderId", extras);
-            GCMMessage copiedMessage = new GCMMessage(message.toBundle());
+            GCMMessage copiedMessage = GCMMessage.createFromBundle(message.toBundle());
 
             assertArrayEquals(new byte[] {0x00, 0x15, 0x30, 0x45}, message.getRawData());
             assertArrayEquals(new byte[] {0x00, 0x15, 0x30, 0x45}, copiedMessage.getRawData());
+        }
+    }
+
+    /**
+     * Tests that a GCMMessage object can be serialized to and deserialized from
+     * a JSONObject. Note that the raw data field is tested separately.
+     */
+    @Test
+    public void testSerializationToJSON() throws JSONException {
+        Bundle extras = new Bundle();
+
+        // Compose a simple message that lacks all optional fields.
+        extras.putString("subtype", "MyAppId");
+
+        {
+            GCMMessage message = new GCMMessage("MySenderId", extras);
+            JSONObject messageJSON = message.toJSON();
+
+            // Version must be written to JSON.
+            assertEquals(messageJSON.get("version"), GCMMessage.VERSION);
+            GCMMessage copiedMessage = GCMMessage.createFromJSON(messageJSON);
+
+            assertMessageEquals(message, copiedMessage);
+        }
+
+        // Add the optional fields: collapse key, raw binary data and a custom property.
+        extras.putString("collapse_key", "MyCollapseKey");
+        extras.putString("property", "value");
+
+        {
+            GCMMessage message = new GCMMessage("MySenderId", extras);
+            GCMMessage copiedMessage = GCMMessage.createFromJSON(message.toJSON());
+
+            assertMessageEquals(message, copiedMessage);
+        }
+    }
+
+    /**
+     * Tests that the raw data field can be serialized and deserialized as expected from JSONObject.
+     * It should be NULL when undefined, an empty byte array when defined but empty, and a regular,
+     * filled byte array when data has been provided.
+     */
+    @Test
+    public void testRawDataSerializationToJSON() throws JSONException {
+        Bundle extras = new Bundle();
+        extras.putString("subtype", "MyAppId");
+
+        // Case 1: No raw data supplied. Should be NULL.
+        {
+            GCMMessage message = new GCMMessage("MySenderId", extras);
+            GCMMessage copiedMessage = GCMMessage.createFromJSON(message.toJSON());
+
+            assertArrayEquals(null, message.getRawData());
+            assertArrayEquals(null, copiedMessage.getRawData());
+        }
+
+        extras.putByteArray("rawData", new byte[] {});
+
+        // Case 2: Empty byte array of raw data supplied. Should be just that.
+        {
+            GCMMessage message = new GCMMessage("MySenderId", extras);
+            GCMMessage copiedMessage = GCMMessage.createFromJSON(message.toJSON());
+
+            assertArrayEquals(new byte[] {}, message.getRawData());
+            assertArrayEquals(new byte[] {}, copiedMessage.getRawData());
+        }
+        final byte[] rawData = {0x00, 0x15, 0x30, 0x45};
+        extras.putByteArray("rawData", rawData);
+
+        // Case 3: Byte array with data supplied.
+        {
+            GCMMessage message = new GCMMessage("MySenderId", extras);
+            GCMMessage copiedMessage = GCMMessage.createFromJSON(message.toJSON());
+
+            assertArrayEquals(rawData, message.getRawData());
+            assertArrayEquals(rawData, copiedMessage.getRawData());
         }
     }
 }

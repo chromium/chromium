@@ -180,7 +180,7 @@ void Content::ApplyValue(StyleResolverState& state,
       if (item->IsFunctionValue()) {
         const CSSFunctionValue* function_value = ToCSSFunctionValue(item.Get());
         DCHECK_EQ(function_value->FunctionType(), CSSValueAttr);
-        state.Style()->SetUnique();
+        state.Style()->SetHasAttrContent();
         // TODO: Can a namespace be specified for an attr(foo)?
         QualifiedName attr(
             g_null_atom, ToCSSCustomIdentValue(function_value->Item(0)).Value(),

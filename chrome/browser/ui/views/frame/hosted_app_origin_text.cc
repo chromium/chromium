@@ -86,7 +86,7 @@ void HostedAppOriginText::StartFadeAnimation() {
       FROM_HERE,
       base::BindOnce(&HostedAppOriginText::AnimationComplete,
                      weak_factory_.GetWeakPtr()),
-      HostedAppButtonContainer::kOriginTotalDuration);
+      HostedAppButtonContainer::OriginTotalDuration());
 
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 }

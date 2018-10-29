@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_action.h"
 #include "chrome/browser/extensions/extension_action_manager.h"
@@ -71,7 +72,7 @@ ToolbarActionsModel* CreateToolbarModelImpl(Profile* profile,
   // No existing model means it's a new profile (since we, by default, don't
   // create the ToolbarModel in testing).
   ToolbarActionsModelFactory::GetInstance()->SetTestingFactory(
-      profile, &BuildToolbarModel);
+      profile, base::BindRepeating(&BuildToolbarModel));
   model = ToolbarActionsModel::Get(profile);
   if (wait_for_ready) {
     // Fake the extension system ready signal.

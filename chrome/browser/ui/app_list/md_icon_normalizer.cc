@@ -227,7 +227,7 @@ void MaybeResizeAndPadIconForMd(const gfx::Size& required_size_dip,
   // First pass over representations, collect transformation parameters.
   std::vector<std::pair<gfx::Size, gfx::Size>> params;
   for (gfx::ImageSkiaRep rep : icon_out->image_reps()) {
-    const SkBitmap& bitmap = rep.sk_bitmap();
+    const SkBitmap& bitmap = rep.GetBitmap();
 
     gfx::Size required_size_px(
         static_cast<int>(required_size_dip.width() * rep.scale() + 0.5),
@@ -251,7 +251,7 @@ void MaybeResizeAndPadIconForMd(const gfx::Size& required_size_dip,
   gfx::ImageSkia transformed;
   int i = 0;
   for (gfx::ImageSkiaRep rep : icon_out->image_reps()) {
-    SkBitmap bitmap = rep.sk_bitmap();
+    SkBitmap bitmap = rep.GetBitmap();
     auto param = params[i++];
     MaybeResizeAndPad(param.first, param.second, &bitmap);
     transformed.AddRepresentation(gfx::ImageSkiaRep(bitmap, rep.scale()));

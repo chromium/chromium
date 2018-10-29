@@ -48,12 +48,22 @@ bool FontFormatCheck::IsCbdtCblcColorFont() {
          table_tags_.Contains(HB_TAG('C', 'B', 'L', 'C'));
 }
 
+bool FontFormatCheck::IsColrCpalColorFont() {
+  return table_tags_.size() &&
+         table_tags_.Contains(HB_TAG('C', 'O', 'L', 'R')) &&
+         table_tags_.Contains(HB_TAG('C', 'P', 'A', 'L'));
+}
+
 bool FontFormatCheck::IsSbixColorFont() {
   return table_tags_.size() && table_tags_.Contains(HB_TAG('s', 'b', 'i', 'x'));
 }
 
 bool FontFormatCheck::IsCff2OutlineFont() {
   return table_tags_.size() && table_tags_.Contains(HB_TAG('C', 'F', 'F', '2'));
+}
+
+bool FontFormatCheck::IsColorFont() {
+  return IsCbdtCblcColorFont() || IsColrCpalColorFont() || IsSbixColorFont();
 }
 
 FontFormatCheck::VariableFontSubType FontFormatCheck::ProbeVariableFont(

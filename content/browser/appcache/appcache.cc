@@ -61,14 +61,14 @@ bool AppCache::AddOrModifyEntry(const GURL& url, const AppCacheEntry& entry) {
 }
 
 void AppCache::RemoveEntry(const GURL& url) {
-  EntryMap::iterator found = entries_.find(url);
+  auto found = entries_.find(url);
   DCHECK(found != entries_.end());
   cache_size_ -= found->second.response_size();
   entries_.erase(found);
 }
 
 AppCacheEntry* AppCache::GetEntry(const GURL& url) {
-  EntryMap::iterator it = entries_.find(url);
+  auto it = entries_.find(url);
   return (it != entries_.end()) ? &(it->second) : nullptr;
 }
 

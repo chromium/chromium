@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 #include "third_party/blink/renderer/core/style/grid_track_size.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -102,6 +102,10 @@ class GridTrackSizingAlgorithm final {
 
   LayoutUnit BaselineOffsetForChild(const LayoutBox&, GridAxis) const;
 
+  void CacheBaselineAlignedItem(const LayoutBox&, GridAxis);
+  void CopyBaselineItemsCache(const GridTrackSizingAlgorithm&, GridAxis);
+  void ClearBaselineItemsCache();
+
   LayoutSize EstimatedGridAreaBreadthForChild(const LayoutBox& child) const;
 
   Vector<GridTrack>& Tracks(GridTrackSizingDirection);
@@ -161,8 +165,9 @@ class GridTrackSizingAlgorithm final {
                                      GridTrackSizingDirection) const;
 
   void ComputeBaselineAlignmentContext();
-  void UpdateBaselineAlignmentContext(LayoutBox&, GridAxis);
+  void UpdateBaselineAlignmentContext(const LayoutBox&, GridAxis);
   bool CanParticipateInBaselineAlignment(const LayoutBox&, GridAxis) const;
+  bool ParticipateInBaselineAlignment(const LayoutBox&, GridAxis) const;
 
   bool IsIntrinsicSizedGridArea(const LayoutBox&, GridAxis) const;
   void ComputeGridContainerIntrinsicSizes();
@@ -239,6 +244,9 @@ class GridTrackSizingAlgorithm final {
   SizingState sizing_state_;
 
   GridBaselineAlignment baseline_alignment_;
+  typedef HashMap<const LayoutBox*, bool> BaselineItemsCache;
+  BaselineItemsCache column_baseline_items_map_;
+  BaselineItemsCache row_baseline_items_map_;
 
   // This is a RAII class used to ensure that the track sizing algorithm is
   // executed as it is suppossed to be, i.e., first resolve columns and then

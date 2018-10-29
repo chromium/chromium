@@ -2,8 +2,8 @@ Ensure that if we have an AXNodeObject with a raw pointer to a Node, the accessi
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

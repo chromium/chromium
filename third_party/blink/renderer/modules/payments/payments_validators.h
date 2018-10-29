@@ -13,7 +13,7 @@
 namespace blink {
 
 class AddressErrors;
-class PayerErrorFields;
+class PayerErrors;
 class PaymentValidationErrors;
 
 class MODULES_EXPORT PaymentsValidators final {
@@ -61,7 +61,7 @@ class MODULES_EXPORT PaymentsValidators final {
                                          String* optional_error_message);
 
   // Returns false if |errors| has too long string (greater than 2048).
-  static bool IsValidPayerErrorsFormat(const PayerErrorFields& errors,
+  static bool IsValidPayerErrorsFormat(const PayerErrors& errors,
                                        String* optional_error_message);
 
   // Returns false if |errors| has too long string (greater than 2048).

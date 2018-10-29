@@ -103,7 +103,7 @@ void FakeSigninManager::SignIn(const std::string& gaia_id,
 }
 
 void FakeSigninManager::ForceSignOut() {
-  ProhibitSignout(false);
+  // SigninClients should always allow sign-out for SIGNOUT_TEST.
   SignOut(signin_metrics::SIGNOUT_TEST,
           signin_metrics::SignoutDelete::IGNORE_METRIC);
 }
@@ -113,10 +113,11 @@ void FakeSigninManager::FailSignin(const GoogleServiceAuthError& error) {
     observer.GoogleSigninFailed(error);
 }
 
-void FakeSigninManager::DoSignOut(
+void FakeSigninManager::OnSignoutDecisionReached(
     signin_metrics::ProfileSignout signout_source_metric,
     signin_metrics::SignoutDelete signout_delete_metric,
-    RemoveAccountsOption remove_option) {
+    RemoveAccountsOption remove_option,
+    SigninClient::SignoutDecision signout_decision) {
   if (!IsAuthenticated()) {
     if (AuthInProgress()) {
       // If the user is in the process of signing in, then treat a call to
@@ -133,8 +134,11 @@ void FakeSigninManager::DoSignOut(
     return;
   }
 
-  if (IsSignoutProhibited())
+  // TODO(crbug.com/887756): Consider moving this higher up, or document why
+  // the above blocks are exempt from the |signout_decision| early return.
+  if (signout_decision == SigninClient::SignoutDecision::DISALLOW_SIGNOUT)
     return;
+
   set_auth_in_progress(std::string());
   set_password(std::string());
   AccountInfo account_info = GetAuthenticatedAccountInfo();

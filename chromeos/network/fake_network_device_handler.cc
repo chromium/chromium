@@ -84,8 +84,18 @@ void FakeNetworkDeviceHandler::AddWifiWakeOnPacketConnection(
     const base::Closure& callback,
     const network_handler::ErrorCallback& error_callback) {}
 
+void FakeNetworkDeviceHandler::AddWifiWakeOnPacketOfTypes(
+    const std::vector<std::string>& types,
+    const base::Closure& callback,
+    const network_handler::ErrorCallback& error_callback) {}
+
 void FakeNetworkDeviceHandler::RemoveWifiWakeOnPacketConnection(
     const net::IPEndPoint& ip_endpoint,
+    const base::Closure& callback,
+    const network_handler::ErrorCallback& error_callback) {}
+
+void FakeNetworkDeviceHandler::RemoveWifiWakeOnPacketOfTypes(
+    const std::vector<std::string>& types,
     const base::Closure& callback,
     const network_handler::ErrorCallback& error_callback) {}
 

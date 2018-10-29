@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
 
 #include "base/macros.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -44,6 +45,9 @@ class DeviceSyncClientHolder : public KeyedService {
   DeviceSyncClient* device_sync_client() { return device_sync_client_.get(); }
 
  private:
+  // KeyedService:
+  void Shutdown() override { device_sync_client_.reset(); }
+
   std::unique_ptr<DeviceSyncClient> device_sync_client_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceSyncClientHolder);
@@ -82,6 +86,10 @@ KeyedService* DeviceSyncClientFactory::BuildServiceInstanceFor(
   }
 
   return nullptr;
+}
+
+bool DeviceSyncClientFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }
 
 }  // namespace device_sync

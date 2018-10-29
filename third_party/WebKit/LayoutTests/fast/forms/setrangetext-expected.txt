@@ -3,9 +3,7 @@ Test setRangeText() method on common input types.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Running tests on input with attributes: {"type":"password"}
-
 setRangeText() with only one parameter.
 element.value = '0123456789'
 element.setSelectionRange(2, 5)
@@ -127,9 +125,7 @@ PASS element.selectionStart is 8
 PASS element.selectionEnd is 9
 element.value = '0123456789'
 PASS element.setRangeText('A', 7, 3) threw exception IndexSizeError: Failed to execute 'setRangeText' on 'HTMLInputElement': The provided start value (7) is larger than the provided end value (3)..
-
 Running tests on input with attributes: {"type":"tel"}
-
 setRangeText() with only one parameter.
 element.value = '0123456789'
 element.setSelectionRange(2, 5)
@@ -251,9 +247,7 @@ PASS element.selectionStart is 8
 PASS element.selectionEnd is 9
 element.value = '0123456789'
 PASS element.setRangeText('A', 7, 3) threw exception IndexSizeError: Failed to execute 'setRangeText' on 'HTMLInputElement': The provided start value (7) is larger than the provided end value (3)..
-
 Running tests on input with attributes: {"type":"text"}
-
 setRangeText() with only one parameter.
 element.value = '0123456789'
 element.setSelectionRange(2, 5)
@@ -375,9 +369,7 @@ PASS element.selectionStart is 8
 PASS element.selectionEnd is 9
 element.value = '0123456789'
 PASS element.setRangeText('A', 7, 3) threw exception IndexSizeError: Failed to execute 'setRangeText' on 'HTMLInputElement': The provided start value (7) is larger than the provided end value (3)..
-
 Running tests on input with attributes: {"type":"text","dir":"rtl"}
-
 setRangeText() with only one parameter.
 element.value = '0123456789'
 element.setSelectionRange(2, 5)
@@ -499,9 +491,7 @@ PASS element.selectionStart is 8
 PASS element.selectionEnd is 9
 element.value = '0123456789'
 PASS element.setRangeText('A', 7, 3) threw exception IndexSizeError: Failed to execute 'setRangeText' on 'HTMLInputElement': The provided start value (7) is larger than the provided end value (3)..
-
 Running tests on input with attributes: {"type":"url"}
-
 setRangeText() with only one parameter.
 element.value = '0123456789'
 element.setSelectionRange(2, 5)
@@ -623,39 +613,27 @@ PASS element.selectionStart is 8
 PASS element.selectionEnd is 9
 element.value = '0123456789'
 PASS element.setRangeText('A', 7, 3) threw exception IndexSizeError: Failed to execute 'setRangeText' on 'HTMLInputElement': The provided start value (7) is larger than the provided end value (3)..
-
 Running tests on input with attributes: {"type":"button"}
-
 element.value = '0123456789XYZ'
 PASS element.setRangeText('ABC', 0, 0) threw exception InvalidStateError: Failed to execute 'setRangeText' on 'HTMLInputElement': The input element's type ('button') does not support selection..
 PASS element.value is "0123456789XYZ"
-
 Running tests on input with attributes: {"type":"checkbox"}
-
 element.value = '0123456789XYZ'
 PASS element.setRangeText('ABC', 0, 0) threw exception InvalidStateError: Failed to execute 'setRangeText' on 'HTMLInputElement': The input element's type ('checkbox') does not support selection..
 PASS element.value is "0123456789XYZ"
-
 Running tests on input with attributes: {"type":"email"}
-
 element.value = '0123456789XYZ'
 PASS element.setRangeText('ABC', 0, 0) threw exception InvalidStateError: Failed to execute 'setRangeText' on 'HTMLInputElement': The input element's type ('email') does not support selection..
 PASS element.value is "0123456789XYZ"
-
 Running tests on input with attributes: {"type":"radio"}
-
 element.value = '0123456789XYZ'
 PASS element.setRangeText('ABC', 0, 0) threw exception InvalidStateError: Failed to execute 'setRangeText' on 'HTMLInputElement': The input element's type ('radio') does not support selection..
 PASS element.value is "0123456789XYZ"
-
 Running tests on input with attributes: {"type":"reset"}
-
 element.value = '0123456789XYZ'
 PASS element.setRangeText('ABC', 0, 0) threw exception InvalidStateError: Failed to execute 'setRangeText' on 'HTMLInputElement': The input element's type ('reset') does not support selection..
 PASS element.value is "0123456789XYZ"
-
 Running tests on input with attributes: {"type":"submit"}
-
 element.value = '0123456789XYZ'
 PASS element.setRangeText('ABC', 0, 0) threw exception InvalidStateError: Failed to execute 'setRangeText' on 'HTMLInputElement': The input element's type ('submit') does not support selection..
 PASS element.value is "0123456789XYZ"

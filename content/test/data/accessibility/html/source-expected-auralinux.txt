@@ -4,8 +4,8 @@
 ++++++[section]
 ++++++++[tool bar] name='audio' description='audio' horizontal
 ++++++++++[tool bar] name='audio' description='audio' horizontal
-++++++++++++[push button] name='play' description='begin playback' focusable
+++++++++++++[push button] name='play' focusable
 ++++++++++++[text] name='0:00'
 ++++++++++++[text] name='/ 0:00'
 ++++++++++++[slider] description='audio time scrubber' focusable horizontal
-++++++++++++[push button] name='mute' description='mute audio track'
+++++++++++++[push button] name='mute'

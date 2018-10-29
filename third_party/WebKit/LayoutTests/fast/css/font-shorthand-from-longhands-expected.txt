@@ -2,7 +2,6 @@ Test the return values for the font properties on the style object.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS style.font is ''
 PASS computedStyle.font is 'normal normal 400 normal 20px / normal foobar'
 PASS computedStyle.fontSize is '20px'

@@ -190,6 +190,7 @@ service_manifest("packaged_services_manifest") {
     "//services/audio:manifest",
     "//services/data_decoder:manifest",
     "//services/device:manifest",
+    "//services/media_session:manifest",
     "//services/metrics:manifest",
     "//services/network:manifest",
     "//services/resource_coordinator:manifest",

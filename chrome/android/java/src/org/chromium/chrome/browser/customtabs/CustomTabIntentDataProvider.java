@@ -35,8 +35,10 @@ import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.browserservices.BrowserSessionDataProvider;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
+import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.util.ColorUtils;
 import org.chromium.chrome.browser.util.IntentUtils;
 import org.chromium.chrome.browser.widget.TintedDrawable;
@@ -69,13 +71,12 @@ public class CustomTabIntentDataProvider extends BrowserSessionDataProvider {
     }
 
     @IntDef({LaunchSourceType.OTHER, LaunchSourceType.WEBAPP, LaunchSourceType.WEBAPK,
-            LaunchSourceType.TWA, LaunchSourceType.MEDIA_LAUNCHER_ACTIVITY})
+            LaunchSourceType.MEDIA_LAUNCHER_ACTIVITY})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchSourceType {
         int OTHER = -1;
         int WEBAPP = 0;
         int WEBAPK = 1;
-        int TWA = 2;
         int MEDIA_LAUNCHER_ACTIVITY = 3;
     }
 
@@ -110,6 +111,10 @@ public class CustomTabIntentDataProvider extends BrowserSessionDataProvider {
     public static final String EXTRA_DISABLE_DOWNLOAD_BUTTON =
             "org.chromium.chrome.browser.customtabs.EXTRA_DISABLE_DOWNLOAD_BUTTON";
 
+    /** Extra that indicates whether the client is a WebAPK. */
+    public static final String EXTRA_IS_OPENED_BY_WEBAPK =
+            "org.chromium.chrome.browser.customtabs.EXTRA_IS_OPENED_BY_WEBAPK";
+
     /**
      * Indicates the source where the Custom Tab is launched. This is only used for
      * WebApp/WebAPK/TrustedWebActivity. The value is defined as
@@ -140,6 +145,8 @@ public class CustomTabIntentDataProvider extends BrowserSessionDataProvider {
             + "To make locally-built Chrome a first-party app, sign with release-test "
             + "signing keys and run on userdebug devices. See use_signing_keys GN arg.";
 
+    private final Intent mIntent;
+
     private final int mUiType;
     private final int mTitleVisibilityState;
     private final String mMediaViewerUrl;
@@ -148,10 +155,13 @@ public class CustomTabIntentDataProvider extends BrowserSessionDataProvider {
     private final int mInitialBackgroundColor;
     private final boolean mDisableStar;
     private final boolean mDisableDownload;
+    private final boolean mIsOpenedByWebApk;
     private final boolean mIsTrustedWebActivity;
     @Nullable
     private final ComponentName mModuleComponentName;
     private final boolean mIsIncognito;
+    @Nullable
+    private String mUrlToLoad;
 
     private int mToolbarColor;
     private int mBottomBarColor;
@@ -196,6 +206,7 @@ public class CustomTabIntentDataProvider extends BrowserSessionDataProvider {
         super(intent);
         if (intent == null) assert false;
 
+        mIntent = intent;
         mIsOpenedByChrome = IntentUtils.safeGetBooleanExtra(
                 intent, EXTRA_IS_OPENED_BY_CHROME, false);
 
@@ -267,6 +278,8 @@ public class CustomTabIntentDataProvider extends BrowserSessionDataProvider {
         mDisableStar = IntentUtils.safeGetBooleanExtra(intent, EXTRA_DISABLE_STAR_BUTTON, false);
         mDisableDownload =
                 IntentUtils.safeGetBooleanExtra(intent, EXTRA_DISABLE_DOWNLOAD_BUTTON, false);
+        mIsOpenedByWebApk =
+                IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OPENED_BY_WEBAPK, false);
 
         String modulePackageName =
                 IntentUtils.safeGetStringExtra(intent, EXTRA_MODULE_PACKAGE_NAME);
@@ -401,11 +414,46 @@ public class CustomTabIntentDataProvider extends BrowserSessionDataProvider {
         return color | 0xFF000000;
     }
 
+    private String resolveUrlToLoad(Intent intent) {
+        String url = IntentHandler.getUrlFromIntent(intent);
+
+        // Intents fired for media viewers have an additional file:// URI passed along so that the
+        // tab can display the actual filename to the user when it is loaded.
+        if (isMediaViewer()) {
+            String mediaViewerUrl = getMediaViewerUrl();
+            if (!TextUtils.isEmpty(mediaViewerUrl)) {
+                Uri mediaViewerUri = Uri.parse(mediaViewerUrl);
+                if (UrlConstants.FILE_SCHEME.equals(mediaViewerUri.getScheme())) {
+                    url = mediaViewerUrl;
+                }
+            }
+        }
+
+        if (!TextUtils.isEmpty(url)) {
+            url = DataReductionProxySettings.getInstance().maybeRewriteWebliteUrl(url);
+        }
+
+        return url;
+    }
+
+    /**
+     * @return The URL that should be used from this intent. If it is a WebLite url, it may be
+     *         overridden if the Data Reduction Proxy is using Lo-Fi previews.
+     * Must be called only after native has loaded.
+     */
+    public String getUrlToLoad() {
+        if (mUrlToLoad == null) {
+            mUrlToLoad = resolveUrlToLoad(mIntent);
+        }
+        return mUrlToLoad;
+    }
+
     /**
      * @return Whether url bar hiding should be enabled in the custom tab. Default is false.
+     * It should be impossible to hide the url bar when the tab is opened for Payment Request.
      */
     public boolean shouldEnableUrlBarHiding() {
-        return mEnableUrlBarHiding;
+        return mEnableUrlBarHiding && !isForPaymentRequest();
     }
 
     /**
@@ -669,6 +717,13 @@ public class CustomTabIntentDataProvider extends BrowserSessionDataProvider {
      */
     boolean shouldShowDownloadButton() {
         return !mDisableDownload;
+    }
+
+    /**
+     * @return Whether the Custom Tab was opened from a WebAPK.
+     */
+    boolean isOpenedByWebApk() {
+        return mIsOpenedByWebApk;
     }
 
     /**

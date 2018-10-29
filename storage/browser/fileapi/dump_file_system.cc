@@ -103,9 +103,9 @@ static void DumpDirectoryTree(const std::string& origin_name,
     std::vector<SandboxDirectoryDatabase::FileId> children;
     if (info.is_directory()) {
       if (!directory_db.ListChildren(id, &children)) {
-        ShowMessageAndExit(base::StringPrintf("ListChildren failed for %" PRIsFP
-                                              " (%" PRId64 ")",
-                                              info.name.c_str(), id));
+        ShowMessageAndExit(base::StringPrintf(
+            "ListChildren failed for %" PRFilePath " (%" PRId64 ")",
+            info.name.c_str(), id));
       }
 
       for (size_t j = children.size(); j; j--)

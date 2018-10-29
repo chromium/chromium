@@ -34,7 +34,8 @@ class PlatformApiImpl : public assistant_client::PlatformApi {
       service_manager::Connector* connector,
       device::mojom::BatteryMonitorPtr battery_monitor,
       bool enable_hotword,
-      scoped_refptr<base::SingleThreadTaskRunner> background_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
+      network::NetworkConnectionTracker* network_connection_tracker);
   ~PlatformApiImpl() override;
 
   // assistant_client::PlatformApi overrides

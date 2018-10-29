@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/simple_thread.h"
-#include "base/threading/thread.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "services/catalog/catalog.h"
@@ -68,24 +67,18 @@ class DefaultService : public service_manager::Service {
 class ServiceManagerConnection {
  public:
   ServiceManagerConnection()
-      : thread_("Persistent service_manager connections"),
-        ipc_thread_("IPC thread") {
+      : thread_("Persistent service_manager connections") {
     catalog::Catalog::LoadDefaultCatalogManifest(
         base::FilePath(kCatalogFilename));
-    mojo::core::Init();
-    ipc_thread_.StartWithOptions(
-        base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
-    ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
-        ipc_thread_.task_runner(),
-        mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
-
     base::WaitableEvent wait(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     base::Thread::Options options;
     thread_.StartWithOptions(options);
     thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&ServiceManagerConnection::SetUpConnections,
-                                  base::Unretained(this), &wait));
+        FROM_HERE,
+        base::BindOnce(
+            &ServiceManagerConnection::SetUpConnectionsOnBackgroundThread,
+            base::Unretained(this), &wait));
     wait.Wait();
   }
 
@@ -94,8 +87,9 @@ class ServiceManagerConnection {
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     thread_.task_runner()->PostTask(
         FROM_HERE,
-        base::BindOnce(&ServiceManagerConnection::TearDownConnections,
-                       base::Unretained(this), &wait));
+        base::BindOnce(
+            &ServiceManagerConnection::TearDownConnectionsOnBackgroundThread,
+            base::Unretained(this), &wait));
     wait.Wait();
   }
 
@@ -124,7 +118,7 @@ class ServiceManagerConnection {
     wait->Signal();
   }
 
-  void SetUpConnections(base::WaitableEvent* wait) {
+  void SetUpConnectionsOnBackgroundThread(base::WaitableEvent* wait) {
     background_service_manager_ =
         std::make_unique<service_manager::BackgroundServiceManager>(nullptr,
                                                                     nullptr);
@@ -140,8 +134,9 @@ class ServiceManagerConnection {
     wait->Signal();
   }
 
-  void TearDownConnections(base::WaitableEvent* wait) {
+  void TearDownConnectionsOnBackgroundThread(base::WaitableEvent* wait) {
     context_.reset();
+    background_service_manager_.reset();
     wait->Signal();
   }
 
@@ -155,8 +150,6 @@ class ServiceManagerConnection {
   }
 
   base::Thread thread_;
-  base::Thread ipc_thread_;
-  std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
   std::unique_ptr<service_manager::BackgroundServiceManager>
       background_service_manager_;
   std::unique_ptr<service_manager::ServiceContext> context_;
@@ -226,7 +219,7 @@ std::unique_ptr<PlatformTestHelper> CreatePlatformTestHelper() {
 }  // namespace
 
 ViewsMusTestSuite::ViewsMusTestSuite(int argc, char** argv)
-    : ViewsTestSuite(argc, argv) {}
+    : ViewsTestSuite(argc, argv), ipc_thread_("IPC thread") {}
 
 ViewsMusTestSuite::~ViewsMusTestSuite() {}
 
@@ -248,6 +241,13 @@ void ViewsMusTestSuite::Initialize() {
       switches::kEnableFeatures, features::kMash.name);
 
   PlatformTestHelper::set_factory(base::Bind(&CreatePlatformTestHelper));
+
+  mojo::core::Init();
+  ipc_thread_.StartWithOptions(
+      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+  ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
+      ipc_thread_.task_runner(),
+      mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
 }
 
 void ViewsMusTestSuite::InitializeEnv() {

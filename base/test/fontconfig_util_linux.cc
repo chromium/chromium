@@ -36,19 +36,6 @@ const char kFontsConfTemplate[] = R"(<?xml version="1.0"?>
     </edit>
   </match>
 
-  <!-- TODO(thomasanderson): Figure out why this is necessary. -->
-  <match target="pattern">
-    <test name="family" compare="eq">
-      <string>Tinos</string>
-    </test>
-    <test name="prgname" compare="eq">
-      <string>chromevox_tests</string>
-    </test>
-    <edit name="hintstyle" mode="assign">
-      <const>hintslight</const>
-    </edit>
-  </match>
-
   <match target="pattern">
     <test qual="any" name="family">
       <string>Times</string>

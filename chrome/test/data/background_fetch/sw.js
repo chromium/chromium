@@ -14,11 +14,14 @@ function postToWindowClients(msg) {
 }
 
 self.addEventListener('message', e => {
-  if (e.data !== 'fetch') throw "unexpected message";
-
-  self.registration.backgroundFetch.fetch(
-      'sw-fetch', '/background_fetch/types_of_cheese.txt')
-    .catch(e => postToWindowClients('permissionerror'));
+  const fetchPromise = self.registration.backgroundFetch.fetch(
+    'sw-fetch', '/background_fetch/types_of_cheese.txt');
+  if (e.data === 'fetchnowait')
+    postToWindowClients('ok');
+  else if (e.data === 'fetch')
+    fetchPromise.catch(e => postToWindowClients('permissionerror'));
+  else
+    postToWindowClients('unexpected message');
 });
 
 // Background Fetch event listeners.

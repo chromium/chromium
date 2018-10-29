@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/message_loop/message_loop.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -268,9 +269,9 @@ gfx::Range GetFirstEmphasizedRange(const ui::CompositionText& composition) {
 // NSTextKillRingSize, a text system default. However to keep things simple,
 // the default kill ring size of 1 (i.e. a single buffer) is assumed.
 base::string16* GetKillBuffer() {
-  CR_DEFINE_STATIC_LOCAL(base::string16, kill_buffer, ());
+  static base::NoDestructor<base::string16> kill_buffer;
   DCHECK(base::MessageLoopForUI::IsCurrent());
-  return &kill_buffer;
+  return kill_buffer.get();
 }
 
 // Helper method to set the kill buffer.
@@ -486,7 +487,7 @@ bool TextfieldModel::CanRedo() {
   if (edit_history_.empty())
     return false;
   // There is no redo iff the current edit is the last element in the history.
-  EditHistory::iterator iter = current_edit_;
+  auto iter = current_edit_;
   return iter == edit_history_.end() || // at the top.
       ++iter != edit_history_.end();
 }
@@ -760,7 +761,7 @@ void TextfieldModel::ClearRedoHistory() {
     ClearEditHistory();
     return;
   }
-  EditHistory::iterator delete_start = current_edit_;
+  auto delete_start = current_edit_;
   ++delete_start;
   edit_history_.erase(delete_start, edit_history_.end());
 }

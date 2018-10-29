@@ -380,9 +380,9 @@ Decimal RangeInputType::FindClosestTickMarkValue(const Decimal& value) {
   if (!tick_mark_values_.size())
     return Decimal::Nan();
 
-  size_t left = 0;
-  size_t right = tick_mark_values_.size();
-  size_t middle;
+  wtf_size_t left = 0;
+  wtf_size_t right = tick_mark_values_.size();
+  wtf_size_t middle;
   while (true) {
     DCHECK_LE(left, right);
     middle = left + (right - left) / 2;

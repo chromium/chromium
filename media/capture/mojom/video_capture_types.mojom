@@ -37,7 +37,9 @@ enum VideoCapturePixelFormat {
   YUV420P12,
   YUV422P12,
   YUV444P12,
-  Y16
+  Y16,
+  ABGR,
+  XBGR,
 };
 
 enum ResolutionChangePolicy {
@@ -205,13 +207,13 @@ enum VideoCaptureError {
   kMacDeckLinkCouldNotStartCapturing,
   kMacDeckLinkUnsupportedPixelFormat,
   kMacAvFoundationReceivedAVCaptureSessionRuntimeErrorNotification,
-  kAndroidApi2ErrorConfiguringCamera
+  kAndroidApi2ErrorConfiguringCamera,
+  kCrosHalV3DeviceDelegateFailedToFlush
 };
 
 enum VideoCaptureFrameDropReason {
   kNone,
   kDeviceClientFrameHasInvalidFormat,
-  kDeviceClientFailedToReserveBufferFromBufferPool,
   kDeviceClientLibyuvConvertToI420Failed,
   kV4L2BufferErrorFlagWasSet,
   kV4L2InvalidNumberOfBytesInBuffer,
@@ -223,7 +225,9 @@ enum VideoCaptureFrameDropReason {
   kWinDirectShowFailedToGetMemoryPointerFromMediaSample,
   kWinMediaFoundationReceivedSampleIsNull,
   kWinMediaFoundationLockingBufferDelieveredNullptr,
-  kWinMediaFoundationGetBufferByIndexReturnedNull
+  kWinMediaFoundationGetBufferByIndexReturnedNull,
+  kBufferPoolMaxBufferCountExceeded,
+  kBufferPoolBufferAllocationFailed
 };
 
 struct VideoCaptureFormat {
@@ -255,7 +259,11 @@ struct VideoFrameInfo{
   VideoCapturePixelFormat pixel_format;
   gfx.mojom.Size coded_size;
   gfx.mojom.Rect visible_rect;
-  gfx.mojom.ColorSpace color_space;
+  // This field is only optional to work around the issue of native enums
+  // not being usable for non-Chromium Mojo clients.
+  // TODO(chfremer): Make this non-optional once gfx.mojom.ColorSpace has been
+  // migrated to a full Mojo struct.
+  gfx.mojom.ColorSpace? color_space;
   // Optionally, stride information can be provided.
   // If not provided, it is assumed that frame data is tightly packed.
   PlaneStrides? strides;
@@ -299,4 +307,3 @@ union VideoBufferHandle {
   SharedMemoryViaRawFileDescriptor shared_memory_via_raw_file_descriptor;
   MailboxBufferHandleSet mailbox_handles;
 };
-

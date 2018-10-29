@@ -2,7 +2,6 @@ Check whether changing slider's value without step attribute works properly
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS range1.intValue is 50
 PASS range1.intValue is 51
 PASS range1.intValue is 52
@@ -21,4 +20,5 @@ PASS range3.intValue is 20
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
   

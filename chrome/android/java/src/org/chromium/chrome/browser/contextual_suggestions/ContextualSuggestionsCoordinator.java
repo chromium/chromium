@@ -11,11 +11,12 @@ import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.init.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.preferences.ContextualSuggestionsPreference;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
-import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegateImpl;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -35,7 +36,7 @@ import javax.inject.Inject;
  * They share a {@link ContextualSuggestionsMediator} and {@link ContextualSuggestionsModel}.
  */
 @ActivityScope
-public class ContextualSuggestionsCoordinator {
+public class ContextualSuggestionsCoordinator implements Destroyable {
     private static final String FEEDBACK_CONTEXT = "contextual_suggestions";
 
     private final Profile mProfile = Profile.getLastUsedProfile().getOriginalProfile();
@@ -59,16 +60,19 @@ public class ContextualSuggestionsCoordinator {
     @Inject
     ContextualSuggestionsCoordinator(ChromeActivity activity,
             BottomSheetController bottomSheetController, TabModelSelector tabModelSelector,
-            ContextualSuggestionsModel model, ContextualSuggestionsMediator mediator) {
+            ContextualSuggestionsModel model, ContextualSuggestionsMediator mediator,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
         mModel = model;
         mBottomSheetController = bottomSheetController;
         mTabModelSelector = tabModelSelector;
         mMediator = mediator;
-        mediator.initialize(this, bottomSheetController.getBottomSheet());
+        mediator.initialize(this);
+        lifecycleDispatcher.register(this);
     }
 
     /** Called when the containing activity is destroyed. */
+    @Override
     public void destroy() {
         mModel.getClusterList().destroy();
         mMediator.destroy();
@@ -90,7 +94,7 @@ public class ContextualSuggestionsCoordinator {
         mContentCoordinator =
                 new ContentCoordinator(mActivity, mBottomSheetController.getBottomSheet());
         mBottomSheetContent = new ContextualSuggestionsBottomSheetContent(
-                mContentCoordinator, mToolbarCoordinator, mModel.isSlimPeekEnabled());
+                mContentCoordinator, mToolbarCoordinator);
         assert mBottomSheetContent != null;
         mBottomSheetController.requestShowContent(mBottomSheetContent, false);
     }
@@ -110,7 +114,7 @@ public class ContextualSuggestionsCoordinator {
             return;
         }
 
-        SuggestionsNavigationDelegate navigationDelegate = new SuggestionsNavigationDelegateImpl(
+        SuggestionsNavigationDelegate navigationDelegate = new SuggestionsNavigationDelegate(
                 mActivity, mProfile, mBottomSheetController.getBottomSheet(), mTabModelSelector);
         SuggestionsUiDelegateImpl uiDelegate = new SuggestionsUiDelegateImpl(suggestionsSource,
                 new ContextualSuggestionsEventReporter(mTabModelSelector, suggestionsSource),

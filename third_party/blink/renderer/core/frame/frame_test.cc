@@ -25,9 +25,10 @@ class FrameTest : public PageTestBase {
 
   void Navigate(const String& destinationUrl, bool user_activated) {
     const KURL& url = KURL(NullURL(), destinationUrl);
-    FrameLoadRequest request(nullptr, ResourceRequest(url),
-                             SubstituteData(SharedBuffer::Create()));
-    GetDocument().GetFrame()->Loader().CommitNavigation(request);
+    GetDocument().GetFrame()->Loader().CommitNavigation(
+        ResourceRequest(url), SubstituteData(SharedBuffer::Create()),
+        ClientRedirectPolicy::kNotClientRedirect,
+        base::UnguessableToken::Create());
     if (user_activated) {
       GetDocument()
           .GetFrame()
@@ -53,7 +54,7 @@ class FrameTest : public PageTestBase {
 TEST_F(FrameTest, NoGesture) {
   // A nullptr LocalFrame* will not set user gesture state.
   std::unique_ptr<UserGestureIndicator> holder =
-      Frame::NotifyUserActivation(nullptr);
+      LocalFrame::NotifyUserActivation(nullptr);
   EXPECT_FALSE(GetDocument().GetFrame()->HasBeenActivated());
 }
 
@@ -62,26 +63,27 @@ TEST_F(FrameTest, PossiblyExisting) {
   // token will not override it.
   {
     std::unique_ptr<UserGestureIndicator> holder =
-        Frame::NotifyUserActivation(GetDocument().GetFrame());
+        LocalFrame::NotifyUserActivation(GetDocument().GetFrame());
     EXPECT_TRUE(GetDocument().GetFrame()->HasBeenActivated());
   }
   {
     std::unique_ptr<UserGestureIndicator> holder =
-        Frame::NotifyUserActivation(nullptr);
+        LocalFrame::NotifyUserActivation(nullptr);
     EXPECT_TRUE(GetDocument().GetFrame()->HasBeenActivated());
   }
 }
 
 TEST_F(FrameTest, NewGesture) {
   // UserGestureToken::Status doesn't impact Document gesture state.
-  std::unique_ptr<UserGestureIndicator> holder = Frame::NotifyUserActivation(
-      GetDocument().GetFrame(), UserGestureToken::kNewGesture);
+  std::unique_ptr<UserGestureIndicator> holder =
+      LocalFrame::NotifyUserActivation(GetDocument().GetFrame(),
+                                       UserGestureToken::kNewGesture);
   EXPECT_TRUE(GetDocument().GetFrame()->HasBeenActivated());
 }
 
 TEST_F(FrameTest, NavigateDifferentDomain) {
   std::unique_ptr<UserGestureIndicator> holder =
-      Frame::NotifyUserActivation(GetDocument().GetFrame());
+      LocalFrame::NotifyUserActivation(GetDocument().GetFrame());
   EXPECT_TRUE(GetDocument().GetFrame()->HasBeenActivated());
   EXPECT_FALSE(
       GetDocument().GetFrame()->HasReceivedUserGestureBeforeNavigation());
@@ -96,7 +98,7 @@ TEST_F(FrameTest, NavigateDifferentDomain) {
 
 TEST_F(FrameTest, NavigateSameDomainMultipleTimes) {
   std::unique_ptr<UserGestureIndicator> holder =
-      Frame::NotifyUserActivation(GetDocument().GetFrame());
+      LocalFrame::NotifyUserActivation(GetDocument().GetFrame());
   EXPECT_TRUE(GetDocument().GetFrame()->HasBeenActivated());
   EXPECT_FALSE(
       GetDocument().GetFrame()->HasReceivedUserGestureBeforeNavigation());
@@ -132,7 +134,7 @@ TEST_F(FrameTest, NavigateSameDomainMultipleTimes) {
 
 TEST_F(FrameTest, NavigateSameDomainDifferentDomain) {
   std::unique_ptr<UserGestureIndicator> holder =
-      Frame::NotifyUserActivation(GetDocument().GetFrame());
+      LocalFrame::NotifyUserActivation(GetDocument().GetFrame());
   EXPECT_TRUE(GetDocument().GetFrame()->HasBeenActivated());
   EXPECT_FALSE(
       GetDocument().GetFrame()->HasReceivedUserGestureBeforeNavigation());
@@ -168,19 +170,23 @@ TEST_F(FrameTest, UserActivationInterfaceTest) {
 
   // Initially both sticky and transient bits are false.
   EXPECT_FALSE(GetDocument().GetFrame()->HasBeenActivated());
-  EXPECT_FALSE(Frame::HasTransientUserActivation(GetDocument().GetFrame()));
+  EXPECT_FALSE(
+      LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
 
-  Frame::NotifyUserActivation(GetDocument().GetFrame());
+  LocalFrame::NotifyUserActivation(GetDocument().GetFrame());
 
   // Now both sticky and transient bits are true, hence consumable.
   EXPECT_TRUE(GetDocument().GetFrame()->HasBeenActivated());
-  EXPECT_TRUE(Frame::HasTransientUserActivation(GetDocument().GetFrame()));
-  EXPECT_TRUE(Frame::ConsumeTransientUserActivation(GetDocument().GetFrame()));
+  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
+  EXPECT_TRUE(
+      LocalFrame::ConsumeTransientUserActivation(GetDocument().GetFrame()));
 
   // After consumption, only the transient bit resets to false.
   EXPECT_TRUE(GetDocument().GetFrame()->HasBeenActivated());
-  EXPECT_FALSE(Frame::HasTransientUserActivation(GetDocument().GetFrame()));
-  EXPECT_FALSE(Frame::ConsumeTransientUserActivation(GetDocument().GetFrame()));
+  EXPECT_FALSE(
+      LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
+  EXPECT_FALSE(
+      LocalFrame::ConsumeTransientUserActivation(GetDocument().GetFrame()));
 }
 
 }  // namespace blink

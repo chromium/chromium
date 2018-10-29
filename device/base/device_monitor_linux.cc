@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "device/udev_linux/udev.h"
 
 namespace device {
@@ -28,7 +28,7 @@ base::LazyInstance<DeviceMonitorLinux>::Leaky g_device_monitor_linux =
 }  // namespace
 
 DeviceMonitorLinux::DeviceMonitorLinux() : monitor_fd_(-1) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
 
   udev_.reset(udev_new());
   if (!udev_) {

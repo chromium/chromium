@@ -56,7 +56,7 @@ enum GridTrackSizeType {
 // statement there (to distinguish between fit-content and any other case) was
 // causing a severe performance drop.
 class GridTrackSize {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   GridTrackSize(const GridLength& length,

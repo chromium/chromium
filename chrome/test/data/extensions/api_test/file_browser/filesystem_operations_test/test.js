@@ -15,7 +15,7 @@
  * extension. The test extension expects following hierarchy:
  *   (root) - test_dir - subdir
  *                         |
- *                          - empty_test_dir
+ *                          - empty_dir
  *                         |
  *                          - test_file.xul
  *                         |
@@ -28,7 +28,7 @@
  * 'root' exists only for Drive.
  * (root/)test_dir/subdir/ will be used as destination dir for copy and move
  * operations.
- * (root/)test_dir/empty_test_dir/ should be empty and will stay empty until
+ * (root/)test_dir/empty_dir/ should be empty and will stay empty until
  * the end of the test.
  * (root/)test_dir/test_file.xul will not change during the test.
  *
@@ -440,11 +440,11 @@ function collectTestsForVolumeId(volumeId, fileSystem) {
     // Verify that the directory exists after delete operation if and only if
     // the file system is read-only.
     var callback = getDirectory.bind(null, volumeId, fileSystem.root,
-        'test_dir/empty_test_dir', false, isReadOnly, chrome.test.succeed);
+        'test_dir/empty_dir', false, isReadOnly, chrome.test.succeed);
 
     // Deleting empty directory should fail for read-only file systems, and
     // succeed otherwise.
-    deleteDirectory(volumeId, fileSystem.root, 'test_dir/empty_test_dir',
+    deleteDirectory(volumeId, fileSystem.root, 'test_dir/empty_dir',
         !isReadOnly, callback);
   });
 

@@ -40,10 +40,6 @@ cast_source_set("renderer") {
     sources += [ "cast_content_renderer_client_simple.cc" ]
   }
 
-  if (use_playready) {
-    configs += [ "//chromecast:playready_config" ]
-  }
-
   deps = [
     "//base",
     "//chromecast:chromecast_buildflags",

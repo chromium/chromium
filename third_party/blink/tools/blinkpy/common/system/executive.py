@@ -369,7 +369,12 @@ class Executive(object):
         if sys.platform == 'win32' and sys.version < '3':
             return True
 
-        return False
+        # On other (POSIX) platforms, we need to encode arguments if the system
+        # does not use UTF-8 encoding. Otherwise, subprocess.Popen will raise
+        # TypeError. Note that macOS always uses UTF-8, while on UNIX it
+        # depends on user locale (LC_CTYPE) and sys.getfilesystemencoding() may
+        # fail and return None.
+        return (sys.getfilesystemencoding() or '').lower() != 'utf-8'
 
     def _encode_argument_if_needed(self, argument):
         if not self._should_encode_child_process_arguments():

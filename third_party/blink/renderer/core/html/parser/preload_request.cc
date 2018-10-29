@@ -105,8 +105,9 @@ Resource* PreloadRequest::Start(Document* document) {
     if (const auto* frame = document->Loader()->GetFrame()) {
       if (frame->IsClientLoFiAllowed(params.GetResourceRequest())) {
         params.SetClientLoFiPlaceholder();
-      } else if (!is_lazyload_attr_off_ && frame->IsLazyLoadingImageAllowed()) {
-        params.SetAllowImagePlaceholder();
+      } else if (!is_lazyload_image_disabled_ &&
+                 frame->IsLazyLoadingImageAllowed()) {
+        params.SetLazyImagePlaceholder();
       }
     }
   }

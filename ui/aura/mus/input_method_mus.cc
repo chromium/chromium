@@ -19,6 +19,21 @@
 using ws::mojom::EventResult;
 
 namespace aura {
+namespace {
+
+void CallEventResultCallback(InputMethodMus::EventResultCallback ack_callback,
+                             bool handled) {
+  // |ack_callback| can be null if the standard form of DispatchKeyEvent() is
+  // called instead of the version which provides a callback. In mus+ash we
+  // use the version with callback, but some unittests use the standard form.
+  if (!ack_callback)
+    return;
+
+  std::move(ack_callback)
+      .Run(handled ? EventResult::HANDLED : EventResult::UNHANDLED);
+}
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // InputMethodMus, public:
@@ -50,13 +65,9 @@ ui::EventDispatchDetails InputMethodMus::DispatchKeyEvent(
 
   // If no text input client, do nothing.
   if (!GetTextInputClient()) {
-    ui::EventDispatchDetails dispatch_details = DispatchKeyEventPostIME(event);
-    if (ack_callback) {
-      std::move(ack_callback)
-          .Run(event->handled() ? EventResult::HANDLED
-                                : EventResult::UNHANDLED);
-    }
-    return dispatch_details;
+    return DispatchKeyEventPostIME(
+        event,
+        base::BindOnce(&CallEventResultCallback, std::move(ack_callback)));
   }
 
   return SendKeyEventToInputMethod(*event, std::move(ack_callback));
@@ -101,6 +112,8 @@ void InputMethodMus::OnCaretBoundsChanged(const ui::TextInputClient* client) {
 
   if (input_method_)
     input_method_->OnCaretBoundsChanged(client->GetCaretBounds());
+
+  NotifyTextInputCaretBoundsChanged(client);
 }
 
 void InputMethodMus::CancelComposition(const ui::TextInputClient* client) {
@@ -125,6 +138,7 @@ bool InputMethodMus::IsCandidatePopupOpen() const {
 }
 
 void InputMethodMus::ShowVirtualKeyboardIfEnabled() {
+  InputMethodBase::ShowVirtualKeyboardIfEnabled();
   if (input_method_)
     input_method_->ShowVirtualKeyboardIfEnabled();
 }
@@ -136,7 +150,8 @@ ui::EventDispatchDetails InputMethodMus::SendKeyEventToInputMethod(
     // This code path is hit in tests that don't connect to the server.
     DCHECK(!ack_callback);
     std::unique_ptr<ui::Event> event_clone = ui::Event::Clone(event);
-    return DispatchKeyEventPostIME(event_clone->AsKeyEvent());
+    return DispatchKeyEventPostIME(event_clone->AsKeyEvent(),
+                                   base::NullCallback());
   }
 
   // IME driver will notify us whether it handled the event or not by calling
@@ -216,14 +231,7 @@ void InputMethodMus::ProcessKeyEventCallback(
   DCHECK(!pending_callbacks_.empty());
   EventResultCallback ack_callback = std::move(pending_callbacks_.front());
   pending_callbacks_.pop_front();
-
-  // |ack_callback| can be null if the standard form of DispatchKeyEvent() is
-  // called instead of the version which provides a callback. In mus+ash we
-  // use the version with callback, but some unittests use the standard form.
-  if (ack_callback) {
-    std::move(ack_callback)
-        .Run(handled ? EventResult::HANDLED : EventResult::UNHANDLED);
-  }
+  CallEventResultCallback(std::move(ack_callback), handled);
 }
 
 }  // namespace aura

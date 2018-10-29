@@ -16,7 +16,6 @@
 #include "base/cfi_buildflags.h"
 #include "base/debug/stack_trace.h"
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/synchronization/waitable_event.h"
@@ -27,6 +26,7 @@
 #include "base/task/task_scheduler/test_utils.h"
 #include "base/task/task_traits.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -55,13 +55,29 @@ namespace internal {
 
 namespace {
 
-struct TraitsExecutionModePair {
-  TraitsExecutionModePair(const TaskTraits& traits,
-                          test::ExecutionMode execution_mode)
-      : traits(traits), execution_mode(execution_mode) {}
+enum class PoolConfiguration {
+  kDefault,
+  kMergeBlockingNonBlocking,
+};
+
+enum class SchedulerState {
+  // TaskScheduler::Start() was not called yet, no thread was created.
+  kBeforeSchedulerStart,
+  // TaskScheduler::Start() has been called.
+  kAfterSchedulerStart,
+};
+
+struct TaskSchedulerImplTestParams {
+  TaskSchedulerImplTestParams(const TaskTraits& traits,
+                              test::ExecutionMode execution_mode,
+                              PoolConfiguration pool_config)
+      : traits(traits),
+        execution_mode(execution_mode),
+        pool_config(pool_config) {}
 
   TaskTraits traits;
   test::ExecutionMode execution_mode;
+  PoolConfiguration pool_config;
 };
 
 #if DCHECK_IS_ON()
@@ -76,7 +92,7 @@ bool GetIOAllowed() {
 // Verify that the current thread priority and I/O restrictions are appropriate
 // to run a Task with |traits|.
 // Note: ExecutionMode is verified inside TestTaskFactory.
-void VerifyTaskEnvironment(const TaskTraits& traits) {
+void VerifyTaskEnvironment(const TaskTraits& traits, SchedulerState state) {
   EXPECT_EQ(CanUseBackgroundPriorityForSchedulerWorker() &&
                     traits.priority() == TaskPriority::BEST_EFFORT
                 ? ThreadPriority::BACKGROUND
@@ -110,23 +126,35 @@ void VerifyTaskEnvironment(const TaskTraits& traits) {
                       ? "Background"
                       : "Foreground"));
   }
-  EXPECT_EQ(traits.may_block(),
-            current_thread_name.find("Blocking") != std::string::npos);
+  // TaskScheduler only handles |kMergeBlockingNonBlockingPools| once started 
+  // (early task runners are not merged for this experiment).
+  // TODO(etiennep): Simplify this after the experiment.
+  // Merging pools does not affect SingleThread workers.
+  if (base::FeatureList::IsEnabled(kMergeBlockingNonBlockingPools) &&
+      state == SchedulerState::kAfterSchedulerStart &&
+      current_thread_name.find("SingleThread") == std::string::npos) {
+    EXPECT_EQ(std::string::npos, current_thread_name.find("Blocking"));
+  } else {
+    EXPECT_EQ(traits.may_block(),
+              current_thread_name.find("Blocking") != std::string::npos);
+  }
 }
 
 void VerifyTaskEnvironmentAndSignalEvent(const TaskTraits& traits,
+                                         SchedulerState state,
                                          WaitableEvent* event) {
   DCHECK(event);
-  VerifyTaskEnvironment(traits);
+  VerifyTaskEnvironment(traits, state);
   event->Signal();
 }
 
 void VerifyTimeAndTaskEnvironmentAndSignalEvent(const TaskTraits& traits,
+                                                SchedulerState state,
                                                 TimeTicks expected_time,
                                                 WaitableEvent* event) {
   DCHECK(event);
   EXPECT_LE(expected_time, TimeTicks::Now());
-  VerifyTaskEnvironment(traits);
+  VerifyTaskEnvironment(traits, state);
   event->Signal();
 }
 
@@ -172,8 +200,10 @@ class ThreadPostingTasks : public SimpleThread {
 
     const size_t kNumTasksPerThread = 150;
     for (size_t i = 0; i < kNumTasksPerThread; ++i) {
-      factory_.PostTask(test::TestTaskFactory::PostNestedTask::NO,
-                        Bind(&VerifyTaskEnvironment, traits_));
+      factory_.PostTask(
+          test::TestTaskFactory::PostNestedTask::NO,
+          Bind(&VerifyTaskEnvironment, traits_,
+               SchedulerState::kAfterSchedulerStart));
     }
   }
 
@@ -183,10 +213,10 @@ class ThreadPostingTasks : public SimpleThread {
   DISALLOW_COPY_AND_ASSIGN(ThreadPostingTasks);
 };
 
-// Returns a vector with a TraitsExecutionModePair for each valid
+// Returns a vector with a TaskSchedulerImplTestParams for each valid
 // combination of {ExecutionMode, TaskPriority, MayBlock()}.
-std::vector<TraitsExecutionModePair> GetTraitsExecutionModePairs() {
-  std::vector<TraitsExecutionModePair> params;
+std::vector<TaskSchedulerImplTestParams> GetTaskSchedulerImplTestParams() {
+  std::vector<TaskSchedulerImplTestParams> params;
 
   const test::ExecutionMode execution_modes[] = {
       test::ExecutionMode::PARALLEL, test::ExecutionMode::SEQUENCED,
@@ -197,8 +227,17 @@ std::vector<TraitsExecutionModePair> GetTraitsExecutionModePairs() {
          priority_index <= static_cast<size_t>(TaskPriority::HIGHEST);
          ++priority_index) {
       const TaskPriority priority = static_cast<TaskPriority>(priority_index);
-      params.push_back(TraitsExecutionModePair({priority}, execution_mode));
-      params.push_back(TraitsExecutionModePair({MayBlock()}, execution_mode));
+      params.push_back(TaskSchedulerImplTestParams(
+          {priority}, execution_mode, PoolConfiguration::kDefault));
+      params.push_back(TaskSchedulerImplTestParams(
+          {MayBlock()}, execution_mode, PoolConfiguration::kDefault));
+
+      params.push_back(TaskSchedulerImplTestParams(
+          {priority}, execution_mode,
+          PoolConfiguration::kMergeBlockingNonBlocking));
+      params.push_back(TaskSchedulerImplTestParams(
+          {MayBlock()}, execution_mode,
+          PoolConfiguration::kMergeBlockingNonBlocking));
     }
   }
 
@@ -206,9 +245,12 @@ std::vector<TraitsExecutionModePair> GetTraitsExecutionModePairs() {
 }
 
 class TaskSchedulerImplTest
-    : public testing::TestWithParam<TraitsExecutionModePair> {
+    : public testing::TestWithParam<TaskSchedulerImplTestParams> {
  protected:
-  TaskSchedulerImplTest() : scheduler_("Test"), field_trial_list_(nullptr) {}
+  TaskSchedulerImplTest() : scheduler_("Test"), field_trial_list_(nullptr) {
+    if (GetParam().pool_config == PoolConfiguration::kMergeBlockingNonBlocking)
+      feature_list.InitWithFeatures({kMergeBlockingNonBlockingPools}, {});
+  }
 
   void EnableAllTasksUserBlocking() {
     constexpr char kFieldTrialName[] = "BrowserScheduler";
@@ -254,6 +296,7 @@ class TaskSchedulerImplTest
 
  private:
   base::FieldTrialList field_trial_list_;
+  base::test::ScopedFeatureList feature_list;
   SchedulerWorkerObserver* scheduler_worker_observer_ = nullptr;
   bool did_tear_down_ = false;
 
@@ -271,7 +314,7 @@ TEST_P(TaskSchedulerImplTest, PostDelayedTaskWithTraitsNoDelay) {
   scheduler_.PostDelayedTaskWithTraits(
       FROM_HERE, GetParam().traits,
       BindOnce(&VerifyTaskEnvironmentAndSignalEvent, GetParam().traits,
-               Unretained(&task_ran)),
+               SchedulerState::kAfterSchedulerStart, Unretained(&task_ran)),
       TimeDelta());
   task_ran.Wait();
 }
@@ -286,6 +329,7 @@ TEST_P(TaskSchedulerImplTest, PostDelayedTaskWithTraitsWithDelay) {
   scheduler_.PostDelayedTaskWithTraits(
       FROM_HERE, GetParam().traits,
       BindOnce(&VerifyTimeAndTaskEnvironmentAndSignalEvent, GetParam().traits,
+               SchedulerState::kAfterSchedulerStart,
                TimeTicks::Now() + TestTimeouts::tiny_timeout(),
                Unretained(&task_ran)),
       TestTimeouts::tiny_timeout());
@@ -305,8 +349,10 @@ TEST_P(TaskSchedulerImplTest, PostTasksViaTaskRunner) {
 
   const size_t kNumTasksPerTest = 150;
   for (size_t i = 0; i < kNumTasksPerTest; ++i) {
-    factory.PostTask(test::TestTaskFactory::PostNestedTask::NO,
-                     Bind(&VerifyTaskEnvironment, GetParam().traits));
+    factory.PostTask(
+        test::TestTaskFactory::PostNestedTask::NO,
+        Bind(&VerifyTaskEnvironment, GetParam().traits,
+             SchedulerState::kAfterSchedulerStart));
   }
 
   factory.WaitForAllTasksToRun();
@@ -319,7 +365,7 @@ TEST_P(TaskSchedulerImplTest, PostDelayedTaskWithTraitsNoDelayBeforeStart) {
   scheduler_.PostDelayedTaskWithTraits(
       FROM_HERE, GetParam().traits,
       BindOnce(&VerifyTaskEnvironmentAndSignalEvent, GetParam().traits,
-               Unretained(&task_running)),
+               SchedulerState::kBeforeSchedulerStart, Unretained(&task_running)),
       TimeDelta());
 
   // Wait a little bit to make sure that the task doesn't run before Start().
@@ -340,6 +386,7 @@ TEST_P(TaskSchedulerImplTest, PostDelayedTaskWithTraitsWithDelayBeforeStart) {
   scheduler_.PostDelayedTaskWithTraits(
       FROM_HERE, GetParam().traits,
       BindOnce(&VerifyTimeAndTaskEnvironmentAndSignalEvent, GetParam().traits,
+               SchedulerState::kAfterSchedulerStart,
                TimeTicks::Now() + TestTimeouts::tiny_timeout(),
                Unretained(&task_running)),
       TestTimeouts::tiny_timeout());
@@ -361,9 +408,10 @@ TEST_P(TaskSchedulerImplTest, PostTaskViaTaskRunnerBeforeStart) {
   WaitableEvent task_running;
   CreateTaskRunnerWithTraitsAndExecutionMode(&scheduler_, GetParam().traits,
                                              GetParam().execution_mode)
-      ->PostTask(FROM_HERE,
-                 BindOnce(&VerifyTaskEnvironmentAndSignalEvent,
-                          GetParam().traits, Unretained(&task_running)));
+      ->PostTask(FROM_HERE, BindOnce(&VerifyTaskEnvironmentAndSignalEvent,
+                                     GetParam().traits,
+                                     SchedulerState::kBeforeSchedulerStart,
+                                     Unretained(&task_running)));
 
   // Wait a little bit to make sure that the task doesn't run before Start().
   // Note: This test won't catch a case where the task runs just after the check
@@ -392,6 +440,7 @@ TEST_P(TaskSchedulerImplTest, AllTasksAreUserBlockingTaskRunner) {
                  BindOnce(&VerifyTaskEnvironmentAndSignalEvent,
                           TaskTraits::Override(GetParam().traits,
                                                {TaskPriority::USER_BLOCKING}),
+                          SchedulerState::kAfterSchedulerStart,
                           Unretained(&task_running)));
   task_running.Wait();
 }
@@ -410,7 +459,7 @@ TEST_P(TaskSchedulerImplTest, AllTasksAreUserBlocking) {
       BindOnce(&VerifyTaskEnvironmentAndSignalEvent,
                TaskTraits::Override(GetParam().traits,
                                     {TaskPriority::USER_BLOCKING}),
-               Unretained(&task_running)),
+               SchedulerState::kAfterSchedulerStart, Unretained(&task_running)),
       TimeDelta());
   task_running.Wait();
 }
@@ -439,21 +488,21 @@ TEST_P(TaskSchedulerImplTest, FlushAsyncForTestingSimple) {
   flush_event.Wait();
 }
 
-INSTANTIATE_TEST_CASE_P(OneTraitsExecutionModePair,
+INSTANTIATE_TEST_CASE_P(OneTaskSchedulerImplTestParams,
                         TaskSchedulerImplTest,
-                        ::testing::ValuesIn(GetTraitsExecutionModePairs()));
+                        ::testing::ValuesIn(GetTaskSchedulerImplTestParams()));
 
 // Spawns threads that simultaneously post Tasks to TaskRunners with various
 // TaskTraits and ExecutionModes. Verifies that each Task runs on a thread with
 // the expected priority and I/O restrictions and respects the characteristics
 // of its ExecutionMode.
-TEST_F(TaskSchedulerImplTest, MultipleTraitsExecutionModePairs) {
+TEST_P(TaskSchedulerImplTest, MultipleTaskSchedulerImplTestParams) {
   StartTaskScheduler();
   std::vector<std::unique_ptr<ThreadPostingTasks>> threads_posting_tasks;
-  for (const auto& traits_execution_mode_pair : GetTraitsExecutionModePairs()) {
-    threads_posting_tasks.push_back(WrapUnique(
-        new ThreadPostingTasks(&scheduler_, traits_execution_mode_pair.traits,
-                               traits_execution_mode_pair.execution_mode)));
+  for (const auto& test_params : GetTaskSchedulerImplTestParams()) {
+    threads_posting_tasks.push_back(std::make_unique<ThreadPostingTasks>(
+        &scheduler_, test_params.traits,
+        test_params.execution_mode));
     threads_posting_tasks.back()->Start();
   }
 
@@ -463,12 +512,13 @@ TEST_F(TaskSchedulerImplTest, MultipleTraitsExecutionModePairs) {
   }
 }
 
-TEST_F(TaskSchedulerImplTest,
+TEST_P(TaskSchedulerImplTest,
        GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated) {
   StartTaskScheduler();
 
   // GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated() does not support
   // TaskPriority::BEST_EFFORT.
+  testing::GTEST_FLAG(death_test_style) = "threadsafe";
   EXPECT_DCHECK_DEATH({
     scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
         {TaskPriority::BEST_EFFORT});
@@ -478,19 +528,32 @@ TEST_F(TaskSchedulerImplTest,
         {MayBlock(), TaskPriority::BEST_EFFORT});
   });
 
-  EXPECT_EQ(4, scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                   {TaskPriority::USER_VISIBLE}));
-  EXPECT_EQ(12, scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                    {MayBlock(), TaskPriority::USER_VISIBLE}));
-  EXPECT_EQ(4, scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                   {TaskPriority::USER_BLOCKING}));
-  EXPECT_EQ(12, scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
-                    {MayBlock(), TaskPriority::USER_BLOCKING}));
+  if (GetParam().pool_config == PoolConfiguration::kMergeBlockingNonBlocking) {
+    EXPECT_EQ(4, scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+                     {TaskPriority::USER_VISIBLE}));
+    EXPECT_EQ(4, scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+                     {MayBlock(), TaskPriority::USER_VISIBLE}));
+    EXPECT_EQ(4, scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+                     {TaskPriority::USER_BLOCKING}));
+    EXPECT_EQ(4, scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+                     {MayBlock(), TaskPriority::USER_BLOCKING}));
+  } else {
+    EXPECT_EQ(4, scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+                     {TaskPriority::USER_VISIBLE}));
+    EXPECT_EQ(12,
+              scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+                  {MayBlock(), TaskPriority::USER_VISIBLE}));
+    EXPECT_EQ(4, scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+                     {TaskPriority::USER_BLOCKING}));
+    EXPECT_EQ(12,
+              scheduler_.GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+                  {MayBlock(), TaskPriority::USER_BLOCKING}));
+  }
 }
 
 // Verify that the RunsTasksInCurrentSequence() method of a SequencedTaskRunner
 // returns false when called from a task that isn't part of the sequence.
-TEST_F(TaskSchedulerImplTest, SequencedRunsTasksInCurrentSequence) {
+TEST_P(TaskSchedulerImplTest, SequencedRunsTasksInCurrentSequence) {
   StartTaskScheduler();
   auto single_thread_task_runner =
       scheduler_.CreateSingleThreadTaskRunnerWithTraits(
@@ -514,7 +577,7 @@ TEST_F(TaskSchedulerImplTest, SequencedRunsTasksInCurrentSequence) {
 // Verify that the RunsTasksInCurrentSequence() method of a
 // SingleThreadTaskRunner returns false when called from a task that isn't part
 // of the sequence.
-TEST_F(TaskSchedulerImplTest, SingleThreadRunsTasksInCurrentSequence) {
+TEST_P(TaskSchedulerImplTest, SingleThreadRunsTasksInCurrentSequence) {
   StartTaskScheduler();
   auto sequenced_task_runner =
       scheduler_.CreateSequencedTaskRunnerWithTraits(TaskTraits());
@@ -537,7 +600,7 @@ TEST_F(TaskSchedulerImplTest, SingleThreadRunsTasksInCurrentSequence) {
 }
 
 #if defined(OS_WIN)
-TEST_F(TaskSchedulerImplTest, COMSTATaskRunnersRunWithCOMSTA) {
+TEST_P(TaskSchedulerImplTest, COMSTATaskRunnersRunWithCOMSTA) {
   StartTaskScheduler();
   auto com_sta_task_runner = scheduler_.CreateCOMSTATaskRunnerWithTraits(
       TaskTraits(), SingleThreadTaskRunnerThreadMode::SHARED);
@@ -554,7 +617,7 @@ TEST_F(TaskSchedulerImplTest, COMSTATaskRunnersRunWithCOMSTA) {
 }
 #endif  // defined(OS_WIN)
 
-TEST_F(TaskSchedulerImplTest, DelayedTasksNotRunAfterShutdown) {
+TEST_P(TaskSchedulerImplTest, DelayedTasksNotRunAfterShutdown) {
   StartTaskScheduler();
   // As with delayed tasks in general, this is racy. If the task does happen to
   // run after Shutdown within the timeout, it will fail this test.
@@ -577,7 +640,7 @@ TEST_F(TaskSchedulerImplTest, DelayedTasksNotRunAfterShutdown) {
 
 #if defined(OS_POSIX)
 
-TEST_F(TaskSchedulerImplTest, FileDescriptorWatcherNoOpsAfterShutdown) {
+TEST_P(TaskSchedulerImplTest, FileDescriptorWatcherNoOpsAfterShutdown) {
   StartTaskScheduler();
 
   int pipes[2];
@@ -624,7 +687,7 @@ TEST_F(TaskSchedulerImplTest, FileDescriptorWatcherNoOpsAfterShutdown) {
 
 // Verify that tasks posted on the same sequence access the same values on
 // SequenceLocalStorage, and tasks on different sequences see different values.
-TEST_F(TaskSchedulerImplTest, SequenceLocalStorage) {
+TEST_P(TaskSchedulerImplTest, SequenceLocalStorage) {
   StartTaskScheduler();
 
   SequenceLocalStorageSlot<int> slot;
@@ -655,7 +718,7 @@ TEST_F(TaskSchedulerImplTest, SequenceLocalStorage) {
   scheduler_.FlushForTesting();
 }
 
-TEST_F(TaskSchedulerImplTest, FlushAsyncNoTasks) {
+TEST_P(TaskSchedulerImplTest, FlushAsyncNoTasks) {
   StartTaskScheduler();
   bool called_back = false;
   scheduler_.FlushAsyncForTesting(
@@ -695,7 +758,7 @@ void VerifyHasStringOnStack(const std::string& query) {
 // Integration test that verifies that workers have a frame on their stacks
 // which easily identifies the type of worker (useful to diagnose issues from
 // logs without memory dumps).
-TEST_F(TaskSchedulerImplTest, MAYBE_IdentifiableStacks) {
+TEST_P(TaskSchedulerImplTest, MAYBE_IdentifiableStacks) {
   StartTaskScheduler();
 
   scheduler_.CreateSequencedTaskRunnerWithTraits({})->PostTask(
@@ -755,7 +818,7 @@ TEST_F(TaskSchedulerImplTest, MAYBE_IdentifiableStacks) {
   scheduler_.FlushForTesting();
 }
 
-TEST_F(TaskSchedulerImplTest, SchedulerWorkerObserver) {
+TEST_P(TaskSchedulerImplTest, SchedulerWorkerObserver) {
   testing::StrictMock<test::MockSchedulerWorkerObserver> observer;
   set_scheduler_worker_observer(&observer);
 

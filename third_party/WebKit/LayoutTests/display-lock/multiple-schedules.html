@@ -1,0 +1,76 @@
+<!doctype HTML>
+
+<!--
+Runs an acquireDisplayLock, which appends the first child and schedules two
+continuations, which append the second and the third children.
+-->
+
+<style>
+#parent {
+  contain: paint;
+  width: 150px;
+  height: 150px;
+  background: lightblue;
+}
+#child1 {
+  width: 20px;
+  height: 20px;
+  background: lightgreen;
+}
+#child2 {
+  width: 20px;
+  height: 20px;
+  background: lightyellow;
+}
+#child3 {
+  width: 20px;
+  height: 20px;
+  background: lightpink;
+}
+</style>
+
+<div id="log"></div>
+<div id="parent"></div>
+
+<script>
+if (window.testRunner)
+  window.testRunner.waitUntilDone();
+
+function createChild(id) {
+  let child = document.createElement("div");
+  child.id = id;
+  return child;
+}
+
+function addChild3(context) {
+  document.getElementById("parent").appendChild(createChild("child3"));
+}
+
+function addChild2(context) {
+  document.getElementById("parent").appendChild(createChild("child2"));
+}
+
+function addChild1(context) {
+  document.getElementById("parent").appendChild(createChild("child1"));
+  context.schedule(addChild2);
+  context.schedule(addChild3);
+}
+
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  if (window.testRunner)
+    window.testRunner.notifyDone();
+}
+
+function acquire() {
+  document.getElementById("parent").acquireDisplayLock(addChild1).then(
+    () => { finishTest("PASS"); },
+    () => { finishTest("FAIL"); });
+}
+
+window.onload = acquire;
+
+</script>
+
+

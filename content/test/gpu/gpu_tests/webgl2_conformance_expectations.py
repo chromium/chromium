@@ -115,7 +115,7 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
 
     self.Fail('conformance2/rendering/depth-stencil-feedback-loop.html',
         bug=660844) # WebGL 2.0.1
-    self.Fail('conformance2/rendering/rendering-sampling-feedback-loop.html',
+    self.Fail('conformance/rendering/rendering-sampling-feedback-loop.html',
         bug=660844) # WebGL 2.0.1
     self.Fail('conformance2/textures/misc/' +
         'integer-cubemap-specification-order-bug.html',
@@ -125,6 +125,10 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
 
     # Need to implement new lifetime/deletion semantics.
     self.Fail('conformance2/vertex_arrays/vertex-array-object.html', bug=739604)
+    self.Fail('deqp/functional/gles3/lifetime.html', bug=898350)
+
+    # Need to forbid generation of mipmaps for zero-sized textures.
+    self.Fail('conformance2/textures/misc/tex-mipmap-levels.html', bug=898351)
 
     # The following actually passes on gl_passthrough and also Mac Intel with
     # command buffer.
@@ -233,7 +237,8 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
         ['win', 'nvidia', 'opengl', 'passthrough'], bug=830046)
     self.Flaky('conformance2/transform_feedback/switching-objects.html',
         ['win', 'nvidia', 'opengl', 'no_passthrough'], bug=832238)
-
+    self.Flaky('deqp/data/gles3/shaders/conversions.html',
+        ['win', 'nvidia', 'opengl', 'passthrough'], bug=887578)
     self.Flaky('deqp/functional/gles3/transformfeedback/*',
         ['win', ('nvidia', 0x1cb3), 'opengl'], bug=822733)
 
@@ -327,8 +332,9 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
     # Seems to cause the harness to fail immediately afterward
     self.Skip('conformance2/textures/video/tex-2d-rgba16f-rgba-half_float.html',
         ['win', 'intel', 'd3d11'], bug=648337)
-    self.Flaky('deqp/functional/gles3/lifetime.html',
-        ['win', 'intel', 'd3d11'], bug=620379)
+    # TODO(kbr): re-enable after fix for http://crbug.com/898350
+    # self.Flaky('deqp/functional/gles3/lifetime.html',
+    #     ['win', 'intel', 'd3d11'], bug=620379)
     self.Flaky('deqp/functional/gles3/textureformat/unsized_3d.html',
         ['win', 'intel', 'd3d11'], bug=614418)
 
@@ -400,6 +406,9 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
         ['passthrough', 'opengl', 'intel'], bug=602688)
 
     # Passthrough command decoder / Windows / OpenGL / Intel
+    # This case causes no-over-optimization-on-uniform-array fail.
+    self.Skip('conformance/ogles/GL/gl_FragCoord/gl_FragCoord_001_to_003.html',
+        ['win', 'passthrough', 'opengl', 'intel'], bug=884210)
     self.Flaky('conformance/glsl/variables/gl-pointcoord.html',
         ['win', 'passthrough', 'opengl', 'intel'], bug=854100)
     self.Fail('conformance2/textures/misc/copy-texture-image-same-texture.html',
@@ -407,12 +416,6 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
     self.Fail('conformance2/renderbuffers/' +
         'multisampled-depth-renderbuffer-initialization.html',
         ['win', 'passthrough', 'opengl', 'intel'], bug=2760) # ANGLE bug
-    self.Fail('conformance/uniforms/' +
-        'no-over-optimization-on-uniform-array-06.html',
-        ['win', 'passthrough', 'opengl', 'intel'], bug=884210)
-    self.Fail('conformance/uniforms/' +
-        'no-over-optimization-on-uniform-array-16.html',
-        ['win', 'passthrough', 'opengl', 'intel'], bug=602688)
     self.Fail('conformance/glsl/constructors/glsl-construct-mat2.html',
         ['win', 'passthrough', 'opengl', 'intel'], bug=602688)
     self.Fail('conformance2/textures/misc/texture-npot.html',
@@ -424,6 +427,8 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
         ['win', 'passthrough', 'opengl', 'intel'], bug=602688)
     self.Fail('conformance2/glsl3/vector-dynamic-indexing.html',
         ['win', 'passthrough', 'opengl', 'intel'], bug=602688)
+    self.Fail('deqp/functional/gles3/shaderbuiltinvar.html', # ANGLE bug
+        ['win', 'passthrough', 'opengl', 'intel'], bug=2880)
 
     # Passthrough command decoder / Linux / OpenGL / NVIDIA
     self.Fail('conformance/textures/image_bitmap_from_video/' +
@@ -438,7 +443,10 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
     self.Fail('conformance/textures/image_bitmap_from_video/' +
         'tex-2d-rgb-rgb-unsigned_short_5_6_5.html',
         ['linux', 'passthrough', 'opengl', 'nvidia'], bug=766918)
-    self.Fail('deqp/functional/gles3/shaderoperator/common_functions.html',
+    self.Flaky('conformance2/textures/image_bitmap_from_video/' +
+        'tex-2d-rgb565-rgb-unsigned_short_5_6_5.html',
+        ['linux', 'passthrough', 'opengl', 'nvidia'], bug=766918)
+    self.Fail('deqp/functional/gles3/shaderoperator/common_functions_*.html',
         ['linux', 'passthrough', 'opengl', 'nvidia'], bug=793055)
 
     # Passthrough command decoder / Linux / OpenGL / Intel
@@ -450,38 +458,41 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
     self.Fail('conformance2/renderbuffers/' +
         'multisampled-stencil-renderbuffer-initialization.html',
         ['linux', 'passthrough', 'opengl', 'intel'], bug=2760) # ANGLE bug
-    self.Fail('conformance2/textures/misc/tex-mipmap-levels.html',
-        ['linux', 'passthrough', 'opengl', 'intel'], bug=2761) # ANGLE bug
+    # TODO(kbr): re-enable after crbug.com/898351 is fixed
+    # self.Fail('conformance2/textures/misc/tex-mipmap-levels.html',
+    #     ['linux', 'passthrough', 'opengl', 'intel'], bug=2761) # ANGLE bug
 
     # Regressions in 10.12.4.
     self.Fail('conformance2/textures/misc/tex-base-level-bug.html',
         ['sierra', 'intel'], bug=705865)
-    self.Fail('conformance2/textures/misc/tex-mipmap-levels.html',
-        ['sierra', 'intel'], bug=705865)
+    # TODO(kbr): re-enable after crbug.com/898351 is fixed
+    # self.Fail('conformance2/textures/misc/tex-mipmap-levels.html',
+    #     ['sierra', 'intel'], bug=705865)
     self.Fail('conformance2/textures/misc/tex-base-level-bug.html',
         ['sierra', 'amd'], bug=870856)
-    self.Fail('conformance2/textures/misc/tex-mipmap-levels.html',
-        ['sierra', 'amd'], bug=870856)
+    # TODO(kbr): re-enable after crbug.com/898351 is fixed
+    # self.Fail('conformance2/textures/misc/tex-mipmap-levels.html',
+    #     ['sierra', 'amd'], bug=870856)
 
     # Regressions in 10.13
     self.Fail('deqp/functional/gles3/fbocolorbuffer/tex2d_00.html',
-        ['highsierra', ('intel', 0xa2e)], bug=774826)
+        ['highsierra', 'mojave', ('intel', 0xa2e)], bug=774826)
     self.Fail('deqp/functional/gles3/fboinvalidate/format_00.html',
-        ['highsierra', ('intel', 0xa2e)], bug=774826)
+        ['highsierra', 'mojave', ('intel', 0xa2e)], bug=774826)
     self.Fail('deqp/functional/gles3/framebufferblit/' +
         'default_framebuffer_05.html',
-        ['highsierra', ('intel', 0xa2e)], bug=774826)
+        ['highsierra', 'mojave', ('intel', 0xa2e)], bug=774826)
     self.Fail('conformance2/glsl3/array-assign.html',
-        ['highsierra', ('nvidia', 0xfe9)], bug=774827)
+        ['highsierra', 'mojave', ('nvidia', 0xfe9)], bug=774827)
     self.Fail('deqp/functional/gles3/fborender/resize_03.html',
-        ['highsierra', ('nvidia', 0xfe9)], bug=774827)
+        ['highsierra', 'mojave', ('nvidia', 0xfe9)], bug=774827)
     self.Fail('deqp/functional/gles3/shaderindexing/mat_00.html',
-        ['highsierra', ('nvidia', 0xfe9)], bug=774827)
+        ['highsierra', 'mojave', ('nvidia', 0xfe9)], bug=774827)
     self.Fail('deqp/functional/gles3/shaderindexing/mat_02.html',
-        ['highsierra', ('nvidia', 0xfe9)], bug=774827)
+        ['highsierra', 'mojave', ('nvidia', 0xfe9)], bug=774827)
     self.Fail('deqp/functional/gles3/texturespecification/' +
         'teximage2d_pbo_cube_00.html',
-        ['highsierra', ('nvidia', 0xfe9)], bug=774827)
+        ['highsierra', 'mojave', ('nvidia', 0xfe9)], bug=774827)
 
     # Fails on multiple GPU types.
     self.Fail('conformance/glsl/misc/fragcolor-fragdata-invariant.html',
@@ -678,12 +689,11 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
     # OpenGL driver on 10.13.6 specifically. Unfortunately when the
     # tests fail, they fail three times in a row, so we must mark them
     # failing rather than flaky.
-    self.Fail('conformance2/textures/misc/tex-mipmap-levels.html',
-        ['highsierra', 'amd'], bug=870856)
+    # TODO(kbr): re-enable after crbug.com/898351 is fixed
+    # self.Fail('conformance2/textures/misc/tex-mipmap-levels.html',
+    #     ['highsierra', 'amd'], bug=870856)
     self.Fail('conformance2/textures/misc/tex-base-level-bug.html',
         ['highsierra', 'amd'], bug=870856)
-    self.Fail('deqp/functional/gles3/shaderoperator/common_functions.html',
-        ['mac', 'amd'], bug=820225)
     self.Fail('deqp/functional/gles3/transformfeedback/' +
         'array_interleaved_lines.html',
         ['sierra', 'amd'], bug=483282)
@@ -777,14 +787,14 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
         ['mac', 'amd'], bug=642822)
 
     # Mac Intel
+    self.Fail('conformance/rendering/canvas-alpha-bug.html',
+        ['mac', ('intel', 0x0a2e)], bug=886970)
     self.Fail('conformance2/rendering/framebuffer-texture-level1.html',
         ['mac', 'intel'], bug=680278)
     self.Fail('conformance2/textures/misc/angle-stuck-depth-textures.html',
         ['mac', 'no_passthrough', 'intel'], bug=679692)
     self.Fail('deqp/functional/gles3/fbomultisample*',
         ['mac', 'intel'], bug=641209)
-    self.Fail('deqp/functional/gles3/shaderoperator/common_functions.html',
-        ['mac', 'intel'], bug=820225)
     self.Fail('deqp/functional/gles3/texturefiltering/2d_combinations_01.html',
         ['mac', 'intel'], bug=606074)
     self.Fail('deqp/functional/gles3/texturefiltering/' +
@@ -992,10 +1002,6 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
         ['linux', ('nvidia', 0x1cb3), 'opengl'], bug=703779)
 
     # Linux Intel
-    # See https://bugs.freedesktop.org/show_bug.cgi?id=94477
-    self.Skip('conformance/glsl/bugs/temp-expressions-should-not-crash.html',
-        ['linux', 'intel'], bug=540543)  # GPU timeout
-
     self.Fail('conformance2/textures/misc/tex-subimage3d-pixel-buffer-bug.html',
        ['linux', 'intel'], bug=662644) # WebGL 2.0.1
 
@@ -1113,10 +1119,14 @@ class WebGL2ConformanceExpectations(WebGLConformanceExpectations):
         ['linux', 'amd'], bug=662644) # WebGL 2.0.1
     self.Fail('conformance2/renderbuffers/framebuffer-texture-layer.html',
         ['linux', 'amd'], bug=295792)
-    self.Fail('conformance2/textures/misc/tex-mipmap-levels.html',
-        ['linux', 'amd'], bug=483282)
+    # TODO(kbr): re-enable after crbug.com/898351 is fixed
+    # self.Fail('conformance2/textures/misc/tex-mipmap-levels.html',
+    #     ['linux', 'amd'], bug=483282)
     self.Fail('conformance2/textures/misc/copy-texture-image-luma-format.html',
         ['linux', 'amd'], bug=483282)
+    self.Fail('conformance2/vertex_arrays/' +
+        'vertex-array-object-and-disabled-attributes.html',
+        ['linux', 'amd'], bug=899754)
 
     self.Fail('deqp/functional/gles3/texturespecification/' +
         'teximage2d_pbo_cube_00.html',

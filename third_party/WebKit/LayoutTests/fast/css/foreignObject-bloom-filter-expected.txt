@@ -2,9 +2,9 @@ Check that the selector filter does not reject a foreignobject selector due to c
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(green).color is "rgb(0, 128, 0)"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 This text should be green.

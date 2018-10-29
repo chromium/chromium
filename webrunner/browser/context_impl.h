@@ -33,6 +33,10 @@ class WEBRUNNER_EXPORT ContextImpl : public chromium::web::Context {
   // Tears down the Context, destroying any active Frames in the process.
   ~ContextImpl() override;
 
+  content::BrowserContext* browser_context_for_test() {
+    return browser_context_;
+  }
+
   // Removes and destroys the specified |frame|.
   void DestroyFrame(FrameImpl* frame);
 

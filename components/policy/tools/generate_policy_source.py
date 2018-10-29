@@ -865,7 +865,7 @@ def _WritePolicyConstantSource(policies, os, f, risk_tags):
           'void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {\n')
 
   for policy in policies:
-    if policy.has_enterprise_default:
+    if policy.has_enterprise_default and policy.is_supported:
       declare_default_stmts, fetch_default =\
           _GenerateDefaultValue(policy.enterprise_default)
       if not fetch_default:

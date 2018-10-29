@@ -1,0 +1,31 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lite_js_test.mojom;
+
+// An interface whose definition covers various types of message signatures in
+// order to exercise the lite JS mojom bindings.
+interface TestMessageTarget {
+  // Zero arguments, no reply.
+  Poke();
+
+  // Zero-argument request, zero-argument reply.
+  Ping() => ();
+
+  // Request and reply both with arguments.
+  Repeat(string? message, array<int32>? numbers)
+      => (string? message, array<int32>? numbers);
+
+  RequestSubinterface(Subinterface& request, SubinterfaceClient client);
+};
+
+interface Subinterface {
+  Push(int32 value);
+  Flush();
+};
+
+interface SubinterfaceClient {
+  DidFlush(array<int32> values);
+};
+

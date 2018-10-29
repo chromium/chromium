@@ -46,6 +46,12 @@
         "enum": ["text", "search", "tel", "url", "email", "number", "password"]
       },
       {
+        "id": "AutoCapitalizeType",
+        "type": "string",
+        "description": "The auto-capitalize type of the text field.",
+        "enum": ["characters", "words", "sentences"]
+      },
+      {
         "id": "InputContext",
         "type": "object",
         "description": "Describes an input Context",
@@ -54,9 +60,11 @@
           "type": {"$ref": "InputContextType", "description": "Type of value this text field edits, (Text, Number, URL, etc)"},
           "autoCorrect": {"type": "boolean", "description": "Whether the text field wants auto-correct."},
           "autoComplete": {"type": "boolean", "description": "Whether the text field wants auto-complete."},
+          "autoCapitalize": {"$ref": "AutoCapitalizeType", "description": "The auto-capitalize type of the text field."},
           "spellCheck": {"type": "boolean", "description": "Whether the text field wants spell-check."},
           "shouldDoLearning": {"type": "boolean", "description": "Whether text entered into the text field should be used to improve typing suggestions for the user."},
-          "focusReason": {"$ref": "FocusReason", "description": "How the text field was focused"}
+          "focusReason": {"$ref": "FocusReason", "description": "How the text field was focused"},
+	  "hasBeenPassword": {"type": "boolean", "description": "Whether the text field has ever been a password field."}
         }
       }
     ],

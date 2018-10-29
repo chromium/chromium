@@ -4,8 +4,8 @@ main frame - didReceiveTitle:
 main frame - didFinishDocumentLoadForFrame
 main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame
-main frame - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/post-to-303-target.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/post-to-303-target.php, main document URL http://127.0.0.1:8000/loading/resources/post-to-303-target.php, http method POST>
+main frame - didStartProvisionalLoadForFrame
 http://127.0.0.1:8000/loading/resources/303-to-307-target.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/303-to-307-target.php, main document URL http://127.0.0.1:8000/loading/resources/303-to-307-target.php, http method GET>
 http://127.0.0.1:8000/loading/resources/307-post-output-target.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/307-post-output-target.php, main document URL http://127.0.0.1:8000/loading/resources/307-post-output-target.php, http method GET>
 http://127.0.0.1:8000/loading/resources/307-post-output-target.php - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/loading/resources/307-post-output-target.php, http status code 200>

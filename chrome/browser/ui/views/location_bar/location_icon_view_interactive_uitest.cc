@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 
 namespace {
 
@@ -22,8 +21,6 @@ class LocationIconViewTest : public InProcessBrowserTest {
   ~LocationIconViewTest() override = default;
 
  private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
-
   DISALLOW_COPY_AND_ASSIGN(LocationIconViewTest);
 };
 

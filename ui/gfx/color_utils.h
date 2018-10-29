@@ -189,7 +189,7 @@ GFX_EXPORT std::string SkColorToRgbString(SkColor color);
 GFX_EXPORT void SetDarkestColor(SkColor color);
 
 // Returns the current color_utils darkest color so tests can clean up.
-GFX_EXPORT SkColor GetDarkestColorForTesting();
+GFX_EXPORT SkColor GetDarkestColor();
 
 }  // namespace color_utils
 

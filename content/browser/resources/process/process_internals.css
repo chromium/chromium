@@ -1,0 +1,86 @@
+/* Copyright 2018 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  color: rgb(48, 57, 66);
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  height: 100%;
+  margin: 0;
+  overflow: auto;
+}
+
+#container {
+  display: flex;
+  height: 100%
+}
+
+#navigation {
+  flex-shrink: 0;
+  padding-top: 20px;
+  width: 200px;
+}
+
+#content {
+  flex-grow: 1;
+}
+
+#caption {
+  color: rgb(92, 97, 102);
+  font-size: 1.5rem;
+  padding-bottom: 10px;
+  padding-inline-start: 20px;
+}
+
+.tab-header {
+  border-inline-start: 6px solid transparent;
+  padding-left: 15px;
+}
+
+.tab-header.selected {
+  border-inline-start-color: rgb(78, 87, 100);
+}
+
+.tab-header > button {
+  background-color: white;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  line-height: 17px;
+  margin: 6px 0;
+  padding: 0 2px;
+}
+
+.tab-header:not(.selected) > button {
+  color: #999;
+}
+
+#content > div {
+  min-width: 32em;
+  padding: 0 20px 65px 0;
+}
+#content > div:not(.selected) {
+  display: none;
+}
+
+.content-header {
+  background: linear-gradient(white, white 40%, rgba(255, 255, 255, 0.92));
+  border-bottom: 1px solid #eee;
+  font-size: 150%;
+  padding: 20px 0 10px 0;
+  z-index: 1;
+}
+
+.tree-label {
+  user-select: text;
+}

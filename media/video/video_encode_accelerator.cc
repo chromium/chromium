@@ -42,6 +42,7 @@ VideoEncodeAccelerator::Config::Config(
     uint32_t initial_bitrate,
     base::Optional<uint32_t> initial_framerate,
     base::Optional<uint8_t> h264_output_level,
+    base::Optional<StorageType> storage_type,
     ContentType content_type)
     : input_format(input_format),
       input_visible_size(input_visible_size),
@@ -51,6 +52,7 @@ VideoEncodeAccelerator::Config::Config(
           VideoEncodeAccelerator::kDefaultFramerate)),
       h264_output_level(h264_output_level.value_or(
           VideoEncodeAccelerator::kDefaultH264Level)),
+      storage_type(storage_type),
       content_type(content_type) {}
 
 VideoEncodeAccelerator::Config::~Config() = default;

@@ -11,7 +11,6 @@ js_type_check("closure_compile") {
     ":display",
     ":display_layout",
     ":display_overscan_dialog",
-    ":display_size_slider",
     ":drag_behavior",
     ":drive_cache_dialog",
     ":keyboard",
@@ -72,8 +71,8 @@ js_library("stylus") {
 js_library("display") {
   deps = [
     ":display_layout",
-    ":display_size_slider",
     "../controls:settings_dropdown_menu",
+    "../controls:settings_slider",
     "../prefs:prefs_behavior",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr",
@@ -124,21 +123,8 @@ js_library("layout_behavior") {
 js_library("night_light_slider") {
   deps = [
     "../prefs:prefs_behavior",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior-extracted",
     "//third_party/polymer/v1_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior-extracted",
     "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-inky-focus-behavior-extracted",
-  ]
-}
-
-js_library("display_size_slider") {
-  deps = [
-    "../prefs:prefs_behavior",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-range-behavior:iron-range-behavior-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior-extracted",
-    "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-inky-focus-behavior-extracted",
-    "//third_party/polymer/v1_0/components-chromium/paper-progress:paper-progress-extracted",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior",
   ]
 }
 

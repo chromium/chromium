@@ -14,7 +14,6 @@
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket.h"
-#include "net/ssl/token_binding.h"
 
 namespace crypto {
 class ECPrivateKey;
@@ -159,13 +158,6 @@ class NET_EXPORT StreamSocket : public Socket {
   // channel ids are not supported.  Must not be called on a socket that does
   // not support SSL.
   virtual ChannelIDService* GetChannelIDService() const;
-
-  // Generates the signature used in Token Binding using key |*key| and for a
-  // Token Binding of type |tb_type|, putting the signature in |*out|. Returns a
-  // net error code.  Must not be called on a socket that does not support SSL.
-  virtual Error GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                         TokenBindingType tb_type,
-                                         std::vector<uint8_t>* out);
 
   // This method is only for debugging https://crbug.com/548423 and will be
   // removed when that bug is closed. This returns the channel ID key that was

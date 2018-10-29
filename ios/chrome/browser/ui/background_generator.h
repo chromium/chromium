@@ -21,7 +21,4 @@ UIImage* GetRadialGradient(CGRect backgroundRect,
                            UIImage* tileImage,
                            UIImage* logoImage);
 
-// Installs the stack view/empty tab view background in |view|.
-void InstallBackgroundInView(UIView* view);
-
 #endif  // IOS_CHROME_BROWSER_UI_BACKGROUND_GENERATOR_H_

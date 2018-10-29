@@ -3,6 +3,7 @@ noparent = True
 include_rules = [
   "+base",
   "+chromeos/chromeos_export.h",
+  "+chromeos/chromeos_features.h",
   "+components/account_id/account_id.h",
   "+components/device_event_log",
   "+components/policy/proto",

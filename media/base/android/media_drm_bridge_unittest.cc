@@ -14,8 +14,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
-#include "widevine_cdm_version.h"  // In SHARED_INTERMEDIATE_DIR.
-
 namespace media {
 
 #define EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(a)                              \

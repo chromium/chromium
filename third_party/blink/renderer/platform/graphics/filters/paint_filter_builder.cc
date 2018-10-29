@@ -40,7 +40,7 @@
 #include "third_party/skia/include/effects/SkXfermodeImageFilter.h"
 
 namespace blink {
-namespace PaintFilterBuilder {
+namespace paint_filter_builder {
 
 void PopulateSourceGraphicImageFilters(
     FilterEffect* source_graphic,
@@ -102,7 +102,7 @@ sk_sp<PaintFilter> TransformInterpolationSpace(
     InterpolationSpace src_interpolation_space,
     InterpolationSpace dst_interpolation_space) {
   sk_sp<SkColorFilter> color_filter =
-      InterpolationSpaceUtilities::CreateInterpolationSpaceFilter(
+      interpolation_space_utilities::CreateInterpolationSpaceFilter(
           src_interpolation_space, dst_interpolation_space);
   if (!color_filter)
     return input;
@@ -184,5 +184,5 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
                                          std::move(input), nullptr);
 }
 
-}  // namespace PaintFilterBuilder
+}  // namespace paint_filter_builder
 }  // namespace blink

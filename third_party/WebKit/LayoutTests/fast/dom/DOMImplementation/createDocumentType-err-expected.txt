@@ -2,7 +2,6 @@ createDocument tests modelled after mozilla's testing
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.implementation.createDocumentType('foo') threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 1 present..
 PASS document.implementation.createDocumentType('foo', null) threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..
 PASS document.implementation.createDocumentType(undefined, undefined) threw exception TypeError: Failed to execute 'createDocumentType' on 'DOMImplementation': 3 arguments required, but only 2 present..

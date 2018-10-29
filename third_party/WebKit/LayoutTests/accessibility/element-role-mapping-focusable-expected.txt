@@ -1,17 +1,28 @@
 Visit Chromium Click the text! Button
 Copyright 2015.
    I have a checkbox  Radio  Button
-   I have a menuItem   Menu   ItemRadio
-Birthday:  Birthday(date and time):  Birthday(datetime-local):  Birthday (month and year):  Select a week:  Select a file:  Min-Max:  Color: Select a time:      
-0  100 + =
-Blue   Red  
+  I have a menuItem  Menu  ItemRadio
+Birthday:  Birthday(date and time):  Birthday(datetime-local):  Birthday (month and year):  Select a week:  Select a file:  Min-Max:  Color: Select a time:  
+Pacific
+Atlantic
+Indian
+Southern
+Arctic
+Milk
+Soda
+Coffee
+Water
+ 
+0 100 + =
+Blue  Red 
 Text Input Controls
 Text: 
 Password: 
+
+
 This test make sure that focusable elements are mapped implicitly to AX roles.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 normal_link_id
 PASS elem.role is "AXRole: AXLink"

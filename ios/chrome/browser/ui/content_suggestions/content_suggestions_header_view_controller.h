@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
-#import "ios/chrome/browser/ui/toolbar/toolbar_owner.h"
 #import "ios/public/provider/chrome/browser/voice/logo_animation_controller.h"
 
 @protocol ApplicationCommands;
@@ -32,7 +31,6 @@ class ReadingListModel;
     : UIViewController<ContentSuggestionsHeaderControlling,
                        ContentSuggestionsHeaderProvider,
                        NTPHomeConsumer,
-                       ToolbarOwner,
                        LogoAnimationControllerOwnerOwner>
 
 // Whether |voiceSearchIsEnabled|.
@@ -61,10 +59,6 @@ class ReadingListModel;
 
 // |YES| if a what's new promo can be displayed.
 @property(nonatomic, assign) BOOL promoCanShow;
-
-// |YES| if its view is visible.  When set to |NO| various UI updates are
-// ignored.
-@property(nonatomic, assign) BOOL isShowing;
 
 // Return the toolbar view;
 - (UIView*)toolBarView;

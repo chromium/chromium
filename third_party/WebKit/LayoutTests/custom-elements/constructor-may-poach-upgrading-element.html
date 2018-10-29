@@ -6,6 +6,10 @@
 <script>
 'use strict';
 
+setup({
+  allow_uncaught_exception: true,
+});
+
 test_with_window((w) => {
   let doc = w.document;
   let e = doc.createElement('a-a');

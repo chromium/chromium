@@ -60,6 +60,9 @@ class CAPTURE_EXPORT StreamCaptureInterface {
   virtual void ProcessCaptureRequest(
       cros::mojom::Camera3CaptureRequestPtr request,
       base::OnceCallback<void(int32_t)> callback) = 0;
+
+  // Send flush to cancel all pending requests to the camera HAL.
+  virtual void Flush(base::OnceCallback<void(int32_t)> callback) = 0;
 };
 
 // CameraDeviceDelegate is instantiated on the capture thread where
@@ -99,6 +102,9 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
   // Mojo connection error handler.
   void OnMojoConnectionError();
 
+  // Reconfigure streams for picture taking.
+  void OnFlushed(int32_t result);
+
   // Callback method for the Close Mojo IPC call.  This method resets the Mojo
   // connection and closes the camera device.
   void OnClosed(int32_t result);
@@ -124,7 +130,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
   // indicates.  If there's no error OnConfiguredStreams notifies
   // |client_| the capture has started by calling OnStarted, and proceeds to
   // ConstructDefaultRequestSettings.
-  void ConfigureStreams();
+  void ConfigureStreams(bool require_photo);
   void OnConfiguredStreams(
       int32_t result,
       cros::mojom::Camera3StreamConfigurationPtr updated_config);
@@ -155,6 +161,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
                       base::OnceCallback<void(int32_t)> callback);
   void ProcessCaptureRequest(cros::mojom::Camera3CaptureRequestPtr request,
                              base::OnceCallback<void(int32_t)> callback);
+  void Flush(base::OnceCallback<void(int32_t)> callback);
 
   bool SetPointsOfInterest(
       const std::vector<mojom::Point2DPtr>& points_of_interest);
@@ -186,6 +193,8 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
   const scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
 
   base::OnceClosure device_close_callback_;
+
+  VideoCaptureDevice::SetPhotoOptionsCallback set_photo_option_callback_;
 
   base::WeakPtrFactory<CameraDeviceDelegate> weak_ptr_factory_;
 

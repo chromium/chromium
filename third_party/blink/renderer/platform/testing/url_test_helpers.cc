@@ -43,7 +43,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
-namespace URLTestHelpers {
+namespace url_test_helpers {
 
 WebURL RegisterMockedURLLoadFromBase(const WebString& base_url,
                                      const WebString& base_path,
@@ -103,5 +103,5 @@ void RegisterMockedURLUnregister(const WebURL& url) {
   Platform::Current()->GetURLLoaderMockFactory()->UnregisterURL(url);
 }
 
-}  // namespace URLTestHelpers
+}  // namespace url_test_helpers
 }  // namespace blink

@@ -2,7 +2,6 @@ This test makes sure that AccessibilityNodeObjects are properly detached when th
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS expectedButtonRole != expectedDetachedRole is true
 PASS canvasButtonRole is expectedButtonRole
 PASS detachedCanvasButtonRole is expectedDetachedRole

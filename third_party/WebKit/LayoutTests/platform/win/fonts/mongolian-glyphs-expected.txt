@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutText {#text} at (0,0) size 49x117
-        text run at (0,0) width 117: "\x{183A}\x{1823}\x{182E}\x{182B}\x{1822}\x{1826}\x{180B}\x{1832}\x{180B}\x{1827}\x{1837}"

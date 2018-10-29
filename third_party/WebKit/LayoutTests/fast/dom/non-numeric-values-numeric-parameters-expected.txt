@@ -2,7 +2,6 @@ This tests the behavior of non-numeric values in contexts where the DOM has a nu
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS nonNumericPolicy('document.createTextNode("a").substringData(x, 0)') is 'any type allowed'
 PASS nonNumericPolicy('document.createTextNode("a").substringData(0, x)') is 'any type allowed (but not omitted)'
 PASS nonNumericPolicy('document.createTextNode("a").insertData(x, "b")') is 'any type allowed'

@@ -63,7 +63,7 @@ PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
       dom_tree_version_(anchor_node->GetDocument().DomTreeVersion()) {
   for (Node* node = SelectableParentOf<Strategy>(*anchor_node); node;
        node = SelectableParentOf<Strategy>(*node)) {
-    // Each m_offsetsInAnchorNode[offset] should be an index of node in
+    // Each offsets_in_anchor_node_[offset] should be an index of node in
     // parent, but delay to calculate the index until it is needed for
     // performance.
     offsets_in_anchor_node_.push_back(kInvalidOffset);
@@ -126,9 +126,8 @@ PositionIteratorAlgorithm<Strategy>::ComputePosition() const {
     // For example, position is before E, F.
     DCHECK_EQ(Strategy::Parent(*node_after_position_in_anchor_), anchor_node_);
     DCHECK_NE(offsets_in_anchor_node_[depth_to_anchor_node_], kInvalidOffset);
-    // TODO(yoichio): This should be equivalent to
-    // PositionTemplate<Strategy>(m_anchorNode,
-    // PositionAnchorType::BeforeAnchor);
+    // TODO(yoichio): This should be equivalent to PositionTemplate<Strategy>(
+    // anchor_node_, PositionAnchorType::kBeforeAnchor).
     return PositionTemplate<Strategy>(
         anchor_node_, offsets_in_anchor_node_[depth_to_anchor_node_]);
   }
@@ -163,11 +162,11 @@ void PositionIteratorAlgorithm<Strategy>::Increment() {
   // +-D
   //   |-G
   //   +-H
-  // Let |anchor| as |m_anchorNode| and
-  // |child| as |m_nodeAfterPositionInAnchor|.
+  // Let |anchor| as |anchor_node_| and
+  // |child| as |node_after_position_in_anchor_|.
   if (node_after_position_in_anchor_) {
     // Case #1: Move to position before the first child of
-    // |m_nodeAfterPositionInAnchor|.
+    // |node_after_position_in_anchor_|.
     // This is a point just before |child|.
     // Let |anchor| is A and |child| is B,
     // then next |anchor| is B and |child| is E.
@@ -190,10 +189,10 @@ void PositionIteratorAlgorithm<Strategy>::Increment() {
       !ShouldTraverseChildren<Strategy>(*anchor_node_) &&
       offset_in_anchor_ < Strategy::LastOffsetForEditing(anchor_node_)) {
     // Case #2. This is the next of Case #1 or #2 itself.
-    // Position is (|anchor|, |m_offsetInAchor|).
+    // Position is (|anchor|, |offset_in_anchor_|).
     // In this case |anchor| is a leaf(E,F,C,G or H) and
-    // |m_offsetInAnchor| is not on the end of |anchor|.
-    // Then just increment |m_offsetInAnchor|.
+    // |offset_in_anchor_| is not on the end of |anchor|.
+    // Then just increment |offset_in_anchor_|.
     offset_in_anchor_ =
         NextGraphemeBoundaryOf(*anchor_node_, offset_in_anchor_);
   } else {
@@ -239,13 +238,13 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
   // +-D
   //   |-G
   //   +-H
-  // Let |anchor| as |m_anchorNode| and
-  // |child| as |m_nodeAfterPositionInAnchor|.
-  // decrement() is complex but logically reverse of increment(), of course:)
+  // Let |anchor| as |anchor_node_| and
+  // |child| as |node_after_position_in_anchor_|.
+  // Decrement() is complex but logically reverse of Increment(), of course:)
   if (node_after_position_in_anchor_) {
     anchor_node_ = Strategy::PreviousSibling(*node_after_position_in_anchor_);
     if (anchor_node_) {
-      // Case #1-a. This is a revese of increment()::Case#3-a.
+      // Case #1-a. This is a revese of Increment()::Case#3-a.
       // |child| has a previous sibling.
       // Let |anchor| is B and |child| is F,
       // next |anchor| is E and |child| is null.
@@ -269,7 +268,7 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
         offsets_in_anchor_node_[depth_to_anchor_node_] = offset_in_anchor_;
       return;
     } else {
-      // Case #1-b. This is a revese of increment()::Case#1.
+      // Case #1-b. This is a revese of Increment()::Case#1.
       // |child| doesn't have a previous sibling.
       // Let |anchor| is B and |child| is E,
       // next |anchor| is A and |child| is B.
@@ -298,7 +297,7 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
                             ? 0
                             : Strategy::LastOffsetForEditing(anchor_node_);
     // Decrement depth initializing with -1 because
-    // |m_nodeAfterPositionInAnchor| is null so still unneeded.
+    // |node_after_position_in_anchor_| is null so still unneeded.
     if (depth_to_anchor_node_ >= offsets_in_anchor_node_.size())
       offsets_in_anchor_node_.push_back(kInvalidOffset);
     else
@@ -307,17 +306,17 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
     return;
   }
   if (offset_in_anchor_ && anchor_node_->GetLayoutObject()) {
-    // Case #3-a. This is a reverse of increment()::Case#2.
+    // Case #3-a. This is a reverse of Increment()::Case#2.
     // In this case |anchor| is a leaf(E,F,C,G or H) and
-    // |m_offsetInAnchor| is not on the beginning of |anchor|.
-    // Then just decrement |m_offsetInAnchor|.
+    // |offset_in_anchor_| is not on the beginning of |anchor|.
+    // Then just decrement |offset_in_anchor_|.
     offset_in_anchor_ =
         PreviousGraphemeBoundaryOf(*anchor_node_, offset_in_anchor_);
     return;
   }
-  // Case #3-b. This is a reverse of increment()::Case#1.
+  // Case #3-b. This is a reverse of Increment()::Case#1.
   // In this case |anchor| is a leaf(E,F,C,G or H) and
-  // |m_offsetInAnchor| is on the beginning of |anchor|.
+  // |offset_in_anchor_| is on the beginning of |anchor|.
   // Let |anchor| is E,
   // next |anchor| is B and |child| is E.
   node_after_position_in_anchor_ = anchor_node_;

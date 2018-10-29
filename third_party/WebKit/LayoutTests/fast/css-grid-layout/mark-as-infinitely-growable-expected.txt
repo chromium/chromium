@@ -5,6 +5,7 @@ PASS window.getComputedStyle(gridFixedMaxContentAndFixedMaxContent, '').getPrope
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 X
 XXXXXX XXX
 XX

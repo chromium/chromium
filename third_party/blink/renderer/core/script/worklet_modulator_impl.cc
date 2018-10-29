@@ -20,7 +20,7 @@ ModuleScriptFetcher* WorkletModulatorImpl::CreateModuleScriptFetcher(
     ModuleScriptCustomFetchType custom_fetch_type) {
   DCHECK_EQ(ModuleScriptCustomFetchType::kWorkletAddModule, custom_fetch_type);
   WorkletGlobalScope* global_scope =
-      ToWorkletGlobalScope(GetExecutionContext());
+      To<WorkletGlobalScope>(GetExecutionContext());
   return new WorkletModuleScriptFetcher(global_scope->EnsureFetcher(),
                                         global_scope->GetModuleResponsesMap());
 }

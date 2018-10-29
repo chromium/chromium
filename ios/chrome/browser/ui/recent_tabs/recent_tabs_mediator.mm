@@ -15,8 +15,8 @@
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/ui/ntp/recent_tabs/recent_tabs_table_consumer.h"
-#import "ios/chrome/browser/ui/ntp/recent_tabs/sessions_sync_user_state.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_consumer.h"
+#import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

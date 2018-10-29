@@ -12,6 +12,7 @@ component("device_features") {
     "device_features.cc",
     "device_features_export.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
     "//base",
   ]

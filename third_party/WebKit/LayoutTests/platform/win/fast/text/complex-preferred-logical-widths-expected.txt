@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutBlockFlow (floating) {DIV} at (0,0) size 303.73x24 [border: (3px solid #0000FF)]
-        LayoutText {#text} at (3,3) size 298x17
-          text run at (3,3) width 298: "The number of lines in this box should be one."

@@ -15,7 +15,7 @@
 #include "base/win/object_watcher.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
-#include "media/base/cdm_proxy_context.h"
+#include "media/cdm/cdm_proxy_context.h"
 #include "media/gpu/windows/d3d11_decryptor.h"
 
 namespace media {
@@ -62,20 +62,21 @@ class D3D11CdmProxyContext : public CdmProxyContext {
   ~D3D11CdmProxyContext() override = default;
 
   // The pointers are owned by the caller.
-  // TODO(rkuroiwa): Handle |key_type|.
   void SetKey(ID3D11CryptoSession* crypto_session,
               const std::vector<uint8_t>& key_id,
-              CdmProxy::KeyType /* key_type */,
+              CdmProxy::KeyType key_type,
               const std::vector<uint8_t>& key_blob) {
     std::string key_id_str(key_id.begin(), key_id.end());
     KeyInfo key_info(crypto_session, key_blob);
     // Note that this would overwrite an entry but it is completely valid, e.g.
     // updating the keyblob due to a configuration change.
-    key_info_map_[key_id_str] = std::move(key_info);
+    key_info_map_[key_id_str][key_type] = std::move(key_info);
   }
 
   void RemoveKey(ID3D11CryptoSession* crypto_session,
                  const std::vector<uint8_t>& key_id) {
+    // There's no need for a keytype for Remove() at the moment, because it's
+    // used for completely removing keys associated to |key_id|.
     std::string key_id_str(key_id.begin(), key_id.end());
     key_info_map_.erase(key_id_str);
   }
@@ -85,12 +86,18 @@ class D3D11CdmProxyContext : public CdmProxyContext {
 
   // CdmProxyContext implementation.
   base::Optional<D3D11DecryptContext> GetD3D11DecryptContext(
+      CdmProxy::KeyType key_type,
       const std::string& key_id) override {
-    auto key_info_it = key_info_map_.find(key_id);
-    if (key_info_it == key_info_map_.end())
+    auto key_id_find_it = key_info_map_.find(key_id);
+    if (key_id_find_it == key_info_map_.end())
       return base::nullopt;
 
-    auto& key_info = key_info_it->second;
+    auto& key_type_to_key_info = key_id_find_it->second;
+    auto key_type_find_it = key_type_to_key_info.find(key_type);
+    if (key_type_find_it == key_type_to_key_info.end())
+      return base::nullopt;
+
+    auto& key_info = key_type_find_it->second;
     D3D11DecryptContext context = {};
     context.crypto_session = key_info.crypto_session;
     context.key_blob = key_info.key_blob.data();
@@ -113,13 +120,13 @@ class D3D11CdmProxyContext : public CdmProxyContext {
     std::vector<uint8_t> key_blob;
   };
 
-  // Maps key ID to KeyInfo.
+  // Maps key ID -> key type -> KeyInfo.
   // The key ID's type is string, which is converted from |key_id| in
   // SetKey(). It's better to use string here rather than convert
   // vector<uint8_t> to string every time in GetD3D11DecryptContext() because
   // in most cases it would be called more often than SetKey() and RemoveKey()
   // combined.
-  std::map<std::string, KeyInfo> key_info_map_;
+  std::map<std::string, std::map<CdmProxy::KeyType, KeyInfo>> key_info_map_;
 
   const GUID key_info_guid_;
 
@@ -491,26 +498,34 @@ void D3D11CdmProxy::CreateMediaCryptoSession(
 void D3D11CdmProxy::SetKey(uint32_t crypto_session_id,
                            const std::vector<uint8_t>& key_id,
                            KeyType key_type,
-                           const std::vector<uint8_t>& key_blob) {
+                           const std::vector<uint8_t>& key_blob,
+                           SetKeyCB set_key_cb) {
   auto crypto_session_it = crypto_session_map_.find(crypto_session_id);
   if (crypto_session_it == crypto_session_map_.end()) {
     DLOG(WARNING) << crypto_session_id
                   << " did not map to a crypto session instance.";
+    std::move(set_key_cb).Run(Status::kFail);
     return;
   }
+
   cdm_context_->SetKey(crypto_session_it->second.Get(), key_id, key_type,
                        key_blob);
+  std::move(set_key_cb).Run(Status::kOk);
 }
 
 void D3D11CdmProxy::RemoveKey(uint32_t crypto_session_id,
-                              const std::vector<uint8_t>& key_id) {
+                              const std::vector<uint8_t>& key_id,
+                              RemoveKeyCB remove_key_cb) {
   auto crypto_session_it = crypto_session_map_.find(crypto_session_id);
   if (crypto_session_it == crypto_session_map_.end()) {
     DLOG(WARNING) << crypto_session_id
                   << " did not map to a crypto session instance.";
+    std::move(remove_key_cb).Run(Status::kFail);
     return;
   }
+
   cdm_context_->RemoveKey(crypto_session_it->second.Get(), key_id);
+  std::move(remove_key_cb).Run(Status::kOk);
 }
 
 void D3D11CdmProxy::SetCreateDeviceCallbackForTesting(

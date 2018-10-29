@@ -9,8 +9,8 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.text.TextUtils;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.preferences.privacy.PrivacyPreferencesManager;

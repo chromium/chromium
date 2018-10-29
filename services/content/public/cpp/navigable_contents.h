@@ -61,6 +61,9 @@ class COMPONENT_EXPORT(CONTENT_SERVICE_CPP) NavigableContents
       const scoped_refptr<net::HttpResponseHeaders>& response_headers) override;
   void DidStopLoading() override;
   void DidAutoResizeView(const gfx::Size& new_size) override;
+  void DidSuppressNavigation(const GURL& url,
+                             WindowOpenDisposition disposition,
+                             bool from_user_gesture) override;
 
   void OnEmbedTokenReceived(const base::UnguessableToken& token);
 

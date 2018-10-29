@@ -2,7 +2,6 @@ This tests that Text is constructable.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS new Text("one").data is "one"
 PASS new Text().data is ""
 PASS new Text(undefined).data is ""
@@ -18,4 +17,5 @@ PASS Object.getPrototypeOf(new innerWindow.Text) is innerWindow.Text.prototype
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

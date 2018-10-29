@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/noncopyable.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace cc {
 class AnimationCurve;
@@ -60,7 +61,9 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
   void PauseKeyframeModel(int keyframe_model_id, double time_offset);
   void AbortKeyframeModel(int keyframe_model_id);
 
-  void UpdateScrollTimelineId(base::Optional<cc::ElementId>);
+  void UpdateScrollTimeline(base::Optional<cc::ElementId>,
+                            base::Optional<double> start_scroll_offset,
+                            base::Optional<double> end_scroll_offset);
 
  private:
   // cc::AnimationDelegate implementation.

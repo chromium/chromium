@@ -28,9 +28,10 @@
 #include <memory>
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/pod_free_list_arena.h"
-#include "third_party/blink/renderer/platform/pod_interval_tree.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/list_hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/pod_free_list_arena.h"
+#include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 
 namespace blink {
 
@@ -45,7 +46,7 @@ class FloatingObject {
 #ifndef NDEBUG
   // Used by the PODIntervalTree for debugging the FloatingObject.
   template <class>
-  friend struct ValueToString;
+  friend struct WTF::ValueToString;
 #endif
 
   // Note that Type uses bits so you can use FloatLeftRight as a mask to query
@@ -186,9 +187,10 @@ typedef ListHashSet<std::unique_ptr<FloatingObject>,
                     FloatingObjectHashFunctions>
     FloatingObjectSet;
 typedef FloatingObjectSet::const_iterator FloatingObjectSetIterator;
-typedef PODInterval<LayoutUnit, FloatingObject*> FloatingObjectInterval;
-typedef PODIntervalTree<LayoutUnit, FloatingObject*> FloatingObjectTree;
-typedef PODFreeListArena<PODRedBlackTree<FloatingObjectInterval>::Node>
+typedef WTF::PODInterval<LayoutUnit, FloatingObject*> FloatingObjectInterval;
+typedef WTF::PODIntervalTree<LayoutUnit, FloatingObject*> FloatingObjectTree;
+typedef WTF::PODFreeListArena<
+    WTF::PODRedBlackTree<FloatingObjectInterval>::Node>
     IntervalArena;
 typedef HashMap<LayoutBox*, std::unique_ptr<FloatingObject>>
     LayoutBoxToFloatInfoMap;
@@ -279,18 +281,20 @@ class FloatingObjects {
   DISALLOW_COPY_AND_ASSIGN(FloatingObjects);
 };
 
+}  // namespace blink
+
+namespace WTF {
 #ifndef NDEBUG
 // These structures are used by PODIntervalTree for debugging purposes.
 template <>
-struct ValueToString<LayoutUnit> {
-  static String ToString(const LayoutUnit value);
+struct ValueToString<blink::LayoutUnit> {
+  static String ToString(const blink::LayoutUnit value);
 };
 template <>
-struct ValueToString<FloatingObject*> {
-  static String ToString(const FloatingObject*);
+struct ValueToString<blink::FloatingObject*> {
+  static String ToString(const blink::FloatingObject*);
 };
 #endif
-
-}  // namespace blink
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLOATING_OBJECTS_H_

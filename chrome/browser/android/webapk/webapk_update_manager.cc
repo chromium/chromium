@@ -89,12 +89,12 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
       GURL(ConvertJavaStringToUTF8(env, java_badge_icon_url));
   info.manifest_url = GURL(ConvertJavaStringToUTF8(env, java_web_manifest_url));
 
-  base::android::AppendJavaStringArrayToStringVector(env, java_icon_urls.obj(),
+  base::android::AppendJavaStringArrayToStringVector(env, java_icon_urls,
                                                      &info.icon_urls);
 
   std::vector<std::string> icon_hashes;
-  base::android::AppendJavaStringArrayToStringVector(
-      env, java_icon_hashes.obj(), &icon_hashes);
+  base::android::AppendJavaStringArrayToStringVector(env, java_icon_hashes,
+                                                     &icon_hashes);
 
   std::map<std::string, std::string> icon_url_to_murmur2_hash;
   for (size_t i = 0; i < info.icon_urls.size(); ++i)

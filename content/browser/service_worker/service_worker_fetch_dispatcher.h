@@ -51,6 +51,7 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
                               FetchEventResult,
                               blink::mojom::FetchAPIResponsePtr,
                               blink::mojom::ServiceWorkerStreamHandlePtr,
+                              blink::mojom::ServiceWorkerFetchEventTimingPtr,
                               scoped_refptr<ServiceWorkerVersion>)>;
 
   // |request_body_*| and |client_id| are used in non-S13nServiceWorker only.
@@ -98,11 +99,13 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   void DidFinish(int request_id,
                  FetchEventResult fetch_result,
                  blink::mojom::FetchAPIResponsePtr response,
-                 blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream);
+                 blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
+                 blink::mojom::ServiceWorkerFetchEventTimingPtr timing);
   void Complete(blink::ServiceWorkerStatusCode status,
                 FetchEventResult fetch_result,
                 blink::mojom::FetchAPIResponsePtr response,
-                blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream);
+                blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
+                blink::mojom::ServiceWorkerFetchEventTimingPtr timing);
 
   // The fetch event stays open until all respondWith() and waitUntil() promises
   // are settled. This function is called once the renderer signals that

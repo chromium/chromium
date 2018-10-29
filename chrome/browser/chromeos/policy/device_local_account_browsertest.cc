@@ -139,6 +139,7 @@
 #include "net/url_request/url_request_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "ui/aura/test/mus/change_completion_waiter.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -212,6 +213,25 @@ const char* const kInvalidRecommendedLocale[] = {
 };
 const char kPublicSessionLocale[] = "de";
 const char kPublicSessionInputMethodIDTemplate[] = "_comp_ime_%sxkb:de:neo:ger";
+
+bool IsLogoutConfirmationDialogShowing() {
+  // Wait for any browser window close mojo messages to propagate to ash.
+  aura::test::WaitForAllChangesToComplete();
+
+  // TODO(mash): Add mojo test API for this.
+  return !!ash::Shell::Get()
+               ->logout_confirmation_controller()
+               ->dialog_for_testing();
+}
+
+void CloseLogoutConfirmationDialog() {
+  // TODO(mash): Add mojo test API for this.
+  ash::LogoutConfirmationDialog* dialog =
+      ash::Shell::Get()->logout_confirmation_controller()->dialog_for_testing();
+  ASSERT_TRUE(dialog);
+  dialog->GetWidget()->Close();
+  base::RunLoop().RunUntilIdle();
+}
 
 // Helper that serves extension update manifests to Chrome.
 class TestingUpdateManifestProvider
@@ -1498,10 +1518,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   app_window_registry->AddObserver(this);
 
   // Verify that the logout confirmation dialog is not showing.
-  ash::LogoutConfirmationController* logout_confirmation_controller =
-      ash::Shell::Get()->logout_confirmation_controller();
-  ASSERT_TRUE(logout_confirmation_controller);
-  EXPECT_FALSE(logout_confirmation_controller->dialog_for_testing());
+  EXPECT_FALSE(IsLogoutConfirmationDialogShowing());
 
   // Remove policy that allows only explicitly whitelisted apps to be installed
   // in a public session.
@@ -1552,7 +1569,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
 
   // Verify that the logout confirmation dialog is not showing because an app
   // window is still open.
-  EXPECT_FALSE(logout_confirmation_controller->dialog_for_testing());
+  EXPECT_FALSE(IsLogoutConfirmationDialogShowing());
 
   // Open a browser window.
   Browser* first_browser = CreateBrowser(profile);
@@ -1567,7 +1584,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
 
   // Verify that the logout confirmation dialog is not showing because a browser
   // window is still open.
-  EXPECT_FALSE(logout_confirmation_controller->dialog_for_testing());
+  EXPECT_FALSE(IsLogoutConfirmationDialogShowing());
 
   // Open a second browser window.
   Browser* second_browser = CreateBrowser(profile);
@@ -1585,7 +1602,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
 
   // Verify that the logout confirmation dialog is not showing because a browser
   // window is still open.
-  EXPECT_FALSE(logout_confirmation_controller->dialog_for_testing());
+  EXPECT_FALSE(IsLogoutConfirmationDialogShowing());
 
   // Close the second browser window.
   browser_window = second_browser->window();
@@ -1598,17 +1615,13 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   EXPECT_TRUE(browser_list->empty());
 
   // Verify that the logout confirmation dialog is showing.
-  ash::LogoutConfirmationDialog* dialog =
-      logout_confirmation_controller->dialog_for_testing();
-  ASSERT_TRUE(dialog);
+  EXPECT_TRUE(IsLogoutConfirmationDialogShowing());
 
   // Deny the logout.
-  dialog->GetWidget()->Close();
-  dialog = NULL;
-  base::RunLoop().RunUntilIdle();
+  ASSERT_NO_FATAL_FAILURE(CloseLogoutConfirmationDialog());
 
   // Verify that the logout confirmation dialog is no longer showing.
-  EXPECT_FALSE(logout_confirmation_controller->dialog_for_testing());
+  EXPECT_FALSE(IsLogoutConfirmationDialogShowing());
 
   // Open a browser window.
   browser = CreateBrowser(profile);
@@ -1625,13 +1638,10 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   EXPECT_TRUE(browser_list->empty());
 
   // Verify that the logout confirmation dialog is showing again.
-  dialog = logout_confirmation_controller->dialog_for_testing();
-  ASSERT_TRUE(dialog);
+  EXPECT_TRUE(IsLogoutConfirmationDialogShowing());
 
   // Deny the logout.
-  dialog->GetWidget()->Close();
-  dialog = NULL;
-  base::RunLoop().RunUntilIdle();
+  ASSERT_NO_FATAL_FAILURE(CloseLogoutConfirmationDialog());
 
   app_window_registry->RemoveObserver(this);
 };
@@ -2294,6 +2304,11 @@ class TermsOfServiceDownloadTest : public DeviceLocalAccountTest,
 };
 
 IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
+  // TODO(crbug.com/898701): Running test with existant TOS path flakes, so this
+  // has been disabled.
+  if (GetParam())
+    return;
+
   // Specify Terms of Service URL.
   ASSERT_TRUE(embedded_test_server()->Start());
   device_local_account_policy_.payload().mutable_termsofserviceurl()->set_value(

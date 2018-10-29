@@ -2,7 +2,7 @@ This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: transceiver.stop is not a function
 PASS insertDTMF() with default duration and intertoneGap should fire tonechange events at the expected time
 PASS insertDTMF() with explicit duration and intertoneGap should fire tonechange events at the expected time
-FAIL insertDTMF('') should not fire any tonechange event, including for '' tone assert_unreached: Expect no tonechange event to be fired Reached unreachable code
+PASS insertDTMF('') should not fire any tonechange event, including for '' tone
 PASS insertDTMF() with duration less than 40 should be clamped to 40
 PASS insertDTMF() with interToneGap less than 30 should be clamped to 30
 PASS insertDTMF with comma should delay next tonechange event for a constant 2000ms

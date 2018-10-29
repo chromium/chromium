@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/shared_memory.h"
 #include "base/sys_info.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,19 +22,21 @@ class GLImageSharedMemoryTestDelegate : public GLImageTestDelegateBase {
   scoped_refptr<GLImage> CreateSolidColorImage(const gfx::Size& size,
                                                const uint8_t color[4]) const {
     DCHECK_EQ(NumberOfPlanesForBufferFormat(format), 1u);
-    base::SharedMemory shared_memory;
-    bool rv = shared_memory.CreateAndMapAnonymous(
-        gfx::BufferSizeForBufferFormat(size, format));
-    DCHECK(rv);
+    base::UnsafeSharedMemoryRegion shared_memory_region =
+        base::UnsafeSharedMemoryRegion::Create(
+            gfx::BufferSizeForBufferFormat(size, format));
+    base::WritableSharedMemoryMapping shared_memory_mapping =
+        shared_memory_region.Map();
+    DCHECK(shared_memory_mapping.IsValid());
+
     GLImageTestSupport::SetBufferDataToColor(
         size.width(), size.height(),
         static_cast<int>(RowSizeForBufferFormat(size.width(), format, 0)), 0,
-        format, color, static_cast<uint8_t*>(shared_memory.memory()));
+        format, color, static_cast<uint8_t*>(shared_memory_mapping.memory()));
     scoped_refptr<GLImageSharedMemory> image(new GLImageSharedMemory(
         size, GLImageMemory::GetInternalFormatForTesting(format)));
-    rv = image->Initialize(
-        base::SharedMemory::DuplicateHandle(shared_memory.handle()),
-        gfx::GenericSharedMemoryId(0), format, 0,
+    bool rv = image->Initialize(
+        shared_memory_region, gfx::GenericSharedMemoryId(0), format, 0,
         gfx::RowSizeForBufferFormat(size.width(), format, 0));
     EXPECT_TRUE(rv);
     return image;
@@ -87,23 +88,24 @@ class GLImageSharedMemoryPoolTestDelegate : public GLImageTestDelegateBase {
                     2;
     size_t pool_size =
         stride * size.height() + base::SysInfo::VMAllocationGranularity() * 3;
-    base::SharedMemory shared_memory;
-    bool rv = shared_memory.CreateAndMapAnonymous(pool_size);
-    DCHECK(rv);
+    base::UnsafeSharedMemoryRegion shared_memory_region =
+        base::UnsafeSharedMemoryRegion::Create(pool_size);
+    base::WritableSharedMemoryMapping shared_memory_mapping =
+        shared_memory_region.Map();
+    DCHECK(shared_memory_mapping.IsValid());
     // Initialize memory to a value that is easy to recognize if test fails.
-    memset(shared_memory.memory(), 0x55, pool_size);
+    memset(shared_memory_mapping.memory(), 0x55, pool_size);
     // Place buffer at a non-zero non-page-aligned offset in shared memory.
     size_t buffer_offset = 3 * base::SysInfo::VMAllocationGranularity() / 2;
     GLImageTestSupport::SetBufferDataToColor(
         size.width(), size.height(), static_cast<int>(stride), 0,
         gfx::BufferFormat::RGBA_8888, color,
-        static_cast<uint8_t*>(shared_memory.memory()) + buffer_offset);
+        static_cast<uint8_t*>(shared_memory_mapping.memory()) + buffer_offset);
     scoped_refptr<GLImageSharedMemory> image(
         new GLImageSharedMemory(size, GL_RGBA));
-    rv = image->Initialize(
-        base::SharedMemory::DuplicateHandle(shared_memory.handle()),
-        gfx::GenericSharedMemoryId(0), gfx::BufferFormat::RGBA_8888,
-        buffer_offset, stride);
+    bool rv =
+        image->Initialize(shared_memory_region, gfx::GenericSharedMemoryId(0),
+                          gfx::BufferFormat::RGBA_8888, buffer_offset, stride);
     EXPECT_TRUE(rv);
     return image;
   }

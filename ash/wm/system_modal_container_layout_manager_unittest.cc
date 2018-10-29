@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/keyboard/ash_keyboard_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -153,13 +154,11 @@ class SystemModalContainerLayoutManagerTest : public AshTestBase {
   }
 
   void ActivateKeyboard() {
-    Shell::GetPrimaryRootWindowController()->ActivateKeyboard(
-        keyboard::KeyboardController::Get());
+    Shell::Get()->ash_keyboard_controller()->ActivateKeyboard();
   }
 
   void DeactivateKeyboard() {
-    Shell::GetPrimaryRootWindowController()->DeactivateKeyboard(
-        keyboard::KeyboardController::Get());
+    Shell::Get()->ash_keyboard_controller()->DeactivateKeyboard();
   }
 
   aura::Window* OpenToplevelTestWindow(bool modal) {
@@ -179,7 +178,7 @@ class SystemModalContainerLayoutManagerTest : public AshTestBase {
   // Show or hide the keyboard.
   void ShowKeyboard(bool show) {
     auto* keyboard = keyboard::KeyboardController::Get();
-    ASSERT_TRUE(keyboard->enabled());
+    ASSERT_TRUE(keyboard->IsEnabled());
     if (show == keyboard->IsKeyboardVisible())
       return;
 

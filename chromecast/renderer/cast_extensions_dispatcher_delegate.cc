@@ -73,11 +73,6 @@ void CastExtensionsDispatcherDelegate::PopulateSourceMap(
   source_map->RegisterSource("tts", IDR_TTS_CUSTOM_BINDINGS_JS);
 }
 
-void CastExtensionsDispatcherDelegate::RequireAdditionalModules(
-    extensions::ScriptContext* context) {
-  // TODO(rmrossi): Stub
-}
-
 void CastExtensionsDispatcherDelegate::OnActiveExtensionsUpdated(
     const std::set<std::string>& extension_ids) {
   // TODO(rmrossi): Stub

@@ -55,6 +55,12 @@ void RelaunchRequiredDialogView::SetDeadline(base::TimeTicks deadline) {
   relaunch_required_timer_.SetDeadline(deadline);
 }
 
+bool RelaunchRequiredDialogView::Cancel() {
+  base::RecordAction(base::UserMetricsAction("RelaunchRequired_Close"));
+
+  return true;
+}
+
 bool RelaunchRequiredDialogView::Accept() {
   base::RecordAction(base::UserMetricsAction("RelaunchRequired_Accept"));
 
@@ -63,12 +69,6 @@ bool RelaunchRequiredDialogView::Accept() {
   // Keep the dialog open in case shutdown is prevented for some reason so that
   // the user can try again if needed.
   return false;
-}
-
-bool RelaunchRequiredDialogView::Close() {
-  base::RecordAction(base::UserMetricsAction("RelaunchRequired_Close"));
-
-  return true;
 }
 
 int RelaunchRequiredDialogView::GetDefaultDialogButton() const {

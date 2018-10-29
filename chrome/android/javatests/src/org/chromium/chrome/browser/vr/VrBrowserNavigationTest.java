@@ -12,6 +12,7 @@ import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_V
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE;
 
 import android.graphics.PointF;
+import android.support.annotation.IntDef;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 
@@ -44,6 +45,8 @@ import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
@@ -73,9 +76,28 @@ public class VrBrowserNavigationTest {
     private static final String TEST_PAGE_WEBXR_URL =
             WebXrVrTestFramework.getFileUrlForHtmlTestFile("test_navigation_webxr_page");
 
-    private enum Page { PAGE_2D, PAGE_2D_2, PAGE_WEBVR, PAGE_WEBXR }
-    private enum PresentationMode { NON_PRESENTING, PRESENTING }
-    private enum FullscreenMode { NON_FULLSCREENED, FULLSCREENED }
+    @IntDef({Page.PAGE_2D, Page.PAGE_2D_2, Page.PAGE_WEBVR, Page.PAGE_WEBXR})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface Page {
+        int PAGE_2D = 0;
+        int PAGE_2D_2 = 1;
+        int PAGE_WEBVR = 2;
+        int PAGE_WEBXR = 3;
+    }
+
+    @IntDef({PresentationMode.NON_PRESENTING, PresentationMode.PRESENTING})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface PresentationMode {
+        int NON_PRESENTING = 0;
+        int PRESENTING = 1;
+    }
+
+    @IntDef({FullscreenMode.NON_FULLSCREENED, FullscreenMode.FULLSCREENED})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface FullscreenMode {
+        int NON_FULLSCREENED = 0;
+        int FULLSCREENED = 1;
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -85,15 +107,15 @@ public class VrBrowserNavigationTest {
         VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
     }
 
-    private String getUrl(Page page) {
+    private String getUrl(@Page int page) {
         switch (page) {
-            case PAGE_2D:
+            case Page.PAGE_2D:
                 return TEST_PAGE_2D_URL;
-            case PAGE_2D_2:
+            case Page.PAGE_2D_2:
                 return TEST_PAGE_2D_2_URL;
-            case PAGE_WEBVR:
+            case Page.PAGE_WEBVR:
                 return TEST_PAGE_WEBVR_URL;
-            case PAGE_WEBXR:
+            case Page.PAGE_WEBXR:
                 return TEST_PAGE_WEBXR_URL;
             default:
                 throw new UnsupportedOperationException("Don't know page type " + page);
@@ -105,7 +127,7 @@ public class VrBrowserNavigationTest {
      * {@link ChromeActivityTestRule#loadUrl loadUrl} but makes sure page initiates the
      * navigation. This is desirable since we are testing navigation transitions end-to-end.
      */
-    private void navigateTo(final Page to) throws InterruptedException {
+    private void navigateTo(final @Page int to) throws InterruptedException {
         ChromeTabUtils.waitForTabPageLoaded(mTestRule.getActivity().getActivityTab(), () -> {
             mVrBrowserTestFramework.runJavaScriptOrFail(
                     "window.location.href = '" + getUrl(to) + "';", POLL_TIMEOUT_SHORT_MS);
@@ -119,8 +141,8 @@ public class VrBrowserNavigationTest {
         Assert.assertTrue("Failed to enter fullscreen", DOMUtils.isFullscreen(webContents));
     }
 
-    private void assertState(WebContents wc, Page page, PresentationMode presentationMode,
-            FullscreenMode fullscreenMode) throws InterruptedException, TimeoutException {
+    private void assertState(WebContents wc, @Page int page, @PresentationMode int presentationMode,
+            @FullscreenMode int fullscreenMode) throws InterruptedException, TimeoutException {
         Assert.assertTrue("Browser is not in VR", VrShellDelegate.isInVr());
         Assert.assertEquals("Browser is not on correct web site", getUrl(page), wc.getVisibleUrl());
         Assert.assertEquals("Browser's presentation mode does not match expectation",
@@ -193,7 +215,7 @@ public class VrBrowserNavigationTest {
         impl2dToWeb(Page.PAGE_WEBXR, mWebXrVrTestFramework);
     }
 
-    private void impl2dToWeb(Page page, WebXrVrTestFramework framework)
+    private void impl2dToWeb(@Page int page, WebXrVrTestFramework framework)
             throws InterruptedException, TimeoutException {
         framework.loadUrlAndAwaitInitialization(TEST_PAGE_2D_URL, PAGE_LOAD_TIMEOUT_S);
 
@@ -226,7 +248,7 @@ public class VrBrowserNavigationTest {
         impl2dFullscreenToWeb(Page.PAGE_WEBXR, mWebXrVrTestFramework);
     }
 
-    private void impl2dFullscreenToWeb(Page page, WebXrVrTestFramework framework)
+    private void impl2dFullscreenToWeb(@Page int page, WebXrVrTestFramework framework)
             throws InterruptedException, TimeoutException {
         framework.loadUrlAndAwaitInitialization(TEST_PAGE_2D_URL, PAGE_LOAD_TIMEOUT_S);
         enterFullscreenOrFail(framework.getFirstTabWebContents());
@@ -260,7 +282,7 @@ public class VrBrowserNavigationTest {
         webTo2dImpl(Page.PAGE_WEBXR, mWebXrVrTestFramework);
     }
 
-    private void webTo2dImpl(Page page, WebXrVrTestFramework framework)
+    private void webTo2dImpl(@Page int page, WebXrVrTestFramework framework)
             throws InterruptedException, TimeoutException {
         framework.loadUrlAndAwaitInitialization(getUrl(page), PAGE_LOAD_TIMEOUT_S);
 
@@ -293,7 +315,7 @@ public class VrBrowserNavigationTest {
         webToWebImpl(Page.PAGE_WEBXR, mWebXrVrTestFramework);
     }
 
-    private void webToWebImpl(Page page, WebXrVrTestFramework framework)
+    private void webToWebImpl(@Page int page, WebXrVrTestFramework framework)
             throws InterruptedException, TimeoutException {
         framework.loadUrlAndAwaitInitialization(getUrl(page), PAGE_LOAD_TIMEOUT_S);
 
@@ -326,7 +348,7 @@ public class VrBrowserNavigationTest {
         webPresentingTo2dImpl(Page.PAGE_WEBXR, mWebXrVrTestFramework);
     }
 
-    private void webPresentingTo2dImpl(Page page, WebXrVrTestFramework framework)
+    private void webPresentingTo2dImpl(@Page int page, WebXrVrTestFramework framework)
             throws InterruptedException, TimeoutException {
         framework.loadUrlAndAwaitInitialization(getUrl(page), PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureOrFail();
@@ -360,7 +382,7 @@ public class VrBrowserNavigationTest {
         webPresentingToWebImpl(Page.PAGE_WEBXR, mWebXrVrTestFramework);
     }
 
-    private void webPresentingToWebImpl(Page page, WebXrVrTestFramework framework)
+    private void webPresentingToWebImpl(@Page int page, WebXrVrTestFramework framework)
             throws InterruptedException, TimeoutException {
         framework.loadUrlAndAwaitInitialization(getUrl(page), PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureOrFail();
@@ -394,7 +416,7 @@ public class VrBrowserNavigationTest {
         webFullscreenTo2dImpl(Page.PAGE_WEBXR, mWebXrVrTestFramework);
     }
 
-    private void webFullscreenTo2dImpl(Page page, WebXrVrTestFramework framework)
+    private void webFullscreenTo2dImpl(@Page int page, WebXrVrTestFramework framework)
             throws InterruptedException, TimeoutException {
         framework.loadUrlAndAwaitInitialization(getUrl(page), PAGE_LOAD_TIMEOUT_S);
         enterFullscreenOrFail(framework.getFirstTabWebContents());
@@ -428,7 +450,7 @@ public class VrBrowserNavigationTest {
         webFullscreenToWebImpl(Page.PAGE_WEBXR, mWebXrVrTestFramework);
     }
 
-    private void webFullscreenToWebImpl(Page page, WebXrVrTestFramework framework)
+    private void webFullscreenToWebImpl(@Page int page, WebXrVrTestFramework framework)
             throws InterruptedException, TimeoutException {
         framework.loadUrlAndAwaitInitialization(getUrl(page), PAGE_LOAD_TIMEOUT_S);
         enterFullscreenOrFail(framework.getFirstTabWebContents());
@@ -531,7 +553,8 @@ public class VrBrowserNavigationTest {
         enterFullscreenOrFail(mVrBrowserTestFramework.getFirstTabWebContents());
 
         final Tab tab = mTestRule.getActivity().getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(() -> tab.simulateRendererKilledForTesting(true));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ChromeTabUtils.simulateRendererKilledForTesting(tab, true));
 
         mVrBrowserTestFramework.simulateRendererKilled();
 
@@ -634,5 +657,90 @@ public class VrBrowserNavigationTest {
                 mTestRule.getActivity().getActivityTab().isIncognito());
         Assert.assertTrue("Created native page is not a NTP",
                 mTestRule.getActivity().getActivityTab().getNativePage() instanceof NewTabPage);
+    }
+
+    /**
+     * Tests that inputting a URL into the URL bar results in a successful navigation.
+     */
+    @Test
+    @MediumTest
+    public void testUrlEntryTriggersNavigation() throws InterruptedException {
+        testUrlEntryTriggersNavigationImpl();
+    }
+
+    /**
+     * Tests that inputting a URL into the URL bar in Incognito Mode results in a successful
+     * navigation.
+     */
+    @Test
+    @MediumTest
+    public void testUrlEntryTriggersNavigationIncognito() throws InterruptedException {
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mTestRule.getActivity()
+                    .getTabCreator(true /* incognito */)
+                    .launchUrl("about:blank", TabLaunchType.FROM_LINK);
+        });
+        testUrlEntryTriggersNavigationImpl();
+    }
+
+    private void testUrlEntryTriggersNavigationImpl() throws InterruptedException {
+        NativeUiUtils.enableMockedKeyboard();
+        NativeUiUtils.clickElementAndWaitForUiQuiescence(UserFriendlyElementName.URL, new PointF());
+        // This is a roundabout solution for ensuring that the committing/pressing of enter actually
+        // results in a navigation - internally, this is handled by grabbing the first suggestion
+        // and navigating to its destination. So, we need to make sure we have suggestions before
+        // pressing enter, otherwise nothing happens. If this ever stops working, e.g. due to always
+        // having suggestions present, waiting for a number of frames before committing seemed
+        // stable. Adding an operation to listen for suggestion changes would also work, but
+        // would add some pretty niche test-only code to the native side.
+        NativeUiUtils.performActionAndWaitForVisibilityChange(
+                UserFriendlyElementName.SUGGESTION_BOX,
+                () -> { NativeUiUtils.inputString("chrome://version/"); });
+        NativeUiUtils.inputEnter();
+        ChromeTabUtils.waitForTabPageLoaded(
+                mTestRule.getActivity().getActivityTab(), "chrome://version/");
+    }
+
+    /**
+     * Tests that clicking on a suggestion results in a successful navigation.
+     */
+    @Test
+    @MediumTest
+    public void testSuggestionClickTriggersNavigation() throws InterruptedException {
+        testSuggestionClickTriggersNavigationImpl();
+    }
+
+    /**
+     * Tests that clicking on a suggestion while in Incognito Mode results in a successful
+     * navigation.
+     */
+    @Test
+    @MediumTest
+    public void testSuggestionClickTriggersNavigationIncognito() throws InterruptedException {
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mTestRule.getActivity()
+                    .getTabCreator(true /* incognito */)
+                    .launchUrl("about:blank", TabLaunchType.FROM_LINK);
+        });
+        testSuggestionClickTriggersNavigationImpl();
+    }
+
+    private void testSuggestionClickTriggersNavigationImpl() throws InterruptedException {
+        NativeUiUtils.enableMockedKeyboard();
+        NativeUiUtils.clickElementAndWaitForUiQuiescence(UserFriendlyElementName.URL, new PointF());
+        NativeUiUtils.performActionAndWaitForVisibilityChange(
+                UserFriendlyElementName.SUGGESTION_BOX,
+                () -> { NativeUiUtils.inputString("chrome://"); });
+        // Blindly clicking in the center of the suggestion box should end up clicking the middle
+        // suggestion, which for "chrome://" should be a valid chrome:// URL.
+        NativeUiUtils.clickElement(UserFriendlyElementName.SUGGESTION_BOX, new PointF());
+        ChromeTabUtils.waitForTabPageLoaded(
+                mTestRule.getActivity().getActivityTab(), (String) null);
+        // We can't just wait for navigation to finish and then check because waitForTabPageLoaded
+        // only supports either exact URL matching or no URL matching, and no URL matching results
+        // in the URL still being about:blank when we check.
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            return mTestRule.getActivity().getActivityTab().getUrl().startsWith("chrome://");
+        });
     }
 }

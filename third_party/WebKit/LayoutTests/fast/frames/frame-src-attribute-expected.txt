@@ -5,7 +5,7 @@ Frame: '<!--framePath //<!--frame0-->-->'
 --------
 This test checks whether a frame element's 'src' attribute is a complete, rather than relative, URL.
 
-PASS: Frame 'src' attribute should include 'LayoutTests/fast/frames' and does.
+PASS: Frame 'src' attribute should include 'fast/frames' and does.
 
 --------
 Frame: '<!--framePath //<!--frame1-->-->'

@@ -278,7 +278,7 @@ suite('SiteDetailsPermission', function() {
       source: settings.SiteSettingSource.ADS_FILTER_BLACKLIST,
     };
     assertEquals(
-        'Site tends to show intrusive ads' +
+        'Site shows intrusive or misleading ads' +
             '\nAllow\nBlock\nAsk',
         testElement.$.permissionItem.innerText.trim());
     assertTrue(testElement.$.permissionItem.classList.contains('two-line'));
@@ -292,7 +292,7 @@ suite('SiteDetailsPermission', function() {
       source: settings.SiteSettingSource.PREFERENCE,
     };
     assertEquals(
-        'Block if site tends to show intrusive ads' +
+        'Block if site shows intrusive or misleading ads' +
             '\nAllow\nBlock\nAsk',
         testElement.$.permissionItem.innerText.trim());
     assertTrue(testElement.$.permissionItem.classList.contains('two-line'));
@@ -306,7 +306,7 @@ suite('SiteDetailsPermission', function() {
       source: settings.SiteSettingSource.DEFAULT,
     };
     assertEquals(
-        'Block if site tends to show intrusive ads' +
+        'Block if site shows intrusive or misleading ads' +
             '\nBlock (default)\nAllow\nBlock\nAsk',
         testElement.$.permissionItem.innerText.trim());
     assertTrue(testElement.$.permissionItem.classList.contains('two-line'));

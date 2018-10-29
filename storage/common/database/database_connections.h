@@ -52,9 +52,7 @@ class STORAGE_COMMON_EXPORT DatabaseConnections {
   // Maps database names to (open count, database size).
   using DBConnections = std::map<base::string16, std::pair<int, int64_t>>;
   // Maps origin identifiers to DBConnections.
-  using OriginConnections = std::map<std::string, DBConnections>;
-
-  OriginConnections connections_;
+  std::map<std::string, DBConnections> connections_;
 
   // Returns true if the last connection was removed.
   bool RemoveConnectionsHelper(const std::string& origin_identifier,

@@ -14,6 +14,7 @@
 #include "chrome/browser/vr/metrics/metrics_helper.h"
 #include "chrome/browser/vr/model/assets.h"
 #include "chrome/browser/vr/vr_features.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/audio/sounds/wav_audio_handler.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -242,8 +243,8 @@ void AssetsLoader::LoadAssetsTask(
 }
 
 AssetsLoader::AssetsLoader()
-    : main_thread_task_runner_(content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::UI)),
+    : main_thread_task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::UI})),
       weak_ptr_factory_(this) {
   DCHECK(main_thread_task_runner_.get());
 }

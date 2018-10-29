@@ -25,6 +25,9 @@ CONSOLE MESSAGE: line 151:     getter writable
 CONSOLE MESSAGE: line 151:     method constructor
 CONSOLE MESSAGE: line 151: interface WorkletGlobalScope
 CONSOLE MESSAGE: line 151:     method constructor
+CONSOLE MESSAGE: line 153: interface WorkletGroupEffectProxy
+CONSOLE MESSAGE: line 153:     method constructor
+CONSOLE MESSAGE: line 153:     method getChildren
 CONSOLE MESSAGE: line 151: interface WritableStream
 CONSOLE MESSAGE: line 151:     getter locked
 CONSOLE MESSAGE: line 151:     method abort

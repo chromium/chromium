@@ -16,6 +16,8 @@
 
 namespace aura {
 
+class TestWindowTreeDelegate;
+
 enum class WindowTreeChangeType {
   ADD_TRANSIENT,
   BOUNDS,
@@ -49,6 +51,8 @@ class TestWindowTree : public ws::mojom::WindowTree {
   ~TestWindowTree() override;
 
   void set_client(ws::mojom::WindowTreeClient* client) { client_ = client; }
+
+  void set_delegate(TestWindowTreeDelegate* delegate) { delegate_ = delegate; }
 
   uint32_t window_id() const { return window_id_; }
 
@@ -115,6 +119,16 @@ class TestWindowTree : public ws::mojom::WindowTree {
 
   const gfx::Rect& last_set_window_bounds() const {
     return last_set_window_bounds_;
+  }
+
+  ws::Id last_not_cancelled_window_id() const {
+    return last_not_cancelled_window_id_;
+  }
+  ws::Id last_cancelled_window_id() const { return last_cancelled_window_id_; }
+  ws::Id last_transfer_current() const { return last_transfer_current_; }
+  ws::Id last_transfer_new() const { return last_transfer_new_; }
+  bool last_transfer_should_cancel() const {
+    return last_transfer_should_cancel_;
   }
 
  private:
@@ -187,8 +201,8 @@ class TestWindowTree : public ws::mojom::WindowTree {
   void GetWindowTree(ws::Id window_id, GetWindowTreeCallback callback) override;
   void SetCapture(uint32_t change_id, ws::Id window_id) override;
   void ReleaseCapture(uint32_t change_id, ws::Id window_id) override;
-  void StartPointerWatcher(bool want_moves) override;
-  void StopPointerWatcher() override;
+  void ObserveEventTypes(
+      const std::vector<ui::mojom::EventType>& types) override;
   void Embed(ws::Id window_id,
              ws::mojom::WindowTreeClientPtr client,
              uint32_t flags,
@@ -202,6 +216,9 @@ class TestWindowTree : public ws::mojom::WindowTree {
   void ScheduleEmbedForExistingClient(
       ws::ClientSpecificId window_id,
       ScheduleEmbedForExistingClientCallback callback) override;
+  void AttachFrameSinkId(uint64_t window_id,
+                         const viz::FrameSinkId& frame_sink_id) override;
+  void UnattachFrameSinkId(uint64_t window_id) override;
   void SetFocus(uint32_t change_id, ws::Id window_id) override;
   void SetCanFocus(ws::Id window_id, bool can_focus) override;
   void SetEventTargetingPolicy(ws::Id window_id,
@@ -244,6 +261,14 @@ class TestWindowTree : public ws::mojom::WindowTree {
   void ObserveTopmostWindow(ws::mojom::MoveLoopSource source,
                             ws::Id window_id) override;
   void StopObservingTopmostWindow() override;
+  void CancelActiveTouchesExcept(ws::Id not_cancelled_window_id) override;
+  void CancelActiveTouches(ws::Id window_id) override;
+  void TransferGestureEventsTo(ws::Id current_id,
+                               ws::Id new_id,
+                               bool should_cancel) override;
+  void TrackOcclusionState(ws::Id window_id) override;
+  void PauseWindowOcclusionTracking() override;
+  void UnpauseWindowOcclusionTracking() override;
 
   struct AckedEvent {
     uint32_t event_id;
@@ -256,7 +281,7 @@ class TestWindowTree : public ws::mojom::WindowTree {
 
   std::vector<Change> changes_;
 
-  ws::mojom::WindowTreeClient* client_;
+  ws::mojom::WindowTreeClient* client_ = nullptr;
 
   base::Optional<base::flat_map<std::string, std::vector<uint8_t>>>
       last_new_window_properties_;
@@ -272,8 +297,16 @@ class TestWindowTree : public ws::mojom::WindowTree {
 
   gfx::Rect last_set_window_bounds_;
 
+  ws::Id last_not_cancelled_window_id_ = 0u;
+  ws::Id last_cancelled_window_id_ = 0u;
+  ws::Id last_transfer_current_ = 0u;
+  ws::Id last_transfer_new_ = 0u;
+  bool last_transfer_should_cancel_ = false;
+
   // Support only one scheduled embed in test.
   base::UnguessableToken scheduled_embed_;
+
+  TestWindowTreeDelegate* delegate_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestWindowTree);
 };

@@ -11,6 +11,7 @@
 #include "base/test/scoped_command_line.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/scheduler/browser_task_executor.h"
+#include "content/browser/startup_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
@@ -22,14 +23,17 @@ namespace content {
 // the number of cores in its foreground pool.
 TEST(BrowserMainLoopTest, CreateThreadsInSingleProcess) {
   {
-    base::TaskScheduler::Create("Browser");
-    BrowserTaskExecutor::Create();
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitch(
         switches::kSingleProcess);
+    base::TaskScheduler::Create("Browser");
+    StartBrowserTaskScheduler();
+    BrowserTaskExecutor::Create();
     MainFunctionParams main_function_params(
         *scoped_command_line.GetProcessCommandLine());
-    BrowserMainLoop browser_main_loop(main_function_params);
+    BrowserMainLoop browser_main_loop(
+        main_function_params,
+        std::make_unique<base::TaskScheduler::ScopedExecutionFence>());
     browser_main_loop.MainMessageLoopStart();
     browser_main_loop.Init();
     browser_main_loop.CreateThreads();

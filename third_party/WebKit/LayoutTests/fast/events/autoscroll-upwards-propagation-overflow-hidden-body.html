@@ -14,32 +14,27 @@
     width: 100px;
   }
 </style>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script type="text/javascript">
   var scrollTopBefore;
   var maxScrollLeft;
 
-  setPrintTestResultsLazily();
-  jsTestIsAsync = true;
-  description("This test ensures that if an autoscroll starts from within a " +
+  const testCase = async_test(
+    "If an autoscroll starts from within a " +
     "scrollable div, it does not propagate to its non-scrollable document " +
     "body. Furthermore, it tests that if the body has only one of overflowX " +
     "or overflowY set to hidden, the scrollable axis actually scrolls. Note " +
     "that this test is pertaining to crbug.com/531525.");
 
-  function finishTest() {
+  const finishTest = testCase.step_func_done(() => {
     eventSender.mouseUp();
     // Because only overflowY:hidden is set, horizontal scroll should happen and
     // vertical scroll shouldn't.
-    if (document.scrollingElement.scrollTop == scrollTopBefore && document.scrollingElement.scrollLeft == maxScrollLeft) {
-      testPassed("Document didn't scroll.");
-    } else {
-      testFailed("Document scrolled although overflow:hidden.");
-      testFailed(document.scrollingElement.scrollTop + " " + scrollTopBefore + " " + document.scrollingElement.scrollLeft + " " + maxScrollLeft);
-    }
+    assert_equals(document.scrollingElement.scrollTop, scrollTopBefore);
+    assert_equals(document.scrollingElement.scrollLeft, maxScrollLeft);
     document.getElementById('text-wrapper').style.display = 'none';
-    finishJSTest();
-  }
+  });
 
   window.onload = function () {
     scrollTopBefore = document.scrollingElement.scrollTop;

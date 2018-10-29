@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/render_text.h"
@@ -42,8 +43,8 @@ constexpr SkColor kMatchedTextColor = SkColorSetARGB(0xDE, 0x00, 0x00, 0x00);
 constexpr SkColor kDefaultTextColor = SkColorSetARGB(0x8A, 0x00, 0x00, 0x00);
 // URL color.
 constexpr SkColor kUrlColor = SkColorSetARGB(0xFF, 0x33, 0x67, 0xD6);
-// Row selected color, #000 8%.
-constexpr SkColor kRowHighlightedColor = SkColorSetARGB(0x14, 0x00, 0x00, 0x00);
+// Row selected color, Google Grey 8%.
+constexpr SkColor kRowHighlightedColor = SkColorSetA(gfx::kGoogleGrey900, 0x14);
 // Search result border color.
 constexpr SkColor kResultBorderColor = SkColorSetARGB(0xFF, 0xE5, 0xE5, 0xE5);
 
@@ -62,13 +63,16 @@ SearchResultView::SearchResultView(SearchResultListView* list_view,
     : list_view_(list_view),
       view_delegate_(view_delegate),
       icon_(new views::ImageView),
+      badge_icon_(new views::ImageView),
       actions_view_(new SearchResultActionsView(this)),
       progress_bar_(new views::ProgressBar),
       weak_ptr_factory_(this) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   icon_->set_can_process_events_within_subtree(false);
+  badge_icon_->set_can_process_events_within_subtree(false);
 
   AddChildView(icon_);
+  AddChildView(badge_icon_);
   AddChildView(actions_view_);
   AddChildView(progress_bar_);
   set_context_menu_controller(this);
@@ -205,6 +209,17 @@ void SearchResultView::Layout() {
   icon_bounds.Intersect(rect);
   icon_->SetBoundsRect(icon_bounds);
 
+  gfx::Rect badge_icon_bounds;
+
+  const int badge_icon_dimension =
+      AppListConfig::instance().search_list_badge_icon_dimension();
+  badge_icon_bounds = gfx::Rect(icon_bounds.right() - badge_icon_dimension / 2,
+                                icon_bounds.bottom() - badge_icon_dimension / 2,
+                                badge_icon_dimension, badge_icon_dimension);
+
+  badge_icon_bounds.Intersect(rect);
+  badge_icon_->SetBoundsRect(badge_icon_bounds);
+
   const int max_actions_width =
       (rect.right() - kActionButtonRightMargin - icon_bounds.right()) / 2;
   int actions_width =
@@ -337,6 +352,17 @@ void SearchResultView::OnMetadataChanged() {
   if (!icon.isNull())
     SetIconImage(icon, icon_,
                  AppListConfig::instance().search_list_icon_dimension());
+
+  // Updates |badge_icon_|.
+  const gfx::ImageSkia badge_icon(result_ ? result_->badge_icon()
+                                          : gfx::ImageSkia());
+  if (badge_icon.isNull()) {
+    badge_icon_->SetVisible(false);
+  } else {
+    SetIconImage(badge_icon, badge_icon_,
+                 AppListConfig::instance().search_list_badge_icon_dimension());
+    badge_icon_->SetVisible(true);
+  }
 
   // Updates |actions_view_|.
   actions_view_->SetActions(result_ ? result_->actions()

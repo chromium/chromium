@@ -76,8 +76,8 @@
     // astral symbol (U+1D306 TETRAGRAM FOR CENTRE)
     shouldBeEqualToString("CSS.escape('\uD834\uDF06')", "\uD834\uDF06");
     // lone surrogates
-    shouldBeEqualToString("CSS.escape('\uDF06')", '\uDF06');
-    shouldBeEqualToString("CSS.escape('\uD834')", '\uD834');
+    shouldBeTrue("CSS.escape('\uDF06') === '\uDF06'");
+    shouldBeTrue("CSS.escape('\uD834') === '\uD834'");
 </script>
 </body>
 </html>

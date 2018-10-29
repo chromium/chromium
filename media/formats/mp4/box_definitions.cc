@@ -521,8 +521,7 @@ bool EditList::Parse(BoxReader* reader) {
   RCHECK(count <= edits.max_size());
   edits.resize(count);
 
-  for (std::vector<EditListEntry>::iterator edit = edits.begin();
-       edit != edits.end(); ++edit) {
+  for (auto edit = edits.begin(); edit != edits.end(); ++edit) {
     if (reader->version() == 1) {
       RCHECK(reader->Read8(&edit->segment_duration) &&
              reader->Read8s(&edit->media_time));
@@ -1519,15 +1518,18 @@ bool TrackFragmentRun::Parse(BoxReader* reader) {
     sample_composition_time_offsets.resize(sample_count);
   }
 
-  for (uint32_t i = 0; i < sample_count; ++i) {
-    if (sample_duration_present)
-      RCHECK(reader->Read4(&sample_durations[i]));
-    if (sample_size_present)
-      RCHECK(reader->Read4(&sample_sizes[i]));
-    if (sample_flags_present)
-      RCHECK(reader->Read4(&sample_flags[i]));
-    if (sample_composition_time_offsets_present)
-      RCHECK(reader->Read4s(&sample_composition_time_offsets[i]));
+  if (sample_duration_present || sample_size_present || sample_flags_present ||
+      sample_composition_time_offsets_present) {
+    for (uint32_t i = 0; i < sample_count; ++i) {
+      if (sample_duration_present)
+        RCHECK(reader->Read4(&sample_durations[i]));
+      if (sample_size_present)
+        RCHECK(reader->Read4(&sample_sizes[i]));
+      if (sample_flags_present)
+        RCHECK(reader->Read4(&sample_flags[i]));
+      if (sample_composition_time_offsets_present)
+        RCHECK(reader->Read4s(&sample_composition_time_offsets[i]));
+    }
   }
 
   if (first_sample_flags_present) {

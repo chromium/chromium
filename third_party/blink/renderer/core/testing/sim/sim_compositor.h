@@ -11,6 +11,7 @@
 #include "content/test/stub_layer_tree_view_delegate.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_canvas.h"
+#include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 
 namespace blink {
 
@@ -27,17 +28,18 @@ class WebViewImpl;
 // Note: This also does not support compositor driven animations.
 class SimCompositor final : public content::StubLayerTreeViewDelegate {
  public:
-  explicit SimCompositor();
+  SimCompositor();
   ~SimCompositor() override;
 
   // This compositor should be given to the WebViewImpl passed to SetWebView.
   content::LayerTreeView& layer_tree_view() { return *layer_tree_view_; }
 
   // When the compositor asks for a main frame, this WebViewImpl will have its
-  // lifecycle updated and be painted. The compositor() should have also been
-  // given to the WebViewImpl so that its using the same compositor() for its
-  // layer tree.
-  void SetWebView(WebViewImpl&);
+  // lifecycle updated and be painted. The WebLayerTreeView that is being used
+  // to composite the WebViewImpl is passed separately as the underlying
+  // content::LayerTreeView type, in order to bypass the Web* API surface
+  // provided to blink.
+  void SetWebView(WebViewImpl&, content::LayerTreeView&);
 
   // Executes the BeginMainFrame processing steps, an approximation of what
   // cc::ThreadProxy::BeginMainFrame would do.
@@ -75,8 +77,11 @@ class SimCompositor final : public content::StubLayerTreeViewDelegate {
     return layer_tree_view_->layer_tree_host()->background_color();
   }
 
+  base::TimeTicks LastFrameTime() const { return last_frame_time_; }
+
  private:
   // content::LayerTreeViewDelegate implementation.
+  void ApplyViewportChanges(const ApplyViewportChangesArgs& args) override;
   void RequestNewLayerTreeFrameSink(
       LayerTreeFrameSinkCallback callback) override;
   void BeginMainFrame(base::TimeTicks frame_time) override;
@@ -89,7 +94,6 @@ class SimCompositor final : public content::StubLayerTreeViewDelegate {
   SimCanvas::Commands* paint_commands_;
 
   content::LayerTreeView* layer_tree_view_ = nullptr;
-  FrameTestHelpers::LayerTreeViewFactory layer_tree_view_factory_;
 
   std::unique_ptr<cc::ScopedDeferCommits> scoped_defer_commits_;
 };

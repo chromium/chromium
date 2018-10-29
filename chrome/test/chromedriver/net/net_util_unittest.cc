@@ -18,6 +18,7 @@
 #include "base/test/scoped_task_environment.h"
 #include "base/threading/thread.h"
 #include "chrome/test/chromedriver/net/url_request_context_getter.h"
+#include "mojo/core/embedder/embedder.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
@@ -26,6 +27,8 @@
 #include "net/socket/tcp_server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/transitional_url_loader_factory_owner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -40,12 +43,19 @@ class FetchUrlTest : public testing::Test,
             base::test::ScopedTaskEnvironment::MainThreadType::IO) {
     base::Thread::Options options(base::MessageLoop::TYPE_IO, 0);
     CHECK(io_thread_.StartWithOptions(options));
-    context_getter_ = new URLRequestContextGetter(io_thread_.task_runner());
+    scoped_refptr<URLRequestContextGetter> context_getter =
+        new URLRequestContextGetter(io_thread_.task_runner());
+    url_loader_factory_owner_ =
+        std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
+            context_getter);
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
     io_thread_.task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&FetchUrlTest::InitOnIO,
                                   base::Unretained(this), &event));
+
+    mojo::core::Init();
+
     event.Wait();
   }
 
@@ -95,6 +105,12 @@ class FetchUrlTest : public testing::Test,
     }
   }
 
+  bool DoFetchURL(const std::string& server_url, std::string* response) {
+    return FetchUrl(server_url,
+                    url_loader_factory_owner_->GetURLLoaderFactory().get(),
+                    response);
+  }
+
   void OnWebSocketRequest(int connection_id,
                           const net::HttpServerRequestInfo& info) override {}
   void OnWebSocketMessage(int connection_id, const std::string& data) override {
@@ -111,7 +127,8 @@ class FetchUrlTest : public testing::Test,
   base::Thread io_thread_;
   ServerResponse response_;
   std::unique_ptr<net::HttpServer> server_;
-  scoped_refptr<URLRequestContextGetter> context_getter_;
+  std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
+      url_loader_factory_owner_;
   std::string server_url_;
   base::test::ScopedTaskEnvironment scoped_task_environment_;
 };
@@ -120,27 +137,26 @@ class FetchUrlTest : public testing::Test,
 
 TEST_F(FetchUrlTest, Http200) {
   std::string response("stuff");
-  ASSERT_TRUE(FetchUrl(server_url_, context_getter_.get(), &response));
+  ASSERT_TRUE(DoFetchURL(server_url_, &response));
   ASSERT_STREQ("hello", response.c_str());
 }
 
 TEST_F(FetchUrlTest, HttpNon200) {
   response_ = kSend404;
   std::string response("stuff");
-  ASSERT_FALSE(FetchUrl(server_url_, context_getter_.get(), &response));
+  ASSERT_FALSE(DoFetchURL(server_url_, &response));
   ASSERT_STREQ("stuff", response.c_str());
 }
 
 TEST_F(FetchUrlTest, ConnectionClose) {
   response_ = kClose;
   std::string response("stuff");
-  ASSERT_FALSE(FetchUrl(server_url_, context_getter_.get(), &response));
+  ASSERT_FALSE(DoFetchURL(server_url_, &response));
   ASSERT_STREQ("stuff", response.c_str());
 }
 
 TEST_F(FetchUrlTest, NoServer) {
   std::string response("stuff");
-  ASSERT_FALSE(
-      FetchUrl("http://localhost:33333", context_getter_.get(), &response));
+  ASSERT_FALSE(DoFetchURL("http://localhost:33333", &response));
   ASSERT_STREQ("stuff", response.c_str());
 }

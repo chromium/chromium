@@ -2,7 +2,6 @@ Test FontFace constructor with invalid parameters
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS faceWithWrongSrc.status is "error"
 PASS rejectionValue.name is "SyntaxError"
 PASS faceWithWrongDescriptors.status is "error"

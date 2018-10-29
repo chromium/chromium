@@ -116,8 +116,7 @@ void SharedWorkerRepositoryClientImpl::Connect(
 
   // No nested workers (for now) - connect() should only be called from document
   // context.
-  DCHECK(worker->GetExecutionContext()->IsDocument());
-  Document* document = ToDocument(worker->GetExecutionContext());
+  Document* document = To<Document>(worker->GetExecutionContext());
 
   // TODO(estark): this is broken, as it only uses the first header
   // when multiple might have been sent. Fix by making the

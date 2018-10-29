@@ -17,7 +17,7 @@ async_test(function(t) {
 
     video.oncanplaythrough = t.step_func_done(function() {
         // Find the play button and click the middle of its bounding box.
-        var playCoords = mediaControlsButtonCoordinates(video, "overlay-play-button");
+        var playCoords = elementCoordinates(enabledPlayButton(video));
         eventSender.mouseMoveTo(playCoords[0], playCoords[1]);
         eventSender.mouseDown();
         eventSender.mouseUp();

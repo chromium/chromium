@@ -310,8 +310,7 @@ void FlashDOMHandler::MaybeRespondToPage() {
     std::vector<UploadList::UploadInfo> crashes;
     upload_list_->GetUploads(10, &crashes);
 
-    for (std::vector<UploadList::UploadInfo>::iterator i = crashes.begin();
-         i != crashes.end(); ++i) {
+    for (auto i = crashes.begin(); i != crashes.end(); ++i) {
       base::string16 crash_string(ASCIIToUTF16(i->upload_id));
       crash_string += ASCIIToUTF16(" ");
       crash_string += base::TimeFormatFriendlyDateAndTime(i->upload_time);

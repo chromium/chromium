@@ -82,8 +82,7 @@ bool SelectionRequestor::PerformBlockingConvertSelection(
     ConvertSelectionForCurrentRequest();
   BlockTillSelectionNotifyForRequest(&request);
 
-  std::vector<Request*>::iterator request_it = std::find(
-      requests_.begin(), requests_.end(), &request);
+  auto request_it = std::find(requests_.begin(), requests_.end(), &request);
   CHECK(request_it != requests_.end());
   if (static_cast<int>(current_request_index_) >
       request_it - requests_.begin()) {
@@ -116,8 +115,7 @@ void SelectionRequestor::PerformBlockingConvertSelectionWithParameter(
 SelectionData SelectionRequestor::RequestAndWaitForTypes(
     XAtom selection,
     const std::vector<XAtom>& types) {
-  for (std::vector<XAtom>::const_iterator it = types.begin();
-       it != types.end(); ++it) {
+  for (auto it = types.begin(); it != types.end(); ++it) {
     scoped_refptr<base::RefCountedMemory> data;
     XAtom type = x11::None;
     if (PerformBlockingConvertSelection(selection,

@@ -6,6 +6,7 @@
 #define CONTENT_COMMON_VISUAL_PROPERTIES_H_
 
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
 #include "content/public/common/screen_info.h"
@@ -58,6 +59,9 @@ struct CONTENT_EXPORT VisualProperties {
 
   // The local surface ID to use (if valid).
   base::Optional<viz::LocalSurfaceId> local_surface_id;
+
+  // The time at which |local_surface_id| was allocated.
+  base::Optional<base::TimeTicks> local_surface_id_allocation_time;
 
   // The size of the visible viewport, which may be smaller than the view if the
   // view is partially occluded (e.g. by a virtual keyboard).  The size is in

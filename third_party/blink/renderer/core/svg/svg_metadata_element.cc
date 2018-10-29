@@ -25,7 +25,7 @@
 namespace blink {
 
 inline SVGMetadataElement::SVGMetadataElement(Document& document)
-    : SVGElement(SVGNames::metadataTag, document) {}
+    : SVGElement(svg_names::kMetadataTag, document) {}
 
 DEFINE_NODE_FACTORY(SVGMetadataElement)
 }

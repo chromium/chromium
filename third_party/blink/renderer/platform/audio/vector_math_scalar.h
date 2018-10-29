@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
-namespace VectorMath {
+namespace vector_math {
 namespace Scalar {
 
 static ALWAYS_INLINE void Conv(const float* source_p,
@@ -427,7 +427,7 @@ static ALWAYS_INLINE void Zvmul(const float* real1p,
 }
 
 }  // namespace Scalar
-}  // namespace VectorMath
+}  // namespace vector_math
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_VECTOR_MATH_SCALAR_H_

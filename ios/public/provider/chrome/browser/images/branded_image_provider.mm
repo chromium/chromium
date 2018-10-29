@@ -46,3 +46,7 @@ UIImage* BrandedImageProvider::GetWhatsNewIconImage(WhatsNewIcon type) {
 UIImage* BrandedImageProvider::GetDownloadGoogleDriveImage() {
   return nil;
 }
+
+UIImage* BrandedImageProvider::GetToolbarSearchIcon(SearchEngineIcon type) {
+  return [UIImage imageNamed:@"toolbar_search"];
+}

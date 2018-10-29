@@ -108,9 +108,7 @@ class AutofillProfileSyncableService
 
   // For unit tests.
   AutofillProfileSyncableService();
-  void set_sync_processor(syncer::SyncChangeProcessor* sync_processor) {
-    sync_processor_.reset(sync_processor);
-  }
+  void set_sync_processor(syncer::SyncChangeProcessor* sync_processor);
 
   // Creates syncer::SyncData based on supplied |profile|.
   // Exposed for unit tests.

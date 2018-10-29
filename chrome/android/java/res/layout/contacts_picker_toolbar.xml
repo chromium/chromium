@@ -7,6 +7,7 @@
 
 <org.chromium.chrome.browser.contacts_picker.ContactsPickerToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:paddingEnd="10dp"
-            android:src="@drawable/ic_select_all"
+            app:srcCompat="@drawable/ic_select_all"
             tools:ignore="ContentDescription" />
 
         <ImageView
@@ -36,12 +37,12 @@
             android:background="@drawable/ic_search"
             android:contentDescription="@string/search" />
 
-        <Button
+        <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
             android:text="@string/done"
-            style="@style/MainButtonStyle" />
+            style="@style/TextButton" />
     </LinearLayout>
 </org.chromium.chrome.browser.contacts_picker.ContactsPickerToolbar>

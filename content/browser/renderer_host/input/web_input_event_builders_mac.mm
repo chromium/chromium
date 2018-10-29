@@ -550,6 +550,7 @@ blink::WebGestureEvent WebGestureEventBuilder::Build(NSEvent* event,
       // because the gesture type already encodes that information.
       result.SetType(blink::WebInputEvent::kGestureDoubleTap);
       result.data.tap.tap_count = 1;
+      result.SetNeedsWheelEvent(true);
       break;
     case NSEventTypeBeginGesture:
     case NSEventTypeEndGesture:

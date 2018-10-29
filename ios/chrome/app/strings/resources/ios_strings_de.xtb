@@ -19,6 +19,7 @@
 <translation id="1201530049782216880">Neuer Inkognito-Tab</translation>
 <translation id="1209206284964581585">Vorerst ausblenden</translation>
 <translation id="1219674500290482172">Internetverbindung kann nicht hergestellt werden.</translation>
+<translation id="122699739164161391">Alle Tabs schließen</translation>
 <translation id="1254117744268754948">Ordner wählen</translation>
 <translation id="1265739287306757398">Weitere Informationen</translation>
 <translation id="127138278192656016">Synchronisierung und alle Dienste nutzen</translation>
@@ -79,6 +80,7 @@
 <translation id="2149973817440762519">Lesezeichen bearbeiten</translation>
 <translation id="2207590065820824892"><ph name="UNREAD_COUNT" /> ungelesene Artikel in Leseliste.</translation>
 <translation id="2230173723195178503">Webseite geladen</translation>
+<translation id="2239626343334228536">Browserdaten werden gelöscht…</translation>
 <translation id="2256128224215992540">Vorschläge für Suche &amp; Websites</translation>
 <translation id="2267753748892043616">Konto hinzufügen</translation>
 <translation id="2273327106802955778">Menü "Mehr"</translation>
@@ -86,6 +88,7 @@
 <translation id="2339560363438331454">Synchronisierung und Google-Dienste</translation>
 <translation id="2351097562818989364">Übersetzungseinstellungen zurückgesetzt</translation>
 <translation id="2359808026110333948">Weiter</translation>
+<translation id="2360196772093551345">Mobile Version anfordern</translation>
 <translation id="2381405137052800939">Grundeinstellungen</translation>
 <translation id="2386793615875593361">1 ausgewählt</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
@@ -95,7 +98,6 @@
 <translation id="2529021024822217800">Alle öffnen</translation>
 <translation id="2572712655377361602">Eine Geräterichtlinie hat den Zugriff auf Ihre Fotos blockiert</translation>
 <translation id="2584132361465095047">Konto hinzufügen...</translation>
-<translation id="2593774076813182497">Drucken der Seite nicht möglich</translation>
 <translation id="2625189173221582860">Passwort kopiert</translation>
 <translation id="2648803196158606475">Gelesene löschen</translation>
 <translation id="2653659639078652383">Senden</translation>
@@ -111,14 +113,13 @@
 <translation id="2780046210906776326">Keine E-Mail-Konten vorhanden</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Tab-Wechsler beenden</translation>
-<translation id="283291358677939992">Auf Seite suchen...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Übersetzungseinstellungen zurücksetzen</translation>
 <translation id="285960592395650245">Download wiederholen</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2871695793448672541">Ausgeblendetes Passwort</translation>
+<translation id="288655811176831528">Tab schließen</translation>
 <translation id="2898963176829412617">Neuer Ordner…</translation>
-<translation id="2909437209446960244">Letzte Tabs</translation>
 <translation id="2916171785467530738">Suchanfragen und URLs automatisch vervollständigen</translation>
 <translation id="291754862089661335">Positionieren Sie den QR-Code oder Barcode in diesem Bereich</translation>
 <translation id="2921219216347069551">Seite kann nicht geteilt werden</translation>
@@ -130,9 +131,7 @@
 <translation id="3024255823539804759">Für den letzten Tag</translation>
 <translation id="3037605927509011580">Oh nein!</translation>
 <translation id="3112556859945124369">Markieren…</translation>
-<translation id="3151924044251363314">Nur Personen mit Ihrer Passphrase können Ihre verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls Sie sie vergessen oder diese Einstellung ändern möchten, müssen Sie die Synchronisierung zurücksetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3157684681743766797">Alle markieren…</translation>
-<translation id="3172213052701798825">Google Smart Lock für Passwörter</translation>
 <translation id="3175081911749765310">Webdienste</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3210163015918861891">Synchronisierung ist deaktiviert.</translation>
@@ -149,6 +148,7 @@
 <translation id="3393920035788932672">Pop-ups erlaubt</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> Min.</translation>
 <translation id="3448016392200048164">Geteilte Ansicht</translation>
+<translation id="345565170154308620">Passwörter verwalten…</translation>
 <translation id="3469166899695866866">Download beenden?</translation>
 <translation id="3470502288861289375">Wird kopiert...</translation>
 <translation id="3474624961160222204">Als "<ph name="NAME" />" fortfahren</translation>
@@ -159,14 +159,14 @@
 <translation id="3494788280727468875">Löschen der Browserdaten bestätigen</translation>
 <translation id="3519193562722059437">Öffnet einen Tab zum Surfen im Web</translation>
 <translation id="3527085408025491307">Ordner</translation>
+<translation id="3533202363250687977">Alle Inkognito-Tabs schließen</translation>
+<translation id="3533436815740441613">Neuer Tab</translation>
 <translation id="3551320343578183772">Tab schließen</translation>
-<translation id="3567664240939803299">Soll Google Smart Lock Ihr Passwort für diese Website speichern?</translation>
 <translation id="3588820906588687999">Bild in neuem Tab öffnen</translation>
 <translation id="3603009562372709545">Link-URL kopieren</translation>
 <translation id="3607167657931203000">AutoFill-Daten</translation>
 <translation id="360930808415985584">Funktionen wie Synchronisierung und Personalisierung verwalten</translation>
 <translation id="3609785682760573515">Synchronisieren...</translation>
-<translation id="3628119975092896051">Ihre Leseliste ist offline verfügbar. Um Ihrer Leseliste eine Seite hinzuzufügen, tippen Sie auf <ph name="SHARE_OPENING_ICON" />.</translation>
 <translation id="3638472932233958418">Webseiten vorabladen</translation>
 <translation id="3691593122358196899">Als Lesezeichen in "<ph name="FOLDER_TITLE" />" gespeichert</translation>
 <translation id="3765471630796399471">Anderes Passwort verwenden</translation>
@@ -179,10 +179,11 @@
 <translation id="3915450441834151894">Websiteinformationen</translation>
 <translation id="3928666092801078803">Daten zusammenführen</translation>
 <translation id="3950820424414687140">Anmelden</translation>
-<translation id="3963231839620026525">Neuer Inkognito-Tab</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3989635538409502728">Abmelden</translation>
+<translation id="3995521777587992544">Statusanzeige für den Seitenaufbau, <ph name="EMAIL" /> geladen.</translation>
 <translation id="4002066346123236978">Titel</translation>
+<translation id="4004204301268239848">Passwörter werden in Ihrem Google-Konto gespeichert, sodass Sie sie auf jedem Gerät verwenden können.</translation>
 <translation id="4038354071007134711">Keine App zum Öffnen der Datei auf diesem Gerät</translation>
 <translation id="4042870976416480368">Auf Seite suchen</translation>
 <translation id="4049507953662678203">Überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es noch einmal.</translation>
@@ -208,6 +209,7 @@
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="441868831736628555">Datenschutzhinweise</translation>
 <translation id="4460091562821778167">Immer nachfragen, welche App verwendet werden soll</translation>
+<translation id="4476574785019001431">Einstellungen</translation>
 <translation id="4496373720959965247">Tabs hinzufügen und zwischen Seiten wechseln</translation>
 <translation id="4508750114462689118">Anmeldeangebot schließen</translation>
 <translation id="4526249700380860531">Unter <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> gespeicherte Passwörter aufrufen und verwalten</translation>
@@ -223,11 +225,16 @@
 
 Ihre Daten sind mit Ihrer Synchronisierungspassphrase verschlüsselt. Geben Sie diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
+<translation id="4747097190499141774">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay. Nur Personen mit Ihrer Passphrase können Ihre verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls Sie sie vergessen oder diese Einstellung ändern möchten, müssen Sie die Synchronisierung zurücksetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="4749030437873592350">Auf Seite suchen…</translation>
+<translation id="4751645464639803239">Neuer Inkognito-Tab</translation>
+<translation id="4802417911091824046">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay.
+
+Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie die Synchronisierung zurück<ph name="END_LINK" /></translation>
 <translation id="4807020197310989387">1 ungelesener Artikel in Leseliste.</translation>
 <translation id="481968316161811770">Cookies, Websitedaten</translation>
 <translation id="4854345657858711387">Passcode einrichten</translation>
 <translation id="4860895144060829044">Anrufen</translation>
-<translation id="4875622588773761625">Soll <ph name="PASSWORD_MANAGER_BRAND" /> Ihr Passwort für diese Website aktualisieren?</translation>
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="4882831918239250449">Legen Sie fest, wie Ihr Browserverlauf zur Personalisierung verwendet wird, z. B. bei der Suche und bei Werbung</translation>
 <translation id="4904877109095351937">Als gelesen markieren</translation>
@@ -242,7 +249,6 @@ Ihre Daten sind mit Ihrer Synchronisierungspassphrase verschlüsselt. Geben Sie 
 <translation id="5062321486222145940">Google Drive installieren</translation>
 <translation id="5083464117946352670">Fehler bei Bestimmung der Dateigröße</translation>
 <translation id="5094827893301452931">Tweet gepostet</translation>
-<translation id="5173593619615111996">Alle Inkognito-Tabs schließen</translation>
 <translation id="5181140330217080051">Download wird ausgeführt...</translation>
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5190835502935405962">Lesezeichenleiste</translation>
@@ -263,6 +269,7 @@ Ihre Daten sind mit Ihrer Synchronisierungspassphrase verschlüsselt. Geben Sie 
 Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein und Ihre Geräte müssen dasselbe iCloud-Konto verwenden.</translation>
 <translation id="5554368826343982379">Synchronisieren und personalisieren</translation>
 <translation id="5556459405103347317">Neu laden</translation>
+<translation id="5614553682702429503">Passwort speichern?</translation>
 <translation id="5619279135193775234">Mail</translation>
 <translation id="5626245204502895507">Die Datei kann momentan nicht heruntergeladen werden.</translation>
 <translation id="5659593005791499971">E-Mail-Adresse</translation>
@@ -294,7 +301,6 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="6012140227487808125">Wird verschlüsselt…</translation>
 <translation id="6021332621416007159">Öffnen in...</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
-<translation id="6039694632319341016">Soll <ph name="PASSWORD_MANAGER_BRAND" /> Ihr Passwort für <ph name="USERNAME" /> für diese Website aktualisieren?</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6042308850641462728">Mehr</translation>
 <translation id="605721222689873409">JJ</translation>
@@ -302,7 +308,6 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="6122191549521593678">Online</translation>
 <translation id="6127379762771434464">Eintrag entfernt</translation>
 <translation id="6136914049981179737">Vor Sek.</translation>
-<translation id="6158823227857319455">Neuer Tab</translation>
 <translation id="616831107264507309">Später lesen</translation>
 <translation id="6184086493125982861">Tabs anzeigen</translation>
 <translation id="6187302354554850004">Letzte Synchr.: <ph name="LAST_USED_TIME" /></translation>
@@ -338,9 +343,9 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="6656103420185847513">Ordner bearbeiten</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="667999046851023355">Dokument</translation>
+<translation id="6709334795756764830">Lesezeichen bearbeiten</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Passwörter können nicht exportiert werden</translation>
-<translation id="6762156594045689028">Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie die Synchronisierung zurück<ph name="END_LINK" /></translation>
 <translation id="6780034285637185932">Postleitzahl</translation>
 <translation id="6785453220513215166">Absturzbericht wird gesendet…</translation>
 <translation id="679325081238418596">Rufen Sie Ihre Lesezeichen, Ihren Verlauf, Ihre Passwörter und andere Einstellungen auf allen Ihren Geräten ab</translation>
@@ -348,6 +353,7 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="6807889908376551050">Alle anzeigen...</translation>
 <translation id="681368974849482173">Element erstellt</translation>
 <translation id="685040365210406336">Keine Änderungen vornehmen</translation>
+<translation id="6851516051005285358">Desktop-Version</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6903907808598579934">Synchronisierung aktivieren</translation>
 <translation id="6914783257214138813">Ihre Passwörter sind für jeden zugänglich, der die exportierte Passwortdatei aufrufen kann.</translation>
@@ -361,6 +367,7 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="7031882061095297553">Synchronisieren mit</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7062545763355031412">Akzeptieren und Konto wechseln</translation>
+<translation id="7099761977003084116">Letzte Tabs</translation>
 <translation id="7102005569666697658">Wird heruntergeladen… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ausblenden</translation>
 <translation id="7133798577887235672">Voller Name</translation>
@@ -376,6 +383,7 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="7291368939935408496">Passwörter werden zum Exportieren vorbereitet…</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % heruntergeladen</translation>
 <translation id="7346909386216857016">OK</translation>
+<translation id="7383797227493018512">Leseliste</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="741204030948306876">Ja, bitte</translation>
 <translation id="7425346204213733349">Änderungen an Ihren Lesezeichen, Ihrem Verlauf, Ihren Passwörtern und anderen Einstellungen werden nicht mehr mit Ihrem Google-Konto synchronisiert. Ihre vorhandenen Daten bleiben aber in Ihrem Google-Konto gespeichert.</translation>
@@ -393,7 +401,6 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synchronisierung funktioniert nicht</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
-<translation id="7649070708921625228">Hilfe</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="766891008101699113">Fügen Sie einen neuen Tab hinzu, um privat im Web zu surfen.</translation>
 <translation id="7671141431838911305">Installieren</translation>
@@ -420,7 +427,6 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="806745655614357130">Daten getrennt halten</translation>
 <translation id="8073670137947914548">Download abgeschlossen</translation>
 <translation id="8076014560081431679">Gespeicherte Website-Einstellungen werden nicht gelöscht und können möglicherweise Ihre Surfgewohnheiten wiedergeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="8080028325999236607">Alle Tabs schließen</translation>
 <translation id="8114753159095730575">Dateidownload verfügbar. Optionen stehen unten auf dem Bildschirm zur Verfügung.</translation>
 <translation id="8160722851663543621">Suchanfragen, die in die Adressleiste oder das Suchfeld eingegeben wurden, sowie einige Cookies werden an Ihre Standardsuchmaschine gesendet</translation>
 <translation id="8205564605687841303">Abbrechen</translation>
@@ -452,6 +458,7 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8741995161408053644">Möglicherweise sind in Ihrem Google-Konto noch andere Formen des Browserverlaufs unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> vorhanden.</translation>
+<translation id="8756969031206844760">Passwort aktualisieren?</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8840513115188359703">Sie werden nicht von Ihrem Google-Konto abgemeldet.</translation>
@@ -460,6 +467,7 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="8904976895050290827">Google Chrome Sync</translation>
 <translation id="895541991026785598">Problem melden</translation>
 <translation id="8971089644512329999">OK</translation>
+<translation id="8976382372951310360">Hilfe</translation>
 <translation id="8981454092730389528">Google-Aktivitätseinstellungen</translation>
 <translation id="8985320356172329008">In Google angemeldet als</translation>
 <translation id="902659348151742535">Mithilfe Ihres Browserverlaufs kann Google die Suche, Werbung und andere Google-Dienste personalisieren.</translation>
@@ -468,6 +476,7 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="9055772144595778347">Anmeldefehler</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="9079935439869366234">Alle als ungelesen markieren</translation>
+<translation id="9081058212938299310">Passwort für <ph name="USERNAME" /> aktualisieren?</translation>
 <translation id="9083392325882095631">1 Element</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>
@@ -476,7 +485,6 @@ Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase ve
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Absturzbericht wurde gesendet.</translation>
 <translation id="935490618240037774">Lesezeichen, Verlauf, Passwörter und andere Einstellungen werden mit Ihrem Google-Konto synchronisiert, damit Sie sie auf allen Ihren Geräten nutzen können.</translation>
-<translation id="939598580284253335">Passphrase eingeben</translation>
 <translation id="976982866697960176">Synchronisierte Daten verwalten...</translation>
 <translation id="988141524645182168">Andere Geräte</translation>
 <translation id="989988560359834682">Adresse bearbeiten</translation>

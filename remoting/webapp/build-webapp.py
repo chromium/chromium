@@ -25,6 +25,11 @@ import sys
 import time
 import zipfile
 
+sys.path.append(os.path.join(
+    os.path.dirname(__file__), os.pardir, os.pardir,
+    "build", "android", "gyp"))
+from util import build_utils
+
 # Update the module path, assuming that this script is in src/remoting/webapp,
 # and that the google_api_keys module is in src/google_apis. Note that
 # sys.path[0] refers to the directory containing this script.
@@ -44,18 +49,6 @@ def findAndReplace(filepath, findString, replaceString):
       for s in input:
         output.write(s.replace(findString, replaceString))
   os.remove(oldFilepath)
-
-
-def createZip(zip_path, directory):
-  """Creates a zipfile at zip_path for the given directory."""
-  zipfile_base = os.path.splitext(os.path.basename(zip_path))[0]
-  zip = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
-  for (root, dirs, files) in os.walk(directory):
-    for f in files:
-      full_path = os.path.join(root, f)
-      rel_path = os.path.relpath(full_path, directory)
-      zip.write(full_path, os.path.join(zipfile_base, rel_path))
-  zip.close()
 
 
 def replaceString(destination, placeholder, value):
@@ -344,7 +337,10 @@ def buildWebApp(buildtype, version, destination, zip_path,
                          context)
 
   # Make the zipfile.
-  createZip(zip_path, destination)
+  build_utils.ZipDir(
+    zip_path, destination,
+    compress_fn=lambda _: zipfile.ZIP_DEFLATED,
+    zip_prefix_path=os.path.splitext(os.path.basename(zip_path))[0])
 
   return 0
 

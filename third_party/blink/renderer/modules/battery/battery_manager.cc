@@ -22,7 +22,7 @@ BatteryManager* BatteryManager::Create(ExecutionContext* context) {
 BatteryManager::~BatteryManager() = default;
 
 BatteryManager::BatteryManager(ExecutionContext* context)
-    : PausableObject(context), PlatformEventController(ToDocument(context)) {}
+    : PausableObject(context), PlatformEventController(To<Document>(context)) {}
 
 ScriptPromise BatteryManager::StartRequest(ScriptState* script_state) {
   if (!battery_property_) {
@@ -68,7 +68,7 @@ void BatteryManager::DidUpdateData() {
     return;
   }
 
-  Document* document = ToDocument(GetExecutionContext());
+  Document* document = To<Document>(GetExecutionContext());
   DCHECK(document);
   if (document->IsContextPaused() || document->IsContextDestroyed())
     return;

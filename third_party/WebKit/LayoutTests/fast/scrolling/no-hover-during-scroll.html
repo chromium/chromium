@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+
+<style>
+  body, html {
+    margin: 0;
+  }
+  div {
+    height: 50px;
+    width: 100%;
+  }
+
+  .hoverme {
+    background-color: rgb(0, 0, 255);
+  }
+
+  .hoverme:hover {
+    background-color: rgb(255, 255, 0);
+  }
+
+  .message {
+    width: 100%;
+    text-align: left;
+  }
+</style>
+
+<div class="message">
+  First move your mouse cursor to the page, you will see the text under the mouse cursor changed to "currently hovered". <br>
+  Scroll mouse wheel slowly, you should not see any text under the mouse changed to "currently hovered" while the scrolling is in process and finishes.
+</div>
+
+<script>
+  let array;
+  const numHoverElements = 30;
+  const elementHeight = 50;
+  const textWhenNotHovered = "hover over me";
+  const textWhenHovered = "currently hovered";
+  const textWhenWasHovered = "was hovered";
+  const mouse = GestureSourceType.MOUSE_INPUT;
+
+  function buildPage() {
+    for (let i = 0; i < numHoverElements; i++) {
+      let div = document.createElement('div');
+      div.className = "hoverme";
+      div.innerHTML = textWhenNotHovered;
+      document.body.appendChild(div);
+    }
+
+    array = document.getElementsByClassName('hoverme');
+
+    for (let element of array) {
+      element.addEventListener('mouseover', function (e) {
+        this.innerHTML = textWhenHovered;
+      });
+      element.addEventListener('mouseout', function (e) {
+        this.innerHTML = textWhenWasHovered;
+      });
+    }
+  }
+
+  window.onload = async () => {
+    if (window.internals) {
+      internals.settings.setScrollAnimatorEnabled(false);
+      internals.runtimeFlags.noHoverDuringScrollEnabled = true;
+    }
+
+    buildPage();
+    await waitForCompositorCommit();
+
+    promise_test(async () => {
+      let x = array[0].offsetLeft + 10;
+      let y = array[0].offsetTop + 10;
+      // Move cursor to 1st element.
+      await mouseMoveTo(x, y);
+      await waitFor( () => { return array[0].innerHTML == textWhenHovered;}, 'wait for move to 1st element');
+      assert_equals(array[0].innerHTML, textWhenHovered);
+      assert_equals(array[1].innerHTML, textWhenNotHovered);
+      assert_equals(getComputedStyle(array[0]).backgroundColor, 'rgb(255, 255, 0)');
+
+      // Scroll end up at 4th element. Hover state does not update during scrolling
+      // so that 2nd, 3rd and 4th elements do not see the mouseover and mouseout events.
+      assert_equals(document.scrollingElement.scrollTop, 0);
+      await smoothScroll(3 * elementHeight, x, y, mouse, 'down', SPEED_INSTANT);
+      // Wait enough time to see if we fire a fake mouse move event to update the hover state.
+      await waitForAnimationEnd(() => { return document.scrollingElement.scrollTop; }, 200, 60);
+      assert_approx_equals(document.scrollingElement.scrollTop, 3 * elementHeight, 10);
+      assert_equals(array[0].innerHTML, textWhenHovered);
+      assert_equals(array[1].innerHTML, textWhenNotHovered);
+      assert_equals(array[2].innerHTML, textWhenNotHovered);
+      assert_equals(array[3].innerHTML, textWhenNotHovered);
+      assert_equals(array[4].innerHTML, textWhenNotHovered);
+      assert_equals(getComputedStyle(array[0]).backgroundColor, 'rgb(255, 255, 0)');
+      assert_equals(getComputedStyle(array[1]).backgroundColor, 'rgb(0, 0, 255)');
+      assert_equals(getComputedStyle(array[2]).backgroundColor, 'rgb(0, 0, 255)');
+      assert_equals(getComputedStyle(array[3]).backgroundColor, 'rgb(0, 0, 255)');
+    }, 'Mouse wheel scroll on the page, no hover update during scrolling.');
+  }
+
+</script>

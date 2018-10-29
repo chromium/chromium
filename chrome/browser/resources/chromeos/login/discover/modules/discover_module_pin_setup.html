@@ -1,0 +1,161 @@
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+
+<dom-module id="discover-pin-setup-card">
+  <template>
+    <discover-card on-click="onClick_">
+      <if expr="chromeos and _google_chrome">
+        <div slot=background>
+          <div style="background: lightgreen; width: 100%; height: 100%;"></div>
+        </div>
+      </if>
+      <div slot="title">
+        [[i18nDynamic(locale, 'discoverPinSetup')]]
+      </div>
+    </discover-card>
+  </template>
+</dom-module>
+
+<iron-iconset-svg name="discover-pin-setup-32" size="32">
+  <svg>
+    <defs>
+      <g id="lock">
+        <defs>
+          <path id="a" d="M24 12h-1.333V9.333A6.67 6.67 0 0 0 16 2.667a6.67 6.67 0 0 0-6.667 6.666V12H8a2.675 2.675 0 0 0-2.667 2.667V28c0 1.467 1.2 2.667 2.667 2.667h16c1.467 0 2.667-1.2 2.667-2.667V14.667C26.667 13.2 25.467 12 24 12zM12 9.333c0-2.213 1.787-4 4-4s4 1.787 4 4V12h-8V9.333zM24 28H8V14.667h16V28zm-8-4c1.467 0 2.667-1.2 2.667-2.667 0-1.466-1.2-2.666-2.667-2.666a2.675 2.675 0 0 0-2.667 2.666C13.333 22.8 14.533 24 16 24z">
+          </path>
+        </defs>
+        <g fill="none" fill-rule="evenodd">
+          <use fill="#1A73E8" fill-rule="nonzero" xlink:href="#a"></use>
+          <path d="M0 0h32v32H0z"></path>
+        </g>
+      </g>
+    </defs>
+  </svg>
+</iron-iconset-svg>
+
+<iron-iconset-svg name="discover-pin-setup-64" size="64">
+  <svg>
+    <defs>
+      <g id="lock">
+        <defs>
+          <path id="a" d="M48 24h-2.667v-5.333c0-7.36-5.973-13.334-13.333-13.334s-13.333 5.974-13.333 13.334V24H16c-2.933 0-5.333 2.4-5.333 5.333V56c0 2.933 2.4 5.333 5.333 5.333h32c2.933 0 5.333-2.4 5.333-5.333V29.333C53.333 26.4 50.933 24 48 24zm-24-5.333c0-4.427 3.573-8 8-8s8 3.573 8 8V24H24v-5.333zM48 56H16V29.333h32V56zm-16-8c2.933 0 5.333-2.4 5.333-5.333 0-2.934-2.4-5.334-5.333-5.334-2.933 0-5.333 2.4-5.333 5.334C26.667 45.6 29.067 48 32 48z"></path>
+        </defs>
+        <g fill="none" fill-rule="evenodd">
+          <use fill="#1A73E8" fill-rule="nonzero" xlink:href="#a"></use>
+          <path d="M0 0h64v64H0z"></path>
+        </g>
+      </g>
+    </defs>
+  </svg>
+</iron-iconset-svg>
+
+<dom-module id="discover-pin-setup-module">
+  <template>
+    <link rel="stylesheet" href="../../oobe_dialog_host.css">
+    <style include="iron-flex iron-flex-alignment iron-positioning
+                    cr-shared-style">
+    </style>
+    <link rel="stylesheet" href="../../oobe_iron_flex_layout_fix.css">
+    <style include="settings-shared"></style>
+    <link rel="stylesheet" href="discover_module_pin_setup.css">
+    <oobe-dialog id="loading" role="dialog" no-header no-footer-padding
+        hidden="[[isStepHidden_(step_, 'loading')]]">
+      <div slot="footer" class="flex layout vertical center center-justified">
+        <throbber-notice text="Please wait">
+        </throbber-notice>
+      </div>
+    </oobe-dialog>
+    <oobe-dialog role="dialog" has-buttons on-keypress="onKeypress_"
+        hidden="[[isStepHidden_(step_, 'password')]]">
+      <hd-iron-icon slot="oobe-icon" icon1x="discover-pin-setup-32:lock"
+          icon2x="discover-pin-setup-64:lock">
+      </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'discoverPinSetupPasswordTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'discoverPinSetupPasswordSubTitle')]]
+      </div>
+      <div slot="footer" class="flex layout horizontal">
+        <cr-input id="passwordInput" type="password"
+            placeholder="[[i18nDynamic(locale, 'passwordPromptPasswordLabel')]]"
+            error-message="[[i18nDynamic(locale,
+                                         'passwordPromptInvalidPassword')]]"
+            invalid="[[passwordInvalid_]]"
+            value="{{password_}}"
+            aria-disabled="false"
+            class="focus-on-show">
+        </cr-input>
+      </div>
+      <div slot="bottom-buttons" class="flex layout horizontal end-justified">
+        <oobe-text-button on-tap="onSkipButton_">
+          <div>[[i18nDynamic(locale, 'discoverPinSetupSkip')]]</div>
+        </oobe-text-button>
+        <oobe-next-button inverse disabled="[[!password_]]"
+            on-tap="onPasswordSubmitButton_">
+          <div>[[i18nDynamic(locale, 'next')]]</div>
+        </oobe-next-button>
+      </div>
+    </oobe-dialog>
+    <oobe-dialog id="setup" role="dialog" has-buttons
+        hidden="[[isPinSetupHidden_(step_)]]">
+      <hd-iron-icon slot="oobe-icon" icon1x="discover-pin-setup-32:lock"
+          icon2x="discover-pin-setup-64:lock">
+      </hd-iron-icon>
+      <h1 slot="title" hidden="[[isStepHidden_(step_, 'start')]]">
+        [[i18nDynamic(locale, 'discoverPinSetupTitle1')]]
+      </h1>
+      <h1 slot="title" hidden="[[isStepHidden_(step_, 'confirm')]]">
+        [[i18nDynamic(locale, 'discoverPinSetupTitle2')]]
+      </h1>
+      <h1 slot="title" hidden="[[isStepHidden_(step_, 'done')]]">
+        [[i18nDynamic(locale, 'discoverPinSetupTitle3')]]
+      </h1>
+      <div slot="subtitle" hidden="[[isStepHidden_(step_, 'start')]]">
+        [[i18nDynamic(locale, 'discoverPinSetupSubtitle1')]]
+      </div>
+      <div slot="subtitle" hidden="[[isStepHidden_(step_, 'done')]]">
+        [[i18nDynamic(locale, 'discoverPinSetupSubtitle3')]]<BR>
+      </div>
+      <div slot="footer" class="flex layout horizontal center-justified">
+          <setup-pin-keyboard id="pinKeyboard"
+              hidden="[[!isStepHidden_(step_, 'done')]]"
+              enable-submit="{{enableSubmit_}}"
+              is-confirm-step="{{isConfirmStep_}}"
+              on-pin-submit="onPinSubmit_"
+              on-set-pin-done="onSetPinDone_"
+              set-modes="{{setModes}}"
+              quick-unlock-private="[[quickUnlockPrivate_]]"
+              write-uma="[[writeUma_]]"
+              class="focus-on-show">
+          </setup-pin-keyboard>
+          <img id="done-illustration" hidden="[[isStepHidden_(step_, 'done')]]"
+              srcset="images/pin_illustration_1x.svg 1x,
+                      images/pin_illustration_2x.svg 2x">
+      </div>
+      <div slot="bottom-buttons" class="flex layout horizontal end-justified">
+        <oobe-text-button id="setupSkipButton" on-tap="onSkipButton_"
+            hidden="[[!isStepHidden_(step_, 'done')]]">
+          <div>[[i18nDynamic(locale, 'discoverPinSetupSkip')]]</div>
+        </oobe-text-button>
+        <oobe-next-button inverse
+            disabled="[[isNextDisabled_(step_, enableSubmit_)]]"
+            on-tap="onNextButton_" class="focus-on-show"
+            hidden="[[!isStepHidden_(step_, 'done')]]">
+          <div>[[i18nDynamic(locale, 'next')]]</div>
+        </oobe-next-button>
+        <oobe-text-button inverse on-tap="onDoneButton_" class="focus-on-show"
+            hidden="[[isStepHidden_(step_, 'done')]]">
+          <div>[[i18nDynamic(locale, 'discoverPinSetupDone')]]</div>
+        </oobe-next-button>
+      </div>
+    </oobe-dialog>
+  </template>
+</dom-module>

@@ -145,7 +145,7 @@ EmptyFilesResult CreateEmptyFiles(
     DiskSpaceFuncPtr disk_space_function,
     scoped_refptr<base::TaskRunner> file_task_runner,
     std::vector<base::FilePath> file_paths) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   File::Error dir_create_status = CreateBlobDirectory(blob_storage_dir);
   if (dir_create_status != File::FILE_OK) {
@@ -186,7 +186,7 @@ std::pair<FileCreationInfo, int64_t> CreateFileAndWriteItems(
     size_t total_size_bytes) {
   DCHECK_NE(0u, total_size_bytes);
   UMA_HISTOGRAM_MEMORY_KB("Storage.Blob.PageFileSize", total_size_bytes / 1024);
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   FileCreationInfo creation_info;
   creation_info.file_deletion_runner = std::move(file_task_runner);
@@ -407,12 +407,12 @@ class BlobMemoryController::FileQuotaAllocationTask
     // Send file creation task to file thread.
     base::PostTaskAndReplyWithResult(
         controller_->file_runner_.get(), FROM_HERE,
-        base::Bind(&CreateEmptyFiles, controller_->blob_storage_dir_,
-                   disk_space_function, controller_->file_runner_,
-                   base::Passed(&file_paths)),
-        base::Bind(&FileQuotaAllocationTask::OnCreateEmptyFiles,
-                   weak_factory_.GetWeakPtr(), base::Passed(&references),
-                   allocation_size_));
+        base::BindOnce(&CreateEmptyFiles, controller_->blob_storage_dir_,
+                       disk_space_function, controller_->file_runner_,
+                       std::move(file_paths)),
+        base::BindOnce(&FileQuotaAllocationTask::OnCreateEmptyFiles,
+                       weak_factory_.GetWeakPtr(), std::move(references),
+                       allocation_size_));
     controller_->RecordTracingCounters();
   }
   ~FileQuotaAllocationTask() override = default;
@@ -524,8 +524,8 @@ BlobMemoryController::BlobMemoryController(
       populated_memory_items_(
           base::MRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
       memory_pressure_listener_(
-          base::Bind(&BlobMemoryController::OnMemoryPressure,
-                     base::Unretained(this))),
+          base::BindRepeating(&BlobMemoryController::OnMemoryPressure,
+                              base::Unretained(this))),
       weak_factory_(this) {}
 
 BlobMemoryController::~BlobMemoryController() = default;
@@ -741,9 +741,10 @@ void BlobMemoryController::CalculateBlobStorageLimits() {
   if (file_runner_) {
     PostTaskAndReplyWithResult(
         file_runner_.get(), FROM_HERE,
-        base::Bind(&CalculateBlobStorageLimitsImpl, blob_storage_dir_, true),
-        base::Bind(&BlobMemoryController::OnStorageLimitsCalculated,
-                   weak_factory_.GetWeakPtr()));
+        base::BindOnce(&CalculateBlobStorageLimitsImpl, blob_storage_dir_,
+                       true),
+        base::BindOnce(&BlobMemoryController::OnStorageLimitsCalculated,
+                       weak_factory_.GetWeakPtr()));
   } else {
     OnStorageLimitsCalculated(
         CalculateBlobStorageLimitsImpl(blob_storage_dir_, false));

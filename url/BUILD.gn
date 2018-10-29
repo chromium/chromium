@@ -66,6 +66,7 @@ component("url") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//ipc:param_traits",
   ]
 
   if (is_win) {

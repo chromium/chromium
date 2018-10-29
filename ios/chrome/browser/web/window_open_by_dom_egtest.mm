@@ -267,20 +267,6 @@ id<GREYMatcher> PopupBlocker() {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests opening a child window using the following link
-// <a href="data:text/html,<script>window.location='about:newtab';</script>"
-//    target="_blank">
-- (void)testWindowOpenWithAboutNewTabScript {
-  const char ID[] = "webScenarioWindowOpenWithAboutNewTabScript";
-  [[EarlGrey selectElementWithMatcher:WebViewInWebState(GetCurrentWebState())]
-      performAction:web::WebViewTapElement(
-                        GetCurrentWebState(),
-                        ElementSelector::ElementSelectorId(ID))];
-  [ChromeEarlGrey waitForMainTabCount:2];
-  [[EarlGrey selectElementWithMatcher:OmniboxText("about:newtab")]
-      assertWithMatcher:grey_notNil()];
-}
-
 // Tests that closing the current window using DOM fails.
 - (void)testCloseWindowNotOpenByDOM {
   GREYAssert(TapWebViewElementWithId("webScenarioWindowClose"),

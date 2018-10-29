@@ -16,6 +16,7 @@
         "coordination_unit": [ "resource_coordinator.mojom.CoordinationUnitProvider" ],
         "heap_profiler_helper": [ "memory_instrumentation.mojom.HeapProfilerHelper" ],
         "page_signal": [ "resource_coordinator.mojom.PageSignalGenerator" ],
+        "webui_graph_dump": [ "resource_coordinator.mojom.WebUIGraphDump" ],
         "tests": [ "*" ]
       },
       "requires": {

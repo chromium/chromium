@@ -19,6 +19,9 @@ class MediaControlVolumeSliderElement final : public MediaControlSliderElement {
   // TODO: who calls this?
   void SetVolume(double);
 
+  void OpenSlider();
+  void CloseSlider();
+
   // MediaControlInputElement overrides.
   bool WillRespondToMouseMoveEvents() override;
   bool WillRespondToMouseClickEvents() override;

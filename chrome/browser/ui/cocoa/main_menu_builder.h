@@ -12,19 +12,21 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/optional.h"
 
-@class AppController;
-
 namespace chrome {
 
-// Creates the main menu bar for and registers it as such on |nsapp|. The
-// NSApplicationDelegate |app_controller| is the target for specific,
-// special menu items.
+// Creates the main menu bar using the name specified in |product_name|, and
+// registers it as such on |nsapp|. The NSApplicationDelegate |app_delegate|
+// is the target for specific, special menu items.
+//
 //
 // Normally the main menu is built in a MainMenu.nib file, but NIB files files
 // are hard to edit (especially cross-platform) and bring in a compile
 // dependency on ibtool. Building the menu in code has a lower maintenance
 // burden.
-void BuildMainMenu(NSApplication* nsapp, AppController* app_controller);
+void BuildMainMenu(NSApplication* nsapp,
+                   id<NSApplicationDelegate> app_delegate,
+                   const base::string16& product_name,
+                   bool is_pwa);
 
 // Internal ////////////////////////////////////////////////////////////////////
 
@@ -77,9 +79,10 @@ class MenuItemBuilder {
     return tag(command_id).action(@selector(commandDispatch:));
   }
 
-  // Specifies a format string argument for the constructor's |string_id|.
-  MenuItemBuilder& string_format_1(int arg1) {
-    string_arg1_ = arg1;
+  // Specifies the string to substitute for the $1 found in the string for
+  // |string_id_|.
+  MenuItemBuilder& string_format_1(const base::string16& arg) {
+    string_arg1_ = arg;
     return *this;
   }
 
@@ -93,6 +96,9 @@ class MenuItemBuilder {
   // the one specified here is used instead.
   MenuItemBuilder& key_equivalent(NSString* key_equivalent,
                                   NSEventModifierFlags flags) {
+    DCHECK((flags & NSEventModifierFlagShift) == 0)
+        << "The shift modifier flag should be directly applied to the key "
+           "equivalent.";
     key_equivalent_ = key_equivalent;
     key_equivalent_flags_ = flags;
     return *this;
@@ -104,6 +110,12 @@ class MenuItemBuilder {
     return *this;
   }
 
+  // Excludes this item from the menu if |condition| is true.
+  MenuItemBuilder& remove_if(bool condition) {
+    is_removed_ |= condition;
+    return *this;
+  }
+
   // Builds a NSMenuItem instance from the properties set on the Builder.
   base::scoped_nsobject<NSMenuItem> Build() const;
 
@@ -111,7 +123,7 @@ class MenuItemBuilder {
   bool is_separator_ = false;
 
   int string_id_ = 0;
-  int string_arg1_ = 0;
+  base::string16 string_arg1_;
 
   int tag_ = 0;
 
@@ -122,6 +134,8 @@ class MenuItemBuilder {
   NSEventModifierFlags key_equivalent_flags_ = 0;
 
   bool is_alternate_ = false;
+
+  bool is_removed_ = false;
 
   base::Optional<std::vector<MenuItemBuilder>> submenu_;
 

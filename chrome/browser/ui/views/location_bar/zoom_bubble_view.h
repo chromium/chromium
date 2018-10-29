@@ -93,7 +93,6 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   ~ZoomBubbleView() override;
 
   // LocationBarBubbleDelegateView:
-  View* GetInitiallyFocusedView() override;
   base::string16 GetAccessibleWindowTitle() const override;
   int GetDialogButtons() const override;
   void OnFocus() override;

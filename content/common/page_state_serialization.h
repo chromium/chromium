@@ -15,9 +15,9 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/platform/web_history_scroll_restoration_type.h"
 #include "third_party/blink/public/platform/web_http_body.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "url/gurl.h"
@@ -48,7 +48,7 @@ struct CONTENT_EXPORT ExplodedFrameState {
   int64_t item_sequence_number;
   int64_t document_sequence_number;
   double page_scale_factor;
-  blink::WebReferrerPolicy referrer_policy;
+  network::mojom::ReferrerPolicy referrer_policy;
   ExplodedHttpBody http_body;
   base::Optional<base::string16> scroll_anchor_selector;
   gfx::PointF scroll_anchor_offset;

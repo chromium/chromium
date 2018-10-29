@@ -33,21 +33,25 @@ namespace {
 
 class StopButton : public views::LabelButton {
  public:
-  StopButton(views::ButtonListener* button_listener,
+  StopButton(CastDialogSinkButton* owner,
+             views::ButtonListener* button_listener,
              const UIMediaSink& sink,
              int button_tag,
              bool enabled)
-      : views::LabelButton(button_listener, base::string16()) {
-    // TODO(https://crbug.com/877702): Update the icon to match the mocks.
+      : views::LabelButton(button_listener, base::string16()), owner_(owner) {
     static const gfx::ImageSkia icon = CreateVectorIcon(
-        kNavigateStopIcon, kPrimaryIconSize, gfx::kGoogleBlue500);
+        kGenericStopIcon, kPrimaryIconSize, gfx::kGoogleBlue500);
     SetImage(views::Button::STATE_NORMAL, icon);
-    SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+    SetInkDropMode(InkDropMode::ON);
     set_tag(button_tag);
     SetBorder(views::CreateEmptyBorder(gfx::Insets(kPrimaryIconBorderWidth)));
     SetEnabled(enabled);
     // Make it possible to navigate to this button by pressing the tab key.
     SetFocusBehavior(FocusBehavior::ALWAYS);
+    // Remove the outlines drawn when the button is in focus.
+    SetInstallFocusRingOnFocus(false);
+    SetFocusPainter(nullptr);
+
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_MEDIA_ROUTER_STOP_CASTING_BUTTON_ACCESSIBLE_NAME,
         sink.friendly_name, sink.status_text));
@@ -70,7 +74,19 @@ class StopButton : public views::LabelButton {
 
   bool CanProcessEventsWithinSubtree() const override { return true; }
 
+  // views::Button:
+  void StateChanged(ButtonState old_state) override {
+    if (state() == Button::STATE_HOVERED) {
+      owner_->OverrideStatusText(
+          l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_STOP_CASTING));
+    } else if (old_state == Button::STATE_HOVERED) {
+      owner_->RestoreStatusText();
+    }
+  }
+
  private:
+  CastDialogSinkButton* const owner_;
+
   DISALLOW_COPY_AND_ASSIGN(StopButton);
 };
 
@@ -114,6 +130,7 @@ gfx::ImageSkia CreateDisabledSinkIcon(SinkIconType icon_type) {
 }
 
 std::unique_ptr<views::View> CreatePrimaryIconForSink(
+    CastDialogSinkButton* sink_button,
     views::ButtonListener* button_listener,
     const UIMediaSink& sink,
     int button_tag) {
@@ -121,7 +138,7 @@ std::unique_ptr<views::View> CreatePrimaryIconForSink(
   if (sink.state == UIMediaSinkState::CONNECTED ||
       sink.state == UIMediaSinkState::DISCONNECTING) {
     return std::make_unique<StopButton>(
-        button_listener, sink, button_tag,
+        sink_button, button_listener, sink, button_tag,
         sink.state == UIMediaSinkState::CONNECTED);
   } else if (sink.issue) {
     auto icon_view = std::make_unique<views::ImageView>();
@@ -162,17 +179,35 @@ CastDialogSinkButton::CastDialogSinkButton(
     views::ButtonListener* button_listener,
     const UIMediaSink& sink,
     int button_tag)
-    : HoverButton(button_listener,
-                  CreatePrimaryIconForSink(button_listener, sink, button_tag),
-                  sink.friendly_name,
-                  GetStatusTextForSink(sink),
-                  /** secondary_icon_view */ nullptr),
+    : HoverButton(
+          button_listener,
+          CreatePrimaryIconForSink(this, button_listener, sink, button_tag),
+          sink.friendly_name,
+          GetStatusTextForSink(sink),
+          /** secondary_icon_view */ nullptr),
       sink_(sink) {
   set_tag(button_tag);
   SetEnabled(sink.state == UIMediaSinkState::AVAILABLE);
 }
 
 CastDialogSinkButton::~CastDialogSinkButton() = default;
+
+void CastDialogSinkButton::OverrideStatusText(
+    const base::string16& status_text) {
+  if (subtitle()) {
+    if (!saved_status_text_)
+      saved_status_text_ = subtitle()->text();
+    subtitle()->SetText(status_text);
+  }
+}
+
+void CastDialogSinkButton::RestoreStatusText() {
+  if (saved_status_text_) {
+    if (subtitle())
+      subtitle()->SetText(*saved_status_text_);
+    saved_status_text_.reset();
+  }
+}
 
 bool CastDialogSinkButton::OnMousePressed(const ui::MouseEvent& event) {
   if (event.IsRightMouseButton())

@@ -9,6 +9,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/single_thread_task_runner.h"
 
 namespace subresource_filter {
 
@@ -17,9 +18,6 @@ namespace subresource_filter {
 class RulesetServiceDelegate {
  public:
   virtual ~RulesetServiceDelegate() = default;
-
-  // Posts |task| to be executed on the UI thread after browser start-up.
-  virtual void PostAfterStartupTask(base::Closure task) = 0;
 
   // Schedules file open and use it as ruleset file. In the case of success,
   // the new and valid |base::File| is passed to |callback|. In the case of
@@ -33,6 +31,12 @@ class RulesetServiceDelegate {
   // Redistributes the new version of the |ruleset| to all existing consumers,
   // and sets up |ruleset| to be distributed to all future consumers.
   virtual void PublishNewRulesetVersion(base::File ruleset_data) = 0;
+
+  // Task queue for best effort tasks in the thread the object was created in.
+  // Used for tasks triggered on RulesetService instantiation so it doesn't
+  // interfere with startup.  Runs in the UI thread.
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  BestEffortTaskRunner() = 0;
 };
 
 }  // namespace subresource_filter

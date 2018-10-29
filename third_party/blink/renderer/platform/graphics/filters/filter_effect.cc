@@ -104,7 +104,7 @@ void FilterEffect::DisposeImageFiltersRecursive() {
 Color FilterEffect::AdaptColorToOperatingInterpolationSpace(
     const Color& device_color) {
   // |deviceColor| is assumed to be DeviceRGB.
-  return InterpolationSpaceUtilities::ConvertColor(
+  return interpolation_space_utilities::ConvertColor(
       device_color, OperatingInterpolationSpace());
 }
 

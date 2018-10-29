@@ -103,9 +103,9 @@ CompositingReasonFinder::PotentialCompositingReasonsFromStyle(
   if (style.HasPerspective())
     reasons |= CompositingReason::kPerspectiveWith3DDescendants;
 
-  // If the implementation of createsGroup changes, we need to be aware of that
+  // If the implementation of CreatesGroup changes, we need to be aware of that
   // in this part of code.
-  DCHECK((layout_object.IsTransparent() || layout_object.HasMask() ||
+  DCHECK((style.HasOpacity() || layout_object.HasMask() ||
           layout_object.HasClipPath() ||
           layout_object.HasFilterInducingProperty() || style.HasBlendMode()) ==
          layout_object.CreatesGroup());
@@ -123,7 +123,7 @@ CompositingReasonFinder::PotentialCompositingReasonsFromStyle(
   if (layout_object.HasTransformRelatedProperty() && style.HasTransform())
     reasons |= CompositingReason::kTransformWithCompositedDescendants;
 
-  if (layout_object.IsTransparent())
+  if (style.HasOpacity())
     reasons |= CompositingReason::kOpacityWithCompositedDescendants;
 
   if (style.HasBlendMode())
@@ -257,7 +257,7 @@ bool CompositingReasonFinder::RequiresCompositingForRootScroller(
   const auto& settings = *layer.GetLayoutObject().GetDocument().GetSettings();
   if (!settings.GetAcceleratedCompositingEnabled())
     return false;
-  return RootScrollerUtil::IsGlobal(layer);
+  return root_scroller_util::IsGlobal(layer);
 }
 
 bool CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(

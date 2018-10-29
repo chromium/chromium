@@ -19,8 +19,9 @@ class ModelTypeStoreBackend;
 
 class BlockingModelTypeStoreImpl : public BlockingModelTypeStore {
  public:
-  // |backend| must not be null and must outlive this object.
-  BlockingModelTypeStoreImpl(ModelType type, ModelTypeStoreBackend* backend);
+  // |backend| must not be null.
+  BlockingModelTypeStoreImpl(ModelType type,
+                             scoped_refptr<ModelTypeStoreBackend> backend);
   ~BlockingModelTypeStoreImpl() override;
 
   // BlockingModelTypeStore implementation.
@@ -41,7 +42,7 @@ class BlockingModelTypeStoreImpl : public BlockingModelTypeStore {
 
  private:
   const ModelType type_;
-  ModelTypeStoreBackend* const backend_;
+  const scoped_refptr<ModelTypeStoreBackend> backend_;
 
   // Key prefix for data/metadata records of this model type.
   const std::string data_prefix_;

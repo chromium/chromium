@@ -2,7 +2,6 @@ Test setting the href attribute of an HTMLAnchorElement to a URL with leading an
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Set href that starts with a space
 PASS a.hostname is 'www.mydomain.com'
 Set href that starts with a newline

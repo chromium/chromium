@@ -22,10 +22,10 @@ namespace quic {
 // encoder stream, and receive data on the decoder stream.
 class QUIC_EXPORT_PRIVATE QpackEncoder {
  public:
-  // This factory method should be called to start encoding.
+  // This factory method should be called to start encoding a header list.
   // |*header_list| must remain valid and must not change
   // during the lifetime of the returned ProgressiveEncoder instance.
-  std::unique_ptr<spdy::HpackEncoder::ProgressiveEncoder> EncodeHeaderSet(
+  std::unique_ptr<spdy::HpackEncoder::ProgressiveEncoder> EncodeHeaderList(
       const spdy::SpdyHeaderBlock* header_list);
 
  private:

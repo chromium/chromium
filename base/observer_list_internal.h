@@ -6,6 +6,7 @@
 #define BASE_OBSERVER_LIST_INTERNAL_H_
 
 #include "base/base_export.h"
+#include "base/containers/linked_list.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -93,6 +94,52 @@ class BASE_EXPORT CheckedObserverAdapter {
   WeakPtr<CheckedObserver> weak_ptr_;
 
   DISALLOW_COPY_AND_ASSIGN(CheckedObserverAdapter);
+};
+
+// Wraps a pointer in a stack-allocated, base::LinkNode. The node is
+// automatically removed from the linked list upon destruction (of the node, not
+// the pointer). Nodes are detached from the list via Invalidate() in the
+// destructor of ObserverList. This invalidates all WeakLinkNodes. There is no
+// threading support.
+template <class ObserverList>
+class WeakLinkNode : public base::LinkNode<WeakLinkNode<ObserverList>> {
+ public:
+  WeakLinkNode() = default;
+  explicit WeakLinkNode(ObserverList* list) { SetList(list); }
+
+  ~WeakLinkNode() { Invalidate(); }
+
+  bool IsOnlyRemainingNode() const {
+    return list_ &&
+           list_->live_iterators_.head() == list_->live_iterators_.tail();
+  }
+
+  void SetList(ObserverList* list) {
+    DCHECK(!list_);
+    DCHECK(list);
+    list_ = list;
+    list_->live_iterators_.Append(this);
+  }
+
+  void Invalidate() {
+    if (list_) {
+      list_ = nullptr;
+      this->RemoveFromList();
+    }
+  }
+
+  ObserverList* get() const {
+    if (list_)
+      DCHECK_CALLED_ON_VALID_SEQUENCE(list_->iteration_sequence_checker_);
+    return list_;
+  }
+  ObserverList* operator->() const { return get(); }
+  explicit operator bool() const { return get(); }
+
+ private:
+  ObserverList* list_ = nullptr;
+
+  DISALLOW_COPY_AND_ASSIGN(WeakLinkNode);
 };
 
 }  // namespace internal

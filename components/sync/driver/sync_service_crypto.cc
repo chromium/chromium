@@ -130,6 +130,12 @@ bool CheckPassphraseAgainstPendingKeys(
 
 }  // namespace
 
+SyncServiceCrypto::State::State()
+    : passphrase_key_derivation_params(KeyDerivationParams::CreateForPbkdf2()) {
+}
+
+SyncServiceCrypto::State::~State() = default;
+
 SyncServiceCrypto::SyncServiceCrypto(
     const base::RepeatingClosure& notify_observers,
     const base::RepeatingCallback<void(ConfigureReason)>& reconfigure,
@@ -137,7 +143,6 @@ SyncServiceCrypto::SyncServiceCrypto(
     : notify_observers_(notify_observers),
       reconfigure_(reconfigure),
       sync_prefs_(sync_prefs),
-      passphrase_key_derivation_params_(KeyDerivationParams::CreateForPbkdf2()),
       weak_factory_(this) {
   DCHECK(notify_observers_);
   DCHECK(reconfigure_);
@@ -146,66 +151,66 @@ SyncServiceCrypto::SyncServiceCrypto(
 
 SyncServiceCrypto::~SyncServiceCrypto() = default;
 
+void SyncServiceCrypto::Reset() {
+  state_ = State();
+}
+
 base::Time SyncServiceCrypto::GetExplicitPassphraseTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return cached_explicit_passphrase_time_;
+  return state_.cached_explicit_passphrase_time;
 }
 
 bool SyncServiceCrypto::IsUsingSecondaryPassphrase() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return cached_passphrase_type_ ==
+  return state_.cached_passphrase_type ==
              PassphraseType::FROZEN_IMPLICIT_PASSPHRASE ||
-         cached_passphrase_type_ == PassphraseType::CUSTOM_PASSPHRASE;
+         state_.cached_passphrase_type == PassphraseType::CUSTOM_PASSPHRASE;
 }
 
 void SyncServiceCrypto::EnableEncryptEverything() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsEncryptEverythingAllowed());
-  DCHECK(engine_);
+  DCHECK(state_.engine);
 
-  // TODO(atwilson): Persist the encryption_pending_ flag to address the various
+  // TODO(atwilson): Persist the encryption_pending flag to address the various
   // problems around cancelling encryption in the background (crbug.com/119649).
-  if (!encrypt_everything_)
-    encryption_pending_ = true;
+  if (!state_.encrypt_everything)
+    state_.encryption_pending = true;
 }
 
 bool SyncServiceCrypto::IsEncryptEverythingEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(engine_);
-  return encrypt_everything_ || encryption_pending_;
+  DCHECK(state_.engine);
+  return state_.encrypt_everything || state_.encryption_pending;
 }
 
-void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase,
-                                                bool is_explicit) {
+void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This should only be called when the engine has been initialized.
-  DCHECK(engine_);
-  DCHECK(!(!is_explicit && IsUsingSecondaryPassphrase()))
-      << "Data is already encrypted using an explicit passphrase";
-  DCHECK(!(is_explicit && passphrase_required_reason_ == REASON_DECRYPTION))
+  DCHECK(state_.engine);
+  DCHECK(state_.passphrase_required_reason != REASON_DECRYPTION)
       << "Can not set explicit passphrase when decryption is needed.";
 
-  DVLOG(1) << "Setting " << (is_explicit ? "explicit" : "implicit")
-           << " passphrase for encryption.";
-  if (passphrase_required_reason_ == REASON_ENCRYPTION) {
+  DVLOG(1) << "Setting explicit passphrase for encryption.";
+  if (state_.passphrase_required_reason == REASON_ENCRYPTION) {
     // REASON_ENCRYPTION implies that the cryptographer does not have pending
     // keys. Hence, as long as we're not trying to do an invalid passphrase
     // change (e.g. explicit -> explicit or explicit -> implicit), we know this
     // will succeed. If for some reason a new encryption key arrives via
     // sync later, the SBH will trigger another OnPassphraseRequired().
-    passphrase_required_reason_ = REASON_PASSPHRASE_NOT_REQUIRED;
+    state_.passphrase_required_reason = REASON_PASSPHRASE_NOT_REQUIRED;
     notify_observers_.Run();
   }
 
   // We should never be called with an empty passphrase.
   DCHECK(!passphrase.empty());
 
-  // SetEncryptionPassphrase should never be called if we are currently
+  // SetEncryptionPassphrase() should never be called if we are currently
   // encrypted with an explicit passphrase.
-  DCHECK(cached_passphrase_type_ == PassphraseType::KEYSTORE_PASSPHRASE ||
-         cached_passphrase_type_ == PassphraseType::IMPLICIT_PASSPHRASE);
+  DCHECK(state_.cached_passphrase_type == PassphraseType::KEYSTORE_PASSPHRASE ||
+         state_.cached_passphrase_type == PassphraseType::IMPLICIT_PASSPHRASE);
 
-  engine_->SetEncryptionPassphrase(passphrase, is_explicit);
+  state_.engine->SetEncryptionPassphrase(passphrase);
 }
 
 bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
@@ -215,27 +220,27 @@ bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
   DCHECK(!passphrase.empty());
 
   // This should only be called when we have cached pending keys.
-  DCHECK(cached_pending_keys_.has_blob());
+  DCHECK(state_.cached_pending_keys.has_blob());
 
   // For types other than CUSTOM_PASSPHRASE, we should be using the old PBKDF2
   // key derivation method.
-  if (cached_passphrase_type_ != PassphraseType::CUSTOM_PASSPHRASE) {
-    DCHECK_EQ(passphrase_key_derivation_params_.method(),
+  if (state_.cached_passphrase_type != PassphraseType::CUSTOM_PASSPHRASE) {
+    DCHECK_EQ(state_.passphrase_key_derivation_params.method(),
               KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003);
   }
 
   // Check the passphrase that was provided against our local cache of the
   // cryptographer's pending keys (which we cached during a previous
-  // OnPassphraseRequired event). If this was unsuccessful, the UI layer can
-  // immediately call OnPassphraseRequired again without showing the user a
+  // OnPassphraseRequired() event). If this was unsuccessful, the UI layer can
+  // immediately call OnPassphraseRequired() again without showing the user a
   // spinner.
-  if (!CheckPassphraseAgainstPendingKeys(cached_pending_keys_,
-                                         passphrase_key_derivation_params_,
-                                         passphrase)) {
+  if (!CheckPassphraseAgainstPendingKeys(
+          state_.cached_pending_keys, state_.passphrase_key_derivation_params,
+          passphrase)) {
     return false;
   }
 
-  engine_->SetDecryptionPassphrase(passphrase);
+  state_.engine->SetDecryptionPassphrase(passphrase);
 
   // Since we were able to decrypt the cached pending keys with the passphrase
   // provided, we immediately alert the UI layer that the passphrase was
@@ -244,34 +249,34 @@ bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
   // unnecessary prompt for a passphrase.
   // Note: It is not guaranteed that the passphrase will be accepted by the
   // syncer thread, since we could receive a new nigori node while the task is
-  // pending. This scenario is a valid race, and SetDecryptionPassphrase can
-  // trigger a new OnPassphraseRequired if it needs to.
+  // pending. This scenario is a valid race, and SetDecryptionPassphrase() can
+  // trigger a new OnPassphraseRequired() if it needs to.
   OnPassphraseAccepted();
   return true;
 }
 
 PassphraseType SyncServiceCrypto::GetPassphraseType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return cached_passphrase_type_;
+  return state_.cached_passphrase_type;
 }
 
 bool SyncServiceCrypto::IsEncryptEverythingAllowed() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return encrypt_everything_allowed_;
+  return state_.encrypt_everything_allowed;
 }
 
 void SyncServiceCrypto::SetEncryptEverythingAllowed(bool allowed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(allowed || !engine_ || !IsEncryptEverythingEnabled());
-  encrypt_everything_allowed_ = allowed;
+  DCHECK(allowed || !state_.engine || !IsEncryptEverythingEnabled());
+  state_.encrypt_everything_allowed = allowed;
 }
 
 ModelTypeSet SyncServiceCrypto::GetEncryptedDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(encrypted_types_.Has(PASSWORDS));
+  DCHECK(state_.encrypted_types.Has(PASSWORDS));
   // We may be called during the setup process before we're
-  // initialized.  In this case, we default to the sensitive types.
-  return encrypted_types_;
+  // initialized. In this case, we default to the sensitive types.
+  return state_.encrypted_types;
 }
 
 void SyncServiceCrypto::OnPassphraseRequired(
@@ -281,14 +286,14 @@ void SyncServiceCrypto::OnPassphraseRequired(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Update our cache of the cryptographer's pending keys.
-  cached_pending_keys_ = pending_keys;
+  state_.cached_pending_keys = pending_keys;
 
   // Update the key derivation params to be used.
-  passphrase_key_derivation_params_ = key_derivation_params;
+  state_.passphrase_key_derivation_params = key_derivation_params;
 
   DVLOG(1) << "Passphrase required with reason: "
            << PassphraseRequiredReasonToString(reason);
-  passphrase_required_reason_ = reason;
+  state_.passphrase_required_reason = reason;
 
   // Reconfigure without the encrypted types (excluded implicitly via the
   // failed datatypes handler).
@@ -299,11 +304,11 @@ void SyncServiceCrypto::OnPassphraseAccepted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Clear our cache of the cryptographer's pending keys.
-  cached_pending_keys_.clear_blob();
+  state_.cached_pending_keys.clear_blob();
 
-  // Reset passphrase_required_reason_ since we know we no longer require the
+  // Reset |passphrase_required_reason| since we know we no longer require the
   // passphrase.
-  passphrase_required_reason_ = REASON_PASSPHRASE_NOT_REQUIRED;
+  state_.passphrase_required_reason = REASON_PASSPHRASE_NOT_REQUIRED;
 
   // Make sure the data types that depend on the passphrase are started at
   // this time.
@@ -325,14 +330,14 @@ void SyncServiceCrypto::OnBootstrapTokenUpdated(
 void SyncServiceCrypto::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                                 bool encrypt_everything) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  encrypted_types_ = encrypted_types;
-  encrypt_everything_ = encrypt_everything;
-  DCHECK(encrypt_everything_allowed_ || !encrypt_everything_);
+  state_.encrypted_types = encrypted_types;
+  state_.encrypt_everything = encrypt_everything;
+  DCHECK(state_.encrypt_everything_allowed || !state_.encrypt_everything);
   DVLOG(1) << "Encrypted types changed to "
-           << ModelTypeSetToString(encrypted_types_)
+           << ModelTypeSetToString(state_.encrypted_types)
            << " (encrypt everything is set to "
-           << (encrypt_everything_ ? "true" : "false") << ")";
-  DCHECK(encrypted_types_.Has(PASSWORDS));
+           << (state_.encrypt_everything ? "true" : "false") << ")";
+  DCHECK(state_.encrypted_types.Has(PASSWORDS));
 
   notify_observers_.Run();
 }
@@ -340,8 +345,8 @@ void SyncServiceCrypto::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
 void SyncServiceCrypto::OnEncryptionComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Encryption complete";
-  if (encryption_pending_ && encrypt_everything_) {
-    encryption_pending_ = false;
+  if (state_.encryption_pending && state_.encrypt_everything) {
+    state_.encryption_pending = false;
     // This is to nudge the integration tests when encryption is
     // finished.
     notify_observers_.Run();
@@ -358,8 +363,8 @@ void SyncServiceCrypto::OnPassphraseTypeChanged(PassphraseType type,
                                                 base::Time passphrase_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Passphrase type changed to " << PassphraseTypeToString(type);
-  cached_passphrase_type_ = type;
-  cached_explicit_passphrase_time_ = passphrase_time;
+  state_.cached_passphrase_type = type;
+  state_.cached_explicit_passphrase_time = passphrase_time;
   notify_observers_.Run();
 }
 
@@ -384,10 +389,11 @@ void SyncServiceCrypto::OnLocalSetPassphraseEncryption(
 
 void SyncServiceCrypto::BeginConfigureCatchUpBeforeClear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!saved_nigori_state_);
-  saved_nigori_state_ = std::make_unique<SyncEncryptionHandler::NigoriState>();
+  DCHECK(!state_.saved_nigori_state);
+  state_.saved_nigori_state =
+      std::make_unique<SyncEncryptionHandler::NigoriState>();
   sync_prefs_->GetNigoriSpecificsForPassphraseTransition(
-      &saved_nigori_state_->nigori_specifics);
+      &state_.saved_nigori_state->nigori_specifics);
   reconfigure_.Run(CONFIGURE_REASON_CATCH_UP);
 }
 
@@ -401,8 +407,7 @@ SyncServiceCrypto::GetEncryptionObserverProxy() {
 std::unique_ptr<SyncEncryptionHandler::NigoriState>
 SyncServiceCrypto::TakeSavedNigoriState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::move(saved_nigori_state_);
+  return std::move(state_.saved_nigori_state);
 }
-
 
 }  // namespace syncer

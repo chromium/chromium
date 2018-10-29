@@ -71,6 +71,11 @@ class TestDataUseAscriber : public DataUseAscriber {
     return &recorder_;
   }
 
+  std::unique_ptr<net::NetworkDelegate> CreateNetworkDelegate(
+      std::unique_ptr<net::NetworkDelegate> wrapped_network_delegate) override {
+    return nullptr;
+  }
+
   std::unique_ptr<URLRequestClassifier> CreateURLRequestClassifier()
       const override {
     return nullptr;
@@ -80,6 +85,24 @@ class TestDataUseAscriber : public DataUseAscriber {
 
  private:
   DataUseRecorder recorder_;
+};
+
+class TestDataUseMeasurement : public DataUseMeasurement {
+ public:
+  TestDataUseMeasurement(
+      std::unique_ptr<URLRequestClassifier> url_request_classifier,
+      DataUseAscriber* ascriber)
+      : DataUseMeasurement(std::move(url_request_classifier),
+                           ascriber,
+                           nullptr) {}
+
+  void UpdateDataUseToMetricsService(int64_t total_bytes,
+                                     bool is_cellular,
+                                     bool is_metrics_service_usage) override {
+    is_data_use_forwarder_called_ = true;
+  }
+
+  bool is_data_use_forwarder_called_ = false;
 };
 
 // The more usual initialization of kUserDataKey would be along the lines of
@@ -104,8 +127,6 @@ class DataUseMeasurementTest : public testing::Test {
       : url_request_classifier_(new TestURLRequestClassifier()),
         data_use_measurement_(
             std::unique_ptr<URLRequestClassifier>(url_request_classifier_),
-            base::Bind(&DataUseMeasurementTest::FakeDataUseforwarder,
-                       base::Unretained(this)),
             &ascriber_) {
     // During the test it is expected to not have cellular connection.
     DCHECK(!net::NetworkChangeNotifier::IsConnectionCellular(
@@ -140,7 +161,6 @@ class DataUseMeasurementTest : public testing::Test {
       request->SetUserData(
           data_use_measurement::DataUseUserData::kUserDataKey,
           std::make_unique<data_use_measurement::DataUseUserData>(
-              data_use_measurement::DataUseUserData::SUGGESTIONS,
               data_use_measurement_.CurrentAppState()));
     }
 
@@ -196,7 +216,9 @@ class DataUseMeasurementTest : public testing::Test {
 
   DataUseMeasurement* data_use_measurement() { return &data_use_measurement_; }
 
-  bool IsDataUseForwarderCalled() { return is_data_use_forwarder_called_; }
+  bool IsDataUseForwarderCalled() {
+    return data_use_measurement_.is_data_use_forwarder_called_;
+  }
 
  protected:
   void InitializeContext() {
@@ -206,22 +228,15 @@ class DataUseMeasurementTest : public testing::Test {
     context_->Init();
   }
 
-  void FakeDataUseforwarder(const std::string& service_name,
-                            int message_size,
-                            bool is_celllular) {
-    is_data_use_forwarder_called_ = true;
-  }
-
   base::MessageLoopForIO loop_;
 
   TestDataUseAscriber ascriber_;
   TestURLRequestClassifier* url_request_classifier_;
-  DataUseMeasurement data_use_measurement_;
+  TestDataUseMeasurement data_use_measurement_;
 
   std::unique_ptr<net::MockClientSocketFactory> socket_factory_;
   std::unique_ptr<net::TestURLRequestContext> context_;
   const std::string kConnectionType = "NotCellular";
-  bool is_data_use_forwarder_called_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DataUseMeasurementTest);
 };
@@ -300,7 +315,7 @@ TEST_F(DataUseMeasurementTest, TimeOfBackgroundDownstreamBytes) {
     std::unique_ptr<net::URLRequest> request = CreateTestRequest(kUserRequest);
     data_use_measurement_.OnBeforeURLRequest(request.get());
     base::HistogramTester histogram_tester;
-    data_use_measurement()->OnApplicationStateChange(
+    data_use_measurement()->OnApplicationStateChangeForTesting(
         base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
     data_use_measurement_.OnNetworkBytesSent(*request, 100);
     data_use_measurement_.OnNetworkBytesReceived(*request, 1000);
@@ -331,7 +346,7 @@ TEST_F(DataUseMeasurementTest, TimeOfBackgroundDownstreamBytes) {
     std::unique_ptr<net::URLRequest> request = CreateTestRequest(kUserRequest);
     data_use_measurement_.OnBeforeURLRequest(request.get());
     base::HistogramTester histogram_tester;
-    data_use_measurement()->OnApplicationStateChange(
+    data_use_measurement()->OnApplicationStateChangeForTesting(
         base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
     data_use_measurement_.OnNetworkBytesSent(*request, 100);
     data_use_measurement_.OnNetworkBytesReceived(*request, 1000);
@@ -382,7 +397,7 @@ TEST_F(DataUseMeasurementTest, TimeOfBackgroundDownstreamBytes) {
     std::unique_ptr<net::URLRequest> request = CreateTestRequest(kUserRequest);
     data_use_measurement_.OnBeforeURLRequest(request.get());
     base::HistogramTester histogram_tester;
-    data_use_measurement()->OnApplicationStateChange(
+    data_use_measurement()->OnApplicationStateChangeForTesting(
         base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
     data_use_measurement_.OnNetworkBytesSent(*request, 100);
     data_use_measurement_.OnNetworkBytesReceived(*request, 1000);

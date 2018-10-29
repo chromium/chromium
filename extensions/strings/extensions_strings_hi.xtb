@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">निजी कुंजी को पढ़ने में विफल.</translation>
 <translation id="6391538222494443604">इनपुट निर्देशिका मौजूद होनी चाहिए.</translation>
 <translation id="641087317769093025">एक्सटेंशन को अनज़िप नहीं किया जा सका</translation>
+<translation id="6413453408918378296">आइकॉन पूरी तरह दिखाई नहीं दे रहा है '<ph name="ICON" />'.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" आपके एक या अधिक डिवाइस के एक्‍सेस का अनुरोध कर रहा है:</translation>
 <translation id="657064425229075395">पृष्ठभूमि स्क्रिप्ट '<ph name="BACKGROUND_SCRIPT" />' लोड नहीं की जा सकी.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> का <ph name="PRODUCT_NAME" /> (सीरियल नंबर <ph name="SERIAL_NUMBER" />)</translation>

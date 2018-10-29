@@ -103,10 +103,8 @@ int32_t PepperInternalFileRefBackend::MakeDirectory(
       GetFileSystemURL(),
       !!(make_directory_flags & PP_MAKEDIRECTORYFLAG_EXCLUSIVE),
       !!(make_directory_flags & PP_MAKEDIRECTORYFLAG_WITH_ANCESTORS),
-      base::Bind(&PepperInternalFileRefBackend::DidFinish,
-                 weak_factory_.GetWeakPtr(),
-                 reply_context,
-                 reply));
+      base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
+                     weak_factory_.GetWeakPtr(), reply_context, reply));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -119,13 +117,10 @@ int32_t PepperInternalFileRefBackend::Touch(
 
   PpapiPluginMsg_FileRef_TouchReply reply;
   GetFileSystemContext()->operation_runner()->TouchFile(
-      GetFileSystemURL(),
-      ppapi::PPTimeToTime(last_access_time),
+      GetFileSystemURL(), ppapi::PPTimeToTime(last_access_time),
       ppapi::PPTimeToTime(last_modified_time),
-      base::Bind(&PepperInternalFileRefBackend::DidFinish,
-                 weak_factory_.GetWeakPtr(),
-                 reply_context,
-                 reply));
+      base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
+                     weak_factory_.GetWeakPtr(), reply_context, reply));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -136,12 +131,9 @@ int32_t PepperInternalFileRefBackend::Delete(
 
   PpapiPluginMsg_FileRef_DeleteReply reply;
   GetFileSystemContext()->operation_runner()->Remove(
-      GetFileSystemURL(),
-      false,
-      base::Bind(&PepperInternalFileRefBackend::DidFinish,
-                 weak_factory_.GetWeakPtr(),
-                 reply_context,
-                 reply));
+      GetFileSystemURL(), false,
+      base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
+                     weak_factory_.GetWeakPtr(), reply_context, reply));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -159,13 +151,9 @@ int32_t PepperInternalFileRefBackend::Rename(
 
   PpapiPluginMsg_FileRef_RenameReply reply;
   GetFileSystemContext()->operation_runner()->Move(
-      GetFileSystemURL(),
-      new_url,
-      storage::FileSystemOperation::OPTION_NONE,
-      base::Bind(&PepperInternalFileRefBackend::DidFinish,
-                 weak_factory_.GetWeakPtr(),
-                 reply_context,
-                 reply));
+      GetFileSystemURL(), new_url, storage::FileSystemOperation::OPTION_NONE,
+      base::BindOnce(&PepperInternalFileRefBackend::DidFinish,
+                     weak_factory_.GetWeakPtr(), reply_context, reply));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -179,8 +167,8 @@ int32_t PepperInternalFileRefBackend::Query(
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
           storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
           storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
-      base::Bind(&PepperInternalFileRefBackend::GetMetadataComplete,
-                 weak_factory_.GetWeakPtr(), reply_context));
+      base::BindOnce(&PepperInternalFileRefBackend::GetMetadataComplete,
+                     weak_factory_.GetWeakPtr(), reply_context));
   return PP_OK_COMPLETIONPENDING;
 }
 

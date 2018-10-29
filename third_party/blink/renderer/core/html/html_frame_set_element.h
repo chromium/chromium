@@ -40,8 +40,12 @@ class HTMLFrameSetElement final : public HTMLElement {
   bool HasFrameBorder() const { return frameborder_; }
   bool NoResize() const { return noresize_; }
 
-  size_t TotalRows() const { return std::max<size_t>(1, row_lengths_.size()); }
-  size_t TotalCols() const { return std::max<size_t>(1, col_lengths_.size()); }
+  wtf_size_t TotalRows() const {
+    return std::max<wtf_size_t>(1, row_lengths_.size());
+  }
+  wtf_size_t TotalCols() const {
+    return std::max<wtf_size_t>(1, col_lengths_.size());
+  }
   int Border() const { return HasFrameBorder() ? border_ : 0; }
 
   bool HasBorderColor() const { return border_color_set_; }

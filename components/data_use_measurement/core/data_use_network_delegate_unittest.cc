@@ -54,10 +54,29 @@ class TestDataUseAscriber : public DataUseAscriber {
     return nullptr;
   }
 
+  std::unique_ptr<net::NetworkDelegate> CreateNetworkDelegate(
+      std::unique_ptr<net::NetworkDelegate> wrapped_network_delegate) override {
+    return nullptr;
+  }
+
   std::unique_ptr<URLRequestClassifier> CreateURLRequestClassifier()
       const override {
     return nullptr;
   }
+};
+
+class TestDataUseMeasurement : public DataUseMeasurement {
+ public:
+  TestDataUseMeasurement(
+      std::unique_ptr<URLRequestClassifier> url_request_classifier,
+      DataUseAscriber* ascriber)
+      : DataUseMeasurement(std::move(url_request_classifier),
+                           ascriber,
+                           nullptr) {}
+
+  void UpdateDataUseToMetricsService(int64_t total_bytes,
+                                     bool is_cellular,
+                                     bool is_metrics_service_usage) override {}
 };
 
 // static
@@ -108,7 +127,6 @@ std::unique_ptr<net::URLRequest> RequestURL(
     request->SetUserData(
         data_use_measurement::DataUseUserData::kUserDataKey,
         std::make_unique<data_use_measurement::DataUseUserData>(
-            data_use_measurement::DataUseUserData::SUGGESTIONS,
             data_use_measurement::DataUseUserData::FOREGROUND));
   }
   request->Start();
@@ -120,10 +138,12 @@ class DataUseNetworkDelegateTest : public testing::Test {
  public:
   DataUseNetworkDelegateTest()
       : context_(true),
-        data_use_network_delegate_(std::make_unique<net::TestNetworkDelegate>(),
-                                   &test_data_use_ascriber_,
-                                   std::make_unique<TestURLRequestClassifier>(),
-                                   metrics::UpdateUsagePrefCallbackType()) {
+        data_use_network_delegate_(
+            std::make_unique<net::TestNetworkDelegate>(),
+            &test_data_use_ascriber_,
+            std::make_unique<TestDataUseMeasurement>(
+                std::make_unique<TestURLRequestClassifier>(),
+                &test_data_use_ascriber_)) {
     context_.set_client_socket_factory(&mock_socket_factory_);
     context_.set_network_delegate(&data_use_network_delegate_);
     context_.Init();

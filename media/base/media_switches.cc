@@ -284,6 +284,14 @@ const base::Feature kD3D11EncryptedMedia{"D3D11EncryptedMedia",
 const base::Feature kD3D11VP9Decoder{"D3D11VP9Decoder",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Falls back to other decoders after audio/video decode error happens. The
+// implementation may choose different strategies on when to fallback. See
+// DecoderStream for details. When disabled, playback will fail immediately
+// after a decode error happens. This can be useful in debugging and testing
+// because the behavior is simpler and more predictable.
+const base::Feature kFallbackAfterDecodeError{"FallbackAfterDecodeError",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Manage and report MSE buffered ranges by PTS intervals, not DTS intervals.
 const base::Feature kMseBufferByPts{"MseBufferByPts",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -320,13 +328,16 @@ const base::Feature kUseR16Texture{"use-r16-texture",
 const base::Feature kUnifiedAutoplay{"UnifiedAutoplay",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Use SurfaceLayer instead of VideoLayer.
+// If enabled, use SurfaceLayer instead of VideoLayer for all playbacks that
+// aren't MediaStream.
 const base::Feature kUseSurfaceLayerForVideo{"UseSurfaceLayerForVideo",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Use SurfaceLayer instead of VideoLayer for MediaStream.
-const base::Feature kUseSurfaceLayerForVideoMS{
-    "UseSurfaceLayerForVideoMS", base::FEATURE_DISABLED_BY_DEFAULT};
+// Use SurfaceLayer instead of VideoLayer when entering Picture-in-Picture mode.
+// Does nothing if UseSurfaceLayerForVideo is enabled.  Does not affect
+// MediaStream playbacks.
+const base::Feature kUseSurfaceLayerForVideoPIP{
+    "UseSurfaceLayerForVideoPIP", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable VA-API hardware encode acceleration for VP8.
 const base::Feature kVaapiVP8Encoder{"VaapiVP8Encoder",
@@ -349,6 +360,11 @@ const base::Feature kExternalClearKeyForTesting{
 const base::Feature kHardwareSecureDecryption{
     "HardwareSecureDecryption", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Limits number of media tags loading in parallel to 6. This speeds up
+// preloading of any media that requires multiple requests to preload.
+const base::Feature kLimitParallelMediaPreloading{
+    "LimitParallelMediaPreloading", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables low-delay video rendering in media pipeline on "live" stream.
 const base::Feature kLowDelayVideoRenderingOnLiveStream{
     "low-delay-video-rendering-on-live-stream",
@@ -360,9 +376,13 @@ const base::Feature kLowDelayVideoRenderingOnLiveStream{
 const base::Feature kAutoplayIgnoreWebAudio{"AutoplayIgnoreWebAudio",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether we should show the new unified sound and autoplay settings UI.
-const base::Feature kAutoplaySoundSettings{"AutoplaySoundSettings",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+// Whether we should show a setting to disable autoplay policy.
+const base::Feature kAutoplayDisableSettings{"AutoplayDisableSettings",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Whether we should allow autoplay whitelisting via sounds settings.
+const base::Feature kAutoplayWhitelistSettings{
+    "AutoplayWhitelistSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
 // Enable a gesture to make the media controls expaned into the display cutout.

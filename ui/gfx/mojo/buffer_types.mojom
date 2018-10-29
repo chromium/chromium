@@ -4,13 +4,10 @@
 
 module gfx.mojom;
 
+import "mojo/public/mojom/base/shared_memory.mojom";
+
 // gfx::BufferFormat
 enum BufferFormat {
-  ATC,
-  ATCIA,
-  DXT1,
-  DXT5,
-  ETC1,
   R_8,
   R_16,
   RG_88,
@@ -94,21 +91,24 @@ struct AHardwareBufferHandle {
   handle<message_pipe> tracking_pipe;
 };
 
-// gfx::GpuMemoryBufferHandle
-struct GpuMemoryBufferHandle {
+union GpuMemoryBufferPlatformHandle {
   // TODO(676224): Use preprocessor to restrict platform-specific members to
   // desired platform.
-  GpuMemoryBufferType type;
-  GpuMemoryBufferId id;
-  handle<shared_buffer>? shared_memory_handle;
-  uint32 offset;
-  uint32 stride;
-  NativePixmapHandle? native_pixmap_handle;
-  handle? mach_port;
+  mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory_handle;
+  NativePixmapHandle native_pixmap_handle;
+  handle mach_port;
 
   [EnableIf=is_win]
-  handle? dxgi_handle;
+  handle dxgi_handle;
 
   [EnableIf=is_android]
-  AHardwareBufferHandle? android_hardware_buffer_handle;
+  AHardwareBufferHandle android_hardware_buffer_handle;
+};
+
+// gfx::GpuMemoryBufferHandle
+struct GpuMemoryBufferHandle {
+  GpuMemoryBufferId id;
+  uint32 offset;
+  uint32 stride;
+  GpuMemoryBufferPlatformHandle? platform_handle;
 };

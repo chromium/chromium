@@ -79,10 +79,8 @@ void WebViewPlugin::ReplayReceivedData(WebPlugin* plugin) {
   if (!response_.IsNull()) {
     plugin->DidReceiveResponse(response_);
     size_t total_bytes = 0;
-    for (std::list<std::string>::iterator it = data_.begin(); it != data_.end();
-         ++it) {
-      plugin->DidReceiveData(it->c_str(),
-                             base::checked_cast<int>(it->length()));
+    for (auto it = data_.begin(); it != data_.end(); ++it) {
+      plugin->DidReceiveData(it->c_str(), it->length());
       total_bytes += it->length();
     }
   }
@@ -237,7 +235,7 @@ void WebViewPlugin::DidReceiveResponse(const WebURLResponse& response) {
   response_ = response;
 }
 
-void WebViewPlugin::DidReceiveData(const char* data, int data_length) {
+void WebViewPlugin::DidReceiveData(const char* data, size_t data_length) {
   data_.push_back(std::string(data, data_length));
 }
 
@@ -263,7 +261,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
   content::RenderView::ApplyWebPreferences(preferences, web_view_);
   WebLocalFrame* web_frame =
       WebLocalFrame::CreateMainFrame(web_view_, this, nullptr, nullptr);
-  WebFrameWidget::Create(this, web_frame);
+  WebFrameWidget::CreateForMainFrame(this, web_frame);
 }
 
 WebViewPlugin::WebViewHelper::~WebViewHelper() {
@@ -289,6 +287,12 @@ bool WebViewPlugin::WebViewHelper::CanUpdateLayout() {
   return true;
 }
 
+blink::WebScreenInfo WebViewPlugin::WebViewHelper::GetScreenInfo() {
+  // TODO(danakj): This should probably return the screen info for the
+  // RenderView.
+  return blink::WebScreenInfo();
+}
+
 blink::WebWidgetClient* WebViewPlugin::WebViewHelper::WidgetClient() {
   return this;
 }
@@ -300,7 +304,7 @@ void WebViewPlugin::WebViewHelper::SetToolTipText(
     plugin_->container_->GetElement().SetAttribute("title", text);
 }
 
-void WebViewPlugin::WebViewHelper::StartDragging(blink::WebReferrerPolicy,
+void WebViewPlugin::WebViewHelper::StartDragging(network::mojom::ReferrerPolicy,
                                                  const WebDragData&,
                                                  WebDragOperationsMask,
                                                  const SkBitmap&,
@@ -311,11 +315,6 @@ void WebViewPlugin::WebViewHelper::StartDragging(blink::WebReferrerPolicy,
 
 bool WebViewPlugin::WebViewHelper::AllowsBrokenNullLayerTreeView() const {
   return true;
-}
-
-blink::WebLayerTreeView*
-WebViewPlugin::WebViewHelper::InitializeLayerTreeView() {
-  return nullptr;
 }
 
 void WebViewPlugin::WebViewHelper::DidInvalidateRect(const WebRect& rect) {

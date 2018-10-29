@@ -40,7 +40,7 @@ interface P2PSocketManager {
   // Starts listening to network list changed events.
   StartNetworkNotifications(P2PNetworkNotificationClient client);
 
-  GetHostAddress(string host_name)
+  GetHostAddress(string host_name, bool enable_mdns)
       => (array<net.interfaces.IPAddress> addresses);
 
   CreateSocket(P2PSocketType type,

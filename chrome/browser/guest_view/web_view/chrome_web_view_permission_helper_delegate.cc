@@ -213,8 +213,7 @@ void ChromeWebViewPermissionHelperDelegate::CancelGeolocationPermissionRequest(
 }
 
 int ChromeWebViewPermissionHelperDelegate::RemoveBridgeID(int bridge_id) {
-  std::map<int, int>::iterator bridge_itr =
-      bridge_id_to_request_id_map_.find(bridge_id);
+  auto bridge_itr = bridge_id_to_request_id_map_.find(bridge_id);
   if (bridge_itr == bridge_id_to_request_id_map_.end())
     return webview::kInvalidPermissionRequestID;
 

@@ -53,7 +53,7 @@ scoped_refptr<VideoFrame> InterprocessFramePool::ReserveVideoFrame(
   while (!available_buffers_.empty()) {
     const auto it =
         std::max_element(available_buffers_.rbegin(), available_buffers_.rend(),
-                         [this](const PooledBuffer& a, const PooledBuffer& b) {
+                         [](const PooledBuffer& a, const PooledBuffer& b) {
                            return a.mapping.size() < b.mapping.size();
                          });
     available_buffers_.erase(it.base() - 1);  // Release before allocating more.

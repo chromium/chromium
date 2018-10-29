@@ -21,12 +21,13 @@
 #include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/mock_android_overlay.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/gpu/android/android_video_decode_accelerator.h"
 #include "media/gpu/android/android_video_surface_chooser.h"
-#include "media/gpu/android/avda_codec_allocator.h"
+#include "media/gpu/android/codec_allocator.h"
 #include "media/gpu/android/fake_codec_allocator.h"
 #include "media/gpu/android/mock_android_video_surface_chooser.h"
 #include "media/gpu/android/mock_device_info.h"
@@ -109,7 +110,8 @@ class AndroidVideoDecodeAcceleratorTest
     context_group_ = new gpu::gles2::ContextGroup(
         gpu_preferences_, false, &mailbox_manager_, nullptr, nullptr, nullptr,
         feature_info_, false, &image_manager_, nullptr, nullptr,
-        gpu::GpuFeatureInfo(), &discardable_manager_);
+        gpu::GpuFeatureInfo(), &discardable_manager_, nullptr,
+        &shared_image_manager_);
 
     // By default, allow deferred init.
     config_.is_deferred_initialization_allowed = true;
@@ -230,6 +232,7 @@ class AndroidVideoDecodeAcceleratorTest
   gpu::gles2::MailboxManagerImpl mailbox_manager_;
   gpu::gles2::ImageManager image_manager_;
   gpu::ServiceDiscardableManager discardable_manager_;
+  gpu::SharedImageManager shared_image_manager_;
 
   // Only set until InitializeAVDA() is called.
   std::unique_ptr<MockAndroidVideoSurfaceChooser> chooser_that_is_usually_null_;

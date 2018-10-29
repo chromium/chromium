@@ -7,8 +7,6 @@ source_set("voice") {
   sources = [
     "audio_session_controller.h",
     "logo_animation_controller.h",
-    "voice_search_bar.h",
-    "voice_search_bar_owner.h",
     "voice_search_controller.h",
     "voice_search_controller.mm",
     "voice_search_language.h",

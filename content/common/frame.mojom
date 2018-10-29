@@ -20,8 +20,10 @@ import "services/service_manager/public/mojom/interface_provider.mojom";
 import "services/viz/public/interfaces/compositing/surface_id.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
+import "third_party/blink/public/mojom/frame/navigation_initiator.mojom";
 import "third_party/blink/public/platform/referrer.mojom";
 import "third_party/blink/public/web/commit_result.mojom";
+import "third_party/blink/public/web/devtools_agent.mojom";
 import "third_party/blink/public/web/window_features.mojom";
 import "ui/base/mojo/window_open_disposition.mojom";
 import "url/mojom/url.mojom";
@@ -150,6 +152,14 @@ interface FrameNavigationControl {
   // receiver's existing bundle.
   UpdateSubresourceLoaderFactories(
       URLLoaderFactoryBundle subresource_loader_factories);
+
+  // Returns a DevToolsAgent interface for this frame, used for
+  // remote debugging. See DevToolsAgent for details.
+  // Returned DevToolsAgent must be associated with navigation control,
+  // due to various ordering dependencies between DevTools protocol and
+  // navigation.
+  BindDevToolsAgent(associated blink.mojom.DevToolsAgentHost agent_host,
+                    associated blink.mojom.DevToolsAgent& agent);
 };
 
 // Implemented by the frame (e.g. renderer processes).
@@ -306,7 +316,8 @@ interface FrameHost {
       CommonNavigationParams common_params,
       BeginNavigationParams begin_params,
       blink.mojom.BlobURLToken? blob_url_token,
-      associated NavigationClient? navigation_client);
+      associated NavigationClient? navigation_client,
+      blink.mojom.NavigationInitiator? navigation_initiator);
 
   // Sent when a subresource response has started.
   // |cert_status| is the bitmask of status info of the SSL certificate. (see

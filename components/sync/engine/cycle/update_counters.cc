@@ -9,9 +9,10 @@
 namespace syncer {
 
 UpdateCounters::UpdateCounters()
-    : num_updates_received(0),
-      num_reflected_updates_received(0),
-      num_tombstone_updates_received(0),
+    : num_initial_updates_received(0),
+      num_non_initial_updates_received(0),
+      num_non_initial_reflected_updates_received(0),
+      num_non_initial_tombstone_updates_received(0),
       num_updates_applied(0),
       num_hierarchy_conflict_application_failures(0),
       num_encryption_conflict_application_failures(0),
@@ -23,11 +24,12 @@ UpdateCounters::~UpdateCounters() {}
 std::unique_ptr<base::DictionaryValue> UpdateCounters::ToValue() const {
   std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
 
-  value->SetInteger("numUpdatesReceived", num_updates_received);
+  value->SetInteger("numInitialUpdatesReceived", num_initial_updates_received);
+  value->SetInteger("numUpdatesReceived", num_non_initial_updates_received);
   value->SetInteger("numReflectedUpdatesReceived",
-                    num_reflected_updates_received);
+                    num_non_initial_reflected_updates_received);
   value->SetInteger("numTombstoneUpdatesReceived",
-                    num_tombstone_updates_received);
+                    num_non_initial_tombstone_updates_received);
 
   value->SetInteger("numUpdatesApplied", num_updates_applied);
   value->SetInteger("numHierarchyConflictApplicationFailures",

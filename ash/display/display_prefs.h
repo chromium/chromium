@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/session/session_observer.h"
 #include "ash/shell_observer.h"
 #include "base/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -39,7 +40,7 @@ class DisplayPrefsTest;
 
 // Manages display preference settings. Settings are stored in the local state
 // for the session.
-class ASH_EXPORT DisplayPrefs : public ShellObserver {
+class ASH_EXPORT DisplayPrefs : public ShellObserver, public SessionObserver {
  public:
   // Returns a dictionary of display pref values stored in PrefService.
   // See chrome/browser/ui/ash/ash_shell_init.cc for details.
@@ -55,9 +56,12 @@ class ASH_EXPORT DisplayPrefs : public ShellObserver {
   // ShellObserver
   void OnLocalStatePrefServiceInitialized(PrefService* pref_service) override;
 
+  // SessionObserver:
+  void OnFirstSessionStarted() override;
+
   // Stores all current displays preferences or queues a request until
   // LoadDisplayPreferences is called.
-  void StoreDisplayPrefs();
+  void MaybeStoreDisplayPrefs();
 
   // Test helper methods.
   void StoreDisplayRotationPrefsForTest(display::Display::Rotation rotation,

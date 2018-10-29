@@ -43,7 +43,8 @@ class TestWindowServiceObserver : public WindowServiceObserver {
 
   // WindowServiceObserver:
   void OnWillSendEventToClient(ClientSpecificId client_id,
-                               uint32_t event_id) override {
+                               uint32_t event_id,
+                               const ui::Event& event) override {
     // For the current tests only a single client_id is needed.
     if (send_count_ == 0)
       last_client_id_ = client_id;

@@ -425,12 +425,12 @@ Network.NetworkLogView = class extends UI.VBox {
    */
   static async _copyResponse(request) {
     const contentData = await request.contentData();
-    let content = contentData.content;
-    if (contentData.encoded) {
-      content = Common.ContentProvider.contentAsDataURL(
-          contentData.content, request.mimeType, contentData.encoded, contentData.encoded ? 'utf-8' : null);
-    }
-    InspectorFrontendHost.copyText(content || '');
+    let content = contentData.content || '';
+    if (!request.contentType().isTextType())
+      content = Common.ContentProvider.contentAsDataURL(content, request.mimeType, contentData.encoded);
+    else if (contentData.encoded)
+      content = window.atob(content);
+    InspectorFrontendHost.copyText(content);
   }
 
   /**

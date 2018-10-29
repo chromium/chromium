@@ -24,8 +24,9 @@ static const char kCategoriesTableCreationSql[] =
                                                        // ID is *not* retained
                                                        // across catalog
                                                        // updates.
-    "version INTEGER NOT NULL, "  // matches an entry in the meta table:
-                                  // ‘current_catalog’ or ‘downloading_catalog’.
+    "version_token TEXT NOT NULL, "  // matches an entry in the meta table:
+                                     // ‘current_catalog’ or
+                                     // ‘downloading_catalog’.
     "type INTEGER NOT NULL, "
     "label TEXT NOT NULL, "
     "image BLOB, "  // can be NULL if no image is available, but must be

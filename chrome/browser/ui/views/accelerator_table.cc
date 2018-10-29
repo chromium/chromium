@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "printing/buildflags/buildflags.h"
@@ -220,10 +221,9 @@ const size_t kRepeatableCommandIdsLength = arraysize(kRepeatableCommandIds);
 } // namespace
 
 std::vector<AcceleratorMapping> GetAcceleratorList() {
-  CR_DEFINE_STATIC_LOCAL(
-      std::vector<AcceleratorMapping>, accelerators,
-      (std::begin(kAcceleratorMap), std::end(kAcceleratorMap)));
-  return accelerators;
+  static base::NoDestructor<std::vector<AcceleratorMapping>> accelerators(
+      std::begin(kAcceleratorMap), std::end(kAcceleratorMap));
+  return *accelerators;
 }
 
 bool GetStandardAcceleratorForCommandId(int command_id,

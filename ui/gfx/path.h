@@ -14,24 +14,11 @@
 
 namespace gfx {
 
+// DEPRECATED, use SkPath directly.
+// TODO(collinbaker): remove this class and replace all references with SkPath.
 class GFX_EXPORT Path : public SkPath {
  public:
-  // Used by Path(Point,size_t) constructor.
-  struct Point {
-    int x;
-    int y;
-  };
-  struct PointF {
-    float x;
-    float y;
-  };
-
   Path();
-
-  // Creates a path populated with the specified points.
-  Path(const Point* points, size_t count);
-  Path(const PointF* points, size_t count);
-
   ~Path();
 };
 

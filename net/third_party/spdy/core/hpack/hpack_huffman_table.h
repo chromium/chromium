@@ -5,9 +5,9 @@
 #ifndef NET_THIRD_PARTY_SPDY_CORE_HPACK_HPACK_HUFFMAN_TABLE_H_
 #define NET_THIRD_PARTY_SPDY_CORE_HPACK_HPACK_HUFFMAN_TABLE_H_
 
-#include <stdint.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "net/third_party/spdy/core/hpack/hpack_constants.h"

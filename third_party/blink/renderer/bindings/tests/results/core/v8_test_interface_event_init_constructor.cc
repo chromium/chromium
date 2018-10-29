@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -63,7 +63,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterfaceEventInitConstructorV8Internal {
+namespace test_interface_event_init_constructor_v8_internal {
 
 static void readonlyStringAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -111,18 +111,18 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
   V8SetReturnValue(info, wrapper);
 }
 
-} // namespace TestInterfaceEventInitConstructorV8Internal
+}  // namespace test_interface_event_init_constructor_v8_internal
 
 void V8TestInterfaceEventInitConstructor::readonlyStringAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceEventInitConstructor_readonlyStringAttribute_Getter");
 
-  TestInterfaceEventInitConstructorV8Internal::readonlyStringAttributeAttributeGetter(info);
+  test_interface_event_init_constructor_v8_internal::readonlyStringAttributeAttributeGetter(info);
 }
 
 void V8TestInterfaceEventInitConstructor::isTrustedAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceEventInitConstructor_isTrusted_Getter");
 
-  TestInterfaceEventInitConstructorV8Internal::isTrustedAttributeGetter(info);
+  test_interface_event_init_constructor_v8_internal::isTrustedAttributeGetter(info);
 }
 
 static const V8DOMConfiguration::AccessorConfiguration V8TestInterfaceEventInitConstructorAccessors[] = {
@@ -143,7 +143,7 @@ void V8TestInterfaceEventInitConstructor::constructorCallback(const v8::Function
     return;
   }
 
-  TestInterfaceEventInitConstructorV8Internal::constructor(info);
+  test_interface_event_init_constructor_v8_internal::constructor(info);
 }
 
 static void installV8TestInterfaceEventInitConstructorTemplate(

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
+#include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -61,6 +62,48 @@
 
 namespace blink {
 
+namespace {
+
+bool GetAbsoluteDimensionValue(const AtomicString& attribute_value,
+                               double* value) {
+  HTMLDimension dimension;
+  if (ParseDimensionValue(attribute_value, dimension) &&
+      dimension.IsAbsolute()) {
+    *value = dimension.Value();
+    return true;
+  }
+  return false;
+}
+
+bool IsLazyLoadingImageAllowed(const LocalFrame* frame,
+                               HTMLImageElement* html_image) {
+  // Minimum width or height attribute of the image to start lazyloading.
+  const unsigned kMinDimensionToLazyLoad = 10;
+
+  // Do not lazyload image elements created from javascript.
+  if (!html_image->ElementCreatedByParser())
+    return false;
+
+  if (EqualIgnoringASCIICase(
+          html_image->FastGetAttribute(HTMLNames::lazyloadAttr), "off") &&
+      !frame->GetDocument()->IsLazyLoadPolicyEnforced()) {
+    return false;
+  }
+  // Avoid lazyloading if width and height attributes are small. This
+  // heuristic helps avoid double fetching tracking pixels.
+  double width, height;
+  if (GetAbsoluteDimensionValue(html_image->getAttribute(HTMLNames::widthAttr),
+                                &width) &&
+      GetAbsoluteDimensionValue(html_image->getAttribute(HTMLNames::heightAttr),
+                                &height) &&
+      width <= kMinDimensionToLazyLoad && height <= kMinDimensionToLazyLoad) {
+    return false;
+  }
+  return frame->IsLazyLoadingImageAllowed();
+}
+
+}  // namespace
+
 static ImageLoader::BypassMainWorldBehavior ShouldBypassMainWorldCSP(
     ImageLoader* loader) {
   DCHECK(loader);
@@ -78,18 +121,22 @@ static ImageLoader::BypassMainWorldBehavior ShouldBypassMainWorldCSP(
 class ImageLoader::Task {
  public:
   static std::unique_ptr<Task> Create(ImageLoader* loader,
+                                      const KURL& request_url,
                                       UpdateFromElementBehavior update_behavior,
                                       ReferrerPolicy referrer_policy) {
-    return std::make_unique<Task>(loader, update_behavior, referrer_policy);
+    return std::make_unique<Task>(loader, request_url, update_behavior,
+                                  referrer_policy);
   }
 
   Task(ImageLoader* loader,
+       const KURL& request_url,
        UpdateFromElementBehavior update_behavior,
        ReferrerPolicy referrer_policy)
       : loader_(loader),
         should_bypass_main_world_csp_(ShouldBypassMainWorldCSP(loader)),
         update_behavior_(update_behavior),
         referrer_policy_(referrer_policy),
+        request_url_(request_url),
         weak_factory_(this) {
     ExecutionContext& context = loader_->GetElement()->GetDocument();
     probe::AsyncTaskScheduled(&context, "Image", this);
@@ -104,8 +151,6 @@ class ImageLoader::Task {
           loader->GetElement()->GetDocument().GetFrame());
       DCHECK(script_state_);
     }
-    request_url_ =
-        loader->ImageSourceToKURL(loader->GetElement()->ImageSourceURL());
   }
 
   void Run() {
@@ -254,6 +299,25 @@ void ImageLoader::SetImageForTest(ImageResourceContent* new_image) {
   SetImageWithoutConsideringPendingLoadEvent(new_image);
 }
 
+bool ImageLoader::ShouldUpdateOnInsertedInto(
+    ContainerNode& insertion_point) const {
+  // If we're being inserted into a disconnected tree, we don't need to update.
+  if (!insertion_point.isConnected())
+    return false;
+
+  // If the base element URL changed, it means that we might be in the process
+  // of fetching a wrong image. We should update to ensure we fetch the correct
+  // image. This can happen when inserting content into an iframe which has a
+  // base element. See crbug.com/897545 for more details.
+  if (element_->GetDocument().ValidBaseElementURL() != last_base_element_url_)
+    return true;
+
+  // Finally, try to update if we're idle (that is, we have neither the image
+  // contents nor any activity). This could be an indication that we skipped a
+  // previous load when inserted into an inactive document.
+  return !image_content_ && !HasPendingActivity();
+}
+
 void ImageLoader::ClearImage() {
   SetImageWithoutConsideringPendingLoadEvent(nullptr);
 }
@@ -346,10 +410,11 @@ inline void ImageLoader::ClearFailedLoadURL() {
 }
 
 inline void ImageLoader::EnqueueImageLoadingMicroTask(
+    const KURL& request_url,
     UpdateFromElementBehavior update_behavior,
     ReferrerPolicy referrer_policy) {
   std::unique_ptr<Task> task =
-      Task::Create(this, update_behavior, referrer_policy);
+      Task::Create(this, request_url, update_behavior, referrer_policy);
   pending_task_ = task->GetWeakPtr();
   Microtask::EnqueueMicrotask(
       WTF::Bind(&Task::Run, WTF::Passed(std::move(task))));
@@ -414,12 +479,11 @@ void ImageLoader::DoUpdateFromElement(BypassMainWorldBehavior bypass_behavior,
     // Correct the RequestContext if necessary.
     if (IsHTMLPictureElement(GetElement()->parentNode()) ||
         !GetElement()->FastGetAttribute(HTMLNames::srcsetAttr).IsNull()) {
-      resource_request.SetRequestContext(
-          WebURLRequest::kRequestContextImageSet);
+      resource_request.SetRequestContext(mojom::RequestContextType::IMAGE_SET);
     } else if (IsHTMLObjectElement(GetElement())) {
-      resource_request.SetRequestContext(WebURLRequest::kRequestContextObject);
+      resource_request.SetRequestContext(mojom::RequestContextType::OBJECT);
     } else if (IsHTMLEmbedElement(GetElement())) {
-      resource_request.SetRequestContext(WebURLRequest::kRequestContextEmbed);
+      resource_request.SetRequestContext(mojom::RequestContextType::EMBED);
     }
 
     bool page_is_being_dismissed =
@@ -428,7 +492,7 @@ void ImageLoader::DoUpdateFromElement(BypassMainWorldBehavior bypass_behavior,
       resource_request.SetHTTPHeaderField(HTTPNames::Cache_Control,
                                           "max-age=0");
       resource_request.SetKeepalive(true);
-      resource_request.SetRequestContext(WebURLRequest::kRequestContextPing);
+      resource_request.SetRequestContext(mojom::RequestContextType::PING);
     }
 
     // Plug-ins should not load via service workers as plug-ins may have their
@@ -451,11 +515,8 @@ void ImageLoader::DoUpdateFromElement(BypassMainWorldBehavior bypass_behavior,
       if (frame->IsClientLoFiAllowed(params.GetResourceRequest())) {
         params.SetClientLoFiPlaceholder();
       } else if (auto* html_image = ToHTMLImageElementOrNull(GetElement())) {
-        if (html_image->ElementCreatedByParser() &&
-            !EqualIgnoringASCIICase(
-                html_image->FastGetAttribute(HTMLNames::lazyloadAttr), "off") &&
-            frame->IsLazyLoadingImageAllowed()) {
-          params.SetAllowImagePlaceholder();
+        if (IsLazyLoadingImageAllowed(frame, html_image)) {
+          params.SetLazyImagePlaceholder();
           lazy_image_load_state_ = LazyImageLoadState::kDeferred;
         }
         LazyLoadImageObserver::StartTrackingVisibilityMetrics(html_image);
@@ -521,6 +582,8 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
                                     ReferrerPolicy referrer_policy) {
   AtomicString image_source_url = element_->ImageSourceURL();
   suppress_error_events_ = (update_behavior == kUpdateSizeChanged);
+  last_base_element_url_ =
+      element_->GetDocument().ValidBaseElementURL().GetString();
 
   if (update_behavior == kUpdateIgnorePreviousError)
     ClearFailedLoadURL();
@@ -537,13 +600,15 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
     ClearImage();
   }
 
+  KURL url = ImageSourceToKURL(image_source_url);
+
   // Prevent the creation of a ResourceLoader (and therefore a network request)
   // for ImageDocument loads. In this case, the image contents have already been
   // requested as a main resource and ImageDocumentParser will take care of
   // funneling the main resource bytes into |image_content_|, so just create an
   // ImageResource to be populated later.
   if (loading_image_document_) {
-    ResourceRequest request(ImageSourceToKURL(element_->ImageSourceURL()));
+    ResourceRequest request(url);
     request.SetFetchCredentialsMode(
         network::mojom::FetchCredentialsMode::kOmit);
     ImageResource* image_resource = ImageResource::Create(request);
@@ -562,7 +627,6 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
     delay_until_do_update_from_element_ = nullptr;
   }
 
-  KURL url = ImageSourceToKURL(image_source_url);
   if (ShouldLoadImmediately(url)) {
     DoUpdateFromElement(kDoNotBypassMainWorldCSP, update_behavior, url,
                         referrer_policy, UpdateType::kSync);
@@ -588,7 +652,7 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
   // raw HTML parsing case by loading images we don't intend to display.
   Document& document = element_->GetDocument();
   if (document.IsActive())
-    EnqueueImageLoadingMicroTask(update_behavior, referrer_policy);
+    EnqueueImageLoadingMicroTask(url, update_behavior, referrer_policy);
 }
 
 KURL ImageLoader::ImageSourceToKURL(AtomicString image_source_url) const {
@@ -625,8 +689,7 @@ bool ImageLoader::ShouldLoadImmediately(const KURL& url) const {
 }
 
 void ImageLoader::ImageChanged(ImageResourceContent* content,
-                               CanDeferInvalidation,
-                               const IntRect*) {
+                               CanDeferInvalidation) {
   DCHECK_EQ(content, image_content_.Get());
   if (image_complete_ || !content->IsLoading() ||
       delay_until_image_notify_finished_)

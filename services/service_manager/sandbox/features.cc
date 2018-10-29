@@ -24,6 +24,9 @@ const base::Feature kNetworkServiceWindowsSandbox{
 // sandbox::MITIGATION_EXTENSION_POINT_DISABLE.
 const base::Feature kWinSboxDisableExtensionPoints{
     "WinSboxDisableExtensionPoint", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether the isolated XR service is sandboxed.
+const base::Feature kXRSandbox{"XRSandbox", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN)
 
 }  // namespace features

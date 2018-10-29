@@ -234,6 +234,7 @@ namespace http://www.w3.org/1999/xhtml
     property onseeked
     property onseeking
     property onselect
+    property onselectionchange
     property onselectstart
     property onstalled
     property onsubmit
@@ -867,6 +868,7 @@ html element param
 html element picture
 html element plaintext
 html element portal
+    property activate
     property src
 html element pre
     property width
@@ -1387,6 +1389,7 @@ namespace http://www.w3.org/2000/svg
     property onseeked
     property onseeking
     property onselect
+    property onselectionchange
     property onselectstart
     property onstalled
     property onsubmit

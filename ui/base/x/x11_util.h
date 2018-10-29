@@ -23,6 +23,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform_event.h"
+#include "ui/gfx/icc_profile.h"
 #include "ui/gfx/x/x11_types.h"
 
 typedef unsigned long XSharedMemoryId;  // ShmSeg in the X headers.
@@ -296,6 +297,9 @@ UI_BASE_X_EXPORT bool IsX11WindowFullScreen(XID window);
 
 // Returns true if the window manager supports the given hint.
 UI_BASE_X_EXPORT bool WmSupportsHint(XAtom atom);
+
+// Returns the ICCProfile corresponding to |monitor| using XGetWindowProperty.
+UI_BASE_X_EXPORT gfx::ICCProfile GetICCProfileForMonitor(int monitor);
 
 // Manages a piece of X11 allocated memory as a RefCountedMemory segment. This
 // object takes ownership over the passed in memory and will free it with the

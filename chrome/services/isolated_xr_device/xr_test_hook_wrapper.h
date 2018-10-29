@@ -25,6 +25,10 @@ class XRTestHookWrapper : public OpenVRTestHook {
   DeviceConfig WaitGetDeviceConfig() override;
   PoseFrameData WaitGetPresentingPose() override;
   PoseFrameData WaitGetMagicWindowPose() override;
+  ControllerRole WaitGetControllerRoleForTrackedDeviceIndex(
+      unsigned int index) override;
+  TrackedDeviceClass WaitGetTrackedDeviceClass(unsigned int index) override;
+  ControllerFrameData WaitGetControllerData(unsigned int index) override;
   void AttachCurrentThread() override;
   void DetachCurrentThread() override;
 

@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_base.h"

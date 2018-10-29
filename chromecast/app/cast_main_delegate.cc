@@ -19,6 +19,7 @@
 #include "base/posix/global_descriptors.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_paths.h"
+#include "chromecast/base/chromecast_switches.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/cast_resource_delegate.h"
@@ -143,20 +144,24 @@ void CastMainDelegate::PreSandboxStartup() {
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
 
-// TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+  bool enable_crash_reporter = !command_line->HasSwitch(
+      switches::kDisableCrashReporter);
+  if (enable_crash_reporter) {
+  // TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
 #if defined(OS_ANDROID)
-  base::FilePath log_file;
-  base::PathService::Get(FILE_CAST_ANDROID_LOG, &log_file);
-  chromecast::CrashHandler::Initialize(process_type, log_file);
+    base::FilePath log_file;
+    base::PathService::Get(FILE_CAST_ANDROID_LOG, &log_file);
+    chromecast::CrashHandler::Initialize(process_type, log_file);
 #elif defined(OS_LINUX)
-  crash_reporter::SetCrashReporterClient(GetCastCrashReporter());
+    crash_reporter::SetCrashReporterClient(GetCastCrashReporter());
 
-  if (process_type != service_manager::switches::kZygoteProcess) {
-    CastCrashReporterClient::InitCrashReporter(process_type);
-  }
+    if (process_type != service_manager::switches::kZygoteProcess) {
+      CastCrashReporterClient::InitCrashReporter(process_type);
+    }
 #endif  // defined(OS_LINUX)
 
-  crash_reporter::InitializeCrashKeys();
+    crash_reporter::InitializeCrashKeys();
+  }
 
   InitializeResourceBundle();
 }
@@ -180,11 +185,22 @@ int CastMainDelegate::RunProcess(
 #if defined(OS_LINUX)
 void CastMainDelegate::ZygoteForked() {
   const base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
-  std::string process_type =
-      command_line->GetSwitchValueASCII(switches::kProcessType);
-  CastCrashReporterClient::InitCrashReporter(process_type);
+  bool enable_crash_reporter = !command_line->HasSwitch(
+      switches::kDisableCrashReporter);
+  if (enable_crash_reporter) {
+    std::string process_type =
+        command_line->GetSwitchValueASCII(switches::kProcessType);
+    CastCrashReporterClient::InitCrashReporter(process_type);
+  }
 }
 #endif  // defined(OS_LINUX)
+
+bool CastMainDelegate::ShouldCreateFeatureList() {
+  // TODO(https://crbug.com/887459): Move the creation of FeatureList from
+  // CastBrowserMainParts::PreCreateThreads() to
+  // CastMainDelegate::PostEarlyInitialization().
+  return false;
+}
 
 void CastMainDelegate::InitializeResourceBundle() {
   base::FilePath pak_file;

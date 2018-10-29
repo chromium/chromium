@@ -2,7 +2,6 @@ This checks that setTimeout() and setInterval() return unique results within the
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Checking the results of setTimeout:
 PASS tID1 > 0 is true
 PASS tID2 > 0 is true
@@ -11,6 +10,7 @@ PASS tID1 !== tID2 is true
 PASS tID1 !== tID3 is true
 PASS tID2 !== tID3 is true
 
+
 Checking the results of setInterval:
 PASS iID1 > 0 is true
 PASS iID2 > 0 is true
@@ -18,6 +18,7 @@ PASS iID3 > 0 is true
 PASS iID1 !== iID2 is true
 PASS iID1 !== iID3 is true
 PASS iID2 !== iID3 is true
+
 
 PASS successfullyParsed is true
 

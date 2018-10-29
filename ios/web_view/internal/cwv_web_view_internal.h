@@ -9,7 +9,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+namespace web {
+class WebState;
+}
+
 @interface CWVWebView ()
+
+// Returns CWVWebView which corresponds to the given web state.
+// It causes an assertion failure if the web state has no corresponding
+// CWVWebView.
+//
+// TODO(crbug.com/896961): Write unit test for this method.
++ (CWVWebView*)webViewForWebState:(web::WebState*)webState;
 
 // This is called by the associated CWVWebViewConfiguration in order to shut
 // down cleanly. See CWVWebViewConfiguration's |shutDown| method for more info.

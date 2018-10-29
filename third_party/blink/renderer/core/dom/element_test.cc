@@ -391,11 +391,11 @@ TEST_F(ElementTest, PartAttribute) {
   }
 }
 
-TEST_F(ElementTest, PartmapAttribute) {
+TEST_F(ElementTest, ExportpartsAttribute) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
-    <span id='has_one_mapping' partmap='partname1 partname2'></span>
-    <span id='has_two_mappings' partmap='partname1 partname2, partname3 partname4'></span>
+    <span id='has_one_mapping' exportparts='partname1: partname2'></span>
+    <span id='has_two_mappings' exportparts='partname1: partname2, partname3: partname4'></span>
     <span id='has_no_mapping'></span>
   )HTML");
 
@@ -432,7 +432,7 @@ TEST_F(ElementTest, PartmapAttribute) {
     EXPECT_FALSE(has_no_mapping->PartNamesMap());
 
     // Now update the attribute value and make sure it's reflected.
-    has_no_mapping->setAttribute("partmap", "partname1 partname2");
+    has_no_mapping->setAttribute("exportparts", "partname1: partname2");
     const NamesMap* part_names_map = has_no_mapping->PartNamesMap();
     ASSERT_TRUE(part_names_map);
     ASSERT_EQ(1UL, part_names_map->size());

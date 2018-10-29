@@ -28,9 +28,9 @@ WTF::TextStream& FEBoxReflect::ExternalRepresentation(WTF::TextStream& ts,
 }
 
 sk_sp<PaintFilter> FEBoxReflect::CreateImageFilter() {
-  return PaintFilterBuilder::BuildBoxReflectFilter(
-      reflection_,
-      PaintFilterBuilder::Build(InputEffect(0), OperatingInterpolationSpace()));
+  return paint_filter_builder::BuildBoxReflectFilter(
+      reflection_, paint_filter_builder::Build(InputEffect(0),
+                                               OperatingInterpolationSpace()));
 }
 
 }  // namespace blink

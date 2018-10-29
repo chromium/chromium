@@ -58,7 +58,7 @@ class NativeAppWindow : public ui::BaseWindow,
 
   // Allows the window to handle unhandled keyboard messages coming back from
   // the renderer.
-  virtual void HandleKeyboardEvent(
+  virtual bool HandleKeyboardEvent(
       const content::NativeWebKeyboardEvent& event) = 0;
 
   // Returns true if the window has no frame, as for a window opened by

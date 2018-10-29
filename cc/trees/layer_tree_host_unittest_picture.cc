@@ -4,6 +4,7 @@
 
 #include "cc/trees/layer_tree_host.h"
 
+#include "base/time/time.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/fake_picture_layer_impl.h"
@@ -193,7 +194,8 @@ class LayerTreeHostPictureTestResizeViewportWithGpuRaster
         // consider picking a new tile size.
         picture_->SetBounds(gfx::Size(768, 1056));
         layer_tree_host()->SetViewportSizeAndScale(gfx::Size(768, 1056), 1.f,
-                                                   viz::LocalSurfaceId());
+                                                   viz::LocalSurfaceId(),
+                                                   base::TimeTicks());
         break;
       case 2:
         EndTest();
@@ -598,8 +600,8 @@ class LayerTreeHostPictureTestForceRecalculateScales
     root->AddChild(normal_layer_);
 
     layer_tree_host()->SetRootLayer(root);
-    layer_tree_host()->SetViewportSizeAndScale(size, 1.f,
-                                               viz::LocalSurfaceId());
+    layer_tree_host()->SetViewportSizeAndScale(size, 1.f, viz::LocalSurfaceId(),
+                                               base::TimeTicks());
 
     client_.set_fill_with_nonsolid_color(true);
     client_.set_bounds(size);

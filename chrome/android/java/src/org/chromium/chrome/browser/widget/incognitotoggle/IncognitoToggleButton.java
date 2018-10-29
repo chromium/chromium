@@ -7,16 +7,17 @@ package org.chromium.chrome.browser.widget.incognitotoggle;
 import android.content.Context;
 import android.support.annotation.StringRes;
 import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.widget.TintedImageButton;
 
 /**
  * A {@link View} that allows a user to toggle between incognito and normal {@link TabModel}s. This
@@ -24,7 +25,7 @@ import org.chromium.chrome.browser.widget.TintedImageButton;
  * TabModelSelector switches between normal and incognito modes. It can be subclassed (e.g. as is
  * done in IncognitoToggleButtonTablet) to add additional behaviors.
  */
-public class IncognitoToggleButton extends TintedImageButton {
+public class IncognitoToggleButton extends AppCompatImageButton {
     // TODO(crbug.com/843749): refactor this class so it doesn't need to hold a reference to
     // TabModelSelector.
     protected TabModelSelector mTabModelSelector;
@@ -73,8 +74,9 @@ public class IncognitoToggleButton extends TintedImageButton {
      */
     protected void setImage(boolean isIncognitoSelected) {
         setImageResource(R.drawable.incognito_simple);
-        setTint(AppCompatResources.getColorStateList(getContext(),
-                isIncognitoSelected ? R.color.white_mode_tint : R.color.dark_mode_tint));
+        ApiCompatibilityUtils.setImageTintList(this,
+                AppCompatResources.getColorStateList(getContext(),
+                        isIncognitoSelected ? R.color.white_mode_tint : R.color.dark_mode_tint));
     }
 
     private void updateButtonResource() {

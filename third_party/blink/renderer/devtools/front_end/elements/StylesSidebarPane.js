@@ -1639,6 +1639,8 @@ Elements.StylePropertiesSection = class {
       event.consume(true);
       return;
     }
+    if (this.element.hasSelection())
+      return;
     this._startEditingAtFirstPosition();
     event.consume(true);
   }
@@ -2107,7 +2109,7 @@ Elements.StylesSidebarPane.CSSPropertyPrompt = class extends UI.TextPrompt {
       case 'ArrowDown':
       case 'PageUp':
       case 'PageDown':
-        if (this._handleNameOrValueUpDown(event)) {
+        if (!this.isSuggestBoxVisible() && this._handleNameOrValueUpDown(event)) {
           event.preventDefault();
           return;
         }

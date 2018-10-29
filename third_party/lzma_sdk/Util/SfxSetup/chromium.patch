@@ -1,0 +1,33 @@
+diff \Users\rogerta\Documents\Visual Studio 2017\Projects\7z.1514.orig\C\Util\SfxSetup\Precomp.h .\Precomp.h
+7,8c7,8
+< #include "../../Compiler.h"
+< #include "../../7zTypes.h"
+---
+> #include "Compiler.h"
+> #include "7zTypes.h"
+diff \Users\rogerta\Documents\Visual Studio 2017\Projects\7z.1514.orig\C\Util\SfxSetup\SfxSetup.c .\SfxSetup.c
+13a14,16
+> #include <windows.h>
+> #include <shellapi.h>
+>
+18,22c21,25
+< #include "../../7z.h"
+< #include "../../7zAlloc.h"
+< #include "../../7zCrc.h"
+< #include "../../7zFile.h"
+< #include "../../CpuArch.h"
+---
+> #include "7z.h"
+> #include "7zAlloc.h"
+> #include "7zCrc.h"
+> #include "7zFile.h"
+> #include "CpuArch.h"
+445c448
+<           unsigned len = (unsigned)wcslen(name);
+---
+>           unsigned len2 = (unsigned)wcslen(name);
+447c450
+<           unsigned extPrice = FindItem(kExts, sizeof(kExts) / sizeof(kExts[0]), name + len - extLen, extLen);
+---
+>           unsigned extPrice = FindItem(kExts, sizeof(kExts) / sizeof(kExts[0]), name + len2 - extLen, extLen);
+

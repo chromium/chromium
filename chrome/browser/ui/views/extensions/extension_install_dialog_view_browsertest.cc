@@ -294,7 +294,7 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
 
  private:
   ExtensionInstallPrompt::PromptType type_ =
-      ExtensionInstallPrompt::INLINE_INSTALL_PROMPT;
+      ExtensionInstallPrompt::INSTALL_PROMPT;
   bool from_webstore_ = false;
   PermissionMessages permissions_;
   std::vector<base::FilePath> retained_files_;
@@ -330,12 +330,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
                        InvokeUi_FromWebstore) {
+  set_type(ExtensionInstallPrompt::WEBSTORE_WIDGET_PROMPT);
   set_from_webstore();
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
                        InvokeUi_FromWebstoreWithPermission) {
+  set_type(ExtensionInstallPrompt::WEBSTORE_WIDGET_PROMPT);
   set_from_webstore();
   AddPermission("Example permission");
   ShowAndVerifyUi();
@@ -421,7 +423,7 @@ void ExtensionInstallDialogRatingsSectionTest::TestRatingsSectionA11y(
       "Testing with %d ratings, %f average rating. Expected text: '%s'.",
       num_ratings, average_rating, expected_text.c_str()));
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt =
-      CreatePrompt(ExtensionInstallPrompt::INLINE_INSTALL_PROMPT);
+      CreatePrompt(ExtensionInstallPrompt::REPAIR_PROMPT);
   prompt->SetWebstoreData("1,234", true, average_rating, num_ratings);
 
   ExtensionInstallDialogView* dialog = new ExtensionInstallDialogView(

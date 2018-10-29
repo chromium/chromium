@@ -14,7 +14,7 @@ import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 
-import org.chromium.base.AsyncTask;
+import org.chromium.base.task.AsyncTask;
 
 import java.io.IOException;
 

@@ -11,8 +11,8 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.VisibleForTesting;
+import org.chromium.base.task.AsyncTask;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;

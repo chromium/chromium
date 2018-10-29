@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/material_components/chrome_app_bar_view_controller.h"
@@ -45,9 +46,26 @@
         self.collectionView;
     // After all other views have been registered.
     [self addChildViewController:_appBarViewController];
+    // Match the width of the parent view.
+    CGRect frame = self.appBarViewController.view.frame;
+    frame.origin.x = 0;
+    frame.size.width =
+        self.appBarViewController.parentViewController.view.bounds.size.width;
+    self.appBarViewController.view.frame = frame;
     [self.view addSubview:self.appBarViewController.view];
     [self.appBarViewController didMoveToParentViewController:self];
+
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(contentSizeCategoryDidChange:)
+               name:UIContentSizeCategoryDidChangeNotification
+             object:nil];
   }
+}
+
+- (void)contentSizeCategoryDidChange:(id)sender {
+  [MDCCollectionViewCell cr_clearPreferredHeightForWidthCellCache];
+  [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
 - (UIViewController*)childViewControllerForStatusBarHidden {

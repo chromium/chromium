@@ -41,7 +41,8 @@ enum class SystemTrayItemUmaType {
   UMA_USER = 24,
   UMA_VPN = 25,
   UMA_NIGHT_LIGHT = 26,
-  UMA_COUNT = 27,
+  UMA_QUIET_MODE = 27,
+  UMA_COUNT = 28,
 };
 
 }  // namespace ash

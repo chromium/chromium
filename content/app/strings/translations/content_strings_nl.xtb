@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1018939186200882850">menu-item</translation>
-<translation id="1020833440720551630">audiotrack dempen</translation>
 <translation id="10623998915015855">schakelknop</translation>
 <translation id="1088086359088493902">Seconden</translation>
 <translation id="1171774979989969504">Geef een e-mailadres op.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">bronvermelding</translation>
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="1548116112524424341">Video in de scherm-in-scherm-modus afspelen</translation>
 <translation id="1589122976691792535">regio</translation>
 <translation id="1591562245178063882">Deze maand</translation>
 <translation id="1637811476055996098">Bestanden kiezen</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">boomstructuur</translation>
 <translation id="1822429046913737220">a.m./p.m.</translation>
 <translation id="1832974991323546415">afspelen op extern apparaat</translation>
-<translation id="1838818994221231429">volledig scherm met display-cutoutgebied schakelen</translation>
 <translation id="190587075670221089">verwijdering</translation>
 <translation id="1907737156431278478">voorbeeld</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">tijd</translation>
 <translation id="5630795885300617244">Dubbeltik links of rechts om 10 seconden over te slaan</translation>
 <translation id="5631759159893697722">uittreksel</translation>
-<translation id="5641012560118721995">afspelen onderbreken</translation>
 <translation id="5643186887447432888">knop</translation>
 <translation id="5677946354068040947">meer opties</translation>
 <translation id="576709008726043716">inleiding</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Resetten</translation>
 <translation id="5966707198760109579">Week</translation>
 <translation id="5987525920412732405">draaiknop</translation>
+<translation id="6011459053400940133">volumeregelaar</translation>
 <translation id="6015796118275082299">Jaar</translation>
 <translation id="6023896073578205740">keuzelijst</translation>
-<translation id="6101327004457443354">dempen van audiotrack opheffen</translation>
 <translation id="6150588977291308318">bibliografie</translation>
 <translation id="6164829606128959761">meter</translation>
 <translation id="6166809985690652833">nawoord</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Uur</translation>
 <translation id="7681220483256441252">index</translation>
 <translation id="7720026100085573005">resterende tijd</translation>
-<translation id="7740016676195725605">het weergeven van ondertiteling stoppen</translation>
 <translation id="7740050170769002709">HTML-content</translation>
 <translation id="7750228210027921155">Scherm-in-scherm</translation>
 <translation id="7789962463072032349">onderbreken</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">zoektekstveld</translation>
 <translation id="8057695513531652401">kennisgeving</translation>
 <translation id="8105797009065549151">opmerkingsreferentie</translation>
-<translation id="8115662671911883373">het weergeven van ondertiteling starten</translation>
 <translation id="8117451130807776954">Deze week</translation>
-<translation id="819205353528511139">film afspelen op volledig scherm</translation>
 <translation id="8199524924445686405">jjjj</translation>
 <translation id="8284326494547611709">Ondertiteling</translation>
 <translation id="835897206747267392">Ongeldige waarde.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">afspelen bedienen op afstand</translation>
 <translation id="862370744433916922">ondertitel</translation>
 <translation id="8750798805984357768">Selecteer een van deze opties.</translation>
-<translation id="8785498733064193001">afspelen starten</translation>
 <translation id="8808573423886751634">hoofdstuk</translation>
 <translation id="8845239796550121995">Wordt nu gecast naar je tv</translation>
 <translation id="8851136666856101339">hoofd</translation>

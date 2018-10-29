@@ -37,7 +37,7 @@ class MultiResolutionImageResourceFetcher {
       const GURL& image_url,
       blink::WebLocalFrame* frame,
       int id,
-      blink::WebURLRequest::RequestContext request_context,
+      blink::mojom::RequestContextType request_context,
       blink::mojom::FetchCacheMode cache_mode,
       Callback callback);
 

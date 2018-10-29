@@ -407,7 +407,7 @@ public class DataReductionStatsPreference extends Preference {
         final long compressedTotalBytes = mReceivedNetworkStatsHistory.getTotalBytes();
         mReceivedTotalPhrase = FileSizeUtil.formatFileSize(context, compressedTotalBytes);
         final long originalTotalBytes = mOriginalNetworkStatsHistory.getTotalBytes();
-        final long savingsTotalBytes = originalTotalBytes - compressedTotalBytes;
+        final long savingsTotalBytes = Math.max(originalTotalBytes - compressedTotalBytes, 0);
         mSavingsTotalPhrase = FileSizeUtil.formatFileSize(context, savingsTotalBytes);
         if (mIsFirstDayChart) {
             // Only show the current date on the left hand side for the single-day-chart.

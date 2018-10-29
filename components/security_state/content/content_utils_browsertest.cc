@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "components/security_state/content/ssl_status_input_event_data.h"
 #include "components/security_state/core/insecure_input_event_data.h"
 #include "components/security_state/core/security_state.h"
@@ -48,10 +49,17 @@ class SecurityStateContentUtilsBrowserTest
   DISALLOW_COPY_AND_ASSIGN(SecurityStateContentUtilsBrowserTest);
 };
 
+#if defined(OS_WIN)
+#define MAYBE_VisibleSecurityStateNonsecureFormInputs \
+  DISABLED_VisibleSecurityStateNonsecureFormInputs
+#else
+#define MAYBE_VisibleSecurityStateNonsecureFormInputs \
+  VisibleSecurityStateNonsecureFormInputs
+#endif
 // Tests that the NavigationEntry's flags for nonsecure password/credit
 // card inputs are reflected in the VisibleSecurityState.
 IN_PROC_BROWSER_TEST_F(SecurityStateContentUtilsBrowserTest,
-                       VisibleSecurityStateNonsecureFormInputs) {
+                       MAYBE_VisibleSecurityStateNonsecureFormInputs) {
   ASSERT_TRUE(https_server_.Start());
   EXPECT_TRUE(NavigateToURL(shell(), https_server_.GetURL("/hello.html")));
 
@@ -94,9 +102,16 @@ IN_PROC_BROWSER_TEST_F(SecurityStateContentUtilsBrowserTest,
                   .credit_card_field_edited);
 }
 
+#if defined(OS_WIN)
+#define MAYBE_VisibleSecurityStateInsecureFieldEdit \
+  DISABLED_VisibleSecurityStateInsecureFieldEdit
+#else
+#define MAYBE_VisibleSecurityStateInsecureFieldEdit \
+  VisibleSecurityStateInsecureFieldEdit
+#endif
 // Tests that the flags for nonsecure editing are set correctly.
 IN_PROC_BROWSER_TEST_F(SecurityStateContentUtilsBrowserTest,
-                       VisibleSecurityStateInsecureFieldEdit) {
+                       MAYBE_VisibleSecurityStateInsecureFieldEdit) {
   ASSERT_TRUE(https_server_.Start());
   EXPECT_TRUE(NavigateToURL(shell(), https_server_.GetURL("/hello.html")));
 

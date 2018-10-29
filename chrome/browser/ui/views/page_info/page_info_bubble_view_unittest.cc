@@ -21,17 +21,13 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "device/base/mock_device_client.h"
-#include "device/usb/mock_usb_device.h"
-#include "device/usb/mock_usb_service.h"
-#include "device/usb/mojo/type_converters.h"
+#include "device/usb/public/cpp/fake_usb_device_manager.h"
 #include "device/usb/public/mojom/device.mojom.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
-#include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
@@ -87,34 +83,17 @@ class PageInfoBubbleViewTestApi {
       return base::ASCIIToUTF16(name);
   }
 
-  // Returns the permission label text of the |index|th permission selector row.
-  // This function returns an empty string if the permission selector row's
-  // |label_| element isn't actually a |views::Label|.
   base::string16 GetPermissionLabelTextAt(int index) {
-    views::View* view = GetPermissionSelectorAt(index)->label_;
-    if (view->GetClassName() == views::Label::kViewClassName) {
-      return static_cast<views::Label*>(view)->text();
-    }
-    return base::string16();
+    return GetPermissionSelectorAt(index)->label_->text();
   }
 
-  base::string16 GetPermissionButtonTextAt(int index) {
-    views::View* view = GetPermissionSelectorAt(index)->button();
-    if (view->GetClassName() == views::MenuButton::kViewClassName) {
-      return static_cast<views::MenuButton*>(view)->GetText();
-    } else if (view->GetClassName() == views::Combobox::kViewClassName) {
-      views::Combobox* combobox = static_cast<views::Combobox*>(view);
-      return combobox->GetTextForRow(combobox->GetSelectedRow());
-    } else {
-      NOTREACHED() << "Unknown class " << view->GetClassName();
-      return base::string16();
-    }
+  base::string16 GetPermissionComboboxTextAt(int index) {
+    auto* combobox = GetPermissionSelectorAt(index)->combobox_;
+    return combobox->GetTextForRow(combobox->GetSelectedRow());
   }
 
   void SimulateUserSelectingComboboxItemAt(int selector_index, int menu_index) {
-    views::View* view = GetPermissionSelectorAt(selector_index)->button();
-    DCHECK_EQ(views::Combobox::kViewClassName, view->GetClassName());
-    views::Combobox* combobox = static_cast<views::Combobox*>(view);
+    auto* combobox = GetPermissionSelectorAt(selector_index)->combobox_;
     combobox->SetSelectedRow(menu_index);
   }
 
@@ -188,7 +167,6 @@ class PageInfoBubbleViewTest : public testing::Test {
   void TearDown() override { parent_window_->CloseNow(); }
 
  protected:
-  device::MockDeviceClient device_client_;
   ScopedWebContentsTestHelper web_contents_helper_;
   views::ScopedViewsTestHelper views_helper_;
 
@@ -268,23 +246,23 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
 
   // Verify labels match the settings on the PermissionInfoList.
   EXPECT_EQ(base::ASCIIToUTF16("Location"), api_->GetPermissionLabelTextAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16("Allow"), api_->GetPermissionButtonTextAt(0));
+  EXPECT_EQ(base::ASCIIToUTF16("Allow"), api_->GetPermissionComboboxTextAt(0));
 
   // Verify calling SetPermissionInfo() directly updates the UI.
   list.back().setting = CONTENT_SETTING_BLOCK;
   api_->SetPermissionInfo(list);
-  EXPECT_EQ(base::ASCIIToUTF16("Block"), api_->GetPermissionButtonTextAt(0));
+  EXPECT_EQ(base::ASCIIToUTF16("Block"), api_->GetPermissionComboboxTextAt(0));
 
   // Simulate a user selection via the UI. Note this will also cover logic in
   // PageInfo to update the pref.
   api_->SimulateUserSelectingComboboxItemAt(0, 1);
   EXPECT_EQ(num_expected_children, api_->permissions_view()->child_count());
-  EXPECT_EQ(base::ASCIIToUTF16("Allow"), api_->GetPermissionButtonTextAt(0));
+  EXPECT_EQ(base::ASCIIToUTF16("Allow"), api_->GetPermissionComboboxTextAt(0));
 
   // Setting to the default via the UI should keep the button around.
   api_->SimulateUserSelectingComboboxItemAt(0, 0);
   EXPECT_EQ(base::ASCIIToUTF16("Ask (default)"),
-            api_->GetPermissionButtonTextAt(0));
+            api_->GetPermissionComboboxTextAt(0));
   EXPECT_EQ(num_expected_children, api_->permissions_view()->child_count());
 
   // However, since the setting is now default, recreating the dialog with those
@@ -303,13 +281,17 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
   EXPECT_EQ(kExpectedChildren, api_->permissions_view()->child_count());
 
   const GURL origin = GURL(kUrl).GetOrigin();
-  scoped_refptr<device::UsbDevice> device =
-      new device::MockUsbDevice(0, 0, "Google", "Gizmo", "1234567890");
-  auto device_info = device::mojom::UsbDeviceInfo::From(*device);
-  DCHECK(device_info);
-  device_client_.usb_service()->AddDevice(device);
+
+  // Connect the UsbChooserContext with FakeUsbDeviceManager.
+  device::FakeUsbDeviceManager usb_device_manager;
+  device::mojom::UsbDeviceManagerPtr device_manager_ptr;
+  usb_device_manager.AddBinding(mojo::MakeRequest(&device_manager_ptr));
   UsbChooserContext* store =
       UsbChooserContextFactory::GetForProfile(web_contents_helper_.profile());
+  store->SetDeviceManagerForTesting(std::move(device_manager_ptr));
+
+  auto device_info = usb_device_manager.CreateAndAddDevice(
+      0, 0, "Google", "Gizmo", "1234567890");
   store->GrantDevicePermission(origin, origin, *device_info);
 
   PermissionInfoList list;
@@ -336,7 +318,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
   button_listener->ButtonPressed(button, event);
   api_->SetPermissionInfo(list);
   EXPECT_EQ(kExpectedChildren, api_->permissions_view()->child_count());
-  EXPECT_FALSE(store->HasDevicePermission(origin, origin, device));
+  EXPECT_FALSE(store->HasDevicePermission(origin, origin, *device_info));
 }
 
 TEST_F(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
@@ -359,22 +341,22 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
   num_expected_children += kViewsPerPermissionRow * list.size();
   list.back().setting = CONTENT_SETTING_BLOCK;
   api_->SetPermissionInfo(list);
-  EXPECT_EQ(base::ASCIIToUTF16("Block"), api_->GetPermissionButtonTextAt(0));
+  EXPECT_EQ(base::ASCIIToUTF16("Block"), api_->GetPermissionComboboxTextAt(0));
 
   // Simulate a user selection via the UI. Note this will also cover logic in
   // PageInfo to update the pref.
   api_->SimulateUserSelectingComboboxItemAt(0, 2);
   EXPECT_EQ(num_expected_children, api_->permissions_view()->child_count());
-  EXPECT_EQ(base::ASCIIToUTF16("Ask"), api_->GetPermissionButtonTextAt(0));
+  EXPECT_EQ(base::ASCIIToUTF16("Ask"), api_->GetPermissionComboboxTextAt(0));
 
   // Setting to the default via the UI should keep the button around.
-    api_->SimulateUserSelectingComboboxItemAt(0, 0);
-    EXPECT_EQ(base::ASCIIToUTF16("Ask (default)"),
-              api_->GetPermissionButtonTextAt(0));
+  api_->SimulateUserSelectingComboboxItemAt(0, 0);
+  EXPECT_EQ(base::ASCIIToUTF16("Ask (default)"),
+            api_->GetPermissionComboboxTextAt(0));
   EXPECT_EQ(num_expected_children, api_->permissions_view()->child_count());
 
-  // However, since the setting is now default, recreating the dialog with those
-  // settings should omit the permission from the UI.
+  // However, since the setting is now default, recreating the dialog with
+  // those settings should omit the permission from the UI.
   //
   // TODO(https://crbug.com/829576): Reconcile the comment above with the fact
   // that |num_expected_children| is not, at this point, 0 and therefore the

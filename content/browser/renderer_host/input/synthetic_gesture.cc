@@ -52,4 +52,8 @@ std::unique_ptr<SyntheticGesture> SyntheticGesture::Create(
   }
 }
 
+bool SyntheticGesture::AllowHighFrequencyDispatch() const {
+  return true;
+}
+
 }  // namespace content

@@ -57,10 +57,8 @@ void VerifyMappings(const GCMAccountMapper::AccountMappings& expected_mappings,
                     const std::string& verification_info) {
   EXPECT_EQ(expected_mappings.size(), actual_mappings.size())
       << "Verification Info: " << verification_info;
-  GCMAccountMapper::AccountMappings::const_iterator expected_iter =
-      expected_mappings.begin();
-  GCMAccountMapper::AccountMappings::const_iterator actual_iter =
-      actual_mappings.begin();
+  auto expected_iter = expected_mappings.begin();
+  auto actual_iter = actual_mappings.begin();
   for (; expected_iter != expected_mappings.end() &&
              actual_iter != actual_mappings.end();
        ++expected_iter, ++actual_iter) {
@@ -948,8 +946,7 @@ TEST_F(GCMAccountMapperTest, DispatchMessageSentToGaiaID) {
 
   EXPECT_EQ(kTestAppId, last_received_app_id());
   EXPECT_EQ(1UL, last_received_message().data.size());
-  MessageData::const_iterator it =
-      last_received_message().data.find(kTestDataKey);
+  auto it = last_received_message().data.find(kTestDataKey);
   EXPECT_TRUE(it != last_received_message().data.end());
   EXPECT_EQ(kTestDataValue, it->second);
   EXPECT_EQ(kTestCollapseKey, last_received_message().collapse_key);

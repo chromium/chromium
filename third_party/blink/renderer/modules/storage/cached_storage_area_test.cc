@@ -15,7 +15,8 @@ namespace blink {
 
 using FormatOption = CachedStorageArea::FormatOption;
 
-class CachedStorageAreaTest : public testing::Test {
+class CachedStorageAreaTest : public testing::Test,
+                              public CachedStorageArea::InspectorEventListener {
  public:
   const scoped_refptr<SecurityOrigin> kOrigin =
       SecurityOrigin::CreateFromString("http://dom_storage/");
@@ -31,11 +32,11 @@ class CachedStorageAreaTest : public testing::Test {
     if (IsSessionStorage()) {
       cached_area_ = CachedStorageArea::CreateForSessionStorage(
           kOrigin, mock_storage_area_.GetAssociatedInterfacePtr(),
-          renderer_scheduler_->IPCTaskRunner());
+          renderer_scheduler_->IPCTaskRunner(), this);
     } else {
       cached_area_ = CachedStorageArea::CreateForLocalStorage(
           kOrigin, mock_storage_area_.GetInterfacePtr(),
-          renderer_scheduler_->IPCTaskRunner());
+          renderer_scheduler_->IPCTaskRunner(), this);
     }
     source_area_ = new FakeAreaSource(kPageUrl);
     source_area_id_ = cached_area_->RegisterSource(source_area_);
@@ -43,6 +44,11 @@ class CachedStorageAreaTest : public testing::Test {
     source_area2_ = new FakeAreaSource(kPageUrl2);
     cached_area_->RegisterSource(source_area2_);
   }
+
+  void DidDispatchStorageEvent(const SecurityOrigin* origin,
+                               const String& key,
+                               const String& old_value,
+                               const String& new_value) override {}
 
   virtual bool IsSessionStorage() { return false; }
 

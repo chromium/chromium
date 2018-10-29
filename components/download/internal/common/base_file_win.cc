@@ -15,7 +15,7 @@
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "components/download/public/common/download_stats.h"
 
@@ -235,7 +235,7 @@ DownloadInterruptReason MapShFileOperationCodes(int code) {
 // Returns a network error, or net::OK for success.
 DownloadInterruptReason BaseFile::MoveFileAndAdjustPermissions(
     const base::FilePath& new_path) {
-  base::AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
 
   // The parameters to SHFileOperation must be terminated with 2 NULL chars.
   base::FilePath::StringType source = full_path_.value();

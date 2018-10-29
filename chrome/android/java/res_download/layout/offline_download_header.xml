@@ -16,11 +16,11 @@
         android:id="@+id/layout_container"
         style="@style/ListItemContainer" >
 
-        <org.chromium.chrome.browser.widget.TintedImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/icon_view"
             style="@style/DownloadIconView"
             android:src="@drawable/ic_chrome"
-            app:chrometint="@color/dark_mode_tint" />
+            app:tint="@color/dark_mode_tint" />
 
         <RelativeLayout
             android:id="@+id/completed_layout"
@@ -47,7 +47,7 @@
                     android:layout_weight="0"
                     android:visibility="gone" />
 
-                <org.chromium.chrome.browser.widget.TintedImageView
+                <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/expand_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
                     android:paddingEnd="16dp"
                     tools:ignore="ContentDescription"
                     android:src="@drawable/ic_expand_more_black_24dp"
-                    app:chrometint="@color/dark_mode_tint" />
+                    app:tint="@color/dark_mode_tint" />
             </LinearLayout>
 
             <TextView

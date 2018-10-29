@@ -48,7 +48,7 @@ void RequestSender::InsertRequest(
 }
 
 std::unique_ptr<PendingRequest> RequestSender::RemoveRequest(int request_id) {
-  PendingRequestMap::iterator i = pending_requests_.find(request_id);
+  auto i = pending_requests_.find(request_id);
   if (i == pending_requests_.end())
     return std::unique_ptr<PendingRequest>();
   std::unique_ptr<PendingRequest> result = std::move(i->second);
@@ -145,8 +145,7 @@ void RequestSender::HandleResponse(int request_id,
 }
 
 void RequestSender::InvalidateSource(Source* source) {
-  for (PendingRequestMap::iterator it = pending_requests_.begin();
-       it != pending_requests_.end();) {
+  for (auto it = pending_requests_.begin(); it != pending_requests_.end();) {
     if (it->second->source == source)
       pending_requests_.erase(it++);
     else

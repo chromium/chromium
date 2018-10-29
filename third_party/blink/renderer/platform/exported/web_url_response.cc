@@ -249,7 +249,7 @@ void WebURLResponse::SetCTPolicyCompliance(
       resource_response_->SetCTPolicyCompliance(
           ResourceResponse::kCTPolicyComplies);
       break;
-    case net::ct::CTPolicyCompliance::CT_POLICY_MAX:
+    case net::ct::CTPolicyCompliance::CT_POLICY_COUNT:
       NOTREACHED();
       resource_response_->SetCTPolicyCompliance(
           ResourceResponse::kCTPolicyComplianceDetailsNotAvailable);

@@ -4,7 +4,6 @@
 
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/json_schema_compiler/json_features.gni")
 
 assert(enable_extensions)
@@ -20,11 +19,5 @@ json_features("extension_features_unittest") {
 group("test_features") {
   public_deps = [
     ":extension_features_unittest",
-  ]
-}
-
-mojom("mojo_bindings") {
-  sources = [
-    "mojom/inline_install.mojom",
   ]
 }

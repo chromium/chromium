@@ -113,21 +113,28 @@ void FakeAuthPolicyClient::AuthenticateUser(
   DCHECK(tpm_util::IsActiveDirectoryLocked());
   authpolicy::ErrorType error = authpolicy::ERROR_NONE;
   authpolicy::ActiveDirectoryAccountInfo account_info;
-  if (!started_) {
+  if (auth_error_ != authpolicy::ERROR_NONE) {
+    error = auth_error_;
+  } else if (!started_) {
     LOG(ERROR) << "authpolicyd not started";
     error = authpolicy::ERROR_DBUS_FAILURE;
   } else {
-    if (auth_error_ == authpolicy::ERROR_NONE) {
-      if (request.account_id().empty())
-        account_info.set_account_id(
-            base::MD5String(request.user_principal_name()));
-      else
-        account_info.set_account_id(request.account_id());
-    }
-    error = auth_error_;
+    std::vector<std::string> parts =
+        base::SplitString(request.user_principal_name(), "@",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (parts.size() != 2 || parts[0].empty() || parts[1].empty())
+      error = authpolicy::ERROR_PARSE_UPN_FAILED;
   }
-  if (error == authpolicy::ERROR_NONE)
+
+  if (error == authpolicy::ERROR_NONE) {
+    if (request.account_id().empty()) {
+      account_info.set_account_id(
+          base::MD5String(request.user_principal_name()));
+    } else {
+      account_info.set_account_id(request.account_id());
+    }
     SetUserKerberosFiles(kDefaultKerberosCreds, kDefaultKerberosConf);
+  }
   PostDelayedClosure(base::BindOnce(std::move(callback), error, account_info),
                      dbus_operation_delay_);
 }

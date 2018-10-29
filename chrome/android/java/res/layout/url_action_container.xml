@@ -4,8 +4,7 @@
      found in the LICENSE file. -->
 
 <merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout android:id="@+id/url_action_container"
         android:layout_width="wrap_content"
@@ -13,27 +12,27 @@
         android:layout_gravity="end|center_vertical"
         android:orientation="horizontal" >
 
-        <org.chromium.chrome.browser.widget.TintedImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/delete_button"
             style="@style/LocationBarActionButton"
             android:src="@drawable/btn_delete_24dp"
             android:visibility="invisible"
             android:contentDescription="@string/accessibility_toolbar_btn_delete_url" />
 
-        <org.chromium.chrome.browser.widget.TintedImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/mic_button"
             style="@style/LocationBarActionButton"
             android:src="@drawable/btn_mic"
             android:visibility="invisible"
             android:contentDescription="@string/accessibility_toolbar_btn_mic" />
 
-        <org.chromium.chrome.browser.widget.TintedImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/bookmark_button"
             style="@style/LocationBarActionButton"
             android:visibility="gone"
             android:contentDescription="@string/accessibility_menu_bookmark" />
 
-       <org.chromium.chrome.browser.widget.TintedImageButton
+       <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/save_offline_button"
             style="@style/LocationBarActionButton"
             android:nextFocusForward="@+id/menu_button"

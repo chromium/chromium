@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "cc/resources/resource_pool.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -270,5 +270,9 @@ uint64_t ZeroCopyRasterBufferProvider::SetReadyToDrawCallback(
 }
 
 void ZeroCopyRasterBufferProvider::Shutdown() {}
+
+bool ZeroCopyRasterBufferProvider::CheckRasterFinishedQueries() {
+  return false;
+}
 
 }  // namespace cc

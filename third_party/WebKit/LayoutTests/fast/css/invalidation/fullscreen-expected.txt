@@ -2,7 +2,6 @@ Test that descendant invalidation works with fullscreen pseudo classes.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(full).backgroundColor is red
 PASS internals.updateStyleAndReturnAffectedElementCount() is 2
 PASS getComputedStyle(full).backgroundColor is green

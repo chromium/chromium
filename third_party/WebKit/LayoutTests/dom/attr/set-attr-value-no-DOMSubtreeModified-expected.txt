@@ -2,7 +2,6 @@ Tests that setting Attr.value does not fire a DOMSubtreeModified event.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS wasDOMSubtreeModifiedFired is false
 PASS wasDOMSubtreeModifiedFired is false
 PASS successfullyParsed is true

@@ -49,7 +49,7 @@ class LinkSelectionTestBase : public testing::Test {
 
   String GetSelectionText();
 
-  FrameTestHelpers::WebViewHelper helper_;
+  frame_test_helpers::WebViewHelper helper_;
   WebViewImpl* web_view_ = nullptr;
   Persistent<WebLocalFrameImpl> main_frame_ = nullptr;
 };
@@ -59,7 +59,7 @@ void LinkSelectionTestBase::EmulateMouseDrag(const IntPoint& down_point,
                                              int modifiers,
                                              DragFlags drag_flags) {
   if (drag_flags & kSendDownEvent) {
-    const auto& down_event = FrameTestHelpers::CreateMouseEvent(
+    const auto& down_event = frame_test_helpers::CreateMouseEvent(
         WebMouseEvent::kMouseDown, WebMouseEvent::Button::kLeft, down_point,
         modifiers);
     web_view_->HandleInputEvent(WebCoalescedInputEvent(down_event));
@@ -71,14 +71,14 @@ void LinkSelectionTestBase::EmulateMouseDrag(const IntPoint& down_point,
   for (int i = 0; i < kMoveEventsNumber; ++i) {
     const auto& move_point =
         down_point + Scaled(up_down_vector, i * kMoveIncrementFraction);
-    const auto& move_event = FrameTestHelpers::CreateMouseEvent(
+    const auto& move_event = frame_test_helpers::CreateMouseEvent(
         WebMouseEvent::kMouseMove, WebMouseEvent::Button::kLeft, move_point,
         modifiers);
     web_view_->HandleInputEvent(WebCoalescedInputEvent(move_event));
   }
 
   if (drag_flags & kSendUpEvent) {
-    const auto& up_event = FrameTestHelpers::CreateMouseEvent(
+    const auto& up_event = frame_test_helpers::CreateMouseEvent(
         WebMouseEvent::kMouseUp, WebMouseEvent::Button::kLeft, up_point,
         modifiers);
     web_view_->HandleInputEvent(WebCoalescedInputEvent(up_event));
@@ -89,7 +89,7 @@ void LinkSelectionTestBase::EmulateMouseClick(const IntPoint& click_point,
                                               WebMouseEvent::Button button,
                                               int modifiers,
                                               int count) {
-  auto event = FrameTestHelpers::CreateMouseEvent(
+  auto event = frame_test_helpers::CreateMouseEvent(
       WebMouseEvent::kMouseDown, button, click_point, modifiers);
   event.click_count = count;
   web_view_->HandleInputEvent(WebCoalescedInputEvent(event));
@@ -101,7 +101,7 @@ void LinkSelectionTestBase::EmulateMouseDown(const IntPoint& click_point,
                                              WebMouseEvent::Button button,
                                              int modifiers,
                                              int count) {
-  auto event = FrameTestHelpers::CreateMouseEvent(
+  auto event = frame_test_helpers::CreateMouseEvent(
       WebMouseEvent::kMouseDown, button, click_point, modifiers);
   event.click_count = count;
   web_view_->HandleInputEvent(WebCoalescedInputEvent(event));
@@ -111,7 +111,7 @@ String LinkSelectionTestBase::GetSelectionText() {
   return main_frame_->SelectionAsText();
 }
 
-class TestFrameClient : public FrameTestHelpers::TestWebFrameClient {
+class TestFrameClient : public frame_test_helpers::TestWebFrameClient {
  public:
   WebNavigationPolicy DecidePolicyForNavigation(
       const NavigationPolicyInfo& info) override {
@@ -135,8 +135,9 @@ class LinkSelectionTest : public LinkSelectionTestBase {
 
     web_view_ = helper_.Initialize(&test_frame_client_);
     main_frame_ = web_view_->MainFrameImpl();
-    FrameTestHelpers::LoadHTMLString(
-        main_frame_, kHTMLString, URLTestHelpers::ToKURL("http://foobar.com"));
+    frame_test_helpers::LoadHTMLString(
+        main_frame_, kHTMLString,
+        url_test_helpers::ToKURL("http://foobar.com"));
     web_view_->Resize(WebSize(800, 600));
     web_view_->GetPage()->GetFocusController().SetActive(true);
 
@@ -286,8 +287,9 @@ class LinkSelectionClickEventsTest : public LinkSelectionTestBase {
 
     web_view_ = helper_.Initialize();
     main_frame_ = web_view_->MainFrameImpl();
-    FrameTestHelpers::LoadHTMLString(
-        main_frame_, kHTMLString, URLTestHelpers::ToKURL("http://foobar.com"));
+    frame_test_helpers::LoadHTMLString(
+        main_frame_, kHTMLString,
+        url_test_helpers::ToKURL("http://foobar.com"));
     web_view_->Resize(WebSize(800, 600));
     web_view_->GetPage()->GetFocusController().SetActive(true);
 

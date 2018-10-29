@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "extensions/browser/api/device_permissions_prompt.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
-#include "extensions/browser/api/web_request/web_request_event_router_delegate.h"
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest_delegate.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper_delegate.h"
@@ -48,6 +47,11 @@ bool ExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
   return false;
 }
 
+void ExtensionsAPIClient::NotifyWebRequestWithheld(
+    int render_process_id,
+    int render_frame_id,
+    const ExtensionId& extension_id) {}
+
 AppViewGuestDelegate* ExtensionsAPIClient::CreateAppViewGuestDelegate() const {
   return NULL;
 }
@@ -79,11 +83,6 @@ WebViewPermissionHelperDelegate* ExtensionsAPIClient::
     CreateWebViewPermissionHelperDelegate(
         WebViewPermissionHelper* web_view_permission_helper) const {
   return new WebViewPermissionHelperDelegate(web_view_permission_helper);
-}
-
-std::unique_ptr<WebRequestEventRouterDelegate>
-ExtensionsAPIClient::CreateWebRequestEventRouterDelegate() const {
-  return nullptr;
 }
 
 scoped_refptr<ContentRulesRegistry>

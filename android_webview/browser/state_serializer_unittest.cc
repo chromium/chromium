@@ -31,7 +31,7 @@ std::unique_ptr<content::NavigationEntry> CreateNavigationEntry() {
   const GURL virtual_url("http://virtual_url");
   content::Referrer referrer;
   referrer.url = GURL("http://referrer_url");
-  referrer.policy = blink::kWebReferrerPolicyOrigin;
+  referrer.policy = network::mojom::ReferrerPolicy::kOrigin;
   const base::string16 title(base::UTF8ToUTF16("title"));
   const content::PageState page_state =
       content::PageState::CreateFromEncodedData("completely bogus state");

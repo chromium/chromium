@@ -88,22 +88,22 @@ PolicyMap::~PolicyMap() {
 }
 
 const PolicyMap::Entry* PolicyMap::Get(const std::string& policy) const {
-  PolicyMapType::const_iterator entry = map_.find(policy);
+  auto entry = map_.find(policy);
   return entry == map_.end() ? nullptr : &entry->second;
 }
 
 PolicyMap::Entry* PolicyMap::GetMutable(const std::string& policy) {
-  PolicyMapType::iterator entry = map_.find(policy);
+  auto entry = map_.find(policy);
   return entry == map_.end() ? nullptr : &entry->second;
 }
 
 const base::Value* PolicyMap::GetValue(const std::string& policy) const {
-  PolicyMapType::const_iterator entry = map_.find(policy);
+  auto entry = map_.find(policy);
   return entry == map_.end() ? nullptr : entry->second.value.get();
 }
 
 base::Value* PolicyMap::GetMutableValue(const std::string& policy) {
-  PolicyMapType::iterator entry = map_.find(policy);
+  auto entry = map_.find(policy);
   return entry == map_.end() ? nullptr : entry->second.value.get();
 }
 
@@ -192,8 +192,8 @@ void PolicyMap::LoadFrom(const base::DictionaryValue* policies,
 void PolicyMap::GetDifferingKeys(const PolicyMap& other,
                                  std::set<std::string>* differing_keys) const {
   // Walk over the maps in lockstep, adding everything that is different.
-  const_iterator iter_this(begin());
-  const_iterator iter_other(other.begin());
+  auto iter_this(begin());
+  auto iter_other(other.begin());
   while (iter_this != end() && iter_other != other.end()) {
     const int diff = iter_this->first.compare(iter_other->first);
     if (diff == 0) {
@@ -251,7 +251,7 @@ bool PolicyMap::MapEntryEquals(const PolicyMap::PolicyMapType::value_type& a,
 void PolicyMap::FilterErase(
     const base::Callback<bool(const const_iterator)>& filter,
     bool deletion_value) {
-  PolicyMapType::iterator iter(map_.begin());
+  auto iter(map_.begin());
   while (iter != map_.end()) {
     if (filter.Run(iter) == deletion_value) {
       map_.erase(iter++);

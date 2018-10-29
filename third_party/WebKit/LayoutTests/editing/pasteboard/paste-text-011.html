@@ -11,8 +11,10 @@ function editingTest() {
     document.body.focus();
     window.getSelection().collapse(document.body, 0);
 
-    if (window.testRunner)
+    if (window.testRunner) {
         testRunner.dumpEditingCallbacks();
+        testRunner.dumpAsLayout();
+    }
 
     Markup.description('There was a bug when pasting at the end of the block.\n'+
     'The content was inserted at the start of the block instead of the end. This tests the insert-at-end case.');

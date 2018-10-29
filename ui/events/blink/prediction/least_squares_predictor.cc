@@ -10,12 +10,12 @@ namespace ui {
 
 namespace {
 
-constexpr double kEpsilon = std::numeric_limits<double>::epsilon();
-
 // Solve XB = y.
 static bool SolveLeastSquares(const gfx::Matrix3F& x,
                               const std::deque<double>& y,
                               gfx::Vector3dF& result) {
+  constexpr double kEpsilon = std::numeric_limits<double>::epsilon();
+
   // return last point if y didn't change.
   if (std::abs(y[0] - y[1]) < kEpsilon && std::abs(y[1] - y[2]) < kEpsilon) {
     result = gfx::Vector3dF(y[2], 0, 0);
@@ -39,6 +39,10 @@ static bool SolveLeastSquares(const gfx::Matrix3F& x,
 LeastSquaresPredictor::LeastSquaresPredictor() {}
 
 LeastSquaresPredictor::~LeastSquaresPredictor() {}
+
+const char* LeastSquaresPredictor::GetName() const {
+  return "LSQ";
+}
 
 void LeastSquaresPredictor::Reset() {
   x_queue_.clear();
@@ -75,14 +79,14 @@ gfx::Matrix3F LeastSquaresPredictor::GetXMatrix() const {
   return x;
 }
 
-bool LeastSquaresPredictor::GeneratePrediction(base::TimeTicks frame_time,
+bool LeastSquaresPredictor::GeneratePrediction(base::TimeTicks predict_time,
                                                InputData* result) const {
-  if (!HasPrediction() || frame_time - time_.back() > kMaxResampleTime)
+  if (!HasPrediction() || predict_time - time_.back() > kMaxResampleTime)
     return false;
 
   gfx::Matrix3F time_matrix = GetXMatrix();
 
-  double dt = (frame_time - time_[0]).InMillisecondsF();
+  double dt = (predict_time - time_[0]).InMillisecondsF();
   if (dt > 0) {
     gfx::Vector3dF b1, b2;
     if (SolveLeastSquares(time_matrix, x_queue_, b1) &&

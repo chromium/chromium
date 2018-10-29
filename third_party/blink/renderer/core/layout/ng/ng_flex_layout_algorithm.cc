@@ -17,7 +17,7 @@ namespace blink {
 
 NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(NGBlockNode node,
                                              const NGConstraintSpace& space,
-                                             NGBreakToken* break_token)
+                                             const NGBreakToken* break_token)
     : NGLayoutAlgorithm(node, space, ToNGBlockBreakToken(break_token)) {}
 
 scoped_refptr<NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {
@@ -36,7 +36,7 @@ scoped_refptr<NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {
   LayoutUnit flex_container_content_inline_size =
       flex_container_content_box_size.inline_size;
 
-  Vector<FlexItem> flex_items;
+  FlexLayoutAlgorithm algorithm(&Style(), flex_container_content_inline_size);
   for (NGLayoutInputNode generic_child = Node().FirstChild(); generic_child;
        generic_child = generic_child.NextSibling()) {
     NGBlockNode child = ToNGBlockNode(generic_child);
@@ -94,14 +94,12 @@ scoped_refptr<NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {
     // https://www.w3.org/TR/css-flexbox-1/#min-size-auto
     MinMaxSize min_max_sizes_in_main_axis_direction{LayoutUnit(),
                                                     LayoutUnit::Max()};
-    flex_items.emplace_back(child.GetLayoutBox(), flex_base_content_size,
-                            min_max_sizes_in_main_axis_direction,
-                            main_axis_border_and_padding, main_axis_margin);
-    flex_items.back().ng_input_node = child;
+    algorithm
+        .emplace_back(child.GetLayoutBox(), flex_base_content_size,
+                      min_max_sizes_in_main_axis_direction,
+                      main_axis_border_and_padding, main_axis_margin)
+        .ng_input_node = child;
   }
-
-  FlexLayoutAlgorithm algorithm(&Style(), flex_container_content_inline_size,
-                                flex_items);
 
   NGBoxStrut borders_scrollbar_padding =
       CalculateBorderScrollbarPadding(ConstraintSpace(), Node());
@@ -116,7 +114,7 @@ scoped_refptr<NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {
     while (!line->ResolveFlexibleLengths()) {
       continue;
     }
-    for (size_t i = 0; i < line->line_items.size(); ++i) {
+    for (wtf_size_t i = 0; i < line->line_items.size(); ++i) {
       FlexItem& flex_item = line->line_items[i];
       NGConstraintSpaceBuilder space_builder(ConstraintSpace());
       NGLogicalSize available_size(flex_item.flexed_content_size +
@@ -129,7 +127,8 @@ scoped_refptr<NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {
       NGConstraintSpace child_space = space_builder.ToConstraintSpace(
           flex_item.box->Style()->GetWritingMode());
       flex_item.layout_result =
-          flex_item.ng_input_node.Layout(child_space, nullptr /*break token*/);
+          ToNGBlockNode(flex_item.ng_input_node)
+              .Layout(child_space, nullptr /*break token*/);
       flex_item.cross_axis_size =
           flex_item.layout_result->PhysicalFragment()->Size().height;
       // TODO(dgrogan): Port logic from
@@ -140,7 +139,7 @@ scoped_refptr<NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {
     // in to the next iteration.
     line->ComputeLineItemsPosition(main_axis_offset, cross_axis_offset);
 
-    for (size_t i = 0; i < line->line_items.size(); ++i) {
+    for (wtf_size_t i = 0; i < line->line_items.size(); ++i) {
       FlexItem& flex_item = line->line_items[i];
       container_builder_.AddChild(
           *flex_item.layout_result,

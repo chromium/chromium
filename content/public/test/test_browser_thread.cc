@@ -26,10 +26,6 @@ TestBrowserThread::TestBrowserThread(
       fake_thread_(
           new BrowserThreadImpl(identifier_, std::move(thread_runner))) {}
 
-TestBrowserThread::TestBrowserThread(BrowserThread::ID identifier,
-                                     base::MessageLoop* message_loop)
-    : TestBrowserThread(identifier, message_loop->task_runner()) {}
-
 TestBrowserThread::~TestBrowserThread() {
   // The upcoming BrowserThreadImpl::ResetGlobalsForTesting() call requires that
   // |identifier_| have completed its SHUTDOWN phase.

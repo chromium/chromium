@@ -6,9 +6,11 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/media/media_internals_handler.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -37,10 +39,14 @@ void MediaInternalsProxy::GetEverything() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   MediaInternals::GetInstance()->SendHistoricalMediaEvents();
+  MediaInternals::GetInstance()->SendGeneralAudioInformation();
+#if !defined(OS_ANDROID)
+  MediaInternals::GetInstance()->SendAudioFocusState();
+#endif
 
   // Ask MediaInternals for its data on IO thread.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&MediaInternalsProxy::GetEverythingOnIOThread, this));
 }
 
@@ -49,10 +55,6 @@ void MediaInternalsProxy::GetEverythingOnIOThread() {
   // TODO(xhwang): Investigate whether we can update on UI thread directly.
   MediaInternals::GetInstance()->SendAudioStreamData();
   MediaInternals::GetInstance()->SendVideoCaptureDeviceCapabilities();
-
-#if !defined(OS_ANDROID)
-  MediaInternals::GetInstance()->SendAudioFocusState();
-#endif
 }
 
 void MediaInternalsProxy::UpdateUIOnUIThread(const base::string16& update) {

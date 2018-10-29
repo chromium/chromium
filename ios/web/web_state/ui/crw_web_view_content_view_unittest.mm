@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/web/public/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -42,6 +43,11 @@ TEST_F(CRWWebViewContentViewTest, ContentInsetWithInsetForPadding) {
 
 // Tests the ContentInset method when shouldUseViewContentInset is set to NO.
 TEST_F(CRWWebViewContentViewTest, ContentInsetWithoutInsetForPadding) {
+  // This functionality has been moved out of the web// layer when
+  // kOutOfWebFullscreen is enabled.
+  if (base::FeatureList::IsEnabled(web::features::kOutOfWebFullscreen))
+    return;
+
   UIView* webView = [[UIView alloc] init];
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   [webView addSubview:scrollView];

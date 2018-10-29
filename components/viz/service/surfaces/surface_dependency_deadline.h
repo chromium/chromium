@@ -57,8 +57,6 @@ class VIZ_SERVICE_EXPORT SurfaceDependencyDeadline : public BeginFrameObserver {
   bool WantsAnimateOnlyBeginFrames() const override;
 
  private:
-  base::Optional<base::TimeDelta> CancelInternal(bool deadline);
-
   SurfaceDeadlineClient* const client_;
   BeginFrameSource* begin_frame_source_ = nullptr;
   const base::TickClock* tick_clock_;

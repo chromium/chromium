@@ -202,8 +202,7 @@ std::vector<PaymentMethodDataPtr> ConvertPaymentMethodDataFromJavaToNative(
     base::android::JavaIntArrayToIntVector(
         env,
         Java_ServiceWorkerPaymentAppBridge_getSupportedNetworksFromMethodData(
-            env, element)
-            .obj(),
+            env, element),
         &supported_network_ints);
     ConvertIntsToEnums<BasicCardNetwork>(supported_network_ints,
                                          &method_data_item->supported_networks);
@@ -212,8 +211,7 @@ std::vector<PaymentMethodDataPtr> ConvertPaymentMethodDataFromJavaToNative(
     base::android::JavaIntArrayToIntVector(
         env,
         Java_ServiceWorkerPaymentAppBridge_getSupportedTypesFromMethodData(
-            env, element)
-            .obj(),
+            env, element),
         &supported_type_ints);
     ConvertIntsToEnums<BasicCardType>(supported_type_ints,
                                       &method_data_item->supported_types);

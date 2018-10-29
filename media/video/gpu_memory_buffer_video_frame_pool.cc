@@ -680,6 +680,8 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
     case PIXEL_FORMAT_Y16:
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_UNKNOWN:
       if (is_software_backed_video_frame) {
         UMA_HISTOGRAM_ENUMERATION(
@@ -1049,8 +1051,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::Shutdown() {
       continue;
 
     media_task_runner_->PostTask(
-        FROM_HERE, base::Bind(&PoolImpl::DeleteFrameResources, gpu_factories_,
-                              base::Owned(frame_resources)));
+        FROM_HERE,
+        base::BindOnce(&PoolImpl::DeleteFrameResources, gpu_factories_,
+                       base::Owned(frame_resources)));
   }
   resources_pool_.clear();
 }

@@ -1,0 +1,212 @@
+{
+  "startingURL": "https://secure2.homedepot.com/mycheckout/checkout#/checkout",
+  "autofillProfile": [
+    {
+      "type": "ADDRESS_HOME_STREET_ADDRESS",
+      "value": "4120 Freidrich Lane, Apt 8"
+    },
+    {
+      "type": "ADDRESS_HOME_ZIP",
+      "value": "78744"
+    },
+    {
+      "type": "CREDIT_CARD_NUMBER",
+      "value": "9621 3279 1175 9602"
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "value": "red.swingline@initech.com"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_EXP_MONTH",
+      "value": "05"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_EXP_YEAR",
+      "value": "2027"
+    },
+    {
+      "type": "NAME_FIRST",
+      "value": "Milton"
+    },
+    {
+      "type": "NAME_LAST",
+      "value": "Waddams"
+    },
+    {
+      "type": "PHONE_HOME_CITY_AND_NUMBER",
+      "value": "(512) 555-1234"
+    }
+  ],
+  "passwordManagerProfiles": [],
+  "actions": [
+    {
+      "selector": "//input[@type=\"text\" and @id=\"firstName\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 1
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Waddams",
+      "selector": "//input[@type=\"text\" and @id=\"lastName\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "NAME_LAST",
+      "action_index": 2
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "red.swingline@initech.com",
+      "selector": "//input[@id=\"emailInput\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "EMAIL_ADDRESS",
+      "action_index": 3
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "(512) 555-1234",
+      "selector": "//input[@id=\"phone\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 4
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "(512) 555-1234",
+      "selector": "//input[@id=\"phone\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 5
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane, Apt 8",
+      "selector": "//input[@id=\"shippingAddress\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_STREET_ADDRESS",
+      "action_index": 6
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@ng-if=\"item && item.isSTH && !showReadOnlyZipCode() || !user.deliveryZipCode && !showReadOnlyZipCode() && type==='shipping' || type==='billing' || type ==='newbilling'\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_ZIP",
+      "action_index": 7
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton",
+      "selector": "//input[@type=\"text\" and @id=\"firstName\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "NAME_FIRST",
+      "action_index": 8
+    },
+    {
+      "selector": "//label[@for=\"hdCheckBox_1\"]",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 9
+    },
+    {
+      "selector": "//input[@id=\"shippingAddress\" and @aria-required=\"true\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 10
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//billing-address//input[@name=\"zip\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_ZIP",
+      "action_index": 11
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane, Apt 8",
+      "selector": "//input[@id=\"shippingAddress\" and @aria-required=\"true\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_STREET_ADDRESS",
+      "action_index": 12
+    },
+    {
+      "selector": "//input[@id=\"cardNumber\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 13
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "2027",
+      "selector": "//input[@name=\"expiryYear\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_CREDIT_CARD_EXP_YEAR",
+      "action_index": 14
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "9621 3279 1175 9602",
+      "selector": "//input[@id=\"cardNumber\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_NUMBER",
+      "action_index": 15
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "05",
+      "selector": "//input[@name=\"expiryMonth\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_CREDIT_CARD_EXP_MONTH",
+      "action_index": 16
+    }
+  ]
+}

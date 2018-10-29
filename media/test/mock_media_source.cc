@@ -68,6 +68,14 @@ MockMediaSource::MockMediaSource(const std::string& filename,
   CHECK_LE(initial_append_size_, file_data_->data_size());
 }
 
+MockMediaSource::MockMediaSource(const std::string& filename,
+                                 size_t initial_append_size,
+                                 bool initial_sequence_mode)
+    : MockMediaSource(filename,
+                      GetMimeTypeForFile(filename),
+                      initial_append_size,
+                      initial_sequence_mode) {}
+
 MockMediaSource::MockMediaSource(scoped_refptr<DecoderBuffer> data,
                                  const std::string& mimetype,
                                  size_t initial_append_size,
@@ -213,7 +221,7 @@ void MockMediaSource::DemuxerOpened() {
 void MockMediaSource::DemuxerOpenedTask() {
   ChunkDemuxer::Status status = AddId();
   if (status != ChunkDemuxer::kOk) {
-    CHECK(!demuxer_failure_cb_.is_null());
+    CHECK(demuxer_failure_cb_);
     demuxer_failure_cb_.Run(DEMUXER_ERROR_COULD_NOT_OPEN);
     return;
   }
@@ -250,7 +258,7 @@ void MockMediaSource::OnEncryptedMediaInitData(
     EmeInitDataType init_data_type,
     const std::vector<uint8_t>& init_data) {
   CHECK(!init_data.empty());
-  CHECK(!encrypted_media_init_data_cb_.is_null());
+  CHECK(encrypted_media_init_data_cb_);
   encrypted_media_init_data_cb_.Run(init_data_type, init_data);
 }
 

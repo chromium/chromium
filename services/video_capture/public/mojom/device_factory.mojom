@@ -15,6 +15,10 @@ enum DeviceAccessResultCode {
   ERROR_DEVICE_NOT_FOUND
 };
 
+interface DevicesChangedObserver {
+  OnDevicesChanged();
+};
+
 // Enables access to a set of video capture devices.
 // Typical operation is to first call GetDeviceInfos() to obtain
 // information about available devices. The |device_id| of the infos can
@@ -63,4 +67,10 @@ interface DeviceFactory {
   AddTextureVirtualDevice(
       media.mojom.VideoCaptureDeviceInfo device_info,
       TextureVirtualDevice& virtual_device);
+
+  // Registered observers will get notified whenever a virtual device is added
+  // or removed. Note: Changes to non-virtual devices are currently being
+  // monitored outside the video capture service, and therefore the service
+  // does not offer such monitoring.
+  RegisterVirtualDevicesChangedObserver(DevicesChangedObserver observer);
 };

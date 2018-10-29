@@ -1,3 +1,2 @@
 Tests that iteration events are fired when the duration is very short.
 PASS: Got a reasonable number of animationCount events
-

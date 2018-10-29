@@ -28,7 +28,8 @@ class WebRunnerURLRequestContextGetter : public net::URLRequestContextGetter {
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
       net::NetLog* net_log,
       content::ProtocolHandlerMap protocol_handlers,
-      content::URLRequestInterceptorScopedVector request_interceptors);
+      content::URLRequestInterceptorScopedVector request_interceptors,
+      base::FilePath data_dir_path);
 
   // net::URLRequestContextGetter overrides.
   net::URLRequestContext* GetURLRequestContext() override;
@@ -46,6 +47,7 @@ class WebRunnerURLRequestContextGetter : public net::URLRequestContextGetter {
 
   content::ProtocolHandlerMap protocol_handlers_;
   content::URLRequestInterceptorScopedVector request_interceptors_;
+  base::FilePath data_dir_path_;
 
   DISALLOW_COPY_AND_ASSIGN(WebRunnerURLRequestContextGetter);
 };

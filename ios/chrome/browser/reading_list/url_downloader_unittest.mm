@@ -16,6 +16,9 @@
 #include "ios/chrome/browser/dom_distiller/distiller_viewer.h"
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
 #include "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -64,12 +67,14 @@ void RemoveOfflineFilesDirectory(base::FilePath base_directory) {
 
 class MockURLDownloader : public URLDownloader {
  public:
-  MockURLDownloader(base::FilePath path)
+  MockURLDownloader(
+      base::FilePath path,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : URLDownloader(nullptr,
                       nullptr,
                       nullptr,
                       path,
-                      nullptr,
+                      std::move(url_loader_factory),
                       base::Bind(&MockURLDownloader::OnEndDownload,
                                  base::Unretained(this)),
                       base::Bind(&MockURLDownloader::OnEndRemove,
@@ -81,11 +86,13 @@ class MockURLDownloader : public URLDownloader {
     removed_files_.clear();
   }
 
-  bool CheckExistenceOfOfflineURLPagePath(const GURL& url) {
+  bool CheckExistenceOfOfflineURLPagePath(
+      const GURL& url,
+      reading_list::OfflineFileType file_type =
+          reading_list::OFFLINE_TYPE_HTML) {
     return base::PathExists(
         reading_list::OfflineURLAbsolutePathFromRelativePath(
-            base_directory_, reading_list::OfflinePagePath(
-                                 url, reading_list::OFFLINE_TYPE_HTML)));
+            base_directory_, reading_list::OfflinePagePath(url, file_type)));
   }
 
   void FakeWorking() { working_ = true; }
@@ -100,7 +107,6 @@ class MockURLDownloader : public URLDownloader {
   GURL redirect_url_;
   std::string mime_type_;
   std::string html_;
-  bool fetching_pdf_;
 
  private:
   void DownloadURL(const GURL& url, bool offline_url_exists) override {
@@ -116,8 +122,6 @@ class MockURLDownloader : public URLDownloader {
         base::Bind(&URLDownloader::DistillerCallback, base::Unretained(this)),
         this, html_, redirect_url_, mime_type_));
   }
-
-  void FetchPDFFile() override { fetching_pdf_ = true; }
 
   void OnEndDownload(const GURL& url,
                      const GURL& distilled_url,
@@ -139,11 +143,15 @@ class MockURLDownloader : public URLDownloader {
 namespace {
 class URLDownloaderTest : public PlatformTest {
  public:
-  URLDownloaderTest() {
+  URLDownloaderTest()
+      : test_shared_url_loader_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_)) {
     base::FilePath data_dir;
     base::PathService::Get(ios::DIR_USER_DATA, &data_dir);
     RemoveOfflineFilesDirectory(data_dir);
-    downloader_.reset(new MockURLDownloader(data_dir));
+    downloader_.reset(
+        new MockURLDownloader(data_dir, test_shared_url_loader_factory_));
   }
 
   ~URLDownloaderTest() override {}
@@ -157,6 +165,11 @@ class URLDownloaderTest : public PlatformTest {
 
  protected:
   base::test::ScopedTaskEnvironment task_environment_;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
+      test_shared_url_loader_factory_;
+
   std::unique_ptr<MockURLDownloader> downloader_;
 
  private:
@@ -197,7 +210,8 @@ TEST_F(URLDownloaderTest, SingleDownloadRedirect) {
 
 TEST_F(URLDownloaderTest, SingleDownloadPDF) {
   GURL url = GURL("http://test.com");
-  ASSERT_FALSE(downloader_->CheckExistenceOfOfflineURLPagePath(url));
+  ASSERT_FALSE(downloader_->CheckExistenceOfOfflineURLPagePath(
+      url, reading_list::OFFLINE_TYPE_PDF));
   ASSERT_EQ(0ul, downloader_->downloaded_files_.size());
   ASSERT_EQ(0ul, downloader_->removed_files_.size());
 
@@ -206,10 +220,20 @@ TEST_F(URLDownloaderTest, SingleDownloadPDF) {
 
   downloader_->DownloadOfflineURL(url);
 
+  task_environment_.RunUntilIdle();
+
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  auto response_info = network::CreateResourceResponseHead(net::HTTP_OK);
+  response_info.mime_type = "application/pdf";
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url, network::URLLoaderCompletionStatus(net::OK),
+      response_info, std::string("123456789"));
+
   // Wait for all asynchronous tasks to complete.
   task_environment_.RunUntilIdle();
 
-  EXPECT_FALSE(downloader_->CheckExistenceOfOfflineURLPagePath(url));
+  EXPECT_TRUE(downloader_->CheckExistenceOfOfflineURLPagePath(
+      url, reading_list::OFFLINE_TYPE_PDF));
 }
 
 TEST_F(URLDownloaderTest, DownloadAndRemove) {

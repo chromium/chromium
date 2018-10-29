@@ -60,7 +60,7 @@ class MockWebMediaPlayer : public blink::WebMediaPlayer,
     return blink::WebTimeRanges();
   }
   void SetSinkId(const blink::WebString& sinkId,
-                 blink::WebSetSinkIdCallbacks*) override {}
+                 std::unique_ptr<blink::WebSetSinkIdCallbacks>) override {}
   bool HasVideo() const override { return true; }
   bool HasAudio() const override { return false; }
   blink::WebSize NaturalSize() const override { return blink::WebSize(16, 10); }
@@ -71,14 +71,15 @@ class MockWebMediaPlayer : public blink::WebMediaPlayer,
   double CurrentTime() const override { return 0.0; }
   NetworkState GetNetworkState() const override { return kNetworkStateEmpty; }
   ReadyState GetReadyState() const override { return kReadyStateHaveNothing; }
+  SurfaceLayerMode GetVideoSurfaceLayerMode() const override {
+    return SurfaceLayerMode::kNever;
+  }
   blink::WebString GetErrorMessage() const override {
     return blink::WebString();
   }
 
   bool DidLoadingProgress() override { return true; }
-  bool DidGetOpaqueResponseFromServiceWorker() const override { return false; }
-  bool HasSingleSecurityOrigin() const override { return true; }
-  bool DidPassCORSAccessCheck() const override { return true; }
+  bool WouldTaintOrigin() const override { return false; }
   double MediaTimeForTimeValue(double timeValue) const override { return 0.0; }
   unsigned DecodedFrameCount() const override { return 0; }
   unsigned DroppedFrameCount() const override { return 0; }

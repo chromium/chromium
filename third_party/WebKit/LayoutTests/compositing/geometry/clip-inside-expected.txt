@@ -27,12 +27,6 @@ Test CSS clip with composited layers. Left and right sides should look the same.
       "transform": 2
     },
     {
-      "name": "Ancestor Clipping Layer",
-      "position": [225, 35],
-      "bounds": [90, 80],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow (relative positioned) DIV class='composited inner'",
       "bounds": [120, 120],
       "backgroundColor": "#00000033",
@@ -66,8 +60,7 @@ Test CSS clip with composited layers. Left and right sides should look the same.
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [210, 10, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     },
     {
       "id": 4,
@@ -77,8 +70,7 @@ Test CSS clip with composited layers. Left and right sides should look the same.
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, 0, 1, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }

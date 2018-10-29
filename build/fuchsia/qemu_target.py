@@ -72,10 +72,12 @@ class QemuTarget(target.Target):
     qemu_command = [qemu_path,
         '-m', str(self._ram_size_mb),
         '-nographic',
-        '-kernel', EnsurePathExists(self._GetTargetKernelPath()),
+        '-kernel', EnsurePathExists(
+            boot_data.GetTargetFile(self._GetTargetSdkArch(),
+                                    'qemu-kernel.bin')),
         '-initrd', EnsurePathExists(
             boot_data.GetTargetFile(self._GetTargetSdkArch(),
-                                    'bootdata-blob.bin')),
+                                    'fuchsia.zbi')),
         '-smp', str(self._cpu_cores),
 
         # Attach the blobstore and data volumes. Use snapshot mode to discard
@@ -167,10 +169,3 @@ class QemuTarget(target.Target):
 
   def _GetSshConfigPath(self):
     return boot_data.GetSSHConfigPath(self._output_dir)
-
-  def _GetTargetKernelPath(self):
-    kernel_name = 'zircon.bin'
-    if self._GetTargetSdkArch() == 'arm64':
-      kernel_name = 'qemu-zircon.bin'
-    return boot_data.GetTargetFile(self._GetTargetSdkArch(),
-                                   kernel_name)

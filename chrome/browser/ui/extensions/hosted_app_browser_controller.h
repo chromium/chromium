@@ -90,15 +90,16 @@ class HostedAppBrowserController : public SiteEngagementObserver,
                          SiteEngagementService::EngagementType type) override;
 
   // TabStripModelObserver overrides.
-  void TabInsertedAt(TabStripModel* tab_strip_model,
-                     content::WebContents* contents,
-                     int index,
-                     bool foreground) override;
-  void TabDetachedAt(content::WebContents* contents,
-                     int index,
-                     bool was_active) override;
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  private:
+  // Called by OnTabstripModelChanged().
+  void OnTabInserted(content::WebContents* contents);
+  void OnTabRemoved(content::WebContents* contents);
+
   const Extension* GetExtension() const;
 
   Browser* const browser_;

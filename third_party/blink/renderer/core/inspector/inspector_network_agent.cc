@@ -576,12 +576,10 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
     response_object->setRemotePort(response.RemotePort());
   }
 
-  String protocol;
-  if (response.GetResourceLoadInfo())
-    protocol = response.GetResourceLoadInfo()->npn_negotiated_protocol;
+  String protocol = response.AlpnNegotiatedProtocol();
   if (protocol.IsEmpty() || protocol == "unknown") {
     if (response.WasFetchedViaSPDY()) {
-      protocol = "spdy";
+      protocol = "h2";
     } else if (response.IsHTTP()) {
       protocol = "http";
       if (response.HttpVersion() ==
@@ -850,7 +848,7 @@ void InspectorNetworkAgent::WillSendRequest(
 
   if (cache_disabled_.Get()) {
     if (LoadsFromCacheOnly(request) &&
-        request.GetRequestContext() != WebURLRequest::kRequestContextInternal) {
+        request.GetRequestContext() != mojom::RequestContextType::INTERNAL) {
       request.SetCacheMode(mojom::FetchCacheMode::kUnspecifiedForceCacheMiss);
     } else {
       request.SetCacheMode(mojom::FetchCacheMode::kBypassCache);
@@ -1516,38 +1514,13 @@ void InspectorNetworkAgent::DidCommitLoad(LocalFrame* frame,
 
 void InspectorNetworkAgent::FrameScheduledNavigation(LocalFrame* frame,
                                                      ScheduledNavigation*) {
-  String frame_id = IdentifiersFactory::FrameId(frame);
-  frames_with_scheduled_navigation_.insert(frame_id);
-  if (!frames_with_scheduled_client_navigation_.Contains(frame_id)) {
-    frame_navigation_initiator_map_.Set(
-        frame_id,
-        BuildInitiatorObject(frame->GetDocument(), FetchInitiatorInfo()));
-  }
+  frame_navigation_initiator_map_.Set(
+      IdentifiersFactory::FrameId(frame),
+      BuildInitiatorObject(frame->GetDocument(), FetchInitiatorInfo()));
 }
 
 void InspectorNetworkAgent::FrameClearedScheduledNavigation(LocalFrame* frame) {
-  String frame_id = IdentifiersFactory::FrameId(frame);
-  frames_with_scheduled_navigation_.erase(frame_id);
-  if (!frames_with_scheduled_client_navigation_.Contains(frame_id))
-    frame_navigation_initiator_map_.erase(frame_id);
-}
-
-void InspectorNetworkAgent::FrameScheduledClientNavigation(LocalFrame* frame) {
-  String frame_id = IdentifiersFactory::FrameId(frame);
-  frames_with_scheduled_client_navigation_.insert(frame_id);
-  if (!frames_with_scheduled_navigation_.Contains(frame_id)) {
-    frame_navigation_initiator_map_.Set(
-        frame_id,
-        BuildInitiatorObject(frame->GetDocument(), FetchInitiatorInfo()));
-  }
-}
-
-void InspectorNetworkAgent::FrameClearedScheduledClientNavigation(
-    LocalFrame* frame) {
-  String frame_id = IdentifiersFactory::FrameId(frame);
-  frames_with_scheduled_client_navigation_.erase(frame_id);
-  if (!frames_with_scheduled_navigation_.Contains(frame_id))
-    frame_navigation_initiator_map_.erase(frame_id);
+  frame_navigation_initiator_map_.erase(IdentifiersFactory::FrameId(frame));
 }
 
 Response InspectorNetworkAgent::GetResponseBody(const String& request_id,
@@ -1640,7 +1613,7 @@ bool InspectorNetworkAgent::FetchResourceContent(Document* document,
 String InspectorNetworkAgent::NavigationInitiatorInfo(LocalFrame* frame) {
   if (!enabled_.Get())
     return String();
-  FrameNavigationInitiatorMap::iterator it =
+  auto it =
       frame_navigation_initiator_map_.find(IdentifiersFactory::FrameId(frame));
   if (it != frame_navigation_initiator_map_.end())
     return it->value->serialize();

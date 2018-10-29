@@ -46,8 +46,3 @@ void CheckGCRootsVisitor::VisitValue(Value* edge) {
 void CheckGCRootsVisitor::VisitPersistent(Persistent* edge) {
   gc_roots_.push_back(current_);
 }
-
-void CheckGCRootsVisitor::AtCollection(Collection* edge) {
-  if (edge->is_root())
-    gc_roots_.push_back(current_);
-}

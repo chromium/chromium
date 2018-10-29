@@ -33,6 +33,15 @@
 
 class GaiaAuthFetcherTest;
 
+namespace signin {
+// Mode determining whether Gaia can change the order of the accounts in
+// cookies.
+enum class MultiloginMode {
+  MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER = 0,
+  MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER
+};
+}  // namespace signin
+
 namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
@@ -195,6 +204,13 @@ class GaiaAuthFetcher {
                               int response_code);
 
   void SetPendingFetch(bool pending_fetch);
+
+  // Needed to use XmlHTTPRequest for Multilogin requeston iOS even after
+  // iOS11 because WKWebView cannot read response body if content-disposition
+  // header is set.
+  // TODO(https://crbug.com/889471) Remove this once requests are done using
+  // NSUrlSession in iOS.
+  bool IsMultiloginUrl(const GURL& url);
 
  private:
   // The format of the POST body for IssueAuthToken.
@@ -360,8 +376,8 @@ class GaiaAuthFetcher {
 
   // For investigation of https://crbug.com/876306.
   base::TimeDelta list_accounts_system_uptime_;
-#if !defined(OS_IOS)
-  // There is no easy way to get the process uptime on iOS.
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+  // Process creation time is not available on iOS and Android.
   base::TimeDelta list_accounts_process_uptime_;
 #endif
 

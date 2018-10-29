@@ -8,6 +8,8 @@ Page reloaded.
     }
     entries : [
         {
+            _initiator : <object>
+            _priority : <string>
             cache : {
             }
             connection : <string>
@@ -103,6 +105,8 @@ Page reloaded.
             timings : <object>
         }
         {
+            _initiator : <object>
+            _priority : <string>
             cache : {
             }
             connection : <string>

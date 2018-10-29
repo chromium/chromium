@@ -14,4 +14,3 @@ PASS history.replaceState() threw exception TypeError: Failed to execute 'replac
 PASS history.replaceState(null) threw exception TypeError: Failed to execute 'replaceState' on 'History': 2 arguments required, but only 1 present..
 PASS history.replaceState(null, null) did not throw exception.
 PASS history.replaceState(null, null, null) did not throw exception.
-

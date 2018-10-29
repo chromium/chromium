@@ -16,6 +16,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/x11_types.h"
 
+using Time = unsigned long;
+
 namespace ui {
 
 // Gets the EventType from a XEvent.
@@ -90,6 +92,18 @@ EVENTS_X_EXPORT bool GetFlingDataFromXEvent(const XEvent& xev,
 EVENTS_X_EXPORT bool IsAltPressed();
 
 EVENTS_X_EXPORT void ResetTimestampRolloverCountersForTesting();
+
+// Conversion from X Time to base::TimeTicks requires checking the current X
+// Server Time. This functionality is provided by X11EventSource, but due to odd
+// layering that cannot be referenced directly.
+class TimestampServer {
+ public:
+  virtual Time GetCurrentServerTime() = 0;
+};
+EVENTS_X_EXPORT void SetTimestampServer(TimestampServer* server);
+
+// Allows tests to force a fixed time..
+EVENTS_X_EXPORT void SetUseFixedTimeForXEventTesting(bool use_fixed_time);
 
 }  // namespace ui
 

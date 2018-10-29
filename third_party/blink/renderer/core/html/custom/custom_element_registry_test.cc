@@ -41,6 +41,14 @@ class CustomElementRegistryTest : public PageTestBase {
     return *GetFrame().DomWindow()->customElements();
   }
 
+  CustomElementDefinition* Define(const AtomicString& name,
+                                  CustomElementDefinitionBuilder& builder,
+                                  const ElementDefinitionOptions& options,
+                                  ExceptionState& exception_state) {
+    return Registry().DefineInternal(GetScriptState(), name, builder, options,
+                                     exception_state);
+  }
+
   ScriptState* GetScriptState() {
     return ToScriptStateForMainWorld(&GetFrame());
   }
@@ -276,8 +284,7 @@ TEST_F(CustomElementRegistryTest, define_upgradesInDocumentElements) {
   NonThrowableExceptionState should_not_throw;
   {
     CEReactionsScope reactions;
-    Registry().define("a-a", builder, ElementDefinitionOptions(),
-                      should_not_throw);
+    Define("a-a", builder, ElementDefinitionOptions(), should_not_throw);
   }
   LogUpgradeDefinition* definition =
       static_cast<LogUpgradeDefinition*>(Registry().DefinitionForName("a-a"));
@@ -319,8 +326,7 @@ TEST_F(CustomElementRegistryTest, attributeChangedCallback) {
   NonThrowableExceptionState should_not_throw;
   {
     CEReactionsScope reactions;
-    Registry().define("a-a", builder, ElementDefinitionOptions(),
-                      should_not_throw);
+    Define("a-a", builder, ElementDefinitionOptions(), should_not_throw);
   }
   LogUpgradeDefinition* definition =
       static_cast<LogUpgradeDefinition*>(Registry().DefinitionForName("a-a"));
@@ -355,8 +361,7 @@ TEST_F(CustomElementRegistryTest, disconnectedCallback) {
   NonThrowableExceptionState should_not_throw;
   {
     CEReactionsScope reactions;
-    Registry().define("a-a", builder, ElementDefinitionOptions(),
-                      should_not_throw);
+    Define("a-a", builder, ElementDefinitionOptions(), should_not_throw);
   }
   LogUpgradeDefinition* definition =
       static_cast<LogUpgradeDefinition*>(Registry().DefinitionForName("a-a"));
@@ -383,8 +388,7 @@ TEST_F(CustomElementRegistryTest, adoptedCallback) {
   NonThrowableExceptionState should_not_throw;
   {
     CEReactionsScope reactions;
-    Registry().define("a-a", builder, ElementDefinitionOptions(),
-                      should_not_throw);
+    Define("a-a", builder, ElementDefinitionOptions(), should_not_throw);
   }
   LogUpgradeDefinition* definition =
       static_cast<LogUpgradeDefinition*>(Registry().DefinitionForName("a-a"));
@@ -413,12 +417,12 @@ TEST_F(CustomElementRegistryTest, adoptedCallback) {
 TEST_F(CustomElementRegistryTest, lookupCustomElementDefinition) {
   NonThrowableExceptionState should_not_throw;
   TestCustomElementDefinitionBuilder builder;
-  CustomElementDefinition* definition_a = Registry().define(
-      "a-a", builder, ElementDefinitionOptions(), should_not_throw);
+  CustomElementDefinition* definition_a =
+      Define("a-a", builder, ElementDefinitionOptions(), should_not_throw);
   ElementDefinitionOptions options;
   options.setExtends("div");
   CustomElementDefinition* definition_b =
-      Registry().define("b-b", builder, options, should_not_throw);
+      Define("b-b", builder, options, should_not_throw);
   // look up defined autonomous custom element
   CustomElementDefinition* definition = Registry().DefinitionFor(
       CustomElementDescriptor(CustomElementDescriptor("a-a", "a-a")));
@@ -436,41 +440,6 @@ TEST_F(CustomElementRegistryTest, lookupCustomElementDefinition) {
   EXPECT_EQ(nullptr, definition) << "a-a, div should not be registered";
 }
 
-TEST_F(CustomElementRegistryTest, defineCustomElementWithStyle) {
-  RuntimeEnabledFeatures::SetConstructableStylesheetsEnabled(true);
-  V8TestingScope scope;
-  NonThrowableExceptionState should_not_throw;
-  ElementDefinitionOptions options;
-  CSSStyleSheet* sheet = GetDocument().createEmptyCSSStyleSheet(
-      scope.GetScriptState(), CSSStyleSheetInit(), should_not_throw);
-  options.setStyle(sheet);
-  TestCustomElementDefinitionBuilder builder(sheet);
-  CustomElementDefinition* definition_a =
-      Registry().define("a-a", builder, options, should_not_throw);
-  EXPECT_EQ(definition_a, Registry().DefinitionForName("a-a"));
-  EXPECT_NE(nullptr, Registry().DefinitionForName("a-a")->DefaultStyleSheet());
-  StyleSheetContents* contents =
-      Registry().DefinitionForName("a-a")->DefaultStyleSheet()->Contents();
-  EXPECT_NE(nullptr, contents);
-  EXPECT_EQ(sheet->Contents()->ChildRules().size(),
-            contents->ChildRules().size());
-  EXPECT_EQ(sheet->Contents()->ImportRules().size(),
-            contents->ImportRules().size());
-  EXPECT_EQ(sheet->Contents()->NamespaceRules().size(),
-            contents->NamespaceRules().size());
-  EXPECT_EQ(sheet->Contents()->OriginalURL(), contents->OriginalURL());
-  EXPECT_EQ(sheet->Contents()->DefaultNamespace(),
-            contents->DefaultNamespace());
-  EXPECT_EQ(sheet->Contents()->HasFontFaceRule(), contents->HasFontFaceRule());
-  EXPECT_EQ(sheet->Contents()->HasViewportRule(), contents->HasViewportRule());
-  EXPECT_EQ(sheet->Contents()->HasMediaQueries(), contents->HasMediaQueries());
-  EXPECT_EQ(sheet->Contents()->HasSyntacticallyValidCSSHeader(),
-            contents->HasSyntacticallyValidCSSHeader());
-  EXPECT_EQ(
-      sheet->ownerRule(),
-      Registry().DefinitionForName("a-a")->DefaultStyleSheet()->ownerRule());
-}
-
 // The embedder may define its own elements via the CustomElementRegistry
 // whose names are not valid custom element names. Ensure that such a
 // definition may be done.
@@ -482,8 +451,8 @@ TEST_F(CustomElementRegistryTest, DefineEmbedderCustomElements) {
   NonThrowableExceptionState should_not_throw;
   TestCustomElementDefinitionBuilder builder;
   CustomElementDefinition* definition_embedder =
-      Registry().define("embeddercustomelement", builder,
-                        ElementDefinitionOptions(), should_not_throw);
+      Define("embeddercustomelement", builder, ElementDefinitionOptions(),
+             should_not_throw);
   CustomElementDefinition* definition =
       Registry().DefinitionFor(CustomElementDescriptor(
           "embeddercustomelement", "embeddercustomelement"));
@@ -503,9 +472,9 @@ TEST_F(CustomElementRegistryTest, DisallowedEmbedderCustomElements) {
   // is disallowed.
 
   TestCustomElementDefinitionBuilder builder;
-  CustomElementDefinition* definition_embedder = Registry().define(
-      "embeddercustomelement", builder, ElementDefinitionOptions(),
-      IGNORE_EXCEPTION_FOR_TESTING);
+  CustomElementDefinition* definition_embedder =
+      Define("embeddercustomelement", builder, ElementDefinitionOptions(),
+             IGNORE_EXCEPTION_FOR_TESTING);
   CustomElementDefinition* definition =
       Registry().DefinitionFor(CustomElementDescriptor(
           "embeddercustomelement", "embeddercustomelement"));

@@ -1,16 +1,31 @@
 Tests that intrinsic width values on blocks work.
- PASS
- PASS
- PASS
- PASS
- PASS
- PASS
- PASS
- PASS
- PASS
- PASS
- PASS
- PASS
- PASS
- PASS
- PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS
+
+PASS

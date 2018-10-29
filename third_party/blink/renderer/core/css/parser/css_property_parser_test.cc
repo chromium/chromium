@@ -457,4 +457,101 @@ TEST(CSSPropertyParserTest, DropFontfaceDescriptor) {
       IsValidPropertyValueForStyleRule(CSSPropertySrc, "var(--dummy)"));
 }
 
+class CSSPropertyUseCounterTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    dummy_page_holder_ = DummyPageHolder::Create(IntSize(800, 600));
+    Page::InsertOrdinaryPageForTesting(&dummy_page_holder_->GetPage());
+    // Use strict mode.
+    GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
+  }
+  void TearDown() override { dummy_page_holder_ = nullptr; }
+
+  void ParseProperty(CSSPropertyID property, const char* value_string) {
+    const CSSValue* value =
+        CSSParser::ParseSingleValue(property, String(value_string),
+                                    CSSParserContext::Create(GetDocument()));
+    DCHECK(value);
+  }
+
+  bool IsCounted(WebFeature feature) {
+    return UseCounter::IsCounted(GetDocument(), feature);
+  }
+
+ private:
+  Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
+};
+
+TEST_F(CSSPropertyUseCounterTest, CSSPropertyXUnitlessUseCount) {
+  WebFeature feature = WebFeature::kSVGGeometryPropertyHasNonZeroUnitlessValue;
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyX, "0");
+  // Unitless zero should not register.
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyX, "42");
+  EXPECT_TRUE(IsCounted(feature));
+}
+
+TEST_F(CSSPropertyUseCounterTest, CSSPropertyYUnitlessUseCount) {
+  WebFeature feature = WebFeature::kSVGGeometryPropertyHasNonZeroUnitlessValue;
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyY, "0");
+  // Unitless zero should not register.
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyY, "42");
+  EXPECT_TRUE(IsCounted(feature));
+}
+
+TEST_F(CSSPropertyUseCounterTest, CSSPropertyRUnitlessUseCount) {
+  WebFeature feature = WebFeature::kSVGGeometryPropertyHasNonZeroUnitlessValue;
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyR, "0");
+  // Unitless zero should not register.
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyR, "42");
+  EXPECT_TRUE(IsCounted(feature));
+}
+
+TEST_F(CSSPropertyUseCounterTest, CSSPropertyRxUnitlessUseCount) {
+  WebFeature feature = WebFeature::kSVGGeometryPropertyHasNonZeroUnitlessValue;
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyRx, "0");
+  // Unitless zero should not register.
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyRx, "42");
+  EXPECT_TRUE(IsCounted(feature));
+}
+
+TEST_F(CSSPropertyUseCounterTest, CSSPropertyRyUnitlessUseCount) {
+  WebFeature feature = WebFeature::kSVGGeometryPropertyHasNonZeroUnitlessValue;
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyRy, "0");
+  // Unitless zero should not register.
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyRy, "42");
+  EXPECT_TRUE(IsCounted(feature));
+}
+
+TEST_F(CSSPropertyUseCounterTest, CSSPropertyCxUnitlessUseCount) {
+  WebFeature feature = WebFeature::kSVGGeometryPropertyHasNonZeroUnitlessValue;
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyCx, "0");
+  // Unitless zero should not register.
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyCx, "42");
+  EXPECT_TRUE(IsCounted(feature));
+}
+
+TEST_F(CSSPropertyUseCounterTest, CSSPropertyCyUnitlessUseCount) {
+  WebFeature feature = WebFeature::kSVGGeometryPropertyHasNonZeroUnitlessValue;
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyCy, "0");
+  // Unitless zero should not register.
+  EXPECT_FALSE(IsCounted(feature));
+  ParseProperty(CSSPropertyCy, "42");
+  EXPECT_TRUE(IsCounted(feature));
+}
+
 }  // namespace blink

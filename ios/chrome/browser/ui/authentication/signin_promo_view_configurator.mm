@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_configurator.h"
 
 #include "base/strings/sys_string_conversions.h"
+#include "components/unified_consent/feature.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -67,11 +68,17 @@
         setTitle:l10n_util::GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS,
                                          base::SysNSStringToUTF16(name))
         forState:UIControlStateNormal];
-    [signinPromoView.secondaryButton
-        setTitle:l10n_util::GetNSStringF(
-                     IDS_IOS_SIGNIN_PROMO_NOT,
-                     base::SysNSStringToUTF16(self.userEmail))
-        forState:UIControlStateNormal];
+    if (unified_consent::IsUnifiedConsentFeatureEnabled()) {
+      [signinPromoView.secondaryButton
+          setTitle:l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
+          forState:UIControlStateNormal];
+    } else {
+      [signinPromoView.secondaryButton
+          setTitle:l10n_util::GetNSStringF(
+                       IDS_IOS_SIGNIN_PROMO_NOT,
+                       base::SysNSStringToUTF16(self.userEmail))
+          forState:UIControlStateNormal];
+    }
     UIImage* image = self.userImage;
     if (!image) {
       image = ios::GetChromeBrowserProvider()

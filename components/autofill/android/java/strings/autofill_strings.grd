@@ -52,6 +52,7 @@
     <file lang="am" path="translations/autofill_strings_am.xtb" />
     <file lang="ar" path="translations/autofill_strings_ar.xtb" />
     <file lang="bg" path="translations/autofill_strings_bg.xtb" />
+    <file lang="bn" path="translations/autofill_strings_bn.xtb" />
     <file lang="ca" path="translations/autofill_strings_ca.xtb" />
     <file lang="cs" path="translations/autofill_strings_cs.xtb" />
     <file lang="da" path="translations/autofill_strings_da.xtb" />
@@ -60,10 +61,12 @@
     <file lang="en-GB" path="translations/autofill_strings_en-GB.xtb" />
     <file lang="es" path="translations/autofill_strings_es.xtb" />
     <file lang="es-419" path="translations/autofill_strings_es-419.xtb" />
+    <file lang="et" path="translations/autofill_strings_et.xtb" />
     <file lang="fa" path="translations/autofill_strings_fa.xtb" />
     <file lang="fi" path="translations/autofill_strings_fi.xtb" />
     <file lang="fil" path="translations/autofill_strings_fil.xtb" />
     <file lang="fr" path="translations/autofill_strings_fr.xtb" />
+    <file lang="gu" path="translations/autofill_strings_gu.xtb" />
     <file lang="hi" path="translations/autofill_strings_hi.xtb" />
     <file lang="hr" path="translations/autofill_strings_hr.xtb" />
     <file lang="hu" path="translations/autofill_strings_hu.xtb" />
@@ -72,8 +75,12 @@
     <file lang="iw" path="translations/autofill_strings_iw.xtb" />
     <file lang="ja" path="translations/autofill_strings_ja.xtb" />
     <file lang="ko" path="translations/autofill_strings_ko.xtb" />
+    <file lang="kn" path="translations/autofill_strings_kn.xtb" />
     <file lang="lt" path="translations/autofill_strings_lt.xtb" />
     <file lang="lv" path="translations/autofill_strings_lv.xtb" />
+    <file lang="ml" path="translations/autofill_strings_ml.xtb" />
+    <file lang="mr" path="translations/autofill_strings_mr.xtb" />
+    <file lang="ms" path="translations/autofill_strings_ms.xtb" />
     <file lang="nl" path="translations/autofill_strings_nl.xtb" />
     <file lang="no" path="translations/autofill_strings_no.xtb" />
     <file lang="pl" path="translations/autofill_strings_pl.xtb" />
@@ -86,6 +93,8 @@
     <file lang="sr" path="translations/autofill_strings_sr.xtb" />
     <file lang="sv" path="translations/autofill_strings_sv.xtb" />
     <file lang="sw" path="translations/autofill_strings_sw.xtb" />
+    <file lang="ta" path="translations/autofill_strings_ta.xtb" />
+    <file lang="te" path="translations/autofill_strings_te.xtb" />
     <file lang="th" path="translations/autofill_strings_th.xtb" />
     <file lang="tr" path="translations/autofill_strings_tr.xtb" />
     <file lang="uk" path="translations/autofill_strings_uk.xtb" />

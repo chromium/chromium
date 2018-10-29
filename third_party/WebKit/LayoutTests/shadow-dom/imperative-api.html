@@ -5,98 +5,161 @@ See https://crbug.com/869308
 -->
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<div id="host">
-  <div id="child1"></div>
-  <div id="child2"></div>
-  <div id="child3"></div>
+<script src="resources/shadow-dom.js"></script>
+<div id="test1">
+  <div id="host"></div>
+  <div id="host1"></div>
+  <div id="host2"></div>
 </div>
-<div id="host1">
-</div>
-</div>
-<div id="host2">
-</div>
-</div>
-<div id="host3">
-</div>
-<div id="child4"></div>
-<div id="host4">
-  <div id="child5"></div>
-</div>
-
-
 <script>
-const host = document.querySelector('#host');
-const host1 = document.querySelector('#host1');
-const host2 = document.querySelector('#host2');
-const host3 = document.querySelector('#host3');
-const child1 = document.querySelector('#child1');
-const child2 = document.querySelector('#child2');
-const child3 = document.querySelector('#child3');
-const child4 = document.querySelector('#child4');
-const child5 = document.querySelector('#child5');
-const shadow_root = host.attachShadow({ mode: 'open', slotting: 'manual' });
-const shadow_root1 = host4.attachShadow({ mode: 'open' });
-const slot1 = document.createElement('slot');
-const slot2 = document.createElement('slot');
-const slot3 = document.createElement('slot');
-const slot4 = document.createElement('slot');
-shadow_root.appendChild(slot1);
-shadow_root.appendChild(slot2);
-shadow_root.appendChild(slot3);
-shadow_root1.appendChild(slot4);
-
 test(() => {
-  assert_not_equals(host1.attachShadow({ mode: 'open', slotting: 'manual' }),
+  let n = createTestTree(test1);
+  assert_not_equals(n.host.attachShadow({ mode: 'open', slotting: 'manual' }),
                     null, 'slotting manual should work');
-  assert_not_equals(host2.attachShadow({ mode: 'open', slotting: 'auto' }),
+  assert_not_equals(n.host1.attachShadow({ mode: 'open', slotting: 'auto' }),
                     null, 'slotting auto should work');
   assert_throws(new TypeError(), () => {
-    host3.attachShadow({ mode: 'open', slotting: 'exceptional' })},
+  n.host2.attachShadow({ mode: 'open', slotting: 'exceptional' })},
                 'others should throw exception');
 }, 'attachShadow can take slotting parameter');
 
+</script>
+<div id="test2">
+  <div id="host">
+    <template id="shadow_root" data-mode="open" data-slotting="manual">
+      <slot id="s1"></slot>
+      <slot id="s2"></slot>
+      <slot id="s3"></slot>
+    </template>
+    <div id="c1"></div>
+    <div id="c2"></div>
+    <div id="c3"></div>
+  </div>
+  <div id="c4"></div>
+  <div id="host4">
+    <template id="shadow_root1" data-mode="open" data-slotting="manual">
+      <slot id="s5" name="s5"></slot>
+    </template>
+  </div>
+</div>
+<script>
 test(() => {
-  assert_array_equals(slot2.assignedElements(), []);
-  assert_equals(child1.assignedSlot, null);
+  let n = createTestTree(test2);
+  assert_array_equals(n.s2.assignedElements(), []);
+  assert_equals(n.c1.assignedSlot, null);
 
-  slot2.assign([child1]);
+  n.s2.assign([n.c1]);
 
-  assert_array_equals(slot2.assignedNodes(), [child1]);
-  assert_equals(child1.assignedSlot, slot2);
+  assert_array_equals(n.s2.assignedNodes(), [n.c1]);
+  assert_equals(n.c1.assignedSlot, n.s2);
 
-  slot1.assign([child2,child1]);
-  assert_array_equals(slot1.assignedNodes(), [child1,child2]);
-  assert_array_equals(slot2.assignedNodes(), []);
-  assert_equals(child1.assignedSlot, slot1);
-  assert_equals(child2.assignedSlot, slot1);
+  n.s1.assign([n.c2,n.c1]);
+  assert_array_equals(n.s1.assignedNodes(), [n.c1,n.c2]);
+  assert_array_equals(n.s2.assignedNodes(), []);
+  assert_equals(n.c1.assignedSlot, n.s1);
+  assert_equals(n.c2.assignedSlot, n.s1);
 
-  slot1.assign([child2]);
-  assert_array_equals(slot1.assignedNodes(), [child2]);
-  assert_array_equals(slot2.assignedNodes(), [child1]);
+  n.s1.assign([n.c2]);
+  assert_array_equals(n.s1.assignedNodes(), [n.c2]);
+  assert_array_equals(n.s2.assignedNodes(), [n.c1]);
 }, 'assignedNodes/Slot can be used in manual slotting');
 
 test(() => {
-  slot3.assign([child4]);
-  assert_array_equals(slot3.assignedNodes(), []);
+  let n = createTestTree(test2);
+  n.s1.assign([n.c4]);
+  assert_array_equals(n.s1.assignedNodes(), []);
 
-  host.appendChild(child4);
-  assert_array_equals(slot3.assignedNodes(), [child4]);
+  n.host.appendChild(n.c4);
+  assert_array_equals(n.s1.assignedNodes(), [n.c4]);
 }, 'Nodes should be assigned to slot only when nodes are host\'s children');
 
 test(() => {
-  slot3.assign([child1]);
-  assert_array_equals(slot3.assignedNodes(), []);
+  let n = createTestTree(test2);
+  n.s5.assign([n.c1]);
+  assert_array_equals(n.s5.assignedNodes(), []);
 
-  shadow_root.insertBefore(slot3,slot1);
-  assert_array_equals(slot3.assignedNodes(), [child1]);
+  n.shadow_root.insertBefore(n.s5,n.s1);
+  assert_array_equals(n.s5.assignedNodes(), [n.c1]);
 }, 'Nodes should be assigned to a slot only when the slot is in host\'s shadowtree');
 
 test(() => {
-  assert_array_equals(slot4.assignedElements(), [child5]);
-  assert_equals(child5.assignedSlot, slot4);
+  let n = createTestTree(test2);
+  n.s1.assign([n.c1]);
+  n.s2.assign([n.c1]);
+  assert_array_equals(n.s2.assignedNodes(), []);
 
-  slot4.assign([]);
-  assert_array_equals(slot4.assignedElements(), [child5]);
-  assert_equals(child5.assignedSlot, slot4);
-}, 'slotting API should not have any effect in auto mode');
+  n.shadow_root.insertBefore(n.s2,n.s1);
+  assert_array_equals(n.s2.assignedNodes(), [n.c1]);
+}, 'A node should be assigned to a slot when the slot is inserted before the assigned slot');
+
+test(() => {
+  let n = createTestTree(test2);
+  n.s1.assign([n.c1]);
+  n.s2.assign([n.c1]);
+  n.s3.assign([n.c1]);
+  n.shadow_root.insertBefore(n.s2,n.s1);
+  n.shadow_root.insertBefore(n.s3,n.s1);
+
+  n.s2.remove();
+
+  assert_array_equals(n.s1.assignedNodes(), []);
+  assert_array_equals(n.s3.assignedNodes(), [n.c1]);
+}, 'A slot should be assigned to a node even after the slot is inserted after the assigned slot, and the assigned slot are removed')
+
+test(() => {
+  let n = createTestTree(test2);
+  n.s1.assign([n.c1]);
+  assert_array_equals(n.s1.assignedNodes(), [n.c1]);
+  n.shadow_root1.insertBefore(n.s1,n.s5);
+
+  assert_array_equals(n.s1.assignedNodes(), []);
+  n.s1.assign([]);
+  n.shadow_root.insertBefore(n.s1,n.s2);
+
+  assert_array_equals(n.s1.assignedNodes(), []);
+}, 'A slot should not be assigned to a node once after the slot is inserted in another shadow root, and assigned another slot.')
+
+test(() => {
+  let n = createTestTree(test2);
+  n.shadow_root.insertBefore(n.s1,n.s2);
+  n.s2.assign([n.c1,n.c1]);
+  assert_array_equals(n.s2.assignedNodes(), [n.c1]);
+
+  n.s1.assign([n.c1]);
+  assert_array_equals(n.s2.assignedNodes(), []);
+
+  n.shadow_root1.appendChild(n.s2);
+  assert_array_equals(n.s2.assignedNodes(), []);
+}, 'Same nodes should be ignored');
+
+test(() => {
+  let n = createTestTree(test2);
+  n.s1.assign([n.c3]);
+  n.s1.assign([n.c3]);
+
+  n.s1.remove();
+
+  assert_equals(n.c3.assignedSlot, null);
+}, 'Same assignment should be ignored');
+
+</script>
+<div id="test3">
+  <div id="host1">
+    <template id="shadow_root" data-mode="open">
+      <slot id="s1" name="s1"></slot>
+    </template>
+    <div id="c1" slot="s1"></div>
+  </div>
+</div>
+<script>
+test(() => {
+  let n = createTestTree(test3);
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+  assert_equals(n.c1.assignedSlot, n.s1);
+
+  n.s1.assign([]);
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+  assert_equals(n.c1.assignedSlot, n.s1);
+}, 'Slotting API should not have any effect in auto mode');
+
 </script>

@@ -55,6 +55,9 @@ interface AshMessageCenterController {
   // Gets a list of all the notifications in the message center.
   GetActiveNotifications() =>
       (array<message_center.mojom.Notification> notifications);
+
+  // Changes the quiet mode state in the message center.
+  SetQuietMode(bool enabled);
 };
 
 // The message center client interface mimics
@@ -92,4 +95,7 @@ interface AshMessageCenterClient {
 
   // Gets ARC app id from a given package name.
   GetArcAppIdByPackageName(string package_name) => (string app_id);
+
+  // Show the lockscreen notification setting on the Chrome OS setting.
+  ShowLockScreenNotificationSettings();
 };

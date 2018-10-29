@@ -46,8 +46,8 @@ enum OobeDialogState {
   HIDDEN,
 };
 
-// Allows clients (e.g. Chrome browser) to control the ash login/lock/user-add
-// screens.
+// Allows clients (e.g. the browser process) to send messages to the ash
+// login/lock/user-add screens.
 interface LoginScreen {
   // Sets the client interface.
   SetClient(LoginScreenClient client);
@@ -61,7 +61,7 @@ interface LoginScreen {
   ShowLoginScreen() => (bool did_show);
 
   // Requests to show error message in the ash lock screen.
-  // TODO(xiaoyinh): login_attempts is probabaly not needed from chrome,
+  // TODO(xiaoyinh): login_attempts is probably not needed from chrome,
   // remove it when we start to count the login attempts in ash lock screen.
   // |login_attempts|: The number of the login authentication attempts.
   // |error_text|:     The error text to be shown in lock screen.
@@ -114,6 +114,17 @@ interface LoginScreen {
   // |is_enabled|:   True if pin unlock is enabled.
   SetPinEnabledForUser(signin.mojom.AccountId account_id, bool is_enabled);
 
+  // Update the status of fingerprint for |account_id|.
+  SetFingerprintState(signin.mojom.AccountId account_id,
+                      FingerprintState state);
+
+  // Called after a fingerprint authentication attempt has been made. If
+  // |successful| is true, then the fingerprint authentication attempt was
+  // successful and the device should be unlocked. If false, an error message
+  // should be shown to the user.
+  NotifyFingerprintAuthResult(signin.mojom.AccountId account_id,
+                              bool successful);
+
   // Change the user's avatar. Some avatars may take a long time to load and the
   // login screen may already be visible.
   SetAvatarForUser(signin.mojom.AccountId account_id, UserAvatar avatar);
@@ -137,13 +148,18 @@ interface LoginScreen {
   // |reverse|:   Whether the tab order is reversed.
   HandleFocusLeavingLockScreenApps(bool reverse);
 
-  // Called when the info shown for dev and canary channels are changed.
+  // Called when new system information is available.
+  // |show_if_hidden|: If true, the system information should be displayed to
+  //                   the user if it is currently hidden. If false, the system
+  //                   information should remain hidden if not already shown.
+  //                   Hidden system information can be shown by pressing alt-v.
   // |os_version_label_text|: The OS version.
   // |enterprise_info_text|:  The enterprise info.
   // |bluetooth_name|:        The name of the bluetooth adapter.
-  SetDevChannelInfo(string os_version_label_text,
-                    string enterprise_info_text,
-                    string bluetooth_name);
+  SetSystemInfo(bool show_if_hidden,
+                string os_version_label_text,
+                string enterprise_info_text,
+                string bluetooth_name);
 
   // Check if the login/lock screen is ready for a password.
   IsReadyForPassword() => (bool is_ready);
@@ -167,10 +183,6 @@ interface LoginScreen {
   SetPublicSessionKeyboardLayouts(signin.mojom.AccountId account_id,
                                   string locale,
                                   array<InputMethodItem> keyboard_layouts);
-
-  // Set the fingerprint unlock state for user with |account_id|.
-  SetFingerprintUnlockState(signin.mojom.AccountId account_id,
-                            FingerprintUnlockState state);
 
   // Update the kiosk app data for the login screen.
   SetKioskApps(array<KioskAppInfo> kiosk_apps);
@@ -201,7 +213,8 @@ interface LoginScreen {
 // Allows ash lock screen to control a client (e.g. Chrome browser). Requests
 // often involve preferences or talk to cryptohome that is not available to ash.
 interface LoginScreenClient {
-  // Request user authentication in chrome.
+  // Attempt to authenticate a user with a password or PIN.
+  //
   // If auth succeeds:
   // chrome will hide the lock screen and clear any displayed error messages.
   // If auth fails:
@@ -211,21 +224,32 @@ interface LoginScreenClient {
   // |authenticated_by_pin|: True if we are using pin to authenticate.
   //
   // The result will be set to true if auth was successful, false if not.
-  AuthenticateUser(signin.mojom.AccountId account_id,
-                   string password,
-                   bool authenticated_by_pin) => (bool auth_success);
+  //
+  // TODO(jdufault): Extract authenticated_by_pin into a separate mojom method,
+  //                 similar to the other Authenticate* methods
+  AuthenticateUserWithPasswordOrPin(
+      signin.mojom.AccountId account_id,
+      string password,
+      bool authenticated_by_pin) => (bool auth_success);
 
-  // Request to attempt easy unlock in chrome.
-  // |account_id|:   The account id of the user we are authenticating.
-  AttemptUnlock(signin.mojom.AccountId account_id);
+  // Attempt to authenticate the user with with an external binary.
+  AuthenticateUserWithExternalBinary(signin.mojom.AccountId account_id)
+      => (bool auth_success);
+
+  // Attempt to enroll a user in the external binary authentication system.
+  EnrollUserWithExternalBinary() => (bool enrollment_success);
+
+  // Try to authenticate |account_id| using easy unlock. This can be used on the
+  // login or lock screen.
+  // |account_id|: The account id of the user we are authenticating.
+  //
+  // TODO(jdufault): Refactor this method to return an auth_success, similar to
+  // the other auth methods above.
+  AuthenticateUserWithEasyUnlock(signin.mojom.AccountId account_id);
 
   // Request to hard lock the user pod.
   // |account_id|:    The account id of the user in the user pod.
   HardlockPod(signin.mojom.AccountId account_id);
-
-  // Record clicks on the lock icon in the user pod.
-  // |account_id|:    The account id of the user in the user pod.
-  RecordClickOnLockIcon(signin.mojom.AccountId account_id);
 
   // Focus user pod of user with |account_id|.
   OnFocusPod(signin.mojom.AccountId account_id);

@@ -25,7 +25,8 @@ FrameReplicationState::FrameReplicationState(
     const std::vector<uint32_t>& insecure_navigations_set,
     bool has_potentially_trustworthy_unique_origin,
     bool has_received_user_gesture,
-    bool has_received_user_gesture_before_nav)
+    bool has_received_user_gesture_before_nav,
+    blink::FrameOwnerElementType owner_type)
     : origin(),
       name(name),
       unique_name(unique_name),
@@ -37,7 +38,8 @@ FrameReplicationState::FrameReplicationState(
           has_potentially_trustworthy_unique_origin),
       has_received_user_gesture(has_received_user_gesture),
       has_received_user_gesture_before_nav(
-          has_received_user_gesture_before_nav) {}
+          has_received_user_gesture_before_nav),
+      frame_owner_element_type(owner_type) {}
 
 FrameReplicationState::FrameReplicationState(
     const FrameReplicationState& other) = default;

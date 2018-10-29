@@ -2,7 +2,6 @@ Tests that a string can be passed in place of an AlgorithmIdentifier
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS key.type is "secret"
 PASS key.algorithm.name is "AES-CBC"
 PASS key.algorithm.length is 128

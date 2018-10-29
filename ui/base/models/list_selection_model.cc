@@ -76,8 +76,7 @@ bool ListSelectionModel::operator!=(const ListSelectionModel& other) const {
 
 void ListSelectionModel::IncrementFrom(int index) {
   // Shift the selection to account for a newly inserted item at |index|.
-  for (SelectedIndices::iterator i = selected_indices_.begin();
-       i != selected_indices_.end(); ++i) {
+  for (auto i = selected_indices_.begin(); i != selected_indices_.end(); ++i) {
     IncrementFromImpl(index, &(*i));
   }
   IncrementFromImpl(index, &anchor_);
@@ -85,8 +84,7 @@ void ListSelectionModel::IncrementFrom(int index) {
 }
 
 void ListSelectionModel::DecrementFrom(int index) {
-  for (SelectedIndices::iterator i = selected_indices_.begin();
-       i != selected_indices_.end(); ) {
+  for (auto i = selected_indices_.begin(); i != selected_indices_.end();) {
     if (DecrementFromImpl(index, &(*i)))
       i = selected_indices_.erase(i);
     else
@@ -115,8 +113,7 @@ void ListSelectionModel::AddIndexToSelection(int index) {
 }
 
 void ListSelectionModel::RemoveIndexFromSelection(int index) {
-  SelectedIndices::iterator i = std::find(selected_indices_.begin(),
-                                          selected_indices_.end(), index);
+  auto i = std::find(selected_indices_.begin(), selected_indices_.end(), index);
   if (i != selected_indices_.end())
     selected_indices_.erase(i);
 }

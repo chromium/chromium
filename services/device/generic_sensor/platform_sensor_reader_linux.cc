@@ -131,7 +131,7 @@ std::unique_ptr<SensorReader> SensorReader::Create(
     const SensorInfoLinux* sensor_device,
     base::WeakPtr<PlatformSensorLinux> sensor,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
   // TODO(maksims): implement triggered reading. At the moment,
   // only polling read is supported.
   return std::make_unique<PollingSensorReader>(sensor_device, sensor,

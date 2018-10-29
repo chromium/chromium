@@ -45,8 +45,11 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
                          ax::mojom::Event event_type) = 0;
   };
 
-  // Get or create an entry in the cache based on an Aura view.
+  // Get or create an entry in the cache. May return null if the View is not
+  // associated with a Widget.
   AXAuraObjWrapper* GetOrCreate(View* view);
+
+  // Get or create an entry in the cache.
   AXAuraObjWrapper* GetOrCreate(Widget* widget);
   AXAuraObjWrapper* GetOrCreate(aura::Window* window);
 

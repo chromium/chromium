@@ -294,7 +294,7 @@ TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithRoot) {
   RunPixelResourceTest(background, expected);
 }
 
-TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithBackgroundFilter) {
+TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithBackdropFilter) {
   const int kRootWidth = 2;
   const int kRootHeight = 2;
   InitializeFromTestCase(resource_type());
@@ -302,7 +302,7 @@ TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithBackgroundFilter) {
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(kRootWidth, kRootHeight), kCSSOrange);
 
-  // Orange child layers have a background filter set and they will blend with
+  // Orange child layers have a backdrop filter set and they will blend with
   // the green background
   gfx::Rect child_rect(0, 0, kRootWidth, kRootHeight);
   scoped_refptr<SolidColorLayer> green_lane =
@@ -310,7 +310,7 @@ TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithBackgroundFilter) {
   background->AddChild(green_lane);
   FilterOperations filters;
   filters.Append(FilterOperation::CreateGrayscaleFilter(.75));
-  green_lane->SetBackgroundFilters(filters);
+  green_lane->SetBackdropFilters(filters);
   green_lane->SetBlendMode(current_blend_mode());
 
   SkBitmap expected;

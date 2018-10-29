@@ -14,7 +14,6 @@
 #include "components/download/internal/background_service/driver_entry.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "content/public/browser/storage_partition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 
@@ -146,14 +145,8 @@ void DownloadDriverImpl::Start(
   if (!download_manager_)
     return;
 
-  content::StoragePartition* storage_partition =
-      content::BrowserContext::GetStoragePartitionForSite(
-          download_manager_->GetBrowserContext(), request_params.url);
-  DCHECK(storage_partition);
-
   std::unique_ptr<DownloadUrlParameters> download_url_params(
       new DownloadUrlParameters(request_params.url,
-                                storage_partition->GetURLRequestContext(),
                                 traffic_annotation));
 
   // TODO(xingliu): Make content::DownloadManager handle potential guid

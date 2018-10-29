@@ -38,7 +38,7 @@
 namespace blink {
 
 struct ShapeCacheEntry {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   ShapeCacheEntry() { shape_result_ = nullptr; }
   scoped_refptr<const ShapeResult> shape_result_;
 };
@@ -49,7 +49,7 @@ class ShapeCache {
   // Used to optimize small strings as hash table keys. Avoids malloc'ing an
   // out-of-line StringImpl.
   class SmallStringKey {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
     void HashString();
 

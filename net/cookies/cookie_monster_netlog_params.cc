@@ -97,4 +97,23 @@ std::unique_ptr<base::Value> NetLogCookieMonsterCookieRejectedHttponly(
   return dict;
 }
 
+std::unique_ptr<base::Value> NetLogCookieMonsterCookiePreservedSkippedSecure(
+    const CanonicalCookie* skipped_secure,
+    const CanonicalCookie* preserved,
+    const CanonicalCookie* new_cookie,
+    NetLogCaptureMode capture_mode) {
+  if (!capture_mode.include_cookies_and_credentials())
+    return nullptr;
+  std::unique_ptr<base::Value> dict =
+      std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  dict->SetKey("name", base::Value(preserved->Name()));
+  dict->SetKey("domain", base::Value(preserved->Domain()));
+  dict->SetKey("path", base::Value(preserved->Path()));
+  dict->SetKey("securecookiedomain", base::Value(skipped_secure->Domain()));
+  dict->SetKey("securecookiepath", base::Value(skipped_secure->Path()));
+  dict->SetKey("preservedvalue", base::Value(preserved->Value()));
+  dict->SetKey("discardedvalue", base::Value(new_cookie->Value()));
+  return dict;
+}
+
 }  // namespace net

@@ -27,13 +27,14 @@ bool TransferCacheSerializeHelper::LockEntry(TransferCacheEntryType type,
   return true;
 }
 
-void TransferCacheSerializeHelper::CreateEntry(
-    const ClientTransferCacheEntry& entry) {
+size_t TransferCacheSerializeHelper::CreateEntry(
+    const ClientTransferCacheEntry& entry,
+    char* memory) {
   // We shouldn't be creating entries if they were already created or locked.
   EntryKey key(entry.Type(), entry.Id());
   DCHECK_EQ(added_entries_.count(key), 0u);
-  CreateEntryInternal(entry);
   added_entries_.insert(key);
+  return CreateEntryInternal(entry, memory);
 }
 
 void TransferCacheSerializeHelper::FlushEntries() {

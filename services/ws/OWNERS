@@ -1,8 +1,10 @@
 # COMPONENT: Internals>Services>WindowService
 
 msw@chromium.org
+mukai@chromium.org
 sadrul@chromium.org
 sky@chromium.org
+xiyuan@chromium.org
 
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS

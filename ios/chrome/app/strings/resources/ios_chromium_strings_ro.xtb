@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Profită de ingeniozitatea Google în Chromium</translation>
 <translation id="2730884209570016437">Chromium nu poate folosi camera foto, deoarece este folosită de o altă aplicație</translation>
 <translation id="2797210818057553964">Poți personaliza oricând această setare din setările Chromium</translation>
+<translation id="2915596697727466327">Chromium folosește Face ID pentru a asigura accesul autorizat la parolele tale.</translation>
 <translation id="3256316712990552818">Copiat în Chromium</translation>
 <translation id="3413120535237193088">Pentru a accesa marcajele pe toate dispozitivele, conectează-te la Chromium.</translation>
 <translation id="3473048256428424907">Activează scanerul QR din Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Filele deschise în Chromium pe alte dispozitive vor apărea aici.</translation>
 <translation id="495292094137889840">Începe să folosești scanerul QR din Chromium</translation>
 <translation id="5231355151045086930">Deconectează-te de la Chromium</translation>
-<translation id="5416919929805616771">Îți place Chromium? <ph name="BEGIN_LINK" />Evaluează aplicația<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Bun venit la Chromium</translation>
 <translation id="5945387852661427312">Te conectezi cu un cont gestionat de <ph name="DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chromium. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chromium, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>
 <translation id="6068866989048414399">Termenii și condițiile Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Comuți contul pentru sincronizare de la <ph name="USER_EMAIL1" /> la <ph name="USER_EMAIL2" />. Datele Chromium existente sunt gestionate de <ph name="DOMAIN" />. Astfel, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne în <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Sfat: <ph name="BEGIN_LINK" />mută Chromium în bara de andocare<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Beneficiază de o experiență Google mai bună în Chromium pe baza locației.</translation>
-<translation id="8353224596138547809">Doriți ca parola pentru acest site să fie salvată de Chromium?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Setările<ph name="END_LINK" /> pot fi personalizate oricând. Google poate folosi conținutul de pe site-urile pe care le accesezi, interacțiunile cu browserul și activitatea pentru a personaliza Chromium și servicii Google precum Traducere, Căutare și anunțuri.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8809780021347235332">Pentru a salva imaginile, atinge Setări ca să permiți browserului Chromium să folosească fotografiile</translation>

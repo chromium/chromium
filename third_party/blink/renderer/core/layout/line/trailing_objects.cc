@@ -57,8 +57,8 @@ void TrailingObjects::UpdateMidpointsForTrailingObjects(
 
     // Now make sure every single trailingPositionedBox following the
     // trailingSpaceMidpoint properly stops and starts ignoring spaces.
-    size_t current_midpoint = trailing_space_midpoint + 1;
-    for (size_t i = 0; i < objects_.size(); ++i) {
+    wtf_size_t current_midpoint = trailing_space_midpoint + 1;
+    for (wtf_size_t i = 0; i < objects_.size(); ++i) {
       if (current_midpoint >= line_midpoint_state.NumMidpoints()) {
         // We don't have a midpoint for this box yet.
         EnsureLineBoxInsideIgnoredSpaces(&line_midpoint_state,
@@ -78,8 +78,8 @@ void TrailingObjects::UpdateMidpointsForTrailingObjects(
     unsigned pos = length >= 2 ? length - 2 : UINT_MAX;
     InlineIterator end_mid(nullptr, whitespace_, pos);
     line_midpoint_state.StartIgnoringSpaces(end_mid);
-    for (size_t i = 0; i < objects_.size(); ++i) {
-      EnsureLineBoxInsideIgnoredSpaces(&line_midpoint_state, objects_[i]);
+    for (const LineLayoutItem& item : objects_) {
+      EnsureLineBoxInsideIgnoredSpaces(&line_midpoint_state, item);
     }
   }
 }

@@ -55,7 +55,7 @@ TEST(ElfReaderTest, ReadElfLibraryName) {
 
   // Memory map the so file and use it to test reading so name.
   MemoryMappedFile file;
-  file.Initialize(FilePath(filename));
+  ASSERT_TRUE(file.Initialize(FilePath(filename)));
   const void* addr = file.data();
 #endif
 

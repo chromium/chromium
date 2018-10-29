@@ -84,6 +84,7 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
   // submit video frames given by VideoFrameCompositor.
   virtual void EnableSubmission(
       const viz::SurfaceId& id,
+      base::TimeTicks local_surface_id_allocation_time,
       media::VideoRotation rotation,
       bool force_submit,
       bool is_opaque,

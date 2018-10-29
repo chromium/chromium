@@ -18,7 +18,7 @@ namespace examples {
 
 // Shows a window with the views examples in it.
 VIEWS_EXAMPLES_WITH_CONTENT_EXPORT void ShowExamplesWindowWithContent(
-    Operation operation,
+    base::OnceClosure on_close,
     content::BrowserContext* browser_context,
     gfx::NativeWindow window_context);
 

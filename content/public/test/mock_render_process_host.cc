@@ -34,8 +34,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/service_manager_connection.h"
 #include "content/public/common/service_names.mojom.h"
+#include "content/test/not_implemented_network_url_loader_factory.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/resource_coordinator/public/mojom/coordination_unit.mojom.h"
 
 namespace content {
@@ -399,6 +401,7 @@ MockRenderProcessHost::GetProcessResourceCoordinator() {
 }
 
 void MockRenderProcessHost::CreateURLLoaderFactory(
+    const url::Origin& origin,
     network::mojom::URLLoaderFactoryRequest request) {
   url_loader_factory_->Clone(std::move(request));
 }
@@ -488,7 +491,9 @@ void MockRenderProcessHost::OverrideURLLoaderFactory(
   url_loader_factory_ = factory;
 }
 
-MockRenderProcessHostFactory::MockRenderProcessHostFactory() {}
+MockRenderProcessHostFactory::MockRenderProcessHostFactory()
+    : default_mock_url_loader_factory_(
+          std::make_unique<NotImplementedNetworkURLLoaderFactory>()) {}
 
 MockRenderProcessHostFactory::~MockRenderProcessHostFactory() {
   // Detach this object from MockRenderProcesses to prevent them from calling
@@ -500,8 +505,10 @@ MockRenderProcessHostFactory::~MockRenderProcessHostFactory() {
 RenderProcessHost* MockRenderProcessHostFactory::CreateRenderProcessHost(
     BrowserContext* browser_context,
     SiteInstance* site_instance) const {
-  processes_.push_back(
-      std::make_unique<MockRenderProcessHost>(browser_context));
+  std::unique_ptr<MockRenderProcessHost> host =
+      std::make_unique<MockRenderProcessHost>(browser_context);
+  host->OverrideURLLoaderFactory(default_mock_url_loader_factory_.get());
+  processes_.push_back(std::move(host));
   processes_.back()->SetFactory(this);
   return processes_.back().get();
 }

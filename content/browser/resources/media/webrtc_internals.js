@@ -161,8 +161,8 @@ function appendChildWithText(parent, tag, text) {
  * @param {!PeerConnectionUpdateEntry} update The peer connection update data.
  */
 function addPeerConnectionUpdate(peerConnectionElement, update) {
-  peerConnectionUpdateTable.addPeerConnectionUpdate(peerConnectionElement,
-                                                    update);
+  peerConnectionUpdateTable.addPeerConnectionUpdate(
+      peerConnectionElement, update);
   extractSsrcInfo(update);
   peerConnectionDataStore[peerConnectionElement.id].addUpdate(update);
 }
@@ -207,8 +207,8 @@ function addPeerConnection(data) {
   }
 
   var p = document.createElement('p');
-  p.textContent = data.url + ', ' + data.rtcConfiguration + ', ' +
-      data.constraints;
+  p.textContent =
+      data.url + ', ' + data.rtcConfiguration + ', ' + data.constraints;
   peerConnectionElement.appendChild(p);
 
   return peerConnectionElement;
@@ -290,12 +290,12 @@ function addGetUserMedia(data) {
 
   appendChildWithText(requestDiv, 'div', 'Caller origin: ' + data.origin);
   appendChildWithText(requestDiv, 'div', 'Caller process id: ' + data.pid);
-  appendChildWithText(requestDiv, 'span', 'Audio Constraints').style.fontWeight
-      = 'bold';
+  appendChildWithText(requestDiv, 'span', 'Audio Constraints')
+      .style.fontWeight = 'bold';
   appendChildWithText(requestDiv, 'div', data.audio);
 
-  appendChildWithText(requestDiv, 'span', 'Video Constraints').style.fontWeight
-      = 'bold';
+  appendChildWithText(requestDiv, 'span', 'Video Constraints')
+      .style.fontWeight = 'bold';
   appendChildWithText(requestDiv, 'div', data.video);
 }
 
@@ -315,7 +315,6 @@ function removeGetUserMediaForRenderer(data) {
   for (var i = 0; i < requests.length; ++i) {
     if (requests[i].rid == data.rid)
       $(USER_MEDIA_TAB_ID).removeChild(requests[i]);
-
   }
   if ($(USER_MEDIA_TAB_ID).childNodes.length == 0)
     tabView.removeTab(USER_MEDIA_TAB_ID);

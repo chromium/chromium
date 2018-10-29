@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/linked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/session_manager_client.h"
@@ -97,6 +96,9 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   static bool IsInitialized();
   static void Shutdown();
   static DeviceSettingsService* Get();
+
+  // Returns a human-readable string describing |status|.
+  static const char* StatusToString(Status status);
 
   // Creates a device settings service instance. This is meant for unit tests,
   // production code uses the singleton returned by Get() above.
@@ -210,7 +212,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
   // Enqueues a new operation. Takes ownership of |operation| and starts it
   // right away if there is no active operation currently.
-  void Enqueue(const linked_ptr<SessionManagerOperation>& operation);
+  void Enqueue(std::unique_ptr<SessionManagerOperation> operation);
 
   // Enqueues a load operation.
   void EnqueueLoad(bool request_key_load);
@@ -263,7 +265,8 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
   // The queue of pending operations. The first operation on the queue is
   // currently active; it gets removed and destroyed once it completes.
-  base::circular_deque<linked_ptr<SessionManagerOperation>> pending_operations_;
+  base::circular_deque<std::unique_ptr<SessionManagerOperation>>
+      pending_operations_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

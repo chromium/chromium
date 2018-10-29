@@ -55,7 +55,6 @@ using blink::WebString;
 using blink::WebURL;
 using blink::WebView;
 using content::DocumentState;
-using content::NavigationState;
 
 namespace {
 
@@ -66,7 +65,7 @@ GURL GetOriginOrURL(const WebFrame* frame) {
   // TODO(alexmos): This is broken for --site-per-process, since top() can be a
   // WebRemoteFrame which does not have a document(), and the WebRemoteFrame's
   // URL is not replicated.  See https://crbug.com/628759.
-  if (top_origin.unique() && frame->Top()->IsWebLocalFrame())
+  if (top_origin.opaque() && frame->Top()->IsWebLocalFrame())
     return frame->Top()->ToWebLocalFrame()->GetDocument().Url();
   return top_origin.GetURL();
 }

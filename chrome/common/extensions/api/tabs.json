@@ -578,7 +578,7 @@
               "url": {
                 "type": "string",
                 "optional": true,
-                "description": "A URL to navigate the tab to."
+                "description": "A URL to navigate the tab to. JavaScript URLs are not supported; use $(ref:tabs.executeScript) instead."
               },
               "active": {
                 "type": "boolean",

@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/web_state/ui/crw_swipe_recognizer_provider.h"
@@ -73,7 +73,7 @@ using base::UserMetricsAction;
     ContentSuggestionsCoordinator* contentSuggestionsCoordinator;
 
 // Controller for the header of the Home panel.
-@property(nonatomic, strong) id<LogoAnimationControllerOwnerOwner, ToolbarOwner>
+@property(nonatomic, strong) id<LogoAnimationControllerOwnerOwner>
     headerController;
 
 @end
@@ -241,27 +241,6 @@ using base::UserMetricsAction;
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
   return [self.headerController logoAnimationControllerOwner];
-}
-
-#pragma mark -
-#pragma mark ToolbarOwner
-
-- (CGRect)toolbarFrame {
-  return [self.headerController toolbarFrame];
-}
-
-- (id<ToolbarSnapshotProviding>)toolbarSnapshotProvider {
-  return self.headerController.toolbarSnapshotProvider;
-}
-
-- (CGFloat)toolbarHeight {
-  BOOL isRegularXRegular =
-      content_suggestions::IsRegularXRegularSizeClass(self.view);
-  // If the google landing controller is nil, there is no toolbar visible in the
-  // native content view, finally there is no toolbar on iPad.
-  return self.headerController && !isRegularXRegular
-             ? ntp_header::ToolbarHeight()
-             : 0.0;
 }
 
 @end

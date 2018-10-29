@@ -17,6 +17,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -104,6 +105,11 @@ class InstrumentedGaiaCookieManagerService : public GaiaCookieManagerService {
   MOCK_METHOD0(StartFetchingListAccounts, void());
   MOCK_METHOD0(StartFetchingLogOut, void());
   MOCK_METHOD0(StartFetchingMergeSession, void());
+  MOCK_METHOD1(StartFetchingAccessTokenForMultilogin,
+               void(const std::string& account_id));
+  MOCK_METHOD0(SetAccountsInCookieWithTokens, void());
+  MOCK_METHOD1(OnSetAccountsFinished,
+               void(const GoogleServiceAuthError& error));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(InstrumentedGaiaCookieManagerService);
@@ -115,6 +121,15 @@ class GaiaCookieManagerServiceTest : public testing::Test {
       : no_error_(GoogleServiceAuthError::NONE),
         error_(GoogleServiceAuthError::SERVICE_ERROR),
         canceled_(GoogleServiceAuthError::REQUEST_CANCELED) {}
+
+  class RequestMockImpl : public OAuth2TokenService::Request {
+   public:
+    RequestMockImpl(std::string account_id) { account_id_ = account_id; }
+    std::string GetAccountId() const override { return account_id_; }
+
+   private:
+    std::string account_id_;
+  };
 
   void SetUp() override {
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
@@ -134,6 +149,20 @@ class GaiaCookieManagerServiceTest : public testing::Test {
     consumer->OnUbertokenFailure(error);
   }
 
+  void SimulateAccessTokenFailure(OAuth2TokenService::Consumer* consumer,
+                                  OAuth2TokenService::Request* request,
+                                  const GoogleServiceAuthError& error) {
+    consumer->OnGetTokenFailure(request, error);
+  }
+
+  void SimulateAccessTokenSuccess(OAuth2TokenService::Consumer* consumer,
+                                  OAuth2TokenService::Request* request) {
+    OAuth2AccessTokenConsumer::TokenResponse token_response =
+        OAuth2AccessTokenConsumer::TokenResponse("AccessToken", base::Time(),
+                                                 "Idtoken");
+    consumer->OnGetTokenSuccess(request, token_response);
+  }
+
   void SimulateMergeSessionSuccess(GaiaAuthConsumer* consumer,
                                    const std::string& data) {
     consumer->OnMergeSessionSuccess(data);
@@ -142,6 +171,11 @@ class GaiaCookieManagerServiceTest : public testing::Test {
   void SimulateMergeSessionFailure(GaiaAuthConsumer* consumer,
                                    const GoogleServiceAuthError& error) {
     consumer->OnMergeSessionFailure(error);
+  }
+
+  void SimulateMultiloginFinished(GaiaAuthConsumer* consumer,
+                                  const OAuthMultiloginResult& result) {
+    consumer->OnOAuthMultiloginFinished(result);
   }
 
   void SimulateListAccountsSuccess(GaiaAuthConsumer* consumer,
@@ -171,6 +205,13 @@ class GaiaCookieManagerServiceTest : public testing::Test {
                                             const std::string& result) {
     signin_client_->test_url_loader_factory()->AddResponse(url, result);
     base::RunLoop().RunUntilIdle();
+  }
+
+  void Advance(scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner,
+               base::TimeDelta advance_by) {
+    test_task_runner->FastForwardBy(advance_by +
+                                    base::TimeDelta::FromMilliseconds(1));
+    test_task_runner->RunUntilIdle();
   }
 
   bool IsLoadPending(const std::string& url) {
@@ -248,6 +289,10 @@ TEST_F(GaiaCookieManagerServiceTest, MergeSessionRetried) {
   InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
   MockObserver observer(&helper);
 
+  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::ScopedClosureRunner task_runner_ =
+      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+
   EXPECT_CALL(helper, StartFetchingUbertoken());
   EXPECT_CALL(helper, StartFetchingMergeSession());
   EXPECT_CALL(observer, OnAddAccountToCookieCompleted("acc1@gmail.com",
@@ -256,12 +301,7 @@ TEST_F(GaiaCookieManagerServiceTest, MergeSessionRetried) {
   helper.AddAccountToCookie("acc1@gmail.com", GaiaConstants::kChromeSource);
   SimulateMergeSessionFailure(&helper, canceled());
   DCHECK(helper.is_running());
-  base::RunLoop run_loop;
-  // Transient error incurs a retry after 1 second.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(1100));
-  run_loop.Run();
+  Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
   SimulateMergeSessionSuccess(&helper, "token");
   DCHECK(!helper.is_running());
 }
@@ -271,6 +311,10 @@ TEST_F(GaiaCookieManagerServiceTest, MergeSessionRetriedTwice) {
   MockObserver observer(&helper);
   base::HistogramTester histograms;
 
+  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::ScopedClosureRunner task_runner_ =
+      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+
   EXPECT_CALL(helper, StartFetchingUbertoken());
   EXPECT_CALL(helper, StartFetchingMergeSession()).Times(2);
   EXPECT_CALL(observer, OnAddAccountToCookieCompleted("acc1@gmail.com",
@@ -279,28 +323,10 @@ TEST_F(GaiaCookieManagerServiceTest, MergeSessionRetriedTwice) {
   helper.AddAccountToCookie("acc1@gmail.com", GaiaConstants::kChromeSource);
   SimulateMergeSessionFailure(&helper, canceled());
   DCHECK(helper.is_running());
-  // Transient error incurs a retry after 1 second.
-  EXPECT_LT(helper.GetBackoffEntry()->GetTimeUntilRelease(),
-      base::TimeDelta::FromMilliseconds(1100));
-  {
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(1100));
-    run_loop.Run();
-  }
+  Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
   SimulateMergeSessionFailure(&helper, canceled());
   DCHECK(helper.is_running());
-  // Next transient error incurs a retry after 3 seconds.
-  EXPECT_LT(helper.GetBackoffEntry()->GetTimeUntilRelease(),
-      base::TimeDelta::FromMilliseconds(3100));
-  {
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(3100));
-    run_loop.Run();
-  }
+  Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
   SimulateMergeSessionSuccess(&helper, "token");
   DCHECK(!helper.is_running());
   histograms.ExpectUniqueSample("OAuth2Login.MergeSessionRetry",
@@ -317,6 +343,531 @@ TEST_F(GaiaCookieManagerServiceTest, FailedUbertoken) {
 
   helper.AddAccountToCookie("acc1@gmail.com", GaiaConstants::kChromeSource);
   SimulateUbertokenFailure(&helper, error());
+}
+
+TEST_F(GaiaCookieManagerServiceTest, AccessTokenSuccess) {
+  InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
+  MockObserver observer(&helper);
+
+  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::ScopedClosureRunner task_runner_ =
+      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+
+  const std::string account_id1 = "12345";
+  const std::string account_id2 = "23456";
+
+  testing::InSequence mock_sequence;
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id2))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  EXPECT_CALL(helper, SetAccountsInCookieWithTokens());
+
+  const std::vector<std::string> account_ids = {account_id1, account_id2};
+
+  helper.SetAccountsInCookie(account_ids, GaiaConstants::kChromeSource);
+
+  RequestMockImpl request1(account_id1);
+  RequestMockImpl request2(account_id2);
+
+  SimulateAccessTokenSuccess(&helper, &request2);
+
+  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
+
+  // Transient error, retry.
+  SimulateAccessTokenFailure(&helper, &request1, error);
+
+  DCHECK(helper.is_running());
+  Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
+
+  SimulateAccessTokenSuccess(&helper, &request1);
+}
+
+TEST_F(GaiaCookieManagerServiceTest,
+       AccessTokenFailureTransientErrorMaxRetriesReached) {
+  InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
+  MockObserver observer(&helper);
+
+  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::ScopedClosureRunner task_runner_ =
+      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+
+  const std::string account_id1 = "12345";
+  const std::string account_id2 = "23456";
+
+  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
+
+  testing::InSequence mock_sequence;
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id2))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(signin::kMaxFetcherRetries - 1);
+  EXPECT_CALL(helper, OnSetAccountsFinished(error)).Times(1);
+  EXPECT_CALL(helper, SetAccountsInCookieWithTokens()).Times(0);
+
+  const std::vector<std::string> account_ids = {account_id1, account_id2};
+
+  helper.SetAccountsInCookie(account_ids, GaiaConstants::kChromeSource);
+
+  RequestMockImpl request1(account_id1);
+  RequestMockImpl request2(account_id2);
+
+  EXPECT_LT(helper.GetBackoffEntry()->GetTimeUntilRelease(),
+            base::TimeDelta::FromMilliseconds(1100));
+
+  // Transient error, retry, fail when maximum number of retries is reached.
+  for (int i = 0; i < signin::kMaxFetcherRetries - 1; ++i) {
+    SimulateAccessTokenFailure(&helper, &request1, error);
+    Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
+  }
+  SimulateAccessTokenFailure(&helper, &request1, error);
+  // Check that no Multilogin is triggered.
+  SimulateAccessTokenSuccess(&helper, &request2);
+}
+
+TEST_F(GaiaCookieManagerServiceTest, AccessTokenFailurePersistentError) {
+  InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
+  MockObserver observer(&helper);
+
+  const std::string account_id1 = "12345";
+  const std::string account_id2 = "23456";
+
+  GoogleServiceAuthError error(
+      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+
+  testing::InSequence mock_sequence;
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id2))
+      .Times(1);
+  EXPECT_CALL(helper, OnSetAccountsFinished(error)).Times(1);
+  EXPECT_CALL(helper, SetAccountsInCookieWithTokens()).Times(0);
+
+  const std::vector<std::string> account_ids = {account_id1, account_id2};
+
+  helper.SetAccountsInCookie(account_ids, GaiaConstants::kChromeSource);
+
+  RequestMockImpl request1(account_id1);
+  RequestMockImpl request2(account_id2);
+
+  SimulateAccessTokenFailure(&helper, &request1, error);
+
+  // Check that no Multilogin is triggered.
+  SimulateAccessTokenSuccess(&helper, &request2);
+}
+
+TEST_F(GaiaCookieManagerServiceTest, FetcherRetriesZeroedBetweenCalls) {
+  InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
+  MockObserver observer(&helper);
+
+  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::ScopedClosureRunner task_runner_ =
+      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+
+  const std::string account_id1 = "12345";
+  const std::string account_id2 = "23456";
+
+  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
+
+  std::string data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+          {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            }
+          ]
+        }
+      )";
+  OAuthMultiloginResult result(data);
+  ASSERT_EQ(result.error().state(), GoogleServiceAuthError::State::NONE);
+
+  testing::InSequence mock_sequence;
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id2))
+      .Times(1);
+  // retry call
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(signin::kMaxFetcherRetries - 1);
+  // retry call
+  EXPECT_CALL(helper, SetAccountsInCookieWithTokens()).Times(1);
+  EXPECT_CALL(helper,
+              OnSetAccountsFinished(GoogleServiceAuthError::AuthErrorNone()))
+      .Times(1);
+
+  const std::vector<std::string> account_ids = {account_id1, account_id2};
+
+  helper.SetAccountsInCookie(account_ids, GaiaConstants::kChromeSource);
+
+  RequestMockImpl request1(account_id1);
+  RequestMockImpl request2(account_id2);
+  // Transient error, retry.
+  // Succeed when only one retry is left. Simulate Multilogin failure. Check
+  // that it retries.
+  for (int i = 0; i < signin::kMaxFetcherRetries - 1; ++i) {
+    SimulateAccessTokenFailure(&helper, &request1, error);
+    Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
+  }
+  SimulateAccessTokenSuccess(&helper, &request1);
+  SimulateAccessTokenSuccess(&helper, &request2);
+
+  std::vector<GaiaAuthFetcher::MultiloginTokenIDPair> accounts =
+      std::vector<GaiaAuthFetcher::MultiloginTokenIDPair>();
+  accounts.emplace_back(account_id1, "AccessToken");
+  accounts.emplace_back(account_id2, "AccessToken");
+
+  helper.StartFetchingMultiLogin(accounts);
+  SimulateMultiloginFinished(&helper, OAuthMultiloginResult(error));
+  SimulateMultiloginFinished(&helper, result);
+}
+
+TEST_F(GaiaCookieManagerServiceTest, MultiloginSuccessAndCookiesSet) {
+  InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
+  MockObserver observer(&helper);
+
+  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::ScopedClosureRunner task_runner_ =
+      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+
+  const std::string account_id1 = "12345";
+  const std::string account_id2 = "23456";
+  const std::vector<std::string> account_ids = {account_id1, account_id2};
+
+  std::vector<GaiaAuthFetcher::MultiloginTokenIDPair> accounts =
+      std::vector<GaiaAuthFetcher::MultiloginTokenIDPair>();
+  accounts.emplace_back(account_id1, "AccessToken");
+  accounts.emplace_back(account_id2, "AccessToken");
+
+  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
+
+  std::string data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            },
+            {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            },
+            {
+              "name":"HSID",
+              "value":"vAlUe4",
+              "host":"google.fr",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":0
+            }
+          ]
+        }
+      )";
+  OAuthMultiloginResult result(data);
+  ASSERT_EQ(result.error().state(), GoogleServiceAuthError::State::NONE);
+
+  testing::InSequence mock_sequence;
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id2))
+      .Times(1);
+  EXPECT_CALL(helper, SetAccountsInCookieWithTokens()).Times(1);
+  EXPECT_CALL(helper,
+              OnSetAccountsFinished(GoogleServiceAuthError::AuthErrorNone()))
+      .Times(1);
+
+  // Needed to insert request in the queue.
+  helper.SetAccountsInCookie(account_ids, GaiaConstants::kChromeSource);
+
+  helper.StartFetchingMultiLogin(accounts);
+
+  SimulateMultiloginFinished(&helper, OAuthMultiloginResult(error));
+
+  DCHECK(helper.is_running());
+  Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
+
+  SimulateMultiloginFinished(&helper, result);
+}
+
+TEST_F(GaiaCookieManagerServiceTest, MultiloginFailurePersistentError) {
+  InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
+  MockObserver observer(&helper);
+
+  const std::string account_id1 = "12345";
+  const std::string account_id2 = "23456";
+  const std::vector<std::string> account_ids = {account_id1, account_id2};
+
+  std::vector<GaiaAuthFetcher::MultiloginTokenIDPair> accounts =
+      std::vector<GaiaAuthFetcher::MultiloginTokenIDPair>();
+  accounts.emplace_back(account_id1, "AccessToken");
+  accounts.emplace_back(account_id2, "AccessToken");
+
+  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
+
+  testing::InSequence mock_sequence;
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id2))
+      .Times(1);
+  EXPECT_CALL(helper, OnSetAccountsFinished(error)).Times(1);
+
+  // Needed to insert request in the queue.
+  helper.SetAccountsInCookie(account_ids, GaiaConstants::kChromeSource);
+
+  helper.StartFetchingMultiLogin(accounts);
+
+  SimulateMultiloginFinished(&helper, OAuthMultiloginResult(error));
+}
+
+TEST_F(GaiaCookieManagerServiceTest, MultiloginFailureMaxRetriesReached) {
+  InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
+  MockObserver observer(&helper);
+
+  auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::ScopedClosureRunner task_runner_ =
+      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+
+  const std::string account_id1 = "12345";
+  const std::string account_id2 = "23456";
+  const std::vector<std::string> account_ids = {account_id1, account_id2};
+
+  std::vector<GaiaAuthFetcher::MultiloginTokenIDPair> accounts =
+      std::vector<GaiaAuthFetcher::MultiloginTokenIDPair>();
+  accounts.emplace_back(account_id1, "AccessToken");
+  accounts.emplace_back(account_id2, "AccessToken");
+
+  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
+
+  testing::InSequence mock_sequence;
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id2))
+      .Times(1);
+  // This is the retry call, the first call is skipped as we call
+  // StartFetchingMultiLogim explicitly instead.
+  EXPECT_CALL(helper, SetAccountsInCookieWithTokens())
+      .Times(signin::kMaxFetcherRetries - 1);
+  EXPECT_CALL(helper, OnSetAccountsFinished(error)).Times(1);
+
+  // Needed to insert request in the queue.
+  helper.SetAccountsInCookie(account_ids, GaiaConstants::kChromeSource);
+
+  helper.StartFetchingMultiLogin(accounts);
+
+  // Transient error, retry, fail when maximum number of retries is reached.
+  for (int i = 0; i < signin::kMaxFetcherRetries - 1; ++i) {
+    SimulateMultiloginFinished(&helper, OAuthMultiloginResult(error));
+    Advance(test_task_runner, helper.GetBackoffEntry()->GetTimeUntilRelease());
+  }
+  SimulateMultiloginFinished(&helper, OAuthMultiloginResult(error));
+}
+
+TEST_F(GaiaCookieManagerServiceTest,
+       MultiloginFailureInvalidGaiaCredentialsMobile) {
+  InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
+  MockObserver observer(&helper);
+
+  const std::string account_id1 = "12345";
+  const std::string account_id2 = "23456";
+  const std::vector<std::string> account_ids = {account_id1, account_id2};
+
+  std::vector<GaiaAuthFetcher::MultiloginTokenIDPair> accounts =
+      std::vector<GaiaAuthFetcher::MultiloginTokenIDPair>();
+  accounts.emplace_back(account_id1, "AccessToken");
+  accounts.emplace_back(account_id2, "AccessToken");
+
+  RequestMockImpl request1(account_id1);
+  RequestMockImpl request2(account_id2);
+
+  GoogleServiceAuthError error(
+      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+
+  std::string data_ok =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+          {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            }
+          ]
+        }
+      )";
+  OAuthMultiloginResult result_ok(data_ok);
+  ASSERT_EQ(result_ok.error().state(), GoogleServiceAuthError::State::NONE);
+
+  std::string data_failed =
+      R"()]}'
+      {
+        "status": "INVALID_TOKENS",
+        "failed_accounts": [
+          {
+            "obfuscated_id": "12345", "status": "RECOVERABLE"
+          },
+          {
+            "obfuscated_id": "23456", "status": "OK"
+          }
+        ]
+      }
+    )";
+  OAuthMultiloginResult result_failed(data_failed);
+  ASSERT_EQ(result_failed.error().state(),
+            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
+
+  testing::InSequence mock_sequence;
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id2))
+      .Times(1);
+  EXPECT_CALL(helper, SetAccountsInCookieWithTokens()).Times(1);
+
+  // On mobile token_service is expected to retry getting access tokens first.
+  EXPECT_CALL(helper, OnSetAccountsFinished(error)).Times(0);
+
+  // Expect to try to refetch failed account one more time.
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+
+  // This time access tokens are supposed to be correct.
+  EXPECT_CALL(helper, SetAccountsInCookieWithTokens()).Times(1);
+  EXPECT_CALL(helper,
+              OnSetAccountsFinished(GoogleServiceAuthError::AuthErrorNone()))
+      .Times(1);
+
+  // Needed to insert request in the queue.
+  helper.SetAccountsInCookie(account_ids, GaiaConstants::kChromeSource);
+
+  // Both requests for access tokens are successful but they could be returned
+  // from cache and be stale.
+  SimulateAccessTokenSuccess(&helper, &request1);
+  SimulateAccessTokenSuccess(&helper, &request2);
+  // Both tokens are inserted in the map.
+  EXPECT_EQ(2u, helper.access_tokens_.size());
+
+  helper.StartFetchingMultiLogin(accounts);
+  // Access tokens were stale, Multilogin failed.
+  SimulateMultiloginFinished(&helper, result_failed);
+
+  // GaiaCookieManagerService should retry fetching access token again,
+  // it should be removed from the token map.
+  EXPECT_EQ(1u, helper.access_tokens_.size());
+  EXPECT_EQ(helper.access_tokens_.begin()->first, account_id2);
+
+  // This time access token is fresh.
+  SimulateAccessTokenSuccess(&helper, &request1);
+
+  EXPECT_EQ(2u, helper.access_tokens_.size());
+
+  // And Multilogin is successful.
+  SimulateMultiloginFinished(&helper, result_ok);
+
+  // The end.
+}
+
+TEST_F(GaiaCookieManagerServiceTest,
+       MultiloginFailureInvalidGaiaCredentialsDesktop) {
+  InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
+  MockObserver observer(&helper);
+
+  const std::string account_id1 = "12345";
+  const std::string account_id2 = "23456";
+  const std::vector<std::string> account_ids = {account_id1, account_id2};
+
+  std::vector<GaiaAuthFetcher::MultiloginTokenIDPair> accounts =
+      std::vector<GaiaAuthFetcher::MultiloginTokenIDPair>();
+  accounts.emplace_back(account_id1, "AccessToken");
+  accounts.emplace_back(account_id2, "AccessToken");
+
+  RequestMockImpl request1(account_id1);
+  RequestMockImpl request2(account_id2);
+
+  GoogleServiceAuthError error(
+      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+
+  std::string data_failed =
+      R"()]}'
+      {
+        "status": "INVALID_TOKENS",
+        "failed_accounts": [
+          {
+            "obfuscated_id": "12345", "status": "RECOVERABLE"
+          },
+          {
+            "obfuscated_id": "23456", "status": "OK"
+          }
+        ]
+      }
+    )";
+  OAuthMultiloginResult result_failed(data_failed);
+  ASSERT_EQ(result_failed.error().state(),
+            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
+
+  testing::InSequence mock_sequence;
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id2))
+      .Times(1);
+  EXPECT_CALL(helper, SetAccountsInCookieWithTokens()).Times(1);
+  // Expect to try to refetch failed account one more time.
+  EXPECT_CALL(helper, StartFetchingAccessTokenForMultilogin(account_id1))
+      .Times(1);
+  // And fail right away.
+  EXPECT_CALL(helper, SetAccountsInCookieWithTokens()).Times(0);
+  EXPECT_CALL(helper, OnSetAccountsFinished(error)).Times(1);
+
+  // Needed to insert request in the queue.
+  helper.SetAccountsInCookie(account_ids, GaiaConstants::kChromeSource);
+
+  // Both requests for access tokens are successful but they could be returned
+  // from cache and be stale.
+  SimulateAccessTokenSuccess(&helper, &request1);
+  SimulateAccessTokenSuccess(&helper, &request2);
+  // Both tokens are inserted in the map.
+  EXPECT_EQ(2u, helper.access_tokens_.size());
+
+  helper.StartFetchingMultiLogin(accounts);
+
+  // On desktop refresh tokens were used and failed. Token service will retry
+  // fetching access token but refresh token is supposed to be set in error and
+  // request will return with immediate error.
+  SimulateMultiloginFinished(&helper, result_failed);
+
+  SimulateAccessTokenFailure(&helper, &request1, error);
 }
 
 TEST_F(GaiaCookieManagerServiceTest, ContinueAfterSuccess) {

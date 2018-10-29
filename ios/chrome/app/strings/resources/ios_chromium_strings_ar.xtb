@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">‏الحصول على ميزات Google الذكية في Chromium</translation>
 <translation id="2730884209570016437">‏يتعذر على Chromium استخدام الكاميرا نظرًا لأنها قيد الاستخدام من قِبل تطبيق آخر</translation>
 <translation id="2797210818057553964">‏يمكنك تخصيص هذا في أي وقت في "إعدادات Chromium".</translation>
+<translation id="2915596697727466327">‏يستخدم Chromium تقنية "التعرُّف على الوجه" لضمان الدخول المصرَّح به إلى كلمات المرور.</translation>
 <translation id="3256316712990552818">‏تم النسخ إلى Chromium</translation>
 <translation id="3413120535237193088">‏للحصول على الإشارات المرجعية على جميع أجهزتك، سجِّل الدخول إلى Chromium.</translation>
 <translation id="3473048256428424907">‏تشغيل الماسح الضوئي للاستجابة السريعة في Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">‏ستظهر علامات التبويب التي فتحتها في Chromium على أجهزتك الأخرى هنا.</translation>
 <translation id="495292094137889840">‏بدء استخدام الماسح الضوئي للاستجابة السريعة في Chromium</translation>
 <translation id="5231355151045086930">‏الخروج من Chromium</translation>
-<translation id="5416919929805616771">‏هل تستمتع باستخدام Chromium؟ <ph name="BEGIN_LINK" />قيّم هذا التطبيق<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">‏مرحبًا بك في Chromium</translation>
 <translation id="5945387852661427312">‏إنك تسجل الدخول باستخدام حساب تتم إدارته من خلال <ph name="DOMAIN" /> وتمنح مشرفه الحق في التحكم في بياناتك على Chromium. سيؤدي ذلك إلى جعل بياناتك مرتبطة دائمًا بهذا الحساب. كما سيؤدي الخروج من Chromium إلى حذف بياناتك من هذا الجهاز، ولكن ستظل هذه البيانات مخزَّنة على حسابك في Google.</translation>
 <translation id="6068866989048414399">‏بنود خدمة Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">‏أنت تجري تبديلاً لحسابات المزامنة من <ph name="USER_EMAIL1" /> إلى <ph name="USER_EMAIL2" />. تتم إدارة بيانات Chromium الحالية من خلال <ph name="DOMAIN" />. سيؤدي ذلك إلى حذف بياناتك من هذا الجهاز، ولكن ستظل بياناتك في <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">‏نصيحة: <ph name="BEGIN_LINK" />انقل Chromium إلى شريط الإرساء<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">‏احصل على تجربة أفضل لاستخدام Google في Chromium استنادًا إلى موقعك.</translation>
-<translation id="8353224596138547809">‏هل تريد من Chromium حفظ كلمة المرور لهذا الموقع؟</translation>
 <translation id="8508544542427105412">‏يمكن تخصيص <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" /> في أي وقت. قد تستخدم Google محتوى المواقع الإلكترونية التي تزورها وتفاعلات المتصفّح ونشاطه لتخصيص Chromium وخدمات Google، مثل "ترجمة" و"بحث" والإعلانات.</translation>
 <translation id="8586442755830160949">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لصالح The Chromium Authors. جميع الحقوق محفوظة.</translation>
 <translation id="8809780021347235332">‏لحفظ الصور، انقر على الإعدادات للسماح لمتصفح Chromium باستخدام صورك</translation>

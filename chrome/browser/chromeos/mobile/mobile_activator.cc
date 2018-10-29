@@ -36,6 +36,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -330,9 +331,10 @@ void MobileActivator::GetPropertiesFailure(
 }
 
 void MobileActivator::OnSetTransactionStatus(bool success) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-      base::Bind(&MobileActivator::HandleSetTransactionStatus,
-                 AsWeakPtr(), success));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::Bind(&MobileActivator::HandleSetTransactionStatus, AsWeakPtr(),
+                 success));
 }
 
 void MobileActivator::HandleSetTransactionStatus(bool success) {
@@ -355,9 +357,9 @@ void MobileActivator::HandleSetTransactionStatus(bool success) {
 }
 
 void MobileActivator::OnPortalLoaded(bool success) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-      base::Bind(&MobileActivator::HandlePortalLoaded,
-                 AsWeakPtr(), success));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::Bind(&MobileActivator::HandlePortalLoaded, AsWeakPtr(), success));
 }
 
 void MobileActivator::HandlePortalLoaded(bool success) {
@@ -1000,7 +1002,8 @@ void MobileActivator::ChangeState(const NetworkState* network,
       break;
     case PLAN_ACTIVATION_DELAY_OTASP: {
       UMA_HISTOGRAM_COUNTS_1M("Cellular.RetryOTASP", 1);
-      BrowserThread::PostDelayedTask(BrowserThread::UI, FROM_HERE,
+      base::PostDelayedTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
           base::Bind(&MobileActivator::RetryOTASP, AsWeakPtr()),
           base::TimeDelta::FromMilliseconds(kOTASPRetryDelay));
       break;

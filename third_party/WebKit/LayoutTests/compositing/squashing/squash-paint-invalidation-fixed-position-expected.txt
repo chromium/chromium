@@ -41,7 +41,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV id='foo'",
           "rect": [0, 0, 100, 100],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }
@@ -101,7 +101,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV id='foo'",
           "rect": [0, 0, 100, 100],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

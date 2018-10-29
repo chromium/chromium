@@ -5,6 +5,7 @@
 #include "storage/browser/fileapi/file_writer_impl.h"
 
 #include "base/callback_helpers.h"
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_storage_context.h"
 
@@ -29,6 +30,25 @@ void FileWriterImpl::Write(uint64_t position,
       std::move(blob),
       base::BindOnce(&FileWriterImpl::DoWrite, base::Unretained(this),
                      std::move(callback), position));
+}
+
+void FileWriterImpl::WriteStream(uint64_t position,
+                                 mojo::ScopedDataPipeConsumerHandle stream,
+                                 WriteStreamCallback callback) {
+  // FileSystemOperationRunner assumes that positions passed to Write are always
+  // valid, and will NOTREACHED() if that is not the case, so first check the
+  // size of the file to make sure the position passed in from the renderer is
+  // in fact valid.
+  // Of course the file could still change between checking its size and the
+  // write operation being started, but this is at least a lot better than the
+  // old implementation where the renderer only checks against how big it thinks
+  // the file currently is.
+  operation_runner_->GetMetadata(
+      url_, FileSystemOperation::GET_METADATA_FIELD_SIZE,
+      base::BindRepeating(&FileWriterImpl::DoWriteStreamWithFileInfo,
+                          base::Unretained(this),
+                          base::AdaptCallbackForRepeating(std::move(callback)),
+                          position, base::Passed(std::move(stream))));
 }
 
 void FileWriterImpl::Truncate(uint64_t length, TruncateCallback callback) {
@@ -74,6 +94,23 @@ void FileWriterImpl::DoWriteWithFileInfo(WriteCallback callback,
   }
   operation_runner_->Write(
       url_, std::move(blob), position,
+      base::BindRepeating(&FileWriterImpl::DidWrite, base::Unretained(this),
+                          base::AdaptCallbackForRepeating(std::move(callback)),
+                          base::Owned(new WriteState())));
+}
+
+void FileWriterImpl::DoWriteStreamWithFileInfo(
+    WriteStreamCallback callback,
+    uint64_t position,
+    mojo::ScopedDataPipeConsumerHandle data_pipe,
+    base::File::Error result,
+    const base::File::Info& file_info) {
+  if (file_info.size < 0 || position > static_cast<uint64_t>(file_info.size)) {
+    std::move(callback).Run(base::File::FILE_ERROR_FAILED, 0);
+    return;
+  }
+  operation_runner_->Write(
+      url_, std::move(data_pipe), position,
       base::BindRepeating(&FileWriterImpl::DidWrite, base::Unretained(this),
                           base::AdaptCallbackForRepeating(std::move(callback)),
                           base::Owned(new WriteState())));

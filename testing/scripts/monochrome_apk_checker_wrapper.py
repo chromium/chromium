@@ -50,7 +50,7 @@ def main():
       'actual': 'PASS' if success else 'FAIL',
     }
     if not success:
-      test['unexpected'] = True
+      test['is_unexpected'] = True
 
     json.dump({
       'version': 3,

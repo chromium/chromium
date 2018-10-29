@@ -133,6 +133,7 @@ android_library("web_contents_delegate_java") {
     ":web_contents_delegate_java_resources",
     "//base:base_java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:android_support_compat_java",
     "//ui/android:ui_java",
   ]
   java_files = [

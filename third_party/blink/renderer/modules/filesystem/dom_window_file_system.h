@@ -32,6 +32,7 @@
 
 namespace blink {
 
+class ChooseFileSystemEntriesOptions;
 class LocalDOMWindow;
 class ScriptPromise;
 class ScriptState;
@@ -60,7 +61,10 @@ class DOMWindowFileSystem {
     kPersistent,
   };
 
-  static ScriptPromise chooseFileSystemEntries(ScriptState*, LocalDOMWindow&);
+  static ScriptPromise chooseFileSystemEntries(
+      ScriptState*,
+      LocalDOMWindow&,
+      const ChooseFileSystemEntriesOptions&);
 };
 
 }  // namespace blink

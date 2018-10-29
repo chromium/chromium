@@ -44,6 +44,9 @@ class FakeHost : public apps::AppShimHandler::Host {
   void OnAppRequestUserAttention(AppShimAttentionType type) override {}
   base::FilePath GetProfilePath() const override { return profile_path_; }
   std::string GetAppId() const override { return app_id_; }
+  views::BridgeFactoryHost* GetViewsBridgeFactoryHost() const override {
+    return nullptr;
+  }
 
  private:
   base::FilePath profile_path_;

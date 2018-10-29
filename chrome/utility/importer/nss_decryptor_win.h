@@ -166,7 +166,6 @@ class NSSDecryptor {
   NSSInitFunc NSS_Init;
   NSSShutdownFunc NSS_Shutdown;
   PK11GetInternalKeySlotFunc PK11_GetInternalKeySlot;
-  PK11CheckUserPasswordFunc PK11_CheckUserPassword;
   PK11FreeSlotFunc PK11_FreeSlot;
   PK11AuthenticateFunc PK11_Authenticate;
   PK11SDRDecryptFunc PK11SDR_Decrypt;

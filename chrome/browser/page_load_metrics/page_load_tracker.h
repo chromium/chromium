@@ -189,6 +189,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client {
   void Commit(content::NavigationHandle* navigation_handle);
   void DidCommitSameDocumentNavigation(
       content::NavigationHandle* navigation_handle);
+  void DidInternalNavigationAbort(content::NavigationHandle* navigation_handle);
   void DidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle);
   void FailedProvisionalLoad(content::NavigationHandle* navigation_handle,

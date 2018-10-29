@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/fake_memory_pressure_monitor.h"
 #include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
@@ -149,8 +149,9 @@ class SessionRestoreTest : public InProcessBrowserTest {
     Browser* new_browser = window_observer.WaitForSingleNewBrowser();
     // Stop loading anything more if we are running out of space.
     if (!no_memory_pressure) {
-      base::MemoryPressureListener::NotifyMemoryPressure(
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      fake_memory_pressure_monitor_.SetAndNotifyMemoryPressure(
+          base::MemoryPressureMonitor::MemoryPressureLevel::
+              MEMORY_PRESSURE_LEVEL_CRITICAL);
     }
     restore_observer.Wait();
 
@@ -207,6 +208,9 @@ class SessionRestoreTest : public InProcessBrowserTest {
   GURL url3_;
 
   const BrowserList* active_browser_list_;
+
+ private:
+  base::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor_;
 };
 
 // SessionRestorePolicy that always allow tabs to load.

@@ -37,7 +37,7 @@ window.automationUtil = function() {};
 // TODO(aboxhall): Look into using WeakMap
 var idToCallback = {};
 
-var DESKTOP_TREE_ID = 0;
+var DESKTOP_TREE_ID = "0";
 
 automationUtil.storeTreeCallback = function(id, callback) {
   if (!callback)

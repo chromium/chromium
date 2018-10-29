@@ -88,8 +88,7 @@ std::string GCMRegistrationInfo::GetSerializedValue(
   // Serialize as:
   // sender1,sender2,...=reg_id#time_of_last_validation
   std::string value;
-  for (std::vector<std::string>::const_iterator iter = sender_ids.begin();
-       iter != sender_ids.end(); ++iter) {
+  for (auto iter = sender_ids.begin(); iter != sender_ids.end(); ++iter) {
     DCHECK(!iter->empty() &&
            iter->find(',') == std::string::npos &&
            iter->find('=') == std::string::npos);

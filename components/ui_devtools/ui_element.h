@@ -6,6 +6,8 @@
 #define COMPONENTS_UI_DEVTOOLS_UI_ELEMENT_H_
 
 #include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/macros.h"
@@ -28,13 +30,15 @@ enum UIElementType { WINDOW, WIDGET, VIEW, ROOT, FRAMESINK, SURFACE };
 class UI_DEVTOOLS_EXPORT UIElement {
  public:
   virtual ~UIElement();
-  int node_id() const { return node_id_; };
+  int node_id() const { return node_id_; }
   std::string GetTypeName() const;
-  UIElement* parent() const { return parent_; };
-  void set_parent(UIElement* parent) { parent_ = parent; };
-  UIElementDelegate* delegate() const { return delegate_; };
-  UIElementType type() const { return type_; };
-  const std::vector<UIElement*>& children() const { return children_; };
+  UIElement* parent() const { return parent_; }
+  void set_parent(UIElement* parent) { parent_ = parent; }
+  UIElementDelegate* delegate() const { return delegate_; }
+  UIElementType type() const { return type_; }
+  const std::vector<UIElement*>& children() const { return children_; }
+  bool is_updating() const { return is_updating_; }
+  void set_is_updating(bool is_updating) { is_updating_ = is_updating; }
 
   // |child| is inserted in front of |before|. If |before| is null, it
   // is inserted at the end. Parent takes ownership of the added child.
@@ -70,7 +74,7 @@ class UI_DEVTOOLS_EXPORT UIElement {
   template <typename BackingT, typename T>
   static BackingT* GetBackingElement(const UIElement* element) {
     return T::From(element);
-  };
+  }
 
  protected:
   UIElement(const UIElementType type,
@@ -83,6 +87,7 @@ class UI_DEVTOOLS_EXPORT UIElement {
   std::vector<UIElement*> children_;
   UIElement* parent_;
   UIElementDelegate* delegate_;
+  bool is_updating_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(UIElement);
 };

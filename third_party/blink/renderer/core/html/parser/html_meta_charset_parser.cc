@@ -62,7 +62,7 @@ bool HTMLMetaCharsetParser::ProcessMeta() {
 static const int kBytesToCheckUnconditionally = 1024;
 
 bool HTMLMetaCharsetParser::CheckForMetaCharset(const char* data,
-                                                size_t length) {
+                                                wtf_size_t length) {
   if (done_checking_)
     return true;
 

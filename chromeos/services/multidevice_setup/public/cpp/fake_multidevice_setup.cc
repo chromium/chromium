@@ -55,6 +55,11 @@ FakeMultiDeviceSetup::~FakeMultiDeviceSetup() {
     if (triggered_debug_event.second)
       std::move(triggered_debug_event.second).Run(false /* success */);
   }
+
+  for (auto& set_host_without_auth_arg : set_host_without_auth_args_) {
+    if (set_host_without_auth_arg.second)
+      std::move(set_host_without_auth_arg.second).Run(false /* success */);
+  }
 }
 
 void FakeMultiDeviceSetup::BindHandle(mojo::ScopedMessagePipeHandle handle) {
@@ -148,6 +153,12 @@ void FakeMultiDeviceSetup::TriggerEventForDebugging(
     mojom::EventTypeForDebugging type,
     TriggerEventForDebuggingCallback callback) {
   triggered_debug_events_.emplace_back(type, std::move(callback));
+}
+
+void FakeMultiDeviceSetup::SetHostDeviceWithoutAuthToken(
+    const std::string& host_device_id,
+    mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback) {
+  set_host_without_auth_args_.emplace_back(host_device_id, std::move(callback));
 }
 
 }  // namespace multidevice_setup

@@ -143,6 +143,9 @@ class EasyUnlockService : public KeyedService {
   // Returns true if ChromeOS login is enabled by the user.
   virtual bool IsChromeOSLoginEnabled() const;
 
+  // TODO(crbug.com/894585): Remove this legacy special case after M71.
+  virtual bool IsInLegacyHostMode() const;
+
   // Sets the hardlock state for the associated user.
   void SetHardlockState(EasyUnlockScreenlockStateHandler::HardlockState state);
 
@@ -183,10 +186,6 @@ class EasyUnlockService : public KeyedService {
   // Marks the Easy Unlock screen lock state as the one associated with the
   // trial run initiated by Easy Unlock app.
   void SetTrialRun();
-
-  // Records that the user clicked on the lock icon during the trial run
-  // initiated by the Easy Unlock app.
-  void RecordClickOnLockIcon();
 
   // Called when the user reauths (e.g. in chrome://settings) so we can cache
   // the user context for the setup flow.

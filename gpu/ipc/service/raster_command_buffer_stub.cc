@@ -61,10 +61,7 @@ RasterCommandBufferStub::RasterCommandBufferStub(
                         command_buffer_id,
                         sequence_id,
                         stream_id,
-                        route_id) {
-  original_url_ = active_url_;
-  original_url_hash_ = active_url_hash_;
-}
+                        route_id) {}
 
 RasterCommandBufferStub::~RasterCommandBufferStub() {}
 
@@ -115,7 +112,9 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
       init_params.attribs.bind_generates_resource, channel_->image_manager(),
       gmb_factory ? gmb_factory->AsImageFactory() : nullptr,
       /*progress_reporter=*/manager->watchdog(), manager->gpu_feature_info(),
-      manager->discardable_manager());
+      manager->discardable_manager(),
+      manager->passthrough_discardable_manager(),
+      manager->shared_image_manager());
 
   ContextResult result;
   auto raster_decoder_context_state =
@@ -242,12 +241,6 @@ void RasterCommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
 void RasterCommandBufferStub::SetActiveURL(GURL url) {
   active_url_ = std::move(url);
   active_url_hash_ = base::Hash(active_url_.possibly_invalid_spec());
-  FastSetActiveURL(active_url_, active_url_hash_, channel_);
-}
-
-void RasterCommandBufferStub::ResetActiveURL() {
-  active_url_ = original_url_;
-  active_url_hash_ = original_url_hash_;
   FastSetActiveURL(active_url_, active_url_hash_, channel_);
 }
 

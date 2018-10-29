@@ -55,6 +55,8 @@ class MutableProfileOAuth2TokenServiceDelegate
   void UpdateAuthError(const std::string& account_id,
                        const GoogleServiceAuthError& error) override;
 
+  std::string GetTokenForMultilogin(
+      const std::string& account_id) const override;
   bool RefreshTokenIsAvailable(const std::string& account_id) const override;
   GoogleServiceAuthError GetAuthError(
       const std::string& account_id) const override;
@@ -72,7 +74,6 @@ class MutableProfileOAuth2TokenServiceDelegate
 
   // Overridden from OAuth2TokenServiceDelegate.
   void Shutdown() override;
-  LoadCredentialsState GetLoadCredentialsState() const override;
 
   // Overridden from NetworkConnectionTracker::NetworkConnectionObserver.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
@@ -123,6 +124,9 @@ class MutableProfileOAuth2TokenServiceDelegate
   FRIEND_TEST_ALL_PREFIXES(
       MutableProfileOAuth2TokenServiceDelegateTest,
       PersistenceLoadCredentialsEmptyPrimaryAccountId_DiceEnabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      MutableProfileOAuth2TokenServiceDelegateTest,
+      LoadCredentialsClearsTokenDBWhenNoPrimaryAccount_DiceDisabled);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            PersistenceLoadCredentials);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -149,6 +153,8 @@ class MutableProfileOAuth2TokenServiceDelegate
                            ShutdownService);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            ClearTokensOnStartup);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           InvalidateTokensForMultilogin);
 
   // WebDataServiceConsumer implementation:
   void OnWebDataServiceRequestDone(
@@ -162,6 +168,9 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Updates the in-memory representation of the credentials.
   void UpdateCredentialsInMemory(const std::string& account_id,
                                  const std::string& refresh_token);
+
+  // Sets refresh token in error.
+  void InvalidateTokenForMultilogin(const std::string& failed_account) override;
 
   // Persists credentials for |account_id|. Enables overriding for
   // testing purposes, or other cases, when accessing the DB is not desired.
@@ -203,9 +212,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   // The primary account id of this service's profile during the loading of
   // credentials.  This member is empty otherwise.
   std::string loading_primary_account_id_;
-
-  // The state of the load credentials operation.
-  LoadCredentialsState load_credentials_state_;
 
   std::vector<std::unique_ptr<RevokeServerRefreshToken>> server_revokes_;
 

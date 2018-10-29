@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/ssl_config.mojom.h"
 
 class PrefRegistrySimple;
+class PrefService;
 class SSLConfigServiceManager;
 
 namespace network {
@@ -27,6 +28,10 @@ class URLLoaderFactory;
 }
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace net_log {
+class NetExportFileWriter;
+}
 
 // Responsible for creating and managing access to the system NetworkContext.
 // Lives on the UI thread. The NetworkContext this owns is intended for requests
@@ -49,8 +54,17 @@ class SharedURLLoaderFactory;
 // to being compatible with the network service.
 class SystemNetworkContextManager {
  public:
-  SystemNetworkContextManager();
   ~SystemNetworkContextManager();
+
+  // Creates the global instance of SystemNetworkContextManager. If an
+  // instance already exists, this will cause a DCHECK failure.
+  static SystemNetworkContextManager* CreateInstance(PrefService* pref_service);
+
+  // Gets the global SystemNetworkContextManager instance.
+  static SystemNetworkContextManager* GetInstance();
+
+  // Destroys the global SystemNetworkContextManager instance.
+  static void DeleteInstance();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -115,6 +129,11 @@ class SystemNetworkContextManager {
   // Returns default set of parameters for configuring the network service.
   network::mojom::NetworkContextParamsPtr CreateDefaultNetworkContextParams();
 
+  // Returns a shared global NetExportFileWriter instance, used by net-export.
+  // It lives here so it can outlive chrome://net-export/ if the tab is closed
+  // or destroyed, and so that it's destroyed before Mojo is shut down.
+  net_log::NetExportFileWriter* GetNetExportFileWriter();
+
   // Flushes all pending SSL configuration changes.
   void FlushSSLConfigManagerForTesting();
 
@@ -139,11 +158,17 @@ class SystemNetworkContextManager {
  private:
   class URLLoaderFactoryForSystem;
 
+  // Constructor. |pref_service| must out live this object.
+  explicit SystemNetworkContextManager(PrefService* pref_service);
+
   void UpdateReferrersEnabled();
 
   // Creates parameters for the NetworkContext. May only be called once, since
   // it initializes some class members.
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams();
+
+  // The PrefService to retrieve all the pref values.
+  PrefService* local_state_;
 
   // This is an instance of the default SSLConfigServiceManager for the current
   // platform and it gets SSL preferences from the BrowserProcess's local_state
@@ -171,6 +196,9 @@ class SystemNetworkContextManager {
   PrefChangeRegistrar pref_change_registrar_;
 
   BooleanPrefMember enable_referrers_;
+
+  // Initialized on first access.
+  std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
 
   DISALLOW_COPY_AND_ASSIGN(SystemNetworkContextManager);
 };

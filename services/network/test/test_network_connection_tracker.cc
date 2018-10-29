@@ -4,13 +4,22 @@
 
 #include "services/network/test/test_network_connection_tracker.h"
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace network {
 
 static TestNetworkConnectionTracker* g_test_network_connection_tracker_instance;
+
+namespace {
+
+NetworkConnectionTracker* GetNonTestInstance() {
+  return TestNetworkConnectionTracker::GetInstance();
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<TestNetworkConnectionTracker>
@@ -24,12 +33,22 @@ TestNetworkConnectionTracker* TestNetworkConnectionTracker::GetInstance() {
   return g_test_network_connection_tracker_instance;
 }
 
+// static
+NetworkConnectionTrackerGetter TestNetworkConnectionTracker::CreateGetter() {
+  return base::BindRepeating(&GetNonTestInstance);
+}
+
 TestNetworkConnectionTracker::TestNetworkConnectionTracker() {
   if (g_test_network_connection_tracker_instance) {
     LOG(WARNING) << "Creating more than one TestNetworkConnectionTracker";
     return;
   }
   g_test_network_connection_tracker_instance = this;
+
+  // Make sure the real NetworkConnectionTracker thinks there's always a
+  // connection available. GetConnectionType asynchronisity will be implemented
+  // in the override in this class.
+  OnNetworkChanged(network::mojom::ConnectionType::CONNECTION_UNKNOWN);
 }
 
 TestNetworkConnectionTracker::~TestNetworkConnectionTracker() {
@@ -40,20 +59,23 @@ TestNetworkConnectionTracker::~TestNetworkConnectionTracker() {
 bool TestNetworkConnectionTracker::GetConnectionType(
     network::mojom::ConnectionType* type,
     ConnectionTypeCallback callback) {
+  network::mojom::ConnectionType current_type;
+  bool sync = NetworkConnectionTracker::GetConnectionType(&current_type,
+                                                          base::DoNothing());
+  DCHECK(sync);
   if (respond_synchronously_) {
-    *type = type_;
+    *type = current_type;
     return true;
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), type_));
+      FROM_HERE, base::BindOnce(std::move(callback), current_type));
   return false;
 }
 
 void TestNetworkConnectionTracker::SetConnectionType(
     network::mojom::ConnectionType type) {
-  type_ = type;
-  OnNetworkChanged(type_);
+  OnNetworkChanged(type);
 }
 
 void TestNetworkConnectionTracker::SetRespondSynchronously(

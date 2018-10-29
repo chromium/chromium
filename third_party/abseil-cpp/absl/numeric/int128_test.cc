@@ -23,6 +23,7 @@
 
 #include "gtest/gtest.h"
 #include "absl/base/internal/cycleclock.h"
+#include "absl/hash/hash_testing.h"
 #include "absl/meta/type_traits.h"
 
 #if defined(_MSC_VER) && _MSC_VER == 1900

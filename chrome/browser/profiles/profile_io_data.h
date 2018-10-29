@@ -78,13 +78,9 @@ class ReportingService;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 }  // namespace net
 
-namespace policy {
-class PolicyCertVerifier;
-}  // namespace policy
-
-namespace previews {
-class PreviewsDeciderImpl;
-}
+namespace network {
+class CertVerifierWithTrustAnchors;
+}  // namespace network
 
 // Conceptually speaking, the ProfileIOData represents data that lives on the IO
 // thread that is owned by a Profile, such as, but not limited to, network
@@ -137,7 +133,7 @@ class ProfileIOData {
 
   net::URLRequestContext* GetMainRequestContext() const;
   net::URLRequestContext* GetMediaRequestContext() const;
-  net::URLRequestContext* GetExtensionsRequestContext() const;
+  virtual net::CookieStore* GetExtensionsCookieStore() const = 0;
   net::URLRequestContext* GetIsolatedAppRequestContext(
       IOThread* io_thread,
       net::URLRequestContext* main_context,
@@ -166,10 +162,6 @@ class ProfileIOData {
   // Gets Sync state, for Dice account consistency.
   bool IsSyncEnabled() const;
   bool SyncHasAuthError() const;
-
-  net::URLRequestContext* extensions_request_context() const {
-    return extensions_request_context_.get();
-  }
 
   BooleanPrefMember* safe_browsing_enabled() const {
     return &safe_browsing_enabled_;
@@ -248,10 +240,6 @@ class ProfileIOData {
   data_reduction_proxy::DataReductionProxyIOData*
   data_reduction_proxy_io_data() const {
     return data_reduction_proxy_io_data_.get();
-  }
-
-  previews::PreviewsDeciderImpl* previews_decider_impl() const {
-    return previews_decider_impl_.get();
   }
 
   // Returns the predictor service for this Profile. Returns nullptr if there is
@@ -365,7 +353,7 @@ class ProfileIOData {
     std::unique_ptr<net::URLRequestInterceptor> new_tab_page_interceptor;
 
 #if defined(OS_CHROMEOS)
-    std::unique_ptr<policy::PolicyCertVerifier> policy_cert_verifier;
+    std::unique_ptr<network::CertVerifierWithTrustAnchors> policy_cert_verifier;
     std::string username_hash;
     SystemKeySlotUseType system_key_slot_use_type = SystemKeySlotUseType::kNone;
     std::unique_ptr<chromeos::CertificateProvider> certificate_provider;
@@ -426,9 +414,6 @@ class ProfileIOData {
   void set_data_reduction_proxy_io_data(
       std::unique_ptr<data_reduction_proxy::DataReductionProxyIOData>
           data_reduction_proxy_io_data) const;
-
-  void set_previews_decider_impl(std::unique_ptr<previews::PreviewsDeciderImpl>
-                                     previews_decider_impl) const;
 
   net::URLRequestContext* main_request_context() const {
     return main_request_context_;
@@ -501,8 +486,8 @@ class ProfileIOData {
   virtual void OnMainRequestContextCreated(
       ProfileParams* profile_params) const = 0;
 
-  // Initializes the RequestContext for extensions.
-  virtual void InitializeExtensionsRequestContext(
+  // Initializes the cookie store for extensions.
+  virtual void InitializeExtensionsCookieStore(
       ProfileParams* profile_params) const = 0;
 
   // Does an on-demand initialization of a media RequestContext for the given
@@ -577,8 +562,6 @@ class ProfileIOData {
   mutable scoped_refptr<extensions::InfoMap> extension_info_map_;
 #endif
 
-  mutable std::unique_ptr<previews::PreviewsDeciderImpl> previews_decider_impl_;
-
   mutable std::unique_ptr<data_reduction_proxy::DataReductionProxyIOData>
       data_reduction_proxy_io_data_;
 
@@ -599,7 +582,6 @@ class ProfileIOData {
   mutable network::URLRequestContextOwner main_request_context_owner_;
   mutable net::URLRequestContext* main_request_context_;
 
-  mutable std::unique_ptr<net::URLRequestContext> extensions_request_context_;
   // One URLRequestContext per isolated app for main and media requests.
   mutable URLRequestContextMap app_request_context_map_;
   mutable URLRequestContextMap isolated_media_request_context_map_;

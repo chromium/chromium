@@ -61,6 +61,8 @@ class MEDIA_MOJO_EXPORT MojoCdmProxy : public cdm::CdmProxy,
   void OnMediaCryptoSessionCreated(media::CdmProxy::Status status,
                                    uint32_t crypto_session_id,
                                    uint64_t output_data);
+  void OnKeySet(media::CdmProxy::Status status);
+  void OnKeyRemoved(media::CdmProxy::Status status);
 
   mojom::CdmProxyPtr cdm_proxy_ptr_;
   cdm::CdmProxyClient* client_;

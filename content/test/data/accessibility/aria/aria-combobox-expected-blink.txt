@@ -3,6 +3,7 @@ rootWebArea
 ++++staticText name='State'
 ++++++inlineTextBox name='State'
 ++textFieldWithComboBox autoComplete='list' name='State' activedescendantId=listBoxOption restriction=readOnly haspopup=listbox
+++++genericContainer
 ++listBox
 ++++listBoxOption name='Alabama' selected=false
 ++++listBoxOption name='Alaska' selected=true

@@ -9,7 +9,10 @@
 #include "base/files/file_enumerator.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task_runner_util.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 
@@ -28,12 +31,16 @@ void ScanDevicesOnWorkerThread(std::vector<base::FilePath>* result) {
     result->push_back(path);
   }
 }
-}
+}  // namespace
 
-DeviceManagerManual::DeviceManagerManual() : weak_ptr_factory_(this) {}
+DeviceManagerManual::DeviceManagerManual()
+    : blocking_task_runner_(
+          base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()})),
+      watcher_(new base::FilePathWatcher,
+               base::OnTaskRunnerDeleter(blocking_task_runner_)),
+      weak_ptr_factory_(this) {}
 
-DeviceManagerManual::~DeviceManagerManual() {
-}
+DeviceManagerManual::~DeviceManagerManual() {}
 
 void DeviceManagerManual::ScanDevices(DeviceEventObserver* observer) {
   if (!is_watching_) {
@@ -58,11 +65,18 @@ void DeviceManagerManual::RemoveObserver(DeviceEventObserver* observer) {
 }
 
 void DeviceManagerManual::StartWatching() {
-  if (!watcher_.Watch(base::FilePath(kDevInput), false,
-                      base::BindRepeating(&DeviceManagerManual::OnWatcherEvent,
-                                          weak_ptr_factory_.GetWeakPtr()))) {
-    LOG(ERROR) << "Failed to start FilePathWatcher";
-  }
+  base::PostTaskAndReplyWithResult(
+      blocking_task_runner_.get(), FROM_HERE,
+      base::BindOnce(
+          &base::FilePathWatcher::Watch, base::Unretained(watcher_.get()),
+          base::FilePath(kDevInput), false,
+          base::BindRepeating(&DeviceManagerManual::OnWatcherEventOnUiSequence,
+                              base::SequencedTaskRunnerHandle::Get(),
+                              weak_ptr_factory_.GetWeakPtr())),
+      base::BindOnce([](bool watch_started) {
+        if (!watch_started)
+          LOG(ERROR) << "Failed to start FilePathWatcher";
+      }));
 }
 
 void DeviceManagerManual::InitiateScanDevices() {
@@ -113,6 +127,17 @@ void DeviceManagerManual::OnWatcherEvent(const base::FilePath& path,
     StartWatching();
   }
   InitiateScanDevices();
+}
+
+// static
+void DeviceManagerManual::OnWatcherEventOnUiSequence(
+    scoped_refptr<base::TaskRunner> ui_thread_runner,
+    base::WeakPtr<DeviceManagerManual> device_manager,
+    const base::FilePath& path,
+    bool error) {
+  ui_thread_runner->PostTask(
+      FROM_HERE, BindOnce(&DeviceManagerManual::OnWatcherEvent, device_manager,
+                          path, error));
 }
 
 }  // namespace ui

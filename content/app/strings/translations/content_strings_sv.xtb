@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1018939186200882850">menyalternativ</translation>
-<translation id="1020833440720551630">stäng av ljudspår</translation>
 <translation id="10623998915015855">växlingsknapp</translation>
 <translation id="1088086359088493902">Sekunder</translation>
 <translation id="1171774979989969504">Ange en e-postadress.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">medverkande</translation>
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="1548116112524424341">spela upp video i bild-i-bild-läge</translation>
 <translation id="1589122976691792535">område</translation>
 <translation id="1591562245178063882">Den här månaden</translation>
 <translation id="1637811476055996098">Välj filer</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">träddiagram</translation>
 <translation id="1822429046913737220">FM/EM</translation>
 <translation id="1832974991323546415">spela på en fjärrenhet</translation>
-<translation id="1838818994221231429">aktivera och inaktivera helskärm till området för utskärning</translation>
 <translation id="190587075670221089">borttagning</translation>
 <translation id="1907737156431278478">exempel</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">tid</translation>
 <translation id="5630795885300617244">Hoppa över 10 s genom att trycka två gånger till vänster/höger</translation>
 <translation id="5631759159893697722">abstract</translation>
-<translation id="5641012560118721995">pausa uppspelning</translation>
 <translation id="5643186887447432888">knapp</translation>
 <translation id="5677946354068040947">fler alternativ</translation>
 <translation id="576709008726043716">inledning</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Återställ</translation>
 <translation id="5966707198760109579">Vecka</translation>
 <translation id="5987525920412732405">snurrknapp</translation>
+<translation id="6011459053400940133">volymreglage</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6023896073578205740">listruta</translation>
-<translation id="6101327004457443354">spela upp ljudspåret</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">mätare</translation>
 <translation id="6166809985690652833">efterord</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Timmar</translation>
 <translation id="7681220483256441252">index</translation>
 <translation id="7720026100085573005">återstående tid</translation>
-<translation id="7740016676195725605">sluta visa textning</translation>
 <translation id="7740050170769002709">HTML-innehåll</translation>
 <translation id="7750228210027921155">Bild-i-bild</translation>
 <translation id="7789962463072032349">paus</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">fält för söktext</translation>
 <translation id="8057695513531652401">anmärkning</translation>
 <translation id="8105797009065549151">referensnot</translation>
-<translation id="8115662671911883373">börja visa textning</translation>
 <translation id="8117451130807776954">Den här veckan</translation>
-<translation id="819205353528511139">spela upp filmen i helskärmsläge</translation>
 <translation id="8199524924445686405">åååå</translation>
 <translation id="8284326494547611709">Textning</translation>
 <translation id="835897206747267392">Ogiltigt värde.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">styra fjärruppspelning</translation>
 <translation id="862370744433916922">undertext</translation>
 <translation id="8750798805984357768">Välj ett av följande alternativ.</translation>
-<translation id="8785498733064193001">starta uppspelning</translation>
 <translation id="8808573423886751634">kapitel</translation>
 <translation id="8845239796550121995">Castar nu till TV:n</translation>
 <translation id="8851136666856101339">huvud</translation>

@@ -12,6 +12,17 @@ namespace ui {
 class GestureEvent;
 class TouchEvent;
 
+// TransferTouchesBehavior customizes the behavior of
+// GestureRecognizer::TransferEventsTo.
+enum class TransferTouchesBehavior {
+  // Dispatches the cancel events to the current consumer on transfer to ensure
+  // its touch stream remains valid.
+  kCancel,
+
+  // Do not dispatch cancel events.
+  kDontCancel
+};
+
 // An abstract type for consumers of gesture-events created by the
 // gesture-recognizer.
 class EVENTS_EXPORT GestureConsumer {

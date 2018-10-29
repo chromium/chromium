@@ -31,6 +31,10 @@ class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
       CopyOrMoveOption option,
       CopyFileProgressCallback progress_callback,
       StatusCallback callback) override;
+  void DeleteRecursively(
+      std::unique_ptr<storage::FileSystemOperationContext> context,
+      const storage::FileSystemURL& url,
+      StatusCallback callback) override;
 
  private:
   Profile* const profile_;

@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxCommandStoreUnitTest() {}
+function ChromeVoxCommandStoreUnitTest() {}
 
-CvoxCommandStoreUnitTest.prototype = {
+ChromeVoxCommandStoreUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -22,7 +22,7 @@ CvoxCommandStoreUnitTest.prototype = {
   ]
 };
 
-TEST_F('CvoxCommandStoreUnitTest', 'TableData', function() {
+TEST_F('ChromeVoxCommandStoreUnitTest', 'TableData', function() {
   var categories = cvox.CommandStore.categories();
   assertEquals(11, categories.length);
   assertEquals('modifier_keys', categories[0]);
@@ -52,7 +52,7 @@ TEST_F('CvoxCommandStoreUnitTest', 'TableData', function() {
 
 
 /** Tests that undefined is returned for bad queries. */
-TEST_F('CvoxCommandStoreUnitTest', 'InvalidQueries', function() {
+TEST_F('ChromeVoxCommandStoreUnitTest', 'InvalidQueries', function() {
   assertThat(cvox.CommandStore.commandsForCategory('foo'), eqJSON([]));
   assertTrue(undefined == cvox.CommandStore.categoryForCommand('foo'));
   assertTrue(undefined == cvox.CommandStore.messageForCommand('foo'));
@@ -60,7 +60,7 @@ TEST_F('CvoxCommandStoreUnitTest', 'InvalidQueries', function() {
 
 
 /** Tests the validity of every command. */
-TEST_F('CvoxCommandStoreUnitTest', 'CommandValidity', function() {
+TEST_F('ChromeVoxCommandStoreUnitTest', 'CommandValidity', function() {
   var categories = cvox.CommandStore.categories();
   for (var i = 0; i < categories.length; i++) {
     var commands = cvox.CommandStore.commandsForCategory(categories[i]);

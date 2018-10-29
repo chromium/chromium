@@ -19,6 +19,7 @@
 namespace blink {
 
 class InspectorAgent;
+class InspectedFrames;
 class CoreProbeSink;
 class LocalFrame;
 
@@ -44,6 +45,7 @@ class CORE_EXPORT InspectorSession
   InspectorSession(
       Client*,
       CoreProbeSink*,
+      InspectedFrames*,
       int session_id,
       v8_inspector::V8Inspector*,
       int context_group_id,
@@ -57,6 +59,8 @@ class CORE_EXPORT InspectorSession
   void Append(InspectorAgent*);
   void Restore();
   void Dispose();
+  void DidStartProvisionalLoad(LocalFrame*);
+  void DidFailProvisionalLoad(LocalFrame*);
   void DidCommitLoadForLocalFrame(LocalFrame*);
   void DispatchProtocolMessage(int call_id,
                                const String& method,
@@ -93,6 +97,7 @@ class CORE_EXPORT InspectorSession
   int session_id_;
   bool disposed_;
   Member<CoreProbeSink> instrumenting_agents_;
+  Member<InspectedFrames> inspected_frames_;
   std::unique_ptr<protocol::UberDispatcher> inspector_backend_dispatcher_;
   InspectorSessionState session_state_;
   HeapVector<Member<InspectorAgent>> agents_;

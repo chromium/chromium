@@ -9,9 +9,12 @@
 #include "base/bind.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
+#include "services/ws/host_event_queue.h"
 #include "services/ws/public/cpp/host/gpu_interface_provider.h"
 #include "services/ws/public/mojom/constants.mojom.h"
 #include "services/ws/public/mojom/window_tree.mojom.h"
+#include "services/ws/test_host_event_dispatcher.h"
+#include "services/ws/window_service.h"
 #include "services/ws/window_service_test_setup.h"
 #include "services/ws/window_tree.h"
 #include "services/ws/window_tree_test_helper.h"
@@ -77,6 +80,11 @@ TEST(InjectedEventHandlerTest, WindowTreeHostDeletedWhileWaiting) {
       aura::WindowTreeHost::Create(
           ui::PlatformWindowInitProperties{gfx::Rect(20, 30, 100, 50)});
   second_host->InitHost();
+  auto host_event_dispatcher =
+      std::make_unique<TestHostEventDispatcher>(second_host.get());
+  auto host_event_queue = test_setup.service()->RegisterHostEventDispatcher(
+      second_host.get(), host_event_dispatcher.get());
+
   second_host->window()->Show();
 
   // Create a top-level in |second_host|.

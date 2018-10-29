@@ -72,7 +72,7 @@
             return;
 
         // Ensure the deferred decoder has decoded ../resources/apple.jpg.
-        testRunner.capturePixelsAsyncThen(function() {
+        testRunner.updateAllLifecyclePhasesAndCompositeThen(function() {
             internals.advanceImageAnimation(imgForAdvanceImageAnimation);
             testRunner.layoutAndPaintAsyncThen(function() {
                 internals.startTrackingRepaints(document);

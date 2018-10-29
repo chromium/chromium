@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -112,11 +113,8 @@ class CONTENT_EXPORT CompositorImpl
   void BeginMainFrameNotExpectedSoon() override {}
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}
   void UpdateLayerTreeHost() override;
-  void ApplyViewportDeltas(const gfx::Vector2dF& inner_delta,
-                           const gfx::Vector2dF& outer_delta,
-                           const gfx::Vector2dF& elastic_overscroll_delta,
-                           float page_scale,
-                           float top_controls_delta) override {}
+  void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override {
+  }
   void RecordWheelAndTouchScrollingCount(bool has_scrolled_by_wheel,
                                          bool has_scrolled_by_touch) override {}
   void RequestNewLayerTreeFrameSink() override;
@@ -130,6 +128,7 @@ class CONTENT_EXPORT CompositorImpl
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override {}
+  void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) override {}
 
   // LayerTreeHostSingleThreadClient implementation.
   void DidSubmitCompositorFrame() override;
@@ -150,8 +149,7 @@ class CONTENT_EXPORT CompositorImpl
   void SetVSyncPaused(bool paused) override;
 
   // viz::HostFrameSinkClient implementation.
-  void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
-  }
+  void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
   void OnFrameTokenChanged(uint32_t frame_token) override {}
 
   // display::DisplayObserver implementation.
@@ -186,12 +184,21 @@ class CONTENT_EXPORT CompositorImpl
   // returns an empty surface.
   viz::LocalSurfaceId GenerateLocalSurfaceId() const;
 
+  // Returns the time at which the viz::LocalSurfaceId created by
+  // GenerateLocalSurfaceID() was allocated. When not in surface-synchronization
+  // mode this returns the null base::TimeTicks.
+  base::TimeTicks GetLocalSurfaceIdAllocationTime() const;
+
   // Tears down the display for both Viz and non-Viz, unregistering the root
   // frame sink ID in the process.
   void TearDownDisplayAndUnregisterRootFrameSink();
 
   // Registers the root frame sink ID.
   void RegisterRootFrameSink();
+
+  // Called when we fail to create the context for the root frame sink.
+  void OnFatalOrSurfaceContextCreationFailure(
+      gpu::ContextResult context_result);
 
   // Viz specific functions:
   void InitializeVizLayerTreeFrameSink(

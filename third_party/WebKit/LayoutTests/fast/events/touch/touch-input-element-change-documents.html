@@ -6,7 +6,7 @@ description("This test checks that we correctly update the touch event handler c
 
  shouldBe('internals.touchStartOrMoveEventHandlerCount(document)', '0');
 
- // There is one touchable Input element in Audio's shadow DOM when controls are enabled.
+ // There are two touchable Input element in Audio's shadow DOM when controls are enabled.
  var input = document.createElement('audio');
  input.setAttribute("controls", true);
  var container = document.getElementById('container');
@@ -14,15 +14,15 @@ description("This test checks that we correctly update the touch event handler c
  shouldBe('internals.touchStartOrMoveEventHandlerCount(document)', '0');
 
  container.appendChild(input);
- shouldBe('internals.touchStartOrMoveEventHandlerCount(document)', '1');
+ shouldBe('internals.touchStartOrMoveEventHandlerCount(document)', '2');
  shouldBe('internals.touchEndOrCancelEventHandlerCount(document)', '0');
 
  input.ontouchend = function() { };
- shouldBe('internals.touchStartOrMoveEventHandlerCount(document)', '1');
+ shouldBe('internals.touchStartOrMoveEventHandlerCount(document)', '2');
  shouldBe('internals.touchEndOrCancelEventHandlerCount(document)', '1');
 
  input.ontouchend = null;
- shouldBe('internals.touchStartOrMoveEventHandlerCount(document)', '1');
+ shouldBe('internals.touchStartOrMoveEventHandlerCount(document)', '2');
  shouldBe('internals.touchEndOrCancelEventHandlerCount(document)', '0');
 
  document.implementation.createDocument("", "", null).adoptNode(input);

@@ -40,7 +40,6 @@ struct ResourceLoadInfo : RefCounted<ResourceLoadInfo> {
   HTTPHeaderMap response_headers;
   String request_headers_text;
   String response_headers_text;
-  String npn_negotiated_protocol;
 };
 
 }  // namespace blink

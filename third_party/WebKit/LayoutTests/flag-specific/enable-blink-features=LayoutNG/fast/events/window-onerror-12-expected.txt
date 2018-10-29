@@ -11,9 +11,7 @@ Stack Trace:
 TypeError: Cannot read property 'mu' of null
     at HTMLButtonElement.onclick window-onerror-12.html:12:38
     at window-onerror-12.html:33:24
-
 Returning 'true': the error should not be reported in the console as an unhandled exception.
-
 
 
 window.onerror: "Uncaught TypeError: Cannot read property 'mu' of null" at window-onerror-12.html (Line: 35, Column: 19)
@@ -21,9 +19,7 @@ Stack Trace:
 TypeError: Cannot read property 'mu' of null
     at HTMLButtonElement.onclick window-onerror-12.html:35:19
     at window-onerror-12.html:33:24
-
 Returning 'true': the error should not be reported in the console as an unhandled exception.
-
 
 
 window.onerror: "Uncaught TypeError: Cannot read property 'mu' of null" at window-onerror-12.html (Line: 35, Column: 19)
@@ -31,9 +27,7 @@ Stack Trace:
 TypeError: Cannot read property 'mu' of null
     at HTMLButtonElement.onclick window-onerror-12.html:35:19
     at window-onerror-12.html:33:24
-
 Returning 'true': the error should not be reported in the console as an unhandled exception.
-
 
 
 PASS successfullyParsed is true

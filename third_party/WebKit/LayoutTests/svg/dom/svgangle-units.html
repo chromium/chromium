@@ -1,4 +1,4 @@
-<!doctype html> 
+<!doctype html>
 <title>SVGAngle tests</title>
 <script src=../../resources/testharness.js></script>
 <script src=../../resources/testharnessreport.js></script>
@@ -13,10 +13,10 @@ var svg = document.querySelector("svg");
 var marker = document.querySelector("marker");
 var EPSILON = Math.pow(2, -8);
 var angles = [ 10, 0, 360, 500, 90, 180, 45, 25.9, 145, 270, 0.5, 0.2, 1.37, 3.14159 /* Math.PI */, 0.523599 /* Math.PI/6 */ ];
-var units = { 
-	"" : 1, 
-	"deg": 2, 
-	"rad": 3, 
+var units = {
+	"" : 1,
+	"deg": 2,
+	"rad": 3,
 	"grad": 4,
 	"turn": 5
 };
@@ -110,13 +110,13 @@ for(var unit in units) {
 for(var constant in unitconstants) {
 	var str = "SVG_ANGLETYPE_" + constant;
 	test(function() {
-		assert_exists(SVGAngle, str, "");
+		assert_own_property(SVGAngle, str);
 	}, "SVGAngle." + str);
 }
 for(var constant in nonexposedunitconstants) {
 	var str = "SVG_ANGLETYPE_" + constant;
 	test(function() {
-		assert_not_exists(SVGAngle, str, "");
+		assert_false(str in SVGAngle);
 	}, "SVGAngle." + str);
 }
 
@@ -130,14 +130,14 @@ angles.forEach(function(angle) {
 		catch(e) {
 			continue;
 		}
-		
+
 		test(function() {
 			assert_approx_equals(angle, ref.valueInSpecifiedUnits, EPSILON);
 		}, "SVGAngle(" + anglestr + ").valueInSpecifiedUnits");
 
-		try {	
+		try {
 			marker.setAttribute("orient", anglestr);
-		
+
 			test(function() {
 				assert_equals(marker.orientAngle.baseVal.valueAsString, anglestr);
 			}, "orient=\"" + anglestr + "\".valueAsString");
@@ -149,7 +149,7 @@ angles.forEach(function(angle) {
 		finally {
 			marker.removeAttribute("orient");
 		}
-		
+
 		for (var otherunit in units) {
 			test(function() {
 				var a = createAngle(anglestr);
@@ -164,7 +164,7 @@ angles.forEach(function(angle) {
 				else
 					assert_approx_equals(a.valueInSpecifiedUnits, convertTo(angle, unit, otherunit), EPSILON);
 			}, "SVGAngle(" + anglestr + ").convertToSpecifiedUnits(" + units[otherunit] + " /*" + (otherunit ? otherunit : "unspecified") + "*/)");
-			
+
 			test(function() {
 				var result = "";
 				try {

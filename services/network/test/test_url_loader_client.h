@@ -54,6 +54,9 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
     return has_received_cached_metadata_;
   }
   bool has_received_completion() const { return has_received_completion_; }
+  bool has_received_connection_error() const {
+    return has_received_connection_error_;
+  }
   const ResourceResponseHead& response_head() const { return response_head_; }
   const base::Optional<net::SSLInfo>& ssl_info() const {
     return response_head_.ssl_info;

@@ -8,7 +8,7 @@
 
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 NSString* const kAutofillEditAccessoryViewAccessibilityID =

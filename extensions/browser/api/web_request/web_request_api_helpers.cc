@@ -17,9 +17,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/web_cache/browser/web_cache_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -257,10 +259,8 @@ std::unique_ptr<base::Value> MakeHeaderModificationLogValue(
   dict->Set("modified_headers", std::move(modified_headers));
 
   auto deleted_headers = std::make_unique<base::ListValue>();
-  for (std::vector<std::string>::const_iterator key =
-           delta->deleted_request_headers.begin();
-       key != delta->deleted_request_headers.end();
-       ++key) {
+  for (auto key = delta->deleted_request_headers.cbegin();
+       key != delta->deleted_request_headers.cend(); ++key) {
     deleted_headers->AppendString(*key);
   }
   dict->Set("deleted_headers", std::move(deleted_headers));
@@ -426,8 +426,7 @@ EventResponseDelta* CalculateOnAuthRequiredDelta(
 void MergeCancelOfResponses(const EventResponseDeltas& deltas,
                             bool* canceled,
                             extensions::WebRequestInfo::Logger* logger) {
-  for (EventResponseDeltas::const_iterator i = deltas.begin();
-       i != deltas.end(); ++i) {
+  for (auto i = deltas.cbegin(); i != deltas.cend(); ++i) {
     if ((*i)->cancel) {
       *canceled = true;
       logger->LogEvent(net::NetLogEventType::CHROME_EXTENSION_ABORTED_REQUEST,
@@ -532,8 +531,8 @@ static bool MergeAddRequestCookieModifications(
   for (delta = deltas.rbegin(); delta != deltas.rend(); ++delta) {
     const RequestCookieModifications& modifications =
         (*delta)->request_cookie_modifications;
-    for (RequestCookieModifications::const_iterator mod = modifications.begin();
-         mod != modifications.end(); ++mod) {
+    for (auto mod = modifications.cbegin(); mod != modifications.cend();
+         ++mod) {
       if ((*mod)->type != ADD || !(*mod)->modification.get())
         continue;
       std::string* new_name = (*mod)->modification->name.get();
@@ -542,7 +541,7 @@ static bool MergeAddRequestCookieModifications(
         continue;
 
       bool cookie_with_same_name_found = false;
-      for (ParsedRequestCookies::iterator cookie = cookies->begin();
+      for (auto cookie = cookies->begin();
            cookie != cookies->end() && !cookie_with_same_name_found; ++cookie) {
         if (cookie->first == *new_name) {
           if (cookie->second != *new_value) {
@@ -574,15 +573,14 @@ static bool MergeEditRequestCookieModifications(
   for (delta = deltas.rbegin(); delta != deltas.rend(); ++delta) {
     const RequestCookieModifications& modifications =
         (*delta)->request_cookie_modifications;
-    for (RequestCookieModifications::const_iterator mod = modifications.begin();
-         mod != modifications.end(); ++mod) {
+    for (auto mod = modifications.cbegin(); mod != modifications.cend();
+         ++mod) {
       if ((*mod)->type != EDIT || !(*mod)->modification.get())
         continue;
 
       std::string* new_value = (*mod)->modification->value.get();
       RequestCookie* filter = (*mod)->filter.get();
-      for (ParsedRequestCookies::iterator cookie = cookies->begin();
-           cookie != cookies->end(); ++cookie) {
+      for (auto cookie = cookies->begin(); cookie != cookies->end(); ++cookie) {
         if (!DoesRequestCookieMatchFilter(*cookie, filter))
           continue;
         // If the edit operation tries to modify the cookie name, we just ignore
@@ -609,13 +607,13 @@ static bool MergeRemoveRequestCookieModifications(
   for (delta = deltas.rbegin(); delta != deltas.rend(); ++delta) {
     const RequestCookieModifications& modifications =
         (*delta)->request_cookie_modifications;
-    for (RequestCookieModifications::const_iterator mod = modifications.begin();
-         mod != modifications.end(); ++mod) {
+    for (auto mod = modifications.cbegin(); mod != modifications.cend();
+         ++mod) {
       if ((*mod)->type != REMOVE)
         continue;
 
       RequestCookie* filter = (*mod)->filter.get();
-      ParsedRequestCookies::iterator i = cookies->begin();
+      auto i = cookies->begin();
       while (i != cookies->end()) {
         if (DoesRequestCookieMatchFilter(*i, filter)) {
           i = cookies->erase(i);
@@ -1006,8 +1004,8 @@ static bool MergeAddResponseCookieModifications(
   for (delta = deltas.rbegin(); delta != deltas.rend(); ++delta) {
     const ResponseCookieModifications& modifications =
         (*delta)->response_cookie_modifications;
-    for (ResponseCookieModifications::const_iterator mod =
-             modifications.begin(); mod != modifications.end(); ++mod) {
+    for (auto mod = modifications.cbegin(); mod != modifications.cend();
+         ++mod) {
       if ((*mod)->type != ADD || !(*mod)->modification.get())
         continue;
       // Cookie names are not unique in response cookies so we always append
@@ -1033,8 +1031,8 @@ static bool MergeEditResponseCookieModifications(
   for (delta = deltas.rbegin(); delta != deltas.rend(); ++delta) {
     const ResponseCookieModifications& modifications =
         (*delta)->response_cookie_modifications;
-    for (ResponseCookieModifications::const_iterator mod =
-             modifications.begin(); mod != modifications.end(); ++mod) {
+    for (auto mod = modifications.cbegin(); mod != modifications.cend();
+         ++mod) {
       if ((*mod)->type != EDIT || !(*mod)->modification.get())
         continue;
 
@@ -1061,12 +1059,12 @@ static bool MergeRemoveResponseCookieModifications(
   for (delta = deltas.rbegin(); delta != deltas.rend(); ++delta) {
     const ResponseCookieModifications& modifications =
         (*delta)->response_cookie_modifications;
-    for (ResponseCookieModifications::const_iterator mod =
-             modifications.begin(); mod != modifications.end(); ++mod) {
+    for (auto mod = modifications.cbegin(); mod != modifications.cend();
+         ++mod) {
       if ((*mod)->type != REMOVE)
         continue;
 
-      ParsedResponseCookies::iterator i = cookies->begin();
+      auto i = cookies->begin();
       while (i != cookies->end()) {
         if (DoesResponseCookieMatchFilter(i->get(),
                                           (*mod)->filter.get())) {
@@ -1251,9 +1249,7 @@ bool MergeOnAuthRequiredResponses(const EventResponseDeltas& deltas,
   CHECK(auth_credentials);
   bool credentials_set = false;
 
-  for (EventResponseDeltas::const_iterator delta = deltas.begin();
-       delta != deltas.end();
-       ++delta) {
+  for (auto delta = deltas.cbegin(); delta != deltas.cend(); ++delta) {
     if (!(*delta)->auth_credentials.get())
       continue;
     bool different =
@@ -1282,8 +1278,8 @@ void ClearCacheOnNavigation() {
   if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     ClearCacheOnNavigationOnUI();
   } else {
-    content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                     base::Bind(&ClearCacheOnNavigationOnUI));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             base::Bind(&ClearCacheOnNavigationOnUI));
   }
 }
 

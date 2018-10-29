@@ -7,9 +7,14 @@ package org.chromium.chrome.browser.browserservices;
 import android.content.res.Resources;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
 import org.chromium.chrome.browser.snackbar.Snackbar;
 import org.chromium.chrome.browser.snackbar.SnackbarManager;
+
+import javax.inject.Inject;
+
+import dagger.Lazy;
 
 /**
  * Shows the Trusted Web Activity disclosure when appropriate and records its acceptance.
@@ -18,8 +23,12 @@ import org.chromium.chrome.browser.snackbar.SnackbarManager;
  * {@link TrustedWebActivityUi}.
  * Thread safety: All methods on this class should be called on the UI thread.
  */
-/* package */ class TrustedWebActivityDisclosure {
+@ActivityScope
+public class TrustedWebActivityDisclosure {
+    // TODO(peconn): Make this package private once TrustedWebActivityUi can be injected.
     private final Resources mResources;
+    private final ChromePreferenceManager mPreferenceManager;
+    private final Lazy<SnackbarManager> mSnackbarManager;
 
     private boolean mSnackbarShowing;
 
@@ -38,36 +47,38 @@ import org.chromium.chrome.browser.snackbar.SnackbarManager;
                  */
                 @Override
                 public void onAction(Object actionData) {
-                    ChromePreferenceManager.getInstance()
-                            .setUserAcceptedTwaDisclosureForPackage((String) actionData);
+                    mPreferenceManager.setUserAcceptedTwaDisclosureForPackage((String) actionData);
                 }
             };
 
-    /* package */ TrustedWebActivityDisclosure(Resources resources) {
+    @Inject
+    /* package */ TrustedWebActivityDisclosure(Resources resources,
+            ChromePreferenceManager preferenceManager, Lazy<SnackbarManager> snackbarManager) {
         mResources = resources;
+        mPreferenceManager = preferenceManager;
+        mSnackbarManager = snackbarManager;
     }
 
-    /** Dismisses the Snackbar if it is showing. */
-    /* package */ void dismissSnackbarIfNeeded(SnackbarManager snackbarManager) {
+    /** Dismisses the disclosure if it is showing. */
+    /* package */ void dismiss() {
         if (!mSnackbarShowing) return;
 
-        snackbarManager.dismissSnackbars(mSnackbarController);
+        mSnackbarManager.get().dismissSnackbars(mSnackbarController);
         mSnackbarShowing = false;
     }
 
-    /** Shows the Snackbar if it is not already showing and hasn't been accepted. */
-    /* package */ void showSnackbarIfNeeded(SnackbarManager snackbarManager, String packageName) {
+    /** Shows the disclosure if it is not already showing and hasn't been accepted. */
+    /* package */ void showIfNeeded(String packageName) {
         if (mSnackbarShowing) return;
-        if (wasSnackbarDismissed(packageName)) return;
+        if (wasDismissed(packageName)) return;
 
-        snackbarManager.showSnackbar(makeRunningInChromeInfobar(packageName));
+        mSnackbarManager.get().showSnackbar(makeRunningInChromeInfobar(packageName));
         mSnackbarShowing = true;
     }
 
-    /** Has a Snackbar been dismissed for this client package before? */
-    private static boolean wasSnackbarDismissed(String packageName) {
-        return ChromePreferenceManager.getInstance()
-                .hasUserAcceptedTwaDisclosureForPackage(packageName);
+    /** Has a disclosure been dismissed for this client package before? */
+    private boolean wasDismissed(String packageName) {
+        return mPreferenceManager.hasUserAcceptedTwaDisclosureForPackage(packageName);
     }
 
     private Snackbar makeRunningInChromeInfobar(String packageName) {

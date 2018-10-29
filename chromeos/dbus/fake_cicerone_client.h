@@ -58,6 +58,13 @@ class CHROMEOS_EXPORT FakeCiceroneClient : public CiceroneClient {
       DBusMethodCallback<vm_tools::cicerone::ContainerAppIconResponse> callback)
       override;
 
+  // Fake version of the method that gets information about a Linux package file
+  // inside a Container. |callback| is called after the method call finishes.
+  void GetLinuxPackageInfo(
+      const vm_tools::cicerone::LinuxPackageInfoRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse> callback)
+      override;
+
   // Fake version of the method that installs an application inside a running
   // Container. |callback| is called after the method call finishes. This does
   // not cause progress events to be fired.
@@ -118,6 +125,12 @@ class CHROMEOS_EXPORT FakeCiceroneClient : public CiceroneClient {
   void set_lxd_container_created_signal_connected(bool connected) {
     is_lxd_container_created_signal_connected_ = connected;
   }
+
+  // Set LxdContainerCreatedSignalConnected response status
+  void set_lxd_container_created_signal_status(
+      vm_tools::cicerone::LxdContainerCreatedSignal_Status status) {
+    lxd_container_created_signal_status_ = status;
+  }
   // Set LxdContainerDownloadingSignalConnected state
   void set_lxd_container_downloading_signal_connected(bool connected) {
     is_lxd_container_downloading_signal_connected_ = connected;
@@ -138,6 +151,12 @@ class CHROMEOS_EXPORT FakeCiceroneClient : public CiceroneClient {
       const vm_tools::cicerone::ContainerAppIconResponse&
           container_app_icon_response) {
     container_app_icon_response_ = container_app_icon_response;
+  }
+
+  void set_linux_package_info_response(
+      const vm_tools::cicerone::LinuxPackageInfoResponse&
+          get_linux_package_info_response) {
+    get_linux_package_info_response_ = get_linux_package_info_response;
   }
 
   void set_install_linux_package_response(
@@ -189,9 +208,14 @@ class CHROMEOS_EXPORT FakeCiceroneClient : public CiceroneClient {
   bool is_lxd_container_downloading_signal_connected_ = true;
   bool is_tremplin_started_signal_connected_ = true;
 
+  vm_tools::cicerone::LxdContainerCreatedSignal_Status
+      lxd_container_created_signal_status_ =
+          vm_tools::cicerone::LxdContainerCreatedSignal::CREATED;
+
   vm_tools::cicerone::LaunchContainerApplicationResponse
       launch_container_application_response_;
   vm_tools::cicerone::ContainerAppIconResponse container_app_icon_response_;
+  vm_tools::cicerone::LinuxPackageInfoResponse get_linux_package_info_response_;
   vm_tools::cicerone::InstallLinuxPackageResponse
       install_linux_package_response_;
   vm_tools::cicerone::CreateLxdContainerResponse create_lxd_container_response_;

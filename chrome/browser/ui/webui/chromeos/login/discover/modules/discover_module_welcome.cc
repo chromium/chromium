@@ -57,8 +57,7 @@ bool DiscoverModuleWelcome::IsCompleted() const {
   return false;
 }
 
-std::unique_ptr<DiscoverHandler> DiscoverModuleWelcome::CreateWebUIHandler()
-    const {
+std::unique_ptr<DiscoverHandler> DiscoverModuleWelcome::CreateWebUIHandler() {
   return std::make_unique<DiscoverModuleWelcomeHandler>();
 }
 

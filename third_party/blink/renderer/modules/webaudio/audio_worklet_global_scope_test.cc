@@ -55,7 +55,7 @@ static const size_t kRenderQuantumFrames = 128;
 class AudioWorkletGlobalScopeTest : public PageTestBase {
  public:
   void SetUp() override {
-    AudioWorkletThread::CreateSharedBackingThreadForTest();
+    AudioWorkletThread::EnsureSharedBackingThread();
     PageTestBase::SetUp(IntSize());
     Document* document = &GetDocument();
     document->SetURL(KURL("https://example.com/"));
@@ -154,7 +154,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
                                    WaitableEvent* wait_event) {
     EXPECT_TRUE(thread->IsCurrentThread());
 
-    auto* global_scope = ToAudioWorkletGlobalScope(thread->GlobalScope());
+    auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
 
     ScriptState* script_state =
         global_scope->ScriptController()->GetScriptState();
@@ -202,7 +202,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
                                      WaitableEvent* wait_event) {
     EXPECT_TRUE(thread->IsCurrentThread());
 
-    auto* global_scope = ToAudioWorkletGlobalScope(thread->GlobalScope());
+    auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
 
     ScriptState* script_state =
         global_scope->ScriptController()->GetScriptState();
@@ -257,7 +257,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
                                            WaitableEvent* wait_event) {
     EXPECT_TRUE(thread->IsCurrentThread());
 
-    auto* global_scope = ToAudioWorkletGlobalScope(thread->GlobalScope());
+    auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
     ScriptState* script_state =
         global_scope->ScriptController()->GetScriptState();
 
@@ -323,7 +323,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
       WaitableEvent* wait_event) {
     EXPECT_TRUE(thread->IsCurrentThread());
 
-    auto* global_scope = ToAudioWorkletGlobalScope(thread->GlobalScope());
+    auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
     ScriptState* script_state =
         global_scope->ScriptController()->GetScriptState();
 

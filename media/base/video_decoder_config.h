@@ -83,11 +83,6 @@ class MEDIA_EXPORT VideoDecoderConfig {
   // Video format used to determine YUV buffer sizes.
   VideoPixelFormat format() const { return format_; }
 
-  // The default color space of the decoded frames. Decoders should output
-  // frames tagged with this color space unless they find a different value in
-  // the bitstream.
-  ColorSpace color_space() const { return color_space_; }
-
   // Default is VIDEO_ROTATION_0.
   VideoRotation video_rotation() const { return rotation_; }
 
@@ -138,9 +133,6 @@ class MEDIA_EXPORT VideoDecoderConfig {
   VideoCodecProfile profile_;
 
   VideoPixelFormat format_;
-
-  // TODO(servolk): Deprecated, use color_space_info_ instead.
-  ColorSpace color_space_;
 
   VideoRotation rotation_;
 

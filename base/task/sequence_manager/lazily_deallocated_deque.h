@@ -79,6 +79,7 @@ class LazilyDeallocatedDeque {
   // Assumed to be an uncommon operation.
   void push_front(T t) {
     if (!head_) {
+      DCHECK(!tail_);
       head_ = std::make_unique<Ring>(kMinimumRingSize);
       tail_ = head_.get();
     }
@@ -97,6 +98,7 @@ class LazilyDeallocatedDeque {
   // Assumed to be a common operation.
   void push_back(T t) {
     if (!head_) {
+      DCHECK(!tail_);
       head_ = std::make_unique<Ring>(kMinimumRingSize);
       tail_ = head_.get();
     }
@@ -132,6 +134,8 @@ class LazilyDeallocatedDeque {
   }
 
   void pop_front() {
+    DCHECK(head_);
+    DCHECK(!head_->empty());
     DCHECK(tail_);
     DCHECK_GT(size_, 0u);
     head_->pop_front();
@@ -174,8 +178,8 @@ class LazilyDeallocatedDeque {
     // reclaiming it next time.
     max_size_ = size_;
 
-    // Only realloc if the current capacity is sufficiently the observed maximum
-    // size for the previous period.
+    // Only realloc if the current capacity is sufficiently greater than the
+    // observed maximum size for the previous period.
     if (new_capacity + kReclaimThreshold >= capacity())
       return;
 
@@ -313,7 +317,7 @@ class LazilyDeallocatedDeque {
     Iterator& operator++() {
       if (index_ == ring_->back_index_) {
         ring_ = ring_->next_.get();
-        index_ = 0;
+        index_ = ring_ ? ring_->CircularIncrement(ring_->front_index_) : 0;
       } else {
         index_ = ring_->CircularIncrement(index_);
       }

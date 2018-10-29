@@ -30,10 +30,10 @@ CONTENT_EXPORT blink::WebMediaStreamTrack::FacingMode ToWebFacingMode(
     media::VideoFacingMode video_facing);
 
 CONTENT_EXPORT blink::WebMediaStreamTrack::DisplayCaptureSurfaceType
-ToWebDisplaySurface(media::DisplayCaptureSurfaceType display_surface);
+ToWebDisplaySurface(media::mojom::DisplayCaptureSurfaceType display_surface);
 
 CONTENT_EXPORT blink::WebMediaStreamTrack::CursorCaptureType
-ToWebCursorCaptureType(media::CursorCaptureType cursor);
+ToWebCursorCaptureType(media::mojom::CursorCaptureType cursor);
 
 struct CONTENT_EXPORT VideoDeviceCaptureCapabilities {
   VideoDeviceCaptureCapabilities();
@@ -59,11 +59,14 @@ struct CONTENT_EXPORT VideoDeviceCaptureCapabilities {
 // but it is customized to account for differences between sources and tracks,
 // and to break ties when multiple source settings are equally good according to
 // the spec algorithm.
+// In this algorithm, a candidate source is defined as a specific video input
+// device opened with a specific resolution and frame rate, together with a
+// specific noise-reduction setting.
 // The main difference between a source and a track with regards to the spec
 // algorithm is that a candidate  source can support a range of values for some
 // properties while a candidate track supports a single value. For example,
-// cropping allows a source with native resolution AxB to support the range of
-// resolutions from 1x1 to AxB.
+// cropping and rescaling allows a source with native resolution AxB to support
+// the range of resolutions from 1x1 to AxB.
 // Only candidates that satisfy the basic constraint set are valid. If no
 // candidate can satisfy the basic constraint set, this function returns
 // a result without value and with the name of a failed constraint accessible
@@ -72,9 +75,9 @@ struct CONTENT_EXPORT VideoDeviceCaptureCapabilities {
 // result with a valid value.
 // If there are no candidates at all, this function returns a result without
 // value and an empty failed constraint name.
-// The criteria to decide if a valid candidate is better than another one are as
-// follows:
-// 1. Given advanced constraint sets A[0],A[1]...,A[n], candidate C1 is better
+// The criteria to decide if a valid candidate source (i.e., one that satisfies
+// the basic constraint set) is better than another one are as follows: 1. Given
+// advanced constraint sets A[0],A[1]...,A[n], candidate C1 is better
 //    than candidate C2 if C1 supports the first advanced set for which C1's
 //    support is different than C2's support.
 //    Examples:
@@ -85,26 +88,20 @@ struct CONTENT_EXPORT VideoDeviceCaptureCapabilities {
 // 2. C1 is better than C2 if C1 has a smaller fitness distance than C2. The
 //    fitness distance depends on the ability of the candidate to support ideal
 //    values in the basic constraint set. This is the final criterion defined in
-//    the spec.
+//    the spec. According to spec, all candidates that share the same fitness
+//    distance are equally acceptable, but this implementation has additional
+//    criteria to break ties.
 // 3. C1 is better than C2 if C1 has a lower Chromium-specific custom distance
-//    from the basic constraint set. This custom distance is the sum of various
-//    constraint-specific custom distances.
-//    For example, if the constraint set specifies a resolution of exactly
-//    1000x1000 for a track, then a candidate with a resolution of 1200x1200
-//    is better than a candidate with a resolution of 2000x2000. Both settings
-//    satisfy the constraint set because cropping can be used to produce the
-//    track setting of 1000x1000, but 1200x1200 is considered better because it
-//    has lower resource usage. The same criteria applies for each advanced
-//    constraint set.
-// 4. C1 is better than C2 if its native settings have a smaller fitness
-//    distance. For example, if the ideal resolution is 1000x1000 and C1 has a
-//    native resolution of 1200x1200, while C2 has a native resolution of
-//    2000x2000, then C1 is better because it can support the ideal value with
-//    lower resource usage. Both C1 and C2 are better than a candidate C3 with
-//    a native resolution of 999x999, since C3 has a nonzero distance to the
-//    ideal value and thus has worse fitness according to step 2, even if C3's
-//    native fitness is better than C1's and C2's.
-// 5. C1 is better than C2 if its settings are closer to certain default
+//    from the basic constraint set that penalizes the amount of resolution and
+//    frame-rate adjustment required to satisfy the range and ideal value
+//    specified by width, height and frameRate constraints.
+//    For example, if constraints specify a resolution of exactly 1000x1000 for
+//    a track, then a candidate with a native resolution of 1200x1200
+//    is better than a candidate with a native resolution of 2000x2000. Both
+//    settings satisfy the constraint set because rescaling can be used to
+//    produce the track setting of 1000x1000, but 1200x1200 is considered better
+//    because it has lower resource usage.
+// 4. C1 is better than C2 if its settings are closer to certain default
 //    settings that include the device ID, noise reduction, resolution,
 //    and frame rate, in that order. Note that there is no default facing mode
 //    or aspect ratio.

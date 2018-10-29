@@ -100,7 +100,7 @@ GCDApiFlowImpl::~GCDApiFlowImpl() {}
 
 void GCDApiFlowImpl::Start(std::unique_ptr<Request> request) {
   request_ = std::move(request);
-  OAuth2TokenService::ScopeSet oauth_scopes;
+  identity::ScopeSet oauth_scopes;
   oauth_scopes.insert(request_->GetOAuthScope());
   DCHECK(identity_manager_);
   token_fetcher_ = std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(

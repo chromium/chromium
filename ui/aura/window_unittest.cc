@@ -1638,9 +1638,13 @@ TEST_P(WindowTest, Transform) {
 }
 
 TEST_P(WindowTest, TransformGesture) {
-  // TODO(sky): fails with mus. https://crbug.com/866502
+  // This test is only applicable to LOCAL mode as it's setting a transform on
+  // host() and expecting events to be transformed while routing the event
+  // directly through host(). In MUS mode the window-service does the
+  // transformation.
   if (GetParam() == Env::Mode::MUS)
     return;
+
   gfx::Size size = host()->GetBoundsInPixels().size();
 
   std::unique_ptr<GestureTrackPositionDelegate> delegate(

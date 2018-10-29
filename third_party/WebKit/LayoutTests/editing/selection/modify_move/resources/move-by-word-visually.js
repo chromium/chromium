@@ -142,7 +142,7 @@ function runTest() {
   var sel = getSelection();
   for (var testcase of tests) {
       test(function () {
-          assert_exists(window, 'internals');
+          assert_own_property(window, 'internals');
           if (testcase.className.search('fix_width') != -1) {
               var span = document.getElementById('span_size');
               var length = span.offsetWidth;

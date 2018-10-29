@@ -119,7 +119,7 @@ class BlendingImageSource : public BinaryImageSource {
       const ImageSkiaRep& first_rep,
       const ImageSkiaRep& second_rep) const override {
     SkBitmap blended = SkBitmapOperations::CreateBlendedBitmap(
-        first_rep.sk_bitmap(), second_rep.sk_bitmap(), alpha_);
+        first_rep.GetBitmap(), second_rep.GetBitmap(), alpha_);
     return ImageSkiaRep(blended, first_rep.scale());
   }
 
@@ -173,7 +173,7 @@ class TransparentImageSource : public gfx::ImageSkiaSource {
                          image_rep.pixel_height());
     alpha.eraseColor(SkColorSetARGB(alpha_ * 255, 0, 0, 0));
     return ImageSkiaRep(
-        SkBitmapOperations::CreateMaskedBitmap(image_rep.sk_bitmap(), alpha),
+        SkBitmapOperations::CreateMaskedBitmap(image_rep.GetBitmap(), alpha),
         image_rep.scale());
   }
 
@@ -196,7 +196,7 @@ class MaskedImageSource : public BinaryImageSource {
       const ImageSkiaRep& first_rep,
       const ImageSkiaRep& second_rep) const override {
     return ImageSkiaRep(SkBitmapOperations::CreateMaskedBitmap(
-        first_rep.sk_bitmap(), second_rep.sk_bitmap()),
+                            first_rep.GetBitmap(), second_rep.GetBitmap()),
                         first_rep.scale());
   }
 
@@ -223,11 +223,10 @@ class TiledImageSource : public gfx::ImageSkiaSource {
     ImageSkiaRep source_rep = source_.GetRepresentation(scale);
     gfx::Rect bounds = DIPToPixelBounds(gfx::Rect(src_x_, src_y_, dst_w_,
                                                   dst_h_), source_rep.scale());
-    return ImageSkiaRep(
-        SkBitmapOperations::CreateTiledBitmap(
-            source_rep.sk_bitmap(),
-            bounds.x(), bounds.y(), bounds.width(), bounds.height()),
-        source_rep.scale());
+    return ImageSkiaRep(SkBitmapOperations::CreateTiledBitmap(
+                            source_rep.GetBitmap(), bounds.x(), bounds.y(),
+                            bounds.width(), bounds.height()),
+                        source_rep.scale());
   }
 
  private:
@@ -253,9 +252,9 @@ class HSLImageSource : public gfx::ImageSkiaSource {
   // gfx::ImageSkiaSource overrides:
   ImageSkiaRep GetImageForScale(float scale) override {
     ImageSkiaRep image_rep = image_.GetRepresentation(scale);
-    return gfx::ImageSkiaRep(
-        SkBitmapOperations::CreateHSLShiftedBitmap(image_rep.sk_bitmap(),
-            hsl_shift_), image_rep.scale());
+    return gfx::ImageSkiaRep(SkBitmapOperations::CreateHSLShiftedBitmap(
+                                 image_rep.GetBitmap(), hsl_shift_),
+                             image_rep.scale());
   }
 
  private:
@@ -288,9 +287,9 @@ class ButtonImageSource: public gfx::ImageSkiaSource {
       mask_rep = mask_.GetRepresentation(1.0f);
     }
     return gfx::ImageSkiaRep(
-        SkBitmapOperations::CreateButtonBackground(color_,
-              image_rep.sk_bitmap(), mask_rep.sk_bitmap()),
-          image_rep.scale());
+        SkBitmapOperations::CreateButtonBackground(
+            color_, image_rep.GetBitmap(), mask_rep.GetBitmap()),
+        image_rep.scale());
   }
 
  private:
@@ -319,8 +318,8 @@ class ExtractSubsetImageSource: public gfx::ImageSkiaSource {
     SkIRect subset_bounds_in_pixel = RectToSkIRect(
         DIPToPixelBounds(subset_bounds_, image_rep.scale()));
     SkBitmap dst;
-    bool success = image_rep.sk_bitmap().extractSubset(&dst,
-                                                       subset_bounds_in_pixel);
+    bool success =
+        image_rep.GetBitmap().extractSubset(&dst, subset_bounds_in_pixel);
     DCHECK(success);
     return gfx::ImageSkiaRep(dst, image_rep.scale());
   }
@@ -354,9 +353,7 @@ class ResizeSource : public ImageSkiaSource {
 
     const Size target_pixel_size = DIPToPixelSize(target_dip_size_, scale);
     const SkBitmap resized = skia::ImageOperations::Resize(
-        image_rep.sk_bitmap(),
-        resize_method_,
-        target_pixel_size.width(),
+        image_rep.GetBitmap(), resize_method_, target_pixel_size.width(),
         target_pixel_size.height());
     return ImageSkiaRep(resized, scale);
   }
@@ -386,8 +383,7 @@ class DropShadowSource : public ImageSkiaSource {
       shadows_in_pixel.push_back(shadows_in_dip_[i].Scale(scale));
 
     const SkBitmap shadow_bitmap = SkBitmapOperations::CreateDropShadow(
-        image_rep.sk_bitmap(),
-        shadows_in_pixel);
+        image_rep.GetBitmap(), shadows_in_pixel);
     return ImageSkiaRep(shadow_bitmap, image_rep.scale());
   }
 
@@ -447,7 +443,7 @@ class RotatedSource : public ImageSkiaSource {
   ImageSkiaRep GetImageForScale(float scale) override {
     const ImageSkiaRep& image_rep = source_.GetRepresentation(scale);
     const SkBitmap rotated_bitmap =
-        SkBitmapOperations::Rotate(image_rep.sk_bitmap(), rotation_);
+        SkBitmapOperations::Rotate(image_rep.GetBitmap(), rotation_);
     return ImageSkiaRep(rotated_bitmap, image_rep.scale());
   }
 

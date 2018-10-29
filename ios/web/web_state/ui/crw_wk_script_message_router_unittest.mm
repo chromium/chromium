@@ -21,8 +21,11 @@
 namespace {
 
 // Returns WKScriptMessage mock.
-id GetScriptMessageMock(WKWebView* web_view, NSString* name) {
+id GetScriptMessageMock(WKFrameInfo* frame_info,
+                        WKWebView* web_view,
+                        NSString* name) {
   id result = [OCMockObject mockForClass:[WKScriptMessage class]];
+  [[[result stub] andReturn:frame_info] frameInfo];
   [[[result stub] andReturn:web_view] webView];
   [[[result stub] andReturn:name] name];
   return result;
@@ -165,20 +168,21 @@ TEST_F(CRWWKScriptMessageRouterTest, RemoveAllHandlersLeak) {
 // web view.
 TEST_F(CRWWKScriptMessageRouterTest, Routing) {
   // It's expected that messages handlers will be called once and in order.
+  WKFrameInfo* frame_info = [[WKFrameInfo alloc] init];
   __block NSInteger last_called_handler = 0;
-  id message1 = GetScriptMessageMock(web_view1_, name1_);
+  id message1 = GetScriptMessageMock(frame_info, web_view1_, name1_);
   id handler1 = ^(WKScriptMessage* message) {
     EXPECT_EQ(0, last_called_handler);
     EXPECT_EQ(message1, message);
     last_called_handler = 1;
   };
-  id message2 = GetScriptMessageMock(web_view2_, name2_);
+  id message2 = GetScriptMessageMock(frame_info, web_view2_, name2_);
   id handler2 = ^(WKScriptMessage* message) {
     EXPECT_EQ(1, last_called_handler);
     EXPECT_EQ(message2, message);
     last_called_handler = 2;
   };
-  id message3 = GetScriptMessageMock(web_view3_, name2_);
+  id message3 = GetScriptMessageMock(frame_info, web_view3_, name2_);
   id handler3 = ^(WKScriptMessage* message) {
     EXPECT_EQ(2, last_called_handler);
     EXPECT_EQ(message3, message);

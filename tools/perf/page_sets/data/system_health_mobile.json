@@ -147,6 +147,9 @@
         "load:news:cnn": {
             "DEFAULT": "system_health_mobile_006.wprgo"
         },
+        "load:news:cnn:2018": {
+            "DEFAULT": "system_health_mobile_f70e9f436d.wprgo"
+        },
         "load:news:flipboard": {
             "DEFAULT": "system_health_mobile_024.wprgo"
         },
@@ -227,6 +230,9 @@
         },
         "load:tools:stackoverflow": {
             "DEFAULT": "system_health_mobile_004.wprgo"
+        },
+        "load:tools:stackoverflow:2018": {
+            "DEFAULT": "system_health_mobile_fea9d8ae01.wprgo"
         },
         "load:tools:weather": {
             "DEFAULT": "system_health_mobile_004.wprgo"

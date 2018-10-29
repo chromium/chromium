@@ -397,7 +397,7 @@ MediaDrmStorageImpl::MediaDrmStorageImpl(
   DVLOG(1) << __func__ << ": origin = " << origin();
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(pref_service_);
-  DCHECK(!origin().unique());
+  DCHECK(!origin().opaque());
 }
 
 MediaDrmStorageImpl::~MediaDrmStorageImpl() {

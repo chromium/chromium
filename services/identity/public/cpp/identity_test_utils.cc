@@ -38,8 +38,7 @@ class OneShotIdentityManagerObserver : public IdentityManager::Observer {
       const AccountInfo& previous_primary_account_info) override;
   void OnRefreshTokenUpdatedForAccount(const AccountInfo& account_info,
                                        bool is_valid) override;
-  void OnRefreshTokenRemovedForAccount(
-      const AccountInfo& account_info) override;
+  void OnRefreshTokenRemovedForAccount(const std::string& account_id) override;
   void OnAccountsInCookieUpdated(
       const std::vector<AccountInfo>& accounts) override;
 
@@ -93,7 +92,7 @@ void OneShotIdentityManagerObserver::OnRefreshTokenUpdatedForAccount(
 }
 
 void OneShotIdentityManagerObserver::OnRefreshTokenRemovedForAccount(
-    const AccountInfo& account_info) {
+    const std::string& account_id) {
   if (event_to_wait_on_ != IdentityManagerEvent::REFRESH_TOKEN_REMOVED)
     return;
 
@@ -172,7 +171,7 @@ AccountInfo SetPrimaryAccount(SigninManagerBase* signin_manager,
 void SetRefreshTokenForPrimaryAccount(ProfileOAuth2TokenService* token_service,
                                       IdentityManager* identity_manager) {
   DCHECK(identity_manager->HasPrimaryAccount());
-  std::string account_id = identity_manager->GetPrimaryAccountInfo().account_id;
+  std::string account_id = identity_manager->GetPrimaryAccountId();
 
   std::string refresh_token = "refresh_token_for_" + account_id;
   SetRefreshTokenForAccount(token_service, identity_manager, account_id);
@@ -182,7 +181,7 @@ void SetInvalidRefreshTokenForPrimaryAccount(
     ProfileOAuth2TokenService* token_service,
     IdentityManager* identity_manager) {
   DCHECK(identity_manager->HasPrimaryAccount());
-  std::string account_id = identity_manager->GetPrimaryAccountInfo().account_id;
+  std::string account_id = identity_manager->GetPrimaryAccountId();
 
   SetInvalidRefreshTokenForAccount(token_service, identity_manager, account_id);
 }
@@ -193,7 +192,7 @@ void RemoveRefreshTokenForPrimaryAccount(
   if (!identity_manager->HasPrimaryAccount())
     return;
 
-  std::string account_id = identity_manager->GetPrimaryAccountInfo().account_id;
+  std::string account_id = identity_manager->GetPrimaryAccountId();
 
   RemoveRefreshTokenForAccount(token_service, identity_manager, account_id);
 }

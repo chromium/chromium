@@ -15,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "build/build_config.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
 #include "components/viz/service/surfaces/surface_hittest_delegate.h"
@@ -26,15 +25,9 @@
 #include "content/common/content_export.h"
 #include "content/public/common/input_event_ack_state.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/transform.h"
 
 struct FrameHostMsg_HittestData_Params;
-
-#if defined(OS_WIN)
-// Flaky on Windows. https://crbug.com/868308
-#define MAYBE_TouchpadPinchOverOOPIF DISABLED_TouchpadPinchOverOOPIF
-#else
-#define MAYBE_TouchpadPinchOverOOPIF TouchpadPinchOverOOPIF
-#endif  // OS_WIN
 
 namespace blink {
 class WebGestureEvent;
@@ -53,6 +46,10 @@ namespace ui {
 class LatencyInfo;
 }
 
+namespace viz {
+class HostFrameSinkManager;
+}
+
 namespace content {
 
 class RenderWidgetHostImpl;
@@ -61,6 +58,11 @@ class RenderWidgetHostViewBase;
 class RenderWidgetTargeter;
 class TouchEmulator;
 class TouchEventAckQueue;
+
+// Helper method also used from hit_test_debug_key_event_observer.cc
+viz::HitTestQuery* GetHitTestQuery(
+    viz::HostFrameSinkManager* host_frame_sink_manager,
+    const viz::FrameSinkId& frame_sink_id);
 
 // Class owned by WebContentsImpl for the purpose of directing input events
 // to the correct RenderWidgetHost on pages with multiple RenderWidgetHosts.
@@ -86,7 +88,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter
                             blink::WebMouseWheelEvent* event,
                             const ui::LatencyInfo& latency);
   void RouteGestureEvent(RenderWidgetHostViewBase* root_view,
-                         blink::WebGestureEvent* event,
+                         const blink::WebGestureEvent* event,
                          const ui::LatencyInfo& latency);
   void OnHandledTouchStartOrFirstTouchMove(uint32_t unique_touch_event_id);
   void ProcessAckedTouchEvent(const TouchEventWithLatencyInfo& event,
@@ -134,6 +136,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter
   // Allows a target to claim or release capture of mouse events.
   void SetMouseCaptureTarget(RenderWidgetHostViewBase* target,
                              bool captures_dragging);
+  RenderWidgetHostImpl* GetMouseCaptureWidgetForTests() const;
 
   std::vector<RenderWidgetHostView*> GetRenderWidgetHostViewsForTests() const;
   RenderWidgetTargeter* GetRenderWidgetTargeterForTests();
@@ -172,6 +175,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter
   struct TargetData {
     RenderWidgetHostViewBase* target;
     gfx::Vector2dF delta;
+    gfx::Transform transform;
 
     TargetData() : target(nullptr) {}
   };
@@ -187,14 +191,14 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter
 
   bool IsViewInMap(const RenderWidgetHostViewBase* view) const;
   void RouteTouchscreenGestureEvent(RenderWidgetHostViewBase* root_view,
-                                    blink::WebGestureEvent* event,
+                                    const blink::WebGestureEvent* event,
                                     const ui::LatencyInfo& latency);
 
   RenderWidgetTargetResult FindTouchpadGestureEventTarget(
       RenderWidgetHostViewBase* root_view,
       const blink::WebGestureEvent& event) const;
   void RouteTouchpadGestureEvent(RenderWidgetHostViewBase* root_view,
-                                 blink::WebGestureEvent* event,
+                                 const blink::WebGestureEvent* event,
                                  const ui::LatencyInfo& latency);
   void DispatchTouchpadGestureEvent(
       RenderWidgetHostViewBase* root_view,
@@ -313,9 +317,20 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter
   // Tracked for the purpose of targeting subsequent fling cancel events.
   RenderWidgetHostViewBase* last_fling_start_target_ = nullptr;
 
+  // During scroll bubbling we bubble the GFS to the target view so that its
+  // fling controller takes care of flinging. In this case we should also send
+  // the GFC to the bubbling target so that the fling controller currently in
+  // charge of the fling progress could handle the fling cancellelation as well.
+  RenderWidgetHostViewBase* last_fling_start_bubbled_target_ = nullptr;
+
   // Tracked for the purpose of providing a root_view when dispatching emulated
   // touch/gesture events.
   RenderWidgetHostViewBase* last_emulated_event_root_view_;
+
+  // Used to send a GSE with proper source device to terminate scroll bubbling
+  // whenever needed.
+  blink::WebGestureDevice bubbling_gesture_scroll_source_device_;
+
   float last_device_scale_factor_;
 
   int active_touches_;
@@ -347,7 +362,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
                            InputEventRouterTouchpadGestureTargetTest);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
-                           MAYBE_TouchpadPinchOverOOPIF);
+                           TouchpadPinchOverOOPIF);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessMouseWheelHitTestBrowserTest,
                            InputEventRouterWheelTargetTest);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessMacBrowserTest,

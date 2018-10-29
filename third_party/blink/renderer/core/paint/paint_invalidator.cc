@@ -27,23 +27,6 @@
 
 namespace blink {
 
-template <typename Rect>
-static LayoutRect SlowMapToVisualRectInAncestorSpace(
-    const LayoutObject& object,
-    const LayoutBoxModelObject& ancestor,
-    const Rect& rect) {
-  if (object.IsSVGChild()) {
-    LayoutRect result;
-    SVGLayoutSupport::MapToVisualRectInAncestorSpace(object, &ancestor,
-                                                     FloatRect(rect), result);
-    return result;
-  }
-
-  LayoutRect result(rect);
-  object.MapToVisualRectInAncestorSpace(&ancestor, result);
-  return result;
-}
-
 // If needed, exclude composited layer's subpixel accumulation to avoid full
 // layer raster invalidations during animation with subpixels.
 // See crbug.com/833083 for details.
@@ -524,6 +507,8 @@ void PaintInvalidator::InvalidatePaint(
   if (context.subtree_flags && context.NeedsVisualRectUpdate(object)) {
     // If any subtree flag is set, we also need to pass needsVisualRectUpdate
     // requirement to the subtree.
+    // TODO(vmpstr): Investigate why this is true. Specifically, when crossing
+    // an isolation boundary, is it safe to clear this subtree requirement.
     context.subtree_flags |= PaintInvalidatorContext::kSubtreeVisualRectUpdate;
   }
 

@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_capturer_proxy.h"
@@ -32,6 +33,15 @@ namespace remoting {
 
 BasicDesktopEnvironment::~BasicDesktopEnvironment() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+}
+
+std::unique_ptr<ActionExecutor>
+BasicDesktopEnvironment::CreateActionExecutor() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  // Connection mode derivations (It2Me/Me2Me) should override this method and
+  // return an executor instance if applicable.
+  return nullptr;
 }
 
 std::unique_ptr<AudioCapturer> BasicDesktopEnvironment::CreateAudioCapturer() {

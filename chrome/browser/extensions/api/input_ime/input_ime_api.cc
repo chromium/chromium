@@ -197,6 +197,11 @@ bool ImeObserver::HasListener(const std::string& event_name) const {
   return extensions::EventRouter::Get(profile_)->HasEventListener(event_name);
 }
 
+bool ImeObserver::ExtensionHasListener(const std::string& event_name) const {
+  return extensions::EventRouter::Get(profile_)->ExtensionHasEventListener(
+      extension_id_, event_name);
+}
+
 std::string ImeObserver::ConvertInputContextType(
     ui::IMEEngineHandlerInterface::InputContext input_context) {
   std::string input_context_type = "text";
@@ -282,6 +287,10 @@ void InputImeEventRouterFactory::RemoveProfile(Profile* profile) {
   if (!profile || router_map_.empty())
     return;
   auto it = router_map_.find(profile);
+  // The routers are common between an incognito profile and its original
+  // profile, and are keyed on the original profiles.
+  // When a profile is removed, exact matching is used to ensure that the router
+  // is deleted only when the original profile is removed.
   if (it != router_map_.end() && it->first == profile) {
     delete it->second;
     router_map_.erase(it);
@@ -440,10 +449,8 @@ BrowserContextKeyedAPIFactory<InputImeAPI>* InputImeAPI::GetFactoryInstance() {
 InputImeEventRouter* GetInputImeEventRouter(Profile* profile) {
   if (!profile)
     return nullptr;
-  if (profile->HasOffTheRecordProfile())
-    profile = profile->GetOffTheRecordProfile();
   return extensions::InputImeEventRouterFactory::GetInstance()->GetRouter(
-      profile);
+      profile->GetOriginalProfile());
 }
 
 }  // namespace extensions

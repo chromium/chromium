@@ -138,6 +138,8 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::CLIPBOARD_WRITE;
   } else if (type == protocol::Browser::PermissionTypeEnum::PaymentHandler) {
     *out_type = PermissionType::PAYMENT_HANDLER;
+  } else if (type == protocol::Browser::PermissionTypeEnum::BackgroundFetch) {
+    *out_type = PermissionType::BACKGROUND_FETCH;
   } else {
     return Response::InvalidParams("Unknown permission type: " + type);
   }

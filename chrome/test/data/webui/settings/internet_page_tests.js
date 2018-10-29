@@ -336,6 +336,7 @@ suite('InternetPage', function() {
             // Call setTimeout to populate iron-list.
             return new Promise((resolve) => {
               setTimeout(function() {
+                Polymer.dom.flush();
                 resolve();
               });
             });

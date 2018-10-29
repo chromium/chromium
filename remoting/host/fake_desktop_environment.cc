@@ -64,6 +64,10 @@ FakeDesktopEnvironment::FakeDesktopEnvironment(
 FakeDesktopEnvironment::~FakeDesktopEnvironment() = default;
 
 // DesktopEnvironment implementation.
+std::unique_ptr<ActionExecutor> FakeDesktopEnvironment::CreateActionExecutor() {
+  return nullptr;
+}
+
 std::unique_ptr<AudioCapturer> FakeDesktopEnvironment::CreateAudioCapturer() {
   return nullptr;
 }

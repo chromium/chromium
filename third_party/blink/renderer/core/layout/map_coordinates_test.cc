@@ -1633,8 +1633,9 @@ TEST_F(MapCoordinatesTest, LocalToAncestorTransform) {
 }
 
 TEST_F(MapCoordinatesTest, LocalToAbsoluteTransformFlattens) {
-  GetDocument().GetFrame()->GetSettings()->SetAcceleratedCompositingEnabled(
-      true);
+  // This Page is not actually being shown by a compositor, but we act like it
+  // will in order to test behaviour.
+  GetPage().GetSettings().SetAcceleratedCompositingEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <div style='position: absolute; left: 0; top: 0;'>
       <div style='transform: rotateY(45deg);

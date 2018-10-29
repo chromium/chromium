@@ -9,11 +9,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "components/signin/core/browser/signin_pref_names.h"
+#include "services/identity/public/cpp/identity_manager.h"
 
 ProfileInfoWatcher::ProfileInfoWatcher(
     Profile* profile, const base::Closure& callback)
@@ -44,17 +44,17 @@ void ProfileInfoWatcher::OnProfileAuthInfoChanged(
 
 std::string ProfileInfoWatcher::GetAuthenticatedUsername() const {
   std::string username;
-  SigninManagerBase* signin_manager = GetSigninManager();
-  if (signin_manager)
-    username = signin_manager->GetAuthenticatedAccountInfo().email;
+  auto* identity_manager = GetIdentityManager();
+  if (identity_manager)
+    username = identity_manager->GetPrimaryAccountInfo().email;
   return username;
 }
 
-SigninManagerBase* ProfileInfoWatcher::GetSigninManager() const {
-  return SigninManagerFactory::GetForProfile(profile_);
+identity::IdentityManager* ProfileInfoWatcher::GetIdentityManager() const {
+  return IdentityManagerFactory::GetForProfile(profile_);
 }
 
 void ProfileInfoWatcher::RunCallback() {
-  if (GetSigninManager())
+  if (GetIdentityManager())
     callback_.Run();
 }

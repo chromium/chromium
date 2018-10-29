@@ -19,50 +19,16 @@
 
 namespace blink {
 
-namespace RootScrollerUtil {
-
-ScrollableArea* ScrollableAreaForRootScroller(const Node* node) {
-  if (!node)
-    return nullptr;
-
-  if (node->IsDocumentNode() || node == node->GetDocument().documentElement()) {
-    if (!node->GetDocument().View())
-      return nullptr;
-
-    // For a FrameView, we use the layoutViewport rather than the
-    // getScrollableArea() since that could be the RootFrameViewport. The
-    // rootScroller's ScrollableArea will be swapped in as the layout viewport
-    // in RootFrameViewport so we need to ensure we get the layout viewport.
-    return node->GetDocument().View()->LayoutViewport();
-  }
-
-  DCHECK(node->IsElementNode());
-  const Element* element = ToElement(node);
-
-  if (!element->GetLayoutObject() || !element->GetLayoutObject()->IsBox())
-    return nullptr;
-
-  return ToLayoutBoxModelObject(element->GetLayoutObject())
-      ->GetScrollableArea();
-}
+namespace root_scroller_util {
 
 PaintLayer* PaintLayerForRootScroller(const Node* node) {
   if (!node)
     return nullptr;
 
-  if (node->IsDocumentNode() || node == node->GetDocument().documentElement()) {
-    if (!node->GetDocument().GetLayoutView())
-      return nullptr;
-
-    return node->GetDocument().GetLayoutView()->Layer();
-  }
-
-  DCHECK(node->IsElementNode());
-  const Element* element = ToElement(node);
-  if (!element->GetLayoutObject() || !element->GetLayoutObject()->IsBox())
+  if (!node->GetLayoutObject() || !node->GetLayoutObject()->IsBox())
     return nullptr;
 
-  LayoutBox* box = ToLayoutBox(element->GetLayoutObject());
+  LayoutBox* box = ToLayoutBox(node->GetLayoutObject());
   return box->Layer();
 }
 
@@ -90,13 +56,13 @@ bool IsGlobal(const PaintLayer& layer) {
   return &layer == root_scroller_layer;
 }
 
-bool IsGlobal(const Element* element) {
-  return element->GetDocument()
+bool IsGlobal(const Node* node) {
+  return node->GetDocument()
              .GetPage()
              ->GlobalRootScrollerController()
-             .GlobalRootScroller() == element;
+             .GlobalRootScroller() == node;
 }
 
-}  // namespace RootScrollerUtil
+}  // namespace root_scroller_util
 
 }  // namespace blink

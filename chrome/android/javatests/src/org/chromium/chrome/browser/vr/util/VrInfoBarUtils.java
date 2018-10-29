@@ -7,12 +7,16 @@ package org.chromium.chrome.browser.vr.util;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_CHECK_INTERVAL_SHORT_MS;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
 
+import android.support.annotation.IntDef;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.infobar.InfoBar;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
@@ -20,8 +24,12 @@ import java.util.List;
  * a high level.
  */
 public class VrInfoBarUtils {
-    public enum Button { PRIMARY, SECONDARY }
-    ;
+    @IntDef({Button.PRIMARY, Button.SECONDARY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Button {
+        int PRIMARY = 0;
+        int SECONDARY = 1;
+    }
 
     /**
      * Determines whether InfoBars are present in the current activity.
@@ -43,12 +51,12 @@ public class VrInfoBarUtils {
      * @param rule The ChromeActivityTestRule to get the InfoBars from.
      */
     @SuppressWarnings("unchecked")
-    public static void clickInfoBarButton(final Button button, ChromeActivityTestRule rule) {
+    public static void clickInfoBarButton(final @Button int button, ChromeActivityTestRule rule) {
         if (!isInfoBarPresent(rule)) return;
         final List<InfoBar> infoBars = rule.getInfoBars();
         ThreadUtils.runOnUiThreadBlocking(() -> {
             switch (button) {
-                case PRIMARY:
+                case Button.PRIMARY:
                     InfoBarUtil.clickPrimaryButton(infoBars.get(0));
                     break;
                 default:

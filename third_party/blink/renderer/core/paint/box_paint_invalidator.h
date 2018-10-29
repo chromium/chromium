@@ -30,15 +30,18 @@ class CORE_EXPORT BoxPaintInvalidator {
  private:
   friend class BoxPaintInvalidatorTest;
 
-  bool BackgroundGeometryDependsOnLayoutOverflowRect() const;
+  bool HasEffectiveBackground();
+  bool BackgroundGeometryDependsOnLayoutOverflowRect();
   bool BackgroundPaintsOntoScrollingContentsLayer();
+  bool BackgroundPaintsOntoMainGraphicsLayer();
   bool ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(
       const LayoutRect& old_layout_overflow,
-      const LayoutRect& new_layout_overflow) const;
-  bool ViewBackgroundShouldFullyInvalidate() const;
+      const LayoutRect& new_layout_overflow);
 
   enum BackgroundInvalidationType { kNone = 0, kIncremental, kFull };
-  BackgroundInvalidationType ComputeBackgroundInvalidation();
+  BackgroundInvalidationType ComputeViewBackgroundInvalidation();
+  BackgroundInvalidationType ComputeBackgroundInvalidation(
+      bool& should_invalidate_all_layers);
   void InvalidateBackground();
 
   PaintInvalidationReason ComputePaintInvalidationReason();

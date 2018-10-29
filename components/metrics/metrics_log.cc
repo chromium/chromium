@@ -54,6 +54,7 @@ namespace {
 class IndependentFlattener : public base::HistogramFlattener {
  public:
   explicit IndependentFlattener(MetricsLog* log) : log_(log) {}
+  ~IndependentFlattener() override {}
 
   // base::HistogramFlattener:
   void RecordDelta(const base::HistogramBase& histogram,
@@ -73,6 +74,26 @@ bool IsTestingID(const std::string& id) {
 }
 
 }  // namespace
+
+MetricsLog::IndependentMetricsLoader::IndependentMetricsLoader(
+    std::unique_ptr<MetricsLog> log)
+    : log_(std::move(log)),
+      flattener_(new IndependentFlattener(log_.get())),
+      snapshot_manager_(new base::HistogramSnapshotManager(flattener_.get())) {}
+
+MetricsLog::IndependentMetricsLoader::~IndependentMetricsLoader() = default;
+
+void MetricsLog::IndependentMetricsLoader::Run(
+    base::OnceCallback<void(bool)> done_callback,
+    MetricsProvider* metrics_provider) {
+  metrics_provider->ProvideIndependentMetrics(
+      std::move(done_callback), log_->uma_proto()->mutable_system_profile(),
+      snapshot_manager_.get());
+}
+
+std::unique_ptr<MetricsLog> MetricsLog::IndependentMetricsLoader::ReleaseLog() {
+  return std::move(log_);
+}
 
 MetricsLog::MetricsLog(const std::string& client_id,
                        int session_id,
@@ -150,8 +171,9 @@ void MetricsLog::RecordCoreSystemProfile(MetricsServiceClient* client,
   system_profile->set_channel(client->GetChannel());
   system_profile->set_application_locale(client->GetApplicationLocale());
 
-#if defined(ADDRESS_SANITIZER)
-  system_profile->set_is_asan_build(true);
+#if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()
+  // Set if a build is instrumented (e.g. built with ASAN, or with DCHECKs).
+  system_profile->set_is_instrumented_build(true);
 #endif
 
   metrics::SystemProfileProto::Hardware* hardware =
@@ -275,15 +297,6 @@ const SystemProfileProto& MetricsLog::RecordEnvironment(
   delegating_provider->ProvideSystemProfileMetrics(system_profile);
 
   return *system_profile;
-}
-
-bool MetricsLog::LoadIndependentMetrics(MetricsProvider* metrics_provider) {
-  SystemProfileProto* system_profile = uma_proto()->mutable_system_profile();
-  IndependentFlattener flattener(this);
-  base::HistogramSnapshotManager snapshot_manager(&flattener);
-
-  return metrics_provider->ProvideIndependentMetrics(system_profile,
-                                                     &snapshot_manager);
 }
 
 bool MetricsLog::LoadSavedEnvironmentFromPrefs(PrefService* local_state,

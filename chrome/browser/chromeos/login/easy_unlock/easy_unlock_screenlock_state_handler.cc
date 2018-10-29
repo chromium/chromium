@@ -223,12 +223,6 @@ void EasyUnlockScreenlockStateHandler::SetTrialRun() {
   RecordEasyUnlockTrialRunEvent(EASY_UNLOCK_TRIAL_RUN_EVENT_LAUNCHED);
 }
 
-void EasyUnlockScreenlockStateHandler::RecordClickOnLockIcon() {
-  if (!is_trial_run_)
-    return;
-  RecordEasyUnlockTrialRunEvent(EASY_UNLOCK_TRIAL_RUN_EVENT_CLICKED_LOCK_ICON);
-}
-
 void EasyUnlockScreenlockStateHandler::OnScreenDidLock(
     proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type) {
   did_see_locked_phone_ = IsLockedState(state_);

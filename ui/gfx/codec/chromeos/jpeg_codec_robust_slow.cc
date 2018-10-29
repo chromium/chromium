@@ -139,26 +139,12 @@ void RGBtoBGRA(const unsigned char* bgra, int pixel_width, unsigned char* rgb) {
 }
 #endif  // !defined(JCS_EXTENSIONS)
 
-// This class destroys the given jpeg_decompress object when it goes out of
-// scope. It simplifies the error handling in Decode (and even applies to the
-// success case).
-class IjgDecompressDestroyer {
- public:
-  IjgDecompressDestroyer() : cinfo_(NULL) {}
-  ~IjgDecompressDestroyer() { DestroyManagedObject(); }
-  void SetManagedObject(jpeg_decompress_struct* ci) {
-    DestroyManagedObject();
-    cinfo_ = ci;
+// jpeg_decompress_struct Deleter.
+struct JpegRobustDecompressStructDeleter {
+  void operator()(jpeg_decompress_struct* ptr) {
+    jpeg_destroy_decompress(ptr);
+    delete ptr;
   }
-  void DestroyManagedObject() {
-    if (cinfo_) {
-      jpeg_destroy_decompress(cinfo_);
-      cinfo_ = NULL;
-    }
-  }
-
- private:
-  jpeg_decompress_struct* cinfo_;
 };
 
 }  // namespace
@@ -169,28 +155,26 @@ bool JPEGCodecRobustSlow::Decode(const unsigned char* input,
                                  std::vector<unsigned char>* output,
                                  int* w,
                                  int* h) {
-  jpeg_decompress_struct cinfo;
-  IjgDecompressDestroyer destroyer;
-  destroyer.SetManagedObject(&cinfo);
+  std::unique_ptr<jpeg_decompress_struct, JpegRobustDecompressStructDeleter>
+      cinfo(new jpeg_decompress_struct);
   output->clear();
 
   // We set up the normal JPEG error routines, then override error_exit.
   // This must be done before the call to create_decompress.
   IjgCoderErrorMgr errmgr;
-  cinfo.err = jpeg_std_error(&errmgr.pub);
+  cinfo->err = jpeg_std_error(&errmgr.pub);
   errmgr.pub.error_exit = IjgErrorExit;
   // Establish the setjmp return context for IjgErrorExit to use.
   if (setjmp(errmgr.setjmp_buffer)) {
     // If we get here, the JPEG code has signaled an error.
-    // See note in JPEGCodec::Encode() for why we need to destroy the cinfo
-    // manually here.
-    destroyer.DestroyManagedObject();
+    // Release |cinfo| by hand to avoid use-after-free of |errmgr|.
+    cinfo.reset();
     return false;
   }
 
   // The destroyer will destroy() cinfo on exit.  We don't want to set the
   // destroyer's object until cinfo is initialized.
-  jpeg_create_decompress(&cinfo);
+  jpeg_create_decompress(cinfo.get());
 
   // set up the source manager
   jpeg_source_mgr srcmgr;
@@ -199,17 +183,17 @@ bool JPEGCodecRobustSlow::Decode(const unsigned char* input,
   srcmgr.skip_input_data = IjgSkipInputData;
   srcmgr.resync_to_restart = jpeg_resync_to_restart;  // use default routine
   srcmgr.term_source = IjgTermSource;
-  cinfo.src = &srcmgr;
+  cinfo->src = &srcmgr;
 
   IjgJpegDecoderState state(input, input_size);
-  cinfo.client_data = &state;
+  cinfo->client_data = &state;
 
   // fill the file metadata into our buffer
-  if (jpeg_read_header(&cinfo, true) != JPEG_HEADER_OK)
+  if (jpeg_read_header(cinfo.get(), true) != JPEG_HEADER_OK)
     return false;
 
   // we want to always get RGB data out
-  switch (cinfo.jpeg_color_space) {
+  switch (cinfo->jpeg_color_space) {
     case JCS_GRAYSCALE:
     case JCS_RGB:
     case JCS_YCbCr:
@@ -219,24 +203,22 @@ bool JPEGCodecRobustSlow::Decode(const unsigned char* input,
       // used by Chromium (i.e. RGB, RGBA, and BGRA) and we just map the input
       // parameters to a colorspace.
       if (format == FORMAT_RGB) {
-        cinfo.out_color_space = JCS_RGB;
-        cinfo.output_components = 3;
+        cinfo->out_color_space = JCS_RGB;
+        cinfo->output_components = 3;
       } else if (format == FORMAT_RGBA ||
                  (format == FORMAT_SkBitmap && SK_R32_SHIFT == 0)) {
-        cinfo.out_color_space = JCS_EXT_RGBX;
-        cinfo.output_components = 4;
+        cinfo->out_color_space = JCS_EXT_RGBX;
+        cinfo->output_components = 4;
       } else if (format == FORMAT_BGRA ||
                  (format == FORMAT_SkBitmap && SK_B32_SHIFT == 0)) {
-        cinfo.out_color_space = JCS_EXT_BGRX;
-        cinfo.output_components = 4;
+        cinfo->out_color_space = JCS_EXT_BGRX;
+        cinfo->output_components = 4;
       } else {
-        // We can exit this function without calling jpeg_destroy_decompress()
-        // because IjgDecompressDestroyer automaticaly calls it.
         NOTREACHED() << "Invalid pixel format";
         return false;
       }
 #else
-      cinfo.out_color_space = JCS_RGB;
+      cinfo->out_color_space = JCS_RGB;
 #endif
       break;
     case JCS_CMYK:
@@ -248,39 +230,39 @@ bool JPEGCodecRobustSlow::Decode(const unsigned char* input,
       return false;
   }
 #ifndef JCS_EXTENSIONS
-  cinfo.output_components = 3;
+  cinfo->output_components = 3;
 #endif
 
-  jpeg_calc_output_dimensions(&cinfo);
-  *w = cinfo.output_width;
-  *h = cinfo.output_height;
+  jpeg_calc_output_dimensions(cinfo.get());
+  *w = cinfo->output_width;
+  *h = cinfo->output_height;
 
-  jpeg_start_decompress(&cinfo);
+  jpeg_start_decompress(cinfo.get());
 
   // FIXME(brettw) we may want to allow the capability for callers to request
   // how to align row lengths as we do for the compressor.
-  int row_read_stride = cinfo.output_width * cinfo.output_components;
+  int row_read_stride = cinfo->output_width * cinfo->output_components;
 
 #ifdef JCS_EXTENSIONS
   // Create memory for a decoded image and write decoded lines to the memory
   // without conversions same as JPEGCodec::Encode().
   int row_write_stride = row_read_stride;
-  output->resize(row_write_stride * cinfo.output_height);
+  output->resize(row_write_stride * cinfo->output_height);
 
-  for (int row = 0; row < static_cast<int>(cinfo.output_height); row++) {
+  for (int row = 0; row < static_cast<int>(cinfo->output_height); row++) {
     unsigned char* rowptr = &(*output)[row * row_write_stride];
-    if (!jpeg_read_scanlines(&cinfo, &rowptr, 1))
+    if (!jpeg_read_scanlines(cinfo.get(), &rowptr, 1))
       return false;
   }
 #else
   if (format == FORMAT_RGB) {
     // easy case, row needs no conversion
     int row_write_stride = row_read_stride;
-    output->resize(row_write_stride * cinfo.output_height);
+    output->resize(row_write_stride * cinfo->output_height);
 
-    for (int row = 0; row < static_cast<int>(cinfo.output_height); row++) {
+    for (int row = 0; row < static_cast<int>(cinfo->output_height); row++) {
       unsigned char* rowptr = &(*output)[row * row_write_stride];
-      if (!jpeg_read_scanlines(&cinfo, &rowptr, 1))
+      if (!jpeg_read_scanlines(cinfo.get(), &rowptr, 1))
         return false;
     }
   } else {
@@ -291,33 +273,32 @@ bool JPEGCodecRobustSlow::Decode(const unsigned char* input,
     void (*converter)(const unsigned char* rgb, int w, unsigned char* out);
     if (format == FORMAT_RGBA ||
         (format == FORMAT_SkBitmap && SK_R32_SHIFT == 0)) {
-      row_write_stride = cinfo.output_width * 4;
+      row_write_stride = cinfo->output_width * 4;
       converter = AddAlpha;
     } else if (format == FORMAT_BGRA ||
                (format == FORMAT_SkBitmap && SK_B32_SHIFT == 0)) {
-      row_write_stride = cinfo.output_width * 4;
+      row_write_stride = cinfo->output_width * 4;
       converter = RGBtoBGRA;
     } else {
       NOTREACHED() << "Invalid pixel format";
-      jpeg_destroy_decompress(&cinfo);
+      jpeg_destroy_decompress(cinfo.get());
       return false;
     }
 
-    output->resize(row_write_stride * cinfo.output_height);
+    output->resize(row_write_stride * cinfo->output_height);
 
     std::unique_ptr<unsigned char[]> row_data(
         new unsigned char[row_read_stride]);
     unsigned char* rowptr = row_data.get();
-    for (int row = 0; row < static_cast<int>(cinfo.output_height); row++) {
-      if (!jpeg_read_scanlines(&cinfo, &rowptr, 1))
+    for (int row = 0; row < static_cast<int>(cinfo->output_height); row++) {
+      if (!jpeg_read_scanlines(cinfo.get(), &rowptr, 1))
         return false;
       converter(rowptr, *w, &(*output)[row * row_write_stride]);
     }
   }
 #endif
 
-  jpeg_finish_decompress(&cinfo);
-  jpeg_destroy_decompress(&cinfo);
+  jpeg_finish_decompress(cinfo.get());
   return true;
 }
 

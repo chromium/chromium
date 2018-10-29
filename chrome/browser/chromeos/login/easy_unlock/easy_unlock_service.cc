@@ -293,6 +293,10 @@ bool EasyUnlockService::IsChromeOSLoginEnabled() const {
   return false;
 }
 
+bool EasyUnlockService::IsInLegacyHostMode() const {
+  return false;
+}
+
 void EasyUnlockService::OpenSetupApp() {
   app_manager_->LaunchSetup();
 }
@@ -363,7 +367,7 @@ bool EasyUnlockService::UpdateScreenlockState(ScreenlockState state) {
   if (state == ScreenlockState::AUTHENTICATED) {
     if (power_monitor_)
       power_monitor_->RecordStartUpTime();
-  } else if (auth_attempt_.get()) {
+  } else if (auth_attempt_) {
     // Clean up existing auth attempt if we can no longer authenticate the
     // remote device.
     auth_attempt_.reset();
@@ -381,8 +385,13 @@ void EasyUnlockService::AttemptAuth(const AccountId& account_id) {
   const EasyUnlockAuthAttempt::Type auth_attempt_type =
       GetType() == TYPE_REGULAR ? EasyUnlockAuthAttempt::TYPE_UNLOCK
                                 : EasyUnlockAuthAttempt::TYPE_SIGNIN;
+  if (auth_attempt_) {
+    PA_LOG(INFO) << "Already attempting auth, skipping this request.";
+    return;
+  }
+
   if (!GetAccountId().is_valid()) {
-    LOG(ERROR) << "Empty user account. Refresh token might go bad.";
+    PA_LOG(ERROR) << "Empty user account. Auth attempt failed.";
     return;
   }
 
@@ -403,7 +412,7 @@ void EasyUnlockService::AttemptAuth(const AccountId& account_id) {
 }
 
 void EasyUnlockService::FinalizeUnlock(bool success) {
-  if (!auth_attempt_.get())
+  if (!auth_attempt_)
     return;
 
   this->OnWillFinalizeUnlock(success);
@@ -421,8 +430,9 @@ void EasyUnlockService::FinalizeUnlock(bool success) {
 }
 
 void EasyUnlockService::FinalizeSignin(const std::string& key) {
-  if (!auth_attempt_.get())
+  if (!auth_attempt_)
     return;
+
   std::string wrapped_secret = GetWrappedSecret();
   if (!wrapped_secret.empty())
     auth_attempt_->FinalizeSignin(GetAccountId(), wrapped_secret, key);
@@ -490,11 +500,6 @@ void EasyUnlockService::SetTrialRun() {
   EasyUnlockScreenlockStateHandler* handler = GetScreenlockStateHandler();
   if (handler)
     handler->SetTrialRun();
-}
-
-void EasyUnlockService::RecordClickOnLockIcon() {
-  if (screenlock_state_handler_)
-    screenlock_state_handler_->RecordClickOnLockIcon();
 }
 
 void EasyUnlockService::AddObserver(EasyUnlockServiceObserver* observer) {

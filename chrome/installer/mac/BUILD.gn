@@ -13,10 +13,6 @@ group("mac") {
     ":make_signers",
     "app:mac_installer_app",
   ]
-
-  if (is_chrome_branded) {
-    public_deps += [ ":keychain_reauthorizers" ]
-  }
 }
 
 _packaging_dir = "$root_out_dir/$chrome_product_full_name Packaging"
@@ -117,19 +113,4 @@ copy("copies") {
   outputs = [
     "$_packaging_dir/{{source_file_part}}",
   ]
-}
-
-if (is_chrome_branded) {
-  copy("keychain_reauthorizers") {
-    visibility = [ ":mac" ]
-
-    sources = [
-      "internal/keychain_reauthorizers/com.google.Chrome",
-      "internal/keychain_reauthorizers/com.google.Chrome.canary",
-    ]
-
-    outputs = [
-      "$_packaging_dir/keychain_reauthorizers/{{source_file_part}}",
-    ]
-  }
 }

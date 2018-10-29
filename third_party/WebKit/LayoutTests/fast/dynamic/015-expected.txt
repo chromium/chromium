@@ -1,0 +1,1 @@
+CONSOLE ERROR: line 16: Uncaught IndexSizeError: Failed to execute 'insertRow' on 'HTMLTableElement': The index provided (100) is greater than the number of rows in the table (6).

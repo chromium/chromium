@@ -101,7 +101,7 @@ BASE_EXPORT void UmaHistogramCounts100000(const std::string& name, int sample);
 BASE_EXPORT void UmaHistogramCounts1M(const std::string& name, int sample);
 BASE_EXPORT void UmaHistogramCounts10M(const std::string& name, int sample);
 
-// For histograms storing times.
+// For histograms storing times. It uses milliseconds granularity.
 BASE_EXPORT void UmaHistogramCustomTimes(const std::string& name,
                                          TimeDelta sample,
                                          TimeDelta min,
@@ -115,6 +115,17 @@ BASE_EXPORT void UmaHistogramMediumTimes(const std::string& name,
 // For time intervals up to 1 hr (50 buckets).
 BASE_EXPORT void UmaHistogramLongTimes(const std::string& name,
                                        TimeDelta sample);
+
+// For histograms storing times with microseconds granularity.
+BASE_EXPORT void UmaHistogramCustomMicrosecondsTimes(const std::string& name,
+                                                     TimeDelta sample,
+                                                     TimeDelta min,
+                                                     TimeDelta max,
+                                                     int buckets);
+
+// For microseconds timings from 1 microsecond up to 10 seconds (50 buckets).
+BASE_EXPORT void UmaHistogramMicrosecondsTimes(const std::string& name,
+                                               TimeDelta sample);
 
 // For recording memory related histograms.
 // Used to measure common KB-granularity memory stats. Range is up to 500M.

@@ -145,4 +145,10 @@ void SurfaceTextureGLOwner::WaitForFrameAvailable() {
   }
 }
 
+std::unique_ptr<gl::GLImage::ScopedHardwareBuffer>
+SurfaceTextureGLOwner::GetAHardwareBuffer() {
+  NOTREACHED() << "Don't use AHardwareBuffers with SurfaceTextureGLOwner";
+  return nullptr;
+}
+
 }  // namespace media

@@ -850,15 +850,15 @@ void SigninScreenHandler::SetupAndShowOfflineMessage(
                                  std::string());
   }
 
-  const bool guest_signin_allowed =
-      chrome_user_manager_util::IsGuestSessionAllowed(CrosSettings::Get()) &&
-      IsSigninScreenError(error_screen_->GetErrorState());
+  bool guest_signin_allowed = false;
+  bool offline_login_allowed = false;
+  if (IsSigninScreenError(error_screen_->GetErrorState())) {
+    guest_signin_allowed =
+        user_manager::UserManager::Get()->IsGuestSessionAllowed();
+    offline_login_allowed = error_screen_->GetErrorState() !=
+                            NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT;
+  }
   error_screen_->AllowGuestSignin(guest_signin_allowed);
-
-  const bool offline_login_allowed =
-      IsSigninScreenError(error_screen_->GetErrorState()) &&
-      error_screen_->GetErrorState() !=
-          NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT;
   error_screen_->AllowOfflineLogin(offline_login_allowed);
 
   if (GetCurrentScreen() != OobeScreen::SCREEN_ERROR_MESSAGE) {

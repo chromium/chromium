@@ -35,10 +35,8 @@
 
 ChromeBrowserMainPartsAndroid::ChromeBrowserMainPartsAndroid(
     const content::MainFunctionParams& parameters,
-    std::unique_ptr<ui::DataPack> data_pack,
     ChromeFeatureListCreator* chrome_feature_list_creator)
     : ChromeBrowserMainParts(parameters,
-                             std::move(data_pack),
                              chrome_feature_list_creator) {}
 
 ChromeBrowserMainPartsAndroid::~ChromeBrowserMainPartsAndroid() {
@@ -115,13 +113,6 @@ int ChromeBrowserMainPartsAndroid::PreEarlyInitialization() {
     if (!base::MessageLoopCurrent::IsSet())
       main_message_loop_ = std::make_unique<base::MessageLoopForUI>();
   }
-
-  // In order for SetLoadSecondaryLocalePaks() to work ResourceBundle must
-  // not have been created yet.
-  DCHECK(!ui::ResourceBundle::HasSharedInstance());
-  // Auto-detect based on en-US whether secondary locale .pak files exist.
-  ui::SetLoadSecondaryLocalePaks(
-      !ui::GetPathForAndroidLocalePakWithinApk("en-US").empty());
 
   return ChromeBrowserMainParts::PreEarlyInitialization();
 }

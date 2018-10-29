@@ -50,14 +50,14 @@ void RuntimeData::ClearAll() {
 void RuntimeData::OnExtensionUnloaded(content::BrowserContext* browser_context,
                                       const Extension* extension,
                                       UnloadedExtensionReason reason) {
-  ExtensionFlagsMap::iterator iter = extension_flags_.find(extension->id());
+  auto iter = extension_flags_.find(extension->id());
   if (iter != extension_flags_.end())
     iter->second = iter->second & kPersistAcrossUnloadMask;
 }
 
 bool RuntimeData::HasFlag(const std::string& extension_id,
                           RuntimeFlag flag) const {
-  ExtensionFlagsMap::const_iterator it = extension_flags_.find(extension_id);
+  auto it = extension_flags_.find(extension_id);
   if (it == extension_flags_.end())
     return false;
   return !!(it->second & flag);

@@ -8,11 +8,10 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/memory_coordinator_client_registry.h"
-#include "base/memory/memory_coordinator_proxy.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/shared_memory.h"
+#include "base/stl_util.h"
 #include "base/sys_info.h"
 #include "build/build_config.h"
 
@@ -28,6 +27,8 @@ FrameEvictionManager* FrameEvictionManager::GetInstance() {
   return base::Singleton<FrameEvictionManager>::get();
 }
 
+FrameEvictionManager::~FrameEvictionManager() {}
+
 void FrameEvictionManager::AddFrame(FrameEvictionManagerClient* frame,
                                     bool locked) {
   RemoveFrame(frame);
@@ -39,17 +40,14 @@ void FrameEvictionManager::AddFrame(FrameEvictionManagerClient* frame,
 }
 
 void FrameEvictionManager::RemoveFrame(FrameEvictionManagerClient* frame) {
-  std::map<FrameEvictionManagerClient*, size_t>::iterator locked_iter =
-      locked_frames_.find(frame);
+  auto locked_iter = locked_frames_.find(frame);
   if (locked_iter != locked_frames_.end())
     locked_frames_.erase(locked_iter);
   unlocked_frames_.remove(frame);
 }
 
 void FrameEvictionManager::LockFrame(FrameEvictionManagerClient* frame) {
-  std::list<FrameEvictionManagerClient*>::iterator unlocked_iter =
-      std::find(unlocked_frames_.begin(), unlocked_frames_.end(), frame);
-  if (unlocked_iter != unlocked_frames_.end()) {
+  if (base::ContainsValue(unlocked_frames_, frame)) {
     DCHECK(locked_frames_.find(frame) == locked_frames_.end());
     unlocked_frames_.remove(frame);
     locked_frames_[frame] = 1;
@@ -74,39 +72,23 @@ void FrameEvictionManager::UnlockFrame(FrameEvictionManagerClient* frame) {
 
 size_t FrameEvictionManager::GetMaxNumberOfSavedFrames() const {
   int percentage = 100;
-  auto* memory_coordinator_proxy = base::MemoryCoordinatorProxy::GetInstance();
-  if (memory_coordinator_proxy) {
-    switch (memory_coordinator_proxy->GetCurrentMemoryState()) {
-      case base::MemoryState::NORMAL:
-        percentage = 100;
-        break;
-      case base::MemoryState::THROTTLED:
-        percentage = kCriticalPressurePercentage;
-        break;
-      case base::MemoryState::SUSPENDED:
-      case base::MemoryState::UNKNOWN:
-        NOTREACHED();
-        break;
-    }
-  } else {
-    base::MemoryPressureMonitor* monitor = base::MemoryPressureMonitor::Get();
+  base::MemoryPressureMonitor* monitor = base::MemoryPressureMonitor::Get();
 
-    if (!monitor)
-      return max_number_of_saved_frames_;
+  if (!monitor)
+    return max_number_of_saved_frames_;
 
-    // Until we have a global OnMemoryPressureChanged event we need to query the
-    // value from our specific pressure monitor.
-    switch (monitor->GetCurrentPressureLevel()) {
-      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-        percentage = 100;
-        break;
-      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-        percentage = kModeratePressurePercentage;
-        break;
-      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
-        percentage = kCriticalPressurePercentage;
-        break;
-    }
+  // Until we have a global OnMemoryPressureChanged event we need to query the
+  // value from our specific pressure monitor.
+  switch (monitor->GetCurrentPressureLevel()) {
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+      percentage = 100;
+      break;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      percentage = kModeratePressurePercentage;
+      break;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      percentage = kCriticalPressurePercentage;
+      break;
   }
   size_t frames = (max_number_of_saved_frames_ * percentage) / 100;
   return std::max(static_cast<size_t>(1), frames);
@@ -116,7 +98,6 @@ FrameEvictionManager::FrameEvictionManager()
     : memory_pressure_listener_(new base::MemoryPressureListener(
           base::Bind(&FrameEvictionManager::OnMemoryPressure,
                      base::Unretained(this)))) {
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Register(this);
   max_number_of_saved_frames_ =
 #if defined(OS_ANDROID)
       // If the amount of memory on the device is >= 3.5 GB, save up to 5
@@ -126,8 +107,6 @@ FrameEvictionManager::FrameEvictionManager()
       std::min(5, 2 + (base::SysInfo::AmountOfPhysicalMemoryMB() / 256));
 #endif
 }
-
-FrameEvictionManager::~FrameEvictionManager() {}
 
 void FrameEvictionManager::CullUnlockedFrames(size_t saved_frame_limit) {
   while (!unlocked_frames_.empty() &&
@@ -152,10 +131,6 @@ void FrameEvictionManager::OnMemoryPressure(
       // No need to change anything when there is no pressure.
       return;
   }
-}
-
-void FrameEvictionManager::OnPurgeMemory() {
-  PurgeMemory(kCriticalPressurePercentage);
 }
 
 void FrameEvictionManager::PurgeMemory(int percentage) {

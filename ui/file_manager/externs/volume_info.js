@@ -32,6 +32,13 @@ VolumeInfo.prototype.displayRoot;
 VolumeInfo.prototype.teamDriveDisplayRoot;
 
 /**
+ * The display root path of Computers directory. It is null before finishing
+ * to resolve the entry. Valid only for Drive volume.
+ * @type {DirectoryEntry}
+ */
+VolumeInfo.prototype.computersDisplayRoot;
+
+/**
  * The volume's fake entries such as Recent, Offline, Shared with me, etc...
  * in Google Drive.
  * @type {Object<!FakeEntry>}}

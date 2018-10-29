@@ -892,7 +892,7 @@ UniChar TranslatedUnicodeCharFromKeyCode(TISInputSourceRef input_source,
       &buffer_length, char_buffer);
   OSSTATUS_DCHECK(ret == noErr, ret);
 
-  // TODO(chongz): Handle multiple character case. Should be rare.
+  // TODO(input-dev): Handle multiple character case. Should be rare.
   return char_buffer[0];
 }
 

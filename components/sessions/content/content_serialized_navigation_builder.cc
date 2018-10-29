@@ -45,7 +45,7 @@ ContentSerializedNavigationBuilder::FromNavigationEntry(
   navigation.index_ = index;
   navigation.unique_id_ = entry.GetUniqueID();
   navigation.referrer_url_ = entry.GetReferrer().url;
-  navigation.referrer_policy_ = entry.GetReferrer().policy;
+  navigation.referrer_policy_ = static_cast<int>(entry.GetReferrer().policy);
   navigation.virtual_url_ = entry.GetVirtualURL();
   navigation.title_ = entry.GetTitle();
   if (!(serialization_options & SerializationOptions::EXCLUDE_PAGE_STATE))
@@ -83,8 +83,8 @@ std::unique_ptr<content::NavigationEntry>
 ContentSerializedNavigationBuilder::ToNavigationEntry(
     const SerializedNavigationEntry* navigation,
     content::BrowserContext* browser_context) {
-  blink::WebReferrerPolicy policy =
-      static_cast<blink::WebReferrerPolicy>(navigation->referrer_policy_);
+  network::mojom::ReferrerPolicy policy =
+      static_cast<network::mojom::ReferrerPolicy>(navigation->referrer_policy_);
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(
           navigation->virtual_url_,

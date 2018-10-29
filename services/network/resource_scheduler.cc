@@ -13,12 +13,15 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
@@ -378,7 +381,8 @@ void ResourceScheduler::RequestQueue::Insert(
 class ResourceScheduler::Client {
  public:
   Client(const net::NetworkQualityEstimator* const network_quality_estimator,
-         ResourceScheduler* resource_scheduler)
+         ResourceScheduler* resource_scheduler,
+         const base::TickClock* tick_clock)
       : deprecated_is_loaded_(false),
         in_flight_delayable_count_(0),
         total_layout_blocking_count_(0),
@@ -387,7 +391,10 @@ class ResourceScheduler::Client {
         did_scheduler_yield_(false),
         network_quality_estimator_(network_quality_estimator),
         resource_scheduler_(resource_scheduler),
+        tick_clock_(tick_clock),
         weak_ptr_factory_(this) {
+    DCHECK(tick_clock_);
+
     UpdateParamsForNetworkQuality();
     // Must not run the conflicting experiments together.
     DCHECK(!params_for_network_quality_
@@ -718,6 +725,15 @@ class ResourceScheduler::Client {
           "ResourceScheduler.NumDelayableRequestsInFlightAtStart.NonDelayable",
           in_flight_delayable_count_);
     }
+
+    DCHECK(!request->url_request()->creation_time().is_null());
+    base::TimeDelta queuing_duration =
+        base::TimeTicks::Now() - request->url_request()->creation_time();
+    base::UmaHistogramMediumTimes(
+        "ResourceScheduler.RequestQueuingDuration.Priority" +
+            base::IntToString(request->get_request_priority_params().priority),
+        queuing_duration);
+
     InsertInFlightRequest(request);
     request->Start(start_mode);
   }
@@ -771,6 +787,12 @@ class ResourceScheduler::Client {
     // experiment with throttling if that happens.
     if (!url_request.url().SchemeIsHTTPOrHTTPS())
       return START_REQUEST;
+
+    if (params_for_network_quality_.max_queuing_time &&
+        tick_clock_->NowTicks() - url_request.creation_time() >=
+            params_for_network_quality_.max_queuing_time) {
+      return START_REQUEST;
+    }
 
     const net::HostPortPair& host_port_pair = request->host_port_pair();
 
@@ -968,11 +990,17 @@ class ResourceScheduler::Client {
   // configuration.
   ResourceScheduler* resource_scheduler_;
 
+  // Guaranteed to be non-null.
+  const base::TickClock* tick_clock_;
+
   base::WeakPtrFactory<ResourceScheduler::Client> weak_ptr_factory_;
 };
 
-ResourceScheduler::ResourceScheduler(bool enabled)
-    : enabled_(enabled),
+ResourceScheduler::ResourceScheduler(bool enabled,
+                                     const base::TickClock* tick_clock)
+    : tick_clock_(tick_clock ? tick_clock
+                             : base::DefaultTickClock::GetInstance()),
+      enabled_(enabled),
       priority_requests_delayable_(
           base::FeatureList::IsEnabled(kPrioritySupportedRequestsDelayable)),
       head_priority_requests_delayable_(base::FeatureList::IsEnabled(
@@ -988,6 +1016,8 @@ ResourceScheduler::ResourceScheduler(bool enabled)
                                                  kYieldMsParam,
                                                  kYieldMsDefault))),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+  DCHECK(tick_clock_);
+
   // Don't run the two experiments together.
   if (priority_requests_delayable_ && head_priority_requests_delayable_)
     priority_requests_delayable_ = false;
@@ -1051,7 +1081,7 @@ void ResourceScheduler::OnClientCreated(
   DCHECK(!base::ContainsKey(client_map_, client_id));
 
   client_map_[client_id] =
-      std::make_unique<Client>(network_quality_estimator, this);
+      std::make_unique<Client>(network_quality_estimator, this, tick_clock_);
 }
 
 void ResourceScheduler::OnClientDeleted(int child_id, int route_id) {

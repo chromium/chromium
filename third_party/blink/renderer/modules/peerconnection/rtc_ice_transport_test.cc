@@ -7,12 +7,10 @@
 // Everything is run on a single thread but with separate TestSimpleTaskRunners
 // for the main thread / worker thread.
 
-#include "third_party/blink/renderer/modules/peerconnection/rtc_ice_transport.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_ice_transport_test.h"
 
-#include "base/test/test_simple_task_runner.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/dom/events/event_listener.h"
-#include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_ice_transport_adapter.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_ice_transport_adapter_cross_thread_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_p2p_quic_packet_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate_init.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_gather_options.h"
@@ -25,6 +23,7 @@ namespace {
 using testing::_;
 using testing::Assign;
 using testing::AllOf;
+using testing::DoDefault;
 using testing::ElementsAre;
 using testing::Field;
 using testing::InSequence;
@@ -34,29 +33,26 @@ using testing::Mock;
 using testing::StrEq;
 using testing::StrNe;
 
-class MockEventListener final : public EventListener {
- public:
-  MockEventListener() : EventListener(ListenerType::kCPPEventListenerType) {}
-
-  bool operator==(const EventListener& other) const final {
-    return this == &other;
-  }
-
-  MOCK_METHOD2(handleEvent, void(ExecutionContext*, Event*));
-};
-
 constexpr char kRemoteUsernameFragment1[] = "usernameFragment";
 constexpr char kRemotePassword1[] = "password";
 
-RTCIceParameters CreateRemoteRTCIceParameters1() {
+constexpr char kRemoteUsernameFragment2[] = "secondUsernameFragment";
+constexpr char kRemotePassword2[] = "secondPassword";
+
+RTCIceParameters CreateRemoteRTCIceParameters2() {
   RTCIceParameters ice_parameters;
-  ice_parameters.setUsernameFragment(kRemoteUsernameFragment1);
-  ice_parameters.setPassword(kRemotePassword1);
+  ice_parameters.setUsernameFragment(kRemoteUsernameFragment2);
+  ice_parameters.setPassword(kRemotePassword2);
   return ice_parameters;
 }
 
-constexpr char kRemoteIceCandidateStr1[] =
+constexpr char kLocalIceCandidateStr1[] =
     "candidate:a0+B/1 1 udp 2130706432 192.168.1.5 1234 typ host generation 2";
+constexpr char kRemoteIceCandidateStr1[] =
+    "candidate:a0+B/2 1 udp 2130706432 ::1 1238 typ host generation 2";
+constexpr char kRemoteIceCandidateStr2[] =
+    "candidate:a0+B/3 1 udp 2130706432 74.125.127.126 2345 typ srflx raddr "
+    "192.168.1.5 rport 2346 generation 2";
 
 RTCIceCandidate* RTCIceCandidateFromString(V8TestingScope& scope,
                                            const String& candidate_str) {
@@ -66,101 +62,83 @@ RTCIceCandidate* RTCIceCandidateFromString(V8TestingScope& scope,
                                  ASSERT_NO_EXCEPTION);
 }
 
-class MockIceTransportAdapterCrossThreadFactory
-    : public IceTransportAdapterCrossThreadFactory {
- public:
-  MockIceTransportAdapterCrossThreadFactory(
-      std::unique_ptr<MockIceTransportAdapter> mock_adapter,
-      IceTransportAdapter::Delegate** delegate_out)
-      : mock_adapter_(std::move(mock_adapter)), delegate_out_(delegate_out) {}
-
-  void InitializeOnMainThread() override {}
-
-  std::unique_ptr<IceTransportAdapter> ConstructOnWorkerThread(
-      IceTransportAdapter::Delegate* delegate) override {
-    DCHECK(mock_adapter_);
-    if (delegate_out_) {
-      *delegate_out_ = delegate;
-    }
-    return std::move(mock_adapter_);
-  }
-
- private:
-  std::unique_ptr<MockIceTransportAdapter> mock_adapter_;
-  IceTransportAdapter::Delegate** delegate_out_;
-};
+cricket::Candidate CricketCandidateFromString(
+    const std::string& candidate_str) {
+  cricket::Candidate candidate;
+  bool success =
+      webrtc::SdpDeserializeCandidate("", candidate_str, &candidate, nullptr);
+  DCHECK(success);
+  return candidate;
+}
 
 }  // namespace
 
-class RTCIceTransportTest : public testing::Test {
- public:
-  RTCIceTransportTest()
-      : main_thread_(new base::TestSimpleTaskRunner()),
-        worker_thread_(new base::TestSimpleTaskRunner()) {}
+// static
+RTCIceParameters RTCIceTransportTest::CreateRemoteRTCIceParameters1() {
+  RTCIceParameters ice_parameters;
+  ice_parameters.setUsernameFragment(kRemoteUsernameFragment1);
+  ice_parameters.setPassword(kRemotePassword1);
+  return ice_parameters;
+}
 
-  ~RTCIceTransportTest() override {
-    // When the V8TestingScope is destroyed at the end of a test, it will call
-    // ContextDestroyed on the RTCIceTransport which will queue a task to delete
-    // the IceTransportAdapter. RunUntilIdle() here ensures that the task will
-    // be executed and the IceTransportAdapter deleted before finishing the
-    // test.
-    RunUntilIdle();
+RTCIceTransportTest::RTCIceTransportTest()
+    : main_thread_(new base::TestSimpleTaskRunner()),
+      worker_thread_(new base::TestSimpleTaskRunner()) {}
 
-    // Explicitly verify expectations of garbage collected mock objects.
-    for (auto mock : mock_event_listeners_) {
-      Mock::VerifyAndClear(mock);
-    }
+RTCIceTransportTest::~RTCIceTransportTest() {
+  // When the V8TestingScope is destroyed at the end of a test, it will call
+  // ContextDestroyed on the RTCIceTransport which will queue a task to delete
+  // the IceTransportAdapter. RunUntilIdle() here ensures that the task will
+  // be executed and the IceTransportAdapter deleted before finishing the
+  // test.
+  RunUntilIdle();
+
+  // Explicitly verify expectations of garbage collected mock objects.
+  for (auto mock : mock_event_listeners_) {
+    Mock::VerifyAndClear(mock);
   }
+}
 
-  // Run the main thread and worker thread until both are idle.
-  void RunUntilIdle() {
-    while (worker_thread_->HasPendingTask() || main_thread_->HasPendingTask()) {
-      worker_thread_->RunPendingTasks();
-      main_thread_->RunPendingTasks();
-    }
+void RTCIceTransportTest::RunUntilIdle() {
+  while (worker_thread_->HasPendingTask() || main_thread_->HasPendingTask()) {
+    worker_thread_->RunPendingTasks();
+    main_thread_->RunPendingTasks();
   }
+}
 
-  // Construct a new RTCIceTransport with a mock IceTransportAdapter.
-  RTCIceTransport* CreateIceTransport(
-      V8TestingScope& scope,
-      IceTransportAdapter::Delegate** delegate_out) {
-    return CreateIceTransport(
-        scope, std::make_unique<MockIceTransportAdapter>(), delegate_out);
+RTCIceTransport* RTCIceTransportTest::CreateIceTransport(
+    V8TestingScope& scope) {
+  return CreateIceTransport(
+      scope, std::make_unique<MockIceTransportAdapter>(
+                 std::make_unique<MockP2PQuicPacketTransport>()));
+}
+
+RTCIceTransport* RTCIceTransportTest::CreateIceTransport(
+    V8TestingScope& scope,
+    IceTransportAdapter::Delegate** delegate_out) {
+  return CreateIceTransport(scope, std::make_unique<MockIceTransportAdapter>(),
+                            delegate_out);
+}
+
+RTCIceTransport* RTCIceTransportTest::CreateIceTransport(
+    V8TestingScope& scope,
+    std::unique_ptr<MockIceTransportAdapter> mock,
+    IceTransportAdapter::Delegate** delegate_out) {
+  if (delegate_out) {
+    // Ensure the caller has not left the delegate_out value floating.
+    DCHECK_EQ(nullptr, *delegate_out);
   }
+  return RTCIceTransport::Create(
+      scope.GetExecutionContext(), main_thread_, worker_thread_,
+      std::make_unique<MockIceTransportAdapterCrossThreadFactory>(
+          std::move(mock), delegate_out));
+}
 
-  // Construct a new RTCIceTransport with the given mock IceTransportAdapter.
-  // |delegate_out|, if non-null, will be populated once the IceTransportAdapter
-  // is constructed on the worker thread.
-  RTCIceTransport* CreateIceTransport(
-      V8TestingScope& scope,
-      std::unique_ptr<MockIceTransportAdapter> mock,
-      IceTransportAdapter::Delegate** delegate_out = nullptr) {
-    if (delegate_out) {
-      // Ensure the caller has not left the delegate_out value floating.
-      DCHECK_EQ(nullptr, *delegate_out);
-    }
-    return RTCIceTransport::Create(
-        scope.GetExecutionContext(), main_thread_, worker_thread_,
-        std::make_unique<MockIceTransportAdapterCrossThreadFactory>(
-            std::move(mock), delegate_out));
-  }
-
-  // Use this method to construct a MockEventListener so that the expectations
-  // can be explicitly checked at the end of the test. Normally the expectations
-  // would be verified in the mock destructor, but since MockEventListener is
-  // garbage collected this may happen after the test has finished, improperly
-  // letting it pass.
-  MockEventListener* CreateMockEventListener() {
-    MockEventListener* event_listener = new MockEventListener();
-    mock_event_listeners_.push_back(event_listener);
-    return event_listener;
-  }
-
- private:
-  scoped_refptr<base::TestSimpleTaskRunner> main_thread_;
-  scoped_refptr<base::TestSimpleTaskRunner> worker_thread_;
-  std::vector<Persistent<MockEventListener>> mock_event_listeners_;
-};
+MockEventListener* RTCIceTransportTest::CreateMockEventListener() {
+  MockEventListener* event_listener = new MockEventListener();
+  mock_event_listeners_.push_back(event_listener);
+  return event_listener;
+}
 
 // Test that calling gather({}) calls StartGathering with non-empty local
 // parameters.
@@ -339,6 +317,257 @@ TEST_F(RTCIceTransportTest, RemoteCandidatesNotPassedUntilStartCalled) {
       ASSERT_NO_EXCEPTION);
   ice_transport->start(CreateRemoteRTCIceParameters1(), "controlling",
                        ASSERT_NO_EXCEPTION);
+}
+
+// Test that receiving an OnStateChanged callback with the completed state
+// updates the RTCIceTransport state to 'connected' and fires a statechange
+// event.
+TEST_F(RTCIceTransportTest, OnStateChangedCompletedUpdatesStateAndFiresEvent) {
+  V8TestingScope scope;
+
+  IceTransportAdapter::Delegate* delegate = nullptr;
+  Persistent<RTCIceTransport> ice_transport =
+      CreateIceTransport(scope, &delegate);
+  ice_transport->start(CreateRemoteRTCIceParameters1(), "controlling",
+                       ASSERT_NO_EXCEPTION);
+  RunUntilIdle();
+  ASSERT_TRUE(delegate);
+
+  Persistent<MockEventListener> event_listener = CreateMockEventListener();
+  EXPECT_CALL(*event_listener, handleEvent(_, _))
+      .WillOnce(InvokeWithoutArgs(
+          [ice_transport] { EXPECT_EQ("connected", ice_transport->state()); }));
+  ice_transport->addEventListener(EventTypeNames::statechange, event_listener);
+
+  ice_transport->addRemoteCandidate(
+      RTCIceCandidateFromString(scope, kRemoteIceCandidateStr1),
+      ASSERT_NO_EXCEPTION);
+  delegate->OnCandidateGathered(
+      CricketCandidateFromString(kLocalIceCandidateStr1));
+
+  delegate->OnStateChanged(cricket::IceTransportState::STATE_COMPLETED);
+
+  RunUntilIdle();
+}
+
+// Test that receiving an OnStateChanged callback with the failed state updates
+// the RTCIceTransport state to 'failed' and fires a statechange event.
+TEST_F(RTCIceTransportTest, OnStateChangedFailedUpdatesStateAndFiresEvent) {
+  V8TestingScope scope;
+
+  IceTransportAdapter::Delegate* delegate = nullptr;
+  Persistent<RTCIceTransport> ice_transport =
+      CreateIceTransport(scope, &delegate);
+  ice_transport->start(CreateRemoteRTCIceParameters1(), "controlling",
+                       ASSERT_NO_EXCEPTION);
+  RunUntilIdle();
+  ASSERT_TRUE(delegate);
+
+  Persistent<MockEventListener> event_listener = CreateMockEventListener();
+  EXPECT_CALL(*event_listener, handleEvent(_, _))
+      .WillOnce(InvokeWithoutArgs(
+          [ice_transport] { EXPECT_EQ("failed", ice_transport->state()); }));
+  ice_transport->addEventListener(EventTypeNames::statechange, event_listener);
+
+  ice_transport->addRemoteCandidate(
+      RTCIceCandidateFromString(scope, kRemoteIceCandidateStr1),
+      ASSERT_NO_EXCEPTION);
+  delegate->OnCandidateGathered(
+      CricketCandidateFromString(kLocalIceCandidateStr1));
+
+  delegate->OnStateChanged(cricket::IceTransportState::STATE_FAILED);
+
+  RunUntilIdle();
+}
+
+// Test that calling OnSelectedCandidatePairChanged the first time fires the
+// selectedcandidatepairchange event and sets the selected candidate pair.
+TEST_F(RTCIceTransportTest, InitialOnSelectedCandidatePairChangedFiresEvent) {
+  V8TestingScope scope;
+
+  IceTransportAdapter::Delegate* delegate = nullptr;
+  Persistent<RTCIceTransport> ice_transport =
+      CreateIceTransport(scope, &delegate);
+  ice_transport->start(CreateRemoteRTCIceParameters1(), "controlling",
+                       ASSERT_NO_EXCEPTION);
+  RunUntilIdle();
+  ASSERT_TRUE(delegate);
+
+  Persistent<MockEventListener> event_listener = CreateMockEventListener();
+  EXPECT_CALL(*event_listener, handleEvent(_, _))
+      .WillOnce(InvokeWithoutArgs([ice_transport] {
+        base::Optional<RTCIceCandidatePair> selected_candidate_pair;
+        ice_transport->getSelectedCandidatePair(selected_candidate_pair);
+        ASSERT_TRUE(selected_candidate_pair);
+        EXPECT_EQ(ice_transport->getLocalCandidates()[0]->candidate(),
+                  selected_candidate_pair->local()->candidate());
+        EXPECT_EQ(ice_transport->getRemoteCandidates()[0]->candidate(),
+                  selected_candidate_pair->remote()->candidate());
+      }));
+  ice_transport->addEventListener(EventTypeNames::selectedcandidatepairchange,
+                                  event_listener);
+
+  ice_transport->addRemoteCandidate(
+      RTCIceCandidateFromString(scope, kRemoteIceCandidateStr1),
+      ASSERT_NO_EXCEPTION);
+  delegate->OnCandidateGathered(
+      CricketCandidateFromString(kLocalIceCandidateStr1));
+  delegate->OnSelectedCandidatePairChanged(
+      std::make_pair(CricketCandidateFromString(kLocalIceCandidateStr1),
+                     CricketCandidateFromString(kRemoteIceCandidateStr1)));
+
+  RunUntilIdle();
+}
+
+// Test that calling OnSelectedCandidatePairChanged with a different remote
+// candidate fires the event and updates the selected candidate pair.
+TEST_F(RTCIceTransportTest,
+       OnSelectedCandidatePairChangedWithDifferentRemoteCandidateFiresEvent) {
+  V8TestingScope scope;
+
+  IceTransportAdapter::Delegate* delegate = nullptr;
+  Persistent<RTCIceTransport> ice_transport =
+      CreateIceTransport(scope, &delegate);
+  ice_transport->start(CreateRemoteRTCIceParameters1(), "controlling",
+                       ASSERT_NO_EXCEPTION);
+  RunUntilIdle();
+  ASSERT_TRUE(delegate);
+
+  Persistent<MockEventListener> event_listener = CreateMockEventListener();
+  EXPECT_CALL(*event_listener, handleEvent(_, _))
+      .WillOnce(DoDefault())  // First event is already tested above.
+      .WillOnce(InvokeWithoutArgs([ice_transport] {
+        base::Optional<RTCIceCandidatePair> selected_candidate_pair;
+        ice_transport->getSelectedCandidatePair(selected_candidate_pair);
+        ASSERT_TRUE(selected_candidate_pair);
+        EXPECT_EQ(ice_transport->getLocalCandidates()[0]->candidate(),
+                  selected_candidate_pair->local()->candidate());
+        EXPECT_EQ(ice_transport->getRemoteCandidates()[1]->candidate(),
+                  selected_candidate_pair->remote()->candidate());
+      }));
+  ice_transport->addEventListener(EventTypeNames::selectedcandidatepairchange,
+                                  event_listener);
+
+  ice_transport->addRemoteCandidate(
+      RTCIceCandidateFromString(scope, kRemoteIceCandidateStr1),
+      ASSERT_NO_EXCEPTION);
+  delegate->OnCandidateGathered(
+      CricketCandidateFromString(kLocalIceCandidateStr1));
+
+  delegate->OnSelectedCandidatePairChanged(
+      std::make_pair(CricketCandidateFromString(kLocalIceCandidateStr1),
+                     CricketCandidateFromString(kRemoteIceCandidateStr1)));
+
+  ice_transport->addRemoteCandidate(
+      RTCIceCandidateFromString(scope, kRemoteIceCandidateStr2),
+      ASSERT_NO_EXCEPTION);
+  delegate->OnSelectedCandidatePairChanged(
+      std::make_pair(CricketCandidateFromString(kLocalIceCandidateStr1),
+                     CricketCandidateFromString(kRemoteIceCandidateStr2)));
+
+  RunUntilIdle();
+}
+
+// Test that receiving an OnStateChange callback to the failed state once a
+// connection has been established clears the selected candidate pair without
+// firing the selectedcandidatepairchange event.
+TEST_F(RTCIceTransportTest,
+       OnStateChangeFailedAfterConnectedClearsSelectedCandidatePair) {
+  V8TestingScope scope;
+
+  IceTransportAdapter::Delegate* delegate = nullptr;
+  Persistent<RTCIceTransport> ice_transport =
+      CreateIceTransport(scope, &delegate);
+  ice_transport->start(CreateRemoteRTCIceParameters1(), "controlling",
+                       ASSERT_NO_EXCEPTION);
+  RunUntilIdle();
+  ASSERT_TRUE(delegate);
+
+  Persistent<MockEventListener> state_change_event_listener =
+      CreateMockEventListener();
+  EXPECT_CALL(*state_change_event_listener, handleEvent(_, _))
+      .WillOnce(DoDefault())  // First event is for 'connected'.
+      .WillOnce(InvokeWithoutArgs([ice_transport] {
+        EXPECT_EQ("failed", ice_transport->state());
+        base::Optional<RTCIceCandidatePair> selected_candidate_pair;
+        ice_transport->getSelectedCandidatePair(selected_candidate_pair);
+        EXPECT_EQ(base::nullopt, selected_candidate_pair);
+      }));
+  ice_transport->addEventListener(EventTypeNames::statechange,
+                                  state_change_event_listener);
+
+  Persistent<MockEventListener> selected_candidate_pair_change_event_listener =
+      CreateMockEventListener();
+  EXPECT_CALL(*selected_candidate_pair_change_event_listener, handleEvent(_, _))
+      .Times(1);  // First event is for the connected pair.
+  ice_transport->addEventListener(
+      EventTypeNames::selectedcandidatepairchange,
+      selected_candidate_pair_change_event_listener);
+
+  // Establish the connection
+  ice_transport->addRemoteCandidate(
+      RTCIceCandidateFromString(scope, kRemoteIceCandidateStr1),
+      ASSERT_NO_EXCEPTION);
+  delegate->OnCandidateGathered(
+      CricketCandidateFromString(kLocalIceCandidateStr1));
+  delegate->OnStateChanged(cricket::IceTransportState::STATE_COMPLETED);
+  delegate->OnSelectedCandidatePairChanged(
+      std::make_pair(CricketCandidateFromString(kLocalIceCandidateStr1),
+                     CricketCandidateFromString(kRemoteIceCandidateStr1)));
+
+  // Transition to failed.
+  delegate->OnStateChanged(cricket::IceTransportState::STATE_FAILED);
+
+  RunUntilIdle();
+}
+
+// Test that receiving an OnSelectedCandidatePairChange callback after a remote
+// ICE restart still updates the selected candidate pair.
+TEST_F(RTCIceTransportTest,
+       RemoteIceRestartRaceWithSelectedCandidatePairChange) {
+  V8TestingScope scope;
+
+  IceTransportAdapter::Delegate* delegate = nullptr;
+  Persistent<RTCIceTransport> ice_transport =
+      CreateIceTransport(scope, &delegate);
+  ice_transport->start(CreateRemoteRTCIceParameters1(), "controlling",
+                       ASSERT_NO_EXCEPTION);
+  RunUntilIdle();
+  ASSERT_TRUE(delegate);
+
+  Persistent<MockEventListener> event_listener = CreateMockEventListener();
+  EXPECT_CALL(*event_listener, handleEvent(_, _))
+      .WillOnce(InvokeWithoutArgs([ice_transport] {
+        base::Optional<RTCIceCandidatePair> selected_candidate_pair;
+        ice_transport->getSelectedCandidatePair(selected_candidate_pair);
+        ASSERT_TRUE(selected_candidate_pair);
+        EXPECT_EQ(kLocalIceCandidateStr1,
+                  selected_candidate_pair->local()->candidate());
+        EXPECT_EQ(kRemoteIceCandidateStr1,
+                  selected_candidate_pair->remote()->candidate());
+      }));
+  ice_transport->addEventListener(EventTypeNames::selectedcandidatepairchange,
+                                  event_listener);
+
+  ice_transport->addRemoteCandidate(
+      RTCIceCandidateFromString(scope, kRemoteIceCandidateStr1),
+      ASSERT_NO_EXCEPTION);
+
+  // Changing remote ICE parameters indicate a remote ICE restart. This clears
+  // the stored list of remote candidates.
+  ice_transport->start(CreateRemoteRTCIceParameters2(), "controlling",
+                       ASSERT_NO_EXCEPTION);
+
+  // These callbacks are part of the previous generation but should still take
+  // effect.
+  delegate->OnCandidateGathered(
+      CricketCandidateFromString(kLocalIceCandidateStr1));
+  delegate->OnStateChanged(cricket::IceTransportState::STATE_COMPLETED);
+  delegate->OnSelectedCandidatePairChanged(
+      std::make_pair(CricketCandidateFromString(kLocalIceCandidateStr1),
+                     CricketCandidateFromString(kRemoteIceCandidateStr1)));
+
+  RunUntilIdle();
 }
 
 }  // namespace blink

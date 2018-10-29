@@ -1,6 +1,6 @@
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
-// // Use of this source code is governed by a BSD-style license that can be
-// // found in the LICENSE file.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef NET_THIRD_PARTY_QUIC_TOOLS_QUIC_SIMPLE_SERVER_STREAM_H_
 #define NET_THIRD_PARTY_QUIC_TOOLS_QUIC_SIMPLE_SERVER_STREAM_H_
@@ -26,6 +26,7 @@ class QuicSimpleServerStream : public QuicSpdyServerStreamBase,
  public:
   QuicSimpleServerStream(QuicStreamId id,
                          QuicSpdySession* session,
+                         StreamType type,
                          QuicSimpleServerBackend* quic_simple_server_backend);
   QuicSimpleServerStream(const QuicSimpleServerStream&) = delete;
   QuicSimpleServerStream& operator=(const QuicSimpleServerStream&) = delete;

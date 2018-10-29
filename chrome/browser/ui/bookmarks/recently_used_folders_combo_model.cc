@@ -88,10 +88,8 @@ RecentlyUsedFoldersComboModel::RecentlyUsedFoldersComboModel(
   items_.push_back(Item(NULL, Item::TYPE_SEPARATOR));
   items_.push_back(Item(NULL, Item::TYPE_CHOOSE_ANOTHER_FOLDER));
 
-  std::vector<Item>::iterator it = std::find(items_.begin(),
-                                             items_.end(),
-                                             Item(node->parent(),
-                                                  Item::TYPE_NODE));
+  auto it = std::find(items_.begin(), items_.end(),
+                      Item(node->parent(), Item::TYPE_NODE));
   node_parent_index_ = static_cast<int>(it - items_.begin());
 }
 
@@ -166,8 +164,7 @@ void RecentlyUsedFoldersComboModel::OnWillRemoveBookmarks(
   // Changing is rare enough that we don't attempt to readjust the contents.
   // Update |items_| so we aren't left pointing to a deleted node.
   bool changed = false;
-  for (std::vector<Item>::iterator i = items_.begin();
-       i != items_.end();) {
+  for (auto i = items_.begin(); i != items_.end();) {
     if (i->type == Item::TYPE_NODE && i->node->HasAncestor(node)) {
       i = items_.erase(i);
       changed = true;
@@ -209,8 +206,7 @@ void RecentlyUsedFoldersComboModel::BookmarkAllUserNodesRemoved(
   // Changing is rare enough that we don't attempt to readjust the contents.
   // Update |items_| so we aren't left pointing to a deleted node.
   bool changed = false;
-  for (std::vector<Item>::iterator i = items_.begin();
-       i != items_.end();) {
+  for (auto i = items_.begin(); i != items_.end();) {
     if (i->type == Item::TYPE_NODE &&
         !bookmark_model_->is_permanent_node(i->node)) {
       i = items_.erase(i);
@@ -245,9 +241,8 @@ const BookmarkNode* RecentlyUsedFoldersComboModel::GetNodeAt(int index) {
 }
 
 void RecentlyUsedFoldersComboModel::RemoveNode(const BookmarkNode* node) {
-  std::vector<Item>::iterator it = std::find(items_.begin(),
-                                             items_.end(),
-                                             Item(node, Item::TYPE_NODE));
+  auto it =
+      std::find(items_.begin(), items_.end(), Item(node, Item::TYPE_NODE));
   if (it != items_.end())
     items_.erase(it);
 }

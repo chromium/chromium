@@ -17,7 +17,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_event_creator.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "net/http/http_response_headers.h"
@@ -428,12 +427,10 @@ DataReductionProxyBypassType GetDataReductionProxyBypassType(
   }
 
   bool disable_bypass_on_missing_via_header =
+      params::IsWarmupURLFetchCallbackEnabled() &&
       GetFieldTrialParamByFeatureAsBool(
           features::kDataReductionProxyRobustConnection,
-          params::GetWarmupCallbackParamName(), false) &&
-      GetFieldTrialParamByFeatureAsBool(
-          features::kDataReductionProxyRobustConnection,
-          params::GetMissingViaBypassParamName(), false);
+          params::GetMissingViaBypassParamName(), true);
 
   if (!has_via_header && !disable_bypass_on_missing_via_header &&
       (headers.response_code() != net::HTTP_NOT_MODIFIED)) {
@@ -455,19 +452,9 @@ DataReductionProxyBypassType GetDataReductionProxyBypassType(
       return BYPASS_EVENT_TYPE_MISSING_VIA_HEADER_4XX;
     }
 
-    bool connection_is_cellular =
-        net::NetworkChangeNotifier::IsConnectionCellular(
-            net::NetworkChangeNotifier::GetConnectionType());
-
-    if (!params::ShouldBypassMissingViaHeader(connection_is_cellular)) {
-      return BYPASS_EVENT_TYPE_MAX;
-    }
-
     data_reduction_proxy_info->mark_proxies_as_bad = true;
-    std::pair<base::TimeDelta, base::TimeDelta> bypass_range =
-        params::GetMissingViaHeaderBypassDurationRange(connection_is_cellular);
-    data_reduction_proxy_info->bypass_duration =
-        GetRandomBypassTime(bypass_range.first, bypass_range.second);
+    data_reduction_proxy_info->bypass_duration = GetRandomBypassTime(
+        base::TimeDelta::FromSeconds(60), base::TimeDelta::FromSeconds(300));
 
     return BYPASS_EVENT_TYPE_MISSING_VIA_HEADER_OTHER;
   }

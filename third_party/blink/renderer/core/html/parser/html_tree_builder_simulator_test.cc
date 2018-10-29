@@ -24,7 +24,7 @@ TEST(HTMLTreeBuilderSimulatorTest, SelfClosingSVGFollowedByScript) {
 
   token.Clear();
   EXPECT_TRUE(tokenizer->NextToken(input, token));
-  EXPECT_EQ(HTMLTreeBuilderSimulator::kScriptStart,
+  EXPECT_EQ(HTMLTreeBuilderSimulator::kValidScriptStart,
             simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
                                tokenizer.get()));
 
@@ -50,11 +50,29 @@ TEST(HTMLTreeBuilderSimulatorTest, SelfClosingMathFollowedByScript) {
 
   token.Clear();
   EXPECT_TRUE(tokenizer->NextToken(input, token));
-  EXPECT_EQ(HTMLTreeBuilderSimulator::kScriptStart,
+  EXPECT_EQ(HTMLTreeBuilderSimulator::kValidScriptStart,
             simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
                                tokenizer.get()));
 
   EXPECT_EQ(HTMLTokenizer::kScriptDataState, tokenizer->GetState());
+
+  token.Clear();
+  EXPECT_TRUE(tokenizer->NextToken(input, token));
+  EXPECT_EQ(HTMLTreeBuilderSimulator::kScriptEnd,
+            simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
+                               tokenizer.get()));
+}
+
+TEST(HTMLTreeBuilderSimulatorTest, DetectInvalidScriptType) {
+  HTMLParserOptions options;
+  HTMLTreeBuilderSimulator simulator(options);
+  std::unique_ptr<HTMLTokenizer> tokenizer = HTMLTokenizer::Create(options);
+  SegmentedString input("<script type=\"text/html\"></script>");
+  HTMLToken token;
+  EXPECT_TRUE(tokenizer->NextToken(input, token));
+  EXPECT_NE(HTMLTreeBuilderSimulator::kValidScriptStart,
+            simulator.Simulate(CompactHTMLToken(&token, TextPosition()),
+                               tokenizer.get()));
 
   token.Clear();
   EXPECT_TRUE(tokenizer->NextToken(input, token));

@@ -59,6 +59,7 @@ class FakeDataTypeManager : public syncer::DataTypeManager {
   }
 
   void ReenableType(syncer::ModelType type) override {}
+  void ReadyForStartChanged(syncer::ModelType type) override {}
   void ResetDataTypeErrors() override {}
   void PurgeForMigration(syncer::ModelTypeSet undesired_types) override {}
   void Stop(syncer::ShutdownReason reason) override {}
@@ -775,7 +776,7 @@ TEST_F(ProfileSyncServiceTest, RevokeAccessTokenFromTokenService) {
             service()->GetTransportState());
 
   const std::string primary_account_id =
-      identity_manager()->GetPrimaryAccountInfo().account_id;
+      identity_manager()->GetPrimaryAccountId();
 
   // Make sure the expected credentials (correct account_id, empty access token)
   // were passed to the SyncEngine.
@@ -827,7 +828,7 @@ TEST_F(ProfileSyncServiceTest, CredentialsRejectedByClient) {
   service()->AddObserver(&observer);
 
   const std::string primary_account_id =
-      identity_manager()->GetPrimaryAccountInfo().account_id;
+      identity_manager()->GetPrimaryAccountId();
 
   // Make sure the expected credentials (correct account_id, empty access token)
   // were passed to the SyncEngine.
@@ -883,7 +884,7 @@ TEST_F(ProfileSyncServiceTest, SignOutRevokeAccessToken) {
             service()->GetTransportState());
 
   const std::string primary_account_id =
-      identity_manager()->GetPrimaryAccountInfo().account_id;
+      identity_manager()->GetPrimaryAccountId();
 
   // Make sure the expected credentials (correct account_id, empty access token)
   // were passed to the SyncEngine.
@@ -972,7 +973,7 @@ TEST_F(ProfileSyncServiceTest, CredentialErrorReturned) {
             service()->GetTransportState());
 
   const std::string primary_account_id =
-      identity_manager()->GetPrimaryAccountInfo().account_id;
+      identity_manager()->GetPrimaryAccountId();
 
   // Make sure the expected credentials (correct account_id, empty access token)
   // were passed to the SyncEngine.
@@ -1035,7 +1036,7 @@ TEST_F(ProfileSyncServiceTest, CredentialErrorClearsOnNewToken) {
             service()->GetTransportState());
 
   const std::string primary_account_id =
-      identity_manager()->GetPrimaryAccountInfo().account_id;
+      identity_manager()->GetPrimaryAccountId();
 
   // Make sure the expected credentials (correct account_id, empty access token)
   // were passed to the SyncEngine.
@@ -1113,7 +1114,8 @@ TEST_F(ProfileSyncServiceTest, MemoryPressureRecording) {
 
   testing::Mock::VerifyAndClearExpectations(component_factory());
 
-  syncer::SyncPrefs sync_prefs(service()->GetSyncClient()->GetPrefService());
+  syncer::SyncPrefs sync_prefs(
+      service()->GetSyncClientForTest()->GetPrefService());
 
   ASSERT_EQ(prefs()->GetInteger(syncer::prefs::kSyncMemoryPressureWarningCount),
             0);
@@ -1335,7 +1337,8 @@ TEST_F(ProfileSyncServiceTest, PassphrasePromptDueToVersion) {
   CreateService(ProfileSyncService::AUTO_START);
   InitializeForNthSync();
 
-  syncer::SyncPrefs sync_prefs(service()->GetSyncClient()->GetPrefService());
+  syncer::SyncPrefs sync_prefs(
+      service()->GetSyncClientForTest()->GetPrefService());
   ASSERT_EQ(PRODUCT_VERSION, sync_prefs.GetLastRunVersion());
 
   sync_prefs.SetPassphrasePrompted(true);
@@ -1511,7 +1514,8 @@ TEST_F(ProfileSyncServiceTest, ConfigureDataTypeManagerReason) {
   service()->OnConfigureDone(configure_result);
 
   // Reconfiguration.
-  service()->ReconfigureDatatypeManager();
+  service()->ReconfigureDatatypeManager(
+      /*bypass_setup_in_progress_check=*/false);
   EXPECT_EQ(syncer::CONFIGURE_REASON_RECONFIGURATION, configure_reason);
   service()->OnConfigureDone(configure_result);
   ShutdownAndDeleteService();
@@ -1529,7 +1533,8 @@ TEST_F(ProfileSyncServiceTest, ConfigureDataTypeManagerReason) {
   service()->OnConfigureDone(configure_result);
 
   // Reconfiguration.
-  service()->ReconfigureDatatypeManager();
+  service()->ReconfigureDatatypeManager(
+      /*bypass_setup_in_progress_check=*/false);
   EXPECT_EQ(syncer::CONFIGURE_REASON_RECONFIGURATION, configure_reason);
   service()->OnConfigureDone(configure_result);
   ShutdownAndDeleteService();

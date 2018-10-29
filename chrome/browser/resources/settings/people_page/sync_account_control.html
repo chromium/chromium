@@ -193,8 +193,7 @@
         <paper-button id="sync-button" class="action-button"
             hidden="[[syncStatus.signedIn]]" on-click="onSyncButtonTap_"
             disabled="[[syncStatus.setupInProgress]]">
-          [[getSubstituteLabel_(
-              '$i18nPolymer{syncAsName}', shownAccount_.givenName)]]
+          $i18n{peopleSignIn}
         </paper-button>
         <paper-button id="turn-off" class="secondary-button"
             hidden="[[!shouldShowTurnOffButton_(syncStatus.signedIn)]]"

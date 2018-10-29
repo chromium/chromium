@@ -12,7 +12,6 @@
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace blink {
@@ -59,7 +58,6 @@ class DevToolsEyeDropper : public content::WebContentsObserver,
   content::RenderWidgetHost::MouseEventCallback mouse_event_callback_;
   content::RenderWidgetHost* host_;
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer_;
-  media::PaintCanvasVideoRenderer video_renderer_;
   base::WeakPtrFactory<DevToolsEyeDropper> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsEyeDropper);

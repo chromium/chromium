@@ -16,6 +16,10 @@
 #include "third_party/blink/public/platform/web_rtc_dtmf_sender_handler_client.h"
 #include "third_party/webrtc/api/dtmfsenderinterface.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace content {
 
 // RtcDtmfSenderHandler is a delegate for the RTC DTMF Sender API messages
@@ -27,7 +31,8 @@ namespace content {
 class CONTENT_EXPORT RtcDtmfSenderHandler
     : public blink::WebRTCDTMFSenderHandler {
  public:
-  explicit RtcDtmfSenderHandler(webrtc::DtmfSenderInterface* dtmf_sender);
+  RtcDtmfSenderHandler(scoped_refptr<base::SingleThreadTaskRunner> main_thread,
+                       webrtc::DtmfSenderInterface* dtmf_sender);
   ~RtcDtmfSenderHandler() override;
 
   // blink::WebRTCDTMFSenderHandler implementation.
@@ -38,7 +43,7 @@ class CONTENT_EXPORT RtcDtmfSenderHandler
                   long duration,
                   long interToneGap) override;
 
-  void OnToneChange(const std::string& tone, const std::string& tone_buffer);
+  void OnToneChange(const std::string& tone);
 
  private:
   scoped_refptr<webrtc::DtmfSenderInterface> dtmf_sender_;

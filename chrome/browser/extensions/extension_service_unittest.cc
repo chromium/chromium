@@ -182,7 +182,6 @@ const char updates_from_webstore3[] = "bmfoocgfinpmkmlbjhcbofejhkhlbchk";
 const char permissions_blocklist[] = "noffkehfcaggllbcojjbopcmlhcnhcdn";
 const char cast_stable[] = "boadgeojelhgndaghljhdicfkmllpafd";
 const char cast_beta[] = "dliochdbjfkdbacpmhlcpmleaejidimm";
-const char zip_unpacker[] = "oedeeodfidgoollimchfdnbmhcpnklnd";
 
 struct BubbleErrorsTestData {
   BubbleErrorsTestData(const std::string& id,
@@ -239,9 +238,9 @@ size_t GetExternalInstallBubbleCount(ExtensionService* service) {
   return bubble_count;
 }
 
-scoped_refptr<Extension> CreateExtension(const std::string& name,
-                                         const base::FilePath& path,
-                                         Manifest::Location location) {
+scoped_refptr<const Extension> CreateExtension(const std::string& name,
+                                               const base::FilePath& path,
+                                               Manifest::Location location) {
   return ExtensionBuilder(name).SetPath(path).SetLocation(location).Build();
 }
 
@@ -732,8 +731,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     msg += extension_id + " " + pref_path;
 
     auto list_value = std::make_unique<base::ListValue>();
-    for (std::set<std::string>::const_iterator iter = value.begin();
-         iter != value.end(); ++iter)
+    for (auto iter = value.begin(); iter != value.end(); ++iter)
       list_value->AppendString(*iter);
 
     SetPref(extension_id, pref_path, std::move(list_value), msg);
@@ -4848,9 +4846,8 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   std::string origin_id = storage::GetIdentifierFromOrigin(ext_url);
 
   // Set a cookie for the extension.
-  net::CookieStore* cookie_store = profile()->GetRequestContextForExtensions()
-                                            ->GetURLRequestContext()
-                                            ->cookie_store();
+  net::CookieStore* cookie_store =
+      profile()->GetExtensionsCookieStoreGetter().Run();
   ASSERT_TRUE(cookie_store);
   net::CookieOptions options;
   cookie_store->SetCookieWithOptionsAsync(
@@ -6540,7 +6537,7 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
   InitializeEmptyExtensionService();
   service_->Init();
 
-  scoped_refptr<Extension> external_component_extension = CreateExtension(
+  scoped_refptr<const Extension> external_component_extension = CreateExtension(
       "external_component_extension",
       base::FilePath(FILE_PATH_LITERAL("//external_component_extension")),
       Manifest::EXTERNAL_COMPONENT);
@@ -6552,7 +6549,7 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
   EXPECT_TRUE(registry()->disabled_extensions().Contains(
       external_component_extension->id()));
 
-  scoped_refptr<Extension> component_extension = CreateExtension(
+  scoped_refptr<const Extension> component_extension = CreateExtension(
       "component_extension",
       base::FilePath(FILE_PATH_LITERAL("//component_extension")),
       Manifest::COMPONENT);
@@ -7090,7 +7087,8 @@ TEST_F(ExtensionServiceTest,
 TEST_F(ExtensionServiceTest, InstallBlacklistedExtension) {
   InitializeEmptyExtensionService();
 
-  scoped_refptr<Extension> extension = ExtensionBuilder("extension").Build();
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("extension").Build();
   ASSERT_TRUE(extension.get());
   const std::string& id = extension->id();
 
@@ -7144,7 +7142,7 @@ TEST_F(ExtensionServiceTest, CannotEnableBlacklistedExtension) {
 // Test that calls to disable Shared Modules do not work.
 TEST_F(ExtensionServiceTest, CannotDisableSharedModules) {
   InitializeEmptyExtensionService();
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("Shared Module")
           .SetManifestPath({"export", "resources"},
                            ListBuilder().Append("foo.js").Build())
@@ -7322,49 +7320,6 @@ TEST_F(ExtensionServiceTest, UninstallDisabledMigratedExtension) {
 
   service()->UninstallMigratedExtensionsForTest();
   EXPECT_FALSE(service()->GetInstalledExtension(cast_stable));
-}
-
-TEST_F(ExtensionServiceTest, EnableZipUnpackerExtension) {
-  InitializeEmptyExtensionService();
-
-  scoped_refptr<const Extension> zip_unpacker_extension =
-      ExtensionBuilder("stable")
-          .SetID(zip_unpacker)
-          .SetLocation(Manifest::EXTERNAL_COMPONENT)
-          .Build();
-  service()->AddExtension(zip_unpacker_extension.get());
-  service()->DisableExtension(zip_unpacker,
-                              disable_reason::DISABLE_USER_ACTION);
-  ASSERT_TRUE(registry()->disabled_extensions().Contains(zip_unpacker));
-
-  service()->EnableZipUnpackerExtensionForTest();
-#if defined(OS_CHROMEOS)
-  ASSERT_TRUE(registry()->enabled_extensions().Contains(zip_unpacker));
-#else
-  ASSERT_TRUE(registry()->disabled_extensions().Contains(zip_unpacker));
-#endif
-}
-
-TEST_F(ExtensionServiceTest, ShouldNotEnableZipUnpackerExtensionAgainstPolicy) {
-  InitializeEmptyExtensionService();
-
-  GetManagementPolicy()->UnregisterAllProviders();
-  TestManagementPolicyProvider provider_(
-      TestManagementPolicyProvider::MUST_REMAIN_DISABLED);
-  GetManagementPolicy()->RegisterProvider(&provider_);
-
-  scoped_refptr<const Extension> zip_unpacker_extension =
-      ExtensionBuilder("stable")
-          .SetID(zip_unpacker)
-          .SetLocation(Manifest::EXTERNAL_COMPONENT)
-          .Build();
-  service()->AddExtension(zip_unpacker_extension.get());
-  service()->DisableExtension(zip_unpacker,
-                              disable_reason::DISABLE_USER_ACTION);
-  ASSERT_TRUE(registry()->disabled_extensions().Contains(zip_unpacker));
-
-  service()->EnableZipUnpackerExtensionForTest();
-  ASSERT_FALSE(registry()->enabled_extensions().Contains(zip_unpacker));
 }
 
 }  // namespace extensions

@@ -588,6 +588,24 @@ TEST_F(SessionServiceTest, RestoreApp) {
   helper_.AssertTabEquals(window2_id, tab2_id, 0, 0, 1, *tab);
   helper_.AssertNavigationEquals(nav2, tab->navigations[0]);
 }
+
+// Don't track Crostini apps. Only applicable on Chrome OS.
+TEST_F(SessionServiceTest, IgnoreCrostiniApps) {
+  SessionID window2_id = SessionID::NewUnique();
+  ASSERT_NE(window2_id, window_id);
+
+  service()->SetWindowType(window2_id, Browser::TYPE_POPUP,
+                           SessionService::TYPE_NORMAL);
+  service()->SetWindowBounds(window2_id, window_bounds, ui::SHOW_STATE_NORMAL);
+  service()->SetWindowAppName(window2_id, "_crostini_fakeappid");
+
+  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
+  ReadWindows(&windows, nullptr);
+
+  for (auto& window : windows)
+    ASSERT_NE(window2_id, window->window_id);
+}
+
 #endif  // defined (OS_CHROMEOS)
 
 // Tests pruning from the front.

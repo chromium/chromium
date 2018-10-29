@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Test that opacity changes when animation starts</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+#target {
+  width: 100px;
+  height: 100px;
+  background-color: green;
+}
+</style>
+
+<script id="simple_animate" type="text/worklet">
+registerAnimator("test_animator", class {
+  animate(currentTime, effect) {
+    effect.localTime = currentTime;
+  }
+});
+</script>
+<div id="target"></div>
+<script src="resources/animation-worklet-tests.js"></script>
+<script>
+async_test(t => {
+runInAnimationWorklet(
+  document.getElementById('simple_animate').textContent
+).then(_ => {
+  const effect = new KeyframeEffect(target, [{ opacity: 0 }], { duration: 1000 });
+  const animation = new WorkletAnimation('test_animator', effect);
+  const first_opacity = getComputedStyle(target).opacity;
+  assert_equals(first_opacity, '1');
+  animation.play();
+
+  waitTwoAnimationFrames(t.step_func_done(() => {
+    // waitTwoAnimationFrames guarantees a compositor frame that could update
+    // the opacity value in the worklet. Meanwhile, getComputedStyle needs an
+    // extra frame to fetch the updated value.
+    window.requestAnimationFrame( _ => {
+      const second_opacity = getComputedStyle(target).opacity;
+      assert_true(second_opacity < first_opacity);
+    });
+  }));
+});
+}, 'Opacity should change as the animation starts.');
+</script>

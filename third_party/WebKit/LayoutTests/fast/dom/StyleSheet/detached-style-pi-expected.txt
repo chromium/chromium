@@ -3,6 +3,7 @@ Bug 45205: Test that <xml-stylesheet> processing instructions only have styleshe
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS sheet.ownerNode is pi
 PASS pi.sheet === sheet is true
 Removing <pi>...
@@ -13,4 +14,3 @@ Re-adding <pi>...
 PASS sheet.ownerNode is null
 PASS pi.sheet === sheet is false
 PASS pi.sheet.ownerNode is pi
-

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -33,8 +34,11 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
                                  public message_center::NotificationObserver,
                                  public DownloadUIModel::Observer {
  public:
-  explicit DownloadItemNotification(Profile* profile,
-                                    std::unique_ptr<DownloadUIModel> item);
+  using DownloadItemNotificationPtr =
+      std::unique_ptr<DownloadItemNotification, base::OnTaskRunnerDeleter>;
+
+  DownloadItemNotification(Profile* profile,
+                           DownloadUIModel::DownloadUIModelPtr item);
   ~DownloadItemNotification() override;
 
   // Observer for this notification.
@@ -59,6 +63,8 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   void Close(bool by_user) override;
   void Click(const base::Optional<int>& button_index,
              const base::Optional<base::string16>& reply) override;
+
+  void ShutDown();
 
  private:
   friend class test::DownloadItemNotificationTest;
@@ -135,7 +141,7 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   bool previous_dangerous_state_ = false;
   std::unique_ptr<message_center::Notification> notification_;
 
-  std::unique_ptr<DownloadUIModel> item_;
+  DownloadUIModel::DownloadUIModelPtr item_;
   std::unique_ptr<std::vector<DownloadCommands::Command>> button_actions_;
 
   // Status of the preview image decode.

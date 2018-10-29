@@ -11,9 +11,6 @@ typedef NS_ENUM(NSInteger, ToolbarType) {
   PRIMARY = 0,
   // Secondary toolbar.
   SECONDARY = 1,
-  // TODO(crbug.com/800266): Remove this.
-  // Non-adaptive toolbar.
-  LEGACY = 2,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_BUTTONS_TOOLBAR_TYPE_H_

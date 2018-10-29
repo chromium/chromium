@@ -6,6 +6,8 @@
 
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager_client.h"
+#include "services/device/public/mojom/constants.mojom.h"
+#include "services/service_manager/public/cpp/connector.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/events/devices/input_device_manager.h"
 #include "ui/events/devices/stylus_state.h"
@@ -44,10 +46,21 @@ power_manager::UserActivityType GetUserActivityTypeForEvent(
 }  // namespace
 
 UserActivityPowerManagerNotifier::UserActivityPowerManagerNotifier(
-    UserActivityDetector* detector)
-    : detector_(detector) {
+    UserActivityDetector* detector,
+    service_manager::Connector* connector)
+    : detector_(detector), fingerprint_observer_binding_(this) {
   detector_->AddObserver(this);
   ui::InputDeviceManager::GetInstance()->AddObserver(this);
+
+  // Connector can be null in tests.
+  if (connector) {
+    // Treat fingerprint attempts as user activies to turn on the screen.
+    // I.e., when user tried to use fingerprint to unlock.
+    connector->BindInterface(device::mojom::kServiceName, &fingerprint_ptr_);
+    device::mojom::FingerprintObserverPtr observer;
+    fingerprint_observer_binding_.Bind(mojo::MakeRequest(&observer));
+    fingerprint_ptr_->AddFingerprintObserver(std::move(observer));
+  }
 }
 
 UserActivityPowerManagerNotifier::~UserActivityPowerManagerNotifier() {
@@ -63,6 +76,23 @@ void UserActivityPowerManagerNotifier::OnStylusStateChanged(
 
 void UserActivityPowerManagerNotifier::OnUserActivity(const Event* event) {
   MaybeNotifyUserActivity(GetUserActivityTypeForEvent(event));
+}
+
+void UserActivityPowerManagerNotifier::OnAuthScanDone(
+    uint32_t scan_result,
+    const base::flat_map<std::string, std::vector<std::string>>& matches) {
+  MaybeNotifyUserActivity(power_manager::USER_ACTIVITY_OTHER);
+}
+
+void UserActivityPowerManagerNotifier::OnSessionFailed() {}
+
+void UserActivityPowerManagerNotifier::OnRestarted() {}
+
+void UserActivityPowerManagerNotifier::OnEnrollScanDone(
+    uint32_t scan_result,
+    bool enroll_session_complete,
+    int percent_complete) {
+  MaybeNotifyUserActivity(power_manager::USER_ACTIVITY_OTHER);
 }
 
 void UserActivityPowerManagerNotifier::MaybeNotifyUserActivity(

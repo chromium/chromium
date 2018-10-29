@@ -180,7 +180,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Sets a BrowserPluginGuest object for this WebContents. If this WebContents
   // has a BrowserPluginGuest then that implies that it is being hosted by
   // a BrowserPlugin object in an embedder renderer process.
-  void SetBrowserPluginGuest(BrowserPluginGuest* guest);
+  void SetBrowserPluginGuest(std::unique_ptr<BrowserPluginGuest> guest);
 
   // Returns embedder browser plugin object, or NULL if this WebContents is not
   // an embedder.
@@ -358,7 +358,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool NeedToFireBeforeUnload() override;
   void DispatchBeforeUnload(bool auto_cancel) override;
   void AttachToOuterWebContentsFrame(
-      WebContents* outer_web_contents,
+      std::unique_ptr<WebContents> current_web_contents,
       RenderFrameHost* outer_contents_frame) override;
   WebContentsImpl* GetOuterWebContents() override;
   WebContentsImpl* GetOutermostWebContents() override;
@@ -401,7 +401,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void RestoreFocus() override;
   void FocusThroughTabTraversal(bool reverse) override;
   bool ShowingInterstitialPage() const override;
-  void AdjustPreviewsStateForNavigation(PreviewsState* previews_state) override;
   InterstitialPageImpl* GetInterstitialPage() const override;
   bool IsSavable() override;
   void OnSavePage() override;
@@ -464,9 +463,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void ActivateNearestFindResult(float x, float y) override;
   void RequestFindMatchRects(int current_version) override;
   service_manager::InterfaceProvider* GetJavaInterfaces() override;
-#elif defined(OS_MACOSX)
-  void SetAllowOtherViews(bool allow) override;
-  bool GetAllowOtherViews() override;
 #endif
 
   bool HasRecentInteractiveInputEvent() const override;
@@ -501,6 +497,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                               bool is_reload,
                               IPC::Message* reply_msg) override;
   void RunFileChooser(RenderFrameHost* render_frame_host,
+                      std::unique_ptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
   void DidCancelLoading() override;
   void DidAccessInitialDocument() override;
@@ -654,6 +651,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool HideDownloadUI() const override;
   bool HasPersistentVideo() const override;
   RenderFrameHost* GetPendingMainFrame() override;
+  void DidFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source) override;
+  void DidCommitAndDrawCompositorFrame(RenderViewHostImpl* source) override;
 
   // NavigatorDelegate ---------------------------------------------------------
 
@@ -693,7 +692,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // RenderWidgetHostDelegate --------------------------------------------------
 
   ukm::SourceId GetUkmSourceIdForLastCommittedSource() const override;
-  void SetTopControlsShownRatio(float ratio) override;
+  void SetTopControlsShownRatio(RenderWidgetHostImpl* render_widget_host,
+                                float ratio) override;
+  bool DoBrowserControlsShrinkRendererSize() const override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   void RenderWidgetCreated(RenderWidgetHostImpl* render_widget_host) override;
@@ -707,6 +708,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                              const gfx::Size& new_size) override;
   gfx::Size GetAutoResizeSize() override;
   void ResetAutoResizeSize() override;
+  InputEventShim* GetInputEventShim() const override;
 
 #if !defined(OS_ANDROID)
   double GetPendingPageZoomLevel() const override;
@@ -714,7 +716,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const NativeWebKeyboardEvent& event) override;
-  void HandleKeyboardEvent(const NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(const NativeWebKeyboardEvent& event) override;
   bool HandleWheelEvent(const blink::WebMouseWheelEvent& event) override;
   bool PreHandleGestureEvent(const blink::WebGestureEvent& event) override;
   BrowserAccessibilityManager* GetRootBrowserAccessibilityManager() override;
@@ -1038,6 +1040,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            JavaScriptDialogsInMainAndSubframes);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
+                           JavaScriptDialogsNormalizeText);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            DialogsFromJavaScriptEndFullscreen);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            DialogsFromJavaScriptEndFullscreenEvenInInnerWC);
@@ -1065,6 +1069,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                            PageDisableWithNoDialogManager);
   FRIEND_TEST_ALL_PREFIXES(PointerLockBrowserTest,
                            PointerLockInnerContentsCrashes);
+  FRIEND_TEST_ALL_PREFIXES(PointerLockBrowserTest, PointerLockOopifCrashes);
 
   // So |find_request_manager_| can be accessed for testing.
   friend class FindRequestManagerTest;
@@ -1088,8 +1093,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     explicit WebContentsTreeNode(WebContentsImpl* current_web_contents);
     ~WebContentsTreeNode() final;
 
-    void ConnectToOuterWebContents(WebContentsImpl* outer_web_contents,
-                                   RenderFrameHostImpl* outer_contents_frame);
+    // Connects |current_web_contents| to the outer WebContents that owns
+    // |outer_contents_frame|.
+    void ConnectToOuterWebContents(
+        std::unique_ptr<WebContents> current_web_contents,
+        RenderFrameHostImpl* outer_contents_frame);
 
     WebContentsImpl* outer_web_contents() const { return outer_web_contents_; }
     int outer_contents_frame_tree_node_id() const {
@@ -1104,11 +1112,13 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     // otherwise.
     WebContentsImpl* GetInnerWebContentsInFrame(const FrameTreeNode* frame);
 
-    const std::vector<WebContentsImpl*>& inner_web_contents() const;
+    std::vector<WebContentsImpl*> GetInnerWebContents() const;
 
    private:
-    void AttachInnerWebContents(WebContentsImpl* inner_web_contents);
-    void DetachInnerWebContents(WebContentsImpl* inner_web_contents);
+    void AttachInnerWebContents(
+        std::unique_ptr<WebContents> inner_web_contents);
+    std::unique_ptr<WebContents> DetachInnerWebContents(
+        WebContentsImpl* inner_web_contents);
 
     // FrameTreeNode::Observer implementation.
     void OnFrameTreeNodeDestroyed(FrameTreeNode* node) final;
@@ -1124,8 +1134,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     // |current_web_contents_| as an inner WebContents.
     int outer_contents_frame_tree_node_id_;
 
-    // List of inner WebContents that we host.
-    std::vector<WebContentsImpl*> inner_web_contents_;
+    // List of inner WebContents that we host. The outer WebContents owns the
+    // inner WebContents.
+    std::vector<std::unique_ptr<WebContents>> inner_web_contents_;
 
     // Only the root node should have this set. This indicates the WebContents
     // whose frame tree has the focused frame. The WebContents tree could be
@@ -1191,7 +1202,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnDidRunContentWithCertificateErrors(RenderFrameHostImpl* source);
   void OnDocumentLoadedInFrame(RenderFrameHostImpl* source);
   void OnDidFinishLoad(RenderFrameHostImpl* source, const GURL& url);
-  void OnGoToEntryAtOffset(RenderViewHostImpl* source, int offset);
+  void OnGoToEntryAtOffset(RenderViewHostImpl* source,
+                           int offset,
+                           bool has_user_gesture);
   void OnUpdateZoomLimits(RenderViewHostImpl* source,
                           int minimum_percent,
                           int maximum_percent);
@@ -1252,8 +1265,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
   void OnUpdateFaviconURL(RenderFrameHostImpl* source,
                           const std::vector<FaviconURL>& candidates);
-  void OnFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source);
-  void OnCommitAndDrawCompositorFrame(RenderViewHostImpl* source);
   void OnShowValidationMessage(RenderViewHostImpl* source,
                                const gfx::Rect& anchor_in_root_view,
                                const base::string16& main_text,
@@ -1314,8 +1325,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Finds the new WebContentsImpl by |main_frame_widget_route_id|, initializes
   // it for renderer-initiated creation, and returns it. Note that this can only
   // be called once as this call also removes it from the internal map.
-  std::unique_ptr<WebContents> GetCreatedWindow(int process_id,
-                                                int main_frame_widget_route_id);
+  std::unique_ptr<WebContentsImpl> GetCreatedWindow(
+      int process_id,
+      int main_frame_widget_route_id);
 
   // Sends a Page message IPC.
   void SendPageMessage(IPC::Message* msg);
@@ -1439,7 +1451,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Tracks created WebContentsImpl objects that have not been shown yet. They
   // are identified by the process ID and routing ID passed to CreateNewWindow.
-  std::map<GlobalRoutingID, std::unique_ptr<WebContents>> pending_contents_;
+  std::map<GlobalRoutingID, std::unique_ptr<WebContentsImpl>> pending_contents_;
 
   // This map holds widgets that were created on behalf of the renderer but
   // haven't been shown yet.
@@ -1672,6 +1684,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // When a new tab is created asynchronously, stores the OpenURLParams needed
   // to continue loading the page once the tab is ready.
   std::unique_ptr<OpenURLParams> delayed_open_url_params_;
+
+  // When a new tab is created with window.open(), navigation can be deferred
+  // to execute asynchronously. In such case, the parameters need to be saved
+  // for the navigation to be started at a later point.
+  std::unique_ptr<NavigationController::LoadURLParams> delayed_load_url_params_;
 
   // Whether overscroll should be unconditionally disabled.
   bool force_disable_overscroll_content_;

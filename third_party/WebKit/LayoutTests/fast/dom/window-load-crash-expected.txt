@@ -1,2 +1,2 @@
 Blocked access to external URL http://blocked/does-not-exist.html
-Test passes if it does not crash.  
+Test passes if it does not crash. 

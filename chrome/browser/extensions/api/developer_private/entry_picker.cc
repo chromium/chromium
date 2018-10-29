@@ -7,9 +7,11 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -35,14 +37,14 @@ EntryPicker::EntryPicker(EntryPickerClient* client,
     : client_(client) {
   if (g_skip_picker_for_test) {
     if (g_path_to_be_picked_for_test) {
-      content::BrowserThread::PostTask(
-          content::BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::UI},
           base::BindOnce(&EntryPicker::FileSelected, base::Unretained(this),
                          *g_path_to_be_picked_for_test, 1,
                          static_cast<void*>(nullptr)));
     } else {
-      content::BrowserThread::PostTask(
-          content::BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::UI},
           base::BindOnce(&EntryPicker::FileSelectionCanceled,
                          base::Unretained(this), static_cast<void*>(nullptr)));
     }

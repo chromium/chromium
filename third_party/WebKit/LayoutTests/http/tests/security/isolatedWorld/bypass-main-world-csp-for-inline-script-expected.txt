@@ -2,10 +2,10 @@ CONSOLE MESSAGE: line 33: Injecting in main world: this should fail.
 CONSOLE ERROR: line 21: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-09Et/dqtUwF1zPoVDKo5ZDj2NUXqkLUxcQfh9UtQQt0='), or a nonce ('nonce-...') is required to enable inline execution.
 
 CONSOLE MESSAGE: line 38: Injecting into isolated world without bypass: this should fail.
-CONSOLE ERROR: line 4: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-weyW8ZEkQAD8it2iIcRJESCAdVG/APiGxF6JYEqMvKo='), or a nonce ('nonce-...') is required to enable inline execution.
+CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-weyW8ZEkQAD8it2iIcRJESCAdVG/APiGxF6JYEqMvKo='), or a nonce ('nonce-...') is required to enable inline execution.
 
 CONSOLE MESSAGE: line 43: Starting to bypass main world's CSP: this should pass!
-CONSOLE MESSAGE: line 1: EXECUTED in isolated world.
+CONSOLE MESSAGE: EXECUTED in isolated world.
 CONSOLE MESSAGE: line 49: Injecting into main world again: this should fail.
 CONSOLE ERROR: line 21: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-09Et/dqtUwF1zPoVDKo5ZDj2NUXqkLUxcQfh9UtQQt0='), or a nonce ('nonce-...') is required to enable inline execution.
 

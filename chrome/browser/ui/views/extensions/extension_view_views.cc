@@ -25,10 +25,6 @@
 #include "ui/base/cursor/cursor.h"
 #endif
 
-#if defined(OS_MACOSX)
-#include "chrome/browser/ui/cocoa/browser_dialogs_views_mac.h"
-#endif
-
 ExtensionViewViews::ExtensionViewViews(extensions::ExtensionHost* host,
                                        Browser* browser)
     : views::WebView(browser ? browser->profile() : nullptr),
@@ -93,11 +89,11 @@ void ExtensionViewViews::RenderViewCreated(
   WebView::RenderViewCreated(render_view_host);
 }
 
-void ExtensionViewViews::HandleKeyboardEvent(
+bool ExtensionViewViews::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
-  unhandled_keyboard_event_handler_.HandleKeyboardEvent(event,
-                                                        GetFocusManager());
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, GetFocusManager());
 }
 
 void ExtensionViewViews::OnLoaded() {

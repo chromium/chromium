@@ -39,7 +39,8 @@ bool IsSystemModalWindowOpen() {
 
 class SystemWebDialogTest : public chromeos::LoginManagerTest {
  public:
-  SystemWebDialogTest() : LoginManagerTest(false) {}
+  SystemWebDialogTest()
+      : LoginManagerTest(false, true /* should_initialize_webui */) {}
   ~SystemWebDialogTest() override = default;
 
  private:

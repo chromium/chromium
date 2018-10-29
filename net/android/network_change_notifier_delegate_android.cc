@@ -10,6 +10,7 @@
 #include "net/android/network_change_notifier_android.h"
 
 using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace net {
@@ -51,7 +52,7 @@ NetworkChangeNotifier::ConnectionSubtype ConvertConnectionSubtype(
 // static
 void NetworkChangeNotifierDelegateAndroid::JavaLongArrayToNetworkMap(
     JNIEnv* env,
-    jlongArray long_array,
+    const JavaRef<jlongArray>& long_array,
     NetworkMap* network_map) {
   std::vector<int64_t> int64_list;
   base::android::JavaLongArrayToInt64Vector(env, long_array, &int64_list);
@@ -86,7 +87,7 @@ NetworkChangeNotifierDelegateAndroid::NetworkChangeNotifierDelegateAndroid()
   ScopedJavaLocalRef<jlongArray> networks_and_types =
       Java_NetworkChangeNotifier_getCurrentNetworksAndTypes(
           env, java_network_change_notifier_);
-  JavaLongArrayToNetworkMap(env, networks_and_types.obj(), &network_map);
+  JavaLongArrayToNetworkMap(env, networks_and_types, &network_map);
   SetCurrentNetworksAndTypes(network_map);
 }
 

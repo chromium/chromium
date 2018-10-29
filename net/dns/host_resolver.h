@@ -18,7 +18,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/prioritized_dispatcher.h"
 #include "net/base/request_priority.h"
-#include "net/dns/dns_config_service.h"
+#include "net/dns/dns_config.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_source.h"
 
@@ -30,6 +30,7 @@ namespace net {
 
 class AddressList;
 class DnsClient;
+struct DnsConfigOverrides;
 class HostResolverImpl;
 class NetLog;
 class NetLogWithSource;
@@ -111,6 +112,17 @@ class NET_EXPORT HostResolver {
     size_t max_concurrent_resolves;
     size_t max_retry_attempts;
     bool enable_caching;
+  };
+
+  // Factory class. Useful for classes that need to inject and override resolver
+  // creation for tests.
+  class NET_EXPORT Factory {
+   public:
+    virtual ~Factory() = default;
+
+    // See HostResolver::CreateSystemResolver.
+    virtual std::unique_ptr<HostResolver> CreateResolver(const Options& options,
+                                                         NetLog* net_log);
   };
 
   // The parameters for doing a Resolve(). A hostname and port are
@@ -330,9 +342,11 @@ class NET_EXPORT HostResolver {
   virtual void SetNoIPv6OnWifi(bool no_ipv6_on_wifi);
   virtual bool GetNoIPv6OnWifi();
 
+  // Sets overriding configuration that will replace or add to configuration
+  // read from the system for DnsClient resolution.
+  virtual void SetDnsConfigOverrides(const DnsConfigOverrides& overrides);
+
   virtual void SetRequestContext(URLRequestContext* request_context) {}
-  virtual void AddDnsOverHttpsServer(std::string spec, bool use_post) {}
-  virtual void ClearDnsOverHttpsServers() {}
 
   // Returns the currently configured DNS over HTTPS servers. Returns nullptr if
   // DNS over HTTPS is not enabled.

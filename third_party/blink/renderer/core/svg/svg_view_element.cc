@@ -26,7 +26,7 @@
 namespace blink {
 
 inline SVGViewElement::SVGViewElement(Document& document)
-    : SVGElement(SVGNames::viewTag, document), SVGFitToViewBox(this) {
+    : SVGElement(svg_names::kViewTag, document), SVGFitToViewBox(this) {
   UseCounter::Count(document, WebFeature::kSVGViewElement);
 }
 

@@ -94,7 +94,7 @@ void ConnectorSettings::InitFrom(ServiceProcessPrefs* prefs) {
 }
 
 bool ConnectorSettings::ShouldConnect(const std::string& printer_name) const {
-  Printers::const_iterator printer = printers_.find(printer_name);
+  auto printer = printers_.find(printer_name);
   if (printer != printers_.end())
     return !connect_new_printers_;
   return connect_new_printers_;

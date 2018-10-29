@@ -38,6 +38,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
+#include "chrome/browser/ui/ash/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
@@ -63,7 +64,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/keyboard/keyboard_controller.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
@@ -124,13 +124,7 @@ const char WebUILoginView::kViewClassName[] =
 
 WebUILoginView::WebUILoginView(const WebViewSettings& settings)
     : settings_(settings) {
-  // TODO(crbug.com/648733): Support virtual keyboard under MASH. There is no
-  // KeyboardController in the browser process under MASH.
-  if (!features::IsUsingWindowService()) {
-    keyboard::KeyboardController::Get()->AddObserver(this);
-  } else {
-    NOTIMPLEMENTED();
-  }
+  ChromeKeyboardControllerClient::Get()->AddObserver(this);
 
   registrar_.Add(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
                  content::NotificationService::AllSources());
@@ -209,7 +203,7 @@ WebUILoginView::~WebUILoginView() {
     ash::Shell::Get()->system_tray_notifier()->RemoveSystemTrayFocusObserver(
         this);
     ash::Shell::Get()->accelerator_controller()->UnregisterAll(this);
-    keyboard::KeyboardController::Get()->RemoveObserver(this);
+    ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   }
 
   // Clear any delegates we have set on the WebView.
@@ -437,14 +431,14 @@ void WebUILoginView::ClearLockScreenAppFocusCyclerDelegate() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// keyboard::KeyboardControllerObserver:
+// ChromeKeyboardControllerClient::Observer
 
-void WebUILoginView::OnKeyboardVisibilityStateChanged(const bool is_visible) {
+void WebUILoginView::OnKeyboardVisibilityChanged(bool visible) {
   if (!GetOobeUI())
     return;
   CoreOobeView* view = GetOobeUI()->GetCoreOobeView();
-  view->ShowControlBar(!is_visible);
-  view->SetVirtualKeyboardShown(is_visible);
+  view->ShowControlBar(!visible);
+  view->SetVirtualKeyboardShown(visible);
 }
 
 // WebUILoginView private: -----------------------------------------------------
@@ -459,15 +453,16 @@ bool WebUILoginView::HandleContextMenu(
 #endif
 }
 
-void WebUILoginView::HandleKeyboardEvent(content::WebContents* source,
+bool WebUILoginView::HandleKeyboardEvent(content::WebContents* source,
                                          const NativeWebKeyboardEvent& event) {
+  bool handled = false;
   if (forward_keyboard_event_) {
     // Disable arrow key traversal because arrow keys are handled via
     // accelerator when this view has focus.
     ScopedArrowKeyTraversal arrow_key_traversal(false);
 
-    unhandled_keyboard_event_handler_.HandleKeyboardEvent(event,
-                                                          GetFocusManager());
+    handled = unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+        event, GetFocusManager());
   }
 
   // Make sure error bubble is cleared on keyboard event. This is needed
@@ -478,6 +473,7 @@ void WebUILoginView::HandleKeyboardEvent(content::WebContents* source,
     if (web_ui)
       web_ui->CallJavascriptFunctionUnsafe("cr.ui.Oobe.clearErrors");
   }
+  return handled;
 }
 
 bool WebUILoginView::TakeFocus(content::WebContents* source, bool reverse) {

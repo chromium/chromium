@@ -60,14 +60,13 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
     bindings_system()->api_system()->GetHooksForAPI("runtime")->SetDelegate(
         std::make_unique<RuntimeHooksDelegate>(messaging_service_.get()));
 
-    scoped_refptr<Extension> mutable_extension = BuildExtension();
-    RegisterExtension(mutable_extension);
-    extension_ = mutable_extension;
+    extension_ = BuildExtension();
+    RegisterExtension(extension_);
 
     v8::HandleScope handle_scope(isolate());
     v8::Local<v8::Context> context = MainContext();
 
-    script_context_ = CreateScriptContext(context, mutable_extension.get(),
+    script_context_ = CreateScriptContext(context, extension_.get(),
                                           Feature::BLESSED_EXTENSION_CONTEXT);
     script_context_->set_url(extension_->url());
     bindings_system()->UpdateBindingsForContext(script_context_);
@@ -80,7 +79,7 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
   }
   bool UseStrictIPCMessageSender() override { return true; }
 
-  virtual scoped_refptr<Extension> BuildExtension() {
+  virtual scoped_refptr<const Extension> BuildExtension() {
     return ExtensionBuilder("foo").Build();
   }
 
@@ -104,7 +103,7 @@ TEST_F(RuntimeHooksDelegateTest, RuntimeId) {
   v8::Local<v8::Context> context = MainContext();
 
   {
-    scoped_refptr<Extension> connectable_extension =
+    scoped_refptr<const Extension> connectable_extension =
         ExtensionBuilder("connectable")
             .SetManifestPath({"externally_connectable", "matches"},
                              ListBuilder().Append("*://example.com/*").Build())
@@ -352,7 +351,7 @@ class RuntimeHooksDelegateNativeMessagingTest
   RuntimeHooksDelegateNativeMessagingTest() {}
   ~RuntimeHooksDelegateNativeMessagingTest() override {}
 
-  scoped_refptr<Extension> BuildExtension() override {
+  scoped_refptr<const Extension> BuildExtension() override {
     return ExtensionBuilder("foo").AddPermission("nativeMessaging").Build();
   }
 };

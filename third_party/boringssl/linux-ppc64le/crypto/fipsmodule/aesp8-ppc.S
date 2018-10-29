@@ -1,3 +1,10 @@
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
+#if !defined(OPENSSL_NO_ASM) && defined(__powerpc64__)
 .machine	"any"
 
 .abiversion	2
@@ -3656,3 +3663,4 @@ _aesp8_xts_dec5x:
 	blr	
 .long	0
 .byte	0,12,0x14,0,0,0,0,0
+#endif  // !OPENSSL_NO_ASM && __powerpc64__

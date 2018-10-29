@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 
 namespace gfx {
 
@@ -39,8 +40,8 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
   if (family_out)
     NOTIMPLEMENTED();
   // Customized font rendering settings are not supported, only defaults.
-  CR_DEFINE_STATIC_LOCAL(const gfx::FontRenderParams, params, (LoadDefaults()));
-  return params;
+  static const base::NoDestructor<gfx::FontRenderParams> params(LoadDefaults());
+  return *params;
 }
 
 float GetFontRenderParamsDeviceScaleFactor() {

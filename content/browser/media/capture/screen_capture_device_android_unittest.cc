@@ -45,12 +45,14 @@ class MockDeviceClient : public media::VideoCaptureDevice::Client {
   MOCK_METHOD0(OnStarted, void(void));
 
   // Trampoline methods to workaround GMOCK problems with std::unique_ptr<>.
-  Buffer ReserveOutputBuffer(const gfx::Size& dimensions,
-                             media::VideoPixelFormat format,
-                             int frame_feedback_id) override {
+  media::VideoCaptureDevice::Client::ReserveResult ReserveOutputBuffer(
+      const gfx::Size& dimensions,
+      media::VideoPixelFormat format,
+      int frame_feedback_id,
+      Buffer* buffer) override {
     EXPECT_EQ(media::PIXEL_FORMAT_I420, format);
     DoReserveOutputBuffer();
-    return Buffer();
+    return media::VideoCaptureDevice::Client::ReserveResult::kSucceeded;
   }
   void OnIncomingCapturedBuffer(Buffer buffer,
                                 const media::VideoCaptureFormat& frame_format,

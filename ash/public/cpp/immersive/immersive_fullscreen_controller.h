@@ -13,8 +13,9 @@
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
+#include "ui/events/event_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
-#include "ui/views/pointer_watcher.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -24,7 +25,6 @@ class WindowTargeter;
 
 namespace gfx {
 class Point;
-class SlideAnimation;
 }  // namespace gfx
 
 namespace ui {
@@ -41,6 +41,7 @@ class Widget;
 
 namespace ash {
 
+class ImmersiveContext;
 class ImmersiveFocusWatcher;
 class ImmersiveFullscreenControllerDelegate;
 class ImmersiveFullscreenControllerTestApi;
@@ -49,7 +50,7 @@ class ImmersiveGestureHandler;
 class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
     : public aura::WindowObserver,
       public gfx::AnimationDelegate,
-      public views::PointerWatcher,
+      public ui::EventObserver,
       public views::ViewObserver,
       public ImmersiveRevealedLock::Delegate {
  public:
@@ -74,7 +75,7 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   // (primary display above/below secondary display).
   static const int kMouseRevealBoundsHeight;
 
-  ImmersiveFullscreenController();
+  explicit ImmersiveFullscreenController(ImmersiveContext* context);
   ~ImmersiveFullscreenController() override;
 
   // Initializes the controller. Must be called prior to enabling immersive
@@ -115,13 +116,10 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   void OnTouchEvent(const ui::TouchEvent& event,
                     const gfx::Point& location_in_screen);
   // Processes a GestureEvent. This may call SetHandled() on the supplied event.
-  void OnGestureEvent(ui::GestureEvent* event,
-                      const gfx::Point& location_in_screen);
+  void OnGestureEvent(ui::GestureEvent* event);
 
-  // views::PointerWatcher:
-  void OnPointerEventObserved(const ui::PointerEvent& event,
-                              const gfx::Point& location_in_screen,
-                              gfx::NativeView target) override;
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
@@ -251,31 +249,32 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   void EnableTouchInsets(bool enable);
 
   // Not owned.
-  ImmersiveFullscreenControllerDelegate* delegate_;
-  views::View* top_container_;
-  views::Widget* widget_;
+  ImmersiveContext* immersive_context_;
+  ImmersiveFullscreenControllerDelegate* delegate_ = nullptr;
+  views::View* top_container_ = nullptr;
+  views::Widget* widget_ = nullptr;
 
   // True if the observers have been enabled.
-  bool event_observers_enabled_;
+  bool event_observers_enabled_ = false;
 
   // True when in immersive fullscreen.
-  bool enabled_;
+  bool enabled_ = false;
 
   // State machine for the revealed/closed animations.
-  RevealState reveal_state_;
+  RevealState reveal_state_ = CLOSED;
 
-  int revealed_lock_count_;
+  int revealed_lock_count_ = 0;
 
   // Timer to track cursor being held at the top edge of the screen.
   base::OneShotTimer top_edge_hover_timer_;
 
   // The cursor x position in screen coordinates when the cursor first hit the
   // top edge of the screen.
-  int mouse_x_when_hit_top_in_screen_;
+  int mouse_x_when_hit_top_in_screen_ = -1;
 
   // Tracks if the controller has seen a ET_GESTURE_SCROLL_BEGIN, without the
   // following events.
-  bool gesture_begun_;
+  bool gesture_begun_ = false;
 
   // Lock which keeps the top-of-window views revealed based on the current
   // mouse state and the current touch state. Acquiring the lock is used to
@@ -284,7 +283,7 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   std::unique_ptr<ImmersiveRevealedLock> located_event_revealed_lock_;
 
   // The animation which controls sliding the top-of-window views in and out.
-  std::unique_ptr<gfx::SlideAnimation> animation_;
+  gfx::SlideAnimation animation_{this};
 
   // Whether the animations are disabled for testing.
   bool animations_disabled_for_test_;
@@ -301,7 +300,7 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   // ImmersiveFullscreenControllerTestApi::GlobalAnimationDisabler for details.
   static bool value_for_animations_disabled_for_test_;
 
-  base::WeakPtrFactory<ImmersiveFullscreenController> weak_ptr_factory_;
+  base::WeakPtrFactory<ImmersiveFullscreenController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImmersiveFullscreenController);
 };

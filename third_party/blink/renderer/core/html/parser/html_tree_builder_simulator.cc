@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
+#include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 
 namespace blink {
@@ -86,11 +87,11 @@ static bool TokenExitsMath(const CompactHTMLToken& token) {
   // FIXME: This is copied from HTMLElementStack::isMathMLTextIntegrationPoint
   // and changed to use threadSafeMatch.
   const String& tag_name = token.Data();
-  return ThreadSafeMatch(tag_name, MathMLNames::miTag) ||
-         ThreadSafeMatch(tag_name, MathMLNames::moTag) ||
-         ThreadSafeMatch(tag_name, MathMLNames::mnTag) ||
-         ThreadSafeMatch(tag_name, MathMLNames::msTag) ||
-         ThreadSafeMatch(tag_name, MathMLNames::mtextTag);
+  return ThreadSafeMatch(tag_name, mathml_names::kMiTag) ||
+         ThreadSafeMatch(tag_name, mathml_names::kMoTag) ||
+         ThreadSafeMatch(tag_name, mathml_names::kMnTag) ||
+         ThreadSafeMatch(tag_name, mathml_names::kMsTag) ||
+         ThreadSafeMatch(tag_name, mathml_names::kMtextTag);
 }
 
 static bool TokenExitsInSelect(const CompactHTMLToken& token) {
@@ -115,9 +116,9 @@ HTMLTreeBuilderSimulator::State HTMLTreeBuilderSimulator::StateFor(
            tree_builder->OpenElements()->TopRecord();
        record; record = record->Next()) {
     Namespace current_namespace = HTML;
-    if (record->NamespaceURI() == SVGNames::svgNamespaceURI)
+    if (record->NamespaceURI() == svg_names::kNamespaceURI)
       current_namespace = SVG;
-    else if (record->NamespaceURI() == MathMLNames::mathmlNamespaceURI)
+    else if (record->NamespaceURI() == mathml_names::kNamespaceURI)
       current_namespace = kMathML;
 
     if (namespace_stack.IsEmpty() ||
@@ -135,9 +136,9 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
 
   if (token.GetType() == HTMLToken::kStartTag) {
     const String& tag_name = token.Data();
-    if (ThreadSafeMatch(tag_name, SVGNames::svgTag))
+    if (ThreadSafeMatch(tag_name, svg_names::kSVGTag))
       namespace_stack_.push_back(SVG);
-    if (ThreadSafeMatch(tag_name, MathMLNames::mathTag))
+    if (ThreadSafeMatch(tag_name, mathml_names::kMathTag))
       namespace_stack_.push_back(kMathML);
     if (InForeignContent() && TokenExitsForeignContent(token))
       namespace_stack_.pop_back();
@@ -152,7 +153,23 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
         tokenizer->SetState(HTMLTokenizer::kRCDATAState);
       } else if (ThreadSafeMatch(tag_name, scriptTag)) {
         tokenizer->SetState(HTMLTokenizer::kScriptDataState);
-        simulated_token = kScriptStart;
+
+        String type_attribute_value;
+        if (auto* item = token.GetAttributeItem(typeAttr)) {
+          type_attribute_value = item->Value();
+        }
+
+        String language_attribute_value;
+        if (auto* item = token.GetAttributeItem(languageAttr)) {
+          language_attribute_value = item->Value();
+        }
+
+        ScriptType script_type;
+        if (ScriptLoader::IsValidScriptTypeAndLanguage(
+                type_attribute_value, language_attribute_value,
+                ScriptLoader::kAllowLegacyTypeInTypeAttribute, script_type)) {
+          simulated_token = kValidScriptStart;
+        }
       } else if (ThreadSafeMatch(tag_name, linkTag)) {
         simulated_token = kLink;
       } else if (!in_select_insertion_mode_) {
@@ -193,9 +210,9 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
        InForeignContent())) {
     const String& tag_name = token.Data();
     if ((namespace_stack_.back() == SVG &&
-         ThreadSafeMatch(tag_name, SVGNames::svgTag)) ||
+         ThreadSafeMatch(tag_name, svg_names::kSVGTag)) ||
         (namespace_stack_.back() == kMathML &&
-         ThreadSafeMatch(tag_name, MathMLNames::mathTag)) ||
+         ThreadSafeMatch(tag_name, mathml_names::kMathTag)) ||
         IsHTMLIntegrationPointForEndTag(token) ||
         (namespace_stack_.Contains(kMathML) &&
          namespace_stack_.back() == HTML && TokenExitsMath(token))) {
@@ -226,9 +243,9 @@ bool HTMLTreeBuilderSimulator::IsHTMLIntegrationPointForStartTag(
   Namespace tokens_ns = namespace_stack_.back();
   const String& tag_name = token.Data();
   if (tokens_ns == kMathML) {
-    if (!ThreadSafeMatch(tag_name, MathMLNames::annotation_xmlTag))
+    if (!ThreadSafeMatch(tag_name, mathml_names::kAnnotationXmlTag))
       return false;
-    if (auto* encoding = token.GetAttributeItem(MathMLNames::encodingAttr)) {
+    if (auto* encoding = token.GetAttributeItem(mathml_names::kEncodingAttr)) {
       return EqualIgnoringASCIICase(encoding->Value(), "text/html") ||
              EqualIgnoringASCIICase(encoding->Value(), "application/xhtml+xml");
     }
@@ -236,10 +253,10 @@ bool HTMLTreeBuilderSimulator::IsHTMLIntegrationPointForStartTag(
     // FIXME: It's very fragile that we special case foreignObject here to be
     // case-insensitive.
     if (DeprecatedEqualIgnoringCase(tag_name,
-                                    SVGNames::foreignObjectTag.LocalName()))
+                                    svg_names::kForeignObjectTag.LocalName()))
       return true;
-    return ThreadSafeMatch(tag_name, SVGNames::descTag) ||
-           ThreadSafeMatch(tag_name, SVGNames::titleTag);
+    return ThreadSafeMatch(tag_name, svg_names::kDescTag) ||
+           ThreadSafeMatch(tag_name, svg_names::kTitleTag);
   }
   return false;
 }
@@ -260,15 +277,15 @@ bool HTMLTreeBuilderSimulator::IsHTMLIntegrationPointForEndTag(
 
   const String& tag_name = token.Data();
   if (tokens_ns == kMathML)
-    return ThreadSafeMatch(tag_name, MathMLNames::annotation_xmlTag);
+    return ThreadSafeMatch(tag_name, mathml_names::kAnnotationXmlTag);
   if (tokens_ns == SVG) {
     // FIXME: It's very fragile that we special case foreignObject here to be
     // case-insensitive.
     if (DeprecatedEqualIgnoringCase(tag_name,
-                                    SVGNames::foreignObjectTag.LocalName()))
+                                    svg_names::kForeignObjectTag.LocalName()))
       return true;
-    return ThreadSafeMatch(tag_name, SVGNames::descTag) ||
-           ThreadSafeMatch(tag_name, SVGNames::titleTag);
+    return ThreadSafeMatch(tag_name, svg_names::kDescTag) ||
+           ThreadSafeMatch(tag_name, svg_names::kTitleTag);
   }
   return false;
 }

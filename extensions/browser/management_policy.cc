@@ -119,8 +119,7 @@ bool ManagementPolicy::MustRemainDisabled(const Extension* extension,
     return true;
   }
 
-  for (ProviderList::const_iterator it = providers_.begin();
-       it != providers_.end(); ++it)
+  for (auto it = providers_.cbegin(); it != providers_.cend(); ++it)
     if ((*it)->MustRemainDisabled(extension, reason, error))
       return true;
 

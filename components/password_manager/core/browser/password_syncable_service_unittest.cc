@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/model/sync_change_processor.h"
+#include "components/sync/model/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/model/sync_error_factory_mock.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -190,11 +191,6 @@ class PasswordSyncableServiceWrapper {
   MockPasswordStore* password_store() { return password_store_.get(); }
 
   PasswordSyncableService* service() { return service_.get(); }
-
-  // Returnes the scoped_ptr to |service_| thus NULLing out it.
-  std::unique_ptr<syncer::SyncChangeProcessor> ReleaseSyncableService() {
-    return std::move(service_);
-  }
 
  private:
   scoped_refptr<MockPasswordStore> password_store_;
@@ -422,8 +418,7 @@ TEST_F(PasswordSyncableServiceTest, GetAllSyncData) {
 
   SyncDataList actual_list = service()->GetAllSyncData(syncer::PASSWORDS);
   std::vector<autofill::PasswordForm> actual_form_list;
-  for (SyncDataList::iterator it = actual_list.begin(); it != actual_list.end();
-       ++it) {
+  for (auto it = actual_list.begin(); it != actual_list.end(); ++it) {
     actual_form_list.push_back(
         PasswordFromSpecifics(GetPasswordSpecifics(*it)));
   }
@@ -466,7 +461,8 @@ TEST_F(PasswordSyncableServiceTest, MergeDataAndPushBack) {
       other_service_wrapper.service()->GetAllSyncData(syncer::PASSWORDS);
   service()->MergeDataAndStartSyncing(
       syncer::PASSWORDS, other_service_data,
-      other_service_wrapper.ReleaseSyncableService(),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          other_service_wrapper.service()),
       std::unique_ptr<syncer::SyncErrorFactory>());
 }
 
@@ -498,11 +494,12 @@ TEST_F(PasswordSyncableServiceTest, FailedReadFromPasswordStore) {
   syncer::SyncError error(FROM_HERE, syncer::SyncError::DATATYPE_ERROR,
                           "Failed to get passwords from store.",
                           syncer::PASSWORDS);
-  EXPECT_CALL(*password_store(), DeleteUndecryptableLogins())
-      .WillOnce(Return(DatabaseCleanupResult::kSuccess));
   EXPECT_CALL(*password_store(), FillAutofillableLogins(_))
-      .Times(2)
-      .WillRepeatedly(Return(false));
+      .WillOnce(Return(false));
+  if (base::FeatureList::IsEnabled(features::kRecoverPasswordsForSyncUsers)) {
+    EXPECT_CALL(*password_store(), DeleteUndecryptableLogins())
+        .WillOnce(Return(DatabaseCleanupResult::kDatabaseUnavailable));
+  }
   EXPECT_CALL(*error_factory, CreateAndUploadError(_, _))
       .WillOnce(Return(error));
   // ActOnPasswordStoreChanges() below shouldn't generate any changes for Sync.
@@ -542,11 +539,15 @@ TEST_F(PasswordSyncableServiceTest, RecoverPasswordsForSyncUsersDisabled) {
   EXPECT_TRUE(result.error().IsSet());
 }
 
-// Enable feature for deleting undecryptable logins.
+// Test that passwords are recovered for Sync users using the older feature
+// (kRecoverPasswordsForSyncUsers) when feature for recovering passwords for
+// Sync users is enabled, while feature for deleting corrupted passwords for
+// all users is disabled.
 TEST_F(PasswordSyncableServiceTest, RecoverPasswordsForSyncUsersEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kRecoverPasswordsForSyncUsers);
+  scoped_feature_list.InitWithFeatures(
+      {features::kRecoverPasswordsForSyncUsers},
+      {features::kDeleteCorruptedPasswords});
 
   EXPECT_CALL(*processor_, ProcessSyncChanges(_, IsEmpty()));
   EXPECT_CALL(*password_store(), FillAutofillableLogins(_))
@@ -563,8 +564,10 @@ TEST_F(PasswordSyncableServiceTest, RecoverPasswordsForSyncUsersEnabled) {
   EXPECT_FALSE(result.error().IsSet());
 }
 
-// Test that corrupted logins are not removed when merging data if features
-// for recovering passwords for both Sync and non-Sync users are enabled.
+// Test that passwords are not recovered using the older feature
+// (kRecoverPasswordForSyncUsers) when merging data if both features for
+// recovering passwords for Sync users and deleting passwords for all users
+// are enabled.
 TEST_F(PasswordSyncableServiceTest, PasswordRecoveryForAllUsersEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kRecoverPasswordsForSyncUsers,
@@ -591,8 +594,9 @@ TEST_F(PasswordSyncableServiceTest, PasswordRecoveryForAllUsersEnabled) {
 // Database cleanup fails because encryption is unavailable.
 TEST_F(PasswordSyncableServiceTest, FailedDeleteUndecryptableLogins) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kRecoverPasswordsForSyncUsers);
+  scoped_feature_list.InitWithFeatures(
+      {features::kRecoverPasswordsForSyncUsers},
+      {features::kDeleteCorruptedPasswords});
   auto error_factory = std::make_unique<syncer::SyncErrorFactoryMock>();
   syncer::SyncError error(
       FROM_HERE, syncer::SyncError::DATATYPE_ERROR,
@@ -647,7 +651,7 @@ TEST_F(PasswordSyncableServiceTest, FailedProcessSyncChanges) {
 // string.
 TEST_F(PasswordSyncableServiceTest, SerializeEmptyFederation) {
   autofill::PasswordForm form;
-  EXPECT_TRUE(form.federation_origin.unique());
+  EXPECT_TRUE(form.federation_origin.opaque());
   syncer::SyncData data = SyncDataFromPassword(form);
   const sync_pb::PasswordSpecificsData& specifics = GetPasswordSpecifics(data);
   EXPECT_TRUE(specifics.has_federation_url());
@@ -655,7 +659,7 @@ TEST_F(PasswordSyncableServiceTest, SerializeEmptyFederation) {
 
   // Deserialize back.
   form = PasswordFromSpecifics(specifics);
-  EXPECT_TRUE(form.federation_origin.unique());
+  EXPECT_TRUE(form.federation_origin.opaque());
 
   // Make sure that the Origins uploaded incorrectly are still deserialized
   // correctly.
@@ -663,7 +667,7 @@ TEST_F(PasswordSyncableServiceTest, SerializeEmptyFederation) {
   sync_pb::PasswordSpecificsData specifics1;
   specifics1.set_federation_url("null");
   form = PasswordFromSpecifics(specifics1);
-  EXPECT_TRUE(form.federation_origin.unique());
+  EXPECT_TRUE(form.federation_origin.opaque());
 }
 
 // Serialize empty PasswordForm and make sure the Sync representation is

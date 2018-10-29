@@ -84,6 +84,21 @@
         }
       },
       {
+        "id": "SyntheticMouseEventType",
+        "type": "string",
+        "description": "The type of event to send",
+        "enum": ["press", "release", "drag", "move", "enter", "exit"]
+      },
+      {
+        "id": "SyntheticMouseEvent",
+        "type": "object",
+        "properties": {
+          "type": {"$ref": "SyntheticMouseEventType"},
+          "x": {"type": "integer", "description": "X coordinate for mouse event in global screen coordinates"},
+          "y": {"type": "integer", "description": "Y coordinate for mouse event in global screen coordinates"}
+        }
+      },
+      {
         "id": "SelectToSpeakState",
         "type": "string",
         "description": "The state of the Select-to-Speak extension",
@@ -215,6 +230,32 @@
         "platforms": ["chromeos"]
       },
       {
+        "name": "enableChromeVoxMouseEvents",
+        "type": "function",
+        "description": "Enables or disables mouse events in ChromeVox.",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "True if ChromeVox should receive mouse events."
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "sendSyntheticMouseEvent",
+        "type": "function",
+        "description": "Sends a fabricated mouse event.",
+        "parameters": [
+          {
+            "name": "mouseEvent",
+            "$ref": "SyntheticMouseEvent",
+            "description": "The event to send."
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
         "name": "onSelectToSpeakStateChanged",
         "type": "function",
         "description": "Called by the Select-to-Speak extension when Select-to-Speak has changed states, between selecting with the mouse, speaking, and inactive.",
@@ -224,6 +265,13 @@
             "$ref": "SelectToSpeakState"
           }
         ],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "toggleDictation",
+        "type": "function",
+        "description": "Toggles dictation between active and inactive states.",
+        "parameters": [],
         "platforms": ["chromeos"]
       }
     ],

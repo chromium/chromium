@@ -56,6 +56,10 @@ class QuicStreamFactoryPeer {
       QuicStreamFactory* factory,
       const quic::QuicServerId& server_id);
 
+  static bool HasLiveSession(QuicStreamFactory* factory,
+                             const HostPortPair& destination,
+                             const quic::QuicServerId& server_id);
+
   static bool IsLiveSession(QuicStreamFactory* factory,
                             QuicChromiumClientSession* session);
 

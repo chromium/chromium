@@ -24,29 +24,25 @@ namespace data_reduction_proxy {
 
 TestDataReductionProxyConfig::TestDataReductionProxyConfig(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    net::NetLog* net_log,
-    DataReductionProxyConfigurator* configurator,
-    DataReductionProxyEventCreator* event_creator)
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    DataReductionProxyConfigurator* configurator)
     : TestDataReductionProxyConfig(
           std::make_unique<TestDataReductionProxyParams>(),
           io_task_runner,
-          net_log,
-          configurator,
-          event_creator) {}
+          ui_task_runner,
+          configurator) {}
 
 TestDataReductionProxyConfig::TestDataReductionProxyConfig(
     std::unique_ptr<DataReductionProxyConfigValues> config_values,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    net::NetLog* net_log,
-    DataReductionProxyConfigurator* configurator,
-    DataReductionProxyEventCreator* event_creator)
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    DataReductionProxyConfigurator* configurator)
     : DataReductionProxyConfig(
           io_task_runner,
-          net_log,
+          ui_task_runner,
           network::TestNetworkConnectionTracker::GetInstance(),
           std::move(config_values),
-          configurator,
-          event_creator),
+          configurator),
       tick_clock_(nullptr),
       is_captive_portal_(false),
       add_default_proxy_bypass_rules_(true) {}
@@ -144,14 +140,12 @@ void TestDataReductionProxyConfig::SetWarmupURLFetchAttemptCounts(
 MockDataReductionProxyConfig::MockDataReductionProxyConfig(
     std::unique_ptr<DataReductionProxyConfigValues> config_values,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    net::NetLog* net_log,
-    DataReductionProxyConfigurator* configurator,
-    DataReductionProxyEventCreator* event_creator)
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    DataReductionProxyConfigurator* configurator)
     : TestDataReductionProxyConfig(std::move(config_values),
                                    io_task_runner,
-                                   net_log,
-                                   configurator,
-                                   event_creator) {}
+                                   ui_task_runner,
+                                   configurator) {}
 
 MockDataReductionProxyConfig::~MockDataReductionProxyConfig() {
 }

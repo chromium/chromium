@@ -17,8 +17,10 @@
 #include "base/no_destructor.h"
 #include "base/process/kill.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/common/three_d_api_types.h"
 #include "gpu/config/gpu_control_list.h"
@@ -72,12 +74,14 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager {
   bool IsGpuFeatureInfoAvailable() const;
   gpu::GpuFeatureStatus GetFeatureStatus(gpu::GpuFeatureType feature) const;
 
-  // Only update if the current GPUInfo is not finalized.  If blacklist is
-  // loaded, run through blacklist and update blacklisted features.
   void UpdateGpuInfo(
       const gpu::GPUInfo& gpu_info,
       const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu);
-
+#if defined(OS_WIN)
+  void UpdateDx12VulkanInfo(
+      const gpu::Dx12VulkanVersionInfo& dx12_vulkan_version_info);
+  void UpdateDxDiagNode(const gpu::DxDiagNode& dx_diagnostics);
+#endif
   // Update the GPU feature info. This updates the blacklist and enabled status
   // of GPU rasterization. In the future this will be used for more features.
   void UpdateGpuFeatureInfo(const gpu::GpuFeatureInfo& gpu_feature_info,
@@ -159,7 +163,8 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager {
   ~GpuDataManagerImpl() override;
 
   mutable base::Lock lock_;
-  std::unique_ptr<GpuDataManagerImplPrivate> private_;
+  std::unique_ptr<GpuDataManagerImplPrivate> private_ GUARDED_BY(lock_)
+      PT_GUARDED_BY(lock_);
 
   DISALLOW_COPY_AND_ASSIGN(GpuDataManagerImpl);
 };

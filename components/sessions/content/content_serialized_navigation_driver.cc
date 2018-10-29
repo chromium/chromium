@@ -9,7 +9,7 @@
 #include "base/memory/singleton.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "content/public/common/page_state.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 
 namespace sessions {
 
@@ -51,7 +51,7 @@ ContentSerializedNavigationDriver::~ContentSerializedNavigationDriver() {
 }
 
 int ContentSerializedNavigationDriver::GetDefaultReferrerPolicy() const {
-  return blink::kWebReferrerPolicyDefault;
+  return static_cast<int>(network::mojom::ReferrerPolicy::kDefault);
 }
 
 std::string

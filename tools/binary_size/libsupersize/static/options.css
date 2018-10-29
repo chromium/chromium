@@ -25,6 +25,11 @@
   background: #00000050;
 }
 
+/** Fix height to prevent vertical shift on view mode change. */
+#select-form {
+  min-height: 380px;
+}
+
 /** Options side panel */
 .options {
   z-index: 5; /* Side panel layer */
@@ -100,6 +105,13 @@ legend {
 .text-button:active {
   background: #d2e3fce6;
 }
+.text-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.text-button:disabled:hover {
+  background: #bbb;
+}
 
 .text-button.with-icon {
   display: flex;
@@ -130,6 +142,18 @@ input:focus + label.filled-button:active {
   box-shadow: 0 1px 2px #3c40434d, 0 2px 6px 2px #3c404326;
 }
 
+select {
+  cursor: pointer;
+}
+
+select.sel-small {
+  background: #fff;
+  color: #3c4043;
+  font-family: "Google Sans", Arial, sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+}
+
 /** <input type='text'> or <select> elements */
 .input-wrapper,
 .select-wrapper {
@@ -139,7 +163,7 @@ input:focus + label.filled-button:active {
 }
 input[type='text'],
 input[type='number'],
-select {
+select.sel-big {
   box-sizing: border-box;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -179,13 +203,16 @@ select {
 }
 input[type='text']:focus + .input-label,
 input[type='number']:focus + .input-label,
-select:focus + .select-label {
+select.sel-big:focus + .select-label {
   color: #1a73e8;
   bottom: -2px;
   border-width: 2px;
 }
-select:focus + .select-label::after {
+select.sel-big:focus + .select-label::after {
   transform: rotate(180deg);
+}
+.mode-view .hide-on-mode-view {
+  display: none;
 }
 
 .input-error {
@@ -291,6 +318,16 @@ input[type='file'] {
   position: absolute;
   top: -100%;
   opacity: 0;
+}
+
+#select-form .msg-bad-compare {
+  color: #f00;
+  font-size: 0.7em;
+  margin-top: 5px;
+  visibility: hidden;
+}
+#select-form .msg-bad-compare.visible {
+  visibility: visible;
 }
 
 /** Tweaks for smaller screen sizes */

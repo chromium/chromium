@@ -15,8 +15,7 @@ namespace syncer {
 std::unique_ptr<base::DictionaryValue> ModelSafeRoutingInfoToValue(
     const ModelSafeRoutingInfo& routing_info) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  for (ModelSafeRoutingInfo::const_iterator it = routing_info.begin();
-       it != routing_info.end(); ++it) {
+  for (auto it = routing_info.begin(); it != routing_info.end(); ++it) {
     dict->SetString(ModelTypeToString(it->first),
                     ModelSafeGroupToString(it->second));
   }
@@ -32,8 +31,7 @@ std::string ModelSafeRoutingInfoToString(
 
 ModelTypeSet GetRoutingInfoTypes(const ModelSafeRoutingInfo& routing_info) {
   ModelTypeSet types;
-  for (ModelSafeRoutingInfo::const_iterator it = routing_info.begin();
-       it != routing_info.end(); ++it) {
+  for (auto it = routing_info.begin(); it != routing_info.end(); ++it) {
     types.Put(it->first);
   }
   return types;
@@ -41,7 +39,7 @@ ModelTypeSet GetRoutingInfoTypes(const ModelSafeRoutingInfo& routing_info) {
 
 ModelSafeGroup GetGroupForModelType(const ModelType type,
                                     const ModelSafeRoutingInfo& routes) {
-  ModelSafeRoutingInfo::const_iterator it = routes.find(type);
+  auto it = routes.find(type);
   if (it == routes.end()) {
     if (type != UNSPECIFIED && type != TOP_LEVEL_FOLDER)
       DVLOG(1) << "Entry does not belong to active ModelSafeGroup!";

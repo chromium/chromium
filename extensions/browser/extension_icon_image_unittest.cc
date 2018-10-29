@@ -171,7 +171,7 @@ TEST_F(ExtensionIconImageTest, Basic) {
   // Before the image representation is loaded, image should contain blank
   // image representation.
   EXPECT_TRUE(gfx::BitmapsAreEqual(
-      representation.sk_bitmap(),
+      representation.GetBitmap(),
       CreateBlankBitmapForScale(16, ui::SCALE_FACTOR_100P)));
 
   WaitForImageLoad();
@@ -181,14 +181,14 @@ TEST_F(ExtensionIconImageTest, Basic) {
   representation = image.image_skia().GetRepresentation(1.0f);
 
   // We should get the right representation now.
-  EXPECT_TRUE(gfx::BitmapsAreEqual(representation.sk_bitmap(), bitmap_16));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(representation.GetBitmap(), bitmap_16));
   EXPECT_EQ(16, representation.pixel_width());
 
   // Gets representation for an additional scale factor.
   representation = image.image_skia().GetRepresentation(2.0f);
 
   EXPECT_TRUE(gfx::BitmapsAreEqual(
-      representation.sk_bitmap(),
+      representation.GetBitmap(),
       CreateBlankBitmapForScale(16, ui::SCALE_FACTOR_200P)));
 
   WaitForImageLoad();
@@ -199,7 +199,7 @@ TEST_F(ExtensionIconImageTest, Basic) {
 
   // Image should have been resized.
   EXPECT_EQ(32, representation.pixel_width());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(representation.sk_bitmap(),
+  EXPECT_TRUE(gfx::BitmapsAreEqual(representation.GetBitmap(),
                                    bitmap_48_resized_to_32));
 }
 
@@ -241,7 +241,7 @@ TEST_F(ExtensionIconImageTest, FallbackToSmallerWhenNoBigger) {
   // size.
   EXPECT_EQ(2.0f, representation.scale());
   EXPECT_EQ(64, representation.pixel_width());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(representation.sk_bitmap(),
+  EXPECT_TRUE(gfx::BitmapsAreEqual(representation.GetBitmap(),
                                    EnsureBitmapSize(bitmap_48, 64)));
 }
 
@@ -278,7 +278,7 @@ TEST_F(ExtensionIconImageTest, FallbackToBigger) {
   // We should have loaded the smallest bigger (resized) resource.
   EXPECT_EQ(1.0f, representation.scale());
   EXPECT_EQ(17, representation.pixel_width());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(representation.sk_bitmap(),
+  EXPECT_TRUE(gfx::BitmapsAreEqual(representation.GetBitmap(),
                                    EnsureBitmapSize(bitmap_24, 17)));
 }
 
@@ -306,10 +306,9 @@ TEST_F(ExtensionIconImageTest, NoResources) {
   gfx::ImageSkiaRep representation = image.image_skia().GetRepresentation(1.0f);
 
   EXPECT_TRUE(gfx::BitmapsAreEqual(
-      representation.sk_bitmap(),
-      EnsureBitmapSize(
-          default_icon.GetRepresentation(1.0f).sk_bitmap(),
-          kRequestedSize)));
+      representation.GetBitmap(),
+      EnsureBitmapSize(default_icon.GetRepresentation(1.0f).GetBitmap(),
+                       kRequestedSize)));
 
   EXPECT_EQ(1, ImageLoadedCount());
   // We should have a default icon representation.
@@ -317,10 +316,9 @@ TEST_F(ExtensionIconImageTest, NoResources) {
 
   representation = image.image_skia().GetRepresentation(1.0f);
   EXPECT_TRUE(gfx::BitmapsAreEqual(
-      representation.sk_bitmap(),
-      EnsureBitmapSize(
-          default_icon.GetRepresentation(1.0f).sk_bitmap(),
-          kRequestedSize)));
+      representation.GetBitmap(),
+      EnsureBitmapSize(default_icon.GetRepresentation(1.0f).GetBitmap(),
+                       kRequestedSize)));
 }
 
 // If resource set is invalid, image load should be done asynchronously and
@@ -346,7 +344,7 @@ TEST_F(ExtensionIconImageTest, InvalidResource) {
 
   gfx::ImageSkiaRep representation = image.image_skia().GetRepresentation(1.0f);
   EXPECT_TRUE(gfx::BitmapsAreEqual(
-      representation.sk_bitmap(),
+      representation.GetBitmap(),
       CreateBlankBitmapForScale(kInvalidIconSize, ui::SCALE_FACTOR_100P)));
 
   WaitForImageLoad();
@@ -356,10 +354,9 @@ TEST_F(ExtensionIconImageTest, InvalidResource) {
 
   representation = image.image_skia().GetRepresentation(1.0f);
   EXPECT_TRUE(gfx::BitmapsAreEqual(
-      representation.sk_bitmap(),
-      EnsureBitmapSize(
-          default_icon.GetRepresentation(1.0f).sk_bitmap(),
-          kInvalidIconSize)));
+      representation.GetBitmap(),
+      EnsureBitmapSize(default_icon.GetRepresentation(1.0f).GetBitmap(),
+                       kInvalidIconSize)));
 }
 
 // Test that IconImage works with lazily (but synchronously) created default
@@ -393,10 +390,9 @@ TEST_F(ExtensionIconImageTest, LazyDefaultIcon) {
   // The resouce set is empty, so we should get the result right away.
   EXPECT_TRUE(lazy_default_icon.HasRepresentation(1.0f));
   EXPECT_TRUE(gfx::BitmapsAreEqual(
-      representation.sk_bitmap(),
-      EnsureBitmapSize(
-          default_icon.GetRepresentation(1.0f).sk_bitmap(),
-          kRequestedSize)));
+      representation.GetBitmap(),
+      EnsureBitmapSize(default_icon.GetRepresentation(1.0f).GetBitmap(),
+                       kRequestedSize)));
 
   // We should have a default icon representation.
   ASSERT_EQ(1u, image.image_skia().image_reps().size());
@@ -437,10 +433,9 @@ TEST_F(ExtensionIconImageTest, LazyDefaultIcon_AsyncIconImage) {
 
   representation = image.image_skia().GetRepresentation(1.0f);
   EXPECT_TRUE(gfx::BitmapsAreEqual(
-      representation.sk_bitmap(),
-      EnsureBitmapSize(
-          default_icon.GetRepresentation(1.0f).sk_bitmap(),
-          kInvalidIconSize)));
+      representation.GetBitmap(),
+      EnsureBitmapSize(default_icon.GetRepresentation(1.0f).GetBitmap(),
+                       kInvalidIconSize)));
 }
 
 // Tests behavior of image created by IconImage after IconImage host goes
@@ -482,7 +477,7 @@ TEST_F(ExtensionIconImageTest, IconImageDestruction) {
 
   EXPECT_EQ(1.0f, representation.scale());
   EXPECT_EQ(16, representation.pixel_width());
-  EXPECT_TRUE(gfx::BitmapsAreEqual(representation.sk_bitmap(), bitmap_16));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(representation.GetBitmap(), bitmap_16));
 
   // When requesting another representation, we should not crash and return some
   // image of the size. It could be blank or a rescale from the existing 1.0f

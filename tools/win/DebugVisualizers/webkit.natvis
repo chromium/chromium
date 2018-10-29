@@ -34,7 +34,7 @@
       <Item Name="Length">length_</Item>
       <Item Name="Hash">hash_</Item>
       <Item Name="AsciiText" Condition="is8_bit_">(this+1),[length_]s</Item>
-      <Item Name="UnicodeText" Condition="!is8_bit_">(wchar_t*)(this+1),[length_]su</Item>
+      <Item Name="UnicodeText" Condition="!is8_bit_">(this+1),[length_]su</Item>
     </Expand>
   </Type>
   <Type Name="WTF::AtomicString">
@@ -197,11 +197,11 @@
       </LinkedListItems>
     </Expand>
   </Type>
-  <Type Name="blink::LineBoxList">
+  <Type Name="blink::InlineBoxList&lt;blink::InlineFlowBox&gt;">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>first_line_box_</HeadPointer>
-        <NextPointer>next_line_box_</NextPointer>
+        <HeadPointer>first_</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)next_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
@@ -210,14 +210,8 @@
     <DisplayString>{layout_object_}</DisplayString>
   </Type>
   <!-- Layout: LayoutNG -->
-  <Type Name="blink::NGBlockNode">
-    <DisplayString>{*box_}</DisplayString>
-  </Type>
-  <Type Name="blink::NGInlineNode">
-    <DisplayString>{*box_}</DisplayString>
-    <Expand>
-      <Item Name="inline_node_data">*((blink::LayoutNGBlockFlow*)box_)->ng_inline_node_data_</Item>
-    </Expand>
+  <Type Name="blink::NGLayoutInputNode">
+    <DisplayString>{(NGLayoutInputNode::NGLayoutInputNodeType)type_} {box_}</DisplayString>
   </Type>
   <Type Name="blink::NGInlineItem">
     <DisplayString>{(NGInlineItem::NGInlineItemType)type_} {start_offset_}-{end_offset_} {*layout_object_}</DisplayString>
@@ -225,8 +219,26 @@
   <Type Name="blink::NGFragment">
     <DisplayString>{physical_fragment_}</DisplayString>
   </Type>
+  <Type Name="blink::NGPaintFragment">
+    <DisplayString>{*physical_fragment_.ptr_}</DisplayString>
+    <Expand>
+      <Synthetic Name="Children">
+        <DisplayString>{first_child_.ptr_}</DisplayString>
+        <Expand>
+          <LinkedListItems>
+            <HeadPointer>first_child_.ptr_</HeadPointer>
+            <NextPointer>next_sibling_.ptr_</NextPointer>
+            <ValueNode>this</ValueNode>
+          </LinkedListItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
   <Type Name="blink::NGPhysicalFragment">
-    <DisplayString>{(blink::NGPhysicalFragment::NGFragmentType)type_} {layout_object_} {size_} {offset_}</DisplayString>
+    <DisplayString>{(blink::NGPhysicalFragment::NGFragmentType)type_} {size_} {*layout_object_}</DisplayString>
+    <Expand>
+      <Item Name="children_" Condition="type_ == 0 || type_ == 2">((blink::NGPhysicalContainerFragment*)this)->children_</Item>
+    </Expand>
   </Type>
   <Type Name="blink::NGLogicalOffset">
     <DisplayString>({inline_offset}, {block_offset})</DisplayString>
@@ -274,6 +286,6 @@
     <DisplayString>{platform_data_}</DisplayString>
   </Type>
   <Type Name="blink::FontPlatformData">
-    <DisplayString>{*typeface_.fPtr}, {text_size_}px</DisplayString>
+    <DisplayString>{*typeface_.ptr_}, {text_size_}px</DisplayString>
   </Type>
 </AutoVisualizer>

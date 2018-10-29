@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_autofill_profile_validator.h"
 #include "components/autofill/core/browser/test_sync_service.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -177,7 +178,10 @@ class PersonalDataManagerTestBase {
         use_account_server_storage
             ? scoped_refptr<AutofillWebDataService>(account_database_service_)
             : nullptr,
-        prefs_.get(), identity_test_env_.identity_manager(), is_incognito);
+        prefs_.get(), identity_test_env_.identity_manager(),
+        TestAutofillProfileValidator::GetInstance(),
+        /*history_service=*/nullptr, is_incognito);
+
     personal_data_->AddObserver(&personal_data_observer_);
     sync_service_.SetIsAuthenticatedAccountPrimary(!use_account_server_storage);
     personal_data_->OnSyncServiceInitialized(&sync_service_);
@@ -986,7 +990,7 @@ TEST_F(PersonalDataManagerTest, AddFullCardAsMaskedCard) {
 
 TEST_F(PersonalDataManagerTest, OfferStoreUnmaskedCards) {
 #if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_MACOSX) || \
-    defined(OS_IOS) || defined(OS_ANDROID)
+    defined(OS_IOS) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
   bool should_offer = true;
 #elif defined(OS_LINUX)
   bool should_offer = false;
@@ -4714,32 +4718,6 @@ TEST_F(PersonalDataManagerTest, DeleteDisusedAddresses_DoNothingWhenDisabled) {
   EXPECT_EQ(1U, personal_data_->GetProfiles().size());
 }
 
-// Tests that DeleteDisusedAddresses is not run a second time on the same
-// major version.
-TEST_F(PersonalDataManagerTest, DeleteDisusedAddresses_OncePerVersion) {
-  // Enable the feature.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillDeleteDisusedAddresses);
-
-  CreateDeletableDisusedProfile();
-
-  EXPECT_TRUE(personal_data_->DeleteDisusedAddresses());
-  WaitForOnPersonalDataChanged();
-
-  EXPECT_EQ(0U, personal_data_->GetProfiles().size());
-
-  // Add the profile back.
-  CreateDeletableDisusedProfile();
-
-  // DeleteDisusedAddresses should return false to indicate it was not run.
-  EXPECT_FALSE(personal_data_->DeleteDisusedAddresses());
-
-  personal_data_->Refresh();
-
-  EXPECT_EQ(1U, personal_data_->GetProfiles().size());
-}
-
 // Tests that DeleteDisusedAddresses only deletes the addresses that are
 // supposed to be deleted.
 TEST_F(PersonalDataManagerTest,
@@ -4841,33 +4819,6 @@ TEST_F(PersonalDataManagerTest,
 
   personal_data_->Refresh();
 
-  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
-}
-
-// Tests that DeleteDisusedCreditCards is not run a second time on the same
-// major version.
-TEST_F(PersonalDataManagerTest, DeleteDisusedCreditCards_OncePerVersion) {
-  // Enable the feature.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillDeleteDisusedCreditCards);
-
-  CreateDeletableExpiredAndDisusedCreditCard();
-
-  // The deletion should be run a first time.
-  EXPECT_TRUE(personal_data_->DeleteDisusedCreditCards());
-  WaitForOnPersonalDataChanged();
-
-  // The profiles should have been deleted.
-  EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
-
-  // Add the card back.
-  CreateDeletableExpiredAndDisusedCreditCard();
-
-  // The cleanup should not be run.
-  EXPECT_FALSE(personal_data_->DeleteDisusedCreditCards());
-
-  // The card should still be present.
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 }
 
@@ -6117,51 +6068,8 @@ TEST_F(PersonalDataManagerTest, CannotAddFullServerCardOnLinux) {
 // These tests are not applicable on Linux since it does not support full server
 // cards.
 #if !defined(OS_LINUX) || defined(OS_CHROMEOS)
-// Make sure that an auth error does not mask all the server cards if the
-// feature is disabled.
-TEST_F(PersonalDataManagerTest, SyncAuthErrorMasksServerCards_FeatureDisabled) {
-  // Explicitely disable the feature that remasks server cards on auth error.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndDisableFeature(
-      features::kAutofillResetFullServerCardsOnAuthError);
-
-  base::HistogramTester histogram_tester;
-  SetUpThreeCardTypes();
-
-  // Set an auth error and inform the personal data manager.
-  sync_service_.SetInAuthError(true);
-  personal_data_->OnStateChanged(&sync_service_);
-
-  // Remove the auth error to be able to get the server cards.
-  sync_service_.SetInAuthError(false);
-
-  // Check that the full server card was not remasked and that the others are
-  // still present.
-  EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  std::vector<CreditCard*> server_cards =
-      personal_data_->GetServerCreditCards();
-  EXPECT_EQ(2U, server_cards.size());
-  EXPECT_EQ(CreditCard::MASKED_SERVER_CARD, server_cards[0]->record_type());
-  EXPECT_EQ(CreditCard::FULL_SERVER_CARD, server_cards[1]->record_type());
-
-  // Check that the metrics are logged correctly.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ResetFullServerCards.SyncServiceStatusOnStateChanged",
-      syncer::UploadState::NOT_ACTIVE, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ResetFullServerCards.NumberOfCardsReset.DryRun", 1, 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.ResetFullServerCards.NumberOfCardsReset", 0);
-}
-
-// Make sure that an auth error masks all the server cards if the feature is
-// enabled.
-TEST_F(PersonalDataManagerTest, SyncAuthErrorMasksServerCards_FeatureEnabled) {
-  // Explicitely enable the feature that remasks server cards on auth error.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillResetFullServerCardsOnAuthError);
-
+// Make sure that an auth error masks all the server cards.
+TEST_F(PersonalDataManagerTest, SyncAuthErrorMasksServerCards) {
   base::HistogramTester histogram_tester;
   SetUpThreeCardTypes();
 
@@ -6187,52 +6095,11 @@ TEST_F(PersonalDataManagerTest, SyncAuthErrorMasksServerCards_FeatureEnabled) {
       syncer::UploadState::NOT_ACTIVE, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ResetFullServerCards.NumberOfCardsReset", 1, 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.ResetFullServerCards.NumberOfCardsReset.DryRun", 0);
-}
-
-// Test that calling OnSyncServiceInitialized with a null sync service does not
-// remask full server cards if the feature is disabled.
-TEST_F(PersonalDataManagerTest,
-       OnSyncServiceInitialized_NoSyncService_FeatureDisabled) {
-  // Explicitely disable the feature that remasks server cards on auth error.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndDisableFeature(
-      features::kAutofillResetFullServerCardsOnAuthError);
-
-  base::HistogramTester histogram_tester;
-  SetUpThreeCardTypes();
-
-  // Call OnSyncServiceInitialized with no sync service.
-  personal_data_->OnSyncServiceInitialized(nullptr);
-
-  // Check that the full server card was not remasked and that the others are
-  // still present.
-  EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  std::vector<CreditCard*> server_cards =
-      personal_data_->GetServerCreditCards();
-  EXPECT_EQ(2U, server_cards.size());
-  EXPECT_EQ(CreditCard::MASKED_SERVER_CARD, server_cards[0]->record_type());
-  EXPECT_EQ(CreditCard::FULL_SERVER_CARD, server_cards[1]->record_type());
-
-  // Check that the metrics are logged correctly.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ResetFullServerCards.SyncServiceNullOnInitialized", true, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ResetFullServerCards.NumberOfCardsReset.DryRun", 1, 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.ResetFullServerCards.NumberOfCardsReset", 0);
 }
 
 // Test that calling OnSyncServiceInitialized with a null sync service remasks
-// full server cards if the feature is enabled.
-TEST_F(PersonalDataManagerTest,
-       OnSyncServiceInitialized_NoSyncService_FeatureEnabled) {
-  // Explicitely enable the feature that remasks server cards on auth error.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillResetFullServerCardsOnAuthError);
-
+// full server cards.
+TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NoSyncService) {
   base::HistogramTester histogram_tester;
   SetUpThreeCardTypes();
 
@@ -6253,58 +6120,11 @@ TEST_F(PersonalDataManagerTest,
       "Autofill.ResetFullServerCards.SyncServiceNullOnInitialized", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ResetFullServerCards.NumberOfCardsReset", 1, 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.ResetFullServerCards.NumberOfCardsReset.DryRun", 0);
 }
 
 // Test that calling OnSyncServiceInitialized with a sync service in auth error
-// does not remask full server cards if the feature is disabled.
-TEST_F(PersonalDataManagerTest,
-       OnSyncServiceInitialized_NotActiveSyncService_FeatureDisabled) {
-  // Explicitely disable the feature that remasks server cards on auth error.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndDisableFeature(
-      features::kAutofillResetFullServerCardsOnAuthError);
-
-  base::HistogramTester histogram_tester;
-  SetUpThreeCardTypes();
-
-  // Call OnSyncServiceInitialized with a sync service in auth error.
-  TestSyncService sync_service;
-  sync_service.SetInAuthError(true);
-  personal_data_->OnSyncServiceInitialized(&sync_service);
-
-  // Remove the auth error to be able to get the server cards.
-  sync_service.SetInAuthError(false);
-
-  // Check that the full server card was not remasked and that the others are
-  // still present.
-  EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  std::vector<CreditCard*> server_cards =
-      personal_data_->GetServerCreditCards();
-  EXPECT_EQ(2U, server_cards.size());
-  EXPECT_EQ(CreditCard::MASKED_SERVER_CARD, server_cards[0]->record_type());
-  EXPECT_EQ(CreditCard::FULL_SERVER_CARD, server_cards[1]->record_type());
-
-  // Check that the metrics are logged correctly.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ResetFullServerCards.SyncServiceNotActiveOnInitialized", true,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ResetFullServerCards.NumberOfCardsReset.DryRun", 1, 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.ResetFullServerCards.NumberOfCardsReset", 0);
-}
-
-// Test that calling OnSyncServiceInitialized with a sync service in auth error
-// remasks full server cards if the feature is enabled.
-TEST_F(PersonalDataManagerTest,
-       OnSyncServiceInitialized_NotActiveSyncService_FeatureEnabled) {
-  // Explicitely enable the feature that remasks server cards on auth error.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillResetFullServerCardsOnAuthError);
-
+// remasks full server cards.
+TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NotActiveSyncService) {
   base::HistogramTester histogram_tester;
   SetUpThreeCardTypes();
 
@@ -6333,8 +6153,6 @@ TEST_F(PersonalDataManagerTest,
       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ResetFullServerCards.NumberOfCardsReset", 1, 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.ResetFullServerCards.NumberOfCardsReset.DryRun", 0);
 }
 #endif  // !defined(OS_LINUX) || defined(OS_CHROMEOS)
 
@@ -6835,6 +6653,159 @@ TEST_F(PersonalDataManagerTest, RequestProfileValidity) {
       personal_data_->GetProfileValidityByGUID(guid).field_validity_states();
   ASSERT_FALSE(validities.empty());
   EXPECT_EQ(validities.at(EMAIL_ADDRESS), AutofillProfile::VALID);
+}
+
+// Use the client side validation API to validate three PDM profiles. This one
+// doesn't test the upload process or saving to the database.
+TEST_F(PersonalDataManagerTest, UpdateClientValidityStates) {
+  // Create three profiles and add them to personal_data_.
+  AutofillProfile valid_profile(test::GetFullValidProfileForCanada());
+  valid_profile.set_guid("00000000-0000-0000-0000-000000000001");
+  personal_data_->AddProfile(valid_profile);
+
+  AutofillProfile profile_invalid_phone_email(
+      test::GetFullValidProfileForChina());
+  profile_invalid_phone_email.SetRawInfo(
+      PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16("invalid phone number!"));
+  profile_invalid_phone_email.SetRawInfo(EMAIL_ADDRESS,
+                                         base::UTF8ToUTF16("invalid email!"));
+  profile_invalid_phone_email.set_guid("00000000-0000-0000-0000-000000000002");
+  personal_data_->AddProfile(profile_invalid_phone_email);
+
+  AutofillProfile profile_invalid_province(base::GenerateGUID(),
+                                           test::kEmptyOrigin);
+  test::SetProfileInfo(&profile_invalid_province, "Alice", "", "Munro",
+                       "alice@munro.ca", "Fox", "123 Zoo St", "unit 5",
+                       "Montreal", "CA", "H3C 2A3", "CA", "15142343254");
+  profile_invalid_province.set_guid("00000000-0000-0000-0000-000000000003");
+  personal_data_->AddProfile(profile_invalid_province);
+
+  WaitForOnPersonalDataChanged();
+  ASSERT_EQ(3U, personal_data_->GetProfiles().size());
+
+  // Validate the profiles through the client validation API.
+  auto profiles = personal_data_->GetProfiles();
+  for (auto* profile : profiles)
+    ASSERT_FALSE(profile->is_client_validity_states_updated());
+  personal_data_->UpdateClientValidityStates(profiles);
+
+  ASSERT_EQ(3U, profiles.size());
+  // The profiles are ordered according to their guid.
+  // valid_profile:
+  ASSERT_EQ(valid_profile.guid(), profiles[0]->guid());
+  EXPECT_TRUE(profiles[0]->is_client_validity_states_updated());
+  EXPECT_EQ(AutofillProfile::VALID,
+            profiles[0]->GetValidityState(ADDRESS_HOME_COUNTRY,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::VALID,
+            profiles[0]->GetValidityState(ADDRESS_HOME_STATE,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(
+      AutofillProfile::VALID,
+      profiles[0]->GetValidityState(ADDRESS_HOME_ZIP, AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::VALID,
+            profiles[0]->GetValidityState(ADDRESS_HOME_CITY,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::EMPTY,
+            profiles[0]->GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(
+      AutofillProfile::VALID,
+      profiles[0]->GetValidityState(EMAIL_ADDRESS, AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::VALID,
+            profiles[0]->GetValidityState(PHONE_HOME_WHOLE_NUMBER,
+                                          AutofillProfile::CLIENT));
+
+  // profile_invalid_phone_email:
+  ASSERT_EQ(profile_invalid_phone_email.guid(), profiles[1]->guid());
+  EXPECT_TRUE(profiles[1]->is_client_validity_states_updated());
+  EXPECT_EQ(AutofillProfile::VALID,
+            profiles[1]->GetValidityState(ADDRESS_HOME_COUNTRY,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::VALID,
+            profiles[1]->GetValidityState(ADDRESS_HOME_STATE,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(
+      AutofillProfile::VALID,
+      profiles[1]->GetValidityState(ADDRESS_HOME_ZIP, AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::VALID,
+            profiles[1]->GetValidityState(ADDRESS_HOME_CITY,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::VALID,
+            profiles[1]->GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(
+      AutofillProfile::INVALID,
+      profiles[1]->GetValidityState(EMAIL_ADDRESS, AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::INVALID,
+            profiles[1]->GetValidityState(PHONE_HOME_WHOLE_NUMBER,
+                                          AutofillProfile::CLIENT));
+
+  ASSERT_EQ(profile_invalid_province.guid(), profiles[2]->guid());
+  EXPECT_TRUE(profiles[2]->is_client_validity_states_updated());
+  EXPECT_EQ(AutofillProfile::VALID,
+            profiles[2]->GetValidityState(ADDRESS_HOME_COUNTRY,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::INVALID,
+            profiles[2]->GetValidityState(ADDRESS_HOME_STATE,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(
+      AutofillProfile::VALID,
+      profiles[2]->GetValidityState(ADDRESS_HOME_ZIP, AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::INVALID,
+            profiles[2]->GetValidityState(ADDRESS_HOME_CITY,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::EMPTY,
+            profiles[2]->GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                          AutofillProfile::CLIENT));
+  EXPECT_EQ(
+      AutofillProfile::VALID,
+      profiles[2]->GetValidityState(EMAIL_ADDRESS, AutofillProfile::CLIENT));
+  EXPECT_EQ(AutofillProfile::VALID,
+            profiles[2]->GetValidityState(PHONE_HOME_WHOLE_NUMBER,
+                                          AutofillProfile::CLIENT));
+}
+
+// Check the validity update status for AutofillProfiles.
+TEST_F(PersonalDataManagerTest, UpdateClientValidityStates_UpdatedFlag) {
+  // Create two profiles and add them to personal_data_.
+  AutofillProfile profile1(test::GetFullValidProfileForCanada());
+  personal_data_->AddProfile(profile1);
+
+  AutofillProfile profile2(test::GetFullValidProfileForChina());
+  personal_data_->AddProfile(profile2);
+
+  WaitForOnPersonalDataChanged();
+  ASSERT_EQ(2U, personal_data_->GetProfiles().size());
+
+  // Validate the profiles through the client validation API.
+  auto profiles = personal_data_->GetProfiles();
+  ASSERT_FALSE(profiles[0]->is_client_validity_states_updated());
+  ASSERT_FALSE(profiles[1]->is_client_validity_states_updated());
+
+  personal_data_->UpdateClientValidityStates(profiles);
+  ASSERT_EQ(2U, profiles.size());
+  EXPECT_TRUE(profiles[0]->is_client_validity_states_updated());
+  EXPECT_TRUE(profiles[1]->is_client_validity_states_updated());
+
+  *profiles[1] = *profiles[0];
+  ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
+  ASSERT_TRUE(profiles[1]->is_client_validity_states_updated());
+
+  profiles[1]->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16(""));
+  ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
+  ASSERT_FALSE(profiles[1]->is_client_validity_states_updated());
+
+  personal_data_->UpdateClientValidityStates(profiles);
+  ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
+  ASSERT_TRUE(profiles[1]->is_client_validity_states_updated());
+
+  profiles[1]->MergeDataFrom(*profiles[0], "en");
+  ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
+  ASSERT_FALSE(profiles[1]->is_client_validity_states_updated());
+
+  profiles[0]->SetRawInfo(NAME_FULL, base::UTF8ToUTF16("Goli Boli"));
+  ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
 }
 
 TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {

@@ -32,9 +32,10 @@ class AlsReaderImpl : public AlsReader {
   static constexpr int kMaxInitialAttempts = 20;
 
   // Interval for polling ambient light values.
-  // TODO(jiameng): revise frequency.
+  // TODO(jiameng): currently poll ALS samples every 250ms. May revise.
+  static constexpr int kNumberAlsPollPerSeconds = 4;
   static constexpr base::TimeDelta kAlsPollInterval =
-      base::TimeDelta::FromSeconds(1);
+      base::TimeDelta::FromSecondsD(1.0 / kNumberAlsPollPerSeconds);
 
   AlsReaderImpl();
   ~AlsReaderImpl() override;
@@ -42,7 +43,6 @@ class AlsReaderImpl : public AlsReader {
   // AlsReader overrides:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  AlsInitStatus GetInitStatus() const override;
 
   // Checks if an ALS is enabled, and if the config is valid . Also
   // reads ambient light file path.

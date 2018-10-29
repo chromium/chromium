@@ -184,8 +184,7 @@ const std::string IdentityInternalsUIMessageHandler::GetExtensionName(
 std::unique_ptr<base::ListValue> IdentityInternalsUIMessageHandler::GetScopes(
     const extensions::ExtensionTokenKey& token_cache_key) {
   auto scopes_value = std::make_unique<base::ListValue>();
-  for (std::set<std::string>::const_iterator
-           iter = token_cache_key.scopes.begin();
+  for (auto iter = token_cache_key.scopes.begin();
        iter != token_cache_key.scopes.end(); ++iter) {
     scopes_value->AppendString(*iter);
   }

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
+#include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "components/offline_pages/task/task.h"
 
 using offline_pages::Task;
@@ -23,8 +24,9 @@ namespace explore_sites {
 class ImportCatalogTask : public Task {
  public:
   ImportCatalogTask(ExploreSitesStore* store,
-                    int64_t catalog_timestamp,
-                    std::unique_ptr<Catalog> catalog_proto);
+                    std::string version_token,
+                    std::unique_ptr<Catalog> catalog_proto,
+                    BooleanCallback callback);
   ~ImportCatalogTask() override;
 
   bool complete() const { return complete_; }
@@ -37,11 +39,12 @@ class ImportCatalogTask : public Task {
   void FinishedExecuting(bool result);
 
   ExploreSitesStore* store_;  // outlives this class.
-  int64_t catalog_timestamp_;
+  std::string version_token_;
   std::unique_ptr<Catalog> catalog_proto_;
 
   bool complete_ = false;
   bool result_ = false;
+  BooleanCallback callback_;
 
   base::WeakPtrFactory<ImportCatalogTask> weak_ptr_factory_;
 };

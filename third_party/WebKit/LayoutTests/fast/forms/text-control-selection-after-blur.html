@@ -10,7 +10,7 @@
 <script>
 function testSelectionAfterBlur(element) {
   test(() => {
-    assert_exists(window, 'eventSender');
+    assert_own_property(window, 'eventSender');
     element.value = '';
     element.focus();
     eventSender.keyDown('a');

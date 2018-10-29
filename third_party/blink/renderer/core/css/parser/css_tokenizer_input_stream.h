@@ -72,8 +72,8 @@ class CSSTokenizerInputStream {
   }
 
  private:
-  size_t offset_;
-  const size_t string_length_;
+  wtf_size_t offset_;
+  const wtf_size_t string_length_;
   const scoped_refptr<StringImpl> string_;
   DISALLOW_COPY_AND_ASSIGN(CSSTokenizerInputStream);
 };

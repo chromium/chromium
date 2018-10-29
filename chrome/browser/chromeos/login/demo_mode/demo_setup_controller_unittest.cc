@@ -13,8 +13,11 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_task_environment.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_setup_test_utils.h"
+#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/settings/stub_install_attributes.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
@@ -43,7 +46,7 @@ class DemoSetupControllerTestHelper {
       : run_loop_(std::make_unique<base::RunLoop>()) {}
   virtual ~DemoSetupControllerTestHelper() = default;
 
-  void OnSetupError(DemoSetupController::DemoSetupError error) {
+  void OnSetupError(const DemoSetupController::DemoSetupError& error) {
     EXPECT_FALSE(succeeded_.has_value());
     succeeded_ = false;
     error_ = error;
@@ -64,9 +67,11 @@ class DemoSetupControllerTestHelper {
     return succeeded_.has_value() && succeeded_.value() == expected;
   }
 
-  // Returns true if it receives a fatal error.
-  bool IsErrorFatal() const {
-    return error_ == DemoSetupController::DemoSetupError::kFatal;
+  // Returns true if powerwash is required to recover from the error.
+  bool RequiresPowerwash() const {
+    return error_.has_value() &&
+           error_->recovery_method() ==
+               DemoSetupController::DemoSetupError::RecoveryMethod::kPowerwash;
   }
 
   void Reset() {
@@ -76,8 +81,7 @@ class DemoSetupControllerTestHelper {
 
  private:
   base::Optional<bool> succeeded_;
-  DemoSetupController::DemoSetupError error_ =
-      DemoSetupController::DemoSetupError::kRecoverable;
+  base::Optional<DemoSetupController::DemoSetupError> error_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(DemoSetupControllerTestHelper);
@@ -95,6 +99,11 @@ class DemoSetupControllerTest : public testing::Test {
     SystemSaltGetter::Initialize();
     DBusThreadManager::Initialize();
     DeviceSettingsService::Initialize();
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->browser_policy_connector_chromeos()
+        ->GetDeviceCloudPolicyManager()
+        ->Initialize(TestingBrowserProcess::GetGlobal()->local_state());
     helper_ = std::make_unique<DemoSetupControllerTestHelper>();
     tested_controller_ = std::make_unique<DemoSetupController>();
   }
@@ -103,6 +112,14 @@ class DemoSetupControllerTest : public testing::Test {
     DBusThreadManager::Shutdown();
     SystemSaltGetter::Shutdown();
     DeviceSettingsService::Shutdown();
+  }
+
+  static std::string GetDeviceRequisition() {
+    return TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->browser_policy_connector_chromeos()
+        ->GetDeviceCloudPolicyManager()
+        ->GetDeviceRequisition();
   }
 
   std::unique_ptr<DemoSetupControllerTestHelper> helper_;
@@ -139,6 +156,7 @@ TEST_F(DemoSetupControllerTest, OfflineSuccess) {
                      base::Unretained(helper_.get())));
 
   EXPECT_TRUE(helper_->WaitResult(true));
+  EXPECT_EQ("", GetDeviceRequisition());
 }
 
 TEST_F(DemoSetupControllerTest, OfflineDeviceLocalAccountPolicyLoadFailure) {
@@ -160,7 +178,8 @@ TEST_F(DemoSetupControllerTest, OfflineDeviceLocalAccountPolicyLoadFailure) {
                      base::Unretained(helper_.get())));
 
   EXPECT_TRUE(helper_->WaitResult(false));
-  EXPECT_FALSE(helper_->IsErrorFatal());
+  EXPECT_FALSE(helper_->RequiresPowerwash());
+  EXPECT_EQ("", GetDeviceRequisition());
 }
 
 TEST_F(DemoSetupControllerTest, OfflineDeviceLocalAccountPolicyStoreFailed) {
@@ -185,7 +204,8 @@ TEST_F(DemoSetupControllerTest, OfflineDeviceLocalAccountPolicyStoreFailed) {
                      base::Unretained(helper_.get())));
 
   EXPECT_TRUE(helper_->WaitResult(false));
-  EXPECT_TRUE(helper_->IsErrorFatal());
+  EXPECT_TRUE(helper_->RequiresPowerwash());
+  EXPECT_EQ("", GetDeviceRequisition());
 }
 
 TEST_F(DemoSetupControllerTest, OfflineInvalidDeviceLocalAccountPolicyBlob) {
@@ -205,7 +225,8 @@ TEST_F(DemoSetupControllerTest, OfflineInvalidDeviceLocalAccountPolicyBlob) {
                      base::Unretained(helper_.get())));
 
   EXPECT_TRUE(helper_->WaitResult(false));
-  EXPECT_TRUE(helper_->IsErrorFatal());
+  EXPECT_TRUE(helper_->RequiresPowerwash());
+  EXPECT_EQ("", GetDeviceRequisition());
 }
 
 TEST_F(DemoSetupControllerTest, OfflineError) {
@@ -228,7 +249,8 @@ TEST_F(DemoSetupControllerTest, OfflineError) {
                      base::Unretained(helper_.get())));
 
   EXPECT_TRUE(helper_->WaitResult(false));
-  EXPECT_FALSE(helper_->IsErrorFatal());
+  EXPECT_TRUE(helper_->RequiresPowerwash());
+  EXPECT_EQ("", GetDeviceRequisition());
 }
 
 TEST_F(DemoSetupControllerTest, OnlineSuccess) {
@@ -243,6 +265,7 @@ TEST_F(DemoSetupControllerTest, OnlineSuccess) {
                      base::Unretained(helper_.get())));
 
   EXPECT_TRUE(helper_->WaitResult(true));
+  EXPECT_EQ("", GetDeviceRequisition());
 }
 
 TEST_F(DemoSetupControllerTest, OnlineError) {
@@ -257,7 +280,8 @@ TEST_F(DemoSetupControllerTest, OnlineError) {
                      base::Unretained(helper_.get())));
 
   EXPECT_TRUE(helper_->WaitResult(false));
-  EXPECT_FALSE(helper_->IsErrorFatal());
+  EXPECT_FALSE(helper_->RequiresPowerwash());
+  EXPECT_EQ("", GetDeviceRequisition());
 }
 
 TEST_F(DemoSetupControllerTest, OnlineComponentError) {
@@ -275,7 +299,8 @@ TEST_F(DemoSetupControllerTest, OnlineComponentError) {
                      base::Unretained(helper_.get())));
 
   EXPECT_TRUE(helper_->WaitResult(false));
-  EXPECT_FALSE(helper_->IsErrorFatal());
+  EXPECT_FALSE(helper_->RequiresPowerwash());
+  EXPECT_EQ("", GetDeviceRequisition());
 }
 
 TEST_F(DemoSetupControllerTest, EnrollTwice) {
@@ -290,7 +315,8 @@ TEST_F(DemoSetupControllerTest, EnrollTwice) {
                      base::Unretained(helper_.get())));
 
   EXPECT_TRUE(helper_->WaitResult(false));
-  EXPECT_FALSE(helper_->IsErrorFatal());
+  EXPECT_FALSE(helper_->RequiresPowerwash());
+  EXPECT_EQ("", GetDeviceRequisition());
 
   helper_->Reset();
 
@@ -305,6 +331,7 @@ TEST_F(DemoSetupControllerTest, EnrollTwice) {
                      base::Unretained(helper_.get())));
 
   EXPECT_TRUE(helper_->WaitResult(true));
+  EXPECT_EQ("", GetDeviceRequisition());
 }
 
 }  //  namespace chromeos

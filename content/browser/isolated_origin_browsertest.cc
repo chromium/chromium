@@ -1115,6 +1115,42 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginFieldTrialTest, Test) {
       policy->IsIsolatedOrigin(url::Origin::Create(GURL("https://bar.com/"))));
 }
 
+class IsolatedOriginCommandLineAndFieldTrialTest
+    : public IsolatedOriginFieldTrialTest {
+ public:
+  IsolatedOriginCommandLineAndFieldTrialTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        switches::kIsolateOrigins,
+        "https://cmd.line.com/,https://cmdline.com/");
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(IsolatedOriginCommandLineAndFieldTrialTest);
+};
+
+// Verify that the lists of isolated origins specified via --isolate-origins
+// and via field trials are merged.  See https://crbug.com/894535.
+IN_PROC_BROWSER_TEST_F(IsolatedOriginCommandLineAndFieldTrialTest, Test) {
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  // --isolate-origins should take effect regardless of the
+  //   kDisableSiteIsolationTrials opt-out flag.
+  EXPECT_TRUE(policy->IsIsolatedOrigin(
+      url::Origin::Create(GURL("https://cmd.line.com/"))));
+  EXPECT_TRUE(policy->IsIsolatedOrigin(
+      url::Origin::Create(GURL("https://cmdline.com/"))));
+
+  // Field trial origins should also take effect, but only if the opt-out flag
+  // is not present.
+  bool expected_to_isolate = !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kDisableSiteIsolationTrials);
+  EXPECT_EQ(expected_to_isolate, policy->IsIsolatedOrigin(url::Origin::Create(
+                                     GURL("https://field.trial.com/"))));
+  EXPECT_EQ(
+      expected_to_isolate,
+      policy->IsIsolatedOrigin(url::Origin::Create(GURL("https://bar.com/"))));
+}
+
 // This is a regresion test for https://crbug.com/793350 - the long list of
 // origins to isolate used to be unnecessarily propagated to the renderer
 // process, trigerring a crash due to exceeding kZygoteMaxMessageLength.

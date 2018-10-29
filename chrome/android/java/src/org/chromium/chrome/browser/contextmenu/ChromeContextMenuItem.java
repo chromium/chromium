@@ -23,48 +23,52 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class ChromeContextMenuItem implements ContextMenuItem {
     @IntDef({Item.OPEN_IN_NEW_CHROME_TAB, Item.OPEN_IN_CHROME_INCOGNITO_TAB,
-            Item.OPEN_IN_BROWSER_ID, Item.OPEN_IN_OTHER_WINDOW, Item.OPEN_IN_NEW_TAB,
-            Item.OPEN_IN_INCOGNITO_TAB, Item.COPY_LINK_ADDRESS, Item.COPY_LINK_TEXT,
-            Item.SAVE_LINK_AS, Item.LOAD_ORIGINAL_IMAGE, Item.SAVE_IMAGE, Item.OPEN_IMAGE,
-            Item.OPEN_IMAGE_IN_NEW_TAB, Item.SEARCH_BY_IMAGE, Item.CALL, Item.SEND_MESSAGE,
-            Item.ADD_TO_CONTACTS, Item.COPY, Item.SAVE_VIDEO, Item.OPEN_IN_CHROME,
-            Item.BROWSER_ACTIONS_OPEN_IN_BACKGROUND, Item.BROWSER_ACTIONS_OPEN_IN_INCOGNITO_TAB,
-            Item.BROWSER_ACTION_SAVE_LINK_AS, Item.BROWSER_ACTIONS_COPY_ADDRESS})
+            Item.OPEN_IN_BROWSER_ID, Item.OPEN_IN_NEW_TAB, Item.OPEN_IN_INCOGNITO_TAB,
+            Item.OPEN_IN_OTHER_WINDOW, Item.OPEN_IN_EPHEMERAL_TAB, Item.COPY_LINK_ADDRESS,
+            Item.COPY_LINK_TEXT, Item.SAVE_LINK_AS, Item.LOAD_ORIGINAL_IMAGE, Item.SAVE_IMAGE,
+            Item.OPEN_IMAGE, Item.OPEN_IMAGE_IN_NEW_TAB, Item.SEARCH_BY_IMAGE, Item.CALL,
+            Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY, Item.SAVE_VIDEO,
+            Item.OPEN_IN_CHROME, Item.BROWSER_ACTIONS_OPEN_IN_BACKGROUND,
+            Item.BROWSER_ACTIONS_OPEN_IN_INCOGNITO_TAB, Item.BROWSER_ACTION_SAVE_LINK_AS,
+            Item.BROWSER_ACTIONS_COPY_ADDRESS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
         // Values are numerated from 0 and can't have gaps.
+        // The menu and string IDs below must be kept in sync with this list.
         // Custom Tab Group
         int OPEN_IN_NEW_CHROME_TAB = 0;
         int OPEN_IN_CHROME_INCOGNITO_TAB = 1;
         int OPEN_IN_BROWSER_ID = 2;
         // Link Group
-        int OPEN_IN_OTHER_WINDOW = 3;
-        int OPEN_IN_NEW_TAB = 4;
-        int OPEN_IN_INCOGNITO_TAB = 5;
-        int COPY_LINK_ADDRESS = 6;
-        int COPY_LINK_TEXT = 7;
-        int SAVE_LINK_AS = 8;
+        int OPEN_IN_NEW_TAB = 3;
+        int OPEN_IN_INCOGNITO_TAB = 4;
+        int OPEN_IN_OTHER_WINDOW = 5;
+        int OPEN_IN_EPHEMERAL_TAB = 6;
+        int COPY_LINK_ADDRESS = 7;
+        int COPY_LINK_TEXT = 8;
+        int SAVE_LINK_AS = 9;
         // Image Group
-        int LOAD_ORIGINAL_IMAGE = 9;
-        int SAVE_IMAGE = 10;
-        int OPEN_IMAGE = 11;
-        int OPEN_IMAGE_IN_NEW_TAB = 12;
-        int SEARCH_BY_IMAGE = 13;
+        int LOAD_ORIGINAL_IMAGE = 10;
+        int SAVE_IMAGE = 11;
+        int OPEN_IMAGE = 12;
+        int OPEN_IMAGE_IN_NEW_TAB = 13;
+        int SEARCH_BY_IMAGE = 14;
         // Message Group
-        int CALL = 14;
-        int SEND_MESSAGE = 15;
-        int ADD_TO_CONTACTS = 16;
-        int COPY = 17;
+        int CALL = 15;
+        int SEND_MESSAGE = 16;
+        int ADD_TO_CONTACTS = 17;
+        int COPY = 18;
         // Video Group
-        int SAVE_VIDEO = 18;
+        int SAVE_VIDEO = 19;
         // Other
-        int OPEN_IN_CHROME = 19;
+        int OPEN_IN_CHROME = 20;
         // Browser Action Items
-        int BROWSER_ACTIONS_OPEN_IN_BACKGROUND = 20;
-        int BROWSER_ACTIONS_OPEN_IN_INCOGNITO_TAB = 21;
-        int BROWSER_ACTION_SAVE_LINK_AS = 22;
-        int BROWSER_ACTIONS_COPY_ADDRESS = 23;
-        int NUM_ENTRIES = 24;
+        int BROWSER_ACTIONS_OPEN_IN_BACKGROUND = 21;
+        int BROWSER_ACTIONS_OPEN_IN_INCOGNITO_TAB = 22;
+        int BROWSER_ACTION_SAVE_LINK_AS = 23;
+        int BROWSER_ACTIONS_COPY_ADDRESS = 24;
+        // ALWAYS UPDATE!
+        int NUM_ENTRIES = 25;
     }
 
     /**
@@ -74,9 +78,10 @@ public class ChromeContextMenuItem implements ContextMenuItem {
             R.id.contextmenu_open_in_new_chrome_tab, // Item.OPEN_IN_NEW_CHROME_TAB
             R.id.contextmenu_open_in_chrome_incognito_tab, // Item.OPEN_IN_CHROME_INCOGNITO_TAB
             R.id.contextmenu_open_in_browser_id, // Item.OPEN_IN_BROWSER_ID
-            R.id.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW
             R.id.contextmenu_open_in_new_tab, // Item.OPEN_IN_NEW_TAB
             R.id.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB
+            R.id.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW
+            R.id.contextmenu_open_in_ephemeral_tab, // Item.OPEN_IN_EPHEMERAL_TAB
             R.id.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS
             R.id.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT
             R.id.contextmenu_save_link_as, // Item.SAVE_LINK_AS
@@ -104,9 +109,10 @@ public class ChromeContextMenuItem implements ContextMenuItem {
             R.string.contextmenu_open_in_new_chrome_tab, // Item.OPEN_IN_NEW_CHROME_TAB:
             R.string.contextmenu_open_in_chrome_incognito_tab, // Item.OPEN_IN_CHROME_INCOGNITO_TAB:
             0, // Item.OPEN_IN_BROWSER_ID is not handled by this mapping.
-            R.string.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW:
             R.string.contextmenu_open_in_new_tab, // Item.OPEN_IN_NEW_TAB:
             R.string.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB:
+            R.string.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW:
+            R.string.contextmenu_open_in_ephemeral_tab, // Item.OPEN_IN_EPHEMERAL_TAB:
             R.string.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS:
             R.string.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT:
             R.string.contextmenu_save_link, // Item.SAVE_LINK_AS:

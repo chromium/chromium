@@ -35,8 +35,10 @@ void NetErrorPageController::Install(content::RenderFrame* render_frame,
     return;
 
   v8::Local<v8::Object> global = context->Global();
-  global->Set(gin::StringToV8(isolate, "errorPageController"),
-              controller.ToV8());
+  global
+      ->Set(context, gin::StringToV8(isolate, "errorPageController"),
+            controller.ToV8())
+      .ToChecked();
 }
 
 bool NetErrorPageController::ShowSavedCopyButtonClick() {

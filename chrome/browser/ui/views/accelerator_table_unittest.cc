@@ -34,8 +34,7 @@ struct Cmp {
 TEST(AcceleratorTableTest, CheckDuplicatedAccelerators) {
   std::set<AcceleratorMapping, Cmp> accelerators;
   const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
-  for (std::vector<AcceleratorMapping>::const_iterator it =
-           accelerator_list.begin(); it != accelerator_list.end(); ++it) {
+  for (auto it = accelerator_list.begin(); it != accelerator_list.end(); ++it) {
     const AcceleratorMapping& entry = *it;
     EXPECT_TRUE(accelerators.insert(entry).second)
         << "Duplicated accelerator: " << entry.keycode << ", "

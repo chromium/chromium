@@ -9,7 +9,7 @@
         {
           "object": "LayoutBlockFlow DIV id='outer'",
           "rect": [8, 8, 784, 500],
-          "reason": "geometry"
+          "reason": "background"
         }
       ]
     }

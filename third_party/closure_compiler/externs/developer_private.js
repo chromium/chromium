@@ -270,9 +270,25 @@ chrome.developerPrivate.Permission;
 
 /**
  * @typedef {{
+ *   host: string,
+ *   granted: boolean
+ * }}
+ */
+chrome.developerPrivate.SiteControl;
+
+/**
+ * @typedef {{
+ *   hasAllHosts: boolean,
+ *   hosts: !Array<!chrome.developerPrivate.SiteControl>
+ * }}
+ */
+chrome.developerPrivate.SpecificSiteControls;
+
+/**
+ * @typedef {{
  *   simplePermissions: !Array<!chrome.developerPrivate.Permission>,
  *   hostAccess: (!chrome.developerPrivate.HostAccess|undefined),
- *   runtimeHostPermissions: (!Array<string>|undefined)
+ *   specificSiteControls: (!chrome.developerPrivate.SpecificSiteControls|undefined)
  * }}
  */
 chrome.developerPrivate.Permissions;

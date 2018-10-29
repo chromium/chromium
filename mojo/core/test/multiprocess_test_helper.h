@@ -12,6 +12,7 @@
 #include "base/process/process.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -33,6 +34,7 @@ class MultiprocessTestHelper {
     // Launch the child process as an unrelated peer process in the mojo system.
     PEER,
 
+#if !defined(OS_FUCHSIA)
     // Launch the child process as a child in the mojo system, using a named
     // pipe.
     NAMED_CHILD,
@@ -40,6 +42,7 @@ class MultiprocessTestHelper {
     // Launch the child process as an unrelated peer process in the mojo
     // system, using a named pipe.
     NAMED_PEER,
+#endif  //  !defined(OS_FUCHSIA)
   };
 
   MultiprocessTestHelper();

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -231,6 +232,30 @@ void IntersectionGeometry::ComputeGeometry() {
   // transforming them to the frame.
   if (ShouldReportRootBounds())
     MapRootRectToRootFrameCoordinates();
+}
+
+LayoutRect IntersectionGeometry::UnZoomedTargetRect() const {
+  if (!target_)
+    return target_rect_;
+  FloatRect rect(target_rect_);
+  AdjustForAbsoluteZoom::AdjustFloatRect(rect, *target_);
+  return LayoutRect(rect);
+}
+
+LayoutRect IntersectionGeometry::UnZoomedIntersectionRect() const {
+  if (!target_)
+    return intersection_rect_;
+  FloatRect rect(intersection_rect_);
+  AdjustForAbsoluteZoom::AdjustFloatRect(rect, *target_);
+  return LayoutRect(rect);
+}
+
+LayoutRect IntersectionGeometry::UnZoomedRootRect() const {
+  if (!root_)
+    return root_rect_;
+  FloatRect rect(root_rect_);
+  AdjustForAbsoluteZoom::AdjustFloatRect(rect, *root_);
+  return LayoutRect(rect);
 }
 
 }  // namespace blink

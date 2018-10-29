@@ -31,8 +31,8 @@
 
 namespace blink {
 
-using blink::FrameTestHelpers::WebViewHelper;
-using blink::URLTestHelpers::ToKURL;
+using blink::frame_test_helpers::WebViewHelper;
+using blink::url_test_helpers::ToKURL;
 
 const char kDefaultOrigin[] = "https://example.test/";
 const char kManifestDummyFilePath[] = "manifest-dummy.html";
@@ -51,13 +51,13 @@ class WebDocumentTest : public testing::Test {
 };
 
 void WebDocumentTest::SetUpTestCase() {
-  URLTestHelpers::RegisterMockedURLLoad(
+  url_test_helpers::RegisterMockedURLLoad(
       ToKURL(std::string(kDefaultOrigin) + kManifestDummyFilePath),
       test::CoreTestDataPath(kManifestDummyFilePath));
-  URLTestHelpers::RegisterMockedURLLoad(
+  url_test_helpers::RegisterMockedURLLoad(
       ToKURL(std::string(kDefaultOrigin) + kNoOriginTrialDummyFilePath),
       test::CoreTestDataPath(kNoOriginTrialDummyFilePath));
-  URLTestHelpers::RegisterMockedURLLoad(
+  url_test_helpers::RegisterMockedURLLoad(
       ToKURL(std::string(kDefaultOrigin) + kOriginTrialDummyFilePath),
       test::CoreTestDataPath(kOriginTrialDummyFilePath));
 }
@@ -272,7 +272,7 @@ KURL ToOriginB(const char* file) {
 }
 
 void RegisterMockedURLLoad(const KURL& url, const char* path) {
-  URLTestHelpers::RegisterMockedURLLoad(url, test::CoreTestDataPath(path));
+  url_test_helpers::RegisterMockedURLLoad(url, test::CoreTestDataPath(path));
 }
 
 }  // anonymous namespace

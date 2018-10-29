@@ -44,8 +44,9 @@ class SyncEncryptionCollectionViewControllerTest
  protected:
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
-                                       &CreateNiceProfileSyncServiceMock);
+    test_cbs_builder.AddTestingFactory(
+        ProfileSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateNiceProfileSyncServiceMock));
     chrome_browser_state_ = test_cbs_builder.Build();
     CollectionViewControllerTest::SetUp();
 

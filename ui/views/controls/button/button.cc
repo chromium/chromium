@@ -15,7 +15,6 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/controls/button/blue_button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -42,6 +41,30 @@ DEFINE_LOCAL_UI_CLASS_PROPERTY_KEY(bool, kIsButtonProperty, false);
 const int kHoverFadeDurationMs = 150;
 
 }  // namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// WidgetObserverButtonBridge:
+Button::WidgetObserverButtonBridge::WidgetObserverButtonBridge(Button* button)
+    : owner_(button) {
+  DCHECK(button->GetWidget());
+  button->GetWidget()->AddObserver(this);
+}
+
+Button::WidgetObserverButtonBridge::~WidgetObserverButtonBridge() {
+  if (owner_)
+    owner_->GetWidget()->RemoveObserver(this);
+}
+
+void Button::WidgetObserverButtonBridge::OnWidgetActivationChanged(
+    Widget* widget,
+    bool active) {
+  owner_->WidgetActivationChanged(widget, active);
+}
+
+void Button::WidgetObserverButtonBridge::OnWidgetDestroying(Widget* widget) {
+  widget->RemoveObserver(this);
+  owner_ = nullptr;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Button, static public:
@@ -89,8 +112,6 @@ void Button::SetFocusForPlatform() {
 
 void Button::SetTooltipText(const base::string16& tooltip_text) {
   tooltip_text_ = tooltip_text;
-  if (accessible_name_.empty())
-    accessible_name_ = tooltip_text_;
   OnSetTooltipText(tooltip_text);
   TooltipTextChanged();
 }
@@ -98,6 +119,10 @@ void Button::SetTooltipText(const base::string16& tooltip_text) {
 void Button::SetAccessibleName(const base::string16& name) {
   accessible_name_ = name;
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+}
+
+const base::string16& Button::GetAccessibleName() const {
+  return accessible_name_.empty() ? tooltip_text_ : accessible_name_;
 }
 
 void Button::SetState(ButtonState state) {
@@ -127,6 +152,14 @@ void Button::SetState(ButtonState state) {
   state_ = state;
   StateChanged(old_state);
   SchedulePaint();
+}
+
+Button::ButtonState Button::GetVisualState() const {
+  if (PlatformStyle::kInactiveWidgetControlsAppearDisabled && GetWidget() &&
+      !GetWidget()->IsActive()) {
+    return STATE_DISABLED;
+  }
+  return state();
 }
 
 void Button::StartThrobbing(int cycles_til_stop) {
@@ -399,7 +432,7 @@ void Button::OnPaint(gfx::Canvas* canvas) {
 
 void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(accessible_name_);
+  node_data->SetName(GetAccessibleName());
   if (!enabled())
     node_data->SetRestriction(ax::mojom::Restriction::kDisabled);
 
@@ -454,6 +487,15 @@ void Button::OnBlur() {
   }
   if (focus_painter_)
     SchedulePaint();
+}
+
+void Button::AddedToWidget() {
+  if (PlatformStyle::kInactiveWidgetControlsAppearDisabled)
+    widget_observer_ = std::make_unique<WidgetObserverButtonBridge>(this);
+}
+
+void Button::RemovedFromWidget() {
+  widget_observer_.reset();
 }
 
 std::unique_ptr<InkDrop> Button::CreateInkDrop() {
@@ -566,6 +608,10 @@ bool Button::ShouldEnterHoveredState() {
 #endif
 
   return check_mouse_position && IsMouseHovered();
+}
+
+void Button::WidgetActivationChanged(Widget* widget, bool active) {
+  StateChanged(state());
 }
 
 }  // namespace views

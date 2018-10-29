@@ -15,21 +15,23 @@
 namespace content {
 
 // Result of file chooser.
+//
+// This represents either a native file or a non-native file. If
+// |file_system_url.is_valid()|, this is a non-native file and |file_path| is
+// empty.
 struct CONTENT_EXPORT FileChooserFileInfo {
   FileChooserFileInfo();
   FileChooserFileInfo(const FileChooserFileInfo& other);
   ~FileChooserFileInfo();
 
-  base::FilePath file_path;
-
   // For native files.
+  base::FilePath file_path;
   base::FilePath::StringType display_name;
 
   // For non-native files.
   GURL file_system_url;
   base::Time modification_time;
   int64_t length;
-
   bool is_directory;
 };
 

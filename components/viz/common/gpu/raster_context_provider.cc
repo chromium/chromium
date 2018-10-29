@@ -12,18 +12,15 @@ RasterContextProvider::ScopedRasterContextLock::ScopedRasterContextLock(
     RasterContextProvider* context_provider,
     const char* url)
     : context_provider_(context_provider),
-      context_lock_(*context_provider_->GetLock()),
-      url_(url) {
+      context_lock_(*context_provider_->GetLock()) {
   busy_ = context_provider_->CacheController()->ClientBecameBusy();
-  if (url_)
-    RasterInterface()->SetActiveURLCHROMIUM(url_);
+  if (url)
+    RasterInterface()->SetActiveURLCHROMIUM(url);
 }
 
 RasterContextProvider::ScopedRasterContextLock::~ScopedRasterContextLock() {
   // Let ContextCacheController know we are no longer busy.
   context_provider_->CacheController()->ClientBecameNotBusy(std::move(busy_));
-  if (url_)
-    RasterInterface()->ResetActiveURLCHROMIUM();
 }
 
 }  // namespace viz

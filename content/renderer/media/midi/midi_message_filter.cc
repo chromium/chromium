@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/single_thread_task_runner.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -51,15 +52,12 @@ void MidiMessageFilter::AddClient(blink::WebMIDIAccessorClient* client) {
 
 void MidiMessageFilter::RemoveClient(blink::WebMIDIAccessorClient* client) {
   DCHECK(clients_.find(client) != clients_.end() ||
-         std::find(clients_waiting_session_queue_.begin(),
-                   clients_waiting_session_queue_.end(),
-                   client) != clients_waiting_session_queue_.end())
+         base::ContainsValue(clients_waiting_session_queue_, client))
       << "RemoveClient call was not ballanced with AddClient call";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   clients_.erase(client);
-  ClientsQueue::iterator it = std::find(clients_waiting_session_queue_.begin(),
-                                        clients_waiting_session_queue_.end(),
-                                        client);
+  auto it = std::find(clients_waiting_session_queue_.begin(),
+                      clients_waiting_session_queue_.end(), client);
   if (it != clients_waiting_session_queue_.end())
     clients_waiting_session_queue_.erase(it);
   if (clients_.empty() && clients_waiting_session_queue_.empty()) {
@@ -159,14 +157,14 @@ void MidiMessageFilter::OnSessionStarted(midi::mojom::Result result) {
       base::BindOnce(&MidiMessageFilter::HandleClientAdded, this, result));
 }
 
-void MidiMessageFilter::OnAddInputPort(midi::MidiPortInfo info) {
+void MidiMessageFilter::OnAddInputPort(midi::mojom::PortInfo info) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MidiMessageFilter::HandleAddInputPort, this, info));
 }
 
-void MidiMessageFilter::OnAddOutputPort(midi::MidiPortInfo info) {
+void MidiMessageFilter::OnAddOutputPort(midi::mojom::PortInfo info) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   main_task_runner_->PostTask(
       FROM_HERE,
@@ -236,7 +234,7 @@ void MidiMessageFilter::HandleClientAdded(midi::mojom::Result result) {
   }
 }
 
-void MidiMessageFilter::HandleAddInputPort(midi::MidiPortInfo info) {
+void MidiMessageFilter::HandleAddInputPort(midi::mojom::PortInfo info) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   inputs_.push_back(info);
   const WebString id = WebString::FromUTF8(info.id);
@@ -247,7 +245,7 @@ void MidiMessageFilter::HandleAddInputPort(midi::MidiPortInfo info) {
     client->DidAddInputPort(id, manufacturer, name, version, info.state);
 }
 
-void MidiMessageFilter::HandleAddOutputPort(midi::MidiPortInfo info) {
+void MidiMessageFilter::HandleAddOutputPort(midi::mojom::PortInfo info) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   outputs_.push_back(info);
   const WebString id = WebString::FromUTF8(info.id);

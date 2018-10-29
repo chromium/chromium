@@ -25,4 +25,5 @@
 
     attribute EventHandler onshippingaddresschange;
     attribute EventHandler onshippingoptionchange;
+    [RuntimeEnabled=PaymentMethodChangeEvent] attribute EventHandler onpaymentmethodchange;
 };

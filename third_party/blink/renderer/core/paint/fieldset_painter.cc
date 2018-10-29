@@ -39,46 +39,50 @@ void FieldsetPainter::PaintBoxDecorationBackground(
     return BoxPainter(layout_fieldset_)
         .PaintBoxDecorationBackground(paint_info, paint_offset);
 
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, layout_fieldset_, paint_info.phase))
-    return;
+  if (!DrawingRecorder::UseCachedDrawingIfPossible(
+          paint_info.context, layout_fieldset_, paint_info.phase)) {
+    FieldsetPaintInfo fieldset_paint_info =
+        CreateFieldsetPaintInfo(layout_fieldset_, *legend);
+    paint_rect.Contract(fieldset_paint_info.border_outsets);
 
-  FieldsetPaintInfo fieldset_paint_info =
-      CreateFieldsetPaintInfo(layout_fieldset_, *legend);
-  paint_rect.Contract(fieldset_paint_info.border_outsets);
+    DrawingRecorder recorder(paint_info.context, layout_fieldset_,
+                             paint_info.phase);
+    BoxDecorationData box_decoration_data(layout_fieldset_);
 
-  DrawingRecorder recorder(paint_info.context, layout_fieldset_,
-                           paint_info.phase);
-  BoxDecorationData box_decoration_data(layout_fieldset_);
+    BoxPainterBase::PaintNormalBoxShadow(paint_info, paint_rect,
+                                         layout_fieldset_.StyleRef());
+    BackgroundImageGeometry geometry(layout_fieldset_);
+    BoxModelObjectPainter(layout_fieldset_)
+        .PaintFillLayers(paint_info, box_decoration_data.background_color,
+                         layout_fieldset_.StyleRef().BackgroundLayers(),
+                         paint_rect, geometry);
+    BoxPainterBase::PaintInsetBoxShadowWithBorderRect(
+        paint_info, paint_rect, layout_fieldset_.StyleRef());
 
-  BoxPainterBase::PaintNormalBoxShadow(paint_info, paint_rect,
-                                       layout_fieldset_.StyleRef());
-  BackgroundImageGeometry geometry(layout_fieldset_);
-  BoxModelObjectPainter(layout_fieldset_)
-      .PaintFillLayers(paint_info, box_decoration_data.background_color,
-                       layout_fieldset_.StyleRef().BackgroundLayers(),
-                       paint_rect, geometry);
-  BoxPainterBase::PaintInsetBoxShadowWithBorderRect(
-      paint_info, paint_rect, layout_fieldset_.StyleRef());
+    if (box_decoration_data.has_border_decoration) {
+      // Create a clipping region around the legend and paint the border as
+      // normal
+      GraphicsContext& graphics_context = paint_info.context;
+      GraphicsContextStateSaver state_saver(graphics_context);
 
-  if (!box_decoration_data.has_border_decoration)
-    return;
+      LayoutRect legend_cutout_rect = fieldset_paint_info.legend_cutout_rect;
+      legend_cutout_rect.MoveBy(paint_offset);
+      graphics_context.ClipOut(PixelSnappedIntRect(legend_cutout_rect));
 
-  // Create a clipping region around the legend and paint the border as normal
-  GraphicsContext& graphics_context = paint_info.context;
-  GraphicsContextStateSaver state_saver(graphics_context);
+      Node* node = nullptr;
+      const LayoutObject* layout_object = &layout_fieldset_;
+      for (; layout_object && !node; layout_object = layout_object->Parent())
+        node = layout_object->GeneratingNode();
+      BoxPainterBase::PaintBorder(
+          layout_fieldset_, layout_fieldset_.GetDocument(), node, paint_info,
+          paint_rect, layout_fieldset_.StyleRef());
+    }
+  }
 
-  LayoutRect legend_cutout_rect = fieldset_paint_info.legend_cutout_rect;
-  legend_cutout_rect.MoveBy(paint_offset);
-  graphics_context.ClipOut(PixelSnappedIntRect(legend_cutout_rect));
-
-  Node* node = nullptr;
-  const LayoutObject* layout_object = &layout_fieldset_;
-  for (; layout_object && !node; layout_object = layout_object->Parent())
-    node = layout_object->GeneratingNode();
-  BoxPainterBase::PaintBorder(layout_fieldset_, layout_fieldset_.GetDocument(),
-                              node, paint_info, paint_rect,
-                              layout_fieldset_.StyleRef());
+  if (RuntimeEnabledFeatures::PaintTouchActionRectsEnabled()) {
+    BoxPainter(layout_fieldset_)
+        .RecordHitTestData(paint_info, paint_offset, paint_rect);
+  }
 }
 
 void FieldsetPainter::PaintMask(const PaintInfo& paint_info,

@@ -39,16 +39,30 @@ namespace absl {
 // Function Template: WrapUnique()
 // -----------------------------------------------------------------------------
 //
-//  Adopts ownership from a raw pointer and transfers it to the returned
-//  `std::unique_ptr`, whose type is deduced. DO NOT specify the template type T
-//  when calling WrapUnique.
+// Adopts ownership from a raw pointer and transfers it to the returned
+// `std::unique_ptr`, whose type is deduced. Because of this deduction, *do not*
+// specify the template type `T` when calling `WrapUnique`.
 //
 // Example:
 //   X* NewX(int, int);
 //   auto x = WrapUnique(NewX(1, 2));  // 'x' is std::unique_ptr<X>.
 //
-// `absl::WrapUnique` is useful for capturing the output of a raw pointer
-// factory. However, prefer 'absl::make_unique<T>(args...) over
+// The purpose of WrapUnique is to automatically deduce the pointer type. If you
+// wish to make the type explicit, for readability reasons or because you prefer
+// to use a base-class pointer rather than a derived one, just use
+// `std::unique_ptr` directly.
+//
+// Example:
+//   X* Factory(int, int);
+//   auto x = std::unique_ptr<X>(Factory(1, 2));
+//                  - or -
+//   std::unique_ptr<X> x(Factory(1, 2));
+//
+// This has the added advantage of working whether Factory returns a raw
+// pointer or a `std::unique_ptr`.
+//
+// While `absl::WrapUnique` is useful for capturing the output of a raw
+// pointer factory, prefer 'absl::make_unique<T>(args...)' over
 // 'absl::WrapUnique(new T(args...))'.
 //
 //   auto x = WrapUnique(new X(1, 2));  // works, but nonideal.
@@ -641,55 +655,59 @@ struct default_allocator_is_nothrow : std::false_type {};
 #endif
 
 namespace memory_internal {
-#ifdef ABSL_HAVE_EXCEPTIONS
-template <typename Allocator, typename StorageElement, typename... Args>
-void ConstructStorage(Allocator* alloc, StorageElement* first,
-                      StorageElement* last, const Args&... args) {
-  for (StorageElement* cur = first; cur != last; ++cur) {
+#ifdef ABSL_HAVE_EXCEPTIONS  // ConstructRange
+template <typename Allocator, typename Iterator, typename... Args>
+void ConstructRange(Allocator& alloc, Iterator first, Iterator last,
+                    const Args&... args) {
+  for (Iterator cur = first; cur != last; ++cur) {
     try {
-      std::allocator_traits<Allocator>::construct(*alloc, cur, args...);
+      std::allocator_traits<Allocator>::construct(alloc, cur, args...);
     } catch (...) {
       while (cur != first) {
         --cur;
-        std::allocator_traits<Allocator>::destroy(*alloc, cur);
+        std::allocator_traits<Allocator>::destroy(alloc, cur);
       }
       throw;
     }
   }
 }
-template <typename Allocator, typename StorageElement, typename Iterator>
-void CopyToStorageFromRange(Allocator* alloc, StorageElement* destination,
-                            Iterator first, Iterator last) {
-  for (StorageElement* cur = destination; first != last;
+#else   // ABSL_HAVE_EXCEPTIONS  // ConstructRange
+template <typename Allocator, typename Iterator, typename... Args>
+void ConstructRange(Allocator& alloc, Iterator first, Iterator last,
+                    const Args&... args) {
+  for (; first != last; ++first) {
+    std::allocator_traits<Allocator>::construct(alloc, first, args...);
+  }
+}
+#endif  // ABSL_HAVE_EXCEPTIONS  // ConstructRange
+
+#ifdef ABSL_HAVE_EXCEPTIONS  // CopyRange
+template <typename Allocator, typename Iterator, typename InputIterator>
+void CopyRange(Allocator& alloc, Iterator destination, InputIterator first,
+               InputIterator last) {
+  for (Iterator cur = destination; first != last;
        static_cast<void>(++cur), static_cast<void>(++first)) {
     try {
-      std::allocator_traits<Allocator>::construct(*alloc, cur, *first);
+      std::allocator_traits<Allocator>::construct(alloc, cur, *first);
     } catch (...) {
       while (cur != destination) {
         --cur;
-        std::allocator_traits<Allocator>::destroy(*alloc, cur);
+        std::allocator_traits<Allocator>::destroy(alloc, cur);
       }
       throw;
     }
   }
 }
-#else   // ABSL_HAVE_EXCEPTIONS
-template <typename Allocator, typename StorageElement, typename... Args>
-void ConstructStorage(Allocator* alloc, StorageElement* first,
-                      StorageElement* last, const Args&... args) {
-  for (; first != last; ++first) {
-    std::allocator_traits<Allocator>::construct(*alloc, first, args...);
-  }
-}
-template <typename Allocator, typename StorageElement, typename Iterator>
-void CopyToStorageFromRange(Allocator* alloc, StorageElement* destination,
-                            Iterator first, Iterator last) {
+#else   // ABSL_HAVE_EXCEPTIONS  // CopyRange
+template <typename Allocator, typename Iterator, typename InputIterator>
+void CopyRange(Allocator& alloc, Iterator destination, InputIterator first,
+               InputIterator last) {
   for (; first != last;
        static_cast<void>(++destination), static_cast<void>(++first)) {
-    std::allocator_traits<Allocator>::construct(*alloc, destination, *first);
+    std::allocator_traits<Allocator>::construct(alloc, destination, *first);
   }
 }
-#endif  // ABSL_HAVE_EXCEPTIONS
+#endif  // ABSL_HAVE_EXCEPTIONS  // CopyRange
 }  // namespace memory_internal
 }  // namespace absl
 

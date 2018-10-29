@@ -4,12 +4,10 @@
 
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/optional.h"
-#include "base/rand_util.h"
 #include "components/crash/content/browser/crash_dump_manager_android.h"
 
 namespace crash_reporter {
@@ -149,15 +147,14 @@ void CrashMetricsReporter::CrashDumpProcessed(
   const uint64_t vm_size_kb = info.blink_oom_metrics.current_vm_size_kb;
   const uint64_t blink_usage_kb = info.blink_oom_metrics.current_blink_usage_kb;
 
-  if (info.process_type == content::PROCESS_TYPE_GPU && app_foreground &&
-      android_oom_kill) {
-    constexpr int kCrashDumpFrequency = 20;
-    if (base::RandInt(1, kCrashDumpFrequency) == kCrashDumpFrequency) {
-      // Diagnostic crash dump to investigate crbug.com/879259.
-      base::debug::DumpWithoutCrashing();
+  if (app_foreground && android_oom_kill) {
+    if (info.process_type == content::PROCESS_TYPE_GPU) {
+      ReportCrashCount(ProcessedCrashCounts::kGpuForegroundOom,
+                       &reported_counts);
+    } else if (info.process_type == content::PROCESS_TYPE_UTILITY) {
+      ReportCrashCount(ProcessedCrashCounts::kUtilityForegroundOom,
+                       &reported_counts);
     }
-
-    ReportCrashCount(ProcessedCrashCounts::kGpuForegroundOom, &reported_counts);
   }
 
   if (info.process_type == content::PROCESS_TYPE_RENDERER &&
@@ -271,10 +268,15 @@ void CrashMetricsReporter::CrashDumpProcessed(
   }
 
   if (has_valid_dump) {
-    ReportCrashCount(info.process_type == content::PROCESS_TYPE_GPU
-                         ? ProcessedCrashCounts::kGpuCrashAll
-                         : ProcessedCrashCounts::kRendererCrashAll,
-                     &reported_counts);
+    if (info.process_type == content::PROCESS_TYPE_RENDERER) {
+      ReportCrashCount(ProcessedCrashCounts::kRendererCrashAll,
+                       &reported_counts);
+    } else if (info.process_type == content::PROCESS_TYPE_GPU) {
+      ReportCrashCount(ProcessedCrashCounts::kGpuCrashAll, &reported_counts);
+    } else if (info.process_type == content::PROCESS_TYPE_UTILITY) {
+      ReportCrashCount(ProcessedCrashCounts::kUtilityCrashAll,
+                       &reported_counts);
+    }
   }
 
   if (app_foreground && android_oom_kill &&

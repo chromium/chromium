@@ -3344,5 +3344,34 @@ TEST_F(DecodedImageTrackerTileManagerTest, DecodedImageTrackerDropsLocksOnUse) {
                     .NumLockedImagesForTesting());
 }
 
+class TileManagerCheckRasterQueriesTest : public TileManagerTest {
+ public:
+  void SetUp() override {
+    TileManagerTest::SetUp();
+    host_impl()->tile_manager()->SetRasterBufferProviderForTesting(
+        &raster_buffer_provider_);
+  }
+
+ protected:
+  class MockRasterBufferProvider : public FakeRasterBufferProviderImpl {
+   public:
+    MOCK_METHOD0(CheckRasterFinishedQueries, bool());
+  };
+
+  MockRasterBufferProvider raster_buffer_provider_;
+};
+
+TEST_F(TileManagerCheckRasterQueriesTest,
+       ChecksRasterQueriesInAllTilesDoneTask) {
+  base::RunLoop run_loop;
+  EXPECT_FALSE(host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+  EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
+      .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(raster_buffer_provider_, CheckRasterFinishedQueries()).Times(1);
+  host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+  EXPECT_TRUE(host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+  run_loop.Run();
+}
+
 }  // namespace
 }  // namespace cc

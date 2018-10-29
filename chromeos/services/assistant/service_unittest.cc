@@ -142,6 +142,7 @@ class FakeDeviceActions : mojom::DeviceActions {
     std::move(callback).Run(true, 1.0);
   }
   void SetScreenBrightnessLevel(double level, bool gradual) override {}
+  void SetNightLightEnabled(bool enabled) override {}
 
   mojo::Binding<mojom::DeviceActions> binding_;
 
@@ -176,7 +177,8 @@ class ServiceTestClient : public service_manager::test::ServiceTestClient,
       const std::string& name,
       service_manager::mojom::PIDReceiverPtr pid_receiver) override {
     if (name == mojom::kServiceName) {
-      auto service = std::make_unique<chromeos::assistant::Service>();
+      auto service = std::make_unique<chromeos::assistant::Service>(
+          nullptr /* network_connection_tracker */);
 
       auto mock_timer = std::make_unique<base::OneShotTimer>(
           mock_task_runner_->GetMockTickClock());

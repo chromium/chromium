@@ -75,8 +75,8 @@ const CSSValue* ParseCSSValue(const ExecutionContext* context,
                               const String& value,
                               AtRuleDescriptorID descriptor_id) {
   CSSParserContext* parser_context =
-      context->IsDocument() ? CSSParserContext::Create(*ToDocument(context))
-                            : CSSParserContext::Create(*context);
+      IsA<Document>(context) ? CSSParserContext::Create(*To<Document>(context))
+                             : CSSParserContext::Create(*context);
   return AtRuleDescriptorParser::ParseFontFaceDescriptor(descriptor_id, value,
                                                          *parser_context);
 }
@@ -455,7 +455,7 @@ void FontFace::SetLoadStatus(LoadStatusType status) {
 void FontFace::RunCallbacks() {
   HeapVector<Member<LoadFontCallback>> callbacks;
   callbacks_.swap(callbacks);
-  for (size_t i = 0; i < callbacks.size(); ++i) {
+  for (wtf_size_t i = 0; i < callbacks.size(); ++i) {
     if (status_ == kLoaded)
       callbacks[i]->NotifyLoaded(this);
     else
@@ -695,8 +695,7 @@ bool ContextAllowsDownload(ExecutionContext* context) {
   if (!context) {
     return false;
   }
-  if (context->IsDocument()) {
-    const Document* document = ToDocument(context);
+  if (const Document* document = DynamicTo<Document>(context)) {
     const Settings* settings = document->GetSettings();
     return settings && settings->GetDownloadableBinaryFontsEnabled();
   }
@@ -724,11 +723,10 @@ void FontFace::InitCSSFontFace(ExecutionContext* context, const CSSValue& src) {
     if (!item.IsLocal()) {
       if (ContextAllowsDownload(context) && item.IsSupportedFormat()) {
         FontSelector* font_selector = nullptr;
-        if (context->IsDocument()) {
-          font_selector =
-              ToDocument(context)->GetStyleEngine().GetFontSelector();
-        } else if (context->IsWorkerGlobalScope()) {
-          font_selector = ToWorkerGlobalScope(context)->GetFontSelector();
+        if (auto* document = DynamicTo<Document>(context)) {
+          font_selector = document->GetStyleEngine().GetFontSelector();
+        } else if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
+          font_selector = scope->GetFontSelector();
         } else {
           NOTREACHED();
         }

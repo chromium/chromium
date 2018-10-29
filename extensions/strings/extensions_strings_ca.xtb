@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">No s'ha pogut llegir la clau privada.</translation>
 <translation id="6391538222494443604">El directori d'entrada ha d'existir.</translation>
 <translation id="641087317769093025">No s'ha pogut descomprimir l'extensió</translation>
+<translation id="6413453408918378296">La icona <ph name="ICON" /> no és prou visible.</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> sol·licita accés a un o més dels teus dispositius:</translation>
 <translation id="657064425229075395">No s'ha pogut carregar l'script en segon pla "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>

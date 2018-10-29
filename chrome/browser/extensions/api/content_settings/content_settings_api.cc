@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -35,6 +36,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/common/webplugininfo.h"
@@ -330,8 +332,7 @@ void ContentSettingsContentSettingGetResourceIdentifiersFunction::OnGotPlugins(
   PluginFinder* finder = PluginFinder::GetInstance();
   std::set<std::string> group_identifiers;
   std::unique_ptr<base::ListValue> list(new base::ListValue());
-  for (std::vector<content::WebPluginInfo>::const_iterator it = plugins.begin();
-       it != plugins.end(); ++it) {
+  for (auto it = plugins.cbegin(); it != plugins.cend(); ++it) {
     std::unique_ptr<PluginMetadata> plugin_metadata(
         finder->GetPluginMetadata(*it));
     const std::string& group_identifier = plugin_metadata->identifier();
@@ -346,8 +347,8 @@ void ContentSettingsContentSettingGetResourceIdentifiersFunction::OnGotPlugins(
     list->Append(std::move(dict));
   }
   SetResult(std::move(list));
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &ContentSettingsContentSettingGetResourceIdentifiersFunction::
               SendResponse,

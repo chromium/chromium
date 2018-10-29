@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL onerror + ErrorEvent + Window assert_equals: expected 5 but got 1
-FAIL onerror + !ErrorEvent + Window assert_equals: expected 5 but got 1
-PASS onerror + Document
-Harness: the test ran to completion.
-

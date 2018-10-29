@@ -79,12 +79,10 @@ class MockDRTPortTest(port_testcase.PortTestCase):
 
 class MockDRTTest(unittest.TestCase):
 
-    def input_line(self, port, test_name, pixel_tests, checksum=None):
+    def input_line(self, port, test_name, checksum=None):
         url = port.create_driver(0).test_to_uri(test_name)
         if url.startswith('file://'):
             url = url[len('file://'):]
-        if pixel_tests:
-            url += "'--pixel-test"
         if checksum:
             url += "'" + checksum
         return url + '\n'
@@ -92,39 +90,38 @@ class MockDRTTest(unittest.TestCase):
     def make_drt(self, options, args, host, stdin, stdout, stderr):
         return mock_drt.MockDRT(options, args, host, stdin, stdout, stderr)
 
-    def make_input_output(self, port, test_name, pixel_tests,
-                          expected_checksum, drt_output, drt_input=None, expected_text=None):
-        if pixel_tests:
-            if not expected_checksum:
-                expected_checksum = port.expected_checksum(test_name)
+    def make_input_output(self, port, test_name, expected_checksum, drt_output,
+                          drt_input=None, expected_text=None):
+        if not expected_checksum:
+            expected_checksum = port.expected_checksum(test_name)
         if not drt_input:
-            drt_input = self.input_line(port, test_name, pixel_tests, expected_checksum)
+            drt_input = self.input_line(port, test_name, expected_checksum)
         text_output = expected_text or port.expected_text(test_name) or ''
 
         if not drt_output:
-            drt_output = self.expected_output(port, test_name, pixel_tests,
+            drt_output = self.expected_output(port, test_name,
                                               text_output, expected_checksum)
         return (drt_input, drt_output)
 
-    def expected_output(self, port, test_name, pixel_tests, text_output, expected_checksum):
+    def expected_output(self, port, test_name, text_output, expected_checksum):
         output = ['#READY\n', 'Content-Type: text/plain\n']
         if text_output:
             output.append(text_output)
         output.append('#EOF\n')
-        if pixel_tests and expected_checksum:
+        if expected_checksum:
             output.extend(['\n',
                            'ActualHash: %s\n' % expected_checksum,
                            'ExpectedHash: %s\n' % expected_checksum])
         output.append('#EOF\n')
         return output
 
-    def assertTest(self, test_name, pixel_tests, expected_checksum=None, drt_output=None, host=None, expected_text=None):
+    def assertTest(self, test_name, expected_checksum=None, drt_output=None, host=None, expected_text=None):
         port_name = 'test'
         host = host or MockSystemHost()
         test.add_unit_tests_to_mock_filesystem(host.filesystem)
         port = PortFactory(host).get(port_name)
         drt_input, drt_output = self.make_input_output(
-            port, test_name, pixel_tests, expected_checksum, drt_output, drt_input=None, expected_text=expected_text)
+            port, test_name, expected_checksum, drt_output, drt_input=None, expected_text=expected_text)
 
         args = ['--run-web-tests', '--platform', port_name, '-']
         stdin = io.BytesIO(drt_input)
@@ -155,11 +152,10 @@ class MockDRTTest(unittest.TestCase):
 
     def test_pixeltest_passes(self):
         # This also tests that we handle HTTP: test URLs properly.
-        self.assertTest('http/tests/passes/text.html', True)
+        self.assertTest('http/tests/passes/text.html')
 
     def test_pixeltest__fails(self):
         self.assertTest('failures/expected/image_checksum.html',
-                        pixel_tests=True,
                         expected_checksum='image_checksum-checksum',
                         drt_output=[
                             '#READY\n',
@@ -173,20 +169,19 @@ class MockDRTTest(unittest.TestCase):
                         ])
 
     def test_textonly(self):
-        self.assertTest('passes/image.html', False)
+        self.assertTest('passes/image.html')
 
     def test_checksum_in_png(self):
-        self.assertTest('passes/checksum_in_image.html', True)
+        self.assertTest('passes/checksum_in_image.html')
 
     def test_reftest_match(self):
-        self.assertTest('passes/reftest.html', True, expected_checksum='mock-checksum', expected_text='reference text\n')
+        self.assertTest('passes/reftest.html', expected_checksum='mock-checksum', expected_text='reference text\n')
 
     def test_reftest_mismatch(self):
-        self.assertTest('passes/mismatch.html', True, expected_checksum='mock-checksum', expected_text='reference text\n')
+        self.assertTest('passes/mismatch.html', expected_checksum='mock-checksum', expected_text='reference text\n')
 
     def test_audio(self):
         self.assertTest('passes/audio.html',
-                        pixel_tests=True,
                         drt_output=[
                             '#READY\n',
                             'Content-Type: audio/wav\n',
@@ -198,4 +193,4 @@ class MockDRTTest(unittest.TestCase):
                         ])
 
     def test_virtual(self):
-        self.assertTest('virtual/passes/text.html', True)
+        self.assertTest('virtual/passes/text.html')

@@ -270,8 +270,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
       }
 
       std::string favicon_string;
-      BookmarkFaviconFetcher::URLFaviconMap::iterator itr =
-          favicons_map_->find(url_string);
+      auto itr = favicons_map_->find(url_string);
       if (itr != favicons_map_->end()) {
         scoped_refptr<base::RefCountedMemory> data(itr->second.get());
         std::string favicon_base64_encoded;

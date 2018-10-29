@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "ui/views/focus/focus_manager.h"
@@ -65,8 +64,6 @@ class ToolbarViewInteractiveUITest : public extensions::ExtensionBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
-
-  test::ScopedMacViewsBrowserMode views_mode_{true};
 
   ToolbarView* toolbar_view_;
 
@@ -194,8 +191,6 @@ class ToolbarViewTest : public InProcessBrowserTest {
   void RunToolbarCycleFocusTest(Browser* browser);
 
  private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
-
   DISALLOW_COPY_AND_ASSIGN(ToolbarViewTest);
 };
 

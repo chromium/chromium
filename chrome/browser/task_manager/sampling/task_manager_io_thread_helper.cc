@@ -4,8 +4,10 @@
 
 #include "chrome/browser/task_manager/sampling/task_manager_io_thread_helper.h"
 
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace task_manager {
@@ -29,8 +31,8 @@ IoThreadHelperManager::IoThreadHelperManager(
     BytesTransferredCallback result_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&TaskManagerIoThreadHelper::CreateInstance,
                  std::move(result_callback)));
 }
@@ -42,9 +44,8 @@ IoThreadHelperManager::~IoThreadHelperManager() {
       content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
       !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&TaskManagerIoThreadHelper::DeleteInstance));
 }
 
@@ -90,8 +91,8 @@ void TaskManagerIoThreadHelper::OnMultipleBytesTransferredIO() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!bytes_transferred_unordered_map_.empty());
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(result_callback_,
                  std::move(bytes_transferred_unordered_map_)));
   bytes_transferred_unordered_map_.clear();

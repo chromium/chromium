@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_TESTING_PLATFORM_SUPPORT_WITH_MOCK_SCHEDULER_H_
 
 #include <memory>
-#include "third_party/blink/public/platform/web_thread.h"
+#include "base/test/test_mock_time_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/testing/scoped_main_thread_overrider.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/noncopyable.h"
 
@@ -35,10 +37,11 @@ class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
   TestingPlatformSupportWithMockScheduler();
   ~TestingPlatformSupportWithMockScheduler() override;
 
-  // Platform:
-  std::unique_ptr<WebThread> CreateThread(
-      const WebThreadCreationParams&) override;
-  WebThread* CurrentThread() override;
+  std::unique_ptr<Thread> CreateMainThread();
+
+  scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner() {
+    return test_task_runner_;
+  }
 
   // Runs a single task.
   void RunSingleTask();
@@ -77,7 +80,7 @@ class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
   std::unique_ptr<scheduler::MainThreadSchedulerImpl> scheduler_;
   base::sequence_manager::SequenceManager*
       sequence_manager_;  // Owned by scheduler_.
-  std::unique_ptr<WebThread> thread_;
+  std::unique_ptr<ScopedMainThreadOverrider> main_thread_overrider_;
 };
 
 }  // namespace blink

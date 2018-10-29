@@ -420,8 +420,8 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
     const uint8_t kColorByte = 255;
     std::vector<uint8_t> filled_bitmap(
         desired_width * kColorChannels * height, kColorByte);
-    std::vector<uint8_t>::iterator filled_bitmap_it = filled_bitmap.begin();
-    std::vector<uint8_t>::iterator bitmap_it = bitmap->begin();
+    auto filled_bitmap_it = filled_bitmap.begin();
+    auto bitmap_it = bitmap->begin();
 
     for (int i = 0; i < height; ++i) {
       std::copy(

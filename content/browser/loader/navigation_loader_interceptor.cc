@@ -14,10 +14,12 @@ NavigationLoaderInterceptor::MaybeCreateSubresourceLoaderParams() {
 }
 
 bool NavigationLoaderInterceptor::MaybeCreateLoaderForResponse(
+    const GURL& request_url,
     const network::ResourceResponseHead& response,
     network::mojom::URLLoaderPtr* loader,
     network::mojom::URLLoaderClientRequest* client_request,
-    ThrottlingURLLoader* url_loader) {
+    ThrottlingURLLoader* url_loader,
+    bool* skip_other_interceptors) {
   return false;
 }
 

@@ -18,8 +18,11 @@
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_factory.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/history/web_history_service_factory.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -248,15 +251,27 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
         checked_other_types);
   }
 
+  // If Sync is running, prevent it from being paused during the operation.
+  // However, if Sync is in error, clearing cookies should pause it.
+  std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion>
+      scoped_data_deletion;
+  sync_ui_util::MessageType sync_status = sync_ui_util::GetStatus(
+      profile_, sync_service_, *SigninManagerFactory::GetForProfile(profile_));
+  if (sync_status == sync_ui_util::SYNCED) {
+    scoped_data_deletion = AccountReconcilorFactory::GetForProfile(profile_)
+                               ->GetScopedSyncDataDeletion();
+  }
+
   int period_selected;
   CHECK(args->GetInteger(2, &period_selected));
 
   content::BrowsingDataRemover* remover =
       content::BrowserContext::GetBrowsingDataRemover(profile_);
 
-  base::OnceClosure callback = base::BindOnce(
-      &ClearBrowsingDataHandler::OnClearingTaskFinished,
-      weak_ptr_factory_.GetWeakPtr(), webui_callback_id, std::move(data_types));
+  base::OnceClosure callback =
+      base::BindOnce(&ClearBrowsingDataHandler::OnClearingTaskFinished,
+                     weak_ptr_factory_.GetWeakPtr(), webui_callback_id,
+                     std::move(data_types), std::move(scoped_data_deletion));
   browsing_data::TimePeriod time_period =
       static_cast<browsing_data::TimePeriod>(period_selected);
 
@@ -275,7 +290,8 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
 void ClearBrowsingDataHandler::OnClearingTaskFinished(
     const std::string& webui_callback_id,
-    const base::flat_set<BrowsingDataType>& data_types) {
+    const base::flat_set<BrowsingDataType>& data_types,
+    std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion) {
   PrefService* prefs = profile_->GetPrefs();
   int notice_shown_times = prefs->GetInteger(
       browsing_data::prefs::kClearBrowsingDataHistoryNoticeShownTimes);
@@ -335,7 +351,8 @@ void ClearBrowsingDataHandler::UpdateSyncState() {
       base::Value(sync_service_ && sync_service_->IsSyncFeatureActive() &&
                   sync_service_->GetActiveDataTypes().Has(
                       syncer::HISTORY_DELETE_DIRECTIVES)),
-      base::Value(ShouldShowCookieException(profile_)));
+      base::Value(
+          browsing_data_counter_utils::ShouldShowCookieException(profile_)));
 }
 
 void ClearBrowsingDataHandler::RefreshHistoryNotice() {
@@ -375,7 +392,8 @@ void ClearBrowsingDataHandler::UpdateCounterText(
   CallJavascriptFunction(
       "cr.webUIListenerCallback", base::Value("update-counter-text"),
       base::Value(result->source()->GetPrefName()),
-      base::Value(GetChromeCounterTextFromResult(result.get(), profile_)));
+      base::Value(browsing_data_counter_utils::GetChromeCounterTextFromResult(
+          result.get(), profile_)));
 }
 
 void ClearBrowsingDataHandler::HandleTimePeriodChanged(

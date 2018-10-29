@@ -56,7 +56,7 @@ class WTF_EXPORT Collator {
 
   static std::unique_ptr<Collator> UserDefault();
 
-  Result Collate(const ::UChar*, size_t, const ::UChar*, size_t) const;
+  Result Collate(const ::UChar*, uint32_t, const ::UChar*, uint32_t) const;
 
  private:
   void CreateCollator() const;

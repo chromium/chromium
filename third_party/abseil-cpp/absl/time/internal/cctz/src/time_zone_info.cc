@@ -286,7 +286,7 @@ bool TimeZoneInfo::EquivTransitions(std::uint_fast8_t tt1_index,
   return true;
 }
 
-// Use the POSIX-TZ-environment-variable-style std::string to handle times
+// Use the POSIX-TZ-environment-variable-style string to handle times
 // in years after the last transition stored in the zoneinfo data.
 void TimeZoneInfo::ExtendTransitions(const std::string& name,
                                      const Header& hdr) {

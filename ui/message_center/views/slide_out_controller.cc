@@ -49,7 +49,6 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
     }
     CaptureControlOpenState();
     RestoreVisualState();
-    delegate_->OnSlideChanged();
     return;
   }
 
@@ -70,6 +69,7 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
       default:
         NOTREACHED();
     }
+    delegate_->OnSlideChanged(true);
   } else if (event->type() == ui::ET_GESTURE_SCROLL_UPDATE) {
     // The scroll-update events include the incremental scroll amount.
     gesture_amount_ += event->details().scroll_x();
@@ -98,10 +98,11 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
         break;
     }
 
-    layer->SetOpacity(opacity);
+    SetOpacityIfNecessary(opacity);
     gfx::Transform transform;
     transform.Translate(scroll_amount, 0.0);
     layer->SetTransform(transform);
+    delegate_->OnSlideChanged(true);
   } else if (event->type() == ui::ET_GESTURE_SCROLL_END) {
     float scrolled_ratio = fabsf(gesture_amount_) / width;
     if (mode_ == SlideMode::FULL &&
@@ -114,7 +115,6 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
     RestoreVisualState();
   }
 
-  delegate_->OnSlideChanged();
   event->SetHandled();
 }
 
@@ -125,6 +125,7 @@ void SlideOutController::RestoreVisualState() {
   ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
   settings.SetTransitionDuration(
       base::TimeDelta::FromMilliseconds(kSwipeRestoreDurationMS));
+  settings.AddObserver(this);
   gfx::Transform transform;
   switch (control_open_state_) {
     case SwipeControlOpenState::CLOSED:
@@ -137,14 +138,26 @@ void SlideOutController::RestoreVisualState() {
       transform.Translate(swipe_control_width_, 0);
       break;
   }
+
+  if (layer->transform() == transform && opacity_ == 1.f) {
+    // Here, nothing are changed and no animation starts. In this case, just
+    // calls OnSlideChanged(in_progress = false) to notify end of horizontal
+    // slide (including animations) to observers.
+    delegate_->OnSlideChanged(false);
+    return;
+  }
+
+  // In this case, animation starts. OnImplicitAnimationsCompleted will be
+  // called just after the animation finishes.
   layer->SetTransform(transform);
-  layer->SetOpacity(1.f);
+  SetOpacityIfNecessary(1.f);
+  delegate_->OnSlideChanged(true);
 }
 
 void SlideOutController::SlideOutAndClose(int direction) {
   ui::Layer* layer = delegate_->GetSlideOutLayer();
   const int kSwipeOutTotalDurationMS = 150;
-  int swipe_out_duration = kSwipeOutTotalDurationMS * layer->opacity();
+  int swipe_out_duration = kSwipeOutTotalDurationMS * opacity_;
   ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
   settings.SetTransitionDuration(
       base::TimeDelta::FromMilliseconds(swipe_out_duration));
@@ -153,22 +166,31 @@ void SlideOutController::SlideOutAndClose(int direction) {
   gfx::Transform transform;
   int width = layer->bounds().width();
   transform.Translate(direction < 0 ? -width : width, 0.0);
+
+  // An animation starts. OnImplicitAnimationsCompleted will be called just
+  // after the animation finishes.
   layer->SetTransform(transform);
-  layer->SetOpacity(0.f);
-  delegate_->OnSlideChanged();
+  SetOpacityIfNecessary(0.f);
+  delegate_->OnSlideChanged(true);
+}
+
+void SlideOutController::SetOpacityIfNecessary(float opacity) {
+  if (update_opacity_)
+    delegate_->GetSlideOutLayer()->SetOpacity(opacity);
+  opacity_ = opacity;
 }
 
 void SlideOutController::OnImplicitAnimationsCompleted() {
-  delegate_->OnSlideChanged();
-  delegate_->OnSlideOut();
+  delegate_->OnSlideChanged(false);
+
+  // Call Delegate::OnSlideOut() if this animation came from SlideOutAndClose().
+  if (opacity_ == 0)
+    delegate_->OnSlideOut();
 }
 
-void SlideOutController::EnableSwipeControl(int button_count) {
-  DCHECK(button_count > 0);
-  swipe_control_width_ =
-      kSwipeControlButtonSize * button_count +
-      kSwipeControlButtonHorizontalMargin * (button_count + 1);
-  has_swipe_control_ = true;
+void SlideOutController::SetSwipeControlWidth(int swipe_control_width) {
+  swipe_control_width_ = swipe_control_width;
+  has_swipe_control_ = (swipe_control_width != 0);
 }
 
 void SlideOutController::CloseSwipeControl() {

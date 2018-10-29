@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/config/jumbo.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 group("common") {
@@ -17,7 +18,7 @@ group("common") {
   }
 }
 
-source_set("internal") {
+jumbo_source_set("internal") {
   visibility = [ "//components/policy/*" ]
 
   configs += [ "//components/policy:component_implementation" ]
@@ -36,8 +37,6 @@ source_set("internal") {
     "cloud/cloud_policy_client.h",
     "cloud/cloud_policy_client_registration_helper.cc",
     "cloud/cloud_policy_client_registration_helper.h",
-    "cloud/cloud_policy_constants.cc",
-    "cloud/cloud_policy_constants.h",
     "cloud/cloud_policy_core.cc",
     "cloud/cloud_policy_core.h",
     "cloud/cloud_policy_manager.cc",
@@ -114,8 +113,6 @@ source_set("internal") {
     "policy_map.h",
     "policy_namespace.cc",
     "policy_namespace.h",
-    "policy_pref_names.cc",
-    "policy_pref_names.h",
     "policy_proto_decoders.cc",
     "policy_proto_decoders.h",
     "policy_service.cc",
@@ -124,9 +121,6 @@ source_set("internal") {
     "policy_service_impl.h",
     "policy_statistics_collector.cc",
     "policy_statistics_collector.h",
-    "policy_switches.cc",
-    "policy_switches.h",
-    "policy_types.h",
     "preferences_mac.cc",
     "preferences_mac.h",
     "remote_commands/remote_command_job.cc",
@@ -151,6 +145,7 @@ source_set("internal") {
   configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
+    ":common_constants",
     "//components/policy:generated",
     "//components/policy/proto",
   ]
@@ -165,6 +160,8 @@ source_set("internal") {
     "//extensions/buildflags",
     "//google_apis",
     "//net",
+    "//services/identity/public/cpp",
+    "//services/identity/public/cpp:cpp_types",
     "//services/network/public/cpp",
     "//third_party/libxml",
     "//third_party/re2",
@@ -242,7 +239,7 @@ source_set("internal") {
   }
 }
 
-static_library("test_support") {
+jumbo_static_library("test_support") {
   testonly = true
   sources = [
     "cloud/mock_cloud_external_data_manager.cc",
@@ -300,6 +297,23 @@ static_library("test_support") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+source_set("common_constants") {
+  configs += [ "//components/policy:component_implementation" ]
+  deps = [
+    "//base",
+  ]
+  sources = [
+    "../../policy_export.h",
+    "cloud/cloud_policy_constants.cc",
+    "cloud/cloud_policy_constants.h",
+    "policy_pref_names.cc",
+    "policy_pref_names.h",
+    "policy_switches.cc",
+    "policy_switches.h",
+    "policy_types.h",
   ]
 }
 

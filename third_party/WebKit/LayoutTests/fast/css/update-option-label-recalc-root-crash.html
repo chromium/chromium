@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<select>
+  <option id="opt">Content</option>
+</select>
+<script>
+  test(() => {
+    opt.appendChild(document.createElement("span"));
+    document.body.offsetTop;
+    // Mark for style recalc and make the span the recalc root.
+    opt.lastChild.style.color = "pink";
+    // Trigger HTMLOptionElement::UpdateLabel() which removes option UA shadow children.
+    opt.innerHTML = "";
+  }, "Should not cause DCHECK failures or crashes.");
+</script>

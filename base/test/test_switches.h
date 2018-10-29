@@ -19,6 +19,7 @@ extern const char kTestLauncherJobs[];
 extern const char kTestLauncherListTests[];
 extern const char kTestLauncherOutput[];
 extern const char kTestLauncherRetryLimit[];
+extern const char kIsolatedScriptTestLauncherRetryLimit[];
 extern const char kTestLauncherSummaryOutput[];
 extern const char kTestLauncherPrintTestStdio[];
 extern const char kTestLauncherPrintWritablePath[];

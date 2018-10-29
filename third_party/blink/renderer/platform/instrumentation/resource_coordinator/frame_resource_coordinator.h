@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_RESOURCE_COORDINATOR_FRAME_RESOURCE_COORDINATOR_H_
 
 #include "services/resource_coordinator/public/mojom/coordination_unit.mojom-blink.h"
-#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/blink_resource_coordinator_base.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/noncopyable.h"
 
 namespace service_manager {
 class InterfaceProvider;
@@ -14,16 +15,17 @@ class InterfaceProvider;
 
 namespace blink {
 
-class PLATFORM_EXPORT FrameResourceCoordinator final
-    : public BlinkResourceCoordinatorBase {
+class PLATFORM_EXPORT FrameResourceCoordinator final {
   WTF_MAKE_NONCOPYABLE(FrameResourceCoordinator);
 
  public:
-  static FrameResourceCoordinator* Create(service_manager::InterfaceProvider*);
+  static std::unique_ptr<FrameResourceCoordinator> Create(
+      service_manager::InterfaceProvider*);
   ~FrameResourceCoordinator();
 
   void SetNetworkAlmostIdle(bool);
   void SetLifecycleState(resource_coordinator::mojom::LifecycleState);
+  void SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload);
   void OnNonPersistentNotificationCreated();
 
  private:

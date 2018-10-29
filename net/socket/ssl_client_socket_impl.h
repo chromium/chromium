@@ -53,10 +53,6 @@ class SSLCertRequestInfo;
 class SSLInfo;
 class SSLKeyLogger;
 
-using TokenBindingSignatureMap =
-    base::MRUCache<std::pair<TokenBindingType, std::string>,
-                   std::vector<uint8_t>>;
-
 class SSLClientSocketImpl : public SSLClientSocket,
                             public SocketBIOAdapter::Delegate {
  public:
@@ -107,9 +103,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const override;
   ChannelIDService* GetChannelIDService() const override;
-  Error GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                 TokenBindingType tb_type,
-                                 std::vector<uint8_t>* out) override;
   crypto::ECPrivateKey* GetChannelIDKey() const override;
 
   void ApplySocketTag(const SocketTag& tag) override;
@@ -219,13 +212,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
                        const void* buf,
                        size_t len);
 
-  int TokenBindingAdd(const uint8_t** out,
-                      size_t* out_len,
-                      int* out_alert_value);
-  int TokenBindingParse(const uint8_t* contents,
-                        size_t contents_len,
-                        int* out_alert_value);
-
   void LogConnectEndEvent(int rv);
 
   // Record whether ALPN was used, and if so, the negotiated protocol,
@@ -287,7 +273,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // The service for retrieving Channel ID keys.  May be NULL.
   ChannelIDService* channel_id_service_;
-  TokenBindingSignatureMap tb_signature_map_;
 
   // OpenSSL stuff
   bssl::UniquePtr<SSL> ssl_;

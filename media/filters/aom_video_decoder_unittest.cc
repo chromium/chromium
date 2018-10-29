@@ -90,8 +90,8 @@ class AomVideoDecoderTest : public testing::Test {
   // output frames into |output_frames|. Returns the last decode status returned
   // by the decoder.
   DecodeStatus DecodeMultipleFrames(const InputBuffers& input_buffers) {
-    for (InputBuffers::const_iterator iter = input_buffers.begin();
-         iter != input_buffers.end(); ++iter) {
+    for (auto iter = input_buffers.begin(); iter != input_buffers.end();
+         ++iter) {
       DecodeStatus status = Decode(*iter);
       switch (status) {
         case DecodeStatus::OK:

@@ -11,7 +11,7 @@ namespace offline_pages {
 namespace {
 
 const char kNamespace[] = "last_n";
-const Offliner::RequestStatus kOfflinerStatus = Offliner::SAVED;
+const Offliner::RequestStatus kOfflinerStatus = Offliner::RequestStatus::SAVED;
 const RequestNotifier::BackgroundSavePageResult kDroppedResult =
     RequestNotifier::BackgroundSavePageResult::START_COUNT_EXCEEDED;
 const int64_t kId = 1234;

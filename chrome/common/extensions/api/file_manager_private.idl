@@ -629,6 +629,17 @@ dictionary Provider {
   manifestTypes.FileSystemProviderSource source;
 };
 
+// Information about a Linux package in response to GetLinuxPackageInfo.
+dictionary LinuxPackageInfo {
+  DOMString name;
+  DOMString version;
+
+  // A one-line summary of the project. Almost always present.
+  DOMString? summary;
+  // A longer description of the project. Almost always present.
+  DOMString? description;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -740,10 +751,17 @@ callback GetRecentFilesCallback = void([instanceOf=Entry] object[] entries);
 callback GetCrostiniSharedPathsCallback =
     void([instanceOf = Entry] object[] entries);
 
+// |linux_package_info| Package info for the queried package.
+callback GetLinuxPackageInfoCallback =
+    void(LinuxPackageInfo linux_package_info);
+
 // |status| Result of starting the install
 // |failure_reason| Reason for failure for a 'failed' status
 callback InstallLinuxPackageCallback = void(
     InstallLinuxPackageResponse response, DOMString failure_reason);
+
+// |result| String representing the detected coding system.
+callback DetectCharacterEncodingCallback = void(DOMString result);
 
 // |thumbnailDataUrl| A data URL for the thumbnail as a PNG; |thumbnailDataUrl|
 // is empty if no thumbnail was available.
@@ -1113,15 +1131,21 @@ interface Functions {
   static void mountCrostini(SimpleCallback callback);
 
   // Shares directory with crostini container.
-  // |entry| Entry of the directory to share.
+  // |entries| Entries of the files or directories to share.
+  // |persist| If true, shares will persist across restarts.
   // |callback|
   [nocompile]
-  static void sharePathWithCrostini(
-      [instanceof=DirectoryEntry] object entry, SimpleCallback callback);
+  static void sharePathsWithCrostini(
+      [instanceof=Entry] object[] entries, boolean persist, SimpleCallback callback);
 
   // Returns list of paths shared with crostini container.
   [nocompile]
   static void getCrostiniSharedPaths(GetCrostiniSharedPathsCallback callback);
+
+  // Requests information about a Linux package. |entry| is a .deb file.
+  [nocompile]
+  static void getLinuxPackageInfo([instanceof=Entry] object entry,
+                                  GetLinuxPackageInfoCallback callback);
 
   // Starts installation of a Linux package.
   [nocompile]
@@ -1135,6 +1159,15 @@ interface Functions {
   static void getThumbnail([instanceOf=FileEntry] object entry,
                            boolean cropToSquare,
                            GetThumbnailCallback callback);
+
+  // Returns a guessed character encoding of a hex-encoded string. Every 2
+  // characters of |bytes| represent one byte by 2-digit hexadecimal number.
+  // The result is preferred MIME name of the detected character encoding
+  // system. It is slightly different from IANA name.
+  // See third_party/ced/src/util/encodings/encodings.cc
+  // Returns an empty string if failed.
+  static DOMString detectCharacterEncoding(DOMString bytes,
+    DetectCharacterEncodingCallback callback);
 };
 
 interface Events {

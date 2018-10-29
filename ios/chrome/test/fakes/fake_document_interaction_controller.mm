@@ -22,6 +22,7 @@
 @end
 
 @implementation FakeDocumentInteractionController
+@synthesize UTI = _UTI;
 @synthesize delegate = _delegate;
 @synthesize presentsOpenInMenu = _presentsOpenInMenu;
 @synthesize presentedOpenInMenu = _presentedOpenInMenu;

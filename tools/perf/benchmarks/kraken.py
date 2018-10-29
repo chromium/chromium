@@ -102,7 +102,8 @@ class _KrakenMeasurement(legacy_page_test.LegacyPageTest):
                     '(http://krakenbenchmark.mozilla.org/)'))
 
 
-@benchmark.Info(emails=['hablich@chromium.org'])
+@benchmark.Info(emails=['hablich@chromium.org'],
+                component='Blink>JavaScript')
 class Kraken(perf_benchmark.PerfBenchmark):
   """Mozilla's Kraken JavaScript benchmark.
 

@@ -8,78 +8,46 @@
 
 namespace arc {
 
-bool GetProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityBooleanProperty prop) {
-  if (!node->boolean_properties)
-    return false;
-
-  auto it = node->boolean_properties->find(prop);
-  if (it == node->boolean_properties->end())
-    return false;
-
-  return it->second;
-}
-
-bool GetProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityIntProperty prop,
-                 int32_t* out_value) {
-  if (!node->int_properties)
-    return false;
-
-  auto it = node->int_properties->find(prop);
-  if (it == node->int_properties->end())
-    return false;
-
-  *out_value = it->second;
-  return true;
-}
-
-bool HasProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityStringProperty prop) {
-  if (!node->string_properties)
-    return false;
-
-  auto it = node->string_properties->find(prop);
-  return it != node->string_properties->end();
-}
-
-bool GetProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityStringProperty prop,
-                 std::string* out_value) {
-  if (!HasProperty(node, prop))
-    return false;
-
-  auto it = node->string_properties->find(prop);
-  *out_value = it->second;
-  return true;
-}
-
-bool GetProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityIntListProperty prop,
-                 std::vector<int32_t>* out_value) {
-  if (!node->int_list_properties)
-    return false;
-
-  auto it = node->int_list_properties->find(prop);
-  if (it == node->int_list_properties->end())
-    return false;
-
-  *out_value = it->second;
-  return true;
-}
-
-bool GetProperty(mojom::AccessibilityNodeInfoData* node,
-                 mojom::AccessibilityStringListProperty prop,
-                 std::vector<std::string>* out_value) {
-  if (!node->string_list_properties)
-    return false;
-
-  auto it = node->string_list_properties->find(prop);
-  if (it == node->string_list_properties->end())
-    return false;
-
-  *out_value = it->second;
-  return true;
+ax::mojom::Event ToAXEvent(mojom::AccessibilityEventType arc_event_type) {
+  switch (arc_event_type) {
+    case mojom::AccessibilityEventType::VIEW_FOCUSED:
+    case mojom::AccessibilityEventType::VIEW_ACCESSIBILITY_FOCUSED:
+      return ax::mojom::Event::kFocus;
+    case mojom::AccessibilityEventType::VIEW_CLICKED:
+    case mojom::AccessibilityEventType::VIEW_LONG_CLICKED:
+      return ax::mojom::Event::kClicked;
+    case mojom::AccessibilityEventType::VIEW_TEXT_CHANGED:
+      return ax::mojom::Event::kTextChanged;
+    case mojom::AccessibilityEventType::VIEW_TEXT_SELECTION_CHANGED:
+      return ax::mojom::Event::kTextSelectionChanged;
+    case mojom::AccessibilityEventType::WINDOW_STATE_CHANGED:
+    case mojom::AccessibilityEventType::NOTIFICATION_STATE_CHANGED:
+    case mojom::AccessibilityEventType::WINDOW_CONTENT_CHANGED:
+    case mojom::AccessibilityEventType::WINDOWS_CHANGED:
+      return ax::mojom::Event::kLayoutComplete;
+    case mojom::AccessibilityEventType::VIEW_HOVER_ENTER:
+      return ax::mojom::Event::kHover;
+    case mojom::AccessibilityEventType::ANNOUNCEMENT:
+      return ax::mojom::Event::kAlert;
+    case mojom::AccessibilityEventType::VIEW_SCROLLED:
+      return ax::mojom::Event::kScrollPositionChanged;
+    case mojom::AccessibilityEventType::VIEW_SELECTED:
+    case mojom::AccessibilityEventType::VIEW_HOVER_EXIT:
+    case mojom::AccessibilityEventType::TOUCH_EXPLORATION_GESTURE_START:
+    case mojom::AccessibilityEventType::TOUCH_EXPLORATION_GESTURE_END:
+    case mojom::AccessibilityEventType::
+        VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
+    case mojom::AccessibilityEventType::GESTURE_DETECTION_START:
+    case mojom::AccessibilityEventType::GESTURE_DETECTION_END:
+    case mojom::AccessibilityEventType::TOUCH_INTERACTION_START:
+    case mojom::AccessibilityEventType::TOUCH_INTERACTION_END:
+    case mojom::AccessibilityEventType::VIEW_CONTEXT_CLICKED:
+    case mojom::AccessibilityEventType::ASSIST_READING_CONTEXT:
+      return ax::mojom::Event::kChildrenChanged;
+    default:
+      return ax::mojom::Event::kChildrenChanged;
+  }
+  return ax::mojom::Event::kChildrenChanged;
 }
 
 }  // namespace arc

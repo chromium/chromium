@@ -15,8 +15,16 @@ of this archive are copied here.  More specifically:
 
 1/ C code required to open 7z archive files and uncompress LZMA
 2/ 7za.exe and 7zr.exe executables (amd64 version)
-3/ 7zS2.sfx binary (x86 version)
+3/ source code for SfxSetup, a utility for creating self extracting archives
 
 The patch in chromium.patch was applied to CpuArch.c to fix register corruption
 that can occur on 64-bit platforms built with -fPIC and register clobbering that
 occurred on Mac builds (but in principle can occur anywhere).
+
+The patch in Util/SfxSetup/chromium.patch was applied so that:
+
+1/ The code compiles without warnings which are treated as errors. Warning is:
+   C6246: Local declaration hides declaration of same name in outer scope.
+2/ Fix for includes file names, since the original code causes an include
+   file violation during git cl presubmit.
+

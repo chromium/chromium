@@ -8,17 +8,17 @@
 
 namespace device {
 
-ARCoreDeviceProvider::ARCoreDeviceProvider() = default;
+ArCoreDeviceProvider::ArCoreDeviceProvider() = default;
 
-ARCoreDeviceProvider::~ARCoreDeviceProvider() = default;
+ArCoreDeviceProvider::~ArCoreDeviceProvider() = default;
 
-void ARCoreDeviceProvider::Initialize(
+void ArCoreDeviceProvider::Initialize(
     base::RepeatingCallback<void(mojom::XRDeviceId,
                                  mojom::VRDisplayInfoPtr,
                                  mojom::XRRuntimePtr)> add_device_callback,
     base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
     base::OnceClosure initialization_complete) {
-  arcore_device_ = base::WrapUnique(new ARCoreDevice());
+  arcore_device_ = base::WrapUnique(new ArCoreDevice());
   add_device_callback.Run(arcore_device_->GetId(),
                           arcore_device_->GetVRDisplayInfo(),
                           arcore_device_->BindXRRuntimePtr());
@@ -26,7 +26,7 @@ void ARCoreDeviceProvider::Initialize(
   std::move(initialization_complete).Run();
 }
 
-bool ARCoreDeviceProvider::Initialized() {
+bool ArCoreDeviceProvider::Initialized() {
   return initialized_;
 }
 

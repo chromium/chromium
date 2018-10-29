@@ -1,2 +1,1 @@
 This tests for a crash when deleting inside an empty list item that is an editable root.
-

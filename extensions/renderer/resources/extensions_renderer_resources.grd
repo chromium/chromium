@@ -14,6 +14,7 @@
       <include name="IDR_BROWSER_TEST_ENVIRONMENT_SPECIFIC_BINDINGS_JS" file="browser_test_environment_specific_bindings.js" type="BINDATA" />
       <include name="IDR_ENTRY_ID_MANAGER" file="entry_id_manager.js" type="BINDATA" />
       <include name="IDR_EVENT_BINDINGS_JS" file="event.js" type="BINDATA" />
+      <include name="IDR_EXTENSIONS_WEB_VIEW_ELEMENT_JS" file="guest_view/web_view/extensions_web_view_element.js" type="BINDATA" />
       <include name="IDR_EXTENSION_OPTIONS_JS" file="guest_view/extension_options/extension_options.js" type="BINDATA"/>
       <include name="IDR_EXTENSION_OPTIONS_ELEMENT_JS" file="guest_view/extension_options/extension_options_element.js" type="BINDATA"/>
       <include name="IDR_EXTENSION_OPTIONS_ATTRIBUTES_JS" file="guest_view/extension_options/extension_options_attributes.js" type="BINDATA"/>

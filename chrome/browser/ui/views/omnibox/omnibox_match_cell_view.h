@@ -17,6 +17,9 @@ class OmniboxTextView;
 
 class OmniboxMatchCellView : public views::View {
  public:
+  // The right-hand margin used for rows.
+  static constexpr int kMarginRight = 8;
+
   explicit OmniboxMatchCellView(OmniboxResultView* result_view);
   ~OmniboxMatchCellView() override;
 
@@ -26,9 +29,7 @@ class OmniboxMatchCellView : public views::View {
   OmniboxTextView* description() { return description_view_; }
   OmniboxTextView* separator() { return separator_view_; }
 
-  // Used to define the amount the keyword view overlaps with the suggestion
-  // view in non-keyword mode.
-  int IconWidthAndPadding() const;
+  static int GetTextIndent();
 
   void OnMatchUpdate(const OmniboxResultView* result_view,
                      const AutocompleteMatch& match);
@@ -36,9 +37,6 @@ class OmniboxMatchCellView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   bool CanProcessEventsWithinSubtree() const override;
-
-  // The right-hand margin used for rows with the refresh UI.
-  static constexpr int kRefreshMarginRight = 8;
 
  protected:
   // views::View:

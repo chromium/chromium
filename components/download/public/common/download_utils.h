@@ -11,6 +11,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
+#include "components/download/public/common/resume_mode.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
@@ -82,6 +83,13 @@ COMPONENTS_DOWNLOAD_EXPORT base::Optional<DownloadEntry>
 CreateDownloadEntryFromDownloadDBEntry(base::Optional<DownloadDBEntry> entry);
 
 COMPONENTS_DOWNLOAD_EXPORT uint64_t GetUniqueDownloadId();
+
+// Given the interrupt reason, and whether restart and user action are required,
+// determine the final ResomeMode.
+COMPONENTS_DOWNLOAD_EXPORT ResumeMode
+GetDownloadResumeMode(DownloadInterruptReason reason,
+                      bool restart_required,
+                      bool user_action_required);
 
 }  // namespace download
 

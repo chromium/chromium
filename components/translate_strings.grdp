@@ -2,9 +2,6 @@
 <grit-part>
 
    <!-- Translate Info Bar -->
-  <message name="IDS_TRANSLATE_INFOBAR_OPTIONS" desc="Text to show for the translate infobar options menu button">
-    Options
-  </message>
   <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_NEVER_TRANSLATE_LANG" desc="Text for the menu item to never translate the specified language">
     Never translate <ph name="language">$1<ex>French</ex></ph>
   </message>
@@ -19,9 +16,6 @@
   </message>
   <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_ABOUT" desc="Text for the menu item for information about Google Translate">
     About Google Translate
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_BEFORE_MESSAGE" desc="Message that page is in specified language and ask if should translate">
-    This page is in<ph name="original_language">$1<ex>French</ex></ph>Would you like to translate it?
   </message>
   <if expr="is_ios">
     <message name="IDS_TRANSLATE_INFOBAR_BEFORE_MESSAGE_IOS" desc="Text to display on the translate infobar to offer a translate. [Length: 200em] [iOS only]">

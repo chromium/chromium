@@ -97,7 +97,7 @@ Polymer({
         apn = cellular.APN;
     if (apn && apn.AccessPointName) {
       activeApn = /** @type {!CrOnc.APNProperties|undefined} */ (
-          CrOnc.getSimpleActiveProperties(apn));
+          CrOnc.getActiveProperties(apn));
     } else if (cellular.LastGoodAPN && cellular.LastGoodAPN.AccessPointName) {
       activeApn = cellular.LastGoodAPN;
     }

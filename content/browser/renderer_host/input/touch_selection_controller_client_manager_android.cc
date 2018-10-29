@@ -4,43 +4,32 @@
 
 #include "content/browser/renderer_host/input/touch_selection_controller_client_manager_android.h"
 
+#include "components/viz/common/hit_test/aggregated_hit_test_region.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 
 namespace content {
 
 TouchSelectionControllerClientManagerAndroid::
     TouchSelectionControllerClientManagerAndroid(
-        RenderWidgetHostViewAndroid* rwhv)
-    : rwhv_(rwhv), active_client_(rwhv), page_scale_factor_(1.f) {
+        RenderWidgetHostViewAndroid* rwhv,
+        viz::HostFrameSinkManager* host_frame_sink_manager)
+    : rwhv_(rwhv),
+      host_frame_sink_manager_(host_frame_sink_manager),
+      active_client_(rwhv) {
   DCHECK(rwhv_);
+  DCHECK(host_frame_sink_manager_);
 }
 
 TouchSelectionControllerClientManagerAndroid::
     ~TouchSelectionControllerClientManagerAndroid() {
+  if (active_client_ != rwhv_)
+    host_frame_sink_manager_->RemoveHitTestRegionObserver(this);
+
   for (auto& observer : observers_)
     observer.OnManagerWillDestroy(this);
 }
-
-void TouchSelectionControllerClientManagerAndroid::SetPageScaleFactor(
-    float page_scale_factor) {
-  page_scale_factor_ = page_scale_factor;
-}
-
-namespace {
-
-gfx::SelectionBound ScaleSelectionBound(const gfx::SelectionBound& bound,
-                                        float scale) {
-  gfx::SelectionBound scaled_bound;
-  gfx::PointF scaled_top = bound.edge_top();
-  scaled_top.Scale(scale);
-  gfx::PointF scaled_bottom = bound.edge_bottom();
-  scaled_bottom.Scale(scale);
-  scaled_bound.SetEdge(scaled_top, scaled_bottom);
-  scaled_bound.set_type(bound.type());
-  scaled_bound.set_visible(bound.visible());
-  return scaled_bound;
-}
-}  // namespace
 
 // TouchSelectionControllerClientManager implementation.
 void TouchSelectionControllerClientManagerAndroid::DidStopFlinging() {
@@ -60,14 +49,20 @@ void TouchSelectionControllerClientManagerAndroid::UpdateClientSelectionBounds(
     return;
   }
 
-  active_client_ = client;
-  if (active_client_ != rwhv_) {
-    manager_selection_start_ = ScaleSelectionBound(start, page_scale_factor_);
-    manager_selection_end_ = ScaleSelectionBound(end, page_scale_factor_);
-  } else {
-    manager_selection_start_ = start;
-    manager_selection_end_ = end;
+  // Since the observer method does very little processing, and early-outs when
+  // not displaying handles, we don't bother un-installing it when an OOPIF
+  // client is not currently displaying handles.
+  if (client != active_client_) {
+    if (active_client_ == rwhv_)  // We are switching to an OOPIF client.
+      host_frame_sink_manager_->AddHitTestRegionObserver(this);
+    else if (client == rwhv_)  // We are switching to a non-OOPIF client.
+      host_frame_sink_manager_->RemoveHitTestRegionObserver(this);
   }
+
+  active_client_ = client;
+  manager_selection_start_ = start;
+  manager_selection_end_ = end;
+
   // Notify TouchSelectionController if anything should change here. Only
   // update if the client is different and not making a change to empty, or
   // is the same client.
@@ -79,8 +74,11 @@ void TouchSelectionControllerClientManagerAndroid::UpdateClientSelectionBounds(
 
 void TouchSelectionControllerClientManagerAndroid::InvalidateClient(
     ui::TouchSelectionControllerClient* client) {
-  if (active_client_ == client)
+  if (active_client_ == client) {
+    if (active_client_ != rwhv_)
+      host_frame_sink_manager_->RemoveHitTestRegionObserver(this);
     active_client_ = rwhv_;
+  }
 }
 
 ui::TouchSelectionController*
@@ -109,30 +107,18 @@ void TouchSelectionControllerClientManagerAndroid::SetNeedsAnimate() {
 
 void TouchSelectionControllerClientManagerAndroid::MoveCaret(
     const gfx::PointF& position) {
-  gfx::PointF scaled_position = position;
-  if (active_client_ != rwhv_)
-    scaled_position.Scale(1 / page_scale_factor_);
-  active_client_->MoveCaret(scaled_position);
+  active_client_->MoveCaret(position);
 }
 
 void TouchSelectionControllerClientManagerAndroid::MoveRangeSelectionExtent(
     const gfx::PointF& extent) {
-  gfx::PointF scaled_extent = extent;
-  if (active_client_ != rwhv_)
-    scaled_extent.Scale(1 / page_scale_factor_);
-  active_client_->MoveRangeSelectionExtent(scaled_extent);
+  active_client_->MoveRangeSelectionExtent(extent);
 }
 
 void TouchSelectionControllerClientManagerAndroid::SelectBetweenCoordinates(
     const gfx::PointF& base,
     const gfx::PointF& extent) {
-  gfx::PointF scaled_extent = extent;
-  gfx::PointF scaled_base = base;
-  if (active_client_ != rwhv_) {
-    scaled_extent.Scale(1 / page_scale_factor_);
-    scaled_base.Scale(1 / page_scale_factor_);
-  }
-  active_client_->SelectBetweenCoordinates(scaled_base, scaled_extent);
+  active_client_->SelectBetweenCoordinates(base, extent);
 }
 
 void TouchSelectionControllerClientManagerAndroid::OnSelectionEvent(
@@ -153,6 +139,21 @@ TouchSelectionControllerClientManagerAndroid::CreateDrawable() {
 
 void TouchSelectionControllerClientManagerAndroid::DidScroll() {
   // Nothing needs to be done here.
+}
+
+void TouchSelectionControllerClientManagerAndroid::
+    OnAggregatedHitTestRegionListUpdated(
+        const viz::FrameSinkId& frame_sink_id,
+        const std::vector<viz::AggregatedHitTestRegion>& hit_test_data) {
+  DCHECK(active_client_ != rwhv_);
+
+  if (!GetTouchSelectionController() ||
+      GetTouchSelectionController()->active_status() ==
+          ui::TouchSelectionController::INACTIVE) {
+    return;
+  }
+
+  active_client_->DidScroll();
 }
 
 }  // namespace content

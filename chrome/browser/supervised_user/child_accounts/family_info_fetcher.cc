@@ -278,9 +278,7 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
 // static
 bool FamilyInfoFetcher::ParseMembers(const base::ListValue* list,
                                      std::vector<FamilyMember>* members) {
-  for (base::ListValue::const_iterator it = list->begin();
-       it != list->end();
-       it++) {
+  for (auto it = list->begin(); it != list->end(); ++it) {
     FamilyMember member;
     const base::DictionaryValue* dict = NULL;
     if (!it->GetAsDictionary(&dict) || !ParseMember(dict, &member)) {

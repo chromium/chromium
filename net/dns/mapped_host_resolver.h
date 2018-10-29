@@ -12,6 +12,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/net_export.h"
+#include "net/dns/dns_config.h"
 #include "net/dns/host_resolver.h"
 
 namespace net {
@@ -73,9 +74,8 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
   std::unique_ptr<base::Value> GetDnsConfigAsValue() const override;
   void SetNoIPv6OnWifi(bool no_ipv6_on_wifi) override;
   bool GetNoIPv6OnWifi() override;
+  void SetDnsConfigOverrides(const DnsConfigOverrides& overrides) override;
   void SetRequestContext(URLRequestContext* request_context) override;
-  void AddDnsOverHttpsServer(std::string spec, bool use_post) override;
-  void ClearDnsOverHttpsServers() override;
   const std::vector<DnsConfig::DnsOverHttpsServerConfig>*
   GetDnsOverHttpsServersForTesting() const override;
 

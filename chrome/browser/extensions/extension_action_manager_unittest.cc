@@ -30,7 +30,7 @@ class ExtensionActionManagerTest : public testing::Test {
  protected:
   // Build an extension, populating |action_type| key with |action|, and
   // "icons" key with |extension_icons|.
-  scoped_refptr<Extension> BuildExtension(
+  scoped_refptr<const Extension> BuildExtension(
       std::unique_ptr<base::DictionaryValue> extension_icons,
       std::unique_ptr<base::DictionaryValue> action,
       const char* action_type);
@@ -71,12 +71,12 @@ ExtensionActionManagerTest::ExtensionActionManagerTest()
   manager_ = ExtensionActionManager::Get(profile_.get());
 }
 
-scoped_refptr<Extension> ExtensionActionManagerTest::BuildExtension(
+scoped_refptr<const Extension> ExtensionActionManagerTest::BuildExtension(
     std::unique_ptr<base::DictionaryValue> extension_icons,
     std::unique_ptr<base::DictionaryValue> action,
     const char* action_type) {
   std::string id = base::IntToString(curr_id_++);
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
               DictionaryBuilder()
@@ -120,7 +120,7 @@ void ExtensionActionManagerTest::TestPopulateMissingValues(
   // Test that the largest icon from the extension's "icons" key is chosen as a
   // replacement for missing action default_icons keys. "19" should not be
   // replaced because "38" can always be used in its place.
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       BuildExtension(DictionaryBuilder()
                          .Set("48", "icon48.png")
                          .Set("128", "icon128.png")
@@ -196,7 +196,7 @@ TEST_F(ExtensionActionManagerTest, PopulatePageAction) {
 
 TEST_F(ExtensionActionManagerTest, GetBestFitActionTest) {
   // Create an extension with page action defaults.
-  scoped_refptr<Extension> extension = BuildExtension(
+  scoped_refptr<const Extension> extension = BuildExtension(
       DictionaryBuilder().Set("48", "icon48.png").Build(),
       DictionaryBuilder()
           .Set("default_title", "Action!")

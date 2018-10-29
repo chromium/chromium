@@ -38,8 +38,8 @@
     [RuntimeEnabled=FileSystem] void webkitResolveLocalFileSystemURL(DOMString url,
             EntryCallback successCallback, optional ErrorCallback? errorCallback);
 
-    // https://github.com/WICG/writable-files/blob/master/EXPLAINER.md
-    // TODO(crbug.com/878581): This needs some kind of options dictionary.
+    // https://wicg.github.io/writable-files/#api-choosefilesystementries
     [RuntimeEnabled=WritableFiles, CallWith=ScriptState, SecureContext]
-    Promise<(FileSystemBaseHandle or sequence<FileSystemBaseHandle>)> chooseFileSystemEntries();
+    Promise<(FileSystemBaseHandle or sequence<FileSystemBaseHandle>)>
+        chooseFileSystemEntries(optional ChooseFileSystemEntriesOptions options);
 };

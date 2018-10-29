@@ -25,18 +25,22 @@ PasswordStoreDefault::~PasswordStoreDefault() {
 
 void PasswordStoreDefault::ShutdownOnUIThread() {
   PasswordStore::ShutdownOnUIThread();
-  ScheduleTask(base::Bind(&PasswordStoreDefault::ResetLoginDB, this));
+  ScheduleTask(base::BindOnce(&PasswordStoreDefault::ResetLoginDB, this));
 }
 
-void PasswordStoreDefault::InitOnBackgroundSequence(
+bool PasswordStoreDefault::InitOnBackgroundSequence(
     const syncer::SyncableService::StartSyncFlare& flare) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(login_db_);
+  bool success = true;
   if (!login_db_->Init()) {
     login_db_.reset();
+    // The initialization should be continued, because PasswordSyncableService
+    // has to be initialized even if database initialization failed.
+    success = false;
     LOG(ERROR) << "Could not create/open login database.";
   }
-  PasswordStore::InitOnBackgroundSequence(flare);
+  return PasswordStore::InitOnBackgroundSequence(flare) && success;
 }
 
 void PasswordStoreDefault::ReportMetricsImpl(

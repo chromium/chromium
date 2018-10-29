@@ -58,9 +58,7 @@ BlobHolder::BlobHolder(content::RenderProcessHost* render_process_host)
 
 bool BlobHolder::ContainsBlobHandle(content::BlobHandle* handle) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (BlobHandleMultimap::const_iterator it = held_blobs_.begin();
-       it != held_blobs_.end();
-       ++it) {
+  for (auto it = held_blobs_.cbegin(); it != held_blobs_.cend(); ++it) {
     if (it->second.get() == handle)
       return true;
   }
@@ -70,10 +68,9 @@ bool BlobHolder::ContainsBlobHandle(content::BlobHandle* handle) const {
 
 void BlobHolder::DropBlobs(const std::vector<std::string>& blob_uuids) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (std::vector<std::string>::const_iterator uuid_it = blob_uuids.begin();
-       uuid_it != blob_uuids.end();
+  for (auto uuid_it = blob_uuids.cbegin(); uuid_it != blob_uuids.cend();
        ++uuid_it) {
-    BlobHandleMultimap::iterator it = held_blobs_.find(*uuid_it);
+    auto it = held_blobs_.find(*uuid_it);
 
     if (it != held_blobs_.end()) {
       held_blobs_.erase(it);

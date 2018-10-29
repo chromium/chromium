@@ -17,6 +17,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -69,10 +70,8 @@ void MirrorInsetsIfNecessary(gfx::Insets* insets) {
 gfx::Insets GetMirroredBackgroundInsets(bool is_shelf_horizontal) {
   gfx::Insets insets;
   // "Primary" is the same direction as the shelf, "secondary" is orthogonal.
-  const int primary_padding =
-      chromeos::switches::ShouldUseShelfNewUi() ? 0 : ash::kHitRegionPadding;
-  const int secondary_padding =
-      chromeos::switches::ShouldUseShelfNewUi() ? -ash::kHitRegionPadding : 0;
+  const int primary_padding = 0;
+  const int secondary_padding = -ash::kHitRegionPadding;
   const int separator_width = ash::TrayConstants::separator_width();
 
   if (is_shelf_horizontal) {
@@ -87,8 +86,6 @@ gfx::Insets GetMirroredBackgroundInsets(bool is_shelf_horizontal) {
 }
 
 }  // namespace
-
-using views::TrayBubbleView;
 
 namespace ash {
 
@@ -133,12 +130,8 @@ class TrayBackground : public views::Background {
     cc::PaintFlags background_flags;
     background_flags.setAntiAlias(true);
     int border_radius = kTrayRoundedBorderRadius;
-    if (chromeos::switches::ShouldUseShelfNewUi()) {
-      background_flags.setColor(kShelfControlPermanentHighlightBackground);
-      border_radius = ShelfConstants::control_border_radius();
-    } else {
-      background_flags.setColor(color_);
-    }
+    background_flags.setColor(kShelfControlPermanentHighlightBackground);
+    border_radius = ShelfConstants::control_border_radius();
 
     gfx::Rect bounds = tray_background_view_->GetBackgroundBounds();
     const float dsf = canvas->UndoDeviceScaleFactor();
@@ -185,6 +178,8 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
       background_(new TrayBackground(this)),
       is_active_(false),
       separator_visible_(true),
+      visible_preferred_(false),
+      show_with_virtual_keyboard_(false),
       widget_observer_(new TrayWidgetObserver(this)) {
   DCHECK(shelf_);
   set_notify_enter_exit_on_child(true);
@@ -205,6 +200,7 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
 }
 
 TrayBackgroundView::~TrayBackgroundView() {
+  Shell::Get()->system_tray_model()->virtual_keyboard()->RemoveObserver(this);
   if (GetWidget())
     GetWidget()->RemoveObserver(widget_observer_.get());
   StopObservingImplicitAnimations();
@@ -212,6 +208,7 @@ TrayBackgroundView::~TrayBackgroundView() {
 
 void TrayBackgroundView::Initialize() {
   GetWidget()->AddObserver(widget_observer_.get());
+  Shell::Get()->system_tray_model()->virtual_keyboard()->AddObserver(this);
 }
 
 // static
@@ -226,6 +223,16 @@ void TrayBackgroundView::InitializeBubbleAnimations(
 }
 
 void TrayBackgroundView::SetVisible(bool visible) {
+  visible_preferred_ = visible;
+
+  // If virtual keyboard is visible and TrayBackgroundView is hidden because of
+  // that, ignore SetVisible() call. |visible_preferred_|  will be restored
+  // in OnVirtualKeyboardVisibilityChanged() when virtual keyboard is hidden.
+  if (!show_with_virtual_keyboard_ &&
+      Shell::Get()->system_tray_model()->virtual_keyboard()->visible()) {
+    return;
+  }
+
   if (visible == layer()->GetTargetVisibility())
     return;
 
@@ -401,6 +408,24 @@ void TrayBackgroundView::ProcessGestureEventForBubble(ui::GestureEvent* event) {
     drag_controller_->ProcessGestureEvent(event, this);
 }
 
+void TrayBackgroundView::OnVirtualKeyboardVisibilityChanged() {
+  if (show_with_virtual_keyboard_) {
+    // The view always shows up when virtual keyboard is visible if
+    // |show_with_virtual_keyboard| is true.
+    views::View::SetVisible(
+        Shell::Get()->system_tray_model()->virtual_keyboard()->visible() ||
+        visible_preferred_);
+    return;
+  }
+
+  // If virtual keyboard is hidden and current preferred visibility is true,
+  // set the visibility to true. We call base class' SetVisible because we don't
+  // want |visible_preferred_| to be updated here.
+  views::View::SetVisible(
+      !Shell::Get()->system_tray_model()->virtual_keyboard()->visible() &&
+      visible_preferred_);
+}
+
 TrayBubbleView* TrayBackgroundView::GetBubbleView() {
   return nullptr;
 }
@@ -424,8 +449,7 @@ void TrayBackgroundView::AnchorUpdated() {
     UpdateClippingWindowBounds();
 }
 
-void TrayBackgroundView::BubbleResized(
-    const views::TrayBubbleView* bubble_view) {}
+void TrayBackgroundView::BubbleResized(const TrayBubbleView* bubble_view) {}
 
 void TrayBackgroundView::OnImplicitAnimationsCompleted() {
   // If there is another animation in the queue, the reverse animation was
@@ -474,8 +498,7 @@ void TrayBackgroundView::SetIsActive(bool is_active) {
                  nullptr);
 }
 
-void TrayBackgroundView::UpdateBubbleViewArrow(
-    views::TrayBubbleView* bubble_view) {
+void TrayBackgroundView::UpdateBubbleViewArrow(TrayBubbleView* bubble_view) {
   // Nothing to do here.
 }
 
@@ -555,9 +578,7 @@ gfx::Rect TrayBackgroundView::GetBackgroundBounds() const {
 
 std::unique_ptr<views::InkDropMask> TrayBackgroundView::CreateInkDropMask()
     const {
-  const int border_radius = chromeos::switches::ShouldUseShelfNewUi()
-                                ? ShelfConstants::control_border_radius()
-                                : kTrayRoundedBorderRadius;
+  const int border_radius = ShelfConstants::control_border_radius();
   return std::make_unique<views::RoundRectInkDropMask>(
       size(), GetBackgroundInsets(), border_radius);
 }

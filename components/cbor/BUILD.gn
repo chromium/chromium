@@ -6,13 +6,13 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("cbor") {
   sources = [
-    "cbor_constants.h",
-    "cbor_reader.cc",
-    "cbor_reader.h",
-    "cbor_values.cc",
-    "cbor_values.h",
-    "cbor_writer.cc",
-    "cbor_writer.h",
+    "constants.h",
+    "reader.cc",
+    "reader.h",
+    "values.cc",
+    "values.h",
+    "writer.cc",
+    "writer.h",
   ]
 
   defines = [ "CBOR_IMPLEMENTATION" ]
@@ -25,9 +25,9 @@ component("cbor") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "cbor_reader_unittest.cc",
-    "cbor_values_unittest.cc",
-    "cbor_writer_unittest.cc",
+    "reader_unittest.cc",
+    "values_unittest.cc",
+    "writer_unittest.cc",
   ]
 
   deps = [
@@ -38,14 +38,14 @@ source_set("unit_tests") {
   ]
 }
 
-fuzzer_test("cbor_reader_fuzzer") {
+fuzzer_test("reader_fuzzer") {
   sources = [
-    "cbor_reader_fuzzer.cc",
+    "reader_fuzzer.cc",
   ]
   deps = [
     ":cbor",
     "//base",
   ]
-  seed_corpus = "cbor_reader_fuzzer_corpus/"
+  seed_corpus = "reader_fuzzer_corpus/"
   libfuzzer_options = [ "max_len=65535" ]
 }

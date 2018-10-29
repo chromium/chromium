@@ -4,11 +4,16 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/post_task.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#include "ios/web/public/web_task_traits.h"
+#include "ios/web/public/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -122,6 +127,23 @@ void SnapshotTabHelper::RetrieveGreySnapshot(void (^callback)(UIImage*)) {
   [snapshot_generator_ retrieveGreySnapshot:callback];
 }
 
+void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
+  if (IsWKWebViewSnapshotsEnabled() && web_state_->ContentIsHTML()) {
+    if (@available(iOS 11, *)) {
+      [snapshot_generator_ updateWebViewSnapshotWithCompletion:callback];
+      return;
+    }
+  }
+  // Pre-iOS 11 and native content cannot utilize the WKWebView snapshotting
+  // API.
+  UIImage* image =
+      UpdateSnapshot(/*with_overlays=*/true, /*visible_frame_only=*/true);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (callback)
+      callback(image);
+  });
+}
+
 UIImage* SnapshotTabHelper::UpdateSnapshot(bool with_overlays,
                                            bool visible_frame_only) {
   return [snapshot_generator_ updateSnapshotWithOverlays:with_overlays
@@ -162,7 +184,7 @@ UIImage* SnapshotTabHelper::GetDefaultSnapshotImage() {
 
 SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state,
                                      NSString* session_id)
-    : web_state_(web_state) {
+    : web_state_(web_state), weak_ptr_factory_(this) {
   snapshot_generator_ = [[SnapshotGenerator alloc] initWithWebState:web_state_
                                                   snapshotSessionId:session_id];
 
@@ -176,11 +198,28 @@ SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state,
   web_state_->AddObserver(this);
 }
 
+void SnapshotTabHelper::DidStartLoading(web::WebState* web_state) {
+  if (IsWKWebViewSnapshotsEnabled())
+    RemoveSnapshot();
+}
+
 void SnapshotTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   if (!ignore_next_load_ && !pause_snapshotting_ &&
       load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
+    if (IsWKWebViewSnapshotsEnabled() && web_state->ContentIsHTML()) {
+      if (@available(iOS 11, *)) {
+        base::PostDelayedTaskWithTraits(
+            FROM_HERE, {web::WebThread::UI},
+            base::BindOnce(&SnapshotTabHelper::UpdateSnapshotWithCallback,
+                           weak_ptr_factory_.GetWeakPtr(), /*callback=*/nil),
+            base::TimeDelta::FromSeconds(1));
+        return;
+      }
+    }
+    // Pre-iOS 11 and native content cannot utilize the WKWebView snapshotting
+    // API.
     UpdateSnapshot(/*with_overlays=*/true, /*visible_frame_only=*/true);
   }
   ignore_next_load_ = false;

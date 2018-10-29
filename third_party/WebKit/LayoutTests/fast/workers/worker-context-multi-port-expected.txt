@@ -15,4 +15,3 @@ PASS event.ports contains two ports when two ports re-sent after error
 PASS posting a non-sequence did throw: TypeError: Failed to execute 'postMessage' on 'DedicatedWorkerGlobalScope': Value at index 0 does not have a transferable type.
 
 TEST COMPLETE
-

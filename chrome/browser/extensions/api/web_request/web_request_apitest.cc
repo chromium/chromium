@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/task/post_task.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
+#include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -55,6 +57,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -99,6 +102,7 @@
 #include "third_party/blink/public/platform/web_input_event.h"
 
 #if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/login/login_state.h"
 #endif  // defined(OS_CHROMEOS)
 
@@ -321,8 +325,8 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
                               base::Unretained(this), port));
     } else {
       base::RunLoop run_loop;
-      content::BrowserThread::PostTaskAndReply(
-          content::BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraitsAndReply(
+          FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(&SetUpDevToolsFrontendInterceptorOnIO, port,
                          test_root_dir_),
           run_loop.QuitClosure());
@@ -335,8 +339,8 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
       url_loader_interceptor_.reset();
     } else {
       base::RunLoop run_loop;
-      content::BrowserThread::PostTaskAndReply(
-          content::BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraitsAndReply(
+          FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(&TearDownDevToolsFrontendInterceptorOnIO),
           run_loop.QuitClosure());
       run_loop.Run();
@@ -846,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HostedAppRequest) {
   GURL hosted_app_url(
       embedded_test_server()->GetURL(
           "/extensions/api_test/webrequest_hosted_app/index.html"));
-  scoped_refptr<Extension> hosted_app =
+  scoped_refptr<const Extension> hosted_app =
       ExtensionBuilder()
           .SetManifest(
               DictionaryBuilder()
@@ -976,14 +980,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   // frames, this shouldn't show up as a blocked action.
   EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension));
 
-  // If we revoke the extension's tab permissions, it should no longer receive
-  // webRequest events.
+  // Revoke the extension's tab permissions.
   ActiveTabPermissionGranter* granter =
       TabHelper::FromWebContents(web_contents)->active_tab_permission_granter();
   ASSERT_TRUE(granter);
   granter->RevokeForTesting();
   base::RunLoop().RunUntilIdle();
+
+  // The extension should no longer receive webRequest events since they are
+  // withheld. The extension icon should get updated to show the wants-to-run
+  // badge UI.
+  TestExtensionActionAPIObserver action_updated_waiter(profile(),
+                                                       extension->id());
   PerformXhrInFrame(main_frame, kHost, port, kXhrPath);
+  action_updated_waiter.Wait();
+  EXPECT_EQ(web_contents, action_updated_waiter.last_web_contents());
+
   EXPECT_EQ(xhr_count,
             GetWebRequestCountFromBackgroundPage(extension, profile()));
   EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST, runner->GetBlockedActions(extension));
@@ -1041,6 +1053,75 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
   EXPECT_TRUE(
       HasSeenWebRequestInBackgroundPage(extension, profile(), kCrossSiteHost));
+}
+
+// Tests behavior when an extension has withheld access to a request's URL, but
+// not the initiator's (tab's) URL. Regression test for
+// https://crbug.com/891586.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       WithheldHostPermissionsForCrossOriginWithoutInitiator) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      extensions_features::kRuntimeHostPermissions);
+
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // TODO(devlin): This is essentially copied from the webrequest_activetab
+  // API test extension, but has different permissions. Maybe it's worth having
+  // all tests use a common pattern?
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+           "name": "Web Request Withheld Hosts",
+           "manifest_version": 2,
+           "version": "0.1",
+           "background": { "scripts": ["background.js"] },
+           "permissions": ["*://b.com:*/*", "webRequest"]
+         })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     R"(window.webRequestCount = 0;
+         window.requestedHostnames = [];
+
+         chrome.webRequest.onBeforeRequest.addListener(function(details) {
+           ++window.webRequestCount;
+           window.requestedHostnames.push((new URL(details.url)).hostname);
+         }, {urls:['<all_urls>']});
+         chrome.test.sendMessage('ready');)");
+
+  // Load an extension that registers a listener for webRequest events, and
+  // wait until it's initialized.
+  ExtensionTestMessageListener listener("ready", false);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension) << message_;
+  ScriptingPermissionsModifier(profile(), base::WrapRefCounted(extension))
+      .SetWithholdHostPermissions(true);
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  // Navigate to example.com, which has a cross-site script to b.com.
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "example.com", "/extensions/cross_site_script.html"));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ExtensionActionRunner* runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  ASSERT_TRUE(runner);
+
+  // Even though the extension has access to b.com, it shouldn't show that it
+  // wants to run, because example.com is not a requested host.
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension));
+  EXPECT_FALSE(
+      HasSeenWebRequestInBackgroundPage(extension, profile(), "b.com"));
+
+  // Navigating to b.com (so that the script is hosted on the same origin as
+  // the WebContents) should show the extension wants to run.
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "b.com", "/extensions/cross_site_script.html"));
+  EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST, runner->GetBlockedActions(extension));
 }
 
 // Verify that requests to clientsX.google.com are protected properly.
@@ -1102,6 +1183,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   auto make_browser_request = [this](const GURL& url) {
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = url;
+    request->resource_type = content::RESOURCE_TYPE_SUB_RESOURCE;
 
     auto* url_loader_factory =
         content::BrowserContext::GetDefaultStoragePartition(profile())
@@ -1127,11 +1209,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       embedded_test_server()->GetURL("clients1.google.com", "/simple.html"));
   EXPECT_EQ(1, get_clients_google_request_count());
 
-  // Sanity check that other requests made by the browser can still be
-  // intercepted by the extension.
+  // Other non-navigation browser requests should also be hidden from
+  // extensions.
   make_browser_request(
       embedded_test_server()->GetURL("yahoo.com", "/simple.html"));
-  EXPECT_EQ(1, get_yahoo_request_count());
+  EXPECT_EQ(0, get_yahoo_request_count());
 }
 
 // Verify that requests for PAC scripts are protected properly.
@@ -1403,7 +1485,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   GURL google_url =
       embedded_test_server()->GetURL("google.com", "/extensions/body1.html");
 
-  // First, check normal requets (e.g., navigations) to verify the extension
+  // First, check normal requests (e.g., navigations) to verify the extension
   // is working correctly.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1440,10 +1522,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   // A callback allow waiting for responses to complete with an expected status
   // and given content.
   auto make_browser_request =
-      [this](network::mojom::URLLoaderFactory* url_loader_factory,
-             const GURL& url,
-             const base::Optional<std::string>& expected_response,
-             int expected_net_code) {
+      [](network::mojom::URLLoaderFactory* url_loader_factory, const GURL& url,
+         const base::Optional<std::string>& expected_response,
+         int expected_net_code) {
         auto request = std::make_unique<network::ResourceRequest>();
         request->url = url;
 
@@ -1481,10 +1562,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   }
 
   {
-    // example.com should fail.
+    // example.com should also succeed since non-navigation browser-initiated
+    // requests are hidden from extensions. See crbug.com/884932.
     SCOPED_TRACE("example.com with Profile's url loader");
-    make_browser_request(url_loader_factory, example_url, base::nullopt,
-                         net::ERR_BLOCKED_BY_CLIENT);
+    make_browser_request(url_loader_factory, example_url, kExampleFullContent,
+                         net::OK);
   }
 
   // Requests going through the system network context manager should always
@@ -1589,24 +1671,31 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
   // Create a profile that will be destroyed later.
   base::ScopedAllowBlockingForTesting allow_blocking;
+#if defined(OS_CHROMEOS)
+  chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+#endif  // defined(OS_CHROMEOS)
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* tmp_profile = Profile::CreateProfile(
+  Profile* temp_profile = Profile::CreateProfile(
       profile_manager->user_data_dir().AppendASCII("profile"), nullptr,
       Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
 
   // Create a WebRequestAPI instance that we can control the lifetime of.
-  auto api = std::make_unique<WebRequestAPI>(tmp_profile);
-  // Make sure we are proxying for |tmp_profile|.
+  auto api = std::make_unique<WebRequestAPI>(temp_profile);
+  // Make sure we are proxying for |temp_profile|.
   api->ForceProxyForTesting();
-  content::BrowserContext::GetDefaultStoragePartition(tmp_profile)
+  content::BrowserContext::GetDefaultStoragePartition(temp_profile)
       ->FlushNetworkInterfaceForTesting();
 
   network::mojom::URLLoaderFactoryPtr factory;
   auto request = mojo::MakeRequest(&factory);
-  EXPECT_TRUE(api->MaybeProxyURLLoaderFactory(nullptr, false, &request));
+  auto temp_web_contents =
+      WebContents::Create(WebContents::CreateParams(temp_profile));
+  EXPECT_TRUE(api->MaybeProxyURLLoaderFactory(temp_web_contents->GetMainFrame(),
+                                              false, &request));
+  temp_web_contents.reset();
   auto params = network::mojom::URLLoaderFactoryParams::New();
   params->process_id = 0;
-  content::BrowserContext::GetDefaultStoragePartition(tmp_profile)
+  content::BrowserContext::GetDefaultStoragePartition(temp_profile)
       ->GetNetworkContext()
       ->CreateURLLoaderFactory(std::move(request), std::move(params));
 
@@ -1623,7 +1712,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   // WebRequestAPI. This will cause the connection error that will reach the
   // proxy before the ProxySet shutdown code runs on the IO thread.
   api->Shutdown();
-  ProfileDestroyer::DestroyProfileWhenAppropriate(tmp_profile);
+  ProfileDestroyer::DestroyProfileWhenAppropriate(temp_profile);
   client.Unbind();
   api.reset();
 }

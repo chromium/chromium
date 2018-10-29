@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/ui/util/top_view_controller.h"
 #import "ios/chrome/common/favicon/favicon_view.h"
+#import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation_manager.h"
 #import "ios/web/public/referrer.h"
@@ -82,8 +83,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 // Object to manage insertion of history entries into the table view model.
 @property(nonatomic, strong) HistoryEntryInserter* entryInserter;
-// Coordinator for displaying context menus for history entries.
-@property(nonatomic, strong) ContextMenuCoordinator* contextMenuCoordinator;
 // The current query for visible history entries.
 @property(nonatomic, copy) NSString* currentQuery;
 // The current status message for the tableView, it might be nil.
@@ -231,14 +230,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   // SearchController is active will fail.
   self.definesPresentationContext = YES;
 
-  self.scrimView = [[UIControl alloc] initWithFrame:self.tableView.bounds];
+  self.scrimView = [[UIControl alloc] init];
   self.scrimView.alpha = 0.0f;
   self.scrimView.backgroundColor =
       [UIColor colorWithWhite:0
                         alpha:kTableViewNavigationWhiteAlphaForSearchScrim];
   self.scrimView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.scrimView.autoresizingMask =
-      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   self.scrimView.accessibilityIdentifier = kHistorySearchScrimIdentifier;
   [self.scrimView addTarget:self
                      action:@selector(dismissSearchController:)
@@ -918,14 +915,16 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   if (self.scrimView.alpha < 1.0f) {
     self.navigationController.toolbarHidden = YES;
     self.scrimView.alpha = 0.0f;
-    CGSize contentSize = self.tableView.contentSize;
-    self.scrimView.frame =
-        CGRectMake(0.0f, 0.0f, contentSize.width,
-                   std::max(contentSize.height, self.view.bounds.size.height));
     [self.tableView addSubview:self.scrimView];
+    // We attach our constraints to the superview because the tableView is
+    // a scrollView and it seems that we get an empty frame when attaching to
+    // it.
+    AddSameConstraints(self.scrimView, self.view.superview);
+    self.tableView.scrollEnabled = NO;
     [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
                      animations:^{
                        self.scrimView.alpha = 1.0f;
+                       [self.view layoutIfNeeded];
                      }];
   }
 }
@@ -940,6 +939,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
         }
         completion:^(BOOL finished) {
           [self.scrimView removeFromSuperview];
+          self.tableView.scrollEnabled = YES;
         }];
   }
 }
@@ -1026,17 +1026,10 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       base::SysUTF16ToNSString(url_formatter::FormatUrl(entry.URL));
   params.menu_title = [menuTitle copy];
 
-  // Present sheet/popover using controller that is added to view hierarchy.
-  // TODO(crbug.com/754642): Remove TopPresentedViewController().
-  UIViewController* topController =
-      top_view_controller::TopPresentedViewController();
+  self.contextMenuCoordinator = [[ContextMenuCoordinator alloc]
+      initWithBaseViewController:self.navigationController
+                          params:params];
 
-  self.contextMenuCoordinator =
-      [[ContextMenuCoordinator alloc] initWithBaseViewController:topController
-                                                          params:params];
-
-  // TODO(crbug.com/606503): Refactor context menu creation code to be shared
-  // with BrowserViewController.
   // Add "Open in New Tab" option.
   NSString* openInNewTabTitle =
       l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);

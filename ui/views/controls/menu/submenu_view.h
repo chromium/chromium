@@ -51,6 +51,9 @@ class VIEWS_EXPORT SubmenuView : public View,
   explicit SubmenuView(MenuItemView* parent);
   ~SubmenuView() override;
 
+  // Returns true if the submenu has at least one empty menu item.
+  bool HasEmptyMenuItemView();
+
   // Returns true if the submenu has at least one visible child item.
   bool HasVisibleChildren();
 

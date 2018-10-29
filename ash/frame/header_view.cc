@@ -6,12 +6,11 @@
 
 #include <memory>
 
-#include "ash/client_image_registry.h"
-#include "ash/frame/caption_buttons/caption_button_model.h"
-#include "ash/frame/caption_buttons/frame_back_button.h"
-#include "ash/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "ash/frame/default_frame_header.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/public/cpp/caption_buttons/caption_button_model.h"
+#include "ash/public/cpp/caption_buttons/frame_back_button.h"
+#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
+#include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -24,64 +23,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-// An appearance provider that relies on window properties which have been set
-// by the client. Only used in Mash.
-class WindowPropertyAppearanceProvider
-    : public CustomFrameHeader::AppearanceProvider {
- public:
-  explicit WindowPropertyAppearanceProvider(aura::Window* window)
-      : window_(window) {}
-  ~WindowPropertyAppearanceProvider() override = default;
-
-  SkColor GetTitleColor() override {
-    return window_->GetProperty(kFrameTextColorKey);
-  }
-
-  SkColor GetFrameHeaderColor(bool active) override {
-    return window_->GetProperty(active ? kFrameActiveColorKey
-                                       : kFrameInactiveColorKey);
-  }
-
-  gfx::ImageSkia GetFrameHeaderImage(bool active) override {
-    return LookUpImageForProperty(active ? kFrameImageActiveKey
-                                         : kFrameImageInactiveKey);
-  }
-
-  int GetFrameHeaderImageYInset() override {
-    return window_->GetProperty(kFrameImageYInsetKey);
-  }
-
-  gfx::ImageSkia GetFrameHeaderOverlayImage(bool active) override {
-    return LookUpImageForProperty(active ? kFrameImageOverlayActiveKey
-                                         : kFrameImageOverlayInactiveKey);
-  }
-
-  bool IsTabletMode() const override {
-    return Shell::Get()
-        ->tablet_mode_controller()
-        ->IsTabletModeWindowManagerEnabled();
-  }
-
- private:
-  gfx::ImageSkia LookUpImageForProperty(
-      const aura::WindowProperty<base::UnguessableToken*>* property_key) {
-    const base::UnguessableToken* token = window_->GetProperty(property_key);
-    const gfx::ImageSkia* image =
-        token ? Shell::Get()->client_image_registry()->GetImage(*token)
-              : nullptr;
-
-    return image ? *image : gfx::ImageSkia();
-  }
-
-  aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPropertyAppearanceProvider);
-};
-
-}  // namespace
 
 // The view used to draw the content (background and title string)
 // of the header. This is a separate view so that it can use
@@ -111,9 +52,7 @@ class HeaderView::HeaderContentView : public views::View {
   DISALLOW_COPY_AND_ASSIGN(HeaderContentView);
 };
 
-HeaderView::HeaderView(views::Widget* target_widget,
-                       mojom::WindowStyle window_style,
-                       std::unique_ptr<CaptionButtonModel> model)
+HeaderView::HeaderView(views::Widget* target_widget)
     : target_widget_(target_widget),
       avatar_icon_(nullptr),
       header_content_view_(new HeaderContentView(this)),
@@ -123,31 +62,19 @@ HeaderView::HeaderView(views::Widget* target_widget,
   AddChildView(header_content_view_);
 
   caption_button_container_ =
-      new FrameCaptionButtonContainerView(target_widget_, std::move(model));
+      new FrameCaptionButtonContainerView(target_widget_, &caption_controller_);
   caption_button_container_->UpdateCaptionButtonState(false /*=animate*/);
   AddChildView(caption_button_container_);
 
-  if (window_style == mojom::WindowStyle::DEFAULT) {
-    frame_header_ = std::make_unique<DefaultFrameHeader>(
-        target_widget, this, caption_button_container_);
-  } else {
-    DCHECK_EQ(mojom::WindowStyle::BROWSER, window_style);
-    // Only used with mash.
-    DCHECK(::features::IsUsingWindowService());
-    appearance_provider_ = std::make_unique<WindowPropertyAppearanceProvider>(
-        target_widget_->GetNativeWindow());
-    auto frame_header = std::make_unique<CustomFrameHeader>(
-        target_widget, this, appearance_provider_.get(),
-        caption_button_container_);
-    frame_header_ = std::move(frame_header);
-  }
+  aura::Window* window = target_widget->GetNativeWindow();
+  frame_header_ = std::make_unique<DefaultFrameHeader>(
+      target_widget, this, caption_button_container_);
 
   UpdateBackButton();
 
-  aura::Window* window = target_widget->GetNativeWindow();
   frame_header_->SetFrameColors(window->GetProperty(kFrameActiveColorKey),
                                 window->GetProperty(kFrameInactiveColorKey));
-  window_observer_.Add(target_widget_->GetNativeWindow());
+  window_observer_.Add(window);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
 
@@ -265,19 +192,13 @@ void HeaderView::OnWindowPropertyChanged(aura::Window* window,
     return;
 
   DCHECK_EQ(target_widget_->GetNativeWindow(), window);
-  if (key == kFrameImageActiveKey || key == kFrameImageInactiveKey ||
-      key == kFrameImageOverlayActiveKey ||
-      key == kFrameImageOverlayInactiveKey || key == kFrameImageYInsetKey) {
-    SchedulePaint();
-  } else if (key == aura::client::kAvatarIconKey) {
+  if (key == aura::client::kAvatarIconKey) {
     gfx::ImageSkia* const avatar_icon =
         window->GetProperty(aura::client::kAvatarIconKey);
     SetAvatarIcon(avatar_icon ? *avatar_icon : gfx::ImageSkia());
   } else if (key == kFrameActiveColorKey || key == kFrameInactiveColorKey) {
     frame_header_->SetFrameColors(window->GetProperty(kFrameActiveColorKey),
                                   window->GetProperty(kFrameInactiveColorKey));
-  } else if (key == kFrameBackButtonStateKey) {
-    UpdateCaptionButtons();
   } else if (key == aura::client::kShowStateKey) {
     frame_header_->OnShowStateChanged(
         window->GetProperty(aura::client::kShowStateKey));
@@ -404,12 +325,7 @@ void HeaderView::UpdateCaptionButtonsVisibility() {
   if (!target_widget_)
     return;
 
-  caption_button_container_->SetVisible(
-      should_paint_ && !(Shell::Get()
-                             ->tablet_mode_controller()
-                             ->IsTabletModeWindowManagerEnabled() &&
-                         target_widget_->GetNativeWindow()->GetProperty(
-                             ash::kHideCaptionButtonsInTabletModeKey)));
+  caption_button_container_->SetVisible(should_paint_);
 }
 
 }  // namespace ash

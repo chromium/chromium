@@ -21,6 +21,7 @@
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -33,12 +34,18 @@ ContextualSearchSceneLayer::ContextualSearchSceneLayer(
     : SceneLayer(env, jobj),
       env_(env),
       object_(jobj),
-      base_page_brightness_(1.0f),
+      color_overlay_(cc::SolidColorLayer::Create()),
       content_container_(cc::Layer::Create()) {
   // Responsible for moving the base page without modifying the layer itself.
   content_container_->SetIsDrawable(true);
   content_container_->SetPosition(gfx::PointF(0.0f, 0.0f));
   layer()->AddChild(content_container_);
+
+  color_overlay_->SetIsDrawable(true);
+  color_overlay_->SetOpacity(0.0f);
+  color_overlay_->SetBackgroundColor(SK_ColorBLACK);
+  color_overlay_->SetPosition(gfx::PointF(0.f, 0.f));
+  layer()->AddChild(color_overlay_);
 }
 
 void ContextualSearchSceneLayer::CreateContextualSearchLayer(
@@ -76,6 +83,8 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jint bar_banner_ripple_resource_id,
     jint bar_banner_text_resource_id,
     jfloat dp_to_px,
+    jfloat layout_width,
+    jfloat layout_height,
     jfloat base_page_brightness,
     jfloat base_page_offset,
     const JavaParamRef<jobject>& jweb_contents,
@@ -143,15 +152,9 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
       web_contents ? web_contents->GetNativeView()->GetLayer() : nullptr;
 
   // Fade the base page out.
-  if (base_page_brightness_ != base_page_brightness) {
-    base_page_brightness_ = base_page_brightness;
-    cc::FilterOperations filters;
-    if (base_page_brightness < 1.f) {
-      filters.Append(
-          cc::FilterOperation::CreateBrightnessFilter(base_page_brightness));
-    }
-    content_container_->SetFilters(filters);
-  }
+  color_overlay_->SetOpacity(1.f - base_page_brightness);
+  color_overlay_->SetBounds(
+      gfx::ToCeiledSize(gfx::SizeF(layout_width, layout_height)));
 
   // Move the base page contents up.
   content_container_->SetPosition(gfx::PointF(0.0f, base_page_offset));
@@ -236,9 +239,7 @@ void ContextualSearchSceneLayer::HideTree(JNIEnv* env,
     contextual_search_layer_->layer()->SetHideLayerAndSubtree(true);
   }
   // Reset base page brightness.
-  cc::FilterOperations filters;
-  filters.Append(cc::FilterOperation::CreateBrightnessFilter(1.0f));
-  content_container_->SetFilters(filters);
+  color_overlay_->SetOpacity(0.f);
   // Reset base page offset.
   content_container_->SetPosition(gfx::PointF(0.0f, 0.0f));
 }

@@ -1,0 +1,15 @@
+{
+  "name": "cups_ipp_parser",
+  "display_name": "CUPS IPP Parser",
+  "options" : {
+    "instance_sharing" : "shared_instance_across_users"
+  },
+  "sandbox_type": "utility",
+  "interface_provider_specs": {
+    "service_manager:connector": {
+      "provides": {
+        "ipp_parser": [ "chrome.mojom.IppParser" ]
+       }
+     }
+  }
+}

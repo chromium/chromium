@@ -17,7 +17,7 @@ AXTreeCombiner::~AXTreeCombiner() {
 void AXTreeCombiner::AddTree(const AXTreeUpdate& tree, bool is_root) {
   trees_.push_back(tree);
   if (is_root) {
-    DCHECK_EQ(root_tree_id_, -1);
+    DCHECK_EQ(root_tree_id_, AXTreeIDUnknown());
     root_tree_id_ = tree.tree_data.tree_id;
   }
 }
@@ -25,7 +25,7 @@ void AXTreeCombiner::AddTree(const AXTreeUpdate& tree, bool is_root) {
 bool AXTreeCombiner::Combine() {
   // First create a map from tree ID to tree update.
   for (const auto& tree : trees_) {
-    int32_t tree_id = tree.tree_data.tree_id;
+    AXTreeID tree_id = tree.tree_data.tree_id;
     if (tree_id_map_.find(tree_id) != tree_id_map_.end())
       return false;
     tree_id_map_[tree.tree_data.tree_id] = &tree;
@@ -46,7 +46,7 @@ bool AXTreeCombiner::Combine() {
   // have focus and mapping IDs from the tree data appropriately.
   combined_.has_tree_data = true;
   combined_.tree_data = root->tree_data;
-  int32_t focused_tree_id = root->tree_data.focused_tree_id;
+  AXTreeID focused_tree_id = root->tree_data.focused_tree_id;
   const AXTreeUpdate* focused_tree = root;
   if (tree_id_map_.find(focused_tree_id) != tree_id_map_.end())
     focused_tree = tree_id_map_[focused_tree_id];
@@ -69,7 +69,7 @@ bool AXTreeCombiner::Combine() {
   return true;
 }
 
-int32_t AXTreeCombiner::MapId(int32_t tree_id, int32_t node_id) {
+int32_t AXTreeCombiner::MapId(AXTreeID tree_id, int32_t node_id) {
   auto tree_id_node_id = std::make_pair(tree_id, node_id);
   if (tree_id_node_id_map_[tree_id_node_id] == 0)
     tree_id_node_id_map_[tree_id_node_id] = next_id_++;
@@ -77,11 +77,11 @@ int32_t AXTreeCombiner::MapId(int32_t tree_id, int32_t node_id) {
 }
 
 void AXTreeCombiner::ProcessTree(const AXTreeUpdate* tree) {
-  int32_t tree_id = tree->tree_data.tree_id;
+  AXTreeID tree_id = tree->tree_data.tree_id;
   for (size_t i = 0; i < tree->nodes.size(); ++i) {
     AXNodeData node = tree->nodes[i];
-    int32_t child_tree_id =
-        node.GetIntAttribute(ax::mojom::IntAttribute::kChildTreeId);
+    AXTreeID child_tree_id = AXTreeID::FromString(
+        node.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
 
     // Map the node's ID.
     node.id = MapId(tree_id, node.id);
@@ -94,16 +94,11 @@ void AXTreeCombiner::ProcessTree(const AXTreeUpdate* tree) {
     if (node.offset_container_id > 0)
       node.offset_container_id = MapId(tree_id, node.offset_container_id);
 
-    // Map other int attributes that refer to node IDs, and remove the
-    // ax::mojom::IntAttribute::kChildTreeId attribute.
+    // Map other int attributes that refer to node IDs.
     for (size_t j = 0; j < node.int_attributes.size(); ++j) {
       auto& attr = node.int_attributes[j];
       if (IsNodeIdIntAttribute(attr.first))
         attr.second = MapId(tree_id, attr.second);
-      if (attr.first == ax::mojom::IntAttribute::kChildTreeId) {
-        attr.first = ax::mojom::IntAttribute::kNone;
-        attr.second = 0;
-      }
     }
 
     // Map other int list attributes that refer to node IDs.
@@ -112,6 +107,15 @@ void AXTreeCombiner::ProcessTree(const AXTreeUpdate* tree) {
       if (IsNodeIdIntListAttribute(attr.first)) {
         for (size_t k = 0; k < attr.second.size(); k++)
           attr.second[k] = MapId(tree_id, attr.second[k]);
+      }
+    }
+
+    // Remove the ax::mojom::StringAttribute::kChildTreeId attribute.
+    for (size_t j = 0; j < node.string_attributes.size(); ++j) {
+      auto& attr = node.string_attributes[j];
+      if (attr.first == ax::mojom::StringAttribute::kChildTreeId) {
+        attr.first = ax::mojom::StringAttribute::kNone;
+        attr.second = "";
       }
     }
 

@@ -44,6 +44,7 @@ class LoginScreenClient;
 class MediaClient;
 class NetworkConnectDelegateChromeOS;
 class NightLightClient;
+class ScreenOrientationDelegateChromeos;
 class SessionControllerClient;
 class SystemTrayClient;
 class TabletModeClient;
@@ -97,6 +98,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<AppListClientImpl> app_list_client_;
   std::unique_ptr<ChromeNewWindowClient> chrome_new_window_client_;
   std::unique_ptr<ImeControllerClient> ime_controller_client_;
+  std::unique_ptr<ScreenOrientationDelegateChromeos>
+      screen_orientation_delegate_;
   std::unique_ptr<SessionControllerClient> session_controller_client_;
   std::unique_ptr<SystemTrayClient> system_tray_client_;
   std::unique_ptr<TabletModeClient> tablet_mode_client_;

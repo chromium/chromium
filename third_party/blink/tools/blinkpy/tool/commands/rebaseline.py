@@ -32,6 +32,7 @@ import logging
 import optparse
 import re
 
+from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.buildbot import Build
 from blinkpy.tool.commands.command import Command
@@ -75,6 +76,10 @@ class AbstractRebaseliningCommand(Command):
     build_number_option = optparse.make_option(
         '--build-number', default=None, type='int',
         help='Optional build number; if not given, the latest build is used.')
+    step_name_option = optparse.make_option(
+        '--step-name',
+        help=('Name of the step which ran the actual tests, and which '
+              'should be used to retrieve results from.'))
 
     def __init__(self, options=None):
         super(AbstractRebaseliningCommand, self).__init__(options=options)
@@ -304,6 +309,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if options.results_directory:
                 args.extend(['--results-directory', options.results_directory])
 
+            step_name = self._tool.buildbot.get_layout_test_step_name(build)
+            if step_name:
+                args.extend(['--step-name', step_name])
+
             rebaseline_command = [self._tool.executable, path_to_blink_tool, 'rebaseline-test-internal'] + args
             rebaseline_commands.append(tuple([rebaseline_command, cwd]))
 
@@ -435,7 +444,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
     def unstaged_baselines(self):
         """Returns absolute paths for unstaged (including untracked) baselines."""
-        baseline_re = re.compile(r'.*[\\/]LayoutTests[\\/].*-expected\.(txt|png|wav)$')
+        baseline_re = re.compile(r'.*[\\/]' + WEB_TESTS_LAST_COMPONENT + r'[\\/].*-expected\.(txt|png|wav)$')
         unstaged_changes = self._tool.git().unstaged_changes()
         return sorted(self._tool.git().absolute_path(path) for path in unstaged_changes if re.match(baseline_re, path))
 

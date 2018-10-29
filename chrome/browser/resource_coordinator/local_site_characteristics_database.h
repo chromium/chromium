@@ -25,6 +25,9 @@ class LocalSiteCharacteristicsDatabase {
   // initialization has failed.
   using ReadSiteCharacteristicsFromDBCallback = base::OnceCallback<void(
       base::Optional<SiteCharacteristicsProto> site_characteristic_proto)>;
+  using GetDatabaseSizeCallback =
+      base::OnceCallback<void(base::Optional<int64_t> num_rows,
+                              base::Optional<int64_t> on_disk_size_kb)>;
 
   LocalSiteCharacteristicsDatabase() = default;
   virtual ~LocalSiteCharacteristicsDatabase() {}
@@ -48,6 +51,9 @@ class LocalSiteCharacteristicsDatabase {
 
   // Clear the database, removes every entries that it contains.
   virtual void ClearDatabase() = 0;
+
+  // Retrieve the size of the database.
+  virtual void GetDatabaseSize(GetDatabaseSizeCallback callback) = 0;
 };
 
 }  // namespace resource_coordinator

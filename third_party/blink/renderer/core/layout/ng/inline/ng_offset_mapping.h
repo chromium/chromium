@@ -38,7 +38,7 @@ enum class NGOffsetMappingUnitType { kIdentity, kCollapsed, kExpanded };
 //   in the dom range is expanded into multiple characters.
 // See design doc https://goo.gl/CJbxky for details.
 class CORE_EXPORT NGOffsetMappingUnit {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   NGOffsetMappingUnit(NGOffsetMappingUnitType,
@@ -130,6 +130,10 @@ class CORE_EXPORT NGOffsetMapping {
   // a LayoutObject at hand.
   static const NGOffsetMapping* GetFor(const LayoutObject*);
 
+  // Returns the mapping object of the inline formatting context the given
+  // LayoutBlockFlow has.
+  static const NGOffsetMapping* GetForContainingBlockFlow(LayoutBlockFlow*);
+
   // Returns the NGOffsetMappingUnit whose DOM range contains the position.
   // If there are multiple qualifying units, returns the last one.
   const NGOffsetMappingUnit* GetMappingUnitForPosition(const Position&) const;
@@ -177,6 +181,13 @@ class CORE_EXPORT NGOffsetMapping {
   Position GetFirstPosition(unsigned) const;
   Position GetLastPosition(unsigned) const;
 
+  // Returns all NGOffsetMappingUnits whose text content ranges has non-empty
+  // (but possibly collapsed) intersection with (start, end). Note that units
+  // that only "touch" |start| or |end| are excluded.
+  NGMappingUnitRange GetMappingUnitsForTextContentOffsetRange(
+      unsigned start,
+      unsigned end) const;
+
   // TODO(xiaochengh): Add offset-to-DOM APIs skipping generated contents.
 
   // ------ APIs inspecting the text content string ------
@@ -199,7 +210,7 @@ class CORE_EXPORT NGOffsetMapping {
   DISALLOW_COPY_AND_ASSIGN(NGOffsetMapping);
 };
 
-CORE_EXPORT const LayoutBlockFlow* NGInlineFormattingContextOf(const Position&);
+CORE_EXPORT LayoutBlockFlow* NGInlineFormattingContextOf(const Position&);
 
 }  // namespace blink
 

@@ -36,6 +36,8 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/separator.h"
 
+using device::mojom::BluetoothSystem;
+
 namespace ash {
 namespace tray {
 
@@ -48,16 +50,25 @@ class BluetoothDefaultView : public TrayItemMore {
 
   void Update() {
     TrayBluetoothHelper* helper = Shell::Get()->tray_bluetooth_helper();
-    if (helper->GetBluetoothAvailable()) {
-      const base::string16 label = l10n_util::GetStringUTF16(
-          helper->GetBluetoothEnabled()
-              ? IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED
-              : IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED);
-      SetLabel(label);
-      SetAccessibleName(label);
-      SetVisible(true);
-    } else {
-      SetVisible(false);
+    bool powered_on = true;
+
+    switch (helper->GetBluetoothState()) {
+      case BluetoothSystem::State::kUnsupported:
+      case BluetoothSystem::State::kUnavailable:
+        SetVisible(false);
+        break;
+      case BluetoothSystem::State::kPoweredOff:
+        powered_on = false;
+        FALLTHROUGH;
+      case BluetoothSystem::State::kTransitioning:
+      case BluetoothSystem::State::kPoweredOn:
+        const base::string16 label = l10n_util::GetStringUTF16(
+            powered_on ? IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED
+                       : IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED);
+        SetLabel(label);
+        SetAccessibleName(label);
+        SetVisible(true);
+        break;
     }
     UpdateStyle();
   }
@@ -68,12 +79,21 @@ class BluetoothDefaultView : public TrayItemMore {
     TrayBluetoothHelper* helper = Shell::Get()->tray_bluetooth_helper();
     std::unique_ptr<TrayPopupItemStyle> style =
         TrayItemMore::HandleCreateStyle();
-    style->set_color_style(
-        helper->GetBluetoothEnabled()
-            ? TrayPopupItemStyle::ColorStyle::ACTIVE
-            : helper->GetBluetoothAvailable()
-                  ? TrayPopupItemStyle::ColorStyle::INACTIVE
-                  : TrayPopupItemStyle::ColorStyle::DISABLED);
+    TrayPopupItemStyle::ColorStyle color_style;
+    switch (helper->GetBluetoothState()) {
+      case BluetoothSystem::State::kUnsupported:
+      case BluetoothSystem::State::kUnavailable:
+        color_style = TrayPopupItemStyle::ColorStyle::INACTIVE;
+        break;
+      case BluetoothSystem::State::kPoweredOff:
+      case BluetoothSystem::State::kTransitioning:
+        color_style = TrayPopupItemStyle::ColorStyle::DISABLED;
+        break;
+      case BluetoothSystem::State::kPoweredOn:
+        color_style = TrayPopupItemStyle::ColorStyle::ACTIVE;
+        break;
+    }
+    style->set_color_style(color_style);
 
     return style;
   }
@@ -87,7 +107,7 @@ class BluetoothDefaultView : public TrayItemMore {
  private:
   const gfx::VectorIcon& GetCurrentIcon() {
     TrayBluetoothHelper* helper = Shell::Get()->tray_bluetooth_helper();
-    if (!helper->GetBluetoothEnabled())
+    if (helper->GetBluetoothState() != BluetoothSystem::State::kPoweredOn)
       return kSystemMenuBluetoothDisabledIcon;
 
     bool has_connected_device = false;
@@ -141,8 +161,9 @@ views::View* TrayBluetooth::CreateDefaultView(LoginStatus status) {
 }
 
 views::View* TrayBluetooth::CreateDetailedView(LoginStatus status) {
-  if (!Shell::Get()->tray_bluetooth_helper()->GetBluetoothAvailable())
+  if (!Shell::Get()->tray_bluetooth_helper()->IsBluetoothStateAvailable())
     return nullptr;
+
   Shell::Get()->metrics()->RecordUserMetricsAction(
       UMA_STATUS_AREA_DETAILED_BLUETOOTH_VIEW);
   CHECK(detailed_ == nullptr);

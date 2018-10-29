@@ -474,8 +474,7 @@ void ExtensionsMetricsProvider::ProvideOccupiedBucketMetric(
     buckets.insert(HashExtension((*it)->id(), client_key));
   }
 
-  for (std::set<int>::const_iterator it = buckets.begin(); it != buckets.end();
-       ++it) {
+  for (auto it = buckets.begin(); it != buckets.end(); ++it) {
     system_profile->add_occupied_extension_bucket(*it);
   }
 }

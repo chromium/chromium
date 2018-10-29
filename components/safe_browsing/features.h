@@ -21,9 +21,6 @@ namespace safe_browsing {
 // Features list
 extern const base::Feature kAdSamplerTriggerFeature;
 
-// Controls the safe browsing protection for advanced protection program.
-extern const base::Feature kAdvancedProtectionStatusFeature;
-
 // Controls the billing interstitial UI.
 extern const base::Feature kBillingInterstitial;
 
@@ -57,6 +54,9 @@ extern const base::Feature kThreatDomDetailsTagAndAttributeFeature;
 // Having a single shared feature makes it impossible to run multiple trigger
 // trials simultaneously.
 extern const base::Feature kTriggerThrottlerDailyQuotaFeature;
+
+// Controls whether Chrome on Android uses locally cached blacklists.
+extern const base::Feature kUseLocalBlacklistsV2;
 
 base::ListValue GetFeatureStatusList();
 

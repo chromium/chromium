@@ -49,13 +49,13 @@ TEST(UTFStringConversionsTest, ConvertUTF8AndWide) {
   // we round-trip all the wide strings through UTF-8 to make sure everything
   // agrees on the conversion. This uses the stream operators to test them
   // simultaneously.
-  for (size_t i = 0; i < arraysize(kConvertRoundtripCases); ++i) {
+  for (auto* i : kConvertRoundtripCases) {
     std::ostringstream utf8;
-    utf8 << WideToUTF8(kConvertRoundtripCases[i]);
+    utf8 << WideToUTF8(i);
     std::wostringstream wide;
     wide << UTF8ToWide(utf8.str());
 
-    EXPECT_EQ(kConvertRoundtripCases[i], wide.str());
+    EXPECT_EQ(i, wide.str());
   }
 }
 
@@ -97,13 +97,10 @@ TEST(UTFStringConversionsTest, ConvertUTF8ToWide) {
 #endif
   };
 
-  for (size_t i = 0; i < arraysize(convert_cases); i++) {
+  for (const auto& i : convert_cases) {
     std::wstring converted;
-    EXPECT_EQ(convert_cases[i].success,
-              UTF8ToWide(convert_cases[i].utf8,
-                         strlen(convert_cases[i].utf8),
-                         &converted));
-    std::wstring expected(convert_cases[i].wide);
+    EXPECT_EQ(i.success, UTF8ToWide(i.utf8, strlen(i.utf8), &converted));
+    std::wstring expected(i.wide);
     EXPECT_EQ(expected, converted);
   }
 

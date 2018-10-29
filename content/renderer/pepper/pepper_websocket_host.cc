@@ -216,10 +216,8 @@ int32_t PepperWebSocketHost::OnHostMsgConnect(
 
   // Validate protocols.
   std::string protocol_string;
-  for (std::vector<std::string>::const_iterator vector_it = protocols.begin();
-       vector_it != protocols.end();
+  for (auto vector_it = protocols.begin(); vector_it != protocols.end();
        ++vector_it) {
-
     // Check containing characters.
     for (std::string::const_iterator string_it = vector_it->begin();
          string_it != vector_it->end();

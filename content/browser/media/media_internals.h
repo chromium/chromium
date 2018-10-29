@@ -18,7 +18,7 @@
 #include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
-#include "content/browser/media/session/audio_focus_observer.h"
+#include "content/browser/media/media_internals_audio_focus_helper.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -44,7 +44,6 @@ namespace content {
 // TODO(crbug.com/812557): Remove inheritance from media::AudioLogFactory once
 // the creation of the AudioManager instance moves to the audio service.
 class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
-                                      public AudioFocusObserver,
                                       public NotificationObserver {
  public:
   // Called with the update string.
@@ -74,6 +73,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
 
   // Replay all saved media events.
   void SendHistoricalMediaEvents();
+
+  // Sends general audio information to each registered UpdateCallback.
+  void SendGeneralAudioInformation();
 
   // Sends all audio cached data to each registered UpdateCallback.
   void SendAudioStreamData();
@@ -114,17 +116,14 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   void OnProcessTerminatedForTesting(int process_id);
 
  private:
+  // Needs access to SendUpdate.
+  friend class MediaInternalsAudioFocusHelper;
+
   class AudioLogImpl;
   // Inner class to handle reporting pipelinestatus to UMA
   class MediaInternalsUMAHandler;
 
   MediaInternals();
-
-  // AudioFocusObserver implementation.
-  void OnFocusGained(media_session::mojom::MediaSessionPtr media_session,
-                     media_session::mojom::AudioFocusType type) override;
-  void OnFocusLost(
-      media_session::mojom::MediaSessionPtr media_session) override;
 
   // Sends |update| to each registered UpdateCallback.  Safe to call from any
   // thread, but will forward to the IO thread.
@@ -162,6 +161,8 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   base::ListValue video_capture_capabilities_cached_data_;
 
   NotificationRegistrar registrar_;
+
+  MediaInternalsAudioFocusHelper audio_focus_helper_;
 
   // All variables below must be accessed under |lock_|.
   base::Lock lock_;

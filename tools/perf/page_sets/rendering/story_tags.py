@@ -13,8 +13,6 @@ Tag = collections.namedtuple('Tag', ['name', 'description'])
 
 GPU_RASTERIZATION = Tag(
     'gpu_rasterization', 'Story tests performance with GPU rasterization.')
-SYNC_SCROLL = Tag(
-    'sync_scroll', 'Story tests rendering with synchronous scrolling.')
 FASTPATH = Tag(
     'fastpath', 'Fast path stories.')
 REQUIRED_WEBGL = Tag(
@@ -38,6 +36,8 @@ KEY_IDLE_POWER = Tag(
     'key_idle_power', 'Key idle power stories')
 MAPS = Tag(
     'maps', 'Maps stories')
+MOTIONMARK = Tag(
+    'motionmark', 'Motionmark benchmark stories')
 PATHOLOGICAL_MOBILE_SITES = Tag(
     'pathological_mobile_sites', 'Pathological mobile sites')
 POLYMER = Tag(

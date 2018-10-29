@@ -117,6 +117,12 @@ interface LevelDBDatabase {
 
   DeletePrefixed(array<uint8> key_prefix) => (DatabaseError status);
 
+  // Rewrites the database to remove traces of deleted entries from disk.
+  // Returns OK on success. A non-OK error means that the rewrite failed.
+  // If the status is not OK, the database can become unusable which will close
+  // the mojo connection.
+  RewriteDB() => (DatabaseError status);
+
   // Atomically performs all |operations|.
   // The DELETE_PREFIXED_KEY applies to all keys that exist before these
   // operations execute. If a 'put' operation precedes a delete prefix, then it

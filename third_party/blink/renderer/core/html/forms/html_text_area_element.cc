@@ -418,7 +418,7 @@ void HTMLTextAreaElement::SetValueCommon(
   UpdatePlaceholderVisibility();
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
-      StyleChangeReasonForTracing::Create(StyleChangeReason::kControlValue));
+      StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
   SetNeedsValidityCheck();
   if (IsFinishedParsingChildren() &&
       selection == TextControlSetValueSelection::kSetSelectionToEnd) {
@@ -482,7 +482,7 @@ void HTMLTextAreaElement::SetSuggestedValue(const String& value) {
   TextControlElement::SetSuggestedValue(value);
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
-      StyleChangeReasonForTracing::Create(StyleChangeReason::kControlValue));
+      StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
 }
 
 String HTMLTextAreaElement::validationMessage() const {

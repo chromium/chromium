@@ -28,6 +28,7 @@ SendAlgorithmInterface* SendAlgorithmInterface::Create(
     QuicPacketCount initial_congestion_window) {
   QuicPacketCount max_congestion_window = kDefaultMaxCongestionWindowPackets;
   switch (congestion_control_type) {
+    case kGoogCC:  // GoogCC is not supported by quic/core, fall back to BBR.
     case kBBR:
       return new BbrSender(rtt_stats, unacked_packets,
                            initial_congestion_window, max_congestion_window,

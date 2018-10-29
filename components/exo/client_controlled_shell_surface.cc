@@ -7,10 +7,11 @@
 #include <map>
 #include <utility>
 
-#include "ash/frame/caption_buttons/caption_button_model.h"
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
+#include "ash/public/cpp/caption_buttons/caption_button_model.h"
+#include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -29,7 +30,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "services/ws/public/mojom/window_tree_constants.mojom.h"
@@ -538,9 +539,11 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
     int64_t display_id,
     const gfx::Rect& window_bounds,
     int bounds_change) {
-  // Do no update the bounds unless we have geometry from client.
+  // 1) Do no update the bounds unless we have geometry from client.
+  // 2) Do not update the bounds if window is minimized.
+  // The bounds will be provided by client when unminimized.
   if (!geometry().IsEmpty() && !window_bounds.IsEmpty() &&
-      bounds_changed_callback_) {
+      !widget_->IsMinimized() && bounds_changed_callback_) {
     // Sends the client bounds, which matches the geometry
     // when frame is enabled.
     ash::NonClientFrameViewAsh* frame_view = GetFrameView();
@@ -655,7 +658,8 @@ ClientControlledShellSurface::CreateNonClientFrameView(views::Widget* widget) {
       static_cast<ash::NonClientFrameViewAsh*>(
           ShellSurfaceBase::CreateNonClientFrameView(widget));
   immersive_fullscreen_controller_ =
-      std::make_unique<ash::ImmersiveFullscreenController>();
+      std::make_unique<ash::ImmersiveFullscreenController>(
+          ash::Shell::Get()->immersive_context());
   frame_view->InitImmersiveFullscreenControllerForView(
       immersive_fullscreen_controller_.get());
   return frame_view;
@@ -757,7 +761,14 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds) {
     preserve_widget_bounds_ = false;
   }
 
-  if (bounds == widget_->GetWindowBoundsInScreen() &&
+  // Calculate a minimum window visibility required bounds.
+  gfx::Rect adjusted_bounds = bounds;
+  if (!is_display_move_pending) {
+    ash::wm::ClientControlledState::AdjustBoundsForMinimumWindowVisibility(
+        target_display.bounds(), &adjusted_bounds);
+  }
+
+  if (adjusted_bounds == widget_->GetWindowBoundsInScreen() &&
       target_display.id() == current_display.id()) {
     return;
   }
@@ -766,13 +777,7 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds) {
                             GetWindowState()->is_dragged() &&
                             !is_display_move_pending;
 
-  // Android PIP windows can be dismissed by swiping off the screen. Let them be
-  // positioned off-screen. Apart from swipe to dismiss, the PIP window will be
-  // kept on screen.
-  // TODO(edcourtney): This should be done as a client controlled move, not a
-  // special case.
-  if (set_bounds_locally || client_controlled_state_->set_bounds_locally() ||
-      GetWindowState()->IsPip()) {
+  if (set_bounds_locally || client_controlled_state_->set_bounds_locally()) {
     // Convert from screen to display coordinates.
     gfx::Point origin = bounds.origin();
     wm::ConvertPointFromScreen(window->parent(), &origin);
@@ -780,17 +785,10 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds) {
     // Move the window relative to the current display.
     {
       ScopedSetBoundsLocally scoped_set_bounds(this);
-      window->SetBounds(gfx::Rect(origin, bounds.size()));
+      window->SetBounds(gfx::Rect(origin, adjusted_bounds.size()));
     }
     UpdateSurfaceBounds();
     return;
-  }
-
-  // Calculate a minimum window visibility required bounds.
-  gfx::Rect adjusted_bounds = bounds;
-  if (!is_display_move_pending) {
-    ash::wm::ClientControlledState::AdjustBoundsForMinimumWindowVisibility(
-        target_display.bounds(), &adjusted_bounds);
   }
 
   {
@@ -877,8 +875,15 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
   }
 
   ash::wm::WindowState* window_state = GetWindowState();
-  if (window_state->GetStateType() == pending_window_state_)
+  if (window_state->GetStateType() == pending_window_state_) {
+    // Animate PIP window movement unless it is being dragged.
+    if (window_state->IsPip() && !window_state->is_dragged()) {
+      client_controlled_state_->set_next_bounds_change_animation_type(
+          ash::wm::ClientControlledState::kAnimationAnimated);
+    }
+
     return true;
+  }
 
   if (IsPinned(window_state)) {
     VLOG(1) << "State change was requested while pinned";
@@ -916,8 +921,12 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
     widget_->widget_delegate()->set_can_activate(true);
   }
 
-  client_controlled_state_->EnterNextState(window_state, pending_window_state_,
-                                           animation_type);
+  if (client_controlled_state_->EnterNextState(window_state,
+                                               pending_window_state_)) {
+    client_controlled_state_->set_next_bounds_change_animation_type(
+        animation_type);
+  }
+
   return true;
 }
 
@@ -963,8 +972,11 @@ void ClientControlledShellSurface::UpdateFrame() {
           .work_area();
 
   ash::wm::WindowState* window_state = GetWindowState();
-  if (window_state->IsMaximizedOrFullscreenOrPinned() &&
-      work_area.width() != geometry().width()) {
+  bool enable_wide_frame = GetFrameView()->visible() &&
+                           window_state->IsMaximizedOrFullscreenOrPinned() &&
+                           work_area.width() != geometry().width();
+
+  if (enable_wide_frame) {
     if (!wide_frame_) {
       wide_frame_ = std::make_unique<ash::WideFrameView>(widget_);
       ash::ImmersiveFullscreenController::EnableForWidget(widget_, false);

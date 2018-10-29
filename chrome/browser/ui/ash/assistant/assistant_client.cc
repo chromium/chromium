@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "ash/public/interfaces/voice_interaction_controller.mojom.h"
+#include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/voice_interaction/voice_interaction_controller_client.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/assistant/assistant_context_util.h"
 #include "chrome/browser/ui/ash/assistant/assistant_image_downloader.h"
 #include "chrome/browser/ui/ash/assistant/assistant_setup.h"
@@ -38,6 +40,12 @@ AssistantClient::~AssistantClient() {
 }
 
 void AssistantClient::MaybeInit(service_manager::Connector* connector) {
+  if (arc::IsAssistantAllowedForProfile(
+          ProfileManager::GetActiveUserProfile()) !=
+      ash::mojom::AssistantAllowedState::ALLOWED) {
+    return;
+  }
+
   if (initialized_)
     return;
 

@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutSlider (floating) {INPUT} at (2,2) size 100x10 [color=#9D968E] [bgcolor=#FF0000]
-        LayoutFlexibleBox {DIV} at (0,0) size 100x10
-          LayoutBlockFlow {DIV} at (0,0) size 100x10
-            LayoutBlockFlow {DIV} at (90,0) size 10x10 [bgcolor=#008000]

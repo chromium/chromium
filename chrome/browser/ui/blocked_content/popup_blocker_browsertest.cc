@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -494,13 +493,11 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_WindowFeatures) {
   // Check that the new popup has (roughly) the requested size.
   gfx::Size window_size = popup->GetContainerBounds().size();
   EXPECT_TRUE(349 <= window_size.width() && window_size.width() <= 351);
-#if defined(OS_MACOSX)
+#if !defined(OS_MACOSX)
   // Window height computation is off in MacViews: https://crbug.com/846329
-  if (!views_mode_controller::IsViewsBrowserCocoa())
-    return;
-#endif
   EXPECT_GE(window_size.height(), 249);
   EXPECT_LE(window_size.height(), 253);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CorrectReferrer) {

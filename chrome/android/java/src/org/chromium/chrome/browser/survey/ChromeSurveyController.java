@@ -11,12 +11,12 @@ import android.support.annotation.IntDef;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
@@ -213,7 +213,7 @@ public class ChromeSurveyController implements InfoBarContainer.InfoBarAnimation
     @VisibleForTesting
     void showSurveyInfoBar(Tab tab, String siteId) {
         mSurveyInfoBarTab = tab;
-        tab.getInfoBarContainer().addAnimationListener(this);
+        InfoBarContainer.get(tab).addAnimationListener(this);
         SurveyInfoBar.showSurveyInfoBar(tab.getWebContents(), siteId, true,
                 R.drawable.chrome_sync_logo, getSurveyInfoBarDelegate());
 
@@ -441,9 +441,8 @@ public class ChromeSurveyController implements InfoBarContainer.InfoBarAnimation
         // Return early to allow only one call to this method (http://crbug.com/791076).
         if (mSurveyInfoBarTab == null) return;
 
-        if (mSurveyInfoBarTab.getInfoBarContainer() != null) {
-            mSurveyInfoBarTab.getInfoBarContainer().removeAnimationListener(this);
-        }
+        InfoBarContainer container = InfoBarContainer.get(mSurveyInfoBarTab);
+        if (container != null) container.removeAnimationListener(this);
 
         mLoggingHandler.removeCallbacksAndMessages(null);
 

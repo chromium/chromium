@@ -5,6 +5,15 @@
 'use strict';
 
 /**
+ * @typedef {{
+ *   dataToSave: Array,
+ *   token: string,
+ *   fileName: string
+ * }}
+ */
+let SaveDataMessageData;
+
+/**
  * @return {number} Width of a scrollbar in pixels
  */
 function getScrollbarWidth() {
@@ -59,6 +68,18 @@ function shouldIgnoreKeyEvents(activeElement) {
 }
 
 /**
+ * Creates a cryptographically secure pseudorandom 128-bit token.
+ *
+ * @return {string} The generated token as a hex string.
+ */
+function createToken() {
+  const randomBytes = new Uint8Array(16);
+  return window.crypto.getRandomValues(randomBytes)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+}
+
+/**
  * The minimum number of pixels to offset the toolbar by from the bottom and
  * right side of the screen.
  */
@@ -104,6 +125,9 @@ function PDFViewer(browserApi) {
   this.isFormFieldFocused_ = false;
   this.beepCount_ = 0;
   this.delayedScriptingMessages_ = [];
+
+  /** @private {!Set<string>} */
+  this.pendingTokens_ = new Set();
 
   this.isPrintPreview_ = location.origin === 'chrome://print';
   this.isPrintPreviewLoadingFinished_ = false;
@@ -509,7 +533,9 @@ PDFViewer.prototype = {
    * @private
    */
   save_: function() {
-    this.postMessage_({type: 'save'});
+    const newToken = createToken();
+    this.pendingTokens_.add(newToken);
+    this.postMessage_({type: 'save', token: newToken});
   },
 
   /**
@@ -755,7 +781,54 @@ PDFViewer.prototype = {
       case 'transformPagePointReply':
         this.coordsTransformer_.onReplyReceived(message);
         break;
+      case 'saveData':
+        this.saveData_(message.data);
+        break;
+      case 'consumeSaveToken':
+        if (!this.pendingTokens_.delete(message.data.token))
+          throw new Error('Internal error: save token not found.');
+        break;
     }
+  },
+
+  /**
+   * Saves a pdf file buffer received from the plugin.
+   *
+   * @param {SaveDataMessageData} messageData data of the message event.
+   * @private
+   */
+  saveData_: function(messageData) {
+    // Verify a token that was created by this instance is included to avoid
+    // being spammed.
+    if (!this.pendingTokens_.delete(messageData.token))
+      throw new Error('Internal error: save token not found, abort save.');
+
+    // Verify the file size and the first bytes to make sure it's a PDF. Cap at
+    // 100 MB. This cap should be kept in sync with and is also enforced in
+    // pdf/out_of_process_instance.cc.
+    const MIN_FILE_SIZE = '%PDF1.0'.length;
+    const MAX_FILE_SIZE = 100 * 1000 * 1000;
+
+    const bufView = new Uint8Array(messageData.dataToSave);
+    if (bufView.length > MAX_FILE_SIZE)
+      throw new Error(`File too large to be saved: ${bufView.length} bytes.`);
+    if (bufView.length < MIN_FILE_SIZE ||
+        String.fromCharCode(bufView[0], bufView[1], bufView[2], bufView[3]) !=
+            '%PDF') {
+      throw new Error('Not a PDF file.');
+    }
+
+    // Make sure file extension is .pdf, avoids dangerous extensions.
+    let fileName = messageData.fileName;
+    if (!fileName.toLowerCase().endsWith('.pdf'))
+      fileName = fileName + '.pdf';
+
+    const a = document.createElement('a');
+    a.download = fileName;
+    const blob = new Blob([messageData.dataToSave], {type: 'application/pdf'});
+    a.href = URL.createObjectURL(blob);
+    a.click();
+    URL.revokeObjectURL(a.href);
   },
 
   /**
@@ -818,7 +891,7 @@ PDFViewer.prototype = {
    */
   setUserInitiated_: function(userInitiated) {
     if (this.isUserInitiatedEvent_ == userInitiated) {
-      throw 'Trying to set user initiated to current value.';
+      throw new Error('Trying to set user initiated to current value.');
     }
     this.isUserInitiatedEvent_ = userInitiated;
   },

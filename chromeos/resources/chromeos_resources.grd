@@ -4,26 +4,15 @@
     <output filename="grit/chromeos_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
+    <output filename="grit/chromeos_resources_map.cc"
+            type="gzipped_resource_file_map_source" />
+    <output filename="grit/chromeos_resources_map.h"
+            type="gzipped_resource_map_header" />
     <output filename="chromeos_resources.pak" type="data_package" />
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_DEVICE_SYNC_MOJOM_JS"
-          file="${mojom_root}/chromeos/services/device_sync/public/mojom/device_sync.mojom.js"
-          use_base_dir="false"
-          type="BINDATA" />
-      <include name="IDR_TIME_MOJOM_JS"
-          file="${mojom_root}/mojo/public/mojom/base/time.mojom.js"
-          use_base_dir="false"
-          type="BINDATA" />
-      <include name="IDR_MULTIDEVICE_SETUP_MOJOM_JS"
-          file="${mojom_root}/chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.js"
-          use_base_dir="false"
-          type="BINDATA" />
-      <include name="IDR_MULTIDEVICE_SETUP_CONSTANTS_MOJOM_JS"
-          file="${mojom_root}/chromeos/services/multidevice_setup/public/mojom/constants.mojom.js"
-          use_base_dir="false"
-          type="BINDATA" />
+      <part file="multidevice_resources.grdp" />
       <part file="proximity_auth_resources.grdp" />
       <if expr="enable_cros_libassistant">
         <part file="assistant_resources.grdp" />

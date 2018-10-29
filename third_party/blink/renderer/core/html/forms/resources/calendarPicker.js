@@ -352,11 +352,11 @@ Day.prototype.format = function() {
   return Day.formatter.format(this.startDate());
 };
 
-// See WebCore/platform/DateComponents.h.
+// See platform/date_components.h.
 Day.Minimum = Day.createFromValue(-62135596800000.0);
 Day.Maximum = Day.createFromValue(8640000000000000.0);
 
-// See WebCore/html/DayInputType.cpp.
+// See core/html/forms/date_input_type.cc.
 Day.DefaultStep = 86400000;
 Day.DefaultStepBase = 0;
 
@@ -387,11 +387,11 @@ function Week(year, week) {
 
 Week.ISOStringRegExp = /^(\d+)-[wW](\d+)$/;
 
-// See WebCore/platform/DateComponents.h.
+// See platform/date_components.h.
 Week.Minimum = new Week(1, 1);
 Week.Maximum = new Week(275760, 37);
 
-// See WebCore/html/WeekInputType.cpp.
+// See core/html/forms/week_input_type.cc.
 Week.DefaultStep = 604800000;
 Week.DefaultStepBase = -259200000;
 
@@ -609,11 +609,11 @@ function Month(year, month) {
 
 Month.ISOStringRegExp = /^(\d+)-(\d+)$/;
 
-// See WebCore/platform/DateComponents.h.
+// See platform/date_components.h.
 Month.Minimum = new Month(1, 0);
 Month.Maximum = new Month(275760, 8);
 
-// See WebCore/html/MonthInputType.cpp.
+// See core/html/forms/month_input_type.cc.
 Month.DefaultStep = 1;
 Month.DefaultStepBase = 0;
 

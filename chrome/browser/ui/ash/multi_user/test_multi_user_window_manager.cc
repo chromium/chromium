@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "components/account_id/account_id.h"
 #include "ui/aura/window.h"
+#include "ui/views/widget/widget.h"
 
 TestMultiUserWindowManager::TestMultiUserWindowManager(
     Browser* visiting_browser,
@@ -59,8 +60,9 @@ void TestMultiUserWindowManager::ShowWindowForUser(
     return;
 
   // Change the visibility of the window to update the view recursively.
-  window->Hide();
-  window->Show();
+  views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+  widget->Hide();
+  widget->Show();
   current_account_id_ = account_id;
 }
 

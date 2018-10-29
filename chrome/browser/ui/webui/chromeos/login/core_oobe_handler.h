@@ -149,6 +149,9 @@ class CoreOobeHandler : public BaseWebUIHandler,
       const base::Value& callback_id,
       std::vector<ash::mojom::DisplayUnitInfoPtr> info_list);
   void HandleSetupDemoMode();
+  // Handles demo mode setup for tests. Accepts 'online' and 'offline' as
+  // |demo_config|.
+  void HandleStartDemoModeSetupForTesting(const std::string& demo_config);
 
   // When keyboard_utils.js arrow key down event is reached, raise it
   // to tab/shift-tab event.
@@ -168,9 +171,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   // Updates client area size based on the primary screen size.
   void UpdateClientAreaSize();
-
-  // Updates OOBE configuration.
-  void UpdateOobeConfiguration();
 
   // Notification of a change in the accessibility settings.
   void OnAccessibilityStatusChanged(

@@ -508,8 +508,7 @@ bool NaClIPCAdapter::OnMessageReceived(const IPC::Message& msg) {
 
   if (type == IPC_REPLY_ID) {
     int id = IPC::SyncMessage::GetMessageId(msg);
-    IOThreadData::PendingSyncMsgMap::iterator it =
-        io_thread_data_.pending_sync_msgs_.find(id);
+    auto it = io_thread_data_.pending_sync_msgs_.find(id);
     DCHECK(it != io_thread_data_.pending_sync_msgs_.end());
     if (it != io_thread_data_.pending_sync_msgs_.end()) {
       type = it->second;

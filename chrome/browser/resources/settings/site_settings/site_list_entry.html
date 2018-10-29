@@ -10,6 +10,7 @@
 <link rel="import" href="../icons.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="../site_favicon.html">
 <link rel="import" href="constants.html">
 <link rel="import" href="site_settings_behavior.html">
 <link rel="import" href="site_settings_prefs_browser_proxy.html">
@@ -17,6 +18,10 @@
 <dom-module id="site-list-entry">
   <template>
     <style include="settings-shared">
+      :host {
+        padding-inline-end: 4px;
+      }
+
       .settings-row {
         flex: 1
       }
@@ -31,9 +36,7 @@
     <div class="list-item" focus-row-container>
       <div class="settings-row"
           actionable$="[[enableSiteSettings_]]" on-click="onOriginTap_">
-        <div class="favicon-image"
-            style$="[[computeSiteIcon(model.origin)]]">
-        </div>
+        <site-favicon url="[[model.origin]]"></site-favicon>
         <div class="middle no-min-width">
           <div class="text-elide">
             <span class="url-directionality">[[model.displayName]]</span>

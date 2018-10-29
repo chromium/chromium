@@ -5,6 +5,7 @@
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 
 #include "base/i18n/case_conversion.h"
+#include "base/strings/string_util.h"
 
 namespace ui {
 
@@ -29,6 +30,14 @@ base::char16 GetMnemonic(const base::string16& label) {
     }
   } while (index != base::string16::npos);
   return 0;
+}
+
+base::string16 EscapeMenuLabelAmpersands(const base::string16& label) {
+  base::string16 ret;
+  static const base::char16 kAmps[] = {'&', 0};
+  static const base::char16 kTwoAmps[] = {'&', '&', 0};
+  base::ReplaceChars(label, kAmps, kTwoAmps, &ret);
+  return ret;
 }
 
 }  // namespace ui

@@ -23,7 +23,7 @@ if (crashpad_is_in_fuchsia) {
 } else if (crashpad_is_in_chromium) {
   group("zx") {
     public_deps = [
-      "//third_party/fuchsia-sdk:zx",
+      "//third_party/fuchsia-sdk/sdk:zx",
     ]
   }
 } else {

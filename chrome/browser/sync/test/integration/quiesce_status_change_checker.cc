@@ -60,14 +60,12 @@ bool ProgressMarkersMatch(const browser_sync::ProfileSyncService* service1,
 
   for (syncer::ModelType type : common_types) {
     // Look up the progress markers.  Fail if either one is missing.
-    syncer::ProgressMarkerMap::const_iterator pm_it1 =
-        snap1.download_progress_markers().find(type);
+    auto pm_it1 = snap1.download_progress_markers().find(type);
     if (pm_it1 == snap1.download_progress_markers().end()) {
       return false;
     }
 
-    syncer::ProgressMarkerMap::const_iterator pm_it2 =
-        snap2.download_progress_markers().find(type);
+    auto pm_it2 = snap2.download_progress_markers().find(type);
     if (pm_it2 == snap2.download_progress_markers().end()) {
       return false;
     }

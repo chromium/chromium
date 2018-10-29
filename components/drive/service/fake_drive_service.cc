@@ -1099,6 +1099,10 @@ CancelCallback FakeDriveService::InitiateUploadNewFile(
                     "",  // etag
                     title);
 
+  if (title == "never-sync.txt") {
+    return CancelCallback();
+  }
+
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(callback, HTTP_SUCCESS, session_url));
   return CancelCallback();
@@ -1556,6 +1560,19 @@ google_apis::DriveApiErrorCode FakeDriveService::GetFileVisibility(
     return HTTP_NOT_FOUND;
 
   *visibility = entry->visibility;
+  return HTTP_SUCCESS;
+}
+
+google_apis::DriveApiErrorCode FakeDriveService::SetFileAsSharedWithMe(
+    const std::string& resource_id) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  EntryInfo* entry = FindEntryByResourceId(resource_id);
+  if (!entry)
+    return HTTP_NOT_FOUND;
+
+  entry->change_resource.mutable_file()->set_shared_with_me_date(
+      base::Time::Now());
   return HTTP_SUCCESS;
 }
 

@@ -108,7 +108,7 @@ void SpellCheckerSessionBridge::ProcessSpellCheckResults(
                  env->GetObjectArrayElement(suggestions_array, i)));
     std::vector<base::string16> suggestions_for_word;
     base::android::AppendJavaStringArrayToStringVector(
-        env, suggestions_for_word_array.obj(), &suggestions_for_word);
+        env, suggestions_for_word_array, &suggestions_for_word);
     results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, offsets[i],
                                        lengths[i], suggestions_for_word));
   }

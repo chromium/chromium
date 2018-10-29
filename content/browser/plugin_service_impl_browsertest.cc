@@ -11,8 +11,10 @@
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/ppapi_plugin_process_host.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/content_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,8 +84,8 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
     client->SetRunLoop(&run_loop);
 
     PluginServiceImpl* service = PluginServiceImpl::GetInstance();
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&PluginServiceImpl::OpenChannelToPpapiPlugin,
                        base::Unretained(service), 0, plugin_path_, profile_dir_,
                        origin, base::Unretained(client)));

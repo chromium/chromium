@@ -86,6 +86,7 @@ class P2PSocketManager
       mojom::P2PNetworkNotificationClientPtr client) override;
   void GetHostAddress(
       const std::string& host_name,
+      bool enable_mdns,
       mojom::P2PSocketManager::GetHostAddressCallback callback) override;
   void CreateSocket(P2PSocketType type,
                     const net::IPEndPoint& local_address,

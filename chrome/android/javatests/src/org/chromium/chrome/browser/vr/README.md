@@ -151,11 +151,12 @@ headset. The two most common files used are:
   emulation.
 * `//chrome/android/shared_preference_files/test/vr_ddview_skipdon_setupcomplete.json`
   This will pair the device with a Daydream View headset, set the DON flow to be
-  skipped, and enable controller emulation. **NOTE** This will prevent you from
-  using a real controller outside of tests. To fix this, you can either
-  reinstall VrCore or apply the Cardboard settings file (there isn't currently a
-  way to manually re-enable real controller use from within the VrCore developer
-  settings)
+  skipped, and enable controller emulation.
+
+The test runner will automatically revert any changed settings back to their
+pre-test values after the test suite has completed. If for whatever reason you
+want to manually apply settings outside of a test, you can do so with
+`//build/android/apply_shared_preference_file.py`.
 
 #### vr-settings-service-enabled
 

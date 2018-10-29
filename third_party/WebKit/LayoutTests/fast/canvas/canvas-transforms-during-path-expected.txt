@@ -1,2 +1,2 @@
-This tests that transforms applied to a canvas, are correctly applied to the stroke path defined in the context. 
+This tests that transforms applied to a canvas, are correctly applied to the stroke path defined in the context.
 The above image should be a green square divided into quarters by two black lines.

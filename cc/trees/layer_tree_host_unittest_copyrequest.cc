@@ -7,6 +7,7 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_picture_layer.h"
@@ -336,8 +337,8 @@ class LayerTreeHostCopyRequestTestLayerDestroyed
         EXPECT_EQ(1, callback_count_);
 
         // Prevent drawing so we can't make a copy of the impl_destroyed layer.
-        layer_tree_host()->SetViewportSizeAndScale(gfx::Size(), 1.f,
-                                                   viz::LocalSurfaceId());
+        layer_tree_host()->SetViewportSizeAndScale(
+            gfx::Size(), 1.f, viz::LocalSurfaceId(), base::TimeTicks());
         break;
       case 2:
         // Flush the message loops and make sure the callbacks run.
@@ -735,8 +736,8 @@ class LayerTreeHostTestAsyncTwoReadbacksWithoutDraw
     PostSetNeedsCommitToMainThread();
 
     // Prevent drawing.
-    layer_tree_host()->SetViewportSizeAndScale(gfx::Size(0, 0), 1.f,
-                                               viz::LocalSurfaceId());
+    layer_tree_host()->SetViewportSizeAndScale(
+        gfx::Size(0, 0), 1.f, viz::LocalSurfaceId(), base::TimeTicks());
 
     AddCopyRequest(copy_layer_.get());
   }
@@ -752,7 +753,8 @@ class LayerTreeHostTestAsyncTwoReadbacksWithoutDraw
     if (layer_tree_host()->SourceFrameNumber() == 1) {
       // Allow drawing.
       layer_tree_host()->SetViewportSizeAndScale(gfx::Size(root_->bounds()),
-                                                 1.f, viz::LocalSurfaceId());
+                                                 1.f, viz::LocalSurfaceId(),
+                                                 base::TimeTicks());
 
       AddCopyRequest(copy_layer_.get());
     }
@@ -1097,8 +1099,8 @@ class LayerTreeHostCopyRequestTestDestroyBeforeCopy
                                base::Unretained(this)));
         copy_layer_->RequestCopyOfOutput(std::move(request));
 
-        layer_tree_host()->SetViewportSizeAndScale(gfx::Size(), 1.f,
-                                                   viz::LocalSurfaceId());
+        layer_tree_host()->SetViewportSizeAndScale(
+            gfx::Size(), 1.f, viz::LocalSurfaceId(), base::TimeTicks());
         break;
       }
       case 2:
@@ -1111,7 +1113,7 @@ class LayerTreeHostCopyRequestTestDestroyBeforeCopy
         // Allow us to draw now.
         layer_tree_host()->SetViewportSizeAndScale(
             layer_tree_host()->root_layer()->bounds(), 1.f,
-            viz::LocalSurfaceId());
+            viz::LocalSurfaceId(), base::TimeTicks());
         break;
       case 4:
         EXPECT_EQ(1, callback_count_);
@@ -1178,8 +1180,8 @@ class LayerTreeHostCopyRequestTestShutdownBeforeCopy
                                base::Unretained(this)));
         copy_layer_->RequestCopyOfOutput(std::move(request));
 
-        layer_tree_host()->SetViewportSizeAndScale(gfx::Size(), 1.f,
-                                                   viz::LocalSurfaceId());
+        layer_tree_host()->SetViewportSizeAndScale(
+            gfx::Size(), 1.f, viz::LocalSurfaceId(), base::TimeTicks());
         break;
       }
       case 2:

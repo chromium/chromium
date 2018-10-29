@@ -2,12 +2,12 @@ Hash and search properties should be non-empty only if they were specified.
 
 link w/o hash link with empty hash link with hash
 
-location.hash: 
-link1.hash: 
-link2.hash: 
+location.hash:
+link1.hash:
+link2.hash:
 link3.hash: #test
-location.search: 
-link1.search: 
-link2.search: 
+location.search:
+link1.search:
+link2.search:
 link3.search: ?search
 

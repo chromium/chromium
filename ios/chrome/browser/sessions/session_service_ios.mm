@@ -169,7 +169,7 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
   NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
   _taskRunner->PostTaskAndReply(
       FROM_HERE, base::BindOnce(^{
-        base::AssertBlockingAllowed();
+        base::AssertBlockingAllowedDeprecated();
         NSFileManager* fileManager = [NSFileManager defaultManager];
         if (![fileManager fileExistsAtPath:sessionPath])
           return;
@@ -220,7 +220,7 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
 - (void)performSaveSessionData:(NSData*)sessionData
                    sessionPath:(NSString*)sessionPath {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* directory = [sessionPath stringByDeletingLastPathComponent];

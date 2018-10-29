@@ -101,7 +101,7 @@ class OomInterventionImplTest : public testing::Test {
 
  protected:
   std::unique_ptr<MockOomInterventionImpl> intervention_;
-  FrameTestHelpers::WebViewHelper web_view_helper_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
   std::unique_ptr<SimRequest> main_resource_;
 };
 
@@ -242,8 +242,8 @@ TEST_F(OomInterventionImplTest, CalculateProcessFootprint) {
   MockOomInterventionHost mock_host(mojo::MakeRequest(&host_ptr));
   mojom::blink::DetectionArgsPtr args(mojom::blink::DetectionArgs::New());
   intervention_->StartDetection(std::move(host_ptr), std::move(args),
-                                false /*renderer_pause_enabled*/,
-                                false /*navigate_ads_enabled*/);
+                                true /*renderer_pause_enabled*/,
+                                true /*navigate_ads_enabled*/);
   // Create unsafe shared memory region to write metrics in reporter.
   base::UnsafeSharedMemoryRegion shm =
       base::UnsafeSharedMemoryRegion::Create(sizeof(OomInterventionMetrics));

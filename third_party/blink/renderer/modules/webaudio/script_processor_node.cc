@@ -57,13 +57,14 @@ ScriptProcessorHandler::ScriptProcessorHandler(
       buffer_read_write_index_(0),
       number_of_input_channels_(number_of_input_channels),
       number_of_output_channels_(number_of_output_channels),
-      internal_input_bus_(AudioBus::Create(number_of_input_channels,
-                                           AudioUtilities::kRenderQuantumFrames,
-                                           false)) {
+      internal_input_bus_(
+          AudioBus::Create(number_of_input_channels,
+                           audio_utilities::kRenderQuantumFrames,
+                           false)) {
   // Regardless of the allowed buffer sizes, we still need to process at the
   // granularity of the AudioNode.
-  if (buffer_size_ < AudioUtilities::kRenderQuantumFrames)
-    buffer_size_ = AudioUtilities::kRenderQuantumFrames;
+  if (buffer_size_ < audio_utilities::kRenderQuantumFrames)
+    buffer_size_ = audio_utilities::kRenderQuantumFrames;
 
   DCHECK_LE(number_of_input_channels, BaseAudioContext::MaxNumberOfChannels());
 

@@ -136,10 +136,10 @@ class AddRemoveThread : public PlatformThread::Delegate, public Foo {
 
     // If we're getting called after we removed ourselves from the list, that is
     // very bad!
-    DCHECK(in_list_);
+    EXPECT_TRUE(in_list_);
 
     // This callback should fire on the appropriate thread
-    EXPECT_EQ(loop_, MessageLoop::current());
+    EXPECT_TRUE(loop_->IsBoundToCurrentThread());
 
     list_->RemoveObserver(this);
     in_list_ = false;
@@ -286,8 +286,8 @@ class FooRemover : public Foo {
   void Observe(int x) override {
     std::vector<Foo*> tmp;
     tmp.swap(foos_);
-    for (std::vector<Foo*>::iterator it = tmp.begin(); it != tmp.end(); ++it) {
-      list_->RemoveObserver(*it);
+    for (auto* it : tmp) {
+      list_->RemoveObserver(it);
     }
   }
 

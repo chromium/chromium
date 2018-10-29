@@ -60,7 +60,7 @@
 
     <cr-lazy-render id="dialog">
       <template>
-        <cr-dialog>
+        <cr-dialog consume-keydown-event>
           <div slot="title">$i18n{removeSelected}</div>
           <div slot="body">$i18n{deleteWarning}</div>
           <div slot="button-container">

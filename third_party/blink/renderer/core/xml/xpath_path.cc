@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/xml/xpath_value.h"
 
 namespace blink {
-namespace XPath {
+namespace xpath {
 
 Filter::Filter(Expression* expr, HeapVector<Member<Predicate>>& predicates)
     : expr_(expr) {
@@ -198,6 +198,6 @@ Value Path::Evaluate(EvaluationContext& context) const {
   return v;
 }
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink

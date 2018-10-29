@@ -20,31 +20,15 @@ namespace ash {
 class Shelf;
 class ShelfView;
 
-// Shelf overflow chevron button.
+// Shelf overflow button.
 class ASH_EXPORT OverflowButton : public views::Button {
  public:
   // |shelf_view| is the view containing this button.
   OverflowButton(ShelfView* shelf_view, Shelf* shelf);
   ~OverflowButton() override;
 
-  void OnShelfAlignmentChanged();
-  void OnOverflowBubbleShown();
-  void OnOverflowBubbleHidden();
-
-  // Updates background and schedules a paint.
-  void UpdateShelfItemBackground(SkColor color);
-
  private:
   friend class OverflowButtonTestApi;
-
-  enum class ChevronDirection { UP, DOWN, LEFT, RIGHT };
-
-  // Returns the direction of chevron image based on the shelf alignment and
-  // overflow state.
-  ChevronDirection GetChevronDirection() const;
-
-  // Updates the chevron image according to GetChevronDirection().
-  void UpdateChevronImage();
 
   // views::Button:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
@@ -54,10 +38,8 @@ class ASH_EXPORT OverflowButton : public views::Button {
   std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
-  // Helper functions to paint the background and foreground of the button
-  // at |bounds|.
+  // Helper function to paint the background of the button at |bounds|.
   void PaintBackground(gfx::Canvas* canvas, const gfx::Rect& bounds);
-  void PaintForeground(gfx::Canvas* canvas, const gfx::Rect& bounds);
 
   // Calculates the bounds of the overflow button based on the shelf alignment
   // and overflow shelf visibility.
@@ -66,18 +48,6 @@ class ASH_EXPORT OverflowButton : public views::Button {
   // The icon in the new UI: horizontal dots.
   const gfx::ImageSkia horizontal_dots_image_;
   views::ImageView* horizontal_dots_image_view_;
-
-  // The original upward chevron image.
-  const gfx::ImageSkia upward_image_;
-
-  // Cached rotations of |upward_image_|.
-  gfx::ImageSkia downward_image_;
-  gfx::ImageSkia leftward_image_;
-  gfx::ImageSkia rightward_image_;
-
-  // Current chevron image which is a pointer to one of the above images
-  // according to current shelf alignment and overflow shelf visibility.
-  const gfx::ImageSkia* chevron_image_;
 
   ShelfView* shelf_view_;
   Shelf* shelf_;

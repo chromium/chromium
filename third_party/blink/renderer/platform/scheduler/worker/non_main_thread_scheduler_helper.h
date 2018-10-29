@@ -29,6 +29,9 @@ class PLATFORM_EXPORT NonMainThreadSchedulerHelper : public SchedulerHelper {
   scoped_refptr<NonMainThreadTaskQueue> DefaultNonMainThreadTaskQueue();
   scoped_refptr<NonMainThreadTaskQueue> ControlNonMainThreadTaskQueue();
 
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultNonMainThreadTaskRunner();
+  scoped_refptr<base::SingleThreadTaskRunner> ControlNonMainThreadTaskRunner();
+
  protected:
   scoped_refptr<base::sequence_manager::TaskQueue> DefaultTaskQueue() override;
   scoped_refptr<base::sequence_manager::TaskQueue> ControlTaskQueue() override;

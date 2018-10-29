@@ -4,11 +4,29 @@
 
 #import "ios/chrome/browser/ui/table_view/table_view_animator.h"
 
-#import "ios/chrome/browser/ui/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// If |direction| is TableAnimatorDirectionFromLeading returns
+// LayoutRectGetRectUsingDirection using the inverted |direction| for
+// |layoutRect|. If |direction| is TableAnimatorDirectionFromTrailing returns
+// LayoutRectGetRect for |layoutRect|.
+CGRect LayoutRectGetRectForDirection(LayoutRect layoutRect,
+                                     TableAnimatorDirection direction) {
+  if (direction == TableAnimatorDirectionFromLeading) {
+    auto invertedDirection = base::i18n::IsRTL() ? base::i18n::LEFT_TO_RIGHT
+                                                 : base::i18n::RIGHT_TO_LEFT;
+    return LayoutRectGetRectUsingDirection(layoutRect, invertedDirection);
+  }
+  return LayoutRectGetRect(layoutRect);
+}
+
+}  // namespace
 
 @implementation TableViewAnimator
 @synthesize presenting = _presenting;
@@ -55,7 +73,8 @@
     LayoutRect presentedViewStartFrame = presentedViewFinalFrame;
     presentedViewStartFrame.position.leading =
         CGRectGetWidth(containerView.bounds);
-    presentedView.frame = LayoutRectGetRect(presentedViewStartFrame);
+    presentedView.frame =
+        LayoutRectGetRectForDirection(presentedViewStartFrame, self.direction);
   } else {
     presentedViewFinalFrame = LayoutRectForRectInBoundingRect(
         presentedView.frame, containerView.bounds);
@@ -70,7 +89,8 @@
       initialSpringVelocity:0
       options:UIViewAnimationOptionTransitionNone
       animations:^{
-        presentedView.frame = LayoutRectGetRect(presentedViewFinalFrame);
+        presentedView.frame = LayoutRectGetRectForDirection(
+            presentedViewFinalFrame, self.direction);
       }
       completion:^(BOOL finished) {
         BOOL success = ![transitionContext transitionWasCancelled];

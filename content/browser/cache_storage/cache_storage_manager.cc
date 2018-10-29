@@ -431,7 +431,7 @@ void CacheStorageManager::DeleteOriginData(
   // Create the CacheStorage for the origin if it hasn't been loaded yet.
   FindOrCreateCacheStorage(origin, owner);
 
-  CacheStorageMap::iterator it = cache_storage_map_.find({origin, owner});
+  auto it = cache_storage_map_.find({origin, owner});
   DCHECK(it != cache_storage_map_.end());
 
   CacheStorage* cache_storage = it->second.release();

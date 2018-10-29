@@ -18,4 +18,3 @@ PASS imageShapeRect('c').right is 300
 PASS imageShapeRect('d').top is 125
 PASS imageShapeRect('e').top is 150
 PASS imageShapeRect('e').right is 0
-

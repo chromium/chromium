@@ -22,6 +22,7 @@
 #include "chrome/browser/policy/javascript_policy_handler.h"
 #include "chrome/browser/policy/managed_bookmarks_policy_handler.h"
 #include "chrome/browser/policy/network_prediction_policy_handler.h"
+#include "chrome/browser/policy/webusb_allow_devices_for_urls_policy_handler.h"
 #include "chrome/browser/profiles/force_safe_search_policy_handler.h"
 #include "chrome/browser/profiles/force_youtube_safety_mode_policy_handler.h"
 #include "chrome/browser/profiles/guest_mode_policy_handler.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/sessions/restore_on_startup_policy_handler.h"
 #include "chrome/browser/spellchecker/spellcheck_language_policy_handler.h"
 #include "chrome/browser/ssl/secure_origin_policy_handler.h"
-#include "chrome/browser/supervised_user/supervised_user_creation_policy_handler.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -98,6 +98,10 @@
 #include "chrome/browser/download/download_dir_policy_handler.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/policy/local_sync_policy_handler.h"
+#endif
+
+#if !defined(OS_CHROMEOS)
+#include "chrome/browser/policy/browser_signin_policy_handler.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -266,9 +270,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDefaultGeolocationSetting,
     prefs::kManagedDefaultGeolocationSetting,
     base::Value::Type::INTEGER },
-  { key::kSigninAllowed,
-    prefs::kSigninAllowed,
-    base::Value::Type::BOOLEAN },
   { key::kEnableOnlineRevocationChecks,
     prefs::kCertRevocationCheckingEnabled,
     base::Value::Type::BOOLEAN },
@@ -563,6 +564,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPowerManagementUsesVideoActivity,
     ash::prefs::kPowerUseVideoActivity,
     base::Value::Type::BOOLEAN },
+  { key::kAllowWakeLocks,
+    ash::prefs::kPowerAllowWakeLocks,
+    base::Value::Type::BOOLEAN },
   { key::kAllowScreenWakeLocks,
     ash::prefs::kPowerAllowScreenWakeLocks,
     base::Value::Type::BOOLEAN },
@@ -617,6 +621,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kEasyUnlockAllowed,
     chromeos::multidevice_setup::kSmartLockAllowedPrefName,
     base::Value::Type::BOOLEAN },
+  { key::kSmartLockSigninAllowed,
+    chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName,
+    base::Value::Type::BOOLEAN },
   { key::kInstantTetheringAllowed,
     chromeos::multidevice_setup::kInstantTetheringAllowedPrefName,
     base::Value::Type::BOOLEAN },
@@ -653,8 +660,8 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserNativePrintersAllowed,
     prefs::kUserNativePrintersAllowed,
     base::Value::Type::BOOLEAN },
-  { key::kAllowedUILocales,
-    prefs::kAllowedUILocales,
+  { key::kAllowedLanguages,
+    prefs::kAllowedLanguages,
     base::Value::Type::LIST },
   { key::kAllowedInputMethods,
     prefs::kLanguageAllowedInputMethods,
@@ -679,6 +686,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kCrostiniAllowed,
     crostini::prefs::kUserCrostiniAllowedByPolicy,
+    base::Value::Type::BOOLEAN },
+  { key::kReportCrostiniUsageEnabled,
+    crostini::prefs::kReportCrostiniUsageEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kNTLMShareAuthenticationEnabled,
+    prefs::kNTLMShareAuthenticationEnabled,
     base::Value::Type::BOOLEAN },
 #endif  // defined(OS_CHROMEOS)
 
@@ -739,11 +752,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCloudPolicyOverridesMachinePolicy,
     prefs::kCloudPolicyOverridesMachinePolicy,
     base::Value::Type::BOOLEAN },
-#endif  // !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
-
-  { key::kForceBrowserSignin,
-    prefs::kForceBrowserSignin,
+  { key::kCloudReportingEnabled,
+    prefs::kCloudReportingEnabled,
     base::Value::Type::BOOLEAN },
+#endif  // !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
 
 #if defined(OS_WIN)
   { key::kWelcomePageOnOSUpgradeEnabled,
@@ -805,6 +817,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 
   { key::kCastReceiverEnabled,
     prefs::kCastReceiverEnabled,
+    base::Value::Type::BOOLEAN },
+
+  { key::kVpnConfigAllowed,
+    prefs::kVpnConfigAllowed,
     base::Value::Type::BOOLEAN },
 #endif
 
@@ -981,6 +997,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SCHEMA_STRICT,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+  handlers->AddHandler(
+      std::make_unique<WebUsbAllowDevicesForUrlsPolicyHandler>(chrome_schema));
 
 // On most platforms, there is a legacy policy
 // kUnsafelyTreatInsecureOriginAsSecure which has been replaced by
@@ -1061,7 +1079,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<extensions::NativeMessagingHostListPolicyHandler>(
           key::kNativeMessagingBlacklist,
           extensions::pref_names::kNativeMessagingBlacklist, true));
-  handlers->AddHandler(std::make_unique<SupervisedUserCreationPolicyHandler>());
 #endif  // !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID)
@@ -1108,6 +1125,28 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           chrome_schema.GetValidationSchema(),
           SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
           SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+#endif
+
+#if !defined(OS_CHROMEOS)
+  std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
+      signin_legacy_policies;
+  signin_legacy_policies.push_back(std::make_unique<SimplePolicyHandler>(
+      key::kForceBrowserSignin, prefs::kForceBrowserSignin,
+      base::Value::Type::BOOLEAN));
+  signin_legacy_policies.push_back(std::make_unique<SimplePolicyHandler>(
+      key::kSigninAllowed,
+#if defined(OS_ANDROID)
+      // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
+      // Keep the old kSigninAllowed pref for Android until the policy is
+      // fully deprecated in M71 and can be removed.
+      prefs::kSigninAllowed,
+#else
+      prefs::kSigninAllowedOnNextStartup,
+#endif
+      base::Value::Type::BOOLEAN));
+  handlers->AddHandler(std::make_unique<LegacyPoliciesDeprecatingPolicyHandler>(
+      std::move(signin_legacy_policies),
+      std::make_unique<BrowserSigninPolicyHandler>(chrome_schema)));
 #endif
 
 #if defined(OS_CHROMEOS)
@@ -1216,6 +1255,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::move(screen_lock_legacy_policies),
       base::WrapUnique(new ScreenLockDelayPolicyHandler(chrome_schema))));
   handlers->AddHandler(
+      std::make_unique<ScreenBrightnessPercentPolicyHandler>(chrome_schema));
+  handlers->AddHandler(
       std::make_unique<ExternalDataPolicyHandler>(key::kUserAvatarImage));
   handlers->AddHandler(
       std::make_unique<ExternalDataPolicyHandler>(key::kDeviceWallpaperImage));
@@ -1257,6 +1298,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<PrintingColorDefaultPolicyHandler>());
   handlers->AddHandler(std::make_unique<PrintingDuplexDefaultPolicyHandler>());
   handlers->AddHandler(std::make_unique<PrintingSizeDefaultPolicyHandler>());
+
+  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+      key::kNetworkFileSharesPreconfiguredShares,
+      prefs::kNetworkFileSharesPreconfiguredShares, chrome_schema,
+      SCHEMA_STRICT,
+      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 #endif  // defined(OS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)

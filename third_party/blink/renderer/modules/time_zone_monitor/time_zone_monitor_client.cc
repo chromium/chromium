@@ -57,7 +57,7 @@ void TimeZoneMonitorClient::OnTimeZoneChange(const String& time_zone_info) {
   DCHECK(IsMainThread());
 
   if (!time_zone_info.IsEmpty()) {
-    DCHECK(time_zone_info.ContainsOnlyASCII());
+    DCHECK(time_zone_info.ContainsOnlyASCIIOrEmpty());
     icu::TimeZone* zone = icu::TimeZone::createTimeZone(
         icu::UnicodeString(time_zone_info.Ascii().data(), -1, US_INV));
     icu::TimeZone::adoptDefault(zone);

@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">Privater Schlüssel konnte nicht gelesen werden.</translation>
 <translation id="6391538222494443604">Eingabeverzeichnis muss vorhanden sein.</translation>
 <translation id="641087317769093025">Erweiterung kann nicht entpackt werden.</translation>
+<translation id="6413453408918378296">Das Symbol <ph name="ICON" /> ist nicht ausreichend sichtbar.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" fordert Zugriff auf eines oder mehrere Ihrer Geräte an:</translation>
 <translation id="657064425229075395">Hintergrundskript "<ph name="BACKGROUND_SCRIPT" />" konnte nicht geladen werden.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> von <ph name="VENDOR_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>

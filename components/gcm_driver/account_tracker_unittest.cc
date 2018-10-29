@@ -75,8 +75,7 @@ bool CompareByUser(TrackingEvent a, TrackingEvent b) {
 std::string Str(const std::vector<TrackingEvent>& events) {
   std::string str = "[";
   bool needs_comma = false;
-  for (std::vector<TrackingEvent>::const_iterator it = events.begin();
-       it != events.end(); ++it) {
+  for (auto it = events.begin(); it != events.end(); ++it) {
     if (needs_comma)
       str += ",\n ";
     needs_comma = true;

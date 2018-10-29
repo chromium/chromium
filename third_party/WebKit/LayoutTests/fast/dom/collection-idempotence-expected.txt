@@ -2,7 +2,6 @@ This test verifies that collection getters return the same collection when calle
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.all is document.all
 PASS document.all === document.all is true
 PASS document.images is document.images
@@ -34,4 +33,4 @@ PASS document.getElementsByTagName('select')[0].options === document.getElements
 PASS successfullyParsed is true
 
 TEST COMPLETE
- 
+

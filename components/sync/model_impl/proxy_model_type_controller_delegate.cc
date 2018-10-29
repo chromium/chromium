@@ -17,7 +17,7 @@ void OnSyncStartingHelperOnModelThread(
     const DataTypeActivationRequest& request,
     ModelTypeControllerDelegate::StartCallback callback_bound_to_ui_thread,
     base::WeakPtr<ModelTypeControllerDelegate> delegate) {
-  CHECK(delegate);
+  DCHECK(delegate);
   delegate->OnSyncStarting(request, std::move(callback_bound_to_ui_thread));
 }
 
@@ -25,7 +25,7 @@ void GetAllNodesForDebuggingHelperOnModelThread(
     ProxyModelTypeControllerDelegate::AllNodesCallback
         callback_bound_to_ui_thread,
     base::WeakPtr<ModelTypeControllerDelegate> delegate) {
-  CHECK(delegate);
+  DCHECK(delegate);
   delegate->GetAllNodesForDebugging(std::move(callback_bound_to_ui_thread));
 }
 
@@ -33,7 +33,7 @@ void GetStatusCountersForDebuggingHelperOnModelThread(
     ProxyModelTypeControllerDelegate::StatusCountersCallback
         callback_bound_to_ui_thread,
     base::WeakPtr<ModelTypeControllerDelegate> delegate) {
-  CHECK(delegate);
+  DCHECK(delegate);
   delegate->GetStatusCountersForDebugging(
       std::move(callback_bound_to_ui_thread));
 }
@@ -41,13 +41,13 @@ void GetStatusCountersForDebuggingHelperOnModelThread(
 void StopSyncHelperOnModelThread(
     SyncStopMetadataFate metadata_fate,
     base::WeakPtr<ModelTypeControllerDelegate> delegate) {
-  CHECK(delegate);
+  DCHECK(delegate);
   delegate->OnSyncStopping(metadata_fate);
 }
 
 void RecordMemoryUsageAndCountsHistogramsHelperOnModelThread(
     base::WeakPtr<ModelTypeControllerDelegate> delegate) {
-  CHECK(delegate);
+  DCHECK(delegate);
   delegate->RecordMemoryUsageAndCountsHistograms();
 }
 
@@ -57,9 +57,9 @@ void RunModelTask(
     const ProxyModelTypeControllerDelegate::DelegateProvider& delegate_provider,
     base::OnceCallback<void(base::WeakPtr<ModelTypeControllerDelegate>)> task) {
   base::WeakPtr<ModelTypeControllerDelegate> delegate = delegate_provider.Run();
-  // TODO(crbug.com/876490): Remove/revisit this CHECK once investigations are
-  // finalized.
-  CHECK(delegate);
+  // TODO(mastiz): Migrate away from weak pointers, since there is no actual
+  // need, provided that KeyedServices have proper dependencies.
+  DCHECK(delegate);
   std::move(task).Run(delegate);
 }
 

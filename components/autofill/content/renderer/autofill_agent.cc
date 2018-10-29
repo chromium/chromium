@@ -312,6 +312,7 @@ void AutofillAgent::Shutdown() {
 
 void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
   GetAutofillDriver()->DidEndTextFieldEditing();
+  password_autofill_agent_->DidEndTextFieldEditing();
 }
 
 void AutofillAgent::SetUserGestureRequired(bool required) {
@@ -681,8 +682,16 @@ void AutofillAgent::GetElementFormAndFieldData(
 
   blink::WebFormControlElement target_form_control_element =
       target_element.To<blink::WebFormControlElement>();
-  form_util::FindFormAndFieldForFormControlElement(target_form_control_element,
-                                                   &form, &field);
+  bool success = form_util::FindFormAndFieldForFormControlElement(
+      target_form_control_element, &form, &field);
+  if (success) {
+    // Remember this element so as to autofill the form without focusing the
+    // field for Autofill Assistant.
+    element_ = target_form_control_element;
+  }
+  // Do not expect failure.
+  DCHECK(success);
+
   return std::move(callback).Run(form, field);
 }
 
@@ -706,8 +715,9 @@ blink::WebElement AutofillAgent::FindUniqueWebElement(
 
     // Query shadow DOM if necessary.
     if (elements.size() == 0 && !query_element.ShadowRoot().IsNull()) {
-      elements = query_element.ShadowRoot().QuerySelectorAll(
-          blink::WebString::FromUTF8(selectors[i]));
+      // TODO(806868): Query shadow dom when Autofill is available for forms in
+      // shadow DOM (crbug.com/746593).
+      return blink::WebElement();
     }
 
     // Return an empty element if there are multiple matching elements.

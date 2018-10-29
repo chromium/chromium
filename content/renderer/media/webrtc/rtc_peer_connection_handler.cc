@@ -21,6 +21,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
@@ -74,49 +75,6 @@ enum RtcpMux {
   RTCP_MUX_NO_MEDIA,
   RTCP_MUX_MAX
 };
-
-// Converter functions from libjingle types to WebKit types.
-blink::WebRTCPeerConnectionHandlerClient::ICEGatheringState
-GetWebKitIceGatheringState(
-    webrtc::PeerConnectionInterface::IceGatheringState state) {
-  using blink::WebRTCPeerConnectionHandlerClient;
-  switch (state) {
-    case webrtc::PeerConnectionInterface::kIceGatheringNew:
-      return WebRTCPeerConnectionHandlerClient::kICEGatheringStateNew;
-    case webrtc::PeerConnectionInterface::kIceGatheringGathering:
-      return WebRTCPeerConnectionHandlerClient::kICEGatheringStateGathering;
-    case webrtc::PeerConnectionInterface::kIceGatheringComplete:
-      return WebRTCPeerConnectionHandlerClient::kICEGatheringStateComplete;
-    default:
-      NOTREACHED();
-      return WebRTCPeerConnectionHandlerClient::kICEGatheringStateNew;
-  }
-}
-
-blink::WebRTCPeerConnectionHandlerClient::ICEConnectionState
-GetWebKitIceConnectionState(
-    webrtc::PeerConnectionInterface::IceConnectionState ice_state) {
-  using blink::WebRTCPeerConnectionHandlerClient;
-  switch (ice_state) {
-    case webrtc::PeerConnectionInterface::kIceConnectionNew:
-      return WebRTCPeerConnectionHandlerClient::kICEConnectionStateStarting;
-    case webrtc::PeerConnectionInterface::kIceConnectionChecking:
-      return WebRTCPeerConnectionHandlerClient::kICEConnectionStateChecking;
-    case webrtc::PeerConnectionInterface::kIceConnectionConnected:
-      return WebRTCPeerConnectionHandlerClient::kICEConnectionStateConnected;
-    case webrtc::PeerConnectionInterface::kIceConnectionCompleted:
-      return WebRTCPeerConnectionHandlerClient::kICEConnectionStateCompleted;
-    case webrtc::PeerConnectionInterface::kIceConnectionFailed:
-      return WebRTCPeerConnectionHandlerClient::kICEConnectionStateFailed;
-    case webrtc::PeerConnectionInterface::kIceConnectionDisconnected:
-      return WebRTCPeerConnectionHandlerClient::kICEConnectionStateDisconnected;
-    case webrtc::PeerConnectionInterface::kIceConnectionClosed:
-      return WebRTCPeerConnectionHandlerClient::kICEConnectionStateClosed;
-    default:
-      NOTREACHED();
-      return WebRTCPeerConnectionHandlerClient::kICEConnectionStateClosed;
-  }
-}
 
 blink::WebRTCSessionDescription CreateWebKitSessionDescription(
     const std::string& sdp, const std::string& type) {
@@ -365,11 +323,11 @@ class StatsResponse : public webrtc::StatsObserver {
       : request_(request.get()), main_thread_(task_runner) {
     // Measure the overall time it takes to satisfy a getStats request.
     TRACE_EVENT_ASYNC_BEGIN0("webrtc", "getStats_Native", this);
-    signaling_thread_checker_.DetachFromThread();
+    DETACH_FROM_THREAD(signaling_thread_checker_);
   }
 
   void OnComplete(const StatsReports& reports) override {
-    DCHECK(signaling_thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
     TRACE_EVENT0("webrtc", "StatsResponse::OnComplete");
     // We can't use webkit objects directly since they use a single threaded
     // heap allocator.
@@ -432,8 +390,7 @@ class StatsResponse : public webrtc::StatsObserver {
     };
 
     Report(const StatsReport* report)
-        : thread_checker_(),
-          id_(report->id()->ToString()),
+        : id_(report->id()->ToString()),
           type_(report->type()),
           type_name_(report->TypeToString()),
           timestamp_(report->timestamp()),
@@ -442,7 +399,7 @@ class StatsResponse : public webrtc::StatsObserver {
     ~Report() override {
       // Since the values vector holds pointers to const objects that are bound
       // to the signaling thread, they must be released on the same thread.
-      DCHECK(thread_checker_.CalledOnValidThread());
+      DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     }
 
     // blink::WebRTCLegacyStats
@@ -462,7 +419,7 @@ class StatsResponse : public webrtc::StatsObserver {
     }
 
    private:
-    const base::ThreadChecker thread_checker_;
+    THREAD_CHECKER(thread_checker_);
     const std::string id_;
     const StatsReport::StatsType type_;
     const std::string type_name_;
@@ -502,7 +459,7 @@ class StatsResponse : public webrtc::StatsObserver {
 
   rtc::scoped_refptr<LocalRTCStatsRequest> request_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
-  base::ThreadChecker signaling_thread_checker_;
+  THREAD_CHECKER(signaling_thread_checker_);
 };
 
 void GetStatsOnSignalingThread(
@@ -1980,12 +1937,10 @@ void RTCPeerConnectionHandler::OnIceConnectionChange(
   }
 
   track_metrics_.IceConnectionChange(new_state);
-  blink::WebRTCPeerConnectionHandlerClient::ICEConnectionState state =
-      GetWebKitIceConnectionState(new_state);
   if (peer_connection_tracker_)
-    peer_connection_tracker_->TrackIceConnectionStateChange(this, state);
+    peer_connection_tracker_->TrackIceConnectionStateChange(this, new_state);
   if (!is_closed_)
-    client_->DidChangeICEConnectionState(state);
+    client_->DidChangeIceConnectionState(new_state);
 }
 
 // Called any time the IceGatheringState changes
@@ -2007,12 +1962,10 @@ void RTCPeerConnectionHandler::OnIceGatheringChange(
     ResetUMAStats();
   }
 
-  blink::WebRTCPeerConnectionHandlerClient::ICEGatheringState state =
-      GetWebKitIceGatheringState(new_state);
   if (peer_connection_tracker_)
-    peer_connection_tracker_->TrackIceGatheringStateChange(this, state);
+    peer_connection_tracker_->TrackIceGatheringStateChange(this, new_state);
   if (!is_closed_)
-    client_->DidChangeICEGatheringState(state);
+    client_->DidChangeIceGatheringState(new_state);
 }
 
 void RTCPeerConnectionHandler::OnRenegotiationNeeded() {

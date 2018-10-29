@@ -14,9 +14,6 @@
 // Called when the reading list menu unread count has changed.
 - (void)unreadCountChanged:(NSInteger)unreadCount;
 
-// Called when the reading list menu seen state has changed.
-- (void)unseenStateChanged:(BOOL)unseenItemsExist;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_MENU_NOTIFICATION_DELEGATE_H_

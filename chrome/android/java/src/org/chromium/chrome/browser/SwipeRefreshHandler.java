@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
@@ -14,8 +15,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.OverscrollRefreshHandler;
 
@@ -23,7 +26,10 @@ import org.chromium.ui.OverscrollRefreshHandler;
  * An overscroll handler implemented in terms a modified version of the Android
  * compat library's SwipeRefreshLayout effect.
  */
-public class SwipeRefreshHandler implements OverscrollRefreshHandler {
+public class SwipeRefreshHandler
+        extends TabWebContentsUserData implements OverscrollRefreshHandler {
+    private static final Class<SwipeRefreshHandler> USER_DATA_KEY = SwipeRefreshHandler.class;
+
     // Synthetic delay between the {@link #didStopRefreshing()} signal and the
     // call to stop the refresh animation.
     private static final int STOP_REFRESH_ANIMATION_DELAY_MS = 500;
@@ -54,16 +60,30 @@ public class SwipeRefreshHandler implements OverscrollRefreshHandler {
     // Accessibility utterance used to indicate refresh activation.
     private String mAccessibilityRefreshString;
 
+    public static SwipeRefreshHandler from(Tab tab) {
+        SwipeRefreshHandler handler = get(tab);
+        if (handler == null) {
+            handler =
+                    tab.getUserDataHost().setUserData(USER_DATA_KEY, new SwipeRefreshHandler(tab));
+        }
+        return handler;
+    }
+
+    @Nullable
+    public static SwipeRefreshHandler get(Tab tab) {
+        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
+    }
+
     /**
      * Simple constructor to use when creating an OverscrollRefresh instance from code.
      *
-     * @param context The associated context.
      * @param tab The Tab where the swipe occurs.
      */
-    public SwipeRefreshHandler(final Context context, Tab tab) {
+    private SwipeRefreshHandler(Tab tab) {
+        super(tab);
         mTab = tab;
-        mContainerView = mTab.getContentView();
 
+        final Context context = tab.getThemedApplicationContext();
         mSwipeRefreshLayout = new SwipeRefreshLayout(context);
         mSwipeRefreshLayout.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -72,7 +92,6 @@ public class SwipeRefreshHandler implements OverscrollRefreshHandler {
         mSwipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
         mSwipeRefreshLayout.setEnabled(false);
 
-        setEnabled(true);
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             cancelStopRefreshingRunnable();
             mSwipeRefreshLayout.postDelayed(
@@ -93,16 +112,27 @@ public class SwipeRefreshHandler implements OverscrollRefreshHandler {
             };
             mSwipeRefreshLayout.post(mDetachLayoutRunnable);
         });
-        mTab.getWebContents().setOverscrollRefreshHandler(this);
     }
 
-    /**
-     * Destroys and cleans up itself.
-     */
-    public void destroy() {
-        setEnabled(false);
+    @Override
+    public void initWebContents(WebContents webContents) {
+        webContents.setOverscrollRefreshHandler(this);
+        mContainerView = mTab.getContentView();
+        setEnabled(true);
+    }
+
+    @Override
+    public void cleanupWebContents(WebContents webContents) {
+        detachSwipeRefreshLayoutIfNecessary();
         cancelStopRefreshingRunnable();
+        mContainerView = null;
+        setEnabled(false);
+    }
+
+    @Override
+    public void destroyInternal() {
         mSwipeRefreshLayout.setOnRefreshListener(null);
+        mSwipeRefreshLayout.setOnResetListener(null);
     }
 
     /**

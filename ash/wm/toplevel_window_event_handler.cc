@@ -52,8 +52,7 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
                                       : ::wm::WINDOW_MOVE_SOURCE_MOUSE;
   if (gesture_target) {
     window->env()->gesture_recognizer()->TransferEventsTo(
-        gesture_target, window,
-        ui::GestureRecognizer::ShouldCancelTouches::DontCancel);
+        gesture_target, window, ui::TransferTouchesBehavior::kDontCancel);
   }
   return wm_toplevel_window_event_handler_.AttemptToStartDrag(
       window, point_in_parent, window_component, source,

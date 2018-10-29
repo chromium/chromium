@@ -12,12 +12,14 @@
 #include "base/android/jni_string.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/features.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "jni/SafeBrowsingApiBridge_jni.h"
 
@@ -36,8 +38,8 @@ void RunCallbackOnIOThread(
     std::unique_ptr<SafeBrowsingApiHandler::URLCheckCallbackMeta> callback,
     SBThreatType threat_type,
     const ThreatMetadata& metadata) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(*callback), threat_type, metadata));
 }
 
@@ -79,6 +81,14 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToJavaArray(
 }
 
 }  // namespace
+
+// Java->Native call, to check whether the feature to use local blacklists is
+// enabled.
+jboolean JNI_SafeBrowsingApiBridge_AreLocalBlacklistsEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jclass>&) {
+  return base::FeatureList::IsEnabled(kUseLocalBlacklistsV2);
+}
 
 // Java->Native call, invoked when a check is done.
 //   |callback_id| is an int form of pointer to a URLCheckCallbackMeta

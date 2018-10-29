@@ -12,8 +12,8 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/policy/weekly_time/weekly_time.h"
-#include "chrome/browser/chromeos/policy/weekly_time/weekly_time_interval.h"
+#include "chromeos/policy/weekly_time/weekly_time.h"
+#include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,8 +82,8 @@ class DeviceAutoUpdateTimeRestrictionsUtilTest : public testing::Test {
   void TearDown() override { icu::TimeZone::adoptDefault(timezone_.release()); }
 
   void SetCrosSettings(const std::string& path, const Value& in_value) {
+    cros_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     cros_settings_helper_.Set(path, in_value);
-    cros_settings_helper_.ReplaceProvider(path);
   }
 
   ListValue GetIntervalsAsList(const vector<WeeklyTimeInterval>& intervals) {

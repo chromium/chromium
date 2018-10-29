@@ -1,6 +1,5 @@
 Pasting in the text area should only fire one paste event.
 
 
+
 PASSED
-
-

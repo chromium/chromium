@@ -303,8 +303,11 @@ void AutofillManager::OnFormSubmittedImpl(const FormData& form,
                                           SubmissionSource source,
                                           base::TimeTicks timestamp) {
   // TODO(crbug.com/801698): handle PROBABLY_FORM_SUBMITTED.
-  if (source == SubmissionSource::PROBABLY_FORM_SUBMITTED)
+  if (source == SubmissionSource::PROBABLY_FORM_SUBMITTED &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillSaveOnProbablySubmitted)) {
     return;
+  }
 
   // We will always give Autocomplete a chance to save the data.
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
@@ -329,6 +332,7 @@ void AutofillManager::OnFormSubmittedImpl(const FormData& form,
   if (IsCreditCardAutofillEnabled())
     credit_card_form_event_logger_->OnWillSubmitForm();
 
+  submitted_form->set_submission_source(source);
   MaybeStartVoteUploadProcess(std::move(submitted_form), timestamp,
                               /*observed_submission=*/true);
 
@@ -338,6 +342,8 @@ void AutofillManager::OnFormSubmittedImpl(const FormData& form,
   DCHECK(submitted_form);
   if (!submitted_form)
     return;
+
+  submitted_form->set_submission_source(source);
 
   CreditCard credit_card =
       form_data_importer_->ExtractCreditCardFromForm(*submitted_form);
@@ -396,19 +402,19 @@ bool AutofillManager::MaybeStartVoteUploadProcess(
     copied_credit_cards.push_back(*card);
 
   // Note that ownership of |form_structure| is passed to the second task,
-  // using |base::Owned|.
+  // using |base::Owned|. We MUST temporarily hang on to the raw form pointer
+  // so that we can safely pass the address to the first callback regardless of
+  // the (undefined) order in which the callback parameters are computed.
   FormStructure* raw_form = form_structure.get();
-  TimeTicks loaded_timestamp = forms_loaded_timestamps_[raw_form->ToFormData()];
   base::PostTaskWithTraitsAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&AutofillManager::DeterminePossibleFieldTypesForUpload,
                      copied_profiles, copied_credit_cards, app_locale_,
                      raw_form),
-      base::BindOnce(&AutofillManager::UploadFormDataAsyncCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Owned(form_structure.release()), loaded_timestamp,
-                     initial_interaction_timestamp_, timestamp,
-                     observed_submission));
+      base::BindOnce(
+          &AutofillManager::UploadFormDataAsyncCallback,
+          weak_ptr_factory_.GetWeakPtr(), base::Owned(form_structure.release()),
+          initial_interaction_timestamp_, timestamp, observed_submission));
   return true;
 }
 
@@ -1023,18 +1029,15 @@ void AutofillManager::OnDidEndTextFieldEditing() {
 }
 
 bool AutofillManager::IsAutofillEnabled() const {
-  return ::autofill::prefs::IsAutofillEnabled(client_->GetPrefs()) &&
-         client_->IsAutofillSupported();
+  return ::autofill::prefs::IsAutofillEnabled(client_->GetPrefs());
 }
 
 bool AutofillManager::IsProfileAutofillEnabled() const {
-  return ::autofill::prefs::IsProfileAutofillEnabled(client_->GetPrefs()) &&
-         client_->IsAutofillSupported();
+  return ::autofill::prefs::IsProfileAutofillEnabled(client_->GetPrefs());
 }
 
 bool AutofillManager::IsCreditCardAutofillEnabled() const {
-  return ::autofill::prefs::IsCreditCardAutofillEnabled(client_->GetPrefs()) &&
-         client_->IsAutofillSupported();
+  return ::autofill::prefs::IsCreditCardAutofillEnabled(client_->GetPrefs());
 }
 
 bool AutofillManager::ShouldUploadForm(const FormStructure& form) {
@@ -1048,16 +1051,15 @@ bool AutofillManager::ShouldUploadForm(const FormStructure& form) {
 // get reset before this method executes.
 void AutofillManager::UploadFormDataAsyncCallback(
     const FormStructure* submitted_form,
-    const TimeTicks& load_time,
     const TimeTicks& interaction_time,
     const TimeTicks& submission_time,
     bool observed_submission) {
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldBeQueried()) {
     submitted_form->LogQualityMetrics(
-        load_time, interaction_time, submission_time,
-        form_interactions_ukm_logger_.get(), did_show_suggestions_,
-        observed_submission);
+        submitted_form->form_parsed_timestamp(), interaction_time,
+        submission_time, form_interactions_ukm_logger_.get(),
+        did_show_suggestions_, observed_submission);
   }
   if (submitted_form->ShouldBeUploaded())
     UploadFormData(*submitted_form, observed_submission);
@@ -1080,12 +1082,11 @@ void AutofillManager::UploadFormData(const FormStructure& submitted_form,
 
   ServerFieldTypeSet non_empty_types;
   personal_data_->GetNonEmptyTypes(&non_empty_types);
-  if (submitted_form.is_signin_upload())
-    non_empty_types.insert(PASSWORD);
 
   download_manager_->StartUploadRequest(
       submitted_form, was_autofilled, non_empty_types,
-      /*login_form_signature=*/std::string(), observed_submission);
+      /*login_form_signature=*/std::string(), observed_submission,
+      client_->GetPrefs());
 }
 
 void AutofillManager::Reset() {
@@ -1098,9 +1099,11 @@ void AutofillManager::Reset() {
       new AutofillMetrics::FormInteractionsUkmLogger(
           client_->GetUkmRecorder()));
   address_form_event_logger_.reset(new AutofillMetrics::FormEventLogger(
-      /*is_for_credit_card=*/false, form_interactions_ukm_logger_.get()));
+      /*is_for_credit_card=*/false, driver()->IsInMainFrame(),
+      form_interactions_ukm_logger_.get()));
   credit_card_form_event_logger_.reset(new AutofillMetrics::FormEventLogger(
-      /*is_for_credit_card=*/true, form_interactions_ukm_logger_.get()));
+      /*is_for_credit_card=*/true, driver()->IsInMainFrame(),
+      form_interactions_ukm_logger_.get()));
 #if defined(OS_ANDROID) || defined(OS_IOS)
   autofill_assistant_.Reset();
 #endif
@@ -1115,7 +1118,6 @@ void AutofillManager::Reset() {
   unmasking_query_id_ = -1;
   unmasking_form_ = FormData();
   unmasking_field_ = FormFieldData();
-  forms_loaded_timestamps_.clear();
   initial_interaction_timestamp_ = TimeTicks();
   external_delegate_->Reset();
   filling_contexts_map_.clear();
@@ -1151,10 +1153,12 @@ AutofillManager::AutofillManager(
       address_form_event_logger_(
           std::make_unique<AutofillMetrics::FormEventLogger>(
               /*is_for_credit_card=*/false,
+              driver->IsInMainFrame(),
               form_interactions_ukm_logger_.get())),
       credit_card_form_event_logger_(
           std::make_unique<AutofillMetrics::FormEventLogger>(
               /*is_for_credit_card=*/true,
+              driver->IsInMainFrame(),
               form_interactions_ukm_logger_.get())),
 #if defined(OS_ANDROID) || defined(OS_IOS)
       autofill_assistant_(this),
@@ -1503,7 +1507,6 @@ void AutofillManager::OnFormsParsed(
     // times for a given form if it or other forms on the page are dynamic.
     LogDeveloperEngagementUkm(client_->GetUkmRecorder(),
                               client_->GetUkmSourceId(), form_structure);
-    forms_loaded_timestamps_[form_structure->ToFormData()] = timestamp;
     std::set<FormType> current_form_types = form_structure->GetFormTypes();
     form_types.insert(current_form_types.begin(), current_form_types.end());
     // Set aside forms with method GET or author-specified types, so that they
@@ -1682,8 +1685,13 @@ void AutofillManager::DeterminePossibleFieldTypesForUpload(
       card.GetMatchingTypes(value, app_locale, &matching_types);
     }
 
-    if (matching_types.empty())
+    if (matching_types.empty()) {
       matching_types.insert(UNKNOWN_TYPE);
+      std::map<ServerFieldType, AutofillProfile::ValidityState>
+          matching_types_validities;
+      matching_types_validities[UNKNOWN_TYPE] = AutofillProfile::UNVALIDATED;
+      field->add_possible_types_validities(matching_types_validities);
+    }
 
     field->set_possible_types(matching_types);
   }

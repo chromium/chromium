@@ -1,5 +1,6 @@
 # Presentation API OWNERS
-imcheng@chromium.org
 mfoltz@chromium.org
 mlamouri@chromium.org
 
+# TEAM: media-dev@chromium.org
+# COMPONENT: Blink>PresentationAPI

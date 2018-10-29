@@ -60,13 +60,8 @@ void SetRAILModeOnWorkerThreadIsolates(v8::RAILMode rail_mode) {
   WorkerBackingThread::SetRAILModeOnWorkerThreadIsolates(rail_mode);
 }
 
-WorkerBackingThread::WorkerBackingThread(const WebThreadCreationParams& params)
-    : backing_thread_(WebThreadSupportingGC::Create(params)),
-      is_owning_thread_(true) {}
-
-WorkerBackingThread::WorkerBackingThread(WebThread* thread)
-    : backing_thread_(WebThreadSupportingGC::CreateForThread(thread)),
-      is_owning_thread_(false) {}
+WorkerBackingThread::WorkerBackingThread(const ThreadCreationParams& params)
+    : backing_thread_(WebThreadSupportingGC::Create(params)) {}
 
 WorkerBackingThread::~WorkerBackingThread() = default;
 
@@ -91,8 +86,7 @@ void WorkerBackingThread::InitializeOnBackingThread(
         isolate_, std::make_unique<V8IdleTaskRunner>(
                       BackingThread().PlatformThread().Scheduler()));
   }
-  if (is_owning_thread_)
-    Platform::Current()->DidStartWorkerThread();
+  Platform::Current()->DidStartWorkerThread();
 
   V8PerIsolateData::From(isolate_)->SetThreadDebugger(
       std::make_unique<WorkerThreadDebugger>(isolate_));
@@ -111,8 +105,7 @@ void WorkerBackingThread::InitializeOnBackingThread(
 
 void WorkerBackingThread::ShutdownOnBackingThread() {
   DCHECK(backing_thread_->IsCurrentThread());
-  if (is_owning_thread_)
-    Platform::Current()->WillStopWorkerThread();
+  Platform::Current()->WillStopWorkerThread();
 
   V8PerIsolateData::WillBeDestroyed(isolate_);
   V8GCController::ClearDOMWrappers(isolate_);

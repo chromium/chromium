@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 分前}other{# 分前}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1分}other{#分}}</translation>
 <translation id="1243314992276662751">アップロード</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">おすすめのアプリ</translation>
 <translation id="1368832886055348810">左から右</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">次のページへ</translation>
 <translation id="8245914219290430011">タブ</translation>
+<translation id="8259556432390118667">16 進数色コード</translation>
 <translation id="8328145009876646418">左端</translation>
 <translation id="8331626408530291785">上にスクロール</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 年}other{# 年}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">既定</translation>
 <translation id="8806053966018712535">フォルダ <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">画像に注釈を付ける</translation>
+<translation id="8841375032071747811">戻るボタン</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="9002566407876343676">開く</translation>
 <translation id="9038489124413477075">名前のないフォルダ</translation>

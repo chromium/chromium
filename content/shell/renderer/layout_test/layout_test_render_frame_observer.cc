@@ -56,15 +56,9 @@ void LayoutTestRenderFrameObserver::CompositeWithRaster(
     CompositeWithRasterCallback callback) {
   blink::WebWidget* widget = render_frame()->GetWebFrame()->FrameWidget();
   if (widget) {
-    widget->CompositeWithRasterForTesting();
-    // TODO(vmpstr): This doesn't embed the popup frame into the browser. We
-    // likely need to manually readback the pixels here and return them via the
-    // callback, so that the browser can embed it into the final screenshot. If
-    // we do this without using WebPagePopup::CompositeWithRasterForTesting(),
-    // then we can put CompositeWithRasterForTesting() on WebFrameWidgetBase
-    // instead, and remove the overrides from a bunch of places.
+    widget->UpdateAllLifecyclePhasesAndCompositeForTesting(/*do_raster=*/true);
     if (blink::WebPagePopup* popup = widget->GetPagePopup())
-      popup->CompositeWithRasterForTesting();
+      popup->UpdateAllLifecyclePhasesAndCompositeForTesting(/*do_raster=*/true);
   }
   std::move(callback).Run();
 }

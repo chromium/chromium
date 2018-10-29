@@ -12,7 +12,6 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
@@ -34,9 +33,6 @@ namespace {
 // values depend on both the shadow elevation and color, so we create a tuple to
 // key the cache.
 typedef std::tuple<int, SkColor> ShadowCacheKey;
-
-// The border corner radius for material design bubble borders.
-constexpr int kMaterialDesignCornerRadius = 2;
 
 // The border is stroked at 1px, but for the purposes of reserving space we have
 // to deal in dip coordinates, so round up to 1dip.
@@ -172,7 +168,8 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
 }
 
 int BubbleBorder::GetBorderCornerRadius() const {
-  return corner_radius_.value_or(kMaterialDesignCornerRadius);
+  constexpr int kCornerRadius = 2;
+  return corner_radius_.value_or(kCornerRadius);
 }
 
 void BubbleBorder::Paint(const views::View& view, gfx::Canvas* canvas) {

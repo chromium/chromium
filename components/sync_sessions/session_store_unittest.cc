@@ -12,13 +12,14 @@
 #include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/sync_prefs.h"
-#include "components/sync/device_info/local_device_info_provider_mock.h"
+#include "components/sync/device_info/device_info.h"
 #include "components/sync/model/model_type_store_test_util.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
+#include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,15 +51,6 @@ using testing::_;
 
 const char kCacheGuid[] = "SomeCacheGuid";
 const char kClientName[] = "Some Client Name";
-
-class MockSessionSyncPrefs : public syncer::SessionSyncPrefs {
- public:
-  MockSessionSyncPrefs() = default;
-  ~MockSessionSyncPrefs() override = default;
-
-  MOCK_CONST_METHOD0(GetSyncSessionsGUID, std::string());
-  MOCK_METHOD1(SetSyncSessionsGUID, void(const std::string& guid));
-};
 
 // A mock callback that a) can be used as mock to verify call expectations and
 // b) conveniently exposes the last instantiated session store.
@@ -163,29 +155,36 @@ std::map<std::string, SessionSpecifics> ReadAllPersistedDataFrom(
 class SessionStoreFactoryTest : public ::testing::Test {
  protected:
   SessionStoreFactoryTest()
-      : underlying_store_(
+      : local_device_info_(kCacheGuid,
+                           kClientName,
+                           "Chromium 10k",
+                           "Chrome 10k",
+                           sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+                           "device_id"),
+        session_sync_prefs_(&pref_service_),
+        underlying_store_(
             syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
-                syncer::SESSIONS)),
-        factory_(SessionStore::CreateFactory(
-            &mock_sync_sessions_client_,
-            &mock_sync_prefs_,
-            &mock_device_info_provider_,
-            syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-                underlying_store_.get()),
-            mock_restored_foreign_tab_callback_.Get())) {}
+                syncer::SESSIONS)) {
+    SessionSyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+
+    ON_CALL(mock_sync_sessions_client_, GetSessionSyncPrefs())
+        .WillByDefault(Return(&session_sync_prefs_));
+    ON_CALL(mock_sync_sessions_client_, GetStoreFactory())
+        .WillByDefault(
+            Return(syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+                underlying_store_.get())));
+
+    factory_ = SessionStore::CreateFactory(
+        &mock_sync_sessions_client_, mock_restored_foreign_tab_callback_.Get());
+  }
 
   ~SessionStoreFactoryTest() override {}
 
-  void InitializeDeviceInfoProvider() {
-    mock_device_info_provider_.Initialize(std::make_unique<syncer::DeviceInfo>(
-        kCacheGuid, kClientName, "Chromium 10k", "Chrome 10k",
-        sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id"));
-  }
-
   base::MessageLoop message_loop_;
+  const syncer::DeviceInfo local_device_info_;
+  TestingPrefServiceSimple pref_service_;
+  SessionSyncPrefs session_sync_prefs_;
   testing::NiceMock<MockSyncSessionsClient> mock_sync_sessions_client_;
-  testing::NiceMock<MockSessionSyncPrefs> mock_sync_prefs_;
-  syncer::LocalDeviceInfoProviderMock mock_device_info_provider_;
   testing::NiceMock<
       base::MockCallback<SessionStore::RestoredForeignTabCallback>>
       mock_restored_foreign_tab_callback_;
@@ -194,63 +193,32 @@ class SessionStoreFactoryTest : public ::testing::Test {
   SessionStore::Factory factory_;
 };
 
-TEST_F(SessionStoreFactoryTest, ShouldWaitForDeviceInfo) {
-  MockFactoryCompletionCallback completion;
-  EXPECT_CALL(completion, Run(_, _, _)).Times(0);
-  factory_.Run(completion.Get());
-  EXPECT_CALL(completion, Run(NoModelError(), /*store=*/NotNull(),
-                              MetadataBatchContains(_, IsEmpty())));
-  EXPECT_CALL(mock_sync_prefs_, GetSyncSessionsGUID());
-  EXPECT_CALL(mock_sync_prefs_,
-              SetSyncSessionsGUID(std::string("session_sync") + kCacheGuid));
-  InitializeDeviceInfoProvider();
-  completion.Wait();
-  ASSERT_THAT(completion.GetResult(), NotNull());
-  EXPECT_THAT(completion.GetResult()->local_session_info().client_name,
-              Eq(kClientName));
-  // Second deviceinfo should be ignored.
-  EXPECT_CALL(completion, Run(_, _, _)).Times(0);
-  EXPECT_CALL(mock_sync_prefs_, GetSyncSessionsGUID()).Times(0);
-  EXPECT_CALL(mock_sync_prefs_, SetSyncSessionsGUID(_)).Times(0);
-  InitializeDeviceInfoProvider();
-}
-
-TEST_F(SessionStoreFactoryTest,
-       ShouldCreateStoreIfDeviceInfoInitiallyAvailable) {
-  EXPECT_CALL(mock_sync_prefs_, GetSyncSessionsGUID());
-  EXPECT_CALL(mock_sync_prefs_,
-              SetSyncSessionsGUID(std::string("session_sync") + kCacheGuid));
-  InitializeDeviceInfoProvider();
+TEST_F(SessionStoreFactoryTest, ShouldCreateStore) {
+  ASSERT_THAT(session_sync_prefs_.GetSyncSessionsGUID(), IsEmpty());
 
   MockFactoryCompletionCallback completion;
   EXPECT_CALL(completion, Run(NoModelError(), /*store=*/NotNull(),
                               MetadataBatchContains(_, IsEmpty())));
-  factory_.Run(completion.Get());
+  factory_.Run(local_device_info_, completion.Get());
   completion.Wait();
   ASSERT_THAT(completion.GetResult(), NotNull());
   EXPECT_THAT(completion.GetResult()->local_session_info().client_name,
               Eq(kClientName));
-  // Second deviceinfo should be ignored.
-  EXPECT_CALL(completion, Run(_, _, _)).Times(0);
-  EXPECT_CALL(mock_sync_prefs_, GetSyncSessionsGUID()).Times(0);
-  EXPECT_CALL(mock_sync_prefs_, SetSyncSessionsGUID(_)).Times(0);
-  InitializeDeviceInfoProvider();
+  EXPECT_THAT(session_sync_prefs_.GetSyncSessionsGUID(),
+              Eq(std::string("session_sync") + kCacheGuid));
 }
 
 TEST_F(SessionStoreFactoryTest, ShouldReadSessionsGuidFromPrefs) {
   const std::string kCachedGuid = "cachedguid1";
-  EXPECT_CALL(mock_sync_prefs_, SetSyncSessionsGUID(_)).Times(0);
-  EXPECT_CALL(mock_sync_prefs_, GetSyncSessionsGUID())
-      .WillOnce(Return(kCachedGuid));
-
-  InitializeDeviceInfoProvider();
+  session_sync_prefs_.SetSyncSessionsGUID(kCachedGuid);
 
   NiceMock<MockFactoryCompletionCallback> completion;
-  factory_.Run(completion.Get());
+  factory_.Run(local_device_info_, completion.Get());
   completion.Wait();
   ASSERT_THAT(completion.GetResult(), NotNull());
   EXPECT_THAT(completion.GetResult()->local_session_info().session_tag,
               Eq(kCachedGuid));
+  EXPECT_THAT(session_sync_prefs_.GetSyncSessionsGUID(), Eq(kCachedGuid));
 }
 
 // Test fixture that creates an initial session store.
@@ -259,16 +227,13 @@ class SessionStoreTest : public SessionStoreFactoryTest {
   const std::string kLocalSessionTag = "localsessiontag";
 
   SessionStoreTest() {
-    ON_CALL(mock_sync_prefs_, GetSyncSessionsGUID())
-        .WillByDefault(Return(kLocalSessionTag));
-
+    session_sync_prefs_.SetSyncSessionsGUID(kLocalSessionTag);
     session_store_ = CreateSessionStore();
   }
 
   std::unique_ptr<SessionStore> CreateSessionStore() {
     NiceMock<MockFactoryCompletionCallback> completion;
-    InitializeDeviceInfoProvider();
-    factory_.Run(completion.Get());
+    factory_.Run(local_device_info_, completion.Get());
     completion.Wait();
     EXPECT_THAT(completion.GetResult(), NotNull());
     return completion.StealResult();
@@ -336,7 +301,7 @@ TEST_F(SessionStoreTest, ShouldWriteAndRestoreMetadata) {
                               MetadataBatchContains(
                                   HasEncryptionKeyName(kEncryptionKeyName1),
                                   ElementsAre(Pair(kStorageKey1, _)))));
-  factory_.Run(completion.Get());
+  factory_.Run(local_device_info_, completion.Get());
   completion.Wait();
   EXPECT_THAT(completion.GetResult(), NotNull());
   EXPECT_NE(session_store(), completion.GetResult());

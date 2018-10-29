@@ -140,12 +140,6 @@ const struct DOMExceptionEntry {
     // https://github.com/WICG/BackgroundSync/issues/124
     {DOMExceptionCode::kPermissionDeniedError, "PermissionDeniedError",
      "User or security policy denied the request."},
-
-    // Pointer Events
-    // https://w3c.github.io/pointerevents/
-    // Pointer Events introduced a new DOMException outside Web IDL.
-    {DOMExceptionCode::kInvalidPointerId, "InvalidPointerId",
-     "PointerId was invalid."},
 };
 
 unsigned short ToLegacyErrorCode(DOMExceptionCode exception_code) {

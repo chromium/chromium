@@ -59,7 +59,6 @@
 #include "extensions/common/url_pattern.h"
 #include "net/base/load_flags.h"
 #include "net/url_request/url_request.h"
-#include "third_party/blink/public/common/manifest/web_display_mode.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 #if defined(OS_MACOSX)
@@ -371,7 +370,7 @@ void BookmarkAppHelper::Create(const CreateBookmarkAppCallback& callback) {
       params.valid_primary_icon = true;
       params.valid_manifest = true;
       // Do not wait for a service worker if it doesn't exist.
-      params.has_worker = true;
+      params.has_worker = !bypass_service_worker_check_;
       installable_manager_->GetData(
           params, base::Bind(&BookmarkAppHelper::OnDidPerformInstallableCheck,
                              weak_factory_.GetWeakPtr()));
@@ -389,9 +388,17 @@ void BookmarkAppHelper::OnDidPerformInstallableCheck(
   if (contents_->IsBeingDestroyed())
     return;
 
-  for_installable_site_ = data.error_code == NO_ERROR_DETECTED
-                              ? ForInstallableSite::kYes
-                              : ForInstallableSite::kNo;
+  if (require_manifest_ && !data.valid_manifest) {
+    LOG(WARNING) << "Did not install " << web_app_info_.app_url.spec()
+                 << " because it didn't have a manifest";
+    callback_.Run(nullptr, web_app_info_);
+    return;
+  }
+
+  for_installable_site_ =
+      data.error_code == NO_ERROR_DETECTED && !shortcut_app_requested_
+          ? ForInstallableSite::kYes
+          : ForInstallableSite::kNo;
 
   UpdateWebAppInfoFromManifest(*data.manifest, &web_app_info_,
                                for_installable_site_);
@@ -434,8 +441,10 @@ void BookmarkAppHelper::OnDidPerformInstallableCheck(
       base::BindOnce(&BookmarkAppHelper::OnIconsDownloaded,
                      weak_factory_.GetWeakPtr())));
 
-  // If the manifest specified icons, don't use the page icons.
-  if (!data.manifest->icons.empty())
+  // If the manifest specified icons, or this is a System App, don't use the
+  // page icons.
+  if (!data.manifest->icons.empty() ||
+      contents_->GetVisibleURL().SchemeIs(content::kChromeUIScheme))
     web_app_icon_downloader_->SkipPageFavicons();
 
   web_app_icon_downloader_->Start();
@@ -526,6 +535,16 @@ void BookmarkAppHelper::OnBubbleCompleted(
       crx_installer_->set_creation_flags(Extension::WAS_INSTALLED_BY_DEFAULT);
     }
 
+    if (is_system_app_) {
+      // System Apps are considered EXTERNAL_COMPONENT as they are downloaded
+      // from the WebUI they point to. COMPONENT seems like the more correct
+      // value, but usages (icon loading, filesystem cleanup), are tightly
+      // coupled to this value, making it unsuitable.
+      crx_installer_->set_install_source(Manifest::EXTERNAL_COMPONENT);
+      // InstallWebApp will OR the creation flags with FROM_BOOKMARK.
+      crx_installer_->set_creation_flags(Extension::WAS_INSTALLED_BY_DEFAULT);
+    }
+
     crx_installer_->InstallWebApp(web_app_info_);
 
     if (InstallableMetrics::IsReportableInstallSource(install_source_) &&
@@ -575,25 +594,24 @@ void BookmarkAppHelper::FinishInstallation(const Extension* extension) {
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
       base::Time::Now());
 
-  Browser* browser = chrome::FindBrowserWithWebContents(contents_);
-  // If there is no browser, it means that the app is being installed in the
-  // background. We skip some steps in this case.
-  const bool silent_install = !browser;
-
-  if (!silent_install && banners::AppBannerManagerDesktop::IsEnabled() &&
-      web_app_info_.open_as_window) {
-    banners::AppBannerManagerDesktop::FromWebContents(contents_)->OnInstall(
-        false /* is_native app */, blink::kWebDisplayModeStandalone);
-  }
-
 #if !defined(OS_CHROMEOS)
   // Pin the app to the relevant launcher depending on the OS.
   Profile* current_profile = profile_->GetOriginalProfile();
 #endif  // !defined(OS_CHROMEOS)
 
+  // If there is no browser, it means that the app is being installed in the
+  // background. We skip some steps in this case.
+  const bool silent_install =
+      (chrome::FindBrowserWithWebContents(contents_) == nullptr);
+
 // On Mac, shortcuts are automatically created for hosted apps when they are
 // installed, so there is no need to create them again.
-#if !defined(OS_MACOSX)
+#if defined(OS_MACOSX)
+  if (!silent_install && !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                             ::switches::kDisableHostedAppShimCreation)) {
+    web_app::RevealAppShimInFinderForApp(current_profile, extension);
+  }
+#else
   if (create_shortcuts_) {
 #if !defined(OS_CHROMEOS)
     web_app::ShortcutLocations creation_locations;
@@ -624,13 +642,6 @@ void BookmarkAppHelper::FinishInstallation(const Extension* extension) {
     ReparentWebContentsIntoAppBrowser(contents_, extension);
   }
 #endif  // !defined(OS_MACOSX)
-
-#if defined(OS_MACOSX)
-  if (!silent_install && !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                             ::switches::kDisableHostedAppShimCreation)) {
-    web_app::RevealAppShimInFinderForApp(current_profile, extension);
-  }
-#endif
 
   callback_.Run(extension, web_app_info_);
 }

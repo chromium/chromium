@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,12 +53,14 @@ class ContextGroupTest : public GpuServiceTest {
         nullptr /* framebuffer_completeness_cache */, feature_info,
         kBindGeneratesResource, &image_manager_, nullptr /* image_factory */,
         nullptr /* progress_reporter */, GpuFeatureInfo(),
-        &discardable_manager_));
+        &discardable_manager_, nullptr /* passthrough_discardable_manager */,
+        &shared_image_manager_));
   }
 
   GpuPreferences gpu_preferences_;
   ImageManager image_manager_;
   ServiceDiscardableManager discardable_manager_;
+  SharedImageManager shared_image_manager_;
   FakeCommandBufferServiceBase command_buffer_service_;
   MailboxManagerImpl mailbox_manager_;
   TraceOutputter outputter_;

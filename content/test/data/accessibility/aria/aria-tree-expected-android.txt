@@ -1,9 +1,9 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='tree' collection hierarchical row_count=2
-++++android.view.View role_description='tree item' checkable collection_item name='Animals '
+++++android.view.View role_description='tree item' checkable collection_item name='Animals'
 ++++++android.view.View role_description='link' clickable focusable link name='Animals'
 ++++++android.view.View
-++++++++android.view.View role_description='tree item' collection_item name='Domesticated '
+++++++++android.view.View role_description='tree item' collection_item name='Domesticated'
 ++++++++++android.view.View role_description='link' clickable focusable link name='Domesticated'
 ++++++++++android.view.View
 ++++++++++++android.view.View role_description='tree item' checkable checked collection_item name='Dog'

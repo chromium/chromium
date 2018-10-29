@@ -636,6 +636,21 @@ TEST(MutatingTest, Move) {
                                 Pointee(5)));
 }
 
+TEST(MutatingTest, MoveWithRvalue) {
+  auto MakeRValueSrc = [] {
+    std::vector<std::unique_ptr<int>> src;
+    src.emplace_back(absl::make_unique<int>(1));
+    src.emplace_back(absl::make_unique<int>(2));
+    src.emplace_back(absl::make_unique<int>(3));
+    return src;
+  };
+
+  std::vector<std::unique_ptr<int>> dest = MakeRValueSrc();
+  absl::c_move(MakeRValueSrc(), std::back_inserter(dest));
+  EXPECT_THAT(dest, ElementsAre(Pointee(1), Pointee(2), Pointee(3), Pointee(1),
+                                Pointee(2), Pointee(3)));
+}
+
 TEST(MutatingTest, SwapRanges) {
   std::vector<int> odds = {2, 4, 6};
   std::vector<int> evens = {1, 3, 5};

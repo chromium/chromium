@@ -9,6 +9,7 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkTime.h"
+#include "third_party/skia/include/docs/SkPDFDocument.h"
 
 namespace {
 
@@ -42,17 +43,15 @@ namespace printing {
 
 sk_sp<SkDocument> MakePdfDocument(const std::string& creator,
                                   SkWStream* stream) {
-  SkDocument::PDFMetadata metadata;
+  SkPDF::Metadata metadata;
   SkTime::DateTime now = TimeToSkTime(base::Time::Now());
-  metadata.fCreation.fEnabled = true;
-  metadata.fCreation.fDateTime = now;
-  metadata.fModified.fEnabled = true;
-  metadata.fModified.fDateTime = now;
+  metadata.fCreation = now;
+  metadata.fModified = now;
   metadata.fCreator = creator.empty()
                           ? SkString("Chromium")
                           : SkString(creator.c_str(), creator.size());
   metadata.fRasterDPI = 300.0f;
-  return SkDocument::MakePDF(stream, metadata);
+  return SkPDF::MakeDocument(stream, metadata);
 }
 
 sk_sp<SkData> SerializeOopPicture(SkPicture* pic, void* ctx) {

@@ -7,17 +7,12 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/views/dropdown_bar_host.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "ui/base/ui_base_features.h"
 
 namespace chrome {
 
 void DisableFindBarAnimationsDuringTesting(bool disable) {
   DropdownBarHost::disable_animations_during_testing_ = disable;
-#if defined(OS_MACOSX) && BUILDFLAG(MAC_VIEWS_BROWSER)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    DisableFindBarCocoaAnimationsDuringTesting(disable);
-#endif
 }
 
 }  // namespace chrome

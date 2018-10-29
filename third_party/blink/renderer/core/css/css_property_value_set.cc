@@ -41,7 +41,7 @@
 
 namespace blink {
 
-static size_t SizeForImmutableCSSPropertyValueSetWithPropertyCount(
+static wtf_size_t SizeForImmutableCSSPropertyValueSetWithPropertyCount(
     unsigned count) {
   return sizeof(ImmutableCSSPropertyValueSet) - sizeof(void*) +
          sizeof(Member<CSSValue>) * count +
@@ -634,7 +634,7 @@ int MutableCSSPropertyValueSet::FindPropertyIndex(T property) const {
                                id, property);
       });
 
-  return (it == end) ? -1 : it - begin;
+  return (it == end) ? -1 : static_cast<int>(it - begin);
 }
 template CORE_EXPORT int MutableCSSPropertyValueSet::FindPropertyIndex(
     CSSPropertyID) const;

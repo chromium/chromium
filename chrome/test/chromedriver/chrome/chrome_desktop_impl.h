@@ -65,18 +65,7 @@ class ChromeDesktopImpl : public ChromeImpl {
   int GetNetworkConnection() const;
   void SetNetworkConnection(int network_connection);
 
-  Status SetWindowRect(const std::string& target_id,
-                       const base::DictionaryValue& params);
-  Status SetWindowPosition(const std::string& target_id, int x, int y);
-  Status SetWindowSize(const std::string& target_id, int width, int height);
-  Status MaximizeWindow(const std::string& target_id);
-  Status MinimizeWindow(const std::string& target_id);
-  Status FullScreenWindow(const std::string& target_id);
-
  private:
-  Status GetWindowBounds(int window_id, Window* window);
-  Status SetWindowBounds(int window_id,
-                         std::unique_ptr<base::DictionaryValue> bounds);
 
   base::Process process_;
   base::CommandLine command_;

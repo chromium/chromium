@@ -66,7 +66,7 @@ ManagedBookmarksPolicyHandler::GetFolderName(const base::ListValue& list) {
 
 void ManagedBookmarksPolicyHandler::FilterBookmarks(base::ListValue* list) {
   // Remove any non-conforming values found.
-  base::ListValue::iterator it = list->begin();
+  auto it = list->begin();
   while (it != list->end()) {
     base::DictionaryValue* dict = NULL;
     if (!it->GetAsDictionary(&dict)) {

@@ -71,9 +71,9 @@ TemplateURLServiceFactory* TemplateURLServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactoryFunction
+BrowserStateKeyedServiceFactory::TestingFactory
 TemplateURLServiceFactory::GetDefaultFactory() {
-  return &BuildTemplateURLService;
+  return base::BindRepeating(&BuildTemplateURLService);
 }
 
 TemplateURLServiceFactory::TemplateURLServiceFactory()

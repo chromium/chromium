@@ -200,7 +200,10 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
 
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override {
-    manager_->RemoveFrame(old_host);
+    // The |old_host| and its children are now pending deletion. Find-in-page
+    // must not interact with them anymore.
+    if (old_host)
+      RemoveFrameRecursively(static_cast<RenderFrameHostImpl*>(old_host));
   }
 
   void FrameDeleted(RenderFrameHost* rfh) override {
@@ -208,6 +211,12 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
   }
 
  private:
+  void RemoveFrameRecursively(RenderFrameHostImpl* rfh) {
+    for (size_t i = 0; i < rfh->child_count(); ++i)
+      RemoveFrameRecursively(rfh->child_at(i)->current_frame_host());
+    manager_->RemoveFrame(rfh);
+  }
+
   // The FindRequestManager that owns this FrameObserver.
   FindRequestManager* const manager_;
 

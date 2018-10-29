@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/macros.h"
@@ -22,6 +23,7 @@ class PrefService;
 
 namespace offline_pages {
 class PrefetchService;
+struct PrefetchSuggestion;
 
 class PrefetchDispatcherImpl : public PrefetchDispatcher,
                                public TaskQueue::Delegate {
@@ -36,6 +38,9 @@ class PrefetchDispatcherImpl : public PrefetchDispatcher,
   void AddCandidatePrefetchURLs(
       const std::string& name_space,
       const std::vector<PrefetchURL>& prefetch_urls) override;
+  void NewSuggestionsAvailable(
+      SuggestionsProvider* suggestions_provider) override;
+  void RemoveSuggestion(const GURL& url) override;
   void RemoveAllUnprocessedPrefetchURLs(const std::string& name_space) override;
   void RemovePrefetchURLsByClientId(const ClientId& client_id) override;
   void BeginBackgroundTask(
@@ -84,6 +89,9 @@ class PrefetchDispatcherImpl : public PrefetchDispatcher,
   // wakeup (when BeginBackgroundTask() is called) or any time TaskQueue
   // becomes idle and any task called SchedulePipelineProcessing() before.
   void QueueActionTasks();
+  // Adds a list of PrefetchSuggestions to the queue of suggestions to be
+  // prefetched.
+  void AddSuggestions(std::vector<PrefetchSuggestion> suggestions);
 
   // The methods below control the  downloading of thumbnails for the provided
   // prefetch items IDs. They are called multiple times for the same article,

@@ -8,6 +8,7 @@
 #include "base/task/post_task.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/logger.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -22,8 +23,8 @@ CastSocketService::CastSocketService()
       // (1) ChromeURLRequestContextGetter::GetURLRequestContext, which is
       // called by CastMediaSinkServiceImpl, must run on IO thread. (2) Parts of
       // CastChannel extension API functions run on IO thread.
-      task_runner_(content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::IO)) {}
+      task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::IO})) {}
 
 // This is a leaky singleton and the dtor won't be called.
 CastSocketService::~CastSocketService() = default;

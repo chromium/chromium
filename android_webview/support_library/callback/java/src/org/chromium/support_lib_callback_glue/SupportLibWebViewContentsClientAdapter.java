@@ -52,25 +52,16 @@ public class SupportLibWebViewContentsClientAdapter {
 
     @Nullable
     private WebViewClientBoundaryInterface convertCompatClient(WebViewClient possiblyCompatClient) {
-        if (!clientIsCompat(possiblyCompatClient)) return null;
+        if (!BoundaryInterfaceReflectionUtil.instanceOfInOwnClassLoader(
+                    possiblyCompatClient, WEBVIEW_CLIENT_COMPAT_NAME)) {
+            return null;
+        }
 
         InvocationHandler handler =
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(possiblyCompatClient);
 
         return BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                 WebViewClientBoundaryInterface.class, handler);
-    }
-
-    private boolean clientIsCompat(WebViewClient possiblyCompatClient) {
-        try {
-            Class compatClass = Class.forName(WEBVIEW_CLIENT_COMPAT_NAME, false,
-                    possiblyCompatClient.getClass().getClassLoader());
-            return compatClass.isInstance(possiblyCompatClient);
-        } catch (ClassNotFoundException e) {
-            // If WEBVIEW_CLIENT_COMPAT_NAME is not in the ClassLoader, then this cannot be an
-            // instance of WebViewClientCompat.
-            return false;
-        }
     }
 
     /**

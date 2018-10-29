@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,13 @@
 #include <objidl.h>
 #include <prntvpt.h>
 #include <winspool.h>
+
+// Important to include wincrypt_shim.h before xpsprint.h since
+// xpsprint.h includes <wincrypt.h> (xpsprint.h -> msopc.h ->
+// wincrypt.h) which in its normal state is incompatible with
+// OpenSSL/BoringSSL.
+#include "base/win/wincrypt_shim.h"
+
 #include <xpsprint.h>
 
 #include <memory>

@@ -89,6 +89,32 @@ _kind_to_closure_type = {
   mojom.NULLABLE_SHAREDBUFFER: "mojo.MojoHandle",
 }
 
+_kind_to_lite_js_type = {
+  mojom.BOOL:                  "mojo.mojom.Bool",
+  mojom.INT8:                  "mojo.mojom.Int8",
+  mojom.UINT8:                 "mojo.mojom.Uint8",
+  mojom.INT16:                 "mojo.mojom.Int16",
+  mojom.UINT16:                "mojo.mojom.Uint16",
+  mojom.INT32:                 "mojo.mojom.Int32",
+  mojom.UINT32:                "mojo.mojom.Uint32",
+  mojom.FLOAT:                 "mojo.mojom.Float",
+  mojom.HANDLE:                "mojo.mojom.Handle",
+  mojom.DCPIPE:                "mojo.mojom.Handle",
+  mojom.DPPIPE:                "mojo.mojom.Handle",
+  mojom.MSGPIPE:               "mojo.mojom.Handle",
+  mojom.SHAREDBUFFER:          "mojo.mojom.Handle",
+  mojom.NULLABLE_HANDLE:       "mojo.mojom.Handle",
+  mojom.NULLABLE_DCPIPE:       "mojo.mojom.Handle",
+  mojom.NULLABLE_DPPIPE:       "mojo.mojom.Handle",
+  mojom.NULLABLE_MSGPIPE:      "mojo.mojom.Handle",
+  mojom.NULLABLE_SHAREDBUFFER: "mojo.mojom.Handle",
+  mojom.INT64:                 "mojo.mojom.Int64",
+  mojom.UINT64:                "mojo.mojom.Uint64",
+  mojom.DOUBLE:                "mojo.mojom.Double",
+  mojom.STRING:                "mojo.mojom.String",
+  mojom.NULLABLE_STRING:       "mojo.mojom.String",
+}
+
 _js_reserved_keywords = [
     'arguments',
     'await',
@@ -231,6 +257,7 @@ class Generator(generator.Generator):
       "interfaces": self.module.interfaces,
       "kinds": self.module.kinds,
       "module": self.module,
+      "mojom_namespace": self.module.mojom_namespace,
       "structs": self.module.structs + self._GetStructsFromMethods(),
       "unions": self.module.unions,
       "generate_fuzzing": self.generate_fuzzing,
@@ -268,9 +295,13 @@ class Generator(generator.Generator):
       "is_struct_kind": mojom.IsStructKind,
       "is_union_kind": mojom.IsUnionKind,
       "js_type": self._JavaScriptType,
+      "lite_default_value": self._LiteJavaScriptDefaultValue,
+      "lite_js_type": self._LiteJavaScriptType,
       "method_passes_associated_kinds": mojom.MethodPassesAssociatedKinds,
       "namespace_declarations": self._NamespaceDeclarations,
       "closure_type_with_nullability": self._ClosureTypeWithNullability,
+      "lite_closure_type_with_nullability":
+          self._LiteClosureTypeWithNullability,
       "payload_size": JavaScriptPayloadSize,
       "to_camel": generator.ToCamel,
       "union_decode_snippet": self._JavaScriptUnionDecodeSnippet,
@@ -298,6 +329,14 @@ class Generator(generator.Generator):
   def _GenerateExterns(self):
     return self._GetParameters()
 
+  @UseJinja("lite/mojom-lite.js.tmpl")
+  def _GenerateLiteBindings(self):
+    return self._GetParameters()
+
+  @UseJinja("lite/module.externs.tmpl")
+  def _GenerateLiteExterns(self):
+    return self._GetParameters()
+
   def GenerateFiles(self, args):
     if self.variant:
       raise Exception("Variants not supported in JavaScript bindings.")
@@ -311,6 +350,10 @@ class Generator(generator.Generator):
 
     self.Write(self._GenerateAMDModule(), "%s.js" % self.module.path)
     self.Write(self._GenerateExterns(), "%s.externs.js" % self.module.path)
+    if self.js_bindings_mode == "new":
+      self.Write(self._GenerateLiteBindings(), "%s-lite.js" % self.module.path)
+      self.Write(self._GenerateLiteExterns(),
+                 "%s-lite.externs.js" % self.module.path)
 
   def _SetUniqueNameForImports(self):
     used_names = set()
@@ -357,8 +400,54 @@ class Generator(generator.Generator):
 
     raise Exception("No valid closure type: %s" % kind)
 
+  def _IsStringableKind(self, kind):
+    # Indicates whether a kind of suitable to stringify and use as an Object
+    # property name. This is checked for map key types to allow most kinds of
+    # mojom maps to be represented as either a Map or an Object.
+    return (mojom.IsIntegralKind(kind) or mojom.IsFloatKind(kind) or
+        mojom.IsDoubleKind(kind) or mojom.IsStringKind(kind))
+
+  def _LiteClosureType(self, kind):
+    if kind in mojom.PRIMITIVES:
+      return _kind_to_closure_type[kind]
+    if mojom.IsInterfaceKind(kind):
+      return kind.module.namespace + "." + kind.name + "Proxy"
+    if mojom.IsInterfaceRequestKind(kind):
+      return kind.kind.module.namespace + "." + kind.kind.name + "Request"
+    if (mojom.IsStructKind(kind) or
+        mojom.IsEnumKind(kind)):
+      return kind.module.namespace + "." + kind.name
+    # TODO(calamity): Support unions properly.
+    if mojom.IsUnionKind(kind):
+      return "Object"
+    if mojom.IsArrayKind(kind):
+      return "Array<%s>" % self._ClosureType(kind.kind)
+    if mojom.IsMapKind(kind) and self._IsStringableKind(kind.key_kind):
+      return "Map<%s, %s>|Object<%s, %s>" % (
+          self._LiteClosureType(kind.key_kind),
+          self._LiteClosureType(kind.value_kind),
+          self._LiteClosureType(kind.key_kind),
+          self._LiteClosureType(kind.value_kind))
+    if mojom.IsMapKind(kind):
+      return "Map<%s, %s>" % (
+          self._LiteClosureType(kind.key_kind),
+          self._LiteClosureType(kind.value_kind))
+    # TODO(calamity): Support associated interfaces properly.
+    if mojom.IsAssociatedInterfaceKind(kind):
+      return "mojo.internal.AssociatedInterfaceProxy"
+    # TODO(calamity): Support associated interface requests properly.
+    if mojom.IsAssociatedInterfaceRequestKind(kind):
+      return "mojo.internal.AssociatedInterfaceRequest"
+    # TODO(calamity): Support enums properly.
+
+    raise Exception("No valid closure type: %s" % kind)
+
   def _ClosureTypeWithNullability(self, kind):
     return ("" if mojom.IsNullableKind(kind) else "!") + self._ClosureType(kind)
+
+  def _LiteClosureTypeWithNullability(self, kind):
+    return (("" if mojom.IsNullableKind(kind) else "!") +
+        self._LiteClosureType(kind))
 
   def _NamespaceDeclarations(self, namespace):
     pieces = namespace.split('.')
@@ -377,6 +466,43 @@ class Generator(generator.Generator):
       name.append(kind.parent_kind.name)
     name.append(kind.name)
     return ".".join(name)
+
+  def _LiteJavaScriptType(self, kind):
+    if self._IsPrimitiveKind(kind):
+      return _kind_to_lite_js_type[kind]
+    if mojom.IsArrayKind(kind):
+      return "mojo.mojom.Array(%s, %s)" % (
+          self._LiteJavaScriptType(kind.kind),
+          "true" if mojom.IsNullableKind(kind.kind) else "false")
+    if mojom.IsMapKind(kind):
+      return "mojo.mojom.Map(%s, %s, %s)" % (
+          self._LiteJavaScriptType(kind.key_kind),
+          self._LiteJavaScriptType(kind.value_kind),
+          "true" if mojom.IsNullableKind(kind.value_kind) else "false")
+
+    if mojom.IsAssociatedKind(kind) or mojom.IsInterfaceRequestKind(kind):
+      named_kind = kind.kind
+    else:
+      named_kind = kind
+
+    name = []
+    if named_kind.module and named_kind.module.path != self.module.path:
+      name.append(named_kind.module.unique_name)
+    if named_kind.parent_kind:
+      name.append(named_kind.parent_kind.name)
+    name.append(named_kind.name)
+    name = ".".join(name)
+
+    if mojom.IsInterfaceKind(kind):
+      return "new mojo.mojom.InterfaceProxy(%sProxy)" % name
+    if mojom.IsInterfaceRequestKind(kind):
+      return "new mojo.mojom.InterfaceRequest(%sRequest)" % name
+    if mojom.IsAssociatedInterfaceKind(kind):
+      return "new mojo.mojom.AssociatedInterfaceProxy(%sAssociatedProxy)" % name
+    if mojom.IsAssociatedInterfaceRequestKind(kind):
+      return "new mojo.mojom.AssociatedInterfaceRequest(%s)" % name
+
+    return name
 
   def _JavaScriptDefaultValue(self, field):
     if field.default:
@@ -405,6 +531,18 @@ class Generator(generator.Generator):
     if mojom.IsEnumKind(field.kind):
       return "0"
     raise Exception("No valid default: %s" % field)
+
+  def _LiteJavaScriptDefaultValue(self, field):
+    if field.default:
+      if mojom.IsStructKind(field.kind):
+        assert field.default == "default"
+        return "null";
+      return self._ExpressionToText(field.default)
+    if field.kind in mojom.PRIMITIVES:
+      return _kind_to_javascript_default_value[field.kind]
+    if mojom.IsEnumKind(field.kind):
+      return "0"
+    return "null"
 
   def _CodecType(self, kind):
     if kind in mojom.PRIMITIVES:

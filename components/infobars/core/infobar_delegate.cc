@@ -5,10 +5,10 @@
 #include "components/infobars/core/infobar_delegate.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -34,8 +34,8 @@ int InfoBarDelegate::GetIconId() const {
 }
 
 const gfx::VectorIcon& InfoBarDelegate::GetVectorIcon() const {
-  CR_DEFINE_STATIC_LOCAL(gfx::VectorIcon, empty_icon, ());
-  return empty_icon;
+  static base::NoDestructor<gfx::VectorIcon> empty_icon;
+  return *empty_icon;
 }
 
 gfx::Image InfoBarDelegate::GetIcon() const {

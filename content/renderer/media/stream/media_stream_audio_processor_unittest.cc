@@ -117,13 +117,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       // |audio_processor| does nothing when the audio processing is off in
       // the processor.
       webrtc::AudioProcessing* ap = audio_processor->audio_processing_.get();
-#if defined(OS_ANDROID)
-      const bool is_aec_enabled = ap && ap->echo_control_mobile()->is_enabled();
-      // AEC should be turned off for mobiles.
-      DCHECK(!ap || !ap->echo_cancellation()->is_enabled());
-#else
-      const bool is_aec_enabled = ap && ap->echo_cancellation()->is_enabled();
-#endif
+      const bool is_aec_enabled = ap && ap->GetConfig().echo_canceller.enabled;
       if (is_aec_enabled) {
         if (params.channels() > kMaxNumberOfPlayoutDataChannels) {
           for (int i = 0; i < kMaxNumberOfPlayoutDataChannels; ++i) {
@@ -159,24 +153,19 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
   void VerifyDefaultComponents(MediaStreamAudioProcessor* audio_processor) {
     webrtc::AudioProcessing* audio_processing =
         audio_processor->audio_processing_.get();
+    const webrtc::AudioProcessing::Config config =
+        audio_processing->GetConfig();
+    EXPECT_TRUE(config.echo_canceller.enabled);
 #if defined(OS_ANDROID)
-    EXPECT_TRUE(audio_processing->echo_control_mobile()->is_enabled());
-    EXPECT_TRUE(audio_processing->echo_control_mobile()->routing_mode() ==
-        webrtc::EchoControlMobile::kSpeakerphone);
-    EXPECT_FALSE(audio_processing->echo_cancellation()->is_enabled());
+    EXPECT_TRUE(config.echo_canceller.mobile_mode);
 #else
-    EXPECT_TRUE(audio_processing->echo_cancellation()->is_enabled());
-    EXPECT_TRUE(audio_processing->echo_cancellation()->suppression_level() ==
-        webrtc::EchoCancellation::kHighSuppression);
-    EXPECT_TRUE(audio_processing->echo_cancellation()->are_metrics_enabled());
-    EXPECT_TRUE(
-        audio_processing->echo_cancellation()->is_delay_logging_enabled());
+    EXPECT_FALSE(config.echo_canceller.mobile_mode);
 #endif
+    EXPECT_TRUE(config.high_pass_filter.enabled);
 
     EXPECT_TRUE(audio_processing->noise_suppression()->is_enabled());
     EXPECT_TRUE(audio_processing->noise_suppression()->level() ==
         webrtc::NoiseSuppression::kHigh);
-    EXPECT_TRUE(audio_processing->high_pass_filter()->is_enabled());
     EXPECT_TRUE(audio_processing->gain_control()->is_enabled());
 #if defined(OS_ANDROID)
     EXPECT_TRUE(audio_processing->gain_control()->mode() ==
@@ -423,6 +412,30 @@ TEST_F(MediaStreamAudioProcessorTest, MAYBE_TestWithKeyboardMicChannel) {
   // Stop |audio_processor| so that it removes itself from
   // |webrtc_audio_device| and clears its pointer to it.
   audio_processor->Stop();
+}
+
+TEST_F(MediaStreamAudioProcessorTest, GetExtraGainConfigNullOpt) {
+  base::Optional<std::string> audio_processing_platform_config_json;
+  base::Optional<double> pre_amplifier_fixed_gain_factor,
+      gain_control_compression_gain_db;
+  GetExtraGainConfig(audio_processing_platform_config_json,
+                     &pre_amplifier_fixed_gain_factor,
+                     &gain_control_compression_gain_db);
+  EXPECT_FALSE(pre_amplifier_fixed_gain_factor);
+  EXPECT_FALSE(gain_control_compression_gain_db);
+}
+
+TEST_F(MediaStreamAudioProcessorTest, GetExtraGainConfig) {
+  base::Optional<std::string> audio_processing_platform_config_json =
+      "{\"gain_control_compression_gain_db\": 10}";
+  base::Optional<double> pre_amplifier_fixed_gain_factor,
+      gain_control_compression_gain_db;
+  GetExtraGainConfig(audio_processing_platform_config_json,
+                     &pre_amplifier_fixed_gain_factor,
+                     &gain_control_compression_gain_db);
+  EXPECT_FALSE(pre_amplifier_fixed_gain_factor);
+  EXPECT_TRUE(gain_control_compression_gain_db);
+  EXPECT_EQ(gain_control_compression_gain_db.value(), 10);
 }
 
 }  // namespace content

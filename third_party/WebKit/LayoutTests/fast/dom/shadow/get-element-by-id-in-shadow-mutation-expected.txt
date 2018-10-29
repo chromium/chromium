@@ -3,7 +3,6 @@ Tests to ensure that ShadowRoot.getElementById works even after mutation
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS null is shadow.getElementById('foo')
 PASS e0a is shadow.getElementById('foo')
 PASS e0b is shadow.getElementById('foo')

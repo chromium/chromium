@@ -31,7 +31,7 @@ CSSParserContext* CSSParserContext::Create(const ExecutionContext& context) {
       context.Url(), false /* is_opaque_response_from_service_worker */,
       WTF::TextEncoding(), kHTMLStandardMode, kHTMLStandardMode, kLiveProfile,
       referrer, true, false, context.GetSecureContextMode(), policy_disposition,
-      context.IsDocument() ? &ToDocument(context) : nullptr);
+      DynamicTo<Document>(context));
 }
 
 // static

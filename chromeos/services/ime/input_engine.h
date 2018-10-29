@@ -11,6 +11,22 @@
 namespace chromeos {
 namespace ime {
 
+namespace rulebased {
+class Engine;
+}
+
+class InputEngineContext {
+ public:
+  explicit InputEngineContext(const std::string& ime);
+  ~InputEngineContext();
+
+  std::string ime_spec;
+  std::unique_ptr<rulebased::Engine> engine;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(InputEngineContext);
+};
+
 // A basic implementation of InputEngine without using any decoder.
 class InputEngine : public mojom::InputChannel {
  public:
@@ -36,10 +52,11 @@ class InputEngine : public mojom::InputChannel {
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 
  private:
-  const std::string& Process(const std::string& message,
-                             const std::string& ime_spec);
+  std::string Process(const std::string& message,
+                      const InputEngineContext* context);
 
-  mojo::BindingSet<mojom::InputChannel, std::string> channel_bindings_;
+  mojo::BindingSet<mojom::InputChannel, std::unique_ptr<InputEngineContext>>
+      channel_bindings_;
 
   DISALLOW_COPY_AND_ASSIGN(InputEngine);
 };

@@ -1,6 +1,7 @@
 rootWebArea
 ++genericContainer
 ++++textField detailsId=paragraph
+++++++genericContainer
 ++paragraph
 ++++staticText name='Details'
 ++++++inlineTextBox name='Details'

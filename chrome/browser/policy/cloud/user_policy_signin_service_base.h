@@ -16,9 +16,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "services/identity/public/cpp/identity_manager.h"
 
 class AccountId;
 class PrefService;
@@ -49,7 +49,7 @@ class UserPolicySigninServiceBase : public KeyedService,
                                     public CloudPolicyClient::Observer,
                                     public CloudPolicyService::Observer,
                                     public content::NotificationObserver,
-                                    public SigninManagerBase::Observer {
+                                    public identity::IdentityManager::Observer {
  public:
   // The callback invoked once policy registration is complete. Passed
   // |dm_token| and |client_id| parameters are empty if policy registration
@@ -68,7 +68,7 @@ class UserPolicySigninServiceBase : public KeyedService,
       PrefService* local_state,
       DeviceManagementService* device_management_service,
       UserCloudPolicyManager* policy_manager,
-      SigninManager* signin_manager,
+      identity::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
   ~UserPolicySigninServiceBase() override;
 
@@ -84,9 +84,9 @@ class UserPolicySigninServiceBase : public KeyedService,
       scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
       const PolicyFetchCallback& callback);
 
-  // SigninManagerBase::Observer implementation:
-  void GoogleSignedOut(const std::string& account_id,
-                       const std::string& username) override;
+  // identity::IdentityManager::Observer implementation:
+  void OnPrimaryAccountCleared(
+      const AccountInfo& previous_primary_account_info) override;
 
   // content::NotificationObserver implementation:
   void Observe(int type,
@@ -148,17 +148,17 @@ class UserPolicySigninServiceBase : public KeyedService,
   virtual void ShutdownUserCloudPolicyManager();
 
   // Convenience helpers to get the associated UserCloudPolicyManager and
-  // SigninManager.
+  // IdentityManager.
   UserCloudPolicyManager* policy_manager() { return policy_manager_; }
-  SigninManager* signin_manager() { return signin_manager_; }
+  identity::IdentityManager* identity_manager() { return identity_manager_; }
 
   content::NotificationRegistrar* registrar() { return &registrar_; }
 
  private:
-  // Weak pointer to the UserCloudPolicyManager and SigninManager this service
+  // Weak pointer to the UserCloudPolicyManager and IdentityManager this service
   // is associated with.
   UserCloudPolicyManager* policy_manager_;
-  SigninManager* signin_manager_;
+  identity::IdentityManager* identity_manager_;
 
   content::NotificationRegistrar registrar_;
 

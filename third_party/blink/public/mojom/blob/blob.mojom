@@ -39,9 +39,11 @@ interface Blob {
   // read operation.
   ReadAll(handle<data_pipe_producer> pipe, BlobReaderClient? client);
 
-  // Causes a subrange of the contents of this blob to be written into the given
-  // data pipe. An optional BlobReaderClient will be informed of the result of
-  // the read operation.
+  // Causes a subrange of the contents of this blob to be written into the
+  // given data pipe. If |length| is -1 (uint64_t max), the range's end is
+  // unbounded so the entire contents are read starting at |offset|. An
+  // optional BlobReaderClient will be informed of the result of the read
+  // operation.
   ReadRange(uint64 offset, uint64 length, handle<data_pipe_producer> pipe,
             BlobReaderClient? client);
 

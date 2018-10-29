@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/task/task_scheduler/task_scheduler.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -26,6 +27,7 @@
 #include "content/common/url_schemes.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -150,8 +152,8 @@ void RunAllPendingInMessageLoop(BrowserThread::ID thread_id) {
   const base::Closure post_quit_run_loop_to_ui_thread = base::Bind(
       base::IgnoreResult(&base::SingleThreadTaskRunner::PostTask),
       base::ThreadTaskRunnerHandle::Get(), FROM_HERE, run_loop.QuitClosure());
-  BrowserThread::PostTask(
-      thread_id, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {thread_id},
       base::BindOnce(&DeferredQuitRunLoop, post_quit_run_loop_to_ui_thread,
                      kNumQuitDeferrals));
   RunThisRunLoop(&run_loop);
@@ -261,12 +263,13 @@ WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh) {
 
   WebContents::CreateParams inner_params(outer_contents->GetBrowserContext());
 
-  // TODO(erikchen): Fix ownership semantics for guest views.
-  // https://crbug.com/832879.
-  WebContents* inner_contents = WebContents::Create(inner_params).release();
+  std::unique_ptr<WebContents> inner_contents_ptr =
+      WebContents::Create(inner_params);
 
   // Attach. |inner_contents| becomes owned by |outer_contents|.
-  inner_contents->AttachToOuterWebContentsFrame(outer_contents, rfh);
+  WebContents* inner_contents = inner_contents_ptr.get();
+  inner_contents->AttachToOuterWebContentsFrame(std::move(inner_contents_ptr),
+                                                rfh);
 
   // |guest_delegate| becomes owned by |inner_contents|.
   guest_delegate.release()->SetInnerWebContents(inner_contents);

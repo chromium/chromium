@@ -140,21 +140,15 @@ void TeamDriveListLoader::CheckForUpdates(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(callback);
 
-  if (google_apis::GetTeamDrivesIntegrationSwitch() ==
-      google_apis::TEAM_DRIVES_INTEGRATION_ENABLED) {
-    if (IsRefreshing()) {
-      pending_load_callbacks_.emplace_back(callback);
-      return;
-    }
-
+  if (IsRefreshing()) {
     pending_load_callbacks_.emplace_back(callback);
-    scheduler_->GetAllTeamDriveList(
-        base::BindRepeating(&TeamDriveListLoader::OnTeamDriveListLoaded,
-                            weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    // No team drive integration, just flow OK to the callback.
-    callback.Run(FILE_ERROR_OK);
+    return;
   }
+
+  pending_load_callbacks_.emplace_back(callback);
+  scheduler_->GetAllTeamDriveList(
+      base::BindRepeating(&TeamDriveListLoader::OnTeamDriveListLoaded,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TeamDriveListLoader::LoadIfNeeded(const FileOperationCallback& callback) {

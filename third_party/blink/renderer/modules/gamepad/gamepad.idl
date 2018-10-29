@@ -43,7 +43,7 @@ interface Gamepad {
     // https://github.com/w3c/gamepad/pull/68
     [RuntimeEnabled=GamepadVibration, MeasureAs=GamepadVibrationActuator] readonly attribute GamepadHapticActuator? vibrationActuator;
 
-    [RuntimeEnabled=GamepadExtensions, MeasureAs=GamepadPose] readonly attribute GamepadPose? pose;
+    [OriginTrialEnabled=GamepadExtensions, MeasureAs=GamepadPose] readonly attribute GamepadPose? pose;
     [OriginTrialEnabled=WebXRGamepadSupport, MeasureAs=GamepadHand] readonly attribute GamepadHand hand;
 
     // https://w3c.github.io/webvr/#interface-gamepad

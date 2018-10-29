@@ -83,15 +83,15 @@ public class XrTestRuleUtils {
      * @param activity The SupportedActivity value to convert to a String.
      * @return A String representation of the activity.
      */
-    public static String supportedActivityToString(SupportedActivity activity) {
+    public static String supportedActivityToString(@SupportedActivity int activity) {
         switch (activity) {
-            case CTA:
+            case SupportedActivity.CTA:
                 return "ChromeTabbedActivity";
-            case CCT:
+            case SupportedActivity.CCT:
                 return "CustomTabActivity";
-            case WAA:
+            case SupportedActivity.WAA:
                 return "WebappActivity";
-            case ALL:
+            case SupportedActivity.ALL:
                 return "AllActivities";
             default:
                 return "UnknownActivity";

@@ -27,7 +27,7 @@ class SimpleLRU {
   }
 
   void Remove(int x) {
-    for (std::list<int>::iterator i = data_.begin(); i != data_.end(); ++i) {
+    for (auto i = data_.begin(); i != data_.end(); ++i) {
       if (*i == x) {
         data_.erase(i);
         DCHECK(!Contains(x));
@@ -58,8 +58,7 @@ class SimpleLRU {
   }
 
   bool Contains(int x) const {
-    for (std::list<int>::const_iterator i = data_.begin(); i != data_.end();
-         ++i) {
+    for (auto i = data_.begin(); i != data_.end(); ++i) {
       if (*i == x) {
         return true;
       }

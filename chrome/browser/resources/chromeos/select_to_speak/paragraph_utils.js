@@ -23,11 +23,12 @@ ParagraphUtils.getFirstBlockAncestor = function(node) {
     if (parent == root) {
       return parent;
     }
-    if (parent.role == RoleType.PARAGRAPH) {
+    if (parent.role == RoleType.PARAGRAPH || parent.role == RoleType.SVG_ROOT) {
       return parent;
     }
     if (parent.display !== undefined && parent.display != 'inline' &&
-        parent.role != RoleType.STATIC_TEXT) {
+        parent.role != RoleType.STATIC_TEXT &&
+        (parent.parent && parent.parent.role != RoleType.SVG_ROOT)) {
       return parent;
     }
     parent = parent.parent;
@@ -215,7 +216,8 @@ ParagraphUtils.buildNodeGroup = function(nodes, index) {
         result.nodes.push(newNode);
       }
     }
-    if (!ParagraphUtils.inSameParagraph(node, next)) {
+    if (index + 1 >= nodes.length ||
+        !ParagraphUtils.inSameParagraph(node, next)) {
       break;
     }
     index += 1;

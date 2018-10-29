@@ -3,7 +3,6 @@ Check that targeted class invalidation works for ::content selectors.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(r1, null).backgroundColor is transparent
 PASS internals.updateStyleAndReturnAffectedElementCount() is 5
 PASS getComputedStyle(r1, null).backgroundColor is green

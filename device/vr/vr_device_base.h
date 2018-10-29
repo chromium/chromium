@@ -27,9 +27,10 @@ class DEVICE_VR_EXPORT VRDeviceBase : public mojom::XRRuntime {
 
   // VRDevice Implementation
   void ListenToDeviceChanges(
-      mojom::XRRuntimeEventListenerPtr listener,
+      mojom::XRRuntimeEventListenerAssociatedPtrInfo listener,
       mojom::XRRuntime::ListenToDeviceChangesCallback callback) final;
   void SetListeningForActivate(bool is_listening) override;
+  void EnsureInitialized(EnsureInitializedCallback callback) override;
 
   void GetFrameData(mojom::XRFrameDataProvider::GetFrameDataCallback callback);
 
@@ -86,7 +87,7 @@ class DEVICE_VR_EXPORT VRDeviceBase : public mojom::XRRuntime {
   virtual void OnMagicWindowFrameDataRequest(
       mojom::XRFrameDataProvider::GetFrameDataCallback callback);
 
-  mojom::XRRuntimeEventListenerPtr listener_;
+  mojom::XRRuntimeEventListenerAssociatedPtr listener_;
 
   bool presenting_ = false;
 

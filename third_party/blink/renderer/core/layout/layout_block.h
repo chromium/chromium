@@ -196,6 +196,12 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     width_available_to_children_changed_ = true;
   }
 
+  // Return true if this is the anonymous child wrapper of an NG fieldset
+  // container. Such a wrapper holds all the fieldset contents. Only the
+  // rendered legend is laid out on the outside, although the layout object
+  // itself for the legend is still a child of this object.
+  bool IsAnonymousNGFieldsetContentWrapper() const;
+
   void SetHasMarkupTruncation(bool b) { has_markup_truncation_ = b; }
   bool HasMarkupTruncation() const { return has_markup_truncation_; }
 
@@ -319,12 +325,12 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
  protected:
   bool RecalcNormalFlowChildOverflowIfNeeded(LayoutObject*);
-  bool RecalcPositionedDescendantsOverflowAfterStyleChange();
-  bool RecalcSelfOverflowAfterStyleChange();
+  bool RecalcPositionedDescendantsOverflow();
+  bool RecalcSelfOverflow();
 
  public:
-  bool RecalcChildOverflowAfterStyleChange();
-  bool RecalcOverflowAfterStyleChange() override;
+  bool RecalcChildOverflow();
+  bool RecalcOverflow() override;
 
   // An example explaining layout tree structure about first-line style:
   // <style>
@@ -389,6 +395,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
                              const LayoutPoint& paint_offset) const;
   void UpdateAfterLayout() override;
 
+  void ComputeOverflow(LayoutUnit old_client_after_edge,
+                       bool recompute_floats = false);
+
  protected:
   virtual void AdjustInlineDirectionLineBounds(
       unsigned /* expansionOpportunityCount */,
@@ -438,15 +447,21 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   bool SimplifiedLayout();
   virtual void SimplifiedNormalFlowLayout();
 
- public:
-  virtual void ComputeOverflow(LayoutUnit old_client_after_edge,
-                               bool recompute_floats = false);
+ private:
+  void AddVisualOverflowFromBlockChildren();
+  void AddLayoutOverflowFromPositionedObjects();
+  void AddLayoutOverflowFromBlockChildren();
 
  protected:
-  virtual void AddOverflowFromChildren();
-  void AddOverflowFromPositionedObjects();
-  void AddOverflowFromBlockChildren();
   void AddVisualOverflowFromTheme();
+  virtual void ComputeVisualOverflow(
+      const LayoutRect& previous_visual_overflow_rect,
+      bool recompute_floats);
+  virtual void ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
+                                     bool recompute_floats);
+
+  virtual void AddLayoutOverflowFromChildren();
+  void AddVisualOverflowFromChildren();
 
   void AddOutlineRects(Vector<LayoutRect>&,
                        const LayoutPoint& additional_offset,

@@ -30,7 +30,6 @@ class CSSLazyParsingState
 
   const CSSParserContext* Context();
   const String& SheetText() const { return sheet_text_; }
-  bool ShouldLazilyParseProperties(const CSSSelectorList&) const;
 
   void Trace(blink::Visitor*);
 

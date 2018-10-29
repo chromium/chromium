@@ -7,6 +7,7 @@
 function createAdFrame(url, name) {
   let frame = document.createElement('iframe');
   frame.name = name;
+  frame.id = name;
   frame.src = url;
   document.body.appendChild(frame);
 }

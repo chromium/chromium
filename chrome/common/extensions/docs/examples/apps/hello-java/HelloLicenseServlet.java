@@ -15,12 +15,15 @@
  */
 package com.example;
 
+import com.google.appengine.api.users.*;
+import com.google.appengine.repackaged.org.json.JSONObject;
+
 import java.io.*;
 import java.net.*;
 import java.util.HashSet;
+
 import javax.servlet.http.*;
-import com.google.appengine.api.users.*;
-import com.google.appengine.repackaged.org.json.JSONObject;
+
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 

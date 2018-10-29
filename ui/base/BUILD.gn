@@ -28,7 +28,7 @@ build_ime = !is_ios
 #
 # Introduce a standalone target that can build on both 'host' and 'target'
 # toolchains that just builds the support to load datapacks. The dependencies
-# should be kept minimal to have to build too many targets with multiple
+# should be kept minimal to not have to build too many targets with multiple
 # toolchains.
 component("ui_data_pack") {
   sources = [
@@ -46,8 +46,11 @@ component("ui_data_pack") {
 
   defines = [ "UI_DATA_PACK_IMPLEMENTATION" ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  configs += [
+    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
+    "//build/config/compiler:no_size_t_to_int_warning",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 }
 
 buildflag_header("ui_features") {
@@ -58,7 +61,6 @@ buildflag_header("ui_features") {
     "ENABLE_MUS=$enable_mus",
     "USE_ATK=$use_atk",
     "USE_XKBCOMMON=$use_xkbcommon",
-    "MAC_VIEWS_BROWSER=$mac_views_browser",
     "HAS_NATIVE_ACCESSIBILITY=$has_native_accessibility",
   ]
 }
@@ -89,9 +91,6 @@ jumbo_component("base") {
     "clipboard/clipboard_win.cc",
     "clipboard/clipboard_win.h",
     "clipboard/custom_data_helper_mac.mm",
-    "cocoa/a11y_util.h",
-    "cocoa/a11y_util.mm",
-    "cocoa/accessibility_hostable.h",
     "cocoa/animation_utils.h",
     "cocoa/appkit_utils.h",
     "cocoa/appkit_utils.mm",
@@ -103,20 +102,8 @@ jumbo_component("base") {
     "cocoa/command_dispatcher.mm",
     "cocoa/constrained_window/constrained_window_animation.h",
     "cocoa/constrained_window/constrained_window_animation.mm",
-    "cocoa/controls/blue_label_button.h",
-    "cocoa/controls/blue_label_button.mm",
     "cocoa/controls/button_utils.h",
     "cocoa/controls/button_utils.mm",
-    "cocoa/controls/hover_image_menu_button.h",
-    "cocoa/controls/hover_image_menu_button.mm",
-    "cocoa/controls/hover_image_menu_button_cell.h",
-    "cocoa/controls/hover_image_menu_button_cell.mm",
-    "cocoa/controls/hyperlink_button_cell.h",
-    "cocoa/controls/hyperlink_button_cell.mm",
-    "cocoa/controls/hyperlink_text_view.h",
-    "cocoa/controls/hyperlink_text_view.mm",
-    "cocoa/controls/imageview_utils.h",
-    "cocoa/controls/imageview_utils.mm",
     "cocoa/controls/textfield_utils.h",
     "cocoa/controls/textfield_utils.mm",
     "cocoa/defaults_utils.h",
@@ -137,22 +124,16 @@ jumbo_component("base") {
     "cocoa/menu_controller.mm",
     "cocoa/nib_loading.h",
     "cocoa/nib_loading.mm",
-    "cocoa/nsgraphics_context_additions.h",
-    "cocoa/nsgraphics_context_additions.mm",
-    "cocoa/nsview_additions.h",
-    "cocoa/nsview_additions.mm",
+    "cocoa/ns_view_ids.h",
+    "cocoa/ns_view_ids.mm",
     "cocoa/quartz_util.h",
     "cocoa/quartz_util.mm",
     "cocoa/remote_layer_api.h",
     "cocoa/remote_layer_api.mm",
-    "cocoa/scoped_cg_context_smooth_fonts.h",
-    "cocoa/scoped_cg_context_smooth_fonts.mm",
     "cocoa/secure_password_input.h",
     "cocoa/secure_password_input.mm",
     "cocoa/text_services_context_menu.cc",
     "cocoa/text_services_context_menu.h",
-    "cocoa/three_part_image.h",
-    "cocoa/three_part_image.mm",
     "cocoa/tool_tip_base_view.h",
     "cocoa/tool_tip_base_view.mm",
     "cocoa/touch_bar_forward_declarations.h",
@@ -164,8 +145,7 @@ jumbo_component("base") {
     "cocoa/underlay_opengl_hosting_window.h",
     "cocoa/underlay_opengl_hosting_window.mm",
     "cocoa/user_interface_item_command_handler.h",
-    "cocoa/view_description.h",
-    "cocoa/view_description.mm",
+    "cocoa/views_hostable.h",
     "cocoa/weak_ptr_nsobject.h",
     "cocoa/weak_ptr_nsobject.mm",
     "cocoa/window_size_constants.h",
@@ -179,7 +159,6 @@ jumbo_component("base") {
     "cursor/cursor_type.h",
     "cursor/cursor_win.cc",
     "default_style.h",
-    "default_theme_provider_mac.mm",
     "device_form_factor.h",
     "device_form_factor_android.cc",
     "device_form_factor_desktop.cc",
@@ -224,6 +203,7 @@ jumbo_component("base") {
     "layout.h",
     "material_design/material_design_controller.cc",
     "material_design/material_design_controller.h",
+    "material_design/material_design_controller_observer.h",
     "models/button_menu_item_model.cc",
     "models/button_menu_item_model.h",
     "models/combobox_model.cc",
@@ -318,8 +298,6 @@ jumbo_component("base") {
     "win/message_box_win.h",
     "win/mouse_wheel_util.cc",
     "win/mouse_wheel_util.h",
-    "win/open_file_name_win.cc",
-    "win/open_file_name_win.h",
     "win/scoped_ole_initializer.cc",
     "win/scoped_ole_initializer.h",
     "win/shell.cc",
@@ -330,7 +308,6 @@ jumbo_component("base") {
     "win/window_event_target.h",
     "window_open_disposition.cc",
     "window_open_disposition.h",
-    "work_area_watcher_observer.h",
   ]
 
   if (is_posix) {
@@ -422,8 +399,11 @@ jumbo_component("base") {
     ]
   }
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  configs += [
+    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
+    "//build/config/compiler:no_size_t_to_int_warning",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   defines = [ "UI_BASE_IMPLEMENTATION" ]
 
@@ -727,8 +707,6 @@ jumbo_static_library("test_support") {
       "test/ios/keyboard_appearance_listener.mm",
       "test/ios/ui_image_test_utils.h",
       "test/ios/ui_image_test_utils.mm",
-      "test/ios/ui_view_test_utils.h",
-      "test/ios/ui_view_test_utils.mm",
     ]
   }
 
@@ -820,7 +798,6 @@ test("ui_base_unittests") {
     "clipboard/clipboard_util_mac_unittest.mm",
     "l10n/l10n_util_mac_unittest.mm",
     "l10n/l10n_util_unittest.cc",
-    "l10n/l10n_util_win_unittest.cc",
     "l10n/time_format_unittest.cc",
     "layout_unittest.cc",
     "material_design/material_design_controller_unittest.cc",
@@ -873,17 +850,10 @@ test("ui_base_unittests") {
       "cocoa/bubble_closer_unittest.mm",
       "cocoa/cocoa_base_utils_unittest.mm",
       "cocoa/constrained_window/constrained_window_animation_unittest.mm",
-      "cocoa/controls/blue_label_button_unittest.mm",
-      "cocoa/controls/hover_image_menu_button_unittest.mm",
-      "cocoa/controls/hyperlink_button_cell_unittest.mm",
-      "cocoa/controls/hyperlink_text_view_unittest.mm",
       "cocoa/focus_tracker_unittest.mm",
       "cocoa/hover_button_unittest.mm",
       "cocoa/hover_image_button_unittest.mm",
       "cocoa/menu_controller_unittest.mm",
-      "cocoa/nsgraphics_context_additions_unittest.mm",
-      "cocoa/nsview_additions_unittest.mm",
-      "cocoa/three_part_image_unittest.mm",
       "cocoa/touch_bar_util_unittest.mm",
       "cocoa/tracking_area_unittest.mm",
       "cocoa/weak_ptr_nsobject_unittest.mm",
@@ -912,7 +882,7 @@ test("ui_base_unittests") {
       "ime/win/tsf_text_store_unittest.cc",
     ]
     if (is_linux && use_aura && !is_chromeos) {
-      if (use_x11) {
+      if (use_x11 || use_ozone) {
         sources += [ "ime/input_method_auralinux_unittest.cc" ]
       } else {
         sources += [ "ime/input_method_minimal_unittest.cc" ]
@@ -965,7 +935,6 @@ test("ui_base_unittests") {
       "dragdrop/os_exchange_data_win_unittest.cc",
       "win/direct_manipulation_unittest.cc",
       "win/hwnd_subclass_unittest.cc",
-      "win/open_file_name_win_unittest.cc",
     ]
 
     ldflags = [

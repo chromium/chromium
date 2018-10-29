@@ -16,8 +16,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list_internal.h"
+#include "base/sequence_checker.h"
 #include "base/stl_util.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,10 +97,7 @@ template <class ObserverType,
           bool check_empty = false,
           bool allow_reentrancy = true,
           class ObserverStorageType = internal::CheckedObserverAdapter>
-class ObserverList : public SupportsWeakPtr<ObserverList<ObserverType,
-                                                         check_empty,
-                                                         allow_reentrancy,
-                                                         ObserverStorageType>> {
+class ObserverList {
  public:
   // Allow declaring an ObserverList<...>::Unchecked that replaces the default
   // ObserverStorageType to use raw pointers. This is required to support legacy
@@ -126,39 +123,42 @@ class ObserverList : public SupportsWeakPtr<ObserverList<ObserverType,
     Iter() : index_(0), max_index_(0) {}
 
     explicit Iter(const ObserverList* list)
-        : list_(const_cast<ObserverList*>(list)->AsWeakPtr()),
+        : list_(const_cast<ObserverList*>(list)),
           index_(0),
           max_index_(list->policy_ == ObserverListPolicy::ALL
                          ? std::numeric_limits<size_t>::max()
                          : list->observers_.size()) {
-      DCHECK(list_);
-      DCHECK(allow_reentrancy || !list_->live_iterator_count_);
+      DCHECK(list);
+      DCHECK(allow_reentrancy || list_.IsOnlyRemainingNode());
+      // Bind to this sequence when creating the first iterator.
+      DCHECK_CALLED_ON_VALID_SEQUENCE(list_->iteration_sequence_checker_);
       EnsureValidIndex();
-      ++list_->live_iterator_count_;
     }
 
     ~Iter() {
-      if (!list_)
-        return;
-
-      DCHECK_GT(list_->live_iterator_count_, 0);
-      if (--list_->live_iterator_count_ == 0)
+      if (list_.IsOnlyRemainingNode())
         list_->Compact();
     }
 
     Iter(const Iter& other)
-        : list_(other.list_),
-          index_(other.index_),
-          max_index_(other.max_index_) {
-      if (list_)
-        ++list_->live_iterator_count_;
+        : index_(other.index_), max_index_(other.max_index_) {
+      if (other.list_)
+        list_.SetList(other.list_.get());
     }
 
-    Iter& operator=(Iter other) {
-      using std::swap;
-      swap(list_, other.list_);
-      swap(index_, other.index_);
-      swap(max_index_, other.max_index_);
+    Iter& operator=(const Iter& other) {
+      if (&other == this)
+        return *this;
+
+      if (list_.IsOnlyRemainingNode())
+        list_->Compact();
+
+      list_.Invalidate();
+      if (other.list_)
+        list_.SetList(other.list_.get());
+
+      index_ = other.index_;
+      max_index_ = other.max_index_;
       return *this;
     }
 
@@ -220,7 +220,8 @@ class ObserverList : public SupportsWeakPtr<ObserverList<ObserverType,
 
     bool is_end() const { return !list_ || index_ == clamped_max_index(); }
 
-    WeakPtr<ObserverList> list_;
+    // Lightweight weak pointer to the ObserverList.
+    internal::WeakLinkNode<ObserverList> list_;
 
     // When initially constructed and each time the iterator is incremented,
     // |index_| is guaranteed to point to a non-null index if the iterator
@@ -240,10 +241,19 @@ class ObserverList : public SupportsWeakPtr<ObserverList<ObserverType,
 
   const_iterator end() const { return const_iterator(); }
 
-  ObserverList() = default;
-  explicit ObserverList(ObserverListPolicy policy) : policy_(policy) {}
+  explicit ObserverList(ObserverListPolicy policy = ObserverListPolicy::ALL)
+      : policy_(policy) {
+    // Sequence checks only apply when iterators are live.
+    DETACH_FROM_SEQUENCE(iteration_sequence_checker_);
+  }
 
   ~ObserverList() {
+    // If there are live iterators, ensure destruction is thread-safe.
+    if (!live_iterators_.empty())
+      DCHECK_CALLED_ON_VALID_SEQUENCE(iteration_sequence_checker_);
+
+    while (!live_iterators_.empty())
+      live_iterators_.head()->value()->Invalidate();
     if (check_empty) {
       Compact();
       DCHECK(observers_.empty());
@@ -274,11 +284,11 @@ class ObserverList : public SupportsWeakPtr<ObserverList<ObserverType,
     if (it == observers_.end())
       return;
 
-    DCHECK_GE(live_iterator_count_, 0);
-    if (live_iterator_count_) {
-      it->MarkForRemoval();
-    } else {
+    if (live_iterators_.empty()) {
       observers_.erase(it);
+    } else {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(iteration_sequence_checker_);
+      it->MarkForRemoval();
     }
   }
 
@@ -296,32 +306,36 @@ class ObserverList : public SupportsWeakPtr<ObserverList<ObserverType,
 
   // Removes all the observers from this list.
   void Clear() {
-    DCHECK_GE(live_iterator_count_, 0);
-    if (live_iterator_count_) {
+    if (live_iterators_.empty()) {
+      observers_.clear();
+    } else {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(iteration_sequence_checker_);
       for (auto& observer : observers_)
         observer.MarkForRemoval();
-    } else {
-      observers_.clear();
     }
   }
 
   bool might_have_observers() const { return !observers_.empty(); }
 
  private:
+  friend class internal::WeakLinkNode<ObserverList>;
+
   // Compacts list of observers by removing those marked for removal.
   void Compact() {
+    // Detach whenever the last iterator is destroyed. Detaching is safe because
+    // Compact() is only ever called when the last iterator is destroyed.
+    DETACH_FROM_SEQUENCE(iteration_sequence_checker_);
+
     EraseIf(observers_, [](const auto& o) { return o.IsMarkedForRemoval(); });
   }
 
   std::vector<ObserverStorageType> observers_;
 
-  // Number of active iterators referencing this ObserverList.
-  //
-  // This counter is not synchronized although it is modified by const
-  // iterators.
-  int live_iterator_count_ = 0;
+  base::LinkedList<internal::WeakLinkNode<ObserverList>> live_iterators_;
 
-  const ObserverListPolicy policy_ = ObserverListPolicy::ALL;
+  const ObserverListPolicy policy_;
+
+  SEQUENCE_CHECKER(iteration_sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(ObserverList);
 };

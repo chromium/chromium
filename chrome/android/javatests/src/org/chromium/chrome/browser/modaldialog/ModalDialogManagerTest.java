@@ -54,10 +54,15 @@ import java.util.List;
 public class ModalDialogManagerTest {
     private static class TestObserver implements UrlFocusChangeListener {
         public final CallbackHelper onUrlFocusChangedCallback = new CallbackHelper();
+        public final CallbackHelper onDialogDismissedCallback = new CallbackHelper();
 
         @Override
         public void onUrlFocusChange(boolean hasFocus) {
             onUrlFocusChangedCallback.notifyCalled();
+        }
+
+        public void onDialogDismissed() {
+            onDialogDismissedCallback.notifyCalled();
         }
     }
 
@@ -69,6 +74,7 @@ public class ModalDialogManagerTest {
     private ModalDialogManager mManager;
     private ModalDialogView[] mModalDialogViews;
     private TestObserver mTestObserver;
+    private Integer mExpectedDismissalCause;
 
     @Before
     public void setUp() throws Exception {
@@ -680,14 +686,67 @@ public class ModalDialogManagerTest {
         checkCurrentPresenter(null);
     }
 
+    @Test
+    @SmallTest
+    public void testDismiss_DismissalCause_BackPressed() throws Exception {
+        mExpectedDismissalCause = DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE;
+        int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
+
+        showDialog(0, ModalDialogType.APP);
+        showDialog(1, ModalDialogType.TAB);
+
+        // Dismiss the app modal dialog and veirify dimissal cause.
+        Espresso.pressBack();
+        mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
+
+        // Dismiss the tab modal dialog and veirify dimissal cause.
+        callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
+        Espresso.pressBack();
+        mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
+
+        mExpectedDismissalCause = null;
+    }
+
+    @Test
+    @SmallTest
+    public void testDismiss_DismissalCause_TabSwitched() throws Exception {
+        mExpectedDismissalCause = DialogDismissalCause.TAB_SWITCHED;
+        int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
+
+        // Open a new tab and make sure that the current tab is at index 0.
+        mActivityTestRule.loadUrlInNewTab("about:blank");
+        ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 0);
+
+        // Show a tab modal dialog and then switch tab.
+        showDialog(0, ModalDialogType.TAB);
+        ChromeTabUtils.switchTabInCurrentTabModel(mActivity, 1);
+        mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
+
+        mExpectedDismissalCause = null;
+    }
+
+    @Test
+    @SmallTest
+    public void testDismiss_DismissalCause_TabDestroyed() throws Exception {
+        mExpectedDismissalCause = DialogDismissalCause.TAB_DESTROYED;
+        int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
+
+        // Show a tab modal dialog and then close tab.
+        showDialog(0, ModalDialogType.TAB);
+        ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(), mActivity);
+        mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
+
+        mExpectedDismissalCause = null;
+    }
+
     private ModalDialogView createDialog(final int index) throws Exception {
         return ThreadUtils.runOnUiThreadBlocking(() -> {
             ModalDialogView.Controller controller = new ModalDialogView.Controller() {
                 @Override
-                public void onCancel() {}
-
-                @Override
-                public void onDismiss() {}
+                public void onDismiss(@DialogDismissalCause int dismissalCause) {
+                    mTestObserver.onDialogDismissed();
+                    checkDialogDismissalCause(dismissalCause);
+                }
 
                 @Override
                 public void onClick(int buttonType) {
@@ -754,5 +813,10 @@ public class ModalDialogManagerTest {
             Assert.assertFalse("Tabs shouldn't be obscured", mActivity.isViewObscuringAllTabs());
             onView(withId(R.id.menu_button)).check(matches(isEnabled()));
         }
+    }
+
+    private void checkDialogDismissalCause(int dismissalCause) {
+        if (mExpectedDismissalCause == null) return;
+        Assert.assertEquals(mExpectedDismissalCause.intValue(), dismissalCause);
     }
 }

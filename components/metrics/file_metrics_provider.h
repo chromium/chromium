@@ -267,6 +267,12 @@ class FileMetricsProvider : public MetricsProvider,
   static AccessResult HandleFilterSource(SourceInfo* source,
                                          const base::FilePath& path);
 
+  // The part of ProvideIndependentMetrics that runs as a background task.
+  static bool ProvideIndependentMetricsOnTaskRunner(
+      SourceInfo* source,
+      SystemProfileProto* system_profile_proto,
+      base::HistogramSnapshotManager* snapshot_manager);
+
   // Creates a task to check all monitored sources for updates.
   void ScheduleSourcesCheck();
 
@@ -282,7 +288,9 @@ class FileMetricsProvider : public MetricsProvider,
 
   // metrics::MetricsProvider:
   void OnDidCreateMetricsLog() override;
-  bool ProvideIndependentMetrics(
+  bool HasIndependentMetrics() override;
+  void ProvideIndependentMetrics(
+      base::OnceCallback<void(bool)> done_callback,
       SystemProfileProto* system_profile_proto,
       base::HistogramSnapshotManager* snapshot_manager) override;
   bool HasPreviousSessionData() override;
@@ -291,6 +299,12 @@ class FileMetricsProvider : public MetricsProvider,
 
   // base::StatisticsRecorder::HistogramProvider:
   void MergeHistogramDeltas() override;
+
+  // The part of ProvideIndependentMetrics that runs after background task.
+  void ProvideIndependentMetricsCleanup(
+      base::OnceCallback<void(bool)> done_callback,
+      std::unique_ptr<SourceInfo> source,
+      bool success);
 
   // A task-runner capable of performing I/O.
   scoped_refptr<base::TaskRunner> task_runner_;

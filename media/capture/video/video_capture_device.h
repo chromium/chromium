@@ -112,12 +112,17 @@ class CAPTURE_EXPORT VideoCaptureDevice
       Buffer(Buffer&& other);
       Buffer& operator=(Buffer&& other);
 
-      bool is_valid() const { return handle_provider != nullptr; }
-
       int id;
       int frame_feedback_id;
       std::unique_ptr<HandleProvider> handle_provider;
       std::unique_ptr<ScopedAccessPermission> access_permission;
+    };
+
+    // Result code for calls to ReserveOutputBuffer()
+    enum class ReserveResult {
+      kSucceeded,
+      kMaxBufferCountExceeded,
+      kAllocationFailed
     };
 
     virtual ~Client() {}
@@ -164,18 +169,20 @@ class CAPTURE_EXPORT VideoCaptureDevice
         int frame_feedback_id = 0) = 0;
 
     // Reserve an output buffer into which contents can be captured directly.
-    // The returned Buffer will always be allocated with a memory size suitable
-    // for holding a packed video frame with pixels of |format| format, of
-    // |dimensions| frame dimensions. It is permissible for |dimensions| to be
-    // zero; in which case the returned Buffer does not guarantee memory
+    // The returned |buffer| will always be allocated with a memory size
+    // suitable for holding a packed video frame with pixels of |format| format,
+    // of |dimensions| frame dimensions. It is permissible for |dimensions| to
+    // be zero; in which case the returned Buffer does not guarantee memory
     // backing, but functions as a reservation for external input for the
     // purposes of buffer throttling.
     //
     // The buffer stays reserved for use by the caller as long as it
     // holds on to the contained |buffer_read_write_permission|.
-    virtual Buffer ReserveOutputBuffer(const gfx::Size& dimensions,
-                                       VideoPixelFormat format,
-                                       int frame_feedback_id) = 0;
+    virtual ReserveResult ReserveOutputBuffer(const gfx::Size& dimensions,
+                                              VideoPixelFormat format,
+                                              int frame_feedback_id,
+                                              Buffer* buffer)
+        WARN_UNUSED_RESULT = 0;
 
     // Provides VCD::Client with a populated Buffer containing the content of
     // the next video frame. The |buffer| must originate from an earlier call to
@@ -308,6 +315,9 @@ class CAPTURE_EXPORT VideoCaptureDevice
   // defined, otherwise returns 0.
   PowerLineFrequency GetPowerLineFrequencyForLocation() const;
 };
+
+VideoCaptureFrameDropReason ConvertReservationFailureToFrameDropReason(
+    VideoCaptureDevice::Client::ReserveResult reserve_result);
 
 }  // namespace media
 

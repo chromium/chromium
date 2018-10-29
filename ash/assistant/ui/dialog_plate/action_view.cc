@@ -18,7 +18,11 @@ namespace ash {
 namespace {
 
 // Appearance.
-constexpr int kIconSizeDip = 22;
+// The desired height for the action view icon is 24dip in mic state to match
+// the static mic button in DialogPlate. The |kMicIcon| resource used for the
+// static button has different internal padding than does that of the icon drawn
+// by LogoView, so we add 2dip for visual consistency.
+constexpr int kIconSizeDip = 26;
 constexpr int kPreferredSizeDip = 32;
 
 }  // namespace
@@ -101,7 +105,7 @@ void ActionView::UpdateState(bool animate) {
   BaseLogoView::State mic_state;
   switch (interaction_model->mic_state()) {
     case MicState::kClosed:
-      mic_state = BaseLogoView::State::kMicFab;
+      mic_state = BaseLogoView::State::kMic;
       break;
     case MicState::kOpen:
       mic_state = is_user_speaking_ ? BaseLogoView::State::kUserSpeaks

@@ -37,6 +37,7 @@ class IceTransportAdapterImpl final : public IceTransportAdapter,
   void HandleRemoteRestart(
       const cricket::IceParameters& new_remote_parameters) override;
   void AddRemoteCandidate(const cricket::Candidate& candidate) override;
+  P2PQuicPacketTransport* packet_transport() const override;
 
  private:
   // Callbacks from P2PTransportChannel.
@@ -44,10 +45,13 @@ class IceTransportAdapterImpl final : public IceTransportAdapter,
   void OnCandidateGathered(cricket::IceTransportInternal* transport,
                            const cricket::Candidate& candidate);
   void OnStateChanged(cricket::IceTransportInternal* transport);
+  void OnNetworkRouteChanged(
+      absl::optional<rtc::NetworkRoute> new_network_route);
 
   Delegate* const delegate_;
   std::unique_ptr<cricket::PortAllocator> port_allocator_;
   std::unique_ptr<cricket::P2PTransportChannel> p2p_transport_channel_;
+  std::unique_ptr<P2PQuicPacketTransport> quic_packet_transport_adapter_;
 };
 
 }  // namespace blink

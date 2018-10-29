@@ -42,8 +42,8 @@ JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeInstanceMethod(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeInstance) {
-  TRACE_EVENT0("jni", "org::chromium_foo::Instance::InstanceMethod");  Instance* native =
-      reinterpret_cast<Instance*>(nativeInstance);
+  TRACE_EVENT0("jni", "org::chromium_foo::Instance::InstanceMethod");
+  Instance* native = reinterpret_cast<Instance*>(nativeInstance);
   CHECK_NATIVE_PTR(env, jcaller, native, "InstanceMethod");
   return native->InstanceMethod(env, base::android::JavaParamRef<jobject>(env, jcaller));
 }
@@ -53,44 +53,51 @@ static void JNI_Foo_StaticMethod(JNIEnv* env, const base::android::JavaParamRef<
 JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller) {
-  TRACE_EVENT0("jni", "org::chromium_foo::JNI_Foo_StaticMethod");  return JNI_Foo_StaticMethod(env,
-      base::android::JavaParamRef<jclass>(env, jcaller));
+  TRACE_EVENT0("jni", "org::chromium_foo::JNI_Foo_StaticMethod");
+  return JNI_Foo_StaticMethod(env, base::android::JavaParamRef<jclass>(env, jcaller));
 }
 
 
 static std::atomic<jmethodID> g_org_chromium_foo_Foo_Constructor(nullptr);
 static base::android::ScopedJavaLocalRef<jobject> Java_Foo_Constructor(JNIEnv* env) {
-  CHECK_CLAZZ(env, org_chromium_foo_Foo_clazz(env),
+  jclass clazz = org_chromium_foo_Foo_clazz(env);
+  CHECK_CLAZZ(env, clazz,
       org_chromium_foo_Foo_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_foo_Foo_clazz(env),
+          env,
+          clazz,
           "<init>",
           "()V",
           &g_org_chromium_foo_Foo_Constructor);
 
-  TRACE_EVENT0("jni", "org.chromium.foo.Foo.<init>");  jobject ret =
-      env->NewObject(org_chromium_foo_Foo_clazz(env),
-          method_id);
-  jni_generator::CheckException(env);
+  TRACE_EVENT0("jni", "org.chromium.foo.Foo.<init>");
+  jobject ret =
+      env->NewObject(clazz,
+          call_context.base.method_id);
   return base::android::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_foo_Foo_callbackFromNative(nullptr);
 static void Java_Foo_callbackFromNative(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_foo_Foo_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_foo_Foo_clazz(env));
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_foo_Foo_clazz(env),
+          env,
+          clazz,
           "callbackFromNative",
           "()V",
           &g_org_chromium_foo_Foo_callbackFromNative);
 
-  TRACE_EVENT0("jni", "org.chromium.foo.Foo.callbackFromNative");  
+  TRACE_EVENT0("jni", "org.chromium.foo.Foo.callbackFromNative");
      env->CallVoidMethod(obj.obj(),
-          method_id);
-  jni_generator::CheckException(env);
+          call_context.base.method_id);
 }
 
 }  // namespace chromium_foo

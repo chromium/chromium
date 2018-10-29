@@ -2,6 +2,6 @@ CONSOLE WARNING: line 28: Element.createShadowRoot is deprecated and will be rem
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS getBackgroundColor(shadowRootWithKeyframe.getElementById('box')) is "rgb(0, 0, 255)"
 PASS getBackgroundColor(shadowRootWithoutKeyframe.getElementById('box')) is "rgb(255, 0, 0)"
-

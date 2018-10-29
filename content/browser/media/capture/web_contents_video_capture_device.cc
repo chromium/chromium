@@ -11,9 +11,11 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
@@ -43,8 +45,8 @@ class WebContentsVideoCaptureDevice::FrameTracker
     DCHECK(device_task_runner_);
     DCHECK(cursor_controller_);
 
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             [](base::WeakPtr<FrameTracker> self, int process_id, int frame_id) {
               if (self) {
@@ -234,16 +236,16 @@ WebContentsVideoCaptureDevice::Create(const std::string& device_id) {
 }
 
 void WebContentsVideoCaptureDevice::WillStart() {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&FrameTracker::WillStartCapturingWebContents,
                      tracker_->AsWeakPtr(),
                      capture_params().SuggestConstraints().max_frame_size));
 }
 
 void WebContentsVideoCaptureDevice::DidStop() {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&FrameTracker::DidStopCapturingWebContents,
                      tracker_->AsWeakPtr()));
 }

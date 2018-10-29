@@ -12,8 +12,9 @@ import("//build/util/process_version.gni")
 import("//build/util/version.gni")
 import("//chrome/process_version_rc_template.gni")  # For branding_file_path.
 import("//components/nacl/features.gni")
+import("//third_party/widevine/cdm/widevine.gni")
 
-if (current_cpu == "x86" || current_cpu == "x64") {
+if (bundle_widevine_cdm) {
   import("//media/cdm/library_cdm/cdm_paths.gni")
 }
 
@@ -48,8 +49,7 @@ if (enable_nacl) {
   }
 }
 
-# The widevine BUILD.gn only produces shared libraries for x86 and x64
-if (is_chrome_branded && (current_cpu == "x86" || current_cpu == "x64")) {
+if (bundle_widevine_cdm) {
   packaging_files_shlibs +=
       [ "$root_out_dir/$widevine_cdm_path/libwidevinecdm.so" ]
 }
@@ -364,7 +364,7 @@ group("installer_deps") {
       "//ppapi/native_client:irt",
     ]
   }
-  if (current_cpu == "x86" || current_cpu == "x64") {
+  if (bundle_widevine_cdm) {
     public_deps += [ "//third_party/widevine/cdm" ]
   }
   if (!is_chromeos) {

@@ -169,7 +169,7 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
 
     stub_install_attributes_.SetCloudManaged("google.com", "device_id");
 
-    settings_helper_.ReplaceProvider(chromeos::kDeviceAttestationEnabled);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     settings_helper_.SetBoolean(chromeos::kDeviceAttestationEnabled, true);
   }
 
@@ -210,7 +210,7 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
   NiceMock<cryptohome::MockAsyncMethodCaller> mock_async_method_caller_;
   NiceMock<chromeos::attestation::MockAttestationFlow> mock_attestation_flow_;
   chromeos::ScopedCrosSettingsTestHelper settings_helper_;
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
   chromeos::StubInstallAttributes stub_install_attributes_;
   ProfileType profile_type_;
   // fake_user_manager_ is owned by user_manager_enabler_.
@@ -219,7 +219,7 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
   PrefService* prefs_ = nullptr;
 
  private:
-  scoped_refptr<Extension> CreateExtension() {
+  scoped_refptr<const Extension> CreateExtension() {
     switch (profile_type_) {
       case ProfileType::USER_PROFILE:
         return ExtensionBuilder("Test").Build();

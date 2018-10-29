@@ -25,7 +25,7 @@ namespace content {
 DropData DropDataBuilder::Build(const WebDragData& drag_data) {
   DropData result;
   result.key_modifiers = drag_data.ModifierKeyState();
-  result.referrer_policy = blink::kWebReferrerPolicyDefault;
+  result.referrer_policy = network::mojom::ReferrerPolicy::kDefault;
 
   const WebVector<WebDragData::Item>& item_list = drag_data.Items();
   for (size_t i = 0; i < item_list.size(); ++i) {

@@ -86,8 +86,12 @@ Polymer({
    * @private
    */
   onChangePermissionControl_: function() {
-    if (this.category == undefined)
+    if (this.category === undefined ||
+        this.controlParams_.value === undefined ||
+        this.subControlParams_.value === undefined) {
+      // Do nothing unless all dependencies are defined.
       return;
+    }
 
     // Don't override user settings with enforced settings.
     if (this.controlParams_.enforcement ==

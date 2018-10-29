@@ -2,7 +2,6 @@ Test that the format of grid shorthands style uses slashes as expected
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test grid-column shorthand
 PASS item.style.gridColumn is "1 / auto"
 PASS item.style.gridColumn is "1 / 3"

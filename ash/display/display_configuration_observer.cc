@@ -30,13 +30,13 @@ void DisplayConfigurationObserver::OnDisplaysInitialized() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(chromeos::switches::kFirstExecAfterBoot) &&
       save_preference_) {
-    Shell::Get()->display_prefs()->StoreDisplayPrefs();
+    Shell::Get()->display_prefs()->MaybeStoreDisplayPrefs();
   }
 }
 
 void DisplayConfigurationObserver::OnDisplayConfigurationChanged() {
   if (save_preference_)
-    Shell::Get()->display_prefs()->StoreDisplayPrefs();
+    Shell::Get()->display_prefs()->MaybeStoreDisplayPrefs();
 }
 
 void DisplayConfigurationObserver::OnTabletModeStarted() {

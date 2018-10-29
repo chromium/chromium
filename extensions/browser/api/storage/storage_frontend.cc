@@ -78,23 +78,23 @@ StorageFrontend* StorageFrontend::Get(BrowserContext* context) {
 
 // static
 std::unique_ptr<StorageFrontend> StorageFrontend::CreateForTesting(
-    const scoped_refptr<ValueStoreFactory>& storage_factory,
+    scoped_refptr<ValueStoreFactory> storage_factory,
     BrowserContext* context) {
-  return base::WrapUnique(new StorageFrontend(storage_factory, context));
+  return base::WrapUnique(
+      new StorageFrontend(std::move(storage_factory), context));
 }
 
 StorageFrontend::StorageFrontend(BrowserContext* context)
     : StorageFrontend(ExtensionSystem::Get(context)->store_factory(), context) {
 }
 
-StorageFrontend::StorageFrontend(
-    const scoped_refptr<ValueStoreFactory>& factory,
-    BrowserContext* context)
+StorageFrontend::StorageFrontend(scoped_refptr<ValueStoreFactory> factory,
+                                 BrowserContext* context)
     : browser_context_(context) {
-  Init(factory);
+  Init(std::move(factory));
 }
 
-void StorageFrontend::Init(const scoped_refptr<ValueStoreFactory>& factory) {
+void StorageFrontend::Init(scoped_refptr<ValueStoreFactory> factory) {
   TRACE_EVENT0("browser,startup", "StorageFrontend::Init")
   SCOPED_UMA_HISTOGRAM_TIMER("Extensions.StorageFrontendInitTime");
 
@@ -116,7 +116,7 @@ void StorageFrontend::Init(const scoped_refptr<ValueStoreFactory>& factory) {
 StorageFrontend::~StorageFrontend() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observers_->RemoveObserver(browser_context_observer_.get());
-  for (CacheMap::iterator it = caches_.begin(); it != caches_.end(); ++it) {
+  for (auto it = caches_.begin(); it != caches_.end(); ++it) {
     ValueStoreCache* cache = it->second;
     cache->ShutdownOnUI();
     GetBackendTaskRunner()->DeleteSoon(FROM_HERE, cache);
@@ -125,7 +125,7 @@ StorageFrontend::~StorageFrontend() {
 
 ValueStoreCache* StorageFrontend::GetValueStoreCache(
     settings_namespace::Namespace settings_namespace) const {
-  CacheMap::const_iterator it = caches_.find(settings_namespace);
+  auto it = caches_.find(settings_namespace);
   if (it != caches_.end())
     return it->second;
   return NULL;
@@ -153,7 +153,7 @@ void StorageFrontend::RunWithStorage(
 
 void StorageFrontend::DeleteStorageSoon(const std::string& extension_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (CacheMap::iterator it = caches_.begin(); it != caches_.end(); ++it) {
+  for (auto it = caches_.begin(); it != caches_.end(); ++it) {
     ValueStoreCache* cache = it->second;
     GetBackendTaskRunner()->PostTask(
         FROM_HERE, base::Bind(&ValueStoreCache::DeleteStorageSoon,
@@ -168,7 +168,7 @@ scoped_refptr<SettingsObserverList> StorageFrontend::GetObservers() {
 
 void StorageFrontend::DisableStorageForTesting(
     settings_namespace::Namespace settings_namespace) {
-  CacheMap::iterator it = caches_.find(settings_namespace);
+  auto it = caches_.find(settings_namespace);
   if (it != caches_.end()) {
     ValueStoreCache* cache = it->second;
     cache->ShutdownOnUI();

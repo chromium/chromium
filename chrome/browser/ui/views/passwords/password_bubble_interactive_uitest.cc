@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
@@ -32,7 +31,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/ui_features.h"
 #include "ui/views/window/dialog_client_view.h"
 
 using net::test_server::BasicHttpResponse;
@@ -82,8 +80,6 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
   }
 
  private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
-
   DISALLOW_COPY_AND_ASSIGN(PasswordBubbleInteractiveUiTest);
 };
 
@@ -383,12 +379,5 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
   ui_test_utils::BrowserActivationWaiter waiter(browser());
   waiter.WaitForActivation();
 
-// Sign-in dialogs opened for inactive browser windows do not auto-close on
-// MacOS. This matches existing Cocoa bubble behavior.
-// TODO(varkha): Remove the limitation as part of http://crbug/671916 .
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
   EXPECT_FALSE(IsBubbleShowing());
-#else
-  EXPECT_TRUE(IsBubbleShowing());
-#endif
 }

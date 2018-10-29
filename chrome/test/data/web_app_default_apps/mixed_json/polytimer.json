@@ -1,4 +1,4 @@
 {
-  "web_app_manifest_url": "https://polytimer.rocks/manifest.json",
-  "web_app_start_url": "https://polytimer.rocks/?homescreen=1"
+  "app_url": "https://polytimer.rocks/?homescreen=1",
+  "launch_container": "window"
 }

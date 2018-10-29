@@ -119,8 +119,6 @@ class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
 class AppListItemView::IconImageView : public views::ImageView {
  public:
   IconImageView() {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
     set_can_process_events_within_subtree(false);
     SetVerticalAlignment(views::ImageView::LEADING);
   }
@@ -128,6 +126,7 @@ class AppListItemView::IconImageView : public views::ImageView {
 
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    views::ImageView::OnBoundsChanged(previous_bounds);
     if (icon_mask_)
       icon_mask_->layer()->SetBounds(GetLocalBounds());
   }
@@ -137,13 +136,15 @@ class AppListItemView::IconImageView : public views::ImageView {
     std::unique_ptr<ui::Layer> old_layer = views::View::RecreateLayer();
 
     // ui::Layer::Clone() does not copy mask layer, so set it explicitly here.
-    SetRoundedRectMaskLayer(mask_corner_radius_, mask_insets_);
+    if (mask_corner_radius_ != 0 || !mask_insets_.IsEmpty())
+      SetRoundedRectMaskLayer(mask_corner_radius_, mask_insets_);
     return old_layer;
   }
 
   // Sets a rounded rect mask layer with |corner_radius| and |insets| to clip
   // the icon.
   void SetRoundedRectMaskLayer(int corner_radius, const gfx::Insets& insets) {
+    EnsureLayer();
     icon_mask_ = views::Painter::CreatePaintedLayer(
         views::Painter::CreateSolidRoundRectPainter(SK_ColorBLACK,
                                                     corner_radius, insets));
@@ -156,12 +157,20 @@ class AppListItemView::IconImageView : public views::ImageView {
     mask_insets_ = insets;
   }
 
+  // Ensure that the view has a layer.
+  void EnsureLayer() {
+    if (!layer()) {
+      SetPaintToLayer();
+      layer()->SetFillsBoundsOpaquely(false);
+    }
+  }
+
  private:
   // The owner of a mask layer to clip the icon into circle.
   std::unique_ptr<ui::LayerOwner> icon_mask_;
 
   // The corner radius of mask layer.
-  int mask_corner_radius_;
+  int mask_corner_radius_ = 0;
 
   // The insets of the mask layer.
   gfx::Insets mask_insets_;
@@ -190,14 +199,17 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
       icon_(new IconImageView),
       title_(new views::Label),
       progress_bar_(new views::ProgressBar),
-      is_new_style_launcher_enabled_(features::IsNewStyleLauncherEnabled()),
+      is_new_style_launcher_enabled_(
+          app_list_features::IsNewStyleLauncherEnabled()),
       weak_ptr_factory_(this) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   if (is_new_style_launcher_enabled_ && is_folder_) {
     // Set background blur for folder icon and use mask layer to clip it into
-    // circle.
-    icon_->layer()->SetBackgroundBlur(AppListConfig::instance().blur_radius());
+    // circle. Note that blur is only enabled in tablet mode to improve dragging
+    // smoothness.
+    if (apps_grid_view_->IsTabletMode())
+      SetBackgroundBlurEnabled(true);
     icon_->SetRoundedRectMaskLayer(
         AppListConfig::instance().folder_icon_radius(),
         gfx::Insets(AppListConfig::instance().folder_icon_insets()));
@@ -207,8 +219,6 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
     // To display shadow for icon while not affecting the icon's bounds, icon
     // shadow is behind the icon.
     icon_shadow_ = new views::ImageView;
-    icon_shadow_->SetPaintToLayer();
-    icon_shadow_->layer()->SetFillsBoundsOpaquely(false);
     icon_shadow_->set_can_process_events_within_subtree(false);
     icon_shadow_->SetVerticalAlignment(views::ImageView::LEADING);
     AddChildView(icon_shadow_);
@@ -247,6 +257,9 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
   SetAnimationDuration(0);
 
   preview_circle_radius_ = 0;
+
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 }
 
 AppListItemView::~AppListItemView() {
@@ -741,6 +754,14 @@ void AppListItemView::OnDraggedViewExit() {
 
   CreateDraggedViewHoverAnimation();
   dragged_view_hover_animation_->Hide();
+}
+
+void AppListItemView::SetBackgroundBlurEnabled(bool enabled) {
+  DCHECK(is_folder_);
+  if (enabled)
+    icon_->EnsureLayer();
+  icon_->layer()->SetBackgroundBlur(
+      enabled ? AppListConfig::instance().blur_radius() : 0);
 }
 
 void AppListItemView::AnimationProgressed(const gfx::Animation* animation) {

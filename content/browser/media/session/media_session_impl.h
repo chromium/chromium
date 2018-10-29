@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "content/browser/media/session/audio_focus_manager.h"
+#include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_uma_helper.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/media_session.h"
@@ -25,6 +25,7 @@
 #include "content/public/common/media_metadata.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/interface_ptr_set.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 
 #if defined(OS_ANDROID)
@@ -37,15 +38,8 @@ namespace media {
 enum class MediaContentType;
 }  // namespace media
 
-namespace media_session {
-namespace mojom {
-enum class AudioFocusType;
-}  // namespace mojom
-}  // namespace media_session
-
 namespace content {
 
-class AudioFocusDelegate;
 class AudioFocusManagerTest;
 class MediaSessionImplServiceRoutingTest;
 class MediaSessionImplStateObserver;
@@ -124,43 +118,6 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT void OnPlayerPaused(MediaSessionPlayerObserver* observer,
                                      int player_id);
 
-  // Resume the media session.
-  // |type| represents the origin of the request.
-  CONTENT_EXPORT void Resume(MediaSession::SuspendType suspend_type) override;
-
-  // Suspend the media session.
-  // |type| represents the origin of the request.
-  CONTENT_EXPORT void Suspend(MediaSession::SuspendType suspend_type) override;
-
-  // Stop the media session.
-  // |type| represents the origin of the request.
-  CONTENT_EXPORT void Stop(MediaSession::SuspendType suspend_type) override;
-
-  // Seek the media session forward.
-  CONTENT_EXPORT void SeekForward(base::TimeDelta seek_time) override;
-
-  // Seek the media session backward.
-  CONTENT_EXPORT void SeekBackward(base::TimeDelta seek_time) override;
-
-  // Returns if the session can be controlled by Resume() and Suspend() calls
-  // above.
-  CONTENT_EXPORT bool IsControllable() const override;
-
-  // Compute if the actual playback state is paused by combining the
-  // MediaSessionService declared state and guessed state (audio_focus_state_).
-  CONTENT_EXPORT bool IsActuallyPaused() const override;
-
-  // Set the volume multiplier applied during ducking.
-  CONTENT_EXPORT void SetDuckingVolumeMultiplier(double multiplier) override;
-
-  // Let the media session start ducking such that the volume multiplier is
-  // reduced.
-  CONTENT_EXPORT void StartDucking() override;
-
-  // Let the media session stop ducking such that the volume multiplier is
-  // recovered.
-  CONTENT_EXPORT void StopDucking() override;
-
   void AddObserver(MediaSessionObserver* observer) override;
   void RemoveObserver(MediaSessionObserver* observer) override;
 
@@ -198,31 +155,83 @@ class MediaSessionImpl : public MediaSession,
   // observers if the service is currently routed.
   void OnMediaSessionActionsChanged(MediaSessionServiceImpl* service);
 
-  // Called when a MediaSessionAction is received. The action will be forwarded
-  // to blink::MediaSession corresponding to the current routed service.
-  void DidReceiveAction(blink::mojom::MediaSessionAction action) override;
-
   // Requests audio focus to the AudioFocusDelegate.
   // Returns whether the request was granted.
-  CONTENT_EXPORT bool RequestSystemAudioFocus(
+  CONTENT_EXPORT AudioFocusDelegate::AudioFocusResult RequestSystemAudioFocus(
       media_session::mojom::AudioFocusType audio_focus_type);
-
-  // Returns debugging information to be displayed on chrome://media-internals.
-  struct DebugInfo {
-    // A unique name for the MediaSession.
-    std::string name;
-
-    // The title and URL of the owning WebContents.
-    std::string owner;
-
-    // State information stored in a string e.g. Ducked.
-    std::string state;
-  };
-  const DebugInfo GetDebugInfo();
 
   // Creates a binding between |this| and |request|.
   void BindToMojoRequest(
       mojo::InterfaceRequest<media_session::mojom::MediaSession> request);
+
+  // Returns information about the MediaSession.
+  media_session::mojom::MediaSessionInfoPtr GetMediaSessionInfoSync();
+
+  // MediaSession overrides ---------------------------------------------------
+
+  // Resume the media session.
+  // |type| represents the origin of the request.
+  CONTENT_EXPORT void Resume(MediaSession::SuspendType suspend_type) override;
+
+  // Stop the media session.
+  // |type| represents the origin of the request.
+  CONTENT_EXPORT void Stop(MediaSession::SuspendType suspend_type) override;
+
+  // Seek the media session forward.
+  CONTENT_EXPORT void SeekForward(base::TimeDelta seek_time) override;
+
+  // Seek the media session backward.
+  CONTENT_EXPORT void SeekBackward(base::TimeDelta seek_time) override;
+
+  // Returns if the session can be controlled by Resume() and Suspend() calls
+  // above.
+  CONTENT_EXPORT bool IsControllable() const override;
+
+  // Compute if the actual playback state is paused by combining the
+  // MediaSessionService declared state and guessed state (audio_focus_state_).
+  CONTENT_EXPORT bool IsActuallyPaused() const override;
+
+  // Called when a MediaSessionAction is received. The action will be forwarded
+  // to blink::MediaSession corresponding to the current routed service.
+  void DidReceiveAction(blink::mojom::MediaSessionAction action) override;
+
+  // Set the volume multiplier applied during ducking.
+  CONTENT_EXPORT void SetDuckingVolumeMultiplier(double multiplier) override;
+
+  // Suspend the media session.
+  // |type| represents the origin of the request.
+  CONTENT_EXPORT void Suspend(MediaSession::SuspendType suspend_type) override;
+
+  // Let the media session start ducking such that the volume multiplier is
+  // reduced.
+  CONTENT_EXPORT void StartDucking() override;
+
+  // Let the media session stop ducking such that the volume multiplier is
+  // recovered.
+  CONTENT_EXPORT void StopDucking() override;
+
+  // Returns information about the MediaSession. The sync method is not actually
+  // slower and should be used over the async one which is available over mojo.
+  void GetMediaSessionInfo(GetMediaSessionInfoCallback callback) override;
+
+  // Returns debugging information to be displayed on chrome://media-internals.
+  void GetDebugInfo(GetDebugInfoCallback) override;
+
+  // Adds a mojo based observer to listen to events related to this session.
+  void AddObserver(
+      media_session::mojom::MediaSessionObserverPtr observer) override;
+
+  // Called by |AudioFocusDelegate| when an async audio focus request is
+  // completed.
+  CONTENT_EXPORT void FinishSystemAudioFocusRequest(
+      media_session::mojom::AudioFocusType type,
+      bool result);
+
+  // Skip to the previous track.
+  CONTENT_EXPORT void PreviousTrack() override;
+
+  // Skip to the next track.
+  CONTENT_EXPORT void NextTrack() override;
 
  private:
   friend class content::WebContentsUserData<MediaSessionImpl>;
@@ -232,6 +241,7 @@ class MediaSessionImpl : public MediaSession,
   friend class content::MediaSessionImplServiceRoutingTest;
   friend class content::MediaSessionImplStateObserver;
   friend class content::MediaSessionServiceImplBrowserTest;
+  friend class MediaSessionImplTest;
   friend class MediaInternalsAudioFocusTest;
 
   CONTENT_EXPORT void SetDelegateForTests(
@@ -246,6 +256,7 @@ class MediaSessionImpl : public MediaSession,
 
     void operator=(const PlayerIdentifier&) = delete;
     bool operator==(const PlayerIdentifier& player_identifier) const;
+    bool operator<(const PlayerIdentifier&) const;
 
     // Hash operator for base::hash_map<>.
     struct Hash {
@@ -261,6 +272,10 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT explicit MediaSessionImpl(WebContents* web_contents);
 
   void Initialize();
+
+  // Called when system audio focus has been requested and whether the request
+  // was granted.
+  void OnSystemAudioFocusRequested(bool result);
 
   CONTENT_EXPORT void OnSuspendInternal(MediaSession::SuspendType suspend_type,
                                         State new_state);
@@ -279,6 +294,12 @@ class MediaSessionImpl : public MediaSession,
   // Internal method that should be used instead of setting audio_focus_state_.
   // It sets audio_focus_state_ and notifies observers about the state change.
   void SetAudioFocusState(State audio_focus_state);
+
+  // Flushes any mojo bindings for testing.
+  CONTENT_EXPORT void FlushForTesting();
+
+  // Notifies mojo observers that the MediaSessionInfo has changed.
+  void NotifyObserversInfoChanged();
 
   // Update the volume multiplier when ducking state changes.
   void UpdateVolumeMultiplier();
@@ -311,7 +332,8 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT MediaSessionServiceImpl* ComputeServiceForRouting();
 
   std::unique_ptr<AudioFocusDelegate> delegate_;
-  PlayersMap normal_players_;
+  std::map<PlayerIdentifier, media_session::mojom::AudioFocusType>
+      normal_players_;
   PlayersMap pepper_players_;
   PlayersMap one_shot_players_;
 
@@ -351,6 +373,9 @@ class MediaSessionImpl : public MediaSession,
 
   // Bindings for Mojo pointers to |this| held by media route providers.
   mojo::BindingSet<media_session::mojom::MediaSession> bindings_;
+
+  mojo::InterfacePtrSet<media_session::mojom::MediaSessionObserver>
+      mojo_observers_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSessionImpl);
 };

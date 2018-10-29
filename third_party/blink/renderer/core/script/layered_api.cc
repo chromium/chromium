@@ -6,7 +6,7 @@
 
 #include "base/stl_util.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
-#include "third_party/blink/renderer/platform/media/resource_bundle_helper.h"
+#include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -115,7 +115,7 @@ String GetSourceText(const KURL& url) {
   if (resource_id < 0)
     return String();
 
-  return ResourceBundleHelper::GetResourceAsString(resource_id);
+  return GetResourceAsString(resource_id);
 }
 
 }  // namespace layered_api

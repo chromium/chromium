@@ -231,6 +231,10 @@ class BASE_EXPORT PlatformThread {
                                 ThreadPriority priority);
 #endif
 
+  // Returns the default thread stack size set by chrome. If we do not
+  // explicitly set default size then returns 0.
+  static size_t GetDefaultThreadStackSize();
+
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(PlatformThread);
 };

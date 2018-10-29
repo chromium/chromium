@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome आपके खातों को वेब पर लाकर आपका समय बचाता है. आप सेटिंग में खाते जोड़ सकते हैं या उन्हें निकाल सकते हैं.</translation>
 <translation id="3282568296779691940">Chrome में प्रवेश करें</translation>
 <translation id="3345341804167540816">Chrome का सभी जगह उपयोग करना</translation>
-<translation id="3678774398092457402">आप चाहते हैं कि Chrome इस साइट के लिए आपका पासवर्ड सहेजे?</translation>
 <translation id="384394811301901750">Google Chrome इस समय आपके कैमरे का उपयोग नहीं कर सकता</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">आप समन्वयित खातों को <ph name="USER_EMAIL1" /> से <ph name="USER_EMAIL2" /> में बदल रहे हैं. आपका मौजूदा Chrome डेटा <ph name="DOMAIN" /> द्वारा प्रबंधित किया जाता है. इससे आपका डेटा इस सेवा से हट जाएगा, लेकिन आपका डेटा <ph name="USER_EMAIL1" /> में बना रहेगा.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> को कभी भी अपनी पसंद के मुताबिक बनाया जा सकता है. Chrome और अनुवाद, सर्च जैसी Google सेवाओं के साथ ही विज्ञापनों को आपकी पसंद के मुताबिक आपको दिखाने के लिए Google उन साइटों की सामग्री जिन पर आप गए हैं, ब्राउज़र इंटरैक्शन और गतिविधि का इस्तेमाल कर सकता है.</translation>
 <translation id="5639704535586432836">सेटिंग &gt; निजता &gt; कैमरा &gt; Google Chrome खोलें और कैमरा चालू करें.</translation>
 <translation id="5642200033778930880">Google Chrome विभाजित दृश्य मोड में आपके कैमरे का उपयोग नहीं कर सकता</translation>
-<translation id="5703130498371792817">Chrome का आनंद ले रहे हैं? <ph name="BEGIN_LINK" />इस ऐप्लिकेशन को रेट करें<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Chrome के लिए सलाह. 'वापस जाएं', 'आगे जाएं' और 'खोजें' जैसे कुछ बटन अब आपकी स्क्रीन के सबसे नीचे मिलेंगे.</translation>
 <translation id="6036420186814142909">Google Chrome में ऐसी सुविधाएं हैं जो आपको अपने इंटरनेट डेटा को प्रबंधित करने और वेबपृष्ठों को तेज़ी से लोड करने में आपकी सहायता करती हैं. <ph name="BEGIN_LINK" />और जानें<ph name="END_LINK" /></translation>
 <translation id="6573431926118603307">आपके द्वारा अपने अन्य डिवाइस पर खोले गए टैब यहां दिखाई देंगे.</translation>
@@ -47,6 +45,7 @@
 <translation id="690638524486313356">Google Chrome सेवा की शर्तें</translation>
 <translation id="7165736900384873061">Google Chrome QR स्कैनर उपयोग शुरू करें</translation>
 <translation id="7172660552945675509">टिप्स: <ph name="BEGIN_LINK" />Chrome को अपने डॉक में ले जाएं<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">आपके पासवर्ड का अधिकृत एक्सेस पक्का करने के लिए, Chrome 'फ़ेस आईडी' यानी चेहरा पहचान का इस्तेमाल करता है.</translation>
 <translation id="7265369419224458312">अपने कंप्यूटर पर आपके खोले हुए टैब सीधे यहां से एेक्सेस करें. बस अपने कंप्यूटर पर Chrome खोलें, मेनू पर जाएं और "Chrome में साइन इन करें…" चुनें</translation>
 <translation id="728488472449859922">Google Chrome QR स्कैनर चालू करें</translation>
 <translation id="7400722733683201933">Google Chrome के बारे में</translation>

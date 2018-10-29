@@ -24,13 +24,13 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/io_thread.h"
 #include "chrome/browser/net/net_export_helper.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/grit/components_resources.h"
-#include "components/net_log/chrome_net_log.h"
 #include "components/net_log/net_export_file_writer.h"
 #include "components/net_log/net_export_ui_constants.h"
 #include "content/public/browser/browser_thread.h"
@@ -137,8 +137,7 @@ class NetExportMessageHandler
   // NetLog file.
   void ShowSelectFileDialog(const base::FilePath& default_path);
 
-  // Cache of g_browser_process->net_log()->net_export_file_writer(). This
-  // is owned by ChromeNetLog which is owned by BrowserProcessImpl.
+  // Cached pointer to SystemNetworkContextManager's NetExportFileWriter.
   net_log::NetExportFileWriter* file_writer_;
 
   ScopedObserver<net_log::NetExportFileWriter,
@@ -160,7 +159,8 @@ class NetExportMessageHandler
 };
 
 NetExportMessageHandler::NetExportMessageHandler()
-    : file_writer_(g_browser_process->net_log()->net_export_file_writer()),
+    : file_writer_(g_browser_process->system_network_context_manager()
+                       ->GetNetExportFileWriter()),
       state_observer_manager_(this),
       weak_ptr_factory_(this) {
   file_writer_->Initialize();
@@ -250,14 +250,8 @@ void NetExportMessageHandler::OnStopNetLog(const base::ListValue* list) {
       new base::DictionaryValue());
 
   Profile* profile = Profile::FromWebUI(web_ui());
-  SetIfNotNull(ui_thread_polled_data.get(), "dataReductionProxyInfo",
-               chrome_browser_net::GetDataReductionProxyInfo(profile));
-  SetIfNotNull(ui_thread_polled_data.get(), "historicNetworkStats",
-               chrome_browser_net::GetHistoricNetworkStats(profile));
   SetIfNotNull(ui_thread_polled_data.get(), "prerenderInfo",
                chrome_browser_net::GetPrerenderInfo(profile));
-  SetIfNotNull(ui_thread_polled_data.get(), "sessionNetworkStats",
-               chrome_browser_net::GetSessionNetworkStats(profile));
   SetIfNotNull(ui_thread_polled_data.get(), "extensionInfo",
                chrome_browser_net::GetExtensionInfo(profile));
 #if defined(OS_WIN)

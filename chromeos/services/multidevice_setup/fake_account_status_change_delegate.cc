@@ -20,7 +20,11 @@ FakeAccountStatusChangeDelegate::GenerateInterfacePtr() {
 }
 
 void FakeAccountStatusChangeDelegate::OnPotentialHostExistsForNewUser() {
-  ++num_new_user_events_handled_;
+  ++num_new_user_potential_host_events_handled_;
+}
+
+void FakeAccountStatusChangeDelegate::OnNoLongerNewUser() {
+  ++num_no_longer_new_user_events_handled_;
 }
 
 void FakeAccountStatusChangeDelegate::OnConnectedHostSwitchedForExistingUser(
@@ -28,7 +32,8 @@ void FakeAccountStatusChangeDelegate::OnConnectedHostSwitchedForExistingUser(
   ++num_existing_user_host_switched_events_handled_;
 }
 
-void FakeAccountStatusChangeDelegate::OnNewChromebookAddedForExistingUser() {
+void FakeAccountStatusChangeDelegate::OnNewChromebookAddedForExistingUser(
+    const std::string& new_host_device_name) {
   ++num_existing_user_chromebook_added_events_handled_;
 }
 

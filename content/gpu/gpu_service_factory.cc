@@ -25,11 +25,13 @@ namespace content {
 GpuServiceFactory::GpuServiceFactory(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
     base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
     media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb) {
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
   gpu_preferences_ = gpu_preferences;
   gpu_workarounds_ = gpu_workarounds;
+  gpu_feature_info_ = gpu_feature_info;
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
   media_gpu_channel_manager_ = std::move(media_gpu_channel_manager);
   android_overlay_factory_cb_ = std::move(android_overlay_factory_cb);
@@ -50,8 +52,8 @@ void GpuServiceFactory::RegisterServices(ServiceMap* services) {
   service_manager::EmbeddedServiceInfo info;
   info.factory = base::BindRepeating(
       &media::CreateGpuMediaService, gpu_preferences_, gpu_workarounds_,
-      task_runner_, media_gpu_channel_manager_, android_overlay_factory_cb_,
-      std::move(cdm_proxy_factory_cb));
+      gpu_feature_info_, task_runner_, media_gpu_channel_manager_,
+      android_overlay_factory_cb_, std::move(cdm_proxy_factory_cb));
   // This service will host audio/video decoders, and if these decoding
   // operations are blocked, user may hear audio glitch or see video freezing,
   // hence "user blocking".

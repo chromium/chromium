@@ -533,46 +533,6 @@ TEST_F(DataReductionProxyCompressionStatsTest, WritePrefsDelayed) {
   VerifyPrefListWasWritten(prefs::kDailyHttpReceivedContentLength);
 }
 
-TEST_F(DataReductionProxyCompressionStatsTest,
-       HistoricNetworkStatsInfoToValue) {
-  const int64_t kOriginalLength = 150;
-  const int64_t kReceivedLength = 100;
-  ResetCompressionStatsWithDelay(
-      base::TimeDelta::FromMinutes(kWriteDelayMinutes));
-
-  base::DictionaryValue* dict = nullptr;
-  std::unique_ptr<base::Value> stats_value(
-      compression_stats()->HistoricNetworkStatsInfoToValue());
-  EXPECT_TRUE(stats_value->GetAsDictionary(&dict));
-  VerifyPrefs(dict);
-
-  SetInt64(prefs::kHttpOriginalContentLength, kOriginalLength);
-  SetInt64(prefs::kHttpReceivedContentLength, kReceivedLength);
-
-  stats_value = compression_stats()->HistoricNetworkStatsInfoToValue();
-  EXPECT_TRUE(stats_value->GetAsDictionary(&dict));
-  VerifyPrefs(dict);
-}
-
-TEST_F(DataReductionProxyCompressionStatsTest,
-       HistoricNetworkStatsInfoToValueDirect) {
-  const int64_t kOriginalLength = 150;
-  const int64_t kReceivedLength = 100;
-
-  base::DictionaryValue* dict = nullptr;
-  std::unique_ptr<base::Value> stats_value(
-      compression_stats()->HistoricNetworkStatsInfoToValue());
-  EXPECT_TRUE(stats_value->GetAsDictionary(&dict));
-  VerifyPrefs(dict);
-
-  SetInt64(prefs::kHttpOriginalContentLength, kOriginalLength);
-  SetInt64(prefs::kHttpReceivedContentLength, kReceivedLength);
-
-  stats_value = compression_stats()->HistoricNetworkStatsInfoToValue();
-  EXPECT_TRUE(stats_value->GetAsDictionary(&dict));
-  VerifyPrefs(dict);
-}
-
 TEST_F(DataReductionProxyCompressionStatsTest, StatsRestoredOnOnRestart) {
   base::ListValue list_value;
   list_value.Insert(0,

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/cpp/window_state_type.h"
 #include "ash/public/interfaces/window_pin_type.mojom.h"
@@ -14,6 +15,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/default_state.h"
+#include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -32,6 +34,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/painter.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/ime_util_chromeos.h"
 #include "ui/wm/core/window_util.h"
@@ -39,6 +42,9 @@
 namespace ash {
 namespace wm {
 namespace {
+
+// TODO(edcourtney): Move this to a PIP specific file, once it's created.
+const int kPipRoundedCornerRadius = 8;
 
 bool IsTabletModeEnabled() {
   return Shell::Get()
@@ -141,6 +147,8 @@ void MoveAllTransientChildrenToNewRoot(aura::Window* window) {
 }
 
 }  // namespace
+
+constexpr base::TimeDelta WindowState::kBoundsChangeSlideDuration;
 
 WindowState::~WindowState() {
   // WindowState is registered as an owned property of |window_|, and window
@@ -478,6 +486,10 @@ void WindowState::OnRevertDrag(const gfx::Point& location) {
     delegate_->OnDragFinished(/*canceled=*/true, location);
 }
 
+display::Display WindowState::GetDisplay() {
+  return display::Screen::GetScreen()->GetDisplayNearestWindow(window());
+}
+
 void WindowState::CreateDragDetails(const gfx::Point& point_in_parent,
                                     int window_component,
                                     ::wm::WindowMoveSource source) {
@@ -507,6 +519,7 @@ WindowState::WindowState(aura::Window* window)
       ignore_property_change_(false),
       current_state_(new DefaultState(ToWindowStateType(GetShowState()))) {
   window_->AddObserver(this);
+  UpdatePipState();
 }
 
 bool WindowState::GetAlwaysOnTop() const {
@@ -617,19 +630,18 @@ void WindowState::SetBoundsConstrained(const gfx::Rect& bounds) {
   SetBoundsDirect(child_bounds);
 }
 
-void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds) {
-  const int kBoundsChangeSlideDurationMs = 120;
-
+void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds,
+                                          base::TimeDelta duration) {
   ui::Layer* layer = window_->layer();
   ui::ScopedLayerAnimationSettings slide_settings(layer->GetAnimator());
   slide_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  slide_settings.SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kBoundsChangeSlideDurationMs));
+  slide_settings.SetTransitionDuration(duration);
   SetBoundsDirect(bounds);
 }
 
-void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds) {
+void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
+                                           gfx::Tween::Type animation_type) {
   // Some test results in invoking CrossFadeToBounds when window is not visible.
   // No animation is necessary in that case, thus just change the bounds and
   // quit.
@@ -656,7 +668,46 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds) {
   // Resize the window to the new size, which will force a layout and paint.
   SetBoundsDirect(new_bounds);
 
-  CrossFadeAnimation(window_, std::move(old_layer_owner), gfx::Tween::EASE_OUT);
+  CrossFadeAnimation(window_, std::move(old_layer_owner), animation_type);
+}
+
+void WindowState::UpdatePipRoundedCorners() {
+  auto* layer = window()->layer();
+  if (!IsPip()) {
+    // Only remove the mask layer if it is from the existing PIP mask.
+    if (layer && pip_mask_ && layer->layer_mask_layer() == pip_mask_->layer())
+      layer->SetMaskLayer(nullptr);
+    pip_mask_.reset();
+    return;
+  }
+
+  gfx::Rect bounds = window()->bounds();
+  if (layer && (!pip_mask_ || pip_mask_->layer()->size() != bounds.size())) {
+    layer->SetMaskLayer(nullptr);
+    pip_mask_ = views::Painter::CreatePaintedLayer(
+        views::Painter::CreateSolidRoundRectPainter(SK_ColorBLACK,
+                                                    kPipRoundedCornerRadius));
+    pip_mask_->layer()->SetBounds(bounds);
+    pip_mask_->layer()->SetFillsBoundsOpaquely(false);
+    layer->SetFillsBoundsOpaquely(false);
+    layer->SetMaskLayer(pip_mask_->layer());
+  }
+}
+
+void WindowState::UpdatePipState() {
+  ::wm::SetWindowVisibilityAnimationType(
+      window(), IsPip() ? WINDOW_VISIBILITY_ANIMATION_TYPE_SLIDE_OUT
+                        : ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT);
+}
+
+void WindowState::UpdatePipBounds() {
+  gfx::Rect new_bounds =
+      PipPositioner::GetPositionAfterMovementAreaChange(this);
+  if (window()->GetBoundsInScreen() != new_bounds) {
+    wm::SetBoundsEvent event(wm::WM_EVENT_SET_BOUNDS, new_bounds,
+                             /*animate=*/true);
+    OnWMEvent(&event);
+  }
 }
 
 WindowState* GetActiveWindowState() {

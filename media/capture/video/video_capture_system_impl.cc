@@ -51,7 +51,7 @@ void ConsolidateCaptureFormats(media::VideoCaptureFormats* formats) {
   }
   std::sort(formats->begin(), formats->end(), IsCaptureFormatSmaller);
   // Remove duplicates
-  media::VideoCaptureFormats::iterator last =
+  auto last =
       std::unique(formats->begin(), formats->end(), IsCaptureFormatEqual);
   formats->erase(last, formats->end());
 }
@@ -79,7 +79,7 @@ void VideoCaptureSystemImpl::GetDeviceInfosAsync(
 }
 
 void VideoCaptureSystemImpl::ProcessDeviceInfoRequest() {
-  DeviceEnumQueue::iterator request = device_enum_request_queue_.begin();
+  auto request = device_enum_request_queue_.begin();
   if (request == device_enum_request_queue_.end()) {
     return;
   }

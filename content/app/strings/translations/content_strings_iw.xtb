@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1018939186200882850">פריט בתפריט</translation>
-<translation id="1020833440720551630">השתק רצועת אודיו</translation>
 <translation id="10623998915015855">לחצן החלפה</translation>
 <translation id="1088086359088493902">שניות</translation>
 <translation id="1171774979989969504">הזן כתובת אימייל.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">קרדיטים</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">מודעת באנר</translation>
-<translation id="1548116112524424341">הפעלת הסרטון במצב 'תמונה בתוך תמונה'</translation>
 <translation id="1589122976691792535">אזור</translation>
 <translation id="1591562245178063882">החודש</translation>
 <translation id="1637811476055996098">בחר קבצים</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">רשת של עץ</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">הפעלה במכשיר מרוחק</translation>
-<translation id="1838818994221231429">מעבר ממסך מלא לתצוגה באזור המגרעת של המסך</translation>
 <translation id="190587075670221089">מחיקה</translation>
 <translation id="1907737156431278478">דוגמה</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">הקשה כפולה בצד ימין או שמאל מדלגת על 10 שניות</translation>
 <translation id="5631759159893697722">תקציר</translation>
-<translation id="5641012560118721995">השהה הפעלה</translation>
 <translation id="5643186887447432888">לחצן</translation>
 <translation id="5677946354068040947">אפשרויות נוספות</translation>
 <translation id="576709008726043716">מבוא</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">אפס</translation>
 <translation id="5966707198760109579">שבוע</translation>
 <translation id="5987525920412732405">לחצן קביעת ערך</translation>
+<translation id="6011459053400940133">מחוון עוצמת קול</translation>
 <translation id="6015796118275082299">שנה</translation>
 <translation id="6023896073578205740">תיבת רשימה</translation>
-<translation id="6101327004457443354">בטל השתקה של רצועת אודיו</translation>
 <translation id="6150588977291308318">ביבליוגרפיה</translation>
 <translation id="6164829606128959761">מד</translation>
 <translation id="6166809985690652833">אחרית דבר</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">שעות</translation>
 <translation id="7681220483256441252">אינדקס</translation>
 <translation id="7720026100085573005">זמן שנותר</translation>
-<translation id="7740016676195725605">הפסק להציג כתוביות סגורות</translation>
 <translation id="7740050170769002709">‏תוכן HTML</translation>
 <translation id="7750228210027921155">תמונה בתוך תמונה</translation>
 <translation id="7789962463072032349">השהה</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">שדה טקסט לחיפוש</translation>
 <translation id="8057695513531652401">הודעה</translation>
 <translation id="8105797009065549151">הפניה להערה</translation>
-<translation id="8115662671911883373">התחל להציג כתוביות סגורות</translation>
 <translation id="8117451130807776954">השבוע</translation>
-<translation id="819205353528511139">הפעל את הסרט במצב מסך מלא</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8284326494547611709">כתוביות</translation>
 <translation id="835897206747267392">ערך לא חוקי.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">שליטה בהפעלה מרחוק</translation>
 <translation id="862370744433916922">כותרת משנה</translation>
 <translation id="8750798805984357768">בחר אחת מהאפשרויות הבאות.</translation>
-<translation id="8785498733064193001">התחל בהפעלה</translation>
 <translation id="8808573423886751634">פרק</translation>
 <translation id="8845239796550121995">מעביר תוכן לטלוויזיה</translation>
 <translation id="8851136666856101339">main</translation>

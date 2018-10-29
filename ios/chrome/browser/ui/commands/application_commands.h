@@ -79,10 +79,6 @@
 // Shows the TabSwitcher UI.
 - (void)displayTabSwitcher;
 
-// Shows the Clear Browsing Data Settings UI (part of Settings).
-- (void)showClearBrowsingDataSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the Autofill Settings UI, presenting from |baseViewController|.
 - (void)showAutofillSettingsFromViewController:

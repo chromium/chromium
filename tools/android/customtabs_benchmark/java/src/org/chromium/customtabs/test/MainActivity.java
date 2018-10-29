@@ -51,7 +51,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static final int NONE = -1;
     // Common key between the benchmark modes.
     private static final String URL_KEY = "url";
-
+    private static final String PARALLEL_URL_KEY = "parallel_url";
+    private static final String DEFAULT_REFERRER_URL = "https://www.google.com";
     // Keys for the WebView / Custom Tabs comparison.
     static final String INTENT_SENT_EXTRA = "intent_sent_ms";
     private static final String USE_WEBVIEW_KEY = "use_webview";
@@ -62,6 +63,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static final String SET_SPECULATION_MODE = "setSpeculationModeForSession";
     private static final String SET_IGNORE_URL_FRAGMENTS_FOR_SESSION =
             "setIgnoreUrlFragmentsForSession";
+
+    private static final String ADD_VERIFIED_ORIGN = "addVerifiedOriginForSession";
+    private static final String ENABLE_PARALLEL_REQUEST = "enableParallelRequestForSession";
+    private static final String PARALLEL_REQUEST_REFERRER_KEY =
+            "android.support.customtabs.PARALLEL_REQUEST_REFERRER";
+    private static final String PARALLEL_REQUEST_URL_KEY =
+            "android.support.customtabs.PARALLEL_REQUEST_URL";
+    private static final int PARALLEL_REQUEST_MIN_DELAY_AFTER_WARMUP = 3000;
+
     private static final int NO_SPECULATION = 0;
     private static final int PRERENDER = 2;
     private static final int HIDDEN_TAB = 3;
@@ -72,6 +82,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private RadioButton mChromeRadioButton;
     private RadioButton mWebViewRadioButton;
     private CheckBox mWarmupCheckbox;
+    private CheckBox mParallelUrlCheckBox;
+    private EditText mParallelUrlEditText;
     private long mIntentSentMs;
 
     @Override
@@ -100,12 +112,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mChromeRadioButton = (RadioButton) findViewById(R.id.radio_chrome);
         mWebViewRadioButton = (RadioButton) findViewById(R.id.radio_webview);
         mWarmupCheckbox = (CheckBox) findViewById(R.id.warmup_checkbox);
+        mParallelUrlCheckBox = (CheckBox) findViewById(R.id.parallel_url_checkbox);
+        mParallelUrlEditText = (EditText) findViewById(R.id.parallel_url_text);
+
         Button goButton = (Button) findViewById(R.id.go_button);
 
         mUrlEditText.setOnClickListener(this);
         mChromeRadioButton.setOnClickListener(this);
         mWebViewRadioButton.setOnClickListener(this);
         mWarmupCheckbox.setOnClickListener(this);
+        mParallelUrlCheckBox.setOnClickListener(this);
+        mParallelUrlEditText.setOnClickListener(this);
         goButton.setOnClickListener(this);
     }
 
@@ -117,9 +134,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
         boolean useChrome = mChromeRadioButton.isChecked();
         boolean useWebView = mWebViewRadioButton.isChecked();
         String url = mUrlEditText.getText().toString();
+        boolean willRequestParallelUrl = mParallelUrlCheckBox.isChecked();
+        String parallelUrl = null;
+        if (willRequestParallelUrl) {
+            parallelUrl = mParallelUrlEditText.getText().toString();
+        }
 
         if (id == R.id.go_button) {
-            customTabsWebViewBenchmark(url, useChrome, useWebView, warmup);
+            customTabsWebViewBenchmark(url, useChrome, useWebView, warmup, parallelUrl);
         }
     }
 
@@ -139,17 +161,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void startCustomTabsWebViewBenchmark(Intent intent) {
         Bundle extras = intent.getExtras();
         String url = extras.getString(URL_KEY);
+        String parallelUrl = extras.getString(PARALLEL_URL_KEY);
         boolean useWebView = extras.getBoolean(USE_WEBVIEW_KEY);
         boolean useChrome = !useWebView;
         boolean warmup = extras.getBoolean(WARMUP_KEY);
-        customTabsWebViewBenchmark(url, useChrome, useWebView, warmup);
+        customTabsWebViewBenchmark(url, useChrome, useWebView, warmup, parallelUrl);
     }
 
     /** Start the CustomTabs / WebView comparison benchmark. */
     private void customTabsWebViewBenchmark(
-            String url, boolean useChrome, boolean useWebView, boolean warmup) {
+            String url, boolean useChrome, boolean useWebView, boolean warmup, String parallelUrl) {
         if (useChrome) {
-            launchChrome(url, warmup);
+            launchChrome(url, warmup, parallelUrl);
         } else {
             assert useWebView;
             launchWebView(url);
@@ -164,11 +187,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         startActivity(intent);
     }
 
-    private void launchChrome(final String url, final boolean warmup) {
+    private void launchChrome(final String url, final boolean warmup, String parallelUrl) {
         CustomTabsServiceConnection connection = new CustomTabsServiceConnection() {
             @Override
             public void onCustomTabsServiceConnected(ComponentName name, CustomTabsClient client) {
-                launchChromeIntent(url, warmup, client);
+                launchChromeIntent(url, warmup, client, parallelUrl);
             }
 
             @Override
@@ -177,7 +200,35 @@ public class MainActivity extends Activity implements View.OnClickListener {
         CustomTabsClient.bindCustomTabsService(this, DEFAULT_PACKAGE, connection);
     }
 
-    private void launchChromeIntent(String url, boolean warmup, CustomTabsClient client) {
+    private static void maybePrepareParallelUrlRequest(String parallelUrl, CustomTabsClient client,
+            CustomTabsIntent intent, IBinder sessionBinder) {
+        if (parallelUrl == null || parallelUrl.length() == 0) {
+            Log.w(TAG, "null or empty parallelUrl");
+            return;
+        }
+
+        Uri parallelUri = Uri.parse(parallelUrl);
+        Bundle params = new Bundle();
+        BundleCompat.putBinder(params, "session", sessionBinder);
+
+        Uri referrerUri = Uri.parse(DEFAULT_REFERRER_URL);
+        params.putParcelable("origin", referrerUri);
+
+        Bundle result = client.extraCommand(ADD_VERIFIED_ORIGN, params);
+        boolean ok = (result != null) && result.getBoolean(ADD_VERIFIED_ORIGN);
+        if (!ok) throw new RuntimeException("Cannot add verified origin");
+
+        result = client.extraCommand(ENABLE_PARALLEL_REQUEST, params);
+        ok = (result != null) && result.getBoolean(ENABLE_PARALLEL_REQUEST);
+        if (!ok) throw new RuntimeException("Cannot enable Parallel Request");
+        Log.w(TAG, "enabled Parallel Request");
+
+        intent.intent.putExtra(PARALLEL_REQUEST_URL_KEY, parallelUri);
+        intent.intent.putExtra(PARALLEL_REQUEST_REFERRER_KEY, referrerUri);
+    }
+
+    private void launchChromeIntent(
+            String url, boolean warmup, CustomTabsClient client, String parallelUrl) {
         CustomTabsCallback callback = new CustomTabsCallback() {
             private long mNavigationStartOffsetMs;
 
@@ -201,6 +252,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         CustomTabsSession session = client.newSession(callback);
         final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder(session).build();
         final Uri uri = Uri.parse(url);
+
+        IBinder sessionBinder = BundleCompat.getBinder(
+                customTabsIntent.intent.getExtras(), CustomTabsIntent.EXTRA_SESSION);
+        assert sessionBinder != null;
+        maybePrepareParallelUrlRequest(parallelUrl, client, customTabsIntent, sessionBinder);
 
         if (warmup) {
             client.warmup(0);
@@ -228,11 +284,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void startCustomTabsBenchmark(Intent intent) {
         String url = intent.getStringExtra(URL_KEY);
         if (url == null) url = DEFAULT_URL;
+        String parallelUrl = intent.getStringExtra(PARALLEL_URL_KEY);
+
         String speculatedUrl = intent.getStringExtra("speculated_url");
         if (speculatedUrl == null) speculatedUrl = url;
         String packageName = intent.getStringExtra("package_name");
         if (packageName == null) packageName = DEFAULT_PACKAGE;
         boolean warmup = intent.getBooleanExtra("warmup", false);
+
         boolean skipLauncherActivity = intent.getBooleanExtra("skip_launcher_activity", false);
         int delayToMayLaunchUrl = intent.getIntExtra("delay_to_may_launch_url", NONE);
         int delayToLaunchUrl = intent.getIntExtra("delay_to_launch_url", NONE);
@@ -240,8 +299,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
         if (speculationMode == null) speculationMode = "prerender";
         int timeoutSeconds = intent.getIntExtra("timeout", NONE);
 
+        if (parallelUrl != null && !warmup) {
+            Log.w(TAG, "Parallel URL provided, forcing warmup");
+            warmup = true;
+            delayToLaunchUrl = Math.max(delayToLaunchUrl, PARALLEL_REQUEST_MIN_DELAY_AFTER_WARMUP);
+            delayToMayLaunchUrl =
+                    Math.max(delayToMayLaunchUrl, PARALLEL_REQUEST_MIN_DELAY_AFTER_WARMUP);
+        }
+
         launchCustomTabs(packageName, speculatedUrl, url, warmup, skipLauncherActivity,
-                speculationMode, delayToMayLaunchUrl, delayToLaunchUrl, timeoutSeconds);
+                speculationMode, delayToMayLaunchUrl, delayToLaunchUrl, timeoutSeconds,
+                parallelUrl);
     }
 
     private final class CustomCallback extends CustomTabsCallback {
@@ -251,6 +319,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         private final String mSpeculationMode;
         private final int mDelayToMayLaunchUrl;
         private final int mDelayToLaunchUrl;
+        public boolean mWarmupCompleted = false;
         private long mIntentSentMs = NONE;
         private long mPageLoadStartedMs = NONE;
         private long mPageLoadFinishedMs = NONE;
@@ -287,6 +356,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         @Override
         public void extraCallback(String callbackName, Bundle args) {
+            if ("onWarmupCompleted".equals(callbackName)) {
+                mWarmupCompleted = true;
+                return;
+            }
+
             if (!"NavigationMetrics".equals(callbackName)) {
                 Log.w(TAG, "Unknown extra callback skipped: " + callbackName);
                 return;
@@ -410,9 +484,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void onCustomTabsServiceConnected(CustomTabsClient client, final Uri speculatedUri,
             final Uri uri, final CustomCallback cb, boolean warmup, boolean skipLauncherActivity,
             String speculationMode, int delayToMayLaunchUrl, final int delayToLaunchUrl,
-            final int timeoutSeconds, final String packageName) {
+            final int timeoutSeconds, final String packageName, final String parallelUrl) {
         final CustomTabsSession session = client.newSession(cb);
         final CustomTabsIntent intent = (new CustomTabsIntent.Builder(session)).build();
+
         logMemory(packageName, "OnServiceConnected");
 
         IBinder sessionBinder =
@@ -424,6 +499,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
             @Override
             public void run() {
                 logMemory(packageName, "BeforeLaunch");
+
+                if (cb.mWarmupCompleted) {
+                    maybePrepareParallelUrlRequest(parallelUrl, client, intent, sessionBinder);
+                } else {
+                    Log.e(TAG, "not warmed up yet!");
+                }
+
                 intent.launchUrl(MainActivity.this, uri);
                 cb.recordIntentHasBeenSent();
                 if (timeoutSeconds != NONE) cb.logMetricsAndFinishDelayed(timeoutSeconds * 1000);
@@ -448,7 +530,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     private void launchCustomTabs(final String packageName, String speculatedUrl, String url,
             final boolean warmup, final boolean skipLauncherActivity, final String speculationMode,
-            final int delayToMayLaunchUrl, final int delayToLaunchUrl, final int timeoutSeconds) {
+            final int delayToMayLaunchUrl, final int delayToLaunchUrl, final int timeoutSeconds,
+            String parallelUrl) {
         final CustomCallback cb = new CustomCallback(packageName, warmup, skipLauncherActivity,
                 speculationMode, delayToMayLaunchUrl, delayToLaunchUrl);
         final Uri speculatedUri = Uri.parse(speculatedUrl);
@@ -460,7 +543,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             ComponentName name, final CustomTabsClient client) {
                         MainActivity.this.onCustomTabsServiceConnected(client, speculatedUri, uri,
                                 cb, warmup, skipLauncherActivity, speculationMode,
-                                delayToMayLaunchUrl, delayToLaunchUrl, timeoutSeconds, packageName);
+                                delayToMayLaunchUrl, delayToLaunchUrl, timeoutSeconds, packageName,
+                                parallelUrl);
                     }
 
                     @Override

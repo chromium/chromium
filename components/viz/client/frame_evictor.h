@@ -16,18 +16,26 @@ class FrameEvictorClient {
   virtual void EvictDelegatedFrame() = 0;
 };
 
+// Keeps track of the visibility state of a child and notifies when the parent
+// needs to drop its surface.
 class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
  public:
-  // |client| must outlive |this|.
   explicit FrameEvictor(FrameEvictorClient* client);
   ~FrameEvictor() override;
 
-  void SwappedFrame(bool visible);
-  void DiscardedFrame();
+  // Called when the parent allocates a new LocalSurfaceId for this child and
+  // embeds it.
+  void OnNewSurfaceEmbedded();
+
+  // Called when the parent stops embedding the child's surface and evicts it.
+  void OnSurfaceDiscarded();
+
+  // Returns whether the parent is currently embedding a surface of this child.
+  bool has_surface() const { return has_surface_; }
+
+  // Notifies that the visibility state of the child has changed.
   void SetVisible(bool visible);
-  void LockFrame();
-  void UnlockFrame();
-  bool HasFrame() { return has_frame_; }
+
   bool visible() const { return visible_; }
 
  private:
@@ -35,8 +43,8 @@ class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
   void EvictCurrentFrame() override;
 
   FrameEvictorClient* client_;
-  bool has_frame_;
-  bool visible_;
+  bool has_surface_ = false;
+  bool visible_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FrameEvictor);
 };

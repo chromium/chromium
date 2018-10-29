@@ -131,7 +131,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
                             public ash::mojom::WallpaperObserver {
  protected:
   WallpaperPolicyTest()
-      : LoginManagerTest(true),
+      : LoginManagerTest(true, true),
         wallpaper_change_count_(0),
         owner_key_util_(new ownership::MockOwnerKeyUtil()),
         fake_session_manager_client_(new FakeSessionManagerClient),
@@ -232,7 +232,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
       ADD_FAILURE() << "No image representation.";
       average_color_ = SkColorSetARGB(0, 0, 0, 0);
     }
-    average_color_ = ComputeAverageColor(representation.sk_bitmap());
+    average_color_ = ComputeAverageColor(representation.GetBitmap());
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -381,29 +381,6 @@ IN_PROC_BROWSER_TEST_F(WallpaperPolicyTest, DISABLED_SetResetClear) {
   // Check wallpaper change count to ensure that setting the second user's
   // wallpaper didn't have any effect.
   ASSERT_EQ(3, wallpaper_change_count_);
-}
-
-IN_PROC_BROWSER_TEST_F(WallpaperPolicyTest, PRE_PRE_PersistOverLogout) {
-  SetSystemSalt();
-  RegisterUser(testUsers_[0]);
-  StartupUtils::MarkOobeCompleted();
-}
-
-IN_PROC_BROWSER_TEST_F(WallpaperPolicyTest, PRE_PersistOverLogout) {
-  SetSystemSalt();
-  LoginUser(testUsers_[0]);
-
-  // Set wallpaper policy to red image.
-  InjectPolicy(0, kRedImageFileName);
-
-  // Run until wallpaper has changed to expected color.
-  RunUntilWallpaperChangeToColor(kRedImageColor);
-  StartupUtils::MarkOobeCompleted();
-}
-
-IN_PROC_BROWSER_TEST_F(WallpaperPolicyTest, PersistOverLogout) {
-  LoginUser(testUsers_[0]);
-  RunUntilWallpaperChangeToColor(kRedImageColor);
 }
 
 IN_PROC_BROWSER_TEST_F(WallpaperPolicyTest, PRE_DevicePolicyTest) {

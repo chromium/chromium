@@ -1,0 +1,32 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="network_config_element_behavior.html">
+<link rel="import" href="network_shared_css.html">
+
+<dom-module id="network-config-toggle">
+  <template>
+    <style include="network-shared">
+      cr-policy-network-indicator {
+        --cr-tooltip-icon-margin-start: var(--cr-controlled-by-spacing);
+      }
+    </style>
+
+    <div class="property-box">
+      <div class="start">
+        [[label]]
+      </div>
+      <cr-toggle checked="{{checked}}"
+          disabled="[[getDisabled_(disabled, property)]]"
+          aria-label$="[[label]]">
+      </cr-toggle>
+      <cr-policy-network-indicator
+          property="[[property]]" tooltip-position="left">
+      </cr-policy-network-indicator>
+    </div>
+  </template>
+  <script src="network_config_toggle.js"></script>
+</dom-module>

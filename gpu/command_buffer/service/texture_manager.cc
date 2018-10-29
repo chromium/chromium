@@ -28,12 +28,13 @@
 #include "gpu/command_buffer/service/gl_stream_texture_image.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
-#include "gpu/command_buffer/service/progress_reporter.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
+#include "gpu/command_buffer/service/shared_image_representation.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_state_restorer.h"
 #include "ui/gl/gl_version_info.h"
+#include "ui/gl/progress_reporter.h"
 #include "ui/gl/trace_util.h"
 
 using base::trace_event::MemoryAllocatorDump;
@@ -513,6 +514,20 @@ TexturePassthrough::~TexturePassthrough() {
   }
 }
 
+TextureBase::Type TexturePassthrough::GetType() const {
+  return TextureBase::Type::kPassthrough;
+}
+
+// static
+TexturePassthrough* TexturePassthrough::CheckedCast(TextureBase* texture) {
+  if (!texture)
+    return nullptr;
+  if (texture->GetType() == TextureBase::Type::kPassthrough)
+    return static_cast<TexturePassthrough*>(texture);
+  DLOG(ERROR) << "Bad typecast";
+  return nullptr;
+}
+
 void TexturePassthrough::MarkContextLost() {
   have_context_ = false;
 }
@@ -547,6 +562,10 @@ gl::GLImage* TexturePassthrough::GetLevelImage(GLenum target,
   }
 
   return level_images_[face_idx][level].get();
+}
+
+void TexturePassthrough::SetEstimatedSize(size_t size) {
+  estimated_size_ = size;
 }
 
 Texture::Texture(GLuint service_id)
@@ -600,6 +619,20 @@ void Texture::MaybeDeleteThis(bool have_context) {
   if (have_context)
     glDeleteTextures(1, &owned_service_id_);
   delete this;
+}
+
+TextureBase::Type Texture::GetType() const {
+  return TextureBase::Type::kValidated;
+}
+
+// static
+Texture* Texture::CheckedCast(TextureBase* texture) {
+  if (!texture)
+    return nullptr;
+  if (texture->GetType() == TextureBase::Type::kValidated)
+    return static_cast<Texture*>(texture);
+  DLOG(ERROR) << "Bad typecast";
+  return nullptr;
 }
 
 MemoryTypeTracker* Texture::GetMemTracker() {
@@ -1198,8 +1231,22 @@ void Texture::SetLevelInfo(GLenum target,
   {
     ScopedMemTrackerChange change(this);
     estimated_size_ -= info.estimated_size;
-    GLES2Util::ComputeImageDataSizes(width, height, depth, format, type, 4,
-                                     &info.estimated_size, nullptr, nullptr);
+
+    if (format != GL_NONE) {
+      // Uncompressed image
+      GLES2Util::ComputeImageDataSizes(width, height, depth, format, type, 4,
+                                       &info.estimated_size, nullptr, nullptr);
+    } else if (internal_format != GL_NONE) {
+      // Compressed image
+      GLsizei compressed_size = 0;
+      GetCompressedTexSizeInBytes(nullptr, width, height, depth,
+                                  internal_format, &compressed_size, nullptr);
+      info.estimated_size = compressed_size;
+    } else {
+      // No image
+      info.estimated_size = 0;
+    }
+
     estimated_size_ += info.estimated_size;
   }
 
@@ -1940,13 +1987,20 @@ scoped_refptr<TextureRef> TextureRef::Create(TextureManager* manager,
 
 TextureRef::~TextureRef() {
   manager_->StopTracking(this);
-  texture_->RemoveTextureRef(
-      this, force_context_lost_ ? false : manager_->have_context_);
+  bool have_context = force_context_lost_ ? false : manager_->have_context_;
+  texture_->RemoveTextureRef(this, have_context);
   manager_ = nullptr;
+  if (!have_context && shared_image_)
+    shared_image_->OnContextLost();
 }
 
 void TextureRef::ForceContextLost() {
   force_context_lost_ = true;
+}
+
+void TextureRef::SetSharedImageRepresentation(
+    std::unique_ptr<SharedImageRepresentationGLTexture> shared_image) {
+  shared_image_ = std::move(shared_image);
 }
 
 TextureManager::TextureManager(MemoryTracker* memory_tracker,
@@ -1957,7 +2011,7 @@ TextureManager::TextureManager(MemoryTracker* memory_tracker,
                                GLint max_3d_texture_size,
                                GLint max_array_texture_layers,
                                bool use_default_textures,
-                               ProgressReporter* progress_reporter,
+                               gl::ProgressReporter* progress_reporter,
                                ServiceDiscardableManager* discardable_manager)
     : memory_type_tracker_(new MemoryTypeTracker(memory_tracker)),
       memory_tracker_(memory_tracker),
@@ -2204,6 +2258,17 @@ TextureRef* TextureManager::Consume(
   bool result = textures_.insert(std::make_pair(client_id, ref)).second;
   DCHECK(result);
   return ref.get();
+}
+
+TextureRef* TextureManager::ConsumeSharedImage(
+    GLuint client_id,
+    std::unique_ptr<SharedImageRepresentationGLTexture> shared_image) {
+  DCHECK(client_id);
+  Texture* texture = shared_image->GetTexture();
+  TextureRef* ref = Consume(client_id, texture);
+  if (ref)
+    ref->SetSharedImageRepresentation(std::move(shared_image));
+  return ref;
 }
 
 void TextureManager::SetParameteri(

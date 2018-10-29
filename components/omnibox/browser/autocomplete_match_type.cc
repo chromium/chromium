@@ -42,6 +42,7 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
     "physical-web-overflow",
     "tab-search",
     "document",
+    "pedal",
   };
   // clang-format on
   static_assert(arraysize(strings) == AutocompleteMatchType::NUM_TYPES,
@@ -125,6 +126,9 @@ base::string16 AutocompleteMatchType::ToAccessibilityLabel(
       0,                               // PHYSICAL_WEB_OVERFLOW_DEPRECATED
       IDS_ACC_AUTOCOMPLETE_HISTORY,    // TAB_SEARCH_DEPRECATED
       0,                               // DOCUMENT_SUGGESTION
+
+      // TODO(orinj): Determine appropriate accessibility labels for Pedals
+      0,  // PEDAL
   };
   static_assert(arraysize(message_ids) == AutocompleteMatchType::NUM_TYPES,
                 "message_ids must have NUM_TYPES elements");

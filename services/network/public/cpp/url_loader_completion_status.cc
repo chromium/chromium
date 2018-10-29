@@ -29,6 +29,7 @@ bool URLLoaderCompletionStatus::operator==(
          extended_error_code == rhs.extended_error_code &&
          exists_in_cache == rhs.exists_in_cache &&
          completion_time == rhs.completion_time &&
+         cors_preflight_timing_info == rhs.cors_preflight_timing_info &&
          encoded_data_length == rhs.encoded_data_length &&
          encoded_body_length == rhs.encoded_body_length &&
          decoded_body_length == rhs.decoded_body_length &&

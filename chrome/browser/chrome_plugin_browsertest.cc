@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +25,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/plugin_service.h"
@@ -110,8 +112,8 @@ class ChromePluginTest : public InProcessBrowserTest {
   static void CrashFlash() {
     scoped_refptr<content::MessageLoopRunner> runner =
         new content::MessageLoopRunner;
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&CrashFlashInternal, runner->QuitClosure()));
     runner->Run();
   }
@@ -140,8 +142,8 @@ class ChromePluginTest : public InProcessBrowserTest {
     int actual = 0;
     scoped_refptr<content::MessageLoopRunner> runner =
         new content::MessageLoopRunner;
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&CountPluginProcesses, &actual, runner->QuitClosure()));
     runner->Run();
     ASSERT_EQ(expected, actual);
@@ -159,7 +161,7 @@ class ChromePluginTest : public InProcessBrowserTest {
       found = true;
     }
     ASSERT_TRUE(found) << "Didn't find Flash process!";
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, quit_task);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, quit_task);
   }
 
   static void GetPluginsInfoCallback(
@@ -175,7 +177,7 @@ class ChromePluginTest : public InProcessBrowserTest {
       if (iter.GetData().process_type == content::PROCESS_TYPE_PPAPI_PLUGIN)
         (*count)++;
     }
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, quit_task);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, quit_task);
   }
 };
 

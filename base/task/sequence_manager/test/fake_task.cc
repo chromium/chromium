@@ -10,12 +10,15 @@ namespace sequence_manager {
 FakeTask::FakeTask() : FakeTask(0 /* task_type */) {}
 
 FakeTask::FakeTask(int task_type)
-    : TaskQueue::Task(TaskQueue::PostedTask(OnceClosure(),
-                                            FROM_HERE,
-                                            TimeDelta(),
-                                            Nestable::kNestable,
-                                            task_type),
-                      TimeTicks()) {}
+    : Task(internal::PostedTask(OnceClosure(),
+                                FROM_HERE,
+                                TimeDelta(),
+                                Nestable::kNestable,
+                                task_type),
+           TimeTicks(),
+           internal::EnqueueOrder(),
+           internal::EnqueueOrder(),
+           internal::WakeUpResolution::kLow) {}
 
 FakeTaskTiming::FakeTaskTiming()
     : TaskTiming(false /* has_wall_time */, false /* has_thread_time */) {}

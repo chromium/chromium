@@ -66,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Integration tests for ClearBrowsingDataPreferences.
@@ -624,7 +625,7 @@ public class ClearBrowsingDataPreferencesTest {
         }
     }
 
-    private void setDataTypesToClear(final ArraySet<Integer> typesToClear) {
+    private void setDataTypesToClear(final Set<Integer> typesToClear) {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             for (@DialogOption Integer option : ClearBrowsingDataPreferences.getAllOptions()) {
                 boolean enabled = typesToClear.contains(option);

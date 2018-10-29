@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 
 namespace {
 
@@ -28,8 +27,6 @@ class SelectedKeywordViewTest : public extensions::ExtensionBrowserTest {
   ~SelectedKeywordViewTest() override = default;
 
  private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
-
   DISALLOW_COPY_AND_ASSIGN(SelectedKeywordViewTest);
 };
 

@@ -99,7 +99,7 @@ void QuicTimeWaitListManager::AddConnectionIdToTimeWait(
   DCHECK(action != SEND_TERMINATION_PACKETS || termination_packets != nullptr);
   DCHECK(action != DO_NOTHING || ietf_quic);
   int num_packets = 0;
-  ConnectionIdMap::iterator it = connection_id_map_.find(connection_id);
+  auto it = connection_id_map_.find(connection_id);
   const bool new_connection_id = it == connection_id_map_.end();
   if (!new_connection_id) {  // Replace record if it is reinserted.
     num_packets = it->second.num_packets;
@@ -142,7 +142,7 @@ void QuicTimeWaitListManager::ProcessPacket(
   QUIC_DLOG(INFO) << "Processing " << connection_id << " in time wait state.";
   // TODO(satyamshekhar): Think about handling packets from different client
   // addresses.
-  ConnectionIdMap::iterator it = connection_id_map_.find(connection_id);
+  auto it = connection_id_map_.find(connection_id);
   DCHECK(it != connection_id_map_.end());
   // Increment the received packet count.
   ConnectionIdData* connection_data = &it->second;
@@ -291,7 +291,7 @@ bool QuicTimeWaitListManager::MaybeExpireOldestConnection(
   if (connection_id_map_.empty()) {
     return false;
   }
-  ConnectionIdMap::iterator it = connection_id_map_.begin();
+  auto it = connection_id_map_.begin();
   QuicTime oldest_connection_id_time = it->second.time_added;
   if (oldest_connection_id_time > expiration_time) {
     // Too recent, don't retire.

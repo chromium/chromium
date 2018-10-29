@@ -1,5 +1,5 @@
 Test Results
-solid on solid	alpha on solid	solid on alpha	alpha on alpha
+	solid on solid	alpha on solid	solid on alpha	alpha on alpha
 source-over				
 source-in				
 source-out				
@@ -12,4 +12,3 @@ lighter
 copy				
 xor				
 Test Video
-

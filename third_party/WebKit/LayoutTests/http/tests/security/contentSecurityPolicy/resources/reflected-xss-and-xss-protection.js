@@ -1,6 +1,6 @@
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.dumpChildFramesAsText();
+    testRunner.dumpChildFrames();
     testRunner.setXSSAuditorEnabled(true);
     testRunner.waitUntilDone();
 }

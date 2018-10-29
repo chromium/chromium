@@ -1,0 +1,28 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":process_internals",
+  ]
+}
+
+js_library("process_internals") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js/cr/ui:tree",
+  ]
+  extra_deps = [
+    "//content/browser/process_internals:mojo_bindings_js",
+    "//url/mojom:url_mojom_gurl_js",
+  ]
+  externs_list = [
+    "$root_gen_dir/content/browser/process_internals/process_internals.mojom.externs.js",
+    "$root_gen_dir/url/mojom/url.mojom.externs.js",
+    "$externs_path/mojo.js",
+  ]
+}

@@ -1,5 +1,6 @@
 Test that each agent could be enabled/disabled separately.
 
+Accessibility.disable finished successfully
 Animation.disable finished successfully
 CSS.disable finished successfully
 DOM.disable finished successfully
@@ -17,6 +18,9 @@ Page.disable finished successfully
 Performance.disable finished successfully
 Profiler.disable finished successfully
 Runtime.disable finished successfully
+
+Accessibility.enable finished successfully
+Accessibility.disable finished successfully
 
 Animation.enable finished successfully
 Animation.disable finished successfully

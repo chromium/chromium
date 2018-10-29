@@ -16,7 +16,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.system.Os;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.BuildConfig;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
@@ -31,6 +30,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 
 import java.io.File;
 import java.io.IOException;

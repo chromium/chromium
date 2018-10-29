@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 168 tests; 82 PASS, 86 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL HTML (standards) IMG usemap="no-hash-name" assert_equals: expected Element node <img src="/images/threecolors.png" usemap="no-hash-name">... but got Element node <area shape="rect" coords="0,0,99,50" href="#area-no-hash...
+Found 168 tests; 89 PASS, 79 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS HTML (standards) IMG usemap="no-hash-name"
 PASS HTML (standards) OBJECT usemap="no-hash-name"
 PASS HTML (standards) IMG usemap="no-hash-id"
 PASS HTML (standards) OBJECT usemap="no-hash-id"
@@ -22,7 +22,7 @@ FAIL HTML (standards) IMG usemap="#two-maps-with-this-id-or-name" assert_equals:
 FAIL HTML (standards) OBJECT usemap="#two-maps-with-this-id-or-name" assert_equals: expected Element node <area shape="rect" coords="0,0,99,50" href="#area-two-map... but got Element node <object data="/images/threecolors.png" usemap="#two-maps-...
 FAIL HTML (standards) IMG usemap="hash-last#" assert_equals: expected Element node <img src="/images/threecolors.png" usemap="hash-last#"></... but got Element node <area shape="rect" coords="0,0,99,50" href="#area-empty-u...
 PASS HTML (standards) OBJECT usemap="hash-last#"
-FAIL HTML (standards) IMG usemap="" assert_equals: expected Element node <img src="/images/threecolors.png" usemap=""></img> but got Element node <area shape="rect" coords="0,0,99,50" href="#area-empty-u...
+PASS HTML (standards) IMG usemap=""
 PASS HTML (standards) OBJECT usemap=""
 FAIL HTML (standards) IMG usemap="#" assert_equals: expected Element node <img src="/images/threecolors.png" usemap="#"></img> but got Element node <area shape="rect" coords="0,0,99,50" href="#area-empty-u...
 PASS HTML (standards) OBJECT usemap="#"
@@ -58,7 +58,7 @@ PASS HTML (standards) IMG usemap="#different-CASE-name"
 PASS HTML (standards) OBJECT usemap="#different-CASE-name"
 PASS HTML (standards) IMG usemap="#different-CASE-id"
 PASS HTML (standards) OBJECT usemap="#different-CASE-id"
-FAIL HTML (quirks) IMG usemap="no-hash-name" assert_equals: expected Element node <img src="/images/threecolors.png" usemap="no-hash-name">... but got Element node <area shape="rect" coords="0,0,99,50" href="#area-no-hash...
+PASS HTML (quirks) IMG usemap="no-hash-name"
 PASS HTML (quirks) OBJECT usemap="no-hash-name"
 PASS HTML (quirks) IMG usemap="no-hash-id"
 PASS HTML (quirks) OBJECT usemap="no-hash-id"
@@ -80,7 +80,7 @@ FAIL HTML (quirks) IMG usemap="#two-maps-with-this-id-or-name" assert_equals: ex
 FAIL HTML (quirks) OBJECT usemap="#two-maps-with-this-id-or-name" assert_equals: expected Element node <area shape="rect" coords="0,0,99,50" href="#area-two-map... but got Element node <object data="/images/threecolors.png" usemap="#two-maps-...
 FAIL HTML (quirks) IMG usemap="hash-last#" assert_equals: expected Element node <img src="/images/threecolors.png" usemap="hash-last#"></... but got Element node <area shape="rect" coords="0,0,99,50" href="#area-empty-u...
 PASS HTML (quirks) OBJECT usemap="hash-last#"
-FAIL HTML (quirks) IMG usemap="" assert_equals: expected Element node <img src="/images/threecolors.png" usemap=""></img> but got Element node <area shape="rect" coords="0,0,99,50" href="#area-empty-u...
+PASS HTML (quirks) IMG usemap=""
 PASS HTML (quirks) OBJECT usemap=""
 FAIL HTML (quirks) IMG usemap="#" assert_equals: expected Element node <img src="/images/threecolors.png" usemap="#"></img> but got Element node <area shape="rect" coords="0,0,99,50" href="#area-empty-u...
 PASS HTML (quirks) OBJECT usemap="#"
@@ -116,9 +116,9 @@ PASS HTML (quirks) IMG usemap="#different-CASE-name"
 PASS HTML (quirks) OBJECT usemap="#different-CASE-name"
 PASS HTML (quirks) IMG usemap="#different-CASE-id"
 PASS HTML (quirks) OBJECT usemap="#different-CASE-id"
-FAIL XHTML img usemap="no-hash-name" assert_equals: expected Element node <img src="/images/threecolors.png" usemap="no-hash-name">... but got Element node <area shape="rect" coords="0,0,99,50" href="#area-no-hash...
+PASS XHTML img usemap="no-hash-name"
 PASS XHTML object usemap="no-hash-name"
-FAIL XHTML img usemap="no-hash-id" assert_equals: expected Element node <img src="/images/threecolors.png" usemap="no-hash-id"></... but got Element node <area shape="rect" coords="0,0,99,50" href="#area-no-hash...
+PASS XHTML img usemap="no-hash-id"
 PASS XHTML object usemap="no-hash-id"
 PASS XHTML img usemap="#hash-name"
 FAIL XHTML object usemap="#hash-name" assert_equals: expected Element node <area shape="rect" coords="0,0,99,50" href="#area-hash-na... but got Element node <object data="/images/threecolors.png" usemap="#hash-name...
@@ -138,7 +138,7 @@ PASS XHTML img usemap="#two-maps-with-this-id-or-name"
 FAIL XHTML object usemap="#two-maps-with-this-id-or-name" assert_equals: expected Element node <area shape="rect" coords="0,0,99,50" href="#area-two-map... but got Element node <object data="/images/threecolors.png" usemap="#two-maps-...
 FAIL XHTML img usemap="hash-last#" assert_equals: expected Element node <img src="/images/threecolors.png" usemap="hash-last#"></... but got Element node <area shape="rect" coords="0,0,99,50" href="#area-empty-u...
 PASS XHTML object usemap="hash-last#"
-FAIL XHTML img usemap="" assert_equals: expected Element node <img src="/images/threecolors.png" usemap=""></img> but got Element node <area shape="rect" coords="0,0,99,50" href="#area-empty-u...
+PASS XHTML img usemap=""
 PASS XHTML object usemap=""
 FAIL XHTML img usemap="#" assert_equals: expected Element node <img src="/images/threecolors.png" usemap="#"></img> but got Element node <area shape="rect" coords="0,0,99,50" href="#area-empty-u...
 PASS XHTML object usemap="#"

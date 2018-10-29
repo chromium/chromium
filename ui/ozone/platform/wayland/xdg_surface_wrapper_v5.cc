@@ -7,7 +7,9 @@
 #include <xdg-shell-unstable-v5-client-protocol.h>
 
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/hit_test.h"
 #include "ui/ozone/platform/wayland/wayland_connection.h"
+#include "ui/ozone/platform/wayland/wayland_util.h"
 #include "ui/ozone/platform/wayland/wayland_window.h"
 
 namespace ui {
@@ -53,20 +55,15 @@ void XDGSurfaceWrapperV5::SetMinimized() {
 }
 
 void XDGSurfaceWrapperV5::SurfaceMove(WaylandConnection* connection) {
-  NOTIMPLEMENTED();
+  xdg_surface_move(xdg_surface_.get(), connection->seat(),
+                   connection->serial());
 }
 
 void XDGSurfaceWrapperV5::SurfaceResize(WaylandConnection* connection,
                                         uint32_t hittest) {
-  // TODO(msisov): implement resizing.
-  /*
-   * int direction;
-   * if (!IdentifyDirection(hittest, &direction))
-   *   return;
-   * xdg_surface_resize(xdg_surface_.get(), connection->seat(),
-   *                    connection->serial(), direction);
-   */
-  NOTIMPLEMENTED();
+  xdg_surface_resize(xdg_surface_.get(), connection->seat(),
+                     connection->serial(),
+                     wl::IdentifyDirection(*connection, hittest));
 }
 
 void XDGSurfaceWrapperV5::SetTitle(const base::string16& title) {

@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "content/browser/shared_worker/shared_worker_script_loader.h"
 #include "content/browser/shared_worker/shared_worker_script_loader_factory.h"
-#include "content/common/navigation_subresource_loader_params.h"
 #include "content/common/throttling_url_loader.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/url_loader_throttle.h"
@@ -71,7 +70,8 @@ SharedWorkerScriptFetcher::SharedWorkerScriptFetcher(
     CreateAndStartCallback callback)
     : script_loader_factory_(std::move(script_loader_factory)),
       resource_request_(std::move(resource_request)),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      response_url_loader_binding_(this) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 }
 
@@ -104,14 +104,49 @@ void SharedWorkerScriptFetcher::OnReceiveResponse(
     const network::ResourceResponseHead& head) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  // TODO(nhiroki): Support AppCache's fallback case. See
-  // NavigationLoaderInterceptor::MaybeCreateLoaderForResponse() for
-  // reference (https://crbug.com/715632).
+  base::WeakPtr<SharedWorkerScriptLoader> script_loader =
+      script_loader_factory_->GetScriptLoader();
+  if (script_loader && script_loader->default_loader_used_) {
+    // If the default network loader was used to handle the URL load request we
+    // need to see if the request interceptors want to potentially create a new
+    // loader for the response, e.g. AppCache's fallback.
+    DCHECK(!response_url_loader_);
+    network::mojom::URLLoaderClientRequest response_client_request;
+    if (script_loader->MaybeCreateLoaderForResponse(head, &response_url_loader_,
+                                                    &response_client_request,
+                                                    url_loader_.get())) {
+      DCHECK(response_url_loader_);
+      response_url_loader_binding_.Bind(std::move(response_client_request));
+      subresource_loader_params_ = script_loader->TakeSubresourceLoaderParams();
+      url_loader_.reset();
+      // OnReceiveResponse() will be called again.
+      return;
+    }
+  }
 
   blink::mojom::SharedWorkerMainScriptLoadParamsPtr main_script_load_params =
       blink::mojom::SharedWorkerMainScriptLoadParams::New();
+
+  // Fill in params for loading shared worker's main script and subresources.
   main_script_load_params->response_head = head;
-  main_script_load_params->url_loader_client_endpoints = url_loader_->Unbind();
+  if (url_loader_) {
+    // The main script was served by a request interceptor or the default
+    // network loader.
+    DCHECK(!response_url_loader_);
+    main_script_load_params->url_loader_client_endpoints =
+        url_loader_->Unbind();
+    subresource_loader_params_ = script_loader->TakeSubresourceLoaderParams();
+  } else {
+    // The main script was served by the default network loader first, and then
+    // a request interceptor created another loader |response_url_loader_| for
+    // serving an alternative response.
+    DCHECK(response_url_loader_);
+    DCHECK(response_url_loader_binding_.is_bound());
+    main_script_load_params->url_loader_client_endpoints =
+        network::mojom::URLLoaderClientEndpoints::New(
+            response_url_loader_.PassInterface(),
+            response_url_loader_binding_.Unbind());
+  }
 
   for (size_t i = 0; i < redirect_infos_.size(); ++i) {
     main_script_load_params->redirect_infos.emplace_back(redirect_infos_[i]);
@@ -119,11 +154,8 @@ void SharedWorkerScriptFetcher::OnReceiveResponse(
         redirect_response_heads_[i]);
   }
 
-  base::Optional<SubresourceLoaderParams> subresource_loader_params =
-      script_loader_factory_->TakeSubresourceLoaderParams();
-
   std::move(callback_).Run(std::move(main_script_load_params),
-                           std::move(subresource_loader_params),
+                           std::move(subresource_loader_params_),
                            true /* success */);
   delete this;
 }

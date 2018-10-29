@@ -19,11 +19,6 @@
 #include "ui/base/hit_test.h"
 #include "ui/events/event.h"
 
-namespace {
-const double kMinHorizVelocityForWindowSwipe = 1100;
-const double kMinVertVelocityForWindowMinimize = 1000;
-}
-
 namespace ash {
 namespace wm {
 
@@ -331,64 +326,9 @@ void WmToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event,
       event->StopPropagation();
       return;
     case ui::ET_SCROLL_FLING_START:
-      CompleteDrag(DragResult::SUCCESS);
-
-      // TODO(xdai): We'll do special handling in tablet mode later.
-      if (Shell::Get()
-              ->tablet_mode_controller()
-              ->IsTabletModeWindowManagerEnabled()) {
-        return;
-      }
-
-      // TODO(pkotwicz): Fix tests which inadvertently start flings and check
-      // window_resizer_->IsMove() instead of the hittest component at |event|'s
-      // location.
-      if (GetNonClientComponent(target, event->location()) != HTCAPTION ||
-          !GetWindowState(target)->IsNormalOrSnapped()) {
-        return;
-      }
-
-      if (event->details().velocity_y() > kMinVertVelocityForWindowMinimize) {
-        SetWindowStateTypeFromGesture(target,
-                                      mojom::WindowStateType::MINIMIZED);
-      } else if (event->details().velocity_y() <
-                 -kMinVertVelocityForWindowMinimize) {
-        SetWindowStateTypeFromGesture(target,
-                                      mojom::WindowStateType::MAXIMIZED);
-      } else if (event->details().velocity_x() >
-                 kMinHorizVelocityForWindowSwipe) {
-        SetWindowStateTypeFromGesture(target,
-                                      mojom::WindowStateType::RIGHT_SNAPPED);
-      } else if (event->details().velocity_x() <
-                 -kMinHorizVelocityForWindowSwipe) {
-        SetWindowStateTypeFromGesture(target,
-                                      mojom::WindowStateType::LEFT_SNAPPED);
-      }
-      event->StopPropagation();
-      return;
+      FALLTHROUGH;
     case ui::ET_GESTURE_SWIPE:
-      DCHECK_GT(event->details().touch_points(), 0);
-      if (event->details().touch_points() == 1)
-        return;
-      if (!GetWindowState(target)->IsNormalOrSnapped())
-        return;
-
-      CompleteDrag(DragResult::SUCCESS);
-
-      if (event->details().swipe_down()) {
-        SetWindowStateTypeFromGesture(target,
-                                      mojom::WindowStateType::MINIMIZED);
-      } else if (event->details().swipe_up()) {
-        SetWindowStateTypeFromGesture(target,
-                                      mojom::WindowStateType::MAXIMIZED);
-      } else if (event->details().swipe_right()) {
-        SetWindowStateTypeFromGesture(target,
-                                      mojom::WindowStateType::RIGHT_SNAPPED);
-      } else {
-        SetWindowStateTypeFromGesture(target,
-                                      mojom::WindowStateType::LEFT_SNAPPED);
-      }
-      event->StopPropagation();
+      HandleFlingOrSwipe(event);
       return;
     default:
       return;
@@ -409,7 +349,6 @@ bool WmToplevelWindowEventHandler::AttemptToStartDrag(
   }
 
   end_closure_ = std::move(end_closure);
-  pre_drag_window_bounds_ = window->bounds();
   in_gesture_drag_ = (source == ::wm::WINDOW_MOVE_SOURCE_TOUCH);
   return true;
 }
@@ -554,44 +493,17 @@ void WmToplevelWindowEventHandler::HandleCaptureLost(ui::LocatedEvent* event) {
   }
 }
 
-void WmToplevelWindowEventHandler::SetWindowStateTypeFromGesture(
-    aura::Window* window,
-    mojom::WindowStateType new_state_type) {
-  wm::WindowState* window_state = GetWindowState(window);
-  // TODO(oshima): Move extra logic (set_unminimize_to_restore_bounds,
-  // SetRestoreBoundsInParent) that modifies the window state
-  // into WindowState.
-  switch (new_state_type) {
-    case mojom::WindowStateType::MINIMIZED:
-      if (window_state->CanMinimize()) {
-        window_state->Minimize();
-        window_state->set_unminimize_to_restore_bounds(true);
-        window_state->SetRestoreBoundsInParent(pre_drag_window_bounds_);
-      }
-      break;
-    case mojom::WindowStateType::MAXIMIZED:
-      if (window_state->CanMaximize()) {
-        window_state->SetRestoreBoundsInParent(pre_drag_window_bounds_);
-        window_state->Maximize();
-      }
-      break;
-    case mojom::WindowStateType::LEFT_SNAPPED:
-      if (window_state->CanSnap()) {
-        window_state->SetRestoreBoundsInParent(pre_drag_window_bounds_);
-        const wm::WMEvent event(wm::WM_EVENT_SNAP_LEFT);
-        window_state->OnWMEvent(&event);
-      }
-      break;
-    case mojom::WindowStateType::RIGHT_SNAPPED:
-      if (window_state->CanSnap()) {
-        window_state->SetRestoreBoundsInParent(pre_drag_window_bounds_);
-        const wm::WMEvent event(wm::WM_EVENT_SNAP_RIGHT);
-        window_state->OnWMEvent(&event);
-      }
-      break;
-    default:
-      NOTREACHED();
-  }
+void WmToplevelWindowEventHandler::HandleFlingOrSwipe(ui::GestureEvent* event) {
+  UpdateGestureTarget(nullptr);
+  if (!window_resizer_)
+    return;
+
+  std::unique_ptr<ScopedWindowResizer> resizer(std::move(window_resizer_));
+  resizer->resizer()->FlingOrSwipe(event);
+  first_finger_hittest_ = HTNOWHERE;
+  in_gesture_drag_ = false;
+  if (end_closure_)
+    std::move(end_closure_).Run(DragResult::SUCCESS);
 }
 
 void WmToplevelWindowEventHandler::ResizerWindowDestroyed() {

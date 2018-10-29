@@ -503,8 +503,7 @@ SpdySerializedFrame SpdyFramer::SerializeSettings(
   }
 
   DCHECK_EQ(kSettingsFrameMinimumSize, builder.length());
-  for (SettingsMap::const_iterator it = values->begin(); it != values->end();
-       ++it) {
+  for (auto it = values->begin(); it != values->end(); ++it) {
     int setting_id = it->first;
     DCHECK_GE(setting_id, 0);
     builder.WriteUInt16(static_cast<SpdySettingsId>(setting_id));
@@ -999,8 +998,7 @@ bool SpdyFramer::SerializeSettings(const SpdySettingsIR& settings,
   }
 
   DCHECK_EQ(kSettingsFrameMinimumSize, builder.length());
-  for (SettingsMap::const_iterator it = values->begin(); it != values->end();
-       ++it) {
+  for (auto it = values->begin(); it != values->end(); ++it) {
     int setting_id = it->first;
     DCHECK_GE(setting_id, 0);
     ok = ok && builder.WriteUInt16(static_cast<SpdySettingsId>(setting_id)) &&

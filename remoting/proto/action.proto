@@ -1,0 +1,40 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.protocol;
+
+// Next Id: 3
+message ActionRequest {
+  enum Action {
+    SEND_ATTENTION_SEQUENCE = 1;
+    LOCK_WORKSTATION = 2;
+  }
+  optional Action action = 1;
+
+  // Identifies an individual request so a response can be sent at a later time
+  // to indicate whether the action succeeded.
+  optional uint32 request_id = 2;
+}
+
+// Next Id: 4
+message ActionResponse {
+  // The ID of the action request this response was generated for.
+  optional uint32 request_id = 1;
+
+  enum ReturnCode {
+    ACTION_SUCCESS = 1;
+    ACTION_ERROR = 2;
+  }
+  optional ReturnCode code = 2;
+
+  // ErrorCode field is populated if |code()| indicates an error occurred.
+  enum ErrorCode {
+    // The action supplied is not known.
+    UNKNOWN_ACTION_ERROR = 1;
+
+    // The action supplied is not supported by the platform or connection mode.
+    UNSUPPORTED_ACTION_ERROR = 2;
+  }
+  optional ErrorCode error = 3;
+}

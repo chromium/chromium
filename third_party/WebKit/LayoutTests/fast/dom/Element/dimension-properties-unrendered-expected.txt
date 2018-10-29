@@ -2,7 +2,6 @@ This test checks the scroll, client and offset dimension properties return "0" i
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS testDiv.offsetLeft is 0
 PASS testDiv.offsetTop is 0
 PASS testDiv.offsetWidth is 0

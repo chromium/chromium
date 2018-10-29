@@ -9,7 +9,9 @@ component("resource_coordinator_cpp_base") {
     "coordination_unit_types.h",
   ]
 
-  defines = [ "SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_BASE_IMPLEMENTATION" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines = [ "IS_SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_BASE_IMPL" ]
 
   deps = [
     "//base",
@@ -17,56 +19,42 @@ component("resource_coordinator_cpp_base") {
   ]
 }
 
+component("resource_coordinator_cpp_features") {
+  sources = [
+    "resource_coordinator_features.cc",
+    "resource_coordinator_features.h",
+  ]
+
+  defines = [ "IS_SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_FEATURES_IMPL" ]
+
+  deps = [
+    "//base",
+  ]
+}
+
 component("resource_coordinator_cpp") {
   sources = [
     "frame_resource_coordinator.cc",
     "frame_resource_coordinator.h",
-    "memory_instrumentation/client_process_impl.cc",
-    "memory_instrumentation/client_process_impl.h",
-    "memory_instrumentation/coordinator.h",
-    "memory_instrumentation/global_memory_dump.cc",
-    "memory_instrumentation/global_memory_dump.h",
-    "memory_instrumentation/memory_instrumentation.cc",
-    "memory_instrumentation/memory_instrumentation.h",
-    "memory_instrumentation/os_metrics.cc",
-    "memory_instrumentation/os_metrics.h",
-    "memory_instrumentation/os_metrics_linux.cc",
-    "memory_instrumentation/os_metrics_mac.cc",
-    "memory_instrumentation/os_metrics_win.cc",
-    "memory_instrumentation/tracing_observer.cc",
-    "memory_instrumentation/tracing_observer.h",
     "page_resource_coordinator.cc",
     "page_resource_coordinator.h",
     "process_resource_coordinator.cc",
     "process_resource_coordinator.h",
-    "resource_coordinator_features.cc",
-    "resource_coordinator_features.h",
     "resource_coordinator_interface.h",
     "system_resource_coordinator.cc",
     "system_resource_coordinator.h",
   ]
 
-  if (is_android) {
-    set_sources_assignment_filter([])
-    sources += [ "memory_instrumentation/os_metrics_linux.cc" ]
-    set_sources_assignment_filter(sources_assignment_filter)
-  }
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  if (is_fuchsia) {
-    sources += [ "memory_instrumentation/os_metrics_fuchsia.cc" ]
-  }
-
-  defines = [ "SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_IMPLEMENTATION" ]
-
-  deps = []
-  if (is_win) {
-    deps += [ "//base/win:pe_image" ]
-  }
+  defines = [ "IS_SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_IMPL" ]
 
   public_deps = [
     ":resource_coordinator_cpp_base",
+    ":resource_coordinator_cpp_features",
     "//base",
     "//mojo/public/cpp/bindings",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//services/resource_coordinator/public/mojom",
     "//services/service_manager/public/cpp",
   ]

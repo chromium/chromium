@@ -50,7 +50,7 @@ cr.define('settings_about_page', function() {
           updateAvailable: false,
         };
 
-        /** @private {boolean} */
+        /** @private {boolean|Promise} */
         this.hasEndOfLife_ = false;
       }
     }
@@ -129,7 +129,7 @@ cr.define('settings_about_page', function() {
       this.regulatoryInfo_ = regulatoryInfo;
     };
 
-    /** @param {boolean} hasEndOfLife */
+    /** @param {boolean|Promise} hasEndOfLife */
     TestAboutPageBrowserProxy.prototype.setHasEndOfLife = function(
         hasEndOfLife) {
       this.hasEndOfLife_ = hasEndOfLife;
@@ -648,13 +648,26 @@ cr.define('settings_about_page', function() {
                 });
           }
 
-          return checkHasEndOfLife(false)
+          // Force test proxy to not respond to JS requests.
+          // End of life message should still be hidden in this case.
+          aboutBrowserProxy.setHasEndOfLife(new Promise(function(res, rej) {}));
+          return initNewPage()
+              .then(function() {
+                return checkHasEndOfLife(false);
+              })
               .then(function() {
                 aboutBrowserProxy.setHasEndOfLife(true);
                 return initNewPage();
               })
               .then(function() {
                 return checkHasEndOfLife(true);
+              })
+              .then(function() {
+                aboutBrowserProxy.setHasEndOfLife(false);
+                return initNewPage();
+              })
+              .then(function() {
+                return checkHasEndOfLife(false);
               });
         });
       }
@@ -922,7 +935,7 @@ cr.define('settings_about_page', function() {
         });
 
         test('Initialization', function() {
-          const radioGroup = dialog.$$('paper-radio-group');
+          const radioGroup = dialog.$$('cr-radio-group');
           assertTrue(!!radioGroup);
           assertTrue(!!dialog.$.warningSelector);
           assertTrue(!!dialog.$.changeChannel);

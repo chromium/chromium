@@ -1,7 +1,18 @@
 /**
- * @license Copyright 2017 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ * @license
+ * Copyright 2017 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS-IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 'use strict';
 
@@ -75,10 +86,10 @@ class CategoryRenderer {
     if (audit.result.scoreDisplayMode === 'error') {
       auditEl.classList.add(`lh-audit--error`);
       const textEl = this.dom.find('.lh-audit__display-text', auditEl);
-      textEl.textContent = 'Error!';
+      textEl.textContent = Util.UIStrings.errorLabel;
       textEl.classList.add('tooltip-boundary');
       const tooltip = this.dom.createChildOf(textEl, 'div', 'tooltip tooltip--error');
-      tooltip.textContent = audit.result.errorMessage || 'Report error: no audit information';
+      tooltip.textContent = audit.result.errorMessage || Util.UIStrings.errorMissingAuditInfo;
     } else if (audit.result.explanation) {
       const explEl = this.dom.createChildOf(titleEl, 'div', 'lh-audit-explanation');
       explEl.textContent = audit.result.explanation;
@@ -89,9 +100,9 @@ class CategoryRenderer {
     // Add list of warnings or singular warning
     const warningsEl = this.dom.createChildOf(titleEl, 'div', 'lh-warnings');
     if (warnings.length === 1) {
-      warningsEl.textContent = `Warning: ${warnings.join('')}`;
+      warningsEl.textContent = `${Util.UIStrings.warningHeader} ${warnings.join('')}`;
     } else {
-      warningsEl.textContent = 'Warnings: ';
+      warningsEl.textContent = Util.UIStrings.warningHeader;
       const warningsUl = this.dom.createChildOf(warningsEl, 'ul');
       for (const warning of warnings) {
         const item = this.dom.createChildOf(warningsUl, 'li');
@@ -158,7 +169,7 @@ class CategoryRenderer {
     const itemCountEl = this.dom.createChildOf(summmaryEl, 'div', 'lh-audit-group__itemcount');
     if (expandable) {
       const chevronEl = summmaryEl.appendChild(this._createChevron());
-      chevronEl.title = 'Show audits';
+      chevronEl.title = Util.UIStrings.auditGroupExpandTooltip;
     }
 
     if (group.description) {
@@ -169,6 +180,7 @@ class CategoryRenderer {
     headerEl.textContent = group.title;
 
     if (opts.itemCount) {
+      // TODO(i18n): support multiple locales here
       itemCountEl.textContent = `${opts.itemCount} audits`;
     }
     return groupEl;
@@ -211,7 +223,7 @@ class CategoryRenderer {
    */
   renderPassedAuditsSection(elements) {
     const passedElem = this.renderAuditGroup({
-      title: `Passed audits`,
+      title: Util.UIStrings.passedAuditsGroupTitle,
     }, {expandable: true, itemCount: this._getTotalAuditsLength(elements)});
     passedElem.classList.add('lh-passed-audits');
     elements.forEach(elem => passedElem.appendChild(elem));
@@ -224,7 +236,7 @@ class CategoryRenderer {
    */
   _renderNotApplicableAuditsSection(elements) {
     const notApplicableElem = this.renderAuditGroup({
-      title: `Not applicable`,
+      title: Util.UIStrings.notApplicableAuditsGroupTitle,
     }, {expandable: true, itemCount: this._getTotalAuditsLength(elements)});
     notApplicableElem.classList.add('lh-audit-group--not-applicable');
     elements.forEach(elem => notApplicableElem.appendChild(elem));
@@ -237,7 +249,7 @@ class CategoryRenderer {
    * @return {Element}
    */
   _renderManualAudits(manualAudits, manualDescription) {
-    const group = {title: 'Additional items to manually check', description: manualDescription};
+    const group = {title: Util.UIStrings.manualAuditsGroupTitle, description: manualDescription};
     const auditGroupElem = this.renderAuditGroup(group,
         {expandable: true, itemCount: manualAudits.length});
     auditGroupElem.classList.add('lh-audit-group--manual');
@@ -282,7 +294,7 @@ class CategoryRenderer {
     percentageEl.textContent = scoreOutOf100.toString();
     if (category.score === null) {
       percentageEl.textContent = '?';
-      percentageEl.title = 'Errors occurred while auditing';
+      percentageEl.title = Util.UIStrings.errorLabel;
     }
 
     this.dom.find('.lh-gauge__label', tmpl).textContent = category.title;

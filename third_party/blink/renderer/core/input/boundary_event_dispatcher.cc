@@ -14,7 +14,7 @@ namespace {
 
 void BuildAncestorChain(EventTarget* target,
                         HeapVector<Member<Node>, 20>* ancestors) {
-  if (!EventHandlingUtil::IsInDocument(target))
+  if (!event_handling_util::IsInDocument(target))
     return;
   Node* target_node = target->ToNode();
   DCHECK(target_node);
@@ -62,7 +62,7 @@ void BoundaryEventDispatcher::SendBoundaryEvents(EventTarget* exited_target,
     return;
 
   // Dispatch out event
-  if (EventHandlingUtil::IsInDocument(exited_target))
+  if (event_handling_util::IsInDocument(exited_target))
     DispatchOut(exited_target, entered_target);
 
   // Create lists of all exited/entered ancestors, locate the common ancestor
@@ -112,7 +112,7 @@ void BoundaryEventDispatcher::SendBoundaryEvents(EventTarget* exited_target,
                   !exited_node_has_capturing_ancestor);
 
   // Dispatch over event
-  if (EventHandlingUtil::IsInDocument(entered_target))
+  if (event_handling_util::IsInDocument(entered_target))
     DispatchOver(entered_target, exited_target);
 
   // Defer locating capturing enter listener until /after/ dispatching the leave

@@ -30,7 +30,9 @@
 
 #include "third_party/blink/renderer/modules/websockets/dom_websocket.h"
 
+#include "base/feature_list.h"
 #include "base/location.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_insecure_request_policy.h"
@@ -47,6 +49,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/websockets/close_event.h"
@@ -54,6 +57,7 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/loader/mixed_content_autoupgrade_status.h"
 #include "third_party/blink/renderer/platform/network/network_log.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -63,10 +67,19 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 static const size_t kMaxByteSizeForHistogram = 100 * 1000 * 1000;
 static const int32_t kBucketCountForMessageSizeHistogram = 50;
 static const char kWebSocketSubprotocolSeparator[] = ", ";
+
+namespace {
+void LogMixedAutoupgradeStatus(blink::MixedContentAutoupgradeStatus status) {
+  // For websockets we use the response received element to log successful
+  // connections.
+  UMA_HISTOGRAM_ENUMERATION("MixedAutoupgrade.Websocket.Status", status);
+}
+}  // namespace
 
 namespace blink {
 
@@ -185,7 +198,7 @@ static inline bool IsValidSubprotocolCharacter(UChar character) {
 bool DOMWebSocket::IsValidSubprotocolString(const String& protocol) {
   if (protocol.IsEmpty())
     return false;
-  for (size_t i = 0; i < protocol.length(); ++i) {
+  for (wtf_size_t i = 0; i < protocol.length(); ++i) {
     if (!IsValidSubprotocolCharacter(protocol[i]))
       return false;
   }
@@ -194,7 +207,7 @@ bool DOMWebSocket::IsValidSubprotocolString(const String& protocol) {
 
 static String EncodeSubprotocolString(const String& protocol) {
   StringBuilder builder;
-  for (size_t i = 0; i < protocol.length(); i++) {
+  for (wtf_size_t i = 0; i < protocol.length(); i++) {
     if (protocol[i] < 0x20 || protocol[i] > 0x7E)
       builder.Append(String::Format("\\u%04X", protocol[i]));
     else if (protocol[i] == 0x5c)
@@ -208,7 +221,7 @@ static String EncodeSubprotocolString(const String& protocol) {
 static String JoinStrings(const Vector<String>& strings,
                           const char* separator) {
   StringBuilder builder;
-  for (size_t i = 0; i < strings.size(); ++i) {
+  for (wtf_size_t i = 0; i < strings.size(); ++i) {
     if (i)
       builder.Append(separator);
     builder.Append(strings[i]);
@@ -231,7 +244,8 @@ DOMWebSocket::DOMWebSocket(ExecutionContext* context)
       subprotocol_(""),
       extensions_(""),
       event_queue_(EventQueue::Create(this)),
-      buffered_amount_update_task_pending_(false) {}
+      buffered_amount_update_task_pending_(false),
+      was_autoupgraded_to_wss_(false) {}
 
 DOMWebSocket::~DOMWebSocket() {
   DCHECK(!channel_);
@@ -291,10 +305,20 @@ void DOMWebSocket::Connect(const String& url,
   NETWORK_DVLOG(1) << "WebSocket " << this << " connect() url=" << url;
   url_ = KURL(NullURL(), url);
 
-  if (GetExecutionContext()->GetSecurityContext().GetInsecureRequestPolicy() &
-          kUpgradeInsecureRequests &&
+  bool upgrade_insecure_requests_set =
+      GetExecutionContext()->GetSecurityContext().GetInsecureRequestPolicy() &
+      kUpgradeInsecureRequests;
+
+  if ((upgrade_insecure_requests_set ||
+       MixedContentChecker::ShouldAutoupgrade(
+           GetExecutionContext()->Url(),
+           WebMixedContentContextType::kBlockable)) &&
       url_.Protocol() == "ws" &&
       !SecurityOrigin::Create(url_)->IsPotentiallyTrustworthy()) {
+    if (!upgrade_insecure_requests_set) {
+      was_autoupgraded_to_wss_ = true;
+      LogMixedAutoupgradeStatus(MixedContentAutoupgradeStatus::kStarted);
+    }
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kUpgradeInsecureRequestsUpgradedRequest);
     url_.SetProtocol("wss");
@@ -349,26 +373,26 @@ void DOMWebSocket::Connect(const String& url,
   }
 
   // Fail if not all elements in |protocols| are valid.
-  for (size_t i = 0; i < protocols.size(); ++i) {
-    if (!IsValidSubprotocolString(protocols[i])) {
+  for (const String& protocol : protocols) {
+    if (!IsValidSubprotocolString(protocol)) {
       state_ = kClosed;
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kSyntaxError,
-          "The subprotocol '" + EncodeSubprotocolString(protocols[i]) +
-              "' is invalid.");
+      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                        "The subprotocol '" +
+                                            EncodeSubprotocolString(protocol) +
+                                            "' is invalid.");
       return;
     }
   }
 
   // Fail if there're duplicated elements in |protocols|.
   HashSet<String> visited;
-  for (size_t i = 0; i < protocols.size(); ++i) {
-    if (!visited.insert(protocols[i]).is_new_entry) {
+  for (const String& protocol : protocols) {
+    if (!visited.insert(protocol).is_new_entry) {
       state_ = kClosed;
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kSyntaxError,
-          "The subprotocol '" + EncodeSubprotocolString(protocols[i]) +
-              "' is duplicated.");
+      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                        "The subprotocol '" +
+                                            EncodeSubprotocolString(protocol) +
+                                            "' is duplicated.");
       return;
     }
   }
@@ -678,6 +702,8 @@ void DOMWebSocket::Unpause() {
 void DOMWebSocket::DidConnect(const String& subprotocol,
                               const String& extensions) {
   NETWORK_DVLOG(1) << "WebSocket " << this << " DidConnect()";
+  if (was_autoupgraded_to_wss_)
+    LogMixedAutoupgradeStatus(MixedContentAutoupgradeStatus::kResponseReceived);
   if (state_ != kConnecting)
     return;
   state_ = kOpen;
@@ -739,6 +765,8 @@ void DOMWebSocket::DidReceiveBinaryMessage(
 
 void DOMWebSocket::DidError() {
   NETWORK_DVLOG(1) << "WebSocket " << this << " DidError()";
+  if (state_ == kConnecting && was_autoupgraded_to_wss_)
+    LogMixedAutoupgradeStatus(MixedContentAutoupgradeStatus::kFailed);
   ReflectBufferedAmountConsumption();
   state_ = kClosed;
   event_queue_->Dispatch(Event::Create(EventTypeNames::error));

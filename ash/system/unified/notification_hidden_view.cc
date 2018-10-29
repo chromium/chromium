@@ -5,7 +5,9 @@
 #include "ash/system/unified/notification_hidden_view.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/sign_out_button.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,6 +20,16 @@
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
+
+namespace {
+
+void ShowLockScreenNotificationSettings() {
+  ash::Shell::Get()
+      ->message_center_controller()
+      ->ShowLockScreenNotificationSettings();
+}
+
+}  // namespace
 
 NotificationHiddenView::NotificationHiddenView() {
   const bool lock_screen_notification_enabled =
@@ -66,7 +78,9 @@ void NotificationHiddenView::ButtonPressed(views::Button* sender,
   static_cast<message_center::MessageCenterImpl*>(
       message_center::MessageCenter::Get())
       ->lock_screen_controller()
-      ->DismissLockScreenThenExecute(base::DoNothing(), base::DoNothing());
+      ->DismissLockScreenThenExecute(
+          base::BindOnce(&ShowLockScreenNotificationSettings),
+          base::DoNothing());
 }
 
 }  // namespace ash

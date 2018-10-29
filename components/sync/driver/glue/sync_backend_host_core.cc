@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -114,9 +115,11 @@ void SyncBackendHostCore::OnInitializationComplete(
   // the initializing downloading control types or initializing the encryption
   // handler in order to receive notifications triggered during encryption
   // startup.
-  DCHECK(encryption_observer_proxy_);
-  sync_manager_->GetEncryptionHandler()->AddObserver(
-      encryption_observer_proxy_.get());
+  DCHECK(!encryption_observer_proxies_.empty());
+  for (const std::unique_ptr<SyncEncryptionHandler::Observer>& proxy_observer :
+       encryption_observer_proxies_) {
+    sync_manager_->GetEncryptionHandler()->AddObserver(proxy_observer.get());
+  }
 
   // Sync manager initialization is complete, so we can schedule recurring
   // SaveChanges.
@@ -248,6 +251,9 @@ void SyncBackendHostCore::DoOnIncomingInvalidation(
       DLOG(WARNING) << "Notification has invalid id: "
                     << ObjectIdToString(object_id);
     } else {
+      UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerModelType",
+                                ModelTypeToHistogramInt(type),
+                                static_cast<int>(MODEL_TYPE_COUNT));
       SingleObjectInvalidationSet invalidation_set =
           invalidation_map.ForObject(object_id);
       for (Invalidation invalidation : invalidation_set) {
@@ -296,9 +302,9 @@ void SyncBackendHostCore::DoInitialize(SyncEngine::InitParams params) {
   DCHECK(params.registrar);
   registrar_ = std::move(params.registrar);
 
-  DCHECK(!encryption_observer_proxy_);
-  DCHECK(params.encryption_observer_proxy);
-  encryption_observer_proxy_ = std::move(params.encryption_observer_proxy);
+  DCHECK(encryption_observer_proxies_.empty());
+  DCHECK(!params.encryption_observer_proxies.empty());
+  encryption_observer_proxies_ = std::move(params.encryption_observer_proxies);
 
   sync_manager_ = params.sync_manager_factory->CreateSyncManager(name_);
   sync_manager_->AddObserver(this);
@@ -366,11 +372,9 @@ void SyncBackendHostCore::DoStartSyncing(base::Time last_poll_time) {
 }
 
 void SyncBackendHostCore::DoSetEncryptionPassphrase(
-    const std::string& passphrase,
-    bool is_explicit) {
+    const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->GetEncryptionHandler()->SetEncryptionPassphrase(passphrase,
-                                                                 is_explicit);
+  sync_manager_->GetEncryptionHandler()->SetEncryptionPassphrase(passphrase);
 }
 
 void SyncBackendHostCore::DoInitialProcessControlTypes() {

@@ -1,5 +1,6 @@
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS window.width1 is window.width2
 PASS

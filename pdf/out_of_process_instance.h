@@ -186,6 +186,9 @@ class OutOfProcessInstance : public pp::Instance,
   // frame's origin.
   pp::URLLoader CreateURLLoaderInternal();
 
+  void Save(const std::string& token);
+  void ConsumeSaveToken(const std::string& token);
+
   void FormDidOpen(int32_t result);
 
   void UserMetricsRecordAction(const std::string& action);
@@ -426,6 +429,8 @@ class OutOfProcessInstance : public pp::Instance,
 
   // Annotation types that were already counted for this document.
   std::set<int> annotation_types_counted_;
+
+  bool edit_mode_ = false;
 
   // The current state of accessibility: either off, enabled but waiting
   // for the document to load, or fully loaded.

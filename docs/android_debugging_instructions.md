@@ -1,34 +1,31 @@
 # Android Debugging Instructions
-
 Chrome on Android has java and c/c++ code. Each "side" have its own set of tools
 for debugging. Here's some tips.
 
 [TOC]
 
-## Launching the app
-
-You can launch the app by using one of the wrappers.
+## Launching
+You can run the app by using one of the wrappers.
 
 ```shell
-out/Default/bin/content_shell_apk launch [--args='--foo --bar'] 'data:text/html;utf-8,<html>Hello World!</html>'
-out/Default/bin/chrome_public_apk launch [--args='--foo --bar'] 'data:text/html;utf-8,<html>Hello World!</html>'
+# Installs, launches, and enters logcat.
+out/Default/bin/content_shell_apk run --args='--disable-fre' 'data:text/html;utf-8,<html>Hello World!</html>'
+# Launches without first installing. Does not show logcat.
+out/Default/bin/chrome_public_apk launch --args='--disable-fre' 'data:text/html;utf-8,<html>Hello World!</html>'
 ```
 
-## Log output
-
+## Logging
 [Chromium logging from LOG(INFO)](https://chromium.googlesource.com/chromium/src/+/master/docs/android_logging.md)
 etc., is directed to the Android logcat logging facility. You can filter the
 messages, e.g. view chromium verbose logging, everything else at warning level
 with:
 
 ```shell
-adb logcat chromium:V cr.SomeComponent:V *:W
-# or:
-out/Default/bin/chrome_public_apk logcat
+# Shows a coloured & filtered logcat.
+out/Default/bin/chrome_public_apk logcat [-v]  # Use -v to show logs for other processes
 ```
 
 ### Warnings for Blink developers
-
 *   **Do not use fprintf or printf debugging!** This does not
     redirect to logcat.
 
@@ -37,49 +34,16 @@ out/Default/bin/chrome_public_apk logcat
     has a bad side-effect that it breaks `adb_install.py`. See
     [here for details](http://stackoverflow.com/questions/28539676/android-adb-fails-to-install-apk-to-nexus-5-on-windows-8-1).
 
-## Take a screenshot
-
-While your phone is plugged into USB, use the `screenshot.py` tool in
-`build/android`. `envsetup.sh` should have put it in your path.
-
+## Take a Screenshot
 ```shell
 build/android/screenshot.py /tmp/screenshot.png
 ```
 
-## Inspecting the view hierarchy
-
-You can use either
-[hierarchy viewer](https://developer.android.com/studio/profile/hierarchy-viewer-setup.html)
-or [monitor](https://developer.android.com/studio/profile/monitor.html) to see
-the Android view hierarchy and see the layout and drawing properties associated
-with it.
-
-While your phone is plugged into USB, you can inspect the Android view hierarchy
-using the following command:
-
-```shell
-ANDROID_HVPROTO=ddm monitor
-```
-
-Setting `ANDROID_HVPROTO` allows you to inspect debuggable apps on non-rooted
-devices.  When building a local version of Chromium, the build tools
-automatically add `android:debuggable=true` to the `AndroidManifest.xml`, which
-will allow you to inspect them on rooted devices.
-
-Want to add some additional information to your Views? You can do that by
-adding the
-[@ViewDebug.ExportedProperty](https://developer.android.com/reference/android/view/ViewDebug.ExportedProperty.html)
-annotation.
-
-Example:
-
-```java
-@ViewDebug.ExportedProperty(category="chrome")
-private int mSuperNiftyDrawingProperty;
-```
+## Inspecting the View Hierarchy
+Generate an [Android Studio](android_studio.md) project, and then use
+[Layout Inspector](https://developer.android.com/studio/debug/layout-inspector).
 
 ## Debugging Java
-
 For both apk and test targets, pass `--wait-for-java-debugger` to the wrapper
 scripts.
 
@@ -104,7 +68,7 @@ out/Default/bin/run_chrome_junit_tests --wait-for-java-debugger  # Specify custo
 *   Open Android Studio ([instructions](android_studio.md))
 *   Click "Run"->"Attach debugger to Android process" (see
 [here](https://developer.android.com/studio/debug/index.html) for more).
-    Click "Run"->"Attach to Local Process..." for Robolectric junit tests.
+*   Click "Run"->"Attach to Local Process..." for Robolectric junit tests.
 
 ### Eclipse
 *   In Eclipse, make a debug configuration of type "Remote Java Application".
@@ -125,8 +89,10 @@ out/Default/bin/run_chrome_junit_tests --wait-for-java-debugger  # Specify custo
 *   Run your debug configuration, and switch to the Debug perspective.
 
 ## Debugging C/C++
+While the app is running, use the wrapper script's `gdb` command to enter into a
+gdb shell.
 
-Use the wrapper script `gdb` command to enter into a gdb shell.
+When running with gdb attached, the app runs **extremely slowly**.
 
 ```shell
 # Attaches to browser process.
@@ -140,34 +106,52 @@ out/Default/bin/chrome_public_apk gdb --debug-process-name privileged_process0
 out/Default/bin/chrome_public_apk gdb --pid $PID
 ```
 
+When connecting, gdb will complain of not being able to load a lot of libraries.
+This happens because of java code. The following messages are all expected:
+```
+Connecting to :5039...
+warning: Could not load shared library symbols for 211 libraries, e.g. /system/framework/arm/boot.oat.
+Use the "info sharedlibrary" command to see the complete listing.
+Do you need "set solib-search-path" or "set sysroot"?
+Failed to read a valid object file image from memory.
+```
+
+### Using Visual Studio Code
+While the app is running, run the `gdb` command with `--ide`:
+
+```shell
+out/Default/bin/content_shell_apk gdb --ide
+```
+
+Once the script has done its thing (generally ~1 second after the initial
+time its used), open [vscode.md](vscode.md) and ensure you have the
+[Android launch entry](vscode.md#Launch-Commands).
+
+Connect via the IDE's launch entry. Connecting takes 30-40 seconds.
+
+When troubleshooting, it's helpful to enable
+[engine logging](https://github.com/Microsoft/vscode-cpptools/blob/master/launch.md#enginelogging).
+
+Known Issues:
+ * Pretty printers are not working properly.
+
 ### Waiting for Debugger on Early Startup
-
-Set the target command line flag with `--wait-for-debugger`.
-
-Launch the debugger using one of the scripts from above.
-
-Type `info threads` and look for a line like:
-
-```
-11 Thread 2564  clock_gettime () at bionic/libc/arch-arm/syscalls/clock_gettime.S:11
+```shell
+# Install, launch, and wait:
+out/Default/bin/chrome_public_apk run --args="--wait-for-debugger"
+# Launch, and have GPU process wait rather than Browser process:
+out/Default/bin/chrome_public_apk launch --args="--wait-for-debugger-children=gpu-process"
+# Or for renderers:
+out/Default/bin/chrome_public_apk launch --args="--wait-for-debugger-children=renderer"
 ```
 
-or perhaps:
+#### With an IDE
+Once `gdb` attaches, the app will resume execution, so you must set your
+breakpoint before attaching.
 
-```
-1  Thread 10870      0x40127050 in nanosleep () from /tmp/user-adb-gdb-libs/system/lib/libc.so
-```
-
-We need to jump out of its sleep routine:
-
-```
-(gdb) thread 11
-(gdb) up
-(gdb) up
-(gdb) return
-Make base::debug::BreakDebugger() return now? (y or n) y
-(gdb) continue
-```
+#### With Command-line GDB
+Once attached, gdb will drop into a prompt. Set your breakpoints and run "c" to
+continue.
 
 ## Symbolizing Crash Stacks and Tombstones (C++)
 

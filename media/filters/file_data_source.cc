@@ -17,16 +17,14 @@ FileDataSource::FileDataSource()
       bytes_read_(0) {
 }
 
-FileDataSource::FileDataSource(base::File file)
-    : force_read_errors_(false),
-      force_streaming_(false),
-      bytes_read_(0) {
-  file_.Initialize(std::move(file));
-}
-
 bool FileDataSource::Initialize(const base::FilePath& file_path) {
   DCHECK(!file_.IsValid());
   return file_.Initialize(file_path);
+}
+
+bool FileDataSource::Initialize(base::File file) {
+  DCHECK(!file_.IsValid());
+  return file_.Initialize(std::move(file));
 }
 
 void FileDataSource::Stop() {}

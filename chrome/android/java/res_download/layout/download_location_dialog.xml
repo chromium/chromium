@@ -28,11 +28,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <org.chromium.chrome.browser.widget.TintedImageView
+            <android.support.v7.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_drive_file_24dp"
-                app:chrometint="@color/default_icon_color"
+                app:tint="@color/default_icon_color"
                 style="@style/ListItemStartIcon" />
 
             <org.chromium.chrome.browser.widget.AlertDialogEditText
@@ -49,11 +49,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <org.chromium.chrome.browser.widget.TintedImageView
+            <android.support.v7.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_folder_blue_24dp"
-                app:chrometint="@color/default_icon_color"
+                app:tint="@color/default_icon_color"
                 style="@style/ListItemStartIcon" />
 
             <Spinner

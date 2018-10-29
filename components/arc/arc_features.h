@@ -18,6 +18,8 @@ extern const base::Feature kCleanArcDataOnRegularToChildTransitionFeature;
 extern const base::Feature kEnableChildToRegularTransitionFeature;
 extern const base::Feature kEnableInputMethodFeature;
 extern const base::Feature kEnableRegularToChildTransitionFeature;
+extern const base::Feature kEnableUnifiedAudioFocusFeature;
+extern const base::Feature kFilePickerExperimentFeature;
 extern const base::Feature kNativeBridgeExperimentFeature;
 extern const base::Feature kSmartTextSelectionFeature;
 extern const base::Feature kUsbHostFeature;

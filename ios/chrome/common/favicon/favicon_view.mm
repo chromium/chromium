@@ -15,8 +15,8 @@ namespace {
 const CGFloat kDefaultCornerRadius = 3;
 }
 
-@interface FaviconViewNew () {
-  // Property releaser for FaviconViewNew.
+@interface FaviconView () {
+  // Property releaser for FaviconView.
 }
 
 // Image view for the favicon.
@@ -26,7 +26,7 @@ const CGFloat kDefaultCornerRadius = 3;
 
 @end
 
-@implementation FaviconViewNew
+@implementation FaviconView
 @synthesize faviconImageView = _faviconImageView;
 @synthesize faviconFallbackLabel = _faviconFallbackLabel;
 

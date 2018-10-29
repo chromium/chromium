@@ -2,6 +2,7 @@ CONSOLE WARNING: line 20: Element.createShadowRoot is deprecated and will be rem
 This tests that the JavaScript wrapper objects of shadow DOM objects
 are not prematurely garbage collected.
 
+
 PASS internals.shadowRoot(ps[0]).tattoo is "I <3 WebKit"
 PASS internals.shadowRoot(ps[0]).styleSheets.tattoo is "I <3 WebKit cssom"
 PASS internals.shadowRoot(ps[1]).tattoo is "I <3 WebKit"

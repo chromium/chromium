@@ -67,6 +67,14 @@ chrome.accessibilityPrivate.SyntheticKeyboardEventType = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.SyntheticMouseEventType = {
+  PRESS: 'press',
+  RELEASE: 'release'
+};
+
+/**
  * @typedef {{
  *   ctrl: (boolean|undefined),
  *   alt: (boolean|undefined),
@@ -84,6 +92,15 @@ chrome.accessibilityPrivate.SyntheticKeyboardModifiers;
  * }}
  */
 chrome.accessibilityPrivate.SyntheticKeyboardEvent;
+
+/**
+ * @typedef {{
+ *   type: !chrome.accessibilityPrivate.SyntheticMouseEventType,
+ *   x: number,
+ *   y: number
+ * }}
+ */
+chrome.accessibilityPrivate.SyntheticMouseEvent;
 
 /**
  * @enum {string}
@@ -168,6 +185,19 @@ chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function
 chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent) {};
 
 /**
+ * Enables or disables mouse events in ChromeVox.
+ * @param {boolean} enabled True if ChromeVox should receive mouse events.
+ */
+chrome.accessibilityPrivate.enableChromeVoxMouseEvents = function(enabled) {};
+
+/**
+ * Sends a fabricated mouse event.
+ * @param {!chrome.accessibilityPrivate.SyntheticMouseEvent} mouseEvent The
+ *     event to send.
+ */
+chrome.accessibilityPrivate.sendSyntheticMouseEvent = function(mouseEvent) {};
+
+/**
  * Fired whenever ChromeVox should output introduction.
  * @type {!ChromeEvent}
  */
@@ -208,3 +238,8 @@ chrome.accessibilityPrivate.onSelectToSpeakStateChanged = function(state) {};
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onSelectToSpeakStateChangeRequested;
+
+/**
+ * Called when a Switch Access user activates dictation from the context menu.
+ */
+chrome.accessibilityPrivate.toggleDictation = function() {};

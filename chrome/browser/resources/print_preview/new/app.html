@@ -69,6 +69,12 @@
         padding-bottom: 16px;
       }
 
+      .settings-section {
+        display: block;
+        margin-bottom: 16px;
+        margin-top: 16px;
+      }
+
       #preview-area-container {
         align-items: center;
         background-color: var(--google-grey-200);
@@ -94,24 +100,24 @@
             invitation-store="[[invitationStore_]]"
             disabled="[[controlsDisabled_]]" state="[[state]]"
             recent-destinations="[[recentDestinations_]]"
-            user-info="{{userInfo_}}" available>
+            user-info="{{userInfo_}}" available class="settings-section">
         </print-preview-destination-settings>
         <print-preview-pages-settings settings="{{settings}}"
             document-info="[[documentInfo_]]"
             disabled="[[controlsDisabled_]]"
-            hidden$="[[!settings.pages.available]]">
+            hidden$="[[!settings.pages.available]]" class="settings-section">
         </print-preview-pages-settings>
         <print-preview-copies-settings settings="{{settings}}"
             disabled="[[controlsDisabled_]]"
-            hidden$="[[!settings.copies.available]]">
+            hidden$="[[!settings.copies.available]]" class="settings-section">
         </print-preview-copies-settings>
         <print-preview-layout-settings settings="{{settings}}"
             disabled="[[controlsDisabled_]]"
-            hidden$="[[!settings.layout.available]]">
+            hidden$="[[!settings.layout.available]]" class="settings-section">
         </print-preview-layout-settings>
         <print-preview-color-settings settings="{{settings}}"
             disabled="[[controlsDisabled_]]"
-            hidden$="[[!settings.color.available]]">
+            hidden$="[[!settings.color.available]]" class="settings-section">
         </print-preview-color-settings>
         <print-preview-more-settings
             settings-expanded-by-user="{{settingsExpandedByUser_}}"
@@ -124,35 +130,41 @@
           <print-preview-media-size-settings settings="{{settings}}"
               capability="[[destination_.capabilities.printer.media_size]]"
               disabled="[[controlsDisabled_]]"
-              hidden$="[[!settings.mediaSize.available]]">
+              hidden$="[[!settings.mediaSize.available]]"
+              class="settings-section">
           </print-preview-media-size-settings>
           <template is="dom-if" if="[[showPagesPerSheet_]]">
             <print-preview-pages-per-sheet-settings settings="{{settings}}"
                 disabled="[[controlsDisabled_]]"
-                hidden$="[[!settings.pagesPerSheet.available]]">
+                hidden$="[[!settings.pagesPerSheet.available]]"
+                class="settings-section">
             </print-preview-pages-per-sheet-settings>
           </template>
           <print-preview-margins-settings settings="{{settings}}"
               disabled="[[controlsDisabled_]]"
-              hidden$="[[!settings.margins.available]]">
+              hidden$="[[!settings.margins.available]]"
+              class="settings-section">
           </print-preview-margins-settings>
           <print-preview-dpi-settings settings="{{settings}}"
               capability="[[destination_.capabilities.printer.dpi]]"
               disabled="[[controlsDisabled_]]"
-              hidden$="[[!settings.dpi.available]]">
+              hidden$="[[!settings.dpi.available]]" class="settings-section">
           </print-preview-dpi-settings>
           <print-preview-scaling-settings settings="{{settings}}"
               document-info="[[documentInfo_]]" disabled="[[controlsDisabled_]]"
-              hidden$="[[!settings.scaling.available]]">
+              hidden$="[[!settings.scaling.available]]"
+              class="settings-section">
           </print-preview-scaling-settings>
           <print-preview-other-options-settings settings="{{settings}}"
               disabled="[[controlsDisabled_]]"
-              hidden$="[[!settings.otherOptions.available]]">
+              hidden$="[[!settings.otherOptions.available]]"
+              class="settings-section">
           </print-preview-other-options-settings>
           <print-preview-advanced-options-settings
               settings="{{settings}}" destination="[[destination_]]"
               disabled="[[controlsDisabled_]]"
-              hidden$="[[!settings.vendorItems.available]]">
+              hidden$="[[!settings.vendorItems.available]]"
+              class="settings-section">
           </print-preview-advanced-options-settings>
         </iron-collapse>
 <if expr="not chromeos">

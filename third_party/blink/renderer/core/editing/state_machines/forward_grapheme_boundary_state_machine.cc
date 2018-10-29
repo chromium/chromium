@@ -163,8 +163,7 @@ ForwardGraphemeBoundaryStateMachine::FeedFollowingCodeUnit(UChar code_unit) {
         if (Character::IsRegionalIndicator(prev_code_point_) &&
             Character::IsRegionalIndicator(code_point)) {
           if (preceding_ris_count_ % 2 == 0) {
-            // Odd numbered RI case, note that m_prevCodePoint is also
-            // RI.
+            // Odd numbered RI case, note that prev_code_point_ is also RI.
             boundary_offset_ += 2;
           }
           return Finish();

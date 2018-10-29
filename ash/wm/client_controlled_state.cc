@@ -5,12 +5,12 @@
 #include "ash/wm/client_controlled_state.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_state_type.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/screen_pinning_controller.h"
-#include "ash/wm/window_animation_types.h"
 #include "ash/wm/window_parenting_utils.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
@@ -68,7 +68,8 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
     bool was_pinned = window_state->IsPinned();
     bool was_trusted_pinned = window_state->IsTrustedPinned();
 
-    EnterNextState(window_state, next_state_type, kAnimationCrossFade);
+    set_next_bounds_change_animation_type(kAnimationCrossFade);
+    EnterNextState(window_state, next_state_type);
 
     VLOG(1) << "Processing Pinned Transtion: event=" << event->type()
             << ", state=" << old_state_type << "=>" << next_state_type
@@ -193,20 +194,25 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
     return;
   switch (event->type()) {
     case WM_EVENT_SET_BOUNDS: {
-      const gfx::Rect& bounds =
-          static_cast<const SetBoundsEvent*>(event)->requested_bounds();
+      const auto* set_bounds_event = static_cast<const SetBoundsEvent*>(event);
+      const gfx::Rect& bounds = set_bounds_event->requested_bounds();
       if (set_bounds_locally_) {
-        switch (bounds_change_animation_type_) {
+        switch (next_bounds_change_animation_type_) {
           case kAnimationNone:
             window_state->SetBoundsDirect(bounds);
             break;
           case kAnimationCrossFade:
             window_state->SetBoundsDirectCrossFade(bounds);
             break;
+          case kAnimationAnimated:
+            window_state->SetBoundsDirectAnimated(
+                bounds, bounds_change_animation_duration_);
+            break;
         }
-        bounds_change_animation_type_ = kAnimationNone;
+        next_bounds_change_animation_type_ = kAnimationNone;
       } else if (!window_state->IsPinned()) {
         // TODO(oshima): Define behavior for pinned app.
+        bounds_change_animation_duration_ = set_bounds_event->duration();
         delegate_->HandleBoundsRequest(window_state,
                                        window_state->GetStateType(), bounds);
       }
@@ -226,13 +232,11 @@ void ClientControlledState::OnWindowDestroying(WindowState* window_state) {
 
 bool ClientControlledState::EnterNextState(
     WindowState* window_state,
-    mojom::WindowStateType next_state_type,
-    BoundsChangeAnimationType animation_type) {
+    mojom::WindowStateType next_state_type) {
   // Do nothing if  we're already in the same state, or delegate has already
   // been deleted.
   if (state_type_ == next_state_type || !delegate_)
     return false;
-  bounds_change_animation_type_ = animation_type;
   mojom::WindowStateType previous_state_type = state_type_;
   state_type_ = next_state_type;
 
@@ -255,6 +259,9 @@ bool ClientControlledState::EnterNextState(
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(
         window_state->window());
   }
+
+  window_state->UpdatePipState();
+
   return true;
 }
 

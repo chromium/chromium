@@ -161,10 +161,6 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // The ProxyConfig to use. The system proxy settings are used by default.
   std::unique_ptr<net::ProxyConfig> proxy_config = nullptr;
 
-  // Comma-separated list of rules that control how hostnames are mapped. See
-  // chrome::switches::kHostRules for a description for the format.
-  std::string host_resolver_rules;
-
   // Default window size. This is also used to create the window tree host and
   // as initial screen size. Defaults to 800x600.
   gfx::Size window_size;
@@ -257,7 +253,6 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& SetEnableBeginFrameControl(bool enable_begin_frame_control);
   Builder& SetUserAgent(const std::string& user_agent);
   Builder& SetProxyConfig(std::unique_ptr<net::ProxyConfig> proxy_config);
-  Builder& SetHostResolverRules(const std::string& host_resolver_rules);
   Builder& SetWindowSize(const gfx::Size& window_size);
   Builder& SetUserDataDir(const base::FilePath& user_data_dir);
   Builder& SetIncognitoMode(bool incognito_mode);

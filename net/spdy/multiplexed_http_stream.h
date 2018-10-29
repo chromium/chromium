@@ -26,9 +26,6 @@ class NET_EXPORT_PRIVATE MultiplexedHttpStream : public HttpStream {
   bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void GetSSLInfo(SSLInfo* ssl_info) override;
   void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override;
-  Error GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                 TokenBindingType tb_type,
-                                 std::vector<uint8_t>* out) override;
   void Drain(HttpNetworkSession* session) override;
   HttpStream* RenewStreamForAuth() override;
   void SetConnectionReused() override;

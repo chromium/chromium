@@ -11,4 +11,8 @@ js_type_check("closure_compile") {
 }
 
 js_library("cr_drawer") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:util",
+  ]
 }

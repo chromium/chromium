@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 
 namespace base {
 namespace internal {
@@ -31,10 +32,17 @@ struct PartitionBucket {
   // Public API.
   void Init(uint32_t new_slot_size);
 
+  // Sets |is_already_zeroed| to true if the allocation was satisfied by
+  // requesting (a) new page(s) from the operating system, or false otherwise.
+  // This enables an optimization for when callers use |PartitionAllocZeroFill|:
+  // there is no need to call memset on fresh pages; the OS has already zeroed
+  // them. (See |PartitionRootBase::AllocFromBucket|.)
+  //
   // Note the matching Free() functions are in PartitionPage.
   BASE_EXPORT NOINLINE void* SlowPathAlloc(PartitionRootBase* root,
                                            int flags,
-                                           size_t size);
+                                           size_t size,
+                                           bool* is_already_zeroed);
 
   ALWAYS_INLINE bool is_direct_mapped() const {
     return !num_system_pages_per_slot_span;

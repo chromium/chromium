@@ -83,7 +83,6 @@ void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {
           content::StoragePartition::REMOVE_DATA_MASK_ALL,
           content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
           GURL(),
-          content::StoragePartition::OriginMatcherFunction(),
           base::Time(),
           base::Time::Max(),
           base::Bind(&InlineLoginHandler::ContinueHandleInitializeMessage,
@@ -153,7 +152,50 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
 
 void InlineLoginHandler::HandleCompleteLoginMessage(
     const base::ListValue* args) {
-  CompleteLogin(args);
+  // When the network service is enabled, the webRequest API doesn't expose
+  // cookie headers. So manually fetch the cookies for the GAIA URL from the
+  // CookieManager.
+  content::WebContents* contents = web_ui()->GetWebContents();
+  content::StoragePartition* partition =
+      content::BrowserContext::GetStoragePartitionForSite(
+          contents->GetBrowserContext(), signin::GetSigninPartitionURL());
+
+  net::CookieOptions cookie_options;
+  cookie_options.set_include_httponly();
+
+  partition->GetCookieManagerForBrowserProcess()->GetCookieList(
+      GaiaUrls::GetInstance()->gaia_url(), cookie_options,
+      base::BindOnce(&InlineLoginHandler::HandleCompleteLoginMessageWithCookies,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::ListValue(args->GetList())));
+}
+
+void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
+    const base::ListValue& args,
+    const std::vector<net::CanonicalCookie>& cookies) {
+  const base::DictionaryValue* dict = nullptr;
+  args.GetDictionary(0, &dict);
+
+  const std::string& email = dict->FindKey("email")->GetString();
+  const std::string& password = dict->FindKey("password")->GetString();
+  const std::string& gaia_id = dict->FindKey("gaiaId")->GetString();
+
+  std::string auth_code;
+  for (const auto& cookie : cookies) {
+    if (cookie.Name() == "oauth_code")
+      auth_code = cookie.Value();
+  }
+
+  bool skip_for_now = false;
+  dict->GetBoolean("skipForNow", &skip_for_now);
+  bool trusted = false;
+  bool trusted_found = dict->GetBoolean("trusted", &trusted);
+
+  bool choose_what_to_sync = false;
+  dict->GetBoolean("chooseWhatToSync", &choose_what_to_sync);
+
+  CompleteLogin(email, password, gaia_id, auth_code, skip_for_now, trusted,
+                trusted_found, choose_what_to_sync);
 }
 
 void InlineLoginHandler::HandleSwitchToFullTabMessage(

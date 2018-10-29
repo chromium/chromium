@@ -224,8 +224,8 @@ static void ReduceOcclusionBelowSurface(
     return;
 
   gfx::Rect affected_area_in_target =
-      contributing_surface->BackgroundFilters().MapRectReverse(target_rect,
-                                                               SkMatrix::I());
+      contributing_surface->BackdropFilters().MapRectReverse(target_rect,
+                                                             SkMatrix::I());
   // Unite target_rect because we only care about positive outsets.
   affected_area_in_target.Union(target_rect);
 
@@ -288,7 +288,7 @@ void OcclusionTracker::LeaveToRenderTarget(
           old_surface->draw_transform());
 
   gfx::Rect unoccluded_surface_rect;
-  if (old_surface->BackgroundFilters().HasFilterThatMovesPixels()) {
+  if (old_surface->BackdropFilters().HasFilterThatMovesPixels()) {
     Occlusion surface_occlusion = GetCurrentOcclusionForContributingSurface(
         old_surface->draw_transform());
     unoccluded_surface_rect =
@@ -320,7 +320,7 @@ void OcclusionTracker::LeaveToRenderTarget(
     }
   }
 
-  if (!old_surface->BackgroundFilters().HasFilterThatMovesPixels())
+  if (!old_surface->BackdropFilters().HasFilterThatMovesPixels())
     return;
 
   ReduceOcclusionBelowSurface(old_surface, unoccluded_surface_rect,

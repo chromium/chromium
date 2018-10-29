@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <cstdint>
 #include <ctime>
 #include <vector>
 

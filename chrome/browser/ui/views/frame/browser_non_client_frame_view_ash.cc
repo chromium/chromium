@@ -6,28 +6,29 @@
 
 #include <algorithm>
 
-#include "ash/frame/caption_buttons/frame_back_button.h"  // mash-ok
-#include "ash/frame/caption_buttons/frame_caption_button_container_view.h"  // mash-ok
-#include "ash/frame/default_frame_header.h"  // mash-ok
-#include "ash/frame/frame_header_util.h"     // mash-ok
+#include "ash/frame/ash_frame_caption_controller.h"  // mash-ok
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_layout_constants.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/caption_buttons/frame_back_button.h"
+#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
+#include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/frame_utils.h"
+#include "ash/public/cpp/tablet_mode.h"
+#include "ash/public/cpp/window_pin_type.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/interfaces/constants.mojom.h"
 #include "ash/public/interfaces/window_state_type.mojom.h"
-#include "ash/shell.h"
-#include "ash/wm/overview/window_selector_controller.h"
-#include "ash/wm/window_util.h"
+#include "ash/wm/window_util.h"  // mash-ok
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager.h"
+#include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -48,17 +49,21 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/env.h"
+#include "ui/aura/mus/window_mus.h"
+#include "ui/aura/mus/window_tree_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/layout.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/mus/desktop_window_tree_host_mus.h"
+#include "ui/views/mus/mus_client.h"
 #include "ui/views/mus/window_manager_frame_values.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/widget/widget.h"
@@ -74,9 +79,11 @@ constexpr SkColor kMdWebUiFrameColor = SkColorSetARGB(0xff, 0x25, 0x4f, 0xae);
 constexpr SkColor kNormalWindowTitleTextColor = SkColorSetRGB(40, 40, 40);
 constexpr SkColor kIncognitoWindowTitleTextColor = SK_ColorWHITE;
 
-bool IsMash() {
-  return features::IsUsingWindowService();
-}
+// The indicator for teleported windows has 8 DIPs before and below it.
+constexpr int kProfileIndicatorPadding = 8;
+
+// The indicator for teleported windows is 24 DIP on a side.
+constexpr int kProfileIndicatorSize = 24;
 
 bool IsV1AppBackButtonEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -84,7 +91,7 @@ bool IsV1AppBackButtonEnabled() {
 }
 
 // Returns true if |window| is currently snapped in split view mode.
-bool IsSnappedInSplitView(aura::Window* window,
+bool IsSnappedInSplitView(const aura::Window* window,
                           ash::mojom::SplitViewState state) {
   ash::mojom::WindowStateType type =
       window->GetProperty(ash::kWindowStateTypeKey);
@@ -117,16 +124,18 @@ BrowserNonClientFrameViewAsh::BrowserNonClientFrameViewAsh(
     BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
-  // In Mash, Ash worries about split view and overview state so there's no need
-  // to observe such changes.
-  if (IsMash())
-    return;
-
-  ash::wm::InstallResizeHandleWindowTargeterForWindow(frame->GetNativeWindow());
-  ash::Shell::Get()->AddShellObserver(this);
+  if (features::IsUsingWindowService()) {
+    ash_window_manager_ =
+        views::MusClient::Get()
+            ->window_tree_client()
+            ->BindWindowManagerInterface<ash::mojom::AshWindowManager>();
+  } else {
+    ash::wm::InstallResizeHandleWindowTargeterForWindow(
+        frame->GetNativeWindow());
+  }
 
   // The ServiceManagerConnection may be nullptr in tests.
-  if (content::ServiceManagerConnection::GetForProcess() && !IsMash()) {
+  if (content::ServiceManagerConnection::GetForProcess()) {
     content::ServiceManagerConnection::GetForProcess()
         ->GetConnector()
         ->BindInterface(ash::mojom::kServiceName, &split_view_controller_);
@@ -143,34 +152,25 @@ BrowserNonClientFrameViewAsh::~BrowserNonClientFrameViewAsh() {
   if (TabletModeClient::Get())
     TabletModeClient::Get()->RemoveObserver(this);
 
-  // As with Init(), some of this may need porting to Mash.
-  if (IsMash())
-    return;
-
   ImmersiveModeController* immersive_controller =
       browser_view()->immersive_mode_controller();
   if (immersive_controller)
     immersive_controller->RemoveObserver(this);
-
-  window_observer_.RemoveAll();
-
-  ash::Shell::Get()->RemoveShellObserver(this);
 }
 
 void BrowserNonClientFrameViewAsh::Init() {
-  if (!IsMash()) {
-    caption_button_container_ =
-        new ash::FrameCaptionButtonContainerView(frame());
-    caption_button_container_->UpdateCaptionButtonState(false /*=animate*/);
-    AddChildView(caption_button_container_);
+  ash::FrameCaptionDelegate* caption_delegate = this;
+  if (!features::IsUsingWindowService()) {
+    caption_controller_ = std::make_unique<ash::AshFrameCaptionController>();
+    caption_delegate = caption_controller_.get();
   }
 
+  caption_button_container_ =
+      new ash::FrameCaptionButtonContainerView(frame(), caption_delegate);
+  caption_button_container_->UpdateCaptionButtonState(false /*=animate*/);
+  AddChildView(caption_button_container_);
+
   Browser* browser = browser_view()->browser();
-  if (IsMash() &&
-      extensions::HostedAppBrowserController::IsForExperimentalHostedAppBrowser(
-          browser_view()->browser())) {
-    SetUpForHostedApp(nullptr);
-  }
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {
@@ -180,8 +180,7 @@ void BrowserNonClientFrameViewAsh::Init() {
     window_icon_->Update();
   }
 
-  if (browser->is_app() && IsV1AppBackButtonEnabled())
-    browser->command_controller()->AddCommandObserver(IDC_BACK, this);
+  UpdateProfileIcons();
 
   aura::Window* window = frame()->GetNativeWindow();
   window->SetProperty(
@@ -189,18 +188,7 @@ void BrowserNonClientFrameViewAsh::Init() {
       static_cast<int>(browser->is_app() ? ash::AppType::CHROME_APP
                                          : ash::AppType::BROWSER));
 
-  // In tablet mode, to prevent accidental taps of the window controls, and to
-  // give more horizontal space for tabs and the new tab button especially in
-  // splitscreen view, we hide the window controls. We only do this when the
-  // Home Launcher feature is enabled, since it gives the user the ability to
-  // minimize all windows when pressing the Launcher button on the shelf.
-  window->SetProperty(
-      ash::kHideCaptionButtonsInTabletModeKey,
-      (browser->is_app() || !app_list::features::IsHomeLauncherEnabled())
-          ? false
-          : true);
-
-  window_observer_.Add(IsMash() ? window->GetRootWindow() : window);
+  window_observer_.Add(GetFrameWindow());
 
   // To preserve privacy, tag incognito windows so that they won't be included
   // in screenshot sent to assistant server.
@@ -211,14 +199,8 @@ void BrowserNonClientFrameViewAsh::Init() {
   if (TabletModeClient::Get())
     TabletModeClient::Get()->AddObserver(this);
 
-  // TODO(estade): how much of the rest of this needs porting to Mash?
-  if (IsMash()) {
-    window->SetProperty(ash::kFrameTextColorKey, GetTitleColor());
-    OnThemeChanged();
-    return;
-  }
-
   if (browser->is_app() && IsV1AppBackButtonEnabled()) {
+    browser->command_controller()->AddCommandObserver(IDC_BACK, this);
     back_button_ = new ash::FrameBackButton();
     AddChildView(back_button_);
     // TODO(oshima): Add Tooltip, accessibility name.
@@ -243,15 +225,6 @@ BrowserNonClientFrameViewAsh::CreateInterfacePtrForTesting() {
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameView:
 
-void BrowserNonClientFrameViewAsh::OnSingleTabModeChanged() {
-  if (!IsMash()) {
-    BrowserNonClientFrameView::OnSingleTabModeChanged();
-    return;
-  }
-
-  UpdateFrameColors();
-}
-
 gfx::Rect BrowserNonClientFrameViewAsh::GetBoundsForTabStrip(
     views::View* tabstrip) const {
   if (!tabstrip)
@@ -266,8 +239,6 @@ gfx::Rect BrowserNonClientFrameViewAsh::GetBoundsForTabStrip(
 
 int BrowserNonClientFrameViewAsh::GetTopInset(bool restored) const {
   // TODO(estade): why do callsites in this class hardcode false for |restored|?
-  if (IsMash())
-    restored = !frame()->IsMaximized() && !frame()->IsFullscreen();
 
   if (!ShouldPaint()) {
     // When immersive fullscreen unrevealed, tabstrip is offscreen with normal
@@ -279,35 +250,21 @@ int BrowserNonClientFrameViewAsh::GetTopInset(bool restored) const {
       return (-1) * browser_view()->GetTabStripHeight();
     }
 
-    if (IsMash())
-      return 0;
-
     // The header isn't painted for restored popup/app windows in overview mode,
     // but the inset is still calculated below, so the overview code can align
     // the window content with a fake header.
-    if (!in_overview_mode_ || frame()->IsFullscreen() ||
+    if (!IsInOverviewMode() || frame()->IsFullscreen() ||
         browser_view()->IsTabStripVisible()) {
       return 0;
     }
   }
 
   Browser* browser = browser_view()->browser();
-  if (IsMash() && UsePackagedAppHeaderStyle(browser))
-    return GetAshLayoutSize(ash::AshLayoutSize::kNonBrowserCaption).height();
 
-  const int header_height =
-      IsMash()
-          ? GetAshLayoutSize(restored
-                                 ? ash::AshLayoutSize::kBrowserCaptionRestored
-                                 : ash::AshLayoutSize::kBrowserCaptionMaximized)
-                .height()
-          : frame_header_->GetHeaderHeight();
+  const int header_height = frame_header_->GetHeaderHeight();
 
   if (browser_view()->IsTabStripVisible())
     return header_height - browser_view()->GetTabStripHeight();
-
-  if (IsMash())
-    return header_height;
 
   return UsePackagedAppHeaderStyle(browser)
              ? frame_header_->GetHeaderHeight()
@@ -315,93 +272,12 @@ int BrowserNonClientFrameViewAsh::GetTopInset(bool restored) const {
 }
 
 int BrowserNonClientFrameViewAsh::GetThemeBackgroundXInset() const {
-  return ash::FrameHeaderUtil::GetThemeBackgroundXInset();
+  return BrowserFrameHeaderAsh::GetThemeBackgroundXInset();
 }
 
 void BrowserNonClientFrameViewAsh::UpdateThrobber(bool running) {
   if (window_icon_)
     window_icon_->Update();
-}
-
-void BrowserNonClientFrameViewAsh::UpdateClientArea() {
-  if (!IsMash())
-    return BrowserNonClientFrameView::UpdateClientArea();
-
-  std::vector<gfx::Rect> additional_client_area;
-  int top_container_offset = 0;
-  ImmersiveModeController* immersive_mode_controller =
-      browser_view()->immersive_mode_controller();
-  // Frame decorations (the non-client area) are visible if not in immersive
-  // mode, or in immersive mode *and* the reveal widget is showing.
-  const bool show_frame_decorations = !immersive_mode_controller->IsEnabled() ||
-                                      immersive_mode_controller->IsRevealed();
-  if (browser_view()->IsTabStripVisible() && show_frame_decorations) {
-    TabStrip* tab_strip = browser_view()->tabstrip();
-    gfx::Rect tab_strip_bounds(GetBoundsForTabStrip(tab_strip));
-
-    int tab_strip_max_x = tab_strip->GetTabsMaxX();
-    if (!tab_strip_bounds.IsEmpty() && tab_strip_max_x) {
-      tab_strip_bounds.set_width(tab_strip_max_x);
-      // The new tab button may be inside or outside |tab_strip_bounds|.  If
-      // it's outside, handle it similarly to those bounds.  If it's inside,
-      // the Subtract() call below will leave it empty and it will be ignored
-      // later.
-      gfx::Rect new_tab_button_bounds = tab_strip->new_tab_button_bounds();
-      new_tab_button_bounds.Subtract(tab_strip_bounds);
-      if (immersive_mode_controller->IsEnabled()) {
-        top_container_offset =
-            immersive_mode_controller->GetTopContainerVerticalOffset(
-                browser_view()->top_container()->size());
-        tab_strip_bounds.set_y(tab_strip_bounds.y() + top_container_offset);
-        new_tab_button_bounds.set_y(new_tab_button_bounds.y() +
-                                    top_container_offset);
-        tab_strip_bounds.Intersect(GetLocalBounds());
-        new_tab_button_bounds.Intersect(GetLocalBounds());
-      }
-
-      additional_client_area.push_back(tab_strip_bounds);
-
-      if (!new_tab_button_bounds.IsEmpty())
-        additional_client_area.push_back(new_tab_button_bounds);
-    }
-  }
-
-  if (hosted_app_button_container_) {
-    gfx::Rect bounds = hosted_app_button_container_->ConvertRectToWidget(
-        hosted_app_button_container_->GetLocalBounds());
-    additional_client_area.push_back(bounds);
-  }
-
-  aura::WindowTreeHostMus* window_tree_host_mus =
-      static_cast<aura::WindowTreeHostMus*>(
-          GetWidget()->GetNativeWindow()->GetHost());
-  if (show_frame_decorations) {
-    const bool restored = !frame()->IsMaximized() && !frame()->IsFullscreen();
-    const int header_height =
-        GetAshLayoutSize(restored
-                             ? ash::AshLayoutSize::kBrowserCaptionRestored
-                             : ash::AshLayoutSize::kBrowserCaptionMaximized)
-            .height();
-
-    gfx::Insets client_area_insets =
-        views::WindowManagerFrameValues::instance().normal_insets;
-    client_area_insets.Set(header_height, client_area_insets.left(),
-                           client_area_insets.bottom(),
-                           client_area_insets.right());
-    window_tree_host_mus->SetClientArea(client_area_insets,
-                                        additional_client_area);
-    views::Widget* reveal_widget = immersive_mode_controller->GetRevealWidget();
-    if (reveal_widget) {
-      // In immersive mode the reveal widget needs the same client area as
-      // the Browser widget. This way mus targets the window manager (ash) for
-      // clicks in the frame decoration.
-      static_cast<aura::WindowTreeHostMus*>(
-          reveal_widget->GetNativeWindow()->GetHost())
-          ->SetClientArea(client_area_insets, {});
-    }
-  } else {
-    window_tree_host_mus->SetClientArea(gfx::Insets(), additional_client_area);
-  }
 }
 
 void BrowserNonClientFrameViewAsh::UpdateMinimumSize() {
@@ -415,14 +291,13 @@ void BrowserNonClientFrameViewAsh::UpdateMinimumSize() {
   }
 }
 
-int BrowserNonClientFrameViewAsh::GetTabStripLeftInset() const {
-  return BrowserNonClientFrameView::GetTabStripLeftInset() +
-         frame_values().normal_insets.left();
-}
-
 void BrowserNonClientFrameViewAsh::OnTabsMaxXChanged() {
   BrowserNonClientFrameView::OnTabsMaxXChanged();
   UpdateClientArea();
+}
+
+bool BrowserNonClientFrameViewAsh::CanUserExitFullscreen() const {
+  return ash::IsWindowTrustedPinned(GetFrameWindow()) ? false : true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -468,13 +343,9 @@ void BrowserNonClientFrameViewAsh::GetWindowMask(const gfx::Size& size,
 }
 
 void BrowserNonClientFrameViewAsh::ResetWindowControls() {
-  if (!IsMash()) {
-    caption_button_container_->SetVisible(true);
-    caption_button_container_->ResetWindowControls();
-  }
-
-  if (hosted_app_button_container_)
-    hosted_app_button_container_->UpdateContentSettingViewsVisibility();
+  BrowserNonClientFrameView::ResetWindowControls();
+  caption_button_container_->SetVisible(true);
+  caption_button_container_->ResetWindowControls();
 }
 
 void BrowserNonClientFrameViewAsh::UpdateWindowIcon() {
@@ -483,7 +354,7 @@ void BrowserNonClientFrameViewAsh::UpdateWindowIcon() {
 }
 
 void BrowserNonClientFrameViewAsh::UpdateWindowTitle() {
-  if (!IsMash() && !frame()->IsFullscreen())
+  if (!frame()->IsFullscreen())
     frame_header_->SchedulePaintForTitle();
 }
 
@@ -492,13 +363,10 @@ void BrowserNonClientFrameViewAsh::SizeConstraintsChanged() {}
 void BrowserNonClientFrameViewAsh::ActivationChanged(bool active) {
   BrowserNonClientFrameView::ActivationChanged(active);
 
+  UpdateProfileIcons();
+
   const bool should_paint_as_active = ShouldPaintAsActive();
-
-  if (!IsMash())
-    frame_header_->SetPaintAsActive(should_paint_as_active);
-
-  if (hosted_app_button_container_)
-    hosted_app_button_container_->SetPaintAsActive(should_paint_as_active);
+  frame_header_->SetPaintAsActive(should_paint_as_active);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -508,58 +376,13 @@ void BrowserNonClientFrameViewAsh::OnPaint(gfx::Canvas* canvas) {
   if (!ShouldPaint())
     return;
 
-  ImmersiveModeController* immersive_mode_controller =
-      browser_view()->immersive_mode_controller();
-
-  if (frame_header_) {
-    DCHECK(!IsMash());
-    const ash::FrameHeader::Mode header_mode =
-        ShouldPaintAsActive() ? ash::FrameHeader::MODE_ACTIVE
-                              : ash::FrameHeader::MODE_INACTIVE;
-    frame_header_->PaintHeader(canvas, header_mode);
-  } else if (IsMash() && immersive_mode_controller->IsEnabled() &&
-             immersive_mode_controller->IsRevealed()) {
-    // TODO(estade): GetTopInset() ignores its parameter in Mash. Fix for this
-    // case, where we truly want to force |restored| to true.
-    ash::PaintThemedFrame(canvas, GetFrameImage(kActive),
-                          GetFrameOverlayImage(kActive), GetFrameColor(kActive),
-                          gfx::Rect(width(), GetTopInset(false)),
-                          GetThemeBackgroundXInset(),
-                          GetFrameHeaderImageYInset(), SK_AlphaOPAQUE);
-  }
-
-  if (browser_view()->IsToolbarVisible() &&
-      !browser_view()->toolbar()->GetPreferredSize().IsEmpty() &&
-      browser_view()->IsTabStripVisible()) {
-    PaintToolbarTopStroke(canvas);
-  }
+  const ash::FrameHeader::Mode header_mode =
+      ShouldPaintAsActive() ? ash::FrameHeader::MODE_ACTIVE
+                            : ash::FrameHeader::MODE_INACTIVE;
+  frame_header_->PaintHeader(canvas, header_mode);
 }
 
 void BrowserNonClientFrameViewAsh::Layout() {
-  if (IsMash()) {
-    if (profile_indicator_icon())
-      LayoutIncognitoButton();
-
-    if (hosted_app_button_container_) {
-      const gfx::Rect* inverted_caption_button_bounds =
-          frame()->GetNativeWindow()->GetRootWindow()->GetProperty(
-              ash::kCaptionButtonBoundsKey);
-      if (inverted_caption_button_bounds) {
-        hosted_app_button_container_->LayoutInContainer(
-            0, inverted_caption_button_bounds->x() + width(), 0,
-            inverted_caption_button_bounds->height());
-      }
-    }
-
-    BrowserNonClientFrameView::Layout();
-    UpdateTopViewInset();
-    UpdateClientArea();
-
-    frame()->GetNativeWindow()->SetProperty(ash::kFrameImageYInsetKey,
-                                            GetFrameHeaderImageYInset());
-    return;
-  }
-
   // The header must be laid out before computing |painted_height| because the
   // computation of |painted_height| for app and popup windows depends on the
   // position of the window controls.
@@ -571,10 +394,10 @@ void BrowserNonClientFrameViewAsh::Layout() {
 
   frame_header_->SetHeaderHeightForPainting(painted_height);
 
-  if (profile_indicator_icon())
-    LayoutIncognitoButton();
-  if (hosted_app_button_container_) {
-    hosted_app_button_container_->LayoutInContainer(
+  if (profile_indicator_icon_)
+    LayoutProfileIndicator();
+  if (hosted_app_button_container()) {
+    hosted_app_button_container()->LayoutInContainer(
         0, caption_button_container_->x(), 0, painted_height);
   }
 
@@ -598,10 +421,7 @@ void BrowserNonClientFrameViewAsh::GetAccessibleNodeData(
 
 gfx::Size BrowserNonClientFrameViewAsh::GetMinimumSize() const {
   gfx::Size min_client_view_size(frame()->client_view()->GetMinimumSize());
-  const int min_frame_width = IsMash()
-                                  ? frame_values().max_title_bar_button_width +
-                                        frame_values().normal_insets.width()
-                                  : frame_header_->GetMinimumHeaderWidth();
+  const int min_frame_width = frame_header_->GetMinimumHeaderWidth();
   int min_width = std::max(min_frame_width, min_client_view_size.width());
   if (browser_view()->IsTabStripVisible()) {
     // Ensure that the minimum width is enough to hold a minimum width tab strip
@@ -616,53 +436,86 @@ gfx::Size BrowserNonClientFrameViewAsh::GetMinimumSize() const {
 }
 
 void BrowserNonClientFrameViewAsh::OnThemeChanged() {
-  if (!IsMash()) {
-    UpdateFrameColors();
-    return;
-  }
-
-  aura::Window* window = frame()->GetNativeWindow();
-  auto update_window_image = [&window](auto property_key,
-                                       const gfx::ImageSkia& image) {
-    scoped_refptr<ImageRegistration> image_registration;
-    if (image.isNull()) {
-      window->ClearProperty(property_key);
-      return image_registration;
-    }
-
-    image_registration = BrowserImageRegistrar::RegisterImage(image);
-    auto* token = new base::UnguessableToken();
-    *token = image_registration->token();
-    window->SetProperty(property_key, token);
-    return image_registration;
-  };
-
-  active_frame_image_registration_ =
-      update_window_image(ash::kFrameImageActiveKey, GetFrameImage(kActive));
-  inactive_frame_image_registration_ = update_window_image(
-      ash::kFrameImageInactiveKey, GetFrameImage(kInactive));
-  active_frame_overlay_image_registration_ = update_window_image(
-      ash::kFrameImageOverlayActiveKey, GetFrameOverlayImage(kActive));
-  inactive_frame_overlay_image_registration_ = update_window_image(
-      ash::kFrameImageOverlayInactiveKey, GetFrameOverlayImage(kInactive));
-
   UpdateFrameColors();
-
   BrowserNonClientFrameView::OnThemeChanged();
 }
 
 void BrowserNonClientFrameViewAsh::ChildPreferredSizeChanged(
     views::View* child) {
-  // This is required even when Ash provides the header (as in Mash) for the
-  // |hosted_app_button_container_|.
   if (browser_view()->initialized()) {
     InvalidateLayout();
     frame()->GetRootView()->Layout();
   }
 }
 
+bool BrowserNonClientFrameViewAsh::OnMousePressed(const ui::MouseEvent& event) {
+  if (!features::IsUsingWindowService())
+    return false;
+
+  if (event.IsOnlyLeftMouseButton()) {
+    if (event.flags() & ui::EF_IS_DOUBLE_CLICK) {
+      ash_window_manager_->MaximizeWindowByCaptionClick(
+          GetServerWindowId(), ui::mojom::PointerKind::MOUSE);
+    }
+
+    // Return true for single clicks to receive subsequent drag events.
+    return true;
+  }
+
+  return false;
+}
+
+bool BrowserNonClientFrameViewAsh::OnMouseDragged(const ui::MouseEvent& event) {
+  if (!features::IsUsingWindowService())
+    return false;
+
+  StartWindowMove(event);
+  return true;
+}
+
+void BrowserNonClientFrameViewAsh::OnMouseReleased(
+    const ui::MouseEvent& event) {
+  // If a window move has already been triggered and OnMouseReleased() is
+  // called, it means the mouse was released before the Ash asserted mouse
+  // capture, and the move should be cancelled. Note that if something else
+  // grabs mouse capture right after PerformWindowMove(), Ash may re-assert that
+  // capture instead of cancelling the move.
+  if (performing_window_move_) {
+    aura::WindowTreeHostMus* window_tree_host_mus =
+        static_cast<aura::WindowTreeHostMus*>(
+            GetWidget()->GetNativeWindow()->GetHost());
+    window_tree_host_mus->CancelWindowMove();
+  }
+}
+
+void BrowserNonClientFrameViewAsh::OnGestureEvent(ui::GestureEvent* event) {
+  if (!features::IsUsingWindowService())
+    return;
+
+  switch (event->type()) {
+    case ui::ET_GESTURE_TAP:
+      if (event->details().tap_count() == 2) {
+        // TODO(estade): need to log TouchUMA for GESTURE_MAXIMIZE_DOUBLETAP and
+        // GESTURE_FRAMEVIEW_TAP, as in WorkspaceEventHandler.
+        ash_window_manager_->MaximizeWindowByCaptionClick(
+            GetServerWindowId(), ui::mojom::PointerKind::TOUCH);
+      }
+      break;
+
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      StartWindowMove(*event);
+      break;
+
+    default:
+      break;
+  }
+  // Always set the event as handled, otherwise the gesture recognizer will not
+  // emit ui::ET_GESTURE_SCROLL_UPDATE events.
+  event->SetHandled();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
-// ash::CustomFrameHeader::AppearanceProvider:
+// ash::BrowserFrameHeaderAsh::AppearanceProvider:
 
 SkColor BrowserNonClientFrameViewAsh::GetTitleColor() {
   return browser_view()->IsRegularOrGuestSession()
@@ -671,12 +524,10 @@ SkColor BrowserNonClientFrameViewAsh::GetTitleColor() {
 }
 
 SkColor BrowserNonClientFrameViewAsh::GetFrameHeaderColor(bool active) {
-  DCHECK(!IsMash());
   return GetFrameColor(active ? kActive : kInactive);
 }
 
 gfx::ImageSkia BrowserNonClientFrameViewAsh::GetFrameHeaderImage(bool active) {
-  DCHECK(!IsMash());
   return GetFrameImage(active ? kActive : kInactive);
 }
 
@@ -686,47 +537,22 @@ int BrowserNonClientFrameViewAsh::GetFrameHeaderImageYInset() {
 
 gfx::ImageSkia BrowserNonClientFrameViewAsh::GetFrameHeaderOverlayImage(
     bool active) {
-  DCHECK(!IsMash());
   return GetFrameOverlayImage(active ? kActive : kInactive);
-}
-
-bool BrowserNonClientFrameViewAsh::IsTabletMode() const {
-  DCHECK(!IsMash());
-  return TabletModeClient::Get() &&
-         TabletModeClient::Get()->tablet_mode_enabled();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// ash::ShellObserver:
-
-void BrowserNonClientFrameViewAsh::OnOverviewModeStarting() {
-  DCHECK(!IsMash());
-  in_overview_mode_ = true;
-  OnOverviewOrSplitviewModeChanged();
-}
-
-void BrowserNonClientFrameViewAsh::OnOverviewModeEnded() {
-  DCHECK(!IsMash());
-  in_overview_mode_ = false;
-  OnOverviewOrSplitviewModeChanged();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // ash::mojom::TabletModeClient:
 
 void BrowserNonClientFrameViewAsh::OnTabletModeToggled(bool enabled) {
-  // TODO(estade): handle in Mash?
-  if (!IsMash()) {
-    if (!enabled && browser_view()->immersive_mode_controller()->IsRevealed()) {
-      // Before updating the caption buttons state below (which triggers a
-      // relayout), we want to move the caption buttons from the
-      // TopContainerView back to this view.
-      OnImmersiveRevealEnded();
-    }
-
-    caption_button_container_->SetVisible(ShouldShowCaptionButtons());
-    caption_button_container_->UpdateCaptionButtonState(true /*=animate*/);
+  if (!enabled && browser_view()->immersive_mode_controller()->IsRevealed()) {
+    // Before updating the caption buttons state below (which triggers a
+    // relayout), we want to move the caption buttons from the
+    // TopContainerView back to this view.
+    OnImmersiveRevealEnded();
   }
+
+  caption_button_container_->SetVisible(ShouldShowCaptionButtons());
+  caption_button_container_->UpdateCaptionButtonState(true /*=animate*/);
 
   if (enabled) {
     // Enter immersive mode if the feature is enabled and the widget is not
@@ -761,10 +587,8 @@ void BrowserNonClientFrameViewAsh::OnTabletModeToggled(bool enabled) {
 
 bool BrowserNonClientFrameViewAsh::ShouldTabIconViewAnimate() const {
   // Hosted apps use their app icon and shouldn't show a throbber.
-  if (extensions::HostedAppBrowserController::IsForExperimentalHostedAppBrowser(
-          browser_view()->browser())) {
+  if (browser_view()->IsBrowserTypeHostedApp())
     return false;
-  }
 
   // This function is queried during the creation of the window as the
   // TabIconView we host is initialized, so we need to null check the selected
@@ -783,26 +607,39 @@ void BrowserNonClientFrameViewAsh::EnabledStateChangedForCommand(int id,
   DCHECK_EQ(IDC_BACK, id);
   DCHECK(browser_view()->browser()->is_app());
 
-  if (IsMash()) {
-    frame()->GetNativeWindow()->SetProperty(
-        ash::kFrameBackButtonStateKey,
-        enabled ? ash::FrameBackButtonState::kEnabled
-                : ash::FrameBackButtonState::kDisabled);
-  } else if (back_button_) {
+  if (back_button_)
     back_button_->SetEnabled(enabled);
-  }
 }
 
 void BrowserNonClientFrameViewAsh::OnSplitViewStateChanged(
     ash::mojom::SplitViewState current_state) {
-  DCHECK(!IsMash());
   split_view_state_ = current_state;
   OnOverviewOrSplitviewModeChanged();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// ash::FrameCaptionDelegate:
+
+bool BrowserNonClientFrameViewAsh::CanSnap(aura::Window* window) {
+  DCHECK_EQ(window, GetWidget()->GetNativeWindow());
+  return true;
+}
+
+void BrowserNonClientFrameViewAsh::ShowSnapPreview(
+    aura::Window* window,
+    ash::mojom::SnapDirection snap) {
+  DCHECK_EQ(window, GetWidget()->GetNativeWindow());
+  ash_window_manager_->ShowSnapPreview(GetServerWindowId(), snap);
+}
+
+void BrowserNonClientFrameViewAsh::CommitSnap(aura::Window* window,
+                                              ash::mojom::SnapDirection snap) {
+  DCHECK_EQ(window, GetWidget()->GetNativeWindow());
+  ash_window_manager_->CommitSnap(GetServerWindowId(), snap);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // aura::WindowObserver:
-// TODO(estade): remove this interface. Ash handles it for us with HeaderView.
 
 void BrowserNonClientFrameViewAsh::OnWindowDestroying(aura::Window* window) {
   window_observer_.RemoveAll();
@@ -811,20 +648,11 @@ void BrowserNonClientFrameViewAsh::OnWindowDestroying(aura::Window* window) {
 void BrowserNonClientFrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
                                                            const void* key,
                                                            intptr_t old) {
-  if (key != aura::client::kShowStateKey)
-    return;
-
-  if (IsMash()) {
-    const ui::WindowShowState new_state =
-        window->GetProperty(aura::client::kShowStateKey);
-    if (new_state == ui::SHOW_STATE_NORMAL ||
-        new_state == ui::SHOW_STATE_MAXIMIZED) {
-      InvalidateLayout();
-      frame()->GetRootView()->Layout();
-    }
-  } else {
+  if (key == aura::client::kShowStateKey) {
     frame_header_->OnShowStateChanged(
         window->GetProperty(aura::client::kShowStateKey));
+  } else if (key == ash::kIsShowingInOverviewKey) {
+    OnOverviewOrSplitviewModeChanged();
   }
 }
 
@@ -845,9 +673,9 @@ void BrowserNonClientFrameViewAsh::OnImmersiveRevealStarted() {
   // temporarily children of the TopContainerView while they're all painting to
   // their layers.
   browser_view()->top_container()->AddChildViewAt(caption_button_container_, 0);
-  if (hosted_app_button_container_) {
+  if (hosted_app_button_container()) {
     browser_view()->top_container()->AddChildViewAt(
-        hosted_app_button_container_, 0);
+        hosted_app_button_container(), 0);
   }
   if (back_button_)
     browser_view()->top_container()->AddChildViewAt(back_button_, 0);
@@ -857,8 +685,8 @@ void BrowserNonClientFrameViewAsh::OnImmersiveRevealStarted() {
 
 void BrowserNonClientFrameViewAsh::OnImmersiveRevealEnded() {
   AddChildViewAt(caption_button_container_, 0);
-  if (hosted_app_button_container_)
-    AddChildViewAt(hosted_app_button_container_, 0);
+  if (hosted_app_button_container())
+    AddChildViewAt(hosted_app_button_container(), 0);
   if (back_button_)
     AddChildViewAt(back_button_, 0);
   Layout();
@@ -866,11 +694,6 @@ void BrowserNonClientFrameViewAsh::OnImmersiveRevealEnded() {
 
 void BrowserNonClientFrameViewAsh::OnImmersiveFullscreenExited() {
   OnImmersiveRevealEnded();
-}
-
-HostedAppButtonContainer*
-BrowserNonClientFrameViewAsh::GetHostedAppButtonContainerForTesting() const {
-  return hosted_app_button_container_;
 }
 
 // static
@@ -884,41 +707,42 @@ bool BrowserNonClientFrameViewAsh::UsePackagedAppHeaderStyle(
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewAsh, protected:
 
-// BrowserNonClientFrameView:
-AvatarButtonStyle BrowserNonClientFrameViewAsh::GetAvatarButtonStyle() const {
-  // Ash doesn't support a profile switcher button.
-  return AvatarButtonStyle::NONE;
+void BrowserNonClientFrameViewAsh::OnProfileAvatarChanged(
+    const base::FilePath& profile_path) {
+  BrowserNonClientFrameView::OnProfileAvatarChanged(profile_path);
+  UpdateProfileIcons();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewAsh, private:
 
 bool BrowserNonClientFrameViewAsh::ShouldShowCaptionButtons() const {
-  DCHECK(!IsMash());
-
-  if (frame()->GetNativeWindow()->GetProperty(
-          ash::kHideCaptionButtonsInTabletModeKey) &&
-      IsTabletMode()) {
+  // In tablet mode, to prevent accidental taps of the window controls, and to
+  // give more horizontal space for tabs and the new tab button especially in
+  // splitscreen view, we hide the window controls. We only do this when the
+  // Home Launcher feature is enabled, since it gives the user the ability to
+  // minimize all windows when pressing the Launcher button on the shelf.
+  const bool hide_caption_buttons_in_tablet_mode =
+      !browser_view()->browser()->is_app() &&
+      app_list_features::IsHomeLauncherEnabled();
+  if (hide_caption_buttons_in_tablet_mode && TabletModeClient::Get() &&
+      TabletModeClient::Get()->tablet_mode_enabled()) {
     return false;
   }
 
-  return !in_overview_mode_ ||
-         IsSnappedInSplitView(frame()->GetNativeWindow(), split_view_state_);
+  return !IsInOverviewMode() ||
+         IsSnappedInSplitView(GetFrameWindow(), split_view_state_);
+}
+
+int BrowserNonClientFrameViewAsh::GetTabStripLeftInset() const {
+  int left_inset = frame_values().normal_insets.left();
+  if (profile_indicator_icon_)
+    left_inset += kProfileIndicatorPadding + kProfileIndicatorSize;
+  return left_inset;
 }
 
 int BrowserNonClientFrameViewAsh::GetTabStripRightInset() const {
-  int inset = IsMash() ? frame_values().normal_insets.right() +
-                             frame_values().max_title_bar_button_width
-                       : caption_button_container_->GetPreferredSize().width();
-
-  // For Material Refresh, the end of the tabstrip contains empty space to
-  // ensure the window remains draggable, which is sufficient padding to the
-  // other tabstrip contents.
-  constexpr int kTabstripRightSpacing = 10;
-  if (!ui::MaterialDesignController::IsRefreshUi())
-    inset += kTabstripRightSpacing;
-
-  return inset;
+  return caption_button_container_->GetPreferredSize().width();
 }
 
 bool BrowserNonClientFrameViewAsh::ShouldPaint() const {
@@ -933,14 +757,10 @@ bool BrowserNonClientFrameViewAsh::ShouldPaint() const {
     return false;
 
   // Do not paint for V1 apps in overview mode.
-  return browser_view()->IsBrowserTypeNormal() || !in_overview_mode_;
+  return browser_view()->IsBrowserTypeNormal() || !IsInOverviewMode();
 }
 
 void BrowserNonClientFrameViewAsh::OnOverviewOrSplitviewModeChanged() {
-  // Not necessary as NonClientFrameViewAsh handles the caption button
-  // visibility logic in Mash.
-  DCHECK(!IsMash());
-
   caption_button_container_->SetVisible(ShouldShowCaptionButtons());
 
   // Schedule a paint to show or hide the header.
@@ -949,18 +769,15 @@ void BrowserNonClientFrameViewAsh::OnOverviewOrSplitviewModeChanged() {
 
 std::unique_ptr<ash::FrameHeader>
 BrowserNonClientFrameViewAsh::CreateFrameHeader() {
-  DCHECK(!IsMash());
-
   std::unique_ptr<ash::FrameHeader> header;
   Browser* browser = browser_view()->browser();
   if (!UsePackagedAppHeaderStyle(browser)) {
-    header = std::make_unique<ash::CustomFrameHeader>(
-        frame(), this, this, caption_button_container_);
+    header = std::make_unique<BrowserFrameHeaderAsh>(frame(), this, this,
+                                                     caption_button_container_);
   } else {
     auto default_frame_header = std::make_unique<ash::DefaultFrameHeader>(
         frame(), this, caption_button_container_);
-    if (extensions::HostedAppBrowserController::
-            IsForExperimentalHostedAppBrowser(browser)) {
+    if (browser_view()->IsBrowserTypeHostedApp()) {
       SetUpForHostedApp(default_frame_header.get());
     } else if (!browser->is_app()) {
       default_frame_header->SetFrameColors(kMdWebUiFrameColor,
@@ -984,14 +801,8 @@ void BrowserNonClientFrameViewAsh::SetUpForHostedApp(
   base::Optional<SkColor> theme_color =
       browser->hosted_app_controller()->GetThemeColor();
   if (theme_color) {
-    // Not necessary in Mash as the frame colors are set in OnThemeChanged().
-    if (!IsMash()) {
-      frame()->GetNativeWindow()->SetProperty(
-          ash::kFrameIsThemedByHostedAppKey,
-          !!browser->hosted_app_controller()->GetThemeColor());
-      header->SetFrameColors(*theme_color, *theme_color);
-    }
-
+    header->set_button_color_mode(ash::FrameCaptionButton::ColorMode::kThemed);
+    header->SetFrameColors(*theme_color, *theme_color);
     active_color = ash::FrameCaptionButton::GetButtonColor(
         ash::FrameCaptionButton::ColorMode::kThemed, *theme_color);
   }
@@ -1001,9 +812,9 @@ void BrowserNonClientFrameViewAsh::SetUpForHostedApp(
       ash::FrameCaptionButton::GetInactiveButtonColorAlphaRatio();
   SkColor inactive_color =
       SkColorSetA(active_color, 255 * inactive_alpha_ratio);
-  hosted_app_button_container_ = new HostedAppButtonContainer(
-      frame(), browser_view(), active_color, inactive_color);
-  AddChildView(hosted_app_button_container_);
+  set_hosted_app_button_container(new HostedAppButtonContainer(
+      frame(), browser_view(), active_color, inactive_color));
+  AddChildView(hosted_app_button_container());
 }
 
 void BrowserNonClientFrameViewAsh::UpdateFrameColors() {
@@ -1012,12 +823,13 @@ void BrowserNonClientFrameViewAsh::UpdateFrameColors() {
   if (!UsePackagedAppHeaderStyle(browser_view()->browser())) {
     active_color = GetFrameColor(kActive);
     inactive_color = GetFrameColor(kInactive);
-  } else if (extensions::HostedAppBrowserController::
-                 IsForExperimentalHostedAppBrowser(browser_view()->browser())) {
+  } else if (browser_view()->IsBrowserTypeHostedApp()) {
     active_color =
         browser_view()->browser()->hosted_app_controller()->GetThemeColor();
-    window->SetProperty(ash::kFrameIsThemedByHostedAppKey, !!active_color);
-  } else {
+    frame_header_->set_button_color_mode(
+        active_color ? ash::FrameCaptionButton::ColorMode::kThemed
+                     : ash::FrameCaptionButton::ColorMode::kDefault);
+  } else if (!browser_view()->browser()->is_app()) {
     active_color = kMdWebUiFrameColor;
   }
 
@@ -1025,13 +837,9 @@ void BrowserNonClientFrameViewAsh::UpdateFrameColors() {
     window->SetProperty(ash::kFrameActiveColorKey, *active_color);
     window->SetProperty(ash::kFrameInactiveColorKey,
                         inactive_color.value_or(*active_color));
-    if (!IsMash()) {
-      // In Mash, HeaderView takes care of this by listening for the property
-      // change.
-      frame_header_->SetFrameColors(
-          window->GetProperty(ash::kFrameActiveColorKey),
-          window->GetProperty(ash::kFrameInactiveColorKey));
-    }
+    frame_header_->SetFrameColors(
+        window->GetProperty(ash::kFrameActiveColorKey),
+        window->GetProperty(ash::kFrameInactiveColorKey));
   } else {
     window->ClearProperty(ash::kFrameActiveColorKey);
     window->ClearProperty(ash::kFrameInactiveColorKey);
@@ -1046,4 +854,109 @@ void BrowserNonClientFrameViewAsh::UpdateTopViewInset() {
   const int inset =
       (tab_strip_visible || immersive) ? 0 : GetTopInset(/*restored=*/false);
   frame()->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, inset);
+}
+
+bool BrowserNonClientFrameViewAsh::ShouldShowProfileIndicatorIcon() const {
+  // We only show the profile indicator for the teleported browser windows
+  // between multi-user sessions. Note that you can't teleport an incognito
+  // window.
+  Browser* browser = browser_view()->browser();
+  if (browser->profile()->GetProfileType() == Profile::INCOGNITO_PROFILE)
+    return false;
+
+  if (!browser->is_type_tabbed() && !browser->is_app())
+    return false;
+
+  return MultiUserWindowManager::ShouldShowAvatar(
+      browser_view()->GetNativeWindow());
+}
+
+void BrowserNonClientFrameViewAsh::UpdateProfileIcons() {
+  View* root_view = frame()->GetRootView();
+  if (ShouldShowProfileIndicatorIcon()) {
+    if (!profile_indicator_icon_) {
+      profile_indicator_icon_ = new ProfileIndicatorIcon();
+      AddChildView(profile_indicator_icon_);
+      if (root_view) {
+        // Adding a child does not invalidate the layout.
+        InvalidateLayout();
+        root_view->Layout();
+      }
+    }
+
+    profile_indicator_icon_->SetIcon(gfx::Image(
+        GetAvatarImageForContext(browser_view()->browser()->profile())));
+    profile_indicator_icon_->set_stroke_color(GetToolbarTopSeparatorColor());
+  } else if (profile_indicator_icon_) {
+    delete profile_indicator_icon_;
+    profile_indicator_icon_ = nullptr;
+    if (root_view)
+      root_view->Layout();
+  }
+}
+
+void BrowserNonClientFrameViewAsh::LayoutProfileIndicator() {
+  DCHECK(profile_indicator_icon_);
+  const int bottom = GetTopInset(false) + browser_view()->GetTabStripHeight() -
+                     kProfileIndicatorPadding;
+  profile_indicator_icon_->SetBounds(
+      kProfileIndicatorPadding, bottom - kProfileIndicatorSize,
+      kProfileIndicatorSize, kProfileIndicatorSize);
+  profile_indicator_icon_->SetVisible(true);
+}
+
+ws::Id BrowserNonClientFrameViewAsh::GetServerWindowId() const {
+  DCHECK(features::IsUsingWindowService());
+  return aura::WindowMus::Get(GetFrameWindow())->server_id();
+}
+
+bool BrowserNonClientFrameViewAsh::IsInOverviewMode() const {
+  return GetFrameWindow()->GetProperty(ash::kIsShowingInOverviewKey);
+}
+
+void BrowserNonClientFrameViewAsh::StartWindowMove(
+    const ui::LocatedEvent& event) {
+  DCHECK(features::IsUsingWindowService());
+
+  // The client may receive multiple events before Ash has taken over the window
+  // move. In this case, ignore the extras.
+  if (performing_window_move_)
+    return;
+
+  aura::WindowTreeHostMus* window_tree_host_mus =
+      static_cast<aura::WindowTreeHostMus*>(
+          GetWidget()->GetNativeWindow()->GetHost());
+  performing_window_move_ = true;
+  // Don't use display::Screen::GetCursorScreenPoint(), that's incorrect for
+  // touch events.
+  aura::Window* window = GetWidget()->GetNativeWindow();
+  gfx::Point cursor_location = window->GetBoundsInScreen().origin() +
+                               event.location().OffsetFromOrigin();
+  ws::mojom::MoveLoopSource source = ws::mojom::MoveLoopSource::MOUSE;
+  if (!event.IsMouseEvent()) {
+    source = ws::mojom::MoveLoopSource::TOUCH;
+    aura::Window* root = window->GetRootWindow();
+    // When using WindowService, the touch events for the window move will
+    // happen on the root window, so the events need to be transferred from
+    // widget to its root before starting move loop.
+    window->env()->gesture_recognizer()->TransferEventsTo(
+        window, root, ui::TransferTouchesBehavior::kDontCancel);
+  }
+  window_tree_host_mus->PerformWindowMove(
+      source, cursor_location,
+      base::BindRepeating(&BrowserNonClientFrameViewAsh::OnWindowMoveDone,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BrowserNonClientFrameViewAsh::OnWindowMoveDone(bool success) {
+  performing_window_move_ = false;
+}
+
+const aura::Window* BrowserNonClientFrameViewAsh::GetFrameWindow() const {
+  return const_cast<BrowserNonClientFrameViewAsh*>(this)->GetFrameWindow();
+}
+
+aura::Window* BrowserNonClientFrameViewAsh::GetFrameWindow() {
+  aura::Window* window = frame()->GetNativeWindow();
+  return features::IsUsingWindowService() ? window->GetRootWindow() : window;
 }

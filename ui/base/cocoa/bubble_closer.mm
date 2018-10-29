@@ -8,7 +8,7 @@
 
 namespace ui {
 
-BubbleCloser::BubbleCloser(gfx::NativeWindow window,
+BubbleCloser::BubbleCloser(NSWindow* window,
                            base::RepeatingClosure on_click_outside)
     : on_click_outside_(std::move(on_click_outside)), factory_(this) {
   // Capture a WeakPtr via NSObject. This allows the block to detect another

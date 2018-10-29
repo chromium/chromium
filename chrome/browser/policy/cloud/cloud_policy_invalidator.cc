@@ -119,8 +119,7 @@ void CloudPolicyInvalidator::OnIncomingInvalidation(
   }
 
   // Acknowledge all except the invalidation with the highest version.
-  syncer::SingleObjectInvalidationSet::const_reverse_iterator it =
-      list.rbegin();
+  auto it = list.rbegin();
   ++it;
   for ( ; it != list.rend(); ++it) {
     it->Acknowledge();

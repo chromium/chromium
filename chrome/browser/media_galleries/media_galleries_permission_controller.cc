@@ -15,6 +15,7 @@
 #include "chrome/browser/media_galleries/media_gallery_context_menu.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -22,7 +23,6 @@
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/permissions/media_galleries_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -125,10 +125,10 @@ base::string16 MediaGalleriesPermissionController::GetHeader() const {
 }
 
 base::string16 MediaGalleriesPermissionController::GetSubtext() const {
-  extensions::MediaGalleriesPermission::CheckParam copy_to_param(
-      extensions::MediaGalleriesPermission::kCopyToPermission);
-  extensions::MediaGalleriesPermission::CheckParam delete_param(
-      extensions::MediaGalleriesPermission::kDeletePermission);
+  chrome_apps::MediaGalleriesPermission::CheckParam copy_to_param(
+      chrome_apps::MediaGalleriesPermission::kCopyToPermission);
+  chrome_apps::MediaGalleriesPermission::CheckParam delete_param(
+      chrome_apps::MediaGalleriesPermission::kDeletePermission);
   const extensions::PermissionsData* permission_data =
       extension_->permissions_data();
   bool has_copy_to_permission = permission_data->CheckAPIPermissionWithParam(
@@ -151,8 +151,7 @@ bool MediaGalleriesPermissionController::IsAcceptAllowed() const {
   if (!toggled_galleries_.empty() || !forgotten_galleries_.empty())
     return true;
 
-  for (GalleryPermissionsMap::const_iterator iter = new_galleries_.begin();
-       iter != new_galleries_.end();
+  for (auto iter = new_galleries_.begin(); iter != new_galleries_.end();
        ++iter) {
     if (iter->second.selected)
       return true;
@@ -177,8 +176,8 @@ MediaGalleriesPermissionController::GetSectionEntries(size_t index) const {
 
   bool existing = !index;
   MediaGalleriesDialogController::Entries result;
-  for (GalleryPermissionsMap::const_iterator iter = known_galleries_.begin();
-       iter != known_galleries_.end(); ++iter) {
+  for (auto iter = known_galleries_.begin(); iter != known_galleries_.end();
+       ++iter) {
     MediaGalleryPrefId pref_id = GetPrefId(iter->first);
     if (!base::ContainsKey(forgotten_galleries_, iter->first) &&
         existing == base::ContainsKey(pref_permitted_galleries_, pref_id)) {
@@ -186,8 +185,8 @@ MediaGalleriesPermissionController::GetSectionEntries(size_t index) const {
     }
   }
   if (existing) {
-    for (GalleryPermissionsMap::const_iterator iter = new_galleries_.begin();
-         iter != new_galleries_.end(); ++iter) {
+    for (auto iter = new_galleries_.begin(); iter != new_galleries_.end();
+         ++iter) {
       result.push_back(iter->second);
     }
   }
@@ -224,7 +223,7 @@ void MediaGalleriesPermissionController::DidClickAuxiliaryButton() {
 void MediaGalleriesPermissionController::DidToggleEntry(
     GalleryDialogId gallery_id, bool selected) {
   // Check known galleries.
-  GalleryPermissionsMap::iterator iter = known_galleries_.find(gallery_id);
+  auto iter = known_galleries_.find(gallery_id);
   if (iter != known_galleries_.end()) {
     if (iter->second.selected == selected)
       return;
@@ -297,7 +296,7 @@ void MediaGalleriesPermissionController::FileSelected(
     // |known_galleries_| as well. User selecting a known gallery effectively
     // just sets the gallery to permitted.
     GalleryDialogId gallery_id = GetDialogId(gallery.pref_id);
-    GalleryPermissionsMap::iterator iter = known_galleries_.find(gallery_id);
+    auto iter = known_galleries_.find(gallery_id);
     DCHECK(iter != known_galleries_.end());
     iter->second.selected = true;
     forgotten_galleries_.erase(gallery_id);
@@ -306,8 +305,8 @@ void MediaGalleriesPermissionController::FileSelected(
   }
 
   // Try to find it in |new_galleries_| (user added same folder twice).
-  for (GalleryPermissionsMap::iterator iter = new_galleries_.begin();
-       iter != new_galleries_.end(); ++iter) {
+  for (auto iter = new_galleries_.begin(); iter != new_galleries_.end();
+       ++iter) {
     if (iter->second.pref_info.path == gallery.path &&
         iter->second.pref_info.device_id == gallery.device_id) {
       iter->second.selected = true;
@@ -370,8 +369,7 @@ void MediaGalleriesPermissionController::OnGalleryInfoUpdated(
   DCHECK(preferences_);
   const MediaGalleriesPrefInfoMap& pref_galleries =
       preferences_->known_galleries();
-  MediaGalleriesPrefInfoMap::const_iterator pref_it =
-      pref_galleries.find(pref_id);
+  auto pref_it = pref_galleries.find(pref_id);
   if (pref_it == pref_galleries.end())
     return;
   const MediaGalleryPrefInfo& gallery_info = pref_it->second;
@@ -382,9 +380,7 @@ void MediaGalleriesPermissionController::InitializePermissions() {
   known_galleries_.clear();
   DCHECK(preferences_);
   const MediaGalleriesPrefInfoMap& galleries = preferences_->known_galleries();
-  for (MediaGalleriesPrefInfoMap::const_iterator iter = galleries.begin();
-       iter != galleries.end();
-       ++iter) {
+  for (auto iter = galleries.begin(); iter != galleries.end(); ++iter) {
     const MediaGalleryPrefInfo& gallery = iter->second;
     if (gallery.IsBlackListedType())
       continue;
@@ -396,9 +392,8 @@ void MediaGalleriesPermissionController::InitializePermissions() {
 
   pref_permitted_galleries_ = preferences_->GalleriesForExtension(*extension_);
 
-  for (MediaGalleryPrefIdSet::iterator iter = pref_permitted_galleries_.begin();
-       iter != pref_permitted_galleries_.end();
-       ++iter) {
+  for (auto iter = pref_permitted_galleries_.begin();
+       iter != pref_permitted_galleries_.end(); ++iter) {
     GalleryDialogId gallery_id = GetDialogId(*iter);
     DCHECK(base::ContainsKey(known_galleries_, gallery_id));
     known_galleries_[gallery_id].selected = true;
@@ -460,12 +455,9 @@ void MediaGalleriesPermissionController::UpdateGalleriesOnPreferencesEvent() {
   std::set<GalleryDialogId> new_galleries_to_remove;
   // Look for duplicate entries in |new_galleries_| in case one was added
   // in another dialog.
-  for (GalleryPermissionsMap::iterator it = known_galleries_.begin();
-       it != known_galleries_.end();
-       ++it) {
+  for (auto it = known_galleries_.begin(); it != known_galleries_.end(); ++it) {
     Entry& gallery = it->second;
-    for (GalleryPermissionsMap::iterator new_it = new_galleries_.begin();
-         new_it != new_galleries_.end();
+    for (auto new_it = new_galleries_.begin(); new_it != new_galleries_.end();
          ++new_it) {
       if (new_it->second.pref_info.path == gallery.pref_info.path &&
           new_it->second.pref_info.device_id == gallery.pref_info.device_id) {
@@ -477,10 +469,8 @@ void MediaGalleriesPermissionController::UpdateGalleriesOnPreferencesEvent() {
       }
     }
   }
-  for (std::set<GalleryDialogId>::const_iterator it =
-           new_galleries_to_remove.begin();
-       it != new_galleries_to_remove.end();
-       ++it) {
+  for (auto it = new_galleries_to_remove.begin();
+       it != new_galleries_to_remove.end(); ++it) {
     new_galleries_.erase(*it);
   }
 

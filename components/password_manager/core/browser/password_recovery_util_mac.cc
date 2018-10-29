@@ -24,7 +24,7 @@ void PasswordRecoveryUtilMac::RecordPasswordRecovery() {
   main_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(
                      [](PrefService* local_state) {
-                       local_state->SetTime(prefs::kSyncUsersPasswordRecovery,
+                       local_state->SetTime(prefs::kPasswordRecovery,
                                             base::Time::Now());
                      },
                      local_state_));

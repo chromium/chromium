@@ -23,7 +23,7 @@ CueTimeline::CueTimeline(HTMLMediaElement& media_element)
 
 void CueTimeline::AddCues(TextTrack* track, const TextTrackCueList* cues) {
   DCHECK_NE(track->mode(), TextTrack::DisabledKeyword());
-  for (size_t i = 0; i < cues->length(); ++i)
+  for (wtf_size_t i = 0; i < cues->length(); ++i)
     AddCueInternal(cues->AnonymousIndexedGetter(i));
   UpdateActiveCues(MediaElement().currentTime());
 }
@@ -46,7 +46,7 @@ void CueTimeline::AddCueInternal(TextTrackCue* cue) {
 }
 
 void CueTimeline::RemoveCues(TextTrack*, const TextTrackCueList* cues) {
-  for (size_t i = 0; i < cues->length(); ++i)
+  for (wtf_size_t i = 0; i < cues->length(); ++i)
     RemoveCueInternal(cues->AnonymousIndexedGetter(i));
   UpdateActiveCues(MediaElement().currentTime());
 }
@@ -65,7 +65,7 @@ void CueTimeline::RemoveCueInternal(TextTrackCue* cue) {
       cue_tree_.CreateInterval(cue->startTime(), end_time, cue);
   cue_tree_.Remove(interval);
 
-  size_t index = currently_active_cues_.Find(interval);
+  wtf_size_t index = currently_active_cues_.Find(interval);
   if (index != kNotFound) {
     DCHECK(cue->IsActive());
     currently_active_cues_.EraseAt(index);
@@ -78,7 +78,7 @@ void CueTimeline::RemoveCueInternal(TextTrackCue* cue) {
 }
 
 void CueTimeline::HideCues(TextTrack*, const TextTrackCueList* cues) {
-  for (size_t i = 0; i < cues->length(); ++i)
+  for (wtf_size_t i = 0; i < cues->length(); ++i)
     cues->AnonymousIndexedGetter(i)->RemoveDisplayTree();
 }
 
@@ -188,15 +188,15 @@ void CueTimeline::UpdateActiveCues(double movie_time) {
   // PlaybackProgressTimerFired().
 
   // Explicitly cache vector sizes, as their content is constant from here.
-  size_t missed_cues_size = missed_cues.size();
-  size_t previous_cues_size = previous_cues.size();
+  wtf_size_t missed_cues_size = missed_cues.size();
+  wtf_size_t previous_cues_size = previous_cues.size();
 
   // 6 - If all of the cues in current cues have their text track cue active
   // flag set, none of the cues in other cues have their text track cue active
   // flag set, and missed cues is empty, then abort these steps.
   bool active_set_changed = missed_cues_size;
 
-  for (size_t i = 0; !active_set_changed && i < previous_cues_size; ++i) {
+  for (wtf_size_t i = 0; !active_set_changed && i < previous_cues_size; ++i) {
     if (!current_cues.Contains(previous_cues[i]) &&
         previous_cues[i].Data()->IsActive())
       active_set_changed = true;
@@ -221,14 +221,15 @@ void CueTimeline::UpdateActiveCues(double movie_time) {
   // other cues that have their text track cue pause-on-exi flag set and that
   // either have their text track cue active flag set or are also in missed
   // cues, then immediately pause the media element.
-  for (size_t i = 0; !media_element.paused() && i < previous_cues_size; ++i) {
+  for (wtf_size_t i = 0; !media_element.paused() && i < previous_cues_size;
+       ++i) {
     if (previous_cues[i].Data()->pauseOnExit() &&
         previous_cues[i].Data()->IsActive() &&
         !current_cues.Contains(previous_cues[i]))
       media_element.pause();
   }
 
-  for (size_t i = 0; !media_element.paused() && i < missed_cues_size; ++i) {
+  for (wtf_size_t i = 0; !media_element.paused() && i < missed_cues_size; ++i) {
     if (missed_cues[i].Data()->pauseOnExit())
       media_element.pause();
   }

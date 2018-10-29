@@ -70,78 +70,79 @@ namespace media {
 // Test V4L2FormatToVideoFrameLayout with NV12 pixelformat, which has one buffer
 // and two color planes.
 TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNV12) {
-  VideoFrameLayout layout =
+  auto layout =
       V4L2Device::V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
           300, 180, V4L2_PIX_FMT_NV12, V4L2_FIELD_ANY, {320}, {86400}));
-  EXPECT_EQ(PIXEL_FORMAT_NV12, layout.format());
-  EXPECT_EQ(gfx::Size(300, 180), layout.coded_size());
+  ASSERT_TRUE(layout.has_value());
+  EXPECT_EQ(PIXEL_FORMAT_NV12, layout->format());
+  EXPECT_EQ(gfx::Size(300, 180), layout->coded_size());
   std::vector<VideoFrameLayout::Plane> expected_planes(
       {{320, 0u}, {320, 57600u}});
-  EXPECT_EQ(expected_planes, layout.planes());
-  EXPECT_EQ(std::vector<size_t>({86400u}), layout.buffer_sizes());
-  EXPECT_EQ(86400u, layout.GetTotalBufferSize());
+  EXPECT_EQ(expected_planes, layout->planes());
+  EXPECT_EQ(std::vector<size_t>({86400u}), layout->buffer_sizes());
+  EXPECT_EQ(86400u, layout->GetTotalBufferSize());
   EXPECT_EQ(
       "VideoFrameLayout format: PIXEL_FORMAT_NV12, coded_size: 300x180, "
       "num_buffers: 1, buffer_sizes: [86400], num_planes: 2, "
       "planes (stride, offset): [(320, 0), (320, 57600)]",
-      layout.ToString());
+      layout->ToString());
 }
 
 // Test V4L2FormatToVideoFrameLayout with YUV420 pixelformat, which has one
 // buffer and three color planes.
 TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutYUV420) {
-  VideoFrameLayout layout =
+  auto layout =
       V4L2Device::V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
           300, 180, V4L2_PIX_FMT_YUV420, V4L2_FIELD_ANY, {320}, {86400}));
-  EXPECT_EQ(PIXEL_FORMAT_I420, layout.format());
-  EXPECT_EQ(gfx::Size(300, 180), layout.coded_size());
+  ASSERT_TRUE(layout.has_value());
+  EXPECT_EQ(PIXEL_FORMAT_I420, layout->format());
+  EXPECT_EQ(gfx::Size(300, 180), layout->coded_size());
   std::vector<VideoFrameLayout::Plane> expected_planes(
       {{320, 0u}, {160, 57600u}, {160, 72000}});
-  EXPECT_EQ(expected_planes, layout.planes());
-  EXPECT_EQ(std::vector<size_t>({86400u}), layout.buffer_sizes());
-  EXPECT_EQ(86400u, layout.GetTotalBufferSize());
+  EXPECT_EQ(expected_planes, layout->planes());
+  EXPECT_EQ(std::vector<size_t>({86400u}), layout->buffer_sizes());
+  EXPECT_EQ(86400u, layout->GetTotalBufferSize());
   EXPECT_EQ(
       "VideoFrameLayout format: PIXEL_FORMAT_I420, coded_size: 300x180, "
       "num_buffers: 1, buffer_sizes: [86400], num_planes: 3, "
       "planes (stride, offset): [(320, 0), (160, 57600), (160, 72000)]",
-      layout.ToString());
+      layout->ToString());
 }
 
 // Test V4L2FormatToVideoFrameLayout with single planar v4l2_format.
 // Expect an invalid VideoFrameLayout.
 TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNoMultiPlanar) {
-  EXPECT_FALSE(V4L2Device::V4L2FormatToVideoFrameLayout(
-                   V4L2FormatVideoOutput(300, 180, V4L2_PIX_FMT_NV12,
-                                         V4L2_FIELD_ANY, 320, 86400))
-                   .IsValid());
+  auto layout = V4L2Device::V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutput(
+      300, 180, V4L2_PIX_FMT_NV12, V4L2_FIELD_ANY, 320, 86400));
+  EXPECT_FALSE(layout.has_value());
 }
 
 // Test V4L2FormatToVideoFrameLayout with unsupported v4l2_format pixelformat,
 // e.g. V4L2_PIX_FMT_NV16. Expect an invalid VideoFrameLayout.
 TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutUnsupportedPixelformat) {
-  EXPECT_FALSE(V4L2Device::V4L2FormatToVideoFrameLayout(
-                   V4L2FormatVideoOutputMplane(300, 180, V4L2_PIX_FMT_NV16,
-                                               V4L2_FIELD_ANY, {320}, {86400}))
-                   .IsValid());
+  auto layout =
+      V4L2Device::V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
+          300, 180, V4L2_PIX_FMT_NV16, V4L2_FIELD_ANY, {320}, {86400}));
+  EXPECT_FALSE(layout.has_value());
 }
 
 // Test V4L2FormatToVideoFrameLayout with unsupported pixelformat which's
 // #color planes > #buffers, e.g. V4L2_PIX_FMT_YUV422M.
 // Expect an invalid VideoFrameLayout.
 TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutUnsupportedStrideCalculation) {
-  EXPECT_FALSE(V4L2Device::V4L2FormatToVideoFrameLayout(
-                   V4L2FormatVideoOutputMplane(300, 180, V4L2_PIX_FMT_YUV422M,
-                                               V4L2_FIELD_ANY, {320}, {86400}))
-                   .IsValid());
+  auto layout =
+      V4L2Device::V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
+          300, 180, V4L2_PIX_FMT_YUV422M, V4L2_FIELD_ANY, {320}, {86400}));
+  EXPECT_FALSE(layout.has_value());
 }
 
 // Test V4L2FormatToVideoFrameLayout with wrong stride value (expect even).
 // Expect an invalid VideoFrameLayout.
 TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutWrongStrideValue) {
-  EXPECT_FALSE(V4L2Device::V4L2FormatToVideoFrameLayout(
-                   V4L2FormatVideoOutputMplane(300, 180, V4L2_PIX_FMT_YUV420,
-                                               V4L2_FIELD_ANY, {319}, {86400}))
-                   .IsValid());
+  auto layout =
+      V4L2Device::V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
+          300, 180, V4L2_PIX_FMT_YUV420, V4L2_FIELD_ANY, {319}, {86400}));
+  EXPECT_FALSE(layout.has_value());
 }
 
 }  // namespace media

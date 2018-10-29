@@ -95,7 +95,8 @@ class SpeedometerMeasurement(legacy_page_test.LegacyPageTest):
     keychain_metric.KeychainMetric().AddResults(tab, results)
 
 
-@benchmark.Info(emails=['hablich@chromium.org'])
+@benchmark.Info(emails=['hablich@chromium.org'],
+                component='Blink')
 class Speedometer(perf_benchmark.PerfBenchmark):
   test = SpeedometerMeasurement
 
@@ -115,7 +116,8 @@ class Speedometer(perf_benchmark.PerfBenchmark):
     return ps
 
 
-@benchmark.Info(emails=['hablich@chromium.org'])
+@benchmark.Info(emails=['hablich@chromium.org'],
+                component='Blink')
 class V8SpeedometerFuture(Speedometer):
   """Speedometer benchmark with the V8 flag --future.
 

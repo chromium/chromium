@@ -4,39 +4,40 @@
 
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/frame_resource_coordinator.h"
 
+#include "base/memory/ptr_util.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace blink {
 
 // static
-FrameResourceCoordinator* FrameResourceCoordinator::Create(
+std::unique_ptr<FrameResourceCoordinator> FrameResourceCoordinator::Create(
     service_manager::InterfaceProvider* interface_provider) {
-  return new FrameResourceCoordinator(interface_provider);
+  return base::WrapUnique(new FrameResourceCoordinator(interface_provider));
 }
 
 FrameResourceCoordinator::FrameResourceCoordinator(
     service_manager::InterfaceProvider* interface_provider) {
   interface_provider->GetInterface(mojo::MakeRequest(&service_));
+  DCHECK(service_);
 }
 
 FrameResourceCoordinator::~FrameResourceCoordinator() = default;
 
 void FrameResourceCoordinator::SetNetworkAlmostIdle(bool idle) {
-  if (!service_)
-    return;
   service_->SetNetworkAlmostIdle(idle);
 }
 
 void FrameResourceCoordinator::SetLifecycleState(
     resource_coordinator::mojom::LifecycleState state) {
-  if (!service_)
-    return;
   service_->SetLifecycleState(state);
 }
 
+void FrameResourceCoordinator::SetHasNonEmptyBeforeUnload(
+    bool has_nonempty_beforeunload) {
+  service_->SetHasNonEmptyBeforeUnload(has_nonempty_beforeunload);
+}
+
 void FrameResourceCoordinator::OnNonPersistentNotificationCreated() {
-  if (!service_)
-    return;
   service_->OnNonPersistentNotificationCreated();
 }
 

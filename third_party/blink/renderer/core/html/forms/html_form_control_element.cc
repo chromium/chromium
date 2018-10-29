@@ -456,17 +456,17 @@ void HTMLFormControlElement::SetNeedsWillValidateCheck() {
     return;
   will_validate_initialized_ = true;
   will_validate_ = new_will_validate;
-  // Needs to force setNeedsValidityCheck() to invalidate validity state of
+  // Needs to force SetNeedsValidityCheck() to invalidate validity state of
   // FORM/FIELDSET. If this element updates willValidate twice and
-  // isValidElement() is not called between them, the second call of this
-  // function still has m_validityIsDirty==true, which means
-  // setNeedsValidityCheck() doesn't invalidate validity state of
+  // IsValidElement() is not called between them, the second call of this
+  // function still has validity_is_dirty_==true, which means
+  // SetNeedsValidityCheck() doesn't invalidate validity state of
   // FORM/FIELDSET.
   validity_is_dirty_ = false;
   SetNeedsValidityCheck();
   // No need to trigger style recalculation here because
-  // setNeedsValidityCheck() does it in the right away. This relies on
-  // the assumption that valid() is always true if willValidate() is false.
+  // SetNeedsValidityCheck() does it in the right away. This relies on
+  // the assumption that Valid() is always true if willValidate() is false.
 
   if (!will_validate_)
     HideVisibleValidationMessage();

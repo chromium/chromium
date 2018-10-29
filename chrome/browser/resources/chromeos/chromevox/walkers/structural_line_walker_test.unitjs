@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxStructuralLineWalkerUnitTest() {}
+function ChromeVoxStructuralLineWalkerUnitTest() {}
 
-CvoxStructuralLineWalkerUnitTest.prototype = {
+ChromeVoxStructuralLineWalkerUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -30,14 +30,14 @@ CvoxStructuralLineWalkerUnitTest.prototype = {
         <a href='google.com'>And here!</a>
       </p>
       */});
-  
+
     Msgs = TestMsgs;
-  
+
     this.walker_ = new cvox.StructuralLineWalker();
   },
 };
 
-TEST_F('CvoxStructuralLineWalkerUnitTest', 'BrailleLine', function() {
+TEST_F('ChromeVoxStructuralLineWalkerUnitTest', 'BrailleLine', function() {
   var aLink = $('1');
   var aLinkSel1 = this.walker_.sync(cvox.CursorSelection.fromNode(aLink));
   assertEquals('Click Here lnk',
@@ -58,7 +58,7 @@ TEST_F('CvoxStructuralLineWalkerUnitTest', 'BrailleLine', function() {
 
 
 /** Tests sync'ing to a line in the middle of a paragraph. */
-TEST_F('CvoxStructuralLineWalkerUnitTest', 'Sync', function() {
+TEST_F('ChromeVoxStructuralLineWalkerUnitTest', 'Sync', function() {
   var p1Sel = this.walker_.sync(
       cvox.CursorSelection.fromNode($('2')));
 
@@ -72,7 +72,7 @@ TEST_F('CvoxStructuralLineWalkerUnitTest', 'Sync', function() {
 });
 
 /** Tests syncing into an element treated as a leaf by TraverseUtil. */
-TEST_F('CvoxStructuralLineWalkerUnitTest', 'SyncTraverseUtil', function() {
+TEST_F('ChromeVoxStructuralLineWalkerUnitTest', 'SyncTraverseUtil', function() {
   this.loadDoc(function() {/*!
     <select id='leaf'>
       <option>apple
@@ -86,7 +86,7 @@ TEST_F('CvoxStructuralLineWalkerUnitTest', 'SyncTraverseUtil', function() {
 
 
 /** Tests specialized name calc with listitems with prefixes. */
-TEST_F('CvoxStructuralLineWalkerUnitTest', 'ListitemPrefixes', function() {
+TEST_F('ChromeVoxStructuralLineWalkerUnitTest', 'ListitemPrefixes', function() {
   this.loadDoc(function() {/*!
     <ol>
       <li id='li_orange'>orange

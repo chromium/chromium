@@ -49,7 +49,7 @@ class ScenicScreen : public PlatformScreen {
 
   DisplayVector displays_;
 
-  base::ObserverList<display::DisplayObserver>::Unchecked observers_;
+  base::ObserverList<display::DisplayObserver> observers_;
 
   base::WeakPtrFactory<ScenicScreen> weak_factory_;
 

@@ -35,7 +35,8 @@ PASS mutations[18].addedNodes[0].tagName is "DIV"
 PASS successfullyParsed is true
 
 TEST COMPLETE
-Mutation records should be delivered for all parser mutations after the above script.
 
+
+Mutation records should be delivered for all parser mutations after the above script.
 
 

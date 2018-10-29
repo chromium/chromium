@@ -962,7 +962,7 @@ void RegisterMutexTracer(void (*fn)(const char *msg, const void *obj,
 //
 // The function pointer registered here will be called here on various CondVar
 // events.  The callback is given an opaque handle to the CondVar object and
-// a std::string identifying the event.  This is thread-safe, but only a single
+// a string identifying the event.  This is thread-safe, but only a single
 // tracer can be registered.
 //
 // Events that can be sent are "Wait", "Unwait", "Signal wakeup", and

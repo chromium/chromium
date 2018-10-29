@@ -175,6 +175,20 @@ class ScreenLockDelayPolicyHandler : public SchemaValidatingPolicyHandler {
   DISALLOW_COPY_AND_ASSIGN(ScreenLockDelayPolicyHandler);
 };
 
+class ScreenBrightnessPercentPolicyHandler
+    : public SchemaValidatingPolicyHandler {
+ public:
+  explicit ScreenBrightnessPercentPolicyHandler(const Schema& chrome_schema);
+  ~ScreenBrightnessPercentPolicyHandler() override;
+
+  // SchemaValidatingPolicyHandler:
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(ScreenBrightnessPercentPolicyHandler);
+};
+
 // Supported values for the |ArcBackupRestoreServiceEnabled| and
 // |ArcGoogleLocationServicesEnabled| policies.
 enum class ArcServicePolicyValue { kDisabled = 0, kUnderUserControl = 1 };

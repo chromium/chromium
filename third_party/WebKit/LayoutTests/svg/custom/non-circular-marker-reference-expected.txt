@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGHiddenContainer {defs} at (0,0) size 0x0
-      LayoutSVGResourceMarker {marker} [id="mark"] [markerUnits=strokeWidth] [ref at (4,4)] [angle=0.00]
-        LayoutSVGEllipse {circle} at (1,1) size 6x6 [stroke={[type=SOLID] [color=#FF0000] [line cap=ROUND]}] [cx=4.00] [cy=4.00] [r=3.00]
-    LayoutSVGPath {path} at (-5,-2) size 10x0 [stroke={[type=SOLID] [color=#000000] [line cap=ROUND]}] [fill={[type=SOLID] [color=#000000]}] [data="M -5 -2 h 5 h 5"]
-    LayoutSVGPath {path} at (-5,2) size 10x0 [stroke={[type=SOLID] [color=#000000] [line cap=ROUND]}] [fill={[type=SOLID] [color=#000000]}] [start marker=mark] [middle marker=mark] [end marker=mark] [data="M -5 2 h 5 h 5"]

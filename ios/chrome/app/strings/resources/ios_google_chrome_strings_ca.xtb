@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Per ajudar-te a estalviar temps, Chrome connecta els teus comptes al web. Pots afegir o suprimir comptes a Configuració.</translation>
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3345341804167540816">Utilitzeu Chrome a tot arreu</translation>
-<translation id="3678774398092457402">Vols que Chrome desi la teva contrasenya per a aquest lloc?</translation>
 <translation id="384394811301901750">Google Chrome no pot utilitzar la càmera en aquest moment</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Esteu canviant del compte de sincronització <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> gestiona les vostres dades de Chrome actuals. Amb aquest canvi se suprimiran les vostres dades d'aquest dispositiu, però continuaran a <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943">La <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> es pot personalitzar en qualsevol moment. Google pot utilitzar contingut dels llocs web que visites, així com l'activitat i les interaccions al navegador per personalitzar Chrome i els serveis de Google, com ara el Traductor, la Cerca i els anuncis.</translation>
 <translation id="5639704535586432836">Obre Configuració &gt; Privacitat &gt; Càmera &gt; Google Chrome i activa la càmera.</translation>
 <translation id="5642200033778930880">Google Chrome no pot utilitzar la càmera en mode de visualització dividida</translation>
-<translation id="5703130498371792817">Us agrada Chrome? <ph name="BEGIN_LINK" />Puntueu aquesta aplicació<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Consell de Chrome. Ara alguns botons són a la part inferior de la pantalla, per exemple, Enrere, Endavant i Cerca.</translation>
 <translation id="6036420186814142909">Google Chrome té funcions que us ajuden a gestionar les vostres dades d'Internet i la rapidesa amb què podeu carregar pàgines web.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Condicions del servei de Google Chrome</translation>
 <translation id="7165736900384873061">Comença a utilitzar l'escàner QR de Google Chrome</translation>
 <translation id="7172660552945675509">Consell: <ph name="BEGIN_LINK" />moveu Chrome al Dock<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome utilitza Face ID per garantir l'accés autoritzat a les contrasenyes.</translation>
 <translation id="7265369419224458312">Accediu a les pestanyes que teniu obertes a l'ordinador des d'aquí mateix. Per fer-ho, obriu Chrome a l'ordinador, aneu al menú i seleccioneu Inici de sessió a Chrome.</translation>
 <translation id="728488472449859922">Activa l'escàner QR de Google Chrome</translation>
 <translation id="7400722733683201933">Sobre Google Chrome</translation>

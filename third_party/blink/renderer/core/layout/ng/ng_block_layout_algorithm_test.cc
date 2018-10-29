@@ -2026,7 +2026,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, FloatFragmentationOrthogonalFlows) {
   scoped_refptr<const NGPhysicalFragment> fragment =
       NGBlockLayoutAlgorithm(node, space).Layout()->PhysicalFragment();
   EXPECT_EQ(NGPhysicalSize(LayoutUnit(150), LayoutUnit(60)), fragment->Size());
-  ASSERT_TRUE(fragment->BreakToken()->IsFinished());
+  ASSERT_TRUE(!fragment->BreakToken() || fragment->BreakToken()->IsFinished());
 
   // float2 should only have one fragment.
   FragmentChildIterator iterator(ToNGPhysicalBoxFragment(fragment.get()));
@@ -2035,7 +2035,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, FloatFragmentationOrthogonalFlows) {
   child = iterator.NextChild(&offset);
   EXPECT_EQ(NGPhysicalSize(LayoutUnit(60), LayoutUnit(200)), child->Size());
   EXPECT_EQ(NGPhysicalOffset(LayoutUnit(90), LayoutUnit(50)), offset);
-  ASSERT_TRUE(child->BreakToken()->IsFinished());
+  ASSERT_TRUE(!child->BreakToken() || child->BreakToken()->IsFinished());
 }
 
 // Tests that a float child inside a zero height block fragments correctly.

@@ -142,9 +142,8 @@ int SpdyHttpStream::InitializeStream(const HttpRequestInfo* request_info,
 
   request_info_ = request_info;
   if (pushed_stream_id_ != kNoPushedStreamFound) {
-    int error =
-        spdy_session_->GetPushedStream(request_info_->url, pushed_stream_id_,
-                                       priority, &stream_, stream_net_log);
+    int error = spdy_session_->GetPushedStream(
+        request_info_->url, pushed_stream_id_, priority, &stream_);
     if (error != OK)
       return error;
 

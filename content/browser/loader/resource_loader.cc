@@ -59,6 +59,7 @@ net::SSLInfo SelectSSLInfoFields(const net::SSLInfo& in) {
   net::SSLInfo out;
   out.connection_status = in.connection_status;
   out.key_exchange_group = in.key_exchange_group;
+  out.peer_signature_algorithm = in.peer_signature_algorithm;
   out.signed_certificate_timestamps = in.signed_certificate_timestamps;
   out.cert = in.cert;
   return out;
@@ -133,7 +134,8 @@ void PopulateResourceResponse(
     DCHECK(!request->ssl_info().cert_status);
     DCHECK_EQ(request->ssl_info().security_bits, -1);
     DCHECK_EQ(request->ssl_info().key_exchange_group, 0);
-    DCHECK(!request->ssl_info().connection_status);
+    DCHECK_EQ(request->ssl_info().peer_signature_algorithm, 0);
+    DCHECK_EQ(request->ssl_info().connection_status, 0);
   }
 }
 

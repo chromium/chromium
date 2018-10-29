@@ -14,7 +14,7 @@ class KURL;
 class SharedBuffer;
 class ResourceResponse;
 
-namespace NetworkUtils {
+namespace network_utils {
 
 enum PrivateRegistryFilter {
   kIncludePrivateRegistries,
@@ -46,7 +46,7 @@ PLATFORM_EXPORT bool IsLegacySymantecCertError(int);
 
 PLATFORM_EXPORT String GenerateAcceptLanguageHeader(const String&);
 
-}  // NetworkUtils
+}  // namespace network_utils
 
 }  // namespace blink
 

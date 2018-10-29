@@ -11,7 +11,7 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "components/cbor/cbor_values.h"
+#include "components/cbor/values.h"
 
 namespace device {
 
@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationStatement {
   // https://www.w3.org/TR/2017/WD-webauthn-20170505/#defined-attestation-formats
   // This is not a CBOR-encoded byte array, but the map that will be
   // nested within another CBOR object and encoded then.
-  virtual cbor::CBORValue::MapValue GetAsCBORMap() const = 0;
+  virtual cbor::Value::MapValue GetAsCBORMap() const = 0;
 
   // Returns true if the attestation is a "self" attestation, i.e. is just the
   // private key signing itself to show that it is fresh.
@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) NoneAttestationStatement
 
   bool IsSelfAttestation() override;
   bool IsAttestationCertificateInappropriatelyIdentifying() override;
-  cbor::CBORValue::MapValue GetAsCBORMap() const override;
+  cbor::Value::MapValue GetAsCBORMap() const override;
   base::Optional<base::span<const uint8_t>> GetLeafCertificate() const override;
 
  private:

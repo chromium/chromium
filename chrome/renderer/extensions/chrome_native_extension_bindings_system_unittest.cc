@@ -11,7 +11,7 @@
 namespace extensions {
 
 TEST_F(NativeExtensionBindingsSystemUnittest, InitializeContext) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
           .AddPermissions({"idle", "power", "webRequest", "tabs"})
           .Build();

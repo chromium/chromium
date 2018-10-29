@@ -1,5 +1,6 @@
 include_rules = [
     "+base/callback.h",
+    "+base/files/file_path.h",
     "+base/optional.h",
     "+base/macros.h",
     "+base/memory/ref_counted.h",
@@ -11,6 +12,7 @@ include_rules = [
     "+cc/paint/paint_flags.h",
     "+mojo/public",
     "+services/network/public/mojom/cors.mojom-shared.h",
+    "+services/network/public/mojom/referrer_policy.mojom-shared.h",
     "+services/service_manager/public",
     # Enforce to use mojom-shared.h in blink/public so that it can compile
     # inside and outside Blink.

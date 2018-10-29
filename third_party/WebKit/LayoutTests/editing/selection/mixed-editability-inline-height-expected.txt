@@ -2,7 +2,6 @@ This confirms that settin the caret before an empty non-editable inline-block el
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getSelection().rangeCount is 1
 PASS getSelection().anchorNode is p
 PASS getSelection().anchorOffset is 0

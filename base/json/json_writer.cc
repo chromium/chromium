@@ -57,47 +57,34 @@ JSONWriter::JSONWriter(int options, std::string* json)
 
 bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
   switch (node.type()) {
-    case Value::Type::NONE: {
+    case Value::Type::NONE:
       json_string_->append("null");
       return true;
-    }
 
-    case Value::Type::BOOLEAN: {
-      bool value;
-      bool result = node.GetAsBoolean(&value);
-      DCHECK(result);
-      json_string_->append(value ? "true" : "false");
-      return result;
-    }
+    case Value::Type::BOOLEAN:
+      json_string_->append(node.GetBool() ? "true" : "false");
+      return true;
 
-    case Value::Type::INTEGER: {
-      int value;
-      bool result = node.GetAsInteger(&value);
-      DCHECK(result);
-      json_string_->append(IntToString(value));
-      return result;
-    }
+    case Value::Type::INTEGER:
+      json_string_->append(IntToString(node.GetInt()));
+      return true;
 
     case Value::Type::DOUBLE: {
-      double value;
-      bool result = node.GetAsDouble(&value);
-      DCHECK(result);
+      double value = node.GetDouble();
       if (omit_double_type_preservation_ &&
           value <= std::numeric_limits<int64_t>::max() &&
           value >= std::numeric_limits<int64_t>::min() &&
           std::floor(value) == value) {
         json_string_->append(Int64ToString(static_cast<int64_t>(value)));
-        return result;
+        return true;
       }
       std::string real = NumberToString(value);
       // Ensure that the number has a .0 if there's no decimal or 'e'.  This
       // makes sure that when we read the JSON back, it's interpreted as a
       // real rather than an int.
-      if (real.find('.') == std::string::npos &&
-          real.find('e') == std::string::npos &&
-          real.find('E') == std::string::npos) {
+      if (real.find_first_of(".eE") == std::string::npos)
         real.append(".0");
-      }
+
       // The JSON spec requires that non-integer values in the range (-1,1)
       // have a zero before the decimal point - ".52" is not valid, "0.52" is.
       if (real[0] == '.') {
@@ -107,27 +94,21 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
         real.insert(static_cast<size_t>(1), static_cast<size_t>(1), '0');
       }
       json_string_->append(real);
-      return result;
+      return true;
     }
 
-    case Value::Type::STRING: {
-      std::string value;
-      bool result = node.GetAsString(&value);
-      DCHECK(result);
-      EscapeJSONString(value, true, json_string_);
-      return result;
-    }
+    case Value::Type::STRING:
+      EscapeJSONString(node.GetString(), true, json_string_);
+      return true;
 
     case Value::Type::LIST: {
       json_string_->push_back('[');
       if (pretty_print_)
         json_string_->push_back(' ');
 
-      const ListValue* list = nullptr;
       bool first_value_has_been_output = false;
-      bool result = node.GetAsList(&list);
-      DCHECK(result);
-      for (const auto& value : *list) {
+      bool result = true;
+      for (const auto& value : node.GetList()) {
         if (omit_binary_values_ && value.type() == Value::Type::BINARY)
           continue;
 
@@ -154,15 +135,13 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
       if (pretty_print_)
         json_string_->append(kPrettyPrintLineEnding);
 
-      const DictionaryValue* dict = nullptr;
       bool first_value_has_been_output = false;
-      bool result = node.GetAsDictionary(&dict);
-      DCHECK(result);
-      for (DictionaryValue::Iterator itr(*dict); !itr.IsAtEnd();
-           itr.Advance()) {
-        if (omit_binary_values_ && itr.value().type() == Value::Type::BINARY) {
+      bool result = true;
+      for (const auto& pair : node.DictItems()) {
+        const auto& key = pair.first;
+        const auto& value = pair.second;
+        if (omit_binary_values_ && value.type() == Value::Type::BINARY)
           continue;
-        }
 
         if (first_value_has_been_output) {
           json_string_->push_back(',');
@@ -173,12 +152,12 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
         if (pretty_print_)
           IndentLine(depth + 1U);
 
-        EscapeJSONString(itr.key(), true, json_string_);
+        EscapeJSONString(key, true, json_string_);
         json_string_->push_back(':');
         if (pretty_print_)
           json_string_->push_back(' ');
 
-        if (!BuildJSONString(itr.value(), depth + 1U))
+        if (!BuildJSONString(value, depth + 1U))
           result = false;
 
         first_value_has_been_output = true;
@@ -198,7 +177,9 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
       DLOG_IF(ERROR, !omit_binary_values_) << "Cannot serialize binary value.";
       return omit_binary_values_;
   }
-  NOTREACHED();
+
+  // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
+  CHECK(false);
   return false;
 }
 

@@ -77,7 +77,7 @@ use of base::CreateSingleThreadTaskRunnerWithTraits() with a TODO against your
 bug to use base::CreateSequencedTaskRunnerWithTraits() when fixed).
 
 Detailed documentation on how to migrate from single-threaded contexts to
-sequenced contexts can be found [here](task_scheduler_migration.md).
+sequenced contexts can be found [here](threading_and_tasks_faq.md#How-can-I-migrate-from-SingleThreadTaskRunner-to-SequencedTaskRunner_).
 
 The discussion below covers all of these ways to execute tasks in details.
 

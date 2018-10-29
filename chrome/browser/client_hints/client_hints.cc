@@ -9,6 +9,7 @@
 #include "chrome/browser/client_hints/client_hints.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -16,15 +17,16 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/client_hints/client_hints.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/nqe/effective_connection_type.h"
+#include "net/nqe/network_quality_estimator_params.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -126,6 +128,30 @@ std::string DoubleToSpecCompliantString(double value) {
   // '.' is the first character in |result|. Prefix one digit before the
   // period to make it spec compliant.
   return "0" + result;
+}
+
+// Return the effective connection type value overridden for web APIs.
+// If no override value has been set, a null value is returned.
+base::Optional<net::EffectiveConnectionType>
+GetWebHoldbackEffectiveConnectionType() {
+  if (!base::FeatureList::IsEnabled(
+          features::kNetworkQualityEstimatorWebHoldback)) {
+    return base::nullopt;
+  }
+  std::string effective_connection_type_param =
+      base::GetFieldTrialParamValueByFeature(
+          features::kNetworkQualityEstimatorWebHoldback,
+          "web_effective_connection_type_override");
+
+  base::Optional<net::EffectiveConnectionType> effective_connection_type =
+      net::GetEffectiveConnectionTypeForName(effective_connection_type_param);
+  DCHECK(effective_connection_type_param.empty() || effective_connection_type);
+
+  if (!effective_connection_type)
+    return base::nullopt;
+  DCHECK_NE(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN,
+            effective_connection_type.value());
+  return effective_connection_type;
 }
 
 }  // namespace
@@ -282,20 +308,42 @@ GetAdditionalNavigationRequestClientHintsHeaders(
       g_browser_process->network_quality_tracker();
 
   if (web_client_hints.IsEnabled(blink::mojom::WebClientHintsType::kRtt)) {
+    base::Optional<net::EffectiveConnectionType> web_holdback_ect =
+        GetWebHoldbackEffectiveConnectionType();
+
+    base::TimeDelta http_rtt;
+    if (web_holdback_ect.has_value()) {
+      http_rtt = net::NetworkQualityEstimatorParams::GetDefaultTypicalHttpRtt(
+          web_holdback_ect.value());
+    } else {
+      http_rtt = network_quality_tracker->GetHttpRTT();
+    }
     additional_headers->SetHeader(
         blink::kClientHintsHeaderMapping[static_cast<int>(
             blink::mojom::WebClientHintsType::kRtt)],
-        base::NumberToString(internal::RoundRtt(
-            url.host(), network_quality_tracker->GetHttpRTT())));
+        base::NumberToString(internal::RoundRtt(url.host(), http_rtt)));
   }
 
   if (web_client_hints.IsEnabled(blink::mojom::WebClientHintsType::kDownlink)) {
+    base::Optional<net::EffectiveConnectionType> web_holdback_ect =
+        GetWebHoldbackEffectiveConnectionType();
+
+    int32_t downlink_throughput_kbps;
+
+    if (web_holdback_ect.has_value()) {
+      downlink_throughput_kbps =
+          net::NetworkQualityEstimatorParams::GetDefaultTypicalDownlinkKbps(
+              web_holdback_ect.value());
+    } else {
+      downlink_throughput_kbps =
+          network_quality_tracker->GetDownstreamThroughputKbps();
+    }
+
     additional_headers->SetHeader(
         blink::kClientHintsHeaderMapping[static_cast<int>(
             blink::mojom::WebClientHintsType::kDownlink)],
-        DoubleToSpecCompliantString(internal::RoundKbpsToMbps(
-            url.host(),
-            network_quality_tracker->GetDownstreamThroughputKbps())));
+        DoubleToSpecCompliantString(
+            internal::RoundKbpsToMbps(url.host(), downlink_throughput_kbps)));
   }
 
   if (web_client_hints.IsEnabled(blink::mojom::WebClientHintsType::kEct)) {
@@ -304,8 +352,14 @@ GetAdditionalNavigationRequestClientHintsHeaders(
     DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
               static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
 
+    base::Optional<net::EffectiveConnectionType> web_holdback_ect =
+        GetWebHoldbackEffectiveConnectionType();
+
     int effective_connection_type =
-        static_cast<int>(network_quality_tracker->GetEffectiveConnectionType());
+        web_holdback_ect.has_value()
+            ? web_holdback_ect.value()
+            : static_cast<int>(
+                  network_quality_tracker->GetEffectiveConnectionType());
 
     additional_headers->SetHeader(
         blink::kClientHintsHeaderMapping[static_cast<int>(
@@ -327,25 +381,6 @@ GetAdditionalNavigationRequestClientHintsHeaders(
   // the client hints headers if the request is redirected with a change in
   // scheme or a change in the origin.
   return additional_headers;
-}
-
-void RequestBeginning(
-    net::URLRequest* request,
-    scoped_refptr<content_settings::CookieSettings> cookie_settings) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  if (!cookie_settings)
-    return;
-
-  if (cookie_settings->IsCookieAccessAllowed(request->url(),
-                                             request->site_for_cookies())) {
-    return;
-  }
-
-  // If |primary_url| is disallowed from storing cookies, then client hints are
-  // not attached to the requests sent to |primary_url|.
-  for (size_t i = 0; i < blink::kClientHintsHeaderMappingCount; ++i)
-    request->RemoveRequestHeaderByName(blink::kClientHintsHeaderMapping[i]);
 }
 
 }  // namespace client_hints

@@ -109,8 +109,16 @@ class ConnectionPreserverImplTest : public NetworkStateTest {
     DBusThreadManager::Shutdown();
   }
 
-  void SetMultiDeviceApiEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(features::kMultiDeviceApi);
+  void SetMultiDeviceApi(bool enabled) {
+    static const std::vector<base::Feature> kFeatures{
+        chromeos::features::kMultiDeviceApi,
+        chromeos::features::kEnableUnifiedMultiDeviceSetup};
+
+    scoped_feature_list_.InitWithFeatures(
+        (enabled ? kFeatures
+                 : std::vector<base::Feature>() /* enable_features */),
+        (enabled ? std::vector<base::Feature>()
+                 : kFeatures /* disable_features */));
   }
 
   void SimulateSuccessfulHostScan_MultiDeviceApiDisabled(
@@ -239,6 +247,7 @@ class ConnectionPreserverImplTest : public NetworkStateTest {
 
 TEST_F(ConnectionPreserverImplTest,
        TestHandleSuccessfulTetherAvailabilityResponse_NoPreservedConnection) {
+  SetMultiDeviceApi(false /* enabled */);
   SimulateSuccessfulHostScan_MultiDeviceApiDisabled(
       test_remote_device_ids_[0], true /* should_remain_registered */);
 }
@@ -246,7 +255,7 @@ TEST_F(ConnectionPreserverImplTest,
 TEST_F(
     ConnectionPreserverImplTest,
     TestHandleSuccessfulTetherAvailabilityResponse_NoPreservedConnection_MultiDeviceApiEnabled) {
-  SetMultiDeviceApiEnabled();
+  SetMultiDeviceApi(true /* enabled */);
 
   SimulateSuccessfulHostScan_MultiDeviceApiEnabled(
       test_remote_devices_[0], true /* should_remain_registered */);
@@ -254,6 +263,7 @@ TEST_F(
 
 TEST_F(ConnectionPreserverImplTest,
        TestHandleSuccessfulTetherAvailabilityResponse_HasInternet) {
+  SetMultiDeviceApi(false /* enabled */);
   ConnectToWifi();
 
   SimulateSuccessfulHostScan_MultiDeviceApiDisabled(
@@ -263,7 +273,7 @@ TEST_F(ConnectionPreserverImplTest,
 TEST_F(
     ConnectionPreserverImplTest,
     TestHandleSuccessfulTetherAvailabilityResponse_HasInternet_MultiDeviceApiEnabled) {
-  SetMultiDeviceApiEnabled();
+  SetMultiDeviceApi(true /* enabled */);
 
   ConnectToWifi();
 
@@ -274,6 +284,7 @@ TEST_F(
 TEST_F(
     ConnectionPreserverImplTest,
     TestHandleSuccessfulTetherAvailabilityResponse_PreservedConnectionExists_NoPreviouslyConnectedHosts) {
+  SetMultiDeviceApi(false /* enabled */);
   SimulateSuccessfulHostScan_MultiDeviceApiDisabled(
       test_remote_device_ids_[0], true /* should_remain_registered */);
   SimulateSuccessfulHostScan_MultiDeviceApiDisabled(
@@ -285,7 +296,7 @@ TEST_F(
 TEST_F(
     ConnectionPreserverImplTest,
     TestHandleSuccessfulTetherAvailabilityResponse_PreservedConnectionExists_NoPreviouslyConnectedHosts_MultiDeviceApiEnabled) {
-  SetMultiDeviceApiEnabled();
+  SetMultiDeviceApi(true /* enabled */);
 
   SimulateSuccessfulHostScan_MultiDeviceApiEnabled(
       test_remote_devices_[0], true /* should_remain_registered */);
@@ -302,6 +313,7 @@ TEST_F(
 
 TEST_F(ConnectionPreserverImplTest,
        TestHandleSuccessfulTetherAvailabilityResponse_TimesOut) {
+  SetMultiDeviceApi(false /* enabled */);
   SimulateSuccessfulHostScan_MultiDeviceApiDisabled(
       test_remote_device_ids_[0], true /* should_remain_registered */);
 
@@ -313,7 +325,7 @@ TEST_F(ConnectionPreserverImplTest,
 TEST_F(
     ConnectionPreserverImplTest,
     TestHandleSuccessfulTetherAvailabilityResponse_TimesOut_MultiDeviceApiEnabled) {
-  SetMultiDeviceApiEnabled();
+  SetMultiDeviceApi(true /* enabled */);
 
   SimulateSuccessfulHostScan_MultiDeviceApiEnabled(
       test_remote_devices_[0], true /* should_remain_registered */);
@@ -325,6 +337,7 @@ TEST_F(
 
 TEST_F(ConnectionPreserverImplTest,
        TestHandleSuccessfulTetherAvailabilityResponse_PreserverDestroyed) {
+  SetMultiDeviceApi(false /* enabled */);
   SimulateSuccessfulHostScan_MultiDeviceApiDisabled(
       test_remote_device_ids_[0], true /* should_remain_registered */);
 
@@ -336,7 +349,7 @@ TEST_F(ConnectionPreserverImplTest,
 TEST_F(
     ConnectionPreserverImplTest,
     TestHandleSuccessfulTetherAvailabilityResponse_PreserverDestroyed_MultiDeviceApiEnabled) {
-  SetMultiDeviceApiEnabled();
+  SetMultiDeviceApi(true /* enabled */);
 
   SimulateSuccessfulHostScan_MultiDeviceApiEnabled(
       test_remote_devices_[0], true /* should_remain_registered */);
@@ -349,6 +362,7 @@ TEST_F(
 TEST_F(
     ConnectionPreserverImplTest,
     TestHandleSuccessfulTetherAvailabilityResponse_ActiveHostBecomesConnected) {
+  SetMultiDeviceApi(false /* enabled */);
   SimulateSuccessfulHostScan_MultiDeviceApiDisabled(
       test_remote_device_ids_[0], true /* should_remain_registered */);
 
@@ -363,7 +377,7 @@ TEST_F(
 TEST_F(
     ConnectionPreserverImplTest,
     TestHandleSuccessfulTetherAvailabilityResponse_ActiveHostBecomesConnected_MultiDeviceApiEnabled) {
-  SetMultiDeviceApiEnabled();
+  SetMultiDeviceApi(true /* enabled */);
 
   SimulateSuccessfulHostScan_MultiDeviceApiEnabled(
       test_remote_devices_[0], true /* should_remain_registered */);
@@ -380,6 +394,8 @@ TEST_F(
 TEST_F(
     ConnectionPreserverImplTest,
     TestHandleSuccessfulTetherAvailabilityResponse_PreviouslyConnectedHostsExist) {
+  SetMultiDeviceApi(false /* enabled */);
+
   // |test_remote_device_ids_[0]| is the most recently connected device, and
   // should be preferred over any other device.
   previously_connected_host_ids_.push_back(test_remote_device_ids_[0]);
@@ -412,7 +428,7 @@ TEST_F(
 TEST_F(
     ConnectionPreserverImplTest,
     TestHandleSuccessfulTetherAvailabilityResponse_PreviouslyConnectedHostsExist_MultiDeviceApiEnabled) {
-  SetMultiDeviceApiEnabled();
+  SetMultiDeviceApi(true /* enabled */);
 
   // |test_remote_device_ids_[0]| is the most recently connected device, and
   // should be preferred over any other device.

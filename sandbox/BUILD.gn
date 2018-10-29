@@ -54,12 +54,14 @@ fuzzer_test("sandbox_ipc_fuzzer") {
   set_sources_assignment_filter([])
   sources = [
     "ipc.dict",
-    "win/fuzzer/fuzzer_defines.h",
+    "win/fuzzer/fuzzer_types.h",
     "win/fuzzer/sandbox_ipc_fuzzer.cc",
     "win/src/crosscall_server.cc",
     "win/src/ipc_args.cc",
   ]
-  defines = [ "SANDBOX_FUZZ_TARGET" ]
+  if (!is_win) {
+    defines = [ "SANDBOX_FUZZ_TARGET" ]
+  }
   deps = [
     "//base",
   ]

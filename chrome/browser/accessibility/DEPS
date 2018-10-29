@@ -1,7 +1,0 @@
-specific_include_rules = {
-  "accessibility_extension_api\.cc": [
-    # TODO(mash): Replace with mojo API. http://crbug.com/594887
-    "+ash/accessibility/accessibility_focus_ring_controller.h",
-    "+ash/shell.h",
-  ],
-}

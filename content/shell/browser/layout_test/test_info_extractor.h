@@ -19,15 +19,48 @@ namespace content {
 
 struct TestInfo {
   TestInfo(const GURL& url,
-           bool enable_pixel_dumping,
            const std::string& expected_pixel_hash,
-           const base::FilePath& current_working_directory);
+           const base::FilePath& current_working_directory,
+           bool protocol_mode);
   ~TestInfo();
 
   GURL url;
-  bool enable_pixel_dumping;
   std::string expected_pixel_hash;
   base::FilePath current_working_directory;
+
+  // If true, the input and output of content_shell are assumed to follow the
+  // run_web_tests protocol through pipes that connect stdin and stdout of
+  // run_web_tests.py and content_shell:
+  //
+  //   run_web_tests.py                      content_shell
+  //         | <------     #READY\n        ------- |
+  //         |                                     |
+  //         | --- <test_name>['<pixelhash>]\n --> |
+  //         |                                     |
+  //         | <------ [<text|audio dump>] ------- |
+  //         | <------      #EOF\n         ------- |
+  //         | <------   [<pixel dump>]    ------- |
+  //         | <------      #EOF\n         ------- |
+  //         |                                     |
+  //         |               ....                  |
+  //         |               ....                  |
+  //         |                                     |
+  //         | -----------  QUIT\n  -------------> |
+  //
+  // In this mode, each test creates 1 or 2 test output dumps. The first dump
+  // is text or audio (can be empty), and the second dump is image (can be
+  // empty, too). Each dump, if not empty, is in the following format:
+  //
+  // Content-Type: <mime-type>\n
+  // [<other headers>]
+  // [Content-Length: <content-length>\n]  # Required for binary content data
+  // <content data>
+  //
+  // Content_shell enters the protocol mode when it sees a "-" parameter in the
+  // command line. For the tests listed in the content_shell command line, this
+  // field is false, and the test runner will dump pure text only without binary
+  // data and protocol tags.
+  bool protocol_mode;
 };
 
 class TestInfoExtractor {

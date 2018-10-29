@@ -72,6 +72,13 @@ std::unique_ptr<TracedValue> InspectorParseHtmlEndData(unsigned end_line) {
   return value;
 }
 
+std::unique_ptr<TracedValue> GetNavigationTracingData(Document* document) {
+  std::unique_ptr<TracedValue> data = TracedValue::Create();
+
+  data->SetString("navigationId",
+                  IdentifiersFactory::LoaderId(document->Loader()));
+  return data;
+}
 }  //  namespace
 
 String ToHexString(const void* p) {
@@ -204,9 +211,10 @@ void InspectorTraceEvents::Did(const probe::CallFunction& probe) {
 void InspectorTraceEvents::PaintTiming(Document* document,
                                        const char* name,
                                        double timestamp) {
-  TRACE_EVENT_MARK_WITH_TIMESTAMP1("loading,rail,devtools.timeline", name,
+  TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading,rail,devtools.timeline", name,
                                    TraceEvent::ToTraceTimestamp(timestamp),
-                                   "frame", ToTraceValue(document->GetFrame()));
+                                   "frame", ToTraceValue(document->GetFrame()),
+                                   "data", GetNavigationTracingData(document));
 }
 
 void InspectorTraceEvents::FrameStartedLoading(LocalFrame* frame) {
@@ -250,7 +258,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoVisited)
     DEFINE_STRING_MAPPING(PseudoAny)
     DEFINE_STRING_MAPPING(PseudoMatches)
-    DEFINE_STRING_MAPPING(PseudoIS)
+    DEFINE_STRING_MAPPING(PseudoWhere)
     DEFINE_STRING_MAPPING(PseudoWebkitAnyLink)
     DEFINE_STRING_MAPPING(PseudoAnyLink)
     DEFINE_STRING_MAPPING(PseudoAutofill)
@@ -350,10 +358,9 @@ const char* CompileOptionsString(v8::ScriptCompiler::CompileOptions options) {
       return "code";
     case v8::ScriptCompiler::kEagerCompile:
       return "full code";
-    case v8::ScriptCompiler::kProduceParserCache:
-    case v8::ScriptCompiler::kConsumeParserCache:
-    case v8::ScriptCompiler::kProduceCodeCache:
-    case v8::ScriptCompiler::kProduceFullCodeCache:
+    // TODO(v8:8252): Remove the default branch once deprecated options are
+    // removed from v8::ScriptCompiler::CompileOptions.
+    default:
       NOTREACHED();
   }
   NOTREACHED();
@@ -388,6 +395,8 @@ const char* NotStreamedReasonString(ScriptStreamer::NotStreamingReason reason) {
       return "start streaming not called";
     case ScriptStreamer::kErrorOccurred:
       return "an error occurred";
+    case ScriptStreamer::kWorkerTopLevelScript:
+      return "worker top-level scripts are not streamable";
     case ScriptStreamer::kAlreadyLoaded:
     case ScriptStreamer::kCount:
     case ScriptStreamer::kInvalid:
@@ -847,10 +856,9 @@ std::unique_ptr<TracedValue> InspectorResourceFinishEvent::Data(
 }
 
 static LocalFrame* FrameForExecutionContext(ExecutionContext* context) {
-  LocalFrame* frame = nullptr;
-  if (context->IsDocument())
-    frame = ToDocument(context)->GetFrame();
-  return frame;
+  if (auto* document = DynamicTo<Document>(context))
+    return document->GetFrame();
+  return nullptr;
 }
 
 static std::unique_ptr<TracedValue> GenericTimerData(ExecutionContext* context,
@@ -893,11 +901,11 @@ std::unique_ptr<TracedValue> InspectorAnimationFrameEvent::Data(
     int callback_id) {
   std::unique_ptr<TracedValue> value = TracedValue::Create();
   value->SetInteger("id", callback_id);
-  if (context->IsDocument()) {
-    value->SetString(
-        "frame", IdentifiersFactory::FrameId(ToDocument(context)->GetFrame()));
-  } else if (context->IsWorkerGlobalScope()) {
-    value->SetString("worker", ToHexString(ToWorkerGlobalScope(context)));
+  if (auto* document = DynamicTo<Document>(context)) {
+    value->SetString("frame",
+                     IdentifiersFactory::FrameId(document->GetFrame()));
+  } else if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
+    value->SetString("worker", ToHexString(scope));
   }
   SetCallStack(value.get());
   return value;
@@ -1312,15 +1320,17 @@ std::unique_ptr<TracedValue> InspectorTimeStampEvent::Data(
 }
 
 std::unique_ptr<TracedValue> InspectorTracingSessionIdForWorkerEvent::Data(
-    LocalFrame* frame,
-    const String& url,
-    WorkerThread* worker_thread) {
+    const base::UnguessableToken& worker_devtools_token,
+    const base::UnguessableToken& parent_devtools_token,
+    const KURL& url,
+    PlatformThreadId worker_thread_id) {
   std::unique_ptr<TracedValue> value = TracedValue::Create();
-  value->SetString("frame", IdentifiersFactory::FrameId(frame));
-  value->SetString("url", url);
-  value->SetString("workerId", IdentifiersFactory::IdFromToken(
-                                   worker_thread->GetDevToolsWorkerToken()));
-  value->SetDouble("workerThreadId", worker_thread->GetPlatformThreadId());
+  value->SetString("frame",
+                   IdentifiersFactory::IdFromToken(parent_devtools_token));
+  value->SetString("url", url.GetString());
+  value->SetString("workerId",
+                   IdentifiersFactory::IdFromToken(worker_devtools_token));
+  value->SetDouble("workerThreadId", worker_thread_id);
   return value;
 }
 

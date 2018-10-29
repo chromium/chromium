@@ -37,9 +37,25 @@ ServiceWorkerReadFromCacheJob::ServiceWorkerReadFromCacheJob(
       version_(version),
       weak_factory_(this) {
   DCHECK(version_);
-  DCHECK(resource_type_ == RESOURCE_TYPE_SCRIPT ||
-         (resource_type_ == RESOURCE_TYPE_SERVICE_WORKER &&
-          version_->script_url() == request_->url()));
+#if DCHECK_IS_ON()
+  switch (version_->script_type()) {
+    case blink::mojom::ScriptType::kClassic:
+      // For classic scripts, the main service worker script should have the
+      // "service worker" resource type and imported scripts should have the
+      // "script" resource type.
+      DCHECK(resource_type_ == RESOURCE_TYPE_SCRIPT ||
+             (resource_type_ == RESOURCE_TYPE_SERVICE_WORKER &&
+              version_->script_url() == request_->url()));
+      break;
+    case blink::mojom::ScriptType::kModule:
+      // For module scripts, both the main service worker script and
+      // static-imported scripts should have the "service worker" resource type
+      // because static import inherits the resource type of the top-level
+      // module script.
+      DCHECK_EQ(RESOURCE_TYPE_SERVICE_WORKER, resource_type_);
+      break;
+  }
+#endif  // DCHECK_IS_ON()
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("ServiceWorker",
                                     "ServiceWorkerReadFromCacheJob", this,
                                     "URL", request_->url().spec());

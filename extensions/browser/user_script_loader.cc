@@ -258,8 +258,7 @@ void UserScriptLoader::StartLoad() {
   if (clear_scripts_) {
     user_scripts_->clear();
   } else {
-    for (UserScriptList::iterator it = user_scripts_->begin();
-         it != user_scripts_->end();) {
+    for (auto it = user_scripts_->begin(); it != user_scripts_->end();) {
       UserScriptIDPair id_pair(it->get()->id());
       if (removed_script_hosts_.count(id_pair) > 0u)
         it = user_scripts_->erase(it);

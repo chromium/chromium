@@ -96,13 +96,23 @@ Polymer({
         print_preview_new.ScalingState.INVALID;
   },
 
+  /**
+   * @return {string} The value to display for fit to page scling.
+   * @private
+   */
+  getFitToPageScalingDisplayValue_: function() {
+    return this.documentInfo.fitToPageScaling > 0 ?
+        this.documentInfo.fitToPageScaling.toString() :
+        '';
+  },
+
   /** @private */
   onFitToPageScalingSet_: function() {
     if (this.currentState_ != print_preview_new.ScalingState.FIT_TO_PAGE)
       return;
 
     this.ignoreValue_ = true;
-    this.currentValue_ = this.documentInfo.fitToPageScaling.toString();
+    this.currentValue_ = this.getFitToPageScalingDisplayValue_();
     this.ignoreValue_ = false;
   },
 
@@ -140,8 +150,10 @@ Polymer({
     if (this.ignoreValue_)
       return;
 
-    this.setSettingValid('scaling', this.inputValid_);
-    if (this.inputValid_)
+    if (this.currentValue_ !== '')
+      this.setSettingValid('scaling', this.inputValid_);
+
+    if (this.currentValue_ !== '' && this.inputValid_)
       this.setSetting('scaling', this.currentValue_);
   },
 
@@ -163,6 +175,8 @@ Polymer({
 
       if (newValue == false)
         this.currentValue_ = this.lastValidScaling_;
+      else
+        this.currentState_ = print_preview_new.ScalingState.FIT_TO_PAGE;
 
       // For tests only
       this.fire('update-checkbox-setting', 'fitToPage');
@@ -174,7 +188,8 @@ Polymer({
    * @private
    */
   getDisabled_: function() {
-    return this.disabled && this.inputValid_;
+    return this.disabled &&
+        this.currentState_ !== print_preview_new.ScalingState.INVALID;
   },
 
   /**
@@ -187,7 +202,8 @@ Polymer({
       this.ignoreFtp_ = true;
       this.$$('#fit-to-page-checkbox').checked = false;
       this.lastFitToPageValue_ = false;
-      this.setSetting('fitToPage', false);
+      if (current == print_preview_new.ScalingState.VALID)
+        this.setSetting('fitToPage', false);
       this.ignoreFtp_ = false;
     }
     if (current == print_preview_new.ScalingState.FIT_TO_PAGE) {
@@ -198,9 +214,15 @@ Polymer({
       }
       this.$$('#fit-to-page-checkbox').checked = true;
       this.ignoreValue_ = true;
-      this.currentValue_ = this.documentInfo.fitToPageScaling.toString();
+      this.currentValue_ = this.getFitToPageScalingDisplayValue_();
       this.ignoreValue_ = false;
     }
+    if (current == print_preview_new.ScalingState.VALID &&
+        previous == print_preview_new.ScalingState.INVALID &&
+        this.getSetting('fitToPage').available) {
+      this.setSetting('fitToPage', false);
+    }
+
   },
 
   /**

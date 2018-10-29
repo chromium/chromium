@@ -73,8 +73,7 @@ void RemoveCommandLineSwitch(const base::CommandLine& in_command_line,
                              base::CommandLine* out_command_line) {
   const base::CommandLine::SwitchMap& switch_map =
       in_command_line.GetSwitches();
-  for (base::CommandLine::SwitchMap::const_iterator i = switch_map.begin();
-       i != switch_map.end(); ++i) {
+  for (auto i = switch_map.begin(); i != switch_map.end(); ++i) {
     const std::string& switch_name = i->first;
     if (switch_name == switch_to_remove)
       continue;

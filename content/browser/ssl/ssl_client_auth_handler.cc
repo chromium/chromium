@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/content_browser_client.h"
@@ -29,8 +31,8 @@ class ClientCertificateDelegateImpl : public ClientCertificateDelegate {
 
   ~ClientCertificateDelegateImpl() override {
     if (!continue_called_) {
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(&SSLClientAuthHandler::CancelCertificateSelection,
                          handler_));
     }
@@ -41,8 +43,8 @@ class ClientCertificateDelegateImpl : public ClientCertificateDelegate {
                                scoped_refptr<net::SSLPrivateKey> key) override {
     DCHECK(!continue_called_);
     continue_called_ = true;
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&SSLClientAuthHandler::ContinueWithCertificate, handler_,
                        std::move(cert), std::move(key)));
   }
@@ -175,15 +177,15 @@ void SSLClientAuthHandler::DidGetClientCerts(
     // before checking ClientCertStore; ClientCertStore itself should probably
     // be handled by the embedder (https://crbug.com/394131), especially since
     // this doesn't work on Android (https://crbug.com/345641).
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&SSLClientAuthHandler::ContinueWithCertificate,
                        weak_factory_.GetWeakPtr(), nullptr, nullptr));
     return;
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&SelectCertificateOnUIThread, web_contents_getter_,
                      base::RetainedRef(cert_request_info_),
                      std::move(client_certs), weak_factory_.GetWeakPtr()));

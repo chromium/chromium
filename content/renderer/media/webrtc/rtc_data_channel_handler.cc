@@ -138,7 +138,7 @@ RtcDataChannelHandler::RtcDataChannelHandler(
 
   // Detach from the ctor thread since we can be constructed on either the main
   // or signaling threads.
-  thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(thread_checker_);
 
   IncrementCounter(CHANNEL_CREATED);
   if (channel->reliable())
@@ -157,7 +157,7 @@ RtcDataChannelHandler::RtcDataChannelHandler(
 }
 
 RtcDataChannelHandler::~RtcDataChannelHandler() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << "::dtor";
   // setClient might not have been called at all if the data channel was not
   // passed to Blink.  So, we call it here explicitly just to make sure the
@@ -168,7 +168,7 @@ RtcDataChannelHandler::~RtcDataChannelHandler() {
 
 void RtcDataChannelHandler::SetClient(
     blink::WebRTCDataChannelHandlerClient* client) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(3) << "setClient " << client;
   webkit_client_ = client;
   if (!client && observer_.get()) {
@@ -178,42 +178,42 @@ void RtcDataChannelHandler::SetClient(
 }
 
 blink::WebString RtcDataChannelHandler::Label() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return blink::WebString::FromUTF8(channel()->label());
 }
 
 bool RtcDataChannelHandler::IsReliable() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return channel()->reliable();
 }
 
 bool RtcDataChannelHandler::Ordered() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return channel()->ordered();
 }
 
 unsigned short RtcDataChannelHandler::MaxRetransmitTime() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return channel()->maxRetransmitTime();
 }
 
 unsigned short RtcDataChannelHandler::MaxRetransmits() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return channel()->maxRetransmits();
 }
 
 blink::WebString RtcDataChannelHandler::Protocol() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return blink::WebString::FromUTF8(channel()->protocol());
 }
 
 bool RtcDataChannelHandler::Negotiated() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return channel()->negotiated();
 }
 
 unsigned short RtcDataChannelHandler::Id() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return channel()->id();
 }
 
@@ -241,7 +241,7 @@ blink::WebRTCDataChannelHandlerClient::ReadyState convertReadyState(
 
 blink::WebRTCDataChannelHandlerClient::ReadyState
 RtcDataChannelHandler::GetState() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!observer_.get()) {
     return blink::WebRTCDataChannelHandlerClient::kReadyStateConnecting;
   } else {
@@ -250,12 +250,12 @@ RtcDataChannelHandler::GetState() const {
 }
 
 unsigned long RtcDataChannelHandler::BufferedAmount() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return channel()->buffered_amount();
 }
 
 bool RtcDataChannelHandler::SendStringData(const blink::WebString& data) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::string utf8_buffer = data.Utf8();
   webrtc::DataBuffer data_buffer(utf8_buffer);
   RecordMessageSent(data_buffer.size());
@@ -263,7 +263,7 @@ bool RtcDataChannelHandler::SendStringData(const blink::WebString& data) {
 }
 
 bool RtcDataChannelHandler::SendRawData(const char* data, size_t length) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   rtc::CopyOnWriteBuffer buffer(data, length);
   webrtc::DataBuffer data_buffer(buffer, true);
   RecordMessageSent(data_buffer.size());
@@ -271,7 +271,7 @@ bool RtcDataChannelHandler::SendRawData(const char* data, size_t length) {
 }
 
 void RtcDataChannelHandler::Close() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   channel()->Close();
   // Note that even though Close() will run synchronously, the readyState has
   // not changed yet since the state changes that occured on the signaling
@@ -289,7 +289,7 @@ RtcDataChannelHandler::channel() const {
 
 void RtcDataChannelHandler::OnStateChange(
     webrtc::DataChannelInterface::DataState state) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << "OnStateChange " << state;
 
   if (!webkit_client_) {
@@ -306,7 +306,7 @@ void RtcDataChannelHandler::OnStateChange(
 
 void RtcDataChannelHandler::OnBufferedAmountDecrease(
     unsigned previous_amount) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << "OnBufferedAmountDecrease " << previous_amount;
 
   if (!webkit_client_) {
@@ -320,7 +320,7 @@ void RtcDataChannelHandler::OnBufferedAmountDecrease(
 
 void RtcDataChannelHandler::OnMessage(
     std::unique_ptr<webrtc::DataBuffer> buffer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!webkit_client_) {
     // If this happens, the web application will not get notified of changes.
     NOTREACHED() << "WebRTCDataChannelHandlerClient not set.";
@@ -342,7 +342,7 @@ void RtcDataChannelHandler::OnMessage(
 }
 
 void RtcDataChannelHandler::RecordMessageSent(size_t num_bytes) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Currently, messages are capped at some fairly low limit (16 Kb?)
   // but we may allow unlimited-size messages at some point, so making
   // the histogram maximum quite large (100 Mb) to have some

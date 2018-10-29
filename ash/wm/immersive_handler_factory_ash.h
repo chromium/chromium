@@ -17,8 +17,6 @@ class ASH_EXPORT ImmersiveHandlerFactoryAsh : public ImmersiveHandlerFactory {
   ~ImmersiveHandlerFactoryAsh() override;
 
   // ImmersiveHandlerFactory:
-  std::unique_ptr<ImmersiveFocusWatcher> CreateFocusWatcher(
-      ImmersiveFullscreenController* controller) override;
   std::unique_ptr<ImmersiveGestureHandler> CreateGestureHandler(
       ImmersiveFullscreenController* controller) override;
 

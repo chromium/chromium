@@ -256,10 +256,8 @@ bool CookiesTreeModelUtil::GetCookieTreeNodeDictionary(
       dict->SetString(kKeySize,
                       ui::FormatBytes(service_worker_info.total_size_bytes));
       auto scopes = std::make_unique<base::ListValue>();
-      for (std::vector<GURL>::const_iterator it =
-               service_worker_info.scopes.begin();
-           it != service_worker_info.scopes.end();
-           ++it) {
+      for (auto it = service_worker_info.scopes.begin();
+           it != service_worker_info.scopes.end(); ++it) {
         scopes->AppendString(it->spec());
       }
       dict->Set(kKeyScopes, std::move(scopes));

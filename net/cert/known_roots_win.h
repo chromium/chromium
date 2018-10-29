@@ -5,7 +5,7 @@
 #ifndef NET_CERT_KNOWN_ROOTS_WIN_H_
 #define NET_CERT_KNOWN_ROOTS_WIN_H_
 
-#include "crypto/wincrypt_shim.h"
+#include "base/win/wincrypt_shim.h"
 
 namespace net {
 

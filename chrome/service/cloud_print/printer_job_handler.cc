@@ -217,7 +217,7 @@ bool PrinterJobHandler::OnJobCompleted(JobStatusUpdater* updater) {
   base::subtle::NoBarrier_AtomicIncrement(&g_total_jobs_done, 1);
   job_queue_handler_.JobDone(job_details_.job_id_);
 
-  for (JobStatusUpdaterList::iterator it = job_status_updater_list_.begin();
+  for (auto it = job_status_updater_list_.begin();
        it != job_status_updater_list_.end(); ++it) {
     if (it->get() == updater) {
       job_status_updater_list_.erase(it);

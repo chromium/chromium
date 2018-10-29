@@ -128,9 +128,12 @@ class GtkUi : public views::LinuxUI {
                      void*,
                      GParamSpec*);
 
+  // Loads all GTK-provided settings.
+  void LoadGtkValues();
+
   // Extracts colors and tints from the GTK theme, both for the
   // ThemeService interface and the colors we send to webkit.
-  void LoadGtkValues();
+  void UpdateColors();
 
   // Sets the Xcursor theme and size with the GTK theme and size.
   void UpdateCursorTheme();

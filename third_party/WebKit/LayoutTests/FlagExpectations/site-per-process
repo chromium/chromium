@@ -105,8 +105,6 @@ Bug(none) virtual/sharedarraybuffer/external/wpt/html/infrastructure/safe-passin
 Bug(none) virtual/sharedarraybuffer/external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-similar-but-cross-origin-success.sub.html [ Skip ]
 Bug(none) external/wpt/wasm/serialization/window-domain-success.sub.html [ Skip ]
 Bug(none) external/wpt/wasm/serialization/window-similar-but-cross-origin-success.sub.html [ Skip ]
-Bug(none) virtual/enable_wasm/external/wpt/wasm/serialization/window-domain-success.sub.html [ Skip ]
-Bug(none) virtual/enable_wasm/external/wpt/wasm/serialization/window-similar-but-cross-origin-success.sub.html [ Skip ]
 
 # Layout tests don't work for printing cross-site frames.
 crbug.com/822372 http/tests/printing/cross-site-frame.html [ Crash ]
@@ -118,3 +116,6 @@ crbug.com/807675 http/tests/images/image-decode-in-frame.html [ Crash Failure ]
 
 # https://crbug.com/872952: Autoplay is still disabled if there is no gesture.
 crbug.com/872952 http/tests/media/autoplay/document-user-activation-feature-policy-iframe-no-gesture.html [ Failure Pass Timeout ]
+
+# https://crbug.com/895001: Blink layout tests with cross-origin mouse clicks can fail without slow path hit testing
+crbug.com/895001 external/wpt/html/user-activation/message-event-activation-api-iframe-cross-origin.sub.tentative.html [ Timeout Pass ]

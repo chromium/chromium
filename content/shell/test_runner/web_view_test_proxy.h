@@ -61,7 +61,6 @@ class TEST_RUNNER_EXPORT ProxyWebWidgetClient : public blink::WebWidgetClient {
 
   // blink::WebWidgetClient implementation.
   void DidInvalidateRect(const blink::WebRect&) override;
-  blink::WebLayerTreeView* InitializeLayerTreeView() override;
   bool AllowsBrokenNullLayerTreeView() const override;
   void ScheduleAnimation() override;
   void IntrinsicSizingInfoChanged(
@@ -79,7 +78,6 @@ class TEST_RUNNER_EXPORT ProxyWebWidgetClient : public blink::WebWidgetClient {
   blink::WebRect ViewRect() override;
   void SetToolTipText(const blink::WebString&,
                       blink::WebTextDirection hint) override;
-  blink::WebScreenInfo GetScreenInfo() override;
   bool RequestPointerLock() override;
   void RequestPointerUnlock() override;
   bool IsPointerLocked() override;
@@ -97,7 +95,7 @@ class TEST_RUNNER_EXPORT ProxyWebWidgetClient : public blink::WebWidgetClient {
   void ShowVirtualKeyboardOnElementFocus() override;
   void ConvertViewportToWindow(blink::WebRect* rect) override;
   void ConvertWindowToViewport(blink::WebFloatRect* rect) override;
-  void StartDragging(blink::WebReferrerPolicy,
+  void StartDragging(network::mojom::ReferrerPolicy,
                      const blink::WebDragData&,
                      blink::WebDragOperationsMask,
                      const SkBitmap& drag_image,
@@ -193,10 +191,13 @@ class TEST_RUNNER_EXPORT WebViewTestProxy : public content::RenderViewImpl,
                              const blink::WebString& frame_name,
                              blink::WebNavigationPolicy policy,
                              bool suppress_opener,
-                             blink::WebSandboxFlags sandbox_flags) override;
+                             blink::WebSandboxFlags sandbox_flags,
+                             const blink::SessionStorageNamespaceId&
+                                 session_storage_namespace_id) override;
   void PrintPage(blink::WebLocalFrame* frame) override;
   blink::WebString AcceptLanguages() override;
   void DidFocus(blink::WebLocalFrame* calling_frame) override;
+  blink::WebScreenInfo GetScreenInfo() override;
   blink::WebWidgetClient* WidgetClient() override;
 
  private:

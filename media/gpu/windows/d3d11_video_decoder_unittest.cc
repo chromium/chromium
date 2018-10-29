@@ -123,7 +123,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   MOCK_METHOD1(MockInitCB, void(bool));
 };
 
-TEST_F(D3D11VideoDecoderTest, RequiresD3D11_1) {
+TEST_F(D3D11VideoDecoderTest, RequiresD3D11_0) {
   D3D_FEATURE_LEVEL feature_levels[100];
   int num_levels = 0;
 
@@ -149,12 +149,12 @@ TEST_F(D3D11VideoDecoderTest, RequiresD3D11_1) {
 
   // Verify that it requests exactly 11.1, and nothing earlier.
   // Later is okay.
-  bool min_is_d3d11_1 = false;
+  bool min_is_d3d11_0 = false;
   for (int i = 0; i < num_levels; i++) {
-    min_is_d3d11_1 |= feature_levels[i] == D3D_FEATURE_LEVEL_11_1;
-    ASSERT_TRUE(feature_levels[i] >= D3D_FEATURE_LEVEL_11_1);
+    min_is_d3d11_0 |= feature_levels[i] == D3D_FEATURE_LEVEL_11_0;
+    ASSERT_TRUE(feature_levels[i] >= D3D_FEATURE_LEVEL_11_0);
   }
-  ASSERT_TRUE(min_is_d3d11_1);
+  ASSERT_TRUE(min_is_d3d11_0);
 }
 
 TEST_F(D3D11VideoDecoderTest, OnlySupportsVP9WithFlagEnabled) {

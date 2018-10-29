@@ -71,11 +71,10 @@ class CoordinationUnitGraph {
   SystemCoordinationUnitImpl* FindOrCreateSystemCoordinationUnit(
       std::unique_ptr<service_manager::ServiceContextRef> service_ref);
 
-  // Search functions for type and ID queries.
-  std::vector<CoordinationUnitBase*> GetCoordinationUnitsOfType(
-      CoordinationUnitType type);
-
   std::vector<ProcessCoordinationUnitImpl*> GetAllProcessCoordinationUnits();
+  std::vector<FrameCoordinationUnitImpl*> GetAllFrameCoordinationUnits();
+  std::vector<PageCoordinationUnitImpl*> GetAllPageCoordinationUnits();
+
   // Retrieves the process CU with PID |pid|, if any.
   ProcessCoordinationUnitImpl* GetProcessCoordinationUnitByPid(
       base::ProcessId pid);
@@ -102,6 +101,9 @@ class CoordinationUnitGraph {
   friend class ProcessCoordinationUnitImpl;
   void BeforeProcessPidChange(ProcessCoordinationUnitImpl* process,
                               base::ProcessId new_pid);
+
+  template <typename CUType>
+  std::vector<CUType*> GetAllCoordinationUnitsOfType();
 
   CoordinationUnitID system_coordination_unit_id_;
   CUIDMap coordination_units_;

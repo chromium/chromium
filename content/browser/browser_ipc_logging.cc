@@ -5,8 +5,10 @@
 #include "content/public/browser/browser_ipc_logging.h"
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "content/common/child_control.mojom.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/bind_interface_helpers.h"
@@ -38,9 +40,8 @@ void EnableIPCLogging(bool enable) {
 
   // Now tell subprocesses.  Messages to ChildProcess-derived
   // processes must be done on the IO thread.
-  BrowserThread::PostTask(
-      BrowserThread::IO,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::Bind(EnableIPCLoggingForChildProcesses, enable));
 
   // Finally, tell the renderers which don't derive from ChildProcess.

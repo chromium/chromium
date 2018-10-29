@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tracing_controller.h"
@@ -44,14 +45,14 @@ class AwTraceDataEndpoint
 
   void ReceiveTraceFinalContents(
       std::unique_ptr<const base::DictionaryValue> metadata) override {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(std::move(completed_callback_), std::move(metadata)));
   }
 
   void ReceiveTraceChunk(std::unique_ptr<std::string> chunk) override {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(received_chunk_callback_, std::move(chunk)));
   }
 

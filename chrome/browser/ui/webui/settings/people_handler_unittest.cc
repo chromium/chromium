@@ -8,13 +8,17 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/signin/account_tracker_service_factory.h"
 #include "chrome/browser/signin/fake_signin_manager_builder.h"
+#include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
+#include "chrome/browser/signin/scoped_account_consistency.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -31,10 +35,13 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_tracker_service.h"
 #include "components/signin/core/browser/fake_auth_status_provider.h"
+#include "components/signin/core/browser/profile_oauth2_token_service.h"
 #include "components/signin/core/browser/signin_manager.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/unified_consent/scoped_unified_consent.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -206,7 +213,7 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
 
     mock_pss_ = static_cast<ProfileSyncServiceMock*>(
         ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(), BuildMockProfileSyncService));
+            profile(), base::BindRepeating(&BuildMockProfileSyncService)));
     ON_CALL(*mock_pss_, GetAuthError()).WillByDefault(ReturnRef(error_));
     ON_CALL(*mock_pss_, GetPassphraseType())
         .WillByDefault(Return(syncer::PassphraseType::IMPLICIT_PASSPHRASE));
@@ -689,9 +696,7 @@ TEST_F(PeopleHandlerTest, SetNewCustomPassphrase) {
   ON_CALL(*mock_pss_, IsUsingSecondaryPassphrase())
       .WillByDefault(Return(false));
   SetupInitializedProfileSyncService();
-  EXPECT_CALL(*mock_pss_,
-              SetEncryptionPassphrase("custom_passphrase",
-                                      ProfileSyncService::EXPLICIT));
+  EXPECT_CALL(*mock_pss_, SetEncryptionPassphrase("custom_passphrase"));
 
   handler_->HandleSetEncryption(&list_args);
   ExpectPageStatusResponse(PeopleHandler::kConfigurePageStatus);
@@ -1001,5 +1006,64 @@ TEST_F(PeopleHandlerTest, TurnOnEncryptAllDisallowed) {
 
   ExpectPageStatusResponse(PeopleHandler::kConfigurePageStatus);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class PeopleHandlerDiceUnifiedConsentTest
+    : public ::testing::TestWithParam<std::tuple<bool, bool>> {};
+
+TEST_P(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
+  content::TestBrowserThreadBundle test_browser_thread_bundle;
+
+  // Decode test parameters.
+  bool dice_enabled;
+  bool unified_consent_enabled;
+  std::tie(dice_enabled, unified_consent_enabled) = GetParam();
+  unified_consent::ScopedUnifiedConsent unified_consent(
+      unified_consent_enabled
+          ? unified_consent::UnifiedConsentFeatureState::kEnabledWithBump
+          : unified_consent::UnifiedConsentFeatureState::kDisabled);
+  ScopedAccountConsistency dice(
+      dice_enabled ? signin::AccountConsistencyMethod::kDice
+                   : signin::AccountConsistencyMethod::kDiceFixAuthErrors);
+
+  // Setup the profile.
+  TestingProfile profile;
+  AccountTrackerService* account_tracker =
+      AccountTrackerServiceFactory::GetForProfile(&profile);
+  SigninManager* signin_manager = SigninManagerFactory::GetForProfile(&profile);
+  ProfileOAuth2TokenService* token_service =
+      ProfileOAuth2TokenServiceFactory::GetForProfile(&profile);
+  std::string account_1 =
+      account_tracker->SeedAccountInfo("1234", "a@gmail.com");
+  std::string account_2 =
+      account_tracker->SeedAccountInfo("5678", "b@gmail.com");
+  token_service->UpdateCredentials(account_1, "token");
+  token_service->UpdateCredentials(account_2, "token");
+  signin_manager->SetAuthenticatedAccountInfo("1234", "a@gmail.com");
+
+  PeopleHandler handler(&profile);
+  std::unique_ptr<base::ListValue> accounts_list =
+      handler.GetStoredAccountsList();
+
+  if (dice_enabled) {
+    EXPECT_EQ(2u, accounts_list->GetSize());
+    EXPECT_EQ("a@gmail.com",
+              accounts_list->GetList()[0].FindKey("email")->GetString());
+    EXPECT_EQ("b@gmail.com",
+              accounts_list->GetList()[1].FindKey("email")->GetString());
+  } else if (unified_consent_enabled) {
+    EXPECT_EQ(1u, accounts_list->GetSize());
+    EXPECT_EQ("a@gmail.com",
+              accounts_list->GetList()[0].FindKey("email")->GetString());
+  } else {
+    EXPECT_EQ(0u, accounts_list->GetSize());
+  }
+}
+
+INSTANTIATE_TEST_CASE_P(Test,
+                        PeopleHandlerDiceUnifiedConsentTest,
+                        ::testing::Combine(::testing::Bool(),
+                                           ::testing::Bool()));
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace settings

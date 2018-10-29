@@ -4,7 +4,7 @@
 function startTest()
 {
     testRunner.dumpAsText();
-    testRunner.dumpChildFramesAsText();
+    testRunner.dumpChildFrames();
     testRunner.queueLoad("resources/reload-subframe.pl?type=object");
     testRunner.queueReload();
 }

@@ -474,7 +474,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl>DEF<bdo dir=ltr>abc</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() - 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left - 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -494,7 +495,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl>DEF<bdo dir=ltr>abc</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -514,14 +516,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>abc</bdo>DEF</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 57;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 57;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo "
-      "dir=\"ltr\">abc</bdo>DEF|</bdo></div>",
+      "dir=\"ltr\">|abc</bdo>DEF</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -534,14 +537,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>abc</bdo>DEF</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 63;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 63;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo "
-      "dir=\"ltr\">abc</bdo>DEF|</bdo></div>",
+      "dir=\"ltr\">|abc</bdo>DEF</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -554,7 +558,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>abc</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() - 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left - 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -574,7 +579,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>abc</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -594,14 +600,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>abc</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo "
-      "dir=\"ltr\">abc|</bdo></bdo></div>",
+      "dir=\"ltr\">|abc</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -614,14 +621,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>abc</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo "
-      "dir=\"ltr\">abc|</bdo></bdo></div>",
+      "dir=\"ltr\">|abc</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -635,14 +643,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo>ghi</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo>ghi|</bdo></bdo></div>",
+      "dir=\"rtl\">ABC|</bdo>ghi</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -656,14 +665,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo>ghi</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo>ghi|</bdo></bdo></div>",
+      "dir=\"rtl\">ABC|</bdo>ghi</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -677,14 +687,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>ghi<bdo "
       "dir=rtl>ABC</bdo>def</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 57;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 57;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\">ABC</bdo>def|</bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo>def</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -698,14 +709,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>ghi<bdo "
       "dir=rtl>ABC</bdo>def</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 63;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 63;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\">ABC</bdo>def|</bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo>def</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -719,7 +731,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -740,7 +753,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -761,14 +775,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo "
       "dir=rtl>ABC</bdo>def</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC|</bdo>def</bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo>def</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -782,14 +797,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo "
       "dir=rtl>ABC</bdo>def</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC|</bdo>def</bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo>def</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -802,14 +818,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl>GHI<bdo dir=ltr>abc</bdo>DEF</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">GHI<bdo "
-      "dir=\"ltr\">abc</bdo>DEF|</bdo></div>",
+      "dir=\"ltr\">abc</bdo>|DEF</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -822,14 +839,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl>GHI<bdo dir=ltr>abc</bdo>DEF</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">GHI<bdo "
-      "dir=\"ltr\">abc</bdo>DEF|</bdo></div>",
+      "dir=\"ltr\">abc|</bdo>DEF</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -842,14 +860,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl>DEF<bdo dir=ltr>abc</bdo>GHI</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 57;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 57;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc</bdo>GHI|</bdo></div>",
+      "dir=\"ltr\">|abc</bdo>GHI</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -862,14 +881,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl>DEF<bdo dir=ltr>abc</bdo>GHI</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 63;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 63;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
-      "<div dir=\"rtl\"><bdo dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc</bdo>GHI|</bdo></div>",
+      "<div dir=\"rtl\"><bdo dir=\"rtl\">DEF|<bdo "
+      "dir=\"ltr\">abc</bdo>GHI</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -882,14 +902,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>abc</bdo>DEF</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo "
-      "dir=\"ltr\">abc</bdo>DEF|</bdo></div>",
+      "dir=\"ltr\">abc</bdo>|DEF</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -902,14 +923,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>abc</bdo>DEF</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo "
-      "dir=\"ltr\">abc</bdo>DEF|</bdo></div>",
+      "dir=\"ltr\">abc|</bdo>DEF</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -922,14 +944,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl>DEF<bdo dir=ltr>abc</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc|</bdo></bdo></div>",
+      "dir=\"ltr\">|abc</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -942,19 +965,20 @@ TEST_P(ParameterizedHitTestingBidiTest,
   SetBodyContent(
       "<div dir=rtl><bdo dir=rtl>DEF<bdo dir=ltr>abc</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
-      "<div dir=\"rtl\"><bdo dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc|</bdo></bdo></div>",
+      "<div dir=\"rtl\"><bdo dir=\"rtl\">DEF|<bdo "
+      "dir=\"ltr\">abc</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryLeftSideOfLeftEdgeOftwoNestedRunsWithBaseRunEnd) {
   // Visual: |a b c F E D g h i
   // Bidi:    2 2 2 1 1 1 0 0 0
@@ -974,8 +998,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryRightSideOfLeftEdgeOftwoNestedRunsWithBaseRunEnd) {
   // Visual: |a b c F E D g h i
   // Bidi:    2 2 2 1 1 1 0 0 0
@@ -995,8 +1019,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryLeftSideOfRightEdgeOftwoNestedRunsWithBaseRunEnd) {
   // Visual:  g h i F E D a b c|
   // Bidi:    0 0 0 1 1 1 2 2 2
@@ -1016,8 +1040,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryRightSideOfRightEdgeOftwoNestedRunsWithBaseRunEnd) {
   // Visual:  g h i F E D a b c|
   // Bidi:    0 0 0 1 1 1 2 2 2
@@ -1445,8 +1469,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryLeftSideOfLeftEdgeOftwoNestedRunsWithBaseRunEnd) {
   // Visual: |C B A d e f I H G
   // Bidi:    3 3 3 2 2 2 1 1 1
@@ -1456,7 +1480,8 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl>GHI<bdo dir=ltr><bdo "
       "dir=rtl>ABC</bdo>def</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() - 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left - 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -1467,8 +1492,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryRightSideOfLeftEdgeOftwoNestedRunsWithBaseRunEnd) {
   // Visual: |C B A d e f I H G
   // Bidi:    3 3 3 2 2 2 1 1 1
@@ -1478,7 +1503,8 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl>GHI<bdo dir=ltr><bdo "
       "dir=rtl>ABC</bdo>def</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -1489,8 +1515,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryLeftSideOfRightEdgeOftwoNestedRunsWithBaseRunEnd) {
   // Visual:  I H G d e f C B A|
   // Bidi:    1 1 1 2 2 2 3 3 3
@@ -1500,19 +1526,20 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo></bdo>GHI</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 87;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 87;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>GHI|</bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>GHI</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryRightSideOfRightEdgeOftwoNestedRunsWithBaseRunEnd) {
   // Visual:  I H G d e f C B A|
   // Bidi:    1 1 1 2 2 2 3 3 3
@@ -1522,14 +1549,15 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo></bdo>GHI</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 93;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 93;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>GHI|</bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>GHI</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1543,7 +1571,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo "
       "dir=rtl>ABC</bdo>def</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() - 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left - 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -1564,7 +1593,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo "
       "dir=rtl>ABC</bdo>def</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -1585,14 +1615,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 57;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 57;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC|</bdo></bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1606,14 +1637,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 63;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 63;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC|</bdo></bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1627,14 +1659,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>ghi<bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>jkl</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\">DEF<bdo dir=\"ltr\">abc</bdo></bdo>jkl|</bdo></bdo></div>",
+      "dir=\"rtl\">DEF|<bdo dir=\"ltr\">abc</bdo></bdo>jkl</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1648,14 +1681,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>ghi<bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>jkl</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\">DEF<bdo dir=\"ltr\">abc</bdo></bdo>jkl|</bdo></bdo></div>",
+      "dir=\"rtl\">DEF<bdo dir=\"ltr\">abc|</bdo></bdo>jkl</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1669,14 +1703,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>jkl<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo>ghi</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 87;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 87;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">jkl<bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>DEF</bdo>ghi|</bdo></bdo></div>",
+      "dir=\"rtl\"><bdo dir=\"ltr\">|abc</bdo>DEF</bdo>ghi</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1690,14 +1725,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>jkl<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo>ghi</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 93;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 93;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">jkl<bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>DEF</bdo>ghi|</bdo></bdo></div>",
+      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>|DEF</bdo>ghi</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1711,7 +1747,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>ghi<bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -1732,14 +1769,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>ghi<bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\">DEF|<bdo dir=\"ltr\">abc</bdo></bdo></bdo></bdo></div>",
+      "dir=\"rtl\">DEF<bdo dir=\"ltr\">abc|</bdo></bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1753,14 +1791,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo>ghi</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 57;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 57;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>DEF|</bdo>ghi</bdo></bdo></div>",
+      "dir=\"rtl\"><bdo dir=\"ltr\">|abc</bdo>DEF</bdo>ghi</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1774,14 +1813,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo>ghi</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 63;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 63;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>DEF|</bdo>ghi</bdo></bdo></div>",
+      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>|DEF</bdo>ghi</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1795,14 +1835,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>JKL<bdo dir=ltr><bdo "
       "dir=rtl>ABC</bdo>def</bdo>GHI</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">JKL<bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo>GHI|</bdo></div>",
+      "dir=\"rtl\">ABC</bdo>def</bdo>|GHI</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1816,14 +1857,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>JKL<bdo dir=ltr><bdo "
       "dir=rtl>ABC</bdo>def</bdo>GHI</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">JKL<bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo>GHI|</bdo></div>",
+      "dir=\"rtl\">ABC|</bdo>def</bdo>GHI</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1837,14 +1879,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>GHI<bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo></bdo>JKL</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 87;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 87;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">GHI<bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>JKL|</bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>JKL</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1858,14 +1901,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>GHI<bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo></bdo>JKL</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 93;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 93;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
-      "<div dir=\"rtl\"><bdo dir=\"rtl\">GHI<bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>JKL|</bdo></div>",
+      "<div dir=\"rtl\"><bdo dir=\"rtl\">GHI|<bdo dir=\"ltr\">def<bdo "
+      "dir=\"rtl\">ABC</bdo></bdo>JKL</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1879,14 +1923,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo "
       "dir=rtl>ABC</bdo>def</bdo>GHI</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo>GHI|</bdo></div>",
+      "dir=\"rtl\">ABC</bdo>def</bdo>|GHI</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1900,14 +1945,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo "
       "dir=rtl>ABC</bdo>def</bdo>GHI</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo>GHI|</bdo></div>",
+      "dir=\"rtl\">ABC|</bdo>def</bdo>GHI</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1921,14 +1967,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>GHI<bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 57;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 57;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">GHI<bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC|</bdo></bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -1942,19 +1989,20 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>GHI<bdo dir=ltr>def<bdo "
       "dir=rtl>ABC</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 63;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 63;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
-      "<div dir=\"rtl\"><bdo dir=\"rtl\">GHI<bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC|</bdo></bdo></bdo></div>",
+      "<div dir=\"rtl\"><bdo dir=\"rtl\">GHI|<bdo dir=\"ltr\">def<bdo "
+      "dir=\"rtl\">ABC</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryLeftSideOfLeftEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual: |C B A d e f I H G j k l
   // Bidi:    3 3 3 2 2 2 1 1 1 0 0 0
@@ -1975,8 +2023,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryRightSideOfLeftEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual: |C B A d e f I H G j k l
   // Bidi:    3 3 3 2 2 2 1 1 1 0 0 0
@@ -1997,8 +2045,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryLeftSideOfRightEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual:  j k l I H G d e f C B A|
   // Bidi:    0 0 0 1 1 1 2 2 2 3 3 3
@@ -2019,8 +2067,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryRightSideOfRightEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual:  j k l I H G d e f C B A|
   // Bidi:    0 0 0 1 1 1 2 2 2 3 3 3
@@ -2188,8 +2236,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockLtrBaseRunRightSideOfRightEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual:  m n o I H G d e f C B A|j k l
   // Bidi:    0 0 0 1 1 1 2 2 2 3 3 3 0 0 0
@@ -2359,8 +2407,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockRtlBaseRunRightSideOfRightEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual:  O N M g h i F E D a b c|L K J
   // Bidi:    1 1 1 2 2 2 3 3 3 4 4 4 1 1 1
@@ -2467,8 +2515,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryLeftSideOfLeftEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual: |a b c F E D g h i L K J
   // Bidi:    4 4 4 3 3 3 2 2 2 1 1 1
@@ -2478,7 +2526,8 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl>JKL<bdo dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() - 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left - 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2489,8 +2538,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryRightSideOfLeftEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual: |a b c F E D g h i L K J
   // Bidi:    4 4 4 3 3 3 2 2 2 1 1 1
@@ -2500,7 +2549,8 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl>JKL<bdo dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2511,8 +2561,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryLeftSideOfRightEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual:  L K J g h i F E D a b c|
   // Bidi:    1 1 1 2 2 2 3 3 3 4 4 4
@@ -2522,19 +2572,20 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo>JKL</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 117;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 117;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>DEF</bdo></bdo>JKL|</bdo></div>",
+      "dir=\"rtl\"><bdo dir=\"ltr\">|abc</bdo>DEF</bdo></bdo>JKL</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryRightSideOfRightEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual:  L K J g h i F E D a b c|
   // Bidi:    1 1 1 2 2 2 3 3 3 4 4 4
@@ -2544,14 +2595,15 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo>JKL</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 123;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 123;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>DEF</bdo></bdo>JKL|</bdo></div>",
+      "dir=\"rtl\"><bdo dir=\"ltr\">|abc</bdo>DEF</bdo></bdo>JKL</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2565,7 +2617,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() - 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left - 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2586,7 +2639,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2607,14 +2661,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 87;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 87;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc|</bdo>DEF</bdo></bdo></bdo></div>",
+      "dir=\"rtl\"><bdo dir=\"ltr\">|abc</bdo>DEF</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2628,14 +2683,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 93;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 93;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc|</bdo>DEF</bdo></bdo></bdo></div>",
+      "dir=\"rtl\"><bdo dir=\"ltr\">|abc</bdo>DEF</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2649,15 +2705,16 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>jkl<bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo>mno</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">jkl<bdo "
-      "dir=\"rtl\">GHI<bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo></bdo>mno|</bdo></bdo></div>",
+      "dir=\"rtl\">GHI|<bdo dir=\"ltr\"><bdo "
+      "dir=\"rtl\">ABC</bdo>def</bdo></bdo>mno</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2671,7 +2728,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>jkl<bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo>mno</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2679,7 +2737,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">jkl<bdo "
       "dir=\"rtl\">GHI<bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo></bdo>mno|</bdo></bdo></div>",
+      "dir=\"rtl\">ABC|</bdo>def</bdo></bdo>mno</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2693,7 +2751,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>mno<bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo>jkl</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 117;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 117;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2701,12 +2760,12 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">mno<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>GHI</bdo>jkl|</bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>GHI</bdo>jkl</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockLtrBaseRunRightSideOfRightEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual:  m n o I H G d e f C B A|j k l
   // Bidi:    2 2 2 3 3 3 4 4 4 5 5 5 2 2 2
@@ -2716,7 +2775,8 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>mno<bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo>jkl</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 123;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 123;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2724,7 +2784,7 @@ TEST_F(
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">mno<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>GHI</bdo>jkl|</bdo></bdo></div>",
+      "dir=\"rtl\">ABC</bdo></bdo>|GHI</bdo>jkl</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2738,7 +2798,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>jkl<bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2760,15 +2821,16 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>jkl<bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">jkl<bdo "
-      "dir=\"rtl\">GHI|<bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo></bdo></bdo></bdo></div>",
+      "dir=\"rtl\">GHI<bdo dir=\"ltr\"><bdo "
+      "dir=\"rtl\">ABC|</bdo>def</bdo></bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2782,7 +2844,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo>jkl</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 87;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 87;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2790,7 +2853,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>GHI|</bdo>jkl</bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>GHI</bdo>jkl</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2804,7 +2867,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo>jkl</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 93;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 93;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2812,7 +2876,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>GHI|</bdo>jkl</bdo></bdo></div>",
+      "dir=\"rtl\">ABC</bdo></bdo>|GHI</bdo>jkl</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2826,7 +2890,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>MNO<bdo dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo>JKL</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2834,7 +2899,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">MNO<bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc</bdo></bdo>ghi</bdo>JKL|</bdo></div>",
+      "dir=\"ltr\">abc</bdo></bdo>ghi</bdo>|JKL</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2848,7 +2913,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>MNO<bdo dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo>JKL</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2856,7 +2922,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">MNO<bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc</bdo></bdo>ghi</bdo>JKL|</bdo></div>",
+      "dir=\"ltr\">abc|</bdo></bdo>ghi</bdo>JKL</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2870,19 +2936,20 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>JKL<bdo dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo>MNO</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 117;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 117;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">JKL<bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>DEF</bdo></bdo>MNO|</bdo></div>",
+      "dir=\"rtl\"><bdo dir=\"ltr\">|abc</bdo>DEF</bdo></bdo>MNO</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockRtlBaseRunRightSideOfRightEdgeOfthreeNestedRunsWithBaseRunEnd) {
   // Visual:  O N M g h i F E D a b c|L K J
   // Bidi:    1 1 1 2 2 2 3 3 3 4 4 4 1 1 1
@@ -2892,14 +2959,15 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl>JKL<bdo dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo>MNO</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 123;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 123;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
-      "<div dir=\"rtl\"><bdo dir=\"rtl\">JKL<bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>DEF</bdo></bdo>MNO|</bdo></div>",
+      "<div dir=\"rtl\"><bdo dir=\"rtl\">JKL|<bdo dir=\"ltr\">ghi<bdo "
+      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>DEF</bdo></bdo>MNO</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2913,7 +2981,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo>JKL</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2921,7 +2990,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc</bdo></bdo>ghi</bdo>JKL|</bdo></div>",
+      "dir=\"ltr\">abc</bdo></bdo>ghi</bdo>|JKL</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2935,7 +3004,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo>JKL</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -2943,7 +3013,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc</bdo></bdo>ghi</bdo>JKL|</bdo></div>",
+      "dir=\"ltr\">abc|</bdo></bdo>ghi</bdo>JKL</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2957,14 +3027,15 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>JKL<bdo dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 87;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 87;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">JKL<bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc|</bdo>DEF</bdo></bdo></bdo></div>",
+      "dir=\"rtl\"><bdo dir=\"ltr\">|abc</bdo>DEF</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -2978,19 +3049,20 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>JKL<bdo dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 93;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 93;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
-      "<div dir=\"rtl\"><bdo dir=\"rtl\">JKL<bdo dir=\"ltr\">ghi<bdo "
-      "dir=\"rtl\"><bdo dir=\"ltr\">abc|</bdo>DEF</bdo></bdo></bdo></div>",
+      "<div dir=\"rtl\"><bdo dir=\"rtl\">JKL|<bdo dir=\"ltr\">ghi<bdo "
+      "dir=\"rtl\"><bdo dir=\"ltr\">abc</bdo>DEF</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryLeftSideOfLeftEdgeOffourNestedRunsWithBaseRunEnd) {
   // Visual: |a b c F E D g h i L K J m n o
   // Bidi:    4 4 4 3 3 3 2 2 2 1 1 1 0 0 0
@@ -3012,8 +3084,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryRightSideOfLeftEdgeOffourNestedRunsWithBaseRunEnd) {
   // Visual: |a b c F E D g h i L K J m n o
   // Bidi:    4 4 4 3 3 3 2 2 2 1 1 1 0 0 0
@@ -3035,8 +3107,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryLeftSideOfRightEdgeOffourNestedRunsWithBaseRunEnd) {
   // Visual:  m n o L K J g h i F E D a b c|
   // Bidi:    0 0 0 1 1 1 2 2 2 3 3 3 4 4 4
@@ -3057,8 +3129,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InLtrBlockAtLineBoundaryRightSideOfRightEdgeOffourNestedRunsWithBaseRunEnd) {
   // Visual:  m n o L K J g h i F E D a b c|
   // Bidi:    0 0 0 1 1 1 2 2 2 3 3 3 4 4 4
@@ -3512,8 +3584,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryLeftSideOfLeftEdgeOffourNestedRunsWithBaseRunEnd) {
   // Visual: |C B A d e f I H G j k l O N M
   // Bidi:    5 5 5 4 4 4 3 3 3 2 2 2 1 1 1
@@ -3523,7 +3595,8 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl>MNO<bdo dir=ltr><bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo>jkl</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() - 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left - 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3535,8 +3608,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryRightSideOfLeftEdgeOffourNestedRunsWithBaseRunEnd) {
   // Visual: |C B A d e f I H G j k l O N M
   // Bidi:    5 5 5 4 4 4 3 3 3 2 2 2 1 1 1
@@ -3546,7 +3619,8 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl>MNO<bdo dir=ltr><bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo>jkl</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3558,8 +3632,8 @@ TEST_F(
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryLeftSideOfRightEdgeOffourNestedRunsWithBaseRunEnd) {
   // Visual:  O N M j k l I H G d e f C B A|
   // Bidi:    1 1 1 2 2 2 3 3 3 4 4 4 5 5 5
@@ -3569,7 +3643,8 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>jkl<bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo></bdo>MNO</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 147;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 147;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3577,12 +3652,12 @@ TEST_F(
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">jkl<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>GHI</bdo></bdo>MNO|</bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>GHI</bdo></bdo>MNO</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
-TEST_F(
-    HitTestingBidiTest,
+TEST_P(
+    ParameterizedHitTestingBidiTest,
     InRtlBlockAtLineBoundaryRightSideOfRightEdgeOffourNestedRunsWithBaseRunEnd) {
   // Visual:  O N M j k l I H G d e f C B A|
   // Bidi:    1 1 1 2 2 2 3 3 3 4 4 4 5 5 5
@@ -3592,7 +3667,8 @@ TEST_F(
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>jkl<bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo></bdo>MNO</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 153;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 153;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3600,7 +3676,7 @@ TEST_F(
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">jkl<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>GHI</bdo></bdo>MNO|</bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>GHI</bdo></bdo>MNO</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3614,7 +3690,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo>jkl</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() - 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left - 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3636,7 +3713,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo>jkl</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 3;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 3;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3658,7 +3736,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>jkl<bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 117;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 117;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3666,7 +3745,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">jkl<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC|</bdo></bdo>GHI</bdo></bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>GHI</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3680,7 +3759,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>jkl<bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 123;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 123;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3688,7 +3768,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">jkl<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC|</bdo></bdo>GHI</bdo></bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>GHI</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3703,15 +3783,16 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo></bdo>pqr</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">mno<bdo "
-      "dir=\"rtl\">JKL<bdo dir=\"ltr\"><bdo dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc</bdo></bdo>ghi</bdo></bdo>pqr|</bdo></bdo></div>",
+      "dir=\"rtl\">JKL|<bdo dir=\"ltr\"><bdo dir=\"rtl\">DEF<bdo "
+      "dir=\"ltr\">abc</bdo></bdo>ghi</bdo></bdo>pqr</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3726,7 +3807,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo></bdo>pqr</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3734,7 +3816,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">mno<bdo "
       "dir=\"rtl\">JKL<bdo dir=\"ltr\"><bdo dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc</bdo></bdo>ghi</bdo></bdo>pqr|</bdo></bdo></div>",
+      "dir=\"ltr\">abc|</bdo></bdo>ghi</bdo></bdo>pqr</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3749,7 +3831,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo>JKL</bdo>mno</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 147;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 147;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3772,7 +3855,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo>JKL</bdo>mno</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 153;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 153;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3780,7 +3864,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">pqr<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo dir=\"rtl\"><bdo "
-      "dir=\"ltr\">abc</bdo>DEF</bdo></bdo>JKL|</bdo>mno</bdo></bdo></div>",
+      "dir=\"ltr\">abc</bdo>DEF</bdo></bdo>|JKL</bdo>mno</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3795,7 +3879,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo></bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3818,15 +3903,16 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "dir=ltr><bdo dir=rtl>DEF<bdo "
       "dir=ltr>abc</bdo></bdo>ghi</bdo></bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\">mno<bdo "
-      "dir=\"rtl\">JKL|<bdo dir=\"ltr\"><bdo dir=\"rtl\">DEF<bdo "
-      "dir=\"ltr\">abc</bdo></bdo>ghi</bdo></bdo></bdo></bdo></div>",
+      "dir=\"rtl\">JKL<bdo dir=\"ltr\"><bdo dir=\"rtl\">DEF<bdo "
+      "dir=\"ltr\">abc|</bdo></bdo>ghi</bdo></bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3841,7 +3927,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo>JKL</bdo>mno</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 117;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 117;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3849,7 +3936,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo dir=\"rtl\"><bdo "
-      "dir=\"ltr\">abc</bdo>DEF</bdo></bdo>JKL|</bdo>mno</bdo></bdo></div>",
+      "dir=\"ltr\">|abc</bdo>DEF</bdo></bdo>JKL</bdo>mno</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3864,7 +3951,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "dir=ltr>ghi<bdo dir=rtl><bdo "
       "dir=ltr>abc</bdo>DEF</bdo></bdo>JKL</bdo>mno</bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 123;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 123;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3872,7 +3960,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">ghi<bdo dir=\"rtl\"><bdo "
-      "dir=\"ltr\">abc</bdo>DEF</bdo></bdo>JKL|</bdo>mno</bdo></bdo></div>",
+      "dir=\"ltr\">abc</bdo>DEF</bdo></bdo>|JKL</bdo>mno</bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3886,7 +3974,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>PQR<bdo dir=ltr><bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo>jkl</bdo>MNO</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3894,7 +3983,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">PQR<bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\">GHI<bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo></bdo>jkl</bdo>MNO|</bdo></div>",
+      "dir=\"rtl\">ABC</bdo>def</bdo></bdo>jkl</bdo>|MNO</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3908,7 +3997,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>PQR<bdo dir=ltr><bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo>jkl</bdo>MNO</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3916,7 +4006,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">PQR<bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\">GHI<bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo></bdo>jkl</bdo>MNO|</bdo></div>",
+      "dir=\"rtl\">ABC|</bdo>def</bdo></bdo>jkl</bdo>MNO</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3930,7 +4020,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>MNO<bdo dir=ltr>jkl<bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo></bdo>PQR</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 147;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 147;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3938,7 +4029,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">MNO<bdo dir=\"ltr\">jkl<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC</bdo></bdo>GHI</bdo></bdo>|PQR</bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>GHI</bdo></bdo>PQR</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3952,15 +4043,16 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>MNO<bdo dir=ltr>jkl<bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo></bdo>PQR</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 153;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 153;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
-      "<div dir=\"rtl\"><bdo dir=\"rtl\">MNO<bdo dir=\"ltr\">jkl<bdo "
+      "<div dir=\"rtl\"><bdo dir=\"rtl\">MNO|<bdo dir=\"ltr\">jkl<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC|</bdo></bdo>GHI</bdo></bdo>PQR</bdo></div>",
+      "dir=\"rtl\">ABC</bdo></bdo>GHI</bdo></bdo>PQR</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3974,7 +4066,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo>jkl</bdo>MNO</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 27;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 27;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -3982,7 +4075,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\">GHI<bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo></bdo>jkl</bdo>MNO|</bdo></div>",
+      "dir=\"rtl\">ABC</bdo>def</bdo></bdo>jkl</bdo>|MNO</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -3996,7 +4089,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr><bdo dir=rtl>GHI<bdo "
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo></bdo>jkl</bdo>MNO</bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 33;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 33;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -4004,7 +4098,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\"><bdo dir=\"ltr\"><bdo "
       "dir=\"rtl\">GHI<bdo dir=\"ltr\"><bdo "
-      "dir=\"rtl\">ABC</bdo>def</bdo></bdo>jkl</bdo>MNO|</bdo></div>",
+      "dir=\"rtl\">ABC|</bdo>def</bdo></bdo>jkl</bdo>MNO</bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -4018,7 +4112,8 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>MNO<bdo dir=ltr>jkl<bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 117;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 117;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
@@ -4026,7 +4121,7 @@ TEST_P(ParameterizedHitTestingBidiTest,
   EXPECT_EQ(
       "<div dir=\"rtl\"><bdo dir=\"rtl\">MNO<bdo dir=\"ltr\">jkl<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC|</bdo></bdo>GHI</bdo></bdo></bdo></div>",
+      "dir=\"rtl\">|ABC</bdo></bdo>GHI</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 
@@ -4040,15 +4135,16 @@ TEST_P(ParameterizedHitTestingBidiTest,
       "<div dir=rtl><bdo dir=rtl>MNO<bdo dir=ltr>jkl<bdo dir=rtl><bdo "
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo>GHI</bdo></bdo></bdo></div>");
   Element* div = GetDocument().QuerySelector("div");
-  int x = div->OffsetLeft() + 123;
+  int text_left = div->OffsetLeft() + 300 - div->textContent().length() * 10;
+  int x = text_left + 123;
   int y = div->OffsetTop() + 5;
   const EphemeralRange result(GetDocument().caretRangeFromPoint(x, y));
   EXPECT_TRUE(result.IsNotNull());
   EXPECT_TRUE(result.IsCollapsed());
   EXPECT_EQ(
-      "<div dir=\"rtl\"><bdo dir=\"rtl\">MNO<bdo dir=\"ltr\">jkl<bdo "
+      "<div dir=\"rtl\"><bdo dir=\"rtl\">MNO|<bdo dir=\"ltr\">jkl<bdo "
       "dir=\"rtl\"><bdo dir=\"ltr\">def<bdo "
-      "dir=\"rtl\">ABC|</bdo></bdo>GHI</bdo></bdo></bdo></div>",
+      "dir=\"rtl\">ABC</bdo></bdo>GHI</bdo></bdo></bdo></div>",
       GetCaretTextFromBody(result.StartPosition()));
 }
 

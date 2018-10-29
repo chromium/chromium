@@ -65,11 +65,12 @@ class PaintControllerPaintTestBase : public RenderingTest {
     return true;
   }
 
-  const DisplayItemClient& ViewBackgroundClient() {
+  const DisplayItemClient& ViewScrollingBackgroundClient() {
+    // TODO(wangxianzhu): SPv2 should use the same display item client.
     if (!RuntimeEnabledFeatures::SlimmingPaintV2Enabled()) {
-      // With SPv1, the document background uses the scrolling contents
-      // layer as its DisplayItemClient.
-      return *GetLayoutView().Layer()->GraphicsLayerBacking();
+      return GetLayoutView()
+          .GetScrollableArea()
+          ->GetScrollingBackgroundDisplayItemClient();
     }
     return GetLayoutView();
   }

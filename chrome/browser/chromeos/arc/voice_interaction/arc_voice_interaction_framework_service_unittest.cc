@@ -255,10 +255,7 @@ TEST_F(ArcVoiceInteractionFrameworkServiceTest, ShowSettings) {
 
 TEST_F(ArcVoiceInteractionFrameworkServiceTest, StartSession) {
   framework_service()->StartSessionFromUserInteraction(gfx::Rect());
-  // A notification should be sent if the container is not ready yet.
   FlushVoiceInteractionControllerMojo();
-  EXPECT_EQ(ash::mojom::VoiceInteractionState::NOT_READY,
-            voice_interaction_controller()->voice_interaction_state());
   // The signal to start voice interaction session should be sent.
   EXPECT_EQ(1u, framework_instance()->start_session_count());
 }
@@ -289,10 +286,7 @@ TEST_F(ArcVoiceInteractionFrameworkServiceTest, StartSessionWithoutInstance) {
 
 TEST_F(ArcVoiceInteractionFrameworkServiceTest, ToggleSession) {
   framework_service()->ToggleSessionFromUserInteraction();
-  // A notification should be sent if the container is not ready yet.
   FlushVoiceInteractionControllerMojo();
-  EXPECT_EQ(ash::mojom::VoiceInteractionState::NOT_READY,
-            voice_interaction_controller()->voice_interaction_state());
   // The signal to toggle voice interaction session should be sent.
   EXPECT_EQ(1u, framework_instance()->toggle_session_count());
 }

@@ -12,29 +12,30 @@
 
     <TextView
         style="@style/BlackCaption"
-        android:id="@+id/explore_sites_title"
+        android:id="@+id/experimental_explore_sites_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/explore_sites_spacing"
+        android:layout_marginTop="@dimen/experimental_explore_sites_spacing"
         android:gravity="center"
         android:text="@string/explore_sites_title" />
 
     <LinearLayout
-        android:id="@+id/explore_sites_tiles"
+        android:id="@+id/experimental_explore_sites_tiles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/explore_sites_spacing"
-        android:paddingHorizontal="@dimen/explore_sites_padding"
+        android:layout_marginTop="@dimen/experimental_explore_sites_spacing"
+        android:paddingHorizontal="@dimen/experimental_explore_sites_padding"
         android:orientation="horizontal" />
 
-    <Button
-        android:id="@+id/explore_sites_more_button"
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/experimental_explore_sites_more_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_marginTop="@dimen/explore_sites_spacing"
-        android:layout_marginHorizontal="@dimen/explore_sites_margin"
-        android:layout_marginBottom="@dimen/explore_sites_spacing"
-        android:text="@string/ntp_explore_sites_more" />
+        android:layout_marginTop="@dimen/experimental_explore_sites_spacing"
+        android:layout_marginHorizontal="@dimen/experimental_explore_sites_margin"
+        android:layout_marginBottom="@dimen/experimental_explore_sites_spacing"
+        android:text="@string/ntp_explore_sites_more"
+        style="@style/TextButton" />
 
 </LinearLayout>

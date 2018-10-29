@@ -66,8 +66,7 @@ std::string RenderOutputHtml(
     line += net::EscapeForHTML(suggestion.url());
     line += "\" target=\"_blank\">";
     line += net::EscapeForHTML(suggestion.title());
-    std::map<GURL, std::string>::const_iterator it =
-        base64_encoded_pngs.find(GURL(suggestion.url()));
+    auto it = base64_encoded_pngs.find(GURL(suggestion.url()));
     if (it != base64_encoded_pngs.end()) {
       line += "<br><img src='";
       line += it->second;

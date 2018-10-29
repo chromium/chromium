@@ -194,9 +194,7 @@ mojom::blink::MediaSessionService* MediaSession::GetService() {
   if (!GetExecutionContext())
     return nullptr;
 
-  DCHECK(GetExecutionContext()->IsDocument())
-      << "MediaSession::getService() is only available from a frame";
-  Document* document = ToDocument(GetExecutionContext());
+  Document* document = To<Document>(GetExecutionContext());
   LocalFrame* frame = document->GetFrame();
   if (!frame)
     return nullptr;
@@ -216,10 +214,10 @@ mojom::blink::MediaSessionService* MediaSession::GetService() {
 
 void MediaSession::DidReceiveAction(
     blink::mojom::blink::MediaSessionAction action) {
-  DCHECK(GetExecutionContext()->IsDocument());
-  Document* document = ToDocument(GetExecutionContext());
+  Document* document = To<Document>(GetExecutionContext());
   std::unique_ptr<UserGestureIndicator> gesture_indicator =
-      Frame::NotifyUserActivation(document ? document->GetFrame() : nullptr);
+      LocalFrame::NotifyUserActivation(document ? document->GetFrame()
+                                                : nullptr);
 
   auto iter = action_handlers_.find(MojomActionToActionName(action));
   if (iter == action_handlers_.end())

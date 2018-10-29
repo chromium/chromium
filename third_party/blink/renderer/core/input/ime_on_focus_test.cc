@@ -16,14 +16,14 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
-using blink::FrameTestHelpers::LoadFrame;
+using blink::frame_test_helpers::LoadFrame;
 using blink::test::RunPendingTasks;
-using blink::URLTestHelpers::RegisterMockedURLLoadFromBase;
+using blink::url_test_helpers::RegisterMockedURLLoadFromBase;
 
 namespace blink {
 
 class ImeRequestTrackingWebViewClient
-    : public FrameTestHelpers::TestWebWidgetClient {
+    : public frame_test_helpers::TestWebWidgetClient {
  public:
   ImeRequestTrackingWebViewClient() : virtual_keyboard_request_count_(0) {}
 
@@ -61,7 +61,7 @@ class ImeOnFocusTest : public testing::Test {
                          std::string frame = "");
 
   std::string base_url_;
-  FrameTestHelpers::WebViewHelper web_view_helper_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
   Persistent<Document> document_;
 };
 

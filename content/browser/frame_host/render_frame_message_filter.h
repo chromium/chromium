@@ -35,7 +35,6 @@ class MessagePipeHandle;
 }
 
 namespace net {
-class URLRequestContext;
 class URLRequestContextGetter;
 }
 
@@ -73,6 +72,8 @@ class CONTENT_EXPORT RenderFrameMessageFilter
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnDestruct() const override;
 
+  network::mojom::CookieManagerPtr* GetCookieManager();
+
  protected:
   friend class TestSaveImageFromDataURL;
 
@@ -97,7 +98,8 @@ class CONTENT_EXPORT RenderFrameMessageFilter
 
   ~RenderFrameMessageFilter() override;
 
-  void InitializeOnIO(network::mojom::CookieManagerPtrInfo cookie_manager);
+  void InitializeCookieManager(
+      network::mojom::CookieManagerRequest cookie_manager_request);
 
   // |new_render_frame_id| and |devtools_frame_token| are out parameters.
   // Browser process defines them for the renderer process.
@@ -167,11 +169,6 @@ class CONTENT_EXPORT RenderFrameMessageFilter
                                            int32_t pp_instance,
                                            bool is_throttled);
 #endif  // ENABLE_PLUGINS
-
-  // Returns the correct net::URLRequestContext depending on what type of url is
-  // given.
-  // Only call on the IO thread.
-  net::URLRequestContext* GetRequestContextForURL(const GURL& url);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   PluginServiceImpl* plugin_service_;

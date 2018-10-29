@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "ui/base/material_design/material_design_controller.h"
 
 namespace extensions {
 
@@ -63,10 +62,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
 
 #if defined(OS_MACOSX)
 // Fails on MAC: http://crbug.com/480370
-#define MAYBE_DisplayModeWindowIsInFullscreen DISABLED_DisplayModeWindowIsInFullscreen
+#define MAYBE_DisplayModeWindowIsInFullscreen \
+  DISABLED_DisplayModeWindowIsInFullscreen
 #else
 #define MAYBE_DisplayModeWindowIsInFullscreen DisplayModeWindowIsInFullscreen
-#endif  // defined(OS_MACOSX)
+#endif
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
                        MAYBE_DisplayModeWindowIsInFullscreen) {

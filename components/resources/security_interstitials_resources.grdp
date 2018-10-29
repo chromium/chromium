@@ -8,4 +8,5 @@
   <include name="IDR_SECURITY_INTERSTITIAL_CONNECTION_HELP_HTML" file="../security_interstitials/content/resources/connection_help.html" compress="gzip" type="BINDATA" />
   <include name="IDR_SECURITY_INTERSTITIAL_CONNECTION_HELP_CSS" file="../security_interstitials/content/resources/connection_help.css" compress="gzip" type="BINDATA" />
   <include name="IDR_SECURITY_INTERSTITIAL_CONNECTION_HELP_JS" file="../security_interstitials/content/resources/connection_help.js" compress="gzip" type="BINDATA" />
+  <include name="IDR_SECURITY_INTERSTITIAL_ORIGIN_POLICY_HTML" compress="gzip" file="../security_interstitials/core/browser/resources/interstitial_origin_policy.html" type="BINDATA" />
 </grit-part>

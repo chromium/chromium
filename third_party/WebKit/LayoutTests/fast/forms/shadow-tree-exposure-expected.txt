@@ -16,7 +16,6 @@ PASS getSelection().extentOffset is 0
 PASS getSelection().type is 'None'
 
 Add an input element.
-
 PASS getSelection().anchorNode is container
 PASS getSelection().anchorOffset is 1
 PASS getSelection().focusNode is container
@@ -34,7 +33,6 @@ PASS getSelection().extentOffset is 1
 PASS getSelection().type is "Range"
 
 Add a textarea element.
-
 PASS getSelection().anchorNode is container
 PASS getSelection().anchorOffset is 2
 PASS getSelection().focusNode is container

@@ -23,7 +23,7 @@ bool SSLClientAuthCache::Lookup(const HostPortPair& server,
                                 scoped_refptr<SSLPrivateKey>* private_key) {
   DCHECK(certificate);
 
-  AuthCacheMap::iterator iter = cache_.find(server);
+  auto iter = cache_.find(server);
   if (iter == cache_.end())
     return false;
 

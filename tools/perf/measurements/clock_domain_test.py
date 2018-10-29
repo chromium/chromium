@@ -13,10 +13,10 @@ def GetSyncEvents(trace_part):
 
 class ClockDomainTest(tab_test_case.TabTestCase):
 
-  # Don't run this test on Android; it's not supposed to work on Android
-  # (since when doing Android tracing there are two different devices,
-  # so the clock domains will be different)
-  @decorators.Disabled('android')
+  # Don't run this test on Android and remote Chrome OS; it won't work
+  # because there are two different devices, so the clock domains will
+  # be different.
+  @decorators.Disabled('android', 'cros-chrome')
   @decorators.Isolated
   def testTelemetryUsesChromeClockDomain(self):
 

@@ -14,10 +14,15 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefService;
+class Profile;
 
 namespace base {
 class SequencedTaskRunner;
 class SingleThreadTaskRunner;
+}
+
+namespace content {
+class NavigationHandle;
 }
 
 namespace data_reduction_proxy {
@@ -72,6 +77,7 @@ class DataReductionProxyChromeSettings
       data_reduction_proxy::DataReductionProxyIOData* io_data,
       PrefService* profile_prefs,
       net::URLRequestContextGetter* request_context_getter,
+      Profile* profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<data_reduction_proxy::DataStore> store,
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
@@ -90,6 +96,15 @@ class DataReductionProxyChromeSettings
     data_reduction_proxy_enabled_pref_name_ = pref_name;
   }
 
+  void SetIgnoreLongTermBlackListRules(
+      bool ignore_long_term_black_list_rules) override;
+
+  // Builds an instance of DataReductionProxyData from the given |handle| and
+  // |headers|.
+  std::unique_ptr<data_reduction_proxy::DataReductionProxyData>
+  CreateDataFromNavigationHandle(content::NavigationHandle* handle,
+                                 const net::HttpResponseHeaders* headers);
+
  private:
   // Helper method for migrating the Data Reduction Proxy away from using the
   // proxy pref. Returns the ProxyPrefMigrationResult value indicating the
@@ -98,6 +113,9 @@ class DataReductionProxyChromeSettings
       PrefService* prefs);
 
   std::string data_reduction_proxy_enabled_pref_name_;
+
+  // Null before InitDataReductionProxySettings is called.
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(DataReductionProxyChromeSettings);
 };

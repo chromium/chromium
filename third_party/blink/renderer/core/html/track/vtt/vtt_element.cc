@@ -132,7 +132,7 @@ void VTTElement::SetIsPastNode(bool is_past_node) {
   SetNeedsStyleRecalc(
       kLocalStyleChange,
       StyleChangeReasonForTracing::CreateWithExtraData(
-          StyleChangeReason::kPseudoClass, StyleChangeExtraData::g_past));
+          style_change_reason::kPseudoClass, StyleChangeExtraData::g_past));
 }
 
 }  // namespace blink

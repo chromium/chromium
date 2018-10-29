@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/default_clock.h"
 #include "components/drive/chromeos/about_resource_root_folder_id_loader.h"
 #include "components/drive/chromeos/change_list_loader.h"
 #include "components/drive/chromeos/directory_loader.h"
@@ -33,12 +34,15 @@ class ResourceMetadata;
 // users default corpus.
 class DefaultCorpusChangeListLoader : public DriveChangeListLoader {
  public:
-  DefaultCorpusChangeListLoader(EventLogger* logger,
-                                base::SequencedTaskRunner* blocking_task_runner,
-                                ResourceMetadata* resource_metadata,
-                                JobScheduler* scheduler,
-                                AboutResourceLoader* about_resource_loader,
-                                LoaderController* apply_task_controller);
+  // |clock| can be mocked for testing.
+  DefaultCorpusChangeListLoader(
+      EventLogger* logger,
+      base::SequencedTaskRunner* blocking_task_runner,
+      ResourceMetadata* resource_metadata,
+      JobScheduler* scheduler,
+      AboutResourceLoader* about_resource_loader,
+      LoaderController* apply_task_controller,
+      const base::Clock* clock = base::DefaultClock::GetInstance());
 
   ~DefaultCorpusChangeListLoader() override;
 

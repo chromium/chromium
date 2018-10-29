@@ -14,9 +14,11 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/sequenced_task_runner.h"
+#include "base/task/post_task.h"
 #include "components/drive/chromeos/file_system_interface.h"
 #include "components/drive/drive.pb.h"
 #include "components/drive/local_file_reader.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/drive/task_util.h"
 #include "net/base/io_buffer.h"
@@ -317,8 +319,8 @@ void GetFileContent(
     const base::Callback<void(const base::Closure&)>& reply_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  BrowserThread::PostTaskAndReplyWithResult(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&GetFileContentOnUIThread, file_system_getter, drive_file_path,
                  base::Passed(google_apis::CreateRelayCallback(
                      std::move(initialized_callback))),

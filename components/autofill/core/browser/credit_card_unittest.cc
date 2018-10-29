@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
+#include "components/autofill/core/browser/autofill_metadata.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/credit_card.h"
@@ -231,6 +232,117 @@ TEST(CreditCardTest, AssignmentOperator) {
   // Assignment to self should not change the profile value.
   a = *&a;  // The *& defeats Clang's -Wself-assign warning.
   EXPECT_EQ(a, b);
+}
+
+TEST(CreditCardTest, GetMetadata) {
+  CreditCard local_card = test::GetCreditCard();
+  local_card.set_use_count(2);
+  local_card.set_use_date(base::Time::FromDoubleT(25));
+  local_card.set_billing_address_id("123");
+  AutofillMetadata local_metadata = local_card.GetMetadata();
+  EXPECT_EQ(local_card.guid(), local_metadata.id);
+  EXPECT_EQ(local_card.billing_address_id(), local_metadata.billing_address_id);
+  EXPECT_EQ(local_card.use_count(), local_metadata.use_count);
+  EXPECT_EQ(local_card.use_date(), local_metadata.use_date);
+
+  CreditCard masked_card = test::GetMaskedServerCard();
+  masked_card.set_use_count(4);
+  masked_card.set_use_date(base::Time::FromDoubleT(50));
+  masked_card.set_billing_address_id("abc");
+  AutofillMetadata masked_metadata = masked_card.GetMetadata();
+  EXPECT_EQ(masked_card.server_id(), masked_metadata.id);
+  EXPECT_EQ(masked_card.billing_address_id(),
+            masked_metadata.billing_address_id);
+  EXPECT_EQ(masked_card.use_count(), masked_metadata.use_count);
+  EXPECT_EQ(masked_card.use_date(), masked_metadata.use_date);
+
+  CreditCard full_card = test::GetFullServerCard();
+  full_card.set_use_count(6);
+  full_card.set_use_date(base::Time::FromDoubleT(100));
+  full_card.set_billing_address_id("xyz");
+  AutofillMetadata full_metadata = full_card.GetMetadata();
+  EXPECT_EQ(full_card.server_id(), full_metadata.id);
+  EXPECT_EQ(full_card.billing_address_id(), full_metadata.billing_address_id);
+  EXPECT_EQ(full_card.use_count(), full_metadata.use_count);
+  EXPECT_EQ(full_card.use_date(), full_metadata.use_date);
+}
+
+TEST(CreditCardTest, SetMetadata_MatchingId) {
+  CreditCard local_card = test::GetCreditCard();
+  AutofillMetadata local_metadata;
+  local_metadata.id = local_card.guid();
+  local_metadata.use_count = 100;
+  local_metadata.use_date = base::Time::FromDoubleT(50);
+  local_metadata.billing_address_id = "billId1";
+  EXPECT_TRUE(local_card.SetMetadata(local_metadata));
+  EXPECT_EQ(local_metadata.id, local_card.guid());
+  EXPECT_EQ(local_metadata.billing_address_id, local_card.billing_address_id());
+  EXPECT_EQ(local_metadata.use_count, local_card.use_count());
+  EXPECT_EQ(local_metadata.use_date, local_card.use_date());
+
+  CreditCard masked_card = test::GetMaskedServerCard();
+  AutofillMetadata masked_metadata;
+  masked_metadata.id = masked_card.server_id();
+  masked_metadata.use_count = 100;
+  masked_metadata.use_date = base::Time::FromDoubleT(50);
+  masked_metadata.billing_address_id = "billId1";
+  EXPECT_TRUE(masked_card.SetMetadata(masked_metadata));
+  EXPECT_EQ(masked_metadata.id, masked_card.server_id());
+  EXPECT_EQ(masked_metadata.billing_address_id,
+            masked_card.billing_address_id());
+  EXPECT_EQ(masked_metadata.use_count, masked_card.use_count());
+  EXPECT_EQ(masked_metadata.use_date, masked_card.use_date());
+
+  CreditCard full_card = test::GetFullServerCard();
+  AutofillMetadata full_metadata;
+  full_metadata.id = full_card.server_id();
+  full_metadata.use_count = 100;
+  full_metadata.use_date = base::Time::FromDoubleT(50);
+  full_metadata.billing_address_id = "billId1";
+  EXPECT_TRUE(full_card.SetMetadata(full_metadata));
+  EXPECT_EQ(full_metadata.id, full_card.server_id());
+  EXPECT_EQ(full_metadata.billing_address_id, full_card.billing_address_id());
+  EXPECT_EQ(full_metadata.use_count, full_card.use_count());
+  EXPECT_EQ(full_metadata.use_date, full_card.use_date());
+}
+
+TEST(CreditCardTest, SetMetadata_NotMatchingId) {
+  CreditCard local_card = test::GetCreditCard();
+  AutofillMetadata local_metadata;
+  local_metadata.id = "WrongId";
+  local_metadata.use_count = 100;
+  local_metadata.use_date = base::Time::FromDoubleT(50);
+  local_metadata.billing_address_id = "billId1";
+  EXPECT_FALSE(local_card.SetMetadata(local_metadata));
+  EXPECT_NE(local_metadata.id, local_card.guid());
+  EXPECT_NE(local_metadata.billing_address_id, local_card.billing_address_id());
+  EXPECT_NE(local_metadata.use_count, local_card.use_count());
+  EXPECT_NE(local_metadata.use_date, local_card.use_date());
+
+  CreditCard masked_card = test::GetMaskedServerCard();
+  AutofillMetadata masked_metadata;
+  masked_metadata.id = "WrongId";
+  masked_metadata.use_count = 100;
+  masked_metadata.use_date = base::Time::FromDoubleT(50);
+  masked_metadata.billing_address_id = "billId1";
+  EXPECT_FALSE(masked_card.SetMetadata(masked_metadata));
+  EXPECT_NE(masked_metadata.id, masked_card.server_id());
+  EXPECT_NE(masked_metadata.billing_address_id,
+            masked_card.billing_address_id());
+  EXPECT_NE(masked_metadata.use_count, masked_card.use_count());
+  EXPECT_NE(masked_metadata.use_date, masked_card.use_date());
+
+  CreditCard full_card = test::GetFullServerCard();
+  AutofillMetadata full_metadata;
+  full_metadata.id = "WrongId";
+  full_metadata.use_count = 100;
+  full_metadata.use_date = base::Time::FromDoubleT(50);
+  full_metadata.billing_address_id = "billId1";
+  EXPECT_FALSE(full_card.SetMetadata(full_metadata));
+  EXPECT_NE(full_metadata.id, full_card.server_id());
+  EXPECT_NE(full_metadata.billing_address_id, full_card.billing_address_id());
+  EXPECT_NE(full_metadata.use_count, full_card.use_count());
+  EXPECT_NE(full_metadata.use_date, full_card.use_date());
 }
 
 struct SetExpirationYearFromStringTestCase {

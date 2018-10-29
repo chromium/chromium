@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "build/build_config.h"
-
 class Browser;
 
 namespace test {
@@ -16,10 +14,6 @@ namespace test {
 class AppMenuTestApi {
  public:
   static std::unique_ptr<AppMenuTestApi> Create(Browser* browser);
-
-#if defined(OS_MACOSX)
-  static std::unique_ptr<AppMenuTestApi> CreateCocoa(Browser* browser);
-#endif
 
   AppMenuTestApi() = default;
   virtual ~AppMenuTestApi() = default;

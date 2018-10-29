@@ -386,7 +386,7 @@ extern template class BASE_EXPORT BasicStringPiece<std::string>;
 extern template class BASE_EXPORT BasicStringPiece<string16>;
 #endif
 
-// StingPiece operators --------------------------------------------------------
+// StringPiece operators -------------------------------------------------------
 
 BASE_EXPORT bool operator==(const StringPiece& x, const StringPiece& y);
 

@@ -9,8 +9,10 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/indexed_db_context.h"
 
@@ -57,8 +59,8 @@ void BrowsingDataIndexedDBHelper::FetchIndexedDBInfoInIndexedDBThread(
       continue;  // Non-websafe state is not considered browsing data.
     result.push_back(origin);
   }
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, result));
 }
 
 void BrowsingDataIndexedDBHelper::DeleteIndexedDBInIndexedDBThread(
@@ -126,15 +128,14 @@ void CannedBrowsingDataIndexedDBHelper::StartFetching(
     result.push_back(info);
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, result));
 }
 
 void CannedBrowsingDataIndexedDBHelper::DeleteIndexedDB(
     const GURL& origin) {
-  for (std::set<PendingIndexedDBInfo>::iterator it =
-           pending_indexed_db_info_.begin();
-       it != pending_indexed_db_info_.end(); ) {
+  for (auto it = pending_indexed_db_info_.begin();
+       it != pending_indexed_db_info_.end();) {
     if (it->origin == origin)
       pending_indexed_db_info_.erase(it++);
     else

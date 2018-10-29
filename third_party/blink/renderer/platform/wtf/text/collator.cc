@@ -67,9 +67,9 @@ void Collator::SetOrderLowerFirst(bool lower_first) {
 }
 
 Collator::Result Collator::Collate(const UChar* lhs,
-                                   size_t lhs_length,
+                                   uint32_t lhs_length,
                                    const UChar* rhs,
-                                   size_t rhs_length) const {
+                                   uint32_t rhs_length) const {
   if (!collator_)
     CreateCollator();
 

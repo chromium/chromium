@@ -26,7 +26,7 @@
 namespace blink {
 
 inline SVGDefsElement::SVGDefsElement(Document& document)
-    : SVGGraphicsElement(SVGNames::defsTag, document) {}
+    : SVGGraphicsElement(svg_names::kDefsTag, document) {}
 
 DEFINE_NODE_FACTORY(SVGDefsElement)
 

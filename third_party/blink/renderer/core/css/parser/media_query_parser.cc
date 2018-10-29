@@ -283,17 +283,17 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
 bool MediaQueryParser::IsMediaFeatureAllowedInMode(
     const String& media_feature) const {
   return mode_ == kUASheetMode ||
-         media_feature != MediaFeatureNames::immersiveMediaFeature;
+         media_feature != media_feature_names::kImmersiveMediaFeature;
 }
 
 MediaQueryData::MediaQueryData()
     : restrictor_(MediaQuery::kNone),
-      media_type_(MediaTypeNames::all),
+      media_type_(media_type_names::kAll),
       media_type_set_(false) {}
 
 void MediaQueryData::Clear() {
   restrictor_ = MediaQuery::kNone;
-  media_type_ = MediaTypeNames::all;
+  media_type_ = media_type_names::kAll;
   media_type_set_ = false;
   media_feature_ = String();
   expressions_.clear();

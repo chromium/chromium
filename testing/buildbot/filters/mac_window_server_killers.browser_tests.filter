@@ -2,6 +2,7 @@
 
 # Suites implicated in window_server deaths.
 -ConstrainedWebDialogBrowserTest.*
+-SSLClientCertificateSelectorMacTest.*
 
 # Investigation, round 2.
 -All/PasswordManagerBrowserTestWithViewsFeature.*
@@ -132,7 +133,7 @@
 -NaClBrowserTestNewlib.*
 -NaClBrowserTestPnacl.*
 -Native/ExtensionBindingsApiTest.*
--NativeAppWindowCocoaBrowserTestInstance/NativeAppWindowCocoaBrowserTest.*
+-NativeAppWindowCocoaBrowserTest.*
 -NativeBindings/ExternallyConnectableMessagingTest.*
 -NavigationEntryRemoverTest.*
 -NetInternalsTest.*
@@ -231,6 +232,36 @@
 -WebUIResourceBrowserTest.*
 -WebViewTest.*
 -WebrtcLoggingPrivateApiTest.*
--WebstoreInlineInstallerTest.*
 -WindowAppleScriptTest.*
 -WindowOpenApiTest.*
+
+# Potential 10.13 killers.
+-DisableExtensionsExceptBrowserTest.*
+-ExtensionActionRunnerBrowserTest.*
+-ExtensionFetchTest.*
+-ExtensionTabUtilBrowserTest.*
+-NativeBindingsApiTest.*
+-PasswordManagerBrowserTest.*
+-PictureInPictureWindowControllerBrowserTest.*
+-UpdateServiceTest.*
+
+# More potential 10.13 killers. All from shard 4 of browser_tests.
+-BookmarkBubbleSignInDelegateTest.*
+-BrowserWindowTouchBarControllerTest.*
+-CloudPrintProxyPolicyStartupTest.*
+-ExtensionUninstallDialogViewBrowserTest.*
+-IdentityGetProfileUserInfoFunctionTest.*
+-MediaRouterDialogControllerWebUIBrowserTest.*
+-MediaRouterWebUIBrowserTest.*
+-PaymentMethodViewControllerTest.*
+-PaymentRequestCanMakePaymentQueryTest.*
+-PaymentRequestCompleteSuggestionsForEverythingTest.*
+-PaymentRequestOrderSummaryViewControllerTest.*
+-PaymentRequestPaymentResponseShippingAddressTest.*
+-PaymentRequestWebContentsManagerTest.*
+-PermissionsApiTest.*
+-PrintPreviewBaseSettingsSectionTest.*
+-PrintPreviewDestinationItemTest.*
+-ProfileListDesktopBrowserTest.*
+-SubresourceFilterWebSocketBrowserTest.*
+-TabCaptureApiTest.*

@@ -1,0 +1,146 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{% from 'macros.tmpl' import source_files_for_generated_file %}
+{{source_files_for_generated_file(template_file, input_files)}}
+
+{% set sink_class = (name | to_singular) + "Sink" %}
+{% set sink_class_header = (header | to_singular) + "_sink" %}
+{% for file in files %}
+#include "{{output_path_in_gen_dir}}{{file.name}}_inl.h"
+{% endfor %}
+#include "{{output_path_in_gen_dir}}{{sink_class_header}}.h"
+{% for agent in agents %}
+#include "{{agent | agent_name_to_include}}"
+{% endfor %}
+#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
+
+namespace blink {
+
+namespace {
+
+Mutex& AgentCountMutex() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
+  return mutex;
+}
+
+}  // namespace
+
+// static
+std::atomic<unsigned> {{sink_class}}::s_existingAgents;
+
+{{sink_class}}::{{sink_class}}() {}
+
+{{sink_class}}::~{{sink_class}}() {
+  MutexLocker lock(AgentCountMutex());
+{% for agent in agents %}
+  if (has{{agent}}s() && --s_numSinksWith{{agent}} == 0)
+    s_existingAgents &= ~k{{agent}};
+{% endfor %}
+}
+
+{% for agent in agents %}
+{% set class_name = agent | agent_name_to_class %}
+{% set getter_name = agent | to_lower_case %}
+
+// static
+unsigned {{sink_class}}::s_numSinksWith{{agent}} = 0;
+
+void {{sink_class}}::add{{agent}}({{class_name}}* agent) {
+  bool already_had_agent = has{{agent}}s();
+  m_{{getter_name}}s.insert(agent);
+
+  if (!already_had_agent) {
+    MutexLocker lock(AgentCountMutex());
+    if (++s_numSinksWith{{agent}} == 1)
+      s_existingAgents |= k{{agent}};
+  }
+
+  DCHECK(HasAgentsGlobal(k{{agent}}));
+}
+
+void {{sink_class}}::remove{{agent}}({{class_name}}* agent) {
+  if (!has{{agent}}s())
+    return;
+
+  m_{{getter_name}}s.erase(agent);
+
+  if (!has{{agent}}s()) {
+    MutexLocker lock(AgentCountMutex());
+    if (--s_numSinksWith{{agent}} == 0)
+      s_existingAgents &= ~k{{agent}};
+  }
+
+  if (has{{agent}}s())
+    DCHECK(HasAgentsGlobal(k{{agent}}));
+}
+
+{% endfor -%}
+
+void {{sink_class}}::Trace(Visitor* visitor)
+{
+{% for agent in agents %}
+{% set getter_name = agent | to_lower_case %}
+  visitor->Trace(m_{{getter_name}}s);
+{% endfor %}
+}
+
+namespace probe {
+{% macro params_list(probe) -%}
+{%- for param in probe.params %}
+{{param.type}} {{param.name}}
+{%- if not loop.last %}, {% endif -%}
+{%- endfor -%}
+{%- endmacro %}
+
+{% macro probe_body(probe, common_name) %}
+{% set agent_probe_name = method_name(common_name or probe.name) %}
+  if (!probe_sink)
+    return;
+{% for agent in probe.agents %}
+{% set class_name = agent | agent_name_to_class %}
+  if (probe_sink->has{{agent}}s()) {
+    for ({{class_name}}* agent : probe_sink->{{ agent | to_lower_case }}s())
+      agent->{{agent_probe_name}}({{caller()}});
+  }
+{% endfor %}
+{% endmacro -%}
+
+{% for file in files %}
+{% for probe in file.declarations %}
+{% if probe.is_scoped %}
+{{probe.name}}::{{probe.name}}({{ params_list(probe) }}) :
+{% for param in probe.params %}
+    {{param.name}}({{param.name}})
+{%- if not loop.last %},
+{% endif %}
+{% endfor %} {
+  probe_sink = To{{sink_class}}({{probe.params[0].name}});
+{% call probe_body(probe, "Will") %}*this{% endcall %}
+}
+
+{{probe.name}}::~{{probe.name}}() {
+{% call probe_body(probe, "Did") %}*this{% endcall %}
+}
+
+{% else -%}
+
+void {{probe.name}}Impl({{ params_list(probe) }}) {
+  {{sink_class}}* probe_sink = To{{sink_class}}({{probe.params[0].name}});
+{% call probe_body(probe, "") %}
+{%- for param in probe.params %}
+{%- if not loop.first or "Keep" in param.options -%}
+{{param.name}}
+{%- if not loop.last %}, {% endif -%}
+{%- endif -%}
+{%- endfor %}
+{%- endcall %}
+}
+
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+} // namespace probe
+} // namespace blink

@@ -12,4 +12,8 @@
     TrustedTypePolicy getExposedPolicy(DOMString policyName);
     // All the policy object names that have been created
     [Affects=Nothing] sequence<DOMString> getPolicyNames();
+    [CallWith=ScriptState] boolean isHTML(object? checkedObject);
+    [CallWith=ScriptState] boolean isScript(object? checkedObject);
+    [CallWith=ScriptState] boolean isScriptURL(object? checkedObject);
+    [CallWith=ScriptState] boolean isURL(object? checkedObject);
 };

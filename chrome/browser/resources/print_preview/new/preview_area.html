@@ -3,12 +3,10 @@
 <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/action_link_css.html">
 <link rel="import" href="chrome://resources/html/cr.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/util.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="../native_layer.html">
 <link rel="import" href="../print_preview_utils.html">
 <link rel="import" href="../data/coordinate2d.html">
@@ -27,7 +25,7 @@
 
 <dom-module id="print-preview-preview-area">
   <template>
-    <style include="print-preview-shared action-link cr-hidden-style paper-button-style">
+    <style include="print-preview-shared cr-hidden-style">
       @keyframes dancing-dots-jump {
         0% { top: 0; }
         55% { top: 0; }
@@ -109,18 +107,6 @@
         position: relative;
         text-align: center;
       }
-
-      .preview-area-action-area {
-        margin-top: 12px;
-      }
-
-      .preview-area-open-system-dialog-button-throbber {
-        vertical-align: middle;
-      }
-
-      .preview-area-open-system-dialog-button {
-        background-color: white;
-      }
     </style>
     <div class$="preview-area-overlay-layer [[getInvisible_(previewState)]]"
         aria-hidden$="[[getAriaHidden_(previewState)]]">
@@ -132,20 +118,11 @@
               hidden$="[[!isPreviewLoading_(previewState)]]">
               <span>.</span><span>.</span><span>.</span>
           </span>
-          <a is="action-link" class="learn-more-link"
-              hidden$="[[!shouldShowLearnMoreLink_(previewState)]]"
-              on-click="onGcpErrorLearnMoreClick_">
+          <a href="$i18n{gcpCertificateErrorLearnMoreURL}"
+              target="_blank" class="learn-more-link"
+              hidden$="[[!shouldShowLearnMoreLink_(previewState)]]">
             $i18n{learnMore}
           </a>
-        </div>
-        <div class="preview-area-action-area"
-            hidden$="[[!displaySystemDialogButton_(previewState)]]">
-          <paper-button class="preview-area-open-system-dialog-button">
-            $i18n{launchNativeDialog}
-          </paper-button>
-          <div
-              class="preview-area-open-system-dialog-button-throbber throbber"
-              hidden></div>
         </div>
       </div>
     </div>

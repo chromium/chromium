@@ -15,7 +15,7 @@ TEST(MediaRouterUIHelperTest, GetExtensionNameExtensionPresent) {
   GURL url = GURL("chrome-extension://" + id);
   std::unique_ptr<extensions::ExtensionRegistry> registry =
       std::make_unique<extensions::ExtensionRegistry>(nullptr);
-  scoped_refptr<extensions::Extension> app =
+  scoped_refptr<const extensions::Extension> app =
       extensions::ExtensionBuilder(
           "test app name", extensions::ExtensionBuilder::Type::PLATFORM_APP)
           .SetID(id)

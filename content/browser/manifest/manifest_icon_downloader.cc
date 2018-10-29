@@ -8,6 +8,8 @@
 
 #include <limits>
 
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -108,8 +110,8 @@ void ManifestIconDownloader::OnIconFetched(
   // webapp storage system as well.
   if (chosen.height() > ideal_icon_size_in_px ||
       chosen.width() > ideal_icon_size_in_px) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&ManifestIconDownloader::ScaleIcon,
                        ideal_icon_size_in_px, chosen, callback));
     return;
@@ -128,8 +130,8 @@ void ManifestIconDownloader::ScaleIcon(
       bitmap, skia::ImageOperations::RESIZE_BEST, ideal_icon_size_in_px,
       ideal_icon_size_in_px);
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, scaled));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, scaled));
 }
 
 int ManifestIconDownloader::FindClosestBitmapIndex(

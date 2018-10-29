@@ -11,7 +11,7 @@ PASS field.autocomplete = 'off'; field.getAttribute('autocomplete') is "off"
 PASS form.setAttribute('autocomplete', 'on'); form.autocomplete is "on"
 PASS field.setAttribute('autocomplete', 'on'); field.autocomplete is "on"
 PASS form.setAttribute('autocomplete', 'indeterminate'); form.autocomplete is "on"
-PASS field.setAttribute('autocomplete', 'indeterminate'); field.autocomplete is "indeterminate"
+PASS field.setAttribute('autocomplete', 'indeterminate'); field.autocomplete is ""
 PASS successfullyParsed is true
 
 TEST COMPLETE

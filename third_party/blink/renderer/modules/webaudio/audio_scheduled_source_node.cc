@@ -69,8 +69,8 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
   }
 
   DCHECK_EQ(quantum_frame_size,
-            static_cast<size_t>(AudioUtilities::kRenderQuantumFrames));
-  if (quantum_frame_size != AudioUtilities::kRenderQuantumFrames) {
+            static_cast<size_t>(audio_utilities::kRenderQuantumFrames));
+  if (quantum_frame_size != audio_utilities::kRenderQuantumFrames) {
     return std::make_tuple(quantum_frame_offset, non_silent_frames_to_process,
                            start_frame_offset);
   }
@@ -84,11 +84,11 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
   size_t quantum_start_frame = Context()->CurrentSampleFrame();
   size_t quantum_end_frame = quantum_start_frame + quantum_frame_size;
   size_t start_frame =
-      AudioUtilities::TimeToSampleFrame(start_time_, sample_rate);
+      audio_utilities::TimeToSampleFrame(start_time_, sample_rate);
   size_t end_frame =
       end_time_ == kUnknownTime
           ? 0
-          : AudioUtilities::TimeToSampleFrame(end_time_, sample_rate);
+          : audio_utilities::TimeToSampleFrame(end_time_, sample_rate);
 
   // If we know the end time and it's already passed, then don't bother doing
   // any more rendering this cycle.

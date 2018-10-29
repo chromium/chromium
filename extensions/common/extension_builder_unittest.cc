@@ -224,4 +224,11 @@ TEST(ExtensionBuilderTest, AddContentScript) {
   }
 }
 
+TEST(ExtensionBuilderTest, SetVersion) {
+  constexpr char kVersion[] = "42.0.99.1";
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo").SetVersion(kVersion).Build();
+  EXPECT_EQ(kVersion, extension->VersionString());
+}
+
 }  // namespace extensions

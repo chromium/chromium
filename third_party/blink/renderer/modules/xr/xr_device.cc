@@ -97,7 +97,7 @@ int64_t XRDevice::GetSourceId() const {
 ScriptPromise XRDevice::requestSession(
     ScriptState* script_state,
     const XRSessionCreationOptions& options) {
-  Document* doc = ToDocumentOrNull(ExecutionContext::From(script_state));
+  Document* doc = To<Document>(ExecutionContext::From(script_state));
 
   if (options.immersive() && !did_log_request_immersive_session_ && doc) {
     ukm::builders::XR_WebXR(GetSourceId())
@@ -117,7 +117,7 @@ ScriptPromise XRDevice::requestSession(
 
   // TODO(ijamardo): Should we just exit if there is not document?
   bool has_user_activation =
-      Frame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr);
+      LocalFrame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr);
 
   // Check if the current page state prevents the requested session from being
   // created.

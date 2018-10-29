@@ -1,27 +1,14 @@
 Name: R8
 URL: https://r8.googlesource.com/r8
-Version: 1.2.28-cr0
+Revision: 97efc6605ceee3e7c12238ae48718d63e5906b4a
+Version: 1.4.4
 License: BSD 3-Clause
 License File: NOT_SHIPPED
 Security Critical: no
 
 Description:
-D8 is a dexer that converts java byte code to dex code.
-It is contained in the R8 repo.
+D8 is a dexer that converts java byte code to dex code. R8 is a proguard-like
+optimizer that also has the ability to dex. D8 is found within R8's repo.
 
 Local Modifications:
-Disabled the code that removes Java asserts. Diff:
-
-diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-index 5f0ec45e..03612637 100644
---- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-+++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-@@ -207,7 +207,7 @@ public class InternalOptions {
-   // EXPERIMENTAL flag to get behaviour as close to Proguard as possible.
-   public boolean forceProguardCompatibility = false;
-   public boolean enableMinification = true;
--  public boolean disableAssertions = true;
-+  public boolean disableAssertions = false;
-   public boolean debugKeepRules = false;
-   // Read input classes into CfCode format (instead of JarCode).
-   public boolean enableCfFrontend = false;
+None

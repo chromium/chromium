@@ -85,14 +85,9 @@ class WebNavigationTabObserver
   bool IsReferenceFragmentNavigation(content::RenderFrameHost* frame_host,
                                      const GURL& url);
 
-  // Creates and sends onErrorOccurred events for all on-going navigations. If
-  // |render_view_host| is non-NULL, only generates events for frames in this
-  // render view host. If |frame_host_to_skip| is given, no events are sent for
-  // that
-  // frame.
-  void SendErrorEvents(content::WebContents* web_contents,
-                       content::RenderViewHost* render_view_host,
-                       content::RenderFrameHost* frame_host_to_skip);
+  // Called when a RenderFrameHost goes into pending deletion. Stop tracking it
+  // and its children.
+  void RenderFrameHostPendingDeletion(content::RenderFrameHost*);
 
   // Tracks the state of the frames we are sending events for.
   FrameNavigationState navigation_state_;

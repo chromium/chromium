@@ -50,8 +50,8 @@ def CheckChange(input_api, message_type):
       "Include \"net/third_party/spdy/platform/api/spdy_string_utils.h\" "
           "instead of \"net/base/hex_utils.h\"",
       "Use SpdyStringPiece instead of base::StringPiece",
-      "Use SpdyStringPrintf instead of base::StringPrintf",
-      "Use SpdyStringAppendF instead of base::StringAppendF",
+      "Use SpdyStrCat instead of base::StringPrintf",
+      "Use SpdyStrCat instead of base::StringAppendF",
       "Use SpdyHexDigitToInt instead of base::HexDigitToInt",
       "Use SpdyHexDecode instead of HexDecode",
       "Use SpdyHexDump instead of HexDump",

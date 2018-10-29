@@ -205,6 +205,10 @@ const wchar_t kUninstallArgumentsField[] = L"UninstallArguments";
 const wchar_t kUninstallDisplayNameField[] = L"DisplayName";
 const wchar_t kUninstallInstallationDate[] = L"installation_date";
 
+// Elevation Service constants.
+const base::FilePath::CharType kElevationServiceExe[] =
+    FILE_PATH_LITERAL("elevation_service.exe");
+
 // Google Update installer result API.
 const wchar_t kInstallerError[] = L"InstallerError";
 const wchar_t kInstallerExtraCode1[] = L"InstallerExtraCode1";

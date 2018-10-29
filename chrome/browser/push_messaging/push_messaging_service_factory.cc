@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -56,10 +58,11 @@ PushMessagingServiceFactory::~PushMessagingServiceFactory() {}
 
 void PushMessagingServiceFactory::RestoreFactoryForTests(
     content::BrowserContext* context) {
-  SetTestingFactory(context, [](content::BrowserContext* context) {
-    return std::unique_ptr<KeyedService>(
-        GetInstance()->BuildServiceInstanceFor(context));
-  });
+  SetTestingFactory(context,
+                    base::BindRepeating([](content::BrowserContext* context) {
+                      return base::WrapUnique(
+                          GetInstance()->BuildServiceInstanceFor(context));
+                    }));
 }
 
 KeyedService* PushMessagingServiceFactory::BuildServiceInstanceFor(

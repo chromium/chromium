@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 namespace blink {
@@ -64,10 +65,12 @@ PushSubscription::PushSubscription(
     ServiceWorkerRegistration* service_worker_registration)
     : endpoint_(subscription.endpoint),
       options_(PushSubscriptionOptions::Create(subscription.options)),
-      p256dh_(DOMArrayBuffer::Create(subscription.p256dh.Data(),
-                                     subscription.p256dh.size())),
-      auth_(DOMArrayBuffer::Create(subscription.auth.Data(),
-                                   subscription.auth.size())),
+      p256dh_(DOMArrayBuffer::Create(
+          subscription.p256dh.Data(),
+          SafeCast<unsigned>(subscription.p256dh.size()))),
+      auth_(
+          DOMArrayBuffer::Create(subscription.auth.Data(),
+                                 SafeCast<unsigned>(subscription.auth.size()))),
       service_worker_registration_(service_worker_registration) {}
 
 PushSubscription::~PushSubscription() = default;
@@ -98,7 +101,7 @@ ScriptPromise PushSubscription::unsubscribe(ScriptState* script_state) {
   DCHECK(web_push_provider);
 
   web_push_provider->Unsubscribe(
-      service_worker_registration_->WebRegistration(),
+      service_worker_registration_->RegistrationId(),
       std::make_unique<CallbackPromiseAdapter<bool, PushError>>(resolver));
   return promise;
 }

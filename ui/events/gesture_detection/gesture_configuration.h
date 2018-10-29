@@ -161,14 +161,6 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   float span_slop() const { return span_slop_; }
   bool swipe_enabled() const { return swipe_enabled_; }
   void set_swipe_enabled(bool val) { swipe_enabled_ = val; }
-
-  // TODO(davemoore): Move into chrome/browser/ui.
-  int tab_scrub_activation_delay_in_ms() const {
-    return tab_scrub_activation_delay_in_ms_;
-  }
-  void set_tab_scrub_activation_delay_in_ms(int val) {
-    tab_scrub_activation_delay_in_ms_ = val;
-  }
   bool two_finger_tap_enabled() const { return two_finger_tap_enabled_; }
   void set_two_finger_tap_enabled(bool val) { two_finger_tap_enabled_ = val; }
   VelocityTracker::Strategy velocity_tracker_strategy() const {
@@ -254,9 +246,6 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   int show_press_delay_in_ms_;
   float span_slop_;
   bool swipe_enabled_;
-
-  // TODO(davemoore): Move into chrome/browser/ui.
-  int tab_scrub_activation_delay_in_ms_;
   bool two_finger_tap_enabled_;
   VelocityTracker::Strategy velocity_tracker_strategy_;
 

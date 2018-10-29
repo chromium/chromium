@@ -4,14 +4,14 @@
 
 package org.chromium.ui.base;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import android.content.ClipData;
 import android.content.Intent;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

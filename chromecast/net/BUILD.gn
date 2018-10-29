@@ -37,6 +37,20 @@ cast_source_set("net") {
   ]
 }
 
+cast_source_set("small_message_socket") {
+  sources = [
+    "small_message_socket.cc",
+    "small_message_socket.h",
+  ]
+  public_deps = [
+    "//net",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}
+
 cast_source_set("test_support") {
   testonly = true
 

@@ -32,10 +32,10 @@ namespace blink {
 SVGTests::SVGTests(SVGElement* context_element)
     : required_extensions_(
           SVGStaticStringList::Create<' '>(context_element,
-                                           SVGNames::requiredExtensionsAttr)),
+                                           svg_names::kRequiredExtensionsAttr)),
       system_language_(
           SVGStaticStringList::Create<','>(context_element,
-                                           SVGNames::systemLanguageAttr)) {
+                                           svg_names::kSystemLanguageAttr)) {
   DCHECK(context_element);
 
   context_element->AddToPropertyMap(required_extensions_);
@@ -98,8 +98,8 @@ bool SVGTests::IsValid() const {
 }
 
 bool SVGTests::IsKnownAttribute(const QualifiedName& attr_name) {
-  return attr_name == SVGNames::requiredExtensionsAttr ||
-         attr_name == SVGNames::systemLanguageAttr;
+  return attr_name == svg_names::kRequiredExtensionsAttr ||
+         attr_name == svg_names::kSystemLanguageAttr;
 }
 
 }  // namespace blink

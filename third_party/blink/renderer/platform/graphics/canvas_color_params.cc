@@ -20,6 +20,7 @@ gfx::ColorSpace::PrimaryID GetPrimaryID(CanvasColorSpace color_space) {
   gfx::ColorSpace::PrimaryID primary_id = gfx::ColorSpace::PrimaryID::BT709;
   switch (color_space) {
     case kSRGBCanvasColorSpace:
+    case kLinearRGBCanvasColorSpace:
       primary_id = gfx::ColorSpace::PrimaryID::BT709;
       break;
     case kRec2020CanvasColorSpace:
@@ -52,20 +53,24 @@ CanvasColorParams::CanvasColorParams(const sk_sp<SkColorSpace> color_space,
   // format).
   if (!color_space)
     return;
-  // kSRGBCanvasColorSpace covers sRGB and linear-rgb. We need to check for
-  // Rec2020 and P3.
-  if (SkColorSpace::Equals(
-          color_space.get(),
-          SkColorSpace::MakeRGB(SkColorSpace::kLinear_RenderTargetGamma,
-                                SkColorSpace::kRec2020_Gamut)
-              .get()))
+  // kSRGBCanvasColorSpace covers sRGB and e-sRGB. We need to check for
+  // linear-rgb, rec2020 and p3.
+  if (SkColorSpace::Equals(color_space.get(),
+                           SkColorSpace::MakeSRGB()->makeLinearGamma().get())) {
+    color_space_ = kLinearRGBCanvasColorSpace;
+  } else if (SkColorSpace::Equals(
+                 color_space.get(),
+                 SkColorSpace::MakeRGB(SkColorSpace::kLinear_RenderTargetGamma,
+                                       SkColorSpace::kRec2020_Gamut)
+                     .get())) {
     color_space_ = kRec2020CanvasColorSpace;
-  else if (SkColorSpace::Equals(
-               color_space.get(),
-               SkColorSpace::MakeRGB(SkColorSpace::kLinear_RenderTargetGamma,
-                                     SkColorSpace::kDCIP3_D65_Gamut)
-                   .get()))
+  } else if (SkColorSpace::Equals(
+                 color_space.get(),
+                 SkColorSpace::MakeRGB(SkColorSpace::kLinear_RenderTargetGamma,
+                                       SkColorSpace::kDCIP3_D65_Gamut)
+                     .get())) {
     color_space_ = kP3CanvasColorSpace;
+  }
   if (color_type == kRGBA_F16_SkColorType)
     pixel_format_ = kF16CanvasPixelFormat;
 }
@@ -156,7 +161,9 @@ gfx::ColorSpace CanvasColorParams::GetStorageGfxColorSpace() const {
 
   gfx::ColorSpace::TransferID transfer_id =
       gfx::ColorSpace::TransferID::IEC61966_2_1;
-  if (pixel_format_ == kF16CanvasPixelFormat)
+  // Only sRGB and e-sRGB use sRGB transfer function. Other canvas color spaces,
+  // i.e., linear-rgb, p3 and rec2020 use linear transfer function.
+  if (color_space_ != kSRGBCanvasColorSpace)
     transfer_id = gfx::ColorSpace::TransferID::LINEAR_HDR;
 
   return gfx::ColorSpace(primary_id, transfer_id);
@@ -167,8 +174,9 @@ sk_sp<SkColorSpace> CanvasColorParams::GetSkColorSpace() const {
   SkColorSpace::RenderTargetGamma gamma = SkColorSpace::kSRGB_RenderTargetGamma;
   switch (color_space_) {
     case kSRGBCanvasColorSpace:
-      if (pixel_format_ == kF16CanvasPixelFormat)
-        gamma = SkColorSpace::kLinear_RenderTargetGamma;
+      break;
+    case kLinearRGBCanvasColorSpace:
+      gamma = SkColorSpace::kLinear_RenderTargetGamma;
       break;
     case kRec2020CanvasColorSpace:
       gamut = SkColorSpace::kRec2020_Gamut;

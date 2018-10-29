@@ -31,7 +31,8 @@ void SetDemoConfigPref(DemoSession::DemoModeConfig demo_config) {
 class DemoSessionDemoDeviceModeTest : public LoginManagerTest {
  protected:
   DemoSessionDemoDeviceModeTest()
-      : LoginManagerTest(true /*should_launch_browser*/),
+      : LoginManagerTest(true /*should_launch_browser*/,
+                         true /* should_initialize_webui */),
         install_attributes_(
             StubInstallAttributes::CreateDemoMode(kFakeDeviceId)) {}
   ~DemoSessionDemoDeviceModeTest() override = default;
@@ -69,7 +70,8 @@ IN_PROC_BROWSER_TEST_F(DemoSessionDemoDeviceModeTest, IsDemoMode) {
 class DemoSessionDemoEnrolledDeviceTest : public LoginManagerTest {
  protected:
   DemoSessionDemoEnrolledDeviceTest()
-      : LoginManagerTest(true /*should_launch_browser*/),
+      : LoginManagerTest(true /*should_launch_browser*/,
+                         true /* should_initialize_webui */),
         install_attributes_(StubInstallAttributes::CreateCloudManaged(
             DemoSetupController::kDemoModeDomain,
             kFakeDeviceId)) {}
@@ -105,7 +107,8 @@ IN_PROC_BROWSER_TEST_F(DemoSessionDemoEnrolledDeviceTest, IsDemoMode) {
 class DemoSessionNonDemoEnrolledDeviceTest : public LoginManagerTest {
  public:
   DemoSessionNonDemoEnrolledDeviceTest()
-      : LoginManagerTest(true /*should_launch_browser*/),
+      : LoginManagerTest(true /*should_launch_browser*/,
+                         true /* should_initialize_webui */),
         install_attributes_(
             StubInstallAttributes::CreateCloudManaged(kNonDemoDomain,
                                                       kFakeDeviceId)) {}
@@ -133,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(DemoSessionNonDemoEnrolledDeviceTest, NotDemoMode) {
 class DemoSessionConsumerDeviceTest : public LoginManagerTest {
  public:
   DemoSessionConsumerDeviceTest()
-      : LoginManagerTest(true /*should_launch_browser*/),
+      : LoginManagerTest(true /*should_launch_browser*/,
+                         true /* should_initialize_webui */),
         install_attributes_(StubInstallAttributes::CreateConsumerOwned()) {}
   ~DemoSessionConsumerDeviceTest() override = default;
 
@@ -159,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(DemoSessionConsumerDeviceTest, NotDemoMode) {
 class DemoSessionUnownedDeviceTest : public LoginManagerTest {
  public:
   DemoSessionUnownedDeviceTest()
-      : LoginManagerTest(true /*should_launch_browser*/),
+      : LoginManagerTest(true /*should_launch_browser*/,
+                         true /* should_initialize_webui */),
         install_attributes_(StubInstallAttributes::CreateUnset()) {}
   ~DemoSessionUnownedDeviceTest() override = default;
 
@@ -185,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(DemoSessionUnownedDeviceTest, NotDemoMode) {
 class DemoSessionActiveDirectoryDeviceTest : public LoginManagerTest {
  public:
   DemoSessionActiveDirectoryDeviceTest()
-      : LoginManagerTest(true /*should_launch_browser*/),
+      : LoginManagerTest(true /*should_launch_browser*/,
+                         true /* should_initialize_webui */),
         install_attributes_(StubInstallAttributes::CreateActiveDirectoryManaged(
             DemoSetupController::kDemoModeDomain,
             kFakeDeviceId)) {}

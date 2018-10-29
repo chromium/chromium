@@ -165,9 +165,11 @@ class VIEWS_EXPORT DesktopWindowTreeHostX11
   void ShowImpl() override;
   void HideImpl() override;
   gfx::Rect GetBoundsInPixels() const override;
-  void SetBoundsInPixels(const gfx::Rect& requested_bounds_in_pixels,
-                         const viz::LocalSurfaceId& local_surface_id =
-                             viz::LocalSurfaceId()) override;
+  void SetBoundsInPixels(
+      const gfx::Rect& requested_bounds_in_pixels,
+      const viz::LocalSurfaceId& local_surface_id = viz::LocalSurfaceId(),
+      base::TimeTicks local_surface_id_allocation_time =
+          base::TimeTicks()) override;
   gfx::Point GetLocationOnScreenInPixels() const override;
   void SetCapture() override;
   void ReleaseCapture() override;
@@ -183,12 +185,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostX11
   // Overridden from display::DisplayObserver via aura::WindowTreeHost:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
-
-  // Called after the window is maximized or restored.
-  virtual void OnMaximizedStateChanged();
-
-  // Called after the window is fullscreened or unfullscreened.
-  virtual void OnFullscreenStateChanged();
 
  private:
   friend class DesktopWindowTreeHostX11HighDPITest;
@@ -218,6 +214,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostX11
 
   // Called when |xwindow_|'s _NET_WM_STATE property is updated.
   void OnWMStateUpdated();
+
+  // Updates |window_properties_| with |new_window_properties|.
+  void UpdateWindowProperties(
+      const base::flat_set<XAtom>& new_window_properties);
 
   // Called when |xwindow_|'s _NET_FRAME_EXTENTS property is updated.
   void OnFrameExtentsUpdated();

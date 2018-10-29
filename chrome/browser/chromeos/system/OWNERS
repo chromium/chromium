@@ -1,0 +1,2 @@
+# There is system tray code in this directory for historical reasons.
+per-file tray_*=file://ash/system/OWNERS

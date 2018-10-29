@@ -3,8 +3,8 @@
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
-#ifndef BLINK_PLATFORM_TESTING_RUNTIME_ENABLED_FEATURES_TEST_HELPERS_H_
-#define BLINK_PLATFORM_TESTING_RUNTIME_ENABLED_FEATURES_TEST_HELPERS_H_
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -39,6 +39,6 @@ typedef ScopedRuntimeEnabledFeatureForTest<
     RuntimeEnabledFeatures::Set{{feature.name}}Enabled>
     Scoped{{feature.name}}ForTest;
 {% endfor %}
-} // namespace blink
+}  // namespace blink
 
-#endif  // BLINK_PLATFORM_TESTING_RUNTIME_ENABLED_FEATURES_TEST_HELPERS_H_
+#endif  // {{header_guard}}

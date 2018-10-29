@@ -121,7 +121,7 @@ class AudioSinkAudioTrackImpl {
     // Additional padding for minimum buffer time, determined experimentally.
     private static final long MIN_BUFFERED_TIME_PADDING_US = ANDROID_AUDIO_PERIOD_SIZE_US;
 
-    private static AudioManager sAudioManager = null;
+    private static AudioManager sAudioManager;
 
     private static int sSessionIdMedia = AudioManager.ERROR;
     private static int sSessionIdCommunication = AudioManager.ERROR;

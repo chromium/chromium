@@ -441,41 +441,39 @@ template("mojom") {
 
   if (defined(invoker.sources)) {
     verify_deps_target_names = []
-    if (!defined(invoker.skip_deps_check) || !invoker.skip_deps_check) {
-      verify_deps_target_name = "${target_name}__verify_deps"
-      verify_deps_target_names += [ ":$verify_deps_target_name" ]
-      source_file_name = target_name
+    verify_deps_target_name = "${target_name}__verify_deps"
+    verify_deps_target_names += [ ":$verify_deps_target_name" ]
+    mojom_target_name = target_name
 
-      action(verify_deps_target_name) {
-        script = mojom_generator_script
-        inputs = mojom_generator_sources + jinja2_sources
-        sources = invoker.sources
-        deps = [
-          ":$parsed_target_name",
-        ]
-        outputs = []
-        filelist = []
-        foreach(source, invoker.sources) {
-          filename = get_path_info("$source", "name")
-          dirname = get_path_info("$source", "gen_dir")
-          outputs += [ "$dirname/$filename.v" ]
-          filelist += [ rebase_path("$source", root_build_dir) ]
-        }
-
-        response_file_contents = filelist
-
-        args = [
-          "verify",
-          "--filelist={{response_file_name}}",
-          "-f",
-          rebase_path("$target_gen_dir/$source_file_name.deps_sources_list",
-                      root_build_dir),
-          "--gen_dir",
-          rebase_path(root_gen_dir, root_build_dir),
-          "--depth",
-          rebase_path("//", root_build_dir),
-        ]
+    action(verify_deps_target_name) {
+      script = mojom_generator_script
+      inputs = mojom_generator_sources + jinja2_sources
+      sources = invoker.sources
+      deps = [
+        ":$parsed_target_name",
+      ]
+      outputs = []
+      filelist = []
+      foreach(source, invoker.sources) {
+        filename = get_path_info("$source", "name")
+        dirname = get_path_info("$source", "gen_dir")
+        outputs += [ "$dirname/$filename.v" ]
+        filelist += [ rebase_path("$source", root_build_dir) ]
       }
+
+      response_file_contents = filelist
+
+      args = [
+        "verify",
+        "--filelist={{response_file_name}}",
+        "-f",
+        rebase_path("$target_gen_dir/$mojom_target_name.deps_sources_list",
+                    root_build_dir),
+        "--gen_dir",
+        rebase_path(root_gen_dir, root_build_dir),
+        "--depth",
+        rebase_path("//", root_build_dir),
+      ]
     }
   }
 
@@ -951,11 +949,15 @@ template("mojom") {
         testonly = invoker.testonly
       }
       defines = []
-      if (defined(invoker.export_define)) {
-        defines += [ invoker.export_define ]
-      }
-      if (defined(invoker.export_define_blink)) {
-        defines += [ invoker.export_define_blink ]
+      if (defined(bindings_configuration.for_blink) &&
+          bindings_configuration.for_blink) {
+        if (defined(invoker.export_define_blink)) {
+          defines += [ invoker.export_define_blink ]
+        }
+      } else {
+        if (defined(invoker.export_define)) {
+          defines += [ invoker.export_define ]
+        }
       }
       if (enabled_sources != []) {
         sources = process_file_template(enabled_sources, generator_cpp_outputs)
@@ -1147,6 +1149,8 @@ template("mojom") {
       generator_js_outputs = [
         "{{source_gen_dir}}/{{source_name_part}}.mojom.js",
         "{{source_gen_dir}}/{{source_name_part}}.mojom.externs.js",
+        "{{source_gen_dir}}/{{source_name_part}}.mojom-lite.js",
+        "{{source_gen_dir}}/{{source_name_part}}.mojom-lite.externs.js",
       ]
       action(generator_js_target_name) {
         script = mojom_generator_script
@@ -1167,6 +1171,8 @@ template("mojom") {
           outputs += [
             "$target_gen_dir/$source.js",
             "$target_gen_dir/$source.externs.js",
+            "$target_gen_dir/$source-lite.js",
+            "$target_gen_dir/$source-lite.externs.js",
           ]
         }
 
@@ -1176,6 +1182,7 @@ template("mojom") {
           "--filelist={{response_file_name}}",
           "-g",
           "javascript",
+          "--js_bindings_mode=new",
         ]
 
         if (!defined(invoker.scramble_message_ids) ||

@@ -11,12 +11,16 @@ namespace blink {
 NGBlockBreakToken::NGBlockBreakToken(
     NGLayoutInputNode node,
     LayoutUnit used_block_size,
-    Vector<scoped_refptr<NGBreakToken>>& child_break_tokens,
+    const NGBreakTokenVector& child_break_tokens,
     bool has_last_resort_break)
     : NGBreakToken(kBlockBreakToken, kUnfinished, node),
       used_block_size_(used_block_size),
-      has_last_resort_break_(has_last_resort_break) {
-  child_break_tokens_.swap(child_break_tokens);
+      has_last_resort_break_(has_last_resort_break),
+      num_children_(child_break_tokens.size()) {
+  for (wtf_size_t i = 0; i < child_break_tokens.size(); ++i) {
+    child_break_tokens_[i] = child_break_tokens[i].get();
+    child_break_tokens_[i]->AddRef();
+  }
 }
 
 NGBlockBreakToken::NGBlockBreakToken(NGLayoutInputNode node,
@@ -24,10 +28,11 @@ NGBlockBreakToken::NGBlockBreakToken(NGLayoutInputNode node,
                                      bool has_last_resort_break)
     : NGBreakToken(kBlockBreakToken, kFinished, node),
       used_block_size_(used_block_size),
-      has_last_resort_break_(has_last_resort_break) {}
+      has_last_resort_break_(has_last_resort_break),
+      num_children_(0) {}
 
 NGBlockBreakToken::NGBlockBreakToken(NGLayoutInputNode node)
-    : NGBreakToken(kBlockBreakToken, kUnfinished, node) {}
+    : NGBreakToken(kBlockBreakToken, kUnfinished, node), num_children_(0) {}
 
 #ifndef NDEBUG
 

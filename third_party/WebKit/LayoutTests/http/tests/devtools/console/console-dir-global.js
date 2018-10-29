@@ -27,10 +27,11 @@
       testController.notifyDone('Exception:' + result);
 
     var objectProxy = TestRunner.runtimeModel.createRemoteObject(result);
-    objectProxy.getOwnProperties(false, getPropertiesCallback);
+    objectProxy.getOwnProperties(false).then(getPropertiesCallback);
   }
 
-  function getPropertiesCallback(properties) {
+  function getPropertiesCallback(allProperties) {
+    const properties = allProperties.properties;
     properties.sort(ObjectUI.ObjectPropertiesSection.CompareProperties);
 
     var golden = {

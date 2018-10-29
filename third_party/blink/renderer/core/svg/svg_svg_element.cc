@@ -54,7 +54,7 @@
 #include "third_party/blink/renderer/core/svg/svg_view_spec.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -62,25 +62,25 @@
 namespace blink {
 
 inline SVGSVGElement::SVGSVGElement(Document& doc)
-    : SVGGraphicsElement(SVGNames::svgTag, doc),
+    : SVGGraphicsElement(svg_names::kSVGTag, doc),
       SVGFitToViewBox(this),
       x_(SVGAnimatedLength::Create(this,
-                                   SVGNames::xAttr,
+                                   svg_names::kXAttr,
                                    SVGLengthMode::kWidth,
                                    SVGLength::Initial::kUnitlessZero,
                                    CSSPropertyX)),
       y_(SVGAnimatedLength::Create(this,
-                                   SVGNames::yAttr,
+                                   svg_names::kYAttr,
                                    SVGLengthMode::kHeight,
                                    SVGLength::Initial::kUnitlessZero,
                                    CSSPropertyY)),
       width_(SVGAnimatedLength::Create(this,
-                                       SVGNames::widthAttr,
+                                       svg_names::kWidthAttr,
                                        SVGLengthMode::kWidth,
                                        SVGLength::Initial::kPercent100,
                                        CSSPropertyWidth)),
       height_(SVGAnimatedLength::Create(this,
-                                        SVGNames::heightAttr,
+                                        svg_names::kHeightAttr,
                                         SVGLengthMode::kHeight,
                                         SVGLength::Initial::kPercent100,
                                         CSSPropertyHeight)),
@@ -187,7 +187,9 @@ void SVGSVGElement::ParseAttribute(const AttributeModificationParams& params) {
   } else if (name == HTMLNames::onerrorAttr) {
     GetDocument().SetWindowAttributeEventListener(
         EventTypeNames::error,
-        CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
+        CreateAttributeEventListener(
+            GetDocument().GetFrame(), name, value,
+            JSEventHandler::HandlerType::kOnErrorEventHandler));
   } else if (SVGZoomAndPan::ParseAttribute(name, value)) {
   } else {
     SVGElement::ParseAttribute(params);
@@ -195,7 +197,7 @@ void SVGSVGElement::ParseAttribute(const AttributeModificationParams& params) {
 }
 
 bool SVGSVGElement::IsPresentationAttribute(const QualifiedName& name) const {
-  if ((name == SVGNames::widthAttr || name == SVGNames::heightAttr) &&
+  if ((name == svg_names::kWidthAttr || name == svg_names::kHeightAttr) &&
       !IsOutermostSVGSVGElement())
     return false;
   return SVGGraphicsElement::IsPresentationAttribute(name);
@@ -203,7 +205,7 @@ bool SVGSVGElement::IsPresentationAttribute(const QualifiedName& name) const {
 
 bool SVGSVGElement::IsPresentationAttributeWithSVGDOM(
     const QualifiedName& attr_name) const {
-  if (attr_name == SVGNames::widthAttr || attr_name == SVGNames::heightAttr)
+  if (attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr)
     return false;
   return SVGGraphicsElement::IsPresentationAttributeWithSVGDOM(attr_name);
 }
@@ -237,9 +239,9 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
 void SVGSVGElement::SvgAttributeChanged(const QualifiedName& attr_name) {
   bool update_relative_lengths_or_view_box = false;
   bool width_or_height_changed =
-      attr_name == SVGNames::widthAttr || attr_name == SVGNames::heightAttr;
-  if (width_or_height_changed || attr_name == SVGNames::xAttr ||
-      attr_name == SVGNames::yAttr) {
+      attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
+  if (width_or_height_changed || attr_name == svg_names::kXAttr ||
+      attr_name == svg_names::kYAttr) {
     update_relative_lengths_or_view_box = true;
     UpdateRelativeLengthsInformation();
     InvalidateRelativeLengthClients();
@@ -256,7 +258,7 @@ void SVGSVGElement::SvgAttributeChanged(const QualifiedName& attr_name) {
         InvalidateSVGPresentationAttributeStyle();
         SetNeedsStyleRecalc(kLocalStyleChange,
                             StyleChangeReasonForTracing::Create(
-                                StyleChangeReason::kSVGContainerSizeChange));
+                                style_change_reason::kSVGContainerSizeChange));
         if (layout_object)
           ToLayoutSVGRoot(layout_object)->IntrinsicSizingInfoChanged();
       }
@@ -273,7 +275,7 @@ void SVGSVGElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     InvalidateRelativeLengthClients();
     if (LayoutObject* object = GetLayoutObject()) {
       object->SetNeedsTransformUpdate();
-      if (attr_name == SVGNames::viewBoxAttr && object->IsSVGRoot())
+      if (attr_name == svg_names::kViewBoxAttr && object->IsSVGRoot())
         ToLayoutSVGRoot(object)->IntrinsicSizingInfoChanged();
     }
   }

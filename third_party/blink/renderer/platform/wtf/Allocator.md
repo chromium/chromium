@@ -149,29 +149,8 @@ class X {
 
 class Y {
   USING_FAST_MALLOC(Y);
-  X m_x;  // This is allowed.
-};
-
-void func() {
-  X x;  // This is allowed.
-  X* x = new X;  // This is forbidden.
-}
-```
-
-* If the object can be allocated only as a part of object or by a placement new
-(e.g., the object is used as a value object in a container),
-use DISALLOW_NEW_EXCEPT_PLACEMENT_NEW().
-
-```c++
-class X {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
-  ...;
-};
-
-class Y {
-  USING_FAST_MALLOC(Y);
-  X m_x;  // This is allowed.
-  Vector<X> m_vector;  // This is allowed.
+  X x_;  // This is allowed.
+  Vector<X> vector_;  // This is allowed.
 };
 
 void func() {

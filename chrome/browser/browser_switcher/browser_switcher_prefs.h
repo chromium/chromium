@@ -16,6 +16,7 @@ extern const char kAlternativeBrowserPath[];
 extern const char kAlternativeBrowserParameters[];
 extern const char kUrlList[];
 extern const char kUrlGreylist[];
+extern const char kUseIeSitelist[];
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

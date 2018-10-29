@@ -110,6 +110,6 @@ CORE_EXPORT void AllAsyncTasksCanceled(ExecutionContext*);
 }  // namespace probe
 }  // namespace blink
 
-#include "third_party/blink/renderer/core/CoreProbesInl.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 
 #endif  // !defined(CoreProbes_h)

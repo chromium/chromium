@@ -128,7 +128,7 @@ void FFTFrame::DoInverseFFT(float* data) {
   // expect. Hence make the scale factor
   // twice as large to compensate for that.
   const float scale = 2.0 / fft_size_;
-  VectorMath::Vsmul(interleaved_data, 1, &scale, data, 1, fft_size_);
+  vector_math::Vsmul(interleaved_data, 1, &scale, data, 1, fft_size_);
 }
 
 float* FFTFrame::GetUpToDateComplexData() {

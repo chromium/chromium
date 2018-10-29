@@ -281,6 +281,16 @@ cr.define('print_preview_test_utils', function() {
     };
   }
 
+  /**
+   * @param {!HTMLInputElement} element
+   * @param {!string} input The value to set for the input element.
+   */
+  function triggerInputEvent(element, input) {
+    element.value = input;
+    element.dispatchEvent(
+        new CustomEvent('input', {composed: true, bubbles: true}));
+  }
+
   return {
     getDefaultInitialSettings: getDefaultInitialSettings,
     getCddTemplate: getCddTemplate,
@@ -293,5 +303,6 @@ cr.define('print_preview_test_utils', function() {
     getMediaSizeCapabilityWithCustomNames:
         getMediaSizeCapabilityWithCustomNames,
     getPdfPrinter: getPdfPrinter,
+    triggerInputEvent: triggerInputEvent,
   };
 });

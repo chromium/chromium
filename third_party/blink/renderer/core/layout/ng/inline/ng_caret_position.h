@@ -27,7 +27,7 @@ class LayoutBlockFlow;
 
 enum class NGCaretPositionType { kBeforeBox, kAfterBox, kAtTextOffset };
 struct NGCaretPosition {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
   bool IsNull() const { return !fragment; }
 

@@ -228,7 +228,7 @@ ExternalPolicyDataFetcher::ExternalPolicyDataFetcher(
 
 ExternalPolicyDataFetcher::~ExternalPolicyDataFetcher() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  for (JobSet::iterator it = jobs_.begin(); it != jobs_.end(); ++it)
+  for (auto it = jobs_.begin(); it != jobs_.end(); ++it)
     CancelJob(*it);
 }
 
@@ -271,7 +271,7 @@ void ExternalPolicyDataFetcher::OnJobFinished(
     Result result,
     std::unique_ptr<std::string> data) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  JobSet::iterator it = jobs_.find(job);
+  auto it = jobs_.find(job);
   if (it == jobs_.end()) {
     // The |job| has been canceled and removed from |jobs_| already. This can
     // happen because the |backend_| runs on a different thread and a |job| may

@@ -111,7 +111,11 @@ syncer::StringOrdinal FakeAppListModelUpdater::GetFirstAvailablePosition()
     const {
   std::vector<ChromeAppListItem*> top_level_items;
   for (auto& item : items_) {
-    if (item->folder_id().empty())
+    DCHECK(item->position().IsValid())
+        << "Item with invalid position: id=" << item->id()
+        << ", name=" << item->name() << ", is_folder=" << item->is_folder()
+        << ", is_page_break=" << item->is_page_break();
+    if (item->folder_id().empty() && item->position().IsValid())
       top_level_items.emplace_back(item.get());
   }
   return GetFirstAvailablePositionInternal(top_level_items);
@@ -154,7 +158,6 @@ FakeAppListModelUpdater::FindOrCreateOemFolder(
         std::make_unique<ChromeAppListItem>(nullptr, ash::kOemFolderId,
                                             nullptr);
     oem_folder = new_folder.get();
-    AddItem(std::move(new_folder));
     ash::mojom::AppListItemMetadataPtr folder_data =
         oem_folder->CloneMetadata();
     folder_data->position = preferred_oem_position.IsValid()
@@ -162,6 +165,7 @@ FakeAppListModelUpdater::FindOrCreateOemFolder(
                                 : GetOemFolderPos();
     folder_data->name = oem_folder_name;
     oem_folder->SetMetadata(std::move(folder_data));
+    AddItem(std::move(new_folder));
   }
   return oem_folder->CloneMetadata();
 }
@@ -171,8 +175,11 @@ syncer::StringOrdinal FakeAppListModelUpdater::GetOemFolderPos() {
   // We don't have the information in Chrome, so the returned position
   // here is not guaranteed correct.
   size_t web_store_app_index;
-  if (!FindItemIndexForTest(extensions::kWebStoreAppId, &web_store_app_index))
+  if (!FindItemIndexForTest(extensions::kWebStoreAppId, &web_store_app_index)) {
+    if (items_.empty())
+      return syncer::StringOrdinal::CreateInitialOrdinal();
     return items_.back()->position().CreateAfter();
+  }
   const ChromeAppListItem* web_store_app_item =
       ItemAtForTest(web_store_app_index);
   return web_store_app_item->position().CreateAfter();

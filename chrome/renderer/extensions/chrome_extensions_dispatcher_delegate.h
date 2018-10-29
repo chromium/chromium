@@ -25,7 +25,7 @@ class ChromeExtensionsDispatcherDelegate
       extensions::ScriptContext* context) override;
   void PopulateSourceMap(
       extensions::ResourceBundleSourceMap* source_map) override;
-  void RequireAdditionalModules(extensions::ScriptContext* context) override;
+  void RequireWebViewModules(extensions::ScriptContext* context) override;
   void OnActiveExtensionsUpdated(
       const std::set<std::string>& extensions_ids) override;
   void InitializeBindingsSystem(

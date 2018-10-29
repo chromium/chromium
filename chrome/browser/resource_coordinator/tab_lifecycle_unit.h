@@ -172,6 +172,18 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   void CheckIfTabIsUsedInBackground(DecisionDetails* decision_details,
                                     InterventionType intervention_type) const;
 
+  // Runs the freezing heuristics checks on this tab and store the decision
+  // details in |decision_details|. This doesn't check for potential background
+  // feature usage.
+  void CanFreezeHeuristicsChecks(DecisionDetails* decision_details) const;
+
+  // Runs the discarding heuristics checks on this tab and store the decision
+  // details in |decision_details|. If |intervention_type| indicates that
+  // this is a proactive intervention then more heuristics will be
+  // applied. This doesn't check for potential background feature usage.
+  void CanDiscardHeuristicsChecks(DecisionDetails* decision_details,
+                                  LifecycleUnitDiscardReason reason) const;
+
   // List of observers to notify when the discarded state or the auto-
   // discardable state of this tab changes.
   base::ObserverList<TabLifecycleObserver>::Unchecked* observers_;

@@ -219,8 +219,7 @@ void FontListImpl::CacheCommonFontHeightAndBaseline() const {
   int ascent = 0;
   int descent = 0;
   const std::vector<Font>& fonts = GetFonts();
-  for (std::vector<Font>::const_iterator i = fonts.begin();
-       i != fonts.end(); ++i) {
+  for (auto i = fonts.begin(); i != fonts.end(); ++i) {
     ascent = std::max(ascent, i->GetBaseline());
     descent = std::max(descent, i->GetHeight() - i->GetBaseline());
   }

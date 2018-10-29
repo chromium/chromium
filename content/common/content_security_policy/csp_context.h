@@ -48,7 +48,7 @@ class CONTENT_EXPORT CSPContext {
   // Returns true when the request can proceed, false otherwise.
   bool IsAllowedByCsp(CSPDirective::Name directive_name,
                       const GURL& url,
-                      bool is_redirect,
+                      bool has_followed_redirect,
                       bool is_response_check,
                       const SourceLocation& source_location,
                       CheckCSPDisposition check_csp_disposition,
@@ -92,7 +92,7 @@ class CONTENT_EXPORT CSPContext {
   // without the round trip in the renderer process.
   // See https://crbug.com/721329
   virtual void SanitizeDataForUseInCspViolation(
-      bool is_redirect,
+      bool has_followed_redirect,
       CSPDirective::Name directive,
       GURL* blocked_url,
       SourceLocation* source_location) const;

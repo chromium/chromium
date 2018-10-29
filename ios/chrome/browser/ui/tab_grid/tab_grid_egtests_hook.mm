@@ -38,15 +38,6 @@ bool DisableUpdateService() {
   return true;
 }
 
-bool ForceUIRefreshPhase1() {
-  return true;
-}
-
-// TODO(crbug.com/885003) : Remove this hook.
-bool ForceWKWebViewSnapshots() {
-  return false;
-}
-
 void SetUpTestsIfPresent() {
   // No-op for Earl Grey.
 }

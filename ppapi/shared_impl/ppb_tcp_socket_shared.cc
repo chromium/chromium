@@ -36,8 +36,7 @@ void TCPSocketState::CompletePendingTransition(bool success) {
       state_ = success ? SSL_CONNECTED : CLOSED;
       break;
     case LISTEN:
-      if (success)
-        state_ = LISTENING;
+      state_ = success ? LISTENING : CLOSED;
       break;
     case CLOSE:
       state_ = CLOSED;

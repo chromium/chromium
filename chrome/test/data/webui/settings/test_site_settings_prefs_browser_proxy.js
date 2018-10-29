@@ -243,7 +243,11 @@ class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
 
   /** @override */
   getExceptionList(contentType) {
-    this.methodCalled('getExceptionList', contentType);
+    // Defer |methodCalled| call so that |then| callback for the promise
+    // returned from this method runs before the one for the promise returned
+    // from |whenCalled| calls in tests.
+    window.setTimeout(
+        () => this.methodCalled('getExceptionList', contentType), 0);
     let pref = this.prefs_.exceptions[contentType];
     assert(pref != undefined, 'Pref is missing for ' + contentType);
 

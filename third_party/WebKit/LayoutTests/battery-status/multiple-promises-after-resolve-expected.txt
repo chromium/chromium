@@ -2,7 +2,6 @@ Test battery status API with multiple promises after resolve.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 resolution number 1
 PASS batteryInfo is defined.
 PASS lastSetMockBatteryInfo is defined.

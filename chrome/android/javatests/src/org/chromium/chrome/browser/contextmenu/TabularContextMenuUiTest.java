@@ -4,15 +4,15 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
+
 import android.support.design.widget.TabLayout;
 import android.support.test.filters.SmallTest;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
 
 import org.junit.Assert;
 import org.junit.Before;

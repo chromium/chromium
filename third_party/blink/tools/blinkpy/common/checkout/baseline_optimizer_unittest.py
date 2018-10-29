@@ -32,6 +32,7 @@ from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer, Result
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.common.path_finder import PathFinder
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.builder_list import BuilderList
 
 ALL_PASS_TESTHARNESS_RESULT = """This is a testharness.js-based test.
@@ -44,6 +45,8 @@ PASS woohoo
 PASS yahoo
 Harness: the test ran to completion.
 """
+
+MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 
 
 class BaselineOptimizerTest(unittest.TestCase):
@@ -379,52 +382,52 @@ class BaselineOptimizerTest(unittest.TestCase):
     # Tests for protected methods - pylint: disable=protected-access
 
     def test_move_baselines(self):
-        self.fs.write_text_file('/mock-checkout/third_party/WebKit/LayoutTests/VirtualTestSuites', '[]')
+        self.fs.write_text_file(MOCK_WEB_TESTS + 'VirtualTestSuites', '[]')
         self.fs.write_binary_file(
-            '/mock-checkout/third_party/WebKit/LayoutTests/platform/win/another/test-expected.txt', 'result A')
+            MOCK_WEB_TESTS + 'platform/win/another/test-expected.txt', 'result A')
         self.fs.write_binary_file(
-            '/mock-checkout/third_party/WebKit/LayoutTests/platform/mac/another/test-expected.txt', 'result A')
-        self.fs.write_binary_file('/mock-checkout/third_party/WebKit/LayoutTests/another/test-expected.txt', 'result B')
+            MOCK_WEB_TESTS + 'platform/mac/another/test-expected.txt', 'result A')
+        self.fs.write_binary_file(MOCK_WEB_TESTS + 'another/test-expected.txt', 'result B')
         baseline_optimizer = BaselineOptimizer(
             self.host, self.host.port_factory.get(), self.host.port_factory.all_port_names())
         baseline_optimizer._move_baselines(
             'another/test-expected.txt',
             {
-                '/mock-checkout/third_party/WebKit/LayoutTests/platform/win': 'aaa',
-                '/mock-checkout/third_party/WebKit/LayoutTests/platform/mac': 'aaa',
-                '/mock-checkout/third_party/WebKit/LayoutTests': 'bbb',
+                MOCK_WEB_TESTS + 'platform/win': 'aaa',
+                MOCK_WEB_TESTS + 'platform/mac': 'aaa',
+                MOCK_WEB_TESTS[:-1]: 'bbb',
             },
             {
-                '/mock-checkout/third_party/WebKit/LayoutTests': 'aaa',
+                MOCK_WEB_TESTS[:-1]: 'aaa',
             })
         self.assertEqual(
             self.fs.read_binary_file(
-                '/mock-checkout/third_party/WebKit/LayoutTests/another/test-expected.txt'),
+                MOCK_WEB_TESTS + 'another/test-expected.txt'),
             'result A')
 
     def test_move_baselines_skip_git_commands(self):
-        self.fs.write_text_file('/mock-checkout/third_party/WebKit/LayoutTests/VirtualTestSuites', '[]')
+        self.fs.write_text_file(MOCK_WEB_TESTS + 'VirtualTestSuites', '[]')
         self.fs.write_binary_file(
-            '/mock-checkout/third_party/WebKit/LayoutTests/platform/win/another/test-expected.txt', 'result A')
+            MOCK_WEB_TESTS + 'platform/win/another/test-expected.txt', 'result A')
         self.fs.write_binary_file(
-            '/mock-checkout/third_party/WebKit/LayoutTests/platform/mac/another/test-expected.txt', 'result A')
-        self.fs.write_binary_file('/mock-checkout/third_party/WebKit/LayoutTests/another/test-expected.txt', 'result B')
+            MOCK_WEB_TESTS + 'platform/mac/another/test-expected.txt', 'result A')
+        self.fs.write_binary_file(MOCK_WEB_TESTS + 'another/test-expected.txt', 'result B')
         baseline_optimizer = BaselineOptimizer(
             self.host, self.host.port_factory.get(), self.host.port_factory.all_port_names())
         baseline_optimizer._move_baselines(
             'another/test-expected.txt',
             {
-                '/mock-checkout/third_party/WebKit/LayoutTests/platform/win': 'aaa',
-                '/mock-checkout/third_party/WebKit/LayoutTests/platform/mac': 'aaa',
-                '/mock-checkout/third_party/WebKit/LayoutTests': 'bbb',
+                MOCK_WEB_TESTS + 'platform/win': 'aaa',
+                MOCK_WEB_TESTS + 'platform/mac': 'aaa',
+                MOCK_WEB_TESTS[:-1]: 'bbb',
             },
             {
-                '/mock-checkout/third_party/WebKit/LayoutTests/platform/linux': 'bbb',
-                '/mock-checkout/third_party/WebKit/LayoutTests': 'aaa',
+                MOCK_WEB_TESTS + 'platform/linux': 'bbb',
+                MOCK_WEB_TESTS[:-1]: 'aaa',
             })
         self.assertEqual(
             self.fs.read_binary_file(
-                '/mock-checkout/third_party/WebKit/LayoutTests/another/test-expected.txt'),
+                MOCK_WEB_TESTS + 'another/test-expected.txt'),
             'result A')
 
 

@@ -33,6 +33,7 @@
 #include "chrome/browser/extensions/event_router_forwarder.h"
 #include "chrome/browser/net/chrome_extensions_network_delegate.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
+#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -153,6 +154,26 @@ base::Value FormStringValue(base::StringPiece str) {
   return list;
 }
 
+// Returns a main-frame request to |url|.
+std::unique_ptr<net::URLRequest> CreateRequestHelper(
+    const GURL& url,
+    net::TestURLRequestContext* context,
+    net::TestDelegate* delegate) {
+  CHECK(context);
+  CHECK(delegate);
+
+  std::unique_ptr<net::URLRequest> request = context->CreateRequest(
+      url, net::DEFAULT_PRIORITY, delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  content::ResourceRequestInfo::AllocateForTesting(
+      request.get(), content::RESOURCE_TYPE_MAIN_FRAME, /*context*/ nullptr,
+      -1 /* render_process_id */, -1 /* render_view_id */,
+      -1 /* render_frame_id */, true /* is_main_frame */,
+      false /* allow_download */, false /* is_async */, content::PREVIEWS_OFF,
+      ChromeNavigationUIData::CreateForMainFrameNavigation(
+          nullptr /* web_contents */, WindowOpenDisposition::CURRENT_TAB));
+  return request;
+}
+
 }  // namespace
 
 // A mock event router that responds to events with a pre-arranged queue of
@@ -245,6 +266,11 @@ class ExtensionWebRequestTest : public testing::Test {
                               const std::vector<char>& bytes_1,
                               const std::vector<char>& bytes_2);
 
+  // Returns a main-frame request to |url|.
+  std::unique_ptr<net::URLRequest> CreateRequest(const GURL& url) {
+    return CreateRequestHelper(url, context_.get(), &delegate_);
+  }
+
   content::TestBrowserThreadBundle thread_bundle_;
   TestingProfile profile_;
   TestingProfileManager profile_manager_;
@@ -282,9 +308,7 @@ TEST_F(ExtensionWebRequestTest, BlockingEventPrecedenceRedirect) {
   GURL redirect_url("about:redirected");
   GURL not_chosen_redirect_url("about:not_chosen");
 
-  std::unique_ptr<net::URLRequest> request(
-      context_->CreateRequest(GURL("about:blank"), net::DEFAULT_PRIORITY,
-                              &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<net::URLRequest> request = CreateRequest(GURL("about:blank"));
   {
     // onBeforeRequest will be dispatched twice initially. The second response -
     // the redirect - should win, since it has a later |install_time|. The
@@ -337,9 +361,8 @@ TEST_F(ExtensionWebRequestTest, BlockingEventPrecedenceRedirect) {
   }
 
   // Now test the same thing but the extensions answer in reverse order.
-  std::unique_ptr<net::URLRequest> request2(
-      context_->CreateRequest(GURL("about:blank"), net::DEFAULT_PRIORITY,
-                              &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<net::URLRequest> request2 =
+      CreateRequest(GURL("about:blank"));
   {
     ExtensionWebRequestEventRouter::EventResponse* response = NULL;
 
@@ -415,9 +438,7 @@ TEST_F(ExtensionWebRequestTest, BlockingEventPrecedenceCancel) {
       ipc_sender_factory.GetWeakPtr());
 
   GURL request_url("about:blank");
-  std::unique_ptr<net::URLRequest> request(
-      context_->CreateRequest(request_url, net::DEFAULT_PRIORITY, &delegate_,
-                              TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<net::URLRequest> request = CreateRequest(request_url);
 
   // onBeforeRequest will be dispatched twice. The second response -
   // the redirect - would win, since it has a later |install_time|, but
@@ -487,9 +508,7 @@ TEST_F(ExtensionWebRequestTest, SimulateChancelWhileBlocked) {
       kEventName2 + "/1", filter, 0, 0, 0, ipc_sender_factory.GetWeakPtr());
 
   GURL request_url("about:blank");
-  std::unique_ptr<net::URLRequest> request(
-      context_->CreateRequest(request_url, net::DEFAULT_PRIORITY, &delegate_,
-                              TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<net::URLRequest> request = CreateRequest(request_url);
 
   ExtensionWebRequestEventRouter::EventResponse* response = NULL;
 
@@ -556,9 +575,7 @@ void ExtensionWebRequestTest::FireURLRequestWithData(
     const std::vector<char>& bytes_2) {
   // The request URL can be arbitrary but must have an HTTP or HTTPS scheme.
   GURL request_url("http://www.example.com");
-  std::unique_ptr<net::URLRequest> request(
-      context_->CreateRequest(request_url, net::DEFAULT_PRIORITY, &delegate_,
-                              TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<net::URLRequest> request = CreateRequest(request_url);
   request->set_method(method);
   if (content_type != NULL) {
     request->SetExtraRequestHeaderByName(net::HttpRequestHeaders::kContentType,
@@ -746,7 +763,7 @@ TEST_F(ExtensionWebRequestTest, AccessRequestBodyData) {
                                                                      false);
 
   IPC::Message* message = NULL;
-  TestIPCSender::SentMessages::const_iterator i = ipc_sender_.sent_begin();
+  auto i = ipc_sender_.sent_begin();
   for (size_t test = 0; test < arraysize(kExpected); ++test) {
     SCOPED_TRACE(testing::Message("iteration number ") << test);
     EXPECT_NE(i, ipc_sender_.sent_end());
@@ -836,7 +853,7 @@ TEST_F(ExtensionWebRequestTest, MinimalAccessRequestBodyData) {
   ExtensionWebRequestEventRouter::GetInstance()->RemoveEventListener(id4,
                                                                      false);
 
-  TestIPCSender::SentMessages::const_iterator i = ipc_sender_.sent_begin();
+  auto i = ipc_sender_.sent_begin();
 
   for (size_t test = 0; test < arraysize(kExpected); ++test, ++i) {
     SCOPED_TRACE(testing::Message("iteration number ") << test);
@@ -945,9 +962,7 @@ TEST_F(ExtensionWebRequestTest, NoAccessRequestBodyData) {
   const GURL request_url("http://www.example.com");
 
   for (size_t i = 0; i < arraysize(kMethods); ++i) {
-    std::unique_ptr<net::URLRequest> request(
-        context_->CreateRequest(request_url, net::DEFAULT_PRIORITY, &delegate_,
-                                TRAFFIC_ANNOTATION_FOR_TESTS));
+    std::unique_ptr<net::URLRequest> request = CreateRequest(request_url);
     request->set_method(kMethods[i]);
     ipc_sender_.PushTask(base::DoNothing());
     request->Start();
@@ -961,7 +976,7 @@ TEST_F(ExtensionWebRequestTest, NoAccessRequestBodyData) {
   ExtensionWebRequestEventRouter::GetInstance()->RemoveEventListener(id1,
                                                                      false);
 
-  TestIPCSender::SentMessages::const_iterator i = ipc_sender_.sent_begin();
+  auto i = ipc_sender_.sent_begin();
   for (size_t test = 0; test < arraysize(kMethods); ++test, ++i) {
     SCOPED_TRACE(testing::Message("iteration number ") << test);
     EXPECT_NE(i, ipc_sender_.sent_end());
@@ -1042,9 +1057,7 @@ TEST_F(ExtensionWebRequestTest, BlockedRequestsAreRemoved) {
 
   // Send a request. It should block. Wait for the run loop to become idle.
   GURL request_url("about:blank");
-  std::unique_ptr<net::URLRequest> request(
-      context_->CreateRequest(request_url, net::DEFAULT_PRIORITY, &delegate_,
-                              TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<net::URLRequest> request = CreateRequest(request_url);
   // Extension response for OnErrorOccurred: Terminate the message loop.
   {
     base::RunLoop run_loop;
@@ -1132,6 +1145,11 @@ class ExtensionWebRequestHeaderModificationTest
     context_->Init();
   }
 
+  // Returns a main-frame request to |url|.
+  std::unique_ptr<net::URLRequest> CreateRequest(const GURL& url) {
+    return CreateRequestHelper(url, context_.get(), &delegate_);
+  }
+
   content::TestBrowserThreadBundle thread_bundle_;
   TestingProfile profile_;
   TestingProfileManager profile_manager_;
@@ -1170,9 +1188,7 @@ TEST_P(ExtensionWebRequestHeaderModificationTest, TestModifications) {
       ipc_sender_factory.GetWeakPtr());
 
   GURL request_url("http://doesnotexist/does_not_exist.html");
-  std::unique_ptr<net::URLRequest> request(
-      context_->CreateRequest(request_url, net::DEFAULT_PRIORITY, &delegate_,
-                              TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<net::URLRequest> request = CreateRequest(request_url);
 
   // Initialize headers available before extensions are notified of the
   // onBeforeSendHeaders event.

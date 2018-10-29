@@ -44,6 +44,9 @@ FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
   // its destructor.
   GetInMemoryURLIndex()->Shutdown();
   set_in_memory_url_index(nullptr);
+  // History service can have its own thread. So we need to explicitly shut down
+  // it to prevent memory leaks.
+  GetHistoryService()->Shutdown();
   // Note that RunUntilIdle() must still be called after this, from
   // whichever task model is being used, probably ScopedTaskEnvironment,
   // or there will be memory leaks.

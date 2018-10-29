@@ -766,11 +766,6 @@ Elements.ElementsTreeElement = class extends UI.TreeElement {
     if (this._editing)
       return;
 
-    function consume(event) {
-      if (event.eventPhase === Event.AT_TARGET)
-        event.consume(true);
-    }
-
     initialValue = this._convertWhitespaceToEntities(initialValue).text;
 
     this._htmlEditElement = createElement('div');
@@ -787,7 +782,6 @@ Elements.ElementsTreeElement = class extends UI.TreeElement {
       this.childrenListElement.style.display = 'none';
     // Append editor.
     this.listItemElement.appendChild(this._htmlEditElement);
-    this.treeOutline.element.addEventListener('mousedown', consume, false);
 
     self.runtime.extension(UI.TextEditorFactory).instance().then(gotFactory.bind(this));
 
@@ -810,11 +804,11 @@ Elements.ElementsTreeElement = class extends UI.TreeElement {
       editor.widget().show(this._htmlEditElement);
       editor.setText(initialValue);
       editor.widget().focus();
-      editor.widget().element.addEventListener('blur', event => {
+      editor.widget().element.addEventListener('focusout', event => {
         // The relatedTarget is null when no element gains focus, e.g. switching windows.
-        if (event.relatedTarget)
+        if (event.relatedTarget && !event.relatedTarget.isSelfOrDescendant(editor.widget().element))
           this._editing.commit();
-      }, true);
+      }, false);
       editor.widget().element.addEventListener('keydown', keydown.bind(this), true);
 
       this.treeOutline.setMultilineEditing(this._editing);
@@ -859,7 +853,6 @@ Elements.ElementsTreeElement = class extends UI.TreeElement {
 
       if (this.treeOutline) {
         this.treeOutline.setMultilineEditing(null);
-        this.treeOutline.element.removeEventListener('mousedown', consume, false);
         this.treeOutline.focus();
       }
 

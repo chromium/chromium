@@ -19,8 +19,6 @@ bool IsBookmarkProviderEnabled();
 
 bool IsPhysicalWebPageProviderEnabled();
 
-bool IsForeignSessionsProviderEnabled();
-
 }  // namespace ntp_snippets
 
 #endif  // CHROME_BROWSER_NTP_SNIPPETS_DEPENDENT_FEATURES_H_

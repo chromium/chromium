@@ -18,6 +18,8 @@ Rules from the stylesheet:
 #s { }
 #t { }
 #u { }
+
+
 Expected result:
 
 #a { content: attr(b); }

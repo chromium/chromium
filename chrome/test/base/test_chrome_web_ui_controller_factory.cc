@@ -55,7 +55,6 @@ TestChromeWebUIControllerFactory::CreateWebUIControllerForURL(
 TestChromeWebUIControllerFactory::WebUIProvider*
     TestChromeWebUIControllerFactory::GetWebUIProvider(
         Profile* profile, const GURL& url) const {
-  FactoryOverridesMap::const_iterator found =
-      factory_overrides_.find(url.host());
+  auto found = factory_overrides_.find(url.host());
   return found != factory_overrides_.end() ? found->second : nullptr;
 }

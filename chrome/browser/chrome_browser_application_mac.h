@@ -17,17 +17,12 @@
                                                 CrAppControlProtocol> {
  @private
   BOOL handlingSendEvent_;
-  BOOL cyclingWindows_;
 }
 
 // Our implementation of |-terminate:| only attempts to terminate the
 // application, i.e., begins a process which may lead to termination. This
 // method cancels that process.
 - (void)cancelTerminate:(id)sender;
-
-// Keep track of whether windows are being cycled for use in determining whether
-// a Panel window can become the key window.
-- (BOOL)isCyclingWindows;
 @end
 
 #endif  // __OBJC__

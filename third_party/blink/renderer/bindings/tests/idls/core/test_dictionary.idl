@@ -7,7 +7,7 @@ dictionary TestDictionary {
     long longMember = 1;
     DOMString stringMember;
     TestInterface testInterfaceMember;
-    [TreatNullAs=EmptyString] ByteString byteStringMember;
+    [TreatNullAs=EmptyString] DOMString domStringTreatNullAsEmptyStringMember;
     USVString? usvStringOrNullMember = null;
     double? doubleOrNullMember = null;
     double restrictedDoubleMember = 3.14;
@@ -46,6 +46,7 @@ dictionary TestDictionary {
     record<ByteString, (long or boolean)> unionInRecordMember;
     record<DOMString, any> anyInRecordMember;
     (Float or BooleanType) unionWithTypedefs;
+    ([TreatNullAs=EmptyString] DOMString or long) unionWithAnnotatedTypeMember;
     [Clamp] long applicableToTypeLongMember;
     [TreatNullAs=EmptyString] DOMString applicableToTypeStringMember;
     (double or sequence<double>) unionMemberWithSequenceDefault = [];
@@ -63,4 +64,5 @@ dictionary TestDictionary {
     record<DOMString, (double or DOMString)?> unionOrNullRecordMember;
     VoidCallbackFunction callbackFunctionMember;
     required VoidCallbackFunction requiredCallbackFunctionMember;
+    boolean member-with-hyphen-in-name = false;
 };

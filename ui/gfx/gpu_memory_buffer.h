@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/memory/shared_memory.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/generic_shared_memory_id.h"
@@ -61,8 +62,7 @@ struct GFX_EXPORT GpuMemoryBufferHandle {
   bool is_null() const { return type == EMPTY_BUFFER; }
   GpuMemoryBufferType type;
   GpuMemoryBufferId id;
-  // TODO(crbug.com/863011): convert this to a scoped handle.
-  base::SharedMemoryHandle handle;
+  base::UnsafeSharedMemoryRegion region;
   uint32_t offset;
   int32_t stride;
 #if defined(OS_LINUX)

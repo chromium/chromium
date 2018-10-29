@@ -114,8 +114,8 @@ class MockHandledEventCallback {
                       base::Optional<cc::TouchAction>));
 
   HandledEventCallback GetCallback() {
-    return BindOnce(&MockHandledEventCallback::HandleCallback,
-                    base::Unretained(this));
+    return base::BindOnce(&MockHandledEventCallback::HandleCallback,
+                          base::Unretained(this));
   }
 
  private:
@@ -129,7 +129,13 @@ class MockHandledEventCallback {
   DISALLOW_COPY_AND_ASSIGN(MockHandledEventCallback);
 };
 
-class MockWebWidget : public blink::WebWidget {
+class StubWebWidget : public blink::WebWidget {
+ public:
+  void SetLayerTreeView(blink::WebLayerTreeView*) override {}
+  blink::WebURL GetURLForDebugTrace() override { return {}; }
+};
+
+class MockWebWidget : public StubWebWidget {
  public:
   MOCK_METHOD0(DispatchBufferedTouchEvents, blink::WebInputEventResult());
   MOCK_METHOD1(
@@ -164,7 +170,8 @@ class InteractiveRenderWidget : public RenderWidget {
   void SendInputEvent(const blink::WebInputEvent& event,
                       HandledEventCallback callback) {
     HandleInputEvent(blink::WebCoalescedInputEvent(
-                         event, std::vector<const blink::WebInputEvent*>()),
+                         event, std::vector<const blink::WebInputEvent*>(),
+                         std::vector<const blink::WebInputEvent*>()),
                      ui::LatencyInfo(), std::move(callback));
   }
 
@@ -356,8 +363,6 @@ TEST_F(RenderWidgetUnittest, RenderWidgetInputEventUmaMetrics) {
 // Tests that if a RenderWidget is auto-resized, it requests a new
 // viz::LocalSurfaceId to be allocated on the impl thread.
 TEST_F(RenderWidgetUnittest, AutoResizeAllocatedLocalSurfaceId) {
-  widget()->InitializeLayerTreeView();
-
   viz::ParentLocalSurfaceIdAllocator allocator;
 
   // Enable auto-resize.
@@ -396,7 +401,6 @@ class PopupRenderWidget : public RenderWidget {
                      false,
                      false) {
     Init(RenderWidget::ShowCallback(), mock_webwidget());
-    did_show_ = true;
   }
 
   IPC::TestSink* sink() { return &sink_; }
@@ -468,7 +472,6 @@ class StubRenderWidgetOwnerDelegate : public RenderWidgetOwnerDelegate {
     return false;
   }
   void SetActiveForWidget(bool active) override {}
-  void SetBackgroundOpaqueForWidget(bool opaque) override {}
   bool SupportsMultipleWindowsForWidget() override { return true; }
   void DidHandleGestureEventForWidget(
       const blink::WebGestureEvent& event) override {}
@@ -484,7 +487,6 @@ class StubRenderWidgetOwnerDelegate : public RenderWidgetOwnerDelegate {
   void ScrollFocusedNodeIntoViewForWidget() override {}
   void DidReceiveSetFocusEventForWidget() override {}
   void DidChangeFocusForWidget() override {}
-  GURL GetURLForGraphicsContext3DForWidget() override { return {}; }
   void DidCommitCompositorFrameForWidget() override {}
   void DidCompletePageScaleAnimationForWidget() override {}
   void ResizeWebWidgetForWidget(

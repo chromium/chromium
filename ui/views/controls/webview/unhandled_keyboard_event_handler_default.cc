@@ -10,10 +10,10 @@
 namespace views {
 
 // static
-void UnhandledKeyboardEventHandler::HandleNativeKeyboardEvent(
+bool UnhandledKeyboardEventHandler::HandleNativeKeyboardEvent(
     gfx::NativeEvent event,
     FocusManager* focus_manager) {
-  focus_manager->OnKeyEvent(*static_cast<ui::KeyEvent*>(event));
+  return !focus_manager->OnKeyEvent(*(event->AsKeyEvent()));
 }
 
 }  // namespace views

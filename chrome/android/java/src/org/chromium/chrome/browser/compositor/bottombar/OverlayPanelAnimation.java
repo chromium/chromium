@@ -10,7 +10,6 @@ import android.content.Context;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
-import org.chromium.chrome.browser.compositor.animation.CompositorAnimator.AnimatorUpdateListener;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -348,12 +347,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
 
         mHeightAnimator = CompositorAnimator.ofFloat(
                 getAnimationHandler(), getHeight(), height, duration, null);
-        mHeightAnimator.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(CompositorAnimator animator) {
-                setPanelHeight(animator.getAnimatedValue());
-            }
-        });
+        mHeightAnimator.addUpdateListener(animator -> setPanelHeight(animator.getAnimatedValue()));
         mHeightAnimator.addListener(new CancelAwareAnimatorListener() {
             @Override
             public void onEnd(Animator animation) {

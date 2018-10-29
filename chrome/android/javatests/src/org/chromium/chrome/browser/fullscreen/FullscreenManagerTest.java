@@ -346,15 +346,10 @@ public class FullscreenManagerTest {
                 "Failed to reset scrolling state", gestureListenerManager.isScrollInProgress());
     }
 
-    /**
-     * TODO(https://crbug.com/876097): Remove the DisableFeatures block turning off contextual
-     * suggestions.
-     */
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @Features.DisableFeatures({ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BOTTOM_SHEET,
-            ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON})
+    @Features.DisableFeatures({ChromeFeatureList.OFFLINE_INDICATOR})
     public void testHidingBrowserControlsRemovesSurfaceFlingerOverlay()
             throws InterruptedException {
         FullscreenManagerTestUtils.disableBrowserOverrides();

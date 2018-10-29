@@ -20,7 +20,6 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -30,8 +29,8 @@ import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.download.DownloadMetrics.DownloadOpenSource;
 import org.chromium.chrome.browser.download.ui.BackendProvider;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
@@ -81,7 +80,7 @@ public class DownloadManagerService
                    NetworkChangeNotifierAutoDetect.Observer,
                    DownloadManagerDelegate.DownloadQueryCallback,
                    DownloadManagerDelegate.EnqueueDownloadRequestCallback, DownloadServiceDelegate,
-                   BackendProvider.DownloadDelegate {
+                   BackendProvider.DownloadDelegate, BrowserStartupController.StartupCallback {
     // Download status.
     @IntDef({DownloadStatus.IN_PROGRESS, DownloadStatus.COMPLETE, DownloadStatus.FAILED,
             DownloadStatus.CANCELLED, DownloadStatus.INTERRUPTED})
@@ -234,13 +233,7 @@ public class DownloadManagerService
     public static DownloadManagerService getDownloadManagerService() {
         ThreadUtils.assertOnUiThread();
         if (sDownloadManagerService == null) {
-            // TODO(crbug.com/765327): Remove temporary fix after flag is no longer being used.
-            DownloadNotifier downloadNotifier =
-                    (!BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                                    .isStartupSuccessfullyCompleted()
-                            || !ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOADS_FOREGROUND))
-                    ? new SystemDownloadNotifier()
-                    : new SystemDownloadNotifier2();
+            DownloadNotifier downloadNotifier = new SystemDownloadNotifier2();
             sDownloadManagerService = new DownloadManagerService(
                     downloadNotifier, new Handler(), UPDATE_DELAY_MILLIS);
         }
@@ -417,7 +410,7 @@ public class DownloadManagerService
             mInfoBarController = new DownloadInfoBarController(false);
             mIncognitoInfoBarController = new DownloadInfoBarController(true);
 
-            DownloadNotificationService.clearResumptionAttemptLeft();
+            DownloadNotificationService2.clearResumptionAttemptLeft();
 
             DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
                     /*isOffTheRecord=*/false);
@@ -498,7 +491,7 @@ public class DownloadManagerService
                 break;
             case DownloadStatus.FAILED:
                 // TODO(cmsy): Use correct FailState.
-                mDownloadNotifier.notifyDownloadFailed(info, FailState.CANNOT_DOWNLOAD);
+                mDownloadNotifier.notifyDownloadFailed(info);
                 Log.w(TAG, "Download failed: " + info.getFilePath());
                 onDownloadFailed(item, DownloadManager.ERROR_UNKNOWN);
                 break;
@@ -555,8 +548,10 @@ public class DownloadManagerService
                             info, result.first, result.second, isSupportedMimeType);
                     broadcastDownloadSuccessful(info);
                 } else {
-                    // TODO(cmsy): Use correct FailState.
-                    mDownloadNotifier.notifyDownloadFailed(info, FailState.CANNOT_DOWNLOAD);
+                    info = DownloadInfo.Builder.fromDownloadInfo(info)
+                                   .setFailState(FailState.CANNOT_DOWNLOAD)
+                                   .build();
+                    mDownloadNotifier.notifyDownloadFailed(info);
                     // TODO(qinmin): get the failure message from native.
                     onDownloadFailed(item, DownloadManager.ERROR_UNKNOWN);
                 }
@@ -1031,6 +1026,8 @@ public class DownloadManagerService
                             .build();
             onDownloadCancelled(info);
             removeDownloadProgress(id.id);
+        } else {
+            mDownloadNotifier.notifyDownloadCanceled(id);
         }
         recordDownloadFinishedUMA(DownloadStatus.CANCELLED, id.id, 0);
     }
@@ -1113,19 +1110,35 @@ public class DownloadManagerService
      */
     private long getNativeDownloadManagerService() {
         if (mNativeDownloadManagerService == 0) {
-            mNativeDownloadManagerService =
-                    nativeInit(BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                                       .isStartupSuccessfullyCompleted());
+            boolean startupCompleted =
+                    BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                            .isStartupSuccessfullyCompleted();
+            mNativeDownloadManagerService = nativeInit(startupCompleted);
+            if (!startupCompleted) {
+                BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                        .addStartupCompletedObserver(this);
+            }
         }
         return mNativeDownloadManagerService;
     }
 
+    @Override
+    public void onSuccess() {
+        if (BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                        .isStartupSuccessfullyCompleted()) {
+            nativeOnFullBrowserStarted(mNativeDownloadManagerService);
+        }
+    }
+
+    @Override
+    public void onFailure() {}
+
     @CalledByNative
     void onResumptionFailed(String downloadGuid) {
-        // TODO(cmsy): Use correct FailState.
-        mDownloadNotifier.notifyDownloadFailed(
-                new DownloadInfo.Builder().setDownloadGuid(downloadGuid).build(),
-                FailState.CANNOT_DOWNLOAD);
+        mDownloadNotifier.notifyDownloadFailed(new DownloadInfo.Builder()
+                                                       .setDownloadGuid(downloadGuid)
+                                                       .setFailState(FailState.CANNOT_DOWNLOAD)
+                                                       .build());
         removeDownloadProgress(downloadGuid);
         recordDownloadResumption(UmaDownloadResumption.FAILED);
         recordDownloadFinishedUMA(DownloadStatus.FAILED, downloadGuid, 0);
@@ -1154,11 +1167,14 @@ public class DownloadManagerService
                     info, notificationId, systemDownloadId, canResolve, false);
         }
 
-        Profile profile = info.isOffTheRecord()
-                ? Profile.getLastUsedProfile().getOffTheRecordProfile()
-                : Profile.getLastUsedProfile().getOriginalProfile();
-        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        tracker.notifyEvent(EventConstants.DOWNLOAD_COMPLETED);
+        if (BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                        .isStartupSuccessfullyCompleted()) {
+            Profile profile = info.isOffTheRecord()
+                    ? Profile.getLastUsedProfile().getOffTheRecordProfile()
+                    : Profile.getLastUsedProfile().getOriginalProfile();
+            Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+            tracker.notifyEvent(EventConstants.DOWNLOAD_COMPLETED);
+        }
     }
 
     /**
@@ -1488,21 +1504,11 @@ public class DownloadManagerService
     @Override
     public void broadcastDownloadAction(DownloadItem downloadItem, String action) {
         Context appContext = ContextUtils.getApplicationContext();
-        if (!BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                        .isStartupSuccessfullyCompleted()
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOADS_FOREGROUND)) {
-            Intent intent = DownloadNotificationService.buildActionIntent(appContext, action,
-                    LegacyHelpers.buildLegacyContentId(false, downloadItem.getId()),
-                    downloadItem.getDownloadInfo().isOffTheRecord());
-            addCancelExtra(intent, downloadItem);
-            appContext.sendBroadcast(intent);
-        } else {
             Intent intent = DownloadNotificationFactory.buildActionIntent(appContext, action,
                     LegacyHelpers.buildLegacyContentId(false, downloadItem.getId()),
                     downloadItem.getDownloadInfo().isOffTheRecord());
             addCancelExtra(intent, downloadItem);
             appContext.startService(intent);
-        }
     }
 
     /**
@@ -1616,7 +1622,7 @@ public class DownloadManagerService
      */
     private boolean isFilePathOnMissingExternalDrive(String filePath, String externalStorageDir,
             ArrayList<DirectoryOption> directoryOptions) {
-        if (filePath.contains(externalStorageDir)) {
+        if (TextUtils.isEmpty(filePath) || filePath.contains(externalStorageDir)) {
             return false;
         }
 
@@ -1911,4 +1917,5 @@ public class DownloadManagerService
             long nativeDownloadManagerService, boolean isOffTheRecord);
     private native void nativeUpdateLastAccessTime(
             long nativeDownloadManagerService, String downloadGuid, boolean isOffTheRecord);
+    private native void nativeOnFullBrowserStarted(long nativeDownloadManagerService);
 }

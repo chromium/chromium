@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 
-#include <memory>
-
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -24,6 +22,10 @@
 
 #if defined(USE_AURA)
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
+#endif
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/ui/views/touch_selection_menu_runner_chromeos.h"
 #endif
 
 // Helpers --------------------------------------------------------------------
@@ -57,7 +59,17 @@ PrefService* GetPrefsForWindow(const views::Widget* window) {
 
 // ChromeViewsDelegate --------------------------------------------------------
 
-ChromeViewsDelegate::ChromeViewsDelegate() {}
+ChromeViewsDelegate::ChromeViewsDelegate() {
+#if defined(OS_CHROMEOS)
+  // ViewsDelegate's constructor may have created a menu runner already, and
+  // since TouchSelectionMenuRunner is a singleton with checks to not
+  // initialize it if there is already an existing runner we need to first
+  // destroy runner before we can create the ChromeOS specific instance.
+  SetTouchSelectionMenuRunner(nullptr);
+  SetTouchSelectionMenuRunner(
+      std::make_unique<TouchSelectionMenuRunnerChromeOS>());
+#endif
+}
 
 ChromeViewsDelegate::~ChromeViewsDelegate() {
   DCHECK_EQ(0u, ref_count_);
@@ -128,8 +140,7 @@ void ChromeViewsDelegate::NotifyAccessibilityEvent(
     views::View* view,
     ax::mojom::Event event_type) {
 #if defined(USE_AURA)
-  AutomationManagerAura::GetInstance()->HandleEvent(
-      GetProfileForWindow(view->GetWidget()), view, event_type);
+  AutomationManagerAura::GetInstance()->HandleEvent(view, event_type);
 #endif
 }
 

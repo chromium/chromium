@@ -5,17 +5,22 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
@@ -81,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrTest, TlsClientAuth) {
   // Install a null ClientCertStore so the client auth prompt isn't bypassed due
   // to the system certificate store returning no certificates.
   base::RunLoop loop;
-  content::BrowserThread::PostTaskAndReply(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReply(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&InstallNullCertStoreFactoryOnIOThread,
                      browser()->profile()->GetResourceContext()),
       loop.QuitClosure());
@@ -108,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrTest, HttpAuth) {
       "test_http_auth.html", embedded_test_server()->GetURL("/auth-basic")));
 }
 
-class BackgroundXhrWebstoreTest : public ExtensionApiTest {
+class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
  public:
   BackgroundXhrWebstoreTest() = default;
   ~BackgroundXhrWebstoreTest() override = default;
@@ -129,59 +134,264 @@ class BackgroundXhrWebstoreTest : public ExtensionApiTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  bool CanFetch(const Extension* extension, const GURL& url) {
+    content::DOMMessageQueue message_queue;
+    browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        profile(), extension->id(),
+        base::StringPrintf("canFetch('%s');", url.spec().c_str()));
+    std::string json;
+    EXPECT_TRUE(message_queue.WaitForMessage(&json));
+    base::JSONReader reader(base::JSON_ALLOW_TRAILING_COMMAS);
+    std::unique_ptr<base::Value> value = reader.ReadToValue(json);
+    std::string result;
+    EXPECT_TRUE(value->GetAsString(&result));
+    EXPECT_TRUE(result == "true" || result == "false") << result;
+    return result == "true";
+  }
+
+  const Extension* LoadXhrExtension(const std::string& host) {
+    ExtensionTestMessageListener listener("ready", false);
+    TestExtensionDir test_dir;
+    test_dir.WriteManifest(R"(
+    {
+      "name": "XHR Test",
+      "manifest_version": 2,
+      "version": "0.1",
+      "background": {"scripts": ["background.js"]},
+      "permissions": [")" + host + R"("]
+    })");
+    constexpr char kBackgroundScriptFile[] = R"(
+    function canFetch(url) {
+      console.warn('Fetching: ' + url);
+      fetch(url).then((response) => {
+        domAutomationController.send('true');
+      }).catch((e) => {
+        let message;
+        if (e.message == 'Failed to fetch')
+          message = 'false'
+        else
+          message = 'Unexpected Error: ' + e.message;
+        domAutomationController.send(message);
+      });
+    }
+    chrome.test.sendMessage('ready');)";
+
+    test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                       kBackgroundScriptFile);
+    const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+    return extension;
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(BackgroundXhrWebstoreTest);
 };
 
 // Extensions should not be able to XHR to the webstore.
 IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, XHRToWebstore) {
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(R"(
-    {
-      "name": "XHR Test",
-      "manifest_version": 2,
-      "version": "0.1",
-      "background": {"scripts": ["background.js"]},
-      "permissions": ["<all_urls>"]
-    })");
-  constexpr char kBackgroundScriptFile[] =
-      R"(function canFetch(url) {
-           console.warn('Fetching: ' + url);
-           fetch(url).then((response) => {
-             domAutomationController.send('true');
-           }).catch((e) => {
-             domAutomationController.send('false');
-           });
-         }
-         chrome.test.sendMessage('ready');)";
-
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundScriptFile);
-
-  ExtensionTestMessageListener listener("ready", false);
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-  EXPECT_TRUE(listener.WaitUntilSatisfied());
-
-  content::BrowserContext* browser_context = profile();
-  auto can_fetch = [extension, browser_context](const GURL& url) {
-    std::string result = browsertest_util::ExecuteScriptInBackgroundPage(
-        browser_context, extension->id(),
-        base::StringPrintf("canFetch('%s');", url.spec().c_str()));
-    EXPECT_TRUE(result == "true" || result == "false")
-        << "Unexpected result: " << result;
-    return result == "true";
-  };
+  const Extension* extension = LoadXhrExtension("<all_urls>");
 
   GURL webstore_launch_url = extension_urls::GetWebstoreLaunchURL();
   GURL webstore_url_to_fetch = embedded_test_server()->GetURL(
       webstore_launch_url.host(), "/simple.html");
 
-  EXPECT_FALSE(can_fetch(webstore_url_to_fetch));
+  EXPECT_FALSE(CanFetch(extension, webstore_url_to_fetch));
 
   // Sanity check: the extension should be able to fetch google.com.
   GURL google_url =
       embedded_test_server()->GetURL("google.com", "/simple.html");
-  EXPECT_TRUE(can_fetch(google_url));
+  EXPECT_TRUE(CanFetch(extension, google_url));
+}
+
+// Extensions should not be able to XHR to the webstore regardless of policy.
+IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, XHRToWebstorePolicy) {
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyAllowedHost(
+        "*", "*://" + extension_urls::GetWebstoreLaunchURL().host());
+  }
+
+  const Extension* extension = LoadXhrExtension("<all_urls>");
+
+  GURL webstore_launch_url = extension_urls::GetWebstoreLaunchURL();
+  GURL webstore_url_to_fetch = embedded_test_server()->GetURL(
+      webstore_launch_url.host(), "/simple.html");
+
+  EXPECT_FALSE(CanFetch(extension, webstore_url_to_fetch));
+
+  // Sanity check: the extension should be able to fetch google.com.
+  GURL google_url =
+      embedded_test_server()->GetURL("google.com", "/simple.html");
+  EXPECT_TRUE(CanFetch(extension, google_url));
+}
+
+// Extensions should not be able to bypass same-origin despite declaring
+// <all_urls> for hosts restricted by enterprise policy.
+IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyBlockedXHR) {
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*.example.com");
+    pref.AddPolicyAllowedHost("*", "*://public.example.com");
+  }
+
+  const Extension* extension = LoadXhrExtension("<all_urls>");
+
+  // Should block due to "runtime_blocked_hosts" section of policy.
+  GURL protected_url_to_fetch =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  EXPECT_FALSE(CanFetch(extension, protected_url_to_fetch));
+
+  // Should allow due to "runtime_allowed_hosts" section of policy.
+  GURL exempted_url_to_fetch =
+      embedded_test_server()->GetURL("public.example.com", "/simple.html");
+  EXPECT_TRUE(CanFetch(extension, exempted_url_to_fetch));
+}
+
+// Verify that policy blocklists apply to XHRs done from injected scripts.
+IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyContentScriptXHR) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"(
+    {
+      "name": "XHR Content Script Test",
+      "manifest_version": 2,
+      "version": "0.1",
+      "permissions": ["<all_urls>", "tabs"],
+      "background": {"scripts": ["background.js"]}
+    })");
+
+  constexpr char kBackgroundScript[] =
+      R"(function canFetch(url) {
+           chrome.tabs.executeScript({code: `
+             fetch("${url}")
+             .then(response => response.text())
+             .then(text => domAutomationController.send('true'))
+             .catch(err => domAutomationController.send('false'));
+           `});
+         }
+      )";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundScript);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to a foo.com page.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL page_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
+  ui_test_utils::NavigateToURL(browser(), page_url);
+  EXPECT_EQ(page_url, web_contents->GetMainFrame()->GetLastCommittedURL());
+
+  GURL example_url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  GURL public_example_url =
+      embedded_test_server()->GetURL("public.example.com", "/simple.html");
+
+  // Sanity Check: Should be able to fetch cross origin.
+  EXPECT_TRUE(CanFetch(extension, example_url));
+  EXPECT_TRUE(CanFetch(extension, public_example_url));
+
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*.example.com");
+    pref.AddPolicyAllowedHost("*", "*://public.example.com");
+  }
+
+  // Policies apply to XHR from a content script.
+  EXPECT_FALSE(CanFetch(extension, example_url));
+  EXPECT_TRUE(CanFetch(extension, public_example_url));
+}
+
+// Make sure the blocklist and allowlist update for both Default and Individual
+// scope policies. Testing with all host permissions granted (<all_urls>).
+IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyUpdateXHR) {
+  const Extension* extension = LoadXhrExtension("<all_urls>");
+
+  GURL example_url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  GURL public_example_url =
+      embedded_test_server()->GetURL("public.example.com", "/simple.html");
+
+  // Sanity check: Without restrictions all fetches should work.
+  EXPECT_TRUE(CanFetch(extension, public_example_url));
+  EXPECT_TRUE(CanFetch(extension, example_url));
+
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*.example.com");
+    pref.AddPolicyAllowedHost("*", "*://public.example.com");
+  }
+
+  // Default policies propagate.
+  EXPECT_TRUE(CanFetch(extension, public_example_url));
+  EXPECT_FALSE(CanFetch(extension, example_url));
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost(extension->id(), "*://*.example2.com");
+    pref.AddPolicyAllowedHost(extension->id(), "*://public.example2.com");
+  }
+
+  // Default policies overridden when individual scope policies applied.
+  EXPECT_TRUE(CanFetch(extension, public_example_url));
+  EXPECT_TRUE(CanFetch(extension, example_url));
+
+  GURL example2_url =
+      embedded_test_server()->GetURL("example2.com", "/simple.html");
+  GURL public_example2_url =
+      embedded_test_server()->GetURL("public.example2.com", "/simple.html");
+
+  // Individual scope policies propagate.
+  EXPECT_TRUE(CanFetch(extension, public_example2_url));
+  EXPECT_FALSE(CanFetch(extension, example2_url));
+}
+
+// Make sure the allowlist entries added due to host permissions are removed
+// when a more generic blocklist policy is updated and contains them.
+// This tests the default policy scope update.
+IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyUpdateDefaultXHR) {
+  const Extension* extension = LoadXhrExtension("*://public.example.com/*");
+
+  GURL example_url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  GURL public_example_url =
+      embedded_test_server()->GetURL("public.example.com", "/simple.html");
+
+  // Sanity check: Without restrictions only public.example.com should work.
+  EXPECT_TRUE(CanFetch(extension, public_example_url));
+  EXPECT_FALSE(CanFetch(extension, example_url));
+
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*.example.com");
+  }
+
+  // The blocklist of example.com overrides allowlist of public.example.com.
+  EXPECT_FALSE(CanFetch(extension, example_url));
+  EXPECT_FALSE(CanFetch(extension, public_example_url));
+}
+
+// Make sure the allowlist entries added due to host permissions are removed
+// when a more generic blocklist policy is updated and contains them.
+// This tests an individual policy scope update.
+IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyUpdateIndividualXHR) {
+  const Extension* extension = LoadXhrExtension("*://public.example.com/*");
+
+  GURL example_url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  GURL public_example_url =
+      embedded_test_server()->GetURL("public.example.com", "/simple.html");
+
+  // Sanity check: Without restrictions only public.example.com should work.
+  EXPECT_TRUE(CanFetch(extension, public_example_url));
+  EXPECT_FALSE(CanFetch(extension, example_url));
+
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost(extension->id(), "*://*.example.com");
+  }
+
+  // The blocklist of example.com overrides allowlist of public.example.com.
+  EXPECT_FALSE(CanFetch(extension, example_url));
+  EXPECT_FALSE(CanFetch(extension, public_example_url));
 }
 
 }  // namespace extensions

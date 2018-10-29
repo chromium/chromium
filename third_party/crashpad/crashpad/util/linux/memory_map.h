@@ -76,14 +76,19 @@ class MemoryMap {
   //!     it was obtained from.
   const Mapping* FindMappingWithName(const std::string& name) const;
 
-  //! \brief Find Mappings that share a Mapping's file, mapped from offset 0.
+  //! \brief Find possible initial mappings of files mapped over several
+  //!     segments.
   //!
   //! Executables and libaries are typically loaded into several mappings with
   //! varying permissions for different segments. Portions of an ELF file may
   //! be mapped multiple times as part of loading the file, for example, when
-  //! initializing GNU_RELRO segments. This method searches for mappings at or
-  //! below \a mapping in memory that are mapped from the same file as \a
-  //! mapping from offset 0.
+  //! initializing GNU_RELRO segments.
+  //!
+  //! This method searches for mappings at or below \a mapping in memory that
+  //! are mapped from the same file as \a mapping from offset 0.
+  //!
+  //! On Android, ELF modules may be loaded from within a zipfile, so this
+  //! method may return mappings whose offset is not 0.
   //!
   //! This method is intended to help identify the possible base address for
   //! loaded modules, but it is the caller's responsibility to determine which

@@ -11,7 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_event.pb.h"
-#include "chrome/common/chrome_features.h"
+#include "chromeos/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 

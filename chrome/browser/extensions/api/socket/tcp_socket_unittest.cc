@@ -167,6 +167,26 @@ TEST_P(TCPSocketUnitTest, SocketConnectAfterDisconnect) {
   EXPECT_TRUE(data_provider2.AllWriteDataConsumed());
 }
 
+TEST_F(TCPSocketUnitTest, SocketConnectDisconnectRace) {
+  // Regression test for https://crbug.com/882585, disconnect while connect
+  // is pending.
+  net::IPEndPoint ip_end_point(net::IPAddress::IPv4Localhost(), 1234);
+  net::StaticSocketDataProvider data_provider((base::span<net::MockRead>()),
+                                              base::span<net::MockWrite>());
+  data_provider.set_connect_data(
+      net::MockConnect(net::SYNCHRONOUS, net::ERR_FAILED, ip_end_point));
+  mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
+  std::unique_ptr<TCPSocket> socket = CreateSocket();
+
+  net::AddressList address(ip_end_point);
+  net::TestCompletionCallback callback;
+  socket->Connect(address, callback.callback());
+  socket->Disconnect(false /* socket_destroying */);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(callback.have_result());
+}
+
 TEST_F(TCPSocketUnitTest, DestroyWhileReadPending) {
   const net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, net::ERR_IO_PENDING)};
@@ -634,6 +654,21 @@ TEST_F(TCPSocketServerTest, ListenAccept) {
   EXPECT_TRUE(client_socket->GetLocalAddress(&client_addr));
   EXPECT_EQ(server_addr, peer_addr);
   EXPECT_EQ(client_addr, accept_client_addr);
+}
+
+TEST_F(TCPSocketServerTest, ListenDisconnectRace) {
+  // Create a server socket.
+  std::unique_ptr<TCPSocket> socket = CreateSocket();
+  net::TestCompletionCallback callback;
+  bool callback_ran = false;
+  socket->Listen(
+      "127.0.0.1", 0 /* port */, 1 /* backlog */,
+      base::BindLambdaForTesting([&](int result, const std::string& error_msg) {
+        callback_ran = true;
+      }));
+  socket->Disconnect(false /* socket_destroying */);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(callback_ran);
 }
 
 TEST_F(TCPSocketServerTest, ReadAndWrite) {

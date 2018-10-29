@@ -28,7 +28,7 @@ void FakeServiceWorkerContext::RegisterServiceWorker(
   NOTREACHED();
 }
 void FakeServiceWorkerContext::UnregisterServiceWorker(
-    const GURL& pattern,
+    const GURL& scope,
     ResultCallback callback) {
   NOTREACHED();
 }
@@ -67,8 +67,8 @@ void FakeServiceWorkerContext::ClearAllServiceWorkersForTest(
     base::OnceClosure) {
   NOTREACHED();
 }
-void FakeServiceWorkerContext::StartWorkerForPattern(
-    const GURL& pattern,
+void FakeServiceWorkerContext::StartWorkerForScope(
+    const GURL& scope,
     ServiceWorkerContext::StartWorkerCallback info_callback,
     base::OnceClosure failure_callback) {
   NOTREACHED();
@@ -80,11 +80,11 @@ void FakeServiceWorkerContext::StartServiceWorkerForNavigationHint(
 }
 
 void FakeServiceWorkerContext::StartServiceWorkerAndDispatchLongRunningMessage(
-    const GURL& pattern,
+    const GURL& scope,
     blink::TransferableMessage message,
     ResultCallback result_callback) {
   start_service_worker_and_dispatch_long_running_message_calls_.push_back(
-      std::make_tuple(pattern, std::move(message), std::move(result_callback)));
+      std::make_tuple(scope, std::move(message), std::move(result_callback)));
 }
 
 void FakeServiceWorkerContext::StopAllServiceWorkersForOrigin(

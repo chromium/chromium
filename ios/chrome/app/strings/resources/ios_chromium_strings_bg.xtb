@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Възползвайте се от интелигентните функции на Google в Chromium</translation>
 <translation id="2730884209570016437">Chromium не може да използва камерата ви, защото е заета от друго приложение</translation>
 <translation id="2797210818057553964">Можете да персонализирате това по всяко време от настройките на Chromium</translation>
+<translation id="2915596697727466327">Chromium използва Face ID, за да обезпечи упълномощен достъп до паролите ви.</translation>
 <translation id="3256316712990552818">Копирано в Chromium</translation>
 <translation id="3413120535237193088">Влезте в Chromium, за да получите отметките си на всичките си устройства.</translation>
 <translation id="3473048256428424907">Включване на скенера за QR кодове в Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Тук ще се показват разделите, които сте отворили в Chromium на другите си устройства.</translation>
 <translation id="495292094137889840">Използване на скенера за QR кодове в Chromium</translation>
 <translation id="5231355151045086930">Изход от Chromium</translation>
-<translation id="5416919929805616771">Харесвате приложението Chromium? <ph name="BEGIN_LINK" />Оценете го<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Добре дошли в Chromium</translation>
 <translation id="5945387852661427312">Влизате с профил, управляван от <ph name="DOMAIN" />, и предоставяте на администратора му контрол над данните си в Chromium. Те ще се свържат за постоянно с този профил. При излизане от браузъра информацията ви ще се изтрие от устройството, но ще продължи да се съхранява в профила ви в Google.</translation>
 <translation id="6068866989048414399">Общи условия на Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Заменяте настоящия профил за синхронизиране (<ph name="USER_EMAIL1" />) с друг (<ph name="USER_EMAIL2" />). Съществуващите ви данни в Chromium се управляват от <ph name="DOMAIN" />. Те ще се изтрият от това устройство, но ще останат в профила <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Съвет: <ph name="BEGIN_LINK" />Преместете Chromium в лентата „Dock“<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Подобрете работата си с Google в Chromium въз основа на местоположението си.</translation>
-<translation id="8353224596138547809">Искате ли Chromium да запази паролата ви за този сайт?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Настройките<ph name="END_LINK" /> могат да бъдат персонализирани по всяко време. Може да използваме съдържанието на посещаваните от вас сайтове, активността в браузъра и взаимодействията с него, за да персонализираме Chromium и услуги на Google, като Преводач, Търсене и рекламите.</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> Авторите на Chromium. Всички права запазени.</translation>
 <translation id="8809780021347235332">За да запазите изображения, докоснете „Settings“ и разрешете на Chromium да използва снимките ви</translation>

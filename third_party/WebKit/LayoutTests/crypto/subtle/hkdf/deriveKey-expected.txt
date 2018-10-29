@@ -2,7 +2,6 @@ Test that keys can be derived from an HKDF key
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS derivedKey.type is "secret"
 PASS typeof derivedKey.extractable is 'boolean'
 PASS derivedKey.extractable is false

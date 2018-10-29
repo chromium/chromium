@@ -2,7 +2,6 @@ Check that DOMImplementation.createDocument() returns an XMLDocument.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.XMLDocument.name is "XMLDocument"
 PASS XMLDocument.prototype.__proto__ is Document.prototype
 PASS document.implementation.createDocument("", "").__proto__ is XMLDocument.prototype

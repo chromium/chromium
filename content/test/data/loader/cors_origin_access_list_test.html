@@ -1,0 +1,66 @@
+<html>
+<head>
+<title>CorsOriginAccessListBrowserTest</title>
+</head>
+<body>
+<script>
+window.reason = 'Probably failed to parse JavaScript';
+
+const queryMap = {};
+for (const item of location.search.substr(1).split('&')) {
+  const [key, value] = item.split('=');
+  queryMap[key] = value;
+}
+
+function log(message) {
+  window.reason += '\n' + message;
+}
+
+function pass(message) {
+  log(message);
+  document.title = "PASS";
+}
+
+function fail(message) {
+  log(message);
+  document.title = "FAIL";
+}
+
+function test(target) {
+  const url = [
+    location.protocol,
+    '//',
+    target,
+    ':',
+    Number(location.port) + Number(queryMap.port_diff || 0),
+    '/loader/get.txt'
+  ].join('');
+
+  log('Testing: ' + url + ' (sync)');
+  let req = new XMLHttpRequest();
+  req.open('GET', url, false);
+  try {
+    req.send(null);
+    log('PASS: ' + req.responseText);
+  } catch (e) {
+    fail('FAIL: ' + e);
+    return;
+  }
+
+  log('Testing: ' + url + ' (async)');
+  req = new XMLHttpRequest();
+  req.open('GET', url, true);
+  req.onload = function() {
+    pass('PASS: ' + req.responseText);
+  };
+  req.onerror = function() {
+    fail('FAIL: ' + req.status);
+  };
+  req.send(null);
+}
+
+window.reason = '';
+test(queryMap.target);
+</script>
+</body>
+</html>

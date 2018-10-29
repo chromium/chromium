@@ -58,9 +58,7 @@ bool DoSerializeEvents(const LogMetadata& metadata,
     return false;
 
   RtpTimeTicks prev_rtp_timestamp;
-  for (media::cast::FrameEventList::const_iterator it = frame_events.begin();
-       it != frame_events.end();
-       ++it) {
+  for (auto it = frame_events.begin(); it != frame_events.end(); ++it) {
     media::cast::proto::AggregatedFrameEvent frame_event(**it);
 
     // Adjust relative RTP timestamp so that it is relative to previous frame,
@@ -86,9 +84,7 @@ bool DoSerializeEvents(const LogMetadata& metadata,
 
   // Write packet events.
   prev_rtp_timestamp = RtpTimeTicks();
-  for (media::cast::PacketEventList::const_iterator it = packet_events.begin();
-       it != packet_events.end();
-       ++it) {
+  for (auto it = packet_events.begin(); it != packet_events.end(); ++it) {
     media::cast::proto::AggregatedPacketEvent packet_event(**it);
 
     const RtpTimeTicks rtp_timestamp =

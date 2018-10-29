@@ -12,11 +12,11 @@ namespace explore_sites {
 // Returns the base URL for the Explore Sites server.
 GURL GetBaseURL();
 
-// Returns the NTP JSON URL for the Explore Sites feature.
-GURL GetNtpURL();
-
-// Returns the ESP catalog URL for the Explore Sites feature.
+// Returns the URL for GetCatalog RPC.
 GURL GetCatalogURL();
+
+// Returns the URL for GetCategories RPC.
+GURL GetCategoriesURL();
 
 }  // namespace explore_sites
 

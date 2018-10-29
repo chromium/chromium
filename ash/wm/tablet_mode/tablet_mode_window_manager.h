@@ -59,6 +59,7 @@ class ASH_EXPORT TabletModeWindowManager
 
   // ShellObserver:
   void OnOverviewModeStarting() override;
+  void OnOverviewModeEnding() override;
   void OnOverviewModeEnded() override;
   void OnSplitViewModeEnded() override;
 
@@ -145,6 +146,9 @@ class ASH_EXPORT TabletModeWindowManager
   std::unordered_set<aura::Window*> added_windows_;
 
   std::unique_ptr<wm::TabletModeEventHandler> event_handler_;
+
+  // True if overview exit type is |kWindowDragged|.
+  bool exit_overview_by_window_drag_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TabletModeWindowManager);
 };

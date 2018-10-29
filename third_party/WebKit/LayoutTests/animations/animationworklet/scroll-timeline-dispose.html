@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<title>Regression test to ensure detaching a ScrollTimeline shouldn't crash</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script src="resources/animation-worklet-tests.js"></script>
+
+<style>
+#scroller {
+  overflow: auto;
+  height: 100px;
+  width: 100px;
+}
+
+#contents {
+  height: 1000px;
+  width: 100%;
+}
+</style>
+
+<div id="box"></div>
+<div id="scroller">
+  <div id="contents"></div>
+</div>
+
+<script>
+// This is a regression test for the crash seen when http://crrev.com/ddd9f0ee
+// landed. The root of the crash was assuming a WeakMember from a static object
+// would still be alive during a USING_PRE_FINALIZER method, which is not true.
+async_test(t => {
+  const box = document.getElementById('box');
+  const effect = new KeyframeEffect(box, null);
+
+  let scroller = document.getElementById('scroller');
+  let timeline = new ScrollTimeline({
+    scrollSource: scroller,
+    timeRange: 1000,
+    orientation: 'block'
+  });
+  // Creating the animation will cause the scroller to be registered as being
+  // used in an attached ScrollTimeline.
+  let animation = new WorkletAnimation('test_animator', effect, timeline, {});
+
+  // Now free up everything at once.
+  scroller.remove();
+  animation.cancel();
+  scroller = undefined;
+  timeline = undefined;
+  animation = undefined;
+
+  requestAnimationFrame(t.step_func_done(() => {
+    // Force GC - this shouldn't crash.
+    gc();
+  }));
+}, 'Disposing of an attached ScrollTimeline should not crash');
+</script>

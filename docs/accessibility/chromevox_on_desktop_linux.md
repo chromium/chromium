@@ -119,6 +119,11 @@ Once built, Chrome and ChromeVox will use your machine’s running Brltty
 daemon to display braille if ChromeVox is running. Simply ensure you have a
 display connected before running Chrome and that Brltty is running.
 
+Note you may need to customize brltty.conf (typically found in /etc).
+In particular, the api-parameters Auth param may exclude the current user.
+You can turn this off by doing:
+api-parameters Auth=none
+
 Testing against the latest releases of Brltty (e.g. 5.4 at time of writing) is
 encouraged.
 

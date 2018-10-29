@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/input_method/textinput_test_helper.h"
-#include "ash/shell.h"
+
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

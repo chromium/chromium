@@ -11,13 +11,6 @@ source_set("location_bar") {
     "location_bar_coordinator.h",
     "location_bar_coordinator.mm",
     "location_bar_generic_coordinator.h",
-    "location_bar_legacy_consumer.h",
-    "location_bar_legacy_coordinator.h",
-    "location_bar_legacy_coordinator.mm",
-    "location_bar_legacy_mediator.h",
-    "location_bar_legacy_mediator.mm",
-    "location_bar_legacy_view.h",
-    "location_bar_legacy_view.mm",
     "location_bar_mediator.h",
     "location_bar_mediator.mm",
     "location_bar_steady_view.h",
@@ -36,11 +29,9 @@ source_set("location_bar") {
     "resources:location_bar_voice",
     "//base",
     "//components/google/core/browser",
-    "//components/google/core/browser",
     "//components/omnibox/browser",
     "//components/search_engines",
     "//components/strings",
-    "//components/toolbar",
     "//components/variations/net",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
@@ -91,6 +82,26 @@ source_set("location_bar") {
       [ "//ios/chrome/browser/ui/omnibox:omnibox_internal" ]
 }
 
+source_set("toolbar_model_delegate") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "toolbar_model_delegate_ios.h",
+    "toolbar_model_delegate_ios.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/omnibox/browser",
+    "//components/prefs",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/autocomplete",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ssl",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web/public",
+  ]
+  libs = [ "UIKit.framework" ]
+}
+
 source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -108,13 +119,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "location_bar_coordinator_unittest.mm",
-    "location_bar_mediator_unittest.mm",
   ]
   deps = [
     ":location_bar",
     "//base",
     "//base/test:test_support",
-    "//components/toolbar:test_support",
+    "//components/omnibox/browser:test_support",
     "//components/variations",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
@@ -122,7 +132,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/toolbar/clean:toolbar",
+    "//ios/chrome/browser/ui/toolbar",
     "//ios/chrome/browser/ui/toolbar/test",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",

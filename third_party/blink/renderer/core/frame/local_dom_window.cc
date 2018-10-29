@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/usv_string_or_trusted_url.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/dom/scripted_idle_task_controller.h"
+#include "third_party/blink/renderer/core/dom/scripted_task_queue_controller.h"
 #include "third_party/blink/renderer/core/dom/sink_document.h"
 #include "third_party/blink/renderer/core/dom/user_gesture_indicator.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -102,6 +104,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
+#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -187,17 +190,19 @@ static void UpdateSuddenTerminationStatus(
         added_listener, disabler_type);
 }
 
-using DOMWindowSet = PersistentHeapHashCountedSet<WeakMember<LocalDOMWindow>>;
+using DOMWindowSet = HeapHashCountedSet<WeakMember<LocalDOMWindow>>;
 
 static DOMWindowSet& WindowsWithUnloadEventListeners() {
-  DEFINE_STATIC_LOCAL(DOMWindowSet, windows_with_unload_event_listeners, ());
-  return windows_with_unload_event_listeners;
+  DEFINE_STATIC_LOCAL(Persistent<DOMWindowSet>,
+                      windows_with_unload_event_listeners, (new DOMWindowSet));
+  return *windows_with_unload_event_listeners;
 }
 
 static DOMWindowSet& WindowsWithBeforeUnloadEventListeners() {
-  DEFINE_STATIC_LOCAL(DOMWindowSet, windows_with_before_unload_event_listeners,
-                      ());
-  return windows_with_before_unload_event_listeners;
+  DEFINE_STATIC_LOCAL(Persistent<DOMWindowSet>,
+                      windows_with_before_unload_event_listeners,
+                      (new DOMWindowSet));
+  return *windows_with_before_unload_event_listeners;
 }
 
 static void TrackUnloadEventListener(LocalDOMWindow* dom_window) {
@@ -621,7 +626,7 @@ void LocalDOMWindow::PostMessageTimerFired(PostMessageTimer* timer) {
   if (!RuntimeEnabledFeatures::UserActivationV2Enabled() && token &&
       token->HasGestures() && document()) {
     gesture_indicator =
-        Frame::NotifyUserActivation(document()->GetFrame(), token);
+        LocalFrame::NotifyUserActivation(document()->GetFrame(), token);
   }
 
   event->EntangleMessagePorts(document());
@@ -1040,6 +1045,13 @@ ScriptPromise LocalDOMWindow::getComputedAccessibleNode(
   return promise;
 }
 
+ScriptedTaskQueueController* LocalDOMWindow::taskQueue() const {
+  if (Document* document = this->document()) {
+    return ScriptedTaskQueueController::From(*document);
+  }
+  return nullptr;
+}
+
 double LocalDOMWindow::devicePixelRatio() const {
   if (!GetFrame())
     return 0.0;
@@ -1076,18 +1088,20 @@ void LocalDOMWindow::scrollBy(const ScrollToOptions& scroll_to_options) const {
     y = ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options.top());
 
   PaintLayerScrollableArea* viewport = view->LayoutViewport();
-  ScrollOffset current_offset = viewport->GetScrollOffset();
-  ScrollOffset scaled_delta(x * GetFrame()->PageZoomFactor(),
-                            y * GetFrame()->PageZoomFactor());
-  FloatPoint new_scaled_position =
-      viewport->ScrollOffsetToPosition(scaled_delta + current_offset);
+  FloatPoint current_position = viewport->ScrollPosition();
+  FloatPoint scaled_delta(x * GetFrame()->PageZoomFactor(),
+                          y * GetFrame()->PageZoomFactor());
+  FloatPoint new_scaled_position = current_position + scaled_delta;
+
   if (RuntimeEnabledFeatures::CSSScrollSnapPointsEnabled()) {
+    std::unique_ptr<SnapSelectionStrategy> strategy =
+        SnapSelectionStrategy::CreateForEndAndDirection(
+            gfx::ScrollOffset(current_position),
+            gfx::ScrollOffset(scaled_delta));
     new_scaled_position =
         document()
             ->GetSnapCoordinator()
-            ->GetSnapPositionForPoint(
-                *document()->GetLayoutView(), new_scaled_position,
-                scroll_to_options.hasLeft(), scroll_to_options.hasTop())
+            ->GetSnapPosition(*document()->GetLayoutView(), *strategy)
             .value_or(new_scaled_position);
   }
 
@@ -1145,20 +1159,21 @@ void LocalDOMWindow::scrollTo(const ScrollToOptions& scroll_to_options) const {
 
   FloatPoint new_scaled_position =
       viewport->ScrollOffsetToPosition(ScrollOffset(scaled_x, scaled_y));
+
   if (RuntimeEnabledFeatures::CSSScrollSnapPointsEnabled()) {
+    std::unique_ptr<SnapSelectionStrategy> strategy =
+        SnapSelectionStrategy::CreateForEndPosition(
+            gfx::ScrollOffset(new_scaled_position), scroll_to_options.hasLeft(),
+            scroll_to_options.hasTop());
     new_scaled_position =
         document()
             ->GetSnapCoordinator()
-            ->GetSnapPositionForPoint(
-                *document()->GetLayoutView(), new_scaled_position,
-                scroll_to_options.hasLeft(), scroll_to_options.hasTop())
+            ->GetSnapPosition(*document()->GetLayoutView(), *strategy)
             .value_or(new_scaled_position);
   }
-
   ScrollBehavior scroll_behavior = kScrollBehaviorAuto;
   ScrollableArea::ScrollBehaviorFromString(scroll_to_options.behavior(),
                                            scroll_behavior);
-
   viewport->SetScrollOffset(
       viewport->ScrollPositionToOffset(new_scaled_position),
       kProgrammaticScroll, scroll_behavior);
@@ -1244,6 +1259,12 @@ int LocalDOMWindow::webkitRequestAnimationFrame(
 void LocalDOMWindow::cancelAnimationFrame(int id) {
   if (Document* document = this->document())
     document->CancelAnimationFrame(id);
+}
+
+void LocalDOMWindow::queueMicrotask(V8VoidFunction* callback) {
+  Microtask::EnqueueMicrotask(WTF::Bind(
+      &V8PersistentCallbackFunction<V8VoidFunction>::InvokeAndReportException,
+      WrapPersistent(ToV8PersistentCallbackFunction(callback)), nullptr));
 }
 
 int LocalDOMWindow::requestIdleCallback(V8IdleRequestCallback* callback,
@@ -1458,22 +1479,6 @@ void LocalDOMWindow::PrintErrorMessage(const String& message) const {
 DOMWindow* LocalDOMWindow::open(ExecutionContext* executionContext,
                                 LocalDOMWindow* current_window,
                                 LocalDOMWindow* entered_window,
-                                const String& url,
-                                const AtomicString& target,
-                                const String& features,
-                                ExceptionState& exception_state) {
-  if (document_->RequireTrustedTypes()) {
-    exception_state.ThrowTypeError(
-        "This document requires `TrustedURL` assignment.");
-    return nullptr;
-  }
-  return openFromString(executionContext, current_window, entered_window, url,
-                        target, features, exception_state);
-}
-
-DOMWindow* LocalDOMWindow::open(ExecutionContext* executionContext,
-                                LocalDOMWindow* current_window,
-                                LocalDOMWindow* entered_window,
                                 const USVStringOrTrustedURL& stringOrUrl,
                                 const AtomicString& target,
                                 const String& features,
@@ -1505,21 +1510,6 @@ DOMWindow* LocalDOMWindow::openFromString(ExecutionContext* executionContext,
   DCHECK(!target.IsNull());
   return openFromString(url, target, features, current_window, entered_window,
                         exception_state);
-}
-
-DOMWindow* LocalDOMWindow::open(const String& url,
-                                const AtomicString& frame_name,
-                                const String& window_features_string,
-                                LocalDOMWindow* calling_window,
-                                LocalDOMWindow* entered_window,
-                                ExceptionState& exception_state) {
-  if (document_->RequireTrustedTypes()) {
-    exception_state.ThrowTypeError(
-        "This document requires `TrustedURL` assignment.");
-    return nullptr;
-  }
-  return openFromString(url, frame_name, window_features_string, calling_window,
-                        entered_window, exception_state);
 }
 
 DOMWindow* LocalDOMWindow::open(const USVStringOrTrustedURL& stringOrUrl,
@@ -1584,7 +1574,8 @@ DOMWindow* LocalDOMWindow::openFromString(const String& url_string,
     if (url_string.IsEmpty())
       return target_frame->DomWindow();
 
-    target_frame->ScheduleNavigation(*active_document, completed_url, false,
+    target_frame->ScheduleNavigation(*active_document, completed_url,
+                                     WebFrameLoadType::kStandard,
                                      UserGestureStatus::kNone);
     return target_frame->DomWindow();
   }

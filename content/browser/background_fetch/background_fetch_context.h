@@ -136,13 +136,16 @@ class CONTENT_EXPORT BackgroundFetchContext
       const BackgroundFetchRegistration& registration,
       const BackgroundFetchOptions& options,
       const SkBitmap& icon,
-      int num_requests) override;
+      int num_requests,
+      bool start_paused) override;
   void OnUpdatedUI(const BackgroundFetchRegistrationId& registration_id,
                    const base::Optional<std::string>& title,
                    const base::Optional<SkBitmap>& icon) override;
   void OnServiceWorkerDatabaseCorrupted(
       int64_t service_worker_registration_id) override;
   void OnQuotaExceeded(
+      const BackgroundFetchRegistrationId& registration_id) override;
+  void OnFetchStorageError(
       const BackgroundFetchRegistrationId& registration_id) override;
 
   // ServiceWorkerContextCoreObserver implementation.
@@ -151,7 +154,8 @@ class CONTENT_EXPORT BackgroundFetchContext
   void OnStorageWiped() override;
 
  private:
-  using GetPermissionCallback = base::OnceCallback<void(bool)>;
+  using GetPermissionCallback =
+      base::OnceCallback<void(BackgroundFetchPermission)>;
 
   FRIEND_TEST_ALL_PREFIXES(BackgroundFetchServiceTest,
                            JobsInitializedOnBrowserRestart);
@@ -176,7 +180,8 @@ class CONTENT_EXPORT BackgroundFetchContext
                         size_t num_completed_requests,
                         size_t num_requests,
                         std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
-                            active_fetch_requests);
+                            active_fetch_requests,
+                        bool start_paused);
 
   // Called when an existing registration has been retrieved from the data
   // manager. If the registration does not exist then |registration| is nullptr.
@@ -196,22 +201,21 @@ class CONTENT_EXPORT BackgroundFetchContext
   void DidFinishJob(
       base::OnceCallback<void(blink::mojom::BackgroundFetchError)> callback,
       const BackgroundFetchRegistrationId& registration_id,
-      blink::mojom::BackgroundFetchFailureReason reason_to_abort);
+      blink::mojom::BackgroundFetchFailureReason failure_reason);
 
   // Called when the data manager finishes marking a registration as deleted.
   void DidMarkForDeletion(
       const BackgroundFetchRegistrationId& registration_id,
-      blink::mojom::BackgroundFetchFailureReason reason_to_abort,
       base::OnceCallback<void(blink::mojom::BackgroundFetchError)> callback,
-      blink::mojom::BackgroundFetchError error);
+      blink::mojom::BackgroundFetchError error,
+      blink::mojom::BackgroundFetchFailureReason failure_reason);
 
   // Called when the sequence of settled fetches for |registration_id| have been
   // retrieved from storage, and the Service Worker event can be invoked.
   void DidGetSettledFetches(
       const BackgroundFetchRegistrationId& registration_id,
-      std::unique_ptr<BackgroundFetchRegistration> registration,
       blink::mojom::BackgroundFetchError error,
-      bool background_fetch_succeeded,
+      blink::mojom::BackgroundFetchFailureReason failure_reason,
       std::vector<BackgroundFetchSettledFetch> settled_fetches,
       std::vector<std::unique_ptr<storage::BlobDataHandle>> blob_data_handles);
 
@@ -221,9 +225,12 @@ class CONTENT_EXPORT BackgroundFetchContext
   void DidGetMatchingRequests(
       blink::mojom::BackgroundFetchService::MatchRequestsCallback callback,
       blink::mojom::BackgroundFetchError error,
-      bool background_fetch_succeeded,
-      std::vector<BackgroundFetchSettledFetch> settled_fetches,
-      std::vector<std::unique_ptr<storage::BlobDataHandle>> blob_data_handles);
+      std::vector<BackgroundFetchSettledFetch> settled_fetches);
+
+  // Dispatches an appropriate event (success, fail, abort).
+  void DispatchCompletionEvent(
+      const BackgroundFetchRegistrationId& registration_id,
+      std::unique_ptr<BackgroundFetchRegistration> registration);
 
   // Called when the notification UI for the background fetch job associated
   // with |unique_id| is activated.
@@ -236,24 +243,16 @@ class CONTENT_EXPORT BackgroundFetchContext
           initialization_data);
 
   // Called when all processing for the |registration_id| has been finished and
-  // the job is ready to be deleted. |blob_handles| are unused, but some callers
-  // use it to keep blobs alive for the right duration.
-  // |partial cleanup|, when set, preserves  the registration ID, and the result
-  // of Fetch when it completed, in |completed_fetches_|. This is not done when
-  // fetch is aborted or cancelled. We use this information to propagate
-  // BackgroundFetchClicked event to the developer, when the user taps the UI.
+  // the job is ready to be deleted.
+  // |preserve_info_to_dispatch_click_event|, when set, preserves the
+  // registration ID, and the result of the Fetch when it completed, in
+  // |completed_fetches_|. This is not done when fetch is aborted or cancelled.
+  // We use this information to propagate BackgroundFetchClicked event to the
+  // developer, when the user taps the UI.
   void CleanupRegistration(
       const BackgroundFetchRegistrationId& registration_id,
-      const std::vector<std::unique_ptr<storage::BlobDataHandle>>&
-          blob_data_handles,
       blink::mojom::BackgroundFetchResult background_fetch_result,
       bool preserve_info_to_dispatch_click_event = false);
-
-  // Called when the last JavaScript BackgroundFetchRegistration object has been
-  // garbage collected for a registration marked for deletion, and so it is now
-  // safe to delete the underlying registration data.
-  void LastObserverGarbageCollected(
-      const BackgroundFetchRegistrationId& registration_id);
 
   // Switches out |data_manager_| with a DataManager configured for testing
   // environments. Must be called directly after the constructor.
@@ -278,7 +277,7 @@ class CONTENT_EXPORT BackgroundFetchContext
                         const SkBitmap& icon,
                         blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
                         int frame_tree_node_id,
-                        bool has_permission);
+                        BackgroundFetchPermission permission);
 
   // |this| is owned, indirectly, by the BrowserContext.
   BrowserContext* browser_context_;

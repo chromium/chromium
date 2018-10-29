@@ -6,7 +6,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 
 Note:The width of the css tables inclusive of its border width.
-
 PASS maxGreatThanMinWidthAutoLayout.getBoundingClientRect().width is 202
 PASS minGreatThanMaxWidthAutoLayout.getBoundingClientRect().width is 202
 PASS onlyMaxWidthAutoLayout.getBoundingClientRect().width is 202

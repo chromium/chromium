@@ -37,6 +37,8 @@ class ASH_EXPORT CleanupAnimationObserver
   void Shutdown() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WindowSelectorTest, OverviewExitAnimationObserver);
+
   std::unique_ptr<views::Widget> widget_;
   WindowSelectorDelegate* owner_;
 

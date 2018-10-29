@@ -171,7 +171,7 @@ __gCrWeb['findInPage']['highlightWord'] =
     // Clean up a previous run.
     __gCrWeb['findInPage']['clearHighlight']();
   }
-  if (!findText || !findText.replace(/\u00a0|\s/g, '')) {
+  if (!findText) {
     // No searching for emptyness.
     return __gCrWeb['findInPage'].NO_RESULTS;
   }

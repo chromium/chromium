@@ -79,8 +79,7 @@ void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {
     // Notify the other roots that we got capture. This is important so that
     // they reset state.
     CaptureClients capture_clients(*capture_clients_);
-    for (CaptureClients::iterator i = capture_clients.begin();
-         i != capture_clients.end(); ++i) {
+    for (auto i = capture_clients.begin(); i != capture_clients.end(); ++i) {
       if (*i != this) {
         aura::client::CaptureDelegate* delegate =
             (*i)->root_->GetHost()->dispatcher();

@@ -3,4 +3,3 @@ This tests the case where an image is loaded in one document and then moved to a
 PASS: Test complete and passed unless a subsequent test crashes.
 
 
-

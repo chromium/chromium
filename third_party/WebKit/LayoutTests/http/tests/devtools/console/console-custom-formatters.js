@@ -140,7 +140,11 @@
 
     for (var i = 0; i < viewMessages.length; ++i) {
       var uiMessage = viewMessages[i];
-      var shadowRoot = uiMessage.contentElement().querySelector('.console-message-text *').shadowRoot;
+      var element =
+          uiMessage.contentElement().querySelector('.console-message-text *');
+      if (!element)
+        continue;
+      var shadowRoot = element.shadowRoot;
       var customElement = (shadowRoot ? shadowRoot.querySelector('.custom-expandable-section-header') : null);
 
       if (customElement)

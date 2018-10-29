@@ -323,7 +323,8 @@ a {
 }
 
 #download-link, #download-link-clicked {
-  margin-bottom: 15px;
+  margin-bottom: 30px;
+  margin-top: 30px;
 }
 
 #download-link-clicked {
@@ -342,57 +343,205 @@ a {
   opacity: 0;
 }
 
-.offline-content-suggestion-image {
-  height: 35vw;
-  line-height: 0;
-  width: 35vw;
-  flex-basis: 35vw;
-  flex-grow: 0;
+.offline-content-list-title {
+  color: rgb(95, 99, 104);
+  font-size: .8em;
+  line-height: 1;
+  margin-bottom: .8em;
+}
+
+#offline-content-suggestions {
+  margin-inline-start: -5%;
+  width: 110%;
+}
+
+/* The selectors below adjust the "overflow" of the suggestion cards contents
+ * based on the same screen size based strategy used for the main frame, which
+ * is applied by the `interstitial-wrapper` class. */
+@media (max-width: 700px) {
+  #offline-content-suggestions {
+    margin-inline-start: -5%;
+    width: 110%;
+  }
+}
+@media (max-width: 420px)  {
+  #offline-content-suggestions {
+    margin-inline-start: -2.5%;
+    width: 105%;
+  }
+}
+@media (max-width: 420px) and (orientation: portrait),
+       (max-height: 560px) {
+  #offline-content-suggestions {
+    margin-inline-start: -12px;
+    width: calc(100% + 24px);
+  }
+}
+
+.suggestion-with-image .offline-content-suggestion-visual {
+  flex-basis: 8.2em;
   flex-shrink: 0;
 }
 
-.offline-content-suggestion-image > img {
-  border-bottom-left-radius: 15px;
-  border-top-left-radius: 15px;
-  height: 35vw;
-  line-height: 0;
-  width: 35vw;
+.suggestion-with-image .offline-content-suggestion-visual > img {
+  height: 100%;
+  width: 100%;
+}
+
+#offline-content-list:not(.is-rtl) .suggestion-with-image
+.offline-content-suggestion-visual > img {
+  border-bottom-right-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+#offline-content-list.is-rtl .suggestion-with-image
+.offline-content-suggestion-visual > img {
+  border-bottom-left-radius: 8px;
+  border-top-left-radius: 8px;
+}
+
+.suggestion-with-icon .offline-content-suggestion-visual {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 4.2em;
+  min-width: 4.2em;
+}
+
+.suggestion-with-icon .offline-content-suggestion-visual > div {
+  align-items: center;
+  background-color: rgb(241, 243, 244);
+  border-radius: 50%;
+  display: flex;
+  height: 2.3em;
+  justify-content: center;
+  width: 2.3em;
+}
+
+.suggestion-with-icon .offline-content-suggestion-visual > div > img {
+  height: 1.45em;
+  width: 1.45em;
+}
+
+.image-video {
+  content: url(images/video.svg);
+}
+
+.image-music-note {
+  content: url(images/music-note.svg);
+}
+
+.image-earth {
+  content: url(images/generic-globe.svg);
+}
+
+.image-file {
+  content: url(images/file.svg);
+}
+
+.offline-content-suggestion-texts {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  line-height: 1.3;
+  padding: .9em;
+  width: 100%;
 }
 
 .offline-content-suggestion-title {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  color: rgb(32, 33, 36);
   display: -webkit-box;
-  margin: 5%;
-  max-height: 65px;
+  font-size: 1.1em;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.offline-content-suggestion-freshness, .offline-content-suggestion-attribution {
-  color: #646464;
-  display: inline-block;
-  font-size: small;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.offline-content-suggestion-attribution {
-  margin-left: 5%;
-  max-width: 35%;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
 div.offline-content-suggestion {
-  background-color: rgb(241, 243, 244);
-  border-radius: 15px;
+  align-items: stretch;
+  border-color: rgb(218, 220, 224);
+  border-radius: 8px;
+  border-style: solid;
+  border-width: 1px;
   display: flex;
-  margin-bottom: 5%;
-  margin-left: 0;
-  margin-right: 0;
-  margin-top: 5%;
+  justify-content: space-between;
+  margin-bottom: .8em;
+}
+
+.suggestion-with-image {
+  flex-direction: row;
+  height: 8.2em;
+  max-height: 8.2em;
+}
+
+.suggestion-with-icon {
+  flex-direction: row-reverse;
+  height: 4.2em;
+  max-height: 4.2em;
+}
+
+.suggestion-with-icon .offline-content-suggestion-title {
+  -webkit-line-clamp: 1;
+  word-break: break-all;
+}
+
+.suggestion-with-icon .offline-content-suggestion-texts {
+  padding-inline-start: 0px;
+}
+
+.offline-content-suggestion-attribution-freshness {
+  color: rgb(95, 99, 104);
+  display: flex;
+  font-size: .8em;
+}
+
+.offline-content-suggestion-attribution {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  display: -webkit-box;
+  flex-shrink: 1;
+  overflow-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+}
+
+.no-attribution .offline-content-suggestion-attribution {
+  display: none;
+}
+
+.offline-content-suggestion-freshness:before {
+  content: '-';
+  display: inline-block;
+  flex-shrink: 0;
+  margin-inline-end: .1em;
+  margin-inline-start: .1em;
+}
+
+.no-attribution .offline-content-suggestion-freshness:before {
+  display: none;
+}
+
+.offline-content-suggestion-freshness {
+  flex-shrink: 0;
+}
+
+.suggestion-with-image .offline-content-suggestion-pin-spacer {
+  flex-shrink: 1;
+  flex-grow: 100;
+}
+
+.suggestion-with-image .offline-content-suggestion-pin {
+  content: url(images/offline_pin.svg);
+  flex-shrink: 0;
+  height: 1.4em;
+  margin-inline-start: .4em;
+  width: 1.4em;
+}
+
+.offline-content-list-action {
+  text-align: center;
 }
 
 #offline-content-summary {

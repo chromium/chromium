@@ -814,6 +814,9 @@ Gallery.prototype.updateSelectionAndState_ = function() {
     selectedItem.touch();
     this.dataModel_.evictCache();
 
+    // Filename Edit field shows for anything selected.
+    this.filenameEdit_.hidden = false;
+
     // Update the title and the display name.
     if (numSelectedItems === 1) {
       document.title = this.selectedEntry_.name;
@@ -841,6 +844,7 @@ Gallery.prototype.updateSelectionAndState_ = function() {
     }
   } else {
     document.title = '';
+    this.filenameEdit_.hidden = true;
     this.filenameEdit_.disabled = true;
     this.filenameEdit_.value = '';
     this.resizeRenameField_();

@@ -29,6 +29,9 @@ public class LicenseActivity extends Activity {
                 String.format("content://%s.%s", packageName, LICENSES_URI_SUFFIX);
         intent.setDataAndType(Uri.parse(licenseUri), LICENSES_CONTENT_TYPE);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
+        // Resources are accessed via getIdentifier because resource ids in the standalone system
+        // webview apk have incorrect package_ids. Accessing resources via getIdentifier needs to be
+        // whitelisted in //android_webview/aapt2.config. see https://crbug.com/894208
         final int titleId =
                 getResources().getIdentifier("license_activity_title", "string", packageName);
         if (titleId != 0) {

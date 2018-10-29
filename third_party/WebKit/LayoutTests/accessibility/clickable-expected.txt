@@ -2,7 +2,6 @@ This tests the clickable property of various elements, and tests that a role of 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS isAXElementClickable('link') is true
 PASS isAXElementClickable('button') is true
 PASS isAXElementClickable('labeled-button') is true

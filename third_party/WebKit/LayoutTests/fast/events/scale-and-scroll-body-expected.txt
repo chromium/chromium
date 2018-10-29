@@ -5,4 +5,3 @@ PASS window.document.scrollingElement.scrollTop is 100
 PASS window.document.scrollingElement.scrollLeft is 100
 PASS window.scrollX is 100
 PASS window.scrollY is 100
-

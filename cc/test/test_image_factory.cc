@@ -26,7 +26,7 @@ scoped_refptr<gl::GLImage> TestImageFactory::CreateImageForGpuMemoryBuffer(
 
   scoped_refptr<gl::GLImageSharedMemory> image(
       new gl::GLImageSharedMemory(size, internalformat));
-  if (!image->Initialize(handle.handle, handle.id, format, handle.offset,
+  if (!image->Initialize(handle.region, handle.id, format, handle.offset,
                          base::checked_cast<size_t>(handle.stride)))
     return nullptr;
 

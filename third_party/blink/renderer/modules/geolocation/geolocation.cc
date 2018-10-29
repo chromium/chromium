@@ -85,11 +85,12 @@ PositionError* CreatePositionError(
   return PositionError::Create(error_code, error);
 }
 
-static void ReportGeolocationViolation(ExecutionContext* context) {
-  Document* doc = ToDocumentOrNull(context);
-  if (!Frame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr)) {
+static void ReportGeolocationViolation(Document* doc) {
+  // TODO(dcheng): |doc| probably can't be null here.
+  if (!LocalFrame::HasTransientUserActivation(doc ? doc->GetFrame()
+                                                  : nullptr)) {
     PerformanceMonitor::ReportGenericViolation(
-        context, PerformanceMonitor::kDiscouragedAPIUse,
+        doc, PerformanceMonitor::kDiscouragedAPIUse,
         "Only request geolocation information in response to a user gesture.",
         base::TimeDelta(), nullptr);
   }
@@ -121,7 +122,7 @@ void Geolocation::Trace(blink::Visitor* visitor) {
 }
 
 Document* Geolocation::GetDocument() const {
-  return ToDocument(GetExecutionContext());
+  return To<Document>(GetExecutionContext());
 }
 
 LocalFrame* Geolocation::GetFrame() const {
@@ -224,12 +225,11 @@ void Geolocation::StartRequest(GeoNotifier* notifier) {
     return;
   }
 
-  if (!GetFrame()->IsFeatureEnabled(mojom::FeaturePolicyFeature::kGeolocation,
-                                    ReportOptions::kReportOnFailure)) {
+  if (!GetDocument()->IsFeatureEnabled(
+          mojom::FeaturePolicyFeature::kGeolocation,
+          ReportOptions::kReportOnFailure, kFeaturePolicyConsoleWarning)) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kGeolocationDisabledByFeaturePolicy);
-    GetDocument()->AddConsoleMessage(ConsoleMessage::Create(
-        kJSMessageSource, kErrorMessageLevel, kFeaturePolicyConsoleWarning));
     notifier->SetFatalError(PositionError::Create(
         PositionError::kPermissionDenied, kFeaturePolicyErrorMessage));
     return;
@@ -463,7 +463,7 @@ void Geolocation::UpdateGeolocationConnection() {
                                                   invalidator);
   geolocation_service_->CreateGeolocation(
       MakeRequest(&geolocation_, invalidator),
-      Frame::HasTransientUserActivation(GetFrame()));
+      LocalFrame::HasTransientUserActivation(GetFrame()));
 
   geolocation_.set_connection_error_handler(WTF::Bind(
       &Geolocation::OnGeolocationConnectionError, WrapWeakPersistent(this)));

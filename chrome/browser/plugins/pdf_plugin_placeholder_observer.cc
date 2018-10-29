@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "chrome/common/render_messages.h"
-#include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -16,21 +15,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/storage_partition.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ppapi/buildflags/buildflags.h"
-
-namespace {
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-void OnDownloadStarted(download::DownloadItem* item,
-                       download::DownloadInterruptReason interrupt_reason) {
-  if (item && interrupt_reason == download::DOWNLOAD_INTERRUPT_REASON_NONE)
-    item->SetOpenWhenComplete(true);
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-}  // namespace
 
 PDFPluginPlaceholderObserver::PDFPluginPlaceholderObserver(
     content::WebContents* web_contents)
@@ -60,13 +46,9 @@ void PDFPluginPlaceholderObserver::OnOpenPDF(
 
   content::Referrer referrer = content::Referrer::SanitizeForRequest(
       url, content::Referrer(web_contents()->GetURL(),
-                             blink::kWebReferrerPolicyDefault));
+                             network::mojom::ReferrerPolicy::kDefault));
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  content::StoragePartition* storage_partition =
-      content::BrowserContext::GetStoragePartition(
-          web_contents()->GetBrowserContext(),
-          render_frame_host->GetSiteInstance());
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("pdf_plugin_placeholder", R"(
         semantics {
@@ -96,12 +78,10 @@ void PDFPluginPlaceholderObserver::OnOpenPDF(
       std::make_unique<download::DownloadUrlParameters>(
           url, render_frame_host->GetRenderViewHost()->GetProcess()->GetID(),
           render_frame_host->GetRenderViewHost()->GetRoutingID(),
-          render_frame_host->GetRoutingID(),
-          storage_partition->GetURLRequestContext(), traffic_annotation);
+          render_frame_host->GetRoutingID(), traffic_annotation);
   params->set_referrer(referrer.url);
   params->set_referrer_policy(
       content::Referrer::ReferrerPolicyForUrlRequest(referrer.policy));
-  params->set_callback(base::Bind(&OnDownloadStarted));
 
   content::BrowserContext::GetDownloadManager(
       web_contents()->GetBrowserContext())

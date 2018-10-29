@@ -1,8 +1,8 @@
 hello world this is a test more test
+
 This tests that you can set an ARIA text role and that it will not have children through hit testing
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS textrole.role is 'AXRole: AXStaticText'
 PASS textrole.name is 'all at once'

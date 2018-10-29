@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.view.View;
 
+import org.chromium.base.Callback;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.ui.UiUtils;
 
@@ -28,7 +29,7 @@ public class ModalDialogManager {
      * Present a {@link ModalDialogView} in a container.
      */
     public static abstract class Presenter {
-        private Runnable mCancelCallback;
+        private Callback<Integer> mDismissCallback;
         private ModalDialogView mModalDialog;
         private View mCurrentView;
 
@@ -37,17 +38,17 @@ public class ModalDialogManager {
          *               is currently showing.
          */
         private void setModalDialog(
-                @Nullable ModalDialogView dialog, @Nullable Runnable cancelCallback) {
+                @Nullable ModalDialogView dialog, @Nullable Callback<Integer> dismissCallback) {
             if (dialog == null) {
                 removeDialogView(mCurrentView);
                 mModalDialog = null;
-                mCancelCallback = null;
+                mDismissCallback = null;
             } else {
                 assert mModalDialog
                         == null : "Should call setModalDialog(null) before setting a modal dialog.";
                 mModalDialog = dialog;
                 mCurrentView = dialog.getView();
-                mCancelCallback = cancelCallback;
+                mDismissCallback = dismissCallback;
                 // Make sure the view is detached from any parent before adding it to the container.
                 // This is not detached after removeDialogView() because there could be animation
                 // running on removing the dialog view.
@@ -59,14 +60,14 @@ public class ModalDialogManager {
         /**
          * Run the cached cancel callback and reset the cached callback.
          */
-        protected final void cancelCurrentDialog() {
-            if (mCancelCallback == null) return;
+        protected final void dismissCurrentDialog(@DialogDismissalCause int dismissalCause) {
+            if (mDismissCallback == null) return;
 
             // Set #mCancelCallback to null before calling the callback to avoid it being
             // updated during the callback.
-            Runnable callback = mCancelCallback;
-            mCancelCallback = null;
-            callback.run();
+            Callback<Integer> callback = mDismissCallback;
+            mDismissCallback = null;
+            callback.onResult(dismissalCause);
         }
 
         /**
@@ -143,7 +144,7 @@ public class ModalDialogManager {
 
     /** Clears any dependencies on the showing or pending dialogs. */
     public void destroy() {
-        cancelAllDialogs();
+        dismissAllDialogs(DialogDismissalCause.ACTIVITY_DESTROYED);
     }
 
     /**
@@ -201,7 +202,8 @@ public class ModalDialogManager {
         dialog.prepareBeforeShow();
         mCurrentType = dialogType;
         mCurrentPresenter = mPresenters.get(dialogType, mDefaultPresenter);
-        mCurrentPresenter.setModalDialog(dialog, () -> cancelDialog(dialog));
+        mCurrentPresenter.setModalDialog(
+                dialog, (dismissalCause) -> dismissDialog(dialog, dismissalCause));
     }
 
     /**
@@ -209,14 +211,29 @@ public class ModalDialogManager {
      * the pending dialog list. If the dialog is currently being dismissed this function does
      * nothing.
      * @param dialog The dialog to be dismissed or removed from pending list.
+     *
+     * TODO(huayinz): Remove this method and use the one with dismissal cause.
      */
     public void dismissDialog(ModalDialogView dialog) {
+        dismissDialog(dialog, DialogDismissalCause.UNKNOWN);
+    }
+
+    /**
+     * Dismiss the specified dialog. If the dialog is not currently showing, it will be removed from
+     * the pending dialog list. If the dialog is currently being dismissed this function does
+     * nothing.
+     * @param dialog The dialog to be dismissed or removed from pending list.
+     * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialog is
+     *                       dismissed.
+     */
+    public void dismissDialog(ModalDialogView dialog, @DialogDismissalCause int dismissalCause) {
+        if (dialog == null) return;
         if (mCurrentPresenter == null || dialog != mCurrentPresenter.getModalDialog()) {
             for (int i = 0; i < mPendingDialogs.size(); ++i) {
                 List<ModalDialogView> dialogs = mPendingDialogs.valueAt(i);
                 for (int j = 0; j < dialogs.size(); ++j) {
                     if (dialogs.get(j) == dialog) {
-                        dialogs.remove(j).getController().onDismiss();
+                        dialogs.remove(j).getController().onDismiss(dismissalCause);
                         return;
                     }
                 }
@@ -229,7 +246,7 @@ public class ModalDialogManager {
         assert dialog == mCurrentPresenter.getModalDialog();
         if (mDismissingCurrentDialog) return;
         mDismissingCurrentDialog = true;
-        dialog.getController().onDismiss();
+        dialog.getController().onDismiss(dismissalCause);
         mCurrentPresenter.setModalDialog(null, null);
         mCurrentPresenter = null;
         mDismissingCurrentDialog = false;
@@ -237,48 +254,40 @@ public class ModalDialogManager {
     }
 
     /**
-     * Cancel showing the specified dialog. This is essentially the same as
-     * {@link #dismissDialog(ModalDialogView)} but will also call the onCancelled callback from the
-     * modal dialog.
-     * @param dialog The dialog to be cancelled.
+     * Dismiss the dialog currently shown and remove all pending dialogs.
+     * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialogs are
+     *                       dismissed.
      */
-    public void cancelDialog(ModalDialogView dialog) {
-        dialog.getController().onCancel();
-        dismissDialog(dialog);
-    }
-
-    /**
-     * Dismiss the dialog currently shown and remove all pending dialogs and call the onCancelled
-     * callbacks from the modal dialogs.
-     */
-    public void cancelAllDialogs() {
+    public void dismissAllDialogs(@DialogDismissalCause int dismissalCause) {
         for (int i = 0; i < mPendingDialogs.size(); ++i) {
-            cancelPendingDialogs(mPendingDialogs.keyAt(i));
+            dismissPendingDialogsOfType(mPendingDialogs.keyAt(i), dismissalCause);
         }
-        if (isShowing()) cancelDialog(mCurrentPresenter.getModalDialog());
+        if (isShowing()) dismissDialog(mCurrentPresenter.getModalDialog());
     }
 
     /**
-     * Dismiss the dialog currently shown and remove all pending dialogs of the specified type and
-     * call the onCancelled callbacks from the modal dialogs.
+     * Dismiss the dialog currently shown and remove all pending dialogs of the specified type.
      * @param dialogType The specified type of dialog.
+     * @param dismissalCause The {@link DialogDismissalCause} that describes why the dialogs are
+     *                       dismissed.
      */
-    protected void cancelAllDialogs(@ModalDialogType int dialogType) {
-        cancelPendingDialogs(dialogType);
+    protected void dismissDialogsOfType(
+            @ModalDialogType int dialogType, @DialogDismissalCause int dismissalCause) {
+        dismissPendingDialogsOfType(dialogType, dismissalCause);
         if (isShowing() && dialogType == mCurrentType) {
-            cancelDialog(mCurrentPresenter.getModalDialog());
+            dismissDialog(mCurrentPresenter.getModalDialog(), dismissalCause);
         }
     }
 
-    /** Helper method to cancel pending dialogs of the specified type. */
-    private void cancelPendingDialogs(@ModalDialogType int dialogType) {
+    /** Helper method to dismiss pending dialogs of the specified type. */
+    private void dismissPendingDialogsOfType(
+            @ModalDialogType int dialogType, @DialogDismissalCause int dismissalCause) {
         List<ModalDialogView> dialogs = mPendingDialogs.get(dialogType);
         if (dialogs == null) return;
 
         while (!dialogs.isEmpty()) {
             ModalDialogView.Controller controller = dialogs.remove(0).getController();
-            controller.onDismiss();
-            controller.onCancel();
+            controller.onDismiss(dismissalCause);
         }
     }
 

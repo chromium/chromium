@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "services/device/hid/input_service_linux.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,8 +26,8 @@ void OnGetDevices(base::OnceClosure quit_closure,
 }  // namespace
 
 TEST(InputServiceLinux, Simple) {
-  base::MessageLoopForIO message_loop;
-  base::FileDescriptorWatcher file_descriptor_watcher(&message_loop);
+  base::test::ScopedTaskEnvironment task_environment(
+      base::test::ScopedTaskEnvironment::MainThreadType::IO);
 
   InputServiceLinux* service = InputServiceLinux::GetInstance();
   ASSERT_TRUE(service);

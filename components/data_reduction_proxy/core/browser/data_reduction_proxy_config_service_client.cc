@@ -27,7 +27,6 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_mutable_config_values.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_request_options.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_util.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_event_creator.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_server.h"
@@ -44,11 +43,10 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
-#include "net/log/net_log_source_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_request_status.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 
 #if defined(OS_ANDROID)
 #include "net/android/network_library.h"
@@ -143,30 +141,23 @@ const net::BackoffEntry::Policy& GetBackoffPolicy() {
 }
 
 DataReductionProxyConfigServiceClient::DataReductionProxyConfigServiceClient(
-    std::unique_ptr<DataReductionProxyParams> params,
     const net::BackoffEntry::Policy& backoff_policy,
     DataReductionProxyRequestOptions* request_options,
     DataReductionProxyMutableConfigValues* config_values,
     DataReductionProxyConfig* config,
-    DataReductionProxyEventCreator* event_creator,
     DataReductionProxyIOData* io_data,
-    net::NetLog* net_log,
     network::NetworkConnectionTracker* network_connection_tracker,
     ConfigStorer config_storer)
-    : params_(std::move(params)),
-      request_options_(request_options),
+    : request_options_(request_options),
       config_values_(config_values),
       config_(config),
-      event_creator_(event_creator),
       io_data_(io_data),
-      net_log_(net_log),
       network_connection_tracker_(network_connection_tracker),
       config_storer_(config_storer),
       backoff_entry_(&backoff_policy),
       config_service_url_(util::AddApiKeyToUrl(params::GetConfigServiceURL())),
       enabled_(false),
       remote_config_applied_(false),
-      url_request_context_getter_(nullptr),
 #if defined(OS_ANDROID)
       foreground_fetch_pending_(false),
 #endif
@@ -177,9 +168,7 @@ DataReductionProxyConfigServiceClient::DataReductionProxyConfigServiceClient(
   DCHECK(request_options);
   DCHECK(config_values);
   DCHECK(config);
-  DCHECK(event_creator);
   DCHECK(io_data);
-  DCHECK(net_log);
   DCHECK(config_service_url_.is_valid());
 
   const base::CommandLine& command_line =
@@ -223,21 +212,17 @@ DataReductionProxyConfigServiceClient::CalculateNextConfigRefreshTime(
 }
 
 void DataReductionProxyConfigServiceClient::InitializeOnIOThread(
-    net::URLRequestContextGetter* url_request_context_getter) {
-  // TODO(crbug.com/721403): DRP is disabled with network service enabled. When
-  // DRP is switched to mojo, we won't need URLRequestContext.
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    DCHECK(url_request_context_getter);
-  }
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  DCHECK(url_loader_factory);
 #if defined(OS_ANDROID)
   // It is okay to use Unretained here because |app_status_listener| would be
   // destroyed before |this|.
-  app_status_listener_.reset(
-      new base::android::ApplicationStatusListener(base::Bind(
+  app_status_listener_ =
+      base::android::ApplicationStatusListener::New(base::BindRepeating(
           &DataReductionProxyConfigServiceClient::OnApplicationStateChange,
-          base::Unretained(this))));
+          base::Unretained(this)));
 #endif
-  url_request_context_getter_ = url_request_context_getter;
+  url_loader_factory_ = std::move(url_loader_factory);
   network_connection_tracker_->AddNetworkConnectionObserver(this);
 }
 
@@ -274,15 +259,11 @@ void DataReductionProxyConfigServiceClient::RetrieveConfig() {
     return;
   }
 
-  net_log_with_source_ = net::NetLogWithSource::Make(
-      net_log_, net::NetLogSourceType::DATA_REDUCTION_PROXY);
   // Strip off query string parameters
   GURL::Replacements replacements;
   replacements.ClearQuery();
   GURL base_config_service_url =
       config_service_url_.ReplaceComponents(replacements);
-  event_creator_->BeginConfigRequest(net_log_with_source_,
-                                     base_config_service_url);
   config_fetch_start_time_ = base::TimeTicks::Now();
 
   RetrieveRemoteConfig();
@@ -364,12 +345,9 @@ bool DataReductionProxyConfigServiceClient::ShouldRetryDueToAuthFailure(
 
   RetrieveConfig();
 
-  auto connection_type = network::mojom::ConnectionType::CONNECTION_NONE;
-  network_connection_tracker_->GetConnectionType(&connection_type,
-                                                 base::DoNothing());
   if (!load_timing_info.send_start.is_null() &&
       !load_timing_info.request_start.is_null() &&
-      connection_type != network::mojom::ConnectionType::CONNECTION_NONE &&
+      !network_connection_tracker_->IsOffline() &&
       last_ip_address_change_ < load_timing_info.request_start) {
     // Record only if there was no change in the IP address since the
     // request started.
@@ -413,15 +391,17 @@ void DataReductionProxyConfigServiceClient::OnConnectionChanged(
   RetrieveConfig();
 }
 
-void DataReductionProxyConfigServiceClient::OnURLFetchComplete(
-    const net::URLFetcher* source) {
+void DataReductionProxyConfigServiceClient::OnURLLoadComplete(
+    std::unique_ptr<std::string> response_body) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(source == fetcher_.get());
   fetch_in_progress_ = false;
-  net::URLRequestStatus status = source->GetStatus();
-  std::string response;
-  source->GetResponseAsString(&response);
-  HandleResponse(response, status, source->GetResponseCode());
+
+  int response_code = -1;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
+    response_code = url_loader_->ResponseInfo()->headers->response_code();
+  }
+  HandleResponse(response_body ? *response_body : "", url_loader_->NetError(),
+                 response_code);
 }
 
 void DataReductionProxyConfigServiceClient::RetrieveRemoteConfig() {
@@ -454,45 +434,7 @@ void DataReductionProxyConfigServiceClient::RetrieveRemoteConfig() {
   version_info->set_patch(patch);
   version_info->set_channel(io_data_->channel());
   request.SerializeToString(&serialized_request);
-  std::unique_ptr<net::URLFetcher> fetcher =
-      GetURLFetcherForConfig(config_service_url_, serialized_request);
-  if (!fetcher) {
-    HandleResponse(std::string(),
-                   net::URLRequestStatus::FromError(net::ERR_ABORTED),
-                   net::URLFetcher::RESPONSE_CODE_INVALID);
-    return;
-  }
 
-  fetcher_ = std::move(fetcher);
-  fetch_in_progress_ = true;
-
-  // Attach variations headers.
-  net::HttpRequestHeaders headers;
-  variations::AppendVariationHeaders(config_service_url_,
-                                     variations::InIncognito::kNo,
-                                     variations::SignedIn::kNo, &headers);
-  if (!headers.IsEmpty())
-    fetcher_->SetExtraRequestHeaders(headers.ToString());
-  UMA_HISTOGRAM_BOOLEAN("DataReductionProxy.ConfigService.SentVariationHeaders",
-                        !headers.IsEmpty());
-  fetcher_->Start();
-}
-
-void DataReductionProxyConfigServiceClient::InvalidateConfig() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  GetBackoffEntry()->InformOfRequest(false);
-  config_storer_.Run(std::string());
-  request_options_->Invalidate();
-  config_values_->Invalidate();
-  io_data_->SetPingbackReportingFraction(0.0f);
-  config_->OnNewClientConfigFetched();
-}
-
-std::unique_ptr<net::URLFetcher>
-DataReductionProxyConfigServiceClient::GetURLFetcherForConfig(
-    const GURL& secure_proxy_check_url,
-    const std::string& request_body) {
-  DCHECK(thread_checker_.CalledOnValidThread());
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("data_reduction_proxy_config", R"(
         semantics {
@@ -515,42 +457,57 @@ DataReductionProxyConfigServiceClient::GetURLFetcherForConfig(
             "by insalling the Data Saver extension."
           policy_exception_justification: "Not implemented."
         })");
-  std::unique_ptr<net::URLFetcher> fetcher(net::URLFetcher::Create(
-      secure_proxy_check_url, net::URLFetcher::POST, this, traffic_annotation));
-  data_use_measurement::DataUseUserData::AttachToFetcher(
-      fetcher.get(),
-      data_use_measurement::DataUseUserData::DATA_REDUCTION_PROXY);
-  fetcher->SetLoadFlags(net::LOAD_BYPASS_PROXY | net::LOAD_DO_NOT_SEND_COOKIES |
-                        net::LOAD_DO_NOT_SAVE_COOKIES);
-  fetcher->SetUploadData("application/x-protobuf", request_body);
-  DCHECK(url_request_context_getter_);
-  fetcher->SetRequestContext(url_request_context_getter_);
-  // |fetcher| should not retry on 5xx errors since the server may already be
-  // overloaded. Spurious 5xx errors are still retried on exponential backoff.
-  // |fetcher| should retry on network changes since the network stack may
-  // receive the connection change event later than |this|.
+  fetch_in_progress_ = true;
+
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = config_service_url_;
+  resource_request->method = "POST";
+  resource_request->load_flags = net::LOAD_BYPASS_PROXY |
+                                 net::LOAD_DO_NOT_SEND_COOKIES |
+                                 net::LOAD_DO_NOT_SAVE_COOKIES;
+  // Attach variations headers.
+  url_loader_ = variations::CreateSimpleURLLoaderWithVariationsHeaders(
+      std::move(resource_request), variations::InIncognito::kNo,
+      variations::SignedIn::kNo, traffic_annotation);
+
+  url_loader_->AttachStringForUpload(serialized_request,
+                                     "application/x-protobuf");
+  // |url_loader_| should not retry on 5xx errors since the server may already
+  // be overloaded. Spurious 5xx errors are still retried on exponential
+  // backoff. |url_loader_| should retry on network changes since the network
+  // stack may receive the connection change event later than |this|.
   static const int kMaxRetries = 5;
-  fetcher->SetAutomaticallyRetryOnNetworkChanges(kMaxRetries);
-  return fetcher;
+  url_loader_->SetRetryOptions(
+      kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory_.get(),
+      base::BindOnce(&DataReductionProxyConfigServiceClient::OnURLLoadComplete,
+                     base::Unretained(this)));
+}
+
+void DataReductionProxyConfigServiceClient::InvalidateConfig() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  GetBackoffEntry()->InformOfRequest(false);
+  config_storer_.Run(std::string());
+  request_options_->Invalidate();
+  config_values_->Invalidate();
+  io_data_->SetPingbackReportingFraction(0.0f);
+  config_->OnNewClientConfigFetched();
 }
 
 void DataReductionProxyConfigServiceClient::HandleResponse(
     const std::string& config_data,
-    const net::URLRequestStatus& status,
+    int status,
     int response_code) {
   DCHECK(thread_checker_.CalledOnValidThread());
   ClientConfig config;
   bool succeeded = false;
 
-  auto connection_type = network::mojom::ConnectionType::CONNECTION_NONE;
-  network_connection_tracker_->GetConnectionType(&connection_type,
-                                                 base::DoNothing());
-  if (connection_type != network::mojom::ConnectionType::CONNECTION_NONE) {
+  if (!network_connection_tracker_->IsOffline())
     base::UmaHistogramSparse(kUMAConfigServiceFetchResponseCode, response_code);
-  }
 
-  if (status.status() == net::URLRequestStatus::SUCCESS &&
-      response_code == net::HTTP_OK && config.ParseFromString(config_data)) {
+  if (status == net::OK && response_code == net::HTTP_OK &&
+      config.ParseFromString(config_data)) {
     succeeded = ParseAndApplyProxyConfig(config);
   }
 
@@ -584,11 +541,6 @@ void DataReductionProxyConfigServiceClient::HandleResponse(
       succeeded, refresh_duration, GetBackoffEntry()->GetTimeUntilRelease());
 
   SetConfigRefreshTimer(next_config_refresh_time);
-  event_creator_->EndConfigRequest(
-      net_log_with_source_, status.error(), response_code,
-      GetBackoffEntry()->failure_count(),
-      DataReductionProxyServer::ConvertToNetProxyServers(proxies),
-      refresh_duration, next_config_refresh_time);
 }
 
 bool DataReductionProxyConfigServiceClient::ParseAndApplyProxyConfig(
@@ -606,7 +558,7 @@ bool DataReductionProxyConfigServiceClient::ParseAndApplyProxyConfig(
   if (!config.has_proxy_config())
     return false;
 
-  config_->SetIgnoreLongTermBlackListRules(
+  io_data_->SetIgnoreLongTermBlackListRules(
       config.ignore_long_term_black_list_rules());
 
   // An empty proxy config is OK, and allows the server to effectively turn off

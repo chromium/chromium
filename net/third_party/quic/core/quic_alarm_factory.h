@@ -11,10 +11,6 @@
 
 namespace quic {
 
-// QuicConnections currently use around 1KB of polymorphic types which would
-// ordinarily be on the heap. Instead, store them inline in an arena.
-using QuicConnectionArena = QuicOneBlockArena<1024>;
-
 // Creates platform-specific alarms used throughout QUIC.
 class QUIC_EXPORT_PRIVATE QuicAlarmFactory {
  public:

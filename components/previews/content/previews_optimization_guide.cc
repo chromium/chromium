@@ -10,8 +10,7 @@
 #include "base/task_runner_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/previews/content/previews_hints.h"
-#include "components/previews/core/previews_user_data.h"
-#include "net/url_request/url_request.h"
+#include "components/previews/content/previews_user_data.h"
 #include "url/gurl.h"
 
 namespace previews {
@@ -32,31 +31,32 @@ PreviewsOptimizationGuide::~PreviewsOptimizationGuide() {
   optimization_guide_service_->RemoveObserver(this);
 }
 
-bool PreviewsOptimizationGuide::IsWhitelisted(const net::URLRequest& request,
+bool PreviewsOptimizationGuide::IsWhitelisted(PreviewsUserData* previews_data,
+                                              const GURL& url,
                                               PreviewsType type) const {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!hints_)
     return false;
 
   int inflation_percent = 0;
-  if (!hints_->IsWhitelisted(request.url(), type, &inflation_percent))
+  net::EffectiveConnectionType ect_threshold =
+      params::GetECTThresholdForPreview(type);
+  if (!hints_->IsWhitelisted(url, type, &inflation_percent, &ect_threshold))
     return false;
 
-  previews::PreviewsUserData* previews_user_data =
-      previews::PreviewsUserData::GetData(request);
-  if (inflation_percent != 0 && previews_user_data)
-    previews_user_data->SetDataSavingsInflationPercent(inflation_percent);
+  if (inflation_percent != 0 && previews_data)
+    previews_data->SetDataSavingsInflationPercent(inflation_percent);
 
   return true;
 }
 
-bool PreviewsOptimizationGuide::IsBlacklisted(const net::URLRequest& request,
+bool PreviewsOptimizationGuide::IsBlacklisted(const GURL& url,
                                               PreviewsType type) const {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!hints_)
     return false;
 
-  return hints_->IsBlacklisted(request.url(), type);
+  return hints_->IsBlacklisted(url, type);
 }
 
 void PreviewsOptimizationGuide::OnLoadedHint(
@@ -93,7 +93,7 @@ void PreviewsOptimizationGuide::OnLoadedHint(
 }
 
 bool PreviewsOptimizationGuide::MaybeLoadOptimizationHints(
-    const net::URLRequest& request,
+    const GURL& url,
     ResourceLoadingHintsCallback callback) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
@@ -101,9 +101,19 @@ bool PreviewsOptimizationGuide::MaybeLoadOptimizationHints(
     return false;
 
   return hints_->MaybeLoadOptimizationHints(
-      request.url(), base::BindOnce(&PreviewsOptimizationGuide::OnLoadedHint,
-                                    io_weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(callback), request.url()));
+      url, base::BindOnce(&PreviewsOptimizationGuide::OnLoadedHint,
+                          io_weak_ptr_factory_.GetWeakPtr(),
+                          std::move(callback), url));
+}
+
+void PreviewsOptimizationGuide::LogHintCacheMatch(
+    const GURL& url,
+    bool is_committed,
+    net::EffectiveConnectionType ect) const {
+  if (!hints_)
+    return;
+
+  hints_->LogHintCacheMatch(url, is_committed, ect);
 }
 
 void PreviewsOptimizationGuide::OnHintsProcessed(

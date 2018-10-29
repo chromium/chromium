@@ -36,16 +36,19 @@ class PaymentsCurrencyFormatterTest
 
 TEST_P(PaymentsCurrencyFormatterTest, IsValidCurrencyFormat) {
   CurrencyFormatter formatter(GetParam().currency_code, GetParam().locale_name);
-  base::string16 output_amount = formatter.Format(GetParam().amount);
+  base::string16 actual_output = formatter.Format(GetParam().amount);
 
   // Convenience so the test cases can use regular spaces.
   const base::string16 kSpace(base::ASCIIToUTF16(" "));
   const base::string16 kNonBreakingSpace(base::UTF8ToUTF16(u8"\u00a0"));
-  base::string16 converted;
-  base::ReplaceChars(base::UTF8ToUTF16(GetParam().expected_amount), kSpace,
-                     kNonBreakingSpace, &converted);
+  const base::string16 kNarrowNonBreakingSpace(base::UTF8ToUTF16(u8"\u202f"));
+  base::ReplaceChars(actual_output, kNonBreakingSpace, kSpace, &actual_output);
+  base::ReplaceChars(actual_output, kNarrowNonBreakingSpace, kSpace,
+                     &actual_output);
+  base::string16 expected_output =
+      base::UTF8ToUTF16(GetParam().expected_amount);
 
-  EXPECT_EQ(converted, output_amount)
+  EXPECT_EQ(expected_output, actual_output)
       << "Failed to convert " << GetParam().amount << " ("
       << GetParam().currency_code << ") in " << GetParam().locale_name;
   EXPECT_EQ(GetParam().expected_currency_code,
@@ -135,7 +138,7 @@ INSTANTIATE_TEST_CASE_P(
             "123456789012345678901234567890.123456789012345678901234567890",
             "USD",
             "fr_FR",
-            "123 456 789 012 345 678 901 234 567 890,123456789 $",
+            "123 456 789 012 345 678 901 234 567 890,123456789 $",
             "USD")));
 
 }  // namespace

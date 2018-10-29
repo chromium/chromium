@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Med Chrome sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3345341804167540816">Brug Chrome overalt</translation>
-<translation id="3678774398092457402">Skal Chrome gemme din adgangskode til dette website?</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruge dit kamera lige nu</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chrome-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver på <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> kan tilpasses når som helst. Google kan bruge indholdet på de websites, du besøger, samt browserinteraktioner og -aktivitet til at tilpasse Chrome og Google-tjenester såsom Oversæt, Søgning og annoncer.</translation>
 <translation id="5639704535586432836">Åbn Indstillinger &gt; Privatliv &gt; Kamera &gt; Google Chrome, og slå kameraet til.</translation>
 <translation id="5642200033778930880">Google Chrome kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>
-<translation id="5703130498371792817">Kan du lide Chrome? <ph name="BEGIN_LINK" />Bedøm denne app<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Chrome-tip. Nogle knapper som f.eks. Tilbage, Frem og Søg findes nu nederst på skærmen.</translation>
 <translation id="6036420186814142909">Google Chrome har funktioner, der hjælper dig med at administrere internetdata og hastigheden, som websider indlæses med.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Google Chrome Servicevilkår</translation>
 <translation id="7165736900384873061">Begynd at bruge QR-scanneren fra Google Chrome.</translation>
 <translation id="7172660552945675509">Tip! <ph name="BEGIN_LINK" />Flyt Chrome til din dock<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome bruger Face ID til at sikre autoriseret adgang til dine adgangskoder.</translation>
 <translation id="7265369419224458312">Få adgang til de faner, der er åbne på din computer, lige her. Du åbner blot Chrome på din computer, går til menuen og vælger "Log ind i Chrome…"</translation>
 <translation id="728488472449859922">Aktivér QR-scanneren fra Google Chrome</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>

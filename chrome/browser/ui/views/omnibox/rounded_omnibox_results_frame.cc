@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
-#include "chrome/browser/ui/views/location_bar/background_with_1_px_border.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "ui/base/material_design/material_design_controller.h"
 #include "ui/compositor/layer.h"
@@ -63,11 +62,14 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
 // so that the location bar shows through.
 class TopBackgroundView : public views::View {
  public:
-  explicit TopBackgroundView(SkColor color) {
-    auto background =
-        std::make_unique<BackgroundWith1PxBorder>(SK_ColorTRANSPARENT, color);
-    background->set_blend_mode(SkBlendMode::kSrc);
-    SetBackground(std::move(background));
+  TopBackgroundView(const LocationBarView* location_bar,
+                    SkColor background_color) {
+    // Paint a stroke of the background color as a 1 px border to hide the
+    // underlying antialiased location bar/toolbar edge.  The round rect here is
+    // not antialiased, since the goal is to completely cover the underlying
+    // pixels, and AA would let those on the edge partly bleed through.
+    SetBackground(location_bar->CreateRoundRectBackground(
+        SK_ColorTRANSPARENT, background_color, SkBlendMode::kSrc, false));
   }
 
 #if !defined(USE_AURA)
@@ -81,12 +83,14 @@ class TopBackgroundView : public views::View {
   // well to catch 'em all.
   void OnMouseMoved(const ui::MouseEvent& event) override {
     auto pair = GetParentWidgetAndEvent(this, &event);
-    pair.widget->OnMouseEvent(&pair.event);
+    if (pair.widget)
+      pair.widget->OnMouseEvent(&pair.event);
   }
 
   void OnMouseEvent(ui::MouseEvent* event) override {
     auto pair = GetParentWidgetAndEvent(this, event);
-    pair.widget->OnMouseEvent(&pair.event);
+    if (pair.widget)
+      pair.widget->OnMouseEvent(&pair.event);
 
     // If the original event isn't marked as "handled" then it will propagate up
     // the view hierarchy and might be double-handled. https://crbug.com/870341
@@ -95,10 +99,14 @@ class TopBackgroundView : public views::View {
 
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override {
     auto pair = GetParentWidgetAndEvent(this, &event);
-    views::View* omnibox_view =
-        pair.widget->GetRootView()->GetEventHandlerForPoint(
-            pair.event.location());
-    return omnibox_view->GetCursor(pair.event);
+    if (pair.widget) {
+      views::View* omnibox_view =
+          pair.widget->GetRootView()->GetEventHandlerForPoint(
+              pair.event.location());
+      return omnibox_view->GetCursor(pair.event);
+    }
+
+    return nullptr;
   }
 #endif  // !USE_AURA
 };
@@ -111,8 +119,9 @@ gfx::Insets GetContentInsets() {
 
 }  // namespace
 
-RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(views::View* contents,
-                                                       OmniboxTint tint)
+RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
+    views::View* contents,
+    const LocationBarView* location_bar)
     : contents_(contents) {
   // Host the contents in its own View to simplify layout and clipping.
   contents_host_ = new views::View();
@@ -120,7 +129,8 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(views::View* contents,
   contents_host_->layer()->SetFillsBoundsOpaquely(false);
 
   // Use a solid background. Note this is clipped to get rounded corners.
-  SkColor background_color =
+  const OmniboxTint tint = location_bar->tint();
+  const SkColor background_color =
       GetOmniboxColor(OmniboxPart::RESULTS_BACKGROUND, tint);
   contents_host_->SetBackground(views::CreateSolidBackground(background_color));
 
@@ -136,7 +146,7 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(views::View* contents,
   contents_mask_->layer()->SetFillsBoundsOpaquely(false);
   contents_host_->layer()->SetMaskLayer(contents_mask_->layer());
 
-  top_background_ = new TopBackgroundView(background_color);
+  top_background_ = new TopBackgroundView(location_bar, background_color);
   contents_host_->AddChildView(top_background_);
   contents_host_->AddChildView(contents_);
 
@@ -186,15 +196,8 @@ int RoundedOmniboxResultsFrame::GetNonResultSectionHeight() {
 
 // static
 gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
-  switch (ui::MaterialDesignController::GetMode()) {
-    case ui::MaterialDesignController::MATERIAL_REFRESH:
-      return gfx::Insets(4, 6);
-    case ui::MaterialDesignController::MATERIAL_TOUCH_REFRESH:
-      return gfx::Insets(6, 1, 5, 1);
-    default:
-      return gfx::Insets(4);
-  }
-  NOTREACHED();
+  return ui::MaterialDesignController::touch_ui() ? gfx::Insets(6, 1, 5, 1)
+                                                  : gfx::Insets(4, 6);
 }
 
 // static

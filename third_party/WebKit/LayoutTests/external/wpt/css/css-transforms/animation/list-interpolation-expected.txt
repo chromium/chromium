@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS "none" and "none" are valid transform values
+FAIL Animation between "none" and "none" at progress 0.25 assert_equals: expected "none" but got "matrix(1, 0, 0, 1, 0, 0)"
+PASS "none" and "translate(200px) rotate(720deg)" are valid transform values
+PASS Animation between "none" and "translate(200px) rotate(720deg)" at progress 0.25
+PASS "translate(200px) rotate(720deg)" and "none" are valid transform values
+PASS Animation between "translate(200px) rotate(720deg)" and "none" at progress 0.25
+PASS "translate(100px)" and "translate(200px) rotate(720deg)" are valid transform values
+FAIL Animation between "translate(100px)" and "translate(200px) rotate(720deg)" at progress 0.25 assert_equals: expected "matrix(-1, 1.22465e-16, -1.22465e-16, -1, 125, 0)" but got "matrix(1, 0, 0, 1, 125, 0)"
+PASS "translate(100px) rotate(720deg)" and "translate(200px)" are valid transform values
+FAIL Animation between "translate(100px) rotate(720deg)" and "translate(200px)" at progress 0.25 assert_equals: expected "matrix(-1, 3.67394e-16, -3.67394e-16, -1, 125, 0)" but got "matrix(1, -4.89859e-16, 4.89859e-16, 1, 125, 0)"
+PASS "scale(2) rotate(360deg) translate(100px) matrix(1, 0, 0, 1, 100, 0) skew(0deg)" and "scale(3) rotate(1080deg) translate(200px) matrix(1, 0, 0, 1, 0, 200) skew(720deg)" are valid transform values
+PASS Animation between "scale(2) rotate(360deg) translate(100px) matrix(1, 0, 0, 1, 100, 0) skew(0deg)" and "scale(3) rotate(1080deg) translate(200px) matrix(1, 0, 0, 1, 0, 200) skew(720deg)" at progress 0.25
+PASS "translateX(100px) scaleX(3) translate(500px) scale(2)" and "translateY(200px) scale(5) translateX(100px) scaleY(3)" are valid transform values
+PASS Animation between "translateX(100px) scaleX(3) translate(500px) scale(2)" and "translateY(200px) scale(5) translateX(100px) scaleY(3)" at progress 0.25
+PASS "rotate(0deg) translate(100px)" and "rotate(720deg) scale(2) translate(200px)" are valid transform values
+FAIL Animation between "rotate(0deg) translate(100px)" and "rotate(720deg) scale(2) translate(200px)" at progress 0.25 assert_equals: expected "matrix(-1.25, 1.53081e-16, -1.53081e-16, -1.25, -175, 2.14313e-14)" but got "matrix(1.25, 0, 0, 1.25, 175, -4.89859e-14)"
+PASS "scale(2) rotate(0deg) translate(100px)" and "rotate(720deg) scale(2) translate(200px)" are valid transform values
+FAIL Animation between "scale(2) rotate(0deg) translate(100px)" and "rotate(720deg) scale(2) translate(200px)" at progress 0.25 assert_equals: expected "matrix(2, 0, 0, 2, 250, 0)" but got "matrix(2, 0, 0, 2, 250, -4.89859e-14)"
+PASS "scale(2) rotate(0deg)" and "rotate(720deg) scale(2) translate(200px)" are valid transform values
+FAIL Animation between "scale(2) rotate(0deg)" and "rotate(720deg) scale(2) translate(200px)" at progress 0.25 assert_equals: expected "matrix(2, 0, 0, 2, 100, 0)" but got "matrix(2, 0, 0, 2, 100, -4.89859e-14)"
+Harness: the test ran to completion.
+

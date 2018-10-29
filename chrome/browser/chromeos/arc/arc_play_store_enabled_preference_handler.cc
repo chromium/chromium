@@ -13,7 +13,7 @@
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,9 +21,9 @@
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
 #include "components/consent_auditor/consent_auditor.h"
-#include "components/signin/core/browser/signin_manager_base.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/identity/public/cpp/identity_manager.h"
 
 using sync_pb::UserConsentTypes;
 
@@ -100,9 +100,16 @@ void ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged() {
     // For example, if a user opts-in ARC on OOBE, and later opts-out via
     // settings page, OOBE_OPTED_IN and SESSION_OPTED_OUT will be recorded.
     if (IsArcOobeOptInActive()) {
-      UpdateOptInActionUMA(is_play_store_enabled
-                               ? OptInActionType::OOBE_OPTED_IN
-                               : OptInActionType::OOBE_OPTED_OUT);
+      OptInActionType type;
+      if (IsArcOobeOptInConfigurationBased()) {
+        type = is_play_store_enabled
+                   ? OptInActionType::OOBE_OPTED_IN_CONFIGURATION
+                   : OptInActionType::OOBE_OPTED_OUT;
+      } else {
+        type = is_play_store_enabled ? OptInActionType::OOBE_OPTED_IN
+                                     : OptInActionType::OOBE_OPTED_OUT;
+      }
+      UpdateOptInActionUMA(type);
     } else {
       UpdateOptInActionUMA(is_play_store_enabled
                                ? OptInActionType::SESSION_OPTED_IN
@@ -118,15 +125,14 @@ void ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged() {
         chrome_launcher_controller->UnpinAppWithID(kPlayStoreAppId);
 
       // Tell Consent Auditor that the Play Store consent was revoked.
-      SigninManagerBase* signin_manager =
-          SigninManagerFactory::GetForProfile(profile_);
+      identity::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile_);
       // TODO(crbug.com/850297): Fix unrelated tests that are not properly
-      // setting up the state of signin_manager and enable the DCHECK instead of
-      // the conditional below.
-      // DCHECK(signin_manager->IsAuthenticated());
-      if (signin_manager->IsAuthenticated()) {
-        const std::string account_id =
-            signin_manager->GetAuthenticatedAccountId();
+      // setting up the state of identity_manager and enable the DCHECK instead
+      // of the conditional below.
+      // DCHECK(identity_manager->HasPrimaryAccount());
+      if (identity_manager->HasPrimaryAccount()) {
+        const std::string account_id = identity_manager->GetPrimaryAccountId();
 
         UserConsentTypes::ArcPlayTermsOfServiceConsent play_consent;
         play_consent.set_status(UserConsentTypes::NOT_GIVEN);

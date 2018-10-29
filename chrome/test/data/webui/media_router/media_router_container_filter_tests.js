@@ -85,6 +85,7 @@ cr.define('media_router_container_filter', function() {
       'key': 'Escape',
       'code': 'Escape',
       'bubbles': true,
+      'composed': true,
       'cancelable': true
     }));
   };
@@ -278,32 +279,34 @@ cr.define('media_router_container_filter', function() {
         // view.
         MockInteractions.tap(container.$$('#sink-search-icon'));
         chainOnAnimationPromise(function() {
+          // The search results container is visible, since we are in filter
+          // view, but there are no results yet since there are no sinks.
           checkElementsVisibleWithId([
             'container-header', 'device-missing', 'sink-search',
-            'sink-list-view'
+            'search-results-container', 'sink-list-view'
           ]);
 
           // Adding sinks should populate the search list.
           container.allSinks = fakeSinkList;
           chainOnAnimationPromise(function() {
             checkElementsVisibleWithId([
-              'container-header', 'search-results', 'sink-search',
-              'sink-list-view'
+              'container-header', 'search-results-container', 'search-results',
+              'sink-search', 'sink-list-view'
             ]);
             // Typing text that doesn't match any sinks should display a 'no
             // matches' message.
             container.$$('#sink-search-input').value = searchTextNone;
             checkElementsVisibleWithId([
-              'container-header', 'no-search-matches', 'sink-search',
-              'sink-list-view'
+              'container-header', 'search-results-container',
+              'no-search-matches', 'sink-search', 'sink-list-view'
             ]);
             // Changing that text to something that matches at least one sink
             // should show the matching sinks again.
             container.$$('#sink-search-input').value = searchTextOne;
             // maybe inside setTimeout
             checkElementsVisibleWithId([
-              'container-header', 'search-results', 'sink-search',
-              'sink-list-view'
+              'container-header', 'search-results-container', 'search-results',
+              'sink-search', 'sink-list-view'
             ]);
             // Clicking the back button should leave |searchTextOne| in the
             // input but return to the SINK_LIST view.
@@ -321,8 +324,8 @@ cr.define('media_router_container_filter', function() {
               MockInteractions.tap(container.$$('#sink-search-icon'));
               chainOnAnimationPromise(function() {
                 checkElementsVisibleWithId([
-                  'container-header', 'search-results', 'sink-search',
-                  'sink-list-view'
+                  'container-header', 'search-results-container',
+                  'search-results', 'sink-search', 'sink-list-view'
                 ]);
 
                 container.$$('#sink-search-input').value = searchTextNone;
@@ -342,8 +345,8 @@ cr.define('media_router_container_filter', function() {
                   MockInteractions.tap(container.$$('#sink-search-icon'));
                   chainOnAnimationPromise(function() {
                     checkElementsVisibleWithId([
-                      'container-header', 'no-search-matches', 'sink-search',
-                      'sink-list-view'
+                      'container-header', 'search-results-container',
+                      'no-search-matches', 'sink-search', 'sink-list-view'
                     ]);
                     // Pressing the Escape key in FILTER view should return
                     // |container| to SINK_LIST view and not exit the dialog.
@@ -376,8 +379,8 @@ cr.define('media_router_container_filter', function() {
         MockInteractions.tap(container.$$('#sink-search-icon'));
         chainOnAnimationPromise(function() {
           checkElementsVisibleWithId([
-            'container-header', 'issue-banner', 'search-results', 'sink-search',
-            'sink-list-view'
+            'container-header', 'issue-banner', 'search-results-container',
+            'search-results', 'sink-search', 'sink-list-view'
           ]);
           done();
         });

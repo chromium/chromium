@@ -18,7 +18,7 @@ namespace blink {
 class AXObject;
 
 class MODULES_EXPORT AXRange final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   AXRange(const AXPosition& start, const AXPosition& end);

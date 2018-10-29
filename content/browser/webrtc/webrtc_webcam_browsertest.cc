@@ -5,6 +5,7 @@
 #include "content/browser/webrtc/webrtc_webcam_browsertest.h"
 
 #include "base/command_line.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -32,9 +33,7 @@ bool IsUseFakeDeviceForMediaStream(const base::CommandLine::StringType& arg) {
 
 void RemoveFakeDeviceFromCommandLine(base::CommandLine* command_line) {
   base::CommandLine::StringVector argv = command_line->argv();
-  argv.erase(std::remove_if(argv.begin(), argv.end(),
-                            IsUseFakeDeviceForMediaStream),
-             argv.end());
+  base::EraseIf(argv, IsUseFakeDeviceForMediaStream);
   command_line->InitFromArgv(argv);
 }
 

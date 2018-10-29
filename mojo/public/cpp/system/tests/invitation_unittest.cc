@@ -20,13 +20,16 @@
 #include "base/test/scoped_task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+
+#if !defined(OS_FUCHSIA)
+#include "mojo/public/cpp/platform/named_platform_channel.h"
+#endif
 
 namespace mojo {
 namespace {
@@ -38,14 +41,18 @@ enum class InvitationType {
 
 enum class TransportType {
   kChannel,
+#if !defined(OS_FUCHSIA)
   kChannelServer,
+#endif
 };
 
 // Switches and values to tell clients of parameterized test runs what mode they
 // should be testing against.
 const char kTransportTypeSwitch[] = "test-transport-type";
 const char kTransportTypeChannel[] = "channel";
+#if !defined(OS_FUCHSIA)
 const char kTransportTypeChannelServer[] = "channel-server";
+#endif
 
 class InvitationCppTest : public testing::Test,
                           public testing::WithParamInterface<TransportType> {
@@ -67,30 +74,33 @@ class InvitationCppTest : public testing::Test,
     base::Optional<PlatformChannel> channel;
     PlatformChannelEndpoint channel_endpoint;
     PlatformChannelServerEndpoint server_endpoint;
-    if (transport_type == TransportType::kChannel) {
-      command_line.AppendSwitchASCII(kTransportTypeSwitch,
-                                     kTransportTypeChannel);
-      channel.emplace();
-      channel->PrepareToPassRemoteEndpoint(&launch_options, &command_line);
+    switch (transport_type) {
+      case TransportType::kChannel: {
+        command_line.AppendSwitchASCII(kTransportTypeSwitch,
+                                       kTransportTypeChannel);
+        channel.emplace();
+        channel->PrepareToPassRemoteEndpoint(&launch_options, &command_line);
 #if defined(OS_WIN)
-      launch_options.start_hidden = true;
+        launch_options.start_hidden = true;
 #endif
-      channel_endpoint = channel->TakeLocalEndpoint();
-    } else if (transport_type == TransportType::kChannelServer) {
-      command_line.AppendSwitchASCII(kTransportTypeSwitch,
-                                     kTransportTypeChannelServer);
-#if defined(OS_FUCHSIA)
-      NOTREACHED() << "Named pipe support does not exist for Mojo on Fuchsia.";
-#else
-      NamedPlatformChannel::Options named_channel_options;
+        channel_endpoint = channel->TakeLocalEndpoint();
+        break;
+      }
+#if !defined(OS_FUCHSIA)
+      case TransportType::kChannelServer: {
+        command_line.AppendSwitchASCII(kTransportTypeSwitch,
+                                       kTransportTypeChannelServer);
+        NamedPlatformChannel::Options named_channel_options;
 #if !defined(OS_WIN)
-      CHECK(base::PathService::Get(base::DIR_TEMP,
-                                   &named_channel_options.socket_dir));
+        CHECK(base::PathService::Get(base::DIR_TEMP,
+                                     &named_channel_options.socket_dir));
 #endif
-      NamedPlatformChannel named_channel(named_channel_options);
-      named_channel.PassServerNameOnCommandLine(&command_line);
-      server_endpoint = named_channel.TakeServerEndpoint();
-#endif
+        NamedPlatformChannel named_channel(named_channel_options);
+        named_channel.PassServerNameOnCommandLine(&command_line);
+        server_endpoint = named_channel.TakeServerEndpoint();
+        break;
+      }
+#endif  //  !defined(OS_FUCHSIA)
     }
 
     child_process_ = base::SpawnMultiProcessTestChild(
@@ -104,28 +114,35 @@ class InvitationCppTest : public testing::Test,
         primordial_pipes[name] = invitation.AttachMessagePipe(name);
     }
 
-    if (transport_type == TransportType::kChannel) {
-      DCHECK(channel_endpoint.is_valid());
-      if (invitation_type == InvitationType::kNormal) {
-        OutgoingInvitation::Send(std::move(invitation), child_process_.Handle(),
-                                 std::move(channel_endpoint), error_callback);
-      } else {
-        DCHECK(primordial_pipes);
-        DCHECK_EQ(num_primordial_pipes, 1u);
-        primordial_pipes[0] =
-            OutgoingInvitation::SendIsolated(std::move(channel_endpoint));
-      }
-    } else if (transport_type == TransportType::kChannelServer) {
-      DCHECK(server_endpoint.is_valid());
-      if (invitation_type == InvitationType::kNormal) {
-        OutgoingInvitation::Send(std::move(invitation), child_process_.Handle(),
-                                 std::move(server_endpoint), error_callback);
-      } else {
-        DCHECK(primordial_pipes);
-        DCHECK_EQ(num_primordial_pipes, 1u);
-        primordial_pipes[0] =
-            OutgoingInvitation::SendIsolated(std::move(server_endpoint));
-      }
+    switch (transport_type) {
+      case TransportType::kChannel:
+        DCHECK(channel_endpoint.is_valid());
+        if (invitation_type == InvitationType::kNormal) {
+          OutgoingInvitation::Send(std::move(invitation),
+                                   child_process_.Handle(),
+                                   std::move(channel_endpoint), error_callback);
+        } else {
+          DCHECK(primordial_pipes);
+          DCHECK_EQ(num_primordial_pipes, 1u);
+          primordial_pipes[0] =
+              OutgoingInvitation::SendIsolated(std::move(channel_endpoint));
+        }
+        break;
+#if !defined(OS_FUCHSIA)
+      case TransportType::kChannelServer:
+        DCHECK(server_endpoint.is_valid());
+        if (invitation_type == InvitationType::kNormal) {
+          OutgoingInvitation::Send(std::move(invitation),
+                                   child_process_.Handle(),
+                                   std::move(server_endpoint), error_callback);
+        } else {
+          DCHECK(primordial_pipes);
+          DCHECK_EQ(num_primordial_pipes, 1u);
+          primordial_pipes[0] =
+              OutgoingInvitation::SendIsolated(std::move(server_endpoint));
+        }
+        break;
+#endif  // !defined(OS_FUCHSIA)
     }
   }
 
@@ -165,15 +182,15 @@ class TestClientBase : public InvitationCppTest {
  public:
   static PlatformChannelEndpoint RecoverEndpointFromCommandLine() {
     const auto& command_line = *base::CommandLine::ForCurrentProcess();
+#if !defined(OS_FUCHSIA)
     std::string transport_type_string =
         command_line.GetSwitchValueASCII(kTransportTypeSwitch);
     CHECK(!transport_type_string.empty());
-    if (transport_type_string == kTransportTypeChannel) {
-      return PlatformChannel::RecoverPassedEndpointFromCommandLine(
-          command_line);
-    } else {
+    if (transport_type_string != kTransportTypeChannel) {
       return NamedPlatformChannel::ConnectToServer(command_line);
     }
+#endif
+    return PlatformChannel::RecoverPassedEndpointFromCommandLine(command_line);
   }
 
   static IncomingInvitation AcceptInvitation() {

@@ -148,18 +148,163 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
 }
 
 TEST(OAuthMultiloginResultTest, CreateOAuthMultiloginResultFromString) {
-  OAuthMultiloginResult result1;
-  EXPECT_TRUE(OAuthMultiloginResult::CreateOAuthMultiloginResultFromString(
-      ")]}\'\n{}", &result1));
-  EXPECT_TRUE(result1.cookies().empty());
+  OAuthMultiloginResult result1(R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            }
+          ]
+        }
+      )");
+  EXPECT_EQ(result1.error().state(), GoogleServiceAuthError::State::NONE);
+  EXPECT_FALSE(result1.cookies().empty());
 
-  OAuthMultiloginResult result2;
-  EXPECT_TRUE(OAuthMultiloginResult::CreateOAuthMultiloginResultFromString(
-      "many_random_characters_before_newline\'\n{}", &result2));
-  EXPECT_TRUE(result2.cookies().empty());
+  OAuthMultiloginResult result2(R"(many_random_characters_before_newline
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            }
+          ]
+        }
+      )");
+  EXPECT_EQ(result2.error().state(), GoogleServiceAuthError::State::NONE);
+  EXPECT_FALSE(result2.cookies().empty());
 
-  OAuthMultiloginResult result3;
-  EXPECT_FALSE(OAuthMultiloginResult::CreateOAuthMultiloginResultFromString(
-      ")]}\'\n)]}'\n{}", &result3));
-  EXPECT_TRUE(result3.cookies().empty());
+  OAuthMultiloginResult result3(R"())]}\'\n)]}'\n{
+          "status": "OK",
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            }
+          ]
+        }
+      )");
+  EXPECT_EQ(result3.error().state(),
+            GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE);
+}
+
+TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
+  std::string data_error_none =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            }
+          ]
+        }
+      )";
+  OAuthMultiloginResult result1(data_error_none);
+  EXPECT_EQ(result1.error().state(), GoogleServiceAuthError::State::NONE);
+
+  std::string data_error_transient =
+      R"(()]}'
+        {
+          "status": "RETRY",
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            }
+          ]
+        }
+      )";
+  OAuthMultiloginResult result2(data_error_transient);
+  EXPECT_TRUE(result2.error().IsTransientError());
+
+  // "ERROR" is a real response status that Gaia sends. This is a persistent
+  // error.
+  std::string data_error_persistent =
+      R"(()]}'
+        {
+          "status": "ERROR",
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            }
+          ]
+        }
+      )";
+  OAuthMultiloginResult result3(data_error_persistent);
+  EXPECT_TRUE(result3.error().IsPersistentError());
+
+  std::string data_error_invalid_credentials =
+      R"()]}'
+        {
+          "status": "INVALID_TOKENS",
+          "failed_accounts": [
+            {
+              "status": "RECOVERABLE",
+              "obfuscated_id": "account1"
+            },
+            {
+              "status": "OK",
+              "obfuscated_id": "account2"
+            }
+          ],
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"vAlUe1",
+              "domain":".google.ru",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            }
+          ]
+        }
+      )";
+  OAuthMultiloginResult result4(data_error_invalid_credentials);
+  EXPECT_EQ(result4.error().state(),
+            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
+  EXPECT_TRUE(result4.error().IsPersistentError());
+  EXPECT_THAT(result4.failed_accounts(), ElementsAre(Eq("account1")));
 }

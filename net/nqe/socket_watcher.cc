@@ -80,7 +80,7 @@ SocketWatcher::SocketWatcher(
 SocketWatcher::~SocketWatcher() = default;
 
 bool SocketWatcher::ShouldNotifyUpdatedRTT() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!run_rtt_callback_)
     return false;
@@ -104,7 +104,7 @@ bool SocketWatcher::ShouldNotifyUpdatedRTT() const {
 }
 
 void SocketWatcher::OnUpdatedRTTAvailable(const base::TimeDelta& rtt) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (rtt <= base::TimeDelta())
     return;
@@ -124,7 +124,7 @@ void SocketWatcher::OnUpdatedRTTAvailable(const base::TimeDelta& rtt) {
 }
 
 void SocketWatcher::OnConnectionChanged() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 }  // namespace internal

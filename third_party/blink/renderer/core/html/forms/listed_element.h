@@ -123,7 +123,7 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   Member<HTMLFormElement> form_;
   Member<ValidityState> validity_state_;
   String custom_validation_message_;
-  // If m_formWasSetByParser is true, m_form is always non-null.
+  // If form_was_set_by_parser_ is true, form_ is always non-null.
   bool form_was_set_by_parser_;
 };
 

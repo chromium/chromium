@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
@@ -218,7 +219,8 @@ void DomDistillerViewerSourceBrowserTest::ViewSingleDistilledPage(
     const std::string& expected_mime_type) {
   // Ensure the correct factory is used for the DomDistillerService.
   dom_distiller::DomDistillerServiceFactory::GetInstance()
-      ->SetTestingFactoryAndUse(browser()->profile(), &Build);
+      ->SetTestingFactoryAndUse(browser()->profile(),
+                                base::BindRepeating(&Build));
 
   // Navigate to a URL which the source should respond to.
   ui_test_utils::NavigateToURL(browser(), url);
@@ -308,7 +310,8 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
 IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
                        EarlyTemplateLoad) {
   dom_distiller::DomDistillerServiceFactory::GetInstance()
-      ->SetTestingFactoryAndUse(browser()->profile(), &Build);
+      ->SetTestingFactoryAndUse(browser()->profile(),
+                                base::BindRepeating(&Build));
 
   scoped_refptr<content::MessageLoopRunner> distillation_done_runner =
       new content::MessageLoopRunner;
@@ -426,7 +429,8 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MultiPageArticle) {
   expect_distillation_ = false;
   expect_distiller_page_ = true;
   dom_distiller::DomDistillerServiceFactory::GetInstance()
-      ->SetTestingFactoryAndUse(browser()->profile(), &Build);
+      ->SetTestingFactoryAndUse(browser()->profile(),
+                                base::BindRepeating(&Build));
 
   scoped_refptr<content::MessageLoopRunner> distillation_done_runner =
       new content::MessageLoopRunner;

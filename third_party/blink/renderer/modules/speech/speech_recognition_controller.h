@@ -52,7 +52,7 @@ class SpeechRecognitionController final
              const String& lang,
              bool continuous,
              bool interim_results,
-             unsigned long max_alternatives);
+             uint32_t max_alternatives);
 
   static SpeechRecognitionController* Create(LocalFrame& frame);
   static SpeechRecognitionController* From(LocalFrame* frame) {

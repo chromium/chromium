@@ -47,7 +47,7 @@ std::string ToLowerASCIIInternal(CHARTYPE* str, SIZETYPE length) {
 
 // Does the same as ToASCIIOrEmpty, but also makes the chars lower.
 std::string ToLowerASCIIOrEmpty(const String& str) {
-  if (str.IsEmpty() || !str.ContainsOnlyASCII())
+  if (str.IsEmpty() || !str.ContainsOnlyASCIIOrEmpty())
     return std::string();
   if (str.Is8Bit())
     return ToLowerASCIIInternal(str.Characters8(), str.length());
@@ -161,7 +161,7 @@ MIMETypeRegistry::SupportsType MIMETypeRegistry::SupportsMediaMIMEType(
     const String& codecs) {
   const std::string ascii_mime_type = ToLowerASCIIOrEmpty(mime_type);
   std::vector<std::string> codec_vector;
-  media::SplitCodecsToVector(ToASCIIOrEmpty(codecs), &codec_vector, false);
+  media::SplitCodecs(ToASCIIOrEmpty(codecs), &codec_vector);
   return static_cast<SupportsType>(
       media::IsSupportedMediaFormat(ascii_mime_type, codec_vector));
 }
@@ -172,7 +172,7 @@ bool MIMETypeRegistry::IsSupportedMediaSourceMIMEType(const String& mime_type,
   if (ascii_mime_type.empty())
     return false;
   std::vector<std::string> parsed_codec_ids;
-  media::SplitCodecsToVector(ToASCIIOrEmpty(codecs), &parsed_codec_ids, false);
+  media::SplitCodecs(ToASCIIOrEmpty(codecs), &parsed_codec_ids);
   return static_cast<MIMETypeRegistry::SupportsType>(
       media::StreamParserFactory::IsTypeSupported(ascii_mime_type,
                                                   parsed_codec_ids));

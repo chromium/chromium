@@ -32,7 +32,7 @@
 
 namespace blink {
 
-using namespace VectorMath;
+using namespace vector_math;
 
 ReverbAccumulationBuffer::ReverbAccumulationBuffer(size_t length)
     : buffer_(length), read_index_(0), read_time_frame_(0) {}

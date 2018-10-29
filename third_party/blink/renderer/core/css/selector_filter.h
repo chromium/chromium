@@ -47,7 +47,7 @@ class CORE_EXPORT SelectorFilter {
 
  public:
   class ParentStackFrame {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     ParentStackFrame() : element(nullptr) {}

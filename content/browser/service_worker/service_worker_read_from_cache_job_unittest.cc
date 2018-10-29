@@ -161,7 +161,7 @@ class ServiceWorkerReadFromCacheJobTest : public testing::Test {
     blink::ServiceWorkerStatusCode status =
         blink::ServiceWorkerStatusCode::kErrorFailed;
     context()->storage()->FindRegistrationForId(
-        registration_->id(), registration_->pattern().GetOrigin(),
+        registration_->id(), registration_->scope().GetOrigin(),
         base::BindOnce(&DidFindRegistration, &status, run_loop.QuitClosure()));
     run_loop.Run();
     return status;

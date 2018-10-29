@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -29,13 +30,13 @@ namespace autofill {
 
 class AutofillChange;
 class AutofillEntry;
+struct AutofillMetadata;
 class AutofillProfile;
 class AutofillTableEncryptor;
 class AutofillTableTest;
 class CreditCard;
-struct PaymentsCustomerData;
-
 struct FormFieldData;
+struct PaymentsCustomerData;
 
 // This class manages the various Autofill tables within the SQLite database
 // passed to the constructor. It expects the following schemas:
@@ -91,7 +92,10 @@ struct FormFieldData;
 //   validity_bitfield  A bitfield representing the validity state of different
 //                      fields in the profile.
 //                      Added in version 75.
-//
+//   is_client_validity_states_updated
+//                      A flag indicating whether the validity states of
+//                      different fields according to the client validity api is
+//                      updated or not. Added in version 80.
 // autofill_profile_names
 //                      This table contains the multi-valued name fields
 //                      associated with a profile.
@@ -401,8 +405,23 @@ class AutofillTable : public WebDatabaseTable,
                               const base::string16& full_number);
   bool MaskServerCreditCard(const std::string& id);
 
+  // Methods to add, update, remove and get the metadata for server cards and
+  // addresses.
+  bool AddServerCardMetadata(const AutofillMetadata& card_metadata);
   bool UpdateServerCardMetadata(const CreditCard& credit_card);
+  bool RemoveServerCardMetadata(const std::string& id);
+  bool GetServerCardsMetadata(
+      std::map<std::string, AutofillMetadata>* cards_metadata) const;
+  bool AddServerAddressMetadata(const AutofillMetadata& address_metadata);
   bool UpdateServerAddressMetadata(const AutofillProfile& profile);
+  bool RemoveServerAddressMetadata(const std::string& id);
+  bool GetServerAddressesMetadata(
+      std::map<std::string, AutofillMetadata>* addresses_metadata) const;
+
+  // Methods to add the server cards and addresses data independently from the
+  // metadata.
+  void SetServerCardsData(const std::vector<CreditCard>& credit_cards);
+  void SetServerAddressesData(const std::vector<AutofillProfile>& profiles);
 
   // Setters and getters related to the Google Payments customer data.
   // Passing null to the setter will clear the data.
@@ -507,7 +526,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion74AddServerCardTypeColumn();
   bool MigrateToVersion75AddProfileValidityBitfieldColumn();
   bool MigrateToVersion78AddModelTypeColumns();
-
+  bool MigrateToVersion80AddIsClientValidityStatesUpdatedColumn();
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
   // Copied to components/autofill/ios/browser/resources/autofill_controller.js.

@@ -19,8 +19,6 @@
 #include "ui/display/screen.h"
 #include "ui/views/mus/aura_init.h"
 #include "ui/views/mus/mus_client.h"
-#include "ui/views/mus/pointer_watcher_event_router.h"
-#include "ui/views/pointer_watcher.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -30,14 +28,15 @@ TapVisualizerApp::TapVisualizerApp() = default;
 
 TapVisualizerApp::~TapVisualizerApp() {
   display::Screen::GetScreen()->RemoveObserver(this);
-  views::MusClient::Get()->pointer_watcher_event_router()->RemovePointerWatcher(
-      this);
+  aura::Env::GetInstance()->RemoveEventObserver(this);
 }
 
 void TapVisualizerApp::Start() {
   // Watches moves so the user can drag around a touch point.
-  views::MusClient::Get()->pointer_watcher_event_router()->AddPointerWatcher(
-      this, true /* want_moves */);
+  aura::Env* env = aura::Env::GetInstance();
+  std::set<ui::EventType> types = {ui::ET_TOUCH_PRESSED, ui::ET_TOUCH_RELEASED,
+                                   ui::ET_TOUCH_MOVED, ui::ET_TOUCH_CANCELLED};
+  env->AddEventObserver(this, env, types);
   display::Screen::GetScreen()->AddObserver(this);
   for (const display::Display& display :
        display::Screen::GetScreen()->GetAllDisplays()) {
@@ -58,20 +57,19 @@ void TapVisualizerApp::OnStart() {
   Start();
 }
 
-void TapVisualizerApp::OnPointerEventObserved(
-    const ui::PointerEvent& event,
-    const gfx::Point& location_in_screen,
-    gfx::NativeView target) {
-  if (!event.IsTouchPointerEvent())
+void TapVisualizerApp::OnEvent(const ui::Event& event) {
+  if (!event.IsTouchEvent())
     return;
 
+  // The event never targets this app, so the location is in screen coordinates.
+  const gfx::Point screen_location = event.AsTouchEvent()->root_location();
   int64_t display_id = display::Screen::GetScreen()
-                           ->GetDisplayNearestPoint(location_in_screen)
+                           ->GetDisplayNearestPoint(screen_location)
                            .id();
   auto it = display_id_to_renderer_.find(display_id);
   if (it != display_id_to_renderer_.end()) {
     TapRenderer* renderer = it->second.get();
-    renderer->HandleTouchEvent(event);
+    renderer->HandleTouchEvent(*event.AsTouchEvent());
   }
 }
 

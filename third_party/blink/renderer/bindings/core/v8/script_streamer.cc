@@ -339,11 +339,6 @@ void RunNonBlockingScriptStreamingTask(
 }  // namespace
 
 bool ScriptStreamer::HasEnoughDataForStreaming(size_t resource_buffer_size) {
-  if (RuntimeEnabledFeatures::ScheduledScriptStreamingEnabled()) {
-    // Enable streaming for small scripts, but we must still check the BOM
-    // before starting streaming.
-    return resource_buffer_size >= kMaximumLengthOfBOM;
-  }
   // Only stream larger scripts.
   return resource_buffer_size >= small_script_threshold_;
 }
@@ -429,7 +424,7 @@ void ScriptStreamer::NotifyAppendData(ScriptResource* resource) {
       // cancel the task.
       //
       // TODO(leszeks): Decrease the priority of these tasks where possible.
-      BackgroundScheduler::PostOnBackgroundThreadWithTraits(
+      background_scheduler::PostOnBackgroundThreadWithTraits(
           FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
           CrossThreadBind(RunBlockingScriptStreamingTask,
                           WTF::Passed(std::move(script_streaming_task)),
@@ -481,7 +476,7 @@ void ScriptStreamer::NotifyFinished() {
       // The task creation shouldn't fail, since it didn't fail before during
       // NotifyAppendData.
       CHECK(script_streaming_task);
-      BackgroundScheduler::PostOnBackgroundThreadWithTraits(
+      background_scheduler::PostOnBackgroundThreadWithTraits(
           FROM_HERE, {base::TaskPriority::USER_BLOCKING},
           CrossThreadBind(RunNonBlockingScriptStreamingTask,
                           WTF::Passed(std::move(script_streaming_task)),
@@ -514,6 +509,11 @@ ScriptStreamer::ScriptStreamer(
       loading_task_runner_(std::move(loading_task_runner)) {}
 
 ScriptStreamer::~ScriptStreamer() = default;
+
+void ScriptStreamer::Prefinalize() {
+  Cancel();
+  prefinalizer_called_ = true;
+}
 
 void ScriptStreamer::Trace(blink::Visitor* visitor) {
   visitor->Trace(pending_script_);

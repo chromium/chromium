@@ -51,23 +51,6 @@ class SigninViewControllerDelegate
       SigninViewController* signin_view_controller,
       Browser* browser);
 
-#if defined(OS_MACOSX)
-  // Temporary shim for Polychrome. See bottom of first comment in
-  // https://crbug.com/80495 for details.
-  static SigninViewControllerDelegate* CreateModalSigninDelegateCocoa(
-      SigninViewController* signin_view_controller,
-      profiles::BubbleViewMode mode,
-      Browser* browser,
-      signin_metrics::AccessPoint access_point);
-  static SigninViewControllerDelegate* CreateSyncConfirmationDelegateCocoa(
-      SigninViewController* signin_view_controller,
-      Browser* browser,
-      bool is_consent_bump = false);
-  static SigninViewControllerDelegate* CreateSigninErrorDelegateCocoa(
-      SigninViewController* signin_view_controller,
-      Browser* browser);
-#endif
-
   // Attaches a dialog manager to this sign-in view controller dialog.
   // Should be called by subclasses when a different dialog may need to be
   // presented on top of the sign-in dialog.
@@ -115,7 +98,7 @@ class SigninViewControllerDelegate
                            bool to_different_document) override;
 
   // Subclasses must override this method to correctly handle accelerators.
-  void HandleKeyboardEvent(
+  bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
 

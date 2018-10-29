@@ -190,6 +190,8 @@ source_set("automation_client_lib") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//third_party/blink/public:buildflags",
     "//third_party/zlib:minizip",
     "//third_party/zlib/google:zip",
@@ -303,6 +305,9 @@ source_set("lib") {
     "//crypto",
     "//net",
     "//net/server:http_server",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//third_party/zlib",
     "//ui/base",
     "//ui/events:dom_keycode_converter",
@@ -333,6 +338,8 @@ executable("chromedriver") {
   deps = [
     ":lib",
     "//build/win:default_exe_manifest",
+    "//mojo/core/embedder",
+    "//services/network/public/mojom",
   ]
 }
 
@@ -430,6 +437,7 @@ test("chromedriver_unittests") {
     "//net",
     "//net:test_support",
     "//net/server:http_server",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
@@ -458,9 +466,12 @@ test("chromedriver_tests") {
     ":lib",
     "//base",
     "//base/test:run_all_unittests",
+    "//mojo/core/embedder",
     "//net",
     "//net:test_support",
     "//net/server:http_server",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gtest",
     "//ui/events:test_support",
     "//url",

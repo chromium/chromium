@@ -1004,8 +1004,8 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
 
  private:
   std::unique_ptr<const PermissionSet> active_perms_;
-  scoped_refptr<Extension> component_extension_;
-  scoped_refptr<Extension> no_component_extension_;
+  scoped_refptr<const Extension> component_extension_;
+  scoped_refptr<const Extension> no_component_extension_;
 };
 TEST_F(ExtensionPrefsComponentExtension, ExtensionPrefsComponentExtension) {
 }

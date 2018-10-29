@@ -197,9 +197,10 @@ class Profile : public content::BrowserContext {
   // Returns the main request context.
   virtual net::URLRequestContextGetter* GetRequestContext() = 0;
 
-  // Returns the request context used for extension-related requests.  This
-  // is only used for a separate cookie store currently.
-  virtual net::URLRequestContextGetter* GetRequestContextForExtensions() = 0;
+  // Returns a callback (which must be executed on the IO thread) that returns
+  // the cookie store for the chrome-extensions:// scheme.
+  virtual base::OnceCallback<net::CookieStore*()>
+  GetExtensionsCookieStoreGetter() = 0;
 
   // Returns the main URLLoaderFactory.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
@@ -231,8 +232,10 @@ class Profile : public content::BrowserContext {
     APP_LOCALE_CHANGED_VIA_LOGIN,
     // From login to a public session.
     APP_LOCALE_CHANGED_VIA_PUBLIC_SESSION_LOGIN,
-    // From AllowedUILocales policy
+    // From AllowedLanguages policy
     APP_LOCALE_CHANGED_VIA_POLICY,
+    // From demo session.
+    APP_LOCALE_CHANGED_VIA_DEMO_SESSION,
     // Source unknown.
     APP_LOCALE_CHANGED_VIA_UNKNOWN
   };

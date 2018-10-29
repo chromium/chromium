@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Отримайте розумні функції Google у Chromium</translation>
 <translation id="2730884209570016437">Chromium не може використовувати камеру, оскільки її використовує інший додаток</translation>
 <translation id="2797210818057553964">Це можна будь-коли змінити в налаштуваннях Chromium</translation>
+<translation id="2915596697727466327">Chromium використовує Face ID, щоб забезпечити авторизований доступ до ваших паролів.</translation>
 <translation id="3256316712990552818">Скопійовано в Chromium</translation>
 <translation id="3413120535237193088">Щоб мати доступ до закладок на всіх своїх пристроях, увійдіть в обліковий запис Chromium.</translation>
 <translation id="3473048256428424907">Увімкнути сканер QR-кодів у Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Тут відображатимуться вкладки, відкриті в Chromium на інших ваших пристроях.</translation>
 <translation id="495292094137889840">Використовувати сканер QR-кодів у Chromium</translation>
 <translation id="5231355151045086930">Вийти з Chromium</translation>
-<translation id="5416919929805616771">Користуєтеся Chromium? <ph name="BEGIN_LINK" />Оцініть цей додаток<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Вітаємо в Chromium</translation>
 <translation id="5945387852661427312">Ви входите в обліковий запис, зареєстрований у домені <ph name="DOMAIN" />, і надаєте його адміністратору доступ до своїх даних Chromium. Ваші дані буде назавжди зв’язано з цим обліковим записом. Якщо ви вийдете з облікового запису Chromium, дані буде видалено з цього пристрою, але вони залишаться у вашому обліковому записі Google.</translation>
 <translation id="6068866989048414399">Умови використання Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Ви переходите з облікового запису <ph name="USER_EMAIL1" /> в обліковий запис <ph name="USER_EMAIL2" />. Наявними даними Chromium керує домен <ph name="DOMAIN" />. Ваші дані буде видалено з пристрою, але вони залишаться в обліковому записі <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Порада. <ph name="BEGIN_LINK" />Перемістіть значок Chromium на панель Dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Знаючи ваше місцезнаходження, Google зможе створити для вас зручніші умови роботи в Chromium.</translation>
-<translation id="8353224596138547809">Зберегти пароль для цього сайту в Chromium?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Налаштування<ph name="END_LINK" /> можна будь-коли змінювати. Google може використовувати вміст відвіданих сайтів, дані веб-перегляду й інші дії, щоб персоналізувати Chromium та інші сервіси Google, як-от Перекладач, Пошук і оголошення.</translation>
 <translation id="8586442755830160949">Авторське право <ph name="YEAR" /> Автори Chromium. Усі права захищено.</translation>
 <translation id="8809780021347235332">Щоб зберегти зображення, торкніться опції "Параметри" та надайте Chromium доступ до ваших фото</translation>

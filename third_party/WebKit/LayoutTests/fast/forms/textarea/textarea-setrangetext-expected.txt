@@ -3,9 +3,7 @@ Test setRangeText() method on textareas.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Running tests on textarea with attributes: {}
-
 setRangeText() with only one parameter.
 element.value = '0123456789'
 element.setSelectionRange(2, 5)
@@ -137,9 +135,7 @@ PASS element.value is longString+'A'
 PASS element.selectionStart is longString.length
 PASS element.selectionEnd is longString.length+1
 PASS element.scrollTop is 0
-
 Running tests on textarea with attributes: {"dir":"rtl"}
-
 setRangeText() with only one parameter.
 element.value = '0123456789'
 element.setSelectionRange(2, 5)

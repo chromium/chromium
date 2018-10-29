@@ -18,6 +18,6 @@
 ] interface WorkletAnimation {
   readonly attribute AnimationTimeline? timeline;
   readonly attribute AnimationPlayState playState;
-  void play();
+  [RaisesException] void play();
   void cancel();
 };

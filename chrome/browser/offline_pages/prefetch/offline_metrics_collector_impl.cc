@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/common/pref_names.h"
+#include "components/offline_pages/core/offline_store_utils.h"
 
 namespace offline_pages {
 
@@ -124,11 +125,11 @@ void OfflineMetricsCollectorImpl::EnsureLoaded() {
   prefetch_open_observed_ =
       prefs_->GetBoolean(prefs::kPrefetchUsageOpenObserved);
 
-  int64_t time_value = prefs_->GetInt64(prefs::kOfflineUsageTrackingDay);
+  tracking_day_midnight_ = prefs_->GetTime(prefs::kOfflineUsageTrackingDay);
   // For the very first run, initialize to current time.
-  tracking_day_midnight_ = time_value == 0L
-                               ? Now().LocalMidnight()
-                               : base::Time::FromInternalValue(time_value);
+  if (tracking_day_midnight_.is_null())
+    tracking_day_midnight_ = Now().LocalMidnight();
+
   unused_days_count_ = prefs_->GetInteger(prefs::kOfflineUsageUnusedCount);
   started_days_count_ = prefs_->GetInteger(prefs::kOfflineUsageStartedCount);
   offline_days_count_ = prefs_->GetInteger(prefs::kOfflineUsageOfflineCount);
@@ -155,8 +156,7 @@ void OfflineMetricsCollectorImpl::SaveToPrefs() {
                      prefetch_fetch_observed_);
   prefs_->SetBoolean(prefs::kPrefetchUsageOpenObserved,
                      prefetch_open_observed_);
-  prefs_->SetInt64(prefs::kOfflineUsageTrackingDay,
-                   tracking_day_midnight_.ToInternalValue());
+  prefs_->SetTime(prefs::kOfflineUsageTrackingDay, tracking_day_midnight_);
   prefs_->SetInteger(prefs::kOfflineUsageUnusedCount, unused_days_count_);
   prefs_->SetInteger(prefs::kOfflineUsageStartedCount, started_days_count_);
   prefs_->SetInteger(prefs::kOfflineUsageOfflineCount, offline_days_count_);

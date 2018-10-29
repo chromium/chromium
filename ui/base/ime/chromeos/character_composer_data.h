@@ -18053,7 +18053,7 @@ static const uint16_t kCompositionsTree[] = {
     //   leaf character table
     0x0050,          // number of entries
     0x0020,  // space
-    0x00B2,  // -> superscript two
+    0x005E,  // -> circumflex accent
     0x0028,  // left parenthesis
     0x207D,  // -> superscript left parenthesis
     0x0029,  // right parenthesis

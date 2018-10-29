@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_consumer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,8 +80,13 @@ class AffiliationServiceTest : public testing::Test {
   void SetUp() override {
     base::FilePath database_path;
     ASSERT_TRUE(CreateTemporaryFile(&database_path));
+    network::TestNetworkConnectionTracker* network_connection_tracker =
+        network::TestNetworkConnectionTracker::GetInstance();
+    network_connection_tracker->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_ETHERNET);
     service_.reset(new AffiliationService(background_task_runner()));
-    service_->Initialize(test_shared_loader_factory_, database_path);
+    service_->Initialize(test_shared_loader_factory_,
+                         network_connection_tracker, database_path);
     // Note: the background task runner is purposely not pumped here, so that
     // the tests also verify that the service can be used synchronously right
     // away after having been constructed.

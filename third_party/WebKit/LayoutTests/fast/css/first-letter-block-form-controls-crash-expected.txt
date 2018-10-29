@@ -1,10 +1,5 @@
 Test case for Bug 34641.
 
-
-
-
-
-
-
+foo
 
 No crash means PASS

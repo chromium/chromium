@@ -91,9 +91,7 @@ class CORE_EXPORT CSSCrossfadeValue final : public CSSImageGeneratorValue {
     ~CrossfadeSubimageObserverProxy() override = default;
     void Trace(blink::Visitor* visitor) { visitor->Trace(owner_value_); }
 
-    void ImageChanged(ImageResourceContent*,
-                      CanDeferInvalidation,
-                      const IntRect* = nullptr) override;
+    void ImageChanged(ImageResourceContent*, CanDeferInvalidation) override;
     bool WillRenderImage() override;
     String DebugName() const override {
       return "CrossfadeSubimageObserverProxy";
@@ -106,8 +104,7 @@ class CORE_EXPORT CSSCrossfadeValue final : public CSSImageGeneratorValue {
   };
 
   bool WillRenderImage() const;
-  void CrossfadeChanged(const IntRect&,
-                        ImageResourceObserver::CanDeferInvalidation);
+  void CrossfadeChanged(ImageResourceObserver::CanDeferInvalidation);
 
   Member<CSSValue> from_value_;
   Member<CSSValue> to_value_;

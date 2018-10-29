@@ -1,0 +1,15 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/accessibility/mojom/ax_tree_id.mojom"
+public_headers = [ "//ui/accessibility/ax_tree_id.h" ]
+traits_headers = [ "//ui/accessibility/mojom/ax_tree_id_mojom_traits.h" ]
+sources = [
+  "ax_tree_id_mojom_traits.cc",
+  "ax_tree_id_mojom_traits.h",
+]
+public_deps = [
+  "//ui/accessibility",
+]
+type_mappings = [ "ax.mojom.AXTreeID=ui::AXTreeID" ]

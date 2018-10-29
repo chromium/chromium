@@ -12,11 +12,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_base.h"
-#include "google_apis/gaia/oauth2_token_service.h"
+#include "services/identity/public/cpp/identity_manager.h"
 
 class AccountId;
 class Profile;
-class ProfileOAuth2TokenService;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -28,19 +27,17 @@ class CloudPolicyClientRegistrationHelper;
 
 // A specialization of the UserPolicySigninServiceBase for the desktop
 // platforms (Windows, Mac and Linux).
-class UserPolicySigninService : public UserPolicySigninServiceBase,
-                                public OAuth2TokenService::Observer {
+class UserPolicySigninService : public UserPolicySigninServiceBase {
  public:
   // Creates a UserPolicySigninService associated with the passed
-  // |policy_manager| and |signin_manager|.
+  // |policy_manager| and |identity_manager|.
   UserPolicySigninService(
       Profile* profile,
       PrefService* local_state,
       DeviceManagementService* device_management_service,
       UserCloudPolicyManager* policy_manager,
-      SigninManager* signin_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
-      ProfileOAuth2TokenService* oauth2_token_service);
+      identity::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
   ~UserPolicySigninService() override;
 
   // Registers a CloudPolicyClient for fetching policy for a user. The
@@ -62,19 +59,14 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
       const std::string& account_id,
       const PolicyRegistrationCallback& callback);
 
-  // SigninManagerBase::Observer implementation:
-  // UserPolicySigninService is already an observer of SigninManagerBase.
-  void GoogleSigninSucceeded(const std::string& account_id,
-                             const std::string& username) override;
-
-  // OAuth2TokenService::Observer implementation:
-  void OnRefreshTokenAvailable(const std::string& account_id) override;
+  // identity::IdentityManager::Observer implementation:
+  // UserPolicySigninServiceBase is already an observer of IdentityManager.
+  void OnPrimaryAccountSet(const AccountInfo& account_info) override;
+  void OnRefreshTokenUpdatedForAccount(const AccountInfo& account_info,
+                                       bool is_valid) override;
 
   // CloudPolicyService::Observer implementation:
   void OnInitializationCompleted(CloudPolicyService* service) override;
-
-  // KeyedService implementation:
-  void Shutdown() override;
 
  protected:
   // UserPolicySigninServiceBase implementation:
@@ -112,10 +104,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   Profile* profile_;
 
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
-
-  // Weak pointer to the token service we use to authenticate during
-  // CloudPolicyClient registration.
-  ProfileOAuth2TokenService* oauth2_token_service_;
 
   DISALLOW_COPY_AND_ASSIGN(UserPolicySigninService);
 };

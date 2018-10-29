@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.download.home.filter.Filters;
@@ -50,17 +51,17 @@ class DownloadManagerCoordinatorImpl
     private boolean mMuteFilterChanges;
 
     /** Builds a {@link DownloadManagerCoordinatorImpl} instance. */
-    public DownloadManagerCoordinatorImpl(Profile profile, Activity activity, boolean offTheRecord,
-            boolean isSeparateActivity, SnackbarManager snackbarManager) {
+    public DownloadManagerCoordinatorImpl(Profile profile, Activity activity,
+            DownloadManagerUiConfig config, SnackbarManager snackbarManager) {
         mActivity = activity;
         mDeleteCoordinator = new DeleteUndoCoordinator(snackbarManager);
         mSelectionDelegate = new SelectionDelegate<ListItem>();
-        mListCoordinator = new DateOrderedListCoordinator(mActivity, offTheRecord,
+        mListCoordinator = new DateOrderedListCoordinator(mActivity, config,
                 OfflineContentAggregatorFactory.forProfile(profile),
                 mDeleteCoordinator::showSnackbar, mSelectionDelegate, this ::notifyFilterChanged,
                 createDateOrderedListObserver());
         mToolbarCoordinator = new ToolbarCoordinator(
-                mActivity, this, mListCoordinator, mSelectionDelegate, isSeparateActivity);
+                mActivity, this, mListCoordinator, mSelectionDelegate, config.isSeparateActivity);
 
         initializeView();
         RecordUserAction.record("Android.DownloadManager.Open");
@@ -72,6 +73,8 @@ class DownloadManagerCoordinatorImpl
      */
     private void initializeView() {
         mMainView = new FrameLayout(mActivity);
+        mMainView.setBackgroundColor(ApiCompatibilityUtils.getColor(
+                mActivity.getResources(), R.color.modern_primary_color));
 
         FrameLayout.LayoutParams listParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);

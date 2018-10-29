@@ -314,13 +314,9 @@ void CSSInterpolationType::ApplyCustomPropertyValue(
   ComputedStyle& style = *state.Style();
   const PropertyHandle property = GetProperty();
   const AtomicString& property_name = property.CustomPropertyName();
-  if (Registration().Inherits()) {
-    style.SetResolvedInheritedVariable(property_name, std::move(variable_data),
-                                       css_value);
-  } else {
-    style.SetResolvedNonInheritedVariable(property_name,
-                                          std::move(variable_data), css_value);
-  }
+  bool inherits = Registration().Inherits();
+  style.SetVariable(property_name, std::move(variable_data), inherits);
+  style.SetRegisteredVariable(property_name, css_value, inherits);
 }
 
 }  // namespace blink

@@ -2,7 +2,6 @@ Tests structured cloning of AES-CTR keys
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS importedKey.extraProperty is "hi"
 PASS importedKey.type is "secret"
 PASS typeof importedKey.extractable is 'boolean'
@@ -20,6 +19,7 @@ PASS clonedKey.algorithm.length is 128
 PASS clonedKey.usages.join(',') is "wrapKey,unwrapKey"
 Serialized key bytes: 5c4b010b10c1011030112233445566778899aabbccddeeff
 PASS: Cloned key exported data should be [30112233445566778899aabbccddeeff] and was
+
 
 PASS importedKey.extraProperty is "hi"
 PASS importedKey.type is "secret"
@@ -39,6 +39,7 @@ PASS clonedKey.usages.join(',') is "wrapKey,unwrapKey"
 Serialized key bytes: 5c4b010b20c1012000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f
 PASS: Cloned key exported data should be [00112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f] and was
 
+
 PASS importedKey.extraProperty is "hi"
 PASS importedKey.type is "secret"
 PASS typeof importedKey.extractable is 'boolean'
@@ -56,6 +57,7 @@ PASS clonedKey.algorithm.length is 128
 PASS clonedKey.usages.join(',') is "wrapKey,unwrapKey"
 Serialized key bytes: 5c4b010b10c0011030112233445566778899aabbccddeeff
 
+
 PASS importedKey.extraProperty is "hi"
 PASS importedKey.type is "secret"
 PASS typeof importedKey.extractable is 'boolean'
@@ -72,6 +74,7 @@ PASS clonedKey.algorithm.name is "AES-CTR"
 PASS clonedKey.algorithm.length is 256
 PASS clonedKey.usages.join(',') is "wrapKey,unwrapKey"
 Serialized key bytes: 5c4b010b20c0012000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f
+
 
 PASS successfullyParsed is true
 

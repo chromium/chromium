@@ -55,18 +55,16 @@ namespace remoting {
 
 class AutoThreadTest : public testing::Test {
  public:
-  AutoThreadTest() : message_loop_quit_correctly_(false) {
-  }
-
   void RunMessageLoop() {
     // Release |main_task_runner_|, then run |message_loop_| until other
     // references created in tests are gone.  We also post a delayed quit
     // task to |message_loop_| so the test will not hang on failure.
     main_task_runner_ = NULL;
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
     message_loop_.task_runner()->PostDelayedTask(
-        FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
-        base::TimeDelta::FromSeconds(5));
-    base::RunLoop().Run();
+        FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(5));
+    run_loop.Run();
   }
 
   void SetUp() override {
@@ -78,18 +76,14 @@ class AutoThreadTest : public testing::Test {
 
   void TearDown() override {
     // Verify that |message_loop_| was quit by the AutoThreadTaskRunner.
-    EXPECT_TRUE(message_loop_quit_correctly_);
+    EXPECT_FALSE(quit_closure_);
   }
 
  protected:
-  void QuitMainMessageLoop() {
-    message_loop_quit_correctly_ = true;
-    message_loop_.task_runner()->PostTask(
-        FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
-  }
+  void QuitMainMessageLoop() { std::move(quit_closure_).Run(); }
 
   base::MessageLoop message_loop_;
-  bool message_loop_quit_correctly_;
+  base::OnceClosure quit_closure_;
   scoped_refptr<AutoThreadTaskRunner> main_task_runner_;
 };
 
@@ -97,7 +91,7 @@ TEST_F(AutoThreadTest, StartAndStop) {
   // Create an AutoThread joined by our MessageLoop.
   scoped_refptr<base::TaskRunner> task_runner =
       AutoThread::Create(kThreadName, main_task_runner_);
-  EXPECT_TRUE(task_runner.get());
+  EXPECT_TRUE(task_runner);
 
   task_runner = NULL;
   RunMessageLoop();
@@ -107,7 +101,7 @@ TEST_F(AutoThreadTest, ProcessTask) {
   // Create an AutoThread joined by our MessageLoop.
   scoped_refptr<base::TaskRunner> task_runner =
       AutoThread::Create(kThreadName, main_task_runner_);
-  EXPECT_TRUE(task_runner.get());
+  EXPECT_TRUE(task_runner);
 
   // Post a task to it.
   bool success = false;
@@ -123,10 +117,10 @@ TEST_F(AutoThreadTest, ThreadDependency) {
   // Create two AutoThreads joined by our MessageLoop.
   scoped_refptr<base::TaskRunner> task_runner1 =
       AutoThread::Create(kThreadName, main_task_runner_);
-  EXPECT_TRUE(task_runner1.get());
+  EXPECT_TRUE(task_runner1);
   scoped_refptr<base::TaskRunner> task_runner2 =
       AutoThread::Create(kThreadName, main_task_runner_);
-  EXPECT_TRUE(task_runner2.get());
+  EXPECT_TRUE(task_runner2);
 
   // Post a task to thread 1 that will post a task to thread 2.
   bool success = false;
@@ -147,7 +141,7 @@ TEST_F(AutoThreadTest, ThreadWithComMta) {
                                                 main_task_runner_,
                                                 base::MessageLoop::TYPE_DEFAULT,
                                                 AutoThread::COM_INIT_MTA);
-  EXPECT_TRUE(task_runner.get());
+  EXPECT_TRUE(task_runner);
 
   // Post a task to query the COM apartment type.
   HRESULT hresult = E_FAIL;
@@ -168,7 +162,7 @@ TEST_F(AutoThreadTest, ThreadWithComSta) {
                                                 main_task_runner_,
                                                 base::MessageLoop::TYPE_UI,
                                                 AutoThread::COM_INIT_STA);
-  EXPECT_TRUE(task_runner.get());
+  EXPECT_TRUE(task_runner);
 
   // Post a task to query the COM apartment type.
   HRESULT hresult = E_FAIL;

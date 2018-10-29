@@ -18,7 +18,8 @@ namespace autofill {
 namespace payments {
 
 int64_t GetBillingCustomerId(PersonalDataManager* personal_data_manager,
-                             PrefService* pref_service) {
+                             PrefService* pref_service,
+                             bool should_log_validity) {
   DCHECK(personal_data_manager);
   DCHECK(pref_service);
 
@@ -33,16 +34,22 @@ int64_t GetBillingCustomerId(PersonalDataManager* personal_data_manager,
       int64_t billing_customer_id = 0;
       if (base::StringToInt64(base::StringPiece(customer_data->customer_id),
                               &billing_customer_id)) {
-        AutofillMetrics::LogPaymentsCustomerDataBillingIdStatus(
-            AutofillMetrics::BillingIdStatus::VALID);
+        if (should_log_validity) {
+          AutofillMetrics::LogPaymentsCustomerDataBillingIdStatus(
+              AutofillMetrics::BillingIdStatus::VALID);
+        }
         return billing_customer_id;
       } else {
-        AutofillMetrics::LogPaymentsCustomerDataBillingIdStatus(
-            AutofillMetrics::BillingIdStatus::PARSE_ERROR);
+        if (should_log_validity) {
+          AutofillMetrics::LogPaymentsCustomerDataBillingIdStatus(
+              AutofillMetrics::BillingIdStatus::PARSE_ERROR);
+        }
       }
     } else {
-      AutofillMetrics::LogPaymentsCustomerDataBillingIdStatus(
-          AutofillMetrics::BillingIdStatus::MISSING);
+      if (should_log_validity) {
+        AutofillMetrics::LogPaymentsCustomerDataBillingIdStatus(
+            AutofillMetrics::BillingIdStatus::MISSING);
+      }
     }
   }
 

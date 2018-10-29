@@ -187,7 +187,7 @@ bool SendBeaconCommon(LocalFrame* frame,
   ResourceRequest request(url);
   request.SetHTTPMethod(HTTPNames::POST);
   request.SetKeepalive(true);
-  request.SetRequestContext(WebURLRequest::kRequestContextBeacon);
+  request.SetRequestContext(mojom::RequestContextType::BEACON);
   beacon.Serialize(request);
   FetchParameters params(request);
   // The spec says:
@@ -234,7 +234,7 @@ void PingLoader::SendLinkAuditPing(LocalFrame* frame,
   // header.
   request.SetReferrerString(Referrer::NoReferrer());
   request.SetReferrerPolicy(kReferrerPolicyNever);
-  request.SetRequestContext(WebURLRequest::kRequestContextPing);
+  request.SetRequestContext(mojom::RequestContextType::PING);
   FetchParameters params(request);
   params.MutableOptions().initiator_info.name = FetchInitiatorTypeNames::ping;
 
@@ -260,13 +260,12 @@ void PingLoader::SendViolationReport(LocalFrame* frame,
   request.SetHTTPBody(std::move(report));
   request.SetFetchCredentialsMode(
       network::mojom::FetchCredentialsMode::kSameOrigin);
-  request.SetRequestContext(WebURLRequest::kRequestContextCSPReport);
+  request.SetRequestContext(mojom::RequestContextType::CSP_REPORT);
+  request.SetRequestorOrigin(frame->GetDocument()->GetSecurityOrigin());
   request.SetFetchRedirectMode(network::mojom::FetchRedirectMode::kError);
   FetchParameters params(request);
   params.MutableOptions().initiator_info.name =
       FetchInitiatorTypeNames::violationreport;
-  params.MutableOptions().security_origin =
-      frame->GetDocument()->GetSecurityOrigin();
 
   frame->Client()->DidDispatchPingLoader(request.Url());
   RawResource::Fetch(params, frame->GetDocument()->Fetcher(), nullptr);

@@ -38,12 +38,13 @@
 #include "third_party/blink/public/platform/interface_provider.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/core/CoreProbeSink.h"
 #include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
+#include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -58,11 +59,10 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
+#include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
-#include "third_party/blink/renderer/core/frame/feature_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -101,7 +101,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/histogram.h"
-#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/blink_resource_coordinator_base.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/frame_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -273,14 +272,15 @@ bool LocalFrame::IsLocalRoot() const {
 
 void LocalFrame::ScheduleNavigation(Document& origin_document,
                                     const KURL& url,
-                                    bool replace_current_item,
+                                    WebFrameLoadType frame_load_type,
                                     UserGestureStatus user_gesture_status) {
   navigation_scheduler_->ScheduleFrameNavigation(&origin_document, url,
-                                                 replace_current_item);
+                                                 frame_load_type);
 }
 
-void LocalFrame::Navigate(const FrameLoadRequest& request) {
-  loader_.StartNavigation(request);
+void LocalFrame::Navigate(const FrameLoadRequest& request,
+                          WebFrameLoadType frame_load_type) {
+  loader_.StartNavigation(request, frame_load_type);
 }
 
 void LocalFrame::DetachImpl(FrameDetachType type) {
@@ -459,6 +459,9 @@ void LocalFrame::Reload(WebFrameLoadType load_type,
         nullptr,
         loader_.ResourceRequestForReload(load_type, client_redirect_policy));
     request.SetClientRedirect(client_redirect_policy);
+    if (const WebInputEvent* input_event = CurrentInputEvent::Get()) {
+      request.SetInputStartTime(input_event->TimeStamp());
+    }
     loader_.StartNavigation(request, load_type);
   } else {
     DCHECK_EQ(WebFrameLoadType::kReload, load_type);
@@ -505,10 +508,23 @@ void LocalFrame::DidChangeVisibilityState() {
 void LocalFrame::DidFreeze() {
   DCHECK(RuntimeEnabledFeatures::PageLifecycleEnabled());
   if (GetDocument()) {
+    auto* frame_resource_coordinator = GetFrameResourceCoordinator();
+    if (frame_resource_coordinator) {
+      // Determine if there is a beforeunload handler by dispatching a
+      // beforeunload that will *not* launch a user dialog. If
+      // |proceed| is false then there is a non-empty beforeunload
+      // handler indicating potentially unsaved user state.
+      bool unused_did_allow_navigation = false;
+      bool proceed = GetDocument()->DispatchBeforeUnloadEvent(
+          *View()->GetChromeClient(), false /* is_reload */,
+          true /* auto_cancel */, unused_did_allow_navigation);
+      frame_resource_coordinator->SetHasNonEmptyBeforeUnload(!proceed);
+    }
+
     GetDocument()->DispatchFreezeEvent();
     // TODO(fmeawad): Move the following logic to the page once we have a
     // PageResourceCoordinator in Blink. http://crbug.com/838415
-    if (auto* frame_resource_coordinator = GetFrameResourceCoordinator()) {
+    if (frame_resource_coordinator) {
       frame_resource_coordinator->SetLifecycleState(
           resource_coordinator::mojom::LifecycleState::kFrozen);
     }
@@ -558,7 +574,7 @@ void LocalFrame::SetInheritedEffectiveTouchAction(TouchAction touch_action) {
     GetDocument()->documentElement()->SetNeedsStyleRecalc(
         kSubtreeStyleChange,
         StyleChangeReasonForTracing::Create(
-            StyleChangeReason::kInheritedStyleChangeFromParentFrame));
+            style_change_reason::kInheritedStyleChangeFromParentFrame));
   }
 }
 
@@ -645,7 +661,10 @@ void LocalFrame::SetPrinting(bool printing,
     }
   }
 
-  View()->SetSubtreeNeedsForcedPaintPropertyUpdate();
+  if (auto* layout_view = View()->GetLayoutView()) {
+    layout_view->AddSubtreePaintPropertyUpdateReason(
+        SubtreePaintPropertyUpdateReason::kPrinting);
+  }
 
   if (!printing)
     GetDocument()->SetPrinting(Document::kNotPrinting);
@@ -736,7 +755,7 @@ void LocalFrame::SetPageAndTextZoomFactors(float page_zoom_factor,
   document->MediaQueryAffectingValueChanged();
   document->SetNeedsStyleRecalc(
       kSubtreeStyleChange,
-      StyleChangeReasonForTracing::Create(StyleChangeReason::kZoom));
+      StyleChangeReasonForTracing::Create(style_change_reason::kZoom));
   document->UpdateStyleAndLayoutIgnorePendingStylesheets();
 }
 
@@ -744,7 +763,7 @@ void LocalFrame::DeviceScaleFactorChanged() {
   GetDocument()->MediaQueryAffectingValueChanged();
   GetDocument()->SetNeedsStyleRecalc(
       kSubtreeStyleChange,
-      StyleChangeReasonForTracing::Create(StyleChangeReason::kZoom));
+      StyleChangeReasonForTracing::Create(style_change_reason::kZoom));
   for (Frame* child = Tree().FirstChild(); child;
        child = child->Tree().NextSibling()) {
     if (child->IsLocalFrame())
@@ -951,13 +970,17 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
       !GetSecurityContext()->IsSandboxed(kSandboxTopNavigation) &&
       target_frame == Tree().Top()) {
     DEFINE_STATIC_LOCAL(EnumerationHistogram, framebust_histogram,
-                        ("WebCore.Framebust", 4));
+                        ("WebCore.Framebust2", 8));
     const unsigned kUserGestureBit = 0x1;
     const unsigned kAllowedBit = 0x2;
+    const unsigned kAdBit = 0x4;
     unsigned framebust_params = 0;
 
     if (has_user_gesture)
       framebust_params |= kUserGestureBit;
+
+    if (is_ad_subframe_)
+      framebust_params |= kAdBit;
 
     UseCounter::Count(this, WebFeature::kTopNavigationFromSubFrame);
     if (sandboxed) {  // Sandboxed with 'allow-top-navigation'.
@@ -971,17 +994,18 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
     if (is_allowed_navigation)
       framebust_params |= kAllowedBit;
     framebust_histogram.Count(framebust_params);
+
     if (has_user_gesture || is_allowed_navigation ||
         target_frame.GetSecurityContext()->GetSecurityOrigin()->CanAccess(
             SecurityOrigin::Create(destination_url).get())) {
       return true;
     }
 
-    String target_domain = NetworkUtils::GetDomainAndRegistry(
+    String target_domain = network_utils::GetDomainAndRegistry(
         target_frame.GetSecurityContext()->GetSecurityOrigin()->Domain(),
-        NetworkUtils::kIncludePrivateRegistries);
-    String destination_domain = NetworkUtils::GetDomainAndRegistry(
-        destination_url.Host(), NetworkUtils::kIncludePrivateRegistries);
+        network_utils::kIncludePrivateRegistries);
+    String destination_domain = network_utils::GetDomainAndRegistry(
+        destination_url.Host(), network_utils::kIncludePrivateRegistries);
     if (!target_domain.IsEmpty() && !destination_domain.IsEmpty() &&
         target_domain == destination_domain) {
       return true;
@@ -993,10 +1017,14 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
     //
     // TODO(csharrison,japhet): Consider not logging an error message if the
     // user has allowed popups/redirects.
+    bool allow_popups_and_redirects = false;
+    if (auto* settings_client = Client()->GetContentSettingsClient()) {
+      allow_popups_and_redirects =
+          settings_client->AllowPopupsAndRedirects(allow_popups_and_redirects);
+    }
     if (!RuntimeEnabledFeatures::
             FramebustingNeedsSameOriginOrUserGestureEnabled() ||
-        Client()->GetContentSettingsClient().AllowPopupsAndRedirects(
-            false /* default_value */)) {
+        allow_popups_and_redirects) {
       String target_frame_description =
           target_frame.IsLocalFrame() ? "with URL '" +
                                             ToLocalFrame(target_frame)
@@ -1033,7 +1061,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
   // Navigating window.opener cross origin, without user activation. See
   // crbug.com/813643.
   if (Client()->Opener() == target_frame &&
-      !HasTransientUserActivation(this, false /* checkIfMainThread */) &&
+      !HasTransientUserActivation(this, false /* check_if_main_thread */) &&
       !target_frame.GetSecurityContext()->GetSecurityOrigin()->CanAccess(
           SecurityOrigin::Create(destination_url).get())) {
     UseCounter::Count(this, WebFeature::kOpenerNavigationWithoutGesture);
@@ -1114,7 +1142,7 @@ bool LocalFrame::CanNavigateWithoutFramebusting(const Frame& target_frame,
       if (GetSecurityContext()->IsSandboxed(kSandboxTopNavigation) &&
           !GetSecurityContext()->IsSandboxed(
               kSandboxTopNavigationByUserActivation) &&
-          !Frame::HasTransientUserActivation(this)) {
+          !LocalFrame::HasTransientUserActivation(this)) {
         // With only 'allow-top-navigation-by-user-activation' (but not
         // 'allow-top-navigation'), top navigation requires a user gesture.
         reason =
@@ -1196,19 +1224,17 @@ LocalFrameClient* LocalFrame::Client() const {
   return static_cast<LocalFrameClient*>(Frame::Client());
 }
 
-ContentSettingsClient* LocalFrame::GetContentSettingsClient() {
-  return Client() ? &Client()->GetContentSettingsClient() : nullptr;
+WebContentSettingsClient* LocalFrame::GetContentSettingsClient() {
+  return Client() ? Client()->GetContentSettingsClient() : nullptr;
 }
 
 FrameResourceCoordinator* LocalFrame::GetFrameResourceCoordinator() {
-  if (!BlinkResourceCoordinatorBase::IsEnabled())
-    return nullptr;
   if (!frame_resource_coordinator_) {
     auto* local_frame_client = Client();
     if (!local_frame_client)
       return nullptr;
-    frame_resource_coordinator_.reset(FrameResourceCoordinator::Create(
-        local_frame_client->GetInterfaceProvider()));
+    frame_resource_coordinator_ = FrameResourceCoordinator::Create(
+        local_frame_client->GetInterfaceProvider());
   }
   return frame_resource_coordinator_.get();
 }
@@ -1436,27 +1462,70 @@ const mojom::blink::ReportingServiceProxyPtr& LocalFrame::GetReportingService()
   return reporting_service_;
 }
 
-void LocalFrame::ReportFeaturePolicyViolation(
+void LocalFrame::DeprecatedReportFeaturePolicyViolation(
     mojom::FeaturePolicyFeature feature) const {
-  if (!RuntimeEnabledFeatures::FeaturePolicyReportingEnabled())
-    return;
-  const String& feature_name = GetNameForFeature(feature);
-  FeaturePolicyViolationReportBody* body = new FeaturePolicyViolationReportBody(
-      feature_name, "Feature policy violation", SourceLocation::Capture());
-  Report* report =
-      new Report("feature-policy", GetDocument()->Url().GetString(), body);
-  ReportingContext::From(GetDocument())->QueueReport(report);
+  GetSecurityContext()->ReportFeaturePolicyViolation(feature);
+}
 
-  bool is_null;
-  int line_number = body->lineNumber(is_null);
-  line_number = is_null ? 0 : line_number;
-  int column_number = body->columnNumber(is_null);
-  column_number = is_null ? 0 : column_number;
+// static
+std::unique_ptr<UserGestureIndicator> LocalFrame::NotifyUserActivation(
+    LocalFrame* frame,
+    UserGestureToken::Status status) {
+  if (frame)
+    frame->NotifyUserActivation();
+  return std::make_unique<UserGestureIndicator>(status);
+}
 
-  // Send the feature policy violation report to the Reporting API.
-  GetReportingService()->QueueFeaturePolicyViolationReport(
-      GetDocument()->Url(), feature_name, "Feature policy violation",
-      body->sourceFile(), line_number, column_number);
+// static
+std::unique_ptr<UserGestureIndicator> LocalFrame::NotifyUserActivation(
+    LocalFrame* frame,
+    UserGestureToken* token) {
+  DCHECK(!RuntimeEnabledFeatures::UserActivationV2Enabled());
+  if (frame)
+    frame->NotifyUserActivation();
+  return std::make_unique<UserGestureIndicator>(token);
+}
+
+// static
+bool LocalFrame::HasTransientUserActivation(LocalFrame* frame,
+                                            bool check_if_main_thread) {
+  if (RuntimeEnabledFeatures::UserActivationV2Enabled()) {
+    return frame ? frame->HasTransientUserActivation() : false;
+  }
+
+  return check_if_main_thread
+             ? UserGestureIndicator::ProcessingUserGestureThreadSafe()
+             : UserGestureIndicator::ProcessingUserGesture();
+}
+
+// static
+bool LocalFrame::ConsumeTransientUserActivation(
+    LocalFrame* frame,
+    bool check_if_main_thread,
+    UserActivationUpdateSource update_source) {
+  if (RuntimeEnabledFeatures::UserActivationV2Enabled()) {
+    return frame ? frame->ConsumeTransientUserActivation(update_source) : false;
+  }
+
+  return check_if_main_thread
+             ? UserGestureIndicator::ConsumeUserGestureThreadSafe()
+             : UserGestureIndicator::ConsumeUserGesture();
+}
+
+void LocalFrame::NotifyUserActivation() {
+  Client()->NotifyUserActivation();
+  NotifyUserActivationInLocalTree();
+}
+
+bool LocalFrame::HasTransientUserActivation() {
+  return user_activation_state_.IsActive();
+}
+
+bool LocalFrame::ConsumeTransientUserActivation(
+    UserActivationUpdateSource update_source) {
+  if (update_source == UserActivationUpdateSource::kRenderer)
+    Client()->ConsumeUserActivation();
+  return ConsumeTransientUserActivationInLocalTree();
 }
 
 }  // namespace blink

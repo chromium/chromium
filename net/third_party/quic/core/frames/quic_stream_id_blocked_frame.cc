@@ -6,12 +6,16 @@
 
 namespace quic {
 
-QuicStreamIdBlockedFrame::QuicStreamIdBlockedFrame() {}
+QuicStreamIdBlockedFrame::QuicStreamIdBlockedFrame()
+    : QuicInlinedFrame(STREAM_ID_BLOCKED_FRAME),
+      control_frame_id(kInvalidControlFrameId) {}
 
 QuicStreamIdBlockedFrame::QuicStreamIdBlockedFrame(
     QuicControlFrameId control_frame_id,
     QuicStreamId stream_id)
-    : QuicControlFrame(control_frame_id), stream_id(stream_id) {}
+    : QuicInlinedFrame(STREAM_ID_BLOCKED_FRAME),
+      control_frame_id(control_frame_id),
+      stream_id(stream_id) {}
 
 std::ostream& operator<<(std::ostream& os,
                          const QuicStreamIdBlockedFrame& frame) {

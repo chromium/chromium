@@ -38,6 +38,7 @@ static const struct TestOsWithFamily {
     {{"ELCAPITAN", GPUTestConfig::kOsMacElCapitan}, kOsFamilyMac},
     {{"SIERRA", GPUTestConfig::kOsMacSierra}, kOsFamilyMac},
     {{"HIGHSIERRA", GPUTestConfig::kOsMacHighSierra}, kOsFamilyMac},
+    {{"MOJAVE", GPUTestConfig::kOsMacMojave}, kOsFamilyMac},
     {{"LINUX", GPUTestConfig::kOsLinux}, {"LINUX", GPUTestConfig::kOsLinux}},
     {{"CHROMEOS", GPUTestConfig::kOsChromeOS},
      {"CHROMEOS", GPUTestConfig::kOsChromeOS}},

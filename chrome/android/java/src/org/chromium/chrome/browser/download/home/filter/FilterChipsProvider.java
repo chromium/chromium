@@ -126,8 +126,8 @@ public class FilterChipsProvider implements ChipsProvider, OfflineItemFilterObse
             if (chip.enabled) visibleChips.add(chip);
         }
 
-        // Remove the none chip if no other chip is visible.
-        if (visibleChips.size() == 1) {
+        // If there is only one chip type or only NONE chips, remove the entire row of chips.
+        if (visibleChips.size() <= 2) {
             assert visibleChips.get(0).id == FilterType.NONE;
             visibleChips.clear();
         }
@@ -158,12 +158,7 @@ public class FilterChipsProvider implements ChipsProvider, OfflineItemFilterObse
         Set</* @FilterType */ Integer> filters = new HashSet<>();
         filters.add(Filters.FilterType.NONE);
         for (OfflineItem item : mSource.getItems()) {
-            if (item.isSuggested) {
-                // All suggested content is considered prefetched and is not included in the chips.
-                filters.add(FilterType.PREFETCHED);
-            } else {
-                filters.add(Filters.fromOfflineItem(item.filter));
-            }
+            filters.add(Filters.fromOfflineItem(item));
         }
 
         // Set the enabled states correctly for all chips.

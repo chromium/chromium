@@ -38,7 +38,7 @@ class BrowserTestDriverTest(unittest.TestCase):
 
     def test_read_stdin_path(self):
         port = TestPort(MockHost())
-        driver = BrowserTestDriver(port, 0, pixel_tests=True)
+        driver = BrowserTestDriver(port, 0)
         driver._server_process = MockServerProcess(lines=[
             'StdinPath: /foo/bar', '#EOF'])
         content_block = driver._read_block(0)

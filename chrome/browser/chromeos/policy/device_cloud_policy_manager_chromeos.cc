@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/attestation/attestation_policy_observer.h"
 #include "chrome/browser/chromeos/attestation/enrollment_policy_observer.h"
+#include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/chromeos/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
@@ -31,11 +32,11 @@
 #include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
 #include "chrome/browser/chromeos/policy/status_uploader.h"
 #include "chrome/browser/chromeos/policy/system_log_uploader.h"
-#include "chrome/browser/chromeos/settings/install_attributes.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/chromeos_constants.h"
 #include "chromeos/chromeos_paths.h"
 #include "chromeos/chromeos_switches.h"
+#include "chromeos/settings/install_attributes.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
@@ -45,6 +46,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/network_service_instance.h"
 #include "crypto/sha2.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "url/gurl.h"
@@ -109,10 +111,12 @@ DeviceCloudPolicyManagerChromeOS::DeviceCloudPolicyManagerChromeOS(
     std::unique_ptr<DeviceCloudPolicyStoreChromeOS> store,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     ServerBackedStateKeysBroker* state_keys_broker)
-    : CloudPolicyManager(dm_protocol::kChromeDevicePolicyType,
-                         std::string(),
-                         store.get(),
-                         task_runner),
+    : CloudPolicyManager(
+          dm_protocol::kChromeDevicePolicyType,
+          std::string(),
+          store.get(),
+          task_runner,
+          base::BindRepeating(&content::GetNetworkConnectionTracker)),
       device_store_(std::move(store)),
       state_keys_broker_(state_keys_broker),
       task_runner_(task_runner),
@@ -332,6 +336,9 @@ void DeviceCloudPolicyManagerChromeOS::InitializeRequisition() {
   if (chromeos::StartupUtils::IsOobeCompleted())
     return;
 
+  // Demo requisition may have been set in a prior enrollment attempt that was
+  // interrupted.
+  chromeos::DemoSetupController::ClearDemoRequisition(this);
   const PrefService::Preference* pref = local_state_->FindPreference(
       prefs::kDeviceEnrollmentRequisition);
   if (pref->IsDefaultValue()) {
@@ -377,7 +384,8 @@ void DeviceCloudPolicyManagerChromeOS::CreateStatusUploader() {
           DeviceStatusCollector::VolumeInfoFetcher(),
           DeviceStatusCollector::CPUStatisticsFetcher(),
           DeviceStatusCollector::CPUTempFetcher(),
-          DeviceStatusCollector::AndroidStatusFetcher(), kActivityDayStart,
+          DeviceStatusCollector::AndroidStatusFetcher(),
+          DeviceStatusCollector::TpmStatusFetcher(), kActivityDayStart,
           true /* is_enterprise_device */),
       task_runner_, kDeviceStatusUploadFrequency));
 }

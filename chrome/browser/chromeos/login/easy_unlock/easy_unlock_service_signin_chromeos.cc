@@ -346,7 +346,8 @@ void EasyUnlockServiceSignin::ShutdownInternal() {
 bool EasyUnlockServiceSignin::IsAllowedInternal() const {
   return service_active_ && account_id_.is_valid() &&
          !LoginState::Get()->IsUserLoggedIn() &&
-         (pref_manager_ && pref_manager_->IsEasyUnlockAllowed());
+         (pref_manager_ && pref_manager_->IsEasyUnlockAllowed() &&
+          pref_manager_->IsChromeOSLoginAllowed());
 }
 
 bool EasyUnlockServiceSignin::IsEnabled() const {

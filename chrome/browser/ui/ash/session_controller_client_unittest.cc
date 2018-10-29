@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_pref_names.h"
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/chromeos/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
-#include "chrome/browser/chromeos/policy/policy_cert_verifier.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -36,6 +36,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/cert_verifier_with_trust_anchors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using chromeos::FakeChromeUserManager;
@@ -46,9 +47,10 @@ namespace {
 constexpr char kUser[] = "user@test.com";
 constexpr char kUserGaiaId[] = "0123456789";
 
-// Weak ptr to PolicyCertVerifier - object is freed in test destructor once
-// we've ensured the profile has been shut down.
-policy::PolicyCertVerifier* g_policy_cert_verifier_for_factory = nullptr;
+// Weak ptr to network::CertVerifierWithTrustAnchors - object is freed in test
+// destructor once we've ensured the profile has been shut down.
+network::CertVerifierWithTrustAnchors* g_policy_cert_verifier_for_factory =
+    nullptr;
 
 std::unique_ptr<KeyedService> CreateTestPolicyCertService(
     content::BrowserContext* context) {
@@ -199,14 +201,14 @@ class SessionControllerClientTest : public testing::Test {
   void TearDown() override {
     user_manager_enabler_.reset();
     user_manager_ = nullptr;
-    // Clear our cached pointer to the PolicyCertVerifier.
+    // Clear our cached pointer to the network::CertVerifierWithTrustAnchors.
     g_policy_cert_verifier_for_factory = nullptr;
     profile_manager_.reset();
 
-    // We must ensure that the PolicyCertVerifier outlives the
-    // PolicyCertService so shutdown the profile here. Additionally, we need
+    // We must ensure that the network::CertVerifierWithTrustAnchors outlives
+    // the PolicyCertService so shutdown the profile here. Additionally, we need
     // to run the message loop between freeing the PolicyCertService and
-    // freeing the PolicyCertVerifier (see
+    // freeing the network::CertVerifierWithTrustAnchors (see
     // PolicyCertService::OnTrustAnchorsChanged() which is called from
     // PolicyCertService::Shutdown()).
     base::RunLoop().RunUntilIdle();
@@ -259,7 +261,7 @@ class SessionControllerClientTest : public testing::Test {
   }
 
   content::TestBrowserThreadBundle threads_;
-  std::unique_ptr<policy::PolicyCertVerifier> cert_verifier_;
+  std::unique_ptr<network::CertVerifierWithTrustAnchors> cert_verifier_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   session_manager::SessionManager session_manager_;
 
@@ -389,11 +391,12 @@ TEST_F(SessionControllerClientTest,
   user_manager()->LoginUser(account_id);
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClient::GetAddUserSessionPolicy());
-  cert_verifier_.reset(new policy::PolicyCertVerifier(base::Closure()));
+  cert_verifier_.reset(
+      new network::CertVerifierWithTrustAnchors(base::Closure()));
   g_policy_cert_verifier_for_factory = cert_verifier_.get();
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          user_profile, CreateTestPolicyCertService));
+          user_profile, base::BindRepeating(&CreateTestPolicyCertService)));
   policy::PolicyCertService* service =
       policy::PolicyCertServiceFactory::GetForProfile(user_profile);
   ASSERT_TRUE(service);

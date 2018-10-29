@@ -27,6 +27,7 @@ class Connector;
 namespace update_client {
 
 class ActivityDataService;
+class ProtocolHandlerFactory;
 
 // Controls the component updater behavior.
 // TODO(sorin): this class will be split soon in two. One class controls
@@ -149,6 +150,11 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   // Returns the app GUID with which Chrome is registered with Google Update, or
   // an empty string if this brand does not integrate with Google Update.
   virtual std::string GetAppGuid() const = 0;
+
+  // Returns the class factory to create protocol parser and protocol
+  // serializer object instances.
+  virtual std::unique_ptr<ProtocolHandlerFactory> GetProtocolHandlerFactory()
+      const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<Configurator>;

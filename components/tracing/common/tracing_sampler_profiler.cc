@@ -38,8 +38,13 @@ class TracingProfileBuilder
  public:
   void OnSampleCompleted(
       std::vector<base::StackSamplingProfiler::Frame> frames) override {
-    if (frames.empty())
+    if (frames.empty()) {
+      TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
+                           "StackCpuSampling", TRACE_EVENT_SCOPE_THREAD,
+                           "frames", "empty");
+
       return;
+    }
     // Insert an event with the frames rendered as a string with the following
     // formats:
     //   offset - module [debugid]
@@ -137,6 +142,10 @@ void TracingSamplerProfiler::OnTraceLogEnabled() {
   base::StackSamplingProfiler::SamplingParams params;
   params.samples_per_profile = std::numeric_limits<int>::max();
   params.sampling_interval = base::TimeDelta::FromMilliseconds(50);
+  // If the sampled thread is stopped for too long for sampling then it is ok to
+  // get next sample at a later point of time. We do not want very accurate
+  // metrics when looking at traces.
+  params.keep_consistent_sampling_interval = false;
 
   // Create and start the stack sampling profiler.
 #if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \

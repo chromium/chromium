@@ -22,8 +22,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/escape.h"
-#include "net/url_request/test_url_fetcher_factory.h"
-#include "net/url_request/url_request_test_util.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ListValue;
@@ -42,11 +42,12 @@ class ContextualSearchDelegateTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    request_context_ =
-        new net::TestURLRequestContextGetter(io_message_loop_.task_runner());
+    test_shared_url_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
     template_url_service_.reset(CreateTemplateURLService());
     delegate_.reset(new ContextualSearchDelegate(
-        request_context_.get(), template_url_service_.get(),
+        test_shared_url_loader_factory_, template_url_service_.get(),
         base::Bind(
             &ContextualSearchDelegateTest::recordSearchTermResolutionResponse,
             base::Unretained(this)),
@@ -56,7 +57,6 @@ class ContextualSearchDelegateTest : public testing::Test {
   }
 
   void TearDown() override {
-    fetcher_ = NULL;
     is_invalid_ = true;
     response_code_ = -1;
     search_term_ = "invalid";
@@ -96,10 +96,7 @@ class ContextualSearchDelegateTest : public testing::Test {
     test_context_->SetSelectionSurroundings(start_offset, end_offset,
                                             surrounding_text);
     delegate_->ResolveSearchTermFromContext();
-    fetcher_ = test_factory_.GetFetcherByID(
-        ContextualSearchDelegate::kContextualSearchURLFetcherID);
-    ASSERT_TRUE(fetcher_);
-    ASSERT_TRUE(fetcher());
+    ASSERT_TRUE(test_url_loader_factory_.GetPendingRequest(0));
   }
 
   // Allows using the vertical bar "|" as a quote character, which makes
@@ -113,11 +110,9 @@ class ContextualSearchDelegateTest : public testing::Test {
   void CreateDefaultSearchWithAdditionalJsonData(
       const std::string additional_json_data) {
     CreateDefaultSearchContextAndRequestSearchTerm();
-    fetcher()->set_response_code(200);
     std::string response =
         escapeBarQuoted("{|search_term|:|obama|" + additional_json_data + "}");
-    fetcher()->SetResponseString(response);
-    fetcher()->delegate()->OnURLFetchComplete(fetcher());
+    SimulateResponseReturned(response);
 
     EXPECT_FALSE(is_invalid());
     EXPECT_EQ(200, response_code());
@@ -144,30 +139,29 @@ class ContextualSearchDelegateTest : public testing::Test {
     delegate_->OnTextSurroundingSelectionAvailable(base::string16(), 1, 2);
   }
 
-  // Call the OnURLFetchComplete to simulate the end of a Resolve request.
-  // Cannot be in an actual test because OnTextSurroundingSelectionAvailable
-  // is private.
-  void CallOnURLFetchComplete() {
-    delegate_->OnURLFetchComplete(delegate_->search_term_fetcher_.get());
-  }
-
   void CallResolveSearchTermFromContext() {
     delegate_->ResolveSearchTermFromContext();
   }
 
-  void SetResponseStringAndFetch(const std::string& selected_text,
-                                 const std::string& mentions_start,
-                                 const std::string& mentions_end) {
-    fetcher()->set_response_code(200);
-      fetcher()->SetResponseString(
-          ")]}'\n"
-          "{\"mid\":\"/m/02mjmr\", \"search_term\":\"obama\","
-          "\"info_text\":\"44th U.S. President\","
-          "\"display_text\":\"Barack Obama\","
-          "\"mentions\":[" + mentions_start + ","+ mentions_end + "],"
-          "\"selected_text\":\"" + selected_text + "\","
-          "\"resolved_term\":\"barack obama\"}");
-      fetcher()->delegate()->OnURLFetchComplete(fetcher());
+  void SetResponseStringAndSimulateResponse(const std::string& selected_text,
+                                            const std::string& mentions_start,
+                                            const std::string& mentions_end) {
+    std::string response = std::string(
+        ")]}'\n"
+        "{\"mid\":\"/m/02mjmr\", \"search_term\":\"obama\","
+        "\"info_text\":\"44th U.S. President\","
+        "\"display_text\":\"Barack Obama\","
+        "\"mentions\":[" + mentions_start + "," + mentions_end + "],"
+        "\"selected_text\":\"" + selected_text + "\","
+        "\"resolved_term\":\"barack obama\"}");
+    SimulateResponseReturned(response);
+  }
+
+  void SimulateResponseReturned(const std::string& response) {
+    auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        pending_request->request.url.spec(), response);
+    base::RunLoop().RunUntilIdle();
   }
 
   void SetSurroundingContext(const base::string16& surrounding_text,
@@ -184,13 +178,13 @@ class ContextualSearchDelegateTest : public testing::Test {
   // Gets the Client Discourse Context proto from the request header.
   discourse_context::ClientDiscourseContext GetDiscourseContextFromRequest() {
     discourse_context::ClientDiscourseContext cdc;
-    // Make sure we can get the actual raw headers from the fake fetcher.
-    net::HttpRequestHeaders fetch_headers;
-    fetcher()->GetExtraRequestHeaders(&fetch_headers);
-    if (fetch_headers.HasHeader(kDiscourseContextHeaderName)) {
+    // Make sure we can get the actual raw headers from the url loader.
+    auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+    net::HttpRequestHeaders request_headers = pending_request->request.headers;
+    if (request_headers.HasHeader(kDiscourseContextHeaderName)) {
       std::string actual_header_value;
-      fetch_headers.GetHeader(kDiscourseContextHeaderName,
-                              &actual_header_value);
+      request_headers.GetHeader(kDiscourseContextHeaderName,
+                                &actual_header_value);
 
       // Unescape, since the server memoizer expects a web-safe encoding.
       std::string unescaped_header = actual_header_value;
@@ -218,7 +212,6 @@ class ContextualSearchDelegateTest : public testing::Test {
     return result;
   }
 
-  net::TestURLFetcher* fetcher() { return fetcher_; }
   bool is_invalid() { return is_invalid_; }
   int response_code() { return response_code_; }
   std::string search_term() { return search_term_; }
@@ -234,6 +227,8 @@ class ContextualSearchDelegateTest : public testing::Test {
 
   // The delegate under test.
   std::unique_ptr<ContextualSearchDelegate> delegate_;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
   void recordSearchTermResolutionResponse(
@@ -273,10 +268,9 @@ class ContextualSearchDelegateTest : public testing::Test {
   std::string context_language_;
 
   base::MessageLoopForIO io_message_loop_;
-  net::TestURLFetcherFactory test_factory_;
-  net::TestURLFetcher* fetcher_;
   std::unique_ptr<TemplateURLService> template_url_service_;
-  scoped_refptr<net::TestURLRequestContextGetter> request_context_;
+  scoped_refptr<network::SharedURLLoaderFactory>
+      test_shared_url_loader_factory_;
 
   // Will be owned by the delegate.
   ContextualSearchContext* test_context_;
@@ -286,14 +280,13 @@ class ContextualSearchDelegateTest : public testing::Test {
 
 TEST_F(ContextualSearchDelegateTest, NormalFetchWithXssiEscape) {
   CreateDefaultSearchContextAndRequestSearchTerm();
-  fetcher()->set_response_code(200);
-  fetcher()->SetResponseString(
+  std::string response(
       ")]}'\n"
       "{\"mid\":\"/m/02mjmr\", \"search_term\":\"obama\","
       "\"info_text\":\"44th U.S. President\","
       "\"display_text\":\"Barack Obama\", \"mentions\":[0,15],"
       "\"selected_text\":\"obama\", \"resolved_term\":\"barack obama\"}");
-  fetcher()->delegate()->OnURLFetchComplete(fetcher());
+  SimulateResponseReturned(response);
 
   EXPECT_FALSE(is_invalid());
   EXPECT_EQ(200, response_code());
@@ -305,13 +298,12 @@ TEST_F(ContextualSearchDelegateTest, NormalFetchWithXssiEscape) {
 
 TEST_F(ContextualSearchDelegateTest, NormalFetchWithoutXssiEscape) {
   CreateDefaultSearchContextAndRequestSearchTerm();
-  fetcher()->set_response_code(200);
-  fetcher()->SetResponseString(
+  std::string response(
       "{\"mid\":\"/m/02mjmr\", \"search_term\":\"obama\","
       "\"info_text\":\"44th U.S. President\","
       "\"display_text\":\"Barack Obama\", \"mentions\":[0,15],"
       "\"selected_text\":\"obama\", \"resolved_term\":\"barack obama\"}");
-  fetcher()->delegate()->OnURLFetchComplete(fetcher());
+  SimulateResponseReturned(response);
 
   EXPECT_FALSE(is_invalid());
   EXPECT_EQ(200, response_code());
@@ -323,11 +315,10 @@ TEST_F(ContextualSearchDelegateTest, NormalFetchWithoutXssiEscape) {
 
 TEST_F(ContextualSearchDelegateTest, ResponseWithNoDisplayText) {
   CreateDefaultSearchContextAndRequestSearchTerm();
-  fetcher()->set_response_code(200);
-  fetcher()->SetResponseString(
+  std::string response(
       "{\"mid\":\"/m/02mjmr\",\"search_term\":\"obama\","
       "\"mentions\":[0,15]}");
-  fetcher()->delegate()->OnURLFetchComplete(fetcher());
+  SimulateResponseReturned(response);
 
   EXPECT_FALSE(is_invalid());
   EXPECT_EQ(200, response_code());
@@ -339,11 +330,10 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithNoDisplayText) {
 
 TEST_F(ContextualSearchDelegateTest, ResponseWithPreventPreload) {
   CreateDefaultSearchContextAndRequestSearchTerm();
-  fetcher()->set_response_code(200);
-  fetcher()->SetResponseString(
+  std::string response(
       "{\"mid\":\"/m/02mjmr\",\"search_term\":\"obama\","
       "\"mentions\":[0,15],\"prevent_preload\":\"1\"}");
-  fetcher()->delegate()->OnURLFetchComplete(fetcher());
+  SimulateResponseReturned(response);
 
   EXPECT_FALSE(is_invalid());
   EXPECT_EQ(200, response_code());
@@ -355,9 +345,8 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithPreventPreload) {
 
 TEST_F(ContextualSearchDelegateTest, NonJsonResponse) {
   CreateDefaultSearchContextAndRequestSearchTerm();
-  fetcher()->set_response_code(200);
-  fetcher()->SetResponseString("Non-JSON Response");
-  fetcher()->delegate()->OnURLFetchComplete(fetcher());
+  std::string response("Non-JSON Response");
+  SimulateResponseReturned(response);
 
   EXPECT_FALSE(is_invalid());
   EXPECT_EQ(200, response_code());
@@ -369,8 +358,11 @@ TEST_F(ContextualSearchDelegateTest, NonJsonResponse) {
 
 TEST_F(ContextualSearchDelegateTest, InvalidResponse) {
   CreateDefaultSearchContextAndRequestSearchTerm();
-  fetcher()->set_response_code(net::URLFetcher::RESPONSE_CODE_INVALID);
-  fetcher()->delegate()->OnURLFetchComplete(fetcher());
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url, network::URLLoaderCompletionStatus(net::OK),
+      network::ResourceResponseHead(), std::string());
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(do_prevent_preload());
   EXPECT_TRUE(is_invalid());
@@ -380,7 +372,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionToEnd) {
   base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Barack";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 6);
-  SetResponseStringAndFetch(selected_text, "0", "12");
+  SetResponseStringAndSimulateResponse(selected_text, "0", "12");
 
   EXPECT_EQ(0, start_adjust());
   EXPECT_EQ(6, end_adjust());
@@ -390,7 +382,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionToStart) {
   base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Obama";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 7, 12);
-  SetResponseStringAndFetch(selected_text, "0", "12");
+  SetResponseStringAndSimulateResponse(selected_text, "0", "12");
 
   EXPECT_EQ(-7, start_adjust());
   EXPECT_EQ(0, end_adjust());
@@ -400,7 +392,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionBothDirections) {
   base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 7, 9);
-  SetResponseStringAndFetch(selected_text, "0", "12");
+  SetResponseStringAndSimulateResponse(selected_text, "0", "12");
 
   EXPECT_EQ(-7, start_adjust());
   EXPECT_EQ(3, end_adjust());
@@ -410,7 +402,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidRange) {
   base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 7, 9);
-  SetResponseStringAndFetch(selected_text, "0", "200");
+  SetResponseStringAndSimulateResponse(selected_text, "0", "200");
 
   EXPECT_EQ(0, start_adjust());
   EXPECT_EQ(0, end_adjust());
@@ -421,7 +413,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantStart) {
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding,
                                           0xffffffff, 0xffffffff - 2);
-  SetResponseStringAndFetch(selected_text, "0", "12");
+  SetResponseStringAndSimulateResponse(selected_text, "0", "12");
 
   EXPECT_EQ(0, start_adjust());
   EXPECT_EQ(0, end_adjust());
@@ -431,7 +423,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidNoOverlap) {
   base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 12);
-  SetResponseStringAndFetch(selected_text, "12", "14");
+  SetResponseStringAndSimulateResponse(selected_text, "12", "14");
 
   EXPECT_EQ(0, start_adjust());
   EXPECT_EQ(0, end_adjust());
@@ -442,7 +434,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantEndAndRange) {
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding,
                                           0xffffffff, 0xffffffff - 2);
-  SetResponseStringAndFetch(selected_text, "0", "268435455");
+  SetResponseStringAndSimulateResponse(selected_text, "0", "268435455");
 
   EXPECT_EQ(0, start_adjust());
   EXPECT_EQ(0, end_adjust());
@@ -453,7 +445,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionLargeNumbers) {
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding,
                                           268435450, 268435455);
-  SetResponseStringAndFetch(selected_text, "268435440", "268435455");
+  SetResponseStringAndSimulateResponse(selected_text, "268435440", "268435455");
 
   EXPECT_EQ(-10, start_adjust());
   EXPECT_EQ(0, end_adjust());
@@ -463,7 +455,7 @@ TEST_F(ContextualSearchDelegateTest, ContractSelectionValid) {
   base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Barack Obama just";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 17);
-  SetResponseStringAndFetch(selected_text, "0", "12");
+  SetResponseStringAndSimulateResponse(selected_text, "0", "12");
 
   EXPECT_EQ(0, start_adjust());
   EXPECT_EQ(-5, end_adjust());
@@ -473,7 +465,7 @@ TEST_F(ContextualSearchDelegateTest, ContractSelectionInvalid) {
   base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Barack Obama just";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 17);
-  SetResponseStringAndFetch(selected_text, "5", "5");
+  SetResponseStringAndSimulateResponse(selected_text, "5", "5");
 
   EXPECT_EQ(0, start_adjust());
   EXPECT_EQ(0, end_adjust());
@@ -548,11 +540,14 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   std::string caption;
   std::string quick_action_uri;
   QuickActionCategory quick_action_category = QUICK_ACTION_CATEGORY_NONE;
+  long long doc_id = 0;
+  long long snippet_hash = 0;
 
   delegate_->DecodeSearchTermFromJsonResponse(
-      json_with_escape, &search_term, &display_text, &alternate_term,
-      &mid, &prevent_preload, &mention_start, &mention_end, &context_language,
-      &thumbnail_url, &caption, &quick_action_uri, &quick_action_category);
+      json_with_escape, &search_term, &display_text, &alternate_term, &mid,
+      &prevent_preload, &mention_start, &mention_end, &context_language,
+      &thumbnail_url, &caption, &quick_action_uri, &quick_action_category,
+      &doc_id, &snippet_hash);
 
   EXPECT_EQ("obama", search_term);
   EXPECT_EQ("Barack Obama", display_text);
@@ -564,16 +559,17 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   EXPECT_EQ("", caption);
   EXPECT_EQ("", quick_action_uri);
   EXPECT_EQ(QUICK_ACTION_CATEGORY_NONE, quick_action_category);
+  EXPECT_EQ(0ll, doc_id);
+  EXPECT_EQ(0ll, snippet_hash);
 }
 
 TEST_F(ContextualSearchDelegateTest, ResponseWithLanguage) {
   CreateDefaultSearchContextAndRequestSearchTerm();
-  fetcher()->set_response_code(200);
-  fetcher()->SetResponseString(
+  std::string response(
       "{\"mid\":\"/m/02mjmr\",\"search_term\":\"obama\","
       "\"mentions\":[0,15],\"prevent_preload\":\"1\", "
       "\"lang\":\"de\"}");
-  fetcher()->delegate()->OnURLFetchComplete(fetcher());
+  SimulateResponseReturned(response);
 
   EXPECT_FALSE(is_invalid());
   EXPECT_EQ(200, response_code());
@@ -612,11 +608,16 @@ TEST_F(ContextualSearchDelegateTest, ContextualCardsResponseWithThumbnail) {
 }
 
 // Test that we can destroy the context while resolving without a crash.
-TEST_F(ContextualSearchDelegateTest, DestroyContextDuringResolve) {
+// Test is flaky: https://crbug.com/890427
+TEST_F(ContextualSearchDelegateTest, DISABLED_DestroyContextDuringResolve) {
   CreateTestContext();
   CallResolveSearchTermFromContext();
   DestroyTestContext();
-  CallOnURLFetchComplete();
+
+  std::string response("Any response as it does not matter here.");
+  SimulateResponseReturned(response);
+
+  EXPECT_TRUE(is_invalid());
 }
 
 // Test that we can destroy the context while gathering surrounding text.

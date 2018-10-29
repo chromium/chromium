@@ -1,2 +1,2 @@
-Tests that we don't crash due to incorrect load event firing during cloneNode. 
+Tests that we don't crash due to incorrect load event firing during cloneNode.
 PASS. WebKit didn't crash.

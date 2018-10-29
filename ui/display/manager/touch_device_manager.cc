@@ -715,8 +715,10 @@ std::ostream& operator<<(std::ostream& os,
 bool HasExternalTouchscreenDevice() {
   for (const auto& device :
        ui::InputDeviceManager::GetInstance()->GetTouchscreenDevices()) {
-    if (device.type == ui::InputDeviceType::INPUT_DEVICE_EXTERNAL)
+    if (device.type == ui::InputDeviceType::INPUT_DEVICE_USB ||
+        device.type == ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH) {
       return true;
+    }
   }
   return false;
 }

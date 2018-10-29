@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.asynctask.ShadowAsyncTask;
+import org.chromium.base.task.test.ShadowAsyncTask;
 import org.chromium.chromecast.base.Controller;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 

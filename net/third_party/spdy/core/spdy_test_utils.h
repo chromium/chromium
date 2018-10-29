@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "net/test/gtest_util.h"
+#include "net/third_party/http2/tools/failure.h"
 #include "net/third_party/spdy/core/spdy_bug_tracker.h"
 #include "net/third_party/spdy/core/spdy_header_block.h"
 #include "net/third_party/spdy/core/spdy_headers_handler_interface.h"

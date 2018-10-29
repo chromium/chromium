@@ -45,23 +45,6 @@ ChromiumBrandedImageProvider::GetSigninConfirmationPersonalizeServicesImage() {
   return rb.GetNativeImageNamed(IDR_IOS_SETTINGS_INFO_24).ToUIImage();
 }
 
-NSArray<UIImage*>*
-ChromiumBrandedImageProvider::GetToolbarVoiceSearchButtonImages(
-    bool incognito) {
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  if (incognito) {
-    return @[
-      rb.GetNativeImageNamed(IDR_IOS_TOOLBAR_DARK_VOICE).ToUIImage(),
-      rb.GetNativeImageNamed(IDR_IOS_TOOLBAR_DARK_VOICE_PRESSED).ToUIImage()
-    ];
-  }
-
-  return @[
-    rb.GetNativeImageNamed(IDR_IOS_TOOLBAR_LIGHT_VOICE).ToUIImage(),
-    rb.GetNativeImageNamed(IDR_IOS_TOOLBAR_LIGHT_VOICE_PRESSED).ToUIImage()
-  ];
-}
-
 UIImage* ChromiumBrandedImageProvider::GetWhatsNewIconImage(WhatsNewIcon type) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   return rb.GetNativeImageNamed(IDR_IOS_PROMO_INFO).ToUIImage();

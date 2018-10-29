@@ -30,9 +30,10 @@ class CORE_EXPORT PointerEventFactory {
   PointerEventFactory();
   ~PointerEventFactory();
 
-  PointerEvent* Create(const WebPointerEvent&,
-                       const Vector<WebPointerEvent>&,
-                       LocalDOMWindow*);
+  PointerEvent* Create(const WebPointerEvent& web_pointer_event,
+                       const Vector<WebPointerEvent>& coalesced_events,
+                       const Vector<WebPointerEvent>& predicted_events,
+                       LocalDOMWindow* view);
 
   PointerEvent* CreatePointerCancelEvent(
       const int pointer_id,

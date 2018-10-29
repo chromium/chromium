@@ -37,7 +37,6 @@
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_clients_info.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_stream_handle.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
@@ -48,9 +47,10 @@ namespace blink {
 
 struct WebPaymentHandlerResponse;
 class ExecutionContext;
+class KURL;
+class ScriptPromiseResolver;
 class WebServiceWorkerContextClient;
 class WebServiceWorkerResponse;
-class KURL;
 class WorkerClients;
 
 // See WebServiceWorkerContextClient for documentation for the methods in this
@@ -67,6 +67,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScopeClient final
   using GetClientCallback = mojom::blink::ServiceWorkerHost::GetClientCallback;
   using GetClientsCallback =
       mojom::blink::ServiceWorkerHost::GetClientsCallback;
+  using FocusCallback = mojom::blink::ServiceWorkerHost::FocusClientCallback;
 
   static const char kSupplementName[];
 
@@ -76,21 +77,15 @@ class MODULES_EXPORT ServiceWorkerGlobalScopeClient final
   void GetClient(const String&, GetClientCallback);
   void GetClients(mojom::blink::ServiceWorkerClientQueryOptionsPtr,
                   GetClientsCallback);
-  void OpenWindowForClients(const KURL&,
-                            std::unique_ptr<WebServiceWorkerClientCallbacks>);
-  void OpenWindowForPaymentHandler(
-      const KURL&,
-      std::unique_ptr<WebServiceWorkerClientCallbacks>);
+  void OpenWindowForClients(const KURL&, ScriptPromiseResolver*);
+  void OpenWindowForPaymentHandler(const KURL&, ScriptPromiseResolver*);
   void SetCachedMetadata(const KURL&, const char*, size_t);
   void ClearCachedMetadata(const KURL&);
   void PostMessageToClient(const String& client_uuid, BlinkTransferableMessage);
   void SkipWaiting(SkipWaitingCallback);
   void Claim(ClaimCallback);
-  void Focus(const String& client_uuid,
-             std::unique_ptr<WebServiceWorkerClientCallbacks>);
-  void Navigate(const String& client_uuid,
-                const KURL&,
-                std::unique_ptr<WebServiceWorkerClientCallbacks>);
+  void Focus(const String& client_uuid, FocusCallback);
+  void Navigate(const String& client_uuid, const KURL&, ScriptPromiseResolver*);
 
   void DidHandleActivateEvent(int event_id,
                               mojom::ServiceWorkerEventStatus,
@@ -114,16 +109,20 @@ class MODULES_EXPORT ServiceWorkerGlobalScopeClient final
   void DidHandleExtendableMessageEvent(int event_id,
                                        mojom::ServiceWorkerEventStatus,
                                        base::TimeTicks event_dispatch_time);
-  void RespondToFetchEventWithNoResponse(int fetch_event_id,
-                                         base::TimeTicks event_dispatch_time);
+  void RespondToFetchEventWithNoResponse(
+      int fetch_event_id,
+      base::TimeTicks event_dispatch_time,
+      base::TimeTicks respond_with_settled_time);
   void RespondToFetchEvent(int fetch_event_id,
                            const WebServiceWorkerResponse&,
-                           base::TimeTicks event_dispatch_time);
+                           base::TimeTicks event_dispatch_time,
+                           base::TimeTicks respond_with_settled_time);
   void RespondToFetchEventWithResponseStream(
       int fetch_event_id,
       const WebServiceWorkerResponse&,
       WebServiceWorkerStreamHandle*,
-      base::TimeTicks event_dispatch_time);
+      base::TimeTicks event_dispatch_time,
+      base::TimeTicks respond_with_settled_time);
   void RespondToAbortPaymentEvent(int event_id,
                                   bool abort_payment,
                                   base::TimeTicks event_dispatch_time);

@@ -132,4 +132,33 @@ TEST_F(LayoutSVGRootTest,
   EXPECT_FALSE(root.PaintedOutputOfObjectHasNoEffectRegardlessOfSize());
 }
 
+TEST_F(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0 }</style>
+    <svg id='svg' style='width: 300px; height: 300px; position: relative;
+        top: 200px; left: 200px;'>
+    </svg>
+  )HTML");
+
+  const auto& svg = *GetDocument().getElementById("svg");
+  const auto& body = *GetDocument().body();
+
+  // This is the center of the rect-based hit test below.
+  EXPECT_EQ(body, *HitTest(150, 150));
+
+  EXPECT_EQ(svg, *HitTest(200, 200));
+
+  // The center of this rect does not overlap the SVG element, but the
+  // rect itself does.
+  auto results = RectBasedHitTest(LayoutRect(0, 0, 300, 300));
+  int count = 0;
+  EXPECT_EQ(2u, results.size());
+  for (auto result : results) {
+    Node* node = result.Get();
+    if (node == svg || node == body)
+      count++;
+  }
+  EXPECT_EQ(2, count);
+}
+
 }  // namespace blink

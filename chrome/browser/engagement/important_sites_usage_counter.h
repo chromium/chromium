@@ -56,10 +56,9 @@ class ImportantSitesUsageCounter {
 
   void GetQuotaUsageOnIOThread();
 
-  void ReceiveQuotaUsageOnIOThread(
-      const std::vector<storage::UsageInfo>& usage_infos);
+  void ReceiveQuotaUsageOnIOThread(std::vector<storage::UsageInfo> usage_infos);
 
-  void ReceiveQuotaUsage(const std::vector<storage::UsageInfo>& usage_infos);
+  void ReceiveQuotaUsage(std::vector<storage::UsageInfo> usage_infos);
 
   void ReceiveLocalStorageUsage(
       const std::vector<content::LocalStorageUsageInfo>& storage_infos);

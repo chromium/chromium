@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 
 #include <string.h>
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace WTF {
@@ -51,14 +52,14 @@ const char* NumberToString(double d, NumberToStringBuffer buffer) {
 static inline const char* FormatStringTruncatingTrailingZerosIfNeeded(
     NumberToStringBuffer buffer,
     double_conversion::StringBuilder& builder) {
-  size_t length = builder.GetPosition();
+  int length = builder.GetPosition();
 
   // If there is an exponent, stripping trailing zeros would be incorrect.
   // FIXME: Zeros should be stripped before the 'e'.
   if (memchr(buffer, 'e', length))
     return builder.Finalize();
 
-  size_t decimal_point_position = 0;
+  int decimal_point_position = 0;
   for (; decimal_point_position < length; ++decimal_point_position) {
     if (buffer[decimal_point_position] == '.')
       break;
@@ -67,7 +68,7 @@ static inline const char* FormatStringTruncatingTrailingZerosIfNeeded(
   if (decimal_point_position == length)
     return builder.Finalize();
 
-  size_t truncated_length = length - 1;
+  int truncated_length = length - 1;
   for (; truncated_length > decimal_point_position; --truncated_length) {
     if (buffer[truncated_length] != '0')
       break;
@@ -79,7 +80,7 @@ static inline const char* FormatStringTruncatingTrailingZerosIfNeeded(
 
   // If we removed all trailing zeros, remove the decimal point as well.
   if (truncated_length == decimal_point_position) {
-    DCHECK_GT(truncated_length, 0u);
+    DCHECK_GT(truncated_length, 0);
     --truncated_length;
   }
 
@@ -135,8 +136,9 @@ namespace Internal {
 double ParseDoubleFromLongString(const UChar* string,
                                  size_t length,
                                  size_t& parsed_length) {
-  Vector<LChar> conversion_buffer(length);
-  for (size_t i = 0; i < length; ++i)
+  wtf_size_t conversion_length = SafeCast<wtf_size_t>(length);
+  Vector<LChar> conversion_buffer(conversion_length);
+  for (wtf_size_t i = 0; i < conversion_length; ++i)
     conversion_buffer[i] = IsASCII(string[i]) ? string[i] : 0;
   return ParseDouble(conversion_buffer.data(), length, parsed_length);
 }

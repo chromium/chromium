@@ -138,7 +138,7 @@ class AppSearchProviderTest : public AppListTestBase {
                     const std::string& name,
                     extensions::Manifest::Location location,
                     int extra_flags) {
-    scoped_refptr<extensions::Extension> extension =
+    scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder()
             .SetManifest(
                 extensions::DictionaryBuilder()
@@ -336,7 +336,7 @@ TEST_F(AppSearchProviderTest, FetchUnlaunchedRecommendations) {
 TEST_F(AppSearchProviderTest, FetchRecommendationsFromRanker) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      {features::kEnableAppSearchResultRanker}, {});
+      {app_list_features::kEnableAppSearchResultRanker}, {});
   CreateSearch();
 
   extensions::ExtensionPrefs* prefs =
@@ -358,7 +358,7 @@ TEST_F(AppSearchProviderTest, FetchRecommendationsFromRanker) {
 TEST_F(AppSearchProviderTest, RankerIsDisabledWithFlag) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      {}, {features::kEnableAppSearchResultRanker});
+      {}, {app_list_features::kEnableAppSearchResultRanker});
   CreateSearch();
 
   extensions::ExtensionPrefs* prefs =

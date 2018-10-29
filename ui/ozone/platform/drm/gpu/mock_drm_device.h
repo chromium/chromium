@@ -61,7 +61,6 @@ class MockDrmDevice : public DrmDevice {
     return remove_framebuffer_call_count_;
   }
   int get_page_flip_call_count() const { return page_flip_call_count_; }
-  int get_overlay_flip_call_count() const { return overlay_flip_call_count_; }
   int get_overlay_clear_call_count() const { return overlay_clear_call_count_; }
   int get_commit_count() const { return commit_count_; }
   int get_set_object_property_count() const {
@@ -131,11 +130,6 @@ class MockDrmDevice : public DrmDevice {
   bool PageFlip(uint32_t crtc_id,
                 uint32_t framebuffer,
                 scoped_refptr<PageFlipRequest> page_flip_request) override;
-  bool PageFlipOverlay(uint32_t crtc_id,
-                       uint32_t framebuffer,
-                       const gfx::Rect& location,
-                       const gfx::Rect& source,
-                       int overlay_plane) override;
   ScopedDrmPlanePtr GetPlane(uint32_t plane_id) override;
   ScopedDrmPropertyPtr GetProperty(drmModeConnector* connector,
                                    const char* name) override;
@@ -172,6 +166,7 @@ class MockDrmDevice : public DrmDevice {
       uint32_t crtc_id,
       const std::vector<display::GammaRampRGBEntry>& lut) override;
   bool SetCapability(uint64_t capability, uint64_t value) override;
+  uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
  private:
   ~MockDrmDevice() override;
@@ -190,7 +185,6 @@ class MockDrmDevice : public DrmDevice {
   int add_framebuffer_call_count_;
   int remove_framebuffer_call_count_;
   int page_flip_call_count_;
-  int overlay_flip_call_count_;
   int overlay_clear_call_count_;
   int allocate_buffer_count_;
   int commit_count_ = 0;
@@ -211,6 +205,9 @@ class MockDrmDevice : public DrmDevice {
   std::map<uint32_t, uint32_t> crtc_cursor_map_;
 
   std::map<uint32_t, ScopedDrmPropertyBlobPtr> blob_property_map_;
+
+  std::set<uint32_t> framebuffer_ids_;
+  std::map<uint32_t, uint32_t> crtc_fb_;
 
   base::queue<PageFlipCallback> callbacks_;
 

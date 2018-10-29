@@ -336,6 +336,7 @@ ap.it, 0
 ap.leg.br, 4
 aparecida.br, 0
 apartments, 0
+apigee.io, 4
 app, 0
 app.lmpm.com, 4
 app.os.fedoraproject.org, 4
@@ -822,7 +823,7 @@ bmd.br, 0
 bmoattachments.org, 4
 bms, 0
 bmw, 0
-bn, 2
+bn, 0
 bn.it, 0
 bnl, 0
 bnpparibas, 0
@@ -1248,6 +1249,7 @@ cloudns.org, 4
 cloudns.pro, 4
 cloudns.pw, 4
 cloudns.us, 4
+cloudycluster.net, 4
 club, 0
 club.aero, 0
 club.tw, 0
@@ -1255,11 +1257,13 @@ clubmed, 0
 cm, 0
 cn, 0
 cn-north-1.eb.amazonaws.com.cn, 4
+cn-northwest-1.eb.amazonaws.com.cn, 4
 cn.com, 4
 cn.eu.org, 4
 cn.it, 0
 cn.ua, 0
 cng.br, 0
+cnpy.gdn, 4
 cns.joyent.com, 6
 cnt.br, 0
 co, 0
@@ -1361,6 +1365,7 @@ com.bb, 0
 com.bh, 0
 com.bi, 0
 com.bm, 0
+com.bn, 0
 com.bo, 0
 com.br, 0
 com.bs, 0
@@ -1392,6 +1397,7 @@ com.gn, 0
 com.gp, 0
 com.gr, 0
 com.gt, 0
+com.gu, 0
 com.gy, 0
 com.hk, 0
 com.hn, 0
@@ -1406,6 +1412,7 @@ com.kg, 0
 com.ki, 0
 com.km, 0
 com.kp, 0
+com.kw, 0
 com.ky, 0
 com.kz, 0
 com.la, 0
@@ -1873,6 +1880,7 @@ edu.bb, 0
 edu.bh, 0
 edu.bi, 0
 edu.bm, 0
+edu.bn, 0
 edu.bo, 0
 edu.br, 0
 edu.bs, 0
@@ -1900,6 +1908,7 @@ edu.gn, 0
 edu.gp, 0
 edu.gr, 0
 edu.gt, 0
+edu.gu, 0
 edu.gy, 0
 edu.hk, 0
 edu.hn, 0
@@ -1915,6 +1924,7 @@ edu.km, 0
 edu.kn, 0
 edu.kp, 0
 edu.krd, 4
+edu.kw, 0
 edu.ky, 0
 edu.kz, 0
 edu.la, 0
@@ -2010,6 +2020,7 @@ elk.pl, 0
 elvendrell.museum, 0
 elverum.no, 0
 email, 0
+emb.kw, 0
 embaixada.st, 0
 embetsu.hokkaido.jp, 0
 embroidery.museum, 0
@@ -2297,6 +2308,7 @@ freeboxos.com, 4
 freeboxos.fr, 4
 freeddns.org, 4
 freeddns.us, 4
+freedesktop.org, 4
 freemasonry.museum, 0
 freesite.host, 4
 freetls.fastly.net, 4
@@ -2614,7 +2626,6 @@ golffan.us, 4
 gon.pk, 0
 gonohe.aomori.jp, 0
 goo, 0
-goodhands, 0
 goodyear, 0
 goog, 0
 google, 0
@@ -2659,6 +2670,7 @@ gov.bb, 0
 gov.bf, 0
 gov.bh, 0
 gov.bm, 0
+gov.bn, 0
 gov.br, 0
 gov.bs, 0
 gov.bt, 0
@@ -2684,6 +2696,7 @@ gov.gh, 0
 gov.gi, 0
 gov.gn, 0
 gov.gr, 0
+gov.gu, 0
 gov.gy, 0
 gov.hk, 0
 gov.ie, 0
@@ -2699,6 +2712,7 @@ gov.ki, 0
 gov.km, 0
 gov.kn, 0
 gov.kp, 0
+gov.kw, 0
 gov.ky, 0
 gov.kz, 0
 gov.la, 0
@@ -2829,8 +2843,9 @@ gs.va.no, 0
 gs.vf.no, 0
 gsm.pl, 0
 gt, 0
-gu, 2
+gu, 0
 gu.us, 0
+guam.gu, 0
 guardian, 0
 gub.uy, 0
 gucci, 0
@@ -2923,6 +2938,7 @@ hashima.gifu.jp, 0
 hashimoto.wakayama.jp, 0
 hasuda.saitama.jp, 0
 hasura-app.io, 4
+hasura.app, 4
 hasvik.no, 0
 hatogaya.saitama.jp, 0
 hatoyama.saitama.jp, 0
@@ -3274,6 +3290,7 @@ incheon.kr, 0
 ind.br, 0
 ind.gt, 0
 ind.in, 0
+ind.kw, 0
 ind.tn, 0
 inderoy.no, 0
 indian.museum, 0
@@ -3299,6 +3316,7 @@ info.co, 0
 info.cx, 4
 info.ec, 0
 info.et, 0
+info.gu, 0
 info.ht, 0
 info.hu, 0
 info.ke, 0
@@ -3513,7 +3531,6 @@ iwata.shizuoka.jp, 0
 iwate.iwate.jp, 0
 iwate.jp, 0
 iwatsuki.saitama.jp, 0
-iwc, 0
 iwi.nz, 0
 iyo.ehime.jp, 0
 iz.hr, 0
@@ -3560,7 +3577,6 @@ jgora.pl, 0
 jinsekikogen.hiroshima.jp, 0
 jio, 0
 jl.cn, 0
-jlc, 0
 jll, 0
 jm, 2
 jmp, 0
@@ -4058,7 +4074,7 @@ kvinesdal.no, 0
 kvinnherad.no, 0
 kviteseid.no, 0
 kvitsoy.no, 0
-kw, 2
+kw, 0
 kwp.gov.pl, 0
 kwpsp.gov.pl, 0
 ky, 0
@@ -4503,7 +4519,6 @@ memorial.museum, 0
 memset.net, 4
 men, 0
 menu, 0
-meo, 0
 meraker.no, 0
 merckmsd, 0
 merseine.nu, 4
@@ -5084,6 +5099,7 @@ net.ba, 0
 net.bb, 0
 net.bh, 0
 net.bm, 0
+net.bn, 0
 net.bo, 0
 net.br, 0
 net.bs, 0
@@ -5110,6 +5126,7 @@ net.gn, 0
 net.gp, 0
 net.gr, 0
 net.gt, 0
+net.gu, 0
 net.gy, 0
 net.hk, 0
 net.hn, 0
@@ -5126,6 +5143,7 @@ net.jo, 0
 net.kg, 0
 net.ki, 0
 net.kn, 0
+net.kw, 0
 net.ky, 0
 net.kz, 0
 net.la, 0
@@ -5586,6 +5604,7 @@ on.ca, 0
 onagawa.miyagi.jp, 0
 one, 0
 ong, 0
+ong.br, 0
 onga.fukuoka.jp, 0
 onion, 0
 onjuku.chiba.jp, 0
@@ -5649,6 +5668,7 @@ org.bb, 0
 org.bh, 0
 org.bi, 0
 org.bm, 0
+org.bn, 0
 org.bo, 0
 org.br, 0
 org.bs, 0
@@ -5678,6 +5698,7 @@ org.gn, 0
 org.gp, 0
 org.gr, 0
 org.gt, 0
+org.gu, 0
 org.gy, 0
 org.hk, 0
 org.hn, 0
@@ -5696,6 +5717,7 @@ org.ki, 0
 org.km, 0
 org.kn, 0
 org.kp, 0
+org.kw, 0
 org.ky, 0
 org.kz, 0
 org.la, 0
@@ -5880,7 +5902,6 @@ palmas.br, 0
 palmsprings.museum, 0
 panama.museum, 0
 panasonic, 0
-panerai, 0
 pantheonsite.io, 4
 parachuting.aero, 0
 paragliding.aero, 0
@@ -6026,6 +6047,7 @@ polkowice.pl, 0
 poltava.ua, 0
 pomorskie.pl, 0
 pomorze.pl, 0
+ponpes.id, 0
 pordenone.it, 0
 porn, 0
 porsanger.no, 0
@@ -6505,7 +6527,6 @@ saobernardo.br, 0
 saogonca.br, 0
 saotome.st, 0
 sap, 0
-sapo, 0
 sapporo.jp, 2
 sar.it, 0
 sardegna.it, 0
@@ -6960,7 +6981,6 @@ ss.it, 0
 ssl.origin.cdn77-secure.org, 4
 st, 0
 st.no, 0
-stackspace.space, 4
 stada, 0
 stadt.museum, 0
 stage.nodeart.io, 4
@@ -7227,7 +7247,6 @@ tecnologia.bo, 0
 tel, 0
 tel.tr, 0
 tele.amune.org, 4
-telecity, 0
 telefonica, 0
 telekommunikation.museum, 0
 television.museum, 0
@@ -7804,7 +7823,6 @@ virtueeldomein.nl, 4
 virtuel.museum, 0
 visa, 0
 vision, 0
-vista, 0
 vistaprint, 0
 viterbo.it, 0
 viva, 0
@@ -7890,6 +7908,7 @@ weatherchannel, 0
 web.bo, 0
 web.co, 0
 web.do, 0
+web.gu, 0
 web.id, 0
 web.lk, 0
 web.nf, 0
@@ -8439,7 +8458,6 @@ xn--zf0ao64a.tw, 0
 xn--zf0avx.hk, 0
 xn--zfr164b, 0
 xnbay.com, 4
-xperia, 0
 xs4all.space, 4
 xxx, 0
 xyz, 0

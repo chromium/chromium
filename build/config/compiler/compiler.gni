@@ -2,10 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_android) {
-  import("//build/config/android/abi.gni")
-}
-import("//build/config/arm.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/compiler/pgo/pgo.gni")
@@ -13,6 +9,13 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
+
+if (is_android) {
+  import("//build/config/android/abi.gni")
+}
+if (current_cpu == "arm" || current_cpu == "arm64") {
+  import("//build/config/arm.gni")
+}
 
 declare_args() {
   # How many symbols to include in the build. This affects the performance of
@@ -48,6 +51,7 @@ declare_args() {
 
   # Enables support for ThinLTO, which links 3x-10x faster than full LTO. See
   # also http://blog.llvm.org/2016/06/thinlto-scalable-and-incremental-lto.html
+  # TODO(https://crbug.com/887272): Reenable on is_android && is_official_build
   use_thin_lto = is_cfi || (is_android && is_official_build)
 
   # Tell VS to create a PDB that references information in .obj files rather

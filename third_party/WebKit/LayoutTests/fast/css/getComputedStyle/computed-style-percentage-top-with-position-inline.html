@@ -3,9 +3,12 @@
     outer
     <div id='inner' style="position:absolute; top:50%; background:blue">inner</div>
 </span>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script>
+  test(()=> {
     var inner = document.querySelector("#inner");
     var computedStyle = window.getComputedStyle(inner, null);
-    shouldBeEqualToString("computedStyle.getPropertyValue('top')", "40px");
+    assert_equals(computedStyle.getPropertyValue('top'), "40px");
+  }, "Percentages should be resolved");
 </script>

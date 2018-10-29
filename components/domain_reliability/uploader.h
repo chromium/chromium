@@ -55,9 +55,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityUploader {
       const scoped_refptr<net::URLRequestContextGetter>&
           url_request_context_getter);
 
-  // Returns true if the request originated from domain reliability uploader.
-  static bool OriginatedFromDomainReliability(const net::URLRequest& request);
-
   // Uploads |report_json| to |upload_url| and calls |callback| when the upload
   // has either completed or failed.
   virtual void UploadReport(const std::string& report_json,

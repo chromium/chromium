@@ -113,13 +113,13 @@ class QuicSentPacketManagerTest : public QuicTestWithParam<bool> {
   }
   void VerifyUnackedPackets(QuicPacketNumber* packets, size_t num_packets) {
     if (num_packets == 0) {
-      EXPECT_FALSE(manager_.HasUnackedPackets());
+      EXPECT_TRUE(manager_.unacked_packets().empty());
       EXPECT_EQ(0u, QuicSentPacketManagerPeer::GetNumRetransmittablePackets(
                         &manager_));
       return;
     }
 
-    EXPECT_TRUE(manager_.HasUnackedPackets());
+    EXPECT_FALSE(manager_.unacked_packets().empty());
     EXPECT_EQ(packets[0], manager_.GetLeastUnacked());
     for (size_t i = 0; i < num_packets; ++i) {
       EXPECT_TRUE(QuicSentPacketManagerPeer::IsUnacked(&manager_, packets[i]))
@@ -650,7 +650,7 @@ TEST_P(QuicSentPacketManagerTest, AckOriginalTransmission) {
   // so no call on OnSpuriousRetransmission is expected.
   {
     ExpectAck(1);
-    EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _));
+    EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _, _));
     manager_.OnAckFrameStart(1, QuicTime::Delta::Infinite(), clock_.Now());
     manager_.OnAckRange(1, 2);
     EXPECT_TRUE(manager_.OnAckFrameEnd(clock_.Now()));
@@ -661,7 +661,7 @@ TEST_P(QuicSentPacketManagerTest, AckOriginalTransmission) {
   // Ack 4, which causes 3 to be retransmitted.
   {
     ExpectAck(4);
-    EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _));
+    EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _, _));
     manager_.OnAckFrameStart(4, QuicTime::Delta::Infinite(), clock_.Now());
     manager_.OnAckRange(4, 5);
     manager_.OnAckRange(1, 2);
@@ -673,7 +673,7 @@ TEST_P(QuicSentPacketManagerTest, AckOriginalTransmission) {
   {
     QuicPacketNumber acked[] = {3};
     ExpectAcksAndLosses(false, acked, QUIC_ARRAYSIZE(acked), nullptr, 0);
-    EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _));
+    EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _, _));
     EXPECT_CALL(*loss_algorithm, SpuriousRetransmitDetected(_, _, _, 5));
     manager_.OnAckFrameStart(4, QuicTime::Delta::Infinite(), clock_.Now());
     manager_.OnAckRange(3, 5);
@@ -684,7 +684,7 @@ TEST_P(QuicSentPacketManagerTest, AckOriginalTransmission) {
       // 5 will cause 5 be considered as a spurious retransmission as no new
       // data gets acked.
       ExpectAck(5);
-      EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _));
+      EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _, _));
       EXPECT_CALL(notifier_, OnFrameAcked(_, _)).WillOnce(Return(false));
       manager_.OnAckFrameStart(5, QuicTime::Delta::Infinite(), clock_.Now());
       manager_.OnAckRange(3, 6);
@@ -1612,6 +1612,7 @@ TEST_P(QuicSentPacketManagerTest, GetTransmissionTimeCryptoHandshake) {
   if (manager_.session_decides_what_to_write()) {
     EXPECT_CALL(notifier_, RetransmitFrames(_, _))
         .WillOnce(InvokeWithoutArgs([this]() { RetransmitCryptoPacket(2); }));
+    // When session decides what to write, crypto_packet_send_time gets updated.
     crypto_packet_send_time = clock_.Now();
   }
   manager_.OnRetransmissionTimeout();
@@ -1621,6 +1622,23 @@ TEST_P(QuicSentPacketManagerTest, GetTransmissionTimeCryptoHandshake) {
 
   // The retransmission time should now be twice as far in the future.
   expected_time = crypto_packet_send_time + srtt * 2 * 1.5;
+  EXPECT_EQ(expected_time, manager_.GetRetransmissionTime());
+
+  // Retransmit the packet for the 2nd time.
+  clock_.AdvanceTime(2 * 1.5 * srtt);
+  if (manager_.session_decides_what_to_write()) {
+    EXPECT_CALL(notifier_, RetransmitFrames(_, _))
+        .WillOnce(InvokeWithoutArgs([this]() { RetransmitCryptoPacket(3); }));
+    // When session decides what to write, crypto_packet_send_time gets updated.
+    crypto_packet_send_time = clock_.Now();
+  }
+  manager_.OnRetransmissionTimeout();
+  if (!manager_.session_decides_what_to_write()) {
+    RetransmitNextPacket(3);
+  }
+
+  // Verify exponential backoff of the retransmission timeout.
+  expected_time = crypto_packet_send_time + srtt * 4 * 1.5;
   EXPECT_EQ(expected_time, manager_.GetRetransmissionTime());
 }
 
@@ -1893,7 +1911,7 @@ TEST_P(QuicSentPacketManagerTest, GetLossDelay) {
   // Handle an ack which causes the loss algorithm to be evaluated and
   // set the loss timeout.
   ExpectAck(2);
-  EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _));
+  EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _, _));
   manager_.OnAckFrameStart(2, QuicTime::Delta::Infinite(), clock_.Now());
   manager_.OnAckRange(2, 3);
   EXPECT_TRUE(manager_.OnAckFrameEnd(clock_.Now()));
@@ -1905,7 +1923,7 @@ TEST_P(QuicSentPacketManagerTest, GetLossDelay) {
 
   // Fire the retransmission timeout and ensure the loss detection algorithm
   // is invoked.
-  EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _));
+  EXPECT_CALL(*loss_algorithm, DetectLosses(_, _, _, _, _, _));
   manager_.OnRetransmissionTimeout();
 }
 

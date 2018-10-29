@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef NodeOrNodeList_h
-#define NodeOrNodeList_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_NODE_OR_NODE_LIST_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_NODE_OR_NODE_LIST_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -25,7 +25,7 @@ class Node;
 class NodeList;
 
 class CORE_EXPORT NodeOrNodeList final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   NodeOrNodeList();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -95,4 +95,4 @@ struct V8TypeOf<NodeOrNodeList> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::NodeOrNodeList);
 
-#endif  // NodeOrNodeList_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_NODE_OR_NODE_LIST_H_

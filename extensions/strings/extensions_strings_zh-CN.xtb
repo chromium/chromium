@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">无法读取私有密钥。</translation>
 <translation id="6391538222494443604">必须存在输入目录。</translation>
 <translation id="641087317769093025">无法解压缩扩展程序</translation>
+<translation id="6413453408918378296"><ph name="ICON" /> 图标不够明显。</translation>
 <translation id="6542618148162044354">“<ph name="APP_NAME" />”请求访问您的一台或多台设备：</translation>
 <translation id="657064425229075395">无法加载背景脚本“<ph name="BACKGROUND_SCRIPT" />”。</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" />提供的<ph name="PRODUCT_NAME" />（序列号：<ph name="SERIAL_NUMBER" />）</translation>

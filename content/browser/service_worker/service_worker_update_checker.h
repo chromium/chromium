@@ -9,14 +9,22 @@
 #include "content/browser/service_worker/service_worker_database.h"
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 namespace content {
+
+class ServiceWorkerVersion;
 
 class ServiceWorkerUpdateChecker {
  public:
   using UpdateStatusCallback = base::OnceCallback<void(bool)>;
 
   ServiceWorkerUpdateChecker(
-      std::vector<ServiceWorkerDatabase::ResourceRecord> scripts_to_compare);
+      std::vector<ServiceWorkerDatabase::ResourceRecord> scripts_to_compare,
+      scoped_refptr<ServiceWorkerVersion> version_to_update,
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
   ~ServiceWorkerUpdateChecker();
 
   // |callback| is always triggered when Start() finishes. If the scripts are
@@ -32,10 +40,14 @@ class ServiceWorkerUpdateChecker {
   std::vector<ServiceWorkerDatabase::ResourceRecord> scripts_to_compare_;
   size_t scripts_compared_ = 0;
 
+  // The version which triggered this update.
+  scoped_refptr<ServiceWorkerVersion> version_to_update_;
+
   std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker> running_checker_;
 
   UpdateStatusCallback callback_;
 
+  scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
   base::WeakPtrFactory<ServiceWorkerUpdateChecker> weak_factory_;
 };
 

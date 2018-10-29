@@ -60,13 +60,15 @@ void InitAllocationRecorder(SenderPipe* sender_pipe,
                             mojom::ProfilingParamsPtr params);
 
 // Creates allocation info record, populates it with current call stack,
-// thread name, allocator type and sends out to the client.
+// thread name, allocator type and sends out to the client. Safe to call this
+// method after TLS is destroyed.
 void RecordAndSendAlloc(AllocatorType type,
                         void* address,
                         size_t sz,
                         const char* context);
 
-// Creates the record for free operation and sends it out to the client.
+// Creates the record for free operation and sends it out to the client. Safe
+// to call this method after TLS is destroyed.
 void RecordAndSendFree(void* address);
 
 // Exists for testing only.

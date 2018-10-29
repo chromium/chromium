@@ -24,7 +24,7 @@ ModelTypeStoreImpl::ModelTypeStoreImpl(
         backend_store,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
     : type_(type),
-      backend_task_runner_(backend_task_runner),
+      backend_task_runner_(std::move(backend_task_runner)),
       backend_store_(std::move(backend_store)),
       weak_ptr_factory_(this) {
   DCHECK(backend_store_);

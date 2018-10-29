@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import os
+import re
 from telemetry import page
 from contrib.vr_benchmarks import (shared_android_vr_page_state as
                                    vr_state)
@@ -26,6 +27,13 @@ class _VrXrSamplePage(page.Page):
     if url_parameters is not None:
       url += '?' + '&'.join(url_parameters)
     name = url.replace('.html', '')
+    # Replace characters that are unsupported by the perf dashboard here so that
+    # the name reported on the dashboard can be used as a story filter.
+    # We don't use a the \W+ regex like other benchmarks because we need to
+    # keep certain non-alphanumeric characters around for backwards naming
+    # compatibility. This regex should replace anything except alphanumeric,
+    # question mark, dash, and period characters with underscores.
+    name = re.sub(r'[^a-zA-Z\d\?\-\.]+', '_', name)
     url = 'file://' + os.path.join(sample_directory, url)
     super(_VrXrSamplePage, self).__init__(
         url=url,

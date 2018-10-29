@@ -21,12 +21,15 @@ class PseudoRandomFilter : public TemplateURLParser::ParameterFilter {
   ~PseudoRandomFilter() override = default;
 
   bool KeepParameter(const std::string&, const std::string&) override {
-    return pool_(generator_);
+    // Return true 254/255 times, ie: as if pool_ only returned uint8_t.
+    return pool_(generator_) % (UINT8_MAX + 1);
   }
 
  private:
   std::mt19937 generator_;
-  std::uniform_int_distribution<uint8_t> pool_;
+  // Use a uint16_t here instead of uint8_t because uniform_int_distribution
+  // does not support 8 bit types on Windows.
+  std::uniform_int_distribution<uint16_t> pool_;
 };
 
 struct FuzzerFixedParams {

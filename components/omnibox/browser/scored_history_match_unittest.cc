@@ -649,7 +649,7 @@ TEST_F(ScoredHistoryMatchTest, GetDocumentSpecificityScore) {
 // This function only tests scoring of single terms that match exactly
 // once somewhere in the URL or title.
 TEST_F(ScoredHistoryMatchTest, GetTopicalityScore) {
-  GURL url("http://abc.def.com/path1/path2?arg1=val1&arg2=val2#hash_component");
+  GURL url("http://abc.def.com/path1/path2?arg1=val1&arg2=val2#hash_fragment");
   base::string16 title = ASCIIToUTF16("here is a title");
   auto Score = [&](const char* term) {
     return GetTopicalityScoreOfTermAgainstURLAndTitle(ASCIIToUTF16(term), url,

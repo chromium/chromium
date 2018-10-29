@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/time/time.h"
 
 namespace feed {
 
@@ -32,12 +33,19 @@ class ContentMutation {
   // Check if mutation has ContentOperation left.
   bool Empty();
 
+  // Return the number of operations in the mutation.
+  size_t Size() const;
+
+  base::TimeTicks GetStartTime() const;
+
   // This will remove the first ContentOperation in |operations_list_| and
   // return it to caller.
   ContentOperation TakeFristOperation();
 
  private:
   std::list<ContentOperation> operations_list_;
+
+  const base::TimeTicks start_time_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentMutation);
 };

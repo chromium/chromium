@@ -275,11 +275,10 @@ your "gn args".
 
 ### Source level debug with -fdebug-compilation-dir
 
-When you enable GN config `strip_absolute_paths_from_debug_symbols`, this is
-enabled by default for goma on Linux build, you need to add following command
-to your `~/.gdbinit` for source level debugging to load customized
-[gdbinit](../tools/gdb/gdbinit) or copy the content of the file to your
-`~/.gdbinit`.
+When `strip_absolute_paths_from_debug_symbols` is enabled (which is the
+default) you need to add following command to your `~/.gdbinit` for source
+level debugging to load customized [gdbinit](../tools/gdb/gdbinit) or copy the
+content of the file to your `~/.gdbinit`.
 
 ```
 source path/to/chromium/src/tools/gdb/gdbinit
@@ -458,9 +457,7 @@ with the appropriate instructions if you know what they are.)
 
 ## Breakpad
 
-See the last section of [Linux Crash Dumping](linux_crash_dumping.md); you
-need to set a gyp variable and an environment variable for the crash dump tests
-to work.
+See the last section of [Linux Crash Dumping](linux_crash_dumping.md).
 
 ## Drag and Drop
 

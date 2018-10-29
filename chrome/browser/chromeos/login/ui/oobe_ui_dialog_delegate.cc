@@ -67,8 +67,9 @@ class CaptivePortalDialogDelegate
       public ChromeWebModalDialogManagerDelegate,
       public web_modal::WebContentsModalDialogHost {
  public:
-  explicit CaptivePortalDialogDelegate(content::WebContents* web_contents)
-      : web_contents_(web_contents) {
+  explicit CaptivePortalDialogDelegate(views::WebDialogView* host_dialog_view)
+      : host_view_(host_dialog_view),
+        web_contents_(host_dialog_view->web_contents()) {
     view_ = new views::WebDialogView(ProfileHelper::GetSigninProfile(), this,
                                      new ChromeWebContentsHandler);
     view_->SetVisible(false);
@@ -106,7 +107,10 @@ class CaptivePortalDialogDelegate
 
   // web_modal::WebContentsModalDialogHost:
   gfx::NativeView GetHostView() const override {
-    return widget_->GetNativeWindow();
+    if (widget_->IsVisible())
+      return widget_->GetNativeWindow();
+    else
+      return host_view_->GetWidget()->GetNativeWindow();
   }
 
   gfx::Point GetDialogPosition(const gfx::Size& size) override {
@@ -160,6 +164,7 @@ class CaptivePortalDialogDelegate
  private:
   views::Widget* widget_ = nullptr;
   views::WebDialogView* view_ = nullptr;
+  views::WebDialogView* host_view_ = nullptr;
   content::WebContents* web_contents_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalDialogDelegate);
@@ -171,13 +176,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
       size_(gfx::Size(kGaiaDialogWidth, kGaiaDialogHeight)) {
   display_observer_.Add(display::Screen::GetScreen());
   tablet_mode_observer_.Add(TabletModeClient::Get());
-  // TODO(crbug.com/646565): Support virtual keyboard under MASH. There is no
-  // KeyboardController in the browser process under MASH.
-  if (!features::IsUsingWindowService()) {
-    keyboard_observer_.Add(keyboard::KeyboardController::Get());
-  } else {
-    NOTIMPLEMENTED();
-  }
+  keyboard_observer_.Add(ChromeKeyboardControllerClient::Get());
 
   accel_map_[ui::Accelerator(
       ui::VKEY_S, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)] = kAppLaunchBailout;
@@ -204,8 +203,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
 
   dialog_view_->web_contents()->SetDelegate(this);
 
-  captive_portal_delegate_ =
-      new CaptivePortalDialogDelegate(dialog_view_->web_contents());
+  captive_portal_delegate_ = new CaptivePortalDialogDelegate(dialog_view_);
 
   GetOobeUI()->GetErrorScreen()->MaybeInitCaptivePortalWindowProxy(
       dialog_view_->web_contents());
@@ -323,10 +321,10 @@ bool OobeUIDialogDelegate::TakeFocus(content::WebContents* source,
   return true;
 }
 
-void OobeUIDialogDelegate::HandleKeyboardEvent(
+bool OobeUIDialogDelegate::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
-  unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, dialog_widget_->GetFocusManager());
 }
 
@@ -415,7 +413,7 @@ bool OobeUIDialogDelegate::AcceleratorPressed(
   return true;
 }
 
-void OobeUIDialogDelegate::OnKeyboardVisibilityStateChanged(bool is_visible) {
+void OobeUIDialogDelegate::OnKeyboardVisibilityChanged(bool visible) {
   if (!dialog_widget_)
     return;
 

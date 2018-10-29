@@ -4,103 +4,139 @@
 
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
 
+#include <vector>
+
+#include "base/callback.h"
 #include "base/format_macros.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/values.h"
+#include "components/autofill/ios/browser/autofill_switches.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
+#include "ios/web/public/web_state/web_frame.h"
+#include "ios/web/public/web_state/web_frames_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// Santizies |str| and wraps it in quotes so it can be injected safely in
-// JavaScript.
-NSString* JSONEscape(NSString* str) {
-  return base::SysUTF8ToNSString(
-      base::GetQuotedJSONString(base::SysNSStringToUTF8(str)));
+@implementation JsSuggestionManager {
+  // The injection receiver used to evaluate JavaScript.
+  CRWJSInjectionReceiver* _receiver;
+  web::WebFramesManager* _webFramesManager;
 }
-}  // namespace
 
-@implementation JsSuggestionManager
+- (instancetype)initWithReceiver:(CRWJSInjectionReceiver*)receiver {
+  DCHECK(receiver);
+  self = [super init];
+  if (self) {
+    _receiver = receiver;
+  }
+  return self;
+}
+
+- (void)setWebFramesManager:(web::WebFramesManager*)framesManager {
+  _webFramesManager = framesManager;
+}
 
 #pragma mark -
 #pragma mark ProtectedMethods
 
-- (NSString*)scriptPath {
-  return @"suggestion_controller";
+- (void)selectNextElementInFrameWithID:(NSString*)frameID {
+  [self selectNextElementInFrameWithID:frameID afterForm:@"" field:@""];
 }
 
-- (void)selectNextElement {
-  [self selectElementAfterForm:@"" field:@""];
+- (void)selectNextElementInFrameWithID:(NSString*)frameID
+                             afterForm:(NSString*)formName
+                                 field:(NSString*)fieldName {
+  std::vector<base::Value> parameters;
+  parameters.push_back(base::Value(base::SysNSStringToUTF8(formName)));
+  parameters.push_back(base::Value(base::SysNSStringToUTF8(fieldName)));
+  autofill::ExecuteJavaScriptFunction(
+      "suggestion.selectNextElement", parameters,
+      [self frameWithFrameID:frameID], _receiver,
+      base::OnceCallback<void(NSString*)>());
 }
 
-- (void)selectElementAfterForm:(NSString*)formName field:(NSString*)fieldName {
-  NSString* selectNextElementJS = [NSString
-      stringWithFormat:@"__gCrWeb.suggestion.selectNextElement(%@, %@)",
-                       JSONEscape(formName), JSONEscape(fieldName)];
-  [self executeJavaScript:selectNextElementJS completionHandler:nil];
+- (void)selectPreviousElementInFrameWithID:(NSString*)frameID {
+  [self selectPreviousElementInFrameWithID:frameID beforeForm:@"" field:@""];
 }
 
-- (void)selectPreviousElement {
-  [self selectElementBeforeForm:@"" field:@""];
+- (void)selectPreviousElementInFrameWithID:(NSString*)frameID
+                                beforeForm:(NSString*)formName
+                                     field:(NSString*)fieldName {
+  std::vector<base::Value> parameters;
+  parameters.push_back(base::Value(base::SysNSStringToUTF8(formName)));
+  parameters.push_back(base::Value(base::SysNSStringToUTF8(fieldName)));
+  autofill::ExecuteJavaScriptFunction(
+      "suggestion.selectPreviousElement", parameters,
+      [self frameWithFrameID:frameID], _receiver,
+      base::OnceCallback<void(NSString*)>());
 }
 
-- (void)selectElementBeforeForm:(NSString*)formName field:(NSString*)fieldName {
-  NSString* selectPreviousElementJS = [NSString
-      stringWithFormat:@"__gCrWeb.suggestion.selectPreviousElement(%@, %@)",
-                       JSONEscape(formName), JSONEscape(fieldName)];
-  [self executeJavaScript:selectPreviousElementJS completionHandler:nil];
+- (void)fetchPreviousAndNextElementsPresenceInFrameWithID:(NSString*)frameID
+                                        completionHandler:
+                                            (void (^)(BOOL,
+                                                      BOOL))completionHandler {
+  [self fetchPreviousAndNextElementsPresenceInFrameWithID:frameID
+                                                  forForm:@""
+                                                    field:@""
+                                        completionHandler:completionHandler];
 }
 
-- (void)fetchPreviousAndNextElementsPresenceWithCompletionHandler:
-        (void (^)(BOOL, BOOL))completionHandler {
-  [self fetchPreviousAndNextElementsPresenceForForm:@""
-                                              field:@""
-                                  completionHandler:completionHandler];
-}
-
-- (void)fetchPreviousAndNextElementsPresenceForForm:(NSString*)formName
-                                              field:(NSString*)fieldName
-                                  completionHandler:
-                                      (void (^)(BOOL, BOOL))completionHandler {
+- (void)fetchPreviousAndNextElementsPresenceInFrameWithID:(NSString*)frameID
+                                                  forForm:(NSString*)formName
+                                                    field:(NSString*)fieldName
+                                        completionHandler:
+                                            (void (^)(BOOL,
+                                                      BOOL))completionHandler {
   DCHECK(completionHandler);
-  DCHECK([self hasBeenInjected]);
-  NSString* escapedFormName = JSONEscape(formName);
-  NSString* escapedFieldName = JSONEscape(fieldName);
-  NSString* JS = [NSString
-      stringWithFormat:@"[__gCrWeb.suggestion.hasPreviousElement(%@, %@),"
-                       @"__gCrWeb.suggestion.hasNextElement(%@, %@)]"
-                       @".toString()",
-                       escapedFormName, escapedFieldName, escapedFormName,
-                       escapedFieldName];
-  [self executeJavaScript:JS completionHandler:^(id result, NSError* error) {
-    // The result maybe an empty string here due to 2 reasons:
-    // 1) When there is an exception running the JS
-    // 2) There is a race when the page is changing due to which
-    // JSSuggestionManager has not yet injected __gCrWeb.suggestion object
-    // Handle this case gracefully.
-    // If a page has overridden Array.toString, the string returned may not
-    // contain a ",", hence this is a defensive measure to early return.
-    NSArray* components = [result componentsSeparatedByString:@","];
-    if (components.count != 2) {
-      completionHandler(NO, NO);
-      return;
-    }
+  std::vector<base::Value> parameters;
+  parameters.push_back(base::Value(base::SysNSStringToUTF8(formName)));
+  parameters.push_back(base::Value(base::SysNSStringToUTF8(fieldName)));
+  autofill::ExecuteJavaScriptFunction(
+      "suggestion.hasPreviousNextElements", parameters,
+      [self frameWithFrameID:frameID], _receiver,
+      base::BindOnce(^(NSString* result) {
+        // The result maybe an empty string here due to 2 reasons:
+        // 1) When there is an exception running the JS
+        // 2) There is a race when the page is changing due to which
+        // JSSuggestionManager has not yet injected __gCrWeb.suggestion
+        // object Handle this case gracefully. If a page has overridden
+        // Array.toString, the string returned may not contain a ",",
+        // hence this is a defensive measure to early return.
+        NSArray* components = [result componentsSeparatedByString:@","];
+        if (components.count != 2) {
+          completionHandler(NO, NO);
+          return;
+        }
 
-    DCHECK([components[0] isEqualToString:@"true"] ||
-           [components[0] isEqualToString:@"false"]);
-    BOOL hasPreviousElement = [components[0] isEqualToString:@"true"];
-    DCHECK([components[1] isEqualToString:@"true"] ||
-           [components[1] isEqualToString:@"false"]);
-    BOOL hasNextElement = [components[1] isEqualToString:@"true"];
-    completionHandler(hasPreviousElement, hasNextElement);
-  }];
+        DCHECK([components[0] isEqualToString:@"true"] ||
+               [components[0] isEqualToString:@"false"]);
+        BOOL hasPreviousElement = [components[0] isEqualToString:@"true"];
+        DCHECK([components[1] isEqualToString:@"true"] ||
+               [components[1] isEqualToString:@"false"]);
+        BOOL hasNextElement = [components[1] isEqualToString:@"true"];
+        completionHandler(hasPreviousElement, hasNextElement);
+      }));
 }
 
-- (void)closeKeyboard {
-  [self executeJavaScript:@"document.activeElement.blur()"
-        completionHandler:nil];
+- (void)closeKeyboardForFrameWithID:(NSString*)frameID {
+  std::vector<base::Value> parameters;
+  autofill::ExecuteJavaScriptFunction(
+      "suggestion.blurActiveElement", parameters,
+      [self frameWithFrameID:frameID], _receiver,
+      base::OnceCallback<void(NSString*)>());
+}
+
+- (web::WebFrame*)frameWithFrameID:(NSString*)frameID {
+  if (autofill::switches::IsAutofillIFrameMessagingEnabled()) {
+    DCHECK(_webFramesManager);
+    return _webFramesManager->GetFrameWithId(base::SysNSStringToUTF8(frameID));
+  }
+  return nil;
 }
 
 @end

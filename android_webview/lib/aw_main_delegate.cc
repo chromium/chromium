@@ -22,11 +22,14 @@
 #include "android_webview/utility/aw_content_utility_client.h"
 #include "base/android/apk_assets.h"
 #include "base/android/build_info.h"
+#include "base/android/locale_utils.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/i18n/icu_util.h"
+#include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "cc/base/switches.h"
@@ -51,6 +54,9 @@
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_bundle_android.h"
+#include "ui/base/ui_base_paths.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
@@ -118,9 +124,6 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   // metadata and controls.
   cl->AppendSwitch(switches::kDisableMediaSessionAPI);
 
-  // Background Fetch is not supported.
-  cl->AppendSwitch(switches::kDisableBackgroundFetch);
-
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   if (cl->GetSwitchValueASCII(switches::kProcessType).empty()) {
     // Browser process (no type specified).
@@ -176,9 +179,11 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   CommandLineHelper::AddDisabledFeature(*cl, media::kUseAndroidOverlay.name);
 
   // WebView doesn't support embedding CompositorFrameSinks which is needed for
-  // UseSurfaceLayerForVideo feature. https://crbug.com/853832
+  // UseSurfaceLayerForVideo[PIP] feature. https://crbug.com/853832
   CommandLineHelper::AddDisabledFeature(*cl,
                                         media::kUseSurfaceLayerForVideo.name);
+  CommandLineHelper::AddDisabledFeature(
+      *cl, media::kUseSurfaceLayerForVideoPIP.name);
 
   // WebView does not support EME persistent license yet, because it's not
   // clear on how user can remove persistent media licenses from UI.
@@ -191,6 +196,8 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   CommandLineHelper::AddDisabledFeature(
       *cl, autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout
                .name);
+
+  CommandLineHelper::AddDisabledFeature(*cl, features::kBackgroundFetch.name);
 
   android_webview::RegisterPathProvider();
 
@@ -224,6 +231,10 @@ void AwMainDelegate::PreSandboxStartup() {
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
+
+  const std::string locale = command_line.GetSwitchValueASCII(switches::kLang);
+  base::i18n::SetICUDefaultLocale(locale);
+
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
   int crash_signal_fd = -1;
@@ -301,6 +312,32 @@ void AwMainDelegate::ProcessExiting(const std::string& process_type) {
   // TODO(torne): Clean up resources when we handle them.
 
   logging::CloseLogFile();
+}
+
+bool AwMainDelegate::ShouldCreateFeatureList() {
+  // TODO(https://crbug.com/887468): Move the creation of FeatureList from
+  // AwBrowserMainParts::PreCreateThreads() to
+  // AwMainDelegate::PostEarlyInitialization().
+  return false;
+}
+
+void AwMainDelegate::PostEarlyInitialization(bool is_running_tests) {
+  ui::SetLocalePaksStoredInApk(true);
+  std::string locale = ui::ResourceBundle::InitSharedInstanceWithLocale(
+      base::android::GetDefaultLocaleString(), NULL,
+      ui::ResourceBundle::LOAD_COMMON_RESOURCES);
+  if (locale.empty()) {
+    LOG(WARNING) << "Failed to load locale .pak from the apk. "
+                    "Bringing up WebView without any locale";
+  }
+  base::i18n::SetICUDefaultLocale(locale);
+
+  // Try to directly mmap the resources.pak from the apk. Fall back to load
+  // from file, using PATH_SERVICE, otherwise.
+  base::FilePath pak_file_path;
+  base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &pak_file_path);
+  pak_file_path = pak_file_path.AppendASCII("resources.pak");
+  ui::LoadMainAndroidPackFile("assets/resources.pak", pak_file_path);
 }
 
 content::ContentBrowserClient* AwMainDelegate::CreateContentBrowserClient() {

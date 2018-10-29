@@ -9,7 +9,9 @@
 </style>
 This box should be located in the center of the page.
 <div id="target"></div>
+<script src="../../resources/compositor-controls.js"></script>
 <script>
+setAnimationRequiresRaster();
 if (window.testRunner) {
   testRunner.useUnfortunateSynchronousResizeMode();
   testRunner.waitUntilDone();

@@ -12,9 +12,9 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/values.h"
 #include "content/renderer/pepper/resource_converter.h"
 #include "ppapi/c/pp_bool.h"
@@ -80,7 +80,7 @@ bool Equals(const PP_Var& var,
             v8::Local<v8::Value> val,
             VarHandleMap* visited_ids) {
   if (ppapi::VarTracker::IsVarTypeRefcounted(var.type)) {
-    VarHandleMap::iterator it = visited_ids->find(var.value.as_id);
+    auto it = visited_ids->find(var.value.as_id);
     if (it != visited_ids->end())
       return it->second == val;
     (*visited_ids)[var.value.as_id] = val;
@@ -236,7 +236,8 @@ class V8VarConverterTest : public testing::Test {
   std::unique_ptr<V8VarConverter> converter_;
 
  private:
-  base::MessageLoop message_loop_;  // Required to receive callbacks.
+  base::test::ScopedTaskEnvironment
+      task_environment_;  // Required to receive callbacks.
 
   TestGlobals globals_;
 };

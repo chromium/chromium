@@ -3,7 +3,6 @@ Test whether :host matches a shadow host correctly.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 :host out of shadow tree should not match any shadow hosts.
 PASS backgroundColorOf('host') is "rgba(0, 0, 0, 0)"
 :host with * should not match any shadow hosts.
@@ -40,4 +39,5 @@ PASS backgroundColorOf('host') is "rgba(0, 0, 0, 0)"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

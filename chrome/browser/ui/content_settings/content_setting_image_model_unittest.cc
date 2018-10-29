@@ -137,8 +137,9 @@ TEST_F(ContentSettingImageModelTest, SubresourceFilter) {
   TabSpecificContentSettings::CreateForWebContents(web_contents());
   TabSpecificContentSettings* content_settings =
       TabSpecificContentSettings::FromWebContents(web_contents());
-  std::unique_ptr<ContentSettingImageModel> content_setting_image_model(
-      new ContentSettingSubresourceFilterImageModel());
+  auto content_setting_image_model =
+      ContentSettingImageModel::CreateForContentType(
+          ContentSettingImageModel::ImageType::ADS);
   EXPECT_FALSE(content_setting_image_model->is_visible());
   EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
 

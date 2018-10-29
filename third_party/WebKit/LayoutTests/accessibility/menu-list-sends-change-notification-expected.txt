@@ -1,14 +1,15 @@
+One
+Two
+Three
 
 This tests that changing the value of a menu list sends a notification even when it's not popped open.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
-
 
 TEST COMPLETE
 Got notification: MenuListValueChanged
 
-TEST COMPLETE
 
+TEST COMPLETE

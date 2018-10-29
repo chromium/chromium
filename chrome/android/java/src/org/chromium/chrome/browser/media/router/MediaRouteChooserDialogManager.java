@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.media.router;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.MediaRouteChooserDialog;
 import android.support.v7.app.MediaRouteChooserDialogFragment;
 import android.support.v7.media.MediaRouteSelector;
 
@@ -44,6 +47,15 @@ public class MediaRouteChooserDialogManager extends BaseMediaRouteDialogManager 
 
         public Fragment(BaseMediaRouteDialogManager manager) {
             mManager = manager;
+        }
+
+        @Override
+        public MediaRouteChooserDialog onCreateChooserDialog(
+                Context context, Bundle savedInstanceState) {
+            MediaRouteChooserDialog dialog =
+                    super.onCreateChooserDialog(context, savedInstanceState);
+            dialog.setCanceledOnTouchOutside(true);
+            return dialog;
         }
 
         @Override

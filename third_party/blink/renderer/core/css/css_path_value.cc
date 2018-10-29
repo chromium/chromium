@@ -48,8 +48,8 @@ CSSPathValue* CreatePathValue() {
 }  // namespace
 
 CSSPathValue& CSSPathValue::EmptyPathValue() {
-  DEFINE_STATIC_LOCAL(CSSPathValue, empty, (CreatePathValue()));
-  return empty;
+  DEFINE_STATIC_LOCAL(Persistent<CSSPathValue>, empty, (CreatePathValue()));
+  return *empty;
 }
 
 String CSSPathValue::CustomCSSText() const {

@@ -21,36 +21,33 @@ class MockIndexedDBFactory : public IndexedDBFactory {
   MOCK_METHOD2(ReleaseDatabase,
                void(const IndexedDBDatabase::Identifier& identifier,
                     bool forced_close));
+  MOCK_METHOD3(GetDatabaseNames,
+               void(scoped_refptr<IndexedDBCallbacks> callbacks,
+                    const url::Origin& origin,
+                    const base::FilePath& data_directory));
+  MOCK_METHOD3(GetDatabaseInfo,
+               void(scoped_refptr<IndexedDBCallbacks> callbacks,
+                    const url::Origin& origin,
+                    const base::FilePath& data_directory));
   MOCK_METHOD4(
-      GetDatabaseNames,
-      void(scoped_refptr<IndexedDBCallbacks> callbacks,
-           const url::Origin& origin,
-           const base::FilePath& data_directory,
-           scoped_refptr<net::URLRequestContextGetter> request_context_getter));
-  MOCK_METHOD5(
       OpenProxy,
       void(const base::string16& name,
            IndexedDBPendingConnection* connection,
-           scoped_refptr<net::URLRequestContextGetter> request_context_getter,
            const url::Origin& origin,
            const base::FilePath& data_directory));
   // Googlemock can't deal with move-only types, so *Proxy() is a workaround.
   void Open(const base::string16& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
-            scoped_refptr<net::URLRequestContextGetter> request_context_getter,
             const url::Origin& origin,
             const base::FilePath& data_directory) override {
-    OpenProxy(name, connection.get(), request_context_getter, origin,
-              data_directory);
+    OpenProxy(name, connection.get(), origin, data_directory);
   }
-  MOCK_METHOD6(
-      DeleteDatabase,
-      void(const base::string16& name,
-           scoped_refptr<net::URLRequestContextGetter> request_context_getter,
-           scoped_refptr<IndexedDBCallbacks> callbacks,
-           const url::Origin& origin,
-           const base::FilePath& data_directory,
-           bool force_close));
+  MOCK_METHOD5(DeleteDatabase,
+               void(const base::string16& name,
+                    scoped_refptr<IndexedDBCallbacks> callbacks,
+                    const url::Origin& origin,
+                    const base::FilePath& data_directory,
+                    bool force_close));
   MOCK_METHOD2(AbortTransactionsAndCompactDatabaseProxy,
                void(base::OnceCallback<void(leveldb::Status)>* callback,
                     const url::Origin& origin));
@@ -77,7 +74,8 @@ class MockIndexedDBFactory : public IndexedDBFactory {
   // The Android NDK implements a subset of STL, and the gtest templates can't
   // deal with std::pair's. This means we can't use GoogleMock for this method
   OriginDBs GetOpenDatabasesForOrigin(const url::Origin& origin) const override;
-  MOCK_METHOD1(ForceClose, void(const url::Origin& origin));
+  MOCK_METHOD2(ForceClose,
+               void(const url::Origin& origin, bool delete_in_memory_store));
   MOCK_METHOD1(ForceSchemaDowngrade, void(const url::Origin& origin));
   MOCK_METHOD1(HasV2SchemaCorruption,
                V2SchemaCorruptionStatus(const url::Origin& origin));
@@ -105,26 +103,22 @@ class MockIndexedDBFactory : public IndexedDBFactory {
  protected:
   ~MockIndexedDBFactory() override;
 
-  MOCK_METHOD6(
-      OpenBackingStore,
-      scoped_refptr<IndexedDBBackingStore>(
-          const url::Origin& origin,
-          const base::FilePath& data_directory,
-          scoped_refptr<net::URLRequestContextGetter> request_context_getter,
-          IndexedDBDataLossInfo* data_loss_info,
-          bool* disk_full,
-          leveldb::Status* s));
+  MOCK_METHOD5(OpenBackingStore,
+               scoped_refptr<IndexedDBBackingStore>(
+                   const url::Origin& origin,
+                   const base::FilePath& data_directory,
+                   IndexedDBDataLossInfo* data_loss_info,
+                   bool* disk_full,
+                   leveldb::Status* s));
 
-  MOCK_METHOD7(
-      OpenBackingStoreHelper,
-      scoped_refptr<IndexedDBBackingStore>(
-          const url::Origin& origin,
-          const base::FilePath& data_directory,
-          scoped_refptr<net::URLRequestContextGetter> request_context_getter,
-          IndexedDBDataLossInfo* data_loss_info,
-          bool* disk_full,
-          bool first_time,
-          leveldb::Status* s));
+  MOCK_METHOD6(OpenBackingStoreHelper,
+               scoped_refptr<IndexedDBBackingStore>(
+                   const url::Origin& origin,
+                   const base::FilePath& data_directory,
+                   IndexedDBDataLossInfo* data_loss_info,
+                   bool* disk_full,
+                   bool first_time,
+                   leveldb::Status* s));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockIndexedDBFactory);

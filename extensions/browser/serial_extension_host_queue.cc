@@ -55,8 +55,7 @@ void SerialExtensionHostQueue::Add(DeferredStartRenderHost* host) {
 }
 
 void SerialExtensionHostQueue::Remove(DeferredStartRenderHost* host) {
-  std::list<DeferredStartRenderHost*>::iterator it =
-      std::find(queue_.begin(), queue_.end(), host);
+  auto it = std::find(queue_.begin(), queue_.end(), host);
   if (it != queue_.end())
     queue_.erase(it);
 }

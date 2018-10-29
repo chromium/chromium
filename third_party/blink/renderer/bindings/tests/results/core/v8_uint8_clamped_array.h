@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef V8Uint8ClampedArray_h
-#define V8Uint8ClampedArray_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_UINT_8_CLAMPED_ARRAY_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_UINT_8_CLAMPED_ARRAY_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
@@ -51,4 +51,4 @@ struct V8TypeOf<TestUint8ClampedArray> {
 
 }  // namespace blink
 
-#endif  // V8Uint8ClampedArray_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_UINT_8_CLAMPED_ARRAY_H_

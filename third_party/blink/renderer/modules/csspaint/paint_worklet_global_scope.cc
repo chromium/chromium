@@ -111,9 +111,7 @@ PaintWorkletGlobalScope::PaintWorkletGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerReportingProxy& reporting_proxy,
     PaintWorkletPendingGeneratorRegistry* pending_generator_registry)
-    : MainThreadWorkletGlobalScope(frame,
-                                   std::move(creation_params),
-                                   reporting_proxy),
+    : WorkletGlobalScope(std::move(creation_params), reporting_proxy, frame),
       pending_generator_registry_(pending_generator_registry) {}
 
 PaintWorkletGlobalScope::~PaintWorkletGlobalScope() = default;
@@ -121,9 +119,8 @@ PaintWorkletGlobalScope::~PaintWorkletGlobalScope() = default;
 void PaintWorkletGlobalScope::Dispose() {
   MainThreadDebugger::Instance()->ContextWillBeDestroyed(
       ScriptController()->GetScriptState());
-
   pending_generator_registry_ = nullptr;
-  MainThreadWorkletGlobalScope::Dispose();
+  WorkletGlobalScope::Dispose();
 }
 
 void PaintWorkletGlobalScope::registerPaint(
@@ -230,7 +227,7 @@ double PaintWorkletGlobalScope::devicePixelRatio() const {
 void PaintWorkletGlobalScope::Trace(blink::Visitor* visitor) {
   visitor->Trace(paint_definitions_);
   visitor->Trace(pending_generator_registry_);
-  MainThreadWorkletGlobalScope::Trace(visitor);
+  WorkletGlobalScope::Trace(visitor);
 }
 
 }  // namespace blink

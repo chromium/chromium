@@ -34,7 +34,6 @@ enum ControllerServiceWorkerPurpose {
 // - For shared workers (non-S13nSW):
 //       Associated with ServiceWorkerDispatcherHost, which is on the
 //       channel-associated interface to the renderer process.
-//       IPC channel.
 // - For documents:
 //       Associated with ServiceWorkerDispatcherHost, which is on the
 //       channel-associated interface to the renderer process.
@@ -91,9 +90,8 @@ interface ServiceWorkerContainerHost {
                                 ControllerServiceWorkerPurpose purpose);
 
   // S13nServiceWorker:
-  // Clones the Mojo end point to the ServiceWorker container host. This is
-  // used to communicate with the host from dedicated and shared workers.
-  CloneForWorker(ServiceWorkerContainerHost& container_host_for_worker);
+  // Makes a new endpoint to this ServiceWorkerContainerHost.
+  CloneContainerHost(ServiceWorkerContainerHost& container_host);
 
   // Does nothing but calls the callback. Useful for pumping the message pipe
   // for this interface and associated interfaces: when the callback is called,

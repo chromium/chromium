@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "services/ws/window_service_observer.h"
 #include "ui/aura/window_event_dispatcher_observer.h"
 #include "ui/aura/window_observer.h"
@@ -31,8 +32,6 @@ class WindowService;
 // remote client and notifying a callback when the client acks the event (or
 // it is determined the client will never ack the event).
 //
-// Exported for tests.
-//
 // Implementation note: an event may be handled in any of the following
 // ways:
 // . It may be dispatched to remote client. This is detected by way of
@@ -44,6 +43,8 @@ class WindowService;
 // For the case of the event being sent to a remote client this has to ensure
 // if the remote client, or WindowTreeHost is destroyed, then no ack is
 // received.
+//
+// Exported for tests.
 class COMPONENT_EXPORT(WINDOW_SERVICE) InjectedEventHandler
     : public aura::WindowEventDispatcherObserver,
       public WindowServiceObserver,
@@ -65,6 +66,8 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) InjectedEventHandler
   void Inject(std::unique_ptr<ui::Event> event, ResultCallback result_callback);
 
  private:
+  class ScopedPreTargetRegister;
+
   // Tracks the client and identifier for an event that this object is waiting
   // on.
   struct EventId {
@@ -94,7 +97,8 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) InjectedEventHandler
 
   // WindowServiceObserver:
   void OnWillSendEventToClient(ClientSpecificId client_id,
-                               uint32_t event_id) override;
+                               uint32_t event_id,
+                               const ui::Event& event) override;
   void OnClientAckedEvent(ClientSpecificId client_id,
                           uint32_t event_id) override;
   void OnWillDestroyClient(ClientSpecificId client_id) override;
@@ -110,6 +114,10 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) InjectedEventHandler
   std::unique_ptr<EventId> event_id_;
 
   bool event_dispatched_ = false;
+
+  std::unique_ptr<ScopedPreTargetRegister> pre_target_register_;
+
+  base::WeakPtrFactory<InjectedEventHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InjectedEventHandler);
 };

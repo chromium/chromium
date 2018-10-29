@@ -85,7 +85,8 @@ class _DromaeoMeasurement(legacy_page_test.LegacyPageTest):
       AddResult(key, math.exp(value['sum'] / value['count']))
 
 
-@benchmark.Info(emails=['jbroman@chromium.org',
+@benchmark.Info(component='Blink>Bindings',
+                emails=['jbroman@chromium.org',
                          'yukishiino@chromium.org',
                          'haraken@chromium.org'])
 class DromaeoBenchmark(perf_benchmark.PerfBenchmark):

@@ -6,15 +6,14 @@ package org.chromium.chrome.browser.download.home.list.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Animatable;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.StringRes;
-import android.support.annotation.StyleableRes;
-import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.ImageView;
 
 import org.chromium.chrome.browser.util.MathUtils;
 import org.chromium.chrome.download.R;
@@ -29,8 +28,8 @@ import java.lang.annotation.RetentionPolicy;
  * The determinate {@link Drawable} will have it's level set via {@link Drawable#setLevel(int)}
  * based on the progress (0 - 10,000).
  *
- * The indeterminate {@link Drawable} supports {@link Animatable} drawables and the animation will
- * be started/stopped when shown/hidden respectively.
+ * The indeterminate and determinate {@link Drawable}s support {@link Animatable} drawables and the
+ * animation will be started/stopped when shown/hidden respectively.
  */
 public class CircularProgressView extends AppCompatImageButton {
     /**
@@ -61,9 +60,7 @@ public class CircularProgressView extends AppCompatImageButton {
     private final Drawable mPauseButtonSrc;
     private final Drawable mRetryButtonSrc;
 
-    // Tracking this here as the API {@link View#getForeground()} is not available in all supported
-    // Android versions.
-    private Drawable mForegroundDrawable;
+    private final ForegroundDrawableCompat mForegroundHelper;
 
     /**
      * Creates an instance of a {@link CircularProgressView}.
@@ -73,22 +70,25 @@ public class CircularProgressView extends AppCompatImageButton {
     public CircularProgressView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        TypedArray types =
-                context.obtainStyledAttributes(attrs, R.styleable.CircularProgressView, 0, 0);
-        try {
-            mIndeterminateProgress = getDrawable(
-                    context, types, R.styleable.CircularProgressView_indeterminateProgress);
-            mDeterminateProgress = getDrawable(
-                    context, types, R.styleable.CircularProgressView_determinateProgress);
-            mResumeButtonSrc =
-                    getDrawable(context, types, R.styleable.CircularProgressView_resumeSrc);
-            mPauseButtonSrc =
-                    getDrawable(context, types, R.styleable.CircularProgressView_pauseSrc);
-            mRetryButtonSrc =
-                    getDrawable(context, types, R.styleable.CircularProgressView_retrySrc);
-        } finally {
-            types.recycle();
-        }
+        mForegroundHelper = new ForegroundDrawableCompat(this);
+        mForegroundHelper.setScaleType(ImageView.ScaleType.FIT_XY);
+
+        TypedArray types = attrs == null
+                ? null
+                : context.obtainStyledAttributes(attrs, R.styleable.CircularProgressView, 0, 0);
+
+        mIndeterminateProgress = AutoAnimatorDrawable.wrap(UiUtils.getDrawable(
+                context, types, R.styleable.CircularProgressView_indeterminateProgress));
+        mDeterminateProgress = AutoAnimatorDrawable.wrap(UiUtils.getDrawable(
+                context, types, R.styleable.CircularProgressView_determinateProgress));
+        mResumeButtonSrc =
+                UiUtils.getDrawable(context, types, R.styleable.CircularProgressView_resumeSrc);
+        mPauseButtonSrc =
+                UiUtils.getDrawable(context, types, R.styleable.CircularProgressView_pauseSrc);
+        mRetryButtonSrc =
+                UiUtils.getDrawable(context, types, R.styleable.CircularProgressView_retrySrc);
+
+        if (types != null) types.recycle();
     }
 
     /**
@@ -101,21 +101,13 @@ public class CircularProgressView extends AppCompatImageButton {
      */
     public void setProgress(int progress) {
         if (progress == INDETERMINATE) {
-            if (mForegroundDrawable != mIndeterminateProgress) {
-                setForeground(mIndeterminateProgress);
-                if (mIndeterminateProgress instanceof Animatable) {
-                    ((Animatable) mIndeterminateProgress).start();
-                }
-            }
+            mForegroundHelper.setDrawable(mIndeterminateProgress);
         } else {
-            progress = MathUtils.clamp(progress, 0, 100);
-            mDeterminateProgress.setLevel(progress * MAX_LEVEL / 100);
-            setForeground(mDeterminateProgress);
-        }
-
-        // Stop any animation that might have previously been running.
-        if (mForegroundDrawable != mIndeterminateProgress) {
-            ((Animatable) mIndeterminateProgress).stop();
+            if (mDeterminateProgress != null) {
+                progress = MathUtils.clamp(progress, 0, 100);
+                mDeterminateProgress.setLevel(progress * MAX_LEVEL / 100);
+            }
+            mForegroundHelper.setDrawable(mDeterminateProgress);
         }
     }
 
@@ -148,18 +140,27 @@ public class CircularProgressView extends AppCompatImageButton {
         setContentDescription(getContext().getText(contentDescription));
     }
 
-    // View implementation.
+    // AppCompatImageButton implementation.
     @Override
-    public void setForeground(Drawable foreground) {
-        mForegroundDrawable = foreground;
-        super.setForeground(foreground);
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+        mForegroundHelper.draw(canvas);
     }
 
-    private static final Drawable getDrawable(
-            Context context, TypedArray attrs, @StyleableRes int attrId) {
-        @DrawableRes
-        int resId = attrs.getResourceId(attrId, -1);
-        if (resId == -1) return null;
-        return AppCompatResources.getDrawable(context, resId);
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        mForegroundHelper.onVisibilityChanged(changedView, visibility);
+    }
+
+    @Override
+    protected void drawableStateChanged() {
+        super.drawableStateChanged();
+        mForegroundHelper.drawableStateChanged();
+    }
+
+    @Override
+    protected boolean verifyDrawable(Drawable dr) {
+        return super.verifyDrawable(dr) || mForegroundHelper.verifyDrawable(dr);
     }
 }

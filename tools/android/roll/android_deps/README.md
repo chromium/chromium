@@ -37,9 +37,20 @@ Full steps to add a new third party library:
     - Before running this command, make sure to increment the `CIPD_SUFFIX`
       variable in `BuildConfigGenerator.groovy` in order to ensure that each
       tag in CIPD is unique.
+      - One option to thoroughly test your change is to run
+        `rm -rf third_party/android_deps/libs/[!O]*` before running with
+        `--update-all`. This will ensure all your deps are fresh. The commands
+        printed out in the following step will ensure you do not upload
+        duplicate instances.
 
 4. Run the commands printed at step 3 to create new and updated packages
    via cipd.
+    - In order to do this, you will need write access. Ask anyone from this
+      [list][owners_link] to add you to the group.
+    - Just make sure to copy the commands exactly, as uploading an instance
+      with the same package and tag as an existing instance currently in use
+      can break all builds, and there is no easy way to delete an instance.
+      - If this happens, file an infra-trooper bug immediately.
 
 5. Create a commit & follow [`//docs/adding_to_third_party.md`][docs_link] for
    the review.
@@ -57,6 +68,7 @@ file that they use, explained in the [README.chromium][readme_chromium_link] is
 up-to-date with the one on android's [website][android_sdk_link], last updated
 date is at the bottom.
 
+[owners_link]: http://go/android-deps-owners
 [docs_link]: ../../../../docs/adding_to_third_party.md
 [android_sdk_link]: https://developer.android.com/studio/terms
 [readme_chromium_link]: ../../../../third_party/android_deps/README.chromium

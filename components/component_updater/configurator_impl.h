@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,7 @@ class Version;
 
 namespace update_client {
 class CommandLineConfigPolicy;
+class ProtocolHandlerFactory;
 }
 
 namespace component_updater {
@@ -88,6 +90,11 @@ class ConfiguratorImpl {
   // Returns the app GUID with which Chrome is registered with Google Update, or
   // an empty string if this brand does not integrate with Google Update.
   std::string GetAppGuid() const;
+
+  // Returns the class factory to create protocol parser and protocol
+  // serializer object instances.
+  std::unique_ptr<update_client::ProtocolHandlerFactory>
+  GetProtocolHandlerFactory() const;
 
  private:
   base::flat_map<std::string, std::string> extra_info_;

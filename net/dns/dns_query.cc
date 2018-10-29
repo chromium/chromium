@@ -5,7 +5,9 @@
 #include "net/dns/dns_query.h"
 
 #include "base/big_endian.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_protocol.h"
@@ -75,10 +77,51 @@ DnsQuery::DnsQuery(uint16_t id,
   }
 }
 
+DnsQuery::DnsQuery(scoped_refptr<IOBufferWithSize> buffer)
+    : io_buffer_(std::move(buffer)) {}
+
 DnsQuery::~DnsQuery() = default;
 
 std::unique_ptr<DnsQuery> DnsQuery::CloneWithNewId(uint16_t id) const {
   return base::WrapUnique(new DnsQuery(*this, id));
+}
+
+bool DnsQuery::Parse(size_t valid_bytes) {
+  if (io_buffer_ == nullptr || io_buffer_->data() == nullptr) {
+    return false;
+  }
+  CHECK(valid_bytes <= base::checked_cast<size_t>(io_buffer_->size()));
+  // We should only parse the query once if the query is constructed from a raw
+  // buffer. If we have constructed the query from data or the query is already
+  // parsed after constructed from a raw buffer, |header_| is not null.
+  DCHECK(header_ == nullptr);
+  base::BigEndianReader reader(io_buffer_->data(), valid_bytes);
+  dns_protocol::Header header;
+  if (!ReadHeader(&reader, &header)) {
+    return false;
+  }
+  if (header.flags & dns_protocol::kFlagResponse) {
+    return false;
+  }
+  if (header.qdcount > 1) {
+    VLOG(1) << "Not supporting parsing a DNS query with multiple questions.";
+    return false;
+  }
+  std::string qname;
+  if (!ReadName(&reader, &qname)) {
+    return false;
+  }
+  uint16_t qtype;
+  uint16_t qclass;
+  if (!reader.ReadU16(&qtype) || !reader.ReadU16(&qclass) ||
+      qclass != dns_protocol::kClassIN) {
+    return false;
+  }
+  // |io_buffer_| now contains the raw packet of a valid DNS query, we just
+  // need to properly initialize |qname_size_| and |header_|.
+  qname_size_ = qname.size();
+  header_ = reinterpret_cast<dns_protocol::Header*>(io_buffer_->data());
+  return true;
 }
 
 uint16_t DnsQuery::id() const {
@@ -111,6 +154,37 @@ DnsQuery::DnsQuery(const DnsQuery& orig, uint16_t id) {
          io_buffer_.get()->size());
   header_ = reinterpret_cast<dns_protocol::Header*>(io_buffer_->data());
   header_->id = base::HostToNet16(id);
+}
+
+bool DnsQuery::ReadHeader(base::BigEndianReader* reader,
+                          dns_protocol::Header* header) {
+  return (
+      reader->ReadU16(&header->id) && reader->ReadU16(&header->flags) &&
+      reader->ReadU16(&header->qdcount) && reader->ReadU16(&header->ancount) &&
+      reader->ReadU16(&header->nscount) && reader->ReadU16(&header->arcount));
+}
+
+bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
+  DCHECK(out != nullptr);
+  out->clear();
+  out->reserve(dns_protocol::kMaxNameLength);
+  uint8_t label_length;
+  if (!reader->ReadU8(&label_length)) {
+    return false;
+  }
+  out->append(reinterpret_cast<char*>(&label_length), 1);
+  while (label_length) {
+    base::StringPiece label;
+    if (!reader->ReadPiece(&label, label_length)) {
+      return false;
+    }
+    out->append(label.data(), label.size());
+    if (!reader->ReadU8(&label_length)) {
+      return false;
+    }
+    out->append(reinterpret_cast<char*>(&label_length), 1);
+  }
+  return true;
 }
 
 }  // namespace net

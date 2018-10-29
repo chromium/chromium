@@ -69,8 +69,8 @@ FileWatcher.prototype.onDirectoryChanged_ = function(event) {
  * Changes the watched directory. In case of a fake entry, the watch is
  * just released, since there is no reason to track a fake directory.
  *
- * @param {!DirectoryEntry|!FakeEntry} entry Directory entry to be tracked, or
- *     the fake entry.
+ * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry to be tracked,
+ *     or the fake entry.
  * @return {!Promise}
  */
 FileWatcher.prototype.changeWatchedDirectory = function(entry) {

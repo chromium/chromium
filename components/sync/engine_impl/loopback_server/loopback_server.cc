@@ -78,12 +78,18 @@ class UpdateSieve {
   // part of a GetUpdatesResponse. Update internal tracking of max versions as a
   // side effect which will later be used to set response progress markers.
   bool ClientWantsItem(const LoopbackServerEntity& entity) {
-    int64_t version = entity.GetVersion();
     ModelType type = entity.GetModelType();
+    // Return only requested datatypes, which makes sure we don't add new
+    // entries to |response_version_map_|, which would otherwise send
+    // unnecessary (and unrequested) progress markers in the response.
+    auto it = request_version_map_.find(type);
+    if (it == request_version_map_.end())
+      return false;
+    DCHECK_NE(0U, request_version_map_.count(type));
+    int64_t version = entity.GetVersion();
     response_version_map_[type] =
         std::max(response_version_map_[type], version);
-    auto it = request_version_map_.find(type);
-    return it == request_version_map_.end() ? false : it->second < version;
+    return it->second < version;
   }
 
  private:
@@ -133,10 +139,12 @@ class UpdateSieve {
 }  // namespace
 
 LoopbackServer::LoopbackServer(const base::FilePath& persistent_file)
-    : version_(0),
+    : strong_consistency_model_enabled_(false),
+      version_(0),
       store_birthday_(0),
       persistent_file_(persistent_file),
       observer_for_tests_(nullptr) {
+  DCHECK(!persistent_file_.empty());
   Init();
 }
 
@@ -184,6 +192,7 @@ bool LoopbackServer::CreateDefaultPermanentItems() {
     if (!top_level_entity) {
       return false;
     }
+    top_level_permanent_item_ids_[model_type] = top_level_entity->GetId();
     SaveEntity(std::move(top_level_entity));
 
     if (model_type == syncer::BOOKMARKS) {
@@ -197,6 +206,15 @@ bool LoopbackServer::CreateDefaultPermanentItems() {
   }
 
   return true;
+}
+
+std::string LoopbackServer::GetTopLevelPermanentItemId(
+    syncer::ModelType model_type) {
+  auto it = top_level_permanent_item_ids_.find(model_type);
+  if (it == top_level_permanent_item_ids_.end()) {
+    return std::string();
+  }
+  return it->second;
 }
 
 void LoopbackServer::UpdateEntityVersion(LoopbackServerEntity* entity) {
@@ -271,6 +289,10 @@ void LoopbackServer::HandleCommand(
   SaveStateToFile(persistent_file_);
 }
 
+void LoopbackServer::EnableStrongConsistencyWithConflictDetectionModel() {
+  strong_consistency_model_enabled_ = true;
+}
+
 bool LoopbackServer::HandleGetUpdatesRequest(
     const sync_pb::GetUpdatesMessage& get_updates,
     sync_pb::GetUpdatesResponse* response) {
@@ -321,6 +343,20 @@ string LoopbackServer::CommitEntity(
     const string& parent_id) {
   if (client_entity.version() == 0 && client_entity.deleted()) {
     return string();
+  }
+
+  // If strong consistency model is enabled (usually on a per-datatype level,
+  // but implemented here as a global state), the server detects version
+  // mismatches and responds with CONFLICT.
+  if (strong_consistency_model_enabled_) {
+    EntityMap::const_iterator iter = entities_.find(client_entity.id_string());
+    if (iter != entities_.end()) {
+      const LoopbackServerEntity* server_entity = iter->second.get();
+      if (server_entity->GetVersion() != client_entity.version()) {
+        entry_response->set_response_type(sync_pb::CommitResponse::CONFLICT);
+        return client_entity.id_string();
+      }
+    }
   }
 
   std::unique_ptr<LoopbackServerEntity> entity;
@@ -478,6 +514,22 @@ std::vector<sync_pb::SyncEntity> LoopbackServer::GetSyncEntitiesByModelType(
   for (const auto& kv : entities_) {
     const LoopbackServerEntity& entity = *kv.second;
     if (!(entity.IsDeleted() || entity.IsPermanent()) &&
+        entity.GetModelType() == model_type) {
+      sync_pb::SyncEntity sync_entity;
+      entity.SerializeAsProto(&sync_entity);
+      sync_entities.push_back(sync_entity);
+    }
+  }
+  return sync_entities;
+}
+
+std::vector<sync_pb::SyncEntity>
+LoopbackServer::GetPermanentSyncEntitiesByModelType(ModelType model_type) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  std::vector<sync_pb::SyncEntity> sync_entities;
+  for (const auto& kv : entities_) {
+    const LoopbackServerEntity& entity = *kv.second;
+    if (!entity.IsDeleted() && entity.IsPermanent() &&
         entity.GetModelType() == model_type) {
       sync_pb::SyncEntity sync_entity;
       entity.SerializeAsProto(&sync_entity);

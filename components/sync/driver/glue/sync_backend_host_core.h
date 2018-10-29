@@ -103,8 +103,7 @@ class SyncBackendHostCore
   void DoStartSyncing(base::Time last_poll_time);
 
   // Called to set the passphrase for encryption.
-  void DoSetEncryptionPassphrase(const std::string& passphrase,
-                                 bool is_explicit);
+  void DoSetEncryptionPassphrase(const std::string& passphrase);
 
   // Called to decrypt the pending keys.
   void DoSetDecryptionPassphrase(const std::string& passphrase);
@@ -198,7 +197,10 @@ class SyncBackendHostCore
 
   // Non-null only between calls to DoInitialize() and DoShutdown().
   std::unique_ptr<SyncBackendRegistrar> registrar_;
-  std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy_;
+
+  // Non-empty only between calls to DoInitialize() and DoShutdown().
+  std::vector<std::unique_ptr<SyncEncryptionHandler::Observer>>
+      encryption_observer_proxies_;
 
   // The timer used to periodically call SaveChanges.
   std::unique_ptr<base::RepeatingTimer> save_changes_timer_;

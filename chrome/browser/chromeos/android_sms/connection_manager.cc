@@ -37,7 +37,9 @@ void ConnectionManager::OnVersionActivated(int64_t version_id,
   prev_active_version_id_ = active_version_id_;
   active_version_id_ = version_id;
   if (is_android_sms_enabled_)
-    connection_establisher_->EstablishConnection(service_worker_context_);
+    connection_establisher_->EstablishConnection(
+        service_worker_context_,
+        ConnectionEstablisher::ConnectionMode::kResumeExistingConnection);
 }
 
 void ConnectionManager::OnVersionRedundant(int64_t version_id,
@@ -68,7 +70,9 @@ void ConnectionManager::OnNoControllees(int64_t version_id, const GURL& scope) {
     return;
 
   if (is_android_sms_enabled_)
-    connection_establisher_->EstablishConnection(service_worker_context_);
+    connection_establisher_->EstablishConnection(
+        service_worker_context_,
+        ConnectionEstablisher::ConnectionMode::kResumeExistingConnection);
 }
 
 void ConnectionManager::OnFeatureStatesChanged(
@@ -91,7 +95,9 @@ void ConnectionManager::UpdateAndroidSmsFeatureState(
   PA_LOG(INFO) << "ConnectionManager::UpdateAndroidSmsFeatureState enabled: "
                << is_enabled;
   if (is_enabled) {
-    connection_establisher_->EstablishConnection(service_worker_context_);
+    connection_establisher_->EstablishConnection(
+        service_worker_context_,
+        ConnectionEstablisher::ConnectionMode::kStartConnection);
   } else {
     service_worker_context_->StopAllServiceWorkersForOrigin(
         GetAndroidMessagesURL());

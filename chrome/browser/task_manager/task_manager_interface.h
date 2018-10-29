@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
@@ -100,9 +99,6 @@ class TaskManagerInterface {
   // inflated because it is counting other processes' resources.
   virtual int64_t GetGpuMemoryUsage(TaskId task_id,
                                     bool* has_duplicates) const = 0;
-
-  // Returns the memory state of the task with |task_id|.
-  virtual base::MemoryState GetMemoryState(TaskId task_id) const = 0;
 
   // Returns the number of average idle CPU wakeups per second since the last
   // refresh cycle. A value of -1 means no valid value is currently available.

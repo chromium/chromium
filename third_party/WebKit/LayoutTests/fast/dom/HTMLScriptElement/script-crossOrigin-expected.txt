@@ -2,7 +2,6 @@ This tests the handling of the script.crossOrigin attribute
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS 'crossOrigin' in script is true
 PASS script.crossOrigin is null
 PASS script.setAttribute('crossorigin', ''); script.crossOrigin is "anonymous"

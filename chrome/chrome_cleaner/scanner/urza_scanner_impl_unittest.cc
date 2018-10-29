@@ -201,10 +201,8 @@ class ScannerTest : public testing::Test {
   void ExpectFoundPUPs(const std::set<UwSId>& pups) {
     EXPECT_EQ(pups.size(), found_pups_.size());
     std::set<UwSId>::const_iterator pup = pups.begin();
-    for (; pup != pups.end(); ++pup) {
-      EXPECT_NE(found_pups_.end(),
-                std::find(found_pups_.begin(), found_pups_.end(), *pup));
-    }
+    for (; pup != pups.end(); ++pup)
+      EXPECT_TRUE(base::ContainsValue(found_pups_, *pup));
     EXPECT_EQ(pups.size(), pups_seen_in_progress_callback_.size());
     EXPECT_EQ(pups, pups_seen_in_progress_callback_);
   }

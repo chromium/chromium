@@ -59,8 +59,10 @@ message SystemProfileProto {
   }
   optional Channel channel = 10;
 
-  // True if Chrome build is ASan-instrumented.
-  optional bool is_asan_build = 20 [default = false];
+  // True if Chrome build is instrumented (e.g. built with ASAN instrumentation
+  // or with DCHECKs enabled).
+  // This field was renamed from |is_asan_build| to reflect its actual meaning.
+  optional bool is_instrumented_build = 20 [default = false];
 
   // The date the user enabled UMA, in seconds since the epoch.
   // If the user has toggled the UMA enabled state multiple times, this will
@@ -129,8 +131,8 @@ message SystemProfileProto {
     // to that, device hardware class was incorrectly recorded in
     // cpu_architecture field.
     //
-    // For Chrome OS, prior to M68, this field had the value that is
-    // currently in |full_hardware_class| field. In M68+, this contains the
+    // For Chrome OS, prior to M69, this field had the value that is
+    // currently in |full_hardware_class| field. In M69+, this contains the
     // board name only. E.G. "CELES", "VEYRON_MINNIE".
 
     optional string hardware_class = 4;

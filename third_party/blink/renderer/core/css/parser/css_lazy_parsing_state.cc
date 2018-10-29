@@ -35,27 +35,6 @@ const CSSParserContext* CSSLazyParsingState::Context() {
   return context_;
 }
 
-bool CSSLazyParsingState::ShouldLazilyParseProperties(
-    const CSSSelectorList& selectors) const {
-  //  Disallow lazy parsing for blocks which have before/after in their selector
-  //  list. This ensures we don't cause a collectFeatures() when we trigger
-  //  parsing for attr() functions which would trigger expensive invalidation
-  //  propagation.
-  for (const auto* s = selectors.FirstForCSSOM(); s;
-       s = CSSSelectorList::Next(*s)) {
-    for (const CSSSelector* current = s; current;
-         current = current->TagHistory()) {
-      const CSSSelector::PseudoType type(current->GetPseudoType());
-      if (type == CSSSelector::kPseudoBefore ||
-          type == CSSSelector::kPseudoAfter)
-        return false;
-      if (current->Relation() != CSSSelector::kSubSelector)
-        break;
-    }
-  }
-  return true;
-}
-
 void CSSLazyParsingState::Trace(blink::Visitor* visitor) {
   visitor->Trace(owning_contents_);
   visitor->Trace(document_);

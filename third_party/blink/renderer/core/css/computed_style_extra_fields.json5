@@ -113,9 +113,9 @@
       keywords: ["not-inside-link", "inside-unvisited-link", "inside-visited-link"],
       inherited: true,
     },
-    // Style can not be shared.
+    // Style has content property with attr() values.
     {
-      name: "Unique",
+      name: "HasAttrContent",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_copy: true,
@@ -227,7 +227,7 @@
       name: "VerticalAlignLength",
       field_template: "external",
       default_value: "Length()",
-      include_paths: ["third_party/blink/renderer/platform/length.h"],
+      include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
       type_name: "Length",
       field_group: "box",
       getter: "GetVerticalAlignLength",
@@ -748,6 +748,13 @@
     },
     {
       name: "HasCurrentTransformAnimation",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
+      name: "HasTransformAnimationWithForwardsOrBothFillMode",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",

@@ -5,9 +5,11 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/download/download_request_core.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "net/http/http_request_headers.h"
@@ -29,7 +31,7 @@ class DownloadRequestCoreTest : public testing::Test {
       const std::string& url) const {
     GURL gurl(url);
     return std::make_unique<download::DownloadUrlParameters>(
-        gurl, request_context_getter_.get(), TRAFFIC_ANNOTATION_FOR_TESTS);
+        gurl, TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
   void CheckRequestHeaders(const std::string& name,
@@ -46,14 +48,15 @@ class DownloadRequestCoreTest : public testing::Test {
   }
 
   void CreateRequestOnIOThread(download::DownloadUrlParameters* params) {
-    url_request_ = DownloadRequestCore::CreateRequestOnIOThread(true, params);
+    url_request_ = DownloadRequestCore::CreateRequestOnIOThread(
+        true, params, request_context_getter_);
     DCHECK(url_request_.get());
   }
 
   void SetUp() override {
     request_context_getter_ = new net::TestURLRequestContextGetter(
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::UI));
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::UI}));
   }
 
   void TearDown() override {

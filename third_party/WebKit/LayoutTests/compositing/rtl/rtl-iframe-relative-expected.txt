@@ -26,11 +26,6 @@
       "bounds": [400, 400]
     },
     {
-      "name": "Child Containment Layer",
-      "bounds": [400, 400],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow (relative positioned) DIV id='layer'",
       "bounds": [100, 100],
       "contentsOpaque": true,

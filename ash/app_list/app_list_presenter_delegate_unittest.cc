@@ -150,7 +150,7 @@ class AppListPresenterDelegateNonHomeLauncherTest
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {}, {app_list::features::kEnableHomeLauncher});
+        {}, {app_list_features::kEnableHomeLauncher});
     AppListPresenterDelegateTest::SetUp();
   }
 
@@ -1120,13 +1120,10 @@ class AppListPresenterDelegateHomeLauncherTest
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {app_list::features::kEnableHomeLauncher,
-         app_list::features::kEnableBackgroundBlur},
+        {app_list_features::kEnableHomeLauncher,
+         app_list_features::kEnableBackgroundBlur},
         {});
     AppListPresenterDelegateTest::SetUp();
-    // Home launcher is only enabled on internal display.
-    display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
-        .SetFirstDisplayAsInternalDisplay();
     GetAppListTestHelper()->WaitUntilIdle();
   }
 
@@ -1138,7 +1135,7 @@ class AppListPresenterDelegateHomeLauncherTest
         ->shelf_controller()
         ->model()
         ->GetShelfItemDelegate(ShelfID(kAppListId))
-        ->ItemSelected(std::move(event), display::kInvalidDisplayId,
+        ->ItemSelected(std::move(event), GetPrimaryDisplayId(),
                        ash::LAUNCH_FROM_UNKNOWN, base::DoNothing());
     GetAppListTestHelper()->WaitUntilIdle();
   }
@@ -1350,7 +1347,7 @@ TEST_F(AppListPresenterDelegateHomeLauncherTest, OpacityInOverviewMode) {
       Shell::Get()->window_selector_controller();
   window_selector_controller->ToggleOverview();
   EXPECT_TRUE(window_selector_controller->IsSelecting());
-  ui::Layer* layer = GetAppListView()->app_list_main_view()->layer();
+  ui::Layer* layer = GetAppListView()->GetWidget()->GetNativeWindow()->layer();
   EXPECT_EQ(0.0f, layer->opacity());
 
   // Disable overview mode.
@@ -1489,6 +1486,8 @@ TEST_F(AppListPresenterDelegateHomeLauncherTest, WallpaperContextMenu) {
   GetAppListTestHelper()->CheckVisibility(true);
 
   // Long press on the app list to open the context menu.
+  // TODO(ginko) look into a way to populate an apps grid, then get a point
+  // between these apps so that clicks/taps between apps can be tested
   const gfx::Point onscreen_point(GetPointOutsideSearchbox());
   ui::test::EventGenerator* generator = GetEventGenerator();
   ui::GestureEvent long_press(

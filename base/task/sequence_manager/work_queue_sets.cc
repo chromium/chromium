@@ -30,7 +30,7 @@ void WorkQueueSets::AddQueue(WorkQueue* work_queue, size_t set_index) {
 void WorkQueueSets::RemoveQueue(WorkQueue* work_queue) {
   DCHECK_EQ(this, work_queue->work_queue_sets());
   work_queue->AssignToWorkQueueSets(nullptr);
-  HeapHandle heap_handle = work_queue->heap_handle();
+  base::internal::HeapHandle heap_handle = work_queue->heap_handle();
   if (!heap_handle.IsValid())
     return;
   size_t set_index = work_queue->work_queue_set_index();
@@ -100,7 +100,7 @@ void WorkQueueSets::OnPopQueue(WorkQueue* work_queue) {
 
 void WorkQueueSets::OnQueueBlocked(WorkQueue* work_queue) {
   DCHECK_EQ(this, work_queue->work_queue_sets());
-  HeapHandle heap_handle = work_queue->heap_handle();
+  base::internal::HeapHandle heap_handle = work_queue->heap_handle();
   if (!heap_handle.IsValid())
     return;
   size_t set_index = work_queue->work_queue_set_index();
@@ -147,7 +147,8 @@ bool WorkQueueSets::ContainsWorkQueueForTest(
   EnqueueOrder enqueue_order;
   bool has_enqueue_order = work_queue->GetFrontTaskEnqueueOrder(&enqueue_order);
 
-  for (const IntrusiveHeap<OldestTaskEnqueueOrder>& heap : work_queue_heaps_) {
+  for (const base::internal::IntrusiveHeap<OldestTaskEnqueueOrder>& heap :
+       work_queue_heaps_) {
     for (const OldestTaskEnqueueOrder& heap_value_pair : heap) {
       if (heap_value_pair.value == work_queue) {
         DCHECK(has_enqueue_order);

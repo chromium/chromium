@@ -249,8 +249,7 @@ class SessionRestoreImpl : public content::NotificationObserver {
     std::vector<Browser*> browsers;
     std::vector<RestoredTab> created_contents;
     // Create a browser instance to put the restored tabs in.
-    for (std::vector<const sessions::SessionWindow*>::const_iterator i = begin;
-         i != end; ++i) {
+    for (auto i = begin; i != end; ++i) {
       Browser* browser = CreateRestoredBrowser(
           BrowserTypeForWindowType((*i)->type), (*i)->bounds, (*i)->workspace,
           (*i)->show_state, (*i)->app_name);
@@ -879,8 +878,7 @@ WebContents* SessionRestore::RestoreForeignSessionTab(
 bool SessionRestore::IsRestoring(const Profile* profile) {
   if (active_session_restorers == nullptr)
     return false;
-  for (std::set<SessionRestoreImpl*>::const_iterator it =
-           active_session_restorers->begin();
+  for (auto it = active_session_restorers->begin();
        it != active_session_restorers->end(); ++it) {
     if ((*it)->profile() == profile)
       return true;
@@ -892,8 +890,7 @@ bool SessionRestore::IsRestoring(const Profile* profile) {
 bool SessionRestore::IsRestoringSynchronously() {
   if (!active_session_restorers)
     return false;
-  for (std::set<SessionRestoreImpl*>::const_iterator it =
-           active_session_restorers->begin();
+  for (auto it = active_session_restorers->begin();
        it != active_session_restorers->end(); ++it) {
     if ((*it)->synchronous())
       return true;

@@ -147,15 +147,6 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
                         uint32_t framebuffer,
                         scoped_refptr<PageFlipRequest> page_flip_request);
 
-  // Schedule an overlay to be show during the page flip for CRTC |crtc_id|.
-  // |source| location from |framebuffer| will be shown on overlay
-  // |overlay_plane|, in the bounds specified by |location| on the screen.
-  virtual bool PageFlipOverlay(uint32_t crtc_id,
-                               uint32_t framebuffer,
-                               const gfx::Rect& location,
-                               const gfx::Rect& source,
-                               int overlay_plane);
-
   // Returns the list of all planes available on this DRM device.
   virtual ScopedDrmPlaneResPtr GetPlaneResources();
 

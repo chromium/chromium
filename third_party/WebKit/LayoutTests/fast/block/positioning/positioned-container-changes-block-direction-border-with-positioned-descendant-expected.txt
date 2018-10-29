@@ -1,4 +1,3 @@
 crbug.com/581612: Changing block-direction border width on a positioned element with auto height should flex the height of its descendants. There should be no red.
 
 PASS
-

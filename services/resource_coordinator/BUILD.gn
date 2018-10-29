@@ -55,7 +55,11 @@ source_set("lib") {
     "resource_coordinator_clock.h",
     "resource_coordinator_service.cc",
     "resource_coordinator_service.h",
+    "webui_graph_dump_impl.cc",
+    "webui_graph_dump_impl.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//base",
@@ -109,6 +113,7 @@ source_set("tests") {
     "public/cpp/memory_instrumentation/memory_instrumentation_mojom_traits_unittest.cc",
     "public/cpp/memory_instrumentation/os_metrics_unittest.cc",
     "public/cpp/memory_instrumentation/tracing_integration_unittest.cc",
+    "webui_graph_dump_impl_unittest.cc",
   ]
 
   if (!is_android) {

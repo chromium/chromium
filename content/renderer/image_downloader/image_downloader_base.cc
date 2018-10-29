@@ -89,8 +89,8 @@ void ImageDownloaderBase::FetchImage(const GURL& image_url,
   image_fetchers_.push_back(
       std::make_unique<MultiResolutionImageResourceFetcher>(
           image_url, frame, 0,
-          is_favicon ? WebURLRequest::kRequestContextFavicon
-                     : WebURLRequest::kRequestContextImage,
+          is_favicon ? blink::mojom::RequestContextType::FAVICON
+                     : blink::mojom::RequestContextType::IMAGE,
           bypass_cache ? blink::mojom::FetchCacheMode::kBypassCache
                        : blink::mojom::FetchCacheMode::kDefault,
           base::BindOnce(&ImageDownloaderBase::DidFetchImage,

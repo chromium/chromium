@@ -195,8 +195,7 @@ std::string CertificateViewerModalDialog::GetDialogArgs() const {
   std::vector<std::string> usages;
   x509_certificate_model::GetUsageStrings(cert_hnd, &usages);
   std::string usagestr;
-  for (std::vector<std::string>::iterator it = usages.begin();
-      it != usages.end(); ++it) {
+  for (auto it = usages.begin(); it != usages.end(); ++it) {
     if (usagestr.length() > 0) {
       usagestr += "\n";
     }
@@ -253,8 +252,7 @@ std::string CertificateViewerModalDialog::GetDialogArgs() const {
   // Certificate hierarchy is constructed from bottom up.
   std::unique_ptr<base::ListValue> children;
   int index = 0;
-  for (net::ScopedCERTCertificateList::const_iterator i = nss_certs_.begin();
-       i != nss_certs_.end(); ++i, ++index) {
+  for (auto i = nss_certs_.begin(); i != nss_certs_.end(); ++i, ++index) {
     std::unique_ptr<base::DictionaryValue> cert_node(
         new base::DictionaryValue());
     base::ListValue cert_details;

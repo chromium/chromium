@@ -18,8 +18,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import diff_util
 import path_util
 
-import print_style
 import histogram_paths
+import histograms_print_style
 
 
 ENUMS_PATH = histogram_paths.ENUMS_XML
@@ -228,7 +228,8 @@ def _GetOldAndUpdatedXml(histogram_enum_name, source_enum_values,
                              source_enum_path, caller_script_name,
                              histograms_doc)
 
-  new_xml = print_style.GetPrintStyle().PrettyPrintNode(histograms_doc)
+  new_xml = histograms_print_style.GetPrintStyle().PrettyPrintNode(
+      histograms_doc)
   return (xml, new_xml)
 
 

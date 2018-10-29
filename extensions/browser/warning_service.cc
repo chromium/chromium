@@ -36,8 +36,7 @@ void WarningService::ClearWarnings(
     const std::set<Warning::WarningType>& types) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ExtensionIdSet affected_extensions;
-  for (WarningSet::iterator i = warnings_.begin();
-       i != warnings_.end();) {
+  for (auto i = warnings_.begin(); i != warnings_.end();) {
     if (types.find(i->warning_type()) != types.end()) {
       affected_extensions.insert(i->extension_id());
       warnings_.erase(i++);
@@ -54,8 +53,7 @@ std::set<Warning::WarningType> WarningService::
     GetWarningTypesAffectingExtension(const std::string& extension_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::set<Warning::WarningType> result;
-  for (WarningSet::const_iterator i = warnings_.begin();
-       i != warnings_.end(); ++i) {
+  for (auto i = warnings_.cbegin(); i != warnings_.cend(); ++i) {
     if (i->extension_id() == extension_id)
       result.insert(i->warning_type());
   }
@@ -70,8 +68,7 @@ std::vector<std::string> WarningService::GetWarningMessagesForExtension(
   const ExtensionSet& extension_set =
       ExtensionRegistry::Get(browser_context_)->enabled_extensions();
 
-  for (WarningSet::const_iterator i = warnings_.begin();
-       i != warnings_.end(); ++i) {
+  for (auto i = warnings_.cbegin(); i != warnings_.cend(); ++i) {
     if (i->extension_id() == extension_id)
       result.push_back(i->GetLocalizedMessage(&extension_set));
   }

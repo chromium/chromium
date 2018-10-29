@@ -57,29 +57,27 @@ int TabStripModelOrderController::DetermineNewSelectedIndex(
   content::WebContents* parent_opener =
       tabstrip_->GetOpenerOfWebContentsAt(removing_index);
   // First see if the index being removed has any "child" tabs. If it does, we
-  // want to select the first in that child group, not the next tab in the same
-  // group of the removed tab.
+  // want to select the first that child opened, not the next tab opened by the
+  // removed tab.
   content::WebContents* removed_contents =
       tabstrip_->GetWebContentsAt(removing_index);
   // The parent opener should never be the same as the controller being removed.
   DCHECK(parent_opener != removed_contents);
   int index = tabstrip_->GetIndexOfNextWebContentsOpenedBy(removed_contents,
-                                                           removing_index,
-                                                           false);
+                                                           removing_index);
   if (index != TabStripModel::kNoTab)
     return GetValidIndex(index, removing_index);
 
   if (parent_opener) {
-    // If the tab was in a group, shift selection to the next tab in the group.
+    // If the tab has an opener, shift selection to the next tab with the same
+    // opener.
     int index = tabstrip_->GetIndexOfNextWebContentsOpenedBy(parent_opener,
-                                                             removing_index,
-                                                             false);
+                                                             removing_index);
     if (index != TabStripModel::kNoTab)
       return GetValidIndex(index, removing_index);
 
-    // If we can't find a subsequent group member, just fall back to the
-    // parent_opener itself. Note that we use "group" here since opener is
-    // reset by select operations..
+    // If we can't find another tab with the same opener, fall back to the
+    // opener itself.
     index = tabstrip_->GetIndexOfWebContents(parent_opener);
     if (index != TabStripModel::kNoTab)
       return GetValidIndex(index, removing_index);
@@ -93,30 +91,38 @@ int TabStripModelOrderController::DetermineNewSelectedIndex(
   return selected_index;
 }
 
-void TabStripModelOrderController::ActiveTabChanged(
-    content::WebContents* old_contents,
-    content::WebContents* new_contents,
-    int index,
-    int reason) {
-  content::WebContents* old_opener = NULL;
+void TabStripModelOrderController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (!selection.active_tab_changed() || tab_strip_model->empty())
+    return;
+
+  content::WebContents* old_contents = selection.old_contents;
+  content::WebContents* new_contents = selection.new_contents;
+  content::WebContents* old_opener = nullptr;
+  int reason = selection.reason;
+
   if (old_contents) {
     int index = tabstrip_->GetIndexOfWebContents(old_contents);
     if (index != TabStripModel::kNoTab) {
       old_opener = tabstrip_->GetOpenerOfWebContentsAt(index);
 
-      // Forget any group/opener relationships that need to be reset whenever
-      // selection changes (see comment in TabStripModel::AddWebContentsAt).
-      if (tabstrip_->ShouldResetGroupOnSelect(old_contents))
-        tabstrip_->ForgetGroup(old_contents);
+      // Forget the opener relationship if it needs to be reset whenever the
+      // active tab changes (see comment in TabStripModel::AddWebContents, where
+      // the flag is set).
+      if (tabstrip_->ShouldResetOpenerOnActiveTabChange(old_contents))
+        tabstrip_->ForgetOpener(old_contents);
     }
   }
-  content::WebContents* new_opener = tabstrip_->GetOpenerOfWebContentsAt(index);
+  content::WebContents* new_opener =
+      tabstrip_->GetOpenerOfWebContentsAt(selection.new_model.active());
 
   if ((reason & CHANGE_REASON_USER_GESTURE) && new_opener != old_opener &&
-      ((old_contents == NULL && new_opener == NULL) ||
-          new_opener != old_contents) &&
-      ((new_contents == NULL && old_opener == NULL) ||
-          old_opener != new_contents)) {
+      ((old_contents == nullptr && new_opener == nullptr) ||
+       new_opener != old_contents) &&
+      ((new_contents == nullptr && old_opener == nullptr) ||
+       old_opener != new_contents)) {
     tabstrip_->ForgetAllOpeners();
   }
 }

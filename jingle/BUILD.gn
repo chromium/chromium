@@ -28,6 +28,7 @@ static_library("jingle_glue") {
     "//base/third_party/dynamic_annotations",
     "//net",
     "//services/network:network_service",
+    "//third_party/libjingle_xmpp:rtc_task_runner",
   ]
 
   configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
@@ -117,6 +118,7 @@ static_library("notifier") {
     "//net",
     "//third_party/expat",
     "//url",
+    "//third_party/libjingle_xmpp:rtc_task_runner",
   ]
 }
 
@@ -197,7 +199,9 @@ test("jingle_unittests") {
     "//base/test:test_support",
     "//net",
     "//net:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/libjingle_xmpp:rtc_task_runner",
   ]
 }

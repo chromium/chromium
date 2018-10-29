@@ -19,7 +19,7 @@ class DiscoverModuleWelcome : public DiscoverModule {
 
   // DiscoverModule:
   bool IsCompleted() const override;
-  std::unique_ptr<DiscoverHandler> CreateWebUIHandler() const override;
+  std::unique_ptr<DiscoverHandler> CreateWebUIHandler() override;
 
   // Module name.
   static const char kModuleName[];

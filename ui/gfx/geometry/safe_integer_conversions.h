@@ -9,7 +9,6 @@
 #include <limits>
 
 #include "base/numerics/safe_conversions.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 

@@ -53,6 +53,8 @@
                 android:title="@null" />
           </menu>
         </item>
+        <item android:id="@+id/translate_id"
+            android:title="@string/menu_translate" />
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page" />
         <item android:id="@+id/add_to_homescreen_id"

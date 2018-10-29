@@ -25,18 +25,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -45,6 +46,7 @@ import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.ui.DropdownPopupWindowInterface;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -63,6 +65,13 @@ public class ManualFillingIntegrationTest {
             new ChromeTabbedActivityTestRule();
 
     private final ManualFillingTestHelper mHelper = new ManualFillingTestHelper(mActivityTestRule);
+
+    @Before
+    public void setUp() throws Exception {
+        // TODO(crbug.com/894428) - fix this suite to use the embedded test server instead of
+        // data urls.
+        Features.getInstance().enable(ChromeFeatureList.AUTOFILL_ALLOW_NON_HTTP_ACTIVATION);
+    }
 
     @After
     public void tearDown() {
@@ -213,9 +222,11 @@ public class ManualFillingIntegrationTest {
                 "", "80666", "", "Disneyland", "1", "a.turing@enigma.com", "DE"));
         mHelper.createTestTab();
 
-        // Focus the field to bring up the accessory.
-        mHelper.clickEmailField();
+        // Focus the field to bring up the autofill popup. We force a accessory here because the
+        // autofill popup doesn't trigger on password fields.
+        mHelper.clickEmailField(true);
         mHelper.waitForKeyboard();
+
         DropdownPopupWindowInterface popup = mHelper.waitForAutofillPopup("a.tu");
 
         assertThat(popup.isShowing(), is(true));
@@ -230,6 +241,25 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
+    public void testSelectingNonPasswordInputDismissesAccessory()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        mHelper.loadTestPage(false);
+        mHelper.createTestTab();
+
+        // Focus the password field to bring up the accessory.
+        mHelper.clickPasswordField();
+        mHelper.waitForKeyboard();
+        whenDisplayed(withId(R.id.tabs));
+
+        // Clicking the email field hides the accessory again.
+        mHelper.clickEmailField(false);
+        mHelper.waitToBeHidden(withId(R.id.keyboard_accessory));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testInvokingTabSwitcherHidesAccessory()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(false);
@@ -244,10 +274,10 @@ public class ManualFillingIntegrationTest {
         mHelper.waitForKeyboardToDisappear();
         whenDisplayed(withId(R.id.keyboard_accessory_sheet));
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getLayoutManager().showOverview(false);
-            mActivityTestRule.getActivity().getLayoutManager().hideOverview(false);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivityTestRule.getActivity().getLayoutManager().showOverview(false); });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivityTestRule.getActivity().getLayoutManager().hideOverview(false); });
 
         mHelper.waitToBeHidden(withId(R.id.keyboard_accessory_sheet));
     }
@@ -281,7 +311,7 @@ public class ManualFillingIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> { mActivityTestRule.getActivity().onResumeWithNative(); });
 
-        // Clicking the field should bring it back up
+        // Clicking the field should bring the accessory back up.
         mHelper.clickPasswordField();
         mHelper.waitForKeyboard();
 
@@ -315,31 +345,19 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    public void testInfobarStaysHiddenWhenOpeningSheet()
+    public void testInfobarStaysHiddenWhileChangingFieldsWithOpenKeybaord()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(false);
 
-        // TODO Create an infobar
-        InfoBarContainer container =
-                mActivityTestRule.getActivity().getActivityTab().getInfoBarContainer();
-        InfoBarTestAnimationListener mListener = new InfoBarTestAnimationListener();
-        container.addAnimationListener(mListener);
-        final SimpleConfirmInfoBarBuilder.Listener testListener =
-                new SimpleConfirmInfoBarBuilder.Listener() {
-                    @Override
-                    public void onInfoBarDismissed() {}
-                    @Override
-                    public boolean onInfoBarButtonClicked(boolean isPrimary) {
-                        return false;
-                    }
-                };
+        InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
+        mActivityTestRule.getInfoBarContainer().addAnimationListener(listener);
         final String kInfoBarText = "SomeInfoBar";
         ThreadUtils.runOnUiThread(() -> {
             SimpleConfirmInfoBarBuilder.create(mActivityTestRule.getActivity().getActivityTab(),
-                    testListener, InfoBarIdentifier.DUPLICATE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID, 0,
-                    kInfoBarText, null, null, false);
+                    InfoBarIdentifier.DUPLICATE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID, kInfoBarText,
+                    false);
         });
-        mListener.addInfoBarAnimationFinished("InfoBar not added.");
+        listener.addInfoBarAnimationFinished("InfoBar not added.");
 
         mHelper.createTestTab();
         whenDisplayed(withText(kInfoBarText));
@@ -347,22 +365,63 @@ public class ManualFillingIntegrationTest {
         // Focus the field to bring up the accessory.
         mHelper.clickPasswordField();
         mHelper.waitForKeyboard();
-        assertThat(mActivityTestRule.getActivity()
-                           .getActivityTab()
-                           .getInfoBarContainer()
-                           .getVisibility(),
-                is(not(View.VISIBLE)));
+        assertThat(mActivityTestRule.getInfoBarContainer().getVisibility(), is(not(View.VISIBLE)));
+
+        // Clicking another field hides the accessory, but the InfoBar should remain invisible.
+        mHelper.clickEmailField(false);
+        assertThat(mActivityTestRule.getInfoBarContainer().getVisibility(), is(not(View.VISIBLE)));
+
+        // Close the keyboard to bring back the InfoBar.
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getKeyboardDelegate().hideKeyboard(
+                    mActivityTestRule.getActivity().getCurrentFocus());
+            mActivityTestRule.getInfoBarContainer().requestLayout();
+        });
+
+        mHelper.waitForKeyboardToDisappear();
+        mHelper.waitToBeHidden(withId(R.id.keyboard_accessory));
+
+        whenDisplayed(withText(kInfoBarText));
+    }
+
+    @Test
+    @SmallTest
+    public void testInfobarStaysHiddenWhenOpeningSheet()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        mHelper.loadTestPage(false);
+
+        InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
+        mActivityTestRule.getInfoBarContainer().addAnimationListener(listener);
+        final String kInfoBarText = "SomeInfoBar";
+        ThreadUtils.runOnUiThread(() -> {
+            SimpleConfirmInfoBarBuilder.create(mActivityTestRule.getActivity().getActivityTab(),
+                    InfoBarIdentifier.DUPLICATE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID, kInfoBarText,
+                    false);
+        });
+        listener.addInfoBarAnimationFinished("InfoBar not added.");
+
+        mHelper.createTestTab();
+        whenDisplayed(withText(kInfoBarText));
+
+        // Focus the field to bring up the accessory.
+        mHelper.clickPasswordField();
+        mHelper.waitForKeyboard();
+        assertThat(mActivityTestRule.getInfoBarContainer().getVisibility(), is(not(View.VISIBLE)));
 
         // Click the tab to show the sheet and hide the keyboard.
         whenDisplayed(withId(R.id.tabs)).perform(selectTabAtPosition(0));
         mHelper.waitForKeyboardToDisappear();
         whenDisplayed(withId(R.id.keyboard_accessory_sheet));
-        assertThat(mActivityTestRule.getActivity()
-                           .getActivityTab()
-                           .getInfoBarContainer()
-                           .getVisibility(),
-                is(not(View.VISIBLE)));
-        Espresso.pressBack();
+        assertThat(mActivityTestRule.getInfoBarContainer().getVisibility(), is(not(View.VISIBLE)));
+
+        // Reopen the keyboard, then close it.
+        whenDisplayed(withId(R.id.tabs)).perform(selectTabAtPosition(0));
+        mHelper.waitForKeyboard();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getKeyboardDelegate().hideKeyboard(
+                    mActivityTestRule.getActivity().getCurrentFocus());
+            mActivityTestRule.getInfoBarContainer().requestLayout();
+        });
 
         mHelper.waitToBeHidden(withId(R.id.keyboard_accessory_sheet));
         mHelper.waitToBeHidden(withId(R.id.keyboard_accessory));

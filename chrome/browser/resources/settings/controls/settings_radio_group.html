@@ -1,7 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="pref_control_behavior.html">
 <link rel="import" href="../prefs/pref_util.html">
 <link rel="import" href="../settings_shared_css.html">
@@ -10,10 +10,10 @@
   <template>
     <style include="settings-shared"></style>
     <div>[[label]]</div>
-    <paper-radio-group selected="{{selected}}"
-        selectable="cr-radio-button, controlled-radio-button">
+    <cr-radio-group selected="[[selected]]"
+        on-selected-changed="onSelectedChanged_">
       <slot></slot>
-    </paper-radio-group>
+    </cr-radio-group>
   </template>
   <script src="settings_radio_group.js"></script>
 </dom-module>

@@ -14,11 +14,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
@@ -91,7 +93,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
                           base::Unretained(this)));
 
   capturer_->SetFormat(capture_params_.requested_format.pixel_format,
-                       media::COLOR_SPACE_UNSPECIFIED);
+                       gfx::ColorSpace::CreateREC709());
   capturer_->SetMinCapturePeriod(
       base::TimeDelta::FromMicroseconds(base::saturated_cast<int64_t>(
           base::Time::kMicrosecondsPerSecond /
@@ -105,8 +107,8 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
     capturer_->ChangeTarget(target_);
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&MouseCursorOverlayController::Start,
                      cursor_controller_->GetWeakPtr(),
                      capturer_->CreateOverlay(kMouseCursorStackingIndex),
@@ -153,9 +155,9 @@ void FrameSinkVideoCaptureDevice::Resume() {
 void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&MouseCursorOverlayController::Stop,
-                                         cursor_controller_->GetWeakPtr()));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(&MouseCursorOverlayController::Stop,
+                                          cursor_controller_->GetWeakPtr()));
 
   MaybeStopConsuming();
   capturer_.reset();
@@ -278,8 +280,8 @@ void FrameSinkVideoCaptureDevice::CreateCapturerViaGlobalManager(
     viz::mojom::FrameSinkVideoCapturerRequest request) {
   // Send the request to UI thread because that's where HostFrameSinkManager
   // lives.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           [](viz::mojom::FrameSinkVideoCapturerRequest request) {
             viz::HostFrameSinkManager* const manager =

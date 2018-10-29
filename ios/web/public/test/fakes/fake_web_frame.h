@@ -31,6 +31,7 @@ class FakeWebFrame : public WebFrame {
       const std::vector<base::Value>& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
+  std::string last_javascript_call() { return last_javascript_call_; }
 
  private:
   // The frame identifier which uniquely identifies this frame across the
@@ -40,6 +41,8 @@ class FakeWebFrame : public WebFrame {
   bool is_main_frame_ = false;
   // The security origin associated with this frame.
   GURL security_origin_;
+  // The last Javascript script that was called, converted as a string.
+  std::string last_javascript_call_;
 };
 
 }  // namespace web

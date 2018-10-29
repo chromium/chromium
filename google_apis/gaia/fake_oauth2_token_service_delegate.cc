@@ -68,6 +68,7 @@ void FakeOAuth2TokenServiceDelegate::RevokeAllCredentials() {
 
 void FakeOAuth2TokenServiceDelegate::LoadCredentials(
     const std::string& primary_account_id) {
+  set_load_credentials_state(LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
   FireRefreshTokensLoaded();
 }
 
@@ -114,6 +115,12 @@ void FakeOAuth2TokenServiceDelegate::UpdateAuthError(
     const std::string& account_id,
     const GoogleServiceAuthError& error) {
   if (GetAuthError(account_id) == error)
+    return;
+
+  // Drop transient errors to match OAuth2TokenService's stated contract for
+  // GetAuthError() and to allow clients to test proper behavior in the case of
+  // transient errors.
+  if (error.IsTransientError())
     return;
 
   auto it = refresh_tokens_.find(account_id);

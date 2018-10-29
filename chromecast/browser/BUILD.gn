@@ -51,6 +51,8 @@ cast_source_set("browser") {
     "cast_quota_permission_context.h",
     "cast_resource_dispatcher_host_delegate.cc",
     "cast_resource_dispatcher_host_delegate.h",
+    "cast_web_contents_impl.cc",
+    "cast_web_contents_impl.h",
     "cast_web_contents_manager.cc",
     "cast_web_contents_manager.h",
     "cast_web_view_default.cc",
@@ -300,8 +302,6 @@ cast_source_set("browser") {
         "cast_web_view_extension.h",
         "ui/aura/accessibility/automation_manager_aura.cc",
         "ui/aura/accessibility/automation_manager_aura.h",
-        "ui/aura/accessibility/ax_root_obj_wrapper.cc",
-        "ui/aura/accessibility/ax_root_obj_wrapper.h",
         "ui/aura/accessibility/ax_tree_source_aura.cc",
         "ui/aura/accessibility/ax_tree_source_aura.h",
       ]
@@ -336,6 +336,7 @@ cast_source_set("public") {
   sources = [
     "cast_content_window.cc",
     "cast_content_window.h",
+    "cast_web_contents.h",
     "cast_web_view.cc",
     "cast_web_view.h",
   ]
@@ -378,6 +379,10 @@ service_manifest("cast_content_browser_manifest_overlay") {
 # interfaces in "content_renderer".
 service_manifest("cast_content_renderer_manifest_overlay") {
   source = "cast_content_renderer_manifest_overlay.json"
+
+  if (chromecast_branding != "public") {
+    overlays = [ "//chromecast/internal/shell/browser:cast_content_renderer_internal_manifest_overlay" ]
+  }
 }
 
 # This target is for packaged services that will run in the main (browser)

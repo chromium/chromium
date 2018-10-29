@@ -1,0 +1,7 @@
+include_rules = [
+    "-third_party/blink/renderer/modules",
+    "+third_party/blink/renderer/modules/animationworklet",
+    "+third_party/blink/renderer/modules/csspaint",
+    "+third_party/blink/renderer/modules/modules_export.h",
+    "+third_party/blink/renderer/modules/worklet",
+]

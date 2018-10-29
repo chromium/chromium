@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/dns_protocol.h"
 #include "net/dns/notify_watcher_mac.h"
@@ -186,7 +187,7 @@ ConfigParsePosixResult ReadDnsConfig(DnsConfig* dns_config) {
   }
 #endif  // defined(OS_MACOSX) && !defined(OS_IOS)
   // Override timeout value to match default setting on Windows.
-  dns_config->timeout = base::TimeDelta::FromMilliseconds(kDnsDefaultTimeoutMs);
+  dns_config->timeout = kDnsDefaultTimeout;
   return result;
 #else  // defined(OS_ANDROID)
   dns_config->nameservers.clear();

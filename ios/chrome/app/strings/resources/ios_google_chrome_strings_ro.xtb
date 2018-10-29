@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Folosind Chrome, economisești timp, deoarece te conectează la conturi și pe web. Poți să adaugi sau să elimini conturi din Setări.</translation>
 <translation id="3282568296779691940">Conectați-vă la Chrome</translation>
 <translation id="3345341804167540816">Folosește Chrome oriunde</translation>
-<translation id="3678774398092457402">Dorești ca Google Chrome să salveze parola pentru acest site?</translation>
 <translation id="384394811301901750">Momentan, Google Chrome nu poate folosi camera foto</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Comuți contul pentru sincronizare de la <ph name="USER_EMAIL1" /> la <ph name="USER_EMAIL2" />. Datele Chrome existente sunt gestionate de <ph name="DOMAIN" />. Astfel, se vor șterge datele de pe acest dispozitiv, dar datele vor rămâne în <ph name="USER_EMAIL1" />.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Setările<ph name="END_LINK" /> pot fi personalizate oricând. Google poate folosi conținutul de pe site-urile pe care le accesezi, interacțiunile cu browserul și activitatea pentru a personaliza Chrome și servicii Google precum Traducere, Căutare și anunțuri.</translation>
 <translation id="5639704535586432836">Deschide Setări &gt; Confidențialitate &gt; Cameră foto &gt; Google Chrome și activează camera foto.</translation>
 <translation id="5642200033778930880">Google Chrome nu poate folosi camera foto în modul Vizualizare împărțită</translation>
-<translation id="5703130498371792817">Îți place Chrome? <ph name="BEGIN_LINK" />Evaluează aplicația<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Sfat pentru Chrome: unele butoane se află acum în partea de jos a ecranului, cum ar fi Înapoi, Înainte și Caută.</translation>
 <translation id="6036420186814142909">Google Chrome are funcții care te ajută să gestionezi datele de internet și viteza cu care poți să încarci paginile web.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Termenii și condițiile Google Chrome</translation>
 <translation id="7165736900384873061">Începe să folosești scanerul QR din Google Chrome</translation>
 <translation id="7172660552945675509">Sfat: <ph name="BEGIN_LINK" />mută Chrome în bara de andocare<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome folosește Face ID pentru a asigura accesul autorizat la parolele tale.</translation>
 <translation id="7265369419224458312">Accesează chiar aici filele pe care le-ai deschis pe computer. Deschide Chrome pe computer, accesează meniul și selectează „Conectează-te la Chrome...”</translation>
 <translation id="728488472449859922">Activează scanerul QR din Google Chrome</translation>
 <translation id="7400722733683201933">Despre Google Chrome</translation>

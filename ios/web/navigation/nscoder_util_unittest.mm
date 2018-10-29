@@ -5,7 +5,7 @@
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/stl_util.h"
 #import "ios/web/navigation/nscoder_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -29,7 +29,7 @@ const char* testStrings[] = {
 };
 
 TEST_F(NSCoderStdStringTest, encodeDecode) {
-  for (size_t i = 0; i < arraysize(testStrings); ++i) {
+  for (size_t i = 0; i < base::size(testStrings); ++i) {
     NSMutableData* data = [NSMutableData data];
 
     NSKeyedArchiver* archiver =

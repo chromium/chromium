@@ -23,7 +23,6 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/data_reduction_proxy/core/browser/data_usage_store.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_event_store.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
@@ -231,35 +230,12 @@ DataReductionProxySettingsAndroid::GetDailyContentLengths(
   return ScopedJavaLocalRef<jlongArray>(env, result);
 }
 
-ScopedJavaLocalRef<jstring> DataReductionProxySettingsAndroid::GetHttpProxyList(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  data_reduction_proxy::DataReductionProxyEventStore* event_store =
-      Settings()->GetEventStore();
-  if (!event_store)
-    return ConvertUTF8ToJavaString(env, std::string());
-
-  return ConvertUTF8ToJavaString(env, event_store->GetHttpProxyList());
-}
-
 DataReductionProxySettings* DataReductionProxySettingsAndroid::Settings() {
   DataReductionProxySettings* settings =
       DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
           ProfileManager::GetActiveUserProfile());
   DCHECK(settings);
   return settings;
-}
-
-ScopedJavaLocalRef<jstring>
-DataReductionProxySettingsAndroid::GetLastBypassEvent(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  data_reduction_proxy::DataReductionProxyEventStore* event_store =
-      Settings()->GetEventStore();
-  if (!event_store)
-    return ConvertUTF8ToJavaString(env, std::string());
-
-  return ConvertUTF8ToJavaString(env, event_store->SanitizedLastBypassEvent());
 }
 
 void DataReductionProxySettingsAndroid::QueryDataUsage(

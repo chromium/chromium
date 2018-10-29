@@ -8,10 +8,9 @@
 #error "This file requires ARC support."
 #endif
 
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -67,44 +66,28 @@ const CGFloat kMinimalHeight = 48;
 
 - (UIFont*)textFont {
   if (!_textFont) {
-    if (experimental_flags::IsSettingsUIRebootEnabled()) {
-      _textFont = [UIFont systemFontOfSize:kUIKitMainFontSize];
-    } else {
-      _textFont = [[MDCTypography fontLoader] mediumFontOfSize:14];
-    }
+    _textFont = [UIFont systemFontOfSize:kUIKitMainFontSize];
   }
   return _textFont;
 }
 
 - (UIColor*)textColor {
   if (!_textColor) {
-    if (experimental_flags::IsSettingsUIRebootEnabled()) {
-      _textColor = UIColorFromRGB(kUIKitMainTextColor);
-    } else {
-      _textColor = [[MDCPalette greyPalette] tint900];
-    }
+    _textColor = UIColorFromRGB(kUIKitMainTextColor);
   }
   return _textColor;
 }
 
 - (UIFont*)detailTextFont {
   if (!_detailTextFont) {
-    if (experimental_flags::IsSettingsUIRebootEnabled()) {
-      _detailTextFont = [UIFont systemFontOfSize:kUIKitMultilineDetailFontSize];
-    } else {
-      _detailTextFont = [[MDCTypography fontLoader] regularFontOfSize:14];
-    }
+    _detailTextFont = [UIFont systemFontOfSize:kUIKitMultilineDetailFontSize];
   }
   return _detailTextFont;
 }
 
 - (UIColor*)detailTextColor {
   if (!_detailTextColor) {
-    if (experimental_flags::IsSettingsUIRebootEnabled()) {
-      _detailTextColor = UIColorFromRGB(kUIKitMultilineDetailTextColor);
-    } else {
-      _detailTextColor = [[MDCPalette greyPalette] tint500];
-    }
+    _detailTextColor = UIColorFromRGB(kUIKitMultilineDetailTextColor);
   }
   return _detailTextColor;
 }

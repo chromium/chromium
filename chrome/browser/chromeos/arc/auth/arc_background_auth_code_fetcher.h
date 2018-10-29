@@ -47,7 +47,7 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher,
   ~ArcBackgroundAuthCodeFetcher() override;
 
   // ArcAuthCodeFetcher:
-  void Fetch(const FetchCallback& callback) override;
+  void Fetch(FetchCallback callback) override;
 
   void SkipMergeSessionForTesting();
 

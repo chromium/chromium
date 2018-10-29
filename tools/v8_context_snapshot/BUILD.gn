@@ -110,5 +110,12 @@ if (use_v8_context_snapshot) {
       "//v8:external_startup_data",
       ":disable_icf",
     ]
+
+    if (is_linux) {
+      # Match main chrome binary, which has ASLR.
+      # Useful for making sure (via the Deterministic Linux bot)
+      # that no raw pointers get serialized.
+      ldflags = [ "-pie" ]
+    }
   }
 }

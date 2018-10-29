@@ -9,6 +9,16 @@ import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_response.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom";
 
+// This struct contains timing information recorded in the context of a
+// controller service worker.
+struct ServiceWorkerFetchEventTiming {
+  // Recorded just before a fetch event is dispatched.
+  mojo_base.mojom.TimeTicks dispatch_event_time;
+  // Recorded when respondWith()'s promise is settled, or the fetch event
+  // dispatch finished without respondWith() being called.
+  mojo_base.mojom.TimeTicks respond_with_settled_time;
+};
+
 // Callback interface which is passed to a controller service worker through
 // DispatchFetchEvent (either via ServiceWorker or via ControllerServiceWorker
 // interface).
@@ -16,13 +26,13 @@ import "third_party/blink/public/mojom/service_worker/service_worker_stream_hand
 interface ServiceWorkerFetchResponseCallback {
   // Responds to the request with |response|.
   OnResponse(FetchAPIResponse response,
-             mojo_base.mojom.TimeTicks dispatch_event_time);
+             ServiceWorkerFetchEventTiming timing);
   // Responds to the request with |response|. |response.blob| should be empty
   // since the body is provided as a stream.
   OnResponseStream(FetchAPIResponse response,
                    ServiceWorkerStreamHandle body_as_stream,
-                   mojo_base.mojom.TimeTicks dispatch_event_time);
+                   ServiceWorkerFetchEventTiming timing);
   // Provides no response to the request. The callee should fall back to the
   // network.
-  OnFallback(mojo_base.mojom.TimeTicks dispatch_event_time);
+  OnFallback(ServiceWorkerFetchEventTiming timing);
 };

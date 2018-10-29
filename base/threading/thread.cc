@@ -232,11 +232,6 @@ PlatformThreadId Thread::GetThreadId() const {
   return id_;
 }
 
-PlatformThreadHandle Thread::GetThreadHandle() const {
-  AutoLock lock(thread_lock_);
-  return thread_;
-}
-
 bool Thread::IsRunning() const {
   // TODO(gab): Fix improper usage of this API (http://crbug.com/629139) and
   // enable this check.
@@ -328,8 +323,8 @@ void Thread::ThreadMain() {
   // Allow threads running a MessageLoopForIO to use FileDescriptorWatcher API.
   std::unique_ptr<FileDescriptorWatcher> file_descriptor_watcher;
   if (MessageLoopForIO::IsCurrent()) {
-    file_descriptor_watcher.reset(new FileDescriptorWatcher(
-        static_cast<MessageLoopForIO*>(message_loop_)));
+    file_descriptor_watcher.reset(
+        new FileDescriptorWatcher(message_loop_->task_runner()));
   }
 #endif
 

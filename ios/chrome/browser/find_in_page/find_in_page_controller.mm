@@ -9,16 +9,18 @@
 #import <cmath>
 #include <memory>
 
-#include "base/logging.h"
-#include "base/mac/foundation_util.h"
+#import "base/logging.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/js_findinpage_manager.h"
+#include "ios/chrome/browser/metrics/ukm_url_recorder.h"
 #import "ios/chrome/browser/web/dom_altering_lock.h"
 #import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
 #import "ios/web/public/web_state/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state/web_state.h"
 #import "ios/web/public/web_state/web_state_observer_bridge.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -48,6 +50,8 @@ static NSString* gSearchTerm;
 // Keyboard listeners.
 - (void)keyboardDidShow:(NSNotification*)note;
 - (void)keyboardWillHide:(NSNotification*)note;
+// Records UKM metric for Find in Page search matches.
+- (void)logFindInPageSearchUKM;
 // Constantly injects the find string in page until
 // |disableFindInPageWithCompletionHandler:| is called or the find operation is
 // complete. Calls |completionHandler| if the find operation is complete.
@@ -177,6 +181,15 @@ static NSString* gSearchTerm;
   }
 }
 
+- (void)logFindInPageSearchUKM {
+  ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(_webState);
+  if (sourceID != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_FindInPageSearchMatches(sourceID)
+        .SetHasMatches(_findInPageModel.matches > 0)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
 - (void)findStringInPage:(NSString*)query
        completionHandler:(ProceduralBlock)completionHandler {
   ProceduralBlockWithBool lockAction = ^(BOOL hasLock) {
@@ -195,9 +208,14 @@ static NSString* gSearchTerm;
     __weak FindInPageController* weakSelf = self;
     [_findInPageJsManager findString:query
                    completionHandler:^(BOOL finished, CGPoint point) {
-                     [weakSelf processPumpResult:finished
-                                     scrollPoint:point
-                               completionHandler:completionHandler];
+                     FindInPageController* strongSelf = weakSelf;
+                     if (!strongSelf) {
+                       return;
+                     }
+                     [strongSelf logFindInPageSearchUKM];
+                     [strongSelf processPumpResult:finished
+                                       scrollPoint:point
+                                 completionHandler:completionHandler];
                    }];
   };
   DOMAlteringLock::FromWebState(_webState)->Acquire(self, lockAction);

@@ -14,11 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar.OnMenuItemClickListener;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.AsyncTask;
-import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.FileUtils;
@@ -27,16 +24,16 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.download.DirectoryOption;
-import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
-import org.chromium.chrome.browser.download.home.UmaUtils;
+import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
+import org.chromium.chrome.browser.download.home.metrics.UmaUtils.MenuAction;
+import org.chromium.chrome.browser.download.home.toolbar.ToolbarUtils;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.native_page.BasicNativePage;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
 import org.chromium.chrome.browser.preferences.download.DownloadPreferences;
@@ -46,16 +43,11 @@ import org.chromium.chrome.browser.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.widget.ThumbnailProvider;
 import org.chromium.chrome.browser.widget.ThumbnailProviderImpl;
-import org.chromium.chrome.browser.widget.ViewHighlighter;
 import org.chromium.chrome.browser.widget.selection.SelectableListLayout;
 import org.chromium.chrome.browser.widget.selection.SelectableListToolbar.SearchDelegate;
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
-import org.chromium.chrome.browser.widget.textbubble.TextBubble;
 import org.chromium.chrome.download.R;
-import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
-import org.chromium.ui.widget.ViewRectProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -252,12 +244,7 @@ public class DownloadManagerUi implements OnMenuItemClickListener, SearchDelegat
 
         mToolbar.setInfoMenuItem(mInfoMenuId);
 
-        if (isLocationEnabled) {
-            final Tracker tracker =
-                    TrackerFactory.getTrackerForProfile(Profile.getLastUsedProfile());
-            tracker.addOnInitializedCallback(
-                    (Callback<Boolean>) success -> maybeShowDownloadSettingsTextBubble(tracker));
-        }
+        if (isLocationEnabled) ToolbarUtils.setupTrackerForDownloadSettingsIPH(mToolbar);
 
         mSelectableListLayout.configureWideDisplayStyle();
         mHistoryAdapter.initialize(mBackendProvider, mSelectableListLayout.getUiConfig());
@@ -356,10 +343,11 @@ public class DownloadManagerUi implements OnMenuItemClickListener, SearchDelegat
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        UmaUtils.recordTopMenuAction(item.getItemId());
+
         if ((item.getItemId() == R.id.close_menu_id
                     || item.getItemId() == R.id.with_settings_close_menu_id)
                 && mIsSeparateActivity) {
-            UmaUtils.recordMenuActionHistogram(UmaUtils.MenuAction.CLOSE);
             mActivity.finish();
             return true;
         } else if (item.getItemId() == R.id.selection_mode_delete_menu_id) {
@@ -367,10 +355,7 @@ public class DownloadManagerUi implements OnMenuItemClickListener, SearchDelegat
                     mBackendProvider.getSelectionDelegate().getSelectedItemsAsList();
             mBackendProvider.getSelectionDelegate().clearSelection();
 
-            UmaUtils.recordMenuActionHistogram(UmaUtils.MenuAction.MULTI_DELETE);
-            RecordHistogram.recordCount100Histogram(
-                    "Android.DownloadManager.Menu.Delete.SelectedCount", items.size());
-
+            UmaUtils.recordTopMenuDeleteCount(items.size());
             deleteItems(items);
             return true;
         } else if (item.getItemId() == R.id.selection_mode_share_menu_id) {
@@ -380,33 +365,27 @@ public class DownloadManagerUi implements OnMenuItemClickListener, SearchDelegat
             //                    startActivityForResult() and the selection would only be cleared
             //                    after receiving an OK response. See crbug.com/638916.
             mBackendProvider.getSelectionDelegate().clearSelection();
-
-            UmaUtils.recordMenuActionHistogram(UmaUtils.MenuAction.MULTI_SHARE);
-            RecordHistogram.recordCount100Histogram(
-                    "Android.DownloadManager.Menu.Share.SelectedCount", items.size());
-
+            UmaUtils.recordTopMenuShareCount(items.size());
             shareItems(items);
             return true;
         } else if (item.getItemId() == mInfoMenuId) {
             boolean showInfo = !mHistoryAdapter.shouldShowStorageInfoHeader();
-            UmaUtils.recordMenuActionHistogram(
-                    showInfo ? UmaUtils.MenuAction.SHOW_INFO : UmaUtils.MenuAction.HIDE_INFO);
+            RecordHistogram.recordEnumeratedHistogram("Android.DownloadManager.Menu.Action",
+                    showInfo ? UmaUtils.MenuAction.SHOW_INFO : UmaUtils.MenuAction.HIDE_INFO,
+                    MenuAction.NUM_ENTRIES);
             enableStorageInfoHeader(showInfo);
             return true;
         } else if (item.getItemId() == mSearchMenuId) {
-            UmaUtils.recordMenuActionHistogram(UmaUtils.MenuAction.SEARCH);
             // The header should be removed as soon as a search is started. It will be added back in
             // DownloadHistoryAdatper#filter() when the search is ended.
             mHistoryAdapter.removeHeader();
             mSelectableListLayout.onStartSearch();
             mToolbar.showSearchView();
-            RecordUserAction.record("Android.DownloadManager.Search");
             return true;
         } else if (item.getItemId() == R.id.settings_menu_id) {
             Intent intent = PreferencesLauncher.createIntentForSettingsPage(
                     mActivity, DownloadPreferences.class.getName());
             mActivity.startActivity(intent);
-            RecordUserAction.record("Android.DownloadManager.Settings");
             return true;
         }
         return false;
@@ -523,64 +502,6 @@ public class DownloadManagerUi implements OnMenuItemClickListener, SearchDelegat
         boolean infoHeaderIsVisible = layoutManager.findFirstVisibleItemPosition() == 0;
         mToolbar.updateInfoMenuItem(infoHeaderIsVisible && shouldShowInfoButton(),
                 mHistoryAdapter.shouldShowStorageInfoHeader());
-    }
-
-    private void maybeShowDownloadSettingsTextBubble(final Tracker tracker) {
-        // If the user doesn't have an SD card don't show the IPH.
-        DownloadDirectoryProvider.getInstance().getAllDirectoriesOptions(
-                (ArrayList<DirectoryOption> dirs) -> {
-                    onDirectoryOptionsRetrieved(dirs, tracker);
-                });
-    }
-
-    private void onDirectoryOptionsRetrieved(
-            ArrayList<DirectoryOption> dirs, final Tracker tracker) {
-        if (dirs.size() < 2) return;
-
-        // Check to see if the help UI should be triggered.
-        if (!tracker.shouldTriggerHelpUI(FeatureConstants.DOWNLOAD_SETTINGS_FEATURE)) return;
-
-        // Build and show text bubble.
-        View anchorView = mToolbar.findViewById(R.id.settings_menu_id);
-
-        // Show the setting text bubble after the root view is attached to window.
-        if (mToolbar.isAttachedToWindow()) {
-            showDownloadSettingsInProductHelp(tracker, anchorView);
-        } else {
-            mToolbar.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-                @Override
-                public void onViewAttachedToWindow(View v) {
-                    showDownloadSettingsInProductHelp(tracker, anchorView);
-                    mToolbar.removeOnAttachStateChangeListener(this);
-                }
-                @Override
-                public void onViewDetachedFromWindow(View v) {}
-            });
-        }
-    }
-
-    private void showDownloadSettingsInProductHelp(final Tracker tracker, View anchorView) {
-        TextBubble textBubble =
-                new TextBubble(mActivity, (View) mToolbar, R.string.iph_download_settings_text,
-                        R.string.iph_download_settings_accessibility_text,
-                        new ViewRectProvider(anchorView));
-        textBubble.setDismissOnTouchInteraction(true);
-        textBubble.addOnDismissListener(() -> {
-            tracker.dismissed(FeatureConstants.DOWNLOAD_SETTINGS_FEATURE);
-            toggleHighlightForDownloadSettingsTextBubble(false);
-        });
-        toggleHighlightForDownloadSettingsTextBubble(true);
-        textBubble.show();
-    }
-
-    private void toggleHighlightForDownloadSettingsTextBubble(boolean shouldHighlight) {
-        View view = mToolbar.findViewById(R.id.settings_menu_id);
-
-        if (shouldHighlight) {
-            ViewHighlighter.turnOnHighlight(view, true);
-        } else {
-            ViewHighlighter.turnOffHighlight(view);
-        }
     }
 
     @VisibleForTesting

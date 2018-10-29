@@ -4,6 +4,7 @@
 
 #include "cc/trees/layer_tree_host.h"
 
+#include "base/time/time.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/layer_tree_test.h"
@@ -532,8 +533,8 @@ class LayerTreeTestMaskLayerWithScaling : public LayerTreeTest {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
         gfx::Size double_root_size(200, 200);
-        layer_tree_host()->SetViewportSizeAndScale(double_root_size, 2.f,
-                                                   viz::LocalSurfaceId());
+        layer_tree_host()->SetViewportSizeAndScale(
+            double_root_size, 2.f, viz::LocalSurfaceId(), base::TimeTicks());
         break;
     }
   }

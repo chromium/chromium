@@ -89,10 +89,10 @@ void HTMLImport::RecalcTreeState(HTMLImport* root) {
   }
 
   // The post-visit DFS order matters here because
-  // HTMLImportStateResolver in recalcState() Depends on
-  // |m_state| of its children and precedents of ancestors.
+  // HTMLImportStateResolver in RecalcState() Depends on
+  // |state_| of its children and precedents of ancestors.
   // Accidental cycle dependency of state computation is prevented
-  // by invalidateCachedState() and isStateCacheValid() check.
+  // by InvalidateCachedState() and IsStateCacheValid() check.
   for (HTMLImport* i = TraverseFirstPostOrder(root); i;
        i = TraverseNextPostOrder(i)) {
     DCHECK(!i->state_.IsValid());

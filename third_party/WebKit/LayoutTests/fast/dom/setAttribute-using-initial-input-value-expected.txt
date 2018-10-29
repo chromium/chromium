@@ -18,6 +18,7 @@ After calling setAttribute("style", elem.value):
 
 PASS elem.getAttribute('style') is ''
 
+
 PASS successfullyParsed is true
 
 TEST COMPLETE

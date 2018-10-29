@@ -41,7 +41,8 @@ typedef std::array<uint8_t, kQuicPathFrameBufferSize> QuicPathFrameBuffer;
 typedef uint16_t QuicApplicationErrorCode;
 
 // The connection id sequence number specifies the order that connection
-// ids must be used in.
+// ids must be used in. This is also the sequence number carried in
+// the IETF QUIC NEW_CONNECTION_ID and RETIRE_CONNECTION_ID frames.
 typedef uint64_t QuicConnectionIdSequenceNumber;
 
 // A struct for functions which consume data payloads and fins.
@@ -184,6 +185,9 @@ enum QuicFrameType : uint8_t {
   PATH_CHALLENGE_FRAME,
   STOP_SENDING_FRAME,
   MESSAGE_FRAME,
+  CRYPTO_FRAME,
+  NEW_TOKEN_FRAME,
+  RETIRE_CONNECTION_ID_FRAME,
 
   NUM_FRAME_TYPES
 };
@@ -193,6 +197,12 @@ enum QuicFrameType : uint8_t {
 // the symbol will map to the correct stream type.
 // All types are defined here, even if we have not yet implmented the
 // quic/core/stream/.... stuff needed.
+// Note: The protocol specifies that frame types are varint-62 encoded,
+// further stating that the shortest encoding must be used.  The current set of
+// frame types all have values less than 0x40 (64) so can be encoded in a single
+// byte, with the two most significant bits being 0. Thus, the following
+// enumerations are valid as both the numeric values of frame types AND their
+// encodings.
 enum QuicIetfFrameType : uint8_t {
   IETF_PADDING = 0x00,
   IETF_RST_STREAM = 0x01,
@@ -207,7 +217,7 @@ enum QuicIetfFrameType : uint8_t {
   IETF_STREAM_ID_BLOCKED = 0x0a,
   IETF_NEW_CONNECTION_ID = 0x0b,
   IETF_STOP_SENDING = 0x0c,
-  IETF_ACK = 0x0d,
+  IETF_RETIRE_CONNECTION_ID = 0x0d,
   IETF_PATH_CHALLENGE = 0x0e,
   IETF_PATH_RESPONSE = 0x0f,
   // the low-3 bits of the stream frame type value are actually flags
@@ -217,6 +227,11 @@ enum QuicIetfFrameType : uint8_t {
   // whether the frame is a stream frame or not, and then examine each
   // bit specifically when/as needed.
   IETF_STREAM = 0x10,
+  IETF_CRYPTO = 0x18,
+  IETF_NEW_TOKEN = 0x19,
+  IETF_ACK = 0x1a,
+  IETF_ACK_ECN = 0x1b,
+
   // MESSAGE frame type is not yet determined, use 0x2x temporarily to give
   // stream frame some wiggle room.
   IETF_EXTENSION_MESSAGE_NO_LENGTH = 0x20,
@@ -224,7 +239,7 @@ enum QuicIetfFrameType : uint8_t {
 };
 // Masks for the bits that indicate the frame is a Stream frame vs the
 // bits used as flags.
-#define IETF_STREAM_FRAME_TYPE_MASK 0xf8
+#define IETF_STREAM_FRAME_TYPE_MASK 0xfffffffffffffff8
 #define IETF_STREAM_FRAME_FLAG_MASK 0x07
 #define IS_IETF_STREAM_FRAME(_stype_) \
   (((_stype_)&IETF_STREAM_FRAME_TYPE_MASK) == IETF_STREAM)
@@ -312,7 +327,7 @@ enum QuicPacketPrivateFlags {
 // QUIC. Note that this is separate from the congestion feedback type -
 // some congestion control algorithms may use the same feedback type
 // (Reno and Cubic are the classic example for that).
-enum CongestionControlType { kCubicBytes, kRenoBytes, kBBR, kPCC };
+enum CongestionControlType { kCubicBytes, kRenoBytes, kBBR, kPCC, kGoogCC };
 
 enum LossDetectionType : uint8_t {
   kNack,          // Used to mimic TCP's loss detection.
@@ -434,15 +449,16 @@ typedef std::vector<LostPacket> LostPacketVector;
 enum QuicIetfTransportErrorCodes : uint16_t {
   NO_IETF_QUIC_ERROR = 0x0,
   INTERNAL_ERROR = 0x1,
+  SERVER_BUSY_ERROR = 0x2,
   FLOW_CONTROL_ERROR = 0x3,
   STREAM_ID_ERROR = 0x4,
   STREAM_STATE_ERROR = 0x5,
   FINAL_OFFSET_ERROR = 0x6,
-  FRAME_FORMAT_ERROR = 0x7,
+  FRAME_ENCODING_ERROR = 0x7,
   TRANSPORT_PARAMETER_ERROR = 0x8,
   VERSION_NEGOTIATION_ERROR = 0x9,
   PROTOCOL_VIOLATION = 0xA,
-  UNSOLICITED_PONG = 0xB,
+  INVALID_MIGRATION = 0xC,
   FRAME_ERROR_base = 0x100,  // add frame type to this base
 };
 
@@ -523,6 +539,15 @@ enum WriteStreamDataResult {
   STREAM_MISSING,  // Trying to write data of a nonexistent stream (e.g.
                    // closed).
   WRITE_FAILED,    // Trying to write nonexistent data of a stream
+};
+
+enum StreamType {
+  // Bidirectional streams allow for data to be sent in both directions.
+  BIDIRECTIONAL,
+
+  // Unidirectional streams carry data in one direction only.
+  WRITE_UNIDIRECTIONAL,
+  READ_UNIDIRECTIONAL,
 };
 
 }  // namespace quic

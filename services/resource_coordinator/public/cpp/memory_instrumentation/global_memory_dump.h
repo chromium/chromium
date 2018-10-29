@@ -5,17 +5,19 @@
 #ifndef SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_GLOBAL_MEMORY_DUMP_H_
 #define SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_GLOBAL_MEMORY_DUMP_H_
 
+#include "base/component_export.h"
 #include "base/optional.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_export.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 namespace memory_instrumentation {
 
 // The returned data structure to consumers of the memory_instrumentation
 // service containing dumps for each process.
-class SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT GlobalMemoryDump {
+class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
+    GlobalMemoryDump {
  public:
-  class SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_EXPORT ProcessDump {
+  class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
+      ProcessDump {
    public:
     ProcessDump(mojom::ProcessMemoryDumpPtr process_memory_dump);
     ~ProcessDump();

@@ -113,22 +113,6 @@ void BrowserControls::UpdateConstraintsAndState(
            current == cc::BrowserControlsState::kHidden));
   DCHECK(!(constraints == cc::BrowserControlsState::kHidden &&
            current == cc::BrowserControlsState::kShown));
-
-  // If the change should be animated, let the impl thread drive the change.
-  // Otherwise, immediately set the shown ratio so we don't have to wait for
-  // a commit from the impl thread.
-  if (animate)
-    return;
-
-  if (constraints == cc::BrowserControlsState::kBoth &&
-      current == cc::BrowserControlsState::kBoth)
-    return;
-
-  if (constraints == cc::BrowserControlsState::kHidden ||
-      current == cc::BrowserControlsState::kHidden)
-    SetShownRatio(0.f);
-  else
-    SetShownRatio(1.f);
 }
 
 void BrowserControls::SetHeight(float top_height,

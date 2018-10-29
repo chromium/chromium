@@ -20,7 +20,7 @@
 #include "base/optional.h"
 #include "base/sys_info.h"
 #include "base/threading/thread_checker.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/histograms.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -253,8 +253,7 @@ void InsertNodesForRasterTask(TaskGraph* graph,
   size_t dependencies = 0u;
 
   // Insert image decode tasks.
-  for (TileTask::Vector::const_iterator it = decode_tasks.begin();
-       it != decode_tasks.end(); ++it) {
+  for (auto it = decode_tasks.begin(); it != decode_tasks.end(); ++it) {
     TileTask* decode_task = it->get();
 
     // Skip if already decoded.
@@ -264,11 +263,10 @@ void InsertNodesForRasterTask(TaskGraph* graph,
     dependencies++;
 
     // Add decode task if it doesn't already exist in graph.
-    TaskGraph::Node::Vector::iterator decode_it =
-        std::find_if(graph->nodes.begin(), graph->nodes.end(),
-                     [decode_task](const TaskGraph::Node& node) {
-                       return node.task == decode_task;
-                     });
+    auto decode_it = std::find_if(graph->nodes.begin(), graph->nodes.end(),
+                                  [decode_task](const TaskGraph::Node& node) {
+                                    return node.task == decode_task;
+                                  });
 
     // In rare circumstances, a background category task may come in before a
     // foreground category task. In these cases, upgrade any background category
@@ -326,6 +324,36 @@ class TaskSetFinishedTaskImpl : public TileTask {
   const base::Closure on_task_set_finished_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(TaskSetFinishedTaskImpl);
+};
+
+class DidFinishRunningAllTilesTask : public TileTask {
+ public:
+  using CompletionCb = base::OnceCallback<void(bool has_pending_queries)>;
+  DidFinishRunningAllTilesTask(base::SequencedTaskRunner* task_runner,
+                               RasterBufferProvider* raster_buffer_provider,
+                               CompletionCb completion_cb)
+      : TileTask(false /* supports_concurrent_execution */),
+        task_runner_(task_runner),
+        raster_buffer_provider_(raster_buffer_provider),
+        completion_cb_(std::move(completion_cb)) {}
+
+  void RunOnWorkerThread() override {
+    TRACE_EVENT0("cc", "TaskSetFinishedTaskImpl::RunOnWorkerThread");
+    bool has_pending_queries =
+        raster_buffer_provider_->CheckRasterFinishedQueries();
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(completion_cb_),
+                                                     has_pending_queries));
+  }
+
+  void OnTaskCompleted() override {}
+
+ protected:
+  ~DidFinishRunningAllTilesTask() override = default;
+
+ private:
+  base::SequencedTaskRunner* task_runner_;
+  RasterBufferProvider* raster_buffer_provider_;
+  CompletionCb completion_cb_;
 };
 
 }  // namespace
@@ -404,6 +432,7 @@ void TileManager::FinishTasksAndCleanUp() {
   signals_check_notifier_.Cancel();
   task_set_finished_weak_ptr_factory_.InvalidateWeakPtrs();
   ready_to_draw_callback_weak_ptr_factory_.InvalidateWeakPtrs();
+  check_pending_tile_queries_callback_.Cancel();
   raster_buffer_provider_ = nullptr;
 
   // Ask the tracker to drop any locked decodes since we will be destroying the
@@ -459,13 +488,14 @@ void TileManager::DidFinishRunningTileTasksRequiredForDraw() {
   signals_check_notifier_.Schedule();
 }
 
-void TileManager::DidFinishRunningAllTileTasks() {
+void TileManager::DidFinishRunningAllTileTasks(bool has_pending_queries) {
   TRACE_EVENT0("cc", "TileManager::DidFinishRunningAllTileTasks");
   TRACE_EVENT_ASYNC_END0("cc", "ScheduledTasks", this);
   DCHECK(resource_pool_);
   DCHECK(tile_task_manager_);
 
   has_scheduled_tile_tasks_ = false;
+  has_pending_queries_ = has_pending_queries;
 
   if (all_tiles_that_need_to_be_rasterized_are_scheduled_ &&
       !resource_pool_->ResourceUsageTooHigh()) {
@@ -960,8 +990,13 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
   scoped_refptr<TileTask> required_for_draw_done_task =
       CreateTaskSetFinishedTask(
           &TileManager::DidFinishRunningTileTasksRequiredForDraw);
+
+  auto all_done_cb =
+      base::BindOnce(&TileManager::DidFinishRunningAllTileTasks,
+                     task_set_finished_weak_ptr_factory_.GetWeakPtr());
   scoped_refptr<TileTask> all_done_task =
-      CreateTaskSetFinishedTask(&TileManager::DidFinishRunningAllTileTasks);
+      base::MakeRefCounted<DidFinishRunningAllTilesTask>(
+          task_runner_, raster_buffer_provider_, std::move(all_done_cb));
 
   // Build a new task queue containing all task currently needed. Tasks
   // are added in order of priority, highest priority task first.
@@ -1352,6 +1387,34 @@ bool TileManager::IsReadyToDraw() const {
              RasterTilePriorityQueue::Type::REQUIRED_FOR_DRAW);
 }
 
+void TileManager::ScheduleCheckRasterFinishedQueries() {
+  DCHECK(has_pending_queries_);
+
+  if (!check_pending_tile_queries_callback_.IsCancelled())
+    return;
+
+  check_pending_tile_queries_callback_.Reset(base::Bind(
+      &TileManager::CheckRasterFinishedQueries, base::Unretained(this)));
+  task_runner_->PostDelayedTask(FROM_HERE,
+                                check_pending_tile_queries_callback_.callback(),
+                                base::TimeDelta::FromMilliseconds(100));
+}
+
+void TileManager::CheckRasterFinishedQueries() {
+  check_pending_tile_queries_callback_.Cancel();
+
+  if (!has_pending_queries_)
+    return;
+
+  // Raster tasks are in progress. The queries will be polled once they finish.
+  if (has_scheduled_tile_tasks_ || !signals_.all_tile_tasks_completed)
+    return;
+
+  has_pending_queries_ = raster_buffer_provider_->CheckRasterFinishedQueries();
+  if (has_pending_queries_)
+    ScheduleCheckRasterFinishedQueries();
+}
+
 void TileManager::FlushAndIssueSignals() {
   TRACE_EVENT0("cc", "TileManager::FlushAndIssueSignals");
   tile_task_manager_->CheckForCompletedTasks();
@@ -1391,6 +1454,10 @@ void TileManager::IssueSignals() {
     if (!has_scheduled_tile_tasks_) {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                    "TileManager::IssueSignals - all tile tasks completed");
+
+      if (has_pending_queries_)
+        ScheduleCheckRasterFinishedQueries();
+
       signals_.did_notify_all_tile_tasks_completed = true;
       client_->NotifyAllTileTasksCompleted();
     }

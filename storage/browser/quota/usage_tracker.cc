@@ -18,10 +18,6 @@ namespace storage {
 
 namespace {
 
-using UsageAccumulator = base::RepeatingCallback<void(int64_t usage)>;
-using GlobalUsageAccumulator =
-    base::RepeatingCallback<void(int64_t usage, int64_t unlimited_usage)>;
-
 void DidGetGlobalUsageForLimitedGlobalUsage(UsageCallback callback,
                                             int64_t total_global_usage,
                                             int64_t global_unlimited_usage) {
@@ -37,7 +33,7 @@ void StripUsageWithBreakdownCallback(
 
 }  // namespace
 
-UsageTracker::UsageTracker(const QuotaClientList& clients,
+UsageTracker::UsageTracker(const std::vector<QuotaClient*>& clients,
                            blink::mojom::StorageType type,
                            SpecialStoragePolicy* special_storage_policy,
                            StorageMonitor* storage_monitor)
@@ -60,13 +56,14 @@ ClientUsageTracker* UsageTracker::GetClientTracker(QuotaClient::ID client_id) {
 }
 
 void UsageTracker::GetGlobalLimitedUsage(UsageCallback callback) {
-  if (global_usage_callbacks_.HasCallbacks()) {
-    global_usage_callbacks_.Add(base::BindOnce(
+  if (!global_usage_callbacks_.empty()) {
+    global_usage_callbacks_.emplace_back(base::BindOnce(
         &DidGetGlobalUsageForLimitedGlobalUsage, std::move(callback)));
     return;
   }
 
-  if (!global_limited_usage_callbacks_.Add(std::move(callback)))
+  global_limited_usage_callbacks_.emplace_back(std::move(callback));
+  if (global_limited_usage_callbacks_.size() > 1)
     return;
 
   AccumulateInfo* info = new AccumulateInfo;
@@ -78,7 +75,7 @@ void UsageTracker::GetGlobalLimitedUsage(UsageCallback callback) {
   // To avoid this, we add one more pending client as a sentinel
   // and fire the sentinel callback at the end.
   info->pending_clients = client_tracker_map_.size() + 1;
-  UsageAccumulator accumulator =
+  auto accumulator =
       base::BindRepeating(&UsageTracker::AccumulateClientGlobalLimitedUsage,
                           weak_factory_.GetWeakPtr(), base::Owned(info));
 
@@ -90,7 +87,8 @@ void UsageTracker::GetGlobalLimitedUsage(UsageCallback callback) {
 }
 
 void UsageTracker::GetGlobalUsage(GlobalUsageCallback callback) {
-  if (!global_usage_callbacks_.Add(std::move(callback)))
+  global_usage_callbacks_.emplace_back(std::move(callback));
+  if (global_usage_callbacks_.size() > 1)
     return;
 
   AccumulateInfo* info = new AccumulateInfo;
@@ -102,7 +100,7 @@ void UsageTracker::GetGlobalUsage(GlobalUsageCallback callback) {
   // To avoid this, we add one more pending client as a sentinel
   // and fire the sentinel callback at the end.
   info->pending_clients = client_tracker_map_.size() + 1;
-  GlobalUsageAccumulator accumulator =
+  auto accumulator =
       base::BindRepeating(&UsageTracker::AccumulateClientGlobalUsage,
                           weak_factory_.GetWeakPtr(), base::Owned(info));
 
@@ -123,7 +121,10 @@ void UsageTracker::GetHostUsage(const std::string& host,
 void UsageTracker::GetHostUsageWithBreakdown(
     const std::string& host,
     UsageWithBreakdownCallback callback) {
-  if (!host_usage_callbacks_.Add(host, std::move(callback)))
+  std::vector<UsageWithBreakdownCallback>& host_callbacks =
+      host_usage_callbacks_[host];
+  host_callbacks.emplace_back(std::move(callback));
+  if (host_callbacks.size() > 1)
     return;
 
   AccumulateInfo* info = new AccumulateInfo;
@@ -142,7 +143,7 @@ void UsageTracker::GetHostUsageWithBreakdown(
 }
 
 void UsageTracker::UpdateUsageCache(QuotaClient::ID client_id,
-                                    const GURL& origin,
+                                    const url::Origin& origin,
                                     int64_t delta) {
   ClientUsageTracker* client_tracker = GetClientTracker(client_id);
   DCHECK(client_tracker);
@@ -165,14 +166,14 @@ void UsageTracker::GetCachedHostsUsage(
 }
 
 void UsageTracker::GetCachedOriginsUsage(
-    std::map<GURL, int64_t>* origin_usage) const {
+    std::map<url::Origin, int64_t>* origin_usage) const {
   DCHECK(origin_usage);
   origin_usage->clear();
   for (const auto& client_id_and_tracker : client_tracker_map_)
     client_id_and_tracker.second->GetCachedOriginsUsage(origin_usage);
 }
 
-void UsageTracker::GetCachedOrigins(std::set<GURL>* origins) const {
+void UsageTracker::GetCachedOrigins(std::set<url::Origin>* origins) const {
   DCHECK(origins);
   origins->clear();
   for (const auto& client_id_and_tracker : client_tracker_map_)
@@ -180,7 +181,7 @@ void UsageTracker::GetCachedOrigins(std::set<GURL>* origins) const {
 }
 
 void UsageTracker::SetUsageCacheEnabled(QuotaClient::ID client_id,
-                                        const GURL& origin,
+                                        const url::Origin& origin,
                                         bool enabled) {
   ClientUsageTracker* client_tracker = GetClientTracker(client_id);
   DCHECK(client_tracker);
@@ -198,9 +199,12 @@ void UsageTracker::AccumulateClientGlobalLimitedUsage(AccumulateInfo* info,
   if (--info->pending_clients)
     return;
 
-  // All the clients have returned their usage data.  Dispatch the
-  // pending callbacks.
-  global_limited_usage_callbacks_.Run(info->usage);
+  // Moving callbacks out of the original vector handles the case where a
+  // callback makes a new quota call.
+  std::vector<UsageCallback> pending_callbacks;
+  pending_callbacks.swap(global_limited_usage_callbacks_);
+  for (auto& callback : pending_callbacks)
+    std::move(callback).Run(info->usage);
 }
 
 void UsageTracker::AccumulateClientGlobalUsage(AccumulateInfo* info,
@@ -222,16 +226,20 @@ void UsageTracker::AccumulateClientGlobalUsage(AccumulateInfo* info,
   else if (info->unlimited_usage < 0)
     info->unlimited_usage = 0;
 
-  // All the clients have returned their usage data.  Dispatch the
-  // pending callbacks.
-  global_usage_callbacks_.Run(info->usage, info->unlimited_usage);
+  // Moving callbacks out of the original vector early handles the case where a
+  // callback makes a new quota call.
+  std::vector<GlobalUsageCallback> pending_callbacks;
+  pending_callbacks.swap(global_usage_callbacks_);
+  for (auto& callback : pending_callbacks)
+    std::move(callback).Run(info->usage, info->unlimited_usage);
 }
 
-void UsageTracker::AccumulateClientHostUsage(const base::Closure& barrier,
-                                             AccumulateInfo* info,
-                                             const std::string& host,
-                                             QuotaClient::ID client,
-                                             int64_t usage) {
+void UsageTracker::AccumulateClientHostUsage(
+    const base::RepeatingClosure& barrier,
+    AccumulateInfo* info,
+    const std::string& host,
+    QuotaClient::ID client,
+    int64_t usage) {
   info->usage += usage;
   // Defend against confusing inputs from clients.
   if (info->usage < 0)
@@ -243,8 +251,18 @@ void UsageTracker::AccumulateClientHostUsage(const base::Closure& barrier,
 
 void UsageTracker::FinallySendHostUsageWithBreakdown(AccumulateInfo* info,
                                                      const std::string& host) {
-  host_usage_callbacks_.Run(host, info->usage,
-                            std::move(info->usage_breakdown));
+  auto host_it = host_usage_callbacks_.find(host);
+  if (host_it == host_usage_callbacks_.end())
+    return;
+
+  std::vector<UsageWithBreakdownCallback> pending_callbacks;
+  pending_callbacks.swap(host_it->second);
+  DCHECK(pending_callbacks.size() > 0)
+      << "host_usage_callbacks_ should only have non-empty callback lists";
+  host_usage_callbacks_.erase(host_it);
+
+  for (auto& callback : pending_callbacks)
+    std::move(callback).Run(info->usage, info->usage_breakdown);
 }
 
 }  // namespace storage

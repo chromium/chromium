@@ -70,25 +70,6 @@ class OAuth2TokenServiceDelegateAndroid : public OAuth2TokenServiceDelegate {
   void ValidateAccounts(const std::string& signed_in_account_id,
                         bool force_notifications);
 
-  // Triggers a notification to all observers of the OAuth2TokenService that a
-  // refresh token is now available. This may cause observers to retry
-  // operations that require authentication.
-  virtual void FireRefreshTokenAvailableFromJava(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& account_name);
-  // Triggers a notification to all observers of the OAuth2TokenService that a
-  // refresh token is now available.
-  virtual void FireRefreshTokenRevokedFromJava(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& account_name);
-  // Triggers a notification to all observers of the OAuth2TokenService that all
-  // refresh tokens have now been loaded.
-  virtual void FireRefreshTokensLoadedFromJava(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-
   // Overridden from OAuth2TokenService to complete signout of all
   // OA2TService aware accounts.
   void RevokeAllCredentials() override;

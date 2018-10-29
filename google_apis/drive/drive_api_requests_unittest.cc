@@ -60,7 +60,7 @@ const char kTestPermissionResponse[] =
 const char kTestUploadExistingFilePath[] = "/upload/existingfile/path";
 const char kTestUploadNewFilePath[] = "/upload/newfile/path";
 const char kTestDownloadPathPrefix[] = "/drive/v2/files/";
-const char kTestDownloadFileQuery[] = "alt=media";
+const char kTestDownloadFileQuery[] = "alt=media&supportsTeamDrives=true";
 
 // Used as a GetContentCallback.
 void AppendContent(std::string* out,
@@ -189,8 +189,7 @@ class DriveApiRequestsTest : public testing::Test {
 
     GURL test_base_url = test_util::GetBaseUrlForTesting(test_server_.port());
     url_generator_.reset(
-        new DriveApiUrlGenerator(test_base_url, test_base_url,
-                                 TEAM_DRIVES_INTEGRATION_DISABLED));
+        new DriveApiUrlGenerator(test_base_url, test_base_url));
 
     // Reset the server's expected behavior just in case.
     ResetExpectedResponse();
@@ -210,12 +209,6 @@ class DriveApiRequestsTest : public testing::Test {
     testing_properties_.clear();
     testing_properties_.push_back(private_property);
     testing_properties_.push_back(public_property);
-  }
-
-  void EnableTeamDrivesIntegration() {
-    GURL test_base_url = test_util::GetBaseUrlForTesting(test_server_.port());
-    url_generator_.reset(new DriveApiUrlGenerator(
-        test_base_url, test_base_url, TEAM_DRIVES_INTEGRATION_ENABLED));
   }
 
   base::test::ScopedTaskEnvironment scoped_task_environment_{
@@ -619,7 +612,8 @@ TEST_F(DriveApiRequestsTest, FilesInsertRequest) {
 
   EXPECT_EQ(HTTP_SUCCESS, error);
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/drive/v2/files?visibility=PRIVATE", http_request_.relative_url);
+  EXPECT_EQ("/drive/v2/files?supportsTeamDrives=true&visibility=PRIVATE",
+            http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
 
   EXPECT_TRUE(http_request_.has_content);
@@ -687,9 +681,11 @@ TEST_F(DriveApiRequestsTest, FilesPatchRequest) {
 
   EXPECT_EQ(HTTP_SUCCESS, error);
   EXPECT_EQ(net::test_server::METHOD_PATCH, http_request_.method);
-  EXPECT_EQ("/drive/v2/files/resource_id"
-            "?setModifiedDate=true&updateViewedDate=false",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/drive/v2/files/resource_id"
+      "?supportsTeamDrives=true&setModifiedDate=true"
+      "&updateViewedDate=false",
+      http_request_.relative_url);
 
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
   EXPECT_TRUE(http_request_.has_content);
@@ -767,7 +763,6 @@ TEST_F(DriveApiRequestsTest, AboutGetRequest_InvalidJson) {
 }
 
 TEST_F(DriveApiRequestsTest, ChangesListRequest) {
-  EnableTeamDrivesIntegration();
   // Set an expected data file containing valid result.
   expected_data_file_path_ = test_util::GetTestFilePath(
       "drive/changelist.json");
@@ -863,8 +858,10 @@ TEST_F(DriveApiRequestsTest, FilesCopyRequest) {
 
   EXPECT_EQ(HTTP_SUCCESS, error);
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/drive/v2/files/resource_id/copy?visibility=PRIVATE",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/drive/v2/files/resource_id/copy"
+      "?supportsTeamDrives=true&visibility=PRIVATE",
+      http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
 
   EXPECT_TRUE(http_request_.has_content);
@@ -901,7 +898,8 @@ TEST_F(DriveApiRequestsTest, FilesCopyRequest_EmptyParentResourceId) {
 
   EXPECT_EQ(HTTP_SUCCESS, error);
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/drive/v2/files/resource_id/copy", http_request_.relative_url);
+  EXPECT_EQ("/drive/v2/files/resource_id/copy?supportsTeamDrives=true",
+            http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
 
   EXPECT_TRUE(http_request_.has_content);
@@ -960,7 +958,8 @@ TEST_F(DriveApiRequestsTest, StartPageTokenRequest) {
 
   EXPECT_EQ(HTTP_SUCCESS, error);
   EXPECT_EQ(net::test_server::METHOD_GET, http_request_.method);
-  EXPECT_EQ("/drive/v2/changes/startPageToken", http_request_.relative_url);
+  EXPECT_EQ("/drive/v2/changes/startPageToken?supportsTeamDrives=true",
+            http_request_.relative_url);
   EXPECT_EQ("15734", result->start_page_token());
   EXPECT_TRUE(result);
 }
@@ -989,8 +988,11 @@ TEST_F(DriveApiRequestsTest, FilesListRequest) {
 
   EXPECT_EQ(HTTP_SUCCESS, error);
   EXPECT_EQ(net::test_server::METHOD_GET, http_request_.method);
-  EXPECT_EQ("/drive/v2/files?maxResults=50&q=%22abcde%22+in+parents",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/drive/v2/files?supportsTeamDrives=true"
+      "&includeTeamDriveItems=true&corpora=default&maxResults=50"
+      "&q=%22abcde%22+in+parents",
+      http_request_.relative_url);
   EXPECT_TRUE(result);
 }
 
@@ -1041,7 +1043,8 @@ TEST_F(DriveApiRequestsTest, FilesDeleteRequest) {
   EXPECT_EQ(HTTP_NO_CONTENT, error);
   EXPECT_EQ(net::test_server::METHOD_DELETE, http_request_.method);
   EXPECT_EQ(kTestETag, http_request_.headers["If-Match"]);
-  EXPECT_EQ("/drive/v2/files/resource_id", http_request_.relative_url);
+  EXPECT_EQ("/drive/v2/files/resource_id?supportsTeamDrives=true",
+            http_request_.relative_url);
   EXPECT_FALSE(http_request_.has_content);
 }
 
@@ -1070,7 +1073,8 @@ TEST_F(DriveApiRequestsTest, FilesTrashRequest) {
 
   EXPECT_EQ(HTTP_SUCCESS, error);
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/drive/v2/files/resource_id/trash", http_request_.relative_url);
+  EXPECT_EQ("/drive/v2/files/resource_id/trash?supportsTeamDrives=true",
+            http_request_.relative_url);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_TRUE(http_request_.content.empty());
 }
@@ -1099,8 +1103,10 @@ TEST_F(DriveApiRequestsTest, ChildrenInsertRequest) {
 
   EXPECT_EQ(HTTP_SUCCESS, error);
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/drive/v2/files/parent_resource_id/children",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/drive/v2/files/parent_resource_id/children"
+      "?supportsTeamDrives=true",
+      http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
 
   EXPECT_TRUE(http_request_.has_content);
@@ -1170,8 +1176,10 @@ TEST_F(DriveApiRequestsTest, UploadNewFileRequest) {
             http_request_.headers["X-Upload-Content-Length"]);
 
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/upload/drive/v2/files?uploadType=resumable",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/upload/drive/v2/files?uploadType=resumable"
+      "&supportsTeamDrives=true",
+      http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_EQ(
@@ -1259,8 +1267,10 @@ TEST_F(DriveApiRequestsTest, UploadNewEmptyFileRequest) {
   EXPECT_EQ("0", http_request_.headers["X-Upload-Content-Length"]);
 
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/upload/drive/v2/files?uploadType=resumable",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/upload/drive/v2/files?uploadType=resumable"
+      "&supportsTeamDrives=true",
+      http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_EQ("{\"parents\":[{"
@@ -1345,8 +1355,10 @@ TEST_F(DriveApiRequestsTest, UploadNewLargeFileRequest) {
             http_request_.headers["X-Upload-Content-Length"]);
 
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/upload/drive/v2/files?uploadType=resumable",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/upload/drive/v2/files?uploadType=resumable"
+      "&supportsTeamDrives=true",
+      http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_EQ("{\"parents\":[{"
@@ -1523,8 +1535,10 @@ TEST_F(DriveApiRequestsTest, UploadNewFileWithMetadataRequest) {
             http_request_.headers["X-Upload-Content-Length"]);
 
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/upload/drive/v2/files?uploadType=resumable&setModifiedDate=true",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/upload/drive/v2/files?uploadType=resumable"
+      "&supportsTeamDrives=true&setModifiedDate=true",
+      http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_EQ("{\"lastViewedByMeDate\":\"2013-07-19T15:59:13.123Z\","
@@ -1573,8 +1587,10 @@ TEST_F(DriveApiRequestsTest, UploadExistingFileRequest) {
   EXPECT_EQ("*", http_request_.headers["If-Match"]);
 
   EXPECT_EQ(net::test_server::METHOD_PUT, http_request_.method);
-  EXPECT_EQ("/upload/drive/v2/files/resource_id?uploadType=resumable",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/upload/drive/v2/files/resource_id?uploadType=resumable"
+      "&supportsTeamDrives=true",
+      http_request_.relative_url);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_EQ(
       "{\"properties\":["
@@ -1659,8 +1675,10 @@ TEST_F(DriveApiRequestsTest, UploadExistingFileRequestWithETag) {
   EXPECT_EQ(kTestETag, http_request_.headers["If-Match"]);
 
   EXPECT_EQ(net::test_server::METHOD_PUT, http_request_.method);
-  EXPECT_EQ("/upload/drive/v2/files/resource_id?uploadType=resumable",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/upload/drive/v2/files/resource_id?uploadType=resumable"
+      "&supportsTeamDrives=true",
+      http_request_.relative_url);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_TRUE(http_request_.content.empty());
 
@@ -1742,8 +1760,10 @@ TEST_F(DriveApiRequestsTest, UploadExistingFileRequestWithETagConflicting) {
   EXPECT_EQ("Conflicting-etag", http_request_.headers["If-Match"]);
 
   EXPECT_EQ(net::test_server::METHOD_PUT, http_request_.method);
-  EXPECT_EQ("/upload/drive/v2/files/resource_id?uploadType=resumable",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/upload/drive/v2/files/resource_id?uploadType=resumable"
+      "&supportsTeamDrives=true",
+      http_request_.relative_url);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_TRUE(http_request_.content.empty());
 }
@@ -1786,8 +1806,10 @@ TEST_F(DriveApiRequestsTest,
   EXPECT_EQ(kTestETag, http_request_.headers["If-Match"]);
 
   EXPECT_EQ(net::test_server::METHOD_PUT, http_request_.method);
-  EXPECT_EQ("/upload/drive/v2/files/resource_id?uploadType=resumable",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/upload/drive/v2/files/resource_id?uploadType=resumable"
+      "&supportsTeamDrives=true",
+      http_request_.relative_url);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_TRUE(http_request_.content.empty());
 
@@ -1888,9 +1910,10 @@ TEST_F(DriveApiRequestsTest, UploadExistingFileWithMetadataRequest) {
   EXPECT_EQ(kTestETag, http_request_.headers["If-Match"]);
 
   EXPECT_EQ(net::test_server::METHOD_PUT, http_request_.method);
-  EXPECT_EQ("/upload/drive/v2/files/resource_id?"
-            "uploadType=resumable&setModifiedDate=true",
-            http_request_.relative_url);
+  EXPECT_EQ(
+      "/upload/drive/v2/files/resource_id?"
+      "uploadType=resumable&supportsTeamDrives=true&setModifiedDate=true",
+      http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_EQ("{\"lastViewedByMeDate\":\"2013-07-19T15:59:13.123Z\","
@@ -1994,7 +2017,7 @@ TEST_F(DriveApiRequestsTest, PermissionsInsertRequest) {
 
   EXPECT_EQ(HTTP_SUCCESS, error);
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/drive/v2/files/resource_id/permissions",
+  EXPECT_EQ("/drive/v2/files/resource_id/permissions?supportsTeamDrives=true",
             http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
 
@@ -2027,7 +2050,7 @@ TEST_F(DriveApiRequestsTest, PermissionsInsertRequest) {
 
   EXPECT_EQ(HTTP_SUCCESS, error);
   EXPECT_EQ(net::test_server::METHOD_POST, http_request_.method);
-  EXPECT_EQ("/drive/v2/files/resource_id2/permissions",
+  EXPECT_EQ("/drive/v2/files/resource_id2/permissions?supportsTeamDrives=true",
             http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
 

@@ -44,8 +44,8 @@
 namespace blink {
 
 namespace {
-using VectorMath::Conv;
-using VectorMath::PrepareFilterForConv;
+using vector_math::Conv;
+using vector_math::PrepareFilterForConv;
 }  // namespace
 
 DirectConvolver::DirectConvolver(

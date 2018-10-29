@@ -139,6 +139,14 @@ PermissionDescriptorPtr ParsePermission(ScriptState* script_state,
   }
   if (name == "payment-handler")
     return CreatePermissionDescriptor(PermissionName::PAYMENT_HANDLER);
+  if (name == "background-fetch") {
+    if (!OriginTrials::BackgroundFetchEnabled(
+            ExecutionContext::From(script_state))) {
+      exception_state.ThrowTypeError("Background Fetch is not enabled.");
+      return nullptr;
+    }
+    return CreatePermissionDescriptor(PermissionName::BACKGROUND_FETCH);
+  }
 
   return nullptr;
 }
@@ -183,13 +191,13 @@ ScriptPromise Permissions::request(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
 
   PermissionDescriptorPtr descriptor_copy = descriptor->Clone();
-  Document* doc = ToDocumentOrNull(context);
+  Document* doc = DynamicTo<Document>(context);
   LocalFrame* frame = doc ? doc->GetFrame() : nullptr;
   GetService(ExecutionContext::From(script_state))
       .RequestPermission(
           std::move(descriptor),
-          Frame::HasTransientUserActivation(frame,
-                                            true /* checkIfMainThread */),
+          LocalFrame::HasTransientUserActivation(
+              frame, true /* check_if_main_thread */),
           WTF::Bind(&Permissions::TaskComplete, WrapPersistent(this),
                     WrapPersistent(resolver),
                     WTF::Passed(std::move(descriptor_copy))));
@@ -224,7 +232,7 @@ ScriptPromise Permissions::requestAll(
   Vector<PermissionDescriptorPtr> internal_permissions;
   Vector<int> caller_index_to_internal_index;
   caller_index_to_internal_index.resize(raw_permissions.size());
-  for (size_t i = 0; i < raw_permissions.size(); ++i) {
+  for (wtf_size_t i = 0; i < raw_permissions.size(); ++i) {
     const ScriptValue& raw_permission = raw_permissions[i];
 
     auto descriptor =
@@ -233,8 +241,8 @@ ScriptPromise Permissions::requestAll(
       return ScriptPromise();
 
     // Only append permissions types that are not already present in the vector.
-    size_t internal_index = kNotFound;
-    for (size_t j = 0; j < internal_permissions.size(); ++j) {
+    wtf_size_t internal_index = kNotFound;
+    for (wtf_size_t j = 0; j < internal_permissions.size(); ++j) {
       if (internal_permissions[j]->name == descriptor->name) {
         internal_index = j;
         break;
@@ -257,13 +265,13 @@ ScriptPromise Permissions::requestAll(
   for (const auto& descriptor : internal_permissions)
     internal_permissions_copy.push_back(descriptor->Clone());
 
-  Document* doc = ToDocumentOrNull(context);
+  Document* doc = DynamicTo<Document>(context);
   LocalFrame* frame = doc ? doc->GetFrame() : nullptr;
   GetService(ExecutionContext::From(script_state))
       .RequestPermissions(
           std::move(internal_permissions),
-          Frame::HasTransientUserActivation(frame,
-                                            true /* checkIfMainThread */),
+          LocalFrame::HasTransientUserActivation(
+              frame, true /* check_if_main_thread */),
           WTF::Bind(&Permissions::BatchTaskComplete, WrapPersistent(this),
                     WrapPersistent(resolver),
                     WTF::Passed(std::move(internal_permissions_copy)),

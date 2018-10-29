@@ -120,9 +120,8 @@ void ExpectPendingRegistrations(
     double expected_delay_seconds,
     const RegistrationManager::PendingRegistrationMap& pending_registrations) {
   ObjectIdSet pending_ids;
-  for (RegistrationManager::PendingRegistrationMap::const_iterator it =
-           pending_registrations.begin(); it != pending_registrations.end();
-       ++it) {
+  for (auto it = pending_registrations.begin();
+       it != pending_registrations.end(); ++it) {
     SCOPED_TRACE(ObjectIdToString(it->first));
     pending_ids.insert(it->first);
     base::TimeDelta offset =
@@ -154,16 +153,14 @@ class RegistrationManagerTest : public testing::Test {
   ~RegistrationManagerTest() override {}
 
   void LoseRegistrations(const ObjectIdSet& oids) {
-    for (ObjectIdSet::const_iterator it = oids.begin(); it != oids.end();
-         ++it) {
+    for (auto it = oids.begin(); it != oids.end(); ++it) {
       fake_invalidation_client_.LoseRegistration(*it);
       fake_registration_manager_.MarkRegistrationLost(*it);
     }
   }
 
   void DisableIds(const ObjectIdSet& oids) {
-    for (ObjectIdSet::const_iterator it = oids.begin(); it != oids.end();
-         ++it) {
+    for (auto it = oids.begin(); it != oids.end(); ++it) {
       fake_invalidation_client_.LoseRegistration(*it);
       fake_registration_manager_.DisableId(*it);
     }

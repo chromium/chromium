@@ -6,11 +6,11 @@
 #define UI_GFX_GEOMETRY_CUBIC_BEZIER_H_
 
 #include "base/macros.h"
-#include "ui/gfx/gfx_export.h"
+#include "ui/gfx/geometry/geometry_export.h"
 
 namespace gfx {
 
-class GFX_EXPORT CubicBezier {
+class GEOMETRY_EXPORT CubicBezier {
  public:
   CubicBezier(double p1x, double p1y, double p2x, double p2y);
   CubicBezier(const CubicBezier& other);

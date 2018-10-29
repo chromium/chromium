@@ -4,15 +4,27 @@
 
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 
+#include <cstdint>
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
-#include "content/browser/browser_main_loop.h"
+#include "base/unguessable_token.h"
+#include "content/browser/media/audio_stream_broker.h"
 #include "content/browser/media/capture/desktop_capture_device_uma_types.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/media/media_devices_permission_checker.h"
+#include "content/browser/media/media_devices_util.h"
+#include "content/browser/renderer_host/media/audio_input_device_manager.h"
+#include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -20,25 +32,29 @@
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/common/media_stream_request.h"
 #include "media/audio/audio_device_description.h"
-#include "media/audio/audio_input_device.h"
 #include "media/base/audio_parameters.h"
+#include "mojo/public/cpp/bindings/binding.h"
+#include "services/audio/public/mojom/audio_processing.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
 namespace {
 
-void LookUpDeviceAndRespondIfFound(
-    scoped_refptr<AudioInputDeviceManager> audio_input_device_manager,
-    int32_t session_id,
-    base::OnceCallback<void(const MediaStreamDevice&)> response) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  const MediaStreamDevice* device =
-      audio_input_device_manager->GetOpenedDeviceById(session_id);
-  if (device) {
-    // Copies device.
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(std::move(response), *device));
+AudioStreamBroker::LoopbackSource* GetLoopbackSourceOnUIThread(
+    int render_process_id,
+    int render_frame_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* source = ForwardingAudioStreamFactory::CoreForFrame(
+      (RenderFrameHost::FromID(render_process_id, render_frame_id)));
+  if (!source) {
+    // The source of the capture has already been destroyed, so fail early.
+    return nullptr;
   }
+  // Note: this pointer is sent over to the IO thread. This is safe since the
+  // destruction of |source| is posted to the IO thread and it hasn't been
+  // posted yet.
+  return source;
 }
 
 void EnumerateOutputDevices(MediaStreamManager* media_stream_manager,
@@ -59,75 +75,170 @@ void TranslateDeviceId(const std::string& device_id,
     if (MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
             salt_and_origin.device_id_salt, salt_and_origin.origin, device_id,
             device_info.device_id)) {
-      BrowserThread::PostTask(
-          BrowserThread::UI, FROM_HERE,
-          base::BindOnce(std::move(cb), device_info.device_id));
+      cb.Run(device_info.device_id);
       break;
     }
   }
   // If we're unable to translate the device id, |cb| will not be run.
 }
 
+void GetSaltOriginAndPermissionsOnUIThread(
+    int process_id,
+    int frame_id,
+    base::OnceCallback<void(MediaDeviceSaltAndOrigin salt_and_origin,
+                            bool has_access)> cb) {
+  auto salt_and_origin = GetMediaDeviceSaltAndOrigin(process_id, frame_id);
+  bool access = MediaDevicesPermissionChecker().CheckPermissionOnUIThread(
+      MEDIA_DEVICE_TYPE_AUDIO_OUTPUT, process_id, frame_id);
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce(std::move(cb), std::move(salt_and_origin), access));
+}
+
 }  // namespace
+
+class RenderFrameAudioInputStreamFactory::Core final
+    : public mojom::RendererAudioInputStreamFactory {
+ public:
+  Core(mojom::RendererAudioInputStreamFactoryRequest request,
+       MediaStreamManager* media_stream_manager,
+       RenderFrameHost* render_frame_host);
+
+  ~Core() final;
+
+  void Init(mojom::RendererAudioInputStreamFactoryRequest request);
+
+  // mojom::RendererAudioInputStreamFactory implementation.
+  void CreateStream(
+      mojom::RendererAudioInputStreamFactoryClientPtr client,
+      int32_t session_id,
+      const media::AudioParameters& audio_params,
+      bool automatic_gain_control,
+      uint32_t shared_memory_count,
+      audio::mojom::AudioProcessingConfigPtr processing_config) final;
+
+  void AssociateInputAndOutputForAec(
+      const base::UnguessableToken& input_stream_id,
+      const std::string& output_device_id) final;
+
+  void CreateLoopbackStream(
+      mojom::RendererAudioInputStreamFactoryClientPtr client,
+      const media::AudioParameters& audio_params,
+      uint32_t shared_memory_count,
+      bool disable_local_echo,
+      AudioStreamBroker::LoopbackSource* loopback_source);
+
+  void AssociateInputAndOutputForAecAfterCheckingAccess(
+      const base::UnguessableToken& input_stream_id,
+      const std::string& output_device_id,
+      MediaDeviceSaltAndOrigin salt_and_origin,
+      bool access_granted);
+
+  void AssociateTranslatedOutputDeviceForAec(
+      const base::UnguessableToken& input_stream_id,
+      const std::string& raw_output_device_id);
+
+  MediaStreamManager* const media_stream_manager_;
+  const int process_id_;
+  const int frame_id_;
+  const url::Origin origin_;
+
+  mojo::Binding<RendererAudioInputStreamFactory> binding_;
+  // Always null-check this weak pointer before dereferencing it.
+  base::WeakPtr<ForwardingAudioStreamFactory::Core> forwarding_factory_;
+
+  base::WeakPtrFactory<Core> weak_ptr_factory_;
+
+  DISALLOW_COPY_AND_ASSIGN(Core);
+};
 
 RenderFrameAudioInputStreamFactory::RenderFrameAudioInputStreamFactory(
     mojom::RendererAudioInputStreamFactoryRequest request,
-    scoped_refptr<AudioInputDeviceManager> audio_input_device_manager,
+    MediaStreamManager* media_stream_manager,
     RenderFrameHost* render_frame_host)
-    : binding_(this, std::move(request)),
-      audio_input_device_manager_(std::move(audio_input_device_manager)),
-      render_frame_host_(render_frame_host),
-      weak_ptr_factory_(this) {
+    : core_(new Core(std::move(request),
+                     media_stream_manager,
+                     render_frame_host)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 RenderFrameAudioInputStreamFactory::~RenderFrameAudioInputStreamFactory() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Ensure |core_| is deleted on the right thread. DeleteOnIOThread isn't used
+  // as it doesn't post in case it is already executed on the right thread. That
+  // causes issues in unit tests where the UI thread and the IO thread are the
+  // same.
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce([](std::unique_ptr<Core>) {}, std::move(core_)));
 }
 
-void RenderFrameAudioInputStreamFactory::CreateStream(
+RenderFrameAudioInputStreamFactory::Core::Core(
+    mojom::RendererAudioInputStreamFactoryRequest request,
+    MediaStreamManager* media_stream_manager,
+    RenderFrameHost* render_frame_host)
+    : media_stream_manager_(media_stream_manager),
+      process_id_(render_frame_host->GetProcess()->GetID()),
+      frame_id_(render_frame_host->GetRoutingID()),
+      origin_(render_frame_host->GetLastCommittedOrigin()),
+      binding_(this),
+      weak_ptr_factory_(this) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  ForwardingAudioStreamFactory::Core* tmp_factory =
+      ForwardingAudioStreamFactory::CoreForFrame(render_frame_host);
+
+  if (!tmp_factory) {
+    // The only case when we not have a forwarding factory at this point is when
+    // the frame belongs to an interstitial. Interstitials don't need audio, so
+    // it's fine to drop the request.
+    return;
+  }
+
+  forwarding_factory_ = tmp_factory->AsWeakPtr();
+
+  // Unretained is safe since the destruction of |this| is posted to the IO
+  // thread.
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce(&Core::Init, base::Unretained(this), std::move(request)));
+}
+
+RenderFrameAudioInputStreamFactory::Core::~Core() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+}
+
+void RenderFrameAudioInputStreamFactory::Core::Init(
+    mojom::RendererAudioInputStreamFactoryRequest request) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  binding_.Bind(std::move(request));
+}
+
+void RenderFrameAudioInputStreamFactory::Core::CreateStream(
     mojom::RendererAudioInputStreamFactoryClientPtr client,
     int32_t session_id,
     const media::AudioParameters& audio_params,
     bool automatic_gain_control,
     uint32_t shared_memory_count,
     audio::mojom::AudioProcessingConfigPtr processing_config) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT_INSTANT1("audio",
-                       "RenderFrameAudioInputStreamFactory::CreateStream",
-                       TRACE_EVENT_SCOPE_THREAD, "session id", session_id);
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  TRACE_EVENT1("audio", "RenderFrameAudioInputStreamFactory::CreateStream",
+               "session id", session_id);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
-      base::BindOnce(
-          &LookUpDeviceAndRespondIfFound, audio_input_device_manager_,
-          session_id,
-          base::BindOnce(&RenderFrameAudioInputStreamFactory::
-                             CreateStreamAfterLookingUpDevice,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(client),
-                         audio_params, automatic_gain_control,
-                         shared_memory_count, std::move(processing_config))));
-}
-
-void RenderFrameAudioInputStreamFactory::CreateStreamAfterLookingUpDevice(
-    mojom::RendererAudioInputStreamFactoryClientPtr client,
-    const media::AudioParameters& audio_params,
-    bool automatic_gain_control,
-    uint32_t shared_memory_count,
-    audio::mojom::AudioProcessingConfigPtr processing_config,
-    const MediaStreamDevice& device) {
-  TRACE_EVENT1(
-      "audio",
-      "RenderFrameAudioInputStreamFactory::CreateStreamAfterLookingUpDevice",
-      "device id", device.id);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ForwardingAudioStreamFactory* factory =
-      ForwardingAudioStreamFactory::ForFrame(render_frame_host_);
-  if (!factory)
+  if (!forwarding_factory_)
     return;
 
+  const MediaStreamDevice* device =
+      media_stream_manager_->audio_input_device_manager()->GetOpenedDeviceById(
+          session_id);
+
+  if (!device) {
+    TRACE_EVENT_INSTANT0("audio", "device not found", TRACE_EVENT_SCOPE_THREAD);
+    return;
+  }
+
   WebContentsMediaCaptureId capture_id;
-  if (WebContentsMediaCaptureId::Parse(device.id, &capture_id)) {
+  if (WebContentsMediaCaptureId::Parse(device->id, &capture_id)) {
     // For MEDIA_GUM_DESKTOP_AUDIO_CAPTURE, the source is selected from
     // picker window, we do not mute the source audio. For
     // MEDIA_GUM_TAB_AUDIO_CAPTURE, the probable use case is Cast, we mute
@@ -135,84 +246,101 @@ void RenderFrameAudioInputStreamFactory::CreateStreamAfterLookingUpDevice(
     // TODO(qiangchen): Analyze audio constraints to make a duplicating or
     // diverting decision. It would give web developer more flexibility.
 
-    RenderFrameHost* source_host = RenderFrameHost::FromID(
-        capture_id.render_process_id, capture_id.main_render_frame_id);
-    if (!source_host) {
-      // The source of the capture has already been destroyed, so fail early.
-      return;
-    }
+    base::PostTaskWithTraitsAndReplyWithResult(
+        FROM_HERE, {BrowserThread::UI},
+        base::BindOnce(&GetLoopbackSourceOnUIThread,
+                       capture_id.render_process_id,
+                       capture_id.main_render_frame_id),
+        base::BindOnce(
+            &RenderFrameAudioInputStreamFactory::Core::CreateLoopbackStream,
+            weak_ptr_factory_.GetWeakPtr(), std::move(client), audio_params,
+            shared_memory_count, capture_id.disable_local_echo));
 
-    factory->CreateLoopbackStream(
-        render_frame_host_, source_host, audio_params, shared_memory_count,
-        capture_id.disable_local_echo, std::move(client));
-
-    if (device.type == MEDIA_GUM_DESKTOP_AUDIO_CAPTURE)
+    if (device->type == MEDIA_GUM_DESKTOP_AUDIO_CAPTURE)
       IncrementDesktopCaptureCounter(SYSTEM_LOOPBACK_AUDIO_CAPTURER_CREATED);
+    return;
   } else {
-    factory->CreateInputStream(render_frame_host_, device.id, audio_params,
-                               shared_memory_count, automatic_gain_control,
-                               std::move(processing_config), std::move(client));
+    forwarding_factory_->CreateInputStream(
+        process_id_, frame_id_, device->id, audio_params, shared_memory_count,
+        automatic_gain_control, std::move(processing_config),
+        std::move(client));
 
     // Only count for captures from desktop media picker dialog and system loop
     // back audio.
-    if (device.type == MEDIA_GUM_DESKTOP_AUDIO_CAPTURE &&
-        (media::AudioDeviceDescription::IsLoopbackDevice(device.id))) {
+    if (device->type == MEDIA_GUM_DESKTOP_AUDIO_CAPTURE &&
+        (media::AudioDeviceDescription::IsLoopbackDevice(device->id))) {
       IncrementDesktopCaptureCounter(SYSTEM_LOOPBACK_AUDIO_CAPTURER_CREATED);
     }
   }
 }
 
-void RenderFrameAudioInputStreamFactory::AssociateInputAndOutputForAec(
+void RenderFrameAudioInputStreamFactory::Core::CreateLoopbackStream(
+    mojom::RendererAudioInputStreamFactoryClientPtr client,
+    const media::AudioParameters& audio_params,
+    uint32_t shared_memory_count,
+    bool disable_local_echo,
+    AudioStreamBroker::LoopbackSource* loopback_source) {
+  if (!loopback_source || !forwarding_factory_)
+    return;
+
+  forwarding_factory_->CreateLoopbackStream(
+      process_id_, frame_id_, loopback_source, audio_params,
+      shared_memory_count, disable_local_echo, std::move(client));
+}
+
+void RenderFrameAudioInputStreamFactory::Core::AssociateInputAndOutputForAec(
     const base::UnguessableToken& input_stream_id,
     const std::string& output_device_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!IsValidDeviceId(output_device_id))
     return;
 
-  ForwardingAudioStreamFactory* factory =
-      ForwardingAudioStreamFactory::ForFrame(render_frame_host_);
-  if (!factory)
-    return;
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(
+          &GetSaltOriginAndPermissionsOnUIThread, process_id_, frame_id_,
+          base::BindOnce(
+              &Core::AssociateInputAndOutputForAecAfterCheckingAccess,
+              weak_ptr_factory_.GetWeakPtr(), input_stream_id,
+              output_device_id)));
+}
 
-  const int process_id = render_frame_host_->GetProcess()->GetID();
-  const int frame_id = render_frame_host_->GetRoutingID();
-  auto salt_and_origin = GetMediaDeviceSaltAndOrigin(process_id, frame_id);
+void RenderFrameAudioInputStreamFactory::Core::
+    AssociateInputAndOutputForAecAfterCheckingAccess(
+        const base::UnguessableToken& input_stream_id,
+        const std::string& output_device_id,
+        MediaDeviceSaltAndOrigin salt_and_origin,
+        bool access_granted) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  // Check permissions for everything but the default device
-  if (!media::AudioDeviceDescription::IsDefaultDevice(output_device_id) &&
-      !MediaDevicesPermissionChecker().CheckPermissionOnUIThread(
-          MEDIA_DEVICE_TYPE_AUDIO_OUTPUT, process_id, frame_id)) {
+  if (!forwarding_factory_ || !access_granted)
     return;
-  }
 
   if (media::AudioDeviceDescription::IsDefaultDevice(output_device_id) ||
       media::AudioDeviceDescription::IsCommunicationsDevice(output_device_id)) {
-    factory->AssociateInputAndOutputForAec(input_stream_id, output_device_id);
+    forwarding_factory_->AssociateInputAndOutputForAec(input_stream_id,
+                                                       output_device_id);
   } else {
-    auto* media_stream_manager =
-        BrowserMainLoop::GetInstance()->media_stream_manager();
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
-        base::BindOnce(
-            EnumerateOutputDevices, media_stream_manager,
-            base::BindRepeating(
-                &TranslateDeviceId, output_device_id, salt_and_origin,
-                base::BindRepeating(&RenderFrameAudioInputStreamFactory::
-                                        AssociateTranslatedOutputDeviceForAec,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    input_stream_id))));
+    EnumerateOutputDevices(
+        media_stream_manager_,
+        base::BindRepeating(
+            &TranslateDeviceId, output_device_id, salt_and_origin,
+            base::BindRepeating(&RenderFrameAudioInputStreamFactory::Core::
+                                    AssociateTranslatedOutputDeviceForAec,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                input_stream_id)));
   }
 }
 
-void RenderFrameAudioInputStreamFactory::AssociateTranslatedOutputDeviceForAec(
-    const base::UnguessableToken& input_stream_id,
-    const std::string& raw_output_device_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ForwardingAudioStreamFactory* factory =
-      ForwardingAudioStreamFactory::ForFrame(render_frame_host_);
-  if (factory)
-    factory->AssociateInputAndOutputForAec(input_stream_id,
-                                           raw_output_device_id);
+void RenderFrameAudioInputStreamFactory::Core::
+    AssociateTranslatedOutputDeviceForAec(
+        const base::UnguessableToken& input_stream_id,
+        const std::string& raw_output_device_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (!forwarding_factory_)
+    return;
+  forwarding_factory_->AssociateInputAndOutputForAec(input_stream_id,
+                                                     raw_output_device_id);
 }
 
 }  // namespace content

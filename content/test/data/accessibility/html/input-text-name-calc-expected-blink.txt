@@ -1,13 +1,19 @@
 rootWebArea
 ++textField name='Title0'
+++++genericContainer
 ++textField description='Title1' name='Label1' descriptionFrom=attribute
+++++genericContainer
 ++textField description='Title2' name='AriaLabel2' descriptionFrom=attribute
+++++genericContainer
 ++textField description='Title3' name='LabelledBy3' descriptionFrom=attribute
+++++genericContainer
 ++textField name='Placeholder4'
 ++++genericContainer
 ++textField name='ARIA Placeholder4a'
+++++genericContainer
 ++textField name='Placeholder4b'
 ++++genericContainer
 ++textField description='Title5' name='Placeholder5' descriptionFrom=attribute
 ++++genericContainer
 ++textField description='DescribedBy6' name='LabelledBy6' descriptionFrom=relatedElement
+++++genericContainer

@@ -7,7 +7,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/histogram_test_util.h"
@@ -19,9 +19,13 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/web/public/test/earl_grey/web_view_matchers.h"
 #include "ios/web/public/test/element_selector.h"
+#import "ios/web/public/web_state/ui/crw_web_view_proxy.h"
+#import "ios/web/public/web_state/web_state.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
@@ -263,10 +267,17 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
   [ChromeEarlGrey loadURL:imageURL];
 
   // Calculate a point inside the displayed image. Javascript can not be used to
-  // find the element because no DOM exists.
+  // find the element because no DOM exists.  If the viewport is adjusted using
+  // the contentInset, the top inset needs to be added to the touch point.
+  id<CRWWebViewProxy> webViewProxy =
+      chrome_test_util::GetCurrentWebState()->GetWebViewProxy();
+  BOOL usesContentInset =
+      webViewProxy.shouldUseViewContentInset ||
+      ios::GetChromeBrowserProvider()->GetFullscreenProvider()->IsInitialized();
+  CGFloat topInset = usesContentInset ? webViewProxy.contentInset.top : 0.0;
   CGPoint point = CGPointMake(
       CGRectGetMidX([chrome_test_util::GetActiveViewController() view].bounds),
-      20.0);
+      topInset + 20.0);
 
   id<GREYMatcher> web_view_matcher =
       web::WebViewInWebState(chrome_test_util::GetCurrentWebState());

@@ -17,7 +17,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -30,14 +32,8 @@
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
-#include "net/base/completion_once_callback.h"
-#include "net/base/io_buffer.h"
-#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_fetcher_response_writer.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 
@@ -65,62 +61,6 @@ std::unique_ptr<base::DictionaryValue> BuildObjectForResponse(
 
   response->Set("headers", std::move(headers));
   return response;
-}
-
-// ResponseWriter -------------------------------------------------------------
-
-class ResponseWriter : public net::URLFetcherResponseWriter {
- public:
-  ResponseWriter(base::WeakPtr<ShellDevToolsBindings> devtools_bindings_,
-                 int stream_id);
-  ~ResponseWriter() override;
-
-  // URLFetcherResponseWriter overrides:
-  int Initialize(net::CompletionOnceCallback callback) override;
-  int Write(net::IOBuffer* buffer,
-            int num_bytes,
-            net::CompletionOnceCallback callback) override;
-  int Finish(int net_error, net::CompletionOnceCallback callback) override;
-
- private:
-  base::WeakPtr<ShellDevToolsBindings> devtools_bindings_;
-  int stream_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResponseWriter);
-};
-
-ResponseWriter::ResponseWriter(
-    base::WeakPtr<ShellDevToolsBindings> shell_devtools,
-    int stream_id)
-    : devtools_bindings_(shell_devtools), stream_id_(stream_id) {}
-
-ResponseWriter::~ResponseWriter() {}
-
-int ResponseWriter::Initialize(net::CompletionOnceCallback callback) {
-  return net::OK;
-}
-
-int ResponseWriter::Write(net::IOBuffer* buffer,
-                          int num_bytes,
-                          net::CompletionOnceCallback callback) {
-  std::string chunk = std::string(buffer->data(), num_bytes);
-  if (!base::IsStringUTF8(chunk))
-    return num_bytes;
-
-  base::Value* id = new base::Value(stream_id_);
-  base::Value* chunkValue = new base::Value(chunk);
-
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::BindOnce(&ShellDevToolsBindings::CallClientFunction,
-                     devtools_bindings_, "DevToolsAPI.streamWrite",
-                     base::Owned(id), base::Owned(chunkValue), nullptr));
-  return num_bytes;
-}
-
-int ResponseWriter::Finish(int net_error,
-                           net::CompletionOnceCallback callback) {
-  return net::OK;
 }
 
 }  // namespace
@@ -186,8 +126,10 @@ class ShellDevToolsBindings::NetworkResourceLoader
 };
 
 // This constant should be in sync with
-// the constant at devtools_ui_bindings.cc.
-const size_t kMaxMessageChunkSize = IPC::Channel::kMaximumMessageSize / 4;
+// the constant
+// kMaxMessageChunkSize in chrome/browser/devtools/devtools_ui_bindings.cc.
+constexpr size_t kShellMaxMessageChunkSize =
+    IPC::Channel::kMaximumMessageSize / 4;
 
 void ShellDevToolsBindings::InspectElementAt(int x, int y) {
   if (agent_host_) {
@@ -209,8 +151,6 @@ ShellDevToolsBindings::ShellDevToolsBindings(WebContents* devtools_contents,
       weak_factory_(this) {}
 
 ShellDevToolsBindings::~ShellDevToolsBindings() {
-  for (const auto& pair : pending_requests_)
-    delete pair.first;
   if (agent_host_)
     agent_host_->DetachClient(this);
 }
@@ -322,23 +262,6 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
               }
             })");
 
-    if (!base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-      net::URLFetcher* fetcher =
-          net::URLFetcher::Create(gurl, net::URLFetcher::GET, this,
-                                  traffic_annotation)
-              .release();
-      pending_requests_[fetcher] = request_id;
-      fetcher->SetRequestContext(BrowserContext::GetDefaultStoragePartition(
-                                     web_contents()->GetBrowserContext())
-                                     ->GetURLRequestContext());
-      fetcher->SetExtraRequestHeaders(headers);
-      fetcher->SaveResponseWithWriter(
-          std::unique_ptr<net::URLFetcherResponseWriter>(
-              new ResponseWriter(weak_factory_.GetWeakPtr(), stream_id)));
-      fetcher->Start();
-      return;
-    }
-
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url = gurl;
     resource_request->headers.AddHeadersFromString(headers);
@@ -394,7 +317,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
 void ShellDevToolsBindings::DispatchProtocolMessage(
     DevToolsAgentHost* agent_host,
     const std::string& message) {
-  if (message.length() < kMaxMessageChunkSize) {
+  if (message.length() < kShellMaxMessageChunkSize) {
     std::string param;
     base::EscapeJSONString(message, true, &param);
     std::string code = "DevToolsAPI.dispatchMessage(" + param + ");";
@@ -404,31 +327,16 @@ void ShellDevToolsBindings::DispatchProtocolMessage(
   }
 
   size_t total_size = message.length();
-  for (size_t pos = 0; pos < message.length(); pos += kMaxMessageChunkSize) {
+  for (size_t pos = 0; pos < message.length();
+       pos += kShellMaxMessageChunkSize) {
     std::string param;
-    base::EscapeJSONString(message.substr(pos, kMaxMessageChunkSize), true,
+    base::EscapeJSONString(message.substr(pos, kShellMaxMessageChunkSize), true,
                            &param);
     std::string code = "DevToolsAPI.dispatchMessageChunk(" + param + "," +
                        std::to_string(pos ? 0 : total_size) + ");";
     base::string16 javascript = base::UTF8ToUTF16(code);
     web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(javascript);
   }
-}
-
-void ShellDevToolsBindings::OnURLFetchComplete(const net::URLFetcher* source) {
-  // TODO(pfeldman): this is a copy of chrome's devtools_ui_bindings.cc.
-  // We should handle some of the commands including this one in content.
-  DCHECK(!base::FeatureList::IsEnabled(network::features::kNetworkService));
-
-  DCHECK(source);
-  PendingRequestsMap::iterator it = pending_requests_.find(source);
-  DCHECK(it != pending_requests_.end());
-
-  auto response = BuildObjectForResponse(source->GetResponseHeaders());
-
-  SendMessageAck(it->second, response.get());
-  pending_requests_.erase(it);
-  delete source;
 }
 
 void ShellDevToolsBindings::CallClientFunction(const std::string& function_name,

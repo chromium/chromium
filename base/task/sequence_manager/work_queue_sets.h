@@ -11,10 +11,10 @@
 #include "base/base_export.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/task/sequence_manager/intrusive_heap.h"
+#include "base/task/common/intrusive_heap.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 
 namespace base {
 namespace sequence_manager {
@@ -82,14 +82,19 @@ class BASE_EXPORT WorkQueueSets {
       return key <= other.key;
     }
 
-    void SetHeapHandle(HeapHandle handle) { value->set_heap_handle(handle); }
+    void SetHeapHandle(base::internal::HeapHandle handle) {
+      value->set_heap_handle(handle);
+    }
 
-    void ClearHeapHandle() { value->set_heap_handle(HeapHandle()); }
+    void ClearHeapHandle() {
+      value->set_heap_handle(base::internal::HeapHandle());
+    }
   };
 
   // For each set |work_queue_heaps_| has a queue of WorkQueue ordered by the
   // oldest task in each WorkQueue.
-  std::vector<IntrusiveHeap<OldestTaskEnqueueOrder>> work_queue_heaps_;
+  std::vector<base::internal::IntrusiveHeap<OldestTaskEnqueueOrder>>
+      work_queue_heaps_;
   const char* const name_;
 
   DISALLOW_COPY_AND_ASSIGN(WorkQueueSets);

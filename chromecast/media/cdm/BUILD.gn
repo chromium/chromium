@@ -34,7 +34,7 @@ cast_source_set("cdm") {
     ]
   }
 
-  if (is_android && use_playready) {
+  if (is_android && enable_playready) {
     sources += [
       "playready_drm_delegate_android.cc",
       "playready_drm_delegate_android.h",

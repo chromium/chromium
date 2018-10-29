@@ -2,4 +2,4 @@ AXWebArea
 ++AXGroup
 ++++AXGroup
 ++++++AXStaticText AXValue='Choose a pokemon '
-++++++AXComboBox AXTitle='Choose a pokemon ' AXAutocompleteValue='list'
+++++++AXComboBox AXTitle='Choose a pokemon' AXAutocompleteValue='list'

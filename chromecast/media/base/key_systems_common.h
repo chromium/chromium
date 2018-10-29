@@ -7,14 +7,15 @@
 
 #include <string>
 
+#include "chromecast/chromecast_buildflags.h"
 #include "chromecast/public/media/cast_key_system.h"
 
 namespace chromecast {
 namespace media {
 
-#if defined(PLAYREADY_CDM_AVAILABLE)
+#if BUILDFLAG(ENABLE_PLAYREADY)
 extern const char kChromecastPlayreadyKeySystem[];
-#endif  // defined(PLAYREADY_CDM_AVAILABLE)
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
 // Translates a key system string into a CastKeySystem, calling into the
 // platform for known key systems if needed.

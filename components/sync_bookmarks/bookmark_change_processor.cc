@@ -730,8 +730,7 @@ void BookmarkChangeProcessor::ApplyChangesFromSyncModel(
   // When we added or updated bookmarks in the previous loop, we placed them to
   // the far right position.  Now we iterate over all these modified items in
   // sync order, left to right, moving them into their proper positions.
-  for (std::multimap<int, const BookmarkNode*>::iterator it =
-       to_reposition.begin(); it != to_reposition.end(); ++it) {
+  for (auto it = to_reposition.begin(); it != to_reposition.end(); ++it) {
     const BookmarkNode* parent = it->second->parent();
     model->Move(it->second, parent, it->first);
   }
@@ -892,8 +891,7 @@ void BookmarkChangeProcessor::SetSyncNodeMetaInfo(
     size_t index = 0;
     for (; index < size; index++) {
       const sync_pb::MetaInfo& meta_info = specifics.meta_info(index);
-      BookmarkNode::MetaInfoMap::const_iterator it =
-          meta_info_map->find(meta_info.key());
+      auto it = meta_info_map->find(meta_info.key());
       if (it == meta_info_map->end() || it->second != meta_info.value()) {
         // One of original meta info entries is missing in |meta_info_map| or
         // different.
@@ -910,8 +908,7 @@ void BookmarkChangeProcessor::SetSyncNodeMetaInfo(
   // Clear and reset meta info in bookmark specifics.
   specifics.clear_meta_info();
   if (meta_info_map) {
-    for (BookmarkNode::MetaInfoMap::const_iterator it = meta_info_map->begin();
-        it != meta_info_map->end(); ++it) {
+    for (auto it = meta_info_map->begin(); it != meta_info_map->end(); ++it) {
       sync_pb::MetaInfo* meta_info = specifics.add_meta_info();
       meta_info->set_key(it->first);
       meta_info->set_value(it->second);

@@ -9,6 +9,8 @@ jumbo_component("views_examples_lib") {
   testonly = true
 
   sources = [
+    "animated_image_view_example.cc",
+    "animated_image_view_example.h",
     "box_layout_example.cc",
     "box_layout_example.h",
     "bubble_example.cc",

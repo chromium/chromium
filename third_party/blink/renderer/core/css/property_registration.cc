@@ -25,10 +25,10 @@ namespace blink {
 const PropertyRegistration* PropertyRegistration::From(
     const ExecutionContext* execution_context,
     const AtomicString& property_name) {
-  if (!execution_context || !execution_context->IsDocument())
+  const auto* document = DynamicTo<Document>(execution_context);
+  if (!document)
     return nullptr;
-  const PropertyRegistry* registry =
-      ToDocument(*execution_context).GetPropertyRegistry();
+  const PropertyRegistry* registry = document->GetPropertyRegistry();
   return registry ? registry->Registration(property_name) : nullptr;
 }
 
@@ -46,7 +46,8 @@ PropertyRegistration::PropertyRegistration(
           CSSInterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
               name,
               syntax,
-              *this)) {
+              *this)),
+      referenced_(false) {
   DCHECK(RuntimeEnabledFeatures::CSSVariables2Enabled());
 }
 
@@ -105,7 +106,7 @@ void PropertyRegistration::registerProperty(
     return;
   }
   AtomicString atomic_name(name);
-  Document* document = ToDocument(execution_context);
+  Document* document = To<Document>(execution_context);
   PropertyRegistry& registry = *document->GetPropertyRegistry();
   if (registry.Registration(atomic_name)) {
     exception_state.ThrowDOMException(

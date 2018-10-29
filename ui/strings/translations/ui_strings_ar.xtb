@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{قبل دقيقة واحدة}zero{قبل # دقيقة}two{قبل دقيقتين (#)}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{دقيقة واحدة}zero{# دقيقة}two{دقيقتان (#)}few{# دقائق}many{# دقيقة}other{# دقيقة}}</translation>
 <translation id="1243314992276662751">تحميل</translation>
+<translation id="1269641567813814718">الفوز</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">تطبيقات مقترحة</translation>
 <translation id="1368832886055348810">من اليسار لليمين</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">صفحة  إلى أسفل</translation>
 <translation id="8245914219290430011">علامة تبويب</translation>
+<translation id="8259556432390118667">القيمة السداسية للّون</translation>
 <translation id="8328145009876646418">الحافة اليمنى</translation>
 <translation id="8331626408530291785">التمرير إلى أعلى</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{سنة واحدة}zero{# سنة}two{سنتان (#)}few{# سنوات}many{# سنةً}other{# سنة}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">التلقائي</translation>
 <translation id="8806053966018712535">مجلد <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">إضافة تعليق توضيحي على الصورة</translation>
+<translation id="8841375032071747811">زر الرجوع</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> كيلوبايت</translation>
 <translation id="9002566407876343676">الفتح</translation>
 <translation id="9038489124413477075">مجلد بدون اسم</translation>

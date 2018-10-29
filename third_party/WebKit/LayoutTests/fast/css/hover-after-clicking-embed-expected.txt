@@ -5,5 +5,5 @@ Hover me
 PASS successfullyParsed is true
 
 TEST COMPLETE
-PASS window.getComputedStyle(document.getElementById("test")).color is "rgb(0, 128, 0)"
 
+PASS window.getComputedStyle(document.getElementById("test")).color is "rgb(0, 128, 0)"

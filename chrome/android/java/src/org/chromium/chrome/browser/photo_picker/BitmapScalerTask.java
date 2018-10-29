@@ -8,9 +8,9 @@ import android.graphics.Bitmap;
 import android.os.SystemClock;
 import android.util.LruCache;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 
 import java.util.concurrent.TimeUnit;
 

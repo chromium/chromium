@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LAYOUT_RECT_H_
 
 #include <iosfwd>
+#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
@@ -45,7 +46,7 @@ class FloatRect;
 class DoubleRect;
 
 class PLATFORM_EXPORT LayoutRect {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   constexpr LayoutRect() = default;
@@ -309,7 +310,13 @@ inline IntRect EnclosedIntRect(const LayoutRect& rect) {
   return IntRect(location, max_point - location);
 }
 
-PLATFORM_EXPORT LayoutRect EnclosingLayoutRect(const FloatRect&);
+inline LayoutRect EnclosingLayoutRect(const FloatRect& rect) {
+  LayoutUnit x = LayoutUnit::FromFloatFloor(rect.X());
+  LayoutUnit y = LayoutUnit::FromFloatFloor(rect.Y());
+  LayoutUnit max_x = LayoutUnit::FromFloatCeil(rect.MaxX());
+  LayoutUnit max_y = LayoutUnit::FromFloatCeil(rect.MaxY());
+  return LayoutRect(x, y, max_x - x, max_y - y);
+}
 
 inline IntRect PixelSnappedIntRect(LayoutUnit left,
                                    LayoutUnit top,

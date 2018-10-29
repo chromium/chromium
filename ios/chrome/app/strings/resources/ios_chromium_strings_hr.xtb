@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Iskoristite pametne Googleove značajke u Chromiumu</translation>
 <translation id="2730884209570016437">Chromium ne može upotrebljavati vaš fotoaparat jer ga upotrebljava neka druga aplikacija</translation>
 <translation id="2797210818057553964">To možete prilagoditi u bilo kojem trenutku u postavkama Chromiuma</translation>
+<translation id="2915596697727466327">Chromium upotrebljava Face ID radi sprječavanja neovlaštenog pristupa vašim zaporkama.</translation>
 <translation id="3256316712990552818">Kopirano na Chromium</translation>
 <translation id="3413120535237193088">Da biste imali svoje oznake na svim svojim uređajima, prijavite se na Chromium.</translation>
 <translation id="3473048256428424907">Uključite Chromiumov QR skener</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Ovdje će se prikazati kartice koje ste otvorili u Chromiumu na svojim ostalim uređajima.</translation>
 <translation id="495292094137889840">Upotrijebite Chromiumov QR skener</translation>
 <translation id="5231355151045086930">Odjava s Chromiuma</translation>
-<translation id="5416919929805616771">Sviđa vam se Chromium? <ph name="BEGIN_LINK" />Ocijenite aplikaciju<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5945387852661427312">Prijavljujete se računom kojim upravlja <ph name="DOMAIN" /> i njegovom administratoru dajete kontrolu nad svojim podacima u Chromiumu. Vaši će se podaci trajno povezati s tim računom. Ako se odjavite s Chromiuma, vaši će se podaci izbrisati s ovog uređaja, no ostat će pohranjeni na vašem Google računu.</translation>
 <translation id="6068866989048414399">Uvjeti pružanja Chromiuma</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Prebacujete sinkronizirane račune s korisnika <ph name="USER_EMAIL1" /> na korisnika <ph name="USER_EMAIL2" />. Vašim postojećim podacima na Chromiumu upravlja <ph name="DOMAIN" />. Ovime će se izbrisati vaši podaci s vašeg uređaja, no oni će ostati na računu <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Savjet: <ph name="BEGIN_LINK" />premjestite Chromium na priključnu stanicu<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Doživite Google na bolji način u Chromiumu na temelju svoje lokacije.</translation>
-<translation id="8353224596138547809">Želite li da Chromium spremi vašu zaporku za ovu web-lokaciju?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" /> se mogu prilagoditi u bilo kojem trenutku. Google može upotrebljavati sadržaj na web-lokacijama koje posjećujete, vaše interakcije u pregledniku i aktivnost pregledavanja kako bi prilagodio Chromium i Googleove usluge kao što su Prevoditelj, Pretraživanje i oglasi.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" />. Autori Chromiuma. Sva prava pridržana.</translation>
 <translation id="8809780021347235332">Da biste spremili slike, dodirnite Postavke i omogućite Chromiumu upotrebu fotografija</translation>

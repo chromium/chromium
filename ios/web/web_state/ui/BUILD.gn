@@ -65,6 +65,8 @@ source_set("ui") {
 source_set("crw_wk_script_message_router") {
   deps = [
     "//base",
+    "//ios/web/navigation:core",
+    "//net",
   ]
 
   sources = [

@@ -1255,10 +1255,10 @@ class OcclusionTrackerTestSurfaceChildOfSurface : public OcclusionTrackerTest {
 
 ALL_OCCLUSIONTRACKER_TEST(OcclusionTrackerTestSurfaceChildOfSurface);
 
-class OcclusionTrackerTestDontOccludePixelsNeededForBackgroundFilter
+class OcclusionTrackerTestDontOccludePixelsNeededForBackdropFilter
     : public OcclusionTrackerTest {
  protected:
-  explicit OcclusionTrackerTestDontOccludePixelsNeededForBackgroundFilter(
+  explicit OcclusionTrackerTestDontOccludePixelsNeededForBackdropFilter(
       bool opaque_layers)
       : OcclusionTrackerTest(opaque_layers) {}
   void RunMyTest() override {
@@ -1282,13 +1282,13 @@ class OcclusionTrackerTestDontOccludePixelsNeededForBackgroundFilter
       // Make a 50x50 filtered surface that is adjacent to occluding layers
       // which are above it in the z-order in various configurations. The
       // surface is scaled to test that the pixel moving is done in the target
-      // space, where the background filter is applied.
+      // space, where the backdrop filter is applied.
       TestContentLayerImpl* parent = this->CreateRoot(
           this->identity_matrix, gfx::PointF(), gfx::Size(200, 200));
       LayerImpl* filtered_surface = this->CreateDrawingLayer(
           parent, scale_by_half, gfx::PointF(50.f, 50.f), gfx::Size(100, 100),
           false);
-      filtered_surface->test_properties()->background_filters = filters;
+      filtered_surface->test_properties()->backdrop_filters = filters;
       gfx::Rect occlusion_rect;
       switch (i) {
         case LEFT:
@@ -1333,7 +1333,7 @@ class OcclusionTrackerTestDontOccludePixelsNeededForBackgroundFilter
       EXPECT_EQ(occlusion_inside_surface.ToString(),
                 occlusion.occlusion_from_outside_target().ToString());
 
-      // The surface has a background blur, so it needs pixels that are
+      // The surface has a backdrop blur, so it needs pixels that are
       // currently considered occluded in order to be drawn. The pixels it
       // needs should be removed from the occluded area, so that they are drawn
       // when we get to the parent.
@@ -1367,12 +1367,12 @@ class OcclusionTrackerTestDontOccludePixelsNeededForBackgroundFilter
 };
 
 ALL_OCCLUSIONTRACKER_TEST(
-    OcclusionTrackerTestDontOccludePixelsNeededForBackgroundFilter);
+    OcclusionTrackerTestDontOccludePixelsNeededForBackdropFilter);
 
-class OcclusionTrackerTestPixelsNeededForDropShadowBackgroundFilter
+class OcclusionTrackerTestPixelsNeededForDropShadowBackdropFilter
     : public OcclusionTrackerTest {
  protected:
-  explicit OcclusionTrackerTestPixelsNeededForDropShadowBackgroundFilter(
+  explicit OcclusionTrackerTestPixelsNeededForDropShadowBackdropFilter(
       bool opaque_layers)
       : OcclusionTrackerTest(opaque_layers) {}
   void RunMyTest() override {
@@ -1397,13 +1397,13 @@ class OcclusionTrackerTestPixelsNeededForDropShadowBackgroundFilter
       // Make a 50x50 filtered surface that is adjacent to occluding layers
       // which are above it in the z-order in various configurations. The
       // surface is scaled to test that the pixel moving is done in the target
-      // space, where the background filter is applied.
+      // space, where the backdrop filter is applied.
       TestContentLayerImpl* parent = this->CreateRoot(
           this->identity_matrix, gfx::PointF(), gfx::Size(200, 200));
       LayerImpl* filtered_surface = this->CreateDrawingLayer(
           parent, scale_by_half, gfx::PointF(50.f, 50.f), gfx::Size(100, 100),
           false);
-      filtered_surface->test_properties()->background_filters = filters;
+      filtered_surface->test_properties()->backdrop_filters = filters;
       gfx::Rect occlusion_rect;
       switch (i) {
         case LEFT:
@@ -1448,7 +1448,7 @@ class OcclusionTrackerTestPixelsNeededForDropShadowBackgroundFilter
       EXPECT_EQ(occlusion_inside_surface.ToString(),
                 occlusion.occlusion_from_outside_target().ToString());
 
-      // The surface has a background filter, so it needs pixels that are
+      // The surface has a backdrop filter, so it needs pixels that are
       // currently considered occluded in order to be drawn. The pixels it
       // needs should be removed from the occluded area, so that they are drawn
       // when we get to the parent.
@@ -1459,7 +1459,7 @@ class OcclusionTrackerTestPixelsNeededForDropShadowBackgroundFilter
       switch (i) {
         case LEFT:
           // The right half of the occlusion is close enough to cast a shadow
-          // that would be visible in the background filter. The shadow reaches
+          // that would be visible in the backdrop filter. The shadow reaches
           // 3*5 + 10 = 25 pixels to the right.
           expected_occlusion = gfx::Rect(0, 0, 25, 200);
           break;
@@ -1488,12 +1488,12 @@ class OcclusionTrackerTestPixelsNeededForDropShadowBackgroundFilter
 };
 
 ALL_OCCLUSIONTRACKER_TEST(
-    OcclusionTrackerTestPixelsNeededForDropShadowBackgroundFilter);
+    OcclusionTrackerTestPixelsNeededForDropShadowBackdropFilter);
 
-class OcclusionTrackerTestTwoBackgroundFiltersReduceOcclusionTwice
+class OcclusionTrackerTestTwoBackdropFiltersReduceOcclusionTwice
     : public OcclusionTrackerTest {
  protected:
-  explicit OcclusionTrackerTestTwoBackgroundFiltersReduceOcclusionTwice(
+  explicit OcclusionTrackerTestTwoBackdropFiltersReduceOcclusionTwice(
       bool opaque_layers)
       : OcclusionTrackerTest(opaque_layers) {}
   void RunMyTest() override {
@@ -1520,8 +1520,8 @@ class OcclusionTrackerTestTwoBackgroundFiltersReduceOcclusionTwice
     filtered_surface2->test_properties()->force_render_surface = true;
     FilterOperations filters;
     filters.Append(FilterOperation::CreateBlurFilter(1.f));
-    filtered_surface1->test_properties()->background_filters = filters;
-    filtered_surface2->test_properties()->background_filters = filters;
+    filtered_surface1->test_properties()->backdrop_filters = filters;
+    filtered_surface2->test_properties()->backdrop_filters = filters;
 
     this->CalcDrawEtc(root);
 
@@ -1554,12 +1554,12 @@ class OcclusionTrackerTestTwoBackgroundFiltersReduceOcclusionTwice
 };
 
 ALL_OCCLUSIONTRACKER_TEST(
-    OcclusionTrackerTestTwoBackgroundFiltersReduceOcclusionTwice);
+    OcclusionTrackerTestTwoBackdropFiltersReduceOcclusionTwice);
 
-class OcclusionTrackerTestDontReduceOcclusionBelowBackgroundFilter
+class OcclusionTrackerTestDontReduceOcclusionBelowBackdropFilter
     : public OcclusionTrackerTest {
  protected:
-  explicit OcclusionTrackerTestDontReduceOcclusionBelowBackgroundFilter(
+  explicit OcclusionTrackerTestDontReduceOcclusionBelowBackdropFilter(
       bool opaque_layers)
       : OcclusionTrackerTest(opaque_layers) {}
   void RunMyTest() override {
@@ -1568,7 +1568,7 @@ class OcclusionTrackerTestDontReduceOcclusionBelowBackgroundFilter
 
     // Make a 50x50 surface, with a smaller 30x30 layer centered below it.
     // The surface is scaled to test that the pixel moving is done in the target
-    // space, where the background filter is applied, and the surface appears at
+    // space, where the backdrop filter is applied, and the surface appears at
     // 50, 50.
     TestContentLayerImpl* parent = this->CreateRoot(
         this->identity_matrix, gfx::PointF(), gfx::Size(300, 150));
@@ -1583,13 +1583,13 @@ class OcclusionTrackerTestDontReduceOcclusionBelowBackgroundFilter
     filtered_surface->test_properties()->force_render_surface = true;
     FilterOperations filters;
     filters.Append(FilterOperation::CreateBlurFilter(3.f));
-    filtered_surface->test_properties()->background_filters = filters;
+    filtered_surface->test_properties()->backdrop_filters = filters;
 
     this->CalcDrawEtc(parent);
 
     TestOcclusionTrackerWithClip occlusion(gfx::Rect(0, 0, 1000, 1000));
 
-    // The surface has a background blur, so it blurs non-opaque pixels below
+    // The surface has a backdrop blur, so it blurs non-opaque pixels below
     // it.
     this->VisitLayer(filtered_surface, &occlusion);
     this->VisitContributingSurface(filtered_surface, &occlusion);
@@ -1616,12 +1616,12 @@ class OcclusionTrackerTestDontReduceOcclusionBelowBackgroundFilter
 };
 
 ALL_OCCLUSIONTRACKER_TEST(
-    OcclusionTrackerTestDontReduceOcclusionBelowBackgroundFilter);
+    OcclusionTrackerTestDontReduceOcclusionBelowBackdropFilter);
 
-class OcclusionTrackerTestDontReduceOcclusionIfBackgroundFilterIsOccluded
+class OcclusionTrackerTestDontReduceOcclusionIfBackdropFilterIsOccluded
     : public OcclusionTrackerTest {
  protected:
-  explicit OcclusionTrackerTestDontReduceOcclusionIfBackgroundFilterIsOccluded(
+  explicit OcclusionTrackerTestDontReduceOcclusionIfBackdropFilterIsOccluded(
       bool opaque_layers)
       : OcclusionTrackerTest(opaque_layers) {}
   void RunMyTest() override {
@@ -1631,7 +1631,7 @@ class OcclusionTrackerTestDontReduceOcclusionIfBackgroundFilterIsOccluded
     // Make a 50x50 filtered surface that is completely occluded by an opaque
     // layer which is above it in the z-order.  The surface is
     // scaled to test that the pixel moving is done in the target space, where
-    // the background filter is applied, and the surface appears at 50, 50.
+    // the backdrop filter is applied, and the surface appears at 50, 50.
     TestContentLayerImpl* parent = this->CreateRoot(
         this->identity_matrix, gfx::PointF(), gfx::Size(200, 150));
     LayerImpl* filtered_surface =
@@ -1645,7 +1645,7 @@ class OcclusionTrackerTestDontReduceOcclusionIfBackgroundFilterIsOccluded
     filtered_surface->test_properties()->force_render_surface = true;
     FilterOperations filters;
     filters.Append(FilterOperation::CreateBlurFilter(3.f));
-    filtered_surface->test_properties()->background_filters = filters;
+    filtered_surface->test_properties()->backdrop_filters = filters;
 
     this->CalcDrawEtc(parent);
 
@@ -1664,7 +1664,7 @@ class OcclusionTrackerTestDontReduceOcclusionIfBackgroundFilterIsOccluded
                 occlusion.occlusion_from_outside_target().ToString());
     }
 
-    // The surface has a background blur, so it blurs non-opaque pixels below
+    // The surface has a backdrop blur, so it blurs non-opaque pixels below
     // it.
     this->VisitContributingSurface(filtered_surface, &occlusion);
     {
@@ -1681,7 +1681,7 @@ class OcclusionTrackerTestDontReduceOcclusionIfBackgroundFilterIsOccluded
 };
 
 ALL_OCCLUSIONTRACKER_TEST(
-    OcclusionTrackerTestDontReduceOcclusionIfBackgroundFilterIsOccluded);
+    OcclusionTrackerTestDontReduceOcclusionIfBackdropFilterIsOccluded);
 
 class OcclusionTrackerTestReduceOcclusionWhenBkgdFilterIsPartiallyOccluded
     : public OcclusionTrackerTest {
@@ -1695,7 +1695,7 @@ class OcclusionTrackerTestReduceOcclusionWhenBkgdFilterIsPartiallyOccluded
 
     // Make a 50x50 surface which is partially occluded by opaque layers which
     // are above it in the z-order.  The surface is scaled to test that the
-    // pixel moving is done in the target space, where the background filter is
+    // pixel moving is done in the target space, where the backdrop filter is
     // applied, but the surface appears at 50, 50.
     TestContentLayerImpl* parent = this->CreateRoot(
         this->identity_matrix, gfx::PointF(), gfx::Size(300, 150));
@@ -1713,7 +1713,7 @@ class OcclusionTrackerTestReduceOcclusionWhenBkgdFilterIsPartiallyOccluded
     filtered_surface->test_properties()->force_render_surface = true;
     FilterOperations filters;
     filters.Append(FilterOperation::CreateBlurFilter(3.f));
-    filtered_surface->test_properties()->background_filters = filters;
+    filtered_surface->test_properties()->backdrop_filters = filters;
 
     this->CalcDrawEtc(parent);
 
@@ -1722,7 +1722,7 @@ class OcclusionTrackerTestReduceOcclusionWhenBkgdFilterIsPartiallyOccluded
     this->VisitLayer(beside_surface_layer, &occlusion);
     this->VisitLayer(above_surface_layer, &occlusion);
 
-    // The surface has a background blur, so it blurs non-opaque pixels below
+    // The surface has a backdrop blur, so it blurs non-opaque pixels below
     // it.
     this->VisitLayer(filtered_surface, &occlusion);
     this->VisitContributingSurface(filtered_surface, &occlusion);

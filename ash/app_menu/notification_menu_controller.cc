@@ -93,7 +93,7 @@ ui::Layer* NotificationMenuController::GetSlideOutLayer() {
                                  : nullptr;
 }
 
-void NotificationMenuController::OnSlideChanged() {}
+void NotificationMenuController::OnSlideChanged(bool in_progress) {}
 
 void NotificationMenuController::OnSlideOut() {
   // Results in |this| being deleted if there are no more notifications to show.

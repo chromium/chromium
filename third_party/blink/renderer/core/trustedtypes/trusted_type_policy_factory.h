@@ -16,6 +16,8 @@ namespace blink {
 
 class ExceptionState;
 class LocalFrame;
+class ScriptState;
+class ScriptValue;
 class TrustedTypePolicy;
 
 class CORE_EXPORT TrustedTypePolicyFactory final : public ScriptWrappable,
@@ -28,6 +30,7 @@ class CORE_EXPORT TrustedTypePolicyFactory final : public ScriptWrappable,
     return new TrustedTypePolicyFactory(frame);
   }
 
+  // TrustedTypePolicyFactory.idl
   TrustedTypePolicy* createPolicy(const String&,
                                   const TrustedTypePolicyOptions&,
                                   bool exposed,
@@ -37,10 +40,18 @@ class CORE_EXPORT TrustedTypePolicyFactory final : public ScriptWrappable,
 
   Vector<String> getPolicyNames() const;
 
+  bool isHTML(ScriptState*, const ScriptValue&);
+  bool isScript(ScriptState*, const ScriptValue&);
+  bool isScriptURL(ScriptState*, const ScriptValue&);
+  bool isURL(ScriptState*, const ScriptValue&);
+
   void Trace(blink::Visitor*) override;
 
  private:
   explicit TrustedTypePolicyFactory(LocalFrame*);
+
+  const WrapperTypeInfo* GetWrapperTypeInfoFromScriptValue(ScriptState*,
+                                                           const ScriptValue&);
 
   HeapHashMap<String, Member<TrustedTypePolicy>> policy_map_;
 };

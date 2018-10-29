@@ -1,0 +1,26 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package image_fetcher;
+
+message CachedImageMetadataProto {
+  // The key for the source image.
+  optional string key = 1;
+
+  // The time which the entry was created at. Used for garbage collection.
+  optional int64 creation_time = 2;
+
+  // The time which the entry was last used. Used for LRU eviction. This time
+  // won't always be updated, such as if the cache is in a read-only mode.
+  optional int64 last_used_time = 3;
+
+  // Size of the image data. Used to decide when to stop evictions after a
+  // certain amount of space has been freed. Is not used to decide the order in
+  // which images are evicted.
+  optional int64 data_size = 4;
+}

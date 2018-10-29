@@ -114,7 +114,7 @@ NodeListsNodeData& NodeRareData::CreateNodeLists() {
   return *node_lists_;
 }
 
-// Ensure the 10 bits reserved for the m_connectedFrameCount cannot overflow
+// Ensure the 10 bits reserved for the connected_frame_count_ cannot overflow.
 static_assert(Page::kMaxNumberOfFrames <
                   (1 << NodeRareData::kConnectedFrameCountBits),
               "Frame limit should fit in rare data count");

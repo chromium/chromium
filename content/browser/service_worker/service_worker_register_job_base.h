@@ -26,8 +26,8 @@ class ServiceWorkerRegisterJobBase {
 
   // Returns true if this job is identical to |job| for the purpose of
   // collapsing them together in a ServiceWorkerJobCoordinator queue.
-  // Registration jobs are equal if they are for the same pattern and script
-  // URL; unregistration jobs are equal if they are for the same pattern.
+  // Registration jobs are equal if they are for the same scope and script
+  // URL; unregistration jobs are equal if they are for the same scope.
   virtual bool Equals(ServiceWorkerRegisterJobBase* job) const = 0;
 
   // Returns the type of this job.

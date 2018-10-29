@@ -2,5 +2,6 @@ When a block element becomes a float we should strip any anonymous blocks wrappi
 
 Some
 content
-here. Should appear inside grey box.
+here.
+Should appear inside grey box.
 PASS

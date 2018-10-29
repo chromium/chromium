@@ -1,6 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x18
-  LayoutBlockFlow {test} at (0,0) size 800x18 [color=#008000]
-    LayoutText {#text} at (0,0) size 138x18
-      text run at (0,0) width 138: "This should be green."

@@ -35,7 +35,6 @@ GCC_TEST_FLAGS = [
 # Docs on groups of flags is preceded by ###.
 
 LLVM_FLAGS = [
-    # All warnings are treated as errors by implicit -Werror flag
     "-Wall",
     "-Wextra",
     "-Weverything",
@@ -53,6 +52,10 @@ LLVM_FLAGS = [
     "-Wno-extra-semi",
     "-Wno-packed",
     "-Wno-padded",
+    ###
+    # Google style does not use unsigned integers, though STL containers
+    # have unsigned types.
+    "-Wno-sign-compare",
     ###
     "-Wno-float-conversion",
     "-Wno-float-equal",
@@ -101,6 +104,7 @@ LLVM_TEST_FLAGS = [
     "-Wno-c99-extensions",
     "-Wno-missing-noreturn",
     "-Wno-missing-prototypes",
+    "-Wno-missing-variable-declarations",
     "-Wno-null-conversion",
     "-Wno-shadow",
     "-Wno-shift-sign-overflow",
@@ -112,13 +116,15 @@ LLVM_TEST_FLAGS = [
     "-Wno-unused-template",
     "-Wno-used-but-marked-unused",
     "-Wno-zero-as-null-pointer-constant",
+    # gtest depends on this GNU extension being offered.
+    "-Wno-gnu-zero-variadic-macro-arguments",
 ]
 
 MSVC_FLAGS = [
     "/W3",
-    "/WX",
     "/wd4005",  # macro-redefinition
     "/wd4068",  # unknown pragma
+    "/wd4180",  # qualifier applied to function type has no meaning; ignored
     "/wd4244",  # conversion from 'type1' to 'type2', possible loss of data
     "/wd4267",  # conversion from 'size_t' to 'type', possible loss of data
     "/wd4800",  # forcing value to bool 'true' or 'false' (performance warning)
@@ -151,4 +157,8 @@ ABSL_TEST_COPTS = ABSL_DEFAULT_COPTS + select({
 ABSL_EXCEPTIONS_FLAG = select({
     "//absl:windows": ["/U_HAS_EXCEPTIONS", "/D_HAS_EXCEPTIONS=1", "/EHsc"],
     "//conditions:default": ["-fexceptions"],
+})
+
+ABSL_EXCEPTIONS_FLAG_LINKOPTS = select({
+    "//conditions:default": [],
 })

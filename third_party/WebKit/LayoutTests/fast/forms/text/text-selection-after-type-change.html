@@ -8,7 +8,7 @@
 <script>
 var t = async_test('selectionStart/selectionEnd should be kept after input type changes.');
 t.step(() => {
-  assert_exists(window, 'eventSender');
+  assert_own_property(window, 'eventSender');
   var element = document.querySelector('input');
   element.value = '';
   element.focus();

@@ -16,8 +16,7 @@ namespace {
 // Erases all items in |item_to_erase| from |container|.
 template <typename Container1, typename Container2>
 void EraseContainer(const Container1& items_to_erase, Container2* container) {
-  for (typename Container1::const_iterator itr = items_to_erase.begin();
-       itr != items_to_erase.end(); ++itr) {
+  for (auto itr = items_to_erase.begin(); itr != items_to_erase.end(); ++itr) {
     container->erase(*itr);
   }
 }
@@ -27,12 +26,11 @@ void EraseContainer(const Container1& items_to_erase, Container2* container) {
 // |container| have the original contents.
 template <typename Container1, typename Container2>
 bool InsertAllOrNone(const Container1& items_to_insert, Container2* container) {
-  typedef typename Container1::const_iterator iterator;
-  for (iterator itr = items_to_insert.begin();
-       itr != items_to_insert.end(); ++itr) {
+  for (auto itr = items_to_insert.begin(); itr != items_to_insert.end();
+       ++itr) {
     if (!container->insert(*itr).second) {
       // Revert all successful insertion.
-      iterator end = itr;
+      auto end = itr;
       itr = items_to_insert.begin();
       for (; itr != end; ++itr)
         container->erase(*itr);
@@ -48,7 +46,7 @@ bool InsertPaths(std::vector<base::FilePath> paths_to_insert,
   for (iterator itr = paths_to_insert.begin();
        itr != paths_to_insert.end(); ++itr) {
     if (!paths->insert(*itr)) {
-      iterator end = itr;
+      auto end = itr;
       for (itr = paths_to_insert.begin(); itr != end; ++itr)
         paths->erase(*itr);
       return false;

@@ -15,6 +15,7 @@
 #include "content/browser/background_fetch/storage/image_helpers.h"
 #include "content/browser/background_fetch/storage/mark_registration_for_deletion_task.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/common/service_worker/service_worker_utils.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
@@ -237,7 +238,7 @@ class GetRequestsTask : public InitializationSubTask {
 
       auto request_info = base::MakeRefCounted<BackgroundFetchRequestInfo>(
           active_request.request_index(),
-          ServiceWorkerFetchRequest::ParseFromString(
+          ServiceWorkerUtils::DeserializeFetchRequestFromString(
               active_request.serialized_request()));
       request_info->SetDownloadGuid(active_request.download_guid());
 
@@ -336,13 +337,7 @@ class FillFromMetadataTask : public InitializationSubTask {
 
     // Fill BackgroundFetchRegistration.
     auto& registration = sub_task_init().initialization_data->registration;
-    // TODO(crbug.com/853874): Unify conversion logic.
-    registration.developer_id = metadata.registration().developer_id();
-    registration.unique_id = metadata.registration().unique_id();
-    registration.upload_total = metadata.registration().upload_total();
-    registration.uploaded = metadata.registration().uploaded();
-    registration.download_total = metadata.registration().download_total();
-    registration.downloaded = metadata.registration().downloaded();
+    ToBackgroundFetchRegistration(metadata, &registration);
 
     // Total number of requests.
     sub_task_init().initialization_data->num_requests = metadata.num_fetches();
@@ -505,7 +500,8 @@ void GetInitializationDataTask::FinishWithError(
       // TODO(crbug.com/865388): Getting the Developer ID should be possible
       // since it is part of the key for when we got the Unique ID.
       AddDatabaseTask(std::make_unique<MarkRegistrationForDeletionTask>(
-          data_manager(), data.second.registration_id, base::DoNothing()));
+          data_manager(), data.second.registration_id,
+          /* check_for_failure= */ false, base::DoNothing()));
     }
 
     if (data.second.error ==

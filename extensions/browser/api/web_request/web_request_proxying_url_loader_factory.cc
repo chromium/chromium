@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/common/url_utils.h"
@@ -23,7 +25,6 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     int32_t network_service_request_id,
     int32_t routing_id,
     uint32_t options,
-    bool is_non_navigation_browser_request,
     const network::ResourceRequest& request,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     network::mojom::URLLoaderRequest loader_request,
@@ -34,7 +35,6 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       network_service_request_id_(network_service_request_id),
       routing_id_(routing_id),
       options_(options),
-      is_non_navigation_browser_request_(is_non_navigation_browser_request),
       traffic_annotation_(traffic_annotation),
       proxied_loader_binding_(this, std::move(loader_request)),
       target_client_(std::move(client)),
@@ -66,21 +66,6 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::Restart() {
                                     : nullptr,
       routing_id_, factory_->resource_context_, request_,
       !(options_ & network::mojom::kURLLoadOptionSynchronous));
-
-  if (is_non_navigation_browser_request_) {
-    // ResourceRequest always has a valid-looking ResourceType value since it's
-    // non-optional and defaults to 0 (i.e. MAIN_FRAME), even of the
-    // corresponding request didn't actually come from a renderer. Because
-    // |info_| was blindly constructed from that ResourceRequest, it also now
-    // appears to pertain to a main-frame request.
-    //
-    // Because we already know this is a browser-originated request, we
-    // explicitly reset |info_->type| to null. A request having no ResourceType
-    // effectively implies a browser-originated request to any subsequent
-    // WebRequest logic that cares, e.g. some permission checking to determine
-    // when to filter certain kinds of requests.
-    info_->type.reset();
-  }
 
   auto continuation =
       base::BindRepeating(&InProgressRequest::ContinueToBeforeSendHeaders,
@@ -174,7 +159,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     const network::ResourceResponseHead& head) {
   if (redirect_url_ != redirect_info.new_url &&
-      !IsRedirectSafe(redirect_info.new_url)) {
+      !IsRedirectSafe(request_.url, redirect_info.new_url)) {
     OnRequestError(
         network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT));
     return;
@@ -363,10 +348,9 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::ContinueAuthRequest(
     WebRequestAPI::AuthRequestCallback callback,
     int error_code) {
   if (error_code != net::OK) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
-        base::BindOnce(std::move(callback), base::nullopt,
-                       true /* should_cancel */));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             base::BindOnce(std::move(callback), base::nullopt,
+                                            true /* should_cancel */));
     return;
   }
 
@@ -421,8 +405,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       return;
   }
 
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   std::move(completion));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           std::move(completion));
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
@@ -540,18 +524,19 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnRequestError(
   factory_->RemoveRequest(network_service_request_id_, request_id_);
 }
 
-// Determines whether it is safe to redirect to |url|.
+// Determines whether it is safe to redirect from |from_url| to |to_url|.
 bool WebRequestProxyingURLLoaderFactory::InProgressRequest::IsRedirectSafe(
-    const GURL& url) {
-  if (url.SchemeIs(extensions::kExtensionScheme)) {
+    const GURL& from_url,
+    const GURL& to_url) {
+  if (to_url.SchemeIs(extensions::kExtensionScheme)) {
     const Extension* extension =
-        factory_->info_map_->extensions().GetByID(url.host());
+        factory_->info_map_->extensions().GetByID(to_url.host());
     if (!extension)
       return false;
     return WebAccessibleResourcesInfo::IsResourceWebAccessible(extension,
-                                                               url.path());
+                                                               to_url.path());
   }
-  return content::IsSafeRedirectTarget(url);
+  return content::IsSafeRedirectTarget(from_url, to_url);
 }
 
 WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
@@ -614,6 +599,9 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
+  // Make sure we are not proxying a browser initiated non-navigation request.
+  DCHECK(render_process_id_ != -1 || navigation_ui_data_);
+
   // The request ID doesn't really matter in the Network Service path. It just
   // needs to be unique per-BrowserContext so extensions can make sense of it.
   // Note that |network_service_request_id_| by contrast is not necessarily
@@ -630,18 +618,11 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
     network_request_id_to_web_request_id_.emplace(request_id, web_request_id);
   }
 
-  // The WebRequest API treats browser-originated non-navigation requests with a
-  // few additional restrictions, so we deduce and propagate that information
-  // here.
-  const bool is_non_navigation_browser_request =
-      render_process_id_ == -1 && !navigation_ui_data_;
-
   auto result = requests_.emplace(
       web_request_id,
       std::make_unique<InProgressRequest>(
-          this, web_request_id, request_id, routing_id, options,
-          is_non_navigation_browser_request, request, traffic_annotation,
-          std::move(loader_request), std::move(client)));
+          this, web_request_id, request_id, routing_id, options, request,
+          traffic_annotation, std::move(loader_request), std::move(client)));
   result.first->second->Restart();
 }
 
@@ -658,10 +639,9 @@ void WebRequestProxyingURLLoaderFactory::HandleAuthRequest(
     WebRequestAPI::AuthRequestCallback callback) {
   auto it = network_request_id_to_web_request_id_.find(request_id);
   if (it == network_request_id_to_web_request_id_.end()) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
-        base::BindOnce(std::move(callback), base::nullopt,
-                       true /* should_cancel */));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             base::BindOnce(std::move(callback), base::nullopt,
+                                            true /* should_cancel */));
     return;
   }
 
@@ -677,18 +657,17 @@ WebRequestProxyingURLLoaderFactory::~WebRequestProxyingURLLoaderFactory() =
 void WebRequestProxyingURLLoaderFactory::OnTargetFactoryError() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   target_factory_.reset();
-  if (proxy_bindings_.empty()) {
-    // Deletes |this|.
-    proxies_->RemoveProxy(this);
-  }
+  proxy_bindings_.CloseAllBindings();
+
+  MaybeRemoveProxy();
 }
 
 void WebRequestProxyingURLLoaderFactory::OnProxyBindingError() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  if (proxy_bindings_.empty() && !target_factory_.is_bound()) {
-    // Deletes |this|.
-    proxies_->RemoveProxy(this);
-  }
+  if (proxy_bindings_.empty())
+    target_factory_.reset();
+
+  MaybeRemoveProxy();
 }
 
 void WebRequestProxyingURLLoaderFactory::RemoveRequest(
@@ -701,6 +680,18 @@ void WebRequestProxyingURLLoaderFactory::RemoveRequest(
         this, content::GlobalRequestID(render_process_id_,
                                        network_service_request_id));
   }
+
+  MaybeRemoveProxy();
+}
+
+void WebRequestProxyingURLLoaderFactory::MaybeRemoveProxy() {
+  // Even if all URLLoaderFactory pipes connected to this object have been
+  // closed it has to stay alive until all active requests have completed.
+  if (target_factory_.is_bound() || !requests_.empty())
+    return;
+
+  // Deletes |this|.
+  proxies_->RemoveProxy(this);
 }
 
 }  // namespace extensions

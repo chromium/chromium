@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 namespace blink {
 
@@ -154,9 +154,11 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   ComputedStyle& style = *state.Style();
   float zoom = EffectiveZoom(style);
+  CSSToLengthConversionData conversion_data = state.CssToLengthConversionData();
+  conversion_data.SetZoom(zoom);
   Length length = LengthInterpolationFunctions::CreateLength(
-      interpolable_value, non_interpolable_value,
-      state.CssToLengthConversionData(), value_range_);
+      interpolable_value, non_interpolable_value, conversion_data,
+      value_range_);
   if (LengthPropertyFunctions::SetLength(CssProperty(), style, length)) {
 #if DCHECK_IS_ON()
     // Assert that setting the length on ComputedStyle directly is identical to

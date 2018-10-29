@@ -11,7 +11,6 @@
 
 namespace ash {
 
-class ImmersiveFocusWatcher;
 class ImmersiveFullscreenController;
 class ImmersiveGestureHandler;
 
@@ -19,9 +18,6 @@ class ImmersiveGestureHandler;
 class ASH_PUBLIC_EXPORT ImmersiveHandlerFactory {
  public:
   static ImmersiveHandlerFactory* Get() { return instance_; }
-
-  virtual std::unique_ptr<ImmersiveFocusWatcher> CreateFocusWatcher(
-      ImmersiveFullscreenController* controller) = 0;
 
   virtual std::unique_ptr<ImmersiveGestureHandler> CreateGestureHandler(
       ImmersiveFullscreenController* controller) = 0;

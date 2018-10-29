@@ -2,7 +2,6 @@ This test checks the behavior of DOM operations when called on non-DOM or incomp
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS aNode.appendChild(aDOMImplementation) threw exception TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'..
 PASS aNode.appendChild('knort') threw exception TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'..
 PASS aNode.appendChild(void 0) threw exception TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'..

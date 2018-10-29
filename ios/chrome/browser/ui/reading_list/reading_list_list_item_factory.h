@@ -15,15 +15,6 @@ class ReadingListEntry;
 // Factory object that produces ListItems for Reading List.
 @interface ReadingListListItemFactory : NSObject
 
-// A factory that produces ReadingListTableViewItems.
-+ (instancetype)tableViewItemFactory;
-
-// A factory that produces ReadingListCollectionViewItems.
-+ (instancetype)collectionViewItemFactory;
-
-// Use either |+tableViewItemFactory| or |+collectionViewItemFactory|.
-- (instancetype)init NS_UNAVAILABLE;
-
 // The accessibility delegate to use for the created items.
 @property(nonatomic, weak) id<ReadingListListItemAccessibilityDelegate>
     accessibilityDelegate;

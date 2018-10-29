@@ -8,7 +8,6 @@
 #include <memory>
 #include <ostream>
 
-#include "net/third_party/quic/core/frames/quic_control_frame.h"
 #include "net/third_party/quic/core/quic_types.h"
 
 namespace quic {
@@ -16,7 +15,7 @@ namespace quic {
 // Size of the entire IETF Quic Path Challenge frame.
 const size_t kQuicPathChallengeFrameSize = kQuicPathFrameBufferSize;
 
-struct QUIC_EXPORT_PRIVATE QuicPathChallengeFrame : public QuicControlFrame {
+struct QUIC_EXPORT_PRIVATE QuicPathChallengeFrame {
   QuicPathChallengeFrame();
   QuicPathChallengeFrame(QuicControlFrameId control_frame_id,
                          const QuicPathFrameBuffer& data_buff);
@@ -25,6 +24,10 @@ struct QUIC_EXPORT_PRIVATE QuicPathChallengeFrame : public QuicControlFrame {
   friend QUIC_EXPORT_PRIVATE std::ostream& operator<<(
       std::ostream& os,
       const QuicPathChallengeFrame& frame);
+
+  // A unique identifier of this control frame. 0 when this frame is received,
+  // and non-zero when sent.
+  QuicControlFrameId control_frame_id;
 
   QuicPathFrameBuffer data_buffer;
 };

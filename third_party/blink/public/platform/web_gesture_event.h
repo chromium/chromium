@@ -60,6 +60,9 @@ class WebGestureEvent : public WebInputEvent {
       int tap_count;
       float width;
       float height;
+      // |needs_wheel_event| for touchpad GestureDoubleTap has the same
+      // semantics as |needs_wheel_event| for touchpad pinch described below.
+      bool needs_wheel_event;
     } tap;
 
     struct {
@@ -72,6 +75,7 @@ class WebGestureEvent : public WebInputEvent {
       float height;
     } show_press;
 
+    // This is used for both GestureLongPress and GestureLongTap.
     struct {
       float width;
       float height;
@@ -276,7 +280,16 @@ class WebGestureEvent : public WebInputEvent {
     }
   }
 
+  bool IsTouchpadZoomEvent() const {
+    // Touchpad GestureDoubleTap also causes a page scale change like a touchpad
+    // pinch gesture.
+    return source_device_ == WebGestureDevice::kWebGestureDeviceTouchpad &&
+           (WebInputEvent::IsPinchGestureEventType(type_) ||
+            type_ == kGestureDoubleTap);
+  }
+
   bool NeedsWheelEvent() const {
+    DCHECK(IsTouchpadZoomEvent());
     switch (type_) {
       case kGesturePinchBegin:
         return data.pinch_begin.needs_wheel_event;
@@ -284,6 +297,8 @@ class WebGestureEvent : public WebInputEvent {
         return data.pinch_update.needs_wheel_event;
       case kGesturePinchEnd:
         return data.pinch_end.needs_wheel_event;
+      case kGestureDoubleTap:
+        return data.tap.needs_wheel_event;
       default:
         NOTREACHED();
         return false;
@@ -291,8 +306,7 @@ class WebGestureEvent : public WebInputEvent {
   }
 
   void SetNeedsWheelEvent(bool needs_wheel_event) {
-    DCHECK(!needs_wheel_event ||
-           source_device_ == WebGestureDevice::kWebGestureDeviceTouchpad);
+    DCHECK(!needs_wheel_event || IsTouchpadZoomEvent());
     switch (type_) {
       case kGesturePinchBegin:
         data.pinch_begin.needs_wheel_event = needs_wheel_event;
@@ -303,8 +317,11 @@ class WebGestureEvent : public WebInputEvent {
       case kGesturePinchEnd:
         data.pinch_end.needs_wheel_event = needs_wheel_event;
         break;
+      case kGestureDoubleTap:
+        data.tap.needs_wheel_event = needs_wheel_event;
+        break;
       default:
-        NOTREACHED();
+        break;
     }
   }
 };

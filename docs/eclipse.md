@@ -59,13 +59,6 @@ settings below are inside Window > Preferences.
  * Disable build before launching
     * Select Run/Debug > Launching
     * Uncheck Build (if required) before launching
- * File types for .gyp and .gypi
-    * Go to General > Editors > File Associations
-    * Add `*.gyp` and `*.gypi` file types, and associate them with Python Editor
-       * See http://pydev.org/index.html for instructions on getting a Python
-         Editor configured in Eclipse
-    * Enjoy a happy life with Ctrl+Shift+P and automatic matching bracket
-      highlight.
  * Tab ordering
     * If you prefer ordering your tabs by most recently used, go to General >
       Appearance and check Show most recently used tabs
@@ -122,17 +115,6 @@ settings below are inside Window > Preferences.
     * Uncheck Index source files not included in the build
     * Uncheck Allow heuristic resolution of includes
     * Click Apply to commit the changes
- * C/C++ Paths and Symbols. This help Eclipse build the symbol table for Chrome.
-    * From a shell, run `GYP_GENERATORS=eclipse build/gyp_chromium`
-    * This generates `<project root>/out/Release/eclipse-cdt-settings.xml` which
-      is used below.
-    * Select C/C++ General > Paths and Symbols from the tree on the left
-    * Click Restore Defaults to clear any old settings
-    * Click Import Settings... The import dialog should appear.
-    * Click Browse... A file browser should appear.
-    * Select `<project root>/out/Release/eclipse-cdt-settings.xml`.
-    * Click the Finish button. The entire preferences dialog should go away.
-    * Right click on the project and select Index > Rebuild
  * Java
     * Create a link from `<project root>/.classpath` to
       `<project root>/tools/android/eclipse/.classpath`:

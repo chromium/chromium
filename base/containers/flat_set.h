@@ -111,6 +111,7 @@ namespace base {
 //   template <typename K> size_t                   count(const K&) const;
 //   template <typename K> iterator                 find(const K&);
 //   template <typename K> const_iterator           find(const K&) const;
+//   template <typename K> bool                     contains(const K&) const;
 //   template <typename K> pair<iterator, iterator> equal_range(K&);
 //   template <typename K> iterator                 lower_bound(const K&);
 //   template <typename K> const_iterator           lower_bound(const K&) const;

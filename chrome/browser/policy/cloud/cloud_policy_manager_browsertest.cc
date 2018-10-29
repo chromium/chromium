@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/cloud/test_request_interceptor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -25,9 +24,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +50,97 @@ using testing::_;
 namespace em = enterprise_management;
 
 namespace policy {
+
+namespace {
+
+// Parses the upload data in |request| into |request_msg|, and validates the
+// request. The query string in the URL must contain the |expected_type| for
+// the "request" parameter. Returns true if all checks succeeded, and the
+// request data has been parsed into |request_msg|.
+bool ValidRequest(const std::string& method,
+                  const GURL& url,
+                  const std::string& data,
+                  const std::string& expected_type,
+                  em::DeviceManagementRequest* request_msg) {
+  if (method != "POST")
+    return false;
+  std::string spec = url.spec();
+  if (spec.find("request=" + expected_type) == std::string::npos)
+    return false;
+
+  if (!request_msg->ParseFromString(data))
+    return false;
+
+  return true;
+}
+
+void RespondWithBadResponse(const network::ResourceRequest& request,
+                            network::TestURLLoaderFactory* factory) {
+  network::URLLoaderCompletionStatus status;
+  factory->AddResponse(
+      request.url, network::ResourceResponseHead(), std::string(),
+      network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED));
+}
+
+void RespondToRegisterWithSuccess(em::DeviceRegisterRequest::Type expected_type,
+                                  bool expect_reregister,
+                                  const network::ResourceRequest& request,
+                                  network::TestURLLoaderFactory* factory) {
+  em::DeviceManagementRequest request_msg;
+  if (!ValidRequest(request.method, request.url,
+                    network::GetUploadData(request), "register",
+                    &request_msg)) {
+    RespondWithBadResponse(request, factory);
+    return;
+  }
+
+  if (!request_msg.has_register_request() ||
+      request_msg.has_unregister_request() ||
+      request_msg.has_policy_request() ||
+      request_msg.has_device_status_report_request() ||
+      request_msg.has_session_status_report_request() ||
+      request_msg.has_auto_enrollment_request()) {
+    RespondWithBadResponse(request, factory);
+    return;
+  }
+
+  const em::DeviceRegisterRequest& register_request =
+      request_msg.register_request();
+  if (expect_reregister &&
+      (!register_request.has_reregister() || !register_request.reregister())) {
+    RespondWithBadResponse(request, factory);
+    return;
+  } else if (!expect_reregister && register_request.has_reregister() &&
+             register_request.reregister()) {
+    RespondWithBadResponse(request, factory);
+    return;
+  }
+
+  if (!register_request.has_type() ||
+      register_request.type() != expected_type) {
+    RespondWithBadResponse(request, factory);
+    return;
+  }
+
+  std::string content;
+  network::URLLoaderCompletionStatus status;
+
+  em::DeviceManagementResponse response;
+  em::DeviceRegisterResponse* register_response =
+      response.mutable_register_response();
+  register_response->set_device_management_token("s3cr3t70k3n");
+  response.SerializeToString(&content);
+
+  status.decoded_body_length = content.size();
+
+  network::ResourceResponseHead head =
+      network::CreateResourceResponseHead(net::HTTP_OK);
+  head.mime_type = "application/protobuf";
+
+  factory->AddResponse(request.url, head, content, status);
+}
+
+}  // namespace
 
 // Tests the cloud policy stack using a URLRequestJobFactory::ProtocolHandler
 // to intercept requests and produce canned responses.
@@ -173,9 +263,8 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, Register) {
   const bool expect_reregister = false;
   test_url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        TestRequestInterceptor::RespondToRegisterWithSuccess(
-            expected_type, expect_reregister, request,
-            test_url_loader_factory_.get());
+        RespondToRegisterWithSuccess(expected_type, expect_reregister, request,
+                                     test_url_loader_factory_.get());
       }));
 
   EXPECT_FALSE(policy_manager()->core()->client()->is_registered());
@@ -238,9 +327,8 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterWithRetry) {
           return;
         }
 
-        TestRequestInterceptor::RespondToRegisterWithSuccess(
-            expected_type, expect_reregister, request,
-            test_url_loader_factory_.get());
+        RespondToRegisterWithSuccess(expected_type, expect_reregister, request,
+                                     test_url_loader_factory_.get());
       }));
 
   EXPECT_FALSE(policy_manager()->core()->client()->is_registered());

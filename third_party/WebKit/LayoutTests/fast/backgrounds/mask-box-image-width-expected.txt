@@ -2,7 +2,6 @@ This test checks that webkitMaskBoxImageWidth is correctly parsed and returned f
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(testElm).webkitMaskBoxImageWidth is "auto"
 PASS getComputedStyle(testElm).webkitMaskBoxImageWidth is "auto"
 PASS getComputedStyle(testElm).webkitMaskBoxImageWidth is "1"

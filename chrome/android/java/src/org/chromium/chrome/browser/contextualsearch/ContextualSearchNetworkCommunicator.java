@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import android.support.annotation.Nullable;
+
 import java.net.URL;
-
-import javax.annotation.Nullable;
-
 
 /**
  * An interface for network communication between the Contextual Search client and server.
@@ -40,12 +39,15 @@ public interface ContextualSearchNetworkCommunicator {
      * @param caption The caption to display.
      * @param quickActionUri The URI for the intent associated with the quick action.
      * @param quickActionCategory The {@link QuickActionCategory} for the quick action.
+     * @param docId The ID of the document identified by the server, or 0 for not known.
+     * @param snippetHash The hash of a snippet from the surrounding text, as identified by the
+     *        server, or 0 for not known.
      */
     void handleSearchTermResolutionResponse(boolean isNetworkUnavailable, int responseCode,
             String searchTerm, String displayText, String alternateTerm, String mid,
             boolean doPreventPreload, int selectionStartAdjust, int selectionEndAdjust,
-            String contextLanguage, String thumbnailUrl, String caption,
-            String quickActionUri, int quickActionCategory);
+            String contextLanguage, String thumbnailUrl, String caption, String quickActionUri,
+            int quickActionCategory, long docId, long snippetHash);
 
     /**
      * @return Whether the device is currently online.

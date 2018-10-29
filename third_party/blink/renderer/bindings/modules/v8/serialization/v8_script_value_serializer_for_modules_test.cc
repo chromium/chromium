@@ -17,8 +17,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_detected_barcode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_detected_face.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_detected_text.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -970,6 +974,84 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeInvalidDOMFileSystem) {
           }))
           .Deserialize()
           ->IsNull());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, DecodeDetectedBarcode) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  scoped_refptr<SerializedScriptValue> input = SerializedValue(
+      {0xff, 0x13, 0xff, 0x0d, 0x5c, 'B',  0x04, 0x74, 0x65, 0x78, 0x74, 0x00,
+       0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00,
+       0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x40, 0x00,
+       0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x40, 0x01, 0x00, 0x00, 0x00, 0x00,
+       0x00, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40});
+  v8::Local<v8::Value> result =
+      V8ScriptValueDeserializerForModules(script_state, input).Deserialize();
+  ASSERT_TRUE(V8DetectedBarcode::hasInstance(result, scope.GetIsolate()));
+  DetectedBarcode* detected_barcode =
+      V8DetectedBarcode::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ("text", detected_barcode->rawValue());
+  DOMRectReadOnly* bounding_box = detected_barcode->boundingBox();
+  EXPECT_EQ(1, bounding_box->x());
+  EXPECT_EQ(2, bounding_box->y());
+  EXPECT_EQ(3, bounding_box->width());
+  EXPECT_EQ(4, bounding_box->height());
+  const HeapVector<Point2D>& corner_points = detected_barcode->cornerPoints();
+  EXPECT_EQ(1u, corner_points.size());
+  EXPECT_EQ(1, corner_points[0].x());
+  EXPECT_EQ(2, corner_points[0].y());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, DecodeDetectedFace) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  scoped_refptr<SerializedScriptValue> input = SerializedValue(
+      {0xff, 0x13, 0xff, 0x0d, 0x5c, 'F',  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+       0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00,
+       0x00, 0x00, 0x00, 0x00, 0x08, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+       0x10, 0x40, 0x01, 0x03, 0x65, 0x79, 0x65, 0x01, 0x00, 0x00, 0x00, 0x00,
+       0x00, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40});
+  v8::Local<v8::Value> result =
+      V8ScriptValueDeserializerForModules(script_state, input).Deserialize();
+  ASSERT_TRUE(V8DetectedFace::hasInstance(result, scope.GetIsolate()));
+  DetectedFace* detected_face = V8DetectedFace::ToImpl(result.As<v8::Object>());
+  DOMRectReadOnly* bounding_box = detected_face->boundingBox();
+  EXPECT_EQ(1, bounding_box->x());
+  EXPECT_EQ(2, bounding_box->y());
+  EXPECT_EQ(3, bounding_box->width());
+  EXPECT_EQ(4, bounding_box->height());
+  const HeapVector<Landmark>& landmarks = detected_face->landmarks();
+  EXPECT_EQ(1u, landmarks.size());
+  EXPECT_EQ("eye", landmarks[0].type());
+  const HeapVector<Point2D>& locations = landmarks[0].locations();
+  EXPECT_EQ(1u, locations.size());
+  EXPECT_EQ(1, locations[0].x());
+  EXPECT_EQ(2, locations[0].y());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, DecodeDetectedText) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  scoped_refptr<SerializedScriptValue> input = SerializedValue(
+      {0xff, 0x13, 0xff, 0x0d, 0x5c, 't',  0x04, 0x74, 0x65, 0x78, 0x74, 0x00,
+       0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00,
+       0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x40, 0x00,
+       0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x40, 0x01, 0x00, 0x00, 0x00, 0x00,
+       0x00, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40});
+  v8::Local<v8::Value> result =
+      V8ScriptValueDeserializerForModules(script_state, input).Deserialize();
+  ASSERT_TRUE(V8DetectedText::hasInstance(result, scope.GetIsolate()));
+  DetectedText* detected_text = V8DetectedText::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ("text", detected_text->rawValue());
+  DOMRectReadOnly* bounding_box = detected_text->boundingBox();
+  EXPECT_EQ(1, bounding_box->x());
+  EXPECT_EQ(2, bounding_box->y());
+  EXPECT_EQ(3, bounding_box->width());
+  EXPECT_EQ(4, bounding_box->height());
+  const HeapVector<Point2D>& corner_points = detected_text->cornerPoints();
+  EXPECT_EQ(1u, corner_points.size());
+  EXPECT_EQ(1, corner_points[0].x());
+  EXPECT_EQ(2, corner_points[0].y());
 }
 
 }  // namespace

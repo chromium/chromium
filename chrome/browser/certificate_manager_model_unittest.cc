@@ -18,7 +18,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
-#include "chrome/browser/chromeos/policy/policy_certificate_provider.h"
+#include "chromeos/policy_certificate_provider.h"
 #endif
 
 namespace {
@@ -191,7 +191,8 @@ TEST_F(CertificateManagerModelTest, ListsClientCertsFromPlatform) {
 #if defined(OS_CHROMEOS)
 namespace {
 
-class FakePolicyCertificateProvider : public policy::PolicyCertificateProvider {
+class FakePolicyCertificateProvider
+    : public chromeos::PolicyCertificateProvider {
  public:
   void AddPolicyProvidedCertsObserver(Observer* observer) override {
     observer_list_.AddObserver(observer);
@@ -208,6 +209,12 @@ class FakePolicyCertificateProvider : public policy::PolicyCertificateProvider {
     merged.insert(merged.end(), not_web_trusted_certs_.begin(),
                   not_web_trusted_certs_.end());
     return merged;
+  }
+
+  net::CertificateList GetAllAuthorityCertificates() const override {
+    // This function is not called by CertificateManagerModel.
+    NOTREACHED();
+    return net::CertificateList();
   }
 
   net::CertificateList GetWebTrustedCertificates() const override {

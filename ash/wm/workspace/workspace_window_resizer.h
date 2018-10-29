@@ -60,6 +60,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   void Drag(const gfx::Point& location_in_parent, int event_flags) override;
   void CompleteDrag() override;
   void RevertDrag() override;
+  void FlingOrSwipe(ui::GestureEvent* event) override;
 
  private:
   friend class WorkspaceWindowResizerTest;
@@ -154,6 +155,11 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   bool AreBoundsValidSnappedBounds(mojom::WindowStateType snapped_type,
                                    const gfx::Rect& bounds_in_parent) const;
 
+  // Sets |window|'s state type to |new_state_type|. Called after the drag has
+  // been completed for fling/swipe gestures.
+  void SetWindowStateTypeFromGesture(aura::Window* window,
+                                     mojom::WindowStateType new_state_type);
+
   wm::WindowState* window_state() { return window_state_; }
 
   const std::vector<aura::Window*> attached_windows_;
@@ -207,6 +213,11 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // If |magnetism_window_| is non-NULL this indicates how the two windows
   // should attach.
   MatchedEdge magnetism_edge_;
+
+  // The window bounds when the drag was started. When a window is minimized,
+  // maximized or snapped via a swipe/fling gesture, the restore bounds should
+  // be set to the bounds of the window when the drag was started.
+  gfx::Rect pre_drag_window_bounds_;
 
   // Used to determine if this has been deleted during a drag such as when a tab
   // gets dragged into another browser window.

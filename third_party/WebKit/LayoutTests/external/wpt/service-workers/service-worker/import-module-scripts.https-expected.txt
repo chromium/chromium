@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Static import.
+PASS Nested static import.
+FAIL Static import and then dynamic import. assert_array_equals: value is "Failed to do dynamic import: TypeError: Module scripts are not supported on WorkerGlobalScope yet (see https://crbug.com/680046).", expected array
+FAIL Dynamic import. assert_array_equals: value is "Failed to do dynamic import: TypeError: Module scripts are not supported on WorkerGlobalScope yet (see https://crbug.com/680046).", expected array
+FAIL Nested dynamic import. assert_array_equals: value is "Failed to do dynamic import: TypeError: Module scripts are not supported on WorkerGlobalScope yet (see https://crbug.com/680046).", expected array
+FAIL Dynamic import and then static import. assert_array_equals: value is "Failed to do dynamic import: TypeError: Module scripts are not supported on WorkerGlobalScope yet (see https://crbug.com/680046).", expected array
+FAIL eval(import()). assert_array_equals: value is "Failed to do dynamic import: TypeError: Module scripts are not supported on WorkerGlobalScope yet (see https://crbug.com/680046).", expected array
+Harness: the test ran to completion.
+

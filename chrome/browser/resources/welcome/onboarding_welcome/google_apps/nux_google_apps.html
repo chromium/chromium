@@ -1,0 +1,80 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="../navigation_behavior.html">
+<link rel="import" href="../shared/step_indicator.html">
+<link rel="import" href="apps_chooser.html">
+<link rel="import" href="nux_google_apps_proxy.html">
+
+<dom-module id="nux-google-apps">
+  <template>
+    <style include="paper-button-style">
+      .apps-ask {
+        margin-left: auto;
+        margin-right: auto;
+        width: fit-content;
+      }
+
+      .chrome-logo {
+        content: -webkit-image-set(
+            url(chrome://welcome/google_apps/google_apps_1x.png) 1x,
+            url(chrome://welcome/google_apps/google_apps_2x.png) 2x);
+        height: 38px;
+        margin-bottom: 16px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 42px;
+      }
+
+      h1 {
+        color: var(--cr-primary-text-color);
+        font-size: 24px;
+        font-weight: 500;
+        margin-bottom: 48px;
+        opacity: .8;
+        text-align: center;
+      }
+
+      apps-chooser {
+        color: var(--cr-primary-text-color);
+        font-size: 14px;
+        margin-bottom: 64px;
+      }
+
+      .button-bar {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      iron-icon[icon='cr:chevron-right'] {
+        height: 20px;
+        margin-left: 6px;
+        margin-right: -10px;
+        width: 20px;
+      }
+    </style>
+
+    <div class="apps-ask">
+      <div class="chrome-logo"></div>
+      <h1>$i18n{googleAppsDescription}</h1>
+
+      <apps-chooser id="appChooser" has-apps-selected="{{hasAppsSelected_}}">
+      </apps-chooser>
+
+      <div class="button-bar">
+        <paper-button on-click="onNoThanksClicked_">
+          $i18n{skip}
+        </paper-button>
+        <step-indicator model="[[indicatorModel]]"></step-indicator>
+        <paper-button class="action-button" disabled$="[[!hasAppsSelected_]]"
+            on-click="onGetStartedClicked_">
+          $i18n{next}
+          <iron-icon icon="cr:chevron-right"></iron-icon>
+        </paper-button>
+      </div>
+    </div>
+  </template>
+  <script src="nux_google_apps.js"></script>
+</dom-module>

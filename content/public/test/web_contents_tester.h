@@ -82,6 +82,13 @@ class WebContentsTester {
   // emulates what happens on a new navigation.
   virtual void NavigateAndCommit(const GURL& url) = 0;
 
+  // Creates a pending navigation to the given URL with the default parameters
+  // and then aborts it with the given |error_code| and |response_headers|.
+  virtual void NavigateAndFail(
+      const GURL& url,
+      int error_code,
+      scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
+
   // Sets the loading state to the given value.
   virtual void TestSetIsLoading(bool value) = 0;
 

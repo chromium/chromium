@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -68,7 +68,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterfaceConstructorV8Internal {
+namespace test_interface_constructor_v8_internal {
 
 static void constructor1(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConstructor_ConstructorCallback");
@@ -79,7 +79,7 @@ static void constructor1(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   ExecutionContext* executionContext = ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext());
-  Document& document = *ToDocument(ToExecutionContext(
+  Document& document = *To<Document>(ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext()));
   TestInterfaceConstructor* impl = TestInterfaceConstructor::Create(scriptState, executionContext, document, exceptionState);
   if (exceptionState.HadException()) {
@@ -150,7 +150,7 @@ static void constructor2(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (UNLIKELY(numArgsPassed <= 7)) {
     ExecutionContext* executionContext = ToExecutionContext(
         info.NewTarget().As<v8::Object>()->CreationContext());
-    Document& document = *ToDocument(ToExecutionContext(
+    Document& document = *To<Document>(ToExecutionContext(
         info.NewTarget().As<v8::Object>()->CreationContext()));
     TestInterfaceConstructor* impl = TestInterfaceConstructor::Create(scriptState, executionContext, document, doubleArg, stringArg, testInterfaceEmptyArg, dictionaryArg, sequenceStringArg, sequenceDictionaryArg, sequenceLongOrTestDictionaryArg, exceptionState);
     if (exceptionState.HadException()) {
@@ -161,7 +161,7 @@ static void constructor2(const v8::FunctionCallbackInfo<v8::Value>& info) {
     V8SetReturnValue(info, wrapper);
     return;
   }
-  optionalUSVStringArg = NativeValueTraits<IDLUSVStringBase<kTreatNullAndUndefinedAsNullString>>::NativeValue(info.GetIsolate(), info[7], exceptionState);
+  optionalUSVStringArg = NativeValueTraits<IDLUSVStringOrNull>::NativeValue(info.GetIsolate(), info[7], exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -181,7 +181,7 @@ static void constructor2(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   ExecutionContext* executionContext = ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext());
-  Document& document = *ToDocument(ToExecutionContext(
+  Document& document = *To<Document>(ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext()));
   TestInterfaceConstructor* impl = TestInterfaceConstructor::Create(scriptState, executionContext, document, doubleArg, stringArg, testInterfaceEmptyArg, dictionaryArg, sequenceStringArg, sequenceDictionaryArg, sequenceLongOrTestDictionaryArg, optionalUSVStringArg, optionalDictionaryArg, optionalTestInterfaceEmptyArg, exceptionState);
   if (exceptionState.HadException()) {
@@ -214,7 +214,7 @@ static void constructor3(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (UNLIKELY(numArgsPassed <= 1)) {
     ExecutionContext* executionContext = ToExecutionContext(
         info.NewTarget().As<v8::Object>()->CreationContext());
-    Document& document = *ToDocument(ToExecutionContext(
+    Document& document = *To<Document>(ToExecutionContext(
         info.NewTarget().As<v8::Object>()->CreationContext()));
     TestInterfaceConstructor* impl = TestInterfaceConstructor::Create(scriptState, executionContext, document, arg, exceptionState);
     if (exceptionState.HadException()) {
@@ -231,7 +231,7 @@ static void constructor3(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   ExecutionContext* executionContext = ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext());
-  Document& document = *ToDocument(ToExecutionContext(
+  Document& document = *To<Document>(ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext()));
   TestInterfaceConstructor* impl = TestInterfaceConstructor::Create(scriptState, executionContext, document, arg, optArg, exceptionState);
   if (exceptionState.HadException()) {
@@ -266,7 +266,7 @@ static void constructor4(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   ExecutionContext* executionContext = ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext());
-  Document& document = *ToDocument(ToExecutionContext(
+  Document& document = *To<Document>(ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext()));
   TestInterfaceConstructor* impl = TestInterfaceConstructor::Create(scriptState, executionContext, document, arg, arg2, arg3, exceptionState);
   if (exceptionState.HadException()) {
@@ -282,49 +282,49 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
   switch (std::min(10, info.Length())) {
     case 0:
       if (true) {
-        TestInterfaceConstructorV8Internal::constructor1(info);
+        test_interface_constructor_v8_internal::constructor1(info);
         return;
       }
       break;
     case 1:
       if (true) {
-        TestInterfaceConstructorV8Internal::constructor3(info);
+        test_interface_constructor_v8_internal::constructor3(info);
         return;
       }
       break;
     case 2:
       if (true) {
-        TestInterfaceConstructorV8Internal::constructor3(info);
+        test_interface_constructor_v8_internal::constructor3(info);
         return;
       }
       break;
     case 3:
       if (true) {
-        TestInterfaceConstructorV8Internal::constructor4(info);
+        test_interface_constructor_v8_internal::constructor4(info);
         return;
       }
       break;
     case 7:
       if (true) {
-        TestInterfaceConstructorV8Internal::constructor2(info);
+        test_interface_constructor_v8_internal::constructor2(info);
         return;
       }
       break;
     case 8:
       if (true) {
-        TestInterfaceConstructorV8Internal::constructor2(info);
+        test_interface_constructor_v8_internal::constructor2(info);
         return;
       }
       break;
     case 9:
       if (true) {
-        TestInterfaceConstructorV8Internal::constructor2(info);
+        test_interface_constructor_v8_internal::constructor2(info);
         return;
       }
       break;
     case 10:
       if (true) {
-        TestInterfaceConstructorV8Internal::constructor2(info);
+        test_interface_constructor_v8_internal::constructor2(info);
         return;
       }
       break;
@@ -339,7 +339,7 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
   exceptionState.ThrowTypeError("No matching constructor signature.");
 }
 
-} // namespace TestInterfaceConstructorV8Internal
+}  // namespace test_interface_constructor_v8_internal
 
 // Suppress warning: global constructors, because struct WrapperTypeInfo is trivial
 // and does not depend on another global objects.
@@ -398,7 +398,7 @@ static void V8TestInterfaceConstructorConstructorCallback(const v8::FunctionCall
   if (UNLIKELY(numArgsPassed <= 1)) {
     ExecutionContext* executionContext = ToExecutionContext(
         info.NewTarget().As<v8::Object>()->CreationContext());
-    Document& document = *ToDocument(ToExecutionContext(
+    Document& document = *To<Document>(ToExecutionContext(
         info.NewTarget().As<v8::Object>()->CreationContext()));
     TestInterfaceConstructor* impl = TestInterfaceConstructor::CreateForJSConstructor(scriptState, executionContext, document, arg, exceptionState);
     if (exceptionState.HadException()) {
@@ -415,7 +415,7 @@ static void V8TestInterfaceConstructorConstructorCallback(const v8::FunctionCall
 
   ExecutionContext* executionContext = ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext());
-  Document& document = *ToDocument(ToExecutionContext(
+  Document& document = *To<Document>(ToExecutionContext(
       info.NewTarget().As<v8::Object>()->CreationContext()));
   TestInterfaceConstructor* impl = TestInterfaceConstructor::CreateForJSConstructor(scriptState, executionContext, document, arg, optArg, exceptionState);
   if (exceptionState.HadException()) {
@@ -485,7 +485,7 @@ void V8TestInterfaceConstructor::constructorCallback(const v8::FunctionCallbackI
     return;
   }
 
-  TestInterfaceConstructorV8Internal::constructor(info);
+  test_interface_constructor_v8_internal::constructor(info);
 }
 
 static void installV8TestInterfaceConstructorTemplate(

@@ -114,17 +114,13 @@ bool MappedHostResolver::GetNoIPv6OnWifi() {
   return impl_->GetNoIPv6OnWifi();
 }
 
+void MappedHostResolver::SetDnsConfigOverrides(
+    const DnsConfigOverrides& overrides) {
+  impl_->SetDnsConfigOverrides(overrides);
+}
+
 void MappedHostResolver::SetRequestContext(URLRequestContext* request_context) {
   impl_->SetRequestContext(request_context);
-}
-
-void MappedHostResolver::AddDnsOverHttpsServer(std::string spec,
-                                               bool use_post) {
-  impl_->AddDnsOverHttpsServer(spec, use_post);
-}
-
-void MappedHostResolver::ClearDnsOverHttpsServers() {
-  impl_->ClearDnsOverHttpsServers();
 }
 
 const std::vector<DnsConfig::DnsOverHttpsServerConfig>*

@@ -146,12 +146,6 @@ class MockWebSocketHandshakeStream : public WebSocketHandshakeStreamBase {
   void GetSSLInfo(SSLInfo* ssl_info) override {}
   void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override {}
   bool GetRemoteEndpoint(IPEndPoint* endpoint) override { return false; }
-  Error GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                 TokenBindingType tb_type,
-                                 std::vector<uint8_t>* out) override {
-    ADD_FAILURE();
-    return ERR_NOT_IMPLEMENTED;
-  }
   void Drain(HttpNetworkSession* session) override {}
   void PopulateNetErrorDetails(NetErrorDetails* details) override { return; }
   void SetPriority(RequestPriority priority) override {}
@@ -701,7 +695,7 @@ TEST_F(HttpStreamFactoryTest, JobNotifiesProxy) {
   const ProxyRetryInfoMap& retry_info =
       session->proxy_resolution_service()->proxy_retry_info();
   EXPECT_EQ(1u, retry_info.size());
-  ProxyRetryInfoMap::const_iterator iter = retry_info.find("bad:99");
+  auto iter = retry_info.find("bad:99");
   EXPECT_TRUE(iter != retry_info.end());
 }
 
@@ -846,7 +840,7 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
     EXPECT_EQ(1u, retry_info.size()) << quic_proxy_test_mock_errors[i];
     EXPECT_TRUE(waiter.used_proxy_info().is_direct());
 
-    ProxyRetryInfoMap::const_iterator iter = retry_info.find("quic://bad:99");
+    auto iter = retry_info.find("quic://bad:99");
     EXPECT_TRUE(iter != retry_info.end()) << quic_proxy_test_mock_errors[i];
   }
 }
@@ -2163,9 +2157,9 @@ TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
     TestCompletionCallback callback;
 
     SSLConfig ssl_config;
-    scoped_refptr<SSLSocketParams> ssl_params(
-        new SSLSocketParams(transport_params, nullptr, nullptr, host_port_pair,
-                            ssl_config, PRIVACY_MODE_DISABLED, 0));
+    scoped_refptr<SSLSocketParams> ssl_params(new SSLSocketParams(
+        transport_params, nullptr, nullptr, host_port_pair, ssl_config,
+        PRIVACY_MODE_DISABLED, false /* ignore_certificate_errors */));
     std::string group_name = "ssl/" + host_port_pair.ToString();
     int rv = connection->Init(
         group_name, ssl_params, MEDIUM, SocketTag(),

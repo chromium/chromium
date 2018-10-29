@@ -6,9 +6,11 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
+#include "base/task/post_task.h"
 #include "components/heap_profiling/client_connection_manager.h"
 #include "components/services/heap_profiling/public/cpp/controller.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/common/service_manager_connection.h"
@@ -69,7 +71,7 @@ void Supervisor::Start(content::ServiceManagerConnection* connection,
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK(!started_);
 
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::IO)
+  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::IO})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&Supervisor::StartServiceOnIOThread,
                                 base::Unretained(this),
@@ -92,7 +94,7 @@ void Supervisor::SetKeepSmallAllocations(bool keep_small_allocations) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK(HasStarted());
 
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::IO)
+  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::IO})
       ->PostTask(
           FROM_HERE,
           base::BindOnce(&Supervisor::SetKeepSmallAllocationsOnIOThread,
@@ -103,7 +105,7 @@ void Supervisor::GetProfiledPids(GetProfiledPidsCallback callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK(HasStarted());
 
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::IO)
+  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::IO})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&Supervisor::GetProfiledPidsOnIOThread,
                                 base::Unretained(this), std::move(callback)));
@@ -137,8 +139,8 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
                base::RefCountedString* in) {
               std::string result;
               result.swap(in->data());
-              content::BrowserThread::GetTaskRunnerForThread(
-                  content::BrowserThread::UI)
+              base::CreateSingleThreadTaskRunnerWithTraits(
+                  {content::BrowserThread::UI})
                   ->PostTask(FROM_HERE,
                              base::BindOnce(std::move(callback), true,
                                             std::move(result)));
@@ -185,7 +187,7 @@ void Supervisor::StartServiceOnIOThread(
       new Controller(std::move(connector), stack_mode, sampling_rate));
   base::WeakPtr<Controller> controller_weak_ptr = controller_->GetWeakPtr();
 
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&Supervisor::FinishInitializationOnUIhread,
                                 base::Unretained(this), mode,
@@ -218,8 +220,8 @@ void Supervisor::GetProfiledPidsOnIOThread(GetProfiledPidsCallback callback) {
   auto post_result_to_ui_thread = base::BindOnce(
       [](GetProfiledPidsCallback callback,
          const std::vector<base::ProcessId>& result) {
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::UI)
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::UI})
             ->PostTask(FROM_HERE, base::BindOnce(std::move(callback), result));
       },
       std::move(callback));

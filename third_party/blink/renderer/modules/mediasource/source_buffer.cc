@@ -939,7 +939,7 @@ bool SourceBuffer::InitializationSegmentReceived(
     //   tracks), then the Track IDs match the ones in the first initialization
     //   segment.
     if (tracks_match_first_init_segment && new_audio_tracks.size() > 1) {
-      for (size_t i = 0; i < new_audio_tracks.size(); ++i) {
+      for (wtf_size_t i = 0; i < new_audio_tracks.size(); ++i) {
         const String& new_track_id = new_video_tracks[i].id;
         if (new_track_id !=
             String(audioTracks().AnonymousIndexedGetter(i)->id())) {
@@ -950,7 +950,7 @@ bool SourceBuffer::InitializationSegmentReceived(
     }
 
     if (tracks_match_first_init_segment && new_video_tracks.size() > 1) {
-      for (size_t i = 0; i < new_video_tracks.size(); ++i) {
+      for (wtf_size_t i = 0; i < new_video_tracks.size(); ++i) {
         const String& new_track_id = new_video_tracks[i].id;
         if (new_track_id !=
             String(videoTracks().AnonymousIndexedGetter(i)->id())) {
@@ -1312,7 +1312,7 @@ void SourceBuffer::AppendBufferAsyncPart() {
   // 1. Run the segment parser loop algorithm.
   // Step 2 doesn't apply since we run Step 1 synchronously here.
   DCHECK_GE(pending_append_data_.size(), pending_append_data_offset_);
-  size_t append_size =
+  wtf_size_t append_size =
       pending_append_data_.size() - pending_append_data_offset_;
 
   // Impose an arbitrary max size for a single append() call so that an append
@@ -1320,13 +1320,12 @@ void SourceBuffer::AppendBufferAsyncPart() {
   // by looking at YouTube SourceBuffer usage across a variety of bitrates.
   // This value allows relatively large appends while keeping append() call
   // duration in the  ~5-15ms range.
-  const size_t kMaxAppendSize = 128 * 1024;
+  const wtf_size_t kMaxAppendSize = 128 * 1024;
   if (append_size > kMaxAppendSize)
     append_size = kMaxAppendSize;
 
   TRACE_EVENT_ASYNC_STEP_INTO1("media", "SourceBuffer::appendBuffer", this,
-                               "appending", "appendSize",
-                               static_cast<unsigned>(append_size));
+                               "appending", "appendSize", append_size);
 
   // |zero| is used for 0 byte appends so we always have a valid pointer.
   // We need to convey all appends, even 0 byte ones to |m_webSourceBuffer|

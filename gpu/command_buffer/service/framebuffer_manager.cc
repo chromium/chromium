@@ -659,6 +659,13 @@ GLenum Framebuffer::GetReadBufferTextureType() const {
   return attachment ? attachment->texture_type() : 0;
 }
 
+bool Framebuffer::GetReadBufferIsMultisampledTexture() const {
+  const Attachment* attachment = GetReadBufferAttachment();
+  return attachment
+             ? attachment->IsTextureAttachment() && attachment->samples() > 0
+             : false;
+}
+
 GLsizei Framebuffer::GetSamples() const {
   // Assume the framebuffer is complete, so return any attachment's samples.
   auto iter = attachments_.begin();

@@ -9,12 +9,10 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
-class Point;
 class Rect;
 }
 
 class Browser;
-class ExtensionInstalledBubble;
 
 namespace bubble_anchor_util {
 
@@ -36,22 +34,6 @@ constexpr int kNoToolbarLeftOffset = 40;
 // actual View. This function has separate implementations for Views- and Cocoa-
 // based browsers. The anchor rect is in screen coordinates.
 gfx::Rect GetPageInfoAnchorRect(Browser* browser);
-
-#if defined(OS_MACOSX)
-// Returns the page info anchor rect for |browser|, which is assumed to have a
-// Cocoa browser window.
-gfx::Rect GetPageInfoAnchorRectCocoa(Browser* browser);
-
-// Returns the anchor point for the extension installed bubble for |window|,
-// which is assumed to be a Cocoa browser window.
-gfx::Point GetExtensionInstalledAnchorPointCocoa(
-    gfx::NativeWindow window,
-    const ExtensionInstalledBubble* bubble);
-
-// Returns the app menu anchor rect for |browser|, which is assumed to have a
-// Cocoa browser window.
-gfx::Rect GetAppMenuAnchorRectCocoa(Browser* browser);
-#endif
 
 }  // namespace bubble_anchor_util
 

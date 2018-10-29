@@ -74,6 +74,16 @@ class LayoutTestRunner(object):
         self._current_run_results = None
 
     def run_tests(self, expectations, test_inputs, tests_to_skip, num_workers, retry_attempt):
+        batch_size = self._options.derived_batch_size
+
+        # If we're retrying a test, then it's because we think it might be flaky
+        # and rerunning it might provide a different result. We must restart
+        # content shell to get a valid result, as otherwise state can leak
+        # from previous tests. To do so, we set a batch size of 1, as that
+        # prevents content shell reuse.
+        if not self._options.must_use_derived_batch_size and retry_attempt >= 1:
+            batch_size = 1
+
         self._expectations = expectations
         self._test_inputs = test_inputs
         self._retry_attempt = retry_attempt
@@ -96,7 +106,7 @@ class LayoutTestRunner(object):
             test_inputs,
             int(self._options.child_processes),
             self._options.fully_parallel,
-            self._options.batch_size == 1)
+            batch_size == 1)
 
         self._reorder_tests_by_args(locked_shards)
         self._reorder_tests_by_args(unlocked_shards)
@@ -108,7 +118,7 @@ class LayoutTestRunner(object):
         num_workers = min(num_workers, len(all_shards))
 
         if retry_attempt < 1:
-            self._printer.print_workers_and_shards(num_workers, len(all_shards), len(locked_shards))
+            self._printer.print_workers_and_shards(self._port, num_workers, len(all_shards), len(locked_shards))
 
         if self._options.dry_run:
             return test_run_results
@@ -118,13 +128,13 @@ class LayoutTestRunner(object):
         start_time = time.time()
         try:
             with message_pool.get(self, self._worker_factory, num_workers, self._port.host) as pool:
-                pool.run(('test_list', shard.name, shard.test_inputs) for shard in all_shards)
+                pool.run(('test_list', shard.name, shard.test_inputs, batch_size) for shard in all_shards)
 
             if self._shards_to_redo:
                 num_workers -= len(self._shards_to_redo)
                 if num_workers > 0:
                     with message_pool.get(self, self._worker_factory, num_workers, self._port.host) as pool:
-                        pool.run(('test_list', shard.name, shard.test_inputs) for shard in self._shards_to_redo)
+                        pool.run(('test_list', shard.name, shard.test_inputs, batch_size) for shard in self._shards_to_redo)
         except TestRunInterruptedException as error:
             _log.warning(error.reason)
             test_run_results.interrupted = True
@@ -190,19 +200,16 @@ class LayoutTestRunner(object):
 
     def _update_summary_with_result(self, test_run_results, result):
         expected = self._expectations.matches_an_expected_result(
-            result.test_name,
-            result.type,
-            self._options.pixel_tests or result.reftest_type,
-            self._options.enable_sanitizer)
+            result.test_name, result.type, self._options.enable_sanitizer)
         expectation_string = self._expectations.get_expectations_string(result.test_name)
         actual_string = self._expectations.expectation_to_string(result.type)
 
         if result.device_failed:
-            self._printer.print_finished_test(result, False, expectation_string, 'Aborted')
+            self._printer.print_finished_test(self._port, result, False, expectation_string, 'Aborted')
             return
 
         test_run_results.add(result, expected, self._test_is_slow(result.test_name))
-        self._printer.print_finished_test(result, expected, expectation_string, actual_string)
+        self._printer.print_finished_test(self._port, result, expected, expectation_string, actual_string)
         self._interrupt_if_at_failure_limits(test_run_results)
 
     def handle(self, name, source, *args):
@@ -240,7 +247,6 @@ class Worker(object):
         # The remaining fields are initialized in start()
         self._host = None
         self._port = None
-        self._batch_size = None
         self._batch_count = None
         self._filesystem = None
         self._primary_driver = None
@@ -264,12 +270,11 @@ class Worker(object):
             self._secondary_driver = self._port.create_driver(self._worker_number)
 
         self._batch_count = 0
-        self._batch_size = self._options.batch_size or 0
 
-    def handle(self, name, source, test_list_name, test_inputs):
+    def handle(self, name, source, test_list_name, test_inputs, batch_size):
         assert name == 'test_list'
         for i, test_input in enumerate(test_inputs):
-            device_failed = self._run_test(test_input, test_list_name)
+            device_failed = self._run_test(test_input, test_list_name, batch_size)
             if device_failed:
                 self._caller.post('device_failed', test_list_name, test_inputs[i:])
                 self._caller.stop_running()
@@ -284,21 +289,15 @@ class Worker(object):
         if test_input.reference_files is None:
             # Lazy initialization.
             test_input.reference_files = self._port.reference_files(test_input.test_name)
-        if test_input.reference_files:
-            test_input.should_run_pixel_test = True
-        else:
-            test_input.should_run_pixel_test = self._port.should_run_as_pixel_test(
-                test_input.test_name)
-        test_input.should_run_pixel_test_first = (
-            self._port.should_run_pixel_test_first(test_input.test_name))
 
-    def _run_test(self, test_input, shard_name):
-        self._batch_count += 1
-
-        stop_when_done = False
-        if self._batch_size > 0 and self._batch_count >= self._batch_size:
+    def _run_test(self, test_input, shard_name, batch_size):
+        # If the batch size has been exceeded, kill the drivers.
+        if batch_size > 0 and self._batch_count >= batch_size:
+            self._kill_driver(self._primary_driver, 'primary')
+            self._kill_driver(self._secondary_driver, 'secondary')
             self._batch_count = 0
-            stop_when_done = True
+
+        self._batch_count += 1
 
         self._update_test_input(test_input)
         start = time.time()
@@ -307,8 +306,7 @@ class Worker(object):
         self._caller.post('started_test', test_input)
         result = single_test_runner.run_single_test(
             self._port, self._options, self._results_directory, self._name,
-            self._primary_driver, self._secondary_driver, test_input,
-            stop_when_done)
+            self._primary_driver, self._secondary_driver, test_input)
 
         result.shard_name = shard_name
         result.worker_name = self._name

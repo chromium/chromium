@@ -23,8 +23,6 @@ enum MessageType {
   PRE_SYNCED,  // User has not set up sync.
   SYNCED,      // We are synced and authenticated to a gmail account.
   SYNC_ERROR,  // A sync error (such as invalid credentials) has occurred.
-  SYNC_PROMO,  // A situation has occurred which should be brought to the user's
-               // attention, but not as an error.
 };
 
 // The action associated with the sync status.

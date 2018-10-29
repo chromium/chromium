@@ -4,13 +4,20 @@
 
 #include "components/offline_pages/task/task_queue.h"
 
+#include <utility>
+
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace offline_pages {
 
 TaskQueue::TaskQueue(Delegate* delegate)
-    : delegate_(delegate), weak_ptr_factory_(this) {
+    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      delegate_(delegate),
+      weak_ptr_factory_(this) {
   DCHECK(delegate_);
 }
 
@@ -18,10 +25,8 @@ TaskQueue::~TaskQueue() {}
 
 void TaskQueue::AddTask(std::unique_ptr<Task> task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  task->SetTaskCompletionCallback(
-      base::ThreadTaskRunnerHandle::Get(),
-      base::BindOnce(&TaskQueue::TaskCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+  task->SetTaskCompletionCallback(base::BindOnce(
+      &TaskCompletedCallback, task_runner_, weak_ptr_factory_.GetWeakPtr()));
   tasks_.push(std::move(task));
   StartTaskIfAvailable();
 }
@@ -44,15 +49,30 @@ void TaskQueue::StartTaskIfAvailable() {
     return;
 
   if (!HasPendingTasks()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&TaskQueue::InformTaskQueueIsIdle,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&TaskQueue::InformTaskQueueIsIdle,
+                                          weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
   current_task_ = std::move(tasks_.front());
   tasks_.pop();
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&TaskQueue::RunCurrentTask,
+                                        weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TaskQueue::RunCurrentTask() {
   current_task_->Run();
+}
+
+// static
+void TaskQueue::TaskCompletedCallback(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    base::WeakPtr<TaskQueue> task_queue,
+    Task* task) {
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&TaskQueue::TaskCompleted, task_queue, task));
 }
 
 void TaskQueue::TaskCompleted(Task* task) {

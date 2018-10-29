@@ -74,8 +74,7 @@ class TestTouchEvent : public ui::TouchEvent {
                                       /* radius_x */ 1.0f,
                                       /* radius_y */ 1.0f,
                                       /* force */ 0.0f),
-                   flags,
-                   0.0f) {}
+                   flags) {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestTouchEvent);
@@ -122,7 +121,6 @@ EventGenerator::EventGenerator(std::unique_ptr<EventGeneratorDelegate> delegate)
 }
 
 EventGenerator::~EventGenerator() {
-  pending_events_.clear();
   ui::SetEventTickClockForTesting(nullptr);
 }
 
@@ -566,43 +564,6 @@ void EventGenerator::ScrollSequence(const gfx::Point& start,
   Dispatch(&fling_start);
 }
 
-void EventGenerator::ScrollSequence(const gfx::Point& start,
-                                    const base::TimeDelta& step_delay,
-                                    const std::vector<gfx::PointF>& offsets,
-                                    int num_fingers) {
-  size_t steps = offsets.size();
-  base::TimeTicks timestamp = ui::EventTimeForNow();
-  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL,
-                               start,
-                               timestamp,
-                               0,
-                               0, 0,
-                               0, 0,
-                               num_fingers);
-  Dispatch(&fling_cancel);
-
-  for (size_t i = 0; i < steps; ++i) {
-    timestamp += step_delay;
-    ui::ScrollEvent scroll(ui::ET_SCROLL,
-                           start,
-                           timestamp,
-                           0,
-                           offsets[i].x(), offsets[i].y(),
-                           offsets[i].x(), offsets[i].y(),
-                           num_fingers);
-    Dispatch(&scroll);
-  }
-
-  ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START,
-                              start,
-                              timestamp,
-                              0,
-                              offsets[steps - 1].x(), offsets[steps - 1].y(),
-                              offsets[steps - 1].x(), offsets[steps - 1].y(),
-                              num_fingers);
-  Dispatch(&fling_start);
-}
-
 void EventGenerator::GenerateTrackpadRest() {
   int num_fingers = 2;
   ui::ScrollEvent scroll(ui::ET_SCROLL, current_location_,
@@ -628,7 +589,19 @@ void EventGenerator::ReleaseKey(ui::KeyboardCode key_code, int flags) {
 }
 
 void EventGenerator::Dispatch(ui::Event* event) {
-  DoDispatchEvent(event, async_);
+  if (event->IsTouchEvent()) {
+    ui::TouchEvent* touch_event = static_cast<ui::TouchEvent*>(event);
+    touch_pointer_details_.id = touch_event->pointer_details().id;
+    touch_event->SetPointerDetailsForTest(touch_pointer_details_);
+  }
+
+  if (!event->handled()) {
+    ui::EventSource* event_source = delegate()->GetEventSource(current_target_);
+    ui::EventSourceTestApi event_source_test(event_source);
+    ui::EventDispatchDetails details = event_source_test.SendEventToSink(event);
+    if (details.dispatcher_destroyed)
+      current_target_ = nullptr;
+  }
 }
 
 void EventGenerator::Init(gfx::NativeWindow root_window,
@@ -721,68 +694,6 @@ gfx::Point EventGenerator::GetLocationInCurrentRoot() const {
 
 gfx::Point EventGenerator::CenterOfWindow(const EventTarget* window) const {
   return delegate()->CenterOfTarget(window);
-}
-
-void EventGenerator::DoDispatchEvent(ui::Event* event, bool async) {
-  if (event->IsTouchEvent()) {
-    ui::TouchEvent* touch_event = static_cast<ui::TouchEvent*>(event);
-    touch_pointer_details_.id = touch_event->pointer_details().id;
-    touch_event->SetPointerDetailsForTest(touch_pointer_details_);
-  }
-
-  if (async) {
-    std::unique_ptr<ui::Event> pending_event = ui::Event::Clone(*event);
-    if (pending_events_.empty()) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&EventGenerator::DispatchNextPendingEvent,
-                                    base::Unretained(this)));
-    }
-    pending_events_.push_back(std::move(pending_event));
-  } else {
-    MaybeDispatchToPointerWatchers(*event);
-    if (!event->handled()) {
-      ui::EventSource* event_source =
-          delegate()->GetEventSource(current_target_);
-      ui::EventSourceTestApi event_source_test(event_source);
-      ui::EventDispatchDetails details =
-          event_source_test.SendEventToSink(event);
-      if (details.dispatcher_destroyed)
-        current_target_ = nullptr;
-    }
-  }
-}
-
-void EventGenerator::MaybeDispatchToPointerWatchers(const Event& event) {
-  // Regular pointer events can be dispatched directly.
-  if (event.IsPointerEvent()) {
-    delegate()->DispatchEventToPointerWatchers(current_target_,
-                                               *event.AsPointerEvent());
-    return;
-  }
-
-  // PointerWatchers always use pointer events, so mouse and touch events
-  // need to be converted.
-  if (!PointerEvent::CanConvertFrom(event))
-    return;
-  if (event.IsMouseEvent()) {
-    delegate()->DispatchEventToPointerWatchers(
-        current_target_, PointerEvent(*event.AsMouseEvent()));
-  } else if (event.IsTouchEvent()) {
-    delegate()->DispatchEventToPointerWatchers(
-        current_target_, PointerEvent(*event.AsTouchEvent()));
-  }
-}
-
-void EventGenerator::DispatchNextPendingEvent() {
-  DCHECK(!pending_events_.empty());
-  ui::Event* event = pending_events_.front().get();
-  DoDispatchEvent(event, false);
-  pending_events_.pop_front();
-  if (!pending_events_.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&EventGenerator::DispatchNextPendingEvent,
-                                  base::Unretained(this)));
-  }
 }
 
 }  // namespace test

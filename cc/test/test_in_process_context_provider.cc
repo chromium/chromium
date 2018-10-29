@@ -115,7 +115,6 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
     raster_implementation_gles2_ =
         std::make_unique<gpu::raster::RasterImplementationGLES>(
             gles2_context_->GetImplementation(),
-            gles2_context_->GetImplementation()->command_buffer(),
             gles2_context_->GetCapabilities());
   }
 

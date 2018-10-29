@@ -276,6 +276,25 @@ FloatRect SVGInlineTextBox::CalculateBoundaries() const {
   return text_bounding_rect;
 }
 
+bool SVGInlineTextBox::HitTestFragments(
+    const HitTestLocation& location_in_container) const {
+  auto line_layout_item = LineLayoutSVGInlineText(GetLineLayoutItem());
+  const SimpleFontData* font_data = line_layout_item.ScaledFont().PrimaryFont();
+  DCHECK(font_data);
+  if (!font_data)
+    return false;
+
+  DCHECK(line_layout_item.ScalingFactor());
+  float baseline = font_data->GetFontMetrics().FloatAscent() /
+                   line_layout_item.ScalingFactor();
+  for (const SVGTextFragment& fragment : text_fragments_) {
+    FloatQuad fragment_quad = fragment.BoundingQuad(baseline);
+    if (location_in_container.Intersects(fragment_quad))
+      return true;
+  }
+  return false;
+}
+
 bool SVGInlineTextBox::NodeAtPoint(HitTestResult& result,
                                    const HitTestLocation& location_in_container,
                                    const LayoutPoint& accumulated_offset,
@@ -299,27 +318,14 @@ bool SVGInlineTextBox::NodeAtPoint(HitTestResult& result,
     LayoutRect rect(Location(), Size());
     rect.MoveBy(accumulated_offset);
     if (location_in_container.Intersects(rect)) {
-      const SimpleFontData* font_data =
-          line_layout_item.ScaledFont().PrimaryFont();
-      DCHECK(font_data);
-      if (!font_data)
-        return false;
-
-      DCHECK(line_layout_item.ScalingFactor());
-      float baseline = font_data->GetFontMetrics().FloatAscent() /
-                       line_layout_item.ScalingFactor();
-      FloatPoint float_location = FloatPoint(location_in_container.Point());
-      for (const SVGTextFragment& fragment : text_fragments_) {
-        FloatQuad fragment_quad = fragment.BoundingQuad(baseline);
-        if (fragment_quad.ContainsPoint(float_location)) {
-          line_layout_item.UpdateHitTestResult(
-              result,
-              location_in_container.Point() - ToLayoutSize(accumulated_offset));
-          if (result.AddNodeToListBasedTestResult(line_layout_item.GetNode(),
-                                                  location_in_container,
-                                                  rect) == kStopHitTesting)
-            return true;
-        }
+      if (HitTestFragments(location_in_container)) {
+        line_layout_item.UpdateHitTestResult(
+            result,
+            location_in_container.Point() - ToLayoutSize(accumulated_offset));
+        if (result.AddNodeToListBasedTestResult(line_layout_item.GetNode(),
+                                                location_in_container,
+                                                rect) == kStopHitTesting)
+          return true;
       }
     }
   }

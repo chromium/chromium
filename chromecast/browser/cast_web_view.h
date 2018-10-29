@@ -12,7 +12,9 @@
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromecast/browser/cast_content_window.h"
+#include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/web_contents.h"
@@ -27,17 +29,9 @@ using shell::VisibilityPriority;
 // A simplified interface for loading and displaying WebContents in cast_shell.
 class CastWebView {
  public:
-  class Delegate : public shell::CastContentWindow::Delegate {
+  class Delegate : public CastWebContents::Delegate,
+                   public shell::CastContentWindow::Delegate {
    public:
-    // Called when the page has stopped. ie: A 404 occured when loading the page
-    // or if the render process crashes. |error_code| will return a net::Error
-    // describing the failure, or net::OK if the page closed naturally.
-    virtual void OnPageStopped(int error_code) = 0;
-
-    // Called during WebContentsDelegate::LoadingStateChanged.
-    // |loading| indicates if web_contents_ IsLoading or not.
-    virtual void OnLoadingStateChanged(bool loading) = 0;
-
     // Called when there is console log output from web_contents.
     // Returning true indicates that the delegate handled the message.
     // If false is returned the default logging mechanism will be used.
@@ -124,6 +118,10 @@ class CastWebView {
   virtual void InitializeWindow(CastWindowManager* window_manager,
                                 CastWindowManager::WindowId z_order,
                                 VisibilityPriority initial_priority) = 0;
+
+  // Sets the activity context exposed to web view and content window. The exact
+  // format of context is defined by each activity.
+  virtual void SetContext(base::Value context) = 0;
 
   // Allows the page to be shown on the screen. The page cannot be shown on the
   // screen until this is called.

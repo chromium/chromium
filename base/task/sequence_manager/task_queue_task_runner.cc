@@ -5,34 +5,36 @@
 #include "base/task/sequence_manager/task_queue_task_runner.h"
 
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/task/sequence_manager/task_queue_proxy.h"
 
 namespace base {
 namespace sequence_manager {
 namespace internal {
 
-TaskQueueTaskRunner::TaskQueueTaskRunner(scoped_refptr<TaskQueue> task_queue,
-                                         int task_type)
-    : task_queue_(task_queue), task_type_(task_type) {}
+TaskQueueTaskRunner::TaskQueueTaskRunner(
+    scoped_refptr<TaskQueueProxy> task_queue_proxy,
+    int task_type)
+    : task_queue_proxy_(std::move(task_queue_proxy)), task_type_(task_type) {}
 
 TaskQueueTaskRunner::~TaskQueueTaskRunner() {}
 
 bool TaskQueueTaskRunner::PostDelayedTask(const Location& location,
                                           OnceClosure callback,
                                           TimeDelta delay) {
-  return task_queue_->PostTaskWithMetadata(TaskQueue::PostedTask(
+  return task_queue_proxy_->PostTask(PostedTask(
       std::move(callback), location, delay, Nestable::kNestable, task_type_));
 }
 
 bool TaskQueueTaskRunner::PostNonNestableDelayedTask(const Location& location,
                                                      OnceClosure callback,
                                                      TimeDelta delay) {
-  return task_queue_->PostTaskWithMetadata(
-      TaskQueue::PostedTask(std::move(callback), location, delay,
-                            Nestable::kNonNestable, task_type_));
+  return task_queue_proxy_->PostTask(PostedTask(std::move(callback), location,
+                                                delay, Nestable::kNonNestable,
+                                                task_type_));
 }
 
 bool TaskQueueTaskRunner::RunsTasksInCurrentSequence() const {
-  return task_queue_->RunsTasksInCurrentSequence();
+  return task_queue_proxy_->RunsTasksInCurrentSequence();
 }
 
 }  // namespace internal

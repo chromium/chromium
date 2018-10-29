@@ -93,10 +93,6 @@ class CONTENT_EXPORT GestureEventQueue {
                          blink::WebInputEvent::Type type,
                          const ui::LatencyInfo& latency);
 
-  // Sets the state of the |fling_in_progress_| field to indicate that a fling
-  // is definitely not in progress.
-  void FlingHasBeenHalted();
-
   // Returns the |TouchpadTapSuppressionController| instance.
   TouchpadTapSuppressionController* GetTouchpadTapSuppressionController();
 
@@ -106,11 +102,6 @@ class CONTENT_EXPORT GestureEventQueue {
     return coalesced_gesture_events_.empty() &&
            debouncing_deferral_queue_.empty();
   }
-
-  // Returns |true| if the given GestureFlingCancel should be discarded
-  // as unnecessary.
-  bool ShouldDiscardFlingCancelEvent(
-      const GestureEventWithLatencyInfo& gesture_event) const;
 
   // Calls |fling_controller_.StopFling| to halt an active fling if such exists.
   void StopFling();
@@ -182,12 +173,10 @@ class CONTENT_EXPORT GestureEventQueue {
   // remain at the head of the queue until ack'ed.
   size_t EventsInFlightCount() const;
 
+  bool FlingInProgressForTest() const;
+
   // The receiver of all forwarded gesture events.
   GestureEventQueueClient* client_;
-
-  // True if a GestureFlingStart is in progress or queued without a subsequent
-  // queued GestureFlingCancel event.
-  bool fling_in_progress_;
 
   // True if a GestureScrollUpdate sequence is in progress.
   bool scrolling_in_progress_;

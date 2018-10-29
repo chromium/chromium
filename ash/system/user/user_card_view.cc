@@ -377,7 +377,7 @@ void UserCardView::OnMediaCaptureChanged(
       break;
   }
   if (res_id)
-    media_capture_icon_->SetTooltipText(l10n_util::GetStringUTF16(res_id));
+    media_capture_icon_->set_tooltip_text(l10n_util::GetStringUTF16(res_id));
   media_capture_icon_->SetVisible(!!res_id);
   Layout();
 }

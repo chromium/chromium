@@ -150,14 +150,16 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
   extensions::AppWindow* app_1_app_window = FirstWindowForApp(app_1_);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidBecomeMainNotification
-                    object:app_1_app_window->GetNativeWindow()];
+                    object:app_1_app_window->GetNativeWindow()
+                               .GetNativeNSWindow()];
   CheckHasAppMenus(app_1_);
 
   // When another app is focused, the menu item for the app should change.
   extensions::AppWindow* app_2_app_window = FirstWindowForApp(app_2_);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidBecomeMainNotification
-                    object:app_2_app_window->GetNativeWindow()];
+                    object:app_2_app_window->GetNativeWindow()
+                               .GetNativeNSWindow()];
   CheckHasAppMenus(app_2_);
 
   // When a browser window is focused, the menu items for the app should be
@@ -166,7 +168,8 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
       (*BrowserList::GetInstance()->begin())->window();
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidBecomeMainNotification
-                    object:chrome_window->GetNativeWindow()];
+                    object:chrome_window->GetNativeWindow()
+                               .GetNativeNSWindow()];
   CheckNoAppMenus();
 
   // When an app window is closed and there are no other app windows, the menu
@@ -175,11 +178,13 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
   chrome_window->Close();
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidBecomeMainNotification
-                    object:app_2_app_window->GetNativeWindow()];
+                    object:app_2_app_window->GetNativeWindow()
+                               .GetNativeNSWindow()];
   CheckHasAppMenus(app_2_);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidResignMainNotification
-                    object:app_2_app_window->GetNativeWindow()];
+                    object:app_2_app_window->GetNativeWindow()
+                               .GetNativeNSWindow()];
   app_2_app_window->GetBaseWindow()->Close();
   CheckNoAppMenus();
 }
@@ -193,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
 
   {
     ui::test::ScopedFakeNSWindowFocus fake_focus;
-    [app_1_app_window->GetNativeWindow() makeMainWindow];
+    [app_1_app_window->GetNativeWindow().GetNativeNSWindow() makeMainWindow];
     CheckHasAppMenus(app_1_);
 
     // Closing a background window without focusing it should not change menus.
@@ -202,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
     chrome_window->Close();
     [[NSNotificationCenter defaultCenter]
         postNotificationName:NSWindowWillCloseNotification
-                      object:chrome_window->GetNativeWindow()];
+                      object:chrome_window->GetNativeWindow()
+                                 .GetNativeNSWindow()];
     CheckHasAppMenus(app_1_);
 
     // |fake_focus| going out of scope sends NSWindowWillResignMainNotification.
@@ -234,14 +240,18 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
   // Focus the hosted app.
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidBecomeMainNotification
-                    object:hosted_app_browser->window()->GetNativeWindow()];
+                    object:hosted_app_browser->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
   CheckEditMenu(hosted_app_);
 
   // Now focus a platform app, the Edit menu should not have the additional
   // options.
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidBecomeMainNotification
-                    object:FirstWindowForApp(app_1_)->GetNativeWindow()];
+                    object:FirstWindowForApp(app_1_)
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
   CheckEditMenu(app_1_);
 }
 
@@ -252,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
 
   FirstWindowForApp(app_2_)->GetBaseWindow()->Close();
   (*BrowserList::GetInstance()->begin())->window()->Close();
-  NSWindow* app_1_window = FirstWindowForApp(app_1_)->GetNativeWindow();
+  NSWindow* app_1_window =
+      FirstWindowForApp(app_1_)->GetNativeWindow().GetNativeNSWindow();
 
   ui::test::ScopedFakeNSWindowFocus fake_focus;
   [app_1_window makeMainWindow];

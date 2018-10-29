@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+<script src='../resources/gesture-util.js'></script>
+
+<style>
+  body, html {
+    margin: 0;
+    height: 10000px;
+  }
+</style>
+
+<script>
+  // This test ensures that animated mouse wheel scrolls with tiny amounts are
+  // accurately propagated in the renderer.
+
+  async function tryScroll(distance, source) {
+      const x = 400;
+      const y = 300;
+      const precise_deltas = false;
+
+      const scrollYBefore = window.scrollY;
+
+      await waitForCompositorCommit();
+
+      await smoothScroll(distance,
+                         x, y,
+                         source,
+                         'down',
+                         SPEED_INSTANT,
+                         precise_deltas);
+
+      await waitFor(() => { return window.scrollY - scrollYBefore >= distance; },
+                    "Didn't scroll by expected amount: " + distance);
+      await waitForCompositorCommit();
+  }
+
+  window.onload = async () => {
+    const source_type = GestureSourceType.MOUSE_INPUT;
+
+    promise_test(async () => {
+      assert_equals(window.scrollY, 0);
+      await tryScroll(1, source_type);
+      assert_equals(window.scrollY, 1);
+    }, 'Synthetic animated ' + GestureSourceType.ToString(source_type) +
+       ' gestures accurately scroll delta (0, 1).');
+
+    promise_test(async () => {
+      assert_equals(window.scrollY, 1);
+      await tryScroll(2, source_type);
+      assert_equals(window.scrollY, 3);
+      window.scrollTo(0, 0);
+    }, 'Synthetic animated ' + GestureSourceType.ToString(source_type) +
+       ' gestures accurately scroll delta (0, 2).');
+  }
+</script>

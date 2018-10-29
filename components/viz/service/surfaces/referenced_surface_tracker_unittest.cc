@@ -19,7 +19,6 @@ using testing::UnorderedElementsAre;
 using testing::IsEmpty;
 
 namespace viz {
-namespace test {
 namespace {
 
 constexpr FrameSinkId kParentFrameSink(2, 1);
@@ -142,5 +141,4 @@ TEST_F(ReferencedSurfaceTrackerTest, AddTwoThenRemoveOneSurfaceReferences) {
   EXPECT_THAT(references_to_add(), IsEmpty());
 }
 
-}  // namespace test
 }  // namespace viz

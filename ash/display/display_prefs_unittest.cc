@@ -786,7 +786,7 @@ TEST_F(DisplayPrefsTest, StorePowerStateNoLogin) {
   EXPECT_FALSE(local_state()->HasPrefPath(prefs::kDisplayPowerState));
 
   // Stores display prefs without login, which still stores the power state.
-  display_prefs()->StoreDisplayPrefs();
+  display_prefs()->MaybeStoreDisplayPrefs();
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayPowerState));
 }
 
@@ -794,7 +794,7 @@ TEST_F(DisplayPrefsTest, StorePowerStateGuest) {
   EXPECT_FALSE(local_state()->HasPrefPath(prefs::kDisplayPowerState));
 
   LoggedInAsGuest();
-  display_prefs()->StoreDisplayPrefs();
+  display_prefs()->MaybeStoreDisplayPrefs();
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayPowerState));
 }
 
@@ -802,7 +802,7 @@ TEST_F(DisplayPrefsTest, StorePowerStateNormalUser) {
   EXPECT_FALSE(local_state()->HasPrefPath(prefs::kDisplayPowerState));
 
   LoggedInAsUser();
-  display_prefs()->StoreDisplayPrefs();
+  display_prefs()->MaybeStoreDisplayPrefs();
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayPowerState));
 }
 
@@ -882,7 +882,7 @@ TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
 
   // Trigger a save, the acceleration rotation should not be saved as the user
   // rotation.
-  display_prefs()->StoreDisplayPrefs();
+  display_prefs()->MaybeStoreDisplayPrefs();
   properties = local_state()->GetDictionary(prefs::kDisplayProperties);
   property = nullptr;
   EXPECT_TRUE(properties->GetDictionary(

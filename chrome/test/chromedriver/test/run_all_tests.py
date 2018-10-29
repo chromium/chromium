@@ -217,21 +217,21 @@ def main():
     versions = {'HEAD': archive.GetLatestRevision()}
     # Linux64 build numbers
     if util.IsLinux():
+      versions['71'] = '599034'
       versions['70'] = '587811'
       versions['69'] = '576753'
-      versions['68'] = '561732'
 
     # Mac build numbers
     elif util.IsMac():
+      versions['71'] = '599028'
       versions['70'] = '587811'
       versions['69'] = '576753'
-      versions['68'] = '561733'
 
     # Windows build numbers
     elif util.IsWindows():
+      versions['71'] = '598927'
       versions['70'] = '587814'
       versions['69'] = '576753'
-      versions['68'] = '561732'
 
     code = 0
     for version, revision in versions.iteritems():

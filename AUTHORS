@@ -18,6 +18,7 @@ Abhishek Agarwal <abhishek.a21@samsung.com>
 Abhishek Kanike <abhishek.ka@samsung.com>
 Abhishek Singh <abhi.rathore@samsung.com>
 Adam Bonner <abonner-chromium@solscope.com>
+Adam Kallai <kadam@inf.u-szeged.hu>
 Adam Roben <adam@github.com>
 Adam Treat <adam.treat@samsung.com>
 Addanki Gandhi Kishor <kishor.ag@samsung.com>
@@ -115,6 +116,7 @@ Bernhard M. Wiedemann <bwiedemann@suse.de>
 Bhagirathi Satpathy <bhagirathi.s@samsung.com>
 Bhanukrushana Rout <b.rout@samsung.com>
 Biljith Jayan <billy.jayan@samsung.com>
+Boaz Sender <boaz@bocoup.com>
 Bobby Powers <bobbypowers@gmail.com>
 Branden Archer <bma4@zips.uakron.edu>
 Brendan Kirby <brendan.kirby@imgtec.com>
@@ -390,6 +392,7 @@ Jesse Miller <jesse@jmiller.biz>
 Jesus Sanchez-Palencia <jesus.sanchez-palencia.fernandez.fil@intel.com>
 Jiadong Zhu <jiadong.zhu@linaro.org>
 Jiajia Qin <jiajia.qin@intel.com>
+Jiajie Hu <jiajie.hu@intel.com>
 Jianjun Zhu <jianjun.zhu@intel.com>
 Jianneng Zhong <muzuiget@gmail.com>
 Jiawei Shao <jiawei.shao@intel.com>
@@ -442,6 +445,7 @@ Jun Fang <jun_fang@foxitsoftware.com>
 Jun Jiang <jun.a.jiang@intel.com>
 Junchao Han <junchao.han@intel.com>
 Junghoon Lee <sjh836@gmail.com>
+Junghyuk Yoo <wjdgurdl272@gmail.com>
 JungJik Lee <jungjik.lee@samsung.com>
 Jungkee Song <jungkee.song@samsung.com>
 Junmin Zhu <junmin.zhu@intel.com>
@@ -464,6 +468,7 @@ Kaustubh Atrawalkar <kaustubh.a@samsung.com>
 Kaustubh Atrawalkar <kaustubh.ra@gmail.com>
 Ke He <ke.he@intel.com>
 Keene Pan <keenepan@linpus.com>
+Keita Yoshimoto <y073k3@gmail.com>
 Keith Chen <keitchen@amazon.com>
 Kenneth Rohde Christiansen <kenneth.r.christiansen@intel.com>
 Kenneth Strickland <ken.strickland@gmail.com>
@@ -597,13 +602,14 @@ Minsoo Max Koo <msu.koo@samsung.com>
 Miran Karic <miran.karic@imgtec.com>
 Mirela Budaes <mbudaes@adobe.com>
 Mirela Budaes <mbudaes@gmail.com>
-Miyoung Shin <myid.shin@samsung.com>
+Miyoung Shin <myid.shin@navercorp.com>
 Mohamed I. Hammad <ibraaaa@gmail.com>
 Mohamed Mansour <m0.interactive@gmail.com>
 Mohammad Azam <m.azam@samsung.com>
 Mohammed Wajahat Ali Siddiqui <wajahat.s@samsung.com>
 Mohan Reddy <mohan.reddy@samsung.com>
 Mohit Bhalla <bhallam@amazon.com>
+Momoko Hattori <momohatt10@gmail.com>
 Mrunal Kapade <mrunal.kapade@intel.com>
 Myeongjin Cho <myeongjin.cho@navercorp.com>
 Myles C. Maxfield <mymax@amazon.com>
@@ -704,6 +710,7 @@ Raveendra Karu <r.karu@samsung.com>
 Ravi Nanjundappa <nravi.n@samsung.com>
 Ravi Phaneendra Kasibhatla <r.kasibhatla@samsung.com>
 Ravi Phaneendra Kasibhatla <ravi.kasibhatla@motorola.com>
+Raviraj Sitaram <raviraj.p.sitaram@intel.com>
 Réda Housni Alaoui <alaoui.rda@gmail.com>
 Refael Ackermann <refack@gmail.com>
 Renata Hodovan <rhodovan.u-szeged@partner.samsung.com>
@@ -744,6 +751,8 @@ Sanghee Lee <sanghee.lee1992@gmail.com>
 Sanghyun Park <sh919.park@samsung.com>
 Sanghyup Lee <sh53.lee@samsung.com>
 Sangjoon Je <htamop@gmail.com>
+Sangseok Jang <sangseok.jang@navercorp.com>
+Sangwoo Ko <sangwoo.ko@navercorp.com>
 Sangwoo Ko <sangwoo108@gmail.com>
 Sanjoy Pal <ncj674@motorola.com>
 Sanjoy Pal <sanjoy.pal@samsung.com>
@@ -857,8 +866,10 @@ Tim Niederhausen <tim@rnc-ag.de>
 Timo Gurr <timo.gurr@gmail.com>
 Timo Reimann <ttr314@googlemail.com>
 Timo Witte <timo.witte@gmail.com>
+Ting Shao <ting.shao@intel.com>
 Tom Callaway <tcallawa@redhat.com>
 Tom Harwood <tfh@skip.org>
+Tom Tan <Tom.Tan@microsoft.com>
 Tomas Popela <tomas.popela@gmail.com>
 Torsten Kurbad <google@tk-webart.de>
 Trent Willis <trentmwillis@gmail.com>
@@ -883,6 +894,7 @@ Vinay Anantharaman <vinaya@adobe.com>
 Vipul Bhasin <vipul.bhasin@gmail.com>
 Visa Putkinen <v.putkinen@partner.samsung.com>
 Vishal Bhatnagar <vishal.b@samsung.com>
+Vitaliy Kharin <kvserr@gmail.com>
 Vivek Galatage <vivek.vg@samsung.com>
 Volker Sorge <volker.sorge@gmail.com>
 Waihung Fu <fufranci@amazon.com>
@@ -917,6 +929,7 @@ Yarin Kaul <yarin.kaul@gmail.com>
 Yash Vempati <vempatiy@amazon.com>
 Ye Liu <cbakgly@gmail.com>
 Yeol Park <peary2@gmail.com>
+Yeonwoo Jo <yeonwoo.jo.92@gmail.com>
 Yi Shen <yi.shen@samsung.com>
 Yi Sun <ratsunny@gmail.com>
 Yichen Jiang <jiangyichen123@gmail.com>
@@ -962,11 +975,13 @@ Rajesh Mahindra <rmahindra@uber.com>
 Yuan-Pin Yu <yjames@uber.com>
 Vinoth Chandar <vinoth@uber.com>
 Zheng Xu <zxu@kobo.com>
+Gaurav Dhol <gaurav.dhol@einfochips.com>
 
 ACCESS CO., LTD. <*@access-company.com>
 Akamai Inc. <*@akamai.com>
 ARM Holdings <*@arm.com>
 BlackBerry Limited <*@blackberry.com>
+Bocoup <*@bocoup.com>
 Canonical Limited <*@canonical.com>
 Cloudflare, Inc. <*@cloudflare.com>
 Code Aurora Forum <*@codeaurora.org>

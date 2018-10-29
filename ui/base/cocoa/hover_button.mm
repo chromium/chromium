@@ -20,7 +20,7 @@ constexpr CGFloat kDragDistance = 5;
 @synthesize dragDelegate = dragDelegate_;
 @synthesize sendActionOnMouseDown = sendActionOnMouseDown_;
 
-- (id)initWithFrame:(NSRect)frameRect {
+- (instancetype)initWithFrame:(NSRect)frameRect {
   if ((self = [super initWithFrame:frameRect])) {
     [self commonInit];
   }

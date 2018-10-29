@@ -62,6 +62,7 @@ class Modulator;
 class Navigator;
 class PostMessageTimer;
 class Screen;
+class ScriptedTaskQueueController;
 class ScriptPromise;
 class ScriptState;
 class ScrollToOptions;
@@ -73,6 +74,7 @@ class TrustedTypePolicyFactory;
 class USVStringOrTrustedURL;
 class V8FrameRequestCallback;
 class V8IdleRequestCallback;
+class V8VoidFunction;
 
 enum PageshowEventPersistence {
   kPageshowEventNotPersisted = 0,
@@ -219,10 +221,15 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Acessibility Object Model
   ScriptPromise getComputedAccessibleNode(ScriptState*, Element*);
 
+  ScriptedTaskQueueController* taskQueue() const;
+
   // WebKit animation extensions
   int requestAnimationFrame(V8FrameRequestCallback*);
   int webkitRequestAnimationFrame(V8FrameRequestCallback*);
   void cancelAnimationFrame(int id);
+
+  // https://html.spec.whatwg.org/#windoworworkerglobalscope-mixin
+  void queueMicrotask(V8VoidFunction*);
 
   // Idle callback extensions
   int requestIdleCallback(V8IdleRequestCallback*, const IdleRequestOptions&);
@@ -275,21 +282,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                   ExceptionState&);
 
   DOMWindow* open(const USVStringOrTrustedURL& stringOrUrl,
-                  const AtomicString& frame_name,
-                  const String& window_features_string,
-                  LocalDOMWindow* calling_window,
-                  LocalDOMWindow* entered_window,
-                  ExceptionState&);
-
-  DOMWindow* open(ExecutionContext*,
-                  LocalDOMWindow* current_window,
-                  LocalDOMWindow* entered_window,
-                  const String& str_url,
-                  const AtomicString& target,
-                  const String& features,
-                  ExceptionState&);
-
-  DOMWindow* open(const String& str_url,
                   const AtomicString& frame_name,
                   const String& window_features_string,
                   LocalDOMWindow* calling_window,

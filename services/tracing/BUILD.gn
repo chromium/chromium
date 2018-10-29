@@ -22,6 +22,8 @@ source_set("lib") {
     "tracing_service.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
@@ -57,6 +59,8 @@ service("tracing") {
   sources = [
     "service_main.cc",
   ]
+
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":lib",
@@ -105,7 +109,7 @@ source_set("tests") {
 
     deps += [
       "//third_party/perfetto/include/perfetto/protozero:protozero",
-      "//third_party/perfetto/protos/perfetto/common",
+      "//third_party/perfetto/protos/perfetto/common:lite",
       "//third_party/perfetto/protos/perfetto/trace:lite",
       "//third_party/perfetto/protos/perfetto/trace/chrome:lite",
     ]

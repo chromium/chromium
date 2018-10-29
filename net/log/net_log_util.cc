@@ -343,8 +343,7 @@ NET_EXPORT std::unique_ptr<base::DictionaryValue> GetNetInfo(
 
     auto list = std::make_unique<base::ListValue>();
 
-    for (ProxyRetryInfoMap::const_iterator it = bad_proxies_map.begin();
-         it != bad_proxies_map.end(); ++it) {
+    for (auto it = bad_proxies_map.begin(); it != bad_proxies_map.end(); ++it) {
       const std::string& proxy_uri = it->first;
       const ProxyRetryInfo& retry_info = it->second;
 

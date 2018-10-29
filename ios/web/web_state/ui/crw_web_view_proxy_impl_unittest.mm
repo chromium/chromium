@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/web/web_state/ui/crw_web_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -62,6 +63,23 @@ TEST_F(CRWWebViewProxyImplTest, ContentViewPresent) {
   fakeContentView.shouldUseViewContentInset = NO;
   proxy.shouldUseViewContentInset = YES;
   EXPECT_TRUE(fakeContentView.shouldUseViewContentInset);
+}
+
+// Tests allowsBackForwardNavigationGestures property is delegated to
+// CWVWebController.
+TEST_F(CRWWebViewProxyImplTest, AllowsBackForwardNavigationGestures) {
+  CRWWebController* mockWebController =
+      OCMStrictClassMock([CRWWebController class]);
+  CRWWebViewProxyImpl* proxy =
+      [[CRWWebViewProxyImpl alloc] initWithWebController:mockWebController];
+
+  OCMStub([mockWebController allowsBackForwardNavigationGestures])
+      .andReturn(YES);
+  EXPECT_TRUE(proxy.allowsBackForwardNavigationGestures);
+
+  OCMExpect([mockWebController setAllowsBackForwardNavigationGestures:YES]);
+  proxy.allowsBackForwardNavigationGestures = YES;
+  EXPECT_OCMOCK_VERIFY((id)mockWebController);
 }
 
 }  // namespace

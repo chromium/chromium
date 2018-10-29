@@ -6,7 +6,7 @@
 import os
 import sys
 
-import model
+import ukm_model
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import presubmit_util
 
@@ -14,7 +14,7 @@ import presubmit_util
 
 def main(argv):
   presubmit_util.DoPresubmitMain(argv, 'ukm.xml', 'ukm.old.xml',
-                                 'pretty_print.py', model.UpdateXML)
+                                 'pretty_print.py', ukm_model.UpdateXML)
 
 
 if '__main__' == __name__:

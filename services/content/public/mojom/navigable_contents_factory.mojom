@@ -12,6 +12,15 @@ struct NavigableContentsParams {
   // |true|, the corresponding NavigableContentsClient will receive
   // |DidAutoResizeView()| notifications whenever such resizing happens.
   bool enable_view_auto_resize = false;
+
+  // Indicates that the client wants to control how navigation requests are
+  // handled within the created NavigableContents. Any attempt to navigate the
+  // NavigableContents by any means other than an explicit call to
+  // |NavigableContents.Navigate()| -- for example, link clicks or scripted
+  // location changes -- will be suppressed and will instead result in a
+  // |DidSuppressNavigation()| message being sent to the corresponding
+  // NavigableContentsClient.
+  bool suppress_navigations = false;
 };
 
 // NavigableContentsFactory is the primary interface through which a new

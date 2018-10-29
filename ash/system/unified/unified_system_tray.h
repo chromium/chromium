@@ -9,6 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 
 namespace ash {
 
@@ -85,7 +87,8 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
   void CloseBubble() override;
   base::string16 GetAccessibleNameForBubble() override;
   base::string16 GetAccessibleNameForTray() override;
-  void HideBubbleWithView(const views::TrayBubbleView* bubble_view) override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
+  void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   void UpdateAfterShelfAlignmentChange() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
@@ -96,6 +99,8 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
   UnifiedSystemTrayModel* model() { return model_.get(); }
 
  private:
+  const static base::TimeDelta kNotificationCountUpdateDelay;
+
   friend class UnifiedSystemTrayTest;
   friend class UnifiedSystemTrayTestApi;
 
@@ -109,6 +114,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
   void ShowBubbleInternal(bool show_by_click);
   void HideBubbleInternal();
   void UpdateNotificationInternal();
+  void UpdateNotificationAfterDelay();
 
   const std::unique_ptr<UiDelegate> ui_delegate_;
 
@@ -129,6 +135,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
   tray::TimeTrayItemView* const time_view_;
 
   ui::Layer* ink_drop_layer_ = nullptr;
+  base::OneShotTimer timer_;
 
   DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTray);
 };

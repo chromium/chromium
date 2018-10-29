@@ -20,7 +20,7 @@ test(function(t)
 {
     // No problem with using aria-owns to put a menu inside a heading.
     var axHeading1 = accessibilityController.accessibleElementById("heading1");
-    assert_equals(axHeading1.name, "heading ");
+    assert_equals(axHeading1.name, "heading");
     var axContainer1 = accessibilityController.accessibleElementById("container1");
     assert_equals(axContainer1.childrenCount, 1);
     assert_equals(axContainer1.childAtIndex(0).role, "AXRole: AXHeading");
@@ -64,9 +64,11 @@ test(function(t)
     var axContainer3 = accessibilityController.accessibleElementById("container3");
     assert_equals(axContainer3.childrenCount, 2);
     assert_equals(axContainer3.childAtIndex(0).role, "AXRole: AXTextField");
-    assert_equals(axContainer3.childAtIndex(0).childrenCount, 0);
+    // An input element naturally gets 1 child that corresponds to the anonymous 
+    // inner editor element.
+    assert_equals(axContainer3.childAtIndex(0).childrenCount, 1);
     assert_equals(axContainer3.childAtIndex(1).role, "AXRole: AXMenu");
-}, "Aria-owns doesn't create children of an input element.");
+}, "Aria-owns doesn't create extra children of an input element.");
 </script>
 
 <div class="container" id="container4" role="group" aria-label="Container">

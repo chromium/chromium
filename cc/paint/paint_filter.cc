@@ -668,7 +668,7 @@ ImagePaintFilter::ImagePaintFilter(PaintImage image,
                                    const SkRect& src_rect,
                                    const SkRect& dst_rect,
                                    SkFilterQuality filter_quality)
-    : PaintFilter(kType, nullptr, image.IsLazyGenerated()),
+    : PaintFilter(kType, nullptr, !image.IsTextureBacked()),
       image_(std::move(image)),
       src_rect_(src_rect),
       dst_rect_(dst_rect),

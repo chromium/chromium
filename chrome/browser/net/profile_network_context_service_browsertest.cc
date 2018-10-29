@@ -109,12 +109,7 @@ IN_PROC_BROWSER_TEST_P(ProfileNetworkContextServiceBrowsertest, BrotliEnabled) {
   std::unique_ptr<network::ResourceRequest> request =
       std::make_unique<network::ResourceRequest>();
   request->url = https_server.GetURL("/echoheader?accept-encoding");
-// On OSX, test certs aren't currently hooked up correctly when using the
-// network service.
-// TODO(mmenke): Remove this line once that's fixed.
-#if defined(OS_MACOSX)
-  request->load_flags |= net::LOAD_IGNORE_ALL_CERT_ERRORS;
-#endif  // !defined(OS_MACOSX)
+
   content::SimpleURLLoaderTestHelper simple_loader_helper;
   std::unique_ptr<network::SimpleURLLoader> simple_loader =
       network::SimpleURLLoader::Create(std::move(request),

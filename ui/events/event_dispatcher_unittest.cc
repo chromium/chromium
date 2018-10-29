@@ -61,15 +61,14 @@ class TestTarget : public EventTarget,
 
 class TestEventHandler : public EventHandler {
  public:
-  TestEventHandler(int id)
-      : id_(id),
-        event_result_(ER_UNHANDLED),
-        expect_pre_target_(false),
-        expect_post_target_(false),
-        received_pre_target_(false) {
+  explicit TestEventHandler(int id) : id_(id) {}
+
+  ~TestEventHandler() override {
+    if (pre_target_)
+      pre_target_->RemovePreTargetHandler(this);
   }
 
-  ~TestEventHandler() override {}
+  void set_pre_target(EventTarget* pre_target) { pre_target_ = pre_target; }
 
   virtual void ReceivedEvent(Event* event) {
     static_cast<TestTarget*>(event->target())->AddHandlerId(id_);
@@ -105,11 +104,12 @@ class TestEventHandler : public EventHandler {
       event->SetHandled();
   }
 
-  int id_;
-  EventResult event_result_;
-  bool expect_pre_target_;
-  bool expect_post_target_;
-  bool received_pre_target_;
+  const int id_;
+  EventResult event_result_ = ER_UNHANDLED;
+  bool expect_pre_target_ = false;
+  bool expect_post_target_ = false;
+  bool received_pre_target_ = false;
+  EventTarget* pre_target_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
@@ -300,6 +300,12 @@ TEST(EventDispatcherTest, EventDispatchOrder) {
   EXPECT_EQ(
       std::vector<int>(exp, exp + sizeof(exp) / sizeof(int)),
       child.handler_list());
+
+  parent.RemovePreTargetHandler(&h1);
+  parent.RemovePreTargetHandler(&h2);
+
+  child.RemovePreTargetHandler(&h3);
+  child.RemovePreTargetHandler(&h4);
 }
 
 // Tests that the event-phases are correct.
@@ -324,6 +330,8 @@ TEST(EventDispatcherTest, EventDispatchPhase) {
   EXPECT_EQ(
       std::vector<int>(handlers, handlers + sizeof(handlers) / sizeof(int)),
       target.handler_list());
+
+  target.RemovePreTargetHandler(&handler);
 }
 
 // Tests that if the dispatcher is destroyed in the middle of pre or post-target
@@ -354,6 +362,10 @@ TEST(EventDispatcherTest, EventDispatcherDestroyedDuringDispatch) {
     EXPECT_EQ(2U, target.handler_list().size());
     EXPECT_EQ(1, target.handler_list()[0]);
     EXPECT_EQ(5, target.handler_list()[1]);
+
+    target.RemovePreTargetHandler(&h1);
+    target.RemovePreTargetHandler(&handler);
+    target.RemovePreTargetHandler(&h2);
   }
 
   // Test for non-cancelable event.
@@ -379,6 +391,10 @@ TEST(EventDispatcherTest, EventDispatcherDestroyedDuringDispatch) {
     EXPECT_EQ(2U, target.handler_list().size());
     EXPECT_EQ(1, target.handler_list()[0]);
     EXPECT_EQ(5, target.handler_list()[1]);
+
+    target.RemovePreTargetHandler(&h1);
+    target.RemovePreTargetHandler(&handler);
+    target.RemovePreTargetHandler(&h2);
   }
 
   // Now test for post-target.
@@ -406,6 +422,10 @@ TEST(EventDispatcherTest, EventDispatcherDestroyedDuringDispatch) {
     EXPECT_EQ(2U, target.handler_list().size());
     EXPECT_EQ(1, target.handler_list()[0]);
     EXPECT_EQ(5, target.handler_list()[1]);
+
+    target.RemovePostTargetHandler(&h1);
+    target.RemovePostTargetHandler(&handler);
+    target.RemovePostTargetHandler(&h2);
   }
 
   // Test for non-cancelable event.
@@ -431,6 +451,10 @@ TEST(EventDispatcherTest, EventDispatcherDestroyedDuringDispatch) {
     EXPECT_EQ(2U, target.handler_list().size());
     EXPECT_EQ(1, target.handler_list()[0]);
     EXPECT_EQ(5, target.handler_list()[1]);
+
+    target.RemovePostTargetHandler(&h1);
+    target.RemovePostTargetHandler(&handler);
+    target.RemovePostTargetHandler(&h2);
   }
 }
 
@@ -473,6 +497,10 @@ TEST(EventDispatcherTest, EventDispatcherInvalidateTarget) {
   EXPECT_EQ(2U, target.handler_list().size());
   EXPECT_EQ(1, target.handler_list()[0]);
   EXPECT_EQ(2, target.handler_list()[1]);
+
+  target.RemovePreTargetHandler(&h1);
+  target.RemovePreTargetHandler(&invalidate_handler);
+  target.RemovePreTargetHandler(&h3);
 }
 
 // Tests that if an event-handler gets destroyed during event-dispatch, it does
@@ -487,6 +515,7 @@ TEST(EventDispatcherTest, EventHandlerDestroyedDuringDispatch) {
 
     target.AddPreTargetHandler(&h1);
     target.AddPreTargetHandler(&handle_destroyer);
+    h3->set_pre_target(&target);
     target.AddPreTargetHandler(h3);
 
     h1.set_expect_pre_target(true);
@@ -504,6 +533,9 @@ TEST(EventDispatcherTest, EventHandlerDestroyedDuringDispatch) {
     EXPECT_EQ(2U, target.handler_list().size());
     EXPECT_EQ(1, target.handler_list()[0]);
     EXPECT_EQ(2, target.handler_list()[1]);
+
+    target.RemovePreTargetHandler(&h1);
+    target.RemovePreTargetHandler(&handle_destroyer);
   }
 
   // Test for non-cancelable events.
@@ -517,6 +549,7 @@ TEST(EventDispatcherTest, EventHandlerDestroyedDuringDispatch) {
     target.AddPreTargetHandler(&h1);
     target.AddPreTargetHandler(&handle_destroyer);
     target.AddPreTargetHandler(h3);
+    h3->set_pre_target(&target);
 
     h1.set_expect_pre_target(true);
     handle_destroyer.set_expect_pre_target(true);
@@ -529,6 +562,9 @@ TEST(EventDispatcherTest, EventHandlerDestroyedDuringDispatch) {
     EXPECT_EQ(2U, target.handler_list().size());
     EXPECT_EQ(1, target.handler_list()[0]);
     EXPECT_EQ(2, target.handler_list()[1]);
+
+    target.RemovePreTargetHandler(&h1);
+    target.RemovePreTargetHandler(&handle_destroyer);
   }
 }
 
@@ -545,6 +581,7 @@ TEST(EventDispatcherTest, EventHandlerAndDispatcherDestroyedDuringDispatch) {
     target.AddPreTargetHandler(&h1);
     target.AddPreTargetHandler(&destroyer);
     target.AddPreTargetHandler(h3);
+    h3->set_pre_target(&target);
 
     h1.set_expect_pre_target(true);
     destroyer.set_expect_pre_target(true);
@@ -561,6 +598,9 @@ TEST(EventDispatcherTest, EventHandlerAndDispatcherDestroyedDuringDispatch) {
     EXPECT_EQ(2U, target.handler_list().size());
     EXPECT_EQ(1, target.handler_list()[0]);
     EXPECT_EQ(2, target.handler_list()[1]);
+
+    target.RemovePreTargetHandler(&h1);
+    target.RemovePreTargetHandler(&destroyer);
   }
 
   // Test for non-cancelable events.
@@ -574,6 +614,7 @@ TEST(EventDispatcherTest, EventHandlerAndDispatcherDestroyedDuringDispatch) {
     target.AddPreTargetHandler(&h1);
     target.AddPreTargetHandler(&destroyer);
     target.AddPreTargetHandler(h3);
+    h3->set_pre_target(&target);
 
     h1.set_expect_pre_target(true);
     destroyer.set_expect_pre_target(true);
@@ -588,6 +629,9 @@ TEST(EventDispatcherTest, EventHandlerAndDispatcherDestroyedDuringDispatch) {
     EXPECT_EQ(2U, target.handler_list().size());
     EXPECT_EQ(1, target.handler_list()[0]);
     EXPECT_EQ(2, target.handler_list()[1]);
+
+    target.RemovePreTargetHandler(&h1);
+    target.RemovePreTargetHandler(&destroyer);
   }
 }
 

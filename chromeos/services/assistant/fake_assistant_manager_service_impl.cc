@@ -46,6 +46,13 @@ void FakeAssistantManagerServiceImpl::SendUpdateSettingsUiRequest(
     const std::string& update,
     UpdateSettingsUiResponseCallback callback) {}
 
+void FakeAssistantManagerServiceImpl::StartSpeakerIdEnrollment(
+    bool skip_cloud_enrollment,
+    mojom::SpeakerIdEnrollmentClientPtr client) {}
+
+void FakeAssistantManagerServiceImpl::StopSpeakerIdEnrollment(
+    AssistantSettingsManager::StopSpeakerIdEnrollmentCallback on_stopped) {}
+
 void FakeAssistantManagerServiceImpl::StartCachedScreenContextInteraction() {}
 
 void FakeAssistantManagerServiceImpl::StartMetalayerInteraction(
@@ -53,7 +60,8 @@ void FakeAssistantManagerServiceImpl::StartMetalayerInteraction(
 
 void FakeAssistantManagerServiceImpl::StartVoiceInteraction() {}
 
-void FakeAssistantManagerServiceImpl::StopActiveInteraction() {}
+void FakeAssistantManagerServiceImpl::StopActiveInteraction(
+    bool cancel_conversation) {}
 
 void FakeAssistantManagerServiceImpl::SendTextQuery(const std::string& query) {}
 

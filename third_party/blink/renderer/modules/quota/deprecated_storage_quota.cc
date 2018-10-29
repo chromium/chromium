@@ -164,10 +164,7 @@ void DeprecatedStorageQuota::requestQuota(
     unsigned long long new_quota_in_bytes,
     V8StorageQuotaCallback* success_callback,
     V8StorageErrorCallback* error_callback) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  DCHECK(execution_context);
-  DCHECK(execution_context->IsDocument())
-      << "Quota requests are not supported in workers";
+  ExecutionContext& execution_context = *ExecutionContext::From(script_state);
 
   StorageType storage_type = GetStorageType(type_);
   if (storage_type != StorageType::kTemporary &&
@@ -183,15 +180,15 @@ void DeprecatedStorageQuota::requestQuota(
       WrapPersistent(ToV8PersistentCallbackFunction(success_callback)),
       WrapPersistent(ToV8PersistentCallbackFunction(error_callback)));
 
-  Document* document = ToDocument(execution_context);
-  const SecurityOrigin* security_origin = document->GetSecurityOrigin();
+  Document& document = To<Document>(execution_context);
+  const SecurityOrigin* security_origin = document.GetSecurityOrigin();
   if (security_origin->IsOpaque()) {
     // Unique origins cannot store persistent state.
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kErrorAbort, 0, 0);
     return;
   }
 
-  GetQuotaHost(execution_context)
+  GetQuotaHost(&execution_context)
       .RequestStorageQuota(
           WrapRefCounted(security_origin), storage_type, new_quota_in_bytes,
           mojo::WrapCallbackWithDefaultInvokeIfNotRun(

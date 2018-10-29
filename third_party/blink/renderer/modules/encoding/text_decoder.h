@@ -67,7 +67,7 @@ class TextDecoder final : public ScriptWrappable {
   TextDecoder(const WTF::TextEncoding&, bool fatal, bool ignore_bom);
 
   String decode(const char* start,
-                size_t length,
+                uint32_t length,
                 const TextDecodeOptions&,
                 ExceptionState&);
 

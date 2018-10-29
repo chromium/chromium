@@ -62,6 +62,7 @@ class InternalRuntimeFlagsWriter(make_runtime_features.RuntimeFeatureWriter):
             'feature_sets': self._feature_sets(),
             'input_files': self._input_files,
             'standard_features': self._standard_features,
+            'header_guard': self._header_guard,
         }
 
 

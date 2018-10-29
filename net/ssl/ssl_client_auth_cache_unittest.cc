@@ -61,13 +61,13 @@ TEST(SSLClientAuthCacheTest, LookupAddRemove) {
   EXPECT_FALSE(cache.Lookup(server1, &cached_cert, &cached_pkey));
 
   // Add client certificate for server1.
-  cache.Add(server1, cert1.get(), new MockSSLPrivateKey);
+  cache.Add(server1, cert1.get(), base::MakeRefCounted<MockSSLPrivateKey>());
   cached_cert = nullptr;
   EXPECT_TRUE(cache.Lookup(server1, &cached_cert, &cached_pkey));
   EXPECT_EQ(cert1, cached_cert);
 
   // Add client certificate for server2.
-  cache.Add(server2, cert2.get(), new MockSSLPrivateKey);
+  cache.Add(server2, cert2.get(), base::MakeRefCounted<MockSSLPrivateKey>());
   cached_cert = nullptr;
   EXPECT_TRUE(cache.Lookup(server1, &cached_cert, &cached_pkey));
   EXPECT_EQ(cert1.get(), cached_cert.get());
@@ -76,7 +76,7 @@ TEST(SSLClientAuthCacheTest, LookupAddRemove) {
   EXPECT_EQ(cert2, cached_cert);
 
   // Overwrite the client certificate for server1.
-  cache.Add(server1, cert3.get(), new MockSSLPrivateKey);
+  cache.Add(server1, cert3.get(), base::MakeRefCounted<MockSSLPrivateKey>());
   cached_cert = nullptr;
   EXPECT_TRUE(cache.Lookup(server1, &cached_cert, &cached_pkey));
   EXPECT_EQ(cert3, cached_cert);
@@ -116,8 +116,8 @@ TEST(SSLClientAuthCacheTest, LookupWithPort) {
       ImportCertFromFile(GetTestCertsDirectory(), "expired_cert.pem"));
   ASSERT_TRUE(cert2);
 
-  cache.Add(server1, cert1.get(), new MockSSLPrivateKey);
-  cache.Add(server2, cert2.get(), new MockSSLPrivateKey);
+  cache.Add(server1, cert1.get(), base::MakeRefCounted<MockSSLPrivateKey>());
+  cache.Add(server2, cert2.get(), base::MakeRefCounted<MockSSLPrivateKey>());
 
   scoped_refptr<X509Certificate> cached_cert;
   scoped_refptr<SSLPrivateKey> cached_pkey;
@@ -137,7 +137,7 @@ TEST(SSLClientAuthCacheTest, LookupNullPreference) {
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(cert1);
 
-  cache.Add(server1, nullptr, new MockSSLPrivateKey);
+  cache.Add(server1, nullptr, base::MakeRefCounted<MockSSLPrivateKey>());
 
   scoped_refptr<X509Certificate> cached_cert(cert1);
   scoped_refptr<SSLPrivateKey> cached_pkey;
@@ -152,13 +152,13 @@ TEST(SSLClientAuthCacheTest, LookupNullPreference) {
   EXPECT_FALSE(cache.Lookup(server1, &cached_cert, &cached_pkey));
 
   // Add a new preference for a specific certificate.
-  cache.Add(server1, cert1.get(), new MockSSLPrivateKey);
+  cache.Add(server1, cert1.get(), base::MakeRefCounted<MockSSLPrivateKey>());
   cached_cert = nullptr;
   EXPECT_TRUE(cache.Lookup(server1, &cached_cert, &cached_pkey));
   EXPECT_EQ(cert1, cached_cert);
 
   // Replace the specific preference with a nullptr certificate.
-  cache.Add(server1, nullptr, new MockSSLPrivateKey);
+  cache.Add(server1, nullptr, base::MakeRefCounted<MockSSLPrivateKey>());
   cached_cert = nullptr;
   EXPECT_TRUE(cache.Lookup(server1, &cached_cert, &cached_pkey));
   EXPECT_EQ(nullptr, cached_cert.get());
@@ -173,10 +173,10 @@ TEST(SSLClientAuthCacheTest, OnCertDBChanged) {
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(cert1);
 
-  cache.Add(server1, cert1.get(), new MockSSLPrivateKey);
+  cache.Add(server1, cert1.get(), base::MakeRefCounted<MockSSLPrivateKey>());
 
   HostPortPair server2("foo2", 443);
-  cache.Add(server2, nullptr, new MockSSLPrivateKey);
+  cache.Add(server2, nullptr, base::MakeRefCounted<MockSSLPrivateKey>());
 
   scoped_refptr<X509Certificate> cached_cert;
   scoped_refptr<SSLPrivateKey> cached_pkey;

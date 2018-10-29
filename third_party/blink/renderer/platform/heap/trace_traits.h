@@ -40,6 +40,8 @@ class TraceTrait;
 template <typename T>
 class WeakMember;
 template <typename T>
+class Persistent;
+template <typename T>
 class WeakPersistent;
 
 template <typename T, bool = NeedsAdjustPointer<T>::value>

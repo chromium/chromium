@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.vr.rules;
 
+import android.support.annotation.IntDef;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,15 +27,18 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XrActivityRestriction {
-    public enum SupportedActivity {
-        CTA, // ChromeTabbedActivity/Normal Chrome
-        CCT, // CustomTabActivity/Chrome Custom Tab
-        WAA, // WebappActivity/Progressive Web App
-        ALL // Run in all of the above
+    @IntDef({SupportedActivity.CTA, SupportedActivity.CCT, SupportedActivity.WAA,
+            SupportedActivity.ALL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SupportedActivity {
+        int CTA = 0; // ChromeTabbedActivity/Normal Chrome
+        int CCT = 1; // CustomTabActivity/Chrome Custom Tab
+        int WAA = 2; // WebappActivity/Progressive Web App
+        int ALL = 3; // Run in all of the above
     }
 
     /**
      * @return A list of activity restrictions.
      */
-    public SupportedActivity[] value();
+    public @SupportedActivity int[] value();
 }

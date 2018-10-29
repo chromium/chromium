@@ -1,0 +1,41 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//third_party/blink/public/mojom/indexeddb/indexeddb.mojom"
+public_headers = [
+  "//third_party/blink/public/common/indexeddb/web_idb_types.h",
+  "//third_party/blink/public/platform/modules/indexeddb/web_idb_key.h",
+  "//third_party/blink/public/platform/modules/indexeddb/web_idb_key_path.h",
+  "//third_party/blink/public/platform/modules/indexeddb/web_idb_key_range.h",
+  "//third_party/blink/public/platform/modules/indexeddb/web_idb_metadata.h",
+  "//third_party/blink/public/platform/modules/indexeddb/web_idb_name_and_version.h",
+  "//third_party/blink/renderer/modules/indexeddb/idb_key_range.h",
+]
+traits_headers = [
+  "//mojo/public/cpp/base/string16_mojom_traits.h",
+  "//mojo/public/cpp/bindings/array_traits_web_vector.h",
+  "//mojo/public/cpp/bindings/array_traits_wtf_vector.h",
+  "//third_party/blink/public/common/indexeddb/indexeddb_mojom_traits.h",
+  "//third_party/blink/renderer/modules/indexeddb/indexed_db_mojom_traits.h",
+  "//third_party/blink/renderer/platform/mojo/string16_mojom_traits.h",
+]
+deps = [
+  "//mojo/public/cpp/bindings",
+  "//third_party/blink/renderer/platform/wtf",
+]
+type_mappings = [
+  "blink.mojom.IDBCursorDirection=::blink::WebIDBCursorDirection",
+  "blink.mojom.IDBDataLoss=::blink::WebIDBDataLoss",
+  "blink.mojom.IDBDatabaseMetadata=::blink::WebIDBMetadata",
+  "blink.mojom.IDBIndexKeys=::blink::WebIDBIndexKeys",
+  "blink.mojom.IDBIndexMetadata=::blink::WebIDBMetadata::Index",
+  "blink.mojom.IDBKey=::blink::WebIDBKey[move_only]",
+  "blink.mojom.IDBKeyPath=::blink::WebIDBKeyPath",
+  "blink.mojom.IDBKeyRange=::blink::WebIDBKeyRange",
+  "blink.mojom.IDBObjectStoreMetadata=::blink::WebIDBMetadata::ObjectStore",
+  "blink.mojom.IDBOperationType=::blink::WebIDBOperationType",
+  "blink.mojom.IDBPutMode=::blink::WebIDBPutMode",
+  "blink.mojom.IDBTaskType=::blink::WebIDBTaskType",
+  "blink.mojom.IDBTransactionMode=::blink::WebIDBTransactionMode",
+]

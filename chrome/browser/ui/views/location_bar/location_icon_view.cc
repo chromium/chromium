@@ -11,12 +11,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/toolbar_model.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/toolbar/toolbar_model.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/views/controls/label.h"
 
 using content::WebContents;
@@ -77,16 +76,14 @@ bool LocationIconView::ShouldShowSeparator() const {
   if (OmniboxFieldTrial::IsJogTextfieldOnPopupEnabled())
     return false;
 
-  return ui::MaterialDesignController::IsRefreshUi() &&
-         !location_bar_->GetOmniboxView()->IsEditingOrEmpty();
+  return !location_bar_->GetOmniboxView()->IsEditingOrEmpty();
 }
 
 bool LocationIconView::ShouldShowExtraEndSpace() const {
   if (OmniboxFieldTrial::IsJogTextfieldOnPopupEnabled())
     return false;
 
-  return ui::MaterialDesignController::IsRefreshUi() &&
-         location_bar_->GetOmniboxView()->IsEditingOrEmpty();
+  return location_bar_->GetOmniboxView()->IsEditingOrEmpty();
 }
 
 bool LocationIconView::ShowBubble(const ui::Event& event) {
@@ -94,6 +91,10 @@ bool LocationIconView::ShowBubble(const ui::Event& event) {
   if (!contents)
     return false;
   return location_bar_->ShowPageInfoDialog(contents);
+}
+
+SkColor LocationIconView::GetInkDropBaseColor() const {
+  return location_bar_->GetIconInkDropColor();
 }
 
 void LocationIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

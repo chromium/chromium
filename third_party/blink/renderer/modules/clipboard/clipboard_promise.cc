@@ -95,8 +95,7 @@ PermissionService* ClipboardPromise::GetPermissionService() {
 }
 
 bool ClipboardPromise::IsFocusedDocument(ExecutionContext* context) {
-  DCHECK(context->IsDocument());
-  Document* doc = ToDocumentOrNull(context);
+  Document* doc = To<Document>(context);
   return doc && doc->hasFocus();
 }
 
@@ -182,8 +181,8 @@ void ClipboardPromise::HandleReadTextWithPermission(PermissionStatus status) {
 // TODO(garykac): This currently only handles plain text.
 void ClipboardPromise::HandleWrite(DataTransfer* data) {
   // Scan DataTransfer and extract data types that we support.
-  size_t num_items = data->items()->length();
-  for (unsigned long i = 0; i < num_items; i++) {
+  uint32_t num_items = data->items()->length();
+  for (uint32_t i = 0; i < num_items; i++) {
     DataTransferItem* item = data->items()->item(i);
     DataObjectItem* objectItem = item->GetDataObjectItem();
     if (objectItem->Kind() == DataObjectItem::kStringKind &&

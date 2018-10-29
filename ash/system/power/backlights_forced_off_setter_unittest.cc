@@ -223,7 +223,7 @@ TEST_F(BacklightsForcedOffSetterTest,
 
   // Initialize an external touch device.
   ui::TouchscreenDevice external_touchdevice(
-      123, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
+      123, ui::InputDeviceType::INPUT_DEVICE_USB,
       std::string("test external touch device"), gfx::Size(1000, 1000), 1);
 
   ui::TouchscreenDevice internal_touchdevice(

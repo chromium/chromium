@@ -186,7 +186,6 @@ class CORE_EXPORT VisualViewport final
 
   // ScrollableArea implementation
   ChromeClient* GetChromeClient() const override;
-  bool ShouldUseIntegerScrollOffset() const override;
   void SetScrollOffset(const ScrollOffset&,
                        ScrollType,
                        ScrollBehavior = kScrollBehaviorInstant) override;
@@ -269,7 +268,8 @@ class CORE_EXPORT VisualViewport final
 
   CompositorElementId GetCompositorOverscrollElasticityElementId() const;
 
-  void SetNeedsPaintPropertiesUpdate();
+  void SetNeedsPaintPropertyUpdate() { needs_paint_property_update_ = true; }
+  bool NeedsPaintPropertyUpdate() const { return needs_paint_property_update_; }
 
  private:
   explicit VisualViewport(Page&);

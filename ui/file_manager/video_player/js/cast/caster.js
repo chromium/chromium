@@ -16,9 +16,11 @@ Object.defineProperty(window, 'localStorage', {
  */
 var APPLICATION_ID = '4CCB98DA';
 
-util.addPageLoadHandler(function() {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initialize);
+} else {
   initialize();
-}.wrap());
+}
 
 /**
  * Starts initialization of cast-related feature.

@@ -29,13 +29,13 @@ bool WifiSecurityClassSupportsPassphrases(
 WifiSecurityClass WifiSecurityClassFromSyncSecurityClass(
     const sync_pb::WifiCredentialSpecifics_SecurityClass sync_enum) {
   switch (sync_enum) {
-    case SECURITY_CLASS_INVALID:
+    case sync_pb::WifiCredentialSpecifics_SecurityClass_SECURITY_CLASS_INVALID:
       return WifiSecurityClass::SECURITY_CLASS_INVALID;
-    case SECURITY_CLASS_NONE:
+    case sync_pb::WifiCredentialSpecifics_SecurityClass_SECURITY_CLASS_NONE:
       return WifiSecurityClass::SECURITY_CLASS_NONE;
-    case SECURITY_CLASS_WEP:
+    case sync_pb::WifiCredentialSpecifics_SecurityClass_SECURITY_CLASS_WEP:
       return WifiSecurityClass::SECURITY_CLASS_WEP;
-    case SECURITY_CLASS_PSK:
+    case sync_pb::WifiCredentialSpecifics_SecurityClass_SECURITY_CLASS_PSK:
       return WifiSecurityClass::SECURITY_CLASS_PSK;
   }
   NOTREACHED() << "Invalid sync security class enum with value " << sync_enum;

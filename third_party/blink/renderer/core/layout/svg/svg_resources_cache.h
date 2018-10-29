@@ -84,8 +84,9 @@ class SVGResourcesCache {
   };
 
  private:
-  void AddResourcesFromLayoutObject(LayoutObject&, const ComputedStyle&);
-  void RemoveResourcesFromLayoutObject(LayoutObject&);
+  bool AddResourcesFromLayoutObject(LayoutObject&, const ComputedStyle&);
+  bool RemoveResourcesFromLayoutObject(LayoutObject&);
+  bool UpdateResourcesFromLayoutObject(LayoutObject&, const ComputedStyle&);
 
   typedef HashMap<const LayoutObject*, std::unique_ptr<SVGResources>> CacheMap;
   CacheMap cache_;

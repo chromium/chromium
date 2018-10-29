@@ -31,6 +31,7 @@ class SourceStream;
 class CORE_EXPORT ScriptStreamer final
     : public GarbageCollectedFinalized<ScriptStreamer> {
   WTF_MAKE_NONCOPYABLE(ScriptStreamer);
+  USING_PRE_FINALIZER(ScriptStreamer, Prefinalize);
 
  public:
   // For tracking why some scripts are not streamed. Not streaming is part of
@@ -51,6 +52,7 @@ class CORE_EXPORT ScriptStreamer final
     kInlineScript,
     kDidntTryToStartStreaming,
     kErrorOccurred,
+    kWorkerTopLevelScript,
 
     // Pseudo values that should never be seen in reported metrics
     kCount,
@@ -125,6 +127,8 @@ class CORE_EXPORT ScriptStreamer final
                  v8::ScriptCompiler::CompileOptions,
                  scoped_refptr<base::SingleThreadTaskRunner>);
 
+  void Prefinalize();
+
   void StreamingComplete();
   void NotifyFinishedToClient();
   bool HasEnoughDataForStreaming(size_t resource_buffer_size);
@@ -165,6 +169,12 @@ class CORE_EXPORT ScriptStreamer final
   v8::ScriptCompiler::StreamedSource::Encoding encoding_;
 
   scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
+
+  // This is a temporary flag to confirm that ScriptStreamer is not
+  // touched after its refinalizer call and thus https://crbug.com/715309
+  // doesn't break assumptions.
+  // TODO(hiroshige): Check the state in more general way.
+  bool prefinalizer_called_ = false;
 };
 
 }  // namespace blink

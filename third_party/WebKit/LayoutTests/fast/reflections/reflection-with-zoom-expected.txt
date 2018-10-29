@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (6,6) size 788x588
-      LayoutText {#text} at (0,0) size 0x0
-layer at (6,6) size 253x224
-  LayoutImage {IMG} at (0,0) size 252.75x223.50 [border: (0.75px solid #000000)]

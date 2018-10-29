@@ -88,7 +88,7 @@ public class DownloadProgressInfoBar extends InfoBar {
      * @return The tab associated with this infobar.
      */
     public Tab getTab() {
-        return nativeGetTab(getNativeInfoBarPtr());
+        return getNativeInfoBarPtr() == 0 ? null : nativeGetTab(getNativeInfoBarPtr());
     }
 
     /**

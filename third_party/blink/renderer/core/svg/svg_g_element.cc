@@ -28,7 +28,7 @@ namespace blink {
 
 inline SVGGElement::SVGGElement(Document& document,
                                 ConstructionType construction_type)
-    : SVGGraphicsElement(SVGNames::gTag, document, construction_type) {}
+    : SVGGraphicsElement(svg_names::kGTag, document, construction_type) {}
 
 DEFINE_NODE_FACTORY(SVGGElement)
 

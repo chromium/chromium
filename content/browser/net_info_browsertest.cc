@@ -22,7 +22,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/test_net_log.h"
 #include "net/nqe/effective_connection_type.h"
-#include "net/nqe/network_quality_estimator_test_util.h"
+#include "services/network/test/test_network_quality_tracker.h"
 
 namespace {
 
@@ -49,7 +49,9 @@ void VerifyRtt(base::TimeDelta expected_rtt, int32_t got_rtt_milliseconds) {
   // For example, if sample is 300 msec, after adding noise, it may become 330,
   // and after rounding off, it would spill over to the next bucket of 350 msec.
   EXPECT_GE((expected_rtt.InMilliseconds() * 0.1) + 50,
-            std::abs(expected_rtt.InMilliseconds() - got_rtt_milliseconds));
+            std::abs(expected_rtt.InMilliseconds() - got_rtt_milliseconds))
+      << " expected_rtt=" << expected_rtt
+      << " got_rtt_milliseconds=" << got_rtt_milliseconds;
 }
 
 void VerifyDownlinkKbps(double expected_kbps, double got_kbps) {
@@ -74,7 +76,8 @@ void VerifyDownlinkKbps(double expected_kbps, double got_kbps) {
   // sample may spill over to the next bucket due to the added noise of 10%.
   // For example, if sample is 300 kbps, after adding noise, it may become 330,
   // and after rounding off, it would spill over to the next bucket of 350 kbps.
-  EXPECT_GE((expected_kbps * 0.1) + 50, std::abs(expected_kbps - got_kbps));
+  EXPECT_GE((expected_kbps * 0.1) + 50, std::abs(expected_kbps - got_kbps))
+      << " expected_kbps=" << expected_kbps << " got_kbps=" << got_kbps;
 }
 
 }  // namespace
@@ -82,6 +85,15 @@ void VerifyDownlinkKbps(double expected_kbps, double got_kbps) {
 namespace content {
 
 class NetInfoBrowserTest : public content::ContentBrowserTest {
+ public:
+  NetInfoBrowserTest()
+      : test_network_quality_tracker_(
+            std::make_unique<network::TestNetworkQualityTracker>()) {}
+
+  network::NetworkQualityTracker* GetNetworkQualityTracker() const {
+    return test_network_quality_tracker_.get();
+  }
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // TODO(jkarlin): Once NetInfo is enabled on all platforms remove this
@@ -145,6 +157,10 @@ class NetInfoBrowserTest : public content::ContentBrowserTest {
     EXPECT_TRUE(ExecuteScriptAndExtractInt(shell(), script, &data));
     return data;
   }
+
+ private:
+  std::unique_ptr<network::TestNetworkQualityTracker>
+      test_network_quality_tracker_;
 };
 
 // Make sure the type is correct when the page is first opened.
@@ -219,10 +235,7 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, TwoRenderViewsInOneProcess) {
 IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest,
                        NetworkQualityEstimatorNotInitialized) {
   base::HistogramTester histogram_tester;
-  net::TestNetworkQualityEstimator estimator(
-      std::map<std::string, std::string>(), false, false, true,
-      std::make_unique<net::BoundTestNetLog>());
-  NetworkQualityObserverImpl impl(&estimator);
+  NetworkQualityObserverImpl impl(GetNetworkQualityTracker());
 
   EXPECT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(
@@ -234,20 +247,17 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest,
   VerifyDownlinkKbps(10000, RunScriptExtractDouble("getDownlink()") * 1000);
 }
 
-// Make sure the changes in the effective connection typeare notified to the
+// Make sure the changes in the effective connection type are notified to the
 // render thread.
 IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest,
                        EffectiveConnectionTypeChangeNotified) {
   base::HistogramTester histogram_tester;
-  net::TestNetworkQualityEstimator estimator(
-      std::map<std::string, std::string>(), false, false, true,
-      std::make_unique<net::BoundTestNetLog>());
-  NetworkQualityObserverImpl impl(&estimator);
+  NetworkQualityObserverImpl impl(GetNetworkQualityTracker());
 
-  net::nqe::internal::NetworkQuality network_quality_1(
-      base::TimeDelta::FromSeconds(1), base::TimeDelta::FromSeconds(2), 300);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(
-      network_quality_1);
+  base::TimeDelta http_rtt(base::TimeDelta::FromMilliseconds(1000));
+  int32_t downstream_throughput_kbps = 300;
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
 
   EXPECT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(
@@ -263,11 +273,11 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest,
   // Changing the effective connection type from 2G to 3G is guaranteed to
   // generate the notification to the renderers, irrespective of the current
   // effective connection type.
-  estimator.NotifyObserversOfEffectiveConnectionType(
+  GetNetworkQualityTracker()->ReportEffectiveConnectionTypeForTesting(
       net::EFFECTIVE_CONNECTION_TYPE_2G);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("2g", RunScriptExtractString("getEffectiveType()"));
-  estimator.NotifyObserversOfEffectiveConnectionType(
+  GetNetworkQualityTracker()->ReportEffectiveConnectionTypeForTesting(
       net::EFFECTIVE_CONNECTION_TYPE_3G);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("3g", RunScriptExtractString("getEffectiveType()"));
@@ -281,15 +291,13 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest,
 // thread, and the changed network quality is accessible via Javascript API.
 IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityChangeNotified) {
   base::HistogramTester histogram_tester;
-  net::TestNetworkQualityEstimator estimator(
-      std::map<std::string, std::string>(), false, false, true,
-      std::make_unique<net::BoundTestNetLog>());
-  NetworkQualityObserverImpl impl(&estimator);
+  NetworkQualityObserverImpl impl(GetNetworkQualityTracker());
 
-  net::nqe::internal::NetworkQuality network_quality_1(
-      base::TimeDelta::FromSeconds(1), base::TimeDelta::FromSeconds(2), 300);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(
-      network_quality_1);
+  base::TimeDelta http_rtt(base::TimeDelta::FromMilliseconds(1000));
+  int32_t downstream_throughput_kbps = 300;
+
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
 
   EXPECT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(
@@ -299,18 +307,18 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityChangeNotified) {
   EXPECT_FALSE(
       histogram_tester.GetAllSamples("NQE.RenderThreadNotified").empty());
 
-  VerifyRtt(network_quality_1.http_rtt(), RunScriptExtractInt("getRtt()"));
-  VerifyDownlinkKbps(network_quality_1.downstream_throughput_kbps(),
+  VerifyRtt(http_rtt, RunScriptExtractInt("getRtt()"));
+  VerifyDownlinkKbps(downstream_throughput_kbps,
                      RunScriptExtractDouble("getDownlink()") * 1000);
 
   // Verify that the network quality change is accessible via Javascript API.
-  net::nqe::internal::NetworkQuality network_quality_2(
-      base::TimeDelta::FromSeconds(10), base::TimeDelta::FromSeconds(20), 3000);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(
-      network_quality_2);
+  http_rtt = base::TimeDelta::FromSeconds(10);
+  downstream_throughput_kbps = 3000;
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
   base::RunLoop().RunUntilIdle();
-  VerifyRtt(network_quality_2.http_rtt(), RunScriptExtractInt("getRtt()"));
-  VerifyDownlinkKbps(network_quality_2.downstream_throughput_kbps(),
+  VerifyRtt(http_rtt, RunScriptExtractInt("getRtt()"));
+  VerifyDownlinkKbps(downstream_throughput_kbps,
                      RunScriptExtractDouble("getDownlink()") * 1000);
 }
 
@@ -318,43 +326,37 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityChangeNotified) {
 // 50 milliseconds or 50 kbps.
 IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityChangeRounded) {
   base::HistogramTester histogram_tester;
-  net::TestNetworkQualityEstimator estimator(
-      std::map<std::string, std::string>(), false, false, true,
-      std::make_unique<net::BoundTestNetLog>());
-  NetworkQualityObserverImpl impl(&estimator);
+  NetworkQualityObserverImpl impl(GetNetworkQualityTracker());
 
   // Verify that the network quality is rounded properly.
-  net::nqe::internal::NetworkQuality network_quality_1(
-      base::TimeDelta::FromMilliseconds(103),
-      base::TimeDelta::FromMilliseconds(212), 8303);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(
-      network_quality_1);
+  base::TimeDelta http_rtt(base::TimeDelta::FromMilliseconds(103));
+  int32_t downstream_throughput_kbps = 8303;
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
 
   EXPECT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/net_info.html")));
-  VerifyRtt(network_quality_1.http_rtt(), RunScriptExtractInt("getRtt()"));
-  VerifyDownlinkKbps(network_quality_1.downstream_throughput_kbps(),
+  VerifyRtt(http_rtt, RunScriptExtractInt("getRtt()"));
+  VerifyDownlinkKbps(downstream_throughput_kbps,
                      RunScriptExtractDouble("getDownlink()") * 1000);
 
-  net::nqe::internal::NetworkQuality network_quality_2(
-      base::TimeDelta::FromMilliseconds(1103),
-      base::TimeDelta::FromMilliseconds(212), 1307);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(
-      network_quality_2);
+  http_rtt = base::TimeDelta::FromMilliseconds(1103);
+  downstream_throughput_kbps = 1307;
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
   base::RunLoop().RunUntilIdle();
-  VerifyRtt(network_quality_2.http_rtt(), RunScriptExtractInt("getRtt()"));
-  VerifyDownlinkKbps(network_quality_2.downstream_throughput_kbps(),
+  VerifyRtt(http_rtt, RunScriptExtractInt("getRtt()"));
+  VerifyDownlinkKbps(downstream_throughput_kbps,
                      RunScriptExtractDouble("getDownlink()") * 1000);
 
-  net::nqe::internal::NetworkQuality network_quality_3(
-      base::TimeDelta::FromMilliseconds(2112),
-      base::TimeDelta::FromMilliseconds(2112), 2112);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(
-      network_quality_3);
+  http_rtt = base::TimeDelta::FromMilliseconds(2112);
+  downstream_throughput_kbps = 2112;
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
   base::RunLoop().RunUntilIdle();
-  VerifyRtt(network_quality_3.http_rtt(), RunScriptExtractInt("getRtt()"));
-  VerifyDownlinkKbps(network_quality_3.downstream_throughput_kbps(),
+  VerifyRtt(http_rtt, RunScriptExtractInt("getRtt()"));
+  VerifyDownlinkKbps(downstream_throughput_kbps,
                      RunScriptExtractDouble("getDownlink()") * 1000);
 }
 
@@ -362,43 +364,39 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityChangeRounded) {
 // limit.
 IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityChangeUpperLimit) {
   base::HistogramTester histogram_tester;
-  net::TestNetworkQualityEstimator estimator(
-      std::map<std::string, std::string>(), false, false, true,
-      std::make_unique<net::BoundTestNetLog>());
-  NetworkQualityObserverImpl impl(&estimator);
+  NetworkQualityObserverImpl impl(GetNetworkQualityTracker());
 
-  net::nqe::internal::NetworkQuality network_quality(
-      base::TimeDelta::FromMilliseconds(12003),
-      base::TimeDelta::FromMilliseconds(212), 30300);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(network_quality);
+  base::TimeDelta http_rtt(base::TimeDelta::FromMilliseconds(12003));
+  int32_t downstream_throughput_kbps = 30300;
+
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
 
   EXPECT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/net_info.html")));
-  VerifyRtt(network_quality.http_rtt(), RunScriptExtractInt("getRtt()"));
-  VerifyDownlinkKbps(network_quality.downstream_throughput_kbps(),
+  VerifyRtt(http_rtt, RunScriptExtractInt("getRtt()"));
+  VerifyDownlinkKbps(downstream_throughput_kbps,
                      RunScriptExtractDouble("getDownlink()") * 1000);
 }
 
 // Make sure the noise added to the network quality varies with the hostname.
 IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityRandomized) {
   base::HistogramTester histogram_tester;
-  net::TestNetworkQualityEstimator estimator(
-      std::map<std::string, std::string>(), false, false, true,
-      std::make_unique<net::BoundTestNetLog>());
-  NetworkQualityObserverImpl impl(&estimator);
+  NetworkQualityObserverImpl impl(GetNetworkQualityTracker());
 
-  net::nqe::internal::NetworkQuality network_quality(
-      base::TimeDelta::FromMilliseconds(2000),
-      base::TimeDelta::FromMilliseconds(200), 3000);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(network_quality);
+  base::TimeDelta http_rtt(base::TimeDelta::FromMilliseconds(2000));
+  int32_t downstream_throughput_kbps = 3000;
+
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
 
   EXPECT_TRUE(embedded_test_server()->Start());
 
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/net_info.html")));
-  VerifyRtt(network_quality.http_rtt(), RunScriptExtractInt("getRtt()"));
-  VerifyDownlinkKbps(network_quality.downstream_throughput_kbps(),
+  VerifyRtt(http_rtt, RunScriptExtractInt("getRtt()"));
+  VerifyDownlinkKbps(downstream_throughput_kbps,
                      RunScriptExtractDouble("getDownlink()") * 1000);
 
   const int32_t rtt_noise_milliseconds = RunScriptExtractInt("getRtt()") - 2000;
@@ -408,8 +406,8 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityRandomized) {
   // When the hostname is not changed, the noise should not change.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/net_info.html")));
-  VerifyRtt(network_quality.http_rtt(), RunScriptExtractInt("getRtt()"));
-  VerifyDownlinkKbps(network_quality.downstream_throughput_kbps(),
+  VerifyRtt(http_rtt, RunScriptExtractInt("getRtt()"));
+  VerifyDownlinkKbps(downstream_throughput_kbps,
                      RunScriptExtractDouble("getDownlink()") * 1000);
   EXPECT_EQ(rtt_noise_milliseconds, RunScriptExtractInt("getRtt()") - 2000);
   EXPECT_EQ(downlink_noise_kbps,
@@ -425,8 +423,8 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityRandomized) {
     std::string fake_hostname = "example" + base::IntToString(i) + ".com";
     EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
                                            fake_hostname, "/net_info.html")));
-    VerifyRtt(network_quality.http_rtt(), RunScriptExtractInt("getRtt()"));
-    VerifyDownlinkKbps(network_quality.downstream_throughput_kbps(),
+    VerifyRtt(http_rtt, RunScriptExtractInt("getRtt()"));
+    VerifyDownlinkKbps(downstream_throughput_kbps,
                        RunScriptExtractDouble("getDownlink()") * 1000);
 
     int32_t new_rtt_noise_milliseconds = RunScriptExtractInt("getRtt()") - 2000;
@@ -444,32 +442,27 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityRandomized) {
 // Make sure the minor changes (<10%) in the network quality are not notified.
 IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityChangeNotNotified) {
   base::HistogramTester histogram_tester;
-  net::TestNetworkQualityEstimator estimator(
-      std::map<std::string, std::string>(), false, false, true,
-      std::make_unique<net::BoundTestNetLog>());
-  NetworkQualityObserverImpl impl(&estimator);
+  NetworkQualityObserverImpl impl(GetNetworkQualityTracker());
 
   // Verify that the network quality is rounded properly.
-  net::nqe::internal::NetworkQuality network_quality_1(
-      base::TimeDelta::FromMilliseconds(1123),
-      base::TimeDelta::FromMilliseconds(1212), 1303);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(
-      network_quality_1);
+  base::TimeDelta http_rtt(base::TimeDelta::FromMilliseconds(1123));
+  int32_t downstream_throughput_kbps = 1303;
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
 
   EXPECT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/net_info.html")));
-  VerifyRtt(network_quality_1.http_rtt(), RunScriptExtractInt("getRtt()"));
-  VerifyDownlinkKbps(network_quality_1.downstream_throughput_kbps(),
+  VerifyRtt(http_rtt, RunScriptExtractInt("getRtt()"));
+  VerifyDownlinkKbps(downstream_throughput_kbps,
                      RunScriptExtractDouble("getDownlink()") * 1000);
 
   // All the 3 metrics change by less than 10%. So, the observers are not
   // notified.
-  net::nqe::internal::NetworkQuality network_quality_2(
-      base::TimeDelta::FromMilliseconds(1223),
-      base::TimeDelta::FromMilliseconds(1312), 1403);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(
-      network_quality_2);
+  http_rtt = base::TimeDelta::FromMilliseconds(1223);
+  downstream_throughput_kbps = 1403;
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
   base::RunLoop().RunUntilIdle();
   VerifyRtt(base::TimeDelta::FromMilliseconds(1100),
             RunScriptExtractInt("getRtt()"));
@@ -477,11 +470,10 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityChangeNotNotified) {
 
   // HTTP RTT has changed by more than 10% from the last notified value of
   // |network_quality_1|. The observers should be notified.
-  net::nqe::internal::NetworkQuality network_quality_3(
-      base::TimeDelta::FromMilliseconds(2223),
-      base::TimeDelta::FromMilliseconds(1312), 1403);
-  estimator.NotifyObserversOfRTTOrThroughputEstimatesComputed(
-      network_quality_3);
+  http_rtt = base::TimeDelta::FromMilliseconds(2223);
+  downstream_throughput_kbps = 1403;
+  GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
   base::RunLoop().RunUntilIdle();
   VerifyRtt(base::TimeDelta::FromMilliseconds(2200),
             RunScriptExtractInt("getRtt()"));

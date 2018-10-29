@@ -1,0 +1,6 @@
+{
+  "app_url": "https://www.chromestatus.com/features",
+  "create_shortcuts": true,
+  "feature_name": "test_feature_name",
+  "launch_container": "tab"
+}

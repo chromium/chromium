@@ -77,6 +77,24 @@ inline bool UseLibV4L2() {
 #endif
 }
 
+#if defined(OS_CHROMEOS) && defined(__aarch64__)
+static const char kLibGlesPath[] = "/usr/lib64/libGLESv2.so.2";
+static const char kLibEglPath[] = "/usr/lib64/libEGL.so.1";
+static const char kLibMaliPath[] = "/usr/lib64/libmali.so";
+static const char kLibTegraPath[] = "/usr/lib64/libtegrav4l2.so";
+static const char kLibV4l2Path[] = "/usr/lib64/libv4l2.so";
+static const char kLibV4lEncPluginPath[] =
+    "/usr/lib64/libv4l/plugins/libv4l-encplugin.so";
+#else
+static const char kLibGlesPath[] = "/usr/lib/libGLESv2.so.2";
+static const char kLibEglPath[] = "/usr/lib/libEGL.so.1";
+static const char kLibMaliPath[] = "/usr/lib/libmali.so";
+static const char kLibTegraPath[] = "/usr/lib/libtegrav4l2.so";
+static const char kLibV4l2Path[] = "/usr/lib/libv4l2.so";
+static const char kLibV4lEncPluginPath[] =
+    "/usr/lib/libv4l/plugins/libv4l-encplugin.so";
+#endif
+
 constexpr int dlopen_flag = RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE;
 
 void AddV4L2GpuWhitelist(
@@ -152,9 +170,6 @@ void AddArmGpuWhitelist(std::vector<BrokerFilePermission>* permissions) {
   static const char kLdSoCache[] = "/etc/ld.so.cache";
 
   // Files needed by the ARM GPU userspace.
-  static const char kLibGlesPath[] = "/usr/lib/libGLESv2.so.2";
-  static const char kLibEglPath[] = "/usr/lib/libEGL.so.1";
-
   permissions->push_back(BrokerFilePermission::ReadOnly(kXAuthorityPath));
   permissions->push_back(BrokerFilePermission::ReadOnly(kLdSoCache));
   permissions->push_back(BrokerFilePermission::ReadOnly(kLibGlesPath));
@@ -261,10 +276,10 @@ void LoadArmGpuLibraries() {
         break;
     }
   } else {
-    dlopen("/usr/lib/libmali.so", dlopen_flag);
+    dlopen(kLibMaliPath, dlopen_flag);
 
     // Preload the Tegra V4L2 (video decode acceleration) library.
-    dlopen("/usr/lib/libtegrav4l2.so", dlopen_flag);
+    dlopen(kLibTegraPath, dlopen_flag);
   }
 }
 
@@ -295,11 +310,11 @@ bool IsAcceleratedVideoEnabled(
 void LoadV4L2Libraries(
     const service_manager::SandboxSeccompBPF::Options& options) {
   if (IsAcceleratedVideoEnabled(options) && UseLibV4L2()) {
-    dlopen("/usr/lib/libv4l2.so", dlopen_flag);
+    dlopen(kLibV4l2Path, dlopen_flag);
 
     if (options.accelerated_video_encode_enabled) {
       // This is a device-specific encoder plugin.
-      dlopen("/usr/lib/libv4l/plugins/libv4l-encplugin.so", dlopen_flag);
+      dlopen(kLibV4lEncPluginPath, dlopen_flag);
     }
   }
 }

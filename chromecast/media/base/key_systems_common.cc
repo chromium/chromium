@@ -7,29 +7,31 @@
 #include <cstddef>
 
 #include "media/base/key_system_names.h"
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "third_party/widevine/cdm/buildflags.h"
 
-#include "widevine_cdm_version.h" // In SHARED_INTERMEDIATE_DIR.
+#if BUILDFLAG(ENABLE_WIDEVINE)
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
+#endif
 
 namespace chromecast {
 namespace media {
 
-#if defined(PLAYREADY_CDM_AVAILABLE)
+#if BUILDFLAG(ENABLE_PLAYREADY)
 const char kChromecastPlayreadyKeySystem[] = "com.chromecast.playready";
-#endif  // defined(PLAYREADY_CDM_AVAILABLE)
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
 CastKeySystem GetKeySystemByName(const std::string& key_system_name) {
-#if defined(WIDEVINE_CDM_AVAILABLE)
+#if BUILDFLAG(ENABLE_WIDEVINE)
   if (key_system_name.compare(kWidevineKeySystem) == 0) {
     return KEY_SYSTEM_WIDEVINE;
   }
-#endif  // defined(WIDEVINE_CDM_AVAILABLE)
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
-#if defined(PLAYREADY_CDM_AVAILABLE)
+#if BUILDFLAG(ENABLE_PLAYREADY)
   if (key_system_name.compare(kChromecastPlayreadyKeySystem) == 0) {
     return KEY_SYSTEM_PLAYREADY;
   }
-#endif  // defined(PLAYREADY_CDM_AVAILABLE)
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
   if (::media::IsClearKey(key_system_name)) {
     return KEY_SYSTEM_CLEAR_KEY;

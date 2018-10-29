@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "components/cryptauth/proto/cryptauth_api.pb.h"
 
 namespace base {
@@ -20,16 +21,37 @@ class GcmDeviceInfoProvider;
 
 namespace chromeos {
 
-namespace device_sync {
-class DeviceSyncClient;
-}  // namespace device_sync
-
 namespace multidevice_setup {
 
-// The DeviceReenroller constructor re-enrolls and syncs the device if the set
-// of supported SoftwareFeatures in the current GCM device info differs from
-// that of the local device metadata on the CryptAuth server.
-class DeviceReenroller {
+// This class re-enrolls the device if the set of supported SoftwareFeatures in
+// the GCM device info differs from that of the local device metadata. This
+// condition is checked in the constructor and any time the
+// DeviceSyncClient::Observer callbacks--OnEnrollmentFinished() and
+// OnNewDevicesSync()--are called.
+//
+// The supported software features listed in GCM device info should be
+// considered the new source of truth. Enrollment updates a device's list of
+// supported software features (among other things) on the backend to conform
+// with the GCM device info. Then, a device sync is necessary to update the
+// cache of device information with the latest backend data. The local device
+// metadata is part of this cache.
+//
+// The flow of the class is as follows:
+//
+//   +-------------------------------------------------------------------------+
+//   |                                                                         |
+//   |              (From external enrollment)      (From external device sync)|
+//   |                         |                                    |          |
+//   V                         V                                    V          |
+// Start-->Enrollment-->OnEnrollmentFinished-->DeviceSync-->OnNewDevicesSynced-+
+//   |                         |
+//   |                         |
+//   V                         V
+//   If features agree, then done
+//
+// A five-minute retry timer is started at the beginning of the flow. Should any
+// step fail, the process will be re-started when the timer fires.
+class DeviceReenroller : public device_sync::DeviceSyncClient::Observer {
  public:
   class Factory {
    public:
@@ -46,7 +68,7 @@ class DeviceReenroller {
     static Factory* test_factory_;
   };
 
-  virtual ~DeviceReenroller();
+  ~DeviceReenroller() override;
 
  private:
   DeviceReenroller(
@@ -54,22 +76,18 @@ class DeviceReenroller {
       const cryptauth::GcmDeviceInfoProvider* gcm_device_info_provider,
       std::unique_ptr<base::OneShotTimer> timer);
 
-  void AttemptReenrollment();
-  void AttemptDeviceSync();
+  void AttemptReenrollmentIfNecessary();
+  // Returns a sorted and deduped list of the supported or enabled software
+  // features from DeviceSyncClient::GetLocalDeviceMetadata().
+  std::vector<cryptauth::SoftwareFeature> GetSupportedFeaturesForLocalDevice();
 
-  // If the re-enrollment was successful, force a device sync; otherwise, retry
-  // re-enrollment every 5 minutes or until success.
-  void OnForceEnrollmentNowComplete(bool success);
-  // If the device sync was successful and the list of supported software
-  // features on the CryptAuth server now agrees with the list of supported
-  // software features in GcmDeviceInfo, log the success; otherwise, retry
-  // device sync every 5 minutes or until success.
-  void OnForceSyncNowComplete(bool success);
+  // device_sync::DeviceSyncClient::Observer:
+  void OnEnrollmentFinished() override;
+  void OnNewDevicesSynced() override;
 
   device_sync::DeviceSyncClient* device_sync_client_;
-  // The sorted and deduped list of supported software features extracted from
-  // GcmDeviceInfo.
-  std::vector<cryptauth::SoftwareFeature> gcm_supported_software_features_;
+  const std::vector<cryptauth::SoftwareFeature>
+      gcm_supported_software_features_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceReenroller);

@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x221
-  LayoutBlockFlow {html} at (0,0) size 800x221
-    LayoutBlockFlow {body} at (8,8) size 784x205
-      LayoutSVGRoot {svg} at (0,0) size 200x200
-        LayoutSVGEllipse {circle} at (0,0) size 100x100 [fill={[type=SOLID] [color=#FF0000]}] [cx=50.00] [cy=50.00] [r=50.00]
-        LayoutSVGEllipse {circle} at (0,0) size 100x100 [fill={[type=SOLID] [color=#008000]}] [cx=50.00] [cy=50.00] [r=50.00]
-      LayoutText {#text} at (0,0) size 0x0

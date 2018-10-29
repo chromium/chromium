@@ -158,7 +158,7 @@ class ShellSurface : public ShellSurfaceBase,
   gfx::Vector2d pending_origin_offset_accumulator_;
   int resize_component_ = HTCAPTION;  // HT constant (see ui/base/hit_test.h)
   int pending_resize_component_ = HTCAPTION;
-
+  ui::WindowShowState initial_show_state_ = ui::SHOW_STATE_NORMAL;
   bool ignore_window_bounds_changes_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ShellSurface);

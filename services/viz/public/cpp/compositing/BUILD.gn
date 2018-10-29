@@ -47,5 +47,6 @@ source_set("perftests") {
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry/mojo:struct_traits",
   ]
 }

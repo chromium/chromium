@@ -165,7 +165,7 @@ class UnitTestPrerenderManager : public PrerenderManager {
     PrerenderData* prerender_data = FindPrerenderData(url, nullptr);
     if (!prerender_data)
       return nullptr;
-    PrerenderDataVector::iterator to_erase =
+    auto to_erase =
         FindIteratorForPrerenderContents(prerender_data->contents());
     CHECK(to_erase != active_prerenders_.end());
     std::unique_ptr<PrerenderContents> prerender_contents =
@@ -215,8 +215,7 @@ class UnitTestPrerenderManager : public PrerenderManager {
   PrerenderContents* GetPrerenderContentsForRoute(int child_id,
                                                   int route_id) const override {
     // Overridden for the PrerenderLinkManager's pending prerender logic.
-    PrerenderContentsMap::const_iterator it =
-        prerender_contents_map_.find(std::make_pair(child_id, route_id));
+    auto it = prerender_contents_map_.find(std::make_pair(child_id, route_id));
     return it != prerender_contents_map_.end() ? it->second : nullptr;
   }
 
@@ -831,7 +830,7 @@ TEST_F(PrerenderTest, PendingPrerenderTest) {
           FINAL_STATUS_USED);
   prerender_link_manager()->OnAddPrerender(
       child_id, GetNextPrerenderID(), pending_url, kDefaultRelTypes,
-      Referrer(url, blink::kWebReferrerPolicyDefault), kSize, route_id);
+      Referrer(url, network::mojom::ReferrerPolicy::kDefault), kSize, route_id);
   EXPECT_FALSE(LauncherHasRunningPrerender(child_id, last_prerender_id()));
   EXPECT_FALSE(pending_prerender_contents->prerendering_has_started());
 
@@ -873,7 +872,7 @@ TEST_F(PrerenderTest, InvalidPendingPrerenderTest) {
           FINAL_STATUS_UNSUPPORTED_SCHEME);
   prerender_link_manager()->OnAddPrerender(
       child_id, GetNextPrerenderID(), pending_url, kDefaultRelTypes,
-      Referrer(url, blink::kWebReferrerPolicyDefault), kSize, route_id);
+      Referrer(url, network::mojom::ReferrerPolicy::kDefault), kSize, route_id);
   EXPECT_FALSE(LauncherHasRunningPrerender(child_id, last_prerender_id()));
   EXPECT_FALSE(pending_prerender_contents->prerendering_has_started());
 
@@ -906,7 +905,7 @@ TEST_F(PrerenderTest, CancelPendingPrerenderTest) {
   // Schedule a pending prerender launched from the prerender.
   prerender_link_manager()->OnAddPrerender(
       child_id, GetNextPrerenderID(), pending_url, kDefaultRelTypes,
-      Referrer(url, blink::kWebReferrerPolicyDefault), kSize, route_id);
+      Referrer(url, network::mojom::ReferrerPolicy::kDefault), kSize, route_id);
   EXPECT_FALSE(LauncherHasRunningPrerender(child_id, last_prerender_id()));
 
   // Cancel the pending prerender.

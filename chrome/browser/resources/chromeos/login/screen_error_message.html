@@ -96,16 +96,6 @@
                      show-with-ui-state-supervised
                      show-with-ui-state-kiosk-mode"></span>
         </div>
-        <div id="offline-network-control-body"
-            class="show-with-ui-state-update
-                   show-with-ui-state-signin
-                   show-with-ui-state-supervised
-                   show-with-ui-state-kiosk-mode
-                   show-with-ui-state-auto-enrollment-error">
-          <network-select-login id="offline-network-control"
-              class="layout vertical flex" configure-connected>
-          </network-select-login>
-        </div>
         <div id="local-state-error-body"
             class="show-with-ui-state-local-state-error">
           <div i18n-content="localStateErrorText0"
@@ -137,6 +127,16 @@
             class="error-message-paragraph offline-login"></div>
         <div id="connecting-indicator"
             class="connecting-indicator error-message-paragraph"></div>
+        <div id="offline-network-control-body"
+            class="show-with-ui-state-update
+                   show-with-ui-state-signin
+                   show-with-ui-state-supervised
+                   show-with-ui-state-kiosk-mode
+                   show-with-ui-state-auto-enrollment-error">
+          <network-select-login id="offline-network-control"
+              class="layout vertical flex" configure-connected>
+          </network-select-login>
+        </div>
       </div>
       <div id="error-message-md-footer-spacer" class="flex"></div>
       <div id="buttons" class="layout horizontal center end-justified">

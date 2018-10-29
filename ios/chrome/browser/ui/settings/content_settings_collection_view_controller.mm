@@ -19,10 +19,10 @@
 #include "ios/chrome/browser/mailto/features.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/settings/block_popups_collection_view_controller.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_detail_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_detail_item.h"
 #import "ios/chrome/browser/ui/settings/compose_email_handler_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#import "ios/chrome/browser/ui/settings/translate_collection_view_controller.h"
+#import "ios/chrome/browser/ui/settings/translate_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
 #import "ios/chrome/browser/web/mailto_handler_manager.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -66,9 +66,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   MailtoHandlerManager* _mailtoHandlerManager;
 
   // Updatable Items
-  SettingsDetailItem* _blockPopupsDetailItem;
-  SettingsDetailItem* _translateDetailItem;
-  SettingsDetailItem* _composeEmailDetailItem;
+  LegacySettingsDetailItem* _blockPopupsDetailItem;
+  LegacySettingsDetailItem* _translateDetailItem;
+  LegacySettingsDetailItem* _composeEmailDetailItem;
 }
 
 // Returns the value for the default setting with ID |settingID|.
@@ -147,8 +147,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (CollectionViewItem*)blockPopupsItem {
-  _blockPopupsDetailItem =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeSettingsBlockPopups];
+  _blockPopupsDetailItem = [[LegacySettingsDetailItem alloc]
+      initWithType:ItemTypeSettingsBlockPopups];
   NSString* subtitle = [_disablePopupsSetting value]
                            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
@@ -162,7 +162,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (CollectionViewItem*)translateItem {
   _translateDetailItem =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeSettingsTranslate];
+      [[LegacySettingsDetailItem alloc] initWithType:ItemTypeSettingsTranslate];
   BOOL enabled =
       browserState_->GetPrefs()->GetBoolean(prefs::kOfferTranslateEnabled);
   NSString* subtitle = enabled ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
@@ -176,8 +176,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (CollectionViewItem*)composeEmailItem {
-  _composeEmailDetailItem =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeSettingsComposeEmail];
+  _composeEmailDetailItem = [[LegacySettingsDetailItem alloc]
+      initWithType:ItemTypeSettingsComposeEmail];
   if (base::FeatureList::IsEnabled(kMailtoHandledWithGoogleUI)) {
     // Use the handler's preferred title string for the compose email item.
     MailtoHandlerProvider* provider =
@@ -225,8 +225,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     }
     case ItemTypeSettingsTranslate: {
-      TranslateCollectionViewController* controller =
-          [[TranslateCollectionViewController alloc]
+      TranslateTableViewController* controller =
+          [[TranslateTableViewController alloc]
               initWithPrefs:browserState_->GetPrefs()];
       controller.dispatcher = self.dispatcher;
       [self.navigationController pushViewController:controller animated:YES];

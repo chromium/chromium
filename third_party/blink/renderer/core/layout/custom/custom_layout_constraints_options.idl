@@ -8,14 +8,14 @@
 // don't want the resulting generated class to have a Layout* prefix.
 // This name is fine, as it doesn't appear to javascript at all.
 dictionary CustomLayoutConstraintsOptions {
-  double availableInlineSize = 0;
-  double availableBlockSize = 0;
+  double availableInlineSize;
+  double availableBlockSize;
 
   double fixedInlineSize;
   double fixedBlockSize;
 
-  // double percentageInlineSize;
-  // double percentageBlockSize;
+  double percentageInlineSize;
+  double percentageBlockSize;
 
   any data;
 };

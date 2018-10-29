@@ -49,7 +49,8 @@ class PrimaryAccountAccessTokenFetcherTest : public testing::Test,
 
   PrimaryAccountAccessTokenFetcherTest()
       : access_token_info_("access token",
-                           base::Time::Now() + base::TimeDelta::FromHours(1)) {}
+                           base::Time::Now() + base::TimeDelta::FromHours(1),
+                           "id_token") {}
 
   ~PrimaryAccountAccessTokenFetcherTest() override {
   }
@@ -98,7 +99,8 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest, OneShotShouldReturnAccessToken) {
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      access_token_info().token, access_token_info().expiration_time);
+      access_token_info().token, access_token_info().expiration_time,
+      access_token_info().id_token);
 }
 
 TEST_F(PrimaryAccountAccessTokenFetcherTest,
@@ -118,7 +120,8 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest,
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      access_token_info().token, access_token_info().expiration_time);
+      access_token_info().token, access_token_info().expiration_time,
+      access_token_info().id_token);
 }
 
 TEST_F(PrimaryAccountAccessTokenFetcherTest, ShouldNotReplyIfDestroyed) {
@@ -136,7 +139,8 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest, ShouldNotReplyIfDestroyed) {
 
   // Fulfilling the request now should have no effect.
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      access_token_info().token, access_token_info().expiration_time);
+      access_token_info().token, access_token_info().expiration_time,
+      access_token_info().id_token);
 }
 
 TEST_F(PrimaryAccountAccessTokenFetcherTest, OneShotCallsBackWhenSignedOut) {
@@ -200,7 +204,8 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest, ShouldWaitForSignIn) {
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      access_token_info().token, access_token_info().expiration_time);
+      access_token_info().token, access_token_info().expiration_time,
+      access_token_info().id_token);
 
   // The request should not have to have been retried.
   EXPECT_FALSE(fetcher->access_token_request_retried());
@@ -228,7 +233,8 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest, ShouldWaitForRefreshToken) {
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      access_token_info().token, access_token_info().expiration_time);
+      access_token_info().token, access_token_info().expiration_time,
+      access_token_info().id_token);
 
   // The request should not have to have been retried.
   EXPECT_FALSE(fetcher->access_token_request_retried());
@@ -294,7 +300,8 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest,
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      access_token_info().token, access_token_info().expiration_time);
+      access_token_info().token, access_token_info().expiration_time,
+      access_token_info().id_token);
 }
 
 TEST_F(PrimaryAccountAccessTokenFetcherTest,

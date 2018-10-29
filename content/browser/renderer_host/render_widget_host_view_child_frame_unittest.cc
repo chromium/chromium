@@ -29,7 +29,7 @@
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/common/frame_visual_properties.h"
-#include "content/common/view_messages.h"
+#include "content/common/widget_messages.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -228,11 +228,11 @@ TEST_F(RenderWidgetHostViewChildFrameTest, ViewportIntersectionUpdated) {
 
   const IPC::Message* intersection_update =
       process->sink().GetUniqueMessageMatching(
-          ViewMsg_SetViewportIntersection::ID);
+          WidgetMsg_SetViewportIntersection::ID);
   ASSERT_TRUE(intersection_update);
   std::tuple<gfx::Rect, gfx::Rect, bool> sent_rects;
 
-  ViewMsg_SetViewportIntersection::Read(intersection_update, &sent_rects);
+  WidgetMsg_SetViewportIntersection::Read(intersection_update, &sent_rects);
   EXPECT_EQ(intersection_rect, std::get<0>(sent_rects));
   EXPECT_EQ(intersection_rect, std::get<1>(sent_rects));
 }
@@ -298,10 +298,10 @@ TEST_F(RenderWidgetHostViewChildFrameTest, WasResizedOncePerChange) {
   ASSERT_EQ(1u, process->sink().message_count());
 
   const IPC::Message* resize_msg = process->sink().GetUniqueMessageMatching(
-      ViewMsg_SynchronizeVisualProperties::ID);
+      WidgetMsg_SynchronizeVisualProperties::ID);
   ASSERT_NE(nullptr, resize_msg);
-  ViewMsg_SynchronizeVisualProperties::Param params;
-  ViewMsg_SynchronizeVisualProperties::Read(resize_msg, &params);
+  WidgetMsg_SynchronizeVisualProperties::Param params;
+  WidgetMsg_SynchronizeVisualProperties::Read(resize_msg, &params);
   EXPECT_EQ(compositor_viewport_pixel_size,
             std::get<0>(params).compositor_viewport_pixel_size);
   EXPECT_EQ(screen_space_rect.size(), std::get<0>(params).new_size);

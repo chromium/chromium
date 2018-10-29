@@ -99,8 +99,9 @@ bool TransferCacheTestHelper::LockEntryInternal(const EntryKey& key) {
   return true;
 }
 
-void TransferCacheTestHelper::CreateEntryInternal(
-    const ClientTransferCacheEntry& client_entry) {
+size_t TransferCacheTestHelper::CreateEntryInternal(
+    const ClientTransferCacheEntry& client_entry,
+    char* memory) {
   auto key = std::make_pair(client_entry.Type(), client_entry.Id());
   DCHECK(entries_.find(key) == entries_.end());
 
@@ -111,6 +112,7 @@ void TransferCacheTestHelper::CreateEntryInternal(
   bool success = client_entry.Serialize(span);
   DCHECK(success);
   CreateEntryDirect(key, span);
+  return 0u;
 }
 
 void TransferCacheTestHelper::FlushEntriesInternal(std::set<EntryKey> keys) {

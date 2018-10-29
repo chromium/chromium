@@ -11,10 +11,12 @@
 .layout.vertical,
 .layout.vertical-reverse {
   display: flex;
+  min-height: 0;
 }
 
 .layout.inline {
   display: inline-flex;
+  min-height: 0;
 }
 
 .layout.horizontal {

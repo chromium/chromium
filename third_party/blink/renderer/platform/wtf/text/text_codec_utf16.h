@@ -38,12 +38,12 @@ class TextCodecUTF16 final : public TextCodec {
   TextCodecUTF16(bool little_endian) : little_endian_(little_endian) {}
 
   String Decode(const char*,
-                size_t length,
+                wtf_size_t length,
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
-  CString Encode(const UChar*, size_t length, UnencodableHandling) override;
-  CString Encode(const LChar*, size_t length, UnencodableHandling) override;
+  CString Encode(const UChar*, wtf_size_t length, UnencodableHandling) override;
+  CString Encode(const LChar*, wtf_size_t length, UnencodableHandling) override;
 
  private:
   bool little_endian_;

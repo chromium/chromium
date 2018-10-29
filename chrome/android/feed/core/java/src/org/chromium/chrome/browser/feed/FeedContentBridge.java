@@ -45,11 +45,6 @@ public class FeedContentBridge {
     @VisibleForTesting
     public FeedContentBridge() {}
 
-    /**
-     * Initializes the native side of this bridge.
-     */
-    public void init() {}
-
     /** Cleans up native half of this bridge. */
     public void destroy() {
         assert mNativeFeedContentBridge != 0;

@@ -277,9 +277,6 @@ class HeapHashCountedSet : public HashCountedSet<T, void, void, HeapAllocator> {
 template<typename K, typename V>
 class HeapHashMap : public HashMap<K, V, void, void, void, HeapAllocator> { };
 
-template<typename T>
-class PersistentHeapVector : public Vector<T, 0, HeapAllocator> { };
-
 class Visitor {
  public:
   template <typename T, void (T::*method)(Visitor*)>

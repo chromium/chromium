@@ -15,7 +15,7 @@ enum class WebThreadType {
   kCompositorThread = 2,
   kDedicatedWorkerThread = 3,
   kSharedWorkerThread = 4,
-  kAnimationWorkletThread = 5,
+  kAnimationAndPaintWorkletThread = 5,
   kServiceWorkerThread = 6,
   kAudioWorkletThread = 7,
   kFileThread = 8,

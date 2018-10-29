@@ -191,4 +191,27 @@ TEST_F(ReplaceSelectionCommandTest, CrashWithNoSelection) {
   EXPECT_EQ("<div></div>", GetSelectionTextFromBody());
 }
 
+// http://crbug.com/877127
+TEST_F(ReplaceSelectionCommandTest, SmartPlainTextPaste) {
+  // After typing "abc", Enter, "def".
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>abc<div>def</div>|</div>"),
+      SetSelectionOptions());
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), "XYZ"));
+  const ReplaceSelectionCommand::CommandOptions options =
+      ReplaceSelectionCommand::kPreventNesting |
+      ReplaceSelectionCommand::kSanitizeFragment |
+      ReplaceSelectionCommand::kMatchStyle |
+      ReplaceSelectionCommand::kSmartReplace;
+  ReplaceSelectionCommand& command =
+      *ReplaceSelectionCommand::Create(GetDocument(), &fragment, options,
+                                       InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  // Smart paste inserts a space before pasted text.
+  EXPECT_EQ(u8"<div contenteditable>abc<div>def XYZ|</div></div>",
+            GetSelectionTextFromBody());
+}
+
 }  // namespace blink

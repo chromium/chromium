@@ -3,7 +3,7 @@
 ***Note that the Fuchsia port is in the early stages, and things are likely to
 frequently be broken. Try #cr-fuchsia on Freenode if something seems awry.***
 
-There are instructions for other platforms linked from the 
+There are instructions for other platforms linked from the
 [get the code](get_the_code.md) page.
 
 ## System requirements
@@ -49,9 +49,6 @@ dependencies.
 $ fetch --nohooks chromium
 ```
 
-If you don't want the full repo history, you can save a lot of time by
-adding the `--no-history` flag to `fetch`.
-
 Expect the command to take 30 minutes on even a fast connection, and many
 hours on slower ones.
 
@@ -74,14 +71,39 @@ target_os = ['fuchsia']
 Note that this should be added as a top-level statement in the `.gclient` file,
 not an entry inside the `solutions` dict.
 
-You will then need to re-run `gclient runhooks`. This makes sure the Fuchsia SDK
-is available in third\_party and keeps it up to date.
+You will then need to run:
+
+```shell
+$ gclient runhooks
+```
+
+This makes sure the Fuchsia SDK is available in third\_party and keeps it up to
+date.
 
 The remaining instructions assume you have switched to the `src` directory:
 
 ```shell
 $ cd src
 ```
+
+### Update your checkout
+
+To update an existing checkout, you can run
+
+```shell
+$ git rebase-update
+$ gclient sync
+```
+
+The first command updates the primary Chromium source repository and rebases
+any of your local branches on top of tip-of-tree (aka the Git branch
+`origin/master`). If you don't want to use this script, you can also just use
+`git pull` or other common Git commands to update the repo.
+
+The second command syncs dependencies to the appropriate versions and re-runs
+hooks as needed. `gclient sync` updates dependencies to the versions specified
+in `DEPS`, so any time that file is modified (pulling, changing branches, etc.)
+`gclient sync` should be run.
 
 ## (Mac-only) Download additional required Clang binaries
 
@@ -118,8 +140,8 @@ example:
 $ autoninja -C out/fuchsia base_unittests
 ```
 
-`autoninja` is a wrapper that automatically provides optimal values for the
-arguments passed to `ninja`.
+(`autoninja` is a wrapper that automatically provides optimal values for the
+arguments passed to `ninja`.)
 
 ## Run
 
@@ -136,9 +158,3 @@ Common gtest arguments such as `--gtest_filter=...` are supported by the run
 script.
 
 The run script also symbolizes backtraces.
-
-A useful alias (for "Build And Run Filtered") is:
-```shell
-alias barf='ninja -C out/fuchsia net_unittests -j1000 && out/fuchsia/bin/run_net_unittests --test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter'
-```
-to build and run only the tests that are not excluded/known-failing on the bot.

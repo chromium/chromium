@@ -39,12 +39,9 @@ namespace net {
 
 namespace {
 
-class TokenBindingSSLConfigService : public SSLConfigService {
+class ChannelIDSSLConfigService : public SSLConfigService {
  public:
-  TokenBindingSSLConfigService() {
-    ssl_config_.token_binding_params.push_back(TB_PARAM_ECDSAP256);
-  }
-  ~TokenBindingSSLConfigService() override = default;
+  ~ChannelIDSSLConfigService() override = default;
 
   void GetSSLConfig(SSLConfig* config) override { *config = ssl_config_; }
 
@@ -64,7 +61,7 @@ class HttpNetworkTransactionSSLTest : public TestWithScopedTaskEnvironment {
   HttpNetworkTransactionSSLTest() = default;
 
   void SetUp() override {
-    ssl_config_service_.reset(new TokenBindingSSLConfigService);
+    ssl_config_service_.reset(new ChannelIDSSLConfigService);
     session_context_.ssl_config_service = ssl_config_service_.get();
 
     auth_handler_factory_.reset(new HttpAuthHandlerMock::Factory());
@@ -124,131 +121,5 @@ TEST_F(HttpNetworkTransactionSSLTest, ChannelID) {
 
   EXPECT_TRUE(trans.server_ssl_config_.channel_id_enabled);
 }
-
-#if !defined(OS_IOS)
-TEST_F(HttpNetworkTransactionSSLTest, TokenBinding) {
-  ChannelIDService channel_id_service(new DefaultChannelIDStore(NULL));
-  session_context_.channel_id_service = &channel_id_service;
-
-  SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ssl_data.ssl_info.token_binding_negotiated = true;
-  ssl_data.ssl_info.token_binding_key_param = TB_PARAM_ECDSAP256;
-  mock_socket_factory_.AddSSLSocketDataProvider(&ssl_data);
-  MockRead mock_reads[] = {MockRead("HTTP/1.1 200 OK\r\n\r\n"),
-                           MockRead(SYNCHRONOUS, OK)};
-  StaticSocketDataProvider data(mock_reads, base::span<MockWrite>());
-  mock_socket_factory_.AddSocketDataProvider(&data);
-
-  HttpNetworkSession session(HttpNetworkSession::Params(), session_context_);
-  HttpNetworkTransaction trans1(DEFAULT_PRIORITY, &session);
-
-  TestCompletionCallback callback;
-  int rv = callback.GetResult(
-      trans1.Start(GetRequestInfo("https://www.example.com/"),
-                   callback.callback(), NetLogWithSource()));
-  EXPECT_THAT(rv, IsOk());
-
-  HttpRequestHeaders headers1;
-  ASSERT_TRUE(trans1.GetFullRequestHeaders(&headers1));
-  std::string token_binding_header1;
-  EXPECT_TRUE(headers1.GetHeader(HttpRequestHeaders::kTokenBinding,
-                                 &token_binding_header1));
-
-  // Send a second request and verify that the token binding header is the same
-  // as in the first request.
-  mock_socket_factory_.AddSSLSocketDataProvider(&ssl_data);
-  StaticSocketDataProvider data2(mock_reads, base::span<MockWrite>());
-  mock_socket_factory_.AddSocketDataProvider(&data2);
-  HttpNetworkTransaction trans2(DEFAULT_PRIORITY, &session);
-
-  rv = callback.GetResult(
-      trans2.Start(GetRequestInfo("https://www.example.com/"),
-                   callback.callback(), NetLogWithSource()));
-  EXPECT_THAT(rv, IsOk());
-
-  HttpRequestHeaders headers2;
-  ASSERT_TRUE(trans2.GetFullRequestHeaders(&headers2));
-  std::string token_binding_header2;
-  EXPECT_TRUE(headers2.GetHeader(HttpRequestHeaders::kTokenBinding,
-                                 &token_binding_header2));
-
-  EXPECT_EQ(token_binding_header1, token_binding_header2);
-}
-
-TEST_F(HttpNetworkTransactionSSLTest, NoTokenBindingOverHttp) {
-  ChannelIDService channel_id_service(new DefaultChannelIDStore(NULL));
-  session_context_.channel_id_service = &channel_id_service;
-
-  SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ssl_data.ssl_info.token_binding_negotiated = true;
-  ssl_data.ssl_info.token_binding_key_param = TB_PARAM_ECDSAP256;
-  mock_socket_factory_.AddSSLSocketDataProvider(&ssl_data);
-  MockRead mock_reads[] = {MockRead("HTTP/1.1 200 OK\r\n\r\n"),
-                           MockRead(SYNCHRONOUS, OK)};
-  StaticSocketDataProvider data(mock_reads, base::span<MockWrite>());
-  mock_socket_factory_.AddSocketDataProvider(&data);
-
-  HttpNetworkSession session(HttpNetworkSession::Params(), session_context_);
-  HttpNetworkTransaction trans(DEFAULT_PRIORITY, &session);
-
-  TestCompletionCallback callback;
-  int rv =
-      callback.GetResult(trans.Start(GetRequestInfo("http://www.example.com/"),
-                                     callback.callback(), NetLogWithSource()));
-  EXPECT_THAT(rv, IsOk());
-
-  HttpRequestHeaders headers;
-  ASSERT_TRUE(trans.GetFullRequestHeaders(&headers));
-  std::string token_binding_header;
-  EXPECT_FALSE(headers.GetHeader(HttpRequestHeaders::kTokenBinding,
-                                 &token_binding_header));
-}
-
-// Regression test for https://crbug.com/667683.
-TEST_F(HttpNetworkTransactionSSLTest, TokenBindingAsync) {
-  // Create a separate thread for ChannelIDService
-  // so that asynchronous Channel ID creation can be delayed.
-  base::Thread channel_id_thread("ThreadForChannelIDService");
-  channel_id_thread.Start();
-  scoped_refptr<base::DeferredSequencedTaskRunner> channel_id_runner =
-      new base::DeferredSequencedTaskRunner(channel_id_thread.task_runner());
-  ChannelIDService channel_id_service(new DefaultChannelIDStore(nullptr));
-  channel_id_service.set_task_runner_for_testing(channel_id_runner);
-  session_context_.channel_id_service = &channel_id_service;
-
-  SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ssl_data.ssl_info.token_binding_negotiated = true;
-  ssl_data.ssl_info.token_binding_key_param = TB_PARAM_ECDSAP256;
-  ssl_data.next_proto = kProtoHTTP2;
-  mock_socket_factory_.AddSSLSocketDataProvider(&ssl_data);
-
-  MockRead reads[] = {MockRead(ASYNC, OK, 0)};
-  StaticSocketDataProvider data(reads, base::span<MockWrite>());
-  mock_socket_factory_.AddSocketDataProvider(&data);
-
-  HttpRequestInfo request_info;
-  request_info.url = GURL("https://www.example.com/");
-  request_info.method = "GET";
-  request_info.token_binding_referrer = "encrypted.example.com";
-  request_info.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  HttpNetworkSession session(HttpNetworkSession::Params(), session_context_);
-  HttpNetworkTransaction trans(DEFAULT_PRIORITY, &session);
-
-  TestCompletionCallback callback;
-  int rv = trans.Start(&request_info, callback.callback(), NetLogWithSource());
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
-  base::RunLoop().RunUntilIdle();
-
-  // When ChannelIdService calls back to HttpNetworkSession,
-  // SpdyHttpStream should not crash.
-  channel_id_runner->Start();
-
-  rv = callback.WaitForResult();
-  EXPECT_THAT(rv, IsError(ERR_CONNECTION_CLOSED));
-}
-#endif  // !defined(OS_IOS)
 
 }  // namespace net

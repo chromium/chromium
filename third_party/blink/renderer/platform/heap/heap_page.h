@@ -179,7 +179,7 @@ static_assert(
     "max size supported by HeapObjectHeader must at least be kBlinkPageSize");
 
 class PLATFORM_EXPORT HeapObjectHeader {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum HeaderLocation { kNormalPage, kLargePage };
@@ -353,7 +353,7 @@ inline bool IsPageHeaderAddress(Address address) {
 // Note: An object whose size is between |kLargeObjectSizeThreshold| and
 // |kBlinkPageSize| can go to either of |NormalPage| or |LargeObjectPage|.
 class BasePage {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   BasePage(PageMemory*, BaseArena*);

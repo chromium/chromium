@@ -2,7 +2,6 @@ This tests CompositeEditCommand::breakOutOfEmptyListItem by inserting new paragr
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS enterAtTarget('<ul><li>a <ul><li>b</li><li id="target"></li></ul> </li></ul>') is '<ul><li>a </li><ul><li>b</li></ul><li><br></li> </ul>'
 PASS enterAtTarget('<ul><li>a <ul><li id="target"></li><li>b</li></ul> </li></ul>') is '<ul><li>a </li><li><br></li><ul><li>b</li></ul> </ul>'
 PASS enterAtTarget('<ul><li>a <ul><li>b</li><li id="target"></li><li>c</li></ul> </li></ul>') is '<ul><li>a </li><ul><li>b</li></ul><li><br></li><ul><li>c</li></ul> </ul>'

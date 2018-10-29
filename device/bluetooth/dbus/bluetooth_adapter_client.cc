@@ -160,8 +160,12 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
       : object_manager_(NULL), weak_ptr_factory_(this) {}
 
   ~BluetoothAdapterClientImpl() override {
-    object_manager_->UnregisterInterface(
-        bluetooth_adapter::kBluetoothAdapterInterface);
+    // There is an instance of this client that is created but not initialized
+    // on Linux. See 'Alternate D-Bus Client' note in bluez_dbus_manager.h.
+    if (object_manager_) {
+      object_manager_->UnregisterInterface(
+          bluetooth_adapter::kBluetoothAdapterInterface);
+    }
   }
 
   // BluetoothAdapterClient override.

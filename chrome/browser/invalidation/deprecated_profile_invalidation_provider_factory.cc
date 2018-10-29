@@ -82,8 +82,7 @@ DeprecatedProfileInvalidationProviderFactory::
     DeprecatedProfileInvalidationProviderFactory()
     : BrowserContextKeyedServiceFactory(
           "InvalidationService",
-          BrowserContextDependencyManager::GetInstance()),
-      testing_factory_(NULL) {
+          BrowserContextDependencyManager::GetInstance()) {
 #if !defined(OS_ANDROID)
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
@@ -94,15 +93,15 @@ DeprecatedProfileInvalidationProviderFactory::
     ~DeprecatedProfileInvalidationProviderFactory() {}
 
 void DeprecatedProfileInvalidationProviderFactory::RegisterTestingFactory(
-    TestingFactoryFunction testing_factory) {
-  testing_factory_ = testing_factory;
+    TestingFactory testing_factory) {
+  testing_factory_ = std::move(testing_factory);
 }
 
 KeyedService*
 DeprecatedProfileInvalidationProviderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   if (testing_factory_)
-    return testing_factory_(context).release();
+    return testing_factory_.Run(context).release();
 
 #if defined(OS_ANDROID)
   // Android does not need an IdentityProvider, because it gets the account

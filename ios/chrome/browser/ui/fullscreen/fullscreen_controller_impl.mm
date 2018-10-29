@@ -59,6 +59,14 @@ void FullscreenControllerImpl::SetWebStateList(WebStateList* web_state_list) {
   web_state_list_observer_.SetWebStateList(web_state_list);
 }
 
+const WebStateList* FullscreenControllerImpl::GetWebStateList() const {
+  return web_state_list_observer_.GetWebStateList();
+}
+
+WebStateList* FullscreenControllerImpl::GetWebStateList() {
+  return web_state_list_observer_.GetWebStateList();
+}
+
 void FullscreenControllerImpl::AddObserver(
     FullscreenControllerObserver* observer) {
   mediator_.AddObserver(observer);

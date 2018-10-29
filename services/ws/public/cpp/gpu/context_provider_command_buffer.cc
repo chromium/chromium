@@ -14,6 +14,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -169,9 +170,9 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentThread() {
     impl_ = nullptr;
     webgpu_interface_ = std::move(webgpu_impl);
     helper_ = std::move(webgpu_helper);
-  } else if (attributes_.enable_oop_rasterization) {
-    DCHECK(attributes_.enable_raster_interface);
-    DCHECK(!attributes_.enable_gles2_interface);
+  } else if (!command_buffer_->channel()->gpu_info().passthrough_cmd_decoder &&
+             attributes_.enable_raster_interface &&
+             !attributes_.enable_gles2_interface) {
     DCHECK(!support_grcontext_);
     // The raster helper writes the command buffer protocol.
     auto raster_helper =
@@ -347,7 +348,7 @@ gpu::raster::RasterInterface* ContextProviderCommandBuffer::RasterInterface() {
     return nullptr;
 
   raster_interface_ = std::make_unique<gpu::raster::RasterImplementationGLES>(
-      gles2_impl_.get(), command_buffer_.get(), ContextCapabilities());
+      gles2_impl_.get(), ContextCapabilities());
   return raster_interface_.get();
 }
 
@@ -433,8 +434,9 @@ const gpu::GpuFeatureInfo& ContextProviderCommandBuffer::GetGpuFeatureInfo()
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
   CheckValidThreadOrLockAcquired();
   if (!command_buffer_ || !command_buffer_->channel()) {
-    static const gpu::GpuFeatureInfo default_gpu_feature_info;
-    return default_gpu_feature_info;
+    static const base::NoDestructor<gpu::GpuFeatureInfo>
+        default_gpu_feature_info;
+    return *default_gpu_feature_info;
   }
   return command_buffer_->channel()->gpu_feature_info();
 }

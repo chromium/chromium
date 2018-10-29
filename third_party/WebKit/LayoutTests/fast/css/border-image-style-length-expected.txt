@@ -2,7 +2,6 @@ Test the style.length of an element with a border-image.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 border-image
 PASS testElement.style.length is 5
 PASS testElement.style.length is 5

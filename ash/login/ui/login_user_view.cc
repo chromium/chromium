@@ -138,9 +138,11 @@ class LoginUserView::UserImage : public NonAccessibleView {
   }
 
   void SetAnimationEnabled(bool enable) {
+    animation_enabled_ = enable;
     image_->SetAnimationPlayback(
-        enable ? AnimatedRoundedImageView::Playback::kRepeat
-               : AnimatedRoundedImageView::Playback::kFirstFrameOnly);
+        animation_enabled_
+            ? AnimatedRoundedImageView::Playback::kRepeat
+            : AnimatedRoundedImageView::Playback::kFirstFrameOnly);
   }
 
  private:
@@ -151,14 +153,16 @@ class LoginUserView::UserImage : public NonAccessibleView {
       return;
     }
 
-    // Don't change the playback style which was set in SetAnimationEnabled.
     image_->SetAnimationDecoder(
         std::make_unique<PassthroughAnimationDecoder>(animation),
-        image_->playback());
+        animation_enabled_
+            ? AnimatedRoundedImageView::Playback::kRepeat
+            : AnimatedRoundedImageView::Playback::kFirstFrameOnly);
   }
 
   AnimatedRoundedImageView* image_ = nullptr;
-  int size_;
+  int size_ = 0;
+  bool animation_enabled_ = false;
 
   base::WeakPtrFactory<UserImage> weak_factory_{this};
 
@@ -321,6 +325,10 @@ views::View* LoginUserView::TestApi::dropdown() const {
 
 LoginBubble* LoginUserView::TestApi::menu() const {
   return view_->menu_.get();
+}
+
+views::View* LoginUserView::TestApi::user_domain() const {
+  return view_->user_domain_;
 }
 
 bool LoginUserView::TestApi::is_opaque() const {

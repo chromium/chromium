@@ -115,8 +115,13 @@ void FidoBleTransaction::OnResponseFragment(std::vector<uint8_t> data) {
   // It is possible to receive the last response fragment before the write of
   // the last request fragment has been acknowledged. If this is the case, do
   // not run the completion callback yet.
-  if (!has_pending_request_fragment_write_)
+  // It is OK to process keep alive frames before the request frame is
+  // acknowledged.
+  if (!has_pending_request_fragment_write_ ||
+      response_frame_assembler_->GetFrame()->command() ==
+          FidoBleDeviceCommand::kKeepAlive) {
     ProcessResponseFrame();
+  }
 }
 
 void FidoBleTransaction::ProcessResponseFrame() {

@@ -80,7 +80,8 @@ scoped_refptr<RefcountedKeyedService> BuildMockTopSites(
 class MockProfile : public TestingProfile {
  public:
   MockProfile() {
-    TopSitesFactory::GetInstance()->SetTestingFactory(this, BuildMockTopSites);
+    TopSitesFactory::GetInstance()->SetTestingFactory(
+        this, base::BindRepeating(&BuildMockTopSites));
   }
 
   void AddKnownURL(const GURL& url, const history::ThumbnailScore& score) {

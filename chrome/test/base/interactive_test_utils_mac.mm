@@ -146,11 +146,13 @@ void SendGlobalKeyEventsHelper::SendGlobalKeyEvent(int key_code,
 
 namespace ui_test_utils {
 
-void HideNativeWindow(gfx::NativeWindow window) {
+void HideNativeWindow(gfx::NativeWindow native_window) {
+  NSWindow* window = native_window.GetNativeNSWindow();
   [window orderOut:nil];
 }
 
-bool ShowAndFocusNativeWindow(gfx::NativeWindow window) {
+bool ShowAndFocusNativeWindow(gfx::NativeWindow native_window) {
+  NSWindow* window = native_window.GetNativeNSWindow();
   // Make sure an unbundled program can get the input focus.
   ProcessSerialNumber psn = { 0, kCurrentProcess };
   TransformProcessType(&psn,kProcessTransformToForegroundApplication);

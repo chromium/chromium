@@ -12,7 +12,6 @@
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
-#include "device/usb/mojo/type_converters.h"
 
 WebUsbServiceImpl::WebUsbServiceImpl(
     content::RenderFrameHost* render_frame_host,
@@ -118,26 +117,24 @@ void WebUsbServiceImpl::SetClient(
 }
 
 void WebUsbServiceImpl::OnDeviceAdded(
-    device::mojom::UsbDeviceInfoPtr device_info) {
-  DCHECK(device_info);
-  if (!HasDevicePermission(*device_info))
+    const device::mojom::UsbDeviceInfo& device_info) {
+  if (!HasDevicePermission(device_info))
     return;
 
   clients_.ForAllPtrs(
       [&device_info](device::mojom::UsbDeviceManagerClient* client) {
-        client->OnDeviceAdded(device_info->Clone());
+        client->OnDeviceAdded(device_info.Clone());
       });
 }
 
 void WebUsbServiceImpl::OnDeviceRemoved(
-    device::mojom::UsbDeviceInfoPtr device_info) {
-  DCHECK(device_info);
-  if (!HasDevicePermission(*device_info))
+    const device::mojom::UsbDeviceInfo& device_info) {
+  if (!HasDevicePermission(device_info))
     return;
 
   clients_.ForAllPtrs(
       [&device_info](device::mojom::UsbDeviceManagerClient* client) {
-        client->OnDeviceRemoved(device_info->Clone());
+        client->OnDeviceRemoved(device_info.Clone());
       });
 }
 

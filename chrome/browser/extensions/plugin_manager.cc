@@ -54,8 +54,7 @@ void PluginManager::OnExtensionLoaded(content::BrowserContext* browser_context,
       NaClModuleInfo::GetNaClModules(extension);
   if (nacl_modules) {
     plugins_or_nacl_changed = true;
-    for (NaClModuleInfo::List::const_iterator module = nacl_modules->begin();
-         module != nacl_modules->end();
+    for (auto module = nacl_modules->begin(); module != nacl_modules->end();
          ++module) {
       RegisterNaClModule(*module);
     }
@@ -73,8 +72,7 @@ void PluginManager::OnExtensionLoaded(content::BrowserContext* browser_context,
     info.path = handler->GetPluginPath();
     info.background_color = handler->GetBackgroundColor();
 
-    for (std::set<std::string>::const_iterator mime_type =
-         handler->mime_type_set().begin();
+    for (auto mime_type = handler->mime_type_set().begin();
          mime_type != handler->mime_type_set().end(); ++mime_type) {
       content::WebPluginMimeType mime_type_info;
       mime_type_info.mime_type = *mime_type;
@@ -104,8 +102,7 @@ void PluginManager::OnExtensionUnloaded(
       NaClModuleInfo::GetNaClModules(extension);
   if (nacl_modules) {
     plugins_or_nacl_changed = true;
-    for (NaClModuleInfo::List::const_iterator module = nacl_modules->begin();
-         module != nacl_modules->end();
+    for (auto module = nacl_modules->begin(); module != nacl_modules->end();
          ++module) {
       UnregisterNaClModule(*module);
     }
@@ -133,7 +130,7 @@ void PluginManager::RegisterNaClModule(const NaClModuleInfo& info) {
 }
 
 void PluginManager::UnregisterNaClModule(const NaClModuleInfo& info) {
-  NaClModuleInfo::List::iterator iter = FindNaClModule(info.url);
+  auto iter = FindNaClModule(info.url);
   DCHECK(iter != nacl_module_list_.end());
   nacl_module_list_.erase(iter);
 }
@@ -183,8 +180,8 @@ void PluginManager::UpdatePluginListWithNaClModules() {
 }
 
 NaClModuleInfo::List::iterator PluginManager::FindNaClModule(const GURL& url) {
-  for (NaClModuleInfo::List::iterator iter = nacl_module_list_.begin();
-       iter != nacl_module_list_.end(); ++iter) {
+  for (auto iter = nacl_module_list_.begin(); iter != nacl_module_list_.end();
+       ++iter) {
     if (iter->url == url)
       return iter;
   }

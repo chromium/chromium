@@ -67,6 +67,8 @@ RendererSettings CreateRendererSettings() {
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableMacOverlays);
 #endif
+  renderer_settings.record_sk_picture = features::IsRecordingSkPicture();
+
   if (command_line->HasSwitch(switches::kSlowDownCompositingScaleFactor)) {
     const int kMinSlowDownScaleFactor = 1;
     const int kMaxSlowDownScaleFactor = 1000;

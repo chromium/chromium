@@ -205,6 +205,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case Event::INVALID_STATUS_CHANGED:
     case Event::LIVE_REGION_CHANGED:
     case Event::LIVE_REGION_CREATED:
+    case Event::LOAD_START:
     case Event::MENU_ITEM_SELECTED:
     case Event::NAME_CHANGED:
     case Event::OTHER_ATTRIBUTE_CHANGED:

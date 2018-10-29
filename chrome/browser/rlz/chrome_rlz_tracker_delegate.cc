@@ -122,7 +122,7 @@ ChromeRLZTrackerDelegate::GetURLLoaderFactory() {
 }
 
 bool ChromeRLZTrackerDelegate::GetBrand(std::string* brand) {
-  return google_brand::GetBrand(brand);
+  return google_brand::GetRlzBrand(brand);
 }
 
 bool ChromeRLZTrackerDelegate::IsBrandOrganic(const std::string& brand) {

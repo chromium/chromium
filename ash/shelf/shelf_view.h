@@ -16,6 +16,7 @@
 #include "ash/shelf/ink_drop_button_listener.h"
 #include "ash/shelf/shelf_button_pressed_metric_tracker.h"
 #include "ash/shelf/shelf_tooltip_manager.h"
+#include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/wm/tablet_mode/tablet_mode_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -112,7 +113,8 @@ class ASH_EXPORT ShelfView : public views::View,
                              public views::FocusTraversable,
                              public views::BoundsAnimatorObserver,
                              public app_list::ApplicationDragAndDropHost,
-                             public ash::TabletModeObserver {
+                             public ash::TabletModeObserver,
+                             public VirtualKeyboardModel::Observer {
  public:
   ShelfView(ShelfModel* model, Shelf* shelf, ShelfWidget* shelf_widget);
   ~ShelfView() override;
@@ -134,14 +136,10 @@ class ASH_EXPORT ShelfView : public views::View,
 
   // Returns true if we're showing a menu for |view|. |view| could be a
   // ShelfButton or the ShelfView.
-  bool IsShowingMenuForView(views::View* view) const;
+  bool IsShowingMenuForView(const views::View* view) const;
 
   // Returns true if overflow bubble is shown.
   bool IsShowingOverflowBubble() const;
-
-  // Whether we should show a visual highlight on the app list button when
-  // the app list is shown.
-  bool ShouldShowAppListButtonHighlight() const;
 
   // Sets owner overflow bubble instance from which this shelf view pops
   // out as overflow.
@@ -189,6 +187,9 @@ class ASH_EXPORT ShelfView : public views::View,
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
+  // Overridden from VirtualKeyboardModel::Observer:
+  void OnVirtualKeyboardVisibilityChanged() override;
+
   void CreateDragIconProxyByLocationWithNoAnimation(
       const gfx::Point& origin_in_screen_coordinates,
       const gfx::ImageSkia& icon,
@@ -229,7 +230,7 @@ class ASH_EXPORT ShelfView : public views::View,
 
   // Enumerates the shelf items that are centered in the new UI and returns
   // the total size they occupy.
-  int GetDimensionOfCenteredShelfItemsInNewUi() const;
+  int GetDimensionOfCenteredShelfItems() const;
 
   // Returns the index of the item after which the separator should be shown,
   // or -1 if no separator is required.
@@ -392,8 +393,6 @@ class ASH_EXPORT ShelfView : public views::View,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
 
   // Overridden from ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;

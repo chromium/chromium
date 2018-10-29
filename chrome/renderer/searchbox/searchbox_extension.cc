@@ -336,10 +336,13 @@ v8::Local<v8::Object> GenerateThemeBackgroundInfo(
     }
   }
 
+  // Assume that a custom background has not been configured and then
+  // override based on the condition below.
+  builder.Set("customBackgroundConfigured", false);
+
   // If a custom background has been set provide the relevant information to the
   // page.
-  if (theme_info.using_default_theme &&
-      !theme_info.custom_background_url.is_empty()) {
+  if (!theme_info.custom_background_url.is_empty()) {
     builder.Set("alternateLogo", true);
     RGBAColor whiteTextRgba = RGBAColor{255, 255, 255, 255};
     builder.Set("textColorRgba",
@@ -352,8 +355,6 @@ v8::Local<v8::Object> GenerateThemeBackgroundInfo(
                 theme_info.custom_background_attribution_line_1);
     builder.Set("attribution2",
                 theme_info.custom_background_attribution_line_2);
-  } else {
-    builder.Set("customBackgroundConfigured", false);
   }
 
   return builder.Build();
@@ -440,6 +441,17 @@ static const char kDispatchDeleteCustomLinkResult[] =
     "    typeof window.chrome.embeddedSearch.newTabPage"
     "        .ondeletecustomlinkdone === 'function') {"
     "  window.chrome.embeddedSearch.newTabPage.ondeletecustomlinkdone(%s);"
+    "  true;"
+    "}";
+
+static const char kDispatchDoesUrlResolveResultScript[] =
+    "if (window.chrome &&"
+    "    window.chrome.embeddedSearch &&"
+    "    window.chrome.embeddedSearch.newTabPage &&"
+    "    window.chrome.embeddedSearch.newTabPage.doesurlresolve &&"
+    "    typeof window.chrome.embeddedSearch.newTabPage.doesurlresolve =="
+    "        'function') {"
+    "  window.chrome.embeddedSearch.newTabPage.doesurlresolve(%s);"
     "  true;"
     "}";
 
@@ -1031,11 +1043,18 @@ void SearchBoxExtension::Install(blink::WebLocalFrame* frame) {
   v8::Handle<v8::Object> chrome =
       content::GetOrCreateChromeObject(isolate, context->Global());
   v8::Local<v8::Object> embedded_search = v8::Object::New(isolate);
-  embedded_search->Set(gin::StringToV8(isolate, "searchBox"),
-                       searchbox_controller.ToV8());
-  embedded_search->Set(gin::StringToV8(isolate, "newTabPage"),
-                       newtabpage_controller.ToV8());
-  chrome->Set(gin::StringToSymbol(isolate, "embeddedSearch"), embedded_search);
+  embedded_search
+      ->Set(context, gin::StringToV8(isolate, "searchBox"),
+            searchbox_controller.ToV8())
+      .ToChecked();
+  embedded_search
+      ->Set(context, gin::StringToV8(isolate, "newTabPage"),
+            newtabpage_controller.ToV8())
+      .ToChecked();
+  chrome
+      ->Set(context, gin::StringToSymbol(isolate, "embeddedSearch"),
+            embedded_search)
+      .ToChecked();
 }
 
 // static
@@ -1088,6 +1107,15 @@ void SearchBoxExtension::DispatchDeleteCustomLinkResult(
     bool success) {
   blink::WebString script(blink::WebString::FromUTF8(base::StringPrintf(
       kDispatchDeleteCustomLinkResult, success ? "true" : "false")));
+  Dispatch(frame, script);
+}
+
+// static
+void SearchBoxExtension::DispatchDoesUrlResolveResult(
+    blink::WebLocalFrame* frame,
+    bool resolves) {
+  blink::WebString script(blink::WebString::FromUTF8(base::StringPrintf(
+      kDispatchDoesUrlResolveResultScript, resolves ? "true" : "false")));
   Dispatch(frame, script);
 }
 

@@ -12,9 +12,9 @@ import android.os.StrictMode;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.AsyncTask;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
@@ -88,7 +89,7 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
   void SetUpRouters() {
     event_router_ = extensions::CreateAndUseTestEventRouter(&profile_);
     SafeBrowsingPrivateEventRouterFactory::GetInstance()->SetTestingFactory(
-        &profile_, BuildSafeBrowsingPrivateEventRouter);
+        &profile_, base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
   }
 
  protected:

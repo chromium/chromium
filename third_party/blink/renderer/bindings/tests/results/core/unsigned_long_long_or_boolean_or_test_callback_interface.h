@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef UnsignedLongLongOrBooleanOrTestCallbackInterface_h
-#define UnsignedLongLongOrBooleanOrTestCallbackInterface_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_UNSIGNED_LONG_LONG_OR_BOOLEAN_OR_TEST_CALLBACK_INTERFACE_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_UNSIGNED_LONG_LONG_OR_BOOLEAN_OR_TEST_CALLBACK_INTERFACE_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -24,7 +24,7 @@ namespace blink {
 class V8TestCallbackInterface;
 
 class CORE_EXPORT UnsignedLongLongOrBooleanOrTestCallbackInterface final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   UnsignedLongLongOrBooleanOrTestCallbackInterface();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -101,4 +101,4 @@ struct V8TypeOf<UnsignedLongLongOrBooleanOrTestCallbackInterface> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::UnsignedLongLongOrBooleanOrTestCallbackInterface);
 
-#endif  // UnsignedLongLongOrBooleanOrTestCallbackInterface_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_UNSIGNED_LONG_LONG_OR_BOOLEAN_OR_TEST_CALLBACK_INTERFACE_H_

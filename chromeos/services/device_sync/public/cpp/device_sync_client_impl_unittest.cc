@@ -63,8 +63,8 @@ class FakeDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
       gcm::GCMDriver* gcm_driver,
       service_manager::Connector* connector,
       const cryptauth::GcmDeviceInfoProvider* gcm_device_info_provider,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      override {
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<base::OneShotTimer> timer) override {
     EXPECT_TRUE(fake_device_sync_);
     return std::move(fake_device_sync_);
   }
@@ -496,7 +496,7 @@ TEST_F(
     TestCompleteInitialEnrollmentBeforeInitialSync_WaitForLocalDeviceMetadata) {
   client_->AddObserver(test_observer_.get());
 
-  SendPendingMojoMessages();
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(client_->is_ready());
   EXPECT_EQ(0u, test_observer_->ready_count());
@@ -515,7 +515,7 @@ TEST_F(
   EXPECT_EQ(0u, test_observer_->enrollment_finished_count());
   EXPECT_EQ(0u, test_observer_->new_devices_synced_count());
 
-  SendPendingMojoMessages();
+  base::RunLoop().RunUntilIdle();
 
   base::RunLoop run_loop;
 
@@ -556,7 +556,7 @@ TEST_F(DeviceSyncClientImplTest, TestOnEnrollmentFinished) {
   // finish before notifying observers that enrollment has finished.
   EXPECT_EQ(1u, test_observer_->enrollment_finished_count());
 
-  SendPendingMojoMessages();
+  base::RunLoop().RunUntilIdle();
 
   // Update the local device metadata. The last update time must also be later
   // than the previous version, otherwise the update will be ignored by the
@@ -591,7 +591,7 @@ TEST_F(DeviceSyncClientImplTest, TestOnNewDevicesSynced) {
   // finish before notifying observers that enrollment has finished.
   EXPECT_EQ(1u, test_observer_->new_devices_synced_count());
 
-  SendPendingMojoMessages();
+  base::RunLoop().RunUntilIdle();
 
   // Change the synced device list.
   cryptauth::RemoteDeviceList new_device_list(

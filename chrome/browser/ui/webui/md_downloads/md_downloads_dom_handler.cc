@@ -40,7 +40,6 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -461,11 +460,6 @@ void MdDownloadsDOMHandler::RetryDownload(const base::ListValue* args) {
   content::RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
   const GURL url = file->GetURL();
 
-  content::StoragePartition* storage_partition =
-      content::BrowserContext::GetStoragePartition(
-          web_contents->GetBrowserContext(),
-          render_frame_host->GetSiteInstance());
-
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("md_downloads_dom_handler", R"(
         semantics {
@@ -489,8 +483,7 @@ void MdDownloadsDOMHandler::RetryDownload(const base::ListValue* args) {
   auto dl_params = std::make_unique<download::DownloadUrlParameters>(
       url, render_frame_host->GetProcess()->GetID(),
       render_frame_host->GetRenderViewHost()->GetRoutingID(),
-      render_frame_host->GetRoutingID(),
-      storage_partition->GetURLRequestContext(), traffic_annotation);
+      render_frame_host->GetRoutingID(), traffic_annotation);
   dl_params->set_content_initiated(true);
   dl_params->set_initiator(url::Origin::Create(GURL("chrome://downloads")));
   dl_params->set_download_source(download::DownloadSource::FROM_RENDERER);

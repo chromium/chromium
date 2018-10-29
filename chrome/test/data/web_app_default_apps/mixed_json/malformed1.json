@@ -1,5 +1,5 @@
 {
-  "web_app_manifest_url": "https://www.chromestatus.com/static/manifest.json",
-  "web_app_start_url": "https://www.chromestatus.com/features",
+  "app_url": "https://www.chromestatus.com/features",
+  "launch_container": "window",
   "this is malformed JSON because there's no end quote
 }

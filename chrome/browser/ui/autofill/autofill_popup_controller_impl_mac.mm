@@ -63,7 +63,7 @@ void AutofillPopupControllerImplMac::Show(
 
   if (@available(macOS 10.12.2, *)) {
     touch_bar_controller_ = [WebTextfieldTouchBarController
-        controllerForWindow:[container_view() window]];
+        controllerForWindow:[container_view().GetNativeNSView() window]];
     [touch_bar_controller_ showCreditCardAutofillWithController:this];
   }
 }

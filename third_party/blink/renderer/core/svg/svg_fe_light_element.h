@@ -91,9 +91,9 @@ class SVGFELightElement : public SVGElement {
 };
 
 inline bool IsSVGFELightElement(const SVGElement& element) {
-  return element.HasTagName(SVGNames::feDistantLightTag) ||
-         element.HasTagName(SVGNames::fePointLightTag) ||
-         element.HasTagName(SVGNames::feSpotLightTag);
+  return element.HasTagName(svg_names::kFEDistantLightTag) ||
+         element.HasTagName(svg_names::kFEPointLightTag) ||
+         element.HasTagName(svg_names::kFESpotLightTag);
 }
 
 DEFINE_SVGELEMENT_TYPE_CASTS_WITH_FUNCTION(SVGFELightElement);

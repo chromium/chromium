@@ -18,8 +18,11 @@
 namespace blink {
 
 SimTest::SimTest()
-    : web_view_client_(compositor_.layer_tree_view()),
-      web_frame_client_(*this) {
+    : web_frame_client_(*this),
+      // SimCompositor overrides the LayerTreeViewDelegate to respond to
+      // BeginMainFrame(), which will update and paint the WebViewImpl given to
+      // SetWebView().
+      web_view_client_(&compositor_) {
   Document::SetThreadedParsingEnabledForTesting(false);
   // Use the mock theme to get more predictable code paths, this also avoids
   // the OS callbacks in ScrollAnimatorMac which can schedule frames
@@ -53,7 +56,7 @@ void SimTest::SetUp() {
   Test::SetUp();
 
   web_view_helper_.Initialize(&web_frame_client_, &web_view_client_);
-  compositor_.SetWebView(WebView());
+  compositor_.SetWebView(WebView(), *web_view_client_.layer_tree_view());
   page_.SetPage(WebView().GetPage());
 }
 

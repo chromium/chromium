@@ -54,8 +54,19 @@ void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
   storage_key_ = profile_path_.BaseName().MaybeAsASCII();
 
   is_force_signin_enabled_ = signin_util::IsForceSigninEnabled();
-  if (!IsAuthenticated() && is_force_signin_enabled_)
-    is_force_signin_profile_locked_ = true;
+  if (is_force_signin_enabled_) {
+    if (!IsAuthenticated())
+      is_force_signin_profile_locked_ = true;
+#if defined(OS_MACOSX) || defined(OS_LINUX) || defined(OS_WIN)
+  } else if (IsSigninRequired()) {
+    // Profiles that require signin in the absence of an enterprise policy are
+    // left-overs from legacy supervised users. Just unlock them, so users can
+    // keep using them.
+    SetLocalAuthCredentials(std::string());
+    SetAuthInfo(std::string(), base::string16());
+    SetIsSigninRequired(false);
+#endif
+  }
 }
 
 base::string16 ProfileAttributesEntry::GetName() const {

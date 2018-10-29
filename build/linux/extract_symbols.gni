@@ -17,9 +17,7 @@ template("extract_symbols") {
                            "deps",
                            "testonly",
                          ])
-  symbol_target_name = "${target_name}_symbols"
-
-  action("${symbol_target_name}") {
+  action("${target_name}") {
     dump_syms_label = "//third_party/breakpad:dump_syms($host_toolchain)"
     dump_syms_binary =
         get_label_info(dump_syms_label, "root_out_dir") + "/" + "dump_syms"

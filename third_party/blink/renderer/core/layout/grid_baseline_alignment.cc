@@ -117,7 +117,7 @@ const BaselineGroup& GridBaselineAlignment::GetBaselineGroupForChild(
 void GridBaselineAlignment::UpdateBaselineAlignmentContext(
     ItemPosition preference,
     unsigned shared_context,
-    LayoutBox& child,
+    const LayoutBox& child,
     GridAxis baseline_axis) {
   DCHECK(IsBaselinePosition(preference));
   DCHECK(!child.NeedsLayout());

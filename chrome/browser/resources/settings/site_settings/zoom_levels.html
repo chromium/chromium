@@ -7,6 +7,7 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="../site_favicon.html">
 <link rel="import" href="site_settings_behavior.html">
 <link rel="import" href="site_settings_prefs_browser_proxy.html">
 
@@ -26,7 +27,7 @@
         margin-top: 15px;
       }
 
-      .list-item .favicon-image {
+      .list-item site-favicon {
         flex-shrink: 0;
       }
 
@@ -40,9 +41,7 @@
           class="cr-separators" risk-selection>
         <template>
           <div class="list-item" first$="[[!index]]">
-            <div class="favicon-image"
-                style$="[[computeSiteIcon(item.originForFavicon)]]">
-            </div>
+            <site-favicon url="[[item.originForFavicon]]"></site-favicon>
             <div class="middle">
               <span class="url-directionality">[[item.displayName]]</span>
             </div>

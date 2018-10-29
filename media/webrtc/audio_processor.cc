@@ -22,12 +22,18 @@ namespace media {
 
 namespace {
 
+constexpr int kBuffersPerSecond = 100;  // 10 ms per buffer.
+
 webrtc::AudioProcessing::ChannelLayout MediaLayoutToWebRtcLayout(
     ChannelLayout media_layout) {
   switch (media_layout) {
     case CHANNEL_LAYOUT_MONO:
       return webrtc::AudioProcessing::kMono;
     case CHANNEL_LAYOUT_STEREO:
+    case CHANNEL_LAYOUT_DISCRETE:
+      // TODO(https://crbug.com/868026): currently mapping all discrete channel
+      // layouts to two channels assuming that any required channel remix takes
+      // place in the native audio layer.
       return webrtc::AudioProcessing::kStereo;
     case CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC:
       return webrtc::AudioProcessing::kStereoAndKeyboard;
@@ -36,6 +42,7 @@ webrtc::AudioProcessing::ChannelLayout MediaLayoutToWebRtcLayout(
       return webrtc::AudioProcessing::kMono;
   }
 }
+
 }  // namespace
 
 AudioProcessor::ProcessingResult::ProcessingResult(
@@ -50,7 +57,8 @@ AudioProcessor::AudioProcessor(const AudioParameters& audio_parameters,
                                const AudioProcessingSettings& settings)
     : audio_parameters_(audio_parameters),
       settings_(settings),
-      output_bus_(AudioBus::Create(audio_parameters_)) {
+      output_bus_(AudioBus::Create(audio_parameters_)),
+      audio_delay_stats_reporter_(kBuffersPerSecond) {
   DCHECK(audio_parameters.IsValid());
   DCHECK_EQ(audio_parameters_.GetBufferDuration(),
             base::TimeDelta::FromMilliseconds(10));
@@ -106,7 +114,7 @@ void AudioProcessor::AnalyzePlayout(const AudioBus& audio,
   if (!audio_processing_)
     return;
 
-  render_delay_ = base::TimeTicks::Now() - playout_time;
+  render_delay_ = playout_time - base::TimeTicks::Now();
 
   constexpr int kMaxChannels = 2;
   DCHECK_GE(parameters.channels(), 1);
@@ -129,7 +137,8 @@ void AudioProcessor::AnalyzePlayout(const AudioBus& audio,
 
 void AudioProcessor::UpdateInternalStats() {
   if (audio_processing_)
-    echo_information_.UpdateAecStats(audio_processing_->echo_cancellation());
+    echo_information_.UpdateAecStats(
+        audio_processing_->GetStatistics(has_reverse_stream_));
 }
 
 void AudioProcessor::GetStats(GetStatsCB callback) {
@@ -250,22 +259,6 @@ void AudioProcessor::InitializeAPM() {
   // Audio processing module construction.
   audio_processing_ = base::WrapUnique(ap_builder.Create(ap_config));
 
-  // AEC setup part 2.
-  switch (settings_.echo_cancellation) {
-    case EchoCancellationType::kSystemAec:
-    case EchoCancellationType::kDisabled:
-      break;
-    case EchoCancellationType::kAec2:
-    case EchoCancellationType::kAec3:
-      int err = audio_processing_->echo_cancellation()->set_suppression_level(
-          webrtc::EchoCancellation::kHighSuppression);
-      err |= audio_processing_->echo_cancellation()->enable_metrics(true);
-      err |= audio_processing_->echo_cancellation()->enable_delay_logging(true);
-      err |= audio_processing_->echo_cancellation()->Enable(true);
-      DCHECK_EQ(err, 0);
-      break;
-  }
-
   // Noise suppression setup part 2.
   if (settings_.noise_suppression != NoiseSuppressionType::kDisabled) {
     int err = audio_processing_->noise_suppression()->set_level(
@@ -302,8 +295,7 @@ void AudioProcessor::InitializeAPM() {
 
   webrtc::AudioProcessing::Config apm_config = audio_processing_->GetConfig();
 
-  // AEC setup part 3.
-  // New-fangled echo cancellation setup. (see: https://bugs.webrtc.org/9535).
+  // AEC setup part 2.
   apm_config.echo_canceller.enabled =
       settings_.echo_cancellation == EchoCancellationType::kAec2 ||
       settings_.echo_cancellation == EchoCancellationType::kAec3;
@@ -331,7 +323,11 @@ void AudioProcessor::UpdateDelayEstimate(base::TimeTicks capture_time) {
   // Note: this delay calculation doesn't make sense, but it's how it's done
   // right now. Instead, the APM should probably attach the playout time to each
   // reference buffer it gets and store that internally?
-  base::TimeDelta total_delay = capture_delay + render_delay_.load();
+  const base::TimeDelta render_delay = render_delay_.load();
+
+  audio_delay_stats_reporter_.ReportDelay(capture_delay, render_delay);
+
+  const base::TimeDelta total_delay = capture_delay + render_delay;
   audio_processing_->set_stream_delay_ms(total_delay.InMilliseconds());
   if (total_delay > base::TimeDelta::FromMilliseconds(300)) {
     DLOG(WARNING) << "Large audio delay, capture delay: "

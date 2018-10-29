@@ -19,8 +19,10 @@ source_set("find_in_page") {
   deps = [
     ":injected_js",
     "//base",
+    "//ios/chrome/browser/metrics:ukm_url_recorder",
     "//ios/chrome/browser/web",
     "//ios/web",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
   libs = [ "CoreGraphics.framework" ]
 }
@@ -37,6 +39,7 @@ source_set("unit_tests") {
   testonly = true
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "find_in_page_controller_unittest.mm",
     "find_in_page_js_unittest.mm",
     "find_tab_helper_unittest.mm",
     "js_findinpage_manager_unittest.mm",
@@ -45,7 +48,11 @@ source_set("unit_tests") {
     ":find_in_page",
     "//base",
     "//base/test:test_support",
+    "//components/ukm:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/metrics:ukm_url_recorder",
     "//ios/chrome/browser/web:test_support",
+    "//ios/chrome/browser/web:web_internal",
     "//ios/web",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

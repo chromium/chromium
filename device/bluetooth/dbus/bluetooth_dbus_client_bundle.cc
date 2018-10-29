@@ -57,6 +57,8 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
         BluetoothGattDescriptorClient::Create());
     bluetooth_gatt_manager_client_.reset(BluetoothGattManagerClient::Create());
     bluetooth_gatt_service_client_.reset(BluetoothGattServiceClient::Create());
+
+    alternate_bluetooth_adapter_client_.reset(BluetoothAdapterClient::Create());
   } else {
     bluetooth_adapter_client_.reset(new FakeBluetoothAdapterClient);
     bluetooth_le_advertising_manager_client_.reset(
@@ -75,6 +77,8 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
         new FakeBluetoothGattDescriptorClient);
     bluetooth_gatt_manager_client_.reset(new FakeBluetoothGattManagerClient);
     bluetooth_gatt_service_client_.reset(new FakeBluetoothGattServiceClient);
+
+    alternate_bluetooth_adapter_client_.reset(new FakeBluetoothAdapterClient);
   }
 }
 

@@ -34,8 +34,8 @@ struct FromValue<{{namespace}}::{{type.id}}> {
   }
 };
 
-template <typename T>
-std::unique_ptr<base::Value> ToValueImpl(const {{namespace}}::{{type.id}}& value, T*) {
+template <>
+inline std::unique_ptr<base::Value> ToValue(const {{namespace}}::{{type.id}}& value) {
   switch (value) {
     {% for literal in type.enum %}
     case {{namespace}}::{{type.id}}::{{literal | sanitize_literal | dash_to_camelcase | camelcase_to_hacker_style | upper }}:
@@ -56,8 +56,8 @@ struct FromValue<{{namespace}}::{{type.id}}> {
   }
 };
 
-template <typename T>
-std::unique_ptr<base::Value> ToValueImpl(const {{namespace}}::{{type.id}}& value, T*) {
+template <>
+inline std::unique_ptr<base::Value> ToValue(const {{namespace}}::{{type.id}}& value) {
   return value.Serialize();
 }
 

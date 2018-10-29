@@ -238,6 +238,7 @@ TEST(FilenameUtilTest, FileURLConversion) {
     {L"\\\\foo\\bar.txt", "file:////foo\\bar.txt"},
     {L"\\\\foo\\bar.txt", "file:/foo/bar.txt"},
     {L"\\\\foo\\bar.txt", "file://foo\\bar.txt"},
+    {L"\\\\foo\\bar.txt", "http://foo/bar.txt"},
     {L"C:\\foo\\bar.txt", "file:\\\\\\c:/foo/bar.txt"},
     // %2F ('/') should fail, because it might otherwise be interpreted as a
     // path separator on Windows.

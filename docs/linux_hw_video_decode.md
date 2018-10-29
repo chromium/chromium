@@ -47,11 +47,11 @@ on a gprecise setup.
     make -j32 && rm -f ${DEST}/lib/dri/{nvidia_drv_video.so,s3g_drv_video.so} && make install
     ```
 
-*   Add to `$GYP_DEFINES`:
-    *   `chromeos=1` to link in `VaapiVideoDecodeAccelerator`
-    *   `proprietary_codecs=1 ffmpeg_branding=Chrome` to allow Chrome to play
-        h.264 content, which is the only codec VAVDA knows about today.
-*   Re-run gyp (`./build/gyp_chromium` or `gclient runhooks`)
+*   Add to args.gn:
+    *   `target_os = "chromeos"` to link in `VaapiVideoDecodeAccelerator`
+    *   `proprietary_codecs = true` and `ffmpeg_branding = "Chrome"` to
+        allow Chrome to play h.264 content, which is the only codec
+        VAVDA knows about today.
 *   Rebuild chrome
 *   Run chrome with `LD_LIBRARY_PATH=${HOME}/apps/libva/lib` in the environment,
     and with the `--no-sandbox` command line flag.

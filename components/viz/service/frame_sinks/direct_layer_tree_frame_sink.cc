@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/histograms.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
@@ -132,15 +133,6 @@ static HitTestRegionList CreateHitTestData(const CompositorFrame& frame) {
         const SurfaceDrawQuad* surface_quad =
             SurfaceDrawQuad::MaterialCast(quad);
 
-        // Skip the quad if the FrameSinkId between fallback and primary is not
-        // the same, because we don't know which FrameSinkId would be used to
-        // draw this quad.
-        if (surface_quad->surface_range.start() &&
-            surface_quad->surface_range.start()->frame_sink_id() !=
-                surface_quad->surface_range.end().frame_sink_id()) {
-          continue;
-        }
-
         // Skip the quad if the transform is not invertible (i.e. it will not
         // be able to receive events).
         gfx::Transform target_to_quad_transform;
@@ -179,20 +171,26 @@ void DirectLayerTreeFrameSink::SubmitCompositorFrame(CompositorFrame frame) {
     pipeline_reporting_frame_times_.erase(it);
   }
 
+  const LocalSurfaceId& local_surface_id =
+      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
+
   if (frame.size_in_pixels() != last_swap_frame_size_ ||
       frame.device_scale_factor() != device_scale_factor_) {
     parent_local_surface_id_allocator_.GenerateId();
     last_swap_frame_size_ = frame.size_in_pixels();
     device_scale_factor_ = frame.device_scale_factor();
-    display_->SetLocalSurfaceId(
-        parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-        device_scale_factor_);
+    display_->SetLocalSurfaceId(local_surface_id, device_scale_factor_);
   }
 
+  const int64_t trace_id = ~frame.metadata.begin_frame_ack.trace_id;
+  TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
+                         "Event.Pipeline", TRACE_ID_GLOBAL(trace_id),
+                         TRACE_EVENT_FLAG_FLOW_OUT, "step",
+                         "SubmitHitTestData");
+
   HitTestRegionList hit_test_region_list = CreateHitTestData(frame);
-  support_->SubmitCompositorFrame(
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-      std::move(frame), std::move(hit_test_region_list));
+  support_->SubmitCompositorFrame(local_surface_id, std::move(frame),
+                                  std::move(hit_test_region_list));
 }
 
 void DirectLayerTreeFrameSink::DidNotProduceFrame(const BeginFrameAck& ack) {

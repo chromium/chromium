@@ -45,6 +45,7 @@ cr.define('extension_detail_view_tests', function() {
       item.set('delegate', mockDelegate);
       item.set('inDevMode', false);
       item.set('incognitoAvailable', true);
+      item.set('showActivityLog', false);
       document.body.appendChild(item);
     });
 
@@ -114,6 +115,11 @@ cr.define('extension_detail_view_tests', function() {
           'chrome-extension://' + extensionData.id + '/options.html';
       item.set('data.optionsPage', {openInTab: true, url: optionsUrl});
       expectTrue(testIsVisible('#extensions-options'));
+
+      expectFalse(testIsVisible('#extensions-activity-log-link'));
+      item.set('showActivityLog', true);
+      Polymer.dom.flush();
+      expectTrue(testIsVisible('#extensions-activity-log-link'));
 
       item.set('data.manifestHomePageUrl', 'http://example.com');
       Polymer.dom.flush();
@@ -200,7 +206,28 @@ cr.define('extension_detail_view_tests', function() {
           'chrome-extension://' + extensionData.id + '/options.html';
       item.set('data.optionsPage', {openInTab: true, url: optionsUrl});
       item.set('data.prettifiedPath', 'foo/bar/baz/');
+      item.set('showActivityLog', true);
       Polymer.dom.flush();
+
+      let currentPage = null;
+      extensions.navigation.addListener(newPage => {
+        currentPage = newPage;
+      });
+
+      // Even though the command line flag is not set for activity log, we
+      // still expect to navigate to it after clicking the link as the logic to
+      // redirect the page back to the details view is in manager.js.
+      // Since this behavior does not happen in the testing environment,
+      // we test the behavior in manager_test.js.
+      MockInteractions.tap(item.$$('#extensions-activity-log-link'));
+      expectDeepEquals(
+          currentPage,
+          {page: Page.ACTIVITY_LOG, extensionId: extensionData.id});
+
+      // Reset current page and test delegate calls.
+      extensions.navigation.navigateTo(
+          {page: Page.DETAILS, extensionId: extensionData.id});
+      currentPage = null;
 
       mockDelegate.testClickingCalls(
           item.$$('#allow-incognito').getLabel(), 'setItemAllowedIncognito',

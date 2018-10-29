@@ -1,0 +1,10 @@
+Name: Earl Grey 2
+Short Name: EG2
+URL: https://github.com/google/EarlGrey
+Version: 0
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+EarlGrey is a native iOS UI automation test framework that enables you to write clear, concise tests.

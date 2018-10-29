@@ -47,13 +47,16 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
     if (IsRunningDialogForOwner(parent))
       return;
 
-    RunState run_state = BeginRun(parent);
-    run_state.dialog_thread->task_runner()->PostTaskAndReply(
+    std::unique_ptr<RunState> run_state = BeginRun(parent);
+
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        run_state->dialog_task_runner;
+    task_runner->PostTaskAndReply(
         FROM_HERE,
-        base::Bind(&NetErrorDiagnosticsDialog::ShowDialogOnPrivateThread,
-                   base::Unretained(this), parent, failed_url),
-        base::Bind(&NetErrorDiagnosticsDialog::DiagnosticsDone,
-                   base::Unretained(this), run_state, callback));
+        base::BindOnce(&NetErrorDiagnosticsDialog::ShowDialogOnPrivateThread,
+                       base::Unretained(this), parent, failed_url),
+        base::BindOnce(&NetErrorDiagnosticsDialog::DiagnosticsDone,
+                       base::Unretained(this), std::move(run_state), callback));
   }
 
  private:
@@ -68,8 +71,9 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
     NdfCloseIncident(incident_handle);
   }
 
-  void DiagnosticsDone(RunState run_state, const base::Closure& callback) {
-    EndRun(run_state);
+  void DiagnosticsDone(std::unique_ptr<RunState> run_state,
+                       const base::Closure& callback) {
+    EndRun(std::move(run_state));
     callback.Run();
   }
 

@@ -122,9 +122,9 @@ bool AudioRendererMixerInput::CurrentThreadIsRenderingThread() {
 
 void AudioRendererMixerInput::SwitchOutputDevice(
     const std::string& device_id,
-    const OutputDeviceStatusCB& callback) {
+    OutputDeviceStatusCB callback) {
   if (device_id == device_id_) {
-    callback.Run(OUTPUT_DEVICE_STATUS_OK);
+    std::move(callback).Run(OUTPUT_DEVICE_STATUS_OK);
     return;
   }
 
@@ -133,7 +133,7 @@ void AudioRendererMixerInput::SwitchOutputDevice(
     AudioRendererMixer* new_mixer = mixer_pool_->GetMixer(
         owner_id_, params_, latency_, device_id, &new_mixer_status);
     if (new_mixer_status != OUTPUT_DEVICE_STATUS_OK) {
-      callback.Run(new_mixer_status);
+      std::move(callback).Run(new_mixer_status);
       return;
     }
 
@@ -153,13 +153,13 @@ void AudioRendererMixerInput::SwitchOutputDevice(
             ->GetOutputDeviceInfo(owner_id_, 0 /* session_id */, device_id)
             .device_status();
     if (new_mixer_status != OUTPUT_DEVICE_STATUS_OK) {
-      callback.Run(new_mixer_status);
+      std::move(callback).Run(new_mixer_status);
       return;
     }
     device_id_ = device_id;
   }
 
-  callback.Run(OUTPUT_DEVICE_STATUS_OK);
+  std::move(callback).Run(OUTPUT_DEVICE_STATUS_OK);
 }
 
 double AudioRendererMixerInput::ProvideInput(AudioBus* audio_bus,

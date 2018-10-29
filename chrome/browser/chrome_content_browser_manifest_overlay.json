@@ -38,7 +38,7 @@
         "chrome": [ "input_device_controller" ],
         "chrome_printing": [ "converter" ],
         "content_browser": [ "profiling_client" ],
-        "cups_ipp_validator": [ "ipp_validator" ],
+        "cups_ipp_parser": [ "ipp_parser" ],
         "device": [
           "device:fingerprint",
           "device:geolocation_config",
@@ -73,6 +73,7 @@
         "unzip": [ "unzip_file" ],
         "util_win" : [ "shell_util_win" ],
         "wifi_util_win": [ "wifi_credentials" ],
+        "resource_coordinator": [ "webui_graph_dump" ],
         "xr_device_service": [ "xr_device_provider", "xr_device_test_hook" ]
       }
     },
@@ -81,6 +82,7 @@
         "renderer": [
           "autofill.mojom.AutofillDriver",
           "autofill.mojom.PasswordManagerDriver",
+          "blink.mojom.BadgeService",
           "blink.mojom.CredentialManager",
           "blink.mojom.InstalledAppProvider",
           "blink.mojom.MediaDownloadInProductHelp",
@@ -89,13 +91,13 @@
           "chrome.mojom.OpenSearchDocumentDescriptionHandler",
           "chrome.mojom.PrerenderCanceler",
           "chromeos.ime.mojom.InputEngineManager",
+          "chromeos.media_perception.mojom.MediaPerception",
           "contextual_search.mojom.ContextualSearchJsApiService",
           "dom_distiller.mojom.DistillabilityService",
           "dom_distiller.mojom.DistillerJavaScriptService",
           "extensions.KeepAlive",
           "extensions.mime_handler.BeforeUnloadControl",
           "extensions.mime_handler.MimeHandlerService",
-          "extensions.mojom.InlineInstall",
           "media_router.mojom.MediaRouter",
           "page_load_metrics.mojom.PageLoadMetrics",
           "safe_browsing.mojom.PhishingDetectorClient",
@@ -112,11 +114,13 @@
           "mojom.ResetPasswordHandler",
           "mojom.SiteEngagementDetailsProvider",
           "mojom.UsbInternalsPageHandler",
+          "resource_coordinator.mojom.WebUIGraphDump",
           "snippets_internals.mojom.PageHandlerFactory",
           "web_ui_test.mojom.TestRunner"
         ],
         "multidevice_setup" : [
-          "chromeos.multidevice_setup.mojom.MultiDeviceSetup"
+          "chromeos.multidevice_setup.mojom.MultiDeviceSetup",
+          "chromeos.multidevice_setup.mojom.PrivilegedHostDeviceSetter"
         ]
       }
     }

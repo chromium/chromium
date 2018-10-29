@@ -19,7 +19,7 @@ const base::Feature kAffiliationBasedMatching = {
 const base::Feature kAutofillHome = {"AutofillHome",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Recovers lost passwords on Mac by deleting ones that cannot be decrypted
+// Recovers lost passwords on Mac by deleting the ones that cannot be decrypted
 // with the present encryption key from the Keychain.
 const base::Feature kDeleteCorruptedPasswords = {
     "DeleteCorruptedPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -27,10 +27,6 @@ const base::Feature kDeleteCorruptedPasswords = {
 // Use HTML based username detector.
 const base::Feature kHtmlBasedUsernameDetector = {
     "HtmlBaseUsernameDetector", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls the ability to generate passwords that fit sites' requirements.
-const base::Feature kPasswordGenerationRequirements = {
-    "PasswordGenerationRequirements", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether password requirements can be overridden for domains
 // (as opposed to only relying on the autofill server).

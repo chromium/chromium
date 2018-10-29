@@ -43,7 +43,7 @@ String DOMWindowBase64::btoa(const String& string_to_encode,
   if (string_to_encode.IsNull())
     return String();
 
-  if (!string_to_encode.ContainsOnlyLatin1()) {
+  if (!string_to_encode.ContainsOnlyLatin1OrEmpty()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
         "The string to be encoded contains "
@@ -59,7 +59,7 @@ String DOMWindowBase64::atob(const String& encoded_string,
   if (encoded_string.IsNull())
     return String();
 
-  if (!encoded_string.ContainsOnlyLatin1()) {
+  if (!encoded_string.ContainsOnlyLatin1OrEmpty()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
         "The string to be decoded contains "

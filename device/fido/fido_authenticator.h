@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/strings/string16.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -48,8 +49,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
                             GetAssertionCallback callback) = 0;
   virtual void Cancel() = 0;
   virtual std::string GetId() const = 0;
+  virtual base::string16 GetDisplayName() const = 0;
   virtual const AuthenticatorSupportedOptions& Options() const = 0;
   virtual FidoTransportProtocol AuthenticatorTransport() const = 0;
+  virtual bool IsInPairingMode() const = 0;
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;
 
  private:

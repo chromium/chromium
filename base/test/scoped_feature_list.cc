@@ -182,8 +182,7 @@ void ScopedFeatureList::InitWithFeaturesAndFieldTrials(
 
   // Add the field trial overrides. This assumes that |enabled_features| are at
   // the begining of |merged_features.enabled_feature_list|, in the same order.
-  std::vector<FieldTrial*>::const_iterator trial_it =
-      trials_for_enabled_features.begin();
+  auto trial_it = trials_for_enabled_features.begin();
   auto feature_it = merged_features.enabled_feature_list.begin();
   std::vector<std::unique_ptr<std::string>> features_with_trial;
   features_with_trial.reserve(trials_for_enabled_features.size());

@@ -129,9 +129,7 @@ class PictureLayerTilingIteratorTest : public testing::Test {
     tiling_->SetLiveTilesRect(live_tiles_rect);
 
     std::vector<Tile*> tiles = tiling_->AllTilesForTesting();
-    for (std::vector<Tile*>::iterator iter = tiles.begin();
-         iter != tiles.end();
-         ++iter) {
+    for (auto iter = tiles.begin(); iter != tiles.end(); ++iter) {
       EXPECT_TRUE(live_tiles_rect.Intersects((*iter)->content_rect()));
     }
   }

@@ -1,8 +1,10 @@
 include_rules = [
   "+components/data_use_measurement/core",
   "+components/grit/components_scaled_resources.h",
+  "+components/history/core/browser",
   "+components/infobars/core",
   "+components/keyed_service/core",
+  "+components/leveldb_proto",
   "+components/metrics",
   "+components/policy",
   "+components/security_state",
@@ -12,6 +14,7 @@ include_rules = [
   "+components/version_info",
   "+components/webdata/common",
   "+components/webdata_services",
+  "+crypto/hkdf.h",
   "+crypto/random.h",
   "+google_apis/gaia",
   "+google_apis/google_api_keys.h",

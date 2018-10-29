@@ -78,6 +78,7 @@
 #if defined(OS_CHROMEOS)
 #include <map>
 
+#include "base/base64.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
@@ -203,6 +204,13 @@ class ChromeOSTermsHandler
           FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::BindOnce(&ChromeOSTermsHandler::LoadArcTermsFileAsync, this),
           base::BindOnce(&ChromeOSTermsHandler::ResponseOnUIThread, this));
+    } else if (path_ == chrome::kArcPrivacyPolicyURLPath) {
+      // Load ARC++ privacy policy from the file.
+      base::PostTaskWithTraitsAndReply(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+          base::BindOnce(&ChromeOSTermsHandler::LoadArcPrivacyPolicyFileAsync,
+                         this),
+          base::BindOnce(&ChromeOSTermsHandler::ResponseOnUIThread, this));
     } else {
       // Load local ChromeOS terms from the file.
       base::PostTaskWithTraitsAndReply(
@@ -247,47 +255,74 @@ class ChromeOSTermsHandler
     }
   }
 
+  void LoadArcPrivacyPolicyFileAsync() {
+    base::ScopedBlockingCall scoped_blocking_call(
+        base::BlockingType::MAY_BLOCK);
+
+    for (const auto& locale : CreateArcLocaleLookupArray()) {
+      auto path = CreateArcPrivacyPolicyPath(locale.c_str());
+      std::string contents;
+      if (base::ReadFileToString(path, &contents)) {
+        base::Base64Encode(contents, &contents_);
+        VLOG(1) << "Read offline Play Store privacy policy for: " << locale;
+        return;
+      }
+      LOG(WARNING) << "Could not find offline Play Store privacy policy for: "
+                   << locale;
+    }
+    LOG(ERROR) << "Failed to load offline Play Store privacy policy";
+    contents_.clear();
+  }
+
   void LoadArcTermsFileAsync() {
     base::ScopedBlockingCall scoped_blocking_call(
         base::BlockingType::MAY_BLOCK);
 
-    const CountryRegionMap kCountryRegionMap = CreateCountryRegionMap();
-    const std::string kDeviceRegion = ReadDeviceRegionFromVpd();
-    // To determine version of Play Store ToS:
-    // * try to match language and device region combination
-    // * if not found check the mapping to default region (APAC, EMEA, EU)
-    // * if no default region mapping default to en-US
-    // Note: AMERICAS region defaults to en-US and to simplify it is not
-    // included in the country region map.
-    const std::string locale_region = base::StrCat(
-        {base::ToLowerASCII(language::ExtractBaseLanguage(locale_)), "-",
-         kDeviceRegion});
-    if (base::ReadFileToString(CreateArcTermsPath(locale_region), &contents_))
-      return;
-
-    const auto region = kCountryRegionMap.find(kDeviceRegion);
-    if (region != kCountryRegionMap.end()) {
-      LOG(WARNING) << "Could not find offline Play Store ToS for: "
-                   << locale_region << ". Trying by region: " << region->second;
-      if (base::ReadFileToString(CreateArcTermsPath(region->second.c_str()),
-                                 &contents_)) {
+    for (const auto& locale : CreateArcLocaleLookupArray()) {
+      auto path = CreateArcTermsPath(locale.c_str());
+      std::string contents;
+      if (base::ReadFileToString(CreateArcTermsPath(locale), &contents_)) {
+        VLOG(1) << "Read offline Play Store terms for: " << locale;
         return;
       }
+      LOG(WARNING) << "Could not find offline Play Store terms for: " << locale;
     }
-
-    LOG(WARNING) << "Could not find offline Play Store ToS by locale nor "
-                    "region for: "
-                 << locale_region << ". Loading: en-US";
-    if (base::ReadFileToString(CreateArcTermsPath("en-us"), &contents_))
-      return;
-
     LOG(ERROR) << "Failed to load offline Play Store ToS";
     contents_.clear();
+  }
+
+  std::vector<std::string> CreateArcLocaleLookupArray() {
+    // To get Play Store asset we look for the first locale match in the
+    // following order:
+    // * language and device region combination
+    // * default region (APAC, EMEA, EU)
+    // * en-US
+    // Note: AMERICAS region defaults to en-US and to simplify it is not
+    // included in the country region map.
+    std::vector<std::string> locale_lookup_array;
+    const std::string device_region = ReadDeviceRegionFromVpd();
+    locale_lookup_array.push_back(base::StrCat(
+        {base::ToLowerASCII(language::ExtractBaseLanguage(locale_)), "-",
+         device_region}));
+
+    const CountryRegionMap country_region_map = CreateCountryRegionMap();
+    const auto region = country_region_map.find(device_region);
+    if (region != country_region_map.end()) {
+      locale_lookup_array.push_back(region->second.c_str());
+    }
+
+    locale_lookup_array.push_back("en-us");
+    return locale_lookup_array;
   }
 
   base::FilePath CreateArcTermsPath(const std::string& locale) const {
     return chromeos_assets_path_.Append(
         base::StringPrintf(chrome::kArcTermsPathFormat, locale.c_str()));
+  }
+
+  base::FilePath CreateArcPrivacyPolicyPath(const std::string& locale) const {
+    return chromeos_assets_path_.Append(base::StringPrintf(
+        chrome::kArcPrivacyPolicyPathFormat, locale.c_str()));
   }
 
   void ResponseOnUIThread() {

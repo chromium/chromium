@@ -136,7 +136,9 @@ void TestDownloadService::ProcessDownload() {
   downloads_.pop_front();
 
   if (!failed_download_id_.empty() && params.guid == failed_download_id_) {
-    OnDownloadFailed(params.guid, Client::FailureReason::ABORTED);
+    CompletionInfo completion_info(base::FilePath(), 0u);
+    OnDownloadFailed(params.guid, completion_info,
+                     Client::FailureReason::ABORTED);
   } else {
     CompletionInfo completion_info(base::FilePath(), file_size_,
                                    {params.request_params.url}, nullptr);
@@ -153,9 +155,10 @@ void TestDownloadService::OnDownloadSucceeded(
 
 void TestDownloadService::OnDownloadFailed(
     const std::string& guid,
+    const CompletionInfo& completion_info,
     Client::FailureReason failure_reason) {
   if (client_)
-    client_->OnDownloadFailed(guid, failure_reason);
+    client_->OnDownloadFailed(guid, completion_info, failure_reason);
 }
 
 }  // namespace test

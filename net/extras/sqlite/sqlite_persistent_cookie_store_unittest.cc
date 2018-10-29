@@ -930,9 +930,9 @@ TEST_F(SQLitePersistentCookieStoreTest, UpdateFromEncryption) {
   EXPECT_NE(contents.find("value123XYZ"), std::string::npos);
 }
 
-bool CompareCookies(std::unique_ptr<CanonicalCookie>& a,
-                    std::unique_ptr<CanonicalCookie>& b) {
-  return a->PartialCompare(*b.get());
+bool CompareCookies(const std::unique_ptr<CanonicalCookie>& a,
+                    const std::unique_ptr<CanonicalCookie>& b) {
+  return a->PartialCompare(*b);
 }
 
 bool CreateV9Schema(sql::Database* db) {

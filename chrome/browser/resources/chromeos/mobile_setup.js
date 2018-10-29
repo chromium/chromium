@@ -115,7 +115,17 @@ cr.define('mobile', function() {
         return;
       }
 
-      chrome.send('paymentPortalLoad', ['ok']);
+      // Workaround for https://crbug.com/893248 - for some reason, the payment
+      // portal does not load properly after the payment frame submition.
+      // Reloading the frame seems to bypass the problem.
+      // TODO(tbarzic): Remove this once the problem has been properly
+      //     addressed.
+      if (!this.paymentPortalReloaded_) {
+        this.paymentPortalReloaded_ = true;
+        $('portalFrameWebview').reload();
+      } else {
+        chrome.send('paymentPortalLoad', ['ok']);
+      }
     },
 
     /**
@@ -127,6 +137,27 @@ cr.define('mobile', function() {
     sendInitialMessage_: function(paymentUrl) {
       $('portalFrameWebview')
           .contentWindow.postMessage({msg: 'loadedInWebview'}, paymentUrl);
+    },
+
+    /**
+     * Shows the payment portal webview when the payment portal starts loading.
+     * The goal is to ensure that any interstitial UI in the webview is visible
+     * to the user, at least temporarily, until https://crbug.com/894281 is
+     * resolved.
+     *
+     * @param {string} paymentUrl The payment portal URL - used to restrict
+     *     origins to which the message is sent.
+     * @private
+     */
+    showPaymentPortalOnLoadStart_: function(paymentUrl, evt) {
+      if (!evt.isTopLevel ||
+          new URL(evt.url).origin != new URL(paymentUrl).origin) {
+        return;
+      }
+
+      $('finalStatus').classList.add('hidden');
+      $('systemStatus').classList.add('hidden');
+      $('portalFrame').classList.remove('hidden');
     },
 
     /**
@@ -159,6 +190,8 @@ cr.define('mobile', function() {
       var frame = document.createElement('webview');
       frame.id = 'portalFrameWebview';
 
+      this.paymentPortalReloaded_ = false;
+
       $('portalFrame').appendChild(frame);
 
       frame.addEventListener(
@@ -174,6 +207,11 @@ cr.define('mobile', function() {
       frame.addEventListener(
           'loadstop',
           this.sendInitialMessage_.bind(this, deviceInfo.payment_url));
+
+      frame.addEventListener(
+          'loadstart',
+          this.showPaymentPortalOnLoadStart_.bind(
+              this, deviceInfo.payment_url));
 
       if (deviceInfo.post_data && deviceInfo.post_data.length) {
         mobile.util.postDeviceDataToWebview(frame, deviceInfo);

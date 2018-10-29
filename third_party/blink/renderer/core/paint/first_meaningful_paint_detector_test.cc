@@ -103,13 +103,6 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
  protected:
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
-
-  TimeDelta GetNetwork0QuietWindowTimeout() {
-    return FirstMeaningfulPaintDetector::kNetwork0QuietWindowTimeout;
-  }
-  TimeDelta GetNetwork2QuietWindowTimeout() {
-    return FirstMeaningfulPaintDetector::kNetwork2QuietWindowTimeout;
-  }
 };
 
 TEST_F(FirstMeaningfulPaintDetectorTest, NoFirstPaint) {

@@ -6,8 +6,10 @@
 """Unittests for test_runner.py."""
 
 import collections
+import glob
 import json
 import os
+import subprocess
 import sys
 import unittest
 
@@ -343,6 +345,143 @@ class SimulatorTestRunnerTest(TestCase):
     )
     tr.launch()
     self.assertTrue(tr.logs)
+
+
+class WprProxySimulatorTestRunnerTest(TestCase):
+  """Tests for test_runner.WprProxySimulatorTestRunner."""
+
+  def setUp(self):
+    super(WprProxySimulatorTestRunnerTest, self).setUp()
+
+    def install_xcode(build, mac_toolchain_cmd, xcode_app_path):
+      return True
+
+    self.mock(test_runner, 'get_current_xcode_info', lambda: {
+        'version': 'test version', 'build': 'test build', 'path': 'test/path'})
+    self.mock(test_runner, 'install_xcode', install_xcode)
+    self.mock(test_runner.subprocess, 'check_output',
+              lambda _: 'fake-bundle-id')
+    self.mock(os.path, 'abspath', lambda path: '/abs/path/to/%s' % path)
+    self.mock(os.path, 'exists', lambda _: True)
+
+  def test_replay_path_not_found(self):
+    """Ensures ReplayPathNotFoundError is raised."""
+
+    self.mock(os.path, 'exists', lambda p: not p.endswith('bad-replay-path'))
+
+    with self.assertRaises(test_runner.ReplayPathNotFoundError):
+      test_runner.WprProxySimulatorTestRunner(
+        'fake-app',
+        'fake-iossim',
+        'bad-replay-path',
+        'platform',
+        'os',
+        'wpr-tools-path',
+        'xcode-version',
+        'xcode-build',
+        'out-dir',
+      )
+
+  def test_wpr_tools_not_found(self):
+    """Ensures WprToolsNotFoundError is raised."""
+
+    self.mock(os.path, 'exists', lambda p: not p.endswith('bad-tools-path'))
+
+    with self.assertRaises(test_runner.WprToolsNotFoundError):
+      test_runner.WprProxySimulatorTestRunner(
+        'fake-app',
+        'fake-iossim',
+        'replay-path',
+        'platform',
+        'os',
+        'bad-tools-path',
+        'xcode-version',
+        'xcode-build',
+        'out-dir',
+      )
+
+  def test_init(self):
+    """Ensures instance is created."""
+    tr = test_runner.WprProxySimulatorTestRunner(
+        'fake-app',
+        'fake-iossim',
+        'replay-path',
+        'platform',
+        'os',
+        'wpr-tools-path',
+        'xcode-version',
+        'xcode-build',
+        'out-dir',
+      )
+
+    self.assertTrue(tr)
+
+  def test_run(self):
+    """Ensures the _run method can handle passed and failed tests."""
+
+    class FakeStdout:
+      def __init__(self):
+        self.line_index = 0
+        self.lines = [
+          'Test Case \'-[a 1]\' started.',
+          'Test Case \'-[a 1]\' has uninteresting logs.',
+          'Test Case \'-[a 1]\' passed (0.1 seconds)',
+          'Test Case \'-[b 2]\' started.',
+          'Test Case \'-[b 2]\' passed (0.1 seconds)',
+          'Test Case \'-[c 3]\' started.',
+          'Test Case \'-[c 3]\' has interesting failure info.',
+          'Test Case \'-[c 3]\' failed (0.1 seconds)',
+        ]
+
+      def readline(self):
+        if self.line_index < len(self.lines):
+          return_line = self.lines[self.line_index]
+          self.line_index += 1
+          return return_line
+        else:
+          return None
+
+    class FakeProcess:
+      def __init__(self):
+        self.stdout = FakeStdout()
+        self.returncode = 0
+
+      def stdout(self):
+        return self.stdout
+
+      def wait(self):
+        return
+
+    def popen(recipe_cmd, env, stdout, stderr):
+      return FakeProcess()
+
+    tr = test_runner.WprProxySimulatorTestRunner(
+        'fake-app',
+        'fake-iossim',
+        'replay-path',
+        'platform',
+        'os',
+        'wpr-tools-path',
+        'xcode-version',
+        'xcode-build',
+        'out-dir',
+    )
+    self.mock(test_runner.WprProxySimulatorTestRunner, 'wprgo_start', lambda a,b: None)
+    self.mock(test_runner.WprProxySimulatorTestRunner, 'wprgo_stop', lambda _: None)
+
+    self.mock(os.path, 'isfile', lambda _: True)
+    self.mock(glob, 'glob', lambda _: ["file1", "file2"])
+    self.mock(subprocess, 'Popen', popen)
+
+    tr.xctest_path = 'fake.xctest'
+    cmd = tr.get_launch_command()
+    result = tr._run(cmd=cmd, shards=1)
+    self.assertIn('file1.a/1', result.passed_tests)
+    self.assertIn('file1.b/2', result.passed_tests)
+    self.assertIn('file1.c/3', result.failed_tests)
+    self.assertIn('file2.a/1', result.passed_tests)
+    self.assertIn('file2.b/2', result.passed_tests)
+    self.assertIn('file2.c/3', result.failed_tests)
 
 
 class DeviceTestRunnerTest(TestCase):

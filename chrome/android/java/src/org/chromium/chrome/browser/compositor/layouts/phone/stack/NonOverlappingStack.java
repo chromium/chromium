@@ -39,7 +39,7 @@ public class NonOverlappingStack extends Stack {
     /**
      * The scale the tabs should be shown at when there are two or more tabs open.
      */
-    private static final float SCALE_FRACTION_MULTIPLE_TABS = 0.60f;
+    private static final float SCALE_FRACTION_MULTIPLE_TABS = 0.54f;
 
     /**
      * The percentage of the screen that defines the spacing between tabs by default (no pinch).

@@ -55,7 +55,7 @@ void AndroidCdmFactory::Create(
   // Bound |cdm_created_cb| so we always fire it asynchronously.
   CdmCreatedCB bound_cdm_created_cb = BindToCurrentLoop(cdm_created_cb);
 
-  if (security_origin.unique()) {
+  if (security_origin.opaque()) {
     bound_cdm_created_cb.Run(nullptr, "Invalid origin.");
     return;
   }

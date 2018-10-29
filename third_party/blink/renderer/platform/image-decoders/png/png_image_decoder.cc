@@ -596,8 +596,10 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
   png_bytep row = row_buffer;
 
   if (png_bytep interlace_buffer = reader_->InterlaceBuffer()) {
-    unsigned color_channels = has_alpha ? 4 : 3;
-    row = interlace_buffer + (row_index * color_channels * Size().Width());
+    unsigned bytes_per_pixel = has_alpha ? 4 : 3;
+    if (decode_to_half_float_)
+      bytes_per_pixel *= 2;
+    row = interlace_buffer + (row_index * bytes_per_pixel * Size().Width());
     png_progressive_combine_row(reader_->PngPtr(), row, row_buffer);
   }
 

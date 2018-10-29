@@ -4,6 +4,7 @@
 
 #include "content/test/mock_clipboard_host.h"
 
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace content {
@@ -42,7 +43,7 @@ void MockClipboardHost::ReadAvailableTypes(
   if (!image_.isNull())
     types.push_back(base::UTF8ToUTF16("image/png"));
   for (auto& it : custom_data_) {
-    CHECK(std::find(types.begin(), types.end(), it.first) == types.end());
+    CHECK(!base::ContainsValue(types, it.first));
     types.push_back(it.first);
   }
   std::move(callback).Run(types, false);

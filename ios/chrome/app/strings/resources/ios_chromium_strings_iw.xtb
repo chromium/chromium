@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">‏קבלת גישה אל תכונות חכמות של Google ב-Chromium</translation>
 <translation id="2730884209570016437">‏Chromium לא יכול להשתמש במצלמה כי אפליקציה אחרת משתמשת בה</translation>
 <translation id="2797210818057553964">‏אפשר תמיד להתאים אישית דרך הגדרות Chromium</translation>
+<translation id="2915596697727466327">‏Chromium משתמש ב-Face ID כדי להבטיח גישה מאושרת לסיסמאות שלך.</translation>
 <translation id="3256316712990552818">‏הועתק אל Chromium</translation>
 <translation id="3413120535237193088">‏היכנס ל-Chromium כדי לקבל גישה אל הסימניות שלך בכל המכשירים.</translation>
 <translation id="3473048256428424907">‏הפעלת סורק ה-QR של Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">‏כרטיסיות שפתחת ב-Chromium במכשירים האחרים שלך יופיעו כאן.</translation>
 <translation id="495292094137889840">‏תחילת השימוש בסורק ה-QR של Chromium</translation>
 <translation id="5231355151045086930">‏יציאה מ-Chromium</translation>
-<translation id="5416919929805616771">‏נהנה מ-Chromium? ‏<ph name="BEGIN_LINK" />דרג את האפליקציה<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">‏ברוכים הבאים ל-Chromium‏</translation>
 <translation id="5945387852661427312">‏אתה נכנס עם חשבון המנוהל על-ידי <ph name="DOMAIN" /> ומעניק למנהל שלו שליטה על הנתונים שלך ב-Chromium. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chromium תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
 <translation id="6068866989048414399">‏התנאים וההגבלות של Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">‏אתה עובר מחשבון סינכרון <ph name="USER_EMAIL1" /> אל <ph name="USER_EMAIL2" />. נתוני Chromium הקיימים שלך מנוהלים על-ידי <ph name="DOMAIN" />. פעולה זו תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו ב-<ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">‏טיפ: <ph name="BEGIN_LINK" />העבר את Chromium לשורת המשימות<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">‏לחוויית Google משופרת ב-Chromium בהתבסס על המיקום שלך.</translation>
-<translation id="8353224596138547809">‏האם אתה מעוניין ש-Chromium ישמור את הסיסמה עבור אתר זה?</translation>
 <translation id="8508544542427105412">‏אפשר תמיד להתאים אישית את <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />. Google עשויה להשתמש בתוכן מאתרים שאליהם נכנסת, באינטראקציות בדפדפן ובפעילות גלישה כדי להתאים אישית את Chromium ואת שירותי Google, כמו Translate, החיפוש ומודעות.</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8809780021347235332">‏כדי לשמור תמונות, הקש על 'הגדרות' ואפשר ל-Chromium להשתמש בתמונות שלך</translation>

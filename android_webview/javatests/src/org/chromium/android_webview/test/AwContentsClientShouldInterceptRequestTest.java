@@ -81,20 +81,6 @@ public class AwContentsClientShouldInterceptRequestTest {
             }
         }
 
-        public static class OnLoadResourceHelper extends CallbackHelper {
-            private String mUrl;
-
-            public String getUrl() {
-                assert getCallCount() > 0;
-                return mUrl;
-            }
-
-            public void notifyCalled(String url) {
-                mUrl = url;
-                notifyCalled();
-            }
-        }
-
         @Override
         public AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request) {
             AwWebResourceResponse returnValue =
@@ -103,26 +89,14 @@ public class AwContentsClientShouldInterceptRequestTest {
             return returnValue;
         }
 
-        @Override
-        public void onLoadResource(String url) {
-            super.onLoadResource(url);
-            mOnLoadResourceHelper.notifyCalled(url);
-        }
-
         private ShouldInterceptRequestHelper mShouldInterceptRequestHelper;
-        private OnLoadResourceHelper mOnLoadResourceHelper;
 
         public ShouldInterceptRequestClient() {
             mShouldInterceptRequestHelper = new ShouldInterceptRequestHelper();
-            mOnLoadResourceHelper = new OnLoadResourceHelper();
         }
 
         public ShouldInterceptRequestHelper getShouldInterceptRequestHelper() {
             return mShouldInterceptRequestHelper;
-        }
-
-        public OnLoadResourceHelper getOnLoadResourceHelper() {
-            return mOnLoadResourceHelper;
         }
     }
 
@@ -323,7 +297,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
 
         onLoadResourceHelper.waitForCallback(callCount);
-        Assert.assertEquals(aboutPageUrl, onLoadResourceHelper.getUrl());
+        Assert.assertEquals(aboutPageUrl, onLoadResourceHelper.getLastLoadedResource());
     }
 
     @Test

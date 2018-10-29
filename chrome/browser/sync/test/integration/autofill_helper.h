@@ -22,6 +22,7 @@ class AutofillProfile;
 class AutofillType;
 class AutofillWebDataService;
 class CreditCard;
+struct PaymentsCustomerData;
 class PersonalDataManager;
 }  // namespace autofill
 
@@ -81,6 +82,10 @@ void SetServerCreditCards(
 
 void SetServerProfiles(int profile,
                        const std::vector<autofill::AutofillProfile>& profiles);
+
+void SetPaymentsCustomerData(
+    int profile,
+    const autofill::PaymentsCustomerData& customer_data);
 
 // Adds the autofill profile |autofill_profile| to sync profile |profile|.
 void AddProfile(int profile, const autofill::AutofillProfile& autofill_profile);

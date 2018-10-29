@@ -10,6 +10,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
@@ -206,6 +207,13 @@ inline v8::Local<v8::Value> ToV8SequenceInternal(
     v8::Local<v8::Object> creation_context,
     v8::Isolate*);
 
+template <typename T, size_t Extent>
+inline v8::Local<v8::Value> ToV8(base::span<T, Extent> value,
+                                 v8::Local<v8::Object> creation_context,
+                                 v8::Isolate* isolate) {
+  return ToV8SequenceInternal(value, creation_context, isolate);
+}
+
 template <typename T, wtf_size_t inlineCapacity>
 inline v8::Local<v8::Value> ToV8(const Vector<T, inlineCapacity>& value,
                                  v8::Local<v8::Object> creation_context,
@@ -231,14 +239,19 @@ inline v8::Local<v8::Value> ToV8(const Vector<std::pair<String, T>>& value,
     v8::Context::Scope context_scope(creation_context->CreationContext());
     object = v8::Object::New(isolate);
   }
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   for (unsigned i = 0; i < value.size(); ++i) {
     v8::Local<v8::Value> v8_value = ToV8(value[i].second, object, isolate);
     if (v8_value.IsEmpty())
       v8_value = v8::Undefined(isolate);
-    if (!V8CallBoolean(object->CreateDataProperty(
-            isolate->GetCurrentContext(), V8String(isolate, value[i].first),
-            v8_value)))
+    bool created_property;
+    if (!object
+             ->CreateDataProperty(
+                 context, V8AtomicString(isolate, value[i].first), v8_value)
+             .To(&created_property) ||
+        !created_property) {
       return v8::Local<v8::Value>();
+    }
   }
   return object;
 }
@@ -252,14 +265,19 @@ inline v8::Local<v8::Value> ToV8(const HeapVector<std::pair<String, T>>& value,
     v8::Context::Scope context_scope(creation_context->CreationContext());
     object = v8::Object::New(isolate);
   }
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   for (unsigned i = 0; i < value.size(); ++i) {
     v8::Local<v8::Value> v8_value = ToV8(value[i].second, object, isolate);
     if (v8_value.IsEmpty())
       v8_value = v8::Undefined(isolate);
-    if (!V8CallBoolean(object->CreateDataProperty(
-            isolate->GetCurrentContext(), V8String(isolate, value[i].first),
-            v8_value)))
+    bool created_property;
+    if (!object
+             ->CreateDataProperty(
+                 context, V8AtomicString(isolate, value[i].first), v8_value)
+             .To(&created_property) ||
+        !created_property) {
       return v8::Local<v8::Value>();
+    }
   }
   return object;
 }
@@ -276,6 +294,7 @@ inline v8::Local<v8::Value> ToV8SequenceInternal(
     v8::Context::Scope context_scope(creation_context->CreationContext());
     array = v8::Array::New(isolate, sequence.size());
   }
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   uint32_t index = 0;
   typename Sequence::const_iterator end = sequence.end();
   for (typename Sequence::const_iterator iter = sequence.begin(); iter != end;
@@ -283,9 +302,12 @@ inline v8::Local<v8::Value> ToV8SequenceInternal(
     v8::Local<v8::Value> value = ToV8(*iter, array, isolate);
     if (value.IsEmpty())
       value = v8::Undefined(isolate);
-    if (!V8CallBoolean(array->CreateDataProperty(isolate->GetCurrentContext(),
-                                                 index++, value)))
+    bool created_property;
+    if (!array->CreateDataProperty(context, index++, value)
+             .To(&created_property) ||
+        !created_property) {
       return v8::Local<v8::Value>();
+    }
   }
   return array;
 }

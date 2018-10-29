@@ -31,6 +31,7 @@ namespace content {
 class ResourceContext;
 class URLLoaderThrottle;
 class SignedExchangePrefetchHandler;
+class SignedExchangePrefetchMetricRecorder;
 
 // PrefetchURLLoader which basically just keeps draining the data.
 class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
@@ -57,7 +58,9 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
       ResourceContext* resource_context,
-      scoped_refptr<net::URLRequestContextGetter> request_context_getter);
+      scoped_refptr<net::URLRequestContextGetter> request_context_getter,
+      scoped_refptr<SignedExchangePrefetchMetricRecorder>
+          signed_exchange_prefetch_metric_recorder);
   ~PrefetchURLLoader() override;
 
  private:
@@ -119,6 +122,11 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
 
   std::unique_ptr<SignedExchangePrefetchHandler>
       signed_exchange_prefetch_handler_;
+
+  GURL new_url_for_redirect_;
+
+  scoped_refptr<SignedExchangePrefetchMetricRecorder>
+      signed_exchange_prefetch_metric_recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchURLLoader);
 };

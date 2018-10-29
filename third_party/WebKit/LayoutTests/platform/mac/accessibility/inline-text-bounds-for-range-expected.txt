@@ -4,7 +4,6 @@ Tests that we can compute the bounds of a range of text from the accessibility t
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS text.length is 185
 Accessible text: "The Hitchhiker's Guide to the Galaxy has a few things to say on the subject of resumés. A resumé, it says, is about the most massively useful thing an interstellar hitch hiker can have."
 PASS appendedInlineText is text

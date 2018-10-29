@@ -30,6 +30,10 @@ component("file_manager") {
 }
 
 group("closure_compile") {
+  # Subfolders' closure_compile groups bundle the non-test "module" type-check
+  # groups as well as unittests and test_support.
+  testonly = true
+
   deps = [
     "audio_player/elements:closure_compile",
     "audio_player/js:closure_compile",
@@ -50,8 +54,12 @@ group("closure_compile") {
 }
 
 group("unit_test_data") {
+  testonly = true
   deps = [
+    "file_manager/background/js:unit_tests",
+    "file_manager/common/js:unit_tests",
     "file_manager/foreground/js:unit_tests",
+    "file_manager/foreground/js/ui:unit_tests",
     "gallery/js:unit_tests",
     "gallery/js/image_editor:unit_tests",
     "image_loader:unit_tests",

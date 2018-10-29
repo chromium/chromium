@@ -43,8 +43,7 @@ const char kAddressesKey[] = "addresses";
 
 bool AddressListFromListValue(const base::ListValue* value, AddressList* list) {
   list->clear();
-  for (base::ListValue::const_iterator it = value->begin(); it != value->end();
-       it++) {
+  for (auto it = value->begin(); it != value->end(); it++) {
     IPAddress address;
     std::string addr_string;
     if (!it->GetAsString(&addr_string) ||
@@ -290,8 +289,8 @@ void HostCache::ClearForHosts(
 
   bool changed = false;
   base::TimeTicks now = tick_clock_->NowTicks();
-  for (EntryMap::iterator it = entries_.begin(); it != entries_.end();) {
-    EntryMap::iterator next_it = std::next(it);
+  for (auto it = entries_.begin(); it != entries_.end();) {
+    auto next_it = std::next(it);
 
     if (host_filter.Run(it->first.hostname)) {
       RecordErase(ERASE_CLEAR, now, it->second);

@@ -14,6 +14,7 @@ namespace blink {
 
 class UnderlyingSourceBase;
 class ExceptionState;
+class MessagePort;
 class ScriptState;
 
 // This class has various methods for ReadableStream[Reader] implemented with
@@ -128,6 +129,20 @@ class CORE_EXPORT ReadableStreamOperations {
                   ScriptValue* new_stream1,
                   ScriptValue* new_stream2,
                   ExceptionState&);
+
+  // ReadableStreamSerialize. Returns a MessagePort which can be passed to
+  // ReadableStreamDeserialize to produce an equivalent ReadableStream in a
+  // different context.
+  static MessagePort* ReadableStreamSerialize(ScriptState*,
+                                              ScriptValue stream,
+                                              ExceptionState&);
+
+  // ReadableStreamDeserialize returns a new ReadableStream in the current
+  // context given a MessagePort which has possibly be transferred from another
+  // context.
+  static ScriptValue ReadableStreamDeserialize(ScriptState*,
+                                               MessagePort*,
+                                               ExceptionState&);
 };
 
 }  // namespace blink

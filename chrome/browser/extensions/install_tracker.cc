@@ -54,8 +54,7 @@ void InstallTracker::RemoveObserver(InstallObserver* observer) {
 
 const ActiveInstallData* InstallTracker::GetActiveInstall(
     const std::string& extension_id) const {
-  ActiveInstallsMap::const_iterator install_data =
-      active_installs_.find(extension_id);
+  auto install_data = active_installs_.find(extension_id);
   if (install_data == active_installs_.end())
     return NULL;
   else
@@ -76,8 +75,7 @@ void InstallTracker::RemoveActiveInstall(const std::string& extension_id) {
 
 void InstallTracker::OnBeginExtensionInstall(
     const InstallObserver::ExtensionInstallParams& params) {
-  ActiveInstallsMap::iterator install_data =
-      active_installs_.find(params.extension_id);
+  auto install_data = active_installs_.find(params.extension_id);
   if (install_data == active_installs_.end()) {
     ActiveInstallData install_data(params.extension_id);
     active_installs_.insert(std::make_pair(params.extension_id, install_data));
@@ -94,8 +92,7 @@ void InstallTracker::OnBeginExtensionDownload(const std::string& extension_id) {
 
 void InstallTracker::OnDownloadProgress(const std::string& extension_id,
                                         int percent_downloaded) {
-  ActiveInstallsMap::iterator install_data =
-      active_installs_.find(extension_id);
+  auto install_data = active_installs_.find(extension_id);
   if (install_data != active_installs_.end()) {
     install_data->second.percent_downloaded = percent_downloaded;
   } else {

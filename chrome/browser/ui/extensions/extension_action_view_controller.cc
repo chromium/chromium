@@ -290,6 +290,11 @@ void ExtensionActionViewController::OnExtensionHostDestroyed(
 ExtensionActionViewController::PageInteractionStatus
 ExtensionActionViewController::GetPageInteractionStatus(
     content::WebContents* web_contents) const {
+  // The |web_contents| can be null, if TabStripModel::GetActiveWebContents()
+  // returns null. In that case, default to kNone.
+  if (!web_contents)
+    return PageInteractionStatus::kNone;
+
   // We give priority to kPending, because it's the one that's most important
   // for users to see.
   if (HasBeenBlocked(web_contents))

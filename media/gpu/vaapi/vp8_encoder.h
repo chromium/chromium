@@ -60,7 +60,7 @@ class VP8Encoder : public AcceleratedVideoEncoder {
     // it. Returns true on success.
     virtual bool SubmitFrameParameters(
         EncodeJob* job,
-        const media::VP8Encoder::EncodeParams& encode_params,
+        const VP8Encoder::EncodeParams& encode_params,
         scoped_refptr<VP8Picture> pic,
         const Vp8ReferenceFrameVector& ref_frames) = 0;
 

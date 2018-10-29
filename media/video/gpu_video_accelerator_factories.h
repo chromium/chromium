@@ -78,6 +78,10 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   // Returns the |route_id| of the command buffer, or 0 if there is none.
   virtual int32_t GetCommandBufferRouteId() = 0;
 
+  // Return true if |config| is potentially supported by a decoder created with
+  // CreateVideoDecoder().
+  virtual bool IsDecoderConfigSupported(const VideoDecoderConfig& config) = 0;
+
   virtual std::unique_ptr<media::VideoDecoder> CreateVideoDecoder(
       MediaLog* media_log,
       const RequestOverlayInfoCB& request_overlay_info_cb,

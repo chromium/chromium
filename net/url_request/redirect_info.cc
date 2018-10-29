@@ -124,7 +124,6 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
     int http_status_code,
     const GURL& new_location,
     bool insecure_scheme_was_upgraded,
-    bool token_binding_negotiated,
     bool copy_fragment) {
   DCHECK(!response_headers ||
          response_headers->response_code() == http_status_code);
@@ -170,15 +169,6 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
                                               GURL(original_referrer),
                                               redirect_info.new_url)
           .spec();
-
-  if (response_headers) {
-    std::string include_referer;
-    response_headers->GetNormalizedHeader("include-referred-token-binding-id",
-                                          &include_referer);
-    include_referer = base::ToLowerASCII(include_referer);
-    if (include_referer == "true" && token_binding_negotiated)
-      redirect_info.referred_token_binding_host = original_url.host();
-  }
 
   return redirect_info;
 }

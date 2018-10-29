@@ -32,7 +32,7 @@ FontFaceSetWorker::FontFaceSetWorker(WorkerGlobalScope& worker)
 FontFaceSetWorker::~FontFaceSetWorker() = default;
 
 WorkerGlobalScope* FontFaceSetWorker::GetWorker() const {
-  return ToWorkerGlobalScope(GetExecutionContext());
+  return To<WorkerGlobalScope>(GetExecutionContext());
 }
 
 AtomicString FontFaceSetWorker::status() const {

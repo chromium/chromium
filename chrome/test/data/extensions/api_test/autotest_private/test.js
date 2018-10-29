@@ -169,6 +169,14 @@ chrome.test.runTests([
             });
         });
   },
+  // This launches Chrome.
+  function launchApp() {
+    chrome.autotestPrivate.launchApp('mgndgikekgjfcpckkfioiadnlibdjbkf',
+      function() {
+        chrome.test.assertNoLastError();
+        chrome.test.succeed();
+      });
+  },
   function setCrostiniEnabled() {
     chrome.autotestPrivate.setCrostiniEnabled(true, chrome.test.callbackFail(
         'Crostini is not available for the current user'));
@@ -176,6 +184,23 @@ chrome.test.runTests([
   function runCrostiniInstaller() {
     chrome.autotestPrivate.runCrostiniInstaller(chrome.test.callbackFail(
         'Crostini is not available for the current user'));
+  },
+  function bootstrapMachineLearningService() {
+    chrome.autotestPrivate.bootstrapMachineLearningService(
+        chrome.test.callbackFail('ML Service connection error'));
+  },
+  function runCrostiniUninstaller() {
+    chrome.autotestPrivate.runCrostiniUninstaller(chrome.test.callbackFail(
+        'Crostini is not available for the current user'));
+  },
+  function takeScreenshot() {
+    chrome.autotestPrivate.takeScreenshot(
+      function(base64Png) {
+        chrome.test.assertTrue(base64Png.length > 0);
+        chrome.test.assertNoLastError();
+        chrome.test.succeed();
+      }
+    )
   },
   function getPrinterList() {
     chrome.autotestPrivate.getPrinterList(function(){

@@ -20,7 +20,7 @@ UI_BASE_EXPORT
 
 // |window| is the window that we are saving focus for.  This
 // method snapshots the currently focused view.
-- (id)initWithWindow:(NSWindow*)window;
+- (instancetype)initWithWindow:(NSWindow*)window;
 
 // Attempts to restore focus to the snapshotted view.  Returns YES if
 // focus was restored.  Will not restore focus if the view is no

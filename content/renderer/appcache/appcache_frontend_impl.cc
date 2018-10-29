@@ -27,8 +27,7 @@ void AppCacheFrontendImpl::OnCacheSelected(int host_id,
 
 void AppCacheFrontendImpl::OnStatusChanged(const std::vector<int>& host_ids,
                                            AppCacheStatus status) {
-  for (std::vector<int>::const_iterator i = host_ids.begin();
-       i != host_ids.end(); ++i) {
+  for (auto i = host_ids.begin(); i != host_ids.end(); ++i) {
     WebApplicationCacheHostImpl* host = GetHost(*i);
     if (host)
       host->OnStatusChanged(status);
@@ -42,8 +41,7 @@ void AppCacheFrontendImpl::OnEventRaised(const std::vector<int>& host_ids,
       AppCacheEventID::APPCACHE_PROGRESS_EVENT);  // See OnProgressEventRaised.
   DCHECK_NE(event_id,
             AppCacheEventID::APPCACHE_ERROR_EVENT);  // See OnErrorEventRaised.
-  for (std::vector<int>::const_iterator i = host_ids.begin();
-       i != host_ids.end(); ++i) {
+  for (auto i = host_ids.begin(); i != host_ids.end(); ++i) {
     WebApplicationCacheHostImpl* host = GetHost(*i);
     if (host)
       host->OnEventRaised(event_id);
@@ -55,8 +53,7 @@ void AppCacheFrontendImpl::OnProgressEventRaised(
     const GURL& url,
     int num_total,
     int num_complete) {
-  for (std::vector<int>::const_iterator i = host_ids.begin();
-       i != host_ids.end(); ++i) {
+  for (auto i = host_ids.begin(); i != host_ids.end(); ++i) {
     WebApplicationCacheHostImpl* host = GetHost(*i);
     if (host)
       host->OnProgressEventRaised(url, num_total, num_complete);
@@ -66,8 +63,7 @@ void AppCacheFrontendImpl::OnProgressEventRaised(
 void AppCacheFrontendImpl::OnErrorEventRaised(
     const std::vector<int>& host_ids,
     const AppCacheErrorDetails& details) {
-  for (std::vector<int>::const_iterator i = host_ids.begin();
-       i != host_ids.end(); ++i) {
+  for (auto i = host_ids.begin(); i != host_ids.end(); ++i) {
     WebApplicationCacheHostImpl* host = GetHost(*i);
     if (host)
       host->OnErrorEventRaised(details);

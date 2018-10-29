@@ -50,20 +50,8 @@
     People
   </message>
   <if expr="is_macosx">
-    <message name="IDS_PROFILES_BUBBLE_ACCESSIBLE_NAME" desc="Title of the avatar bubble menu for accessibility">
-      Switch Users
-    </message>
-    <message name="IDS_PROFILES_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The help text for the avatar bubble.">
-      Switch to a different user.
-    </message>
     <message name="IDS_PROFILES_CREATE_NEW_PROFILE_OPTION" desc="In Title Case. Create new profile menu item and button title.">
       Add Person...
-    </message>
-    <message name="IDS_PROFILES_NEW_AVATAR_BUTTON_ACCESSIBLE_NAME" desc="Title of the avatar button for accessibility">
-      <ph name="PROFILE_NAME">$1<ex>User</ex></ph> Switch person
-    </message>
-    <message name="IDS_PROFILES_ACCOUNT_BUTTON_AUTH_ERROR_ACCESSIBLE_NAME" desc="Title of the avatar button for accessibility">
-      <ph name="PROFILE_NAME">$1<ex>User</ex></ph>: sign in error
     </message>
   </if>
   <message name="IDS_PROFILES_PROFILE_SIGNOUT_BUTTON" desc="Button in the avatar menu bubble view to sign-out the current profile.">
@@ -85,7 +73,10 @@
     Syncing to
   </message>
   <message name="IDS_PROFILES_DICE_SIGNIN_BUTTON" desc="Button in the profile user menu to sign in and turn on Sync.">
-    Sign in
+    Turn on sync...
+  </message>
+  <message name="IDS_PROFILES_DICE_NOT_SYNCING_TITLE" desc="Title of the sync promo account card in the user menu.">
+    Not syncing
   </message>
   <message name="IDS_PROFILES_DICE_SIGNIN_FIRST_ACCOUNT_BUTTON" desc="Button to sign in and turn on Sync for a specific web account.">
     Sync as <ph name="ACCOUNT_FULL_NAME">$1<ex>John Doe</ex></ph>
@@ -115,7 +106,7 @@
     Payment methods
   </message>
   <message name="IDS_PROFILES_ADDRESSES_LINK" desc="Text of the menu item leading to the list of autofill addresses.">
-    Addresses
+    Addresses and more
   </message>
   <if expr="not use_titlecase">
     <message name="IDS_PROFILES_DICE_SIGNIN_WITH_ANOTHER_ACCOUNT_BUTTON" desc="Button to sign in and turn on Sync with another web account.">

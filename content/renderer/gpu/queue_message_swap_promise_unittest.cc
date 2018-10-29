@@ -14,7 +14,7 @@
 #include "base/test/scoped_task_environment.h"
 #include "cc/trees/swap_promise.h"
 #include "content/common/render_frame_metadata.mojom.h"
-#include "content/common/view_messages.h"
+#include "content/common/widget_messages.h"
 #include "content/renderer/gpu/frame_swap_message_queue.h"
 #include "content/renderer/gpu/layer_tree_view.h"
 #include "content/renderer/render_widget.h"
@@ -31,9 +31,9 @@ class TestSyncMessageFilter : public IPC::SyncMessageFilter {
   TestSyncMessageFilter() : IPC::SyncMessageFilter(nullptr) {}
 
   bool Send(IPC::Message* message) override {
-    if (message->type() == ViewHostMsg_FrameSwapMessages::ID) {
-      ViewHostMsg_FrameSwapMessages::Param param;
-      ViewHostMsg_FrameSwapMessages::Read(message, &param);
+    if (message->type() == WidgetHostMsg_FrameSwapMessages::ID) {
+      WidgetHostMsg_FrameSwapMessages::Param param;
+      WidgetHostMsg_FrameSwapMessages::Read(message, &param);
       std::vector<IPC::Message> messages = std::get<1>(param);
       last_swap_messages_.clear();
       for (const IPC::Message& message : messages) {

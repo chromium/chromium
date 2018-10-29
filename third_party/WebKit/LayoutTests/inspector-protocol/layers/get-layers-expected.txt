@@ -76,21 +76,7 @@ Tests LayerTree domain reporting layers.
         "width": 100,
         "height": 50,
         "paintCount": "number",
-        "drawsContent": true,
-        "stickyPositionConstraint": {
-            "stickyBoxRect": {
-                "x": 0,
-                "y": 0,
-                "width": 100,
-                "height": 50
-            },
-            "containingBlockRect": {
-                "x": 0,
-                "y": 0,
-                "width": 100,
-                "height": 200
-            }
-        }
+        "drawsContent": true
     },
     {
         "layerId": "string",
@@ -101,22 +87,7 @@ Tests LayerTree domain reporting layers.
         "width": 100,
         "height": 25,
         "paintCount": "number",
-        "drawsContent": true,
-        "stickyPositionConstraint": {
-            "stickyBoxRect": {
-                "x": 0,
-                "y": 0,
-                "width": 100,
-                "height": 25
-            },
-            "containingBlockRect": {
-                "x": 0,
-                "y": 0,
-                "width": 100,
-                "height": 50
-            },
-            "nearestLayerShiftingContainingBlock": "string"
-        }
+        "drawsContent": true
     },
     {
         "layerId": "string",
@@ -207,21 +178,7 @@ Tests LayerTree domain reporting layers.
         "width": 100,
         "height": 50,
         "paintCount": "number",
-        "drawsContent": true,
-        "stickyPositionConstraint": {
-            "stickyBoxRect": {
-                "x": 0,
-                "y": 0,
-                "width": 100,
-                "height": 50
-            },
-            "containingBlockRect": {
-                "x": 0,
-                "y": 0,
-                "width": 100,
-                "height": 200
-            }
-        }
+        "drawsContent": true
     },
     {
         "layerId": "string",
@@ -232,22 +189,7 @@ Tests LayerTree domain reporting layers.
         "width": 100,
         "height": 25,
         "paintCount": "number",
-        "drawsContent": true,
-        "stickyPositionConstraint": {
-            "stickyBoxRect": {
-                "x": 0,
-                "y": 0,
-                "width": 100,
-                "height": 25
-            },
-            "containingBlockRect": {
-                "x": 0,
-                "y": 0,
-                "width": 100,
-                "height": 50
-            },
-            "nearestLayerShiftingContainingBlock": "string"
-        }
+        "drawsContent": true
     },
     {
         "layerId": "string",

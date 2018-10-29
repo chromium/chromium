@@ -30,6 +30,9 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(
       switches::kAutoplayPolicy,
       switches::autoplay::kNoUserGestureRequiredPolicy);
+  // Disable fallback after decode error to avoid unexpected test pass on the
+  // fallback path.
+  scoped_feature_list_.InitAndDisableFeature(media::kFallbackAfterDecodeError);
 }
 
 void MediaBrowserTest::RunMediaTestPage(const std::string& html_page,

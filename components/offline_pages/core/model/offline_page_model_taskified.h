@@ -79,7 +79,6 @@ class OfflinePageModelTaskified : public OfflinePageModel,
   // OfflinePageModel implementation.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-
   void SavePage(const SavePageParams& save_page_params,
                 std::unique_ptr<OfflinePageArchiver> archiver,
                 content::WebContents* web_contents,
@@ -108,10 +107,8 @@ class OfflinePageModelTaskified : public OfflinePageModel,
                      MultipleOfflinePageItemCallback callback) override;
   void GetPagesByNamespace(const std::string& name_space,
                            MultipleOfflinePageItemCallback callback) override;
-  // Get all pages in the namespaces that will be removed on cache reset.
   void GetPagesRemovedOnCacheReset(
       MultipleOfflinePageItemCallback callback) override;
-  // Get all pages in the namespaces that are shown in download ui.
   void GetPagesSupportedByDownloads(
       MultipleOfflinePageItemCallback callback) override;
   void GetPagesByRequestOrigin(
@@ -130,16 +127,11 @@ class OfflinePageModelTaskified : public OfflinePageModel,
   void HasThumbnailForOfflineId(
       int64_t offline_id,
       base::OnceCallback<void(bool)> callback) override;
-
   const base::FilePath& GetInternalArchiveDirectory(
       const std::string& name_space) const override;
   bool IsArchiveInInternalDir(const base::FilePath& file_path) const override;
-
   ClientPolicyController* GetPolicyController() override;
-
   OfflineEventLogger* GetLogger() override;
-
-  // Publish an offline page from our internal directory to a public directory.
   void PublishInternalArchive(
       const OfflinePageItem& offline_page,
       std::unique_ptr<OfflinePageArchiver> archiver,

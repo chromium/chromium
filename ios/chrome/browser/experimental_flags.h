@@ -20,7 +20,7 @@ enum GaiaEnvironment {
 
 enum WhatsNewPromoStatus {
   WHATS_NEW_DEFAULT = 0,         // Not forced to enable a promo.
-  WHATS_NEW_APP_RATING,          // Force enable App Rating Promo.
+  WHATS_NEW_TEST_COMMAND_TIP,    // Test Tip that runs a command.
   WHATS_NEW_MOVE_TO_DOCK_TIP,    // Force enable Move To Dock Tip promo.
   WHATS_NEW_PROMO_STATUS_COUNT,  // Count of Whats New Promo Statuses.
 };
@@ -39,9 +39,6 @@ std::string GetOriginServerHost();
 // If |WHATS_NEW_DEFAULT| is returned, no promo is force enabled.
 WhatsNewPromoStatus GetWhatsNewPromoStatus();
 
-// Whether the lru snapshot cache experiment is enabled.
-bool IsLRUSnapshotCacheEnabled();
-
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
 
@@ -54,21 +51,9 @@ bool IsNewClearBrowsingDataUIEnabled();
 // Whether the 3rd party keyboard omnibox workaround is enabled.
 bool IsThirdPartyKeyboardWorkaroundEnabled();
 
-// Whether RecentTabs UI Reboot is enabled.
-// TODO (crbug.com/884718): Remove all use of this flag.
-bool IsRecentTabsUIRebootEnabled();
-
 // Whether the Bookmarks UI Reboot is enabled.
 // TODO (crbug.com/884719): Remove all use of this flag.
 bool IsBookmarksUIRebootEnabled();
-
-// Whether the Reading List UI Reboot is enabled.
-// TODO (crbug.com/884720): Remove all use of this flag.
-bool IsReadingListUIRebootEnabled();
-
-// Whether the Settings UI Reboot is enabled.
-// TODO (crbug.com/884721): Remove all use of this flag.
-bool IsSettingsUIRebootEnabled();
 
 // Whether the application group sandbox must be cleared before starting.
 // Calling this method will reset the flag to false, so the sandbox is cleared

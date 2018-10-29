@@ -36,7 +36,6 @@ class FakeBaseTabStripController : public TabStripController {
   void ToggleSelected(int index) override;
   void AddSelectionFromAnchorTo(int index) override;
   void CloseTab(int index, CloseTabSource source) override;
-  void ToggleTabAudioMute(int index) override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
                              ui::MenuSourceType source_type) override;

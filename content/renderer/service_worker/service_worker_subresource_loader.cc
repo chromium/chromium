@@ -54,8 +54,9 @@ network::ResourceResponseHead RewriteServiceWorkerTime(
 // whenever a response or redirect is received.
 class HeaderRewritingURLLoaderClient : public network::mojom::URLLoaderClient {
  public:
-  using RewriteHeaderCallback = base::Callback<network::ResourceResponseHead(
-      const network::ResourceResponseHead&)>;
+  using RewriteHeaderCallback =
+      base::RepeatingCallback<network::ResourceResponseHead(
+          const network::ResourceResponseHead&)>;
 
   HeaderRewritingURLLoaderClient(
       network::mojom::URLLoaderClientPtr url_loader_client,
@@ -204,6 +205,14 @@ void ServiceWorkerSubresourceLoader::StartRequest(
   controller_connector_observer_.Add(controller_connector_.get());
   fetch_request_restarted_ = false;
 
+  // |service_worker_start_time| becomes web-exposed
+  // PerformanceResourceTiming#workerStart, which is the time before starting
+  // the worker or just before firing a fetch event. The idea is (fetchStart -
+  // workerStart) is the time taken to start service worker. In our case, we
+  // don't really know if the worker is started or not yet, but here is a good
+  // time to set workerStart, since it will either started soon or the fetch
+  // event will be dispatched soon.
+  // https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-workerstart
   response_head_.service_worker_start_time = base::TimeTicks::Now();
   DispatchFetchEvent();
 }
@@ -215,10 +224,6 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
       controller_connector_->GetControllerServiceWorker(
           mojom::ControllerServiceWorkerPurpose::FETCH_SUB_RESOURCE);
 
-  // GetControllerServiceWorker() makes sure that the connection to the
-  // service worker is established, which means that the service worker
-  // has started if it wasn't running.
-  response_head_.service_worker_ready_time = base::TimeTicks::Now();
   response_head_.load_timing.send_start = base::TimeTicks::Now();
   response_head_.load_timing.send_end = base::TimeTicks::Now();
 
@@ -285,6 +290,8 @@ void ServiceWorkerSubresourceLoader::OnFetchEventFinished(
   SettleFetchEventDispatch(
       mojo::ConvertTo<blink::ServiceWorkerStatusCode>(status));
 
+  // TODO(bashi): Remove these histograms. They are replaced with
+  // ServiceWorker.LoadTiming.Subresource UMAs.
   base::TimeDelta delay = actual_dispatch_time - request_dispatch_time;
   UMA_HISTOGRAM_TIMES("ServiceWorker.EventDispatchingDelay", delay);
   UMA_HISTOGRAM_TIMES("ServiceWorker.EventDispatchingDelay_FETCH_SUB_RESOURCE",
@@ -348,33 +355,37 @@ void ServiceWorkerSubresourceLoader::SettleFetchEventDispatch(
 
 void ServiceWorkerSubresourceLoader::OnResponse(
     blink::mojom::FetchAPIResponsePtr response,
-    base::TimeTicks dispatch_event_time) {
+    blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
                          "ServiceWorkerSubresourceLoader::OnResponse", this,
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   SettleFetchEventDispatch(blink::ServiceWorkerStatusCode::kOk);
+  UpdateResponseTiming(std::move(timing));
   StartResponse(std::move(response), nullptr /* body_as_stream */);
 }
 
 void ServiceWorkerSubresourceLoader::OnResponseStream(
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
-    base::TimeTicks dispatch_event_time) {
+    blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerSubresourceLoader::OnResponseStream", this,
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   SettleFetchEventDispatch(blink::ServiceWorkerStatusCode::kOk);
+  UpdateResponseTiming(std::move(timing));
   StartResponse(std::move(response), std::move(body_as_stream));
 }
 
 void ServiceWorkerSubresourceLoader::OnFallback(
-    base::TimeTicks dispatch_event_time) {
+    blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
   SettleFetchEventDispatch(blink::ServiceWorkerStatusCode::kOk);
+  UpdateResponseTiming(std::move(timing));
   // When the request mode is CORS or CORS-with-forced-preflight and the origin
   // of the request URL is different from the security origin of the document,
   // we can't simply fallback to the network here. It is because the CORS
   // preflight logic is implemented in Blink. So we return a "fallback required"
   // response to Blink.
+  // TODO(falken): Remove this mechanism after OOB-CORS ships.
   if ((resource_request_.fetch_request_mode ==
            network::mojom::FetchRequestMode::kCORS ||
        resource_request_.fetch_request_mode ==
@@ -385,6 +396,11 @@ void ServiceWorkerSubresourceLoader::OnFallback(
     TRACE_EVENT_WITH_FLOW0(
         "ServiceWorker", "ServiceWorkerSubresourceLoader::OnFallback", this,
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    //  Add "Service Worker Fallback Required" which DevTools knows means to not
+    //  show the response in the Network tab as it's just an internal
+    //  implementation mechanism.
+    response_head_.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        "HTTP/1.1 400 Service Worker Fallback Required");
     response_head_.was_fetched_via_service_worker = true;
     response_head_.was_fallback_required_by_service_worker = true;
     CommitResponseHeaders();
@@ -415,7 +431,18 @@ void ServiceWorkerSubresourceLoader::OnFallback(
   // factory dies, the web context that made the request is dead so the request
   // is moot.
   DCHECK(!fallback_factory_->HasOneRef());
+
+  RecordTimingMetrics(false /* handled */);
   delete this;
+}
+
+void ServiceWorkerSubresourceLoader::UpdateResponseTiming(
+    blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
+  // |service_worker_ready_time| becomes web-exposed
+  // PerformanceResourceTiming#fetchStart, which is the time just before
+  // dispatching the fetch event, so set it to |dispatch_event_time|.
+  response_head_.service_worker_ready_time = timing->dispatch_event_time;
+  fetch_event_timing_ = std::move(timing);
 }
 
 void ServiceWorkerSubresourceLoader::StartResponse(
@@ -438,7 +465,7 @@ void ServiceWorkerSubresourceLoader::StartResponse(
   // Handle a redirect response. ComputeRedirectInfo returns non-null redirect
   // info if the given response is a redirect.
   redirect_info_ = ServiceWorkerLoaderHelpers::ComputeRedirectInfo(
-      resource_request_, response_head_, false /* token_binding_negotiated */);
+      resource_request_, response_head_);
   if (redirect_info_) {
     if (redirect_limit_-- == 0) {
       CommitCompleted(net::ERR_TOO_MANY_REDIRECTS);
@@ -509,6 +536,9 @@ void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code) {
       "ServiceWorker", "ServiceWorkerSubresourceLoader::CommitCompleted", this,
       TRACE_EVENT_FLAG_FLOW_IN, "error_code", net::ErrorToString(error_code));
 
+  if (error_code == net::OK)
+    RecordTimingMetrics(true /* handled */);
+
   DCHECK_LT(status_, Status::kCompleted);
   DCHECK(url_loader_client_.is_bound());
   body_as_blob_.reset();
@@ -522,6 +552,63 @@ void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code) {
   // Invalidate weak pointers to prevent callbacks after commit.  This can
   // occur if an error code is encountered which forces an early commit.
   weak_factory_.InvalidateWeakPtrs();
+}
+
+void ServiceWorkerSubresourceLoader::RecordTimingMetrics(bool handled) {
+  DCHECK(fetch_event_timing_);
+
+  // |report_raw_headers| is true when DevTools is attached. Don't record
+  // metrics when DevTools is attached to reduce noise.
+  // TODO(bashi): Relying on |report_raw_header| to detect DevTools existence
+  // is brittle. Figure out a better way to check DevTools is attached.
+  if (resource_request_.report_raw_headers)
+    return;
+
+  // |fetch_event_timing_| can be recorded in different process. We can get
+  // reasonable metrics only when TimeTicks are consistent across processes.
+  if (!base::TimeTicks::IsHighResolution() ||
+      !base::TimeTicks::IsConsistentAcrossProcesses())
+    return;
+
+  base::TimeTicks completion_time = base::TimeTicks::Now();
+
+  // Time spent for service worker startup including mojo message delay.
+  UMA_HISTOGRAM_TIMES(
+      "ServiceWorker.LoadTiming.Subresource."
+      "ForwardServiceWorkerToWorkerReady",
+      response_head_.service_worker_ready_time -
+          response_head_.service_worker_start_time);
+
+  // Time spent by fetch handlers.
+  UMA_HISTOGRAM_TIMES(
+      "ServiceWorker.LoadTiming.Subresource."
+      "WorkerReadyToFetchHandlerEnd",
+      fetch_event_timing_->respond_with_settled_time -
+          response_head_.service_worker_ready_time);
+
+  if (handled) {
+    // Mojo message delay. If the controller service worker lives in the same
+    // process this captures service worker thread -> background thread delay.
+    // Otherwise, this captures IPC delay (this renderer process -> other
+    // renderer process).
+    UMA_HISTOGRAM_TIMES(
+        "ServiceWorker.LoadTiming.Subresource."
+        "FetchHandlerEndToResponseReceived",
+        response_head_.load_timing.receive_headers_end -
+            fetch_event_timing_->respond_with_settled_time);
+
+    // Time spent reading response body.
+    UMA_HISTOGRAM_TIMES(
+        "ServiceWorker.LoadTiming.Subresource."
+        "ResponseReceivedToCompleted",
+        completion_time - response_head_.load_timing.receive_headers_end);
+  } else {
+    // Mojo message delay (network fallback case). See above for the detail.
+    UMA_HISTOGRAM_TIMES(
+        "ServiceWorker.LoadTiming.Subresource."
+        "FetchHandlerEndToFallbackNetwork",
+        completion_time - fetch_event_timing_->respond_with_settled_time);
+  }
 }
 
 // ServiceWorkerSubresourceLoader: URLLoader implementation -----------------
@@ -586,7 +673,7 @@ int ServiceWorkerSubresourceLoader::StartBlobReading(
   UMA_HISTOGRAM_TIMES("ServiceWorker.SubresourceStartBlobReadingDelay", delay);
 
   return ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
-      &body_as_blob_, body_as_blob_size_, resource_request_.headers,
+      &body_as_blob_, body_as_blob_size_,
       base::BindOnce(&ServiceWorkerSubresourceLoader::OnBlobReadingComplete,
                      weak_factory_.GetWeakPtr()),
       body_pipe);

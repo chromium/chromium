@@ -17,6 +17,7 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_processing.h"
 #include "media/base/audio_parameters.h"
+#include "media/webrtc/audio_delay_stats_reporter.h"
 #include "media/webrtc/audio_processor_controls.h"
 #include "media/webrtc/echo_information.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
@@ -99,6 +100,9 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor final
   // The APM writes the processed data here.
   std::unique_ptr<AudioBus> output_bus_;
   std::vector<float*> output_ptrs_;
+
+  // For reporting audio delay stats.
+  AudioDelayStatsReporter audio_delay_stats_reporter_;
 
   // Low-priority task queue for doing AEC dump recordings. It has to
   // out-live |audio_processing_| and be created/destroyed from the same

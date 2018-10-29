@@ -261,9 +261,8 @@ FloatRect::operator gfx::RectF() const {
 FloatRect UnionRect(const Vector<FloatRect>& rects) {
   FloatRect result;
 
-  size_t count = rects.size();
-  for (size_t i = 0; i < count; ++i)
-    result.Unite(rects[i]);
+  for (const auto& rect : rects)
+    result.Unite(rect);
 
   return result;
 }

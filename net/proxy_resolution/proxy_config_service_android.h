@@ -78,8 +78,9 @@ class NET_EXPORT ProxyConfigServiceAndroid : public ProxyConfigService {
 
   void SetProxyOverride(const std::string& host,
                         int port,
-                        const std::vector<std::string>& exclusion_list);
-  void ClearProxyOverride();
+                        const std::vector<std::string>& exclusion_list,
+                        base::OnceClosure callback);
+  void ClearProxyOverride(base::OnceClosure callback);
 
  private:
   friend class ProxyConfigServiceAndroidTestBase;

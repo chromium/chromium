@@ -511,7 +511,7 @@ TEST(BrowserAccessibilityManagerTest, TestMoveChildUp) {
   ASSERT_EQ(0, CountedBrowserAccessibility::global_obj_count_);
 }
 
-// Temporarily disabled due to bug http://crbug.com/870661
+// Temporarily disabled due to bug http://crbug.com/765490
 TEST(BrowserAccessibilityManagerTest, DISABLED_TestFatalError) {
   // Test that BrowserAccessibilityManager raises a fatal error
   // (which will crash the renderer) if the same id is used in

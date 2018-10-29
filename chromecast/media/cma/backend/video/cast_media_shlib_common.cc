@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/public/cast_media_shlib.h"
-
-#include "chromecast/media/cma/backend/stream_mixer.h"
 #include "chromecast/public/media/media_capabilities_shlib.h"
 
 namespace chromecast {

@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.VisibleForTesting;
 
@@ -342,6 +343,13 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      */
     public void setBackgroundDrawable(Drawable background) {
         mPopupWindow.setBackgroundDrawable(background);
+    }
+
+    /**
+     * Sets the elevation of the popup, if elevation is supported.
+     */
+    public void setElevation(float elevation) {
+        ApiCompatibilityUtils.setElevation(mPopupWindow, elevation);
     }
 
     // RectProvider.Observer implementation.

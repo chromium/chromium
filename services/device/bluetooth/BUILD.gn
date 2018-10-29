@@ -23,6 +23,8 @@ source_set("bluetooth_system") {
 
   deps = [
     "//base",
+    "//dbus",
+    "//device/bluetooth",
   ]
 }
 
@@ -35,6 +37,8 @@ source_set("bluetooth_system_tests") {
 
   deps = [
     ":bluetooth_system",
+    "//dbus",
+    "//device/bluetooth",
     "//net",
     "//services/device:test_support",
     "//testing/gtest",

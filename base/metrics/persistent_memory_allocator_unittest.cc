@@ -747,7 +747,7 @@ TEST(FilePersistentMemoryAllocatorTest, CreationTest) {
   }
 
   std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
-  mmfile->Initialize(file_path);
+  ASSERT_TRUE(mmfile->Initialize(file_path));
   EXPECT_TRUE(mmfile->IsValid());
   const size_t mmlength = mmfile->length();
   EXPECT_GE(meminfo1.total, mmlength);
@@ -805,9 +805,9 @@ TEST(FilePersistentMemoryAllocatorTest, ExtendTest) {
   // Map it as an extendable read/write file and append to it.
   {
     std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
-    mmfile->Initialize(
+    ASSERT_TRUE(mmfile->Initialize(
         File(file_path, File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE),
-        region, MemoryMappedFile::READ_WRITE_EXTEND);
+        region, MemoryMappedFile::READ_WRITE_EXTEND));
     FilePersistentMemoryAllocator allocator(std::move(mmfile), region.size, 0,
                                             "", false);
     EXPECT_EQ(static_cast<size_t>(before_size), allocator.used());
@@ -824,9 +824,9 @@ TEST(FilePersistentMemoryAllocatorTest, ExtendTest) {
   // Verify that it's still an acceptable file.
   {
     std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
-    mmfile->Initialize(
+    ASSERT_TRUE(mmfile->Initialize(
         File(file_path, File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE),
-        region, MemoryMappedFile::READ_WRITE_EXTEND);
+        region, MemoryMappedFile::READ_WRITE_EXTEND));
     EXPECT_TRUE(FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, true));
     EXPECT_TRUE(
         FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, false));
@@ -869,7 +869,7 @@ TEST(FilePersistentMemoryAllocatorTest, AcceptableTest) {
         read_only ? MemoryMappedFile::READ_ONLY : MemoryMappedFile::READ_WRITE;
 
     mmfile.reset(new MemoryMappedFile());
-    mmfile->Initialize(File(file_path, file_flags), map_access);
+    ASSERT_TRUE(mmfile->Initialize(File(file_path, file_flags), map_access));
     EXPECT_EQ(filesize, mmfile->length());
     if (FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, read_only)) {
       // Make sure construction doesn't crash. It will, however, cause
@@ -911,7 +911,7 @@ TEST(FilePersistentMemoryAllocatorTest, AcceptableTest) {
     ASSERT_TRUE(PathExists(file_path));
 
     mmfile.reset(new MemoryMappedFile());
-    mmfile->Initialize(File(file_path, file_flags), map_access);
+    ASSERT_TRUE(mmfile->Initialize(File(file_path, file_flags), map_access));
     EXPECT_EQ(filesize, mmfile->length());
     if (FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, read_only)) {
       // Make sure construction doesn't crash. It will, however, cause
@@ -967,12 +967,12 @@ TEST_F(PersistentMemoryAllocatorTest, TruncateTest) {
       SCOPED_TRACE(StringPrintf("read_only=%s", read_only ? "true" : "false"));
 
       std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
-      mmfile->Initialize(
+      ASSERT_TRUE(mmfile->Initialize(
           File(file_path, File::FLAG_OPEN |
                               (read_only ? File::FLAG_READ
                                          : File::FLAG_READ | File::FLAG_WRITE)),
           read_only ? MemoryMappedFile::READ_ONLY
-                    : MemoryMappedFile::READ_WRITE);
+                    : MemoryMappedFile::READ_WRITE));
       ASSERT_TRUE(
           FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, read_only));
 

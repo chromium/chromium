@@ -1,8 +1,7 @@
-CONSOLE WARNING: line 1: Percentages row tracks and gutters for indefinite height grid containers will be resolved against the intrinsic height instead of being treated as auto and zero respectively. This change will happen in M70, around October 2018. See https://www.chromestatus.com/feature/6708326821789696 for more details.
+CONSOLE WARNING: Percentages row tracks and gutters for indefinite height grid containers will be resolved against the intrinsic height instead of being treated as auto and zero respectively. This change will happen in M70, around October 2018. See https://www.chromestatus.com/feature/6708326821789696 for more details.
 Test that setting and getting grid-template-columns and grid-template-rows works as expected
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 Test getting grid-template-columns and grid-template-rows set through CSS
 PASS window.getComputedStyle(gridWithFixedElement, '').getPropertyValue('grid-template-columns') is "[first] 10px"
@@ -27,6 +26,7 @@ PASS window.getComputedStyle(gridWithRepeatElement, '').getPropertyValue('grid-t
 PASS window.getComputedStyle(gridWithRepeatElement, '').getPropertyValue('grid-template-rows') is "100px [nav nav2] 150px [nav nav2] 150px [last]"
 PASS window.getComputedStyle(gridWithEmptyBrackets, '').getPropertyValue('grid-template-columns') is "10px"
 PASS window.getComputedStyle(gridWithEmptyBrackets, '').getPropertyValue('grid-template-rows') is "20px 50px"
+
 
 Test getting and setting grid-template-columns and grid-template-rows through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "[first] 18px"
@@ -82,6 +82,7 @@ PASS element.style.gridTemplateColumns is "[first] auto [foo bar] 20px [foo bar]
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "220px [foo] 300px [baz]"
 PASS element.style.gridTemplateRows is "220px [foo] 50% [baz]"
 
+
 Test getting invalid grid-template-columns and grid-template-rows set through CSS
 PASS window.getComputedStyle(gridWithoutBrackets, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(gridWithoutBrackets, '').getPropertyValue('grid-template-rows') is "none"
@@ -95,6 +96,7 @@ PASS window.getComputedStyle(gridWithContiguousBrackets, '').getPropertyValue('g
 PASS window.getComputedStyle(gridWithContiguousBrackets, '').getPropertyValue('grid-template-rows') is "none"
 PASS window.getComputedStyle(gridWithInvalidCustomIdents, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(gridWithInvalidCustomIdents, '').getPropertyValue('grid-template-rows') is "none"
+
 
 Test getting and setting invalid grid-template-columns and grid-template-rows through JS
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"

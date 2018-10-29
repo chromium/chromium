@@ -1,0 +1,42 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/icons.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_shared_css.html">
+
+<dom-module id="ui-page">
+  <template>
+    <style include="multidevice-setup-shared">
+      iron-icon {
+        --iron-icon-width: 32px;
+        --iron-icon-height: 32px;
+      }
+
+      h1 {
+        color: var(--google-grey-900);
+        font-family: 'Google Sans';
+        font-size: 28px;
+        font-weight: normal;
+        line-height: 28px;
+        margin: 0;
+        padding-top: 36px;
+      }
+
+      #message-container {
+        box-sizing: border-box;
+        min-height: 32px;
+        padding-top: 16px;
+      }
+    </style>
+    <iron-icon icon="[[computeIconIdentifier_(iconName)]]"></iron-icon>
+    <h1>[[headerText]]</h1>
+    <div id="message-container">
+      <slot name="message"></slot>
+    </div>
+    <div id="additional-content-container">
+      <slot name="additional-content"></slot>
+    </div>
+  </template>
+  <script src="chrome://resources/cr_components/chromeos/multidevice_setup/ui_page.js">
+  </script>
+</dom-module>

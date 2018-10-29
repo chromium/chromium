@@ -1,0 +1,8 @@
+{
+  "name": "My extension with an invisible icon",
+  "version": "1.0",
+  "icons": {
+    "16": "invisible_icon.png"
+  },
+  "manifest_version": 2
+}

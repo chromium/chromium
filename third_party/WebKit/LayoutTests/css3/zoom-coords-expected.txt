@@ -1,6 +1,8 @@
 Test
 Test
 Test
+
+
 This test checks getBoundingClientRect() on zoomed HTML and SVG elements
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -9,7 +11,9 @@ Gray rectangles: 100x50
 Green rectangles: 100x50, zoom=200%
 Blue rectangles: 200x100, zoom=50%
 
+
 Checking HTML elements:
+
 
 PASS div1.left is 0
 PASS div1.top is 0
@@ -18,12 +22,14 @@ PASS div1.height is 50
 PASS div1.right is 100
 PASS div1.bottom is 50
 
+
 PASS div2.left is 0
 PASS div2.top is 25
 PASS div2.width is 100
 PASS div2.height is 50
 PASS div2.right is 100
 PASS div2.bottom is 75
+
 
 PASS div3.left is 0
 PASS div3.top is 300
@@ -32,7 +38,9 @@ PASS div3.height is 100
 PASS div3.right is 200
 PASS div3.bottom is 400
 
+
 Checking SVG elements:
+
 
 PASS svg1.left is 0
 PASS svg1.top is 250
@@ -55,6 +63,7 @@ PASS image1.bottom is 275
 PASS text1.left is 100
 PASS text1.top is within 1 of 283
 PASS text1.height is within 1 of 6
+
 
 PASS svg2.left is 75
 PASS svg2.top is 100
@@ -79,6 +88,7 @@ PASS text2.top is within 1 of 132
 PASS text2.width is within 0.02 of text1.width
 PASS text2.height is within 0.02 of text1.height
 
+
 PASS svg3.left is 900
 PASS svg3.top is 500
 PASS svg3.width is 300
@@ -101,6 +111,7 @@ PASS text3.left is 1100
 PASS text3.top is within 1 of 565
 PASS text3.width is within 0.02 of (text1.width * 2)
 PASS text3.height is within 0.02 of (text1.height * 2)
+
 
 PASS successfullyParsed is true
 

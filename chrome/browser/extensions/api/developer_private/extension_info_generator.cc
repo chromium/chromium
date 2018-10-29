@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 
 #include <iterator>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -222,6 +223,53 @@ void ConstructCommands(CommandService* command_service,
   }
 }
 
+// Creates and returns a SpecificSiteControls object for the given
+// |granted_permissions| and |withheld_permissions|.
+std::unique_ptr<developer::SpecificSiteControls> GetSpecificSiteControls(
+    const PermissionSet& runtime_granted_permissions,
+    const PermissionSet& withheld_permissions) {
+  auto controls = std::make_unique<developer::SpecificSiteControls>();
+  constexpr bool kIncludeApiPermissions = false;
+  controls->has_all_hosts =
+      withheld_permissions.ShouldWarnAllHosts(kIncludeApiPermissions) ||
+      runtime_granted_permissions.ShouldWarnAllHosts(kIncludeApiPermissions);
+
+  auto get_distinct_hosts = [](const URLPatternSet& patterns) {
+    std::set<std::string> distinct_hosts;
+    for (URLPattern pattern : patterns) {
+      // We only allow addition/removal of full hosts (since from a
+      // permissions point of view, path is irrelevant). We always make the
+      // path wildcard when adding through this UI, but the optional
+      // permissions API may allow adding permissions with paths.
+      // TODO(devlin): Investigate, and possibly change the optional
+      // permissions API.
+      pattern.SetPath("/*");
+      distinct_hosts.insert(pattern.GetAsString());
+    }
+    return distinct_hosts;
+  };
+
+  std::set<std::string> distinct_granted =
+      get_distinct_hosts(runtime_granted_permissions.effective_hosts());
+  std::set<std::string> distinct_withheld =
+      get_distinct_hosts(withheld_permissions.effective_hosts());
+  controls->hosts.reserve(distinct_granted.size() + distinct_withheld.size());
+  for (auto& host : distinct_granted) {
+    developer::SiteControl host_control;
+    host_control.host = std::move(host);
+    host_control.granted = true;
+    controls->hosts.push_back(std::move(host_control));
+  }
+  for (auto& host : distinct_withheld) {
+    developer::SiteControl host_control;
+    host_control.host = std::move(host);
+    host_control.granted = false;
+    controls->hosts.push_back(std::move(host_control));
+  }
+
+  return controls;
+}
+
 // Populates the |permissions| data for the given |extension|.
 void AddPermissionsInfo(content::BrowserContext* browser_context,
                         const Extension& extension,
@@ -284,22 +332,9 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
       permissions->host_access = developer::HOST_ACCESS_ON_CLICK;
     } else {
       permissions->host_access = developer::HOST_ACCESS_ON_SPECIFIC_SITES;
-      std::set<std::string> distinct_hosts;
-      for (auto pattern : runtime_granted_permissions->effective_hosts()) {
-        // We only allow addition/removal of full hosts (since from a
-        // permissions point of view, path is irrelevant). We always make the
-        // path wildcard when adding through this UI, but the optional
-        // permissions API may allow adding permissions with paths.
-        // TODO(devlin): Investigate, and possibly change the optional
-        // permissions API.
-        pattern.SetPath("/*");
-        distinct_hosts.insert(pattern.GetAsString());
-      }
-
-      permissions->runtime_host_permissions =
-          std::make_unique<std::vector<std::string>>(
-              std::make_move_iterator(distinct_hosts.begin()),
-              std::make_move_iterator(distinct_hosts.end()));
+      permissions->specific_site_controls = GetSpecificSiteControls(
+          *runtime_granted_permissions,
+          extension.permissions_data()->withheld_permissions());
     }
   }
 }

@@ -266,6 +266,34 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
   }
 }
 
+TEST_F(FormAutofillUtilsTest, InferButtonTitleForFormTest) {
+  static const AutofillFieldUtilCase test_cases[] = {
+      {"<button>", "<form id='target'><button>Sign Up</button></form>",
+       "Sign Up%"},
+      {"<input type='submit'>",
+       "<form id='target'><input type='submit' value='Sign In'></form>",
+       "Sign In$"},
+      {"several labels",
+       "<form id='target'><button type='button'>Show "
+       "password</button><button type='submit'>Register</button></form>",
+       "Register&Show password%"}};
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.description);
+    LoadHTML(test_case.html);
+    WebLocalFrame* web_frame = GetMainFrame();
+    ASSERT_NE(nullptr, web_frame);
+    const WebElement& target =
+        web_frame->GetDocument().GetElementById("target");
+    ASSERT_FALSE(target.IsNull());
+    const WebFormElement& form_target = target.ToConst<WebFormElement>();
+    ASSERT_FALSE(form_target.IsNull());
+
+    base::string16 button_title =
+        autofill::form_util::InferButtonTitleForTesting(form_target);
+    EXPECT_EQ(base::UTF8ToUTF16(test_case.expected_label), button_title);
+  }
+}
+
 TEST_F(FormAutofillUtilsTest, IsEnabled) {
   LoadHTML(
       "<input type='text' id='name1'>"

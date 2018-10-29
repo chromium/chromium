@@ -1,3 +1,1 @@
 This tests checks that adding grid items when some of them are positioned does not crash.
-
-

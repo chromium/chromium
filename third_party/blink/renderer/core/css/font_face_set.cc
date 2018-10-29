@@ -118,7 +118,7 @@ void FontFaceSet::Trace(blink::Visitor* visitor) {
   FontFace::LoadFontCallback::Trace(visitor);
 }
 
-size_t FontFaceSet::size() const {
+wtf_size_t FontFaceSet::size() const {
   if (!InActiveContext())
     return non_css_connected_faces_.size();
   return CSSConnectedFontFaceList().size() + non_css_connected_faces_.size();
@@ -153,7 +153,7 @@ void FontFaceSet::LoadFontPromiseResolver::LoadFonts() {
     return;
   }
 
-  for (size_t i = 0; i < font_faces_.size(); i++)
+  for (wtf_size_t i = 0; i < font_faces_.size(); i++)
     font_faces_[i]->LoadWithCallback(this);
 }
 

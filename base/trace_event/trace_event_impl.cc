@@ -16,8 +16,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
 #include "base/trace_event/trace_log.h"
+#include "base/trace_event/traced_value.h"
 
 namespace base {
 namespace trace_event {

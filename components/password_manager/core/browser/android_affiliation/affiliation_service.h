@@ -21,6 +21,7 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }  // namespace network
 
@@ -107,6 +108,7 @@ class AffiliationService : public KeyedService {
   // thread corresponding to |backend_task_runner_|.
   void Initialize(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      network::NetworkConnectionTracker* network_connection_tracker,
       const base::FilePath& db_path);
 
   // Looks up facets affiliated with the facet identified by |facet_uri| and

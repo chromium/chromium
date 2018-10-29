@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <set>
 #include <string>
+#include <vector>
 
-#include <windows.data.xml.dom.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
@@ -33,7 +35,6 @@
 
 namespace mswr = Microsoft::WRL;
 namespace winui = ABI::Windows::UI;
-namespace winxml = ABI::Windows::Data::Xml;
 
 namespace {
 
@@ -185,27 +186,14 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
 };
 
 class MockIToastActivatedEventArgs
-    : public winui::Notifications::IToastActivatedEventArgs {
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<
+              Microsoft::WRL::WinRt | Microsoft::WRL::InhibitRoOriginateError>,
+          winui::Notifications::IToastActivatedEventArgs> {
  public:
   explicit MockIToastActivatedEventArgs(const base::string16& args)
       : arguments_(args) {}
-  virtual ~MockIToastActivatedEventArgs() = default;
-
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid,
-                                           void** ppvObject) override {
-    return E_NOTIMPL;
-  }
-  ULONG STDMETHODCALLTYPE AddRef() override { return 1; }
-  ULONG STDMETHODCALLTYPE Release() override { return 0; }
-  HRESULT STDMETHODCALLTYPE GetIids(ULONG* iidCount, IID** iids) override {
-    return E_NOTIMPL;
-  }
-  HRESULT STDMETHODCALLTYPE GetRuntimeClassName(HSTRING* className) override {
-    return E_NOTIMPL;
-  }
-  HRESULT STDMETHODCALLTYPE GetTrustLevel(TrustLevel* trustLevel) override {
-    return E_NOTIMPL;
-  }
+  ~MockIToastActivatedEventArgs() override = default;
 
   HRESULT STDMETHODCALLTYPE get_Arguments(HSTRING* value) override {
     base::win::ScopedHString arguments =

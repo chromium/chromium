@@ -43,7 +43,7 @@ bool BufferedLineReader::GetLine(String& line) {
       ScanCharacter(kNewlineCharacter);
       maybe_skip_lf_ = false;
     }
-    // If there was no (new) data available, then keep m_maybeSkipLF set,
+    // If there was no (new) data available, then keep maybe_skip_lf_ set,
     // and fall through all the way down to the EOS check at the end of
     // the method.
   }

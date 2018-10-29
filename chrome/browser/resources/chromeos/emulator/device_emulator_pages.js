@@ -34,6 +34,6 @@ Polymer({
 
   /** @private */
   onSelectedPageChange_: function() {
-    this.$.drawer.closeDrawer();
+    this.$.drawer.close();
   },
 });

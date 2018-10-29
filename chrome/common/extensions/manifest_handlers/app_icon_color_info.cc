@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/image_util.h"
@@ -19,12 +20,12 @@ namespace errors = manifest_errors;
 
 namespace {
 
-const AppIconColorInfo& GetInfo(const Extension* extension) {
-  CR_DEFINE_STATIC_LOCAL(const AppIconColorInfo, fallback, ());
+const AppIconColorInfo& GetAppIconColorInfo(const Extension* extension) {
+  static const base::NoDestructor<AppIconColorInfo> fallback;
 
   AppIconColorInfo* info = static_cast<AppIconColorInfo*>(
       extension->GetManifestData(keys::kAppIconColor));
-  return info ? *info : fallback;
+  return info ? *info : *fallback;
 }
 
 }  // namespace
@@ -37,13 +38,13 @@ AppIconColorInfo::~AppIconColorInfo() {
 
 // static
 SkColor AppIconColorInfo::GetIconColor(const Extension* extension) {
-  return GetInfo(extension).icon_color_;
+  return GetAppIconColorInfo(extension).icon_color_;
 }
 
 // static
 const std::string& AppIconColorInfo::GetIconColorString(
     const Extension* extension) {
-  return GetInfo(extension).icon_color_string_;
+  return GetAppIconColorInfo(extension).icon_color_string_;
 }
 
 AppIconColorHandler::AppIconColorHandler() {

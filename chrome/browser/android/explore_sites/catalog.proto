@@ -17,7 +17,9 @@ message Catalog {
 
 // A logical grouping of sites, with a title and an icon.
 message Category {
-  // The canonical types of category.
+  // The canonical types of category.  These must be kept in sync with
+  // CategoryType in ExploreSitesCatagory.java and ExploreSitesCategories in
+  // enums.xml.
   enum CategoryType {
     DEFAULT = 0;
     SOCIAL = 1;
@@ -74,4 +76,30 @@ message Site {
   // will be in the language presented by the site, not localized to the user's
   // language preferences.
   string title = 3;
+}
+
+message GetCatalogRequest {
+  reserved 1;
+
+  // The country code for the catalog that was returned.
+  string country_code = 2;
+
+  // The latest version token the client currently has cached as received in
+  // GetCatalogResponse.
+  string version_token = 3;
+}
+
+message GetCatalogResponse {
+  reserved 2;
+
+  // Catalog of categories and sites that are appropriate for the client. Will
+  // be empty if the client sends a request with the latest timestamp.
+  Catalog catalog = 1;
+
+  // The country code for the catalog that was returned.
+  string country_code = 3;
+
+  // The version token for the latest ExploreSites Catalog. This is a
+  // server-generated opaque string.
+  string version_token = 4;
 }

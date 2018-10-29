@@ -317,7 +317,11 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
             for h, d in host_device_tuples]
         dev.PushChangedFiles(
             host_device_tuples_substituted,
-            delete_device_stale=True)
+            delete_device_stale=True,
+            # Some gtest suites, e.g. unit_tests, have data dependencies that
+            # can take longer than the default timeout to push. See
+            # crbug.com/791632 for context.
+            timeout=600)
         if not host_device_tuples:
           dev.RemovePath(device_root, force=True, recursive=True, rename=True)
           dev.RunShellCommand(['mkdir', '-p', device_root], check_return=True)

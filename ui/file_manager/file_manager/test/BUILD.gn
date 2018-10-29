@@ -8,7 +8,6 @@ action("create_test_main") {
   script = "//ui/file_manager/file_manager/test/scripts/create_test_main.py"
   output = "$target_gen_dir/../test.html"
   sources = [
-    "../../../webui/resources/css/text_defaults.css",
     "../background/js/background_common_scripts.js",
     "../background/js/background_scripts.js",
     "../foreground/elements/elements_bundle.html",
@@ -18,8 +17,13 @@ action("create_test_main") {
     "../foreground/js/elements_importer.js",
     "../foreground/js/main_scripts.js",
     "../main.html",
+    "//chrome/app/file_manager_strings.grdp",
+    "//chrome/browser/chromeos/extensions/file_manager/private_api_strings.cc",
+    "//ui/webui/resources/css/text_defaults.css",
     "check_select.js",
-    "crostini.js",
+    "crostini_mount.js",
+    "crostini_share.js",
+    "crostini_tasks.js",
     "js/strings.js",
     "quick_view.js",
     "uma.js",
@@ -27,12 +31,6 @@ action("create_test_main") {
   args = [ "--output=" + rebase_path(output, root_build_dir) ]
   outputs = [
     output,
-    "$target_gen_dir/gen/css/text_defaults.css",
-    "$target_gen_dir/gen/elements/elements_bundle.html",
-    "$target_gen_dir/gen/elements/files_quick_view.html",
-    "$target_gen_dir/gen/elements/files_safe_media.html",
-    "$target_gen_dir/gen/elements/files_safe_media.js",
-    "$target_gen_dir/gen/js/elements_importer.js",
   ]
 }
 
@@ -40,7 +38,9 @@ js_type_check("closure_compile") {
   deps = [
     ":check_select",
     ":closure_compile_externs",
-    ":crostini",
+    ":crostini_mount",
+    ":crostini_share",
+    ":crostini_tasks",
     ":quick_view",
     ":uma",
   ]
@@ -72,7 +72,23 @@ js_library("check_select") {
   ]
 }
 
-js_library("crostini") {
+js_library("crostini_mount") {
+  deps = [
+    "../foreground/js:crostini",
+    "js:test_util",
+    "//ui/webui/resources/js:webui_resource_test",
+  ]
+}
+
+js_library("crostini_share") {
+  deps = [
+    "../foreground/js:crostini",
+    "js:test_util",
+    "//ui/webui/resources/js:webui_resource_test",
+  ]
+}
+
+js_library("crostini_tasks") {
   deps = [
     "../foreground/js:crostini",
     "js:test_util",

@@ -15,18 +15,7 @@
 
 namespace ui {
 
-class EventDeviceInfoTest : public testing::Test {
- public:
-  EventDeviceInfoTest();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventDeviceInfoTest);
-};
-
-EventDeviceInfoTest::EventDeviceInfoTest() {
-}
-
-TEST_F(EventDeviceInfoTest, BasicUsbGamepad) {
+TEST(EventDeviceInfoTest, BasicUsbGamepad) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kXboxGamepad, &devinfo));
 
@@ -36,9 +25,11 @@ TEST_F(EventDeviceInfoTest, BasicUsbGamepad) {
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_TRUE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_USB, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, BasicCrosKeyboard) {
+TEST(EventDeviceInfoTest, BasicCrosKeyboard) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kLinkKeyboard, &devinfo));
 
@@ -48,9 +39,11 @@ TEST_F(EventDeviceInfoTest, BasicCrosKeyboard) {
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, BasicCrosTouchscreen) {
+TEST(EventDeviceInfoTest, BasicCrosTouchscreen) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kLinkTouchscreen, &devinfo));
 
@@ -60,9 +53,11 @@ TEST_F(EventDeviceInfoTest, BasicCrosTouchscreen) {
   EXPECT_TRUE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, BasicCrosTouchpad) {
+TEST(EventDeviceInfoTest, BasicCrosTouchpad) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kLinkTouchpad, &devinfo));
 
@@ -72,9 +67,11 @@ TEST_F(EventDeviceInfoTest, BasicCrosTouchpad) {
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, BasicUsbKeyboard) {
+TEST(EventDeviceInfoTest, BasicUsbKeyboard) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kHpUsbKeyboard, &devinfo));
 
@@ -84,9 +81,11 @@ TEST_F(EventDeviceInfoTest, BasicUsbKeyboard) {
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_USB, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, BasicUsbKeyboard_Extra) {
+TEST(EventDeviceInfoTest, BasicUsbKeyboard_Extra) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kHpUsbKeyboard_Extra, &devinfo));
 
@@ -96,9 +95,11 @@ TEST_F(EventDeviceInfoTest, BasicUsbKeyboard_Extra) {
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_USB, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, BasicUsbMouse) {
+TEST(EventDeviceInfoTest, BasicUsbMouse) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kLogitechUsbMouse, &devinfo));
 
@@ -108,9 +109,11 @@ TEST_F(EventDeviceInfoTest, BasicUsbMouse) {
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_USB, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, BasicUsbTouchscreen) {
+TEST(EventDeviceInfoTest, BasicUsbTouchscreen) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kMimoTouch2Touchscreen, &devinfo));
 
@@ -120,9 +123,11 @@ TEST_F(EventDeviceInfoTest, BasicUsbTouchscreen) {
   EXPECT_TRUE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_USB, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, BasicUsbTablet) {
+TEST(EventDeviceInfoTest, BasicUsbTablet) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kWacomIntuosPtS_Pen, &devinfo));
 
@@ -132,9 +137,11 @@ TEST_F(EventDeviceInfoTest, BasicUsbTablet) {
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_TRUE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_USB, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, BasicUsbTouchpad) {
+TEST(EventDeviceInfoTest, BasicUsbTouchpad) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kWacomIntuosPtS_Finger, &devinfo));
 
@@ -144,9 +151,11 @@ TEST_F(EventDeviceInfoTest, BasicUsbTouchpad) {
   EXPECT_FALSE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_USB, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, HybridKeyboardWithMouse) {
+TEST(EventDeviceInfoTest, HybridKeyboardWithMouse) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kLogitechTouchKeyboardK400, &devinfo));
 
@@ -159,7 +168,7 @@ TEST_F(EventDeviceInfoTest, HybridKeyboardWithMouse) {
   EXPECT_FALSE(devinfo.HasGamepad());
 }
 
-TEST_F(EventDeviceInfoTest, AbsoluteMouseTouchscreen) {
+TEST(EventDeviceInfoTest, AbsoluteMouseTouchscreen) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kElo_TouchSystems_2700, &devinfo));
 
@@ -170,9 +179,11 @@ TEST_F(EventDeviceInfoTest, AbsoluteMouseTouchscreen) {
   EXPECT_TRUE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_USB, devinfo.device_type());
 }
 
-TEST_F(EventDeviceInfoTest, OnScreenStylus) {
+TEST(EventDeviceInfoTest, OnScreenStylus) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kWilsonBeachActiveStylus, &devinfo));
 
@@ -182,6 +193,36 @@ TEST_F(EventDeviceInfoTest, OnScreenStylus) {
   EXPECT_TRUE(devinfo.HasTouchscreen());
   EXPECT_FALSE(devinfo.HasTablet());
   EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, devinfo.device_type());
+}
+
+TEST(EventDeviceInfoTest, HammerKeyboard) {
+  EventDeviceInfo devinfo;
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kHammerKeyboard, &devinfo));
+
+  EXPECT_TRUE(devinfo.HasKeyboard());
+  EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasTouchpad());
+  EXPECT_FALSE(devinfo.HasTouchscreen());
+  EXPECT_FALSE(devinfo.HasTablet());
+  EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, devinfo.device_type());
+}
+
+TEST(EventDeviceInfoTest, HammerTouchpad) {
+  EventDeviceInfo devinfo;
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kHammerTouchpad, &devinfo));
+
+  EXPECT_FALSE(devinfo.HasKeyboard());
+  EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_TRUE(devinfo.HasTouchpad());
+  EXPECT_FALSE(devinfo.HasTouchscreen());
+  EXPECT_FALSE(devinfo.HasTablet());
+  EXPECT_FALSE(devinfo.HasGamepad());
+
+  EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, devinfo.device_type());
 }
 
 }  // namespace ui

@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/favicon/favicon_view.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "url/gurl.h"
@@ -24,8 +24,6 @@ namespace {
 const CGFloat kFaviconWidth = 16;
 // The width and height of the favicon container view.
 const CGFloat kFaviconContainerWidth = 28;
-// The text color of the URL and metadata labels.
-const CGFloat kSecondaryLabelLightGrayTextColor = 0x8E8E93;
 // Default delimiter to use between the hostname and the supplemental URL text
 // if text is specified but not the delimiter.
 const char kDefaultSupplementalURLTextDelimiter[] = "•";
@@ -88,8 +86,14 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 
 // Returns the text to use when configuring a TableViewURLCell's title label.
 - (NSString*)titleLabelText {
-  return self.title.length ? self.title
-                           : base::SysUTF8ToNSString(self.URL.host());
+  if (self.title.length) {
+    return self.title;
+  } else if (base::SysUTF8ToNSString(self.URL.host()).length) {
+    return base::SysUTF8ToNSString(self.URL.host());
+  } else {
+    // Backup in case host returns nothing (e.g. about:blank).
+    return base::SysUTF8ToNSString(self.URL.spec());
+  }
 }
 
 // Returns the text to use when configuring a TableViewURLCell's URL label.
@@ -146,7 +150,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     _faviconContainerView = [[UIImageView alloc]
         initWithImage:[UIImage
                           imageNamed:@"table_view_cell_favicon_background"]];
-    _faviconView = [[FaviconViewNew alloc] init];
+    _faviconView = [[FaviconView alloc] init];
     _faviconView.contentMode = UIViewContentModeScaleAspectFit;
     _faviconView.clipsToBounds = YES;
     [_faviconContainerView addSubview:_faviconView];
@@ -160,12 +164,13 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     _titleLabel.adjustsFontForContentSizeCategory = YES;
     _URLLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     _URLLabel.adjustsFontForContentSizeCategory = YES;
-    _URLLabel.textColor = UIColorFromRGB(kSecondaryLabelLightGrayTextColor);
+    _URLLabel.textColor =
+        UIColorFromRGB(kTableViewSecondaryLabelLightGrayTextColor);
     _URLLabel.hidden = YES;
     _metadataLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     _metadataLabel.textColor =
-        UIColorFromRGB(kSecondaryLabelLightGrayTextColor);
+        UIColorFromRGB(kTableViewSecondaryLabelLightGrayTextColor);
     _metadataLabel.adjustsFontForContentSizeCategory = YES;
     _metadataLabel.hidden = YES;
 

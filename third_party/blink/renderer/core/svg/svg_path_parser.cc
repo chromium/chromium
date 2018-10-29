@@ -291,6 +291,10 @@ void SVGPathAbsolutizer::EmitSegment(const PathSegmentData& segment) {
 
   if (absolute_segment.command == kPathSegClosePath) {
     current_point_ = sub_path_point_;
+  } else if (absolute_segment.command == kPathSegLineToHorizontalAbs) {
+    current_point_.SetX(absolute_segment.target_point.X());
+  } else if (absolute_segment.command == kPathSegLineToVerticalAbs) {
+    current_point_.SetY(absolute_segment.target_point.Y());
   } else {
     current_point_ = absolute_segment.target_point;
     if (absolute_segment.command == kPathSegMoveToAbs) {

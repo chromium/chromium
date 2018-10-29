@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/common/password_form.h"
+#include "components/autofill/core/common/submission_source.h"
 
 namespace autofill {
 
@@ -196,6 +197,28 @@ base::string16 ValueElementVectorToString(
                    return p.first + base::ASCIIToUTF16("+") + p.second;
                  });
   return base::JoinString(pairs, base::ASCIIToUTF16(", "));
+}
+
+PasswordForm::SubmissionIndicatorEvent ToSubmissionIndicatorEvent(
+    SubmissionSource source) {
+  switch (source) {
+    case SubmissionSource::NONE:
+      return PasswordForm::SubmissionIndicatorEvent::NONE;
+    case SubmissionSource::SAME_DOCUMENT_NAVIGATION:
+      return PasswordForm::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+    case SubmissionSource::XHR_SUCCEEDED:
+      return PasswordForm::SubmissionIndicatorEvent::XHR_SUCCEEDED;
+    case SubmissionSource::FRAME_DETACHED:
+      return PasswordForm::SubmissionIndicatorEvent::FRAME_DETACHED;
+    case SubmissionSource::DOM_MUTATION_AFTER_XHR:
+      return PasswordForm::SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR;
+    case SubmissionSource::PROBABLY_FORM_SUBMITTED:
+      return PasswordForm::SubmissionIndicatorEvent::PROBABLE_FORM_SUBMISSION;
+    case SubmissionSource::FORM_SUBMISSION:
+      return PasswordForm::SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
+  }
+  // Unittests exercise this path, so do not put NOTREACHED() here.
+  return PasswordForm::SubmissionIndicatorEvent::NONE;
 }
 
 std::ostream& operator<<(std::ostream& os, const PasswordForm& form) {

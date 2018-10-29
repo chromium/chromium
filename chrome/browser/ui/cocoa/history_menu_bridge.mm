@@ -23,13 +23,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/text_elider.h"
 #include "ui/resources/grit/ui_resources.h"
 
 namespace {
-
-// Maximum number of pixels to use for a menu item title.
-const float kTitlePixelWidth = 400;
 
 // Number of days to consider when getting the number of visited items.
 const int kVisitedScope = 90;
@@ -293,12 +289,10 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(HistoryItem* item,
                                              NSInteger tag,
                                              NSInteger index) {
   // Elide the title of the history item, or use the URL if there is none.
-  std::string url = item->url.possibly_invalid_spec();
-  base::string16 full_title = item->title;
-  base::string16 title = gfx::ElideText(
-      full_title.empty() ? base::UTF8ToUTF16(url) : full_title,
-      gfx::FontList(gfx::Font([NSFont menuFontOfSize:0])), kTitlePixelWidth,
-      gfx::ELIDE_MIDDLE, gfx::Typesetter::NATIVE);
+  const std::string& url = item->url.possibly_invalid_spec();
+  const base::string16& full_title = item->title;
+  const base::string16& title =
+      full_title.empty() ? base::UTF8ToUTF16(url) : full_title;
 
   item->menu_item.reset(
       [[NSMenuItem alloc] initWithTitle:base::SysUTF16ToNSString(title)

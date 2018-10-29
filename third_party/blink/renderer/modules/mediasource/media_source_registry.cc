@@ -49,27 +49,28 @@ void MediaSourceRegistry::RegisterURL(SecurityOrigin*,
 
   MediaSource* source = static_cast<MediaSource*>(registrable);
   source->AddedToRegistry();
-  media_sources_.Set(url.GetString(), source);
+  media_sources_->Set(url.GetString(), source);
 }
 
 void MediaSourceRegistry::UnregisterURL(const KURL& url) {
   DCHECK(IsMainThread());
-  PersistentHeapHashMap<String, Member<MediaSource>>::iterator iter =
-      media_sources_.find(url.GetString());
-  if (iter == media_sources_.end())
+  HeapHashMap<String, Member<MediaSource>>::iterator iter =
+      media_sources_->find(url.GetString());
+  if (iter == media_sources_->end())
     return;
 
   MediaSource* source = iter->value;
-  media_sources_.erase(iter);
+  media_sources_->erase(iter);
   source->RemovedFromRegistry();
 }
 
 URLRegistrable* MediaSourceRegistry::Lookup(const String& url) {
   DCHECK(IsMainThread());
-  return url.IsNull() ? nullptr : media_sources_.at(url);
+  return url.IsNull() ? nullptr : media_sources_->at(url);
 }
 
-MediaSourceRegistry::MediaSourceRegistry() {
+MediaSourceRegistry::MediaSourceRegistry()
+    : media_sources_(new HeapHashMap<String, Member<MediaSource>>) {
   HTMLMediaSource::SetRegistry(this);
 }
 

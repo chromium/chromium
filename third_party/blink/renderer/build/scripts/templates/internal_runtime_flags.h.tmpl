@@ -3,8 +3,8 @@
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
-#ifndef InternalRuntimeFlags_h
-#define InternalRuntimeFlags_h
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -43,6 +43,6 @@ class InternalRuntimeFlags : public ScriptWrappable {
   InternalRuntimeFlags() {}
 };
 
-} // namespace blink
+}  // namespace blink
 
-#endif // InternalRuntimeFlags_h
+#endif  // {{header_guard}}

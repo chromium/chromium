@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/memory/memory_coordinator_client_registry.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
@@ -193,7 +192,6 @@ GpuChildThread::GpuChildThread(base::RepeatingClosure quit_closure,
 }
 
 GpuChildThread::~GpuChildThread() {
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Unregister(this);
 }
 
 void GpuChildThread::Init(const base::Time& process_start_time) {
@@ -230,7 +228,6 @@ void GpuChildThread::Init(const base::Time& process_start_time) {
 
   StartServiceManagerConnection();
 
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Register(this);
   memory_pressure_listener_ =
       std::make_unique<base::MemoryPressureListener>(base::BindRepeating(
           &GpuChildThread::OnMemoryPressure, base::Unretained(this)));
@@ -277,6 +274,7 @@ void GpuChildThread::OnGpuServiceConnection(viz::GpuServiceImpl* gpu_service) {
   service_factory_.reset(new GpuServiceFactory(
       gpu_service->gpu_preferences(),
       gpu_service->gpu_channel_manager()->gpu_driver_bug_workarounds(),
+      gpu_service->gpu_feature_info(),
       gpu_service->media_gpu_channel_manager()->AsWeakPtr(),
       std::move(overlay_factory_cb)));
 
@@ -307,17 +305,11 @@ void GpuChildThread::BindServiceFactoryRequest(
                                        std::move(request));
 }
 
-void GpuChildThread::OnTrimMemoryImmediately() {
-  OnPurgeMemory();
-}
-
 void GpuChildThread::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
-    OnPurgeMemory();
-}
+  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
+    return;
 
-void GpuChildThread::OnPurgeMemory() {
   base::allocator::ReleaseFreeMemory();
   if (viz_main_.discardable_shared_memory_manager())
     viz_main_.discardable_shared_memory_manager()->ReleaseFreeMemory();

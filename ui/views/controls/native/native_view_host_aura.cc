@@ -5,6 +5,7 @@
 #include "ui/views/controls/native/native_view_host_aura.h"
 
 #include "base/logging.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
@@ -98,10 +99,12 @@ void NativeViewHostAura::AttachNativeView() {
 }
 
 void NativeViewHostAura::NativeViewDetaching(bool destroyed) {
-  // This method causes a succession of window tree changes.
-  // ScopedPauseOcclusionTracking ensures that occlusion is recomputed at the
-  // end of the method instead of after each change.
-  aura::WindowOcclusionTracker::ScopedPauseOcclusionTracking pause_occlusion;
+  // This method causes a succession of window tree changes. ScopedPause ensures
+  // that occlusion is recomputed at the end of the method instead of after each
+  // change.
+  base::Optional<aura::WindowOcclusionTracker::ScopedPause> pause_occlusion;
+  if (clipping_window_)
+    pause_occlusion.emplace(clipping_window_->env());
 
   clipping_window_delegate_->set_native_view(NULL);
   RemoveClippingWindow();
@@ -131,8 +134,12 @@ void NativeViewHostAura::AddedToWidget() {
 
 void NativeViewHostAura::RemovedFromWidget() {
   if (host_->native_view()) {
-    host_->native_view()->Hide();
+    // Clear kHostWindowKey before Hide() because it could be accessed during
+    // the call. In MUS aura, the hosting window could be destroyed at this
+    // point.
     host_->native_view()->ClearProperty(aura::client::kHostWindowKey);
+
+    host_->native_view()->Hide();
     if (host_->native_view()->parent())
       host_->native_view()->parent()->RemoveChild(host_->native_view());
     RemoveClippingWindow();

@@ -26,7 +26,7 @@
         {
           "object": "LayoutBlockFlow (relative positioned) (floating) DIV id='float'",
           "rect": [0, 0, 100, 100],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

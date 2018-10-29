@@ -16,7 +16,7 @@ namespace blink {
 // down into interpolable and non-interpolable parts. InterpolationValues can be
 // composed together to represent a whole PropertySpecificKeyframe value.
 struct InterpolationValue {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
   explicit InterpolationValue(
       std::unique_ptr<InterpolableValue> interpolable_value,

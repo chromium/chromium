@@ -32,6 +32,11 @@ class RefVector : public RefCounted<RefVector<T>> {
   const T& at(wtf_size_t i) const { return vector_.at(i); }
   T& at(wtf_size_t i) { return vector_.at(i); }
 
+  T* begin() { return vector_.begin(); }
+  T* end() { return vector_.end(); }
+  const T* begin() const { return vector_.begin(); }
+  const T* end() const { return vector_.end(); }
+
   bool operator==(const RefVector& o) const { return vector_ == o.vector_; }
   bool operator!=(const RefVector& o) const { return vector_ != o.vector_; }
 

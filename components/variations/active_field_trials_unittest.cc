@@ -44,8 +44,7 @@ TEST(ActiveFieldTrialsTest, GetFieldTrialActiveGroups) {
                                            &active_group_ids);
   EXPECT_EQ(2U, active_group_ids.size());
   for (size_t i = 0; i < active_group_ids.size(); ++i) {
-    ActiveGroupIdSet::iterator expected_group =
-        expected_groups.find(active_group_ids[i]);
+    auto expected_group = expected_groups.find(active_group_ids[i]);
     EXPECT_FALSE(expected_group == expected_groups.end());
     expected_groups.erase(expected_group);
   }

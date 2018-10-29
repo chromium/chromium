@@ -5,7 +5,7 @@
 #include "cc/tiles/tile_priority.h"
 
 #include "base/numerics/safe_conversions.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
 

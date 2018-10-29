@@ -13,7 +13,10 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
+#include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/common/extension.h"
@@ -111,8 +114,14 @@ class WakeEventPageTest : public ExtensionBrowserTest {
                               kContentScriptJs);
     }
 
-    // Install the extension, then close its background page if desired..
+    // Install the extension, then close its background page if desired.
+    // TODO(https://crbug.com/898682): Waiting for content scripts to load
+    // should be done as part of the extension loading process.
+    content::WindowedNotificationObserver scripts_updated_observer(
+        extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
+        content::NotificationService::AllSources());
     const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
+    scripts_updated_observer.Wait();
     CHECK(extension);
 
     // Regardless of |will_be_open|, we haven't closed the background page yet,

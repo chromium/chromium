@@ -40,15 +40,16 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_piece.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
 #include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/code_cache_loader.h"
-#include "third_party/blink/public/platform/modules/indexeddb/web_idb_factory.h"
 #include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -63,10 +64,13 @@
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
-#include "third_party/webrtc/p2p/base/portallocator.h"
 
 namespace base {
 class SingleThreadTaskRunner;
+}
+
+namespace cricket {
+class PortAllocator;
 }
 
 namespace gpu {
@@ -95,6 +99,8 @@ struct RtpCapabilities;
 namespace blink {
 
 class InterfaceProvider;
+class Thread;
+struct ThreadCreationParams;
 class WebAudioBus;
 class WebAudioLatencyHint;
 class WebBlobRegistry;
@@ -102,7 +108,6 @@ class WebCanvasCaptureHandler;
 class WebCookieJar;
 class WebCrypto;
 class WebDatabaseObserver;
-class WebFileSystem;
 class WebGraphicsContext3DProvider;
 class WebImageCaptureFrameGrabber;
 class WebLocalFrame;
@@ -126,8 +131,6 @@ class WebSpeechSynthesizer;
 class WebSpeechSynthesizerClient;
 class WebStorageNamespace;
 class WebThemeEngine;
-class WebThread;
-struct WebThreadCreationParams;
 class WebURLLoaderMockFactory;
 class WebURLResponse;
 class WebURLResponse;
@@ -156,16 +159,21 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // This is another entry point for embedders that only require simple
   // execution environment of Blink. This version automatically sets up Blink
-  // with a minimally viable implementation of WebThread for the main thread.
-  // The WebThread object is returned by Platform::CurrentThread(), therefore
-  // embedders do not need to override CurrentThread(), if your application
-  // is single-threaded. If your application supports multi-thread, you
-  // need to override CurrentThread() as well as CreateThread().
+  // with a minimally viable implementation of WebThreadScheduler and
+  // blink::Thread for the main thread.
+  //
+  // TODO(yutak): Fix function name as it seems obsolete at this point.
   static void CreateMainThreadAndInitialize(Platform*);
 
   // Used to switch the current platform only for testing.
   // You should not pass in a Platform object that is not fully instantiated.
   static void SetCurrentPlatformForTesting(Platform*);
+
+  // This sets up a minimally viable implementation of blink::Thread without
+  // changing the current Platform. This is essentially a workaround for the
+  // initialization order in ScopedUnittestsEnvironmentSetup, and nobody else
+  // should use this.
+  static void CreateMainThreadForTesting();
 
   // These are dirty workaround for tests requiring the main thread task runner
   // from a non-main thread. If your test needs base::ScopedTaskEnvironment
@@ -279,9 +287,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // FileSystem ----------------------------------------------------------
 
-  // Must return non-null.
-  virtual WebFileSystem* FileSystem() { return nullptr; }
-
   // Return a filename-friendly identifier for an origin.
   virtual WebString FileSystemCreateOriginIdentifier(
       const WebSecurityOrigin& origin) {
@@ -291,11 +296,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   // IDN conversion ------------------------------------------------------
 
   virtual WebString ConvertIDNToUnicode(const WebString& host) { return host; }
-
-  // IndexedDB ----------------------------------------------------------
-
-  // Must return non-null.
-  virtual std::unique_ptr<WebIDBFactory> CreateIdbFactory() { return nullptr; }
 
   // History -------------------------------------------------------------
 
@@ -384,16 +384,19 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual WebString UserAgent() { return WebString(); }
 
   // A suggestion to cache this metadata in association with this URL.
-  virtual void CacheMetadata(const WebURL&,
+  virtual void CacheMetadata(blink::mojom::CodeCacheType cache_type,
+                             const WebURL&,
                              base::Time response_time,
                              const char* data,
                              size_t data_size) {}
 
   // A request to fetch contents associated with this URL from metadata cache.
   virtual void FetchCachedCode(
+      blink::mojom::CodeCacheType cache_type,
       const GURL&,
       base::OnceCallback<void(base::Time, const std::vector<uint8_t>&)>) {}
-  virtual void ClearCodeCacheEntry(const GURL&) {}
+  virtual void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
+                                   const GURL&) {}
 
   // A suggestion to cache this metadata in association with this URL which
   // resource is in CacheStorage.
@@ -428,20 +431,42 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Threads -------------------------------------------------------
 
-  // Creates an embedder-defined thread.
-  virtual std::unique_ptr<WebThread> CreateThread(
-      const WebThreadCreationParams&);
+  // Most of threading functionality has moved to blink::Thread. The functions
+  // in Platform are deprecated; use the counterpart in blink::Thread as noted
+  // below.
 
-  // Creates a WebAudio-specific thread with the elevated priority. Do NOT use
-  // for any other purpose.
-  virtual std::unique_ptr<WebThread> CreateWebAudioThread();
+  // DEPRECATED: Use Thread::CreateThread() instead.
+  std::unique_ptr<Thread> CreateThread(const ThreadCreationParams&);
 
-  // Returns an interface to the current thread.
-  //
-  // The default implementation only works on the main thread. If your
-  // application supports multi-thread, you *must* override this function
-  // as well as CreateThread().
-  virtual WebThread* CurrentThread();
+  // DEPRECATED: Use Thread::CreateWebAudioThread() instead.
+  std::unique_ptr<Thread> CreateWebAudioThread();
+
+  // DEPRECATED: Use Thread::Current() instead.
+  Thread* CurrentThread();
+
+  // DEPRECATED: Use Thread::MainThread() instead.
+  Thread* MainThread();
+
+  // DEPRECATED: Use Thread::CompositorThread() instead.
+  Thread* CompositorThread();
+
+  // The two compositor-related functions below are called by the embedder.
+  // TODO(yutak): Perhaps we should move these to somewhere else?
+
+  // Create and initialize the compositor thread. After this function
+  // completes, you can access CompositorThreadTaskRunner().
+  void CreateAndSetCompositorThread();
+
+  // Returns the task runner of the compositor thread. This is available
+  // once CreateAndSetCompositorThread() is called.
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorThreadTaskRunner();
+
+  // This is called after the compositor thread is created, so the embedder
+  // can initiate an IPC to change its thread priority (on Linux we can't
+  // increase the nice value, so we need to ask the browser process). This
+  // function is only called from the main thread (where InitializeCompositor-
+  // Thread() is called).
+  virtual void SetDisplayThreadPriority(base::PlatformThreadId) {}
 
   // Returns a blame context for attributing top-level work which does not
   // belong to a particular frame scope.
@@ -473,15 +498,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Returns a value such as "en-US".
   virtual WebString DefaultLocale() { return WebString(); }
-
-  // Returns an interface to the main thread. Can be null if blink was
-  // initialized on a thread without a message loop.
-  WebThread* MainThread() const;
-
-  // Returns an interface to the compositor thread. This can be null if the
-  // renderer was created with threaded rendering desabled.
-  virtual WebThread* CompositorThread() const { return 0; }
-
 
   // Returns an interface to the IO task runner.
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() const {
@@ -638,9 +654,7 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // May return null if WebRTC functionality is not implemented.
   virtual std::unique_ptr<cricket::PortAllocator> CreateWebRtcPortAllocator(
-      WebLocalFrame* frame) {
-    return nullptr;
-  }
+      WebLocalFrame* frame);
 
   // Creates a WebCanvasCaptureHandler to capture Canvas output.
   virtual std::unique_ptr<WebCanvasCaptureHandler>
@@ -740,6 +754,8 @@ class BLINK_PLATFORM_EXPORT Platform {
   // depending on memory pressure.
   virtual void RequestPurgeMemory() {}
 
+  virtual void SetMemoryPressureNotificationsSuppressed(bool suppressed) {}
+
   // V8 Context Snapshot --------------------------------------------------
 
   // This method returns true only when
@@ -747,19 +763,9 @@ class BLINK_PLATFORM_EXPORT Platform {
   // runs during Chromium's build step).
   virtual bool IsTakingV8ContextSnapshot() { return false; }
 
- protected:
-  WebThread* main_thread_;
-
  private:
-  static void InitializeCommon(Platform* platform);
-
-  // Platform owns the main thread in most cases. The pointer value is the same
-  // as main_thread_ if this variable is non-null.
-  //
-  // This variable is null if (and only if) ScopedTestingPlatformSupport<>
-  // overrides the old Platform. In this case, main_thread_ points to the old
-  // Platform's main thread. See testing_platform_support.h for this.
-  std::unique_ptr<WebThread> owned_main_thread_;
+  static void InitializeCommon(Platform* platform,
+                               std::unique_ptr<Thread> main_thread);
 };
 
 }  // namespace blink

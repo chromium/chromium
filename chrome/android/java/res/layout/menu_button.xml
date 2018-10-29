@@ -12,13 +12,13 @@
        android:layout_height="wrap_content"
        android:id="@+id/menu_button_wrapper">
 
-       <org.chromium.chrome.browser.widget.TintedImageButton
+       <android.support.v7.widget.AppCompatImageButton
            android:id="@+id/menu_button"
            style="@style/ToolbarMenuButtonPhone"
            android:src="@drawable/ic_more_vert_black_24dp"
            android:contentDescription="@string/accessibility_toolbar_btn_menu"
            android:layout_gravity="center"
-           app:chrometint="@color/dark_mode_tint" />
+           app:tint="@color/dark_mode_tint" />
 
        <ImageView
            android:id="@+id/menu_badge"

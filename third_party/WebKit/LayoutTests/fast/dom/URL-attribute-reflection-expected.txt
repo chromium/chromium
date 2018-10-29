@@ -2,7 +2,6 @@ Test reflecting URL attributes with empty string values.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS testURLReflection('attribute', 'element') is 'none'
 PASS testURLReflection('id', 'element') is 'non-URL'
 PASS testURLReflection('action', 'form') is 'URL'

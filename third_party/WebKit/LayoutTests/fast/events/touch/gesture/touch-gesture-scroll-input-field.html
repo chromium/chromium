@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="../../../../resources/testharness.js"></script>
 <script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/compositor-controls.js"></script>
 <script src="../../../../resources/gesture-util.js"></script>
 <body style="margin:0">
   <div id="container" style="width: 500px; height: 200px; overflow-y: scroll; overflow-x: scroll">
@@ -12,6 +13,7 @@
 </body>
 
 <script type="text/javascript">
+setAnimationRequiresRaster();
 var gestureX = 100;
 var gestureY = 50;
 var box = document.getElementById("box");
@@ -21,7 +23,7 @@ var fullyScrolled;
 function calculateFullScroll() {
   fullyScrolled = box.scrollWidth - box.clientWidth;
 
-  // FIXME: Mac has a quirk where the text box text can actually be scrolled a little bit 
+  // FIXME: Mac has a quirk where the text box text can actually be scrolled a little bit
   // past the end. That is, scrollLeft = (scrollWidth - clientWidth) + 2 on Mac. Once
   // this is fixed we can remove this adjustment.
   box.scrollLeft = 100000;

@@ -16,12 +16,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "chrome/common/search.mojom.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/search/url_validity_checker.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "url/gurl.h"
@@ -32,13 +34,14 @@
 
 class InstantIOContext;
 class InstantServiceObserver;
+class NtpBackgroundService;
 class Profile;
 struct InstantMostVisitedItem;
 struct ThemeBackgroundInfo;
 
 namespace content {
 class RenderProcessHost;
-}
+}  // namespace content
 
 // Tracks render process host IDs that are associated with Instant, i.e.
 // processes that are used to render an NTP. Also responsible for keeping
@@ -98,6 +101,15 @@ class InstantService : public KeyedService,
   // using a non-Google search provider.
   bool ResetCustomLinks();
 
+  // Invoked during the add/update a custom link flow. Creates a request to
+  // check if |url| resolves to an existing page and notifies the frontend of
+  // the result. This will be used to determine if we need to use "http" instead
+  // of the default "https" scheme for the link's URL. Custom links must be
+  // enabled.
+  void DoesUrlResolve(
+      const GURL& url,
+      chrome::mojom::EmbeddedSearch::DoesUrlResolveCallback callback);
+
   // Invoked by the InstantController to update theme information for NTP.
   //
   // TODO(kmadhusu): Invoking this from InstantController shouldn't be
@@ -127,6 +139,13 @@ class InstantService : public KeyedService,
   // Used for testing.
   ThemeBackgroundInfo* GetThemeInfoForTesting() { return theme_info_.get(); }
 
+  void AddValidBackdropUrlForTesting(const GURL& url) const;
+
+  // Used for testing.
+  void SetUrlValidityCheckerForTesting(UrlValidityChecker* url_checker) {
+    url_checker_for_testing_ = url_checker;
+  }
+
  private:
   class SearchProviderObserver;
 
@@ -138,6 +157,18 @@ class InstantService : public KeyedService,
 
   // KeyedService:
   void Shutdown() override;
+
+  // Called when the request from |DoesUrlResolve| finishes. Invokes the
+  // associated callback with the request status.
+  //
+  // If the request exceeded the UI dialog timeout and the URL did not resolve,
+  // calls |UpdateCustomLink| to internally update the link's default "https"
+  // scheme to "http".
+  void OnDoesUrlResolveComplete(
+      const GURL& url,
+      chrome::mojom::EmbeddedSearch::DoesUrlResolveCallback callback,
+      bool resolves,
+      base::TimeDelta duration);
 
   // content::NotificationObserver:
   void Observe(int type,
@@ -171,9 +202,16 @@ class InstantService : public KeyedService,
 
   void FallbackToDefaultThemeInfo();
 
+  void RemoveLocalBackgroundImageCopy();
+
   // Update the background pref to point to
   // chrome-search://local-ntp/background.jpg
   void SetBackgroundToLocalResource();
+
+  // Returns the owned instance of UrlValidityChecker or
+  // |url_checker_for_testing_| if not null. Should only be called from the UI
+  // thread.
+  UrlValidityChecker* GetUrlValidityChecker();
 
   Profile* const profile_;
 
@@ -198,9 +236,14 @@ class InstantService : public KeyedService,
   // Keeps track of any changes in search engine provider. May be null.
   std::unique_ptr<SearchProviderObserver> search_provider_observer_;
 
+  // Test UrlValidityChecker used for testing.
+  UrlValidityChecker* url_checker_for_testing_ = nullptr;
+
   PrefChangeRegistrar pref_change_registrar_;
 
   PrefService* pref_service_;
+
+  NtpBackgroundService* background_service_;
 
   base::WeakPtrFactory<InstantService> weak_ptr_factory_;
 

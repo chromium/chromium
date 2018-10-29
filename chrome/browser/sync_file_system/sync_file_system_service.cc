@@ -20,8 +20,8 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/extensions/api/sync_file_system/extension_sync_event_observer.h"
-#include "chrome/browser/extensions/api/sync_file_system/sync_file_system_api_helpers.h"
+#include "chrome/browser/apps/platform_apps/api/sync_file_system/extension_sync_event_observer.h"
+#include "chrome/browser/apps/platform_apps/api/sync_file_system/sync_file_system_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_service.h"
@@ -104,8 +104,8 @@ void DidHandleLoadEvent(
 }
 
 std::string SyncFileStatusToString(SyncFileStatus sync_file_status) {
-  return extensions::api::sync_file_system::ToString(
-      extensions::SyncFileStatusToExtensionEnum(sync_file_status));
+  return chrome_apps::api::sync_file_system::ToString(
+      chrome_apps::api::SyncFileStatusToExtensionEnum(sync_file_status));
 }
 
 // Gets called repeatedly until every SyncFileStatus has been mapped.

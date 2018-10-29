@@ -15,11 +15,14 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "storage/browser/quota/quota_client.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
-class GURL;
+namespace url {
+class Origin;
+}
 
 namespace storage {
 
@@ -40,10 +43,11 @@ using AvailableSpaceCallback =
     base::OnceCallback<void(blink::mojom::QuotaStatusCode, int64_t)>;
 using StatusCallback = base::OnceCallback<void(blink::mojom::QuotaStatusCode)>;
 using GetOriginsCallback =
-    base::OnceCallback<void(const std::set<GURL>& origins,
+    base::OnceCallback<void(const std::set<url::Origin>& origins,
                             blink::mojom::StorageType type)>;
-using GetUsageInfoCallback = base::OnceCallback<void(const UsageInfoEntries&)>;
-using GetOriginCallback = base::OnceCallback<void(const GURL&)>;
+using GetUsageInfoCallback = base::OnceCallback<void(UsageInfoEntries)>;
+using GetOriginCallback =
+    base::OnceCallback<void(const base::Optional<url::Origin>&)>;
 
 // Simple template wrapper for a callback queue.
 template <typename CallbackType, typename... Args>

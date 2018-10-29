@@ -84,14 +84,8 @@ Polymer({
     const filterValue =
         this.filterValue_ ? this.filterValue_.toLowerCase() : null;
     return this.languages.supported.filter(language => {
-      const isAvailableLanguage =
-          !this.languageHelper.isLanguageEnabled(language.code);
-
-      if (!isAvailableLanguage)
+      if (!this.languageHelper.canEnableLanguage(language))
         return false;
-
-      if (this.languageHelper.isLanguageCodeForArcIme(language.code))
-        return false;  // internal use only
 
       if (filterValue === null)
         return true;

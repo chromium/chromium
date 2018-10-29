@@ -7,4 +7,3 @@ PASS: Object.prototype.isPrototypeOf(styleSheet) should be true and is.
 PASS: Object.prototype.isPrototypeOf(cssRule) should be true and is.
 PASS: Object.prototype.isPrototypeOf(nodeList) should be true and is.
 PASS: Object.prototype.isPrototypeOf(namedNodesCollection) should be true and is.
-

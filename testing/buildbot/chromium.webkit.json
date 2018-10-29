@@ -5,6 +5,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--num-retries=3",
           "--additional-expectations",
           "../../third_party/WebKit/LayoutTests/ASANExpectations",
           "--time-out-ms",
@@ -36,6 +37,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--num-retries=3",
           "--additional-expectations",
           "../../third_party/WebKit/LayoutTests/LeakExpectations",
           "--time-out-ms",
@@ -67,6 +69,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--num-retries=3",
           "--additional-expectations",
           "../../third_party/WebKit/LayoutTests/MSANExpectations",
           "--time-out-ms",
@@ -100,6 +103,9 @@
   "WebKit Mac10.13 (retina)": {
     "isolated_scripts": [
       {
+        "args": [
+          "--num-retries=3"
+        ],
         "isolate_name": "webkit_layout_tests_exparchive",
         "merge": {
           "args": [
@@ -127,6 +133,9 @@
   "WebKit Win10": {
     "isolated_scripts": [
       {
+        "args": [
+          "--num-retries=3"
+        ],
         "isolate_name": "webkit_layout_tests_exparchive",
         "merge": {
           "args": [

@@ -64,7 +64,7 @@ TEST_F(SearchHostToURLsMapTest, Remove) {
   ASSERT_TRUE(urls != nullptr);
 
   int url_count = 0;
-  for (TemplateURLSet::const_iterator i(urls->begin()); i != urls->end(); ++i) {
+  for (auto i(urls->begin()); i != urls->end(); ++i) {
     url_count++;
     ASSERT_EQ(template_urls_[1].get(), *i);
   }

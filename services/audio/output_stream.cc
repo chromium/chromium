@@ -75,7 +75,7 @@ OutputStream::OutputStream(
     log_->get()->OnCreated(params, output_device_id);
 
   coordinator_->RegisterMember(loopback_group_id_, &controller_);
-  if (!reader_.IsValid() || !controller_.Create(false)) {
+  if (!reader_.IsValid() || !controller_.CreateStream()) {
     // Either SyncReader initialization failed or the controller failed to
     // create the stream. In the latter case, the controller will have called
     // OnControllerError().

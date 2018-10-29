@@ -36,6 +36,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_service.h"
@@ -470,11 +471,9 @@ void BootTimesRecorder::AddMarker(std::vector<TimeMarker>* vector,
     // Add the marker on the UI thread.
     // Note that it's safe to use an unretained pointer to the vector because
     // BootTimesRecorder's lifetime exceeds that of the UI thread message loop.
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
-        base::Bind(&BootTimesRecorder::AddMarker,
-                   base::Unretained(vector),
-                   marker));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::Bind(&BootTimesRecorder::AddMarker,
+                                        base::Unretained(vector), marker));
   }
 }
 

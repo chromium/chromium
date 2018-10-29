@@ -40,11 +40,13 @@ struct CC_EXPORT AnimationWorkletInput {
     // Worklet animation's current time, from its associated timeline.
     double current_time;
     std::unique_ptr<AnimationOptions> options;
+    int num_effects;
 
     AddAndUpdateState(WorkletAnimationId worklet_animation_id,
                       std::string name,
                       double current_time,
-                      std::unique_ptr<AnimationOptions> options);
+                      std::unique_ptr<AnimationOptions> options,
+                      int num_effects);
 
     AddAndUpdateState(AddAndUpdateState&&);
     ~AddAndUpdateState();
@@ -109,16 +111,12 @@ class CC_EXPORT MutatorInputState {
 
 struct CC_EXPORT AnimationWorkletOutput {
   struct CC_EXPORT AnimationState {
-    AnimationState(WorkletAnimationId,
-                   base::Optional<base::TimeDelta> local_time);
+    explicit AnimationState(WorkletAnimationId);
     AnimationState(const AnimationState&);
+    ~AnimationState();
 
     WorkletAnimationId worklet_animation_id;
-    // The animator effect's local time.
-    // TODO(majidvp): This assumes each animator has a single output effect
-    // which does not hold once we state support group effects.
-    // http://crbug.com/767043
-    base::Optional<base::TimeDelta> local_time;
+    std::vector<base::Optional<base::TimeDelta>> local_times;
   };
 
   AnimationWorkletOutput();

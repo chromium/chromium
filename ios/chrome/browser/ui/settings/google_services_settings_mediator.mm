@@ -22,7 +22,9 @@
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_collapsible_item.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
+#import "ios/chrome/browser/ui/settings/sync_utils/sync_util.h"
 #import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -43,7 +45,8 @@ namespace {
 
 // List of sections.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SyncEverythingSectionIdentifier = kSectionIdentifierEnumZero,
+  SyncFeedbackSectionIdentifier = kSectionIdentifierEnumZero,
+  SyncEverythingSectionIdentifier,
   PersonalizedSectionIdentifier,
   NonPersonalizedSectionIdentifier,
 };
@@ -56,8 +59,10 @@ NSString* const kGoogleServicesSettingsNonPersonalizedSectionKey =
 
 // List of items.
 typedef NS_ENUM(NSInteger, ItemType) {
+  // SyncErrorSectionIdentifier,
+  SyncErrorItemType = kItemTypeEnumZero,
   // SyncEverythingSectionIdentifier section.
-  SyncEverythingItemType = kItemTypeEnumZero,
+  SyncEverythingItemType,
   // PersonalizedSectionIdentifier section.
   SyncPersonalizationItemType,
   SyncBookmarksItemType,
@@ -129,10 +134,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // YES if the switch for |syncEverythingItem| is currently animating from one
 // state to another.
-@property(nonatomic, assign, readwrite) BOOL syncEverythingSwitchBeingAnimated;
+@property(nonatomic, assign) BOOL syncEverythingSwitchBeingAnimated;
 // YES if at least one switch in the personalized section is currently animating
 // from one state to another.
-@property(nonatomic, assign, readwrite) BOOL personalizedSectionBeingAnimated;
+@property(nonatomic, assign) BOOL personalizedSectionBeingAnimated;
+// Item to display the sync error.
+@property(nonatomic, strong) SettingsImageDetailTextItem* syncErrorItem;
 // Item for "Sync Everything" section.
 @property(nonatomic, strong, readonly) SyncSwitchItem* syncEverythingItem;
 // Collapsible item for the personalized section.
@@ -168,6 +175,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _syncEverythingSwitchBeingAnimated;
 @synthesize personalizedSectionBeingAnimated =
     _personalizedSectionBeingAnimated;
+@synthesize syncErrorItem = _syncErrorItem;
 @synthesize syncEverythingItem = _syncEverythingItem;
 @synthesize syncPersonalizationItem = _syncPersonalizationItem;
 @synthesize personalizedItems = _personalizedItems;
@@ -285,6 +293,23 @@ initWithUserPrefService:(PrefService*)userPrefService
 
 - (BOOL)isConsentGiven {
   return self.unifiedConsentService->IsUnifiedConsentGiven();
+}
+
+- (SettingsImageDetailTextItem*)syncErrorItem {
+  if (!_syncErrorItem) {
+    _syncErrorItem =
+        [[SettingsImageDetailTextItem alloc] initWithType:SyncErrorItemType];
+    {
+      // TODO(crbug.com/889470): Needs asset for the sync error.
+      CGSize size = CGSizeMake(40, 40);
+      UIGraphicsBeginImageContextWithOptions(size, YES, 0);
+      [[UIColor grayColor] setFill];
+      UIRectFill(CGRectMake(0, 0, size.width, size.height));
+      _syncErrorItem.image = UIGraphicsGetImageFromCurrentImageContext();
+      UIGraphicsEndImageContext();
+    }
+  }
+  return _syncErrorItem;
 }
 
 - (CollectionViewItem*)syncEverythingItem {
@@ -518,12 +543,77 @@ textItemWithItemType:(NSInteger)itemType
   return textItem;
 }
 
+// Reloads the sync feedback section. If |notifyConsummer| is YES, the consomer
+// is notified to add or remove the sync error section.
+- (void)updateSyncErrorSectionAndNotifyConsumer:(BOOL)notifyConsummer {
+  CollectionViewModel* model = self.consumer.collectionViewModel;
+  GoogleServicesSettingsCommandID commandID =
+      GoogleServicesSettingsCommandIDNoOp;
+  if (self.isAuthenticated) {
+    switch (self.syncSetupService->GetSyncServiceState()) {
+      case SyncSetupService::kSyncServiceUnrecoverableError:
+        commandID = GoogleServicesSettingsCommandIDRestartAuthenticationFlow;
+        break;
+      case SyncSetupService::kSyncServiceSignInNeedsUpdate:
+        commandID = GoogleServicesSettingsReauthDialogAsSyncIsInAuthError;
+        break;
+      case SyncSetupService::kSyncServiceNeedsPassphrase:
+        commandID = GoogleServicesSettingsCommandIDShowPassphraseDialog;
+        break;
+      case SyncSetupService::kNoSyncServiceError:
+      case SyncSetupService::kSyncServiceCouldNotConnect:
+      case SyncSetupService::kSyncServiceServiceUnavailable:
+        break;
+    }
+  }
+  if (commandID == GoogleServicesSettingsCommandIDNoOp) {
+    // No action to do, therefore the sync error section should not be visibled.
+    if ([model hasSectionForSectionIdentifier:SyncFeedbackSectionIdentifier]) {
+      // Remove the sync error item if it exists.
+      NSUInteger sectionIndex =
+          [model sectionForSectionIdentifier:SyncFeedbackSectionIdentifier];
+      [model removeSectionWithIdentifier:SyncFeedbackSectionIdentifier];
+      if (notifyConsummer) {
+        NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+        [self.consumer deleteSections:indexSet];
+      }
+    }
+    return;
+  }
+  // Add the sync error item and its section (if it doesn't already exist) and
+  // reload them.
+  BOOL sectionAdded = NO;
+  if (![model hasSectionForSectionIdentifier:SyncFeedbackSectionIdentifier]) {
+    // Adding the sync error item and its section.
+    [model insertSectionWithIdentifier:SyncFeedbackSectionIdentifier atIndex:0];
+    [model addItem:self.syncErrorItem
+        toSectionWithIdentifier:SyncFeedbackSectionIdentifier];
+    sectionAdded = YES;
+  }
+  NSUInteger sectionIndex =
+      [model sectionForSectionIdentifier:SyncFeedbackSectionIdentifier];
+  self.syncErrorItem.text = l10n_util::GetNSString(IDS_IOS_SYNC_ERROR_TITLE);
+  self.syncErrorItem.detailText =
+      GetSyncErrorDescriptionForSyncSetupService(self.syncSetupService);
+  self.syncErrorItem.commandID = commandID;
+  if (notifyConsummer) {
+    if (sectionAdded) {
+      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+      [self.consumer insertSections:indexSet];
+    } else {
+      [self.consumer reloadItem:self.syncErrorItem];
+    }
+  }
+}
+
 // Updates the personalized section according to the user consent.
 - (void)updatePersonalizedSection {
   BOOL enabled = self.isAuthenticated && !self.isConsentGiven;
   [self updateSectionWithCollapsibleItem:self.syncPersonalizationItem
                                    items:self.personalizedItems
-                                 enabled:enabled];
+                  collapsibleItemEnabled:enabled
+                       switchItemEnabled:enabled
+                         textItemEnabled:self.isAuthenticated];
   syncer::ModelType autofillModelType =
       _syncSetupService->GetModelType(SyncSetupService::kSyncAutofill);
   BOOL isAutofillOn = _syncSetupService->IsDataTypePreferred(autofillModelType);
@@ -539,16 +629,21 @@ textItemWithItemType:(NSInteger)itemType
   BOOL enabled = !self.isAuthenticated || !self.isConsentGiven;
   [self updateSectionWithCollapsibleItem:self.nonPersonalizedServicesItem
                                    items:self.nonPersonalizedItems
-                                 enabled:enabled];
+                  collapsibleItemEnabled:enabled
+                       switchItemEnabled:enabled
+                         textItemEnabled:enabled];
 }
 
-// Set a section (collapsible item, with all the items inside) to be enabled
-// or disabled.
+// Updates |collapsibleItem| and |items| using |collapsibleItemEnabled|,
+// |switchItemEnabled| and |textItemEnabled|.
 - (void)updateSectionWithCollapsibleItem:
             (SettingsCollapsibleItem*)collapsibleItem
                                    items:(ItemArray)items
-                                 enabled:(BOOL)enabled {
-  UIColor* textColor = enabled ? nil : [[MDCPalette greyPalette] tint500];
+                  collapsibleItemEnabled:(BOOL)collapsibleItemEnabled
+                       switchItemEnabled:(BOOL)switchItemEnabled
+                         textItemEnabled:(BOOL)textItemEnabled {
+  UIColor* textColor =
+      collapsibleItemEnabled ? nil : [[MDCPalette greyPalette] tint500];
   collapsibleItem.textColor = textColor;
   for (CollectionViewItem* item in items) {
     if ([item isKindOfClass:[SyncSwitchItem class]]) {
@@ -584,11 +679,11 @@ textItemWithItemType:(NSInteger)itemType
           NOTREACHED();
           break;
       }
-      switchItem.enabled = enabled;
+      switchItem.enabled = switchItemEnabled;
     } else if ([item isKindOfClass:[CollectionViewTextItem class]]) {
       CollectionViewTextItem* textItem =
           base::mac::ObjCCast<CollectionViewTextItem>(item);
-      textItem.enabled = enabled;
+      textItem.enabled = textItemEnabled;
     } else {
       NOTREACHED();
     }
@@ -606,6 +701,7 @@ textItemWithItemType:(NSInteger)itemType
     [self loadSyncEverythingSection];
   [self loadPersonalizedSection];
   [self loadNonPersonalizedSection];
+  [self updateSyncErrorSectionAndNotifyConsumer:NO];
 }
 
 #pragma mark - GoogleServicesSettingsServiceDelegate
@@ -705,6 +801,7 @@ textItemWithItemType:(NSInteger)itemType
     // personalized section), if the autofill feature changed state.
     [self.consumer reloadItem:self.autocompleteWalletItem];
   }
+  [self updateSyncErrorSectionAndNotifyConsumer:YES];
 }
 
 #pragma mark - BooleanObserver

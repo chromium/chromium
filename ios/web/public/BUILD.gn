@@ -13,7 +13,7 @@ source_set("public") {
   ]
 
   deps = [
-    "//services/service_manager/embedder",
+    "//services/service_manager/public/cpp",
     "//ui/base",
   ]
 

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/loader/modulescript/document_module_script_fetcher.h"
+#include "third_party/blink/renderer/core/loader/modulescript/installed_service_worker_module_script_fetcher.h"
 #include "third_party/blink/renderer/core/loader/modulescript/worker_module_script_fetcher.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
@@ -22,7 +23,7 @@ WorkerModulatorImpl::WorkerModulatorImpl(ScriptState* script_state)
 
 ModuleScriptFetcher* WorkerModulatorImpl::CreateModuleScriptFetcher(
     ModuleScriptCustomFetchType custom_fetch_type) {
-  auto* global_scope = ToWorkerGlobalScope(GetExecutionContext());
+  auto* global_scope = To<WorkerGlobalScope>(GetExecutionContext());
   switch (custom_fetch_type) {
     case ModuleScriptCustomFetchType::kNone:
       return new DocumentModuleScriptFetcher(global_scope->EnsureFetcher());
@@ -30,6 +31,8 @@ ModuleScriptFetcher* WorkerModulatorImpl::CreateModuleScriptFetcher(
       return new WorkerModuleScriptFetcher(global_scope);
     case ModuleScriptCustomFetchType::kWorkletAddModule:
       break;
+    case ModuleScriptCustomFetchType::kInstalledServiceWorker:
+      return new InstalledServiceWorkerModuleScriptFetcher(global_scope);
   }
   NOTREACHED();
   return nullptr;

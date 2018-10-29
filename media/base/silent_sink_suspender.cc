@@ -88,7 +88,8 @@ int SilentSinkSuspender::Render(base::TimeDelta delay,
     if (is_using_fake_sink_) {
       is_transition_pending_ = true;
       task_runner_->PostTask(
-          FROM_HERE, base::Bind(sink_transition_callback_.callback(), false));
+          FROM_HERE,
+          base::BindOnce(sink_transition_callback_.callback(), false));
       return dest->frames();
     }
   } else if (!is_using_fake_sink_) {
@@ -101,7 +102,8 @@ int SilentSinkSuspender::Render(base::TimeDelta delay,
       latest_output_delay_timestamp_ = delay_timestamp;
       fake_sink_transition_time_ = now;
       task_runner_->PostTask(
-          FROM_HERE, base::Bind(sink_transition_callback_.callback(), true));
+          FROM_HERE,
+          base::BindOnce(sink_transition_callback_.callback(), true));
     }
   }
 
@@ -112,13 +114,21 @@ void SilentSinkSuspender::OnRenderError() {
   callback_->OnRenderError();
 }
 
+bool SilentSinkSuspender::IsUsingFakeSinkForTesting() {
+  base::AutoLock al(transition_lock_);
+  return is_using_fake_sink_;
+}
+
 void SilentSinkSuspender::TransitionSinks(bool use_fake_sink) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   // Ignore duplicate requests which can occur if the transition takes too long
   // and multiple Render() events occur.
-  if (use_fake_sink == is_using_fake_sink_)
-    return;
+  {
+    base::AutoLock al(transition_lock_);
+    if (use_fake_sink == is_using_fake_sink_)
+      return;
+  }
 
   if (use_fake_sink) {
     sink_->Pause();

@@ -118,12 +118,13 @@ class ContentSuggestionsNotifierService::NotifyingObserver
       : service_(service),
         prefs_(prefs),
         notifier_(notifier),
-        app_status_listener_(base::Bind(&NotifyingObserver::AppStatusChanged,
-                                        base::Unretained(this))),
+        app_status_listener_(base::android::ApplicationStatusListener::New(
+            base::BindRepeating(&NotifyingObserver::AppStatusChanged,
+                                base::Unretained(this)))),
         weak_ptr_factory_(this) {}
 
   void OnNewSuggestions(Category category) override {
-    if (!ShouldNotifyInState(app_status_listener_.GetState())) {
+    if (!ShouldNotifyInState(app_status_listener_->GetState())) {
       DVLOG(1) << "Suppressed notification because Chrome is frontmost";
       return;
     } else if (!ContentSuggestionsNotifier::ShouldSendNotifications(prefs_)) {
@@ -223,7 +224,7 @@ class ContentSuggestionsNotifierService::NotifyingObserver
                     const base::string16& text,
                     base::Time timeout_at,
                     const gfx::Image& image) {
-    if (!ShouldNotifyInState(app_status_listener_.GetState())) {
+    if (!ShouldNotifyInState(app_status_listener_->GetState())) {
       return;  // Became foreground while we were fetching the image; forget it.
     }
     // check if suggestion is still valid.
@@ -245,7 +246,8 @@ class ContentSuggestionsNotifierService::NotifyingObserver
   ContentSuggestionsService* const service_;
   PrefService* const prefs_;
   ContentSuggestionsNotifier* const notifier_;
-  base::android::ApplicationStatusListener app_status_listener_;
+  std::unique_ptr<base::android::ApplicationStatusListener>
+      app_status_listener_;
 
   base::WeakPtrFactory<NotifyingObserver> weak_ptr_factory_;
 

@@ -78,8 +78,6 @@ extern NSString* const kProxyPassthroughHeaderValue;
 // The current title of the tab.
 @property(nonatomic, readonly) NSString* title;
 
-@property(nonatomic, readonly) NSString* urlDisplayString;
-
 // ID associated with this tab.
 @property(nonatomic, readonly) NSString* tabId;
 
@@ -133,20 +131,11 @@ extern NSString* const kProxyPassthroughHeaderValue;
 // be populated. Can return null.
 - (web::NavigationManager*)navigationManager;
 
-// Navigate forwards or backwards to |item|.
-- (void)goToItem:(const web::NavigationItem*)item;
-
 // Navigates forwards or backwards.
 // TODO(crbug.com/661664): These are passthroughs to the Tab's WebState's
 // NavigationManager. Convert all callers and remove these methods.
 - (void)goBack;
 - (void)goForward;
-
-// Returns the timestamp of the last time the tab is visited.
-- (double)lastVisitedTimestamp;
-
-// Updates the timestamp of the last time the tab is visited.
-- (void)updateLastVisitedTimestamp;
 
 // Called before capturing a snapshot for Tab.
 - (void)willUpdateSnapshot;

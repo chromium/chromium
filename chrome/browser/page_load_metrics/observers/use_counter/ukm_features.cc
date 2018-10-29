@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/page_load_metrics/observers/use_counter/ukm_features.h"
+
 #include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
 
 using WebFeature = blink::mojom::WebFeature;
 
 // UKM-based UseCounter features (WebFeature) should be defined in
 // opt_in_features list.
 bool IsAllowedUkmFeature(blink::mojom::WebFeature feature) {
-  CR_DEFINE_STATIC_LOCAL(
-      const base::flat_set<WebFeature>, opt_in_features,
-      ({
+  static base::NoDestructor<base::flat_set<WebFeature>> opt_in_features(
+      base::flat_set<WebFeature>({
           WebFeature::kNavigatorVibrate, WebFeature::kNavigatorVibrateSubFrame,
           WebFeature::kTouchEventPreventedNoTouchAction,
           WebFeature::kTouchEventPreventedForcedDocumentPassiveNoTouchAction,
@@ -57,6 +58,8 @@ bool IsAllowedUkmFeature(blink::mojom::WebFeature feature) {
           WebFeature::kDocumentLevelPassiveDefaultEventListenerPreventedWheel,
           WebFeature::kDocumentDomainBlockedCrossOriginAccess,
           WebFeature::kDocumentDomainEnabledCrossOriginAccess,
+          WebFeature::kSuppressHistoryEntryWithoutUserGesture,
+          WebFeature::kCursorImageGT32x32, WebFeature::kCursorImageLE32x32,
       }));
-  return opt_in_features.count(feature);
+  return opt_in_features->count(feature);
 }

@@ -61,7 +61,6 @@ VideoDecoderConfig::VideoDecoderConfig()
     : codec_(kUnknownVideoCodec),
       profile_(VIDEO_CODEC_PROFILE_UNKNOWN),
       format_(PIXEL_FORMAT_UNKNOWN),
-      color_space_(COLOR_SPACE_UNSPECIFIED),
       rotation_(VIDEO_ROTATION_0) {}
 
 VideoDecoderConfig::VideoDecoderConfig(
@@ -114,7 +113,6 @@ void VideoDecoderConfig::Initialize(VideoCodec codec,
   codec_ = codec;
   profile_ = profile;
   format_ = format;
-  color_space_ = color_space;
   rotation_ = rotation;
   coded_size_ = coded_size;
   visible_rect_ = visible_rect;
@@ -160,16 +158,16 @@ bool VideoDecoderConfig::Matches(const VideoDecoderConfig& config) const {
 
 std::string VideoDecoderConfig::AsHumanReadableString() const {
   std::ostringstream s;
-  s << "codec: " << GetCodecName(codec()) << " format: " << format()
-    << " profile: " << GetProfileName(profile()) << " coded size: ["
+  s << "codec: " << GetCodecName(codec()) << ", format: " << format()
+    << ", profile: " << GetProfileName(profile()) << ", coded size: ["
     << coded_size().width() << "," << coded_size().height() << "]"
-    << " visible rect: [" << visible_rect().x() << "," << visible_rect().y()
+    << ", visible rect: [" << visible_rect().x() << "," << visible_rect().y()
     << "," << visible_rect().width() << "," << visible_rect().height() << "]"
-    << " natural size: [" << natural_size().width() << ","
+    << ", natural size: [" << natural_size().width() << ","
     << natural_size().height() << "]"
-    << " has extra data? " << (extra_data().empty() ? "false" : "true")
-    << " encryption scheme: " << encryption_scheme()
-    << " rotation: " << VideoRotationToString(video_rotation());
+    << ", has extra data: " << (extra_data().empty() ? "false" : "true")
+    << ", encryption scheme: " << encryption_scheme()
+    << ", rotation: " << VideoRotationToString(video_rotation());
   return s.str();
 }
 

@@ -11,7 +11,8 @@
 
 namespace gfx {
 class Rect;
-}
+class Range;
+}  // namespace gfx
 
 namespace ui {
 
@@ -33,6 +34,10 @@ class UI_BASE_IME_LINUX_EXPORT LinuxInputMethodContext {
   // client window rect.
   virtual void SetCursorLocation(const gfx::Rect& rect) = 0;
 
+  // Tells the system IME the surrounding text around the cursor location.
+  virtual void SetSurroundingText(const base::string16& text,
+                                  const gfx::Range& selection_range) = 0;
+
   // Resets the context.  A client needs to call OnTextInputTypeChanged() again
   // before calling DispatchKeyEvent().
   virtual void Reset() = 0;
@@ -51,6 +56,9 @@ class UI_BASE_IME_LINUX_EXPORT LinuxInputMethodContextDelegate {
 
   // Commits the |text| to the text input client.
   virtual void OnCommit(const base::string16& text) = 0;
+
+  // Deletes the surrounding text at |index| for given |length|.
+  virtual void OnDeleteSurroundingText(int32_t index, uint32_t length) = 0;
 
   // Sets the composition text to the text input client.
   virtual void OnPreeditChanged(const CompositionText& composition_text) = 0;

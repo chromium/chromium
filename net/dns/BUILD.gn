@@ -31,7 +31,10 @@ source_set("dns") {
     sources += [
       "address_sorter.h",
       "address_sorter_win.cc",
+      "dns_config.cc",
+      "dns_config_overrides.cc",
       "dns_config_service.cc",
+      "dns_config_service.h",
       "dns_config_service_win.cc",
       "dns_config_service_win.h",
       "dns_config_watcher_mac.cc",
@@ -51,6 +54,8 @@ source_set("dns") {
       "host_cache.cc",
       "host_resolver.cc",
       "host_resolver_impl.cc",
+      "host_resolver_mdns_task.cc",
+      "host_resolver_mdns_task.h",
       "host_resolver_proc.cc",
       "host_resolver_proc.h",
       "host_resolver_source.h",
@@ -161,11 +166,6 @@ source_set("host_resolver") {
     # TODO(crbug.com/874654): Remove once migrated to network service IPC.
     "//components/network_hints/browser",
 
-    # content/public/browser/resource_hints.h
-    # Deprecated and soon to be removed.
-    # TODO(crbug.com/875238): Remove once code is removed.
-    "//content/public/browser:browser_sources",
-
     # headless/lib/browser/headless_url_request_context_getter.cc
     # URLRequestContext creation for headless.
     "//headless",
@@ -197,7 +197,8 @@ source_set("host_resolver") {
 
   if (!is_nacl) {
     sources += [
-      "dns_config_service.h",
+      "dns_config.h",
+      "dns_config_overrides.h",
       "host_cache.h",
       "host_resolver.h",
       "mapped_host_resolver.h",
@@ -226,9 +227,10 @@ source_set("host_resolver_impl") {
   # Whitelist-only access so we can keep track of all usage external to the
   # network stack.
   friend = [
-    "//chromeos",
+    "//chromeos/network",
     "//components/cronet/*",
     "//net/*",
+    "//services/network:tests",
   ]
 
   sources = []
@@ -457,8 +459,14 @@ source_set("test_support") {
   ]
 
   if (enable_mdns) {
-    sources += [ "mock_mdns_socket_factory.cc" ]
-    public += [ "mock_mdns_socket_factory.h" ]
+    sources += [
+      "mock_mdns_client.cc",
+      "mock_mdns_socket_factory.cc",
+    ]
+    public += [
+      "mock_mdns_client.h",
+      "mock_mdns_socket_factory.h",
+    ]
   }
 
   deps = [
@@ -497,6 +505,30 @@ fuzzer_test("net_dns_hosts_parse_fuzzer") {
 fuzzer_test("net_dns_record_fuzzer") {
   sources = [
     "dns_record_fuzzer.cc",
+  ]
+  deps = [
+    "//base",
+    "//net",
+    "//net:net_fuzzer_test_support",
+  ]
+  dict = "//net/data/fuzzer_dictionaries/net_dns_record_fuzzer.dict"
+}
+
+fuzzer_test("net_dns_query_parse_fuzzer") {
+  sources = [
+    "dns_query_parse_fuzzer.cc",
+  ]
+  deps = [
+    "//base",
+    "//net",
+    "//net:net_fuzzer_test_support",
+  ]
+  dict = "//net/data/fuzzer_dictionaries/net_dns_record_fuzzer.dict"
+}
+
+fuzzer_test("net_dns_response_fuzzer") {
+  sources = [
+    "dns_response_fuzzer.cc",
   ]
   deps = [
     "//base",

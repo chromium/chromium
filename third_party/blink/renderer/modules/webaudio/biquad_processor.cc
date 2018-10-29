@@ -129,9 +129,9 @@ void BiquadProcessor::Process(const AudioBus* source,
 }
 
 void BiquadProcessor::ProcessOnlyAudioParams(size_t frames_to_process) {
-  DCHECK_LE(frames_to_process, AudioUtilities::kRenderQuantumFrames);
+  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
 
-  float values[AudioUtilities::kRenderQuantumFrames];
+  float values[audio_utilities::kRenderQuantumFrames];
 
   parameter1_->CalculateSampleAccurateValues(values, frames_to_process);
   parameter2_->CalculateSampleAccurateValues(values, frames_to_process);

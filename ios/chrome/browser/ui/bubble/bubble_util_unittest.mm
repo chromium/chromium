@@ -6,7 +6,7 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 

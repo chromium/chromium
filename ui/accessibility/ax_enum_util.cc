@@ -54,6 +54,8 @@ const char* ToString(ax::mojom::Event event) {
       return "liveRegionChanged";
     case ax::mojom::Event::kLoadComplete:
       return "loadComplete";
+    case ax::mojom::Event::kLoadStart:
+      return "loadStart";
     case ax::mojom::Event::kLocationChanged:
       return "locationChanged";
     case ax::mojom::Event::kMediaStartedPlaying:
@@ -162,6 +164,8 @@ ax::mojom::Event ParseEvent(const char* event) {
     return ax::mojom::Event::kLiveRegionChanged;
   if (0 == strcmp(event, "loadComplete"))
     return ax::mojom::Event::kLoadComplete;
+  if (0 == strcmp(event, "loadStart"))
+    return ax::mojom::Event::kLoadStart;
   if (0 == strcmp(event, "locationChanged"))
     return ax::mojom::Event::kLocationChanged;
   if (0 == strcmp(event, "mediaStartedPlaying"))
@@ -1162,8 +1166,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "ariaInvalidValue";
     case ax::mojom::StringAttribute::kAutoComplete:
       return "autoComplete";
-    case ax::mojom::StringAttribute::kChromeChannel:
-      return "chromeChannel";
+    case ax::mojom::StringAttribute::kChildTreeId:
+      return "childTreeId";
     case ax::mojom::StringAttribute::kClassName:
       return "className";
     case ax::mojom::StringAttribute::kContainerLiveRelevant:
@@ -1216,8 +1220,8 @@ ax::mojom::StringAttribute ParseStringAttribute(const char* string_attribute) {
     return ax::mojom::StringAttribute::kAriaInvalidValue;
   if (0 == strcmp(string_attribute, "autoComplete"))
     return ax::mojom::StringAttribute::kAutoComplete;
-  if (0 == strcmp(string_attribute, "chromeChannel"))
-    return ax::mojom::StringAttribute::kChromeChannel;
+  if (0 == strcmp(string_attribute, "childTreeId"))
+    return ax::mojom::StringAttribute::kChildTreeId;
   if (0 == strcmp(string_attribute, "className"))
     return ax::mojom::StringAttribute::kClassName;
   if (0 == strcmp(string_attribute, "containerLiveRelevant"))
@@ -1333,8 +1337,6 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "nextOnLineId";
     case ax::mojom::IntAttribute::kPreviousOnLineId:
       return "previousOnLineId";
-    case ax::mojom::IntAttribute::kChildTreeId:
-      return "childTreeId";
     case ax::mojom::IntAttribute::kRestriction:
       return "restriction";
     case ax::mojom::IntAttribute::kSetSize:
@@ -1443,8 +1445,6 @@ ax::mojom::IntAttribute ParseIntAttribute(const char* int_attribute) {
     return ax::mojom::IntAttribute::kNextOnLineId;
   if (0 == strcmp(int_attribute, "previousOnLineId"))
     return ax::mojom::IntAttribute::kPreviousOnLineId;
-  if (0 == strcmp(int_attribute, "childTreeId"))
-    return ax::mojom::IntAttribute::kChildTreeId;
   if (0 == strcmp(int_attribute, "restriction"))
     return ax::mojom::IntAttribute::kRestriction;
   if (0 == strcmp(int_attribute, "setSize"))
@@ -2151,12 +2151,16 @@ const char* ToString(ax::mojom::NameFrom name_from) {
       return "attribute";
     case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
       return "attributeExplicitlyEmpty";
+    case ax::mojom::NameFrom::kCaption:
+      return "caption";
     case ax::mojom::NameFrom::kContents:
       return "contents";
     case ax::mojom::NameFrom::kPlaceholder:
       return "placeholder";
     case ax::mojom::NameFrom::kRelatedElement:
       return "relatedElement";
+    case ax::mojom::NameFrom::kTitle:
+      return "title";
     case ax::mojom::NameFrom::kValue:
       return "value";
   }
@@ -2173,12 +2177,16 @@ ax::mojom::NameFrom ParseNameFrom(const char* name_from) {
     return ax::mojom::NameFrom::kAttribute;
   if (0 == strcmp(name_from, "attributeExplicitlyEmpty"))
     return ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
+  if (0 == strcmp(name_from, "caption"))
+    return ax::mojom::NameFrom::kCaption;
   if (0 == strcmp(name_from, "contents"))
     return ax::mojom::NameFrom::kContents;
   if (0 == strcmp(name_from, "placeholder"))
     return ax::mojom::NameFrom::kPlaceholder;
   if (0 == strcmp(name_from, "relatedElement"))
     return ax::mojom::NameFrom::kRelatedElement;
+  if (0 == strcmp(name_from, "title"))
+    return ax::mojom::NameFrom::kTitle;
   if (0 == strcmp(name_from, "value"))
     return ax::mojom::NameFrom::kValue;
   return ax::mojom::NameFrom::kNone;

@@ -32,8 +32,8 @@ source_set("main_content_ui") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/ui:ui_util",
     "//ios/chrome/browser/ui/broadcaster",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web_state_list",
     "//ios/web/public",
   ]
@@ -69,12 +69,12 @@ source_set("unit_tests") {
     ":main_content_ui_broadcasting_util",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/ui:ui_util",
     "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/browser/ui/browser_list",
     "//ios/chrome/browser/ui/coordinators",
     "//ios/chrome/browser/ui/coordinators:test_support",
     "//ios/chrome/browser/ui/main_content/test",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test/base",
     "//ios/web/public/test",

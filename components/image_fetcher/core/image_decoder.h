@@ -19,7 +19,9 @@ namespace image_fetcher {
 
 using ImageDecodedCallback = base::Callback<void(const gfx::Image&)>;
 
-// ImageDecoder defines the common interface for decoding images.
+// ImageDecoder defines the common interface for decoding images. This is
+// expected to process untrusted input from the web so implementations must be
+// sure to decode safely.
 class ImageDecoder {
  public:
   ImageDecoder() {}

@@ -89,7 +89,7 @@ class DescriptorParsingResult {
 };
 
 class ImageCandidate {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum OriginAttribute { kSrcsetOrigin, kSrcOrigin };

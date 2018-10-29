@@ -154,7 +154,7 @@ void BindAddStatement(const PasswordForm& form,
   s->BindString(COLUMN_ICON_URL, form.icon_url.spec());
   // An empty Origin serializes as "null" which would be strange to store here.
   s->BindString(COLUMN_FEDERATION_URL,
-                form.federation_origin.unique()
+                form.federation_origin.opaque()
                     ? std::string()
                     : form.federation_origin.Serialize());
   s->BindInt(COLUMN_SKIP_ZERO_CLICK, form.skip_zero_click);
@@ -953,7 +953,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form) {
   s.BindString16(next_param++, form.display_name);
   s.BindString(next_param++, form.icon_url.spec());
   // An empty Origin serializes as "null" which would be strange to store here.
-  s.BindString(next_param++, form.federation_origin.unique()
+  s.BindString(next_param++, form.federation_origin.opaque()
                                  ? std::string()
                                  : form.federation_origin.Serialize());
   s.BindInt(next_param++, form.skip_zero_click);
@@ -1324,8 +1324,7 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   // If the Keychain is unavailable, don't delete any logins.
   if (!OSCrypt::IsEncryptionAvailable()) {
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
-        metrics_util::DeleteUndecryptableLoginsReturnValue::
-            kEncryptionUnavailable);
+        metrics_util::DeleteCorruptedPasswordsResult::kEncryptionUnavailable);
     return DatabaseCleanupResult::kEncryptionUnavailable;
   }
 
@@ -1354,21 +1353,19 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   for (const auto& form : forms_to_be_deleted) {
     if (!RemoveLogin(form)) {
       metrics_util::LogDeleteUndecryptableLoginsReturnValue(
-          metrics_util::DeleteUndecryptableLoginsReturnValue::kItemFailure);
+          metrics_util::DeleteCorruptedPasswordsResult::kItemFailure);
       return DatabaseCleanupResult::kItemFailure;
     }
   }
 
   if (forms_to_be_deleted.empty()) {
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
-        metrics_util::DeleteUndecryptableLoginsReturnValue::
-            kSuccessNoDeletions);
+        metrics_util::DeleteCorruptedPasswordsResult::kSuccessNoDeletions);
   } else {
     DCHECK(password_recovery_util_);
     password_recovery_util_->RecordPasswordRecovery();
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
-        metrics_util::DeleteUndecryptableLoginsReturnValue::
-            kSuccessLoginsDeleted);
+        metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted);
     UMA_HISTOGRAM_COUNTS_100("PasswordManager.CleanedUpPasswords",
                              forms_to_be_deleted.size());
   }
@@ -1445,13 +1442,29 @@ bool LoginDatabase::StatementToForms(
                               psl_domain_match_metric, PSL_DOMAIN_MATCH_COUNT);
   }
 
+#if defined(OS_MACOSX) && !defined(OS_IOS)
   // Remove corrupted passwords.
-  // TODO(tsabolcec): Instead of ignoring items that failed to be removed, count
-  // successfully removed entries and report it.
+  size_t count_removed_logins = 0;
   for (const auto& form : forms_to_be_deleted) {
-    if (!RemoveLogin(form))
-      continue;
+    if (RemoveLogin(form))
+      count_removed_logins++;
   }
+
+  if (count_removed_logins > 0) {
+    UMA_HISTOGRAM_COUNTS_100("PasswordManager.RemovedCorruptedPasswords",
+                             count_removed_logins);
+  }
+
+  if (count_removed_logins != forms_to_be_deleted.size()) {
+    metrics_util::LogDeleteCorruptedPasswordsResult(
+        metrics_util::DeleteCorruptedPasswordsResult::kItemFailure);
+  } else if (count_removed_logins > 0) {
+    DCHECK(password_recovery_util_);
+    password_recovery_util_->RecordPasswordRecovery();
+    metrics_util::LogDeleteCorruptedPasswordsResult(
+        metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted);
+  }
+#endif
 
   if (!statement->Succeeded())
     return false;

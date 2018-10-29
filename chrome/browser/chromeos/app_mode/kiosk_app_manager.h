@@ -20,7 +20,7 @@
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/install_attributes.h"
+#include "chromeos/settings/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
 

@@ -4,7 +4,7 @@
 
 // https://w3c.github.io/webvr/#interface-vrdisplaycapabilities
 [
-    RuntimeEnabled=WebVR
+    OriginTrialEnabled=WebVR
 ] interface VRDisplayCapabilities {
   // Whether or not the VR display is capable of reporting user position.
   // If false position may still be reported using simulated values like

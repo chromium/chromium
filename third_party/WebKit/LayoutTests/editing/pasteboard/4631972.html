@@ -1,6 +1,8 @@
 <script>
-if (window.testRunner)
-     testRunner.dumpEditingCallbacks();
+if (window.testRunner) {
+    testRunner.dumpEditingCallbacks();
+    testRunner.dumpAsLayoutWithPixelResults();
+}
 </script>
 <p>This tests pasting a fragment containing an &lt;iframe&gt; after a &lt;div&gt;.  This used to fail on an assertion in moveParagraphContentsToNewBlockIfNecessary.  You should see 'foo' and then an &lt;iframe&gt; below.</p> 
 <div contenteditable="true" id="test"></div>

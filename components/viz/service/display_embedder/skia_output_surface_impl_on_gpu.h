@@ -31,6 +31,7 @@ class GLSurface;
 
 namespace gpu {
 class SyncPointClientState;
+class SharedImageRepresentationSkia;
 
 #if BUILDFLAG(ENABLE_VULKAN)
 class VulkanSurface;
@@ -40,36 +41,6 @@ class VulkanSurface;
 namespace viz {
 
 class GpuServiceImpl;
-
-// Metadata for YUV promise SkImage.
-class YUVResourceMetadata {
- public:
-  YUVResourceMetadata(std::vector<ResourceMetadata> metadatas,
-                      SkYUVColorSpace yuv_color_space);
-  YUVResourceMetadata(YUVResourceMetadata&& other);
-  ~YUVResourceMetadata();
-  YUVResourceMetadata& operator=(YUVResourceMetadata&& other);
-
-  const std::vector<ResourceMetadata>& metadatas() const { return metadatas_; }
-  SkYUVColorSpace yuv_color_space() const { return yuv_color_space_; }
-  const sk_sp<SkImage> image() const { return image_; }
-  void set_image(sk_sp<SkImage> image) { image_ = image; }
-  const gfx::Size size() const { return metadatas_[0].size; }
-
- private:
-  // Metadatas for YUV planes.
-  std::vector<ResourceMetadata> metadatas_;
-
-  SkYUVColorSpace yuv_color_space_;
-
-  // The image copied from YUV textures, it is for fullfilling the promise
-  // image.
-  // TODO(penghuang): Remove it when Skia supports drawing YUV textures
-  // directly.
-  sk_sp<SkImage> image_;
-
-  DISALLOW_COPY_AND_ASSIGN(YUVResourceMetadata);
-};
 
 // The SkiaOutputSurface implementation running on the GPU thread. This class
 // should be created, used and destroyed on the GPU thread.
@@ -104,28 +75,29 @@ class SkiaOutputSurfaceImplOnGpu : public gpu::ImageTransportSurfaceDelegate {
                base::WaitableEvent* event);
   void FinishPaintCurrentFrame(
       std::unique_ptr<SkDeferredDisplayList> ddl,
-      std::vector<YUVResourceMetadata*> yuv_resource_metadatas,
       uint64_t sync_fence_release);
   void SwapBuffers(OutputSurfaceFrame frame);
   void FinishPaintRenderPass(
       RenderPassId id,
       std::unique_ptr<SkDeferredDisplayList> ddl,
-      std::vector<YUVResourceMetadata*> yuv_resource_metadatas,
       uint64_t sync_fence_release);
   void RemoveRenderPassResource(std::vector<RenderPassId> ids);
   void CopyOutput(RenderPassId id,
                   const gfx::Rect& copy_rect,
                   std::unique_ptr<CopyOutputRequest> request);
 
-  // Fullfill callback for promise SkImage created from a resource.
-  void FullfillPromiseTexture(const ResourceMetadata& metadata,
-                              GrBackendTexture* backend_texture);
-  // Fullfill callback for promise SkImage created from YUV resources.
-  void FullfillPromiseTexture(const YUVResourceMetadata& metadata,
-                              GrBackendTexture* backend_texture);
-  // Fullfill callback for promise SkImage created from a render pass.
-  void FullfillPromiseTexture(const RenderPassId id,
-                              GrBackendTexture* backend_texture);
+  // Fulfill callback for promise SkImage created from a resource.
+  void FulfillPromiseTexture(
+      const ResourceMetadata& metadata,
+      std::unique_ptr<gpu::SharedImageRepresentationSkia>* shared_image_out,
+      GrBackendTexture* backend_texture);
+  // Fulfill callback for promise SkImage created from a render pass.
+  // |shared_image_out| is ignored for render passes, as these aren't based on
+  // SharedImage.
+  void FulfillPromiseTexture(
+      const RenderPassId id,
+      std::unique_ptr<gpu::SharedImageRepresentationSkia>* shared_image_out,
+      GrBackendTexture* backend_texture);
 
   sk_sp<GrContextThreadSafeProxy> GetGrContextThreadSafeProxy();
   const gl::GLVersionInfo* gl_version_info() const { return gl_version_info_; }
@@ -148,8 +120,6 @@ class SkiaOutputSurfaceImplOnGpu : public gpu::ImageTransportSurfaceDelegate {
   void InitializeForVulkan();
 
   void BindOrCopyTextureIfNecessary(gpu::TextureBase* texture_base);
-  void PreprocessYUVResources(
-      std::vector<YUVResourceMetadata*> yuv_resource_metadatas);
 
   // Generage the next swap ID and push it to our pending swap ID queues.
   void OnSwapBuffers();

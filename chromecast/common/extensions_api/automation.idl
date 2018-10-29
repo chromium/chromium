@@ -35,6 +35,7 @@
     liveRegionCreated,
     liveRegionChanged,
     loadComplete,
+    loadStart,
     locationChanged,
     mediaStartedPlaying,
     mediaStoppedPlaying,

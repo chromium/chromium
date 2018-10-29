@@ -344,13 +344,13 @@ void RendererImpl::FinishInitialization(PipelineStatus status) {
   DCHECK(init_cb_);
   TRACE_EVENT_ASYNC_END1("media", "RendererImpl::Initialize", this, "status",
                          MediaLog::PipelineStatusToString(status));
-  base::ResetAndReturn(&init_cb_).Run(status);
+  std::move(init_cb_).Run(status);
 }
 
 void RendererImpl::FinishFlush() {
   DCHECK(flush_cb_);
   TRACE_EVENT_ASYNC_END0("media", "RendererImpl::Flush", this);
-  base::ResetAndReturn(&flush_cb_).Run();
+  std::move(flush_cb_).Run();
 }
 
 void RendererImpl::InitializeAudioRenderer() {
@@ -369,7 +369,7 @@ void RendererImpl::InitializeAudioRenderer() {
 
   if (!audio_stream) {
     audio_renderer_.reset();
-    task_runner_->PostTask(FROM_HERE, base::Bind(done_cb, PIPELINE_OK));
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(done_cb, PIPELINE_OK));
     return;
   }
 
@@ -420,7 +420,7 @@ void RendererImpl::InitializeVideoRenderer() {
 
   if (!video_stream) {
     video_renderer_.reset();
-    task_runner_->PostTask(FROM_HERE, base::Bind(done_cb, PIPELINE_OK));
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(done_cb, PIPELINE_OK));
     return;
   }
 

@@ -49,7 +49,7 @@ String DOMMimeType::suffixes() const {
   const Vector<String>& extensions = mime_class_info_->Extensions();
 
   StringBuilder builder;
-  for (size_t i = 0; i < extensions.size(); ++i) {
+  for (wtf_size_t i = 0; i < extensions.size(); ++i) {
     if (i)
       builder.Append(',');
     builder.Append(extensions[i]);

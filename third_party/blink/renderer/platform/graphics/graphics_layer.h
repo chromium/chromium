@@ -119,7 +119,7 @@ class PLATFORM_EXPORT GraphicsLayer : public cc::LayerClient,
   void RemoveFromParent();
 
   GraphicsLayer* MaskLayer() const { return mask_layer_; }
-  void SetMaskLayer(GraphicsLayer*);
+  void SetMaskLayer(GraphicsLayer*, bool is_rounded_corner_mask);
 
   GraphicsLayer* ContentsClippingMaskLayer() const {
     return contents_clipping_mask_layer_;
@@ -139,8 +139,8 @@ class PLATFORM_EXPORT GraphicsLayer : public cc::LayerClient,
   const gfx::PointF& GetPosition() const;
   void SetPosition(const gfx::PointF&);
 
-  const FloatPoint3D& TransformOrigin() const { return transform_origin_; }
-  void SetTransformOrigin(const FloatPoint3D&);
+  const gfx::Point3F& TransformOrigin() const;
+  void SetTransformOrigin(const gfx::Point3F&);
 
   // The size of the layer.
   const gfx::Size& Size() const;
@@ -148,13 +148,13 @@ class PLATFORM_EXPORT GraphicsLayer : public cc::LayerClient,
 
   const TransformationMatrix& Transform() const { return transform_; }
   void SetTransform(const TransformationMatrix&);
+
+  bool ShouldFlattenTransform() const;
   void SetShouldFlattenTransform(bool);
   void SetRenderingContext(int id);
 
   bool MasksToBounds() const;
   void SetMasksToBounds(bool);
-
-  bool IsRootForIsolatedGroup() const { return is_root_for_isolated_group_; }
 
   bool DrawsContent() const { return draws_content_; }
   void SetDrawsContent(bool);
@@ -168,23 +168,22 @@ class PLATFORM_EXPORT GraphicsLayer : public cc::LayerClient,
   // For special cases, e.g. drawing missing tiles on Android.
   // The compositor should never paint this color in normal cases because the
   // Layer will paint the background by itself.
-  Color BackgroundColor() const { return background_color_; }
-  void SetBackgroundColor(const Color&);
+  RGBA32 BackgroundColor() const;
+  void SetBackgroundColor(RGBA32);
 
   // Opaque means that we know the layer contents have no alpha.
-  bool ContentsOpaque() const { return contents_opaque_; }
+  bool ContentsOpaque() const;
   void SetContentsOpaque(bool);
 
-  bool BackfaceVisibility() const { return backface_visibility_; }
+  bool BackfaceVisibility() const;
   void SetBackfaceVisibility(bool visible);
 
-  bool ShouldFlattenTransform() const { return should_flatten_transform_; }
-
-  float Opacity() const { return opacity_; }
+  float Opacity() const;
   void SetOpacity(float);
 
-  BlendMode GetBlendMode() const { return blend_mode_; }
+  BlendMode GetBlendMode() const;
   void SetBlendMode(BlendMode);
+  bool IsRootForIsolatedGroup() const;
   void SetIsRootForIsolatedGroup(bool);
 
   void SetHitTestableWithoutDrawsContent(bool);
@@ -370,21 +369,10 @@ class PLATFORM_EXPORT GraphicsLayer : public cc::LayerClient,
   IntSize offset_from_layout_object_;
 
   TransformationMatrix transform_;
-  FloatPoint3D transform_origin_;
 
-  Color background_color_;
-  float opacity_;
-
-  BlendMode blend_mode_;
-
-  bool has_transform_origin_ : 1;
-  bool contents_opaque_ : 1;
   bool prevent_contents_opaque_changes_ : 1;
-  bool should_flatten_transform_ : 1;
-  bool backface_visibility_ : 1;
   bool draws_content_ : 1;
   bool contents_visible_ : 1;
-  bool is_root_for_isolated_group_ : 1;
   bool hit_testable_without_draws_content_ : 1;
   bool needs_check_raster_invalidation_ : 1;
 

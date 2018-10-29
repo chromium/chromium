@@ -147,7 +147,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
   }
 
   void set_mock_platform_device(std::unique_ptr<MockFidoDevice> device) {
-    mock_platform_device_ = std::move(device);
+    pending_mock_platform_device_ = std::move(device);
   }
 
   void set_supported_transports(
@@ -157,10 +157,11 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
 
  protected:
   base::Optional<PlatformAuthenticatorInfo> CreatePlatformAuthenticator() {
-    if (!mock_platform_device_)
+    if (!pending_mock_platform_device_)
       return base::nullopt;
     return PlatformAuthenticatorInfo(
-        std::make_unique<FidoDeviceAuthenticator>(mock_platform_device_.get()),
+        std::make_unique<FidoDeviceAuthenticator>(
+            std::move(pending_mock_platform_device_)),
         false /* has_recognized_mac_touch_id_credential_available */);
   }
 
@@ -173,7 +174,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
   test::FakeFidoDiscovery* cable_discovery_;
   test::FakeFidoDiscovery* nfc_discovery_;
   scoped_refptr<::testing::NiceMock<MockBluetoothAdapter>> mock_adapter_;
-  std::unique_ptr<MockFidoDevice> mock_platform_device_;
+  std::unique_ptr<MockFidoDevice> pending_mock_platform_device_;
   TestGetAssertionRequestCallback get_assertion_cb_;
   base::flat_set<FidoTransportProtocol> supported_transports_ =
       GetAllTransportProtocols();

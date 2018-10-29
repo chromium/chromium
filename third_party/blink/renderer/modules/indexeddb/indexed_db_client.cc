@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_client.h"
 
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/core/workers/worker_content_settings_client.h"
@@ -32,12 +32,11 @@ IndexedDBClient::IndexedDBClient(WorkerClients& clients)
     : Supplement<WorkerClients>(clients) {}
 
 IndexedDBClient* IndexedDBClient::From(ExecutionContext* context) {
-  if (context->IsDocument()) {
-    return Supplement<LocalFrame>::From<IndexedDBClient>(
-        ToDocument(*context).GetFrame());
+  if (auto* document = DynamicTo<Document>(context)) {
+    return Supplement<LocalFrame>::From<IndexedDBClient>(document->GetFrame());
   }
 
-  WorkerClients* clients = ToWorkerGlobalScope(*context).Clients();
+  WorkerClients* clients = To<WorkerGlobalScope>(*context).Clients();
   DCHECK(clients);
   return Supplement<WorkerClients>::From<IndexedDBClient>(clients);
 }
@@ -47,17 +46,18 @@ bool IndexedDBClient::AllowIndexedDB(ExecutionContext* context,
   DCHECK(context->IsContextThread());
   SECURITY_DCHECK(context->IsDocument() || context->IsWorkerGlobalScope());
 
-  if (context->IsDocument()) {
-    Document* document = ToDocument(context);
+  if (auto* document = DynamicTo<Document>(context)) {
     LocalFrame* frame = document->GetFrame();
     if (!frame)
       return false;
-    DCHECK(frame->GetContentSettingsClient());
-    return frame->GetContentSettingsClient()->AllowIndexedDB(
-        name, context->GetSecurityOrigin());
+    if (auto* settings_client = frame->GetContentSettingsClient()) {
+      return settings_client->AllowIndexedDB(
+          name, WebSecurityOrigin(context->GetSecurityOrigin()));
+    }
+    return true;
   }
 
-  WorkerGlobalScope& worker_global_scope = *ToWorkerGlobalScope(context);
+  WorkerGlobalScope& worker_global_scope = *To<WorkerGlobalScope>(context);
   return WorkerContentSettingsClient::From(worker_global_scope)
       ->AllowIndexedDB(name);
 }

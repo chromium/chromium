@@ -163,13 +163,15 @@ class SiteInstanceTest : public testing::Test {
 
 // Test to ensure no memory leaks for SiteInstance objects.
 TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
+  TestBrowserContext context;
+
   // The existence of this object will cause WebContentsImpl to create our
   // test one instead of the real one.
   RenderViewHostTestEnabler rvh_test_enabler;
   const GURL url("test:foo");
 
   // Ensure that instances are deleted when their NavigationEntries are gone.
-  scoped_refptr<SiteInstanceImpl> instance = SiteInstanceImpl::Create(nullptr);
+  scoped_refptr<SiteInstanceImpl> instance = SiteInstanceImpl::Create(&context);
   EXPECT_EQ(0, browser_client()->GetAndClearSiteInstanceDeleteCount());
 
   NavigationEntryImpl* e1 = new NavigationEntryImpl(
@@ -242,7 +244,9 @@ TEST_F(SiteInstanceTest, GetProcess) {
 
 // Test to ensure SetSite and site() work properly.
 TEST_F(SiteInstanceTest, SetSite) {
-  scoped_refptr<SiteInstanceImpl> instance(SiteInstanceImpl::Create(nullptr));
+  TestBrowserContext context;
+
+  scoped_refptr<SiteInstanceImpl> instance(SiteInstanceImpl::Create(&context));
   EXPECT_FALSE(instance->HasSite());
   EXPECT_TRUE(instance->GetSiteURL().is_empty());
 
@@ -256,53 +260,55 @@ TEST_F(SiteInstanceTest, SetSite) {
 
 // Test to ensure GetSiteForURL properly returns sites for URLs.
 TEST_F(SiteInstanceTest, GetSiteForURL) {
+  TestBrowserContext context;
+
   // Pages are irrelevant.
   GURL test_url = GURL("http://www.google.com/index.html");
-  GURL site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  GURL site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("http://google.com"), site_url);
   EXPECT_EQ("http", site_url.scheme());
   EXPECT_EQ("google.com", site_url.host());
 
   // Ports are irrelevant.
   test_url = GURL("https://www.google.com:8080");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("https://google.com"), site_url);
 
   // Punycode is canonicalized.
   test_url = GURL("http://☃snowperson☃.net:333/");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("http://xn--snowperson-di0gka.net"), site_url);
 
   // Username and password are stripped out.
   test_url = GURL("ftp://username:password@ftp.chromium.org/files/README");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("ftp://chromium.org"), site_url);
 
   // Literal IP addresses of any flavor are okay.
   test_url = GURL("http://127.0.0.1/a.html");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("http://127.0.0.1"), site_url);
   EXPECT_EQ("127.0.0.1", site_url.host());
 
   test_url = GURL("http://2130706433/a.html");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("http://127.0.0.1"), site_url);
   EXPECT_EQ("127.0.0.1", site_url.host());
 
   test_url = GURL("http://[::1]:2/page.html");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("http://[::1]"), site_url);
   EXPECT_EQ("[::1]", site_url.host());
 
   // Hostnames without TLDs are okay.
   test_url = GURL("http://foo/a.html");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("http://foo"), site_url);
   EXPECT_EQ("foo", site_url.host());
 
   // File URLs should include the scheme.
   test_url = GURL("file:///C:/Downloads/");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("file:"), site_url);
   EXPECT_EQ("file", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
@@ -311,7 +317,7 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   // maps *all* file://... URLs into "file://" origin) such file URLs still need
   // to map into "file:" site URL.  See also https://crbug.com/776160.
   test_url = GURL("file://server/path");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("file:"), site_url);
   EXPECT_EQ("file", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
@@ -319,7 +325,7 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   // Data URLs should include the whole URL, except for the hash, when Site
   // Isolation is enabled.  Otherwise they just include the scheme.
   test_url = GURL("data:text/html,foo");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   if (AreAllSitesIsolatedForTesting())
     EXPECT_EQ(test_url, site_url);
   else
@@ -327,7 +333,7 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   EXPECT_EQ("data", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
   test_url = GURL("data:text/html,foo#bar");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_FALSE(site_url.has_ref());
   if (AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(test_url, site_url);
@@ -338,7 +344,7 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
 
   // Javascript URLs should include the scheme.
   test_url = GURL("javascript:foo();");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("javascript:"), site_url);
   EXPECT_EQ("javascript", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
@@ -347,12 +353,12 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   test_url = GURL(
       "blob:gopher://www.ftp.chromium.org/"
       "4d4ff040-6d61-4446-86d3-13ca07ec9ab9");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("gopher://chromium.org"), site_url);
 
   // Blob URLs with file origin also extract the site from the origin.
   test_url = GURL("blob:file:///1029e5a4-2983-4b90-a585-ed217563acfeb");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("file:"), site_url);
   EXPECT_EQ("file", site_url.scheme());
   EXPECT_FALSE(site_url.has_host());
@@ -361,13 +367,13 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   // when Site Isolation is enabled, except for the hash.  Otherwise they just
   // include the scheme.
   test_url = GURL("blob:null/1029e5a4-2983-4b90-a585-ed217563acfeb");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   if (AreAllSitesIsolatedForTesting())
     EXPECT_EQ(test_url, site_url);
   else
     EXPECT_EQ(GURL("blob:"), site_url);
   test_url = GURL("blob:null/1029e5a4-2983-4b90-a585-ed217563acfeb#foo");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_FALSE(site_url.has_ref());
   if (AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(test_url, site_url);
@@ -380,12 +386,12 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   test_url = GURL(
       "blob:http://www.example.appspot.com:44/"
       "4d4ff040-6d61-4446-86d3-13ca07ec9ab9");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("http://example.appspot.com"), site_url);
 
   // The site of filesystem URLs is determined by the inner URL.
   test_url = GURL("filesystem:http://www.google.com/foo/bar.html?foo#bar");
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("http://google.com"), site_url);
 
   // Guest URLs are special and need to have the path in the site as well,
@@ -393,7 +399,7 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   std::string guest_url(kGuestScheme);
   guest_url.append("://abc123/path");
   test_url = GURL(guest_url);
-  site_url = SiteInstance::GetSiteForURL(nullptr, test_url);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(test_url, site_url);
 
   DrainMessageLoop();
@@ -401,6 +407,7 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
 
 // Test that process lock URLs are computed without using effective URLs.
 TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
+  TestBrowserContext context;
   GURL test_url("https://some.app.foo.com/");
   GURL nonapp_site_url("https://foo.com/");
   GURL app_url("https://app.com/");
@@ -415,10 +422,10 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
   GURL expected_app_site_url(app_url.spec() + "#" + nonapp_site_url.spec());
   {
     GURL site_url = SiteInstanceImpl::GetSiteForURL(
-        nullptr, test_url, false /* use_effective_urls */);
+        &context, test_url, false /* use_effective_urls */);
     EXPECT_EQ(nonapp_site_url, site_url);
 
-    site_url = SiteInstanceImpl::GetSiteForURL(nullptr, test_url,
+    site_url = SiteInstanceImpl::GetSiteForURL(&context, test_url,
                                                true /* use_effective_urls */);
     EXPECT_EQ(expected_app_site_url, site_url);
   }
@@ -461,6 +468,7 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
 // tested in RegistryControlledDomainTest.  This test focuses on URLs with
 // different schemes or ports.
 TEST_F(SiteInstanceTest, IsSameWebSite) {
+  TestBrowserContext context;
   GURL url_foo = GURL("http://foo/a.html");
   GURL url_foo2 = GURL("http://foo/b.html");
   GURL url_foo_https = GURL("https://foo/a.html");
@@ -469,31 +477,31 @@ TEST_F(SiteInstanceTest, IsSameWebSite) {
   GURL url_blank = GURL(url::kAboutBlankURL);
 
   // Same scheme and port -> same site.
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, url_foo, url_foo2));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, url_foo, url_foo2));
 
   // Different scheme -> different site.
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, url_foo, url_foo_https));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, url_foo, url_foo_https));
 
   // Different port -> same site.
   // (Changes to document.domain make renderer ignore the port.)
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, url_foo, url_foo_port));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, url_foo, url_foo_port));
 
   // JavaScript links should be considered same site for anything.
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, url_javascript, url_foo));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, url_javascript, url_foo));
   EXPECT_TRUE(
-      SiteInstance::IsSameWebSite(nullptr, url_javascript, url_foo_https));
+      SiteInstance::IsSameWebSite(&context, url_javascript, url_foo_https));
   EXPECT_TRUE(
-      SiteInstance::IsSameWebSite(nullptr, url_javascript, url_foo_port));
+      SiteInstance::IsSameWebSite(&context, url_javascript, url_foo_port));
 
   // Navigating to a blank page is considered the same site.
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, url_foo, url_blank));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, url_foo_https, url_blank));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, url_foo_port, url_blank));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, url_foo, url_blank));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, url_foo_https, url_blank));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, url_foo_port, url_blank));
 
   // Navigating from a blank site is not considered to be the same site.
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, url_blank, url_foo));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, url_blank, url_foo_https));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, url_blank, url_foo_port));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, url_blank, url_foo));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, url_blank, url_foo_https));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, url_blank, url_foo_port));
 
   DrainMessageLoop();
 }
@@ -501,26 +509,30 @@ TEST_F(SiteInstanceTest, IsSameWebSite) {
 // Test that two file URLs are considered same-site if they have the same path,
 // even if they have different fragments.
 TEST_F(SiteInstanceTest, IsSameWebSiteForFileURLs) {
+  TestBrowserContext context;
+
   // Two identical file URLs should be same-site.
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, GURL("file:///foo/bar.html"),
-                                          GURL("file:///foo/bar.html")));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(
+      &context, GURL("file:///foo/bar.html"), GURL("file:///foo/bar.html")));
 
   // File URLs with the same path but different fragment are considered
   // same-site.
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, GURL("file:///foo/bar.html"),
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context,
+                                          GURL("file:///foo/bar.html"),
                                           GURL("file:///foo/bar.html#baz")));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(
-      nullptr, GURL("file:///foo/bar.html#baz"), GURL("file:///foo/bar.html")));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr,
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context,
+                                          GURL("file:///foo/bar.html#baz"),
+                                          GURL("file:///foo/bar.html")));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context,
                                           GURL("file:///foo/bar.html#baz"),
                                           GURL("file:///foo/bar.html#qux")));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, GURL("file:///#abc"),
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, GURL("file:///#abc"),
                                           GURL("file:///#def")));
 
   // Other cases are cross-site.
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, GURL("file:///foo.html"),
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, GURL("file:///foo.html"),
                                            GURL("file:///foo/bar.html")));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, GURL("file:///#bar"),
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, GURL("file:///#bar"),
                                            GURL("file:///foo/#bar")));
 }
 
@@ -674,79 +686,6 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   // The processes will be unregistered when the RPH scoped_ptrs go away.
 
   DrainMessageLoop();
-}
-
-static scoped_refptr<SiteInstanceImpl> CreateSiteInstance(
-    BrowserContext* browser_context,
-    const GURL& url) {
-  return SiteInstanceImpl::CreateForURL(browser_context, url);
-}
-
-// Test to ensure that pages that require certain privileges are grouped
-// in processes with similar pages.
-// TODO(nasko): Remove. See https://crbug.com/847127.
-TEST_F(SiteInstanceTest, ProcessSharingByType) {
-  // This test shouldn't run with --site-per-process mode, which prohibits
-  // the renderer process reuse this test explicitly exercises.
-  if (AreAllSitesIsolatedForTesting())
-    return;
-
-  ChildProcessSecurityPolicyImpl* policy =
-      ChildProcessSecurityPolicyImpl::GetInstance();
-
-  // Make a bunch of mock renderers so that we hit the limit.
-  std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
-  std::vector<std::unique_ptr<MockRenderProcessHost>> hosts;
-  for (size_t i = 0; i < kMaxRendererProcessCount; ++i) {
-    hosts.push_back(
-        std::make_unique<MockRenderProcessHost>(browser_context.get()));
-    hosts[i]->SetIsUsed();
-  }
-
-  // On Android by default the number of renderer hosts is unlimited and process
-  // sharing doesn't happen. We set the override so that the test can run
-  // everywhere.
-  RenderProcessHost::SetMaxRendererProcessCount(kMaxRendererProcessCount);
-
-  // Create some extension instances and make sure they share a process.
-  scoped_refptr<SiteInstanceImpl> extension1_instance(
-      CreateSiteInstance(browser_context.get(),
-          GURL(kPrivilegedScheme + std::string("://foo/bar"))));
-  set_privileged_process_id(extension1_instance->GetProcess()->GetID());
-
-  scoped_refptr<SiteInstanceImpl> extension2_instance(
-      CreateSiteInstance(browser_context.get(),
-          GURL(kPrivilegedScheme + std::string("://baz/bar"))));
-
-  std::unique_ptr<RenderProcessHost> extension_host(
-      extension1_instance->GetProcess());
-  EXPECT_EQ(extension1_instance->GetProcess(),
-            extension2_instance->GetProcess());
-
-  // Create some WebUI instances and make sure they share a process.
-  scoped_refptr<SiteInstanceImpl> webui1_instance(
-      CreateSiteInstance(browser_context.get(), GetWebUIURL(kChromeUIGpuHost)));
-  policy->GrantWebUIBindings(webui1_instance->GetProcess()->GetID(),
-                             BINDINGS_POLICY_WEB_UI);
-
-  scoped_refptr<SiteInstanceImpl> webui2_instance(CreateSiteInstance(
-      browser_context.get(), GetWebUIURL(kChromeUIMediaInternalsHost)));
-
-  std::unique_ptr<RenderProcessHost> dom_host(webui1_instance->GetProcess());
-  EXPECT_EQ(webui1_instance->GetProcess(), webui2_instance->GetProcess());
-
-  // Make sure none of differing privilege processes are mixed.
-  EXPECT_NE(extension1_instance->GetProcess(), webui1_instance->GetProcess());
-
-  for (size_t i = 0; i < kMaxRendererProcessCount; ++i) {
-    EXPECT_NE(extension1_instance->GetProcess(), hosts[i].get());
-    EXPECT_NE(webui1_instance->GetProcess(), hosts[i].get());
-  }
-
-  DrainMessageLoop();
-
-  // Disable the process limit override.
-  RenderProcessHost::SetMaxRendererProcessCount(0u);
 }
 
 // Test to ensure that HasWrongProcessForURL behaves properly for different
@@ -906,6 +845,7 @@ TEST_F(SiteInstanceTest, NoProcessPerSiteForEmptySite) {
 // Check that an URL is considered same-site with blob: and filesystem: URLs
 // with a matching inner origin.  See https://crbug.com/726370.
 TEST_F(SiteInstanceTest, IsSameWebsiteForNestedURLs) {
+  TestBrowserContext context;
   GURL foo_url("http://foo.com/");
   GURL bar_url("http://bar.com/");
   GURL blob_foo_url("blob:http://foo.com/uuid");
@@ -913,85 +853,38 @@ TEST_F(SiteInstanceTest, IsSameWebsiteForNestedURLs) {
   GURL fs_foo_url("filesystem:http://foo.com/path/");
   GURL fs_bar_url("filesystem:http://bar.com/path/");
 
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, foo_url, blob_foo_url));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, blob_foo_url, foo_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, foo_url, blob_bar_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, blob_foo_url, bar_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, foo_url, blob_foo_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, blob_foo_url, foo_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, foo_url, blob_bar_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, blob_foo_url, bar_url));
 
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, foo_url, fs_foo_url));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, fs_foo_url, foo_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, foo_url, fs_bar_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, fs_foo_url, bar_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, foo_url, fs_foo_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, fs_foo_url, foo_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, foo_url, fs_bar_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, fs_foo_url, bar_url));
 
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, blob_foo_url, fs_foo_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, blob_foo_url, fs_bar_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, blob_foo_url, fs_foo_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, blob_foo_url, fs_bar_url));
   EXPECT_FALSE(
-      SiteInstance::IsSameWebSite(nullptr, blob_foo_url, blob_bar_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, fs_foo_url, fs_bar_url));
+      SiteInstance::IsSameWebSite(&context, blob_foo_url, blob_bar_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, fs_foo_url, fs_bar_url));
 
   // Verify that the scheme and ETLD+1 are used for comparison.
   GURL www_bar_url("http://www.bar.com/");
   GURL bar_org_url("http://bar.org/");
   GURL https_bar_url("https://bar.com/");
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, www_bar_url, bar_url));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, www_bar_url, blob_bar_url));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, www_bar_url, fs_bar_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, bar_org_url, bar_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, bar_org_url, blob_bar_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, bar_org_url, fs_bar_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, https_bar_url, bar_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, www_bar_url, bar_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, www_bar_url, blob_bar_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, www_bar_url, fs_bar_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, bar_org_url, bar_url));
   EXPECT_FALSE(
-      SiteInstance::IsSameWebSite(nullptr, https_bar_url, blob_bar_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, https_bar_url, fs_bar_url));
-}
-
-TEST_F(SiteInstanceTest, DefaultSubframeSiteInstance) {
-  if (AreAllSitesIsolatedForTesting())
-    return;  // --top-document-isolation is not possible.
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTopDocumentIsolation);
-
-  std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
-  scoped_refptr<SiteInstanceImpl> main_instance =
-      SiteInstanceImpl::Create(browser_context.get());
-  scoped_refptr<SiteInstanceImpl> subframe_instance =
-      main_instance->GetDefaultSubframeSiteInstance();
-  int subframe_instance_id = subframe_instance->GetId();
-
-  EXPECT_NE(main_instance, subframe_instance);
-  EXPECT_EQ(subframe_instance, main_instance->GetDefaultSubframeSiteInstance());
-  EXPECT_FALSE(main_instance->IsDefaultSubframeSiteInstance());
-  EXPECT_TRUE(subframe_instance->IsDefaultSubframeSiteInstance());
-
-  EXPECT_EQ(0, browser_client()->GetAndClearSiteInstanceDeleteCount());
-  EXPECT_EQ(0, browser_client()->GetAndClearBrowsingInstanceDeleteCount());
-
-  // Free the subframe instance.
-  subframe_instance = nullptr;
-  EXPECT_EQ(1, browser_client()->GetAndClearSiteInstanceDeleteCount());
-  EXPECT_EQ(0, browser_client()->GetAndClearBrowsingInstanceDeleteCount());
-
-  // Calling GetDefaultSubframeSiteInstance again should return a new
-  // SiteInstance with a different ID from the original.
-  subframe_instance = main_instance->GetDefaultSubframeSiteInstance();
-  EXPECT_NE(subframe_instance->GetId(), subframe_instance_id);
-  EXPECT_FALSE(main_instance->IsDefaultSubframeSiteInstance());
-  EXPECT_TRUE(subframe_instance->IsDefaultSubframeSiteInstance());
-  EXPECT_EQ(subframe_instance->GetDefaultSubframeSiteInstance(),
-            subframe_instance);
-  EXPECT_EQ(0, browser_client()->GetAndClearSiteInstanceDeleteCount());
-  EXPECT_EQ(0, browser_client()->GetAndClearBrowsingInstanceDeleteCount());
-
-  // Free the main instance.
-  main_instance = nullptr;
-  EXPECT_EQ(1, browser_client()->GetAndClearSiteInstanceDeleteCount());
-  EXPECT_EQ(0, browser_client()->GetAndClearBrowsingInstanceDeleteCount());
-
-  // Free the subframe instance, which should free the browsing instance.
-  subframe_instance = nullptr;
-  EXPECT_EQ(1, browser_client()->GetAndClearSiteInstanceDeleteCount());
-  EXPECT_EQ(1, browser_client()->GetAndClearBrowsingInstanceDeleteCount());
+      SiteInstance::IsSameWebSite(&context, bar_org_url, blob_bar_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, bar_org_url, fs_bar_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, https_bar_url, bar_url));
+  EXPECT_FALSE(
+      SiteInstance::IsSameWebSite(&context, https_bar_url, blob_bar_url));
+  EXPECT_FALSE(
+      SiteInstance::IsSameWebSite(&context, https_bar_url, fs_bar_url));
 }
 
 TEST_F(SiteInstanceTest, IsolatedOrigins) {
@@ -1000,9 +893,10 @@ TEST_F(SiteInstanceTest, IsolatedOrigins) {
   GURL isolated_bar_url("http://isolated.bar.com");
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  TestBrowserContext context;
 
   EXPECT_FALSE(policy->IsIsolatedOrigin(url::Origin::Create(isolated_foo_url)));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, foo_url, isolated_foo_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, foo_url, isolated_foo_url));
 
   policy->AddIsolatedOrigins({url::Origin::Create(isolated_foo_url)});
   EXPECT_TRUE(policy->IsIsolatedOrigin(url::Origin::Create(isolated_foo_url)));
@@ -1021,42 +915,44 @@ TEST_F(SiteInstanceTest, IsolatedOrigins) {
 
   // IsSameWebSite should compare origins rather than sites if either URL is an
   // isolated origin.
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, foo_url, isolated_foo_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, isolated_foo_url, foo_url));
   EXPECT_FALSE(
-      SiteInstance::IsSameWebSite(nullptr, isolated_foo_url, isolated_bar_url));
-  EXPECT_TRUE(
-      SiteInstance::IsSameWebSite(nullptr, isolated_foo_url, isolated_foo_url));
+      SiteInstance::IsSameWebSite(&context, foo_url, isolated_foo_url));
+  EXPECT_FALSE(
+      SiteInstance::IsSameWebSite(&context, isolated_foo_url, foo_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, isolated_foo_url,
+                                           isolated_bar_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, isolated_foo_url,
+                                          isolated_foo_url));
 
   // Ensure blob and filesystem URLs with isolated origins are compared
   // correctly.
   GURL isolated_blob_foo_url("blob:http://isolated.foo.com/uuid");
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, isolated_foo_url,
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, isolated_foo_url,
                                           isolated_blob_foo_url));
   GURL isolated_filesystem_foo_url("filesystem:http://isolated.foo.com/bar/");
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, isolated_foo_url,
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, isolated_foo_url,
                                           isolated_filesystem_foo_url));
 
   // The site URL for an isolated origin should be the full origin rather than
   // eTLD+1.
   EXPECT_EQ(isolated_foo_url,
-            SiteInstance::GetSiteForURL(nullptr, isolated_foo_url));
+            SiteInstance::GetSiteForURL(&context, isolated_foo_url));
   EXPECT_EQ(isolated_bar_url,
-            SiteInstance::GetSiteForURL(nullptr, isolated_bar_url));
+            SiteInstance::GetSiteForURL(&context, isolated_bar_url));
   EXPECT_EQ(isolated_foo_url,
-            SiteInstance::GetSiteForURL(nullptr, isolated_blob_foo_url));
+            SiteInstance::GetSiteForURL(&context, isolated_blob_foo_url));
   EXPECT_EQ(isolated_foo_url,
-            SiteInstance::GetSiteForURL(nullptr, isolated_filesystem_foo_url));
+            SiteInstance::GetSiteForURL(&context, isolated_filesystem_foo_url));
 
   // Isolated origins always require a dedicated process.
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      nullptr, isolated_foo_url));
+      &context, isolated_foo_url));
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      nullptr, isolated_bar_url));
+      &context, isolated_bar_url));
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      nullptr, isolated_blob_foo_url));
+      &context, isolated_blob_foo_url));
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      nullptr, isolated_filesystem_foo_url));
+      &context, isolated_filesystem_foo_url));
 
   // Cleanup.
   policy->RemoveIsolatedOriginForTesting(url::Origin::Create(isolated_foo_url));
@@ -1105,6 +1001,7 @@ TEST_F(SiteInstanceTest, SubdomainOnIsolatedSite) {
   GURL isolated_url("http://isolated.com");
   GURL foo_isolated_url("http://foo.isolated.com");
 
+  TestBrowserContext context;
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   policy->AddIsolatedOrigins({url::Origin::Create(isolated_url)});
 
@@ -1128,15 +1025,15 @@ TEST_F(SiteInstanceTest, SubdomainOnIsolatedSite) {
   // should use the isolated origin's host and not its own host as the site
   // URL.
   EXPECT_EQ(isolated_url,
-            SiteInstance::GetSiteForURL(nullptr, foo_isolated_url));
+            SiteInstance::GetSiteForURL(&context, foo_isolated_url));
 
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      nullptr, foo_isolated_url));
+      &context, foo_isolated_url));
 
   EXPECT_TRUE(
-      SiteInstance::IsSameWebSite(nullptr, isolated_url, foo_isolated_url));
+      SiteInstance::IsSameWebSite(&context, isolated_url, foo_isolated_url));
   EXPECT_TRUE(
-      SiteInstance::IsSameWebSite(nullptr, foo_isolated_url, isolated_url));
+      SiteInstance::IsSameWebSite(&context, foo_isolated_url, isolated_url));
 
   // Don't try to match subdomains on IP addresses.
   GURL isolated_ip("http://127.0.0.1");
@@ -1155,6 +1052,7 @@ TEST_F(SiteInstanceTest, SubdomainOnIsolatedOrigin) {
   GURL bar_isolated_foo_url("http://bar.isolated.foo.com");
   GURL baz_isolated_foo_url("http://baz.isolated.foo.com");
 
+  TestBrowserContext context;
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   policy->AddIsolatedOrigins({url::Origin::Create(isolated_foo_url)});
 
@@ -1165,38 +1063,40 @@ TEST_F(SiteInstanceTest, SubdomainOnIsolatedOrigin) {
   EXPECT_TRUE(
       policy->IsIsolatedOrigin(url::Origin::Create(baz_isolated_foo_url)));
 
-  EXPECT_EQ(foo_url, SiteInstance::GetSiteForURL(nullptr, foo_url));
+  EXPECT_EQ(foo_url, SiteInstance::GetSiteForURL(&context, foo_url));
   EXPECT_EQ(isolated_foo_url,
-            SiteInstance::GetSiteForURL(nullptr, isolated_foo_url));
+            SiteInstance::GetSiteForURL(&context, isolated_foo_url));
   EXPECT_EQ(isolated_foo_url,
-            SiteInstance::GetSiteForURL(nullptr, bar_isolated_foo_url));
+            SiteInstance::GetSiteForURL(&context, bar_isolated_foo_url));
   EXPECT_EQ(isolated_foo_url,
-            SiteInstance::GetSiteForURL(nullptr, baz_isolated_foo_url));
+            SiteInstance::GetSiteForURL(&context, baz_isolated_foo_url));
 
   if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_FALSE(
-        SiteInstanceImpl::DoesSiteRequireDedicatedProcess(nullptr, foo_url));
+        SiteInstanceImpl::DoesSiteRequireDedicatedProcess(&context, foo_url));
   }
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      nullptr, isolated_foo_url));
+      &context, isolated_foo_url));
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      nullptr, bar_isolated_foo_url));
+      &context, bar_isolated_foo_url));
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      nullptr, baz_isolated_foo_url));
+      &context, baz_isolated_foo_url));
 
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, foo_url, isolated_foo_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, isolated_foo_url, foo_url));
   EXPECT_FALSE(
-      SiteInstance::IsSameWebSite(nullptr, foo_url, bar_isolated_foo_url));
+      SiteInstance::IsSameWebSite(&context, foo_url, isolated_foo_url));
   EXPECT_FALSE(
-      SiteInstance::IsSameWebSite(nullptr, bar_isolated_foo_url, foo_url));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, bar_isolated_foo_url,
+      SiteInstance::IsSameWebSite(&context, isolated_foo_url, foo_url));
+  EXPECT_FALSE(
+      SiteInstance::IsSameWebSite(&context, foo_url, bar_isolated_foo_url));
+  EXPECT_FALSE(
+      SiteInstance::IsSameWebSite(&context, bar_isolated_foo_url, foo_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, bar_isolated_foo_url,
                                           isolated_foo_url));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, isolated_foo_url,
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, isolated_foo_url,
                                           bar_isolated_foo_url));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, bar_isolated_foo_url,
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, bar_isolated_foo_url,
                                           baz_isolated_foo_url));
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, baz_isolated_foo_url,
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, baz_isolated_foo_url,
                                           bar_isolated_foo_url));
 
   // Cleanup.
@@ -1209,6 +1109,7 @@ TEST_F(SiteInstanceTest, MultipleIsolatedOriginsWithCommonSite) {
   GURL baz_bar_foo_url("http://baz.bar.foo.com");
   GURL qux_baz_bar_foo_url("http://qux.baz.bar.foo.com");
 
+  TestBrowserContext context;
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   policy->AddIsolatedOrigins(
       {url::Origin::Create(foo_url), url::Origin::Create(baz_bar_foo_url)});
@@ -1219,33 +1120,33 @@ TEST_F(SiteInstanceTest, MultipleIsolatedOriginsWithCommonSite) {
   EXPECT_TRUE(
       policy->IsIsolatedOrigin(url::Origin::Create(qux_baz_bar_foo_url)));
 
-  EXPECT_EQ(foo_url, SiteInstance::GetSiteForURL(nullptr, foo_url));
-  EXPECT_EQ(foo_url, SiteInstance::GetSiteForURL(nullptr, bar_foo_url));
+  EXPECT_EQ(foo_url, SiteInstance::GetSiteForURL(&context, foo_url));
+  EXPECT_EQ(foo_url, SiteInstance::GetSiteForURL(&context, bar_foo_url));
   EXPECT_EQ(baz_bar_foo_url,
-            SiteInstance::GetSiteForURL(nullptr, baz_bar_foo_url));
+            SiteInstance::GetSiteForURL(&context, baz_bar_foo_url));
   EXPECT_EQ(baz_bar_foo_url,
-            SiteInstance::GetSiteForURL(nullptr, qux_baz_bar_foo_url));
+            SiteInstance::GetSiteForURL(&context, qux_baz_bar_foo_url));
 
   EXPECT_TRUE(
-      SiteInstanceImpl::DoesSiteRequireDedicatedProcess(nullptr, foo_url));
+      SiteInstanceImpl::DoesSiteRequireDedicatedProcess(&context, foo_url));
   EXPECT_TRUE(
-      SiteInstanceImpl::DoesSiteRequireDedicatedProcess(nullptr, bar_foo_url));
+      SiteInstanceImpl::DoesSiteRequireDedicatedProcess(&context, bar_foo_url));
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      nullptr, baz_bar_foo_url));
+      &context, baz_bar_foo_url));
   EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      nullptr, qux_baz_bar_foo_url));
+      &context, qux_baz_bar_foo_url));
 
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, foo_url, bar_foo_url));
-  EXPECT_FALSE(SiteInstance::IsSameWebSite(nullptr, foo_url, baz_bar_foo_url));
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, foo_url, bar_foo_url));
+  EXPECT_FALSE(SiteInstance::IsSameWebSite(&context, foo_url, baz_bar_foo_url));
   EXPECT_FALSE(
-      SiteInstance::IsSameWebSite(nullptr, foo_url, qux_baz_bar_foo_url));
+      SiteInstance::IsSameWebSite(&context, foo_url, qux_baz_bar_foo_url));
 
   EXPECT_FALSE(
-      SiteInstance::IsSameWebSite(nullptr, bar_foo_url, baz_bar_foo_url));
+      SiteInstance::IsSameWebSite(&context, bar_foo_url, baz_bar_foo_url));
   EXPECT_FALSE(
-      SiteInstance::IsSameWebSite(nullptr, bar_foo_url, qux_baz_bar_foo_url));
+      SiteInstance::IsSameWebSite(&context, bar_foo_url, qux_baz_bar_foo_url));
 
-  EXPECT_TRUE(SiteInstance::IsSameWebSite(nullptr, baz_bar_foo_url,
+  EXPECT_TRUE(SiteInstance::IsSameWebSite(&context, baz_bar_foo_url,
                                           qux_baz_bar_foo_url));
 
   // Cleanup.

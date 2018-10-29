@@ -13,7 +13,7 @@ namespace {
 // Adds the names to the set.
 static void AddToSet(const SpaceSplitString& strings,
                      HashSet<AtomicString>* set) {
-  for (size_t i = 0; i < strings.size(); i++) {
+  for (wtf_size_t i = 0; i < strings.size(); i++) {
     set->insert(strings[i]);
   }
 }

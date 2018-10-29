@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/payments/cells/accepted_payment_methods_item.h"
 
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -94,7 +94,7 @@ const CGFloat kHorizontalSpacingBetweenIcons = 4.5;
 
 // Set default font and text colors for labels.
 - (void)setDefaultViewStyling {
-  _messageLabel.font = [MDCTypography body2Font];
+  SetUILabelScaledFont(_messageLabel, [MDCTypography body2Font]);
   _messageLabel.textColor = [[MDCPalette greyPalette] tint600];
   _messageLabel.numberOfLines = 0;
   _messageLabel.lineBreakMode = NSLineBreakByWordWrapping;

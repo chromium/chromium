@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_WEB_APP_EXTENSION_SHORTCUT_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_WEB_APP_EXTENSION_SHORTCUT_H_
 
-#include "chrome/browser/web_applications/components/web_app_shortcut.h"
+#include <memory>
 
+#include "base/callback_forward.h"
+#include "base/files/file_path.h"
+#include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/components/web_app_shortcut.h"
 
 class Profile;
 
@@ -39,7 +43,7 @@ std::unique_ptr<ShortcutInfo> ShortcutInfoForExtensionAndProfile(
     Profile* profile);
 
 // Whether to create a shortcut for this type of extension.
-bool ShouldCreateShortcutFor(web_app::ShortcutCreationReason reason,
+bool ShouldCreateShortcutFor(ShortcutCreationReason reason,
                              Profile* profile,
                              const extensions::Extension* extension);
 
@@ -75,22 +79,11 @@ void UpdateAllShortcuts(const base::string16& old_app_title,
 void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback);
 
 #if defined(OS_WIN)
-
 // Update the relaunch details for the given app's window, making the taskbar
 // group's "Pin to the taskbar" button function correctly.
 void UpdateRelaunchDetailsForApp(Profile* profile,
                                  const extensions::Extension* extension,
                                  HWND hwnd);
-
-namespace internals {
-
-// Returns the Windows user-level shortcut paths that are specified in
-// |creation_locations|.
-std::vector<base::FilePath> GetShortcutPaths(
-    const ShortcutLocations& creation_locations);
-
-}  // namespace internals
-
 #endif  // defined(OS_WIN)
 
 }  // namespace web_app

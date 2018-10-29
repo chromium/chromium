@@ -54,11 +54,14 @@ class SmbService : public KeyedService,
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Starts the process of mounting an SMB file system.
+  // |use_kerberos| indicates whether the share should be mounted with a user's
+  // chromad kerberos tickets.
   // Calls SmbProviderClient::Mount().
   void Mount(const file_system_provider::MountOptions& options,
              const base::FilePath& share_path,
              const std::string& username,
              const std::string& password,
+             bool use_chromad_kerberos,
              MountResponse callback);
 
   // Completes the mounting of an SMB file system, passing |options| on to
@@ -75,7 +78,6 @@ class SmbService : public KeyedService,
   // for each of the hosts found. |discovery_callback| is called as soon as host
   // discovery is complete. |shares_callback| is called once per host and will
   // contain the URLs to the shares found.
-  void GatherSharesInNetwork(GatherSharesResponse shares_callback);
   void GatherSharesInNetwork(HostDiscoveryResponse discovery_callback,
                              GatherSharesResponse shares_callback);
 
@@ -86,6 +88,7 @@ class SmbService : public KeyedService,
                  const base::FilePath& share_path,
                  const std::string& username,
                  const std::string& password,
+                 bool use_chromad_kerberos,
                  MountResponse callback);
 
   // Calls file_system_provider::Service::UnmountFileSystem().
@@ -138,11 +141,22 @@ class SmbService : public KeyedService,
   // Set up NetBios host locator.
   void SetUpNetBiosHostLocator();
 
+  // Opens |file_system_id| in the File Manager. Must only be called on a
+  // mounted share.
+  void OpenFileManager(const std::string& file_system_id);
+
   // Whether Network File Shares are allowed to be used. Controlled via policy.
   bool IsAllowedByPolicy() const;
 
   // Whether NetBios discovery should be used. Controlled via policy.
   bool IsNetBiosDiscoveryEnabled() const;
+
+  // Whether NTLM should be used. Controlled via policy.
+  bool IsNTLMAuthenticationEnabled() const;
+
+  // Gets the shares preconfigured via policy that should be displayed in the
+  // discovery drop down.
+  std::vector<SmbUrl> GetPreconfiguredSharePathsForDropDown() const;
 
   // Records metrics on the number of SMB mounts a user has.
   void RecordMountCount() const;

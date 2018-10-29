@@ -12,7 +12,7 @@ TestWallpaperController::~TestWallpaperController() = default;
 
 void TestWallpaperController::ShowWallpaperImage(const gfx::ImageSkia& image) {
   current_wallpaper = image;
-  test_observers_.ForAllPtrs([this](ash::mojom::WallpaperObserver* observer) {
+  test_observers_.ForAllPtrs([](ash::mojom::WallpaperObserver* observer) {
     observer->OnWallpaperChanged(dummy_image_id);
   });
 }

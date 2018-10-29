@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
@@ -47,7 +48,7 @@ class FakeAudioWorker::Worker
   const base::TimeDelta buffer_duration_;
 
   base::Lock worker_cb_lock_;  // Held while mutating or running |worker_cb_|.
-  base::Closure worker_cb_;
+  base::Closure worker_cb_ GUARDED_BY(worker_cb_lock_);
   base::TimeTicks next_read_time_;
 
   // Used to cancel any delayed tasks still inside the worker loop's queue.
@@ -89,23 +90,24 @@ FakeAudioWorker::Worker::Worker(
 }
 
 FakeAudioWorker::Worker::~Worker() {
-  DCHECK(worker_cb_.is_null());
+  DCHECK(!worker_cb_);
 }
 
 bool FakeAudioWorker::Worker::IsStopped() {
   base::AutoLock scoped_lock(worker_cb_lock_);
-  return worker_cb_.is_null();
+  return !worker_cb_;
 }
 
 void FakeAudioWorker::Worker::Start(const base::Closure& worker_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!worker_cb.is_null());
+  DCHECK(worker_cb);
   {
     base::AutoLock scoped_lock(worker_cb_lock_);
-    DCHECK(worker_cb_.is_null());
+    DCHECK(!worker_cb_);
     worker_cb_ = worker_cb;
   }
-  worker_task_runner_->PostTask(FROM_HERE, base::Bind(&Worker::DoStart, this));
+  worker_task_runner_->PostTask(FROM_HERE,
+                                base::BindOnce(&Worker::DoStart, this));
 }
 
 void FakeAudioWorker::Worker::DoStart() {
@@ -119,11 +121,12 @@ void FakeAudioWorker::Worker::Stop() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   {
     base::AutoLock scoped_lock(worker_cb_lock_);
-    if (worker_cb_.is_null())
+    if (!worker_cb_)
       return;
     worker_cb_.Reset();
   }
-  worker_task_runner_->PostTask(FROM_HERE, base::Bind(&Worker::DoCancel, this));
+  worker_task_runner_->PostTask(FROM_HERE,
+                                base::BindOnce(&Worker::DoCancel, this));
 }
 
 void FakeAudioWorker::Worker::DoCancel() {
@@ -136,7 +139,7 @@ void FakeAudioWorker::Worker::DoRead() {
 
   {
     base::AutoLock scoped_lock(worker_cb_lock_);
-    if (!worker_cb_.is_null())
+    if (worker_cb_)
       worker_cb_.Run();
   }
 

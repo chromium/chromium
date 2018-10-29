@@ -254,17 +254,38 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
      * @return whether we should stay in Chrome or not.
      */
     public boolean shouldStayInChrome(boolean hasExternalProtocol) {
-        return (mIsInitialIntentHeadingToChrome && !hasExternalProtocol)
-                || shouldNavigationTypeStayInChrome();
+        return shouldStayInChrome(hasExternalProtocol, false);
+    }
 
+    /**
+     * @param hasExternalProtocol whether the destination URI has an external protocol or not.
+     * @param isForTrustedCallingApp whether the app we would launch to is trusted and what launched
+     *                               Chrome.
+     * @return whether we should stay in Chrome or not.
+     */
+    public boolean shouldStayInChrome(boolean hasExternalProtocol,
+            boolean isForTrustedCallingApp) {
+        return (mIsInitialIntentHeadingToChrome && !hasExternalProtocol)
+                || shouldNavigationTypeStayInChrome(isForTrustedCallingApp);
     }
 
     /**
      * @return Whether the current navigation is of the type that should always stay in Chrome.
      */
     public boolean shouldNavigationTypeStayInChrome() {
-        return mInitialNavigationType == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE
-                || mInitialNavigationType == NAVIGATION_TYPE_FROM_RELOAD;
+        return shouldNavigationTypeStayInChrome(false);
+    }
+
+    private boolean shouldNavigationTypeStayInChrome(boolean isForTrustedCallingApp) {
+        // Never leave Chrome from a refresh.
+        if (mInitialNavigationType == NAVIGATION_TYPE_FROM_RELOAD) return true;
+
+        // If the app we would navigate to is trusted and what launched Chrome, allow the
+        // navigation.
+        if (isForTrustedCallingApp) return false;
+
+        // Otherwise allow navigation out of the app only with a user gesture.
+        return mInitialNavigationType == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
     }
 
     /**

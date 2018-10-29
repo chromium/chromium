@@ -12,10 +12,10 @@ namespace chrome_pdf {
 
 namespace {
 
-const float kDefaultWidth = 8.5 * printing::kPointsPerInch;
-const float kDefaultHeight = 11.0 * printing::kPointsPerInch;
-const float kDefaultRatio = kDefaultWidth / kDefaultHeight;
-const double kTolerance = 0.0001;
+constexpr float kDefaultWidth = 8.5 * printing::kPointsPerInch;
+constexpr float kDefaultHeight = 11.0 * printing::kPointsPerInch;
+constexpr float kDefaultRatio = kDefaultWidth / kDefaultHeight;
+constexpr double kTolerance = 0.0001;
 
 void ExpectDefaultPortraitBox(const PdfRectangle& box) {
   EXPECT_FLOAT_EQ(0, box.left);
@@ -130,7 +130,7 @@ TEST(PdfTransformTest, CalculateMediaBoxAndCropBox) {
   ExpectDefaultLandscapeBox(crop_box);
 
   // Assume crop box is missing.
-  const PdfRectangle expected_box = {0, 0, 42, 420};
+  constexpr PdfRectangle expected_box = {0, 0, 42, 420};
   media_box = expected_box;
   InitializeBoxToInvalidValues(&crop_box);
   CalculateMediaBoxAndCropBox(false, true, false, &media_box, &crop_box);
@@ -188,7 +188,7 @@ TEST(PdfTransformTest, CalculateClipBoxBoundary) {
 }
 
 TEST(PdfTransformTest, CalculateScaledClipBoxOffset) {
-  const gfx::Rect rect(kDefaultWidth, kDefaultHeight);
+  constexpr gfx::Rect rect(kDefaultWidth, kDefaultHeight);
   PdfRectangle clip_box;
   double offset_x;
   double offset_y;
@@ -210,7 +210,7 @@ TEST(PdfTransformTest, CalculateScaledClipBoxOffset) {
 TEST(PdfTransformTest, CalculateNonScaledClipBoxOffset) {
   int page_width = kDefaultWidth;
   int page_height = kDefaultHeight;
-  const gfx::Rect rect(kDefaultWidth, kDefaultHeight);
+  constexpr gfx::Rect rect(kDefaultWidth, kDefaultHeight);
   PdfRectangle clip_box;
   double offset_x;
   double offset_y;
@@ -280,12 +280,12 @@ TEST(PdfTransformTest, CalculateNonScaledClipBoxOffset) {
 TEST(PdfTransformTest, ReversedMediaBox) {
   int page_width = kDefaultWidth;
   int page_height = kDefaultHeight;
-  const gfx::Rect rect(kDefaultWidth, kDefaultHeight);
+  constexpr gfx::Rect rect(kDefaultWidth, kDefaultHeight);
   PdfRectangle clip_box;
   double offset_x;
   double offset_y;
 
-  const PdfRectangle expected_media_box_b491160 = {0, -792, 612, 0};
+  constexpr PdfRectangle expected_media_box_b491160 = {0, -792, 612, 0};
   PdfRectangle media_box_b491160 = {0, 0, 612, -792};
   CalculateMediaBoxAndCropBox(false, true, false, &media_box_b491160,
                               &clip_box);

@@ -29,7 +29,8 @@ class CHROMEOS_EXPORT LoginState {
     LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED,  // Public session v2.
     LOGGED_IN_USER_SUPERVISED,      // A supervised user is logged in
     LOGGED_IN_USER_KIOSK_APP,       // Is in kiosk app mode
-    LOGGED_IN_USER_ARC_KIOSK_APP    // Is in ARC kiosk mode
+    LOGGED_IN_USER_ARC_KIOSK_APP,   // Is in ARC kiosk mode
+    LOGGED_IN_USER_CHILD            // A child is logged in
   };
 
   class Observer {
@@ -84,6 +85,9 @@ class CHROMEOS_EXPORT LoginState {
 
   // Returns true if logged in as a kiosk app.
   bool IsKioskApp() const;
+
+  // Returns true if a child user is logged in.
+  bool IsChildUser() const;
 
   // Whether a network profile is created for the user.
   bool UserHasNetworkProfile() const;

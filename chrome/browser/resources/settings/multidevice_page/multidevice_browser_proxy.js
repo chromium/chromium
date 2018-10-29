@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+cr.exportPath('settings');
+
+/**
+ * An object containing messages for web permissisions origin
+ * and the messages multidevice feature state.
+ *
+ * @typedef {{origin: string,
+ *            enabled: boolean}}
+ */
+settings.AndroidSmsInfo;
+
 cr.define('settings', function() {
   /** @interface */
   class MultiDeviceBrowserProxy {
@@ -30,6 +41,36 @@ cr.define('settings', function() {
      * PWA.
      */
     setUpAndroidSms() {}
+
+    /**
+     * Returns the value of the preference controlling whether Smart Lock may be
+     * used to sign-in the user (as opposed to unlocking the screen).
+     * @return {!Promise<boolean>}
+     */
+    getSmartLockSignInEnabled() {}
+
+    /**
+     * Sets the value of the preference controlling whether Smart Lock may be
+     * used to sign-in the user (as opposed to unlocking the screen).
+     * @param {boolean} enabled
+     * @param {string=} opt_authToken Authentication token used to restrict
+     *    edit access to the Smart Lock sign-in pref.
+     */
+    setSmartLockSignInEnabled(enabled, opt_authToken) {}
+
+    /**
+     * Returns the value of the preference controlling whether Smart Lock
+     * sign-in is allowed.
+     * @return {!Promise<boolean>}
+     */
+    getSmartLockSignInAllowed() {}
+
+    /**
+     * Returns android messages info with messages feature state
+     * and messages for web permissions origin.
+     * @return {!Promise<!settings.AndroidSmsInfo>} Android SMS Info
+     */
+    getAndroidSmsInfo() {}
   }
 
   /**
@@ -65,6 +106,26 @@ cr.define('settings', function() {
     /** @override */
     setUpAndroidSms() {
       chrome.send('setUpAndroidSms');
+    }
+
+    /** @override */
+    getSmartLockSignInEnabled() {
+      return cr.sendWithPromise('getSmartLockSignInEnabled');
+    }
+
+    /** @override */
+    setSmartLockSignInEnabled(enabled, opt_authToken) {
+      chrome.send('setSmartLockSignInEnabled', [enabled, opt_authToken]);
+    }
+
+    /** @override */
+    getSmartLockSignInAllowed() {
+      return cr.sendWithPromise('getSmartLockSignInAllowed');
+    }
+
+    /** @override */
+    getAndroidSmsInfo() {
+      return cr.sendWithPromise('getAndroidSmsInfo');
     }
   }
 

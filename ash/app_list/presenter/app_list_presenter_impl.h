@@ -129,6 +129,7 @@ class APP_LIST_PRESENTER_EXPORT AppListPresenterImpl
 
   // views::WidgetObserver overrides:
   void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   // PaginationModelObserver overrides:

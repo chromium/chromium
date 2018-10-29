@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 
-#include <vector>
+#include <memory>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,8 +14,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/text_utils.h"
+#include "url/gurl.h"
 
 // AuthenticatorSheetModelBase ------------------------------------------------
 
@@ -86,8 +90,18 @@ void AuthenticatorSheetModelBase::OnCancel() {
 }
 
 base::string16 AuthenticatorSheetModelBase::GetRelyingPartyIdString() const {
-  DCHECK(!dialog_model()->transport_availability()->rp_id.empty());
-  return base::UTF8ToUTF16(dialog_model()->transport_availability()->rp_id);
+  static constexpr char kRpIdUrlPrefix[] = "https://";
+  // The preferred width of medium snap point modal dialog view is 448 dp, but
+  // we leave some room for padding between the text and the modal views.
+  static constexpr int kDialogWidth = 300;
+  const auto& rp_id = dialog_model()->transport_availability()->rp_id;
+  DCHECK(!rp_id.empty());
+  GURL rp_id_url(kRpIdUrlPrefix + rp_id);
+  auto max_static_string_length = gfx::GetStringWidthF(
+      l10n_util::GetStringUTF16(IDS_WEBAUTHN_GENERIC_TITLE), gfx::FontList(),
+      gfx::Typesetter::DEFAULT);
+  return url_formatter::ElideHost(rp_id_url, gfx::FontList(),
+                                  kDialogWidth - max_static_string_length);
 }
 
 void AuthenticatorSheetModelBase::OnModelDestroyed() {
@@ -466,14 +480,23 @@ base::string16 AuthenticatorBleDeviceSelectionSheetModel::GetStepDescription()
 
 // AuthenticatorBlePinEntrySheetModel -----------------------------------------
 
+void AuthenticatorBlePinEntrySheetModel::SetPinCode(base::string16 pin_code) {
+  pin_code_ = std::move(pin_code);
+}
+
 gfx::ImageSkia* AuthenticatorBlePinEntrySheetModel::GetStepIllustration()
     const {
   return GetImage(IDR_WEBAUTHN_ILLUSTRATION_BLE_PIN);
 }
 
 base::string16 AuthenticatorBlePinEntrySheetModel::GetStepTitle() const {
-  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_BLE_PIN_ENTRY_TITLE,
-                                    GetRelyingPartyIdString());
+  const auto& authenticator_id = dialog_model()->selected_authenticator_id();
+  const auto* ble_authenticator =
+      dialog_model()->saved_authenticators().GetAuthenticator(authenticator_id);
+  DCHECK(ble_authenticator);
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_BLE_PIN_ENTRY_TITLE,
+      ble_authenticator->authenticator_display_name());
 }
 
 base::string16 AuthenticatorBlePinEntrySheetModel::GetStepDescription() const {
@@ -491,6 +514,10 @@ bool AuthenticatorBlePinEntrySheetModel::IsAcceptButtonEnabled() const {
 base::string16 AuthenticatorBlePinEntrySheetModel::GetAcceptButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_BLE_PIN_ENTRY_NEXT);
+}
+
+void AuthenticatorBlePinEntrySheetModel::OnAccept() {
+  dialog_model()->FinishPairingWithPin(pin_code_);
 }
 
 // AuthenticatorBleVerifyingSheetModel ----------------------------------------

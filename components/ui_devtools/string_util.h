@@ -74,6 +74,19 @@ class StringUtil {
   static std::unique_ptr<Value> parseJSON(const String& string);
 };
 
+// A read-only sequence of uninterpreted bytes with reference-counted storage.
+// Though the templates for generating the protocol bindings reference
+// this type, thus far it's not used in the Chrome layer, so we provide no
+// implementation here and rely on the linker optimizing it away. If this
+// changes, look to content/browser/devtools/protocol_string{.h,.cc} for
+// inspiration.
+class Binary {
+ public:
+  const uint8_t* data() const;
+  size_t size() const;
+  String toBase64() const;
+  static Binary fromBase64(const String& base64, bool* success);
+};
 }  // namespace protocol
 }  // namespace ui_devtools
 

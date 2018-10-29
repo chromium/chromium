@@ -14,15 +14,20 @@ namespace blink {
 
 IceTransportHost::IceTransportHost(
     scoped_refptr<base::SingleThreadTaskRunner> proxy_thread,
+    scoped_refptr<base::SingleThreadTaskRunner> host_thread,
     base::WeakPtr<IceTransportProxy> proxy)
-    : proxy_thread_(std::move(proxy_thread)), proxy_(std::move(proxy)) {
+    : proxy_thread_(std::move(proxy_thread)),
+      host_thread_(std::move(host_thread)),
+      proxy_(std::move(proxy)) {
   DETACH_FROM_THREAD(thread_checker_);
   DCHECK(proxy_thread_);
+  DCHECK(host_thread_);
   DCHECK(proxy_);
 }
 
 IceTransportHost::~IceTransportHost() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!HasConsumer());
 }
 
 void IceTransportHost::Initialize(
@@ -30,6 +35,18 @@ void IceTransportHost::Initialize(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(adapter_factory);
   transport_ = adapter_factory->ConstructOnWorkerThread(this);
+}
+
+scoped_refptr<base::SingleThreadTaskRunner> IceTransportHost::proxy_thread()
+    const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return proxy_thread_;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner> IceTransportHost::host_thread()
+    const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return host_thread_;
 }
 
 void IceTransportHost::StartGathering(
@@ -62,6 +79,27 @@ void IceTransportHost::AddRemoteCandidate(const cricket::Candidate& candidate) {
 
 }
 
+bool IceTransportHost::HasConsumer() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return consumer_host_;
+}
+
+IceTransportAdapter* IceTransportHost::ConnectConsumer(
+    QuicTransportHost* consumer_host) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(consumer_host);
+  DCHECK(!consumer_host_);
+  consumer_host_ = consumer_host;
+  return transport_.get();
+}
+
+void IceTransportHost::DisconnectConsumer(QuicTransportHost* consumer_host) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(consumer_host);
+  DCHECK_EQ(consumer_host, consumer_host_);
+  consumer_host_ = nullptr;
+}
+
 void IceTransportHost::OnGatheringStateChanged(
     cricket::IceGatheringState new_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -84,6 +122,16 @@ void IceTransportHost::OnStateChanged(cricket::IceTransportState new_state) {
   PostCrossThreadTask(
       *proxy_thread_, FROM_HERE,
       CrossThreadBind(&IceTransportProxy::OnStateChanged, proxy_, new_state));
+}
+
+void IceTransportHost::OnSelectedCandidatePairChanged(
+    const std::pair<cricket::Candidate, cricket::Candidate>&
+        selected_candidate_pair) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  PostCrossThreadTask(
+      *proxy_thread_, FROM_HERE,
+      CrossThreadBind(&IceTransportProxy::OnSelectedCandidatePairChanged,
+                      proxy_, selected_candidate_pair));
 }
 
 }  // namespace blink

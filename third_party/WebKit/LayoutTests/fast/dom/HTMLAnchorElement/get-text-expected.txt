@@ -2,7 +2,6 @@ Tests that HTMLAnchorElement.text returns the same value as the textContent attr
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS a.__proto__ is HTMLAnchorElement.prototype
 PASS a.text is "ab"
 PASS a.textContent is "ab"

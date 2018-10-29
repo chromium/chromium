@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.photo_picker;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.widget.selection.SelectableListToolbar;
 
@@ -19,7 +19,6 @@ import java.util.List;
  * Handles toolbar functionality for the Photo Picker class.
  */
 public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
-    // TODO(finnur): Match style changes from Contacts Picker and delete blue_when_enabled.
     public PhotoPickerToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -33,8 +32,8 @@ public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
 
         TextView up = (TextView) mNumberRollView.findViewById(R.id.up);
         TextView down = (TextView) mNumberRollView.findViewById(R.id.down);
-        up.setTextColor(Color.BLACK);
-        down.setTextColor(Color.BLACK);
+        ApiCompatibilityUtils.setTextAppearance(up, R.style.BlackHeadline);
+        ApiCompatibilityUtils.setTextAppearance(down, R.style.BlackHeadline);
     }
 
     @Override

@@ -22,7 +22,6 @@
 #include "components/drive/drive.pb.h"
 #include "components/drive/file_system_core_util.h"
 #include "content/public/test/test_browser_thread_bundle.h"
-#include "google_apis/drive/drive_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace drive {
@@ -562,14 +561,8 @@ TEST_F(ResourceMetadataTest, Iterate) {
       ++directory_count;
   }
 
-  int expected_directory_count = 7;
-  if (google_apis::GetTeamDrivesIntegrationSwitch() ==
-      google_apis::TEAM_DRIVES_INTEGRATION_ENABLED) {
-    ++expected_directory_count;
-  }
-
   EXPECT_EQ(7, file_count);
-  EXPECT_EQ(expected_directory_count, directory_count);
+  EXPECT_EQ(9, directory_count);
 }
 
 TEST_F(ResourceMetadataTest, DuplicatedNames) {
@@ -697,16 +690,12 @@ TEST_F(ResourceMetadataTest, Reset) {
   ASSERT_TRUE(entry.file_info().is_directory());
   EXPECT_EQ(util::kDriveGrandRootLocalId, entry.local_id());
 
-  // There are "other", "trash" and "root" under "drive".
+  // There are "other", "trash" and "root", "team_drives" and "Computers"
+  // under "drive".
   ASSERT_EQ(FILE_ERROR_OK,
             resource_metadata_->ReadDirectoryByPath(
                 base::FilePath::FromUTF8Unsafe("drive"), &entries));
-  size_t expected_count = 3U;
-  if (google_apis::GetTeamDrivesIntegrationSwitch() ==
-      google_apis::TEAM_DRIVES_INTEGRATION_ENABLED) {
-    ++expected_count;
-  }
-  EXPECT_EQ(expected_count, entries.size());
+  EXPECT_EQ(5U, entries.size());
 
   // The "other" directory should be empty.
   ASSERT_EQ(FILE_ERROR_OK,
@@ -720,21 +709,15 @@ TEST_F(ResourceMetadataTest, Reset) {
                 base::FilePath::FromUTF8Unsafe("drive/trash"), &entries));
   EXPECT_TRUE(entries.empty());
 
-  if (google_apis::GetTeamDrivesIntegrationSwitch() ==
-      google_apis::TEAM_DRIVES_INTEGRATION_ENABLED) {
-    // The "team_drives" directory should be empty.
-    ASSERT_EQ(
-        FILE_ERROR_OK,
-        resource_metadata_->ReadDirectoryByPath(
-            base::FilePath::FromUTF8Unsafe("drive/team_drives"), &entries));
-    EXPECT_TRUE(entries.empty());
+  ASSERT_EQ(FILE_ERROR_OK,
+            resource_metadata_->ReadDirectoryByPath(
+                base::FilePath::FromUTF8Unsafe("drive/team_drives"), &entries));
+  EXPECT_TRUE(entries.empty());
 
-  } else {
-    ASSERT_EQ(
-        FILE_ERROR_NOT_FOUND,
-        resource_metadata_->ReadDirectoryByPath(
-            base::FilePath::FromUTF8Unsafe("drive/team_drives"), &entries));
-  }
+  ASSERT_EQ(FILE_ERROR_OK,
+            resource_metadata_->ReadDirectoryByPath(
+                base::FilePath::FromUTF8Unsafe("drive/Computers"), &entries));
+  EXPECT_TRUE(entries.empty());
 }
 
 }  // namespace internal

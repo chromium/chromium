@@ -687,8 +687,7 @@ void ProfileInfoCache::UpdateSortForProfileIndex(size_t index) {
 
   // Remove and reinsert key in |sorted_keys_| to alphasort.
   std::string key = CacheKeyFromProfilePath(GetPathOfProfileAtIndex(index));
-  std::vector<std::string>::iterator key_it =
-      std::find(sorted_keys_.begin(), sorted_keys_.end(), key);
+  auto key_it = std::find(sorted_keys_.begin(), sorted_keys_.end(), key);
   DCHECK(key_it != sorted_keys_.end());
   sorted_keys_.erase(key_it);
   sorted_keys_.insert(FindPositionForProfile(key, name), key);

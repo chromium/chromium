@@ -12,6 +12,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/view.h"
+#include "url/gurl.h"
 
 namespace views {
 class Label;
@@ -53,9 +54,7 @@ class LegalMessageView : public views::View {
                             views::StyledLabelListener* listener);
   ~LegalMessageView() override;
 
-  void OnLinkClicked(views::StyledLabel* label,
-                     const gfx::Range& range,
-                     content::WebContents* web_contents);
+  const GURL GetUrlForLink(views::StyledLabel* label, const gfx::Range& range);
 
  private:
   std::unique_ptr<views::StyledLabel> CreateLegalMessageLineLabel(

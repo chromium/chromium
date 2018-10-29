@@ -937,8 +937,10 @@ function focusOnFirstTextInTestElementIfExists() {
 }
 
 function runEditingTest() {
-    if (window.testRunner)
+    if (window.testRunner) {
         testRunner.dumpEditingCallbacks();
+        testRunner.dumpAsLayoutWithPixelResults();
+    }
 
     focusOnFirstTextInTestElementIfExists();
 

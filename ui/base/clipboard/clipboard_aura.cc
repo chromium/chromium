@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -453,8 +454,8 @@ Clipboard::FormatType Clipboard::GetFormatType(
 
 // static
 const Clipboard::FormatType& Clipboard::GetUrlFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeURIList));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeURIList);
+  return *type;
 }
 
 // static
@@ -464,14 +465,14 @@ const Clipboard::FormatType& Clipboard::GetUrlWFormatType() {
 
 // static
 const Clipboard::FormatType& Clipboard::GetMozUrlFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeMozillaURL));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeMozillaURL);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetPlainTextFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeText));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeText);
+  return *type;
 }
 
 // static
@@ -481,8 +482,8 @@ const Clipboard::FormatType& Clipboard::GetPlainTextWFormatType() {
 
 // static
 const Clipboard::FormatType& Clipboard::GetFilenameFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeFilename));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeFilename);
+  return *type;
 }
 
 // static
@@ -492,38 +493,38 @@ const Clipboard::FormatType& Clipboard::GetFilenameWFormatType() {
 
 // static
 const Clipboard::FormatType& Clipboard::GetHtmlFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeHTML));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeHTML);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetRtfFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeRTF));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeRTF);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetBitmapFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeBitmap));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeBitmap);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetWebKitSmartPasteFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeWebkitSmartPaste));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeWebkitSmartPaste);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetWebCustomDataFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeWebCustomData));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeWebCustomData);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetPepperCustomDataFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypePepperCustomData));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypePepperCustomData);
+  return *type;
 }
 
 // Clipboard factory method.
@@ -656,10 +657,8 @@ void ClipboardAura::ReadData(const FormatType& format,
 void ClipboardAura::WriteObjects(ClipboardType type, const ObjectMap& objects) {
   DCHECK(CalledOnValidThread());
   DCHECK(IsSupportedClipboardType(type));
-  for (ObjectMap::const_iterator iter = objects.begin(); iter != objects.end();
-       ++iter) {
-    DispatchObject(static_cast<ObjectType>(iter->first), iter->second);
-  }
+  for (const auto& object : objects)
+    DispatchObject(static_cast<ObjectType>(object.first), object.second);
   ClipboardDataBuilder::CommitToClipboard();
 }
 

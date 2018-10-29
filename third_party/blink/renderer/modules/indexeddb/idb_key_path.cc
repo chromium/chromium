@@ -61,12 +61,12 @@ static inline bool IsIdentifierCharacter(UChar c) {
 }
 
 bool IsIdentifier(const String& s) {
-  size_t length = s.length();
+  wtf_size_t length = s.length();
   if (!length)
     return false;
   if (!IsIdentifierStartCharacter(s[0]))
     return false;
-  for (size_t i = 1; i < length; ++i) {
+  for (wtf_size_t i = 1; i < length; ++i) {
     if (!IsIdentifierCharacter(s[i]))
       return false;
   }
@@ -93,8 +93,8 @@ void IDBParseKeyPath(const String& key_path,
   }
 
   key_path.Split('.', /*allow_empty_entries=*/true, elements);
-  for (size_t i = 0; i < elements.size(); ++i) {
-    if (!IsIdentifier(elements[i])) {
+  for (const auto& element : elements) {
+    if (!IsIdentifier(element)) {
       error = kIDBKeyPathParseErrorIdentifier;
       return;
     }
@@ -110,8 +110,8 @@ IDBKeyPath::IDBKeyPath(const class String& string)
 IDBKeyPath::IDBKeyPath(const Vector<class String>& array)
     : type_(kArrayType), array_(array) {
 #if DCHECK_IS_ON()
-  for (size_t i = 0; i < array_.size(); ++i)
-    DCHECK(!array_[i].IsNull());
+  for (const auto& element : array_)
+    DCHECK(!element.IsNull());
 #endif
 }
 
@@ -127,8 +127,8 @@ IDBKeyPath::IDBKeyPath(const StringOrStringSequence& key_path) {
     type_ = kArrayType;
     array_ = key_path.GetAsStringSequence();
 #if DCHECK_IS_ON()
-    for (size_t i = 0; i < array_.size(); ++i)
-      DCHECK(!array_[i].IsNull());
+    for (const auto& element : array_)
+      DCHECK(!element.IsNull());
 #endif
   }
 }
@@ -177,8 +177,8 @@ bool IDBKeyPath::IsValid() const {
     case kArrayType:
       if (array_.IsEmpty())
         return false;
-      for (size_t i = 0; i < array_.size(); ++i) {
-        if (!IDBIsValidKeyPath(array_[i]))
+      for (const auto& element : array_) {
+        if (!IDBIsValidKeyPath(element))
           return false;
       }
       return true;

@@ -26,7 +26,7 @@ class MESSAGE_CENTER_EXPORT PaddedButton : public views::ImageButton {
   PaddedButton(views::ButtonListener* listener);
   ~PaddedButton() override = default;
 
-  // Overridden from InkDropHostView
+  // views::ImageButton:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
 

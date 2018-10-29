@@ -4,6 +4,8 @@
 
 #include "content/browser/download/web_ui_download_url_loader_factory_getter.h"
 
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
@@ -20,7 +22,7 @@ WebUIDownloadURLLoaderFactoryGetter::WebUIDownloadURLLoaderFactoryGetter(
 }
 
 WebUIDownloadURLLoaderFactoryGetter::~WebUIDownloadURLLoaderFactoryGetter() {
-  BrowserThread::GetTaskRunnerForThread(BrowserThread::UI)
+  base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI})
       ->DeleteSoon(FROM_HERE, std::move(factory_));
 }
 

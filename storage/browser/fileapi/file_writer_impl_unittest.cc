@@ -9,6 +9,7 @@
 #include "base/guid.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_task_environment.h"
+#include "mojo/public/cpp/system/string_data_pipe_producer.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -60,6 +61,25 @@ class FileWriterImplTest : public testing::Test {
     return result;
   }
 
+  mojo::ScopedDataPipeConsumerHandle CreateStream(const std::string& contents) {
+    // Test with a relatively low capacity pipe to make sure it isn't all
+    // written/read in one go.
+    mojo::DataPipe pipe(16);
+    CHECK(pipe.producer_handle.is_valid());
+    auto producer = std::make_unique<mojo::StringDataPipeProducer>(
+        std::move(pipe.producer_handle));
+    auto* producer_raw = producer.get();
+    producer_raw->Write(
+        contents,
+        mojo::StringDataPipeProducer::AsyncWritingMode::
+            STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION,
+        base::BindOnce(
+            base::DoNothing::Once<std::unique_ptr<mojo::StringDataPipeProducer>,
+                                  MojoResult>(),
+            std::move(producer)));
+    return std::move(pipe.consumer_handle);
+  }
+
   std::string ReadFile(const FileSystemURL& url) {
     std::unique_ptr<FileStreamReader> reader =
         file_system_context_->CreateFileStreamReader(
@@ -80,9 +100,9 @@ class FileWriterImplTest : public testing::Test {
     }
   }
 
-  base::File::Error WriteSync(uint64_t position,
-                              blink::mojom::BlobPtr blob,
-                              uint64_t* bytes_written_out) {
+  base::File::Error WriteBlobSync(uint64_t position,
+                                  blink::mojom::BlobPtr blob,
+                                  uint64_t* bytes_written_out) {
     base::RunLoop loop;
     base::File::Error result_out;
     writer_->Write(position, std::move(blob),
@@ -92,6 +112,24 @@ class FileWriterImplTest : public testing::Test {
                          *bytes_written_out = bytes_written;
                          loop.Quit();
                        }));
+    loop.Run();
+    return result_out;
+  }
+
+  base::File::Error WriteStreamSync(
+      uint64_t position,
+      mojo::ScopedDataPipeConsumerHandle data_pipe,
+      uint64_t* bytes_written_out) {
+    base::RunLoop loop;
+    base::File::Error result_out;
+    writer_->WriteStream(
+        position, std::move(data_pipe),
+        base::BindLambdaForTesting(
+            [&](base::File::Error result, uint64_t bytes_written) {
+              result_out = result;
+              *bytes_written_out = bytes_written;
+              loop.Quit();
+            }));
     loop.Run();
     return result_out;
   }
@@ -108,6 +146,16 @@ class FileWriterImplTest : public testing::Test {
     return result_out;
   }
 
+  virtual bool WriteUsingBlobs() { return true; }
+
+  base::File::Error WriteSync(uint64_t position,
+                              const std::string& contents,
+                              uint64_t* bytes_written_out) {
+    if (WriteUsingBlobs())
+      return WriteBlobSync(position, CreateBlob(contents), bytes_written_out);
+    return WriteStreamSync(position, CreateStream(contents), bytes_written_out);
+  }
+
  protected:
   base::test::ScopedTaskEnvironment scoped_task_environment_;
 
@@ -120,55 +168,65 @@ class FileWriterImplTest : public testing::Test {
   std::unique_ptr<FileWriterImpl> writer_;
 };
 
+class FileWriterImplWriteTest : public FileWriterImplTest,
+                                public testing::WithParamInterface<bool> {
+ public:
+  bool WriteUsingBlobs() override { return GetParam(); }
+};
+
+INSTANTIATE_TEST_CASE_P(FileWriterImplTest,
+                        FileWriterImplWriteTest,
+                        ::testing::Bool());
+
 TEST_F(FileWriterImplTest, WriteInvalidBlob) {
   blink::mojom::BlobPtr blob;
   MakeRequest(&blob);
 
   uint64_t bytes_written;
-  base::File::Error result = WriteSync(0, std::move(blob), &bytes_written);
+  base::File::Error result = WriteBlobSync(0, std::move(blob), &bytes_written);
   EXPECT_EQ(result, base::File::FILE_ERROR_FAILED);
   EXPECT_EQ(bytes_written, 0u);
 
   EXPECT_EQ("", ReadFile(test_url_));
 }
 
-TEST_F(FileWriterImplTest, WriteValidEmptyBlob) {
+TEST_P(FileWriterImplWriteTest, WriteValidEmptyString) {
   uint64_t bytes_written;
-  base::File::Error result = WriteSync(0, CreateBlob(""), &bytes_written);
+  base::File::Error result = WriteSync(0, "", &bytes_written);
   EXPECT_EQ(result, base::File::FILE_OK);
   EXPECT_EQ(bytes_written, 0u);
 
   EXPECT_EQ("", ReadFile(test_url_));
 }
 
-TEST_F(FileWriterImplTest, WriteValidBlob) {
+TEST_P(FileWriterImplWriteTest, WriteValidNonEmpty) {
+  std::string test_data("abcdefghijklmnopqrstuvwxyz");
   uint64_t bytes_written;
-  base::File::Error result =
-      WriteSync(0, CreateBlob("1234567890"), &bytes_written);
+  base::File::Error result = WriteSync(0, test_data, &bytes_written);
   EXPECT_EQ(result, base::File::FILE_OK);
-  EXPECT_EQ(bytes_written, 10u);
+  EXPECT_EQ(bytes_written, test_data.size());
 
-  EXPECT_EQ("1234567890", ReadFile(test_url_));
+  EXPECT_EQ(test_data, ReadFile(test_url_));
 }
 
-TEST_F(FileWriterImplTest, WriteWithOffsetInFile) {
+TEST_P(FileWriterImplWriteTest, WriteWithOffsetInFile) {
   uint64_t bytes_written;
   base::File::Error result;
 
-  result = WriteSync(0, CreateBlob("1234567890"), &bytes_written);
+  result = WriteSync(0, "1234567890", &bytes_written);
   EXPECT_EQ(result, base::File::FILE_OK);
   EXPECT_EQ(bytes_written, 10u);
 
-  result = WriteSync(4, CreateBlob("abc"), &bytes_written);
+  result = WriteSync(4, "abc", &bytes_written);
   EXPECT_EQ(result, base::File::FILE_OK);
   EXPECT_EQ(bytes_written, 3u);
 
   EXPECT_EQ("1234abc890", ReadFile(test_url_));
 }
 
-TEST_F(FileWriterImplTest, WriteWithOffsetPastFile) {
+TEST_P(FileWriterImplWriteTest, WriteWithOffsetPastFile) {
   uint64_t bytes_written;
-  base::File::Error result = WriteSync(4, CreateBlob("abc"), &bytes_written);
+  base::File::Error result = WriteSync(4, "abc", &bytes_written);
   EXPECT_EQ(result, base::File::FILE_ERROR_FAILED);
   EXPECT_EQ(bytes_written, 0u);
 
@@ -179,7 +237,7 @@ TEST_F(FileWriterImplTest, TruncateShrink) {
   uint64_t bytes_written;
   base::File::Error result;
 
-  result = WriteSync(0, CreateBlob("1234567890"), &bytes_written);
+  result = WriteSync(0, "1234567890", &bytes_written);
   EXPECT_EQ(result, base::File::FILE_OK);
   EXPECT_EQ(bytes_written, 10u);
 
@@ -193,7 +251,7 @@ TEST_F(FileWriterImplTest, TruncateGrow) {
   uint64_t bytes_written;
   base::File::Error result;
 
-  result = WriteSync(0, CreateBlob("abc"), &bytes_written);
+  result = WriteSync(0, "abc", &bytes_written);
   EXPECT_EQ(result, base::File::FILE_OK);
   EXPECT_EQ(bytes_written, 3u);
 

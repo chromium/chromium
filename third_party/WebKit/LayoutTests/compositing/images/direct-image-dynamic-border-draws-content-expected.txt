@@ -1,4 +1,3 @@
-
 layer tree before image style change
 
 {

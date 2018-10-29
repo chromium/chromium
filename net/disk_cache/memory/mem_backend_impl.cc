@@ -167,11 +167,11 @@ int32_t MemBackendImpl::GetEntryCount() const {
   return static_cast<int32_t>(entries_.size());
 }
 
-int MemBackendImpl::OpenEntry(const std::string& key,
-                              net::RequestPriority request_priority,
-                              Entry** entry,
-                              CompletionOnceCallback callback) {
-  EntryMap::iterator it = entries_.find(key);
+net::Error MemBackendImpl::OpenEntry(const std::string& key,
+                                     net::RequestPriority request_priority,
+                                     Entry** entry,
+                                     CompletionOnceCallback callback) {
+  auto it = entries_.find(key);
   if (it == entries_.end())
     return net::ERR_FAILED;
 
@@ -181,10 +181,10 @@ int MemBackendImpl::OpenEntry(const std::string& key,
   return net::OK;
 }
 
-int MemBackendImpl::CreateEntry(const std::string& key,
-                                net::RequestPriority request_priority,
-                                Entry** entry,
-                                CompletionOnceCallback callback) {
+net::Error MemBackendImpl::CreateEntry(const std::string& key,
+                                       net::RequestPriority request_priority,
+                                       Entry** entry,
+                                       CompletionOnceCallback callback) {
   std::pair<EntryMap::iterator, bool> create_result =
       entries_.insert(EntryMap::value_type(key, nullptr));
   const bool did_insert = create_result.second;
@@ -198,10 +198,10 @@ int MemBackendImpl::CreateEntry(const std::string& key,
   return net::OK;
 }
 
-int MemBackendImpl::DoomEntry(const std::string& key,
-                              net::RequestPriority priority,
-                              CompletionOnceCallback callback) {
-  EntryMap::iterator it = entries_.find(key);
+net::Error MemBackendImpl::DoomEntry(const std::string& key,
+                                     net::RequestPriority priority,
+                                     CompletionOnceCallback callback) {
+  auto it = entries_.find(key);
   if (it == entries_.end())
     return net::ERR_FAILED;
 
@@ -209,13 +209,13 @@ int MemBackendImpl::DoomEntry(const std::string& key,
   return net::OK;
 }
 
-int MemBackendImpl::DoomAllEntries(CompletionOnceCallback callback) {
+net::Error MemBackendImpl::DoomAllEntries(CompletionOnceCallback callback) {
   return DoomEntriesBetween(Time(), Time(), std::move(callback));
 }
 
-int MemBackendImpl::DoomEntriesBetween(Time initial_time,
-                                       Time end_time,
-                                       CompletionOnceCallback callback) {
+net::Error MemBackendImpl::DoomEntriesBetween(Time initial_time,
+                                              Time end_time,
+                                              CompletionOnceCallback callback) {
   if (end_time.is_null())
     end_time = Time::Max();
   DCHECK_GE(end_time, initial_time);
@@ -232,8 +232,8 @@ int MemBackendImpl::DoomEntriesBetween(Time initial_time,
   return net::OK;
 }
 
-int MemBackendImpl::DoomEntriesSince(Time initial_time,
-                                     CompletionOnceCallback callback) {
+net::Error MemBackendImpl::DoomEntriesSince(Time initial_time,
+                                            CompletionOnceCallback callback) {
   return DoomEntriesBetween(initial_time, Time::Max(), std::move(callback));
 }
 
@@ -267,8 +267,8 @@ class MemBackendImpl::MemIterator final : public Backend::Iterator {
   explicit MemIterator(base::WeakPtr<MemBackendImpl> backend)
       : backend_(backend) {}
 
-  int OpenNextEntry(Entry** next_entry,
-                    CompletionOnceCallback callback) override {
+  net::Error OpenNextEntry(Entry** next_entry,
+                           CompletionOnceCallback callback) override {
     if (!backend_)
       return net::ERR_FAILED;
 
@@ -315,7 +315,7 @@ std::unique_ptr<Backend::Iterator> MemBackendImpl::CreateIterator() {
 }
 
 void MemBackendImpl::OnExternalCacheHit(const std::string& key) {
-  EntryMap::iterator it = entries_.find(key);
+  auto it = entries_.find(key);
   if (it != entries_.end())
     it->second->UpdateStateOnUse(MemEntryImpl::ENTRY_WAS_NOT_MODIFIED);
 }

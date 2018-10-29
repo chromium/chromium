@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600 scrollWidth 1901
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutInline {SPAN} at (0,0) size 1894x19
-        LayoutText {#text} at (0,0) size 1894x19
-          text run at (0,0) width 1894: "Side note.  Both GR's have been cleaned by both myself and Miguet -  Please keep our GR's clean or there will be Fire and Brimstone.  The state of the GR2 today was Unacceptable with random parts that were suppose to be KGB that were not labeled,  RTW,  RFP and attached to a machine in awaiting parts. .  "
-      LayoutText {#text} at (0,0) size 0x0

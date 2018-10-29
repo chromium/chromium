@@ -160,6 +160,9 @@ HARImporter.HAREntry = class extends HARImporter.HARBase {
 
     // Chrome specific.
     this._fromCache = HARImporter.HARBase._optionalString(data['_fromCache']);
+    if (data['_initiator'])
+      this._initiator = new HARImporter.HARInitiator(data['_initiator']);
+    this._priority = HARImporter.HARBase._optionalString(data['_priority']);
   }
 };
 
@@ -311,5 +314,19 @@ HARImporter.HARTimings = class extends HARImporter.HARBase {
     // Chrome specific.
     this._blocked_queueing = HARImporter.HARBase._optionalNumber(data['_blocked_queueing']);
     this._blocked_proxy = HARImporter.HARBase._optionalNumber(data['_blocked_proxy']);
+  }
+};
+
+HARImporter.HARInitiator = class extends HARImporter.HARBase {
+  /**
+   * Based on Initiator defined in browser_protocol.pdl
+   *
+   * @param {*} data
+   */
+  constructor(data) {
+    super(data);
+    this.type = HARImporter.HARBase._optionalString(data['type']);
+    this.url = HARImporter.HARBase._optionalString(data['url']);
+    this.lineNumber = HARImporter.HARBase._optionalNumber(data['lineNumber']);
   }
 };

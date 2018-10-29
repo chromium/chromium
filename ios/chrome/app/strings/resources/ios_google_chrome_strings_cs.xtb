@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome vám šetří čas tím, že vaše účty přenáší na web. Účty můžete přidat nebo odstranit v Nastavení.</translation>
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
 <translation id="3345341804167540816">Používejte Chrome všude</translation>
-<translation id="3678774398092457402">Chcete, aby aplikace Chrome uložila vaše heslo pro tento web?</translation>
 <translation id="384394811301901750">Google Chrome teď nemůže použít fotoaparát</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Přepínáte účet pro synchronizaci z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Vaše existující data prohlížeče Chrome jsou spravována doménou <ph name="DOMAIN" />. Touto akcí svá data smažete z tohoto zařízení, v účtu <ph name="USER_EMAIL1" /> však vaše data zůstanou.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943"><ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" /> lze kdykoliv upravit. Google může používat obsah na webech, které navštěvujete, interakce s prohlížečem a aktivity k personalizaci prohlížeče Chrome a služeb Google, jako jsou Překladač, Vyhledávání a reklamy.</translation>
 <translation id="5639704535586432836">Otevřete Nastavení &gt; Soukromí &gt; Fotoaparát &gt; Google Chrome a zapněte fotoaparát.</translation>
 <translation id="5642200033778930880">Google Chrome nemůže používat fotoaparát v režimu Split View</translation>
-<translation id="5703130498371792817">Jste s prohlížečem Chrome spokojeni? <ph name="BEGIN_LINK" />Ohodnoťte tuto aplikaci<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Tip pro Chrome. Některá tlačítka, například Zpět, Vpřed a Hledat, jsou teď v dolní části obrazovky.</translation>
 <translation id="6036420186814142909">Google Chrome obsahuje funkce, které pomáhají spravovat přenosy dat z internetu a umožňují zrychlit načítání webových stránek.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Smluvní podmínky Google Chrome</translation>
 <translation id="7165736900384873061">Začněte používat čtečku QR kódů prohlížeče Google Chrome</translation>
 <translation id="7172660552945675509">Tip: <ph name="BEGIN_LINK" />Přesuňte si Chrome do doku<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome pomocí funkce Face ID ověřuje přístup k heslům.</translation>
 <translation id="7265369419224458312">Karty, které máte otevřené v počítači, můžete používat přímo tady. Stačí v počítači otevřít Chrome, přejít do nabídky a vybrat možnost Přihlásit se do prohlížeče Chrome…</translation>
 <translation id="728488472449859922">Zapněte čtečku QR kódů prohlížeče Google Chrome</translation>
 <translation id="7400722733683201933">O aplikaci Google Chrome</translation>

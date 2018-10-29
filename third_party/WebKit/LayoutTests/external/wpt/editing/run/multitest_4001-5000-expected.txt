@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 908 PASS, 92 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 912 PASS, 88 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("indent") before
 PASS [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("indent") before
 PASS [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("indent") before
@@ -171,7 +171,7 @@ PASS [["backcolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]b
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foobar<br></li></ol>"
+PASS [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandState("backcolor") before
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("backcolor") before
@@ -188,7 +188,7 @@ PASS [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ol>" but got "<ol><li>fooabar<br></li></ol>"
+FAIL [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
 PASS [["backcolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
@@ -249,7 +249,7 @@ PASS [["backcolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]b
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar": execCommand("backcolor", false, "#00FFFF") return value
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foobar<br></li></ul>"
+PASS [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("backcolor") before
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("backcolor") before
@@ -266,7 +266,7 @@ PASS [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "fo
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ul>" but got "<ul><li>fooabar<br></li></ul>"
+FAIL [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
 PASS [["backcolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
@@ -811,7 +811,7 @@ PASS [["createlink","http://www.google.com/"],["insertlinebreak",""],["inserttex
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar<br></li></ol>"
+FAIL [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar</li></ol>"
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("createlink") before
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandState("createlink") before
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""]] "foo[]bar" queryCommandValue("createlink") before
@@ -828,7 +828,7 @@ PASS [["createlink","http://www.google.com/"],["insertorderedlist",""],["insertt
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<a href=\"http://www.google.com/\">a</a>bar</li></ol>" but got "<ol><li>foo<a href=\"http://www.google.com/\">a</a>bar<br></li></ol>"
+PASS [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
 PASS [["createlink","http://www.google.com/"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
@@ -889,7 +889,7 @@ PASS [["createlink","http://www.google.com/"],["insertparagraph",""],["inserttex
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar<br></li></ul>"
+FAIL [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foobar</li></ul>" but got "<ul><li>foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar</li></ul>"
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("createlink") before
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandState("createlink") before
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("createlink") before
@@ -906,7 +906,7 @@ PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inser
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
-FAIL [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<a href=\"http://www.google.com/\">a</a>bar</li></ul>" but got "<ul><li>foo<a href=\"http://www.google.com/\">a</a>bar<br></li></ul>"
+PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
 PASS [["createlink","http://www.google.com/"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before

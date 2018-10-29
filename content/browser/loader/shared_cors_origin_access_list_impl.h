@@ -17,13 +17,10 @@ class SharedCorsOriginAccessListImpl final : public SharedCorsOriginAccessList {
   SharedCorsOriginAccessListImpl();
 
   // SharedCorsOriginAccessList interface.
-  void SetAllowListForOrigin(
+  void SetForOrigin(
       const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> patterns,
-      base::OnceClosure closure) override;
-  void SetBlockListForOrigin(
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> patterns,
+      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
       base::OnceClosure closure) override;
   const network::cors::OriginAccessList& GetOriginAccessList() const override;
 
@@ -31,12 +28,10 @@ class SharedCorsOriginAccessListImpl final : public SharedCorsOriginAccessList {
   ~SharedCorsOriginAccessListImpl() override;
 
  private:
-  void SetAllowListForOriginOnIOThread(
+  void SetForOriginOnIOThread(
       const url::Origin source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> patterns);
-  void SetBlockListForOriginOnIOThread(
-      const url::Origin source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> patterns);
+      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns);
 
   network::cors::OriginAccessList origin_access_list_;
 

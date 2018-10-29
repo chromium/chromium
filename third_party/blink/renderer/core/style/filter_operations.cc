@@ -52,18 +52,18 @@ bool FilterOperations::operator==(const FilterOperations& o) const {
 }
 
 bool FilterOperations::CanInterpolateWith(const FilterOperations& other) const {
-  for (size_t i = 0; i < Operations().size(); ++i) {
-    if (!FilterOperation::CanInterpolate(Operations()[i]->GetType()))
-      return false;
+  auto can_interpolate = [](FilterOperation* operation) {
+    return FilterOperation::CanInterpolate(operation->GetType());
+  };
+  if (!std::all_of(Operations().begin(), Operations().end(), can_interpolate) ||
+      !std::all_of(other.Operations().begin(), other.Operations().end(),
+                   can_interpolate)) {
+    return false;
   }
 
-  for (size_t i = 0; i < other.Operations().size(); ++i) {
-    if (!FilterOperation::CanInterpolate(other.Operations()[i]->GetType()))
-      return false;
-  }
-
-  size_t common_size = std::min(Operations().size(), other.Operations().size());
-  for (size_t i = 0; i < common_size; ++i) {
+  wtf_size_t common_size =
+      std::min(Operations().size(), other.Operations().size());
+  for (wtf_size_t i = 0; i < common_size; ++i) {
     if (!Operations()[i]->IsSameType(*other.Operations()[i]))
       return false;
   }
@@ -89,19 +89,15 @@ FloatRect FilterOperations::MapRect(const FloatRect& rect) const {
 }
 
 bool FilterOperations::HasFilterThatAffectsOpacity() const {
-  for (size_t i = 0; i < operations_.size(); ++i) {
-    if (operations_[i]->AffectsOpacity())
-      return true;
-  }
-  return false;
+  return std::any_of(
+      operations_.begin(), operations_.end(),
+      [](const auto& operation) { return operation->AffectsOpacity(); });
 }
 
 bool FilterOperations::HasFilterThatMovesPixels() const {
-  for (size_t i = 0; i < operations_.size(); ++i) {
-    if (operations_[i]->MovesPixels())
-      return true;
-  }
-  return false;
+  return std::any_of(
+      operations_.begin(), operations_.end(),
+      [](const auto& operation) { return operation->MovesPixels(); });
 }
 
 void FilterOperations::AddClient(SVGResourceClient& client) const {

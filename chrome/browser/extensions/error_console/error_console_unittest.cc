@@ -84,13 +84,13 @@ TEST_F(ErrorConsoleUnitTest, EnableAndDisableErrorConsole) {
   // the ErrorConsole, same as if the profile were in developer mode.
   const char kAppsDeveloperToolsExtensionId[] =
       "ohmmkhmmmpcnpikjeljgnaoabkaalbgc";
-  scoped_refptr<Extension> adt =
+  scoped_refptr<const Extension> adt =
       ExtensionBuilder()
-          .SetManifest(
-              DictionaryBuilder().Set("name", "apps dev tools")
-                                 .Set("version", "0.2.0")
-                                 .Set("manifest_version", 2)
-                                 .Build())
+          .SetManifest(DictionaryBuilder()
+                           .Set("name", "apps dev tools")
+                           .Set("version", "0.2.0")
+                           .Set("manifest_version", 2)
+                           .Build())
           .SetID(kAppsDeveloperToolsExtensionId)
           .Build();
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_.get());

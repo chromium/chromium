@@ -149,18 +149,6 @@ const char* WebView::GetClassName() const {
   return kViewClassName;
 }
 
-std::unique_ptr<content::WebContents> WebView::SwapWebContents(
-    std::unique_ptr<content::WebContents> new_web_contents) {
-  if (wc_owner_)
-    wc_owner_->SetDelegate(NULL);
-  std::unique_ptr<content::WebContents> old_web_contents(std::move(wc_owner_));
-  wc_owner_ = std::move(new_web_contents);
-  if (wc_owner_)
-    wc_owner_->SetDelegate(this);
-  SetWebContents(wc_owner_.get());
-  return old_web_contents;
-}
-
 void WebView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   if (crashed_overlay_view_)
     crashed_overlay_view_->SetBoundsRect(gfx::Rect(size()));
@@ -258,6 +246,10 @@ void WebView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // provided via other means. Providing it here would be redundant.
   // Mark the name as explicitly empty so that accessibility_checks pass.
   node_data->SetNameExplicitlyEmpty();
+  if (child_ax_tree_id_ != ui::AXTreeIDUnknown()) {
+    node_data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
+                                  child_ax_tree_id_);
+  }
 }
 
 gfx::NativeViewAccessible WebView::GetNativeViewAccessible() {
@@ -415,8 +407,13 @@ void WebView::UpdateCrashedOverlayView() {
 }
 
 void WebView::NotifyAccessibilityWebContentsChanged() {
-  if (web_contents())
-    NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  content::RenderFrameHost* rfh =
+      web_contents() ? web_contents()->GetMainFrame() : nullptr;
+  if (rfh)
+    child_ax_tree_id_ = rfh->GetAXTreeID();
+  else
+    child_ax_tree_id_ = ui::AXTreeIDUnknown();
+  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
 }
 
 std::unique_ptr<content::WebContents> WebView::CreateWebContents(

@@ -53,10 +53,7 @@ bool AuraInit::Init(const InitParams& params) {
   mus_params.create_wm_state = true;
   mus_params.use_accessibility_host = params.use_accessibility_host;
   mus_client_ = std::make_unique<MusClient>(mus_params);
-  // MaterialDesignController may have initialized already (such as happens
-  // in the utility process).
-  if (!ui::MaterialDesignController::is_mode_initialized())
-    ui::MaterialDesignController::Initialize();
+  ui::MaterialDesignController::Initialize();
   if (!InitializeResources(params))
     return false;
 

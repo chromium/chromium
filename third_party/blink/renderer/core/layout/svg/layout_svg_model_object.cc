@@ -158,12 +158,4 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
   SVGResourcesCache::ClientStyleChanged(*this, diff, StyleRef());
 }
 
-bool LayoutSVGModelObject::NodeAtPoint(HitTestResult&,
-                                       const HitTestLocation&,
-                                       const LayoutPoint&,
-                                       HitTestAction) {
-  NOTREACHED();
-  return false;
-}
-
 }  // namespace blink

@@ -34,7 +34,9 @@
 
 namespace blink {
 
-LayoutSVGPath::LayoutSVGPath(SVGGeometryElement* node) : LayoutSVGShape(node) {}
+LayoutSVGPath::LayoutSVGPath(SVGGeometryElement* node)
+    // <line> elements have no joins and thus needn't care about miters.
+    : LayoutSVGShape(node, IsSVGLineElement(node) ? kNoMiters : kComplex) {}
 
 LayoutSVGPath::~LayoutSVGPath() = default;
 
@@ -52,12 +54,6 @@ void LayoutSVGPath::WillBeDestroyed() {
 void LayoutSVGPath::UpdateShapeFromElement() {
   LayoutSVGShape::UpdateShapeFromElement();
   UpdateMarkers();
-}
-
-FloatRect LayoutSVGPath::HitTestStrokeBoundingBox() const {
-  if (StyleRef().SvgStyle().HasStroke())
-    return stroke_bounding_box_;
-  return ApproximateStrokeBoundingBox(fill_bounding_box_);
 }
 
 void LayoutSVGPath::UpdateMarkers() {

@@ -3095,8 +3095,7 @@ TEST_F(PictureLayerImplTest, TilingSetRasterQueue) {
 
   std::vector<Tile*> high_res_tiles =
       pending_layer()->HighResTiling()->AllTilesForTesting();
-  for (std::vector<Tile*>::iterator tile_it = high_res_tiles.begin();
-       tile_it != high_res_tiles.end();
+  for (auto tile_it = high_res_tiles.begin(); tile_it != high_res_tiles.end();
        ++tile_it) {
     Tile* tile = *tile_it;
     TileDrawInfo& draw_info = tile->draw_info();
@@ -3370,7 +3369,7 @@ TEST_F(PictureLayerImplTest, OcclusionOnSolidColorPictureLayer) {
 
   {
     SCOPED_TRACE("Scaled occlusion");
-    gfx::Rect occluded(300, 0, 400, 2000);
+    gfx::Rect occluded(300, 0, 2000, 2000);
     impl.AppendQuadsWithOcclusion(active_layer(), occluded);
 
     size_t partial_occluded_count = 0;
@@ -3378,11 +3377,9 @@ TEST_F(PictureLayerImplTest, OcclusionOnSolidColorPictureLayer) {
                                             &partial_occluded_count);
     // Because of the implementation of test helper AppendQuadsWithOcclusion,
     // the occlusion will have a scale transform resulted from the device scale
-    // factor. However, the AppendQuads function will try to tile a solid color
-    // layer ignoring the scale factor, and its visible layer bounds is 500x500.
-    // So we end up having 4 partially occluded quads.
-    EXPECT_EQ(4u, impl.quad_list().size());
-    EXPECT_EQ(4u, partial_occluded_count);
+    // factor. A single partially overlapped DrawQuad of 500x500 will be added.
+    EXPECT_EQ(1u, impl.quad_list().size());
+    EXPECT_EQ(1u, partial_occluded_count);
   }
 }
 
@@ -3410,7 +3407,7 @@ TEST_F(PictureLayerImplTest, IgnoreOcclusionOnSolidColorMask) {
                                             &partial_occluded_count);
     // None of the quads shall be occluded because mask layers ignores
     // occlusion.
-    EXPECT_EQ(16u, impl.quad_list().size());
+    EXPECT_EQ(1u, impl.quad_list().size());
     EXPECT_EQ(0u, partial_occluded_count);
   }
 }
@@ -4428,7 +4425,6 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   active_occluding_layer->SetDrawsContent(true);
   active_occluding_layer->SetContentsOpaque(true);
   active_occluding_layer->SetPosition(active_occluding_layer_position);
-
   ActivateTree();
 
   // Partially invalidate the pending layer. Tiles inside the invalidation rect

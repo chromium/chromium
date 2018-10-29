@@ -21,6 +21,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -33,6 +34,7 @@
 #include "content/browser/appcache/appcache_url_request_job.h"
 #include "content/browser/appcache/mock_appcache_policy.h"
 #include "content/browser/appcache/mock_appcache_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -204,7 +206,8 @@ class AppCacheRequestHandlerTest
   static void SetUpTestCase() {
     thread_bundle_.reset(
         new TestBrowserThreadBundle(TestBrowserThreadBundle::REAL_IO_THREAD));
-    io_task_runner_ = BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
+    io_task_runner_ =
+        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO});
   }
 
   static void TearDownTestCase() {

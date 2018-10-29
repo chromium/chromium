@@ -129,6 +129,7 @@ void ImeController::SetImesManagedByPolicy(bool managed) {
 }
 
 void ImeController::ShowImeMenuOnShelf(bool show) {
+  is_menu_active_ = show;
   Shell::Get()->system_tray_notifier()->NotifyRefreshIMEMenu(show);
 }
 

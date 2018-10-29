@@ -18,14 +18,14 @@ class ComputedStyle;
 class LayoutBox;
 class LayoutObject;
 class NGBlockNode;
-class NGFragmentBuilder;
+class NGBoxFragmentBuilder;
 class NGConstraintSpace;
 class NGLayoutResult;
 struct NGOutOfFlowPositionedDescendant;
 
 // Helper class for positioning of out-of-flow blocks.
-// It should be used together with NGFragmentBuilder.
-// See NGFragmentBuilder::AddOutOfFlowChildCandidate documentation
+// It should be used together with NGBoxFragmentBuilder.
+// See NGBoxFragmentBuilder::AddOutOfFlowChildCandidate documentation
 // for example of using these classes together.
 class CORE_EXPORT NGOutOfFlowLayoutPart {
   STACK_ALLOCATED();
@@ -37,7 +37,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   // block" of such an out-of-flow positioned descendant isn't a true block (but
   // e.g. a relatively positioned inline instead), the containing block here is
   // the containing block of said non-block.
-  NGOutOfFlowLayoutPart(NGFragmentBuilder* container_builder,
+  NGOutOfFlowLayoutPart(NGBoxFragmentBuilder* container_builder,
                         bool contains_absolute,
                         bool contains_fixed,
                         const NGBoxStrut& borders_and_scrollers,
@@ -98,7 +98,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const base::Optional<LayoutUnit>& block_estimate,
       const NGAbsolutePhysicalPosition& node_position);
 
-  NGFragmentBuilder* container_builder_;
+  NGBoxFragmentBuilder* container_builder_;
   bool contains_absolute_;
   bool contains_fixed_;
   NGPhysicalSize icb_size_;

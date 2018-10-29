@@ -30,6 +30,9 @@
 
 namespace blink {
 
+FloatPoint3D::FloatPoint3D(const gfx::Point3F& point)
+    : x_(point.x()), y_(point.y()), z_(point.z()) {}
+
 void FloatPoint3D::Normalize() {
   float temp_length = length();
 

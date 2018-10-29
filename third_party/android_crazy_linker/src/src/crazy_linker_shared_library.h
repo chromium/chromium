@@ -7,10 +7,13 @@
 
 #include <link.h>
 
+#include <utility>
+
 #include "crazy_linker_elf_relro.h"
 #include "crazy_linker_elf_symbols.h"
 #include "crazy_linker_elf_view.h"
 #include "crazy_linker_error.h"
+#include "crazy_linker_memory_mapping.h"
 #include "crazy_linker_rdebug.h"
 #include "crazy_linker_util.h"
 #include "elf_traits.h"
@@ -141,6 +144,11 @@ class SharedLibrary {
   // callback, if it is present in the library.
   void CallJniOnUnload();
 
+  // Release reserved memory mapping. Caller takes ownership. Used to delay
+  // the unmapping of the library segments in the case of delayed RDebug
+  // operations.
+  MemoryMapping ReleaseMapping() { return std::move(reserved_map_); }
+
   // Helper class to iterate over dependencies in a given SharedLibrary.
   // Usage:
   //    SharedLibary::DependencyIterator iter(lib);
@@ -174,38 +182,38 @@ class SharedLibrary {
 
   ElfView view_;
   ElfSymbols symbols_;
+  MemoryMapping reserved_map_;
 
-  ELF::Addr relro_start_;
-  ELF::Addr relro_size_;
-  bool relro_used_;
+  ELF::Addr relro_start_ = 0;
+  ELF::Addr relro_size_ = 0;
+  bool relro_used_ = false;
 
-  SharedLibrary* list_next_;
-  SharedLibrary* list_prev_;
-  unsigned flags_;
+  SharedLibrary* list_next_ = nullptr;
+  SharedLibrary* list_prev_ = nullptr;
+  unsigned flags_ = 0;
 
-  linker_function_t* preinit_array_;
-  size_t preinit_array_count_;
-  linker_function_t* init_array_;
-  size_t init_array_count_;
-  linker_function_t* fini_array_;
-  size_t fini_array_count_;
-  linker_function_t init_func_;
-  linker_function_t fini_func_;
-
+  linker_function_t* preinit_array_ = nullptr;
+  size_t preinit_array_count_ = 0;
+  linker_function_t* init_array_ = nullptr;
+  size_t init_array_count_ = 0;
+  linker_function_t* fini_array_ = nullptr;
+  size_t fini_array_count_ = 0;
+  linker_function_t init_func_ = nullptr;
+  linker_function_t fini_func_ = nullptr;
 #ifdef __arm__
   // ARM EABI section used for stack unwinding.
-  unsigned* arm_exidx_;
-  size_t arm_exidx_count_;
+  unsigned* arm_exidx_ = nullptr;
+  size_t arm_exidx_count_ = 0;
 #endif
 
-  link_map_t link_map_;
+  link_map_t link_map_ = {};
 
-  bool has_DT_SYMBOLIC_;
+  bool has_DT_SYMBOLIC_ = false;
 
-  void* java_vm_;
+  void* java_vm_ = nullptr;
 
-  const char* soname_;
-  const char* base_name_;
+  const char* soname_ = nullptr;
+  const char* base_name_ = nullptr;
   char full_path_[512];
 };
 

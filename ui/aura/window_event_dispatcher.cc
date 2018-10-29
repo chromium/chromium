@@ -419,9 +419,10 @@ void WindowEventDispatcher::UpdateCapture(Window* old_capture,
 
   if (old_capture && old_capture->GetRootWindow() == window() &&
       old_capture->delegate()) {
-    // Send a capture changed event with bogus location data.
-    ui::MouseEvent event(ui::ET_MOUSE_CAPTURE_CHANGED, gfx::Point(),
-                         gfx::Point(), ui::EventTimeForNow(), 0, 0);
+    // Send a capture changed event with the most recent mouse screen location.
+    const gfx::Point location = host_->window()->env()->last_mouse_location();
+    ui::MouseEvent event(ui::ET_MOUSE_CAPTURE_CHANGED, location, location,
+                         ui::EventTimeForNow(), 0, 0);
 
     DispatchDetails details = DispatchEvent(old_capture, &event);
     if (details.dispatcher_destroyed)
@@ -1088,8 +1089,10 @@ DispatchDetails WindowEventDispatcher::PreDispatchTouchEvent(
 DispatchDetails WindowEventDispatcher::PreDispatchKeyEvent(
     ui::KeyEvent* event) {
   if (skip_ime_ || !host_->has_input_method() ||
-      (event->flags() & ui::EF_IS_SYNTHESIZED))
+      (event->flags() & ui::EF_IS_SYNTHESIZED) ||
+      !host_->ShouldSendKeyEventToIme()) {
     return DispatchDetails();
+  }
   DispatchDetails details = host_->GetInputMethod()->DispatchKeyEvent(event);
   event->StopPropagation();
   return details;

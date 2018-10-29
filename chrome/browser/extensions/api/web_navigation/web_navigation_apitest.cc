@@ -563,6 +563,12 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, CrossProcessIframe) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/crossProcessIframe")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, PendingDeletion) {
+  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("webnavigation/pendingDeletion")) << message_;
+}
+
 // TODO(jam): http://crbug.com/350550
 #if !(defined(OS_CHROMEOS) && defined(ADDRESS_SANITIZER))
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, Crash) {

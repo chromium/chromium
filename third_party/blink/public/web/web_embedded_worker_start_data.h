@@ -68,7 +68,7 @@ struct WebEmbeddedWorkerStartData {
   WebEmbeddedWorkerStartData()
       : pause_after_download_mode(kDontPauseAfterDownload),
         wait_for_debugger_mode(kDontWaitForDebugger),
-        v8_cache_options(WebSettings::kV8CacheOptionsDefault) {}
+        v8_cache_options(WebSettings::V8CacheOptions::kDefault) {}
 };
 
 }  // namespace blink

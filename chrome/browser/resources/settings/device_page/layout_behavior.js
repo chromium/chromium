@@ -20,7 +20,10 @@ const LayoutBehavior = {
      * Whether or not mirroring is enabled.
      * @type {boolean}
      */
-    mirroring: false,
+    mirroring: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @private {!Map<string, chrome.system.display.Bounds>} */

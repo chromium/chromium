@@ -78,9 +78,8 @@ Network.RequestResponseView = class extends UI.VBox {
       return null;
     }
 
-    const contentProvider = new Network.DecodingContentProvider(request);
     const highlighterType = request.resourceType().canonicalMimeType() || request.mimeType;
-    sourceView = SourceFrame.ResourceSourceFrame.createSearchableView(contentProvider, highlighterType);
+    sourceView = SourceFrame.ResourceSourceFrame.createSearchableView(request, highlighterType);
     request[Network.RequestResponseView._sourceViewSymbol] = sourceView;
     return sourceView;
   }
@@ -137,59 +136,3 @@ Network.RequestResponseView = class extends UI.VBox {
 };
 
 Network.RequestResponseView._sourceViewSymbol = Symbol('RequestResponseSourceView');
-
-/**
- * @implements {Common.ContentProvider}
- */
-Network.DecodingContentProvider = class {
-  /**
-   * @param {!SDK.NetworkRequest} request
-   */
-  constructor(request) {
-    this._request = request;
-  }
-
-  /**
-   * @override
-   * @return {string}
-   */
-  contentURL() {
-    return this._request.contentURL();
-  }
-
-  /**
-   * @override
-   * @return {!Common.ResourceType}
-   */
-  contentType() {
-    return this._request.resourceType();
-  }
-
-  /**
-   * @override
-   * @return {!Promise<boolean>}
-   */
-  contentEncoded() {
-    return Promise.resolve(false);
-  }
-
-  /**
-   * @override
-   * @return {!Promise<?string>}
-   */
-  async requestContent() {
-    const contentData = await this._request.contentData();
-    return contentData.encoded ? window.atob(contentData.content || '') : contentData.content;
-  }
-
-  /**
-   * @override
-   * @param {string} query
-   * @param {boolean} caseSensitive
-   * @param {boolean} isRegex
-   * @return {!Promise<!Array<!Common.ContentProvider.SearchMatch>>}
-   */
-  searchInContent(query, caseSensitive, isRegex) {
-    return this._request.searchInContent(query, caseSensitive, isRegex);
-  }
-};

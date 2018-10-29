@@ -191,3 +191,10 @@ class NameStyleConverterTest(unittest.TestCase):
             'upper_camel_case': 'SVGScriptElement',
             'macro_case': 'SVG_SCRIPT_ELEMENT',
         })
+
+    def test_to_header_guard(self):
+        converter = NameStyleConverter('third_party/blink/renderer/bindings/modules/v8/v8_path_2d.h')
+        self.assertEqual(converter.to_header_guard(), 'THIRD_PARTY_BLINK_RENDERER_BINDINGS_MODULES_V8_V8_PATH_2D_H_')
+
+if __name__ == '__main__':
+    unittest.main()

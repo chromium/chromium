@@ -50,7 +50,7 @@ class Vector2d;
 namespace blink {
 
 class PLATFORM_EXPORT IntSize {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   constexpr IntSize() : width_(0), height_(0) {}

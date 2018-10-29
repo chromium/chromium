@@ -8,101 +8,161 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/scoped_task_environment.h"
+#include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
-#include "url/gurl.h"
 
 namespace {
 
-const char kProfileId1[] = "Default";
-const char kProfileId2[] = "User";
+// This value has to stay in sync with that in notification_image_retainer.cc.
+constexpr base::TimeDelta kDeletionDelay = base::TimeDelta::FromSeconds(12);
 
 }  // namespace
 
 class NotificationImageRetainerTest : public ::testing::Test {
  public:
-  NotificationImageRetainerTest() = default;
+  NotificationImageRetainerTest()
+      : scoped_task_environment_(
+            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME),
+        user_data_dir_override_(chrome::DIR_USER_DATA) {}
+
   ~NotificationImageRetainerTest() override = default;
-
-  void SetUp() override {
-    NotificationImageRetainer::OverrideTempFileLifespanForTesting(true);
-  }
-
-  void TearDown() override {
-    NotificationImageRetainer::OverrideTempFileLifespanForTesting(false);
-  }
 
  protected:
   base::test::ScopedTaskEnvironment scoped_task_environment_;
 
-  base::string16 CalculateHash(const std::string& profile_id,
-                               const GURL& origin) {
-    return base::UintToString16(base::Hash(profile_id + origin.spec()));
-  }
-
  private:
+  base::ScopedPathOverride user_data_dir_override_;
+
   DISALLOW_COPY_AND_ASSIGN(NotificationImageRetainerTest);
 };
 
-TEST_F(NotificationImageRetainerTest, FileCreation) {
+TEST_F(NotificationImageRetainerTest, RegisterTemporaryImage) {
   auto image_retainer = std::make_unique<NotificationImageRetainer>(
-      scoped_task_environment_.GetMainThreadTaskRunner());
+      scoped_task_environment_.GetMainThreadTaskRunner(),
+      scoped_task_environment_.GetMockTickClock());
 
   SkBitmap icon;
   icon.allocN32Pixels(64, 64);
   icon.eraseARGB(255, 100, 150, 200);
   gfx::Image image = gfx::Image::CreateFrom1xBitmap(icon);
 
-  GURL origin1("https://www.google.com");
-  GURL origin2("https://www.chromium.org");
+  base::FilePath temp_file = image_retainer->RegisterTemporaryImage(image);
+  ASSERT_FALSE(temp_file.empty());
+  ASSERT_TRUE(base::PathExists(temp_file));
 
-  // Expecting separate directories per profile and origin.
-  base::string16 dir_profile1_origin1 = CalculateHash(kProfileId1, origin1);
-  base::string16 dir_profile1_origin2 = CalculateHash(kProfileId1, origin2);
-  base::string16 dir_profile2_origin1 = CalculateHash(kProfileId2, origin1);
-  base::string16 dir_profile2_origin2 = CalculateHash(kProfileId2, origin2);
+  // Fast-forward the task runner so that the file deletion task posted in
+  // RegisterTemporaryImage() finishes running.
+  scoped_task_environment_.FastForwardBy(kDeletionDelay);
 
-  base::FilePath path1 =
-      image_retainer->RegisterTemporaryImage(image, kProfileId1, origin1);
-  ASSERT_TRUE(base::PathExists(path1));
-  ASSERT_TRUE(path1.value().find(dir_profile1_origin1) != std::string::npos)
-      << path1.value().c_str();
+  // The temp file should be deleted now.
+  ASSERT_FALSE(base::PathExists(temp_file));
 
-  std::vector<base::FilePath::StringType> components;
-  path1.GetComponents(&components);
-  base::FilePath image_dir;
-  for (size_t i = 0; i < components.size() - 2; ++i)
-    image_dir = image_dir.Append(components[i]);
+  // The destruction of the image retainer object won't delete the image
+  // directory.
+  image_retainer.reset();
+  ASSERT_TRUE(base::PathExists(temp_file.DirName()));
+}
 
-  base::FilePath path2 =
-      image_retainer->RegisterTemporaryImage(image, kProfileId1, origin2);
-  ASSERT_TRUE(base::PathExists(path2));
-  ASSERT_TRUE(path2.value().find(dir_profile1_origin2) != std::string::npos)
-      << path2.value().c_str();
+TEST_F(NotificationImageRetainerTest, DeleteFilesInBatch) {
+  auto image_retainer = std::make_unique<NotificationImageRetainer>(
+      scoped_task_environment_.GetMainThreadTaskRunner(),
+      scoped_task_environment_.GetMockTickClock());
 
-  base::FilePath path3 =
-      image_retainer->RegisterTemporaryImage(image, kProfileId2, origin1);
-  ASSERT_TRUE(base::PathExists(path3));
-  ASSERT_TRUE(path3.value().find(dir_profile2_origin1) != std::string::npos)
-      << path3.value().c_str();
+  SkBitmap icon;
+  icon.allocN32Pixels(64, 64);
+  icon.eraseARGB(255, 100, 150, 200);
+  gfx::Image image = gfx::Image::CreateFrom1xBitmap(icon);
 
-  base::FilePath path4 =
-      image_retainer->RegisterTemporaryImage(image, kProfileId2, origin2);
-  ASSERT_TRUE(base::PathExists(path4));
-  ASSERT_TRUE(path4.value().find(dir_profile2_origin2) != std::string::npos)
-      << path4.value().c_str();
+  // Create 1st image file on disk.
+  base::FilePath temp_file1 = image_retainer->RegisterTemporaryImage(image);
+  ASSERT_FALSE(temp_file1.empty());
+  ASSERT_TRUE(base::PathExists(temp_file1));
 
-  base::RunLoop().RunUntilIdle();
+  // Simulate ticking of the clock so that the next image file has a different
+  // registration time.
+  scoped_task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
-  ASSERT_FALSE(base::PathExists(path1));
-  ASSERT_FALSE(base::PathExists(path2));
-  ASSERT_FALSE(base::PathExists(path3));
-  ASSERT_FALSE(base::PathExists(path4));
+  // Create 2nd image file on disk.
+  base::FilePath temp_file2 = image_retainer->RegisterTemporaryImage(image);
+  ASSERT_FALSE(temp_file2.empty());
+  ASSERT_TRUE(base::PathExists(temp_file2));
 
-  image_retainer.reset(nullptr);
-  ASSERT_FALSE(base::PathExists(image_dir));
+  // Simulate ticking of the clock so that the next image file has a different
+  // registration time.
+  scoped_task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Create 3rd image file on disk.
+  base::FilePath temp_file3 = image_retainer->RegisterTemporaryImage(image);
+  ASSERT_FALSE(temp_file3.empty());
+  ASSERT_TRUE(base::PathExists(temp_file3));
+
+  // Fast-forward the task runner by kDeletionDelay. The first temp file should
+  // be deleted now, while the other two should still be around.
+  scoped_task_environment_.FastForwardBy(kDeletionDelay);
+  ASSERT_FALSE(base::PathExists(temp_file1));
+  ASSERT_TRUE(base::PathExists(temp_file2));
+  ASSERT_TRUE(base::PathExists(temp_file3));
+
+  // Fast-forward the task runner again. The second and the third temp files
+  // are deleted simultaneously.
+  scoped_task_environment_.FastForwardBy(kDeletionDelay);
+  ASSERT_FALSE(base::PathExists(temp_file2));
+  ASSERT_FALSE(base::PathExists(temp_file3));
+}
+
+TEST_F(NotificationImageRetainerTest, CleanupFilesFromPrevSessions) {
+  auto image_retainer = std::make_unique<NotificationImageRetainer>(
+      scoped_task_environment_.GetMainThreadTaskRunner(),
+      scoped_task_environment_.GetMockTickClock());
+
+  const base::FilePath& image_dir = image_retainer->image_dir();
+  ASSERT_TRUE(base::CreateDirectory(image_dir));
+
+  // Create two temp files as if they were created in previous sessions.
+  base::FilePath temp_file1;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(image_dir, &temp_file1));
+
+  base::FilePath temp_file2;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(image_dir, &temp_file2));
+
+  ASSERT_TRUE(base::PathExists(temp_file1));
+  ASSERT_TRUE(base::PathExists(temp_file2));
+
+  // Create a new temp file in the current session. This file will be scheduled
+  // to delete after kDeletionDelay seconds.
+  SkBitmap icon;
+  icon.allocN32Pixels(64, 64);
+  icon.eraseARGB(255, 100, 150, 200);
+  gfx::Image image = gfx::Image::CreateFrom1xBitmap(icon);
+
+  base::FilePath temp_file3 = image_retainer->RegisterTemporaryImage(image);
+  ASSERT_FALSE(temp_file3.empty());
+  ASSERT_TRUE(base::PathExists(temp_file3));
+
+  // Schedule a file cleanup task.
+  image_retainer->CleanupFilesFromPrevSessions();
+
+  // Now the file cleanup task finishes running.
+  scoped_task_environment_.RunUntilIdle();
+
+  // The two temp files from previous sessions should be deleted now.
+  ASSERT_FALSE(base::PathExists(temp_file1));
+  ASSERT_FALSE(base::PathExists(temp_file2));
+
+  // The temp file created in this session should still be around.
+  ASSERT_TRUE(base::PathExists(temp_file3));
+
+  // Fast-forward the task runner so that the file deletion task posted in
+  // RegisterTemporaryImage() finishes running.
+  scoped_task_environment_.FastForwardBy(kDeletionDelay);
+
+  // The temp file created in this session should be deleted now.
+  ASSERT_FALSE(base::PathExists(temp_file3));
+
+  // The image directory should still be around.
+  ASSERT_TRUE(base::PathExists(image_dir));
 }

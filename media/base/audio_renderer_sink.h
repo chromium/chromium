@@ -103,7 +103,7 @@ class SwitchableAudioRendererSink : public RestartableAudioRendererSink {
   // the media::OutputDeviceStatus enum.
   // There is no guarantee about the thread where |callback| will be invoked.
   virtual void SwitchOutputDevice(const std::string& device_id,
-                                  const OutputDeviceStatusCB& callback) = 0;
+                                  OutputDeviceStatusCB callback) = 0;
 
  protected:
   ~SwitchableAudioRendererSink() override {}

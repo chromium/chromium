@@ -26,8 +26,8 @@ base::android::ScopedJavaLocalRef<jobject> PreviewsInfoBar::CreateRenderInfoBar(
   base::android::ScopedJavaLocalRef<jstring> link_text =
       base::android::ConvertUTF16ToJavaString(env, delegate->GetLinkText());
   base::android::ScopedJavaLocalRef<jstring> timestamp_text =
-      base::android::ConvertUTF16ToJavaString(env,
-                                              delegate->GetTimestampText());
+      base::android::ConvertUTF16ToJavaString(
+          env, delegate->GetStalePreviewTimestampText());
   return Java_PreviewsInfoBar_show(env, GetEnumeratedIconId(), message_text,
                                    link_text, timestamp_text);
 }

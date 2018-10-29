@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
 #include "content/browser/renderer_host/media/audio_output_stream_observer_impl.h"
 #include "content/browser/renderer_host/media/renderer_audio_output_stream_factory_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/render_frame_host.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/services/mojo_audio_output_stream_provider.h"
@@ -32,8 +34,8 @@ RenderFrameAudioOutputStreamFactoryHandle::CreateFactory(
                                                            render_frame_id));
   // Unretained is safe since |*handle| must be posted to the IO thread prior to
   // deletion.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&RenderFrameAudioOutputStreamFactoryHandle::Init,
                      base::Unretained(handle.get()), std::move(request)));
   return handle;

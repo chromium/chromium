@@ -44,13 +44,10 @@ extern const char kShowMemoryDebuggingTools[];
 
 extern const char kSigninLastAccounts[];
 extern const char kSigninLastAccountsMigrated[];
-extern const char kSigninSharedAuthenticationUserId[];
 extern const char kSigninShouldPromptForSigninAgain[];
 
 extern const char kOmniboxGeolocationAuthorizationState[];
 extern const char kOmniboxGeolocationLastAuthorizationAlertVersion[];
-
-extern const char kRateThisAppDialogLastShownTime[];
 
 extern const char kDesktopIOSPromotionSMSEntryPoint[];
 extern const char kDesktopIOSPromotionShownEntryPoints[];

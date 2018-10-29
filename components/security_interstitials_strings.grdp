@@ -235,9 +235,6 @@
   <message name="IDS_SAFE_BROWSING_PRIVACY_POLICY_PAGE" desc="Label for the link to SafeBrowsing Privacy policy page">
     Privacy policy
   </message>
-  <message name="IDS_SAFE_BROWSING_MALWARE_REPORTING_AGREE" desc="SafeBrowsing Malware v2 Details label next to checkbox">
-    <ph name="BEGIN_WHITEPAPER_LINK">&lt;a href="#" id="whitepaper-link"&gt;</ph>Automatically report<ph name="END_WHITEPAPER_LINK">&lt;/a&gt;</ph> details of possible security incidents to Google. <ph name="PRIVACY_PAGE_LINK">$1</ph>
-  </message>
   <message name="IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE" desc="SafeBrowsing Scout label next to checkbox">
     Help improve Safe Browsing by sending some <ph name="BEGIN_WHITEPAPER_LINK">&lt;a href="#" id="whitepaper-link"&gt;</ph>system information and page content<ph name="END_WHITEPAPER_LINK">&lt;/a&gt;</ph> to Google. <ph name="PRIVACY_PAGE_LINK">$1</ph>
   </message>
@@ -311,6 +308,12 @@
   <message name="IDS_HARMFUL_WEBVIEW_EXPLANATION_PARAGRAPH" desc="The explanation of why Safe Browsing has blocked the page. Allows the user to proceed using a link.">
     This content might try to install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>Show anyway<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_BILLING_WEBVIEW_HEADING" desc="Title of a security warning. Shown when the user wants to visit a site that may trick them into signing up for a recurring charge to their mobile phone plan. 'Potential' indicates likelihood. 'charges' refers to financial charges to user's mobile phone plan.">
+    Potential charges ahead.
+  </message>
+  <message name="IDS_BILLING_WEBVIEW_EXPLANATION_PARAGRAPH" desc="Body of a security warning. Shown when the user wants to visit a site that may trick them into signing up for a recurring charge to their mobile phone plan. 'charges' refers to financial charges to user's mobile phone plan. 'not obvious' means the site may, for example, include a pricing disclosure in hard-to-see text.">
+    These charges could be one-time or recurring and may not be obvious. <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>Show anyway<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
 
   <message name="IDS_CONNECTION_HELP_SHOW_MORE" desc="The button label to expand sections for the chrome://connection-help site. Paired with IDS_CONNECTION_HELP_SHOW_LESS">
     Show More
@@ -335,16 +338,16 @@
   <message name="IDS_CONNECTION_HELP_SPECIFIC_ERROR_HEADING" desc="Heading for individual errors section in chrome://connection-help. Matches the heading for the specific error section in https://support.google.com/chrome/answer/6098869">
     Get help with a specific error message
   </message>
-  <message name="IDS_CONNECTION_HELP_CONNECTION_NOT_PRIVATE_TITLE" desc="Title for your connection is not private section in chrome://connection-help. Matches the heading for the third section in https://support.google.com/chrome/answer/6098869">
-    "Your connection is not private" or "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" or "SSL certificate error"
+  <message name="IDS_CONNECTION_HELP_CONNECTION_NOT_PRIVATE_TITLE" desc="Title for your connection is not private section in chrome://connection-help. Matches the heading for the fourth section in https://support.google.com/chrome/answer/6098869, with the addition of ERR_CERT_SYMANTEC_LEGACY.">
+    "Your connection is not private" or "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" or "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" or "SSL certificate error"
   </message>
-  <message name="IDS_CONNECTION_HELP_CONNECT_TO_NETWORK_TITLE" desc="Title for connect to network section in chrome://connection-help. Matches the heading for the fourth section in https://support.google.com/chrome/answer/6098869">
+  <message name="IDS_CONNECTION_HELP_CONNECT_TO_NETWORK_TITLE" desc="Title for connect to network section in chrome://connection-help. Matches the heading for the fifth section in https://support.google.com/chrome/answer/6098869">
     "Connect to network"
   </message>
-  <message name="IDS_CONNECTION_HELP_INCORRECT_CLOCK_TITLE" desc="Title for incorrect clock section in chrome://connection-help. Matches the heading for the fifth section in https://support.google.com/chrome/answer/6098869">
+  <message name="IDS_CONNECTION_HELP_INCORRECT_CLOCK_TITLE" desc="Title for incorrect clock section in chrome://connection-help. Matches the heading for the sixth section in https://support.google.com/chrome/answer/6098869">
     "Your clock is behind" or "Your clock is ahead" or "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"
   </message>
-  <message name="IDS_CONNECTION_HELP_CONNECTION_NOT_PRIVATE_DETAILS" desc="Details for your connection is not private section in chrome://connection-help. Matches the third section in https://support.google.com/chrome/answer/6098869">
+  <message name="IDS_CONNECTION_HELP_CONNECTION_NOT_PRIVATE_DETAILS" desc="Details for your connection is not private section in chrome://connection-help. Matches the fourth section in https://support.google.com/chrome/answer/6098869">
     &lt;h4&gt;Step 1: Sign in to the portal&lt;/h4&gt;
     &lt;p&gt;Wi-Fi networks at places like cafes or airports need you to sign in. To see the sign-in page, visit a page that uses &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -363,19 +366,19 @@
     &lt;h4&gt;Step 5: Get extra help&lt;/h4&gt;
     &lt;p&gt;If you still see the error, contact the website owner.&lt;/p&gt;
   </message>
-  <message name="IDS_CONNECTION_HELP_CONNECT_TO_NETWORK_DETAILS" desc="Details for connect to network section in chrome://connection-help. Matches the fourth section in https://support.google.com/chrome/answer/6098869">
+  <message name="IDS_CONNECTION_HELP_CONNECT_TO_NETWORK_DETAILS" desc="Details for connect to network section in chrome://connection-help. Matches the fifth section in https://support.google.com/chrome/answer/6098869">
     &lt;p&gt;You'll see this error if you're using a Wi-Fi portal where you have to sign in before you can get online.&lt;/p&gt;
     &lt;p&gt;To fix the error, click &lt;strong&gt;Connect&lt;/strong&gt; on the page you're trying to open.&lt;/p&gt;
   </message>
-  <message name="IDS_CONNECTION_HELP_INCORRECT_CLOCK_DETAILS" desc="Details for incorrect clock section in chrome://connection-help. Matches the fifth section in https://support.google.com/chrome/answer/6098869">
+  <message name="IDS_CONNECTION_HELP_INCORRECT_CLOCK_DETAILS" desc="Details for incorrect clock section in chrome://connection-help. Matches the sixth section in https://support.google.com/chrome/answer/6098869">
     &lt;p&gt;You'll see this error if your computer or mobile device's date and time are inaccurate.&lt;/p&gt;
     &lt;p&gt;To fix the error, open your device's clock. Make sure the time and date are correct.&lt;/p&gt;
   </message>
   <if expr="is_win">
-    <message name="IDS_CONNECTION_HELP_MITM_SOFTWARE_TITLE" desc="Title for MITM software section in chrome://connection-help. Matches the heading for the eighth section in https://support.google.com/chrome/answer/6098869">
+    <message name="IDS_CONNECTION_HELP_MITM_SOFTWARE_TITLE" desc="Title for MITM software section in chrome://connection-help. Matches the heading for the nineth section in https://support.google.com/chrome/answer/6098869">
     "Software on your computer is stopping Chrome from safely connecting to the web" (Windows computers only)
   </message>
-    <message name="IDS_CONNECTION_HELP_MITM_SOFTWARE_DETAILS" desc="Details for MITM software section in chrome://connection-help. Matches the eighth section in https://support.google.com/chrome/answer/6098869">
+    <message name="IDS_CONNECTION_HELP_MITM_SOFTWARE_DETAILS" desc="Details for MITM software section in chrome://connection-help. Matches the nineth section in https://support.google.com/chrome/answer/6098869">
       &lt;p&gt;You'll see this error if you have Superfish software on your Windows computer.&lt;/p&gt;
       &lt;p&gt;Follow these steps to temporarily disable the software so you can get on the web. You'll need administrator privileges.&lt;/p&gt;
       &lt;ol&gt;

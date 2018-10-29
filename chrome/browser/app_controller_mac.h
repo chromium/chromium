@@ -80,8 +80,8 @@ class ScopedKeepAlive;
   // Outlets for the close tab/window menu items so that we can adjust the
   // commmand-key equivalent depending on the kind of window and how many
   // tabs it has.
-  IBOutlet NSMenuItem* closeTabMenuItem_;
-  IBOutlet NSMenuItem* closeWindowMenuItem_;
+  NSMenuItem* closeTabMenuItem_;
+  NSMenuItem* closeWindowMenuItem_;
 
   // If we are expecting a workspace change in response to a reopen
   // event, the time we got the event. A null time otherwise.

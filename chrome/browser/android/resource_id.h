@@ -4,6 +4,14 @@
 
 // This file maps Chromium resource IDs to Android resource IDs.
 
+// Presence of regular include guards is checked by:
+// 1. cpplint
+// 2. a custom presubmit in src/PRESUBMIT.py
+// 3. clang (but it only checks the guard is correct if present)
+// Disable the first two with these magic comments:
+// NOLINT(build/header_guard)
+// no-include-guard-because-multiply-included
+
 // LINK_RESOURCE_ID is used for IDs that come from a .grd file.
 #ifndef LINK_RESOURCE_ID
 #error "LINK_RESOURCE_ID should be defined before including this file"
@@ -20,7 +28,6 @@ LINK_RESOURCE_ID(0, 0)
 // InfoBar resources.
 LINK_RESOURCE_ID(IDR_INFOBAR_3D_BLOCKED, R.drawable.infobar_3d_blocked)
 LINK_RESOURCE_ID(IDR_INFOBAR_AUTOFILL_CC, R.drawable.infobar_autofill_cc)
-LINK_RESOURCE_ID(IDR_INFOBAR_TRANSLATE, R.drawable.infobar_translate)
 
 // Android only infobars.
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_ACCESSIBILITY_EVENTS,
@@ -49,7 +56,8 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_PREVIEWS,
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_PROTECTED_MEDIA_IDENTIFIER,
                     R.drawable.infobar_protected_media_identifier)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_SAVE_PASSWORD,
-                    R.drawable.infobar_savepassword)
+                    R.drawable.ic_vpn_key_blue)
+DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_TRANSLATE, R.drawable.infobar_translate)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_WARNING, R.drawable.infobar_warning)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER,
                  R.drawable.google_pay_with_divider)

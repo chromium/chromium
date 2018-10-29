@@ -201,13 +201,24 @@ class InputController final : public StreamMonitor {
     void StartEchoCancellationDump(base::File file) final;
     void StopEchoCancellationDump() final;
 
-    // Starts and/or stops snooping and updates |monitored_output_stream_|
-    // appropriately.
-    void ChangeStreamMonitor(Snoopable* output_stream);
-
     media::AudioProcessor* GetAudioProcessor();
 
+    // Starts monitoring |output_stream| instead of the currently monitored
+    // stream, if any.
+    void StartMonitoringStream(Snoopable* output_stream);
+
+    // Stops monitoring |output_stream|, provided it's the currently monitored
+    // stream.
+    void StopMonitoringStream(Snoopable* output_stream);
+
+    // Stops monitoring |monitored_output_stream_|, if not null.
+    void StopAllStreamMonitoring();
+
    private:
+    // Starts and/or stops snooping and updates |monitored_output_stream_|
+    // appropriately.
+    void ChangeMonitoredStream(Snoopable* output_stream);
+
     THREAD_CHECKER(owning_thread_);
 
     const mojo::Binding<mojom::AudioProcessorControls> binding_;

@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/callback.h"
@@ -22,7 +23,7 @@
 
 namespace extensions {
 
-class Alias;
+struct Alias;
 
 // A global object that holds the extension permission instances and provides
 // methods for accessing them.
@@ -32,9 +33,8 @@ class PermissionsInfo {
 
   // Registers the permissions specified by |infos| along with the
   // |aliases|.
-  // TODO(devlin): Convert |aliases| to be a base::span.
   void RegisterPermissions(base::span<const APIPermissionInfo::InitInfo> infos,
-                           const std::vector<Alias>& aliases);
+                           base::span<const Alias> aliases);
 
   // Returns the permission with the given |id|, and NULL if it doesn't exist.
   const APIPermissionInfo* GetByID(APIPermission::ID id) const;
@@ -71,7 +71,9 @@ class PermissionsInfo {
   void RegisterPermission(std::unique_ptr<APIPermissionInfo> permission);
 
   // Maps permission ids to permissions. Owns the permissions.
-  typedef std::map<APIPermission::ID, std::unique_ptr<APIPermissionInfo>> IDMap;
+  typedef std::unordered_map<APIPermission::ID,
+                             std::unique_ptr<APIPermissionInfo>>
+      IDMap;
 
   // Maps names and aliases to permissions. Doesn't own the permissions.
   typedef std::map<std::string, APIPermissionInfo*> NameMap;

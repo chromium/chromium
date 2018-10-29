@@ -14,7 +14,7 @@ VASurface::VASurface(VASurfaceID va_surface_id,
       size_(size),
       format_(format),
       release_cb_(release_cb) {
-  DCHECK(!release_cb_.is_null());
+  DCHECK(release_cb_);
 }
 
 VASurface::~VASurface() {

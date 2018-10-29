@@ -587,10 +587,10 @@ TEST_F(AdaptiveScreenBrightnessManagerTest, UserEventCounts) {
   ReportUserActivity(&kKeyEvent);
   ReportUserActivity(&kKeyEvent);
 
-  const ui::PointerEvent kStylusEvent(
-      ui::ET_POINTER_MOVED, kEventLocation, gfx::Point(), ui::EF_NONE, 0,
+  const ui::TouchEvent kStylusEvent(
+      ui::ET_TOUCH_MOVED, kEventLocation, base::TimeTicks(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_PEN, 0),
-      base::TimeTicks());
+      ui::EF_NONE);
   ReportUserActivity(&kStylusEvent);
   ReportUserActivity(&kStylusEvent);
   ReportUserActivity(&kStylusEvent);

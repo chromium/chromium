@@ -177,7 +177,7 @@ void CredentialManagerImpl::SendPasswordForm(
   CredentialInfo info;
   if (form) {
     password_manager::CredentialType type_to_return =
-        form->federation_origin.unique()
+        form->federation_origin.opaque()
             ? CredentialType::CREDENTIAL_TYPE_PASSWORD
             : CredentialType::CREDENTIAL_TYPE_FEDERATED;
     info = CredentialInfo(*form, type_to_return);
@@ -227,7 +227,7 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     return;
   }
 
-  if (!form.federation_origin.unique()) {
+  if (!form.federation_origin.opaque()) {
     // If this is a federated credential, check it against the federated matches
     // produced by the PasswordFormManager. If a match is found, update it and
     // return.

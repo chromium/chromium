@@ -16,7 +16,7 @@ etc., where each group organizes related histograms.
 ## Coding (Emitting to Histograms)
 
 Generally you'll be best served by using one of the macros in
-[https://cs.chromium.org/chromium/src/base/metrics/histogram_macros.h](histogram_macros.h)
+[histogram_macros.h](https://cs.chromium.org/chromium/src/base/metrics/histogram_macros.h)
 if possible.
 
 ### Don't Use the Same Histogram Logging Call in Multiple Places
@@ -212,7 +212,7 @@ friends, as well as helpers such as SCOPED_UMA_HISTOGRAM_TIMER. Many timing
 histograms are used for performance monitoring; if this is the case for you,
 please read [this document about how to structure timing histograms to make
 them more useful and
-actionable](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/speed/diagnostic_metrics.md).
+actionable](https://chromium.googlesource.com/chromium/src/+/lkgr/docs/speed/diagnostic_metrics.md).
 
 ### Percentage or Ratio Histograms
 

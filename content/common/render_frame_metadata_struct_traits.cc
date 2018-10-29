@@ -5,6 +5,7 @@
 #include "content/common/render_frame_metadata_struct_traits.h"
 
 #include "build/build_config.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_struct_traits.h"
 #include "ui/gfx/geometry/mojo/geometry_struct_traits.h"
 #include "ui/gfx/mojo/selection_bound_struct_traits.h"
@@ -38,7 +39,9 @@ bool StructTraits<content::mojom::RenderFrameMetadataDataView,
          data.ReadRootLayerSize(&out->root_layer_size) &&
 #endif
          data.ReadViewportSizeInPixels(&out->viewport_size_in_pixels) &&
-         data.ReadLocalSurfaceId(&out->local_surface_id);
+         data.ReadLocalSurfaceId(&out->local_surface_id) &&
+         data.ReadLocalSurfaceIdAllocationTimeFromChild(
+             &out->local_surface_id_allocation_time_from_child);
 }
 
 }  // namespace mojo

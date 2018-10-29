@@ -54,7 +54,7 @@ class PLATFORM_EXPORT WrappedDataPipeGetter final
 };
 
 class PLATFORM_EXPORT FormDataElement final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   FormDataElement() : type_(kData) {}
@@ -125,14 +125,14 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   };
 
   static scoped_refptr<EncodedFormData> Create();
-  static scoped_refptr<EncodedFormData> Create(const void*, size_t);
+  static scoped_refptr<EncodedFormData> Create(const void*, wtf_size_t);
   static scoped_refptr<EncodedFormData> Create(const CString&);
   static scoped_refptr<EncodedFormData> Create(const Vector<char>&);
   scoped_refptr<EncodedFormData> Copy() const;
   scoped_refptr<EncodedFormData> DeepCopy() const;
   ~EncodedFormData();
 
-  void AppendData(const void* data, size_t);
+  void AppendData(const void* data, wtf_size_t);
   void AppendFile(const String& file_path);
   void AppendFileRange(const String& filename,
                        long long start,

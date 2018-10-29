@@ -16,6 +16,8 @@
 
 namespace media_session {
 
+class AudioFocusManager;
+
 class MediaSessionService : public service_manager::Service {
  public:
   MediaSessionService();
@@ -36,6 +38,8 @@ class MediaSessionService : public service_manager::Service {
   }
 
  private:
+  std::unique_ptr<AudioFocusManager> audio_focus_manager_;
+
   service_manager::BinderRegistry registry_;
   std::unique_ptr<service_manager::ServiceContextRefFactory> ref_factory_;
   base::WeakPtrFactory<MediaSessionService> weak_factory_{this};

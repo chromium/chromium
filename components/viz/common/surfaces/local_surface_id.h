@@ -144,6 +144,10 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
   // it.
   bool IsSameOrNewerThan(const LocalSurfaceId& other) const;
 
+  // Returns the smallest valid LocalSurfaceId with the same embed token as this
+  // LocalSurfaceID.
+  LocalSurfaceId ToSmallestId() const;
+
  private:
   friend struct mojo::StructTraits<mojom::LocalSurfaceIdDataView,
                                    LocalSurfaceId>;

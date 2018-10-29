@@ -10,9 +10,9 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "net/third_party/quic/core/crypto/quic_decrypter.h"
-#include "net/third_party/quic/core/crypto/scoped_evp_aead_ctx.h"
 #include "net/third_party/quic/platform/api/quic_export.h"
 #include "net/third_party/quic/platform/api/quic_string_piece.h"
+#include "third_party/boringssl/src/include/openssl/aead.h"
 
 namespace quic {
 
@@ -68,7 +68,7 @@ class QUIC_EXPORT_PRIVATE AeadBaseDecrypter : public QuicDecrypter {
   // The IV used to construct the nonce.
   unsigned char iv_[kMaxNonceSize];
 
-  ScopedEVPAEADCtx ctx_;
+  bssl::ScopedEVP_AEAD_CTX ctx_;
 };
 
 }  // namespace quic

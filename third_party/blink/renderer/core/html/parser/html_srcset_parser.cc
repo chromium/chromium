@@ -107,9 +107,11 @@ static void AppendDescriptorAndReset(const CharType* attribute_start,
                                      const CharType*& descriptor_start,
                                      const CharType* position,
                                      Vector<DescriptorToken>& descriptors) {
-  if (position > descriptor_start)
-    descriptors.push_back(DescriptorToken(descriptor_start - attribute_start,
-                                          position - descriptor_start));
+  if (position > descriptor_start) {
+    descriptors.push_back(DescriptorToken(
+        static_cast<unsigned>(descriptor_start - attribute_start),
+        static_cast<unsigned>(position - descriptor_start)));
+  }
   descriptor_start = nullptr;
 }
 
@@ -323,21 +325,26 @@ static void ParseImageCandidatesFromSrcsetAttribute(
       if (!ParseDescriptors(attribute, descriptor_tokens, result, document)) {
         if (document) {
           UseCounter::Count(document, WebFeature::kSrcsetDroppedCandidate);
-          if (document->GetFrame())
+          if (document->GetFrame()) {
             document->GetFrame()->Console().AddMessage(ConsoleMessage::Create(
                 kOtherMessageSource, kErrorMessageLevel,
                 String("Dropped srcset candidate ") +
-                    JSONValue::QuoteString(String(
-                        image_url_start, image_url_end - image_url_start))));
+                    JSONValue::QuoteString(
+                        String(image_url_start,
+                               static_cast<wtf_size_t>(image_url_end -
+                                                       image_url_start)))));
+          }
         }
         continue;
       }
     }
 
     DCHECK_GT(image_url_end, attribute_start);
-    unsigned image_url_starting_position = image_url_start - attribute_start;
+    unsigned image_url_starting_position =
+        static_cast<unsigned>(image_url_start - attribute_start);
     DCHECK_GT(image_url_end, image_url_start);
-    unsigned image_url_length = image_url_end - image_url_start;
+    unsigned image_url_length =
+        static_cast<unsigned>(image_url_end - image_url_start);
     image_candidates.push_back(
         ImageCandidate(attribute, image_url_starting_position, image_url_length,
                        result, ImageCandidate::kSrcsetOrigin));

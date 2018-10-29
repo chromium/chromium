@@ -1,34 +1,28 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_network_icon.html">
 <link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../internet_page/network_summary_item.html">
+<link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="../settings_vars_css.html">
+<link rel="import" href="multidevice_feature_behavior.html">
+<link rel="import" href="multidevice_feature_item.html">
 
 <dom-module id="settings-multidevice-tether-item">
   <style include="settings-shared">
-    network-summary-item {
-      --network-summary-item-outer-box: {
-        padding: var(--feature-item-row-padding);
-      };
-
-      --network-summary-item-title: {
-        color: var(--cr-primary-text-color);
-        font-weight: 400;
-      };
-    }
   </style>
   <template>
-    <network-summary-item id="networkSummaryItem"
-        active-network-state="[[activeNetworkState_]]"
-        device-state="[[deviceState_]]"
-        network-state-list="[[getNetworkStateList_(activeNetworkState_)]]"
-        networking-private="[[networkingPrivate]]"
-        tether-device-state="[[deviceState_]]"
-        network-title-text="$i18n{multideviceInstantTetheringItemTitle}">
-    </network-summary-item>
+    <settings-multidevice-feature-item page-content-data="[[pageContentData]]"
+        feature="[[MultiDeviceFeature.INSTANT_TETHERING]]"
+        subpage-route="[[routes.INTERNET_NETWORKS]]"
+        subpage-route-url-search-params=
+            "[[getTetherNetworkUrlSearchParams_()]]">
+      <cr-network-icon slot="icon"
+          network-state="[[activeNetworkState_]]"
+          device-state="[[deviceState_]]">
+      </cr-network-icon>
+    </settings-multidevice-feature-item>
   </template>
   <script src="multidevice_tether_item.js"></script>
 </dom-module>

@@ -6,11 +6,10 @@
 
 #include "base/i18n/rtl.h"
 #include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
-#import "ios/chrome/browser/ui/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -45,11 +44,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
 
 - (instancetype)initWithType:(NSInteger)type style:(BookmarkFolderStyle)style {
   if ((self = [super initWithType:type])) {
-    if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-      self.cellClass = [TableViewBookmarkFolderCell class];
-    } else {
-      self.cellClass = [LegacyTableViewBookmarkFolderCell class];
-    }
+    self.cellClass = [TableViewBookmarkFolderCell class];
     self.style = style;
   }
   return self;
@@ -58,61 +53,34 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
 - (void)configureCell:(UITableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    TableViewBookmarkFolderCell* folderCell =
-        base::mac::ObjCCastStrict<TableViewBookmarkFolderCell>(cell);
-    switch (self.style) {
-      case BookmarkFolderStyleNewFolder: {
-        folderCell.folderTitleTextField.text =
-            l10n_util::GetNSString(IDS_IOS_BOOKMARK_CREATE_GROUP);
-        folderCell.folderImageView.image =
-            [UIImage imageNamed:@"bookmark_blue_new_folder"];
-        folderCell.accessibilityIdentifier =
-            kBookmarkCreateNewFolderCellIdentifier;
-        folderCell.accessibilityTraits |= UIAccessibilityTraitButton;
-        break;
-      }
-      case BookmarkFolderStyleFolderEntry: {
-        folderCell.folderTitleTextField.text = self.title;
-        folderCell.accessibilityIdentifier = self.title;
-        folderCell.accessibilityTraits |= UIAccessibilityTraitButton;
-        if (self.isCurrentFolder)
-          folderCell.bookmarkAccessoryType =
-              TableViewBookmarkFolderAccessoryTypeCheckmark;
-        // In order to indent the cell's content we need to modify its
-        // indentation constraint.
-        folderCell.indentationConstraint.constant =
-            folderCell.indentationConstraint.constant +
-            kFolderCellIndentationWidth * self.indentationLevel;
-        folderCell.folderImageView.image =
-            [UIImage imageNamed:@"bookmark_blue_folder"];
-        break;
-      }
+  TableViewBookmarkFolderCell* folderCell =
+      base::mac::ObjCCastStrict<TableViewBookmarkFolderCell>(cell);
+  switch (self.style) {
+    case BookmarkFolderStyleNewFolder: {
+      folderCell.folderTitleTextField.text =
+          l10n_util::GetNSString(IDS_IOS_BOOKMARK_CREATE_GROUP);
+      folderCell.folderImageView.image =
+          [UIImage imageNamed:@"bookmark_blue_new_folder"];
+      folderCell.accessibilityIdentifier =
+          kBookmarkCreateNewFolderCellIdentifier;
+      folderCell.accessibilityTraits |= UIAccessibilityTraitButton;
+      break;
     }
-  } else {
-    LegacyTableViewBookmarkFolderCell* folderCell =
-        base::mac::ObjCCastStrict<LegacyTableViewBookmarkFolderCell>(cell);
-    switch (self.style) {
-      case BookmarkFolderStyleNewFolder: {
-        folderCell.textLabel.text =
-            l10n_util::GetNSString(IDS_IOS_BOOKMARK_CREATE_GROUP);
-        folderCell.imageView.image =
-            [UIImage imageNamed:@"bookmark_gray_new_folder"];
-        folderCell.accessibilityIdentifier =
-            kBookmarkCreateNewFolderCellIdentifier;
-        break;
-      }
-      case BookmarkFolderStyleFolderEntry: {
-        folderCell.textLabel.text = self.title;
-        folderCell.accessibilityIdentifier = self.title;
-        folderCell.accessibilityLabel = self.title;
-        folderCell.checked = self.isCurrentFolder;
-        folderCell.indentationLevel = self.indentationLevel;
-        folderCell.indentationWidth = kFolderCellIndentationWidth;
-        folderCell.imageView.image =
-            [UIImage imageNamed:@"bookmark_gray_folder_new"];
-        break;
-      }
+    case BookmarkFolderStyleFolderEntry: {
+      folderCell.folderTitleTextField.text = self.title;
+      folderCell.accessibilityIdentifier = self.title;
+      folderCell.accessibilityTraits |= UIAccessibilityTraitButton;
+      if (self.isCurrentFolder)
+        folderCell.bookmarkAccessoryType =
+            TableViewBookmarkFolderAccessoryTypeCheckmark;
+      // In order to indent the cell's content we need to modify its
+      // indentation constraint.
+      folderCell.indentationConstraint.constant =
+          folderCell.indentationConstraint.constant +
+          kFolderCellIndentationWidth * self.indentationLevel;
+      folderCell.folderImageView.image =
+          [UIImage imageNamed:@"bookmark_blue_folder"];
+      break;
     }
   }
 }

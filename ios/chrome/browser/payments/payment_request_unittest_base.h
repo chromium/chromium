@@ -35,8 +35,8 @@ class PaymentRequestUnitTestBase {
   PaymentRequestUnitTestBase();
   ~PaymentRequestUnitTestBase();
 
-  void SetUp();
-  void TearDown();
+  void DoSetUp();
+  void DoTearDown();
 
   // Should be called after data is added to the database via AddAutofillProfile
   // and/or AddCreditCard.

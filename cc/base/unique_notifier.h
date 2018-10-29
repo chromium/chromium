@@ -16,6 +16,8 @@ class SequencedTaskRunner;
 
 namespace cc {
 
+// Callers must ensure that they only schedule the notifier on the same thread
+// that the provided |task_runner| runs on.
 class CC_BASE_EXPORT UniqueNotifier {
  public:
   // Configure this notifier to issue the |closure| notification when scheduled.

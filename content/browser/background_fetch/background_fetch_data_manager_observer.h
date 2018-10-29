@@ -28,7 +28,8 @@ class BackgroundFetchDataManagerObserver {
       const BackgroundFetchRegistration& registration,
       const BackgroundFetchOptions& options,
       const SkBitmap& icon,
-      int num_requests) = 0;
+      int num_requests,
+      bool start_paused) = 0;
 
   // Called when the UI options for the Background Fetch |registration_id| have
   // been updated in the data store.
@@ -42,6 +43,11 @@ class BackgroundFetchDataManagerObserver {
 
   // Called if the origin is out of quota during the fetch.
   virtual void OnQuotaExceeded(
+      const BackgroundFetchRegistrationId& registration_id) = 0;
+
+  // Called if a database task encountered a storage error in the context of a
+  // fetch workflow, such as preparing a request or storing a response.
+  virtual void OnFetchStorageError(
       const BackgroundFetchRegistrationId& registration_id) = 0;
 
   virtual ~BackgroundFetchDataManagerObserver() {}

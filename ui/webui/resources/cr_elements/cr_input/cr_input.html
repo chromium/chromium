@@ -10,18 +10,22 @@
   <template>
     <style include="cr-hidden-style cr-input-style">
       /*
+        A 'suffix' element will be outside the underlined space, while a
+        'prefix' element will be inside the underlined space by default.
+
         Regarding cr-input's width:
-        When there's no element in the 'suffix' slot, setting the width of
-        cr-input as follows will work as expected:
+        When there's no element in the 'prefix' or 'suffix' slot, setting
+        the width of cr-input as follows will work as expected:
 
           cr-input {
             width: 200px;
           }
 
-        However, when there's an element in the 'suffix' slot, setting the
-        'width' will dictate the total with of the input field *plus* the
-        'suffix' element. To set the width of the input field itself when
-        a 'suffix' is present, use --cr-input-width.
+        However, when there's an element in the 'suffix' and/or 'prefix'
+        slot, setting the 'width' will dictate the total width of the input
+        field *plus* the 'prefix' and 'suffix' elements. To set the width
+        of the input field + 'prefix' when a 'suffix' is present, use
+        --cr-input-width.
 
           cr-input {
             --cr-input-width: 200px;
@@ -82,14 +86,17 @@
         visibility: visible;
       }
 
-      #row-container {
+      #row-container,
+      #inner-input-container {
         align-items: center;
         display: flex;
         /* This will spread the input field and the suffix apart only if the
            host element width is intentionally set to something large. */
         justify-content: space-between;
         position: relative;
+      }
 
+      #row-container {
         @apply --cr-input-row-container;
       }
 
@@ -103,14 +110,17 @@
         <!-- Only attributes that are named inconsistently between html and js
              need to use attr$="", such as |tabindex| vs .tabIndex and
              |readonly| vs .readOnly. -->
-        <input id="input" disabled="[[disabled]]" autofocus="[[autofocus]]"
-            value="{{value::input}}" tabindex$="[[tabindex]]" type="[[type]]"
-            readonly$="[[readonly]]" maxlength$="[[maxlength]]"
-            pattern="[[pattern]]" required="[[required]]"
-            minlength$="[[minlength]]"
-            max="[[max]]" min="[[min]]" on-focus="onInputFocus_"
-            on-blur="onInputBlur_" on-change="onInputChange_"
-            on-keydown="onInputKeydown_">
+        <div id="inner-input-container">
+          <slot name="prefix"></slot>
+          <input id="input" disabled="[[disabled]]" autofocus="[[autofocus]]"
+              value="{{value::input}}" tabindex$="[[tabindex]]" type="[[type]]"
+              readonly$="[[readonly]]" maxlength$="[[maxlength]]"
+              pattern$="[[pattern]]" required="[[required]]"
+              minlength$="[[minlength]]"
+              max="[[max]]" min="[[min]]" on-focus="onInputFocus_"
+              on-blur="onInputBlur_" on-change="onInputChange_"
+              on-keydown="onInputKeydown_">
+        </div>
         <div id="underline"></div>
       </div>
       <slot name="suffix"></slot>

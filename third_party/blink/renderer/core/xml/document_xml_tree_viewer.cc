@@ -26,7 +26,7 @@ void TransformDocumentToXMLTreeView(Document& document) {
   document.GetFrame()->GetScriptController().ExecuteScriptInIsolatedWorld(
       IsolatedWorldId::kDocumentXMLTreeViewerWorldId,
       ScriptSourceCode(script_string, ScriptSourceLocationType::kInternal),
-      KURL(), kNotSharableCrossOrigin);
+      KURL(), kOpaqueResource);
 
   Element* element = document.getElementById("xml-viewer-style");
   if (element) {

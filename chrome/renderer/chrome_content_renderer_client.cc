@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,7 +30,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/constants.mojom.h"
 #include "chrome/common/crash_keys.h"
-#include "chrome/common/pdf_uma.h"
+#include "chrome/common/pdf_util.h"
 #include "chrome/common/pepper_permission_util.h"
 #include "chrome/common/plugin.mojom.h"
 #include "chrome/common/prerender_types.h"
@@ -747,8 +748,8 @@ ChromeContentRendererClient::GetPluginInfoHost() {
     ~PluginInfoHostHolder() {}
     chrome::mojom::PluginInfoHostAssociatedPtr plugin_info_host;
   };
-  CR_DEFINE_STATIC_LOCAL(PluginInfoHostHolder, holder, ());
-  return holder.plugin_info_host;
+  static base::NoDestructor<PluginInfoHostHolder> holder;
+  return holder->plugin_info_host;
 }
 
 // static
@@ -1704,7 +1705,7 @@ bool ChromeContentRendererClient::OverrideLegacySymantecCertConsoleMessage(
     std::string* console_message) {
   *console_message = base::StringPrintf(
       "The SSL certificate used to load resources from %s"
-      " will be distrusted in M70. Once distrusted, users will be prevented"
+      " will be distrusted very soon. Once distrusted, users will be prevented"
       " from loading these resources. See https://g.co/chrome/symantecpkicerts"
       " for more information.",
       url::Origin::Create(url).Serialize().c_str());

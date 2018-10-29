@@ -6,11 +6,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/frame_host/debug_urls.h"
 #include "content/browser/frame_host/navigation_handle_impl.h"
 #include "content/browser/frame_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -98,7 +100,8 @@ class TestNavigationThrottle : public NavigationThrottle {
              navigation_handle_impl->request_context_type());
     request_context_type_ = navigation_handle_impl->request_context_type();
 
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, did_call_will_start_);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             did_call_will_start_);
     return will_start_result_;
   }
 
@@ -108,8 +111,8 @@ class TestNavigationThrottle : public NavigationThrottle {
     CHECK_EQ(request_context_type_,
              navigation_handle_impl->request_context_type());
 
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            did_call_will_redirect_);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             did_call_will_redirect_);
     return will_redirect_result_;
   }
 
@@ -119,7 +122,8 @@ class TestNavigationThrottle : public NavigationThrottle {
     CHECK_EQ(request_context_type_,
              navigation_handle_impl->request_context_type());
 
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, did_call_will_fail_);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             did_call_will_fail_);
     return will_fail_result_;
   }
 
@@ -129,8 +133,8 @@ class TestNavigationThrottle : public NavigationThrottle {
     CHECK_EQ(request_context_type_,
              navigation_handle_impl->request_context_type());
 
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            did_call_will_process_);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             did_call_will_process_);
     return will_process_result_;
   }
 
@@ -1828,8 +1832,8 @@ IN_PROC_BROWSER_TEST_F(PlzNavigateNavigationHandleImplBrowserTest,
   GURL start_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   GURL error_url(embedded_test_server()->GetURL("/close-socket"));
   EXPECT_NE(start_url.host(), error_url.host());
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
 
   {

@@ -9,14 +9,7 @@
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
-
-// Enum defining the actions for a ContentSuggestionsMostVisitedActionItem.
-typedef NS_ENUM(NSInteger, ContentSuggestionsMostVisitedAction) {
-  ContentSuggestionsMostVisitedActionBookmark,
-  ContentSuggestionsMostVisitedActionReadingList,
-  ContentSuggestionsMostVisitedActionRecentTabs,
-  ContentSuggestionsMostVisitedActionHistory,
-};
+#import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_constants.h"
 
 // Item containing a most visited action button. These buttons belong to the
 // collection section as most visited items, but have static placement (the last
@@ -24,8 +17,8 @@ typedef NS_ENUM(NSInteger, ContentSuggestionsMostVisitedAction) {
 @interface ContentSuggestionsMostVisitedActionItem
     : CollectionViewItem<SuggestedContent>
 
-- (nonnull instancetype)initWithAction:
-    (ContentSuggestionsMostVisitedAction)action;
+- (nonnull instancetype)initWithCollectionShortcutType:
+    (NTPCollectionShortcutType)type;
 
 // Text for the title of the cell.
 @property(nonatomic, copy, nonnull) NSString* title;
@@ -34,8 +27,8 @@ typedef NS_ENUM(NSInteger, ContentSuggestionsMostVisitedAction) {
 // as the label.
 @property(nonatomic, copy, nullable) NSString* accessibilityLabel;
 
-// The action type for this button.
-@property(nonatomic, assign) ContentSuggestionsMostVisitedAction action;
+// The collection that this item acts as a shortcut for.
+@property(nonatomic, assign) NTPCollectionShortcutType collectionShortcutType;
 
 // Reading list count passed to the most visited cell.
 @property(nonatomic, assign) NSInteger count;

@@ -376,8 +376,13 @@ def _AssignNmAliasPathsAndCreatePathAliases(raw_symbols, object_paths_by_name):
   for symbol in raw_symbols:
     ret.append(symbol)
     full_name = symbol.full_name
-    if (symbol.IsBss() or
-        symbol.IsStringLiteral() or
+    # Don't skip if symbol.IsBss(). This is needed for LLD-LTO to work, since
+    # .bss object_path data are unavailable for linker_map_parser, and need to
+    # be extracted here. For regular LLD flow, incorrect aliased symbols can
+    # arise. But that's a lesser evil compared to having LLD-LTO .bss missing
+    # object_path and source_path.
+    # TODO(huangs): Fix aliased symbols for the LLD case.
+    if (symbol.IsStringLiteral() or
         not full_name or
         full_name[0] in '*.' or  # e.g. ** merge symbols, .Lswitch.table
         full_name == 'startup'):
@@ -1105,7 +1110,6 @@ def _CreatePakObjectMap(object_paths_by_name):
   for name in object_paths_by_name:
     if name.startswith(PREFIX):
       pak_id = int(name[id_start_idx:id_end_idx])
-      logging.info('PAK ID: %d', pak_id)
       object_paths_by_pak_id[pak_id] = object_paths_by_name[name]
   return object_paths_by_pak_id
 

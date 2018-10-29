@@ -23,6 +23,8 @@ class SigninErrorController;
 
 namespace base { class FilePath; }
 
+struct AccountInfo;
+
 namespace profiles {
 
 // Assortment of methods for dealing with profiles.
@@ -53,11 +55,6 @@ void SetLastUsedProfile(const std::string& profile_dir);
 base::string16 GetAvatarNameForProfile(const base::FilePath& profile_path);
 
 #if !defined(OS_CHROMEOS)
-// Returns the string to use in the avatar button for the specified profile.
-// This is essentially the name returned by GetAvatarNameForProfile, but it
-// may be elided and contain an indicator for supervised users.
-base::string16 GetAvatarButtonTextForProfile(Profile* profile);
-
 // Returns the string to use in the fast user switcher menu for the specified
 // menu item. Adds a supervision indicator to the profile name if appropriate.
 base::string16 GetProfileSwitcherTextForItem(const AvatarMenu::Item& item);
@@ -69,12 +66,10 @@ base::string16 GetProfileSwitcherTextForItem(const AvatarMenu::Item& item);
 void UpdateProfileName(Profile* profile,
                        const base::string16& new_profile_name);
 
-// Returns the list of secondary accounts for a specific |profile|, which is
-// all the email addresses associated with the profile that are not equal to
-// the |primary_account|.
-std::vector<std::string> GetSecondaryAccountsForProfile(
-    Profile* profile,
-    const std::string& primary_account);
+// Returns the list of secondary accounts for a specific
+// |profile|. Note that the profile must be signed in.
+std::vector<AccountInfo> GetSecondaryAccountsForSignedInProfile(
+    Profile* profile);
 #endif  // !defined(OS_CHROMEOS)
 
 // Returns whether the |browser|'s profile is a non-incognito or guest profile.

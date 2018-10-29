@@ -1,0 +1,4 @@
+include_rules = [
+    # Feature policy needs to construct url::Origin objects
+    "+url",
+]

@@ -77,9 +77,8 @@ static void SetHostPatterns(
     content::SocketPermissionRequest::OperationType operation_type) {
   host_patterns.reset(new SocketHostPatterns());
   host_patterns->as_strings.reset(new std::vector<std::string>());
-  for (SocketPermissionEntrySet::const_iterator it =
-           permission->entries().begin();
-       it != permission->entries().end(); ++it) {
+  for (auto it = permission->entries().cbegin();
+       it != permission->entries().cend(); ++it) {
     if (it->pattern().type == operation_type) {
       host_patterns->as_strings->push_back(it->GetHostPatternAsString());
     }
@@ -200,9 +199,7 @@ std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
 bool SocketsManifestPermission::CheckRequest(
     const Extension* extension,
     const SocketPermissionRequest& request) const {
-  for (SocketPermissionEntrySet::const_iterator it = permissions_.begin();
-       it != permissions_.end();
-       ++it) {
+  for (auto it = permissions_.cbegin(); it != permissions_.cend(); ++it) {
     if (it->Check(request))
       return true;
   }

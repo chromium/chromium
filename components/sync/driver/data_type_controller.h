@@ -15,9 +15,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/base/unrecoverable_error_handler.h"
 #include "components/sync/engine/cycle/status_counters.h"
+#include "components/sync/engine/shutdown_reason.h"
+#include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/model/data_type_error_handler.h"
 
 namespace syncer {
@@ -63,18 +64,22 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
     MAX_CONFIGURE_RESULT
   };
 
-  using StartCallback = base::Callback<
+  using StartCallback = base::OnceCallback<
       void(ConfigureResult, const SyncMergeResult&, const SyncMergeResult&)>;
 
-  using ModelLoadCallback = base::Callback<void(ModelType, const SyncError&)>;
+  // Note: This seems like it should be a OnceCallback, but it can actually be
+  // called multiple times in the case of errors.
+  using ModelLoadCallback =
+      base::RepeatingCallback<void(ModelType, const SyncError&)>;
 
   using StopCallback = base::OnceClosure;
 
   using AllNodesCallback =
-      base::Callback<void(const ModelType, std::unique_ptr<base::ListValue>)>;
+      base::OnceCallback<void(const ModelType,
+                              std::unique_ptr<base::ListValue>)>;
 
   using StatusCountersCallback =
-      base::Callback<void(ModelType, const StatusCounters&)>;
+      base::OnceCallback<void(ModelType, const StatusCounters&)>;
 
   using TypeMap = std::map<ModelType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;
@@ -113,13 +118,14 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // DataTypeManager before downloading initial data. Non-blocking types need to
   // pass activation context containing progress marker to sync backend and use
   // |set_downloaded| to inform the manager whether their initial sync is done.
-  virtual void RegisterWithBackend(base::Callback<void(bool)> set_downloaded,
-                                   ModelTypeConfigurer* configurer) = 0;
+  virtual void RegisterWithBackend(
+      base::OnceCallback<void(bool)> set_downloaded,
+      ModelTypeConfigurer* configurer) = 0;
 
   // Will start a potentially asynchronous operation to perform the
   // model association. Once the model association is done the callback will
   // be invoked.
-  virtual void StartAssociating(const StartCallback& start_callback) = 0;
+  virtual void StartAssociating(StartCallback start_callback) = 0;
 
   // Called by DataTypeManager to activate the controlled data type using
   // one of the implementation specific methods provided by the |configurer|.
@@ -142,10 +148,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // logic shuts down gracefully by flushing remaining changes and calling
   // StopSyncing on the SyncableService. This assumes no changes will ever
   // propagate from sync again from point where Stop() is called.
-  // KEEP_METADATA is used when the engine just stops sync, and CLEAR_METADATA
-  // is used when the user disables sync for data type.
-  virtual void Stop(SyncStopMetadataFate metadata_fate,
-                    StopCallback callback) = 0;
+  virtual void Stop(ShutdownReason shutdown_reason, StopCallback callback) = 0;
 
   // Name of this data type.  For logging purposes only.
   std::string name() const { return ModelTypeToString(type()); }
@@ -166,16 +169,23 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // Returns a ListValue representing all nodes for this data type through
   // |callback| on this thread. Can only be called if state() != NOT_RUNNING.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
-  virtual void GetAllNodes(const AllNodesCallback& callback) = 0;
+  virtual void GetAllNodes(AllNodesCallback callback) = 0;
 
   // Collects StatusCounters for this datatype and passes them to |callback|.
   // Used to display entity counts in chrome://sync-internals. Can be called
   // only if state() != NOT_RUNNING.
-  virtual void GetStatusCounters(const StatusCountersCallback& callback) = 0;
+  virtual void GetStatusCounters(StatusCountersCallback callback) = 0;
 
   // Records entities count and estimated memory usage of the type into
   // histograms. Can be called only if state() != NOT_RUNNING.
   virtual void RecordMemoryUsageAndCountsHistograms() = 0;
+
+  // Allows datatype controllers to receive crypto updates directly from the
+  // sync thread.
+  // TODO(crbug.com/856941): Remove when PASSWORDS are migrated to USS, which
+  // will likely make this API unnecessary.
+  virtual std::unique_ptr<SyncEncryptionHandler::Observer>
+  GetEncryptionObserverProxy();
 
  protected:
   explicit DataTypeController(ModelType type);

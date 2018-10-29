@@ -38,6 +38,10 @@ class CONTENT_EXPORT BrowserURLHandlerImpl : public BrowserURLHandler {
   bool ReverseURLRewrite(GURL* url, const GURL& original,
                          BrowserContext* browser_context);
 
+  // Sets the fixup handler during tests. Unlike |SetFixupHandler|, this can be
+  // called multiple time during tests.
+  void SetFixupHandlerForTesting(URLHandler handler);
+
  private:
   // This object is a singleton:
   BrowserURLHandlerImpl();

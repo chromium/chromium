@@ -12,11 +12,12 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "net/base/network_change_notifier_factory.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/url_util.h"
-#include "net/dns/dns_config_service.h"
+#include "net/dns/dns_config.h"
 #include "net/url_request/url_request.h"
 #include "url/gurl.h"
 
@@ -32,6 +33,8 @@
 #include "net/base/network_change_notifier_linux.h"
 #elif defined(OS_MACOSX)
 #include "net/base/network_change_notifier_mac.h"
+#elif defined(OS_FUCHSIA)
+#include "net/base/network_change_notifier_fuchsia.h"
 #endif
 
 namespace net {
@@ -216,6 +219,8 @@ NetworkChangeNotifier* NetworkChangeNotifier::Create() {
   return new NetworkChangeNotifierLinux(std::unordered_set<std::string>());
 #elif defined(OS_MACOSX)
   return new NetworkChangeNotifierMac();
+#elif defined(OS_FUCHSIA)
+  return new NetworkChangeNotifierFuchsia();
 #else
   NOTIMPLEMENTED();
   return NULL;

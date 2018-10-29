@@ -179,10 +179,15 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 34
+// Next available id: 36
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
+
+  // The secondary form signature is calculated based on field types instead of
+  // names and is used if the primary one is unstable, i.e. the field names
+  // change on every page load.
+  optional fixed64 secondary_form_signature = 34;
 
   // True if the autofill feature was used to fill this form, false otherwise.
   required bool autofill_used = 3;
@@ -279,10 +284,20 @@ message AutofillUploadContents {
     optional VoteType vote_type = 23;
 
     message AutofillTypeValiditiesPair {
+      // Type of the field, e.g. what type of personal data the user entered in
+      // that field before form submission. A list of all data types can be
+      // found in:
       required int32 type = 1;
+      // The validity of the type, which is determined based on the validity of
+      // the user's profile data. A list of all validity states can be found
+      // here: components/autofill/core/browser/field_types.h
+      // The validity state of a type is used to experiment if only using valid
+      // data would result in better predictions.
       repeated int32 validity = 2;
     }
-    repeated AutofillTypeValiditiesPair autofill_type_validities = 24;
+    // A list of possible types for the field with their corresponding validity
+    // states based on the user's data.
+    repeated AutofillTypeValiditiesPair autofill_type_validities = 35;
   }
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;
@@ -337,6 +352,7 @@ message AutofillUploadContents {
     PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD = 7;
     DEPRECATED_FILLED_FORM_ON_START_PROVISIONAL_LOAD = 8;            // unused
     DEPRECATED_FILLED_INPUT_ELEMENTS_ON_START_PROVISIONAL_LOAD = 9;  // unused
+    PROBABLE_FORM_SUBMISSION = 10;
   }
 
   // The type of the event that was taken as an indication that the form has

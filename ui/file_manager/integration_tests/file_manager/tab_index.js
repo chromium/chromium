@@ -22,9 +22,7 @@ testcase.tabindexSearchBoxFocus = function() {
     // Press the Ctrl-F key.
     function(element) {
       remoteCall.callRemoteTestUtil(
-          'fakeKeyDown', appId,
-          ['body', 'f', 'U+0046', true, false, false],
-          this.next);
+          'fakeKeyDown', appId, ['body', 'f', true, false, false], this.next);
     },
     // Check that the search box has the focus.
     function(result) {
@@ -36,8 +34,7 @@ testcase.tabindexSearchBoxFocus = function() {
     function(element) {
       remoteCall.callRemoteTestUtil(
           'fakeKeyDown', appId,
-          ['#search-box cr-input', 'Escape', 'U+001B', false, false, false],
-          this.next);
+          ['#search-box cr-input', 'Escape', false, false, false], this.next);
     },
     // Check that the file list has the focus.
     function(result) {
@@ -286,8 +283,7 @@ function tabindexFocus(dialogParams, volumeName, expectedSet, initialize,
     promise = promise.then(function() {
       // Closes the window by pressing Enter.
       return remoteCall.callRemoteTestUtil(
-          'fakeKeyDown', appId, ['#file-list', 'Enter', 'Enter', false, false,
-                                 false]);
+          'fakeKeyDown', appId, ['#file-list', 'Enter', false, false, false]);
     });
 
     return promise;

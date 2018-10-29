@@ -120,37 +120,6 @@ ScopedFPDFDocument CreatePdfDoc(
   return doc;
 }
 
-std::vector<uint8_t> CreateNupPdfDocument(FPDF_DOCUMENT doc,
-                                          size_t pages_per_sheet,
-                                          const gfx::Size& page_size,
-                                          const gfx::Rect& printable_area) {
-  int page_size_width = page_size.width();
-  int page_size_height = page_size.height();
-
-  printing::NupParameters nup_params;
-  bool is_landscape = PDFiumPrint::IsSourcePdfLandscape(doc);
-  nup_params.SetParameters(pages_per_sheet, is_landscape);
-  bool paper_is_landscape = page_size_width > page_size_height;
-  if (nup_params.landscape() != paper_is_landscape)
-    std::swap(page_size_width, page_size_height);
-
-  ScopedFPDFDocument output_doc_nup(FPDF_ImportNPagesToOne(
-      doc, page_size_width, page_size_height, nup_params.num_pages_on_x_axis(),
-      nup_params.num_pages_on_y_axis()));
-
-  if (!output_doc_nup)
-    return std::vector<uint8_t>();
-
-  PDFiumPrint::FitContentsToPrintableArea(output_doc_nup.get(), page_size,
-                                          printable_area);
-
-  PDFiumMemBufferFileWrite output_file_write;
-  if (!FPDF_SaveAsCopy(output_doc_nup.get(), &output_file_write, 0))
-    return std::vector<uint8_t>();
-
-  return output_file_write.TakeBuffer();
-}
-
 bool IsValidPrintableArea(const gfx::Size& page_size,
                           const gfx::Rect& printable_area) {
   return !printable_area.IsEmpty() && printable_area.x() >= 0 &&
@@ -324,8 +293,8 @@ std::vector<uint8_t> PDFiumEngineExports::ConvertPdfPagesToNupPdf(
   if (!doc)
     return std::vector<uint8_t>();
 
-  return CreateNupPdfDocument(doc.get(), pages_per_sheet, page_size,
-                              printable_area);
+  return PDFiumPrint::CreateNupPdf(std::move(doc), pages_per_sheet, page_size,
+                                   printable_area);
 }
 
 std::vector<uint8_t> PDFiumEngineExports::ConvertPdfDocumentToNupPdf(
@@ -340,8 +309,8 @@ std::vector<uint8_t> PDFiumEngineExports::ConvertPdfDocumentToNupPdf(
   if (!doc)
     return std::vector<uint8_t>();
 
-  return CreateNupPdfDocument(doc.get(), pages_per_sheet, page_size,
-                              printable_area);
+  return PDFiumPrint::CreateNupPdf(std::move(doc), pages_per_sheet, page_size,
+                                   printable_area);
 }
 
 bool PDFiumEngineExports::GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,

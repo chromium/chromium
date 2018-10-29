@@ -456,8 +456,7 @@ int InspectorDOMSnapshotAgent::VisitNode(Node* node,
     HTMLImageElement* image_element = ToHTMLImageElementOrNull(node);
     if (image_element)
       value->setCurrentSourceURL(image_element->currentSrc());
-  } else if (node->IsDocumentNode()) {
-    Document* document = ToDocument(node);
+  } else if (auto* document = DynamicTo<Document>(node)) {
     value->setDocumentURL(InspectorDOMAgent::DocumentURLString(document));
     value->setBaseURL(InspectorDOMAgent::DocumentBaseURLString(document));
     if (document->ContentLanguage())

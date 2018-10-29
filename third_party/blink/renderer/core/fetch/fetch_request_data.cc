@@ -126,7 +126,7 @@ FetchRequestData::~FetchRequestData() {}
 FetchRequestData::FetchRequestData()
     : method_(HTTPNames::GET),
       header_list_(FetchHeaderList::Create()),
-      context_(WebURLRequest::kRequestContextUnspecified),
+      context_(mojom::RequestContextType::UNSPECIFIED),
       same_origin_data_url_flag_(false),
       referrer_string_(Referrer::ClientReferrerString()),
       referrer_policy_(kReferrerPolicyDefault),

@@ -43,9 +43,9 @@ ManagedBookmarkServiceFactory* ManagedBookmarkServiceFactory::GetInstance() {
 }
 
 // static
-BrowserContextKeyedServiceFactory::TestingFactoryFunction
+BrowserContextKeyedServiceFactory::TestingFactory
 ManagedBookmarkServiceFactory::GetDefaultFactory() {
-  return &BuildManagedBookmarkService;
+  return base::BindRepeating(&BuildManagedBookmarkService);
 }
 
 // static

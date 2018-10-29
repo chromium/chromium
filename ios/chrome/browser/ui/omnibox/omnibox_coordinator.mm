@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 
 #include "base/logging.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/strings/grit/components_strings.h"
@@ -104,7 +106,10 @@
 }
 
 - (void)focusOmnibox {
-  [self.textField becomeFirstResponder];
+  if (![self.textField isFirstResponder]) {
+    base::RecordAction(base::UserMetricsAction("MobileOmniboxFocused"));
+    [self.textField becomeFirstResponder];
+  }
 }
 
 - (void)endEditing {

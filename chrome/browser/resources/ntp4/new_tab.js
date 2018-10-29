@@ -221,14 +221,16 @@ cr.define('ntp', function() {
    */
   function layoutFooter() {
     // We need the image to be loaded.
-    var logo = $('logo-img');
-    var logoImg = logo.querySelector('img');
-    if (!logoImg.complete) {
+    let logo = $('logo-img');
+    let logoImg = logo.querySelector('img');
+
+    // Only compare the width after the footer image successfully loaded.
+    if (!logoImg.complete || logoImg.width === 0) {
       logoImg.onload = layoutFooter;
       return;
     }
 
-    var menu = $('footer-menu-container');
+    let menu = $('footer-menu-container');
     if (menu.clientWidth > logoImg.width)
       logo.style.WebkitFlex = '0 1 ' + menu.clientWidth + 'px';
     else

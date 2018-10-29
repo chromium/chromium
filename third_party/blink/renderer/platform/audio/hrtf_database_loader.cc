@@ -95,7 +95,7 @@ void HRTFDatabaseLoader::LoadAsynchronously() {
 
   // Start the asynchronous database loading process.
   thread_ = Platform::Current()->CreateThread(
-      WebThreadCreationParams(WebThreadType::kHRTFDatabaseLoaderThread));
+      ThreadCreationParams(WebThreadType::kHRTFDatabaseLoaderThread));
   // TODO(alexclarke): Should this be posted as a loading task?
   PostCrossThreadTask(*thread_->GetTaskRunner(), FROM_HERE,
                       CrossThreadBind(&HRTFDatabaseLoader::LoadTask,

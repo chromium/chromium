@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/writer.h"
 #include "device/fido/fido_parsing_utils.h"
 
 namespace device {
@@ -65,13 +65,13 @@ ECPublicKey::ECPublicKey(std::string algorithm,
 ECPublicKey::~ECPublicKey() = default;
 
 std::vector<uint8_t> ECPublicKey::EncodeAsCOSEKey() const {
-  cbor::CBORValue::MapValue map;
-  map[cbor::CBORValue(1)] = cbor::CBORValue(2);
-  map[cbor::CBORValue(3)] = cbor::CBORValue(-7);
-  map[cbor::CBORValue(-1)] = cbor::CBORValue(1);
-  map[cbor::CBORValue(-2)] = cbor::CBORValue(x_coordinate_);
-  map[cbor::CBORValue(-3)] = cbor::CBORValue(y_coordinate_);
-  return *cbor::CBORWriter::Write(cbor::CBORValue(std::move(map)));
+  cbor::Value::MapValue map;
+  map[cbor::Value(1)] = cbor::Value(2);
+  map[cbor::Value(3)] = cbor::Value(-7);
+  map[cbor::Value(-1)] = cbor::Value(1);
+  map[cbor::Value(-2)] = cbor::Value(x_coordinate_);
+  map[cbor::Value(-3)] = cbor::Value(y_coordinate_);
+  return *cbor::Writer::Write(cbor::Value(std::move(map)));
 }
 
 }  // namespace device

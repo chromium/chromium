@@ -20,7 +20,6 @@ GL_APICALL void         GL_APIENTRY glGetQueryObjectuivEXT (GLidQuery id, GLenum
 // Non-GL commands.
 GL_APICALL GLuint       GL_APIENTRY glCreateImageCHROMIUM (ClientBuffer buffer, GLsizei width, GLsizei height, GLenum internalformat);
 GL_APICALL void         GL_APIENTRY glDestroyImageCHROMIUM (GLuint image_id);
-GL_APICALL void         GL_APIENTRY glCompressedCopyTextureCHROMIUM (GLuint source_id, GLuint dest_id);
 GL_APICALL void         GL_APIENTRY glLoseContextCHROMIUM (GLenumResetStatus current, GLenumResetStatus other);
 GL_APICALL GLuint64     GL_APIENTRY glInsertFenceSyncCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glGenSyncTokenCHROMIUM (GLbyte* sync_token);
@@ -54,4 +53,3 @@ GL_APICALL void         GL_APIENTRY glCopySubTexture (GLuint source_id, GLuint d
 GL_APICALL void         GL_APIENTRY glTraceBeginCHROMIUM (const char* category_name, const char* trace_name);
 GL_APICALL void         GL_APIENTRY glTraceEndCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glSetActiveURLCHROMIUM (const char* url);
-GL_APICALL void         GL_APIENTRY glResetActiveURLCHROMIUM (void);

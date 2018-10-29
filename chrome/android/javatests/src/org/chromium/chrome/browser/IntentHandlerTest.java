@@ -25,6 +25,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
@@ -391,6 +392,25 @@ public class IntentHandlerTest {
         Intent headersIntent = new Intent(Intent.ACTION_VIEW);
         headersIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
         Assert.assertNull(IntentHandler.getExtraHeadersFromIntent(headersIntent));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Android-AppBase"})
+    public void testLogHeaders() {
+        Bundle bundle = new Bundle();
+        bundle.putString("Content-Length", "1234");
+        Intent headersIntent = new Intent(Intent.ACTION_VIEW);
+        headersIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
+
+        IntentHandler.getExtraHeadersFromIntent(headersIntent);
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting("Android.IntentHeaders"));
+
+        IntentHandler.getExtraHeadersFromIntent(headersIntent, true);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting("Android.IntentHeaders"));
     }
 
     @Test

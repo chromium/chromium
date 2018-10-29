@@ -5,8 +5,7 @@
 #ifndef CHROME_COMMON_EXTENSIONS_PERMISSIONS_CHROME_API_PERMISSIONS_H_
 #define CHROME_COMMON_EXTENSIONS_PERMISSIONS_CHROME_API_PERMISSIONS_H_
 
-#include <vector>
-
+#include "base/containers/span.h"
 #include "extensions/common/alias.h"
 #include "extensions/common/permissions/api_permission.h"
 
@@ -18,7 +17,7 @@ namespace chrome_api_permissions {
 base::span<const APIPermissionInfo::InitInfo> GetPermissionInfos();
 
 // Returns the list of aliases for chrome-layer extension APIPermissions.
-std::vector<Alias> GetPermissionAliases();
+base::span<const Alias> GetPermissionAliases();
 
 }  // namespace chrome_api_permissions
 }  // namespace extensions

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1018939186200882850">ಮೆನು ಐಟಂ</translation>
-<translation id="1020833440720551630">ಆಡಿಯೋ ಟ್ರ್ಯಾಕ್ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="10623998915015855">ಟಾಗಲ್ ಬಟನ್</translation>
 <translation id="1088086359088493902">ಸೆಕೆಂಡುಗಳು</translation>
 <translation id="1171774979989969504">ದಯವಿಟ್ಟು ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">ಕ್ರೆಡಿಟ್‌ಗಳು</translation>
 <translation id="1342835525016946179">ಲೇಖನ</translation>
 <translation id="1359897965706325498">ಬ್ಯಾನರ್</translation>
-<translation id="1548116112524424341">ಚಿತ್ರದಲ್ಲಿನ ಚಿತ್ರದ ಮೋಡ್‌ನಲ್ಲಿ ವೀಡಿಯೊ ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="1589122976691792535">ಪ್ರದೇಶ</translation>
 <translation id="1591562245178063882">ಈ ತಿಂಗಳು</translation>
 <translation id="1637811476055996098">ಫೈಲ್‌ಗಳನ್ನು ಆರಿಸಿ</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">ಟ್ರೀ ಗ್ರಿಡ್</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">ರಿಮೋಟ್ ಸಾಧನದಲ್ಲಿ ಪ್ಲೇ ಮಾಡಿ</translation>
-<translation id="1838818994221231429">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಡಿಸ್‌ಪ್ಲೇ ಕಟ್‌ಔಟ್ ಪ್ರದೇಶವಾಗಿ ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="190587075670221089">ಅಳಿಸುವಿಕೆ</translation>
 <translation id="1907737156431278478">ಉದಾಹರಣೆ</translation>
 <translation id="1921819250265091946">ದಿದಿ</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">ಸಮಯ</translation>
 <translation id="5630795885300617244">10ಸೆ ಸ್ಕಿಪ್ ಮಾಡಲು ಎಡಕ್ಕೆ ಅಥವಾ ಬಲಕ್ಕೆ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5631759159893697722">ಸಾರಾಂಶ</translation>
-<translation id="5641012560118721995">ಪ್ಲೇಬ್ಯಾಕ್ ವಿರಾಮಗೊಳಿಸು</translation>
 <translation id="5643186887447432888">ಬಟನ್</translation>
 <translation id="5677946354068040947">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="576709008726043716">ಪರಿಚಯ</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">ಮರುಹೊಂದಿಸು</translation>
 <translation id="5966707198760109579">ವಾರ</translation>
 <translation id="5987525920412732405">ಸ್ಪಿನ್ ಬಟನ್</translation>
+<translation id="6011459053400940133">ವಾಲ್ಯೂಮ್ ಸ್ಲೈಡರ್</translation>
 <translation id="6015796118275082299">ವರ್ಷ</translation>
 <translation id="6023896073578205740">ಪಟ್ಟಿಯ ಬಾಕ್ಸ್</translation>
-<translation id="6101327004457443354">ಆಡಿಯೋ ಟ್ರ್ಯಾಕ್ ಅನ್‌ಮ್ಯೂಟ್ ಮಾಡು</translation>
 <translation id="6150588977291308318">ಗ್ರಂಥಸೂಚಿ</translation>
 <translation id="6164829606128959761">ಮೀಟರ್</translation>
 <translation id="6166809985690652833">ನಂತರದ</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">ಗಂಟೆಗಳು</translation>
 <translation id="7681220483256441252">ಸೂಚಿಕೆ</translation>
 <translation id="7720026100085573005">ಉಳಿದಿರುವ ಸಮಯ</translation>
-<translation id="7740016676195725605">ಮುಚ್ಚಲಾಗಿರುವ ಶೀರ್ಷಿಕೆಗಳ ಪ್ರದರ್ಶಿಸುವಿಕೆಯನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="7740050170769002709">HTML ವಿಷಯ</translation>
 <translation id="7750228210027921155">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ</translation>
 <translation id="7789962463072032349">ವಿರಾಮ</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">ಪಠ್ಯ ಕ್ಷೇತ್ರವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="8057695513531652401">ಸೂಚನೆ</translation>
 <translation id="8105797009065549151">ಸೂಚನೆ ಉಲ್ಲೇಖ</translation>
-<translation id="8115662671911883373">ಮುಚ್ಚಲಾಗಿರುವ ಶೀರ್ಷಿಕೆಗಳ ಪ್ರದರ್ಶಿಸುವಿಕೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="8117451130807776954">ಈ ವಾರ</translation>
-<translation id="819205353528511139">ಪೂರ್ಣ ಪರದೆಯ ಮೋಡ್‌‌ನಲ್ಲಿ ಚಲನಚಿತ್ರವನ್ನು ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="8199524924445686405">ವವವವ</translation>
 <translation id="8284326494547611709">ಶೀರ್ಷಿಕೆಗಳು</translation>
 <translation id="835897206747267392">ಅಮಾನ್ಯ ಮೌಲ್ಯ.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">ರಿಮೋಟ್ ಪ್ಲೇಬ್ಯಾಕ್ ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="862370744433916922">ಉಪಶೀರ್ಷಿಕೆ</translation>
 <translation id="8750798805984357768">ದಯವಿಟ್ಟು ಈ ಕೆಳಗಿನ ಆಯ್ಕೆಗಳಲ್ಲಿ ಒಂದನ್ನು ಆರಿಸಿ.</translation>
-<translation id="8785498733064193001">ಪ್ಲೇಬ್ಯಾಕ್ ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="8808573423886751634">ಅಧ್ಯಾಯ</translation>
 <translation id="8845239796550121995">ಈಗ ನಿಮ್ಮ ಟಿವಿಯನ್ನು ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8851136666856101339">ಮುಖ್ಯ</translation>

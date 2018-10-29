@@ -33,6 +33,7 @@ Layer tree when the fixed elements are out-of-view (should have just a root laye
     }
   ]
 }
+
 Layer tree when the fixed elements are in-view (both fixed elements should have layers):
 {
   "layers": [
@@ -69,6 +70,7 @@ Layer tree when the fixed elements are in-view (both fixed elements should have 
     }
   ]
 }
+
 Layer tree when the fixed elements are out-of-view again (should have just a root layer):
 {
   "layers": [

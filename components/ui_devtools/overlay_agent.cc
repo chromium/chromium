@@ -27,7 +27,6 @@ protocol::Response OverlayAgent::highlightNode(
 }
 
 protocol::Response OverlayAgent::hideHighlight() {
-  NOTREACHED();
   return protocol::Response::OK();
 }
 

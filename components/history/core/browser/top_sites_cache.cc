@@ -56,8 +56,7 @@ Images* TopSitesCache::GetImage(const GURL& url) {
 bool TopSitesCache::GetPageThumbnail(
     const GURL& url,
     scoped_refptr<base::RefCountedMemory>* bytes) const {
-  std::map<GURL, Images>::const_iterator found =
-      images_.find(GetCanonicalURL(url));
+  auto found = images_.find(GetCanonicalURL(url));
   if (found != images_.end()) {
     base::RefCountedMemory* data = found->second.thumbnail.get();
     if (data) {
@@ -70,8 +69,7 @@ bool TopSitesCache::GetPageThumbnail(
 
 bool TopSitesCache::GetPageThumbnailScore(const GURL& url,
                                           ThumbnailScore* score) const {
-  std::map<GURL, Images>::const_iterator found =
-      images_.find(GetCanonicalURL(url));
+  auto found = images_.find(GetCanonicalURL(url));
   if (found != images_.end()) {
     *score = found->second.thumbnail_score;
     return true;
@@ -80,13 +78,12 @@ bool TopSitesCache::GetPageThumbnailScore(const GURL& url,
 }
 
 const GURL& TopSitesCache::GetCanonicalURL(const GURL& url) const {
-  CanonicalURLs::const_iterator it = GetCanonicalURLsIterator(url);
+  auto it = GetCanonicalURLsIterator(url);
   return it == canonical_urls_.end() ? url : it->first.first->url;
 }
 
 GURL TopSitesCache::GetGeneralizedCanonicalURL(const GURL& url) const {
-  CanonicalURLs::const_iterator it_hi =
-      canonical_urls_.lower_bound(CanonicalURLQuery(url).entry());
+  auto it_hi = canonical_urls_.lower_bound(CanonicalURLQuery(url).entry());
   if (it_hi != canonical_urls_.end()) {
     // Test match ignoring "?query#ref". This also handles exact match.
     if (url.ReplaceComponents(clear_query_ref_) ==
@@ -97,8 +94,7 @@ GURL TopSitesCache::GetGeneralizedCanonicalURL(const GURL& url) const {
   // Everything on or after |it_hi| is irrelevant.
 
   GURL base_url(url.ReplaceComponents(clear_path_query_ref_));
-  CanonicalURLs::const_iterator it_lo =
-      canonical_urls_.lower_bound(CanonicalURLQuery(base_url).entry());
+  auto it_lo = canonical_urls_.lower_bound(CanonicalURLQuery(base_url).entry());
   if (it_lo == canonical_urls_.end())
     return GURL::EmptyGURL();
   GURL compare_url_lo(GetURLFromIterator(it_lo));
@@ -110,7 +106,7 @@ GURL TopSitesCache::GetGeneralizedCanonicalURL(const GURL& url) const {
 
   // Search in [|it_lo|, |it_hi|) in reversed order. The first URL found that's
   // a prefix of |url| (ignoring "?query#ref") would be returned.
-  for (CanonicalURLs::const_iterator it = it_hi; it != it_lo;) {
+  for (auto it = it_hi; it != it_lo;) {
     --it;
     GURL compare_url(GetURLFromIterator(it));
     DCHECK(HaveSameSchemeHostAndPort(compare_url, url));

@@ -16,7 +16,7 @@ namespace media {
 // TODO(https://crbug.com/820277): Deduplicate media_router::MediaStatus.
 struct MEDIA_EXPORT MediaStatus {
  public:
-  enum class PlayState { PLAYING, PAUSED, BUFFERING };
+  enum class State { UNKNOWN, PLAYING, PAUSED, BUFFERING, STOPPED };
 
   MediaStatus();
   MediaStatus(const MediaStatus& other);
@@ -41,7 +41,7 @@ struct MEDIA_EXPORT MediaStatus {
   // If this is true, the media's current playback position can be changed.
   bool can_seek = false;
 
-  PlayState play_state = PlayState::PLAYING;
+  State state = State::UNKNOWN;
 
   bool is_muted = false;
 
@@ -56,6 +56,9 @@ struct MEDIA_EXPORT MediaStatus {
 
   // Current playback position. Must be less than or equal to |duration|.
   base::TimeDelta current_time;
+
+  // True if we have reached the end of stream.
+  bool reached_end_of_stream = false;
 };
 
 }  // namespace media

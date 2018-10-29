@@ -520,8 +520,7 @@ void ExtensionFunctionDispatcher::RemoveWorkerCallbacksForProcess(
     int render_process_id) {
   UIThreadWorkerResponseCallbackWrapperMap& map =
       ui_thread_response_callback_wrappers_for_worker_;
-  for (UIThreadWorkerResponseCallbackWrapperMap::iterator it = map.begin();
-       it != map.end();) {
+  for (auto it = map.begin(); it != map.end();) {
     if (it->first.render_process_id == render_process_id) {
       it = map.erase(it);
       continue;

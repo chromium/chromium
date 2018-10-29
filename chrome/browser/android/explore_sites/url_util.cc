@@ -14,8 +14,7 @@ namespace explore_sites {
 
 GURL GetBaseURL() {
   const char kBaseURLOption[] = "base_url";
-  const char kDefaultBaseUrl[] =
-      "https://explore-sites-ux-research.appspot.com";
+  const char kDefaultBaseUrl[] = "https://exploresites-pa.googleapis.com";
   std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
       chrome::android::kExploreSites, kBaseURLOption);
   if (field_trial_param.empty())
@@ -23,9 +22,9 @@ GURL GetBaseURL() {
   return GURL(field_trial_param);
 }
 
-GURL GetNtpURL() {
-  const char kNtpJsonPath[] = "/ntp.json";
-  std::string path(kNtpJsonPath);
+GURL GetCatalogURL() {
+  const char kGetCatalogPath[] = "/v1/getcatalog";
+  std::string path(kGetCatalogPath);
 
   GURL base_url(GetBaseURL());
   GURL::Replacements replacements;
@@ -33,9 +32,9 @@ GURL GetNtpURL() {
   return base_url.ReplaceComponents(replacements);
 }
 
-GURL GetCatalogURL() {
-  const char kEspPath[] = "/esp.html";
-  std::string path(kEspPath);
+GURL GetCategoriesURL() {
+  const char kNtpJsonPath[] = "/v1/getcategories";
+  std::string path(kNtpJsonPath);
 
   GURL base_url(GetBaseURL());
   GURL::Replacements replacements;

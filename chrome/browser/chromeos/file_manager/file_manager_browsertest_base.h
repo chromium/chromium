@@ -24,7 +24,7 @@ enum GuestMode { NOT_IN_GUEST_MODE, IN_GUEST_MODE, IN_INCOGNITO };
 
 class DriveTestVolume;
 class FakeTestVolume;
-class LocalTestVolume;
+class DownloadsTestVolume;
 class CrostiniTestVolume;
 class AndroidFilesTestVolume;
 
@@ -109,7 +109,7 @@ class FileManagerBrowserTestBase : public extensions::ExtensionApiTest {
 
   base::test::ScopedFeatureList feature_list_;
 
-  std::unique_ptr<LocalTestVolume> local_volume_;
+  std::unique_ptr<DownloadsTestVolume> local_volume_;
   std::unique_ptr<CrostiniTestVolume> crostini_volume_;
   std::unique_ptr<AndroidFilesTestVolume> android_files_volume_;
   std::map<Profile*, std::unique_ptr<DriveTestVolume>> drive_volumes_;

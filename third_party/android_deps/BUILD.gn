@@ -565,6 +565,12 @@ java_prebuilt("com_google_dagger_dagger_compiler_java") {
   ]
 }
 
+java_prebuilt("com_squareup_javapoet_java") {
+  jar_path = "libs/com_squareup_javapoet/javapoet-1.11.0.jar"
+  output_name = "com_squareup_javapoet"
+  supports_android = true
+}
+
 java_prebuilt("javax_inject_javax_inject_java") {
   jar_path = "libs/javax_inject_javax_inject/javax.inject-1.jar"
   output_name = "javax_inject_javax_inject"
@@ -806,12 +812,6 @@ java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
   jar_path =
       "libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-1.1.jar"
   output_name = "com_google_j2objc_j2objc_annotations"
-  visibility = [ ":*" ]
-}
-
-java_prebuilt("com_squareup_javapoet_java") {
-  jar_path = "libs/com_squareup_javapoet/javapoet-1.11.0.jar"
-  output_name = "com_squareup_javapoet"
   visibility = [ ":*" ]
 }
 

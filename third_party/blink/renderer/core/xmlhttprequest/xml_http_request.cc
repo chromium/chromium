@@ -70,7 +70,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/histogram.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
@@ -306,8 +305,7 @@ XMLHttpRequest::~XMLHttpRequest() {
 }
 
 Document* XMLHttpRequest::GetDocument() const {
-  DCHECK(GetExecutionContext()->IsDocument());
-  return ToDocument(GetExecutionContext());
+  return To<Document>(GetExecutionContext());
 }
 
 const SecurityOrigin* XMLHttpRequest::GetSecurityOrigin() const {
@@ -746,11 +744,10 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
 
   if (!async_) {
     if (GetExecutionContext()->IsDocument() &&
-        !GetDocument()->GetFrame()->IsFeatureEnabled(
+        !GetDocument()->IsFeatureEnabled(
             mojom::FeaturePolicyFeature::kSyncXHR,
-            ReportOptions::kReportOnFailure)) {
-      LogConsoleError(GetExecutionContext(),
-                      "Synchronous requests are disabled by Feature Policy.");
+            ReportOptions::kReportOnFailure,
+            "Synchronous requests are disabled by Feature Policy.")) {
       HandleNetworkError();
       ThrowForLoadFailureIfNeeded(exception_state, String());
       return false;
@@ -1049,8 +1046,9 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
       !CORS::ContainsOnlyCORSSafelistedHeaders(request_headers_);
 
   ResourceRequest request(url_);
+  request.SetRequestorOrigin(GetSecurityOrigin());
   request.SetHTTPMethod(method_);
-  request.SetRequestContext(WebURLRequest::kRequestContextXMLHttpRequest);
+  request.SetRequestContext(mojom::RequestContextType::XML_HTTP_REQUEST);
   request.SetFetchRequestMode(
       upload_events ? network::mojom::FetchRequestMode::kCORSWithForcedPreflight
                     : network::mojom::FetchRequestMode::kCORS);
@@ -1074,7 +1072,6 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
     request.AddHTTPHeaderFields(request_headers_);
 
   ResourceLoaderOptions resource_loader_options;
-  resource_loader_options.security_origin = GetSecurityOrigin();
   resource_loader_options.initiator_info.name =
       FetchInitiatorTypeNames::xmlhttprequest;
   if (blob_url_loader_factory_) {

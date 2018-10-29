@@ -7,7 +7,6 @@ Tests that we can compute the bounds of a range of text from the accessibility t
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Testing bounds of word one in horizontalParagraph
 PASS axBounds.x is within 2 of rangeBounds.left
 PASS axBounds.y is within 2 of rangeBounds.top

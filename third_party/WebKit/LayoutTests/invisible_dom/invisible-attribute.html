@@ -71,18 +71,11 @@ test(() => {
 
 test(() => {
   setUp();
-  assert_equals(getComputedStyle(innerDiv).display, "none");
-  innerDiv.removeAttribute("invisible");
-  assert_equals(getComputedStyle(innerDiv).display, "block");
-}, "Kuma attributes makes element's display=none");
-
-test(() => {
-  setUp();
   innerDiv.removeAttribute("invisible");
   assertIsDisplayed(innerDiv);
 
   outerDiv.setAttribute("invisible", "invisible");
-  assert_equals(getComputedStyle(outerDiv).display, "none", "outerDiv display=none");
+  assert_equals(getComputedStyle(outerDiv).display, "block", "outerDiv display=block");
   assertIsNotDisplayed(outerDiv);
   assert_equals(getComputedStyle(innerDiv).display, "block", "innerDiv display=block");
   assertIsNotDisplayed(innerDiv);
@@ -90,7 +83,7 @@ test(() => {
   outerDiv.removeAttribute("invisible");
   assertIsDisplayed(outerDiv);
   assertIsDisplayed(innerDiv);
-}, "Descendants of a invisible element are not displayed");
+}, "Inclusive descendants of an invisible element are not displayed");
 
 test(() => {
   setUp();
@@ -106,6 +99,6 @@ test(() => {
 
   slot.invisible = "invisible";
   assertIsNotDisplayed(slottedChild);
-}, "Flat tree descendants of a invisible element are not displayed");
+}, "Flat tree descendants of an invisible element are not displayed");
 </script>
 </body>

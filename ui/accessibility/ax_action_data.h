@@ -7,6 +7,7 @@
 
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -31,7 +32,7 @@ struct AX_EXPORT AXActionData {
   ax::mojom::Action action = ax::mojom::Action::kNone;
 
   // The ID of the tree that this action should be performed on.
-  int target_tree_id = -1;
+  ui::AXTreeID target_tree_id = ui::AXTreeIDUnknown();
 
   // The source extension id (if any) of this action.
   std::string source_extension_id;

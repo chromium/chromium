@@ -4,10 +4,18 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../media-controls.js"></script>
-<video controls width=400 src="../../content/60_sec_video.webm"></video>
+<script src="../overlay-play-button.js"></script>
+<body></body>
 <script>
 async_test(t => {
-  const video = document.querySelector('video');
+  // This test is only valid when the overlay play button is enabled.
+  enableOverlayPlayButtonForTest(t);
+
+  const video = document.createElement('video');
+  video.controls = true;
+  video.width = 400;
+  video.src='../../content/60_sec_video.webm';
+  document.body.appendChild(video);
 
   video.addEventListener('playing', t.step_func(() => {
     // Single tap in the middle of the button.

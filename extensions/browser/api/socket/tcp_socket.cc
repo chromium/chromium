@@ -11,7 +11,9 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/post_task.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/api_resource.h"
@@ -133,8 +135,8 @@ void TCPSocket::Connect(const net::AddressList& address,
           base::BindOnce(&TCPSocket::OnConnectCompleteOnUIThread, task_runner_,
                          std::move(completion_callback));
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&TCPSocket::ConnectOnUIThread, storage_partition_,
                      browser_context_, address,
                      mojo::MakeRequest(&client_socket_),
@@ -142,6 +144,9 @@ void TCPSocket::Connect(const net::AddressList& address,
 }
 
 void TCPSocket::Disconnect(bool socket_destroying) {
+  // Make sure that any outstanding callbacks from Connect or Listen are
+  // aborted.
+  weak_factory_.InvalidateWeakPtrs();
   is_connected_ = false;
   local_addr_ = base::nullopt;
   peer_addr_ = base::nullopt;
@@ -256,8 +261,8 @@ void TCPSocket::Listen(const std::string& address,
           base::BindOnce(&TCPSocket::OnListenCompleteOnUIThread, task_runner_,
                          std::move(completion_callback));
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&TCPSocket::ListenOnUIThread, storage_partition_,
                      browser_context_, ip_end_point, backlog,
                      mojo::MakeRequest(&server_socket_),

@@ -40,7 +40,7 @@ namespace blink {
 class WebMixedContent {
  public:
   BLINK_PLATFORM_EXPORT static WebMixedContentContextType
-  ContextTypeFromRequestContext(WebURLRequest::RequestContext,
+  ContextTypeFromRequestContext(mojom::RequestContextType,
                                 bool strict_mixed_content_checking_for_plugin);
 };
 

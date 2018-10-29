@@ -7,9 +7,9 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "services/service_manager/public/cpp/export.h"
 
 namespace service_manager {
 
@@ -18,7 +18,7 @@ struct BindSourceInfo;
 
 // The primary contract between a Service and the Service Manager, receiving
 // lifecycle notifications and connection requests.
-class SERVICE_MANAGER_PUBLIC_CPP_EXPORT Service {
+class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Service {
  public:
   Service();
   virtual ~Service();
@@ -37,6 +37,14 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT Service {
                                const std::string& interface_name,
                                mojo::ScopedMessagePipeHandle interface_pipe);
 
+  // Called when the Service Manager has stopped tracking this instance. Once
+  // invoked, no further Service interface methods will be called on this
+  // Service, and no further communication with the Service Manager is possible.
+  //
+  // The Service may continue to operate and service existing client connections
+  // as it deems appropriate.
+  virtual void OnDisconnected();
+
   // Called when the Service Manager has stopped tracking this instance. The
   // service should use this as a signal to shut down, and in fact its process
   // may be reaped shortly afterward if applicable.
@@ -49,6 +57,9 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT Service {
   //
   // NOTE: This may be called at any time, and once it's been called, none of
   // the other public Service methods will be invoked by the ServiceContext.
+  //
+  // This is ONLY invoked when using a ServiceContext and is therefore
+  // deprecated.
   virtual bool OnServiceManagerConnectionLost();
 
  protected:
@@ -72,7 +83,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT Service {
 
 // TODO(rockot): Remove this. It's here to satisfy a few remaining use cases
 // where a Service impl is owned by something other than its ServiceContext.
-class SERVICE_MANAGER_PUBLIC_CPP_EXPORT ForwardingService : public Service {
+class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ForwardingService : public Service {
  public:
   // |target| must outlive this object.
   explicit ForwardingService(Service* target);

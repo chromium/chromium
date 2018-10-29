@@ -321,7 +321,8 @@ TEST(BusTest, ListenForServiceOwnerChange) {
   base::MessageLoopForIO message_loop;
 
   // This enables FileDescriptorWatcher, which is required by dbus::Watch.
-  base::FileDescriptorWatcher file_descriptor_watcher(&message_loop);
+  base::FileDescriptorWatcher file_descriptor_watcher(
+      message_loop.task_runner());
 
   RunLoopWithExpectedCount run_loop_state;
 

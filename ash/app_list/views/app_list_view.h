@@ -14,9 +14,7 @@
 #include "ash/public/cpp/app_list/app_list_constants.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
 #include "build/build_config.h"
-#include "ui/display/display_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -25,7 +23,7 @@ class Window;
 }
 
 namespace display {
-class Screen;
+class Display;
 }
 
 namespace ui {
@@ -49,8 +47,7 @@ class TransitionAnimationObserver;
 // and hosts a AppsGridView and passes AppListModel to it for display.
 // TODO(newcomer|weidongg): Organize the cc file to match the order of
 // definitions in this header.
-class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
-                                    public display::DisplayObserver {
+class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView {
  public:
   class TestApi {
    public:
@@ -128,12 +125,7 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   // Performs the 'back' action for the active page.
   void Back();
 
-  // Enables/disables a semi-transparent overlay over the app list (good for
-  // hiding the app list when a modal dialog is being shown).
-  void SetAppListOverlayVisible(bool visible);
-
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
   bool CanProcessEventsWithinSubtree() const override;
@@ -170,15 +162,15 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   void SetStateFromSearchBoxView(bool search_box_is_empty,
                                  bool triggered_by_contents_change);
 
-  // Updates y position and opacity of app list.
+  // Updates y position and opacity of app list during dragging.
   void UpdateYPositionAndOpacity(int y_position_in_screen,
                                  float background_opacity);
 
   // Offsets the y position of the app list (above the screen)
   void OffsetYPositionOfAppList(int offset);
 
-  // Layouts the app list during dragging.
-  void DraggingLayout();
+  // Update Y position and opacity of this view's child views during dragging.
+  void UpdateChildViewsYPositionAndOpacity();
 
   // The search box cannot actively listen to all key events. To control and
   // input into the search box when it does not have focus, we need to redirect
@@ -187,6 +179,9 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
 
   // Called when on-screen keyboard's visibility is changed.
   void OnScreenKeyboardShown(bool shown);
+
+  // Called when parent window's bounds is changed.
+  void OnParentWindowBoundsChanged();
 
   // If the on-screen keyboard is shown, hide it. Return whether keyboard was
   // hidden
@@ -212,6 +207,9 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   // state. [0.0, 1.0] means the progress between closed and peeking state,
   // while [1.0, 2.0] means the progress between peeking and fullscreen state.
   float GetAppListTransitionProgress() const;
+
+  // Returns the height of app list in fullscreen state.
+  int GetFullscreenStateHeight() const;
 
   views::Widget* get_fullscreen_widget_for_test() const {
     return fullscreen_widget_;
@@ -319,10 +317,6 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   // Overridden from views::WidgetDelegateView:
   views::View* GetInitiallyFocusedView() override;
 
-  // Overridden from DisplayObserver:
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t changed_metrics) override;
-
   // Gets app list background opacity during dragging.
   float GetAppListBackgroundOpacityDuringDragging();
 
@@ -336,6 +330,19 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
 
   // Returns true if scroll events should be ignored.
   bool ShouldIgnoreScrollEvents();
+
+  // Returns preferred y of fullscreen widget bounds in parent window for the
+  // specified state.
+  int GetPreferredWidgetYForState(AppListViewState state);
+
+  // Returns preferred fullscreen widget bounds in parent window for the
+  // specified state. Note that this function should only be called after the
+  // widget is initialized.
+  gfx::Rect GetPreferredWidgetBoundsForState(AppListViewState state);
+
+  // Updates y position of |app_list_background_shield_| based on the
+  // |app_list_state_| and |is_in_drag_|.
+  void UpdateAppListBackgroundYPosition();
 
   AppListViewDelegate* delegate_;    // Weak. Owned by AppListService.
   AppListModel* const model_;        // Not Owned.
@@ -381,16 +388,10 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   const bool is_background_blur_enabled_;
   // The state of the app list, controlled via SetState().
   AppListViewState app_list_state_ = AppListViewState::PEEKING;
-  // An observer that notifies AppListView when the display has changed.
-  ScopedObserver<display::Screen, display::DisplayObserver> display_observer_;
 
   // A widget observer that sets the AppListView state when the widget is
   // closed.
   std::unique_ptr<FullscreenWidgetObserver> widget_observer_;
-
-  // A semi-transparent white overlay that covers the app list while dialogs
-  // are open.
-  views::View* overlay_view_ = nullptr;
 
   std::unique_ptr<HideViewAnimationObserver> hide_view_animation_observer_;
 
@@ -407,9 +408,6 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
 
   // Accessibility announcement dialogue.
   base::string16 state_announcement_;
-
-  // Whether FocusManager can handle arrow key before this class is constructed.
-  const bool previous_arrow_key_traversal_enabled_;
 
   // Metric reporter for state change animations.
   const std::unique_ptr<ui::AnimationMetricsReporter>

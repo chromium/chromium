@@ -268,6 +268,7 @@ def GenerateXcodeProject(gn_path, root_dir, out_dir, settings):
     generator = GnGenerator(settings, 'Debug', 'iphonesimulator')
     generator.Generate(gn_path, root_dir, temp_path)
     convert_gn_xcodeproj.ConvertGnXcodeProject(
+        root_dir,
         os.path.join(temp_path),
         os.path.join(out_dir, 'build'),
         SUPPORTED_CONFIGS)

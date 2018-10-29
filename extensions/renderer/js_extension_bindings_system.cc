@@ -36,21 +36,24 @@ namespace {
 // exist.
 v8::Local<v8::Object> GetOrCreateObject(const v8::Local<v8::Object>& object,
                                         const std::string& field,
-                                        v8::Isolate* isolate) {
-  v8::Local<v8::String> key = v8::String::NewFromUtf8(isolate, field.c_str());
+                                        ScriptContext* context) {
+  v8::Local<v8::String> key =
+      v8::String::NewFromUtf8(context->isolate(), field.c_str(),
+                              v8::NewStringType::kInternalized)
+          .ToLocalChecked();
   // If the object has a callback property, it is assumed it is an unavailable
   // API, so it is safe to delete. This is checked before GetOrCreateObject is
   // called.
   if (object->HasRealNamedCallbackProperty(key)) {
-    object->Delete(key);
+    object->Delete(context->v8_context(), key).ToChecked();
   } else if (object->HasRealNamedProperty(key)) {
     v8::Local<v8::Value> value = object->Get(key);
     CHECK(value->IsObject());
     return v8::Local<v8::Object>::Cast(value);
   }
 
-  v8::Local<v8::Object> new_object = v8::Object::New(isolate);
-  object->Set(key, new_object);
+  v8::Local<v8::Object> new_object = v8::Object::New(context->isolate());
+  object->Set(context->v8_context(), key, new_object).ToChecked();
   return new_object;
 }
 
@@ -60,12 +63,14 @@ v8::Local<v8::Object> GetOrCreateObject(const v8::Local<v8::Object>& object,
 // an empty object.
 v8::Local<v8::Object> GetOrCreateChrome(ScriptContext* context) {
   v8::Local<v8::String> chrome_string(
-      v8::String::NewFromUtf8(context->isolate(), "chrome"));
+      v8::String::NewFromUtf8(context->isolate(), "chrome",
+                              v8::NewStringType::kInternalized)
+          .ToLocalChecked());
   v8::Local<v8::Object> global(context->v8_context()->Global());
   v8::Local<v8::Value> chrome(global->Get(chrome_string));
   if (chrome->IsUndefined()) {
     chrome = v8::Object::New(context->isolate());
-    global->Set(chrome_string, chrome);
+    global->Set(context->v8_context(), chrome_string, chrome).ToChecked();
   }
   return chrome->IsObject() ? chrome.As<v8::Object>() : v8::Local<v8::Object>();
 }
@@ -108,7 +113,7 @@ v8::Local<v8::Object> GetOrCreateBindObjectIfAvailable(
       if (bind_object.IsEmpty())
         return v8::Local<v8::Object>();
     }
-    bind_object = GetOrCreateObject(bind_object, split[i], context->isolate());
+    bind_object = GetOrCreateObject(bind_object, split[i], context);
   }
 
   if (only_ancestor_available)
@@ -280,7 +285,9 @@ void JsExtensionBindingsSystem::RegisterBinding(
     return;
 
   v8::Local<v8::String> v8_bind_name =
-      v8::String::NewFromUtf8(context->isolate(), bind_name.c_str());
+      v8::String::NewFromUtf8(context->isolate(), bind_name.c_str(),
+                              v8::NewStringType::kInternalized)
+          .ToLocalChecked();
   if (bind_object->HasRealNamedProperty(v8_bind_name)) {
     // The bind object may already have the property if the API has been
     // registered before (or if the extension has put something there already,

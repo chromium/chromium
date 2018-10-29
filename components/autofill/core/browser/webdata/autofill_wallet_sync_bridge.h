@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -34,8 +35,11 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // Factory method that hides dealing with change_processor and also stores the
   // created bridge within |web_data_service|. This method should only be
   // called on |web_data_service|'s DB thread.
+  // |active_callback| will be called with a boolean describing whether Wallet
+  // data is actively sync whenever the state changes.
   static void CreateForWebDataServiceAndBackend(
       const std::string& app_locale,
+      const base::RepeatingCallback<void(bool)>& active_callback,
       bool has_persistent_storage_,
       AutofillWebDataBackend* webdata_backend,
       AutofillWebDataService* web_data_service);
@@ -44,6 +48,7 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
       AutofillWebDataService* web_data_service);
 
   explicit AutofillWalletSyncBridge(
+      const base::RepeatingCallback<void(bool)>& active_callback,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       bool has_persistent_storage_,
       AutofillWebDataBackend* web_data_backend);
@@ -72,9 +77,11 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   void GetAllDataForTesting(DataCallback callback);
 
  private:
+  template <class Item>
   struct AutofillWalletDiff {
     int items_added = 0;
     int items_removed = 0;
+    std::vector<AutofillDataModelChange<Item>> changes;
 
     bool IsEmpty() const { return items_added == 0 && items_removed == 0; }
   };
@@ -95,18 +102,17 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
 
   // Sets |customer_data| to this client and returns whether any change has been
   // applied (i.e., whether |customer_data| was different from local data).
-  bool SetPaymentsCustormerData(
-      std::vector<PaymentsCustomerData> customer_data);
+  bool SetPaymentsCustomerData(std::vector<PaymentsCustomerData> customer_data);
 
   // Computes a "diff" (items added, items removed) of two vectors of items,
-  // which should be either CreditCard or AutofillProfile. This is used for two
-  // purposes:
+  // which should be either CreditCard or AutofillProfile. This is used for
+  // three purposes:
   // 1) Detecting if anything has changed, so that we don't write to disk in the
   //    common case where nothing has changed.
+  // 3) Notifying |web_data_backend_| of any changes.
   // 2) Recording metrics on the number of added/removed items.
-  // This is exposed as a static method so that it can be tested.
   template <class Item>
-  static AutofillWalletDiff ComputeAutofillWalletDiff(
+  AutofillWalletDiff<Item> ComputeAutofillWalletDiff(
       const std::vector<std::unique_ptr<Item>>& old_data,
       const std::vector<Item>& new_data);
 
@@ -121,6 +127,10 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // of the complete sync feature) or to an ephemeral storage (as part of the
   // content-area-account-based lightweight sync).
   const bool has_persistent_storage_;
+
+  // Callback to let the metadata bridge know that whether the card data
+  // is actively syncing.
+  const base::RepeatingCallback<void(bool)> active_callback_;
 
   // Stores whether initial sync has been done.
   bool initial_sync_done_;

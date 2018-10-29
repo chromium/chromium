@@ -123,9 +123,7 @@ bool GetNetworkListImpl(
     GetInterfaceNameFunction get_interface_name) {
   std::map<int, std::string> ifnames;
 
-  for (internal::AddressTrackerLinux::AddressMap::const_iterator it =
-           address_map.begin();
-       it != address_map.end(); ++it) {
+  for (auto it = address_map.begin(); it != address_map.end(); ++it) {
     // Ignore addresses whose links are not online.
     if (online_links.find(it->second.ifa_index) == online_links.end())
       continue;

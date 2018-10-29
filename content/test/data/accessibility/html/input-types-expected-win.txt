@@ -2,48 +2,48 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Default: '
-++++++ROLE_SYSTEM_TEXT name='Default: ' FOCUSABLE
+++++++ROLE_SYSTEM_TEXT name='Default:' FOCUSABLE
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Button: '
-++++++ROLE_SYSTEM_PUSHBUTTON name='Button: ' FOCUSABLE
-++++ROLE_SYSTEM_CHECKBUTTON name='Checkbox: ' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++ROLE_SYSTEM_PUSHBUTTON name='Button:' FOCUSABLE
+++++ROLE_SYSTEM_CHECKBUTTON name='Checkbox:' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Color: '
-++++++IA2_ROLE_COLOR_CHOOSER name='Color: ' value='0% red 0% green 0% blue' FOCUSABLE
+++++++IA2_ROLE_COLOR_CHOOSER name='Color:' value='0% red 0% green 0% blue' FOCUSABLE
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Email: '
-++++++ROLE_SYSTEM_TEXT name='Email: ' FOCUSABLE text-input-type:email
+++++++ROLE_SYSTEM_TEXT name='Email:' FOCUSABLE text-input-type:email
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='File: '
-++++++ROLE_SYSTEM_PUSHBUTTON name='File: ' value='No file chosen' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='File:' value='No file chosen' FOCUSABLE
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Image: '
-++++++ROLE_SYSTEM_PUSHBUTTON name='Image: ' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='Image:' FOCUSABLE
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Number: '
-++++++ROLE_SYSTEM_SPINBUTTON name='Number: ' FOCUSABLE text-input-type:number
+++++++ROLE_SYSTEM_SPINBUTTON name='Number:' FOCUSABLE text-input-type:number
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Password: '
-++++++ROLE_SYSTEM_TEXT name='Password: ' FOCUSABLE PROTECTED text-input-type:password
-++++ROLE_SYSTEM_RADIOBUTTON name='Radio: ' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++++ROLE_SYSTEM_TEXT name='Password:' FOCUSABLE PROTECTED text-input-type:password
+++++ROLE_SYSTEM_RADIOBUTTON name='Radio:' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Range: '
-++++++ROLE_SYSTEM_SLIDER name='Range: ' value='50' FOCUSABLE IA2_STATE_HORIZONTAL
+++++++ROLE_SYSTEM_SLIDER name='Range:' value='50' FOCUSABLE IA2_STATE_HORIZONTAL
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Reset: '
-++++++ROLE_SYSTEM_PUSHBUTTON name='Reset: ' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='Reset:' FOCUSABLE
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Search: '
-++++++ROLE_SYSTEM_TEXT name='Search: ' FOCUSABLE text-input-type:search
+++++++ROLE_SYSTEM_TEXT name='Search:' FOCUSABLE text-input-type:search
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Submit: '
-++++++ROLE_SYSTEM_PUSHBUTTON name='Submit: ' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='Submit:' FOCUSABLE
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Tel: '
-++++++ROLE_SYSTEM_TEXT name='Tel: ' FOCUSABLE text-input-type:tel
+++++++ROLE_SYSTEM_TEXT name='Tel:' FOCUSABLE text-input-type:tel
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Text: '
-++++++ROLE_SYSTEM_TEXT name='Text: ' FOCUSABLE text-input-type:text
+++++++ROLE_SYSTEM_TEXT name='Text:' FOCUSABLE text-input-type:text
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Url: '
-++++++ROLE_SYSTEM_TEXT name='Url: ' FOCUSABLE text-input-type:url
+++++++ROLE_SYSTEM_TEXT name='Url:' FOCUSABLE text-input-type:url

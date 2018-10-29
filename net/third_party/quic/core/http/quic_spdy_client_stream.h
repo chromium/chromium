@@ -22,7 +22,9 @@ class QuicSpdyClientSession;
 // SPDY response.
 class QuicSpdyClientStream : public QuicSpdyStream {
  public:
-  QuicSpdyClientStream(QuicStreamId id, QuicSpdyClientSession* session);
+  QuicSpdyClientStream(QuicStreamId id,
+                       QuicSpdyClientSession* session,
+                       StreamType type);
   QuicSpdyClientStream(const QuicSpdyClientStream&) = delete;
   QuicSpdyClientStream& operator=(const QuicSpdyClientStream&) = delete;
   ~QuicSpdyClientStream() override;

@@ -21,6 +21,7 @@
 #include "cc/layers/layer.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/trees/layer_tree_host.h"
+#include "content/common/input/actions_parser.h"
 #include "content/common/input/synthetic_gesture_params.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"
@@ -32,7 +33,6 @@
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "content/renderer/gpu/actions_parser.h"
 #include "content/renderer/gpu/layer_tree_view.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
@@ -54,6 +54,7 @@
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/docs/SkXPSDocument.h"
 // Note that headers in third_party/skia/src are fragile.  This is
 // an experimental, fragile, and diagnostic-only document type.
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
@@ -64,7 +65,7 @@
 // XpsObjectModel.h indirectly includes <wincrypt.h> which is
 // incompatible with Chromium's OpenSSL. By including wincrypt_shim.h
 // first, problems are avoided.
-#include "crypto/wincrypt_shim.h"
+#include "base/win/wincrypt_shim.h"
 
 #include <XpsObjectModel.h>
 #include <objbase.h>
@@ -290,7 +291,8 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
                        float start_y,
                        float fling_velocity,
                        bool precise_scrolling_deltas,
-                       bool scroll_by_page) {
+                       bool scroll_by_page,
+                       bool cursor_visible) {
   gfx::Rect rect = context->render_view_impl()->GetWidget()->ViewRect();
   rect -= rect.OffsetFromOrigin();
   if (!rect.Contains(start_x, start_y)) {
@@ -308,7 +310,7 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
     mouseMove.SetPositionInWidget(start_x, start_y);
     context->web_view()->HandleInputEvent(
         blink::WebCoalescedInputEvent(mouseMove));
-    context->web_view()->SetCursorVisibilityState(true);
+    context->web_view()->SetCursorVisibilityState(cursor_visible);
   }
 
   scoped_refptr<CallbackAndContext> callback_and_context =
@@ -456,8 +458,10 @@ static void PrintDocumentTofile(v8::Isolate* isolate,
   if (!base::PathIsWritable(path.DirName())) {
     std::string msg("Path is not writable: ");
     msg.append(path.DirName().MaybeAsASCII());
-    isolate->ThrowException(v8::Exception::Error(v8::String::NewFromUtf8(
-        isolate, msg.c_str(), v8::String::kNormalString, msg.length())));
+    isolate->ThrowException(v8::Exception::Error(
+        v8::String::NewFromUtf8(isolate, msg.c_str(),
+                                v8::NewStringType::kNormal, msg.length())
+            .ToLocalChecked()));
     return;
   }
   SkFILEWStream wStream(path.MaybeAsASCII().c_str());
@@ -487,7 +491,7 @@ static sk_sp<SkDocument> MakeXPSDocument(SkWStream* s) {
     LOG(ERROR) << "CoCreateInstance(CLSID_XpsOMObjectFactory, ...) failed:"
                << logging::SystemErrorCodeToString(hr);
   }
-  return SkDocument::MakeXPS(s, factory.Get());
+  return SkXPS::MakeDocument(s, factory.Get());
 }
 #endif
 }  // namespace
@@ -606,8 +610,10 @@ void GpuBenchmarking::PrintPagesToXPS(v8::Isolate* isolate,
   PrintDocumentTofile(isolate, filename, &MakeXPSDocument);
 #else
   std::string msg("PrintPagesToXPS is unsupported.");
-  isolate->ThrowException(v8::Exception::Error(v8::String::NewFromUtf8(
-      isolate, msg.c_str(), v8::String::kNormalString, msg.length())));
+  isolate->ThrowException(v8::Exception::Error(
+      v8::String::NewFromUtf8(isolate, msg.c_str(), v8::NewStringType::kNormal,
+                              msg.length())
+          .ToLocalChecked()));
 #endif
 }
 
@@ -626,8 +632,10 @@ void GpuBenchmarking::PrintToSkPicture(v8::Isolate* isolate,
       !base::PathIsWritable(dirpath)) {
     std::string msg("Path is not writable: ");
     msg.append(dirpath.MaybeAsASCII());
-    isolate->ThrowException(v8::Exception::Error(v8::String::NewFromUtf8(
-        isolate, msg.c_str(), v8::String::kNormalString, msg.length())));
+    isolate->ThrowException(v8::Exception::Error(
+        v8::String::NewFromUtf8(isolate, msg.c_str(),
+                                v8::NewStringType::kNormal, msg.length())
+            .ToLocalChecked()));
     return;
   }
 
@@ -662,6 +670,7 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   float speed_in_pixels_s = 800;
   bool precise_scrolling_deltas = true;
   bool scroll_by_page = false;
+  bool cursor_visible = true;
 
   if (!GetOptionalArg(args, &pixels_to_scroll) ||
       !GetOptionalArg(args, &callback) || !GetOptionalArg(args, &start_x) ||
@@ -670,7 +679,8 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
       !GetOptionalArg(args, &direction) ||
       !GetOptionalArg(args, &speed_in_pixels_s) ||
       !GetOptionalArg(args, &precise_scrolling_deltas) ||
-      !GetOptionalArg(args, &scroll_by_page)) {
+      !GetOptionalArg(args, &scroll_by_page) ||
+      !GetOptionalArg(args, &cursor_visible)) {
     return false;
   }
 
@@ -682,10 +692,10 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
          gesture_source_type == SyntheticGestureParams::MOUSE_INPUT);
 
   EnsureRemoteInterface();
-  return BeginSmoothScroll(&context, args, input_injector_, pixels_to_scroll,
-                           callback, gesture_source_type, direction,
-                           speed_in_pixels_s, true, start_x, start_y, 0,
-                           precise_scrolling_deltas, scroll_by_page);
+  return BeginSmoothScroll(
+      &context, args, input_injector_, pixels_to_scroll, callback,
+      gesture_source_type, direction, speed_in_pixels_s, true, start_x, start_y,
+      0, precise_scrolling_deltas, scroll_by_page, cursor_visible);
 }
 
 bool GpuBenchmarking::SmoothDrag(gin::Arguments* args) {
@@ -751,11 +761,11 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
     fling_velocity = 1000;
 
   EnsureRemoteInterface();
-  return BeginSmoothScroll(&context, args, input_injector_, -pixels_to_scroll,
-                           callback, gesture_source_type, direction,
-                           speed_in_pixels_s, false, start_x, start_y,
-                           fling_velocity, true /* precise_scrolling_deltas */,
-                           false /* scroll_by_page */);
+  return BeginSmoothScroll(
+      &context, args, input_injector_, -pixels_to_scroll, callback,
+      gesture_source_type, direction, speed_in_pixels_s, false, start_x,
+      start_y, fling_velocity, true /* precise_scrolling_deltas */,
+      false /* scroll_by_page */, true /* cursor_visible */);
 }
 
 bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
@@ -914,9 +924,9 @@ void GpuBenchmarking::SetPageScaleFactor(float scale) {
 
 void GpuBenchmarking::SetBrowserControlsShown(bool show) {
   GpuBenchmarkingContext context;
-  if (!context.Init(false))
+  if (!context.Init(true))
     return;
-  context.web_view()->UpdateBrowserControlsState(
+  context.layer_tree_view()->UpdateBrowserControlsState(
       cc::BrowserControlsState::kBoth,
       show ? cc::BrowserControlsState::kShown
            : cc::BrowserControlsState::kHidden,

@@ -51,7 +51,7 @@ class ConstrainedWebDialogDelegateBase
   void WebContentsDestroyed() override;
 
   // WebDialogWebContentsDelegate interface.
-  void HandleKeyboardEvent(
+  bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
 

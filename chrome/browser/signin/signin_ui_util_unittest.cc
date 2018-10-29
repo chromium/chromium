@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/signin_ui_util.h"
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -131,11 +132,13 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
 
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{SigninManagerFactory::GetInstance(), BuildFakeSigninManagerBase},
+    return {{SigninManagerFactory::GetInstance(),
+             base::BindRepeating(&BuildFakeSigninManagerForTesting)},
             {ProfileOAuth2TokenServiceFactory::GetInstance(),
-             BuildFakeProfileOAuth2TokenService},
+             base::BindRepeating(&BuildFakeProfileOAuth2TokenService)},
             {GaiaCookieManagerServiceFactory::GetInstance(),
-             BuildFakeGaiaCookieManagerServiceNoFakeUrlFetcher}};
+             base::BindRepeating(
+                 &BuildFakeGaiaCookieManagerServiceNoFakeUrlFetcher)}};
   }
 
   // BrowserWithTestWindowTest:

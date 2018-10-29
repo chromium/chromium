@@ -9,5 +9,6 @@ include_rules = [
   "+net",
   "+services/network/public",
   "+services/network/test",
+  "+ui/gfx/geometry",
 ]
 

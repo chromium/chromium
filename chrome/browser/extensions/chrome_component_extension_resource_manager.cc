@@ -14,7 +14,6 @@
 #include "chrome/grit/theme_resources.h"
 
 #if defined(OS_CHROMEOS)
-#include "components/chrome_apps/chrome_apps_resource_util.h"
 #include "ui/file_manager/file_manager_resource_util.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 #include "ui/keyboard/keyboard_resource_util.h"
@@ -36,9 +35,6 @@ ChromeComponentExtensionResourceManager() {
 #if defined(OS_CHROMEOS)
     {"chrome_app/chrome_app_icon_32.png", IDR_CHROME_APP_ICON_32},
     {"chrome_app/chrome_app_icon_192.png", IDR_CHROME_APP_ICON_192},
-    {"webstore_widget/app/icons/icon_16.png", IDR_WEBSTORE_ICON_16},
-    {"webstore_widget/app/icons/icon_32.png", IDR_WEBSTORE_ICON_32},
-    {"webstore_widget/app/icons/icon_128.png", IDR_WEBSTORE_ICON},
 #endif
   };
 
@@ -49,13 +45,6 @@ ChromeComponentExtensionResourceManager() {
       kExtraComponentExtensionResources,
       arraysize(kExtraComponentExtensionResources));
 #if defined(OS_CHROMEOS)
-  size_t chrome_apps_resource_size;
-  const GritResourceMap* chrome_apps_resources =
-      chrome_apps::GetChromeAppsResources(&chrome_apps_resource_size);
-  AddComponentResourceEntries(
-      chrome_apps_resources,
-      chrome_apps_resource_size);
-
   size_t file_manager_resource_size;
   const GritResourceMap* file_manager_resources =
       file_manager::GetFileManagerResources(&file_manager_resource_size);
@@ -89,8 +78,7 @@ bool ChromeComponentExtensionResourceManager::IsComponentExtensionResource(
   relative_path = relative_path.Append(resource_path);
   relative_path = relative_path.NormalizePathSeparators();
 
-  std::map<base::FilePath, int>::const_iterator entry =
-      path_to_resource_id_.find(relative_path);
+  auto entry = path_to_resource_id_.find(relative_path);
   if (entry != path_to_resource_id_.end())
     *resource_id = entry->second;
 

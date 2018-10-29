@@ -19,7 +19,9 @@ namespace content {
 class WebContents;
 }
 
-class SigninManager;
+namespace identity {
+class IdentityManager;
+}
 
 class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
                                       public content::WebContentsObserver {
@@ -40,10 +42,11 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
   ProcessDiceHeaderDelegateImpl(
       content::WebContents* web_contents,
       signin::AccountConsistencyMethod account_consistency,
-      SigninManager* signin_manager,
+      identity::IdentityManager* identity_manager,
       bool is_sync_signin_tab,
       EnableSyncCallback enable_sync_callback,
-      ShowSigninErrorCallback show_signin_error_callback);
+      ShowSigninErrorCallback show_signin_error_callback,
+      const GURL& redirect_url = GURL::EmptyGURL());
   ~ProcessDiceHeaderDelegateImpl() override;
 
   // ProcessDiceHeaderDelegate:
@@ -56,10 +59,11 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
   bool ShouldEnableSync();
 
   signin::AccountConsistencyMethod account_consistency_;
-  SigninManager* signin_manager_;
+  identity::IdentityManager* identity_manager_;
   EnableSyncCallback enable_sync_callback_;
   ShowSigninErrorCallback show_signin_error_callback_;
   bool is_sync_signin_tab_;
+  GURL redirect_url_;
   DISALLOW_COPY_AND_ASSIGN(ProcessDiceHeaderDelegateImpl);
 };
 

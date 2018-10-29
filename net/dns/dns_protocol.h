@@ -76,12 +76,12 @@ static const uint16_t kDefaultPortMulticast = 5353;
 
 // On-the-wire header. All uint16_t are in network order.
 struct NET_EXPORT Header {
-  uint16_t id;
-  uint16_t flags;
-  uint16_t qdcount;
-  uint16_t ancount;
-  uint16_t nscount;
-  uint16_t arcount;
+  uint16_t id = 0;
+  uint16_t flags = 0;
+  uint16_t qdcount = 0;
+  uint16_t ancount = 0;
+  uint16_t nscount = 0;
+  uint16_t arcount = 0;
 };
 
 #pragma pack(pop)
@@ -141,6 +141,7 @@ static const uint8_t kRcodeREFUSED = 5;
 //
 // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-12
 static const uint16_t kFlagResponse = 0x8000;
+static const uint16_t kFlagAA = 0x400;  // Authoritative Answer - response flag.
 static const uint16_t kFlagRD = 0x100;  // Recursion Desired - query flag.
 static const uint16_t kFlagTC = 0x200;  // Truncated - server flag.
 

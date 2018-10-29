@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
 
+#include <stddef.h>
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/date_components.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
@@ -37,19 +38,20 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/serialized_resource.h"
 #include "third_party/blink/renderer/platform/shared_buffer.h"
-#include "third_party/blink/renderer/platform/text/quoted_printable.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
+#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/time.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 namespace {
 
-const size_t kMaximumLineLength = 76;
+const wtf_size_t kMaximumLineLength = 76;
 
 const char kRFC2047EncodingPrefix[] = "=?utf-8?Q?";
 const size_t kRFC2047EncodingPrefixLength = 10;
@@ -60,69 +62,118 @@ const char kQuotedPrintable[] = "quoted-printable";
 const char kBase64[] = "base64";
 const char kBinary[] = "binary";
 
-}  // namespace
+// Returns the length of a line-ending if one is present starting at
+// |input[index]| or zero if no line-ending is present at the given |index|.
+size_t LengthOfLineEndingAtIndex(const char* input,
+                                 size_t input_length,
+                                 size_t index) {
+  SECURITY_DCHECK(index < input_length);
+  if (input[index] == '\n')
+    return 1;  // Single LF.
 
-// Controls quoted-printable encoding characters in body, per RFC 2045.
-class QuotedPrintableEncodeBodyDelegate : public QuotedPrintableEncodeDelegate {
- public:
-  QuotedPrintableEncodeBodyDelegate() = default;
-  ~QuotedPrintableEncodeBodyDelegate() override = default;
-
-  size_t GetMaxLineLengthForEncodedContent() const override {
-    return kMaximumLineLength;
+  if (input[index] == '\r') {
+    if ((index + 1) == input_length || input[index + 1] != '\n')
+      return 1;  // Single CR (Classic Mac OS).
+    return 2;    // CR-LF.
   }
 
-  bool ShouldEncodeWhiteSpaceCharacters(bool end_of_line) const override {
-    // They should be encoded only if they appear at the end of a body line.
-    return end_of_line;
-  }
+  return 0;
+}
 
-  void DidStartLine(Vector<char>& out) override {
-    // Nothing to add.
-  }
-
-  void DidFinishLine(bool last_line, Vector<char>& out) override {
-    if (!last_line) {
-      out.push_back('=');
-      out.Append("\r\n", 2);
-    }
-  }
-};
-
-// Controls quoted-printable encoding characters in headers, per RFC 2047.
-class QuotedPrintableEncodeHeaderDelegate
-    : public QuotedPrintableEncodeDelegate {
- public:
-  QuotedPrintableEncodeHeaderDelegate() = default;
-  ~QuotedPrintableEncodeHeaderDelegate() override = default;
-
-  size_t GetMaxLineLengthForEncodedContent() const override {
-    return kMaximumLineLength - kRFC2047EncodingPrefixLength -
-           kRFC2047EncodingSuffixLength;
-  }
-
-  bool ShouldEncodeWhiteSpaceCharacters(bool end_of_line) const override {
-    // They should always be encoded if they appear anywhere in the header.
-    return true;
-  }
-
-  void DidStartLine(Vector<char>& out) override {
+// Performs quoted-printable encoding characters, per RFC 2047.
+void QuotedPrintableEncode(const char* input,
+                           wtf_size_t input_length,
+                           bool is_header,
+                           Vector<char>& out) {
+  out.clear();
+  out.ReserveCapacity(input_length);
+  if (is_header)
     out.Append(kRFC2047EncodingPrefix, kRFC2047EncodingPrefixLength);
-  }
+  size_t current_line_length = 0;
+  for (size_t i = 0; i < input_length; ++i) {
+    bool is_last_character = (i == input_length - 1);
+    char current_character = input[i];
+    bool requires_encoding = false;
+    // All non-printable ASCII characters and = require encoding.
+    if ((current_character < ' ' || current_character > '~' ||
+         current_character == '=') &&
+        current_character != '\t')
+      requires_encoding = true;
 
-  void DidFinishLine(bool last_line, Vector<char>& out) override {
-    out.Append(kRFC2047EncodingSuffix, kRFC2047EncodingSuffixLength);
-    if (!last_line) {
-      out.Append("\r\n", 2);
-      out.push_back(' ');
+    // Decide if space and tab characters need to be encoded.
+    if (!requires_encoding &&
+        (current_character == '\t' || current_character == ' ')) {
+      if (is_header) {
+        // White space characters should always be encoded if they appear
+        // anywhere in the header.
+        requires_encoding = true;
+      } else {
+        bool end_of_line = is_last_character || LengthOfLineEndingAtIndex(
+                                                    input, input_length, i + 1);
+        requires_encoding = end_of_line;
+      }
+    }
+
+    // End of line should be converted to CR-LF sequences.
+    if (!is_last_character) {
+      size_t length_of_line_ending =
+          LengthOfLineEndingAtIndex(input, input_length, i);
+      if (length_of_line_ending) {
+        out.Append("\r\n", 2);
+        current_line_length = 0;
+        i += (length_of_line_ending -
+              1);  // -1 because we'll ++ in the for() above.
+        continue;
+      }
+    }
+
+    size_t length_of_encoded_character = 1;
+    if (requires_encoding)
+      length_of_encoded_character += 2;
+    if (!is_last_character)
+      length_of_encoded_character += 1;  // + 1 for the = (soft line break).
+
+    // Insert a soft line break if necessary.
+    size_t max_line_length_for_encoded_content = kMaximumLineLength;
+    if (is_header) {
+      max_line_length_for_encoded_content -= kRFC2047EncodingPrefixLength;
+      max_line_length_for_encoded_content -= kRFC2047EncodingSuffixLength;
+    }
+
+    if (current_line_length + length_of_encoded_character >
+        max_line_length_for_encoded_content) {
+      if (is_header) {
+        out.Append(kRFC2047EncodingSuffix, kRFC2047EncodingSuffixLength);
+        out.Append("\r\n", 2);
+        out.push_back(' ');
+      } else {
+        out.push_back('=');
+        out.Append("\r\n", 2);
+      }
+      current_line_length = 0;
+      if (is_header)
+        out.Append(kRFC2047EncodingPrefix, kRFC2047EncodingPrefixLength);
+    }
+
+    // Finally, insert the actual character(s).
+    if (requires_encoding) {
+      out.push_back('=');
+      out.push_back(UpperNibbleToASCIIHexDigit(current_character));
+      out.push_back(LowerNibbleToASCIIHexDigit(current_character));
+      current_line_length += 3;
+    } else {
+      out.push_back(current_character);
+      current_line_length++;
     }
   }
-};
+  if (is_header)
+    out.Append(kRFC2047EncodingSuffix, kRFC2047EncodingSuffixLength);
+}
 
-static String ConvertToPrintableCharacters(const String& text) {
+String ConvertToPrintableCharacters(const String& text) {
   // If the text contains all printable ASCII characters, no need for encoding.
   bool found_non_printable_char = false;
-  for (size_t i = 0; i < text.length(); ++i) {
+  for (wtf_size_t i = 0; i < text.length(); ++i) {
     if (!IsASCIIPrintable(text[i])) {
       found_non_printable_char = true;
       break;
@@ -137,12 +188,13 @@ static String ConvertToPrintableCharacters(const String& text) {
   // where, "utf-8" is the chosen charset to represent the text and "Q" is the
   // Quoted-Printable format to convert to 7-bit printable ASCII characters.
   CString utf8_text = text.Utf8();
-  QuotedPrintableEncodeHeaderDelegate header_delegate;
   Vector<char> encoded_text;
-  QuotedPrintableEncode(utf8_text.data(), utf8_text.length(), &header_delegate,
-                        encoded_text);
+  QuotedPrintableEncode(utf8_text.data(), utf8_text.length(),
+                        true /* is_header */, encoded_text);
   return String(encoded_text.data(), encoded_text.size());
 }
+
+}  // namespace
 
 MHTMLArchive::MHTMLArchive() = default;
 
@@ -168,13 +220,13 @@ MHTMLArchive* MHTMLArchive::Create(const KURL& url,
 
   size_t resources_count = resources.size();
   // The first document suitable resource is the main resource of the top frame.
-  for (size_t i = 0; i < resources_count; ++i) {
+  for (ArchiveResource* resource : resources) {
     if (archive->MainResource()) {
-      archive->AddSubresource(resources[i].Get());
+      archive->AddSubresource(resource);
       continue;
     }
 
-    const AtomicString& mime_type = resources[i]->MimeType();
+    const AtomicString& mime_type = resource->MimeType();
     bool is_mime_type_suitable_for_main_resource =
         MIMETypeRegistry::IsSupportedNonImageMIMEType(mime_type);
     // Want to allow image-only MHTML archives, but retain behavior for other
@@ -190,9 +242,9 @@ MHTMLArchive* MHTMLArchive::Create(const KURL& url,
       is_mime_type_suitable_for_main_resource = false;
 
     if (is_mime_type_suitable_for_main_resource)
-      archive->SetMainResource(resources[i].Get());
+      archive->SetMainResource(resource);
     else
-      archive->AddSubresource(resources[i].Get());
+      archive->AddSubresource(resource);
   }
   if (archive->MainResource())
     return archive;
@@ -248,7 +300,7 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
 
   // We use utf8() below instead of ascii() as ascii() replaces CRLFs with ??
   // (we still only have put ASCII characters in it).
-  DCHECK(string_builder.ToString().ContainsOnlyASCII());
+  DCHECK(string_builder.ToString().ContainsOnlyASCIIOrEmpty());
   CString ascii_string = string_builder.ToString().Utf8();
 
   output_buffer.Append(ascii_string.data(), ascii_string.length());
@@ -305,7 +357,7 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
 
   if (!strcmp(content_encoding, kBinary)) {
     for (const auto& span : *resource.data)
-      output_buffer.Append(span.data(), span.size());
+      output_buffer.Append(span.data(), SafeCast<wtf_size_t>(span.size()));
   } else {
     // FIXME: ideally we would encode the content as a stream without having to
     // fetch it all.
@@ -314,18 +366,18 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
     size_t data_length = flat_data.size();
     Vector<char> encoded_data;
     if (!strcmp(content_encoding, kQuotedPrintable)) {
-      QuotedPrintableEncodeBodyDelegate body_delegate;
-      QuotedPrintableEncode(data, data_length, &body_delegate, encoded_data);
+      QuotedPrintableEncode(data, SafeCast<wtf_size_t>(data_length),
+                            false /* is_header */, encoded_data);
       output_buffer.Append(encoded_data.data(), encoded_data.size());
     } else {
       DCHECK(!strcmp(content_encoding, kBase64));
       // We are not specifying insertLFs = true below as it would cut the lines
       // with LFs and MHTML requires CRLFs.
-      Base64Encode(data, data_length, encoded_data);
-      size_t index = 0;
-      size_t encoded_data_length = encoded_data.size();
+      Base64Encode(data, SafeCast<wtf_size_t>(data_length), encoded_data);
+      wtf_size_t index = 0;
+      wtf_size_t encoded_data_length = encoded_data.size();
       do {
-        size_t line_length =
+        wtf_size_t line_length =
             std::min(encoded_data_length - index, kMaximumLineLength);
         output_buffer.Append(encoded_data.data() + index, line_length);
         output_buffer.Append("\r\n", 2u);

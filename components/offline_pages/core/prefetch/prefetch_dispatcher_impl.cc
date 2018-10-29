@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -16,21 +17,7 @@
 #include "components/offline_pages/core/offline_event_logger.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_model.h"
-#include "components/offline_pages/core/prefetch/add_unique_urls_task.h"
-#include "components/offline_pages/core/prefetch/download_archives_task.h"
-#include "components/offline_pages/core/prefetch/download_cleanup_task.h"
-#include "components/offline_pages/core/prefetch/download_completed_task.h"
-#include "components/offline_pages/core/prefetch/finalize_dismissed_url_suggestion_task.h"
-#include "components/offline_pages/core/prefetch/generate_page_bundle_reconcile_task.h"
-#include "components/offline_pages/core/prefetch/generate_page_bundle_task.h"
-#include "components/offline_pages/core/prefetch/get_operation_task.h"
-#include "components/offline_pages/core/prefetch/import_archives_task.h"
-#include "components/offline_pages/core/prefetch/import_cleanup_task.h"
-#include "components/offline_pages/core/prefetch/import_completed_task.h"
-#include "components/offline_pages/core/prefetch/mark_operation_done_task.h"
-#include "components/offline_pages/core/prefetch/metrics_finalization_task.h"
 #include "components/offline_pages/core/prefetch/offline_metrics_collector.h"
-#include "components/offline_pages/core/prefetch/page_bundle_update_task.h"
 #include "components/offline_pages/core/prefetch/prefetch_background_task.h"
 #include "components/offline_pages/core/prefetch/prefetch_background_task_handler.h"
 #include "components/offline_pages/core/prefetch/prefetch_downloader.h"
@@ -40,9 +27,24 @@
 #include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
-#include "components/offline_pages/core/prefetch/sent_get_operation_cleanup_task.h"
-#include "components/offline_pages/core/prefetch/stale_entry_finalizer_task.h"
 #include "components/offline_pages/core/prefetch/suggested_articles_observer.h"
+#include "components/offline_pages/core/prefetch/suggestions_provider.h"
+#include "components/offline_pages/core/prefetch/tasks/add_unique_urls_task.h"
+#include "components/offline_pages/core/prefetch/tasks/download_archives_task.h"
+#include "components/offline_pages/core/prefetch/tasks/download_cleanup_task.h"
+#include "components/offline_pages/core/prefetch/tasks/download_completed_task.h"
+#include "components/offline_pages/core/prefetch/tasks/finalize_dismissed_url_suggestion_task.h"
+#include "components/offline_pages/core/prefetch/tasks/generate_page_bundle_reconcile_task.h"
+#include "components/offline_pages/core/prefetch/tasks/generate_page_bundle_task.h"
+#include "components/offline_pages/core/prefetch/tasks/get_operation_task.h"
+#include "components/offline_pages/core/prefetch/tasks/import_archives_task.h"
+#include "components/offline_pages/core/prefetch/tasks/import_cleanup_task.h"
+#include "components/offline_pages/core/prefetch/tasks/import_completed_task.h"
+#include "components/offline_pages/core/prefetch/tasks/mark_operation_done_task.h"
+#include "components/offline_pages/core/prefetch/tasks/metrics_finalization_task.h"
+#include "components/offline_pages/core/prefetch/tasks/page_bundle_update_task.h"
+#include "components/offline_pages/core/prefetch/tasks/sent_get_operation_cleanup_task.h"
+#include "components/offline_pages/core/prefetch/tasks/stale_entry_finalizer_task.h"
 #include "components/offline_pages/core/prefetch/thumbnail_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
@@ -53,6 +55,11 @@ namespace {
 
 void DeleteBackgroundTaskHelper(std::unique_ptr<PrefetchBackgroundTask> task) {
   task.reset();
+}
+
+PrefetchURL SuggestionToPrefetchURL(PrefetchSuggestion suggestion) {
+  return PrefetchURL(suggestion.article_url.spec(), suggestion.article_url,
+                     base::UTF8ToUTF16(suggestion.article_title));
 }
 
 }  // namespace
@@ -112,6 +119,21 @@ void PrefetchDispatcherImpl::AddCandidatePrefetchURLs(
 
   // Report the 'enabled' day if we receive URLs and Prefetch is enabled.
   service_->GetOfflineMetricsCollector()->OnPrefetchEnabled();
+}
+
+void PrefetchDispatcherImpl::NewSuggestionsAvailable(
+    SuggestionsProvider* suggestions_provider) {
+  if (!prefetch_prefs::IsEnabled(pref_service_))
+    return;
+  suggestions_provider->GetCurrentArticleSuggestions(base::BindOnce(
+      &PrefetchDispatcherImpl::AddSuggestions, weak_factory_.GetWeakPtr()));
+}
+
+void PrefetchDispatcherImpl::RemoveSuggestion(const GURL& url) {
+  if (!prefetch_prefs::IsEnabled(pref_service_))
+    return;
+  // TODO(https://crbug.com/841516): to be implemented soon.
+  NOTIMPLEMENTED();
 }
 
 void PrefetchDispatcherImpl::RemoveAllUnprocessedPrefetchURLs(
@@ -222,6 +244,17 @@ void PrefetchDispatcherImpl::QueueActionTasks() {
               &PrefetchDispatcherImpl::DidGenerateBundleOrGetOperationRequest,
               weak_factory_.GetWeakPtr(), "GeneratePageBundleRequest"));
   task_queue_.AddTask(std::move(generate_page_bundle_task));
+}
+
+void PrefetchDispatcherImpl::AddSuggestions(
+    std::vector<PrefetchSuggestion> suggestions) {
+  std::vector<PrefetchURL> urls;
+  urls.reserve(suggestions.size());
+
+  for (auto& suggestion : suggestions) {
+    urls.push_back(SuggestionToPrefetchURL(std::move(suggestion)));
+  }
+  AddCandidatePrefetchURLs(kSuggestedArticlesNamespace, urls);
 }
 
 void PrefetchDispatcherImpl::StopBackgroundTask() {
@@ -393,6 +426,11 @@ void PrefetchDispatcherImpl::FetchThumbnails(
     std::unique_ptr<PrefetchDispatcher::IdsVector> remaining_ids,
     bool is_first_attempt) {
   if (remaining_ids->empty())
+    return;
+
+  // Zine/Feed
+  // TODO(https://crbug.com/841516): Implement thumbnail fetching with the Feed.
+  if (!service_->GetThumbnailFetcher())
     return;
 
   int64_t offline_id = remaining_ids->back().first;

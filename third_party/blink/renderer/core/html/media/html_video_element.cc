@@ -89,8 +89,8 @@ inline HTMLVideoElement::HTMLVideoElement(Document& document)
         new MediaCustomControlsFullscreenDetector(*this);
   }
 
-  if (MediaElementParserHelpers::IsMediaElement(this) &&
-      !MediaElementParserHelpers::IsUnsizedMediaEnabled(document)) {
+  if (media_element_parser_helpers::IsMediaElement(this) &&
+      !media_element_parser_helpers::IsUnsizedMediaEnabled(document)) {
     is_default_overridden_intrinsic_size_ = true;
     overridden_intrinsic_size_ =
         IntSize(LayoutReplaced::kDefaultWidth, LayoutReplaced::kDefaultHeight);
@@ -190,8 +190,8 @@ void HTMLVideoElement::ParseAttribute(
     // In case the poster attribute is set after playback, don't update the
     // display state, post playback the correct state will be picked up.
     if (GetDisplayMode() < kVideo || !HasAvailableVideoFrame()) {
-      // Force a poster recalc by setting m_displayMode to Unknown directly
-      // before calling updateDisplayState.
+      // Force a poster recalc by setting display_mode_ to kUnknown directly
+      // before calling UpdateDisplayState.
       HTMLMediaElement::SetDisplayMode(kUnknown);
       UpdateDisplayState();
     }
@@ -221,7 +221,7 @@ void HTMLVideoElement::ParseAttribute(
                  ExperimentalProductivityFeaturesEnabled()) {
     String message;
     bool intrinsic_size_changed =
-        MediaElementParserHelpers::ParseIntrinsicSizeAttribute(
+        media_element_parser_helpers::ParseIntrinsicSizeAttribute(
             params.new_value, this, &overridden_intrinsic_size_,
             &is_default_overridden_intrinsic_size_, &message);
     if (!message.IsEmpty()) {
@@ -582,9 +582,8 @@ scoped_refptr<Image> HTMLVideoElement::GetSourceImageForCanvas(
   return snapshot;
 }
 
-bool HTMLVideoElement::WouldTaintOrigin(
-    const SecurityOrigin* destination_security_origin) const {
-  return !IsMediaDataCORSSameOrigin(destination_security_origin);
+bool HTMLVideoElement::WouldTaintOrigin(const SecurityOrigin*) const {
+  return !IsMediaDataCORSSameOrigin();
 }
 
 FloatSize HTMLVideoElement::ElementSize(const FloatSize&) const {

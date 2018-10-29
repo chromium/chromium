@@ -154,6 +154,10 @@ source_set("minidump_test") {
     "minidump_writable_test.cc",
   ]
 
+  configs += [
+    "../build:crashpad_is_in_fuchsia",
+  ]
+
   deps = [
     ":test_support",
     "../snapshot:test_support",

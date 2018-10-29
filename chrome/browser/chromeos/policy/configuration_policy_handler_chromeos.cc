@@ -88,6 +88,9 @@ const char kActionLogout[] = "Logout";
 const char kActionShutdown[]  = "Shutdown";
 const char kActionDoNothing[] = "DoNothing";
 
+constexpr char kScreenBrightnessPercentAC[] = "BrightnessAC";
+constexpr char kScreenBrightnessPercentBattery[] = "BrightnessBattery";
+
 std::unique_ptr<base::Value> GetValue(const base::DictionaryValue* dict,
                                       const char* key) {
   const base::Value* value = NULL;
@@ -514,6 +517,41 @@ void ScreenLockDelayPolicyHandler::ApplyPolicySettings(
   value = GetValue(dict, kScreenLockDelayBattery);
   if (value)
     prefs->SetValue(ash::prefs::kPowerBatteryScreenLockDelayMs,
+                    std::move(value));
+}
+
+ScreenBrightnessPercentPolicyHandler::ScreenBrightnessPercentPolicyHandler(
+    const Schema& chrome_schema)
+    : SchemaValidatingPolicyHandler(
+          key::kScreenBrightnessPercent,
+          chrome_schema.GetKnownProperty(key::kScreenBrightnessPercent),
+          SCHEMA_ALLOW_UNKNOWN) {}
+
+ScreenBrightnessPercentPolicyHandler::~ScreenBrightnessPercentPolicyHandler() =
+    default;
+
+void ScreenBrightnessPercentPolicyHandler::ApplyPolicySettings(
+    const PolicyMap& policies,
+    PrefValueMap* prefs) {
+  std::unique_ptr<base::Value> policy_value;
+  if (!CheckAndGetValue(policies, nullptr, &policy_value))
+    return;
+
+  if (!policy_value)
+    return;
+
+  base::DictionaryValue* dict = nullptr;
+  if (!policy_value->GetAsDictionary(&dict))
+    return;
+
+  std::unique_ptr<base::Value> value;
+  value = GetValue(dict, kScreenBrightnessPercentAC);
+  if (value)
+    prefs->SetValue(ash::prefs::kPowerAcScreenBrightnessPercent,
+                    std::move(value));
+  value = GetValue(dict, kScreenBrightnessPercentBattery);
+  if (value)
+    prefs->SetValue(ash::prefs::kPowerBatteryScreenBrightnessPercent,
                     std::move(value));
 }
 

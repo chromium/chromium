@@ -4,8 +4,16 @@
 
 #include "chrome/common/apps/platform_apps/chrome_apps_api_permissions.h"
 
+#include "chrome/common/apps/platform_apps/media_galleries_permission.h"
+
 namespace chrome_apps_api_permissions {
 namespace {
+
+template <typename T>
+extensions::APIPermission* CreateAPIPermission(
+    const extensions::APIPermissionInfo* permission) {
+  return new T(permission);
+}
 
 // WARNING: If you are modifying a permission message in this list, be sure to
 // add the corresponding permission message rule to
@@ -13,6 +21,14 @@ namespace {
 constexpr extensions::APIPermissionInfo::InitInfo permissions_to_register[] = {
     {extensions::APIPermission::kBrowser, "browser"},
     {extensions::APIPermission::kEasyUnlockPrivate, "easyUnlockPrivate"},
+    {extensions::APIPermission::kMusicManagerPrivate, "musicManagerPrivate",
+     extensions::APIPermissionInfo::kFlagCannotBeOptional},
+    {extensions::APIPermission::kMediaGalleries, "mediaGalleries",
+     extensions::APIPermissionInfo::kFlagNone,
+     &CreateAPIPermission<chrome_apps::MediaGalleriesPermission>},
+    {extensions::APIPermission::kSyncFileSystem, "syncFileSystem"},
+    {extensions::APIPermission::kWebstoreWidgetPrivate, "webstoreWidgetPrivate",
+     extensions::APIPermissionInfo::kFlagCannotBeOptional},
 };
 
 }  // namespace

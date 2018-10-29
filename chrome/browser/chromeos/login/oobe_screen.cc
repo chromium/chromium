@@ -65,6 +65,7 @@ const char* kScreenNames[] = {
     "app-downloading",               // SCREEN_APP_DOWNLOADING
     "discover",                      // SCREEN_DISCOVER
     "marketing-opt-in",              // SCREEN_MARKETING_OPT_IN
+    "multidevice-setup",             // SCREEN_MULTIDEVICE_SETUP
     "unknown",                       // SCREEN_UNKNOWN
 };
 

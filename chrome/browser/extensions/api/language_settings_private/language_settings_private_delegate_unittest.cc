@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate.h"
+
+#include "base/bind.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -40,8 +42,8 @@ class LanguageSettingsPrivateDelegateTest
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
     ExtensionServiceTestBase::InitializeEmptyExtensionService();
-    EventRouterFactory::GetInstance()->SetTestingFactory(profile(),
-                                                         &BuildEventRouter);
+    EventRouterFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildEventRouter));
 
     base::ListValue language_codes;
     language_codes.AppendString("fr");
@@ -49,7 +51,7 @@ class LanguageSettingsPrivateDelegateTest
                                language_codes);
 
     SpellcheckServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), &BuildSpellcheckService);
+        profile(), base::BindRepeating(&BuildSpellcheckService));
 
     // Wait until dictionary file is loaded.
     SpellcheckService* service =

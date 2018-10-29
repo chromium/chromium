@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -1478,8 +1480,8 @@ IN_PROC_BROWSER_TEST_F(
 
         // Quit the run loop on IO to make sure the message handler of
         // TextInputClientMac has successfully run on UI thread.
-        content::BrowserThread::PostTask(content::BrowserThread::IO, FROM_HERE,
-                                         callback_on_io);
+        base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                                 callback_on_io);
       },
       child_process_id, child_frame_routing_id,
       test_complete_waiter.QuitClosure()));
@@ -1548,8 +1550,8 @@ IN_PROC_BROWSER_TEST_F(
 
         // Quit the run loop on IO to make sure the message handler of
         // TextInputClientMac has successfully run on UI thread.
-        content::BrowserThread::PostTask(content::BrowserThread::IO, FROM_HERE,
-                                         callback_on_io);
+        base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                                 callback_on_io);
       },
       main_frame_process_id, main_frame_routing_id,
       test_complete_waiter.QuitClosure()));

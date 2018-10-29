@@ -7,33 +7,32 @@
 
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_observer.h"
-#include "ash/shelf/shelf_tooltip_bubble_base.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/events/event_handler.h"
-#include "ui/views/pointer_watcher.h"
+
+namespace ui {
+class LocatedEvent;
+}
 
 namespace views {
 class View;
 }
 
 namespace ash {
+class ShelfTooltipBubbleBase;
 class ShelfView;
 
 // ShelfTooltipManager manages the tooltip bubble that appears for shelf items.
 class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
-                                       public views::PointerWatcher,
                                        public ShelfObserver {
  public:
   explicit ShelfTooltipManager(ShelfView* shelf_view);
   ~ShelfTooltipManager() override;
 
-  // Initializes the tooltip manager once the shelf is shown.
-  void Init();
-
-  // Closes the tooltip.
-  void Close();
+  // Closes the tooltip; uses an animation if |animate| is true.
+  void Close(bool animate = true);
 
   // Returns true if the tooltip is currently visible.
   bool IsVisible() const;
@@ -51,11 +50,7 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
  protected:
   // ui::EventHandler overrides:
   void OnMouseEvent(ui::MouseEvent* event) override;
-
-  // views::PointerWatcher overrides:
-  void OnPointerEventObserved(const ui::PointerEvent& event,
-                              const gfx::Point& location_in_screen,
-                              gfx::NativeView target) override;
+  void OnTouchEvent(ui::TouchEvent* event) override;
 
   // ShelfObserver overrides:
   void WillChangeVisibilityState(ShelfVisibilityState new_state) override;
@@ -68,11 +63,13 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
   // A helper function to check for shelf visibility and view validity.
   bool ShouldShowTooltipForView(views::View* view);
 
+  // A helper function to close the tooltip on mouse and touch press events.
+  void ProcessPressedEvent(const ui::LocatedEvent& event);
+
   int timer_delay_;
   base::OneShotTimer timer_;
-
   ShelfView* shelf_view_;
-  ShelfTooltipBubbleBase* bubble_;
+  ShelfTooltipBubbleBase* bubble_ = nullptr;
 
   base::WeakPtrFactory<ShelfTooltipManager> weak_factory_;
 

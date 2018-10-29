@@ -163,6 +163,15 @@ void V4L2Webcam::GetZoom(const GetPTZCompleteCallback& callback) {
   callback.Run(success, value, min_value, max_value);
 }
 
+void V4L2Webcam::GetFocus(const GetPTZCompleteCallback& callback) {
+  int value = 0;
+  int min_value = 0;
+  int max_value = 0;
+  bool success = GetWebcamParameter(fd_.get(), V4L2_CID_FOCUS_ABSOLUTE, &value,
+                                    &min_value, &max_value);
+  callback.Run(success, value, min_value, max_value);
+}
+
 void V4L2Webcam::SetPan(int value,
                         int pan_speed,
                         const SetPTZCompleteCallback& callback) {
@@ -177,6 +186,16 @@ void V4L2Webcam::SetTilt(int value,
 
 void V4L2Webcam::SetZoom(int value, const SetPTZCompleteCallback& callback) {
   callback.Run(SetWebcamParameter(fd_.get(), V4L2_CID_ZOOM_ABSOLUTE, value));
+}
+
+void V4L2Webcam::SetFocus(int value, const SetPTZCompleteCallback& callback) {
+  callback.Run(SetWebcamParameter(fd_.get(), V4L2_CID_FOCUS_ABSOLUTE, value));
+}
+
+void V4L2Webcam::SetAutofocusState(AutofocusState state,
+                                   const SetPTZCompleteCallback& callback) {
+  const int value = (state == AUTOFOCUS_ON) ? 1 : 0;
+  callback.Run(SetWebcamParameter(fd_.get(), V4L2_CID_FOCUS_AUTO, value));
 }
 
 void V4L2Webcam::SetPanDirection(PanDirection direction,

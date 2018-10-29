@@ -1,3 +1,2 @@
 When the caret is scrolled out and resides at the end of the textarea, on pressing "Return" it must be scrolled to the bottom of the view, not to the center to avoid undesirable content view jumping.
-
 PASS

@@ -16,7 +16,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBar;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -145,10 +144,8 @@ public class PermissionTestRule extends ChromeActivityTestRule<ChromeActivity> {
      */
     void setUpActivity() throws InterruptedException {
         startMainActivityOnBlankPage();
-        InfoBarContainer container =
-                getActivity().getTabModelSelector().getCurrentTab().getInfoBarContainer();
         mListener = new InfoBarTestAnimationListener();
-        container.addAnimationListener(mListener);
+        getInfoBarContainer().addAnimationListener(mListener);
     }
 
     private void ruleTearDown() throws Exception {

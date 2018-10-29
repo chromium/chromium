@@ -35,7 +35,7 @@ class StatusBubbleViews : public StatusBubble {
   static const int kTotalVerticalPadding = 7;
 
   // |base_view| is the view that this bubble is positioned relative to.
-  StatusBubbleViews(views::View* base_view, bool has_client_edge);
+  explicit StatusBubbleViews(views::View* base_view);
   ~StatusBubbleViews() override;
 
   views::View* base_view() { return base_view_; }
@@ -144,10 +144,6 @@ class StatusBubbleViews : public StatusBubble {
   // If the bubble has already been expanded, and encounters a new URL,
   // change size immediately, with no hover.
   bool is_expanded_;
-
-  // Whether or not the frame that the bubble will be painting inside has a
-  // client edge. Affects layout.
-  const bool has_client_edge_;
 
   // Times expansion of status bubble when URL is too long for standard width.
   base::WeakPtrFactory<StatusBubbleViews> expand_timer_factory_;

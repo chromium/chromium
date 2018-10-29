@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest, ScreenOrientation) {
 // Regression test for triggering a screen orientation change for a pending
 // main frame RenderFrameHost.  See https://crbug.com/764202.  In the bug, this
 // was triggered via the DevTools audit panel and
-// ViewMsg_EnableDeviceEmulation, which calls RenderWidget::Resize on the
+// WidgetMsg_EnableDeviceEmulation, which calls RenderWidget::Resize on the
 // renderer side.  The test fakes this by directly sending the resize message
 // to the widget.
 IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,

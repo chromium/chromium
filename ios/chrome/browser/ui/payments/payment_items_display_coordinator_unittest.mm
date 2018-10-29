@@ -22,13 +22,15 @@ class PaymentRequestPaymentItemsDisplayCoordinatorTest
     : public PaymentRequestUnitTestBase,
       public PlatformTest {
  protected:
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     CreateTestPaymentRequest();
   }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 };
 
 // Tests that invoking start and stop on the coordinator presents and dismisses

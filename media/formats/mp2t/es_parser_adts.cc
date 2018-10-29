@@ -139,7 +139,7 @@ EsParserAdts::EsParserAdts(const NewAudioConfigCB& new_audio_config_cb,
       get_decrypt_config_cb_(get_decrypt_config_cb),
       use_hls_sample_aes_(use_hls_sample_aes),
       sbr_in_mimetype_(sbr_in_mimetype) {
-  DCHECK_EQ(!get_decrypt_config_cb_.is_null(), use_hls_sample_aes_);
+  DCHECK_EQ(!!get_decrypt_config_cb_, use_hls_sample_aes_);
 }
 #endif
 

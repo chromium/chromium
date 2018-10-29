@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/debug/alias.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -23,6 +24,7 @@
 #include "net/cert/symantec_certs.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_private_key.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
@@ -68,6 +70,7 @@ void PopulateResourceResponse(net::URLRequest* request,
   response->head.socket_address = response_info.socket_address;
   response->head.was_fetched_via_cache = request->was_cached();
   response->head.was_fetched_via_proxy = request->was_fetched_via_proxy();
+  response->head.proxy_server = request->proxy_server();
   response->head.network_accessed = response_info.network_accessed;
   response->head.async_revalidation_requested =
       response_info.async_revalidation_requested;
@@ -245,7 +248,7 @@ class SSLPrivateKeyInternal : public net::SSLPrivateKey {
             base::span<const uint8_t> input,
             net::SSLPrivateKey::SignCallback callback) override {
     std::vector<uint8_t> input_vector(input.begin(), input.end());
-    if (ssl_private_key_.encountered_error()) {
+    if (!ssl_private_key_ || ssl_private_key_.encountered_error()) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback),
@@ -320,6 +323,10 @@ URLLoader::URLLoader(
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
       network_usage_accumulator_(std::move(network_usage_accumulator)),
       first_auth_attempt_(true),
+      custom_proxy_pre_cache_headers_(request.custom_proxy_pre_cache_headers),
+      custom_proxy_post_cache_headers_(request.custom_proxy_post_cache_headers),
+      custom_proxy_use_alternate_proxy_list_(
+          request.custom_proxy_use_alternate_proxy_list),
       weak_ptr_factory_(this) {
   DCHECK(delete_callback_);
   if (!base::FeatureList::IsEnabled(features::kNetworkService)) {
@@ -346,6 +353,11 @@ URLLoader::URLLoader(
   url_request_->SetReferrer(ComputeReferrer(request.referrer));
   url_request_->set_referrer_policy(request.referrer_policy);
   url_request_->SetExtraRequestHeaders(request.headers);
+  if (!request.requested_with.empty()) {
+    // X-Requested-With header must be set here to avoid breaking CORS checks.
+    url_request_->SetExtraRequestHeaderByName("X-Requested-With",
+                                              request.requested_with, true);
+  }
   url_request_->set_upgrade_if_insecure(request.upgrade_if_insecure);
 
   url_request_->SetUserData(kUserDataKey,
@@ -684,6 +696,14 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
     raw_response_headers_ = nullptr;
   }
 
+  // Save some info for debugging. Temporary for https://crbug.com/893971
+  int32_t annotation_hash =
+      url_request_->traffic_annotation().unique_id_hash_code;
+  size_t num_running_requests = url_request_context_->url_requests()->size();
+  base::debug::Alias(&annotation_hash);
+  base::debug::Alias(&num_running_requests);
+  DEBUG_ALIAS_FOR_GURL(url_buf, url_request_->url());
+
   mojo::DataPipe data_pipe(kDefaultAllocationSize);
   response_body_stream_ = std::move(data_pipe.producer_handle);
   consumer_handle_ = std::move(data_pipe.consumer_handle);
@@ -868,14 +888,14 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
     // since the concern is the effect that entering suspend mode has on
     // sockets. See https://crbug.com/651120.
     if (pending_write_)
-      CompletePendingWrite();
+      CompletePendingWrite(url_request_->status().is_success());
     NotifyCompleted(url_request_->status().ToNetError());
     // |this| will have been deleted.
     return;
   }
 
   if (complete_read) {
-    CompletePendingWrite();
+    CompletePendingWrite(true /* success */);
   }
   if (completed_synchronously) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -942,6 +962,13 @@ void URLLoader::NotifyCompleted(int error_code) {
   if (network_usage_accumulator_) {
     network_usage_accumulator_->OnBytesTransferred(
         factory_params_->process_id, render_frame_id_,
+        url_request_->GetTotalReceivedBytes(),
+        url_request_->GetTotalSentBytes());
+  }
+  if (network_service_client_ && (url_request_->GetTotalReceivedBytes() > 0 ||
+                                  url_request_->GetTotalSentBytes() > 0)) {
+    network_service_client_->OnDataUseUpdate(
+        url_request_->traffic_annotation().unique_id_hash_code,
         url_request_->GetTotalReceivedBytes(),
         url_request_->GetTotalSentBytes());
   }
@@ -1012,9 +1039,18 @@ void URLLoader::SendResponseToClient() {
   response_ = nullptr;
 }
 
-void URLLoader::CompletePendingWrite() {
-  response_body_stream_ =
-      pending_write_->Complete(pending_write_buffer_offset_);
+void URLLoader::CompletePendingWrite(bool success) {
+  if (success) {
+    // The write can only be completed immediately in case of a success, since
+    // doing so invalidates memory of any attached NetToMojoIOBuffer's; but in
+    // case of an abort, particularly one caused by a suspend, the failure may
+    // be delivered to URLLoader while the disk_cache layer is still hanging on
+    // to the now-invalid IOBuffer in some worker thread trying to commit it to
+    // disk.  In case of an error, this will have to wait till everything is
+    // destroyed.
+    response_body_stream_ =
+        pending_write_->Complete(pending_write_buffer_offset_);
+  }
   total_written_bytes_ += pending_write_buffer_offset_;
   pending_write_ = nullptr;
   pending_write_buffer_offset_ = 0;
@@ -1060,8 +1096,8 @@ void URLLoader::OnCertificateRequestedResponse(
     url_request_->CancelWithError(net::ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   } else {
     if (x509_certificate) {
-      scoped_refptr<net::SSLPrivateKey> key(new SSLPrivateKeyInternal(
-          algorithm_preferences, std::move(ssl_private_key)));
+      auto key = base::MakeRefCounted<SSLPrivateKeyInternal>(
+          algorithm_preferences, std::move(ssl_private_key));
       url_request_->ContinueWithCertificate(std::move(x509_certificate),
                                             std::move(key));
     } else {

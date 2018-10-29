@@ -174,6 +174,13 @@ class BaseTestServer {
       TLS_INTOLERANCE_RESET = 2,  // Send a TCP reset.
     };
 
+    enum TLSMaxVersion {
+      TLS_MAX_VERSION_DEFAULT = 0,
+      TLS_MAX_VERSION_TLS1_0 = 1,
+      TLS_MAX_VERSION_TLS1_1 = 2,
+      TLS_MAX_VERSION_TLS1_2 = 3,
+    };
+
     // Initialize a new SSLOptions using CERT_OK as the certificate.
     SSLOptions();
 
@@ -304,6 +311,9 @@ class BaseTestServer {
     // an intolerant TLS version.
     TLSIntoleranceType tls_intolerance_type = TLS_INTOLERANCE_ALERT;
 
+    // The maximum TLS version to support.
+    TLSMaxVersion tls_max_version = TLS_MAX_VERSION_DEFAULT;
+
     // fallback_scsv_enabled, if true, causes the server to process the
     // TLS_FALLBACK_SCSV cipher suite. This cipher suite is sent by Chrome
     // when performing TLS version fallback in response to an SSL handshake
@@ -343,8 +353,13 @@ class BaseTestServer {
     // If true, disables extended master secret tls extension.
     bool disable_extended_master_secret = false;
 
-    // List of token binding params that the server supports and will negotiate.
-    std::vector<int> supported_token_binding_params;
+    // If true, sends the TLS 1.3 to TLS 1.2 downgrade signal in the ServerHello
+    // random.
+    bool simulate_tls13_downgrade = false;
+
+    // If true, sends the TLS 1.2 to TLS 1.1 downgrade signal in the ServerHello
+    // random.
+    bool simulate_tls12_downgrade = false;
   };
 
   // Initialize a TestServer.

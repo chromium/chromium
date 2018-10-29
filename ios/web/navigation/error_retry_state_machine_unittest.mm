@@ -41,9 +41,9 @@ TEST_F(ErrorRetryStateMachineTest, OfflineThenReload) {
   ASSERT_EQ(ErrorRetryState::kReadyToDisplayErrorForFailedNavigation,
             machine.state());
 
-  // Presents error in native view.
-  machine.SetDisplayingNativeError();
-  ASSERT_EQ(ErrorRetryState::kDisplayingNativeErrorForFailedNavigation,
+  // Presents error.
+  machine.SetDisplayingWebError();
+  ASSERT_EQ(ErrorRetryState::kDisplayingWebErrorForFailedNavigation,
             machine.state());
 
   // Reload the failed navigation.

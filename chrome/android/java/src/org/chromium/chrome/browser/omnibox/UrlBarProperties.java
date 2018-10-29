@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlDirectionListener;
+import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 
 import java.util.Locale;
@@ -110,6 +111,10 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<UrlDirectionListener> URL_DIRECTION_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** The callback to be notified on text changes. */
+    public static final WritableObjectPropertyKey<UrlTextChangeListener> URL_TEXT_CHANGE_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     /** Specifies whether dark text colors should be used in the view. */
     public static final WritableBooleanPropertyKey USE_DARK_TEXT_COLORS =
             new WritableBooleanPropertyKey();
@@ -118,8 +123,8 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<WindowDelegate> WINDOW_DELEGATE =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {ACTION_MODE_CALLBACK, ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE,
-                    FOCUS_CHANGE_CALLBACK, SHOW_CURSOR, TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE,
-                    URL_DIRECTION_LISTENER, USE_DARK_TEXT_COLORS, WINDOW_DELEGATE};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ACTION_MODE_CALLBACK,
+            ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE, FOCUS_CHANGE_CALLBACK, SHOW_CURSOR,
+            TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE, URL_DIRECTION_LISTENER,
+            URL_TEXT_CHANGE_LISTENER, USE_DARK_TEXT_COLORS, WINDOW_DELEGATE};
 }

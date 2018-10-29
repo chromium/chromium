@@ -24,14 +24,51 @@ TestComponentCreator::~TestComponentCreator() {
 }
 
 optimization_guide::ComponentInfo
-TestComponentCreator::CreateComponentInfoWithWhitelist(
+TestComponentCreator::CreateComponentInfoWithTopLevelWhitelist(
     optimization_guide::proto::OptimizationType optimization_type,
     const std::vector<std::string>& whitelisted_host_suffixes) {
-  std::string version_string = base::IntToString(next_component_version_++);
-  base::FilePath hints_path = GetFilePath(version_string);
-  WriteConfigToFile(optimization_type, hints_path, whitelisted_host_suffixes);
-  return optimization_guide::ComponentInfo(base::Version(version_string),
-                                           hints_path);
+  optimization_guide::proto::Configuration config;
+  for (const auto& whitelisted_site : whitelisted_host_suffixes) {
+    optimization_guide::proto::Hint* hint = config.add_hints();
+    hint->set_key(whitelisted_site);
+    hint->set_key_representation(optimization_guide::proto::HOST_SUFFIX);
+
+    optimization_guide::proto::Optimization* optimization =
+        hint->add_whitelisted_optimizations();
+    optimization->set_optimization_type(optimization_type);
+  }
+
+  return WriteConfigToFileAndReturnComponentInfo(config);
+}
+
+optimization_guide::ComponentInfo
+TestComponentCreator::CreateComponentInfoWithPageHints(
+    optimization_guide::proto::OptimizationType optimization_type,
+    const std::vector<std::string>& page_hint_host_suffixes,
+    const std::vector<std::string>& resource_blocking_patterns) {
+  optimization_guide::proto::Configuration config;
+  for (const auto& page_hint_site : page_hint_host_suffixes) {
+    optimization_guide::proto::Hint* hint = config.add_hints();
+    hint->set_key(page_hint_site);
+    hint->set_key_representation(optimization_guide::proto::HOST_SUFFIX);
+
+    optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
+    page_hint->set_page_pattern("*");
+
+    optimization_guide::proto::Optimization* optimization =
+        page_hint->add_whitelisted_optimizations();
+    optimization->set_optimization_type(optimization_type);
+
+    for (auto resource_blocking_pattern : resource_blocking_patterns) {
+      optimization_guide::proto::ResourceLoadingHint* resource_loading_hint =
+          optimization->add_resource_loading_hints();
+      resource_loading_hint->set_loading_optimization_type(
+          optimization_guide::proto::LOADING_BLOCK_RESOURCE);
+      resource_loading_hint->set_resource_pattern(resource_blocking_pattern);
+    }
+  }
+
+  return WriteConfigToFileAndReturnComponentInfo(config);
 }
 
 base::FilePath TestComponentCreator::GetFilePath(std::string file_path_suffix) {
@@ -42,20 +79,9 @@ base::FilePath TestComponentCreator::GetFilePath(std::string file_path_suffix) {
 }
 
 void TestComponentCreator::WriteConfigToFile(
-    optimization_guide::proto::OptimizationType optimization_type,
-    base::FilePath file_path,
-    std::vector<std::string> whitelisted_host_suffixes) {
+    const base::FilePath& file_path,
+    const optimization_guide::proto::Configuration& config) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-
-  optimization_guide::proto::Configuration config;
-  for (auto whitelisted_noscript_site : whitelisted_host_suffixes) {
-    optimization_guide::proto::Hint* hint = config.add_hints();
-    hint->set_key(whitelisted_noscript_site);
-    hint->set_key_representation(optimization_guide::proto::HOST_SUFFIX);
-    optimization_guide::proto::Optimization* optimization =
-        hint->add_whitelisted_optimizations();
-    optimization->set_optimization_type(optimization_type);
-  }
 
   std::string serialized_config;
   ASSERT_TRUE(config.SerializeToString(&serialized_config));
@@ -63,6 +89,16 @@ void TestComponentCreator::WriteConfigToFile(
   ASSERT_EQ(static_cast<int32_t>(serialized_config.length()),
             base::WriteFile(file_path, serialized_config.data(),
                             serialized_config.length()));
+}
+
+optimization_guide::ComponentInfo
+TestComponentCreator::WriteConfigToFileAndReturnComponentInfo(
+    const optimization_guide::proto::Configuration& config) {
+  std::string version_string = base::IntToString(next_component_version_++);
+  base::FilePath file_path = GetFilePath(version_string);
+  WriteConfigToFile(file_path, config);
+  return optimization_guide::ComponentInfo(base::Version(version_string),
+                                           file_path);
 }
 
 }  // namespace testing

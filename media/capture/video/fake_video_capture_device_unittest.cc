@@ -148,12 +148,14 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
 
   std::unique_ptr<MockVideoCaptureDeviceClient> CreateClient() {
     auto result = std::make_unique<MockVideoCaptureDeviceClient>();
-    ON_CALL(*result, ReserveOutputBuffer(_, _, _))
-        .WillByDefault(Invoke(
-            [](const gfx::Size& dimensions, VideoPixelFormat format, int) {
+    ON_CALL(*result, ReserveOutputBuffer(_, _, _, _))
+        .WillByDefault(
+            Invoke([](const gfx::Size& dimensions, VideoPixelFormat format, int,
+                      VideoCaptureDevice::Client::Buffer* buffer) {
               EXPECT_GT(dimensions.GetArea(), 0);
               const VideoCaptureFormat frame_format(dimensions, 0.0, format);
-              return CreateStubBuffer(0, frame_format.ImageAllocationSize());
+              *buffer = CreateStubBuffer(0, frame_format.ImageAllocationSize());
+              return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
             }));
     ON_CALL(*result, OnIncomingCapturedData(_, _, _, _, _, _, _))
         .WillByDefault(
@@ -361,17 +363,17 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
   const mojom::PhotoState* state = image_capture_client_->state();
   ASSERT_TRUE(state);
   EXPECT_EQ(mojom::MeteringMode::NONE, state->current_white_balance_mode);
-  EXPECT_EQ(mojom::MeteringMode::NONE, state->current_exposure_mode);
+  EXPECT_EQ(mojom::MeteringMode::MANUAL, state->current_exposure_mode);
   EXPECT_EQ(mojom::MeteringMode::NONE, state->current_focus_mode);
 
   EXPECT_EQ(0, state->exposure_compensation->min);
   EXPECT_EQ(0, state->exposure_compensation->max);
   EXPECT_EQ(0, state->exposure_compensation->current);
   EXPECT_EQ(0, state->exposure_compensation->step);
-  EXPECT_EQ(0, state->exposure_time->min);
-  EXPECT_EQ(0, state->exposure_time->max);
-  EXPECT_EQ(0, state->exposure_time->current);
-  EXPECT_EQ(0, state->exposure_time->step);
+  EXPECT_EQ(10, state->exposure_time->min);
+  EXPECT_EQ(100, state->exposure_time->max);
+  EXPECT_EQ(50, state->exposure_time->current);
+  EXPECT_EQ(5, state->exposure_time->step);
   EXPECT_EQ(0, state->color_temperature->min);
   EXPECT_EQ(0, state->color_temperature->max);
   EXPECT_EQ(0, state->color_temperature->current);

@@ -162,6 +162,15 @@ TEST_F(PlatformSharedMemoryRegionTest, TakeTooLargeRegionIsInvalid) {
   EXPECT_FALSE(region2.IsValid());
 }
 
+// Tests that mapping zero bytes fails.
+TEST_F(PlatformSharedMemoryRegionTest, MapAtZeroBytesTest) {
+  PlatformSharedMemoryRegion region =
+      PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
+  ASSERT_TRUE(region.IsValid());
+  WritableSharedMemoryMapping mapping = MapAtForTesting(&region, 0, 0);
+  EXPECT_FALSE(mapping.IsValid());
+}
+
 // Tests that mapping bytes out of the region limits fails.
 TEST_F(PlatformSharedMemoryRegionTest, MapAtOutOfTheRegionLimitsTest) {
   PlatformSharedMemoryRegion region =

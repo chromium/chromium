@@ -20,7 +20,7 @@
 #include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_loop_current.h"
 #include "base/no_destructor.h"
-#include "base/process/process_info.h"
+#include "base/process/process.h"
 #include "base/process/process_metrics.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
@@ -370,7 +370,6 @@ void TraceLog::ResetForTesting() {
 TraceLog::TraceLog()
     : enabled_modes_(0),
       num_traces_recorded_(0),
-      dispatching_to_observer_list_(false),
       process_sort_index_(0),
       process_id_hash_(0),
       process_id_(0),
@@ -393,7 +392,7 @@ TraceLog::TraceLog()
 // Linux renderer processes and Android O processes are not allowed to read
 // "proc/stat" file, crbug.com/788870.
 #if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
-  process_creation_time_ = CurrentProcessInfo::CreationTime();
+  process_creation_time_ = Process::Current().CreationTime();
 #else
   // Use approximate time when creation time is not available.
   process_creation_time_ = TRACE_TIME_NOW();
@@ -571,95 +570,90 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
                           uint8_t modes_to_enable) {
   DCHECK(trace_config.process_filter_config().IsEnabled(process_id_));
 
-  std::vector<EnabledStateObserver*> observer_list;
-  std::map<AsyncEnabledStateObserver*, RegisteredAsyncObserver> observer_map;
+  AutoLock lock(lock_);
+
+  // Can't enable tracing when Flush() is in progress.
+  DCHECK(!flush_task_runner_);
+
+  InternalTraceOptions new_options =
+      GetInternalOptionsFromTraceConfig(trace_config);
+
+  InternalTraceOptions old_options = trace_options();
+
+  if (dispatching_to_observers_) {
+    // TODO(ssid): Change to NOTREACHED after fixing crbug.com/625170.
+    DLOG(ERROR)
+        << "Cannot manipulate TraceLog::Enabled state from an observer.";
+    return;
+  }
+
+  // Clear all filters from previous tracing session. These filters are not
+  // cleared at the end of tracing because some threads which hit trace event
+  // when disabling, could try to use the filters.
+  if (!enabled_modes_)
+    GetCategoryGroupFilters().clear();
+
+  // Update trace config for recording.
+  const bool already_recording = enabled_modes_ & RECORDING_MODE;
+  if (modes_to_enable & RECORDING_MODE) {
+    if (already_recording) {
+      // TODO(ssid): Stop supporting enabling of RECORDING_MODE when already
+      // enabled crbug.com/625170.
+      DCHECK_EQ(new_options, old_options) << "Attempting to re-enable "
+                                             "tracing with a different set "
+                                             "of options.";
+      trace_config_.Merge(trace_config);
+    } else {
+      trace_config_ = trace_config;
+    }
+  }
+
+  // Update event filters only if filtering was not enabled.
+  if (modes_to_enable & FILTERING_MODE && enabled_event_filters_.empty()) {
+    DCHECK(!trace_config.event_filters().empty());
+    enabled_event_filters_ = trace_config.event_filters();
+  }
+  // Keep the |trace_config_| updated with only enabled filters in case anyone
+  // tries to read it using |GetCurrentTraceConfig| (even if filters are
+  // empty).
+  trace_config_.SetEventFilters(enabled_event_filters_);
+
+  enabled_modes_ |= modes_to_enable;
+  UpdateCategoryRegistry();
+
+  // Do not notify observers or create trace buffer if only enabled for
+  // filtering or if recording was already enabled.
+  if (!(modes_to_enable & RECORDING_MODE) || already_recording)
+    return;
+
+  // Discard events if new trace options are different. Reducing trace buffer
+  // size is not supported while already recording, so only replace trace
+  // buffer if we were not already recording.
+  if (new_options != old_options ||
+      (trace_config_.GetTraceBufferSizeInEvents() && !already_recording)) {
+    subtle::NoBarrier_Store(&trace_options_, new_options);
+    UseNextTraceBuffer();
+  }
+
+  num_traces_recorded_++;
+
+  UpdateCategoryRegistry();
+
+  dispatching_to_observers_ = true;
   {
-    AutoLock lock(lock_);
-
-    // Can't enable tracing when Flush() is in progress.
-    DCHECK(!flush_task_runner_);
-
-    InternalTraceOptions new_options =
-        GetInternalOptionsFromTraceConfig(trace_config);
-
-    InternalTraceOptions old_options = trace_options();
-
-    if (dispatching_to_observer_list_) {
-      // TODO(ssid): Change to NOTREACHED after fixing crbug.com/625170.
-      DLOG(ERROR)
-          << "Cannot manipulate TraceLog::Enabled state from an observer.";
-      return;
+    // Notify observers outside of the thread events lock, so they can trigger
+    // trace events.
+    AutoUnlock unlock(lock_);
+    AutoLock lock2(observers_lock_);
+    for (EnabledStateObserver* observer : enabled_state_observers_)
+      observer->OnTraceLogEnabled();
+    for (const auto& it : async_observers_) {
+      it.second.task_runner->PostTask(
+          FROM_HERE, BindOnce(&AsyncEnabledStateObserver::OnTraceLogEnabled,
+                              it.second.observer));
     }
-
-    // Clear all filters from previous tracing session. These filters are not
-    // cleared at the end of tracing because some threads which hit trace event
-    // when disabling, could try to use the filters.
-    if (!enabled_modes_)
-      GetCategoryGroupFilters().clear();
-
-    // Update trace config for recording.
-    const bool already_recording = enabled_modes_ & RECORDING_MODE;
-    if (modes_to_enable & RECORDING_MODE) {
-      if (already_recording) {
-        // TODO(ssid): Stop suporting enabling of RECODING_MODE when already
-        // enabled crbug.com/625170.
-        DCHECK_EQ(new_options, old_options) << "Attempting to re-enable "
-                                               "tracing with a different set "
-                                               "of options.";
-        trace_config_.Merge(trace_config);
-      } else {
-        trace_config_ = trace_config;
-      }
-    }
-
-    // Update event filters only if filtering was not enabled.
-    if (modes_to_enable & FILTERING_MODE && enabled_event_filters_.empty()) {
-      DCHECK(!trace_config.event_filters().empty());
-      enabled_event_filters_ = trace_config.event_filters();
-    }
-    // Keep the |trace_config_| updated with only enabled filters in case anyone
-    // tries to read it using |GetCurrentTraceConfig| (even if filters are
-    // empty).
-    trace_config_.SetEventFilters(enabled_event_filters_);
-
-    enabled_modes_ |= modes_to_enable;
-    UpdateCategoryRegistry();
-
-    // Do not notify observers or create trace buffer if only enabled for
-    // filtering or if recording was already enabled.
-    if (!(modes_to_enable & RECORDING_MODE) || already_recording)
-      return;
-
-    // Discard events if new trace options are different. Reducing trace buffer
-    // size is not supported while already recording, so only replace trace
-    // buffer if we were not already recording.
-    if (new_options != old_options ||
-        (trace_config_.GetTraceBufferSizeInEvents() && !already_recording)) {
-      subtle::NoBarrier_Store(&trace_options_, new_options);
-      UseNextTraceBuffer();
-    }
-
-    num_traces_recorded_++;
-
-    UpdateCategoryRegistry();
-
-    dispatching_to_observer_list_ = true;
-    observer_list = enabled_state_observer_list_;
-    observer_map = async_observers_;
   }
-  // Notify observers outside the lock in case they trigger trace events.
-  for (EnabledStateObserver* observer : observer_list)
-    observer->OnTraceLogEnabled();
-  for (const auto& it : observer_map) {
-    it.second.task_runner->PostTask(
-        FROM_HERE, BindOnce(&AsyncEnabledStateObserver::OnTraceLogEnabled,
-                            it.second.observer));
-  }
-
-  {
-    AutoLock lock(lock_);
-    dispatching_to_observer_list_ = false;
-  }
+  dispatching_to_observers_ = false;
 }
 
 void TraceLog::SetArgumentFilterPredicate(
@@ -710,7 +704,7 @@ void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
   if (!(enabled_modes_ & modes_to_disable))
     return;
 
-  if (dispatching_to_observer_list_) {
+  if (dispatching_to_observers_) {
     // TODO(ssid): Change to NOTREACHED after fixing crbug.com/625170.
     DLOG(ERROR)
         << "Cannot manipulate TraceLog::Enabled state from an observer.";
@@ -739,58 +733,68 @@ void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
   // Remove metadata events so they will not get added to a subsequent trace.
   metadata_events_.clear();
 
-  dispatching_to_observer_list_ = true;
-  std::vector<EnabledStateObserver*> observer_list =
-      enabled_state_observer_list_;
-  std::map<AsyncEnabledStateObserver*, RegisteredAsyncObserver> observer_map =
-      async_observers_;
-
+  dispatching_to_observers_ = true;
   {
-    // Dispatch to observers outside the lock in case the observer triggers a
-    // trace event.
+    // Release trace events lock, so observers can trigger trace events.
     AutoUnlock unlock(lock_);
-    for (EnabledStateObserver* observer : observer_list)
-      observer->OnTraceLogDisabled();
-    for (const auto& it : observer_map) {
+    AutoLock lock2(observers_lock_);
+    for (auto* it : enabled_state_observers_)
+      it->OnTraceLogDisabled();
+    for (const auto& it : async_observers_) {
       it.second.task_runner->PostTask(
           FROM_HERE, BindOnce(&AsyncEnabledStateObserver::OnTraceLogDisabled,
                               it.second.observer));
     }
   }
-  dispatching_to_observer_list_ = false;
+  dispatching_to_observers_ = false;
 }
 
 int TraceLog::GetNumTracesRecorded() {
   AutoLock lock(lock_);
-  if (!IsEnabled())
-    return -1;
-  return num_traces_recorded_;
+  return IsEnabled() ? num_traces_recorded_ : -1;
 }
 
 void TraceLog::AddEnabledStateObserver(EnabledStateObserver* listener) {
-  AutoLock lock(lock_);
-  enabled_state_observer_list_.push_back(listener);
+  AutoLock lock(observers_lock_);
+  enabled_state_observers_.push_back(listener);
 }
 
 void TraceLog::RemoveEnabledStateObserver(EnabledStateObserver* listener) {
-  AutoLock lock(lock_);
-  std::vector<EnabledStateObserver*>::iterator it =
-      std::find(enabled_state_observer_list_.begin(),
-                enabled_state_observer_list_.end(), listener);
-  if (it != enabled_state_observer_list_.end())
-    enabled_state_observer_list_.erase(it);
+  AutoLock lock(observers_lock_);
+  enabled_state_observers_.erase(
+      std::remove(enabled_state_observers_.begin(),
+                  enabled_state_observers_.end(), listener),
+      enabled_state_observers_.end());
 }
 
 void TraceLog::AddOwnedEnabledStateObserver(
     std::unique_ptr<EnabledStateObserver> listener) {
-  AutoLock lock(lock_);
-  enabled_state_observer_list_.push_back(listener.get());
+  AutoLock lock(observers_lock_);
+  enabled_state_observers_.push_back(listener.get());
   owned_enabled_state_observer_copy_.push_back(std::move(listener));
 }
 
 bool TraceLog::HasEnabledStateObserver(EnabledStateObserver* listener) const {
-  AutoLock lock(lock_);
-  return ContainsValue(enabled_state_observer_list_, listener);
+  AutoLock lock(observers_lock_);
+  return ContainsValue(enabled_state_observers_, listener);
+}
+
+void TraceLog::AddAsyncEnabledStateObserver(
+    WeakPtr<AsyncEnabledStateObserver> listener) {
+  AutoLock lock(observers_lock_);
+  async_observers_.emplace(listener.get(), RegisteredAsyncObserver(listener));
+}
+
+void TraceLog::RemoveAsyncEnabledStateObserver(
+    AsyncEnabledStateObserver* listener) {
+  AutoLock lock(observers_lock_);
+  async_observers_.erase(listener);
+}
+
+bool TraceLog::HasAsyncEnabledStateObserver(
+    AsyncEnabledStateObserver* listener) const {
+  AutoLock lock(observers_lock_);
+  return ContainsKey(async_observers_, listener);
 }
 
 TraceLogStatus TraceLog::GetStatus() const {
@@ -1048,8 +1052,7 @@ void TraceLog::OnFlushTimeout(int generation, bool discard_events) {
            "If this happens stably for some thread, please call "
            "TraceLog::GetInstance()->SetCurrentThreadBlocksMessageLoop() from "
            "the thread to avoid its trace events from being lost.";
-    for (hash_set<MessageLoop*>::const_iterator it =
-             thread_message_loops_.begin();
+    for (auto it = thread_message_loops_.begin();
          it != thread_message_loops_.end(); ++it) {
       LOG(WARNING) << "Thread: " << (*it)->GetThreadName();
     }
@@ -1724,7 +1727,7 @@ void TraceLog::SetTimeOffset(TimeDelta offset) {
 }
 
 size_t TraceLog::GetObserverCountForTest() const {
-  return enabled_state_observer_list_.size();
+  return enabled_state_observers_.size();
 }
 
 void TraceLog::SetCurrentThreadBlocksMessageLoop() {
@@ -1783,25 +1786,6 @@ void ConvertableToTraceFormat::EstimateTraceMemoryOverhead(
     TraceEventMemoryOverhead* overhead) {
   overhead->Add(TraceEventMemoryOverhead::kConvertableToTraceFormat,
                 sizeof(*this));
-}
-
-void TraceLog::AddAsyncEnabledStateObserver(
-    WeakPtr<AsyncEnabledStateObserver> listener) {
-  AutoLock lock(lock_);
-  async_observers_.insert(
-      std::make_pair(listener.get(), RegisteredAsyncObserver(listener)));
-}
-
-void TraceLog::RemoveAsyncEnabledStateObserver(
-    AsyncEnabledStateObserver* listener) {
-  AutoLock lock(lock_);
-  async_observers_.erase(listener);
-}
-
-bool TraceLog::HasAsyncEnabledStateObserver(
-    AsyncEnabledStateObserver* listener) const {
-  AutoLock lock(lock_);
-  return ContainsKey(async_observers_, listener);
 }
 
 }  // namespace trace_event

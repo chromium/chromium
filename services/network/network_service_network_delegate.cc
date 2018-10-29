@@ -7,6 +7,7 @@
 #include "services/network/cookie_manager.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
+#include "services/network/network_service_proxy_delegate.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/url_loader.h"
 
@@ -23,6 +24,28 @@ NetworkServiceNetworkDelegate::NetworkServiceNetworkDelegate(
     : network_context_(network_context), weak_ptr_factory_(this) {}
 
 NetworkServiceNetworkDelegate::~NetworkServiceNetworkDelegate() = default;
+
+int NetworkServiceNetworkDelegate::OnBeforeStartTransaction(
+    net::URLRequest* request,
+    net::CompletionOnceCallback callback,
+    net::HttpRequestHeaders* headers) {
+  if (network_context_->proxy_delegate()) {
+    network_context_->proxy_delegate()->OnBeforeStartTransaction(request,
+                                                                 headers);
+  }
+  return net::OK;
+}
+
+void NetworkServiceNetworkDelegate::OnBeforeSendHeaders(
+    net::URLRequest* request,
+    const net::ProxyInfo& proxy_info,
+    const net::ProxyRetryInfoMap& proxy_retry_info,
+    net::HttpRequestHeaders* headers) {
+  if (network_context_->proxy_delegate()) {
+    network_context_->proxy_delegate()->OnBeforeSendHeaders(request, proxy_info,
+                                                            headers);
+  }
+}
 
 int NetworkServiceNetworkDelegate::OnHeadersReceived(
     net::URLRequest* request,

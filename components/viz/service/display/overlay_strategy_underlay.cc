@@ -22,7 +22,7 @@ OverlayStrategyUnderlay::~OverlayStrategyUnderlay() {}
 
 bool OverlayStrategyUnderlay::Attempt(
     const SkMatrix44& output_color_matrix,
-    const OverlayProcessor::FilterOperationsMap& render_pass_background_filters,
+    const OverlayProcessor::FilterOperationsMap& render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
     RenderPass* render_pass,
     OverlayCandidateList* candidate_list,
@@ -41,15 +41,23 @@ bool OverlayStrategyUnderlay::Attempt(
     // be filtered.  This is a problem when there are hardware planes because
     // the planes are not composited until they are on the display controller.
     if (OverlayCandidate::IsOccludedByFilteredQuad(
-            candidate, quad_list.begin(), it, render_pass_background_filters)) {
+            candidate, quad_list.begin(), it, render_pass_backdrop_filters)) {
       continue;
     }
 
+    OverlayCandidateList new_candidate_list;
+    if (candidate_list->size() == 1) {
+      auto& primary = candidate_list->back();
+      primary.is_opaque = false;
+      OverlayProcessor::EliminateOrCropPrimary(quad_list, it,
+                                               &primary, &new_candidate_list);
+    } else {
+      new_candidate_list = *candidate_list;
+    }
+
     // Add the overlay.
-    OverlayCandidateList new_candidate_list = *candidate_list;
     new_candidate_list.push_back(candidate);
     new_candidate_list.back().plane_z_order = -1;
-    new_candidate_list.front().is_opaque = false;
 
     // Check for support.
     capability_checker_->CheckOverlaySupport(&new_candidate_list);
@@ -70,7 +78,7 @@ bool OverlayStrategyUnderlay::Attempt(
       candidate_list->AddPromotionHint(candidate);
       return true;
     } else {
-      // If |candidate| should get a promotion hint, then rememeber that now.
+      // If |candidate| should get a promotion hint, then remember that now.
       candidate_list->promotion_hint_info_map_.insert(
           new_candidate_list.promotion_hint_info_map_.begin(),
           new_candidate_list.promotion_hint_info_map_.end());

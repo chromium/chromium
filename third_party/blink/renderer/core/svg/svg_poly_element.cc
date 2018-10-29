@@ -29,7 +29,7 @@ SVGPolyElement::SVGPolyElement(const QualifiedName& tag_name,
                                Document& document)
     : SVGGeometryElement(tag_name, document),
       points_(SVGAnimatedPointList::Create(this,
-                                           SVGNames::pointsAttr,
+                                           svg_names::kPointsAttr,
                                            SVGPointList::Create())) {
   AddToPropertyMap(points_);
 }
@@ -59,7 +59,7 @@ Path SVGPolyElement::AsPathFromPoints() const {
 }
 
 void SVGPolyElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == SVGNames::pointsAttr) {
+  if (attr_name == svg_names::kPointsAttr) {
     GeometryAttributeChanged();
     return;
   }

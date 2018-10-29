@@ -1,19 +1,21 @@
 <html> 
     <head>
-        <script src="../../resources/js-test.js"></script>
+        <script src="../../resources/testharness.js"></script>
+        <script src="../../resources/testharnessreport.js"></script>
     </head>
     <body>
         <button id="button1" onclick="testButton1()">Click Here</button>
         <button id="button2" onclick="testButton2()">Click Here Too</button>
         <button id="test" onclick="popup()" style="display:none"></button>
-        <div id="console"></div>
         <script>
+            setup({explicit_done: true});
+
             var testNum = 0;
             var win;
 
             function popup() {
                 win = window.open("about:blank", "blank");
-                shouldBeNonNull("win");
+                assert_not_equals(win, null);
             }
 
             function testButton1() {
@@ -44,28 +46,30 @@
 
             function nextTest() {
                 if (testNum == 0) {
+                  test(() => {
                     var button1 = document.getElementById("button1");
                     eventSender.mouseMoveTo(button1.offsetLeft + button1.offsetWidth / 2, button1.offsetTop + button1.offsetHeight / 2);
                     eventSender.mouseDown();
                     eventSender.mouseUp();
+                  }, 'Click button1');
                 } else if (testNum == 1) {
+                  test(() => {
                     var button2 = document.getElementById("button2");
                     eventSender.mouseMoveTo(button2.offsetLeft + button2.offsetWidth / 2, button2.offsetTop + button2.offsetHeight / 2);
                     eventSender.mouseDown();
                     eventSender.mouseUp();
+                  }, 'Click button2');
                 } else {
-                    testRunner.notifyDone();
+                    done();
                 }
                 ++testNum;
                 closeWindowAndRunNextTest();
             }
 
             if (window.testRunner) {
-                testRunner.dumpAsText();
                 testRunner.setCanOpenWindows();
                 testRunner.setPopupBlockingEnabled(true);
                 testRunner.setCloseRemainingWindowsWhenComplete(true);
-                testRunner.waitUntilDone();
 
                 nextTest();
             }

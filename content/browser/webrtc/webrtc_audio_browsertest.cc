@@ -4,7 +4,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -39,15 +38,6 @@ class WebRtcAudioBrowserTest : public WebRtcContentBrowserTestBase,
       // Force audio service out of process to disabled.
       audio_service_features_.InitWithFeatures({}, audio_service_oop_features);
     }
-#if defined(OS_WIN)
-    // TODO(https://crbug.com/867827) remove histogram allocator creation when
-    // removing output controller checks.
-    if (!base::GlobalHistogramAllocator::Get()) {
-      const int32_t kAllocatorMemorySize = 8 << 20;
-      base::GlobalHistogramAllocator::CreateWithLocalMemory(
-          kAllocatorMemorySize, 0, "HistogramAllocatorTest");
-    }
-#endif
   }
   ~WebRtcAudioBrowserTest() override {}
 

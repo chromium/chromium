@@ -12,7 +12,7 @@
 namespace blink {
 
 class AppliedTextDecoration {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   AppliedTextDecoration(TextDecoration, ETextDecorationStyle, Color);

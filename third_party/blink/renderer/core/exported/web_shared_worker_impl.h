@@ -104,6 +104,7 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker,
   void TerminateWorkerContext() override;
   void PauseWorkerContextOnStart() override;
   void BindDevToolsAgent(
+      mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
       mojo::ScopedInterfaceEndpointHandle devtools_agent_request) override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
 

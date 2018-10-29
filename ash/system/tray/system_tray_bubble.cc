@@ -24,8 +24,6 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-using views::TrayBubbleView;
-
 namespace ash {
 
 namespace {

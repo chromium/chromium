@@ -9,8 +9,10 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/vr/browser_ui_interface.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager.h"
@@ -182,8 +184,8 @@ void SpeechRecognizerOnIO::Stop() {
 
 void SpeechRecognizerOnIO::NotifyRecognitionStateChanged(
     SpeechRecognitionState new_state) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&IOBrowserUIInterface::OnSpeechRecognitionStateChanged,
                      browser_ui_, new_state));
 }
@@ -224,8 +226,8 @@ void SpeechRecognizerOnIO::OnRecognitionResults(
       final_count++;
     result_str += result->hypotheses[0]->utterance;
   }
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&IOBrowserUIInterface::OnSpeechResult, browser_ui_,
                      result_str, final_count == results.size()));
 
@@ -268,8 +270,8 @@ void SpeechRecognizerOnIO::OnAudioLevelsChange(int session_id,
   DCHECK_LE(0.0, noise_volume);
   DCHECK_GE(1.0, noise_volume);
   volume = std::max(0.0f, volume - noise_volume);
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&IOBrowserUIInterface::OnSpeechSoundLevelChanged,
                      browser_ui_, volume));
 }
@@ -323,8 +325,8 @@ void SpeechRecognizer::Start() {
 
   // It is safe to use unretained because speech_recognizer_on_io_ only gets
   // deleted on IO thread when SpeechRecognizer is deleted.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&SpeechRecognizerOnIO::Start,
                      base::Unretained(speech_recognizer_on_io_.get()),
                      std::move(shared_url_loader_factory_info_),
@@ -341,8 +343,8 @@ void SpeechRecognizer::Stop() {
 
   // It is safe to use unretained because speech_recognizer_on_io_ only gets
   // deleted on IO thread when SpeechRecognizer is deleted.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&SpeechRecognizerOnIO::Stop,
                      base::Unretained(speech_recognizer_on_io_.get())));
   if (ui_) {

@@ -587,9 +587,7 @@ void DeviceManagementService::Initialize() {
 void DeviceManagementService::Shutdown() {
   DCHECK(thread_checker_.CalledOnValidThread());
   weak_ptr_factory_.InvalidateWeakPtrs();
-  for (JobFetcherMap::iterator job(pending_jobs_.begin());
-       job != pending_jobs_.end();
-       ++job) {
+  for (auto job(pending_jobs_.begin()); job != pending_jobs_.end(); ++job) {
     delete job->first;
     queued_jobs_.push_back(job->second);
   }
@@ -710,7 +708,7 @@ void DeviceManagementService::OnURLLoaderCompleteInternal(
     int net_error,
     int response_code,
     bool was_fetched_via_proxy) {
-  JobFetcherMap::iterator entry(pending_jobs_.find(url_loader));
+  auto entry(pending_jobs_.find(url_loader));
   if (entry == pending_jobs_.end()) {
     NOTREACHED() << "Callback from foreign URL loader";
     return;
@@ -751,8 +749,7 @@ void DeviceManagementService::AddJob(DeviceManagementRequestJobImpl* job) {
 }
 
 void DeviceManagementService::RemoveJob(DeviceManagementRequestJobImpl* job) {
-  for (JobFetcherMap::iterator entry(pending_jobs_.begin());
-       entry != pending_jobs_.end();
+  for (auto entry(pending_jobs_.begin()); entry != pending_jobs_.end();
        ++entry) {
     if (entry->second == job) {
       delete entry->first;

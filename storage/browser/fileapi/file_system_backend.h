@@ -55,7 +55,7 @@ class STORAGE_EXPORT FileSystemBackend {
       base::OnceCallback<void(const GURL& root_url,
                               const std::string& name,
                               base::File::Error error)>;
-  virtual ~FileSystemBackend() {}
+  virtual ~FileSystemBackend() = default;
 
   // Returns true if this filesystem backend can handle |type|.
   // One filesystem backend may be able to handle multiple filesystem types.

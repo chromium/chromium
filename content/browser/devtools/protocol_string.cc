@@ -4,6 +4,8 @@
 
 #include "content/browser/devtools/protocol_string.h"
 
+#include <utility>
+#include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string16.h"
@@ -164,5 +166,43 @@ void StringBuilder::reserveCapacity(size_t capacity) {
   string_.reserve(capacity);
 }
 
+Binary::Binary() : bytes_(new base::RefCountedBytes) {}
+Binary::Binary(const Binary& binary) : bytes_(binary.bytes_) {}
+Binary::Binary(scoped_refptr<base::RefCountedMemory> bytes) : bytes_(bytes) {}
+Binary::~Binary() {}
+
+String Binary::toBase64() const {
+  std::string encoded;
+  base::Base64Encode(
+      base::StringPiece(reinterpret_cast<const char*>(bytes_->front()),
+                        bytes_->size()),
+      &encoded);
+  return encoded;
+}
+
+// static
+Binary Binary::fromBase64(const String& base64, bool* success) {
+  std::string decoded;
+  *success = base::Base64Decode(base::StringPiece(base64), &decoded);
+  if (*success) {
+    return Binary::fromString(std::move(decoded));
+  }
+  return Binary();
+}
+
+// static
+Binary Binary::fromRefCounted(scoped_refptr<base::RefCountedMemory> memory) {
+  return Binary(memory);
+}
+
+// static
+Binary Binary::fromVector(std::vector<uint8_t> data) {
+  return Binary(base::RefCountedBytes::TakeVector(&data));
+}
+
+// static
+Binary Binary::fromString(std::string data) {
+  return Binary(base::RefCountedString::TakeString(&data));
+}
 }  // namespace protocol
 }  // namespace content

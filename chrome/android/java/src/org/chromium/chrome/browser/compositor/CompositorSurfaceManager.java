@@ -46,9 +46,9 @@ public interface CompositorSurfaceManager {
     void doneWithUnownedSurface();
 
     /**
-     * Destroy and re-create the surface. Useful for a JB workaround needed by CompositorView.
+     * Destroy and re-create the surface.
      */
-    void recreateSurfaceForJellyBean();
+    void recreateSurface();
 
     /**
      * Update the background drawable on all surfaces.

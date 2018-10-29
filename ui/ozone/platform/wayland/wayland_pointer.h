@@ -27,6 +27,7 @@ class WaylandPointer {
   }
 
   int GetFlagsWithKeyboardModifiers();
+  void ResetFlags();
 
   WaylandCursor* cursor() { return cursor_.get(); }
 

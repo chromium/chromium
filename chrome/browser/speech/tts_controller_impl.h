@@ -102,7 +102,7 @@ class TtsControllerImpl : public TtsController {
   base::queue<Utterance*> utterance_queue_;
 
   // A set of delegates that want to be notified when the voices change.
-  std::set<VoicesChangedDelegate*> voices_changed_delegates_;
+  base::ObserverList<VoicesChangedDelegate> voices_changed_delegates_;
 
   // A pointer to the platform implementation of text-to-speech, for
   // dependency injection.

@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "ui/gfx/color_palette.h"
 
 namespace app_list {
@@ -23,11 +24,11 @@ AppListConfig::AppListConfig()
       grid_focus_dimension_(64),
       grid_focus_corner_radius_(8),
       search_tile_icon_dimension_(48),
-      search_tile_badge_icon_dimension_(12),
-      search_tile_badge_background_radius_(10),
+      search_tile_badge_icon_dimension_(22),
+      search_tile_badge_icon_offset_(5),
       search_list_icon_dimension_(18),
       search_list_badge_icon_dimension_(14),
-      recommended_app_icon_dimension_(48),
+      suggestion_chip_icon_dimension_(48),
       app_title_max_line_height_(16),
       app_title_font_(
           ui::ResourceBundle::GetSharedInstance()
@@ -59,7 +60,8 @@ AppListConfig::AppListConfig()
       // 48 when the new shelf UI is turned off.
       shelf_height_(56),
       blur_radius_(30),
-      is_new_style_launcher_enabled_(features::IsNewStyleLauncherEnabled()) {
+      is_new_style_launcher_enabled_(
+          app_list_features::IsNewStyleLauncherEnabled()) {
   if (is_new_style_launcher_enabled_) {
     grid_tile_width_ = 120;
     grid_tile_height_ = 112;
@@ -70,7 +72,7 @@ AppListConfig::AppListConfig()
     grid_title_width_ = 96;
     grid_focus_dimension_ = 80;
     grid_focus_corner_radius_ = 12;
-    recommended_app_icon_dimension_ = 16;
+    suggestion_chip_icon_dimension_ = 16;
     app_title_max_line_height_ = 20;
     app_title_font_ =
         ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(1);
@@ -100,15 +102,15 @@ AppListConfig::~AppListConfig() = default;
 
 // static
 const AppListConfig& AppListConfig::instance() {
-  CR_DEFINE_STATIC_LOCAL(AppListConfig, instance, ());
-  return instance;
+  static const base::NoDestructor<AppListConfig> instance;
+  return *instance;
 }
 
 int AppListConfig::GetPreferredIconDimension(
     ash::SearchResultDisplayType display_type) const {
   switch (display_type) {
     case ash::SearchResultDisplayType::kRecommendation:
-      return recommended_app_icon_dimension_;
+      FALLTHROUGH;
     case ash::SearchResultDisplayType::kTile:
       return search_tile_icon_dimension_;
     case ash::SearchResultDisplayType::kList:

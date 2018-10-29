@@ -8,11 +8,13 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -99,8 +101,8 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
 
   // Check that the render frame type is appropriate, and whether or not we
   // need to request permission from the user.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&CheckRenderFrameType, std::move(callback),
                      render_process_id, render_frame_id));
 }
@@ -137,8 +139,8 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     // This happens for extensions. Manifest should be checked for permission.
     allowed = true;
     check_permission = false;
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(std::move(callback), check_permission, allowed));
     return;
   }
@@ -164,8 +166,8 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   check_permission = true;
 #endif
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(callback), check_permission, allowed));
 }
 

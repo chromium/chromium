@@ -116,10 +116,14 @@ experimental domain Accessibility
     enum
       busy
       disabled
+      editable
+      focusable
+      focused
       hidden
       hiddenRoot
       invalid
       keyshortcuts
+      settable
       roledescription
       live
       atomic
@@ -174,6 +178,13 @@ experimental domain Accessibility
       # The backend ID for the associated DOM node, if any.
       optional DOM.BackendNodeId backendDOMNodeId
 
+  # Disables the accessibility domain.
+  command disable
+
+  # Enables the accessibility domain which causes `AXNodeId`s to remain consistent between method calls.
+  # This turns on accessibility for the page, which can impact performance until accessibility is disabled.
+  command enable
+
   # Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists.
   experimental command getPartialAXTree
     parameters
@@ -188,6 +199,11 @@ experimental domain Accessibility
     returns
       # The `Accessibility.AXNode` for this DOM node, if it exists, plus its ancestors, siblings and
       # children, if requested.
+      array of AXNode nodes
+
+  # Fetches the entire accessibility tree
+  experimental command getFullAXTree
+    returns
       array of AXNode nodes
 
 experimental domain Animation
@@ -485,6 +501,7 @@ domain Browser
       accessibilityEvents
       audioCapture
       backgroundSync
+      backgroundFetch
       clipboardRead
       clipboardWrite
       durableStorage
@@ -1138,6 +1155,16 @@ experimental domain CacheStorage
   # Unique identifier of the Cache object.
   type CacheId extends string
 
+  # type of HTTP response cached
+  type CachedResponseType extends string
+    enum
+      basic
+      cors
+      default
+      error
+      opaqueResponse
+      opaqueRedirect
+
   # Data entry.
   type DataEntry extends object
     properties
@@ -1153,6 +1180,8 @@ experimental domain CacheStorage
       integer responseStatus
       # HTTP response status text.
       string responseStatusText
+      # HTTP response type
+      CachedResponseType responseType
       # Response headers
       array of Header responseHeaders
 
@@ -1525,7 +1554,8 @@ domain DOM
       # Resulting node.
       array of Node nodes
 
-  # Returns node id at given location.
+  # Returns node id at given location. Depending on whether DOM domain is enabled, nodeId is
+  # either returned or not.
   experimental command getNodeForLocation
     parameters
       # X coordinate.
@@ -1535,8 +1565,10 @@ domain DOM
       # False to skip to the nearest non-UA shadow root ancestor (default: false).
       optional boolean includeUserAgentShadowDOM
     returns
-      # Id of the node at given coordinates.
-      NodeId nodeId
+      # Resulting node.
+      BackendNodeId backendNodeId
+      # Id of the node at given coordinates, only when enabled.
+      optional NodeId nodeId
 
   # Returns node's HTML markup.
   command getOuterHTML
@@ -1792,7 +1824,10 @@ domain DOM
     parameters
       Page.FrameId frameId
     returns
-      NodeId nodeId
+      # Resulting node.
+      BackendNodeId backendNodeId
+      # Id of the node at given coordinates, only when enabled.
+      optional NodeId nodeId
 
   # Fired when `Element`'s attribute is modified.
   event attributeModified
@@ -4019,7 +4054,7 @@ domain Network
       optional ErrorReason errorReason
       # If set the requests completes using with the provided base64 encoded raw response, including
       # HTTP status line and headers etc... Must not be set in response to an authChallenge.
-      optional string rawResponse
+      optional binary rawResponse
       # If set the request url will be modified in a way that's not observable by page. Must not be
       # set in response to an authChallenge.
       optional string url
@@ -4865,6 +4900,10 @@ domain Page
   command addScriptToEvaluateOnNewDocument
     parameters
       string source
+      # If specified, creates an isolated world with the given name and evaluates given script in it.
+      # This world name will be used as the ExecutionContextDescription::name when the corresponding
+      # event is emitted.
+      experimental optional string worldName
     returns
       # Identifier of the added script.
       ScriptIdentifier identifier
@@ -5289,7 +5328,7 @@ domain Page
     parameters
       string url
       # Base64-encoded data
-      string data
+      binary data
 
   # Clears seeded compilation cache.
   experimental command clearCompilationCache
@@ -5457,7 +5496,7 @@ domain Page
     parameters
       string url
       # Base64-encoded data
-      string data
+      binary data
 
 
 domain Performance
@@ -5475,6 +5514,18 @@ domain Performance
 
   # Enable collecting and reporting metrics.
   command enable
+
+  # Sets time domain to use for collecting and reporting duration metrics.
+  # Note that this must be called before enabling metrics collection. Calling
+  # this method while metrics collection is enabled returns an error.
+  experimental command setTimeDomain
+    parameters
+      # Time domain
+      enum timeDomain
+        # Use monotonically increasing abstract time (default).
+        timeTicks
+        # Use thread running time.
+        threadTicks
 
   # Retrieve current values of run-time metrics.
   command getMetrics
@@ -5528,6 +5579,8 @@ domain Security
       MixedContentType mixedContentType
       # Page certificate.
       array of string certificate
+      # Recommendations to fix any issues.
+      optional array of string recommendations
 
   # Information about insecure content on the page.
   type InsecureContentStatus extends object

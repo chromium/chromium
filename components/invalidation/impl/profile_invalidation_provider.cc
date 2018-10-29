@@ -39,6 +39,9 @@ void ProfileInvalidationProvider::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kInvalidationServiceUseGCMChannel,
       true);  // if no value in prefs, use GCM channel.
+
+  registry->RegisterStringPref(prefs::kFCMInvalidationClientIDCache,
+                               /*default_value=*/std::string());
 }
 
 }  // namespace invalidation

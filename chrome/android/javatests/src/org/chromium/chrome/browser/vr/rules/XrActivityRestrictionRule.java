@@ -17,9 +17,9 @@ import org.chromium.chrome.browser.vr.util.XrTestRuleUtils;
  * one of the supported Activity types for the test.
  */
 public class XrActivityRestrictionRule implements TestRule {
-    private SupportedActivity mCurrentRestriction;
+    private @SupportedActivity int mCurrentRestriction;
 
-    public XrActivityRestrictionRule(SupportedActivity currentRestriction) {
+    public XrActivityRestrictionRule(@SupportedActivity int currentRestriction) {
         mCurrentRestriction = currentRestriction;
     }
 
@@ -35,7 +35,8 @@ public class XrActivityRestrictionRule implements TestRule {
             return generateIgnoreStatement();
         }
 
-        SupportedActivity[] activities = annotation.value();
+        @SupportedActivity
+        int[] activities = annotation.value();
         for (int i = 0; i < activities.length; i++) {
             if (activities[i] == mCurrentRestriction || activities[i] == SupportedActivity.ALL) {
                 return base;

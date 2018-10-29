@@ -121,15 +121,9 @@ AccountChooserDialogAndroid::~AccountChooserDialogAndroid() {}
 
 void AccountChooserDialogAndroid::ShowDialog() {
   JNIEnv* env = AttachCurrentThread();
-  bool is_smartlock_branding_enabled =
-      password_bubble_experiment::IsSmartLockUser(
-          ProfileSyncServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents_->GetBrowserContext())));
-  base::string16 title;
-  gfx::Range title_link_range = gfx::Range();
-  GetAccountChooserDialogTitleTextAndLinkRange(
-      is_smartlock_branding_enabled, local_credentials_forms().size() > 1,
-      &title, &title_link_range);
+  base::string16 title =
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE);
+  ;
   gfx::NativeWindow native_window = web_contents_->GetTopLevelNativeWindow();
   ScopedJavaLocalRef<jobjectArray> java_credentials_array =
       CreateNativeCredentialArray(env, local_credentials_forms().size());
@@ -145,8 +139,7 @@ void AccountChooserDialogAndroid::ShowDialog() {
   dialog_jobject_.Reset(Java_AccountChooserDialog_createAndShowAccountChooser(
       env, native_window->GetJavaObject(), reinterpret_cast<intptr_t>(this),
       java_credentials_array,
-      base::android::ConvertUTF16ToJavaString(env, title),
-      title_link_range.start(), title_link_range.end(),
+      base::android::ConvertUTF16ToJavaString(env, title), 0, 0,
       base::android::ConvertUTF8ToJavaString(env, origin),
       base::android::ConvertUTF16ToJavaString(env, signin_button)));
   network::mojom::URLLoaderFactory* loader_factory =

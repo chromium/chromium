@@ -33,7 +33,12 @@ public class AppRestrictionsProvider extends AbstractAppRestrictionsProvider {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     protected Bundle getApplicationRestrictions(String packageName) {
         if (mUserManager == null) return new Bundle();
-        return mUserManager.getApplicationRestrictions(packageName);
+        try {
+            return mUserManager.getApplicationRestrictions(packageName);
+        } catch (SecurityException e) {
+            // Android bug may throw SecurityException. See crbug.com/886814.
+            return new Bundle();
+        }
     }
 
     @Override

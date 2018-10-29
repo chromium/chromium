@@ -203,6 +203,9 @@ class ChromeBrowsingDataRemoverDelegate
   void OnKeywordsLoaded(base::RepeatingCallback<bool(const GURL&)> url_filter,
                         base::OnceClosure done);
 
+  // A helper method that checks if time period is for "all time".
+  bool IsForAllTime() const;
+
 #if defined (OS_CHROMEOS)
   void OnClearPlatformKeys(base::OnceClosure done, base::Optional<bool> result);
 #endif

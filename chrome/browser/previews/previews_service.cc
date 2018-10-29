@@ -8,9 +8,10 @@
 #include "base/files/file_path.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/time/default_clock.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/previews/previews_lite_page_decider.h"
 #include "chrome/common/chrome_constants.h"
-#include "components/blacklist/opt_out_blacklist/opt_out_blacklist_data.h"
 #include "components/blacklist/opt_out_blacklist/opt_out_store.h"
 #include "components/blacklist/opt_out_blacklist/sql/opt_out_store_sql.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
@@ -83,8 +84,11 @@ int GetPreviewsTypeVersion(previews::PreviewsType type) {
   return -1;
 }
 
-// Returns the enabled PreviewsTypes with their version.
-blacklist::BlacklistData::AllowedTypesAndVersions GetAllowedPreviews() {
+}  // namespace
+
+// static
+blacklist::BlacklistData::AllowedTypesAndVersions
+PreviewsService::GetAllowedPreviews() {
   blacklist::BlacklistData::AllowedTypesAndVersions enabled_previews;
 
   // Loop across all previews types (relies on sequential enum values).
@@ -97,8 +101,6 @@ blacklist::BlacklistData::AllowedTypesAndVersions GetAllowedPreviews() {
   return enabled_previews;
 }
 
-}  // namespace
-
 PreviewsService::PreviewsService(content::BrowserContext* browser_context)
     : previews_lite_page_decider_(
           std::make_unique<PreviewsLitePageDecider>(browser_context)) {
@@ -110,11 +112,14 @@ PreviewsService::~PreviewsService() {
 }
 
 void PreviewsService::Initialize(
-    previews::PreviewsDeciderImpl* previews_decider_impl,
     optimization_guide::OptimizationGuideService* optimization_guide_service,
-    const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
+    const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
     const base::FilePath& profile_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::unique_ptr<previews::PreviewsDeciderImpl> previews_decider_impl =
+      std::make_unique<previews::PreviewsDeciderImpl>(
+          base::DefaultClock::GetInstance());
 
   // Get the background thread to run SQLite on.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
@@ -122,18 +127,28 @@ void PreviewsService::Initialize(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
   previews_ui_service_ = std::make_unique<previews::PreviewsUIService>(
-      previews_decider_impl, io_task_runner,
+      std::move(previews_decider_impl),
       std::make_unique<blacklist::OptOutStoreSQL>(
-          io_task_runner, background_task_runner,
+          ui_task_runner, background_task_runner,
           profile_path.Append(chrome::kPreviewsOptOutDBFilename)),
       optimization_guide_service
           ? std::make_unique<previews::PreviewsOptimizationGuide>(
-                optimization_guide_service, io_task_runner)
+                optimization_guide_service, ui_task_runner)
           : nullptr,
       base::Bind(&IsPreviewsTypeEnabled),
-      std::make_unique<previews::PreviewsLogger>(), GetAllowedPreviews());
+      std::make_unique<previews::PreviewsLogger>(), GetAllowedPreviews(),
+      g_browser_process->network_quality_tracker());
 }
 
 void PreviewsService::Shutdown() {
   previews_lite_page_decider_->Shutdown();
+}
+
+void PreviewsService::ClearBlackList(base::Time begin_time,
+                                     base::Time end_time) {
+  if (previews_ui_service_)
+    previews_ui_service_->ClearBlackList(begin_time, end_time);
+
+  if (previews_lite_page_decider_)
+    previews_lite_page_decider_->ClearBlacklist();
 }

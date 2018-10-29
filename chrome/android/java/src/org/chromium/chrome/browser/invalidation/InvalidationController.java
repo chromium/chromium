@@ -14,11 +14,10 @@ import com.google.ipc.invalidation.ticl.android2.channel.AndroidGcmController;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.VisibleForTesting;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.invalidation.InvalidationClientService;
 import org.chromium.components.signin.ChromeSigninController;
@@ -131,11 +130,6 @@ public class InvalidationController implements ApplicationStatus.ApplicationStat
 
     @SuppressLint("StaticFieldLeak")
     private static InvalidationController sInstance;
-
-    /**
-     * Whether session sync invalidations can be disabled.
-     */
-    private final boolean mCanDisableSessionInvalidations;
 
     /**
      * Whether the controller was started.
@@ -265,8 +259,6 @@ public class InvalidationController implements ApplicationStatus.ApplicationStat
      * Called when a RecentTabsPage is opened.
      */
     public void onRecentTabsPageOpened() {
-        if (!mCanDisableSessionInvalidations) return;
-
         ++mNumRecentTabPages;
         if (mNumRecentTabPages == 1) {
             setSessionInvalidationsEnabled(true, REGISTER_FOR_SESSION_SYNC_INVALIDATIONS_DELAY_MS);
@@ -277,8 +269,6 @@ public class InvalidationController implements ApplicationStatus.ApplicationStat
      * Called when a RecentTabsPage is closed.
      */
     public void onRecentTabsPageClosed() {
-        if (!mCanDisableSessionInvalidations) return;
-
         --mNumRecentTabPages;
         if (mNumRecentTabPages == 0) {
             setSessionInvalidationsEnabled(
@@ -294,11 +284,7 @@ public class InvalidationController implements ApplicationStatus.ApplicationStat
     public static InvalidationController get() {
         synchronized (LOCK) {
             if (sInstance == null) {
-                // If the NTP is trying to suggest foreign tabs, then recieving invalidations is
-                // vital, otherwise data is stale and less useful.
-                boolean requireInvalidationsForSuggestions = ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.NTP_FOREIGN_SESSIONS_SUGGESTIONS);
-                sInstance = new InvalidationController(!requireInvalidationsForSuggestions);
+                sInstance = new InvalidationController();
             }
             return sInstance;
         }
@@ -330,11 +316,10 @@ public class InvalidationController implements ApplicationStatus.ApplicationStat
      * Creates an instance using {@code context} to send intents.
      */
     @VisibleForTesting
-    InvalidationController(boolean canDisableSessionInvalidations) {
+    InvalidationController() {
         if (ContextUtils.getApplicationContext() == null)
             throw new NullPointerException("Unable to get application context");
-        mCanDisableSessionInvalidations = canDisableSessionInvalidations;
-        mSessionInvalidationsEnabled = !mCanDisableSessionInvalidations;
+        mSessionInvalidationsEnabled = false;
         mEnableSessionInvalidationsTimer = new Timer();
 
         ApplicationStatus.registerApplicationStateListener(this);

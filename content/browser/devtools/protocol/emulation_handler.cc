@@ -8,12 +8,12 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "content/browser/devtools/devtools_session.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/view_messages.h"
+#include "content/common/widget_messages.h"
 #include "content/public/common/url_constants.h"
 #include "net/http/http_util.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
@@ -69,19 +69,19 @@ EmulationHandler::~EmulationHandler() {
 // static
 std::vector<EmulationHandler*> EmulationHandler::ForAgentHost(
     DevToolsAgentHostImpl* host) {
-  return DevToolsSession::HandlersForAgentHost<EmulationHandler>(
-      host, Emulation::Metainfo::domainName);
+  return host->HandlersByName<EmulationHandler>(
+      Emulation::Metainfo::domainName);
 }
 
 void EmulationHandler::SetRenderer(int process_host_id,
                                    RenderFrameHostImpl* frame_host) {
   if (host_ == frame_host)
     return;
-
   host_ = frame_host;
   if (touch_emulation_enabled_)
     UpdateTouchEventEmulationState();
-  UpdateDeviceEmulationState();
+  if (device_emulation_enabled_)
+    UpdateDeviceEmulationState();
 }
 
 void EmulationHandler::Wire(UberDispatcher* dispatcher) {
@@ -94,8 +94,10 @@ Response EmulationHandler::Disable() {
     UpdateTouchEventEmulationState();
   }
   user_agent_ = std::string();
-  device_emulation_enabled_ = false;
-  UpdateDeviceEmulationState();
+  if (device_emulation_enabled_) {
+    device_emulation_enabled_ = false;
+    UpdateDeviceEmulationState();
+  }
   return Response::OK();
 }
 
@@ -387,14 +389,14 @@ void EmulationHandler::UpdateDeviceEmulationState() {
   // emulation params were applied. That way, we can avoid having to handle
   // Set/ClearDeviceMetricsOverride in the renderer. With the old IPC system,
   // this is tricky since we'd have to track the DevTools message id with the
-  // ViewMsg and acknowledgment, as well as plump the acknowledgment back to the
-  // EmulationHandler somehow. Mojo callbacks should make this much simpler.
+  // WidgetMsg and acknowledgment, as well as plump the acknowledgment back to
+  // the EmulationHandler somehow. Mojo callbacks should make this much simpler.
   if (device_emulation_enabled_) {
-    host_->GetRenderWidgetHost()->Send(new ViewMsg_EnableDeviceEmulation(
+    host_->GetRenderWidgetHost()->Send(new WidgetMsg_EnableDeviceEmulation(
         host_->GetRenderWidgetHost()->GetRoutingID(),
         device_emulation_params_));
   } else {
-    host_->GetRenderWidgetHost()->Send(new ViewMsg_DisableDeviceEmulation(
+    host_->GetRenderWidgetHost()->Send(new WidgetMsg_DisableDeviceEmulation(
         host_->GetRenderWidgetHost()->GetRoutingID()));
   }
 }

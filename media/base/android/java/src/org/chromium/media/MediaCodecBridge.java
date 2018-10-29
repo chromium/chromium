@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.view.Surface;
 
 import org.chromium.base.Log;
@@ -75,6 +76,7 @@ class MediaCodecBridge {
     private boolean mPendingError;
     private boolean mPendingStart;
     private long mNativeMediaCodecBridge;
+    private int mSequenceCounter;
     private Queue<DequeueInputResult> mPendingInputBuffers;
     private Queue<DequeueOutputResult> mPendingOutputBuffers;
 
@@ -273,6 +275,7 @@ class MediaCodecBridge {
         mPendingOutputBuffers.clear();
         mPendingStart = true;
         mCurrentFormat = null;
+        ++mSequenceCounter;
     }
 
     @CalledByNative
@@ -319,6 +322,12 @@ class MediaCodecBridge {
         notifyBuffersAvailable();
     }
 
+    public synchronized void onPendingStartComplete(int sequenceCounter) {
+        // Ignore events from the past.
+        if (mSequenceCounter != sequenceCounter) return;
+        mPendingStart = false;
+    }
+
     void updateLastPresentationTime(MediaCodec.BufferInfo info) {
         if (info.presentationTimeUs < mLastPresentationTimeUs) {
             // TODO(qinmin): return a special code through DequeueOutputResult
@@ -361,8 +370,26 @@ class MediaCodecBridge {
         try {
             if (mUseAsyncApi) {
                 synchronized (this) {
-                    mPendingStart = false;
                     if (mPendingError) return false;
+
+                    class CompletePendingStartTask implements Runnable {
+                        private int mThisSequence;
+                        CompletePendingStartTask(int sequence) {
+                            mThisSequence = sequence;
+                        }
+
+                        @Override
+                        public void run() {
+                            onPendingStartComplete(mThisSequence);
+                        }
+                    };
+
+                    // Ensure any pending indices are ignored until after start
+                    // by trampolining through the handler/looper that the
+                    // notifications are coming from.
+                    Handler h = sCallbackHandler == null ? new Handler(Looper.getMainLooper())
+                                                         : sCallbackHandler;
+                    h.post(new CompletePendingStartTask(mSequenceCounter));
                 }
             }
 
@@ -386,12 +413,7 @@ class MediaCodecBridge {
         if (mUseAsyncApi) {
             synchronized (this) {
                 if (mPendingError) return new DequeueInputResult(MediaCodecStatus.ERROR, -1);
-                if (mPendingStart) {
-                    return new DequeueInputResult(
-                            start() ? MediaCodecStatus.TRY_AGAIN_LATER : MediaCodecStatus.ERROR,
-                            -1);
-                }
-                if (mPendingInputBuffers.isEmpty())
+                if (mPendingStart || mPendingInputBuffers.isEmpty())
                     return new DequeueInputResult(MediaCodecStatus.TRY_AGAIN_LATER, -1);
                 return mPendingInputBuffers.remove();
             }
@@ -423,11 +445,14 @@ class MediaCodecBridge {
             mMediaCodec.flush();
 
             // MediaCodec.flush() invalidates all returned indices, but there
-            // may be some unhandled callbacks when using the async API. So we
-            // need to wait until the next dequeuInputBuffer() before we start
-            // accepting callbacks from MediaCodec again. By that point we can
-            // be sure that the looper / MessageLoop have cycled at least once.
-            if (mUseAsyncApi) prepareAsyncApiForRestart();
+            // may be some unhandled callbacks when using the async API. When
+            // we call prepareAsyncApiForRestart() it will set mPendingStart,
+            // start() will then post a task through the callback handler which
+            // clears mPendingStart to start accepting new buffers.
+            if (mUseAsyncApi) {
+                prepareAsyncApiForRestart();
+                if (!start()) return MediaCodecStatus.ERROR;
+            }
         } catch (Exception e) {
             Log.e(TAG, "Failed to flush MediaCodec", e);
             return MediaCodecStatus.ERROR;

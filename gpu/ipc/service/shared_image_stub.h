@@ -23,7 +23,7 @@ struct RasterDecoderContextState;
 }
 
 class SharedImageStub : public IPC::Listener,
-                        public gles2::MemoryTracker,
+                        public MemoryTracker,
                         public base::trace_event::MemoryDumpProvider {
  public:
   SharedImageStub(GpuChannel* channel, int32_t route_id);
@@ -32,7 +32,7 @@ class SharedImageStub : public IPC::Listener,
   // IPC::Listener implementation:
   bool OnMessageReceived(const IPC::Message& msg) override;
 
-  // gles2::MemoryTracker implementation:
+  // MemoryTracker implementation:
   void TrackMemoryAllocatedChange(uint64_t delta) override;
   uint64_t GetSize() const override;
   uint64_t ClientTracingId() const override;

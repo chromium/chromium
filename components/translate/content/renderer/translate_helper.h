@@ -163,6 +163,10 @@ class TranslateHelper : public content::RenderFrameObserver,
   // The URL scheme for translate extensions.
   std::string extension_scheme_;
 
+  // The task runner responsible for the translation task, freezing it
+  // when the frame is backgrounded.
+  scoped_refptr<base::SingleThreadTaskRunner> translate_task_runner_;
+
   // The Mojo pipe for communication with the browser process. Due to a
   // refactor, the other end of the pipe is now attached to a
   // LanguageDetectionTabHelper (which implements the ContentTranslateDriver

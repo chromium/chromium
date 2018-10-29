@@ -42,6 +42,12 @@
 #include "net/third_party/quic/core/quic_packets.h"
 #include "net/url_request/url_request_job_factory.h"
 
+namespace base {
+namespace android {
+class ApplicationStatusListener;
+}
+}  // namespace base
+
 namespace net {
 
 class CertVerifier;
@@ -119,6 +125,12 @@ class NET_EXPORT URLRequestContextBuilder {
 
     // The cache path (when type is DISK).
     base::FilePath path;
+
+#if defined(OS_ANDROID)
+    // If this is set, will override the default ApplicationStatusListener. This
+    // is useful if the cache will not be in the main process.
+    base::android::ApplicationStatusListener* app_status_listener = nullptr;
+#endif
   };
 
   URLRequestContextBuilder();

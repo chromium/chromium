@@ -66,7 +66,7 @@ CSSLayoutDefinition::CSSLayoutDefinition(
 CSSLayoutDefinition::~CSSLayoutDefinition() = default;
 
 CSSLayoutDefinition::Instance::Instance(CSSLayoutDefinition* definition,
-                                        v8::Local<v8::Object> instance)
+                                        v8::Local<v8::Value> instance)
     : definition_(definition),
       instance_(definition->script_state_->GetIsolate(), instance) {}
 
@@ -84,7 +84,7 @@ bool CSSLayoutDefinition::Instance::Layout(
   ScriptState::Scope scope(script_state);
 
   v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Object> instance = instance_.NewLocal(isolate);
+  v8::Local<v8::Value> instance = instance_.NewLocal(isolate);
   v8::Local<v8::Context> context = script_state->GetContext();
 
   v8::Local<v8::Function> layout = definition_->layout_.NewLocal(isolate);
@@ -310,8 +310,9 @@ CSSLayoutDefinition::Instance* CSSLayoutDefinition::CreateInstance() {
   v8::Local<v8::Function> constructor = constructor_.NewLocal(isolate);
   DCHECK(!IsUndefinedOrNull(constructor));
 
-  v8::Local<v8::Object> layout_instance;
-  if (V8ObjectConstructor::NewInstance(isolate, constructor)
+  v8::Local<v8::Value> layout_instance;
+  if (V8ScriptRunner::CallAsConstructor(
+          isolate, constructor, ExecutionContext::From(script_state_), 0, {})
           .ToLocal(&layout_instance)) {
     instance = new Instance(this, layout_instance);
   } else {

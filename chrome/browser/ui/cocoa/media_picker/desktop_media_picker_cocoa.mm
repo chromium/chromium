@@ -20,7 +20,7 @@ void DesktopMediaPickerCocoa::Show(
     const DoneCallback& done_callback) {
   controller_.reset([[DesktopMediaPickerController alloc]
       initWithSourceLists:std::move(source_lists)
-                   parent:params.parent
+                   parent:params.parent.GetNativeNSWindow()
                  callback:done_callback
                   appName:params.app_name
                targetName:params.target_name

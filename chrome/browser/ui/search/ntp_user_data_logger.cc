@@ -89,7 +89,7 @@ enum VoiceError {
 
 // Key used in prefs::kNtpCustomBackgroundDict to save a background image URL.
 // TODO(crbug.com/873699): Refactor customization check for better testability.
-const char* kNtpCustomBackgroundURL = "background_url";
+const char kNtpCustomBackgroundURL[] = "background_url";
 
 // Logs BackgroundCustomization availability on the NTP,
 void LogBackgroundCustomizationAvailability(

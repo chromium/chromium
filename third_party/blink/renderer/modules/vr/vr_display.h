@@ -45,8 +45,13 @@ class SessionClientBinding
     : public GarbageCollectedFinalized<SessionClientBinding>,
       public device::mojom::blink::XRSessionClient {
  public:
+  enum class SessionBindingType {
+    kImmersive = 0,
+    kNonImmersive = 1,
+  };
+
   SessionClientBinding(VRDisplay* display,
-                       bool is_immersive,
+                       SessionBindingType immersive,
                        device::mojom::blink::XRSessionClientRequest request);
   ~SessionClientBinding() override;
   void Close();
@@ -265,21 +270,28 @@ class VRDisplay final : public EventTargetWithInlineData,
 
 using VRDisplayVector = HeapVector<Member<VRDisplay>>;
 
+// When adding values, insert them before Max and add them to
+// VRPresentationResult in enums.xml. Do not reuse values.
+// Also, remove kPlaceholderForPreviousHighValue.
+// When values become obsolete, comment them out here and mark them deprecated
+// in enums.xml.
 enum class PresentationResult {
   kRequested = 0,
   kSuccess = 1,
   kSuccessAlreadyPresenting = 2,
   kVRDisplayCannotPresent = 3,
   kPresentationNotSupportedByDisplay = 4,
-  kVRDisplayNotFound = 5,
+  // kVRDisplayNotFound = 5,
   kNotInitiatedByUserGesture = 6,
   kInvalidNumberOfLayers = 7,
   kInvalidLayerSource = 8,
   kLayerSourceMissingWebGLContext = 9,
   kInvalidLayerBounds = 10,
-  kServiceInactive = 11,
-  kRequestDenied = 12,
-  kFullscreenNotEnabled = 13,
+  // kServiceInactive = 11,
+  // kRequestDenied = 12,
+  // kFullscreenNotEnabled = 13,
+  // TODO(ddorwin): Remove this placeholder when adding a new value.
+  kPlaceholderForPreviousHighValue = 13,
   kPresentationResultMax,  // Must be last member of enum.
 };
 

@@ -54,12 +54,16 @@ ui::WindowShowState ToWindowShowState(mojom::WindowStateType type) {
   return ui::SHOW_STATE_DEFAULT;
 }
 
+bool IsFullscreenOrPinnedWindowStateType(mojom::WindowStateType type) {
+  return type == mojom::WindowStateType::FULLSCREEN ||
+         type == mojom::WindowStateType::PINNED ||
+         type == mojom::WindowStateType::TRUSTED_PINNED;
+}
+
 bool IsMaximizedOrFullscreenOrPinnedWindowStateType(
     mojom::WindowStateType type) {
   return type == mojom::WindowStateType::MAXIMIZED ||
-         type == mojom::WindowStateType::FULLSCREEN ||
-         type == mojom::WindowStateType::PINNED ||
-         type == mojom::WindowStateType::TRUSTED_PINNED;
+         IsFullscreenOrPinnedWindowStateType(type);
 }
 
 bool IsMinimizedWindowStateType(mojom::WindowStateType type) {

@@ -81,7 +81,7 @@
 
   TestRunner.addResult('');
   TestRunner.addResult('User selected content script');
-  context.setFlavor(SDK.ExecutionContext, pageRuntimeModel.executionContexts()[2]);
+  context.setFlavor(SDK.ExecutionContext, pageRuntimeModel.executionContexts().find(context => context.id === 'cs1'));
 
   TestRunner.addResult('');
   TestRunner.addResult('Switching to sw target');
@@ -93,7 +93,7 @@
 
   TestRunner.addResult('');
   TestRunner.addResult('User selected iframe1');
-  context.setFlavor(SDK.ExecutionContext, pageRuntimeModel.executionContexts()[0]);
+  context.setFlavor(SDK.ExecutionContext, pageRuntimeModel.executionContexts().find(context => context.id === 'if1'));
 
   TestRunner.addResult('');
   TestRunner.addResult('Switching to sw target');

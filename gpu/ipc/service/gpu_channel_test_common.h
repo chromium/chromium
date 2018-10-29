@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "ipc/ipc_test_sink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -42,6 +43,7 @@ class GpuChannelTestCommon : public testing::Test {
   base::UnsafeSharedMemoryRegion GetSharedMemoryRegion();
 
  private:
+  IPC::TestSink sink_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   scoped_refptr<base::TestSimpleTaskRunner> io_task_runner_;
   std::unique_ptr<SyncPointManager> sync_point_manager_;

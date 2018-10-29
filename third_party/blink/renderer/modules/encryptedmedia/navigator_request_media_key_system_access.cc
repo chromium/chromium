@@ -47,7 +47,7 @@ const char kEncryptedMediaFeaturePolicyConsoleWarning[] =
 static WebVector<WebEncryptedMediaInitDataType> ConvertInitDataTypes(
     const Vector<String>& init_data_types) {
   WebVector<WebEncryptedMediaInitDataType> result(init_data_types.size());
-  for (size_t i = 0; i < init_data_types.size(); ++i)
+  for (wtf_size_t i = 0; i < init_data_types.size(); ++i)
     result[i] = EncryptedMediaUtils::ConvertToInitDataType(init_data_types[i]);
   return result;
 }
@@ -66,7 +66,7 @@ ConvertEncryptionScheme(const String& encryption_scheme) {
 static WebVector<WebMediaKeySystemMediaCapability> ConvertCapabilities(
     const HeapVector<MediaKeySystemMediaCapability>& capabilities) {
   WebVector<WebMediaKeySystemMediaCapability> result(capabilities.size());
-  for (size_t i = 0; i < capabilities.size(); ++i) {
+  for (wtf_size_t i = 0; i < capabilities.size(); ++i) {
     const WebString& content_type = capabilities[i].contentType();
     result[i].content_type = content_type;
     ParsedContentType type(content_type);
@@ -115,7 +115,7 @@ static WebMediaKeySystemConfiguration::Requirement ConvertMediaKeysRequirement(
 static WebVector<WebEncryptedMediaSessionType> ConvertSessionTypes(
     const Vector<String>& session_types) {
   WebVector<WebEncryptedMediaSessionType> result(session_types.size());
-  for (size_t i = 0; i < session_types.size(); ++i)
+  for (wtf_size_t i = 0; i < session_types.size(); ++i)
     result[i] = EncryptedMediaUtils::ConvertToSessionType(session_types[i]);
   return result;
 }
@@ -170,7 +170,7 @@ MediaKeySystemAccessInitializer::MediaKeySystemAccessInitializer(
     : resolver_(ScriptPromiseResolver::Create(script_state)),
       key_system_(key_system),
       supported_configurations_(supported_configurations.size()) {
-  for (size_t i = 0; i < supported_configurations.size(); ++i) {
+  for (wtf_size_t i = 0; i < supported_configurations.size(); ++i) {
     const MediaKeySystemConfiguration& config = supported_configurations[i];
     WebMediaKeySystemConfiguration web_config;
 
@@ -300,11 +300,10 @@ ScriptPromise NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
   DVLOG(3) << __func__;
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  Document* document = ToDocument(execution_context);
+  Document* document = To<Document>(execution_context);
 
-  if (!document->GetFrame() ||
-      !document->GetFrame()->IsFeatureEnabled(
-          mojom::FeaturePolicyFeature::kEncryptedMedia)) {
+  if (!document->IsFeatureEnabled(mojom::FeaturePolicyFeature::kEncryptedMedia,
+                                  ReportOptions::kReportOnFailure)) {
     UseCounter::Count(document,
                       WebFeature::kEncryptedMediaDisabledByFeaturePolicy);
     document->AddConsoleMessage(

@@ -334,10 +334,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ARB_vertex_array_object");
   ext.b_GL_CHROMIUM_bind_uniform_location =
       gfx::HasExtension(extensions, "GL_CHROMIUM_bind_uniform_location");
-  ext.b_GL_CHROMIUM_compressed_copy_texture =
-      gfx::HasExtension(extensions, "GL_CHROMIUM_compressed_copy_texture");
-  ext.b_GL_CHROMIUM_copy_compressed_texture =
-      gfx::HasExtension(extensions, "GL_CHROMIUM_copy_compressed_texture");
   ext.b_GL_CHROMIUM_copy_texture =
       gfx::HasExtension(extensions, "GL_CHROMIUM_copy_texture");
   ext.b_GL_CHROMIUM_framebuffer_mixed_samples =
@@ -617,13 +613,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       ext.b_GL_ARB_sync) {
     fn.glClientWaitSyncFn = reinterpret_cast<glClientWaitSyncProc>(
         GetGLProcAddress("glClientWaitSync"));
-  }
-
-  if (ext.b_GL_CHROMIUM_copy_compressed_texture ||
-      ext.b_GL_CHROMIUM_compressed_copy_texture) {
-    fn.glCompressedCopyTextureCHROMIUMFn =
-        reinterpret_cast<glCompressedCopyTextureCHROMIUMProc>(
-            GetGLProcAddress("glCompressedCopyTextureCHROMIUM"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
@@ -2924,11 +2913,6 @@ void GLApiBase::glColorMaskFn(GLboolean red,
 
 void GLApiBase::glCompileShaderFn(GLuint shader) {
   driver_->fn.glCompileShaderFn(shader);
-}
-
-void GLApiBase::glCompressedCopyTextureCHROMIUMFn(GLuint sourceId,
-                                                  GLuint destId) {
-  driver_->fn.glCompressedCopyTextureCHROMIUMFn(sourceId, destId);
 }
 
 void GLApiBase::glCompressedTexImage2DFn(GLenum target,
@@ -6005,13 +5989,6 @@ void TraceGLApi::glColorMaskFn(GLboolean red,
 void TraceGLApi::glCompileShaderFn(GLuint shader) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glCompileShader")
   gl_api_->glCompileShaderFn(shader);
-}
-
-void TraceGLApi::glCompressedCopyTextureCHROMIUMFn(GLuint sourceId,
-                                                   GLuint destId) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glCompressedCopyTextureCHROMIUM")
-  gl_api_->glCompressedCopyTextureCHROMIUMFn(sourceId, destId);
 }
 
 void TraceGLApi::glCompressedTexImage2DFn(GLenum target,
@@ -9654,13 +9631,6 @@ void DebugGLApi::glCompileShaderFn(GLuint shader) {
   GL_SERVICE_LOG("glCompileShader"
                  << "(" << shader << ")");
   gl_api_->glCompileShaderFn(shader);
-}
-
-void DebugGLApi::glCompressedCopyTextureCHROMIUMFn(GLuint sourceId,
-                                                   GLuint destId) {
-  GL_SERVICE_LOG("glCompressedCopyTextureCHROMIUM"
-                 << "(" << sourceId << ", " << destId << ")");
-  gl_api_->glCompressedCopyTextureCHROMIUMFn(sourceId, destId);
 }
 
 void DebugGLApi::glCompressedTexImage2DFn(GLenum target,
@@ -14231,11 +14201,6 @@ void NoContextGLApi::glColorMaskFn(GLboolean red,
 
 void NoContextGLApi::glCompileShaderFn(GLuint shader) {
   NoContextHelper("glCompileShader");
-}
-
-void NoContextGLApi::glCompressedCopyTextureCHROMIUMFn(GLuint sourceId,
-                                                       GLuint destId) {
-  NoContextHelper("glCompressedCopyTextureCHROMIUM");
 }
 
 void NoContextGLApi::glCompressedTexImage2DFn(GLenum target,

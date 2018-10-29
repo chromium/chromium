@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_ABOUT_SIGNIN_INTERNALS_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_ABOUT_SIGNIN_INTERNALS_H_
 
+#include <deque>
 #include <map>
 #include <memory>
 #include <string>
@@ -122,6 +123,23 @@ class AboutSigninInternals
     bool removed_;
   };
 
+  enum class RefreshTokenEventType {
+    kUpdateToRegular,
+    kUpdateToInvalid,
+    kRevokeRegular,
+    kAllTokensLoaded,
+  };
+
+  struct RefreshTokenEvent {
+    RefreshTokenEvent();
+    std::string GetTypeAsString() const;
+
+    const base::Time timestamp;
+    std::string account_id;
+    RefreshTokenEventType type;
+    std::string source;
+  };
+
   // Encapsulates both authentication and token related information. Used
   // by SigninInternals to maintain information that needs to be shown in
   // the about:signin-internals page.
@@ -132,12 +150,17 @@ class AboutSigninInternals
     std::map<std::string, std::vector<std::unique_ptr<TokenInfo>>>
         token_info_map;
 
+    // All the events that affected the refresh tokens.
+    std::deque<RefreshTokenEvent> refresh_token_events;
+
     SigninStatus();
     ~SigninStatus();
 
     TokenInfo* FindToken(const std::string& account_id,
                          const std::string& consumer_id,
                          const OAuth2TokenService::ScopeSet& scopes);
+
+    void AddRefreshTokenEvent(const RefreshTokenEvent& event);
 
     // Returns a dictionary with the following form:
     // { "signin_info" :
@@ -181,10 +204,13 @@ class AboutSigninInternals
                                   const OAuth2TokenService::ScopeSet& scopes,
                                   GoogleServiceAuthError error,
                                   base::Time expiration_time) override;
-  void OnTokenRemoved(const std::string& account_id,
-                      const OAuth2TokenService::ScopeSet& scopes) override;
+  void OnAccessTokenRemoved(
+      const std::string& account_id,
+      const OAuth2TokenService::ScopeSet& scopes) override;
 
   // OAuth2TokenServiceDelegate::Observer implementations.
+  void OnRefreshTokenAvailable(const std::string& account_id) override;
+  void OnRefreshTokenRevoked(const std::string& account_id) override;
   void OnRefreshTokensLoaded() override;
   void OnEndBatchChanges() override;
 

@@ -102,10 +102,19 @@ class FakeVideoCaptureDevice : public VideoCaptureDevice {
 // This is a separate struct because read-access to it is shared with several
 // collaborating classes.
 struct FakeDeviceState {
-  FakeDeviceState(float zoom, float frame_rate, VideoPixelFormat pixel_format)
-      : zoom(zoom), format(gfx::Size(), frame_rate, pixel_format) {}
+  FakeDeviceState(float zoom,
+                  float exposure_time,
+                  mojom::MeteringMode exposure_mode,
+                  float frame_rate,
+                  VideoPixelFormat pixel_format)
+      : zoom(zoom),
+        exposure_time(exposure_time),
+        exposure_mode(exposure_mode),
+        format(gfx::Size(), frame_rate, pixel_format) {}
 
   uint32_t zoom;
+  uint32_t exposure_time;
+  mojom::MeteringMode exposure_mode;
   VideoCaptureFormat format;
 };
 

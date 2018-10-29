@@ -134,7 +134,7 @@ void DevToolsHost::EvaluateScript(const String& expression) {
     return;
   ScriptState::Scope scope(script_state);
   std::unique_ptr<UserGestureIndicator> gesture_indicator =
-      Frame::NotifyUserActivation(frontend_frame_);
+      LocalFrame::NotifyUserActivation(frontend_frame_);
   v8::MicrotasksScope microtasks(script_state->GetIsolate(),
                                  v8::MicrotasksScope::kRunMicrotasks);
   ScriptSourceCode source_code(expression, ScriptSourceLocationType::kInternal,

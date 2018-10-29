@@ -92,6 +92,7 @@ DownloadMetaData BuildDownloadMetaData(Entry* entry, DownloadDriver* driver) {
   DCHECK(entry);
   DownloadMetaData meta_data;
   meta_data.guid = entry->guid;
+  meta_data.paused = entry->state == Entry::State::PAUSED;
   if (entry->state == Entry::State::COMPLETE) {
     meta_data.completion_info =
         CompletionInfo(entry->target_file_path, entry->bytes_downloaded,

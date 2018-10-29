@@ -28,6 +28,8 @@ class TestTaskRunner {
   void RunTask(Task* task);
 
  private:
+  void TaskComplete(Task** completed_task_ptr, Task* task);
+
   // Certainly confusing, but internal task runner, is simply a test version of
   // a single thread task runner. It is used for running closures.
   // The difference between that and the encapsulating task runner, is that a

@@ -6,5 +6,6 @@ include_rules = [
   "+content/public/gpu",
   "+media/cdm",
   "+media/gpu",
+  "+third_party/widevine/cdm/buildflags.h",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
 ]

@@ -145,16 +145,17 @@ chrome.test.runTests([
     chrome.metricsPrivate.recordValue(linear1, 42);
     // This one should be rejected because the bucket count is different.
     // We check for sample count == 2 in metrics_apitest.cc
-    // chrome.metricsPrivate.recordValue(linear2, 42);  disabled for field test
+    chrome.metricsPrivate.recordValue(linear2, 42);
     chrome.metricsPrivate.recordValue(linear1, 42);
 
     chrome.metricsPrivate.recordValue(log1, 42);
     // This one should be rejected because the bucket count is different.
     // We check for sample count == 2 in metrics_apitest.cc
-    // chrome.metricsPrivate.recordValue(log2, 42);  disabled for field test
+    chrome.metricsPrivate.recordValue(log2, 42);
     chrome.metricsPrivate.recordValue(log1, 42);
 
     chrome.test.succeed();
   },
+
 ]);
 

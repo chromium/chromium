@@ -65,6 +65,7 @@
 
 // Tears down the debugger so it can be deallocated.
 - (void)tearDownDebugger {
+  showMemoryDebugger_.Destroy();
   [memoryDebugger_ invalidateTimers];
   [memoryDebugger_ removeFromSuperview];
   memoryDebugger_ = nil;

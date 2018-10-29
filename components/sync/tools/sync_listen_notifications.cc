@@ -65,7 +65,7 @@ class NotificationPrinter : public InvalidationHandler {
   void OnIncomingInvalidation(
       const ObjectIdInvalidationMap& invalidation_map) override {
     ObjectIdSet ids = invalidation_map.GetObjectIds();
-    for (ObjectIdSet::const_iterator it = ids.begin(); it != ids.end(); ++it) {
+    for (auto it = ids.begin(); it != ids.end(); ++it) {
       LOG(INFO) << "Remote invalidation: " << invalidation_map.ToString();
     }
   }

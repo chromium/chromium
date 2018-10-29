@@ -1,0 +1,12 @@
+<script>
+  function sleep(delay_ms) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay_ms) { /* nothing */ }
+  }
+
+  // The unload event handler is a javascript function taking 0.5s seconds to
+  // execute.
+  window.addEventListener("unload", function() {
+    sleep(500 /* milliseconds */);
+  });
+</script>

@@ -55,7 +55,7 @@ class ExtensionInstallPrompt {
   enum PromptType {
     UNSET_PROMPT_TYPE = -1,
     INSTALL_PROMPT = 0,
-    INLINE_INSTALL_PROMPT = 1,
+    // INLINE_INSTALL_PROMPT_DEPRECATED = 1,
     // BUNDLE_INSTALL_PROMPT_DEPRECATED = 2,
     RE_ENABLE_PROMPT = 3,
     PERMISSIONS_PROMPT = 4,
@@ -67,6 +67,7 @@ class ExtensionInstallPrompt {
     DELEGATED_PERMISSIONS_PROMPT = 10,
     // DELEGATED_BUNDLE_PERMISSIONS_PROMPT_DEPRECATED = 11,
     NUM_PROMPT_TYPES = 12,
+    WEBSTORE_WIDGET_PROMPT = 13,
   };
 
   // The last prompt type to display; only used for testing.
@@ -110,8 +111,6 @@ class ExtensionInstallPrompt {
     base::string16 GetRetainedDevicesHeading() const;
 
     bool ShouldShowPermissions() const;
-
-    bool ShouldUseTabModalDialog() const;
 
     // Getters for webstore metadata. Only populated when the type is
     // INLINE_INSTALL_PROMPT, EXTERNAL_INSTALL_PROMPT, or REPAIR_PROMPT.

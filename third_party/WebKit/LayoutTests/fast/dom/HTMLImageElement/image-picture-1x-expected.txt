@@ -1,6 +1,7 @@
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS document.getElementById("canary").clientWidth is 75
 PASS currentSrcFileName("canary") is "blue_rect.jpg?0"
 PASS document.getElementById("simple").clientWidth is 800
@@ -27,4 +28,4 @@ PASS document.getElementById("no_srcset").clientWidth is 1600
 PASS currentSrcFileName("no_srcset") is "image-set-4x.png?3"
    
 some text
-         
+        

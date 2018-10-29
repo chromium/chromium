@@ -14,6 +14,7 @@ public_deps = [
 ]
 type_mappings = [
   "gpu.mojom.CollectInfoResult=gpu::CollectInfoResult",
+  "gpu.mojom.Dx12VulkanVersionInfo=gpu::Dx12VulkanVersionInfo",
   "gpu.mojom.GpuDevice=gpu::GPUInfo::GPUDevice",
   "gpu.mojom.GpuInfo=gpu::GPUInfo",
   "gpu.mojom.VideoCodecProfile=gpu::VideoCodecProfile",

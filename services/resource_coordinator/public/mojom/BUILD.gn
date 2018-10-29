@@ -18,6 +18,7 @@ mojom_component("mojom") {
     "page_signal.mojom",
     "service_constants.mojom",
     "signals.mojom",
+    "webui_graph_dump.mojom",
   ]
 
   public_deps = [

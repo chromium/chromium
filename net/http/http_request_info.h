@@ -42,10 +42,6 @@ struct NET_EXPORT HttpRequestInfo {
   // tracked by the server (e.g. without channel id).
   PrivacyMode privacy_mode;
 
-  // If present, the host of the referrer whose TokenBindingID should be
-  // included in a referred TokenBinding.
-  std::string token_binding_referrer;
-
   // Tag applied to all sockets used to service request.
   SocketTag socket_tag;
 

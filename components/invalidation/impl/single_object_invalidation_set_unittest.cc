@@ -42,8 +42,8 @@ TEST_F(SingleObjectInvalidationSetTest, InsertionAndOrdering) {
   ASSERT_EQ(3U, l1.GetSize());
   ASSERT_EQ(3U, l2.GetSize());
 
-  SingleObjectInvalidationSet::const_iterator it1 = l1.begin();
-  SingleObjectInvalidationSet::const_iterator it2 = l2.begin();
+  auto it1 = l1.begin();
+  auto it2 = l2.begin();
   EXPECT_THAT(inv0, Eq(*it1));
   EXPECT_THAT(inv0, Eq(*it2));
   it1++;

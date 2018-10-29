@@ -6,10 +6,12 @@
 
 #include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/common/constants.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/startup_metric_utils/browser/startup_metric_host_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -36,8 +38,8 @@ class ChromeService::IOThreadContext : public service_manager::Service {
  public:
   IOThreadContext() {
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner =
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::UI);
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::UI});
 
 #if defined(OS_CHROMEOS)
 #if defined(USE_OZONE)
@@ -68,7 +70,7 @@ class ChromeService::IOThreadContext : public service_manager::Service {
     // on the IO thread. Post a task instead. As long as this task is posted
     // before any code attempts to connect to the chrome service, there's no
     // race.
-    content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::IO)
+    base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::IO})
         ->PostTask(FROM_HERE,
                    base::BindOnce(&IOThreadContext::BindConnectorOnIOThread,
                                   base::Unretained(this),

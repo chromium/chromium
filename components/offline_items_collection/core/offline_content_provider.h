@@ -43,7 +43,10 @@ class OfflineContentProvider {
   class Observer {
    public:
     // Called when one or more OfflineItems have been added and should be shown
-    // in the UI.
+    // in the UI.  This should only be called for actual new items that are
+    // added during this session.  Existing items that are loaded on startup do
+    // not need to trigger this.  Most UI surfaces should query the existing
+    // list of items if they want to get the current state of the world.
     // If Observer maintains a cache of items, the specified items may already
     // be in the cache, in which case this call has to be ignored.
     virtual void OnItemsAdded(const OfflineItemList& items) = 0;

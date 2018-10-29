@@ -65,7 +65,7 @@ TEST(PaintOpHelper, DrawDRRectToString) {
       str,
       "DrawDRRectOp(outer=[bounded by 1.000,2.000 3.000x4.000], inner=[bounded "
       "by 5.000,6.000 7.000x8.000], flags=[color=rgba(0, 0, 0, 255), "
-      "blendMode=kSrcOver, isAntiAlias=false, isVerticalText=false, "
+      "blendMode=kSrcOver, isAntiAlias=false, "
       "isSubpixelText=false, isLCDRenderText=false, hinting=kNormal_Hinting, "
       "isAutohinted=false, isDither=false, textEncoding=kUTF8_TextEncoding, "
       "textSize=12.000, filterQuality=kNone_SkFilterQuality, "
@@ -84,7 +84,7 @@ TEST(PaintOpHelper, DrawImageToString) {
       str,
       "DrawImageOp(image=<paint image>, left=10.500, top=20.300, "
       "flags=[color=rgba(0, 0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, "
-      "isVerticalText=false, isSubpixelText=false, isLCDRenderText=false, "
+      "isSubpixelText=false, isLCDRenderText=false, "
       "hinting=kNormal_Hinting, isAutohinted=false, isDither=false, "
       "textEncoding=kUTF8_TextEncoding, textSize=12.000, "
       "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
@@ -105,7 +105,7 @@ TEST(PaintOpHelper, DrawImageRectToString) {
       "DrawImageRectOp(image=<paint image>, src=[1.000,2.000 3.000x4.000], "
       "dst=[5.000,6.000 7.000x8.000], constraint=kStrict_SrcRectConstraint, "
       "flags=[color=rgba(0, 0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, "
-      "isVerticalText=false, isSubpixelText=false, isLCDRenderText=false, "
+      "isSubpixelText=false, isLCDRenderText=false, "
       "hinting=kNormal_Hinting, isAutohinted=false, isDither=false, "
       "textEncoding=kUTF8_TextEncoding, textSize=12.000, "
       "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
@@ -121,7 +121,7 @@ TEST(PaintOpHelper, DrawIRectToString) {
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(str,
             "DrawIRectOp(rect=[1,2 3x4], flags=[color=rgba(0, 0, 0, 255), "
-            "blendMode=kSrcOver, isAntiAlias=false, isVerticalText=false, "
+            "blendMode=kSrcOver, isAntiAlias=false, "
             "isSubpixelText=false, isLCDRenderText=false, "
             "hinting=kNormal_Hinting, isAutohinted=false, isDither=false, "
             "textEncoding=kUTF8_TextEncoding, textSize=12.000, "
@@ -141,7 +141,7 @@ TEST(PaintOpHelper, DrawLineToString) {
       str,
       "DrawLineOp(x0=1.100, y0=2.200, x1=3.300, y1=4.400, flags=[color=rgba(0, "
       "0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, "
-      "isVerticalText=false, isSubpixelText=false, isLCDRenderText=false, "
+      "isSubpixelText=false, isLCDRenderText=false, "
       "hinting=kNormal_Hinting, isAutohinted=false, isDither=false, "
       "textEncoding=kUTF8_TextEncoding, textSize=12.000, "
       "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
@@ -159,7 +159,7 @@ TEST(PaintOpHelper, DrawOvalToString) {
       str,
       "DrawOvalOp(oval=[100.000,200.000 300.000x400.000], flags=[color=rgba(0, "
       "0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, "
-      "isVerticalText=false, isSubpixelText=false, isLCDRenderText=false, "
+      "isSubpixelText=false, isLCDRenderText=false, "
       "hinting=kNormal_Hinting, isAutohinted=false, isDither=false, "
       "textEncoding=kUTF8_TextEncoding, textSize=12.000, "
       "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
@@ -176,7 +176,7 @@ TEST(PaintOpHelper, DrawPathToString) {
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(str,
             "DrawPathOp(path=<SkPath>, flags=[color=rgba(0, 0, 0, 255), "
-            "blendMode=kSrcOver, isAntiAlias=false, isVerticalText=false, "
+            "blendMode=kSrcOver, isAntiAlias=false, "
             "isSubpixelText=false, isLCDRenderText=false, "
             "hinting=kNormal_Hinting, isAutohinted=false, isDither=false, "
             "textEncoding=kUTF8_TextEncoding, textSize=12.000, "
@@ -201,7 +201,7 @@ TEST(PaintOpHelper, DrawRectToString) {
   EXPECT_EQ(
       str,
       "DrawRectOp(rect=[-1.000,-2.000 -3.000x-4.000], flags=[color=rgba(0, 0, "
-      "0, 255), blendMode=kSrcOver, isAntiAlias=false, isVerticalText=false, "
+      "0, 255), blendMode=kSrcOver, isAntiAlias=false, "
       "isSubpixelText=false, isLCDRenderText=false, hinting=kNormal_Hinting, "
       "isAutohinted=false, isDither=false, textEncoding=kUTF8_TextEncoding, "
       "textSize=12.000, filterQuality=kNone_SkFilterQuality, "
@@ -221,7 +221,7 @@ TEST(PaintOpHelper, DrawRRectToString) {
       str,
       "DrawRRectOp(rrect=[bounded by -1.000,-2.000 3.000x4.000], "
       "flags=[color=rgba(0, 0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, "
-      "isVerticalText=false, isSubpixelText=false, isLCDRenderText=false, "
+      "isSubpixelText=false, isLCDRenderText=false, "
       "hinting=kNormal_Hinting, isAutohinted=false, isDither=false, "
       "textEncoding=kUTF8_TextEncoding, textSize=12.000, "
       "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
@@ -239,7 +239,7 @@ TEST(PaintOpHelper, DrawTextBlobToString) {
       str,
       "DrawTextBlobOp(blob=(nil), x=100.000, y=-222.000, flags=[color=rgba(0, "
       "0, 0, 255), blendMode=kSrcOver, isAntiAlias=false, "
-      "isVerticalText=false, isSubpixelText=false, isLCDRenderText=false, "
+      "isSubpixelText=false, isLCDRenderText=false, "
       "hinting=kNormal_Hinting, isAutohinted=false, isDither=false, "
       "textEncoding=kUTF8_TextEncoding, textSize=12.000, "
       "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
@@ -281,7 +281,7 @@ TEST(PaintOpHelper, SaveLayerToString) {
   EXPECT_EQ(
       str,
       "SaveLayerOp(bounds=[1.000,2.000 3.000x4.000], flags=[color=rgba(0, 0, "
-      "0, 255), blendMode=kSrcOver, isAntiAlias=false, isVerticalText=false, "
+      "0, 255), blendMode=kSrcOver, isAntiAlias=false, "
       "isSubpixelText=false, isLCDRenderText=false, hinting=kNormal_Hinting, "
       "isAutohinted=false, isDither=false, textEncoding=kUTF8_TextEncoding, "
       "textSize=12.000, filterQuality=kNone_SkFilterQuality, "

@@ -31,29 +31,7 @@ class Accelerator;
 
 namespace libgtkui {
 
-// Default frame tints
 extern const color_utils::HSL kDefaultTintFrameIncognito;
-extern const color_utils::HSL kDefaultTintFrameIncognitoInactive;
-
-// Default background tab tints
-extern const color_utils::HSL kDefaultTintBackgroundTab;
-extern const color_utils::HSL kDefaultTintBackgroundTabIncognito;
-
-extern const SkColor kInvalidColorIdColor;
-extern const SkColor kURLTextColor;
-
-// Generates the normal URL color, a green color used in unhighlighted URL
-// text. It is a mix of |kURLTextColor| and the current text color.  Unlike the
-// selected text color, it is more important to match the qualities of the
-// foreground typeface color instead of taking the background into account.
-SkColor NormalURLColor(SkColor foreground);
-
-// Generates the selected URL color, a green color used on URL text in the
-// currently highlighted entry in the autocomplete popup. It's a mix of
-// |kURLTextColor|, the current text color, and the background color (the
-// select highlight). It is more important to contrast with the background
-// saturation than to look exactly like the foreground color.
-SkColor SelectedURLColor(SkColor foreground, SkColor background);
 
 void GtkInitFromCommandLine(const base::CommandLine& command_line);
 

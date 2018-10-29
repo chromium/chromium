@@ -257,15 +257,6 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   // This method is thread-safe.
   PlatformThreadId GetThreadId() const;
 
-  // Returns the current thread handle. If called before Start*() returns or
-  // after Stop() returns, an empty thread handle will be returned.
-  //
-  // This method is thread-safe.
-  //
-  // TODO(robliao): Remove this when it no longer needs to be temporarily
-  // exposed for http://crbug.com/717380.
-  PlatformThreadHandle GetThreadHandle() const;
-
   // Returns true if the thread has been started, and not yet stopped.
   bool IsRunning() const;
 

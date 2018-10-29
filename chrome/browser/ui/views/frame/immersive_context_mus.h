@@ -13,18 +13,19 @@ class ImmersiveContextMus : public ash::ImmersiveContext {
   ImmersiveContextMus();
   ~ImmersiveContextMus() override;
 
+  static ImmersiveContextMus* Get() { return instance_; }
+
   // ash::ImmersiveContext:
   void OnEnteringOrExitingImmersive(
       ash::ImmersiveFullscreenController* controller,
       bool entering) override;
   gfx::Rect GetDisplayBoundsInScreen(views::Widget* widget) override;
-  void AddPointerWatcher(views::PointerWatcher* watcher,
-                         views::PointerWatcherEventTypes events) override;
-  void RemovePointerWatcher(views::PointerWatcher* watcher) override;
   bool DoesAnyWindowHaveCapture() override;
   bool IsMouseEventsEnabled() override;
 
  private:
+  static ImmersiveContextMus* instance_;
+
   DISALLOW_COPY_AND_ASSIGN(ImmersiveContextMus);
 };
 

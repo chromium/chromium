@@ -2,7 +2,6 @@ This tests checks that the 'text' keyword is parsed correctly in the 'background
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS test("background-clip: content-box", "background-clip") is "content-box"
 PASS test("background-clip: padding-box", "background-clip") is "padding-box"
 PASS test("background-clip: border-box", "background-clip") is "border-box"

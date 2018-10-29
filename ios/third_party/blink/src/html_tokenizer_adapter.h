@@ -10,12 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
-
-#define DEFINE_STATIC_LOCAL_STRING(name, arguments)                       \
-    static const WebCore::LChar* name = (const WebCore::LChar*)arguments; \
-    static const size_t name##Length = (arraysize(arguments) - 1); \
-    DCHECK(name##Length == strlen((const char*)name))
 
 #define WTF_MAKE_NONCOPYABLE(x) DISALLOW_COPY_AND_ASSIGN(x)
 

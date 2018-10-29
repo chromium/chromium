@@ -45,7 +45,7 @@ SpeechGrammar* SpeechGrammarList::item(unsigned index) const {
 void SpeechGrammarList::addFromUri(ScriptState* script_state,
                                    const String& src,
                                    double weight) {
-  Document* document = ToDocument(ExecutionContext::From(script_state));
+  Document* document = To<Document>(ExecutionContext::From(script_state));
   grammars_.push_back(
       SpeechGrammar::Create(document->CompleteURL(src), weight));
 }

@@ -110,9 +110,7 @@ v8::Local<v8::Array> V8SchemaRegistry::GetSchemas(
 
   v8::Local<v8::Array> v8_apis(v8::Array::New(isolate, apis.size()));
   size_t api_index = 0;
-  for (std::vector<std::string>::const_iterator i = apis.begin();
-       i != apis.end();
-       ++i) {
+  for (auto i = apis.cbegin(); i != apis.cend(); ++i) {
     v8_apis->Set(api_index++, GetSchema(*i));
   }
   return handle_scope.Escape(v8_apis);

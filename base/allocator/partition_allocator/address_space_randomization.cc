@@ -6,7 +6,8 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/spin_lock.h"
-#include "base/lazy_instance.h"
+#include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
 
@@ -31,8 +32,10 @@ struct RandomContext {
   uint32_t d;
 };
 
-static LazyInstance<RandomContext>::Leaky s_RandomContext =
-    LAZY_INSTANCE_INITIALIZER;
+RandomContext* GetRandomContext() {
+  static NoDestructor<RandomContext> s_RandomContext;
+  return s_RandomContext.get();
+}
 
 #define rot(x, k) (((x) << (k)) | ((x) >> (32 - (k))))
 
@@ -67,7 +70,7 @@ uint32_t RandomValue(RandomContext* x) {
 }  // namespace
 
 void SetRandomPageBaseSeed(int64_t seed) {
-  RandomContext* x = s_RandomContext.Pointer();
+  RandomContext* x = GetRandomContext();
   subtle::SpinLock::Guard guard(x->lock);
   // Set RNG to initial state.
   x->initialized = true;
@@ -76,12 +79,11 @@ void SetRandomPageBaseSeed(int64_t seed) {
 }
 
 void* GetRandomPageBase() {
-  uintptr_t random =
-      static_cast<uintptr_t>(RandomValue(s_RandomContext.Pointer()));
+  uintptr_t random = static_cast<uintptr_t>(RandomValue(GetRandomContext()));
 
 #if defined(ARCH_CPU_64_BITS)
   random <<= 32ULL;
-  random |= static_cast<uintptr_t>(RandomValue(s_RandomContext.Pointer()));
+  random |= static_cast<uintptr_t>(RandomValue(GetRandomContext()));
 
 // The kASLRMask and kASLROffset constants will be suitable for the
 // OS and build configuration.

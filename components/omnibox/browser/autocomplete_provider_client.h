@@ -26,6 +26,7 @@ class DocumentSuggestionsService;
 class GURL;
 class InMemoryURLIndex;
 class KeywordProvider;
+class OmniboxPedalProvider;
 class PrefService;
 class ShortcutsBackend;
 
@@ -64,6 +65,7 @@ class AutocompleteProviderClient {
       bool create_if_necessary) const = 0;
   virtual DocumentSuggestionsService* GetDocumentSuggestionsService(
       bool create_if_necessary) const = 0;
+  virtual OmniboxPedalProvider* GetPedalProvider() const = 0;
   virtual scoped_refptr<ShortcutsBackend> GetShortcutsBackend() = 0;
   virtual scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() = 0;
   virtual std::unique_ptr<KeywordExtensionsDelegate>

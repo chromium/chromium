@@ -299,6 +299,10 @@ public class WebXrVrInputTest {
                 WebXrVrTestFramework.getFileUrlForHtmlTestFile("test_webxr_input"),
                 PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.enterSessionWithUserGestureOrFail();
+        // Make it so that the webpage doesn't try to finish the JavaScript step after each input
+        // since we don't need to ack each one like with the Daydream controller.
+        mWebXrVrTestFramework.runJavaScriptOrFail(
+                "finishAfterEachInput = false", POLL_TIMEOUT_SHORT_MS);
         int numIterations = 10;
         mWebXrVrTestFramework.runJavaScriptOrFail(
                 "stepSetupListeners(" + String.valueOf(numIterations) + ")", POLL_TIMEOUT_SHORT_MS);

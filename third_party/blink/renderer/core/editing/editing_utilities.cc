@@ -1605,7 +1605,7 @@ DispatchEventResult DispatchBeforeInputInsertText(
     const StaticRangeVector* ranges) {
   if (!target)
     return DispatchEventResult::kNotCanceled;
-  // TODO(chongz): Pass appropriate |ranges| after it's defined on spec.
+  // TODO(editing-dev): Pass appropriate |ranges| after it's defined on spec.
   // http://w3c.github.io/editing/input-events.html#dom-inputevent-inputtype
   InputEvent* before_input_event = InputEvent::CreateBeforeInput(
       input_type, data, InputTypeIsCancelable(input_type),
@@ -1648,7 +1648,7 @@ DispatchEventResult DispatchBeforeInputDataTransfer(
         TargetRangesForInputEvent(*target));
   } else {
     const String& data = data_transfer->getData(kMimeTypeTextPlain);
-    // TODO(chongz): Pass appropriate |ranges| after it's defined on spec.
+    // TODO(editing-dev): Pass appropriate |ranges| after it's defined on spec.
     // http://w3c.github.io/editing/input-events.html#dom-inputevent-inputtype
     before_input_event = InputEvent::CreateBeforeInput(
         input_type, data, InputTypeIsCancelable(input_type),

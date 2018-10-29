@@ -90,6 +90,7 @@ viz_component("common") {
     "quads/debug_border_draw_quad.h",
     "quads/draw_quad.cc",
     "quads/draw_quad.h",
+    "quads/frame_deadline.cc",
     "quads/frame_deadline.h",
     "quads/largest_draw_quad.cc",
     "quads/largest_draw_quad.h",
@@ -186,7 +187,7 @@ viz_component("common") {
       "gpu/vulkan_in_process_context_provider.h",
     ]
     configs = [ "//third_party/vulkan:vulkan_config" ]
-    deps += [ "//gpu/vulkan/init" ]
+    deps += [ "//gpu/vulkan" ]
   }
 
   if (is_win) {
@@ -217,6 +218,7 @@ viz_source_set("unit_tests") {
     "frame_sinks/copy_output_util_unittest.cc",
     "frame_sinks/delay_based_time_source_unittest.cc",
     "gl_helper_unittest.cc",
+    "gl_scaler_overscan_pixeltest.cc",
     "gl_scaler_shader_pixeltest.cc",
     "gl_scaler_test_util.cc",
     "gl_scaler_test_util.h",

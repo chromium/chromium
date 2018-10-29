@@ -7,10 +7,10 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
-#include "components/signin/core/browser/signin_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "services/identity/public/cpp/identity_manager.h"
 
 namespace {
 
@@ -32,10 +32,10 @@ extensions::SafeBrowsingPrivateEventRouter* GetEventRouter(
 std::string GetUserName(const content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  SigninManagerBase* signin_manager =
-      SigninManagerFactory::GetForProfileIfExists(profile);
-  return signin_manager ? signin_manager->GetAuthenticatedAccountInfo().email
-                        : std::string();
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile);
+  return identity_manager ? identity_manager->GetPrimaryAccountInfo().email
+                          : std::string();
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

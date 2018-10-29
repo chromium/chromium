@@ -31,8 +31,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/style_path.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/length.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/ref_vector.h"
@@ -272,11 +272,15 @@ class CORE_EXPORT StyleMiscData : public RefCounted<StyleMiscData> {
     return !(*this == other);
   }
 
+  Length baseline_shift_value;
+
   Color flood_color;
-  float flood_opacity;
   Color lighting_color;
 
-  Length baseline_shift_value;
+  float flood_opacity;
+
+  bool flood_color_is_current_color;
+  bool lighting_color_is_current_color;
 
  private:
   StyleMiscData();

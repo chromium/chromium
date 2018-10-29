@@ -8,7 +8,8 @@
 
 namespace gfx {
 
-GpuMemoryBufferHandle::GpuMemoryBufferHandle() : type(EMPTY_BUFFER), id(0) {}
+GpuMemoryBufferHandle::GpuMemoryBufferHandle()
+    : type(EMPTY_BUFFER), id(0), offset(0), stride(0) {}
 
 // TODO(crbug.com/863011): Reset |type| and possibly the handles on the
 // moved-from object.

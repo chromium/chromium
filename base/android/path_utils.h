@@ -49,6 +49,10 @@ BASE_EXPORT bool GetNativeLibraryDirectory(FilePath* result);
 // is placed in the FilePath pointed to by 'result'.
 BASE_EXPORT bool GetExternalStorageDirectory(FilePath* result);
 
+// Retrieves the absolute path the base APK. The result is placed in the
+// FilePath pointed to by 'result'.
+BASE_EXPORT bool GetPathToBaseApk(FilePath* result);
+
 }  // namespace android
 }  // namespace base
 

@@ -59,12 +59,6 @@ namespace blink {
        ? alloca(value.As<v8::ArrayBufferView>()->ByteLength())   \
        : nullptr)
 
-// DEPRECATED
-inline bool V8CallBoolean(v8::Maybe<bool> maybe) {
-  bool result;
-  return maybe.To(&result) && result;
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_MACROS_H_

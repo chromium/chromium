@@ -63,6 +63,7 @@ NetworkChangeNotifierLinux::Thread::~Thread() {
 
 void NetworkChangeNotifierLinux::Thread::Init() {
   address_tracker_->Init();
+  last_type_ = GetCurrentConnectionType();
   dns_config_service_ = DnsConfigService::CreateSystemService();
   dns_config_service_->WatchConfig(
       base::Bind(&NetworkChangeNotifier::SetDnsConfig));

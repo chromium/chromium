@@ -161,7 +161,8 @@ Polymer({
 
   /** @private */
   deviceStateChanged_: function() {
-    this.showSpinner = !!this.deviceState.Scanning;
+    this.showSpinner =
+        this.deviceState !== undefined && !!this.deviceState.Scanning;
 
     // Scans should only be triggered by the "networks" subpage.
     if (settings.getCurrentRoute() != settings.routes.INTERNET_NETWORKS) {

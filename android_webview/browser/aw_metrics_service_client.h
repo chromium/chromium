@@ -10,6 +10,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/metrics/field_trial.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
@@ -18,10 +19,6 @@ class PrefService;
 
 namespace base {
 class FilePath;
-}
-
-namespace net {
-class URLRequestContextGetter;
 }
 
 namespace metrics {
@@ -43,18 +40,16 @@ class AwMetricsServiceClient : public metrics::MetricsServiceClient,
  public:
   static AwMetricsServiceClient* GetInstance();
 
-  // If the client ID was pre-loaded on the Java side, store it in "client_id"
-  // and return true; otherwise, return false.
-  static bool GetPreloadedClientId(std::string* client_id);
-
   // Retrieve the client ID or generate one if none exists.
   static void LoadOrCreateClientId();
 
   // Return the cached client id.
   static std::string GetClientId();
 
-  void Initialize(PrefService* pref_service,
-                  net::URLRequestContextGetter* request_context);
+  void Initialize(PrefService* pref_service);
+
+  std::unique_ptr<const base::FieldTrial::EntropyProvider>
+  CreateLowEntropyProvider();
 
   // metrics::EnabledStateProvider implementation
   bool IsConsentGiven() const override;
@@ -92,7 +87,6 @@ class AwMetricsServiceClient : public metrics::MetricsServiceClient,
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<metrics::MetricsService> metrics_service_;
   PrefService* pref_service_;
-  net::URLRequestContextGetter* request_context_;
   bool consent_;    // = (user has consented) && !(app has opted out)
   bool in_sample_;  // Is this client enabled by sampling?
 

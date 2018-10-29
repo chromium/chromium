@@ -131,13 +131,6 @@ class MiscTests(Base):
         # test handling of MISSING results
         self.assertEqual(TestExpectations.result_was_expected(MISSING, set([PASS])), False)
 
-    def test_remove_pixel_failures(self):
-        self.assertEqual(TestExpectations.remove_pixel_failures(set([FAIL])), set([FAIL]))
-        self.assertEqual(TestExpectations.remove_pixel_failures(set([PASS])), set([PASS]))
-        self.assertEqual(TestExpectations.remove_pixel_failures(set([IMAGE])), set([PASS]))
-        self.assertEqual(TestExpectations.remove_pixel_failures(set([FAIL])), set([FAIL]))
-        self.assertEqual(TestExpectations.remove_pixel_failures(set([PASS, IMAGE, CRASH])), set([PASS, CRASH]))
-
     def test_suffixes_for_expectations(self):
         self.assertEqual(TestExpectations.suffixes_for_expectations(set([FAIL])), set(['txt', 'png', 'wav']))
         self.assertEqual(TestExpectations.suffixes_for_expectations(set([IMAGE])), set(['png']))
@@ -228,25 +221,9 @@ class MiscTests(Base):
                                      'Bug(override) failures/expected/text.html [ Timeout ]\n'
                                      'Bug(override) failures/expected/text.html [ Crash ]\n')
 
-    def test_pixel_tests_flag(self):
-        def match(test, result, pixel_tests_enabled):
-            return self._exp.matches_an_expected_result(
-                test, result, pixel_tests_enabled, sanitizer_is_enabled=False)
-
-        self.parse_exp(self.get_basic_expectations())
-        self.assertTrue(match('failures/expected/text.html', FAIL, True))
-        self.assertTrue(match('failures/expected/text.html', FAIL, False))
-        self.assertFalse(match('failures/expected/text.html', CRASH, True))
-        self.assertFalse(match('failures/expected/text.html', CRASH, False))
-        self.assertFalse(match('failures/expected/image_checksum.html', PASS, True))
-        self.assertFalse(match('failures/expected/image_checksum.html', PASS, False))
-        self.assertFalse(match('failures/expected/crash.html', PASS, False))
-        self.assertTrue(match('passes/text.html', PASS, False))
-
     def test_sanitizer_flag(self):
         def match(test, result):
-            return self._exp.matches_an_expected_result(
-                test, result, pixel_tests_are_enabled=False, sanitizer_is_enabled=True)
+            return self._exp.matches_an_expected_result(test, result, sanitizer_is_enabled=True)
 
         self.parse_exp("""
 Bug(test) failures/expected/crash.html [ Crash ]
@@ -297,6 +274,8 @@ Bug(test) failures/expected/timeout.html [ Timeout ]
                           '/out-of-checkout/TestExpectations')
         self.assertEquals(expectations._shorten_filename('/mock-checkout/third_party/WebKit/LayoutTests/TestExpectations'),
                           'third_party/WebKit/LayoutTests/TestExpectations')
+        self.assertEquals(expectations._shorten_filename('/mock-checkout/third_party/blink/web_tests/TestExpectations'),
+                          'third_party/blink/web_tests/TestExpectations')
 
 class SkippedTests(Base):
 

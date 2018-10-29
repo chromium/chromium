@@ -877,4 +877,80 @@ TEST(TypeTraitsTest, TestResultOf) {
   EXPECT_EQ(TypeEnum::D, GetTypeExt(Wrap<TypeD>()));
 }
 
+template <typename T>
+bool TestCopyAssign() {
+  return absl::is_copy_assignable<T>::value ==
+         std::is_copy_assignable<T>::value;
+}
+
+TEST(TypeTraitsTest, IsCopyAssignable) {
+  EXPECT_TRUE(TestCopyAssign<int>());
+  EXPECT_TRUE(TestCopyAssign<int&>());
+  EXPECT_TRUE(TestCopyAssign<int&&>());
+
+  struct S {};
+  EXPECT_TRUE(TestCopyAssign<S>());
+  EXPECT_TRUE(TestCopyAssign<S&>());
+  EXPECT_TRUE(TestCopyAssign<S&&>());
+
+  class C {
+   public:
+    explicit C(C* c) : c_(c) {}
+    ~C() { delete c_; }
+
+   private:
+    C* c_;
+  };
+  EXPECT_TRUE(TestCopyAssign<C>());
+  EXPECT_TRUE(TestCopyAssign<C&>());
+  EXPECT_TRUE(TestCopyAssign<C&&>());
+
+  // Reason for ifndef: add_lvalue_reference<T> in libc++ breaks for these cases
+#ifndef _LIBCPP_VERSION
+  EXPECT_TRUE(TestCopyAssign<int()>());
+  EXPECT_TRUE(TestCopyAssign<int(int) const>());
+  EXPECT_TRUE(TestCopyAssign<int(...) volatile&>());
+  EXPECT_TRUE(TestCopyAssign<int(int, ...) const volatile&&>());
+#endif  // _LIBCPP_VERSION
+}
+
+template <typename T>
+bool TestMoveAssign() {
+  return absl::is_move_assignable<T>::value ==
+         std::is_move_assignable<T>::value;
+}
+
+TEST(TypeTraitsTest, IsMoveAssignable) {
+  EXPECT_TRUE(TestMoveAssign<int>());
+  EXPECT_TRUE(TestMoveAssign<int&>());
+  EXPECT_TRUE(TestMoveAssign<int&&>());
+
+  struct S {};
+  EXPECT_TRUE(TestMoveAssign<S>());
+  EXPECT_TRUE(TestMoveAssign<S&>());
+  EXPECT_TRUE(TestMoveAssign<S&&>());
+
+  class C {
+   public:
+    explicit C(C* c) : c_(c) {}
+    ~C() { delete c_; }
+    void operator=(const C&) = delete;
+    void operator=(C&&) = delete;
+
+   private:
+    C* c_;
+  };
+  EXPECT_TRUE(TestMoveAssign<C>());
+  EXPECT_TRUE(TestMoveAssign<C&>());
+  EXPECT_TRUE(TestMoveAssign<C&&>());
+
+  // Reason for ifndef: add_lvalue_reference<T> in libc++ breaks for these cases
+#ifndef _LIBCPP_VERSION
+  EXPECT_TRUE(TestMoveAssign<int()>());
+  EXPECT_TRUE(TestMoveAssign<int(int) const>());
+  EXPECT_TRUE(TestMoveAssign<int(...) volatile&>());
+  EXPECT_TRUE(TestMoveAssign<int(int, ...) const volatile&&>());
+#endif  // _LIBCPP_VERSION
+}
+
 }  // namespace

@@ -30,13 +30,13 @@ const CSSValue* BorderImageOutset::CSSValueFromComputedStyleInternal(
 
 const CSSValue* BorderImageOutset::InitialValue() const {
   DEFINE_STATIC_LOCAL(
-      CSSValue, zeroInteger,
+      Persistent<CSSValue>, zeroInteger,
       (CSSPrimitiveValue::Create(0, CSSPrimitiveValue::UnitType::kInteger)));
   DEFINE_STATIC_LOCAL(
-      CSSQuadValue, value,
-      (CSSQuadValue::Create(&zeroInteger, &zeroInteger, &zeroInteger,
-                            &zeroInteger, CSSQuadValue::kSerializeAsQuad)));
-  return &value;
+      Persistent<CSSQuadValue>, value,
+      (CSSQuadValue::Create(zeroInteger, zeroInteger, zeroInteger, zeroInteger,
+                            CSSQuadValue::kSerializeAsQuad)));
+  return value;
 }
 
 }  // namespace CSSLonghand

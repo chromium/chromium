@@ -1,0 +1,16 @@
+/* Copyright 2018 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/**
+ * This fixes the issue with polymer 1.0 layout classes.
+ * (see https://crbug.com/892757)
+ */
+
+.layout.horizontal,
+.layout.horizontal-reverse,
+.layout.inline,
+.layout.vertical,
+.layout.vertical-reverse {
+  min-height: 0;
+}

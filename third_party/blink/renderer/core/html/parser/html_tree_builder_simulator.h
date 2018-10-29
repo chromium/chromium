@@ -44,7 +44,7 @@ class CORE_EXPORT HTMLTreeBuilderSimulator {
 
  public:
   enum SimulatedToken {
-    kScriptStart,
+    kValidScriptStart,
     kScriptEnd,
     kLink,
     kStyleEnd,

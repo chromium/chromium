@@ -40,6 +40,7 @@ enum AudioContextLatencyCategory {
 ] interface AudioContext : BaseAudioContext {
     [MeasureAs=AudioContextSuspend, CallWith=ScriptState, ImplementedAs=suspendContext] Promise<void> suspend();
     [MeasureAs=AudioContextClose, CallWith=ScriptState, ImplementedAs=closeContext] Promise<void> close();
+    [MeasureAs=AudioContextResume, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<void> resume();
 
     // Output timestamp
     [MeasureAs=AudioContextGetOutputTimestamp, CallWith=ScriptState] AudioTimestamp getOutputTimestamp();
@@ -48,10 +49,8 @@ enum AudioContextLatencyCategory {
     // passing the audio from the AudioDestinationNode to the audio subsystem
     readonly attribute double baseLatency;
 
-    // Sources
-    // TODO(rtoy): The following methods should be here instead of in BaseAudioContext:
-    //
-    // createMediaElementSource(HTMLMediaElement mediaElement)
-    // createMediaStreamSource(MediaStream mediaStream)
-    // createMediaStreamDestination()
+    [RaisesException, MeasureAs=AudioContextCreateMediaElementSource] MediaElementAudioSourceNode createMediaElementSource(HTMLMediaElement mediaElement);
+    [RaisesException, MeasureAs=AudioContextCreateMediaStreamSource] MediaStreamAudioSourceNode createMediaStreamSource(MediaStream mediaStream);
+    [RaisesException, MeasureAs=AudioContextCreateMediaStreamDestination] MediaStreamAudioDestinationNode createMediaStreamDestination();
+
 };

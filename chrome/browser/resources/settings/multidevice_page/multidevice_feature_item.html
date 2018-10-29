@@ -33,8 +33,10 @@
         class="settings-box two-line"
         on-click="handleItemClick_"
         actionable$="[[hasSubpageClickHandler_(
-            subpageRoute, pageContentData, feature)]]">
-      <iron-icon icon="[[getIconName(feature)]]"></iron-icon>
+            feature, pageContentData, subpageRoute)]]">
+      <slot name="icon">
+        <iron-icon icon="[[getIconName(feature)]]"></iron-icon>
+      </slot>
       <div id="item-text-container" class="middle">
         <div id="featureName">[[getFeatureName(feature)]]</div>
         <div class="secondary"
@@ -44,7 +46,7 @@
       </div>
       <template is="dom-if"
           if="[[hasSubpageClickHandler_(
-              subpageRoute, pageContentData, feature)]]"
+              feature, pageContentData, subpageRoute)]]"
           restamp>
         <paper-icon-button-light class="subpage-arrow">
           <button aria-labelledby="featureName"

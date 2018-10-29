@@ -18,4 +18,3 @@ PASS scrollBox.scrollTop is within 0.1 of 13
 Scrolling 2.0 scaled div
 PASS scrollBox.scrollTop is within 0.1 of 5
 PASS scrollBox.scrollTop is within 0.1 of 15
-

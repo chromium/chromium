@@ -46,15 +46,9 @@ class TEST_RUNNER_EXPORT WebTestInterfaces {
   void SetTestIsRunning(bool running);
 
   // Configures the renderer for the test, based on |test_url| and
-  // |generate_pixels|.
-  //
-  // If |initial_configuration| is true, then the test configuration is being
-  // applied for the first time during a test;  otherwise the test configuration
-  // is merely being replicated to another renderer (and in this case global
-  // actions like showing a DevTools window should not be redone).
+  // |procotol_mode|.
   void ConfigureForTestWithURL(const blink::WebURL& test_url,
-                               bool generate_pixels,
-                               bool initial_configuration);
+                               bool protocol_mode);
 
   WebTestRunner* TestRunner();
   blink::WebThemeEngine* ThemeEngine();

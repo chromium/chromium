@@ -38,6 +38,11 @@ class UI_BASE_EXPORT Accelerator {
   };
 
   Accelerator();
+  // |modifiers| consists of ui::EventFlags bitwise-or-ed together,
+  // for example:
+  //     Accelerator(ui::VKEY_Z, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)
+  // would correspond to the shortcut "ctrl + shift + z".
+  //
   // NOTE: this constructor strips out non key related flags.
   Accelerator(KeyboardCode key_code,
               int modifiers,

@@ -98,8 +98,7 @@ void BrowsingDataFlashLSOHelperImpl::OnGetSitesWithDataCompleted(
 void BrowsingDataFlashLSOHelperImpl::OnClearSiteDataCompleted(
     uint32_t request_id,
     bool success) {
-  std::map<uint32_t, DeleteFlashLSOTask>::iterator entry =
-      clear_site_data_ids_.find(request_id);
+  auto entry = clear_site_data_ids_.find(request_id);
   DCHECK(entry != clear_site_data_ids_.end());
   LOG_IF(ERROR, !success) << "Couldn't clear Flash LSO data for "
                           << entry->second.site;

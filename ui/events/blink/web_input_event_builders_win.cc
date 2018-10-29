@@ -4,8 +4,7 @@
 
 #include "ui/events/blink/web_input_event_builders_win.h"
 
-#include <windowsx.h>
-
+#include "base/win/windowsx_shim.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/event_utils.h"

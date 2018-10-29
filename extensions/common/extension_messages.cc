@@ -158,8 +158,7 @@ bool ParamTraits<URLPatternSet>::Read(const base::Pickle* m,
   if (!ReadParam(m, iter, &patterns))
     return false;
 
-  for (std::set<URLPattern>::iterator i = patterns.begin();
-       i != patterns.end(); ++i)
+  for (auto i = patterns.begin(); i != patterns.end(); ++i)
     p->AddPattern(*i);
   return true;
 }

@@ -48,6 +48,9 @@ const char kEnableTouchDragDrop[] = "enable-touch-drag-drop";
 const char kEnableTouchableAppContextMenu[] =
     "enable-touchable-app-context-menus";
 
+// Forces dark mode in UI for platforms that support it.
+const char kForceDarkMode[] = "force-dark-mode";
+
 // Forces high-contrast mode in native UI drawing, regardless of system
 // settings. Note that this has limited effect on Windows: only Aura colors will
 // be switched to high contrast, not other system colors.
@@ -67,32 +70,11 @@ const char kMaterialDesignInkDropAnimationSpeedFast[] = "fast";
 // Defines that Material Design visual feedback animations should be slow.
 const char kMaterialDesignInkDropAnimationSpeedSlow[] = "slow";
 
-// Enables top Chrome material design elements.
-const char kTopChromeMD[] = "top-chrome-md";
-
-// Material design mode for the |kTopChromeMD| switch.
-const char kTopChromeMDMaterial[] = "material";
-
-// Auto-switching mode |kTopChromeMD| switch. This mode toggles between
-// material and material-hybrid depending on device.
-const char kTopChromeMDMaterialAuto[] = "material-auto";
-
-// Material design hybrid mode for the |kTopChromeMD| switch. Targeted for
-// mouse/touch hybrid devices.
-const char kTopChromeMDMaterialHybrid[] = "material-hybrid";
-
-// Material design mode that is more optimized for touch devices for the
-// |kTopChromeMD| switch.
-const char kTopChromeMDMaterialTouchOptimized[] = "material-touch-optimized";
-
-// Material design mode that represents a refresh of the Chrome UI for the
-// |kTopChromeMD| switch.
-const char kTopChromeMDMaterialRefresh[] = "material-refresh";
-
-// Material design mode that represents a touchable version of material-refresh
-// for the |kTopChromeMD| switch.
-const char kTopChromeMDMaterialRefreshTouchOptimized[] =
-    "material-refresh-touch-optimized";
+// Controls touch-optimized UI layout for top chrome.
+const char kTopChromeTouchUi[] = "top-chrome-touch-ui";
+const char kTopChromeTouchUiAuto[] = "auto";
+const char kTopChromeTouchUiDisabled[] = "disabled";
+const char kTopChromeTouchUiEnabled[] = "enabled";
 
 // Disable partial swap which is needed for some OpenGL drivers / emulators.
 const char kUIDisablePartialSwap[] = "ui-disable-partial-swap";

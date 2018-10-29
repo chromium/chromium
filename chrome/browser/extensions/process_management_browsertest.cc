@@ -325,9 +325,13 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, MAYBE_ExtensionProcessBalancing) {
   // chrome-extension:// URIs below (not to HTTP URIs) to make sure the 1/3rd
   // of process limit also applies to normal tabs (not just to background pages
   // and scripts).
-  ui_test_utils::NavigateToURL(
+  content::RenderProcessHost* first_renderer = ui_test_utils::NavigateToURL(
       browser(), base_url.Resolve("isolated_apps/app1/main.html"));
-  ui_test_utils::NavigateToURL(
+  content::RenderProcessHostWatcher first_renderer_watcher(
+      first_renderer,
+      content::RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+
+  content::RenderProcessHost* second_renderer = ui_test_utils::NavigateToURL(
       browser(), base_url.Resolve("api_test/management/test/basics.html"));
 
   std::set<int> process_ids;
@@ -348,6 +352,13 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, MAYBE_ExtensionProcessBalancing) {
     EXPECT_EQ(2u, process_ids.size());
   else
     EXPECT_EQ(5u, process_ids.size());
+
+  if (first_renderer != second_renderer) {
+    // Wait for the first renderer to be torn down before verifying the number
+    // of processes, else we race with the teardown here (specifically the
+    // FrameMsg_SwapOut -> FrameHostMsg_SwapOut_ACK round trip).
+    first_renderer_watcher.Wait();
+  }
 
   // ProcessMap will always have exactly 5 entries - one for each of the
   // extensions with a background page (api_test/browser_action/*).  There won't

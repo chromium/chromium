@@ -39,7 +39,7 @@
 namespace blink {
 
 struct SerializedResource {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   KURL url;
   String mime_type;
   scoped_refptr<const SharedBuffer> data;

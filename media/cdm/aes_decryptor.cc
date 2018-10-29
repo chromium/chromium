@@ -118,7 +118,7 @@ class AesDecryptor::SessionIdDecryptionKeyMap {
 void AesDecryptor::SessionIdDecryptionKeyMap::Insert(
     const std::string& session_id,
     std::unique_ptr<DecryptionKey> decryption_key) {
-  KeyList::iterator it = Find(session_id);
+  auto it = Find(session_id);
   if (it != key_list_.end())
     Erase(it);
   key_list_.push_front(std::make_pair(session_id, std::move(decryption_key)));
@@ -126,7 +126,7 @@ void AesDecryptor::SessionIdDecryptionKeyMap::Insert(
 
 void AesDecryptor::SessionIdDecryptionKeyMap::Erase(
     const std::string& session_id) {
-  KeyList::iterator it = Find(session_id);
+  auto it = Find(session_id);
   if (it == key_list_.end())
     return;
   Erase(it);
@@ -134,7 +134,7 @@ void AesDecryptor::SessionIdDecryptionKeyMap::Erase(
 
 AesDecryptor::SessionIdDecryptionKeyMap::KeyList::iterator
 AesDecryptor::SessionIdDecryptionKeyMap::Find(const std::string& session_id) {
-  for (KeyList::iterator it = key_list_.begin(); it != key_list_.end(); ++it) {
+  for (auto it = key_list_.begin(); it != key_list_.end(); ++it) {
     if (it->first == session_id)
       return it;
   }
@@ -176,9 +176,9 @@ AesDecryptor::AesDecryptor(
       session_expiration_update_cb_(session_expiration_update_cb) {
   // AesDecryptor doesn't keep any persistent data, so no need to do anything
   // with |security_origin|.
-  DCHECK(!session_message_cb_.is_null());
-  DCHECK(!session_closed_cb_.is_null());
-  DCHECK(!session_keys_change_cb_.is_null());
+  DCHECK(session_message_cb_);
+  DCHECK(session_closed_cb_);
+  DCHECK(session_keys_change_cb_);
 }
 
 AesDecryptor::~AesDecryptor() {
@@ -308,7 +308,7 @@ bool AesDecryptor::UpdateSessionWithJWK(const std::string& session_id,
   }
 
   bool local_key_added = false;
-  for (KeyIdAndKeyPairs::iterator it = keys.begin(); it != keys.end(); ++it) {
+  for (auto it = keys.begin(); it != keys.end(); ++it) {
     if (it->second.length() !=
         static_cast<size_t>(DecryptConfig::kDecryptionKeySize)) {
       DVLOG(1) << "Invalid key length: " << it->second.length();
@@ -339,10 +339,10 @@ void AesDecryptor::FinishUpdate(const std::string& session_id,
   {
     base::AutoLock auto_lock(new_key_cb_lock_);
 
-    if (!new_audio_key_cb_.is_null())
+    if (new_audio_key_cb_)
       new_audio_key_cb_.Run();
 
-    if (!new_video_key_cb_.is_null())
+    if (new_video_key_cb_)
       new_video_key_cb_.Run();
   }
 
@@ -590,7 +590,7 @@ bool AesDecryptor::AddDecryptionKey(const std::string& session_id,
   }
 
   base::AutoLock auto_lock(key_map_lock_);
-  KeyIdToSessionKeysMap::iterator key_id_entry = key_map_.find(key_id);
+  auto key_id_entry = key_map_.find(key_id);
   if (key_id_entry != key_map_.end()) {
     key_id_entry->second->Insert(session_id, std::move(decryption_key));
     return true;
@@ -607,7 +607,7 @@ bool AesDecryptor::AddDecryptionKey(const std::string& session_id,
 AesDecryptor::DecryptionKey* AesDecryptor::GetKey_Locked(
     const std::string& key_id) const {
   key_map_lock_.AssertAcquired();
-  KeyIdToSessionKeysMap::const_iterator key_id_found = key_map_.find(key_id);
+  auto key_id_found = key_map_.find(key_id);
   if (key_id_found == key_map_.end())
     return NULL;
 
@@ -631,13 +631,13 @@ void AesDecryptor::DeleteKeysForSession(const std::string& session_id) {
   // Remove all keys associated with |session_id|. Since the data is
   // optimized for access in GetKey_Locked(), we need to look at each entry in
   // |key_map_|.
-  KeyIdToSessionKeysMap::iterator it = key_map_.begin();
+  auto it = key_map_.begin();
   while (it != key_map_.end()) {
     it->second->Erase(session_id);
     if (it->second->Empty()) {
       // Need to get rid of the entry for this key_id. This will mess up the
       // iterator, so we need to increment it first.
-      KeyIdToSessionKeysMap::iterator current = it;
+      auto current = it;
       ++it;
       key_map_.erase(current);
     } else {

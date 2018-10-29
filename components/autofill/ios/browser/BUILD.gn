@@ -35,7 +35,6 @@ source_set("browser") {
   ]
 
   deps = [
-    ":injected_js",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -72,13 +71,6 @@ source_set("test_support") {
   ]
 }
 
-js_compile_checked("injected_js") {
-  visibility = [ ":browser" ]
-  sources = [
-    "resources/suggestion_controller.js",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -90,8 +82,10 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/leveldb_proto:leveldb_proto",
     "//components/prefs",
     "//ios/web/public",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",

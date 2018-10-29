@@ -1,4 +1,5 @@
 Text in a span
+
 Chain of active elements should be cleared, even if style :active sets display: none on the current active element
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

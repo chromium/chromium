@@ -39,6 +39,7 @@ class SyncScheduler {
     ~SyncRequest();
 
     void OnDidComplete(bool success);
+    void Cancel();
 
    protected:
     // The parent scheduler that dispatched this request.

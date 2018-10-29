@@ -467,6 +467,20 @@ uint16_t ElfImageReader::FileType() const {
   return memory_.Is64Bit() ? header_64_.e_type : header_32_.e_type;
 }
 
+bool ElfImageReader::SoName(std::string* name) {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  if (!InitializeDynamicArray()) {
+    return false;
+  }
+
+  VMSize offset;
+  if (!dynamic_array_->GetValue(DT_SONAME, true, &offset)) {
+    return false;
+  }
+
+  return ReadDynamicStringTableAtOffset(offset, name);
+}
+
 bool ElfImageReader::GetDynamicSymbol(const std::string& name,
                                       VMAddress* address,
                                       VMSize* size) {

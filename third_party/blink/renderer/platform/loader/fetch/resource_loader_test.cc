@@ -170,7 +170,7 @@ TEST_F(ResourceLoaderTest, ResponseType) {
     ResourceRequest request;
     request.SetURL(test.url);
     request.SetFetchRequestMode(test.request_mode);
-    request.SetRequestContext(WebURLRequest::kRequestContextFetch);
+    request.SetRequestContext(mojom::RequestContextType::FETCH);
 
     FetchParameters fetch_parameters(request);
     if (test.request_mode == network::mojom::FetchRequestMode::kCORS) {

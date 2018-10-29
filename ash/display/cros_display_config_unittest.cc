@@ -36,9 +36,9 @@ void SetResult(mojom::DisplayConfigResult* result_ptr,
 }
 
 void InitExternalTouchDevices(int64_t display_id) {
-  ui::TouchscreenDevice touchdevice(
-      123, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL,
-      std::string("test external touch device"), gfx::Size(1000, 1000), 1);
+  ui::TouchscreenDevice touchdevice(123, ui::InputDeviceType::INPUT_DEVICE_USB,
+                                    std::string("test external touch device"),
+                                    gfx::Size(1000, 1000), 1);
   ws::InputDeviceClientTestApi().SetTouchscreenDevices({touchdevice});
 
   std::vector<ui::TouchDeviceTransform> transforms;

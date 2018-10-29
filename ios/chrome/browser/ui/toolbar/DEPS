@@ -2,4 +2,9 @@ specific_include_rules = {
   "^toolbar_model_impl_ios\.mm$": [
     "+ios/web/web_state/ui/crw_web_controller.h",
   ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "toolbar_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
 }

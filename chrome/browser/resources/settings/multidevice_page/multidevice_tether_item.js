@@ -14,6 +14,8 @@
 Polymer({
   is: 'settings-multidevice-tether-item',
 
+  behaviors: [MultiDeviceFeatureBehavior],
+
   properties: {
     /**
      * Interface for networkingPrivate calls.
@@ -37,10 +39,18 @@ Polymer({
      * @private {?CrOnc.NetworkStateProperties|undefined}
      */
     activeNetworkState_: Object,
+
+    /**
+     * Alias for allowing Polymer bindings to settings.routes.
+     * @type {?SettingsRoutes}
+     */
+    routes: {
+      type: Object,
+      value: settings.routes,
+    },
   },
 
   listeners: {
-    'device-enabled-toggled': 'onDeviceEnabledToggled_',
     'network-list-changed': 'updateTetherNetworkState_',
     // network-changed is fired by the settings-multidevice-subpage element's
     // CrNetworkListenerBehavior.
@@ -105,18 +115,6 @@ Polymer({
   },
 
   /**
-   * Event triggered by a device state enabled toggle.
-   * @param {!{detail: {enabled: boolean, type: CrOnc.Type}}} event
-   * @private
-   */
-  onDeviceEnabledToggled_: function(event) {
-    if (event.detail.enabled)
-      this.networkingPrivate_.enableNetworkType(CrOnc.Type.TETHER);
-    else
-      this.networkingPrivate_.disableNetworkType(CrOnc.Type.TETHER);
-  },
-
-  /**
    * Retrieves device states (CrOnc.DeviceStateProperties) and sets
    * this.deviceState_ to the retrieved Instant Tethering state (or undefined if
    * there is none) in its callback. Note that the function
@@ -159,5 +157,13 @@ Polymer({
    */
   getNetworkStateList_: function() {
     return this.activeNetworkState_.GUID ? [this.activeNetworkState_] : [];
+  },
+
+  /**
+   * @return {!URLSearchParams}
+   * @private
+   */
+  getTetherNetworkUrlSearchParams_: function() {
+    return new URLSearchParams('type=' + CrOnc.Type.TETHER);
   },
 });

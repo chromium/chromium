@@ -1,0 +1,9 @@
+include_rules = [
+  "+dbus",
+]
+
+specific_include_rules = {
+  "bluetooth_system_unittest.cc": [
+    "+third_party/cros_system_api/dbus/service_constants.h"
+  ],
+}

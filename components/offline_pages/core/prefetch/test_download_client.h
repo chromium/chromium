@@ -18,6 +18,7 @@ class TestDownloadClient : public download::test::EmptyClient {
   ~TestDownloadClient() override = default;
 
   void OnDownloadFailed(const std::string& guid,
+                        const download::CompletionInfo& completion_info,
                         download::Client::FailureReason reason) override;
   void OnDownloadSucceeded(
       const std::string& guid,

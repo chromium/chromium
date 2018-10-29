@@ -23,9 +23,6 @@ source_set("database") {
     "download_namespace.h",
     "in_progress/download_entry.cc",
     "in_progress/download_entry.h",
-    "in_progress/in_progress_cache.h",
-    "in_progress/in_progress_cache_impl.cc",
-    "in_progress/in_progress_cache_impl.h",
     "in_progress/in_progress_info.cc",
     "in_progress/in_progress_info.h",
     "in_progress/ukm_info.cc",
@@ -48,7 +45,6 @@ source_set("unit_tests") {
   sources = [
     "download_db_conversions_unittest.cc",
     "download_db_impl_unittest.cc",
-    "in_progress/in_progress_cache_impl_unittest.cc",
   ]
 
   deps = [

@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/time/tick_clock.h"
 #include "components/sync/base/passphrase_enums.h"
 
 namespace crypto {
@@ -20,7 +21,7 @@ namespace syncer {
 
 class Nigori;
 
-struct KeyDerivationParams {
+class KeyDerivationParams {
  public:
   static KeyDerivationParams CreateForPbkdf2();
   static KeyDerivationParams CreateForScrypt(const std::string& salt);
@@ -33,6 +34,7 @@ struct KeyDerivationParams {
   KeyDerivationParams(KeyDerivationParams&& other);
   KeyDerivationParams& operator=(const KeyDerivationParams& other);
   bool operator==(const KeyDerivationParams& other) const;
+  bool operator!=(const KeyDerivationParams& other) const;
 
  private:
   KeyDerivationParams(KeyDerivationMethod method,
@@ -92,6 +94,10 @@ class Nigori {
 
   static std::string GenerateScryptSalt();
 
+  void SetTickClockForTesting(const base::TickClock* tick_clock) {
+    tick_clock_ = tick_clock;
+  }
+
   // Exposed for tests.
   static const size_t kIvSize = 16;
 
@@ -117,6 +123,7 @@ class Nigori {
   };
 
   Keys keys_;
+  const base::TickClock* tick_clock_;
 };
 
 }  // namespace syncer

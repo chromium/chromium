@@ -18,19 +18,19 @@
       "backgroundColor": "#008000",
       "paintInvalidations": [
         {
-          "object": "Scrolling Contents Layer",
+          "object": "Scrolling background of LayoutView #document",
           "rect": [0, 0, 800, 600],
-          "reason": "background on scrolling contents layer"
+          "reason": "background"
         },
         {
           "object": "NGPhysicalTextFragment 'Tests that the entire viewport is painted with a floated html element.'",
           "rect": [108, 116, 424, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'Tests that the entire viewport is painted with a floated html element.'",
           "rect": [8, 16, 424, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

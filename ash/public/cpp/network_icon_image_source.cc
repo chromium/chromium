@@ -20,10 +20,6 @@ namespace network_icon {
 
 namespace {
 
-// Padding between outside of icon and edge of the canvas, in dp. This value
-// stays the same regardless of the canvas size.
-constexpr int kSignalStrengthImageInset = 2;
-
 // TODO(estade): share this alpha with other things in ash (battery, etc.).
 // See https://crbug.com/623987 and https://crbug.com/632827
 constexpr int kSignalStrengthImageBgAlpha = 0x4D;
@@ -73,11 +69,8 @@ void NetworkIconImageSource::Draw(gfx::Canvas* canvas) {
   if (badges_.center.icon)
     paint_badge(badges_.center, icon_x, icon_y, icon_.width());
 
-  // The other badges are flush against the edges of the canvas, except at the
-  // top, where the badge is only 1dp higher than the base image.
-  const int top_badge_y = icon_y - 1;
   if (badges_.top_left.icon)
-    paint_badge(badges_.top_left, 0, top_badge_y);
+    paint_badge(badges_.top_left, 0, icon_y);
   if (badges_.bottom_left.icon) {
     paint_badge(
         badges_.bottom_left, 0,
@@ -100,11 +93,13 @@ bool NetworkIconImageSource::HasRepresentationAtAllScales() const {
 SignalStrengthImageSource::SignalStrengthImageSource(ImageType image_type,
                                                      SkColor color,
                                                      const gfx::Size& size,
-                                                     int signal_strength)
+                                                     int signal_strength,
+                                                     int padding)
     : CanvasImageSource(size, false /* is_opaque */),
       image_type_(image_type),
       color_(color),
-      signal_strength_(signal_strength) {
+      signal_strength_(signal_strength),
+      padding_(padding) {
   if (image_type_ == NONE)
     image_type_ = ARCS;
 
@@ -128,7 +123,7 @@ bool SignalStrengthImageSource::HasRepresentationAtAllScales() const {
 
 void SignalStrengthImageSource::DrawArcs(gfx::Canvas* canvas) {
   gfx::RectF oval_bounds((gfx::Rect(size())));
-  oval_bounds.Inset(gfx::Insets(kSignalStrengthImageInset));
+  oval_bounds.Inset(gfx::Insets(padding_));
   // Double the width and height. The new midpoint should be the former
   // bottom center.
   oval_bounds.Inset(-oval_bounds.width() / 2, 0, -oval_bounds.width() / 2,
@@ -172,12 +167,11 @@ void SignalStrengthImageSource::DrawBars(gfx::Canvas* canvas) {
 
   // Length of short side of an isosceles right triangle, in dip.
   const SkScalar kFullTriangleSide =
-      SkIntToScalar(size().width()) - kSignalStrengthImageInset * 2;
+      SkIntToScalar(size().width()) - padding_ * 2;
 
-  auto make_triangle = [scale, kFullTriangleSide](SkScalar side) {
+  auto make_triangle = [scale, kFullTriangleSide, this](SkScalar side) {
     SkPath triangle;
-    triangle.moveTo(scale(kSignalStrengthImageInset),
-                    scale(kSignalStrengthImageInset + kFullTriangleSide));
+    triangle.moveTo(scale(padding_), scale(padding_ + kFullTriangleSide));
     triangle.rLineTo(scale(side), 0);
     triangle.rLineTo(0, -scale(side));
     triangle.close();

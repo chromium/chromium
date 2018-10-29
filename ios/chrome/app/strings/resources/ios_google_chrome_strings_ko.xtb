@@ -22,7 +22,6 @@
 <translation id="3196546062792660320">Chrome에서는 계정 로그인 정보가 자동으로 채워지기 때문에 시간을 절약할 수 있습니다. 설정에서 계정을 추가하거나 삭제할 수 있습니다.</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3345341804167540816">어디서나 Chrome 사용</translation>
-<translation id="3678774398092457402">Chrome이 이 사이트에서 비밀번호를 저장하도록 하시겠습니까?</translation>
 <translation id="384394811301901750">지금 Chrome에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chrome 데이터는 <ph name="DOMAIN" />에서 관리합니다. 이렇게 하면 데이터가 이 기기에서 삭제되지만 <ph name="USER_EMAIL1" />에는 그대로 유지됩니다.</translation>
@@ -38,7 +37,6 @@
 <translation id="5489543008378040943">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />을 변경할 수 있습니다. Google에서 Chrome 및 번역, 검색과 같은 기타 Google 서비스, 광고를 맞춤설정하기 위해 사용자가 방문한 사이트의 콘텐츠, 탐색 활동, 상호작용 기록을 사용할 수 있습니다.</translation>
 <translation id="5639704535586432836">설정 &gt; 개인정보 보호 &gt; 카메라 &gt; Chrome을 열고 카메라를 사용 설정하세요.</translation>
 <translation id="5642200033778930880">Chrome에서는 분할 모드에서 카메라를 사용할 수 없습니다.</translation>
-<translation id="5703130498371792817">Chrome 사용 소감을 알려주세요! <ph name="BEGIN_LINK" />앱 평가하기<ph name="END_LINK" /></translation>
 <translation id="5854621639439811139">Chrome 도움말. 뒤로, 앞으로, 검색과 같은 일부 버튼이 화면 하단으로 이동했습니다.</translation>
 <translation id="6036420186814142909">Chrome에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -48,6 +46,7 @@
 <translation id="690638524486313356">Chrome 서비스 약관</translation>
 <translation id="7165736900384873061">Chrome QR 스캐너 사용 시작</translation>
 <translation id="7172660552945675509">도움말: <ph name="BEGIN_LINK" />Chrome을 내 Dock에 추가하세요.<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">Chrome은 얼굴 ID를 사용하여 승인된 사용자만 비밀번호에 액세스할 수 있도록 합니다.</translation>
 <translation id="7265369419224458312">여기에서 컴퓨터에서 열어 둔 탭에 바로 액세스할 수 있습니다. 컴퓨터에서 Chrome을 열고 메뉴로 이동하여 'Chrome에 로그인...'을 선택하세요.</translation>
 <translation id="728488472449859922">Chrome QR 스캐너 사용 설정</translation>
 <translation id="7400722733683201933">Chrome 정보</translation>

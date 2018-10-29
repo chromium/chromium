@@ -19,21 +19,29 @@
   text-decoration: underline;
 }
 
+.check-mark,
+.x-mark {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  font-size: 0;
+  height: 16px;
+  width: 16px;
+}
+
 .check-mark {
-  color: green;
-  text-align: center;
+  background-image: url(../../../../ui/webui/resources/images/check_circle_green.svg);
 }
 
 .x-mark {
-  color: red;
-  text-align: center;
+  background-image: url(../../../../ui/webui/resources/images/cancel_red.svg);
 }
 
 p {
   margin: 0;
 }
 
-.input-section {
+.section {
   margin-bottom: 1em;
 }
 

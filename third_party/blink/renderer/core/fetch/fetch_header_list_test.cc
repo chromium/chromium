@@ -90,23 +90,6 @@ TEST(FetchHeaderListTest, Combine) {
   EXPECT_EQ("text/plain, application/xml, foo", combinedValue);
 }
 
-// This is going to be removed: see crbug.com/645492.
-TEST(FetchHeaderListTest, GetAll) {
-  FetchHeaderList* headerList = FetchHeaderList::Create();
-  headerList->Append("ConTenT-TyPe", "text/plain");
-  headerList->Append("content-type", "application/xml");
-  headerList->Append("CONTENT-type", "foo");
-  headerList->Append("X-Foo", "bar");
-  Vector<String> combinedValues;
-  headerList->GetAll("content-TYPE", combinedValues);
-  EXPECT_EQ(Vector<String>({"text/plain", "application/xml", "foo"}),
-            combinedValues);
-  headerList->GetAll("x-foo", combinedValues);
-  EXPECT_EQ(Vector<String>({"bar"}), combinedValues);
-  headerList->GetAll("Host", combinedValues);
-  EXPECT_TRUE(combinedValues.IsEmpty());
-}
-
 TEST(FetchHeaderListTest, Contains) {
   FetchHeaderList* headerList = FetchHeaderList::Create();
   headerList->Append("ConTenT-TyPe", "text/plain");

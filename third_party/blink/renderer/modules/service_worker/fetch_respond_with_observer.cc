@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_response.h"
@@ -112,10 +114,10 @@ bool IsNavigationRequest(network::mojom::RequestContextFrameType frame_type) {
 }
 
 bool IsClientRequest(network::mojom::RequestContextFrameType frame_type,
-                     WebURLRequest::RequestContext request_context) {
+                     mojom::RequestContextType request_context) {
   return IsNavigationRequest(frame_type) ||
-         request_context == WebURLRequest::kRequestContextSharedWorker ||
-         request_context == WebURLRequest::kRequestContextWorker;
+         request_context == mojom::RequestContextType::SHARED_WORKER ||
+         request_context == mojom::RequestContextType::WORKER;
 }
 
 // Notifies the result of FetchDataLoader to |handle_|. |handle_| pass through
@@ -127,18 +129,57 @@ class FetchLoaderClient final
   USING_GARBAGE_COLLECTED_MIXIN(FetchLoaderClient);
 
  public:
-  explicit FetchLoaderClient(
-      std::unique_ptr<WebServiceWorkerStreamHandle> handle)
-      : handle_(std::move(handle)) {}
+  FetchLoaderClient() {}
 
-  void DidFetchDataLoadedDataPipe() override { handle_->Completed(); }
-  void DidFetchDataLoadFailed() override { handle_->Aborted(); }
+  void DidFetchDataStartedDataPipe(
+      mojo::ScopedDataPipeConsumerHandle pipe) override {
+    DCHECK(!handle_);
+    handle_ = std::make_unique<WebServiceWorkerStreamHandle>(std::move(pipe));
+  }
+  void DidFetchDataLoadedDataPipe() override {
+    DCHECK(handle_);
+    // If this method is called synchronously from StartLoading() then we need
+    // to delay notifying the handle until after
+    // RespondToFetchEventWithResponseStream() is called.
+    if (!started_) {
+      pending_complete_ = true;
+      return;
+    }
+    pending_complete_ = false;
+    handle_->Completed();
+  }
+  void DidFetchDataLoadFailed() override {
+    // If this method is called synchronously from StartLoading() then we need
+    // to delay notifying the handle until after
+    // RespondToFetchEventWithResponseStream() is called.
+    if (!started_) {
+      pending_failure_ = true;
+      return;
+    }
+    pending_failure_ = false;
+    if (handle_)
+      handle_->Aborted();
+  }
   void Abort() override {
     // A fetch() aborted via AbortSignal in the ServiceWorker will just look
     // like an ordinary failure to the page.
     // TODO(ricea): Should a fetch() on the page get an AbortError instead?
-    handle_->Aborted();
+    if (handle_)
+      handle_->Aborted();
   }
+
+  void SetStarted() {
+    DCHECK(!started_);
+    // Note that RespondToFetchEventWithResponseStream() has been called and
+    // flush any pending operation.
+    started_ = true;
+    if (pending_complete_)
+      DidFetchDataLoadedDataPipe();
+    else if (pending_failure_)
+      DidFetchDataLoadFailed();
+  }
+
+  WebServiceWorkerStreamHandle* Handle() const { return handle_.get(); }
 
   void Trace(blink::Visitor* visitor) override {
     FetchDataLoader::Client::Trace(visitor);
@@ -146,6 +187,9 @@ class FetchLoaderClient final
 
  private:
   std::unique_ptr<WebServiceWorkerStreamHandle> handle_;
+  bool started_ = false;
+  bool pending_complete_ = false;
+  bool pending_failure_ = false;
 };
 
 }  // namespace
@@ -157,7 +201,7 @@ FetchRespondWithObserver* FetchRespondWithObserver::Create(
     network::mojom::FetchRequestMode request_mode,
     network::mojom::FetchRedirectMode redirect_mode,
     network::mojom::RequestContextFrameType frame_type,
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     WaitUntilObserver* observer) {
   return new FetchRespondWithObserver(context, fetch_event_id, request_url,
                                       request_mode, redirect_mode, frame_type,
@@ -179,7 +223,8 @@ void FetchRespondWithObserver::OnResponseRejected(
   WebServiceWorkerResponse web_response;
   web_response.SetError(error);
   ServiceWorkerGlobalScopeClient::From(GetExecutionContext())
-      ->RespondToFetchEvent(event_id_, web_response, event_dispatch_time_);
+      ->RespondToFetchEvent(event_id_, web_response, event_dispatch_time_,
+                            base::TimeTicks::Now());
 }
 
 void FetchRespondWithObserver::OnResponseFulfilled(
@@ -283,42 +328,45 @@ void FetchRespondWithObserver::OnResponseFulfilled(
       // Handle the blob response body.
       web_response.SetBlobDataHandle(blob_data_handle);
       ServiceWorkerGlobalScopeClient::From(GetExecutionContext())
-          ->RespondToFetchEvent(event_id_, web_response, event_dispatch_time_);
+          ->RespondToFetchEvent(event_id_, web_response, event_dispatch_time_,
+                                base::TimeTicks::Now());
       return;
     }
-    // Handle the stream response body.
-    mojo::DataPipe pipe;
-    if (!pipe.consumer_handle.is_valid()) {
-      OnResponseRejected(ServiceWorkerResponseError::kDataPipeCreationFailed);
-      return;
-    }
-    DCHECK(pipe.producer_handle.is_valid());
 
-    std::unique_ptr<WebServiceWorkerStreamHandle> body_stream_handle =
-        std::make_unique<WebServiceWorkerStreamHandle>(
-            std::move(pipe.consumer_handle));
-    ServiceWorkerGlobalScopeClient::From(GetExecutionContext())
-        ->RespondToFetchEventWithResponseStream(event_id_, web_response,
-                                                body_stream_handle.get(),
-                                                event_dispatch_time_);
-
-    buffer->StartLoading(FetchDataLoader::CreateLoaderAsDataPipe(
-                             std::move(pipe.producer_handle), task_runner_),
-                         new FetchLoaderClient(std::move(body_stream_handle)),
-                         exception_state);
+    // Load the Response as a mojo::DataPipe.  The resulting pipe consumer
+    // handle will be passed to the FetchLoaderClient on start.
+    FetchLoaderClient* fetch_loader_client = new FetchLoaderClient();
+    buffer->StartLoading(FetchDataLoader::CreateLoaderAsDataPipe(task_runner_),
+                         fetch_loader_client, exception_state);
     if (exception_state.HadException()) {
       OnResponseRejected(ServiceWorkerResponseError::kResponseBodyBroken);
       return;
     }
+
+    // If we failed to create the WebServiceWorkerStreamHandle then we must
+    // have failed to allocate the mojo::DataPipe.
+    if (!fetch_loader_client->Handle()) {
+      OnResponseRejected(ServiceWorkerResponseError::kDataPipeCreationFailed);
+      return;
+    }
+
+    ServiceWorkerGlobalScopeClient::From(GetExecutionContext())
+        ->RespondToFetchEventWithResponseStream(
+            event_id_, web_response, fetch_loader_client->Handle(),
+            event_dispatch_time_, base::TimeTicks::Now());
+
+    fetch_loader_client->SetStarted();
     return;
   }
   ServiceWorkerGlobalScopeClient::From(GetExecutionContext())
-      ->RespondToFetchEvent(event_id_, web_response, event_dispatch_time_);
+      ->RespondToFetchEvent(event_id_, web_response, event_dispatch_time_,
+                            base::TimeTicks::Now());
 }
 
 void FetchRespondWithObserver::OnNoResponse() {
   ServiceWorkerGlobalScopeClient::From(GetExecutionContext())
-      ->RespondToFetchEventWithNoResponse(event_id_, event_dispatch_time_);
+      ->RespondToFetchEventWithNoResponse(event_id_, event_dispatch_time_,
+                                          base::TimeTicks::Now());
 }
 
 FetchRespondWithObserver::FetchRespondWithObserver(
@@ -328,7 +376,7 @@ FetchRespondWithObserver::FetchRespondWithObserver(
     network::mojom::FetchRequestMode request_mode,
     network::mojom::FetchRedirectMode redirect_mode,
     network::mojom::RequestContextFrameType frame_type,
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     WaitUntilObserver* observer)
     : RespondWithObserver(context, fetch_event_id, observer),
       request_url_(request_url),

@@ -43,6 +43,7 @@
           "blink.mojom.BlobRegistry",
           "blink.mojom.BroadcastChannelProvider",
           "blink.mojom.ClipboardHost",
+          "blink.mojom.CodeCacheHost",
           "blink.mojom.FontUniqueNameLookup",
           "blink.mojom.EmbeddedFrameSinkProvider",
           "blink.mojom.FileUtilitiesHost",
@@ -104,6 +105,7 @@
         "data_decoder": [ "image_decoder", "json_parser", "xml_parser" ],
         "device": [
           "device:battery_monitor",
+          "device:bluetooth_system",
           "device:generic_sensor",
           "device:geolocation",
           "device:hid",
@@ -111,11 +113,13 @@
           "device:mtp",
           "device:nfc",
           "device:serial",
+          "device:usb",
           "device:vibration",
           "device:wake_lock"
         ],
         "file": [ "file:filesystem", "file:leveldb" ],
         "media": [ "media:media" ],
+        "media_session": [ "media_session:app" ],
         "metrics": [ "url_keyed_metrics" ],
         "network": [
           "network_service",
@@ -162,6 +166,7 @@
           "blink.mojom.CredentialManager",
           "blink.mojom.DisplayCutoutHost",
           "blink.mojom.DedicatedWorkerFactory",
+          "blink.mojom.FileSystemManager",
           "blink.mojom.LockManager",
           "blink.mojom.GeolocationService",
           "blink.mojom.InsecureInputService",
@@ -227,6 +232,7 @@
         "renderer": [
           "blink.mojom.CacheStorage",
           "blink.mojom.DedicatedWorkerFactory",
+          "blink.mojom.FileSystemManager",
           "blink.mojom.LockManager",
           "blink.mojom.NotificationService",
           "blink.mojom.PermissionService",
@@ -263,6 +269,7 @@
       "provides": {
         "renderer": [
           "blink.mojom.CacheStorage",
+          "blink.mojom.FileSystemManager",
           "blink.mojom.LockManager",
           "blink.mojom.NotificationService",
           "blink.mojom.PermissionService",

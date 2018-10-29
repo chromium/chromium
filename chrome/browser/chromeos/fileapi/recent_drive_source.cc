@@ -9,9 +9,12 @@
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
+#include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/recent_file.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/fileapi/file_system_operation.h"
 #include "storage/browser/fileapi/file_system_operation_runner.h"
@@ -25,24 +28,25 @@ namespace chromeos {
 namespace {
 
 void OnGetMetadataOnIOThread(
-    const storage::FileSystemOperation::GetMetadataCallback& callback,
+    storage::FileSystemOperation::GetMetadataCallback callback,
     base::File::Error result,
     const base::File::Info& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result, info));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(std::move(callback), result, info));
 }
 
 void GetMetadataOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& url,
     int fields,
-    const storage::FileSystemOperation::GetMetadataCallback& callback) {
+    storage::FileSystemOperation::GetMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   file_system_context->operation_runner()->GetMetadata(
-      url, fields, base::Bind(&OnGetMetadataOnIOThread, callback));
+      url, fields,
+      base::BindOnce(&OnGetMetadataOnIOThread, std::move(callback)));
 }
 
 }  // namespace
@@ -70,19 +74,34 @@ void RecentDriveSource::GetRecentFiles(Params params) {
 
   build_start_time_ = base::TimeTicks::Now();
 
-  drive::FileSystemInterface* file_system =
-      drive::util::GetFileSystemByProfile(profile_);
-  if (!file_system) {
-    // |file_system| is nullptr if Drive is disabled.
+  auto* integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile_);
+  if (!integration_service) {
+    // |integration_service| is nullptr if Drive is disabled.
     OnSearchMetadata(drive::FILE_ERROR_FAILED, nullptr);
     return;
   }
 
-  file_system->SearchMetadata(
-      "" /* query */, drive::SEARCH_METADATA_EXCLUDE_DIRECTORIES,
-      params_.value().max_files(), drive::MetadataSearchOrder::LAST_MODIFIED,
-      base::Bind(&RecentDriveSource::OnSearchMetadata,
-                 weak_ptr_factory_.GetWeakPtr()));
+  if (integration_service->file_system()) {
+    integration_service->file_system()->SearchMetadata(
+        "" /* query */, drive::SEARCH_METADATA_EXCLUDE_DIRECTORIES,
+        params_.value().max_files(), drive::MetadataSearchOrder::LAST_MODIFIED,
+        base::BindOnce(&RecentDriveSource::OnSearchMetadata,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+  auto query_params = drivefs::mojom::QueryParameters::New();
+  query_params->page_size = params_->max_files();
+  query_params->query_source =
+      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
+  query_params->sort_field =
+      drivefs::mojom::QueryParameters::SortField::kLastModified;
+  query_params->sort_direction =
+      drivefs::mojom::QueryParameters::SortDirection::kDescending;
+  integration_service->GetDriveFsInterface()->StartSearchQuery(
+      mojo::MakeRequest(&search_query_), std::move(query_params));
+  search_query_->GetNextPage(base::BindOnce(
+      &RecentDriveSource::GotSearchResults, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RecentDriveSource::OnSearchMetadata(
@@ -115,14 +134,14 @@ void RecentDriveSource::OnSearchMetadata(
             params_.value().origin(), storage::kFileSystemTypeExternal,
             virtual_path);
     ++num_inflight_stats_;
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &GetMetadataOnIOThread,
             base::WrapRefCounted(params_.value().file_system_context()), url,
             storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
-            base::Bind(&RecentDriveSource::OnGetMetadata,
-                       weak_ptr_factory_.GetWeakPtr(), url)));
+            base::BindOnce(&RecentDriveSource::OnGetMetadata,
+                           weak_ptr_factory_.GetWeakPtr(), url)));
   }
 
   if (num_inflight_stats_ == 0)
@@ -163,6 +182,35 @@ void RecentDriveSource::OnComplete() {
   DCHECK(build_start_time_.is_null());
 
   std::move(params.callback()).Run(std::move(files));
+}
+
+void RecentDriveSource::GotSearchResults(
+    drive::FileError error,
+    base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
+  search_query_.reset();
+  auto* integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile_);
+  if (!results || !integration_service) {
+    OnComplete();
+    return;
+  }
+
+  files_.reserve(results->size());
+  for (auto& result : *results) {
+    if (result->metadata->type ==
+        drivefs::mojom::FileMetadata::Type::kDirectory) {
+      continue;
+    }
+    base::FilePath path = integration_service->GetMountPointPath().BaseName();
+    if (!base::FilePath("/").AppendRelativePath(result->path, &path)) {
+      path = path.Append(result->path);
+    }
+    files_.emplace_back(
+        params_.value().file_system_context()->CreateCrackedFileSystemURL(
+            params_->origin(), storage::kFileSystemTypeExternal, path),
+        result->metadata->last_viewed_by_me_time);
+  }
+  OnComplete();
 }
 
 }  // namespace chromeos

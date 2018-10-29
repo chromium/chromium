@@ -6,28 +6,56 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 
 namespace autofill_assistant {
 
-UploadDomAction::UploadDomAction(const ActionProto& proto) : Action(proto) {
+UploadDomAction::UploadDomAction(const ActionProto& proto)
+    : Action(proto), weak_ptr_factory_(this) {
   DCHECK(proto_.has_upload_dom());
 }
 
 UploadDomAction::~UploadDomAction() {}
 
-void UploadDomAction::ProcessAction(ActionDelegate* delegate,
-                                    ProcessActionCallback callback) {
-  processed_action_proto_ = std::make_unique<ProcessedActionProto>();
-  // We return a dummy dom tree for now.
-  NodeProto* root_node = processed_action_proto_->mutable_page_content()
-                             ->mutable_dom_tree()
-                             ->mutable_root();
-  root_node->set_type(NodeProto::ELEMENT);
-  root_node->set_value("BODY");
-  UpdateProcessedAction(true);
+void UploadDomAction::InternalProcessAction(ActionDelegate* delegate,
+                                            ProcessActionCallback callback) {
+  DCHECK_GT(proto_.upload_dom().tree_root().selectors_size(), 0);
+  delegate->WaitForElement(
+      ExtractSelectors(proto_.upload_dom().tree_root().selectors()),
+      base::BindOnce(&UploadDomAction::OnWaitForElement,
+                     weak_ptr_factory_.GetWeakPtr(), base::Unretained(delegate),
+                     std::move(callback)));
+}
+
+void UploadDomAction::OnWaitForElement(ActionDelegate* delegate,
+                                       ProcessActionCallback callback,
+                                       bool element_found) {
+  if (!element_found) {
+    UpdateProcessedAction(ELEMENT_RESOLUTION_FAILED);
+    std::move(callback).Run(std::move(processed_action_proto_));
+    return;
+  }
+
+  delegate->GetOuterHtml(
+      ExtractSelectors(proto_.upload_dom().tree_root().selectors()),
+      base::BindOnce(&UploadDomAction::OnGetOuterHtml,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void UploadDomAction::OnGetOuterHtml(ProcessActionCallback callback,
+                                     bool successful,
+                                     const std::string& outer_html) {
+  if (!successful) {
+    UpdateProcessedAction(OTHER_ACTION_STATUS);
+    std::move(callback).Run(std::move(processed_action_proto_));
+    return;
+  }
+
+  processed_action_proto_->set_html_source(outer_html);
+  UpdateProcessedAction(ACTION_APPLIED);
   std::move(callback).Run(std::move(processed_action_proto_));
 }
 
-}  // namespace autofill_assistant.
+}  // namespace autofill_assistant

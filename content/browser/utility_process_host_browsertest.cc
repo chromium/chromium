@@ -5,10 +5,12 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/utility_process_host.h"
 #include "content/browser/utility_process_host_client.h"
 #include "content/public/browser/browser_child_process_observer.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_termination_info.h"
@@ -39,14 +41,13 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
   void RunUtilityProcess(bool elevated, bool crash) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     BrowserChildProcessObserver::Add(this);
-    has_launched = false;
     has_crashed = false;
     base::RunLoop run_loop;
     done_closure_ =
         base::BindOnce(&UtilityProcessHostBrowserTest::DoneRunning,
                        base::Unretained(this), run_loop.QuitClosure(), crash);
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &UtilityProcessHostBrowserTest::RunUtilityProcessOnIOThread,
             base::Unretained(this), elevated, crash));
@@ -57,7 +58,6 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
   void DoneRunning(base::OnceClosure quit_closure, bool expect_crashed) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     BrowserChildProcessObserver::Remove(this);
-    EXPECT_EQ(true, has_launched);
     EXPECT_EQ(expect_crashed, has_crashed);
     std::move(quit_closure).Run();
   }
@@ -98,15 +98,14 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     // If service crashes then this never gets called.
     ASSERT_EQ(false, expect_crash);
     ResetServiceOnIOThread();
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            std::move(done_closure_));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             std::move(done_closure_));
   }
 
   mojom::TestServicePtr service_;
   base::OnceClosure done_closure_;
 
   // Access on UI thread.
-  bool has_launched;
   bool has_crashed;
 
  private:
@@ -128,7 +127,6 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
       const ChildProcessData& data,
       const ChildProcessTerminationInfo& info) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    EXPECT_EQ(true, has_launched);
 #if defined(OS_WIN)
     EXPECT_EQ(EXCEPTION_BREAKPOINT, DWORD{info.exit_code});
 #elif defined(OS_MACOSX) || defined(OS_LINUX)
@@ -138,21 +136,11 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     EXPECT_EQ(kTestProcessName, data.metrics_name);
     EXPECT_EQ(false, has_crashed);
     has_crashed = true;
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&UtilityProcessHostBrowserTest::ResetServiceOnIOThread,
                        base::Unretained(this)));
     std::move(done_closure_).Run();
-  }
-
-  void BrowserChildProcessLaunchedAndConnected(
-      const ChildProcessData& data) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    // Multiple child processes might be launched, check just for ours.
-    if (data.metrics_name == kTestProcessName) {
-      EXPECT_EQ(false, has_launched);
-      has_launched = true;
-    }
   }
 };
 
@@ -160,14 +148,7 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcess) {
   RunUtilityProcess(false, false);
 }
 
-// Flaky on Windows, crbug.com/879555
-#if defined(OS_WIN)
-#define MAYBE_LaunchProcessAndCrash DISABLED_LaunchProcessAndCrash
-#else
-#define MAYBE_LaunchProcessAndCrash LaunchProcessAndCrash
-#endif
-IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
-                       MAYBE_LaunchProcessAndCrash) {
+IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcessAndCrash) {
   RunUtilityProcess(false, true);
 }
 

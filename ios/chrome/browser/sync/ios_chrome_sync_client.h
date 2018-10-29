@@ -45,6 +45,7 @@ class IOSChromeSyncClient : public syncer::SyncClient {
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
+  sync_sessions::SessionSyncService* GetSessionSyncService() override;
   bool HasPasswordStore() override;
   base::Closure GetPasswordStateChangedCallback() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
@@ -53,7 +54,6 @@ class IOSChromeSyncClient : public syncer::SyncClient {
   invalidation::InvalidationService* GetInvalidationService() override;
   BookmarkUndoService* GetBookmarkUndoServiceIfExists() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
-  sync_sessions::SyncSessionsClient* GetSyncSessionsClient() override;
   base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
       syncer::ModelType type) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -83,8 +83,6 @@ class IOSChromeSyncClient : public syncer::SyncClient {
 
   // The task runner for the |web_data_service_|, if any.
   scoped_refptr<base::SingleThreadTaskRunner> db_thread_;
-
-  std::unique_ptr<sync_sessions::SyncSessionsClient> sync_sessions_client_;
 
   DISALLOW_COPY_AND_ASSIGN(IOSChromeSyncClient);
 };

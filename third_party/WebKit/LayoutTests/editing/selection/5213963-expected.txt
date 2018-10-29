@@ -2,4 +2,5 @@ This tests to see that a selection inside an input field is removed when clickin
 
 
 
+
 Success

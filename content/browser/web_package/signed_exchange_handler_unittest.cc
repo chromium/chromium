@@ -11,9 +11,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_package/signed_exchange_cert_fetcher_factory.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
+#include "content/browser/web_package/signed_exchange_signature_verifier.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/test_browser_thread_bundle.h"
@@ -279,7 +281,30 @@ class SignedExchangeHandlerTest
     }
   }
 
+  void ExpectHistogramValues(
+      base::Optional<SignedExchangeSignatureVerifier::Result> signature_result,
+      base::Optional<int32_t> cert_result,
+      base::Optional<net::ct::CTPolicyCompliance> ct_result,
+      base::Optional<net::OCSPVerifyResult::ResponseStatus>
+          ocsp_response_status,
+      base::Optional<net::OCSPRevocationStatus> ocsp_revocation_status) {
+    // CertVerificationResult histogram records negated net::Error code.
+    if (cert_result.has_value())
+      *cert_result = -*cert_result;
+
+    ExpectZeroOrUniqueSample("SignedExchange.SignatureVerificationResult",
+                             signature_result);
+    ExpectZeroOrUniqueSample("SignedExchange.CertVerificationResult",
+                             cert_result);
+    ExpectZeroOrUniqueSample("SignedExchange.CTVerificationResult", ct_result);
+    ExpectZeroOrUniqueSample("SignedExchange.OCSPResponseStatus",
+                             ocsp_response_status);
+    ExpectZeroOrUniqueSample("SignedExchange.OCSPRevocationStatus",
+                             ocsp_revocation_status);
+  }
+
  protected:
+  const base::HistogramTester histogram_tester_;
   MockSignedExchangeCertFetcherFactory* mock_cert_fetcher_factory_;
   std::unique_ptr<net::CertVerifier> cert_verifier_;
   std::unique_ptr<MockCTVerifier> mock_ct_verifier_;
@@ -300,6 +325,15 @@ class SignedExchangeHandlerTest
     inner_url_ = url;
     resource_response_ = resource_response;
     payload_stream_ = std::move(payload_stream);
+  }
+
+  template <typename T>
+  void ExpectZeroOrUniqueSample(const std::string& histogram_name,
+                                base::Optional<T> expected_value) {
+    if (expected_value.has_value())
+      histogram_tester_.ExpectUniqueSample(histogram_name, *expected_value, 1);
+    else
+      histogram_tester_.ExpectTotalCount(histogram_name, 0);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -377,6 +411,10 @@ TEST_P(SignedExchangeHandlerTest, Simple) {
 
   EXPECT_EQ(payload, expected_payload);
   EXPECT_EQ(rv, static_cast<int>(expected_payload.size()));
+  ExpectHistogramValues(
+      SignedExchangeSignatureVerifier::Result::kSuccess, net::OK,
+      net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+      net::OCSPVerifyResult::PROVIDED, net::OCSPRevocationStatus::GOOD);
 }
 
 TEST_P(SignedExchangeHandlerTest, MimeType) {
@@ -550,6 +588,12 @@ TEST_P(SignedExchangeHandlerTest, CertSha256Mismatch) {
   EXPECT_EQ(SignedExchangeLoadResult::kSignatureVerificationError, result());
   EXPECT_EQ(net::ERR_INVALID_SIGNED_EXCHANGE, error());
   EXPECT_EQ(kTestSxgInnerURL, inner_url());
+  ExpectHistogramValues(
+      SignedExchangeSignatureVerifier::Result::kErrCertificateSHA256Mismatch,
+      base::nullopt /* cert_result */, base::nullopt /* ct_result */,
+      base::nullopt /* ocsp_response_status */,
+      base::nullopt /* ocsp_revocation_status */);
+
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
 }
@@ -586,6 +630,12 @@ TEST_P(SignedExchangeHandlerTest, VerifyCertFailure) {
   EXPECT_EQ(SignedExchangeLoadResult::kCertVerificationError, result());
   EXPECT_EQ(net::ERR_INVALID_SIGNED_EXCHANGE, error());
   EXPECT_EQ("https://test.example.com/test/", inner_url());
+  ExpectHistogramValues(
+      SignedExchangeSignatureVerifier::Result::kSuccess, net::ERR_CERT_INVALID,
+      net::ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE,
+      base::nullopt /* ocsp_response_status */,
+      base::nullopt /* ocsp_revocation_status */);
+
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
 }
@@ -809,6 +859,11 @@ TEST_P(SignedExchangeHandlerTest, NotEnoughSCTsFromPubliclyTrustedCert) {
   EXPECT_EQ(SignedExchangeLoadResult::kCTVerificationError, result());
   EXPECT_EQ(net::ERR_INVALID_SIGNED_EXCHANGE, error());
   EXPECT_EQ(kTestSxgInnerURL, inner_url());
+  ExpectHistogramValues(SignedExchangeSignatureVerifier::Result::kSuccess,
+                        net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED,
+                        net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+                        base::nullopt /* ocsp_response_status */,
+                        base::nullopt /* ocsp_revocation_status */);
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
 }
@@ -854,6 +909,10 @@ TEST_P(SignedExchangeHandlerTest, CTRequirementsMetForPubliclyTrustedCert) {
   EXPECT_TRUE(resource_response().ssl_info->ct_policy_compliance_required);
   EXPECT_EQ(net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
             resource_response().ssl_info->ct_policy_compliance);
+  ExpectHistogramValues(
+      SignedExchangeSignatureVerifier::Result::kSuccess, net::OK,
+      net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+      net::OCSPVerifyResult::PROVIDED, net::OCSPRevocationStatus::GOOD);
 
   std::string payload;
   int rv = ReadPayloadStream(&payload);
@@ -906,6 +965,10 @@ TEST_P(SignedExchangeHandlerTest, CTNotRequiredForLocalAnchors) {
   EXPECT_FALSE(resource_response().ssl_info->ct_policy_compliance_required);
   EXPECT_EQ(net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
             resource_response().ssl_info->ct_policy_compliance);
+  ExpectHistogramValues(
+      SignedExchangeSignatureVerifier::Result::kSuccess, net::OK,
+      net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+      net::OCSPVerifyResult::PROVIDED, net::OCSPRevocationStatus::GOOD);
 
   std::string payload;
   int rv = ReadPayloadStream(&payload);

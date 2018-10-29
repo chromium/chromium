@@ -2,7 +2,6 @@
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS elementWithoutStyleAttribute.style.backgroundColor = 'red'; elementWithoutStyleAttribute.removeAttribute('style'); getComputedStyle(elementWithoutStyleAttribute).backgroundColor is "rgba(0, 0, 0, 0)"
 PASS getComputedStyle(elementWithEmptyStyleAttribute).backgroundColor is "rgba(0, 0, 0, 0)"
 PASS getComputedStyle(elementWithStyleAttribute).backgroundColor is "rgba(0, 0, 0, 0)"

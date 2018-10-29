@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/jank_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
@@ -48,12 +49,9 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   if (needs_tree_builder_context_update)
     GeometryMapper::ClearCache();
 
-  if (RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled() ||
-      RuntimeEnabledFeatures::SlimmingPaintV2Enabled()) {
-    VisualViewportPaintPropertyTreeBuilder::Update(
-        root_frame_view.GetPage()->GetVisualViewport(),
-        *context_storage_.back().tree_builder_context);
-  }
+  VisualViewportPaintPropertyTreeBuilder::Update(
+      root_frame_view.GetPage()->GetVisualViewport(),
+      *context_storage_.back().tree_builder_context);
 
   Walk(root_frame_view);
   paint_invalidator_.ProcessPendingDelayedPaintInvalidations();
@@ -266,13 +264,17 @@ void PrePaintTreeWalk::InvalidatePaintLayerOptimizationsIfNeeded(
   paint_layer.SetPreviousPaintPhaseDescendantOutlinesEmpty(false);
   paint_layer.SetPreviousPaintPhaseFloatEmpty(false);
   paint_layer.SetPreviousPaintPhaseDescendantBlockBackgroundsEmpty(false);
-  context.paint_invalidator_context.subtree_flags |=
-      PaintInvalidatorContext::kSubtreeVisualRectUpdate;
 }
 
 bool PrePaintTreeWalk::NeedsTreeBuilderContextUpdate(
     const LocalFrameView& frame_view,
     const PrePaintTreeWalkContext& context) {
+  if ((RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled() ||
+       RuntimeEnabledFeatures::SlimmingPaintV2Enabled()) &&
+      frame_view.GetFrame().IsLocalRoot() &&
+      frame_view.GetPage()->GetVisualViewport().NeedsPaintPropertyUpdate())
+    return true;
+
   return frame_view.GetLayoutView() &&
          NeedsTreeBuilderContextUpdate(*frame_view.GetLayoutView(), context);
 }
@@ -281,7 +283,7 @@ bool PrePaintTreeWalk::NeedsTreeBuilderContextUpdate(
     const LayoutObject& object,
     const PrePaintTreeWalkContext& parent_context) {
   if (parent_context.tree_builder_context &&
-      parent_context.tree_builder_context->force_subtree_update) {
+      parent_context.tree_builder_context->force_subtree_update_reasons) {
     return true;
   }
   // The following CHECKs are for debugging crbug.com/816810.
@@ -292,6 +294,11 @@ bool PrePaintTreeWalk::NeedsTreeBuilderContextUpdate(
   if (object.DescendantNeedsPaintPropertyUpdate()) {
     CHECK(parent_context.tree_builder_context)
         << "DescendantNeedsPaintPropertyUpdate";
+    return true;
+  }
+  if (object.DescendantNeedsPaintOffsetAndVisualRectUpdate()) {
+    CHECK(parent_context.tree_builder_context)
+        << "DescendantNeedsPaintOffsetAndVisualRectUpdate";
     return true;
   }
   if (parent_context.paint_invalidator_context.NeedsVisualRectUpdate(object)) {
@@ -322,11 +329,6 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   if (context.tree_builder_context) {
     property_tree_builder.emplace(object, *context.tree_builder_context);
     property_changed = property_tree_builder->UpdateForSelf();
-
-    if (context.tree_builder_context->clip_changed) {
-      paint_invalidator_context.subtree_flags |=
-          PaintInvalidatorContext::kSubtreeVisualRectUpdate;
-    }
 
     if (property_changed &&
         !context.tree_builder_context

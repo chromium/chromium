@@ -22,7 +22,7 @@ FirstPartyOrigin::FirstPartyOrigin(url::Origin document_origin)
     : document_origin_(std::move(document_origin)) {}
 
 bool FirstPartyOrigin::IsThirdParty(const GURL& url) const {
-  if (document_origin_.unique())
+  if (document_origin_.opaque())
     return true;
   base::StringPiece host_piece = url.host_piece();
   if (!last_checked_host_.empty() && host_piece == last_checked_host_)
@@ -35,7 +35,7 @@ bool FirstPartyOrigin::IsThirdParty(const GURL& url) const {
 
 bool FirstPartyOrigin::IsThirdParty(const GURL& url,
                                     const url::Origin& first_party_origin) {
-  return first_party_origin.unique() ||
+  return first_party_origin.opaque() ||
          IsThirdPartyImpl(url, first_party_origin);
 }
 

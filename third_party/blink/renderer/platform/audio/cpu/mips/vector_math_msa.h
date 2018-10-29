@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/cpu/mips/common_macros_msa.h"
 
 namespace blink {
-namespace VectorMath {
+namespace vector_math {
 namespace MSA {
 
 // TODO: Consider optimizing these.
@@ -213,7 +213,7 @@ static ALWAYS_INLINE void Vsmul(const float* source_p,
 }
 
 }  // namespace MSA
-}  // namespace VectorMath
+}  // namespace vector_math
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_MIPS_VECTOR_MATH_MSA_H_

@@ -70,6 +70,7 @@ jumbo_source_set("common_sources") {
     "constants.h",
     "context_creation_attribs.cc",
     "context_creation_attribs.h",
+    "context_result.cc",
     "context_result.h",
     "debug_marker_manager.cc",
     "debug_marker_manager.h",

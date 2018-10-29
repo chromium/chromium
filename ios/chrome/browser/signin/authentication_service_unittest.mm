@@ -121,15 +121,18 @@ class AuthenticationServiceTest : public PlatformTest,
     TestChromeBrowserState::Builder builder;
     builder.SetPrefService(CreatePrefService());
     builder.AddTestingFactory(SigninClientFactory::GetInstance(),
-                              &BuildFakeTestSigninClient);
-    builder.AddTestingFactory(ProfileOAuth2TokenServiceFactory::GetInstance(),
-                              &BuildFakeOAuth2TokenService);
-    builder.AddTestingFactory(ios::SigninManagerFactory::GetInstance(),
-                              &ios::BuildFakeSigninManager);
-    builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
-                              &BuildMockProfileSyncService);
+                              base::BindRepeating(&BuildFakeTestSigninClient));
+    builder.AddTestingFactory(
+        ProfileOAuth2TokenServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeOAuth2TokenService));
+    builder.AddTestingFactory(
+        ios::SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&ios::BuildFakeSigninManager));
+    builder.AddTestingFactory(
+        ProfileSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildMockProfileSyncService));
     builder.AddTestingFactory(SyncSetupServiceFactory::GetInstance(),
-                              &BuildMockSyncSetupService);
+                              base::BindRepeating(&BuildMockSyncSetupService));
     browser_state_ = builder.Build();
 
     signin_manager_ =

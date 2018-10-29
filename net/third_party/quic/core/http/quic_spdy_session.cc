@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "net/third_party/quic/core/http/quic_headers_stream.h"
+#include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/platform/api/quic_bug_tracker.h"
 #include "net/third_party/quic/platform/api/quic_fallthrough.h"
 #include "net/third_party/quic/platform/api/quic_flag_utils.h"
@@ -297,14 +298,18 @@ QuicHpackDebugVisitor::QuicHpackDebugVisitor() {}
 
 QuicHpackDebugVisitor::~QuicHpackDebugVisitor() {}
 
-QuicSpdySession::QuicSpdySession(QuicConnection* connection,
-                                 QuicSession::Visitor* visitor,
-                                 const QuicConfig& config)
-    : QuicSession(connection, visitor, config),
+QuicSpdySession::QuicSpdySession(
+    QuicConnection* connection,
+    QuicSession::Visitor* visitor,
+    const QuicConfig& config,
+    const ParsedQuicVersionVector& supported_versions)
+    : QuicSession(connection, visitor, config, supported_versions),
       max_inbound_header_list_size_(kDefaultMaxUncompressedHeaderSize),
       server_push_enabled_(true),
-      stream_id_(kInvalidStreamId),
-      promised_stream_id_(kInvalidStreamId),
+      stream_id_(
+          QuicUtils::GetInvalidStreamId(connection->transport_version())),
+      promised_stream_id_(
+          QuicUtils::GetInvalidStreamId(connection->transport_version())),
       fin_(false),
       frame_len_(0),
       uncompressed_frame_len_(0),
@@ -334,15 +339,20 @@ void QuicSpdySession::Initialize() {
   QuicSession::Initialize();
 
   if (perspective() == Perspective::IS_SERVER) {
-    set_largest_peer_created_stream_id(kHeadersStreamId);
+    set_largest_peer_created_stream_id(
+        QuicUtils::GetHeadersStreamId(connection()->transport_version()));
   } else {
     QuicStreamId headers_stream_id = GetNextOutgoingStreamId();
-    DCHECK_EQ(headers_stream_id, kHeadersStreamId);
+    DCHECK_EQ(headers_stream_id,
+              QuicUtils::GetHeadersStreamId(connection()->transport_version()));
   }
 
   headers_stream_ = QuicMakeUnique<QuicHeadersStream>((this));
-  DCHECK_EQ(kHeadersStreamId, headers_stream_->id());
-  RegisterStaticStream(kHeadersStreamId, headers_stream_.get());
+  DCHECK_EQ(QuicUtils::GetHeadersStreamId(connection()->transport_version()),
+            headers_stream_->id());
+  RegisterStaticStream(
+      QuicUtils::GetHeadersStreamId(connection()->transport_version()),
+      headers_stream_.get());
 
   set_max_uncompressed_header_bytes(max_inbound_header_list_size_);
 
@@ -364,15 +374,11 @@ void QuicSpdySession::OnStreamHeaderList(QuicStreamId stream_id,
                                          bool fin,
                                          size_t frame_len,
                                          const QuicHeaderList& header_list) {
-  if (GetQuicRestartFlag(quic_check_stream_nonstatic_on_header_list)) {
-    QUIC_FLAG_COUNT(
-        quic_restart_flag_quic_check_stream_nonstatic_on_header_list);
-    if (QuicContainsKey(static_streams(), stream_id)) {
-      connection()->CloseConnection(
-          QUIC_INVALID_HEADERS_STREAM_DATA, "stream is static",
-          ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET);
-      return;
-    }
+  if (QuicContainsKey(static_streams(), stream_id)) {
+    connection()->CloseConnection(
+        QUIC_INVALID_HEADERS_STREAM_DATA, "stream is static",
+        ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET);
+    return;
   }
   QuicSpdyStream* stream = GetSpdyDataStream(stream_id);
   if (stream == nullptr) {
@@ -514,7 +520,6 @@ void QuicSpdySession::OnPromiseHeaderList(QuicStreamId stream_id,
                                           const QuicHeaderList& header_list) {
   QuicString error = "OnPromiseHeaderList should be overridden in client code.";
   QUIC_BUG << error;
-  RecordInternalErrorLocation(QUIC_SPDY_SESSION);
   connection()->CloseConnection(QUIC_INTERNAL_ERROR, error,
                                 ConnectionCloseBehavior::SILENT_CLOSE);
 }
@@ -541,8 +546,10 @@ void QuicSpdySession::OnHeaders(SpdyStreamId stream_id,
       return;
     }
   }
-  DCHECK_EQ(kInvalidStreamId, stream_id_);
-  DCHECK_EQ(kInvalidStreamId, promised_stream_id_);
+  DCHECK_EQ(QuicUtils::GetInvalidStreamId(connection()->transport_version()),
+            stream_id_);
+  DCHECK_EQ(QuicUtils::GetInvalidStreamId(connection()->transport_version()),
+            promised_stream_id_);
   stream_id_ = stream_id;
   fin_ = fin;
 }
@@ -550,8 +557,10 @@ void QuicSpdySession::OnHeaders(SpdyStreamId stream_id,
 void QuicSpdySession::OnPushPromise(SpdyStreamId stream_id,
                                     SpdyStreamId promised_stream_id,
                                     bool end) {
-  DCHECK_EQ(kInvalidStreamId, stream_id_);
-  DCHECK_EQ(kInvalidStreamId, promised_stream_id_);
+  DCHECK_EQ(QuicUtils::GetInvalidStreamId(connection()->transport_version()),
+            stream_id_);
+  DCHECK_EQ(QuicUtils::GetInvalidStreamId(connection()->transport_version()),
+            promised_stream_id_);
   stream_id_ = stream_id;
   promised_stream_id_ = promised_stream_id;
 }
@@ -571,15 +580,17 @@ void QuicSpdySession::OnPriority(SpdyStreamId stream_id,
 void QuicSpdySession::OnHeaderList(const QuicHeaderList& header_list) {
   QUIC_DVLOG(1) << "Received header list for stream " << stream_id_ << ": "
                 << header_list.DebugString();
-  if (promised_stream_id_ == kInvalidStreamId) {
+  if (promised_stream_id_ ==
+      QuicUtils::GetInvalidStreamId(connection()->transport_version())) {
     OnStreamHeaderList(stream_id_, fin_, frame_len_, header_list);
   } else {
     OnPromiseHeaderList(stream_id_, promised_stream_id_, frame_len_,
                         header_list);
   }
   // Reset state for the next frame.
-  promised_stream_id_ = kInvalidStreamId;
-  stream_id_ = kInvalidStreamId;
+  promised_stream_id_ =
+      QuicUtils::GetInvalidStreamId(connection()->transport_version());
+  stream_id_ = QuicUtils::GetInvalidStreamId(connection()->transport_version());
   fin_ = false;
   frame_len_ = 0;
   uncompressed_frame_len_ = 0;

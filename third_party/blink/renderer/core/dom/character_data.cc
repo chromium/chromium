@@ -164,8 +164,8 @@ String CharacterData::nodeValue() const {
   return data_;
 }
 
-bool CharacterData::ContainsOnlyWhitespace() const {
-  return data_.ContainsOnlyWhitespace();
+bool CharacterData::ContainsOnlyWhitespaceOrEmpty() const {
+  return data_.ContainsOnlyWhitespaceOrEmpty();
 }
 
 void CharacterData::setNodeValue(const String& node_value) {

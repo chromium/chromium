@@ -33,15 +33,15 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(canvas, attrs) {
   ExecutionContext* execution_context = canvas->GetTopExecutionContext();
-  if (execution_context->IsDocument()) {
-    Settings* settings = ToDocument(execution_context)->GetSettings();
+  if (auto* document = DynamicTo<Document>(execution_context)) {
+    Settings* settings = document->GetSettings();
     if (settings->GetDisableReadingFromCanvas())
       canvas->SetDisableReadingFromCanvasTrue();
     return;
   }
   dirty_rect_for_commit_.setEmpty();
   WorkerSettings* worker_settings =
-      ToWorkerGlobalScope(execution_context)->GetWorkerSettings();
+      To<WorkerGlobalScope>(execution_context)->GetWorkerSettings();
   if (worker_settings && worker_settings->DisableReadingFromCanvas())
     canvas->SetDisableReadingFromCanvasTrue();
 }

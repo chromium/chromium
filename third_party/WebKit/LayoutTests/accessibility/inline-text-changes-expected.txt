@@ -4,7 +4,6 @@ Tests that accessible inline text boxes update when a static text node changes.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS axStaticText.childrenCount is 2
 PASS axInlineBefore0.name is 'This paragraph contains '
 PASS axInlineBefore1.name is 'two lines of text.'

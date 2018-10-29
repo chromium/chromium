@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/stl_util.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/half_float.h"
 #include "ui/gl/init/gl_factory.h"
@@ -33,8 +34,7 @@ void GLImageTestSupport::InitializeGL(
   DCHECK(!allowed_impls.empty());
 
   GLImplementation impl = prefered_impl ? *prefered_impl : allowed_impls[0];
-  DCHECK(std::find(allowed_impls.begin(), allowed_impls.end(), impl) !=
-         allowed_impls.end());
+  DCHECK(base::ContainsValue(allowed_impls, impl));
 
   GLSurfaceTestSupport::InitializeOneOffImplementation(impl, true);
 #if defined(USE_OZONE)
@@ -226,11 +226,6 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
       }
       return;
     }
-    case gfx::BufferFormat::ATC:
-    case gfx::BufferFormat::ATCIA:
-    case gfx::BufferFormat::DXT1:
-    case gfx::BufferFormat::DXT5:
-    case gfx::BufferFormat::ETC1:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::UYVY_422:
       NOTREACHED() << gfx::BufferFormatToString(format);

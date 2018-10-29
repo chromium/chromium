@@ -38,7 +38,7 @@ namespace blink {
 class ExceptionState;
 class XPathNSResolver;
 
-namespace XPath {
+namespace xpath {
 
 class Expression;
 class LocationPath;
@@ -118,9 +118,9 @@ class Parser {
   DISALLOW_COPY_AND_ASSIGN(Parser);
 };
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink
 
-int xpathyyparse(blink::XPath::Parser*);
+int xpathyyparse(blink::xpath::Parser*);
 #endif

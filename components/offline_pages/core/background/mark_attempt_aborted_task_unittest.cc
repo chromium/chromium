@@ -30,8 +30,7 @@ class MarkAttemptAbortedTaskTest : public RequestQueueTaskTestBase {
   ~MarkAttemptAbortedTaskTest() override {}
 
   void AddItemToStore(RequestQueueStore* store);
-  void ChangeRequestsStateCallback(
-      std::unique_ptr<UpdateRequestsResult> result);
+  void ChangeRequestsStateCallback(UpdateRequestsResult result);
 
   void ClearResults();
 
@@ -55,8 +54,8 @@ void MarkAttemptAbortedTaskTest::AddItemToStore(RequestQueueStore* store) {
 }
 
 void MarkAttemptAbortedTaskTest::ChangeRequestsStateCallback(
-    std::unique_ptr<UpdateRequestsResult> result) {
-  result_ = std::move(result);
+    UpdateRequestsResult result) {
+  result_ = std::make_unique<UpdateRequestsResult>(std::move(result));
 }
 
 void MarkAttemptAbortedTaskTest::ClearResults() {

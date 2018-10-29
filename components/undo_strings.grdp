@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
 
+  <message name="IDS_BOOKMARK_BAR_UNDO_DESCRIPTION" desc="Shortcut description for undoing a bookmark operation, used as a hint for keyboard users">
+    press <ph name="MODIFIER_KEY_DESCRIPTION">$1<ex>Control Z</ex></ph> to undo
+  </message>
+
   <if expr="not use_titlecase">
     <message name="IDS_BOOKMARK_BAR_UNDO" desc="Menu title for undoing a bookmark operation">
       &amp;Undo

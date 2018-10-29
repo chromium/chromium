@@ -295,9 +295,9 @@ void CanvasCaptureHandler::ReadARGBPixelsAsync(
   context_provider->GetGLHelper()->ReadbackTextureAsync(
       texture_info.fID, image_size,
       temp_argb_frame->visible_data(VideoFrame::kARGBPlane), kN32_SkColorType,
-      base::Bind(&CanvasCaptureHandler::OnARGBPixelsReadAsync,
-                 weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
-                 timestamp, surface_origin != kTopLeft_GrSurfaceOrigin));
+      base::BindOnce(&CanvasCaptureHandler::OnARGBPixelsReadAsync,
+                     weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
+                     timestamp, surface_origin != kTopLeft_GrSurfaceOrigin));
 }
 
 void CanvasCaptureHandler::ReadYUVPixelsAsync(
@@ -338,9 +338,9 @@ void CanvasCaptureHandler::ReadYUVPixelsAsync(
       output_frame->visible_data(media::VideoFrame::kUPlane),
       output_frame->stride(media::VideoFrame::kVPlane),
       output_frame->visible_data(media::VideoFrame::kVPlane), gfx::Point(0, 0),
-      base::Bind(&CanvasCaptureHandler::OnYUVPixelsReadAsync,
-                 weak_ptr_factory_.GetWeakPtr(), image, output_frame,
-                 timestamp));
+      base::BindOnce(&CanvasCaptureHandler::OnYUVPixelsReadAsync,
+                     weak_ptr_factory_.GetWeakPtr(), image, output_frame,
+                     timestamp));
 }
 
 void CanvasCaptureHandler::OnARGBPixelsReadAsync(

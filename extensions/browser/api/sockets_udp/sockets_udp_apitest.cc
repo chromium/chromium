@@ -32,7 +32,8 @@ class SocketsUdpApiTest : public ShellApiTest {
 IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, SocketsUdpCreateGood) {
   scoped_refptr<api::SocketsUdpCreateFunction> socket_create_function(
       new api::SocketsUdpCreateFunction());
-  scoped_refptr<Extension> empty_extension = ExtensionBuilder("Test").Build();
+  scoped_refptr<const Extension> empty_extension =
+      ExtensionBuilder("Test").Build();
 
   socket_create_function->set_extension(empty_extension.get());
   socket_create_function->set_has_callback(true);

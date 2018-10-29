@@ -33,7 +33,7 @@
 #include "base/strings/pattern.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom-shared.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -239,17 +239,27 @@ void SecurityPolicy::AddOriginAccessAllowListEntry(
     const SecurityOrigin& source_origin,
     const String& destination_protocol,
     const String& destination_domain,
-    bool allow_destination_subdomains) {
+    bool allow_destination_subdomains,
+    const network::mojom::CORSOriginAccessMatchPriority priority) {
   MutexLocker lock(GetMutex());
   GetOriginAccessList().AddAllowListEntryForOrigin(
       source_origin.ToUrlOrigin(), WebString(destination_protocol).Utf8(),
-      WebString(destination_domain).Utf8(), allow_destination_subdomains);
+      WebString(destination_domain).Utf8(), allow_destination_subdomains,
+      priority);
 }
 
 void SecurityPolicy::ClearOriginAccessAllowListForOrigin(
     const SecurityOrigin& source_origin) {
   MutexLocker lock(GetMutex());
   GetOriginAccessList().SetAllowListForOrigin(
+      source_origin.ToUrlOrigin(),
+      std::vector<network::mojom::CorsOriginPatternPtr>());
+}
+
+void SecurityPolicy::ClearOriginAccessBlockListForOrigin(
+    const SecurityOrigin& source_origin) {
+  MutexLocker lock(GetMutex());
+  GetOriginAccessList().SetBlockListForOrigin(
       source_origin.ToUrlOrigin(),
       std::vector<network::mojom::CorsOriginPatternPtr>());
 }
@@ -263,11 +273,13 @@ void SecurityPolicy::AddOriginAccessBlockListEntry(
     const SecurityOrigin& source_origin,
     const String& destination_protocol,
     const String& destination_domain,
-    bool allow_destination_subdomains) {
+    bool allow_destination_subdomains,
+    const network::mojom::CORSOriginAccessMatchPriority priority) {
   MutexLocker lock(GetMutex());
   GetOriginAccessList().AddBlockListEntryForOrigin(
       source_origin.ToUrlOrigin(), WebString(destination_protocol).Utf8(),
-      WebString(destination_domain).Utf8(), allow_destination_subdomains);
+      WebString(destination_domain).Utf8(), allow_destination_subdomains,
+      priority);
 }
 
 void SecurityPolicy::ClearOriginAccessBlockList() {
@@ -366,18 +378,24 @@ bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
   return true;
 }
 
-STATIC_ASSERT_ENUM(kWebReferrerPolicyAlways, kReferrerPolicyAlways);
-STATIC_ASSERT_ENUM(kWebReferrerPolicyDefault, kReferrerPolicyDefault);
-STATIC_ASSERT_ENUM(kWebReferrerPolicyNoReferrerWhenDowngrade,
+STATIC_ASSERT_ENUM(network::mojom::ReferrerPolicy::kAlways,
+                   kReferrerPolicyAlways);
+STATIC_ASSERT_ENUM(network::mojom::ReferrerPolicy::kDefault,
+                   kReferrerPolicyDefault);
+STATIC_ASSERT_ENUM(network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
                    kReferrerPolicyNoReferrerWhenDowngrade);
-STATIC_ASSERT_ENUM(kWebReferrerPolicyNever, kReferrerPolicyNever);
-STATIC_ASSERT_ENUM(kWebReferrerPolicyOrigin, kReferrerPolicyOrigin);
-STATIC_ASSERT_ENUM(kWebReferrerPolicyOriginWhenCrossOrigin,
+STATIC_ASSERT_ENUM(network::mojom::ReferrerPolicy::kNever,
+                   kReferrerPolicyNever);
+STATIC_ASSERT_ENUM(network::mojom::ReferrerPolicy::kOrigin,
+                   kReferrerPolicyOrigin);
+STATIC_ASSERT_ENUM(network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin,
                    kReferrerPolicyOriginWhenCrossOrigin);
-STATIC_ASSERT_ENUM(kWebReferrerPolicySameOrigin, kReferrerPolicySameOrigin);
-STATIC_ASSERT_ENUM(kWebReferrerPolicyStrictOrigin, kReferrerPolicyStrictOrigin);
-STATIC_ASSERT_ENUM(
-    kWebReferrerPolicyNoReferrerWhenDowngradeOriginWhenCrossOrigin,
-    kReferrerPolicyStrictOriginWhenCrossOrigin);
+STATIC_ASSERT_ENUM(network::mojom::ReferrerPolicy::kSameOrigin,
+                   kReferrerPolicySameOrigin);
+STATIC_ASSERT_ENUM(network::mojom::ReferrerPolicy::kStrictOrigin,
+                   kReferrerPolicyStrictOrigin);
+STATIC_ASSERT_ENUM(network::mojom::ReferrerPolicy::
+                       kNoReferrerWhenDowngradeOriginWhenCrossOrigin,
+                   kReferrerPolicyStrictOriginWhenCrossOrigin);
 
 }  // namespace blink

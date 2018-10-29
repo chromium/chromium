@@ -69,10 +69,10 @@ class FILERawSink {
 
 // Provide RawSink integration with common types from the STL.
 inline void AbslFormatFlush(std::string* out, string_view s) {
-  out->append(s.begin(), s.size());
+  out->append(s.data(), s.size());
 }
 inline void AbslFormatFlush(std::ostream* out, string_view s) {
-  out->write(s.begin(), s.size());
+  out->write(s.data(), s.size());
 }
 
 template <class AbslCord, typename = typename std::enable_if<

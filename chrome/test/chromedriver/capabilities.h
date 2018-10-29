@@ -20,6 +20,7 @@
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/log.h"
 #include "chrome/test/chromedriver/net/net_util.h"
+#include "chrome/test/chromedriver/session.h"
 
 namespace base {
 class CommandLine;
@@ -96,7 +97,38 @@ struct Capabilities {
   // Return true if android package is specified.
   bool IsAndroid() const;
 
+  // Accepts all W3C defined capabilities (including those not yet supported by
+  // ChromeDriver) and all ChromeDriver-specific extensions.
   Status Parse(const base::DictionaryValue& desired_caps);
+
+  // Check if all specified capabilities are supported by ChromeDriver.
+  // The long term goal is to support all standard capabilities, thus making
+  // this method unnecessary.
+  Status CheckSupport() const;
+
+  //
+  // W3C defined capabilities
+  //
+
+  bool accept_insecure_certs;
+
+  std::string browser_name;
+  std::string browser_version;
+  std::string platform_name;
+
+  std::string page_load_strategy;
+
+  // Data from "proxy" capability are stored in "switches" field.
+
+  base::TimeDelta script_timeout = Session::kDefaultScriptTimeout;
+  base::TimeDelta page_load_timeout = Session::kDefaultPageLoadTimeout;
+  base::TimeDelta implicit_wait_timeout = Session::kDefaultImplicitWaitTimeout;
+
+  std::string unhandled_prompt_behavior;
+
+  //
+  // ChromeDriver specific capabilities
+  //
 
   std::string android_activity;
 
@@ -147,13 +179,7 @@ struct Capabilities {
   // If set, enable minidump for chrome crashes and save to this directory.
   std::string minidump_path;
 
-  std::string page_load_strategy;
-
-  std::string unexpected_alert_behaviour;
-
   bool network_emulation_enabled;
-
-  bool accept_insecure_certs;
 
   PerfLoggingPrefs perf_logging_prefs;
 

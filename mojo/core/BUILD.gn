@@ -108,7 +108,7 @@ template("core_impl_source_set") {
     if (is_fuchsia) {
       sources += [ "channel_fuchsia.cc" ]
 
-      public_deps += [ "//third_party/fuchsia-sdk:fdio" ]
+      public_deps += [ "//third_party/fuchsia-sdk/sdk:fdio" ]
     }
 
     if (is_posix) {

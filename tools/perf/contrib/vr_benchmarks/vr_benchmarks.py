@@ -6,7 +6,6 @@ import logging
 
 from benchmarks import memory
 from core import perf_benchmark
-from measurements import smoothness
 from telemetry import benchmark
 from telemetry import story
 from telemetry.timeline import chrome_trace_category_filter
@@ -210,7 +209,11 @@ class XrBrowsingWprStatic(_BaseBrowsingBenchmark):
 class XrBrowsingWprSmoothness(_BaseBrowsingBenchmark):
   """Benchmark for testing VR browser scrolling smoothness and throughput."""
 
-  test = smoothness.Smoothness
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    category_filter = chrome_trace_category_filter.CreateLowOverheadFilter()
+    options = timeline_based_measurement.Options(category_filter)
+    options.SetTimelineBasedMetrics(['renderingMetric'])
+    return options
 
   def CreateStorySet(self, options):
     return vr_browsing_mode_pages.VrBrowsingModeWprSmoothnessPageSet()

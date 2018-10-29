@@ -116,7 +116,11 @@ base::TimeDelta WebMTracksParser::GetVideoDefaultDuration(
 
 WebMParserClient* WebMTracksParser::OnListStart(int id) {
   if (id == kWebMIdContentEncodings) {
-    DCHECK(!track_content_encodings_client_.get());
+    if (track_content_encodings_client_) {
+      MEDIA_LOG(ERROR, media_log_) << "Multiple ContentEncodings lists";
+      return NULL;
+    }
+
     track_content_encodings_client_.reset(
         new WebMContentEncodingsClient(media_log_));
     return track_content_encodings_client_->OnListStart(id);

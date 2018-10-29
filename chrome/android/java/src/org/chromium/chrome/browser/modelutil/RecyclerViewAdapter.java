@@ -63,6 +63,16 @@ public class RecyclerViewAdapter<VH extends ViewHolder, P>
         void onBindViewHolder(VH viewHolder, int position, @Nullable P payload);
 
         /**
+         * Called when the {@link View} owned by {@code viewHolder} no longer needs to be attached
+         * to its parent {@link RecyclerView}.  This is a good place to free up expensive resources
+         * that might be owned by the particular {@link View} or {@code viewHolder}.
+         * @param viewHolder A view holder that will be recycled.
+         * @see RecyclerView.Adapter#onViewRecycled(ViewHolder)
+         */
+        default void
+            onViewRecycled(VH viewHolder) {}
+
+        /**
          * @param position The position of an item to be dismissed.
          * @return The set of item positions that should be dismissed simultaneously when dismissing
          *         the item at the given {@code position} (including the position itself), or an
@@ -160,6 +170,11 @@ public class RecyclerViewAdapter<VH extends ViewHolder, P>
         for (Object p : payloads) {
             mDelegate.onBindViewHolder(holder, position, (P) p);
         }
+    }
+
+    @Override
+    public void onViewRecycled(VH holder) {
+        mDelegate.onViewRecycled(holder);
     }
 
     @Override

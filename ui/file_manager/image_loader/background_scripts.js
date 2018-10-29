@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 
 // <include src="../file_manager/common/js/file_type.js">
-// <include src="../file_manager/common/js/metrics_base.js">
-// <include src="../file_manager/common/js/metrics.js">
-// <include src="../file_manager/common/js/metrics_events.js">
 // <include src="../file_manager/foreground/js/metadata/image_orientation.js">
 // <include src="cache.js">
 // <include src="load_image_request.js">

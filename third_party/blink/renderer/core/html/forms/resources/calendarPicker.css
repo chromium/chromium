@@ -209,7 +209,7 @@ body {
     min-width: 0 !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
-    -webkit-margin-start: 4px !important;
+    margin-inline-start: 4px !important;
 }
 
 .year-list-view {
@@ -228,7 +228,7 @@ body {
 .year-list-cell .label {
     height: 24px;
     line-height: 24px;
-    -webkit-padding-start: 8px;
+    padding-inline-start: 8px;
     background-color: #f5f5f5;
     border-bottom: 1px solid #bfbfbf;
 }

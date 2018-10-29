@@ -281,7 +281,7 @@ TEST_P(PasswordStoreMacTest, OperationsOnABadDatabaseSilentlyFail) {
   EXPECT_THAT(mock_consumer.forms(), IsEmpty());
 
   // Report metrics.
-  store()->ReportMetrics("Test Username", true);
+  store()->ReportMetrics("Test Username", true, false);
   FinishAsyncProcessing();
 
   // Change the login.

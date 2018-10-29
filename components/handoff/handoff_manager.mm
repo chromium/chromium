@@ -99,7 +99,7 @@
   [self.userActivity invalidate];
 
   base::scoped_nsobject<NSUserActivity> userActivity([[NSUserActivity alloc]
-      initWithActivityType:handoff::kChromeHandoffActivityType]);
+      initWithActivityType:NSUserActivityTypeBrowsingWeb]);
   self.userActivity = userActivity;
   self.userActivity.webpageURL = net::NSURLWithGURL(_activeURL);
   NSString* origin = handoff::StringFromOrigin(_origin);

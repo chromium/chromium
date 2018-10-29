@@ -142,8 +142,7 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
   // The files are processed in reverse order because |MergeFrom| gives priority
   // to existing keys, but the ConfigDirPolicyProvider gives priority to the
   // last file in lexicographic order.
-  for (std::set<base::FilePath>::reverse_iterator config_file_iter =
-           files.rbegin(); config_file_iter != files.rend();
+  for (auto config_file_iter = files.rbegin(); config_file_iter != files.rend();
        ++config_file_iter) {
     JSONFileValueDeserializer deserializer(*config_file_iter,
                                            base::JSON_ALLOW_TRAILING_COMMAS);

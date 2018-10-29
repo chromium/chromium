@@ -123,7 +123,7 @@ TEST_F(RenderWidgetTest, HitTestAPI) {
       "</body>'></iframe><div></body>");
   gfx::PointF point;
   viz::FrameSinkId main_frame_sink_id =
-      widget()->GetFrameSinkIdAtPoint(gfx::Point(10, 10), &point);
+      widget()->GetFrameSinkIdAtPoint(gfx::PointF(10, 10), &point);
   EXPECT_EQ(static_cast<uint32_t>(widget()->routing_id()),
             main_frame_sink_id.sink_id());
   EXPECT_EQ(static_cast<uint32_t>(RenderThreadImpl::Get()->GetClientId()),
@@ -133,7 +133,7 @@ TEST_F(RenderWidgetTest, HitTestAPI) {
   // Targeting a child frame should also return the FrameSinkId for the main
   // widget.
   viz::FrameSinkId frame_sink_id =
-      widget()->GetFrameSinkIdAtPoint(gfx::Point(150, 150), &point);
+      widget()->GetFrameSinkIdAtPoint(gfx::PointF(150, 150), &point);
   EXPECT_EQ(static_cast<uint32_t>(widget()->routing_id()),
             frame_sink_id.sink_id());
   EXPECT_EQ(main_frame_sink_id.client_id(), frame_sink_id.client_id());

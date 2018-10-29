@@ -209,6 +209,68 @@ function testManipulateZoom() {
       });
 }
 
+// Tries to read, set and read back the exposureTime capability if available.
+function testManipulateExposureTime() {
+    var newExposureTime = -1;
+    var imageCapturer;
+    var exposureTimeTolerance;
+    navigator.mediaDevices.getUserMedia({"video": CONSTRAINTS})
+        .then(stream => {
+            assertEquals('video', stream.getVideoTracks()[0].kind);
+            return new ImageCapture(stream.getVideoTracks()[0]);
+        })
+        .then(capturer => {
+            imageCapturer = capturer;
+            // TODO(mcasas): Before accesing synchronous track APIs we need a delay,
+            // use instead a round trip of capabilities: https://crbug.com/711524.
+            return capturer.getPhotoCapabilities();
+        })
+        .then(capabilities => {
+            const trackCapabilities = imageCapturer.track.getCapabilities();
+            if (trackCapabilities.exposureTime === undefined) {
+                console.log('exposureTime not supported, skipping test');
+                reportTestSuccess();
+                return;
+            }
+
+            const currentExposureTime = imageCapturer.track.getSettings().exposureTime;
+            newExposureTime = currentExposureTime + trackCapabilities.exposureTime
+                .step;
+            newExposureTime = Math.min(newExposureTime, trackCapabilities.exposureTime
+                .max);
+            console.log("Setting exposureTime from " + currentExposureTime +
+                " to " +
+                newExposureTime);
+            exposureTimeTolerance = trackCapabilities.exposureTime.step /
+                10;
+
+            currentExposureMode = imageCapturer.track.getSettings().exposureMode;
+            console.log(" exposureMode == " + currentExposureMode);
+            exposureModeCapabilities = trackCapabilities.exposureMode;
+            console.log(" exposureModeCapabilities == " +
+                exposureModeCapabilities);
+
+            return imageCapturer.track.applyConstraints({
+                advanced: [{
+                    exposureMode: "manual",
+                    exposureTime: newExposureTime
+                }]
+            });
+        })
+        .then(() => {
+            assertEquals(newExposureTime,
+                imageCapturer.track.getConstraints().advanced[0].exposureTime
+            );
+            assertTrue(Math.abs(newExposureTime - imageCapturer.track.getSettings()
+                    .exposureTime) <
+                exposureTimeTolerance);
+            reportTestSuccess();
+        })
+        .catch(err => {
+            return failTest(err.toString());
+        });
+}
+
 </script>
 </body>
 </html>

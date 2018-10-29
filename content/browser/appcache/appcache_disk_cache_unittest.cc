@@ -49,7 +49,7 @@ class AppCacheDiskCacheTest : public testing::Test {
 };
 
 TEST_F(AppCacheDiskCacheTest, DisablePriorToInitCompletion) {
-  AppCacheDiskCache::Entry* entry = nullptr;
+  AppCacheDiskCacheEntry* entry = nullptr;
 
   // Create an instance and start it initializing, queue up
   // one of each kind of "entry" function.
@@ -103,7 +103,7 @@ TEST_F(AppCacheDiskCacheTest, DisableAfterInitted) {
 
   // Methods should return immediately when disabled and not invoke
   // the callback at all.
-  AppCacheDiskCache::Entry* entry = nullptr;
+  AppCacheDiskCacheEntry* entry = nullptr;
   completion_results_.clear();
   EXPECT_EQ(net::ERR_ABORTED,
             disk_cache->CreateEntry(1, &entry, completion_callback_));
@@ -135,8 +135,8 @@ TEST_F(AppCacheDiskCacheTest, DISABLED_DisableWithEntriesOpen) {
   // and we do have expectations about that.
 
   // Create/open some entries.
-  AppCacheDiskCache::Entry* entry1 = nullptr;
-  AppCacheDiskCache::Entry* entry2 = nullptr;
+  AppCacheDiskCacheEntry* entry1 = nullptr;
+  AppCacheDiskCacheEntry* entry2 = nullptr;
   disk_cache->CreateEntry(1, &entry1, completion_callback_);
   disk_cache->CreateEntry(2, &entry2, completion_callback_);
   FlushCacheTasks();

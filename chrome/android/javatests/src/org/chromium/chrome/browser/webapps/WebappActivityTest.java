@@ -24,6 +24,5 @@ public class WebappActivityTest {
         Assert.assertEquals(LaunchSourceType.OTHER, WebappActivity.ActivityType.OTHER);
         Assert.assertEquals(LaunchSourceType.WEBAPP, WebappActivity.ActivityType.WEBAPP);
         Assert.assertEquals(LaunchSourceType.WEBAPK, WebappActivity.ActivityType.WEBAPK);
-        Assert.assertEquals(LaunchSourceType.TWA, WebappActivity.ActivityType.TWA);
     }
 }

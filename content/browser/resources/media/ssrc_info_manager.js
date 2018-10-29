@@ -15,7 +15,7 @@
  */
 function GetSsrcFromReport(report) {
   if (report.type != 'ssrc') {
-    console.warn("Trying to get ssrc from non-ssrc report.");
+    console.warn('Trying to get ssrc from non-ssrc report.');
     return null;
   }
 
@@ -106,8 +106,8 @@ var SsrcInfoManager = (function() {
         if (nextFieldIndex == -1)
           continue;
 
-        var ssrc = attributes[i].substring(this.SSRC_ATTRIBUTE_PREFIX_.length,
-                                           nextFieldIndex);
+        var ssrc = attributes[i].substring(
+            this.SSRC_ATTRIBUTE_PREFIX_.length, nextFieldIndex);
         if (!this.streamInfoContainer_[ssrc])
           this.streamInfoContainer_[ssrc] = {};
 

@@ -239,6 +239,8 @@ base::string16 Accelerator::ApplyLongFormModifiers(
     shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_COMMAND_KEY);
 #elif defined(OS_CHROMEOS)
     shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_SEARCH_KEY);
+#elif defined(OS_WIN)
+    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_WINDOWS_KEY);
 #else
     NOTREACHED();
 #endif

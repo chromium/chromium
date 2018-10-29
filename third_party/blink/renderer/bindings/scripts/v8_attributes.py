@@ -35,6 +35,12 @@ Extends IdlType with property |constructor_type_name|.
 Design doc: http://www.chromium.org/developers/design-documents/idl-compiler
 """
 
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__),
+                             '..', '..', 'build', 'scripts'))
+from blinkbuild.name_style_converter import NameStyleConverter
 import idl_types
 from idl_types import inherits_interface
 from v8_globals import includes
@@ -80,7 +86,7 @@ def attribute_context(interface, attribute, interfaces):
         includes.add('core/frame/use_counter.h')
     # [CrossOrigin]
     if has_extended_attribute_value(attribute, 'CrossOrigin', 'Setter'):
-        includes.add('bindings/core/v8/v8_cross_origin_setter_info.h')
+        includes.add('platform/bindings/v8_cross_origin_setter_info.h')
     # [Constructor]
     # TODO(yukishiino): Constructors are much like methods although constructors
     # are not methods.  Constructors must be data-type properties, and we can
@@ -104,11 +110,6 @@ def attribute_context(interface, attribute, interfaces):
         'SaveSameObject' in attribute.extended_attributes)
     if is_save_same_object:
         includes.add('platform/bindings/v8_private_property.h')
-
-    if (base_idl_type == 'EventHandler' and
-            interface.name in ['Window', 'WorkerGlobalScope'] and
-            attribute.name == 'onerror'):
-        includes.add('bindings/core/v8/v8_error_handler.h')
 
     cached_attribute_validation_method = extended_attributes.get('CachedAttribute')
     keep_alive_for_gc = is_keep_alive_for_gc(interface, attribute)
@@ -439,9 +440,13 @@ def setter_context(interface, attribute, interfaces, context):
         return
 
     if ('Replaceable' in attribute.extended_attributes):
+        # Create the property, and early-return if an exception is thrown.
+        # Subsequent cleanup code may not be prepared to handle a pending
+        # exception.
         context['cpp_setter'] = (
-            'V8CallBoolean(info.Holder()->CreateDataProperty(' +
-            'info.GetIsolate()->GetCurrentContext(), propertyName, v8Value))')
+            'if (info.Holder()->CreateDataProperty(' +
+            'info.GetIsolate()->GetCurrentContext(), propertyName, v8Value).IsNothing())' +
+            '\n  return')
         return
 
     extended_attributes = attribute.extended_attributes
@@ -463,6 +468,8 @@ def setter_context(interface, attribute, interfaces, context):
         'has_type_checking_interface': has_type_checking_interface,
         'is_setter_call_with_execution_context': has_extended_attribute_value(
             attribute, 'SetterCallWith', 'ExecutionContext'),
+        'is_setter_call_with_script_state': has_extended_attribute_value(
+            attribute, 'SetterCallWith', 'ScriptState'),
         'is_setter_raises_exception': is_setter_raises_exception,
         'v8_value_to_local_cpp_value': idl_type.v8_value_to_local_cpp_value(
             extended_attributes, 'v8Value', 'cppValue'),
@@ -492,17 +499,16 @@ def setter_expression(interface, attribute, context):
         getter_name = scoped_name(interface, attribute, cpp_name(attribute))
         context['event_handler_getter_expression'] = '%s(%s)' % (
             getter_name, ', '.join(arguments))
-        if (interface.name in ['Window', 'WorkerGlobalScope'] and
-                attribute.name == 'onerror'):
-            includes.add('bindings/core/v8/v8_error_handler.h')
-            arguments.append(
-                'V8EventListenerHelper::EnsureErrorHandler(' +
-                'ScriptState::ForRelevantRealm(info), v8Value)')
-        else:
-            arguments.append(
-                'V8EventListenerHelper::GetEventListener(' +
-                'ScriptState::ForRelevantRealm(info), v8Value, true, ' +
-                'kListenerFindOrCreate)')
+        handler_type = 'kEventHandler'
+        if attribute.name == 'onerror':
+            handler_type = 'kOnErrorEventHandler'
+        elif attribute.name == 'onbeforeunload':
+            handler_type = 'kOnBeforeUnloadEventHandler'
+        arguments.append(
+            'V8EventListenerHelper::GetEventHandler(' +
+            'ScriptState::ForRelevantRealm(info), v8Value, ' +
+            'JSEventHandler::HandlerType::' + handler_type +
+            ', kListenerFindOrCreate)')
     elif idl_type.base_type == 'SerializedScriptValue':
         arguments.append('std::move(cppValue)')
     else:
@@ -535,13 +541,15 @@ def setter_base_name(interface, attribute, arguments):
 
 def scoped_content_attribute_name(interface, attribute):
     content_attribute_name = attribute.extended_attributes['Reflect'] or attribute.name.lower()
+    symbol_name = 'k' + NameStyleConverter(content_attribute_name).to_upper_camel_case()
     if interface.name.startswith('SVG'):
-        namespace = 'SVGNames'
+        namespace = 'svg_names'
         includes.add('core/svg_names.h')
     else:
         namespace = 'HTMLNames'
         includes.add('core/html_names.h')
-    return '%s::%sAttr' % (namespace, content_attribute_name)
+        symbol_name = content_attribute_name
+    return '%s::%sAttr' % (namespace, symbol_name)
 
 
 ################################################################################

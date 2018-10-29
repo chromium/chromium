@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 #if defined(__OBJC__)
@@ -24,9 +23,7 @@ class NativeEventProcessorObserver {
   virtual void WillRunNativeEvent(const void* opaque_identifier) = 0;
 
   // Called right after a native event is run.
-  // |creation_time| refers to the time at which the native event was created.
-  virtual void DidRunNativeEvent(const void* opaque_identifier,
-                                 base::TimeTicks creation_time) = 0;
+  virtual void DidRunNativeEvent(const void* opaque_identifier) = 0;
 };
 
 // The constructor sends a WillRunNativeEvent callback to each observer.

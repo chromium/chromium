@@ -7,17 +7,12 @@
 
 namespace viz {
 class FrameSinkId;
-class SurfaceInfo;
 }  // namespace viz
 
 namespace content {
 
 class MusEmbeddedFrameDelegate {
  public:
-  // Called when the SurfaceInfo changes.
-  virtual void OnMusEmbeddedFrameSurfaceChanged(
-      const viz::SurfaceInfo& surface_info) = 0;
-
   // Called when mus determines the FrameSinkId.
   virtual void OnMusEmbeddedFrameSinkIdAllocated(
       const viz::FrameSinkId& frame_sink_id) = 0;

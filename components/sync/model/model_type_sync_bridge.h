@@ -103,15 +103,19 @@ class ModelTypeSyncBridge {
   // Used for getting all data in Sync Node Browser of chrome://sync-internals.
   virtual void GetAllDataForDebugging(DataCallback callback) = 0;
 
+  // Must not be called unless SupportsGetClientTag() returns true.
+  //
   // Get or generate a client tag for |entity_data|. This must be the same tag
   // that was/would have been generated in the SyncableService/Directory world
   // for backward compatibility with pre-USS clients. The only time this
-  // theoretically needs to be called is on the creation of local data, however
-  // it is also used to verify the hash of remote data. If a model type was
-  // never launched pre-USS, then method does not need to be different from
-  // GetStorageKey(). Only the hash of this value is kept.
+  // theoretically needs to be called is on the creation of local data.
+  //
+  // If a model type was never launched pre-USS, then method does not need to be
+  // different from GetStorageKey(). Only the hash of this value is kept.
   virtual std::string GetClientTag(const EntityData& entity_data) = 0;
 
+  // Must not be called unless SupportsGetStorageKey() returns true.
+  //
   // Get or generate a storage key for |entity_data|. This will only ever be
   // called once when first encountering a remote entity. Local changes will
   // provide their storage keys directly to Put instead of using this method.
@@ -120,6 +124,12 @@ class ModelTypeSyncBridge {
   // should be. Storage keys are kept in memory at steady state, so each model
   // type should strive to keep these keys as small as possible.
   virtual std::string GetStorageKey(const EntityData& entity_data) = 0;
+
+  // Whether or not the bridge is capable of producing a client tag from
+  // |EntityData| (usually remote changes), via GetClientTag(). Most bridges do,
+  // but in rare cases including commit-only types and read-only types, it may
+  // not.
+  virtual bool SupportsGetClientTag() const;
 
   // By returning true in this function datatype indicates that it can generate
   // storage key from EntityData. In this case for all new entities received
@@ -157,10 +167,26 @@ class ModelTypeSyncBridge {
   virtual StopSyncResponse ApplyStopSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list);
 
+  // Returns an estimate of memory usage attributed to sync (that is, excludes
+  // the actual model). Because the resulting UMA metrics are often used to
+  // compare with the non-USS equivalent implementations (SyncableService), it's
+  // a good idea to account for overhead that would also get accounted for the
+  // SyncableService by other means.
+  virtual size_t EstimateSyncOverheadMemoryUsage() const;
+
   // Needs to be informed about any model change occurring via Delete() and
   // Put(). The changing metadata should be stored to persistent storage
   // before or atomically with the model changes.
   ModelTypeChangeProcessor* change_processor();
+
+  // Similar to ApplySyncChanges(), but notifies the bridge that the processor
+  // is about to recommit all data due to encryption changes.
+  // TODO(crbug.com/856941): Remove when PASSWORDS are migrated to USS, which
+  // will likely make this API unnecessary.
+  virtual base::Optional<ModelError>
+  ApplySyncChangesWithNewEncryptionRequirements(
+      std::unique_ptr<MetadataChangeList> metadata_change_list,
+      EntityChangeList entity_changes);
 
  private:
   std::unique_ptr<ModelTypeChangeProcessor> change_processor_;

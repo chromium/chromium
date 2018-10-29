@@ -215,6 +215,14 @@ gcc_toolchain("mips64el") {
   }
 }
 
+clang_toolchain("clang_s390x") {
+  toolchain_args = {
+    current_cpu = "s390x"
+    current_os = "linux"
+    is_clang = true
+  }
+}
+
 gcc_toolchain("s390x") {
   cc = "gcc"
   cxx = "g++"

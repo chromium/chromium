@@ -138,14 +138,23 @@ class HourAppLaunchPredictor : public AppLaunchPredictor {
   FRIEND_TEST_ALL_PREFIXES(HourAppLaunchPredictorTest, GetTheRightBin);
   FRIEND_TEST_ALL_PREFIXES(HourAppLaunchPredictorTest, RankFromSingleBin);
   FRIEND_TEST_ALL_PREFIXES(HourAppLaunchPredictorTest, RankFromMultipleBin);
+  FRIEND_TEST_ALL_PREFIXES(HourAppLaunchPredictorTest, CheckDefaultWeights);
+  FRIEND_TEST_ALL_PREFIXES(HourAppLaunchPredictorTest, SetWeightsFromFlag);
+  FRIEND_TEST_ALL_PREFIXES(HourAppLaunchPredictorTest, FromProtoDecay);
 
   // Returns current bin index of this predictor.
   int GetBin() const;
+
+  // Get weights of adjacent bins from flag which will be set using finch config
+  // for exploring possible options.
+  static std::vector<float> BinWeightsFromFlagOrDefault();
 
   // The proto for this predictor.
   AppLaunchPredictorProto proto_;
   // Last time the predictor was saved.
   base::Time last_save_timestamp_;
+  // Coefficient that controls the decay of previous record.
+  static constexpr float kWeeklyDecayCoeff = 0.8;
 
   DISALLOW_COPY_AND_ASSIGN(HourAppLaunchPredictor);
 };

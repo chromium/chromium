@@ -9,16 +9,19 @@
 #include <vector>
 
 #include "base/android/callback_android.h"
+#include "base/android/int_string_callback.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind_helpers.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -63,7 +66,7 @@ Profile* PasswordUIViewAndroid::GetProfile() {
   return ProfileManager::GetLastUsedProfile();
 }
 
-void PasswordUIViewAndroid::ShowPassword(size_t index,
+void PasswordUIViewAndroid::ShowPassword(const std::string& sort_key,
                                          const base::string16& password_value) {
   NOTIMPLEMENTED();
 }
@@ -148,7 +151,7 @@ void PasswordUIViewAndroid::HandleRemoveSavedPasswordException(
 void PasswordUIViewAndroid::HandleSerializePasswords(
     JNIEnv* env,
     const JavaRef<jobject>&,
-    const JavaRef<jstring>& java_target_path,
+    const JavaRef<jstring>& java_target_directory,
     const JavaRef<jobject>& success_callback,
     const JavaRef<jobject>& error_callback) {
   switch (state_) {
@@ -177,7 +180,7 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
       base::BindOnce(
           &PasswordUIViewAndroid::ObtainAndSerializePasswords,
           base::Unretained(this),
-          base::FilePath(ConvertJavaStringToUTF8(env, java_target_path))),
+          base::FilePath(ConvertJavaStringToUTF8(env, java_target_directory))),
       base::BindOnce(&PasswordUIViewAndroid::PostSerializedPasswords,
                      base::Unretained(this),
                      base::android::ScopedJavaGlobalRef<jobject>(
@@ -202,7 +205,7 @@ static jlong JNI_PasswordUIView_Init(JNIEnv* env,
 
 PasswordUIViewAndroid::SerializationResult
 PasswordUIViewAndroid::ObtainAndSerializePasswords(
-    const base::FilePath& target_path) {
+    const base::FilePath& target_directory) {
   // This is run on a backend task runner. Do not access any member variables
   // except for |credential_provider_for_testing_| and
   // |password_manager_presenter_|.
@@ -216,13 +219,36 @@ PasswordUIViewAndroid::ObtainAndSerializePasswords(
   // The UI should not trigger serialization if there are not passwords.
   DCHECK(!passwords.empty());
 
+  // Creating a file will block the execution on I/O.
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::WILL_BLOCK);
+
+  // Ensure that the target directory exists.
+  base::File::Error error = base::File::FILE_OK;
+  if (!base::CreateDirectoryAndGetError(target_directory, &error)) {
+    return {0, std::string(), base::File::ErrorToString(error)};
+  }
+
+  // Create a temporary file in the target directory to hold the serialized
+  // passwords.
+  base::FilePath export_file;
+  if (!base::CreateTemporaryFileInDir(target_directory, &export_file)) {
+    return {
+        0, std::string(),
+        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
+  }
+
+  // Write the serialized data in CSV.
   std::string data =
       password_manager::PasswordCSVWriter::SerializePasswords(passwords);
-  int bytes_written = base::WriteFile(target_path, data.data(), data.size());
-  if (bytes_written != base::checked_cast<int>(data.size()))
-    return {0, logging::GetLastSystemErrorCode()};
+  int bytes_written = base::WriteFile(export_file, data.data(), data.size());
+  if (bytes_written != base::checked_cast<int>(data.size())) {
+    return {
+        0, std::string(),
+        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
+  }
 
-  return {static_cast<int>(passwords.size()), 0};
+  return {static_cast<int>(passwords.size()), export_file.value(),
+          std::string()};
 }
 
 void PasswordUIViewAndroid::PostSerializedPasswords(
@@ -240,12 +266,12 @@ void PasswordUIViewAndroid::PostSerializedPasswords(
         *export_target_for_testing_ = serialization_result;
       } else {
         if (serialization_result.entries_count) {
-          base::android::RunIntCallbackAndroid(
-              success_callback, serialization_result.entries_count);
+          base::android::RunIntStringCallbackAndroid(
+              success_callback, serialization_result.entries_count,
+              serialization_result.exported_file_path);
         } else {
-          base::android::RunStringCallbackAndroid(
-              error_callback,
-              logging::SystemErrorCodeToString(serialization_result.error));
+          base::android::RunStringCallbackAndroid(error_callback,
+                                                  serialization_result.error);
         }
       }
       break;

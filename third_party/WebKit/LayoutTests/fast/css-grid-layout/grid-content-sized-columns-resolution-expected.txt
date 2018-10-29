@@ -11,6 +11,7 @@ PASS window.getComputedStyle(gridAutoMaxContent, '').getPropertyValue('grid-temp
 PASS window.getComputedStyle(gridMaxContentAndMinContentFixed, '').getPropertyValue('grid-template-columns') is "70px 20px"
 PASS window.getComputedStyle(gridMaxContentAndMaxContentFixed, '').getPropertyValue('grid-template-columns') is "55px 35px"
 
+
 Check that items are processed by ascending span to compute track breadths forbidding extra space distribution.
 PASS window.getComputedStyle(gridMinContentFixedAndAutoUnsortedConstrained, '').getPropertyValue('grid-template-columns') is "0px 40px"
 PASS window.getComputedStyle(gridAutoAndAutoUnsortedConstrained, '').getPropertyValue('grid-template-columns') is "10px 30px"
@@ -24,6 +25,7 @@ PASS window.getComputedStyle(gridAutoMinContentUnsortedConstrained, '').getPrope
 PASS window.getComputedStyle(gridAutoMaxContentUnsortedConstrained, '').getPropertyValue('grid-template-columns') is "0px 90px"
 PASS window.getComputedStyle(gridMaxContentAndMinContentFixedUnsortedConstrained, '').getPropertyValue('grid-template-columns') is "50px 40px"
 PASS window.getComputedStyle(gridMaxContentAndMaxContentFixedUnsortedConstrained, '').getPropertyValue('grid-template-columns') is "40px 70px"
+
 
 Check that items are processed by ascending span to compute track breadths allowing extra space distribution.
 PASS window.getComputedStyle(gridMinContentFixedAndAutoUnsorted, '').getPropertyValue('grid-template-columns') is "15px 90px"
@@ -39,6 +41,7 @@ PASS window.getComputedStyle(gridAutoMaxContentUnsorted, '').getPropertyValue('g
 PASS window.getComputedStyle(gridMaxContentAndMinContentFixedUnsorted, '').getPropertyValue('grid-template-columns') is "50px 40px"
 PASS window.getComputedStyle(gridMaxContentAndMaxContentFixedUnsorted, '').getPropertyValue('grid-template-columns') is "40px 70px"
 
+
 Check that only a subset of tracks grow above track limits.
 PASS window.getComputedStyle(gridMinContentFixedAndAutoAboveLimits, '').getPropertyValue('grid-template-columns') is "15px 95px"
 PASS window.getComputedStyle(gridMaxContentFixedAndAutoAboveLimits, '').getPropertyValue('grid-template-columns') is "15px 135px"
@@ -49,6 +52,7 @@ PASS window.getComputedStyle(gridAutoAndMinContentFixedAndMinContent, '').getPro
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 XXXX XXXX
 XXXX XXXX
 XXXX XXXX

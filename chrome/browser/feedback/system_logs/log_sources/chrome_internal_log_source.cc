@@ -32,9 +32,11 @@
 #if defined(OS_CHROMEOS)
 #include "ash/public/interfaces/constants.mojom.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/system/statistics_provider.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/common/service_manager_connection.h"
 #include "services/service_manager/public/cpp/connector.h"
 #endif
@@ -61,6 +63,8 @@ constexpr char kSettingsKey[] = "settings";
 constexpr char kLocalStateSettingsResponseKey[] = "Local State: settings";
 constexpr char kArcStatusKey[] = "CHROMEOS_ARC_STATUS";
 constexpr char kMonitorInfoKey[] = "monitor_info";
+constexpr char kAccountTypeKey[] = "account_type";
+constexpr char kDemoModeConfigKey[] = "demo_mode_config";
 #else
 constexpr char kOsVersionTag[] = "OS VERSION";
 #endif
@@ -71,6 +75,40 @@ constexpr char kInstallerBrandCode[] = "installer_brand_code";
 #endif
 
 #if defined(OS_CHROMEOS)
+
+std::string GetPrimaryAccountTypeString() {
+  DCHECK(user_manager::UserManager::Get());
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+
+  // In case we're on the login screen, we won't have a logged in user.
+  if (!primary_user)
+    return "none";
+
+  switch (primary_user->GetType()) {
+    case user_manager::USER_TYPE_REGULAR:
+      return "regular";
+    case user_manager::USER_TYPE_GUEST:
+      return "guest";
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+      return "public_account";
+    case user_manager::USER_TYPE_SUPERVISED:
+      return "supervised";
+    case user_manager::USER_TYPE_KIOSK_APP:
+      return "kiosk_app";
+    case user_manager::USER_TYPE_CHILD:
+      return "child";
+    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+      return "arc_kiosk_app";
+    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
+      return "active_directory";
+    case user_manager::NUM_USER_TYPES:
+      NOTREACHED();
+      break;
+  }
+  return std::string();
+}
+
 std::string GetEnrollmentStatusString() {
   switch (ChromeOSMetricsProvider::GetEnrollmentStatus()) {
     case ChromeOSMetricsProvider::NON_MANAGED:
@@ -202,6 +240,10 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
                                        ProfileManager::GetLastUsedProfile())
                                        ? "enabled"
                                        : "disabled");
+  response->emplace(kAccountTypeKey, GetPrimaryAccountTypeString());
+  response->emplace(kDemoModeConfigKey,
+                    chromeos::DemoSession::DemoConfigToString(
+                        chromeos::DemoSession::GetDemoConfig()));
   PopulateLocalStateSettings(response.get());
 
   // Chain asynchronous fetchers: PopulateMonitorInfoAsync, PopulateEntriesAsync
@@ -241,8 +283,7 @@ void ChromeInternalLogSource::PopulateSyncLogs(SystemLogsResponse* response) {
   sync_logs->GetList(syncer::sync_ui_util::kDetailsKey, &details);
   if (!details)
     return;
-  for (base::ListValue::iterator it = details->begin();
-      it != details->end(); ++it) {
+  for (auto it = details->begin(); it != details->end(); ++it) {
     base::DictionaryValue* dict = NULL;
     if (it->GetAsDictionary(&dict)) {
       std::string title;

@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/tab_specific_content_settings.h"
@@ -28,6 +29,7 @@
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/activation_scope.h"
 #include "components/subresource_filter/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -75,8 +77,8 @@ void ChromeSubresourceFilterClient::MaybeAppendNavigationThrottles(
         std::make_unique<subresource_filter::
                              SubresourceFilterSafeBrowsingActivationThrottle>(
             navigation_handle, this,
-            content::BrowserThread::GetTaskRunnerForThread(
-                content::BrowserThread::IO),
+            base::CreateSingleThreadTaskRunnerWithTraits(
+                {content::BrowserThread::IO}),
             safe_browsing_service->database_manager()));
   }
 

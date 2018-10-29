@@ -8,7 +8,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ntp_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:contentDescription="@string/accessibility_new_incognito_tab_page" >
 
     <org.chromium.chrome.browser.ntp.NewTabPageScrollView
         android:id="@+id/ntp_scrollview"
@@ -17,10 +20,7 @@
         android:layout_height="match_parent"
         android:fadingEdgeLength="9dp"
         android:fillViewport="false"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:requiresFadingEdge="vertical"
-        android:contentDescription="@string/accessibility_new_incognito_tab_page" >
+        android:requiresFadingEdge="vertical" >
 
         <LinearLayout
             android:id="@+id/new_tab_incognito_container"
@@ -42,9 +42,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/new_tab_otr_title"
-                android:textAppearance="@style/WhiteHeadlineIncognito" />
+                android:textAppearance="@style/WhiteHeadline" />
 
-            <TextView
+            <org.chromium.ui.widget.TextViewWithClickableSpans
                 android:id="@+id/new_tab_incognito_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -78,8 +78,6 @@
                 android:id="@+id/learn_more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
                 android:text="@string/learn_more"
                 android:textAppearance="@style/TextAppearance.IncognitoNewTabLearnMoreLinkModern"
                 android:lineSpacingExtra="@dimen/md_incognito_ntp_line_spacing" />

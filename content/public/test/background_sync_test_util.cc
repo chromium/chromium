@@ -5,12 +5,14 @@
 #include "content/public/test/background_sync_test_util.h"
 
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "content/browser/background_sync/background_sync_context.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/background_sync_network_observer.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/network_change_notifier.h"
@@ -51,8 +53,8 @@ void SetIgnoreNetworkChanges(bool ignore) {
 
 // static
 void SetOnline(WebContents* web_contents, bool online) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &SetOnlineOnIOThread,
           base::Unretained(

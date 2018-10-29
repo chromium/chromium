@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<style>
+  /* Offset the mask so that the span ends up somewhere in the middle of the
+     circle, i.e. so that it's fully inside the mask. */
+  .mask { -webkit-mask:url(resources/circle.png) -180px -50px no-repeat; }
+</style>
+<p>The word "PASS" should be seen below, to the right.</p>
+<div style="writing-mode:vertical-rl; width:600px;">
+  <span class="mask">PASS</span>
+</div>

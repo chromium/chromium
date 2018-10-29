@@ -15,6 +15,7 @@ This tests different ways of deserializing css stylesheets. The first item below
 .four {display: none; color: red;}
 I {display: block;}
 
+
 @import url("fancyfonts.css") screen;
 @media print {
   body { font-size: 10pt; } 
@@ -30,6 +31,7 @@ I {display: block;}
 .three { display: list-item; list-style-type: square; margin-left: 3em; } 
 .four { display: none; color: red; } 
 i { display: block; } 
+
 
 @import url("fancyfonts.css") screen;
 @media print {

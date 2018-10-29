@@ -21,7 +21,7 @@
 
 namespace content {
 
-struct VideoTrackAdapterSettings;
+class VideoTrackAdapterSettings;
 
 // MediaStreamVideoTrack is a video specific representation of a
 // blink::WebMediaStreamTrack in content. It is owned by the blink object

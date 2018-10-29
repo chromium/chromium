@@ -2,7 +2,6 @@ This test ensures that the shadow element is available.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS shadow.nodeName is 'SHADOW'
 PASS 0 <= shadow.constructor.toString().indexOf('HTMLShadowElement') is true
 PASS window.HTMLShadowElement is shadow.constructor

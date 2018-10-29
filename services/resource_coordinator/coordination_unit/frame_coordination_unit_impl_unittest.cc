@@ -125,7 +125,7 @@ TEST_F(FrameCoordinationUnitImplTest, LastAudibleTime) {
             cu_graph.frame->last_audible_time());
 }
 
-int64_t GetLifecycleState(resource_coordinator::CoordinationUnitBase* cu) {
+int64_t GetLifecycleState(PageCoordinationUnitImpl* cu) {
   int64_t value;
   if (cu->GetProperty(mojom::PropertyType::kLifecycleState, &value))
     return value;
@@ -155,31 +155,43 @@ TEST_F(FrameCoordinationUnitImplTest, LifecycleStatesTransitions) {
 
   // Freezing a child frame should not affect the page state.
   cu_graph.child_frame->SetLifecycleState(mojom::LifecycleState::kFrozen);
-  // Verify that the frame is frozen.
-  EXPECT_FROZEN(cu_graph.child_frame);
-  // But all pages remain active.
   EXPECT_RUNNING(cu_graph.page);
   EXPECT_RUNNING(cu_graph.other_page);
 
-  // Freezing a page main frame should freeze that page.
+  // Freezing the only frame in a page should freeze that page.
   cu_graph.frame->SetLifecycleState(mojom::LifecycleState::kFrozen);
-  EXPECT_FROZEN(cu_graph.frame);
   EXPECT_FROZEN(cu_graph.page);
+  EXPECT_RUNNING(cu_graph.other_page);
 
-  // Freezing the other page main frame.
-  cu_graph.other_frame->SetLifecycleState(mojom::LifecycleState::kFrozen);
-  EXPECT_FROZEN(cu_graph.other_frame);
-  EXPECT_FROZEN(cu_graph.other_page);
-
-  // Unfreezing subframe should have no effect.
+  // Unfreeze the child frame in the other page.
   cu_graph.child_frame->SetLifecycleState(mojom::LifecycleState::kRunning);
-  // Verify that the frame is unfrozen.
-  EXPECT_RUNNING(cu_graph.child_frame);
-  // But the page is still frozen
+  EXPECT_FROZEN(cu_graph.page);
+  EXPECT_RUNNING(cu_graph.other_page);
+
+  // Freezing the main frame in the other page should not alter that pages
+  // state, as there is still a child frame that is running.
+  cu_graph.other_frame->SetLifecycleState(mojom::LifecycleState::kFrozen);
+  EXPECT_FROZEN(cu_graph.page);
+  EXPECT_RUNNING(cu_graph.other_page);
+
+  // Refreezing the child frame should freeze the page.
+  cu_graph.child_frame->SetLifecycleState(mojom::LifecycleState::kFrozen);
+  EXPECT_FROZEN(cu_graph.page);
   EXPECT_FROZEN(cu_graph.other_page);
 
-  // Unfreezing the main frame should unfreeze the page.
+  // Unfreezing a main frame should unfreeze the associated page.
+  cu_graph.frame->SetLifecycleState(mojom::LifecycleState::kRunning);
+  EXPECT_RUNNING(cu_graph.page);
+  EXPECT_FROZEN(cu_graph.other_page);
+
+  // Unfreezing the child frame should unfreeze the associated page.
+  cu_graph.child_frame->SetLifecycleState(mojom::LifecycleState::kRunning);
+  EXPECT_RUNNING(cu_graph.page);
+  EXPECT_RUNNING(cu_graph.other_page);
+
+  // Unfreezing the main frame shouldn't change anything.
   cu_graph.other_frame->SetLifecycleState(mojom::LifecycleState::kRunning);
+  EXPECT_RUNNING(cu_graph.page);
   EXPECT_RUNNING(cu_graph.other_page);
 }
 

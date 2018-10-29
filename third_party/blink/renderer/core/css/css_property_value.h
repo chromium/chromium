@@ -60,7 +60,7 @@ struct CSSPropertyValueMetadata {
 };
 
 class CSSPropertyValue {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   CSSPropertyValue(const CSSProperty& property,

@@ -13,6 +13,6 @@
 #include <windows.h>
 #include <cryptuiapi.h>
 
-#include "crypto/wincrypt_shim.h"
+#include "base/win/wincrypt_shim.h"
 
 #endif  // CHROME_BROWSER_UI_CRYPTUIAPI_SHIM_H_

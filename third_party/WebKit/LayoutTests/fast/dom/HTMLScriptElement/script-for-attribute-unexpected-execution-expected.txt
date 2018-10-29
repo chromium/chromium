@@ -2,7 +2,6 @@ Tests that scripts which have a for-event other than window.onload are not execu
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS for=window
 PASS for=anything
 PASS event=onload

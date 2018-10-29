@@ -9,8 +9,6 @@
 async_test(function(t) {
   // Make sure the overlay play button is turned on, as it's typically off
   // unless we're dealing with Android.
-  // TODO(steimel): This can probably be removed since with modern controls the
-  //                overlay play button is always enabled.
   enableOverlayPlayButtonForTest(t);
 
   var video = createAndMoveVideo();

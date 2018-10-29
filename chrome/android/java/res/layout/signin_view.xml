@@ -41,7 +41,7 @@
                 android:layout_marginStart="@dimen/signin_margin_start"
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="@dimen/signin_margin_end"
-                android:textAppearance="@style/BlackHeadline1"
+                android:textAppearance="@style/BlackHeadline"
                 tools:text="@string/signin_title"/>
             <LinearLayout
                 android:id="@+id/signin_account_picker"
@@ -202,13 +202,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp">
-        <Button
+        <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/negative_button"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:paddingStart="@dimen/fre_button_padding"
             android:paddingEnd="@dimen/fre_button_padding"
-            tools:text="@string/no_thanks"/>
+            tools:text="@string/no_thanks"
+            style="@style/TextButton" />
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -220,18 +221,17 @@
             android:layout_height="36dp"
             android:paddingStart="@dimen/fre_button_padding"
             android:paddingEnd="@dimen/fre_button_padding"
-            android:textAppearance="@style/WhiteButtonText"
-            app:buttonColor="@color/light_active_color"
-            app:buttonRaised="false"
-            tools:text="@string/signin_accept_button"/>
-        <Button
+            tools:text="@string/signin_accept_button"
+            style="@style/FilledButton.Flat" />
+        <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/more_button"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:drawableEnd="@drawable/down_arrow"
             android:drawablePadding="8dp"
             android:visibility="gone"
-            tools:text="@string/more"/>
+            tools:text="@string/more"
+            style="@style/TextButton" />
         <View
             android:id="@+id/positive_button_end_padding"
             android:layout_width="0dp"

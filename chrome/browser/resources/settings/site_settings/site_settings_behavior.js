@@ -91,33 +91,6 @@ const SiteSettingsBehaviorImpl = {
   },
 
   /**
-   * Removes the wildcard prefix from a pattern string.
-   * @param {string} pattern The pattern to remove the wildcard from.
-   * @return {string} The resulting pattern.
-   * @private
-   */
-  removePatternWildcard: function(pattern) {
-    if (pattern.startsWith('http://[*.]'))
-      return pattern.replace('http://[*.]', 'http://');
-    else if (pattern.startsWith('https://[*.]'))
-      return pattern.replace('https://[*.]', 'https://');
-    else if (pattern.startsWith('[*.]'))
-      return pattern.substring(4, pattern.length);
-    return pattern;
-  },
-
-  /**
-   * Returns the icon to use for a given site.
-   * @param {string} site The url of the site to fetch the icon for.
-   * @return {string} The background-image style with the favicon.
-   */
-  computeSiteIcon: function(site) {
-    site = this.removePatternWildcard(site);
-    const url = this.ensureUrlHasScheme(site);
-    return 'background-image: ' + cr.icon.getFavicon(url);
-  },
-
-  /**
    * Returns true if the passed content setting is considered 'enabled'.
    * @param {string} setting
    * @return {boolean}

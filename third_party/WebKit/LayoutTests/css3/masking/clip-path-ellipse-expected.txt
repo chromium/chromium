@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x216
-  LayoutBlockFlow {HTML} at (0,0) size 800x216
-    LayoutBlockFlow {BODY} at (8,8) size 784x200
-layer at (8,8) size 200x200 backgroundClip at (8,33) size 200x150 clip at (8,33) size 200x150
-  LayoutBlockFlow {DIV} at (0,0) size 200x200 [bgcolor=#008000]

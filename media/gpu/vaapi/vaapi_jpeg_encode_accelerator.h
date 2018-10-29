@@ -39,7 +39,7 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   size_t GetMaxCodedBufferSize(const gfx::Size& picture_size) override;
 
   // Currently only I420 format is supported for |video_frame|.
-  void Encode(scoped_refptr<media::VideoFrame> video_frame,
+  void Encode(scoped_refptr<VideoFrame> video_frame,
               int quality,
               const BitstreamBuffer* exif_buffer,
               const BitstreamBuffer& output_buffer) override;
@@ -49,14 +49,14 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   // consumption, provided by the client.
   struct EncodeRequest {
     EncodeRequest(int32_t buffer_id,
-                  scoped_refptr<media::VideoFrame> video_frame,
+                  scoped_refptr<VideoFrame> video_frame,
                   std::unique_ptr<UnalignedSharedMemory> exif_shm,
                   std::unique_ptr<UnalignedSharedMemory> output_shm,
                   int quality);
     ~EncodeRequest();
 
     int32_t buffer_id;
-    scoped_refptr<media::VideoFrame> video_frame;
+    scoped_refptr<VideoFrame> video_frame;
     std::unique_ptr<UnalignedSharedMemory> exif_shm;
     std::unique_ptr<UnalignedSharedMemory> output_shm;
     int quality;

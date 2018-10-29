@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
+#include "services/network/public/cpp/cors/preflight_timing_info.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 
 namespace network {
@@ -47,6 +48,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
 
   // Time the request completed.
   base::TimeTicks completion_time;
+
+  // Timing info if CORS preflights were made.
+  std::vector<cors::PreflightTimingInfo> cors_preflight_timing_info;
 
   // Total amount of data received from the network.
   int64_t encoded_data_length = 0;

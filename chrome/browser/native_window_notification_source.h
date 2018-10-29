@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_NATIVE_WINDOW_NOTIFICATION_SOURCE_H_
 #define CHROME_BROWSER_NATIVE_WINDOW_NOTIFICATION_SOURCE_H_
 
+#include "build/build_config.h"
 #include "content/public/browser/notification_source.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if !defined(OS_MACOSX)
 
 namespace content {
 
@@ -28,6 +31,8 @@ class Source<gfx::NativeWindow> : public content::NotificationSource {
   }
 };
 
-}
+}  // namespace content
+
+#endif
 
 #endif  // CHROME_BROWSER_NATIVE_WINDOW_NOTIFICATION_SOURCE_H_

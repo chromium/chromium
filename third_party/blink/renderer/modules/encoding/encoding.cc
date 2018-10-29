@@ -6,7 +6,7 @@
 
 namespace blink {
 
-namespace Encoding {
+namespace encoding {
 
 bool IsASCIIWhiteSpace(UChar c) {
   // From Encoding Standard:
@@ -15,6 +15,6 @@ bool IsASCIIWhiteSpace(UChar c) {
   return c == 0x09 || c == 0x0A || c == 0x0C || c == 0x0D || c == 0x20;
 }
 
-}  // namespace Encoding
+}  // namespace encoding
 
 }  // namespace blink

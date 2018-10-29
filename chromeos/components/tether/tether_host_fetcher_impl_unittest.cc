@@ -122,13 +122,15 @@ class TetherHostFetcherImplTest : public testing::Test {
         tether_host_source == TetherHostSource::REMOTE_DEVICE_PROVIDER
             ? fake_remote_device_provider_.get()
             : nullptr,
-        tether_host_source == TetherHostSource::DEVICE_SYNC_CLIENT
+        tether_host_source == TetherHostSource::DEVICE_SYNC_CLIENT ||
+                tether_host_source == TetherHostSource::MULTIDEVICE_SETUP_CLIENT
             ? fake_device_sync_client_.get()
             : nullptr,
         tether_host_source == TetherHostSource::MULTIDEVICE_SETUP_CLIENT
             ? fake_multidevice_setup_client_.get()
             : nullptr);
 
+    fake_device_sync_client_->NotifyReady();
     test_observer_ = std::make_unique<TestObserver>();
     tether_host_fetcher_->AddObserver(test_observer_.get());
   }
@@ -174,6 +176,9 @@ class TetherHostFetcherImplTest : public testing::Test {
 
     // Mark the first device enabled instead of supported.
     list[0].software_features[cryptauth::SoftwareFeature::MAGIC_TETHER_HOST] =
+        cryptauth::SoftwareFeatureState::kEnabled;
+    list[0]
+        .software_features[cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST] =
         cryptauth::SoftwareFeatureState::kEnabled;
 
     return list;
@@ -259,8 +264,17 @@ class TetherHostFetcherImplTest : public testing::Test {
     EXPECT_EQ(2u, test_observer_->num_updates());
   }
 
-  void TestSingleTetherHost() {
+  void TestSingleTetherHost(bool use_legacy_mode = false) {
     InitializeTest();
+    if (use_legacy_mode) {
+      test_remote_device_list_[0]
+          .software_features[cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST] =
+          cryptauth::SoftwareFeatureState::kNotSupported;
+      test_remote_device_ref_list_ =
+          CreateTestRemoteDeviceRefList(test_remote_device_list_);
+      SetSyncedDevices(test_remote_device_list_);
+      NotifyNewDevicesSynced();
+    }
 
     VerifySingleTetherHost(test_remote_device_ref_list_[0].GetDeviceId(),
                            test_remote_device_ref_list_[0]);
@@ -291,7 +305,7 @@ class TetherHostFetcherImplTest : public testing::Test {
                            base::nullopt);
   }
 
-  void TestFetchAllTetherHosts() {
+  void TestFetchAllTetherHosts(bool use_legacy_mode = false) {
     InitializeTest();
 
     // Create a list of test devices, only some of which are valid tether hosts.
@@ -302,6 +316,11 @@ class TetherHostFetcherImplTest : public testing::Test {
     test_remote_device_list_[4]
         .software_features[cryptauth::SoftwareFeature::MAGIC_TETHER_HOST] =
         cryptauth::SoftwareFeatureState::kNotSupported;
+    if (use_legacy_mode) {
+      test_remote_device_list_[0]
+          .software_features[cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST] =
+          cryptauth::SoftwareFeatureState::kNotSupported;
+    }
 
     SetSyncedDevices(test_remote_device_list_);
     NotifyNewDevicesSynced();
@@ -309,9 +328,12 @@ class TetherHostFetcherImplTest : public testing::Test {
     cryptauth::RemoteDeviceRefList expected_host_device_list;
     switch (GetTetherHostSourceBasedOnFlags()) {
       case TetherHostSource::MULTIDEVICE_SETUP_CLIENT:
-        expected_host_device_list =
-            CreateTestRemoteDeviceRefList({test_remote_device_list_[0]});
-        break;
+        if (!use_legacy_mode) {
+          expected_host_device_list =
+              CreateTestRemoteDeviceRefList({test_remote_device_list_[0]});
+          break;
+        }
+        FALLTHROUGH;
       case TetherHostSource::DEVICE_SYNC_CLIENT:
       case TetherHostSource::REMOTE_DEVICE_PROVIDER:
         expected_host_device_list = CreateTestRemoteDeviceRefList(
@@ -374,6 +396,11 @@ TEST_F(TetherHostFetcherImplTest,
   SetOnlyMultiDeviceApiFeatureEnabled();
   TestFetchAllTetherHosts();
 }
+TEST_F(TetherHostFetcherImplTest,
+       TestFetchAllTetherHosts_MultideviceApiAndSetupEnabledInLegacyMode) {
+  SetMultiDeviceApiAndSetupFeaturesEnabled();
+  TestFetchAllTetherHosts(true /* use_legacy_mode */);
+}
 
 // TestSingleTetherHost
 TEST_F(TetherHostFetcherImplTest, TestSingleTetherHost) {
@@ -388,6 +415,11 @@ TEST_F(TetherHostFetcherImplTest,
        TestSingleTetherHost_OnlyMultideviceApiEnabled) {
   SetOnlyMultiDeviceApiFeatureEnabled();
   TestSingleTetherHost();
+}
+TEST_F(TetherHostFetcherImplTest,
+       TestSingleTetherHost_MultideviceApiAndSetupEnabledInLegacyMode) {
+  SetMultiDeviceApiAndSetupFeaturesEnabled();
+  TestSingleTetherHost(true /* use_legacy_mode */);
 }
 
 // TestSingleTetherHost_IdDoesNotCorrespondToDevice

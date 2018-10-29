@@ -25,7 +25,6 @@ import static org.chromium.bytecode.TypeUtils.BUILD_HOOKS_ANDROID;
 import static org.chromium.bytecode.TypeUtils.CONFIGURATION;
 import static org.chromium.bytecode.TypeUtils.CONTEXT;
 import static org.chromium.bytecode.TypeUtils.CONTEXT_WRAPPER;
-import static org.chromium.bytecode.TypeUtils.DISPLAY_LEAK_ACTIVITY;
 import static org.chromium.bytecode.TypeUtils.INT;
 import static org.chromium.bytecode.TypeUtils.RESOURCES;
 import static org.chromium.bytecode.TypeUtils.STRING;
@@ -71,9 +70,6 @@ class CustomResourcesClassAdapter extends ClassVisitor {
             TypeUtils.getMethodSignature("getTheme", THEME),
             TypeUtils.getMethodSignature("createConfigurationContext", CONTEXT, CONFIGURATION),
             TypeUtils.getMethodSignature("setTheme", VOID, INT));
-
-    private static final List<String> EXCEPTED_CLASS_METHODS = Arrays.asList(
-            DISPLAY_LEAK_ACTIVITY + TypeUtils.getMethodSignature("setTheme", VOID, INT));
 
     private boolean mShouldTransform;
     private String mClassName;
@@ -122,9 +118,7 @@ class CustomResourcesClassAdapter extends ClassVisitor {
     }
 
     private boolean requiresModifyingExisting(String methodDescriptor) {
-        // TODO(estevenson): Remove LeakCanary special casing once we get rid of LeakCanary.
-        return PROHIBITED_METHODS.contains(methodDescriptor)
-                && !EXCEPTED_CLASS_METHODS.contains(mClassName + methodDescriptor);
+        return PROHIBITED_METHODS.contains(methodDescriptor);
     }
 
     private boolean shouldTransform() {

@@ -99,12 +99,14 @@ TEST_F(AudioStreamHandlerTest, ConsecutivePlayRequests) {
 
   ASSERT_TRUE(audio_stream_handler()->Play());
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, base::Bind(base::IgnoreResult(&AudioStreamHandler::Play),
-                            base::Unretained(audio_stream_handler())),
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&AudioStreamHandler::Play),
+                     base::Unretained(audio_stream_handler())),
       base::TimeDelta::FromSeconds(1));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, base::Bind(&AudioStreamHandler::Stop,
-                            base::Unretained(audio_stream_handler())),
+      FROM_HERE,
+      base::BindOnce(&AudioStreamHandler::Stop,
+                     base::Unretained(audio_stream_handler())),
       base::TimeDelta::FromSeconds(2));
 
   run_loop.Run();

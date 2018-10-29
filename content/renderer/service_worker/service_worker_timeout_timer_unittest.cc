@@ -71,6 +71,8 @@ base::OnceClosure CreateDispatchingEventTask(
 
 }  // namespace
 
+using StayAwakeToken = ServiceWorkerTimeoutTimer::StayAwakeToken;
+
 class ServiceWorkerTimeoutTimerTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -116,7 +118,7 @@ TEST_F(ServiceWorkerTimeoutTimerTest, IdleTimer) {
   // Nothing happens since there is an inflight event.
   EXPECT_FALSE(is_idle);
 
-  int event_id_2 = timer.StartEvent(std::move(do_nothing_callback));
+  int event_id_2 = timer.StartEvent(do_nothing_callback);
   task_runner()->FastForwardBy(kIdleInterval);
   // Nothing happens since there are two inflight events.
   EXPECT_FALSE(is_idle);
@@ -127,6 +129,25 @@ TEST_F(ServiceWorkerTimeoutTimerTest, IdleTimer) {
   EXPECT_FALSE(is_idle);
 
   timer.EndEvent(event_id_1);
+  task_runner()->FastForwardBy(kIdleInterval);
+  // |idle_callback| should be fired.
+  EXPECT_TRUE(is_idle);
+
+  is_idle = false;
+  int event_id_3 = timer.StartEvent(do_nothing_callback);
+  task_runner()->FastForwardBy(kIdleInterval);
+  // Nothing happens since there is an inflight event.
+  EXPECT_FALSE(is_idle);
+
+  std::unique_ptr<StayAwakeToken> token = timer.CreateStayAwakeToken();
+  timer.EndEvent(event_id_3);
+  task_runner()->FastForwardBy(kIdleInterval);
+  // Nothing happens since there is a living StayAwakeToken.
+  EXPECT_FALSE(is_idle);
+
+  token.reset();
+  // |idle_callback| isn't triggered immendiately.
+  EXPECT_FALSE(is_idle);
   task_runner()->FastForwardBy(kIdleInterval);
   // |idle_callback| should be fired.
   EXPECT_TRUE(is_idle);
@@ -315,6 +336,25 @@ TEST_F(ServiceWorkerTimeoutTimerTest, SetIdleTimerDelayToZero) {
     timer.EndEvent(event_id_2);
     // EndEvent() immediately triggers the idle callback when no inflight events
     // exist.
+    EXPECT_TRUE(is_idle);
+  }
+
+  {
+    bool is_idle = false;
+    ServiceWorkerTimeoutTimer timer(CreateReceiverWithCalledFlag(&is_idle),
+                                    task_runner()->GetMockTickClock());
+    std::unique_ptr<StayAwakeToken> token_1 = timer.CreateStayAwakeToken();
+    std::unique_ptr<StayAwakeToken> token_2 = timer.CreateStayAwakeToken();
+    timer.SetIdleTimerDelayToZero();
+    // Nothing happens since there are two living tokens.
+    EXPECT_FALSE(is_idle);
+
+    token_1.reset();
+    // Nothing happens since there is an living token.
+    EXPECT_FALSE(is_idle);
+
+    token_2.reset();
+    // EndEvent() immediately triggers the idle callback when no tokens exist.
     EXPECT_TRUE(is_idle);
   }
 }

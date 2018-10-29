@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace service_manager {
 class InterfaceProvider;
@@ -58,6 +59,7 @@ class ExceptionState;
 class FetchClientSettingsObjectSnapshot;
 class FontFaceSet;
 class OffscreenFontSelector;
+class V8VoidFunction;
 class WorkerLocation;
 class WorkerNavigator;
 class WorkerThread;
@@ -133,6 +135,7 @@ class CORE_EXPORT WorkerGlobalScope
 
   // EventTarget
   ExecutionContext* GetExecutionContext() const final;
+  bool IsWindowOrWorkerGlobalScope() const final { return true; }
 
   // The following methods implement PausbaleObject semantic
   // so that WorkerGlobalScope can be paused.
@@ -156,6 +159,9 @@ class CORE_EXPORT WorkerGlobalScope
   // TODO(fserb): This can be removed once we WorkerGlobalScope implements
   // FontFaceSource on the IDL.
   FontFaceSet* fonts();
+
+  // https://html.spec.whatwg.org/#windoworworkerglobalscope-mixin
+  void queueMicrotask(V8VoidFunction*);
 
   int requestAnimationFrame(V8FrameRequestCallback* callback, ExceptionState&);
   void cancelAnimationFrame(int id);
@@ -187,6 +193,10 @@ class CORE_EXPORT WorkerGlobalScope
       const KURL& module_url_record,
       FetchClientSettingsObjectSnapshot* outside_settings_object,
       network::mojom::FetchCredentialsMode) = 0;
+
+  void AddPausedCall(base::OnceClosure closure);
+
+  ScriptType GetScriptType() const { return script_type_; }
 
  private:
   void SetWorkerSettings(std::unique_ptr<WorkerSettings>);
@@ -255,11 +265,12 @@ class CORE_EXPORT WorkerGlobalScope
   Vector<base::OnceClosure> paused_calls_;
 };
 
-DEFINE_TYPE_CASTS(WorkerGlobalScope,
-                  ExecutionContext,
-                  context,
-                  context->IsWorkerGlobalScope(),
-                  context.IsWorkerGlobalScope());
+template <>
+struct DowncastTraits<WorkerGlobalScope> {
+  static bool AllowFrom(const ExecutionContext& context) {
+    return context.IsWorkerGlobalScope();
+  }
+};
 
 }  // namespace blink
 

@@ -22,9 +22,11 @@ iiiiiiiiii ref_3_0
 jjjjjjjjjj test_3_1
 jjjjjjjjjj ref_3_1
 
+
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS document.getElementById('test_0_0').offsetWidth is document.getElementById('ref_0_0').offsetWidth
 PASS document.getElementById('test_0_1').offsetWidth is document.getElementById('ref_0_1').offsetWidth
 PASS document.getElementById('test_1_0').offsetWidth is document.getElementById('ref_1_0').offsetWidth
@@ -33,4 +35,3 @@ PASS document.getElementById('test_2_0').offsetWidth is document.getElementById(
 PASS document.getElementById('test_2_1').offsetWidth is document.getElementById('ref_2_1').offsetWidth
 PASS document.getElementById('test_3_0').offsetWidth is document.getElementById('ref_3_0').offsetWidth
 PASS document.getElementById('test_3_1').offsetWidth is document.getElementById('ref_3_1').offsetWidth
-

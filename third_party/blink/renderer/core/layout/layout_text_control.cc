@@ -56,7 +56,7 @@ void LayoutTextControl::StyleDidChange(StyleDifference diff,
   if (inner_editor_layout_object) {
     inner_editor->SetNeedsStyleRecalc(
         kSubtreeStyleChange,
-        StyleChangeReasonForTracing::Create(StyleChangeReason::kControl));
+        StyleChangeReasonForTracing::Create(style_change_reason::kControl));
 
     // The inner editor element uses the LayoutTextControl's ::selection style
     // (see: GetUncachedSelectionStyle in SelectionPaintingUtils.cpp) so ensure

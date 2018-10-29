@@ -17,6 +17,7 @@ function_registration("api_registration") {
   root_namespace = apps_api_root_namespace
 
   deps = [
+    "//chrome/browser/apps/platform_apps/api",
     "//extensions/browser",
   ]
 }
@@ -27,11 +28,34 @@ source_set("api") {
     "browser/browser_api.h",
     "browser_context_keyed_service_factories.cc",
     "browser_context_keyed_service_factories.h",
+    "media_galleries/blob_data_source_factory.cc",
+    "media_galleries/blob_data_source_factory.h",
+    "media_galleries/media_galleries_api.cc",
+    "media_galleries/media_galleries_api.h",
+    "media_galleries/media_galleries_api_util.cc",
+    "media_galleries/media_galleries_api_util.h",
+    "sync_file_system/extension_sync_event_observer.cc",
+    "sync_file_system/extension_sync_event_observer.h",
+    "sync_file_system/sync_file_system_api.cc",
+    "sync_file_system/sync_file_system_api.h",
+    "sync_file_system/sync_file_system_api_helpers.cc",
+    "sync_file_system/sync_file_system_api_helpers.h",
   ]
 
   deps = [
+    "//chrome/app:generated_resources_grit",
+
+    # TODO(https://crbug.com/883570): It'd be nice to have more APIs here
+    # extracted into their own BUILD files (so they are easy to audit, add, or
+    # remove), but any that depend on //chrome/browser:browser can't.
+    "//chrome/browser/apps/platform_apps/api/music_manager_private",
     "//chrome/browser/extensions",
+    "//chrome/common",
+    "//chrome/common/apps/platform_apps",
     "//chrome/common/apps/platform_apps/api",
+    "//chrome/services/media_gallery_util/public/cpp",
+    "//components/storage_monitor",
+    "//components/web_modal",
     "//extensions/browser",
   ]
 
@@ -43,12 +67,14 @@ source_set("api") {
       "easy_unlock_private/easy_unlock_private_connection.h",
       "easy_unlock_private/easy_unlock_private_connection_manager.cc",
       "easy_unlock_private/easy_unlock_private_connection_manager.h",
+      "webstore_widget_private/app_installer.cc",
+      "webstore_widget_private/app_installer.h",
+      "webstore_widget_private/webstore_widget_private_api.cc",
+      "webstore_widget_private/webstore_widget_private_api.h",
     ]
 
     deps += [
       "//chrome:strings",
-      "//chrome/browser/chromeos",
-      "//chrome/browser/ui",
       "//chromeos/components/proximity_auth",
       "//chromeos/components/proximity_auth/logging",
       "//components/account_id",
@@ -60,5 +86,21 @@ source_set("api") {
     ]
   }
 
-  visibility = [ "//chrome/browser" ]
+  if (use_lld) {
+    visibility = [
+      "//chrome/browser",
+      "//chrome/browser/ui",
+    ]
+  } else {
+    # //chrome/browser:browser and //chrome/browser/ui:* will be split into
+    # multiple libraries when not linking with lld.
+    visibility = [
+      "//chrome/browser:*",
+      "//chrome/browser/ui:*",
+    ]
+  }
+  visibility += [
+    "//chrome/browser/chromeos",
+    ":api_registration",
+  ]
 }

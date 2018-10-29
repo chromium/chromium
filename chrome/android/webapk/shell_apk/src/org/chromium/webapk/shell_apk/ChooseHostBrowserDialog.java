@@ -84,10 +84,10 @@ public class ChooseHostBrowserDialog {
      * Shows the dialog for choosing a host browser.
      * @param context The current Context.
      * @param listener The listener for the dialog.
-     * @param infos The list of ResolvedInfos of the browsers that are shown on the dialog.
+     * @param infos The set of ResolvedInfos of the browsers that are shown on the dialog.
      * @param appName The name of the WebAPK for which the dialog is shown.
      */
-    public static void show(Context context, final DialogListener listener, List<ResolveInfo> infos,
+    public static void show(Context context, final DialogListener listener, Set<ResolveInfo> infos,
             String appName) {
         final List<BrowserItem> browserItems =
                 getBrowserInfosForHostBrowserSelection(context.getPackageManager(), infos);
@@ -141,7 +141,7 @@ public class ChooseHostBrowserDialog {
 
     /** Returns a list of BrowserItem for all of the installed browsers. */
     private static List<BrowserItem> getBrowserInfosForHostBrowserSelection(
-            PackageManager packageManager, List<ResolveInfo> resolveInfos) {
+            PackageManager packageManager, Set<ResolveInfo> resolveInfos) {
         List<BrowserItem> browsers = new ArrayList<>();
         List<String> browsersSupportingWebApk = HostBrowserUtils.getBrowsersSupportingWebApk();
         Set<String> packages = new HashSet<>();

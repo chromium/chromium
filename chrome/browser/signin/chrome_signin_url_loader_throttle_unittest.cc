@@ -90,7 +90,6 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
   request.url = kTestURL;
   request.referrer = kTestReferrer;
   request.resource_type = static_cast<int>(content::RESOURCE_TYPE_MAIN_FRAME);
-  request.is_main_frame = true;
   request.headers.SetHeader("X-Request-1", "Foo");
   bool defer = false;
   throttle->WillStartRequest(&request, &defer);
@@ -230,7 +229,6 @@ TEST(ChromeSigninURLLoaderThrottleTest, InterceptSubFrame) {
   network::ResourceRequest request;
   request.url = GURL("https://google.com");
   request.resource_type = static_cast<int>(content::RESOURCE_TYPE_SUB_FRAME);
-  request.is_main_frame = false;
 
   bool defer = false;
   throttle->WillStartRequest(&request, &defer);

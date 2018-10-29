@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview loadTimeData override values for ONC strings used in
- *     network_config.html and other network configuration UI.
+ * @fileoverview This file has two parts:
+ *
+ * 1. loadTimeData override values for ONC strings used in network_config.html
+ * and other network configuration UI.
+ *
+ * 2. Helper functions to convert and handle ONC properties for using in tests.
  */
 
 var CrOncTest = CrOncTest || {};
@@ -80,4 +84,31 @@ CrOncTest.overrideCrOncStrings = function() {
     'Oncipv6-IPAddress': 'Oncipv6-IPAddress',
   };
   loadTimeData.overrideValues(oncKeys);
+};
+
+/**
+ * Converts an unmanaged ONC dictionary into a managed dictionary by
+ * setting properties 'Active' values to values from unmanaged dictionary.
+ * NOTE: Because of having not only managed variables in ManagedProperty (e.g.
+ * 'GUID', 'Source', 'Type', etc) this function can handle only simple
+ * dictionaries such as provided in network_config_test.js.
+ * @param {!Object|undefined} properties An unmanaged ONC dictionary
+ * @return {!Object|undefined} A managed version of |properties|.
+ */
+CrOncTest.convertToManagedProperties = function(properties) {
+  'use strict';
+  if (!properties)
+    return undefined;
+  var result = {};
+  var keys = Object.keys(properties);
+  if (typeof properties != 'object')
+    return {Active: properties};
+  for (var i = 0; i < keys.length; ++i) {
+    var k = keys[i];
+    if (['GUID', 'Source', 'Type'].includes(k))
+      result[k] = properties[k];
+    else
+      result[k] = this.convertToManagedProperties(properties[k]);
+  }
+  return result;
 };

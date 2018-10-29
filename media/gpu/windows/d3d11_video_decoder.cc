@@ -31,12 +31,17 @@ namespace {
 #define INRANGE(_profile, codecname) \
   (_profile >= codecname##PROFILE_MIN && _profile <= codecname##PROFILE_MAX)
 
-bool isVP9(const VideoDecoderConfig& config) {
+bool IsVP9(const VideoDecoderConfig& config) {
   return INRANGE(config.profile(), VP9);
 }
 
-bool isH264(const VideoDecoderConfig& config) {
+bool IsH264(const VideoDecoderConfig& config) {
   return INRANGE(config.profile(), H264);
+}
+
+bool IsUnsupportedVP9Profile(const VideoDecoderConfig& config) {
+  return config.profile() == VP9PROFILE_PROFILE1 ||
+         config.profile() == VP9PROFILE_PROFILE3;
 }
 
 #undef INRANGE
@@ -94,6 +99,9 @@ D3D11VideoDecoder::~D3D11VideoDecoder() {
     impl_.reset();
   else
     impl_task_runner_->DeleteSoon(FROM_HERE, std::move(impl_));
+
+  // Explicitly destroy the decoder, since it can reference picture buffers.
+  accelerated_video_decoder_.reset();
 }
 
 std::string D3D11VideoDecoder::GetDisplayName() const {
@@ -104,13 +112,16 @@ void D3D11VideoDecoder::InitializeAcceleratedDecoder(
     const VideoDecoderConfig& config,
     CdmProxyContext* proxy_context,
     Microsoft::WRL::ComPtr<ID3D11VideoDecoder> video_decoder) {
-  if (isVP9(config)) {
-    accelerated_video_decoder_ =
-        std::make_unique<VP9Decoder>(std::make_unique<D3D11VP9Accelerator>());
+  if (IsVP9(config)) {
+    accelerated_video_decoder_ = std::make_unique<VP9Decoder>(
+        std::make_unique<D3D11VP9Accelerator>(this, media_log_.get(),
+                                              proxy_context, video_decoder,
+                                              video_device_, video_context_),
+        config.color_space_info());
     return;
   }
 
-  if (isH264(config)) {
+  if (IsH264(config)) {
     accelerated_video_decoder_ = std::make_unique<H264Decoder>(
         std::make_unique<D3D11H264Accelerator>(this, media_log_.get(),
                                                proxy_context, video_decoder,
@@ -121,7 +132,6 @@ void D3D11VideoDecoder::InitializeAcceleratedDecoder(
 
   // No other type of config should make it this far due to earlier checks.
   NOTREACHED();
-  return;
 }
 
 bool D3D11VideoDecoder::DeviceHasDecoderID(GUID decoder_guid) {
@@ -137,11 +147,11 @@ bool D3D11VideoDecoder::DeviceHasDecoderID(GUID decoder_guid) {
 }
 
 GUID D3D11VideoDecoder::GetD3D11DecoderGUID(const VideoDecoderConfig& config) {
-  if (isVP9(config) && base::FeatureList::IsEnabled(kD3D11VP9Decoder))
+  if (IsVP9(config) && base::FeatureList::IsEnabled(kD3D11VP9Decoder))
     // TODO(tmathmeyer) set up a finch experiment.
     return D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0;
 
-  if (isH264(config))
+  if (IsH264(config))
     return D3D11_DECODER_PROFILE_H264_VLD_NOFGT;
 
   return {};
@@ -179,6 +189,7 @@ void D3D11VideoDecoder::Initialize(
   // could use our own device, and run on the mojo thread, but texture sharing
   // seems to be difficult.
   // TODO(liberato): take |device_| as input.
+  // TODO(liberato): On re-init, we can probably re-use the device.
   device_ = gl::QueryD3D11DeviceObjectFromANGLE();
   if (!device_) {
     // This happens if, for example, if chrome is configured to use
@@ -268,9 +279,16 @@ void D3D11VideoDecoder::Initialize(
     proxy_context = cdm_context->GetCdmProxyContext();
 #endif
 
+  // Ensure that if we are encrypted, that we have a CDM.
+  if (is_encrypted_ && !proxy_context) {
+    NotifyError("Video stream is encrypted, but no cdm was found");
+    return;
+  }
+
   InitializeAcceleratedDecoder(config, proxy_context, video_decoder);
 
   // |cdm_context| could be null for clear playback.
+  // TODO(liberato): On re-init, should this still happen?
   if (cdm_context) {
     new_key_callback_registration_ =
         cdm_context->RegisterNewKeyCB(base::BindRepeating(
@@ -587,6 +605,7 @@ void D3D11VideoDecoder::NotifyError(const char* reason) {
 
   for (auto& queue_pair : input_buffer_queue_)
     queue_pair.second.Run(DecodeStatus::DECODE_ERROR);
+  input_buffer_queue_.clear();
 }
 
 void D3D11VideoDecoder::SetCreateDeviceCallbackForTesting(
@@ -648,9 +667,9 @@ bool D3D11VideoDecoder::IsPotentiallySupported(
   // TODO(liberato): It would be nice to QueryD3D11DeviceObjectFromANGLE, but
   // we don't know what thread we're on.
 
-  // Make sure that we support at least 11.1.
+  // Make sure that we support at least 11.0.
   D3D_FEATURE_LEVEL levels[] = {
-      D3D_FEATURE_LEVEL_11_1,
+      D3D_FEATURE_LEVEL_11_0,
   };
   HRESULT hr = create_device_func_.Run(
       nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, levels, ARRAYSIZE(levels),
@@ -668,13 +687,18 @@ bool D3D11VideoDecoder::IsPotentiallySupported(
     return false;
   }
 
+  if (IsUnsupportedVP9Profile(config)) {
+    SetWasSupportedReason(D3D11VideoNotSupportedReason::kProfileNotSupported);
+    return false;
+  }
+
   // Converts one of chromium's VideoCodecProfile options to a dxguid value.
   // If this GUID comes back empty then the profile is not supported.
-  GUID decoderGUID = GetD3D11DecoderGUID(config);
+  GUID decoder_GUID = GetD3D11DecoderGUID(config);
 
   // If we got the empty guid, fail.
   GUID empty_guid = {};
-  if (decoderGUID == empty_guid) {
+  if (decoder_GUID == empty_guid) {
     SetWasSupportedReason(D3D11VideoNotSupportedReason::kCodecNotSupported);
     return false;
   }

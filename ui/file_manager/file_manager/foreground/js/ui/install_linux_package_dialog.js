@@ -4,7 +4,6 @@
 
 /**
  * InstallLinuxPackageDialog is used as the handler for .deb files.
- * TODO(timloh): Retrieve package info and display it in the dialog.
  */
 cr.define('cr.filebrowser', function() {
   /**
@@ -19,7 +18,14 @@ cr.define('cr.filebrowser', function() {
 
     this.frame_.id = 'install-linux-package-dialog';
 
-    // TODO(timloh): Add a penguin icon
+    this.details_frame_ = this.document_.createElement('div');
+    this.details_frame_.className = 'install-linux-package-details-frame';
+    this.frame_.insertBefore(this.details_frame_, this.buttons);
+
+    this.details_label_ = this.document_.createElement('div');
+    this.details_label_.className = 'install-linux-package-details-label';
+    this.details_label_.textContent =
+        str('INSTALL_LINUX_PACKAGE_DETAILS_LABEL');
 
     // The OK button normally dismisses the dialog, so add a button we can
     // customize.
@@ -50,14 +56,91 @@ cr.define('cr.filebrowser', function() {
 
     this.entry_ = entry;
 
-    var title = str('INSTALL_LINUX_PACKAGE_TITLE');
-    var message = str('INSTALL_LINUX_PACKAGE_DESCRIPTION');
-    var show = FileManagerDialogBase.prototype.showOkCancelDialog.call(
+    const title = str('INSTALL_LINUX_PACKAGE_TITLE');
+    const message = str('INSTALL_LINUX_PACKAGE_DESCRIPTION');
+    const show = FileManagerDialogBase.prototype.showOkCancelDialog.call(
         this, title, message, null, null);
 
     if (!show) {
       console.error('InstallLinuxPackageDialog can\'t be shown.');
       return;
+    }
+
+    chrome.fileManagerPrivate.getLinuxPackageInfo(
+        this.entry_, this.onGetLinuxPackageInfo_.bind(this));
+    this.resetDetailsFrame_(str('INSTALL_LINUX_PACKAGE_DETAILS_LOADING'));
+  };
+
+  /**
+   * Resets the state of the details frame to just contain the 'Details' label,
+   * then appends |message| if non-empty.
+   *
+   * @param {string|null} message The (optional) message to display.
+   */
+  InstallLinuxPackageDialog.prototype.resetDetailsFrame_ = function(message) {
+    this.details_frame_.innerHTML = '';
+    this.details_frame_.appendChild(this.details_label_);
+    if (message) {
+      const text = this.document_.createElement('div');
+      text.textContent = message;
+      text.className = 'install-linux-package-detail-value';
+      this.details_frame_.appendChild(text);
+    }
+  };
+
+  /**
+   * Updates the dialog with the package info.
+   *
+   * @param {(!chrome.fileManagerPrivate.LinuxPackageInfo|undefined)}
+   *     linux_package_info The retrieved package info.
+   */
+  InstallLinuxPackageDialog.prototype.onGetLinuxPackageInfo_ = function(
+      linux_package_info) {
+    if (chrome.runtime.lastError) {
+      this.resetDetailsFrame_(
+          str('INSTALL_LINUX_PACKAGE_DETAILS_NOT_AVAILABLE'));
+      console.error(
+          'Failed to retrieve app info: ' + chrome.runtime.lastError.message);
+      return;
+    }
+
+    this.resetDetailsFrame_(null);
+
+    const details = [
+      [
+        str('INSTALL_LINUX_PACKAGE_DETAILS_APPLICATION_LABEL'),
+        linux_package_info.name
+      ],
+      [
+        str('INSTALL_LINUX_PACKAGE_DETAILS_VERSION_LABEL'),
+        linux_package_info.version
+      ],
+    ];
+
+    // Summary and description are almost always set, but handle the case
+    // where they're missing gracefully.
+    let description = linux_package_info.summary;
+    if (linux_package_info.description) {
+      if (description)
+        description += '\n\n';
+      description += linux_package_info.description;
+    }
+    if (description) {
+      details.push([
+        str('INSTALL_LINUX_PACKAGE_DETAILS_DESCRIPTION_LABEL'), description
+      ]);
+    }
+
+    for (const detail of details) {
+      const label = this.document_.createElement('div');
+      label.textContent = detail[0] + ': ';
+      label.className = 'install-linux-package-detail-label';
+      const text = this.document_.createElement('div');
+      text.textContent = detail[1];
+      text.className = 'install-linux-package-detail-value';
+      this.details_frame_.appendChild(label);
+      this.details_frame_.appendChild(text);
+      this.details_frame_.appendChild(this.document_.createElement('br'));
     }
   };
 
@@ -97,6 +180,7 @@ cr.define('cr.filebrowser', function() {
     // surface the provided failure reason if one is provided.
     this.title_.textContent = str('INSTALL_LINUX_PACKAGE_ERROR_TITLE');
     this.text_.textContent = str('INSTALL_LINUX_PACKAGE_ERROR_DESCRIPTION');
+    console.error('Failed to begin package installation: ' + failure_reason);
   };
 
   return {InstallLinuxPackageDialog: InstallLinuxPackageDialog};

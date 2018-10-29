@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/cronet/cronet_buildflags.h"
 #include "components/cronet/ios/test/cronet_test_base.h"
 #include "components/cronet/ios/test/start_cronet.h"
 #include "components/cronet/test/test_server.h"
@@ -180,7 +181,13 @@ TEST_F(HttpTest, NSURLSessionReceivesData) {
             base::SysNSStringToUTF8([delegate_ responseBody]));
 }
 
-TEST_F(HttpTest, GetGlobalMetricsDeltas) {
+// https://crbug.com/830005 Disable histogram support to reduce binary size.
+#if BUILDFLAG(DISABLE_HISTOGRAM_SUPPORT)
+#define MAYBE_GetGlobalMetricsDeltas DISABLED_GetGlobalMetricsDeltas
+#else  // BUILDFLAG(DISABLE_HISTOGRAM_SUPPORT)
+#define MAYBE_GetGlobalMetricsDeltas GetGlobalMetricsDeltas
+#endif  // BUILDFLAG(DISABLE_HISTOGRAM_SUPPORT)
+TEST_F(HttpTest, MAYBE_GetGlobalMetricsDeltas) {
   NSData* delta1 = [Cronet getGlobalMetricsDeltas];
   NSURL* url = net::NSURLWithGURL(net::QuicSimpleTestServer::GetSimpleURL());
   NSURLSessionDataTask* task = [session_ dataTaskWithURL:url];

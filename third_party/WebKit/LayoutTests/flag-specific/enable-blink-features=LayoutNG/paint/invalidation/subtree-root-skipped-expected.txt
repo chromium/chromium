@@ -20,17 +20,12 @@
         {
           "object": "LayoutTextControl INPUT id='input'",
           "rect": [8, 8, 181, 22],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'Selection is here'",
           "rect": [8, 30, 103, 19],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Selection is here'",
-          "rect": [8, 30, 103, 19],
-          "reason": "chunk disappeared"
+          "reason": "geometry"
         },
         {
           "object": "InlineTextBox 'PASS'",

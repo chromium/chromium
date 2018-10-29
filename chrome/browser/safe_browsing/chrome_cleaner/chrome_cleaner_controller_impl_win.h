@@ -65,6 +65,7 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   void OnSwReporterReady(SwReporterInvocationSequence&& invocations) override;
   void Scan(const SwReporterInvocation& reporter_invocation) override;
   void ReplyWithUserResponse(Profile* profile,
+                             extensions::ExtensionService* extension_service,
                              UserResponse user_response) override;
   void Reboot() override;
   bool IsAllowedByPolicy() override;
@@ -121,6 +122,8 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   std::unique_ptr<ChromeCleanerControllerDelegate> real_delegate_;
   // Pointer to either real_delegate_ or one set by tests.
   ChromeCleanerControllerDelegate* delegate_;
+
+  extensions::ExtensionService* extension_service_;
 
   State state_ = State::kIdle;
   // The logs permission checkboxes in the Chrome Cleaner dialog and webui page

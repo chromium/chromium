@@ -100,9 +100,10 @@ WebContents* ConstrainedWebDialogDelegateBase::GetWebContents() {
   return web_contents_;
 }
 
-void ConstrainedWebDialogDelegateBase::HandleKeyboardEvent(
+bool ConstrainedWebDialogDelegateBase::HandleKeyboardEvent(
     content::WebContents* source,
     const NativeWebKeyboardEvent& event) {
+  return false;
 }
 
 gfx::Size ConstrainedWebDialogDelegateBase::GetConstrainedWebDialogMinimumSize()

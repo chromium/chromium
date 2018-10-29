@@ -87,6 +87,11 @@ Please use the following conventions when naming the new file:
 -   Feel free to add other relevant things into the file name (e.g. the mode the
     file applies to - for example `site-per-process`).
 
-When adding a new file, please update `//testing/buildbot/filters/BUILD.gn`.
+When adding a new filter file, you will need to:
+-   Update `//testing/buildbot/filters/BUILD.gn`.
+-   Add `//testing/buildbot/filters:foo_filters` to the appropriate test target.
+-   Add `'--test-launcher-filter-file=../../testing/buildbot/filters/foo.filter'`
+    to the desired test suite(s) in `test_suites.pyl`.
+-   Run `testing/buildbot/generate_buildbot_json.py` to update .json files.
 
 [gtest_filter]: https://github.com/google/googletest/blob/master/googletest/docs/advanced.md#running-a-subset-of-the-tests

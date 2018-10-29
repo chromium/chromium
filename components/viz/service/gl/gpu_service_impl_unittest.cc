@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
-namespace test {
 
 class GpuServiceTest : public testing::Test {
  public:
@@ -96,5 +95,4 @@ TEST_F(GpuServiceTest, ServiceDestroyedAfterBind) {
   DestroyService();
 }
 
-}  // namespace test
 }  // namespace viz

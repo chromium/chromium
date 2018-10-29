@@ -1,0 +1,77 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{% from 'macros.tmpl' import source_files_for_generated_file %}
+{{source_files_for_generated_file(template_file, input_files)}}
+
+{% set sink_class = (name | to_singular) + "Sink" %}
+{% set export_header = config["settings"]["export_header"] %}
+{% set export_symbol = config["settings"]["export_symbol"] %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include <atomic>
+
+#include "{{export_header}}"
+#include "third_party/blink/renderer/platform/heap/handle.h"
+
+namespace blink {
+
+{% for agent in agents %}
+class {{ agent | agent_name_to_class }};
+{% endfor %}
+
+class {{export_symbol}} {{sink_class}} : public GarbageCollectedFinalized<{{sink_class}}> {
+
+ public:
+  enum AgentType : unsigned {
+{% for agent in agents %}
+    k{{agent}} = 1u << {{loop.index0}},
+{% endfor %}
+  };
+
+  {{sink_class}}();
+  ~{{sink_class}}();
+  {{sink_class}} (const {{sink_class}}&) = delete;
+  {{sink_class}}& operator=(const {{sink_class}}&) = delete;
+
+  void Trace(Visitor*);
+
+{% for agent in agents %}
+{% set class_name = agent | agent_name_to_class %}
+{% set getter_name = agent | to_lower_case %}
+  bool has{{agent}}s() const { return !m_{{getter_name}}s.IsEmpty(); }
+  const HeapListHashSet<Member<{{class_name}}>>& {{getter_name}}s() const { return m_{{getter_name}}s; }
+  void add{{agent}}({{class_name}}* agent);
+  void remove{{agent}}({{class_name}}* agent);
+
+{% endfor %}
+  // Queries process-wide. Intended for fast-return cases only.
+  static bool HasAgentsGlobal(unsigned mask) {
+    return s_existingAgents.load(std::memory_order_acquire) & mask;
+  }
+
+ private:
+{% for agent in agents %}
+{% set class_name = agent | agent_name_to_class %}
+{% set getter_name = agent | to_lower_case %}
+  HeapListHashSet<Member<{{class_name}}>> m_{{getter_name}}s;
+{% endfor %}
+
+  // Number of sinks with an enabled agent of each type, used to keep
+  // |s_existingAgents| up to date.
+  // Access must be guarded by AgentCountMutex in the source file.
+{% for agent in agents %}
+  static unsigned s_numSinksWith{{agent}};
+{% endfor %}
+
+  // Bit-set of types of enabled agent which exist in this process.
+  // Always a bitwise-or of AgentType enumerators.
+  static std::atomic<unsigned> s_existingAgents;
+};
+
+} // namespace blink
+
+#endif // {{header_guard}}

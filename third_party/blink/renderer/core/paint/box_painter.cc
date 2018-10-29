@@ -19,15 +19,16 @@
 #include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/svg_foreign_object_painter.h"
 #include "third_party/blink/renderer/core/paint/theme_painter.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
 
 namespace blink {
 
@@ -74,9 +75,19 @@ void BoxPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info,
     paint_rect.MoveBy(paint_offset);
   }
 
-  PaintBoxDecorationBackgroundWithRect(
-      contents_paint_state ? contents_paint_state->GetPaintInfo() : paint_info,
-      paint_rect);
+  // Paint the background if we're visible and this block has a box decoration
+  // (background, border, appearance, or box shadow).
+  const ComputedStyle& style = layout_box_.StyleRef();
+  if (style.Visibility() == EVisibility::kVisible &&
+      layout_box_.HasBoxDecorationBackground()) {
+    PaintBoxDecorationBackgroundWithRect(
+        contents_paint_state ? contents_paint_state->GetPaintInfo()
+                             : paint_info,
+        paint_rect);
+  }
+
+  if (RuntimeEnabledFeatures::PaintTouchActionRectsEnabled())
+    RecordHitTestData(paint_info, paint_offset, paint_rect);
 }
 
 bool BoxPainter::BackgroundIsKnownToBeOpaque(const PaintInfo& paint_info) {
@@ -111,11 +122,10 @@ void BoxPainter::PaintBoxDecorationBackgroundWithRect(
   }
 
   const DisplayItemClient& display_item_client =
-      painting_overflow_contents ? static_cast<const DisplayItemClient&>(
-                                       *layout_box_.Layer()
-                                            ->GetCompositedLayerMapping()
-                                            ->ScrollingContentsLayer())
-                                 : layout_box_;
+      painting_overflow_contents
+          ? layout_box_.GetScrollableArea()
+                ->GetScrollingBackgroundDisplayItemClient()
+          : layout_box_;
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, display_item_client,
           DisplayItem::kBoxDecorationBackground))
@@ -200,9 +210,7 @@ void BoxPainter::PaintBackground(const PaintInfo& paint_info,
                                  const LayoutRect& paint_rect,
                                  const Color& background_color,
                                  BackgroundBleedAvoidance bleed_avoidance) {
-  if (layout_box_.IsDocumentElement())
-    return;
-  if (layout_box_.BackgroundStolenForBeingBody())
+  if (layout_box_.BackgroundTransfersToView())
     return;
   if (layout_box_.BackgroundIsKnownToBeObscured())
     return;
@@ -243,6 +251,32 @@ void BoxPainter::PaintMaskImages(const PaintInfo& paint_info,
   painter.PaintMaskImages(paint_info, paint_rect, layout_box_, geometry,
                           include_logical_left_edge,
                           include_logical_right_edge);
+}
+
+void BoxPainter::RecordHitTestData(const PaintInfo& paint_info,
+                                   const LayoutPoint& paint_offset,
+                                   const LayoutRect& paint_rect) {
+  // TODO(sunxd): ReplacedPainter only record hit test data for svg root which
+  // skips clip. We should move the conditions and ReplacedPainter's
+  // RecordHitTestData here.
+  if (layout_box_.IsLayoutReplaced())
+    return;
+
+  // Hit test display items are only needed for compositing. This flag is used
+  // for for printing and drag images which do not need hit testing.
+  if (paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers)
+    return;
+
+  // If an object is not visible, it does not participate in hit testing.
+  if (layout_box_.StyleRef().Visibility() != EVisibility::kVisible)
+    return;
+
+  auto touch_action = layout_box_.EffectiveWhitelistedTouchAction();
+  if (touch_action == TouchAction::kTouchActionAuto)
+    return;
+
+  HitTestData::RecordHitTestRect(paint_info.context, layout_box_,
+                                 HitTestRect(paint_rect, touch_action));
 }
 
 }  // namespace blink

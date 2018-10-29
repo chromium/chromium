@@ -23,9 +23,8 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "device/base/mock_device_client.h"
-#include "device/usb/mock_usb_device.h"
-#include "device/usb/mock_usb_service.h"
+#include "device/usb/public/cpp/fake_usb_device_manager.h"
+#include "device/usb/public/mojom/device.mojom.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
@@ -36,8 +35,9 @@ class WebUsbService;
 }  // namespace blink
 
 using content::RenderFrameHost;
-using device::MockDeviceClient;
-using device::MockUsbDevice;
+using device::FakeUsbDeviceManager;
+using device::mojom::UsbDeviceManagerPtr;
+using device::mojom::UsbDeviceInfoPtr;
 
 namespace {
 
@@ -127,13 +127,13 @@ class WebUsbTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
-    device_client_.reset(new MockDeviceClient());
-    AddMockDevice("123456");
+    AddFakeDevice("123456");
 
-    // Force the UsbChooserContext to be created before the test begins. This
-    // ensures that it is created before any instances of DeviceManagerImpl and
-    // thus may expose ordering bugs not normally encountered.
-    UsbChooserContextFactory::GetForProfile(browser()->profile());
+    // Connect with the FakeUsbDeviceManager.
+    UsbDeviceManagerPtr device_manager_ptr;
+    device_manager_.AddBinding(mojo::MakeRequest(&device_manager_ptr));
+    UsbChooserContextFactory::GetForProfile(browser()->profile())
+        ->SetDeviceManagerForTesting(std::move(device_manager_ptr));
 
     original_content_browser_client_ =
         content::SetBrowserClientForTesting(&test_content_browser_client_);
@@ -151,17 +151,16 @@ class WebUsbTest : public InProcessBrowserTest {
     content::SetBrowserClientForTesting(original_content_browser_client_);
   }
 
-  void AddMockDevice(const std::string& serial_number) {
-    DCHECK(!mock_device_);
-    mock_device_ = base::MakeRefCounted<MockUsbDevice>(
+  void AddFakeDevice(const std::string& serial_number) {
+    DCHECK(!fake_device_info_);
+    fake_device_info_ = device_manager_.CreateAndAddDevice(
         0, 0, "Test Manufacturer", "Test Device", serial_number);
-    device_client_->usb_service()->AddDevice(mock_device_);
   }
 
-  void RemoveMockDevice() {
-    DCHECK(mock_device_);
-    device_client_->usb_service()->RemoveDevice(mock_device_);
-    mock_device_ = nullptr;
+  void RemoveFakeDevice() {
+    DCHECK(fake_device_info_);
+    device_manager_.RemoveDevice(fake_device_info_->guid);
+    fake_device_info_ = nullptr;
   }
 
   const GURL& origin() { return origin_; }
@@ -169,8 +168,8 @@ class WebUsbTest : public InProcessBrowserTest {
   void UseRealChooser() { test_content_browser_client_.UseRealChooser(); }
 
  private:
-  std::unique_ptr<MockDeviceClient> device_client_;
-  scoped_refptr<MockUsbDevice> mock_device_;
+  FakeUsbDeviceManager device_manager_;
+  UsbDeviceInfoPtr fake_device_info_;
   TestContentBrowserClient test_content_browser_client_;
   content::ContentBrowserClient* original_content_browser_client_;
   GURL origin_;
@@ -257,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDevice) {
       &result));
   EXPECT_EQ("123456", result);
 
-  RemoveMockDevice();
+  RemoveFakeDevice();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
@@ -270,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDevice) {
       &result));
   EXPECT_EQ("123456", result);
 
-  AddMockDevice("123456");
+  AddFakeDevice("123456");
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
@@ -289,8 +288,8 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDeviceEphemeral) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Replace the default mock device with one that has no serial number.
-  RemoveMockDevice();
-  AddMockDevice("");
+  RemoveFakeDevice();
+  AddFakeDevice("");
   base::RunLoop().RunUntilIdle();
 
   std::string result;
@@ -308,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDeviceEphemeral) {
       &result));
   EXPECT_EQ("", result);
 
-  RemoveMockDevice();
+  RemoveFakeDevice();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(

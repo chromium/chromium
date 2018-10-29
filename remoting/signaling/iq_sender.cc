@@ -72,9 +72,9 @@ std::unique_ptr<IqRequest> IqSender::SendIq(
 }
 
 void IqSender::RemoveRequest(IqRequest* request) {
-  IqRequestMap::iterator it = requests_.begin();
+  auto it = requests_.begin();
   while (it != requests_.end()) {
-    IqRequestMap::iterator cur = it;
+    auto cur = it;
     ++it;
     if (cur->second == request) {
       requests_.erase(cur);
@@ -110,7 +110,7 @@ bool IqSender::OnSignalStrategyIncomingStanza(const buzz::XmlElement* stanza) {
 
   std::string from = stanza->Attr(buzz::QN_FROM);
 
-  IqRequestMap::iterator it = requests_.find(id);
+  auto it = requests_.find(id);
   if (it == requests_.end()) {
     return false;
   }

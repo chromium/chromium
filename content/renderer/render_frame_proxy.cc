@@ -151,12 +151,12 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     // Create a frame under an existing parent. The parent is always expected
     // to be a RenderFrameProxy, because navigations initiated by local frames
     // should not wind up here.
-
     web_frame = parent->web_frame()->CreateRemoteChild(
         replicated_state.scope,
         blink::WebString::FromUTF8(replicated_state.name),
         replicated_state.frame_policy.sandbox_flags,
-        replicated_state.frame_policy.container_policy, proxy.get(), opener);
+        replicated_state.frame_policy.container_policy,
+        replicated_state.frame_owner_element_type, proxy.get(), opener);
     proxy->unique_name_ = replicated_state.unique_name;
     render_view = parent->render_view();
     render_widget = parent->render_widget();
@@ -179,7 +179,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
 // static
 RenderFrameProxy* RenderFrameProxy::FromRoutingID(int32_t routing_id) {
   RoutingIDProxyMap* proxies = g_routing_id_proxy_map.Pointer();
-  RoutingIDProxyMap::iterator it = proxies->find(routing_id);
+  auto it = proxies->find(routing_id);
   return it == proxies->end() ? NULL : it->second;
 }
 
@@ -188,7 +188,7 @@ RenderFrameProxy* RenderFrameProxy::FromWebFrame(
     blink::WebRemoteFrame* web_frame) {
   // TODO(dcheng): Turn this into a DCHECK() if it doesn't crash on canary.
   CHECK(web_frame);
-  FrameProxyMap::iterator iter = g_frame_proxy_map.Get().find(web_frame);
+  auto iter = g_frame_proxy_map.Get().find(web_frame);
   if (iter != g_frame_proxy_map.Get().end()) {
     RenderFrameProxy* proxy = iter->second;
     DCHECK_EQ(web_frame, proxy->web_frame());
@@ -249,7 +249,7 @@ void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
       render_widget_->GetOriginalScreenInfo();
 
 #if defined(USE_AURA)
-  if (features::IsUsingWindowService()) {
+  if (features::IsMultiProcessMash()) {
     RendererWindowTreeClient* renderer_window_tree_client =
         RendererWindowTreeClient::Get(render_widget_->routing_id());
     // It's possible a MusEmbeddedFrame has already been scheduled for creation
@@ -270,10 +270,9 @@ void RenderFrameProxy::ResendVisualProperties() {
 }
 
 void RenderFrameProxy::WillBeginCompositorFrame() {
-  if (compositing_helper_ &&
-      compositing_helper_->primary_surface_id().is_valid()) {
+  if (compositing_helper_ && compositing_helper_->surface_id().is_valid()) {
     FrameHostMsg_HittestData_Params params;
-    params.surface_id = compositing_helper_->primary_surface_id();
+    params.surface_id = compositing_helper_->surface_id();
     params.ignored_for_hittest = web_frame_->IsIgnoredForHitTest();
     render_widget_->QueueMessage(
         new FrameHostMsg_HittestData(render_widget_->routing_id(), params));
@@ -433,6 +432,7 @@ bool RenderFrameProxy::OnMessageReceived(const IPC::Message& msg) {
     IPC_MESSAGE_HANDLER(FrameMsg_BubbleLogicalScroll, OnBubbleLogicalScroll)
     IPC_MESSAGE_HANDLER(FrameMsg_SetHasReceivedUserGestureBeforeNavigation,
                         OnSetHasReceivedUserGestureBeforeNavigation)
+    IPC_MESSAGE_HANDLER(FrameMsg_RenderFallbackContent, OnRenderFallbackContent)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -465,12 +465,11 @@ void RenderFrameProxy::OnFirstSurfaceActivation(
     return;
 
   if (!enable_surface_synchronization_) {
-    compositing_helper_->SetPrimarySurfaceId(
-        surface_info.id(), local_frame_size(),
-        cc::DeadlinePolicy::UseDefaultDeadline());
+    compositing_helper_->SetSurfaceId(surface_info.id(), local_frame_size(),
+                                      cc::DeadlinePolicy::UseDefaultDeadline());
   }
-  compositing_helper_->SetFallbackSurfaceId(surface_info.id(),
-                                            local_frame_size());
+  compositing_helper_->SetOldestAcceptableFallback(surface_info.id(),
+                                                   local_frame_size());
 }
 
 void RenderFrameProxy::OnIntrinsicSizingInfoOfChildChanged(
@@ -491,7 +490,7 @@ void RenderFrameProxy::OnViewChanged(
     const FrameMsg_ViewChanged_Params& params) {
   crashed_ = false;
   // In mash the FrameSinkId comes from RendererWindowTreeClient.
-  if (!features::IsUsingWindowService())
+  if (!features::IsMultiProcessMash())
     frame_sink_id_ = *params.frame_sink_id;
 
   // Resend the FrameRects and allocate a new viz::LocalSurfaceId when the view
@@ -593,7 +592,9 @@ void RenderFrameProxy::OnBubbleLogicalScroll(
 void RenderFrameProxy::OnDidUpdateVisualProperties(
     const cc::RenderFrameMetadata& metadata) {
   if (!parent_local_surface_id_allocator_.UpdateFromChild(
-          metadata.local_surface_id.value_or(viz::LocalSurfaceId()))) {
+          metadata.local_surface_id.value_or(viz::LocalSurfaceId()),
+          metadata.local_surface_id_allocation_time_from_child.value_or(
+              base::TimeTicks()))) {
     return;
   }
 
@@ -653,8 +654,11 @@ void RenderFrameProxy::SynchronizeVisualProperties() {
           pending_visual_properties_.zoom_level ||
       capture_sequence_number_changed;
 
-  if (synchronized_props_changed)
+  if (synchronized_props_changed) {
     parent_local_surface_id_allocator_.GenerateId();
+    pending_visual_properties_.local_surface_id_allocation_time =
+        parent_local_surface_id_allocator_.allocation_time();
+  }
 
   viz::SurfaceId surface_id(frame_sink_id_, GetLocalSurfaceId());
   if (enable_surface_synchronization_) {
@@ -664,8 +668,7 @@ void RenderFrameProxy::SynchronizeVisualProperties() {
         capture_sequence_number_changed
             ? cc::DeadlinePolicy::UseInfiniteDeadline()
             : cc::DeadlinePolicy::UseDefaultDeadline();
-    compositing_helper_->SetPrimarySurfaceId(surface_id, local_frame_size(),
-                                             deadline);
+    compositing_helper_->SetSurfaceId(surface_id, local_frame_size(), deadline);
   }
 
   bool rect_changed = !sent_visual_properties_ ||
@@ -701,6 +704,10 @@ void RenderFrameProxy::OnSetHasReceivedUserGestureBeforeNavigation(bool value) {
   web_frame_->SetHasReceivedUserGestureBeforeNavigation(value);
 }
 
+void RenderFrameProxy::OnRenderFallbackContent() const {
+  web_frame_->RenderFallbackContent();
+}
+
 void RenderFrameProxy::FrameDetached(DetachType type) {
 #if defined(USE_AURA)
   mus_embedded_frame_.reset();
@@ -730,7 +737,7 @@ void RenderFrameProxy::FrameDetached(DetachType type) {
 
   // Remove the entry in the WebFrame->RenderFrameProxy map, as the |web_frame_|
   // is no longer valid.
-  FrameProxyMap::iterator it = g_frame_proxy_map.Get().find(web_frame_);
+  auto it = g_frame_proxy_map.Get().find(web_frame_);
   CHECK(it != g_frame_proxy_map.Get().end());
   CHECK_EQ(it->second, this);
   g_frame_proxy_map.Get().erase(it);
@@ -875,15 +882,10 @@ base::UnguessableToken RenderFrameProxy::GetDevToolsFrameToken() {
 }
 
 #if defined(USE_AURA)
-void RenderFrameProxy::OnMusEmbeddedFrameSurfaceChanged(
-    const viz::SurfaceInfo& surface_info) {
-  OnFirstSurfaceActivation(surface_info);
-}
-
 void RenderFrameProxy::OnMusEmbeddedFrameSinkIdAllocated(
     const viz::FrameSinkId& frame_sink_id) {
   // RendererWindowTreeClient should only call this when mus is hosting viz.
-  DCHECK(features::IsUsingWindowService());
+  DCHECK(features::IsMultiProcessMash());
   frame_sink_id_ = frame_sink_id;
   // Resend the FrameRects and allocate a new viz::LocalSurfaceId when the view
   // changes.

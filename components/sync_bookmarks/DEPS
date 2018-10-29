@@ -7,5 +7,6 @@ include_rules = [
   "+components/prefs",
   "+components/sync",
   "+components/undo",
+  "+ui/base",
   "+ui/gfx",
 ]

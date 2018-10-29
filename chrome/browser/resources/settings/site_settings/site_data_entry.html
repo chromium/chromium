@@ -6,6 +6,7 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../focus_row_behavior.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="../site_favicon.html">
 <link rel="import" href="cookie_info.html">
 
 <dom-module id="site-data-entry">
@@ -16,9 +17,7 @@
       }
     </style>
     <div class="settings-box two-line site-item" focus-row-container actionable>
-      <div class="favicon-image"
-          style$="background-image: [[favicon_]]">
-      </div>
+      <site-favicon url="[[model.site]]"></site-favicon>
       <div class="middle">
         <span class="url-directionality">[[model.site]]</span>
         <div class="secondary">[[model.localData]]</div>

@@ -9,13 +9,13 @@
 
 #include "base/macros.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "ui/events/event_handler.h"
 
 class Browser;
+class BrowserView;
+class ImmersiveRevealedLock;
 class Tab;
 class TabStrip;
 
@@ -25,7 +25,7 @@ class Point;
 
 // Class to enable quick tab switching via horizontal 3 finger swipes.
 class TabScrubber : public ui::EventHandler,
-                    public content::NotificationObserver,
+                    public BrowserListObserver,
                     public TabStripObserver {
  public:
   enum Direction { LEFT, RIGHT };
@@ -39,25 +39,20 @@ class TabScrubber : public ui::EventHandler,
                                   int index,
                                   TabScrubber::Direction direction);
 
-  void set_activation_delay(int activation_delay) {
-    activation_delay_ = activation_delay;
-    use_default_activation_delay_ = false;
-  }
-  int activation_delay() const { return activation_delay_; }
   int highlighted_tab() const { return highlighted_tab_; }
   bool IsActivationPending();
 
  private:
+  friend class TabScrubberTest;
+
   TabScrubber();
   ~TabScrubber() override;
 
   // ui::EventHandler overrides:
   void OnScrollEvent(ui::ScrollEvent* event) override;
 
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // BrowserListObserver overrides:
+  void OnBrowserRemoved(Browser* browser) override;
 
   // TabStripObserver overrides.
   void OnTabAdded(int index) override;
@@ -66,7 +61,7 @@ class TabScrubber : public ui::EventHandler,
 
   Browser* GetActiveBrowser();
 
-  void BeginScrub(Browser* browser, BrowserView* browser_view, float x_offset);
+  void BeginScrub(BrowserView* browser_view, float x_offset);
   void FinishScrub(bool activate);
 
   void ScheduleFinishScrubIfNeeded();
@@ -81,31 +76,27 @@ class TabScrubber : public ui::EventHandler,
   void UpdateHighlightedTab(Tab* new_tab, int new_index);
 
   // Are we currently scrubbing?.
-  bool scrubbing_;
-  // The last browser we used for scrubbing, NULL if |scrubbing_| is
-  // false and there is no pending work.
-  Browser* browser_;
+  bool scrubbing_ = false;
+  // The last browser we used for scrubbing, NULL if |scrubbing_| is false and
+  // there is no pending work.
+  Browser* browser_ = nullptr;
   // The TabStrip of the active browser we're scrubbing.
-  TabStrip* tab_strip_;
-  // The current accumulated x and y positions of a swipe, in
-  // the coordinates of the TabStrip of |browser_|
-  float swipe_x_;
-  float swipe_y_;
+  TabStrip* tab_strip_ = nullptr;
+  // The current accumulated x and y positions of a swipe, in the coordinates
+  // of the TabStrip of |browser_|.
+  float swipe_x_ = -1;
+  int swipe_y_ = -1;
   // The direction the current swipe is headed.
-  Direction swipe_direction_;
+  Direction swipe_direction_ = LEFT;
   // The index of the tab that is currently highlighted.
-  int highlighted_tab_;
+  int highlighted_tab_ = -1;
   // Timer to control a delayed activation of the |highlighted_tab_|.
   base::RetainingOneShotTimer activate_timer_;
-  // Time to wait in ms before newly selected tab becomes active.
-  int activation_delay_;
-  // Set if activation_delay had been explicitly set.
-  bool use_default_activation_delay_;
+  // True if the default activation delay should be used with |activate_timer_|.
+  // A value of false means the |activate_timer_| gets a really long delay.
+  bool use_default_activation_delay_ = true;
   // Forces the tabs to be revealed if we are in immersive fullscreen.
   std::unique_ptr<ImmersiveRevealedLock> immersive_reveal_lock_;
-
-  content::NotificationRegistrar registrar_;
-  base::WeakPtrFactory<TabScrubber> weak_ptr_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(TabScrubber);
 };

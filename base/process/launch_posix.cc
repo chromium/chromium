@@ -416,8 +416,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 
     if (options.maximize_rlimits) {
       // Some resource limits need to be maximal in this child.
-      for (size_t i = 0; i < options.maximize_rlimits->size(); ++i) {
-        const int resource = (*options.maximize_rlimits)[i];
+      for (auto resource : *options.maximize_rlimits) {
         struct rlimit limit;
         if (getrlimit(resource, &limit) < 0) {
           RAW_LOG(WARNING, "getrlimit failed");
@@ -461,9 +460,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 #endif  // defined(OS_CHROMEOS)
 
     // Cannot use STL iterators here, since debug iterators use locks.
-    for (size_t i = 0; i < options.fds_to_remap.size(); ++i) {
-      const FileHandleMappingVector::value_type& value =
-          options.fds_to_remap[i];
+    for (const auto& value : options.fds_to_remap) {
       fd_shuffle1.push_back(InjectionArc(value.first, value.second, false));
       fd_shuffle2.push_back(InjectionArc(value.first, value.second, false));
     }
@@ -606,8 +603,8 @@ static bool GetAppOutputInternal(
       // Adding another element here? Remeber to increase the argument to
       // reserve(), above.
 
-      for (size_t i = 0; i < fd_shuffle1.size(); ++i)
-        fd_shuffle2.push_back(fd_shuffle1[i]);
+      for (const auto& i : fd_shuffle1)
+        fd_shuffle2.push_back(i);
 
       if (!ShuffleFileDescriptors(&fd_shuffle1))
         _exit(127);

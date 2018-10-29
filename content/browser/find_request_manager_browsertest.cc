@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RemoveFrame) {
 
   // Remove a frame.
   FrameTreeNode* root = contents()->GetFrameTree()->root();
-  root->RemoveChild(root->child_at(0));
+  root->current_frame_host()->RemoveChild(root->child_at(0));
 
   // The number of matches and active match ordinal should update automatically
   // to exclude the matches from the removed frame.

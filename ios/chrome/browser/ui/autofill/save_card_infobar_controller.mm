@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_view.h"
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_view_delegate.h"
 #import "ios/chrome/browser/ui/infobars/infobar_view_sizing_delegate.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
@@ -32,14 +32,8 @@ NSString* const kSaveCardInfobarViewUploadAccessibilityID =
 
 namespace {
 
-// Returns whether the UI Refresh Infobar will be used.
-using ::IsRefreshInfobarEnabled;
-
 // Returns the image for the infobar close button.
 UIImage* InfoBarCloseImage() {
-  if (!IsRefreshInfobarEnabled()) {
-    return [UIImage imageNamed:@"infobar_close"];
-  }
   ui::ResourceBundle& resourceBundle = ui::ResourceBundle::GetSharedInstance();
   return resourceBundle.GetNativeImageNamed(IDR_IOS_INFOBAR_CLOSE).ToUIImage();
 }

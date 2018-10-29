@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/bind.h"
 #include "chrome/browser/chromeos/net/wake_on_wifi_connection_observer.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,7 +28,7 @@ class WakeOnWifiObserverTest : public ::testing::Test {
  public:
   WakeOnWifiObserverTest() {
     gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, &BuildFakeGCMProfileService);
+        &profile_, base::BindRepeating(&BuildFakeGCMProfileService));
   }
   ~WakeOnWifiObserverTest() override {}
 

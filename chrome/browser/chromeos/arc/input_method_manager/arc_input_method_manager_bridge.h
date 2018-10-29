@@ -20,15 +20,9 @@ class ArcInputMethodManagerBridge {
 
   // Received mojo calls and connection state changes are passed to this
   // delegate.
-  class Delegate {
+  class Delegate : public mojom::InputMethodManagerHost {
    public:
-    virtual ~Delegate() = default;
-
-    // Mojo calls:
-    virtual void OnActiveImeChanged(const std::string& ime_id) = 0;
-    virtual void OnImeDisabled(const std::string& ime_id) = 0;
-    virtual void OnImeInfoChanged(
-        const std::vector<mojom::ImeInfoPtr> ime_info_array) = 0;
+    ~Delegate() override = default;
 
     // Mojo connection state changes:
     virtual void OnConnectionClosed() = 0;
@@ -45,6 +39,11 @@ class ArcInputMethodManagerBridge {
                              EnableImeCallback callback) = 0;
   virtual void SendSwitchImeTo(const std::string& ime_id,
                                SwitchImeToCallback callback) = 0;
+  virtual void SendFocus(mojom::InputConnectionPtr connection,
+                         mojom::TextInputStatePtr state) = 0;
+  virtual void SendUpdateTextInputState(mojom::TextInputStatePtr state) = 0;
+  virtual void SendShowVirtualKeyboard() = 0;
+  virtual void SendHideVirtualKeyboard() = 0;
 };
 
 }  // namespace arc

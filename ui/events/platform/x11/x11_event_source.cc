@@ -100,6 +100,7 @@ X11EventSource::X11EventSource(X11EventSourceDelegate* delegate,
       distribution_(0, 999) {
   DCHECK(!instance_);
   instance_ = this;
+  SetTimestampServer(this);
 
   DCHECK(delegate_);
   DCHECK(display_);
@@ -110,6 +111,7 @@ X11EventSource::X11EventSource(X11EventSourceDelegate* delegate,
 X11EventSource::~X11EventSource() {
   DCHECK_EQ(this, instance_);
   instance_ = nullptr;
+  SetTimestampServer(nullptr);
   if (dummy_initialized_)
     XDestroyWindow(display_, dummy_window_);
 }

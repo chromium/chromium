@@ -35,7 +35,10 @@ bool RegisterTestPluginWithExtraParameters(
     const base::FilePath::StringType& extra_registration_parameters)
     WARN_UNUSED_RESULT;
 
-// Registers the Flash-imitating Power Saver test plugin.
+// Registers the Flash-imitating CORB-testing plugin.
+bool RegisterCorbTestPlugin(base::CommandLine* command_line) WARN_UNUSED_RESULT;
+
+// Registers the Flash-imitating Power-Saver-testing plugin.
 bool RegisterFlashTestPlugin(base::CommandLine* command_line)
     WARN_UNUSED_RESULT;
 
@@ -47,6 +50,12 @@ using CreateUDPSocketCallback = base::RepeatingCallback<void(
     network::mojom::NetworkContext* network_context,
     network::mojom::UDPSocketRequest socket_request,
     network::mojom::UDPSocketReceiverPtr socket_receiver)>;
+
+// Sets a NetworkContext to be used by the Pepper TCP classes for testing.
+// Passed in NetworkContext must remain valid until the method is called again
+// with a nullptr, to clear the callback.
+void SetPepperTCPNetworkContextForTesting(
+    network::mojom::NetworkContext* network_context);
 
 // Sets callback to be invoked when creating a UDPSocket for use by pepper.
 // Passed in callback must remain valid until the method is called again with

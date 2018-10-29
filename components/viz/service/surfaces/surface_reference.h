@@ -54,6 +54,10 @@ struct SurfaceReferenceHash {
   size_t operator()(const SurfaceReference& ref) const { return ref.hash(); }
 };
 
+VIZ_SERVICE_EXPORT std::ostream& operator<<(
+    std::ostream& out,
+    const SurfaceReference& surface_reference);
+
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_REFERENCE_H_

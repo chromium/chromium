@@ -60,9 +60,10 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
                void(quic::QuicErrorCode error,
                     const std::string& error_details,
                     quic::ConnectionCloseSource source));
-  MOCK_METHOD1(CreateIncomingDynamicStream,
+  MOCK_METHOD1(CreateIncomingStream,
                quic::QuicSpdyStream*(quic::QuicStreamId id));
-  MOCK_METHOD0(CreateOutgoingDynamicStream, QuicChromiumClientStream*());
+  MOCK_METHOD0(CreateOutgoingBidirectionalStream, QuicChromiumClientStream*());
+  MOCK_METHOD0(CreateOutgoingUnidirectionalStream, QuicChromiumClientStream*());
   MOCK_METHOD5(WritevData,
                quic::QuicConsumedData(quic::QuicStream* stream,
                                       quic::QuicStreamId id,
@@ -110,11 +111,6 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
                           quic::QuicAckListenerInterface>& ack_listener));
   MOCK_METHOD1(OnHeadersHeadOfLineBlocking, void(quic::QuicTime::Delta delta));
 
-  std::unique_ptr<quic::QuicStream> CreateStream(quic::QuicStreamId id) {
-    return quic::QuicMakeUnique<QuicChromiumClientStream>(
-        id, this, NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS);
-  }
-
   using quic::QuicSession::ActivateStream;
 
   // Returns a quic::QuicConsumedData that indicates all of |write_length| (and
@@ -133,8 +129,8 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
   bool IsAuthorized(const std::string& hostname) override { return true; }
 
  protected:
-  MOCK_METHOD1(ShouldCreateIncomingDynamicStream, bool(quic::QuicStreamId id));
-  MOCK_METHOD0(ShouldCreateOutgoingDynamicStream, bool());
+  MOCK_METHOD1(ShouldCreateIncomingStream, bool(quic::QuicStreamId id));
+  MOCK_METHOD0(ShouldCreateOutgoingStream, bool());
 
  private:
   std::unique_ptr<quic::QuicCryptoStream> crypto_stream_;
@@ -171,11 +167,12 @@ class QuicChromiumClientStreamTest
                          quic::ParsedQuicVersion(quic::PROTOCOL_QUIC_CRYPTO,
                                                  GetParam()))),
                  &push_promise_index_) {
-    stream_ = new QuicChromiumClientStream(kTestStreamId, &session_,
-                                           NetLogWithSource(),
-                                           TRAFFIC_ANNOTATION_FOR_TESTS);
+    stream_ = new QuicChromiumClientStream(
+        kTestStreamId, &session_, quic::BIDIRECTIONAL, NetLogWithSource(),
+        TRAFFIC_ANNOTATION_FOR_TESTS);
     session_.ActivateStream(base::WrapUnique(stream_));
     handle_ = stream_->CreateHandle();
+    helper_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
   }
 
   void InitializeHeaders() {
@@ -672,7 +669,8 @@ TEST_P(QuicChromiumClientStreamTest, HeadersBeforeHandle) {
   // stream.
   quic::QuicStreamId stream_id = GetNthServerInitiatedStreamId(0);
   QuicChromiumClientStream* stream2 = new QuicChromiumClientStream(
-      stream_id, &session_, NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS);
+      stream_id, &session_, quic::READ_UNIDIRECTIONAL, NetLogWithSource(),
+      TRAFFIC_ANNOTATION_FOR_TESTS);
   session_.ActivateStream(base::WrapUnique(stream2));
 
   InitializeHeaders();
@@ -695,7 +693,8 @@ TEST_P(QuicChromiumClientStreamTest, HeadersAndDataBeforeHandle) {
   // stream.
   quic::QuicStreamId stream_id = GetNthServerInitiatedStreamId(0);
   QuicChromiumClientStream* stream2 = new QuicChromiumClientStream(
-      stream_id, &session_, NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS);
+      stream_id, &session_, quic::READ_UNIDIRECTIONAL, NetLogWithSource(),
+      TRAFFIC_ANNOTATION_FOR_TESTS);
   session_.ActivateStream(base::WrapUnique(stream2));
 
   InitializeHeaders();

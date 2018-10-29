@@ -111,6 +111,12 @@ message DirectorySpecificInfo {
   // The start page token of this directory. This value may not match the
   // start_page_token of ResourceMetadata if the directory was "fast-fetched".
   optional string start_page_token = 2;
+
+  // The last time we read this directory from the server when fast fetching.
+  // This is used on initial load when we do not have the full list of files
+  // fetched from the server to prevent repeated reading of the directory file
+  // list.
+  optional int64 last_read_time_ms = 3;
 }
 
 // Represents metadata of a resource (file or directory) on Drive.

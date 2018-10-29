@@ -32,12 +32,10 @@
 
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element.h"
 
 namespace blink {
 
 void WebCustomElement::AddEmbedderCustomElementName(const WebString& name) {
-  V0CustomElement::AddEmbedderCustomElementName(name);
   CustomElement::AddEmbedderCustomElementName(name);
 }
 

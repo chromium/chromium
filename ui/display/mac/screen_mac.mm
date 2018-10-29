@@ -168,7 +168,8 @@ class ScreenMac : public Screen {
     return gfx::ScreenPointFromNSPoint([NSEvent mouseLocation]);
   }
 
-  bool IsWindowUnderCursor(gfx::NativeWindow window) override {
+  bool IsWindowUnderCursor(gfx::NativeWindow native_window) override {
+    NSWindow* window = native_window.GetNativeNSWindow();
     return [NSWindow windowNumberAtPoint:[NSEvent mouseLocation]
              belowWindowWithWindowNumber:0] == [window windowNumber];
   }
@@ -184,7 +185,9 @@ class ScreenMac : public Screen {
     return displays_;
   }
 
-  Display GetDisplayNearestWindow(gfx::NativeWindow window) const override {
+  Display GetDisplayNearestWindow(
+      gfx::NativeWindow native_window) const override {
+    NSWindow* window = native_window.GetNativeNSWindow();
     EnsureDisplaysValid();
     if (displays_.size() == 1)
       return displays_[0];
@@ -202,7 +205,8 @@ class ScreenMac : public Screen {
     return GetCachedDisplayForScreen(match_screen);
   }
 
-  Display GetDisplayNearestView(gfx::NativeView view) const override {
+  Display GetDisplayNearestView(gfx::NativeView native_view) const override {
+    NSView* view = native_view.GetNativeNSView();
     NSWindow* window = [view window];
     if (!window)
       return GetPrimaryDisplay();
@@ -366,12 +370,14 @@ class ScreenMac : public Screen {
 }  // namespace
 
 // static
-gfx::NativeWindow Screen::GetWindowForView(gfx::NativeView view) {
-  NSWindow* window = nil;
+gfx::NativeWindow Screen::GetWindowForView(gfx::NativeView native_view) {
 #if !defined(USE_AURA)
-  window = [view window];
-#endif
+  NSView* view = native_view.GetNativeNSView();
+  return [view window];
+#else
+  gfx::NativeWindow window = nil;
   return window;
+#endif
 }
 
 #if !defined(USE_AURA)

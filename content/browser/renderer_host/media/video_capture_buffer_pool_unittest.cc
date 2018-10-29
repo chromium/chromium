@@ -17,7 +17,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "media/base/video_frame.h"
@@ -77,11 +77,14 @@ class VideoCaptureBufferPoolTest
     DVLOG(1) << media::VideoPixelFormatToString(pixel_format) << " "
              << dimensions.ToString();
     const int arbitrary_frame_feedback_id = 0;
-    const int buffer_id = pool_->ReserveForProducer(
+    int buffer_id = media::VideoCaptureBufferPool::kInvalidId;
+    const auto reserve_result = pool_->ReserveForProducer(
         dimensions, pixel_format, nullptr, arbitrary_frame_feedback_id,
-        &buffer_id_to_drop);
-    if (buffer_id == media::VideoCaptureBufferPool::kInvalidId)
+        &buffer_id, &buffer_id_to_drop);
+    if (reserve_result !=
+        media::VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
       return std::unique_ptr<Buffer>();
+    }
     EXPECT_EQ(expected_dropped_id_, buffer_id_to_drop);
 
     std::unique_ptr<media::VideoCaptureBufferHandle> buffer_handle =
@@ -90,7 +93,7 @@ class VideoCaptureBufferPoolTest
         new Buffer(pool_, std::move(buffer_handle), buffer_id));
   }
 
-  base::MessageLoop loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
   int expected_dropped_id_;
   scoped_refptr<media::VideoCaptureBufferPool> pool_;
 

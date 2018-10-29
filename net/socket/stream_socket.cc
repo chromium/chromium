@@ -23,13 +23,6 @@ ChannelIDService* StreamSocket::GetChannelIDService() const {
   return nullptr;
 }
 
-Error StreamSocket::GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                             TokenBindingType tb_type,
-                                             std::vector<uint8_t>* out) {
-  NOTREACHED();
-  return ERR_NOT_IMPLEMENTED;
-}
-
 crypto::ECPrivateKey* StreamSocket::GetChannelIDKey() const {
   NOTREACHED();
   return nullptr;

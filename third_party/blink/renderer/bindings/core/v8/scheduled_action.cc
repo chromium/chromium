@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -58,7 +59,7 @@ ScheduledAction* ScheduledAction::Create(ScriptState* script_state,
   if (!script_state->World().IsWorkerWorld()) {
     if (!BindingSecurity::ShouldAllowAccessToFrame(
             EnteredDOMWindow(script_state->GetIsolate()),
-            ToDocument(target)->GetFrame(),
+            To<Document>(target)->GetFrame(),
             BindingSecurity::ErrorReportOption::kDoNotReport)) {
       UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
       return new ScheduledAction(script_state);
@@ -73,7 +74,7 @@ ScheduledAction* ScheduledAction::Create(ScriptState* script_state,
   if (!script_state->World().IsWorkerWorld()) {
     if (!BindingSecurity::ShouldAllowAccessToFrame(
             EnteredDOMWindow(script_state->GetIsolate()),
-            ToDocument(target)->GetFrame(),
+            To<Document>(target)->GetFrame(),
             BindingSecurity::ErrorReportOption::kDoNotReport)) {
       UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
       return new ScheduledAction(script_state);
@@ -108,8 +109,8 @@ void ScheduledAction::Execute(ExecutionContext* context) {
   // determine if it is allowed. Enter the scope here.
   ScriptState::Scope scope(script_state_->Get());
 
-  if (context->IsDocument()) {
-    LocalFrame* frame = ToDocument(context)->GetFrame();
+  if (auto* document = DynamicTo<Document>(context)) {
+    LocalFrame* frame = document->GetFrame();
     if (!frame) {
       DVLOG(1) << "ScheduledAction::execute " << this << ": no frame";
       return;
@@ -122,7 +123,7 @@ void ScheduledAction::Execute(ExecutionContext* context) {
     Execute(frame);
   } else {
     DVLOG(1) << "ScheduledAction::execute " << this << ": worker scope";
-    Execute(ToWorkerGlobalScope(context));
+    Execute(To<WorkerGlobalScope>(context));
   }
 }
 
@@ -170,11 +171,15 @@ void ScheduledAction::Execute(LocalFrame* frame) {
   } else {
     DVLOG(1) << "ScheduledAction::execute " << this
              << ": executing from source";
+    // We're using |kSharableCrossOrigin| to keep the existing behavior, but
+    // this causes failures on
+    // wpt/html/webappapis/scripting/processing-model-2/compile-error-cross-origin-setTimeout.html
+    // and friends.
     frame->GetScriptController().ExecuteScriptAndReturnValue(
         script_state_->GetContext(),
         ScriptSourceCode(code_,
                          ScriptSourceLocationType::kEvalForScheduledAction),
-        KURL(), kNotSharableCrossOrigin);
+        KURL(), kSharableCrossOrigin);
   }
 
   // The frame might be invalid at this point because JavaScript could have
@@ -206,10 +211,14 @@ void ScheduledAction::Execute(WorkerGlobalScope* worker) {
         function, worker, script_state_->GetContext()->Global(), info.size(),
         info.data(), script_state_->GetIsolate());
   } else {
+    // We're using |kSharableCrossOrigin| to keep the existing behavior, but
+    // this causes failures on
+    // wpt/html/webappapis/scripting/processing-model-2/compile-error-cross-origin-setTimeout.html
+    // and friends.
     worker->ScriptController()->Evaluate(
         ScriptSourceCode(code_,
                          ScriptSourceLocationType::kEvalForScheduledAction),
-        kNotSharableCrossOrigin);
+        kSharableCrossOrigin);
   }
 }
 

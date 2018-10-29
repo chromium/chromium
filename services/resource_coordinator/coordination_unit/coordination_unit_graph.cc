@@ -127,25 +127,19 @@ CoordinationUnitGraph::GetProcessCoordinationUnitByPid(base::ProcessId pid) {
   return ProcessCoordinationUnitImpl::FromCoordinationUnitBase(it->second);
 }
 
-std::vector<CoordinationUnitBase*>
-CoordinationUnitGraph::GetCoordinationUnitsOfType(CoordinationUnitType type) {
-  std::vector<CoordinationUnitBase*> results;
-  for (const auto& el : coordination_units_) {
-    if (el.first.type == type)
-      results.push_back(el.second.get());
-  }
-  return results;
-}
-
 std::vector<ProcessCoordinationUnitImpl*>
 CoordinationUnitGraph::GetAllProcessCoordinationUnits() {
-  auto cus = GetCoordinationUnitsOfType(CoordinationUnitType::kProcess);
-  std::vector<ProcessCoordinationUnitImpl*> process_cus;
-  for (auto* process_cu : cus) {
-    process_cus.push_back(
-        ProcessCoordinationUnitImpl::FromCoordinationUnitBase(process_cu));
-  }
-  return process_cus;
+  return GetAllCoordinationUnitsOfType<ProcessCoordinationUnitImpl>();
+}
+
+std::vector<FrameCoordinationUnitImpl*>
+CoordinationUnitGraph::GetAllFrameCoordinationUnits() {
+  return GetAllCoordinationUnitsOfType<FrameCoordinationUnitImpl>();
+}
+
+std::vector<PageCoordinationUnitImpl*>
+CoordinationUnitGraph::GetAllPageCoordinationUnits() {
+  return GetAllCoordinationUnitsOfType<PageCoordinationUnitImpl>();
 }
 
 CoordinationUnitBase* CoordinationUnitGraph::AddNewCoordinationUnit(
@@ -181,6 +175,17 @@ void CoordinationUnitGraph::BeforeProcessPidChange(
   }
   if (new_pid != base::kNullProcessId)
     processes_by_pid_[new_pid] = process;
+}
+
+template <typename CUType>
+std::vector<CUType*> CoordinationUnitGraph::GetAllCoordinationUnitsOfType() {
+  const auto type = CUType::Type();
+  std::vector<CUType*> ret;
+  for (const auto& el : coordination_units_) {
+    if (el.first.type == type)
+      ret.push_back(CUType::FromCoordinationUnitBase(el.second.get()));
+  }
+  return ret;
 }
 
 }  // namespace resource_coordinator

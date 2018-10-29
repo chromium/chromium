@@ -3,7 +3,6 @@ Tests justifying paragraphs to left, right, and center.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 Center
 PASS execCommand('JustifyCenter') returned "<div style="text-align: center;"><br></div>" selecting first position of ""
 PASS execCommand('JustifyCenter') returned "<div style="text-align: center;"><br></div>" selecting first position of "<br>"

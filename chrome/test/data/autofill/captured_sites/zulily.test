@@ -1,0 +1,360 @@
+{
+  "startingURL": "https://www.zulily.com/2/cart",
+  "autofillProfile": [
+    {
+      "type": "ADDRESS_HOME_CITY",
+      "value": "Austin"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE1",
+      "value": "4120 Freidrich Lane"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE2",
+      "value": "Apt 8"
+    },
+    {
+      "type": "ADDRESS_HOME_STATE",
+      "value": "57"
+    },
+    {
+      "type": "ADDRESS_HOME_ZIP",
+      "value": "78744"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "value": "2027"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_MONTH",
+      "value": "05"
+    },
+    {
+      "type": "CREDIT_CARD_NUMBER",
+      "value": "9621327911759602"
+    },
+    {
+      "type": "NAME_FIRST",
+      "value": "Milton"
+    },
+    {
+      "type": "NAME_LAST",
+      "value": "Waddams"
+    },
+    {
+      "type": "PHONE_HOME_CITY_AND_NUMBER",
+      "value": "5125551234"
+    }
+  ],
+  "passwordManagerProfiles": [],
+  "actions": [
+    {
+      "selector": "//li/a[normalize-space(text())=\"\"]/span[text()=\"proceed to checkout\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 1
+    },
+    {
+      "url": "https://www.zulily.com/2/checkout",
+      "context": {
+        "isIframe": false
+      },
+      "type": "loadPage",
+      "action_index": 2
+    },
+    {
+      "selector": "//button/i[@aria-hidden=\"true\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 3
+    },
+    {
+      "selector": "//input[@tabindex=\"0\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 4
+    },
+    {
+      "selector": "//input[@type=\"text\" and @maxlength=\"30\" and @id=\"address[80793][firstname]\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 5
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Waddams",
+      "selector": "//input[@type=\"text\" and @maxlength=\"30\" and @id=\"address[80793][lastname]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "NAME_LAST",
+      "action_index": 6
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane",
+      "selector": "//input[@type=\"text\" and @maxlength=\"30\" and @id=\"address[80793][street1]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_LINE1",
+      "action_index": 7
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@type=\"text\" and @maxlength=\"30\" and @id=\"address[80793][street2]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_LINE2",
+      "action_index": 8
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Austin",
+      "selector": "//input[@type=\"text\" and @data-min-length=\"2\" and @id=\"address[80793][city]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_CITY",
+      "action_index": 9
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "57",
+      "selector": "//select[@id=\"address[80793][region_id][us]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_STATE",
+      "action_index": 10
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@type=\"text\" and @maxlength=\"10\" and @id=\"address[80793][postcode]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_ZIP",
+      "action_index": 11
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5125551234",
+      "selector": "//input[@type=\"text\" and @name=\"address[telephone]\" and @id=\"address[80793][telephone]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 12
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton",
+      "selector": "//input[@type=\"text\" and @maxlength=\"30\" and @id=\"address[80793][firstname]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "NAME_FIRST",
+      "action_index": 13
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "selector": "//input[@type=\"text\" and @name=\"address[telephone]\" and @id=\"address[80793][telephone]\"]",
+      "type": "type",
+      "value": "5125161234",
+      "visibility": 7,
+      "action_index": 14
+    },
+    {
+      "selector": "//input[@type=\"checkbox\" and @id=\"address[80793][default]\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 15
+    },
+    {
+      "selector": "//form/div[2]/div[2]/button[normalize-space(text())=\"\"]/span[normalize-space(text())=\"\"]/span[text()=\"continue\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 16
+    },
+    {
+      "selector": "//input[@tabindex=\"0\" and @value=\"new\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 17
+    },
+    {
+      "selector": "//input[@type=\"text\" and @maxlength=\"30\" and @id=\"address[43558][firstname]\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 18
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Waddams",
+      "selector": "//input[@type=\"text\" and @maxlength=\"30\" and @id=\"address[43558][lastname]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "NAME_LAST",
+      "action_index": 19
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane",
+      "selector": "//input[@type=\"text\" and @maxlength=\"30\" and @id=\"address[43558][street1]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_LINE1",
+      "action_index": 20
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@type=\"text\" and @maxlength=\"30\" and @id=\"address[43558][street2]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_LINE2",
+      "action_index": 21
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Austin",
+      "selector": "//input[@type=\"text\" and @maxlength=\"50\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_CITY",
+      "action_index": 22
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "57",
+      "selector": "//select[@id=\"address[43558][region_id][us]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_STATE",
+      "action_index": 23
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@type=\"text\" and @maxlength=\"10\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_ZIP",
+      "action_index": 24
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5125551234",
+      "selector": "//input[@type=\"text\" and @name=\"address[telephone]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 25
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton",
+      "selector": "//input[@type=\"text\" and @maxlength=\"30\" and @id=\"address[43558][firstname]\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "NAME_FIRST",
+      "action_index": 26
+    },
+    {
+      "selector": "//input[@aria-required=\"true\" and @id=\"payment:number\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 27
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "05",
+      "selector": "//select[@aria-required=\"true\" and @id=\"payment:expmonth\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "CREDIT_CARD_EXP_MONTH",
+      "action_index": 28
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "2027",
+      "selector": "//select[@aria-required=\"true\" and @id=\"payment:expyear\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "action_index": 29
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "9621327911759602",
+      "selector": "//input[@aria-required=\"true\" and @id=\"payment:number\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "CREDIT_CARD_NUMBER",
+      "action_index": 30
+    }
+  ]
+}

@@ -93,8 +93,7 @@ void FrameBuffer::GetMissingPackets(bool newest_frame,
   // (Iff it's the latest frame)
   int maximum = newest_frame ? max_seen_packet_id_ : max_packet_id_;
   int packet = 0;
-  for (PacketMap::const_iterator i = packets_.begin();
-       i != packets_.end() && packet <= maximum;
+  for (auto i = packets_.begin(); i != packets_.end() && packet <= maximum;
        ++i) {
     int end = std::min<int>(i->first, maximum + 1);
     while (packet < end) {

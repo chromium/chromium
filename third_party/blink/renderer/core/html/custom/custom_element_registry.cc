@@ -106,20 +106,17 @@ void CustomElementRegistry::Trace(blink::Visitor* visitor) {
 CustomElementDefinition* CustomElementRegistry::define(
     ScriptState* script_state,
     const AtomicString& name,
-    const ScriptValue& constructor,
+    V8CustomElementConstructor* constructor,
     const ElementDefinitionOptions& options,
     ExceptionState& exception_state) {
-  CSSStyleSheet* style_sheet = nullptr;
-  if (RuntimeEnabledFeatures::CustomElementDefaultStyleEnabled() &&
-      options.hasStyle())
-    style_sheet = options.style();
-  ScriptCustomElementDefinitionBuilder builder(script_state, this, style_sheet,
-                                               constructor, exception_state);
-  return define(name, builder, options, exception_state);
+  ScriptCustomElementDefinitionBuilder builder(script_state, this, constructor,
+                                               exception_state);
+  return DefineInternal(script_state, name, builder, options, exception_state);
 }
 
 // http://w3c.github.io/webcomponents/spec/custom/#dfn-element-definition
-CustomElementDefinition* CustomElementRegistry::define(
+CustomElementDefinition* CustomElementRegistry::DefineInternal(
+    ScriptState* script_state,
     const AtomicString& name,
     CustomElementDefinitionBuilder& builder,
     const ElementDefinitionOptions& options,
@@ -170,9 +167,6 @@ CustomElementDefinition* CustomElementRegistry::define(
     local_name = extends;
   }
 
-  // TODO(dominicc): Add a test where the prototype getter destroys
-  // the context.
-
   // 8. If this CustomElementRegistry's element definition is
   // running flag is set, then throw a "NotSupportedError"
   // DOMException and abort these steps.
@@ -188,11 +182,7 @@ CustomElementDefinition* CustomElementRegistry::define(
     // running flag.
     base::AutoReset<bool> defining(&element_definition_is_running_, true);
 
-    // 10.1-2
-    if (!builder.CheckPrototype())
-      return nullptr;
-
-    // 10.3-6
+    // 10. Run the following substeps while catching any exceptions: ...
     if (!builder.RememberOriginalProperties())
       return nullptr;
 
@@ -203,6 +193,16 @@ CustomElementDefinition* CustomElementRegistry::define(
     // (|defining|'s destructor does this.)
   }
 
+  // During step 10, property getters might have detached the frame. Abort in
+  // the case.
+  if (!script_state->ContextIsValid()) {
+    // Intentionally do not throw an exception so that, when Blink will support
+    // detached frames, the behavioral change whether Blink throws or not will
+    // not be observable from author.
+    // TODO(yukishiino): Support detached frames.
+    return nullptr;
+  }
+
   CustomElementDescriptor descriptor(name, local_name);
   if (UNLIKELY(definitions_.size() >=
                std::numeric_limits<CustomElementDefinition::Id>::max()))
@@ -211,6 +211,10 @@ CustomElementDefinition* CustomElementRegistry::define(
   CustomElementDefinition* definition = builder.Build(descriptor, id);
   CHECK(!exception_state.HadException());
   CHECK(definition->Descriptor() == descriptor);
+  if (RuntimeEnabledFeatures::CustomElementDefaultStyleEnabled() &&
+      options.hasStyles())
+    definition->SetDefaultStyleSheets(options.styles());
+
   definitions_.emplace_back(definition);
   NameIdMap::AddResult result = name_id_map_.insert(descriptor.GetName(), id);
   CHECK(result.is_new_entry);
@@ -226,6 +230,7 @@ CustomElementDefinition* CustomElementRegistry::define(
     entry->value->Resolve();
     when_defined_promise_map_.erase(entry);
   }
+
   return definition;
 }
 

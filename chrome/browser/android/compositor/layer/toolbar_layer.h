@@ -51,6 +51,8 @@ class ToolbarLayer : public Layer {
                          int progress_bar_background_height,
                          int progress_bar_background_color);
 
+  void SetOpacity(float opacity);
+
  protected:
   explicit ToolbarLayer(ui::ResourceManager* resource_manager);
   ~ToolbarLayer() override;

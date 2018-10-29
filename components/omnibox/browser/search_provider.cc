@@ -154,7 +154,7 @@ void SearchProvider::RegisterDisplayedAnswers(
   // The answer must be in the first or second slot to be considered. It should
   // only be in the second slot if AutocompleteController ranked a local search
   // history or a verbatim item higher than the answer.
-  AutocompleteResult::const_iterator match = result.begin();
+  auto match = result.begin();
   if (match->answer_contents.empty() && result.size() > 1)
     ++match;
   if (match->answer_contents.empty() || match->answer_type.empty() ||
@@ -200,9 +200,8 @@ void SearchProvider::UpdateOldResults(
   // When called without |minimal_changes|, it likely means the user has
   // pressed a key.  Revise the cached results appropriately.
   if (!minimal_changes) {
-    for (SearchSuggestionParser::SuggestResults::iterator sug_it =
-             results->suggest_results.begin();
-         sug_it != results->suggest_results.end(); ) {
+    for (auto sug_it = results->suggest_results.begin();
+         sug_it != results->suggest_results.end();) {
       if (sug_it->type() == AutocompleteMatchType::CALCULATOR) {
         sug_it = results->suggest_results.erase(sug_it);
       } else {
@@ -210,8 +209,7 @@ void SearchProvider::UpdateOldResults(
         ++sug_it;
       }
     }
-    for (SearchSuggestionParser::NavigationResults::iterator nav_it =
-             results->navigation_results.begin();
+    for (auto nav_it = results->navigation_results.begin();
          nav_it != results->navigation_results.end(); ++nav_it) {
       nav_it->set_received_after_last_keystroke(false);
     }
@@ -464,13 +462,11 @@ void SearchProvider::ClearAllResults() {
 void SearchProvider::UpdateMatchContentsClass(
     const base::string16& input_text,
     SearchSuggestionParser::Results* results) {
-  for (SearchSuggestionParser::SuggestResults::iterator sug_it =
-           results->suggest_results.begin();
+  for (auto sug_it = results->suggest_results.begin();
        sug_it != results->suggest_results.end(); ++sug_it) {
     sug_it->ClassifyMatchContents(false, input_text);
   }
-  for (SearchSuggestionParser::NavigationResults::iterator nav_it =
-           results->navigation_results.begin();
+  for (auto nav_it = results->navigation_results.begin();
        nav_it != results->navigation_results.end(); ++nav_it) {
     nav_it->CalculateAndClassifyMatchContents(false, input_text);
   }
@@ -600,8 +596,7 @@ void SearchProvider::EnforceConstraints() {
 void SearchProvider::RecordTopSuggestion() {
   top_query_suggestion_match_contents_ = base::string16();
   top_navigation_suggestion_ = GURL();
-  ACMatches::const_iterator first_match =
-      AutocompleteResult::FindTopMatch(matches_);
+  auto first_match = AutocompleteResult::FindTopMatch(matches_);
   if ((first_match != matches_.end()) &&
       !first_match->inline_autocompletion.empty()) {
     // Identify if this match came from a query suggestion or a navsuggestion.
@@ -833,16 +828,14 @@ void SearchProvider::PersistTopSuggestions(
   // Other results don't need similar changes, because they shouldn't be
   // displayed asynchronously anyway.
   if (!top_query_suggestion_match_contents_.empty()) {
-    for (SearchSuggestionParser::SuggestResults::iterator sug_it =
-             results->suggest_results.begin();
+    for (auto sug_it = results->suggest_results.begin();
          sug_it != results->suggest_results.end(); ++sug_it) {
       if (sug_it->match_contents() == top_query_suggestion_match_contents_)
         sug_it->set_received_after_last_keystroke(false);
     }
   }
   if (top_navigation_suggestion_.is_valid()) {
-    for (SearchSuggestionParser::NavigationResults::iterator nav_it =
-             results->navigation_results.begin();
+    for (auto nav_it = results->navigation_results.begin();
          nav_it != results->navigation_results.end(); ++nav_it) {
       if (nav_it->url() == top_navigation_suggestion_)
         nav_it->set_received_after_last_keystroke(false);
@@ -1006,8 +999,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
     bool has_answer = false;
     base::string16 trimmed_verbatim_lower =
         base::i18n::ToLower(trimmed_verbatim);
-    for (ACMatches::iterator it = matches_.begin(); it != matches_.end();
-         ++it) {
+    for (auto it = matches_.begin(); it != matches_.end(); ++it) {
       if (it->answer &&
           base::i18n::ToLower(it->fill_into_edit) == trimmed_verbatim_lower) {
         answer_contents = it->answer_contents;
@@ -1086,8 +1078,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
   // Guarantee that if there's a legal default match anywhere in the result
   // set that it'll get returned.  The rotate() call does this by moving the
   // default match to the front of the list.
-  ACMatches::iterator default_match =
-      AutocompleteResult::FindTopMatch(&matches);
+  auto default_match = AutocompleteResult::FindTopMatch(&matches);
   if (default_match != matches.end())
     std::rotate(matches.begin(), default_match, default_match + 1);
 
@@ -1127,7 +1118,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
 
 void SearchProvider::RemoveExtraAnswers(ACMatches* matches) {
   bool answer_seen = false;
-  for (ACMatches::iterator it = matches->begin(); it != matches->end(); ++it) {
+  for (auto it = matches->begin(); it != matches->end(); ++it) {
     if (it->answer) {
       if (!answer_seen) {
         answer_seen = true;
@@ -1141,8 +1132,7 @@ void SearchProvider::RemoveExtraAnswers(ACMatches* matches) {
 }
 
 bool SearchProvider::IsTopMatchSearchWithURLInput() const {
-  ACMatches::const_iterator first_match =
-      AutocompleteResult::FindTopMatch(matches_);
+  auto first_match = AutocompleteResult::FindTopMatch(matches_);
   return (input_.type() == metrics::OmniboxInputType::URL) &&
          (first_match != matches_.end()) &&
          (first_match->relevance > CalculateRelevanceForVerbatim()) &&
@@ -1153,8 +1143,8 @@ bool SearchProvider::IsTopMatchSearchWithURLInput() const {
 void SearchProvider::AddNavigationResultsToMatches(
     const SearchSuggestionParser::NavigationResults& navigation_results,
     ACMatches* matches) {
-  for (SearchSuggestionParser::NavigationResults::const_iterator it =
-           navigation_results.begin(); it != navigation_results.end(); ++it) {
+  for (auto it = navigation_results.begin(); it != navigation_results.end();
+       ++it) {
     matches->push_back(NavigationToMatch(*it));
     // In the absence of suggested relevance scores, use only the single
     // highest-scoring result.  (The results are already sorted by relevance.)
@@ -1182,9 +1172,7 @@ void SearchProvider::AddTransformedHistoryResultsToMap(
     const SearchSuggestionParser::SuggestResults& transformed_results,
     int did_not_accept_suggestion,
     MatchMap* map) {
-  for (SearchSuggestionParser::SuggestResults::const_iterator i(
-           transformed_results.begin());
-       i != transformed_results.end();
+  for (auto i(transformed_results.begin()); i != transformed_results.end();
        ++i) {
     AddMatchToMap(*i, std::string(), did_not_accept_suggestion, true,
                   providers_.GetKeywordProviderURL() != nullptr, map);
@@ -1205,8 +1193,7 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
           input_.current_page_classification());
   const base::string16& trimmed_input =
       base::CollapseWhitespace(input_text, false);
-  for (HistoryResults::const_iterator i(results.begin()); i != results.end();
-       ++i) {
+  for (auto i(results.begin()); i != results.end(); ++i) {
     const base::string16& trimmed_suggestion =
         base::CollapseWhitespace(i->term, false);
 
@@ -1222,8 +1209,7 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
     // Add the match to |scored_results| by putting the what-you-typed match
     // on the front and appending all other matches.  We want the what-you-
     // typed match to always be first.
-    SearchSuggestionParser::SuggestResults::iterator insertion_position =
-        scored_results.end();
+    auto insertion_position = scored_results.end();
     if (trimmed_suggestion == trimmed_input) {
       found_what_you_typed_match = true;
       insertion_position = scored_results.begin();
@@ -1292,8 +1278,7 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
     }
   }
 
-  for (SearchSuggestionParser::SuggestResults::iterator i(
-           scored_results.begin()); i != scored_results.end(); ++i) {
+  for (auto i(scored_results.begin()); i != scored_results.end(); ++i) {
     if ((last_relevance != 0) && (i->relevance() >= last_relevance))
       i->set_relevance(last_relevance - 1);
     last_relevance = i->relevance();

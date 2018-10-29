@@ -81,6 +81,10 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Returns |true| if the Media Router action should be present on the toolbar
+  // or the overflow menu.
+  bool ShouldEnableAction() const;
+
  private:
   friend class MediaRouterActionControllerUnitTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterActionControllerUnitTest,
@@ -98,10 +102,6 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   // area icon is completely rolled out.
   void MaybeAddOrRemoveComponentAction();
   void MaybeAddOrRemoveTrustedAreaIcon();
-
-  // Returns |true| if the Media Router action should be present on the toolbar
-  // or the overflow menu.
-  bool ShouldEnableAction() const;
 
   // The profile |this| is associated with. There should be one instance of this
   // class per profile.

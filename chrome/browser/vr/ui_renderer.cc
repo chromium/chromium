@@ -6,10 +6,10 @@
 
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/vr/elements/ui_element.h"
+#include "chrome/browser/vr/gl_bindings.h"
 #include "chrome/browser/vr/render_info.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "chrome/browser/vr/ui_scene.h"
-#include "ui/gl/gl_bindings.h"
 
 namespace vr {
 

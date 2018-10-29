@@ -6,6 +6,7 @@ import json
 import unittest
 
 from blinkpy.common.host_mock import MockHost
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.w3c.common import (
     read_credentials,
     is_testharness_baseline,
@@ -116,4 +117,4 @@ class CommonTest(unittest.TestCase):
             is_file_exportable('third_party/fake/OWNERS')
         # Rejects absolute paths.
         with self.assertRaises(AssertionError):
-            is_file_exportable('/mock-checkout/third_party/WebKit/LayoutTests/external/wpt/OWNERS')
+            is_file_exportable('/mock-checkout/' + RELATIVE_WEB_TESTS + 'external/wpt/OWNERS')

@@ -2,10 +2,10 @@ This tests that window.scrollBy respects the page's zoom and scale factor when s
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Testing at zoom -1 and scale 1.2
 PASS window.pageYOffset is within 4 of 231
 Testing at zoom -3 and scale 0.75

@@ -4,7 +4,6 @@ This tests the blur() on on shadow host should work when a shadow host contains 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
-
 getNodeInComposedTree('shadowHostA/childInTreeOne').focus()
 PASS document.activeElement.id is "shadowHostA"
 getNodeInComposedTree('shadowHostA').blur();
@@ -41,4 +40,5 @@ PASS getNodeInComposedTree('shadowHostC/').activeElement.id is "childInTreeThree
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

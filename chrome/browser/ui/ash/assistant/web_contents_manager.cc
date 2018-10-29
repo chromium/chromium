@@ -52,6 +52,13 @@ class ManagedWebContents : public content::WebContentsDelegate,
   }
 
   ~ManagedWebContents() override {
+    // We may be destroying this instance before |callback_| was signaled that
+    // contents were ready for embedding. In such cases we still need to run the
+    // callback as it is an error to drop response callbacks which still
+    // correspond to an open interface pipe.
+    if (callback_)
+      std::move(callback_).Run(base::nullopt);
+
     web_contents_->SetDelegate(nullptr);
     Observe(nullptr);
 

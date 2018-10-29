@@ -8,7 +8,7 @@
         android:key="sign_in"
         android:title="@string/sign_in_to_chrome"/>
 
-    <org.chromium.chrome.browser.preferences.SyncErrorCardPreference
+    <Preference
         android:key="sync_error_card"
         android:icon="@drawable/sync_error"
         android:title="@string/sync_error_card_title"/>

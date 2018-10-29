@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/trace_event/trace_event_argument.h"
+#include "cc/trees/scroll_node.h"
+
 #include "cc/base/math_util.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/layer.h"
 #include "cc/trees/element_id.h"
 #include "cc/trees/property_tree.h"
-#include "cc/trees/scroll_node.h"
+
+#include "base/trace_event/traced_value.h"
 
 namespace cc {
 

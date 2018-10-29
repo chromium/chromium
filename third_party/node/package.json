@@ -6,7 +6,7 @@
     "crisper": "2.1.1",
     "eslint": "3.19.0",
     "polymer-bundler": "3.1.1",
-    "polymer-css-build": "0.3.2",
+    "polymer-css-build": "0.3.3",
     "uglify-es": "3.0.15"
   }
 }

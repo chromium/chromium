@@ -11,12 +11,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_factory.h"
+#include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/media/router/test/media_router_mojo_test.h"
 #include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/browser/media/router/test/test_helper.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 #include "chrome/browser/ui/webui/media_router/media_router_webui_message_handler.h"
+#include "chrome/browser/ui/webui/media_router/web_contents_display_observer.h"
 #include "chrome/common/media_router/media_route.h"
 #include "chrome/common/media_router/media_source_helper.h"
 #include "chrome/common/media_router/mojo/media_router.mojom.h"
@@ -33,12 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
-#include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
-#include "chrome/browser/ui/webui/media_router/web_contents_display_observer.h"
 #include "ui/display/display.h"
-#endif
 
 using content::WebContents;
 using testing::_;
@@ -82,7 +79,6 @@ class MockMediaRouterFileDialog : public MediaRouterFileDialog {
   MOCK_METHOD1(OpenFileDialog, void(Browser* browser));
 };
 
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
 class TestWebContentsDisplayObserver : public WebContentsDisplayObserver {
  public:
   explicit TestWebContentsDisplayObserver(const display::Display& display)
@@ -98,7 +94,6 @@ class TestWebContentsDisplayObserver : public WebContentsDisplayObserver {
  private:
   display::Display display_;
 };
-#endif  // !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
 
 class PresentationRequestCallbacks {
  public:
@@ -801,7 +796,6 @@ TEST_F(MediaRouterUITest, SetsForcedCastModeWithPresentationURLs) {
   media_router_ui_.reset();
 }
 
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
 // A wired display sink should not be on the sinks list when the dialog is on
 // that display, to prevent showing a fullscreen presentation window over the
 // controlling window.
@@ -862,6 +856,5 @@ TEST_F(MediaRouterUITest, UpdateSinksWhenDialogMovesToAnotherDisplay) {
   display_observer->set_display(display2);
   media_router_ui_->UpdateSinks();
 }
-#endif  // !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
 
 }  // namespace media_router

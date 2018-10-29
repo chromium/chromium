@@ -110,7 +110,8 @@ interface EmbeddedWorkerInstanceClient {
   AddMessageToConsole(blink.mojom.ConsoleMessageLevel level, string message);
   // Returns a DevToolsAgent interface for this embedded worker, used for
   // remote debugging. See DevToolsAgent for details.
-  BindDevToolsAgent(associated blink.mojom.DevToolsAgent& devtools_agent);
+  BindDevToolsAgent(associated blink.mojom.DevToolsAgentHost agent_host,
+                    associated blink.mojom.DevToolsAgent& agent);
 };
 
 // EmbeddedWorkerInstanceHost is the browser-side ("Host") of

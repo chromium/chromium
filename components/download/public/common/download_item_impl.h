@@ -276,6 +276,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   base::Time GetLastAccessTime() const override;
   bool IsTransient() const override;
   bool IsParallelDownload() const override;
+  DownloadCreationType GetDownloadCreationType() const override;
   void OnContentCheckCompleted(DownloadDangerType danger_type,
                                DownloadInterruptReason reason) override;
   void SetOpenWhenComplete(bool open) override;
@@ -297,8 +298,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // parameters. It may be different from the DownloadCreateInfo used to create
   // the DownloadItem if Start() is being called in response for a
   // download resumption request.
-  // TODO(qinmin): Remove |url_request_context_getter| once network service is
-  // enabled.
   virtual void Start(std::unique_ptr<DownloadFile> download_file,
                      std::unique_ptr<DownloadRequestHandleInterface> req_handle,
                      const DownloadCreateInfo& new_create_info,
@@ -508,7 +507,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // Construction common to all constructors. |active| should be true for new
   // downloads and false for downloads from the history.
   // |download_type| indicates to the trace event what kind of download this is.
-  void Init(bool active, DownloadItem::DownloadType download_type);
+  void Init(bool active, DownloadItem::DownloadCreationType download_type);
 
   // Callback from file thread when we initialize the DownloadFile.
   void OnDownloadFileInitialized(DownloadInterruptReason result,
@@ -771,6 +770,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // Source of the download, used in metrics.
   DownloadSource download_source_ = DownloadSource::UNKNOWN;
+
+  DownloadCreationType download_type_ =
+      DownloadCreationType::TYPE_ACTIVE_DOWNLOAD;
 
   THREAD_CHECKER(thread_checker_);
 

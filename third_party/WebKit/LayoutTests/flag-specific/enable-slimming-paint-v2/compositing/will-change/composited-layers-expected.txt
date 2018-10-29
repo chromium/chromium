@@ -10,7 +10,6 @@
       "name": "LayoutBlockFlow DIV id='willChangeOpacity' class='shouldComposite'",
       "position": [12, 42],
       "bounds": [30, 30],
-      "contentsOpaque": true,
       "backgroundColor": "#008000"
     },
     {
@@ -52,7 +51,6 @@
       "name": "LayoutBlockFlow DIV id='willChangeCombinationThatComposites' class='shouldComposite'",
       "position": [12, 416],
       "bounds": [30, 30],
-      "contentsOpaque": true,
       "backgroundColor": "#008000"
     }
   ]

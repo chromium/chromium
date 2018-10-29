@@ -19,9 +19,7 @@ class Error;
 // libraries.
 class ElfView {
  public:
-  ElfView() { ::memset(this, 0, sizeof(*this)); }
-
-  ~ElfView() {}
+  ElfView() = default;
 
   // Initialize this ElfView from its load address and a copy of its program
   // header table.
@@ -104,14 +102,14 @@ class ElfView {
 #endif
 
  protected:
-  const ELF::Phdr* phdr_;
-  size_t phdr_count_;
-  const ELF::Dyn* dynamic_;
-  size_t dynamic_count_;
-  ELF::Word dynamic_flags_;
-  ELF::Addr load_address_;
-  size_t load_size_;
-  size_t load_bias_;
+  const ELF::Phdr* phdr_ = nullptr;
+  size_t phdr_count_ = 0;
+  const ELF::Dyn* dynamic_ = nullptr;
+  size_t dynamic_count_ = 0;
+  ELF::Word dynamic_flags_ = 0;
+  ELF::Addr load_address_ = 0;
+  size_t load_size_ = 0;
+  size_t load_bias_ = 0;
 
 #if defined(__arm__) || defined(__aarch64__)
   uint8_t* packed_relocations_;

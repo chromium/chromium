@@ -20,7 +20,7 @@ namespace syncer {
 
 class CryptoSyncPrefs;
 
-// This class functions as mostly independent component of SyncServiceBase that
+// This class functions as mostly independent component of SyncService that
 // handles things related to encryption, including holding lots of state and
 // encryption communications with the sync thread.
 class SyncServiceCrypto : public SyncEncryptionHandler::Observer {
@@ -31,12 +31,14 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer {
       CryptoSyncPrefs* sync_prefs);
   ~SyncServiceCrypto() override;
 
+  void Reset();
+
   // See the SyncService header.
   base::Time GetExplicitPassphraseTime() const;
   bool IsUsingSecondaryPassphrase() const;
   void EnableEncryptEverything();
   bool IsEncryptEverythingEnabled() const;
-  void SetEncryptionPassphrase(const std::string& passphrase, bool is_explicit);
+  void SetEncryptionPassphrase(const std::string& passphrase);
   bool SetDecryptionPassphrase(const std::string& passphrase);
 
   // Returns the actual passphrase type being used for encryption.
@@ -73,7 +75,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer {
   void BeginConfigureCatchUpBeforeClear();
 
   // Used to provide the engine when it is initialized.
-  void SetSyncEngine(SyncEngine* engine) { engine_ = engine; }
+  void SetSyncEngine(SyncEngine* engine) { state_.engine = engine; }
 
   // Creates a proxy observer object that will post calls to this thread.
   std::unique_ptr<SyncEncryptionHandler::Observer> GetEncryptionObserverProxy();
@@ -82,9 +84,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer {
   std::unique_ptr<SyncEncryptionHandler::NigoriState> TakeSavedNigoriState();
 
   PassphraseRequiredReason passphrase_required_reason() const {
-    return passphrase_required_reason_;
+    return state_.passphrase_required_reason;
   }
-  bool encryption_pending() { return encryption_pending_; }
+  bool encryption_pending() const { return state_.encryption_pending; }
 
  private:
   // Calls SyncServiceBase::NotifyObservers(). Never null.
@@ -96,61 +98,71 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer {
   // outlive us.
   CryptoSyncPrefs* const sync_prefs_;
 
-  // Not-null when the engine is initialized.
-  SyncEngine* engine_ = nullptr;
+  // All the mutable state is wrapped in a struct so that it can be easily
+  // reset to its default values.
+  struct State {
+    State();
+    ~State();
 
-  // Was the last SYNC_PASSPHRASE_REQUIRED notification sent because it
-  // was required for encryption, decryption with a cached passphrase, or
-  // because a new passphrase is required?
-  PassphraseRequiredReason passphrase_required_reason_ =
-      REASON_PASSPHRASE_NOT_REQUIRED;
+    State& operator=(State&& other) = default;
 
-  // The current set of encrypted types.  Always a superset of
-  // Cryptographer::SensitiveTypes().
-  ModelTypeSet encrypted_types_ = SyncEncryptionHandler::SensitiveTypes();
+    // Not-null when the engine is initialized.
+    SyncEngine* engine = nullptr;
 
-  // Whether encrypting everything is allowed.
-  bool encrypt_everything_allowed_ = true;
+    // Was the last SYNC_PASSPHRASE_REQUIRED notification sent because it
+    // was required for encryption, decryption with a cached passphrase, or
+    // because a new passphrase is required?
+    PassphraseRequiredReason passphrase_required_reason =
+        REASON_PASSPHRASE_NOT_REQUIRED;
 
-  // Whether we want to encrypt everything.
-  bool encrypt_everything_ = false;
+    // The current set of encrypted types. Always a superset of
+    // Cryptographer::SensitiveTypes().
+    ModelTypeSet encrypted_types = SyncEncryptionHandler::SensitiveTypes();
 
-  // Whether we're waiting for an attempt to encryption all sync data to
-  // complete. We track this at this layer in order to allow the user to cancel
-  // if they e.g. don't remember their explicit passphrase.
-  bool encryption_pending_ = false;
+    // Whether encrypting everything is allowed.
+    bool encrypt_everything_allowed = true;
 
-  // Nigori state after user switching to custom passphrase, saved until
-  // transition steps complete. It will be injected into new engine after sync
-  // restart.
-  std::unique_ptr<SyncEncryptionHandler::NigoriState> saved_nigori_state_;
+    // Whether we want to encrypt everything.
+    bool encrypt_everything = false;
 
-  // We cache the cryptographer's pending keys whenever NotifyPassphraseRequired
-  // is called. This way, before the UI calls SetDecryptionPassphrase on the
-  // syncer, it can avoid the overhead of an asynchronous decryption call and
-  // give the user immediate feedback about the passphrase entered by first
-  // trying to decrypt the cached pending keys on the UI thread. Note that
-  // SetDecryptionPassphrase can still fail after the cached pending keys are
-  // successfully decrypted if the pending keys have changed since the time they
-  // were cached.
-  sync_pb::EncryptedData cached_pending_keys_;
+    // Whether we're waiting for an attempt to encryption all sync data to
+    // complete. We track this at this layer in order to allow the user to
+    // cancel if they e.g. don't remember their explicit passphrase.
+    bool encryption_pending = false;
 
-  // The state of the passphrase required to decrypt the bag of encryption keys
-  // in the nigori node. Updated whenever a new nigori node arrives or the user
-  // manually changes their passphrase state. Cached so we can synchronously
-  // check it from the UI thread.
-  PassphraseType cached_passphrase_type_ = PassphraseType::IMPLICIT_PASSPHRASE;
+    // Nigori state after user switching to custom passphrase, saved until
+    // transition steps complete. It will be injected into new engine after sync
+    // restart.
+    std::unique_ptr<SyncEncryptionHandler::NigoriState> saved_nigori_state;
 
-  // The key derivation params for the passphrase. We save them when we receive
-  // a passphrase required event, as they are a necessary piece of information
-  // to be able to properly perform a decryption attempt, and we want to be able
-  // to synchronously do that from the UI thread. For passphrase types other
-  // than CUSTOM_PASSPHRASE, their key derivation method will always be PBKDF2.
-  KeyDerivationParams passphrase_key_derivation_params_;
+    // We cache the cryptographer's pending keys whenever
+    // NotifyPassphraseRequired is called. This way, before the UI calls
+    // SetDecryptionPassphrase on the syncer, it can avoid the overhead of an
+    // asynchronous decryption call and give the user immediate feedback about
+    // the passphrase entered by first trying to decrypt the cached pending keys
+    // on the UI thread. Note that SetDecryptionPassphrase can still fail after
+    // the cached pending keys are successfully decrypted if the pending keys
+    // have changed since the time they were cached.
+    sync_pb::EncryptedData cached_pending_keys;
 
-  // If an explicit passphrase is in use, the time at which the passphrase was
-  // first set (if available).
-  base::Time cached_explicit_passphrase_time_;
+    // The state of the passphrase required to decrypt the bag of encryption
+    // keys in the nigori node. Updated whenever a new nigori node arrives or
+    // the user manually changes their passphrase state. Cached so we can
+    // synchronously check it from the UI thread.
+    PassphraseType cached_passphrase_type = PassphraseType::IMPLICIT_PASSPHRASE;
+
+    // The key derivation params for the passphrase. We save them when we
+    // receive a passphrase required event, as they are a necessary piece of
+    // information to be able to properly perform a decryption attempt, and we
+    // want to be able to synchronously do that from the UI thread. For
+    // passphrase types other than CUSTOM_PASSPHRASE, their key derivation
+    // method will always be PBKDF2.
+    KeyDerivationParams passphrase_key_derivation_params;
+
+    // If an explicit passphrase is in use, the time at which the passphrase was
+    // first set (if available).
+    base::Time cached_explicit_passphrase_time;
+  } state_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

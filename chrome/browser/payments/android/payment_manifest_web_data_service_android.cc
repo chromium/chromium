@@ -170,8 +170,7 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentWebAppManifest(
       base::android::ScopedJavaLocalRef<jbyteArray> jfingerprint(
           env, (jbyteArray)env->GetObjectArrayElement(
                    jsection_fingerprints.obj(), j));
-      base::android::JavaByteArrayToByteVector(env, jfingerprint.obj(),
-                                               &fingerprint);
+      base::android::JavaByteArrayToByteVector(env, jfingerprint, &fingerprint);
       section.fingerprints.emplace_back(fingerprint);
     }
 

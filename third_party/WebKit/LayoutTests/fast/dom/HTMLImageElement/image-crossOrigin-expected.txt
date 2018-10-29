@@ -2,7 +2,6 @@ This tests the handling of the img.crossOrigin attribute
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS 'crossOrigin' in img is true
 PASS img.crossOrigin is null
 PASS img.setAttribute('crossorigin', ''); img.crossOrigin is "anonymous"

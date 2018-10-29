@@ -18,8 +18,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.favicon.IconType;
 import org.chromium.chrome.browser.favicon.LargeIconBridge;
-import org.chromium.chrome.browser.ntp.ContextMenuManager;
-import org.chromium.chrome.browser.ntp.ContextMenuManager.ContextMenuItemId;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -542,9 +542,15 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         @Override
         public boolean isItemSupported(@ContextMenuItemId int menuItemId) {
-            // Personalized tiles are the only tiles that can be removed.
-            return !(menuItemId == ContextMenuManager.ContextMenuItemId.REMOVE
-                    && mSuggestion.sectionType != TileSectionType.PERSONALIZED);
+            switch (menuItemId) {
+                // Personalized tiles are the only tiles that can be removed.
+                case ContextMenuItemId.REMOVE:
+                    return mSuggestion.sectionType == TileSectionType.PERSONALIZED;
+                case ContextMenuItemId.LEARN_MORE:
+                    return SuggestionsConfig.scrollToLoad();
+                default:
+                    return true;
+            }
         }
 
         @Override

@@ -328,25 +328,6 @@ inline v8::Local<v8::String> V8AtomicString(v8::Isolate* isolate,
       .ToLocalChecked();
 }
 
-inline v8::Local<v8::String> V8StringFromUtf8(v8::Isolate* isolate,
-                                              const char* bytes,
-                                              int length) {
-  DCHECK(isolate);
-  return v8::String::NewFromUtf8(isolate, bytes, v8::NewStringType::kNormal,
-                                 length)
-      .ToLocalChecked();
-}
-
-inline v8::Local<v8::Value> V8Undefined() {
-  return v8::Local<v8::Value>();
-}
-
-inline v8::MaybeLocal<v8::Value> V8DateOrNaN(v8::Isolate* isolate,
-                                             double value) {
-  DCHECK(isolate);
-  return v8::Date::New(isolate->GetCurrentContext(), value);
-}
-
 inline bool IsUndefinedOrNull(v8::Local<v8::Value> value) {
   return value.IsEmpty() || value->IsNullOrUndefined();
 }
@@ -364,8 +345,10 @@ static void IndexedPropertyEnumerator(
   v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
   for (int i = 0; i < length; ++i) {
     v8::Local<v8::Integer> integer = v8::Integer::New(info.GetIsolate(), i);
-    if (!V8CallBoolean(properties->CreateDataProperty(context, i, integer)))
+    bool created;
+    if (!properties->CreateDataProperty(context, i, integer).To(&created))
       return;
+    DCHECK(created);
   }
   V8SetReturnValue(info, properties);
 }

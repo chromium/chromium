@@ -1,5 +1,3 @@
 file://components/search/OWNERS
 
-per-file *source*=mathp@chromium.org
 per-file *source*=fserb@chromium.org
-per-file *source*=huangs@chromium.org

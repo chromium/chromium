@@ -4,6 +4,7 @@
 
 import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
+import("//ui/gl/features.gni")
 
 jumbo_component("init") {
   output_name = "gl_init"
@@ -38,6 +39,10 @@ jumbo_component("init") {
       "gl_factory_android.cc",
       "gl_initializer_android.cc",
     ]
+
+    if (use_static_angle) {
+      deps += [ "//third_party/angle:libEGL_static" ]
+    }
   } else if (is_win && !use_ozone) {
     sources += [
       "gl_factory_win.cc",

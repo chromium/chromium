@@ -1,23 +1,32 @@
 This test checks our implementation of the special RegExp member variables.
 
 Properties of RegExp at startup:
-$1: {} (read-only)
-$2: {} (read-only)
-$3: {} (read-only)
-$4: {} (read-only)
-$5: {} (read-only)
-$6: {} (read-only)
-$7: {} (read-only)
-$8: {} (read-only)
-$9: {} (read-only)
-input: {} (read-write)
-lastMatch: {} (read-only)
-lastParen: {} (read-only)
-leftContext: {} (read-only)
-multiline: {false} (read-write)
-rightContext: {} (read-only)
+$&: {}
+$': {}
+$+: {}
+$1: {}
+$2: {}
+$3: {}
+$4: {}
+$5: {}
+$6: {}
+$7: {}
+$8: {}
+$9: {}
+$_: {}
+$`: {}
+input: {}
+lastMatch: {}
+lastParen: {}
+leftContext: {}
+length: {2}
+name: {RegExp}
+rightContext: {}
 
 Properties of RegExp after /(1)(2)(3)(4)(5)(6)(7)(8)(9)(0)/.exec(<1234567890>):
+$&: {1234567890}
+$': {>}
+$+: {0}
 $1: {1}
 $2: {2}
 $3: {3}
@@ -27,20 +36,25 @@ $6: {6}
 $7: {7}
 $8: {8}
 $9: {9}
+$_: {<1234567890>}
+$`: {<}
 input: {<1234567890>}
 lastMatch: {1234567890}
 lastParen: {0}
 leftContext: {<}
-multiline: {false}
+length: {2}
+name: {RegExp}
 rightContext: {>}
 
 RegExp.$0 does not exist
 RegExp.$10 does not exist
 RegExp doesn't use RegExp.input
-RegExp.multiline coerces values to booleans
 RegExp.input coerces values to strings
 
 Properties of RegExp after /(1)(2)(3)(4)(5)(6)(7)(8)(9)(0)/.exec(XXX):
+$&: {1234567890}
+$': {>}
+$+: {0}
 $1: {1}
 $2: {2}
 $3: {3}
@@ -50,15 +64,21 @@ $6: {6}
 $7: {7}
 $8: {8}
 $9: {9}
+$_: {0}
+$`: {<}
 input: {0}
 lastMatch: {1234567890}
 lastParen: {0}
 leftContext: {<}
-multiline: {true}
+length: {2}
+name: {RegExp}
 rightContext: {>}
 
 ---------- [Cleared RegExp values] ----------
 Properties of RegExp after <1234567890>.search(/(1)(2)(3)(4)(5)(6)(7)(8)(9)(0)/):
+$&: {1234567890}
+$': {>}
+$+: {0}
 $1: {1}
 $2: {2}
 $3: {3}
@@ -68,15 +88,21 @@ $6: {6}
 $7: {7}
 $8: {8}
 $9: {9}
+$_: {<1234567890>}
+$`: {<}
 input: {<1234567890>}
 lastMatch: {1234567890}
 lastParen: {0}
 leftContext: {<}
-multiline: {true}
+length: {2}
+name: {RegExp}
 rightContext: {>}
 
 ---------- [Cleared RegExp values] ----------
 Properties of RegExp after <1234567890>.replace(/(1)(2)(3)(4)(5)(6)(7)(8)(9)(0)/):
+$&: {1234567890}
+$': {>}
+$+: {0}
 $1: {1}
 $2: {2}
 $3: {3}
@@ -86,10 +112,13 @@ $6: {6}
 $7: {7}
 $8: {8}
 $9: {9}
+$_: {<1234567890>}
+$`: {<}
 input: {<1234567890>}
 lastMatch: {1234567890}
 lastParen: {0}
 leftContext: {<}
-multiline: {true}
+length: {2}
+name: {RegExp}
 rightContext: {>}
 

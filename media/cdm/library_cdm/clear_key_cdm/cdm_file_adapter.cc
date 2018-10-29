@@ -16,11 +16,11 @@ namespace {
 
 CdmFileAdapter::Status ConvertStatus(cdm::FileIOClient::Status status) {
   switch (status) {
-    case cdm::FileIOClient::kSuccess:
+    case cdm::FileIOClient::Status::kSuccess:
       return CdmFileAdapter::Status::kSuccess;
-    case cdm::FileIOClient::kInUse:
+    case cdm::FileIOClient::Status::kInUse:
       return CdmFileAdapter::Status::kInUse;
-    case cdm::FileIOClient::kError:
+    case cdm::FileIOClient::Status::kError:
       return CdmFileAdapter::Status::kError;
   }
 
@@ -35,9 +35,9 @@ CdmFileAdapter::CdmFileAdapter(CdmHostProxy* cdm_host_proxy) {
 }
 
 CdmFileAdapter::~CdmFileAdapter() {
-  DCHECK(open_cb_.is_null());
-  DCHECK(read_cb_.is_null());
-  DCHECK(write_cb_.is_null());
+  DCHECK(!open_cb_);
+  DCHECK(!read_cb_);
+  DCHECK(!write_cb_);
   file_io_->Close();
 }
 
@@ -66,12 +66,13 @@ void CdmFileAdapter::OnOpenComplete(cdm::FileIOClient::Status status) {
 void CdmFileAdapter::OnReadComplete(cdm::FileIOClient::Status status,
                                     const uint8_t* data,
                                     uint32_t data_size) {
-  std::move(read_cb_).Run(status == kSuccess && data_size > 0,
-                          std::vector<uint8_t>(data, data + data_size));
+  std::move(read_cb_).Run(
+      status == FileIOClient::Status::kSuccess && data_size > 0,
+      std::vector<uint8_t>(data, data + data_size));
 }
 
 void CdmFileAdapter::OnWriteComplete(cdm::FileIOClient::Status status) {
-  std::move(write_cb_).Run(status == kSuccess);
+  std::move(write_cb_).Run(status == FileIOClient::Status::kSuccess);
 }
 
 }  // namespace media

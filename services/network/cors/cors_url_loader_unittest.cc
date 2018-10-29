@@ -18,6 +18,7 @@
 #include "net/url_request/url_request.h"
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/cors.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -39,12 +40,13 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   }
 
   void NotifyClientOnReceiveResponse(
+      int status_code,
       const std::vector<std::string>& extra_headers) {
-    DCHECK(client_ptr_);
     ResourceResponseHead response;
     response.headers = new net::HttpResponseHeaders(
-        "HTTP/1.1 200 OK\n"
-        "Content-Type: image/png\n");
+        base::StringPrintf("HTTP/1.1 %d OK\n"
+                           "Content-Type: image/png\n",
+                           status_code));
     for (const auto& header : extra_headers)
       response.headers->AddHeader(header);
 
@@ -162,7 +164,15 @@ class CORSURLLoaderTest : public testing::Test {
   void NotifyLoaderClientOnReceiveResponse(
       const std::vector<std::string>& extra_headers = {}) {
     DCHECK(test_url_loader_factory_);
-    test_url_loader_factory_->NotifyClientOnReceiveResponse(extra_headers);
+    test_url_loader_factory_->NotifyClientOnReceiveResponse(200, extra_headers);
+  }
+
+  void NotifyLoaderClientOnReceiveResponse(
+      int status_code,
+      const std::vector<std::string>& extra_headers = {}) {
+    DCHECK(test_url_loader_factory_);
+    test_url_loader_factory_->NotifyClientOnReceiveResponse(status_code,
+                                                            extra_headers);
   }
 
   void NotifyLoaderClientOnReceiveRedirect(
@@ -219,8 +229,9 @@ class CORSURLLoaderTest : public testing::Test {
                                   const std::string& protocol,
                                   const std::string& domain,
                                   bool allow_subdomains) {
-    origin_access_list_.AddAllowListEntryForOrigin(source_origin, protocol,
-                                                   domain, allow_subdomains);
+    origin_access_list_.AddAllowListEntryForOrigin(
+        source_origin, protocol, domain, allow_subdomains,
+        network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
   }
 
   static net::RedirectInfo CreateRedirectInfo(
@@ -1015,6 +1026,149 @@ TEST_F(CORSURLLoaderTest, OriginAccessList) {
   EXPECT_FALSE(client().has_received_redirect());
   EXPECT_TRUE(client().has_received_response());
   EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_F(CORSURLLoaderTest, 304ForSimpleRevalidation) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+  const GURL new_url("https://other2.example.com/bar.png");
+
+  ResourceRequest request;
+  request.fetch_request_mode = mojom::FetchRequestMode::kCORS;
+  request.fetch_credentials_mode = mojom::FetchCredentialsMode::kOmit;
+  request.load_flags |= net::LOAD_DO_NOT_SAVE_COOKIES;
+  request.load_flags |= net::LOAD_DO_NOT_SEND_COOKIES;
+  request.load_flags |= net::LOAD_DO_NOT_SEND_AUTH_DATA;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+  request.headers.SetHeader("If-Modified-Since", "x");
+  request.headers.SetHeader("If-None-Match", "y");
+  request.headers.SetHeader("Cache-Control", "z");
+  request.is_revalidating = true;
+  CreateLoaderAndStart(request);
+
+  // No preflight, no CORS response headers.
+  NotifyLoaderClientOnReceiveResponse(304, {});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_TRUE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_F(CORSURLLoaderTest, 304ForSimpleGet) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+  const GURL new_url("https://other2.example.com/bar.png");
+
+  ResourceRequest request;
+  request.fetch_request_mode = mojom::FetchRequestMode::kCORS;
+  request.fetch_credentials_mode = mojom::FetchCredentialsMode::kOmit;
+  request.load_flags |= net::LOAD_DO_NOT_SAVE_COOKIES;
+  request.load_flags |= net::LOAD_DO_NOT_SEND_COOKIES;
+  request.load_flags |= net::LOAD_DO_NOT_SEND_AUTH_DATA;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+  CreateLoaderAndStart(request);
+
+  // No preflight, no CORS response headers.
+  NotifyLoaderClientOnReceiveResponse(304, {});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
+}
+
+TEST_F(CORSURLLoaderTest, 200ForSimpleRevalidation) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+  const GURL new_url("https://other2.example.com/bar.png");
+
+  ResourceRequest request;
+  request.fetch_request_mode = mojom::FetchRequestMode::kCORS;
+  request.fetch_credentials_mode = mojom::FetchCredentialsMode::kOmit;
+  request.load_flags |= net::LOAD_DO_NOT_SAVE_COOKIES;
+  request.load_flags |= net::LOAD_DO_NOT_SEND_COOKIES;
+  request.load_flags |= net::LOAD_DO_NOT_SEND_AUTH_DATA;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+  request.headers.SetHeader("If-Modified-Since", "x");
+  request.headers.SetHeader("If-None-Match", "y");
+  request.headers.SetHeader("Cache-Control", "z");
+  request.is_revalidating = true;
+  CreateLoaderAndStart(request);
+
+  // No preflight, no CORS response headers.
+  NotifyLoaderClientOnReceiveResponse(200, {});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
+}
+
+TEST_F(CORSURLLoaderTest, RevalidationAndPreflight) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+  const GURL new_url("https://other2.example.com/bar.png");
+
+  ResourceRequest original_request;
+  original_request.fetch_request_mode = mojom::FetchRequestMode::kCORS;
+  original_request.fetch_credentials_mode = mojom::FetchCredentialsMode::kOmit;
+  original_request.load_flags |= net::LOAD_DO_NOT_SAVE_COOKIES;
+  original_request.load_flags |= net::LOAD_DO_NOT_SEND_COOKIES;
+  original_request.load_flags |= net::LOAD_DO_NOT_SEND_AUTH_DATA;
+  original_request.method = "GET";
+  original_request.url = url;
+  original_request.request_initiator = url::Origin::Create(origin);
+  original_request.headers.SetHeader("If-Modified-Since", "x");
+  original_request.headers.SetHeader("If-None-Match", "y");
+  original_request.headers.SetHeader("Cache-Control", "z");
+  original_request.headers.SetHeader("foo", "bar");
+  original_request.is_revalidating = true;
+  CreateLoaderAndStart(original_request);
+
+  // preflight request
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, url);
+  EXPECT_EQ(GetRequest().method, "OPTIONS");
+  std::string preflight_request_headers;
+  EXPECT_TRUE(GetRequest().headers.GetHeader("access-control-request-headers",
+                                             &preflight_request_headers));
+  EXPECT_EQ(preflight_request_headers, "foo");
+
+  NotifyLoaderClientOnReceiveResponse(
+      {"Access-Control-Allow-Origin: https://example.com",
+       "Access-Control-Allow-Headers: foo"});
+  RunUntilCreateLoaderAndStartCalled();
+
+  // the actual request
+  EXPECT_EQ(2, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, url);
+  EXPECT_EQ(GetRequest().method, "GET");
+
+  NotifyLoaderClientOnReceiveResponse(
+      {"Access-Control-Allow-Origin: https://example.com"});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_TRUE(client().has_received_response());
+  ASSERT_TRUE(client().has_received_completion());
   EXPECT_EQ(net::OK, client().completion_status().error_code);
 }
 

@@ -4,6 +4,8 @@
 
 module subresource_filter.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 enum ActivationLevel {
   kDisabled,
   kDryRun,
@@ -37,6 +39,25 @@ struct ActivationState {
   bool enable_logging = false;
 };
 
+// Contains statistics and performance metrics collected by the
+// DocumentSubresourceFilter.
+struct DocumentLoadStatistics {
+  // The number of subresource loads that went through the
+  // DocumentSubresouceFilter filtering methods.
+  int32 num_loads_total = 0;
+
+  // Statistics on the number of subresource loads that were evaluated, were
+  // matched by filtering rules, and were disallowed, respectively, during the
+  // lifetime of a DocumentSubresourceFilter.
+  int32 num_loads_evaluated = 0;
+  int32 num_loads_matching_rules = 0;
+  int32 num_loads_disallowed = 0;
+
+  // Total time spent in GetLoadPolicy() calls evaluating subresource loads.
+  mojo_base.mojom.TimeDelta evaluation_total_wall_duration;
+  mojo_base.mojom.TimeDelta evaluation_total_cpu_duration;
+};
+
 interface SubresourceFilterHost {
   // Called the first time a subresource load is disallowed for the most
   // recently committed document load in a frame. It is used to trigger a UI
@@ -49,5 +70,24 @@ interface SubresourceFilterHost {
   // an ad via SubresourceFilterMsg_ActivateForNextCommittedLoad, at
   // ReadyToCommitNavigation time.
   FrameIsAdSubframe();
+
+  // This is sent to a RenderFrameHost in the browser when a document load is
+  // finished, just before the DidFinishLoad message, and contains statistics
+  // collected by the DocumentSubresourceFilter up until that point: the number
+  // of subresources evaluated/disallowed/etc, and total time spent on
+  // evaluating subresource loads in its allowLoad method. The time metrics are
+  // equal to zero if performance measurements were disabled for the load.
+  SetDocumentLoadStatistics(DocumentLoadStatistics statistics);
+};
+
+interface SubresourceFilterAgent {
+  // Instructs the renderer to activate subresource filtering at the specified
+  // |activation_state| for the document load committed next in a frame.
+  //
+  // Most be called just before mojom::FrameNavigationControl::CommitNavigation,
+  // at ReadyToCommitNavigation time. If not called, the default behavior is
+  // mojom::ActivationLevel::kDisabled.
+  ActivateForNextCommittedLoad(ActivationState activation_state,
+                               bool is_ad_subframe);
 };
 

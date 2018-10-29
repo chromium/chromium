@@ -39,14 +39,6 @@ Polymer({
      */
     pageVisibility: Object,
 
-    /** @private {chrome.settingsPrivate.PrefObject} */
-    safeBrowsingExtendedReportingPref_: {
-      type: Object,
-      value: function() {
-        return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
-      },
-    },
-
     /**
      * Used for HTML bindings. This is defined as a property rather than within
      * the ready callback, because the value needs to be available before
@@ -84,51 +76,11 @@ Polymer({
   ready: function() {
     this.browserProxy_ = settings.PrivacyPageBrowserProxyImpl.getInstance();
 
-    const setSber = this.setSafeBrowsingExtendedReporting_.bind(this);
-    this.addWebUIListener('safe-browsing-extended-reporting-change', setSber);
-    this.browserProxy_.getSafeBrowsingExtendedReporting().then(setSber);
-
     // <if expr="_google_chrome and not chromeos">
     const setMetricsReportingPref = this.setMetricsReportingPref_.bind(this);
     this.addWebUIListener('metrics-reporting-change', setMetricsReportingPref);
     this.browserProxy_.getMetricsReporting().then(setMetricsReportingPref);
     // </if>
-  },
-
-  /** @private */
-  onSberChange_: function() {
-    const enabled = this.$.safeBrowsingExtendedReportingControl.checked;
-    this.browserProxy_.setSafeBrowsingExtendedReportingEnabled(enabled);
-  },
-
-  /**
-   * TODO(crbug.com/855945): Use this function for the spell check error hint
-   * @param {!Event} e
-   * @private
-   */
-  onLanguageLinkBoxClick_: function(e) {
-    if (e.target.tagName === 'A') {
-      e.preventDefault();
-      settings.navigateTo(settings.routes.LANGUAGES);
-    }
-  },
-
-  /**
-   * @param {!SberPrefState} sberPrefState SBER enabled and managed state.
-   * @private
-   */
-  setSafeBrowsingExtendedReporting_: function(sberPrefState) {
-    // Ignore the next change because it will happen when we set the pref.
-    const pref = {
-      key: '',
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: sberPrefState.enabled,
-    };
-    if (sberPrefState.managed) {
-      pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-      pref.controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
-    }
-    this.safeBrowsingExtendedReportingPref_ = pref;
   },
 
   // <if expr="_google_chrome and not chromeos">
@@ -174,5 +126,15 @@ Polymer({
     settings.LifetimeBrowserProxyImpl.getInstance().restart();
   },
   // </if>
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showSpellCheckControl_: function() {
+    return !!this.prefs.spellcheck &&
+        /** @type {!Array<string>} */
+        (this.prefs.spellcheck.dictionaries.value).length > 0;
+  },
 });
 })();

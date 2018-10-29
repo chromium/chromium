@@ -31,7 +31,7 @@
 namespace blink {
 
 DelayDSPKernel::DelayDSPKernel(DelayProcessor* processor)
-    : AudioDelayDSPKernel(processor, AudioUtilities::kRenderQuantumFrames) {
+    : AudioDelayDSPKernel(processor, audio_utilities::kRenderQuantumFrames) {
   DCHECK(processor);
   DCHECK_GT(processor->SampleRate(), 0);
   if (!(processor && processor->SampleRate() > 0))
@@ -63,9 +63,9 @@ double DelayDSPKernel::DelayTime(float) {
 }
 
 void DelayDSPKernel::ProcessOnlyAudioParams(size_t frames_to_process) {
-  DCHECK_LE(frames_to_process, AudioUtilities::kRenderQuantumFrames);
+  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
 
-  float values[AudioUtilities::kRenderQuantumFrames];
+  float values[audio_utilities::kRenderQuantumFrames];
 
   GetDelayProcessor()->DelayTime().CalculateSampleAccurateValues(
       values, frames_to_process);

@@ -18,6 +18,8 @@
 #include "base/time/time.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/time.h"
+#include "components/sync/device_info/device_info.h"
+#include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -100,30 +102,21 @@ class LocalSessionWriteBatch : public LocalSessionEventHandlerImpl::WriteBatch {
 
 SessionSyncBridge::SessionSyncBridge(
     SyncSessionsClient* sessions_client,
-    syncer::SessionSyncPrefs* sync_prefs,
-    syncer::LocalDeviceInfoProvider* local_device_info_provider,
-    const syncer::RepeatingModelTypeStoreFactory& store_factory,
-    const base::RepeatingClosure& foreign_sessions_updated_callback,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
     : ModelTypeSyncBridge(std::move(change_processor)),
       sessions_client_(sessions_client),
       local_session_event_router_(
           sessions_client->GetLocalSessionEventRouter()),
-      foreign_sessions_updated_callback_(foreign_sessions_updated_callback),
       favicon_cache_(sessions_client->GetFaviconService(),
                      sessions_client->GetHistoryService(),
                      kMaxSyncFavicons),
       session_store_factory_(SessionStore::CreateFactory(
           sessions_client,
-          sync_prefs,
-          local_device_info_provider,
-          store_factory,
           base::BindRepeating(&FaviconCache::UpdateMappingsFromForeignTab,
                               base::Unretained(&favicon_cache_)))),
       weak_ptr_factory_(this) {
   DCHECK(sessions_client_);
   DCHECK(local_session_event_router_);
-  DCHECK(foreign_sessions_updated_callback_);
 }
 
 SessionSyncBridge::~SessionSyncBridge() {
@@ -172,11 +165,8 @@ SessionSyncBridge::CreateMetadataChangeList() {
 base::Optional<syncer::ModelError> SessionSyncBridge::MergeSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  // TODO(crbug.com/876490): Here and elsewhere in this file, CHECKs have been
-  // introduced to investigate some crashes in the wild. Let's downgrade all
-  // CHECKs to DCHECKs as soon as the investigation is completed.
-  CHECK(syncing_);
-  CHECK(change_processor()->IsTrackingMetadata());
+  DCHECK(syncing_);
+  DCHECK(change_processor()->IsTrackingMetadata());
 
   StartLocalSessionEventHandler();
 
@@ -186,9 +176,9 @@ base::Optional<syncer::ModelError> SessionSyncBridge::MergeSyncData(
 
 void SessionSyncBridge::StartLocalSessionEventHandler() {
   // We should be ready to propagate local state to sync.
-  CHECK(syncing_);
-  CHECK(!syncing_->local_session_event_handler);
-  CHECK(change_processor()->IsTrackingMetadata());
+  DCHECK(syncing_);
+  DCHECK(!syncing_->local_session_event_handler);
+  DCHECK(change_processor()->IsTrackingMetadata());
 
   syncing_->local_session_event_handler =
       std::make_unique<LocalSessionEventHandlerImpl>(
@@ -204,8 +194,8 @@ void SessionSyncBridge::StartLocalSessionEventHandler() {
 base::Optional<syncer::ModelError> SessionSyncBridge::ApplySyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  CHECK(change_processor()->IsTrackingMetadata());
-  CHECK(syncing_);
+  DCHECK(change_processor()->IsTrackingMetadata());
+  DCHECK(syncing_);
 
   // Merging sessions is simple: remote entities are expected to be foreign
   // sessions (identified by the session tag)  and hence must simply be
@@ -268,7 +258,7 @@ base::Optional<syncer::ModelError> SessionSyncBridge::ApplySyncChanges(
   SessionStore::WriteBatch::Commit(std::move(batch));
 
   if (!entity_changes.empty()) {
-    foreign_sessions_updated_callback_.Run();
+    sessions_client_->NotifyForeignSessionUpdated();
   }
 
   return base::nullopt;
@@ -310,7 +300,7 @@ ModelTypeSyncBridge::StopSyncResponse SessionSyncBridge::ApplyStopSyncChanges(
 
 std::unique_ptr<LocalSessionEventHandlerImpl::WriteBatch>
 SessionSyncBridge::CreateLocalSessionWriteBatch() {
-  CHECK(syncing_);
+  DCHECK(syncing_);
 
   // If a remote client mangled with our local session (typically deleted
   // entities due to garbage collection), we resubmit all local entities at this
@@ -345,25 +335,34 @@ void SessionSyncBridge::OnFaviconVisited(const GURL& page_url,
 
 void SessionSyncBridge::OnSyncStarting(
     const syncer::DataTypeActivationRequest& request) {
-  CHECK(!syncing_);
+  DCHECK(!syncing_);
 
-  session_store_factory_.Run(base::BindOnce(
-      &SessionSyncBridge::OnStoreInitialized, weak_ptr_factory_.GetWeakPtr()));
+  const syncer::DeviceInfo* device_info =
+      sessions_client_->GetLocalDeviceInfo();
+
+  // DeviceInfo must be available by the time sync starts, because there's no
+  // task posting involved in the sessions controller.
+  DCHECK(device_info);
+  DCHECK_EQ(device_info->guid(), request.cache_guid);
+
+  session_store_factory_.Run(
+      *device_info, base::BindOnce(&SessionSyncBridge::OnStoreInitialized,
+                                   weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SessionSyncBridge::OnStoreInitialized(
     const base::Optional<syncer::ModelError>& error,
     std::unique_ptr<SessionStore> store,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
-  CHECK(!syncing_);
+  DCHECK(!syncing_);
 
   if (error) {
     change_processor()->ReportError(*error);
     return;
   }
 
-  CHECK(store);
-  CHECK(metadata_batch);
+  DCHECK(store);
+  DCHECK(metadata_batch);
 
   syncing_.emplace();
   syncing_->store = std::move(store);
@@ -446,7 +445,7 @@ void SessionSyncBridge::DeleteForeignSessionWithBatch(
   change_processor()->Delete(header_storage_key,
                              batch->GetMetadataChangeList());
 
-  foreign_sessions_updated_callback_.Run();
+  sessions_client_->NotifyForeignSessionUpdated();
 }
 
 std::unique_ptr<SessionStore::WriteBatch>

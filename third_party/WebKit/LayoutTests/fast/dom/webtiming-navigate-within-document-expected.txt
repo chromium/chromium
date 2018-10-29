@@ -2,7 +2,6 @@ This test checks that navigating within the document does not reset Web Timing n
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS connectEnd is unchanged.
 PASS connectStart is unchanged.
 PASS domComplete is unchanged.

@@ -8,6 +8,7 @@
 #include "ash/assistant/assistant_interaction_controller.h"
 #include "ash/assistant/assistant_screen_context_controller.h"
 #include "ash/assistant/ui/assistant_container_view.h"
+#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -75,8 +76,11 @@ void AssistantUiController::OnWidgetActivationChanged(views::Widget* widget,
   if (active) {
     container_view_->RequestFocus();
   } else {
-    // When the widget is deactivated the UI should hide. Interacting with
-    // the metalayer does not cause widget deactivation.
+    // When the Assistant widget is deactivated we should hide Assistant UI.
+    // We already handle press events happening outside of the UI container but
+    // this will also handle the case where we are deactivated without a press
+    // event occurring. This happens, for example, when launching Chrome OS
+    // feedback using keyboard shortcuts.
     HideUi(AssistantSource::kUnspecified);
   }
 }
@@ -93,8 +97,7 @@ void AssistantUiController::OnWidgetDestroying(views::Widget* widget) {
   model_.SetVisibility(AssistantVisibility::kClosed,
                        AssistantSource::kUnspecified);
 
-  container_view_->GetWidget()->RemoveObserver(this);
-  container_view_ = nullptr;
+  ResetContainerView();
 }
 
 void AssistantUiController::OnInputModalityChanged(
@@ -109,7 +112,7 @@ void AssistantUiController::OnInteractionStateChanged(
 
   // If there is an active interaction, we need to show Assistant UI if it is
   // not already showing. We don't have enough information here to know what
-  // the interaction source is, but at the moment we have no need to know.
+  // the interaction source is.
   ShowUi(AssistantSource::kUnspecified);
 }
 
@@ -212,9 +215,17 @@ void AssistantUiController::OnDeepLinkReceived(
   UpdateUiMode(AssistantUiMode::kWebUi);
 }
 
-void AssistantUiController::OnUrlOpened(const GURL& url) {
-  // We hide Assistant UI when opening a URL in a new tab.
-  if (model_.visibility() == AssistantVisibility::kVisible)
+void AssistantUiController::OnUrlOpened(const GURL& url, bool from_server) {
+  if (model_.visibility() != AssistantVisibility::kVisible)
+    return;
+
+  // We close the Assistant UI entirely when opening a new browser tab if the
+  // navigation was initiated by a server response. Otherwise the navigation
+  // was user initiated so we only hide the UI to retain session state. That way
+  // the user can choose to resume their session if they are so inclined.
+  if (from_server)
+    CloseUi(AssistantSource::kUnspecified);
+  else
     HideUi(AssistantSource::kUnspecified);
 }
 
@@ -227,16 +238,39 @@ void AssistantUiController::OnUiVisibilityChanged(
           ? mojom::VoiceInteractionState::RUNNING
           : mojom::VoiceInteractionState::STOPPED);
 
-  if (new_visibility == AssistantVisibility::kHidden) {
-    // When hiding the UI, start a timer to automatically close ourselves after
-    // |kAutoCloseThreshold|. This is to give the user an opportunity to resume
-    // their previous session before it is automatically finished.
-    auto_close_timer_.Start(FROM_HERE, kAutoCloseThreshold,
-                            base::BindRepeating(&AssistantUiController::CloseUi,
-                                                weak_factory_.GetWeakPtr(),
-                                                AssistantSource::kUnspecified));
-  } else {
-    auto_close_timer_.Stop();
+  switch (new_visibility) {
+    case AssistantVisibility::kClosed:
+      // When the UI is closed, we stop the auto close timer as it may be
+      // running and also stop monitoring events.
+      auto_close_timer_.Stop();
+      event_monitor_.reset();
+      break;
+    case AssistantVisibility::kHidden:
+      // When hiding the UI, we start a timer to automatically close ourselves
+      // after |kAutoCloseThreshold|. This is to give the user an opportunity to
+      // resume their previous session before it is automatically finished.
+      auto_close_timer_.Start(
+          FROM_HERE, kAutoCloseThreshold,
+          base::BindRepeating(&AssistantUiController::CloseUi,
+                              weak_factory_.GetWeakPtr(),
+                              AssistantSource::kUnspecified));
+
+      // Because the UI is not visible we needn't monitor events.
+      event_monitor_.reset();
+      break;
+    case AssistantVisibility::kVisible:
+      // Upon becoming visible, we stop the auto close timer.
+      auto_close_timer_.Stop();
+
+      // We need to monitor events for the root window while we're visible to
+      // give us an opportunity to dismiss Assistant UI when the user starts an
+      // interaction outside of our bounds. TODO(dmblack): Investigate how this
+      // behaves in a multi-display environment.
+      gfx::NativeWindow root_window =
+          container_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
+      event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+          this, root_window, {ui::ET_MOUSE_PRESSED, ui::ET_TOUCH_PRESSED});
+      break;
   }
 
   // Metalayer should not be sticky. Disable when the UI is no longer visible.
@@ -266,10 +300,8 @@ void AssistantUiController::ShowUi(AssistantSource source) {
     return;
   }
 
-  if (!container_view_) {
-    container_view_ = new AssistantContainerView(assistant_controller_);
-    container_view_->GetWidget()->AddObserver(this);
-  }
+  if (!container_view_)
+    CreateContainerView();
 
   // Note that we initially show the Assistant widget as inactive. This is
   // necessary due to limitations imposed by retrieving screen context. Once we
@@ -337,8 +369,130 @@ void AssistantUiController::UpdateUiMode(
                        : AssistantUiMode::kMainUi);
 }
 
+void AssistantUiController::OnKeyboardWorkspaceOccludedBoundsChanged(
+    const gfx::Rect& new_bounds) {
+  DCHECK(container_view_);
+
+  // Check the display for root window and where the keyboard shows to handle
+  // the case when there are multiple monitors and the virtual keyboard is shown
+  // on a different display other than Assistant UI.
+  aura::Window* root_window =
+      container_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
+  display::Display keyboard_display =
+      display::Screen::GetScreen()->GetDisplayMatching(new_bounds);
+  if (!new_bounds.IsEmpty() &&
+      root_window !=
+          Shell::Get()->GetRootWindowForDisplayId(keyboard_display.id())) {
+    return;
+  }
+
+  // Cache the keyboard workspace occluded bounds.
+  keyboard_workspace_occluded_bounds_ = new_bounds;
+
+  // This keyboard event handles the Assistant UI change when:
+  // 1. accessibility keyboard or normal virtual keyboard pops up or
+  // dismisses. 2. display metrics change (zoom in/out or rotation) when
+  // keyboard shows.
+  UpdateUsableWorkArea(root_window);
+}
+
+void AssistantUiController::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  DCHECK(container_view_);
+
+  // Disable this display event when virtual keyboard shows for solving the
+  // inconsistency between normal virtual keyboard and accessibility keyboard in
+  // changing the work area (accessibility keyboard will change the display work
+  // area but virtual keyboard won't). Display metrics change with keyboard
+  // showing is instead handled by OnKeyboardWorkspaceOccludedBoundsChanged.
+  if (keyboard_workspace_occluded_bounds_.IsEmpty()) {
+    aura::Window* root_window =
+        container_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
+    if (root_window == Shell::Get()->GetRootWindowForDisplayId(display.id())) {
+      UpdateUsableWorkArea(root_window);
+    }
+  }
+}
+
+void AssistantUiController::OnEvent(const ui::Event& event) {
+  DCHECK(event.type() == ui::ET_MOUSE_PRESSED ||
+         event.type() == ui::ET_TOUCH_PRESSED);
+
+  const ui::LocatedEvent* located_event = event.AsLocatedEvent();
+  const gfx::Point screen_location =
+      event.target() ? event.target()->GetScreenLocation(*located_event)
+                     : located_event->root_location();
+
+  const gfx::Rect screen_bounds =
+      container_view_->GetWidget()->GetWindowBoundsInScreen();
+  const gfx::Rect keyboard_bounds =
+      keyboard::KeyboardController::Get()->GetWorkspaceOccludedBounds();
+
+  // Pressed events outside our widget bounds should result in hiding of the
+  // Assistant UI. The exception to this rule is if the user is interacting
+  // with the virtual keyboard in which case we should not dismiss Assistant UI.
+  // Note that this event does not fire during a Metalayer session so we needn't
+  // enforce logic to prevent hiding when using the stylus.
+  if (!screen_bounds.Contains(screen_location) &&
+      !keyboard_bounds.Contains(screen_location)) {
+    HideUi(AssistantSource::kUnspecified);
+  }
+}
+
+void AssistantUiController::UpdateUsableWorkArea(aura::Window* root_window) {
+  gfx::Rect usable_work_area;
+  gfx::Rect screen_bounds = root_window->GetBoundsInScreen();
+
+  if (keyboard_workspace_occluded_bounds_.height() != 0) {
+    // When keyboard shows. Unlike accessibility keyboard, normal virtual
+    // keyboard won't change the display work area, so the new usable work
+    // area needs to be calculated manually by subtracting the keyboard
+    // occluded bounds from the screen bounds.
+    usable_work_area = gfx::Rect(
+        screen_bounds.x(), screen_bounds.y(), screen_bounds.width(),
+        screen_bounds.height() - keyboard_workspace_occluded_bounds_.height());
+  } else {
+    // When keyboard hides, the new usable display work area is the same
+    // as the whole display work area for the root window.
+    display::Display display =
+        display::Screen::GetScreen()->GetDisplayMatching(screen_bounds);
+    usable_work_area = display.work_area();
+  }
+
+  usable_work_area.Inset(kMarginDip, kMarginDip);
+  model_.SetUsableWorkArea(usable_work_area);
+}
+
 AssistantContainerView* AssistantUiController::GetViewForTest() {
   return container_view_;
+}
+
+void AssistantUiController::CreateContainerView() {
+  container_view_ = new AssistantContainerView(assistant_controller_);
+  container_view_->GetWidget()->AddObserver(this);
+
+  // To save resources, only watch these events while Assistant UI exists.
+  display::Screen::GetScreen()->AddObserver(this);
+  keyboard::KeyboardController::Get()->AddObserver(this);
+
+  // Retrieve the current keyboard occluded bounds.
+  keyboard_workspace_occluded_bounds_ =
+      keyboard::KeyboardController::Get()->GetWorkspaceOccludedBounds();
+
+  // Set the initial usable work area for Assistant views.
+  aura::Window* root_window =
+      container_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
+  UpdateUsableWorkArea(root_window);
+}
+
+void AssistantUiController::ResetContainerView() {
+  // Remove observers when the Assistant UI is closed.
+  keyboard::KeyboardController::Get()->RemoveObserver(this);
+  display::Screen::GetScreen()->RemoveObserver(this);
+
+  container_view_->GetWidget()->RemoveObserver(this);
+  container_view_ = nullptr;
 }
 
 }  // namespace ash

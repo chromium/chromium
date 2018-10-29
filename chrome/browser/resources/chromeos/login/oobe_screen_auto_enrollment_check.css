@@ -12,4 +12,5 @@
   display: flex;
   justify-content: center;
   margin-top: 130px;
+  min-height: 0;
 }

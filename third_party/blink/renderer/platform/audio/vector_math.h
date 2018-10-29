@@ -35,7 +35,7 @@
 // will ideally be optimized.
 
 namespace blink {
-namespace VectorMath {
+namespace vector_math {
 
 // Direct vector convolution:
 //
@@ -141,7 +141,7 @@ PLATFORM_EXPORT void Vclip(const float* source_p,
                            int dest_stride,
                            size_t frames_to_process);
 
-}  // namespace VectorMath
+}  // namespace vector_math
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_VECTOR_MATH_H_

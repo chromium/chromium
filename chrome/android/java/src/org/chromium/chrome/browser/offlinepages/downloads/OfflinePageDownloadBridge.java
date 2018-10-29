@@ -109,8 +109,6 @@ public class OfflinePageDownloadBridge {
     /**
      * Opens the offline page identified by the given offlineId and the LoadUrlParams in the current
      * tab. If no tab is current, the page is not opened.
-     * TODO(crbug.com/852872): The current tab could change at any time. We should instead pass the
-     *  tab or tab ID into this function to ensure we're using the right tab.
      */
     private static void openItemInCurrentTab(long offlineId, LoadUrlParams params) {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();

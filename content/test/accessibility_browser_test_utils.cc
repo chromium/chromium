@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
@@ -82,11 +83,11 @@ void AccessibilityNotificationWaiter::WaitForNotification() {
 }
 
 const ui::AXTree& AccessibilityNotificationWaiter::GetAXTree() const {
-  CR_DEFINE_STATIC_LOCAL(ui::AXTree, empty_tree, ());
+  static base::NoDestructor<ui::AXTree> empty_tree;
   const ui::AXTree* tree = frame_host_->GetAXTreeForTesting();
   if (tree)
     return *tree;
-  return empty_tree;
+  return *empty_tree;
 }
 
 void AccessibilityNotificationWaiter::OnAccessibilityEvent(

@@ -534,17 +534,6 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
     }
 
     /**
-     * @return Whether or not any tabs in this layer use the toolbar resource.
-     */
-    public boolean usesToolbarLayer() {
-        if (mLayoutTabs == null) return false;
-        for (int i = 0; i < mLayoutTabs.length; i++) {
-            if (mLayoutTabs[i].showToolbar()) return true;
-        }
-        return false;
-    }
-
-    /**
      * Initializes a {@link LayoutTab} with data from the {@link LayoutUpdateHost}. This function
      * eventually needs to be called but may be overridden to manage the posting traffic.
      *
@@ -853,7 +842,7 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
     }
 
     /**
-     * @return Whether or not the layout should permenantly show the browser controls.
+     * @return Whether or not the layout should permanently show the browser controls.
      */
     public boolean forceShowBrowserControlsAndroidView() {
         return false;

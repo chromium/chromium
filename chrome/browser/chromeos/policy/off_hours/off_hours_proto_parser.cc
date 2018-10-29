@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/policy/weekly_time/time_utils.h"
+#include "chromeos/policy/weekly_time/time_utils.h"
 
 namespace em = enterprise_management;
 

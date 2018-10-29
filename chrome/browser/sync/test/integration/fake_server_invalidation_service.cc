@@ -70,8 +70,7 @@ void FakeServerInvalidationService::OnCommit(
   syncer::ObjectIdSet object_ids = syncer::ModelTypeSetToObjectIdSet(
       committed_model_types);
   syncer::ObjectIdInvalidationMap invalidation_map;
-  for (syncer::ObjectIdSet::const_iterator it = object_ids.begin();
-       it != object_ids.end(); ++it) {
+  for (auto it = object_ids.begin(); it != object_ids.end(); ++it) {
     // TODO(pvalenzuela): Create more refined invalidations instead of
     // invalidating all items of a given type.
 

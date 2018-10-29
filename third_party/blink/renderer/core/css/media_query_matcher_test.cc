@@ -18,7 +18,7 @@ TEST(MediaQueryMatcherTest, LostFrame) {
   MediaQueryMatcher* matcher =
       MediaQueryMatcher::Create(page_holder->GetDocument());
   scoped_refptr<MediaQuerySet> query_set =
-      MediaQuerySet::Create(MediaTypeNames::all);
+      MediaQuerySet::Create(media_type_names::kAll);
   ASSERT_TRUE(matcher->Evaluate(query_set.get()));
 
   matcher->DocumentDetached();

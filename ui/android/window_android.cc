@@ -42,6 +42,7 @@ class WindowAndroid::WindowBeginFrameSource : public viz::BeginFrameSource {
   void RemoveObserver(viz::BeginFrameObserver* obs) override;
   void DidFinishFrame(viz::BeginFrameObserver* obs) override {}
   bool IsThrottled() const override { return true; }
+  void OnGpuNoLongerBusy() override;
 
   void OnVSync(base::TimeTicks frame_time, base::TimeDelta vsync_period);
   void OnPauseChanged(bool paused);
@@ -96,6 +97,11 @@ void WindowAndroid::WindowBeginFrameSource::RemoveObserver(
     window_->SetNeedsBeginFrames(false);
 }
 
+void WindowAndroid::WindowBeginFrameSource::OnGpuNoLongerBusy() {
+  for (auto& obs : observers_)
+    obs.OnBeginFrame(last_begin_frame_args_);
+}
+
 void WindowAndroid::WindowBeginFrameSource::OnVSync(
     base::TimeTicks frame_time,
     base::TimeDelta vsync_period) {
@@ -106,9 +112,9 @@ void WindowAndroid::WindowBeginFrameSource::OnVSync(
       deadline, vsync_period, viz::BeginFrameArgs::NORMAL);
   DCHECK(last_begin_frame_args_.IsValid());
   next_sequence_number_++;
-
-  for (auto& obs : observers_)
-    obs.OnBeginFrame(last_begin_frame_args_);
+  if (RequestCallbackOnGpuAvailable())
+    return;
+  OnGpuNoLongerBusy();
 }
 
 void WindowAndroid::WindowBeginFrameSource::OnPauseChanged(bool paused) {

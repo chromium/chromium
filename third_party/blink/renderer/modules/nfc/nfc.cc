@@ -270,7 +270,7 @@ struct TypeConverter<NFCMessagePtr, blink::NFCMessage> {
     NFCMessagePtr messagePtr = NFCMessage::New();
     messagePtr->url = message.url();
     messagePtr->data.resize(message.records().size());
-    for (size_t i = 0; i < message.records().size(); ++i) {
+    for (wtf_size_t i = 0; i < message.records().size(); ++i) {
       NFCRecordPtr record = NFCRecord::From(message.records()[i]);
       if (record.is_null())
         return nullptr;
@@ -619,7 +619,7 @@ NFCMessage ToNFCMessage(ScriptState* script_state,
   NFCMessage nfc_message;
   nfc_message.setURL(message->url);
   blink::HeapVector<NFCRecord> records;
-  for (size_t i = 0; i < message->data.size(); ++i)
+  for (wtf_size_t i = 0; i < message->data.size(); ++i)
     records.push_back(ToNFCRecord(script_state, message->data[i]));
   nfc_message.setRecords(records);
   return nfc_message;
@@ -627,7 +627,7 @@ NFCMessage ToNFCMessage(ScriptState* script_state,
 
 size_t GetNFCMessageSize(const device::mojom::blink::NFCMessagePtr& message) {
   size_t message_size = message->url.CharactersSizeInBytes();
-  for (size_t i = 0; i < message->data.size(); ++i) {
+  for (wtf_size_t i = 0; i < message->data.size(); ++i) {
     message_size += message->data[i]->media_type.CharactersSizeInBytes();
     message_size += message->data[i]->data.size();
   }
@@ -775,7 +775,7 @@ ScriptPromise NFC::watch(ScriptState* script_state,
 }
 
 // https://w3c.github.io/web-nfc/#dom-nfc-cancelwatch
-ScriptPromise NFC::cancelWatch(ScriptState* script_state, long id) {
+ScriptPromise NFC::cancelWatch(ScriptState* script_state, int32_t id) {
   ScriptPromise promise = RejectIfNotSupported(script_state);
   if (!promise.IsEmpty())
     return promise;
@@ -872,8 +872,8 @@ bool NFC::IsSupportedInContext(ExecutionContext* context,
                                String& error_message) {
   // https://w3c.github.io/web-nfc/#security-policies
   // WebNFC API must be only accessible from top level browsing context.
-  if (!ToDocument(context)->domWindow()->GetFrame() ||
-      !ToDocument(context)->GetFrame()->IsMainFrame()) {
+  if (!To<Document>(context)->domWindow()->GetFrame() ||
+      !To<Document>(context)->GetFrame()->IsMainFrame()) {
     error_message = "Must be in a top-level browsing context";
     return false;
   }

@@ -13,6 +13,8 @@ extern const char kExploreSitesVariationParameterName[];
 
 extern const char kExploreSitesVariationExperimental[];
 
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.explore_sites
 enum class ExploreSitesVariation { ENABLED, EXPERIMENT, DISABLED };
 
 ExploreSitesVariation GetExploreSitesVariation();

@@ -22,7 +22,7 @@ SourceBufferRange::SourceBufferRange(
       next_buffer_index_(-1),
       interbuffer_distance_cb_(interbuffer_distance_cb),
       size_in_bytes_(0) {
-  DCHECK(!interbuffer_distance_cb.is_null());
+  DCHECK(interbuffer_distance_cb);
 }
 
 SourceBufferRange::~SourceBufferRange() = default;

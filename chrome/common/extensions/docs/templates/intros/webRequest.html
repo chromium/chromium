@@ -130,14 +130,14 @@ Moreover, only the following schemes are accessible:
 <code>wss://</code> (<span class="availability">since Chrome 58</span>), or
 <code>chrome-extension://</code>.
 In addition, even certain requests with URLs using one of the above schemes
-are hidden, e.g.,
+are hidden. These include
 <code>chrome-extension://other_extension_id</code> where
 <code>other_extension_id</code> is not the ID of the extension to handle
 the request,
 <code>https://www.google.com/chrome</code>,
-and others (this list is not complete). Also synchronous XMLHttpRequests from
-your extension are hidden from blocking event handlers in order to prevent
-deadlocks.
+and other sensitive requests core to browser functionality. Also synchronous
+XMLHttpRequests from your extension are hidden from blocking event handlers in
+order to prevent deadlocks.
 Note that for some of the supported schemes the set of available events might be
 limited due to the nature of the corresponding protocol.
 For example, for the <q>file:</q> scheme, only <code>onBeforeRequest</code>,

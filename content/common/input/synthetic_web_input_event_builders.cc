@@ -110,10 +110,10 @@ WebGestureEvent SyntheticWebGestureEventBuilder::Build(
     result.data.tap.tap_count = 1;
     result.data.tap.width = 10;
     result.data.tap.height = 10;
-  } else if (WebInputEvent::IsPinchGestureEventType(type)) {
-    result.SetNeedsWheelEvent(source_device ==
-                              blink::kWebGestureDeviceTouchpad);
   }
+
+  result.SetNeedsWheelEvent(result.IsTouchpadZoomEvent());
+
   return result;
 }
 

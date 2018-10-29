@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View;
 
+import org.chromium.chrome.browser.modaldialog.DialogDismissalCause;
 import org.chromium.chrome.browser.modaldialog.ModalDialogManager;
 import org.chromium.chrome.browser.modaldialog.ModalDialogView;
 
@@ -98,14 +99,11 @@ public class VrAlertDialog extends AlertDialog {
      */
     @Override
     public void dismiss() {
-        mModalDialogManager.cancelDialog(mModalDialogView);
+        mModalDialogManager.dismissDialog(mModalDialogView);
     }
 
     private ModalDialogView createView() {
         ModalDialogView.Controller controller = new ModalDialogView.Controller() {
-            @Override
-            public void onCancel() {}
-
             @Override
             public void onClick(int buttonType) {
                 if (buttonType == ModalDialogView.ButtonType.POSITIVE) {
@@ -117,7 +115,7 @@ public class VrAlertDialog extends AlertDialog {
             }
 
             @Override
-            public void onDismiss() {}
+            public void onDismiss(@DialogDismissalCause int dialogDismissal) {}
         };
         final ModalDialogView.Params params = new ModalDialogView.Params();
 

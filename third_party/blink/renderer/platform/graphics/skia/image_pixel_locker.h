@@ -17,7 +17,7 @@ class SkImage;
 namespace blink {
 
 class ImagePixelLocker final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   ImagePixelLocker(sk_sp<const SkImage>, SkAlphaType, SkColorType);

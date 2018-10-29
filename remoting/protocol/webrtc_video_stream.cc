@@ -53,7 +53,7 @@ std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
 }  // namespace
 
 struct WebrtcVideoStream::FrameStats {
-  // The following fields is not null only for one frame after each incoming
+  // The following fields are non-null only for one frame after each incoming
   // input event.
   InputEventTimestamps input_event_timestamps;
 
@@ -64,6 +64,7 @@ struct WebrtcVideoStream::FrameStats {
   base::TimeTicks encode_ended_time;
 
   uint32_t capturer_id = 0;
+  int frame_quality = -1;
 };
 
 WebrtcVideoStream::WebrtcVideoStream(const SessionOptions& session_options)
@@ -243,6 +244,14 @@ void WebrtcVideoStream::OnFrameEncoded(
 
   current_frame_stats_->encode_ended_time = base::TimeTicks::Now();
 
+  // Convert the frame quantizer to a measure of frame quality between 0 and
+  // 100, for a simple visualization of quality over time. The quantizer from
+  // VP8/VP9 encoder lies within 0-63, with 0 representing a lossless
+  // frame.
+  // TODO(crbug.com/891571): Remove |quantizer| from the WebrtcVideoEncoder
+  // interface, and move this logic to the encoders.
+  current_frame_stats_->frame_quality = (63 - frame->quantizer) * 100 / 63;
+
   HostFrameStats stats;
   scheduler_->OnFrameEncoded(frame.get(), &stats);
 
@@ -296,6 +305,8 @@ void WebrtcVideoStream::OnFrameEncoded(
                          current_frame_stats_->encode_started_time;
 
     stats.capturer_id = current_frame_stats_->capturer_id;
+
+    stats.frame_quality = current_frame_stats_->frame_quality;
 
     video_stats_dispatcher_.OnVideoFrameStats(result.frame_id, stats);
   }

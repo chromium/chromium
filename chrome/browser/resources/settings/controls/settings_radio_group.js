@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview
- * `cr-radio-group` wraps a radio-group and set of radio-buttons that control
- *  a supplied preference.
+ * `settings-radio-group` wraps cr-radio-group and set of radio-buttons that
+ * control a supplied preference.
  *
  * Example:
  *      <settings-radio-group pref="{{prefs.settings.foo}}"
@@ -18,10 +18,7 @@ Polymer({
   behaviors: [PrefControlBehavior],
 
   properties: {
-    /**
-     * IronSelectableBehavior selected attribute.
-     */
-    selected: {type: String, notify: true, observer: 'selectedChanged_'},
+    selected: String,
   },
 
   hostAttributes: {
@@ -39,10 +36,12 @@ Polymer({
   },
 
   /** @private */
-  selectedChanged_: function(selected) {
+  onSelectedChanged_: function() {
     if (!this.pref)
       return;
+    this.selected = this.$$('cr-radio-group').selected;
     this.set(
-        'pref.value', Settings.PrefUtil.stringToPrefValue(selected, this.pref));
+        'pref.value',
+        Settings.PrefUtil.stringToPrefValue(this.selected, this.pref));
   },
 });

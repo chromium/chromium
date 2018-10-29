@@ -21,6 +21,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_renderer_sink.h"
@@ -50,7 +51,7 @@ class MEDIA_EXPORT AudioRendererMixerInput
   void Initialize(const AudioParameters& params,
                   AudioRendererSink::RenderCallback* renderer) override;
   void SwitchOutputDevice(const std::string& device_id,
-                          const OutputDeviceStatusCB& callback) override;
+                          OutputDeviceStatusCB callback) override;
   // This is expected to be called on the audio rendering thread. The caller
   // must ensure that this input has been added to a mixer before calling the
   // function, and that it is not removed from the mixer before this function
@@ -75,7 +76,7 @@ class MEDIA_EXPORT AudioRendererMixerInput
 
   bool started_;
   bool playing_;
-  double volume_;
+  double volume_ GUARDED_BY(volume_lock_);
 
   // AudioConverter::InputCallback implementation.
   double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;

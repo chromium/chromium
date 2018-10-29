@@ -20,7 +20,12 @@
     'if (await true) { var a = 1; }',
     'if (await true) { let a = 1; }',
     'var a = await 1; let b = 2; const c = 3;',
-    'let o = await 1, p'
+    'let o = await 1, p',
+    'for await (const number of asyncRandomNumbers()) {}',
+    '[...(await fetch(\'url\', { method: \'HEAD\' })).headers.entries()]',
+    'await 1\n//hello',
+    'var {a = await new Promise(resolve => resolve({a:123}))} = {a : 3}',
+    'await 1; for (var a of [1,2,3]);'
   ];
 
   await TestRunner.loadModule("formatter");

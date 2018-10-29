@@ -142,9 +142,8 @@ void SignedInDevicesManager::OnListenerRemoved(
 
 void SignedInDevicesManager::RemoveChangeObserverForExtension(
     const std::string& extension_id) {
-  for (std::vector<std::unique_ptr<SignedInDevicesChangeObserver>>::iterator
-           it = change_observers_.begin();
-       it != change_observers_.end(); ++it) {
+  for (auto it = change_observers_.begin(); it != change_observers_.end();
+       ++it) {
     if ((*it)->extension_id() == extension_id) {
       change_observers_.erase(it);
       return;

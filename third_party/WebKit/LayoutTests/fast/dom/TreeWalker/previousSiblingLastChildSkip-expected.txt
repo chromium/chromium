@@ -2,7 +2,6 @@ Test for a specific problem with previousSibling that failed in older versions o
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS walker.firstChild(); walker.currentNode.id is 'A1'
 PASS walker.nextNode(); walker.currentNode.id is 'C1'
 PASS walker.nextNode(); walker.currentNode.id is 'C2'

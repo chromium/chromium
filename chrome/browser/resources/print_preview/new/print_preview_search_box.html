@@ -17,7 +17,6 @@
           min-height: 32px;
         };
         --cr-input-error-display: none;
-        --cr-input-padding-start: 32px;
       }
 
       #icon {
@@ -25,9 +24,7 @@
         height: 30px;
         margin-inline-end: 0;
         margin-inline-start: 0;
-        position: absolute;
         width: 30px;
-        z-index: 1;
       }
 
       .search-box-input {
@@ -38,11 +35,12 @@
         -webkit-appearance: none;
       }
     </style>
-    <div id="icon" class="cr-icon icon-search" alt=""></div>
     <cr-input type="search" id="searchInput" class="search-box-input"
         on-search="onSearchTermSearch" on-input="onSearchTermInput"
         aria-label$="[[label]]" placeholder="[[label]]"
-        autofocus="[[autofocus]]" spellcheck="false"></cr-input>
+        autofocus="[[autofocus]]" spellcheck="false">
+      <div slot="prefix" id="icon" class="cr-icon icon-search" alt=""></div>
+    </cr-input>
   </template>
   <script src="print_preview_search_box.js"></script>
 </dom-module>

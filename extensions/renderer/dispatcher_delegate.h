@@ -38,8 +38,9 @@ class DispatcherDelegate {
   // Includes additional source resources into the resource map.
   virtual void PopulateSourceMap(ResourceBundleSourceMap* source_map) {}
 
-  // Requires additional modules within an extension context's module system.
-  virtual void RequireAdditionalModules(ScriptContext* context) {}
+  // Requires modules for defining <webview> within an extension context's
+  // module system.
+  virtual void RequireWebViewModules(ScriptContext* context);
 
   // Allows the delegate to respond to an updated set of active extensions in
   // the Dispatcher.

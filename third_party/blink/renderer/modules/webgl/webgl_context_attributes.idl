@@ -35,4 +35,6 @@ dictionary WebGLContextAttributes {
     boolean preserveDrawingBuffer = false;
     boolean failIfMajorPerformanceCaveat = false;
     [OriginTrialEnabled=WebXR] XRDevice compatibleXRDevice = null;
+    // TODO(crbug.com/788439): remove OriginTrialEnabled.
+    [OriginTrialEnabled=LowLatencyCanvas] boolean lowLatency = false;
 };

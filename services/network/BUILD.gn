@@ -51,8 +51,10 @@ jumbo_component("network_service") {
     "keepalive_statistics_recorder.h",
     "loader_util.cc",
     "loader_util.h",
-    "mojo_net_log.cc",
-    "mojo_net_log.h",
+    "net_log_capture_mode_type_converter.cc",
+    "net_log_capture_mode_type_converter.h",
+    "net_log_exporter.cc",
+    "net_log_exporter.h",
     "network_change_manager.cc",
     "network_change_manager.h",
     "network_context.cc",
@@ -67,6 +69,8 @@ jumbo_component("network_service") {
     "network_service.h",
     "network_service_network_delegate.cc",
     "network_service_network_delegate.h",
+    "network_service_proxy_delegate.cc",
+    "network_service_proxy_delegate.h",
     "network_usage_accumulator.cc",
     "network_usage_accumulator.h",
     "p2p/socket.cc",
@@ -166,6 +170,17 @@ jumbo_component("network_service") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "cert_verifier_with_trust_anchors.cc",
+      "cert_verifier_with_trust_anchors.h",
+      "cert_verify_proc_chromeos.cc",
+      "cert_verify_proc_chromeos.h",
+    ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/certificate_transparency",
@@ -187,6 +202,7 @@ jumbo_component("network_service") {
     "//services/service_manager/sandbox:sandbox",
     "//third_party/webrtc/media:rtc_media_base",
     "//third_party/webrtc/rtc_base",
+    "//third_party/webrtc/rtc_base:timeutils",
     "//third_party/webrtc_overrides",
     "//third_party/webrtc_overrides:init_webrtc",
     "//url",
@@ -245,6 +261,7 @@ source_set("tests") {
     "network_change_manager_unittest.cc",
     "network_context_unittest.cc",
     "network_quality_estimator_manager_unittest.cc",
+    "network_service_proxy_delegate_unittest.cc",
     "network_service_unittest.cc",
     "network_usage_accumulator_unittest.cc",
     "p2p/socket_tcp_server_unittest.cc",
@@ -291,12 +308,20 @@ source_set("tests") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "cert_verifier_with_trust_anchors_unittest.cc",
+      "cert_verify_proc_chromeos_unittest.cc",
+    ]
+  }
+
   deps = [
     ":network_service",
     ":test_support",
     "//base",
     "//components/certificate_transparency",
     "//components/network_session_configurator/browser",
+    "//crypto:test_support",
     "//jingle:jingle_fake_socket",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
@@ -304,6 +329,7 @@ source_set("tests") {
     "//net",
     "//net:extras",
     "//net:test_support",
+    "//net/http:transport_security_state_unittest_data_default",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/service_manager/public/cpp",

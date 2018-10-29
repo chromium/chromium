@@ -8,9 +8,9 @@
 
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
@@ -253,7 +253,7 @@ class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
   }
 
  protected:
-  base::MessageLoop ye_olde_message_loope_;
+  base::test::ScopedTaskEnvironment task_environment_;
   cc::TestTaskGraphRunner test_task_graph_runner_;
   blink::scheduler::FakeRendererScheduler fake_renderer_scheduler_;
   FakeLayerTreeViewDelegate layer_tree_view_delegate_;
@@ -328,7 +328,7 @@ TEST(LayerTreeViewTest, VisibilityTest) {
   // Test that LayerTreeView does not retry FrameSink request while
   // invisible.
 
-  base::MessageLoop message_loop;
+  base::test::ScopedTaskEnvironment task_environment;
 
   cc::TestTaskGraphRunner test_task_graph_runner;
   blink::scheduler::FakeRendererScheduler fake_renderer_scheduler;

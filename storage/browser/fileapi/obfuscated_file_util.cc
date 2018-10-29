@@ -253,16 +253,17 @@ ObfuscatedFileUtil::ObfuscatedFileUtil(
     storage::SpecialStoragePolicy* special_storage_policy,
     const base::FilePath& file_system_directory,
     leveldb::Env* env_override,
-    const GetTypeStringForURLCallback& get_type_string_for_url,
+    GetTypeStringForURLCallback get_type_string_for_url,
     const std::set<std::string>& known_type_strings,
     SandboxFileSystemBackendDelegate* sandbox_delegate)
     : special_storage_policy_(special_storage_policy),
       file_system_directory_(file_system_directory),
       env_override_(env_override),
       db_flush_delay_seconds_(10 * 60),  // 10 mins.
-      get_type_string_for_url_(get_type_string_for_url),
+      get_type_string_for_url_(std::move(get_type_string_for_url)),
       known_type_strings_(known_type_strings),
       sandbox_delegate_(sandbox_delegate) {
+  DCHECK(!get_type_string_for_url_.is_null());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -1286,9 +1287,10 @@ void ObfuscatedFileUtil::MarkUsed() {
   if (timer_.IsRunning()) {
     timer_.Reset();
   } else {
-    timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(db_flush_delay_seconds_),
-        base::Bind(&ObfuscatedFileUtil::DropDatabases, base::Unretained(this)));
+    timer_.Start(FROM_HERE,
+                 base::TimeDelta::FromSeconds(db_flush_delay_seconds_),
+                 base::BindOnce(&ObfuscatedFileUtil::DropDatabases,
+                                base::Unretained(this)));
   }
 }
 

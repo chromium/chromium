@@ -49,7 +49,7 @@ const unsigned RealtimeAnalyser::kInputBufferSize =
 RealtimeAnalyser::RealtimeAnalyser()
     : input_buffer_(kInputBufferSize),
       write_index_(0),
-      down_mix_bus_(AudioBus::Create(1, AudioUtilities::kRenderQuantumFrames)),
+      down_mix_bus_(AudioBus::Create(1, audio_utilities::kRenderQuantumFrames)),
       fft_size_(kDefaultFFTSize),
       magnitude_buffer_(kDefaultFFTSize / 2),
       smoothing_time_constant_(kDefaultSmoothingTimeConstant),
@@ -64,7 +64,7 @@ bool RealtimeAnalyser::SetFftSize(size_t size) {
 
   // Only allow powers of two within the allowed range.
   if (size > kMaxFFTSize || size < kMinFFTSize ||
-      !AudioUtilities::IsPowerOfTwo(size))
+      !audio_utilities::IsPowerOfTwo(size))
     return false;
 
   if (fft_size_ != size) {
@@ -198,7 +198,7 @@ void RealtimeAnalyser::ConvertFloatToDb(DOMFloat32Array* destination_array) {
 
     for (unsigned i = 0; i < len; ++i) {
       float linear_value = source[i];
-      double db_mag = AudioUtilities::LinearToDecibels(linear_value);
+      double db_mag = audio_utilities::LinearToDecibels(linear_value);
       destination[i] = float(db_mag);
     }
   }
@@ -236,7 +236,7 @@ void RealtimeAnalyser::ConvertToByteData(DOMUint8Array* destination_array) {
 
     for (unsigned i = 0; i < len; ++i) {
       float linear_value = source[i];
-      double db_mag = AudioUtilities::LinearToDecibels(linear_value);
+      double db_mag = audio_utilities::LinearToDecibels(linear_value);
 
       // The range m_minDecibels to m_maxDecibels will be scaled to byte values
       // from 0 to UCHAR_MAX.

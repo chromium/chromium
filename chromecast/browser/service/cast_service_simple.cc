@@ -90,9 +90,11 @@ void CastServiceSimple::StopInternal() {
   cast_web_view_.reset();
 }
 
-void CastServiceSimple::OnPageStopped(int error_code) {}
+void CastServiceSimple::OnPageStopped(CastWebContents* cast_web_contents,
+                                      int error_code) {}
 
-void CastServiceSimple::OnLoadingStateChanged(bool loading) {}
+void CastServiceSimple::OnPageStateChanged(CastWebContents* cast_web_contents) {
+}
 
 void CastServiceSimple::OnWindowDestroyed() {}
 

@@ -53,12 +53,6 @@ class ChromeURLRequestContextGetter : public net::URLRequestContextGetter {
       Profile* profile,
       const ProfileIOData* profile_io_data);
 
-  // Create an instance for an original profile for extensions. This is expected
-  // to get called on UI thread.
-  static scoped_refptr<ChromeURLRequestContextGetter> CreateForExtensions(
-      Profile* profile,
-      const ProfileIOData* profile_io_data);
-
   // Create an instance for an original profile for an app with isolated
   // storage. This is expected to get called on UI thread.
   static scoped_refptr<ChromeURLRequestContextGetter> CreateForIsolatedApp(

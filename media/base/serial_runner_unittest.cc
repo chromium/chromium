@@ -25,8 +25,8 @@ class SerialRunnerTest : public ::testing::Test {
 
   void RunSerialRunner() {
     message_loop_.task_runner()->PostTask(
-        FROM_HERE, base::Bind(&SerialRunnerTest::StartRunnerInternal,
-                              base::Unretained(this), bound_fns_));
+        FROM_HERE, base::BindOnce(&SerialRunnerTest::StartRunnerInternal,
+                                  base::Unretained(this), bound_fns_));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -120,8 +120,8 @@ class SerialRunnerTest : public ::testing::Test {
   void CancelSerialRunner(const PipelineStatusCB& status_cb) {
     // Tasks run by |runner_| shouldn't reset it, hence we post a task to do so.
     message_loop_.task_runner()->PostTask(
-        FROM_HERE, base::Bind(&SerialRunnerTest::ResetSerialRunner,
-                              base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&SerialRunnerTest::ResetSerialRunner,
+                                  base::Unretained(this)));
     status_cb.Run(PIPELINE_OK);
   }
 

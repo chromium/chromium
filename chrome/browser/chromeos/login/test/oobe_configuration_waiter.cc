@@ -15,9 +15,7 @@ OOBEConfigurationWaiter::~OOBEConfigurationWaiter() {
 }
 
 void OOBEConfigurationWaiter::OnOobeConfigurationChanged() {
-  if (OobeConfiguration::Get()->GetConfiguration().DictEmpty()) {
-    return;
-  }
+  DCHECK(OobeConfiguration::Get()->CheckCompleted());
   OobeConfiguration::Get()->RemoveObserver(this);
   std::move(callback_).Run();
 }
@@ -26,11 +24,10 @@ void OOBEConfigurationWaiter::OnOobeConfigurationChanged() {
 bool OOBEConfigurationWaiter::IsConfigurationLoaded(
     base::OnceClosure callback) {
   DCHECK(!callback_);
-  // Assume that configuration is not loaded if it is empty.
-  if (!OobeConfiguration::Get()->GetConfiguration().DictEmpty()) {
+  if (OobeConfiguration::Get()->CheckCompleted()) {
     return true;
   }
-  OobeConfiguration::Get()->AddObserver(this);
+  OobeConfiguration::Get()->AddAndFireObserver(this);
   callback_ = std::move(callback);
   return false;
 }

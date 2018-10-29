@@ -9,10 +9,10 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
+#include "components/omnibox/browser/toolbar_model.h"
+#include "components/omnibox/browser/toolbar_model_delegate.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
-#include "components/toolbar/toolbar_model.h"
-#include "components/toolbar/toolbar_model_delegate.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 

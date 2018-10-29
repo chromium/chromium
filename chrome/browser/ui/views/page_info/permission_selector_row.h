@@ -15,14 +15,11 @@
 #include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "ui/views/controls/button/menu_button_listener.h"
 
 class Profile;
 
 namespace internal {
 class ComboboxModelAdapter;
-class PermissionCombobox;
-class PermissionMenuButton;
 }  // namespace internal
 
 namespace test {
@@ -34,6 +31,7 @@ class GridLayout;
 class ImageView;
 class Label;
 class View;
+class Combobox;
 }  // namespace views
 
 // A |PermissionSelectorRow| is a row in the Page Info bubble that shows a
@@ -70,10 +68,6 @@ class PermissionSelectorRow {
   void InitializeComboboxView(views::GridLayout* layout,
                               const PageInfoUI::PermissionInfo& permission);
 
-  // Returns the "button" for this row, which is the control used to change the
-  // permission's value. This is either a |MenuButton| or a |Combobox|.
-  views::View* button();
-
   Profile* profile_;
 
   // Model for the permission's menu.
@@ -83,8 +77,7 @@ class PermissionSelectorRow {
   // These are all owned by the views hierarchy:
   views::ImageView* icon_;
   views::Label* label_;
-  internal::PermissionMenuButton* menu_button_;
-  internal::PermissionCombobox* combobox_;
+  views::Combobox* combobox_;
 
   base::ObserverList<PermissionSelectorRowObserver, false>::Unchecked
       observer_list_;

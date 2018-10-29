@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -27,6 +28,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/gurl.h"
@@ -58,7 +60,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
       const GURL& scope,
       const GURL& first_party,
       content::ResourceContext* context,
-      const base::Callback<WebContents*(void)>& wc_getter) override {
+      base::RepeatingCallback<WebContents*()> wc_getter) override {
     return false;
   }
 };
@@ -134,14 +136,36 @@ class MockServiceWorkerRegistrationObject
 // will be terminated when SetIdleTimerDelayToZero() is called.
 class RegistrationTestHelper : public EmbeddedWorkerTestHelper {
  public:
-  RegistrationTestHelper() : EmbeddedWorkerTestHelper(base::FilePath()) {}
+  RegistrationTestHelper()
+      : EmbeddedWorkerTestHelper(base::FilePath()), weak_factory_(this) {}
   ~RegistrationTestHelper() override = default;
+
+  void RequestTermination(int embedded_worker_id) {
+    GetEmbeddedWorkerInstanceHost(embedded_worker_id)
+        ->RequestTermination(
+            base::BindOnce(&RegistrationTestHelper::OnRequestedTermination,
+                           weak_factory_.GetWeakPtr()));
+  }
+
+  const base::Optional<bool>& will_be_terminated() const {
+    return will_be_terminated_;
+  }
+
+  bool is_zero_idle_timer_delay() const { return is_zero_idle_timer_delay_; }
 
  protected:
   void OnSetIdleTimerDelayToZero(int embedded_worker_id) override {
-    GetEmbeddedWorkerInstanceHost(embedded_worker_id)
-        ->RequestTermination(base::DoNothing());
+    is_zero_idle_timer_delay_ = true;
   }
+
+  void OnRequestedTermination(bool will_be_terminated) {
+    will_be_terminated_ = will_be_terminated;
+  }
+
+ private:
+  bool is_zero_idle_timer_delay_ = false;
+  base::Optional<bool> will_be_terminated_;
+  base::WeakPtrFactory<RegistrationTestHelper> weak_factory_;
 };
 
 class ServiceWorkerRegistrationTest : public testing::Test {
@@ -202,7 +226,7 @@ class ServiceWorkerRegistrationTest : public testing::Test {
   };
 
  protected:
-  std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
+  std::unique_ptr<RegistrationTestHelper> helper_;
   TestBrowserThreadBundle thread_bundle_;
 };
 
@@ -235,7 +259,7 @@ TEST_F(ServiceWorkerRegistrationTest, SetAndUnsetVersions) {
   EXPECT_EQ(version_1.get(), registration->active_version());
   EXPECT_EQ(registration, listener.observed_registration_);
   EXPECT_TRUE(listener.observed_changed_mask_->active);
-  EXPECT_EQ(kScope, listener.observed_info_.pattern);
+  EXPECT_EQ(kScope, listener.observed_info_.scope);
   EXPECT_EQ(version_1_id, listener.observed_info_.active_version.version_id);
   EXPECT_EQ(kScript, listener.observed_info_.active_version.script_url);
   EXPECT_EQ(listener.observed_info_.installing_version.version_id,
@@ -349,7 +373,8 @@ TEST_F(ServiceWorkerRegistrationTest, NavigationPreload) {
 
 // Sets up a registration with a waiting worker, and an active worker
 // with a controllee and an inflight request.
-class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest {
+class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
+                                    public testing::WithParamInterface<bool> {
  public:
   ServiceWorkerActivationTest() : ServiceWorkerRegistrationTest() {}
 
@@ -427,12 +452,20 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest {
     registration_->ActivateWaitingVersionWhenReady();
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(version_1.get(), registration_->active_version());
+
+    if (devtools_should_be_attached()) {
+      // Attach DevTools to the active worker. This shouldn't prevent from
+      // promoting the waiting worker to active.
+      version_1->SetDevToolsAttached(true);
+    }
   }
 
   void TearDown() override {
     registration_->active_version()->RemoveObserver(registration_.get());
     ServiceWorkerRegistrationTest::TearDown();
   }
+
+  bool devtools_should_be_attached() const { return GetParam(); }
 
   ServiceWorkerRegistration* registration() { return registration_.get(); }
   ServiceWorkerProviderHost* controllee() { return host_.get(); }
@@ -451,10 +484,19 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest {
   // error like ServiceWorkerContext shutdown.
   void SimulateSkipWaiting(ServiceWorkerVersion* version,
                            base::Optional<bool>* out_result) {
-    version->SkipWaiting(
-        base::BindOnce([](base::Optional<bool>* out_result,
-                          bool success) { *out_result = success; },
-                       out_result));
+    SimulateSkipWaitingWithCallback(version, out_result, base::DoNothing());
+  }
+
+  void SimulateSkipWaitingWithCallback(ServiceWorkerVersion* version,
+                                       base::Optional<bool>* out_result,
+                                       base::OnceClosure done_callback) {
+    version->SkipWaiting(base::BindOnce(
+        [](base::OnceClosure done_callback, base::Optional<bool>* out_result,
+           bool success) {
+          *out_result = success;
+          std::move(done_callback).Run();
+        },
+        std::move(done_callback), out_result));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -466,26 +508,43 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest {
 };
 
 // Test activation triggered by finishing all requests.
-TEST_F(ServiceWorkerActivationTest, NoInflightRequest) {
+TEST_P(ServiceWorkerActivationTest, NoInflightRequest) {
   scoped_refptr<ServiceWorkerRegistration> reg = registration();
   scoped_refptr<ServiceWorkerVersion> version_1 = reg->active_version();
   scoped_refptr<ServiceWorkerVersion> version_2 = reg->waiting_version();
 
   // Remove the controllee. Since there is an in-flight request,
   // activation should not yet happen.
+  // When S13nServiceWorker is on, the idle timer living in the renderer is
+  // requested to notify the browser the idle state ASAP.
   version_1->RemoveControllee(controllee()->client_uuid());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(version_1.get(), reg->active_version());
+  if (blink::ServiceWorkerUtils::IsServicificationEnabled())
+    EXPECT_TRUE(helper_->is_zero_idle_timer_delay());
 
   // Finish the request. Activation should happen.
   version_1->FinishRequest(inflight_request_id(), true /* was_handled */,
                            base::TimeTicks::Now());
   base::RunLoop().RunUntilIdle();
+
+  if (blink::ServiceWorkerUtils::IsServicificationEnabled()) {
+    EXPECT_EQ(version_1.get(), reg->active_version());
+    helper_->RequestTermination(
+        version_1->embedded_worker()->embedded_worker_id());
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(helper_->will_be_terminated().value());
+  }
+
   EXPECT_EQ(version_2.get(), reg->active_version());
 }
 
 // Test activation triggered by loss of controllee.
-TEST_F(ServiceWorkerActivationTest, NoControllee) {
+TEST_P(ServiceWorkerActivationTest, NoControllee) {
+  // S13nServiceWorker: activation only happens when the service worker reports
+  // it's idle, so this test doesn't make sense.
+  if (blink::ServiceWorkerUtils::IsServicificationEnabled())
+    return;
   scoped_refptr<ServiceWorkerRegistration> reg = registration();
   scoped_refptr<ServiceWorkerVersion> version_1 = reg->active_version();
   scoped_refptr<ServiceWorkerVersion> version_2 = reg->waiting_version();
@@ -503,8 +562,49 @@ TEST_F(ServiceWorkerActivationTest, NoControllee) {
   EXPECT_EQ(version_2.get(), reg->active_version());
 }
 
+// Test activation triggered by skipWaiting and finishing requests.
+TEST_P(ServiceWorkerActivationTest, SkipWaitingWithInflightRequest) {
+  scoped_refptr<ServiceWorkerRegistration> reg = registration();
+  scoped_refptr<ServiceWorkerVersion> version_1 = reg->active_version();
+  scoped_refptr<ServiceWorkerVersion> version_2 = reg->waiting_version();
+
+  base::Optional<bool> result;
+  base::RunLoop skip_waiting_loop;
+  // Set skip waiting flag. Since there is still an in-flight request,
+  // activation should not happen.
+  SimulateSkipWaitingWithCallback(version_2.get(), &result,
+                                  skip_waiting_loop.QuitClosure());
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(version_1.get(), reg->active_version());
+  if (blink::ServiceWorkerUtils::IsServicificationEnabled())
+    EXPECT_TRUE(helper_->is_zero_idle_timer_delay());
+
+  // Finish the request.
+  // non-S13nServiceWorker: The service worker becomes idle.
+  // S13nServiceWorker: FinishRequest() doesn't immediately make the worker
+  // "no work" state. It needs to be notfied the idle state by
+  // RequestTermination().
+  version_1->FinishRequest(inflight_request_id(), true /* was_handled */,
+                           base::TimeTicks::Now());
+
+  if (blink::ServiceWorkerUtils::IsServicificationEnabled()) {
+    EXPECT_EQ(version_1.get(), reg->active_version());
+    helper_->RequestTermination(
+        version_1->embedded_worker()->embedded_worker_id());
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(helper_->will_be_terminated().value());
+  }
+
+  // Wait until SkipWaiting resolves.
+  skip_waiting_loop.Run();
+
+  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(*result);
+  EXPECT_EQ(version_2.get(), reg->active_version());
+}
+
 // Test activation triggered by skipWaiting.
-TEST_F(ServiceWorkerActivationTest, SkipWaiting) {
+TEST_P(ServiceWorkerActivationTest, SkipWaiting) {
   scoped_refptr<ServiceWorkerRegistration> reg = registration();
   scoped_refptr<ServiceWorkerVersion> version_1 = reg->active_version();
   scoped_refptr<ServiceWorkerVersion> version_2 = reg->waiting_version();
@@ -516,37 +616,34 @@ TEST_F(ServiceWorkerActivationTest, SkipWaiting) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(version_1.get(), reg->active_version());
 
-  // Call skipWaiting. Activation should happen.
+  // Call skipWaiting.
+  // non-S13nServiceWorker: Activation should happen.
+  // S13nServiceWorker: Activation should happen after RequestTermination is
+  // triggered.
   base::Optional<bool> result;
-  SimulateSkipWaiting(version_2.get(), &result);
+  base::RunLoop skip_waiting_loop;
+  SimulateSkipWaitingWithCallback(version_2.get(), &result,
+                                  skip_waiting_loop.QuitClosure());
+
+  if (blink::ServiceWorkerUtils::IsServicificationEnabled()) {
+    EXPECT_TRUE(helper_->is_zero_idle_timer_delay());
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(version_1.get(), reg->active_version());
+    helper_->RequestTermination(
+        version_1->embedded_worker()->embedded_worker_id());
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(helper_->will_be_terminated().value());
+  }
+
+  // Wait until SkipWaiting resolves.
+  skip_waiting_loop.Run();
+
   EXPECT_TRUE(result.has_value());
   EXPECT_TRUE(*result);
   EXPECT_EQ(version_2.get(), reg->active_version());
 }
 
-// Test activation triggered by skipWaiting and finishing requests.
-TEST_F(ServiceWorkerActivationTest, SkipWaitingWithInflightRequest) {
-  scoped_refptr<ServiceWorkerRegistration> reg = registration();
-  scoped_refptr<ServiceWorkerVersion> version_1 = reg->active_version();
-  scoped_refptr<ServiceWorkerVersion> version_2 = reg->waiting_version();
-
-  base::Optional<bool> result;
-  // Set skip waiting flag. Since there is still an in-flight request,
-  // activation should not happen.
-  SimulateSkipWaiting(version_2.get(), &result);
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(version_1.get(), reg->active_version());
-
-  // Finish the request. Activation should happen.
-  version_1->FinishRequest(inflight_request_id(), true /* was_handled */,
-                           base::TimeTicks::Now());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(result.has_value());
-  EXPECT_TRUE(*result);
-  EXPECT_EQ(version_2.get(), reg->active_version());
-}
-
-TEST_F(ServiceWorkerActivationTest, TimeSinceSkipWaiting_Installing) {
+TEST_P(ServiceWorkerActivationTest, TimeSinceSkipWaiting_Installing) {
   scoped_refptr<ServiceWorkerRegistration> reg = registration();
   scoped_refptr<ServiceWorkerVersion> version = reg->waiting_version();
   base::SimpleTestTickClock clock;
@@ -581,7 +678,7 @@ TEST_F(ServiceWorkerActivationTest, TimeSinceSkipWaiting_Installing) {
 }
 
 // Test lame duck timer triggered by skip waiting.
-TEST_F(ServiceWorkerActivationTest, LameDuckTime_SkipWaiting) {
+TEST_P(ServiceWorkerActivationTest, LameDuckTime_SkipWaiting) {
   scoped_refptr<ServiceWorkerRegistration> reg = registration();
   scoped_refptr<ServiceWorkerVersion> version_1 = reg->active_version();
   scoped_refptr<ServiceWorkerVersion> version_2 = reg->waiting_version();
@@ -614,7 +711,7 @@ TEST_F(ServiceWorkerActivationTest, LameDuckTime_SkipWaiting) {
 }
 
 // Test lame duck timer triggered by loss of controllee.
-TEST_F(ServiceWorkerActivationTest, LameDuckTime_NoControllee) {
+TEST_P(ServiceWorkerActivationTest, LameDuckTime_NoControllee) {
   scoped_refptr<ServiceWorkerRegistration> reg = registration();
   scoped_refptr<ServiceWorkerVersion> version_1 = reg->active_version();
   scoped_refptr<ServiceWorkerVersion> version_2 = reg->waiting_version();
@@ -667,6 +764,10 @@ TEST_F(ServiceWorkerActivationTest, LameDuckTime_NoControllee) {
   EXPECT_EQ(version_2.get(), reg->active_version());
   EXPECT_FALSE(IsLameDuckTimerRunning());
 }
+
+INSTANTIATE_TEST_CASE_P(ServiceWorkerActivationTestWithDevTools,
+                        ServiceWorkerActivationTest,
+                        testing::Bool());
 
 // Sets up a registration with a ServiceWorkerRegistrationObjectHost to hold it.
 class ServiceWorkerRegistrationObjectHostTest

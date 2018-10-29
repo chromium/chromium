@@ -20,7 +20,7 @@ namespace {
 
 class ElementVisibilityObserverTest : public ::testing::Test {
  protected:
-  FrameTestHelpers::WebViewHelper helper_;
+  frame_test_helpers::WebViewHelper helper_;
 };
 
 TEST_F(ElementVisibilityObserverTest, ObserveElementWithoutDocumentFrame) {
@@ -39,7 +39,7 @@ TEST_F(ElementVisibilityObserverTest, ObserveElementWithRemoteFrameParent) {
   helper_.InitializeRemote();
 
   WebLocalFrameImpl* child_frame =
-      FrameTestHelpers::CreateLocalChild(*helper_.RemoteMainFrame());
+      frame_test_helpers::CreateLocalChild(*helper_.RemoteMainFrame());
   Document& document = *child_frame->GetFrame()->GetDocument();
 
   Persistent<HTMLElement> element = HTMLDivElement::Create(document);

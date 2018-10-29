@@ -9,6 +9,8 @@
 #include "ash/multi_profile_uma.h"
 #include "ash/session/session_controller.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/accessibility_feature_pod_controller.h"
+#include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
@@ -27,7 +29,6 @@
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
 #include "ash/system/rotation/rotation_lock_feature_pod_controller.h"
 #include "ash/system/tray/system_tray_item_uma_type.h"
-#include "ash/system/unified/accessibility_feature_pod_controller.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
@@ -37,9 +38,9 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/system/unified/user_chooser_view.h"
-#include "ash/system/unified_accessibility_detailed_view_controller.h"
 #include "ash/wm/lock_state_controller.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/message_center/message_center.h"
@@ -65,6 +66,10 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
   animation_->Reset(model->IsExpandedOnOpen() ? 1.0 : 0.0);
   animation_->SetSlideDuration(kExpandAnimationDurationMs);
   animation_->SetTweenType(gfx::Tween::EASE_IN_OUT);
+
+  Shell::Get()->metrics()->RecordUserMetricsAction(UMA_STATUS_AREA_MENU_OPENED);
+  UMA_HISTOGRAM_BOOLEAN("ChromeOS.SystemTray.IsExpandedOnOpen",
+                        model_->IsExpandedOnOpen());
 }
 
 UnifiedSystemTrayController::~UnifiedSystemTrayController() = default;
@@ -160,17 +165,6 @@ void UnifiedSystemTrayController::ToggleExpanded() {
     animation_->Show();
 }
 
-void UnifiedSystemTrayController::HandleClearAllAction() {
-  // When the animation is finished, OnClearAllAnimationEnded() is called.
-  unified_view_->ShowClearAllAnimation();
-}
-
-void UnifiedSystemTrayController::OnClearAllAnimationEnded() {
-  message_center::MessageCenter::Get()->RemoveAllNotifications(
-      true /* by_user */,
-      message_center::MessageCenter::RemoveType::NON_PINNED);
-}
-
 void UnifiedSystemTrayController::OnMessageCenterVisibilityUpdated() {
   if (bubble_)
     bubble_->UpdateTransform();
@@ -221,6 +215,8 @@ void UnifiedSystemTrayController::Fling(int velocity) {
 void UnifiedSystemTrayController::ShowUserChooserView() {
   if (!IsUserChooserEnabled())
     return;
+  animation_->Reset(1.0);
+  UpdateExpandedAmount();
   unified_view_->SetDetailedView(new UserChooserView(this));
 }
 

@@ -113,8 +113,18 @@ SyncAuthManager::SyncAccountInfo SyncAuthManager::GetActiveAccountInfo() const {
   return sync_account_;
 }
 
-const syncer::SyncTokenStatus& SyncAuthManager::GetSyncTokenStatus() const {
-  return token_status_;
+syncer::SyncTokenStatus SyncAuthManager::GetSyncTokenStatus() const {
+  DCHECK(partial_token_status_.next_token_request_time.is_null());
+
+  syncer::SyncTokenStatus token_status = partial_token_status_;
+  token_status.has_token = !access_token_.empty();
+  if (request_access_token_retry_timer_.IsRunning()) {
+    base::TimeDelta delta =
+        request_access_token_retry_timer_.desired_run_time() -
+        base::TimeTicks::Now();
+    token_status.next_token_request_time = base::Time::Now() + delta;
+  }
+  return token_status;
 }
 
 syncer::SyncCredentials SyncAuthManager::GetCredentials() const {
@@ -126,14 +136,13 @@ syncer::SyncCredentials SyncAuthManager::GetCredentials() const {
   credentials.account_id = account_info.account_id;
   credentials.email = account_info.email;
   credentials.sync_token = access_token_;
-  credentials.scope_set.insert(GaiaConstants::kChromeSyncOAuth2Scope);
 
   return credentials;
 }
 
 void SyncAuthManager::ConnectionStatusChanged(syncer::ConnectionStatus status) {
-  token_status_.connection_status_update_time = base::Time::Now();
-  token_status_.connection_status = status;
+  partial_token_status_.connection_status_update_time = base::Time::Now();
+  partial_token_status_.connection_status = status;
 
   switch (status) {
     case syncer::CONNECTION_AUTH_ERROR:
@@ -174,18 +183,9 @@ void SyncAuthManager::ConnectionStatusChanged(syncer::ConnectionStatus status) {
         // Drop any access token here, to maintain the invariant that only one
         // of a token OR a pending request OR a pending retry can exist at any
         // time.
-        if (!access_token_.empty()) {
-          access_token_.clear();
-          credentials_changed_callback_.Run();
-        }
+        InvalidateAccessToken();
         request_access_token_backoff_.InformOfRequest(false);
-        base::TimeDelta delay =
-            request_access_token_backoff_.GetTimeUntilRelease();
-        token_status_.next_token_request_time = base::Time::Now() + delay;
-        request_access_token_retry_timer_.Start(
-            FROM_HERE, delay,
-            base::BindRepeating(&SyncAuthManager::RequestAccessToken,
-                                weak_ptr_factory_.GetWeakPtr()));
+        ScheduleAccessTokenRequest();
       }
       break;
     case syncer::CONNECTION_OK:
@@ -212,12 +212,35 @@ void SyncAuthManager::ConnectionStatusChanged(syncer::ConnectionStatus status) {
   }
 }
 
+void SyncAuthManager::InvalidateAccessToken() {
+  if (access_token_.empty()) {
+    return;
+  }
+
+  identity_manager_->RemoveAccessTokenFromCache(
+      sync_account_.account_info.account_id,
+      identity::ScopeSet{GaiaConstants::kChromeSyncOAuth2Scope}, access_token_);
+
+  access_token_.clear();
+  credentials_changed_callback_.Run();
+}
+
 void SyncAuthManager::ClearAccessTokenAndRequest() {
   access_token_.clear();
   request_access_token_retry_timer_.Stop();
-  token_status_.next_token_request_time = base::Time();
   ongoing_access_token_fetch_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void SyncAuthManager::ScheduleAccessTokenRequest() {
+  DCHECK(access_token_.empty());
+  DCHECK(!ongoing_access_token_fetch_);
+  DCHECK(!request_access_token_retry_timer_.IsRunning());
+
+  request_access_token_retry_timer_.Start(
+      FROM_HERE, request_access_token_backoff_.GetTimeUntilRelease(),
+      base::BindRepeating(&SyncAuthManager::RequestAccessToken,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SyncAuthManager::Clear() {
@@ -289,9 +312,9 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
 }
 
 void SyncAuthManager::OnRefreshTokenRemovedForAccount(
-    const AccountInfo& account_info) {
+    const std::string& account_id) {
   // If we're syncing to a different account, then this doesn't affect us.
-  if (account_info.account_id != sync_account_.account_info.account_id) {
+  if (account_id != sync_account_.account_info.account_id) {
     return;
   }
 
@@ -304,7 +327,7 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
   // If we're still here, then that means Chrome is still signed in to this
   // account. Keep Sync alive but set an auth error.
   DCHECK_EQ(sync_account_.account_info.account_id,
-            identity_manager_->GetPrimaryAccountInfo().account_id);
+            identity_manager_->GetPrimaryAccountId());
 
   // TODO(crbug.com/839834): REQUEST_CANCELED doesn't seem like the right auth
   // error to use here. Maybe INVALID_GAIA_CREDENTIALS?
@@ -401,27 +424,17 @@ void SyncAuthManager::RequestAccessToken() {
   if (request_access_token_retry_timer_.IsRunning()) {
     request_access_token_retry_timer_.Stop();
   }
-  // Also reset the next request time. Note that if we were called back by the
-  // timer, then it's already considered not running, so we reset this time
-  // unconditionally.
-  token_status_.next_token_request_time = base::Time();
 
-  const OAuth2TokenService::ScopeSet kOAuth2ScopeSet{
+  const identity::ScopeSet kOAuth2ScopeSet{
       GaiaConstants::kChromeSyncOAuth2Scope};
 
   // Invalidate any previous token, otherwise the token service will return the
   // same token again.
-  if (!access_token_.empty()) {
-    identity_manager_->RemoveAccessTokenFromCache(
-        sync_account_.account_info.account_id, kOAuth2ScopeSet, access_token_);
-
-    access_token_.clear();
-    credentials_changed_callback_.Run();
-  }
+  InvalidateAccessToken();
 
   // Finally, kick off a new access token fetch.
-  token_status_.token_request_time = base::Time::Now();
-  token_status_.token_receive_time = base::Time();
+  partial_token_status_.token_request_time = base::Time::Now();
+  partial_token_status_.token_receive_time = base::Time();
   ongoing_access_token_fetch_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
           sync_account_.account_info.account_id, kSyncOAuthConsumerName,
@@ -436,16 +449,17 @@ void SyncAuthManager::AccessTokenFetched(
     identity::AccessTokenInfo access_token_info) {
   DCHECK(ongoing_access_token_fetch_);
   ongoing_access_token_fetch_.reset();
+  DCHECK(!request_access_token_retry_timer_.IsRunning());
 
   access_token_ = access_token_info.token;
-  token_status_.last_get_token_error = error;
+  partial_token_status_.last_get_token_error = error;
 
   DCHECK_EQ(access_token_.empty(),
             error.state() != GoogleServiceAuthError::NONE);
 
   switch (error.state()) {
     case GoogleServiceAuthError::NONE:
-      token_status_.token_receive_time = base::Time::Now();
+      partial_token_status_.token_receive_time = base::Time::Now();
       sync_prefs_->SetSyncAuthError(false);
       last_auth_error_ = GoogleServiceAuthError::AuthErrorNone();
       break;
@@ -458,13 +472,7 @@ void SyncAuthManager::AccessTokenFetched(
       // persistent error. Should we use .IsTransientError() instead of manually
       // listing cases here?
       request_access_token_backoff_.InformOfRequest(false);
-      token_status_.next_token_request_time =
-          base::Time::Now() +
-          request_access_token_backoff_.GetTimeUntilRelease();
-      request_access_token_retry_timer_.Start(
-          FROM_HERE, request_access_token_backoff_.GetTimeUntilRelease(),
-          base::BindRepeating(&SyncAuthManager::RequestAccessToken,
-                              weak_ptr_factory_.GetWeakPtr()));
+      ScheduleAccessTokenRequest();
       break;
     case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
       sync_prefs_->SetSyncAuthError(true);

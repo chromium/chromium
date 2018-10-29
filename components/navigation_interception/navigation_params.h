@@ -21,6 +21,7 @@ class NavigationParams {
                    bool is_redirect,
                    bool is_external_protocol,
                    bool is_main_frame,
+                   bool is_renderer_initiated,
                    const GURL& base_url_for_data_url);
   ~NavigationParams();
   NavigationParams(const NavigationParams&);
@@ -35,6 +36,7 @@ class NavigationParams {
   bool is_redirect() const { return is_redirect_; }
   bool is_external_protocol() const { return is_external_protocol_; }
   bool is_main_frame() const { return is_main_frame_; }
+  bool is_renderer_initiated() const { return is_renderer_initiated_; }
   const GURL& base_url_for_data_url() const { return base_url_for_data_url_; }
 
  private:
@@ -47,6 +49,7 @@ class NavigationParams {
   bool is_redirect_;
   bool is_external_protocol_;
   bool is_main_frame_;
+  bool is_renderer_initiated_;
   GURL base_url_for_data_url_;
 };
 

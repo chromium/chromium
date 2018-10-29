@@ -103,6 +103,32 @@ TEST(ColorUtils, IsWithinHSLRangeHueWrapAround) {
   EXPECT_FALSE(IsWithinHSLRange(hsl, lower, upper));
 }
 
+TEST(ColorUtils, IsHSLShiftMeaningful) {
+  HSL noop_all_neg_one{-1.0, -1.0, -1.0};
+  HSL noop_s_point_five{-1.0, 0.5, -1.0};
+  HSL noop_l_point_five{-1.0, -1.0, 0.5};
+
+  HSL only_h{0.1, -1.0, -1.0};
+  HSL only_s{-1.0, 0.1, -1.0};
+  HSL only_l{-1.0, -1.0, 0.1};
+  HSL only_hs{0.1, 0.1, -1.0};
+  HSL only_hl{0.1, -1.0, 0.1};
+  HSL only_sl{-1.0, 0.1, 0.1};
+  HSL all_set{0.1, 0.2, 0.3};
+
+  EXPECT_FALSE(IsHSLShiftMeaningful(noop_all_neg_one));
+  EXPECT_FALSE(IsHSLShiftMeaningful(noop_s_point_five));
+  EXPECT_FALSE(IsHSLShiftMeaningful(noop_l_point_five));
+
+  EXPECT_TRUE(IsHSLShiftMeaningful(only_h));
+  EXPECT_TRUE(IsHSLShiftMeaningful(only_s));
+  EXPECT_TRUE(IsHSLShiftMeaningful(only_l));
+  EXPECT_TRUE(IsHSLShiftMeaningful(only_hs));
+  EXPECT_TRUE(IsHSLShiftMeaningful(only_hl));
+  EXPECT_TRUE(IsHSLShiftMeaningful(only_sl));
+  EXPECT_TRUE(IsHSLShiftMeaningful(all_set));
+}
+
 TEST(ColorUtils, ColorToHSLRegisterSpill) {
   // In a opt build on Linux, this was causing a register spill on my laptop
   // (Pentium M) when converting from SkColor to HSL.
@@ -179,7 +205,7 @@ TEST(ColorUtils, SkColorToRgbString) {
 }
 
 TEST(ColorUtils, IsDarkDarkestColorChange) {
-  SkColor old_black_color = GetDarkestColorForTesting();
+  SkColor old_black_color = GetDarkestColor();
 
   ASSERT_FALSE(IsDark(SkColorSetARGB(255, 200, 200, 200)));
   SetDarkestColor(SkColorSetARGB(255, 200, 200, 200));
@@ -210,7 +236,7 @@ TEST(ColorUtils, GetColorWithMinimumContrast_BlendLighter) {
 }
 
 TEST(ColorUtils, GetColorWithMinimumContrast_StopsAtDarkestColor) {
-  SkColor old_black_color = GetDarkestColorForTesting();
+  SkColor old_black_color = GetDarkestColor();
 
   const SkColor darkest_color = SkColorSetRGB(0x44, 0x44, 0x44);
   SetDarkestColor(darkest_color);

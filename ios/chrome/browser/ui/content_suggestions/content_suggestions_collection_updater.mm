@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -663,59 +663,31 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
 
   if (![model headerForSectionWithIdentifier:sectionIdentifier] &&
       sectionInfo.title) {
-    BOOL addHeader = YES;
-
-    if (IsFromContentSuggestionsService(sectionIdentifier)) {
-      addHeader = IsUIRefreshPhase1Enabled();
-
-      if ([self.sectionIdentifiersFromContentSuggestions
-              containsObject:@(sectionIdentifier)]) {
-        return;
-      }
-
-      if ([self.sectionIdentifiersFromContentSuggestions count] == 1) {
-        NSNumber* existingSectionIdentifier =
-            [self.sectionIdentifiersFromContentSuggestions anyObject];
-        ContentSuggestionsSectionInformation* existingSectionInfo =
-            self.sectionInfoBySectionIdentifier[existingSectionIdentifier];
-        [model setHeader:[self headerForSectionInfo:existingSectionInfo]
-            forSectionWithIdentifier:[existingSectionIdentifier integerValue]];
-        addHeader = YES;
-      } else if ([self.sectionIdentifiersFromContentSuggestions count] > 1) {
-        addHeader = YES;
-      }
-
-      [self.sectionIdentifiersFromContentSuggestions
-          addObject:@(sectionIdentifier)];
+    DCHECK(IsFromContentSuggestionsService(sectionIdentifier));
+    if ([self.sectionIdentifiersFromContentSuggestions
+            containsObject:@(sectionIdentifier)]) {
+      return;
     }
-
-    if (addHeader) {
-      [model setHeader:[self headerForSectionInfo:sectionInfo]
-          forSectionWithIdentifier:sectionIdentifier];
-    }
+    [self.sectionIdentifiersFromContentSuggestions
+        addObject:@(sectionIdentifier)];
+    [model setHeader:[self headerForSectionInfo:sectionInfo]
+        forSectionWithIdentifier:sectionIdentifier];
   }
 }
 
 // Returns the header for this |sectionInfo|.
 - (CollectionViewItem*)headerForSectionInfo:
     (ContentSuggestionsSectionInformation*)sectionInfo {
-  if (IsUIRefreshPhase1Enabled()) {
-    DCHECK(SectionIdentifierForInfo(sectionInfo) == SectionIdentifierArticles);
-    __weak ContentSuggestionsCollectionUpdater* weakSelf = self;
-    ContentSuggestionsArticlesHeaderItem* header =
-        [[ContentSuggestionsArticlesHeaderItem alloc]
-            initWithType:ItemTypeHeader
-                   title:sectionInfo.title
-                callback:^{
-                  [weakSelf.dataSource toggleArticlesVisibility];
-                }];
-    header.expanded = sectionInfo.expanded;
-    return header;
-  }
-  CollectionViewTextItem* header =
-      [[CollectionViewTextItem alloc] initWithType:ItemTypeHeader];
-  header.text = sectionInfo.title;
-  header.textColor = [[MDCPalette greyPalette] tint500];
+  DCHECK(SectionIdentifierForInfo(sectionInfo) == SectionIdentifierArticles);
+  __weak ContentSuggestionsCollectionUpdater* weakSelf = self;
+  ContentSuggestionsArticlesHeaderItem* header =
+      [[ContentSuggestionsArticlesHeaderItem alloc]
+          initWithType:ItemTypeHeader
+                 title:sectionInfo.title
+              callback:^{
+                [weakSelf.dataSource toggleArticlesVisibility];
+              }];
+  header.expanded = sectionInfo.expanded;
   return header;
 }
 

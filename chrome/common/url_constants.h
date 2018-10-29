@@ -167,8 +167,6 @@ extern const char kResetProfileSettingsLearnMoreURL[];
 // Help URL for the settings page's search feature.
 extern const char kSettingsSearchHelpURL[];
 
-extern const char kSmartLockHelpPage[];
-
 // The URL for the Learn More page about Sync and Google services.
 extern const char kSyncAndGoogleServicesLearnMoreURL[];
 
@@ -223,6 +221,10 @@ extern const char kEULAPathFormat[];
 // Relative to |kChromeOSAssetPath|.
 extern const char kArcTermsPathFormat[];
 
+// The path format to the localized offline ARC++ Privacy Policy.
+// Relative to |kChromeOSAssetPath|.
+extern const char kArcPrivacyPolicyPathFormat[];
+
 // The URL for EOL notification
 extern const char kEolNotificationURL[];
 
@@ -256,8 +258,11 @@ extern const char kNaturalScrollHelpURL[];
 // The URL path to offline OEM EULA.
 extern const char kOemEulaURLPath[];
 
-// THE URL path to offline ARC++ Terms of Service.
+// The URL path to offline ARC++ Terms of Service.
 extern const char kArcTermsURLPath[];
+
+// The URL path to offline ARC++ Privacy Policy.
+extern const char kArcPrivacyPolicyURLPath[];
 
 extern const char kOnlineEulaURLPath[];
 
@@ -266,6 +271,9 @@ extern const char kTPMFirmwareUpdateLearnMoreURL[];
 
 // The URL for the "Learn more" page for the time zone settings page.
 extern const char kTimeZoneSettingsLearnMoreURL[];
+
+// The URL for the "Learn more" page for the network file shares settings page.
+extern const char kSmbSharesLearnMoreURL[];
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_MACOSX)

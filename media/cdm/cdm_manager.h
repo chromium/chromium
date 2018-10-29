@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_manager_export.h"
 
@@ -40,7 +41,8 @@ class CDM_MANAGER_EXPORT CdmManager {
 
  private:
   base::Lock lock_;
-  std::map<int, scoped_refptr<ContentDecryptionModule>> cdm_map_;
+  std::map<int, scoped_refptr<ContentDecryptionModule>> cdm_map_
+      GUARDED_BY(lock_);
 
   DISALLOW_COPY_AND_ASSIGN(CdmManager);
 };

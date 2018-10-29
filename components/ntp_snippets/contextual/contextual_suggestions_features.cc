@@ -10,14 +10,11 @@ const base::Feature kContextualSuggestionsAlternateCardLayout{
     "ContextualSuggestionsAlternateCardLayout",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kContextualSuggestionsBottomSheet{
-    "ContextualSuggestionsBottomSheet", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kContextualSuggestionsButton{
     "ContextualSuggestionsButton", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kContextualSuggestionsSlimPeekUI{
-    "ContextualSuggestionsSlimPeekUI", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kContextualSuggestionsIPHReverseScroll{
+    "ContextualSuggestionsIPHReverseScroll", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kContextualSuggestionsOptOut{
     "ContextualSuggestionsOptOut", base::FEATURE_ENABLED_BY_DEFAULT};

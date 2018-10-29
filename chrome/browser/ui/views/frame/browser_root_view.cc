@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/touch_uma/touch_uma.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -31,6 +32,8 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/paint_recorder.h"
+#include "ui/gfx/scoped_canvas.h"
 
 namespace {
 
@@ -38,14 +41,14 @@ using FileSupportedCallback =
     base::OnceCallback<void(const GURL& url, bool supported)>;
 
 // Get the MIME type of the file pointed to by the url, based on the file's
-// extension. Must be called on a thread that allows IO.
+// extension. Must be called in a context that allows blocking.
 std::string FindURLMimeType(const GURL& url) {
-  base::AssertBlockingAllowed();
   base::FilePath full_path;
   net::FileURLToFilePath(url, &full_path);
 
   // Get the MIME type based on the filename.
   std::string mime_type;
+  // This call may block on some platforms.
   net::GetMimeTypeFromFile(full_path, &mime_type);
 
   return mime_type;
@@ -292,6 +295,53 @@ void BrowserRootView::OnMouseExited(const ui::MouseEvent& event) {
   scroll_remainder_x_ = 0;
   scroll_remainder_y_ = 0;
   RootView::OnMouseExited(event);
+}
+
+void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
+  views::internal::RootView::PaintChildren(paint_info);
+
+  // ToolbarView can't paint its own top stroke because the stroke is drawn just
+  // above its bounds, where the active tab can overwrite it to visually join
+  // with the toolbar.  This painting can't be done in the NonClientFrameView
+  // because parts of the BrowserView (such as tabs) would get rendered on top
+  // of the stroke.  It can't be done in BrowserView either because that view is
+  // offset from the widget by a few DIPs, which is toublesome for computing a
+  // subpixel offset when using fractional scale factors.  So we're forced to
+  // put this drawing in the BrowserRootView.
+  if (tabstrip()->controller()->ShouldDrawStrokes() &&
+      browser_view_->IsToolbarVisible()) {
+    ui::PaintRecorder recorder(paint_info.context(),
+                               paint_info.paint_recording_size(),
+                               paint_info.paint_recording_scale_x(),
+                               paint_info.paint_recording_scale_y(), nullptr);
+    gfx::Canvas* canvas = recorder.canvas();
+
+    const float scale = canvas->image_scale();
+
+    gfx::RectF toolbar_bounds(browser_view_->toolbar()->bounds());
+    ConvertRectToTarget(browser_view_, this, &toolbar_bounds);
+    const int bottom = std::round(toolbar_bounds.y() * scale);
+    const int x = std::round(toolbar_bounds.x() * scale);
+    const int width = std::round(toolbar_bounds.width() * scale);
+
+    gfx::ScopedCanvas scoped_canvas(canvas);
+    int active_tab_index = tabstrip()->controller()->GetActiveIndex();
+    if (active_tab_index != ui::ListSelectionModel::kUnselectedIndex) {
+      Tab* active_tab = tabstrip()->tab_at(active_tab_index);
+      if (active_tab && active_tab->visible()) {
+        gfx::RectF bounds(active_tab->GetMirroredBounds());
+        ConvertRectToTarget(tabstrip(), this, &bounds);
+        canvas->ClipRect(bounds, SkClipOp::kDifference);
+      }
+    }
+    canvas->UndoDeviceScaleFactor();
+
+    cc::PaintFlags flags;
+    flags.setColor(tabstrip()->GetToolbarTopSeparatorColor());
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    canvas->DrawRect(gfx::RectF(x, bottom - scale, width, scale), flags);
+  }
 }
 
 void BrowserRootView::OnEventProcessingStarted(ui::Event* event) {

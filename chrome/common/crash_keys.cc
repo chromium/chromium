@@ -98,7 +98,7 @@ void SetActiveExtensions(const std::set<std::string>& extensions) {
       {"extension-10", ExtensionIDKey::Tag::kArray},
   };
 
-  std::set<std::string>::const_iterator it = extensions.begin();
+  auto it = extensions.begin();
   for (size_t i = 0; i < arraysize(extension_ids); ++i) {
     if (it == extensions.end()) {
       extension_ids[i].Clear();

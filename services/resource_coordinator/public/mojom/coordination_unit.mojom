@@ -63,6 +63,7 @@ interface FrameCoordinationUnit {
   SetAudibility(bool audible);
   SetNetworkAlmostIdle(bool idle);
   SetLifecycleState(LifecycleState state);
+  SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload);
 
   // Event signals.
   OnAlertFired();
@@ -106,7 +107,6 @@ interface ProcessCoordinationUnit {
   // Add a new binding to an existing ProcessCoordinationUnit.
   AddBinding(ProcessCoordinationUnit& request);
   AddFrame(CoordinationUnitID cu_id);
-  RemoveFrame(CoordinationUnitID cu_id);
 
   // Property signals.
   SetCPUUsage(double cpu_usage);

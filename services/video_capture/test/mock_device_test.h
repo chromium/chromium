@@ -6,13 +6,13 @@
 #define SERVICES_VIDEO_CAPTURE_TEST_MOCK_DEVICE_TEST_H_
 
 #include "base/test/mock_callback.h"
+#include "media/capture/video/mock_device.h"
+#include "media/capture/video/mock_device_factory.h"
 #include "media/capture/video/video_capture_device.h"
 #include "services/service_manager/public/cpp/service_context_ref.h"
 #include "services/video_capture/device_factory_media_to_mojo_adapter.h"
+#include "services/video_capture/public/cpp/mock_receiver.h"
 #include "services/video_capture/public/mojom/device_factory_provider.mojom.h"
-#include "services/video_capture/test/mock_device.h"
-#include "services/video_capture/test/mock_device_factory.h"
-#include "services/video_capture/test/mock_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -30,7 +30,7 @@ class MockDeviceTest : public ::testing::Test {
   void SetUp() override;
 
  protected:
-  MockDeviceFactory* mock_device_factory_;
+  media::MockDeviceFactory* mock_device_factory_;
   std::unique_ptr<DeviceFactoryMediaToMojoAdapter> mock_device_factory_adapter_;
 
   mojom::DeviceFactoryPtr factory_;
@@ -38,7 +38,7 @@ class MockDeviceTest : public ::testing::Test {
   base::MockCallback<mojom::DeviceFactory::GetDeviceInfosCallback>
       device_infos_receiver_;
 
-  MockDevice mock_device_;
+  media::MockDevice mock_device_;
   std::unique_ptr<MockReceiver> mock_receiver_;
   mojom::DevicePtr device_proxy_;
   mojom::ReceiverPtr mock_receiver_proxy_;

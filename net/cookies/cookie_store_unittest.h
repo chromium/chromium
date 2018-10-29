@@ -310,6 +310,9 @@ class CookieStoreTest : public testing::Test {
     return cookie_store_.get();
   }
 
+  // Resets CookieStore.
+  void ResetCookieStore() { cookie_store_.reset(); }
+
   // Compares two cookie lines.
   void MatchCookieLines(const std::string& line1, const std::string& line2) {
     EXPECT_EQ(TokenizeCookieLine(line1), TokenizeCookieLine(line2));

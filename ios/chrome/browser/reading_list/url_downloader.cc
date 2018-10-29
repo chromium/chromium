@@ -21,9 +21,8 @@
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "net/url_request/url_request_status.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
 namespace {
@@ -47,7 +46,7 @@ URLDownloader::URLDownloader(
     reading_list::ReadingListDistillerPageFactory* distiller_page_factory,
     PrefService* prefs,
     base::FilePath chrome_profile_path,
-    net::URLRequestContextGetter* url_request_context_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const DownloadCompletion& download_completion,
     const SuccessCompletion& delete_completion)
     : distiller_page_factory_(distiller_page_factory),
@@ -58,7 +57,7 @@ URLDownloader::URLDownloader(
       working_(false),
       base_directory_(chrome_profile_path),
       mime_type_(),
-      url_request_context_getter_(url_request_context_getter),
+      url_loader_factory_(std::move(url_loader_factory)),
       task_runner_(base::CreateSequencedTaskRunnerWithTraits(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
@@ -195,30 +194,28 @@ void URLDownloader::DistilledPageHasMimeType(const GURL& original_url,
   mime_type_ = mime_type;
 }
 
-void URLDownloader::OnURLFetchComplete(const net::URLFetcher* source) {
-  DCHECK(source == fetcher_.get());
+void URLDownloader::OnURLLoadComplete(const GURL& original_url,
+                                      base::FilePath response_path) {
   // At the moment, only pdf files are downloaded using URLFetcher.
   DCHECK(mime_type_ == "application/pdf");
   base::FilePath path = reading_list::OfflinePagePath(
       original_url_, reading_list::OFFLINE_TYPE_PDF);
   std::string mime_type;
-  if (fetcher_->GetResponseHeaders()) {
-    fetcher_->GetResponseHeaders()->GetMimeType(&mime_type);
+  if (url_loader_->ResponseInfo()) {
+    mime_type = url_loader_->ResponseInfo()->mime_type;
   }
-  if (!fetcher_->GetStatus().is_success() || mime_type != mime_type_) {
+  if (response_path.empty() || mime_type != mime_type_) {
     return DownloadCompletionHandler(original_url_, "", path, ERROR);
   }
-  base::FilePath temporary_path;
-  // Do not take ownership of the file until the file is moved. This ensures
-  // that the file is cleaned if there a problem before file is moved.
-  fetcher_->GetResponseAsFilePath(false, &temporary_path);
 
   task_tracker_.PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
       base::Bind(&URLDownloader::SavePDFFile, base::Unretained(this),
-                 temporary_path),
+                 response_path),
       base::Bind(&URLDownloader::DownloadCompletionHandler,
-                 base::Unretained(this), source->GetOriginalURL(), "", path));
+                 base::Unretained(this), original_url, "", path));
+
+  url_loader_.reset();
 }
 
 void URLDownloader::CancelTask() {
@@ -229,11 +226,16 @@ void URLDownloader::CancelTask() {
 void URLDownloader::FetchPDFFile() {
   const GURL& pdf_url =
       distilled_url_.is_valid() ? distilled_url_ : original_url_;
-  fetcher_ = net::URLFetcher::Create(0, pdf_url, net::URLFetcher::GET, this);
-  fetcher_->SetRequestContext(url_request_context_getter_.get());
-  fetcher_->SetLoadFlags(net::LOAD_SKIP_CACHE_VALIDATION);
-  fetcher_->SaveResponseToTemporaryFile(task_runner_.get());
-  fetcher_->Start();
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = pdf_url;
+  resource_request->load_flags = net::LOAD_SKIP_CACHE_VALIDATION;
+
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 NO_TRAFFIC_ANNOTATION_YET);
+  url_loader_->DownloadToTempFile(
+      url_loader_factory_.get(),
+      base::BindOnce(&URLDownloader::OnURLLoadComplete, base::Unretained(this),
+                     pdf_url));
 }
 
 URLDownloader::SuccessState URLDownloader::SavePDFFile(

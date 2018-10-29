@@ -18,6 +18,8 @@ class TestPermissionMessageProvider : public PermissionMessageProvider {
  private:
   PermissionMessages GetPermissionMessages(
       const PermissionIDSet& permissions) const override;
+  PermissionMessages GetPowerfulPermissionMessages(
+      const PermissionIDSet& permissions) const override;
   bool IsPrivilegeIncrease(const PermissionSet& granted_permissions,
                            const PermissionSet& requested_permissions,
                            Manifest::Type extension_type) const override;

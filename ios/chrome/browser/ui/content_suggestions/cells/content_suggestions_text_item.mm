@@ -6,8 +6,6 @@
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_text_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,16 +57,20 @@
 // Configures the |textLabel|.
 - (void)configureTextLabel:(UILabel*)textLabel {
   textLabel.text = self.text;
-  textLabel.textColor = [[MDCPalette greyPalette] tint900];
-  textLabel.font = [MDCTypography body2Font];
+  textLabel.textColor = [UIColor colorWithWhite:0.13 alpha:1];
+  textLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  textLabel.adjustsFontForContentSizeCategory = YES;
   textLabel.numberOfLines = 0;
 }
 
 // Configures the |detailTextLabel|.
 - (void)configureDetailTextLabel:(UILabel*)detailTextLabel {
   detailTextLabel.text = self.detailText;
-  detailTextLabel.textColor = [[MDCPalette greyPalette] tint500];
-  detailTextLabel.font = [MDCTypography body1Font];
+  detailTextLabel.textColor = [UIColor colorWithWhite:0.62 alpha:1];
+  detailTextLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  detailTextLabel.adjustsFontForContentSizeCategory = YES;
   detailTextLabel.numberOfLines = 0;
 }
 

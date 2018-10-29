@@ -75,6 +75,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [NewObject] Range createRange();
 
     [CallWith=ScriptState, NewObject, RaisesException, RuntimeEnabled=ConstructableStylesheets] Promise<CSSStyleSheet> createCSSStyleSheet(DOMString text, optional CSSStyleSheetInit options);
+    [CallWith=ScriptState, NewObject, RaisesException, RuntimeEnabled=ConstructableStylesheets] CSSStyleSheet createCSSStyleSheetSync(DOMString text, optional CSSStyleSheetInit options);
     [CallWith=ScriptState, NewObject, RaisesException, RuntimeEnabled=ConstructableStylesheets] CSSStyleSheet createEmptyCSSStyleSheet(optional CSSStyleSheetInit options);
 
 
@@ -104,7 +105,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
     // DOM tree accessors
     // Named getter is implemented without IDL code generation for better
-    // performance. See LocalWindowProxy.cpp.
+    // performance. See local_window_proxy.cc.
     // getter object (DOMString name);
     [Affects=Nothing, CEReactions, CustomElementCallbacks] attribute DOMString title;
     [CEReactions, CustomElementCallbacks] attribute DOMString dir;
@@ -173,7 +174,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Custom Elements
     // https://w3c.github.io/webcomponents/spec/custom/#extensions-to-document-interface-to-register
     // FIXME: The registerElement return type should be Function.
-    [RuntimeEnabled=CustomElementsV0, CallWith=ScriptState, CustomElementCallbacks, RaisesException, DeprecateAs=DocumentRegisterElement] CustomElementConstructor registerElement(DOMString type, optional ElementRegistrationOptions options);
+    [RuntimeEnabled=CustomElementsV0, CallWith=ScriptState, CustomElementCallbacks, RaisesException, DeprecateAs=DocumentRegisterElement] any registerElement(DOMString type, optional ElementRegistrationOptions options);
     // https://w3c.github.io/webcomponents/spec/custom/#extensions-to-document-interface-to-instantiate
     // FIXME: The typeExtension arguments should not be nullable.
     [CustomElementCallbacks, PerWorldBindings, RaisesException, ImplementedAs=CreateElementForBinding] Element createElement(DOMString localName, (DOMString or Dictionary)? options);
@@ -209,19 +210,15 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     attribute EventHandler onbeforecopy;
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
-    attribute EventHandler oncopy;
-    attribute EventHandler oncut;
     [RuntimeEnabled=PageLifecycle] attribute EventHandler onfreeze;
-    attribute EventHandler onpaste;
     [RuntimeEnabled=PageLifecycle] attribute EventHandler onresume;
     attribute EventHandler onsearch;
     [RuntimeEnabled=ExperimentalContentSecurityPolicyFeatures] attribute EventHandler onsecuritypolicyviolation;
-    attribute EventHandler onselectionchange;
-    attribute EventHandler onselectstart;
     attribute EventHandler onvisibilitychange;
 };
 
 Document implements GlobalEventHandlers;
+Document implements DocumentAndElementEventHandlers;
 Document implements ParentNode;
 Document implements NonElementParentNode;
 Document implements DocumentOrShadowRoot;

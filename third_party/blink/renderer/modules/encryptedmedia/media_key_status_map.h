@@ -39,10 +39,10 @@ class MediaKeyStatusMap final
 
   void Clear();
   void AddEntry(WebData key_id, const String& status);
-  const MapEntry& at(size_t) const;
+  const MapEntry& at(uint32_t) const;
 
   // IDL attributes / methods
-  size_t size() const { return entries_.size(); }
+  uint32_t size() const { return entries_.size(); }
   bool has(const ArrayBufferOrArrayBufferView& key_id);
   ScriptValue get(ScriptState*, const ArrayBufferOrArrayBufferView& key_id);
 
@@ -52,7 +52,7 @@ class MediaKeyStatusMap final
   // PairIterable<> implementation.
   IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
 
-  size_t IndexOf(const DOMArrayPiece& key_id) const;
+  uint32_t IndexOf(const DOMArrayPiece& key_id) const;
 
   MediaKeyStatusMapType entries_;
 };

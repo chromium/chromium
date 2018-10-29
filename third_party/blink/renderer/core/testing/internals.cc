@@ -281,12 +281,12 @@ void Internals::ResetToConsistentState(Page* page) {
   KeyboardEventManager::SetCurrentCapsLockState(
       OverrideCapsLockState::kDefault);
 
-  IntersectionObserver::SetV2ThrottleDelayEnabledForTesting(true);
+  IntersectionObserver::SetThrottleDelayEnabledForTesting(true);
 }
 
 Internals::Internals(ExecutionContext* context)
     : runtime_flags_(InternalRuntimeFlags::create()),
-      document_(ToDocument(context)) {
+      document_(To<Document>(context)) {
   document_->Fetcher()->EnableIsPreloadedForTest();
 }
 
@@ -462,7 +462,7 @@ int Internals::getResourcePriority(const String& url, Document* document) {
     return static_cast<int>(ResourceLoadPriority::kUnresolved);
 
   Resource* resource = document->Fetcher()->AllResources().at(
-      URLTestHelpers::ToKURL(url.Utf8().data()));
+      url_test_helpers::ToKURL(url.Utf8().data()));
 
   if (!resource)
     return static_cast<int>(ResourceLoadPriority::kUnresolved);
@@ -476,7 +476,7 @@ String Internals::getResourceHeader(const String& url,
   if (!document)
     return String();
   Resource* resource = document->Fetcher()->AllResources().at(
-      URLTestHelpers::ToKURL(url.Utf8().data()));
+      url_test_helpers::ToKURL(url.Utf8().data()));
   if (!resource)
     return String();
   return resource->GetResourceRequest().HttpHeaderField(header.Utf8().data());
@@ -512,14 +512,14 @@ unsigned short Internals::compareTreeScopePosition(
     ExceptionState& exception_state) const {
   DCHECK(node1 && node2);
   const TreeScope* tree_scope1 =
-      node1->IsDocumentNode()
-          ? static_cast<const TreeScope*>(ToDocument(node1))
+      IsA<Document>(node1)
+          ? static_cast<const TreeScope*>(To<Document>(node1))
           : node1->IsShadowRoot()
                 ? static_cast<const TreeScope*>(ToShadowRoot(node1))
                 : nullptr;
   const TreeScope* tree_scope2 =
-      node2->IsDocumentNode()
-          ? static_cast<const TreeScope*>(ToDocument(node2))
+      IsA<Document>(node2)
+          ? static_cast<const TreeScope*>(To<Document>(node2))
           : node2->IsShadowRoot()
                 ? static_cast<const TreeScope*>(ToShadowRoot(node2))
                 : nullptr;
@@ -613,8 +613,8 @@ bool Internals::hasContentElement(const Node* root,
   return ToShadowRoot(root)->V0().ContainsContentElements();
 }
 
-size_t Internals::countElementShadow(const Node* root,
-                                     ExceptionState& exception_state) const {
+uint32_t Internals::countElementShadow(const Node* root,
+                                       ExceptionState& exception_state) const {
   DCHECK(root);
   if (!root->IsShadowRoot()) {
     exception_state.ThrowDOMException(
@@ -1417,10 +1417,10 @@ String Internals::rangeAsText(const Range* range) {
 
 void Internals::HitTestRect(HitTestLocation& location,
                             HitTestResult& result,
-                            long x,
-                            long y,
-                            long width,
-                            long height,
+                            int x,
+                            int y,
+                            int width,
+                            int height,
                             Document* document) {
   document->UpdateStyleAndLayout();
   EventHandler& event_handler = document->GetFrame()->GetEventHandler();
@@ -1434,10 +1434,10 @@ void Internals::HitTestRect(HitTestLocation& location,
 }
 
 DOMPoint* Internals::touchPositionAdjustedToBestClickableNode(
-    long x,
-    long y,
-    long width,
-    long height,
+    int x,
+    int y,
+    int width,
+    int height,
     Document* document,
     ExceptionState& exception_state) {
   DCHECK(document);
@@ -1463,10 +1463,10 @@ DOMPoint* Internals::touchPositionAdjustedToBestClickableNode(
 }
 
 Node* Internals::touchNodeAdjustedToBestClickableNode(
-    long x,
-    long y,
-    long width,
-    long height,
+    int x,
+    int y,
+    int width,
+    int height,
     Document* document,
     ExceptionState& exception_state) {
   DCHECK(document);
@@ -1487,10 +1487,10 @@ Node* Internals::touchNodeAdjustedToBestClickableNode(
 }
 
 DOMPoint* Internals::touchPositionAdjustedToBestContextMenuNode(
-    long x,
-    long y,
-    long width,
-    long height,
+    int x,
+    int y,
+    int width,
+    int height,
     Document* document,
     ExceptionState& exception_state) {
   DCHECK(document);
@@ -1516,10 +1516,10 @@ DOMPoint* Internals::touchPositionAdjustedToBestContextMenuNode(
 }
 
 Node* Internals::touchNodeAdjustedToBestContextMenuNode(
-    long x,
-    long y,
-    long width,
-    long height,
+    int x,
+    int y,
+    int width,
+    int height,
     Document* document,
     ExceptionState& exception_state) {
   DCHECK(document);
@@ -1631,8 +1631,8 @@ Vector<AtomicString> Internals::userPreferredLanguages() const {
 // this is not supported yet.
 void Internals::setUserPreferredLanguages(const Vector<String>& languages) {
   Vector<AtomicString> atomic_languages;
-  for (size_t i = 0; i < languages.size(); ++i)
-    atomic_languages.push_back(AtomicString(languages[i]));
+  for (const String& language : languages)
+    atomic_languages.push_back(AtomicString(language));
   OverrideUserPreferredLanguagesForTesting(atomic_languages);
 }
 
@@ -1820,13 +1820,13 @@ static PaintLayer* FindLayerForGraphicsLayer(PaintLayer* search_root,
 // purposes). No attempt is made to do this efficiently (eg. by relying on the
 // sort criteria of SkRegion).
 static void MergeRects(Vector<IntRect>& rects) {
-  for (size_t i = 0; i < rects.size(); ++i) {
+  for (wtf_size_t i = 0; i < rects.size(); ++i) {
     if (rects[i].IsEmpty())
       continue;
     bool updated;
     do {
       updated = false;
-      for (size_t j = i + 1; j < rects.size(); ++j) {
+      for (wtf_size_t j = i + 1; j < rects.size(); ++j) {
         if (rects[j].IsEmpty())
           continue;
         // Try to merge rects[j] into rects[i] along the 4 possible edges.
@@ -1877,18 +1877,17 @@ static void AccumulateLayerRectList(PaintLayerCompositor* compositor,
         compositor->RootLayer(), graphics_layer, &layer_offset, &layer_type);
     Node* node =
         paint_layer ? paint_layer->GetLayoutObject().GetNode() : nullptr;
-    for (size_t i = 0; i < layer_rects.size(); ++i) {
-      if (!layer_rects[i].IsEmpty()) {
+    for (const IntRect& layer_rect : layer_rects) {
+      if (!layer_rect.IsEmpty()) {
         rects->Append(node, layer_type, layer_offset.Width(),
                       layer_offset.Height(),
-                      DOMRectReadOnly::FromIntRect(layer_rects[i]));
+                      DOMRectReadOnly::FromIntRect(layer_rect));
       }
     }
   }
 
-  size_t num_children = graphics_layer->Children().size();
-  for (size_t i = 0; i < num_children; ++i)
-    AccumulateLayerRectList(compositor, graphics_layer->Children()[i], rects);
+  for (GraphicsLayer* child_layer : graphics_layer->Children())
+    AccumulateLayerRectList(compositor, child_layer, rects);
 }
 
 LayerRectList* Internals::touchEventTargetLayerRects(
@@ -1948,23 +1947,23 @@ AtomicString Internals::htmlNamespace() {
 }
 
 Vector<AtomicString> Internals::htmlTags() {
-  Vector<AtomicString> tags(HTMLNames::HTMLTagsCount);
+  Vector<AtomicString> tags(HTMLNames::kTagsCount);
   std::unique_ptr<const HTMLQualifiedName* []> qualified_names =
-      HTMLNames::getHTMLTags();
-  for (size_t i = 0; i < HTMLNames::HTMLTagsCount; ++i)
+      HTMLNames::GetTags();
+  for (wtf_size_t i = 0; i < HTMLNames::kTagsCount; ++i)
     tags[i] = qualified_names[i]->LocalName();
   return tags;
 }
 
 AtomicString Internals::svgNamespace() {
-  return SVGNames::svgNamespaceURI;
+  return svg_names::kNamespaceURI;
 }
 
 Vector<AtomicString> Internals::svgTags() {
-  Vector<AtomicString> tags(SVGNames::SVGTagsCount);
+  Vector<AtomicString> tags(svg_names::kTagsCount);
   std::unique_ptr<const SVGQualifiedName* []> qualified_names =
-      SVGNames::getSVGTags();
-  for (size_t i = 0; i < SVGNames::SVGTagsCount; ++i)
+      svg_names::GetTags();
+  for (wtf_size_t i = 0; i < svg_names::kTagsCount; ++i)
     tags[i] = qualified_names[i]->LocalName();
   return tags;
 }
@@ -2583,8 +2582,8 @@ void Internals::updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks(
   Document* document = nullptr;
   if (!node) {
     document = document_;
-  } else if (node->IsDocumentNode()) {
-    document = ToDocument(node);
+  } else if (IsA<Document>(node)) {
+    document = To<Document>(node);
   } else if (auto* iframe = ToHTMLIFrameElementOrNull(*node)) {
     document = iframe->contentDocument();
   }
@@ -2637,9 +2636,9 @@ DOMRectList* Internals::AnnotatedRegions(Document* document,
   Vector<AnnotatedRegionValue> regions = document->AnnotatedRegions();
 
   Vector<FloatQuad> quads;
-  for (size_t i = 0; i < regions.size(); ++i) {
-    if (regions[i].draggable == draggable)
-      quads.push_back(FloatQuad(FloatRect(regions[i].bounds)));
+  for (const AnnotatedRegionValue& region : regions) {
+    if (region.draggable == draggable)
+      quads.push_back(FloatQuad(FloatRect(region.bounds)));
   }
   return DOMRectList::Create(quads);
 }
@@ -2786,8 +2785,8 @@ bool Internals::fakeMouseMovePending() const {
 DOMArrayBuffer* Internals::serializeObject(
     scoped_refptr<SerializedScriptValue> value) const {
   base::span<const uint8_t> span = value->GetWireData();
-  DOMArrayBuffer* buffer =
-      DOMArrayBuffer::CreateUninitializedOrNull(span.size(), sizeof(uint8_t));
+  DOMArrayBuffer* buffer = DOMArrayBuffer::CreateUninitializedOrNull(
+      SafeCast<uint32_t>(span.size()), sizeof(uint8_t));
   if (buffer)
     memcpy(buffer->Data(), span.data(), span.size());
   return buffer;
@@ -2941,7 +2940,7 @@ bool Internals::selectPopupItemStyleIsRtl(Node* node, int item_index) {
 
   HTMLSelectElement& select = ToHTMLSelectElement(*node);
   if (item_index < 0 ||
-      static_cast<size_t>(item_index) >= select.GetListItems().size())
+      static_cast<wtf_size_t>(item_index) >= select.GetListItems().size())
     return false;
   const ComputedStyle* item_style =
       select.ItemComputedStyle(*select.GetListItems()[item_index]);
@@ -2954,7 +2953,7 @@ int Internals::selectPopupItemStyleFontHeight(Node* node, int item_index) {
 
   HTMLSelectElement& select = ToHTMLSelectElement(*node);
   if (item_index < 0 ||
-      static_cast<size_t>(item_index) >= select.GetListItems().size())
+      static_cast<wtf_size_t>(item_index) >= select.GetListItems().size())
     return false;
   const ComputedStyle* item_style =
       select.ItemComputedStyle(*select.GetListItems()[item_index]);
@@ -3035,7 +3034,8 @@ class AddOneFunction : public ScriptFunction {
   ScriptValue Call(ScriptValue value) override {
     v8::Local<v8::Value> v8_value = value.V8Value();
     DCHECK(v8_value->IsNumber());
-    int int_value = v8_value.As<v8::Integer>()->Value();
+    int32_t int_value =
+        static_cast<int32_t>(v8_value.As<v8::Integer>()->Value());
     return ScriptValue(
         GetScriptState(),
         v8::Integer::New(GetScriptState()->GetIsolate(), int_value + 1));
@@ -3467,9 +3467,9 @@ unsigned Internals::LifecycleUpdateCount() const {
   return document_->View()->LifecycleUpdateCountForTesting();
 }
 
-void Internals::DisableIntersectionObserverV2Throttle() const {
+void Internals::DisableIntersectionObserverThrottleDelay() const {
   // This gets reset by Internals::ResetToConsistentState
-  IntersectionObserver::SetV2ThrottleDelayEnabledForTesting(false);
+  IntersectionObserver::SetThrottleDelayEnabledForTesting(false);
 }
 
 void Internals::addEmbedderCustomElementName(const AtomicString& name,

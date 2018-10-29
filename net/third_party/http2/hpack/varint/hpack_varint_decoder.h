@@ -19,6 +19,8 @@
 // For details of the encoding, see:
 //        http://httpwg.org/specs/rfc7541.html#integer.representation
 //
+// The decoder supports decoding integers up to 2^28 + 2^prefix_length - 2.
+//
 // TODO(jamessynge): Consider dropping support for encodings of more than 4
 // bytes, including the prefix byte, as in practice we only see at most 3 bytes,
 // and 4 bytes would cover any desire to support large (but not ridiculously
@@ -28,6 +30,7 @@
 #define NET_THIRD_PARTY_HTTP2_HPACK_VARINT_HPACK_VARINT_DECODER_H_
 
 #include <cstdint>
+#include <limits>
 
 #include "base/logging.h"
 #include "net/third_party/http2/decoder/decode_buffer.h"
@@ -84,29 +87,22 @@ class HTTP2_EXPORT_PRIVATE HpackVarintDecoder {
   DecodeStatus StartExtendedForTest(uint8_t prefix_length, DecodeBuffer* db);
   DecodeStatus ResumeForTest(DecodeBuffer* db);
 
-  static constexpr uint32_t MaxExtensionBytes() { return 5; }
-
  private:
   // Protection in case Resume is called when it shouldn't be.
   void MarkDone() {
 #ifndef NDEBUG
-    // We support up to 5 extension bytes, so offset_ should never be > 28 when
-    // it makes sense to call Resume().
-    offset_ = MaxOffset() + 7;
+    offset_ = std::numeric_limits<uint32_t>::max();
 #endif
   }
   void CheckNotDone() const {
 #ifndef NDEBUG
-    DCHECK_LE(offset_, MaxOffset());
+    DCHECK_NE(std::numeric_limits<uint32_t>::max(), offset_);
 #endif
   }
   void CheckDone() const {
 #ifndef NDEBUG
-    DCHECK_GT(offset_, MaxOffset());
+    DCHECK_EQ(std::numeric_limits<uint32_t>::max(), offset_);
 #endif
-  }
-  static constexpr uint32_t MaxOffset() {
-    return 7 * (MaxExtensionBytes() - 1);
   }
 
   // These fields are initialized just to keep ASAN happy about reading

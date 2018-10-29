@@ -32,8 +32,7 @@ void GetLanguages(base::DictionaryValue* dict) {
   std::vector<std::string> language_codes;
   l10n_util::GetAcceptLanguagesForLocale(app_locale, &language_codes);
 
-  for (std::vector<std::string>::iterator it = language_codes.begin();
-       it != language_codes.end(); ++it) {
+  for (auto it = language_codes.begin(); it != language_codes.end(); ++it) {
     const std::string& lang_code = *it;
     base::string16 lang_name =
         l10n_util::GetDisplayNameForLocale(lang_code, app_locale, false);

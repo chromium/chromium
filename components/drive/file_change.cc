@@ -137,16 +137,15 @@ void FileChange::Update(const base::FilePath file_path,
 }
 
 void FileChange::Apply(const FileChange& new_changed_files) {
-  for (Map::const_iterator it = new_changed_files.map().begin();
-       it != new_changed_files.map().end();
-       it++) {
+  for (auto it = new_changed_files.map().begin();
+       it != new_changed_files.map().end(); it++) {
     Update(it->first, it->second);
   }
 }
 
 size_t FileChange::CountDirectory(const base::FilePath& directory_path) const {
   size_t count = 0;
-  for (Map::const_iterator it = map_.begin(); it != map_.end(); it++) {
+  for (auto it = map_.begin(); it != map_.end(); it++) {
     if (it->first.DirName() == directory_path)
       count++;
   }
@@ -156,8 +155,7 @@ size_t FileChange::CountDirectory(const base::FilePath& directory_path) const {
 std::string FileChange::DebugString() const {
   std::ostringstream ss;
   ss << "{ ";
-  for (FileChange::Map::const_iterator it = map_.begin(); it != map_.end();
-       it++) {
+  for (auto it = map_.begin(); it != map_.end(); it++) {
     ss << it->first.value() << ": " << it->second.DebugString() << ", ";
   }
   ss << "}";

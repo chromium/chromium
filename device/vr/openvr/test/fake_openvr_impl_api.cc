@@ -14,6 +14,8 @@
 #include <wrl.h>
 #include <memory>
 
+// TODO(https://crbug.com/892717): Update argument names to be consistent with
+// Chromium style guidelines.
 namespace vr {
 
 class TestVRSystem : public IVRSystem {
@@ -96,17 +98,9 @@ class TestVRSystem : public IVRSystem {
     return 0;
   }
   ETrackedControllerRole GetControllerRoleForTrackedDeviceIndex(
-      TrackedDeviceIndex_t unDeviceIndex) override {
-    NOTIMPLEMENTED();
-    return TrackedControllerRole_Invalid;
-  }
+      TrackedDeviceIndex_t unDeviceIndex) override;
   ETrackedDeviceClass GetTrackedDeviceClass(
-      TrackedDeviceIndex_t unDeviceIndex) override {
-    // Not yet implemented, but avoid calling NOTIMPLEMENTED() because it floods
-    // logs, and will be called to enumerate input devices.
-    // TODO(crbug.com/863487) - implement this and test input.
-    return TrackedDeviceClass_Invalid;
-  }
+      TrackedDeviceIndex_t unDeviceIndex) override;
   bool IsTrackedDeviceConnected(TrackedDeviceIndex_t unDeviceIndex) override {
     NOTIMPLEMENTED();
     return false;
@@ -125,17 +119,11 @@ class TestVRSystem : public IVRSystem {
   int32_t GetInt32TrackedDeviceProperty(
       TrackedDeviceIndex_t unDeviceIndex,
       ETrackedDeviceProperty prop,
-      ETrackedPropertyError* pError = 0L) override {
-    NOTIMPLEMENTED();
-    return 0;
-  }
+      ETrackedPropertyError* pError = 0L) override;
   uint64_t GetUint64TrackedDeviceProperty(
       TrackedDeviceIndex_t unDeviceIndex,
       ETrackedDeviceProperty prop,
-      ETrackedPropertyError* pError = 0L) override {
-    NOTIMPLEMENTED();
-    return 0;
-  }
+      ETrackedPropertyError* pError = 0L) override;
   HmdMatrix34_t GetMatrix34TrackedDeviceProperty(
       TrackedDeviceIndex_t unDeviceIndex,
       ETrackedDeviceProperty prop,
@@ -171,21 +159,15 @@ class TestVRSystem : public IVRSystem {
     NOTIMPLEMENTED();
     return {};
   }
-  bool GetControllerState(TrackedDeviceIndex_t unControllerDeviceIndex,
-                          VRControllerState_t* pControllerState,
-                          uint32_t unControllerStateSize) override {
-    NOTIMPLEMENTED();
-    return false;
-  }
+  bool GetControllerState(TrackedDeviceIndex_t controller_device_index,
+                          VRControllerState_t* controller_state,
+                          uint32_t controller_state_size) override;
   bool GetControllerStateWithPose(
-      ETrackingUniverseOrigin eOrigin,
-      TrackedDeviceIndex_t unControllerDeviceIndex,
-      VRControllerState_t* pControllerState,
-      uint32_t unControllerStateSize,
-      TrackedDevicePose_t* pTrackedDevicePose) override {
-    NOTIMPLEMENTED();
-    return false;
-  }
+      ETrackingUniverseOrigin origin,
+      TrackedDeviceIndex_t device_controller_index,
+      VRControllerState_t* controller_state,
+      uint32_t controller_state_size,
+      TrackedDevicePose_t* tracked_device_pose) override;
   void TriggerHapticPulse(TrackedDeviceIndex_t unControllerDeviceIndex,
                           uint32_t unAxisId,
                           unsigned short usDurationMicroSec) override {
@@ -506,6 +488,25 @@ bool TestVRSystem::PollNextEvent(VREvent_t*, unsigned int) {
   return false;
 }
 
+bool TestVRSystem::GetControllerState(
+    TrackedDeviceIndex_t controller_device_index,
+    VRControllerState_t* controller_state,
+    uint32_t controller_state_size) {
+  return g_test_helper.GetControllerState(controller_device_index,
+                                          controller_state);
+}
+
+bool TestVRSystem::GetControllerStateWithPose(
+    ETrackingUniverseOrigin origin,
+    TrackedDeviceIndex_t controller_device_index,
+    VRControllerState_t* controller_state,
+    uint32_t controller_state_size,
+    TrackedDevicePose_t* tracked_device_pose) {
+  g_test_helper.GetControllerState(controller_device_index, controller_state);
+  return g_test_helper.GetControllerPose(controller_device_index,
+                                         tracked_device_pose);
+}
+
 uint32_t TestVRSystem::GetStringTrackedDeviceProperty(
     TrackedDeviceIndex_t unDeviceIndex,
     ETrackedDeviceProperty prop,
@@ -535,6 +536,38 @@ float TestVRSystem::GetFloatTrackedDeviceProperty(
   return 0;
 }
 
+int32_t TestVRSystem::GetInt32TrackedDeviceProperty(
+    TrackedDeviceIndex_t unDeviceIndex,
+    ETrackedDeviceProperty prop,
+    ETrackedPropertyError* pError) {
+  int32_t ret;
+  ETrackedPropertyError err =
+      g_test_helper.GetInt32TrackedDeviceProperty(unDeviceIndex, prop, ret);
+  if (err != TrackedProp_Success) {
+    NOTIMPLEMENTED();
+  }
+  if (pError) {
+    *pError = err;
+  }
+  return ret;
+}
+
+uint64_t TestVRSystem::GetUint64TrackedDeviceProperty(
+    TrackedDeviceIndex_t unDeviceIndex,
+    ETrackedDeviceProperty prop,
+    ETrackedPropertyError* pError) {
+  uint64_t ret;
+  ETrackedPropertyError err =
+      g_test_helper.GetUint64TrackedDeviceProperty(unDeviceIndex, prop, ret);
+  if (err != TrackedProp_Success) {
+    NOTIMPLEMENTED();
+  }
+  if (pError) {
+    *pError = err;
+  }
+  return ret;
+}
+
 HmdMatrix34_t TestVRSystem::GetSeatedZeroPoseToStandingAbsoluteTrackingPose() {
   HmdMatrix34_t ret = {};
   ret.m[0][0] = 1;
@@ -542,6 +575,16 @@ HmdMatrix34_t TestVRSystem::GetSeatedZeroPoseToStandingAbsoluteTrackingPose() {
   ret.m[2][2] = 1;
   ret.m[1][3] = 1.2f;
   return ret;
+}
+
+ETrackedControllerRole TestVRSystem::GetControllerRoleForTrackedDeviceIndex(
+    TrackedDeviceIndex_t unDeviceIndex) {
+  return g_test_helper.GetControllerRoleForTrackedDeviceIndex(unDeviceIndex);
+}
+
+ETrackedDeviceClass TestVRSystem::GetTrackedDeviceClass(
+    TrackedDeviceIndex_t unDeviceIndex) {
+  return g_test_helper.GetTrackedDeviceClass(unDeviceIndex);
 }
 
 void TestVRCompositor::SuspendRendering(bool bSuspend) {}

@@ -7,7 +7,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #import "ui/base/test/cocoa_helper.h"
 
 // A test class that all tests that depend on AppKit should inherit from.
@@ -26,9 +25,6 @@ class CocoaTest : public ui::CocoaTest {
   static void BootstrapCocoa();
 
   CocoaTest();
-
- private:
-  test::ScopedMacViewsBrowserMode cocoa_mode_{false};
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_TEST_COCOA_TEST_HELPER_H_

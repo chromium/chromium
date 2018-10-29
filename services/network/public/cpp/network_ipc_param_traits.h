@@ -13,6 +13,7 @@
 #include "ipc/param_traits_macros.h"
 #include "net/base/auth.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/ct_policy_status.h"
@@ -111,11 +112,21 @@ IPC_STRUCT_TRAITS_BEGIN(network::CORSErrorStatus)
   IPC_STRUCT_TRAITS_MEMBER(failed_parameter)
 IPC_STRUCT_TRAITS_END()
 
+IPC_STRUCT_TRAITS_BEGIN(network::cors::PreflightTimingInfo)
+  IPC_STRUCT_TRAITS_MEMBER(start_time)
+  IPC_STRUCT_TRAITS_MEMBER(finish_time)
+  IPC_STRUCT_TRAITS_MEMBER(alpn_negotiated_protocol)
+  IPC_STRUCT_TRAITS_MEMBER(connection_info)
+  IPC_STRUCT_TRAITS_MEMBER(timing_allow_origin)
+  IPC_STRUCT_TRAITS_MEMBER(transfer_size)
+IPC_STRUCT_TRAITS_END()
+
 IPC_STRUCT_TRAITS_BEGIN(network::URLLoaderCompletionStatus)
   IPC_STRUCT_TRAITS_MEMBER(error_code)
   IPC_STRUCT_TRAITS_MEMBER(extended_error_code)
   IPC_STRUCT_TRAITS_MEMBER(exists_in_cache)
   IPC_STRUCT_TRAITS_MEMBER(completion_time)
+  IPC_STRUCT_TRAITS_MEMBER(cors_preflight_timing_info)
   IPC_STRUCT_TRAITS_MEMBER(encoded_data_length)
   IPC_STRUCT_TRAITS_MEMBER(encoded_body_length)
   IPC_STRUCT_TRAITS_MEMBER(decoded_body_length)
@@ -135,6 +146,7 @@ IPC_STRUCT_TRAITS_BEGIN(network::ResourceRequest)
   IPC_STRUCT_TRAITS_MEMBER(referrer_policy)
   IPC_STRUCT_TRAITS_MEMBER(is_prerendering)
   IPC_STRUCT_TRAITS_MEMBER(headers)
+  IPC_STRUCT_TRAITS_MEMBER(requested_with)
   IPC_STRUCT_TRAITS_MEMBER(load_flags)
   IPC_STRUCT_TRAITS_MEMBER(allow_credentials)
   IPC_STRUCT_TRAITS_MEMBER(plugin_child_id)
@@ -166,7 +178,11 @@ IPC_STRUCT_TRAITS_BEGIN(network::ResourceRequest)
   IPC_STRUCT_TRAITS_MEMBER(previews_state)
   IPC_STRUCT_TRAITS_MEMBER(initiated_in_secure_context)
   IPC_STRUCT_TRAITS_MEMBER(upgrade_if_insecure)
+  IPC_STRUCT_TRAITS_MEMBER(is_revalidating)
   IPC_STRUCT_TRAITS_MEMBER(throttling_profile_id)
+  IPC_STRUCT_TRAITS_MEMBER(custom_proxy_pre_cache_headers)
+  IPC_STRUCT_TRAITS_MEMBER(custom_proxy_post_cache_headers)
+  IPC_STRUCT_TRAITS_MEMBER(custom_proxy_use_alternate_proxy_list)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(network::ResourceResponseInfo)
@@ -192,6 +208,7 @@ IPC_STRUCT_TRAITS_BEGIN(network::ResourceResponseInfo)
   IPC_STRUCT_TRAITS_MEMBER(alpn_negotiated_protocol)
   IPC_STRUCT_TRAITS_MEMBER(socket_address)
   IPC_STRUCT_TRAITS_MEMBER(was_fetched_via_cache)
+  IPC_STRUCT_TRAITS_MEMBER(proxy_server)
   IPC_STRUCT_TRAITS_MEMBER(was_fetched_via_service_worker)
   IPC_STRUCT_TRAITS_MEMBER(was_fallback_required_by_service_worker)
   IPC_STRUCT_TRAITS_MEMBER(url_list_via_service_worker)

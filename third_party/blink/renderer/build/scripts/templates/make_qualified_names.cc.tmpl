@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
-namespace {{namespace}}Names {
+namespace {{cpp_namespace}} {
 
 using namespace blink;
 
@@ -20,15 +20,15 @@ DEFINE_GLOBAL(AtomicString, {{namespace_prefix}}NamespaceURI);
 {% if tags %}
 // Tags
 
-void* {{suffix}}TagStorage[{{namespace}}TagsCount * ((sizeof({{namespace}}QualifiedName) + sizeof(void *) - 1) / sizeof(void *))];
+void* {{suffix}}TagStorage[kTagsCount * ((sizeof({{namespace}}QualifiedName) + sizeof(void *) - 1) / sizeof(void *))];
 {% for tag in tags|sort(attribute='name', case_sensitive=True) %}
 const {{namespace}}QualifiedName& {{tag|symbol}}Tag = reinterpret_cast<{{namespace}}QualifiedName*>(&{{suffix}}TagStorage)[{{loop.index0}}];
 {% endfor %}
 
 
-std::unique_ptr<const {{namespace}}QualifiedName*[]> get{{namespace}}Tags() {
-  auto tags = std::make_unique<const {{namespace}}QualifiedName*[]>({{namespace}}TagsCount);
-  for (size_t i = 0; i < {{namespace}}TagsCount; i++)
+std::unique_ptr<const {{namespace}}QualifiedName*[]> GetTags() {
+  auto tags = std::make_unique<const {{namespace}}QualifiedName*[]>(kTagsCount);
+  for (size_t i = 0; i < kTagsCount; i++)
     tags[i] = reinterpret_cast<{{namespace}}QualifiedName*>(&{{suffix}}TagStorage) + i;
   return tags;
 }
@@ -36,16 +36,16 @@ std::unique_ptr<const {{namespace}}QualifiedName*[]> get{{namespace}}Tags() {
 {% endif %}
 // Attributes
 
-void* {{suffix}}AttrStorage[{{namespace}}AttrsCount * ((sizeof(QualifiedName) + sizeof(void *) - 1) / sizeof(void *))];
+void* {{suffix}}AttrStorage[kAttrsCount * ((sizeof(QualifiedName) + sizeof(void *) - 1) / sizeof(void *))];
 
 {% for attr in attrs|sort(attribute='name', case_sensitive=True) %}
 const QualifiedName& {{attr|symbol}}Attr = reinterpret_cast<QualifiedName*>(&{{suffix}}AttrStorage)[{{loop.index0}}];
 {% endfor %}
 
 {% if namespace != 'HTML' %}
-std::unique_ptr<const QualifiedName*[]> get{{namespace}}Attrs() {
-  auto attrs = std::make_unique<const QualifiedName*[]>({{namespace}}AttrsCount);
-  for (size_t i = 0; i < {{namespace}}AttrsCount; i++)
+std::unique_ptr<const QualifiedName*[]> GetAttrs() {
+  auto attrs = std::make_unique<const QualifiedName*[]>(kAttrsCount);
+  for (size_t i = 0; i < kAttrsCount; i++)
     attrs[i] = reinterpret_cast<QualifiedName*>(&{{suffix}}AttrStorage) + i;
   return attrs;
 }
@@ -99,10 +99,10 @@ void init() {
     attr_i++;
   }
   {% if tags %}
-  DCHECK_EQ(tag_i, {{namespace}}TagsCount);
+  DCHECK_EQ(tag_i, kTagsCount);
   {% endif %}
-  DCHECK_EQ(attr_i, {{namespace}}AttrsCount);
+  DCHECK_EQ(attr_i, kAttrsCount);
 }
 
-}  // namespace {{namespace}}Names
+}  // namespace {{cpp_namespace}}
 }  // namespace blink

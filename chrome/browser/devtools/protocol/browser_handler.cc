@@ -4,11 +4,13 @@
 
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 
+#include "base/task/post_task.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 
@@ -94,9 +96,8 @@ protocol::Response BrowserHandler::GetWindowBounds(
 }
 
 protocol::Response BrowserHandler::Close() {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::BindOnce([]() { chrome::AttemptExit(); }));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce([]() { chrome::AttemptExit(); }));
   return protocol::Response::OK();
 }
 

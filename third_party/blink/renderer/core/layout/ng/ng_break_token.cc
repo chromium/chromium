@@ -27,8 +27,8 @@ void AppendBreakTokenToString(const NGBreakToken* token,
 
   if (token->Type() == NGBreakToken::kBlockBreakToken) {
     const auto children = ToNGBlockBreakToken(token)->ChildBreakTokens();
-    for (const auto& child : children)
-      AppendBreakTokenToString(child.get(), string_builder, indent + 2);
+    for (const auto* child : children)
+      AppendBreakTokenToString(child, string_builder, indent + 2);
   }
 }
 }  // namespace

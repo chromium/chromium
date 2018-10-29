@@ -73,17 +73,19 @@ struct ArcAppIcon::ReadResult {
   ReadResult(bool error,
              bool request_to_install,
              ui::ScaleFactor scale_factor,
+             bool resize_allowed,
              std::string unsafe_icon_data)
       : error(error),
         request_to_install(request_to_install),
         scale_factor(scale_factor),
-        unsafe_icon_data(unsafe_icon_data) {
-  }
+        resize_allowed(resize_allowed),
+        unsafe_icon_data(unsafe_icon_data) {}
 
-  bool error;
-  bool request_to_install;
-  ui::ScaleFactor scale_factor;
-  std::string unsafe_icon_data;
+  const bool error;
+  const bool request_to_install;
+  const ui::ScaleFactor scale_factor;
+  const bool resize_allowed;
+  const std::string unsafe_icon_data;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -166,7 +168,8 @@ gfx::ImageSkiaRep ArcAppIcon::Source::GetImageForScale(float scale) {
 class ArcAppIcon::DecodeRequest : public ImageDecoder::ImageRequest {
  public:
   DecodeRequest(const base::WeakPtr<ArcAppIcon>& host,
-                const ArcAppIconDescriptor& descriptor);
+                const ArcAppIconDescriptor& descriptor,
+                bool resize_allowed);
   ~DecodeRequest() override;
 
   // ImageDecoder::ImageRequest
@@ -176,6 +179,7 @@ class ArcAppIcon::DecodeRequest : public ImageDecoder::ImageRequest {
  private:
   base::WeakPtr<ArcAppIcon> host_;
   const ArcAppIconDescriptor descriptor_;
+  const bool resize_allowed_;
 
   DISALLOW_COPY_AND_ASSIGN(DecodeRequest);
 };
@@ -184,11 +188,11 @@ class ArcAppIcon::DecodeRequest : public ImageDecoder::ImageRequest {
 // ArcAppIcon::DecodeRequest
 
 ArcAppIcon::DecodeRequest::DecodeRequest(const base::WeakPtr<ArcAppIcon>& host,
-                                         const ArcAppIconDescriptor& descriptor)
-    : host_(host), descriptor_(descriptor) {}
+                                         const ArcAppIconDescriptor& descriptor,
+                                         bool resize_allowed)
+    : host_(host), descriptor_(descriptor), resize_allowed_(resize_allowed) {}
 
-ArcAppIcon::DecodeRequest::~DecodeRequest() {
-}
+ArcAppIcon::DecodeRequest::~DecodeRequest() = default;
 
 void ArcAppIcon::DecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
   DCHECK(!bitmap.isNull() && !bitmap.empty());
@@ -198,15 +202,20 @@ void ArcAppIcon::DecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
 
   const int expected_dim = descriptor_.GetSizeInPixels();
   if (bitmap.width() != expected_dim || bitmap.height() != expected_dim) {
-    VLOG(2) << "Decoded ARC icon has unexpected dimension " << bitmap.width()
-            << "x" << bitmap.height() << ". Expected " << expected_dim << ".";
-
-    host_->MaybeRequestIcon(descriptor_.scale_factor);
-    host_->DiscardDecodeRequest(this);
-    return;
+    if (!resize_allowed_) {
+      VLOG(2) << "Decoded ARC icon has unexpected dimension " << bitmap.width()
+              << "x" << bitmap.height() << ". Expected " << expected_dim << ".";
+      host_->MaybeRequestIcon(descriptor_.scale_factor);
+    } else {
+      host_->Update(descriptor_.scale_factor,
+                    skia::ImageOperations::Resize(
+                        bitmap, skia::ImageOperations::RESIZE_BEST,
+                        expected_dim, expected_dim));
+    }
+  } else {
+    host_->Update(descriptor_.scale_factor, bitmap);
   }
 
-  host_->Update(descriptor_.scale_factor, bitmap);
   host_->DiscardDecodeRequest(this);
 }
 
@@ -295,14 +304,19 @@ std::unique_ptr<ArcAppIcon::ReadResult> ArcAppIcon::ReadOnFileThread(
   DCHECK(!path.empty());
 
   base::FilePath path_to_read;
+  // Allow resizing only for default app icons.
+  bool resize_allowed;
   if (base::PathExists(path)) {
     path_to_read = path;
+    resize_allowed = false;
   } else {
     if (default_app_path.empty() || !base::PathExists(default_app_path)) {
-      return std::make_unique<ArcAppIcon::ReadResult>(false, true, scale_factor,
-                                                      std::string());
+      return std::make_unique<ArcAppIcon::ReadResult>(
+          false /* error */, true /* request_to_install */, scale_factor,
+          false /* resize_allowed */, std::string() /* unsafe_icon_data */);
     }
     path_to_read = default_app_path;
+    resize_allowed = true;
   }
 
   bool request_to_install = path_to_read != path;
@@ -317,11 +331,13 @@ std::unique_ptr<ArcAppIcon::ReadResult> ArcAppIcon::ReadOnFileThread(
     // on cached icon file. Send request to re install the icon.
     request_to_install |= unsafe_icon_data.empty();
     return std::make_unique<ArcAppIcon::ReadResult>(
-        true, request_to_install, scale_factor, std::string());
+        true /* error */, request_to_install, scale_factor,
+        false /* resize_allowed */, std::string() /* unsafe_icon_data */);
   }
 
   return std::make_unique<ArcAppIcon::ReadResult>(
-      false, request_to_install, scale_factor, unsafe_icon_data);
+      false /* error */, request_to_install, scale_factor, resize_allowed,
+      unsafe_icon_data);
 }
 
 void ArcAppIcon::OnIconRead(
@@ -334,8 +350,8 @@ void ArcAppIcon::OnIconRead(
   if (!read_result->unsafe_icon_data.empty()) {
     decode_requests_.emplace_back(std::make_unique<DecodeRequest>(
         weak_ptr_factory_.GetWeakPtr(),
-        ArcAppIconDescriptor(resource_size_in_dip_,
-                             read_result->scale_factor)));
+        ArcAppIconDescriptor(resource_size_in_dip_, read_result->scale_factor),
+        read_result->resize_allowed));
     if (disable_safe_decoding_for_testing) {
       SkBitmap bitmap;
       if (!read_result->unsafe_icon_data.empty() &&

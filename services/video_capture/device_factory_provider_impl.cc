@@ -67,9 +67,13 @@ class DeviceFactoryProviderImpl::GpuDependenciesContext {
   base::WeakPtrFactory<GpuDependenciesContext> weak_factory_for_gpu_io_thread_;
 };
 
-DeviceFactoryProviderImpl::DeviceFactoryProviderImpl(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+DeviceFactoryProviderImpl::DeviceFactoryProviderImpl() {
+  // Unretained |this| is safe because |factory_bindings_| is owned by
+  // |this|.
+  factory_bindings_.set_connection_error_handler(base::BindRepeating(
+      &DeviceFactoryProviderImpl::OnFactoryClientDisconnected,
+      base::Unretained(this)));
+}
 
 DeviceFactoryProviderImpl::~DeviceFactoryProviderImpl() {
   factory_bindings_.CloseAllBindings();
@@ -78,6 +82,11 @@ DeviceFactoryProviderImpl::~DeviceFactoryProviderImpl() {
     gpu_dependencies_context_->GetTaskRunner()->DeleteSoon(
         FROM_HERE, std::move(gpu_dependencies_context_));
   }
+}
+
+void DeviceFactoryProviderImpl::SetServiceRef(
+    std::unique_ptr<service_manager::ServiceContextRef> service_ref) {
+  service_ref_ = std::move(service_ref);
 }
 
 void DeviceFactoryProviderImpl::InjectGpuDependencies(
@@ -91,7 +100,10 @@ void DeviceFactoryProviderImpl::InjectGpuDependencies(
 
 void DeviceFactoryProviderImpl::ConnectToDeviceFactory(
     mojom::DeviceFactoryRequest request) {
+  DCHECK(service_ref_);
   LazyInitializeDeviceFactory();
+  if (factory_bindings_.empty())
+    device_factory_->SetServiceRef(service_ref_->Clone());
   factory_bindings_.AddBinding(device_factory_.get(), std::move(request));
 }
 
@@ -119,13 +131,22 @@ void DeviceFactoryProviderImpl::LazyInitializeDeviceFactory() {
       std::move(media_device_factory));
 
   device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
-      service_ref_->Clone(),
       std::make_unique<DeviceFactoryMediaToMojoAdapter>(
-          service_ref_->Clone(), std::move(video_capture_system),
+          std::move(video_capture_system),
           base::BindRepeating(
               &GpuDependenciesContext::CreateJpegDecodeAccelerator,
               gpu_dependencies_context_->GetWeakPtr()),
           gpu_dependencies_context_->GetTaskRunner()));
+}
+
+void DeviceFactoryProviderImpl::OnFactoryClientDisconnected() {
+  // If last client has disconnected, release service ref so that service
+  // shutdown timeout starts if no other references are still alive.
+  // We keep the |device_factory_| instance alive in order to avoid
+  // losing state that would be expensive to reinitialize, e.g. having
+  // already enumerated the available devices.
+  if (factory_bindings_.empty())
+    device_factory_->SetServiceRef(nullptr);
 }
 
 }  // namespace video_capture

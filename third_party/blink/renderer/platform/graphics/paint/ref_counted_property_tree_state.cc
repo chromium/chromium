@@ -32,10 +32,10 @@ const CompositorElementId RefCountedPropertyTreeState::GetCompositorElementId(
   // interim step while we pursue broader rework of animation subsystem noted in
   // http://crbug.com/709137.
   if (Effect()->GetCompositorElementId() &&
-      !element_ids.Contains(Effect()->GetCompositorElementId()))
+      !element_ids.count(Effect()->GetCompositorElementId()))
     return Effect()->GetCompositorElementId();
   if (Transform()->GetCompositorElementId() &&
-      !element_ids.Contains(Transform()->GetCompositorElementId()))
+      !element_ids.count(Transform()->GetCompositorElementId()))
     return Transform()->GetCompositorElementId();
   return CompositorElementId();
 }

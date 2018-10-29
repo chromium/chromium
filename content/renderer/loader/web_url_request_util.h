@@ -23,8 +23,8 @@ class WebHTTPBody;
 
 namespace content {
 
-ResourceType WebURLRequestContextToResourceType(
-    blink::WebURLRequest::RequestContext request_context);
+ResourceType RequestContextToResourceType(
+    blink::mojom::RequestContextType request_context);
 
 CONTENT_EXPORT ResourceType WebURLRequestToResourceType(
     const blink::WebURLRequest& request);

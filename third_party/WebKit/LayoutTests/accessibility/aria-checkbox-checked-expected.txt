@@ -2,10 +2,10 @@
 X
 X
    
+
 This tests that ARIA checkboxes correctly handle the aria-checked attribute.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS checkbox.checked is "false"
 PASS checkbox.checked is "true"

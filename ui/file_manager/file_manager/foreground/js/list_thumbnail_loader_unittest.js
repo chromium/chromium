@@ -3,24 +3,6 @@
 // found in the LICENSE file.
 
 /**
- * Wait until the condition is met.
- *
- * @param {function()} condition Condition.
- * @return {Promise} A promise which is resolved when condition is met.
- */
-function waitUntil(condition) {
-  return new Promise(function(resolve, reject) {
-    var checkCondition = function() {
-      if (condition())
-        resolve();
-      else
-        setTimeout(checkCondition, 100);
-    };
-    checkCondition();
-  });
-}
-
-/**
  * Generates a data url of a sample image for testing.
  * TODO(yawano) Consider to share image generation logic with
  *     gallery/js/image_editor/test_util.js.

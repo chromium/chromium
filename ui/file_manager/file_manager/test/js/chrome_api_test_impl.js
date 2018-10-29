@@ -95,20 +95,26 @@ chrome = {
 
   metricsPrivate: {
     userActions_: [],
+    smallCounts_: [],
     times_: [],
+    values_: [],
     MetricTypeType: {
       HISTOGRAM_LINEAR: 'histogram-linear',
     },
     recordMediumCount: () => {},
     recordPercentage: () => {},
-    recordSmallCount: () => {},
+    recordSmallCount: (metricName, value) => {
+      chrome.metricsPrivate.smallCounts_.push([metricName, value]);
+    },
     recordTime: (metricName, value) => {
       chrome.metricsPrivate.times_.push([metricName, value]);
     },
     recordUserAction: (action) => {
       chrome.metricsPrivate.userActions_.push(action);
     },
-    recordValue: () => {},
+    recordValue: (metricName, value) => {
+      chrome.metricsPrivate.values_.push([metricName, value]);
+    },
   },
 
   notifications: {

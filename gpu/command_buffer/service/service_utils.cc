@@ -167,6 +167,8 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       command_line->HasSwitch(switches::kIgnoreGpuBlacklist);
   gpu_preferences.enable_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
+  gpu_preferences.enable_raster_to_sk_image =
+      command_line->HasSwitch(switches::kEnableRasterToSkImage);
   return gpu_preferences;
 }
 

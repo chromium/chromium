@@ -21,6 +21,7 @@
 #include "chrome/browser/media/router/media_router_metrics.h"
 #include "chrome/browser/media/router/media_routes_observer.h"
 #include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
+#include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -39,12 +40,8 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/origin.h"
-
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
-#include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "ui/display/display.h"
-#endif
+#include "url/origin.h"
 
 namespace media_router {
 namespace {
@@ -290,7 +287,6 @@ void MediaRouterUIBase::MaybeReportCastingSource(
 }
 
 std::vector<MediaSinkWithCastModes> MediaRouterUIBase::GetEnabledSinks() const {
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
   if (!display_observer_)
     return sinks_;
 
@@ -308,9 +304,6 @@ std::vector<MediaSinkWithCastModes> MediaRouterUIBase::GetEnabledSinks() const {
       enabled_sinks.push_back(sink);
   }
   return enabled_sinks;
-#else
-  return sinks_;
-#endif
 }
 
 std::string MediaRouterUIBase::GetTruncatedPresentationRequestSourceName()
@@ -466,11 +459,9 @@ void MediaRouterUIBase::InitCommon(content::WebContents* initiator) {
   // information at initialization.
   OnRoutesUpdated(GetMediaRouter()->GetCurrentRoutes(),
                   std::vector<MediaRoute::Id>());
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
   display_observer_ = WebContentsDisplayObserver::Create(
       initiator_, base::BindRepeating(&MediaRouterUIBase::UpdateSinks,
                                       base::Unretained(this)));
-#endif
 }
 
 void MediaRouterUIBase::OnDefaultPresentationChanged(
@@ -549,7 +540,8 @@ base::Optional<RouteParameters> MediaRouterUIBase::GetRouteParameters(
                      weak_factory_.GetWeakPtr(), cast_mode));
 
   // There are 3 cases. In cases (1) and (3) the MediaRouterUIBase will need to
-  // be notified. In case (2) the dialog will be closed.
+  // be notified via OnRouteResponseReceived(). In case (2) the dialog will be
+  // closed before that via HandleCreateSessionRequestRouteResponse().
   // (1) Non-presentation route request (e.g., mirroring). No additional
   //     notification necessary.
   // (2) Presentation route request for a PresentationRequest.start() call.
@@ -559,12 +551,11 @@ base::Optional<RouteParameters> MediaRouterUIBase::GetRouteParameters(
   //     PresentationServiceDelegateImpl will have to be notified. Note that we
   //     treat subsequent route requests from a Presentation API-initiated
   //     dialogs as browser-initiated.
-  if (!for_presentation_source || !start_presentation_context_) {
-    params.route_result_callbacks.push_back(base::BindOnce(
-        &MediaRouterUIBase::OnRouteResponseReceived, weak_factory_.GetWeakPtr(),
-        current_route_request_->id, sink_id, cast_mode,
-        base::UTF8ToUTF16(GetTruncatedPresentationRequestSourceName())));
-  }
+  // TODO(https://crbug.com/868186): Close the Views dialog in case (2).
+  params.route_result_callbacks.push_back(base::BindOnce(
+      &MediaRouterUIBase::OnRouteResponseReceived, weak_factory_.GetWeakPtr(),
+      current_route_request_->id, sink_id, cast_mode,
+      base::UTF8ToUTF16(GetTruncatedPresentationRequestSourceName())));
   if (for_presentation_source) {
     if (start_presentation_context_) {
       // |start_presentation_context_| will be nullptr after this call, as the

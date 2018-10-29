@@ -515,9 +515,9 @@ TEST(JSONReaderTest, InvalidUTF16Escapes) {
       "\"\\ud83\\u1\""       // Invalid upper surrogate.
   };
   std::unique_ptr<Value> root;
-  for (size_t i = 0; i < arraysize(cases); ++i) {
-    root = JSONReader().ReadToValue(cases[i]);
-    EXPECT_FALSE(root) << cases[i];
+  for (auto* i : cases) {
+    root = JSONReader().ReadToValue(i);
+    EXPECT_FALSE(root) << i;
   }
 }
 

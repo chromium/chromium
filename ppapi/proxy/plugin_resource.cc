@@ -13,6 +13,14 @@
 namespace ppapi {
 namespace proxy {
 
+void SafeRunCallback(scoped_refptr<TrackedCallback>* callback, int32_t error) {
+  if (TrackedCallback::IsPending(*callback)) {
+    scoped_refptr<TrackedCallback> temp;
+    callback->swap(temp);
+    temp->Run(error);
+  }
+}
+
 PluginResource::PluginResource(Connection connection, PP_Instance instance)
     : Resource(OBJECT_IS_PROXY, instance),
       connection_(connection),

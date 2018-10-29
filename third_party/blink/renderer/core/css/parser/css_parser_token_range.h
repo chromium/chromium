@@ -32,7 +32,7 @@ class CORE_EXPORT CSSParserTokenRange {
   bool AtEnd() const { return first_ == last_; }
   const CSSParserToken* end() const { return last_; }
 
-  const CSSParserToken& Peek(unsigned offset = 0) const {
+  const CSSParserToken& Peek(wtf_size_t offset = 0) const {
     if (first_ + offset >= last_)
       return g_static_eof_token;
     return *(first_ + offset);

@@ -98,7 +98,6 @@ ReadableStreamBytesConsumer::ReadableStreamBytesConsumer(
     ScriptValue stream_reader)
     : reader_(script_state->GetIsolate(), stream_reader.V8Value()),
       script_state_(script_state) {
-  reader_.SetPhantom();
 }
 
 ReadableStreamBytesConsumer::~ReadableStreamBytesConsumer() {}
@@ -172,6 +171,7 @@ BytesConsumer::Error ReadableStreamBytesConsumer::GetError() const {
 }
 
 void ReadableStreamBytesConsumer::Trace(blink::Visitor* visitor) {
+  visitor->Trace(reader_);
   visitor->Trace(client_);
   visitor->Trace(pending_buffer_);
   visitor->Trace(script_state_);

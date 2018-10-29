@@ -26,7 +26,6 @@
 #include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
@@ -39,15 +38,20 @@
 #include "base/mac/mach_port_broker.h"
 #endif
 
+#if !defined(OS_FUCHSIA)
+#include "mojo/public/cpp/platform/named_platform_channel.h"
+#endif
+
 namespace mojo {
 namespace core {
 namespace test {
 
 namespace {
 
+#if !defined(OS_FUCHSIA)
 const char kNamedPipeName[] = "named-pipe-name";
+#endif
 const char kRunAsBrokerClient[] = "run-as-broker-client";
-
 const char kTestChildMessagePipeName[] = "test_pipe";
 
 // For use (and only valid) in a test child process:
@@ -106,27 +110,34 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
       command_line.AppendSwitchNative(entry.first, entry.second);
   }
 
-  mojo::PlatformChannel channel;
-  mojo::NamedPlatformChannel::ServerName server_name;
+#if !defined(OS_FUCHSIA)
+  NamedPlatformChannel::ServerName server_name;
+#endif
+  PlatformChannel channel;
   base::LaunchOptions options;
-  if (launch_type == LaunchType::CHILD || launch_type == LaunchType::PEER) {
-    channel.PrepareToPassRemoteEndpoint(&options, &command_line);
-  } else if (launch_type == LaunchType::NAMED_CHILD ||
-             launch_type == LaunchType::NAMED_PEER) {
-#if defined(OS_FUCHSIA)
-    // TODO(fuchsia): Implement named channels. See crbug.com/754038.
-    NOTREACHED();
-#elif defined(OS_POSIX)
-    base::FilePath temp_dir;
-    CHECK(base::PathService::Get(base::DIR_TEMP, &temp_dir));
-    server_name =
-        temp_dir.AppendASCII(base::NumberToString(base::RandUint64())).value();
+  switch (launch_type) {
+    case LaunchType::CHILD:
+    case LaunchType::PEER:
+      channel.PrepareToPassRemoteEndpoint(&options, &command_line);
+      break;
+#if !defined(OS_FUCHSIA)
+    case LaunchType::NAMED_CHILD:
+    case LaunchType::NAMED_PEER: {
+#if defined(OS_POSIX)
+      base::FilePath temp_dir;
+      CHECK(base::PathService::Get(base::DIR_TEMP, &temp_dir));
+      server_name =
+          temp_dir.AppendASCII(base::NumberToString(base::RandUint64()))
+              .value();
 #elif defined(OS_WIN)
-    server_name = base::NumberToString16(base::RandUint64());
+      server_name = base::NumberToString16(base::RandUint64());
 #else
 #error "Platform not yet supported."
 #endif
-    command_line.AppendSwitchNative(kNamedPipeName, server_name);
+      command_line.AppendSwitchNative(kNamedPipeName, server_name);
+      break;
+    }
+#endif  // !defined(OS_FUCHSIA)
   }
 
   if (!switch_string.empty()) {
@@ -146,35 +157,49 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   // the pipe path can race with child's connection to the pipe.
   PlatformChannelEndpoint local_channel_endpoint;
   PlatformChannelServerEndpoint server_endpoint;
-  if (launch_type == LaunchType::CHILD || launch_type == LaunchType::PEER) {
-    local_channel_endpoint = channel.TakeLocalEndpoint();
-  } else if (launch_type == LaunchType::NAMED_CHILD ||
-             launch_type == LaunchType::NAMED_PEER) {
-    NamedPlatformChannel::Options options;
-    options.server_name = server_name;
-    NamedPlatformChannel named_channel(options);
-    server_endpoint = named_channel.TakeServerEndpoint();
-  }
+  switch (launch_type) {
+    case LaunchType::CHILD:
+    case LaunchType::PEER:
+      local_channel_endpoint = channel.TakeLocalEndpoint();
+      break;
+#if !defined(OS_FUCHSIA)
+    case LaunchType::NAMED_CHILD:
+    case LaunchType::NAMED_PEER: {
+      NamedPlatformChannel::Options options;
+      options.server_name = server_name;
+      NamedPlatformChannel named_channel(options);
+      server_endpoint = named_channel.TakeServerEndpoint();
+      break;
+    }
+#endif  // !defined(OS_FUCHSIA)
+  };
 
   OutgoingInvitation child_invitation;
   ScopedMessagePipeHandle pipe;
-  if (launch_type == LaunchType::CHILD ||
-      launch_type == LaunchType::NAMED_CHILD) {
-    pipe = child_invitation.AttachMessagePipe(kTestChildMessagePipeName);
-    command_line.AppendSwitch(kRunAsBrokerClient);
-  } else if (launch_type == LaunchType::PEER ||
-             launch_type == LaunchType::NAMED_PEER) {
-    isolated_connection_ = std::make_unique<IsolatedConnection>();
-    if (local_channel_endpoint.is_valid()) {
-      pipe = isolated_connection_->Connect(std::move(local_channel_endpoint));
-    } else {
-#if defined(OS_POSIX) || defined(OS_WIN)
-      DCHECK(server_endpoint.is_valid());
-      pipe = isolated_connection_->Connect(std::move(server_endpoint));
-#else
-      NOTREACHED();
+  switch (launch_type) {
+    case LaunchType::CHILD:
+#if !defined(OS_FUCHSIA)
+    case LaunchType::NAMED_CHILD:
 #endif
-    }
+      pipe = child_invitation.AttachMessagePipe(kTestChildMessagePipeName);
+      command_line.AppendSwitch(kRunAsBrokerClient);
+      break;
+    case LaunchType::PEER:
+#if !defined(OS_FUCHSIA)
+    case LaunchType::NAMED_PEER:
+#endif
+      isolated_connection_ = std::make_unique<IsolatedConnection>();
+      if (local_channel_endpoint.is_valid()) {
+        pipe = isolated_connection_->Connect(std::move(local_channel_endpoint));
+      } else {
+#if defined(OS_POSIX) || defined(OS_WIN)
+        DCHECK(server_endpoint.is_valid());
+        pipe = isolated_connection_->Connect(std::move(server_endpoint));
+#else
+        NOTREACHED();
+#endif
+      }
+      break;
   }
 
   test_child_ =
@@ -186,13 +211,16 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
     DCHECK(local_channel_endpoint.is_valid());
     OutgoingInvitation::Send(std::move(child_invitation), test_child_.Handle(),
                              std::move(local_channel_endpoint),
-                             mojo::ProcessErrorCallback());
-  } else if (launch_type == LaunchType::NAMED_CHILD) {
+                             ProcessErrorCallback());
+  }
+#if !defined(OS_FUCHSIA)
+  else if (launch_type == LaunchType::NAMED_CHILD) {
     DCHECK(server_endpoint.is_valid());
     OutgoingInvitation::Send(std::move(child_invitation), test_child_.Handle(),
                              std::move(server_endpoint),
-                             mojo::ProcessErrorCallback());
+                             ProcessErrorCallback());
   }
+#endif  //  !defined(OS_FUCHSIA)
 
   CHECK(test_child_.IsValid());
   return pipe;
@@ -217,31 +245,33 @@ void MultiprocessTestHelper::ChildSetup() {
   CHECK(base::CommandLine::InitializedForCurrentProcess());
 
   auto& command_line = *base::CommandLine::ForCurrentProcess();
-  NamedPlatformChannel::ServerName named_pipe(
-      command_line.GetSwitchValueNative(kNamedPipeName));
-  if (command_line.HasSwitch(kRunAsBrokerClient)) {
-    mojo::IncomingInvitation invitation;
+
+  bool run_as_broker_client = command_line.HasSwitch(kRunAsBrokerClient);
 #if defined(OS_MACOSX) && !defined(OS_IOS)
+  if (run_as_broker_client)
     CHECK(base::MachPortBroker::ChildSendTaskPortToParent("mojo_test"));
 #endif
-    if (!named_pipe.empty()) {
-      invitation = mojo::IncomingInvitation::Accept(
-          mojo::NamedPlatformChannel::ConnectToServer(named_pipe));
-    } else {
-      auto endpoint =
-          mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
-              command_line);
-      invitation = IncomingInvitation::Accept(std::move(endpoint));
-    }
+
+  PlatformChannelEndpoint endpoint;
+#if !defined(OS_FUCHSIA)
+  NamedPlatformChannel::ServerName named_pipe(
+      command_line.GetSwitchValueNative(kNamedPipeName));
+  if (!named_pipe.empty()) {
+    endpoint = NamedPlatformChannel::ConnectToServer(named_pipe);
+  } else
+#endif  // !defined(OS_FUCHSIA)
+  {
+    endpoint =
+        PlatformChannel::RecoverPassedEndpointFromCommandLine(command_line);
+  }
+
+  if (run_as_broker_client) {
+    IncomingInvitation invitation =
+        IncomingInvitation::Accept(std::move(endpoint));
     primordial_pipe = invitation.ExtractMessagePipe(kTestChildMessagePipeName);
   } else {
-    if (!named_pipe.empty()) {
-      primordial_pipe = g_child_isolated_connection.Get().Connect(
-          NamedPlatformChannel::ConnectToServer(named_pipe));
-    } else {
-      primordial_pipe = g_child_isolated_connection.Get().Connect(
-          PlatformChannel::RecoverPassedEndpointFromCommandLine(command_line));
-    }
+    primordial_pipe =
+        g_child_isolated_connection.Get().Connect(std::move(endpoint));
   }
 }
 
@@ -268,8 +298,7 @@ int MultiprocessTestHelper::RunClientTestMain(
       true /* pass_pipe_ownership_to_main */);
 }
 
-// static
-mojo::ScopedMessagePipeHandle MultiprocessTestHelper::primordial_pipe;
+ScopedMessagePipeHandle MultiprocessTestHelper::primordial_pipe;
 
 }  // namespace test
 }  // namespace core

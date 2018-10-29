@@ -61,3 +61,7 @@
 .text-prompt-editing ::content br {
     display: none;
 }
+
+:host-context(:not(:focus-within)) ::content ::selection {
+    background: transparent;
+}

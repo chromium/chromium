@@ -34,25 +34,17 @@ const size_t kMaxNumberOfSuggestions = 5;
 
 }  // namespace
 
-jlong JNI_TextSuggestionHost_Init(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj,
-                                  const JavaParamRef<jobject>& jweb_contents) {
-  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(web_contents);
-  auto* text_suggestion_host =
-      new TextSuggestionHostAndroid(env, obj, web_contents);
+void TextSuggestionHostAndroid::Create(JNIEnv* env, WebContents* web_contents) {
+  auto* text_suggestion_host = new TextSuggestionHostAndroid(env, web_contents);
   text_suggestion_host->Initialize();
-  return reinterpret_cast<intptr_t>(text_suggestion_host);
 }
 
 TextSuggestionHostAndroid::TextSuggestionHostAndroid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     WebContents* web_contents)
     : RenderWidgetHostConnector(web_contents),
       WebContentsObserver(web_contents),
       rwhva_(nullptr),
-      java_text_suggestion_host_(JavaObjectWeakGlobalRef(env, obj)),
       suggestion_menu_timeout_(
           base::Bind(&TextSuggestionHostAndroid::OnSuggestionMenuTimeout,
                      base::Unretained(this))) {
@@ -144,6 +136,19 @@ double TextSuggestionHostAndroid::DpToPxIfNeeded(double value) {
   return value;
 }
 
+ScopedJavaLocalRef<jobject>
+TextSuggestionHostAndroid::GetJavaTextSuggestionHost() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_text_suggestion_host_.get(env);
+  if (obj.is_null()) {
+    obj = Java_TextSuggestionHost_create(
+        env, WebContentsObserver::web_contents()->GetJavaWebContents(),
+        reinterpret_cast<intptr_t>(this));
+    java_text_suggestion_host_ = JavaObjectWeakGlobalRef(env, obj);
+  }
+  return obj;
+}
+
 void TextSuggestionHostAndroid::ShowSpellCheckSuggestionMenu(
     double caret_x,
     double caret_y,
@@ -155,7 +160,7 @@ void TextSuggestionHostAndroid::ShowSpellCheckSuggestionMenu(
   for (size_t i = 0; i < suggestions.size() && i < kMaxNumberOfSuggestions; ++i)
     suggestion_strings.push_back(suggestions[i]->suggestion);
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_text_suggestion_host_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaTextSuggestionHost();
   if (obj.is_null())
     return;
 
@@ -173,7 +178,9 @@ void TextSuggestionHostAndroid::ShowTextSuggestionMenu(
     const std::string& marked_text,
     const std::vector<blink::mojom::TextSuggestionPtr>& suggestions) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_text_suggestion_host_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaTextSuggestionHost();
+  if (obj.is_null())
+    return;
 
   // Enforce kMaxNumberOfSuggestions here in case the renderer is hijacked and
   // tries to send bad input.

@@ -6,4 +6,3 @@ PASS successfullyParsed is true
 TEST COMPLETE
 PASS Change event fired.
 PASS slider.value is "0"
-

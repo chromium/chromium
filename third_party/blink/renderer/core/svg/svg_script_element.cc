@@ -35,7 +35,7 @@ namespace blink {
 
 inline SVGScriptElement::SVGScriptElement(Document& document,
                                           const CreateElementFlags flags)
-    : SVGElement(SVGNames::scriptTag, document),
+    : SVGElement(svg_names::kScriptTag, document),
       SVGURIReference(this),
       loader_(InitializeScriptLoader(flags.IsCreatedByParser(),
                                      flags.WasAlreadyStarted())) {}
@@ -50,7 +50,9 @@ void SVGScriptElement::ParseAttribute(
   if (params.name == HTMLNames::onerrorAttr) {
     SetAttributeEventListener(
         EventTypeNames::error,
-        CreateAttributeEventListener(this, params.name, params.new_value));
+        CreateAttributeEventListener(
+            this, params.name, params.new_value,
+            JSEventHandler::HandlerType::kOnErrorEventHandler));
   } else {
     SVGElement::ParseAttribute(params);
   }
@@ -107,7 +109,7 @@ String SVGScriptElement::SourceAttributeValue() const {
 }
 
 String SVGScriptElement::TypeAttributeValue() const {
-  return getAttribute(SVGNames::typeAttr).GetString();
+  return getAttribute(svg_names::kTypeAttr).GetString();
 }
 
 String SVGScriptElement::TextFromChildren() {
@@ -170,8 +172,8 @@ void SVGScriptElement::SetScriptElementForBinding(
 
 #if DCHECK_IS_ON()
 bool SVGScriptElement::IsAnimatableAttribute(const QualifiedName& name) const {
-  if (name == SVGNames::typeAttr || name == SVGNames::hrefAttr ||
-      name == XLinkNames::hrefAttr)
+  if (name == svg_names::kTypeAttr || name == svg_names::kHrefAttr ||
+      name == xlink_names::kHrefAttr)
     return false;
   return SVGElement::IsAnimatableAttribute(name);
 }

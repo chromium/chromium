@@ -53,8 +53,9 @@ static_library("drive") {
 
     # TODO(lukasza): Remove this dependency (see DEPS file for more info).
     "//content/public/browser",
-    "//google_apis:google_apis",
-    "//net:net",
+    "//google_apis",
+    "//google_apis/drive",
+    "//net",
     "//services/device/public/mojom",
     "//third_party/cacheinvalidation",
     "//third_party/leveldatabase",
@@ -88,6 +89,7 @@ static_library("test_support") {
     "//components/prefs:test_support",
     "//content/test:test_support",
     "//google_apis:test_support",
+    "//google_apis/drive:test_support",
     "//net:net",
   ]
 }
@@ -177,8 +179,9 @@ if (is_chromeos) {
       "//base",
       "//base:i18n",
       "//components/prefs",
-      "//google_apis:google_apis",
-      "//net:net",
+      "//google_apis",
+      "//google_apis/drive",
+      "//net",
     ]
     public_deps = [
       ":proto",
@@ -204,6 +207,7 @@ if (is_chromeos) {
       "//components/prefs:test_support",
       "//content/test:test_support",
       "//google_apis:test_support",
+      "//google_apis/drive:test_support",
     ]
   }
 }

@@ -31,7 +31,7 @@
 
 namespace blink {
 
-using namespace VectorMath;
+using namespace vector_math;
 
 FFTConvolver::FFTConvolver(size_t fft_size)
     : frame_(fft_size),

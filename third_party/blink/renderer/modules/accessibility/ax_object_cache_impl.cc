@@ -707,20 +707,50 @@ void AXObjectCacheImpl::DidInsertChildrenOfNode(Node* node) {
 }
 
 void AXObjectCacheImpl::ChildrenChanged(Node* node) {
+  if (!node)
+    return;
+
+  if (node->GetDocument().NeedsLayoutTreeUpdateForNode(*node)) {
+    nodes_changed_during_layout_.push_back(node);
+    return;
+  }
   ChildrenChanged(Get(node), node);
 }
 
+// Return a node for the current layout object or ancestor layout object.
+Node* GetClosestNodeForLayoutObject(LayoutObject* layout_object) {
+  if (!layout_object)
+    return nullptr;
+  Node* node = layout_object->GetNode();
+  return node ? node : GetClosestNodeForLayoutObject(layout_object->Parent());
+}
+
 void AXObjectCacheImpl::ChildrenChanged(LayoutObject* layout_object) {
-  if (layout_object) {
-    AXObject* object = Get(layout_object);
-    ChildrenChanged(object, layout_object->GetNode());
+  if (!layout_object)
+    return;
+
+  Node* node = GetClosestNodeForLayoutObject(layout_object);
+
+  if (node && node->GetDocument().NeedsLayoutTreeUpdateForNode(*node)) {
+    nodes_changed_during_layout_.push_back(node);
+    return;
   }
+
+  AXObject* object = Get(layout_object);
+  ChildrenChanged(object, layout_object->GetNode());
 }
 
 void AXObjectCacheImpl::ChildrenChanged(AccessibleNode* accessible_node) {
+  if (!accessible_node)
+    return;
+  Element* element = accessible_node->element();
+  if (element &&
+      element->GetDocument().NeedsLayoutTreeUpdateForNode(*element)) {
+    nodes_changed_during_layout_.push_back(element);
+    return;
+  }
   AXObject* object = Get(accessible_node);
-  if (object)
-    ChildrenChanged(object, object->GetNode());
+  ChildrenChanged(object, object ? object->GetNode() : nullptr);
 }
 
 void AXObjectCacheImpl::ChildrenChanged(AXObject* obj, Node* optional_node) {
@@ -731,6 +761,21 @@ void AXObjectCacheImpl::ChildrenChanged(AXObject* obj, Node* optional_node) {
     ContainingTableRowsOrColsMaybeChanged(optional_node);
     relation_cache_->UpdateRelatedTree(optional_node);
   }
+}
+
+void AXObjectCacheImpl::ProcessUpdatesAfterLayout(Document& document) {
+  if (document.Lifecycle().GetState() < DocumentLifecycle::kLayoutClean)
+    return;
+
+  HeapVector<Member<Node>> remaining_nodes;
+  for (auto node : nodes_changed_during_layout_) {
+    if (node->GetDocument() != document) {
+      remaining_nodes.push_back(node);
+      continue;
+    }
+    ChildrenChanged(Get(node), node);
+  }
+  nodes_changed_during_layout_.swap(remaining_nodes);
 }
 
 void AXObjectCacheImpl::NotificationPostTimerFired(TimerBase*) {
@@ -1336,7 +1381,7 @@ void AXObjectCacheImpl::RequestAOMEventListenerPermission() {
   permission_service_->RequestPermission(
       CreatePermissionDescriptor(
           mojom::blink::PermissionName::ACCESSIBILITY_EVENTS),
-      Frame::HasTransientUserActivation(document_->GetFrame()),
+      LocalFrame::HasTransientUserActivation(document_->GetFrame()),
       WTF::Bind(&AXObjectCacheImpl::OnPermissionStatusChange,
                 WrapPersistent(this)));
 }
@@ -1353,6 +1398,7 @@ void AXObjectCacheImpl::Trace(blink::Visitor* visitor) {
 
   visitor->Trace(objects_);
   visitor->Trace(notifications_to_post_);
+  visitor->Trace(nodes_changed_during_layout_);
 
   AXObjectCache::Trace(visitor);
 }

@@ -423,13 +423,13 @@ mojom::DisplayConfigResult SetDisplayMode(
     // For the internal display, the display mode will be applied directly.
     // Otherwise a confirm/revert notification will be prepared first, and the
     // display mode will be applied. If the user accepts the mode change by
-    // dismissing the notification, StoreDisplayPrefs() will be called back to
-    // persist the new preferences.
+    // dismissing the notification, MaybeStoreDisplayPrefs() will be called back
+    // to persist the new preferences.
     if (!Shell::Get()
              ->resolution_notification_controller()
              ->PrepareNotificationAndSetDisplayMode(
                  id, current_mode, new_mode, base::BindOnce([]() {
-                   Shell::Get()->display_prefs()->StoreDisplayPrefs();
+                   Shell::Get()->display_prefs()->MaybeStoreDisplayPrefs();
                  }))) {
       return mojom::DisplayConfigResult::kSetDisplayModeError;
     }

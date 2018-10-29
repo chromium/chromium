@@ -78,6 +78,20 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
     pending_requests_counts_[registration_id]--;
   }
 
+  // To be called when a request for |registration_id| has finished.
+  // Moves |request_info| to |out_request_info|.
+  void GetRequestInfoOnRequestFinished(
+      const BackgroundFetchRegistrationId& registration_id,
+      scoped_refptr<content::BackgroundFetchRequestInfo>* out_request_info,
+      scoped_refptr<content::BackgroundFetchRequestInfo> request_info) {
+    DCHECK(pending_requests_counts_.count(registration_id));
+    DCHECK(out_request_info);
+
+    EXPECT_GE(pending_requests_counts_[registration_id], 1);
+    pending_requests_counts_[registration_id]--;
+    *out_request_info = request_info;
+  }
+
   // Creates a new Background Fetch registration, whose id will be stored in the
   // |*registration_id|, and registers it with the DataManager for the included
   // |request_data|. If |auto_complete_requests| is true, the request will
@@ -141,7 +155,8 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
                        base::Unretained(this)));
 
     controller->InitializeRequestStatus(
-        0, total_downloads, {} /* outstanding_guids */, "" /* ui_title */);
+        0, total_downloads, {} /* outstanding_guids */, "" /* ui_title */,
+        /* start_paused = */ false);
 
     return controller;
   }
@@ -192,10 +207,8 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
   BackgroundFetchDelegate* delegate_;
 
  private:
-  void DidUpdateProgress(const std::string& unique_id,
-                         uint64_t download_total,
-                         uint64_t downloaded) {
-    last_downloaded_ = downloaded;
+  void DidUpdateProgress(const BackgroundFetchRegistration& registration) {
+    last_downloaded_ = registration.downloaded;
 
     if (job_progress_closure_)
       job_progress_closure_.Run();
@@ -236,6 +249,32 @@ TEST_F(BackgroundFetchJobControllerTest, SingleRequestJob) {
 
   EXPECT_EQ(JobCompletionStatus::kCompleted,
             GetCompletionStatus(registration_id));
+}
+
+TEST_F(BackgroundFetchJobControllerTest, SingleRequestJobWithInsecureOrigin) {
+  BackgroundFetchRegistrationId registration_id;
+
+  auto requests = CreateRegistrationForRequests(
+      &registration_id, {{GURL("http://example.com/funny_cat.png"), "GET"}},
+      true /* auto_complete_requests */);
+
+  EXPECT_EQ(JobCompletionStatus::kRunning,
+            GetCompletionStatus(registration_id));
+
+  std::unique_ptr<BackgroundFetchJobController> controller =
+      CreateJobController(registration_id, requests.size());
+
+  controller->StartRequest(
+      requests[0],
+      base::BindOnce(
+          &BackgroundFetchJobControllerTest::GetRequestInfoOnRequestFinished,
+          base::Unretained(this), registration_id, &requests[0]));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(JobCompletionStatus::kCompleted,
+            GetCompletionStatus(registration_id));
+  EXPECT_FALSE(requests[0]->IsResultSuccess());
 }
 
 TEST_F(BackgroundFetchJobControllerTest, MultipleRequestJob) {
@@ -283,6 +322,46 @@ TEST_F(BackgroundFetchJobControllerTest, MultipleRequestJob) {
 
   EXPECT_EQ(JobCompletionStatus::kCompleted,
             GetCompletionStatus(registration_id));
+}
+
+TEST_F(BackgroundFetchJobControllerTest, MultipleRequestsJobWithMixedContent) {
+  BackgroundFetchRegistrationId registration_id;
+
+  auto requests = CreateRegistrationForRequests(
+      &registration_id,
+      {{GURL("http://example.com/funny_cat.png"), "GET"},
+       {GURL("https://example.com/scary_cat.png"), "GET"}},
+      true /* auto_complete_requests */);
+
+  EXPECT_EQ(JobCompletionStatus::kRunning,
+            GetCompletionStatus(registration_id));
+
+  std::unique_ptr<BackgroundFetchJobController> controller =
+      CreateJobController(registration_id, requests.size());
+
+  controller->StartRequest(
+      requests[0],
+      base::BindOnce(
+          &BackgroundFetchJobControllerTest::GetRequestInfoOnRequestFinished,
+          base::Unretained(this), registration_id, &requests[0]));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(JobCompletionStatus::kRunning,
+            GetCompletionStatus(registration_id));
+  EXPECT_FALSE(requests[0]->IsResultSuccess());
+
+  controller->StartRequest(
+      requests[1],
+      base::BindOnce(
+          &BackgroundFetchJobControllerTest::GetRequestInfoOnRequestFinished,
+          base::Unretained(this), registration_id, &requests[1]));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(JobCompletionStatus::kCompleted,
+            GetCompletionStatus(registration_id));
+  EXPECT_TRUE(requests[1]->IsResultSuccess());
 }
 
 TEST_F(BackgroundFetchJobControllerTest, Abort) {

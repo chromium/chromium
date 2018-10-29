@@ -33,7 +33,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/canvas.h"
@@ -89,8 +88,6 @@ BrowserActionsContainer::BrowserActionsContainer(
 
     if (GetSeparatorAreaWidth() > 0) {
       separator_ = new views::Separator();
-      separator_->SetSize(gfx::Size(views::Separator::kThickness,
-                                    GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
       AddChildView(separator_);
     }
   }
@@ -169,7 +166,7 @@ void BrowserActionsContainer::AddViewForAction(
 void BrowserActionsContainer::RemoveViewForAction(
     ToolbarActionViewController* action) {
   std::unique_ptr<ToolbarActionView> view;
-  for (ToolbarActionViews::iterator iter = toolbar_action_views_.begin();
+  for (auto iter = toolbar_action_views_.begin();
        iter != toolbar_action_views_.end(); ++iter) {
     if ((*iter)->view_controller() == action) {
       std::swap(view, *iter);
@@ -423,6 +420,11 @@ void BrowserActionsContainer::Layout() {
       // separate resize area.
       // TODO(pbos): Remove this workaround when the files merge.
       bounds.set_x(bounds.x() + GetResizeAreaWidth());
+      // Vertically center the icons if the available height is not enough.
+      // TODO(https://889745): Remove the possibility of there not being enough
+      // available height.
+      if (bounds.height() > height())
+        bounds.set_y((height() - bounds.height()) / 2);
       view->SetBoundsRect(bounds);
       view->SetVisible(true);
       // TODO(corising): Move setting background to
@@ -445,6 +447,8 @@ void BrowserActionsContainer::Layout() {
     }
   }
   if (separator_) {
+    separator_->SetSize(gfx::Size(views::Separator::kThickness,
+                                  GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
     if (width() < GetResizeAreaWidth() + GetSeparatorAreaWidth()) {
       separator_->SetVisible(false);
     } else {
@@ -773,11 +777,9 @@ int BrowserActionsContainer::GetResizeAreaWidth() const {
 }
 
 int BrowserActionsContainer::GetSeparatorAreaWidth() const {
-  // The separator is not applicable to the app menu, and is only available in
-  // Material refresh.
-  if (ShownInsideMenu() || !ui::MaterialDesignController::IsRefreshUi()) {
+  // The separator is not applicable to the app menu.
+  if (ShownInsideMenu())
     return 0;
-  }
   return 2 * GetLayoutConstant(TOOLBAR_STANDARD_SPACING) +
          views::Separator::kThickness;
 }

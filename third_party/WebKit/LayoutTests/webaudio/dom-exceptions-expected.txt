@@ -25,10 +25,10 @@ PASS   context.createBuffer(1, 0, context.sampleRate) threw NotSupportedError: "
 PASS   context.createBuffer(new ArrayBuffer(100), true) threw TypeError: "Failed to execute 'createBuffer' on 'BaseAudioContext': 3 arguments required, but only 2 present.".
 PASS < [createBuffer] All assertions passed. (total 11 assertions)
 PASS > [createMediaElementSource] 
-PASS   context.createMediaElementSource(null) threw TypeError: "Failed to execute 'createMediaElementSource' on 'BaseAudioContext': parameter 1 is not of type 'HTMLMediaElement'.".
+PASS   context.createMediaElementSource(null) threw TypeError: "Failed to execute 'createMediaElementSource' on 'AudioContext': parameter 1 is not of type 'HTMLMediaElement'.".
 PASS < [createMediaElementSource] All assertions passed. (total 1 assertions)
 PASS > [createMediaStreamSource] 
-PASS   context.createMediaStreamSource(null) threw TypeError: "Failed to execute 'createMediaStreamSource' on 'BaseAudioContext': parameter 1 is not of type 'MediaStream'.".
+PASS   context.createMediaStreamSource(null) threw TypeError: "Failed to execute 'createMediaStreamSource' on 'AudioContext': parameter 1 is not of type 'MediaStream'.".
 PASS < [createMediaStreamSource] All assertions passed. (total 1 assertions)
 PASS > [createScriptProcessor] 
 PASS   context.createScriptProcessor(1, 1, 1) threw IndexSizeError: "Failed to execute 'createScriptProcessor' on 'BaseAudioContext': buffer size (1) must be 0 or a power of two between 256 and 16384.".

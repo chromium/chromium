@@ -147,6 +147,7 @@ GCMProfileService::GCMProfileService(
              network::mojom::ProxyResolvingSocketFactoryRequest)>
         get_socket_factory_callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
     version_info::Channel channel,
     const std::string& product_category_for_subtypes,
     identity::IdentityManager* identity_manager,
@@ -161,8 +162,9 @@ GCMProfileService::GCMProfileService(
       path.Append(gcm_driver::kGCMStoreDirname),
       base::BindRepeating(get_socket_factory_callback,
                           weak_ptr_factory_.GetWeakPtr()),
-      url_loader_factory, channel, product_category_for_subtypes,
-      ui_task_runner, io_task_runner, blocking_task_runner);
+      url_loader_factory, network_connection_tracker, channel,
+      product_category_for_subtypes, ui_task_runner, io_task_runner,
+      blocking_task_runner);
 
   identity_observer_.reset(new IdentityObserver(
       identity_manager_, url_loader_factory, driver_.get()));

@@ -21,7 +21,7 @@
   width: 100%;
 }
 
-:host[expanded] .track {
+:host([expanded]) .track {
   background-color: rgba(255, 255, 255, 0.9);
   bottom: 0px;
   position: absolute;
@@ -34,7 +34,7 @@
   width: 48px;
 }
 
-:host[expanded] .icon {
+:host([expanded]) .icon {
   visibility: hidden;
 }
 
@@ -55,7 +55,7 @@
   position: relative;
 }
 
-:host:not([artwork-available])[expanded] .track-wrapper {
+:host(:not([artwork-available])[expanded]) .track-wrapper {
   height: 320px;
   position: relative;
   width: 100%;
@@ -65,11 +65,11 @@
   background-size: 0 0;
 }
 
-:host:not([expanded]) .icon-unavailable-expanded {
+:host(:not([expanded])) .icon-unavailable-expanded {
   background-size: 0 0;
 }
 
-:host:not([artwork-available])[expanded] .icon-unavailable-expanded {
+:host(:not([artwork-available])[expanded]) .icon-unavailable-expanded {
   background-image: -webkit-image-set(
       url(../assets/100/player_no_artwork.png) 1x,
       url(../assets/200/player_no_artwork.png) 2x);
@@ -81,7 +81,7 @@
   width: 320px;
 }
 
-:host[artwork-available][expanded] .icon-expanded {
+:host([artwork-available][expanded]) .icon-expanded {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -100,13 +100,13 @@
   width: 48px;
 }
 
-:host:not([expanded]) .track .expand {
+:host(:not([expanded])) .track .expand {
   background-image: -webkit-image-set(
       url(../assets/100/player_cover_open.png) 1x,
       url(../assets/200/player_cover_open.png) 2x);
 }
 
-:host[expanded] .track .expand {
+:host([expanded]) .track .expand {
   background-image: -webkit-image-set(
       url(../assets/100/player_cover_close.png) 1x,
       url(../assets/200/player_cover_close.png) 2x);

@@ -29,20 +29,15 @@
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
-#include "ios/chrome/browser/ui/rtl_geometry.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/ui/text_field_styling.h"
-#import "ios/third_party/material_components_ios/src/components/Buttons/src/MDCFlatButton.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/ShadowElevations/src/MaterialShadowElevations.h"
-#import "ios/third_party/material_components_ios/src/components/ShadowLayer/src/MaterialShadowLayer.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -183,15 +178,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
                     browserState:(ios::ChromeBrowserState*)browserState {
   DCHECK(bookmark);
   DCHECK(browserState);
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    self =
-        [super initWithTableViewStyle:UITableViewStylePlain
-                          appBarStyle:ChromeTableViewControllerStyleNoAppBar];
-  } else {
-    self =
-        [super initWithTableViewStyle:UITableViewStylePlain
-                          appBarStyle:ChromeTableViewControllerStyleWithAppBar];
-  }
+  self = [super initWithTableViewStyle:UITableViewStylePlain
+                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
   if (self) {
     DCHECK(!bookmark->is_folder());
     DCHECK(!browserState->IsOffTheRecord());
@@ -227,17 +215,12 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
       kEstimatedTableSectionFooterHeight;
   self.view.accessibilityIdentifier = kBookmarkEditViewContainerIdentifier;
 
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    // Add a tableFooterView in order to disable separators at the bottom of the
-    // tableView.
-    self.tableView.tableFooterView = [[UIView alloc] init];
-    [self.tableView
-        setSeparatorInset:UIEdgeInsetsMake(
-                              0, kBookmarkCellHorizontalLeadingInset, 0, 0)];
-  } else {
-    self.navigationController.navigationBarHidden = YES;
-    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-  }
+  // Add a tableFooterView in order to disable separators at the bottom of the
+  // tableView.
+  self.tableView.tableFooterView = [[UIView alloc] init];
+  [self.tableView
+      setSeparatorInset:UIEdgeInsetsMake(0, kBookmarkCellHorizontalLeadingInset,
+                                         0, 0)];
 
   self.title = l10n_util::GetNSString(IDS_IOS_BOOKMARK_EDIT_SCREEN_TITLE);
 
@@ -274,28 +257,13 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
                            target:nil
                            action:nil];
 
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    deleteButton.tintColor = [UIColor redColor];
-    // Setting the image to nil will cause the default shadowImage to be used,
-    // we need to create a new one.
-    [self.navigationController.toolbar setShadowImage:[UIImage new]
-                                   forToolbarPosition:UIBarPositionAny];
-    [self setToolbarItems:@[ spaceButton, deleteButton, spaceButton ]
-                 animated:NO];
-  } else {
-    self.navigationController.toolbar.barTintColor = [UIColor whiteColor];
-    deleteButton.title = [deleteButton.title uppercaseString];
-    [deleteButton
-        setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                 [[MDCTypography fontLoader]
-                                                     mediumFontOfSize:14],
-                                                 NSFontAttributeName,
-                                                 [UIColor blackColor],
-                                                 NSForegroundColorAttributeName,
-                                                 nil]
-                      forState:UIControlStateNormal];
-    [self setToolbarItems:@[ deleteButton, spaceButton ] animated:NO];
-  }
+  deleteButton.tintColor = [UIColor redColor];
+  // Setting the image to nil will cause the default shadowImage to be used,
+  // we need to create a new one.
+  [self.navigationController.toolbar setShadowImage:[UIImage new]
+                                 forToolbarPosition:UIBarPositionAny];
+  [self setToolbarItems:@[ spaceButton, deleteButton, spaceButton ]
+               animated:NO];
 
   [self updateUIFromBookmark];
 }
@@ -498,8 +466,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 - (void)textDidChangeForItem:(BookmarkTextFieldItem*)item {
   [self updateSaveButtonState];
-  if (experimental_flags::IsBookmarksUIRebootEnabled() &&
-      (self.displayingValidURL != [self inputURLIsValid])) {
+  if (self.displayingValidURL != [self inputURLIsValid]) {
     self.displayingValidURL = [self inputURLIsValid];
     UITableViewHeaderFooterView* footer = [self.tableView
         footerViewForSection:[self.tableViewModel sectionForSectionIdentifier:
@@ -551,15 +518,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     case ItemTypeName:
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
-    case ItemTypeURL: {
-      if (!experimental_flags::IsBookmarksUIRebootEnabled()) {
-        LegacyBookmarkTextFieldCell* URLCell =
-            base::mac::ObjCCastStrict<LegacyBookmarkTextFieldCell>(cell);
-        URLCell.textField.textValidator = self;
-        URLCell.selectionStyle = UITableViewCellSelectionStyleNone;
-      }
-      break;
-    }
+    case ItemTypeURL:
     case ItemTypeFolder:
       break;
   }

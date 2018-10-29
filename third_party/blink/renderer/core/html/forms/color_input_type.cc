@@ -150,7 +150,7 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
     return;
 
   Document& document = GetElement().GetDocument();
-  if (!Frame::HasTransientUserActivation(document.GetFrame()))
+  if (!LocalFrame::HasTransientUserActivation(document.GetFrame()))
     return;
 
   ChromeClient* chrome_client = GetChromeClient();

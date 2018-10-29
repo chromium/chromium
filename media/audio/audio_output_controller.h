@@ -260,6 +260,11 @@ class MEDIA_EXPORT AudioOutputController
   // Helper method that stops, closes, and NULLs |*stream_|.
   void DoStopCloseAndClearStream();
 
+  // Equivalent to OnDeviceChange(), but without any UMA events recorded. This
+  // is necessary for proper apples-to-apples comparison with the new Audio
+  // Service code paths. http://crbug.com/866455
+  void DoStartOrStopDivertingInternal();
+
   // Send audio data to each duplication target.
   void BroadcastDataToDuplicationTargets(std::unique_ptr<AudioBus> audio_bus,
                                          base::TimeTicks reference_time);
@@ -275,6 +280,10 @@ class MEDIA_EXPORT AudioOutputController
 
   // The message loop of audio manager thread that this object runs on.
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // Time when the controller is constructed. Used to record its lifetime on
+  // destruction.
+  const base::TimeTicks construction_time_;
 
   // Specifies the device id of the output device to open or empty for the
   // default output device.

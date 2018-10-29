@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_factory.h"
@@ -17,6 +18,7 @@
 #include "chromeos/dbus/session_manager_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_launcher.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
@@ -155,8 +157,8 @@ void PlatformKeysTestBase::SetUpOnMainThread() {
 
   if (system_token_status() == SystemTokenStatus::EXISTS) {
     base::RunLoop loop;
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&PlatformKeysTestBase::SetUpTestSystemSlotOnIO,
                        base::Unretained(this), loop.QuitClosure()));
     loop.Run();
@@ -170,8 +172,8 @@ void PlatformKeysTestBase::TearDownOnMainThread() {
 
   if (system_token_status() == SystemTokenStatus::EXISTS) {
     base::RunLoop loop;
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&PlatformKeysTestBase::TearDownTestSystemSlotOnIO,
                        base::Unretained(this), loop.QuitClosure()));
     loop.Run();
@@ -211,14 +213,14 @@ void PlatformKeysTestBase::SetUpTestSystemSlotOnIO(
 
   PrepareTestSystemSlotOnIO(test_system_slot_.get());
 
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   std::move(done_callback));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           std::move(done_callback));
 }
 
 void PlatformKeysTestBase::TearDownTestSystemSlotOnIO(
     base::OnceClosure done_callback) {
   test_system_slot_.reset();
 
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   std::move(done_callback));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           std::move(done_callback));
 }

@@ -70,10 +70,15 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
 
 // Tests that clicking a link from an app browser to either within or outside
 // the scope of an installed app does not show the intent picker, even when the
-// outside of scope links open a new tabbed browser.
+// outside of scope link opens a new tabbed browser.
 IN_PROC_BROWSER_TEST_P(
     IntentPickerBubbleViewBrowserTest,
-    NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker) {
+    NavigationInAppWindowToInScopeLinkDoesNotShowIntentPickerWhenDesktopPWAsStayInWindowDisabled) {
+  // Disable the desktop-pwas-stay-in-window flag, so we can test that links
+  // opening in the browser don't trigger the intent picker.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kDesktopPWAsStayInWindow);
+
   InstallTestBookmarkApp();
 
   // No intent picker should be seen when first opening the bookmark app.
@@ -96,6 +101,48 @@ IN_PROC_BROWSER_TEST_P(
     const GURL out_of_scope_url =
         https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
     TestAppActionOpensForegroundTab(
+        app_browser, out_of_scope_url,
+        base::BindOnce(&ClickLinkAndWait,
+                       app_browser->tab_strip_model()->GetActiveWebContents(),
+                       out_of_scope_url, LinkTarget::SELF, GetParam()));
+
+    EXPECT_EQ(nullptr, IntentPickerBubbleView::intent_picker_bubble());
+  }
+}
+
+// Tests that clicking a link from an app browser to either within or outside
+// the scope of an installed app does not show the intent picker, even when an
+// outside of scope link is opened within the context of the PWA.
+IN_PROC_BROWSER_TEST_P(
+    IntentPickerBubbleViewBrowserTest,
+    NavigationInAppWindowToInScopeLinkDoesNotShowIntentPickerWhenDesktopPWAsStayInWindowEnabled) {
+  // Enable desktop-pwas-stay-in-window, so we can test that links opening in
+  // the PWA which are out of scope don't trigger the intent picker.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kDesktopPWAsStayInWindow);
+
+  InstallTestBookmarkApp();
+
+  // No intent picker should be seen when first opening the bookmark app.
+  Browser* app_browser = OpenTestBookmarkApp();
+  EXPECT_EQ(nullptr, IntentPickerBubbleView::intent_picker_bubble());
+
+  {
+    const GURL in_scope_url =
+        https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+    TestActionDoesNotOpenAppWindow(
+        app_browser, in_scope_url,
+        base::BindOnce(&ClickLinkAndWait,
+                       app_browser->tab_strip_model()->GetActiveWebContents(),
+                       in_scope_url, LinkTarget::SELF, GetParam()));
+
+    EXPECT_EQ(nullptr, IntentPickerBubbleView::intent_picker_bubble());
+  }
+
+  {
+    const GURL out_of_scope_url =
+        https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+    TestActionDoesNotOpenAppWindow(
         app_browser, out_of_scope_url,
         base::BindOnce(&ClickLinkAndWait,
                        app_browser->tab_strip_model()->GetActiveWebContents(),

@@ -52,7 +52,7 @@ class HidConnectionLinux::BlockingTaskHelper {
   // Must be called on a thread that has a base::MessageLoopForIO.
   void Start() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    base::AssertBlockingAllowed();
+    base::AssertBlockingAllowedDeprecated();
 
     file_watcher_ = base::FileDescriptorWatcher::WatchReadable(
         fd_.get(), base::Bind(&BlockingTaskHelper::OnFileCanReadWithoutBlocking,

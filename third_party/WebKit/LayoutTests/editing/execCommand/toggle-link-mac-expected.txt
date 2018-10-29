@@ -2,7 +2,6 @@ Test to make sure we remove span tags with no attributes if we removed the last 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS select all of "hello <b>world</b>" and createLink (http://webkit.org/) yields "<a href="http://webkit.org/">hello <b>world</b></a>"
 PASS select all of "<u>hello world</u>" and createLink (http://webkit.org/) yields "<u><a href="http://webkit.org/">hello world</a></u>"
 PASS select all of "hello <a href="http://bugs.webkit.org/">world</a>" and createLink (http://webkit.org/) yields "<a href="http://webkit.org/">hello world</a>"

@@ -49,10 +49,6 @@ interface BackgroundFetchRegistration : EventTarget
     method match
     method matchAll
     setter onprogress
-interface BackgroundFetchSettledFetch : BackgroundFetchFetch
-    attribute @@toStringTag
-    getter response
-    method constructor
 interface BackgroundFetchUpdateUIEvent : BackgroundFetchEvent
     attribute @@toStringTag
     method constructor
@@ -566,6 +562,7 @@ interface IDBFactory
     attribute @@toStringTag
     method cmp
     method constructor
+    method databases
     method deleteDatabase
     method open
 interface IDBIndex
@@ -3371,10 +3368,6 @@ interface WebGLSync
     method constructor
 interface WebGLTexture
     attribute @@toStringTag
-    getter lastUploadedVideoFrameWasSkipped
-    getter lastUploadedVideoHeight
-    getter lastUploadedVideoTimestamp
-    getter lastUploadedVideoWidth
     method constructor
 interface WebGLTransformFeedback
     attribute @@toStringTag
@@ -3440,6 +3433,7 @@ interface WorkerGlobalScope : EventTarget
     method createImageBitmap
     method fetch
     method importScripts
+    method queueMicrotask
     method requestAnimationFrame
     method setInterval
     method setTimeout
@@ -3473,6 +3467,7 @@ interface WorkerNavigator
     getter permissions
     getter platform
     getter product
+    getter serial
     getter storage
     getter usb
     getter userAgent

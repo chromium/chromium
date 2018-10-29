@@ -10,6 +10,7 @@ goog.provide('cvox.BrailleBackground');
 
 goog.require('BrailleKeyEventRewriter');
 goog.require('ChromeVoxState');
+goog.require('LogStore');
 goog.require('cvox.BrailleDisplayManager');
 goog.require('cvox.BrailleInputHandler');
 goog.require('cvox.BrailleInterface');
@@ -73,6 +74,13 @@ cvox.BrailleBackground.prototype.write = function(params) {
   if (this.frozen_) {
     return;
   }
+
+  if (localStorage['enableBrailleLogging'] == 'true') {
+    var logStr = 'Braille "' + params.text.toString() + '"';
+    LogStore.getInstance().writeTextLog(logStr, TextLog.LogType.BRAILLE);
+    console.log(logStr);
+  }
+
   this.setContent_(params, null);
 };
 

@@ -179,8 +179,6 @@ class QuicEndToEndTest : public ::testing::TestWithParam<TestParams>,
         quic::test::kInitialStreamFlowControlWindowForTest);
     server_config_.SetInitialSessionFlowControlWindowToSend(
         quic::test::kInitialSessionFlowControlWindowForTest);
-    server_config_options_.token_binding_params =
-        quic::QuicTagVector{quic::kTB10, quic::kP256};
     server_.reset(new QuicSimpleServer(
         quic::test::crypto_test_utils::ProofSourceForTesting(), server_config_,
         server_config_options_, quic::AllSupportedVersions(),
@@ -280,27 +278,6 @@ TEST_P(QuicEndToEndTest, LargeGetWithNoPacketLoss) {
   base::RunLoop().Run();
 
   CheckResponse(consumer, "HTTP/1.1 200", response);
-}
-
-TEST_P(QuicEndToEndTest, TokenBinding) {
-  // Enable token binding and re-initialize the TestTransactionFactory.
-  session_params_.enable_token_binding = true;
-  transaction_factory_.reset(
-      new TestTransactionFactory(session_params_, session_context_));
-
-  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
-
-  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
-                                   transaction_factory_.get());
-  consumer.Start(&request_, NetLogWithSource());
-
-  // Will terminate when the last consumer completes.
-  base::RunLoop().Run();
-
-  CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
-  HttpRequestHeaders headers;
-  ASSERT_TRUE(consumer.transaction()->GetFullRequestHeaders(&headers));
-  EXPECT_TRUE(headers.HasHeader(HttpRequestHeaders::kTokenBinding));
 }
 
 // crbug.com/559173

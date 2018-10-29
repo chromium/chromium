@@ -37,13 +37,6 @@ void MultiplexedHttpStream::GetSSLCertRequestInfo(
   NOTREACHED();
 }
 
-Error MultiplexedHttpStream::GetTokenBindingSignature(
-    crypto::ECPrivateKey* key,
-    TokenBindingType tb_type,
-    std::vector<uint8_t>* out) {
-  return session_->GetTokenBindingSignature(key, tb_type, out);
-}
-
 void MultiplexedHttpStream::Drain(HttpNetworkSession* session) {
   NOTREACHED();
   Close(false);

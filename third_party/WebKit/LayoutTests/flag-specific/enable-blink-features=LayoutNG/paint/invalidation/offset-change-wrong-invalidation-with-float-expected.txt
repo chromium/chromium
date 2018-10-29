@@ -38,14 +38,7 @@
     {
       "name": "LayoutNGListItem (relative positioned) (floating) LI id='menu'",
       "position": [30, 44],
-      "bounds": [7, 20],
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment '\u2022 '",
-          "rect": [0, 0, 7, 19],
-          "reason": "subtree"
-        }
-      ]
+      "bounds": [7, 20]
     }
   ]
 }

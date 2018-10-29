@@ -30,12 +30,10 @@ class CONTENT_EXPORT BackgroundFetchRegistrationNotifier {
       const std::string& unique_id,
       blink::mojom::BackgroundFetchRegistrationObserverPtr observer);
 
-  // Notifies any registered observers for the registration identified by the
-  // |unique_id| of the progress. This will cause JavaScript events to fire.
-  // Successful fetches must also call Notify with the final state.
-  void Notify(const std::string& unique_id,
-              uint64_t download_total,
-              uint64_t downloaded);
+  // Notifies any registered observers for the |registration| of the progress.
+  // This will cause JavaScript events to fire.
+  // Completed fetches must also call Notify with the final state.
+  void Notify(const BackgroundFetchRegistration& registration);
 
   // Notifies any registered observers for the registration identifier by
   // |unique_id| that the records for the fetch are no longer available.

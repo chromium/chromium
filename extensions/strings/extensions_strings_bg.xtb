@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">Прочитът на личния ключ не бе успешен.</translation>
 <translation id="6391538222494443604">Трябва да съществува директория за въвеждане.</translation>
 <translation id="641087317769093025">Разширението не можа да се разархивира</translation>
+<translation id="6413453408918378296">Иконата <ph name="ICON" /> не се вижда достатъчно добре.</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> иска достъп до едно или повече от устройствата ви:</translation>
 <translation id="657064425229075395">Не можа да се зареди фоновият скрипт „<ph name="BACKGROUND_SCRIPT" />“.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> от <ph name="VENDOR_NAME" /> (сериен номер: <ph name="SERIAL_NUMBER" />)</translation>

@@ -14,7 +14,9 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -23,6 +25,7 @@
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/browser/service_manager/service_manager_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 #include "media/audio/audio_device_description.h"
@@ -422,7 +425,8 @@ void MediaDevicesManager::EnumerateDevices(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   base::PostTaskAndReplyWithResult(
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::UI).get(), FROM_HERE,
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI}).get(),
+      FROM_HERE,
       base::BindOnce(salt_and_origin_callback_, render_process_id,
                      render_frame_id),
       base::BindOnce(&MediaDevicesManager::CheckPermissionsForEnumerateDevices,
@@ -515,8 +519,8 @@ void MediaDevicesManager::StartMonitoring() {
   }
 
 #if defined(OS_MACOSX)
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&MediaDevicesManager::StartMonitoringOnUIThread,
                  base::Unretained(this)));
 #endif
@@ -584,11 +588,9 @@ media::VideoCaptureFormats MediaDevicesManager::GetVideoInputFormats(
   video_capture_manager_->GetDeviceSupportedFormats(device_id, &formats);
   ReplaceInvalidFrameRatesWithFallback(&formats);
   // Remove formats that have zero resolution.
-  formats.erase(std::remove_if(formats.begin(), formats.end(),
-                               [](const media::VideoCaptureFormat& format) {
-                                 return format.frame_size.GetArea() <= 0;
-                               }),
-                formats.end());
+  base::EraseIf(formats, [](const media::VideoCaptureFormat& format) {
+    return format.frame_size.GetArea() <= 0;
+  });
 
   // If the device does not report any valid format, use a fallback list of
   // standard formats.
@@ -733,8 +735,8 @@ void MediaDevicesManager::DoEnumerateDevices(MediaDeviceType type) {
       break;
     case MEDIA_DEVICE_TYPE_VIDEO_INPUT:
       video_capture_manager_->EnumerateDevices(
-          base::Bind(&MediaDevicesManager::VideoInputDevicesEnumerated,
-                     weak_factory_.GetWeakPtr()));
+          base::BindOnce(&MediaDevicesManager::VideoInputDevicesEnumerated,
+                         weak_factory_.GetWeakPtr()));
       break;
     case MEDIA_DEVICE_TYPE_AUDIO_OUTPUT:
       EnumerateAudioDevices(false /* is_input */);
@@ -946,7 +948,8 @@ void MediaDevicesManager::NotifyDeviceChangeSubscribers(
     const SubscriptionRequest& request = subscription.second;
     if (request.subscribe_types[type]) {
       base::PostTaskAndReplyWithResult(
-          BrowserThread::GetTaskRunnerForThread(BrowserThread::UI).get(),
+          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI})
+              .get(),
           FROM_HERE,
           base::BindOnce(salt_and_origin_callback_, request.render_process_id,
                          request.render_frame_id),

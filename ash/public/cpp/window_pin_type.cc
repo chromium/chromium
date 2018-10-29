@@ -17,10 +17,13 @@ bool IsValidWindowPinType(int64_t value) {
          value == int64_t(ash::mojom::WindowPinType::TRUSTED_PINNED);
 }
 
-bool IsWindowTrustedPinned(ui::BaseWindow* window) {
-  aura::Window* aura_window = window->GetNativeWindow();
-  mojom::WindowPinType type = aura_window->GetProperty(kWindowPinTypeKey);
+bool IsWindowTrustedPinned(const aura::Window* window) {
+  mojom::WindowPinType type = window->GetProperty(kWindowPinTypeKey);
   return type == mojom::WindowPinType::TRUSTED_PINNED;
+}
+
+bool IsWindowTrustedPinned(const ui::BaseWindow* window) {
+  return IsWindowTrustedPinned(window->GetNativeWindow());
 }
 
 }  // namespace ash

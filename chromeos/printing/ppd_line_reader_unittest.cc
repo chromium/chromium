@@ -145,7 +145,7 @@ TEST(PpdLineReaderTest, SkipLongLines) {
   constexpr int kMaxLineLength = 35;
   std::vector<std::string> expected = base::SplitString(
       kTestPpd, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::EraseIf(expected, [kMaxLineLength](const std::string& entry) -> bool {
+  base::EraseIf(expected, [](const std::string& entry) -> bool {
     return entry.size() > kMaxLineLength;
   });
   RunTest(kTestPpd, kMaxLineLength, expected);
@@ -156,7 +156,7 @@ TEST(PpdLineReaderTest, SkipLongLinesGzipped) {
   constexpr int kMaxLineLength = 35;
   std::vector<std::string> expected = base::SplitString(
       kTestPpd, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::EraseIf(expected, [kMaxLineLength](const std::string& entry) -> bool {
+  base::EraseIf(expected, [](const std::string& entry) -> bool {
     return entry.size() > kMaxLineLength;
   });
   RunTest(std::string(kTestPpdGzipped, sizeof(kTestPpdGzipped)), kMaxLineLength,

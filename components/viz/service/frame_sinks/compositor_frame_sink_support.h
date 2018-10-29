@@ -127,7 +127,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
                                const SharedBitmapId& id);
   void DidDeleteSharedBitmap(const SharedBitmapId& id);
 
-  void EvictLastActivatedSurface();
+  // Mark |id| and all surfaces with smaller ids for destruction. Note that |id|
+  // doesn't have to exist at the time of calling.
+  void EvictSurface(const LocalSurfaceId& id);
 
   // Attempts to submit a new CompositorFrame to |local_surface_id| and returns
   // whether the frame was accepted or the reason why it was rejected. If
@@ -166,6 +168,12 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // string.
   static const char* GetSubmitResultAsString(SubmitResult result);
 
+  const std::vector<
+      std::pair<LocalSurfaceId, std::unique_ptr<CopyOutputRequest>>>&
+  copy_output_requests_for_testing() const {
+    return copy_output_requests_;
+  }
+
  private:
   friend class FrameSinkManagerTest;
 
@@ -197,13 +205,17 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   bool WantsAnimateOnlyBeginFrames() const override;
 
   void UpdateNeedsBeginFramesInternal();
-  Surface* CreateSurface(const SurfaceInfo& surface_info);
+  Surface* CreateSurface(const SurfaceInfo& surface_info,
+                         bool block_activation_on_parent);
 
   // For the sync API calls, if we are blocking a client callback, runs it once
   // BeginFrame and FrameAck are done.
   void HandleCallback();
 
   int64_t ComputeTraceId();
+
+  void MaybeEvictSurfaces();
+  void EvictLastActiveSurface();
 
   mojom::CompositorFrameSinkClient* const client_;
 
@@ -283,6 +295,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   bool callback_received_begin_frame_ = true;
   bool callback_received_receive_ack_ = true;
   uint32_t trace_sequence_ = 0;
+
+  uint32_t last_evicted_parent_sequence_number_ = 0;
 
   base::WeakPtrFactory<CompositorFrameSinkSupport> weak_factory_;
 

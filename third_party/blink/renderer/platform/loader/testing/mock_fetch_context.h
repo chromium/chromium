@@ -80,7 +80,7 @@ class MockFetchContext : public FetchContext {
     return base::nullopt;
   }
   base::Optional<ResourceRequestBlockedReason> CheckCSPForRequest(
-      WebURLRequest::RequestContext,
+      mojom::RequestContextType,
       const KURL& url,
       const ResourceLoaderOptions& options,
       SecurityViolationReportingPolicy reporting_policy,
@@ -117,10 +117,6 @@ class MockFetchContext : public FetchContext {
     return frame_scheduler_.get();
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> GetLoadingTaskRunner() override {
-    return frame_scheduler_->GetTaskRunner(TaskType::kInternalTest);
-  }
-
   std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
   CreateResourceLoadingTaskRunnerHandle() override {
     return scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
@@ -146,18 +142,17 @@ class MockFetchContext : public FetchContext {
       LoadPolicy load_policy,
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       std::unique_ptr<WebURLLoaderFactory> url_loader_factory)
-      : load_policy_(load_policy),
-        runner_(loading_task_runner
-                    ? std::move(loading_task_runner)
-                    : base::MakeRefCounted<scheduler::FakeTaskRunner>()),
+      : FetchContext(loading_task_runner
+                         ? std::move(loading_task_runner)
+                         : base::MakeRefCounted<scheduler::FakeTaskRunner>()),
+        load_policy_(load_policy),
         security_origin_(SecurityOrigin::CreateUniqueOpaque()),
-        frame_scheduler_(new MockFrameScheduler(runner_)),
+        frame_scheduler_(new MockFrameScheduler(GetLoadingTaskRunner())),
         url_loader_factory_(std::move(url_loader_factory)),
         complete_(false),
         transfer_size_(-1) {}
 
   enum LoadPolicy load_policy_;
-  scoped_refptr<base::SingleThreadTaskRunner> runner_;
   scoped_refptr<const SecurityOrigin> security_origin_;
   std::unique_ptr<FrameScheduler> frame_scheduler_;
   std::unique_ptr<WebURLLoaderFactory> url_loader_factory_;

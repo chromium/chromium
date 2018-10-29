@@ -93,8 +93,6 @@ SyncerError ServerConnectionErrorAsSyncerError(
       return SYNC_SERVER_ERROR;
     case HttpResponse::SYNC_AUTH_ERROR:
       return SYNC_AUTH_ERROR;
-    case HttpResponse::RETRY:
-      return SERVER_RETURN_TRANSIENT_ERROR;
     case HttpResponse::SERVER_CONNECTION_OK:
     case HttpResponse::NONE:
     default:

@@ -20,7 +20,7 @@ EventListeners.frameworkEventListeners = function(object) {
   }
 
   const listenersResult = /** @type {!EventListeners.FrameworkEventListenersObject} */ ({eventListeners: []});
-  return object.callFunctionPromise(frameworkEventListeners, undefined)
+  return object.callFunction(frameworkEventListeners, undefined)
       .then(assertCallFunctionResult)
       .then(getOwnProperties)
       .then(createEventListeners)
@@ -29,14 +29,14 @@ EventListeners.frameworkEventListeners = function(object) {
 
   /**
    * @param {!SDK.RemoteObject} object
-   * @return {!Promise<!{properties: ?Array.<!SDK.RemoteObjectProperty>, internalProperties: ?Array.<!SDK.RemoteObjectProperty>}>}
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
   function getOwnProperties(object) {
-    return object.getOwnPropertiesPromise(false /* generatePreview */);
+    return object.getOwnProperties(false /* generatePreview */);
   }
 
   /**
-   * @param {!{properties: ?Array<!SDK.RemoteObjectProperty>, internalProperties: ?Array<!SDK.RemoteObjectProperty>}} result
+   * @param {!SDK.GetPropertiesResult} result
    * @return {!Promise<undefined>}
    */
   function createEventListeners(result) {
@@ -84,8 +84,7 @@ EventListeners.frameworkEventListeners = function(object) {
       let removeFunctionObject = null;
 
       const promises = [];
-      promises.push(
-          listenerObject.callFunctionJSONPromise(truncatePageEventListener, undefined).then(storeTruncatedListener));
+      promises.push(listenerObject.callFunctionJSON(truncatePageEventListener, undefined).then(storeTruncatedListener));
 
       /**
        * @suppressReceiverCheck
@@ -106,7 +105,7 @@ EventListeners.frameworkEventListeners = function(object) {
         once = truncatedListener.once;
       }
 
-      promises.push(listenerObject.callFunctionPromise(handlerFunction)
+      promises.push(listenerObject.callFunction(handlerFunction)
                         .then(assertCallFunctionResult)
                         .then(storeOriginalHandler)
                         .then(toTargetFunction)
@@ -147,9 +146,8 @@ EventListeners.frameworkEventListeners = function(object) {
         location = functionDetails ? functionDetails.location : null;
       }
 
-      promises.push(listenerObject.callFunctionPromise(getRemoveFunction)
-                        .then(assertCallFunctionResult)
-                        .then(storeRemoveFunction));
+      promises.push(
+          listenerObject.callFunction(getRemoveFunction).then(assertCallFunctionResult).then(storeRemoveFunction));
 
       /**
        * @suppressReceiverCheck

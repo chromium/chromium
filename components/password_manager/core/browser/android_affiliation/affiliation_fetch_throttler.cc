@@ -52,9 +52,11 @@ const int64_t AffiliationFetchThrottler::kGracePeriodAfterReconnectMs =
 AffiliationFetchThrottler::AffiliationFetchThrottler(
     AffiliationFetchThrottlerDelegate* delegate,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    network::NetworkConnectionTracker* network_connection_tracker,
     const base::TickClock* tick_clock)
     : delegate_(delegate),
       task_runner_(task_runner),
+      network_connection_tracker_(network_connection_tracker),
       tick_clock_(tick_clock),
       state_(IDLE),
       has_network_connectivity_(false),
@@ -64,12 +66,12 @@ AffiliationFetchThrottler::AffiliationFetchThrottler(
   DCHECK(delegate);
   // Start observing before querying the current connectivity state, so that if
   // the state changes concurrently in-between, it will not go unnoticed.
-  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  has_network_connectivity_ = !net::NetworkChangeNotifier::IsOffline();
+  network_connection_tracker_->AddNetworkConnectionObserver(this);
+  has_network_connectivity_ = !network_connection_tracker_->IsOffline();
 }
 
 AffiliationFetchThrottler::~AffiliationFetchThrottler() {
-  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  network_connection_tracker_->RemoveNetworkConnectionObserver(this);
 }
 
 void AffiliationFetchThrottler::SignalNetworkRequestNeeded() {
@@ -121,11 +123,14 @@ void AffiliationFetchThrottler::OnBackoffDelayExpiredCallback() {
     state_ = delegate_->OnCanSendNetworkRequest() ? FETCH_IN_FLIGHT : IDLE;
 }
 
-void AffiliationFetchThrottler::OnNetworkChanged(
-    net::NetworkChangeNotifier::ConnectionType type) {
+void AffiliationFetchThrottler::OnConnectionChanged(
+    network::mojom::ConnectionType type) {
   bool old_has_network_connectivity = has_network_connectivity_;
-  has_network_connectivity_ =
-      (type != net::NetworkChangeNotifier::CONNECTION_NONE);
+  // We reread the connection type here instead of relying on |type| because
+  // NetworkConnectionTracker will call this function an extra time with
+  // CONNECTION_NONE whenever the connection changes to an online state, even
+  // if it was already in a different online state.
+  has_network_connectivity_ = !network_connection_tracker_->IsOffline();
 
   // Only react when network connectivity has been reestablished.
   if (!has_network_connectivity_ || old_has_network_connectivity)

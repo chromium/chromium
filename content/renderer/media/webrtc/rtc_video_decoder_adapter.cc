@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
+#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -377,8 +378,7 @@ void RTCVideoDecoderAdapter::OnOutput(
 
   base::AutoLock auto_lock(lock_);
 
-  if (std::find(decode_timestamps_.begin(), decode_timestamps_.end(),
-                frame->timestamp()) == decode_timestamps_.end()) {
+  if (!base::ContainsValue(decode_timestamps_, frame->timestamp())) {
     DVLOG(2) << "Discarding frame with timestamp " << frame->timestamp();
     return;
   }

@@ -142,7 +142,7 @@ public class AccountManagementFragment extends PreferenceFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ListView list = (ListView) getView().findViewById(android.R.id.list);
+        ListView list = getView().findViewById(android.R.id.list);
         list.setDivider(null);
     }
 

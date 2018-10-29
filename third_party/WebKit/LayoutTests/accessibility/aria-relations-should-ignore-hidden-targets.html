@@ -19,16 +19,28 @@ test(function(t)
     var axTab = accessibilityController.accessibleElementById('tab');
     var panel = document.getElementById('panel');
     var axPanel = accessibilityController.accessibleElementById('panel');
-    assert_equals(axTab.ariaControlsElementAtIndex(0), axPanel);
+    assert_not_equals(axPanel, undefined,
+                      'axPanel not undefined, Initial state');
+    assert_equals(axTab.ariaControlsElementAtIndex(0), axPanel,
+                  'Initial state');
+
     panel.style.display = 'none';
-    assert_not_equals(axTab.ariaControlsElementAtIndex(0), axPanel);
+    assert_not_equals(axPanel, undefined,
+                      'axPanel not undefined, display: none');
+    assert_not_equals(axTab.ariaControlsElementAtIndex(0), axPanel,
+                     'display: none');
 
     // Restore the "display" attribute and test with "visibility".
     panel.style.display = 'initial';
     axPanel = accessibilityController.accessibleElementById('panel');
-    assert_equals(axTab.ariaControlsElementAtIndex(0), axPanel);
+    assert_not_equals(axPanel, undefined,
+                      'axPanel not undefined, display: initial');
+    assert_equals(axTab.ariaControlsElementAtIndex(0), axPanel,
+                  'display: initial');
+
     panel.style.visibility = 'hidden';
-    assert_not_equals(axTab.ariaControlsElementAtIndex(0), axPanel);
+    assert_equals(axTab.ariaControlsElementAtIndex(0), undefined,
+                      'visibility: hidden');
 }, 'aria-controls should ignore hidden targets.');
 </script>
 

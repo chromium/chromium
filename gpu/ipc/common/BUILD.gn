@@ -170,6 +170,7 @@ source_set("surface_handle_type") {
 mojom("interfaces") {
   sources = [
     "capabilities.mojom",
+    "context_result.mojom",
     "dx_diag_node.mojom",
     "gpu_feature_info.mojom",
     "gpu_info.mojom",
@@ -212,6 +213,7 @@ mojom("test_interfaces") {
 
 source_set("struct_traits") {
   sources = [
+    "context_result_struct_traits.h",
     "mailbox_holder_struct_traits.h",
     "mailbox_struct_traits.h",
     "memory_stats_struct_traits.h",

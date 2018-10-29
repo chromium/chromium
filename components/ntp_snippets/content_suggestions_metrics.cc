@@ -85,7 +85,7 @@ enum class HistogramCategories {
   DOWNLOADS,
   BOOKMARKS,
   PHYSICAL_WEB_PAGES_DEPRECATED,
-  FOREIGN_TABS,
+  FOREIGN_TABS_DEPRECATED,
   ARTICLES,
   READING_LIST,
   CONTEXTUAL,
@@ -108,8 +108,8 @@ HistogramCategories GetHistogramCategory(Category category) {
       return HistogramCategories::DOWNLOADS;
     case KnownCategories::BOOKMARKS:
       return HistogramCategories::BOOKMARKS;
-    case KnownCategories::FOREIGN_TABS:
-      return HistogramCategories::FOREIGN_TABS;
+    case KnownCategories::FOREIGN_TABS_DEPRECATED:
+      return HistogramCategories::FOREIGN_TABS_DEPRECATED;
     case KnownCategories::ARTICLES:
       return HistogramCategories::ARTICLES;
     case KnownCategories::READING_LIST:
@@ -136,8 +136,6 @@ std::string GetCategorySuffix(Category category) {
       return "Downloads";
     case HistogramCategories::BOOKMARKS:
       return "Bookmarks";
-    case HistogramCategories::FOREIGN_TABS:
-      return "ForeignTabs";
     case HistogramCategories::ARTICLES:
       return "Articles";
     case HistogramCategories::EXPERIMENTAL:
@@ -146,6 +144,7 @@ std::string GetCategorySuffix(Category category) {
       return "ReadingList";
     case HistogramCategories::CONTEXTUAL:
       return "Contextual";
+    case HistogramCategories::FOREIGN_TABS_DEPRECATED:
     case HistogramCategories::RECENT_TABS_DEPRECATED:
     case HistogramCategories::PHYSICAL_WEB_PAGES_DEPRECATED:
     case HistogramCategories::COUNT:

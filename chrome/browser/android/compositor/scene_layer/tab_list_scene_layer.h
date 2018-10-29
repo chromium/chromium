@@ -84,6 +84,7 @@ class TabListSceneLayer : public SceneLayer {
                    jfloat shadow_alpha,
                    jfloat close_alpha,
                    jfloat close_btn_width,
+                   jfloat close_btn_asset_size,
                    jfloat static_to_view_blend,
                    jfloat border_scale,
                    jfloat saturation,

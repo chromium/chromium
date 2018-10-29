@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "mash/public/mojom/launchable.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/service.h"
 
@@ -20,13 +18,12 @@ class Widget;
 
 namespace quick_launch {
 
-class QuickLaunchApplication : public service_manager::Service,
-                               public ::mash::mojom::Launchable {
+class QuickLaunchApplication : public service_manager::Service {
  public:
   QuickLaunchApplication();
   ~QuickLaunchApplication() override;
 
-  void RemoveWindow(views::Widget* window);
+  void Quit();
 
   void set_running_standalone(bool value) { running_standalone_ = value; }
 
@@ -37,13 +34,7 @@ class QuickLaunchApplication : public service_manager::Service,
                        const std::string& interface_name,
                        mojo::ScopedMessagePipeHandle interface_pipe) override;
 
-  // ::mash::mojom::Launchable:
-  void Launch(uint32_t what, ::mash::mojom::LaunchMode how) override;
-
-  void Create(::mash::mojom::LaunchableRequest request);
-
-  mojo::BindingSet<::mash::mojom::Launchable> bindings_;
-  std::vector<views::Widget*> windows_;
+  views::Widget* window_ = nullptr;
 
   service_manager::BinderRegistry registry_;
 

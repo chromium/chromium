@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/exported/worker_shadow_page.h"
 
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -41,9 +41,6 @@ WorkerShadowPage::WorkerShadowPage(
       preferences_(std::move(preferences)) {
   DCHECK(IsMainThread());
 
-  // TODO(http://crbug.com/363843): This needs to find a better way to
-  // not create graphics layers.
-  web_view_->GetSettings()->SetAcceleratedCompositingEnabled(false);
   // TODO(lunalu): Service worker and shared worker count feature usage on the
   // blink side use counter. Once the blink side use counter is removed
   // (crbug.com/811948), remove this instant from Settings.
@@ -70,8 +67,10 @@ void WorkerShadowPage::Initialize(const KURL& script_url) {
   CString content("");
   scoped_refptr<SharedBuffer> buffer(
       SharedBuffer::Create(content.data(), content.length()));
-  main_frame_->GetFrame()->Loader().CommitNavigation(FrameLoadRequest(
-      nullptr, ResourceRequest(script_url), SubstituteData(buffer)));
+  main_frame_->GetFrame()->Loader().CommitNavigation(
+      ResourceRequest(script_url), SubstituteData(buffer),
+      ClientRedirectPolicy::kNotClientRedirect,
+      base::UnguessableToken::Create());
 }
 
 void WorkerShadowPage::DidFinishDocumentLoad() {
@@ -107,7 +106,8 @@ void WorkerShadowPage::WillSendRequest(WebURLRequest& request) {
     request.SetHTTPHeaderField(WebString::FromUTF8(kDoNotTrackHeader), "1");
   }
   if (!preferences_.enable_referrers) {
-    request.SetHTTPReferrer(WebString(), kWebReferrerPolicyDefault);
+    request.SetHTTPReferrer(WebString(),
+                            network::mojom::ReferrerPolicy::kDefault);
   }
 }
 
@@ -131,9 +131,8 @@ void WorkerShadowPage::AdvanceState(State new_state) {
   }
 }
 
-void WorkerShadowPage::BindDevToolsAgent(
-    mojom::blink::DevToolsAgentAssociatedRequest request) {
-  main_frame_->DevToolsAgentImpl()->BindRequest(std::move(request));
+WebDevToolsAgentImpl* WorkerShadowPage::DevToolsAgent() {
+  return main_frame_->DevToolsAgentImpl();
 }
 
 }  // namespace blink

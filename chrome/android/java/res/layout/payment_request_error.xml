@@ -29,18 +29,17 @@
         android:layout_marginEnd="@dimen/editor_dialog_section_large_spacing"
         android:layout_marginBottom="@dimen/payments_section_largest_spacing"
         android:text="@string/payments_error_message"
-        android:textColor="@color/error_text_color"
-        android:textSize="16sp" />
+        android:textAppearance="@style/TextAppearance.PaymentRequestErrorText" />
 
     <!-- Dismisses the dialog. -->
-    <Button
+    <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/ok_button"
-        android:background="?android:attr/selectableItemBackground"
         android:text="@string/ok"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginEnd="@dimen/editor_dialog_section_small_spacing"
-        android:layout_marginBottom="@dimen/editor_dialog_section_small_spacing" />
+        android:layout_marginBottom="@dimen/editor_dialog_section_small_spacing"
+        style="@style/TextButton" />
 
 </org.chromium.chrome.browser.payments.ui.PaymentRequestUiErrorView>

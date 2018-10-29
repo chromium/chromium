@@ -55,8 +55,10 @@ class DownloadManagerService
   void NotifyServiceStarted(
       std::unique_ptr<service_manager::Connector> connector);
 
-  // Called to Initialize this object.
-  void Init(JNIEnv* env, jobject obj);
+  // Called to Initialize this object. If |is_full_browser_started| is false,
+  // it means only the service manager is launched. OnFullBrowserStarted() will
+  // be called later when browser process fully launches.
+  void Init(JNIEnv* env, jobject obj, bool is_full_browser_started);
 
   // Called when full browser process starts.
   void OnFullBrowserStarted(JNIEnv* env, jobject obj);
@@ -179,6 +181,17 @@ class DownloadManagerService
 
   void OnResumptionFailedInternal(const std::string& download_guid);
 
+  // Gets a download item from DownloadManager or InProgressManager.
+  download::DownloadItem* GetDownload(const std::string& download_guid,
+                                      bool is_off_the_record);
+
+  // Creates the InProgressDownloadmanager when running with ServiceManager
+  // only mode.
+  void CreateInProgressDownloadManager();
+
+  // Called when all pending downloads are loaded.
+  void OnPendingDownloadsLoaded();
+
   typedef base::Callback<void(bool)> ResumeCallback;
   void set_resume_callback_for_testing(const ResumeCallback& resume_cb) {
     resume_callback_for_testing_ = resume_cb;
@@ -188,6 +201,7 @@ class DownloadManagerService
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
   bool is_history_query_complete_;
+  bool is_pending_downloads_loaded_;
 
   enum PendingGetDownloadsFlags {
     NONE = 0,
@@ -216,6 +230,13 @@ class DownloadManagerService
 
   std::unique_ptr<download::AllDownloadItemNotifier> original_notifier_;
   std::unique_ptr<download::AllDownloadItemNotifier> off_the_record_notifier_;
+
+  // In-progress download manager when download is running as a service. Will
+  // pass this object to DownloadManagerImpl once it is created.
+  std::unique_ptr<download::InProgressDownloadManager> in_progress_manager_;
+
+  // Connector to the service manager to get the network service.
+  std::unique_ptr<service_manager::Connector> connector_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadManagerService);
 };

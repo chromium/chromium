@@ -175,7 +175,8 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
           transport_availability_info().available_transports,
           FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy)) {
     DCHECK(request_.cable_extension());
-    auto discovery = FidoDiscovery::CreateCable(*request_.cable_extension());
+    auto discovery =
+        FidoDeviceDiscovery::CreateCable(*request_.cable_extension());
     discovery->set_observer(this);
     discoveries().push_back(std::move(discovery));
   }

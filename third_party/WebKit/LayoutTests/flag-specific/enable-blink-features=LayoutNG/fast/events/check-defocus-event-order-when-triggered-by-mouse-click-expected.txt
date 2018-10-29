@@ -14,4 +14,3 @@ PASS fired event is (secondInput, focus).
 PASS fired event is (secondInput, click).
 
 TEST COMPLETE
-

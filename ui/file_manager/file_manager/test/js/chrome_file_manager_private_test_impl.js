@@ -16,7 +16,7 @@ const mockVolumeManager = new MockVolumeManager();
     mockVolumeManager
         .getCurrentProfileVolumeInfo(VolumeManagerCommon.VolumeType.DRIVE)
         .fileSystem)
-    .populate(['/root/', '/team_drives/']);
+    .populate(['/root/', '/team_drives/', '/Computers/']);
 
 /**
  * Suppress compiler warning for overwriting chrome.fileManagerPrivate.
@@ -92,6 +92,13 @@ chrome.fileManagerPrivate = {
   getCrostiniSharedPaths: (callback) => {
     // Returns Entry[].
     setTimeout(callback, 0, []);
+  },
+  getLinuxPackageInfo: (entry, callback) => {
+    // Returns chrome.fileManagerPrivate.LinuxPackageInfo.
+    setTimeout(callback, 0, {
+      name: 'dummy-package',
+      version: '1.0',
+    });
   },
   getPreferences: (callback) => {
     setTimeout(callback, 0, chrome.fileManagerPrivate.preferences_);
@@ -180,7 +187,7 @@ chrome.fileManagerPrivate = {
     // highlightedBaseName: string }
     setTimeout(callback, 0, []);
   },
-  sharePathWithCrostini: (entry, callback) => {
+  sharePathsWithCrostini: (entries, persist, callback) => {
     setTimeout(callback, 0);
   },
   nextCopyId_: 0,
@@ -277,8 +284,9 @@ var webkitResolveLocalFileSystemURL = (url, successCallback, errorCallback) => {
       }
     }
   }
-  var error =
-      new Error('webkitResolveLocalFileSystemURL not found: [' + url + ']');
+  const message = `webkitResolveLocalFileSystemURL not found: ${url}`;
+  console.warn(message);
+  const error = new DOMException(message, 'NotFoundError');
   if (errorCallback) {
     setTimeout(errorCallback, 0, error);
   } else {

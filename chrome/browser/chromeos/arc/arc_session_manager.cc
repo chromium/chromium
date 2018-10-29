@@ -989,7 +989,6 @@ void ArcSessionManager::StartArc() {
     params.demo_session_apps_path = demo_session->GetDemoAppsPath();
   }
 
-  params.is_child = profile_->IsChild();
   params.supervision_transition = GetSupervisionTransition(profile_);
   params.locale = locale;
   // Empty |preferred_languages| is converted to empty array.

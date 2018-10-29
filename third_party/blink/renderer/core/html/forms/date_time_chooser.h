@@ -42,7 +42,7 @@ namespace blink {
 class AXObject;
 
 struct DateTimeSuggestion {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   double value;
   String localized_value;
   String label;

@@ -79,9 +79,9 @@ webrtc::RtpTransceiverInit ToRtpTransceiverInit(
     webrtc_init.stream_ids.push_back(stream->id().Utf8().data());
   }
   DCHECK(init.hasSendEncodings());
-  // TODO(orphis,hbos): Pass the encodings down to the lower layer using
-  // ToRtpEncodingParameters() once implemented in third_party/webrtc.
-  // https://crbug.com/803494
+  for (const auto& encoding : init.sendEncodings()) {
+    webrtc_init.send_encodings.push_back(ToRtpEncodingParameters(encoding));
+  }
   return webrtc_init;
 }
 

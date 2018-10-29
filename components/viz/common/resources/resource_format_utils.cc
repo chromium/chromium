@@ -211,8 +211,6 @@ gfx::BufferFormat BufferFormat(ResourceFormat format) {
       return gfx::BufferFormat::RGBA_4444;
     case RGBA_8888:
       return gfx::BufferFormat::RGBA_8888;
-    case ETC1:
-      return gfx::BufferFormat::ETC1;
     case RGBA_F16:
       return gfx::BufferFormat::RGBA_F16;
     case BGR_565:
@@ -233,6 +231,7 @@ gfx::BufferFormat BufferFormat(ResourceFormat format) {
       return gfx::BufferFormat::YUV_420_BIPLANAR;
     case UYVY_422:
       return gfx::BufferFormat::UYVY_422;
+    case ETC1:
     case ALPHA_8:
     case LUMINANCE_8:
     case RGB_565:
@@ -296,11 +295,11 @@ bool IsGpuMemoryBufferFormatSupported(ResourceFormat format) {
     case R16_EXT:
     case RGBA_4444:
     case RGBA_8888:
-    case ETC1:
     case RGBA_F16:
       return true;
     // These formats have no BufferFormat equivalent or are only used
     // for external textures, or have no GL equivalent formats.
+    case ETC1:
     case ALPHA_8:
     case LUMINANCE_8:
     case RGB_565:
@@ -361,8 +360,6 @@ ResourceFormat GetResourceFormat(gfx::BufferFormat format) {
       return RGBA_4444;
     case gfx::BufferFormat::RGBA_8888:
       return RGBA_8888;
-    case gfx::BufferFormat::ETC1:
-      return ETC1;
     case gfx::BufferFormat::RGBA_F16:
       return RGBA_F16;
     case gfx::BufferFormat::BGR_565:

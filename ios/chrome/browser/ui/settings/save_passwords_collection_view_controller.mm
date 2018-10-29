@@ -35,8 +35,9 @@
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_footer_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
+#import "ios/chrome/browser/ui/settings/alpha_animated_collection_view_flow_layout.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_search_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_text_item.h"
 #import "ios/chrome/browser/ui/settings/password_details_collection_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password_details_collection_view_controller_delegate.h"
@@ -44,8 +45,8 @@
 #import "ios/chrome/browser/ui/settings/reauthentication_module.h"
 #import "ios/chrome/browser/ui/settings/settings_utils.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -158,7 +159,7 @@ initWithActivityItems:(NSArray*)activityItems
   // Saved passwords are only on if the password manager is enabled.
   PrefBackedBoolean* passwordManagerEnabled_;
   // The item related to the switch for the password manager setting.
-  SettingsSwitchItem* savePasswordsItem_;
+  LegacySettingsSwitchItem* savePasswordsItem_;
   // The item related to the button for exporting passwords.
   SettingsTextItem* exportPasswordsItem_;
   // The interface for getting and manipulating a user's saved passwords.
@@ -216,7 +217,8 @@ initWithActivityItems:(NSArray*)activityItems
 
 - (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
   DCHECK(browserState);
-  UICollectionViewLayout* layout = [[MDCCollectionViewFlowLayout alloc] init];
+  MDCCollectionViewFlowLayout* layout =
+      [[AlphaAnimatedCollectionViewFlowLayout alloc] init];
   self =
       [super initWithLayout:layout style:CollectionViewControllerStyleAppBar];
   if (self) {
@@ -350,9 +352,10 @@ initWithActivityItems:(NSArray*)activityItems
   return footerItem;
 }
 
-- (SettingsSwitchItem*)savePasswordsItem {
-  SettingsSwitchItem* savePasswordsItem =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeSavePasswordsSwitch];
+- (LegacySettingsSwitchItem*)savePasswordsItem {
+  LegacySettingsSwitchItem* savePasswordsItem =
+      [[LegacySettingsSwitchItem alloc]
+          initWithType:ItemTypeSavePasswordsSwitch];
   savePasswordsItem.text = l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS);
   savePasswordsItem.on = [passwordManagerEnabled_ value];
   savePasswordsItem.accessibilityIdentifier = @"savePasswordsItem_switch";
@@ -470,8 +473,8 @@ blacklistedFormItemWithText:(NSString*)text
 
   if ([self.collectionViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeSavePasswordsSwitch) {
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    LegacySettingsSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(savePasswordsSwitchChanged:)
                     forControlEvents:UIControlEventValueChanged];
@@ -827,13 +830,18 @@ blacklistedFormItemWithText:(NSString*)text
     SavePasswordsCollectionViewController* strongSelf = weakSelf;
     if (!strongSelf)
       return;
+    // Delete in reverse order of section indexes (bottom up of section
+    // displayed), so that indexes in model matches those in the view.  if we
+    // don't we'll cause a crash.
+    [strongSelf
+        clearSectionWithIdentifier:SectionIdentifierBlacklist
+                           ifEmpty:strongSelf->blacklistedForms_.empty()];
     [strongSelf clearSectionWithIdentifier:SectionIdentifierSavedPasswords
-                                   ifEmpty:savedForms_.empty()];
-    [strongSelf clearSectionWithIdentifier:SectionIdentifierBlacklist
-                                   ifEmpty:blacklistedForms_.empty()];
-    [strongSelf clearSectionWithIdentifier:SectionIdentifierSearchPasswordsBox
-                                   ifEmpty:savedForms_.empty() &&
-                                           blacklistedForms_.empty()];
+                                   ifEmpty:strongSelf->savedForms_.empty()];
+    [strongSelf
+        clearSectionWithIdentifier:SectionIdentifierSearchPasswordsBox
+                           ifEmpty:strongSelf->savedForms_.empty() &&
+                                   strongSelf->blacklistedForms_.empty()];
   }
       completion:^(BOOL finished) {
         SavePasswordsCollectionViewController* strongSelf = weakSelf;
@@ -1028,8 +1036,8 @@ blacklistedFormItemWithText:(NSString*)text
   NSIndexPath* switchPath =
       [model indexPathForItemType:ItemTypeSavePasswordsSwitch
                 sectionIdentifier:SectionIdentifierSavePasswordsSwitch];
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  LegacySettingsSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<LegacySettingsSwitchItem>(
           [model itemAtIndexPath:switchPath]);
   [switchItem setEnabled:enabled];
   [self reconfigureCellsForItems:@[ switchItem ]];

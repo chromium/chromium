@@ -32,9 +32,6 @@
 /* Customized scrollbar for the playlist. */
 
 .media-button {
-  --files-toggle-ripple-activated: {
-    opacity: 0.1;
-  };
   background-color: transparent;
   border: 0;
   flex: none;
@@ -208,16 +205,4 @@ paper-slider.disabled {
   justify-content: flex-end;
   position: absolute;
   top: -1px;
-}
-
-.control-panel {
-  --files-ripple: {
-    background-color: black;
-  };
-  --files-toggle-ripple: {
-    background-color: black;
-  };
-  --files-toggle-ripple-activated: {
-    background-color: black;
-  };
 }

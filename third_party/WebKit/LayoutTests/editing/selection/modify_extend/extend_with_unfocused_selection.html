@@ -4,7 +4,7 @@
 <script src="../../assert_selection.js"></script>
 <script>
 test(() => {
-  assert_exists(window, 'eventSender', 'This test requires eventSender');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
   assert_selection(
   [
     '<textarea>|text</textarea>',
@@ -23,7 +23,7 @@ test(() => {
 }, 'Press Shift + right arrow key with unfocused selection in text control');
 
 test(() => {
-  assert_exists(window, 'eventSender', 'This test requires eventSender');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
   assert_selection(
   [
     '<div contenteditable>|text</div>',

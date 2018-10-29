@@ -13,18 +13,7 @@ mojom("interfaces") {
 
   public_deps = [
     "//mojo/public/mojom/base",
-    "//ui/gfx/mojo",
+    "//ui/gfx/geometry/mojo",
     "//ui/latency/mojo:interfaces",
-  ]
-}
-
-mojom("test_interfaces") {
-  testonly = true
-  sources = [
-    "traits_test_service.mojom",
-  ]
-
-  public_deps = [
-    ":interfaces",
   ]
 }

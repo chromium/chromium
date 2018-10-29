@@ -375,7 +375,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
 };
 
 // Helper class to temporarily tell the uploader to save the multipart buffer to

@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Tooge Google'i nutikad funktsioonid Chromiumi</translation>
 <translation id="2730884209570016437">Chromium ei saa kaamerat kasutada, kuna seda kasutab muu rakendus</translation>
 <translation id="2797210818057553964">Seda saate Chromiumi seadetes igal ajal kohandada</translation>
+<translation id="2915596697727466327">Chromium kasutab paroolide volitatud juurdepääsu kontrollimiseks Face ID-d.</translation>
 <translation id="3256316712990552818">Kopeeritud Chromiumi</translation>
 <translation id="3413120535237193088">Kõikidesse seadmetesse järjehoidjate hankimiseks logige Chromiumisse sisse.</translation>
 <translation id="3473048256428424907">Chromiumi QR-skanneri sisselülitamine</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Siin kuvatakse teie teistes seadmetes Chromiumis avatud vahelehed.</translation>
 <translation id="495292094137889840">Chromiumi QR-skanneri kasutamise alustamine</translation>
 <translation id="5231355151045086930">Chromiumist väljalogimine</translation>
-<translation id="5416919929805616771">Kas teile meeldib Chromium? <ph name="BEGIN_LINK" />Hinnake seda rakendust<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Tere tulemast Chromiumi</translation>
 <translation id="5945387852661427312">Logite sisse kontoga, mida haldab <ph name="DOMAIN" />, ja annate selle administraatorile üle Chromiumi andmete juhtimise. Teie andmed seotakse jäädavalt selle kontoga. Chromiumist väljalogimisel kustutatakse teie andmed sellest seadmest, kuid need jäävad alles teie Google'i kontole.</translation>
 <translation id="6068866989048414399">Chromiumi teenusetingimused</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Vahetate sünkroonitavad kontod aadressilt <ph name="USER_EMAIL1" /> aadressile <ph name="USER_EMAIL2" />. Teie olemasolevaid Chromiumi andmeid haldab domeen <ph name="DOMAIN" />. Teie andmed kustutatakse sellest seadmest, kuid need jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Nõuanne: <ph name="BEGIN_LINK" />lisage Chromium dokki<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Täiustage Chromiumis oma Google'i teenuste kasutuskogemust asukohateabe abil.</translation>
-<translation id="8353224596138547809">Kas soovite, et Chromium salvestaks parooli, mida selle saidi jaoks kasutate?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Seadeid<ph name="END_LINK" /> saab igal ajal kohandada. Google võib kasutada teie külastatavate saitide sisu, brauseri interaktsioone ja tegevusi Chromiumi ja Google'i teenuste, näiteks tõlke, otsingu ja reklaamide täiustamiseks.</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
 <translation id="8809780021347235332">Kujutiste salvestamiseks puudutage valikut Seaded, et lubada Chromiumil teie fotode kasutamine</translation>

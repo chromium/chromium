@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -135,7 +136,13 @@ class WheelScrollLatchingBrowserTest : public ContentBrowserTest {
 // wheel scroll latching is enabled the wheel event will be still sent to the
 // document's scrolling element and the document's scrolling element will
 // continue scrolling.
-IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest, WheelEventTarget) {
+// Disabled on Android due to flakiness. See https://crbug.com/894572.
+#if defined(OS_ANDROID)
+#define MAYBE_WheelEventTarget DISABLED_WheelEventTarget
+#else
+#define MAYBE_WheelEventTarget WheelEventTarget
+#endif
+IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest, MAYBE_WheelEventTarget) {
   LoadURL(kWheelEventLatchingDataURL);
   EXPECT_EQ(0, ExecuteScriptAndExtractInt("documentWheelEventCounter"));
   EXPECT_EQ(0, ExecuteScriptAndExtractInt("scrollableDivWheelEventCounter"));
@@ -243,8 +250,8 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
   EXPECT_EQ(1, ExecuteScriptAndExtractInt("scrollableDivWheelEventCounter"));
 }
 
-// crbug.com/777258 Flaky on Android.
-#if defined(OS_ANDROID)
+// crbug.com/777258 Flaky on Android and Chrome OS.
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
 #define MAYBE_WheelScrollingRelatchWhenLatchedScrollerRemoved \
   DISABLED_WheelScrollingRelatchWhenLatchedScrollerRemoved
 #else

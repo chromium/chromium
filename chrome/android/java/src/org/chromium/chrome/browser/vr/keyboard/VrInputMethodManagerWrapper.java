@@ -54,6 +54,11 @@ public class VrInputMethodManagerWrapper implements InputMethodManagerWrapper {
         mKeyboard = keyboard;
     }
 
+    @VisibleForTesting
+    public BrowserKeyboardInterface getBrowserKeyboardInterfaceForTesting() {
+        return mKeyboard;
+    }
+
     @Override
     public void restartInput(View view) {
         if (DEBUG_LOGS) Log.i(TAG, "restartInput");

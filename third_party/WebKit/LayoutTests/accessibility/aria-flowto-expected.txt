@@ -1,9 +1,9 @@
 Content 2
 Content 3
+
 This tests that aria-flowto identifies the correct element
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS item1.ariaFlowToElementAtIndex(0).isEqual(item2) is true
 PASS item1.ariaFlowToElementAtIndex(1).isEqual(item3) is true

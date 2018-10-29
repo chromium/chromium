@@ -1,0 +1,31 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_shared_css.html">
+
+<dom-module id="button-bar">
+  <template>
+    <style include="multidevice-setup-shared">
+      :host {
+        display: flex;
+      }
+    </style>
+    <div id="backward"
+        on-click="onBackwardButtonClicked_"
+        hidden$="[[backwardButtonHidden]]">
+      <slot name="backward-button"></slot>
+    </div>
+    <div class="flex"></div>
+    <div id="cancel"
+        on-click="onCancelButtonClicked_"
+        hidden$="[[cancelButtonHidden]]">
+      <slot name="cancel-button"></slot>
+    </div>
+    <div id="forward"
+        on-click="onForwardButtonClicked_"
+        hidden$="[[forwardButtonHidden]]">
+      <slot name="forward-button"></slot>
+    </div>
+  </template>
+  <script src="chrome://resources/cr_components/chromeos/multidevice_setup/button_bar.js">
+  </script>
+</dom-module>

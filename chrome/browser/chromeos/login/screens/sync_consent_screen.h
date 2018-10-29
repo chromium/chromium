@@ -53,6 +53,10 @@ class SyncConsentScreen : public BaseScreen,
     DISALLOW_COPY_AND_ASSIGN(SyncConsentScreenTestDelegate);
   };
 
+  // Launches the sync consent settings dialog if the user requested to review
+  // them after completing OOBE.
+  static void MaybeLaunchSyncConstentSettings(Profile* profile);
+
   SyncConsentScreen(BaseScreenDelegate* base_screen_delegate,
                     SyncConsentScreenView* view);
   ~SyncConsentScreen() override;

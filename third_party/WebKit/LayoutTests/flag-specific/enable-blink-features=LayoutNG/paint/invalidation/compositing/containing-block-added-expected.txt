@@ -33,12 +33,7 @@
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (positioned) DIV id='container'",
           "rect": [0, 0, 100, 100],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (positioned) DIV id='container'",
-          "rect": [0, 0, 100, 100],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (positioned) DIV class='fixed'",

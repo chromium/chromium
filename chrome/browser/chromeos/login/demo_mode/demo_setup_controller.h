@@ -11,12 +11,18 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string16.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper.h"
+#include "chrome/browser/chromeos/policy/enrollment_status_chromeos.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 class PrefRegistrySimple;
+
+namespace policy {
+class DeviceCloudPolicyManagerChromeOS;
+}
 
 namespace chromeos {
 
@@ -25,24 +31,140 @@ class DemoSetupController
     : public EnterpriseEnrollmentHelper::EnrollmentStatusConsumer,
       public policy::CloudPolicyStore::Observer {
  public:
-  // Type of demo mode setup error.
-  enum class DemoSetupError {
-    // Recoverable or temporary demo mode setup error. Another attempt to setup
-    // demo mode may succeed.
-    kRecoverable,
-    // Fatal demo mode setup error. Device requires powerwash to recover from
-    // the resulting state.
-    kFatal,
+  // Contains information related to setup error.
+  class DemoSetupError {
+   public:
+    // Type of setup error.
+    enum class ErrorCode {
+      // Offline resources not available on device.
+      kNoOfflineResources,
+      // Cannot load or parse offline policy.
+      kOfflinePolicyError,
+      // Local account policy store error.
+      kOfflinePolicyStoreError,
+      // Cannot perform offline setup without online FRE check.
+      kOnlineFRECheckRequired,
+      // Cannot load online component.
+      kOnlineComponentError,
+      // Invalid request to DMServer.
+      kInvalidRequest,
+      // Request to DMServer failed, because of network error.
+      kRequestNetworkError,
+      // DMServer temporary unavailable.
+      kTemporaryUnavailable,
+      // DMServer returned abnormal response code.
+      kResponseError,
+      // DMServer response cannot be decoded.
+      kResponseDecodingError,
+      // Device management not supported for demo account.
+      kDemoAccountError,
+      // DMServer cannot find the device.
+      kDeviceNotFound,
+      // Invalid device management token.
+      kInvalidDMToken,
+      // Serial number invalid or unknown to DMServer,
+      kInvalidSerialNumber,
+      // Device id conflict.
+      kDeviceIdError,
+      // Not enough licenses or domain expired.
+      kLicenseError,
+      // Device was deprovisioned.ec
+      kDeviceDeprovisioned,
+      // Device belongs to different domain (FRE).
+      kDomainMismatch,
+      // Management request could not be signed by the client.
+      kSigningError,
+      // DMServer could not find policy for the device.
+      kPolicyNotFound,
+      // ARC disabled for demo domain.
+      kArcError,
+      // Cannot determine server-backed state keys.
+      kNoStateKeys,
+      // Failed to fetch robot account auth or refresh token.
+      kRobotFetchError,
+      // Failed to fetch robot account refresh token.
+      kRobotStoreError,
+      // Unsuppored device mode returned by the server.
+      kBadMode,
+      // Could not fetch registration cert,
+      kCertFetchError,
+      // Could not fetch the policy.
+      kPolicyFetchError,
+      // Policy validation failed.
+      kPolicyValidationError,
+      // Timeout during locking the device.
+      kLockTimeout,
+      // Error during locking the device.
+      kLockError,
+      // Device locked to different domain on mode.
+      kAlreadyLocked,
+      // Error while installing online policy.
+      kOnlineStoreError,
+      // Could not determine device model or serial number.
+      kMachineIdentificationError,
+      // Could not store DM token.
+      kDMTokenStoreError,
+      // Unexpected/fatal error.
+      kUnexpectedError,
+    };
+
+    // Type of recommended recovery from the setup error.
+    enum class RecoveryMethod {
+      // Retry demo setup.
+      kRetry,
+      // Reboot and retry demo setup.
+      kReboot,
+      // Powerwash and retry demo setup.
+      kPowerwash,
+      // Check network and retry demo setup.
+      kCheckNetwork,
+      // Cannot perform offline setup - online setup might work.
+      kOnlineOnly,
+      // Unknown recovery method.
+      kUnknown,
+    };
+
+    static DemoSetupError CreateFromEnrollmentStatus(
+        const policy::EnrollmentStatus& status);
+
+    static DemoSetupError CreateFromOtherEnrollmentError(
+        EnterpriseEnrollmentHelper::OtherError error);
+
+    static DemoSetupError CreateFromComponentError(
+        component_updater::CrOSComponentManager::Error error);
+
+    DemoSetupError(ErrorCode error_code, RecoveryMethod recovery_method);
+    DemoSetupError(ErrorCode error_code,
+                   RecoveryMethod recovery_method,
+                   const std::string& debug_message);
+    ~DemoSetupError();
+
+    ErrorCode error_code() const { return error_code_; }
+    RecoveryMethod recovery_method() const { return recovery_method_; }
+
+    base::string16 GetLocalizedErrorMessage() const;
+    base::string16 GetLocalizedRecoveryMessage() const;
+    std::string GetDebugDescription() const;
+
+   private:
+    ErrorCode error_code_;
+    RecoveryMethod recovery_method_;
+    std::string debug_message_;
   };
 
   // Demo mode setup callbacks.
   using OnSetupSuccess = base::OnceClosure;
-  using OnSetupError = base::OnceCallback<void(DemoSetupError)>;
+  using OnSetupError = base::OnceCallback<void(const DemoSetupError&)>;
 
   // Domain that demo mode devices are enrolled into.
   static constexpr char kDemoModeDomain[] = "cros-demo-mode.com";
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  // Clears demo device enrollment requisition on the given |policy_manager| if
+  // it is set.
+  static void ClearDemoRequisition(
+      policy::DeviceCloudPolicyManagerChromeOS* policy_manager);
 
   // Utility method that returns whether demo mode is allowed on the device.
   static bool IsDemoModeAllowed();
@@ -120,8 +242,8 @@ class DemoSetupController
   // is completed. This is the last step of demo mode setup flow.
   void OnDeviceRegistered();
 
-  // Finish the flow with an error message.
-  void SetupFailed(const std::string& message, DemoSetupError error);
+  // Finish the flow with an error.
+  void SetupFailed(const DemoSetupError& error);
 
   // Clears the internal state.
   void Reset();

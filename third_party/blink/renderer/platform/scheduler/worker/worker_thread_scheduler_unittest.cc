@@ -13,7 +13,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/scheduler/child/process_state.h"
+#include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_frame_scheduler.h"
 
 using testing::ElementsAreArray;
@@ -118,7 +118,8 @@ class WorkerThreadSchedulerTest : public testing::Test {
     // Null clock might trigger some assertions.
     task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5));
     scheduler_->Init();
-    default_task_runner_ = scheduler_->CreateTaskQueue("test_tq");
+    default_task_queue_ = scheduler_->CreateTaskQueue("test_tq");
+    default_task_runner_ = default_task_queue_->CreateTaskRunner(0);
     idle_task_runner_ = scheduler_->IdleTaskRunner();
   }
 
@@ -176,6 +177,7 @@ class WorkerThreadSchedulerTest : public testing::Test {
   base::test::ScopedTaskEnvironment task_environment_;
   std::vector<std::string> timeline_;
   std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;
+  scoped_refptr<base::sequence_manager::TaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
 

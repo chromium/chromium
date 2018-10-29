@@ -20,11 +20,27 @@ const char kCrostiniSharedPaths[] = "crostini.shared_paths";
 // Crostini use.
 const char kUserCrostiniAllowedByPolicy[] = "crostini.user_allowed_by_policy";
 
+// A boolean preference controlling Crostini usage reporting.
+const char kReportCrostiniUsageEnabled[] = "crostini.usage_reporting_enabled";
+// Preferences used to store last launch information for reporting:
+const char kCrostiniLastLaunchVersion[] = "crostini.last_launch.version";
+// The start of a three day window of the last app launch
+// stored as Java time (ms since epoch).
+const char kCrostiniLastLaunchTimeWindowStart[] =
+    "crostini.last_launch.time_window_start";
+// The value of the last sample of the disk space used by Crostini.
+const char kCrostiniLastDiskSize[] = "crostini.last_disk_size";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kCrostiniEnabled, false);
   registry->RegisterDictionaryPref(kCrostiniMimeTypes);
   registry->RegisterDictionaryPref(kCrostiniRegistry);
   registry->RegisterListPref(kCrostiniSharedPaths);
+  registry->RegisterBooleanPref(crostini::prefs::kReportCrostiniUsageEnabled,
+                                false);
+  registry->RegisterStringPref(kCrostiniLastLaunchVersion, std::string());
+  registry->RegisterInt64Pref(kCrostiniLastLaunchTimeWindowStart, 0u);
+  registry->RegisterInt64Pref(kCrostiniLastDiskSize, 0u);
   registry->RegisterBooleanPref(kUserCrostiniAllowedByPolicy, true);
 }
 

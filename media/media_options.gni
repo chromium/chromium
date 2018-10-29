@@ -21,6 +21,7 @@ media_subcomponent_deps = [
   "//media/device_monitors",
   "//media/filters",
   "//media/formats",
+  "//media/learning",
   "//media/muxers",
   "//media/renderers",
   "//media/video",
@@ -77,7 +78,8 @@ declare_args() {
   enable_hls_sample_aes = proprietary_codecs && is_chromecast
 
   # If true, use cast CMA backend instead of default chromium media pipeline.
-  is_cast_using_cma_backend = is_cast_audio_only || !is_android
+  # TODO(sanfin): Remove this flag when all builds enable CMA.
+  is_cast_using_cma_backend = true
 }
 
 # enable_hls_sample_aes can only be true if enable_mse_mpeg2ts_stream_parser is.
@@ -185,12 +187,20 @@ if (enable_mojo_media) {
     _default_mojo_media_host = "browser"
   } else if (is_android) {
     # Both chrome for Android and cast for Android belongs to this case
-    _default_mojo_media_services = [
-      "cdm",
-      "audio_decoder",
-      "video_decoder",
-    ]
-    _default_mojo_media_host = "gpu"
+    if (is_cast_audio_only) {
+      _default_mojo_media_services = [
+        "cdm",
+        "audio_decoder",
+      ]
+      _default_mojo_media_host = "browser"
+    } else {
+      _default_mojo_media_services = [
+        "cdm",
+        "audio_decoder",
+        "video_decoder",
+      ]
+      _default_mojo_media_host = "gpu"
+    }
   } else if (is_chromeos || is_mac || is_win) {
     _default_mojo_media_services = [ "video_decoder" ]
     _default_mojo_media_host = "gpu"

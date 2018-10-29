@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/launcher/arc_playstore_shortcut_launcher_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
@@ -33,7 +34,6 @@
 #include "extensions/browser/process_manager.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
-#include "ui/wm/core/window_animations.h"
 
 using extensions::Extension;
 using extensions::ExtensionRegistry;
@@ -340,8 +340,7 @@ bool AppShortcutLauncherItemController::AdvanceToNextApp() {
         if (items.size() == 1) {
           // If there is only a single item available, we animate it upon key
           // action.
-          AnimateWindow(browser->window()->GetNativeWindow(),
-                        wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+          ash_util::BounceWindow(browser->window()->GetNativeWindow());
         } else {
           int index = (static_cast<int>(i - items.begin()) + 1) % items.size();
           ActivateContent(items[index]);

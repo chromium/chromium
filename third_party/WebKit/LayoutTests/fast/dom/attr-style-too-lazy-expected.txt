@@ -2,7 +2,6 @@ This test verifies that acquiring the 'style' attribute via a DOM Attr node stil
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS styleAttr.value is 'background-color: white;'
 PASS styleAttr.value is 'background-color: green;'
 PASS oldStyleAttr.value is 'background-color: red;'

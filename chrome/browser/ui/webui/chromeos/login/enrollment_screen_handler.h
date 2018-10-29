@@ -17,6 +17,10 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "net/base/net_errors.h"
 
+namespace net {
+class CanonicalCookie;
+}
+
 namespace chromeos {
 
 class ErrorScreensHistogramHelper;
@@ -96,8 +100,10 @@ class EnrollmentScreenHandler
   // Handlers for WebUI messages.
   void HandleToggleFakeEnrollment();
   void HandleClose(const std::string& reason);
-  void HandleCompleteLogin(const std::string& user,
-                           const std::string& auth_code);
+  void HandleCompleteLogin(const std::string& user);
+  void OnGetCookiesForCompleteLogin(
+      const std::string& user,
+      const std::vector<net::CanonicalCookie>& cookies);
   void HandleAdCompleteLogin(const std::string& machine_name,
                              const std::string& distinguished_name,
                              const std::string& encryption_types,

@@ -64,10 +64,15 @@ IN_PROC_BROWSER_TEST_P(NavigationPredictorBrowserTest, Pipeline) {
   if (base::FeatureList::IsEnabled(
           blink::features::kRecordAnchorMetricsVisible)) {
     histogram_tester.ExpectUniqueSample(
-        "AnchorElementMetrics.Visible.NumberOfAnchorElements", 2, 1);
+        "AnchorElementMetrics.Visible.NumberOfAnchorElements", 3, 1);
+    // Same document anchor element should be removed after merge.
+    histogram_tester.ExpectUniqueSample(
+        "AnchorElementMetrics.Visible.NumberOfAnchorElementsAfterMerge", 2, 1);
   } else {
     histogram_tester.ExpectTotalCount(
         "AnchorElementMetrics.Visible.NumberOfAnchorElements", 0);
+    histogram_tester.ExpectTotalCount(
+        "AnchorElementMetrics.Visible.NumberOfAnchorElementsAfterMerge", 0);
   }
 }
 
@@ -146,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(NavigationPredictorBrowserTest, AreaRank) {
 // Test that MergeMetricsSameTargetUrl merges anchor elements having the same
 // href. The html file contains two anchor elements having the same href.
 IN_PROC_BROWSER_TEST_P(NavigationPredictorBrowserTest,
-                       MergeMetricsSameTargetUrl) {
+                       MergeMetricsSameTargetUrl_ClickHrefWithNoMergedImage) {
   base::HistogramTester histogram_tester;
 
   const GURL& url = GetTestURL("/anchors_same_href.html");
@@ -160,5 +165,53 @@ IN_PROC_BROWSER_TEST_P(NavigationPredictorBrowserTest,
   } else {
     histogram_tester.ExpectTotalCount("AnchorElementMetrics.Visible.RatioArea",
                                       0);
+  }
+
+  EXPECT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "document.getElementById('diffHref').click();"));
+  base::RunLoop().RunUntilIdle();
+
+  // Anchor element with id 'diffHref' points to an href. No image in the
+  // webpage also points to an image. So, clicking on this non-image anchor
+  // element, should not be recorded as "ContainsImage".
+  if (base::FeatureList::IsEnabled(
+          blink::features::kRecordAnchorMetricsVisible)) {
+    histogram_tester.ExpectTotalCount(
+        "AnchorElementMetrics.Clicked.RatioContainsImage_ContainsImage", 0);
+  }
+}
+
+// Test that MergeMetricsSameTargetUrl merges anchor elements having the same
+// href. The html file contains two anchor elements having the same href.
+IN_PROC_BROWSER_TEST_P(NavigationPredictorBrowserTest,
+                       MergeMetricsSameTargetUrl_ClickHrefWithMergedImage) {
+  base::HistogramTester histogram_tester;
+
+  const GURL& url = GetTestURL("/anchors_same_href.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  base::RunLoop().RunUntilIdle();
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kRecordAnchorMetricsVisible)) {
+    histogram_tester.ExpectTotalCount("AnchorElementMetrics.Visible.RatioArea",
+                                      1);
+  } else {
+    histogram_tester.ExpectTotalCount("AnchorElementMetrics.Visible.RatioArea",
+                                      0);
+  }
+
+  EXPECT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "document.getElementById('google').click();"));
+  base::RunLoop().RunUntilIdle();
+
+  // Anchor element with id 'google' points to an href. Another image in the
+  // webpage also points to an image. So, even though we clicked on a non-image
+  // anchor element, it should be recorded as "ContainsImage".
+  if (base::FeatureList::IsEnabled(
+          blink::features::kRecordAnchorMetricsVisible)) {
+    histogram_tester.ExpectTotalCount(
+        "AnchorElementMetrics.Clicked.RatioContainsImage_ContainsImage", 1);
   }
 }

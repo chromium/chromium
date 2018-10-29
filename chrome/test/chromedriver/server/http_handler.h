@@ -34,9 +34,14 @@ class HttpServerRequestInfo;
 class HttpServerResponseInfo;
 }
 
+namespace network {
+class TransitionalURLLoaderFactoryOwner;
+}
+
 class Adb;
 class DeviceManager;
 class URLRequestContextGetter;
+class WrapperURLLoaderFactory;
 
 enum HttpMethod {
   kGet,
@@ -110,6 +115,9 @@ class HttpHandler {
   std::string url_base_;
   bool received_shutdown_;
   scoped_refptr<URLRequestContextGetter> context_getter_;
+  std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
+      url_loader_factory_owner_;
+  std::unique_ptr<WrapperURLLoaderFactory> wrapper_url_loader_factory_;
   SyncWebSocketFactory socket_factory_;
   SessionThreadMap session_thread_map_;
   std::unique_ptr<CommandMap> command_map_;

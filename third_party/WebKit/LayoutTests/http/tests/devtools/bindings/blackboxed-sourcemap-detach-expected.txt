@@ -1,0 +1,6 @@
+Tests that blackboxed sourcemaps properly detach on reload crbug.com/888688
+Evaluating script with source map
+Message count: 1
+Page reloaded.
+After reload, Console message count: 0
+

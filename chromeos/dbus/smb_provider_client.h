@@ -46,6 +46,10 @@ class CHROMEOS_EXPORT SmbProviderClient
   using StartCopyCallback =
       base::OnceCallback<void(smbprovider::ErrorType error,
                               int32_t copy_token)>;
+  using StartReadDirectoryCallback = base::OnceCallback<void(
+      smbprovider::ErrorType error,
+      int32_t read_dir_token,
+      const smbprovider::DirectoryEntryListProto& entries)>;
 
   ~SmbProviderClient() override;
 
@@ -58,6 +62,7 @@ class CHROMEOS_EXPORT SmbProviderClient
   // credentials to access the mount. |callback| is called after getting (or
   // failing to get) D-BUS response.
   virtual void Mount(const base::FilePath& share_path,
+                     bool ntlm_enabled,
                      const std::string& workgroup,
                      const std::string& username,
                      base::ScopedFD password_fd,
@@ -67,6 +72,7 @@ class CHROMEOS_EXPORT SmbProviderClient
   // original |mount_id|.
   virtual void Remount(const base::FilePath& share_path,
                        int32_t mount_id,
+                       bool ntlm_enabled,
                        const std::string& workgroup,
                        const std::string& username,
                        base::ScopedFD password_fd,
@@ -211,6 +217,19 @@ class CHROMEOS_EXPORT SmbProviderClient
   virtual void ContinueCopy(int32_t mount_id,
                             int32_t copy_token,
                             StatusCallback callback) = 0;
+
+  // Calls StartReadDirectory. This starts a read directory of |directory_path|.
+  // Returns smbprovider::ERROR_OPERATION_PENDING if there is more work to do.
+  virtual void StartReadDirectory(int32_t mount_id,
+                                  const base::FilePath& directory_path,
+                                  StartReadDirectoryCallback callback) = 0;
+
+  // Calls ContinueReadDirectory. This continues the copy corresponding to
+  // |read_dir_token|. Returns smbprovider::ERROR_OPERATION_PENDING if there is
+  // more work to do.
+  virtual void ContinueReadDirectory(int32_t mount_id,
+                                     int32_t read_dir_token,
+                                     ReadDirectoryCallback callback) = 0;
 
  protected:
   // Create() should be used instead.

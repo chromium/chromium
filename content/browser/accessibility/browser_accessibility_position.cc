@@ -36,7 +36,7 @@ void BrowserAccessibilityPosition::AnchorChild(int child_index,
   DCHECK(child_id);
 
   if (!GetAnchor() || child_index < 0 || child_index >= AnchorChildCount()) {
-    *tree_id = INVALID_TREE_ID;
+    *tree_id = ui::AXTreeIDUnknown();
     *child_id = INVALID_ANCHOR_ID;
     return;
   }
@@ -74,7 +74,7 @@ void BrowserAccessibilityPosition::AnchorParent(AXTreeID* tree_id,
   DCHECK(parent_id);
 
   if (!GetAnchor() || !GetAnchor()->PlatformGetParent()) {
-    *tree_id = AXPosition::INVALID_TREE_ID;
+    *tree_id = ui::AXTreeIDUnknown();
     *parent_id = AXPosition::INVALID_ANCHOR_ID;
     return;
   }
@@ -87,7 +87,7 @@ void BrowserAccessibilityPosition::AnchorParent(AXTreeID* tree_id,
 BrowserAccessibility* BrowserAccessibilityPosition::GetNodeInTree(
     AXTreeID tree_id,
     int32_t node_id) const {
-  if (tree_id == AXPosition::INVALID_TREE_ID ||
+  if (tree_id == ui::AXTreeIDUnknown() ||
       node_id == AXPosition::INVALID_ANCHOR_ID) {
     return nullptr;
   }

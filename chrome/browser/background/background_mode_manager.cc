@@ -566,8 +566,7 @@ void BackgroundModeManager::OnProfileWillBeRemoved(
   DCHECK(success);
   base::string16 profile_name = entry->GetName();
   // Remove the profile from our map of profiles.
-  BackgroundModeInfoMap::iterator it =
-      GetBackgroundModeIterator(profile_name);
+  auto it = GetBackgroundModeIterator(profile_name);
   // If a profile isn't running a background app, it may not be in the map.
   if (it != background_mode_data_.end()) {
     it->second->applications()->RemoveObserver(this);
@@ -605,7 +604,7 @@ BackgroundModeManager::BackgroundModeData*
 BackgroundModeManager::GetBackgroundModeDataForLastProfile() const {
   Profile* most_recent_profile = g_browser_process->profile_manager()->
       GetLastUsedProfileAllowedByPolicy();
-  BackgroundModeInfoMap::const_iterator profile_background_data =
+  auto profile_background_data =
       background_mode_data_.find(most_recent_profile);
 
   if (profile_background_data == background_mode_data_.end())
@@ -1019,12 +1018,9 @@ BackgroundModeManager::GetBackgroundModeData(const Profile* profile) const {
 BackgroundModeManager::BackgroundModeInfoMap::iterator
 BackgroundModeManager::GetBackgroundModeIterator(
     const base::string16& profile_name) {
-  BackgroundModeInfoMap::iterator profile_it =
-      background_mode_data_.end();
-  for (BackgroundModeInfoMap::iterator it =
-       background_mode_data_.begin();
-       it != background_mode_data_.end();
-       ++it) {
+  auto profile_it = background_mode_data_.end();
+  for (auto it = background_mode_data_.begin();
+       it != background_mode_data_.end(); ++it) {
     if (it->second->name() == profile_name) {
       profile_it = it;
     }

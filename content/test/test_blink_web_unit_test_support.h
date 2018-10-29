@@ -34,7 +34,6 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   ~TestBlinkWebUnitTestSupport() override;
 
   blink::WebBlobRegistry* GetBlobRegistry() override;
-  std::unique_ptr<blink::WebIDBFactory> CreateIdbFactory() override;
 
   std::unique_ptr<blink::WebURLLoaderFactory> CreateDefaultURLLoaderFactory()
       override;
@@ -52,8 +51,6 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   blink::WebString DefaultLocale() override;
 
   blink::WebURLLoaderMockFactory* GetURLLoaderMockFactory() override;
-
-  blink::WebThread* CurrentThread() override;
 
   bool IsThreadedAnimationEnabled() override;
 

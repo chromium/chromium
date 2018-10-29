@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -65,7 +65,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestCallbackFunctionsV8Internal {
+namespace test_callback_functions_v8_internal {
 
 static void customElementsCallbacksReadonlyAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -199,60 +199,60 @@ static void customElementCallbacksMethodMethod(const v8::FunctionCallbackInfo<v8
   impl->customElementCallbacksMethod();
 }
 
-} // namespace TestCallbackFunctionsV8Internal
+}  // namespace test_callback_functions_v8_internal
 
 void V8TestCallbackFunctions::customElementsCallbacksReadonlyAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_customElementsCallbacksReadonlyAttribute_Getter");
 
-  TestCallbackFunctionsV8Internal::customElementsCallbacksReadonlyAttributeAttributeGetter(info);
+  test_callback_functions_v8_internal::customElementsCallbacksReadonlyAttributeAttributeGetter(info);
 }
 
 void V8TestCallbackFunctions::returnCallbackFunctionMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_returnCallbackFunctionMethod");
 
-  TestCallbackFunctionsV8Internal::returnCallbackFunctionMethodMethod(info);
+  test_callback_functions_v8_internal::returnCallbackFunctionMethodMethod(info);
 }
 
 void V8TestCallbackFunctions::returnCallbackFunctionMethod2MethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_returnCallbackFunctionMethod2");
 
-  TestCallbackFunctionsV8Internal::returnCallbackFunctionMethod2Method(info);
+  test_callback_functions_v8_internal::returnCallbackFunctionMethod2Method(info);
 }
 
 void V8TestCallbackFunctions::voidMethodCallbackFunctionInArgMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_voidMethodCallbackFunctionInArg");
 
-  TestCallbackFunctionsV8Internal::voidMethodCallbackFunctionInArgMethod(info);
+  test_callback_functions_v8_internal::voidMethodCallbackFunctionInArgMethod(info);
 }
 
 void V8TestCallbackFunctions::voidMethodCallbackFunctionInArg2MethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_voidMethodCallbackFunctionInArg2");
 
-  TestCallbackFunctionsV8Internal::voidMethodCallbackFunctionInArg2Method(info);
+  test_callback_functions_v8_internal::voidMethodCallbackFunctionInArg2Method(info);
 }
 
 void V8TestCallbackFunctions::voidMethodCallbackFunctionWithReturnValueInArgMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_voidMethodCallbackFunctionWithReturnValueInArg");
 
-  TestCallbackFunctionsV8Internal::voidMethodCallbackFunctionWithReturnValueInArgMethod(info);
+  test_callback_functions_v8_internal::voidMethodCallbackFunctionWithReturnValueInArgMethod(info);
 }
 
 void V8TestCallbackFunctions::voidMethodOptionalCallbackFunctionInArgMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_voidMethodOptionalCallbackFunctionInArg");
 
-  TestCallbackFunctionsV8Internal::voidMethodOptionalCallbackFunctionInArgMethod(info);
+  test_callback_functions_v8_internal::voidMethodOptionalCallbackFunctionInArgMethod(info);
 }
 
 void V8TestCallbackFunctions::voidMethodNullableCallbackFunctionInArgMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_voidMethodNullableCallbackFunctionInArg");
 
-  TestCallbackFunctionsV8Internal::voidMethodNullableCallbackFunctionInArgMethod(info);
+  test_callback_functions_v8_internal::voidMethodNullableCallbackFunctionInArgMethod(info);
 }
 
 void V8TestCallbackFunctions::customElementCallbacksMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_customElementCallbacksMethod");
 
-  TestCallbackFunctionsV8Internal::customElementCallbacksMethodMethod(info);
+  test_callback_functions_v8_internal::customElementCallbacksMethodMethod(info);
 }
 
 static const V8DOMConfiguration::AccessorConfiguration V8TestCallbackFunctionsAccessors[] = {

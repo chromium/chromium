@@ -36,20 +36,21 @@ class FakeDriveNotificationObserver : public DriveNotificationObserver {
   ~FakeDriveNotificationObserver() override {}
 
   // DriveNotificationObserver overrides
-  void OnNotificationReceived(const std::set<std::string>& ids) override {
+  void OnNotificationReceived(
+      const std::map<std::string, int64_t>& ids) override {
     notification_ids_ = ids;
   }
   void OnNotificationTimerFired() override {}
   void OnPushNotificationEnabled(bool enabled) override {}
 
-  const std::set<std::string> GetNotificationIds() const {
+  const std::map<std::string, int64_t> GetNotificationIds() const {
     return notification_ids_;
   }
 
   void ClearNotificationIds() { notification_ids_.clear(); }
 
  private:
-  std::set<std::string> notification_ids_;
+  std::map<std::string, int64_t> notification_ids_;
 };
 
 invalidation::ObjectId CreateTeamDriveInvalidationObjectId(
@@ -164,7 +165,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(5));
 
   // Default corpus is has the id "" when sent to observers.
-  std::set<std::string> expected_ids = {""};
+  std::map<std::string, int64_t> expected_ids = {{"", -1}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
   drive_notification_observer_->ClearNotificationIds();
 
@@ -177,35 +178,35 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   // Emit invalidation for default corpus, should not emit a team drive
   // invalidation.
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::InitUnknownVersion(kDefaultCorpusObjectId));
+      syncer::Invalidation::Init(kDefaultCorpusObjectId, 1, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(5));
 
   // Default corpus is has the id "" when sent to observers.
-  expected_ids = {""};
+  expected_ids = {{"", 1}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
   drive_notification_observer_->ClearNotificationIds();
 
   // Emit team drive invalidation
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::InitUnknownVersion(team_drive_1_object_id));
+      syncer::Invalidation::Init(team_drive_1_object_id, 2, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(5));
-  expected_ids = {team_drive_id_1};
+  expected_ids = {{team_drive_id_1, 2}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
   drive_notification_observer_->ClearNotificationIds();
 
   // Emit both default corpus and team drive.
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::InitUnknownVersion(kDefaultCorpusObjectId));
+      syncer::Invalidation::Init(kDefaultCorpusObjectId, 1, ""));
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::InitUnknownVersion(team_drive_1_object_id));
+      syncer::Invalidation::Init(team_drive_1_object_id, 2, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(5));
-  expected_ids = {"", team_drive_id_1};
+  expected_ids = {{"", 1}, {team_drive_id_1, 2}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
 }
 

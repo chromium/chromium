@@ -23,10 +23,12 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.CachedMetrics;
 import org.chromium.chrome.browser.browserservices.BrowserSessionContentUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.PaymentHandlerActivity;
 import org.chromium.chrome.browser.customtabs.SeparateTaskCustomTabActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.incognito.IncognitoDisclosureActivity;
@@ -45,6 +47,7 @@ import org.chromium.chrome.browser.util.IntentUtils;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.webapps.ActivityAssigner;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
+import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -288,6 +291,13 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         newIntent.setData(uri);
         newIntent.setClassName(context, CustomTabActivity.class.getName());
 
+        // Use a custom tab with a unique theme for payment handlers.
+        if (intent.getIntExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE,
+                    CustomTabIntentDataProvider.CustomTabsUiType.DEFAULT)
+                == CustomTabIntentDataProvider.CustomTabsUiType.PAYMENT_REQUEST) {
+            newIntent.setClassName(context, PaymentHandlerActivity.class.getName());
+        }
+
         // If |uri| is a content:// URI, we want to propagate the URI permissions. This can't be
         // achieved by simply adding the FLAG_GRANT_READ_URI_PERMISSION to the Intent, since the
         // data URI on the Intent isn't |uri|, it just has |uri| as a query parameter.
@@ -339,12 +349,14 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             }
         }
 
-        // If the previous caller was not Chrome, but added EXTRA_IS_OPENED_BY_CHROME for malicious
-        // purpose, remove it. The new intent will be sent by Chrome, but was not sent by Chrome
-        // initially.
+        // If the previous caller was not Chrome, but added EXTRA_IS_OPENED_BY_CHROME or
+        // EXTRA_IS_OPENED_BY_WEBAPK for malicious purpose, remove it. The new intent will be sent
+        // by Chrome, but was not sent by Chrome initially.
         if (!IntentHandler.wasIntentSenderChrome(intent)) {
             IntentUtils.safeRemoveExtra(
                     newIntent, CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_CHROME);
+            IntentUtils.safeRemoveExtra(
+                    newIntent, CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_WEBAPK);
         }
 
         return newIntent;
@@ -363,9 +375,14 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // Create and fire a launch intent.
         Intent launchIntent = createCustomTabActivityIntent(mActivity, mIntent);
 
+        boolean hasOffTheRecordProfile =
+                BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                        .isStartupSuccessfullyCompleted()
+                && Profile.getLastUsedProfile().hasOffTheRecordProfile();
+
         boolean shouldShowIncognitoDisclosure =
                 CustomTabIntentDataProvider.isValidExternalIncognitoIntent(launchIntent)
-                && Profile.getLastUsedProfile().hasOffTheRecordProfile();
+                && hasOffTheRecordProfile;
 
         if (shouldShowIncognitoDisclosure) {
             IncognitoDisclosureActivity.launch(mActivity, launchIntent);

@@ -14,11 +14,9 @@
 // right of it.
 @interface OmniboxContainerView : UIView
 
-// Initialize the container view with the given frame, font, Regular x Regular
-// size class font, text color, and tint color for omnibox.
+// Initialize the container view with the given frame, text color, and tint
+// color for omnibox.
 - (instancetype)initWithFrame:(CGRect)frame
-                         font:(UIFont*)font
-                   largerFont:(UIFont*)largerFont
                     textColor:(UIColor*)textColor
                 textFieldTint:(UIColor*)textFieldTint
                      iconTint:(UIColor*)iconTint NS_DESIGNATED_INITIALIZER;

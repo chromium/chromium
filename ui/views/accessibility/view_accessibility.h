@@ -6,13 +6,16 @@
 #define UI_VIEWS_ACCESSIBILITY_VIEW_ACCESSIBILITY_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
+#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -45,10 +48,11 @@ class VIEWS_EXPORT ViewAccessibility {
   // Note that string attributes are only used if non-empty, so you can't
   // override a string with the empty string.
   //
-  void OverrideRole(ax::mojom::Role role);
+  void OverrideRole(const ax::mojom::Role role);
   void OverrideName(const std::string& name);
   void OverrideName(const base::string16& name);
   void OverrideDescription(const std::string& description);
+  void OverrideDescription(const base::string16& description);
   void OverrideIsLeaf();  // Force this node to be treated as a leaf node.
 
   virtual gfx::NativeViewAccessible GetNativeObject();
@@ -64,6 +68,39 @@ class VIEWS_EXPORT ViewAccessibility {
   bool is_ignored() const { return is_ignored_; }
   void set_is_ignored(bool ignored) { is_ignored_ = ignored; }
 
+  //
+  // Methods for managing virtual views.
+  //
+
+  // Adds |virtual_view| as a child of this View, optionally at |index|.
+  // We take ownership of our virtual children.
+  void AddVirtualChildView(std::unique_ptr<AXVirtualView> virtual_view);
+  void AddVirtualChildViewAt(std::unique_ptr<AXVirtualView> virtual_view,
+                             int index);
+
+  // Removes |virtual_view| from this View. The virtual view's parent will
+  // change to nullptr. Hands ownership back to the caller.
+  std::unique_ptr<AXVirtualView> RemoveVirtualChildView(
+      AXVirtualView* virtual_view);
+
+  // Removes all the virtual children from this View.
+  // The virtual views are deleted.
+  void RemoveAllVirtualChildViews();
+
+  int virtual_child_count() const {
+    return static_cast<int>(virtual_children_.size());
+  }
+
+  const AXVirtualView* virtual_child_at(int index) const {
+    DCHECK_GE(index, 0);
+    DCHECK_LT(index, virtual_child_count());
+    return virtual_children_[index].get();
+  }
+
+  // Returns the index of |virtual_view|, or -1 if |virtual_view| is not a child
+  // of this View.
+  int GetIndexOf(const AXVirtualView* virtual_view) const;
+
  protected:
   explicit ViewAccessibility(View* view);
 
@@ -72,6 +109,10 @@ class VIEWS_EXPORT ViewAccessibility {
  private:
   // Weak. Owns this.
   View* const owner_view_;
+
+  // If there are any virtual children, they override any real children.
+  // We own our virtual children.
+  std::vector<std::unique_ptr<AXVirtualView>> virtual_children_;
 
   const ui::AXUniqueId unique_id_;
 

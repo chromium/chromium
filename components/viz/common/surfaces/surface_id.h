@@ -62,9 +62,13 @@ class VIZ_COMMON_EXPORT SurfaceId {
   // Returns whether this SurfaceId was generated after |other|.
   bool IsNewerThan(const SurfaceId& other) const;
 
-  // Compare this SurfaceId with |other| and returns the difference between the
-  // parent sequence numbers plus the difference between child sequence numbers.
-  uint32_t ManhattanDistanceTo(const SurfaceId& other) const;
+  // Returns whether this SurfaceId is the same as or was generated after
+  // |other|.
+  bool IsSameOrNewerThan(const SurfaceId& other) const;
+
+  // Returns the smallest valid SurfaceId with the same FrameSinkId and embed
+  // token as this SurfaceId.
+  SurfaceId ToSmallestId() const;
 
   bool operator==(const SurfaceId& other) const {
     return frame_sink_id_ == other.frame_sink_id_ &&

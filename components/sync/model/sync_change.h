@@ -71,6 +71,8 @@ class SyncChange {
 // gmock printer helper.
 void PrintTo(const SyncChange& sync_change, std::ostream* os);
 
+using SyncChangeList = std::vector<SyncChange>;
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_MODEL_SYNC_CHANGE_H_

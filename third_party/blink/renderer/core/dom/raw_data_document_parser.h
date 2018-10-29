@@ -37,8 +37,10 @@ class RawDataDocumentParser : public DocumentParser {
       : DocumentParser(document) {}
 
   void Finish() override {
-    if (!IsStopped())
+    if (!IsStopped()) {
+      GetDocument()->SetReadyState(Document::kInteractive);
       GetDocument()->FinishedParsing();
+    }
   }
 
  private:

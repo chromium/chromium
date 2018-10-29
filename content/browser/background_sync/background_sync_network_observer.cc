@@ -6,7 +6,9 @@
 
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 
@@ -29,8 +31,8 @@ BackgroundSyncNetworkObserver::BackgroundSyncNetworkObserver(
       weak_ptr_factory_(this) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  BrowserThread::PostTaskAndReplyWithResult(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&GetNetworkConnectionTracker),
       base::BindOnce(
           &BackgroundSyncNetworkObserver::RegisterWithNetworkConnectionTracker,

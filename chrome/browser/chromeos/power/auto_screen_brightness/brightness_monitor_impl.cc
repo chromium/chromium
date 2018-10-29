@@ -32,16 +32,16 @@ void BrightnessMonitorImpl::AddObserver(
     BrightnessMonitor::Observer* const observer) {
   DCHECK(observer);
   observers_.AddObserver(observer);
+  if (brightness_monitor_status_ != Status::kInitializing) {
+    observer->OnBrightnessMonitorInitialized(brightness_monitor_status_ ==
+                                             Status::kSuccess);
+  }
 }
 
 void BrightnessMonitorImpl::RemoveObserver(
     BrightnessMonitor::Observer* const observer) {
   DCHECK(observer);
   observers_.RemoveObserver(observer);
-}
-
-BrightnessMonitor::Status BrightnessMonitorImpl::GetStatus() const {
-  return brightness_monitor_status_;
 }
 
 void BrightnessMonitorImpl::ScreenBrightnessChanged(

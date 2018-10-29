@@ -39,6 +39,14 @@ Polymer({
     },
 
     /**
+     * Removes buttons padding.
+     */
+    noButtonsPadding: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * True when dialog is displayed in full-screen mode.
      */
     fullScreenDialog: {

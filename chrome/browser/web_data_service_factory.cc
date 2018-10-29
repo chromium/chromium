@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/singleton.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -20,6 +21,7 @@
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/core/browser/webdata/token_web_data.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -175,7 +177,7 @@ KeyedService* WebDataServiceFactory::BuildServiceInstanceFor(
   const base::FilePath& profile_path = context->GetPath();
   return new WebDataServiceWrapper(
       profile_path, g_browser_process->GetApplicationLocale(),
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::UI),
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI}),
       sync_start_util::GetFlareForSyncableService(profile_path),
       base::BindRepeating(&ProfileErrorCallback));
 }

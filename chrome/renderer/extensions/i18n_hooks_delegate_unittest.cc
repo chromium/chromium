@@ -22,7 +22,7 @@ using I18nHooksDelegateTest = NativeExtensionBindingsSystemUnittest;
 // for i18n live at the //extensions level. We should move these to all be in
 // the same location.
 TEST_F(I18nHooksDelegateTest, TestI18nGetMessage) {
-  scoped_refptr<Extension> extension = ExtensionBuilder("foo").Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());

@@ -23,6 +23,8 @@ namespace {
 
 class GLSurfaceEGLTest : public testing::Test {};
 
+#if !defined(MEMORY_SANITIZER)
+// Fails under MSAN: crbug.com/886995
 TEST(GLSurfaceEGLTest, SurfaceFormatTest) {
   GLSurfaceTestSupport::InitializeOneOffImplementation(
       GLImplementation::kGLImplementationEGLGLES2, true);
@@ -46,6 +48,7 @@ TEST(GLSurfaceEGLTest, SurfaceFormatTest) {
   eglGetConfigAttrib(surface->GetDisplay(), config, EGL_SAMPLES, &attrib);
   EXPECT_EQ(0, attrib);
 }
+#endif
 
 #if defined(OS_WIN)
 

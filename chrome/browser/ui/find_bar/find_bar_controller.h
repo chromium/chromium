@@ -112,9 +112,10 @@ class FindBarController : public content::NotificationObserver {
 
   std::unique_ptr<FindBarPlatformHelper> find_bar_platform_helper_;
 
-  // The last match count we reported to the user. This is used by
-  // UpdateFindBarForCurrentResult to avoid flickering.
+  // The last match count and ordinal we reported to the user. This is used
+  // by UpdateFindBarForCurrentResult to avoid flickering.
   int last_reported_matchcount_ = 0;
+  int last_reported_ordinal_ = 0;
 
   // Used to keep track of whether the user has been notified that the find came
   // up empty. A single find session can result in multiple final updates, if

@@ -15,8 +15,7 @@
                 message: message,
                 filename: filename,
                 lineno: lineno,
-                colno: colno,
-                error: error
+                colno: colno
             });
             setTimeout(function () { postMessage({ done: true }); }, 0);
             return true;
@@ -30,7 +29,7 @@
         checkPostMessage({
             message: "Uncaught ReferenceError: foo is not defined",
             filename: "[blob: URL]",
-            lineno: 14,
+            lineno: 13,
             colno: 9,
         });
 
@@ -38,4 +37,3 @@
     </script>
 </body>
 </html>
-

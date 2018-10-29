@@ -192,7 +192,7 @@ const struct NonPrintableKeyEntry {
     {VKEY_EREOF, DomKey::ERASE_EOF},
     {VKEY_PLAY, DomKey::PLAY},
     {VKEY_ZOOM, DomKey::ZOOM_TOGGLE},
-    // TODO(chongz): Handle VKEY_NONAME, VKEY_PA1.
+    // TODO(input-dev): Handle VKEY_NONAME, VKEY_PA1.
     // https://crbug.com/616910
     {VKEY_OEM_CLEAR, DomKey::CLEAR},
 };
@@ -268,7 +268,8 @@ struct PlatformKeyMapInstanceTlsTraits
           base::ThreadLocalStorage::Slot> {
   static base::ThreadLocalStorage::Slot* New(void* instance) {
     // Use placement new to initialize our instance in our preallocated space.
-    // TODO(chongz): Use std::default_delete instead of providing own function.
+    // TODO(input-dev): Use std::default_delete instead of providing own
+    // function.
     return new (instance) base::ThreadLocalStorage::Slot(CleanupKeyMapTls);
   }
 };
@@ -382,7 +383,7 @@ void PlatformKeyMap::UpdateLayout(HKL layout) {
   if (!::GetKeyboardState(keyboard_state_to_restore))
     return;
 
-  // TODO(chongz): Optimize layout switching (see crbug.com/587147).
+  // TODO(input-dev): Optimize layout switching (see crbug.com/587147).
   keyboard_layout_ = layout;
   printable_keycode_to_key_.clear();
   has_alt_graph_ = false;
@@ -418,7 +419,7 @@ void PlatformKeyMap::UpdateLayout(HKL layout) {
                                                    flags)] =
               DomKey::DeadKeyFromCombiningCharacter(translated_chars[0]);
         } else {
-          // TODO(chongz): Check if this will actually happen.
+          // TODO(input-dev): Check if this will actually happen.
         }
       } else if (rv == 1) {
         if (translated_chars[0] >= 0x20) {
@@ -434,7 +435,7 @@ void PlatformKeyMap::UpdateLayout(HKL layout) {
           // Ignores legacy non-printable control characters.
         }
       } else {
-        // TODO(chongz): Handle rv <= -2 and rv >= 2.
+        // TODO(input-dev): Handle rv <= -2 and rv >= 2.
       }
     }
   }

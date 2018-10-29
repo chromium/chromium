@@ -25,19 +25,6 @@ HANDLE GetCurrentProcessToken() {
 
 }  // namespace
 
-// static
-const Time CurrentProcessInfo::CreationTime() {
-  FILETIME creation_time = {};
-  FILETIME ignore1 = {};
-  FILETIME ignore2 = {};
-  FILETIME ignore3 = {};
-  if (!::GetProcessTimes(::GetCurrentProcess(), &creation_time, &ignore1,
-                         &ignore2, &ignore3)) {
-    return Time();
-  }
-  return Time::FromFileTime(creation_time);
-}
-
 IntegrityLevel GetCurrentProcessIntegrityLevel() {
   HANDLE process_token(GetCurrentProcessToken());
 

@@ -1,0 +1,6 @@
+CONSOLE ERROR: line 20: Error: <svg> attribute preserveAspectRatio: Unrecognized enumerated value, "defer".
+CONSOLE ERROR: line 23: Error: <svg> attribute preserveAspectRatio: Unrecognized enumerated value, "defer meet".
+CONSOLE ERROR: line 26: Error: <svg> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMid m…".
+CONSOLE ERROR: line 29: Error: <svg> attribute preserveAspectRatio: Unrecognized enumerated value, "defer 1 xMidYMid…".
+CONSOLE ERROR: line 32: Error: <svg> attribute preserveAspectRatio: Unrecognized enumerated value, "defer , xMidYMid…".
+CONSOLE ERROR: line 39: Error: <svg> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMid m…".

@@ -131,10 +131,12 @@ jumbo_source_set("browser_sources") {
     "download_utils.h",
     "favicon_status.cc",
     "favicon_status.h",
+    "file_select_listener.h",
     "file_url_loader.h",
     "focused_node_details.h",
     "font_list_async.h",
     "frame_service_base.h",
+    "generated_code_cache_settings.h",
     "global_request_id.h",
     "global_routing_id.h",
     "gpu_client.h",
@@ -170,8 +172,6 @@ jumbo_source_set("browser_sources") {
     "media_session.h",
     "media_session_observer.cc",
     "media_session_observer.h",
-    "memory_coordinator.h",
-    "memory_coordinator_delegate.h",
     "message_port_provider.h",
     "mhtml_extra_parts.h",
     "native_event_processor_mac.h",
@@ -202,6 +202,7 @@ jumbo_source_set("browser_sources") {
     "notification_service.h",
     "notification_source.h",
     "notification_types.h",
+    "origin_policy_error_reason.h",
     "overlay_window.h",
     "overscroll_configuration.h",
     "page_navigator.cc",
@@ -244,13 +245,13 @@ jumbo_source_set("browser_sources") {
     "resource_dispatcher_host.h",
     "resource_dispatcher_host_delegate.cc",
     "resource_dispatcher_host_delegate.h",
-    "resource_hints.h",
     "resource_request_info.h",
     "resource_throttle.cc",
     "resource_throttle.h",
     "restore_type.h",
     "save_page_type.h",
     "screen_orientation_delegate.h",
+    "screenlock_observer.h",
     "security_style_explanation.cc",
     "security_style_explanation.h",
     "security_style_explanations.cc",
@@ -312,7 +313,6 @@ jumbo_source_set("browser_sources") {
     "web_contents_view_delegate.cc",
     "web_contents_view_delegate.h",
     "web_drag_dest_delegate.h",
-    "web_package_context.h",
     "web_ui.h",
     "web_ui_controller.cc",
     "web_ui_controller.h",
@@ -402,6 +402,13 @@ jumbo_source_set("browser_sources") {
     deps += [
       "//services/ws/public/cpp/host",
       "//ui/aura",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "ns_view_bridge_factory_host.h",
+      "ns_view_bridge_factory_impl.h",
     ]
   }
 

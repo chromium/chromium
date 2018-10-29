@@ -37,121 +37,131 @@ const InterpolationTypes& SVGInterpolationTypesMap::Get(
       std::make_unique<InterpolationTypes>();
 
   const QualifiedName& attribute = property.SvgAttribute();
-  if (attribute == SVGNames::orientAttr) {
+  if (attribute == svg_names::kOrientAttr) {
     applicable_types->push_back(
         std::make_unique<SVGAngleInterpolationType>(attribute));
-  } else if (attribute == SVGNames::numOctavesAttr ||
-             attribute == SVGNames::targetXAttr ||
-             attribute == SVGNames::targetYAttr) {
+  } else if (attribute == svg_names::kNumOctavesAttr ||
+             attribute == svg_names::kTargetXAttr ||
+             attribute == svg_names::kTargetYAttr) {
     applicable_types->push_back(
         std::make_unique<SVGIntegerInterpolationType>(attribute));
-  } else if (attribute == SVGNames::orderAttr) {
+  } else if (attribute == svg_names::kOrderAttr) {
     applicable_types->push_back(
         std::make_unique<SVGIntegerOptionalIntegerInterpolationType>(
             attribute));
-  } else if (attribute == SVGNames::cxAttr || attribute == SVGNames::cyAttr ||
-             attribute == SVGNames::fxAttr || attribute == SVGNames::fyAttr ||
-             attribute == SVGNames::heightAttr ||
-             attribute == SVGNames::markerHeightAttr ||
-             attribute == SVGNames::markerWidthAttr ||
-             attribute == SVGNames::rAttr || attribute == SVGNames::refXAttr ||
-             attribute == SVGNames::refYAttr || attribute == SVGNames::rxAttr ||
-             attribute == SVGNames::ryAttr ||
-             attribute == SVGNames::startOffsetAttr ||
-             attribute == SVGNames::textLengthAttr ||
-             attribute == SVGNames::widthAttr ||
-             attribute == SVGNames::x1Attr || attribute == SVGNames::x2Attr ||
-             attribute == SVGNames::y1Attr || attribute == SVGNames::y2Attr) {
+  } else if (attribute == svg_names::kCxAttr ||
+             attribute == svg_names::kCyAttr ||
+             attribute == svg_names::kFxAttr ||
+             attribute == svg_names::kFyAttr ||
+             attribute == svg_names::kHeightAttr ||
+             attribute == svg_names::kMarkerHeightAttr ||
+             attribute == svg_names::kMarkerWidthAttr ||
+             attribute == svg_names::kRAttr ||
+             attribute == svg_names::kRefXAttr ||
+             attribute == svg_names::kRefYAttr ||
+             attribute == svg_names::kRxAttr ||
+             attribute == svg_names::kRyAttr ||
+             attribute == svg_names::kStartOffsetAttr ||
+             attribute == svg_names::kTextLengthAttr ||
+             attribute == svg_names::kWidthAttr ||
+             attribute == svg_names::kX1Attr ||
+             attribute == svg_names::kX2Attr ||
+             attribute == svg_names::kY1Attr ||
+             attribute == svg_names::kY2Attr) {
     applicable_types->push_back(
         std::make_unique<SVGLengthInterpolationType>(attribute));
-  } else if (attribute == SVGNames::dxAttr || attribute == SVGNames::dyAttr) {
+  } else if (attribute == svg_names::kDxAttr ||
+             attribute == svg_names::kDyAttr) {
     applicable_types->push_back(
         std::make_unique<SVGNumberInterpolationType>(attribute));
     applicable_types->push_back(
         std::make_unique<SVGLengthListInterpolationType>(attribute));
-  } else if (attribute == SVGNames::xAttr || attribute == SVGNames::yAttr) {
+  } else if (attribute == svg_names::kXAttr || attribute == svg_names::kYAttr) {
     applicable_types->push_back(
         std::make_unique<SVGLengthInterpolationType>(attribute));
     applicable_types->push_back(
         std::make_unique<SVGLengthListInterpolationType>(attribute));
-  } else if (attribute == SVGNames::amplitudeAttr ||
-             attribute == SVGNames::azimuthAttr ||
-             attribute == SVGNames::biasAttr ||
-             attribute == SVGNames::diffuseConstantAttr ||
-             attribute == SVGNames::divisorAttr ||
-             attribute == SVGNames::elevationAttr ||
-             attribute == SVGNames::exponentAttr ||
-             attribute == SVGNames::interceptAttr ||
-             attribute == SVGNames::k1Attr || attribute == SVGNames::k2Attr ||
-             attribute == SVGNames::k3Attr || attribute == SVGNames::k4Attr ||
-             attribute == SVGNames::limitingConeAngleAttr ||
-             attribute == SVGNames::offsetAttr ||
-             attribute == SVGNames::pathLengthAttr ||
-             attribute == SVGNames::pointsAtXAttr ||
-             attribute == SVGNames::pointsAtYAttr ||
-             attribute == SVGNames::pointsAtZAttr ||
-             attribute == SVGNames::scaleAttr ||
-             attribute == SVGNames::seedAttr ||
-             attribute == SVGNames::slopeAttr ||
-             attribute == SVGNames::specularConstantAttr ||
-             attribute == SVGNames::specularExponentAttr ||
-             attribute == SVGNames::surfaceScaleAttr ||
-             attribute == SVGNames::zAttr) {
+  } else if (attribute == svg_names::kAmplitudeAttr ||
+             attribute == svg_names::kAzimuthAttr ||
+             attribute == svg_names::kBiasAttr ||
+             attribute == svg_names::kDiffuseConstantAttr ||
+             attribute == svg_names::kDivisorAttr ||
+             attribute == svg_names::kElevationAttr ||
+             attribute == svg_names::kExponentAttr ||
+             attribute == svg_names::kInterceptAttr ||
+             attribute == svg_names::kK1Attr ||
+             attribute == svg_names::kK2Attr ||
+             attribute == svg_names::kK3Attr ||
+             attribute == svg_names::kK4Attr ||
+             attribute == svg_names::kLimitingConeAngleAttr ||
+             attribute == svg_names::kOffsetAttr ||
+             attribute == svg_names::kPathLengthAttr ||
+             attribute == svg_names::kPointsAtXAttr ||
+             attribute == svg_names::kPointsAtYAttr ||
+             attribute == svg_names::kPointsAtZAttr ||
+             attribute == svg_names::kScaleAttr ||
+             attribute == svg_names::kSeedAttr ||
+             attribute == svg_names::kSlopeAttr ||
+             attribute == svg_names::kSpecularConstantAttr ||
+             attribute == svg_names::kSpecularExponentAttr ||
+             attribute == svg_names::kSurfaceScaleAttr ||
+             attribute == svg_names::kZAttr) {
     applicable_types->push_back(
         std::make_unique<SVGNumberInterpolationType>(attribute));
-  } else if (attribute == SVGNames::kernelMatrixAttr ||
-             attribute == SVGNames::rotateAttr ||
-             attribute == SVGNames::tableValuesAttr ||
-             attribute == SVGNames::valuesAttr) {
+  } else if (attribute == svg_names::kKernelMatrixAttr ||
+             attribute == svg_names::kRotateAttr ||
+             attribute == svg_names::kTableValuesAttr ||
+             attribute == svg_names::kValuesAttr) {
     applicable_types->push_back(
         std::make_unique<SVGNumberListInterpolationType>(attribute));
-  } else if (attribute == SVGNames::baseFrequencyAttr ||
-             attribute == SVGNames::kernelUnitLengthAttr ||
-             attribute == SVGNames::radiusAttr ||
-             attribute == SVGNames::stdDeviationAttr) {
+  } else if (attribute == svg_names::kBaseFrequencyAttr ||
+             attribute == svg_names::kKernelUnitLengthAttr ||
+             attribute == svg_names::kRadiusAttr ||
+             attribute == svg_names::kStdDeviationAttr) {
     applicable_types->push_back(
         std::make_unique<SVGNumberOptionalNumberInterpolationType>(attribute));
-  } else if (attribute == SVGNames::dAttr) {
+  } else if (attribute == svg_names::kDAttr) {
     applicable_types->push_back(
         std::make_unique<SVGPathInterpolationType>(attribute));
-  } else if (attribute == SVGNames::pointsAttr) {
+  } else if (attribute == svg_names::kPointsAttr) {
     applicable_types->push_back(
         std::make_unique<SVGPointListInterpolationType>(attribute));
-  } else if (attribute == SVGNames::viewBoxAttr) {
+  } else if (attribute == svg_names::kViewBoxAttr) {
     applicable_types->push_back(
         std::make_unique<SVGRectInterpolationType>(attribute));
-  } else if (attribute == SVGNames::gradientTransformAttr ||
-             attribute == SVGNames::patternTransformAttr ||
-             attribute == SVGNames::transformAttr) {
+  } else if (attribute == svg_names::kGradientTransformAttr ||
+             attribute == svg_names::kPatternTransformAttr ||
+             attribute == svg_names::kTransformAttr) {
     applicable_types->push_back(
         std::make_unique<SVGTransformListInterpolationType>(attribute));
   } else if (attribute == HTMLNames::classAttr ||
-             attribute == SVGNames::clipPathUnitsAttr ||
-             attribute == SVGNames::edgeModeAttr ||
-             attribute == SVGNames::filterUnitsAttr ||
-             attribute == SVGNames::gradientUnitsAttr ||
-             attribute == SVGNames::hrefAttr || attribute == SVGNames::inAttr ||
-             attribute == SVGNames::in2Attr ||
-             attribute == SVGNames::lengthAdjustAttr ||
-             attribute == SVGNames::markerUnitsAttr ||
-             attribute == SVGNames::maskContentUnitsAttr ||
-             attribute == SVGNames::maskUnitsAttr ||
-             attribute == SVGNames::methodAttr ||
-             attribute == SVGNames::modeAttr ||
-             attribute == SVGNames::operatorAttr ||
-             attribute == SVGNames::patternContentUnitsAttr ||
-             attribute == SVGNames::patternUnitsAttr ||
-             attribute == SVGNames::preserveAlphaAttr ||
-             attribute == SVGNames::preserveAspectRatioAttr ||
-             attribute == SVGNames::primitiveUnitsAttr ||
-             attribute == SVGNames::resultAttr ||
-             attribute == SVGNames::spacingAttr ||
-             attribute == SVGNames::spreadMethodAttr ||
-             attribute == SVGNames::stitchTilesAttr ||
-             attribute == SVGNames::targetAttr ||
-             attribute == SVGNames::typeAttr ||
-             attribute == SVGNames::xChannelSelectorAttr ||
-             attribute == SVGNames::yChannelSelectorAttr) {
+             attribute == svg_names::kClipPathUnitsAttr ||
+             attribute == svg_names::kEdgeModeAttr ||
+             attribute == svg_names::kFilterUnitsAttr ||
+             attribute == svg_names::kGradientUnitsAttr ||
+             attribute == svg_names::kHrefAttr ||
+             attribute == svg_names::kInAttr ||
+             attribute == svg_names::kIn2Attr ||
+             attribute == svg_names::kLengthAdjustAttr ||
+             attribute == svg_names::kMarkerUnitsAttr ||
+             attribute == svg_names::kMaskContentUnitsAttr ||
+             attribute == svg_names::kMaskUnitsAttr ||
+             attribute == svg_names::kMethodAttr ||
+             attribute == svg_names::kModeAttr ||
+             attribute == svg_names::kOperatorAttr ||
+             attribute == svg_names::kPatternContentUnitsAttr ||
+             attribute == svg_names::kPatternUnitsAttr ||
+             attribute == svg_names::kPreserveAlphaAttr ||
+             attribute == svg_names::kPreserveAspectRatioAttr ||
+             attribute == svg_names::kPrimitiveUnitsAttr ||
+             attribute == svg_names::kResultAttr ||
+             attribute == svg_names::kSpacingAttr ||
+             attribute == svg_names::kSpreadMethodAttr ||
+             attribute == svg_names::kStitchTilesAttr ||
+             attribute == svg_names::kTargetAttr ||
+             attribute == svg_names::kTypeAttr ||
+             attribute == svg_names::kXChannelSelectorAttr ||
+             attribute == svg_names::kYChannelSelectorAttr) {
     // Use default SVGValueInterpolationType.
   } else {
     NOTREACHED();

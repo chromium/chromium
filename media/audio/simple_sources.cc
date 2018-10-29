@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/audio/sounds/wav_audio_handler.h"
 #include "media/base/audio_bus.h"
@@ -87,8 +88,8 @@ class BeepContext {
 
  private:
   mutable base::Lock lock_;
-  bool beep_once_;
-  bool automatic_beep_;
+  bool beep_once_ GUARDED_BY(lock_);
+  bool automatic_beep_ GUARDED_BY(lock_);
 };
 
 BeepContext* GetBeepContext() {

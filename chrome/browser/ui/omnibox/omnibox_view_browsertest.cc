@@ -33,7 +33,6 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.cc"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -43,11 +42,11 @@
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/omnibox/browser/test_toolbar_model.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/toolbar/test_toolbar_model.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/dns/mock_host_resolver.h"
@@ -393,8 +392,6 @@ class OmniboxViewTest : public InProcessBrowserTest,
 
  private:
   policy::MockConfigurationPolicyProvider policy_provider_;
-
-  test::ScopedMacViewsBrowserMode views_mode_{true};
 
   // Non-owning pointer.
   TestToolbarModel* test_toolbar_model_ = nullptr;
@@ -938,60 +935,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FocusSearchLongUrl) {
   // Make sure nothing DCHECKs.
   chrome::FocusSearch(browser());
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-}
-
-// Make sure the display text is preserved when calling FocusSearch() when the
-// display text is not the permanent text.
-IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PreserveDisplayTextOnFocusSearch) {
-  OmniboxView* omnibox_view = NULL;
-  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
-
-  OmniboxPopupModel* popup_model = omnibox_view->model()->popup_model();
-  ASSERT_TRUE(popup_model);
-
-  // Input something that can match history items.
-  omnibox_view->SetUserText(ASCIIToUTF16("site.com/p"));
-  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  EXPECT_TRUE(popup_model->IsOpen());
-  EXPECT_EQ(ASCIIToUTF16("site.com/path/1"), omnibox_view->GetText());
-  base::string16::size_type start, end;
-  omnibox_view->GetSelectionBounds(&start, &end);
-  EXPECT_EQ(10U, std::min(start, end));
-  EXPECT_EQ(15U, std::max(start, end));
-
-  // Calling FocusSearch() with an inline autocompletion should preserve the
-  // autocompleted text, and should select all.
-  chrome::FocusSearch(browser());
-  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  EXPECT_EQ(ASCIIToUTF16("site.com/path/1"), omnibox_view->GetText());
-  omnibox_view->GetSelectionBounds(&start, &end);
-  EXPECT_EQ(0U, std::min(start, end));
-  EXPECT_EQ(15U, std::max(start, end));
-
-  // Press backspace twice and the omnibox should be empty.
-  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  EXPECT_EQ(base::string16(), omnibox_view->GetText());
-  omnibox_view->GetSelectionBounds(&start, &end);
-  EXPECT_EQ(0U, start);
-  EXPECT_EQ(0U, end);
-
-  // Calling FocusSearch() with temporary text showing should preserve the
-  // suggested text, and should select all.
-  omnibox_view->SetUserText(ASCIIToUTF16("site.com/p"));
-  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  EXPECT_TRUE(popup_model->IsOpen());
-  omnibox_view->model()->OnUpOrDownKeyPressed(1);
-  EXPECT_EQ(ASCIIToUTF16("www.site.com/path/2"), omnibox_view->GetText());
-  omnibox_view->GetSelectionBounds(&start, &end);
-  EXPECT_EQ(start, end);
-
-  chrome::FocusSearch(browser());
-  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  EXPECT_EQ(ASCIIToUTF16("www.site.com/path/2"), omnibox_view->GetText());
-  omnibox_view->GetSelectionBounds(&start, &end);
-  EXPECT_EQ(0U, std::min(start, end));
-  EXPECT_EQ(19U, std::max(start, end));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, AcceptKeywordByTypingQuestionMark) {

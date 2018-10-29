@@ -90,16 +90,23 @@ void FileReaderLoader::Start(scoped_refptr<BlobDataHandle> blob_data) {
   started_loading_ = true;
 #endif  // DCHECK_IS_ON()
 
-  mojo::DataPipe pipe(blink::BlobUtils::GetDataPipeCapacity(blob_data->size()));
-  if (!pipe.producer_handle.is_valid()) {
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes =
+      blink::BlobUtils::GetDataPipeCapacity(blob_data->size());
+
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  MojoResult rv = CreateDataPipe(&options, &producer_handle, &consumer_handle_);
+  if (rv != MOJO_RESULT_OK) {
     Failed(FileError::kNotReadableErr, FailureType::kMojoPipeCreation);
     return;
   }
-  consumer_handle_ = std::move(pipe.consumer_handle);
 
   mojom::blink::BlobReaderClientPtr client_ptr;
   binding_.Bind(MakeRequest(&client_ptr));
-  blob_data->ReadAll(std::move(pipe.producer_handle), std::move(client_ptr));
+  blob_data->ReadAll(std::move(producer_handle), std::move(client_ptr));
 
   if (IsSyncLoad()) {
     // Wait for OnCalculatedSize, which will also synchronously drain the data

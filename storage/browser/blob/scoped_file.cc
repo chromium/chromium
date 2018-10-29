@@ -19,12 +19,12 @@ ScopedFile::ScopedFile()
 
 ScopedFile::ScopedFile(const base::FilePath& path,
                        ScopeOutPolicy policy,
-                       const scoped_refptr<base::TaskRunner>& file_task_runner)
+                       scoped_refptr<base::TaskRunner> file_task_runner)
     : path_(path),
       scope_out_policy_(policy),
-      file_task_runner_(file_task_runner) {
+      file_task_runner_(std::move(file_task_runner)) {
   DCHECK(path.empty() || policy != DELETE_ON_SCOPE_OUT ||
-         file_task_runner.get())
+         file_task_runner_.get())
       << "path:" << path.value() << " policy:" << policy
       << " runner:" << file_task_runner.get();
 }

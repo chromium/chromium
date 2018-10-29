@@ -138,8 +138,8 @@ class FixedArray {
   explicit FixedArray(size_type n, const allocator_type& a = allocator_type())
       : storage_(n, a) {
     if (DefaultConstructorIsNonTrivial()) {
-      memory_internal::ConstructStorage(storage_.alloc(), storage_.begin(),
-                                        storage_.end());
+      memory_internal::ConstructRange(storage_.alloc(), storage_.begin(),
+                                      storage_.end());
     }
   }
 
@@ -147,8 +147,8 @@ class FixedArray {
   FixedArray(size_type n, const value_type& val,
              const allocator_type& a = allocator_type())
       : storage_(n, a) {
-    memory_internal::ConstructStorage(storage_.alloc(), storage_.begin(),
-                                      storage_.end(), val);
+    memory_internal::ConstructRange(storage_.alloc(), storage_.begin(),
+                                    storage_.end(), val);
   }
 
   // Creates an array initialized with the size and contents of `init_list`.
@@ -163,13 +163,12 @@ class FixedArray {
   FixedArray(Iterator first, Iterator last,
              const allocator_type& a = allocator_type())
       : storage_(std::distance(first, last), a) {
-    memory_internal::CopyToStorageFromRange(storage_.alloc(), storage_.begin(),
-                                            first, last);
+    memory_internal::CopyRange(storage_.alloc(), storage_.begin(), first, last);
   }
 
   ~FixedArray() noexcept {
     for (auto* cur = storage_.begin(); cur != storage_.end(); ++cur) {
-      AllocatorTraits::destroy(*storage_.alloc(), cur);
+      AllocatorTraits::destroy(storage_.alloc(), cur);
     }
   }
 
@@ -359,6 +358,13 @@ class FixedArray {
   friend bool operator>=(const FixedArray& lhs, const FixedArray& rhs) {
     return !(lhs < rhs);
   }
+
+  template <typename H>
+  friend H AbslHashValue(H h, const FixedArray& v) {
+    return H::combine(H::combine_contiguous(std::move(h), v.data(), v.size()),
+                      v.size());
+  }
+
  private:
   // StorageElement
   //
@@ -446,15 +452,15 @@ class FixedArray {
       if (UsingInlinedStorage(size())) {
         InlinedStorage::AnnotateDestruct(size());
       } else {
-        AllocatorTraits::deallocate(*alloc(), AsValueType(begin()), size());
+        AllocatorTraits::deallocate(alloc(), AsValueType(begin()), size());
       }
     }
 
     size_type size() const { return size_alloc_.template get<0>(); }
     StorageElement* begin() const { return data_; }
     StorageElement* end() const { return begin() + size(); }
-    allocator_type* alloc() {
-      return std::addressof(size_alloc_.template get<1>());
+    allocator_type& alloc() {
+      return size_alloc_.template get<1>();
     }
 
    private:
@@ -468,7 +474,7 @@ class FixedArray {
         return InlinedStorage::data();
       } else {
         return reinterpret_cast<StorageElement*>(
-            AllocatorTraits::allocate(*alloc(), size()));
+            AllocatorTraits::allocate(alloc(), size()));
       }
     }
 

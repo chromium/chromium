@@ -101,6 +101,7 @@ public class SafeBrowsingTest {
     private static final int PHISHING_PAGE_BACKGROUND_COLOR = Color.rgb(0, 0, 255);
     private static final int MALWARE_PAGE_BACKGROUND_COLOR = Color.rgb(0, 0, 255);
     private static final int UNWANTED_SOFTWARE_PAGE_BACKGROUND_COLOR = Color.rgb(0, 0, 255);
+    private static final int BILLING_PAGE_BACKGROUND_COLOR = Color.rgb(0, 0, 255);
     private static final int IFRAME_EMBEDDER_BACKGROUND_COLOR = Color.rgb(10, 10, 10);
 
     private static final String RESOURCE_PATH = "/android_webview/test/data";
@@ -114,6 +115,7 @@ public class SafeBrowsingTest {
     private static final String MALWARE_HTML_PATH = RESOURCE_PATH + "/malware.html";
     private static final String UNWANTED_SOFTWARE_HTML_PATH =
             RESOURCE_PATH + "/unwanted_software.html";
+    private static final String BILLING_HTML_PATH = RESOURCE_PATH + "/billing.html";
 
     // A gray page with an iframe to MALWARE_HTML_PATH
     private static final String IFRAME_HTML_PATH = RESOURCE_PATH + "/iframe.html";
@@ -130,15 +132,23 @@ public class SafeBrowsingTest {
     public static class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
         private Observer mObserver;
         private static final String SAFE_METADATA = "{}";
+
+        // These codes are defined in "safebrowsing.proto".
         private static final int PHISHING_CODE = 5;
         private static final int MALWARE_CODE = 4;
         private static final int UNWANTED_SOFTWARE_CODE = 3;
+        private static final int BILLING_CODE = 15;
 
         // Mock time it takes for a lookup request to complete.
         private static final long CHECK_DELTA_US = 10;
 
         @Override
         public boolean init(Observer result) {
+            return init(result, false);
+        }
+
+        @Override
+        public boolean init(Observer result, boolean enableLocalBlacklists) {
             mObserver = result;
             return true;
         }
@@ -161,6 +171,9 @@ public class SafeBrowsingTest {
             } else if (uri.endsWith(UNWANTED_SOFTWARE_HTML_PATH)
                     && Arrays.binarySearch(threatsOfInterest, UNWANTED_SOFTWARE_CODE) >= 0) {
                 metadata = buildMetadataFromCode(UNWANTED_SOFTWARE_CODE);
+            } else if (uri.endsWith(BILLING_HTML_PATH)
+                    && Arrays.binarySearch(threatsOfInterest, BILLING_CODE) >= 0) {
+                metadata = buildMetadataFromCode(BILLING_CODE);
             } else {
                 metadata = SAFE_METADATA;
             }
@@ -481,6 +494,48 @@ public class SafeBrowsingTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("disable-features=BillingInterstitial")
+    public void testSafeBrowsingDoesNotBlockBillingPages() throws Throwable {
+        // TODO(ntfschr): this is a temporary check until we launch support for Billing warnings
+        // (http://crbug/887186).
+        loadGreenPage();
+        final String responseUrl = mTestServer.getURL(BILLING_HTML_PATH);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), responseUrl);
+        assertTargetPageHasLoaded(BILLING_PAGE_BACKGROUND_COLOR);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("enable-features=BillingInterstitial")
+    public void testSafeBrowsingBlocksBillingPages() throws Throwable {
+        loadGreenPage();
+        loadPathAndWaitForInterstitial(BILLING_HTML_PATH);
+        assertGreenPageNotShowing();
+        assertTargetPageNotShowing(BILLING_PAGE_BACKGROUND_COLOR);
+        // Assume that we are rendering the interstitial, since we see neither the previous page nor
+        // the target page
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("enable-features=BillingInterstitial")
+    public void testSafeBrowsingOnSafeBrowsingHitBillingCode() throws Throwable {
+        loadGreenPage();
+        loadPathAndWaitForInterstitial(BILLING_HTML_PATH);
+
+        // Check onSafeBrowsingHit arguments
+        final String responseUrl = mTestServer.getURL(BILLING_HTML_PATH);
+        Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().url);
+        Assert.assertEquals(AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_BILLING,
+                mContentsClient.getLastThreatType());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testSafeBrowsingBlocksPhishingPages() throws Throwable {
         loadGreenPage();
         loadPathAndWaitForInterstitial(PHISHING_HTML_PATH);
@@ -742,6 +797,18 @@ public class SafeBrowsingTest {
         loadPathAndWaitForInterstitial(UNWANTED_SOFTWARE_HTML_PATH);
         assertGreenPageNotShowing();
         assertTargetPageNotShowing(UNWANTED_SOFTWARE_PAGE_BACKGROUND_COLOR);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("enable-features=BillingInterstitial")
+    public void testSafeBrowsingCanShowQuietBillingInterstitial() throws Throwable {
+        mAwContents.setCanShowBigInterstitial(false);
+        loadGreenPage();
+        loadPathAndWaitForInterstitial(BILLING_HTML_PATH);
+        assertGreenPageNotShowing();
+        assertTargetPageNotShowing(BILLING_PAGE_BACKGROUND_COLOR);
     }
 
     @Test

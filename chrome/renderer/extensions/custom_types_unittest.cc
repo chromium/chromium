@@ -37,10 +37,10 @@ class CustomTypesTest : public NativeExtensionBindingsSystemUnittest {
   void RunContextInvalidationTest(const char* permission,
                                   const char* api_script,
                                   const char* use_api_script) {
-    scoped_refptr<Extension> extension = ExtensionBuilder("foo")
-                                             .AddPermission(permission)
-                                             .SetID(extension_id_)
-                                             .Build();
+    scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
+                                                   .AddPermission(permission)
+                                                   .SetID(extension_id_)
+                                                   .Build();
     RegisterExtension(extension);
 
     v8::HandleScope handle_scope(isolate());
@@ -109,7 +109,7 @@ TEST_F(CustomTypesTest, EasyUnlockProximityRequiredUseAfterInvalidation) {
 }
 
 TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationError) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo").AddPermission("contentSettings").Build();
   RegisterExtension(extension);
 
@@ -142,7 +142,7 @@ TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationError) {
 }
 
 TEST_F(CustomTypesTest, ChromeSettingsInvalidInvocationError) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo").AddPermission("privacy").Build();
   RegisterExtension(extension);
 

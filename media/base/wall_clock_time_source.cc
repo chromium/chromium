@@ -81,6 +81,12 @@ bool WallClockTimeSource::GetWallClockTimes(
   return playback_rate_ && ticking_;
 }
 
+void WallClockTimeSource::SetTickClockForTesting(
+    const base::TickClock* tick_clock) {
+  base::AutoLock auto_lock(lock_);
+  tick_clock_ = tick_clock;
+}
+
 base::TimeDelta WallClockTimeSource::CurrentMediaTime_Locked() {
   lock_.AssertAcquired();
   if (!ticking_ || !playback_rate_)

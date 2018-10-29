@@ -24,9 +24,6 @@ cr.define('bookmarks', function() {
     attached: function() {
       assert(ToastManager.instance_ == null);
       ToastManager.instance_ = this;
-      Polymer.RenderStatus.afterNextRender(this, function() {
-        Polymer.IronA11yAnnouncer.requestAvailability();
-      });
     },
 
     /** @override */
@@ -73,7 +70,6 @@ cr.define('bookmarks', function() {
      */
     showInternal_: function(showUndo) {
       this.showUndo_ = showUndo;
-      this.fire('iron-announce', {text: this.$.content.textContent});
       this.$.toast.show();
     },
 

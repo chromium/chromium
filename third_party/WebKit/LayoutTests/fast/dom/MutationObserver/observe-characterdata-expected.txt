@@ -2,7 +2,6 @@ Test WebKitMutationObserver.observe on CharacterData nodes
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Testing basic aspects of characterData observation.
 ...can characterData changes be observed at all
 PASS mutations.length is 1
@@ -17,8 +16,10 @@ PASS mutations[0].target is charDataNode
 PASS mutations[1].type is "characterData"
 PASS mutations[1].target is charDataNode
 
+
 Testing that observing without specifying "characterData" does not result in hearing about characterData changes.
 PASS mutations is null
+
 
 Testing that multiple observers can be registered to a given node and both receive mutations.
 PASS mutations.length is 1
@@ -28,10 +29,12 @@ PASS mutations2.length is 1
 PASS mutations2[0].type is "characterData"
 PASS mutations2[0].target is charDataNode
 
+
 Testing mutation records are enqueued for characterData before DOMSubtreeModified is dispatched.
 PASS mutations.length is 2
 PASS mutations[0].type is "characterData"
 PASS mutations[1].type is "attributes"
+
 
 Testing that oldValue is returned when requested.
 PASS mutations.length is 2
@@ -42,6 +45,7 @@ PASS mutations[1].type is "characterData"
 PASS mutations[1].target is charDataNode
 PASS mutations[1].oldValue is "bar"
 
+
 Testing that oldValue is delivered as requested (or not).
 PASS mutationsWithOldValue.length is 1
 PASS mutationsWithOldValue[0].type is "characterData"
@@ -50,10 +54,12 @@ PASS mutations.length is 1
 PASS mutations[0].type is "characterData"
 PASS mutations[0].oldValue is null
 
+
 An observer with multiple observations will get characterDataOldValue if any entries request it.
 PASS mutations.length is 1
 PASS mutations[0].type is "characterData"
 PASS mutations[0].oldValue is "foo"
+
 
 PASS successfullyParsed is true
 

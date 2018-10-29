@@ -13,10 +13,9 @@ namespace tools {
 
 AXEventServer::AXEventServer(base::ProcessId pid,
                              const base::StringPiece& pattern)
-    : recorder_(content::AccessibilityEventRecorder::GetInstance(nullptr,
-                                                                 pid,
-                                                                 pattern)) {
-  recorder_.ListenToEvents(
+    : recorder_(
+          content::AccessibilityEventRecorder::Create(nullptr, pid, pattern)) {
+  recorder_->ListenToEvents(
       base::BindRepeating(&AXEventServer::OnEvent, base::Unretained(this)));
 
   std::stringstream output;

@@ -223,13 +223,9 @@ Resources.IDBDataView = class extends UI.SimpleView {
     this._pageForwardButton.addEventListener(UI.ToolbarButton.Events.Click, this._pageForwardButtonClicked, this);
     editorToolbar.appendToolbarItem(this._pageForwardButton);
 
-    this._keyInputElement = UI.createInput('toolbar-input');
-    editorToolbar.appendToolbarItem(new UI.ToolbarItem(this._keyInputElement));
-    this._keyInputElement.placeholder = Common.UIString('Start from key');
-    this._keyInputElement.addEventListener('paste', this._keyInputChanged.bind(this), false);
-    this._keyInputElement.addEventListener('cut', this._keyInputChanged.bind(this), false);
-    this._keyInputElement.addEventListener('keypress', this._keyInputChanged.bind(this), false);
-    this._keyInputElement.addEventListener('keydown', this._keyInputChanged.bind(this), false);
+    this._keyInput = new UI.ToolbarInput(ls`Start from key`, 0.5);
+    this._keyInput.addEventListener(UI.ToolbarInput.Event.TextChanged, this._updateData.bind(this, false));
+    editorToolbar.appendToolbarItem(this._keyInput);
 
     editorToolbar.appendToolbarItem(this._needsRefresh);
   }
@@ -248,10 +244,6 @@ Resources.IDBDataView = class extends UI.SimpleView {
   _pageForwardButtonClicked(event) {
     this._skipCount = this._skipCount + this._pageSize;
     this._updateData(false);
-  }
-
-  _keyInputChanged() {
-    window.setTimeout(this._updateData.bind(this, false), 0);
   }
 
   refreshData() {
@@ -292,7 +284,7 @@ Resources.IDBDataView = class extends UI.SimpleView {
    * @param {boolean} force
    */
   _updateData(force) {
-    const key = this._parseKey(this._keyInputElement.value);
+    const key = this._parseKey(this._keyInput.value());
     const pageSize = this._pageSize;
     let skipCount = this._skipCount;
     let selected = this._dataGrid.selectedNode ? this._dataGrid.selectedNode.data['number'] : 0;

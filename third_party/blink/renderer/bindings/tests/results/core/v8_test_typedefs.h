@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef V8TestTypedefs_h
-#define V8TestTypedefs_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TEST_TYPEDEFS_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TEST_TYPEDEFS_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/byte_string_sequence_sequence_or_byte_string_byte_string_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h"
@@ -86,4 +86,4 @@ struct V8TypeOf<TestTypedefs> {
 
 }  // namespace blink
 
-#endif  // V8TestTypedefs_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TEST_TYPEDEFS_H_

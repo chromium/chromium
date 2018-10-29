@@ -36,6 +36,7 @@
 
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/sandbox_flags.h"
 #include "third_party/blink/public/common/frame/user_activation_update_type.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
@@ -47,7 +48,6 @@
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
-#include "third_party/blink/public/platform/web_file_system.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
 #include "third_party/blink/public/platform/web_insecure_request_policy.h"
 #include "third_party/blink/public/platform/web_loading_behavior_flag.h"
@@ -221,7 +221,8 @@ class BLINK_EXPORT WebLocalFrameClient {
       const WebString& fallback_name,
       WebSandboxFlags sandbox_flags,
       const ParsedFeaturePolicy& container_policy,
-      const WebFrameOwnerProperties&) {
+      const WebFrameOwnerProperties&,
+      FrameOwnerElementType) {
     return nullptr;
   }
 
@@ -341,6 +342,7 @@ class BLINK_EXPORT WebLocalFrameClient {
     WebURLRequest& url_request;
     WebNavigationType navigation_type;
     WebNavigationPolicy default_policy;
+    bool has_user_gesture;
     bool replaces_current_history_item;
     bool is_history_navigation_in_new_child_frame;
     bool is_client_redirect;
@@ -362,6 +364,7 @@ class BLINK_EXPORT WebLocalFrameClient {
         : url_request(url_request),
           navigation_type(kWebNavigationTypeOther),
           default_policy(kWebNavigationPolicyIgnore),
+          has_user_gesture(false),
           replaces_current_history_item(false),
           is_history_navigation_in_new_child_frame(false),
           is_client_redirect(false),
@@ -387,7 +390,7 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Navigational notifications ------------------------------------------
 
   // These notifications bracket any loading that occurs in the WebFrame.
-  virtual void DidStartLoading(bool to_different_document) {}
+  virtual void DidStartLoading() {}
   virtual void DidStopLoading() {}
 
   // Notification that some progress was made loading the current frame.
@@ -399,16 +402,15 @@ class BLINK_EXPORT WebLocalFrameClient {
   // hasn't yet had a chance to run (and possibly alter/interrupt the submit.)
   virtual void WillSendSubmitEvent(const WebFormElement&) {}
 
-  // A form submission is about to occur.
-  virtual void WillSubmitForm(const WebFormElement&) {}
-
   // A datasource has been created for a new navigation.  The given
   // datasource will become the provisional datasource for the frame.
   virtual void DidCreateDocumentLoader(WebDocumentLoader*) {}
 
   // A new provisional load has been started.
-  virtual void DidStartProvisionalLoad(WebDocumentLoader* document_loader,
-                                       WebURLRequest& request) {}
+  virtual void DidStartProvisionalLoad(
+      WebDocumentLoader* document_loader,
+      WebURLRequest& request,
+      mojo::ScopedMessagePipeHandle navigation_initiator_handle) {}
 
   // The provisional load failed. The WebHistoryCommitType is the commit type
   // that would have been used had the load succeeded.
@@ -448,6 +450,7 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // The frame's document finished loading.
   // This method may not execute JavaScript code.
+  // TODO(dgozman): rename this to DidFireDOMContentLoadedEvent.
   virtual void DidFinishDocumentLoad() {}
 
   // Like |didFinishDocumentLoad|, except this method may run JavaScript
@@ -518,6 +521,11 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual base::UnguessableToken GetDevToolsFrameToken() {
     return base::UnguessableToken::Create();
   }
+
+  // When a same-site load fails and the original frame in parent process is
+  // owned by an <object> element, this call notifies the owner element that it
+  // should render fallback content of its own.
+  virtual void RenderFallbackContentInParentProcess() {}
 
   // PlzNavigate
   // Called to abort a navigation that is being handled by the browser process.
@@ -625,9 +633,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void DidRunInsecureContent(const WebSecurityOrigin&,
                                      const WebURL& insecure_url) {}
 
-  // A reflected XSS was encountered in the page and suppressed.
-  virtual void DidDetectXSS(const WebURL&, bool did_block_entire_page) {}
-
   // A PingLoader was created, and a request dispatched to a URL.
   virtual void DidDispatchPingLoader(const WebURL&) {}
 
@@ -667,6 +672,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   // UseCounter CSS histograms.
   virtual void DidObserveNewCssPropertyUsage(int /*css_property*/,
                                              bool /*is_animated*/) {}
+
+  // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
+  virtual void DidObserveLayoutJank(double jank_fraction) {}
 
   // Script notifications ------------------------------------------------
 
@@ -784,15 +792,11 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Audio Output Devices API --------------------------------------------
 
   // Checks that the given audio sink exists and is authorized. The result is
-  // provided via the callbacks.  This method takes ownership of the callbacks
-  // pointer.
+  // provided via the callbacks.
   virtual void CheckIfAudioSinkExistsAndIsAuthorized(
       const WebString& sink_id,
-      WebSetSinkIdCallbacks* callbacks) {
-    if (callbacks) {
-      callbacks->OnError(WebSetSinkIdError::kNotSupported);
-      delete callbacks;
-    }
+      std::unique_ptr<WebSetSinkIdCallbacks> callbacks) {
+    callbacks->OnError(WebSetSinkIdError::kNotSupported);
   }
 
   // Visibility ----------------------------------------------------------

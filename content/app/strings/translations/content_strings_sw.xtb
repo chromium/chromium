@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1018939186200882850">kipengee cha menyu</translation>
-<translation id="1020833440720551630">nyamazisha sauti ya wimbo</translation>
 <translation id="10623998915015855">kitufe cha kugeuza</translation>
 <translation id="1088086359088493902">Sekunde</translation>
 <translation id="1171774979989969504">Tafadhali weka anwani ya barua pepe.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">walioshiriki</translation>
 <translation id="1342835525016946179">makala</translation>
 <translation id="1359897965706325498">bango</translation>
-<translation id="1548116112524424341">cheza video katika hali ya picha ndani ya picha</translation>
 <translation id="1589122976691792535">eneo</translation>
 <translation id="1591562245178063882">Mwezi huu</translation>
 <translation id="1637811476055996098">Chagua Faili</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">gridi ya mti</translation>
 <translation id="1822429046913737220">AM / PM</translation>
 <translation id="1832974991323546415">cheza kwenye kifaa cha mbali</translation>
-<translation id="1838818994221231429">tumia skrini nzima katika eneo la mkato kwenye skrini</translation>
 <translation id="190587075670221089">ufutaji</translation>
 <translation id="1907737156431278478">mfano</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">wakati</translation>
 <translation id="5630795885300617244">Gusa mara mbili kushoto au kulia ili uruke kwa sekunde 10</translation>
 <translation id="5631759159893697722">ikisiri</translation>
-<translation id="5641012560118721995">sitisha kucheza</translation>
 <translation id="5643186887447432888">kitufe</translation>
 <translation id="5677946354068040947">chaguo zaidi</translation>
 <translation id="576709008726043716">utangulizi</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Weka upya</translation>
 <translation id="5966707198760109579">Juma</translation>
 <translation id="5987525920412732405">kitufe cha kubadilishia</translation>
+<translation id="6011459053400940133">kitelezi cha sauti</translation>
 <translation id="6015796118275082299">Mwaka</translation>
 <translation id="6023896073578205740">kikasha cha orodha</translation>
-<translation id="6101327004457443354">washa sauti ya wimbo</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">mita</translation>
 <translation id="6166809985690652833">maelezo kuhusu kitabu</translation>
@@ -163,7 +159,7 @@
 <translation id="6709570249143506788">Ubora wa chini wa kucheza video</translation>
 <translation id="6755330956360078551">kidirisha cha vidokezo</translation>
 <translation id="6790428901817661496">Cheza</translation>
-<translation id="6820355525329141109">Haikuweza kupakia programu-jalizi.</translation>
+<translation id="6820355525329141109">Haikuweza kupakia programu jalizi.</translation>
 <translation id="6820615603175220800">marejeleo ya bibliografia</translation>
 <translation id="6843725295806269523">nyamazisha</translation>
 <translation id="6853785296079745596">ficha manukuu yanayoweza kuonyeshwa</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Saa</translation>
 <translation id="7681220483256441252">faharasa</translation>
 <translation id="7720026100085573005">muda unaosalia</translation>
-<translation id="7740016676195725605">koma kuonyesha manukuu yanaweza kufichwa</translation>
 <translation id="7740050170769002709">Maudhui ya HTML</translation>
 <translation id="7750228210027921155">Picha ndani ya picha</translation>
 <translation id="7789962463072032349">Sitisha</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">sehemu ya maandishi ya utafutaji</translation>
 <translation id="8057695513531652401">ilani</translation>
 <translation id="8105797009065549151">marejeleo ya dokezo</translation>
-<translation id="8115662671911883373">anza kuonyesha manukuu yaliyofungwa</translation>
 <translation id="8117451130807776954">Wiki hii</translation>
-<translation id="819205353528511139">cheza filamu katika hali ya skrini kamili</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8284326494547611709">Manukuu</translation>
 <translation id="835897206747267392">Thamani batili.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">dhibiti kucheza kwa mbali</translation>
 <translation id="862370744433916922">kichwa kidogo</translation>
 <translation id="8750798805984357768">Tafadhali chagua moja wapo ya chaguo hizi.</translation>
-<translation id="8785498733064193001">anza kucheza</translation>
 <translation id="8808573423886751634">sura</translation>
 <translation id="8845239796550121995">Sasa inatuma kwenye TV yako</translation>
 <translation id="8851136666856101339">kuu</translation>

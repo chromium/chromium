@@ -12,7 +12,7 @@ async_test(function(t) {
         assert_true(video.paused);
 
         // Tap the play button
-        var coords = mediaControlsButtonCoordinates(video, "overlay-play-button");
+        var coords = elementCoordinates(enabledPlayButton(video));
         eventSender.gestureTapDown(coords[0], coords[1]);
         eventSender.gestureShowPress(coords[0], coords[1]);
         eventSender.gestureTap(coords[0], coords[1]);

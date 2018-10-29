@@ -7,17 +7,17 @@ transition (before): all 1s ease 0s, left 3s cubic-bezier(0.2, 0.3, 0.6, 0.8) 2s
 transition property (before): all, left
 transition duration (before): 1s, 3s
 transition timing function (before): ease, cubic-bezier(0.2, 0.3, 0.6, 0.8)
-transition (after): 
-transition property (after): 
-transition duration (after): 
-transition timing function (after): 
+transition (after):
+transition property (after):
+transition duration (after):
+transition timing function (after):
 
 transform origin (before): left 30% 0px
-transform origin X (before): 
-transform origin Y (before): 
-transform origin (after): 
-transform origin X (after): 
-transform origin Y (after): 
+transform origin X (before):
+transform origin Y (before):
+transform origin (after):
+transform origin X (after):
+transform origin Y (after):
 
 animation (before): test 5s ease-in-out 0s infinite alternate none running
 animation name (before): test
@@ -25,11 +25,11 @@ animation duration (before): 5s
 animation timing function (before): ease-in-out
 animation direction (before): alternate
 animation iteration count (before): infinite
-animation (after): 
-animation name (after): 
-animation duration (after): 
-animation timing function (after): 
-animation direction (after): 
-animation iteration count (after): 
+animation (after):
+animation name (after):
+animation duration (after):
+animation timing function (after):
+animation direction (after):
+animation iteration count (after):
 
 

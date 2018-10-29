@@ -401,16 +401,20 @@ bool LowLevelAlloc::DeleteArena(Arena *arena) {
     ABSL_RAW_CHECK(munmap_result != 0,
                    "LowLevelAlloc::DeleteArena: VitualFree failed");
 #else
+#ifndef ABSL_LOW_LEVEL_ALLOC_ASYNC_SIGNAL_SAFE_MISSING
     if ((arena->flags & LowLevelAlloc::kAsyncSignalSafe) == 0) {
       munmap_result = munmap(region, size);
     } else {
       munmap_result = base_internal::DirectMunmap(region, size);
     }
+#else
+    munmap_result = munmap(region, size);
+#endif  // ABSL_LOW_LEVEL_ALLOC_ASYNC_SIGNAL_SAFE_MISSING
     if (munmap_result != 0) {
       ABSL_RAW_LOG(FATAL, "LowLevelAlloc::DeleteArena: munmap failed: %d",
                    errno);
     }
-#endif
+#endif  // _WIN32
   }
   section.Leave();
   arena->~Arena();
@@ -545,6 +549,7 @@ static void *DoAllocWithArena(size_t request, LowLevelAlloc::Arena *arena) {
                                MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
       ABSL_RAW_CHECK(new_pages != nullptr, "VirtualAlloc failed");
 #else
+#ifndef ABSL_LOW_LEVEL_ALLOC_ASYNC_SIGNAL_SAFE_MISSING
       if ((arena->flags & LowLevelAlloc::kAsyncSignalSafe) != 0) {
         new_pages = base_internal::DirectMmap(nullptr, new_pages_size,
             PROT_WRITE|PROT_READ, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
@@ -552,10 +557,15 @@ static void *DoAllocWithArena(size_t request, LowLevelAlloc::Arena *arena) {
         new_pages = mmap(nullptr, new_pages_size, PROT_WRITE | PROT_READ,
                          MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
       }
+#else
+      new_pages = mmap(nullptr, new_pages_size, PROT_WRITE | PROT_READ,
+                       MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+#endif  // ABSL_LOW_LEVEL_ALLOC_ASYNC_SIGNAL_SAFE_MISSING
       if (new_pages == MAP_FAILED) {
         ABSL_RAW_LOG(FATAL, "mmap error: %d", errno);
       }
-#endif
+
+#endif  // _WIN32
       arena->mu.Lock();
       s = reinterpret_cast<AllocList *>(new_pages);
       s->header.size = new_pages_size;

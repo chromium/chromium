@@ -40,5 +40,5 @@ promise_test(function(t) {
 promise_test(function(t) {
     return fetch('http://localhost:8000/fetch/resources/redirect-loop.php?Count=100&ACAOrigin=*')
       .then(t.unreached_func('must reject'), function() {});
-  }, 'A didFailRedirectCheck() error should output an error message');
+  }, 'net::ERR_TOO_MANY_REDIRECTS (cross origin redirects) should not output error messages');
 </script>

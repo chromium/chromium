@@ -375,8 +375,8 @@ void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
   for (const auto& info : urls_deleted_notifications_) {
     EXPECT_EQ(expired, info.is_from_expiration());
     const history::URLRows& rows(info.deleted_rows());
-    history::URLRows::const_iterator it_row = std::find_if(
-        rows.begin(), rows.end(), history::URLRow::URLRowHasURL(row.url()));
+    auto it_row = std::find_if(rows.begin(), rows.end(),
+                               history::URLRow::URLRowHasURL(row.url()));
     if (it_row != rows.end()) {
       // Further verify that the ID is set to what had been in effect in the
       // main database before the deletion. The InMemoryHistoryBackend relies

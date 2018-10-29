@@ -1,3 +1,3 @@
-This computer will self-destruct in   minutes.
+This computer will self-destruct in  minutes.
 
 The accessibility description is "Note: This computer will self-destruct in 10 minutes."

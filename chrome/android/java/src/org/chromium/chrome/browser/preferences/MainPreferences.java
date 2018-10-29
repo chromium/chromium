@@ -44,6 +44,7 @@ public class MainPreferences extends PreferenceFragment
     public static final String PREF_NOTIFICATIONS = "notifications";
     public static final String PREF_LANGUAGES = "languages";
     public static final String PREF_DOWNLOADS = "downloads";
+    public static final String PREF_DEVELOPER = "developer";
 
     public static final String AUTOFILL_GUID = "guid";
     // Needs to be in sync with kSettingsOrigin[] in
@@ -151,6 +152,11 @@ public class MainPreferences extends PreferenceFragment
         // This checks whether the flag for Downloads Preferences is enabled.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOADS_LOCATION_CHANGE)) {
             getPreferenceScreen().removePreference(findPreference(PREF_DOWNLOADS));
+        }
+
+        // Developer preferences are only shown when the feature is enabled.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DEVELOPER_PREFERENCES)) {
+            getPreferenceScreen().removePreference(findPreference(PREF_DEVELOPER));
         }
     }
 

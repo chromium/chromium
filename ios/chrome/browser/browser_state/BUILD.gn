@@ -68,7 +68,6 @@ source_set("browser_state_impl") {
     "//components/metrics",
     "//components/net_log",
     "//components/password_manager/core/browser",
-    "//components/password_manager/sync/browser",
     "//components/pref_registry",
     "//components/prefs",
     "//components/proxy_config",

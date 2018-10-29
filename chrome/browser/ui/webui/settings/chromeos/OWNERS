@@ -1,0 +1,3 @@
+per-file multidevice_handler*=file://chromeos/services/multidevice_setup/OWNERS
+
+# COMPONENT: UI>Settings

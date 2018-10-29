@@ -35,6 +35,8 @@ class X11InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   void Reset() override;
   void Focus() override;
   void Blur() override;
+  void SetSurroundingText(const base::string16& text,
+                          const gfx::Range& selection_range) override;
 
  private:
   // Resets the cache of X modifier keycodes.
@@ -78,6 +80,14 @@ class X11InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
 
   // A set of callback functions.  Must not be nullptr.
   ui::LinuxInputMethodContextDelegate* delegate_;
+
+  // Input method context type flag.
+  //   - true if it supports table-based input methods
+  //   - false if it supports multiple, loadable input methods
+  bool is_simple_;
+
+  // Keeps track of current focus state.
+  bool has_focus_;
 
   // IME's input GTK context.
   GtkIMContext* gtk_context_;

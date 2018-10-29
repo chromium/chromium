@@ -50,7 +50,14 @@ class InlineLoginHandlerImpl : public InlineLoginHandler,
  private:
   // InlineLoginHandler overrides:
   void SetExtraInitParams(base::DictionaryValue& params) override;
-  void CompleteLogin(const base::ListValue* args) override;
+  void CompleteLogin(const std::string& email,
+                     const std::string& password,
+                     const std::string& gaia_id,
+                     const std::string& auth_code,
+                     bool skip_for_now,
+                     bool trusted,
+                     bool trusted_found,
+                     bool choose_what_to_sync) override;
 
   // This struct exists to pass paramters to the FinishCompleteLogin() method,
   // since the base::Bind() call does not support this many template args.

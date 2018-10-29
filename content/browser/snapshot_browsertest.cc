@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -355,8 +356,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_AsyncMultiWindowTest) {
       ExpectedColor expected;
       do {
         PickRandomColor(&expected);
-      } while (std::find(expected_snapshots.cbegin(), expected_snapshots.cend(),
-                         expected) != expected_snapshots.cend());
+      } while (base::ContainsValue(expected_snapshots, expected));
       expected_snapshots.push_back(expected);
 
       std::string colorString = base::StringPrintf("#%02x%02x%02x", expected.r,

@@ -10,8 +10,17 @@
 #include "components/autofill_assistant/browser/actions/autofill_action.h"
 #include "components/autofill_assistant/browser/actions/click_action.h"
 #include "components/autofill_assistant/browser/actions/focus_element_action.h"
+#include "components/autofill_assistant/browser/actions/get_payment_information_action.h"
+#include "components/autofill_assistant/browser/actions/highlight_element_action.h"
+#include "components/autofill_assistant/browser/actions/navigate_action.h"
+#include "components/autofill_assistant/browser/actions/reset_action.h"
 #include "components/autofill_assistant/browser/actions/select_option_action.h"
+#include "components/autofill_assistant/browser/actions/set_form_field_value_action.h"
+#include "components/autofill_assistant/browser/actions/show_details_action.h"
+#include "components/autofill_assistant/browser/actions/show_progress_bar_action.h"
+#include "components/autofill_assistant/browser/actions/stop_action.h"
 #include "components/autofill_assistant/browser/actions/tell_action.h"
+#include "components/autofill_assistant/browser/actions/unsupported_action.h"
 #include "components/autofill_assistant/browser/actions/upload_dom_action.h"
 #include "components/autofill_assistant/browser/actions/wait_for_dom_action.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -20,14 +29,34 @@
 
 namespace autofill_assistant {
 
+namespace {
+
+// Fills the destination proto field with script parameters from the given
+// parameter map.
+void AddScriptParametersToProto(
+    const std::map<std::string, std::string>& source,
+    ::google::protobuf::RepeatedPtrField<ScriptParameterProto>* destination) {
+  for (const auto& param_entry : source) {
+    ScriptParameterProto* parameter = destination->Add();
+    parameter->set_name(param_entry.first);
+    parameter->set_value(param_entry.second);
+  }
+}
+
+}  // namespace
+
 // static
-std::string ProtocolUtils::CreateGetScriptsRequest(const GURL& url) {
+std::string ProtocolUtils::CreateGetScriptsRequest(
+    const GURL& url,
+    const std::map<std::string, std::string>& parameters) {
   DCHECK(!url.is_empty());
 
   SupportsScriptRequestProto script_proto;
   script_proto.set_url(url.spec());
   script_proto.mutable_client_context()->mutable_chrome()->set_chrome_version(
       version_info::GetProductNameAndVersionForUserAgent());
+  AddScriptParametersToProto(parameters,
+                             script_proto.mutable_script_parameters());
   std::string serialized_script_proto;
   bool success = script_proto.SerializeToString(&serialized_script_proto);
   DCHECK(success);
@@ -54,8 +83,10 @@ bool ProtocolUtils::ParseScripts(
     const auto& presentation = script_proto.presentation();
     script->handle.name = presentation.name();
     script->handle.autostart = presentation.autostart();
-    script->precondition =
-        ScriptPrecondition::FromProto(presentation.precondition());
+    script->handle.initial_prompt = presentation.initial_prompt();
+    script->handle.highlight = presentation.highlight();
+    script->precondition = ScriptPrecondition::FromProto(
+        script_proto.path(), presentation.precondition());
     script->priority = presentation.priority();
 
     if (script->handle.name.empty() || script->handle.path.empty() ||
@@ -72,14 +103,26 @@ bool ProtocolUtils::ParseScripts(
 
 // static
 std::string ProtocolUtils::CreateInitialScriptActionsRequest(
-    const std::string& script_path) {
+    const std::string& script_path,
+    const GURL& url,
+    const std::map<std::string, std::string>& parameters,
+    const std::string& server_payload) {
   ScriptActionRequestProto request_proto;
+  InitialScriptActionsRequestProto* initial_request_proto =
+      request_proto.mutable_initial_request();
   InitialScriptActionsRequestProto::QueryProto* query =
-      request_proto.mutable_initial_request()->mutable_query();
+      initial_request_proto->mutable_query();
   query->add_script_path(script_path);
+  query->set_url(url.spec());
   query->set_policy(PolicyType::SCRIPT);
+  AddScriptParametersToProto(
+      parameters, initial_request_proto->mutable_script_parameters());
   request_proto.mutable_client_context()->mutable_chrome()->set_chrome_version(
       version_info::GetProductNameAndVersionForUserAgent());
+
+  if (!server_payload.empty()) {
+    request_proto.set_server_payload(server_payload);
+  }
 
   std::string serialized_initial_request_proto;
   bool success =
@@ -106,9 +149,10 @@ std::string ProtocolUtils::CreateNextScriptActionsRequest(
 }
 
 // static
-bool ProtocolUtils::ParseActions(const std::string& response,
-                                 std::string* return_server_payload,
-                                 std::deque<std::unique_ptr<Action>>* actions) {
+bool ProtocolUtils::ParseActions(
+    const std::string& response,
+    std::string* return_server_payload,
+    std::vector<std::unique_ptr<Action>>* actions) {
   DCHECK(actions);
 
   ActionsResponseProto response_proto;
@@ -144,16 +188,53 @@ bool ProtocolUtils::ParseActions(const std::string& response,
         actions->emplace_back(std::make_unique<WaitForDomAction>(action));
         break;
       }
-      case ActionProto::ActionInfoCase::kUploadDom: {
-        actions->emplace_back(std::make_unique<UploadDomAction>(action));
-        break;
-      }
       case ActionProto::ActionInfoCase::kSelectOption: {
         actions->emplace_back(std::make_unique<SelectOptionAction>(action));
         break;
       }
+      case ActionProto::ActionInfoCase::kNavigate: {
+        actions->emplace_back(std::make_unique<NavigateAction>(action));
+        break;
+      }
+      case ActionProto::ActionInfoCase::kStop: {
+        actions->emplace_back(std::make_unique<StopAction>(action));
+        break;
+      }
+      case ActionProto::ActionInfoCase::kReset: {
+        actions->emplace_back(std::make_unique<ResetAction>(action));
+        break;
+      }
+      case ActionProto::ActionInfoCase::kHighlightElement: {
+        actions->emplace_back(std::make_unique<HighlightElementAction>(action));
+        break;
+      }
+      case ActionProto::ActionInfoCase::kUploadDom: {
+        actions->emplace_back(std::make_unique<UploadDomAction>(action));
+        break;
+      }
+      case ActionProto::ActionInfoCase::kShowDetails: {
+        actions->emplace_back(std::make_unique<ShowDetailsAction>(action));
+        break;
+      }
+      case ActionProto::ActionInfoCase::kGetPaymentInformation: {
+        actions->emplace_back(
+            std::make_unique<GetPaymentInformationAction>(action));
+        break;
+      }
+      case ActionProto::ActionInfoCase::kSetFormValue: {
+        actions->emplace_back(
+            std::make_unique<SetFormFieldValueAction>(action));
+        break;
+      }
+      case ActionProto::ActionInfoCase::kShowProgressBar: {
+        actions->emplace_back(std::make_unique<ShowProgressBarAction>(action));
+        break;
+      }
+      default:
       case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
-        LOG(ERROR) << "Unknown or unspported action.";
+        DLOG(ERROR) << "Unknown or unsupported action with action_case="
+                    << action.action_info_case();
+        actions->emplace_back(std::make_unique<UnsupportedAction>(action));
         break;
       }
     }

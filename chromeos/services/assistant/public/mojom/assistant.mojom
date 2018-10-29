@@ -26,9 +26,10 @@ interface Assistant {
   // Starts a new Assistant voice interaction.
   StartVoiceInteraction();
 
-  // Stops the active Assistant interaction. If there is no active interaction,
-  // this method is a no-op.
-  StopActiveInteraction();
+  // Stops the active Assistant interaction and cancel the conversation if
+  // |cancel_conversation|. If there is no active interaction, this method
+  // is a no-op.
+  StopActiveInteraction(bool cancel_conversation);
 
   // Send text query to assistant. Result will be returned through registered
   // |AssistantInteractionSubscriber|.
@@ -44,9 +45,12 @@ interface Assistant {
       AssistantNotificationSubscriber subscriber);
 
   // Retrieves a notification. A voiceless interaction will be sent to server to
-  // retrieve the notification payload, which can trigger other assistant's
-  // events such as OnTextResponse to show the result in the UI. The reteived
-  // notification will be removed from the UI.
+  // retrieve the notification of |action_index|, which can trigger other
+  // Assistant events such as OnTextResponse to show the result in the UI. The
+  // retrieved notification will be removed from the UI.
+  // |action_index| is the index of the tapped action. The main UI in the
+  // notification contains the top level action, which index is 0. The buttons
+  // have the additional actions, which are indexed starting from 1.
   RetrieveNotification(AssistantNotification notification, int32 action_index);
 
   // Dismisses a notification.
@@ -75,8 +79,8 @@ interface AssistantInteractionSubscriber {
   // Assistant interaction has ended with the specified |resolution|.
   OnInteractionFinished(AssistantInteractionResolution resolution);
 
-  // Assistant got Html response from server.
-  OnHtmlResponse(string response);
+  // Assistant got Html response with fallback text from server.
+  OnHtmlResponse(string response, string fallback);
 
   // Assistant got suggestions response from server.
   OnSuggestionsResponse(array<AssistantSuggestion> response);
@@ -153,6 +157,9 @@ interface DeviceActions {
   // Sets the screen brightness level (0-1.0).  If |gradual| is true, the
   // transition will be animated.
   SetScreenBrightnessLevel(double level, bool gradual);
+
+  // Enables or disables Night Light.
+  SetNightLightEnabled(bool enabled);
 };
 
 // Enumeration of possible completions for an Assistant interaction.
@@ -180,6 +187,15 @@ struct AssistantSuggestion {
   url.mojom.Url action_url;
 };
 
+// Models a notification button.
+struct AssistantNotificationButton {
+  // Display text of the button.
+  string label;
+
+  // Optional URL to open when the tap action is invoked on the button.
+  url.mojom.Url action_url;
+};
+
 // Models an Assistant notification.
 struct AssistantNotification {
   // Title of the notification.
@@ -188,8 +204,12 @@ struct AssistantNotification {
   // Body text of the notification.
   string message;
 
-  // URL to open when the tap action is invoked on the notification.
+  // Optional URL to open when the tap action is invoked on the notification
+  // main UI.
   url.mojom.Url action_url;
+
+  // List of buttons in the notification.
+  array<AssistantNotificationButton> buttons;
 
   // An id that uniquely identifies a notification.
   string notification_id;

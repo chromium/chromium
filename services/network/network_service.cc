@@ -21,21 +21,27 @@
 #include "components/certificate_transparency/sth_observer.h"
 #include "components/os_crypt/os_crypt.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/logging_network_change_observer.h"
 #include "net/base/network_change_notifier.h"
+#include "net/cert/cert_database.h"
 #include "net/cert/ct_log_response_parser.h"
 #include "net/cert/signed_tree_head.h"
+#include "net/dns/dns_config_overrides.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/log/file_net_log_observer.h"
 #include "net/log/net_log.h"
+#include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_util.h"
+#include "net/ssl/ssl_key_logger_impl.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "services/network/crl_set_distributor.h"
 #include "services/network/cross_origin_read_blocking.h"
-#include "services/network/mojo_net_log.h"
+#include "services/network/net_log_capture_mode_type_converter.h"
+#include "services/network/net_log_exporter.h"
 #include "services/network/network_context.h"
 #include "services/network/network_usage_accumulator.h"
 #include "services/network/public/cpp/features.h"
@@ -52,14 +58,18 @@
 #include "components/os_crypt/key_storage_config_linux.h"
 #endif
 
+#if defined(OS_ANDROID)
+#include "base/android/application_status_listener.h"
+#endif
+
 namespace network {
 
 namespace {
 
 NetworkService* g_network_service = nullptr;
 
-MojoNetLog* GetMojoNetLog() {
-  static base::NoDestructor<MojoNetLog> instance;
+net::NetLog* GetNetLog() {
+  static base::NoDestructor<net::NetLog> instance;
   return instance.get();
 }
 
@@ -163,8 +173,7 @@ NetworkService::NetworkService(
   // per-NetworkContext basis.
   UMA_HISTOGRAM_BOOLEAN(
       "Net.Certificate.IgnoreCertificateErrorsSPKIListPresent",
-      command_line->HasSwitch(
-          network::switches::kIgnoreCertificateErrorsSPKIList));
+      command_line->HasSwitch(switches::kIgnoreCertificateErrorsSPKIList));
 
   network_change_manager_ = std::make_unique<NetworkChangeManager>(
       CreateNetworkChangeNotifierIfNeeded());
@@ -172,18 +181,16 @@ NetworkService::NetworkService(
   if (net_log) {
     net_log_ = net_log;
   } else {
-    network_service_net_log_ = GetMojoNetLog();
-    // Note: The command line switches are only checked when not using the
-    // embedder's NetLog, as it may already be writing to the destination log
-    // file.
-    net_log_ = network_service_net_log_;
+    net_log_ = GetNetLog();
   }
+
+  trace_net_log_observer_.WatchForTraceStart(net_log_);
 
   // Add an observer that will emit network change events to the ChromeNetLog.
   // Assuming NetworkChangeNotifier dispatches in FIFO order, we should be
   // logging the network change before other IO thread consumers respond to it.
-  network_change_observer_.reset(
-      new net::LoggingNetworkChangeObserver(net_log_));
+  network_change_observer_ =
+      std::make_unique<net::LoggingNetworkChangeObserver>(net_log_);
 
   network_quality_estimator_manager_ =
       std::make_unique<NetworkQualityEstimatorManager>(net_log_);
@@ -206,8 +213,11 @@ NetworkService::~NetworkService() {
   // point.
   DCHECK(network_contexts_.empty());
 
-  if (network_service_net_log_)
-    network_service_net_log_->ShutDown();
+  if (file_net_log_observer_) {
+    file_net_log_observer_->StopObserving(nullptr /*polled_data*/,
+                                          base::OnceClosure());
+  }
+  trace_net_log_observer_.StopWatchForTraceStart();
 }
 
 void NetworkService::set_os_crypt_is_configured() {
@@ -279,13 +289,21 @@ void NetworkService::SetClient(mojom::NetworkServiceClientPtr client) {
 }
 
 void NetworkService::StartNetLog(base::File file,
+                                 mojom::NetLogCaptureMode capture_mode,
                                  base::Value client_constants) {
   DCHECK(client_constants.is_dict());
   std::unique_ptr<base::DictionaryValue> constants = net::GetNetConstants();
   constants->MergeDictionary(&client_constants);
 
-  network_service_net_log_->ObserveFileWithConstants(std::move(file),
-                                                     std::move(*constants));
+  file_net_log_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
+      std::move(file), std::move(constants));
+  file_net_log_observer_->StartObserving(
+      net_log_, mojo::ConvertTo<net::NetLogCaptureMode>(capture_mode));
+}
+
+void NetworkService::SetSSLKeyLogFile(const base::FilePath& file) {
+  net::SSLClientSocket::SetSSLKeyLogger(
+      std::make_unique<net::SSLKeyLoggerImpl>(file));
 }
 
 void NetworkService::CreateNetworkContext(
@@ -303,7 +321,7 @@ void NetworkService::CreateNetworkContext(
 
 void NetworkService::ConfigureStubHostResolver(
     bool stub_resolver_enabled,
-    base::Optional<std::vector<network::mojom::DnsOverHttpsServerPtr>>
+    base::Optional<std::vector<mojom::DnsOverHttpsServerPtr>>
         dns_over_https_servers) {
   // If the stub resolver is not enabled, |dns_over_https_servers| has no
   // effect.
@@ -315,19 +333,25 @@ void NetworkService::ConfigureStubHostResolver(
   host_resolver_->SetDnsClientEnabled(stub_resolver_enabled);
 
   // Configure DNS over HTTPS.
-  host_resolver_->ClearDnsOverHttpsServers();
-  if (!dns_over_https_servers)
+  if (!dns_over_https_servers || dns_over_https_servers.value().empty()) {
+    host_resolver_->SetDnsConfigOverrides(net::DnsConfigOverrides());
     return;
+  }
 
   for (auto* network_context : network_contexts_) {
     if (!network_context->IsPrimaryNetworkContext())
       continue;
 
     host_resolver_->SetRequestContext(network_context->url_request_context());
+
+    net::DnsConfigOverrides overrides;
+    overrides.dns_over_https_servers.emplace();
     for (const auto& doh_server : *dns_over_https_servers) {
-      host_resolver_->AddDnsOverHttpsServer(doh_server->server_template,
-                                            doh_server->use_post);
+      overrides.dns_over_https_servers.value().emplace_back(
+          doh_server->server_template, doh_server->use_post);
     }
+    host_resolver_->SetDnsConfigOverrides(overrides);
+
     return;
   }
 
@@ -426,6 +450,10 @@ void NetworkService::UpdateCRLSet(base::span<const uint8_t> crl_set) {
   crl_set_distributor_->OnNewCRLSet(crl_set);
 }
 
+void NetworkService::OnCertDBChanged() {
+  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+}
+
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 void NetworkService::SetCryptConfig(mojom::CryptConfigPtr crypt_config) {
 #if !defined(IS_CHROMECAST)
@@ -457,6 +485,14 @@ void NetworkService::RemoveCorbExceptionForPlugin(uint32_t process_id) {
   DCHECK_NE(mojom::kBrowserProcessId, process_id);
   CrossOriginReadBlocking::RemoveExceptionForPlugin(process_id);
 }
+
+#if defined(OS_ANDROID)
+void NetworkService::OnApplicationStateChange(
+    base::android::ApplicationState state) {
+  for (auto* network_context : network_contexts_)
+    network_context->app_status_listener()->Notify(state);
+}
+#endif
 
 net::HttpAuthHandlerFactory* NetworkService::GetHttpAuthHandlerFactory() {
   if (!http_auth_handler_factory_) {
@@ -496,9 +532,10 @@ void NetworkService::DestroyNetworkContexts() {
   // If DNS over HTTPS is enabled, the HostResolver is currently using the
   // primary NetworkContext to do DNS lookups, so need to tell the HostResolver
   // to stop using DNS over HTTPS before destroying the primary NetworkContext.
-  // The ClearDnsOverHttpsServers() call will will fail any in-progress DNS
-  // lookups, but only if DNS over HTTPS is currently enabled.
-  host_resolver_->ClearDnsOverHttpsServers();
+  // The SetDnsConfigOverrides() call will will fail any in-progress DNS
+  // lookups, but only if there are current config overrides (which there will
+  // be if DNS over HTTPS is currently enabled).
+  host_resolver_->SetDnsConfigOverrides(net::DnsConfigOverrides());
   host_resolver_->SetRequestContext(nullptr);
 
   DCHECK_LE(owned_network_contexts_.size(), 1u);

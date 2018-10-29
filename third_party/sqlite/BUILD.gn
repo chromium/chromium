@@ -144,6 +144,12 @@ config("chromium_sqlite3_compile_options") {
     # Chrome doesn't use sqlite3_{profile,trace}().
     "SQLITE_OMIT_TRACE",
 
+    # Chrome doesn't use UPSERT.
+    "SQLITE_OMIT_UPSERT",
+
+    # Chrome doesn't use window functions in SQL.
+    "SQLITE_OMIT_WINDOWFUNC",
+
     # Uses isnan() in the C99 standard library.
     "SQLITE_HAVE_ISNAN",
   ]

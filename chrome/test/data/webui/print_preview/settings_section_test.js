@@ -8,6 +8,7 @@ cr.define('settings_sections_tests', function() {
     Copies: 'copies',
     Layout: 'layout',
     Color: 'color',
+    ColorSaveToDrive: 'color save to drive',
     MediaSize: 'media size',
     MediaSizeCustomNames: 'media size custom names',
     Margins: 'margins',
@@ -104,16 +105,6 @@ cr.define('settings_sections_tests', function() {
     function toggleMoreSettings() {
       const moreSettingsElement = page.$$('print-preview-more-settings');
       moreSettingsElement.$.label.click();
-    }
-
-    /**
-     * @param {!HTMLInputElement} element
-     * @param {!string} input The value to set for the input element.
-     */
-    function triggerInputEvent(element, input) {
-      element.value = input;
-      element.dispatchEvent(
-          new CustomEvent('input', {composed: true, bubbles: true}));
     }
 
     test(assert(TestNames.Copies), function() {
@@ -269,6 +260,27 @@ cr.define('settings_sections_tests', function() {
         assertFalse(colorElement.$$('print-preview-settings-section').managed);
         assertFalse(selectElement.disabled);
       });
+    });
+
+    test(assert(TestNames.ColorSaveToDrive), function() {
+      // Check that the Save to Google Drive printer does not show the color
+      // capability, but sets the value as true by default.
+      const colorElement = page.$$('print-preview-color-settings');
+      const googleDrivePrinter = new print_preview.Destination(
+          print_preview.Destination.GooglePromotedId.DOCS,
+          print_preview.DestinationType.GOOGLE,
+          print_preview.DestinationOrigin.COOKIES,
+          print_preview.Destination.GooglePromotedId.DOCS, true /* isRecent */,
+          print_preview.DestinationConnectionStatus.ONLINE, {});
+      page.set('destination_', googleDrivePrinter);
+      const capabilities =
+          print_preview_test_utils
+              .getCddTemplate(print_preview.Destination.GooglePromotedId.DOCS)
+              .capabilities;
+      delete capabilities.printer.color;
+      page.set('destination_.capabilities', capabilities);
+      assertTrue(colorElement.hidden);
+      assertEquals(true, page.getSettingValue('color'));
     });
 
     test(assert(TestNames.MediaSize), function() {
@@ -440,6 +452,19 @@ cr.define('settings_sections_tests', function() {
       assertFalse(optionsElement.hidden);
       assertTrue(isSectionHidden(duplex));
 
+      // Set a duplex capability with only 1 type, no duplex.
+      capabilities =
+          print_preview_test_utils.getCddTemplate('FooPrinter').capabilities;
+      delete capabilities.printer.duplex;
+      capabilities.printer.duplex = {
+        option:
+            [{type: print_preview_new.DuplexType.NO_DUPLEX, is_default: true}]
+      };
+      page.set('destination_.capabilities', capabilities);
+      Polymer.dom.flush();
+      assertFalse(optionsElement.hidden);
+      assertTrue(isSectionHidden(duplex));
+
       // PDF
       initDocumentInfo(true, false);
       Polymer.dom.flush();
@@ -557,8 +582,8 @@ cr.define('settings_sections_tests', function() {
       assertFalse(pagesElement.hidden);
 
       // Default value is all pages. Print ticket expects this to be empty.
-      const allRadio = pagesElement.$$('#all-radio-button');
-      const customRadio = pagesElement.$$('#custom-radio-button');
+      const allRadio = pagesElement.$.allRadioButton;
+      const customRadio = pagesElement.$.customRadioButton;
       const pagesCrInput = pagesElement.$.pageSettingsCustomInput;
       const pagesInput = pagesCrInput.inputElement;
 
@@ -582,12 +607,12 @@ cr.define('settings_sections_tests', function() {
       // Set selection of pages 1 and 2.
       customRadio.click();
 
-      // Manually set |customSelected_| since focus may not work correctly on
+      // Manually set |optionSelected_| since focus may not work correctly on
       // MacOS. The PageSettingsTests verify this behavior is correct on all
       // platforms.
-      pagesElement.set('customSelected_', true);
+      pagesElement.set('optionSelected_', pagesElement.pagesValueEnum_.CUSTOM);
 
-      triggerInputEvent(pagesInput, '1-2');
+      print_preview_test_utils.triggerInputEvent(pagesInput, '1-2');
       return test_util.eventToPromise('input-change', pagesElement)
           .then(function() {
             validateInputState(false, '1-2', true);
@@ -598,7 +623,7 @@ cr.define('settings_sections_tests', function() {
             assertTrue(page.settings.pages.valid);
 
             // Select pages 1 and 3
-            triggerInputEvent(pagesInput, '1, 3');
+            print_preview_test_utils.triggerInputEvent(pagesInput, '1, 3');
             return test_util.eventToPromise('input-change', pagesElement);
           })
           .then(function() {
@@ -612,7 +637,7 @@ cr.define('settings_sections_tests', function() {
             assertTrue(page.settings.pages.valid);
 
             // Enter an out of bounds value.
-            triggerInputEvent(pagesInput, '5');
+            print_preview_test_utils.triggerInputEvent(pagesInput, '5');
             return test_util.eventToPromise('input-change', pagesElement);
           })
           .then(function() {
@@ -635,7 +660,7 @@ cr.define('settings_sections_tests', function() {
       assertEquals(1, page.settings.copies.value);
 
       // Change to 2
-      triggerInputEvent(copiesInput, '2');
+      print_preview_test_utils.triggerInputEvent(copiesInput, '2');
       return test_util.eventToPromise('input-change', copiesElement)
           .then(function() {
             assertEquals(2, page.settings.copies.value);
@@ -650,6 +675,37 @@ cr.define('settings_sections_tests', function() {
             assertFalse(collateInput.checked);
             collateInput.dispatchEvent(new CustomEvent('change'));
             assertFalse(page.settings.collate.value);
+
+            // Set an empty value.
+            print_preview_test_utils.triggerInputEvent(copiesInput, '');
+            return test_util.eventToPromise('input-change', copiesElement);
+          })
+          .then(function() {
+            // Collate should be hidden now, but no update to the backing value
+            // occurs.
+            assertTrue(copiesElement.$$('.checkbox').hidden);
+            assertTrue(page.settings.copies.valid);
+            assertEquals(2, page.settings.copies.value);
+
+            // If the field is blurred, it will be reset to the default by the
+            // number-settings-section. Simulate this ocurring.
+            const numberSettingsSection =
+                copiesElement.$$('print-preview-number-settings-section');
+            numberSettingsSection.$.userValue.value = '1';
+            numberSettingsSection.currentValue = '1';
+            assertTrue(page.settings.copies.valid);
+            assertEquals(1, page.settings.copies.value);
+
+            // Enter an invalid value.
+            print_preview_test_utils.triggerInputEvent(copiesInput, '0');
+            return test_util.eventToPromise('input-change', copiesElement);
+          })
+          .then(function() {
+            // Collate should be hidden. Value is not updated to the invalid
+            // number. Setting is marked invalid.
+            assertTrue(copiesElement.$$('.checkbox').hidden);
+            assertFalse(page.settings.copies.valid);
+            assertEquals(1, page.settings.copies.value);
           });
     });
 
@@ -860,33 +916,34 @@ cr.define('settings_sections_tests', function() {
               .$.userValue.inputElement;
       const fitToPageCheckbox = scalingElement.$$('#fit-to-page-checkbox');
 
-      const validateScalingState = (scalingValue, scalingValid, fitToPage) => {
-        // Invalid scalings are always set directly in the input, so no need to
-        // verify that the input matches them.
-        if (scalingValid) {
-          const scalingDisplay = fitToPage ?
-              page.documentInfo_.fitToPageScaling.toString() :
-              scalingValue;
-          assertEquals(scalingDisplay, scalingInput.value);
-        }
-        assertEquals(scalingValue, page.settings.scaling.value);
-        assertEquals(scalingValid, page.settings.scaling.valid);
-        assertEquals(fitToPage, fitToPageCheckbox.checked);
-        assertEquals(fitToPage, page.settings.fitToPage.value);
-      };
+      const validateScalingState =
+          (scalingValue, scalingValid, fitToPage, fitToPageDisplay) => {
+            // Invalid scalings are always set directly in the input, so no need
+            // to verify that the input matches them.
+            if (scalingValid) {
+              const scalingDisplay = fitToPage ?
+                  page.documentInfo_.fitToPageScaling.toString() :
+                  scalingValue;
+              assertEquals(scalingDisplay, scalingInput.value);
+            }
+            assertEquals(scalingValue, page.settings.scaling.value);
+            assertEquals(scalingValid, page.settings.scaling.valid);
+            assertEquals(fitToPageDisplay, fitToPageCheckbox.checked);
+            assertEquals(fitToPage, page.settings.fitToPage.value);
+          };
 
       // Set PDF so both scaling and fit to page are active.
       initDocumentInfo(true, false);
       assertFalse(scalingElement.hidden);
 
       // Default is 100
-      validateScalingState('100', true, false);
+      validateScalingState('100', true, false, false);
 
       // Change to 105
-      triggerInputEvent(scalingInput, '105');
+      print_preview_test_utils.triggerInputEvent(scalingInput, '105');
       return test_util.eventToPromise('input-change', scalingElement)
           .then(function() {
-            validateScalingState('105', true, false);
+            validateScalingState('105', true, false, false);
 
             // Change to fit to page. Should display fit to page scaling but not
             // alter the scaling setting.
@@ -897,23 +954,23 @@ cr.define('settings_sections_tests', function() {
           })
           .then(function(event) {
             assertEquals('fitToPage', event.detail);
-            validateScalingState('105', true, true);
+            validateScalingState('105', true, true, true);
 
             // Set scaling. Should uncheck fit to page and set the settings for
             // scaling and fit to page.
-            triggerInputEvent(scalingInput, '95');
+            print_preview_test_utils.triggerInputEvent(scalingInput, '95');
             return test_util.eventToPromise('input-change', scalingElement);
           })
           .then(function() {
-            validateScalingState('95', true, false);
+            validateScalingState('95', true, false, false);
 
             // Set scaling to something invalid. Should change setting validity
             // but not value.
-            triggerInputEvent(scalingInput, '5');
+            print_preview_test_utils.triggerInputEvent(scalingInput, '5');
             return test_util.eventToPromise('input-change', scalingElement);
           })
           .then(function() {
-            validateScalingState('95', false, false);
+            validateScalingState('95', false, false, false);
 
             // Check fit to page. Should set scaling valid.
             fitToPageCheckbox.checked = true;
@@ -923,7 +980,7 @@ cr.define('settings_sections_tests', function() {
           })
           .then(function(event) {
             assertEquals('fitToPage', event.detail);
-            validateScalingState('95', true, true);
+            validateScalingState('95', true, true, true);
 
             // Uncheck fit to page. Should reset scaling to last valid.
             fitToPageCheckbox.checked = false;
@@ -933,7 +990,45 @@ cr.define('settings_sections_tests', function() {
           })
           .then(function(event) {
             assertEquals('fitToPage', event.detail);
-            validateScalingState('95', true, false);
+            validateScalingState('95', true, false, false);
+
+            // Change to fit to page. Should display fit to page scaling but not
+            // alter the scaling setting.
+            fitToPageCheckbox.checked = true;
+            fitToPageCheckbox.dispatchEvent(new CustomEvent('change'));
+            return test_util.eventToPromise(
+                'update-checkbox-setting', scalingElement);
+          })
+          .then(function(event) {
+            assertEquals('fitToPage', event.detail);
+            validateScalingState('95', true, true, true);
+
+            // Enter something invalid in the scaling field. This should not
+            // change the stored value of scaling or fit to page, to avoid an
+            // unnecessary preview regeneration, but should display fit to page
+            // as unchecked.
+            print_preview_test_utils.triggerInputEvent(scalingInput, '9');
+            return test_util.eventToPromise('input-change', scalingElement);
+          })
+          .then(function() {
+            validateScalingState('95', false, true, false);
+
+            // Enter a blank value in the scaling field. This should not
+            // change the stored value of scaling or fit to page, to avoid an
+            // unnecessary preview regeneration.
+            print_preview_test_utils.triggerInputEvent(scalingInput, '');
+            return test_util.eventToPromise('input-change', scalingElement);
+          })
+          .then(function() {
+            validateScalingState('95', false, true, false);
+
+            // Entering something valid unsets fit to page and sets scaling
+            // valid to true.
+            print_preview_test_utils.triggerInputEvent(scalingInput, '90');
+            return test_util.eventToPromise('input-change', scalingElement);
+          })
+          .then(function() {
+            validateScalingState('90', true, false, false);
           });
     });
 
@@ -963,7 +1058,9 @@ cr.define('settings_sections_tests', function() {
 
       return testOptionCheckbox('headerFooter', true)
           .then(function() {
-            return testOptionCheckbox('duplex', true);
+            // Duplex defaults to false, since the printer sets no duplex as the
+            // default in the CDD (see print_preview_test_utils.js).
+            return testOptionCheckbox('duplex', false);
           })
           .then(function() {
             return testOptionCheckbox('cssBackground', false);

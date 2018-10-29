@@ -43,6 +43,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/blink/texttrack_impl.h"
+#include "media/blink/url_index.h"
 #include "media/blink/video_decode_stats_reporter.h"
 #include "media/blink/watch_time_reporter.h"
 #include "media/blink/webaudiosourceprovider_impl.h"
@@ -94,8 +95,8 @@ namespace {
 
 void SetSinkIdOnMediaThread(scoped_refptr<WebAudioSourceProviderImpl> sink,
                             const std::string& device_id,
-                            const OutputDeviceStatusCB& callback) {
-  sink->SwitchOutputDevice(device_id, callback);
+                            OutputDeviceStatusCB callback) {
+  sink->SwitchOutputDevice(device_id, std::move(callback));
 }
 
 bool IsBackgroundSuspendEnabled(WebMediaPlayerDelegate* delegate) {
@@ -155,9 +156,6 @@ constexpr base::TimeDelta kPrerollAttemptTimeout =
 // Maximum number, per-WMPI, of media logs of playback rate changes.
 constexpr int kMaxNumPlaybackRateLogs = 10;
 
-constexpr base::TimeDelta kMaxKeyframeDistance =
-    base::TimeDelta::FromSeconds(5);
-
 blink::WebLocalizedString::Name GetSwitchToLocalMessage(
     MediaObserverClient::ReasonToSwitchToLocal reason) {
   switch (reason) {
@@ -188,6 +186,18 @@ EncryptionSchemeUMA DetermineEncryptionSchemeUMAValue(
 
   DCHECK_EQ(encryption_scheme.mode(), EncryptionScheme::CIPHER_MODE_AES_CTR);
   return EncryptionSchemeUMA::kCenc;
+}
+
+EncryptionMode DetermineEncryptionMode(
+    const EncryptionScheme& encryption_scheme) {
+  switch (encryption_scheme.mode()) {
+    case EncryptionScheme::CIPHER_MODE_UNENCRYPTED:
+      return EncryptionMode::kUnencrypted;
+    case EncryptionScheme::CIPHER_MODE_AES_CTR:
+      return EncryptionMode::kCenc;
+    case EncryptionScheme::CIPHER_MODE_AES_CBC:
+      return EncryptionMode::kCbcs;
+  }
 }
 
 #if BUILDFLAG(ENABLE_FFMPEG)
@@ -258,13 +268,13 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           params->enable_instant_source_buffer_gc()),
       embedded_media_experience_enabled_(
           params->embedded_media_experience_enabled()),
-      surface_layer_for_video_enabled_(params->use_surface_layer_for_video()),
+      surface_layer_mode_(params->use_surface_layer_for_video()),
       create_bridge_callback_(params->create_bridge_callback()),
       request_routing_token_cb_(params->request_routing_token_cb()),
       overlay_routing_token_(OverlayInfo::RoutingToken()),
       media_metrics_provider_(params->take_metrics_provider()) {
   DVLOG(1) << __func__;
-  DCHECK(!adjust_allocated_memory_cb_.is_null());
+  DCHECK(adjust_allocated_memory_cb_);
   DCHECK(renderer_factory_selector_);
   DCHECK(client_);
   DCHECK(delegate_);
@@ -293,6 +303,23 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
   media_log_->SetStringProperty("frame_title",
                                 frame_->GetDocument().Title().Utf8());
 
+  // To make manual testing easier, include |surface_layer_mode_| in the log.
+  // TODO(liberato): Move this into media_factory.cc, so that it can be shared
+  // with the MediaStream startup.
+  const char* surface_layer_mode_name = "(unset)";
+  switch (surface_layer_mode_) {
+    case SurfaceLayerMode::kAlways:
+      surface_layer_mode_name = "kAlways";
+      break;
+    case SurfaceLayerMode::kOnDemand:
+      surface_layer_mode_name = "kOnDemand";
+      break;
+    case SurfaceLayerMode::kNever:
+      surface_layer_mode_name = "kNever";
+      break;
+  }
+  media_log_->SetStringProperty("surface_layer_mode", surface_layer_mode_name);
+
   if (params->initial_cdm())
     SetCdm(params->initial_cdm());
 
@@ -309,6 +336,9 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
 
   memory_usage_reporting_timer_.SetTaskRunner(
       frame_->GetTaskRunner(blink::TaskType::kInternalMedia));
+
+  if (frame_->IsAdSubframe())
+    media_metrics_provider_->SetIsAdMedia();
 }
 
 WebMediaPlayerImpl::~WebMediaPlayerImpl() {
@@ -398,7 +428,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerImpl::Load(
 
   bool is_deferred = false;
 
-  if (!defer_load_cb_.is_null()) {
+  if (defer_load_cb_) {
     is_deferred = defer_load_cb_.Run(base::BindOnce(
         &WebMediaPlayerImpl::DoLoad, AsWeakPtr(), load_type, url, cors_mode));
   } else {
@@ -428,7 +458,8 @@ void WebMediaPlayerImpl::OnSurfaceIdUpdated(viz::SurfaceId surface_id) {
   // the size of the video changes.
   if (client_ && IsInPictureInPicture() && !client_->IsInAutoPIP()) {
     delegate_->DidPictureInPictureSurfaceChange(
-        delegate_id_, surface_id, pipeline_metadata_.natural_size);
+        delegate_id_, surface_id, pipeline_metadata_.natural_size,
+        true /* show_play_pause_button */);
   }
 }
 
@@ -601,10 +632,14 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   if (load_type == kLoadTypeMediaSource) {
     StartPipeline();
   } else {
+    auto url_data =
+        url_index_->GetByUrl(url, static_cast<UrlData::CORSMode>(cors_mode));
+    // Notify |this| of bytes received by the network.
+    url_data->AddBytesReceivedCallback(BindToCurrentLoop(base::BindRepeating(
+        &WebMediaPlayerImpl::OnBytesReceived, AsWeakPtr())));
     data_source_.reset(new MultibufferDataSource(
-        main_task_runner_,
-        url_index_->GetByUrl(url, static_cast<UrlData::CORSMode>(cors_mode)),
-        media_log_.get(), &buffered_data_source_host_,
+        main_task_runner_, std::move(url_data), media_log_.get(),
+        &buffered_data_source_host_,
         base::Bind(&WebMediaPlayerImpl::NotifyDownloading, AsWeakPtr())));
     data_source_->SetPreload(preload_);
     data_source_->SetIsClientAudioElement(client_->IsAudioElement());
@@ -740,8 +775,8 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
     // ready state change to eventually happen.
     if (old_state == kReadyStateHaveEnoughData) {
       main_task_runner_->PostTask(
-          FROM_HERE, base::Bind(&WebMediaPlayerImpl::OnBufferingStateChange,
-                                AsWeakPtr(), BUFFERING_HAVE_ENOUGH));
+          FROM_HERE, base::BindOnce(&WebMediaPlayerImpl::OnBufferingStateChange,
+                                    AsWeakPtr(), BUFFERING_HAVE_ENOUGH));
     }
     return;
   }
@@ -805,6 +840,9 @@ void WebMediaPlayerImpl::SetVolume(double volume) {
 
 void WebMediaPlayerImpl::EnterPictureInPicture(
     blink::WebMediaPlayer::PipWindowOpenedCallback callback) {
+  if (!surface_layer_for_video_enabled_)
+    ActivateSurfaceLayerForVideo();
+
   DCHECK(bridge_);
 
   const viz::SurfaceId& surface_id = bridge_->GetSurfaceId();
@@ -812,9 +850,9 @@ void WebMediaPlayerImpl::EnterPictureInPicture(
 
   // Notifies the browser process that the player should now be in
   // Picture-in-Picture mode.
-  delegate_->DidPictureInPictureModeStart(delegate_id_, surface_id,
-                                          pipeline_metadata_.natural_size,
-                                          std::move(callback));
+  delegate_->DidPictureInPictureModeStart(
+      delegate_id_, surface_id, pipeline_metadata_.natural_size,
+      std::move(callback), true /* show_play_pause_button */);
 }
 
 void WebMediaPlayerImpl::ExitPictureInPicture(
@@ -840,16 +878,17 @@ void WebMediaPlayerImpl::RegisterPictureInPictureWindowResizeCallback(
                                                           std::move(callback));
 }
 
-void WebMediaPlayerImpl::SetSinkId(const blink::WebString& sink_id,
-                                   blink::WebSetSinkIdCallbacks* web_callback) {
+void WebMediaPlayerImpl::SetSinkId(
+    const blink::WebString& sink_id,
+    std::unique_ptr<blink::WebSetSinkIdCallbacks> web_callback) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DVLOG(1) << __func__;
 
   media::OutputDeviceStatusCB callback =
-      media::ConvertToOutputDeviceStatusCB(web_callback);
+      media::ConvertToOutputDeviceStatusCB(std::move(web_callback));
   media_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&SetSinkIdOnMediaThread, audio_source_provider_,
-                            sink_id.Utf8(), callback));
+      FROM_HERE, base::BindOnce(&SetSinkIdOnMediaThread, audio_source_provider_,
+                                sink_id.Utf8(), std::move(callback)));
 }
 
 STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadNone, MultibufferDataSource::NONE);
@@ -1015,6 +1054,11 @@ WebMediaPlayer::ReadyState WebMediaPlayerImpl::GetReadyState() const {
   return ready_state_;
 }
 
+blink::WebMediaPlayer::SurfaceLayerMode
+WebMediaPlayerImpl::GetVideoSurfaceLayerMode() const {
+  return surface_layer_mode_;
+}
+
 blink::WebString WebMediaPlayerImpl::GetErrorMessage() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return blink::WebString::FromUTF8(media_log_->GetErrorMessage());
@@ -1115,10 +1159,12 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
 
   gfx::Rect gfx_rect(rect);
   Context3D context_3d;
+  gpu::ContextSupport* context_support = nullptr;
   if (video_frame.get() && video_frame->HasTextures()) {
     if (context_provider_) {
       context_3d = Context3D(context_provider_->ContextGL(),
                              context_provider_->GrContext());
+      context_support = context_provider_->ContextSupport();
     }
     if (!context_3d.gl)
       return;  // Unable to get/create a shared main thread context.
@@ -1136,13 +1182,8 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
   }
   video_renderer_.Paint(
       video_frame, canvas, gfx::RectF(gfx_rect), flags,
-      pipeline_metadata_.video_decoder_config.video_rotation(), context_3d);
-}
-
-bool WebMediaPlayerImpl::DidGetOpaqueResponseFromServiceWorker() const {
-  if (data_source_)
-    return data_source_->DidGetOpaqueResponseViaServiceWorker();
-  return false;
+      pipeline_metadata_.video_decoder_config.video_rotation(), context_3d,
+      context_support);
 }
 
 bool WebMediaPlayerImpl::HasSingleSecurityOrigin() const {
@@ -1157,10 +1198,15 @@ bool WebMediaPlayerImpl::HasSingleSecurityOrigin() const {
   return true;
 }
 
-bool WebMediaPlayerImpl::DidPassCORSAccessCheck() const {
-  if (data_source_)
-    return data_source_->DidPassCORSAccessCheck();
-  return false;
+bool WebMediaPlayerImpl::WouldTaintOrigin() const {
+  if (!HasSingleSecurityOrigin()) {
+    // When the resource is redirected to another origin we think it as
+    // tainted. This is actually not specified, and is under discussion.
+    // See https://github.com/whatwg/fetch/issues/737.
+    return true;
+  }
+
+  return data_source_ && data_source_->IsCorsCrossOrigin();
 }
 
 double WebMediaPlayerImpl::MediaTimeForTimeValue(double timeValue) const {
@@ -1222,13 +1268,15 @@ bool WebMediaPlayerImpl::CopyVideoTextureToPlatformTexture(
   }
 
   Context3D context_3d;
+  gpu::ContextSupport* context_support = nullptr;
   if (context_provider_) {
     context_3d = Context3D(context_provider_->ContextGL(),
                            context_provider_->GrContext());
+    context_support = context_provider_->ContextSupport();
   }
   return video_renderer_.CopyVideoFrameTexturesToGLTexture(
-      context_3d, gl, video_frame.get(), target, texture, internal_format,
-      format, type, level, premultiply_alpha, flip_y);
+      context_3d, context_support, gl, video_frame.get(), target, texture,
+      internal_format, format, type, level, premultiply_alpha, flip_y);
 }
 
 // static
@@ -1544,10 +1592,10 @@ void WebMediaPlayerImpl::OnMemoryPressure(
   // from ~WMPI by first hopping to |media_task_runner_| to prevent race with
   // this task.
   media_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&ChunkDemuxer::OnMemoryPressure,
-                            base::Unretained(chunk_demuxer_),
-                            base::TimeDelta::FromSecondsD(CurrentTime()),
-                            memory_pressure_level, force_instant_gc));
+      FROM_HERE, base::BindOnce(&ChunkDemuxer::OnMemoryPressure,
+                                base::Unretained(chunk_demuxer_),
+                                base::TimeDelta::FromSecondsD(CurrentTime()),
+                                memory_pressure_level, force_instant_gc));
 }
 
 void WebMediaPlayerImpl::OnError(PipelineStatus status) {
@@ -1568,7 +1616,8 @@ void WebMediaPlayerImpl::OnError(PipelineStatus status) {
     SetMemoryReportingState(false);
 
     main_task_runner_->PostTask(
-        FROM_HERE, base::Bind(&WebMediaPlayerImpl::StartPipeline, AsWeakPtr()));
+        FROM_HERE,
+        base::BindOnce(&WebMediaPlayerImpl::StartPipeline, AsWeakPtr()));
     return;
   }
 #endif
@@ -1655,43 +1704,20 @@ void WebMediaPlayerImpl::OnMetadata(PipelineMetadata metadata) {
         DisableOverlay();
     }
 
-    if (!surface_layer_for_video_enabled_) {
+    if (surface_layer_mode_ ==
+            blink::WebMediaPlayer::SurfaceLayerMode::kAlways ||
+        (surface_layer_mode_ ==
+             blink::WebMediaPlayer::SurfaceLayerMode::kOnDemand &&
+         client_->DisplayType() ==
+             WebMediaPlayer::DisplayType::kPictureInPicture)) {
+      ActivateSurfaceLayerForVideo();
+    } else {
       DCHECK(!video_layer_);
       video_layer_ = cc::VideoLayer::Create(
           compositor_.get(),
           pipeline_metadata_.video_decoder_config.video_rotation());
       video_layer_->SetContentsOpaque(opaque_);
       client_->SetCcLayer(video_layer_.get());
-    } else {
-      DCHECK(!bridge_);
-
-      bridge_ = std::move(create_bridge_callback_)
-                    .Run(this, compositor_->GetUpdateSubmissionStateCallback());
-      bridge_->CreateSurfaceLayer();
-
-      vfc_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &VideoFrameCompositor::EnableSubmission,
-              base::Unretained(compositor_.get()), bridge_->GetSurfaceId(),
-              pipeline_metadata_.video_decoder_config.video_rotation(),
-              IsInPictureInPicture(), opaque_,
-              BindToCurrentLoop(base::BindRepeating(
-                  &WebMediaPlayerImpl::OnFrameSinkDestroyed, AsWeakPtr()))));
-      bridge_->SetContentsOpaque(opaque_);
-
-      // If the element is already in Picture-in-Picture mode, it means that it
-      // was set in this mode prior to this load, with a different
-      // WebMediaPlayerImpl. The new player needs to send its id, size and
-      // surface id to the browser process to make sure the states are properly
-      // updated.
-      // TODO(872056): the surface should be activated but for some reasons, it
-      // does not. It is possible that this will no longer be neded after 872056
-      // is fixed.
-      if (client_->DisplayType() ==
-          WebMediaPlayer::DisplayType::kPictureInPicture) {
-        OnSurfaceIdUpdated(bridge_->GetSurfaceId());
-      }
     }
   }
 
@@ -1705,6 +1731,48 @@ void WebMediaPlayerImpl::OnMetadata(PipelineMetadata metadata) {
   CreateVideoDecodeStatsReporter();
 
   UpdatePlayState();
+}
+
+void WebMediaPlayerImpl::ActivateSurfaceLayerForVideo() {
+  // Note that we might or might not already be in VideoLayer mode.
+  DCHECK(!bridge_);
+
+  surface_layer_for_video_enabled_ = true;
+
+  // If we're in VideoLayer mode, then get rid of the layer.
+  if (video_layer_) {
+    client_->SetCcLayer(nullptr);
+    video_layer_ = nullptr;
+  }
+
+  bridge_ = std::move(create_bridge_callback_)
+                .Run(this, compositor_->GetUpdateSubmissionStateCallback());
+  bridge_->CreateSurfaceLayer();
+
+  vfc_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &VideoFrameCompositor::EnableSubmission,
+          base::Unretained(compositor_.get()), bridge_->GetSurfaceId(),
+          bridge_->GetLocalSurfaceIdAllocationTime(),
+          pipeline_metadata_.video_decoder_config.video_rotation(),
+          IsInPictureInPicture(), opaque_,
+          BindToCurrentLoop(base::BindRepeating(
+              &WebMediaPlayerImpl::OnFrameSinkDestroyed, AsWeakPtr()))));
+  bridge_->SetContentsOpaque(opaque_);
+
+  // If the element is already in Picture-in-Picture mode, it means that it
+  // was set in this mode prior to this load, with a different
+  // WebMediaPlayerImpl. The new player needs to send its id, size and
+  // surface id to the browser process to make sure the states are properly
+  // updated.
+  // TODO(872056): the surface should be activated but for some reasons, it
+  // does not. It is possible that this will no longer be needed after 872056
+  // is fixed.
+  if (client_->DisplayType() ==
+      WebMediaPlayer::DisplayType::kPictureInPicture) {
+    OnSurfaceIdUpdated(bridge_->GetSurfaceId());
+  }
 }
 
 void WebMediaPlayerImpl::OnFrameSinkDestroyed() {
@@ -2147,6 +2215,10 @@ void WebMediaPlayerImpl::OnPictureInPictureControlClicked(
   }
 }
 
+void WebMediaPlayerImpl::OnBytesReceived(uint64_t data_length) {
+  media_metrics_provider_->AddBytesReceived(data_length);
+}
+
 void WebMediaPlayerImpl::ScheduleRestart() {
   // TODO(watk): All restart logic should be moved into PipelineController.
   if (pipeline_controller_.IsPipelineRunning() &&
@@ -2196,6 +2268,8 @@ void WebMediaPlayerImpl::FlingingStarted() {
   DCHECK(!disable_pipeline_auto_suspend_);
   disable_pipeline_auto_suspend_ = true;
 
+  is_flinging_ = true;
+
   // Capabilities reporting should only be performed for local playbacks.
   video_decode_stats_reporter_.reset();
 
@@ -2208,6 +2282,8 @@ void WebMediaPlayerImpl::FlingingStopped() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(disable_pipeline_auto_suspend_);
   disable_pipeline_auto_suspend_ = false;
+
+  is_flinging_ = false;
 
   CreateVideoDecodeStatsReporter();
 
@@ -2321,7 +2397,7 @@ void WebMediaPlayerImpl::OnOverlayInfoRequested(
   // If we get a non-null cb, a decoder is initializing and requires overlay
   // info. If we get a null cb, a previously initialized decoder is
   // unregistering for overlay info updates.
-  if (provide_overlay_info_cb.is_null()) {
+  if (!provide_overlay_info_cb) {
     decoder_requires_restart_for_overlay_ = false;
     provide_overlay_info_cb_.Reset();
     return;
@@ -2378,7 +2454,7 @@ void WebMediaPlayerImpl::MaybeSendOverlayInfoToDecoder() {
 
   // If restart is required, the callback is one-shot only.
   if (decoder_requires_restart_for_overlay_) {
-    base::ResetAndReturn(&provide_overlay_info_cb_).Run(overlay_info_);
+    std::move(provide_overlay_info_cb_).Run(overlay_info_);
   } else {
     provide_overlay_info_cb_.Run(overlay_info_);
   }
@@ -2465,6 +2541,10 @@ void WebMediaPlayerImpl::StartPipeline() {
         BindToCurrentLoop(
             base::Bind(&WebMediaPlayerImpl::OnProgress, AsWeakPtr())),
         encrypted_media_init_data_cb, media_log_.get());
+    // Notify |this| of bytes that are received via MSE.
+    chunk_demuxer_->AddBytesReceivedCallback(
+        BindToCurrentLoop(base::BindRepeating(
+            &WebMediaPlayerImpl::OnBytesReceived, AsWeakPtr())));
     demuxer_.reset(chunk_demuxer_);
 
     if (base::FeatureList::IsEnabled(kMemoryPressureBasedSourceBufferGC)) {
@@ -2541,8 +2621,9 @@ scoped_refptr<VideoFrame> WebMediaPlayerImpl::GetCurrentFrameFromCompositor()
   // which also runs on |main_task_runner_|, which makes it impossible for
   // UpdateCurrentFrameIfStale() to be queued after |compositor_|'s dtor.
   vfc_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&VideoFrameCompositor::UpdateCurrentFrameIfStale,
-                            base::Unretained(compositor_.get())));
+      FROM_HERE,
+      base::BindOnce(&VideoFrameCompositor::UpdateCurrentFrameIfStale,
+                     base::Unretained(compositor_.get())));
 
   return video_frame;
 }
@@ -2937,7 +3018,12 @@ void WebMediaPlayerImpl::UpdateSecondaryProperties() {
       mojom::SecondaryPlaybackProperties::New(
           pipeline_metadata_.audio_decoder_config.codec(),
           pipeline_metadata_.video_decoder_config.codec(), audio_decoder_name_,
-          video_decoder_name_, pipeline_metadata_.natural_size));
+          video_decoder_name_,
+          DetermineEncryptionMode(
+              pipeline_metadata_.audio_decoder_config.encryption_scheme()),
+          DetermineEncryptionMode(
+              pipeline_metadata_.video_decoder_config.encryption_scheme()),
+          pipeline_metadata_.natural_size));
 }
 
 bool WebMediaPlayerImpl::IsHidden() const {
@@ -2995,7 +3081,7 @@ bool WebMediaPlayerImpl::ShouldPauseVideoWhenHidden() const {
       return false;
 
 #if defined(OS_ANDROID)
-    if (IsRemote())
+    if (IsRemote() || is_flinging_)
       return false;
 #endif
 
@@ -3006,7 +3092,7 @@ bool WebMediaPlayerImpl::ShouldPauseVideoWhenHidden() const {
   // Otherwise only pause if the optimization is on and it's a video-only
   // optimization candidate.
   return IsBackgroundVideoPauseOptimizationEnabled() && !HasAudio() &&
-         IsBackgroundOptimizationCandidate();
+         IsBackgroundOptimizationCandidate() && !is_flinging_;
 }
 
 bool WebMediaPlayerImpl::ShouldDisableVideoWhenHidden() const {
@@ -3047,12 +3133,16 @@ bool WebMediaPlayerImpl::IsBackgroundOptimizationCandidate() const {
   // Videos shorter than the maximum allowed keyframe distance can be optimized.
   base::TimeDelta duration = GetPipelineMediaDuration();
 
-  if (duration < kMaxKeyframeDistance)
+  constexpr base::TimeDelta kMaxKeyframeDistanceToDisableBackgroundVideo =
+      base::TimeDelta::FromMilliseconds(
+          kMaxKeyframeDistanceToDisableBackgroundVideoMs);
+  if (duration < kMaxKeyframeDistanceToDisableBackgroundVideo)
     return true;
 
   // Otherwise, only optimize videos with shorter average keyframe distance.
   PipelineStatistics stats = GetPipelineStatistics();
-  return stats.video_keyframe_distance_average < kMaxKeyframeDistance;
+  return stats.video_keyframe_distance_average <
+         kMaxKeyframeDistanceToDisableBackgroundVideo;
 }
 
 void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
@@ -3250,6 +3340,10 @@ void WebMediaPlayerImpl::OnFirstFrame(base::TimeTicks frame_time) {
   const base::TimeDelta elapsed = frame_time - load_start_time_;
   media_metrics_provider_->SetTimeToFirstFrame(elapsed);
   RecordTimingUMA("Media.TimeToFirstFrame", elapsed);
+  if (url_index_->HasReachedMaxParallelPreload()) {
+    base::UmaHistogramMediumTimes("Media.TimeToFirstFrame.SRC.ManyVideos",
+                                  elapsed);
+  }
 }
 
 void WebMediaPlayerImpl::RecordTimingUMA(const std::string& key,

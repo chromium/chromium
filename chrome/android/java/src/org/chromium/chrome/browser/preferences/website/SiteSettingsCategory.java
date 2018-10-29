@@ -37,15 +37,15 @@ import java.lang.annotation.RetentionPolicy;
  * A base class for dealing with website settings categories.
  */
 public class SiteSettingsCategory {
-    @IntDef({Type.ALL_SITES, Type.ADS, Type.AUTOPLAY, Type.BACKGROUND_SYNC, Type.CAMERA,
-            Type.CLIPBOARD, Type.COOKIES, Type.DEVICE_LOCATION, Type.JAVASCRIPT, Type.MICROPHONE,
-            Type.NOTIFICATIONS, Type.POPUPS, Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND,
-            Type.USE_STORAGE, Type.USB})
+    @IntDef({Type.ALL_SITES, Type.ADS, Type.AUTOMATIC_DOWNLOADS, Type.AUTOPLAY,
+            Type.BACKGROUND_SYNC, Type.CAMERA, Type.CLIPBOARD, Type.COOKIES, Type.DEVICE_LOCATION,
+            Type.JAVASCRIPT, Type.MICROPHONE, Type.NOTIFICATIONS, Type.POPUPS, Type.PROTECTED_MEDIA,
+            Type.SENSORS, Type.SOUND, Type.USE_STORAGE, Type.USB})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
-        // Values used to address array index. Should be enumerated from 0 and
-        // can't have gaps. After adding new value please increase NUM_CATEGORIES
-        // and update PREFERENCE_KEYS and CONTENT_TYPES.
+        // Values used to address array index - should be enumerated from 0 and can't have gaps.
+        // All updates here must also be reflected in {@link #preferenceKey(int)
+        // preferenceKey} and {@link #contentSettingsType(int) contentSettingsType}.
         int ALL_SITES = 0;
         int ADS = 1;
         int AUTOPLAY = 2;
@@ -63,61 +63,12 @@ public class SiteSettingsCategory {
         int SOUND = 14;
         int USE_STORAGE = 15;
         int USB = 16;
+        int AUTOMATIC_DOWNLOADS = 17;
         /**
          * Number of handled categories used for calculating array sizes.
          */
-        int NUM_ENTRIES = 17;
+        int NUM_ENTRIES = 18;
     }
-
-    /**
-     * Mapping from Type to String used in preferences. Values are sorted like
-     * Type constants.
-     */
-    private static final String[] PREFERENCE_KEYS = {
-            "all_sites", // Type.ALL_SITES
-            "ads", // Type.ADS
-            "autoplay", // Type.AUTOPLAY
-            "background_sync", // Type.BACKGROUND_SYNC
-            "camera", // Type.CAMERA
-            "clipboard", // Type.CLIPBOARD
-            "cookies", // Type.COOKIES,
-            "device_location", // Type.DEVICE_LOCATION
-            "javascript", // Type.JAVASCRIPT
-            "microphone", // Type.MICROPHONE
-            "notifications", // Type.NOTIFICATIONS
-            "popups", // Type.POPUPS
-            "protected_content", // Type.PROTECTED_MEDIA
-            "sensors", // Type.SENSORS
-            "sound", // Type.SOUND
-            "use_storage", // Type.USE_STORAGE
-            "usb", // Type.USB
-    };
-
-    /**
-     * Mapping from Type to ContentSettingsType. Values are sorted like Type
-     * constants, -1 means unavailable conversion.
-     */
-    private static final int[] CONTENT_TYPES = {
-            // This comment ensures clang-format will keep first entry in separate line.
-            -1, // Type.ALL_SITES
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_ADS, // Type.ADS
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY, // Type.AUTOPLAY
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC, // Type.BACKGROUND_SYNC
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA, // Type.CAMERA
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_CLIPBOARD_READ, // Type.CLIPBOARD
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_COOKIES, // Type.COOKIES
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION, // Type.DEVICE_LOCATION
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_JAVASCRIPT, // Type.JAVASCRIPT
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC, // Type.MICROPHONE
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS, // Type.NOTIFICATIONS
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_POPUPS, // Type.POPUPS
-            ContentSettingsType
-                    .CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER, // Type.PROTECTED_MEDIA
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_SENSORS, // Type.SENSORS
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_SOUND, // Type.SOUND
-            -1, // Type.USE_STORAGE
-            ContentSettingsType.CONTENT_SETTINGS_TYPE_USB_GUARD, // Type.USB
-    };
 
     // The id of this category.
     private @Type int mCategory;
@@ -133,9 +84,6 @@ public class SiteSettingsCategory {
      *        that this category represents (or blank, if Android does not expose that permission).
      */
     protected SiteSettingsCategory(@Type int category, String androidPermission) {
-        assert Type.NUM_ENTRIES == PREFERENCE_KEYS.length;
-        assert Type.NUM_ENTRIES == CONTENT_TYPES.length;
-
         mCategory = category;
         mAndroidPermission = androidPermission;
     }
@@ -163,7 +111,7 @@ public class SiteSettingsCategory {
         assert contentSettingsType != -1;
         assert Type.ALL_SITES == 0;
         for (@Type int i = Type.ALL_SITES; i < Type.NUM_ENTRIES; i++) {
-            if (CONTENT_TYPES[i] == contentSettingsType) return createFromType(i);
+            if (contentSettingsType(i) == contentSettingsType) return createFromType(i);
         }
         return null;
     }
@@ -171,7 +119,7 @@ public class SiteSettingsCategory {
     public static SiteSettingsCategory createFromPreferenceKey(String preferenceKey) {
         assert Type.ALL_SITES == 0;
         for (@Type int i = Type.ALL_SITES; i < Type.NUM_ENTRIES; i++) {
-            if (PREFERENCE_KEYS[i].equals(preferenceKey)) return createFromType(i);
+            if (preferenceKey(i).equals(preferenceKey)) return createFromType(i);
         }
         return null;
     }
@@ -180,21 +128,98 @@ public class SiteSettingsCategory {
      * Convert Type into {@link ContentSettingsType}
      */
     public static int contentSettingsType(@Type int type) {
-        return CONTENT_TYPES[type];
+        switch (type) {
+            case Type.ADS:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_ADS;
+            case Type.AUTOMATIC_DOWNLOADS:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS;
+            case Type.AUTOPLAY:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY;
+            case Type.BACKGROUND_SYNC:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC;
+            case Type.CAMERA:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA;
+            case Type.CLIPBOARD:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_CLIPBOARD_READ;
+            case Type.COOKIES:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_COOKIES;
+            case Type.DEVICE_LOCATION:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION;
+            case Type.JAVASCRIPT:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_JAVASCRIPT;
+            case Type.MICROPHONE:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC;
+            case Type.NOTIFICATIONS:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS;
+            case Type.POPUPS:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_POPUPS;
+            case Type.PROTECTED_MEDIA:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER;
+            case Type.SENSORS:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_SENSORS;
+            case Type.SOUND:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_SOUND;
+            case Type.USB:
+                return ContentSettingsType.CONTENT_SETTINGS_TYPE_USB_GUARD;
+            // case Type.ALL_SITES
+            // case Type.USE_STORAGE
+            default:
+                return -1; // Conversion unavailable.
+        }
     }
 
     /**
      * Convert Type into preference String
      */
     public static String preferenceKey(@Type int type) {
-        return PREFERENCE_KEYS[type];
+        switch (type) {
+            case Type.ADS:
+                return "ads";
+            case Type.ALL_SITES:
+                return "all_sites";
+            case Type.AUTOMATIC_DOWNLOADS:
+                return "automatic_downloads";
+            case Type.AUTOPLAY:
+                return "autoplay";
+            case Type.BACKGROUND_SYNC:
+                return "background_sync";
+            case Type.CAMERA:
+                return "camera";
+            case Type.CLIPBOARD:
+                return "clipboard";
+            case Type.COOKIES:
+                return "cookies";
+            case Type.DEVICE_LOCATION:
+                return "device_location";
+            case Type.JAVASCRIPT:
+                return "javascript";
+            case Type.MICROPHONE:
+                return "microphone";
+            case Type.NOTIFICATIONS:
+                return "notifications";
+            case Type.POPUPS:
+                return "popups";
+            case Type.PROTECTED_MEDIA:
+                return "protected_content";
+            case Type.SENSORS:
+                return "sensors";
+            case Type.SOUND:
+                return "sound";
+            case Type.USB:
+                return "usb";
+            case Type.USE_STORAGE:
+                return "use_storage";
+            default:
+                assert false;
+                return "";
+        }
     }
 
     /**
      * Returns the {@link ContentSettingsType} for this category, or -1 if no such type exists.
      */
     public @ContentSettingsType int getContentSettingsType() {
-        return CONTENT_TYPES[mCategory];
+        return contentSettingsType(mCategory);
     }
 
     /**
@@ -217,7 +242,9 @@ public class SiteSettingsCategory {
      */
     public boolean isManaged() {
         PrefServiceBridge prefs = PrefServiceBridge.getInstance();
-        if (showSites(Type.BACKGROUND_SYNC)) {
+        if (showSites(Type.AUTOMATIC_DOWNLOADS)) {
+            return prefs.isAutomaticDownloadsManaged();
+        } else if (showSites(Type.BACKGROUND_SYNC)) {
             return prefs.isBackgroundSyncManaged();
         } else if (showSites(Type.COOKIES)) {
             return !prefs.isAcceptCookiesUserModifiable();

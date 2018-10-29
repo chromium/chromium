@@ -484,15 +484,17 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
   LogHistogramValue(signin_metrics::HISTOGRAM_SHOWN);
 }
 
-void InlineLoginHandlerImpl::CompleteLogin(const base::ListValue* args) {
+void InlineLoginHandlerImpl::CompleteLogin(const std::string& email,
+                                           const std::string& password,
+                                           const std::string& gaia_id,
+                                           const std::string& auth_code,
+                                           bool skip_for_now,
+                                           bool trusted,
+                                           bool trusted_found,
+                                           bool choose_what_to_sync) {
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetURL();
 
-  const base::DictionaryValue* dict = NULL;
-  args->GetDictionary(0, &dict);
-
-  bool skip_for_now = false;
-  dict->GetBoolean("skipForNow", &skip_for_now);
   if (skip_for_now) {
     signin::SetUserSkippedPromo(Profile::FromWebUI(web_ui()));
     SyncStarterCallback(OneClickSigninSyncStarter::SYNC_SETUP_FAILURE);
@@ -500,31 +502,12 @@ void InlineLoginHandlerImpl::CompleteLogin(const base::ListValue* args) {
   }
 
   // This value exists only for webview sign in.
-  bool trusted = false;
-  if (dict->GetBoolean("trusted", &trusted))
+  if (trusted_found)
     confirm_untrusted_signin_ = !trusted;
 
-  base::string16 email_string16;
-  dict->GetString("email", &email_string16);
-  DCHECK(!email_string16.empty());
-  std::string email(base::UTF16ToASCII(email_string16));
-
-  base::string16 password_string16;
-  dict->GetString("password", &password_string16);
-  std::string password(base::UTF16ToASCII(password_string16));
-
-  base::string16 gaia_id_string16;
-  dict->GetString("gaiaId", &gaia_id_string16);
-  DCHECK(!gaia_id_string16.empty());
-  std::string gaia_id = base::UTF16ToASCII(gaia_id_string16);
-
-  base::string16 auth_code_string16;
-  dict->GetString("authCode", &auth_code_string16);
-  std::string auth_code = base::UTF16ToASCII(auth_code_string16);
+  DCHECK(!email.empty());
+  DCHECK(!gaia_id.empty());
   DCHECK(!auth_code.empty());
-
-  bool choose_what_to_sync = false;
-  dict->GetBoolean("chooseWhatToSync", &choose_what_to_sync);
 
   content::StoragePartition* partition =
       content::BrowserContext::GetStoragePartitionForSite(

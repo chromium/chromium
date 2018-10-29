@@ -617,9 +617,8 @@ CookieMonster::~CookieMonster() {
 
   // TODO(mmenke): Does it really make sense to run
   // CookieChanged callbacks when the CookieStore is destroyed?
-  for (CookieMap::iterator cookie_it = cookies_.begin();
-       cookie_it != cookies_.end();) {
-    CookieMap::iterator current_cookie_it = cookie_it;
+  for (auto cookie_it = cookies_.begin(); cookie_it != cookies_.end();) {
+    auto current_cookie_it = cookie_it;
     ++cookie_it;
     InternalDeleteCookie(current_cookie_it, false /* sync_to_store */,
                          DELETE_COOKIE_DONT_RECORD);
@@ -681,8 +680,8 @@ void CookieMonster::DeleteAllCreatedInTimeRange(const TimeRange& creation_range,
   DCHECK(thread_checker_.CalledOnValidThread());
 
   uint32_t num_deleted = 0;
-  for (CookieMap::iterator it = cookies_.begin(); it != cookies_.end();) {
-    CookieMap::iterator curit = it;
+  for (auto it = cookies_.begin(); it != cookies_.end();) {
+    auto curit = it;
     CanonicalCookie* cc = curit->second.get();
     ++it;
 
@@ -702,8 +701,8 @@ void CookieMonster::DeleteAllCreatedInTimeRange(const TimeRange& creation_range,
 void CookieMonster::DeleteAllMatchingInfo(CookieDeletionInfo delete_info,
                                           DeleteCallback callback) {
   uint32_t num_deleted = 0;
-  for (CookieMap::iterator it = cookies_.begin(); it != cookies_.end();) {
-    CookieMap::iterator curit = it;
+  for (auto it = cookies_.begin(); it != cookies_.end();) {
+    auto curit = it;
     CanonicalCookie* cc = curit->second.get();
     ++it;
 
@@ -778,8 +777,8 @@ void CookieMonster::DeleteCookie(const GURL& url,
     matching_cookies.insert(cookie);
   }
 
-  for (CookieMap::iterator it = cookies_.begin(); it != cookies_.end();) {
-    CookieMap::iterator curit = it;
+  for (auto it = cookies_.begin(); it != cookies_.end();) {
+    auto curit = it;
     ++it;
     if (matching_cookies.find(curit->second.get()) != matching_cookies.end()) {
       InternalDeleteCookie(curit, true, DELETE_COOKIE_EXPLICIT);
@@ -824,8 +823,8 @@ void CookieMonster::DeleteSessionCookies(DeleteCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   uint32_t num_deleted = 0;
-  for (CookieMap::iterator it = cookies_.begin(); it != cookies_.end();) {
-    CookieMap::iterator curit = it;
+  for (auto it = cookies_.begin(); it != cookies_.end();) {
+    auto curit = it;
     CanonicalCookie* cc = curit->second.get();
     ++it;
 
@@ -917,8 +916,8 @@ void CookieMonster::StoreLoadedCookies(
 
   for (auto& cookie : cookies) {
     CanonicalCookie* cookie_ptr = cookie.get();
-    CookieMap::iterator inserted = InternalInsertCookie(
-        GetKey(cookie_ptr->Domain()), std::move(cookie), false);
+    auto inserted = InternalInsertCookie(GetKey(cookie_ptr->Domain()),
+                                         std::move(cookie), false);
     const Time cookie_access_time(cookie_ptr->LastAccessDate());
     if (earliest_access_time_.is_null() ||
         cookie_access_time < earliest_access_time_) {
@@ -933,9 +932,9 @@ void CookieMonster::StoreLoadedCookies(
 
   // Any cookies that contain control characters that we have loaded from the
   // persistent store should be deleted. See http://crbug.com/238041.
-  for (CookieItVector::iterator it = cookies_with_control_chars.begin();
+  for (auto it = cookies_with_control_chars.begin();
        it != cookies_with_control_chars.end();) {
-    CookieItVector::iterator curit = it;
+    auto curit = it;
     ++it;
 
     InternalDeleteCookie(*curit, true, DELETE_COOKIE_CONTROL_CHAR);
@@ -984,11 +983,11 @@ void CookieMonster::EnsureCookiesMapIsValid() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Iterate through all the of the cookies, grouped by host.
-  CookieMap::iterator prev_range_end = cookies_.begin();
+  auto prev_range_end = cookies_.begin();
   while (prev_range_end != cookies_.end()) {
-    CookieMap::iterator cur_range_begin = prev_range_end;
+    auto cur_range_begin = prev_range_end;
     const std::string key = cur_range_begin->first;  // Keep a copy.
-    CookieMap::iterator cur_range_end = cookies_.upper_bound(key);
+    auto cur_range_end = cookies_.upper_bound(key);
     prev_range_end = cur_range_end;
 
     // Ensure no equivalent cookies for this host.
@@ -1013,7 +1012,7 @@ void CookieMonster::TrimDuplicateCookiesForKey(const std::string& key,
 
   // Iterate through all of the cookies in our range, and insert them into
   // the equivalence map.
-  for (CookieMap::iterator it = begin; it != end; ++it) {
+  for (auto it = begin; it != end; ++it) {
     DCHECK_EQ(key, it->first);
     CanonicalCookie* cookie = it->second.get();
 
@@ -1038,8 +1037,8 @@ void CookieMonster::TrimDuplicateCookiesForKey(const std::string& key,
 
   // Otherwise, delete all the duplicate cookies, both from our in-memory store
   // and from the backing store.
-  for (EquivalenceMap::iterator it = equivalent_cookies.begin();
-       it != equivalent_cookies.end(); ++it) {
+  for (auto it = equivalent_cookies.begin(); it != equivalent_cookies.end();
+       ++it) {
     const CookieSignature& signature = it->first;
     CookieSet& dupes = it->second;
 
@@ -1061,8 +1060,7 @@ void CookieMonster::TrimDuplicateCookiesForKey(const std::string& key,
     // Remove all the cookies identified by |dupes|. It is valid to delete our
     // list of iterators one at a time, since |cookies_| is a multimap (they
     // don't invalidate existing iterators following deletion).
-    for (CookieSet::iterator dupes_it = dupes.begin(); dupes_it != dupes.end();
-         ++dupes_it) {
+    for (auto dupes_it = dupes.begin(); dupes_it != dupes.end(); ++dupes_it) {
       InternalDeleteCookie(*dupes_it, true,
                            DELETE_COOKIE_DUPLICATE_IN_BACKING_STORE);
     }
@@ -1097,7 +1095,7 @@ void CookieMonster::FindCookiesForKey(const std::string& key,
 
   for (CookieMapItPair its = cookies_.equal_range(key);
        its.first != its.second;) {
-    CookieMap::iterator curit = its.first;
+    auto curit = its.first;
     CanonicalCookie* cc = curit->second.get();
     ++its.first;
 
@@ -1137,9 +1135,11 @@ bool CookieMonster::DeleteAnyEquivalentCookie(
 
   histogram_cookie_delete_equivalent_->Add(COOKIE_DELETE_EQUIVALENT_ATTEMPT);
 
+  CookieMap::iterator cookie_it_to_possibly_delete = cookies_.end();
+  CanonicalCookie* cc_skipped_secure = nullptr;
   for (CookieMapItPair its = cookies_.equal_range(key);
        its.first != its.second;) {
-    CookieMap::iterator curit = its.first;
+    auto curit = its.first;
     CanonicalCookie* cc = curit->second.get();
     ++its.first;
 
@@ -1152,6 +1152,7 @@ bool CookieMonster::DeleteAnyEquivalentCookie(
     if (cc->IsSecure() && !source_secure &&
         ecc.IsEquivalentForSecureCookieMatching(*cc)) {
       skipped_secure_cookie = true;
+      cc_skipped_secure = cc;
       histogram_cookie_delete_equivalent_->Add(
           COOKIE_DELETE_EQUIVALENT_SKIPPING_SECURE);
       net_log_.AddEvent(
@@ -1176,6 +1177,7 @@ bool CookieMonster::DeleteAnyEquivalentCookie(
       // and be considered equivalent.
       CHECK(!found_equivalent_cookie)
           << "Duplicate equivalent cookies found, cookie store is corrupted.";
+      DCHECK(cookie_it_to_possibly_delete == cookies_.end());
       if (skip_httponly && cc->IsHttpOnly()) {
         skipped_httponly = true;
         net_log_.AddEvent(
@@ -1183,20 +1185,38 @@ bool CookieMonster::DeleteAnyEquivalentCookie(
             base::BindRepeating(&NetLogCookieMonsterCookieRejectedHttponly, cc,
                                 &ecc));
       } else {
-        histogram_cookie_delete_equivalent_->Add(
-            COOKIE_DELETE_EQUIVALENT_FOUND);
-        if (cc->Value() == ecc.Value()) {
-          *creation_date_to_inherit = cc->CreationDate();
-          histogram_cookie_delete_equivalent_->Add(
-              COOKIE_DELETE_EQUIVALENT_FOUND_WITH_SAME_VALUE);
-        }
-        InternalDeleteCookie(curit, true, already_expired
-                                              ? DELETE_COOKIE_EXPIRED_OVERWRITE
-                                              : DELETE_COOKIE_OVERWRITE);
+        cookie_it_to_possibly_delete = curit;
       }
       found_equivalent_cookie = true;
     }
   }
+
+  if (cookie_it_to_possibly_delete != cookies_.end()) {
+    CanonicalCookie* cc_to_possibly_delete =
+        cookie_it_to_possibly_delete->second.get();
+    // If a secure cookie was encountered (and left alone), don't actually
+    // modify any of the pre-existing cookies. Only delete if no secure cookies
+    // were skipped.
+    if (!skipped_secure_cookie) {
+      histogram_cookie_delete_equivalent_->Add(COOKIE_DELETE_EQUIVALENT_FOUND);
+      if (cc_to_possibly_delete->Value() == ecc.Value()) {
+        *creation_date_to_inherit = cc_to_possibly_delete->CreationDate();
+        histogram_cookie_delete_equivalent_->Add(
+            COOKIE_DELETE_EQUIVALENT_FOUND_WITH_SAME_VALUE);
+      }
+      InternalDeleteCookie(cookie_it_to_possibly_delete, true,
+                           already_expired ? DELETE_COOKIE_EXPIRED_OVERWRITE
+                                           : DELETE_COOKIE_OVERWRITE);
+    } else {
+      // If any secure cookie was skipped, preserve the pre-existing cookie.
+      DCHECK(cc_skipped_secure);
+      net_log_.AddEvent(
+          NetLogEventType::COOKIE_STORE_COOKIE_PRESERVED_SKIPPED_SECURE,
+          base::BindRepeating(&NetLogCookieMonsterCookiePreservedSkippedSecure,
+                              cc_skipped_secure, cc_to_possibly_delete, &ecc));
+    }
+  }
+
   return skipped_httponly || skipped_secure_cookie;
 }
 
@@ -1214,8 +1234,7 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
       sync_to_store) {
     store_->AddCookie(*cc_ptr);
   }
-  CookieMap::iterator inserted =
-      cookies_.insert(CookieMap::value_type(key, std::move(cc)));
+  auto inserted = cookies_.insert(CookieMap::value_type(key, std::move(cc)));
 
   // See InitializeHistograms() for details.
   int32_t type_sample = cc_ptr->SameSite() != CookieSameSite::NO_RESTRICTION
@@ -1624,7 +1643,7 @@ size_t CookieMonster::GarbageCollectExpired(const Time& current,
 
   int num_deleted = 0;
   for (CookieMap::iterator it = itpair.first, end = itpair.second; it != end;) {
-    CookieMap::iterator curit = it;
+    auto curit = it;
     ++it;
 
     if (curit->second->IsExpired(current)) {
@@ -1645,7 +1664,7 @@ size_t CookieMonster::GarbageCollectDeleteRange(
     CookieItVector::iterator it_end) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  for (CookieItVector::iterator it = it_begin; it != it_end; it++) {
+  for (auto it = it_begin; it != it_end; it++) {
     InternalDeleteCookie((*it), true, cause);
   }
   return it_end - it_begin;
@@ -1667,7 +1686,7 @@ size_t CookieMonster::GarbageCollectLeastRecentlyAccessed(
       cookie_its.begin(), cookie_its.end(),
       cookie_its.size() < purge_goal ? purge_goal + 1 : purge_goal);
   // Find boundary to cookies older than safe_date.
-  CookieItVector::iterator global_purge_it = LowerBoundAccessDate(
+  auto global_purge_it = LowerBoundAccessDate(
       cookie_its.begin(), cookie_its.begin() + purge_goal, safe_date);
   // Only delete the old cookies and delete non-secure ones first.
   size_t num_deleted =
@@ -1862,8 +1881,7 @@ void CookieMonster::DoCookieCallbackForHostOrDomain(
     // Checks if the domain key has been loaded.
     std::string key = GetKey(host_or_domain);
     if (keys_loaded_.find(key) == keys_loaded_.end()) {
-      std::map<std::string, base::circular_deque<base::OnceClosure>>::iterator
-          it = tasks_pending_for_key_.find(key);
+      auto it = tasks_pending_for_key_.find(key);
       if (it == tasks_pending_for_key_.end()) {
         store_->LoadCookiesForKey(
             key, base::Bind(&CookieMonster::OnKeyLoaded,

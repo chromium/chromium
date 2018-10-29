@@ -5,59 +5,76 @@
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/completion_callback.h"
 #include "net/base/completion_once_callback.h"
-#include "net/http/http_util.h"
+#include "net/base/url_util.h"
+#include "url/gurl.h"
 
 namespace content {
 
 namespace {
-// Checks if |requesting_origin| is allowed to cache code for |resource_url|.
-//   |resource_url| is the url corresponding to the requested resource.
-//   If this url is invalid we don't cache the code.
-//   |requesting_origin| is the origin that has requested the resource.
-//   If this is a unique origin, then we don't cache the code.
-// For example, if http://script.com/script1.js is requested by
-// http://example.com, then http://script.com/script.js is the resource_url
-// and example.com is the requesting_origin.
-bool IsAllowedToCache(const GURL& resource_url,
-                      const url::Origin& requesting_origin) {
-  // Don't cache the code corresponding to unique origins. The same-origin
-  // checks should always fail for unique origins but the serialized value of
-  // unique origins does not ensure this.
-  if (requesting_origin.unique())
-    return false;
+// We always expect to receive valid URLs that can be used as keys to the code
+// cache. The relevant checks (for ex: resource_url is valid, origin_lock is
+// not opque etc.,) must be done prior to requesting the code cache.
+//
+// This function doesn't enforce anything in the production code. It is here
+// to make the assumptions explicit and to catch any errors when DCHECKs are
+// enabled.
+void CheckValidKeys(const GURL& resource_url, const GURL& origin_lock) {
+  // If the resource url is invalid don't cache the code.
+  DCHECK(resource_url.is_valid() && resource_url.SchemeIsHTTPOrHTTPS());
 
-  // If the resource url or requesting url is invalid don't cache the code.
-  if (!resource_url.is_valid())
-    return false;
-
-  return true;
+  // |origin_lock| should be either empty or should have Http/Https/chrome
+  // schemes and it should not be a URL with opaque origin. Empty origin_locks
+  // are allowed when the renderer is not locked to an origin.
+  DCHECK(origin_lock.is_empty() ||
+         ((origin_lock.SchemeIsHTTPOrHTTPS() ||
+           origin_lock.SchemeIs(content::kChromeUIScheme)) &&
+          !url::Origin::Create(origin_lock).opaque()));
 }
 
-// Generates the cache key for the given |resource_url| and the
-// |requesting_origin|. This returns the key by concatenating the
-// serialized url and origin with a separator in between.
-std::string GetCacheKey(const GURL& resource_url,
-                        const url::Origin& requesting_origin) {
-  DCHECK(!requesting_origin.unique());
-  DCHECK(resource_url.is_valid());
+// Generates the cache key for the given |resource_url| and the |origin_lock|.
+//   |resource_url| is the url corresponding to the requested resource.
+//   |origin_lock| is the origin that the renderer which requested this
+//   resource is locked to.
+// For example, if SitePerProcess is enabled and http://script.com/script1.js is
+// requested by http://example.com, then http://script.com/script.js is the
+// resource_url and http://example.com is the origin_lock.
+//
+// This returns the key by concatenating the serialized url and origin lock
+// with a separator in between. |origin_lock| could be empty when renderer is
+// not locked to an origin (ex: SitePerProcess is disabled) and it is safe to
+// use only |resource_url| as the key in such cases.
+std::string GetCacheKey(const GURL& resource_url, const GURL& origin_lock) {
+  CheckValidKeys(resource_url, origin_lock);
+
   // Add a prefix _ so it can't be parsed as a valid URL.
   std::string key = "_key";
   // Remove reference, username and password sections of the URL.
-  key.append(net::HttpUtil::SpecForRequest(resource_url));
+  key.append(net::SimplifyUrlForRequest(resource_url).spec());
   // Add a separator between URL and origin to avoid any possibility of
   // attacks by crafting the URL. URLs do not contain any control ASCII
   // characters, and also space is encoded. So use ' \n' as a seperator.
   key.append(" \n");
-  key.append(requesting_origin.Serialize());
+
+  if (origin_lock.is_valid())
+    key.append(net::SimplifyUrlForRequest(origin_lock).spec());
   return key;
 }
-
-void CollectStatistics(GeneratedCodeCache::CacheEntryStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("SiteIsolatedCodeCache.Behaviour", status);
-}
 }  // namespace
+
+void GeneratedCodeCache::CollectStatistics(
+    GeneratedCodeCache::CacheEntryStatus status) {
+  switch (cache_type_) {
+    case GeneratedCodeCache::CodeCacheType::kJavaScript:
+      UMA_HISTOGRAM_ENUMERATION("SiteIsolatedCodeCache.JS.Behaviour", status);
+      break;
+    case GeneratedCodeCache::CodeCacheType::kWebAssembly:
+      UMA_HISTOGRAM_ENUMERATION("SiteIsolatedCodeCache.WASM.Behaviour", status);
+      break;
+  }
+}
 
 // Stores the information about a pending request while disk backend is
 // being initialized.
@@ -146,10 +163,12 @@ GeneratedCodeCache::PendingOperation::PendingOperation(
 GeneratedCodeCache::PendingOperation::~PendingOperation() = default;
 
 GeneratedCodeCache::GeneratedCodeCache(const base::FilePath& path,
-                                       int max_size_bytes)
+                                       int max_size_bytes,
+                                       CodeCacheType cache_type)
     : backend_state_(kUnInitialized),
       path_(path),
       max_size_bytes_(max_size_bytes),
+      cache_type_(cache_type),
       weak_ptr_factory_(this) {
   CreateBackend();
 }
@@ -157,18 +176,11 @@ GeneratedCodeCache::GeneratedCodeCache(const base::FilePath& path,
 GeneratedCodeCache::~GeneratedCodeCache() = default;
 
 void GeneratedCodeCache::WriteData(const GURL& url,
-                                   const url::Origin& origin,
+                                   const GURL& origin_lock,
                                    const base::Time& response_time,
                                    const std::vector<uint8_t>& data) {
   // Silently ignore the requests.
   if (backend_state_ == kFailed) {
-    CollectStatistics(CacheEntryStatus::kError);
-    return;
-  }
-
-  // If the url is invalid or if it is from a unique origin, we should not
-  // cache the code.
-  if (!IsAllowedToCache(url, origin)) {
     CollectStatistics(CacheEntryStatus::kError);
     return;
   }
@@ -185,7 +197,7 @@ void GeneratedCodeCache::WriteData(const GURL& url,
     memcpy(buffer->data() + kResponseTimeSizeInBytes, &data.front(),
            data.size());
 
-  std::string key = GetCacheKey(url, origin);
+  std::string key = GetCacheKey(url, origin_lock);
   if (backend_state_ != kInitialized) {
     // Insert it into the list of pending operations while the backend is
     // still being opened.
@@ -199,7 +211,7 @@ void GeneratedCodeCache::WriteData(const GURL& url,
 }
 
 void GeneratedCodeCache::FetchEntry(const GURL& url,
-                                    const url::Origin& origin,
+                                    const GURL& origin_lock,
                                     ReadDataCallback read_data_callback) {
   if (backend_state_ == kFailed) {
     CollectStatistics(CacheEntryStatus::kError);
@@ -208,15 +220,7 @@ void GeneratedCodeCache::FetchEntry(const GURL& url,
     return;
   }
 
-  // If the url is invalid or if it is from a unique origin, we should not
-  // cache the code.
-  if (!IsAllowedToCache(url, origin)) {
-    CollectStatistics(CacheEntryStatus::kError);
-    std::move(read_data_callback).Run(base::Time(), std::vector<uint8_t>());
-    return;
-  }
-
-  std::string key = GetCacheKey(url, origin);
+  std::string key = GetCacheKey(url, origin_lock);
   if (backend_state_ != kInitialized) {
     // Insert it into the list of pending operations while the backend is
     // still being opened.
@@ -229,22 +233,14 @@ void GeneratedCodeCache::FetchEntry(const GURL& url,
   FetchEntryImpl(key, read_data_callback);
 }
 
-void GeneratedCodeCache::DeleteEntry(const GURL& url,
-                                     const url::Origin& origin) {
+void GeneratedCodeCache::DeleteEntry(const GURL& url, const GURL& origin_lock) {
   // Silently ignore the requests.
   if (backend_state_ == kFailed) {
     CollectStatistics(CacheEntryStatus::kError);
     return;
   }
 
-  // If the url is invalid or if it is from a unique origin, we should not
-  // cache the code.
-  if (!IsAllowedToCache(url, origin)) {
-    CollectStatistics(CacheEntryStatus::kError);
-    return;
-  }
-
-  std::string key = GetCacheKey(url, origin);
+  std::string key = GetCacheKey(url, origin_lock);
   if (backend_state_ != kInitialized) {
     // Insert it into the list of pending operations while the backend is
     // still being opened.

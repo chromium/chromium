@@ -77,6 +77,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
 
  private:
   // BluetoothAdapter::Observer:
+  void DeviceAddressChanged(BluetoothAdapter* adapter,
+                            BluetoothDevice* device,
+                            const std::string& old_address) override;
   void GattCharacteristicValueChanged(
       BluetoothAdapter* adapter,
       BluetoothRemoteGattCharacteristic* characteristic,

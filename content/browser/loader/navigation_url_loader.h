@@ -6,6 +6,8 @@
 #define CONTENT_BROWSER_LOADER_NAVIGATION_URL_LOADER_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/optional.h"

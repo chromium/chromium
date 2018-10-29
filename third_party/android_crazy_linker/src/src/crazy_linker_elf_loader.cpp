@@ -49,33 +49,73 @@ namespace crazy {
 //   https://crbug.com/504410
 #define RESERVE_BREAKPAD_GUARD_REGION 1
 
-ElfLoader::ElfLoader()
-    : fd_(),
-      path_(NULL),
-      phdr_num_(0),
-      phdr_mmap_(NULL),
-      phdr_table_(NULL),
-      phdr_size_(0),
-      file_offset_(0),
-      wanted_load_address_(0),
-      load_start_(NULL),
-      load_size_(0),
-      load_bias_(0),
-      loaded_phdr_(NULL),
-      reserved_start_(NULL),
-      reserved_size_(0) {}
+namespace {
 
-ElfLoader::~ElfLoader() {
+class InternalElfLoader {
+ public:
+  ~InternalElfLoader();
+
+  bool LoadAt(const char* lib_path,
+              off_t file_offset,
+              uintptr_t wanted_address,
+              Error* error);
+
+  // Only call the following functions after a successful LoadAt() call.
+
+  size_t phdr_count() { return phdr_num_; }
+  ELF::Addr load_start() { return reinterpret_cast<ELF::Addr>(load_start_); }
+  ELF::Addr load_size() { return load_size_; }
+  ELF::Addr load_bias() { return load_bias_; }
+  const ELF::Phdr* loaded_phdr() { return loaded_phdr_; }
+
+  // Return the mapping object covering the reserved address space for this
+  // ELF object. Caller takes ownership.
+  MemoryMapping ReleaseMapping() { return std::move(reserved_map_); }
+
+ private:
+  FileDescriptor fd_;
+  const char* path_ = nullptr;
+
+  ELF::Ehdr header_ = {};
+  size_t phdr_num_ = 0;
+
+  void* phdr_mmap_ = nullptr;  // temporary copy of the program header.
+  ELF::Phdr* phdr_table_ = nullptr;
+  ELF::Addr phdr_size_ = 0;  // and its size.
+
+  off_t file_offset_ = 0;
+  void* wanted_load_address_ = nullptr;
+  void* load_start_ = nullptr;  // First page of reserved address space.
+  ELF::Addr load_size_ = 0;     // Size in bytes of reserved address space.
+  ELF::Addr load_bias_ = 0;     // load_bias, add this value to all "vaddr"
+                             // values in the library to get the corresponding
+                             // memory address.
+
+  const ELF::Phdr* loaded_phdr_ =
+      nullptr;  // points to the loaded program header.
+
+  MemoryMapping reserved_map_;
+
+  // Individual steps used by ::LoadAt()
+  bool ReadElfHeader(Error* error);
+  bool ReadProgramHeader(Error* error);
+  bool ReserveAddressSpace(Error* error);
+  bool LoadSegments(Error* error);
+  bool FindPhdr(Error* error);
+  bool CheckPhdr(ELF::Addr, Error* error);
+};
+
+InternalElfLoader::~InternalElfLoader() {
   if (phdr_mmap_) {
     // Deallocate the temporary program header copy.
     munmap(phdr_mmap_, phdr_size_);
   }
 }
 
-bool ElfLoader::LoadAt(const char* lib_path,
-                       off_t file_offset,
-                       uintptr_t wanted_address,
-                       Error* error) {
+bool InternalElfLoader::LoadAt(const char* lib_path,
+                               off_t file_offset,
+                               uintptr_t wanted_address,
+                               Error* error) {
   LOG("lib_path='%s', file_offset=%p, load_address=%p", lib_path, file_offset,
       wanted_address);
 
@@ -117,16 +157,14 @@ bool ElfLoader::LoadAt(const char* lib_path,
   if (!LoadSegments(error) || !FindPhdr(error)) {
     // An error occured, cleanup the address space by un-mapping the
     // range that was reserved by ReserveAddressSpace().
-    if (reserved_start_ && reserved_size_)
-      munmap(reserved_start_, reserved_size_);
-
+    reserved_map_.Deallocate();
     return false;
   }
 
   return true;
 }
 
-bool ElfLoader::ReadElfHeader(Error* error) {
+bool InternalElfLoader::ReadElfHeader(Error* error) {
   int ret = fd_.Read(&header_, sizeof(header_));
   if (ret < 0) {
     error->Format("Can't read file: %s", strerror(errno));
@@ -174,7 +212,7 @@ bool ElfLoader::ReadElfHeader(Error* error) {
 
 // Loads the program header table from an ELF file into a read-only private
 // anonymous mmap-ed block.
-bool ElfLoader::ReadProgramHeader(Error* error) {
+bool InternalElfLoader::ReadProgramHeader(Error* error) {
   phdr_num_ = header_.e_phnum;
 
   // Like the kernel, only accept program header tables smaller than 64 KB.
@@ -210,7 +248,7 @@ bool ElfLoader::ReadProgramHeader(Error* error) {
 // This will use the wanted_load_address_ value. Fails if the requested
 // address range cannot be reserved. Typically this would be because
 // it overlaps an existing, possibly system, mapping.
-bool ElfLoader::ReserveAddressSpace(Error* error) {
+bool InternalElfLoader::ReserveAddressSpace(Error* error) {
   ELF::Addr min_vaddr;
   load_size_ =
       phdr_table_get_load_size(phdr_table_, phdr_num_, &min_vaddr, NULL);
@@ -227,7 +265,7 @@ bool ElfLoader::ReserveAddressSpace(Error* error) {
     addr = static_cast<uint8_t*>(wanted_load_address_);
   }
 
-  reserved_size_ = load_size_;
+  size_t reserved_size = load_size_;
 
 #if RESERVE_BREAKPAD_GUARD_REGION
   // Increase size to extend the address reservation mapping so that it will
@@ -235,7 +273,7 @@ bool ElfLoader::ReserveAddressSpace(Error* error) {
   // If loading at a fixed address, move our requested address back by the
   // guard region size.
   if (min_vaddr) {
-    reserved_size_ += min_vaddr;
+    reserved_size += min_vaddr;
     if (wanted_load_address_) {
       addr -= min_vaddr;
     }
@@ -243,21 +281,21 @@ bool ElfLoader::ReserveAddressSpace(Error* error) {
   }
 #endif
 
-  LOG("address=%p size=%p", addr, reserved_size_);
-  void* start = mmap(addr, reserved_size_, PROT_NONE, mmap_flags, -1, 0);
+  LOG("address=%p size=%p", addr, reserved_size);
+  void* start = mmap(addr, reserved_size, PROT_NONE, mmap_flags, -1, 0);
   if (start == MAP_FAILED) {
-    error->Format("Could not reserve %d bytes of address space",
-                  reserved_size_);
+    error->Format("Could not reserve %d bytes of address space", reserved_size);
     return false;
   }
   if (addr && start != addr) {
     error->Format("Could not map at %p requested, backing out", addr);
-    munmap(start, reserved_size_);
+    munmap(start, reserved_size);
     return false;
   }
 
-  reserved_start_ = start;
-  LOG("reserved start=%p", reserved_start_);
+  // Take ownership of the mapping here.
+  reserved_map_ = MemoryMapping(start, reserved_size);
+  LOG("reserved start=%p", reserved_map_.address());
 
   load_start_ = start;
   load_bias_ = reinterpret_cast<ELF::Addr>(start) - min_vaddr;
@@ -283,7 +321,7 @@ bool ElfLoader::ReserveAddressSpace(Error* error) {
 // Returns the address of the program header table as it appears in the loaded
 // segments in memory. This is in contrast with 'phdr_table_' which
 // is temporary and will be released before the library is relocated.
-bool ElfLoader::FindPhdr(Error* error) {
+bool InternalElfLoader::FindPhdr(Error* error) {
   const ELF::Phdr* phdr_limit = phdr_table_ + phdr_num_;
 
   // If there is a PT_PHDR, use it directly.
@@ -315,7 +353,7 @@ bool ElfLoader::FindPhdr(Error* error) {
 // Ensures that our program header is actually within a loadable
 // segment. This should help catch badly-formed ELF files that
 // would cause the linker to crash later when trying to access it.
-bool ElfLoader::CheckPhdr(ELF::Addr loaded, Error* error) {
+bool InternalElfLoader::CheckPhdr(ELF::Addr loaded, Error* error) {
   const ELF::Phdr* phdr_limit = phdr_table_ + phdr_num_;
   ELF::Addr loaded_end = loaded + (phdr_num_ * sizeof(ELF::Phdr));
   for (ELF::Phdr* phdr = phdr_table_; phdr < phdr_limit; ++phdr) {
@@ -336,7 +374,7 @@ bool ElfLoader::CheckPhdr(ELF::Addr loaded, Error* error) {
 // Map all loadable segments in process' address space.
 // This assumes you already called phdr_table_reserve_memory to
 // reserve the address space range for the library.
-bool ElfLoader::LoadSegments(Error* error) {
+bool InternalElfLoader::LoadSegments(Error* error) {
   for (size_t i = 0; i < phdr_num_; ++i) {
     const ELF::Phdr* phdr = &phdr_table_[i];
 
@@ -403,6 +441,26 @@ bool ElfLoader::LoadSegments(Error* error) {
     }
   }
   return true;
+}
+
+}  // namespace
+
+// static
+ElfLoader::Result ElfLoader::LoadAt(const char* lib_path,
+                                    off_t file_offset,
+                                    uintptr_t wanted_address,
+                                    Error* error) {
+  InternalElfLoader loader;
+  Result result;
+  if (loader.LoadAt(lib_path, file_offset, wanted_address, error)) {
+    result.load_start = reinterpret_cast<ELF::Addr>(loader.load_start());
+    result.load_size = loader.load_size();
+    result.load_bias = loader.load_bias();
+    result.phdr = loader.loaded_phdr();
+    result.phdr_count = loader.phdr_count();
+    result.reserved_mapping = loader.ReleaseMapping();
+  }
+  return result;
 }
 
 }  // namespace crazy

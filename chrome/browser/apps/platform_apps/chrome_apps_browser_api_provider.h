@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
 
-namespace apps {
+namespace chrome_apps {
 
 class ChromeAppsBrowserAPIProvider
     : public extensions::ExtensionsBrowserAPIProvider {
@@ -23,6 +23,6 @@ class ChromeAppsBrowserAPIProvider
   DISALLOW_COPY_AND_ASSIGN(ChromeAppsBrowserAPIProvider);
 };
 
-}  // namespace apps
+}  // namespace chrome_apps
 
 #endif  // CHROME_BROWSER_APPS_PLATFORM_APPS_CHROME_APPS_BROWSER_API_PROVIDER_H_

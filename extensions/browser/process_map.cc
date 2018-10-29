@@ -73,7 +73,7 @@ bool ProcessMap::Remove(const std::string& extension_id, int process_id,
 
 int ProcessMap::RemoveAllFromProcess(int process_id) {
   int result = 0;
-  for (ItemSet::iterator iter = items_.begin(); iter != items_.end(); ) {
+  for (auto iter = items_.begin(); iter != items_.end();) {
     if (iter->process_id == process_id) {
       items_.erase(iter++);
       ++result;
@@ -86,8 +86,7 @@ int ProcessMap::RemoveAllFromProcess(int process_id) {
 
 bool ProcessMap::Contains(const std::string& extension_id,
                           int process_id) const {
-  for (ItemSet::const_iterator iter = items_.begin(); iter != items_.end();
-       ++iter) {
+  for (auto iter = items_.cbegin(); iter != items_.cend(); ++iter) {
     if (iter->process_id == process_id && iter->extension_id == extension_id)
       return true;
   }
@@ -95,8 +94,7 @@ bool ProcessMap::Contains(const std::string& extension_id,
 }
 
 bool ProcessMap::Contains(int process_id) const {
-  for (ItemSet::const_iterator iter = items_.begin(); iter != items_.end();
-       ++iter) {
+  for (auto iter = items_.cbegin(); iter != items_.cend(); ++iter) {
     if (iter->process_id == process_id)
       return true;
   }
@@ -105,8 +103,7 @@ bool ProcessMap::Contains(int process_id) const {
 
 std::set<std::string> ProcessMap::GetExtensionsInProcess(int process_id) const {
   std::set<std::string> result;
-  for (ItemSet::const_iterator iter = items_.begin(); iter != items_.end();
-       ++iter) {
+  for (auto iter = items_.cbegin(); iter != items_.cend(); ++iter) {
     if (iter->process_id == process_id)
       result.insert(iter->extension_id);
   }

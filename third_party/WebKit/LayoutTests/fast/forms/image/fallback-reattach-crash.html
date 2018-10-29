@@ -5,5 +5,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script>
-  test(() => document.body.offsetTop, "Pass if test does not crash.");
+test(() => {
+  document.body.offsetTop;
+}, "Pass if test does not crash.");
 </script>

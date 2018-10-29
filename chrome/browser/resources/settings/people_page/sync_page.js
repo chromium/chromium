@@ -88,6 +88,7 @@ Polymer({
     /** @type {settings.SyncStatus} */
     syncStatus: {
       type: Object,
+      observer: 'onSyncStatusChanged_',
     },
 
     /**
@@ -133,7 +134,6 @@ Polymer({
       type: Boolean,
       value: true,
       computed: 'computeSignedIn_(syncStatus.signedIn)',
-      observer: 'onSignedInChanged_',
     },
 
     /** @private */
@@ -177,6 +177,12 @@ Polymer({
     unifiedConsentEnabled: Boolean,
   },
 
+  observers: [
+    // Depends on signedIn_ so that the sync section is updated on signin
+    // changes, even though the actual value of signedIn_ is not used.
+    'onSyncSectionOpenedShouldChange_(signedIn_, syncSectionDisabled_)',
+  ],
+
   /** @private {?settings.SyncBrowserProxy} */
   browserProxy_: null,
 
@@ -191,6 +197,13 @@ Polymer({
    * @private {?Function}
    */
   beforeunloadCallback_: null,
+
+  /**
+   * Whether the initial layout for collapsible sections has been computed. It
+   * is computed only once, the first time the sync status is updated.
+   * @private {boolean}
+   */
+  collapsibleSectionsInitialized_: false,
 
   /**
    * Whether the user decided to abort sync.
@@ -276,6 +289,8 @@ Polymer({
     if (this.beforeunloadCallback_)
       return;
 
+    this.collapsibleSectionsInitialized_ = false;
+
     // Display loading page until the settings have been retrieved.
     this.pageStatus_ = settings.PageStatus.SPINNER;
 
@@ -306,8 +321,11 @@ Polymer({
    * @private
    */
   onUnifiedConsentToggleChange_: function() {
-    if(!this.$$('#unifiedConsentToggle').checked){
-      this.syncSectionOpened_ = true;
+    const checked = this.$$('#unifiedConsentToggle').checked;
+    this.browserProxy_.unifiedConsentToggleChanged(checked);
+
+    if (!checked) {
+      this.syncSectionOpened_ = !this.syncSectionDisabled_;
       this.personalizeSectionOpened_ = true;
     }
   },
@@ -511,11 +529,12 @@ Polymer({
 
   /**
    * Called when the encryption
+   * @param {!Event} event
    * @private
    */
   onEncryptionRadioSelectionChanged_: function(event) {
     this.creatingNewPassphrase_ =
-        event.target.selected == RadioButtonNames.ENCRYPT_WITH_PASSPHRASE;
+        event.detail.value == RadioButtonNames.ENCRYPT_WITH_PASSPHRASE;
   },
 
   /**
@@ -607,12 +626,27 @@ Polymer({
     settings.navigateTo(settings.routes.BASIC);
   },
 
+  // Computes the initial layout for the sync section and the personalize
+  // section. This function only does something on its first call.
+  onSyncStatusChanged_: function() {
+    if (!!this.syncStatus && !this.collapsibleSectionsInitialized_) {
+      this.collapsibleSectionsInitialized_ = true;
+      this.personalizeSectionOpened_ =
+          !this.$$('#unifiedConsentToggle').checked ||
+          !!this.syncStatus.setupInProgress;
+      this.syncSectionOpened_ =
+          this.personalizeSectionOpened_ && !this.syncSectionDisabled_;
+    }
+  },
+
   /**
-   * Collapses/Expands the sync section if the signedIn state has changed.
+   * Collapses the sync section if it becomes disabled, and expands it when it's
+   * re-enabled.
    * @private
    */
-  onSignedInChanged_: function() {
-    this.syncSectionOpened_ = !!this.signedIn_;
+  onSyncSectionOpenedShouldChange_: function() {
+    this.syncSectionOpened_ =
+        !this.syncSectionDisabled_ && !this.$$('#unifiedConsentToggle').checked;
   },
 
   /**

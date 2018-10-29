@@ -43,6 +43,11 @@ class AccessibilityEventRecorderAuraLinux : public AccessibilityEventRecorder {
                        const GValue* params);
   void ProcessATSPIEvent(const AtspiEvent* event);
 
+  static gboolean OnATKEventReceived(GSignalInvocationHint* hint,
+                                     unsigned int n_params,
+                                     const GValue* params,
+                                     gpointer data);
+
  private:
   bool ShouldUseATSPI();
 
@@ -58,30 +63,38 @@ class AccessibilityEventRecorderAuraLinux : public AccessibilityEventRecorder {
   base::ProcessId pid_;
   base::StringPiece application_name_match_pattern_;
   std::vector<unsigned int> atk_listener_ids_;
+  static AccessibilityEventRecorderAuraLinux* instance_;
+
+  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderAuraLinux);
 };
 
 // static
-gboolean OnATKEventReceived(GSignalInvocationHint* hint,
-                            unsigned int n_params,
-                            const GValue* params,
-                            gpointer data) {
+AccessibilityEventRecorderAuraLinux*
+    AccessibilityEventRecorderAuraLinux::instance_ = nullptr;
+
+// static
+gboolean AccessibilityEventRecorderAuraLinux::OnATKEventReceived(
+    GSignalInvocationHint* hint,
+    unsigned int n_params,
+    const GValue* params,
+    gpointer data) {
   GSignalQuery query;
   g_signal_query(hint->signal_id, &query);
 
-  static_cast<AccessibilityEventRecorderAuraLinux&>(
-      AccessibilityEventRecorder::GetInstance())
-      .ProcessATKEvent(query.signal_name, n_params, params);
+  if (instance_) {
+    instance_->ProcessATKEvent(query.signal_name, n_params, params);
+  }
+
   return true;
 }
 
 // static
-AccessibilityEventRecorder& AccessibilityEventRecorder::GetInstance(
+std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const base::StringPiece& application_name_match_pattern) {
-  static base::NoDestructor<AccessibilityEventRecorderAuraLinux> instance(
+  return std::make_unique<AccessibilityEventRecorderAuraLinux>(
       manager, pid, application_name_match_pattern);
-  return *instance;
 }
 
 bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
@@ -96,14 +109,21 @@ AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
     : AccessibilityEventRecorder(manager),
       pid_(pid),
       application_name_match_pattern_(application_name_match_pattern) {
-  if (ShouldUseATSPI())
+  CHECK(!instance_) << "There can be only one instance of"
+                    << " AccessibilityEventRecorder at a time.";
+
+  if (ShouldUseATSPI()) {
     AddATSPIEventListeners();
-  else
+  } else {
     AddATKEventListeners();
+  }
+
+  instance_ = this;
 }
 
 AccessibilityEventRecorderAuraLinux::~AccessibilityEventRecorderAuraLinux() {
   RemoveATSPIEventListeners();
+  instance_ = nullptr;
 }
 
 void AccessibilityEventRecorderAuraLinux::AddATKEventListener(

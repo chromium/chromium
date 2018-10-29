@@ -58,10 +58,22 @@ Polymer({
     initialPin_: String,
 
     /**
-     * The actual problem message to display.
+     * The message ID of actual problem message to display.
      * @private
      */
-    problemMessage_: String,
+    problemMessageId_: {
+      type: String,
+      value: '',
+    },
+
+    /**
+     * The additional parameters to format for the problem message string.
+     * @private
+     */
+    problemMessageParameters_: {
+      type: String,
+      value: '',
+    },
 
     /**
      * The type of problem class to show (warning or error).
@@ -115,6 +127,14 @@ Polymer({
      * @private
      */
     pinHasPassedMinimumLength_: {type: Boolean, value: false},
+
+    /**
+     * Enables pin placeholder.
+     */
+    enablePlaceholder: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   focus: function() {
@@ -141,7 +161,8 @@ Polymer({
     this.enableSubmit = false;
     this.isConfirmStep = false;
     this.hideProblem_();
-    this.onPinChange_();
+    this.onPinChange_(
+        new CustomEvent('pin-change', {detail: {pin: this.pinKeyboardValue_}}));
   },
 
   /**
@@ -154,7 +175,8 @@ Polymer({
   },
 
   /**
-   * Handles writing the appropriate message to |problemMessage_|.
+   * Handles writing the appropriate message to |problemMessageId_| &&
+   * |problemMessageParameters_|.
    * @private
    * @param {string} messageId
    * @param {chrome.quickUnlockPrivate.CredentialRequirements} requirements
@@ -176,7 +198,8 @@ Polymer({
         assertNotReached();
         break;
     }
-    this.problemMessage_ = this.i18n(messageId, additionalInformation);
+    this.problemMessageId_ = messageId;
+    this.problemMessageParameters_ = additionalInformation;
   },
 
   /**
@@ -197,7 +220,7 @@ Polymer({
 
   /** @private */
   hideProblem_: function() {
-    this.problemMessage_ = '';
+    this.problemMessageId_ = '';
     this.problemClass_ = '';
   },
 
@@ -250,13 +273,16 @@ Polymer({
     }
   },
 
-  /** @private */
-  onPinChange_: function() {
+  /**
+   * @param {!CustomEvent} e Custom event containing the new pin.
+   * @private */
+  onPinChange_: function(e) {
+    const newPin = /** @type {{pin: string}} */ (e.detail).pin;
     if (!this.isConfirmStep) {
-      if (this.pinKeyboardValue_) {
+      if (newPin) {
         this.quickUnlockPrivate.checkCredential(
-            chrome.quickUnlockPrivate.QuickUnlockMode.PIN,
-            this.pinKeyboardValue_, this.processPinProblems_.bind(this));
+            chrome.quickUnlockPrivate.QuickUnlockMode.PIN, newPin,
+            this.processPinProblems_.bind(this));
       } else {
         this.enableSubmit = false;
       }
@@ -264,7 +290,7 @@ Polymer({
     }
 
     this.hideProblem_();
-    this.enableSubmit = this.pinKeyboardValue_.length > 0;
+    this.enableSubmit = newPin.length > 0;
   },
 
   /** @private */
@@ -297,7 +323,8 @@ Polymer({
       this.initialPin_ = this.pinKeyboardValue_;
       this.pinKeyboardValue_ = '';
       this.isConfirmStep = true;
-      this.onPinChange_();
+      this.onPinChange_(new CustomEvent(
+          'pin-change', {detail: {pin: this.pinKeyboardValue_}}));
       this.$.pinKeyboard.focus();
       this.writeUma(LockScreenProgress.ENTER_PIN);
       return;
@@ -321,12 +348,25 @@ Polymer({
 
   /**
    * @private
-   * @param {string} problemMessage
+   * @param {string} problemMessageId
    * @param {string} problemClass
    * @return {boolean}
    */
-  hasError_: function(problemMessage, problemClass) {
-    return !!problemMessage && problemClass == ProblemType.ERROR;
+  hasError_: function(problemMessageId, problemClass) {
+    return !!problemMessageId && problemClass == ProblemType.ERROR;
+  },
+
+  /**
+   * Formar problem message
+   * @private
+   * @param {string} locale  i18n locale data
+   * @param {string} messageId
+   * @param {string} messageParameters
+   * @return {string}
+   */
+  formatProblemMessage_: function(locale, messageId, messageParameters) {
+    return messageId ? this.i18nDynamic(locale, messageId, messageParameters) :
+                       '';
   },
 });
 

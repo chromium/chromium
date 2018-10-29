@@ -6,6 +6,7 @@
 
 [
     Constructor,
+    Serializable,
     OriginTrialEnabled=ShapeDetection
 ] interface DetectedBarcode {
     // TODO(mcasas): Implement missing fields. https://crbug.com/646083
@@ -14,4 +15,6 @@
     // 4 corner points in clockwise direction starting with top-left. Due to
     // possible perspective distortions, this is not necessarily a rectangle.
     [SameObject, SaveSameObject] readonly attribute FrozenArray<Point2D> cornerPoints;
+
+    serializer = { attribute };
 };

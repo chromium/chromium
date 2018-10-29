@@ -13,5 +13,6 @@ PASS getComputedStyle(c2b)["background-color"] is "rgb(255, 204, 204)"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Some parent text. Some child text.
 Some parent text. Some child text.

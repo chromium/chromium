@@ -2,7 +2,6 @@ This is a test to make sure ch units work as intended.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.getElementById("box_mono_zero").clientWidth is 0
 PASS document.getElementById("box_mono_four1").clientWidth is document.getElementById("box_mono_four2").clientWidth
 PASS document.getElementById("box_monofallthrough_four1").clientWidth is document.getElementById("box_monofallthrough_four2").clientWidth
@@ -22,6 +21,8 @@ PASS document.getElementById("box_mono_one").clientWidth is document.getElementB
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 This is a test to make sure ch units work as intended. You should not see anything red on this page.
 
 Only 'PASS' should be visible:
@@ -38,10 +39,14 @@ abcdefghijklmnopqrstuvwxyz
 Four zeroes should be visible, nothing else:
 0000
 0000
-0000 There should be more than one green '|' visible (non-monospaced fonts):
-|||0|||
-|||0|||
-|||0|||
+0000
+There should be more than one green '|' visible (non-monospaced fonts):
+|||0
+|||
+|||0
+|||
+|||0
+|||
 This box has a 20px font size. The last two '0's should be the same size.
 0
 0

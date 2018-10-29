@@ -10,6 +10,8 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/net_errors.h"
 
@@ -84,8 +86,8 @@ void ForwardRequestStatus(
 
   int process_id, render_frame_id;
   if (info->GetAssociatedRenderFrame(&process_id, &render_frame_id)) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&NotifyEPMRequestStatus, status, profile_id,
                        request->identifier(), process_id, render_frame_id));
   }

@@ -39,8 +39,7 @@ Cryptographer::Cryptographer(Encryptor* encryptor) : encryptor_(encryptor) {
 Cryptographer::Cryptographer(const Cryptographer& other)
     : encryptor_(other.encryptor_),
       default_nigori_name_(other.default_nigori_name_) {
-  for (NigoriMap::const_iterator it = other.nigoris_.begin();
-       it != other.nigoris_.end(); ++it) {
+  for (auto it = other.nigoris_.begin(); it != other.nigoris_.end(); ++it) {
     std::string user_key, encryption_key, mac_key;
     it->second->ExportKeys(&user_key, &encryption_key, &mac_key);
     auto nigori_copy = std::make_unique<Nigori>();
@@ -106,8 +105,7 @@ bool Cryptographer::EncryptString(const std::string& serialized,
     }
   }
 
-  NigoriMap::const_iterator default_nigori =
-      nigoris_.find(default_nigori_name_);
+  auto default_nigori = nigoris_.find(default_nigori_name_);
   if (default_nigori == nigoris_.end()) {
     LOG(ERROR) << "Corrupt default key.";
     return false;
@@ -130,7 +128,7 @@ bool Cryptographer::Decrypt(const sync_pb::EncryptedData& encrypted,
 
 std::string Cryptographer::DecryptToString(
     const sync_pb::EncryptedData& encrypted) const {
-  NigoriMap::const_iterator it = nigoris_.find(encrypted.key_name());
+  auto it = nigoris_.find(encrypted.key_name());
   if (nigoris_.end() == it) {
     // The key used to encrypt the blob is not part of the set of installed
     // nigoris.
@@ -347,7 +345,7 @@ std::string Cryptographer::GetDefaultNigoriKeyName() const {
 std::string Cryptographer::GetDefaultNigoriKeyData() const {
   if (!is_initialized())
     return std::string();
-  NigoriMap::const_iterator iter = nigoris_.find(default_nigori_name_);
+  auto iter = nigoris_.find(default_nigori_name_);
   if (iter == nigoris_.end())
     return std::string();
   sync_pb::NigoriKey key;

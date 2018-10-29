@@ -136,6 +136,7 @@ TEST_F(DeepLinkUnitTest, GetDeepLinkType) {
       {"googleassistant://send-query", DeepLinkType::kQuery},
       {"googleassistant://settings", DeepLinkType::kSettings},
       {"googleassistant://take-screenshot", DeepLinkType::kScreenshot},
+      {"googleassistant://task-manager", DeepLinkType::kTaskManager},
       {"googleassistant://whats-on-my-screen", DeepLinkType::kWhatsOnMyScreen},
 
       // OK: Parameterized deep links.
@@ -148,6 +149,7 @@ TEST_F(DeepLinkUnitTest, GetDeepLinkType) {
       {"googleassistant://settings?param=true", DeepLinkType::kSettings},
       {"googleassistant://take-screenshot?param=true",
        DeepLinkType::kScreenshot},
+      {"googleassistant://task-manager?param=true", DeepLinkType::kTaskManager},
       {"googleassistant://whats-on-my-screen?param=true",
        DeepLinkType::kWhatsOnMyScreen},
 
@@ -159,6 +161,7 @@ TEST_F(DeepLinkUnitTest, GetDeepLinkType) {
       {"GOOGLEASSISTANT://SEND-QUERY", DeepLinkType::kUnsupported},
       {"GOOGLEASSISTANT://SETTINGS", DeepLinkType::kUnsupported},
       {"GOOGLEASSISTANT://TAKE-SCREENSHOT", DeepLinkType::kUnsupported},
+      {"GOOGLEASSISTANT://TASK-MANAGER", DeepLinkType::kUnsupported},
       {"GOOGLEASSISTANT://WHATS-ON-MY-SCREEN", DeepLinkType::kUnsupported},
 
       // UNSUPPORTED: Unknown deep links.
@@ -184,6 +187,7 @@ TEST_F(DeepLinkUnitTest, IsDeepLinkType) {
       {"googleassistant://send-query", DeepLinkType::kQuery},
       {"googleassistant://settings", DeepLinkType::kSettings},
       {"googleassistant://take-screenshot", DeepLinkType::kScreenshot},
+      {"googleassistant://task-manager", DeepLinkType::kTaskManager},
       {"googleassistant://whats-on-my-screen", DeepLinkType::kWhatsOnMyScreen},
 
       // OK: Parameterized deep link types.
@@ -196,6 +200,7 @@ TEST_F(DeepLinkUnitTest, IsDeepLinkType) {
       {"googleassistant://settings?param=true", DeepLinkType::kSettings},
       {"googleassistant://take-screenshot?param=true",
        DeepLinkType::kScreenshot},
+      {"googleassistant://task-manager?param=true", DeepLinkType::kTaskManager},
       {"googleassistant://whats-on-my-screen?param=true",
        DeepLinkType::kWhatsOnMyScreen},
 
@@ -206,6 +211,7 @@ TEST_F(DeepLinkUnitTest, IsDeepLinkType) {
       {"GOOGLEASSISTANT://SEND-FEEDBACK", DeepLinkType::kUnsupported},
       {"GOOGLEASSISTANT://SEND-QUERY", DeepLinkType::kUnsupported},
       {"GOOGLEASSISTANT://SETTINGS", DeepLinkType::kUnsupported},
+      {"GOOGLEASSISTANT://TASK-MANAGER", DeepLinkType::kUnsupported},
 
       // UNSUPPORTED: Unknown deep links.
       {"googleassistant://", DeepLinkType::kUnsupported},
@@ -229,6 +235,7 @@ TEST_F(DeepLinkUnitTest, IsDeepLinkUrl) {
       {"googleassistant://send-query", true},
       {"googleassistant://settings", true},
       {"googleassistant://take-screenshot", true},
+      {"googleassistant://task-manager", true},
       {"googleassistant://whats-on-my-screen", true},
 
       // OK: Parameterized deep links.
@@ -239,6 +246,7 @@ TEST_F(DeepLinkUnitTest, IsDeepLinkUrl) {
       {"googleassistant://send-query?param=true", true},
       {"googleassistant://settings?param=true", true},
       {"googleassistant://take-screenshot?param=true", true},
+      {"googleassistant://task-manager?param=true", true},
       {"googleassistant://whats-on-my-screen?param=true", true},
 
       // FAIL: Deep links are case sensitive.
@@ -249,6 +257,7 @@ TEST_F(DeepLinkUnitTest, IsDeepLinkUrl) {
       {"GOOGLEASSISTANT://SEND-QUERY", false},
       {"GOOGLEASSISTANT://SETTINGS", false},
       {"GOOGLEASSISTANT://TAKE-SCREENSHOT", false},
+      {"GOOGLEASSISTANT://TASK-MANAGER", false},
       {"GOOGLEASSISTANT://WHATS-ON-MY-SCREEN", false},
 
       // FAIL: Unknown deep links.
@@ -306,6 +315,7 @@ TEST_F(DeepLinkUnitTest, GetWebUrl) {
       {"googleassistant://send-feedback", false},
       {"googleassistant://send-query", false},
       {"googleassistant://take-screenshot", false},
+      {"googleassistant://task-manager", false},
       {"googleassistant://whats-on-my-screen", false},
 
       // FAIL: Non-deep link URLs.
@@ -329,6 +339,7 @@ TEST_F(DeepLinkUnitTest, GetWebUrlByType) {
       {DeepLinkType::kOnboarding, false},
       {DeepLinkType::kQuery, false},
       {DeepLinkType::kScreenshot, false},
+      {DeepLinkType::kTaskManager, false},
       {DeepLinkType::kWhatsOnMyScreen, false},
 
       // FAIL: Unsupported deep link types.
@@ -358,6 +369,7 @@ TEST_F(DeepLinkUnitTest, IsWebDeepLink) {
       {"googleassistant://send-feedback", false},
       {"googleassistant://send-query", false},
       {"googleassistant://take-screenshot", false},
+      {"googleassistant://task-manager", false},
       {"googleassistant://whats-on-my-screen", false},
 
       // FAIL: Non-deep link URLs.
@@ -380,6 +392,7 @@ TEST_F(DeepLinkUnitTest, IsWebDeepLinkType) {
       {DeepLinkType::kOnboarding, false},
       {DeepLinkType::kQuery, false},
       {DeepLinkType::kScreenshot, false},
+      {DeepLinkType::kTaskManager, false},
       {DeepLinkType::kWhatsOnMyScreen, false},
 
       // FAIL: Unsupported deep link types.

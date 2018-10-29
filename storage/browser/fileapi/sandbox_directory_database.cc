@@ -319,8 +319,7 @@ bool DatabaseCheckHelper::ScanDirectory() {
       }
 
       // Check if the file has a database entry.
-      std::set<base::FilePath>::iterator itr =
-          files_in_db_.find(relative_file_path);
+      auto itr = files_in_db_.find(relative_file_path);
       if (itr == files_in_db_.end()) {
         if (!base::DeleteFile(absolute_file_path, false))
           return false;

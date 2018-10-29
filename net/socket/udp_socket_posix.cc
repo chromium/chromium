@@ -669,6 +669,30 @@ int UDPSocketPosix::SetBroadcast(bool broadcast) {
   return rv == 0 ? OK : MapSystemError(errno);
 }
 
+int UDPSocketPosix::AllowAddressSharingForMulticast() {
+  DCHECK_NE(socket_, kInvalidSocket);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!is_connected());
+
+  int rv = AllowAddressReuse();
+  if (rv != OK)
+    return rv;
+
+#ifdef SO_REUSEPORT
+  // Attempt to set SO_REUSEPORT if available. On some platforms, this is
+  // necessary to allow the address to be fully shared between separate sockets.
+  // On platforms where the option does not exist, SO_REUSEADDR should be
+  // sufficient to share multicast packets if such sharing is at all possible.
+  int value = 1;
+  rv = setsockopt(socket_, SOL_SOCKET, SO_REUSEPORT, &value, sizeof(value));
+  // Ignore errors that the option does not exist.
+  if (rv != 0 && rv != ENOPROTOOPT)
+    return MapSystemError(errno);
+#endif  // SO_REUSEPORT
+
+  return OK;
+}
+
 void UDPSocketPosix::ReadWatcher::OnFileCanReadWithoutBlocking(int) {
   TRACE_EVENT0(kNetTracingCategory,
                "UDPSocketPosix::ReadWatcher::OnFileCanReadWithoutBlocking");

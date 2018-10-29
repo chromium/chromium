@@ -46,6 +46,11 @@
 // Sets the text of the badge text. Hides the badge text if |badgeText| is nil.
 - (void)setBadgeText:(NSString*)badgeText;
 
+// After this is called, the cell is listening for the
+// UIContentSizeCategoryDidChangeNotification notification and updates its font
+// size to the new category.
+- (void)registerForContentSizeUpdates;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_CELLS_POPUP_MENU_TOOLS_ITEM_H_

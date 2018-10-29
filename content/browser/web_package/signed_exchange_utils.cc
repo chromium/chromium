@@ -5,9 +5,13 @@
 #include "content/browser/web_package/signed_exchange_utils.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/web_package/origins_list.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/browser/web_package/signed_exchange_request_handler.h"
@@ -28,6 +32,51 @@ void ReportErrorAndTraceEvent(
                        error_message);
   if (devtools_proxy)
     devtools_proxy->ReportError(error_message, std::move(error_field));
+}
+
+namespace {
+
+OriginsList CreateAdvertiseAcceptHeaderOriginsList() {
+  std::string param = base::GetFieldTrialParamValueByFeature(
+      features::kSignedHTTPExchangeAcceptHeader,
+      features::kSignedHTTPExchangeAcceptHeaderFieldTrialParamName);
+  if (param.empty())
+    DLOG(ERROR) << "The Accept-SXG origins list param is empty.";
+
+  return OriginsList(param);
+}
+
+}  //  namespace
+
+bool NeedToCheckRedirectedURLForAcceptHeader() {
+  // When SignedHTTPExchange is enabled, the SignedExchange accept header must
+  // be sent to all origins. So we don't need to check the redirected URL.
+  return !base::FeatureList::IsEnabled(features::kSignedHTTPExchange) &&
+         base::FeatureList::IsEnabled(
+             features::kSignedHTTPExchangeOriginTrial) &&
+         base::FeatureList::IsEnabled(
+             features::kSignedHTTPExchangeAcceptHeader);
+}
+
+bool ShouldAdvertiseAcceptHeader(const url::Origin& origin) {
+  // When SignedHTTPExchange is enabled, we must send the SignedExchange accept
+  // header to all origins.
+  if (base::FeatureList::IsEnabled(features::kSignedHTTPExchange))
+    return true;
+  // When SignedHTTPExchangeOriginTrial is not enabled or
+  // SignedHTTPExchangeAcceptHeader is not enabled, we must not send the
+  // SignedExchange accept header.
+  if (!base::FeatureList::IsEnabled(features::kSignedHTTPExchangeOriginTrial) ||
+      !base::FeatureList::IsEnabled(
+          features::kSignedHTTPExchangeAcceptHeader)) {
+    return false;
+  }
+
+  // |origins_list| is initialized in a thread-safe manner.
+  // Querying OriginsList::Match() should be safe since it's read-only access.
+  static base::NoDestructor<OriginsList> origins_list(
+      CreateAdvertiseAcceptHeaderOriginsList());
+  return origins_list->Match(origin);
 }
 
 bool IsSignedExchangeHandlingEnabled() {
@@ -51,9 +100,9 @@ bool ShouldHandleAsSignedHTTPExchange(
     return false;
   std::unique_ptr<blink::TrialTokenValidator> validator =
       std::make_unique<blink::TrialTokenValidator>();
-  return validator->RequestEnablesFeature(request_url, head.headers.get(),
-                                          features::kSignedHTTPExchange.name,
-                                          base::Time::Now());
+  return validator->RequestEnablesFeature(
+      request_url, head.headers.get(),
+      features::kSignedHTTPExchangeOriginTrial.name, base::Time::Now());
 }
 
 base::Optional<SignedExchangeVersion> GetSignedExchangeVersion(

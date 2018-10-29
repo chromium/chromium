@@ -9,17 +9,21 @@
 #include "components/viz/client/local_surface_id_provider.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
+#include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/hit_test_data_provider_aura.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/base/layout.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
 namespace aura {
+
 namespace {
+static const char* kExo = "Exo";
 
 class ScopedCursorHider {
  public:
@@ -147,7 +151,8 @@ WindowPortLocal::CreateLayerTreeFrameSink() {
   viz::mojom::CompositorFrameSinkClientPtr client;
   viz::mojom::CompositorFrameSinkClientRequest client_request =
       mojo::MakeRequest(&client);
-  host_frame_sink_manager->RegisterFrameSinkId(frame_sink_id_, this);
+  host_frame_sink_manager->RegisterFrameSinkId(
+      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kYes);
   window_->SetEmbedFrameSinkId(frame_sink_id_);
   host_frame_sink_manager->CreateCompositorFrameSink(
       frame_sink_id_, std::move(sink_request), std::move(client));
@@ -158,10 +163,16 @@ WindowPortLocal::CreateLayerTreeFrameSink() {
   params.pipes.compositor_frame_sink_info = std::move(sink_info);
   params.pipes.client_request = std::move(client_request);
   params.enable_surface_synchronization = true;
+  params.client_name = kExo;
   if (features::IsVizHitTestingDrawQuadEnabled()) {
+    bool root_accepts_events =
+        (window_->event_targeting_policy() ==
+         ws::mojom::EventTargetingPolicy::TARGET_ONLY) ||
+        (window_->event_targeting_policy() ==
+         ws::mojom::EventTargetingPolicy::TARGET_AND_DESCENDANTS);
     params.hit_test_data_provider =
         std::make_unique<viz::HitTestDataProviderDrawQuad>(
-            true /* should_ask_for_child_region */);
+            true /* should_ask_for_child_region */, root_accepts_events);
   } else {
     params.hit_test_data_provider =
         std::make_unique<HitTestDataProviderAura>(window_);
@@ -183,11 +194,6 @@ void WindowPortLocal::AllocateLocalSurfaceId() {
   UpdateLocalSurfaceId();
 }
 
-bool WindowPortLocal::IsLocalSurfaceIdAllocationSuppressed() const {
-  return parent_local_surface_id_allocator_ &&
-         parent_local_surface_id_allocator_->is_allocation_suppressed();
-}
-
 viz::ScopedSurfaceIdAllocator WindowPortLocal::GetSurfaceIdAllocator(
     base::OnceCallback<void()> allocation_task) {
   return viz::ScopedSurfaceIdAllocator(
@@ -195,9 +201,11 @@ viz::ScopedSurfaceIdAllocator WindowPortLocal::GetSurfaceIdAllocator(
 }
 
 void WindowPortLocal::UpdateLocalSurfaceIdFromEmbeddedClient(
-    const viz::LocalSurfaceId& embedded_client_local_surface_id) {
+    const viz::LocalSurfaceId& embedded_client_local_surface_id,
+    base::TimeTicks embedded_client_local_surface_id_allocation_time) {
   parent_local_surface_id_allocator_->UpdateFromChild(
-      embedded_client_local_surface_id);
+      embedded_client_local_surface_id,
+      embedded_client_local_surface_id_allocation_time);
   UpdateLocalSurfaceId();
 }
 
@@ -207,20 +215,30 @@ const viz::LocalSurfaceId& WindowPortLocal::GetLocalSurfaceId() {
   return GetCurrentLocalSurfaceId();
 }
 
+base::TimeTicks WindowPortLocal::GetLocalSurfaceIdAllocationTime() const {
+  if (!parent_local_surface_id_allocator_)
+    return base::TimeTicks();
+  return parent_local_surface_id_allocator_->allocation_time();
+}
+
 void WindowPortLocal::OnEventTargetingPolicyChanged() {}
 
 bool WindowPortLocal::ShouldRestackTransientChildren() {
   return true;
 }
 
+void WindowPortLocal::TrackOcclusionState() {
+  window_->env()->GetWindowOcclusionTracker()->Track(window_);
+}
+
 void WindowPortLocal::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
   DCHECK_EQ(surface_info.id().frame_sink_id(), window_->GetFrameSinkId());
-  window_->layer()->SetShowPrimarySurface(
-      surface_info.id(), window_->bounds().size(), SK_ColorWHITE,
-      cc::DeadlinePolicy::UseDefaultDeadline(),
-      false /* stretch_content_to_fill_bounds */);
-  window_->layer()->SetFallbackSurfaceId(surface_info.id());
+  window_->layer()->SetShowSurface(surface_info.id(), window_->bounds().size(),
+                                   SK_ColorWHITE,
+                                   cc::DeadlinePolicy::UseDefaultDeadline(),
+                                   false /* stretch_content_to_fill_bounds */);
+  window_->layer()->SetOldestAcceptableFallback(surface_info.id());
 }
 
 void WindowPortLocal::OnFrameTokenChanged(uint32_t frame_token) {}

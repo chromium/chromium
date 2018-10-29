@@ -38,15 +38,15 @@ String ContentType::Parameter(const String& parameter_name) const {
 
   // a MIME type can have one or more "param=value" after a semi-colon, and
   // separated from each other by semi-colons
-  size_t semi = stripped_type.find(';');
+  wtf_size_t semi = stripped_type.find(';');
   if (semi != kNotFound) {
-    size_t start =
+    wtf_size_t start =
         stripped_type.FindIgnoringASCIICase(parameter_name, semi + 1);
     if (start != kNotFound) {
       start = stripped_type.find('=', start + parameter_name.length());
       if (start != kNotFound) {
-        size_t quote = stripped_type.find('\"', start + 1);
-        size_t end = stripped_type.find('\"', start + 2);
+        wtf_size_t quote = stripped_type.find('\"', start + 1);
+        wtf_size_t end = stripped_type.find('\"', start + 2);
         if (quote != kNotFound && end != kNotFound) {
           start = quote;
         } else {
@@ -67,7 +67,7 @@ String ContentType::GetType() const {
   String stripped_type = type_.StripWhiteSpace();
 
   // "type" can have parameters after a semi-colon, strip them
-  size_t semi = stripped_type.find(';');
+  wtf_size_t semi = stripped_type.find(';');
   if (semi != kNotFound)
     stripped_type = stripped_type.Left(semi).StripWhiteSpace();
 

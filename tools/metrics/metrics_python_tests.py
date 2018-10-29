@@ -22,7 +22,9 @@ def resolve(*paths):
 sys.exit(typ.main(tests=resolve(
    'actions/extract_actions_test.py',
    'histograms/generate_expired_histograms_array_unittest.py',
-   'ukm/pretty_print_test.py',
+   'histograms/pretty_print_test.py',
+   'rappor/rappor_model_test.py',
+   'ukm/ukm_model_test.py',
    "../json_comment_eater/json_comment_eater_test.py",
    "../json_to_struct/element_generator_test.py",
    "../json_to_struct/struct_generator_test.py",

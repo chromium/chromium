@@ -59,6 +59,7 @@ class CORE_EXPORT PointerEvent final : public MouseEvent {
   Node* toElement() const final;
 
   HeapVector<Member<PointerEvent>> getCoalescedEvents();
+  HeapVector<Member<PointerEvent>> getPredictedEvents();
   TimeTicks OldestPlatformTimeStamp() const;
 
   DispatchEventResult DispatchEvent(EventDispatcher&) override;
@@ -82,8 +83,11 @@ class CORE_EXPORT PointerEvent final : public MouseEvent {
   bool is_primary_;
 
   bool coalesced_events_targets_dirty_;
+  bool predicted_events_targets_dirty_;
 
   HeapVector<Member<PointerEvent>> coalesced_events_;
+
+  HeapVector<Member<PointerEvent>> predicted_events_;
 };
 
 DEFINE_EVENT_TYPE_CASTS(PointerEvent);

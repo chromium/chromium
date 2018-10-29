@@ -202,8 +202,6 @@ crbug.com/459009 crypto/subtle/ [ Slow ]
 
 crbug.com/528419 http/tests/devtools/elements/styles-2/pseudo-elements.js [ Slow ]
 
-crbug.com/529345 [ Win10 ] paint/masks/fieldset-mask.html [ Slow ]
-
 crbug.com/802029 fast/dom/shadow/focus-controller-recursion-crash.html [ Slow ]
 
 crbug.com/592183 external/wpt/webusb/usbDevice.https.html [ Slow ]
@@ -1405,6 +1403,9 @@ crbug.com/874695 virtual/user-activation-v2/fullscreen/full-screen-restrictions.
 crbug.com/874695 virtual/user-activation-v2/fullscreen/model/fully-exit-fullscreen-nested-iframe.html [ Slow ]
 crbug.com/874695 virtual/user-activation-v2/fullscreen/rendering/overflow.html [ Slow ]
 crbug.com/874695 virtual/video-surface-layer/external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Slow ]
+crbug.com/874695 virtual/video-surface-layer/http/tests/devtools/sources/debugger-breakpoints/breakpoints-ui-in-multiple-workers.js [ Slow ]
+crbug.com/874695 virtual/video-surface-layer/http/tests/devtools/sources/debugger-breakpoints/breakpoints-ui-shifted-breakpoint.js [ Slow ]
+crbug.com/874695 virtual/video-surface-layer/http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Slow ]
 crbug.com/874695 virtual/video-surface-layer/media/audio-controls-do-not-fade-out.html [ Slow ]
 crbug.com/874695 virtual/video-surface-layer/media/autoplay-muted.html [ Slow ]
 crbug.com/874695 virtual/video-surface-layer/media/autoplay-when-visible.html [ Slow ]
@@ -1446,3 +1447,20 @@ crbug.com/878650 [ Release ] inspector-protocol/heap-profiler/heap-snapshot-merg
 crbug.com/878650 [ Release ] inspector-protocol/heap-profiler/heap-snapshot-with-no-detached-iframe.js [ Slow ]
 
 crbug.com/878995 [ Win ] external/wpt/async-local-storage/key-types.tentative.https.html [ Slow ]
+crbug.com/888225 external/wpt/svg/idlharness.window.html [ Slow ]
+
+crbug.com/893015 [ Linux ] http/tests/fetch/chromium/response-array-buffer-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] http/tests/fetch/chromium/response-blob-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] http/tests/fetch/chromium/response-form-data-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] http/tests/fetch/chromium/response-json-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] http/tests/fetch/chromium/response-text-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] virtual/outofblink-cors/http/tests/fetch/chromium/response-array-buffer-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] virtual/outofblink-cors/http/tests/fetch/chromium/response-blob-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] virtual/outofblink-cors/http/tests/fetch/chromium/response-form-data-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] virtual/outofblink-cors/http/tests/fetch/chromium/response-json-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] virtual/outofblink-cors/http/tests/fetch/chromium/response-text-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] virtual/outofblink-cors-ns/http/tests/fetch/chromium/response-array-buffer-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] virtual/outofblink-cors-ns/http/tests/fetch/chromium/response-blob-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] virtual/outofblink-cors-ns/http/tests/fetch/chromium/response-form-data-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] virtual/outofblink-cors-ns/http/tests/fetch/chromium/response-json-gc-crash.html [ Slow ]
+crbug.com/893015 [ Linux ] virtual/outofblink-cors-ns/http/tests/fetch/chromium/response-text-gc-crash.html [ Slow ]

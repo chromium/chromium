@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -146,9 +147,8 @@ TargetList::TargetList(const AtomVector& target_list)
 
 bool TargetList::ContainsText() const {
   std::vector<::Atom> atoms = GetTextAtomsFrom();
-  for (std::vector< ::Atom>::const_iterator it = atoms.begin();
-       it != atoms.end(); ++it) {
-    if (ContainsAtom(*it))
+  for (const auto& atom : atoms) {
+    if (ContainsAtom(atom))
       return true;
   }
 
@@ -378,9 +378,8 @@ SelectionData ClipboardAuraX11::AuraX11Details::RequestAndWaitForTypes(
     // with the X server.
     const SelectionFormatMap& format_map = LookupStorageForAtom(selection_name);
 
-    for (std::vector< ::Atom>::const_iterator it = types.begin();
-         it != types.end(); ++it) {
-      SelectionFormatMap::const_iterator format_map_it = format_map.find(*it);
+    for (const auto& type : types) {
+      auto format_map_it = format_map.find(type);
       if (format_map_it != format_map.end())
         return SelectionData(format_map_it->first, format_map_it->second);
     }
@@ -405,10 +404,8 @@ TargetList ClipboardAuraX11::AuraX11Details::WaitAndGetTargetsList(
     // We can local fastpath and return the list of local targets.
     const SelectionFormatMap& format_map = LookupStorageForAtom(selection_name);
 
-    for (SelectionFormatMap::const_iterator it = format_map.begin();
-         it != format_map.end(); ++it) {
-      out.push_back(it->first);
-    }
+    for (const auto& format : format_map)
+      out.push_back(format.first);
   } else {
     scoped_refptr<base::RefCountedMemory> data;
     size_t out_data_items = 0;
@@ -432,16 +429,12 @@ TargetList ClipboardAuraX11::AuraX11Details::WaitAndGetTargetsList(
       // copy the data to see if it is available, but at least this path
       // shouldn't be hit for conforming programs.
       std::vector< ::Atom> types = GetTextAtoms();
-      for (std::vector< ::Atom>::const_iterator it = types.begin();
-           it != types.end(); ++it) {
+      for (const auto& text_atom : types) {
         ::Atom type = x11::None;
-        if (selection_requestor_.PerformBlockingConvertSelection(selection_name,
-                                                                 *it,
-                                                                 NULL,
-                                                                 NULL,
-                                                                 &type) &&
-            type == *it) {
-          out.push_back(*it);
+        if (selection_requestor_.PerformBlockingConvertSelection(
+                selection_name, text_atom, NULL, NULL, &type) &&
+            type == text_atom) {
+          out.push_back(text_atom);
         }
       }
     }
@@ -557,8 +550,8 @@ Clipboard::FormatType Clipboard::GetFormatType(
 
 // static
 const Clipboard::FormatType& Clipboard::GetUrlFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeURIList));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeURIList);
+  return *type;
 }
 
 // static
@@ -568,14 +561,14 @@ const Clipboard::FormatType& Clipboard::GetUrlWFormatType() {
 
 // static
 const Clipboard::FormatType& Clipboard::GetMozUrlFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeMozillaURL));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeMozillaURL);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetPlainTextFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeText));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeText);
+  return *type;
 }
 
 // static
@@ -585,8 +578,8 @@ const Clipboard::FormatType& Clipboard::GetPlainTextWFormatType() {
 
 // static
 const Clipboard::FormatType& Clipboard::GetFilenameFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeFilename));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeFilename);
+  return *type;
 }
 
 // static
@@ -596,38 +589,38 @@ const Clipboard::FormatType& Clipboard::GetFilenameWFormatType() {
 
 // static
 const Clipboard::FormatType& Clipboard::GetHtmlFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeHTML));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeHTML);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetRtfFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeRTF));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeRTF);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetBitmapFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypePNG));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypePNG);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetWebKitSmartPasteFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeWebkitSmartPaste));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeWebkitSmartPaste);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetWebCustomDataFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeWebCustomData));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeWebCustomData);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetPepperCustomDataFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypePepperCustomData));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypePepperCustomData);
+  return *type;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -813,14 +806,12 @@ void ClipboardAuraX11::WriteObjects(ClipboardType type,
   DCHECK(IsSupportedClipboardType(type));
 
   aurax11_details_->CreateNewClipboardData();
-  for (ObjectMap::const_iterator iter = objects.begin(); iter != objects.end();
-       ++iter) {
-    DispatchObject(static_cast<ObjectType>(iter->first), iter->second);
-  }
+  for (const auto& object : objects)
+    DispatchObject(static_cast<ObjectType>(object.first), object.second);
   aurax11_details_->TakeOwnershipOfSelection(type);
 
   if (type == CLIPBOARD_TYPE_COPY_PASTE) {
-    ObjectMap::const_iterator text_iter = objects.find(CBF_TEXT);
+    auto text_iter = objects.find(CBF_TEXT);
     if (text_iter != objects.end()) {
       aurax11_details_->CreateNewClipboardData();
       const ObjectMapParams& params_vector = text_iter->second;

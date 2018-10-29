@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: NoData-CORS-ALLOW
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: NullData-CORS-ALLOW
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: UndefinedData-CORS-ALLOW
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallString-CORS-ALLOW
+FAIL Verify 'navigator.sendbeacon()' successfully sends for variant: SmallBlob-CORS-ALLOW Failed to execute 'sendBeacon' on 'Navigator': sendBeacon() with a Blob whose type is not any of the CORS-safelisted values for the Content-Type request header is disabled temporarily. See http://crbug.com/490015 for details.
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallBufferSource-CORS-ALLOW
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallFormData-CORS-ALLOW
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeEncoded-CORS-ALLOW
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeForm-CORS-ALLOW
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeText-CORS-ALLOW
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: NoData-CORS-FORBID
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: NullData-CORS-FORBID
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: UndefinedData-CORS-FORBID
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallString-CORS-FORBID
+FAIL Verify 'navigator.sendbeacon()' successfully sends for variant: SmallBlob-CORS-FORBID Failed to execute 'sendBeacon' on 'Navigator': sendBeacon() with a Blob whose type is not any of the CORS-safelisted values for the Content-Type request header is disabled temporarily. See http://crbug.com/490015 for details.
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallBufferSource-CORS-FORBID
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallFormData-CORS-FORBID
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeEncoded-CORS-FORBID
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeForm-CORS-FORBID
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeText-CORS-FORBID
+FAIL Verify 'navigator.sendbeacon()' successfully sends for variant: SmallCORSContentTypeText-PREFLIGHT-ALLOW Failed to execute 'sendBeacon' on 'Navigator': sendBeacon() with a Blob whose type is not any of the CORS-safelisted values for the Content-Type request header is disabled temporarily. See http://crbug.com/490015 for details.
+Harness: the test ran to completion.
+

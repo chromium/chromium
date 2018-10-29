@@ -5,6 +5,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 nihao should marked from 0 to 5
 PASS textInputController.hasMarkedText() is true
 PASS textInputController.markedRange().toString() is "0,5"

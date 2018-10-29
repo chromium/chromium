@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "extensions/browser/guest_view/web_view/javascript_dialog_helper.h"
@@ -163,6 +162,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   ~WebViewGuest() override;
 
+  void ClearCodeCache(base::Time remove_since,
+                      uint32_t removal_mask,
+                      const base::Closure& callback);
   void ClearDataInternal(const base::Time remove_since,
                          uint32_t removal_mask,
                          const base::Closure& callback);
@@ -211,7 +213,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                               const base::string16& source_id) final;
   void CloseContents(content::WebContents* source) final;
   bool HandleContextMenu(const content::ContextMenuParams& params) final;
-  void HandleKeyboardEvent(content::WebContents* source,
+  bool HandleKeyboardEvent(content::WebContents* source,
                            const content::NativeWebKeyboardEvent& event) final;
   void LoadProgressChanged(content::WebContents* source, double progress) final;
   bool PreHandleGestureEvent(content::WebContents* source,
@@ -321,8 +323,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   // Handles find requests and replies for the webview find API.
   WebViewFindHelper find_helper_;
-
-  base::ObserverList<ScriptExecutionObserver>::Unchecked script_observers_;
   std::unique_ptr<ScriptExecutor> script_executor_;
 
   // True if the user agent is overridden.
@@ -348,13 +348,27 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Tracks the name, and target URL of the new window. Once the first
   // navigation commits, we no longer track this information.
   struct NewWindowInfo {
-    GURL url;
+    // Name of the new window.
     std::string name;
-    bool changed;
-    NewWindowInfo(const GURL& url, const std::string& name) :
-        url(url),
-        name(name),
-        changed(false) {}
+
+    // Expected initial URL of the new window.
+    GURL url;
+
+    // Whether OpenURL navigation from the newly created GuestView has changed
+    // |url|. The pending OpenURL navigation needs to be applied after attaching
+    // the GuestView.
+    bool url_changed_via_open_url;
+
+    // Whether the newly created GuestView begun navigating away from the
+    // initial URL.  Used to suppress the initial navigation when attaching the
+    // GuestView and applying its attributes.
+    bool did_start_navigating_away_from_initial_url;
+
+    NewWindowInfo(const GURL& url, const std::string& name)
+        : name(name),
+          url(url),
+          url_changed_via_open_url(false),
+          did_start_navigating_away_from_initial_url(false) {}
   };
 
   using PendingWindowMap = std::map<WebViewGuest*, NewWindowInfo>;

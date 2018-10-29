@@ -37,6 +37,7 @@ namespace base {
 
 class HistogramBase;
 class SchedulerWorkerObserver;
+class TaskSchedulerTestHelpers;
 
 // Interface for a task scheduler and static methods to manage the instance used
 // by the post_task.h API.
@@ -201,6 +202,7 @@ class BASE_EXPORT TaskScheduler : public TaskExecutor {
   static TaskScheduler* GetInstance();
 
  private:
+  friend class TaskSchedulerTestHelpers;
   friend class gin::V8Platform;
   friend class content::BrowserMainLoopTest_CreateThreadsInSingleProcess_Test;
 

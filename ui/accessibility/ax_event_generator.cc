@@ -270,7 +270,7 @@ void AXEventGenerator::OnBoolAttributeChanged(AXTree* tree,
     AddEvent(node, Event::SELECTED_CHANGED);
     ui::AXNode* container = node;
     while (container &&
-           !ui::IsContainerWithSelectableChildrenRole(container->data().role))
+           !ui::IsContainerWithSelectableChildren(container->data().role))
       container = container->parent();
     if (container)
       AddEvent(container, Event::SELECTED_CHILDREN_CHANGED);
@@ -304,8 +304,11 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
                                          const ui::AXTreeData& new_tree_data) {
   DCHECK_EQ(tree_, tree);
 
-  if (new_tree_data.loaded && !old_tree_data.loaded)
+  if (new_tree_data.loaded && !old_tree_data.loaded &&
+      ShouldFireLoadEvents(tree->root())) {
     AddEvent(tree->root(), Event::LOAD_COMPLETE);
+  }
+
   if (new_tree_data.sel_anchor_object_id !=
           old_tree_data.sel_anchor_object_id ||
       new_tree_data.sel_anchor_offset != old_tree_data.sel_anchor_offset ||
@@ -355,8 +358,12 @@ void AXEventGenerator::OnAtomicUpdateFinished(
     const std::vector<Change>& changes) {
   DCHECK_EQ(tree_, tree);
 
-  if (root_changed && tree->data().loaded)
-    AddEvent(tree->root(), Event::LOAD_COMPLETE);
+  if (root_changed && ShouldFireLoadEvents(tree->root())) {
+    if (tree->data().loaded)
+      AddEvent(tree->root(), Event::LOAD_COMPLETE);
+    else
+      AddEvent(tree->root(), Event::LOAD_START);
+  }
 
   for (const auto& change : changes) {
     if ((change.type == NODE_CREATED || change.type == SUBTREE_CREATED)) {
@@ -448,6 +455,13 @@ void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
                 tree->int_reverse_relations().end(), callback);
   std::for_each(tree->intlist_reverse_relations().begin(),
                 tree->intlist_reverse_relations().end(), callback);
+}
+
+// Attempts to suppress load-related events that we presume no AT will be
+// interested in under any circumstances, such as pages which have no size.
+bool AXEventGenerator::ShouldFireLoadEvents(AXNode* node) {
+  const AXNodeData& data = node->data();
+  return data.location.width() || data.location.height();
 }
 
 }  // namespace ui

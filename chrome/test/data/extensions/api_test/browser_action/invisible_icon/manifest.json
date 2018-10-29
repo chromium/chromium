@@ -6,6 +6,9 @@
     "page": "background.html"
   },
   "browser_action": {
-    "name": "Set toolbar icon"
+    "name": "Set toolbar icon",
+    "default_icon": {
+      "24": "invisible_icon.png"
+    }
   }
 }

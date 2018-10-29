@@ -46,7 +46,8 @@ class ProximityAuthLocalStatePrefManager : public ProximityAuthPrefManager {
   bool IsEasyUnlockEnabled() const override;
   bool IsEasyUnlockEnabledStateSet() const override;
   ProximityThreshold GetProximityThreshold() const override;
-  bool IsChromeOSLoginEnabled() override;
+  bool IsChromeOSLoginAllowed() const override;
+  bool IsChromeOSLoginEnabled() const override;
 
  private:
   // ProximityAuthPrefManager:

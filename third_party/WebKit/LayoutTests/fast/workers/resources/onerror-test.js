@@ -4,15 +4,26 @@ function stripURL(url) {
     return url ? url.match( /[^\/]+\/?$/ )[0] : url;
 }
 
-function checkErrorEvent(errorEvent, obj) {
+function checkWorkerLevelErrorEvent(errorEvent, obj) {
+    window.errorEvent = errorEvent;
+    shouldBeEqualToString('errorEvent.message', obj.message);
+    shouldBeEqualToString('stripURL(errorEvent.filename)', obj.filename);
+    shouldBe('errorEvent.lineno', '' + obj.lineno);
+    shouldBe('errorEvent.colno', '' + obj.colno);
+}
+
+function checkPageLevelErrorEvent(errorEvent, obj) {
     window.errorEvent = errorEvent;
     shouldBeEqualToString('errorEvent.message', obj.message);
     shouldBeEqualToString('stripURL(errorEvent.filename)', obj.filename);
     shouldBe('errorEvent.lineno', '' + obj.lineno);
     shouldBe('errorEvent.colno', '' + obj.colno);
 
-    // The spec says the error property for worker-generated errors is always initialized to null
-    // outside the worker: http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#runtime-script-errors-0
+    // The spec says the error property for the errors generated for dedicated
+    // workers (not DedicatedWorkerGlobalScope) should be initialized to null.
+    // This is because error property cannot always be passed to outside
+    // workers, since the value of |error| attribute is not always clonable.
+    // https://html.spec.whatwg.org/multipage/workers.html#runtime-script-errors-2
     shouldBeNull('errorEvent.error');
 }
 
@@ -21,7 +32,7 @@ function checkPostMessage(obj) {
         if (e.data.done)
             return;
         debug("\nWorker-level onerror handler triggered:");
-        checkErrorEvent(e.data, obj);
+        checkWorkerLevelErrorEvent(e.data, obj);
     };
 }
 
@@ -35,7 +46,7 @@ function checkErrorEventInHandler(error, returnValue) {
         if (error.length)
             obj = error[errorsSeen++];
 
-        checkErrorEvent(e, obj);
+        checkPageLevelErrorEvent(e, obj);
 
         if (!error.length || error.length == errorsSeen)
             finishJSTest();
@@ -52,7 +63,7 @@ function checkErrorEventInListener(error, preventDefault) {
         if (error.length)
             obj = error[errorsSeen++];
 
-        checkErrorEvent(e, obj);
+        checkPageLevelErrorEvent(e, obj);
 
         if (!error.length || error.length == errorsSeen)
             finishJSTest();

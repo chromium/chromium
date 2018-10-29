@@ -45,7 +45,7 @@
 
 namespace blink {
 
-namespace VectorMath {
+namespace vector_math {
 
 namespace {
 #if defined(OS_MACOSX)
@@ -199,6 +199,6 @@ void Zvmul(const float* real1p,
               frames_to_process);
 }
 
-}  // namespace VectorMath
+}  // namespace vector_math
 
 }  // namespace blink

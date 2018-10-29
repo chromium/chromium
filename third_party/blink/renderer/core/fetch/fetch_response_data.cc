@@ -287,7 +287,8 @@ FetchResponseData::FetchResponseData(Type type,
     : type_(type),
       status_(status),
       status_message_(status_message),
-      header_list_(FetchHeaderList::Create()) {}
+      header_list_(FetchHeaderList::Create()),
+      response_time_(base::Time::Now()) {}
 
 void FetchResponseData::ReplaceBodyStreamBuffer(BodyStreamBuffer* buffer) {
   if (type_ == Type::kBasic || type_ == Type::kCORS) {

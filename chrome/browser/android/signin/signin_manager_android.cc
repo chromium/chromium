@@ -326,13 +326,6 @@ jboolean SigninManagerAndroid::IsSignedInOnNative(
   return SigninManagerFactory::GetForProfile(profile_)->IsAuthenticated();
 }
 
-void SigninManagerAndroid::ProhibitSignout(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj,
-                                           jboolean prohibit_signout) {
-  SigninManagerFactory::GetForProfile(profile_)->ProhibitSignout(
-      prohibit_signout);
-}
-
 void SigninManagerAndroid::GoogleSigninFailed(
     const GoogleServiceAuthError& error) {}
 

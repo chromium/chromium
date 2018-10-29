@@ -49,7 +49,7 @@ HistoryProvider::~HistoryProvider() {}
 void HistoryProvider::DeleteMatchFromMatches(const AutocompleteMatch& match) {
   bool found = false;
   BookmarkModel* bookmark_model = client_->GetBookmarkModel();
-  for (ACMatches::iterator i(matches_.begin()); i != matches_.end(); ++i) {
+  for (auto i(matches_.begin()); i != matches_.end(); ++i) {
     if (i->destination_url == match.destination_url && i->type == match.type) {
       found = true;
       if ((i->type == AutocompleteMatchType::URL_WHAT_YOU_TYPED) ||

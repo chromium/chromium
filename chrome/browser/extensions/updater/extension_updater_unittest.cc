@@ -647,8 +647,7 @@ static void VerifyQueryAndExtractParameters(
   std::map<std::string, std::string> expected;
   ExtractParameters(omaha_params, &expected);
 
-  for (std::map<std::string, std::string>::iterator it = expected.begin();
-       it != expected.end(); ++it) {
+  for (auto it = expected.begin(); it != expected.end(); ++it) {
     EXPECT_EQ(it->second, params[it->first]);
   }
 
@@ -2588,22 +2587,17 @@ TEST_F(ExtensionUpdaterTest, TestCheckSoon) {
 }
 
 TEST_F(ExtensionUpdaterTest, TestDisabledReasons1) {
-  std::vector<int> disabled;
-  disabled.push_back(disable_reason::DISABLE_USER_ACTION);
-  disabled.push_back(disable_reason::DISABLE_PERMISSIONS_INCREASE |
-                     disable_reason::DISABLE_CORRUPTED);
-  TestPingMetrics(1, disabled);
+  TestPingMetrics(1, {disable_reason::DISABLE_USER_ACTION,
+                      disable_reason::DISABLE_PERMISSIONS_INCREASE |
+                          disable_reason::DISABLE_CORRUPTED});
 }
 
 TEST_F(ExtensionUpdaterTest, TestDisabledReasons2) {
-  std::vector<int> disabled;
-  TestPingMetrics(1, disabled);
+  TestPingMetrics(1, {});
 }
 
 TEST_F(ExtensionUpdaterTest, TestDisabledReasons3) {
-  std::vector<int> disabled;
-  disabled.push_back(0);
-  TestPingMetrics(0, disabled);
+  TestPingMetrics(0, {0});
 }
 
 TEST_F(ExtensionUpdaterTest, TestUninstallWhileUpdateCheck) {
@@ -2631,6 +2625,11 @@ TEST_F(ExtensionUpdaterTest, TestUninstallWhileUpdateCheck) {
 
   service.set_extensions(ExtensionList(), ExtensionList());
   ASSERT_FALSE(service.GetExtensionById(id, false));
+
+  // RunUntilIdle is needed to make sure that the UpdateService instance that
+  // runs the extension update process has a chance to exit gracefully; without
+  // it, the test would crash.
+  RunUntilIdle();
 }
 
 // Tests that we don't get a DCHECK failure when the next check time saved in

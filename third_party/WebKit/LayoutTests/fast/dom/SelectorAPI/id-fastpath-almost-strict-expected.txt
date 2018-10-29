@@ -2,7 +2,6 @@ This tests that the querySelector and querySelectorAll fast path for IDs in almo
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.querySelector('#testId') is correctNode
 PASS document.querySelector('div#testId') is correctNode
 PASS document.querySelector('ul#testId') is null

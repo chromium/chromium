@@ -26,6 +26,9 @@ enum SandboxType {
 #if defined(OS_WIN)
   // Do not apply any sandboxing and elevate the privileges of the process.
   SANDBOX_TYPE_NO_SANDBOX_AND_ELEVATED_PRIVILEGES,
+
+  // The XR Compositing process.
+  SANDBOX_TYPE_XRCOMPOSITING,
 #endif
 
   // Renderer or worker process. Most common case.

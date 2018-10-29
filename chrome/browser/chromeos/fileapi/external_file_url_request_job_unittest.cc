@@ -17,11 +17,15 @@
 #include "chrome/browser/chromeos/drive/drive_file_stream_reader.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/chromeos/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/chromeos/file_system_provider/service.h"
+#include "chrome/browser/chromeos/file_system_provider/service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/chromeos_features.h"
 #include "components/drive/chromeos/drive_test_util.h"
 #include "components/drive/chromeos/fake_file_system.h"
 #include "components/drive/service/fake_drive_service.h"
@@ -114,6 +118,12 @@ class TestDelegate : public net::TestDelegate {
   DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
+constexpr char kExtensionId[] = "abc";
+constexpr char kFileSystemId[] = "test-filesystem";
+constexpr char kTestUrl[] = "externalfile:abc:test-filesystem:/hello.txt";
+constexpr char kExpectedFileContents[] =
+    "This is a testing file. Lorem ipsum dolor sit amet est.";
+
 }  // namespace
 
 class ExternalFileURLRequestJobTest : public testing::Test {
@@ -134,6 +144,17 @@ class ExternalFileURLRequestJobTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     Profile* const profile =
         profile_manager_->CreateTestingProfile("test-user");
+
+    auto* service = chromeos::file_system_provider::Service::Get(profile);
+    service->RegisterProvider(
+        chromeos::file_system_provider::FakeExtensionProvider::Create(
+            kExtensionId));
+    const auto kProviderId =
+        chromeos::file_system_provider::ProviderId::CreateFromExtensionId(
+            kExtensionId);
+    service->MountFileSystem(kProviderId,
+                             chromeos::file_system_provider::MountOptions(
+                                 kFileSystemId, "Test FileSystem"));
 
     // Create the drive integration service for the profile.
     integration_service_factory_scope_.reset(
@@ -239,8 +260,7 @@ class ExternalFileURLRequestJobTest : public testing::Test {
 
 TEST_F(ExternalFileURLRequestJobTest, NonGetMethod) {
   std::unique_ptr<net::URLRequest> request(url_request_context_->CreateRequest(
-      GURL("externalfile:drive-test-user-hash/root/File 1.txt"),
-      net::DEFAULT_PRIORITY, test_delegate_.get()));
+      GURL(kTestUrl), net::DEFAULT_PRIORITY, test_delegate_.get()));
   request->set_method("POST");  // Set non "GET" method.
   request->Start();
 
@@ -250,57 +270,28 @@ TEST_F(ExternalFileURLRequestJobTest, NonGetMethod) {
 }
 
 TEST_F(ExternalFileURLRequestJobTest, RegularFile) {
-  const GURL kTestUrl("externalfile:drive-test-user-hash/root/File 1.txt");
-  const base::FilePath kTestFilePath("drive/root/File 1.txt");
-
-  // For the first time, the file should be fetched from the server.
   {
-    std::unique_ptr<net::URLRequest> request(
-        url_request_context_->CreateRequest(kTestUrl, net::DEFAULT_PRIORITY,
-                                            test_delegate_.get()));
-    request->Start();
-
-    base::RunLoop().Run();
-
-    EXPECT_EQ(net::OK, test_delegate_->request_status());
-    // It looks weird, but the mime type for the "File 1.txt" is "audio/mpeg"
-    // on the server.
-    std::string mime_type;
-    request->GetMimeType(&mime_type);
-    EXPECT_EQ("audio/mpeg", mime_type);
-
-    // Reading file must be done after |request| runs, otherwise
-    // it'll create a local cache file, and we cannot test correctly.
-    std::string expected_data;
-    ASSERT_TRUE(ReadDriveFileSync(kTestFilePath, &expected_data));
-    EXPECT_EQ(expected_data, test_delegate_->data_received());
-  }
-
-  // For the second time, the locally cached file should be used.
-  // The caching emulation is done by FakeFileSystem.
-  {
-    test_delegate_.reset(new TestDelegate);
     std::unique_ptr<net::URLRequest> request(
         url_request_context_->CreateRequest(
-            GURL("externalfile:drive-test-user-hash/root/File 1.txt"),
-            net::DEFAULT_PRIORITY, test_delegate_.get()));
+            GURL(kTestUrl), net::DEFAULT_PRIORITY, test_delegate_.get()));
     request->Start();
 
     base::RunLoop().Run();
 
-    EXPECT_EQ(net::OK, test_delegate_->request_status());
-
+    ASSERT_EQ(net::OK, test_delegate_->request_status());
     std::string mime_type;
     request->GetMimeType(&mime_type);
-    EXPECT_EQ("audio/mpeg", mime_type);
+    EXPECT_EQ("text/plain", mime_type);
 
-    std::string expected_data;
-    ASSERT_TRUE(ReadDriveFileSync(kTestFilePath, &expected_data));
-    EXPECT_EQ(expected_data, test_delegate_->data_received());
+    EXPECT_EQ(kExpectedFileContents, test_delegate_->data_received());
   }
 }
 
 TEST_F(ExternalFileURLRequestJobTest, HostedDocument) {
+  // Hosted documents are never opened via externalfile: URLs with DriveFS.
+  if (base::FeatureList::IsEnabled(chromeos::features::kDriveFs)) {
+    return;
+  }
   // Open a gdoc file.
   std::unique_ptr<net::URLRequest> request(url_request_context_->CreateRequest(
       GURL("externalfile:drive-test-user-hash/root/Document 1 "
@@ -317,19 +308,8 @@ TEST_F(ExternalFileURLRequestJobTest, HostedDocument) {
 
 TEST_F(ExternalFileURLRequestJobTest, RootDirectory) {
   std::unique_ptr<net::URLRequest> request(url_request_context_->CreateRequest(
-      GURL("externalfile:drive-test-user-hash/root"), net::DEFAULT_PRIORITY,
+      GURL("externalfile:abc:test-filesystem:/"), net::DEFAULT_PRIORITY,
       test_delegate_.get()));
-  request->Start();
-
-  base::RunLoop().Run();
-
-  EXPECT_EQ(net::ERR_FAILED, test_delegate_->request_status());
-}
-
-TEST_F(ExternalFileURLRequestJobTest, Directory) {
-  std::unique_ptr<net::URLRequest> request(url_request_context_->CreateRequest(
-      GURL("externalfile:drive-test-user-hash/root/Directory 1"),
-      net::DEFAULT_PRIORITY, test_delegate_.get()));
   request->Start();
 
   base::RunLoop().Run();
@@ -339,7 +319,7 @@ TEST_F(ExternalFileURLRequestJobTest, Directory) {
 
 TEST_F(ExternalFileURLRequestJobTest, NonExistingFile) {
   std::unique_ptr<net::URLRequest> request(url_request_context_->CreateRequest(
-      GURL("externalfile:drive-test-user-hash/root/non-existing-file.txt"),
+      GURL("externalfile:abc:test-filesystem:/non-existing-file.txt"),
       net::DEFAULT_PRIORITY, test_delegate_.get()));
   request->Start();
 
@@ -360,8 +340,7 @@ TEST_F(ExternalFileURLRequestJobTest, WrongFormat) {
 
 TEST_F(ExternalFileURLRequestJobTest, Cancel) {
   std::unique_ptr<net::URLRequest> request(url_request_context_->CreateRequest(
-      GURL("externalfile:drive-test-user-hash/root/File 1.txt"),
-      net::DEFAULT_PRIORITY, test_delegate_.get()));
+      GURL(kTestUrl), net::DEFAULT_PRIORITY, test_delegate_.get()));
 
   // Start the request, and cancel it immediately after it.
   request->Start();
@@ -373,11 +352,8 @@ TEST_F(ExternalFileURLRequestJobTest, Cancel) {
 }
 
 TEST_F(ExternalFileURLRequestJobTest, RangeHeader) {
-  const GURL kTestUrl("externalfile:drive-test-user-hash/root/File 1.txt");
-  const base::FilePath kTestFilePath("drive/root/File 1.txt");
-
   std::unique_ptr<net::URLRequest> request(url_request_context_->CreateRequest(
-      kTestUrl, net::DEFAULT_PRIORITY, test_delegate_.get()));
+      GURL(kTestUrl), net::DEFAULT_PRIORITY, test_delegate_.get()));
 
   // Set range header.
   request->SetExtraRequestHeaderByName(
@@ -388,18 +364,13 @@ TEST_F(ExternalFileURLRequestJobTest, RangeHeader) {
 
   EXPECT_EQ(net::OK, test_delegate_->request_status());
 
-  // Reading file must be done after |request| runs, otherwise
-  // it'll create a local cache file, and we cannot test correctly.
-  std::string expected_data;
-  ASSERT_TRUE(ReadDriveFileSync(kTestFilePath, &expected_data));
-  EXPECT_EQ(expected_data.substr(3, 3), test_delegate_->data_received());
+  EXPECT_EQ(base::StringPiece(kExpectedFileContents).substr(3, 3),
+            test_delegate_->data_received());
 }
 
 TEST_F(ExternalFileURLRequestJobTest, WrongRangeHeader) {
-  const GURL kTestUrl("externalfile:drive-test-user-hash/root/File 1.txt");
-
   std::unique_ptr<net::URLRequest> request(url_request_context_->CreateRequest(
-      kTestUrl, net::DEFAULT_PRIORITY, test_delegate_.get()));
+      GURL(kTestUrl), net::DEFAULT_PRIORITY, test_delegate_.get()));
 
   // Set range header.
   request->SetExtraRequestHeaderByName(

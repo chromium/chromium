@@ -9,15 +9,18 @@ import android.support.annotation.NonNull;
 import com.google.android.libraries.feed.api.knowncontent.ContentMetadata;
 import com.google.android.libraries.feed.host.action.ActionApi;
 
-import org.chromium.blink_public.web.WebReferrerPolicy;
 import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.feed.FeedLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedOfflineIndicator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.suggestions.NavigationRecorder;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
@@ -29,6 +32,7 @@ public class FeedActionHandler implements ActionApi {
     private final Runnable mSuggestionConsumedObserver;
     private final FeedOfflineIndicator mOfflineIndicator;
     private final OfflinePageBridge mOfflinePageBridge;
+    private final FeedLoggingBridge mLoggingBridge;
 
     /**
      * @param delegate The {@link SuggestionsNavigationDelegate} that this handler calls when
@@ -37,15 +41,18 @@ public class FeedActionHandler implements ActionApi {
      * consumed by the user.
      * @param offlineIndicator Tracks offline pages and can supply this handler with offline ids.
      * @param offlinePageBridge Capable of updating {@link LoadUrlParams} to include offline ids.
+     * @param loggingBridge Reports pages visiting time.
      */
     public FeedActionHandler(@NonNull SuggestionsNavigationDelegate delegate,
             @NonNull Runnable suggestionConsumedObserver,
             @NonNull FeedOfflineIndicator offlineIndicator,
-            @NonNull OfflinePageBridge offlinePageBridge) {
+            @NonNull OfflinePageBridge offlinePageBridge,
+            @NonNull FeedLoggingBridge loggingBridge) {
         mDelegate = delegate;
         mSuggestionConsumedObserver = suggestionConsumedObserver;
         mOfflineIndicator = offlineIndicator;
         mOfflinePageBridge = offlinePageBridge;
+        mLoggingBridge = loggingBridge;
     }
 
     @Override
@@ -116,7 +123,7 @@ public class FeedActionHandler implements ActionApi {
         params.setReferrer(
                 new Referrer(SuggestionsConfig.getReferrerUrl(
                                      ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS),
-                        WebReferrerPolicy.ALWAYS));
+                        ReferrerPolicy.ALWAYS));
         return params;
     }
 
@@ -133,12 +140,24 @@ public class FeedActionHandler implements ActionApi {
     private void openOfflineIfPossible(int disposition, String url) {
         Long maybeOfflineId = mOfflineIndicator.getOfflineIdIfPageIsOfflined(url);
         if (maybeOfflineId == null) {
-            mDelegate.openUrl(disposition, createLoadUrlParams(url));
+            Tab loadingTab = mDelegate.openUrl(disposition, createLoadUrlParams(url));
+            if (loadingTab != null) {
+                // Records how long the user spending on the suggested page.
+                NavigationRecorder.record(loadingTab, visitData -> {
+                    mLoggingBridge.onContentTargetVisited(visitData.duration);
+                });
+            }
         } else {
             mOfflinePageBridge.getLoadUrlParamsByOfflineId(
                     maybeOfflineId, LaunchLocation.SUGGESTION, (loadUrlParams) -> {
                         loadUrlParams.setVerbatimHeaders(loadUrlParams.getExtraHeadersString());
-                        mDelegate.openUrl(disposition, loadUrlParams);
+                        Tab loadingTab = mDelegate.openUrl(disposition, loadUrlParams);
+                        if (loadingTab != null) {
+                            // Records how long the user spending on the offline page.
+                            NavigationRecorder.record(loadingTab, visitData -> {
+                                mLoggingBridge.onOfflinePageVisited(visitData.duration);
+                            });
+                        }
                     });
         }
         mSuggestionConsumedObserver.run();

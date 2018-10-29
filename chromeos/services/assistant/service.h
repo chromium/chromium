@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/assistant/default_voice_interaction_observer.h"
 #include "ash/public/interfaces/assistant_controller.mojom.h"
 #include "ash/public/interfaces/session_controller.mojom.h"
 #include "ash/public/interfaces/voice_interaction_controller.mojom.h"
@@ -33,6 +34,10 @@ namespace base {
 class OneShotTimer;
 }
 
+namespace network {
+class NetworkConnectionTracker;
+}  // namespace network
+
 namespace chromeos {
 namespace assistant {
 
@@ -42,11 +47,11 @@ class AssistantSettingsManager;
 class Service : public service_manager::Service,
                 public chromeos::PowerManagerClient::Observer,
                 public ash::mojom::SessionActivationObserver,
-                public mojom::AssistantInteractionSubscriber,
                 public mojom::AssistantPlatform,
-                public ash::mojom::VoiceInteractionObserver {
+                public ash::DefaultVoiceInteractionObserver {
  public:
-  Service();
+  explicit Service(
+      network::NetworkConnectionTracker* network_connection_tracker);
   ~Service() override;
 
   mojom::Client* client() { return client_.get(); }
@@ -54,6 +59,8 @@ class Service : public service_manager::Service,
   ash::mojom::AssistantController* assistant_controller() {
     return assistant_controller_.get();
   }
+
+  void RequestAccessToken();
 
   void SetIdentityManagerForTesting(
       identity::mojom::IdentityManagerPtr identity_manager);
@@ -85,39 +92,11 @@ class Service : public service_manager::Service,
   void OnLockStateChanged(bool locked) override;
 
   // ash::mojom::VoiceInteractionObserver:
-  void OnVoiceInteractionStatusChanged(
-      ash::mojom::VoiceInteractionState state) override {}
   void OnVoiceInteractionSettingsEnabled(bool enabled) override;
-  void OnVoiceInteractionContextEnabled(bool enabled) override {}
   void OnVoiceInteractionHotwordEnabled(bool enabled) override;
-  void OnVoiceInteractionSetupCompleted(bool completed) override {}
-  void OnAssistantFeatureAllowedChanged(
-      ash::mojom::AssistantAllowedState state) override {}
-  void OnLocaleChanged(const std::string& locale) override {}
-
-  // chromeos::assistant::mojom::AssistantInteractionSubscriber:
-  void OnInteractionStarted(bool is_voice_interaction) override{};
-  void OnInteractionFinished(
-      mojom::AssistantInteractionResolution resolution) override;
-  void OnHtmlResponse(const std::string& response) override{};
-  void OnSuggestionsResponse(
-      std::vector<mojom::AssistantSuggestionPtr> response) override{};
-  void OnTextResponse(const std::string& response) override{};
-  void OnOpenUrlResponse(const GURL& url) override{};
-  void OnSpeechRecognitionStarted() override{};
-  void OnSpeechRecognitionIntermediateResult(
-      const std::string& high_confidence_text,
-      const std::string& low_confidence_text) override{};
-  void OnSpeechRecognitionEndOfUtterance() override{};
-  void OnSpeechRecognitionFinalResult(
-      const std::string& final_result) override{};
-  void OnSpeechLevelUpdated(float speech_level) override{};
-  void OnTtsStarted(bool due_to_error) override{};
 
   void BindAssistantSettingsManager(
       mojom::AssistantSettingsManagerRequest request);
-
-  void RequestAccessToken();
 
   identity::mojom::IdentityManager* GetIdentityManager();
 
@@ -173,8 +152,8 @@ class Service : public service_manager::Service,
   ash::mojom::VoiceInteractionControllerPtr voice_interaction_controller_;
   mojo::Binding<ash::mojom::VoiceInteractionObserver>
       voice_interaction_observer_binding_;
-  mojo::Binding<chromeos::assistant::mojom::AssistantInteractionSubscriber>
-      assistant_interaction_subscriber_binding_;
+
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   base::WeakPtrFactory<Service> weak_ptr_factory_;
 

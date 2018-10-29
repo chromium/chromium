@@ -17,6 +17,8 @@ class GURL;
 
 namespace test_runner {
 
+extern const char* kIllegalString;
+
 inline bool IsASCIIAlpha(char ch) {
   return base::IsAsciiLower(ch | 0x20);
 }

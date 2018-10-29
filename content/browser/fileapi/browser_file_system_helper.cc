@@ -15,8 +15,10 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/lazy_task_runner.h"
+#include "base/task/post_task.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
@@ -89,7 +91,8 @@ scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
       new storage::FileSystemContext(
-          BrowserThread::GetTaskRunnerForThread(BrowserThread::IO).get(),
+          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})
+              .get(),
           g_fileapi_task_runner.Get().get(),
           BrowserContext::GetMountPoints(browser_context),
           browser_context->GetSpecialStoragePolicy(), quota_manager_proxy,

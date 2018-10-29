@@ -2,7 +2,6 @@ Tests correct behavior of event.dataTransfer.setData/getData for 'URL', 'text/ur
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 --- Test set/get 'URL':
 PASS getDataResultType is "string"
 PASS getDataResult is "http://test.com/"

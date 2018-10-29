@@ -32,7 +32,7 @@ base::LazyInstance<ConnectionMap>::Leaky g_connections =
 
 // static
 void RendererWindowTreeClient::CreateIfNecessary(int routing_id) {
-  if (!features::IsUsingWindowService() || Get(routing_id))
+  if (!features::IsMultiProcessMash() || Get(routing_id))
     return;
   RendererWindowTreeClient* connection =
       new RendererWindowTreeClient(routing_id);
@@ -145,7 +145,8 @@ void RendererWindowTreeClient::RequestLayerTreeFrameSinkInternal(
   if (features::IsVizHitTestingDrawQuadEnabled()) {
     params.hit_test_data_provider =
         std::make_unique<viz::HitTestDataProviderDrawQuad>(
-            true /* should_ask_for_child_region */);
+            true /* should_ask_for_child_region */,
+            true /* root_accepts_events */);
   }
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
@@ -237,7 +238,7 @@ void RendererWindowTreeClient::OnFrameSinkIdAllocated(
     const viz::FrameSinkId& frame_sink_id) {
   // When mus is not hosting viz FrameSinkIds come from the browser, so we
   // ignore them here.
-  if (!features::IsUsingWindowService())
+  if (!features::IsMultiProcessMash())
     return;
 
   for (MusEmbeddedFrame* embedded_frame : embedded_frames_) {
@@ -299,6 +300,9 @@ void RendererWindowTreeClient::OnWindowOpacityChanged(ws::Id window_id,
                                                       float old_opacity,
                                                       float new_opacity) {}
 
+void RendererWindowTreeClient::OnWindowDisplayChanged(ws::Id window_id,
+                                                      int64_t display_id) {}
+
 void RendererWindowTreeClient::OnWindowParentDrawnStateChanged(ws::Id window_id,
                                                                bool drawn) {}
 
@@ -312,14 +316,12 @@ void RendererWindowTreeClient::OnWindowInputEvent(
     ws::Id window_id,
     int64_t display_id,
     std::unique_ptr<ui::Event> event,
-    bool matches_pointer_watcher) {
+    bool matches_event_observer) {
   NOTREACHED();
 }
 
-void RendererWindowTreeClient::OnPointerEventObserved(
-    std::unique_ptr<ui::Event> event,
-    ws::Id window_id,
-    int64_t display_id) {
+void RendererWindowTreeClient::OnObservedInputEvent(
+    std::unique_ptr<ui::Event> event) {
   NOTREACHED();
 }
 
@@ -327,18 +329,6 @@ void RendererWindowTreeClient::OnWindowFocused(ws::Id focused_window_id) {}
 
 void RendererWindowTreeClient::OnWindowCursorChanged(ws::Id window_id,
                                                      ui::CursorData cursor) {}
-
-void RendererWindowTreeClient::OnWindowSurfaceChanged(
-    ws::Id window_id,
-    const viz::SurfaceInfo& surface_info) {
-  DCHECK(features::IsUsingWindowService());
-  for (MusEmbeddedFrame* embedded_frame : embedded_frames_) {
-    if (embedded_frame->window_id_ == window_id) {
-      embedded_frame->delegate_->OnMusEmbeddedFrameSurfaceChanged(surface_info);
-      return;
-    }
-  }
-}
 
 void RendererWindowTreeClient::OnDragDropStart(
     const base::flat_map<std::string, std::vector<uint8_t>>& mime_data) {}
@@ -386,5 +376,9 @@ void RendererWindowTreeClient::RequestClose(ws::Id window_id) {}
 
 void RendererWindowTreeClient::GetScreenProviderObserver(
     ws::mojom::ScreenProviderObserverAssociatedRequest observer) {}
+
+void RendererWindowTreeClient::OnOcclusionStateChanged(
+    ws::Id window_id,
+    ws::mojom::OcclusionState occlusion_state) {}
 
 }  // namespace content

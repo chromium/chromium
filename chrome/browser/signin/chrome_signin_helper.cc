@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -25,8 +26,8 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/dice_response_handler.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -39,6 +40,7 @@
 #include "components/signin/core/browser/profile_management_switches.h"
 #include "components/signin/core/browser/signin_buildflags.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_request_info.h"
 #include "content/public/browser/web_contents.h"
@@ -188,7 +190,7 @@ void ProcessMirrorHeaderUIThread(
     BrowserWindow::AvatarBubbleMode bubble_mode;
     switch (service_type) {
       case GAIA_SERVICE_TYPE_INCOGNITO:
-        chrome::NewIncognitoWindow(browser);
+        chrome::NewIncognitoWindow(profile);
         return;
       case GAIA_SERVICE_TYPE_ADDSESSION:
         bubble_mode = BrowserWindow::AVATAR_BUBBLE_MODE_ADD_ACCOUNT;
@@ -304,6 +306,9 @@ void ProcessDiceHeaderUIThread(
   signin_metrics::PromoAction promo_action =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   signin_metrics::Reason reason = signin_metrics::Reason::REASON_UNKNOWN_REASON;
+  // This is the URL that the browser specified to redirect to after the user
+  // signs in. Not to be confused with the redirect header from GAIA response.
+  GURL redirect_after_signin_url = GURL::EmptyGURL();
 
   bool is_sync_signin_tab = false;
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents);
@@ -312,6 +317,7 @@ void ProcessDiceHeaderUIThread(
     access_point = tab_helper->signin_access_point();
     promo_action = tab_helper->signin_promo_action();
     reason = tab_helper->signin_reason();
+    redirect_after_signin_url = tab_helper->redirect_url();
   }
 
   DiceResponseHandler* dice_response_handler =
@@ -320,10 +326,11 @@ void ProcessDiceHeaderUIThread(
       dice_params,
       std::make_unique<ProcessDiceHeaderDelegateImpl>(
           web_contents, account_consistency,
-          SigninManagerFactory::GetForProfile(profile), is_sync_signin_tab,
+          IdentityManagerFactory::GetForProfile(profile), is_sync_signin_tab,
           base::BindOnce(&CreateDiceTurnOnSyncHelper, base::Unretained(profile),
                          access_point, promo_action, reason),
-          base::BindOnce(&ShowDiceSigninError, base::Unretained(profile))));
+          base::BindOnce(&ShowDiceSigninError, base::Unretained(profile)),
+          redirect_after_signin_url));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -362,10 +369,9 @@ void ProcessMirrorResponseHeaderIfExists(ResponseAdapter* response,
   if (params.service_type == GAIA_SERVICE_TYPE_NONE)
     return;
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::BindOnce(ProcessMirrorHeaderUIThread, params,
-                     response->GetWebContentsGetter()));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(ProcessMirrorHeaderUIThread, params,
+                                          response->GetWebContentsGetter()));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -401,8 +407,8 @@ void ProcessDiceResponseHeaderIfExists(ResponseAdapter* response,
   if (params.user_intention == DiceAction::NONE)
     return;
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(ProcessDiceHeaderUIThread, base::Passed(std::move(params)),
                  response->GetWebContentsGetter()));
 }
@@ -525,8 +531,8 @@ void FixAccountConsistencyRequestHeader(ChromeRequestAdapter* request,
   // starts.
   if (dice_header_added && ShouldBlockReconcilorForRequest(request)) {
     auto lock_wrapper = base::MakeRefCounted<AccountReconcilorLockWrapper>();
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&AccountReconcilorLockWrapper::CreateLockOnUI,
                        lock_wrapper, request->GetWebContentsGetter()));
 

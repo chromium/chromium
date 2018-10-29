@@ -195,7 +195,7 @@ std::unique_ptr<char* []> AlterEnvironment(const char* const* const env,
     size_t line_length = ParseEnvLine(env[i], &key);
 
     // Keep only values not specified in the change vector.
-    EnvironmentMap::const_iterator found_change = changes.find(key);
+    auto found_change = changes.find(key);
     if (found_change == changes.end()) {
       result_indices.push_back(value_storage.size());
       value_storage.append(env[i], line_length);
@@ -203,13 +203,12 @@ std::unique_ptr<char* []> AlterEnvironment(const char* const* const env,
   }
 
   // Now append all modified and new values.
-  for (EnvironmentMap::const_iterator i = changes.begin();
-       i != changes.end(); ++i) {
-    if (!i->second.empty()) {
+  for (const auto& i : changes) {
+    if (!i.second.empty()) {
       result_indices.push_back(value_storage.size());
-      value_storage.append(i->first);
+      value_storage.append(i.first);
       value_storage.push_back('=');
-      value_storage.append(i->second);
+      value_storage.append(i.second);
       value_storage.push_back(0);
     }
   }

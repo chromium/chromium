@@ -31,8 +31,8 @@
 
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
 
 namespace blink {
 
@@ -113,7 +113,7 @@ void BasicShapeEllipse::GetPath(Path& path, const FloatRect& bounding_box) {
 void BasicShapePolygon::GetPath(Path& path, const FloatRect& bounding_box) {
   DCHECK(path.IsEmpty());
   DCHECK(!(values_.size() % 2));
-  size_t length = values_.size();
+  wtf_size_t length = values_.size();
 
   if (!length)
     return;
@@ -123,7 +123,7 @@ void BasicShapePolygon::GetPath(Path& path, const FloatRect& bounding_box) {
                      bounding_box.X(),
                  FloatValueForLength(values_.at(1), bounding_box.Height()) +
                      bounding_box.Y()));
-  for (size_t i = 2; i < length; i = i + 2) {
+  for (wtf_size_t i = 2; i < length; i = i + 2) {
     path.AddLineTo(FloatPoint(
         FloatValueForLength(values_.at(i), bounding_box.Width()) +
             bounding_box.X(),

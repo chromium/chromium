@@ -389,7 +389,7 @@ void TestWebState::SetHasOpener(bool has_opener) {
   has_opener_ = has_opener;
 }
 
-void TestWebState::TakeSnapshot(SnapshotCallback callback) {
+void TestWebState::TakeSnapshot(CGRect rect, SnapshotCallback callback) {
   std::move(callback).Run(gfx::Image([[UIImage alloc] init]));
 }
 

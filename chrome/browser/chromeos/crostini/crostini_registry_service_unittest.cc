@@ -164,8 +164,7 @@ TEST_F(CrostiniRegistryServiceTest, ZeroAppsInstalledHistogram) {
   RecreateService();
 
   // Check that there are no apps installed.
-  histogram_tester.ExpectTotalCount(kCrostiniAppsInstalledHistogram, 1);
-  histogram_tester.ExpectBucketCount(kCrostiniAppsInstalledHistogram, 0, 1);
+  histogram_tester.ExpectUniqueSample(kCrostiniAppsInstalledHistogram, 0, 1);
 }
 
 TEST_F(CrostiniRegistryServiceTest, NAppsInstalledHistogram) {
@@ -195,8 +194,7 @@ TEST_F(CrostiniRegistryServiceTest, NAppsInstalledHistogram) {
 
   RecreateService();
 
-  histogram_tester.ExpectTotalCount(kCrostiniAppsInstalledHistogram, 1);
-  histogram_tester.ExpectBucketCount(kCrostiniAppsInstalledHistogram, 4, 1);
+  histogram_tester.ExpectUniqueSample(kCrostiniAppsInstalledHistogram, 4, 1);
 }
 
 TEST_F(CrostiniRegistryServiceTest, InstallAndLaunchTime) {

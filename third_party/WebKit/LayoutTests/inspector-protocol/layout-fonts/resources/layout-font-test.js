@@ -1,4 +1,5 @@
 (async function layoutFontTest(testRunner, session) {
+  await session.evaluateAsync("document.fonts.ready");
   var documentNodeId = (await session.protocol.DOM.getDocument()).result.root.nodeId;
   await session.protocol.CSS.enable();
   var testNodes = await session.evaluate(`
@@ -13,12 +14,7 @@
 
     testRunner.log(testNode.textContent.trim());
     testRunner.log(testNode.selector + ':');
-    for (var i = 0; i < usedFonts.length; i++) {
-      var usedFont = usedFonts[i];
-      var isLast = i === usedFonts.length - 1;
-      testRunner.log(`"${usedFont.familyName}" : ${usedFont.glyphCount}${isLast ? '' : ','}`);
-    }
-    testRunner.log('');
+    testRunner.log(usedFonts.map(usedFont => `"${usedFont.familyName}" : ${usedFont.glyphCount}`).join(',\n') + '\n');
     testNode.usedFonts = usedFonts;
   }
   return testNodes;

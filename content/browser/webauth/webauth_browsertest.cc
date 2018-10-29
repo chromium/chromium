@@ -67,9 +67,9 @@ constexpr char kTimeoutErrorMessage[] =
     "webauth: NotAllowedError: The operation either timed out or was not "
     "allowed. See: https://w3c.github.io/webauthn/#sec-assertion-privacy.";
 
-constexpr char kInvalidStateErrorMessage[] =
-    "webauth: InvalidStateError: The user attempted to use an authenticator "
-    "that recognized none of the provided credentials.";
+constexpr char kResidentCredentialsErrorMessage[] =
+    "webauth: NotSupportedError: Resident credentials or empty "
+    "'allowCredentials' lists are not supported at this time.";
 
 constexpr char kRelyingPartySecurityErrorMessage[] =
     "webauth: SecurityError: The relying party ID 'localhost' is not a "
@@ -402,7 +402,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         std::move(rp), std::move(user), kTestChallenge, std::move(parameters),
         base::TimeDelta::FromSeconds(30),
         std::vector<blink::mojom::PublicKeyCredentialDescriptorPtr>(), nullptr,
-        blink::mojom::AttestationConveyancePreference::NONE, nullptr);
+        blink::mojom::AttestationConveyancePreference::NONE, nullptr,
+        false /* no hmac_secret */);
 
     return mojo_options;
   }
@@ -590,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
   // factory as one of the first steps. Here, the request should not have been
   // serviced at all, so the fake request should still be pending on the fake
   // factory.
-  auto hid_discovery = ::device::FidoDiscovery::Create(
+  auto hid_discovery = ::device::FidoDeviceDiscovery::Create(
       ::device::FidoTransportProtocol::kUsbHumanInterfaceDevice, nullptr);
   ASSERT_TRUE(!!hid_discovery);
 
@@ -735,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
         shell()->web_contents()->GetMainFrame(),
         BuildCreateCallWithParameters(parameters), &result));
 
-    ASSERT_EQ(kTimeoutErrorMessage, result);
+    ASSERT_EQ(kResidentCredentialsErrorMessage, result);
   }
 }
 
@@ -806,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       shell()->web_contents()->GetMainFrame(),
       BuildGetCallWithParameters(parameters), &result));
-  ASSERT_EQ(kInvalidStateErrorMessage, result);
+  ASSERT_EQ(kResidentCredentialsErrorMessage, result);
 }
 
 // WebAuthBrowserBleDisabledTest

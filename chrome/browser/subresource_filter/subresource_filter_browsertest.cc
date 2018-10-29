@@ -135,6 +135,13 @@ GURL GetURLWithFragment(const GURL& url, base::StringPiece fragment) {
   return url.ReplaceComponents(replacements);
 }
 
+// This string comes from GetErrorStringForDisallowedLoad() in
+// blink/renderer/core/loader/subresource_filter.cc
+constexpr const char kBlinkDisallowSubframeConsoleMessageFormat[] =
+    "Chrome blocked resource %s on this site because this site tends to show "
+    "ads that interrupt, distract, mislead, or prevent user control. Learn "
+    "more at https://www.chromestatus.com/feature/5738264052891648";
+
 }  // namespace
 
 // Tests -----------------------------------------------------------------------
@@ -280,10 +287,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, SubFrameActivation) {
-  std::ostringstream message_filter;
-  message_filter << kDisallowSubframeConsoleMessagePrefix << "*";
+  std::string message_filter =
+      base::StringPrintf(kBlinkDisallowSubframeConsoleMessageFormat, "*");
   content::ConsoleObserverDelegate console_observer(web_contents(),
-                                                    message_filter.str());
+                                                    message_filter);
   web_contents()->SetDelegate(&console_observer);
 
   GURL url(GetTestUrl(kTestFrameSetPath));
@@ -302,17 +309,18 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, SubFrameActivation) {
                            SubresourceFilterAction::kUIShown, 1);
 
   // Console message for subframe blocking should be displayed.
-  std::ostringstream result;
-  result << kDisallowSubframeConsoleMessagePrefix << "*included_script.js*";
-  EXPECT_TRUE(base::MatchPattern(console_observer.message(), result.str()));
+  EXPECT_TRUE(base::MatchPattern(
+      console_observer.message(),
+      base::StringPrintf(kBlinkDisallowSubframeConsoleMessageFormat,
+                         "*included_script.js")));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        ActivationDisabled_NoConsoleMessage) {
-  std::ostringstream message_filter;
-  message_filter << kDisallowSubframeConsoleMessageSuffix << "*";
+  std::string message_filter =
+      base::StringPrintf(kBlinkDisallowSubframeConsoleMessageFormat, "*");
   content::ConsoleObserverDelegate console_observer(web_contents(),
-                                                    message_filter.str());
+                                                    message_filter);
   web_contents()->SetDelegate(&console_observer);
 
   Configuration config(
@@ -334,10 +342,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        ActivationDryRun_NoConsoleMessage) {
-  std::ostringstream message_filter;
-  message_filter << kDisallowSubframeConsoleMessageSuffix << "*";
+  std::string message_filter =
+      base::StringPrintf(kBlinkDisallowSubframeConsoleMessageFormat, "*");
   content::ConsoleObserverDelegate console_observer(web_contents(),
-                                                    message_filter.str());
+                                                    message_filter);
   web_contents()->SetDelegate(&console_observer);
 
   Configuration config(

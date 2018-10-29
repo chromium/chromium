@@ -48,23 +48,17 @@ class CHROMEOS_EXPORT UpdateEngineClient : public DBusClient {
 
   // The status of the ongoing update attempt.
   struct Status {
-    Status() : status(UPDATE_STATUS_IDLE),
-               download_progress(0.0),
-               last_checked_time(0),
-               new_size(0) {
-    }
-
-    UpdateStatusOperation status;
+    UpdateStatusOperation status = UPDATE_STATUS_IDLE;
     // 0.0 - 1.0
-    double download_progress;
+    double download_progress = 0.0;
     // As reported by std::time().
-    int64_t last_checked_time;
+    int64_t last_checked_time = 0;
     std::string new_version;
     // Valid during DOWNLOADING, in bytes.
-    int64_t new_size;
+    int64_t new_size = 0;
     // True if the update is actually a rollback and the device will be wiped
     // when rebooted.
-    bool is_rollback;
+    bool is_rollback = false;
   };
 
   // The result code used for RequestUpdateCheck().

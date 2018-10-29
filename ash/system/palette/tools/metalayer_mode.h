@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/highlighter/highlighter_controller.h"
+#include "ash/public/cpp/assistant/default_voice_interaction_observer.h"
 #include "ash/public/interfaces/voice_interaction_controller.mojom.h"
 #include "ash/system/palette/common_palette_tool.h"
 #include "base/memory/weak_ptr.h"
@@ -21,7 +22,7 @@ namespace ash {
 // menu, but also by the stylus button click.
 class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
                                  public ui::EventHandler,
-                                 public mojom::VoiceInteractionObserver,
+                                 public DefaultVoiceInteractionObserver,
                                  public HighlighterController::Observer {
  public:
   explicit MetalayerMode(Delegate* delegate);
@@ -68,11 +69,8 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
       mojom::VoiceInteractionState state) override;
   void OnVoiceInteractionSettingsEnabled(bool enabled) override;
   void OnVoiceInteractionContextEnabled(bool enabled) override;
-  void OnVoiceInteractionHotwordEnabled(bool enabled) override {}
-  void OnVoiceInteractionSetupCompleted(bool completed) override {}
   void OnAssistantFeatureAllowedChanged(
       mojom::AssistantAllowedState state) override;
-  void OnLocaleChanged(const std::string& locale) override {}
 
   // HighlighterController::Observer:
   void OnHighlighterEnabledChanged(HighlighterEnabledState state) override;

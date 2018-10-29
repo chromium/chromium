@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_TEXTURE_BASE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_TEXTURE_BASE_H_
 
+#include <stdint.h>
+
 #include "gpu/gpu_export.h"
 
 namespace gpu {
@@ -26,6 +28,10 @@ class GPU_EXPORT TextureBase {
 
   void SetMailboxManager(MailboxManager* mailbox_manager);
   MailboxManager* mailbox_manager() const { return mailbox_manager_; }
+
+  // An identifier for subclasses. Necessary for safe downcasting.
+  enum class Type { kNone, kValidated, kPassthrough };
+  virtual Type GetType() const;
 
  protected:
   // The id of the texture.

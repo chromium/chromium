@@ -369,7 +369,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
 
   void DidFinishRunningTileTasksRequiredForActivation();
   void DidFinishRunningTileTasksRequiredForDraw();
-  void DidFinishRunningAllTileTasks();
+  void DidFinishRunningAllTileTasks(bool has_pending_queries);
 
   scoped_refptr<TileTask> CreateTaskSetFinishedTask(
       void (TileManager::*callback)());
@@ -397,6 +397,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void FlushAndIssueSignals();
   void CheckPendingGpuWorkAndIssueSignals();
   void IssueSignals();
+  void ScheduleCheckRasterFinishedQueries();
+  void CheckRasterFinishedQueries();
 
   TileManagerClient* client_;
   base::SequencedTaskRunner* task_runner_;
@@ -451,6 +453,11 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   int num_of_tiles_with_checker_images_ = 0;
 
   GURL active_url_;
+
+  // The callback scheduled to poll whether the GPU side work for pending tiles
+  // has completed.
+  bool has_pending_queries_ = false;
+  base::CancelableClosure check_pending_tile_queries_callback_;
 
   // We need two WeakPtrFactory objects as the invalidation pattern of each is
   // different. The |task_set_finished_weak_ptr_factory_| is invalidated any

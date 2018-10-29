@@ -2,7 +2,6 @@ Test JS objects as NodeFilters.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Testing with raw function filter
  filtering node A1 [this=[object Window]]
 PASS walker.firstChild(); walker.currentNode.id is 'A1'

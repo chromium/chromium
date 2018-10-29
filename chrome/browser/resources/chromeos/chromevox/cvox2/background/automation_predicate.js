@@ -197,7 +197,8 @@ AutomationPredicate.leaf = function(node) {
       node.state[State.INVISIBLE] || node.children.every(function(n) {
         return n.state[State.INVISIBLE];
       }) ||
-      !!AutomationPredicate.math(node);
+      // Explicitly only check the clickable attribute here (for Android).
+      node.clickable || !!AutomationPredicate.math(node);
 };
 
 /**
@@ -355,7 +356,7 @@ AutomationPredicate.container = function(node) {
 AutomationPredicate.structuralContainer = AutomationPredicate.roles([
   Role.ALERT_DIALOG, Role.CLIENT, Role.DIALOG, Role.ROOT_WEB_AREA,
   Role.WEB_VIEW, Role.WINDOW, Role.EMBEDDED_OBJECT, Role.IFRAME,
-  Role.IFRAME_PRESENTATIONAL, Role.UNKNOWN
+  Role.IFRAME_PRESENTATIONAL, Role.IGNORED, Role.UNKNOWN
 ]);
 
 /**
@@ -455,10 +456,9 @@ AutomationPredicate.shouldIgnoreNode = function(node) {
  * @param {!AutomationNode} node
  * @return {boolean}
  */
-AutomationPredicate.checkable = AutomationPredicate.roles([
-  Role.CHECK_BOX, Role.RADIO_BUTTON, Role.MENU_ITEM_CHECK_BOX,
-  Role.MENU_ITEM_RADIO, Role.SWITCH, Role.TOGGLE_BUTTON, Role.TREE_ITEM
-]);
+AutomationPredicate.checkable = function(node) {
+  return !!node.checked;
+};
 
 /**
  * Returns if the node is clickable.
@@ -596,7 +596,7 @@ AutomationPredicate.multiline = function(node) {
  * @return {boolean}
  */
 AutomationPredicate.autoScrollable = function(node) {
-  return node.scrollable &&
+  return !!node.scrollable &&
       (node.role == Role.GRID || node.role == Role.LIST ||
        node.role == Role.POP_UP_BUTTON || node.role == Role.SCROLL_VIEW);
 };

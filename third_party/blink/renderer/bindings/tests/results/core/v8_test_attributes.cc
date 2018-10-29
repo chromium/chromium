@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -62,7 +62,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestAttributesV8Internal {
+namespace test_attributes_v8_internal {
 
 static void lenientThisLongAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   // [LenientThis]
@@ -155,36 +155,36 @@ static void floatAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Val
   V8SetReturnValue(info, impl->floatAttribute());
 }
 
-} // namespace TestAttributesV8Internal
+}  // namespace test_attributes_v8_internal
 
 void V8TestAttributes::lenientThisLongAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestAttributes_lenientThisLongAttribute_Getter");
 
-  TestAttributesV8Internal::lenientThisLongAttributeAttributeGetter(info);
+  test_attributes_v8_internal::lenientThisLongAttributeAttributeGetter(info);
 }
 
 void V8TestAttributes::stringPromiseAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestAttributes_stringPromiseAttribute_Getter");
 
-  TestAttributesV8Internal::stringPromiseAttributeAttributeGetter(info);
+  test_attributes_v8_internal::stringPromiseAttributeAttributeGetter(info);
 }
 
 void V8TestAttributes::lenientThisStringPromiseAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestAttributes_lenientThisStringPromiseAttribute_Getter");
 
-  TestAttributesV8Internal::lenientThisStringPromiseAttributeAttributeGetter(info);
+  test_attributes_v8_internal::lenientThisStringPromiseAttributeAttributeGetter(info);
 }
 
 void V8TestAttributes::raisesExceptionShortPromiseAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestAttributes_raisesExceptionShortPromiseAttribute_Getter");
 
-  TestAttributesV8Internal::raisesExceptionShortPromiseAttributeAttributeGetter(info);
+  test_attributes_v8_internal::raisesExceptionShortPromiseAttributeAttributeGetter(info);
 }
 
 void V8TestAttributes::lenientSetterBoolAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestAttributes_lenientSetterBoolAttribute_Getter");
 
-  TestAttributesV8Internal::lenientSetterBoolAttributeAttributeGetter(info);
+  test_attributes_v8_internal::lenientSetterBoolAttributeAttributeGetter(info);
 }
 
 void V8TestAttributes::lenientSetterBoolAttributeAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -194,7 +194,7 @@ void V8TestAttributes::lenientSetterBoolAttributeAttributeSetterCallback(const v
 void V8TestAttributes::floatAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestAttributes_floatAttribute_Getter");
 
-  TestAttributesV8Internal::floatAttributeAttributeGetter(info);
+  test_attributes_v8_internal::floatAttributeAttributeGetter(info);
 }
 
 static const V8DOMConfiguration::AccessorConfiguration V8TestAttributesAccessors[] = {

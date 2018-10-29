@@ -8,7 +8,6 @@
 #if DCHECK_IS_ON()
 
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/paint/find_properties_needing_update.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -32,10 +31,11 @@ class FindPaintOffsetNeedingUpdateScope {
         fragment_data_(fragment_data),
         is_actually_needed_(is_actually_needed),
         old_paint_offset_(fragment_data.PaintOffset()) {
-    auto* properties = fragment_data.PaintProperties();
-    if (properties && properties->PaintOffsetTranslation()) {
-      old_paint_offset_translation_ =
-          properties->PaintOffsetTranslation()->Clone();
+    if (const auto* properties = fragment_data.PaintProperties()) {
+      if (const auto* translation = properties->PaintOffsetTranslation()) {
+        old_parent_ = translation->Parent();
+        old_translation_ = translation->Matrix();
+      }
     }
   }
 
@@ -43,12 +43,20 @@ class FindPaintOffsetNeedingUpdateScope {
     if (is_actually_needed_)
       return;
     LayoutPoint paint_offset = fragment_data_.PaintOffset();
-    DCHECK_OBJECT_PROPERTY_EQ(object_, &old_paint_offset_, &paint_offset);
-    auto* paint_properties = fragment_data_.PaintProperties();
-    const auto* paint_offset_translation =
-        paint_properties ? paint_properties->PaintOffsetTranslation() : nullptr;
-    DCHECK_OBJECT_PROPERTY_EQ(object_, old_paint_offset_translation_.get(),
-                              paint_offset_translation);
+    DCHECK_EQ(old_paint_offset_, paint_offset) << object_.DebugName();
+
+    const TransformPaintPropertyNode* new_parent = nullptr;
+    base::Optional<TransformationMatrix> new_translation;
+    if (const auto* properties = fragment_data_.PaintProperties()) {
+      if (const auto* translation = properties->PaintOffsetTranslation()) {
+        new_parent = translation->Parent();
+        new_translation = translation->Matrix();
+      }
+    }
+    DCHECK_EQ(!!old_translation_, !!new_translation) << object_.DebugName();
+    DCHECK_EQ(old_parent_, new_parent) << object_.DebugName();
+    if (old_translation_ && new_translation)
+      DCHECK_EQ(*old_translation_, *new_translation) << object_.DebugName();
   }
 
  private:
@@ -56,7 +64,8 @@ class FindPaintOffsetNeedingUpdateScope {
   const FragmentData& fragment_data_;
   const bool& is_actually_needed_;
   LayoutPoint old_paint_offset_;
-  scoped_refptr<TransformPaintPropertyNode> old_paint_offset_translation_;
+  const TransformPaintPropertyNode* old_parent_ = nullptr;
+  base::Optional<TransformationMatrix> old_translation_;
 };
 
 class FindVisualRectNeedingUpdateScopeBase {

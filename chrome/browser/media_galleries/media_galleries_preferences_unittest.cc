@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_test_util.h"
+#include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,7 +38,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/permissions/media_galleries_permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -137,12 +137,12 @@ class MediaGalleriesPreferencesTest : public testing::Test {
 
     std::vector<std::string> all_permissions;
     all_permissions.push_back(
-        extensions::MediaGalleriesPermission::kReadPermission);
+        chrome_apps::MediaGalleriesPermission::kReadPermission);
     all_permissions.push_back(
-        extensions::MediaGalleriesPermission::kAllAutoDetectedPermission);
+        chrome_apps::MediaGalleriesPermission::kAllAutoDetectedPermission);
     std::vector<std::string> read_permissions;
     read_permissions.push_back(
-        extensions::MediaGalleriesPermission::kReadPermission);
+        chrome_apps::MediaGalleriesPermission::kReadPermission);
 
     all_permission_extension =
         AddMediaGalleriesApp("all", all_permissions, profile_.get());
@@ -187,9 +187,7 @@ class MediaGalleriesPreferencesTest : public testing::Test {
         new ListPrefUpdate(prefs, prefs::kMediaGalleriesRememberedGalleries));
     base::ListValue* list = update->Get();
 
-    for (base::ListValue::iterator iter = list->begin();
-         iter != list->end();
-         ++iter) {
+    for (auto iter = list->begin(); iter != list->end(); ++iter) {
       base::DictionaryValue* dict;
 
       if (iter->GetAsDictionary(&dict)) {
@@ -206,9 +204,7 @@ class MediaGalleriesPreferencesTest : public testing::Test {
     const MediaGalleriesPrefInfoMap& known_galleries =
         gallery_prefs_->known_galleries();
     EXPECT_EQ(expected_galleries_.size(), known_galleries.size());
-    for (MediaGalleriesPrefInfoMap::const_iterator it = known_galleries.begin();
-         it != known_galleries.end();
-         ++it) {
+    for (auto it = known_galleries.begin(); it != known_galleries.end(); ++it) {
       VerifyGalleryInfo(it->second, it->first);
       if (it->second.type != MediaGalleryPrefInfo::kAutoDetected &&
           it->second.type != MediaGalleryPrefInfo::kBlackListed) {
@@ -245,8 +241,7 @@ class MediaGalleriesPreferencesTest : public testing::Test {
 
   void VerifyGalleryInfo(const MediaGalleryPrefInfo& actual,
                          MediaGalleryPrefId expected_id) const {
-    MediaGalleriesPrefInfoMap::const_iterator in_expectation =
-      expected_galleries_.find(expected_id);
+    auto in_expectation = expected_galleries_.find(expected_id);
     ASSERT_FALSE(in_expectation == expected_galleries_.end())  << expected_id;
     EXPECT_EQ(in_expectation->second.pref_id, actual.pref_id);
     EXPECT_EQ(in_expectation->second.display_name, actual.display_name);
@@ -1252,10 +1247,7 @@ TEST_F(MediaGalleriesPreferencesTest, SetsDefaultGalleryTypeField) {
 
   const MediaGalleriesPrefInfoMap& known_galleries =
       gallery_prefs()->known_galleries();
-  for (MediaGalleriesPrefInfoMap::const_iterator it =
-           known_galleries.begin();
-       it != known_galleries.end();
-       ++it) {
+  for (auto it = known_galleries.begin(); it != known_galleries.end(); ++it) {
     if (it->second.type != MediaGalleryPrefInfo::kAutoDetected)
       continue;
 
@@ -1310,9 +1302,7 @@ TEST_F(MediaGalleriesPreferencesTest, UpdatesDefaultGalleryType) {
 
   const MediaGalleriesPrefInfoMap& old_known_galleries =
       gallery_prefs()->known_galleries();
-  for (MediaGalleriesPrefInfoMap::const_iterator it =
-           old_known_galleries.begin();
-       it != old_known_galleries.end();
+  for (auto it = old_known_galleries.begin(); it != old_known_galleries.end();
        ++it) {
     if (it->second.type == MediaGalleryPrefInfo::kAutoDetected) {
       std::string unique_id;
@@ -1365,9 +1355,7 @@ TEST_F(MediaGalleriesPreferencesTest, UpdatesDefaultGalleryType) {
 
   const MediaGalleriesPrefInfoMap& known_galleries =
       gallery_prefs()->known_galleries();
-  for (MediaGalleriesPrefInfoMap::const_iterator it = known_galleries.begin();
-       it != known_galleries.end();
-       ++it) {
+  for (auto it = known_galleries.begin(); it != known_galleries.end(); ++it) {
     if (it->second.type == MediaGalleryPrefInfo::kAutoDetected) {
       std::string unique_id;
       if (!StorageInfo::CrackDeviceId(it->second.device_id, NULL, &unique_id))
@@ -1437,9 +1425,7 @@ TEST_F(MediaGalleriesPreferencesTest, UpdateAddsDefaultGalleryTypeIfMissing) {
 
   const MediaGalleriesPrefInfoMap& known_galleries =
       gallery_prefs()->known_galleries();
-  for (MediaGalleriesPrefInfoMap::const_iterator it = known_galleries.begin();
-       it != known_galleries.end();
-       ++it) {
+  for (auto it = known_galleries.begin(); it != known_galleries.end(); ++it) {
     std::string unique_id;
     if (!StorageInfo::CrackDeviceId(it->second.device_id, NULL, &unique_id))
       continue;

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
@@ -31,8 +32,8 @@ namespace offline_pages {
 namespace {
 const bool kUserRequest = true;
 const bool kStartOfProcessing = true;
-const int kMinDurationSeconds = 1;
-const int kMaxDurationSeconds = 7 * 24 * 60 * 60;  // 7 days
+constexpr int kMinDurationSeconds = 1;
+constexpr int kMaxDurationSeconds = base::TimeDelta::FromDays(7).InSeconds();
 const int kDurationBuckets = 50;
 const int kDisabledTaskRecheckSeconds = 5;
 
@@ -44,7 +45,8 @@ std::string AddHistogramSuffix(const ClientId& client_id,
     return histogram_name;
   }
   std::string adjusted_histogram_name(histogram_name);
-  adjusted_histogram_name += "." + client_id.name_space;
+  adjusted_histogram_name += ".";
+  adjusted_histogram_name += client_id.name_space;
   return adjusted_histogram_name;
 }
 
@@ -53,28 +55,19 @@ std::string AddHistogramSuffix(const ClientId& client_id,
 void RecordOfflinerResultUMA(const ClientId& client_id,
                              const base::Time& request_creation_time,
                              Offliner::RequestStatus request_status) {
-  // The histogram below is an expansion of the UMA_HISTOGRAM_ENUMERATION
-  // macro adapted to allow for a dynamically suffixed histogram name.
-  // Note: The factory creates and owns the histogram.
-  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+  base::UmaHistogramEnumeration(
       AddHistogramSuffix(client_id,
                          "OfflinePages.Background.OfflinerRequestStatus"),
-      1, static_cast<int>(Offliner::RequestStatus::STATUS_COUNT),
-      static_cast<int>(Offliner::RequestStatus::STATUS_COUNT) + 1,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->Add(static_cast<int>(request_status));
+      request_status);
 
   // For successful requests also record time from request to save.
   if (request_status == Offliner::RequestStatus::SAVED ||
       request_status == Offliner::RequestStatus::SAVED_ON_LAST_RETRY) {
-    // Using regular histogram (with dynamic suffix) rather than time-oriented
-    // one to record samples in seconds rather than milliseconds.
-    base::HistogramBase* histogram = base::Histogram::FactoryGet(
-        AddHistogramSuffix(client_id, "OfflinePages.Background.TimeToSaved"),
-        kMinDurationSeconds, kMaxDurationSeconds, kDurationBuckets,
-        base::HistogramBase::kUmaTargetedHistogramFlag);
     base::TimeDelta duration = base::Time::Now() - request_creation_time;
-    histogram->Add(duration.InSeconds());
+    base::UmaHistogramCustomCounts(
+        AddHistogramSuffix(client_id, "OfflinePages.Background.TimeToSaved"),
+        duration.InSeconds(), kMinDurationSeconds, kMaxDurationSeconds,
+        kDurationBuckets);
   }
 }
 
@@ -84,19 +77,10 @@ void RecordOfflinerResultUMA(const ClientId& client_id,
 void RecordSavePageResultUMA(
     const ClientId& client_id,
     RequestNotifier::BackgroundSavePageResult request_status) {
-  // The histogram below is an expansion of the UMA_HISTOGRAM_ENUMERATION
-  // macro adapted to allow for a dynamically suffixed histogram name.
-  // Note: The factory creates and owns the histogram.
-  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+  base::UmaHistogramEnumeration(
       AddHistogramSuffix(client_id,
                          "OfflinePages.Background.FinalSavePageResult"),
-      1,
-      static_cast<int>(RequestNotifier::BackgroundSavePageResult::STATUS_COUNT),
-      static_cast<int>(
-          RequestNotifier::BackgroundSavePageResult::STATUS_COUNT) +
-          1,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->Add(static_cast<int>(request_status));
+      request_status);
 }
 
 // Records whether the request comes from CCT or not
@@ -114,28 +98,22 @@ void RecordStartTimeUMA(const SavePageRequest& request) {
     histogram_name += ".Svelte";
   }
 
-  // The histogram below is an expansion of the UMA_HISTOGRAM_CUSTOM_TIMES
-  // macro adapted to allow for a dynamically suffixed histogram name.
-  // Note: The factory creates and owns the histogram.
-  base::HistogramBase* histogram = base::Histogram::FactoryTimeGet(
-      AddHistogramSuffix(request.client_id(), histogram_name.c_str()),
-      base::TimeDelta::FromMilliseconds(100), base::TimeDelta::FromDays(7), 50,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
   base::TimeDelta duration = base::Time::Now() - request.creation_time();
-  histogram->AddTime(duration);
+  base::UmaHistogramCustomTimes(
+      AddHistogramSuffix(request.client_id(), histogram_name.c_str()), duration,
+      base::TimeDelta::FromMilliseconds(100), base::TimeDelta::FromDays(7), 50);
 }
 
 void RecordCancelTimeUMA(const SavePageRequest& canceled_request) {
   // Using regular histogram (with dynamic suffix) rather than time-oriented
   // one to record samples in seconds rather than milliseconds.
-  base::HistogramBase* histogram = base::Histogram::FactoryGet(
-      AddHistogramSuffix(canceled_request.client_id(),
-                         "OfflinePages.Background.TimeToCanceled"),
-      kMinDurationSeconds, kMaxDurationSeconds, kDurationBuckets,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
   base::TimeDelta duration =
       base::Time::Now() - canceled_request.creation_time();
-  histogram->Add(duration.InSeconds());
+  base::UmaHistogramCustomCounts(
+      AddHistogramSuffix(canceled_request.client_id(),
+                         "OfflinePages.Background.TimeToCanceled"),
+      duration.InSeconds(), kMinDurationSeconds, kMaxDurationSeconds,
+      kDurationBuckets);
 }
 
 // Records the number of started attempts for completed requests (whether
@@ -189,10 +167,10 @@ void RecordNetworkQualityAtRequestStartForFailedRequest(
 }
 
 // Returns whether |result| is a successful result for a single request.
-bool IsSingleSuccessResult(const UpdateRequestsResult* result) {
-  return result->store_state == StoreState::LOADED &&
-         result->item_statuses.size() == 1 &&
-         result->item_statuses.at(0).second == ItemActionStatus::SUCCESS;
+bool IsSingleSuccessResult(const UpdateRequestsResult& result) {
+  return result.store_state == StoreState::LOADED &&
+         result.item_statuses.size() == 1 &&
+         result.item_statuses.at(0).second == ItemActionStatus::SUCCESS;
 }
 
 FailState RequestStatusToFailState(Offliner::RequestStatus request_status) {
@@ -431,18 +409,17 @@ void RequestCoordinator::MarkAttemptAborted(int64_t request_id,
                      weak_ptr_factory_.GetWeakPtr(), request_id, name_space));
 }
 
-void RequestCoordinator::MarkAttemptDone(
-    int64_t request_id,
-    const std::string& name_space,
-    std::unique_ptr<UpdateRequestsResult> result) {
+void RequestCoordinator::MarkAttemptDone(int64_t request_id,
+                                         const std::string& name_space,
+                                         UpdateRequestsResult result) {
   // If the request succeeded, notify observer. If it failed, we can't really
   // do much, so just log it.
-  if (IsSingleSuccessResult(result.get())) {
-    NotifyChanged(result->updated_items.at(0));
+  if (IsSingleSuccessResult(result)) {
+    NotifyChanged(result.updated_items.at(0));
   } else {
     DVLOG(1) << "Failed to mark attempt: " << request_id;
     UpdateRequestResult request_result =
-        result->store_state != StoreState::LOADED
+        result.store_state != StoreState::LOADED
             ? UpdateRequestResult::STORE_FAILURE
             : UpdateRequestResult::REQUEST_DOES_NOT_EXIST;
     event_logger_.RecordUpdateRequestFailed(name_space, request_result);
@@ -539,14 +516,14 @@ void RequestCoordinator::AddRequestResultCallback(
 }
 
 void RequestCoordinator::UpdateMultipleRequestsCallback(
-    std::unique_ptr<UpdateRequestsResult> result) {
-  for (auto& request : result->updated_items) {
+    UpdateRequestsResult result) {
+  for (auto& request : result.updated_items) {
     pending_state_updater_.SetPendingState(request);
     NotifyChanged(request);
   }
 
   bool available_user_request = false;
-  for (const auto& request : result->updated_items) {
+  for (const auto& request : result.updated_items) {
     if (!available_user_request && request.user_requested() &&
         request.request_state() == SavePageRequest::RequestState::AVAILABLE) {
       available_user_request = true;
@@ -557,9 +534,8 @@ void RequestCoordinator::UpdateMultipleRequestsCallback(
     StartImmediatelyIfConnected();
 }
 
-void RequestCoordinator::ReconcileCallback(
-    std::unique_ptr<UpdateRequestsResult> result) {
-  for (auto& request : result->updated_items) {
+void RequestCoordinator::ReconcileCallback(UpdateRequestsResult result) {
+  for (auto& request : result.updated_items) {
     RecordOfflinerResult(request, Offliner::RequestStatus::BROWSER_KILLED);
     pending_state_updater_.SetPendingState(request);
     NotifyChanged(request);
@@ -569,19 +545,19 @@ void RequestCoordinator::ReconcileCallback(
 void RequestCoordinator::HandleRemovedRequestsAndCallback(
     RemoveRequestsCallback callback,
     RequestNotifier::BackgroundSavePageResult status,
-    std::unique_ptr<UpdateRequestsResult> result) {
+    UpdateRequestsResult result) {
   // TODO(dougarnett): Define status code for user/api cancel and use here
   // to determine whether to record cancel time UMA.
-  for (const auto& request : result->updated_items)
+  for (const auto& request : result.updated_items)
     RecordCancelTimeUMA(request);
-  std::move(callback).Run(result->item_statuses);
+  std::move(callback).Run(result.item_statuses);
   HandleRemovedRequests(status, std::move(result));
 }
 
 void RequestCoordinator::HandleRemovedRequests(
     RequestNotifier::BackgroundSavePageResult status,
-    std::unique_ptr<UpdateRequestsResult> result) {
-  for (const auto& request : result->updated_items)
+    UpdateRequestsResult result) {
+  for (const auto& request : result.updated_items)
     NotifyCompleted(request, status);
 }
 
@@ -639,7 +615,7 @@ void RequestCoordinator::StopProcessing(Offliner::RequestStatus stop_status) {
 
 void RequestCoordinator::HandleWatchdogTimeout() {
   Offliner::RequestStatus watchdog_status =
-      Offliner::REQUEST_COORDINATOR_TIMED_OUT;
+      Offliner::RequestStatus::REQUEST_COORDINATOR_TIMED_OUT;
   if (offliner_->HandleTimeout(active_request_id_))
     return;
   StopOfflining(base::BindOnce(&RequestCoordinator::TryNextRequestCallback,
@@ -821,7 +797,7 @@ void RequestCoordinator::TryNextRequest(bool is_start_of_processing) {
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&RequestCoordinator::RequestCounts,
                      weak_ptr_factory_.GetWeakPtr(), is_start_of_processing),
-      *current_conditions_, disabled_requests_, prioritized_requests_);
+      *current_conditions_, disabled_requests_, &prioritized_requests_);
 }
 
 // Called by the request picker when a request has been picked.
@@ -936,19 +912,18 @@ void RequestCoordinator::SendRequestToOffliner(const SavePageRequest& request) {
                      request.client_id().name_space));
 }
 
-void RequestCoordinator::StartOffliner(
-    int64_t request_id,
-    const std::string& client_namespace,
-    std::unique_ptr<UpdateRequestsResult> update_result) {
-  if (update_result->store_state != StoreState::LOADED ||
-      update_result->item_statuses.size() != 1 ||
-      update_result->item_statuses.at(0).first != request_id ||
-      update_result->item_statuses.at(0).second != ItemActionStatus::SUCCESS) {
+void RequestCoordinator::StartOffliner(int64_t request_id,
+                                       const std::string& client_namespace,
+                                       UpdateRequestsResult update_result) {
+  if (update_result.store_state != StoreState::LOADED ||
+      update_result.item_statuses.size() != 1 ||
+      update_result.item_statuses.at(0).first != request_id ||
+      update_result.item_statuses.at(0).second != ItemActionStatus::SUCCESS) {
     state_ = RequestCoordinatorState::IDLE;
-    StopProcessing(Offliner::QUEUE_UPDATE_FAILED);
+    StopProcessing(Offliner::RequestStatus::QUEUE_UPDATE_FAILED);
     DVLOG(1) << "Failed to mark attempt started: " << request_id;
     UpdateRequestResult request_result =
-        update_result->store_state != StoreState::LOADED
+        update_result.store_state != StoreState::LOADED
             ? UpdateRequestResult::STORE_FAILURE
             : UpdateRequestResult::REQUEST_DOES_NOT_EXIST;
     event_logger_.RecordUpdateRequestFailed(client_namespace, request_result);
@@ -961,7 +936,7 @@ void RequestCoordinator::StartOffliner(
 
   // Start the load and save process in the offliner (Async).
   if (offliner_->LoadAndSave(
-          update_result->updated_items.at(0),
+          update_result.updated_items.at(0),
           base::BindOnce(&RequestCoordinator::OfflinerDoneCallback,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&RequestCoordinator::OfflinerProgressCallback,
@@ -977,7 +952,7 @@ void RequestCoordinator::StartOffliner(
     }
 
     // Inform observer of active request.
-    NotifyChanged(update_result->updated_items.at(0));
+    NotifyChanged(update_result.updated_items.at(0));
 
     // Start a watchdog timer to catch offliners running too long
     watchdog_timer_.Start(FROM_HERE, timeout, this,
@@ -985,7 +960,7 @@ void RequestCoordinator::StartOffliner(
   } else {
     state_ = RequestCoordinatorState::IDLE;
     DVLOG(0) << "Unable to start LoadAndSave";
-    StopProcessing(Offliner::LOADING_NOT_ACCEPTED);
+    StopProcessing(Offliner::RequestStatus::LOADING_NOT_ACCEPTED);
 
     // We need to undo the MarkAttemptStarted that brought us to this
     // method since we didn't success in starting after all.

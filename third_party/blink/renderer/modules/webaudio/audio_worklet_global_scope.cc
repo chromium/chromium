@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
+#include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param_descriptor.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
@@ -36,24 +37,23 @@ namespace blink {
 
 AudioWorkletGlobalScope* AudioWorkletGlobalScope::Create(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
-    v8::Isolate* isolate,
     WorkerThread* thread) {
-  return new AudioWorkletGlobalScope(std::move(creation_params), isolate,
-                                     thread);
+  return new AudioWorkletGlobalScope(std::move(creation_params), thread);
 }
 
 AudioWorkletGlobalScope::AudioWorkletGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
-    v8::Isolate* isolate,
     WorkerThread* thread)
-    : ThreadedWorkletGlobalScope(std::move(creation_params), isolate, thread) {}
+    : WorkletGlobalScope(std::move(creation_params),
+                         thread->GetWorkerReportingProxy(),
+                         thread) {}
 
 AudioWorkletGlobalScope::~AudioWorkletGlobalScope() = default;
 
 void AudioWorkletGlobalScope::Dispose() {
   DCHECK(IsContextThread());
   is_closing_ = true;
-  ThreadedWorkletGlobalScope::Dispose();
+  WorkletGlobalScope::Dispose();
 }
 
 void AudioWorkletGlobalScope::registerProcessor(
@@ -401,7 +401,7 @@ double AudioWorkletGlobalScope::currentTime() const {
 void AudioWorkletGlobalScope::Trace(blink::Visitor* visitor) {
   visitor->Trace(processor_definition_map_);
   visitor->Trace(processor_instances_);
-  ThreadedWorkletGlobalScope::Trace(visitor);
+  WorkletGlobalScope::Trace(visitor);
 }
 
 }  // namespace blink

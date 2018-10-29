@@ -5,16 +5,14 @@
 #ifndef CHROME_BROWSER_WIN_CHROME_SELECT_FILE_DIALOG_FACTORY_H_
 #define CHROME_BROWSER_WIN_CHROME_SELECT_FILE_DIALOG_FACTORY_H_
 
-#include <Windows.h>
-#include <commdlg.h>
+#include <memory>
 
 #include "base/macros.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 
 // Implements a file Open / Save dialog in a utility process. The utility
 // process is used to isolate the Chrome browser process from potential
-// instability caused by Shell extension modules loaded by ::GetOpenFileName
-// and ::GetSaveFileName.
+// instability caused by Shell extension modules loaded by the file dialogs.
 class ChromeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
  public:
   ChromeSelectFileDialogFactory();
@@ -26,9 +24,6 @@ class ChromeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
       std::unique_ptr<ui::SelectFilePolicy> policy) override;
 
  private:
-  static bool BlockingGetOpenFileName(OPENFILENAME* ofn);
-  static bool BlockingGetSaveFileName(OPENFILENAME* ofn);
-
   DISALLOW_COPY_AND_ASSIGN(ChromeSelectFileDialogFactory);
 };
 

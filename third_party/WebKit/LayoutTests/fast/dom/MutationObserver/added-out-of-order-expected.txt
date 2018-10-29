@@ -2,7 +2,6 @@ Test MutationEvents interfering with MutationObservers: adding nodes 'out of ord
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS mutations.length is 3
 PASS mutations[0].addedNodes.length is 0
 PASS mutations[0].removedNodes.length is 1

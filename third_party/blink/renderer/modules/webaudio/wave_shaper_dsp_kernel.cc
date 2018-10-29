@@ -42,17 +42,17 @@ WaveShaperDSPKernel::WaveShaperDSPKernel(WaveShaperProcessor* processor)
 void WaveShaperDSPKernel::LazyInitializeOversampling() {
   if (!temp_buffer_) {
     temp_buffer_ = std::make_unique<AudioFloatArray>(
-        AudioUtilities::kRenderQuantumFrames * 2);
+        audio_utilities::kRenderQuantumFrames * 2);
     temp_buffer2_ = std::make_unique<AudioFloatArray>(
-        AudioUtilities::kRenderQuantumFrames * 4);
+        audio_utilities::kRenderQuantumFrames * 4);
     up_sampler_ =
-        std::make_unique<UpSampler>(AudioUtilities::kRenderQuantumFrames);
-    down_sampler_ =
-        std::make_unique<DownSampler>(AudioUtilities::kRenderQuantumFrames * 2);
+        std::make_unique<UpSampler>(audio_utilities::kRenderQuantumFrames);
+    down_sampler_ = std::make_unique<DownSampler>(
+        audio_utilities::kRenderQuantumFrames * 2);
     up_sampler2_ =
-        std::make_unique<UpSampler>(AudioUtilities::kRenderQuantumFrames * 2);
-    down_sampler2_ =
-        std::make_unique<DownSampler>(AudioUtilities::kRenderQuantumFrames * 4);
+        std::make_unique<UpSampler>(audio_utilities::kRenderQuantumFrames * 2);
+    down_sampler2_ = std::make_unique<DownSampler>(
+        audio_utilities::kRenderQuantumFrames * 4);
   }
 }
 
@@ -143,7 +143,7 @@ void WaveShaperDSPKernel::ProcessCurve(const float* source,
 void WaveShaperDSPKernel::ProcessCurve2x(const float* source,
                                          float* destination,
                                          size_t frames_to_process) {
-  bool is_safe = frames_to_process == AudioUtilities::kRenderQuantumFrames;
+  bool is_safe = frames_to_process == audio_utilities::kRenderQuantumFrames;
   DCHECK(is_safe);
   if (!is_safe)
     return;
@@ -161,7 +161,7 @@ void WaveShaperDSPKernel::ProcessCurve2x(const float* source,
 void WaveShaperDSPKernel::ProcessCurve4x(const float* source,
                                          float* destination,
                                          size_t frames_to_process) {
-  bool is_safe = frames_to_process == AudioUtilities::kRenderQuantumFrames;
+  bool is_safe = frames_to_process == audio_utilities::kRenderQuantumFrames;
   DCHECK(is_safe);
   if (!is_safe)
     return;

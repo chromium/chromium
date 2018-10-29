@@ -167,6 +167,7 @@ base::Optional<AnchorElementMetrics> AnchorElementMetrics::Create(
   // Limit the element size to the viewport size.
   float ratio_area = std::min(1.0f, target.Height() / base_height) *
                      std::min(1.0f, target.Width() / base_width);
+  DCHECK_GE(1.0, ratio_area);
   float ratio_distance_top_to_visible_top = target.Y() / base_height;
   float ratio_distance_center_to_visible_top =
       (target.Y() + target.Height() / 2.0) / base_height;
@@ -197,6 +198,7 @@ base::Optional<AnchorElementMetrics> AnchorElementMetrics::Create(
   // It guarantees to be less or equal to 1.
   float ratio_visible_area = (target_visible.Height() / base_height) *
                              (target_visible.Width() / base_width);
+  DCHECK_GE(1.0, ratio_visible_area);
 
   return AnchorElementMetrics(
       anchor_element, ratio_area, ratio_visible_area,
@@ -212,6 +214,7 @@ AnchorElementMetrics::MaybeReportClickedMetricsOnClick(
     const HTMLAnchorElement* anchor_element) {
   if (!base::FeatureList::IsEnabled(features::kRecordAnchorMetricsClicked) ||
       !anchor_element->Href().ProtocolIsInHTTPFamily() ||
+      !GetRootDocument(*anchor_element)->Url().ProtocolIsInHTTPFamily() ||
       !anchor_element->GetDocument().BaseURL().ProtocolIsInHTTPFamily()) {
     return base::nullopt;
   }
@@ -235,6 +238,7 @@ void AnchorElementMetrics::MaybeReportViewportMetricsOnLoad(
   DCHECK(document.GetFrame());
   if (!base::FeatureList::IsEnabled(features::kRecordAnchorMetricsVisible) ||
       document.ParentDocument() || !document.View() ||
+      !document.Url().ProtocolIsInHTTPFamily() ||
       !document.BaseURL().ProtocolIsInHTTPFamily()) {
     return;
   }
@@ -272,7 +276,9 @@ mojom::blink::AnchorElementMetricsPtr AnchorElementMetrics::CreateMetricsPtr()
     const {
   auto metrics = mojom::blink::AnchorElementMetrics::New();
   metrics->ratio_area = ratio_area_;
+  DCHECK_GE(1.0, metrics->ratio_area);
   metrics->ratio_visible_area = ratio_visible_area_;
+  DCHECK_GE(1.0, metrics->ratio_visible_area);
   metrics->ratio_distance_top_to_visible_top =
       ratio_distance_top_to_visible_top_;
   metrics->ratio_distance_center_to_visible_top =

@@ -1265,6 +1265,10 @@ TEST_F(MediaStreamConstraintsUtilSetsTest, DiscreteSetBool) {
   set = BoolSet({true});
   intersection = set.Intersection(BoolSet({false}));
   EXPECT_TRUE(intersection.IsEmpty());
+
+  // Explicit universal set.
+  set = BoolSet({true, false});
+  EXPECT_TRUE(set.is_universal());
 }
 
 }  // namespace media_constraints

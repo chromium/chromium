@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
 #include "media/base/media_export.h"
 #include "media/base/time_source.h"
@@ -29,24 +30,22 @@ class MEDIA_EXPORT WallClockTimeSource : public TimeSource {
       const std::vector<base::TimeDelta>& media_timestamps,
       std::vector<base::TimeTicks>* wall_clock_times) override;
 
-  void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
-    tick_clock_ = tick_clock;
-  }
+  void SetTickClockForTesting(const base::TickClock* tick_clock);
 
  private:
-  base::TimeDelta CurrentMediaTime_Locked();
+  base::TimeDelta CurrentMediaTime_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Allow for an injectable tick clock for testing.
-  const base::TickClock* tick_clock_;
+  const base::TickClock* tick_clock_ GUARDED_BY(lock_);
 
-  bool ticking_;
+  bool ticking_ GUARDED_BY(lock_);
 
   // While ticking we can interpolate the current media time by measuring the
   // delta between our reference ticks and the current system ticks and scaling
   // that time by the playback rate.
-  double playback_rate_;
-  base::TimeDelta base_timestamp_;
-  base::TimeTicks reference_time_;
+  double playback_rate_ GUARDED_BY(lock_);
+  base::TimeDelta base_timestamp_ GUARDED_BY(lock_);
+  base::TimeTicks reference_time_ GUARDED_BY(lock_);
 
   // TODO(scherkus): Remove internal locking from this class after access to
   // Renderer::CurrentMediaTime() is single threaded http://crbug.com/370634

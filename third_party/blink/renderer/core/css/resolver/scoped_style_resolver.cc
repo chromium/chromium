@@ -206,7 +206,7 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
     InvalidationRootForTreeScope(tree_scope)
         .SetNeedsStyleRecalc(kSubtreeStyleChange,
                              StyleChangeReasonForTracing::Create(
-                                 StyleChangeReason::kStyleSheetChange));
+                                 style_change_reason::kStyleSheetChange));
     return;
   }
 
@@ -217,7 +217,7 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
 void ScopedStyleResolver::CollectMatchingAuthorRules(
     ElementRuleCollector& collector,
     ShadowV0CascadeOrder cascade_order) {
-  size_t sheet_index = 0;
+  wtf_size_t sheet_index = 0;
   for (auto sheet : author_style_sheets_) {
     if (!RuntimeEnabledFeatures::ConstructableStylesheetsEnabled())
       DCHECK(sheet->ownerNode());
@@ -230,7 +230,7 @@ void ScopedStyleResolver::CollectMatchingAuthorRules(
 void ScopedStyleResolver::CollectMatchingShadowHostRules(
     ElementRuleCollector& collector,
     ShadowV0CascadeOrder cascade_order) {
-  size_t sheet_index = 0;
+  wtf_size_t sheet_index = 0;
   for (auto sheet : author_style_sheets_) {
     if (!RuntimeEnabledFeatures::ConstructableStylesheetsEnabled())
       DCHECK(sheet->ownerNode());
@@ -272,7 +272,7 @@ void ScopedStyleResolver::CollectMatchingPartPseudoRules(
     ShadowV0CascadeOrder cascade_order) {
   if (!RuntimeEnabledFeatures::CSSPartPseudoElementEnabled())
     return;
-  size_t sheet_index = 0;
+  wtf_size_t sheet_index = 0;
   for (auto sheet : author_style_sheets_) {
     if (!RuntimeEnabledFeatures::ConstructableStylesheetsEnabled())
       DCHECK(sheet->ownerNode());

@@ -87,7 +87,8 @@ void ClearKeyCdmProxy::CreateMediaCryptoSession(
 void ClearKeyCdmProxy::SetKey(uint32_t crypto_session_id,
                               const std::vector<uint8_t>& key_id,
                               KeyType /* key_type */,
-                              const std::vector<uint8_t>& key_blob) {
+                              const std::vector<uint8_t>& key_blob,
+                              SetKeyCB set_key_cb) {
   DVLOG(1) << __func__;
 
   if (!aes_decryptor_)
@@ -95,10 +96,14 @@ void ClearKeyCdmProxy::SetKey(uint32_t crypto_session_id,
 
   aes_decryptor_->UpdateSession(kDummySessionId, key_blob,
                                 std::make_unique<IgnoreResponsePromise>());
+  std::move(set_key_cb).Run(Status::kOk);
 }
 
 void ClearKeyCdmProxy::RemoveKey(uint32_t crypto_session_id,
-                                 const std::vector<uint8_t>& key_id) {}
+                                 const std::vector<uint8_t>& key_id,
+                                 RemoveKeyCB remove_key_cb) {
+  std::move(remove_key_cb).Run(Status::kOk);
+}
 
 Decryptor* ClearKeyCdmProxy::GetDecryptor() {
   DVLOG(1) << __func__;

@@ -12,10 +12,20 @@
 
 namespace {
 bool g_is_input_source_dvorak_qwerty = false;
+bool g_is_input_source_czech = false;
+bool g_is_input_source_abc_azerty = false;
 }  // namespace
 
 void SetIsInputSourceDvorakQwertyForTesting(bool is_dvorak_qwerty) {
   g_is_input_source_dvorak_qwerty = is_dvorak_qwerty;
+}
+
+void SetIsInputSourceCzechForTesting(bool is_czech) {
+  g_is_input_source_czech = is_czech;
+}
+
+void SetIsInputSourceAbcAzertyForTesting(bool is_abc_azerty) {
+  g_is_input_source_abc_azerty = is_abc_azerty;
 }
 
 @interface KeyboardInputSourceListener : NSObject
@@ -47,6 +57,12 @@ void SetIsInputSourceDvorakQwertyForTesting(bool is_dvorak_qwerty) {
       inputSource.get(), kTISPropertyInputSourceID);
   g_is_input_source_dvorak_qwerty =
       [inputSourceID isEqualToString:@"com.apple.keylayout.DVORAK-QWERTYCMD"];
+  g_is_input_source_czech =
+      [inputSourceID rangeOfString:@"com.apple.keylayout.Czech"].location !=
+      NSNotFound;
+  g_is_input_source_abc_azerty =
+      [inputSourceID rangeOfString:@"com.apple.keylayout.ABC-AZERTY"]
+          .location != NSNotFound;
 }
 
 - (void)inputSourceDidChange:(NSNotification*)notification {
@@ -77,6 +93,23 @@ void SetIsInputSourceDvorakQwertyForTesting(bool is_dvorak_qwerty) {
   NSString* eventString = [event charactersIgnoringModifiers];
   NSUInteger eventModifiers =
       [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
+
+  // cmd-opt-a gives some weird char as characters and "a" as
+  // charactersWithoutModifiers with an US layout, but an "a" as characters and
+  // a weird char as "charactersWithoutModifiers" with a cyrillic layout. Oh,
+  // Cocoa! Instead of getting the current layout from Text Input Services,
+  // and then requesting the kTISPropertyUnicodeKeyLayoutData and looking in
+  // there, let's try a pragmatic hack.
+  if ([eventString length] == 0 ||
+      ([eventString characterAtIndex:0] > 0x7f &&
+       [[event characters] length] > 0 &&
+       [[event characters] characterAtIndex:0] <= 0x7f)) {
+    eventString = [event characters];
+
+    // Process the shift if necessary.
+    if (eventModifiers & NSShiftKeyMask)
+      eventString = [eventString uppercaseString];
+  }
 
   if ([eventString length] == 0 || [[self keyEquivalent] length] == 0)
     return NO;
@@ -110,17 +143,6 @@ void SetIsInputSourceDvorakQwertyForTesting(bool is_dvorak_qwerty) {
     eventModifiers |= NSFunctionKeyMask;
   }
 
-  // cmd-opt-a gives some weird char as characters and "a" as
-  // charactersWithoutModifiers with an US layout, but an "a" as characters and
-  // a weird char as "charactersWithoutModifiers" with a cyrillic layout. Oh,
-  // Cocoa! Instead of getting the current layout from Text Input Services,
-  // and then requesting the kTISPropertyUnicodeKeyLayoutData and looking in
-  // there, let's try a pragmatic hack.
-  if ([eventString characterAtIndex:0] > 0x7f &&
-      [[event characters] length] > 0 &&
-      [[event characters] characterAtIndex:0] <= 0x7f)
-    eventString = [event characters];
-
   // We intentionally leak this object.
   static __attribute__((unused)) KeyboardInputSourceListener* listener =
       [[KeyboardInputSourceListener alloc] init];
@@ -149,7 +171,8 @@ void SetIsInputSourceDvorakQwertyForTesting(bool is_dvorak_qwerty) {
   } else {
     // Clear shift key for printable characters, excluding tab.
     if ((eventModifiers & (NSNumericPadKeyMask | NSFunctionKeyMask)) == 0 &&
-        [[self keyEquivalent] characterAtIndex:0] != '\r') {
+        [[self keyEquivalent] characterAtIndex:0] != '\r' &&
+        [[self keyEquivalent] characterAtIndex:0] != '\x9') {
       eventModifiers &= ~NSShiftKeyMask;
     }
   }
@@ -159,6 +182,30 @@ void SetIsInputSourceDvorakQwertyForTesting(bool is_dvorak_qwerty) {
                     NSControlKeyMask |
                     NSAlternateKeyMask |
                     NSShiftKeyMask;
+
+  // On Czech keyboards, we want to interpret cmd + '+' as cmd + '1'.
+  // htts://crbug.com/889424. We don't need special handling for other numeric
+  // keys because they produce non-ASCII characters, and we already have logic
+  // that ignores non-ASCII characters in favor of modified characters.
+  if (g_is_input_source_czech) {
+    if (eventModifiers == NSCommandKeyMask &&
+        [eventString isEqualToString:@"+"]) {
+      eventString = @"1";
+    }
+  }
+
+  // On ABC-AZERTY kebyards, we want to interpet cmd + '&' as cmd + '1'. Ditto
+  // for other keyCodes that would produce a numerical key.
+  if (g_is_input_source_abc_azerty) {
+    if (eventModifiers == NSCommandKeyMask) {
+      ui::KeyboardCode windows_keycode =
+          ui::KeyboardCodeFromKeyCode(event.keyCode);
+      if (windows_keycode >= ui::VKEY_0 && windows_keycode <= ui::VKEY_9) {
+        eventString =
+            [NSString stringWithFormat:@"%d", windows_keycode - ui::VKEY_0];
+      }
+    }
+  }
 
   return [eventString isEqualToString:[self keyEquivalent]]
       && eventModifiers == [self keyEquivalentModifierMask];

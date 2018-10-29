@@ -242,7 +242,7 @@ std::unique_ptr<base::File> SimpleFileTracker::PrepareClose(
 
 void SimpleFileTracker::CloseFilesIfTooManyOpen(
     std::vector<std::unique_ptr<base::File>>* files_to_close) {
-  std::list<TrackedFiles*>::iterator i = lru_.end();
+  auto i = lru_.end();
   while (open_files_ > file_limit_ && i != lru_.begin()) {
     --i;  // Point to the actual entry.
     TrackedFiles* tracked_files = *i;

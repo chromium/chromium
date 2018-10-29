@@ -7,10 +7,13 @@
 
 namespace net {
 
+// This value is histogrammed, so do not re-order or change values, and add
+// new values at the end.
 enum class OCSPRevocationStatus {
-  GOOD,
-  REVOKED,
-  UNKNOWN,
+  GOOD = 0,
+  REVOKED = 1,
+  UNKNOWN = 2,
+  MAX_VALUE = UNKNOWN
 };
 
 }  // namespace net

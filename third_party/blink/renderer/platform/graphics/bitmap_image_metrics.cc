@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 
+#include "base/metrics/histogram_base.h"
+#include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -75,8 +78,26 @@ void BitmapImageMetrics::CountImageGammaAndGamut(
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       EnumerationHistogram, gamut_named_histogram,
       ("Blink.ColorGamut.Source", static_cast<int>(ColorSpaceGamut::kEnd)));
-  gamut_named_histogram.Count(
-      static_cast<int>(ColorSpaceUtilities::GetColorSpaceGamut(color_profile)));
+  gamut_named_histogram.Count(static_cast<int>(
+      color_space_utilities::GetColorSpaceGamut(color_profile)));
+}
+
+void BitmapImageMetrics::CountJpegArea(const IntSize& size) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, image_area_histogram,
+      ("Blink.ImageDecoders.Jpeg.Area", 1 /* min */, 8192 * 8192 /* max */,
+       100 /* bucket_count */));
+  // A base::HistogramBase::Sample may not fit |size.Area()|. Hence the use of
+  // saturated_cast.
+  image_area_histogram.Count(
+      base::saturated_cast<base::HistogramBase::Sample>(size.Area()));
+}
+
+void BitmapImageMetrics::CountJpegColorSpace(JpegColorSpace color_space) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      EnumerationHistogram, color_space_histogram,
+      ("Blink.ImageDecoders.Jpeg.ColorSpace", JpegColorSpace::kMaxValue));
+  color_space_histogram.Count(color_space);
 }
 
 BitmapImageMetrics::Gamma BitmapImageMetrics::GetColorSpaceGamma(

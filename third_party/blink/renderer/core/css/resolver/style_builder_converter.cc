@@ -551,7 +551,7 @@ StyleBuilderConverter::ConvertFontVariantLigatures(StyleResolverState&,
   if (value.IsValueList()) {
     FontDescription::VariantLigatures ligatures;
     const CSSValueList& value_list = ToCSSValueList(value);
-    for (size_t i = 0; i < value_list.length(); ++i) {
+    for (wtf_size_t i = 0; i < value_list.length(); ++i) {
       const CSSValue& item = value_list.Item(i);
       switch (ToCSSIdentifierValue(item).GetValueID()) {
         case CSSValueNoCommonLigatures:
@@ -1237,7 +1237,7 @@ scoped_refptr<QuotesData> StyleBuilderConverter::ConvertQuotes(
   if (value.IsValueList()) {
     const CSSValueList& list = ToCSSValueList(value);
     scoped_refptr<QuotesData> quotes = QuotesData::Create();
-    for (size_t i = 0; i < list.length(); i += 2) {
+    for (wtf_size_t i = 0; i < list.length(); i += 2) {
       String start_quote = ToCSSStringValue(list.Item(i)).Value();
       String end_quote = ToCSSStringValue(list.Item(i + 1)).Value();
       quotes->AddPair(std::make_pair(start_quote, end_quote));
@@ -1371,8 +1371,8 @@ scoped_refptr<SVGDashArray> StyleBuilderConverter::ConvertStrokeDasharray(
   const CSSValueList& dashes = ToCSSValueList(value);
 
   scoped_refptr<SVGDashArray> array = SVGDashArray::Create();
-  size_t length = dashes.length();
-  for (size_t i = 0; i < length; ++i) {
+  wtf_size_t length = dashes.length();
+  for (wtf_size_t i = 0; i < length; ++i) {
     array->push_back(ConvertLength(state, ToCSSPrimitiveValue(dashes.Item(i))));
   }
 
@@ -1700,6 +1700,18 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       Length length = primitive_value.ConvertToLength(
           css_to_length_conversion_data.CopyWithAdjustedZoom(1));
       return *CSSPrimitiveValue::Create(length, 1);
+    }
+    // If we encounter a calculated number that was not resolved during
+    // parsing, it means that a calc()-expression was allowed in place of
+    // an integer. Such calc()-for-integers must be rounded at computed value
+    // time.
+    // https://drafts.csswg.org/css-values-4/#calc-type-checking
+    if (primitive_value.IsCalculated() &&
+        (primitive_value.TypeWithCalcResolved() ==
+         CSSPrimitiveValue::UnitType::kNumber)) {
+      double double_value = primitive_value.CssCalcValue()->DoubleValue();
+      auto unit_type = CSSPrimitiveValue::UnitType::kInteger;
+      return *CSSPrimitiveValue::Create(std::round(double_value), unit_type);
     }
   }
   return value;

@@ -32,7 +32,7 @@ class HttpAuthCache;
 class HttpAuthHandlerFactory;
 class HttpProxyClientSocketWrapper;
 class NetLog;
-class NetworkQualityProvider;
+class NetworkQualityEstimator;
 class QuicStreamFactory;
 class SSLClientSocketPool;
 class SSLSocketParams;
@@ -160,7 +160,7 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocketPool
                             int max_sockets_per_group,
                             TransportClientSocketPool* transport_pool,
                             SSLClientSocketPool* ssl_pool,
-                            NetworkQualityProvider* network_quality_provider,
+                            NetworkQualityEstimator* network_quality_estimator,
                             NetLog* net_log);
 
   ~HttpProxyClientSocketPool() override;
@@ -230,10 +230,11 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocketPool
   class NET_EXPORT_PRIVATE HttpProxyConnectJobFactory
       : public PoolBase::ConnectJobFactory {
    public:
-    HttpProxyConnectJobFactory(TransportClientSocketPool* transport_pool,
-                               SSLClientSocketPool* ssl_pool,
-                               NetworkQualityProvider* network_quality_provider,
-                               NetLog* net_log);
+    HttpProxyConnectJobFactory(
+        TransportClientSocketPool* transport_pool,
+        SSLClientSocketPool* ssl_pool,
+        NetworkQualityEstimator* network_quality_estimator,
+        NetLog* net_log);
 
     // ClientSocketPoolBase::ConnectJobFactory methods.
     std::unique_ptr<ConnectJob> NewConnectJob(
@@ -255,7 +256,7 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocketPool
 
     TransportClientSocketPool* const transport_pool_;
     SSLClientSocketPool* const ssl_pool_;
-    NetworkQualityProvider* const network_quality_provider_;
+    NetworkQualityEstimator* const network_quality_estimator_;
 
     // For secure proxies, the connection timeout is set to
     // |ssl_http_rtt_multiplier_| times the HTTP RTT estimate. For insecure

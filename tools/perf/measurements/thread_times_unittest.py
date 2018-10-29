@@ -37,11 +37,10 @@ class ThreadTimesUnitTest(page_test_test_case.PageTestTestCase):
     results = self.RunMeasurement(measurement, ps, options=timeline_options)
     self.assertFalse(results.had_failures)
 
-    for interval in timeline.IntervalNames:
-      for category in timeline.TimelineThreadCategories.values():
-        cpu_time_name = timeline.ThreadCpuTimeResultName(category, interval)
-        cpu_time = results.FindAllPageSpecificValuesNamed(cpu_time_name)
-        self.assertEquals(len(cpu_time), 1)
+    for category in timeline.TimelineThreadCategories.values():
+      cpu_time_name = timeline.ThreadCpuTimeResultName(category)
+      cpu_time = results.FindAllPageSpecificValuesNamed(cpu_time_name)
+      self.assertEquals(len(cpu_time), 1)
 
   @decorators.Disabled('chromeos')  # crbug.com/483212
   def testWithSilkDetails(self):
@@ -52,12 +51,11 @@ class ThreadTimesUnitTest(page_test_test_case.PageTestTestCase):
 
     main_thread = 'renderer_main'
     expected_trace_categories = ['blink', 'cc', 'idle']
-    for interval in timeline.IntervalNames:
-      for trace_category in expected_trace_categories:
-        value_name = timeline.ThreadDetailResultName(
-            main_thread, interval, trace_category)
-        values = results.FindAllPageSpecificValuesNamed(value_name)
-        self.assertEquals(len(values), 1)
+    for trace_category in expected_trace_categories:
+      value_name = timeline.ThreadDetailResultName(
+          main_thread, trace_category)
+      values = results.FindAllPageSpecificValuesNamed(value_name)
+      self.assertEquals(len(values), 1)
 
   def testCleanUpTrace(self):
     self.TestTracingCleanedUp(thread_times.ThreadTimes, self._options)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @implements {cr.ui.FocusRow.Delegate} */
+/** @implements {cr.ui.FocusRowDelegate} */
 class FocusRowDelegate {
   /** @param {{lastFocused: Object}} listItem */
   constructor(listItem) {
@@ -41,7 +41,7 @@ class FocusRowDelegate {
 class VirtualFocusRow extends cr.ui.FocusRow {
   /**
    * @param {!Element} root
-   * @param {cr.ui.FocusRow.Delegate} delegate
+   * @param {cr.ui.FocusRowDelegate} delegate
    */
   constructor(root, delegate) {
     super(root, /* boundary */ null, delegate);
@@ -125,11 +125,12 @@ const FocusRowBehavior = {
 
       const controls = this.root.querySelectorAll('[focus-row-control]');
 
-      for (let i = 0; i < controls.length; i++) {
+      controls.forEach(control => {
         this.row_.addItem(
-            controls[i].getAttribute('focus-type'),
-            /** @type {HTMLElement} */ (controls[i]));
-      }
+            control.getAttribute('focus-type'),
+            /** @type {!HTMLElement} */
+            (cr.ui.FocusRow.getFocusableElement(control)));
+      });
     }
   },
 

@@ -211,7 +211,7 @@ void MostVisitedSitesBridge::Destroy(JNIEnv* env,
 void MostVisitedSitesBridge::OnHomepageStateChanged(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  most_visited_->RefreshHomepageTile();
+  most_visited_->RefreshTiles();
 }
 
 void MostVisitedSitesBridge::SetHomepageClient(

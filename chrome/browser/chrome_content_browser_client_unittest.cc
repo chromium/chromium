@@ -279,7 +279,8 @@ class InstantNTPURLRewriteTest : public BrowserWithTestWindowTest {
 
   void InstallTemplateURLWithNewTabPage(GURL new_tab_page_url) {
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), &TemplateURLServiceFactory::BuildInstanceFor);
+        profile(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(browser()->profile());
     search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);

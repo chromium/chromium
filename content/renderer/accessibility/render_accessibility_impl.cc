@@ -464,11 +464,11 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
     // Whenever there's a change within a table, invalidate the
     // whole table so that row and cell indexes are recomputed.
-    ax::mojom::Role role = obj.Role();
-    if (ui::IsTableLikeRole(role) || role == ax::mojom::Role::kRow ||
-        ui::IsCellOrTableHeaderRole(role)) {
+    const ax::mojom::Role role = obj.Role();
+    if (ui::IsTableLike(role) || role == ax::mojom::Role::kRow ||
+        ui::IsCellOrTableHeader(role)) {
       auto table = obj;
-      while (!table.IsDetached() && !ui::IsTableLikeRole(table.Role()))
+      while (!table.IsDetached() && !ui::IsTableLike(table.Role()))
         table = table.ParentObject();
       if (!table.IsDetached())
         serializer_.InvalidateSubtree(table);

@@ -65,9 +65,15 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
                    const LayoutPoint&,
                    HitTestAction) override;
 
-  bool NodeAtFloatPoint(HitTestResult&,
-                        const FloatPoint& point_in_parent,
-                        HitTestAction) override;
+  // A method to call when recursively hit testing from an SVG parent.
+  // Since LayoutSVGRoot has a PaintLayer always, this will cause a
+  // trampoline through PaintLayer::HitTest and back to a call to NodeAtPoint
+  // on this object. This is why there are two methods.
+  bool NodeAtPointFromSVG(HitTestResult&,
+                          const HitTestLocation&,
+                          const LayoutPoint&,
+                          HitTestAction);
+
   bool IsOfType(LayoutObjectType type) const override {
     return type == kLayoutObjectSVGForeignObject ||
            LayoutSVGBlock::IsOfType(type);
@@ -76,6 +82,12 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   void SetNeedsTransformUpdate() override { needs_transform_update_ = true; }
 
   PaintLayerType LayerTypeRequired() const override;
+
+  bool CreatesNewFormattingContext() const final {
+    // This is the root of a foreign object. Don't let anything inside it escape
+    // to our ancestors.
+    return true;
+  }
 
  private:
   LayoutUnit ElementX() const;

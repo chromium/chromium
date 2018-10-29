@@ -21,6 +21,7 @@ void FakeSeneschalClient::SharePath(
     const vm_tools::seneschal::SharePathRequest& request,
     DBusMethodCallback<vm_tools::seneschal::SharePathResponse> callback) {
   share_path_called_ = true;
+  last_request_ = request;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), share_path_response_));
 }

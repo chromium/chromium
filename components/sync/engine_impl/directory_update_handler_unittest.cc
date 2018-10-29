@@ -111,7 +111,9 @@ void DirectoryUpdateHandlerProcessUpdateTest::UpdateSyncEntities(
     const SyncEntityList& applicable_updates,
     StatusController* status) {
   syncable::ModelNeutralWriteTransaction trans(FROM_HERE, UNITTEST, dir());
-  handler->UpdateSyncEntities(&trans, applicable_updates, status);
+  // We pick is_initial_sync arbitrarily as it has only impact on counters.
+  handler->UpdateSyncEntities(&trans, applicable_updates,
+                              /*is_initial_sync=*/true, status);
 }
 
 void DirectoryUpdateHandlerProcessUpdateTest::UpdateProgressMarkers(

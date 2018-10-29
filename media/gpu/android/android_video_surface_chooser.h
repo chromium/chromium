@@ -21,6 +21,9 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooser {
  public:
   // Input state used for choosing the surface type.
   struct State {
+    State();
+    ~State();
+
     // Is an overlay required?
     bool is_required = false;
 
@@ -49,6 +52,11 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooser {
 
     // Hint to use for the initial position when transitioning to an overlay.
     gfx::Rect initial_position;
+
+    // Indicates that we should always use a TextureOwner. This is used with
+    // SurfaceControl where the TextureOwner can be promoted to an overlay
+    // dynamically by the compositor.
+    bool always_use_texture_owner = false;
   };
 
   // Notify the client that |overlay| is ready for use.  The client may get

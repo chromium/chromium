@@ -2,69 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @implements {settings.MultideviceBrowserProxy}
- * Note: Only showMultiDeviceSetupDialog is used by the multidevice-page
- * element.
- */
-class TestMultideviceBrowserProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'showMultiDeviceSetupDialog',
-      'getPageContentData',
-      'setFeatureEnabledState',
-    ]);
-  }
-
-  /** @override */
-  showMultiDeviceSetupDialog() {
-    this.methodCalled('showMultiDeviceSetupDialog');
-  }
-
-  /** @override */
-  setFeatureEnabledState(feature, enabled, opt_authToken) {
-    this.methodCalled(
-        'setFeatureEnabledState', [feature, enabled, opt_authToken]);
-  }
-}
-
 suite('Multidevice', function() {
   let multidevicePage = null;
   let browserProxy = null;
   let ALL_MODES;
-  const HOST_DEVICE = 'Pixel XL';
+
+  /**
+   * Sets pageContentData via WebUI Listener and flushes.
+   * @param {!MultiDevicePageContentData}
+   */
+  function setPageContentData(newPageContentData) {
+    cr.webUIListenerCallback(
+        'settings.updateMultidevicePageContentData', newPageContentData);
+    Polymer.dom.flush();
+  }
 
   /**
    * Sets pageContentData to the specified mode. If it is a mode corresponding
    * to a set host, it will set the hostDeviceName to the provided name or else
-   * default to HOST_DEVICE.
+   * default to multidevice.HOST_DEVICE.
    * @param {settings.MultiDeviceSettingsMode} newMode
-   * @param {string|undefined} newHostDeviceName Overrides default if there
-   *     newMode corresponds to a set host.
+   * @param {string=} opt_newHostDeviceName Overrides default if |newMode|
+   *     corresponds to a set host.
    */
-  function setPageContentData(newMode, newHostDeviceName) {
-    let newPageContentData = {mode: newMode};
-    if ([
-          settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
-          settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
-          settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED,
-        ].includes(newMode)) {
-      newPageContentData.hostDeviceName = newHostDeviceName || HOST_DEVICE;
-    }
-    multidevicePage.pageContentData = newPageContentData;
-    Polymer.dom.flush();
+  function setHostData(newMode, opt_newHostDeviceName) {
+    setPageContentData(
+        multidevice.createFakePageContentData(newMode, opt_newHostDeviceName));
   }
 
   function setSuiteState(newState) {
-    multidevicePage.pageContentData = Object.assign(
-        {}, multidevicePage.pageContentData, {betterTogetherState: newState});
-    Polymer.dom.flush();
+    setPageContentData(Object.assign(
+        {}, multidevicePage.pageContentData, {betterTogetherState: newState}));
   }
 
   function setSmartLockState(newState) {
-    multidevicePage.pageContentData = Object.assign(
-        {}, multidevicePage.pageContentData, {smartLockState: newState});
-    Polymer.dom.flush();
+    setPageContentData(Object.assign(
+        {}, multidevicePage.pageContentData, {smartLockState: newState}));
   }
 
   /**
@@ -87,7 +60,8 @@ suite('Multidevice', function() {
       assertTrue(multidevicePage.showPasswordPromptDialog_);
       // Simulate the user entering a valid password, then closing the dialog.
       multidevicePage.fire('auth-token-changed', {value: 'validAuthToken'});
-      multidevicePage.fire('close');
+      // Simulate closing the password prompt dialog
+      multidevicePage.$$('#multidevicePasswordPrompt').fire('close');
       Polymer.dom.flush();
     } else {
       assertFalse(multidevicePage.showPasswordPromptDialog_);
@@ -108,15 +82,19 @@ suite('Multidevice', function() {
   });
 
   setup(function() {
-    browserProxy = new TestMultideviceBrowserProxy();
+    settings.navigateTo(settings.routes.MULTIDEVICE);
+    browserProxy = new multidevice.TestMultideviceBrowserProxy();
     settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    const whenInitialized = browserProxy.whenCalled('getPageContentData');
 
     PolymerTest.clearBody();
     multidevicePage = document.createElement('settings-multidevice-page');
     assertTrue(!!multidevicePage);
 
     document.body.appendChild(multidevicePage);
-    Polymer.dom.flush();
+    return whenInitialized.then(() => {
+      Polymer.dom.flush();
+    });
   });
 
   teardown(function() {
@@ -128,7 +106,7 @@ suite('Multidevice', function() {
   const getSubpage = () => multidevicePage.$$('settings-multidevice-subpage');
 
   test('clicking setup shows multidevice setup dialog', function() {
-    setPageContentData(settings.MultiDeviceSettingsMode.NO_HOST_SET);
+    setHostData(settings.MultiDeviceSettingsMode.NO_HOST_SET);
     const button = multidevicePage.$$('paper-button');
     assertTrue(!!button);
     button.click();
@@ -137,23 +115,24 @@ suite('Multidevice', function() {
 
   test('headings render based on mode and host', function() {
     for (const mode of ALL_MODES) {
-      setPageContentData(mode);
-      assertEquals(multidevicePage.isHostSet(), getLabel() === HOST_DEVICE);
+      setHostData(mode);
+      assertEquals(
+          multidevicePage.isHostSet(), getLabel() === multidevice.HOST_DEVICE);
     }
   });
 
   test('changing host device changes header', function() {
-    setPageContentData(settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
-    assertEquals(getLabel(), HOST_DEVICE);
-    const anotherHost = 'Super Duper ' + HOST_DEVICE;
-    setPageContentData(
+    setHostData(settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+    assertEquals(getLabel(), multidevice.HOST_DEVICE);
+    const anotherHost = 'Super Duper ' + multidevice.HOST_DEVICE;
+    setHostData(
         settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED, anotherHost);
     assertEquals(getLabel(), anotherHost);
   });
 
   test('item is actionable if and only if a host is set', function() {
     for (const mode of ALL_MODES) {
-      setPageContentData(mode);
+      setHostData(mode);
       assertEquals(
           multidevicePage.isHostSet(),
           !!multidevicePage.$$('#multidevice-item').hasAttribute('actionable'));
@@ -163,7 +142,7 @@ suite('Multidevice', function() {
   test(
       'clicking item with verified host opens subpage with features',
       function() {
-        setPageContentData(settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+        setHostData(settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
         assertFalse(!!getSubpage());
         multidevicePage.$$('#multidevice-item').click();
         assertTrue(!!getSubpage());
@@ -173,9 +152,9 @@ suite('Multidevice', function() {
   test(
       'clicking item with unverified set host opens subpage without features',
       function() {
-        setPageContentData(
+        setHostData(
             settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION,
-            HOST_DEVICE);
+            multidevice.HOST_DEVICE);
         assertFalse(!!getSubpage());
         multidevicePage.$$('#multidevice-item').click();
         assertTrue(!!getSubpage());
@@ -183,7 +162,7 @@ suite('Multidevice', function() {
       });
 
   test('policy prohibited suite shows policy indicator', function() {
-    setPageContentData(settings.MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS);
+    setHostData(settings.MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS);
     assertFalse(!!multidevicePage.$$('cr-policy-indicator'));
     // Prohibit suite by policy.
     setSuiteState(settings.MultiDeviceFeatureState.PROHIBITED_BY_POLICY);

@@ -102,6 +102,7 @@ source_set("authentication_ui") {
   deps = [
     "//base",
     "//components/signin/core/browser",
+    "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui",

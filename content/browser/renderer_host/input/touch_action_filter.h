@@ -9,7 +9,6 @@
 #include "base/optional.h"
 #include "cc/input/touch_action.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/platform/web_input_event.h"
 
 namespace blink {
 class WebGestureEvent;
@@ -49,12 +48,6 @@ class CONTENT_EXPORT TouchActionFilter {
   // action.
   void ReportAndResetTouchAction();
 
-  // Must be called at least once between when the last gesture events for the
-  // previous touch sequence have passed through the touch action filter and the
-  // time the touch start for the next touch sequence has reached the
-  // renderer. It may be called multiple times during this interval.
-  void ResetTouchAction();
-
   // Called when a set-white-listed-touch-action message is received from the
   // renderer for a touch start event that is currently in flight.
   void OnSetWhiteListedTouchAction(cc::TouchAction white_listed_touch_action);
@@ -69,19 +62,23 @@ class CONTENT_EXPORT TouchActionFilter {
 
   void IncreaseActiveTouches();
   void DecreaseActiveTouches();
-  int num_of_active_touches_for_test() { return num_of_active_touches_; }
+
+  void ForceResetTouchActionForTest();
 
   // Debugging only.
   void AppendToGestureSequenceForDebugging(const char* str);
 
  private:
+  friend class InputRouterImplTest;
   friend class MockRenderWidgetHost;
   friend class TouchActionFilterTest;
+  friend class TouchActionFilterPinchTest;
   friend class SitePerProcessBrowserTouchActionTest;
 
   bool ShouldSuppressManipulation(const blink::WebGestureEvent&);
   bool FilterManipulationEventAndResetState();
   void ReportTouchAction();
+  void ResetTouchAction();
   void SetTouchAction(cc::TouchAction touch_action);
 
   // Whether scroll and pinch gestures should be discarded due to touch-action.
@@ -109,6 +106,9 @@ class CONTENT_EXPORT TouchActionFilter {
   // True if an active gesture sequence is in progress. i.e. after GTD and
   // before GSE.
   bool gesture_sequence_in_progress_ = false;
+
+  // True if we're between a GSB and a GSE.
+  bool gesture_scroll_in_progress_ = false;
 
   // Increment at receiving ACK for touch start and decrement at touch end.
   int num_of_active_touches_ = 0;

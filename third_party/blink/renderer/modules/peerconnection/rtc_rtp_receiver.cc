@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_capabilities.h"
 #include "third_party/blink/renderer/modules/peerconnection/web_rtc_stats_report_callback_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/rtpparameters.h"
 
@@ -106,7 +107,8 @@ void RTCRtpReceiver::getCapabilities(
       blink::Platform::Current()->GetRtpSenderCapabilities(kind);
 
   HeapVector<RTCRtpCodecCapability> codecs;
-  codecs.ReserveInitialCapacity(rtc_capabilities->codecs.size());
+  codecs.ReserveInitialCapacity(
+      SafeCast<wtf_size_t>(rtc_capabilities->codecs.size()));
   for (const auto& rtc_codec : rtc_capabilities->codecs) {
     codecs.emplace_back();
     auto& codec = codecs.back();
@@ -129,7 +131,7 @@ void RTCRtpReceiver::getCapabilities(
 
   HeapVector<RTCRtpHeaderExtensionCapability> header_extensions;
   header_extensions.ReserveInitialCapacity(
-      rtc_capabilities->header_extensions.size());
+      SafeCast<wtf_size_t>(rtc_capabilities->header_extensions.size()));
   for (const auto& rtc_header_extension : rtc_capabilities->header_extensions) {
     header_extensions.emplace_back();
     auto& header_extension = header_extensions.back();

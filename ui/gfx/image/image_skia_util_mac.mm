@@ -88,8 +88,7 @@ NSImage* NSImageFromImageSkia(const gfx::ImageSkia& image_skia) {
   std::vector<gfx::ImageSkiaRep> image_reps = image_skia.image_reps();
   for (std::vector<gfx::ImageSkiaRep>::const_iterator it = image_reps.begin();
        it != image_reps.end(); ++it) {
-    [image addRepresentation:
-        skia::SkBitmapToNSBitmapImageRep(it->sk_bitmap())];
+    [image addRepresentation:skia::SkBitmapToNSBitmapImageRep(it->GetBitmap())];
   }
 
   [image setSize:NSMakeSize(image_skia.width(), image_skia.height())];
@@ -106,9 +105,8 @@ NSImage* NSImageFromImageSkiaWithColorSpace(const gfx::ImageSkia& image_skia,
   std::vector<gfx::ImageSkiaRep> image_reps = image_skia.image_reps();
   for (std::vector<gfx::ImageSkiaRep>::const_iterator it = image_reps.begin();
        it != image_reps.end(); ++it) {
-    [image addRepresentation:
-        skia::SkBitmapToNSBitmapImageRepWithColorSpace(it->sk_bitmap(),
-                                                      color_space)];
+    [image addRepresentation:skia::SkBitmapToNSBitmapImageRepWithColorSpace(
+                                 it->GetBitmap(), color_space)];
   }
 
   [image setSize:NSMakeSize(image_skia.width(), image_skia.height())];

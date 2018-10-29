@@ -21,6 +21,7 @@
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/ime_keymap.h"
 #include "ui/base/ime/composition_text.h"
+#include "ui/base/ime/constants.h"
 #include "ui/base/ime/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ui_base_features.h"
@@ -219,9 +220,8 @@ void InputMethodEngine::HideInputView() {
   // KeyboardController in the browser process under MASH.
   if (!features::IsUsingWindowService()) {
     auto* keyboard_controller = keyboard::KeyboardController::Get();
-    if (keyboard_controller->enabled()) {
+    if (keyboard_controller->IsEnabled())
       keyboard_controller->HideKeyboardByUser();
-    }
   }
 }
 
@@ -233,7 +233,7 @@ void InputMethodEngine::EnableInputView() {
   // KeyboardController in the browser process under MASH.
   if (!features::IsUsingWindowService()) {
     auto* keyboard_controller = keyboard::KeyboardController::Get();
-    if (keyboard_controller->enabled())
+    if (keyboard_controller->IsEnabled())
       keyboard_controller->Reload();
   }
 }
@@ -334,6 +334,11 @@ bool InputMethodEngine::SendKeyEvent(ui::KeyEvent* event,
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return false;
+
+  // Marks the simulated key event is from the Virtual Keyboard.
+  ui::Event::Properties properties;
+  properties[ui::kPropertyFromVK] = std::vector<uint8_t>();
+  event->SetProperties(properties);
 
   input_context->SendKeyEvent(event);
   return true;

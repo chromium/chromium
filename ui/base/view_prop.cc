@@ -21,7 +21,7 @@ class ViewProp::Data : public base::RefCounted<ViewProp::Data> {
     if (!data_set_)
       data_set_ = new DataSet;
     scoped_refptr<Data> new_data(new Data(view, key));
-    DataSet::const_iterator i = data_set_->find(new_data.get());
+    auto i = data_set_->find(new_data.get());
     if (i != data_set_->end()) {
       *data = *i;
       return;
@@ -58,7 +58,7 @@ class ViewProp::Data : public base::RefCounted<ViewProp::Data> {
         data_(NULL) {}
 
   ~Data() {
-    DataSet::iterator i = data_set_->find(this);
+    auto i = data_set_->find(this);
     // Also check for equality using == as |Get| creates dummy values in order
     // to look up a value.
     if (i != data_set_->end() && *i == this)

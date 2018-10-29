@@ -4,6 +4,7 @@
 
 #include "chrome/browser/previews/previews_lite_page_navigation_throttle.h"
 
+#include <stdint.h>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -15,7 +16,9 @@
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/spdyproxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/net/spdyproxy/data_reduction_proxy_chrome_settings_factory.h"
@@ -23,6 +26,7 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/previews/core/previews_experiments.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -44,6 +48,8 @@
 namespace {
 
 constexpr char kChromeProxyHeader[] = "chrome-proxy";
+
+const base::TimeDelta kBlacklistDuration = base::TimeDelta::FromDays(30);
 
 bool IsPreviewsDomain(const GURL& url) {
   GURL previews_host = previews::params::GetLitePagePreviewsDomainURL();
@@ -149,6 +155,25 @@ class WebContentsLifetimeHelper
   base::WeakPtrFactory<WebContentsLifetimeHelper> weak_factory_;
 };
 
+bool HandlePreviewsLitePageURLRewrite(
+    GURL* url,
+    content::BrowserContext* browser_context) {
+  // Don't change the |url|, just register our interest in reversing it before
+  // it is displayed to the user in |HandlePreviewsLitePageURLRewriteReverse|.
+  return !!PreviewsLitePageNavigationThrottle::GetOriginalURL(*url, nullptr);
+}
+
+bool HandlePreviewsLitePageURLRewriteReverse(
+    GURL* url,
+    content::BrowserContext* browser_context) {
+  std::string original_url;
+  if (PreviewsLitePageNavigationThrottle::GetOriginalURL(*url, &original_url)) {
+    *url = GURL(original_url);
+    return true;
+  }
+  return false;
+}
+
 PreviewsLitePageNavigationThrottle::PreviewsLitePageNavigationThrottle(
     content::NavigationHandle* handle,
     PreviewsLitePageNavigationThrottleManager* manager)
@@ -178,6 +203,13 @@ bool PreviewsLitePageNavigationThrottle::IsEligibleForPreview() const {
   if (manager_->IsServerUnavailable())
     ineligible_reasons.push_back(IneligibleReason::kServerUnavailable);
 
+  if (g_browser_process->network_quality_tracker()
+          ->GetEffectiveConnectionType() >
+      previews::params::GetECTThresholdForPreview(
+          previews::PreviewsType::LITE_PAGE_REDIRECT)) {
+    ineligible_reasons.push_back(IneligibleReason::kNetworkNotSlow);
+  }
+
   // Record UMA.
   for (IneligibleReason reason : ineligible_reasons) {
     UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.IneligibleReasons",
@@ -205,13 +237,25 @@ bool PreviewsLitePageNavigationThrottle::IsEligibleForPreview() const {
     }
   }
 
+  if (manager_->HostBlacklisted(url.host()))
+    blacklist_reasons.push_back(BlacklistReason::kHostBlacklisted);
+
   // Record UMA
   for (BlacklistReason reason : blacklist_reasons) {
     UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.BlacklistReasons",
                               reason);
   }
 
-  return blacklist_reasons.empty();
+  if (!blacklist_reasons.empty())
+    return false;
+
+  if (manager_->NeedsToNotifyUser()) {
+    manager_->NotifyUser(navigation_handle()->GetWebContents());
+    UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.IneligibleReasons",
+                              IneligibleReason::kInfoBarNotSeen);
+    return false;
+  }
+  return true;
 }
 
 // static
@@ -237,7 +281,6 @@ bool PreviewsLitePageNavigationThrottle::GetOriginalURL(
 GURL PreviewsLitePageNavigationThrottle::GetPreviewsURLForURL(
     const GURL& original_url) {
   DCHECK(original_url.is_valid());
-  DCHECK(!IsPreviewsDomain(original_url));
 
   std::string origin_hash = base::ToLowerASCII(base32::Base32Encode(
       crypto::SHA256HashString(
@@ -256,6 +299,7 @@ GURL PreviewsLitePageNavigationThrottle::GetPreviewsURLForURL(
 }
 
 GURL PreviewsLitePageNavigationThrottle::GetPreviewsURL() const {
+  DCHECK(!IsPreviewsDomain(navigation_handle()->GetURL()));
   return GetPreviewsURLForURL(navigation_handle()->GetURL());
 }
 
@@ -279,8 +323,8 @@ void PreviewsLitePageNavigationThrottle::LoadAndBypass(
     return;
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&WebContentsLifetimeHelper::PostNewNavigation,
                      helper->GetWeakPtr(), params));
 }
@@ -327,25 +371,29 @@ PreviewsLitePageNavigationThrottle::TriggerPreview() const {
   // timeout whether the previews navigation has finished (either in success or
   // failure). If not, the helper will stop the ongoing previews navigation and
   // load the original page.
-  content::BrowserThread::PostDelayedTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::BindOnce(
-          &WebContentsLifetimeHelper::CheckForHungNavigation,
-          helper->GetWeakPtr(), GetPreviewsURL(),
-          base::BindOnce(
-              &PreviewsLitePageNavigationThrottle::LoadAndBypass,
-              base::Unretained(web_contents), manager_,
-              MakeOpenURLParams(navigation_handle(),
-                                navigation_handle()->GetURL(), std::string()),
-              false)),
-      previews::params::LitePagePreviewsNavigationTimeoutDuration());
+  const base::TimeDelta timeout =
+      previews::params::LitePagePreviewsNavigationTimeoutDuration();
+  if (timeout > base::TimeDelta()) {
+    base::PostDelayedTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
+        base::BindOnce(
+            &WebContentsLifetimeHelper::CheckForHungNavigation,
+            helper->GetWeakPtr(), GetPreviewsURL(),
+            base::BindOnce(
+                &PreviewsLitePageNavigationThrottle::LoadAndBypass,
+                base::Unretained(web_contents), manager_,
+                MakeOpenURLParams(navigation_handle(),
+                                  navigation_handle()->GetURL(), std::string()),
+                false)),
+        timeout);
+  }
 
   // The helper class and its weak pointer protect against the WebContents
   // dying in-between the PostTask and its execution, resulting in a use after
   // free crash. Since the helper is a WebContentsUserData, it will be
   // destroyed when the WebContents is and the task will not be executed.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&WebContentsLifetimeHelper::PostNewNavigation,
                      helper->GetWeakPtr(),
                      MakeOpenURLParams(navigation_handle(), GetPreviewsURL(),
@@ -356,6 +404,21 @@ PreviewsLitePageNavigationThrottle::TriggerPreview() const {
 
 content::NavigationThrottle::ThrottleCheckResult
 PreviewsLitePageNavigationThrottle::MaybeNavigateToPreview() const {
+  // First check if the user is attempting to load the original page on a
+  // preview.
+  std::string original_url;
+  if (navigation_handle()->GetReloadType() ==
+          content::ReloadType::ORIGINAL_REQUEST_URL &&
+      GetOriginalURL(navigation_handle()->GetURL(), &original_url)) {
+    LoadAndBypass(navigation_handle()->GetWebContents(), manager_,
+                  MakeOpenURLParams(navigation_handle(), GURL(original_url),
+                                    std::string()),
+                  true);
+    UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.IneligibleReasons",
+                              IneligibleReason::kLoadOriginalReload);
+    return content::NavigationThrottle::CANCEL;
+  }
+
   const bool trigger =
       IsEligibleForPreview() &&
       !manager_->CheckSingleBypass(navigation_handle()->GetURL().spec());
@@ -372,6 +435,58 @@ PreviewsLitePageNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 PreviewsLitePageNavigationThrottle::WillRedirectRequest() {
+  // WillRedirectRequest is called after the navigation_handle's URL has already
+  // been set to the next location. So inspect the previous URL for the presence
+  // of the previews server.
+  const std::vector<GURL>& redirect_chain =
+      navigation_handle()->GetRedirectChain();
+  // |navigation_handle()->GetURL()| is always the last element in the redirect
+  // chain. So if we've come here after a redirect, the length of
+  // |redirect_chain| is at least 2.
+  const GURL& previous_url = redirect_chain[redirect_chain.size() - 2];
+
+  // If we are redirecting on a preview, count some UMA and proceed.
+  std::string original_url;
+  if (GetOriginalURL(previous_url, &original_url)) {
+    // A redirect means one of two things: (1) there is no preview available for
+    // this page and we should redirect back to the original page. (2) the
+    // previews server is forwarding along a redirect from the origin. The
+    // difference between the two is where the Location header is pointing. If
+    // it is pointing towards the original page, it is considered a bypass.
+    // Otherwise it is just a forwarded bypass.
+    if (GURL(original_url) == navigation_handle()->GetURL()) {
+      manager_->AddSingleBypass(navigation_handle()->GetURL().spec());
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Previews.ServerLitePage.HttpOnlyFallbackPenalty",
+          base::TimeTicks::Now() - navigation_handle()->NavigationStart());
+      UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.ServerResponse",
+                                ServerResponse::kPreviewUnavailable);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.ServerResponse",
+                                ServerResponse::kRedirect);
+    }
+
+    // Check if the original host should be blacklisted, as directed by the
+    // server.
+    const net::HttpResponseHeaders* response_headers =
+        navigation_handle()->GetResponseHeaders();
+
+    std::string chrome_proxy_header;
+    bool blacklist_host =
+        response_headers &&
+        response_headers->EnumerateHeader(nullptr, kChromeProxyHeader,
+                                          &chrome_proxy_header) &&
+        chrome_proxy_header.find("host-blacklisted") != std::string::npos;
+
+    if (blacklist_host)
+      manager_->BlacklistHost(GURL(original_url).host(), kBlacklistDuration);
+
+    UMA_HISTOGRAM_BOOLEAN("Previews.ServerLitePage.HostBlacklistedOnBypass",
+                          blacklist_host);
+
+    return content::NavigationThrottle::PROCEED;
+  }
+
   return MaybeNavigateToPreview();
 }
 
@@ -396,15 +511,14 @@ PreviewsLitePageNavigationThrottle::WillFailRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 PreviewsLitePageNavigationThrottle::WillProcessResponse() {
-  const net::HttpResponseHeaders* response_headers =
-      navigation_handle()->GetResponseHeaders();
-  DCHECK(response_headers);
-
   std::string original_url;
   if (!GetOriginalURL(navigation_handle()->GetURL(), &original_url)) {
     // Return early if this request was not for a Preview.
     return content::NavigationThrottle::PROCEED;
   }
+
+  const net::HttpResponseHeaders* response_headers =
+      navigation_handle()->GetResponseHeaders();
 
   // After this point, the given response is known to be for a Preview.
   // The Previews server will only send the following response codes: 200, 307,
@@ -415,14 +529,17 @@ PreviewsLitePageNavigationThrottle::WillProcessResponse() {
   const int response_code = response_headers->response_code();
 
   if (response_code == net::HTTP_OK) {
+    // Attempt to get the original content length and report it to Data Saver.
+    const int64_t ofcl =
+        data_reduction_proxy::GetDataReductionProxyOFCL(response_headers);
+    if (ofcl > 0) {
+      manager_->ReportDataSavings(response_headers->GetContentLength(), ofcl,
+                                  GURL(original_url).host());
+    }
+
     UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.ServerResponse",
                               ServerResponse::kOk);
-    return content::NavigationThrottle::PROCEED;
-  }
 
-  if (response_code == net::HTTP_TEMPORARY_REDIRECT) {
-    UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.ServerResponse",
-                              ServerResponse::kRedirect);
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -431,11 +548,7 @@ PreviewsLitePageNavigationThrottle::WillProcessResponse() {
   UMA_HISTOGRAM_MEDIUM_TIMES("Previews.ServerLitePage.HttpOnlyFallbackPenalty",
                              penalty);
 
-  if (response_code == net::HTTP_NOT_FOUND) {
-    UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.ServerResponse",
-                              ServerResponse::kPreviewUnavailable);
-
-  } else if (response_code == net::HTTP_SERVICE_UNAVAILABLE) {
+  if (response_code == net::HTTP_SERVICE_UNAVAILABLE) {
     std::string retry_after_header;
     base::TimeDelta retry_after = base::TimeDelta::FromSeconds(
         base::RandInt(60, previews::params::PreviewServerLoadshedMaxSeconds()));
@@ -448,6 +561,9 @@ PreviewsLitePageNavigationThrottle::WillProcessResponse() {
 
     UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.ServerResponse",
                               ServerResponse::kServiceUnavailable);
+  } else if (response_code == net::HTTP_FORBIDDEN) {
+    UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.ServerResponse",
+                              ServerResponse::kAuthFailure);
   } else {
     UMA_HISTOGRAM_ENUMERATION("Previews.ServerLitePage.ServerResponse",
                               ServerResponse::kOther);

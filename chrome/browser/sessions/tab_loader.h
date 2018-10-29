@@ -11,7 +11,6 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
@@ -56,7 +55,6 @@ class TabLoaderTester;
 // out of the outermost function.
 class TabLoader : public base::RefCounted<TabLoader>,
                   public TabLoaderCallback,
-                  public base::MemoryCoordinatorClient,
                   public resource_coordinator::TabLoadTracker::Observer {
  public:
   // Helper class used for tracking reentrancy and performing lifetime
@@ -113,9 +111,6 @@ class TabLoader : public base::RefCounted<TabLoader>,
   // React to memory pressure by stopping to load any more tabs.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-
-  // base::MemoryCoordinatorClient implementation:
-  void OnMemoryStateChange(base::MemoryState state) override;
 
   // Determines whether or not tab loading should stop early due to external
   // factors.

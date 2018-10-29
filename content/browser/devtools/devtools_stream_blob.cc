@@ -7,7 +7,9 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/strings/string_piece.h"
+#include "base/task/post_task.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/io_buffer.h"
@@ -29,7 +31,7 @@ DevToolsStreamBlob::ReadRequest::~ReadRequest() = default;
 
 DevToolsStreamBlob::DevToolsStreamBlob()
     : DevToolsIOContext::Stream(
-          BrowserThread::GetTaskRunnerForThread(BrowserThread::IO)),
+          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})),
       last_read_pos_(0),
       failed_(false),
       is_binary_(false) {}
@@ -64,18 +66,19 @@ scoped_refptr<DevToolsIOContext::Stream> DevToolsStreamBlob::Create(
 }
 
 void DevToolsStreamBlob::ReadRequest::Fail() {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(std::move(callback), nullptr, false,
-                                         Stream::StatusFailure));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(std::move(callback), nullptr, false,
+                                          Stream::StatusFailure));
 }
 
 void DevToolsStreamBlob::Open(scoped_refptr<ChromeBlobStorageContext> context,
                               StoragePartition* partition,
                               const std::string& handle,
                               OpenCallback callback) {
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&DevToolsStreamBlob::OpenOnIO, this,
-                                         context, handle, std::move(callback)));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce(&DevToolsStreamBlob::OpenOnIO, this, context, handle,
+                     std::move(callback)));
 }
 
 void DevToolsStreamBlob::Read(off_t position,
@@ -83,8 +86,8 @@ void DevToolsStreamBlob::Read(off_t position,
                               ReadCallback callback) {
   std::unique_ptr<ReadRequest> request(
       new ReadRequest(position, max_size, std::move(callback)));
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&DevToolsStreamBlob::ReadOnIO, this, std::move(request)));
 }
 
@@ -115,8 +118,8 @@ void DevToolsStreamBlob::OnBlobConstructionComplete(
     FailOnIO(std::move(open_callback_));
     return;
   }
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(std::move(open_callback_), true));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(std::move(open_callback_), true));
   if (!pending_reads_.empty())
     StartReadRequest();
 }
@@ -141,8 +144,8 @@ void DevToolsStreamBlob::FailOnIO() {
 }
 
 void DevToolsStreamBlob::FailOnIO(OpenCallback callback) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(std::move(callback), false));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(std::move(callback), false));
   FailOnIO();
 }
 
@@ -178,8 +181,8 @@ void DevToolsStreamBlob::BeginRead() {
     bytes_read = blob_reader_->net_error();
     DCHECK_LT(0, bytes_read);
   }
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&DevToolsStreamBlob::OnReadComplete, this, bytes_read));
 }
 
@@ -207,8 +210,8 @@ void DevToolsStreamBlob::OnReadComplete(int bytes_read) {
       *data = std::string(io_buf_->data(), bytes_read);
     }
   }
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(request->callback), std::move(data),
                      base64_encoded, status));
   if (!pending_reads_.empty())

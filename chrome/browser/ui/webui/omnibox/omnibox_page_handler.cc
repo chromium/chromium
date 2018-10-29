@@ -44,8 +44,7 @@ struct TypeConverter<std::vector<mojom::AutocompleteAdditionalInfoPtr>,
       const AutocompleteMatch::AdditionalInfo& input) {
     std::vector<mojom::AutocompleteAdditionalInfoPtr> array(input.size());
     size_t index = 0;
-    for (AutocompleteMatch::AdditionalInfo::const_iterator i = input.begin();
-         i != input.end(); ++i, index++) {
+    for (auto i = input.begin(); i != input.end(); ++i, index++) {
       mojom::AutocompleteAdditionalInfoPtr item(
           mojom::AutocompleteAdditionalInfo::New());
       item->key = i->first;

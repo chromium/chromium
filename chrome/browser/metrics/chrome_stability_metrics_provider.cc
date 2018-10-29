@@ -160,12 +160,8 @@ void ChromeStabilityMetricsProvider::OnCrashDumpProcessed(
     int rph_id,
     const crash_reporter::CrashMetricsReporter::ReportedCrashTypeSet&
         reported_counts) {
-  if (reported_counts.count(
-          crash_reporter::CrashMetricsReporter::ProcessedCrashCounts::
-              kRendererForegroundVisibleCrash) ||
-      reported_counts.count(
-          crash_reporter::CrashMetricsReporter::ProcessedCrashCounts::
-              kRendererForegroundVisibleSubframeCrash)) {
+  if (reported_counts.count(crash_reporter::CrashMetricsReporter::
+                                ProcessedCrashCounts::kRendererCrashAll)) {
     helper_.IncreaseRendererCrashCount();
   }
   if (reported_counts.count(crash_reporter::CrashMetricsReporter::

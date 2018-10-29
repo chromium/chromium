@@ -29,10 +29,8 @@ public abstract class ListItemViewHolder extends ViewHolder {
      */
     public static ListItemViewHolder create(ViewGroup parent, @ListUtils.ViewType int viewType) {
         switch (viewType) {
-            case ListUtils.ViewType.DATE:
-                return DateViewHolder.create(parent);
             case ListUtils.ViewType.IN_PROGRESS:
-                return InProgressViewHolder.create(parent);
+                return InProgressGenericViewHolder.create(parent);
             case ListUtils.ViewType.GENERIC:
                 return GenericViewHolder.create(parent);
             case ListUtils.ViewType.VIDEO:
@@ -45,12 +43,10 @@ public abstract class ListItemViewHolder extends ViewHolder {
                 return PrefetchViewHolder.create(parent);
             case ListUtils.ViewType.SECTION_HEADER:
                 return SectionTitleViewHolder.create(parent);
-            case ListUtils.ViewType.SEPARATOR_DATE:
-                return SeparatorViewHolder.create(parent, true);
-            case ListUtils.ViewType.SEPARATOR_SECTION:
-                return SeparatorViewHolder.create(parent, false);
             case ListUtils.ViewType.IN_PROGRESS_VIDEO:
                 return InProgressVideoViewHolder.create(parent);
+            case ListUtils.ViewType.IN_PROGRESS_IMAGE:
+                return InProgressImageViewHolder.create(parent);
         }
 
         assert false;
@@ -63,4 +59,10 @@ public abstract class ListItemViewHolder extends ViewHolder {
      * @param item       The {@link ListItem} to visually represent in this {@link ViewHolder}.
      */
     public abstract void bind(PropertyModel properties, ListItem item);
+
+    /**
+     * Gives subclasses a chance to free up expensive resources when this {@link ViewHolder} is no
+     * longer attached to the parent {@link RecyclerView}.
+     */
+    public void recycle() {}
 }

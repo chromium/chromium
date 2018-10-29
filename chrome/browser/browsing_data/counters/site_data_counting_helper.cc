@@ -4,11 +4,13 @@
 
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 
+#include "base/task/post_task.h"
 #include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/local_storage_usage_info.h"
@@ -22,6 +24,8 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using content::BrowserThread;
 
@@ -65,8 +69,8 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
         blink::mojom::StorageType::kSyncable};
     for (auto type : types) {
       tasks_ += 1;
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(&storage::QuotaManager::GetOriginsModifiedSince,
                          quota_manager, type, begin_, origins_callback));
     }
@@ -104,8 +108,8 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
   }
   // Count origins with channel ids.
   tasks_ += 1;
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SiteDataCountingHelper::GetChannelIDsOnIOThread,
                      base::Unretained(this), base::WrapRefCounted(rq_context)));
 }
@@ -135,19 +139,23 @@ void SiteDataCountingHelper::GetCookiesCallback(
       origins.push_back(url);
     }
   }
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&SiteDataCountingHelper::Done,
-                                         base::Unretained(this), origins));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(&SiteDataCountingHelper::Done,
+                                          base::Unretained(this), origins));
 }
 
 void SiteDataCountingHelper::GetQuotaOriginsCallback(
-    const std::set<GURL>& origin_set,
+    const std::set<url::Origin>& origins,
     blink::mojom::StorageType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  std::vector<GURL> origins(origin_set.begin(), origin_set.end());
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&SiteDataCountingHelper::Done,
-                                         base::Unretained(this), origins));
+  std::vector<GURL> urls;
+  urls.resize(origins.size());
+  for (const url::Origin& origin : origins)
+    urls.push_back(origin.GetURL());
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(&SiteDataCountingHelper::Done, base::Unretained(this),
+                     std::move(urls)));
 }
 
 void SiteDataCountingHelper::GetLocalStorageUsageInfoCallback(
@@ -204,9 +212,9 @@ void SiteDataCountingHelper::GetChannelIDsCallback(
       origins.push_back(GURL("https://" + channel_id.server_identifier()));
     }
   }
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&SiteDataCountingHelper::Done,
-                                         base::Unretained(this), origins));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(&SiteDataCountingHelper::Done,
+                                          base::Unretained(this), origins));
 }
 
 void SiteDataCountingHelper::Done(const std::vector<GURL>& origins) {

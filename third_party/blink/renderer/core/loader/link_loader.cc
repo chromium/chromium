@@ -472,8 +472,7 @@ static void ModulePreloadIfNeeded(const LinkLoadParameters& params,
       link_loader->DispatchLinkLoadingErroredAsync();
     return;
   }
-  WebURLRequest::RequestContext destination =
-      WebURLRequest::kRequestContextScript;
+  mojom::RequestContextType destination = mojom::RequestContextType::SCRIPT;
 
   // Step 4. "Parse the URL given by the href attribute, relative to the
   // element's node document. If that fails, then return. Otherwise, let url be
@@ -576,15 +575,6 @@ static Resource* PrefetchIfNeeded(const LinkLoadParameters& params,
     resource_request.SetReferrerPolicy(params.referrer_policy);
     resource_request.SetFetchImportanceMode(
         GetFetchImportanceAttributeValue(params.importance));
-
-    // If Signed Exchange is enabled, prefer the application/signed-exchange
-    // content type
-    // (https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html#internet-media-type-applicationsigned-exchange).
-    if (RuntimeEnabledFeatures::SignedHTTPExchangeEnabled()) {
-      DEFINE_STATIC_LOCAL(const AtomicString, accept_prefetch,
-                          ("application/signed-exchange;v=b2;q=0.9,*/*;q=0.8"));
-      resource_request.SetHTTPAccept(accept_prefetch);
-    }
 
     ResourceLoaderOptions options;
     options.initiator_info.name = FetchInitiatorTypeNames::link;

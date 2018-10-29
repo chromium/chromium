@@ -5,11 +5,16 @@
 #ifndef CONTENT_BROWSER_DOWNLOAD_URL_DOWNLOADER_FACTORY_H_
 #define CONTENT_BROWSER_DOWNLOAD_URL_DOWNLOADER_FACTORY_H_
 
+#include "base/memory/ref_counted.h"
 #include "components/download/public/common/url_download_handler_factory.h"
 
 namespace download {
 class DownloadURLLoaderFactoryGetter;
-};
+}
+
+namespace net {
+class URLRequestContextGetter;
+}
 
 namespace content {
 
@@ -27,6 +32,7 @@ class UrlDownloaderFactory : public download::UrlDownloadHandlerFactory {
       base::WeakPtr<download::UrlDownloadHandler::Delegate> delegate,
       scoped_refptr<download::DownloadURLLoaderFactoryGetter>
           shared_url_loader_factory,
+      scoped_refptr<net::URLRequestContextGetter> url_request_context_getter,
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) override;
 };
 

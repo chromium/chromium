@@ -356,13 +356,6 @@ var CommandHandler = function(fileManager, selectionHandler) {
       'disable-zip-archiver-packer', function(disabled) {
         CommandHandler.IS_ZIP_ARCHIVER_PACKER_ENABLED_ = !disabled;
       });
-  chrome.fileManagerPrivate.isCrostiniEnabled((enabled) => {
-    if (enabled) {
-      chrome.commandLinePrivate.hasSwitch('crostini-files', (enabled) => {
-        CommandHandler.IS_CROSTINI_FILES_ENABLED_ = enabled;
-      });
-    }
-  });
 };
 
 /**
@@ -371,13 +364,6 @@ var CommandHandler = function(fileManager, selectionHandler) {
  * @private
  */
 CommandHandler.IS_ZIP_ARCHIVER_PACKER_ENABLED_ = false;
-
-/**
- * A flag that determines whether crostini file sharing is enabled.
- * @type {boolean}
- * @private
- */
-CommandHandler.IS_CROSTINI_FILES_ENABLED_ = false;
 
 /**
  * Supported disk file system types for renaming.
@@ -408,6 +394,8 @@ CommandHandler.MenuCommandsForUMA = {
   SHOW_GOOGLE_DOCS_FILES_ON: 'drive-hosted-settings-enabled',
   HIDDEN_ANDROID_FOLDERS_SHOW: 'toggle-hidden-android-folders-on',
   HIDDEN_ANDROID_FOLDERS_HIDE: 'toggle-hidden-android-folders-off',
+  SHARE_WITH_LINUX: 'share-with-linux',
+  MANAGE_LINUX_SHARING: 'manage-linux-sharing',
 };
 
 /**
@@ -432,6 +420,8 @@ CommandHandler.ValidMenuCommandsForUMA = [
   CommandHandler.MenuCommandsForUMA.SHOW_GOOGLE_DOCS_FILES_OFF,
   CommandHandler.MenuCommandsForUMA.HIDDEN_ANDROID_FOLDERS_SHOW,
   CommandHandler.MenuCommandsForUMA.HIDDEN_ANDROID_FOLDERS_HIDE,
+  CommandHandler.MenuCommandsForUMA.SHARE_WITH_LINUX,
+  CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING,
 ];
 console.assert(
     Object.keys(CommandHandler.MenuCommandsForUMA).length ===
@@ -1657,8 +1647,9 @@ CommandHandler.COMMANDS_['share-with-linux'] = /** @type {Command} */ ({
     const entry = CommandUtil.getCommandEntry(event.target);
     if (entry && entry.isDirectory) {
       const dir = /** @type {!DirectoryEntry} */ (entry);
-      chrome.fileManagerPrivate.sharePathWithCrostini(
-          dir, () => {
+      // Always persist shares via right-click > Share with Linux.
+      chrome.fileManagerPrivate.sharePathsWithCrostini(
+          [dir], true /* persist */, () => {
             if (chrome.runtime.lastError) {
               console.error(
                   'Error sharing with linux: ' +
@@ -1667,6 +1658,8 @@ CommandHandler.COMMANDS_['share-with-linux'] = /** @type {Command} */ ({
               Crostini.registerSharedPath(dir, fileManager.volumeManager);
             }
           });
+      CommandHandler.recordMenuItemSelected_(
+          CommandHandler.MenuCommandsForUMA.SHARE_WITH_LINUX);
     }
   },
   /**
@@ -1676,12 +1669,35 @@ CommandHandler.COMMANDS_['share-with-linux'] = /** @type {Command} */ ({
   canExecute: function(event, fileManager) {
     // Must be single directory subfolder of Downloads not already shared.
     const entries = CommandUtil.getCommandEntries(event.target);
-    event.canExecute = CommandHandler.IS_CROSTINI_FILES_ENABLED_ &&
-        entries.length === 1 && entries[0].isDirectory &&
-        !Crostini.isPathShared(entries[0], assert(fileManager.volumeManager)) &&
-        entries[0].fullPath !== '/' &&
-        fileManager.volumeManager.getLocationInfo(entries[0]).rootType ===
-            VolumeManagerCommon.RootType.DOWNLOADS;
+    event.canExecute = entries.length === 1 && entries[0].isDirectory &&
+        !Crostini.isPathShared(entries[0], fileManager.volumeManager) &&
+        Crostini.canSharePath(
+            entries[0], true /* persist */, fileManager.volumeManager);
+    event.command.setHidden(!event.canExecute);
+  }
+});
+
+/**
+ * Link to settings page to manage files and folders shared with crostini
+ * container.
+ * @type {Command}
+ */
+CommandHandler.COMMANDS_['manage-linux-sharing'] = /** @type {Command} */ ({
+  /**
+   * @param {!Event} event Command event.
+   * @param {!CommandHandlerDeps} fileManager CommandHandlerDeps to use.
+   */
+  execute: function(event, fileManager) {
+    chrome.fileManagerPrivate.openSettingsSubpage('crostini/sharedPaths');
+    CommandHandler.recordMenuItemSelected_(
+        CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
+  },
+  /**
+   * @param {!Event} event Command event.
+   * @param {!CommandHandlerDeps} fileManager CommandHandlerDeps to use.
+   */
+  canExecute: function(event, fileManager) {
+    event.canExecute = Crostini.IS_CROSTINI_FILES_ENABLED;
     event.command.setHidden(!event.canExecute);
   }
 });

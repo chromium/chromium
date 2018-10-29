@@ -140,7 +140,6 @@ void ValidationMessageOverlayDelegate::EnsurePage(const PageOverlay& overlay,
   page_->GetSettings().SetMinimumFontSize(main_settings.GetMinimumFontSize());
   page_->GetSettings().SetMinimumLogicalFontSize(
       main_settings.GetMinimumLogicalFontSize());
-  page_->GetSettings().SetAcceleratedCompositingEnabled(false);
 
   LocalFrame* frame =
       LocalFrame::Create(EmptyLocalFrameClient::Create(), *page_, nullptr);

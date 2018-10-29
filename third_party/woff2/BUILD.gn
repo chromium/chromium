@@ -8,6 +8,9 @@ config("woff2_includes") {
 
 static_library("woff2_dec") {
   sources = [
+    "include/woff2/decode.h",
+    "include/woff2/encode.h",
+    "include/woff2/output.h",
     "src/buffer.h",
     "src/file.h",
     "src/round.h",
@@ -20,9 +23,6 @@ static_library("woff2_dec") {
     "src/woff2_common.h",
     "src/woff2_dec.cc",
     "src/woff2_out.cc",
-    "woff2/include/decode.h",
-    "woff2/include/encode.h",
-    "woff2/include/output.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]

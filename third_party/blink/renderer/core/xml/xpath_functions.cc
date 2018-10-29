@@ -41,7 +41,7 @@
 #include <limits>
 
 namespace blink {
-namespace XPath {
+namespace xpath {
 
 static inline bool IsWhitespace(UChar c) {
   return c == ' ' || c == '\n' || c == '\r' || c == '\t';
@@ -630,7 +630,7 @@ Value FunLang::Evaluate(EvaluationContext& context) const {
   while (node) {
     if (node->IsElementNode()) {
       Element* element = ToElement(node);
-      language_attribute = element->Attributes().Find(XMLNames::langAttr);
+      language_attribute = element->Attributes().Find(xml_names::kLangAttr);
     }
     if (language_attribute)
       break;
@@ -770,5 +770,5 @@ Function* CreateFunction(const String& name,
   return function;
 }
 
-}  // namespace XPath
+}  // namespace xpath
 }  // namespace blink

@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/fileapi/recent_source.h"
+#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/chromeos/file_system_interface.h"
 #include "components/drive/file_errors.h"
 
@@ -54,6 +55,10 @@ class RecentDriveSource : public RecentSource {
                      const base::File::Info& info);
   void OnComplete();
 
+  void GotSearchResults(
+      drive::FileError error,
+      base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
+
   Profile* const profile_;
 
   // Set at the beginning of GetRecentFiles().
@@ -63,6 +68,8 @@ class RecentDriveSource : public RecentSource {
 
   int num_inflight_stats_ = 0;
   std::vector<RecentFile> files_;
+
+  drivefs::mojom::SearchQueryPtr search_query_;
 
   base::WeakPtrFactory<RecentDriveSource> weak_ptr_factory_;
 

@@ -98,7 +98,7 @@ bool TranslateURLFetcher::Request(const GURL& url,
   resource_request->load_flags =
       net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
   if (!extra_request_header_.empty())
-    resource_request->headers.AddHeadersFromString(extra_request_header_);
+    resource_request->headers.AddHeaderFromString(extra_request_header_);
 
   simple_loader_ =
       variations::CreateSimpleURLLoaderWithVariationsHeadersUnknownSignedIn(

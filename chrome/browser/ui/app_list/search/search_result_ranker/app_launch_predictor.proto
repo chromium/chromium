@@ -32,6 +32,8 @@ message HourAppLaunchPredictorProto {
   }
   // A map from bin indices to each FrequencyTable of that bin.
   map<int32, FrequencyTable> binned_frequency_table = 1;
+  // Timestamp of last decay operation in days since windows epoch.
+  optional int32 last_decay_timestamp = 2;
 }
 
 // Used only for testing AppSearchResultRanker.

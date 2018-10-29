@@ -34,27 +34,12 @@ class XRDeviceAbstraction {
   virtual void OnLayerBoundsChanged();
 };
 
-// This will become a mojo interface
-class XROverlayCompositor {
- public:
-  virtual void SubmitOverlayTexture(
-      int16_t frame_id,
-      const gfx::RectF& left_bounds,
-      const gfx::RectF& right_bounds,
-      mojo::ScopedHandle texture_handle,
-      base::OnceCallback<void(bool)> present_succeeded) = 0;
-  virtual void RequestOverlayPose(
-      mojom::XRFrameDataProvider::GetFrameDataCallback callback) = 0;
-  virtual void SetOverlayAndWebXRVisibility(bool overlay_visible,
-                                            bool webxr_visible) = 0;
-};
-
 class XRCompositorCommon : public base::Thread,
                            public XRDeviceAbstraction,
                            public mojom::XRPresentationProvider,
                            public mojom::XRFrameDataProvider,
                            public mojom::IsolatedXRGamepadProvider,
-                           public XROverlayCompositor {
+                           public mojom::ImmersiveOverlay {
  public:
   using RequestSessionCallback =
       base::OnceCallback<void(bool result, mojom::XRSessionPtr)>;
@@ -73,6 +58,7 @@ class XRCompositorCommon : public base::Thread,
       mojom::XRFrameDataPtr frame_data);
 
   void RequestGamepadProvider(mojom::IsolatedXRGamepadProviderRequest request);
+  void RequestOverlay(mojom::ImmersiveOverlayRequest request);
 
  protected:
 #if defined(OS_WIN)
@@ -117,15 +103,13 @@ class XRCompositorCommon : public base::Thread,
                          const gfx::RectF& right_bounds,
                          const gfx::Size& source_size) final;
 
-  // XROverlayCompositor:
-  void SubmitOverlayTexture(
-      int16_t frame_id,
-      const gfx::RectF& left_bounds,
-      const gfx::RectF& right_bounds,
-      mojo::ScopedHandle texture_handle,
-      base::OnceCallback<void(bool)> present_succeeded) override;
-  void RequestOverlayPose(
-      XRFrameDataProvider::GetFrameDataCallback callback) override;
+  // ImmersiveOverlay:
+  void SubmitOverlayTexture(int16_t frame_id,
+                            mojo::ScopedHandle texture,
+                            const gfx::RectF& left_bounds,
+                            const gfx::RectF& right_bounds,
+                            SubmitOverlayTextureCallback callback) override;
+  void RequestNextOverlayPose(RequestNextOverlayPoseCallback callback) override;
   void SetOverlayAndWebXRVisibility(bool overlay_visible,
                                     bool webxr_visible) override;
 
@@ -154,12 +138,13 @@ class XRCompositorCommon : public base::Thread,
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   mojom::XRPresentationClientPtr submit_client_;
-  base::OnceCallback<void(bool)> overlay_submit_succeeded_;
+  SubmitOverlayTextureCallback overlay_submit_callback_;
   base::OnceCallback<void()> on_presentation_ended_;
   mojom::IsolatedXRGamepadProvider::RequestUpdateCallback gamepad_callback_;
   mojo::Binding<mojom::XRPresentationProvider> presentation_binding_;
   mojo::Binding<mojom::XRFrameDataProvider> frame_data_binding_;
   mojo::Binding<mojom::IsolatedXRGamepadProvider> gamepad_provider_;
+  mojo::Binding<mojom::ImmersiveOverlay> overlay_binding_;
 
   DISALLOW_COPY_AND_ASSIGN(XRCompositorCommon);
 };

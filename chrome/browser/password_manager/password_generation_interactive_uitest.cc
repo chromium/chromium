@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -119,11 +120,6 @@ class PasswordGenerationInteractiveTest
   void TearDownOnMainThread() override {
     PasswordManagerBrowserTestBase::TearDownOnMainThread();
 
-    // Clean up UI.
-    ChromePasswordManagerClient* client =
-        ChromePasswordManagerClient::FromWebContents(WebContents());
-    client->HidePasswordGenerationPopup();
-
     autofill::test::ReenableSystemServices();
   }
 
@@ -199,6 +195,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
                        PopupShownAndPasswordSelected) {
   FocusPasswordField();
   EXPECT_TRUE(GenerationPopupShowing());
+  base::HistogramTester histogram_tester;
   SendKeyToPopup(ui::VKEY_DOWN);
   SendKeyToPopup(ui::VKEY_RETURN);
 
@@ -212,6 +209,15 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   // Re-focusing the password field should show the editing popup.
   FocusPasswordField();
   EXPECT_TRUE(EditingPopupShowing());
+
+  // The metrics are recorded when the form manager is destroyed. Closing the
+  // tab enforces it.
+  CloseAllBrowsers();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.UserDecision",
+      password_manager::PasswordFormMetricsRecorder::GeneratedPasswordStatus::
+          kPasswordAccepted,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
@@ -229,10 +235,19 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   EXPECT_TRUE(EditingPopupShowing());
 
   // Delete the password. The generation prompt should be visible.
+  base::HistogramTester histogram_tester;
   SimulateUserDeletingFieldContent("password_field");
   WaitForPopupStatusChange();
   EXPECT_FALSE(EditingPopupShowing());
   EXPECT_TRUE(GenerationPopupShowing());
+
+  // The metrics are recorded on navigation when the frame is destroyed.
+  NavigateToFile("/password/done.html");
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.UserDecision",
+      password_manager::PasswordFormMetricsRecorder::GeneratedPasswordStatus::
+          kPasswordDeleted,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,

@@ -433,6 +433,25 @@ void LocalStorageContextMojo::DeleteStorage(const url::Origin& origin,
   }
 }
 
+void LocalStorageContextMojo::PerformCleanup(base::OnceClosure callback) {
+  if (connection_state_ != CONNECTION_FINISHED) {
+    RunWhenConnected(base::BindOnce(&LocalStorageContextMojo::PerformCleanup,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(callback)));
+    return;
+  }
+  if (database_) {
+    // Try to commit all changes before rewriting the database. If
+    // an area is not ready to commit its changes, nothing breaks but the
+    // rewrite doesn't remove all traces of old data.
+    Flush();
+    database_->RewriteDB(
+        base::BindOnce(&DatabaseErrorResponse, std::move(callback)));
+  } else {
+    std::move(callback).Run();
+  }
+}
+
 void LocalStorageContextMojo::Flush() {
   if (connection_state_ != CONNECTION_FINISHED) {
     RunWhenConnected(base::BindOnce(&LocalStorageContextMojo::Flush,
@@ -682,6 +701,19 @@ void LocalStorageContextMojo::InitiateConnection(bool in_memory_only) {
   }
 }
 
+void LocalStorageContextMojo::OnMojoConnectionDestroyed() {
+  UMA_HISTOGRAM_BOOLEAN("LocalStorageContext.OnConnectionDestroyed", true);
+  LOG(ERROR) << "Lost connection to database";
+  // We're about to set database_ to null, so delete the StorageAreaImpls
+  // that might still be using the old database.
+  for (const auto& it : areas_)
+    it.second->storage_area()->CancelAllPendingRequests();
+  areas_.clear();
+  database_ = nullptr;
+  // TODO(dullweber): Should we try to recover? E.g. try to reopen and if this
+  // fails, call DeleteAndRecreateDatabase().
+}
+
 void LocalStorageContextMojo::OnDirectoryOpened(base::File::Error err) {
   if (err != base::File::Error::FILE_OK) {
     // We failed to open the directory; continue with startup so that we create
@@ -740,6 +772,9 @@ void LocalStorageContextMojo::OnDatabaseOpened(
 
   // Verify DB schema version.
   if (database_) {
+    database_.set_connection_error_handler(
+        base::BindOnce(&LocalStorageContextMojo::OnMojoConnectionDestroyed,
+                       weak_ptr_factory_.GetWeakPtr()));
     database_->Get(
         leveldb::StdStringToUint8Vector(kVersionKey),
         base::BindOnce(&LocalStorageContextMojo::OnGotDatabaseVersion,

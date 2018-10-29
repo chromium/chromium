@@ -33,10 +33,6 @@ class PDFiumPage {
   void Unload();
   // Gets the FPDF_PAGE for this page, loading and parsing it if necessary.
   FPDF_PAGE GetPage();
-  // Get the FPDF_PAGE for printing.
-  FPDF_PAGE GetPrintPage();
-  // Close the printing page.
-  void ClosePrintPage();
 
   // Returns FPDF_TEXTPAGE for the page, loading and parsing it if necessary.
   FPDF_TEXTPAGE GetTextPage();

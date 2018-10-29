@@ -129,7 +129,7 @@ class MODULES_EXPORT SpeechRecognition final
   String lang_;
   bool continuous_;
   bool interim_results_;
-  unsigned long max_alternatives_;
+  uint32_t max_alternatives_;
 
   Member<SpeechRecognitionController> controller_;
   bool started_;

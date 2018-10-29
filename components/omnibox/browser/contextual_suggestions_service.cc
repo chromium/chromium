@@ -312,7 +312,7 @@ void ContextualSuggestionsService::CreateExperimentalRequest(
   }
 
   // Create the oauth2 token fetcher.
-  const OAuth2TokenService::ScopeSet scopes{
+  const identity::ScopeSet scopes{
       "https://www.googleapis.com/auth/cusco-chrome-extension"};
   token_fetcher_ = std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
       "contextual_suggestions_service", identity_manager_, scopes,

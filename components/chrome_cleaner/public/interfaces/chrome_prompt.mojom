@@ -58,4 +58,14 @@ interface ChromePrompt {
              [MinVersion=1] array<RegistryKey>? registry_keys,
              [MinVersion=2] array<ExtensionId>? extension_ids)
       => (PromptAcceptance prompt_acceptance);
+
+  // Actually uninstalls the extensions.
+  // Params:
+  //  - extension_ids: list of IDs of extensions that will be removed from
+  //        Chrome. If there are any invalid IDs, none are removed and false is
+  //        returned.
+  // Returns:
+  //  - success: indicates if the extension removal was successful.
+  [MinVersion=3] DisableExtensions(array<ExtensionId> extension_ids)
+      => (bool success);
 };

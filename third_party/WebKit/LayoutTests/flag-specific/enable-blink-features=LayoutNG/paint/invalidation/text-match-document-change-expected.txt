@@ -18,19 +18,14 @@
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "NGPhysicalTextFragment 'To be changed: findme (Manual testing:'",
+          "object": "NGPhysicalTextFragment 'After change'",
           "rect": [18, 130, 251, 19],
-          "reason": "disappeared"
+          "reason": "appeared"
         },
         {
           "object": "NGPhysicalTextFragment 'Find-in-page 'findme', then click here)'",
           "rect": [18, 150, 240, 19],
           "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'After change'",
-          "rect": [18, 130, 82, 19],
-          "reason": "appeared"
         },
         {
           "object": "VerticalScrollbar",

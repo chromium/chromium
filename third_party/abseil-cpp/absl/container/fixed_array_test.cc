@@ -27,6 +27,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/internal/exception_testing.h"
+#include "absl/hash/hash_testing.h"
 #include "absl/memory/memory.h"
 
 using ::testing::ElementsAreArray;
@@ -867,4 +868,5 @@ TEST(FixedArrayTest, AddressSanitizerAnnotations4) {
   EXPECT_DEATH(raw[21] = ThreeInts(), "container-overflow");
 }
 #endif  // ADDRESS_SANITIZER
+
 }  // namespace

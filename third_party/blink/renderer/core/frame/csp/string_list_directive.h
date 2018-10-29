@@ -22,7 +22,11 @@ class CORE_EXPORT StringListDirective final : public CSPDirective {
   bool Allows(const String& string_piece);
 
  private:
+  // Determine whether a given string in the string list is valid.
+  static bool IsInvalidStringValue(const String& str);
+
   Vector<String> list_;
+  bool allow_any_;
 };
 
 }  // namespace blink

@@ -13,6 +13,8 @@
         android:gravity="center_vertical"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.OmniboxVerboseStatus"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:visibility="gone" />
 
     <!-- Separator is going to be shown or hidden together with the status defined above. -->
@@ -26,7 +28,7 @@
     <!-- This space follows the verbose status and compliments the space that follows
          the status. -->
     <Space android:id="@+id/location_bar_verbose_status_extra_space"
-        android:layout_width="8dp"
+        android:layout_width="@dimen/location_bar_status_separator_spacer"
         android:layout_height="match_parent"
         android:visibility="gone" />
 

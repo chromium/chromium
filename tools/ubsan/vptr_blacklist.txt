@@ -134,8 +134,3 @@ fun:*forbidGCDuringConstruction*
 # "vptr". See crbug.com/609786.
 
 src:*/third_party/libc\+\+abi/trunk/src/private_typeinfo.cpp
-
-#############################################################################
-# invalid downcasts for IPC messages
-# https://crbug.com/520760
-src:*nacl_message_scanner.cc

@@ -8,6 +8,7 @@
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/browser/frame_host/render_frame_host_delegate.h"
+#include "content/public/browser/file_select_listener.h"
 #include "ipc/ipc_message.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -31,6 +32,13 @@ bool RenderFrameHostDelegate::DidAddMessageToConsole(
     int32_t line_no,
     const base::string16& source_id) {
   return false;
+}
+
+void RenderFrameHostDelegate::RunFileChooser(
+    RenderFrameHost* render_frame_host,
+    std::unique_ptr<FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  listener->FileSelectionCanceled();
 }
 
 WebContents* RenderFrameHostDelegate::GetAsWebContents() {

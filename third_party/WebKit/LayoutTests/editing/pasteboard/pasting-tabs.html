@@ -1,6 +1,8 @@
 <script>
-if (window.testRunner)
-     testRunner.dumpEditingCallbacks();
+if (window.testRunner) {
+    testRunner.dumpEditingCallbacks();
+    testRunner.dumpAsLayoutWithPixelResults();
+}
 </script>
 <p>This tests copying plain text with tabs and pasting it into an editable region using paste and match tyle.  The tabs should be preserved.</p>
 <textarea id="textarea">Tab->	<-Tab</textarea>

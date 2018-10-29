@@ -132,15 +132,16 @@ base::Optional<CORSErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
 
 base::Optional<CORSErrorStatus>
 PreflightResult::EnsureAllowedCrossOriginHeaders(
-    const net::HttpRequestHeaders& headers) const {
+    const net::HttpRequestHeaders& headers,
+    bool is_revalidating) const {
   if (!credentials_ && headers_.find("*") != headers_.end())
     return base::nullopt;
 
   // Forbidden headers are forbidden to be used by JavaScript, and checked
   // beforehand. But user-agents may add these headers internally, and it's
   // fine.
-  for (const auto& name :
-       CORSUnsafeNotForbiddenRequestHeaderNames(headers.GetHeaderVector())) {
+  for (const auto& name : CORSUnsafeNotForbiddenRequestHeaderNames(
+           headers.GetHeaderVector(), is_revalidating)) {
     // Header list check is performed in case-insensitive way. Here, we have a
     // parsed header list set in lower case, and search each header in lower
     // case.
@@ -155,7 +156,8 @@ PreflightResult::EnsureAllowedCrossOriginHeaders(
 bool PreflightResult::EnsureAllowedRequest(
     mojom::FetchCredentialsMode credentials_mode,
     const std::string& method,
-    const net::HttpRequestHeaders& headers) const {
+    const net::HttpRequestHeaders& headers,
+    bool is_revalidating) const {
   if (absolute_expiry_time_ <= Now())
     return false;
 
@@ -167,7 +169,7 @@ bool PreflightResult::EnsureAllowedRequest(
   if (EnsureAllowedCrossOriginMethod(method))
     return false;
 
-  if (EnsureAllowedCrossOriginHeaders(headers))
+  if (EnsureAllowedCrossOriginHeaders(headers, is_revalidating))
     return false;
 
   return true;

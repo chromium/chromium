@@ -11,8 +11,10 @@ assert(is_android)
 cast_shell_android_manifest =
     "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
 
-manifest_variables =
-    [ "cast_build_enable_background_activities=$enable_background_activities" ]
+manifest_variables = [
+  "cast_build_enable_background_activities=$enable_background_activities",
+  "is_android_things_non_public=$is_android_things_non_public",
+]
 
 jinja_template("cast_shell_manifest") {
   input = "apk/AndroidManifest.xml.jinja2"
@@ -108,6 +110,7 @@ android_library("cast_shell_java") {
     "$java_src_dir/org/chromium/chromecast/shell/CastCrashUploader.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastCrashUploaderFactory.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastMetricsHelper.java",
+    "$java_src_dir/org/chromium/chromecast/shell/CastSerialGenerator.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastSysInfoAndroid.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsActivity.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsComponent.java",

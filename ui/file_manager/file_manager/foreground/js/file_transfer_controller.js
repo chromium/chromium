@@ -167,7 +167,7 @@ function FileTransferController(
       queryRequiredElement('command#cut', this.document_));
 
   /**
-   * @private {DirectoryEntry|FakeEntry}
+   * @private {DirectoryEntry|FilesAppDirEntry}
    */
   this.destinationEntry_ = null;
 

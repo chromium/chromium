@@ -9,7 +9,7 @@
 
 namespace blink {
 
-namespace ColorSpaceUtilities {
+namespace color_space_utilities {
 
 ColorSpaceGamut GetColorSpaceGamut(const WebScreenInfo& screen_info) {
   const gfx::ColorSpace& color_space = screen_info.color_space;
@@ -19,7 +19,7 @@ ColorSpaceGamut GetColorSpaceGamut(const WebScreenInfo& screen_info) {
   // wide gamut for HDR profiles).
   skcms_ICCProfile color_profile;
   color_space.GetRasterColorSpace().ToSkColorSpace()->toProfile(&color_profile);
-  return ColorSpaceUtilities::GetColorSpaceGamut(&color_profile);
+  return color_space_utilities::GetColorSpaceGamut(&color_profile);
 }
 
 ColorSpaceGamut GetColorSpaceGamut(const skcms_ICCProfile* color_profile) {
@@ -62,6 +62,6 @@ ColorSpaceGamut GetColorSpaceGamut(const skcms_ICCProfile* color_profile) {
   return ColorSpaceGamut::kUltraWide;
 }
 
-}  // namespace ColorSpaceUtilities
+}  // namespace color_space_utilities
 
 }  // namespace blink

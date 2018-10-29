@@ -11,7 +11,7 @@ namespace automationInternal {
   // the tree update format.
   [nocompile] dictionary AXEventParams {
     // The tree id of the web contents that this update is for.
-    long treeID;
+    DOMString treeID;
 
     // ID of the node that the event applies to.
     long targetID;
@@ -41,7 +41,7 @@ namespace automationInternal {
 
   // Arguments required for all actions supplied to performAction.
   dictionary PerformActionRequiredParams {
-    long treeID;
+    DOMString treeID;
     long automationNodeID;
 
     // This can be either automation::ActionType or
@@ -78,7 +78,7 @@ namespace automationInternal {
 
   // Arguments for the querySelector function.
   dictionary QuerySelectorRequiredParams {
-    long treeID;
+    DOMString treeID;
     long automationNodeID;
     DOMString selector;
   };
@@ -119,7 +119,7 @@ namespace automationInternal {
                           EnableTabCallback callback);
 
     // Enable automation of the frame with the given tree id.
-    static void enableFrame(long tree_id);
+    static void enableFrame(DOMString treeId);
 
     // Enables desktop automation.
     static void enableDesktop(EnableDesktopCallback callback);
@@ -137,19 +137,19 @@ namespace automationInternal {
     // Fired when an accessibility event occurs
     static void onAccessibilityEvent(AXEventParams update);
 
-    static void onAccessibilityTreeDestroyed(long treeID);
+    static void onAccessibilityTreeDestroyed(DOMString treeID);
 
     static void onTreeChange(long observerID,
-                             long treeID,
+                             DOMString treeID,
                              long nodeID,
                              DOMString changeType);
 
-    static void onChildTreeID(long treeID, long nodeID);
+    static void onChildTreeID(DOMString treeID, long nodeID);
 
-    static void onNodesRemoved(long treeID, long[] nodeIDs);
+    static void onNodesRemoved(DOMString treeID, long[] nodeIDs);
 
-    static void onAccessibilityTreeSerializationError(long treeID);
+    static void onAccessibilityTreeSerializationError(DOMString treeID);
 
-    static void onActionResult(long treeID, long requestID, boolean result);
+    static void onActionResult(DOMString treeID, long requestID, boolean result);
   };
 };

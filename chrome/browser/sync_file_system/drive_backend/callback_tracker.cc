@@ -19,8 +19,7 @@ CallbackTracker::~CallbackTracker() {
 void CallbackTracker::AbortAll() {
   AbortClosureByHelper helpers;
   std::swap(helpers, helpers_);
-  for (AbortClosureByHelper::iterator itr = helpers.begin();
-       itr != helpers.end(); ++itr) {
+  for (auto itr = helpers.begin(); itr != helpers.end(); ++itr) {
     delete itr->first;
     itr->second.Run();
   }

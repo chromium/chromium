@@ -28,6 +28,7 @@ public final class TaskIds {
     public static final int DOWNLOAD_RESUMPTION_JOB_ID = 55;
     public static final int FEED_REFRESH_JOB_ID = 22;
     public static final int COMPONENT_UPDATE_JOB_ID = 2;
+    public static final int EXPLORE_SITES_REFRESH_JOB_ID = 100;
 
     private TaskIds() {}
 }

@@ -2,7 +2,6 @@ Test what happens when you set the window's prototype to various values.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS __proto__ = window; __proto__ threw exception TypeError: Immutable prototype object '#<Window>' cannot have their prototype set.
 PASS __proto__ = chainPointingBackToWindow; __proto__ threw exception TypeError: Immutable prototype object '#<Window>' cannot have their prototype set.
 PASS __proto__ = 1; __proto__ is originalWindowPrototype

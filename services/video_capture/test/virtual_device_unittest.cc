@@ -8,9 +8,9 @@
 #include "base/test/mock_callback.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "services/service_manager/public/cpp/service_context_ref.h"
+#include "services/video_capture/public/cpp/mock_producer.h"
+#include "services/video_capture/public/cpp/mock_receiver.h"
 #include "services/video_capture/shared_memory_virtual_device_mojo_adapter.h"
-#include "services/video_capture/test/mock_producer.h"
-#include "services/video_capture/test/mock_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;

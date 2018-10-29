@@ -78,15 +78,6 @@ newSyncEncryptionPassphraseController:(ios::ChromeBrowserState*)browserState
                              delegate:(id<SettingsNavigationControllerDelegate>)
                                           delegate;
 
-// Creates a new ClearBrowsingDataCollectionViewController and the chrome around
-// it.
-// |browserState| is used to personalize some settings aspects and should not be
-// nil. |delegate| may be nil.
-+ (SettingsNavigationController*)
-newClearBrowsingDataController:(ios::ChromeBrowserState*)browserState
-                      delegate:
-                          (id<SettingsNavigationControllerDelegate>)delegate;
-
 // Creates a new SavePasswordsCollectionViewController and the chrome around it.
 // |browserState| is used to personalize some settings aspects and should not be
 // nil. |delegate| may be nil.

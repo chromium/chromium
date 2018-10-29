@@ -2,7 +2,6 @@ Verify that document.scrollingElement doesn't force a style update or layout in 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS internals.needsLayoutCount() is 0
 PASS document.scrollingElement is document.documentElement
 Verifying style update hadn't been triggered
@@ -12,4 +11,5 @@ PASS internals.needsLayoutCount() is 3
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

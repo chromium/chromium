@@ -31,8 +31,9 @@ class OobeConfiguration {
   virtual ~OobeConfiguration();
 
   const base::Value& GetConfiguration() const;
+  bool CheckCompleted() const;
 
-  void AddObserver(Observer* observer);
+  void AddAndFireObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
   void ResetConfiguration();
@@ -49,6 +50,7 @@ class OobeConfiguration {
  private:
   void OnConfigurationCheck(bool has_configuration,
                             const std::string& configuration);
+  void NotifyObservers();
 
   // Pointer to the existing OobeConfiguration instance (if any).
   // Set in ctor, reset in dtor. Not owned since we need to control the lifetime
@@ -62,7 +64,10 @@ class OobeConfiguration {
   // this flag back to false and run CheckConfiguration() to proceed.
   static bool skip_check_for_testing_;
 
-  // Non-null dictionary value with configuration
+  // Tracks if configuration check is completed.
+  bool check_completed_;
+
+  // Non-null dictionary value with configuration.
   std::unique_ptr<base::Value> configuration_;
 
   // Observers

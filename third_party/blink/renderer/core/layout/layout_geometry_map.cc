@@ -196,8 +196,8 @@ void LayoutGeometryMap::PushMappingsToAncestor(
     const LayoutBoxModelObject* ancestor_layout_object) {
   // We need to push mappings in reverse order here, so do insertions rather
   // than appends.
-  base::AutoReset<size_t> position_change(&insertion_position_,
-                                          mapping_.size());
+  base::AutoReset<wtf_size_t> position_change(&insertion_position_,
+                                              mapping_.size());
   do {
     layout_object =
         layout_object->PushMappingToContainer(ancestor_layout_object, *this);
@@ -266,8 +266,8 @@ void LayoutGeometryMap::PushMappingsToAncestor(
       PushMappingsToAncestor(&ancestor_layer->GetLayoutObject(), nullptr);
     }
 
-    base::AutoReset<size_t> position_change(&insertion_position_,
-                                            mapping_.size());
+    base::AutoReset<wtf_size_t> position_change(&insertion_position_,
+                                                mapping_.size());
     bool accumulating_transform =
         layout_object.StyleRef().Preserves3D() ||
         ancestor_layer->GetLayoutObject().StyleRef().Preserves3D();

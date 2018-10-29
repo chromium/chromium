@@ -57,8 +57,8 @@ sort_typeBstar(const sauchar_t *T, saidx_it SA,
   saint_t c0, c1;
 
   /* Initialize bucket arrays. */
-  for(i = 0; i < BUCKET_A_SIZE; ++i) { bucket_A[i] = 0; }
-  for(i = 0; i < BUCKET_B_SIZE; ++i) { bucket_B[i] = 0; }
+  for(i = 0; i < static_cast<saidx_t>(BUCKET_A_SIZE); ++i) { bucket_A[i] = 0; }
+  for(i = 0; i < static_cast<saidx_t>(BUCKET_B_SIZE); ++i) { bucket_B[i] = 0; }
 
   /* Count the number of occurrences of the first one or two characters of each
      type A, B and B* suffix. Moreover, store the beginning position of all
@@ -84,11 +84,11 @@ note:
 */
 
   /* Calculate the index of start/end point of each bucket. */
-  for(c0 = 0, i = 0, j = 0; c0 < ALPHABET_SIZE; ++c0) {
+  for(c0 = 0, i = 0, j = 0; c0 < static_cast<saint_t>(ALPHABET_SIZE); ++c0) {
     t = i + BUCKET_A(c0);
     BUCKET_A(c0) = i + j; /* start point */
     i = t + BUCKET_B(c0, c0);
-    for(c1 = c0 + 1; c1 < ALPHABET_SIZE; ++c1) {
+    for(c1 = c0 + 1; c1 < static_cast<saint_t>(ALPHABET_SIZE); ++c1) {
       j += BUCKET_BSTAR(c0, c1);
       BUCKET_BSTAR(c0, c1) = j; /* end point */
       i += BUCKET_B(c0, c1);

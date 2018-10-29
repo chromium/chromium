@@ -4,6 +4,8 @@
 
 #include "content/public/test/cache_test_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
 #include "net/url_request/url_request_context.h"
@@ -19,8 +21,8 @@ CacheTestUtil::CacheTestUtil(content::StoragePartition* partition)
   waitable_event_ = std::make_unique<base::WaitableEvent>(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CacheTestUtil::SetUpOnIOThread, base::Unretained(this)));
   WaitForTasksOnIOThread();
 }
@@ -28,15 +30,15 @@ CacheTestUtil::CacheTestUtil(content::StoragePartition* partition)
 CacheTestUtil::~CacheTestUtil() {
   // The cache iterator must be deleted on the thread where it was created,
   // which is the IO thread.
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&CacheTestUtil::TearDownOnIOThread,
-                                         base::Unretained(this)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&CacheTestUtil::TearDownOnIOThread,
+                                          base::Unretained(this)));
   WaitForTasksOnIOThread();
 }
 
 void CacheTestUtil::CreateCacheEntries(const std::set<std::string>& keys) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CacheTestUtil::CreateCacheEntriesOnIOThread,
                      base::Unretained(this), base::ConstRef(keys)));
   WaitForTasksOnIOThread();
@@ -113,9 +115,10 @@ void CacheTestUtil::DoneCallback(int value) {
 // Check cache content.
 std::vector<std::string> CacheTestUtil::GetEntryKeys() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&CacheTestUtil::GetEntryKeysOnIOThread,
-                                         base::Unretained(this)));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce(&CacheTestUtil::GetEntryKeysOnIOThread,
+                     base::Unretained(this)));
   WaitForTasksOnIOThread();
   return keys_;
 }

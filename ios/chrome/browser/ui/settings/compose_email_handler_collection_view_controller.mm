@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/compose_email_handler_collection_view_controller.h"
 
 #include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_text_item.h"
 #import "ios/chrome/browser/web/mailto_handler.h"
 #import "ios/chrome/browser/web/mailto_handler_manager.h"
@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // When this switch is ON, the user wants to be prompted for which Mail
   // client app to use, so the list of available Mail client apps should be
   // disabled (grayed out).
-  SettingsSwitchItem* _alwaysAskItem;
+  LegacySettingsSwitchItem* _alwaysAskItem;
 }
 
 // Returns the MailtoHandler at |indexPath|. Returns nil if |indexPath| falls
@@ -97,7 +97,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // prompt for selection of Mail client app.
   [model addSectionWithIdentifier:SectionIdentifierAlwaysAsk];
   _alwaysAskItem =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeAlwaysAskSwitch];
+      [[LegacySettingsSwitchItem alloc] initWithType:ItemTypeAlwaysAskSwitch];
   _alwaysAskItem.text = l10n_util::GetNSString(IDS_IOS_CHOOSE_EMAIL_ASK_TOGGLE);
   _alwaysAskItem.on = currentHandlerID == nil;
   [model addItem:_alwaysAskItem
@@ -178,8 +178,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSInteger itemType =
       [self.collectionViewModel itemTypeForIndexPath:indexPath];
   if (itemType == ItemTypeAlwaysAskSwitch) {
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    LegacySettingsSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(didToggleAlwaysAskSwitch:)
                     forControlEvents:UIControlEventValueChanged];

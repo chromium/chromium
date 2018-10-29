@@ -4,7 +4,9 @@
 
 #include "content/browser/gpu/video_capture_dependencies.h"
 
+#include "base/task/post_task.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -13,8 +15,8 @@ namespace content {
 void VideoCaptureDependencies::CreateJpegDecodeAccelerator(
     media::mojom::JpegDecodeAcceleratorRequest accelerator) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&VideoCaptureDependencies::CreateJpegDecodeAccelerator,
                        std::move(accelerator)));
     return;
@@ -33,8 +35,8 @@ void VideoCaptureDependencies::CreateJpegDecodeAccelerator(
 void VideoCaptureDependencies::CreateJpegEncodeAccelerator(
     media::mojom::JpegEncodeAcceleratorRequest accelerator) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&VideoCaptureDependencies::CreateJpegEncodeAccelerator,
                        std::move(accelerator)));
     return;

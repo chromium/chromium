@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600 scrollWidth 2008
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutBlockFlow {DIV} at (0,0) size 784x154
-        LayoutBlockFlow (floating) {DIV} at (700,0) size 84x104 [bgcolor=#008000] [border: (2px solid #808000)]
-        LayoutImage {IMG} at (0,104) size 2000x50 [bgcolor=#FFA500]
-        LayoutText {#text} at (0,0) size 0x0

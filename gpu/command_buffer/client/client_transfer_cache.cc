@@ -13,24 +13,79 @@ ClientTransferCache::~ClientTransferCache() = default;
 void* ClientTransferCache::MapEntry(MappedMemoryManager* mapped_memory,
                                     size_t size) {
   DCHECK(!mapped_ptr_);
+  DCHECK(!transfer_buffer_ptr_);
   mapped_ptr_.emplace(size, client_->cmd_buffer_helper(), mapped_memory);
   if (!mapped_ptr_->valid()) {
     mapped_ptr_ = base::nullopt;
     return nullptr;
-  } else {
-    return mapped_ptr_->address();
   }
+  return mapped_ptr_->address();
+}
+
+void* ClientTransferCache::MapTransferBufferEntry(
+    TransferBufferInterface* transfer_buffer,
+    size_t size) {
+  DCHECK(!mapped_ptr_);
+  DCHECK(!transfer_buffer_ptr_);
+  transfer_buffer_ptr_.emplace(size, client_->cmd_buffer_helper(),
+                               transfer_buffer);
+  if (!transfer_buffer_ptr_->valid()) {
+    transfer_buffer_ptr_ = base::nullopt;
+    return nullptr;
+  }
+  return transfer_buffer_ptr_->address();
 }
 
 void ClientTransferCache::UnmapAndCreateEntry(uint32_t type, uint32_t id) {
-  DCHECK(mapped_ptr_);
   EntryKey key(type, id);
 
   base::AutoLock hold(lock_);
+  auto handle = CreateDiscardableHandle(key);
+  if (!handle.IsValid())
+    return;
+
+  if (mapped_ptr_) {
+    DCHECK(!transfer_buffer_ptr_);
+    client_->IssueCreateTransferCacheEntry(
+        type, id, handle.shm_id(), handle.byte_offset(), mapped_ptr_->shm_id(),
+        mapped_ptr_->offset(), mapped_ptr_->size());
+    mapped_ptr_ = base::nullopt;
+  } else {
+    DCHECK(!mapped_ptr_);
+    client_->IssueCreateTransferCacheEntry(
+        type, id, handle.shm_id(), handle.byte_offset(),
+        transfer_buffer_ptr_->shm_id(), transfer_buffer_ptr_->offset(),
+        transfer_buffer_ptr_->size());
+    transfer_buffer_ptr_ = base::nullopt;
+  }
+}
+
+void ClientTransferCache::AddTransferCacheEntry(uint32_t type,
+                                                uint32_t id,
+                                                uint32_t shm_id,
+                                                uint32_t shm_offset,
+                                                size_t size) {
+  DCHECK(!mapped_ptr_);
+  EntryKey key(type, id);
+
+  base::AutoLock hold(lock_);
+  auto handle = CreateDiscardableHandle(key);
+  if (!handle.IsValid())
+    return;
+
+  client_->IssueCreateTransferCacheEntry(type, id, handle.shm_id(),
+                                         handle.byte_offset(), shm_id,
+                                         shm_offset, size);
+}
+
+ClientDiscardableHandle ClientTransferCache::CreateDiscardableHandle(
+    const EntryKey& key) {
+  lock_.AssertAcquired();
+
   ClientDiscardableHandle::Id discardable_handle_id =
       discardable_manager_.CreateHandle(client_->command_buffer());
   if (discardable_handle_id.is_null())
-    return;
+    return ClientDiscardableHandle();
 
   // We must have a valid handle here, since the id was generated above and
   // should be in locked state.
@@ -41,11 +96,7 @@ void ClientTransferCache::UnmapAndCreateEntry(uint32_t type, uint32_t id) {
   // transfer cache discardable_handle_id.
   DCHECK(FindDiscardableHandleId(key).is_null());
   discardable_handle_id_map_.emplace(key, discardable_handle_id);
-
-  client_->IssueCreateTransferCacheEntry(
-      type, id, handle.shm_id(), handle.byte_offset(), mapped_ptr_->shm_id(),
-      mapped_ptr_->offset(), mapped_ptr_->size());
-  mapped_ptr_ = base::nullopt;
+  return handle;
 }
 
 bool ClientTransferCache::LockEntry(uint32_t type, uint32_t id) {

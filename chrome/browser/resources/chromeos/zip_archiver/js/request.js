@@ -41,15 +41,15 @@ unpacker.request = {
     COMPRESSOR_ID: 'compressor_id',  // Should be an int.
 
     // Optional keys unique to packing operations.
-    ENTRY_ID: 'entry_id',                    // Should be an int.
-    PATHNAME: 'pathname',                    // should be a string.
-    FILE_SIZE: 'file_size',                  // should be a string. Same reason
-                                             // as ARCHIVE_SIZE.
-    IS_DIRECTORY: 'is_directory',            // should be a boolean.
-    MODIFICATION_TIME: 'modification_time',  // should be a string.
-                                             // (mm/dd/yy h:m:s)
-    HAS_ERROR: 'has_error',                  // Should be a boolean Sent from JS
-                                             // to NaCL.
+    ENTRY_ID: 'entry_id',          // Should be an int.
+    PATHNAME: 'pathname',          // should be a string.
+    FILE_SIZE: 'file_size',        // should be a string. Same reason
+                                   // as ARCHIVE_SIZE.
+    IS_DIRECTORY: 'is_directory',  // should be a boolean.
+    // Local time in milliseconds since UNIX epoch, as a string.
+    MODIFICATION_TIME: 'modification_time',
+    HAS_ERROR: 'has_error',  // Should be a boolean Sent from JS
+                             // to NaCL.
 
     // Optional keys used for both packing and unpacking operations.
     ERROR: 'error',                // Should be a string.

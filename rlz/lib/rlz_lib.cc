@@ -353,6 +353,14 @@ bool SetAccessPointRlz(AccessPoint point, const char* new_rlz) {
   return store->WriteAccessPointRlz(point, normalized_rlz);
 }
 
+bool UpdateExistingAccessPointRlz(const std::string& brand) {
+  ScopedRlzValueStoreLock lock;
+  RlzValueStore* store = lock.GetStore();
+  if (!store || !store->HasAccess(RlzValueStore::kWriteAccess))
+    return false;
+  return store->UpdateExistingAccessPointRlz(brand);
+}
+
 // Financial Server pinging functions.
 
 bool FormFinancialPingRequest(Product product, const AccessPoint* access_points,

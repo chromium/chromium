@@ -42,7 +42,7 @@ namespace blink {
 AudioBuffer* AudioBuffer::Create(unsigned number_of_channels,
                                  size_t number_of_frames,
                                  float sample_rate) {
-  if (!AudioUtilities::IsValidAudioBufferSampleRate(sample_rate) ||
+  if (!audio_utilities::IsValidAudioBufferSampleRate(sample_rate) ||
       number_of_channels > BaseAudioContext::MaxNumberOfChannels() ||
       !number_of_channels || !number_of_frames)
     return nullptr;
@@ -71,14 +71,14 @@ AudioBuffer* AudioBuffer::Create(unsigned number_of_channels,
     return nullptr;
   }
 
-  if (!AudioUtilities::IsValidAudioBufferSampleRate(sample_rate)) {
+  if (!audio_utilities::IsValidAudioBufferSampleRate(sample_rate)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         ExceptionMessages::IndexOutsideRange(
             "sample rate", sample_rate,
-            AudioUtilities::MinAudioBufferSampleRate(),
+            audio_utilities::MinAudioBufferSampleRate(),
             ExceptionMessages::kInclusiveBound,
-            AudioUtilities::MaxAudioBufferSampleRate(),
+            audio_utilities::MaxAudioBufferSampleRate(),
             ExceptionMessages::kInclusiveBound));
     return nullptr;
   }
@@ -114,7 +114,7 @@ AudioBuffer* AudioBuffer::Create(const AudioBufferOptions& options,
 AudioBuffer* AudioBuffer::CreateUninitialized(unsigned number_of_channels,
                                               size_t number_of_frames,
                                               float sample_rate) {
-  if (!AudioUtilities::IsValidAudioBufferSampleRate(sample_rate) ||
+  if (!audio_utilities::IsValidAudioBufferSampleRate(sample_rate) ||
       number_of_channels > BaseAudioContext::MaxNumberOfChannels() ||
       !number_of_channels || !number_of_frames)
     return nullptr;

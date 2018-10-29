@@ -277,8 +277,8 @@ bool SyncExtensionHelper::ExtensionStatesMatch(
     return false;
   }
 
-  ExtensionStateMap::const_iterator it1 = state_map1.begin();
-  ExtensionStateMap::const_iterator it2 = state_map2.begin();
+  auto it1 = state_map1.begin();
+  auto it2 = state_map2.begin();
   while (it1 != state_map1.end()) {
     if (it1->first != it2->first) {
       DVLOG(1) << "Extensions for profile " << profile1->GetDebugName()
@@ -412,7 +412,7 @@ scoped_refptr<Extension> SyncExtensionHelper::GetExtension(
     ADD_FAILURE();
     return nullptr;
   }
-  ProfileExtensionNameMap::iterator it = profile_extensions_.find(profile);
+  auto it = profile_extensions_.find(profile);
   if (it == profile_extensions_.end()) {
     ADD_FAILURE();
     return nullptr;

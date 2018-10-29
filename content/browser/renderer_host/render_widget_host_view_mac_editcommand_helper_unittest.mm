@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #include "base/mac/scoped_nsautorelease_pool.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/gpu/compositor_util.h"
@@ -104,7 +104,7 @@ class RenderWidgetHostViewMacEditCommandHelperTest : public PlatformTest {
   void TearDown() override { ImageTransportFactory::Terminate(); }
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
 };
 
 class RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest

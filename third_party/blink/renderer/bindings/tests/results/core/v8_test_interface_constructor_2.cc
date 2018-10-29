@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -63,7 +63,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterfaceConstructor2V8Internal {
+namespace test_interface_constructor_2_v8_internal {
 
 static void constructor1(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConstructor2_ConstructorCallback");
@@ -138,7 +138,7 @@ static void constructor4(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   }
 
-  longArg = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), info[1], exceptionState, kNormalConversion);
+  longArg = NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), info[1], exceptionState);
   if (exceptionState.HadException())
     return;
 
@@ -183,11 +183,11 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
   switch (std::min(6, info.Length())) {
     case 1:
       if (info[0]->IsArray()) {
-        TestInterfaceConstructor2V8Internal::constructor3(info);
+        test_interface_constructor_2_v8_internal::constructor3(info);
         return;
       }
       if (HasCallableIteratorSymbol(info.GetIsolate(), info[0], exceptionState)) {
-        TestInterfaceConstructor2V8Internal::constructor3(info);
+        test_interface_constructor_2_v8_internal::constructor3(info);
         return;
       }
       if (exceptionState.HadException()) {
@@ -195,41 +195,41 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
         return;
       }
       if (info[0]->IsObject()) {
-        TestInterfaceConstructor2V8Internal::constructor2(info);
+        test_interface_constructor_2_v8_internal::constructor2(info);
         return;
       }
       if (true) {
-        TestInterfaceConstructor2V8Internal::constructor1(info);
+        test_interface_constructor_2_v8_internal::constructor1(info);
         return;
       }
       break;
     case 2:
       if (true) {
-        TestInterfaceConstructor2V8Internal::constructor4(info);
+        test_interface_constructor_2_v8_internal::constructor4(info);
         return;
       }
       break;
     case 3:
       if (true) {
-        TestInterfaceConstructor2V8Internal::constructor4(info);
+        test_interface_constructor_2_v8_internal::constructor4(info);
         return;
       }
       break;
     case 4:
       if (true) {
-        TestInterfaceConstructor2V8Internal::constructor4(info);
+        test_interface_constructor_2_v8_internal::constructor4(info);
         return;
       }
       break;
     case 5:
       if (true) {
-        TestInterfaceConstructor2V8Internal::constructor4(info);
+        test_interface_constructor_2_v8_internal::constructor4(info);
         return;
       }
       break;
     case 6:
       if (true) {
-        TestInterfaceConstructor2V8Internal::constructor4(info);
+        test_interface_constructor_2_v8_internal::constructor4(info);
         return;
       }
       break;
@@ -240,7 +240,7 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
   exceptionState.ThrowTypeError("No matching constructor signature.");
 }
 
-} // namespace TestInterfaceConstructor2V8Internal
+}  // namespace test_interface_constructor_2_v8_internal
 
 void V8TestInterfaceConstructor2::constructorCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceConstructor2_Constructor");
@@ -255,7 +255,7 @@ void V8TestInterfaceConstructor2::constructorCallback(const v8::FunctionCallback
     return;
   }
 
-  TestInterfaceConstructor2V8Internal::constructor(info);
+  test_interface_constructor_2_v8_internal::constructor(info);
 }
 
 static void installV8TestInterfaceConstructor2Template(

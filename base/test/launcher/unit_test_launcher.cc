@@ -249,7 +249,7 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
 
   MessageLoopForIO message_loop;
 #if defined(OS_POSIX)
-  FileDescriptorWatcher file_descriptor_watcher(&message_loop);
+  FileDescriptorWatcher file_descriptor_watcher(message_loop.task_runner());
 #endif
 
   DefaultUnitTestPlatformDelegate platform_delegate;
@@ -296,17 +296,17 @@ bool ProcessTestResults(
     // TODO(phajdan.jr): Check for duplicates and mismatches between
     // the results we got from XML file and tests we intended to run.
     std::map<std::string, TestResult> results_map;
-    for (size_t i = 0; i < test_results.size(); i++)
-      results_map[test_results[i].full_name] = test_results[i];
+    for (const auto& i : test_results)
+      results_map[i.full_name] = i;
 
     bool had_interrupted_test = false;
 
     // Results to be reported back to the test launcher.
     std::vector<TestResult> final_results;
 
-    for (size_t i = 0; i < test_names.size(); i++) {
-      if (ContainsKey(results_map, test_names[i])) {
-        TestResult test_result = results_map[test_names[i]];
+    for (const auto& i : test_names) {
+      if (ContainsKey(results_map, i)) {
+        TestResult test_result = results_map[i];
         if (test_result.status == TestResult::TEST_CRASH) {
           had_interrupted_test = true;
 
@@ -331,13 +331,13 @@ bool ProcessTestResults(
         test_result.output_snippet = GetTestOutputSnippet(test_result, output);
         final_results.push_back(test_result);
       } else if (had_interrupted_test) {
-        tests_to_relaunch->push_back(test_names[i]);
+        tests_to_relaunch->push_back(i);
       } else {
         // TODO(phajdan.jr): Explicitly pass the info that the test didn't
         // run for a mysterious reason.
-        LOG(ERROR) << "no test result for " << test_names[i];
+        LOG(ERROR) << "no test result for " << i;
         TestResult test_result;
-        test_result.full_name = test_names[i];
+        test_result.full_name = i;
         test_result.status = TestResult::TEST_UNKNOWN;
         test_result.output_snippet = GetTestOutputSnippet(test_result, output);
         final_results.push_back(test_result);
@@ -351,8 +351,8 @@ bool ProcessTestResults(
       return false;
 
     bool has_non_success_test = false;
-    for (size_t i = 0; i < final_results.size(); i++) {
-      if (final_results[i].status != TestResult::TEST_SUCCESS) {
+    for (const auto& i : final_results) {
+      if (i.status != TestResult::TEST_SUCCESS) {
         has_non_success_test = true;
         break;
       }
@@ -363,15 +363,14 @@ bool ProcessTestResults(
       // but the exit code was not zero. This can happen e.g. under memory
       // tools that report leaks this way. Mark all tests as a failure on exit,
       // and for more precise info they'd need to be retried serially.
-      for (size_t i = 0; i < final_results.size(); i++)
-        final_results[i].status = TestResult::TEST_FAILURE_ON_EXIT;
+      for (auto& i : final_results)
+        i.status = TestResult::TEST_FAILURE_ON_EXIT;
     }
 
-    for (size_t i = 0; i < final_results.size(); i++) {
+    for (auto& i : final_results) {
       // Fix the output snippet after possible changes to the test result.
-      final_results[i].output_snippet =
-          GetTestOutputSnippet(final_results[i], output);
-      test_launcher->OnTestFinished(final_results[i]);
+      i.output_snippet = GetTestOutputSnippet(i, output);
+      test_launcher->OnTestFinished(i);
       called_any_callback = true;
     }
   } else {
@@ -721,8 +720,8 @@ size_t UnitTestLauncherDelegate::RunTests(
   int launch_flags = use_job_objects_ ? TestLauncher::USE_JOB_OBJECTS : 0;
 
   std::vector<std::string> batch;
-  for (size_t i = 0; i < test_names.size(); i++) {
-    batch.push_back(test_names[i]);
+  for (const auto& i : test_names) {
+    batch.push_back(i);
 
     // Use 0 to indicate unlimited batch size.
     if (batch.size() >= batch_limit_ && batch_limit_ != 0) {

@@ -68,7 +68,7 @@ TEST(HttpRequestHeaders, SetEmptyHeader) {
   HttpRequestHeaders headers;
   headers.SetHeader("Foo", "Bar");
   headers.SetHeader("Bar", "");
-  EXPECT_EQ("Foo: Bar\r\nBar:\r\n\r\n", headers.ToString());
+  EXPECT_EQ("Foo: Bar\r\nBar: \r\n\r\n", headers.ToString());
 }
 
 TEST(HttpRequestHeaders, SetHeaderIfMissing) {
@@ -134,13 +134,13 @@ TEST(HttpRequestHeaders, AddHeaderFromStringLeadingTrailingWhitespace) {
 TEST(HttpRequestHeaders, AddHeaderFromStringWithEmptyValue) {
   HttpRequestHeaders headers;
   headers.AddHeaderFromString("Foo:");
-  EXPECT_EQ("Foo:\r\n\r\n", headers.ToString());
+  EXPECT_EQ("Foo: \r\n\r\n", headers.ToString());
 }
 
 TEST(HttpRequestHeaders, AddHeaderFromStringWithWhitespaceValue) {
   HttpRequestHeaders headers;
   headers.AddHeaderFromString("Foo: ");
-  EXPECT_EQ("Foo:\r\n\r\n", headers.ToString());
+  EXPECT_EQ("Foo: \r\n\r\n", headers.ToString());
 }
 
 TEST(HttpRequestHeaders, MergeFrom) {

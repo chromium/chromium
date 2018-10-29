@@ -6,8 +6,10 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -31,20 +33,20 @@ WebContents* DownloadRequestHandle::GetWebContents() const {
 }
 
 void DownloadRequestHandle::PauseRequest() {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&DownloadResourceHandler::PauseRequest, handler_));
 }
 
 void DownloadRequestHandle::ResumeRequest() {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&DownloadResourceHandler::ResumeRequest, handler_));
 }
 
 void DownloadRequestHandle::CancelRequest(bool user_cancel) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&DownloadResourceHandler::CancelRequest, handler_));
 }
 

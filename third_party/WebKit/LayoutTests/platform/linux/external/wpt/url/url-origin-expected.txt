@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 302 tests; 295 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 303 tests; 296 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -93,6 +93,7 @@ PASS Origin parsing: </a/%2f/c> against <http://example.org/foo/bar>
 PASS Origin parsing: <#β> against <http://example.org/foo/bar>
 PASS Origin parsing: <data:text/html,test#test> against <http://example.org/foo/bar>
 PASS Origin parsing: <tel:1234567890> against <http://example.org/foo/bar>
+PASS Origin parsing: <ssh://example.com/foo/bar.git> against <http://example.org/>
 PASS Origin parsing: <http://example.com/././foo> against <about:blank>
 PASS Origin parsing: <http://example.com/./.foo> against <about:blank>
 PASS Origin parsing: <http://example.com/foo/.> against <about:blank>

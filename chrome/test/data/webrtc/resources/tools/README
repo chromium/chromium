@@ -1,8 +1,3 @@
 The files in this directory are downloaded from gs://chrome-webrtc-resources,
 which is a google-internal bucket. The files in .. are downloaded from
 gs://chromium-webrtc-resources, which is public.
-
-About PESQ:
-The PESQ version is the http://www.itu.int/rec/T-REC-P.862-200511-I!Amd2/en.
-Don't download the 02/01 version which prints its results differently; that
-will not work with the test which expects a raw MOS and MOS-LQO number.

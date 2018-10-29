@@ -1,8 +1,8 @@
  test
+
 This tests that the aria-label attribute works. The input and the A tag should return the appropriate description.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS succeeded is true
 PASS succeeded is true

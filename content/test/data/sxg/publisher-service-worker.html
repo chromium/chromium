@@ -1,0 +1,13 @@
+<script>
+async function register(script, scope) {
+  const registration = await navigator.serviceWorker.register(
+      script, {scope: scope})
+  await new Promise(resolve =>
+    registration.installing.addEventListener('statechange', resolve));
+}
+async function initialize() {
+  await register('publisher-service-worker.js', './');
+  document.title = "Done";
+}
+initialize();
+</script>

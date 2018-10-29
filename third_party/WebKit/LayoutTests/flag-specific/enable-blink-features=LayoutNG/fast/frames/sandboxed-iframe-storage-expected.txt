@@ -35,4 +35,3 @@ PASS window.openDatabase('SandboxedIframeStorageAllowed', '1.0', '', 1) != null 
 PASS window.localStorage != null is true
 PASS window.sessionStorage != null is true
 PASS document.cookie != null is true
-

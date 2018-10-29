@@ -61,7 +61,7 @@ TEST(InputFileParsersTest, ParseJSON) {
   EXPECT_TRUE(ParseJSON(valid, &entries, &pinsets));
 
   ASSERT_EQ(1U, pinsets.size());
-  PinsetMap::const_iterator pinset = pinsets.pinsets().find("test");
+  auto pinset = pinsets.pinsets().find("test");
   ASSERT_NE(pinset, pinsets.pinsets().cend());
   EXPECT_EQ("test", pinset->second->name());
   EXPECT_EQ("https://hpkp-log.example.com", pinset->second->report_uri());

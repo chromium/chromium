@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_mask_element.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
@@ -49,11 +50,7 @@ sk_sp<const PaintRecord> LayoutSVGResourceMasker::CreatePaintRecord(
     AffineTransform& content_transformation,
     const FloatRect& target_bounding_box,
     GraphicsContext& context) {
-  SVGUnitTypes::SVGUnitType content_units = ToSVGMaskElement(GetElement())
-                                                ->maskContentUnits()
-                                                ->CurrentValue()
-                                                ->EnumValue();
-  if (content_units == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
+  if (MaskContentUnits() == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
     content_transformation.Translate(target_bounding_box.X(),
                                      target_bounding_box.Y());
     content_transformation.ScaleNonUniform(target_bounding_box.Width(),
@@ -98,16 +95,27 @@ void LayoutSVGResourceMasker::CalculateMaskContentVisualRect() {
   }
 }
 
+SVGUnitTypes::SVGUnitType LayoutSVGResourceMasker::MaskUnits() const {
+  return ToSVGMaskElement(GetElement())
+      ->maskUnits()
+      ->CurrentValue()
+      ->EnumValue();
+}
+
+SVGUnitTypes::SVGUnitType LayoutSVGResourceMasker::MaskContentUnits() const {
+  return ToSVGMaskElement(GetElement())
+      ->maskContentUnits()
+      ->CurrentValue()
+      ->EnumValue();
+}
+
 FloatRect LayoutSVGResourceMasker::ResourceBoundingBox(
-    const LayoutObject* object) {
+    const FloatRect& reference_box) {
   SVGMaskElement* mask_element = ToSVGMaskElement(GetElement());
   DCHECK(mask_element);
 
-  FloatRect object_bounding_box = object->ObjectBoundingBox();
-  FloatRect mask_boundaries =
-      SVGLengthContext::ResolveRectangle<SVGMaskElement>(
-          mask_element, mask_element->maskUnits()->CurrentValue()->EnumValue(),
-          object_bounding_box);
+  FloatRect mask_boundaries = SVGLengthContext::ResolveRectangle(
+      mask_element, MaskUnits(), reference_box);
 
   // Resource was not layouted yet. Give back clipping rect of the mask.
   if (SelfNeedsLayout())
@@ -117,12 +125,10 @@ FloatRect LayoutSVGResourceMasker::ResourceBoundingBox(
     CalculateMaskContentVisualRect();
 
   FloatRect mask_rect = mask_content_boundaries_;
-  if (mask_element->maskContentUnits()->CurrentValue()->Value() ==
-      SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
+  if (MaskContentUnits() == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
     AffineTransform transform;
-    transform.Translate(object_bounding_box.X(), object_bounding_box.Y());
-    transform.ScaleNonUniform(object_bounding_box.Width(),
-                              object_bounding_box.Height());
+    transform.Translate(reference_box.X(), reference_box.Y());
+    transform.ScaleNonUniform(reference_box.Width(), reference_box.Height());
     mask_rect = transform.MapRect(mask_rect);
   }
 

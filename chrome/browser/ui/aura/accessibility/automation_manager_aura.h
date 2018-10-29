@@ -24,41 +24,36 @@ template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace views {
 class AXAuraObjWrapper;
 class View;
 }  // namespace views
 
-using AuraAXTreeSerializer =
-    ui::AXTreeSerializer<views::AXAuraObjWrapper*,
-                         ui::AXNodeData,
-                         ui::AXTreeData>;
+using AuraAXTreeSerializer = ui::
+    AXTreeSerializer<views::AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData>;
 
 struct ExtensionMsg_AccessibilityEventBundleParams;
 
 // Manages a tree of automation nodes.
 class AutomationManagerAura : public ui::AXHostDelegate,
-                              views::AXAuraObjCache::Delegate {
+                              public views::AXAuraObjCache::Delegate {
  public:
   // Get the single instance of this class.
   static AutomationManagerAura* GetInstance();
 
   // Enable automation support for views.
-  void Enable(content::BrowserContext* context);
+  void Enable();
 
   // Disable automation support for views.
   void Disable();
 
   // Handle an event fired upon a |View|.
-  void HandleEvent(content::BrowserContext* context,
-                   views::View* view,
-                   ax::mojom::Event event_type);
+  void HandleEvent(views::View* view, ax::mojom::Event event_type);
 
-  void HandleAlert(content::BrowserContext* context, const std::string& text);
+  // Handle an event fired upon the root view.
+  void HandleEvent(ax::mojom::Event event_type);
+
+  void HandleAlert(const std::string& text);
 
   // AXHostDelegate implementation.
   void PerformAction(const ui::AXActionData& data) override;
@@ -89,8 +84,7 @@ class AutomationManagerAura : public ui::AXHostDelegate,
   // serializer to save memory.
   void Reset(bool reset_serializer);
 
-  void SendEvent(content::BrowserContext* context,
-                 views::AXAuraObjWrapper* aura_obj,
+  void SendEvent(views::AXAuraObjWrapper* aura_obj,
                  ax::mojom::Event event_type);
 
   void PerformHitTest(const ui::AXActionData& data);

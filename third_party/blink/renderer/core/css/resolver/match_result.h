@@ -36,7 +36,7 @@ namespace blink {
 class CSSPropertyValueSet;
 
 struct CORE_EXPORT MatchedProperties {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   MatchedProperties();

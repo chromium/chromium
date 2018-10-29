@@ -8,16 +8,18 @@
 
 #include "base/bind.h"
 #include "base/stl_util.h"
+#include "base/task/post_task.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/background_sync_service_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
 
 BackgroundSyncContext::BackgroundSyncContext()
     : base::RefCountedDeleteOnSequence<BackgroundSyncContext>(
-          BrowserThread::GetTaskRunnerForThread(BrowserThread::IO)) {}
+          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})) {}
 
 BackgroundSyncContext::~BackgroundSyncContext() {
   // The destructor must run on the IO thread because it implicitly accesses
@@ -32,24 +34,24 @@ void BackgroundSyncContext::Init(
     const scoped_refptr<ServiceWorkerContextWrapper>& context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&BackgroundSyncContext::CreateBackgroundSyncManager, this,
                      context));
 }
 
 void BackgroundSyncContext::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&BackgroundSyncContext::ShutdownOnIO, this));
 }
 
 void BackgroundSyncContext::CreateService(
     blink::mojom::BackgroundSyncServiceRequest request) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&BackgroundSyncContext::CreateServiceOnIOThread, this,
                      std::move(request)));
 }

@@ -4,53 +4,24 @@
 
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/search.h"
-#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/prefs/pref_service.h"
-#include "components/search/search.h"
-#include "components/url_formatter/url_formatter.h"
-#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/buildflags/buildflags.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/api/commands/command_service.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension_set.h"
-#endif
-
-#if defined(TOOLKIT_VIEWS)
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/paint_vector_icon.h"
-#endif
-
-#if defined(OS_WIN)
-#include "ui/base/material_design/material_design_controller.h"
-#include "ui/base/resource/resource_bundle.h"
-#endif
+#include "url/gurl.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;

@@ -202,7 +202,7 @@ class MediaControlsOrientationLockDelegateTest
 
   void SimulateEnterFullscreen() {
     std::unique_ptr<UserGestureIndicator> gesture =
-        Frame::NotifyUserActivation(GetDocument().GetFrame());
+        LocalFrame::NotifyUserActivation(GetDocument().GetFrame());
     Fullscreen::RequestFullscreen(Video());
     test::RunPendingTasks();
   }
@@ -405,7 +405,7 @@ class MediaControlsOrientationLockAndRotateToFullscreenDelegateTest
   void PlayVideo() {
     {
       std::unique_ptr<UserGestureIndicator> gesture =
-          Frame::NotifyUserActivation(GetDocument().GetFrame());
+          LocalFrame::NotifyUserActivation(GetDocument().GetFrame());
       Video().Play();
     }
     test::RunPendingTasks();

@@ -65,7 +65,7 @@ std::string CreateSortKey(const autofill::PasswordForm& form) {
            kSortKeyPartsSeparator + base::UTF16ToUTF8(form.password_value);
 
     key += kSortKeyPartsSeparator;
-    if (!form.federation_origin.unique())
+    if (!form.federation_origin.opaque())
       key += form.federation_origin.host();
     else
       key += kSortKeyNoFederationSymbol;

@@ -210,7 +210,6 @@ void StorageMonitorCros::OnMountEvent(
   switch (event) {
     case DiskMountManager::MOUNTING: {
       if (base::ContainsKey(mount_map_, mount_info.mount_path)) {
-        NOTREACHED();
         return;
       }
 

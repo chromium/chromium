@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.preferences.password;
 
 import org.chromium.base.Callback;
+import org.chromium.base.IntStringCallback;
 
 /**
  * Interface for retrieving passwords and password exceptions (websites for which Chrome should not
@@ -69,9 +70,9 @@ public interface PasswordManagerHandler {
      *
      * @param targetPath is the file to which the serialized passwords should be written.
      * @param successCallback is called on successful completion, with the count of the serialized
-     * passwords as argument.
+     * passwords and the path to the file containing them as argument.
      * @param errorCallback is called on failure, with the error message as argument.
      */
     void serializePasswords(
-            String targetPath, Callback<Integer> successCallback, Callback<String> errorCallback);
+            String targetPath, IntStringCallback successCallback, Callback<String> errorCallback);
 }

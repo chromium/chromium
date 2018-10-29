@@ -12,6 +12,10 @@
 namespace arc {
 
 const char kContentFileSystemMountPointName[] = "arc-content";
+const char kIntentHelperFileproviderUrl[] =
+    "content://org.chromium.arc.intent_helper.fileprovider/";
+const char kFileSystemFileproviderUrl[] =
+    "content://org.chromium.arc.file_system.fileprovider/";
 
 const base::FilePath::CharType kContentFileSystemMountPointPath[] =
     FILE_PATH_LITERAL("/special/arc-content");

@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "chrome/browser/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
-#include "chrome/browser/ui/bookmarks/bookmark_bar_instructions_delegate.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_observer.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
@@ -39,7 +38,7 @@ class Profile;
 namespace bookmarks {
 class BookmarkModel;
 class ManagedBookmarkService;
-}
+}  // namespace bookmarks
 
 namespace content {
 class PageNavigator;
@@ -54,7 +53,7 @@ class Button;
 class MenuButton;
 class MenuItemView;
 class LabelButton;
-}
+}  // namespace views
 
 // BookmarkBarView renders the BookmarkModel.  Each starred entry on the
 // BookmarkBar is rendered as a MenuButton. An additional MenuButton aligned to
@@ -71,7 +70,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
                         public views::DragController,
                         public gfx::AnimationDelegate,
                         public BookmarkMenuControllerObserver,
-                        public BookmarkBarInstructionsDelegate,
                         public bookmarks::BookmarkBubbleObserver {
  public:
   // The internal view class name.
@@ -113,10 +111,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // Returns the MenuButton for node.
   views::MenuButton* GetMenuButtonForNode(const bookmarks::BookmarkNode* node);
 
-  // Returns the LabelButton for node.
-  views::LabelButton* GetBookmarkButtonForNode(
-      const bookmarks::BookmarkNode* node);
-
   // Returns the position to anchor the menu for |button| at.
   void GetAnchorPositionForButton(views::MenuButton* button,
                                   views::MenuAnchorPosition* anchor);
@@ -130,9 +124,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // Returns the button used when not all the items on the bookmark bar fit.
   views::MenuButton* overflow_button() const { return overflow_button_; }
 
-  const gfx::Animation& size_animation() {
-    return size_animation_;
-  }
+  const gfx::Animation& size_animation() { return size_animation_; }
 
   // Returns the active MenuItemView, or NULL if a menu isn't showing.
   views::MenuItemView* GetMenu();
@@ -168,7 +160,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
-  bool CanProcessEventsWithinSubtree() const override;
   void Layout() override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
@@ -196,9 +187,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // BookmarkMenuControllerObserver:
   void BookmarkMenuControllerDeleted(
       BookmarkMenuController* controller) override;
-
-  // BookmarkBarInstructionsDelegate:
-  void OnImportBookmarks() override;
 
   // bookmarks::BookmarkBubbleObserver:
   void OnBookmarkBubbleShown(const bookmarks::BookmarkNode* node) override;
@@ -263,11 +251,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   friend class BookmarkBarViewEventTestBase;
 
   // Used to identify what the user is dropping onto.
-  enum DropButtonType {
-    DROP_BOOKMARK,
-    DROP_OTHER_FOLDER,
-    DROP_OVERFLOW
-  };
+  enum DropButtonType { DROP_BOOKMARK, DROP_OTHER_FOLDER, DROP_OVERFLOW };
 
   // Creates recent bookmark button and when visible button as well as
   // calculating the preferred height.
@@ -439,10 +423,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // The individual bookmark buttons.
   std::vector<views::LabelButton*> bookmark_buttons_;
-
-  // Shows a text and a link to import bookmarks if there are no bookmarks in
-  // the Bookmarks Bar.
-  views::View* instructions_;
 
   ButtonSeparatorView* bookmarks_separator_view_;
 

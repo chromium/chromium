@@ -128,6 +128,7 @@ class CORE_EXPORT ScrollAnchor final {
     bool viable;
     Corner corner;
   };
+
   ExamineResult Examine(const LayoutObject*) const;
 
   IntSize ComputeAdjustment() const;

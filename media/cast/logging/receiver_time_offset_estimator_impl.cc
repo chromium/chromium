@@ -73,7 +73,7 @@ void ReceiverTimeOffsetEstimatorImpl::BoundCalculator::UpdateBound(
   }
 
   if (events_.size() > kMaxEventTimesMapSize) {
-    EventMap::iterator i = ModMapOldest(&events_);
+    auto i = ModMapOldest(&events_);
     if (i != events_.end()) {
       events_.erase(i);
     }

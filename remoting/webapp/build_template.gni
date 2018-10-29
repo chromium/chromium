@@ -214,6 +214,10 @@ template("desktop_remoting_webapp") {
   action(target_name) {
     script = "//remoting/webapp/build-webapp.py"
 
+    sources = [
+      "//build/android/gyp/util/build_utils.py",
+    ]
+
     output_dir = invoker.output_dir
     zip_path = invoker.zip_path
     extra_files = invoker.extra_files

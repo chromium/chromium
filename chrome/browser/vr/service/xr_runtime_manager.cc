@@ -49,6 +49,11 @@ namespace {
 XRRuntimeManager* g_xr_runtime_manager = nullptr;
 }  // namespace
 
+XRRuntimeManager::~XRRuntimeManager() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  g_xr_runtime_manager = nullptr;
+}
+
 XRRuntimeManager* XRRuntimeManager::GetInstance() {
   if (!g_xr_runtime_manager) {
     // Register VRDeviceProviders for the current platform
@@ -57,7 +62,7 @@ XRRuntimeManager* XRRuntimeManager::GetInstance() {
 #if defined(OS_ANDROID)
 #if BUILDFLAG(ENABLE_ARCORE)
     if (base::FeatureList::IsEnabled(features::kWebXrHitTest)) {
-      providers.emplace_back(device::ARCoreDeviceProviderFactory::Create());
+      providers.emplace_back(device::ArCoreDeviceProviderFactory::Create());
     }
 #endif
 
@@ -100,26 +105,38 @@ XRRuntimeManager* XRRuntimeManager::GetInstance() {
   return g_xr_runtime_manager;
 }
 
-BrowserXRRuntime* XRRuntimeManager::GetImmersiveRuntime() {
-#if defined(OS_ANDROID)
-  auto* gvr = GetRuntime(device::mojom::XRDeviceId::GVR_DEVICE_ID);
-  if (gvr)
-    return gvr;
-#endif
+bool XRRuntimeManager::HasInstance() {
+  return g_xr_runtime_manager != nullptr;
+}
 
-#if BUILDFLAG(ENABLE_OPENVR)
-  auto* openvr = GetRuntime(device::mojom::XRDeviceId::OPENVR_DEVICE_ID);
-  if (openvr)
-    return openvr;
+void XRRuntimeManager::RecordVrStartupHistograms() {
+#if BUILDFLAG(ENABLE_OPENVR) && !BUILDFLAG(ENABLE_ISOLATED_XR_SERVICE)
+  device::OpenVRDeviceProvider::RecordRuntimeAvailability();
 #endif
+}
 
-#if BUILDFLAG(ENABLE_OCULUS_VR)
-  auto* oculus = GetRuntime(device::mojom::XRDeviceId::OCULUS_DEVICE_ID);
-  if (oculus)
-    return oculus;
-#endif
+void XRRuntimeManager::AddService(VRServiceImpl* service) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  return nullptr;
+  // Loop through any currently active devices and send Connected messages to
+  // the service. Future devices that come online will send a Connected message
+  // when they are created.
+  InitializeProviders();
+
+  if (AreAllProvidersInitialized())
+    service->InitializationComplete();
+
+  services_.insert(service);
+}
+
+void XRRuntimeManager::RemoveService(VRServiceImpl* service) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  services_.erase(service);
+
+  if (services_.empty()) {
+    // Delete the device manager when it has no active connections.
+    delete g_xr_runtime_manager;
+  }
 }
 
 BrowserXRRuntime* XRRuntimeManager::GetRuntime(device::mojom::XRDeviceId id) {
@@ -152,10 +169,26 @@ BrowserXRRuntime* XRRuntimeManager::GetRuntimeForOptions(
   return nullptr;
 }
 
-bool XRRuntimeManager::IsOtherDevicePresenting(XRDeviceImpl* device) {
-  auto* runtime = GetImmersiveRuntime();
-  return runtime && runtime->GetPresentingRendererDevice() &&
-         runtime->GetPresentingRendererDevice() != device;
+BrowserXRRuntime* XRRuntimeManager::GetImmersiveRuntime() {
+#if defined(OS_ANDROID)
+  auto* gvr = GetRuntime(device::mojom::XRDeviceId::GVR_DEVICE_ID);
+  if (gvr)
+    return gvr;
+#endif
+
+#if BUILDFLAG(ENABLE_OPENVR)
+  auto* openvr = GetRuntime(device::mojom::XRDeviceId::OPENVR_DEVICE_ID);
+  if (openvr)
+    return openvr;
+#endif
+
+#if BUILDFLAG(ENABLE_OCULUS_VR)
+  auto* oculus = GetRuntime(device::mojom::XRDeviceId::OCULUS_DEVICE_ID);
+  if (oculus)
+    return oculus;
+#endif
+
+  return nullptr;
 }
 
 device::mojom::VRDisplayInfoPtr XRRuntimeManager::GetCurrentVRDisplayInfo(
@@ -165,6 +198,12 @@ device::mojom::VRDisplayInfoPtr XRRuntimeManager::GetCurrentVRDisplayInfo(
   if (immersive_runtime) {
     // Listen to changes for this device.
     immersive_runtime->OnRendererDeviceAdded(device);
+
+    // If we don't have display info for the immersive device, get display info
+    // from a different device.
+    if (!immersive_runtime->GetVRDisplayInfo()) {
+      immersive_runtime = nullptr;
+    }
   }
 
   // Get an AR device if there is one.
@@ -201,6 +240,31 @@ device::mojom::VRDisplayInfoPtr XRRuntimeManager::GetCurrentVRDisplayInfo(
   return device_info;
 }
 
+void XRRuntimeManager::OnRendererDeviceRemoved(XRDeviceImpl* device) {
+  for (const auto& runtime : runtimes_) {
+    runtime.second->OnRendererDeviceRemoved(device);
+  }
+}
+
+bool XRRuntimeManager::IsOtherDevicePresenting(XRDeviceImpl* device) {
+  DCHECK(device);
+
+  auto* runtime = GetImmersiveRuntime();
+  if (!runtime)
+    return false;  // No immersive runtime to be presenting.
+
+  XRDeviceImpl* presenting_device = runtime->GetPresentingRendererDevice();
+  if (!presenting_device)
+    return false;  // No XRDeviceImpl is presenting.
+
+  // True if some other XRDeviceImpl is presenting.
+  return (presenting_device != device);
+}
+
+bool XRRuntimeManager::HasAnyRuntime() {
+  return runtimes_.size() > 0;
+}
+
 void XRRuntimeManager::SupportsSession(
     device::mojom::XRSessionOptionsPtr options,
     device::mojom::XRDevice::SupportsSessionCallback callback) {
@@ -216,14 +280,6 @@ void XRRuntimeManager::SupportsSession(
   std::move(callback).Run(true);
 }
 
-bool XRRuntimeManager::HasAnyRuntime() {
-  return runtimes_.size() > 0;
-}
-
-bool XRRuntimeManager::HasInstance() {
-  return g_xr_runtime_manager != nullptr;
-}
-
 XRRuntimeManager::XRRuntimeManager(ProviderList providers)
     : providers_(std::move(providers)) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -231,71 +287,19 @@ XRRuntimeManager::XRRuntimeManager(ProviderList providers)
   g_xr_runtime_manager = this;
 }
 
-XRRuntimeManager::~XRRuntimeManager() {
+device::mojom::XRRuntime* XRRuntimeManager::GetRuntimeForTest(
+    device::mojom::XRDeviceId id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  g_xr_runtime_manager = nullptr;
+  DeviceRuntimeMap::iterator iter =
+      runtimes_.find(static_cast<device::mojom::XRDeviceId>(id));
+  if (iter == runtimes_.end())
+    return nullptr;
+
+  return iter->second->GetRuntime();
 }
 
-void XRRuntimeManager::AddService(VRServiceImpl* service) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Loop through any currently active devices and send Connected messages to
-  // the service. Future devices that come online will send a Connected message
-  // when they are created.
-  InitializeProviders();
-
-  if (AreAllProvidersInitialized())
-    service->InitializationComplete();
-
-  services_.insert(service);
-}
-
-void XRRuntimeManager::RemoveService(VRServiceImpl* service) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  services_.erase(service);
-
-  if (services_.empty()) {
-    // Delete the device manager when it has no active connections.
-    delete g_xr_runtime_manager;
-  }
-}
-
-void XRRuntimeManager::OnRendererDeviceRemoved(XRDeviceImpl* device) {
-  for (const auto& runtime : runtimes_) {
-    runtime.second->OnRendererDeviceRemoved(device);
-  }
-}
-
-void XRRuntimeManager::AddRuntime(device::mojom::XRDeviceId id,
-                                  device::mojom::VRDisplayInfoPtr info,
-                                  device::mojom::XRRuntimePtr runtime) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(runtimes_.find(id) == runtimes_.end());
-
-  runtimes_[id] =
-      std::make_unique<BrowserXRRuntime>(std::move(runtime), std::move(info));
-  for (VRServiceImpl* service : services_)
-    service->RuntimesChanged();
-}
-
-void XRRuntimeManager::RemoveRuntime(device::mojom::XRDeviceId id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto it = runtimes_.find(id);
-  DCHECK(it != runtimes_.end());
-
-  // Remove the device from runtimes_ before notifying services that it was
-  // removed, since they will query for devices in RemoveRuntime.
-  std::unique_ptr<BrowserXRRuntime> removed_device = std::move(it->second);
-  runtimes_.erase(it);
-
-  for (VRServiceImpl* service : services_)
-    service->RuntimesChanged();
-}
-
-void XRRuntimeManager::RecordVrStartupHistograms() {
-#if BUILDFLAG(ENABLE_OPENVR) && !BUILDFLAG(ENABLE_ISOLATED_XR_SERVICE)
-  device::OpenVRDeviceProvider::RecordRuntimeAvailability();
-#endif
+size_t XRRuntimeManager::NumberOfConnectedServices() {
+  return services_.size();
 }
 
 void XRRuntimeManager::InitializeProviders() {
@@ -329,22 +333,30 @@ bool XRRuntimeManager::AreAllProvidersInitialized() {
   return num_initialized_providers_ == providers_.size();
 }
 
-size_t XRRuntimeManager::NumberOfConnectedServices() {
-  return services_.size();
+void XRRuntimeManager::AddRuntime(device::mojom::XRDeviceId id,
+                                  device::mojom::VRDisplayInfoPtr info,
+                                  device::mojom::XRRuntimePtr runtime) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(runtimes_.find(id) == runtimes_.end());
+
+  runtimes_[id] =
+      std::make_unique<BrowserXRRuntime>(std::move(runtime), std::move(info));
+  for (VRServiceImpl* service : services_)
+    service->RuntimesChanged();
 }
 
-device::mojom::XRRuntime* XRRuntimeManager::GetRuntimeForTest(unsigned int id) {
+void XRRuntimeManager::RemoveRuntime(device::mojom::XRDeviceId id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto it = runtimes_.find(id);
+  DCHECK(it != runtimes_.end());
 
-  if (id == 0)
-    return nullptr;
+  // Remove the device from runtimes_ before notifying services that it was
+  // removed, since they will query for devices in RemoveRuntime.
+  std::unique_ptr<BrowserXRRuntime> removed_device = std::move(it->second);
+  runtimes_.erase(it);
 
-  DeviceRuntimeMap::iterator iter =
-      runtimes_.find(static_cast<device::mojom::XRDeviceId>(id));
-  if (iter == runtimes_.end())
-    return nullptr;
-
-  return iter->second->GetRuntime();
+  for (VRServiceImpl* service : services_)
+    service->RuntimesChanged();
 }
 
 }  // namespace vr

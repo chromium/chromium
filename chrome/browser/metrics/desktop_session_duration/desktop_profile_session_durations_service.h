@@ -13,6 +13,7 @@
 #include "components/signin/core/browser/gaia_cookie_manager_service.h"
 #include "components/signin/core/browser/signin_manager.h"
 #include "components/sync/driver/sync_service_observer.h"
+#include "services/identity/public/cpp/identity_manager.h"
 
 namespace metrics {
 
@@ -22,13 +23,13 @@ class DesktopProfileSessionDurationsService
     : public KeyedService,
       public DesktopSessionDurationTracker::Observer,
       public GaiaCookieManagerService::Observer,
-      public OAuth2TokenService::Observer,
-      public syncer::SyncServiceObserver {
+      public syncer::SyncServiceObserver,
+      public identity::IdentityManager::Observer {
  public:
   // Callers must ensure that the parameters outlive this object.
   DesktopProfileSessionDurationsService(
       browser_sync::ProfileSyncService* sync_service,
-      OAuth2TokenService* oath2_token_service,
+      identity::IdentityManager* identity_manager,
       GaiaCookieManagerService* cookie_manager,
       DesktopSessionDurationTracker* tracker);
   ~DesktopProfileSessionDurationsService() override;
@@ -46,9 +47,10 @@ class DesktopProfileSessionDurationsService
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // OAuth2TokenService::Observer:
-  void OnRefreshTokenAvailable(const std::string& account_id) override;
-  void OnRefreshTokenRevoked(const std::string& account_id) override;
+  // IdentityManager::Observer:
+  void OnRefreshTokenUpdatedForAccount(const AccountInfo& account_info,
+                                       bool is_valid) override;
+  void OnRefreshTokenRemovedForAccount(const std::string& account_id) override;
   void OnRefreshTokensLoaded() override;
 
  private:
@@ -72,12 +74,12 @@ class DesktopProfileSessionDurationsService
   void HandleSyncAndAccountChange();
 
   browser_sync::ProfileSyncService* sync_service_;
-  OAuth2TokenService* oauth2_token_service_;
+  identity::IdentityManager* identity_manager_;
 
   ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observer_;
-  ScopedObserver<OAuth2TokenService, OAuth2TokenService::Observer>
-      oauth2_token_observer_;
+  ScopedObserver<identity::IdentityManager, identity::IdentityManager::Observer>
+      identity_manager_observer_;
   ScopedObserver<GaiaCookieManagerService, GaiaCookieManagerService::Observer>
       gaia_cookie_observer_;
   ScopedObserver<DesktopSessionDurationTracker,

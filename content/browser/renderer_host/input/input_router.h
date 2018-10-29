@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_H_
 
+#include "base/callback_forward.h"
 #include "cc/input/touch_action.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/gesture_event_queue.h"
@@ -12,7 +13,6 @@
 #include "content/common/widget.mojom.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/input_event_ack_state.h"
-#include "ipc/ipc_listener.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 
 namespace content {
@@ -21,7 +21,7 @@ namespace content {
 // sent to the renderer, and how responses are dispatched to the browser.
 // While the router should respect the relative order in which events are
 // received, it is free to customize when those events are dispatched.
-class InputRouter : public IPC::Listener {
+class InputRouter {
  public:
   struct CONTENT_EXPORT Config {
     Config();
@@ -29,17 +29,32 @@ class InputRouter : public IPC::Listener {
     PassthroughTouchEventQueue::Config touch_config;
   };
 
-  ~InputRouter() override {}
+  virtual ~InputRouter() = default;
 
-  // WebInputEvents
-  virtual void SendMouseEvent(
-      const MouseEventWithLatencyInfo& mouse_event) = 0;
+  // Note: if the event is processed immediately, the supplied callback is run
+  // *synchronously*. If |this| is destroyed while waiting on a result from
+  // the renderer, then callbacks are *not* run.
+  using MouseEventCallback =
+      base::OnceCallback<void(const MouseEventWithLatencyInfo& event,
+                              InputEventAckSource ack_source,
+                              InputEventAckState ack_result)>;
+  virtual void SendMouseEvent(const MouseEventWithLatencyInfo& mouse_event,
+                              MouseEventCallback event_result_callback) = 0;
+
   virtual void SendWheelEvent(
       const MouseWheelEventWithLatencyInfo& wheel_event) = 0;
+
+  using KeyboardEventCallback = base::OnceCallback<void(
+      const NativeWebKeyboardEventWithLatencyInfo& event,
+      InputEventAckSource ack_source,
+      InputEventAckState ack_result)>;
   virtual void SendKeyboardEvent(
-      const NativeWebKeyboardEventWithLatencyInfo& key_event) = 0;
+      const NativeWebKeyboardEventWithLatencyInfo& key_event,
+      KeyboardEventCallback event_result_callback) = 0;
+
   virtual void SendGestureEvent(
       const GestureEventWithLatencyInfo& gesture_event) = 0;
+
   virtual void SendTouchEvent(
       const TouchEventWithLatencyInfo& touch_event) = 0;
 
@@ -84,6 +99,10 @@ class InputRouter : public IPC::Listener {
   // frame, we set the touch action in the main frame Auto even if there is no
   // pending touch start.
   virtual void ForceSetTouchActionAuto() = 0;
+
+  // Called when the renderer notifies a change in whether or not it has touch
+  // event handlers registered.
+  virtual void OnHasTouchEventHandlers(bool has_handlers) = 0;
 };
 
 }  // namespace content

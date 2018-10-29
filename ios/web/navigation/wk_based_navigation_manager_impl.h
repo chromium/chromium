@@ -20,11 +20,19 @@
 
 @class WKBackForwardListItem;
 
+namespace base {
+class ElapsedTimer;
+}
+
 namespace web {
 class BrowserState;
 class NavigationItem;
 struct Referrer;
 class SessionStorageBuilder;
+
+// Name of UMA histogram to log the time spent on asynchronous session
+// restoration.
+extern const char kRestoreNavigationTime[];
 
 // WKBackForwardList based implementation of NavigationManagerImpl.
 // This class relies on the following WKWebView APIs, defined by the
@@ -242,6 +250,11 @@ class WKBasedNavigationManagerImpl : public NavigationManagerImpl {
   // history into WKWebView. It is set in Restore() and unset in the first
   // OnNavigationItemCommitted() callback.
   bool is_restore_session_in_progress_ = false;
+
+  // Non null during the session restoration. Created when session restoration
+  // is started and reset when the restoration is finished. Used to log UMA
+  // histogram that measures session restoration time.
+  std::unique_ptr<base::ElapsedTimer> restoration_timer_;
 
   // The active navigation entry in the restored session. GetVisibleItem()
   // returns this item when |is_restore_session_in_progress_| is true so that

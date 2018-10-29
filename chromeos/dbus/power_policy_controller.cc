@@ -8,10 +8,13 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/chromeos_features.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 
 // Avoid some ugly line-wrapping later.
 using base::StringAppendF;
@@ -106,12 +109,14 @@ PowerPolicyController::PrefValues::PrefValues()
       use_video_activity(true),
       ac_brightness_percent(-1.0),
       battery_brightness_percent(-1.0),
+      allow_wake_locks(true),
       allow_screen_wake_locks(true),
       enable_auto_screen_lock(false),
       presentation_screen_dim_delay_factor(1.0),
       user_activity_screen_dim_delay_factor(1.0),
       wait_for_initial_user_activity(false),
-      force_nonzero_brightness_for_user_activity(true) {}
+      force_nonzero_brightness_for_user_activity(true),
+      smart_dim_enabled(true) {}
 
 // static
 std::string PowerPolicyController::GetPolicyDebugString(
@@ -230,22 +235,39 @@ void PowerPolicyController::ApplyPrefs(const PrefValues& values) {
   prefs_policy_.set_lid_closed_action(GetProtoAction(values.lid_closed_action));
   prefs_policy_.set_use_audio_activity(values.use_audio_activity);
   prefs_policy_.set_use_video_activity(values.use_video_activity);
-  if (values.ac_brightness_percent >= 0.0)
-    prefs_policy_.set_ac_brightness_percent(values.ac_brightness_percent);
-  if (values.battery_brightness_percent >= 0.0) {
-    prefs_policy_.set_battery_brightness_percent(
-        values.battery_brightness_percent);
+
+  if (!per_session_brightness_override_) {
+    if (values.ac_brightness_percent >= 0.0)
+      prefs_policy_.set_ac_brightness_percent(values.ac_brightness_percent);
+    if (values.battery_brightness_percent >= 0.0) {
+      prefs_policy_.set_battery_brightness_percent(
+          values.battery_brightness_percent);
+    }
   }
-  prefs_policy_.set_presentation_screen_dim_delay_factor(
-      values.presentation_screen_dim_delay_factor);
-  prefs_policy_.set_user_activity_screen_dim_delay_factor(
-      values.user_activity_screen_dim_delay_factor);
+
+  // Screen-dim deferral in response to user activity predictions can
+  // interact poorly with delay scaling, resulting in the system staying
+  // awake for a long time if a prediction is wrong. See
+  // https://crbug.com/888392.
+  if (values.smart_dim_enabled &&
+      base::FeatureList::IsEnabled(features::kUserActivityPrediction)) {
+    prefs_policy_.set_presentation_screen_dim_delay_factor(1.0);
+    prefs_policy_.set_user_activity_screen_dim_delay_factor(1.0);
+  } else {
+    prefs_policy_.set_presentation_screen_dim_delay_factor(
+        values.presentation_screen_dim_delay_factor);
+    prefs_policy_.set_user_activity_screen_dim_delay_factor(
+        values.user_activity_screen_dim_delay_factor);
+  }
+
   prefs_policy_.set_wait_for_initial_user_activity(
       values.wait_for_initial_user_activity);
   prefs_policy_.set_force_nonzero_brightness_for_user_activity(
       values.force_nonzero_brightness_for_user_activity);
 
-  honor_screen_wake_locks_ = values.allow_screen_wake_locks;
+  honor_wake_locks_ = values.allow_wake_locks;
+  honor_screen_wake_locks_ =
+      honor_wake_locks_ && values.allow_screen_wake_locks;
 
   prefs_were_set_ = true;
   SendCurrentPolicy();
@@ -277,6 +299,17 @@ void PowerPolicyController::PowerManagerRestarted() {
   SendCurrentPolicy();
 }
 
+void PowerPolicyController::ScreenBrightnessChanged(
+    const power_manager::BacklightBrightnessChange& change) {
+  if (prefs_were_set_ &&
+      (prefs_policy_.has_ac_brightness_percent() ||
+       prefs_policy_.has_battery_brightness_percent()) &&
+      change.cause() ==
+          power_manager::BacklightBrightnessChange_Cause_USER_REQUEST) {
+    per_session_brightness_override_ = true;
+  }
+}
+
 void PowerPolicyController::NotifyChromeIsExiting() {
   if (chrome_is_exiting_)
     return;
@@ -293,12 +326,7 @@ void PowerPolicyController::SetEncryptionMigrationActive(bool active) {
 }
 
 PowerPolicyController::PowerPolicyController(PowerManagerClient* client)
-    : client_(client),
-      prefs_were_set_(false),
-      honor_screen_wake_locks_(true),
-      next_wake_lock_id_(1),
-      chrome_is_exiting_(false),
-      encryption_migration_active_(false) {
+    : client_(client) {
   DCHECK(client_);
   client_->AddObserver(this);
 }
@@ -331,44 +359,47 @@ void PowerPolicyController::SendCurrentPolicy() {
   if (prefs_were_set_)
     causes = kPrefsReason;
 
-  bool have_screen_wake_locks = false;
-  bool have_dim_wake_locks = false;
-  bool have_system_wake_locks = false;
-  for (const auto& it : wake_locks_) {
-    // Skip audio and video locks that should be ignored due to policy.
-    if (!IsWakeLockReasonHonored(it.second.reason, policy.use_audio_activity(),
-                                 policy.use_video_activity()))
-      continue;
+  if (honor_wake_locks_) {
+    bool have_screen_wake_locks = false;
+    bool have_dim_wake_locks = false;
+    bool have_system_wake_locks = false;
+    for (const auto& it : wake_locks_) {
+      // Skip audio and video locks that should be ignored due to policy.
+      if (!IsWakeLockReasonHonored(it.second.reason,
+                                   policy.use_audio_activity(),
+                                   policy.use_video_activity()))
+        continue;
 
-    switch (it.second.type) {
-      case WakeLock::TYPE_SCREEN:
-        have_screen_wake_locks = true;
-        break;
-      case WakeLock::TYPE_DIM:
-        have_dim_wake_locks = true;
-        break;
-      case WakeLock::TYPE_SYSTEM:
-        have_system_wake_locks = true;
-        break;
+      switch (it.second.type) {
+        case WakeLock::TYPE_SCREEN:
+          have_screen_wake_locks = true;
+          break;
+        case WakeLock::TYPE_DIM:
+          have_dim_wake_locks = true;
+          break;
+        case WakeLock::TYPE_SYSTEM:
+          have_system_wake_locks = true;
+          break;
+      }
+      causes += (causes.empty() ? "" : ", ") + it.second.description;
     }
-    causes += (causes.empty() ? "" : ", ") + it.second.description;
-  }
 
-  // Downgrade full-brightness and dimmed-brightness locks to system locks if
-  // wake locks aren't allowed to keep the screen on.
-  if (!honor_screen_wake_locks_ &&
-      (have_screen_wake_locks || have_dim_wake_locks)) {
-    have_system_wake_locks = true;
-    have_screen_wake_locks = false;
-    have_dim_wake_locks = false;
-  }
+    // Downgrade full-brightness and dimmed-brightness locks to system locks if
+    // wake locks aren't allowed to keep the screen on.
+    if (!honor_screen_wake_locks_ &&
+        (have_screen_wake_locks || have_dim_wake_locks)) {
+      have_system_wake_locks = true;
+      have_screen_wake_locks = false;
+      have_dim_wake_locks = false;
+    }
 
-  if (have_screen_wake_locks)
-    policy.set_screen_wake_lock(true);
-  if (have_dim_wake_locks)
-    policy.set_dim_wake_lock(true);
-  if (have_system_wake_locks)
-    policy.set_system_wake_lock(true);
+    if (have_screen_wake_locks)
+      policy.set_screen_wake_lock(true);
+    if (have_dim_wake_locks)
+      policy.set_dim_wake_lock(true);
+    if (have_system_wake_locks)
+      policy.set_system_wake_lock(true);
+  }
 
   if (encryption_migration_active_ &&
       policy.lid_closed_action() !=

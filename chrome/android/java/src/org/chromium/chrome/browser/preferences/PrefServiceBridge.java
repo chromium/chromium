@@ -340,6 +340,14 @@ public class PrefServiceBridge {
     }
 
     /**
+     * @return true if automatic downloads is managed by policy.
+     */
+    public boolean isAutomaticDownloadsManaged() {
+        return isContentSettingManaged(
+                ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS);
+    }
+
+    /**
      * Sets the preference that controls translate
      */
     public void setTranslateEnabled(boolean enabled) {
@@ -439,13 +447,6 @@ public class PrefServiceBridge {
     public void setContextualSearchState(boolean enabled) {
         setContextualSearchPreference(enabled
                 ? CONTEXTUAL_SEARCH_ENABLED : CONTEXTUAL_SEARCH_DISABLED);
-    }
-
-    /**
-     * @return Whether the active Safe Browsing Extended Reporting pref is the new Scout pref.
-     */
-    public boolean isSafeBrowsingScoutReportingActive() {
-        return nativeIsScoutExtendedReportingActive();
     }
 
     /**
@@ -682,14 +683,14 @@ public class PrefServiceBridge {
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_USB_GUARD:
                 setContentSettingEnabled(contentSettingsType, allow);
                 break;
+            case ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS:
+                nativeSetAutomaticDownloadsEnabled(allow);
+                break;
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY:
                 nativeSetAutoplayEnabled(allow);
                 break;
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC:
                 nativeSetBackgroundSyncEnabled(allow);
-                break;
-            case ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
-                nativeSetCameraEnabled(allow);
                 break;
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_CLIPBOARD_READ:
                 nativeSetClipboardEnabled(allow);
@@ -699,6 +700,9 @@ public class PrefServiceBridge {
                 break;
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION:
                 nativeSetAllowLocationEnabled(allow);
+                break;
+            case ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
+                nativeSetCameraEnabled(allow);
                 break;
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC:
                 nativeSetMicEnabled(allow);
@@ -730,14 +734,16 @@ public class PrefServiceBridge {
             // Returns true if websites are allowed to request permission to access USB devices.
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_USB_GUARD:
                 return isContentSettingEnabled(contentSettingsType);
+            case ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS:
+                return nativeGetAutomaticDownloadsEnabled();
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY:
                 return nativeGetAutoplayEnabled();
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC:
                 return nativeGetBackgroundSyncEnabled();
-            case ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
-                return nativeGetCameraEnabled();
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_COOKIES:
                 return nativeGetAcceptCookiesEnabled();
+            case ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
+                return nativeGetCameraEnabled();
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC:
                 return nativeGetMicEnabled();
             case ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS:
@@ -1069,6 +1075,7 @@ public class PrefServiceBridge {
     private native boolean nativeGetAcceptCookiesEnabled();
     private native boolean nativeGetAcceptCookiesUserModifiable();
     private native boolean nativeGetAcceptCookiesManagedByCustodian();
+    private native boolean nativeGetAutomaticDownloadsEnabled();
     private native boolean nativeGetAutoplayEnabled();
     private native boolean nativeGetBackgroundSyncEnabled();
     private native boolean nativeGetBlockThirdPartyCookiesEnabled();
@@ -1084,11 +1091,11 @@ public class PrefServiceBridge {
     private native boolean nativeGetPasswordEchoEnabled();
     private native boolean nativeGetFirstRunEulaAccepted();
     private native boolean nativeGetCameraEnabled();
-    private native void nativeSetCameraEnabled(boolean allow);
+    private native void nativeSetCameraEnabled(boolean enabled);
     private native boolean nativeGetCameraUserModifiable();
     private native boolean nativeGetCameraManagedByCustodian();
     private native boolean nativeGetMicEnabled();
-    private native void nativeSetMicEnabled(boolean allow);
+    private native void nativeSetMicEnabled(boolean enabled);
     private native boolean nativeGetMicUserModifiable();
     private native boolean nativeGetMicManagedByCustodian();
     private native boolean nativeGetTranslateEnabled();
@@ -1114,23 +1121,24 @@ public class PrefServiceBridge {
             int clearBrowsingDataTab, int timePeriod);
     private native int nativeGetLastClearBrowsingDataTab();
     private native void nativeSetLastClearBrowsingDataTab(int lastTab);
-    private native void nativeSetAutoplayEnabled(boolean allow);
-    private native void nativeSetAllowCookiesEnabled(boolean allow);
-    private native void nativeSetBackgroundSyncEnabled(boolean allow);
+    private native void nativeSetAutomaticDownloadsEnabled(boolean enabled);
+    private native void nativeSetAutoplayEnabled(boolean enabled);
+    private native void nativeSetAllowCookiesEnabled(boolean enabled);
+    private native void nativeSetBackgroundSyncEnabled(boolean enabled);
     private native void nativeSetBlockThirdPartyCookiesEnabled(boolean enabled);
-    private native void nativeSetClipboardEnabled(boolean allow);
+    private native void nativeSetClipboardEnabled(boolean enabled);
     private native void nativeSetDoNotTrackEnabled(boolean enabled);
     private native void nativeSetRememberPasswordsEnabled(boolean allow);
     private native void nativeSetPasswordManagerAutoSigninEnabled(boolean enabled);
     private native boolean nativeGetAllowLocationEnabled();
     private native boolean nativeGetNotificationsEnabled();
     private native boolean nativeGetNotificationsVibrateEnabled();
-    private native void nativeSetAllowLocationEnabled(boolean allow);
-    private native void nativeSetNotificationsEnabled(boolean allow);
+    private native void nativeSetAllowLocationEnabled(boolean enabled);
+    private native void nativeSetNotificationsEnabled(boolean enabled);
     private native void nativeSetNotificationsVibrateEnabled(boolean enabled);
     private native void nativeSetPasswordEchoEnabled(boolean enabled);
-    private native void nativeSetSensorsEnabled(boolean allow);
-    private native void nativeSetSoundEnabled(boolean allow);
+    private native void nativeSetSensorsEnabled(boolean enabled);
+    private native void nativeSetSoundEnabled(boolean enabled);
     private native boolean nativeCanPrefetchAndPrerender();
     private native AboutVersionStrings nativeGetAboutVersionStrings();
     private native void nativeSetContextualSearchPreference(String preference);
@@ -1140,7 +1148,6 @@ public class PrefServiceBridge {
     private native void nativeSetSearchSuggestEnabled(boolean enabled);
     private native boolean nativeGetSearchSuggestManaged();
     private native boolean nativeGetSafeBrowsingExtendedReportingEnabled();
-    private native boolean nativeIsScoutExtendedReportingActive();
     private native void nativeSetSafeBrowsingExtendedReportingEnabled(boolean enabled);
     private native boolean nativeGetSafeBrowsingExtendedReportingManaged();
     private native boolean nativeGetSafeBrowsingEnabled();

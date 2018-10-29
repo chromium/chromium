@@ -9,7 +9,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/blue_button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -57,8 +56,6 @@ void ButtonExample::CreateExampleView(View* container) {
   disabled_button_->SetStyleDeprecated(Button::STYLE_BUTTON);
   disabled_button_->SetState(Button::STATE_DISABLED);
   container->AddChildView(disabled_button_);
-
-  container->AddChildView(new BlueButton(this, ASCIIToUTF16("Blue Button")));
 
   md_button_ =
       MdTextButton::Create(this, base::ASCIIToUTF16("Material design"));

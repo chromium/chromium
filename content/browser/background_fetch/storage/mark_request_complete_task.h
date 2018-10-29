@@ -79,7 +79,8 @@ class MarkRequestCompleteTask : public DatabaseTask {
   MarkRequestCompleteCallback callback_;
 
   proto::BackgroundFetchCompletedRequest completed_request_;
-  bool is_response_successful_ = true;
+  proto::BackgroundFetchRegistration::BackgroundFetchFailureReason
+      failure_reason_ = proto::BackgroundFetchRegistration::NONE;
 
   base::WeakPtrFactory<MarkRequestCompleteTask> weak_factory_;  // Keep as last.
 

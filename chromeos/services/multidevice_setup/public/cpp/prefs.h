@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_PREFS_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_PREFS_H_
 
+#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+
 class PrefRegistrySimple;
 class PrefService;
 
@@ -18,6 +20,7 @@ namespace multidevice_setup {
 extern const char kInstantTetheringAllowedPrefName[];
 extern const char kMessagesAllowedPrefName[];
 extern const char kSmartLockAllowedPrefName[];
+extern const char kSmartLockSigninAllowedPrefName[];
 
 // Preferences which represent whether features are enabled by the user via
 // settings. If a feature is prohibited (see above preferences), the "enabled"
@@ -34,6 +37,7 @@ extern const char kSmartLockEnabledDeprecatedPrefName[];
 
 void RegisterFeaturePrefs(PrefRegistrySimple* registry);
 bool AreAnyMultiDeviceFeaturesAllowed(PrefService* pref_service);
+bool IsFeatureAllowed(mojom::Feature feature, PrefService* pref_service);
 
 }  // namespace multidevice_setup
 

@@ -177,6 +177,22 @@ class CalledProcessError(Exception):
     return 'Command failed: {}\n{}'.format(copyable_command, self.output)
 
 
+def FilterLines(output, filter_string):
+  """Output filter from build_utils.CheckOutput.
+
+  Args:
+    output: Executable output as from build_utils.CheckOutput.
+    filter_string: An RE string that will filter (remove) matching
+        lines from |output|.
+
+  Returns:
+    The filtered output, as a single string.
+  """
+  re_filter = re.compile(filter_string)
+  return '\n'.join(
+      line for line in output.splitlines() if not re_filter.search(line))
+
+
 # This can be used in most cases like subprocess.check_output(). The output,
 # particularly when the command fails, better highlights the command's failure.
 # If the command fails, raises a build_utils.CalledProcessError.
@@ -305,8 +321,15 @@ def AddToZipHermetic(zip_file, zip_path, src_path=None, data=None,
     zip_file.writestr(zipinfo, os.readlink(src_path))
     return
 
+  # zipfile.write() does
+  #     external_attr = (os.stat(src_path)[0] & 0xFFFF) << 16L
+  # but we want to use _HERMETIC_FILE_ATTR, so manually set
+  # the few attr bits we care about.
+  if src_path and os.access(src_path, os.X_OK):
+    zipinfo.external_attr |= stat.S_IXUSR << 16L
+
   if src_path:
-    with file(src_path) as f:
+    with open(src_path, 'rb') as f:
       data = f.read()
 
   # zipfile will deflate even when it makes the file bigger. To avoid
@@ -322,7 +345,8 @@ def AddToZipHermetic(zip_file, zip_path, src_path=None, data=None,
   zip_file.writestr(zipinfo, data, compress_type)
 
 
-def DoZip(inputs, output, base_dir=None, compress_fn=None):
+def DoZip(inputs, output, base_dir=None, compress_fn=None,
+          zip_prefix_path=None):
   """Creates a zip file from a list of files.
 
   Args:
@@ -331,6 +355,7 @@ def DoZip(inputs, output, base_dir=None, compress_fn=None):
     base_dir: Prefix to strip from inputs.
     compress_fn: Applied to each input to determine whether or not to compress.
         By default, items will be |zipfile.ZIP_STORED|.
+    zip_prefix_path: Path prepended to file path in zip file.
   """
   input_tuples = []
   for tup in inputs:
@@ -342,11 +367,13 @@ def DoZip(inputs, output, base_dir=None, compress_fn=None):
   input_tuples.sort(key=lambda tup: tup[0])
   with zipfile.ZipFile(output, 'w') as outfile:
     for zip_path, fs_path in input_tuples:
+      if zip_prefix_path:
+        zip_path = os.path.join(zip_prefix_path, zip_path)
       compress = compress_fn(zip_path) if compress_fn else None
       AddToZipHermetic(outfile, zip_path, src_path=fs_path, compress=compress)
 
 
-def ZipDir(output, base_dir, compress_fn=None):
+def ZipDir(output, base_dir, compress_fn=None, zip_prefix_path=None):
   """Creates a zip file from a directory."""
   inputs = []
   for root, _, files in os.walk(base_dir):
@@ -354,7 +381,8 @@ def ZipDir(output, base_dir, compress_fn=None):
       inputs.append(os.path.join(root, f))
 
   with AtomicOutput(output) as f:
-    DoZip(inputs, f, base_dir, compress_fn=compress_fn)
+    DoZip(inputs, f, base_dir, compress_fn=compress_fn,
+          zip_prefix_path=zip_prefix_path)
 
 
 def MatchesGlob(path, filters):

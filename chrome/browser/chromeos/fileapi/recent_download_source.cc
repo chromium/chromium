@@ -8,8 +8,10 @@
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/fileapi/external_mount_points.h"
 #include "storage/browser/fileapi/file_system_context.h"
@@ -30,8 +32,8 @@ void OnReadDirectoryOnIOThread(
     bool has_more) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(callback, result, std::move(entries), has_more));
 }
 
@@ -46,24 +48,25 @@ void ReadDirectoryOnIOThread(
 }
 
 void OnGetMetadataOnIOThread(
-    const storage::FileSystemOperation::GetMetadataCallback& callback,
+    storage::FileSystemOperation::GetMetadataCallback callback,
     base::File::Error result,
     const base::File::Info& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result, info));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(std::move(callback), result, info));
 }
 
 void GetMetadataOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& url,
     int fields,
-    const storage::FileSystemOperation::GetMetadataCallback& callback) {
+    storage::FileSystemOperation::GetMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   file_system_context->operation_runner()->GetMetadata(
-      url, fields, base::Bind(&OnGetMetadataOnIOThread, callback));
+      url, fields,
+      base::BindOnce(&OnGetMetadataOnIOThread, std::move(callback)));
 }
 
 }  // namespace
@@ -106,8 +109,8 @@ void RecentDownloadSource::ScanDirectory(const base::FilePath& path) {
   storage::FileSystemURL url = BuildDownloadsURL(path);
 
   ++inflight_readdirs_;
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &ReadDirectoryOnIOThread,
           base::WrapRefCounted(params_.value().file_system_context()), url,
@@ -130,14 +133,14 @@ void RecentDownloadSource::OnReadDirectory(
     } else {
       storage::FileSystemURL url = BuildDownloadsURL(subpath);
       ++inflight_stats_;
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(
               &GetMetadataOnIOThread,
               base::WrapRefCounted(params_.value().file_system_context()), url,
               storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
-              base::Bind(&RecentDownloadSource::OnGetMetadata,
-                         weak_ptr_factory_.GetWeakPtr(), url)));
+              base::BindOnce(&RecentDownloadSource::OnGetMetadata,
+                             weak_ptr_factory_.GetWeakPtr(), url)));
     }
   }
 

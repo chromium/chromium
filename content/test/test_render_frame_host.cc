@@ -30,6 +30,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/platform/modules/bluetooth/web_bluetooth.mojom.h"
 #include "third_party/blink/public/platform/web_mixed_content_context_type.h"
@@ -107,11 +108,11 @@ void TestRenderFrameHost::InitializeRenderFrameIfNeeded() {
 TestRenderFrameHost* TestRenderFrameHost::AppendChild(
     const std::string& frame_name) {
   std::string frame_unique_name = base::GenerateGUID();
-  OnCreateChildFrame(GetProcess()->GetNextRoutingID(),
-                     CreateStubInterfaceProviderRequest(),
-                     blink::WebTreeScopeType::kDocument, frame_name,
-                     frame_unique_name, false, base::UnguessableToken::Create(),
-                     blink::FramePolicy(), FrameOwnerProperties());
+  OnCreateChildFrame(
+      GetProcess()->GetNextRoutingID(), CreateStubInterfaceProviderRequest(),
+      blink::WebTreeScopeType::kDocument, frame_name, frame_unique_name, false,
+      base::UnguessableToken::Create(), blink::FramePolicy(),
+      FrameOwnerProperties(), blink::FrameOwnerElementType::kIframe);
   return static_cast<TestRenderFrameHost*>(
       child_creation_observer_.last_created_frame());
 }
@@ -321,9 +322,6 @@ void TestRenderFrameHost::SendNavigateWithParameters(
     ui::PageTransition transition,
     int response_code,
     const ModificationCallback& callback) {
-  if (!IsBrowserSideNavigationEnabled())
-    OnDidStartLoading(true);
-
   FrameHostMsg_DidCommitProvisionalLoad_Params params;
   params.nav_entry_id = nav_entry_id;
   params.url = url;
@@ -449,7 +447,8 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           base::nullopt /* devtools_initiator_info */);
   CommonNavigationParams common_params;
   common_params.url = url;
-  common_params.referrer = Referrer(GURL(), blink::kWebReferrerPolicyDefault);
+  common_params.referrer =
+      Referrer(GURL(), network::mojom::ReferrerPolicy::kDefault);
   common_params.transition = ui::PAGE_TRANSITION_LINK;
   common_params.navigation_type = FrameMsg_Navigate_Type::DIFFERENT_DOCUMENT;
   common_params.has_user_gesture = has_user_gesture;
@@ -458,9 +457,10 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
   if (IsPerNavigationMojoInterfaceEnabled()) {
     GetRemoteAssociatedInterfaces()->GetInterface(&navigation_client_ptr);
     BeginNavigation(common_params, std::move(begin_params), nullptr,
-                    navigation_client_ptr.PassInterface());
+                    navigation_client_ptr.PassInterface(), nullptr);
   } else {
-    BeginNavigation(common_params, std::move(begin_params), nullptr, nullptr);
+    BeginNavigation(common_params, std::move(begin_params), nullptr, nullptr,
+                    nullptr);
   }
 }
 

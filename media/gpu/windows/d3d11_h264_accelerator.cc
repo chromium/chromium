@@ -8,8 +8,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/cdm_proxy_context.h"
 #include "media/base/media_log.h"
+#include "media/cdm/cdm_proxy_context.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
@@ -94,10 +94,6 @@ Status D3D11H264Accelerator::SubmitFrameMetadata(
     const H264Picture::Vector& ref_pic_listb1,
     const scoped_refptr<H264Picture>& pic) {
   const bool is_encrypted = pic->decrypt_config();
-  if (is_encrypted && !cdm_proxy_context_) {
-    RecordFailure("The input is encrypted but there is no proxy context.");
-    return Status::kFail;
-  }
 
   std::unique_ptr<D3D11_VIDEO_DECODER_BEGIN_FRAME_CRYPTO_SESSION> content_key;
   // This decrypt context has to be outside the if block because pKeyInfo in
@@ -105,7 +101,7 @@ Status D3D11H264Accelerator::SubmitFrameMetadata(
   base::Optional<CdmProxyContext::D3D11DecryptContext> decrypt_context;
   if (is_encrypted) {
     decrypt_context = cdm_proxy_context_->GetD3D11DecryptContext(
-        pic->decrypt_config()->key_id());
+        CdmProxy::KeyType::kDecryptAndDecode, pic->decrypt_config()->key_id());
     if (!decrypt_context) {
       RecordFailure("Cannot find decrypt context for the frame.");
       return Status::kTryAgain;

@@ -237,10 +237,12 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
 
   // Overridden from ui::internal::InputMethodDelegate:
   ui::EventDispatchDetails DispatchKeyEventPostIME(
-      ui::KeyEvent* event) override {
+      ui::KeyEvent* event,
+      base::OnceCallback<void(bool)> ack_callback) override {
     dispatched_key_event_ = *event;
     if (stop_propagation_post_ime_)
       event->StopPropagation();
+    CallDispatchKeyEventPostIMEAck(event, std::move(ack_callback));
     return ui::EventDispatchDetails();
   }
 

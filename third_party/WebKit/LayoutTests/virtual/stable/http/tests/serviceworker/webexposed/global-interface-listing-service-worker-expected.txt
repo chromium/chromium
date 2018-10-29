@@ -2439,6 +2439,7 @@ interface WorkerGlobalScope : EventTarget
     method createImageBitmap
     method fetch
     method importScripts
+    method queueMicrotask
     method requestAnimationFrame
     method setInterval
     method setTimeout

@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "components/autofill/core/browser/autofill_metadata.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "url/gurl.h"
@@ -44,6 +45,19 @@ bool AutofillDataModel::CompareFrecency(const AutofillDataModel* other,
     return use_date_ > other->use_date_;
 
   return guid_ > other->guid_;
+}
+
+AutofillMetadata AutofillDataModel::GetMetadata() const {
+  AutofillMetadata metadata;
+  metadata.use_count = use_count_;
+  metadata.use_date = use_date_;
+  return metadata;
+}
+
+bool AutofillDataModel::SetMetadata(const AutofillMetadata metadata) {
+  use_count_ = metadata.use_count;
+  use_date_ = metadata.use_date;
+  return true;
 }
 
 double AutofillDataModel::GetFrecencyScore(base::Time time) const {

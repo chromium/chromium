@@ -26,6 +26,10 @@
 namespace ppapi {
 namespace proxy {
 
+// A "safe" way to run callbacks, doing nothing if they are not
+// pending (active).
+void SafeRunCallback(scoped_refptr<TrackedCallback>* callback, int32_t error);
+
 class PPAPI_PROXY_EXPORT PluginResource : public Resource {
  public:
   enum Destination {

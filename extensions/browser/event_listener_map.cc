@@ -181,7 +181,7 @@ bool EventListenerMap::RemoveListener(const EventListener* listener) {
 
 bool EventListenerMap::HasListenerForEvent(
     const std::string& event_name) const {
-  ListenerMap::const_iterator it = listeners_.find(event_name);
+  auto it = listeners_.find(event_name);
   return it != listeners_.end() && !it->second.empty();
 }
 
@@ -231,8 +231,7 @@ void EventListenerMap::RemoveListenersForExtension(
     const std::string& extension_id) {
   for (auto& it : listeners_) {
     auto& listener_map = it.second;
-    for (ListenerList::iterator it2 = listener_map.begin();
-         it2 != listener_map.end();) {
+    for (auto it2 = listener_map.begin(); it2 != listener_map.end();) {
       if ((*it2)->extension_id() == extension_id) {
         std::unique_ptr<EventListener> listener_removed = std::move(*it2);
         CleanupListener(listener_removed.get());
@@ -325,8 +324,7 @@ void EventListenerMap::RemoveListenersForProcess(
   CHECK(process);
   for (auto& it : listeners_) {
     auto& listener_map = it.second;
-    for (ListenerList::iterator it2 = listener_map.begin();
-         it2 != listener_map.end();) {
+    for (auto it2 = listener_map.begin(); it2 != listener_map.end();) {
       if ((*it2)->process() == process) {
         std::unique_ptr<EventListener> listener_removed = std::move(*it2);
         CleanupListener(listener_removed.get());

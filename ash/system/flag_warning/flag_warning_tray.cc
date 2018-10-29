@@ -15,7 +15,6 @@
 #include "ash/system/tray/tray_container.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "mash/public/mojom/launchable.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ui_base_features.h"
@@ -26,17 +25,11 @@
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
-namespace {
-
-const char kTooltipText[] = "Running with feature mash";
-
-}  // namespace
 
 FlagWarningTray::FlagWarningTray(Shelf* shelf) : shelf_(shelf) {
   DCHECK(shelf_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  DCHECK(::features::IsMultiProcessMash());
   container_ = new TrayContainer(shelf);
   AddChildView(container_);
 
@@ -45,7 +38,7 @@ FlagWarningTray::FlagWarningTray(Shelf* shelf) : shelf_(shelf) {
   button_->SetProminent(true);
   button_->SetBgColorOverride(gfx::kGoogleYellow300);
   button_->SetEnabledTextColors(SK_ColorBLACK);
-  button_->SetTooltipText(base::ASCIIToUTF16(kTooltipText));
+  button_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   UpdateButton();
   container_->AddChildView(button_);
   SetVisible(true);
@@ -66,10 +59,7 @@ void FlagWarningTray::ButtonPressed(views::Button* sender,
   DCHECK_EQ(button_, sender);
 
   // Open the quick launch mojo mini-app to demonstrate that mini-apps work.
-  mash::mojom::LaunchablePtr launchable;
-  Shell::Get()->connector()->BindInterface(quick_launch::mojom::kServiceName,
-                                           &launchable);
-  launchable->Launch(mash::mojom::kWindow, mash::mojom::LaunchMode::DEFAULT);
+  Shell::Get()->connector()->StartService(quick_launch::mojom::kServiceName);
 }
 
 void FlagWarningTray::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -83,17 +73,27 @@ void FlagWarningTray::UpdateButton() {
 
   // Only the horizontal shelf is wide enough for a text label. Use an icon for
   // vertical shelf alignments.
-  if (shelf_->IsHorizontalAlignment()) {
-    button_->SetText(base::ASCIIToUTF16("mash"));
-    button_->SetImage(views::Button::STATE_NORMAL, gfx::ImageSkia());
-    button_->SetMinSize(gfx::Size(0, kTrayItemSize));
-  } else {
+  if (!shelf_->IsHorizontalAlignment()) {
     button_->SetText(base::string16());
     button_->SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(kSystemMenuInfoIcon, SK_ColorBLACK));
     button_->SetMinSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+    return;
   }
+
+  if (::features::IsSingleProcessMash()) {
+    button_->SetText(base::ASCIIToUTF16("SPM"));
+    button_->SetTooltipText(
+        base::ASCIIToUTF16("Running with feature SingleProcessMash"));
+  } else if (::features::IsMultiProcessMash()) {
+    button_->SetText(base::ASCIIToUTF16("Mash"));
+    button_->SetTooltipText(base::ASCIIToUTF16("Running with feature Mash"));
+  } else {
+    NOTREACHED();
+  }
+  button_->SetImage(views::Button::STATE_NORMAL, gfx::ImageSkia());
+  button_->SetMinSize(gfx::Size(0, kTrayItemSize));
 }
 
 }  // namespace ash

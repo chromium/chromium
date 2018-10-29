@@ -102,9 +102,9 @@ class WeakIdentifierMap final
   WeakIdentifierMap<T, ##__VA_ARGS__>&                                \
   WeakIdentifierMap<T, ##__VA_ARGS__>::Instance() {                   \
     using RefType = WeakIdentifierMap<T, ##__VA_ARGS__>;              \
-    DEFINE_STATIC_LOCAL(RefType, map_instance,                        \
+    DEFINE_STATIC_LOCAL(Persistent<RefType>, map_instance,            \
                         (new WeakIdentifierMap<T, ##__VA_ARGS__>())); \
-    return map_instance;                                              \
+    return *map_instance;                                             \
   }
 
 }  // namespace blink

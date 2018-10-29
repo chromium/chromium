@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -36,7 +37,6 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/test_browser_thread_bundle.h"
-#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
@@ -343,12 +343,13 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
     service_ = ExtensionSystem::Get(profile())->extension_service();
     service_->Init();
 
-    extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->
-        SetTestingFactory(profile(), &BuildOverrideRegistrar);
+    extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
+        ->SetTestingFactory(profile(),
+                            base::BindRepeating(&BuildOverrideRegistrar));
     extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(
         profile());
     ToolbarActionsModelFactory::GetInstance()->SetTestingFactory(
-        profile(), &BuildToolbarModel);
+        profile(), base::BindRepeating(&BuildToolbarModel));
   }
 
   ~ExtensionMessageBubbleTest() override {}
@@ -396,15 +397,6 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  scoped_refptr<Extension> CreateExtension(
-      Manifest::Location location,
-      const std::string& data,
-      const std::string& id) {
-    std::unique_ptr<base::DictionaryValue> parsed_manifest(
-        api_test_utils::ParseDictionary(data));
-    return api_test_utils::CreateExtension(location, parsed_manifest.get(), id);
-  }
-
   ExtensionService* service_;
 
  private:
@@ -735,7 +727,7 @@ TEST_F(ExtensionMessageBubbleTest, ShowDevModeBubbleOncePerOriginalProfile) {
     Profile* off_the_record_profile = profile()->GetOffTheRecordProfile();
 
     ToolbarActionsModelFactory::GetInstance()->SetTestingFactory(
-        off_the_record_profile, &BuildToolbarModel);
+        off_the_record_profile, base::BindRepeating(&BuildToolbarModel));
 
     std::unique_ptr<BrowserWindow> off_the_record_window(CreateBrowserWindow());
     std::unique_ptr<Browser> off_the_record_browser(

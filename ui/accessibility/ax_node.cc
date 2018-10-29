@@ -9,12 +9,18 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_table_info.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/gfx/transform.h"
 
 namespace ui {
 
-AXNode::AXNode(AXNode* parent, int32_t id, int32_t index_in_parent)
-    : index_in_parent_(index_in_parent), parent_(parent) {
+AXNode::AXNode(AXNode::OwnerTree* tree,
+               AXNode* parent,
+               int32_t id,
+               int32_t index_in_parent)
+    : tree_(tree), index_in_parent_(index_in_parent), parent_(parent) {
   data_.id = id;
 }
 
@@ -171,6 +177,262 @@ base::string16 AXNode::GetInheritedString16Attribute(
 
 std::ostream& operator<<(std::ostream& stream, const AXNode& node) {
   return stream << node.data().ToString();
+}
+
+bool AXNode::IsTable() const {
+  return IsTableLike(data().role);
+}
+
+int32_t AXNode::GetTableColCount() const {
+  AXTableInfo* table_info = tree_->GetTableInfo(this);
+  if (!table_info)
+    return 0;
+
+  return table_info->col_count;
+}
+
+int32_t AXNode::GetTableRowCount() const {
+  AXTableInfo* table_info = tree_->GetTableInfo(this);
+  if (!table_info)
+    return 0;
+
+  return table_info->row_count;
+}
+
+int32_t AXNode::GetTableCellCount() const {
+  AXTableInfo* table_info = tree_->GetTableInfo(this);
+  if (!table_info)
+    return 0;
+
+  return static_cast<int32_t>(table_info->unique_cell_ids.size());
+}
+
+AXNode* AXNode::GetTableCellFromIndex(int32_t index) const {
+  AXTableInfo* table_info = tree_->GetTableInfo(this);
+  if (!table_info)
+    return nullptr;
+
+  if (index < 0 ||
+      index >= static_cast<int32_t>(table_info->unique_cell_ids.size()))
+    return nullptr;
+
+  return tree_->GetFromId(table_info->unique_cell_ids[index]);
+}
+
+AXNode* AXNode::GetTableCellFromCoords(int32_t row_index,
+                                       int32_t col_index) const {
+  AXTableInfo* table_info = tree_->GetTableInfo(this);
+  if (!table_info)
+    return nullptr;
+
+  if (row_index < 0 || row_index >= table_info->row_count || col_index < 0 ||
+      col_index >= table_info->col_count)
+    return nullptr;
+
+  return tree_->GetFromId(table_info->cell_ids[row_index][col_index]);
+}
+
+void AXNode::GetTableColHeaderNodeIds(
+    int32_t col_index,
+    std::vector<int32_t>* col_header_ids) const {
+  DCHECK(col_header_ids);
+  AXTableInfo* table_info = tree_->GetTableInfo(this);
+  if (!table_info)
+    return;
+
+  if (col_index < 0 || col_index >= table_info->col_count)
+    return;
+
+  for (size_t i = 0; i < table_info->col_headers[col_index].size(); i++)
+    col_header_ids->push_back(table_info->col_headers[col_index][i]);
+}
+
+void AXNode::GetTableRowHeaderNodeIds(
+    int32_t row_index,
+    std::vector<int32_t>* row_header_ids) const {
+  DCHECK(row_header_ids);
+  AXTableInfo* table_info = tree_->GetTableInfo(this);
+  if (!table_info)
+    return;
+
+  if (row_index < 0 || row_index >= table_info->row_count)
+    return;
+
+  for (size_t i = 0; i < table_info->row_headers[row_index].size(); i++)
+    row_header_ids->push_back(table_info->row_headers[row_index][i]);
+}
+
+void AXNode::GetTableUniqueCellIds(std::vector<int32_t>* cell_ids) const {
+  DCHECK(cell_ids);
+  AXTableInfo* table_info = tree_->GetTableInfo(this);
+  if (!table_info)
+    return;
+
+  cell_ids->assign(table_info->unique_cell_ids.begin(),
+                   table_info->unique_cell_ids.end());
+}
+
+std::vector<AXNode*>* AXNode::GetExtraMacNodes() const {
+  AXTableInfo* table_info = tree_->GetTableInfo(this);
+  if (!table_info)
+    return nullptr;
+
+  return &table_info->extra_mac_nodes;
+}
+
+//
+// Table row-like nodes.
+//
+
+bool AXNode::IsTableRow() const {
+  return data().role == ax::mojom::Role::kRow;
+}
+
+int32_t AXNode::GetTableRowRowIndex() const {
+  // TODO(dmazzoni): Compute from AXTableInfo. http://crbug.com/832289
+  int32_t row_index = 0;
+  GetIntAttribute(ax::mojom::IntAttribute::kTableRowIndex, &row_index);
+  return row_index;
+}
+
+//
+// Table cell-like nodes.
+//
+
+bool AXNode::IsTableCellOrHeader() const {
+  return IsCellOrTableHeader(data().role);
+}
+
+int32_t AXNode::GetTableCellIndex() const {
+  if (!IsTableCellOrHeader())
+    return -1;
+
+  AXTableInfo* table_info = GetAncestorTableInfo();
+  if (!table_info)
+    return -1;
+
+  const auto& iter = table_info->cell_id_to_index.find(id());
+  if (iter != table_info->cell_id_to_index.end())
+    return iter->second;
+
+  return -1;
+}
+
+int32_t AXNode::GetTableCellColIndex() const {
+  // TODO(dmazzoni): Compute from AXTableInfo. http://crbug.com/832289
+  int32_t col_index = 0;
+  GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex, &col_index);
+  return col_index;
+}
+
+int32_t AXNode::GetTableCellRowIndex() const {
+  // TODO(dmazzoni): Compute from AXTableInfo. http://crbug.com/832289
+  int32_t row_index = 0;
+  GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex, &row_index);
+  return row_index;
+}
+
+int32_t AXNode::GetTableCellColSpan() const {
+  // If it's not a table cell, don't return a col span.
+  if (!IsTableCellOrHeader())
+    return 0;
+
+  // Otherwise, try to return a colspan, with 1 as the default if it's not
+  // specified.
+  int32_t col_span = 1;
+  if (GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan, &col_span))
+    return col_span;
+
+  return 1;
+}
+
+int32_t AXNode::GetTableCellRowSpan() const {
+  // If it's not a table cell, don't return a row span.
+  if (!IsTableCellOrHeader())
+    return 0;
+
+  // Otherwise, try to return a row span, with 1 as the default if it's not
+  // specified.
+  int32_t row_span = 1;
+  if (GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan, &row_span))
+    return row_span;
+  return 1;
+}
+
+int32_t AXNode::GetTableCellAriaColIndex() const {
+  int32_t col_index = 0;
+  GetIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex, &col_index);
+  return col_index;
+}
+
+int32_t AXNode::GetTableCellAriaRowIndex() const {
+  int32_t row_index = 0;
+  GetIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex, &row_index);
+  return row_index;
+}
+
+void AXNode::GetTableCellColHeaderNodeIds(
+    std::vector<int32_t>* col_header_ids) const {
+  DCHECK(col_header_ids);
+  AXTableInfo* table_info = GetAncestorTableInfo();
+  if (!table_info)
+    return;
+
+  int32_t col_index = GetTableCellColIndex();
+  if (col_index < 0 || col_index >= table_info->col_count)
+    return;
+
+  for (size_t i = 0; i < table_info->col_headers[col_index].size(); i++)
+    col_header_ids->push_back(table_info->col_headers[col_index][i]);
+}
+
+void AXNode::GetTableCellColHeaders(std::vector<AXNode*>* col_headers) const {
+  DCHECK(col_headers);
+
+  std::vector<int32_t> col_header_ids;
+  GetTableCellColHeaderNodeIds(&col_header_ids);
+  IdVectorToNodeVector(col_header_ids, col_headers);
+}
+
+void AXNode::GetTableCellRowHeaderNodeIds(
+    std::vector<int32_t>* row_header_ids) const {
+  DCHECK(row_header_ids);
+  AXTableInfo* table_info = GetAncestorTableInfo();
+  if (!table_info)
+    return;
+
+  int32_t row_index = GetTableCellRowIndex();
+  if (row_index < 0 || row_index >= table_info->row_count)
+    return;
+
+  for (size_t i = 0; i < table_info->row_headers[row_index].size(); i++)
+    row_header_ids->push_back(table_info->row_headers[row_index][i]);
+}
+
+void AXNode::GetTableCellRowHeaders(std::vector<AXNode*>* row_headers) const {
+  DCHECK(row_headers);
+
+  std::vector<int32_t> row_header_ids;
+  GetTableCellRowHeaderNodeIds(&row_header_ids);
+  IdVectorToNodeVector(row_header_ids, row_headers);
+}
+
+AXTableInfo* AXNode::GetAncestorTableInfo() const {
+  const AXNode* node = this;
+  while (node && !node->IsTable())
+    node = node->parent();
+  if (node)
+    return tree_->GetTableInfo(node);
+  return nullptr;
+}
+
+void AXNode::IdVectorToNodeVector(std::vector<int32_t>& ids,
+                                  std::vector<AXNode*>* nodes) const {
+  for (int32_t id : ids) {
+    AXNode* node = tree_->GetFromId(id);
+    if (node)
+      nodes->push_back(node);
+  }
 }
 
 }  // namespace ui

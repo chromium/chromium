@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/bind.h"
 #include "build/buildflag.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -96,7 +97,8 @@ NotificationDisplayServiceTester::NotificationDisplayServiceTester(
   // a fully functional MockNotificationPlatformBridge.
   display_service_ = static_cast<StubNotificationDisplayService*>(
       NotificationDisplayServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile_, &StubNotificationDisplayService::FactoryForTests));
+          profile_, base::BindRepeating(
+                        &StubNotificationDisplayService::FactoryForTests)));
 
   profile_shutdown_subscription_ =
       NotificationDisplayServiceShutdownNotifierFactory::GetInstance()
@@ -112,7 +114,7 @@ NotificationDisplayServiceTester::~NotificationDisplayServiceTester() {
   g_tester = nullptr;
   if (profile_) {
     NotificationDisplayServiceFactory::GetInstance()->SetTestingFactory(
-        profile_, nullptr);
+        profile_, BrowserContextKeyedServiceFactory::TestingFactory());
   }
 }
 

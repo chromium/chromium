@@ -133,8 +133,10 @@ js_compile_bundle("chrome_bundle_all_frames") {
   closure_entry_point = "__crWeb.chromeBundleAllFrames"
   sources = [
     "//components/autofill/ios/browser/resources/autofill_controller.js",
+    "//components/autofill/ios/browser/resources/suggestion_controller.js",
     "//components/autofill/ios/form_util/resources/fill.js",
     "//components/autofill/ios/form_util/resources/form.js",
+    "//components/autofill/ios/form_util/resources/form_handlers.js",
     "resources/accessibility.js",
     "resources/chrome_bundle_all_frames.js",
     "resources/print.js",
@@ -145,10 +147,10 @@ js_compile_bundle("chrome_bundle_main_frame") {
   closure_entry_point = "__crWeb.chromeBundleMainFrame"
   sources = [
     "//components/password_manager/ios/resources/password_controller.js",
+    "//ios/chrome/browser/search_engines/resources/search_engine.js",
     "resources/chrome_bundle_main_frame.js",
     "resources/image_fetch.js",
   ]
-
   deps = [
     ":credential_manager",
     ":payment_request",
@@ -186,10 +188,6 @@ source_set("web_internal") {
     "blocked_popup_tab_helper.mm",
     "chrome_web_client.h",
     "chrome_web_client.mm",
-    "error_page_content.h",
-    "error_page_content.mm",
-    "error_page_generator.h",
-    "error_page_generator.mm",
     "print_tab_helper.h",
     "print_tab_helper.mm",
     "web_state_printer.h",
@@ -216,9 +214,9 @@ source_set("web_internal") {
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/ui:ui_util",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/static_content",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/unzip",
     "//ios/chrome/browser/web",
     "//ios/public/provider/chrome/browser",
@@ -262,7 +260,6 @@ source_set("unit_tests_internal") {
   sources = [
     "blocked_popup_tab_helper_unittest.mm",
     "chrome_web_client_unittest.mm",
-    "error_page_generator_unittest.mm",
   ]
   deps = [
     ":test_support",
@@ -306,6 +303,7 @@ source_set("eg_tests") {
     "progress_indicator_egtest.mm",
     "push_and_replace_state_navigation_egtest.mm",
     "stop_loading_egtest.mm",
+    "tab_order_egtest.mm",
     "visible_url_egtest.mm",
     "window_open_by_dom_egtest.mm",
   ]

@@ -5,12 +5,11 @@
 #include "third_party/blink/renderer/platform/fonts/orientation_iterator.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include <string>
 
 namespace blink {
 
 struct OrientationTestRun {
-  std::string text;
+  const char* const text;
   OrientationIterator::RenderOrientation code;
 };
 
@@ -30,7 +29,7 @@ class OrientationIteratorTest : public testing::Test {
     String text(g_empty_string16_bit);
     Vector<OrientationExpectedRun> expect;
     for (auto& run : runs) {
-      text.append(String::FromUTF8(run.text.c_str()));
+      text.append(String::FromUTF8(run.text));
       expect.push_back(OrientationExpectedRun(text.length(), run.code));
     }
     OrientationIterator orientation_iterator(text.Characters16(), text.length(),

@@ -45,7 +45,7 @@ public class TasksUma {
             }
         }
 
-        recordStatistic(tabInGroupsCount, tabGroupCount, model.getCount());
+        recordParentChildrenTabStatistic(tabInGroupsCount, tabGroupCount, model.getCount());
     }
 
     private static int getTabsInOneGroupCount(
@@ -62,17 +62,31 @@ public class TasksUma {
 
     private static void getTabsRelationship(
             TabModel model, Map<Integer, List<Integer>> tabsRelationList) {
+        int duplicatedTabCount = 0;
+        Map<String, Integer> uniqueUrlCounterMap = new HashMap<>();
+
         for (int i = 0; i < model.getCount(); i++) {
             Tab currentTab = model.getTabAt(i);
+
+            String url = currentTab.getUrl();
+            int urlDuplicatedCount = 0;
+            if (uniqueUrlCounterMap.containsKey(url)) {
+                duplicatedTabCount++;
+                urlDuplicatedCount = uniqueUrlCounterMap.get(url);
+            }
+            uniqueUrlCounterMap.put(url, urlDuplicatedCount + 1);
+
             int parentIdOfCurrentTab = currentTab.getParentId();
             if (!tabsRelationList.containsKey(parentIdOfCurrentTab)) {
                 tabsRelationList.put(parentIdOfCurrentTab, new ArrayList<>());
             }
             tabsRelationList.get(parentIdOfCurrentTab).add(currentTab.getId());
         }
+
+        recordDuplicatedTabStatistic(duplicatedTabCount, model.getCount());
     }
 
-    private static void recordStatistic(
+    private static void recordParentChildrenTabStatistic(
             int tabsInGroupCount, int tabGroupCount, int totalTabCount) {
         if (totalTabCount == 0) return;
 
@@ -100,5 +114,16 @@ public class TasksUma {
         Log.d(TAG, "TabsInGroupCount: %d", tabsInGroupCount);
         Log.d(TAG, "TabsInGroupRatioPercent: %d", (int) tabsInGroupRatioPercent);
         Log.d(TAG, "TabGroupDensityPercent: %d", (int) tabGroupDensityPercent);
+    }
+
+    private static void recordDuplicatedTabStatistic(int duplicatedTabCount, int totalTabCount) {
+        if (totalTabCount == 0 || duplicatedTabCount >= totalTabCount) return;
+
+        RecordHistogram.recordCountHistogram(
+                "Tabs.Tasks.DuplicatedTab.DuplicatedTabCount", duplicatedTabCount);
+
+        int duplicatedTabRatioPercent = 100 * duplicatedTabCount / totalTabCount;
+        RecordHistogram.recordPercentageHistogram(
+                "Tabs.Tasks.DuplicatedTab.DuplicatedTabRatio", duplicatedTabRatioPercent);
     }
 }

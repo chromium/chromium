@@ -5,8 +5,8 @@
 'use strict';
 
 /**
- * Sends a message to the controlling test harness, namely and usually, the
- * chrome FileManagerBrowserTest harness: it expects the message to contain
+ * Sends a command to the controlling test harness, namely and usually, the
+ * chrome FileManagerBrowserTest harness: it expects the command to contain
  * the 'name' of the command, and any required or optional arguments of the
  * command, e.g.,
  *
@@ -16,18 +16,18 @@
  *     entries: entries
  *   }).then(...);
  *
- * @param {Object} message Message object to be sent. The object is converted
- *     to a JSON string prior to sending.
+ * @param {Object} command Test command to send. The object is converted to
+ *     a JSON string prior to sending.
  * @return {Promise} Promise to be fulfilled with the value returned by the
  *     chrome.test.sendMessage callback.
  */
-function sendTestMessage(message) {
-  if (typeof message.name === 'string') {
+function sendTestMessage(command) {
+  if (typeof command.name === 'string') {
     return new Promise(function(fulfill) {
-      chrome.test.sendMessage(JSON.stringify(message), fulfill);
+      chrome.test.sendMessage(JSON.stringify(command), fulfill);
     });
   } else {
-    let error = 'sendTestMessage requires a message.name <string>';
+    const error = 'sendTestMessage requires a command.name <string>';
     throw new Error(error);
   }
 }
@@ -166,6 +166,33 @@ function repeatUntil(checkFunction) {
 }
 
 /**
+ * Sends the test |command| to the browser test harness and awaits a 'string'
+ * result. Calls |callback| with that result.
+ * @param {Object} command Test command to send. Refer to sendTestMessage()
+ *    above for the expected format of a test |command| object.
+ * @param {function(string)} callback Completion callback.
+ * @param {Object=} opt_debug If truthy, log the result.
+ */
+function sendBrowserTestCommand(command, callback, opt_debug) {
+  const caller = getCaller();
+  if (typeof command.name !== 'string')
+    chrome.test.fail('Invalid test command: ' + JSON.stringify(command));
+  repeatUntil(function sendTestCommand() {
+    const tryAgain = pending(caller, 'Sent BrowserTest ' + command.name);
+    return sendTestMessage(command).then((result) => {
+      if (typeof result !== 'string')
+        return tryAgain;
+      if (opt_debug)
+        console.log('BrowserTest ' + command.name + ': ' + result);
+      callback(result);
+    }).catch((error) => {
+      console.log(error.stack || error);
+      return tryAgain;
+    });
+  });
+}
+
+/**
  * Adds the givin entries to the target volume(s).
  * @param {Array<string>} volumeNames Names of target volumes.
  * @param {Array<TestEntryInfo>} entries List of entries to be added.
@@ -209,7 +236,9 @@ var EntryType = Object.freeze({
  */
 var SharedOption = Object.freeze({
   NONE: 'none',
-  SHARED: 'shared'
+  SHARED: 'shared',
+  SHARED_WITH_ME: 'sharedWithMe',
+  NESTED_SHARED_WITH_ME: 'nestedSharedWithMe',
 });
 
 /**
@@ -429,6 +458,17 @@ var ENTRIES = {
     typeText: 'JPEG image'
   }),
 
+  smallJpeg: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'small.jpg',
+    targetPath: 'small.jpg',
+    mimeType: 'image/jpeg',
+    lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
+    nameText: 'small.jpg',
+    sizeText: '1 KB',
+    typeText: 'JPEG image'
+  }),
+
   // An ogg file without a mime type, to confirm that file type detection using
   // file extensions works fine.
   beautiful: new TestEntryInfo({
@@ -480,6 +520,39 @@ var ENTRIES = {
     nameText: 'newly added file.ogg',
     sizeText: '14 KB',
     typeText: 'OGG audio'
+  }),
+
+  tallText: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'tall.txt',
+    targetPath: 'tall.txt',
+    mimeType: 'text/plain',
+    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
+    nameText: 'tall.txt',
+    sizeText: '546 bytes',
+    typeText: 'Plain text',
+  }),
+
+  tallHtml: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'tall.html',
+    targetPath: 'tall.html',
+    mimeType: 'text/html',
+    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
+    nameText: 'tall.html',
+    sizeText: '589 bytes',
+    typeText: 'HTML document',
+  }),
+
+  tallPdf: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'tall.pdf',
+    targetPath: 'tall.pdf',
+    mimeType: 'application/pdf',
+    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
+    nameText: 'tall.pdf',
+    sizeText: '15 KB',
+    typeText: 'PDF document',
   }),
 
   pinned: new TestEntryInfo({
@@ -556,6 +629,28 @@ var ENTRIES = {
     lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
     nameText: 'archive.zip',
     sizeText: '533 bytes',
+    typeText: 'Zip archive'
+  }),
+
+  zipArchiveSJIS: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'archive_sjis.zip',
+    targetPath: 'archive_sjis.zip',
+    mimeType: 'application/x-zip',
+    lastModifiedTime: 'Dec 21, 2018, 12:21 PM',
+    nameText: 'archive_sjis.zip',
+    sizeText: '160 bytes',
+    typeText: 'Zip archive'
+  }),
+
+  zipArchiveWithAbsolutePaths: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'absolute_paths.zip',
+    targetPath: 'absolute_paths.zip',
+    mimeType: 'application/x-zip',
+    lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
+    nameText: 'absolute_paths.zip',
+    sizeText: '400 bytes',
     typeText: 'Zip archive'
   }),
 
@@ -655,7 +750,6 @@ var ENTRIES = {
     },
   }),
 
-
   // Read-only and write-restricted entries.
   // TODO(sashab): Generate all combinations of capabilities inside the test, to
   // ensure maximum coverage.
@@ -751,6 +845,7 @@ var ENTRIES = {
       canShare: true
     },
   }),
+
   directoryMovies: new TestEntryInfo({
     type: EntryType.DIRECTORY,
     targetPath: 'Movies',
@@ -766,6 +861,7 @@ var ENTRIES = {
       canShare: true
     },
   }),
+
   directoryMusic: new TestEntryInfo({
     type: EntryType.DIRECTORY,
     targetPath: 'Music',
@@ -781,6 +877,7 @@ var ENTRIES = {
       canShare: true
     },
   }),
+
   directoryPictures: new TestEntryInfo({
     type: EntryType.DIRECTORY,
     targetPath: 'Pictures',
@@ -795,5 +892,49 @@ var ENTRIES = {
       canDelete: false,
       canShare: true
     },
+  }),
+
+  documentsText: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'text.txt',
+    targetPath: 'Documents/android.txt',
+    mimeType: 'text/plain',
+    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
+    nameText: 'android.txt',
+    sizeText: '51 bytes',
+    typeText: 'Plain text',
+  }),
+
+  neverSync: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'text.txt',
+    targetPath: 'never-sync.txt',
+    mimeType: 'text/plain',
+    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
+    nameText: 'never-sync.txt',
+    sizeText: '51 bytes',
+    typeText: 'Plain text'
+  }),
+
+  sharedDirectory: new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: 'Shared Directory',
+    sharedOption: SharedOption.SHARED_WITH_ME,
+    lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
+    nameText: 'Shared Directory',
+    sizeText: '--',
+    typeText: 'Folder'
+  }),
+
+  sharedDirectoryFile: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'text.txt',
+    targetPath: 'Shared Directory/file.txt',
+    mimeType: 'text/plain',
+    sharedOption: SharedOption.NESTED_SHARED_WITH_ME,
+    lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
+    nameText: 'file.txt',
+    sizeText: '51 bytes',
+    typeText: 'Plain text'
   }),
 };

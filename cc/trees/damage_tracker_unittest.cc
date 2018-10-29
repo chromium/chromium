@@ -924,7 +924,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForHighDPIImageFilter) {
   EXPECT_EQ(expected_child_damage_rect, child_damage_rect);
 }
 
-TEST_F(DamageTrackerTest, VerifyDamageForBackgroundBlurredChild) {
+TEST_F(DamageTrackerTest, VerifyDamageForBackdropBlurredChild) {
   LayerImpl* root = CreateAndSetUpTestTreeWithTwoSurfaces();
   LayerImpl* child1 = root->test_properties()->children[0];
   LayerImpl* child2 = root->test_properties()->children[1];
@@ -937,13 +937,13 @@ TEST_F(DamageTrackerTest, VerifyDamageForBackgroundBlurredChild) {
 
   // Setting the filter will damage the whole surface.
   ClearDamageForAllSurfaces(root);
-  child1->test_properties()->background_filters = filters;
+  child1->test_properties()->backdrop_filters = filters;
   child1->NoteLayerPropertyChanged();
   root->layer_tree_impl()->property_trees()->needs_rebuild = true;
   EmulateDrawingOneFrame(root);
 
   // CASE 1: Setting the update rect should cause the corresponding damage to
-  //         the surface, blurred based on the size of the child's background
+  //         the surface, blurred based on the size of the child's backdrop
   //         blur filter. Note that child1's render surface has a size of
   //         206x208 due to contributions from grand_child1 and grand_child2.
   ClearDamageForAllSurfaces(root);
@@ -964,7 +964,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForBackgroundBlurredChild) {
   EXPECT_EQ(expected_damage_rect.ToString(), root_damage_rect.ToString());
 
   // CASE 2: Setting the update rect should cause the corresponding damage to
-  //         the surface, blurred based on the size of the child's background
+  //         the surface, blurred based on the size of the child's backdrop
   //         blur filter. Since the damage extends to the right/bottom outside
   //         of the blurred layer, only the left/top should end up expanded.
   ClearDamageForAllSurfaces(root);
@@ -1053,7 +1053,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForBackgroundBlurredChild) {
 
   // CASE 7: No changes, so should not damage the surface.
   ClearDamageForAllSurfaces(root);
-  // We want to make sure that the background filter doesn't cause empty damage
+  // We want to make sure that the backdrop filter doesn't cause empty damage
   // to get expanded. We position child1 so that an expansion of the empty rect
   // would have non-empty intersection with child1 in its target space (root
   // space).
@@ -1791,7 +1791,7 @@ TEST_F(DamageTrackerTest, DamageRectTooBigWithFilter) {
   FilterOperations filters;
   filters.Append(FilterOperation::CreateBlurFilter(5.f));
   root->SetDrawsContent(true);
-  root->test_properties()->background_filters = filters;
+  root->test_properties()->backdrop_filters = filters;
 
   // Really far left.
   child1->SetPosition(gfx::PointF(std::numeric_limits<int>::min() + 100, 0));
@@ -1917,7 +1917,7 @@ TEST_F(DamageTrackerTest, DamageRectTooBigInRenderSurfaceWithFilter) {
   FilterOperations filters;
   filters.Append(FilterOperation::CreateBlurFilter(5.f));
   child1->SetDrawsContent(true);
-  child1->test_properties()->background_filters = filters;
+  child1->test_properties()->backdrop_filters = filters;
 
   // Really far left.
   grandchild1->SetPosition(

@@ -74,6 +74,14 @@ Polymer({
       if (behavior.onBeforeShow)
         behavior.onBeforeShow.call(this);
     });
+    window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
+  },
+
+  /**
+   * Called when dialog is shown for the first time.
+   * @private
+   */
+  applyOobeConfiguration_: function() {
     if (this.configuration_applied_)
       return;
     var configuration = Oobe.getInstance().getOobeConfiguration();

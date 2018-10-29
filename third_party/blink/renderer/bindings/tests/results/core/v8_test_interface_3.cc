@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -63,7 +63,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterface3V8Internal {
+namespace test_interface_3_v8_internal {
 
 static void lengthAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -128,30 +128,30 @@ static void indexedPropertyDescriptor(uint32_t index, const v8::PropertyCallback
   }
 }
 
-} // namespace TestInterface3V8Internal
+}  // namespace test_interface_3_v8_internal
 
 void V8TestInterface3::lengthAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface3_length_Getter");
 
-  TestInterface3V8Internal::lengthAttributeGetter(info);
+  test_interface_3_v8_internal::lengthAttributeGetter(info);
 }
 
 void V8TestInterface3::readonlyStringifierAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface3_readonlyStringifierAttribute_Getter");
 
-  TestInterface3V8Internal::readonlyStringifierAttributeAttributeGetter(info);
+  test_interface_3_v8_internal::readonlyStringifierAttributeAttributeGetter(info);
 }
 
 void V8TestInterface3::voidMethodDocumentMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface3_voidMethodDocument");
 
-  TestInterface3V8Internal::voidMethodDocumentMethod(info);
+  test_interface_3_v8_internal::voidMethodDocumentMethod(info);
 }
 
 void V8TestInterface3::toStringMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterface3_toString");
 
-  TestInterface3V8Internal::toStringMethod(info);
+  test_interface_3_v8_internal::toStringMethod(info);
 }
 
 void V8TestInterface3::namedPropertyGetterCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -203,7 +203,7 @@ void V8TestInterface3::indexedPropertyGetterCallback(uint32_t index, const v8::P
 }
 
 void V8TestInterface3::indexedPropertyDescriptorCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
-  TestInterface3V8Internal::indexedPropertyDescriptor(index, info);
+  test_interface_3_v8_internal::indexedPropertyDescriptor(index, info);
 }
 
 void V8TestInterface3::indexedPropertySetterCallback(uint32_t index, v8::Local<v8::Value> v8Value, const v8::PropertyCallbackInfo<v8::Value>& info) {

@@ -65,11 +65,6 @@ bool CastDiscoveryEnabled();
 // enabled.
 bool CastMediaRouteProviderEnabled();
 
-// Returns true if the presentation receiver window for local media casting is
-// available on the current platform.
-// TODO(crbug.com/802332): Remove this when mac_views_browser=1 by default.
-bool PresentationReceiverWindowEnabled();
-
 // Returns true if the Views implementation of the Cast dialog should be used.
 // Returns false if the WebUI implementation should be used.
 bool ShouldUseViewsDialog();

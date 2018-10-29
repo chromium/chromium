@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/input_type_view.h"
 
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -96,7 +97,7 @@ scoped_refptr<ComputedStyle> InputTypeView::CustomStyleForLayoutObject(
 }
 
 TextDirection InputTypeView::ComputedTextDirection() {
-  return GetElement().EnsureComputedStyle()->Direction();
+  return GetElement().ComputedStyleRef().Direction();
 }
 
 void InputTypeView::Blur() {

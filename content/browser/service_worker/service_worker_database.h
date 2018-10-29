@@ -72,6 +72,7 @@ class CONTENT_EXPORT ServiceWorkerDatabase {
     // the waiting version. Then transition to the active version. The stored
     // version may be in the ACTIVATED state or in the INSTALLED state.
     GURL script;
+    blink::mojom::ScriptType script_type;
     blink::mojom::ServiceWorkerUpdateViaCache update_via_cache;
     int64_t version_id;
     bool is_active;

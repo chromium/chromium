@@ -62,7 +62,7 @@ class WebIDBKeyArrayView {
 // The Blink object wrapped by WebIDBKey is immutable, so WebIDBKeyView
 // instances are implicitly const references.
 //
-// Having both WebIDBKeyView and WebIDBView is extra complexity, and we pay this
+// Having both WebIDBKeyView and WebIDBKey is extra complexity, and we pay this
 // price to avoid unnecessary memory copying. Specifically, WebIDBKeyView is
 // used to issue requests to the IndexedDB backing store.
 //
@@ -99,6 +99,19 @@ class WebIDBKeyView {
   // Only valid for NumberType.
   BLINK_EXPORT double Number() const;
 
+  BLINK_EXPORT size_t SizeEstimate() const;
+
+  // TODO(cmp): Ensure |private_| can never be null.
+  //
+  // SizeEstimate() can be called when |private_| is null.  That happens if and
+  // only if the |WebIDBKey| instance is created using WebIDBKey::CreateNull().
+  //
+  // Eventually, WebIDBKey::CreateNull() will change so that case will lead to
+  // a non-null |private_|.  At that time, this null check can change to a
+  // DCHECK that |private_| is not null and the special null case handling can
+  // be removed.
+  BLINK_EXPORT bool IsNull() const { return !private_; }
+
  private:
   const IDBKey* const private_;
 };
@@ -124,17 +137,24 @@ class WebIDBKey {
   BLINK_EXPORT static WebIDBKey CreateNull() noexcept { return WebIDBKey(); }
 
   // The default constructor must not be used explicitly.
-  // It is only provided for WebVector's use.
+  // It is only provided for WebVector and Mojo's use.
   BLINK_EXPORT WebIDBKey() noexcept;
 
   BLINK_EXPORT WebIDBKey(WebIDBKey&&) noexcept;
   BLINK_EXPORT WebIDBKey& operator=(WebIDBKey&&) noexcept;
+
+  // TODO(cmp): Remove copy and assignment constructors when Vector<->WebVector
+  //            conversions are no longer needed.
+  BLINK_EXPORT WebIDBKey(const WebIDBKey& rkey);
+  BLINK_EXPORT WebIDBKey& operator=(const WebIDBKey& rkey);
 
   BLINK_EXPORT ~WebIDBKey();
 
   BLINK_EXPORT WebIDBKeyView View() const {
     return WebIDBKeyView(private_.get());
   }
+
+  BLINK_EXPORT size_t SizeEstimate() const { return View().SizeEstimate(); }
 
 #if INSIDE_BLINK
   explicit WebIDBKey(std::unique_ptr<IDBKey>) noexcept;
@@ -147,14 +167,11 @@ class WebIDBKey {
 #endif  // INSIDE_BLINK
 
  private:
-  // WebIDBKey has to be move-only, because std::unique_ptr is move-only. Making
-  // the restriction explicit results in slightly better compilation error
-  // messages in code that attempts copying.
-  WebIDBKey(const WebIDBKey&) = delete;
-  WebIDBKey& operator=(const WebIDBKey&) = delete;
 
   std::unique_ptr<IDBKey> private_;
 };
+
+using WebIDBIndexKeys = std::pair<int64_t, WebVector<WebIDBKey>>;
 
 }  // namespace blink
 

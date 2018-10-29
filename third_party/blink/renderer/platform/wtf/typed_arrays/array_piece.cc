@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/wtf/typed_arrays/array_piece.h"
 
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/typed_arrays/array_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/typed_arrays/array_buffer_view.h"
 
@@ -20,7 +21,7 @@ ArrayPiece::ArrayPiece(void* data, unsigned byte_length) {
 
 ArrayPiece::ArrayPiece(ArrayBuffer* buffer) {
   if (buffer) {
-    InitWithData(buffer->Data(), buffer->ByteLength());
+    InitWithData(buffer->Data(), SafeCast<unsigned>(buffer->ByteLength()));
   } else {
     InitNull();
   }

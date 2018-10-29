@@ -83,17 +83,20 @@ id<GREYMatcher> ToolsMenuButton();
 // Matcher for the Share menu button.
 id<GREYMatcher> ShareButton();
 
+// Returns the GREYMatcher for the button that opens the tab switcher.
+id<GREYMatcher> TabletTabSwitcherOpenButton();
+
 // Matcher for show tabs button.
 id<GREYMatcher> ShowTabsButton();
 
-// Matcher for SettingsSwitchCell.
-id<GREYMatcher> SettingsSwitchCell(NSString* accessibilityIdentifier,
-                                   BOOL isToggledOn);
+// Matcher for LegacySettingsSwitchCell.
+id<GREYMatcher> LegacySettingsSwitchCell(NSString* accessibilityIdentifier,
+                                         BOOL isToggledOn);
 
-// Matcher for SettingsSwitchCell.
-id<GREYMatcher> SettingsSwitchCell(NSString* accessibilityIdentifier,
-                                   BOOL isToggledOn,
-                                   BOOL isEnabled);
+// Matcher for LegacySettingsSwitchCell.
+id<GREYMatcher> LegacySettingsSwitchCell(NSString* accessibilityIdentifier,
+                                         BOOL isToggledOn,
+                                         BOOL isEnabled);
 
 // Matcher for SyncSwitchCell.
 id<GREYMatcher> SyncSwitchCell(NSString* accessibilityLabel, BOOL isToggledOn);
@@ -237,6 +240,9 @@ id<GREYMatcher> ContextMenuCopyButton();
 
 // Returns matcher for defoucesed omnibox on a new tab.
 id<GREYMatcher> NewTabPageOmnibox();
+
+// Returns a matcher for the current WebView.
+id<GREYMatcher> WebViewMatcher();
 
 }  // namespace chrome_test_util
 

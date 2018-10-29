@@ -495,8 +495,7 @@ bool Command::Parse(const base::DictionaryValue* command,
   command->GetBoolean(keys::kGlobal, &global);
 
   // Normalize the suggestions.
-  for (SuggestionMap::iterator iter = suggestions.begin();
-       iter != suggestions.end(); ++iter) {
+  for (auto iter = suggestions.begin(); iter != suggestions.end(); ++iter) {
     // Before we normalize Ctrl to Command we must detect when the developer
     // specified Command in the Default section, which will work on Mac after
     // normalization but only fail on other platforms when they try it out on

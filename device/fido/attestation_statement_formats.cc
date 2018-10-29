@@ -119,18 +119,18 @@ FidoAttestationStatement::FidoAttestationStatement(
 
 FidoAttestationStatement::~FidoAttestationStatement() = default;
 
-cbor::CBORValue::MapValue FidoAttestationStatement::GetAsCBORMap() const {
-  cbor::CBORValue::MapValue attestation_statement_map;
-  attestation_statement_map[cbor::CBORValue(kSignatureKey)] =
-      cbor::CBORValue(signature_);
+cbor::Value::MapValue FidoAttestationStatement::GetAsCBORMap() const {
+  cbor::Value::MapValue attestation_statement_map;
+  attestation_statement_map[cbor::Value(kSignatureKey)] =
+      cbor::Value(signature_);
 
-  std::vector<cbor::CBORValue> certificate_array;
+  std::vector<cbor::Value> certificate_array;
   for (const auto& cert : x509_certificates_) {
-    certificate_array.push_back(cbor::CBORValue(cert));
+    certificate_array.push_back(cbor::Value(cert));
   }
 
-  attestation_statement_map[cbor::CBORValue(kX509CertKey)] =
-      cbor::CBORValue(std::move(certificate_array));
+  attestation_statement_map[cbor::Value(kX509CertKey)] =
+      cbor::Value(std::move(certificate_array));
 
   return attestation_statement_map;
 }
@@ -174,22 +174,22 @@ PackedAttestationStatement::PackedAttestationStatement(
 
 PackedAttestationStatement::~PackedAttestationStatement() = default;
 
-cbor::CBORValue::MapValue PackedAttestationStatement::GetAsCBORMap() const {
-  cbor::CBORValue::MapValue attestation_statement_map;
+cbor::Value::MapValue PackedAttestationStatement::GetAsCBORMap() const {
+  cbor::Value::MapValue attestation_statement_map;
   // alg
-  attestation_statement_map[cbor::CBORValue(kAlgorithmKey)] =
-      cbor::CBORValue(static_cast<int>(algorithm_));
+  attestation_statement_map[cbor::Value(kAlgorithmKey)] =
+      cbor::Value(static_cast<int>(algorithm_));
   // sig
-  attestation_statement_map[cbor::CBORValue(kSignatureKey)] =
-      cbor::CBORValue(signature_);
+  attestation_statement_map[cbor::Value(kSignatureKey)] =
+      cbor::Value(signature_);
   // x5c (optional)
   if (!x509_certificates_.empty()) {
-    std::vector<cbor::CBORValue> certificate_array;
+    std::vector<cbor::Value> certificate_array;
     for (const auto& cert : x509_certificates_) {
-      certificate_array.push_back(cbor::CBORValue(cert));
+      certificate_array.push_back(cbor::Value(cert));
     }
-    attestation_statement_map[cbor::CBORValue(kX509CertKey)] =
-        cbor::CBORValue(std::move(certificate_array));
+    attestation_statement_map[cbor::Value(kX509CertKey)] =
+        cbor::Value(std::move(certificate_array));
   }
   return attestation_statement_map;
 }

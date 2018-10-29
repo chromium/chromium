@@ -4,6 +4,10 @@
 
 static_library("core") {
   sources = [
+    "cached_image_fetcher.cc",
+    "cached_image_fetcher.h",
+    "cached_image_fetcher_service.cc",
+    "cached_image_fetcher_service.h",
     "image_data_fetcher.cc",
     "image_data_fetcher.h",
     "image_decoder.h",
@@ -15,11 +19,12 @@ static_library("core") {
     "request_metadata.h",
   ]
   deps = [
-    "storage",
+    "cache",
   ]
   public_deps = [
     "//base",
     "//components/data_use_measurement/core",
+    "//components/keyed_service/core",
     "//net",
     "//services/network/public/cpp",
     "//ui/gfx",
@@ -31,6 +36,8 @@ static_library("core") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "fake_image_decoder.cc",
+    "fake_image_decoder.h",
     "mock_image_decoder.cc",
     "mock_image_decoder.h",
     "mock_image_fetcher.cc",
@@ -40,12 +47,15 @@ static_library("test_support") {
     ":core",
     "//services/network:test_support",
     "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "cached_image_fetcher_unittest.cc",
     "image_data_fetcher_unittest.cc",
     "image_fetcher_impl_unittest.cc",
     "request_metadata_unittest.cc",
@@ -53,7 +63,11 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":test_support",
-    "storage:storage_unit_tests",
+    "cache",
+    "cache:cache_unit_tests",
+    "cache/proto",
+    "//components/leveldb_proto:test_support",
+    "//components/prefs:test_support",
     "//net",
     "//net:test_support",
     "//testing/gmock",

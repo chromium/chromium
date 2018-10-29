@@ -18,7 +18,7 @@
 #include "net/cert/scoped_nss_types.h"
 #elif defined(OS_WIN)
 #include <windows.h>
-#include "crypto/wincrypt_shim.h"
+#include "base/win/wincrypt_shim.h"
 #elif defined(OS_MACOSX)
 #include <CoreFoundation/CFArray.h>
 #include <Security/SecTrust.h>

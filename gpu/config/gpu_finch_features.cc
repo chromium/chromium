@@ -28,15 +28,16 @@ const base::Feature kDefaultEnableOopRasterization{
 const base::Feature kDefaultPassthroughCommandDecoder{
     "DefaultPassthroughCommandDecoder", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Use DirectComposition layers (overlays) for video if supported. Overridden by
-// --enable-direct-composition-layers and --disable-direct-composition-layers.
-const base::Feature kDirectCompositionOverlays{
-    "DirectCompositionOverlays", base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if defined(OS_ANDROID)
 // Use android AImageReader when playing videos with MediaPlayer.
 const base::Feature kAImageReaderMediaPlayer{"AImageReaderMediaPlayer",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Use android SurfaceControl API for managing display compositor's buffer queue
+// and using overlays on Android.
+// Note that the feature only works with VizDisplayCompositor enabled.
+const base::Feature kAndroidSurfaceControl{"AndroidSurfaceControl",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Overrides preferred overlay format to NV12 instead of YUY2.
@@ -49,5 +50,11 @@ const base::Feature kDirectCompositionPreferNV12Overlays{
 // https://crbug.com/868400 is resolved.
 const base::Feature kVaapiJpegImageDecodeAcceleration{
     "VaapiJpegImageDecodeAcceleration", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Causes us to use the SharedImageManager, removing support for the old
+// mailbox system. Any consumers of the GPU process using the old mailbox
+// system will experience undefined results.
+const base::Feature kSharedImageManager{"SharedImageManager",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features

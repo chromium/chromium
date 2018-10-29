@@ -17,7 +17,6 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 extern const char kClearTokenService[];
 extern const char kDisableSigninScopedDeviceId[];
-extern const char kExtensionsMultiAccount[];
 
 #if !BUILDFLAG(ENABLE_MIRROR)
 // Note: Account consistency (Mirror) is already enabled on mobile platforms, so

@@ -30,13 +30,10 @@ class ShellSystemLogsFetcherTest : public ExtensionsTest {
   ShellSystemLogsFetcherTest() = default;
   ~ShellSystemLogsFetcherTest() override = default;
 
-  scoped_refptr<Extension> BuildExtension(const std::string& name,
-                                          const std::string& version,
-                                          const std::string& id) {
-    return ExtensionBuilder(name)
-        .SetManifestKey("version", version)
-        .SetID(id)
-        .Build();
+  scoped_refptr<const Extension> BuildExtension(const std::string& name,
+                                                const std::string& version,
+                                                const std::string& id) {
+    return ExtensionBuilder(name).SetVersion(version).SetID(id).Build();
   }
 
   void OnSystemLogsResponse(
@@ -61,10 +58,10 @@ TEST_F(ShellSystemLogsFetcherTest, TestLogSources) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
   EXPECT_TRUE(registry);
 
-  std::vector<scoped_refptr<Extension>> extensions{
+  std::vector<scoped_refptr<const Extension>> extensions{
       BuildExtension("My First Extension", "1.1", std::string(32, 'a')),
       BuildExtension("My Second Extension", "1.2", std::string(32, 'b'))};
-  for (const scoped_refptr<Extension>& extension : extensions)
+  for (const scoped_refptr<const Extension>& extension : extensions)
     registry->AddEnabled(extension);
 
   system_logs::SystemLogsFetcher* fetcher =
@@ -80,7 +77,7 @@ TEST_F(ShellSystemLogsFetcherTest, TestLogSources) {
 
   const base::StringPiece fmt = "$1 : $2 : version $3\n";
   std::string expected_extensions = "";
-  for (const scoped_refptr<Extension>& extension : extensions) {
+  for (const scoped_refptr<const Extension>& extension : extensions) {
     std::string version_mangled;
     base::ReplaceChars(extension->VersionString(), ".", "_", &version_mangled);
     expected_extensions += base::ReplaceStringPlaceholders(
@@ -88,7 +85,7 @@ TEST_F(ShellSystemLogsFetcherTest, TestLogSources) {
   }
   EXPECT_EQ(expected_extensions, response()->at("extensions"));
 
-  for (const scoped_refptr<Extension>& extension : extensions)
+  for (const scoped_refptr<const Extension>& extension : extensions)
     registry->RemoveEnabled(extension->id());
 }
 

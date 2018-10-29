@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import org.chromium.base.Callback;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.modelutil.ListObservable;
-import org.chromium.chrome.browser.ntp.ContextMenuManager;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder.PartialBindCallback;
 import org.chromium.chrome.browser.ntp.snippets.CategoryInt;
 import org.chromium.chrome.browser.ntp.snippets.CategoryStatus;
@@ -89,16 +89,9 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
 
         if (mAboveTheFoldView != null) mRoot.addChildren(new AboveTheFoldItem());
 
-        if (SuggestionsConfig.scrollToLoad()) {
-            // If scroll-to-load is enabled, show the sign-in promo above suggested content.
-            if (mSigninPromo != null) mRoot.addChildren(mSigninPromo);
-            mRoot.addChildren(mAllDismissed);
-            mRoot.addChildren(mSections);
-        } else {
-            mRoot.addChildren(mSections);
-            if (mSigninPromo != null) mRoot.addChildren(mSigninPromo);
-            mRoot.addChildren(mAllDismissed);
-        }
+        // Show the sign-in promo above suggested content.
+        if (mSigninPromo != null) mRoot.addChildren(mSigninPromo);
+        mRoot.addChildren(mAllDismissed, mSections);
 
         mFooter = new Footer();
         mRoot.addChildren(mFooter);

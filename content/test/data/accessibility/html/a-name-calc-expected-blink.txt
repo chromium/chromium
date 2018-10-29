@@ -17,6 +17,6 @@ rootWebArea
 ++link name='LabelledBy3' nameFrom=relatedElement
 ++++staticText name='InnerText3' nameFrom=contents
 ++++++inlineTextBox name='InnerText3' nameFrom=contents
-++link name='Title4' nameFrom=attribute
+++link name='Title4' nameFrom=title
 ++link name='Label5' nameFrom=attribute
 ++link name='LabelledBy6' nameFrom=relatedElement

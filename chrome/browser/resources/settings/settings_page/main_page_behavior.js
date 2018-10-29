@@ -158,7 +158,7 @@ const MainPageBehaviorImpl = {
         else
           promise = this.expandSection_(currentSection);
       } else if (scrollToSection) {
-        currentSection.scrollIntoView();
+        currentSection.show();
       }
     } else if (
         this.tagName == 'SETTINGS-BASIC-PAGE' && settings.routes.ADVANCED &&

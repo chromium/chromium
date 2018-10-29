@@ -184,8 +184,6 @@ static void GL_BINDING_CALL Mock_glColorMask(GLboolean red,
                                              GLboolean blue,
                                              GLboolean alpha);
 static void GL_BINDING_CALL Mock_glCompileShader(GLuint shader);
-static void GL_BINDING_CALL
-Mock_glCompressedCopyTextureCHROMIUM(GLuint sourceId, GLuint destId);
 static void GL_BINDING_CALL Mock_glCompressedTexImage2D(GLenum target,
                                                         GLint level,
                                                         GLenum internalformat,

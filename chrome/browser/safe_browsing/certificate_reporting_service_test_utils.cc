@@ -5,10 +5,12 @@
 #include "chrome/browser/safe_browsing/certificate_reporting_service_test_utils.h"
 
 #include "base/strings/string_piece.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ssl/certificate_error_report.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -165,8 +167,8 @@ DelayableCertReportURLRequestJob::DelayableCertReportURLRequestJob(
 
 DelayableCertReportURLRequestJob::~DelayableCertReportURLRequestJob() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   destruction_callback_);
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           destruction_callback_);
 }
 
 base::WeakPtr<DelayableCertReportURLRequestJob>

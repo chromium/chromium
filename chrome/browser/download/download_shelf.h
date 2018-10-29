@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/download/download_ui_model.h"
 
 class Browser;
 
@@ -17,17 +18,13 @@ namespace gfx {
 class Canvas;
 }
 
-namespace content {
-class DownloadManager;
-}
-
-namespace download {
-class DownloadItem;
-}
-
 namespace ui {
 class ThemeProvider;
 }
+
+using offline_items_collection::ContentId;
+using offline_items_collection::OfflineItem;
+using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
 
 // This is an abstract base class for platform specific download shelf
 // implementations.
@@ -86,7 +83,7 @@ class DownloadShelf {
   // DownloadItemModel::ShouldRemoveFromShelfWhenComplete()). These transient
   // downloads are added to the shelf after a delay. If the download completes
   // before the delay duration, it will not be added to the shelf at all.
-  void AddDownload(download::DownloadItem* download);
+  void AddDownload(DownloadUIModelPtr download);
 
   // The browser view needs to know when we are going away to properly return
   // the resize corner size to WebKit so that we don't draw on top of it.
@@ -116,7 +113,7 @@ class DownloadShelf {
   bool is_hidden() { return is_hidden_; }
 
  protected:
-  virtual void DoAddDownload(download::DownloadItem* download) = 0;
+  virtual void DoAddDownload(DownloadUIModelPtr download) = 0;
   virtual void DoOpen() = 0;
   virtual void DoClose(CloseReason reason) = 0;
   virtual void DoHide() = 0;
@@ -126,20 +123,16 @@ class DownloadShelf {
   // Protected virtual for testing.
   virtual base::TimeDelta GetTransientDownloadShowDelay();
 
-  // Returns the DownloadManager associated with this DownloadShelf. All
-  // downloads that are shown on this shelf is expected to belong to this
-  // DownloadManager. Protected virtual for testing.
-  virtual content::DownloadManager* GetDownloadManager();
+  // Virtual for testing.
+  virtual Profile* profile() const;
 
  private:
   // Show the download on the shelf immediately. Also displayes the download
   // started animation if necessary.
-  void ShowDownload(download::DownloadItem* download);
+  void ShowDownload(DownloadUIModelPtr download);
 
-  // Similar to ShowDownload() but refers to the download using an ID. This
-  // download should belong to the DownloadManager returned by
-  // GetDownloadManager().
-  void ShowDownloadById(int32_t download_id);
+  // Similar to ShowDownload() but refers to the download using an ID.
+  void ShowDownloadById(ContentId id);
 
   bool should_show_on_unhide_;
   bool is_hidden_;

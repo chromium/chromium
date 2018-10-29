@@ -36,12 +36,10 @@ class CookieManager;
 // embedder.
 class SigninClient : public KeyedService {
  public:
-  ~SigninClient() override = default;
+  // Argument to PreSignOut() callback, indicating client decision.
+  enum class SignoutDecision { ALLOW_SIGNOUT, DISALLOW_SIGNOUT };
 
-  // Called before Google signout started, call |sign_out| to start the sign out
-  // process.
-  virtual void PreSignOut(const base::Callback<void()>& sign_out,
-                          signin_metrics::ProfileSignout signout_source_metric);
+  ~SigninClient() override = default;
 
   // Perform Chrome-specific sign out. This happens when user signs out.
   virtual void OnSignedOut() = 0;
@@ -76,6 +74,14 @@ class SigninClient : public KeyedService {
   virtual void PostSignedIn(const std::string& account_id,
                             const std::string& username,
                             const std::string& password) {}
+
+  // Called before Google sign-out started. Implementers must run the
+  // |on_signout_decision_reached|, passing a SignoutDecision to allow/disallow
+  // sign-out to continue. When to disallow sign-out is implementation specific.
+  // Sign-out is always allowed by default.
+  virtual void PreSignOut(
+      base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
+      signin_metrics::ProfileSignout signout_source_metric);
 
   // Called before calling the GAIA logout endpoint.
   // For iOS, cookies should be cleaned up.

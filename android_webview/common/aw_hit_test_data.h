@@ -22,7 +22,7 @@ struct AwHitTestData {
     // except the special case described below.
     // For special case of invalid or javascript scheme url that would
     // otherwise be type an LINK type, |href| will contain the javascript
-    // string in the href attribute, and |anchor_text|i and |img_src| contain
+    // string in the href attribute, and |anchor_text| and |img_src| contain
     // their normal values for the respective type.
     UNKNOWN_TYPE = 0,
 

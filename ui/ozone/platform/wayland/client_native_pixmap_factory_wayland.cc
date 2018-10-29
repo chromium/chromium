@@ -16,7 +16,8 @@ namespace ui {
 class ClientNativePixmapFactoryWayland : public gfx::ClientNativePixmapFactory {
  public:
   ClientNativePixmapFactoryWayland() {
-    dmabuf_factory_.reset(gfx::CreateClientNativePixmapFactoryDmabuf());
+    dmabuf_factory_.reset(gfx::CreateClientNativePixmapFactoryDmabuf(
+        true /* supports_native_pixmap_import_from_dmabuf */));
   }
   ~ClientNativePixmapFactoryWayland() override {}
 
@@ -25,12 +26,6 @@ class ClientNativePixmapFactoryWayland : public gfx::ClientNativePixmapFactory {
                                 gfx::BufferUsage usage) const override {
     OzonePlatform::PlatformProperties properties =
         OzonePlatform::GetInstance()->GetPlatformProperties();
-    if (properties.supported_buffer_formats.empty()) {
-      // If the compositor did not announce supported buffer formats, do our
-      // best and assume those are supported.
-      return dmabuf_factory_->IsConfigurationSupported(format, usage);
-    }
-
     for (auto buffer_format : properties.supported_buffer_formats) {
       if (buffer_format == format)
         return dmabuf_factory_->IsConfigurationSupported(format, usage);

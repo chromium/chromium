@@ -7,8 +7,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
-#include "third_party/blink/renderer/platform/fonts/paint_text_blob.h"
-#include "third_party/blink/renderer/platform/fonts/paint_typeface.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
@@ -94,9 +92,9 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   }
 
   struct BlobInfo {
-    BlobInfo(scoped_refptr<PaintTextBlob> b, CanvasRotationInVertical r)
+    BlobInfo(sk_sp<SkTextBlob> b, CanvasRotationInVertical r)
         : blob(std::move(b)), rotation(r) {}
-    scoped_refptr<PaintTextBlob> blob;
+    sk_sp<SkTextBlob> blob;
     CanvasRotationInVertical rotation;
   };
 
@@ -133,7 +131,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   const Type type_;
 
   // Current text blob state.
-  PaintTextBlobBuilder builder_;
+  SkTextBlobBuilder builder_;
   CanvasRotationInVertical builder_rotation_ =
       CanvasRotationInVertical::kRegular;
   size_t builder_run_count_ = 0;

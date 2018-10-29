@@ -126,7 +126,16 @@ class SERVICE_MANAGER_SANDBOX_EXPORT SandboxLinux {
   // a new unprivileged namespace. This is a layer-1 sandbox.
   // In order for this sandbox to be effective, it must be "sealed" by calling
   // InitializeSandbox().
+  // Terminates the process in case the sandboxing operations cannot complete
+  // successfully.
   void EngageNamespaceSandbox(bool from_zygote);
+
+  // Performs the same actions as EngageNamespaceSandbox, but is allowed to
+  // to fail. This is useful when sandboxed non-renderer processes could
+  // benefit from extra sandboxing but is not strictly required on systems that
+  // don't support unprivileged user namespaces.
+  // Zygote should use EngageNamespaceSandbox instead.
+  bool EngageNamespaceSandboxIfPossible();
 
   // Return a list of file descriptors to close if PreinitializeSandbox() ran
   // but InitializeSandbox() won't. Avoid using.
@@ -241,6 +250,12 @@ class SERVICE_MANAGER_SANDBOX_EXPORT SandboxLinux {
   // Stop |thread| and make sure it does not appear in /proc/self/tasks/
   // anymore.
   void StopThreadAndEnsureNotCounted(base::Thread* thread) const;
+
+  // Engages the namespace sandbox as described for EngageNamespaceSandbox.
+  // Returns false if it fails to transition to a new user namespace, but
+  // after transitioning to a new user namespace we don't allow this function
+  // to fail.
+  bool EngageNamespaceSandboxInternal(bool from_zygote);
 
   // A file descriptor to /proc. It's dangerous to have it around as it could
   // allow for sandbox bypasses. It needs to be closed before we consider

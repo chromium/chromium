@@ -71,4 +71,13 @@ void TestWindowServiceDelegate::CancelDragLoop(aura::Window* window) {
   cancel_drag_loop_called_ = true;
 }
 
+aura::Window* TestWindowServiceDelegate::GetTopmostWindowAtPoint(
+    const gfx::Point& location_in_screen,
+    const std::set<aura::Window*>& ignore,
+    aura::Window** real_topmost) {
+  if (real_topmost)
+    *real_topmost = real_topmost_;
+  return topmost_;
+}
+
 }  // namespace ws

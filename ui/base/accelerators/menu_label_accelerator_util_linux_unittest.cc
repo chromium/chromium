@@ -49,29 +49,4 @@ TEST(MenuLabelAcceleratorTest, RemoveWindowsStyleAccelerators) {
   }
 }
 
-TEST(MenuLabelAcceleratorTest, EscapeWindowsStyleAccelerators) {
-  static const struct {
-    const char* input;
-    const char* output;
-  } cases[] = {
-    { "nothing", "nothing" },
-    { "foo &bar", "foo &&bar" },
-    { "foo &&bar", "foo &&&&bar" },
-    { "foo &&&bar", "foo &&&&&&bar" },
-    { "&foo bar", "&&foo bar" },
-    { "&&foo bar", "&&&&foo bar" },
-    { "&&&foo bar", "&&&&&&foo bar" },
-    { "&foo &bar", "&&foo &&bar" },
-    { "&&foo &&bar", "&&&&foo &&&&bar" },
-    { "f&o&o ba&r", "f&&o&&o ba&&r" },
-    { "foo_&_bar", "foo_&&_bar" },
-    { "&_foo_bar_&", "&&_foo_bar_&&" },
-  };
-
-  for (size_t i = 0; i < arraysize(cases); ++i) {
-    std::string result = EscapeWindowsStyleAccelerators(cases[i].input);
-    EXPECT_EQ(cases[i].output, result);
-  }
-}
-
 }  // namespace ui

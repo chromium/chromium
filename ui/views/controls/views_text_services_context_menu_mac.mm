@@ -114,7 +114,7 @@ class ViewsTextServicesContextMenuMac
     gfx::DecoratedText text;
     if (client()->GetWordLookupDataFromSelection(&text, &baseline_point)) {
       Widget* widget = client()->GetWidget();
-      gfx::NativeView view = widget->GetNativeView();
+      NSView* view = widget->GetNativeView().GetNativeNSView();
       views::View::ConvertPointToTarget(client(), widget->GetRootView(),
                                         &baseline_point);
 

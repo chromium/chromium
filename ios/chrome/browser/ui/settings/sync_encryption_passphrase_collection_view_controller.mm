@@ -18,7 +18,6 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/profile_oauth2_token_service_factory.h"
@@ -37,7 +36,7 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_utils.h"
 #import "ios/chrome/browser/ui/settings/sync_utils/sync_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -239,9 +238,6 @@ const CGFloat kSpinnerButtonPadding = 18;
     [self unregisterTextField:passphrase_];
   }
   passphrase_ = [[UITextField alloc] init];
-  if (!experimental_flags::IsSettingsUIRebootEnabled()) {
-    [passphrase_ setFont:[MDCTypography body1Font]];
-  }
   [passphrase_ setSecureTextEntry:YES];
   [passphrase_ setBackgroundColor:[UIColor clearColor]];
   [passphrase_ setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
@@ -317,29 +313,6 @@ const CGFloat kSpinnerButtonPadding = 18;
   return MDCCellDefaultOneLineHeight;
 }
 
-#pragma mark - UICollectionViewDataSource
-
-- (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
-                 cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  UICollectionViewCell* cell =
-      [super collectionView:collectionView cellForItemAtIndexPath:indexPath];
-  CollectionViewItem* item =
-      [self.collectionViewModel itemAtIndexPath:indexPath];
-  if (item.type == ItemTypeMessage) {
-    // Changing the font weight may reflow the text onto a different number of
-    // lines, but the collection view doesn't know that it needs to layout the
-    // cell again. Sidestep this bug by leaving the font at a normal weight
-    // under UIRefresh.
-    if (!experimental_flags::IsSettingsUIRebootEnabled()) {
-      CardMultilineCell* messageCell =
-          base::mac::ObjCCastStrict<CardMultilineCell>(cell);
-      messageCell.textLabel.font =
-          [[MDCTypography fontLoader] mediumFontOfSize:14];
-    }
-  }
-  return cell;
-}
-
 #pragma mark - UICollectionViewDelegate
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -392,8 +365,7 @@ const CGFloat kSpinnerButtonPadding = 18;
     }
   } else {
     service->EnableEncryptEverything();
-    service->SetEncryptionPassphrase(
-        passphrase, browser_sync::ProfileSyncService::EXPLICIT);
+    service->SetEncryptionPassphrase(passphrase);
   }
   [self reloadData];
 }

@@ -1,5 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 104x600
-  LayoutNGBlockFlow {HTML} at (0,0) size 104x600 [border: (2px solid #000000)]
-    LayoutNGBlockFlow {BODY} at (10,10) size 0x580

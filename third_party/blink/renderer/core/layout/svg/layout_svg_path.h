@@ -46,7 +46,6 @@ class LayoutSVGPath final : public LayoutSVGShape {
   void WillBeDestroyed() override;
 
   void UpdateShapeFromElement() override;
-  FloatRect HitTestStrokeBoundingBox() const override;
 
   void UpdateMarkers();
 

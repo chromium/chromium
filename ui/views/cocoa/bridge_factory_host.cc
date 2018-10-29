@@ -4,10 +4,14 @@
 
 #include "ui/views/cocoa/bridge_factory_host.h"
 
+#include "mojo/public/cpp/bindings/interface_request.h"
+
 namespace views {
 
 BridgeFactoryHost::BridgeFactoryHost(
-    views_bridge_mac::mojom::BridgeFactoryRequest* request) {
+    uint64_t host_id,
+    views_bridge_mac::mojom::BridgeFactoryAssociatedRequest* request)
+    : host_id_(host_id) {
   *request = mojo::MakeRequest(&bridge_factory_ptr_);
 }
 

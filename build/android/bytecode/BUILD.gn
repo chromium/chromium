@@ -11,6 +11,7 @@ java_binary("java_bytecode_rewriter") {
   java_files = [
     "java/org/chromium/bytecode/AssertionEnablerClassAdapter.java",
     "java/org/chromium/bytecode/ByteCodeProcessor.java",
+    "java/org/chromium/bytecode/ClassPathValidator.java",
     "java/org/chromium/bytecode/CustomClassLoaderClassWriter.java",
     "java/org/chromium/bytecode/CustomResourcesClassAdapter.java",
     "java/org/chromium/bytecode/TypeUtils.java",

@@ -139,12 +139,8 @@ void SelectPopup::SelectMenuItems(JNIEnv* env,
     return;
   }
 
-  int selected_count = env->GetArrayLength(indices);
   std::vector<int> selected_indices;
-  jint* indices_ptr = env->GetIntArrayElements(indices, NULL);
-  for (int i = 0; i < selected_count; ++i)
-    selected_indices.push_back(indices_ptr[i]);
-  env->ReleaseIntArrayElements(indices, indices_ptr, JNI_ABORT);
+  base::android::JavaIntArrayToIntVector(env, indices, &selected_indices);
   rfhi->DidSelectPopupMenuItems(selected_indices);
 }
 

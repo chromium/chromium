@@ -37,7 +37,6 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/history/public",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/main:tab_switcher",
-    "//ios/chrome/browser/ui/ntp/recent_tabs",
     "//ios/chrome/browser/ui/recent_tabs",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
     "//ios/chrome/browser/web",
@@ -82,12 +81,14 @@ source_set("tab_grid_ui") {
     "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
-    "//ios/chrome/browser/ui:ui_util",
+    "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
     "//ios/chrome/browser/ui/tab_grid/transitions",
     "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui_util",
+    "//ios/web/public",
     "//ui/base",
   ]
 }
@@ -135,9 +136,8 @@ source_set("egtest_support") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui:ui_util",
-    "//ios/chrome/browser/ui/ntp/recent_tabs",
-    "//ios/chrome/browser/ui/tools_menu/public",
+    "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
     "//ios/third_party/earl_grey:earl_grey+link",
@@ -150,11 +150,16 @@ source_set("eg_tests") {
   testonly = true
   sources = [
     "tab_grid_egtest.mm",
+    "tab_grid_transition_egtest.mm",
   ]
 
   deps = [
     ":egtest_support",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/tabs:tabs",
     "//ios/chrome/browser/ui/tab_grid:tab_grid_ui",
+    "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
     "//ios/web/public/test/http_server",
   ]

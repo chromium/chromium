@@ -21,7 +21,7 @@ namespace blink {
 class GraphicsContext;
 
 class PLATFORM_EXPORT DrawingRecorder final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   static bool UseCachedDrawingIfPossible(GraphicsContext& context,

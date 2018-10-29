@@ -20,6 +20,9 @@
 // files don't know that "resources.pak" now has a dependency to
 // "whatever.js". You should rerun gyp to let the build files know.
 //
+// error_counter.js must be loaded before all other scripts of the Files app.
+// <include src="../../../base/js/error_counter.js">
+//
 // metrics_base.js and metrics.js initiates load performance tracking
 // so we want to parse it as early as possible.
 // <include src="../../common/js/metrics_base.js">
@@ -78,8 +81,6 @@
 // 'strict mode' is invoked for this scope.
 'use strict';
 
-// error_util.js must be loaded before all other scripts of the Files app.
-// <include src="../../common/js/error_util.js">
 //
 // <include src="../../common/js/async_util.js">
 // <include src="../../common/js/file_type.js">
@@ -98,14 +99,10 @@
 // <include src="metadata/metadata_provider.js">
 // <include src="metadata/metadata_request.js">
 //
-// <include
-// src="../../../../../components/chrome_apps/webstore_widget/cws_widget/app_installer.js">
-// <include
-// src="../../../../../components/chrome_apps/webstore_widget/cws_widget/cws_webview_client.js">
-// <include
-// src="../../../../../components/chrome_apps/webstore_widget/cws_widget/cws_widget_container.js">
-// <include
-// src="../../../../../components/chrome_apps/webstore_widget/cws_widget/cws_widget_container_error_dialog.js">
+// <include src="../../cws_widget/app_installer.js">
+// <include src="../../cws_widget/cws_webview_client.js">
+// <include src="../../cws_widget/cws_widget_container.js">
+// <include src="../../cws_widget/cws_widget_container_error_dialog.js">
 //
 // <include src="actions_controller.js">
 // <include src="actions_model.js">

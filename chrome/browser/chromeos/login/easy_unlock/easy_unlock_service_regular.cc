@@ -33,6 +33,7 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/common/apps/platform_apps/api/easy_unlock_private.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -164,10 +165,19 @@ void EasyUnlockServiceRegular::LoadRemoteDevices() {
     return;
   }
 
+  // TODO(crbug.com/894585): Remove this legacy special case after M71.
+  bool is_in_legacy_host_mode = IsInLegacyHostMode();
+  pref_manager_->SetIsInLegacyHostMode(is_in_legacy_host_mode);
+
+  bool is_in_valid_legacy_host_state =
+      is_in_legacy_host_mode &&
+      feature_state_ ==
+          multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost;
   if (base::FeatureList::IsEnabled(
           chromeos::features::kEnableUnifiedMultiDeviceSetup) &&
       feature_state_ !=
-          multidevice_setup::mojom::FeatureState::kEnabledByUser) {
+          multidevice_setup::mojom::FeatureState::kEnabledByUser &&
+      !is_in_valid_legacy_host_state) {
     // OnFeatureStatesChanged() will call back on this method when feature state
     // changes.
     PA_LOG(INFO) << "Smart Lock is disabled; aborting.";
@@ -550,6 +560,7 @@ void EasyUnlockServiceRegular::InitializeInternal() {
 
 void EasyUnlockServiceRegular::ShutdownInternal() {
   short_lived_user_context_.reset();
+  pref_manager_.reset();
 
   turn_off_flow_status_ = EasyUnlockService::IDLE;
   proximity_auth::ScreenlockBridge::Get()->RemoveObserver(this);
@@ -598,8 +609,10 @@ bool EasyUnlockServiceRegular::IsAllowedInternal() const {
 }
 
 bool EasyUnlockServiceRegular::IsEnabled() const {
+  // TODO(crbug.com/894585): Remove the legacy special case after M71.
   if (base::FeatureList::IsEnabled(
-          chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+          chromeos::features::kEnableUnifiedMultiDeviceSetup) &&
+      !IsInLegacyHostMode()) {
     return feature_state_ ==
            multidevice_setup::mojom::FeatureState::kEnabledByUser;
   }
@@ -609,6 +622,42 @@ bool EasyUnlockServiceRegular::IsEnabled() const {
 
 bool EasyUnlockServiceRegular::IsChromeOSLoginEnabled() const {
   return pref_manager_ && pref_manager_->IsChromeOSLoginEnabled();
+}
+
+bool EasyUnlockServiceRegular::IsInLegacyHostMode() const {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi))
+    return false;
+
+  if (!device_sync_client_->is_ready()) {
+    PA_LOG(WARNING) << "EasyUnlockServiceRegular::IsInLegacyHostMode: "
+                    << "DeviceSyncClient not ready. Returning false.";
+    return false;
+  }
+
+  bool has_supported_easy_unlock_host = false;
+  for (const cryptauth::RemoteDeviceRef& remote_device_ref :
+       device_sync_client_->GetSyncedDevices()) {
+    cryptauth::SoftwareFeatureState better_together_host_state =
+        remote_device_ref.GetSoftwareFeatureState(
+            cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST);
+    // If there's any valid Better Together host, don't support legacy mode.
+    if (better_together_host_state ==
+            cryptauth::SoftwareFeatureState::kSupported ||
+        better_together_host_state ==
+            cryptauth::SoftwareFeatureState::kEnabled) {
+      return false;
+    }
+
+    cryptauth::SoftwareFeatureState easy_unlock_host_state =
+        remote_device_ref.GetSoftwareFeatureState(
+            cryptauth::SoftwareFeature::EASY_UNLOCK_HOST);
+    if (easy_unlock_host_state == cryptauth::SoftwareFeatureState::kSupported ||
+        easy_unlock_host_state == cryptauth::SoftwareFeatureState::kEnabled) {
+      has_supported_easy_unlock_host = true;
+    }
+  }
+
+  return has_supported_easy_unlock_host;
 }
 
 void EasyUnlockServiceRegular::OnWillFinalizeUnlock(bool success) {
@@ -694,16 +743,42 @@ void EasyUnlockServiceRegular::OnNewDevicesSynced() {
 void EasyUnlockServiceRegular::OnFeatureStatesChanged(
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
+  // TODO(crbug.com/894585): Remove after M71.
+  bool is_in_legacy_host_mode = IsInLegacyHostMode();
+  if (pref_manager_)
+    pref_manager_->SetIsInLegacyHostMode(is_in_legacy_host_mode);
+
   const auto it =
       feature_states_map.find(multidevice_setup::mojom::Feature::kSmartLock);
   if (it == feature_states_map.end()) {
     feature_state_ =
         multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost;
-    return;
+    if (!is_in_legacy_host_mode)
+      return;
+  } else {
+    feature_state_ = it->second;
   }
-  feature_state_ = it->second;
+
+  // Note: In order to properly start the EasyUnlock app when MultiDeviceSetup
+  // is enabled, we must ensure that UpdateAppState() gets called when the
+  // EasyUnlock feature-state changes from kProhibitedByPolicy to
+  // kUnavailableNoVerifiedHost.
+  if (is_in_legacy_host_mode)
+    UpdateAppState();
 
   LoadRemoteDevices();
+}
+
+void EasyUnlockServiceRegular::ShowChromebookAddedNotification() {
+  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
+         base::FeatureList::IsEnabled(
+             chromeos::features::kEnableUnifiedMultiDeviceSetup));
+
+  // The user may have decided to disable Smart Lock or the whole multidevice
+  // suite immediately after completing setup, so ensure that Smart Lock is
+  // enabled.
+  if (feature_state_ == multidevice_setup::mojom::FeatureState::kEnabledByUser)
+    notification_controller_->ShowChromebookAddedNotification();
 }
 
 void EasyUnlockServiceRegular::ShowNotificationIfNewDevicePresent(
@@ -724,6 +799,21 @@ void EasyUnlockServiceRegular::ShowNotificationIfNewDevicePresent(
 
   if (!public_keys_after_sync.empty() && !is_setup_fresh) {
     if (public_keys_before_sync.empty()) {
+      if (base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi) &&
+          base::FeatureList::IsEnabled(
+              chromeos::features::kEnableUnifiedMultiDeviceSetup)) {
+        multidevice_setup::MultiDeviceSetupDialog* multidevice_setup_dialog =
+            multidevice_setup::MultiDeviceSetupDialog::Get();
+        if (multidevice_setup_dialog) {
+          // Delay showing the "Chromebook added" notification until the
+          // MultiDeviceSetupDialog is closed.
+          multidevice_setup_dialog->AddOnCloseCallback(base::BindOnce(
+              &EasyUnlockServiceRegular::ShowChromebookAddedNotification,
+              weak_ptr_factory_.GetWeakPtr()));
+          return;
+        }
+      }
+
       notification_controller_->ShowChromebookAddedNotification();
     } else {
       shown_pairing_changed_notification_ = true;
@@ -833,9 +923,6 @@ void EasyUnlockServiceRegular::OnTurnOffEasyUnlockSuccess() {
 
   if (base::FeatureList::IsEnabled(chromeos::features::kMultiDeviceApi)) {
     remote_device_unlock_keys_before_sync_ = GetUnlockKeys();
-    device_sync_client_->ForceSyncNow(
-        base::BindOnce(&EasyUnlockServiceRegular::OnForceSyncCompleted,
-                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     GetCryptAuthDeviceManager()->ForceSyncNow(
         cryptauth::InvocationReason::INVOCATION_REASON_FEATURE_TOGGLED);

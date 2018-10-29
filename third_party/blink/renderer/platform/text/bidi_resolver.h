@@ -177,7 +177,7 @@ struct BidiStatus final {
 };
 
 class BidiEmbedding final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   BidiEmbedding(WTF::Unicode::CharDirection direction,
@@ -606,8 +606,7 @@ bool BidiResolver<Iterator, Run, IsolatedRun>::CommitExplicitEmbedding(
   unsigned char from_level = Context()->Level();
   scoped_refptr<BidiContext> to_context = Context();
 
-  for (size_t i = 0; i < current_explicit_embedding_sequence_.size(); ++i) {
-    BidiEmbedding embedding = current_explicit_embedding_sequence_[i];
+  for (const BidiEmbedding& embedding : current_explicit_embedding_sequence_) {
     if (embedding.Direction() == WTF::Unicode::kPopDirectionalFormat) {
       if (BidiContext* parent_context = to_context->Parent())
         to_context = parent_context;

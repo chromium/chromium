@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/menu_item.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/web/web_context_menu_data.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -134,7 +134,7 @@ struct CONTENT_EXPORT ContextMenuParams {
   std::string frame_charset;
 
   // The referrer policy of the frame on which the menu is invoked.
-  blink::WebReferrerPolicy referrer_policy;
+  network::mojom::ReferrerPolicy referrer_policy;
 
   CustomContextMenuContext custom_context;
   std::vector<MenuItem> custom_items;

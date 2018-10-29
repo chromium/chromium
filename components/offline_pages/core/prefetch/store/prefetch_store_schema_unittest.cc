@@ -7,6 +7,13 @@
 #include <limits>
 #include <memory>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/json/string_escape.h"
+#include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -14,7 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
-
+namespace {
 static const char kSomeTableCreationSql[] =
     "CREATE TABLE some_table "
     "(id INTEGER PRIMARY KEY NOT NULL,"
@@ -24,6 +31,156 @@ static const char kAnotherTableCreationSql[] =
     "CREATE TABLE another_table "
     "(id INTEGER PRIMARY KEY NOT NULL,"
     " name VARCHAR NOT NULL)";
+
+std::vector<std::string> TableColumns(sql::Database* db,
+                                      const std::string table_name) {
+  std::vector<std::string> columns;
+  std::string sql = "PRAGMA TABLE_INFO(" + table_name + ")";
+  sql::Statement table_info(db->GetUniqueStatement(sql.c_str()));
+  while (table_info.Step())
+    columns.push_back(table_info.ColumnString(1));
+  return columns;
+}
+
+struct Table {
+  std::string ToString() const {
+    std::ostringstream ss;
+    ss << "-- TABLE " << name << " --\n";
+    for (size_t row_index = 0; row_index < rows.size(); ++row_index) {
+      ss << "--- ROW " << row_index << " ---\n";
+      const std::vector<std::string>& row = rows[row_index];
+      for (size_t i = 0; i < row.size(); ++i) {
+        ss << column_names[i] << ": " << base::GetQuotedJSONString(row[i])
+           << '\n';
+      }
+    }
+    return ss.str();
+  }
+
+  std::string name;
+  std::vector<std::string> column_names;
+  // List of all values. Has size [row_count][column_count].
+  std::vector<std::vector<std::string>> rows;
+};
+
+// Returns the value contained in a table cell, or nullptr if the cell row or
+// column is invalid.
+const std::string* TableCell(const Table& table,
+                             const std::string& column,
+                             size_t row) {
+  if (row >= table.rows.size())
+    return nullptr;
+  for (size_t i = 0; i < table.column_names.size(); ++i) {
+    if (table.column_names[i] == column) {
+      return &table.rows[row][i];
+    }
+  }
+  return nullptr;
+}
+
+struct DatabaseTables {
+  std::string ToString() {
+    std::ostringstream ss;
+    for (auto i = tables.begin(); i != tables.end(); ++i)
+      ss << i->second.ToString();
+    return ss.str();
+  }
+  std::map<std::string, Table> tables;
+};
+
+Table ReadTable(sql::Database* db, const std::string table_name) {
+  Table table;
+  table.name = table_name;
+  table.column_names = TableColumns(db, table_name);
+  std::string sql = "SELECT * FROM " + table_name;
+  sql::Statement all_data(db->GetUniqueStatement(sql.c_str()));
+  while (all_data.Step()) {
+    std::vector<std::string> row;
+    for (size_t i = 0; i < table.column_names.size(); ++i) {
+      row.push_back(all_data.ColumnString(i));
+    }
+    table.rows.push_back(std::move(row));
+  }
+  return table;
+}
+
+// Returns all tables in |db|, except the 'meta' table. We don't test the 'meta'
+// table directly in this file, but instead use the MetaTable class.
+DatabaseTables ReadTables(sql::Database* db) {
+  DatabaseTables database_tables;
+  std::stringstream ss;
+  sql::Statement table_names(db->GetUniqueStatement(
+      "SELECT name FROM sqlite_master WHERE type='table'"));
+  while (table_names.Step()) {
+    const std::string table_name = table_names.ColumnString(0);
+    if (table_name == "meta")
+      continue;
+    database_tables.tables[table_name] = ReadTable(db, table_name);
+  }
+  return database_tables;
+}
+
+// Returns the SQL that defines a table.
+std::string TableSql(sql::Database* db, const std::string& table_name) {
+  DatabaseTables database_tables;
+  std::stringstream ss;
+  sql::Statement table_sql(db->GetUniqueStatement(
+      "SELECT sql FROM sqlite_master WHERE type='table' AND name=?"));
+  table_sql.BindString(0, table_name);
+  if (!table_sql.Step())
+    return std::string();
+  // Try to normalize the SQL, since we use this to compare schemas.
+  std::string sql =
+      base::CollapseWhitespaceASCII(table_sql.ColumnString(0), true);
+  base::ReplaceSubstringsAfterOffset(&sql, 0, ", ", ",");
+  base::ReplaceSubstringsAfterOffset(&sql, 0, ",", ",\n");
+  return sql;
+}
+
+std::string ReadSchemaFile(const std::string& file_name) {
+  std::string data;
+  base::FilePath path;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+  path = path.AppendASCII(
+                 "components/test/data/offline_pages/prefetch/version_schemas/")
+             .AppendASCII(file_name);
+  CHECK(base::ReadFileToString(path, &data)) << path;
+  return data;
+}
+
+std::unique_ptr<sql::Database> CreateTablesWithSampleRows(int version) {
+  auto db = std::make_unique<sql::Database>();
+  CHECK(db->OpenInMemory());
+  // Write a meta table. v*.sql overwrites version and last_compatible_version.
+  sql::MetaTable meta_table;
+  CHECK(meta_table.Init(db.get(), 1, 1));
+
+  const std::string schema = ReadSchemaFile(
+      base::StrCat({"v", base::NumberToString(version), ".sql"}));
+  CHECK(db->Execute(schema.c_str()));
+  return db;
+}
+
+void ExpectDbIsCurrent(sql::Database* db) {
+  // Check the meta table.
+  sql::MetaTable meta_table;
+  EXPECT_TRUE(meta_table.Init(db, 1, 1));
+  EXPECT_EQ(PrefetchStoreSchema::kCurrentVersion,
+            meta_table.GetVersionNumber());
+  EXPECT_EQ(PrefetchStoreSchema::kCompatibleVersion,
+            meta_table.GetCompatibleVersionNumber());
+
+  std::unique_ptr<sql::Database> current_db =
+      CreateTablesWithSampleRows(PrefetchStoreSchema::kCurrentVersion);
+
+  // Check that database schema is current.
+  for (auto name_and_table : ReadTables(db).tables) {
+    const std::string current_sql =
+        TableSql(current_db.get(), name_and_table.first);
+    const std::string real_sql = TableSql(db, name_and_table.first);
+    EXPECT_EQ(current_sql, real_sql);
+  }
+}
 
 TEST(PrefetchStoreSchemaPreconditionTest,
      TestSqliteCreateTableIsTransactional) {
@@ -90,200 +247,120 @@ TEST(PrefetchStoreSchemaPreconditionTest,
   EXPECT_TRUE(db.DoesColumnExist("some_table", "value"));
 }
 
-class PrefetchStoreSchemaTest : public testing::Test {
- public:
-  PrefetchStoreSchemaTest() = default;
-  ~PrefetchStoreSchemaTest() override = default;
+TEST(PrefetchStoreSchemaTest, TestInvalidMetaTable) {
+  // Verify CreateOrUpgradeIfNeeded will raze the db if it can't be used.
+  sql::Database db;
+  ASSERT_TRUE(db.OpenInMemory());
+  sql::MetaTable meta;
+  meta.Init(&db, 100, 99);  // Some future version.
+  ASSERT_TRUE(db.Execute("CREATE TABLE prefetch_items (x INTEGER DEFAULT 1);"));
+  ASSERT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(&db));
 
-  void SetUp() override {
-    db_ = std::make_unique<sql::Database>();
-    ASSERT_TRUE(db_->OpenInMemory());
-    ASSERT_FALSE(sql::MetaTable::DoesTableExist(db_.get()));
+  ExpectDbIsCurrent(&db);
+}
+
+// Verify the latest v#.sql accurately represents the current schema.
+//
+// Note: We keep the creation code for the current schema version duplicated in
+// PrefetchStoreSchema and in the latest version test file so that when we move
+// on from the current schema we already know it's represented correctly in the
+// test.
+TEST(PrefetchStoreSchemaTest, TestCurrentSqlFileIsAccurate) {
+  // Create the database with the release code, and with v?.sql.
+  sql::Database db;
+  ASSERT_TRUE(db.OpenInMemory());
+  ASSERT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(&db));
+
+  ExpectDbIsCurrent(&db);
+}
+
+// Tests database creation starting with all previous versions, or an empty
+// state.
+TEST(PrefetchStoreSchemaTest, TestCreateOrMigrate) {
+  for (int i = 0; i <= PrefetchStoreSchema::kCurrentVersion; ++i) {
+    SCOPED_TRACE(testing::Message() << "Testing migration from version " << i);
+    std::unique_ptr<sql::Database> db;
+    // When i==0, start from an empty state.
+    const int version = i > 0 ? i : PrefetchStoreSchema::kCurrentVersion;
+    if (i > 0) {
+      db = CreateTablesWithSampleRows(i);
+      // Executes the migration.
+      EXPECT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(db.get()));
+    } else {
+      db = std::make_unique<sql::Database>();
+      ASSERT_TRUE(db->OpenInMemory());
+      // Creation from scratch.
+      EXPECT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(db.get()));
+      // Tables are already created, this will just insert rows.
+      const std::string schema = ReadSchemaFile(
+          base::StrCat({"v", base::NumberToString(version), ".sql"}));
+      ASSERT_TRUE(db->Execute(schema.c_str()));
+    }
+
+    // Check schema.
+    ExpectDbIsCurrent(db.get());
+
+    // Check the database contents.
+    std::string expected_data = ReadSchemaFile(
+        base::StrCat({"v", base::NumberToString(version), ".data"}));
+    EXPECT_EQ(expected_data, ReadTables(db.get()).ToString());
   }
+}
 
-  void CheckTablesExistence() {
-    EXPECT_TRUE(db_->DoesTableExist("prefetch_items"));
-    EXPECT_TRUE(db_->DoesTableExist("prefetch_downloader_quota"));
-    EXPECT_FALSE(db_->DoesTableExist("prefetch_items_old"));
+// Test that the current database version can be used by all compatible
+// versions.
+TEST(PrefetchStoreSchemaTest, TestRevert) {
+  static_assert(PrefetchStoreSchema::kCompatibleVersion == 1,
+                "If compatible version is changed, add a test to verify the "
+                "database is correctly razed and recreated!");
+
+  // This test simply runs the insert operations in v*.sql on a database
+  // with the current schema.
+  for (int version = PrefetchStoreSchema::kCompatibleVersion;
+       version < PrefetchStoreSchema::kCurrentVersion; ++version) {
+    SCOPED_TRACE(testing::Message() << "Testing revert to version " << version);
+    // First, extract the expected state after running v*.sql.
+    DatabaseTables original_state;
+    {
+      std::unique_ptr<sql::Database> db = CreateTablesWithSampleRows(version);
+      original_state = ReadTables(db.get());
+    }
+
+    // Create a new database at the current version.
+    sql::Database db;
+    ASSERT_TRUE(db.OpenInMemory());
+    EXPECT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(&db));
+
+    // Attempt to insert a row using the old SQL.
+    const std::string schema = ReadSchemaFile(
+        base::StrCat({"v", base::NumberToString(version), ".sql"}));
+    EXPECT_TRUE(db.Execute(schema.c_str()));
+
+    // Check the database contents.
+    // We should find every value from original_state present in the db.
+    std::string expected_data = ReadSchemaFile(
+        base::StrCat({"v", base::NumberToString(version), ".data"}));
+    const DatabaseTables new_state = ReadTables(&db);
+    for (auto name_and_table : original_state.tables) {
+      const Table& original_table = name_and_table.second;
+      ASSERT_EQ(1ul, new_state.tables.count(name_and_table.first));
+      const Table& new_table =
+          new_state.tables.find(name_and_table.first)->second;
+      for (size_t row = 0; row < original_table.rows.size(); ++row) {
+        for (const std::string& column_name : original_table.column_names) {
+          const std::string* old_value =
+              TableCell(original_table, column_name, row);
+          const std::string* new_value = TableCell(new_table, column_name, row);
+          ASSERT_TRUE(old_value);
+          EXPECT_TRUE(new_value) << "new table does not have old value";
+          if (new_value) {
+            EXPECT_EQ(*old_value, *new_value);
+          }
+        }
+      }
+    }
   }
-
- protected:
-  std::unique_ptr<sql::Database> db_;
-  std::unique_ptr<PrefetchStoreSchema> schema_;
-};
-
-TEST_F(PrefetchStoreSchemaTest, TestSchemaCreationFromNothing) {
-  EXPECT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(db_.get()));
-  CheckTablesExistence();
-  sql::MetaTable meta_table;
-  EXPECT_TRUE(meta_table.Init(db_.get(), std::numeric_limits<int>::max(),
-                              std::numeric_limits<int>::max()));
-  EXPECT_EQ(PrefetchStoreSchema::kCurrentVersion,
-            meta_table.GetVersionNumber());
-  EXPECT_EQ(PrefetchStoreSchema::kCompatibleVersion,
-            meta_table.GetCompatibleVersionNumber());
 }
 
-TEST_F(PrefetchStoreSchemaTest, TestMissingTablesAreCreatedAtLatestVersion) {
-  sql::MetaTable meta_table;
-  EXPECT_TRUE(meta_table.Init(db_.get(), PrefetchStoreSchema::kCurrentVersion,
-                              PrefetchStoreSchema::kCompatibleVersion));
-  EXPECT_EQ(PrefetchStoreSchema::kCurrentVersion,
-            meta_table.GetVersionNumber());
-  EXPECT_EQ(PrefetchStoreSchema::kCompatibleVersion,
-            meta_table.GetCompatibleVersionNumber());
-
-  EXPECT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(db_.get()));
-  CheckTablesExistence();
-}
-
-TEST_F(PrefetchStoreSchemaTest, TestMissingTablesAreRecreated) {
-  EXPECT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(db_.get()));
-  CheckTablesExistence();
-
-  EXPECT_TRUE(db_->Execute("DROP TABLE prefetch_items"));
-  EXPECT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(db_.get()));
-  CheckTablesExistence();
-
-  EXPECT_TRUE(db_->Execute("DROP TABLE prefetch_downloader_quota"));
-  EXPECT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(db_.get()));
-  CheckTablesExistence();
-}
-
-void CreateVersion1TablesWithSampleRows(sql::Database* db) {
-  // Create version 1 tables.
-  static const char kV0ItemsTableCreationSql[] =
-      "CREATE TABLE prefetch_items"
-      "(offline_id INTEGER PRIMARY KEY NOT NULL,"
-      " state INTEGER NOT NULL DEFAULT 0,"
-      " generate_bundle_attempts INTEGER NOT NULL DEFAULT 0,"
-      " get_operation_attempts INTEGER NOT NULL DEFAULT 0,"
-      " download_initiation_attempts INTEGER NOT NULL DEFAULT 0,"
-      " archive_body_length INTEGER_NOT_NULL DEFAULT -1,"
-      " creation_time INTEGER NOT NULL,"
-      " freshness_time INTEGER NOT NULL,"
-      " error_code INTEGER NOT NULL DEFAULT 0,"
-      " file_size INTEGER NOT NULL DEFAULT 0,"
-      " guid VARCHAR NOT NULL DEFAULT '',"
-      " client_namespace VARCHAR NOT NULL DEFAULT '',"
-      " client_id VARCHAR NOT NULL DEFAULT '',"
-      " requested_url VARCHAR NOT NULL DEFAULT '',"
-      " final_archived_url VARCHAR NOT NULL DEFAULT '',"
-      " operation_name VARCHAR NOT NULL DEFAULT '',"
-      " archive_body_name VARCHAR NOT NULL DEFAULT '',"
-      " title VARCHAR NOT NULL DEFAULT '',"
-      " file_path VARCHAR NOT NULL DEFAULT ''"
-      ")";
-  EXPECT_TRUE(db->Execute(kV0ItemsTableCreationSql));
-  static const char kV0QuotaTableCreationSql[] =
-      "CREATE TABLE prefetch_downloader_quota"
-      "(quota_id INTEGER PRIMARY KEY NOT NULL DEFAULT 1,"
-      " update_time INTEGER NOT NULL,"
-      " available_quota INTEGER NOT NULL DEFAULT 0)";
-  EXPECT_TRUE(db->Execute(kV0QuotaTableCreationSql));
-
-  // Insert one row with artificial values into the items table.
-  static const char kV0ItemInsertSql[] =
-      "INSERT INTO prefetch_items"
-      " (offline_id, state, generate_bundle_attempts, get_operation_attempts,"
-      "  download_initiation_attempts, archive_body_length, creation_time,"
-      "  freshness_time, error_code, file_size, guid, client_namespace,"
-      "  client_id, requested_url, final_archived_url, operation_name,"
-      "  archive_body_name, title, file_path)"
-      " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-  sql::Statement insertStatement1(db->GetUniqueStatement(kV0ItemInsertSql));
-  // Generates fake values for all integer columns starting at 1.
-  for (int i = 0; i <= 9; ++i)
-    insertStatement1.BindInt(i, i + 1);
-  // Generates fake values for all string columns starting at "a".
-  for (int i = 10; i <= 18; ++i)
-    insertStatement1.BindString(i, std::string(1, 'a' + i - 10));
-  EXPECT_TRUE(insertStatement1.Run());
-
-  // Insert one row with artificial values into the quota table.
-  static const char kV0QuotaInsertSql[] =
-      "INSERT INTO prefetch_downloader_quota"
-      " (quota_id, update_time, available_quota)"
-      " VALUES (?, ?, ?)";
-  sql::Statement insertStatement2(db->GetUniqueStatement(kV0QuotaInsertSql));
-  // Generates fake values for all columns.
-  insertStatement2.BindInt(0, 1);
-  insertStatement2.BindInt(1, 2);
-  insertStatement2.BindInt(2, 3);
-  EXPECT_TRUE(insertStatement2.Run());
-}
-
-void CheckSampleRowsAtCurrentVersion(sql::Database* db) {
-  // Checks the previously inserted item row was migrated correctly.
-  static const char kV0ItemSelectSql[] =
-      "SELECT "
-      " offline_id, state, generate_bundle_attempts, get_operation_attempts,"
-      "  download_initiation_attempts, archive_body_length, creation_time,"
-      "  freshness_time, error_code, file_size, guid, client_namespace,"
-      "  client_id, requested_url, final_archived_url, operation_name,"
-      "  archive_body_name, title, file_path"
-      " FROM prefetch_items";
-  sql::Statement selectStatement1(db->GetUniqueStatement(kV0ItemSelectSql));
-  ASSERT_TRUE(selectStatement1.Step());
-  // Checks fake values for all integer columns.
-  for (int i = 0; i <= 9; ++i)
-    EXPECT_EQ(i + 1, selectStatement1.ColumnInt(i))
-        << "Wrong integer value at items table's column " << i;
-  // Checks fake values for all string columns.
-  for (int i = 10; i <= 18; ++i)
-    EXPECT_EQ(std::string(1, 'a' + i - 10), selectStatement1.ColumnString(i))
-        << "Wrong string value at items table's column " << i;
-  ;
-  EXPECT_FALSE(selectStatement1.Step());
-
-  // Checks the previously inserted quota row was migrated correctly.
-  static const char kV0QuotaSelectSql[] =
-      "SELECT quota_id, update_time, available_quota"
-      " FROM prefetch_downloader_quota";
-  sql::Statement selectStatement2(db->GetUniqueStatement(kV0QuotaSelectSql));
-  ASSERT_TRUE(selectStatement2.Step());
-  // Checks fake values for all columns.
-  EXPECT_EQ(1, selectStatement2.ColumnInt(0));
-  EXPECT_EQ(2, selectStatement2.ColumnInt(1));
-  EXPECT_EQ(3, selectStatement2.ColumnInt(2));
-  EXPECT_FALSE(selectStatement2.Step());
-}
-
-// Tests that a migration from the initially deployed version of the schema,
-// as it was for chromium/src at 90113a2c01ca9ff77042daacd8282a4c16aade85, is
-// correctly migrated to the final, current version without losing data.
-TEST_F(PrefetchStoreSchemaTest, TestMigrationFromV0) {
-  // Set version numbers to 1.
-  sql::MetaTable meta_table;
-  EXPECT_TRUE(meta_table.Init(db_.get(), 1, 1));
-  EXPECT_EQ(1, meta_table.GetVersionNumber());
-  EXPECT_EQ(1, meta_table.GetCompatibleVersionNumber());
-
-  CreateVersion1TablesWithSampleRows(db_.get());
-
-  // Executes the migration.
-  EXPECT_TRUE(PrefetchStoreSchema::CreateOrUpgradeIfNeeded(db_.get()));
-  EXPECT_EQ(2, meta_table.GetVersionNumber());
-  EXPECT_EQ(1, meta_table.GetCompatibleVersionNumber());
-  CheckTablesExistence();
-
-  CheckSampleRowsAtCurrentVersion(db_.get());
-
-  // Tests that the default value for file size is now -1.
-  sql::Statement fileSizeInsertStatement(db_->GetUniqueStatement(
-      "INSERT INTO prefetch_items (offline_id, creation_time, freshness_time)"
-      " VALUES (?, ?, ?)"));
-  fileSizeInsertStatement.BindInt(0, 100);
-  fileSizeInsertStatement.BindInt(1, 101);
-  fileSizeInsertStatement.BindInt(2, 102);
-  EXPECT_TRUE(fileSizeInsertStatement.Run());
-
-  sql::Statement fileSizeSelectStatement(db_->GetUniqueStatement(
-      "SELECT file_size FROM prefetch_items WHERE offline_id = ?"));
-  fileSizeSelectStatement.BindInt(0, 100);
-  ASSERT_TRUE(fileSizeSelectStatement.Step());
-  EXPECT_EQ(-1, fileSizeSelectStatement.ColumnInt(0));
-  EXPECT_FALSE(fileSizeSelectStatement.Step());
-}
-
+}  // namespace
 }  // namespace offline_pages

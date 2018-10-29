@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
-#import "ios/chrome/browser/ui/animation_util.h"
-#import "ios/chrome/browser/ui/reversed_animation.h"
+#import "ios/chrome/browser/ui/util/animation_util.h"
+#import "ios/chrome/browser/ui/util/reversed_animation.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

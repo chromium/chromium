@@ -4,6 +4,7 @@
 
 const Action = {
   VERIFY_APPINSTALLED: 'verify_appinstalled',
+  VERIFY_APPINSTALLED_STASH_EVENT: 'verify_appinstalled_stash_event',
   VERIFY_PROMPT_APPINSTALLED: 'verify_prompt_appinstalled',
   VERIFY_BEFOREINSTALLPROMPT: 'verify_beforeinstallprompt',
   CALL_PROMPT_DELAYED: 'call_prompt_delayed',
@@ -76,6 +77,10 @@ function addPromptListener(action) {
     e.preventDefault();
 
     switch (action) {
+      case Action.VERIFY_APPINSTALLED_STASH_EVENT:
+        stashedEvent = e;
+        verifyEvents('appinstalled');
+        break;
       case Action.CALL_PROMPT_DELAYED:
         setTimeout(callPrompt, 0, e);
         break;
@@ -133,6 +138,7 @@ function initialize() {
       addPromptListener(Action.STASH_EVENT);
       addClickListener(action);
       break;
+    case Action.VERIFY_APPINSTALLED_STASH_EVENT:
     case Action.CALL_PROMPT_DELAYED:
     case Action.CALL_PROMPT_IN_HANDLER:
     case Action.CALL_PROMPT_NO_USERCHOICE:

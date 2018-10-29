@@ -28,7 +28,7 @@
     <!--- TODO: Requests for new benchmarks: chrome-benchmarking-request mailing list link -->
     * Performance dashboard, bisect, try jobs: speed-services-dev@chromium.org
   * **Chrome Speed Metrics**: provides a set of high-quality metrics that represent real-world user experience, and exposes these metrics to both Chrome and Web Developers.
-    * General discussion: progressive-web-metrics@chromium.org
+    * General discussion: speed-metrics-dev@chromium.org
     * The actual metrics: [speed launch metrics survey.](https://docs.google.com/document/d/1Ww487ZskJ-xBmJGwPO-XPz_QcJvw-kSNffm0nPhVpj8/edit#heading=h.2uunmi119swk)
 
 ## For Googlers

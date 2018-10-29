@@ -32,6 +32,7 @@ class LocationIconView : public IconLabelBubbleView {
   bool ShowBubble(const ui::Event& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool IsBubbleShowing() const override;
+  SkColor GetInkDropBaseColor() const override;
 
   // Whether we should show the tooltip for this icon or not.
   void set_show_tooltip(bool show_tooltip) { show_tooltip_ = show_tooltip; }

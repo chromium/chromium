@@ -2,7 +2,6 @@ This test checks that the 'grid-template' shorthand is properly parsed and the l
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test getting grid-template-areas set through CSS.
 PASS window.getComputedStyle(gridTemplateWithNone, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(gridTemplateWithNone, '').getPropertyValue('grid-template-rows') is "none"
@@ -58,6 +57,7 @@ PASS window.getComputedStyle(gridTemplateNoColumnsRowWithEmptyTrailingLineNames,
 PASS window.getComputedStyle(gridTemplateConsecutiveAreas, '').getPropertyValue('grid-template-columns') is "10px"
 PASS window.getComputedStyle(gridTemplateConsecutiveAreas, '').getPropertyValue('grid-template-rows') is "0px 0px"
 PASS window.getComputedStyle(gridTemplateConsecutiveAreas, '').getPropertyValue('grid-template-areas') is "\"a\" \"a\""
+
 
 Test getting wrong values for grid-template shorthand through CSS (they should resolve to the default: 'none')
 PASS window.getComputedStyle(gridTemplateMultipleSlash, '').getPropertyValue('grid-template-columns') is "none"
@@ -142,6 +142,7 @@ PASS window.getComputedStyle(gridTemplateRepeatAutoFit, '').getPropertyValue('gr
 PASS window.getComputedStyle(gridTemplateRepeatAutoFit, '').getPropertyValue('grid-template-rows') is "none"
 PASS window.getComputedStyle(gridTemplateRepeatAutoFit, '').getPropertyValue('grid-template-areas') is "none"
 
+
 Test the initial value
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "none"
@@ -149,6 +150,7 @@ PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-areas'
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is 'none'
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is 'none'
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-areas') is 'none'
+
 
 Test setting grid-template-columns and grid-template-rows back to 'none' through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "10px"
@@ -163,6 +165,7 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "no
 PASS element.style.gridTemplateRows is "none"
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-areas') is "none"
 PASS element.style.gridTemplateAreas is "none"
+
 
 Test getting and setting grid-template shorthand through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "18px"
@@ -189,6 +192,7 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "0p
 PASS element.style.gridTemplateRows is "auto"
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-areas') is "\"a\""
 PASS element.style.gridTemplateAreas is "\"a\""
+
 
 Test setting grid-template shorthand to bad values through JS
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"

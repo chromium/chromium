@@ -22,11 +22,6 @@ P2PSocketDispatcher::P2PSocketDispatcher()
       network_list_observers_(
           new base::ObserverListThreadSafe<NetworkListObserver>()),
       network_notification_client_binding_(this) {
-  network::mojom::P2PSocketManagerPtr p2p_socket_manager;
-  p2p_socket_manager_request_ = mojo::MakeRequest(&p2p_socket_manager);
-  thread_safe_p2p_socket_manager_ =
-      network::mojom::ThreadSafeP2PSocketManagerPtr::Create(
-          std::move(p2p_socket_manager));
 }
 
 P2PSocketDispatcher::~P2PSocketDispatcher() {
@@ -37,7 +32,8 @@ void P2PSocketDispatcher::AddNetworkListObserver(
   network_list_observers_->AddObserver(network_list_observer);
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::Bind(&P2PSocketDispatcher::RequestNetworkEventsIfNecessary, this));
+      base::BindOnce(&P2PSocketDispatcher::RequestNetworkEventsIfNecessary,
+                     this));
 }
 
 void P2PSocketDispatcher::RemoveNetworkListObserver(
@@ -45,11 +41,22 @@ void P2PSocketDispatcher::RemoveNetworkListObserver(
   network_list_observers_->RemoveObserver(network_list_observer);
 }
 
-network::mojom::P2PSocketManager* P2PSocketDispatcher::GetP2PSocketManager() {
+scoped_refptr<network::mojom::ThreadSafeP2PSocketManagerPtr>
+P2PSocketDispatcher::GetP2PSocketManager() {
+  base::AutoLock lock(p2p_socket_manager_lock_);
+  if (!thread_safe_p2p_socket_manager_) {
+    network::mojom::P2PSocketManagerPtr p2p_socket_manager;
+    p2p_socket_manager_request_ = mojo::MakeRequest(&p2p_socket_manager);
+    p2p_socket_manager.set_connection_error_handler(base::BindOnce(
+        &P2PSocketDispatcher::OnConnectionError, base::Unretained(this)));
+    thread_safe_p2p_socket_manager_ =
+        network::mojom::ThreadSafeP2PSocketManagerPtr::Create(
+            std::move(p2p_socket_manager));
+  }
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::Bind(&P2PSocketDispatcher::RequestInterfaceIfNecessary, this));
-  return thread_safe_p2p_socket_manager_->get();
+      base::BindOnce(&P2PSocketDispatcher::RequestInterfaceIfNecessary, this));
+  return thread_safe_p2p_socket_manager_;
 }
 
 void P2PSocketDispatcher::NetworkListChanged(
@@ -82,9 +89,14 @@ void P2PSocketDispatcher::RequestNetworkEventsIfNecessary() {
     network::mojom::P2PNetworkNotificationClientPtr network_notification_client;
     network_notification_client_binding_.Bind(
         mojo::MakeRequest(&network_notification_client));
-    GetP2PSocketManager()->StartNetworkNotifications(
+    GetP2PSocketManager()->get()->StartNetworkNotifications(
         std::move(network_notification_client));
   }
+}
+
+void P2PSocketDispatcher::OnConnectionError() {
+  base::AutoLock lock(p2p_socket_manager_lock_);
+  thread_safe_p2p_socket_manager_.reset();
 }
 
 }  // namespace content

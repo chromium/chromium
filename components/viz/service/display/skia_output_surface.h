@@ -34,15 +34,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface {
   // called.
   virtual SkCanvas* BeginPaintCurrentFrame() = 0;
 
-  // Finish painting the current frame. It should be paired with
-  // BeginPaintCurrentFrame. This method will schedule a GPU task to play the
-  // DDL back on GPU thread on the SkSurface for the framebuffer. This method
-  // returns a sync token which can be waited on in a command buffer to ensure
-  // the paint operation is completed. This token is released when the GPU ops
-  // from painting the current frame have been seen and processed by the GPU
-  // main.
-  virtual gpu::SyncToken FinishPaintCurrentFrame() = 0;
-
   // Make a promise SkImage from the given |metadata|. The SkiaRenderer can use
   // the image with SkCanvas returned by |GetSkCanvasForCurrentFrame|, but Skia
   // will not read the content of the resource until the sync token in the
@@ -52,15 +43,16 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface {
   virtual sk_sp<SkImage> MakePromiseSkImage(ResourceMetadata metadata) = 0;
 
   // Make a promise SkImage from the given |metadata| and the |yuv_color_space|.
-  // For YUV format, three resource metadatas should be provided. metadatas[0]
-  // contains pixels from y panel, metadatas[1] contains pixels from u panel,
-  // metadatas[2] contains pixels from v panel.
-  // For NV12 format, two resource metadatas should be provided. metadatas[0]
-  // contains pixels from y panel, metadatas[1] contains pixels from u and v
-  // panels.
+  // For YUV format, at least three resource metadatas should be provided.
+  // metadatas[0] contains pixels from y panel, metadatas[1] contains pixels
+  // from u panel, metadatas[2] contains pixels from v panel. For NV12 format,
+  // at least two resource metadatas should be provided. metadatas[0] contains
+  // pixels from y panel, metadatas[1] contains pixels from u and v panels. If
+  // has_alpha is true, the last item in metadatas contains alpha panel.
   virtual sk_sp<SkImage> MakePromiseSkImageFromYUV(
       std::vector<ResourceMetadata> metadatas,
-      SkYUVColorSpace yuv_color_space) = 0;
+      SkYUVColorSpace yuv_color_space,
+      bool has_alpha) = 0;
 
   // Swaps the current backbuffer to the screen.
   virtual void SkiaSwapBuffers(OutputSurfaceFrame frame) = 0;
@@ -75,13 +67,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface {
                                          ResourceFormat format,
                                          bool mipmap) = 0;
 
-  // Finish painting a render pass. It should be paired with
-  // BeginPaintRenderPass. This method will schedule a GPU task to play the DDL
-  // back on GPU thread on a cached SkSurface. This method returns a sync token
-  // which can be waited on in a command buffer to ensure the paint operation is
-  // completed. This token is released when the GPU ops from painting the render
-  // pass have been seen and processed by the GPU main.
-  virtual gpu::SyncToken FinishPaintRenderPass() = 0;
+  // Finish painting the current frame or current render pass, depends on which
+  // BeginPaint function is called last. This method will schedule a GPU task to
+  // play the DDL back on GPU thread on a cached SkSurface. This method returns
+  // a sync token which can be waited on in a command buffer to ensure the paint
+  // operation is completed. This token is released when the GPU ops from
+  // painting the render pass have been seen and processed by the GPU main.
+  virtual gpu::SyncToken SubmitPaint() = 0;
 
   // Make a promise SkImage from a render pass id. The render pass has been
   // painted with BeginPaintRenderPass and FinishPaintRenderPass. The format

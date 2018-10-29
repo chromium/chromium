@@ -13,10 +13,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/hit_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/ozone/platform/wayland/fake_server.h"
 #include "ui/ozone/platform/wayland/wayland_test.h"
+#include "ui/ozone/platform/wayland/wayland_util.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -132,6 +134,17 @@ class WaylandWindowTest : public WaylandTest {
     return window;
   }
 
+  void InitializeWithSupportedHitTestValues(std::vector<int>* hit_tests) {
+    hit_tests->push_back(static_cast<int>(HTBOTTOM));
+    hit_tests->push_back(static_cast<int>(HTBOTTOMLEFT));
+    hit_tests->push_back(static_cast<int>(HTBOTTOMRIGHT));
+    hit_tests->push_back(static_cast<int>(HTLEFT));
+    hit_tests->push_back(static_cast<int>(HTRIGHT));
+    hit_tests->push_back(static_cast<int>(HTTOP));
+    hit_tests->push_back(static_cast<int>(HTTOPLEFT));
+    hit_tests->push_back(static_cast<int>(HTTOPRIGHT));
+  }
+
   wl::MockXdgSurface* xdg_surface_;
 
   MouseEvent test_mouse_event_;
@@ -206,6 +219,8 @@ TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
   EXPECT_EQ(PLATFORM_WINDOW_STATE_NORMAL, window_->GetPlatformWindowState());
 
   ScopedWlArray states = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(0, 0, 1, states.get());
+  Sync();
 
   AddStateToWlArray(XDG_SURFACE_STATE_FULLSCREEN, states.get());
 
@@ -217,7 +232,7 @@ TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
   // comment in the WaylandWindow::ToggleFullscreen.
   EXPECT_EQ(window_->GetPlatformWindowState(),
             PLATFORM_WINDOW_STATE_FULLSCREEN);
-  SendConfigureEvent(0, 0, 1, states.get());
+  SendConfigureEvent(0, 0, 2, states.get());
   Sync();
 
   EXPECT_CALL(*GetXdgSurface(), UnsetFullscreen());
@@ -227,7 +242,45 @@ TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
   EXPECT_EQ(window_->GetPlatformWindowState(), PLATFORM_WINDOW_STATE_UNKNOWN);
   // Reinitialize wl_array, which removes previous old states.
   states = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(0, 0, 3, states.get());
+  Sync();
+}
+
+TEST_P(WaylandWindowTest, StartWithFullscreen) {
+  // Make sure the window is initialized to normal state from the beginning.
+  EXPECT_EQ(PLATFORM_WINDOW_STATE_NORMAL, window_->GetPlatformWindowState());
+
+  // The state must not be changed to the fullscreen before the surface is
+  // activated.
+  EXPECT_CALL(*GetXdgSurface(), SetFullscreen()).Times(0);
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_)).Times(0);
+  window_->ToggleFullscreen();
+  // The state of the window must still be a normal one.
+  EXPECT_EQ(window_->GetPlatformWindowState(), PLATFORM_WINDOW_STATE_NORMAL);
+
+  Sync();
+
+  // Once the surface will be activated, the window will automatically trigger
+  // the state change.
+  EXPECT_CALL(*GetXdgSurface(), SetFullscreen());
+  EXPECT_CALL(delegate_,
+              OnWindowStateChanged(Eq(PLATFORM_WINDOW_STATE_FULLSCREEN)));
+
+  // Activate the surface.
+  ScopedWlArray states = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(0, 0, 1, states.get());
+
+  Sync();
+
+  // The wayland window manually handles the fullscreen state changes, and it
+  // must change to a fullscreen before the state change is confirmed by the
+  // wayland. See comment in the WaylandWindow::ToggleFullscreen.
+  EXPECT_EQ(window_->GetPlatformWindowState(),
+            PLATFORM_WINDOW_STATE_FULLSCREEN);
+
+  AddStateToWlArray(XDG_SURFACE_STATE_FULLSCREEN, states.get());
   SendConfigureEvent(0, 0, 2, states.get());
+
   Sync();
 }
 
@@ -301,6 +354,8 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterFullscreen) {
   const gfx::Rect current_bounds = window_->GetBounds();
 
   ScopedWlArray states = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(0, 0, 1, states.get());
+  Sync();
 
   gfx::Rect restored_bounds = window_->GetRestoredBoundsInPixels();
   EXPECT_EQ(restored_bounds, gfx::Rect());
@@ -310,7 +365,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterFullscreen) {
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(fullscreen_bounds)));
   window_->ToggleFullscreen();
   AddStateToWlArray(XDG_SURFACE_STATE_FULLSCREEN, states.get());
-  SendConfigureEvent(fullscreen_bounds.width(), fullscreen_bounds.height(), 1,
+  SendConfigureEvent(fullscreen_bounds.width(), fullscreen_bounds.height(), 2,
                      states.get());
   Sync();
   restored_bounds = window_->GetRestoredBoundsInPixels();
@@ -325,7 +380,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterFullscreen) {
   window_->Restore();
   // Reinitialize wl_array, which removes previous old states.
   states = InitializeWlArrayWithActivatedState();
-  SendConfigureEvent(0, 0, 2, states.get());
+  SendConfigureEvent(0, 0, 3, states.get());
   Sync();
   bounds = window_->GetBounds();
   EXPECT_EQ(bounds, restored_bounds);
@@ -647,6 +702,25 @@ TEST_P(WaylandWindowTest, CanDispatchEventToMenuWindowNested) {
   EXPECT_FALSE(nested_menu_window->CanDispatchEvent(&test_mouse_event_));
 
   Sync();
+}
+
+TEST_P(WaylandWindowTest, DispatchWindowMove) {
+  EXPECT_CALL(*GetXdgSurface(), Move(_));
+  window_->DispatchHostWindowDragMovement(HTCAPTION, gfx::Point());
+}
+
+// Makes sure hit tests are converted into right edges.
+TEST_P(WaylandWindowTest, DispatchWindowResize) {
+  std::vector<int> hit_test_values;
+  InitializeWithSupportedHitTestValues(&hit_test_values);
+
+  for (const int value : hit_test_values) {
+    {
+      uint32_t direction = wl::IdentifyDirection(*(connection_.get()), value);
+      EXPECT_CALL(*GetXdgSurface(), Resize(_, Eq(direction)));
+      window_->DispatchHostWindowDragMovement(value, gfx::Point());
+    }
+  }
 }
 
 INSTANTIATE_TEST_CASE_P(XdgVersionV5Test,

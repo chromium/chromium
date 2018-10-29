@@ -22,8 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(OS_CHROMEOS)
-#include "chrome/browser/signin/signin_manager_factory.h"
-#include "components/signin/core/browser/signin_manager.h"
+#include "chrome/browser/signin/signin_util.h"
 #endif  // defined(OS_CHROMEOS)
 
 using browser_sync::ProfileSyncService;
@@ -114,7 +113,7 @@ void GetStatusForUnrecoverableError(Profile* profile,
     status_label->assign(l10n_util::GetStringUTF16(
         IDS_SYNC_STATUS_UNRECOVERABLE_ERROR));
     // The message for managed accounts is the same as that of the cros.
-    if (SigninManagerFactory::GetForProfile(profile)->IsSignoutProhibited()) {
+    if (!signin_util::IsUserSignoutAllowedForProfile(profile)) {
       status_label->assign(l10n_util::GetStringUTF16(
           IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT));
     }
@@ -352,7 +351,7 @@ AvatarSyncErrorType GetMessagesForAvatarSyncError(
     service->QueryDetailedSyncStatus(&status);
     if (status.sync_protocol_error.action != syncer::UPGRADE_CLIENT) {
       // Display different messages and buttons for managed accounts.
-      if (SigninManagerFactory::GetForProfile(profile)->IsSignoutProhibited()) {
+      if (!signin_util::IsUserSignoutAllowedForProfile(profile)) {
         // For a managed user, the user is directed to the signout
         // confirmation dialogue in the settings page.
         *content_string_id = IDS_SYNC_ERROR_USER_MENU_SIGNOUT_MESSAGE;

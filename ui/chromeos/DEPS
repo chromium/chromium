@@ -5,6 +5,8 @@ include_rules = [
   "+grit/ui_chromeos_resources.h",
   "+grit/ui_chromeos_strings.h",
   "+mojo/public/cpp/bindings",
+  "+services/device/public",
+  "+services/service_manager/public",
   "+services/ws/public/cpp",
   "+services/ws/public/mojom",
   "+third_party/cros_system_api",

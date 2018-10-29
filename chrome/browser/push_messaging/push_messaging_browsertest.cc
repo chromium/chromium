@@ -127,7 +127,11 @@ void InstanceIDResultCallback(base::Closure done_callback,
 
 class PushMessagingBrowserTest : public InProcessBrowserTest {
  public:
-  PushMessagingBrowserTest() : gcm_service_(nullptr), gcm_driver_(nullptr) {}
+  PushMessagingBrowserTest()
+      : scoped_testing_factory_installer_(
+            base::BindRepeating(&gcm::FakeGCMProfileService::Build)),
+        gcm_service_(nullptr),
+        gcm_driver_(nullptr) {}
   ~PushMessagingBrowserTest() override {}
 
   // InProcessBrowserTest:
@@ -136,9 +140,6 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
         new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
     https_server_->ServeFilesFromSourceDirectory("chrome/test/data");
     ASSERT_TRUE(https_server_->Start());
-
-    gcm::GCMProfileServiceFactory::SetGlobalTestingFactory(
-        &gcm::FakeGCMProfileService::Build);
 
     SiteEngagementScore::SetParamValuesForTesting();
     InProcessBrowserTest::SetUp();
@@ -168,11 +169,6 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
     LoadTestPage();
   }
 
-  void TearDown() override {
-    gcm::GCMProfileServiceFactory::SetGlobalTestingFactory(nullptr);
-    InProcessBrowserTest::TearDown();
-  }
-
   void TearDownOnMainThread() override {
     notification_tester_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
@@ -181,8 +177,8 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
   // Calls should be wrapped in the ASSERT_NO_FATAL_FAILURE() macro.
   void RestartPushService() {
     Profile* profile = GetBrowser()->profile();
-    PushMessagingServiceFactory::GetInstance()->SetTestingFactory(profile,
-                                                                  nullptr);
+    PushMessagingServiceFactory::GetInstance()->SetTestingFactory(
+        profile, BrowserContextKeyedServiceFactory::TestingFactory());
     ASSERT_EQ(nullptr, PushMessagingServiceFactory::GetForProfile(profile));
     PushMessagingServiceFactory::GetInstance()->RestoreFactoryForTests(profile);
     PushMessagingServiceImpl::InitializeForProfile(profile);
@@ -325,6 +321,9 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
   }
 
   virtual Browser* GetBrowser() const { return browser(); }
+
+  gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
+      scoped_testing_factory_installer_;
 
   gcm::FakeGCMProfileService* gcm_service_;
   instance_id::FakeGCMDriverForInstanceID* gcm_driver_;

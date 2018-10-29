@@ -17,7 +17,8 @@ ChildLocalSurfaceIdAllocator::ChildLocalSurfaceIdAllocator()
                                 base::UnguessableToken()) {}
 
 bool ChildLocalSurfaceIdAllocator::UpdateFromParent(
-    const LocalSurfaceId& parent_allocated_local_surface_id) {
+    const LocalSurfaceId& parent_allocated_local_surface_id,
+    base::TimeTicks parent_local_surface_id_allocation_time) {
   if ((parent_allocated_local_surface_id.parent_sequence_number() >
        current_local_surface_id_.parent_sequence_number()) ||
       parent_allocated_local_surface_id.embed_token() !=
@@ -26,6 +27,7 @@ bool ChildLocalSurfaceIdAllocator::UpdateFromParent(
         parent_allocated_local_surface_id.parent_sequence_number_;
     current_local_surface_id_.embed_token_ =
         parent_allocated_local_surface_id.embed_token_;
+    allocation_time_ = parent_local_surface_id_allocation_time;
     return true;
   }
   return false;
@@ -37,6 +39,7 @@ const LocalSurfaceId& ChildLocalSurfaceIdAllocator::GenerateId() {
             kInvalidParentSequenceNumber);
 
   ++current_local_surface_id_.child_sequence_number_;
+  allocation_time_ = base::TimeTicks::Now();
 
   TRACE_EVENT_WITH_FLOW2(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),

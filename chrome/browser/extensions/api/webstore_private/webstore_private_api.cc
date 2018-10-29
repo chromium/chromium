@@ -102,8 +102,7 @@ void PendingApprovals::PushApproval(
 std::unique_ptr<WebstoreInstaller::Approval> PendingApprovals::PopApproval(
     Profile* profile,
     const std::string& id) {
-  for (ApprovalList::iterator iter = approvals_.begin();
-       iter != approvals_.end(); ++iter) {
+  for (auto iter = approvals_.begin(); iter != approvals_.end(); ++iter) {
     if (iter->get()->extension_id == id &&
         profile->IsSameProfile(iter->get()->profile)) {
       std::unique_ptr<WebstoreInstaller::Approval> approval = std::move(*iter);

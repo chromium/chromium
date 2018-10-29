@@ -6,7 +6,7 @@
 #define UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_HOST_H_
 
 #include "base/macros.h"
-#include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/animation/ink_drop_host_view.h"
 
 namespace views {
 
@@ -14,7 +14,7 @@ namespace views {
 // tests.  Tracks the number of hosted ink drop layers.
 //
 // Note that CreateInkDrop() is not supported.
-class TestInkDropHost : public InkDropHost {
+class TestInkDropHost : public InkDropHostView {
  public:
   TestInkDropHost();
   ~TestInkDropHost() override;
@@ -28,11 +28,9 @@ class TestInkDropHost : public InkDropHost {
     disable_timers_for_test_ = disable_timers_for_test;
   }
 
-  // TestInkDropHost:
+  // InkDropHostView:
   void AddInkDropLayer(ui::Layer* ink_drop_layer) override;
   void RemoveInkDropLayer(ui::Layer* ink_drop_layer) override;
-  // Not supported.
-  std::unique_ptr<InkDrop> CreateInkDrop() override;
   std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override;
   std::unique_ptr<InkDropHighlight> CreateInkDropHighlight() const override;
 

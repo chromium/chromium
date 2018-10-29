@@ -43,22 +43,6 @@ class AppLauncherCoordinatorTest : public PlatformTest {
   id application_ = nil;
 };
 
-// Tests that an empty URL does not prompt user and does not launch application.
-TEST_F(AppLauncherCoordinatorTest, EmptyUrl) {
-  BOOL app_exists = [coordinator_ appLauncherTabHelper:nullptr
-                                      launchAppWithURL:GURL::EmptyGURL()
-                                        linkTransition:NO];
-  EXPECT_FALSE(app_exists);
-  EXPECT_EQ(nil, base_view_controller_.presentedViewController);
-}
-
-// Tests that an invalid URL does not launch application.
-TEST_F(AppLauncherCoordinatorTest, InvalidUrl) {
-  BOOL app_exists = [coordinator_ appLauncherTabHelper:nullptr
-                                      launchAppWithURL:GURL("invalid")
-                                        linkTransition:NO];
-  EXPECT_FALSE(app_exists);
-}
 
 // Tests that an itunes URL shows an alert.
 TEST_F(AppLauncherCoordinatorTest, ItmsUrlShowsAlert) {

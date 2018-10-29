@@ -515,8 +515,8 @@ AudioManagerMac::AudioManagerMac(std::unique_ptr<AudioThread> audio_thread,
   // PostTask since AudioManager creation may be on the startup path and this
   // may be slow.
   GetTaskRunner()->PostTask(
-      FROM_HERE, base::Bind(&AudioManagerMac::InitializeOnAudioThread,
-                            weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&AudioManagerMac::InitializeOnAudioThread,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 AudioManagerMac::~AudioManagerMac() = default;
@@ -629,8 +629,12 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
   const int buffer_size = ChooseBufferSize(true, sample_rate);
 
   // TODO(grunell): query the native channel layout for the specific device.
-  AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-                         sample_rate, buffer_size);
+  AudioParameters params(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
+      buffer_size,
+      AudioParameters::HardwareCapabilities(
+          GetMinAudioBufferSizeMacOS(limits::kMinAudioBufferSize, sample_rate),
+          limits::kMaxAudioBufferSize));
 
   if (DeviceSupportsAmbientNoiseReduction(device)) {
     params.set_effects(AudioParameters::NOISE_SUPPRESSION);
@@ -860,8 +864,13 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
       channel_layout = CHANNEL_LAYOUT_DISCRETE;
   }
 
-  AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-                         hardware_sample_rate, buffer_size);
+  AudioParameters params(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
+      hardware_sample_rate, buffer_size,
+      AudioParameters::HardwareCapabilities(
+          GetMinAudioBufferSizeMacOS(limits::kMinAudioBufferSize,
+                                     hardware_sample_rate),
+          limits::kMaxAudioBufferSize));
   params.set_channels_for_discrete(output_channels);
   return params;
 }

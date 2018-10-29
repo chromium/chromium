@@ -34,19 +34,7 @@ class TestWindowTreeClient : public mojom::WindowTreeClient,
     Id window_id;
     int64_t display_id;
     std::unique_ptr<ui::Event> event;
-    bool matches_pointer_watcher;
-  };
-
-  // An ObservedPointerEvent is created for each call to
-  // OnPointerEventObserved()
-  struct ObservedPointerEvent {
-    ObservedPointerEvent();
-    ObservedPointerEvent(ObservedPointerEvent&& other);
-    ~ObservedPointerEvent();
-
-    std::unique_ptr<ui::Event> event;
-    Id window_id = 0;
-    int64_t display_id = 0;
+    bool matches_event_observer;
   };
 
   TestWindowTreeClient();
@@ -54,22 +42,19 @@ class TestWindowTreeClient : public mojom::WindowTreeClient,
 
   std::queue<InputEvent>& input_events() { return input_events_; }
 
-  // Returns the oldest InputEvent that was received by way of
-  // OnWindowInputEvent(). If no events have been observed, |event| in the
-  // returned object is null.
+  // Returns the oldest InputEvent that was received by OnWindowInputEvent().
+  // If no events have been received, |event| in the returned object is null.
   InputEvent PopInputEvent();
 
   // Removes all InputEvents from |input_events_|.
   void ClearInputEvents();
 
-  std::queue<ObservedPointerEvent>& observed_pointer_events() {
-    return observed_pointer_events_;
+  std::queue<std::unique_ptr<ui::Event>>& observed_events() {
+    return observed_events_;
   }
 
-  // Returns the oldest ObservedPointerEvent that was received by way of
-  // OnPointerEventObserved(). If no pointer events have been observed, |event|
-  // in the returned object is null.
-  ObservedPointerEvent PopObservedPointerEvent();
+  // Returns the oldest event received by OnObservedInputEvent(), or null.
+  std::unique_ptr<ui::Event> PopObservedEvent();
 
   // Sets the mojom::WindowTree for this client. Used when creating a client
   // using mojom::WindowTreeFactory.
@@ -145,23 +130,20 @@ class TestWindowTreeClient : public mojom::WindowTreeClient,
   void OnWindowOpacityChanged(Id window,
                               float old_opacity,
                               float new_opacity) override;
+  void OnWindowDisplayChanged(Id window_id, int64_t display_id) override;
   void OnWindowParentDrawnStateChanged(Id window, bool drawn) override;
   void OnWindowInputEvent(uint32_t event_id,
                           Id window_id,
                           int64_t display_id,
                           std::unique_ptr<ui::Event> event,
-                          bool matches_pointer_watcher) override;
-  void OnPointerEventObserved(std::unique_ptr<ui::Event> event,
-                              Id window_id,
-                              int64_t display_id) override;
+                          bool matches_event_observer) override;
+  void OnObservedInputEvent(std::unique_ptr<ui::Event> event) override;
   void OnWindowSharedPropertyChanged(
       Id window,
       const std::string& name,
       const base::Optional<std::vector<uint8_t>>& new_data) override;
   void OnWindowFocused(Id focused_window_id) override;
   void OnWindowCursorChanged(Id window_id, ui::CursorData cursor) override;
-  void OnWindowSurfaceChanged(Id window_id,
-                              const viz::SurfaceInfo& surface_info) override;
   void OnDragDropStart(const base::flat_map<std::string, std::vector<uint8_t>>&
                            drag_data) override;
   void OnDragEnter(Id window,
@@ -189,6 +171,8 @@ class TestWindowTreeClient : public mojom::WindowTreeClient,
   void RequestClose(Id window_id) override;
   void GetScreenProviderObserver(
       mojom::ScreenProviderObserverAssociatedRequest observer) override;
+  void OnOcclusionStateChanged(Id window_id,
+                               mojom::OcclusionState occlusion_state) override;
 
  protected:
   TestChangeTracker tracker_;
@@ -196,7 +180,7 @@ class TestWindowTreeClient : public mojom::WindowTreeClient,
   Id root_window_id_ = 0;
   bool track_root_bounds_changes_ = false;
   std::queue<InputEvent> input_events_;
-  std::queue<ObservedPointerEvent> observed_pointer_events_;
+  std::queue<std::unique_ptr<ui::Event>> observed_events_;
   TestScreenProviderObserver screen_provider_observer_;
   mojo::AssociatedBinding<mojom::ScreenProviderObserver>
       screen_provider_observer_binding_{&screen_provider_observer_};

@@ -719,27 +719,5 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, NoOverrideOnlineSignin) {
   }
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, TrialRunMetrics) {
-  base::HistogramTester histogram_tester;
-
-  // Simulate the user clicking on the lock icon twice outside of a trial run.
-  // No trial run metrics should be recorded.
-  state_handler_->RecordClickOnLockIcon();
-  state_handler_->RecordClickOnLockIcon();
-  histogram_tester.ExpectTotalCount("EasyUnlock.TrialRun.Events", 0);
-
-  // Simulate the user clicking on the lock icon three times during a trial run.
-  state_handler_->SetTrialRun();
-  state_handler_->RecordClickOnLockIcon();
-  state_handler_->RecordClickOnLockIcon();
-  state_handler_->RecordClickOnLockIcon();
-  histogram_tester.ExpectTotalCount("EasyUnlock.TrialRun.Events", 4);
-  histogram_tester.ExpectBucketCount("EasyUnlock.TrialRun.Events",
-                                     EASY_UNLOCK_TRIAL_RUN_EVENT_LAUNCHED, 1);
-  histogram_tester.ExpectBucketCount(
-      "EasyUnlock.TrialRun.Events",
-      EASY_UNLOCK_TRIAL_RUN_EVENT_CLICKED_LOCK_ICON, 3);
-}
-
 }  // namespace
 }  // namespace chromeos

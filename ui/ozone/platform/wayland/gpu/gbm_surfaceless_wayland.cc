@@ -59,8 +59,6 @@ bool GbmSurfacelessWayland::IsOffscreen() {
 }
 
 bool GbmSurfacelessWayland::SupportsPresentationCallback() {
-  // TODO(msisov): enable a real presentation callback for wayland. For now, we
-  // just blindly say it was successful. https://crbug.com/859012.
   return true;
 }
 

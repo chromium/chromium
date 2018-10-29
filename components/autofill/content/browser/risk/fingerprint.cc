@@ -194,7 +194,7 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
       const std::string& app_locale,
       const std::string& user_agent,
       const base::TimeDelta& timeout,
-      const base::Callback<void(std::unique_ptr<Fingerprint>)>& callback,
+      base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback,
       service_manager::Connector* connector);
 
  private:
@@ -249,7 +249,7 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
   base::OneShotTimer timeout_timer_;
 
   // The callback that will be called once all the data is available.
-  base::Callback<void(std::unique_ptr<Fingerprint>)> callback_;
+  base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback_;
 
   // For invalidating asynchronous callbacks that might arrive after |this|
   // instance is destroyed.
@@ -270,7 +270,7 @@ FingerprintDataLoader::FingerprintDataLoader(
     const std::string& app_locale,
     const std::string& user_agent,
     const base::TimeDelta& timeout,
-    const base::Callback<void(std::unique_ptr<Fingerprint>)>& callback,
+    base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback,
     service_manager::Connector* connector)
     : gpu_data_manager_(content::GpuDataManager::GetInstance()),
       gpu_observer_(this),
@@ -285,7 +285,7 @@ FingerprintDataLoader::FingerprintDataLoader(
       user_agent_(user_agent),
       install_time_(install_time),
       waiting_on_plugins_(true),
-      callback_(callback),
+      callback_(std::move(callback)),
       weak_ptr_factory_(this) {
   DCHECK(!install_time_.is_null());
 
@@ -437,7 +437,7 @@ void FingerprintDataLoader::FillFingerprint() {
   metadata->set_obfuscated_gaia_id(obfuscated_gaia_id_);
   metadata->set_fingerprinter_version(kFingerprinterVersion);
 
-  callback_.Run(std::move(fingerprint));
+  std::move(callback_).Run(std::move(fingerprint));
 }
 
 }  // namespace
@@ -456,14 +456,14 @@ void GetFingerprintInternal(
     const std::string& app_locale,
     const std::string& user_agent,
     const base::TimeDelta& timeout,
-    const base::Callback<void(std::unique_ptr<Fingerprint>)>& callback,
+    base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback,
     service_manager::Connector* connector) {
   // Begin loading all of the data that we need to load asynchronously.
   // This class is responsible for freeing its own memory.
   new FingerprintDataLoader(obfuscated_gaia_id, window_bounds, content_bounds,
                             screen_info, version, charset, accept_languages,
                             install_time, app_locale, user_agent, timeout,
-                            callback, connector);
+                            std::move(callback), connector);
 }
 
 }  // namespace internal
@@ -478,7 +478,7 @@ void GetFingerprint(
     const base::Time& install_time,
     const std::string& app_locale,
     const std::string& user_agent,
-    const base::Callback<void(std::unique_ptr<Fingerprint>)>& callback,
+    base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback,
     service_manager::Connector* connector) {
   gfx::Rect content_bounds = web_contents->GetContainerBounds();
 
@@ -491,7 +491,8 @@ void GetFingerprint(
   internal::GetFingerprintInternal(
       obfuscated_gaia_id, window_bounds, content_bounds, screen_info, version,
       charset, accept_languages, install_time, app_locale, user_agent,
-      base::TimeDelta::FromSeconds(kTimeoutSeconds), callback, connector);
+      base::TimeDelta::FromSeconds(kTimeoutSeconds), std::move(callback),
+      connector);
 }
 
 }  // namespace risk

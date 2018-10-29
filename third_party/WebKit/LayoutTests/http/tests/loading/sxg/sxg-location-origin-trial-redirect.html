@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Location of SignedHTTPExchange with Origin-Trial header after redirect</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="./resources/sxg-util.js"></script>
+<body>
+<script>
+promise_test(async (t) => {
+  await waitUntilDidFinishLoadForFrame;
+  const url =
+      'http://localhost:8000/resources/redirect.php?url=' +
+      encodeURIComponent(
+        'http://127.0.0.1:8000/loading/sxg/resources/sxg-location-origin-trial.php');
+  const message = await openSXGInIframeAndWaitForMessage(t, url);
+  assert_equals(message.location, 'https://127.0.0.1:8443/loading/sxg/resources/inner-url.html');
+  assert_false(message.is_fallback);
+}, 'Location of SignedHTTPExchange with Origin-Trial header after redirect');
+</script>
+</body>

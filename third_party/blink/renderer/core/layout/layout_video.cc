@@ -104,9 +104,8 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize() {
 }
 
 void LayoutVideo::ImageChanged(WrappedImagePtr new_image,
-                               CanDeferInvalidation defer,
-                               const IntRect* rect) {
-  LayoutMedia::ImageChanged(new_image, defer, rect);
+                               CanDeferInvalidation defer) {
+  LayoutMedia::ImageChanged(new_image, defer);
 
   // Cache the image intrinsic size so we can continue to use it to draw the
   // image correctly even if we know the video intrinsic size but aren't able to
@@ -204,7 +203,7 @@ void LayoutVideo::UpdateAfterLayout() {
   // Report violation of unsized-media policy.
   if (auto* video_element = ToHTMLVideoElementOrNull(GetNode())) {
     if (video_element->IsDefaultIntrinsicSize())
-      MediaElementParserHelpers::ReportUnsizedMediaViolation(this);
+      media_element_parser_helpers::ReportUnsizedMediaViolation(this);
   }
 }
 

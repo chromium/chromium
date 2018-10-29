@@ -8,7 +8,6 @@ import android.content.res.AssetManager;
 import android.os.Handler;
 import android.os.Looper;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.BuildConfig;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
@@ -18,6 +17,7 @@ import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.io.File;

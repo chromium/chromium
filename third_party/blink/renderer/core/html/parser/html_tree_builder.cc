@@ -283,11 +283,11 @@ void HTMLTreeBuilder::Trace(blink::Visitor* visitor) {
 void HTMLTreeBuilder::Detach() {
 #if DCHECK_IS_ON()
   // This call makes little sense in fragment mode, but for consistency
-  // DocumentParser expects detach() to always be called before it's destroyed.
+  // DocumentParser expects Detach() to always be called before it's destroyed.
   is_attached_ = false;
 #endif
-  // HTMLConstructionSite might be on the callstack when detach() is called
-  // otherwise we'd just call m_tree.clear() here instead.
+  // HTMLConstructionSite might be on the callstack when Detach() is called
+  // otherwise we'd just call tree_.Clear() here instead.
   tree_.Detach();
 }
 
@@ -463,9 +463,8 @@ static void AdjustSVGTagNameCase(AtomicHTMLToken* token) {
   static PrefixedNameToQualifiedNameMap* case_map = nullptr;
   if (!case_map) {
     case_map = new PrefixedNameToQualifiedNameMap;
-    std::unique_ptr<const SVGQualifiedName* []> svg_tags =
-        SVGNames::getSVGTags();
-    MapLoweredLocalNameToName(case_map, svg_tags.get(), SVGNames::SVGTagsCount);
+    std::unique_ptr<const SVGQualifiedName* []> svg_tags = svg_names::GetTags();
+    MapLoweredLocalNameToName(case_map, svg_tags.get(), svg_names::kTagsCount);
   }
 
   const QualifiedName& cased_name = case_map->at(token->GetName());
@@ -492,13 +491,12 @@ static void AdjustAttributes(AtomicHTMLToken* token) {
 
 // https://html.spec.whatwg.org/multipage/parsing.html#adjust-svg-attributes
 static void AdjustSVGAttributes(AtomicHTMLToken* token) {
-  AdjustAttributes<SVGNames::getSVGAttrs, SVGNames::SVGAttrsCount>(token);
+  AdjustAttributes<svg_names::GetAttrs, svg_names::kAttrsCount>(token);
 }
 
 // https://html.spec.whatwg.org/multipage/parsing.html#adjust-mathml-attributes
 static void AdjustMathMLAttributes(AtomicHTMLToken* token) {
-  AdjustAttributes<MathMLNames::getMathMLAttrs, MathMLNames::MathMLAttrsCount>(
-      token);
+  AdjustAttributes<mathml_names::GetAttrs, mathml_names::kAttrsCount>(token);
 }
 
 static void AddNamesWithPrefix(PrefixedNameToQualifiedNameMap* map,
@@ -519,19 +517,17 @@ static void AdjustForeignAttributes(AtomicHTMLToken* token) {
   if (!map) {
     map = new PrefixedNameToQualifiedNameMap;
 
-    std::unique_ptr<const QualifiedName* []> attrs =
-        XLinkNames::getXLinkAttrs();
+    std::unique_ptr<const QualifiedName* []> attrs = xlink_names::GetAttrs();
     AddNamesWithPrefix(map, g_xlink_atom, attrs.get(),
-                       XLinkNames::XLinkAttrsCount);
+                       xlink_names::kAttrsCount);
 
-    std::unique_ptr<const QualifiedName* []> xml_attrs =
-        XMLNames::getXMLAttrs();
+    std::unique_ptr<const QualifiedName* []> xml_attrs = xml_names::GetAttrs();
     AddNamesWithPrefix(map, g_xml_atom, xml_attrs.get(),
-                       XMLNames::XMLAttrsCount);
+                       xml_names::kAttrsCount);
 
-    map->insert(WTF::g_xmlns_atom, XMLNSNames::xmlnsAttr);
+    map->insert(WTF::g_xmlns_atom, xmlns_names::kXmlnsAttr);
     map->insert("xmlns:xlink", QualifiedName(g_xmlns_atom, g_xlink_atom,
-                                             XMLNSNames::xmlnsNamespaceURI));
+                                             xmlns_names::kNamespaceURI));
   }
 
   for (unsigned i = 0; i < token->Attributes().size(); ++i) {
@@ -827,18 +823,18 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     tree_.InsertHTMLElement(token);
     return;
   }
-  if (token->GetName() == MathMLNames::mathTag.LocalName()) {
+  if (token->GetName() == mathml_names::kMathTag.LocalName()) {
     tree_.ReconstructTheActiveFormattingElements();
     AdjustMathMLAttributes(token);
     AdjustForeignAttributes(token);
-    tree_.InsertForeignElement(token, MathMLNames::mathmlNamespaceURI);
+    tree_.InsertForeignElement(token, mathml_names::kNamespaceURI);
     return;
   }
-  if (token->GetName() == SVGNames::svgTag.LocalName()) {
+  if (token->GetName() == svg_names::kSVGTag.LocalName()) {
     tree_.ReconstructTheActiveFormattingElements();
     AdjustSVGAttributes(token);
     AdjustForeignAttributes(token);
-    tree_.InsertForeignElement(token, SVGNames::svgNamespaceURI);
+    tree_.InsertForeignElement(token, svg_names::kNamespaceURI);
     return;
   }
   if (IsCaptionColOrColgroupTag(token->GetName()) ||
@@ -1816,7 +1812,7 @@ bool HTMLTreeBuilder::ProcessCaptionEndTagForInCaption() {
     return false;
   }
   tree_.GenerateImpliedEndTags();
-  // FIXME: parse error if (!m_tree.currentStackItem()->hasTagName(captionTag))
+  // FIXME: parse error if (!tree_.CurrentStackItem()->HasTagName(captionTag))
   tree_.OpenElements()->PopUntilPopped(captionTag.LocalName());
   tree_.ActiveFormattingElements()->ClearToLastMarker();
   SetInsertionMode(kInTableMode);
@@ -2595,15 +2591,15 @@ bool HTMLTreeBuilder::ShouldProcessTokenInForeignContent(
     return false;
   if (HTMLElementStack::IsMathMLTextIntegrationPoint(adjusted_current_node)) {
     if (token->GetType() == HTMLToken::kStartTag &&
-        token->GetName() != MathMLNames::mglyphTag &&
-        token->GetName() != MathMLNames::malignmarkTag)
+        token->GetName() != mathml_names::kMglyphTag &&
+        token->GetName() != mathml_names::kMalignmarkTag)
       return false;
     if (token->GetType() == HTMLToken::kCharacter)
       return false;
   }
-  if (adjusted_current_node->HasTagName(MathMLNames::annotation_xmlTag) &&
+  if (adjusted_current_node->HasTagName(mathml_names::kAnnotationXmlTag) &&
       token->GetType() == HTMLToken::kStartTag &&
-      token->GetName() == SVGNames::svgTag)
+      token->GetName() == svg_names::kSVGTag)
     return false;
   if (HTMLElementStack::IsHTMLIntegrationPoint(adjusted_current_node)) {
     if (token->GetType() == HTMLToken::kStartTag)
@@ -2670,9 +2666,9 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
       }
       const AtomicString& current_namespace =
           adjusted_current_node->NamespaceURI();
-      if (current_namespace == MathMLNames::mathmlNamespaceURI)
+      if (current_namespace == mathml_names::kNamespaceURI)
         AdjustMathMLAttributes(token);
-      if (current_namespace == SVGNames::svgNamespaceURI) {
+      if (current_namespace == svg_names::kNamespaceURI) {
         AdjustSVGTagNameCase(token);
         AdjustSVGAttributes(token);
       }
@@ -2681,11 +2677,11 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
       break;
     }
     case HTMLToken::kEndTag: {
-      if (adjusted_current_node->NamespaceURI() == SVGNames::svgNamespaceURI)
+      if (adjusted_current_node->NamespaceURI() == svg_names::kNamespaceURI)
         AdjustSVGTagNameCase(token);
 
-      if (token->GetName() == SVGNames::scriptTag &&
-          tree_.CurrentStackItem()->HasTagName(SVGNames::scriptTag)) {
+      if (token->GetName() == svg_names::kScriptTag &&
+          tree_.CurrentStackItem()->HasTagName(svg_names::kScriptTag)) {
         if (ScriptingContentIsAllowed(tree_.GetParserContentPolicy()))
           script_to_process_ = tree_.CurrentElement();
         tree_.OpenElements()->Pop();

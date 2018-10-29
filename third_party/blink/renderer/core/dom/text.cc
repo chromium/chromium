@@ -288,7 +288,7 @@ bool Text::TextLayoutObjectIsNeeded(const AttachContext& context,
   if (style.Display() == EDisplay::kNone)
     return false;
 
-  if (!ContainsOnlyWhitespace())
+  if (!ContainsOnlyWhitespaceOrEmpty())
     return true;
 
   if (!CanHaveWhitespaceChildren(parent, style, context))

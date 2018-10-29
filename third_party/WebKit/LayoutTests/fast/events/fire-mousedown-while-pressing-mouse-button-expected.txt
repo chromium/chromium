@@ -11,14 +11,11 @@ PASS received mousedown for the middle mouse button while pressing the left mous
 PASS received mousedown for the right mouse button while pressing the left mouse button.
 
 When pressing and holding the "middle mouse button"
-
 PASS received mousedown for the left mouse button while pressing the middle mouse button.
 PASS received mousedown for the right mouse button while pressing the middle mouse button.
 
 When pressing and holding the "right mouse button"
-
 PASS received mousedown for the left mouse button while pressing the right mouse button.
 PASS received mousedown for the middle mouse button while pressing the right mouse button.
 
 TEST COMPLETE
-

@@ -2,7 +2,6 @@ Test that MutationObservers operate in Shadow DOM
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Mutations in shadow DOM should have been observed:
 PASS mutations.length is 4
 PASS mutations[0].type is "attributes"
@@ -15,4 +14,5 @@ PASS mutations.length is 0
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

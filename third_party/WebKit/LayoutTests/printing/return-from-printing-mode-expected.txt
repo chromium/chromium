@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600 clip at (0,0) size 800x585 scrollWidth 1656
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x48
-  LayoutBlockFlow {HTML} at (0,0) size 800x48
-    LayoutBlockFlow {BODY} at (8,16) size 784x16
-      LayoutBlockFlow {P} at (0,0) size 784x16
-        LayoutText {#text} at (0,0) size 1648x16
-          text run at (0,0) width 1648: "The_content_of_this_paragraph_must_be_long_enough_such_that_a_scroll_bar_is_shown_in_non_printing_mode."

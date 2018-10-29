@@ -29,12 +29,15 @@
 #include "chrome/browser/resource_coordinator/usage_clock.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/usb/usb_chooser_context.h"
+#include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/web_contents_tester.h"
-#include "device/base/mock_device_client.h"
+#include "device/usb/public/cpp/fake_usb_device_manager.h"
+#include "device/usb/public/mojom/device_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace resource_coordinator {
@@ -477,8 +480,13 @@ TEST_F(TabLifecycleUnitTest, CannotFreezeOrDiscardWebUsbConnectionsOpen) {
   test_clock_.Advance(kBackgroundUrgentProtectionTime);
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
-  // Make sure there is a DeviceClient instance.
-  device::MockDeviceClient device_client;
+  // Connect with the FakeUsbDeviceManager.
+  device::FakeUsbDeviceManager device_manager;
+  device::mojom::UsbDeviceManagerPtr device_manager_ptr;
+  device_manager.AddBinding(mojo::MakeRequest(&device_manager_ptr));
+  UsbChooserContextFactory::GetForProfile(profile())
+      ->SetDeviceManagerForTesting(std::move(device_manager_ptr));
+
   UsbTabHelper* usb_tab_helper =
       UsbTabHelper::GetOrCreateForWebContents(web_contents_);
   usb_tab_helper->CreateWebUsbService(
@@ -830,6 +838,53 @@ TEST_F(TabLifecycleUnitTest, ReloadingAFrozenTabUnfreezeIt) {
   tab_lifecycle_unit.Freeze();
   web_contents_->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_NE(LifecycleUnitState::FROZEN, tab_lifecycle_unit.GetState());
+}
+
+TEST_F(TabLifecycleUnitTest, DisableHeuristicsFlag) {
+  TabLifecycleUnit tab_lifecycle_unit(GetSource(), &observers_,
+                                      usage_clock_.get(), web_contents_,
+                                      tab_strip_model_.get());
+  TabLoadTracker::Get()->TransitionStateForTesting(web_contents_,
+                                                   LoadingState::LOADED);
+
+  DecisionDetails decision_details;
+  EXPECT_TRUE(tab_lifecycle_unit.CanFreeze(&decision_details));
+  EXPECT_TRUE(decision_details.IsPositive());
+  decision_details.Clear();
+
+  EXPECT_TRUE(tab_lifecycle_unit.CanDiscard(
+      LifecycleUnitDiscardReason::PROACTIVE, &decision_details));
+  EXPECT_TRUE(decision_details.IsPositive());
+  decision_details.Clear();
+
+  // Use one of the heuristics on the tab to prevent it from being discarded.
+  InterventionPolicyDatabase* policy_db =
+      TabLifecycleUnitSource::GetInstance()->intervention_policy_database();
+  policy_db->AddOriginPoliciesForTesting(
+      url::Origin::Create(web_contents_->GetLastCommittedURL()),
+      {OriginInterventions::OPT_OUT, OriginInterventions::OPT_OUT});
+
+  EXPECT_FALSE(tab_lifecycle_unit.CanFreeze(&decision_details));
+  EXPECT_FALSE(decision_details.IsPositive());
+  decision_details.Clear();
+
+  EXPECT_FALSE(tab_lifecycle_unit.CanDiscard(
+      LifecycleUnitDiscardReason::PROACTIVE, &decision_details));
+  EXPECT_FALSE(decision_details.IsPositive());
+  decision_details.Clear();
+
+  // Disable the heuristics and check that the tab can now be safely discarded.
+  GetMutableStaticProactiveTabFreezeAndDiscardParamsForTesting()
+      ->disable_heuristics_protections = true;
+
+  EXPECT_TRUE(tab_lifecycle_unit.CanFreeze(&decision_details));
+  EXPECT_TRUE(decision_details.IsPositive());
+  decision_details.Clear();
+
+  EXPECT_TRUE(tab_lifecycle_unit.CanDiscard(
+      LifecycleUnitDiscardReason::PROACTIVE, &decision_details));
+  EXPECT_TRUE(decision_details.IsPositive());
+  decision_details.Clear();
 }
 
 }  // namespace resource_coordinator

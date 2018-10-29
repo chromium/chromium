@@ -10,6 +10,8 @@ namespace chrome_cleaner {
 
 // Set the timeout for the cleaning phase, in minutes. 0 disables the timeout
 // entirely.
+// WARNING: this switch is used by internal test systems. Be careful when making
+// changes.
 const char kCleaningTimeoutMinutesSwitch[] = "cleaning-timeout";
 
 // Identifier used to group all reports generated during the same run of the
@@ -130,6 +132,8 @@ const char kScanLocationsSwitch[] = "scan-locations";
 
 // Set the timeout for the scanning phase, in minutes. 0 disables the timeout
 // entirely.
+// WARNING: this switch is used by internal test systems. Be careful when making
+// changes.
 const char kScanningTimeoutMinutesSwitch[] = "scanning-timeout";
 
 // Set a test logging URL, where logs will be uploaded.

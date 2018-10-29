@@ -6,7 +6,7 @@
 const kFontSize = '10px';
 const kMouseStep = '5';
 function startDrag(x, y) {
-  assert_exists(window, 'eventSender', 'This test requires window.eventSender');
+  assert_own_property(window, 'eventSender', 'This test requires window.eventSender');
   eventSender.dragMode = false;
 
   // Clear click count

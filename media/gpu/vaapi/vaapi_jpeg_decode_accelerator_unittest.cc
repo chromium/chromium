@@ -33,12 +33,10 @@ constexpr const char* kTestFilename = "pixel-1280x720.jpg";
 constexpr const char* kExpectedMd5SumI420 = "6e9e1716073c9a9a1282e3f0e0dab743";
 constexpr const char* kExpectedMd5SumYUYV = "ff313a6aedbc4e157561e5c2d5c2e079";
 
-// <va/va.h> doesn't provide this specific packing/ordering.
-constexpr uint32_t kFourccYUYV = VA_FOURCC('Y', 'U', 'Y', 'V');
 constexpr VAImageFormat kImageFormatI420 = {.fourcc = VA_FOURCC_I420,
                                             .byte_order = VA_LSB_FIRST,
                                             .bits_per_pixel = 12};
-constexpr VAImageFormat kImageFormatYUYV = {.fourcc = kFourccYUYV,
+constexpr VAImageFormat kImageFormatYUYV = {.fourcc = VA_FOURCC_YUYV,
                                             .byte_order = VA_LSB_FIRST,
                                             .bits_per_pixel = 16};
 
@@ -55,21 +53,21 @@ base::FilePath FindTestDataFilePath(const std::string& file_name) {
 }
 
 uint32_t GetVASurfaceFormat() {
-  if (VaapiWrapper::IsImageFormatSupported(kImageFormatI420)) {
+  if (VaapiWrapper::IsImageFormatSupported(kImageFormatI420))
     return VA_RT_FORMAT_YUV420;
-  } else if (VaapiWrapper::IsImageFormatSupported(kImageFormatYUYV)) {
+  else if (VaapiWrapper::IsImageFormatSupported(kImageFormatYUYV))
     return VA_RT_FORMAT_YUV422;
-  }
+
   LOG(FATAL) << "Neither I420 nor YUY2 is supported.";
   return 0;
 }
 
 VAImageFormat GetVAImageFormat() {
-  if (VaapiWrapper::IsImageFormatSupported(kImageFormatI420)) {
+  if (VaapiWrapper::IsImageFormatSupported(kImageFormatI420))
     return kImageFormatI420;
-  } else if (VaapiWrapper::IsImageFormatSupported(kImageFormatYUYV)) {
+  else if (VaapiWrapper::IsImageFormatSupported(kImageFormatYUYV))
     return kImageFormatYUYV;
-  }
+
   LOG(FATAL) << "Neither I420 nor YUY2 is supported.";
   return VAImageFormat{};
 }
@@ -196,14 +194,17 @@ TEST_F(VaapiJpegDecodeAcceleratorTest, DecodeFail) {
 TEST_F(VaapiJpegDecodeAcceleratorTest, ScopedVAImage) {
   std::vector<VASurfaceID> va_surfaces;
   const gfx::Size coded_size(64, 64);
-  ASSERT_TRUE(wrapper_->CreateSurfaces(GetVASurfaceFormat(), coded_size, 1,
+  ASSERT_TRUE(wrapper_->CreateSurfaces(VA_RT_FORMAT_YUV420, coded_size, 1,
                                        &va_surfaces));
   ASSERT_EQ(va_surfaces.size(), 1u);
 
   std::unique_ptr<ScopedVAImage> scoped_image;
   {
+    // On Stoney-Ridge devices the output image format is dependent on the
+    // surface format. However when DoDecode() is not called the output image
+    // format seems to default to I420. https://crbug.com/828119
+    VAImageFormat va_image_format = kImageFormatI420;
     base::AutoLock auto_lock(*GetVaapiWrapperLock());
-    VAImageFormat va_image_format = GetVAImageFormat();
     scoped_image = std::make_unique<ScopedVAImage>(
         GetVaapiWrapperLock(), GetVaapiWrapperVaDisplay(), va_surfaces[0],
         &va_image_format, coded_size);
@@ -222,8 +223,8 @@ TEST_F(VaapiJpegDecodeAcceleratorTest, BadScopedVAImage) {
 
   std::unique_ptr<ScopedVAImage> scoped_image;
   {
+    VAImageFormat va_image_format = kImageFormatI420;
     base::AutoLock auto_lock(*GetVaapiWrapperLock());
-    VAImageFormat va_image_format = GetVAImageFormat();
     scoped_image = std::make_unique<ScopedVAImage>(
         GetVaapiWrapperLock(), GetVaapiWrapperVaDisplay(), va_surfaces[0],
         &va_image_format, coded_size);

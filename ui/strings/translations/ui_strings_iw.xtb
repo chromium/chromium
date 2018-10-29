@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{לפני דקה אחת}two{לפני # דקות}many{לפני # דקות}other{לפני # דקות}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{דקה}two{# דק}many{# דק}other{# דק}}</translation>
 <translation id="1243314992276662751">העלה</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">אפליקציות מומלצות</translation>
 <translation id="1368832886055348810">משמאל לימין</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">דף למטה</translation>
 <translation id="8245914219290430011">כרטיסייה</translation>
+<translation id="8259556432390118667">ערך צבע הקסדצימלי</translation>
 <translation id="8328145009876646418">קצה שמאלי</translation>
 <translation id="8331626408530291785">גלול למעלה</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{שנה אחת}two{שנתיים}many{# שנים}other{# שנים}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">ברירת מחדל</translation>
 <translation id="8806053966018712535">תיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">רשום הערה לתמונה</translation>
+<translation id="8841375032071747811">לחצן 'הקודם'</translation>
 <translation id="8901569739625249689">‏<ph name="QUANTITY" /> KB‏</translation>
 <translation id="9002566407876343676">פתח</translation>
 <translation id="9038489124413477075">תיקייה ללא שם</translation>

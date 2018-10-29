@@ -36,6 +36,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "extensions/browser/extension_registry.h"
@@ -103,8 +104,7 @@ void ProfileResetter::Reset(
   CHECK_EQ(static_cast<ResettableFlags>(0), pending_reset_flags_);
 
   if (!resettable_flags) {
-    content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                     callback);
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI}, callback);
     return;
   }
 
@@ -153,8 +153,8 @@ void ProfileResetter::MarkAsDone(Resettable resettable) {
   pending_reset_flags_ &= ~resettable;
 
   if (!pending_reset_flags_) {
-    content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                     callback_);
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             callback_);
     callback_.Reset();
     master_settings_.reset();
     template_url_service_sub_.reset();

@@ -5,24 +5,23 @@
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_PRE_TARGET_HANDLER_MAC_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_PRE_TARGET_HANDLER_MAC_H_
 
-#include "ui/events/event_handler.h"
 #include "ui/views/controls/menu/menu_pre_target_handler.h"
-#include "ui/views/event_monitor_mac.h"
+
+#include "ui/base/cocoa/weak_ptr_nsobject.h"
 
 namespace views {
 
-class MenuPreTargetHandlerMac : public MenuPreTargetHandler,
-                                public ui::EventHandler {
+// Stops dispatch of key events when they are handled by MenuController.
+// While similar to EventMonitorMac, that class does not allow dispatch changes.
+class MenuPreTargetHandlerMac : public MenuPreTargetHandler {
  public:
   MenuPreTargetHandlerMac(MenuController* controller, Widget* widget);
   ~MenuPreTargetHandlerMac() override;
 
-  // ui::EventHandler:
-  void OnKeyEvent(ui::KeyEvent* event) override;
-
  private:
   MenuController* controller_;  // Weak. Owns |this|.
-  std::unique_ptr<EventMonitorMac> event_monitor_;
+  id monitor_;
+  ui::WeakPtrNSObjectFactory<MenuPreTargetHandlerMac> factory_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuPreTargetHandlerMac);
 };

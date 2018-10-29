@@ -365,9 +365,11 @@ UI.InspectorView.ActionDelegate = class {
         return true;
       case 'main.next-tab':
         UI.inspectorView._tabbedPane.selectNextTab();
+        UI.inspectorView._tabbedPane.focus();
         return true;
       case 'main.previous-tab':
         UI.inspectorView._tabbedPane.selectPrevTab();
+        UI.inspectorView._tabbedPane.focus();
         return true;
     }
     return false;

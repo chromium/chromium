@@ -58,11 +58,6 @@ class InfoBarService : public infobars::InfoBarManager,
       std::unique_ptr<ConfirmInfoBarDelegate> delegate) override;
   void OpenURL(const GURL& url, WindowOpenDisposition disposition) override;
 
-#if defined(OS_MACOSX)
-  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBarCocoa(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate);
-#endif
-
  protected:
   explicit InfoBarService(content::WebContents* web_contents);
 

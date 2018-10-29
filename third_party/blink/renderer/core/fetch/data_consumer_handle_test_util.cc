@@ -41,7 +41,7 @@ class WaitingHandle final : public WebDataConsumerHandle {
 }  // namespace
 
 DataConsumerHandleTestUtil::Thread::Thread(
-    const WebThreadCreationParams& params,
+    const ThreadCreationParams& params,
     InitializationPolicy initialization_policy)
     : thread_(WebThreadSupportingGC::Create(params)),
       initialization_policy_(initialization_policy),

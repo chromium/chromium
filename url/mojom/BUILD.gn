@@ -17,6 +17,7 @@ mojom("url_mojom_origin") {
 
   public_deps = [
     ":url_mojom_gurl",
+    "//mojo/public/mojom/base",
   ]
 
   check_includes_blink = false

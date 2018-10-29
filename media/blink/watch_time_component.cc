@@ -85,7 +85,7 @@ void WatchTimeComponent<T>::RecordWatchTime(base::TimeDelta current_timestamp) {
 
   // If no value to key callback has been provided, record |elapsed| to every
   // key in the |keys_to_finalize_| list.
-  if (value_to_key_cb_.is_null()) {
+  if (!value_to_key_cb_) {
     for (auto k : keys_to_finalize_)
       recorder_->RecordWatchTime(k, elapsed);
     return;

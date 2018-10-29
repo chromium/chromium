@@ -985,6 +985,13 @@ virtual/media-gpu-accelerated/external/wpt/media-source/mediasource-config-chang
 virtual/media-gpu-accelerated/external/wpt/media-source/mediasource-config-change-mp4-av-framesize.html
 virtual/media-gpu-accelerated/external/wpt/media-source/mediasource-config-change-mp4-v-framerate.html
 
+# Test synthetic gestures since telemetry and layout tests rely on these being correct.
+virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html
+virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html
+virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen.html
+virtual/threaded/synthetic_gestures/smooth-scroll-tiny-delta.html
+synthetic_gestures/smooth-scroll-tiny-delta.html
+
 virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scroll-corner-crash.html
 virtual/prefer_compositing_to_lcd_text/scrollbars/viewport-scrollbar-corner-with-percent-padding-crash.html
 virtual/stable/fast/css3-text/css3-text-decoration/stable/getComputedStyle-text-decoration.html
@@ -995,9 +1002,6 @@ virtual/stable/web-animations-api/additive-animations-unsupported.html
 virtual/stable/webexposed/internal-properties-should-not-be-exposed.html
 virtual/threaded/animations/stability/pseudo-element-animation-with-marker-crash.html
 virtual/threaded/printing/page-and-element-geometry-match.html
-virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html
-virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html
-virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen.html
 virtual/without-smil/svg/animations/exposed/effect.html
 wake_lock/wakelock-api.html
 wake_lock/wakelock-in-nested-frame.html

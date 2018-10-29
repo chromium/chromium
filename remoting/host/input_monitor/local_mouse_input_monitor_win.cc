@@ -42,6 +42,8 @@ class MouseRawInputHandlerWin : public LocalInputMonitorWin::RawInputHandler {
   LocalInputMonitor::MouseMoveCallback on_mouse_move_;
   base::OnceClosure disconnect_callback_;
 
+  webrtc::DesktopVector mouse_position_;
+
   // Tracks whether the instance is registered to receive raw input events.
   bool registered_ = false;
 
@@ -99,18 +101,30 @@ void MouseRawInputHandlerWin::OnInputEvent(const RAWINPUT* input) {
 
   // Notify the observer about mouse events generated locally. Remote (injected)
   // mouse events do not specify a device handle (based on observed behavior).
-  if (input->header.dwType == RIM_TYPEMOUSE &&
-      input->header.hDevice != nullptr) {
-    POINT position;
-    if (!GetCursorPos(&position)) {
-      position.x = 0;
-      position.y = 0;
-    }
-
-    caller_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(on_mouse_move_, webrtc::DesktopVector(
-                                                      position.x, position.y)));
+  if (input->header.dwType != RIM_TYPEMOUSE ||
+      input->header.hDevice == nullptr) {
+    return;
   }
+
+  POINT position;
+  if (!GetCursorPos(&position)) {
+    position.x = 0;
+    position.y = 0;
+  }
+  webrtc::DesktopVector new_position(position.x, position.y);
+
+  // Ignore the event if the cursor position or button states have not changed.
+  // Note: If GetCursorPos fails above, we err on the safe side and treat it
+  // like a movement.
+  if (mouse_position_.equals(new_position) &&
+      !input->data.mouse.usButtonFlags && !new_position.is_zero()) {
+    return;
+  }
+
+  mouse_position_ = new_position;
+
+  caller_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(on_mouse_move_, std::move(new_position)));
 }
 
 void MouseRawInputHandlerWin::OnError() {

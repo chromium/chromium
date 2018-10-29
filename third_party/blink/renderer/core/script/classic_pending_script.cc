@@ -28,15 +28,17 @@
 
 namespace blink {
 
+// <specdef href="https://html.spec.whatwg.org/#fetch-a-classic-script">
 ClassicPendingScript* ClassicPendingScript::Fetch(
     const KURL& url,
     Document& element_document,
     const ScriptFetchOptions& options,
+    CrossOriginAttributeValue cross_origin,
     const WTF::TextEncoding& encoding,
     ScriptElementBase* element,
     FetchParameters::DeferOption defer) {
   FetchParameters params = options.CreateFetchParameters(
-      url, element_document.GetSecurityOrigin(), encoding, defer);
+      url, element_document.GetSecurityOrigin(), cross_origin, encoding, defer);
 
   ClassicPendingScript* pending_script = new ClassicPendingScript(
       element, TextPosition(), ScriptSourceLocationType::kExternalFile, options,
@@ -50,9 +52,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
   pending_script->intervened_ =
       MaybeDisallowFetchForDocWrittenScript(params, element_document);
 
-  // <spec
-  // href="https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-classic-script"
-  // step="2">Set request's client to settings object.</spec>
+  // <spec step="2">Set request's client to settings object.</spec>
   //
   // Note: |element_document| corresponds to the settings object.
   ScriptResource::Fetch(params, element_document.Fetcher(), pending_script);
@@ -100,7 +100,6 @@ ClassicPendingScript::~ClassicPendingScript() {}
 
 NOINLINE void ClassicPendingScript::CheckState() const {
   // TODO(hiroshige): Turn these CHECK()s into DCHECK() before going to beta.
-  CHECK(!prefinalizer_called_);
   CHECK(GetElement());
   CHECK_EQ(is_external_, !!GetResource());
   CHECK(GetResource() || !streamer_);
@@ -185,13 +184,6 @@ void ClassicPendingScript::RecordStreamingHistogram(
     DCHECK_NE(ScriptStreamer::kInvalid, reason);
     RecordNotStreamingReasonHistogram(type, reason);
   }
-}
-
-void ClassicPendingScript::Prefinalize() {
-  // TODO(hiroshige): Consider moving this to ScriptStreamer's prefinalizer.
-  // https://crbug.com/715309
-  CancelStreaming();
-  prefinalizer_called_ = true;
 }
 
 void ClassicPendingScript::DisposeInternal() {
@@ -285,8 +277,10 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   }
 
   if (intervened_) {
+    CrossOriginAttributeValue cross_origin =
+        GetCrossOriginAttributeValue(element->CrossOriginAttributeValue());
     PossiblyFetchBlockedDocWriteScript(resource, element->GetDocument(),
-                                       options_);
+                                       options_, cross_origin);
   }
 
   // We are now waiting for script streaming to finish.
@@ -397,8 +391,9 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
   ScriptSourceCode source_code(streamer_ready ? streamer_ : nullptr, resource,
                                not_streamed_reason);
   // The base URL for external classic script is
-  // "the URL from which the script was obtained" [spec text]
-  // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
+  //
+  // <spec href="https://html.spec.whatwg.org/#concept-script-base-url">
+  // ... the URL from which the script was obtained, ...</spec>
   const KURL& base_url = source_code.Url();
   return ClassicScript::Create(source_code, base_url, options_,
                                resource->CalculateAccessControlStatus());

@@ -17,6 +17,7 @@
 <translation id="2687023731466035790">የGoogle ዘመናዊ ነገሮችን በChromium ውስጥ ያግኙ</translation>
 <translation id="2730884209570016437">ሌላ መተግበሪያ ካሜራዎን እየተጠቀመበት ስለሆነ Chromium ካሜራዎን መጠቀም አይችልም</translation>
 <translation id="2797210818057553964">ይህን በማንኛውም ጊዜ በChromium ቅንብሮች ውስጥ ማበጀት ይችላሉ</translation>
+<translation id="2915596697727466327">Chromium ወደ የእርስዎ የይለፍ ቃላት መዳረሻ መፈቀዱን ለማረጋገጥ የመልክ መታወቂያን ይጠቀማል።</translation>
 <translation id="3256316712990552818">ወደ Chromium ተቀድቷል</translation>
 <translation id="3413120535237193088">የእርስዎን ዕልባቶች በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ወደ Chromium ይግቡ።</translation>
 <translation id="3473048256428424907">የChromium ኪውአር መቃኛን ያብሩ</translation>
@@ -30,7 +31,6 @@
 <translation id="4787850887676698916">በሌሎች መሣሪያዎችዎ ላይ ባለ Chromium ላይ የከፈቷቸው ትሮች እዚህ ይመጣሉ።</translation>
 <translation id="495292094137889840">የChromium ኪውአር መቃኛውን መጠቀም ይጀምሩ</translation>
 <translation id="5231355151045086930">ከChromium ዘግተው ይውጡ</translation>
-<translation id="5416919929805616771">በChromium እየተደሰቱ ነው? <ph name="BEGIN_LINK" />ለዚህ መተግበሪያ ደረጃ ይስጡ።<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">ወደ Chromium እንኳን በደህና መጡ</translation>
 <translation id="5945387852661427312">በ<ph name="DOMAIN" /> ከሚተዳደር መለያ ዘግተው እየወጡና ለአስተዳዳሪው ሙሉውን በChromium ውሂብዎ ቁጥጥር እየሰጡ ነው። የእርስዎ ውሂብ እስከመጨረሻው ከዚህ መለያ ጋር ይተሳሰራል። ከChromium ዘግቶ መውጣት ውሂብዎን ከዚህ መሣሪያ ይሰርዘዋል፣ ነገር ግን በእርስዎ Google መለያ ላይ እንደተከማቸ ይቆያል።</translation>
 <translation id="6068866989048414399">የChromium አገልግሎት ውል</translation>
@@ -51,7 +51,6 @@
 <translation id="786327964234957808">የስምረት መለያዎችን ከ<ph name="USER_EMAIL1" /> ወደ <ph name="USER_EMAIL2" /> እየቀየሩ ነው። ነባሩ የChromium ውሂብዎ በ<ph name="DOMAIN" /> ነው የሚተዳደረው። ይሄ ውሂብዎን ከዚህ መሣሪያዎ ይሰርዘዋል፣ ነገር ግን ውሂብዎ በ<ph name="USER_EMAIL1" /> ውስጥ እንዳለ ይቀራል።</translation>
 <translation id="8175055321229419309">ጠቃሚ ምክር፦ <ph name="BEGIN_LINK" />Chromiumን ወደ የእርስዎ መትከያ ይውሰዱት<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">በአካባቢዎ ላይ በመመስረት በChromium ውስጥ የተሻለ የGoogle ተሞክሮ ያግኙ።</translation>
-<translation id="8353224596138547809">Chromium የዚህ ጣቢያ ይለፍ ቃልዎን እንዲያስቀምጥልዎ ይፈልጋሉ?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" />ን በማንኛውም ጊዜ ማበጀት ይችላሉ። Chromiumን እና እንደ ትርጉም፣ ፍለጋ እና ማስታወቂያዎች ያሉ ሌሎች የGoogle አገልግሎቶችን ግላዊነት ለማላበስ Google እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለ ይዘትን እና የአሰሳ እንቅስቃሴ ሊጠቀም ይችላል።</translation>
 <translation id="8586442755830160949">የቅጂ መብት <ph name="YEAR" /> የChromium ደራሲያን። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="8809780021347235332">ምስሎችን ለማስቀመጥ Chromium የእርስዎን ፎቶዎች መጠቀም እንዲችል በቅንብሮች ላይ መታ ያድርጉ።</translation>

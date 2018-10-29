@@ -132,6 +132,38 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_DelayedWriteAck) {
   EXPECT_EQ(frame, receiver.value());
 }
 
+// Tests a scenario where keep alive frames are obtained before the control
+// point write was acknowledged. The keep alive should be processed.
+TEST_F(FidoBleTransactionTest, WriteRequestFrame_DelayedWriteAck_KeepAlive) {
+  FidoBleConnection::WriteCallback delayed_write_callback;
+
+  EXPECT_CALL(connection(), WriteControlPointPtr)
+      .WillOnce(::testing::Invoke(
+          [&](auto&&, auto* cb) { delayed_write_callback = std::move(*cb); }));
+
+  FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
+  FidoBleFrame tup_needed_frame(
+      FidoBleDeviceCommand::kKeepAlive,
+      {base::strict_cast<uint8_t>(FidoBleFrame::KeepaliveCode::TUP_NEEDED)});
+  FrameCallbackReceiver receiver;
+
+  // Send two keep alives then the actual response.
+  transaction().WriteRequestFrame(frame, receiver.callback());
+  for (auto&& byte_fragment : ToByteFragments(tup_needed_frame))
+    transaction().OnResponseFragment(std::move(byte_fragment));
+  for (auto&& byte_fragment : ToByteFragments(tup_needed_frame))
+    transaction().OnResponseFragment(std::move(byte_fragment));
+  for (auto&& byte_fragment : ToByteFragments(frame))
+    transaction().OnResponseFragment(std::move(byte_fragment));
+
+  scoped_task_environment().RunUntilIdle();
+  EXPECT_FALSE(receiver.was_called());
+
+  std::move(delayed_write_callback).Run(true);
+  receiver.WaitForCallback();
+  EXPECT_EQ(frame, receiver.value());
+}
+
 // Tests a case where the control point length is too small.
 TEST_F(FidoBleTransactionTest, WriteRequestFrame_ControlPointLength_TooSmall) {
   static constexpr uint16_t kTooSmallControlPointLength = 2u;

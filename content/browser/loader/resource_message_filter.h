@@ -62,7 +62,7 @@ class CONTENT_EXPORT ResourceMessageFilter
       storage::FileSystemContext* file_system_context,
       ServiceWorkerContextWrapper* service_worker_context,
       PrefetchURLLoaderService* prefetch_url_loader_service,
-      SharedCorsOriginAccessList* shared_cors_origin_access_list,
+      const SharedCorsOriginAccessList* shared_cors_origin_access_list,
       const GetContextsCallback& get_contexts_callback,
       const scoped_refptr<base::SingleThreadTaskRunner>& io_thread_runner);
 
@@ -122,7 +122,8 @@ class CONTENT_EXPORT ResourceMessageFilter
 
   scoped_refptr<PrefetchURLLoaderService> prefetch_url_loader_service_;
 
-  scoped_refptr<SharedCorsOriginAccessList> shared_cors_origin_access_list_;
+  scoped_refptr<const SharedCorsOriginAccessList>
+      shared_cors_origin_access_list_;
 
   // Task runner for the IO thead.
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner_;

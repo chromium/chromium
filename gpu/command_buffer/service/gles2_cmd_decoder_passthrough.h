@@ -16,6 +16,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
+#include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -39,6 +40,8 @@ class GLFence;
 }
 
 namespace gpu {
+class SharedImageRepresentationGLTexturePassthrough;
+
 namespace gles2 {
 
 class ContextGroup;
@@ -86,6 +89,14 @@ struct PassthroughResources {
   // using the mailbox are deleted
   ClientServiceMap<GLuint, scoped_refptr<TexturePassthrough>>
       texture_object_map;
+
+  // Mapping of client texture IDs to
+  // SharedImageRepresentationGLTexturePassthroughs.
+  // TODO(ericrk): Remove this once TexturePassthrough holds a reference to
+  // the SharedImageRepresentationGLTexturePassthrough itself.
+  base::flat_map<GLuint,
+                 std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>>
+      texture_shared_image_map;
 
   // A set of yet-to-be-deleted TexturePassthrough, which should be tossed
   // whenever a context switch happens or the resources is destroyed.
@@ -428,6 +439,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
                             GLuint client_id,
                             TexturePassthrough* texture);
 
+  void UpdateTextureSizeFromTexturePassthrough(TexturePassthrough* texture,
+                                               GLuint client_id);
+  void UpdateTextureSizeFromTarget(GLenum target);
+  void UpdateTextureSizeFromClientID(GLuint client_id);
+
   error::Error BindTexImage2DCHROMIUMImpl(GLenum target,
                                           GLenum internalformat,
                                           GLint image_id);
@@ -456,7 +472,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
 
   // Fail-fast inline version of BindPendingImagesForSamplers.
   inline void BindPendingImagesForSamplersIfNeeded() {
-    if (textures_pending_binding_.size() > 0)
+    if (!textures_pending_binding_.empty())
       BindPendingImagesForSamplers();
   }
 
@@ -472,6 +488,19 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
 
     if (texture && texture->is_bind_pending())
       BindOnePendingImage(texture->target(), texture.get());
+  }
+
+  inline void RemovePendingBindingTexture(GLenum target, GLuint unit) {
+    // Note that this code was found to be faster than running base::EraseIf.
+    size_t num_pending = textures_pending_binding_.size();
+    for (size_t index = 0; index < num_pending; ++index) {
+      TexturePendingBinding& pending = textures_pending_binding_[index];
+      if (pending.target == target && pending.unit == unit) {
+        textures_pending_binding_.erase(textures_pending_binding_.begin() +
+                                        index);
+        return;
+      }
+    }
   }
 
   DecoderClient* client_ = nullptr;
@@ -578,20 +607,24 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
   std::array<std::array<BoundTexture, kMaxTextureUnits>, kNumTextureTypes>
       bound_textures_;
 
-  // [target, texture unit] = texture that has a bound GLImage that requires
-  // bind / copy before draw.
-  using TargetUnitPair = std::pair<GLenum, GLuint>;
-  struct TargetUnitPairHasher {
-    std::size_t operator()(const TargetUnitPair& target_unit_pair) const {
-      // Combine them into disjoint ints.
-      return target_unit_pair.first * kMaxTextureUnits +
-             target_unit_pair.second;
-    }
+  // [target, texture unit, texture] where texture has a bound GLImage that
+  // requires bind / copy before draw.
+  struct TexturePendingBinding {
+    TexturePendingBinding(GLenum target,
+                          GLuint unit,
+                          base::WeakPtr<TexturePassthrough> texture);
+    TexturePendingBinding(const TexturePendingBinding& other);
+    TexturePendingBinding(TexturePendingBinding&& other);
+    ~TexturePendingBinding();
+
+    TexturePendingBinding& operator=(const TexturePendingBinding& other);
+    TexturePendingBinding& operator=(TexturePendingBinding&& other);
+
+    GLenum target;
+    GLuint unit;
+    base::WeakPtr<TexturePassthrough> texture;
   };
-  std::unordered_map<TargetUnitPair,
-                     base::WeakPtr<TexturePassthrough>,
-                     TargetUnitPairHasher>
-      textures_pending_binding_;
+  std::vector<TexturePendingBinding> textures_pending_binding_;
 
   // State tracking of currently bound buffers
   std::unordered_map<GLenum, GLuint> bound_buffers_;
@@ -617,6 +650,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
     scoped_refptr<gpu::Buffer> shm;
     QuerySync* sync = nullptr;
     base::subtle::Atomic32 submit_count = 0;
+
+    std::unique_ptr<gl::GLFence> commands_completed_fence;
 
     std::vector<base::OnceClosure> callbacks;
     std::unique_ptr<gl::GLFence> buffer_shadow_update_fence = nullptr;

@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "v8/include/v8.h"
 
@@ -47,9 +47,9 @@ class MODULES_EXPORT CSSPaintDefinition final
   // This may return a nullptr (representing an invalid image) if javascript
   // throws an error.
   //
-  // The |container_size| is the container size with subpixel snapping.
+  // The |container_size| is without subpixel snapping.
   scoped_refptr<Image> Paint(const ImageResourceObserver&,
-                             const IntSize& container_size,
+                             const FloatSize& container_size,
                              const CSSStyleValueVector*);
   const Vector<CSSPropertyID>& NativeInvalidationProperties() const {
     return native_invalidation_properties_;
@@ -97,7 +97,7 @@ class MODULES_EXPORT CSSPaintDefinition final
   TraceWrapperV8Reference<v8::Function> paint_;
 
   // At the moment there is only ever one instance of a paint class per type.
-  TraceWrapperV8Reference<v8::Object> instance_;
+  TraceWrapperV8Reference<v8::Value> instance_;
 
   bool did_call_constructor_;
 

@@ -98,7 +98,7 @@ void DOMStorageNamespace::DeleteSessionStorageOrigin(
 }
 
 void DOMStorageNamespace::PurgeMemory(bool aggressively) {
-  AreaMap::iterator it = areas_.begin();
+  auto it = areas_.begin();
   while (it != areas_.end()) {
     const AreaHolder& holder = it->second;
 
@@ -148,7 +148,7 @@ void DOMStorageNamespace::Flush() {
 DOMStorageNamespace::UsageStatistics DOMStorageNamespace::GetUsageStatistics()
     const {
   UsageStatistics stats = {0};
-  for (AreaMap::const_iterator it = areas_.begin(); it != areas_.end(); ++it) {
+  for (auto it = areas_.begin(); it != areas_.end(); ++it) {
     if (it->second.area_->map_memory_used()) {
       stats.total_cache_size += it->second.area_->map_memory_used();
       ++stats.total_area_count;
@@ -182,7 +182,7 @@ int DOMStorageNamespace::GetAreaOpenCount(const url::Origin& origin) const {
 
 DOMStorageNamespace::AreaHolder* DOMStorageNamespace::GetAreaHolder(
     const url::Origin& origin) {
-  AreaMap::iterator found = areas_.find(origin);
+  auto found = areas_.find(origin);
   if (found == areas_.end())
     return nullptr;
   return &(found->second);

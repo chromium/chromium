@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
 
@@ -80,19 +81,23 @@ class WTF_EXPORT TextCodec {
   virtual ~TextCodec();
 
   String Decode(const char* str,
-                size_t length,
+                wtf_size_t length,
                 FlushBehavior flush = FlushBehavior::kDoNotFlush) {
     bool ignored;
     return Decode(str, length, flush, false, ignored);
   }
 
   virtual String Decode(const char*,
-                        size_t length,
+                        wtf_size_t length,
                         FlushBehavior,
                         bool stop_on_error,
                         bool& saw_error) = 0;
-  virtual CString Encode(const UChar*, size_t length, UnencodableHandling) = 0;
-  virtual CString Encode(const LChar*, size_t length, UnencodableHandling) = 0;
+  virtual CString Encode(const UChar*,
+                         wtf_size_t length,
+                         UnencodableHandling) = 0;
+  virtual CString Encode(const LChar*,
+                         wtf_size_t length,
+                         UnencodableHandling) = 0;
 
   // Fills a null-terminated string representation of the given
   // unencodable character into the given replacement buffer.

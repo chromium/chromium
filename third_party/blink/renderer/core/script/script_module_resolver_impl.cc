@@ -50,7 +50,8 @@ ModuleScript* ScriptModuleResolverImpl::GetHostDefined(
   return it->value;
 }
 
-// https://html.spec.whatwg.org/multipage/webappapis.html#hostresolveimportedmodule(referencingscriptormodule,-specifier)
+// <specdef
+// href="https://html.spec.whatwg.org/#hostresolveimportedmodule(referencingscriptormodule,-specifier)">
 ScriptModule ScriptModuleResolverImpl::Resolve(
     const String& specifier,
     const ScriptModule& referrer,
@@ -58,32 +59,37 @@ ScriptModule ScriptModuleResolverImpl::Resolve(
   DVLOG(1) << "ScriptModuleResolverImpl::resolve(specifier=\"" << specifier
            << ", referrer.hash=" << ScriptModuleHash::GetHash(referrer) << ")";
 
-  // Step 1. Let referencing module script be referencingModule.[[HostDefined]].
+  // <spec step="1">Let referencing script be
+  // referencingScriptOrModule.[[HostDefined]].</spec>
   ModuleScript* referrer_module = GetHostDefined(referrer);
 
-  // Step 2. Let moduleMap be referencing module script's settings object's
-  // module map. Note: Blink finds out "module script's settings object"
+  // <spec step="2">Let moduleMap be referencing script's settings object's
+  // module map.</spec>
+  //
+  // Note: Blink finds out "module script's settings object"
   // (Modulator) from context where HostResolveImportedModule was called.
 
-  // Step 3. Let url be the result of resolving a module specifier given
-  // referencing module script and specifier.
+  // <spec step="3">Let url be the result of resolving a module specifier given
+  // referencing script's base URL and specifier.</spec>
   KURL url = referrer_module->ResolveModuleSpecifier(specifier);
 
-  // Step 4. Assert: url is never failure, because resolving a module specifier
-  // must have been previously successful with these same two arguments.
+  // <spec step="4">Assert: url is never failure, because resolving a module
+  // specifier must have been previously successful with these same two
+  // arguments.</spec>
   DCHECK(url.IsValid());
 
-  // Step 5. Let resolved module script be moduleMap[url]. (This entry must
-  // exist for us to have gotten to this point.)
+  // <spec step="5">Let resolved module script be moduleMap[url]. (This entry
+  // must exist for us to have gotten to this point.)</spec>
   ModuleScript* module_script = modulator_->GetFetchedModuleScript(url);
 
-  // Step 6. Assert: resolved module script is a module script (i.e., is not
-  // null or "fetching").
-  // Step 7. Assert: resolved module script's record is not null.
+  // <spec step="6">Assert: resolved module script is a module script (i.e., is
+  // not null or "fetching").</spec>
+  //
+  // <spec step="7">Assert: resolved module script's record is not null.</spec>
   DCHECK(module_script);
   CHECK(!module_script->Record().IsNull());
 
-  // Step 8. Return resolved module script's module record.
+  // <spec step="8">Return resolved module script's record.</spec>
   return module_script->Record();
 }
 

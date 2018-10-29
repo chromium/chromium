@@ -55,6 +55,13 @@ class AutocompleteResult {
   void SortAndCull(const AutocompleteInput& input,
                    TemplateURLService* template_url_service);
 
+  // Creates and adds any dedicated Pedal matches triggered by existing match.
+  void AppendDedicatedPedalMatches(AutocompleteProviderClient* client,
+                                   const AutocompleteInput& input);
+
+  // Sets |pedal| in matches that have Pedal-triggering text.
+  void ConvertInSuggestionPedalMatches(AutocompleteProviderClient* client);
+
   // Sets |has_tab_match| in matches whose URL matches an open tab's URL.
   // Also, fixes up the description if not using another UI element to
   // annotate (e.g. tab switch button). |input| can be null; if provided,

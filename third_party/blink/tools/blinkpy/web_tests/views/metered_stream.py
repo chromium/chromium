@@ -67,9 +67,8 @@ class MeteredStream(object):
         self._logger = logger
         self._log_handler = None
         if self._logger:
-            log_level = logging.DEBUG if verbose else logging.INFO
             self._log_handler = _LogHandler(self)
-            self._log_handler.setLevel(log_level)
+            self._log_handler.setLevel(self._logger.level)
             self._logger.addHandler(self._log_handler)
 
     def __del__(self):

@@ -28,7 +28,7 @@
       }
 
       #feature-items-container {
-        @apply(--settings-list-frame-padding);
+        @apply --settings-list-frame-padding;
       }
 
       #forget-device-container {
@@ -66,14 +66,15 @@
           <settings-multidevice-feature-item id="smartLockItem"
               feature="[[MultiDeviceFeature.SMART_LOCK]]"
               page-content-data="[[pageContentData]]"
-              subpage-route="[[routes.LOCK_SCREEN]]">
+              subpage-route="[[routes.SMART_LOCK]]">
           </settings-multidevice-feature-item>
         </template>
         <template is="dom-if"
             if="[[isFeatureSupported(
                 MultiDeviceFeature.INSTANT_TETHERING, pageContentData)]]"
             restamp>
-          <settings-multidevice-tether-item id="instantTetheringItem">
+          <settings-multidevice-tether-item id="instantTetheringItem"
+              page-content-data="[[pageContentData]]">
           </settings-multidevice-tether-item>
         </template>
         <template is="dom-if"
@@ -113,9 +114,9 @@
       </div>
     </div>
     <cr-dialog id="forgetDeviceDialog">
-      <div slot="title">$i18n{multideviceForgetDeviceDialogHeading}</div>
+      <div slot="title">$i18n{multideviceForgetDevice}</div>
       <div slot="body">
-        <div class="settings-box first">
+        <div class="first">
           $i18n{multideviceForgetDeviceDialogMessage}
         </div>
       </div>

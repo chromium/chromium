@@ -321,5 +321,32 @@ bool QuicUtils::IsIetfPacketHeader(uint8_t first_byte) {
          !(first_byte & FLAGS_DEMULTIPLEXING_BIT);
 }
 
+// static
+QuicStreamId QuicUtils::GetInvalidStreamId(QuicTransportVersion version) {
+  return 0;
+}
+
+// static
+QuicStreamId QuicUtils::GetCryptoStreamId(QuicTransportVersion version) {
+  return 1;
+}
+
+// static
+QuicStreamId QuicUtils::GetHeadersStreamId(QuicTransportVersion version) {
+  return 3;
+}
+
+// static
+bool QuicUtils::IsClientInitiatedStreamId(QuicTransportVersion version,
+                                          QuicStreamId id) {
+  return id != GetInvalidStreamId(version) && id % 2 != 0;
+}
+
+// static
+bool QuicUtils::IsServerInitiatedStreamId(QuicTransportVersion version,
+                                          QuicStreamId id) {
+  return id != GetInvalidStreamId(version) && id % 2 == 0;
+}
+
 #undef RETURN_STRING_LITERAL  // undef for jumbo builds
 }  // namespace quic

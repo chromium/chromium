@@ -26,8 +26,8 @@
       "paintInvalidations": [
         {
           "object": "LayoutNGBlockFlow (positioned) DIV class='test image'",
-          "rect": [0, 40, 60, 4],
-          "reason": "incremental"
+          "rect": [0, 0, 60, 44],
+          "reason": "geometry"
         }
       ]
     },
@@ -68,8 +68,8 @@
       "paintInvalidations": [
         {
           "object": "LayoutNGBlockFlow (positioned) DIV class='test image fixed-height'",
-          "rect": [0, 40, 60, 4],
-          "reason": "incremental"
+          "rect": [0, 0, 60, 44],
+          "reason": "geometry"
         }
       ]
     },
@@ -96,8 +96,8 @@
       "paintInvalidations": [
         {
           "object": "LayoutNGBlockFlow (positioned) DIV class='test image top'",
-          "rect": [0, 40, 60, 4],
-          "reason": "incremental"
+          "rect": [0, 0, 60, 44],
+          "reason": "geometry"
         }
       ]
     },
@@ -137,8 +137,8 @@
       "paintInvalidations": [
         {
           "object": "LayoutNGBlockFlow (positioned) DIV class='test image no-repeat'",
-          "rect": [0, 40, 60, 4],
-          "reason": "incremental"
+          "rect": [0, 0, 60, 44],
+          "reason": "geometry"
         }
       ]
     },

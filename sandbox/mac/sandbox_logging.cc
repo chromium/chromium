@@ -22,6 +22,10 @@
     __builtin_unreachable();                                                   \
   }
 
+extern "C" {
+void abort_report_np(const char*, ...);
+}
+
 namespace sandbox {
 
 namespace logging {
@@ -89,6 +93,12 @@ void SendAslLog(Level level, const char* message) {
   asl_set(asl_message.get(), ASL_KEY_LEVEL, asl_level_string.c_str());
   asl_set(asl_message.get(), ASL_KEY_MSG, message);
   asl_send(asl_client.get(), asl_message.get());
+
+  if (__builtin_available(macOS 10.11, *)) {
+    if (level == Level::FATAL) {
+      abort_report_np(message);
+    }
+  }
 }
 
 // |error| is strerror(errno) when a P* logging function is called. Pass

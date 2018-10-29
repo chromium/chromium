@@ -55,11 +55,6 @@ class BluetoothLowEnergyPeripheralManagerBridge {
   return self;
 }
 
-- (void)dealloc {
-  [bridge_->GetPeripheralManager() setDelegate:nil];
-  [super dealloc];
-}
-
 - (void)peripheralManagerDidUpdateState:(CBPeripheralManager*)peripheral {
   bridge_->UpdatedState();
 }

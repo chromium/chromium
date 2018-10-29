@@ -19,7 +19,8 @@ enum BackgroundFetchError {
   STORAGE_ERROR,
   SERVICE_WORKER_UNAVAILABLE,
   QUOTA_EXCEEDED,
-  PERMISSION_DENIED
+  PERMISSION_DENIED,
+  REGISTRATION_LIMIT_EXCEEDED
 };
 
 // Struct representing completed Background Fetch requests, along with their
@@ -102,7 +103,9 @@ interface BackgroundFetchRegistrationObserver {
   OnProgress(uint64 upload_total,
              uint64 uploaded,
              uint64 download_total,
-             uint64 downloaded);
+             uint64 downloaded,
+             BackgroundFetchResult result,
+             BackgroundFetchFailureReason failure_reason);
 
   // Notifies the BackgroundFetchRegistration that the data for the associated
   // fetch is no longer available. The mojo connection will be closed after

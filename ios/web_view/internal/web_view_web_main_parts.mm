@@ -5,6 +5,8 @@
 #import "ios/web_view/internal/web_view_web_main_parts.h"
 
 #include "base/base_paths.h"
+#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "ios/web_view/cwv_web_view_features.h"
@@ -38,6 +40,15 @@ void WebViewWebMainParts::PreCreateThreads() {
   DCHECK(local_state);
 
   ApplicationContext::GetInstance()->PreCreateThreads();
+
+#if BUILDFLAG(IOS_WEB_VIEW_ENABLE_SYNC)
+  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  feature_list->InitializeFromCommandLine(
+      /*enable_features=*/"",
+      // TODO(crbug.com/873790): Figure out if USER_CONSENTS need to be enabled.
+      /*disable_features=*/"SyncUserConsentSeparateType");
+  base::FeatureList::SetInstance(std::move(feature_list));
+#endif  // BUILDFLAG(IOS_WEB_VIEW_ENABLE_SYNC)
 }
 
 void WebViewWebMainParts::PreMainMessageLoopRun() {

@@ -59,8 +59,7 @@ class SessionStorageNamespaceImplMojoTest
     // Create a database that already has a namespace saved.
     metadata_.SetupNewDatabase();
     std::vector<leveldb::mojom::BatchedOperationPtr> save_operations;
-    NamespaceEntry entry =
-        metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_);
+    auto entry = metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_);
     auto map_id =
         metadata_.RegisterNewMap(entry, test_origin1_, &save_operations);
     DCHECK(map_id->KeyPrefix() == StdStringToUint8Vector("map-0-"));
@@ -130,7 +129,7 @@ class SessionStorageNamespaceImplMojoTest
       const SessionStorageNamespaceImplMojo::OriginAreas& areas_to_clone)
       override {
     std::vector<leveldb::mojom::BatchedOperationPtr> save_operations;
-    NamespaceEntry namespace_entry =
+    auto namespace_entry =
         metadata_.GetOrCreateNamespaceEntry(destination_namespace);
     metadata_.RegisterShallowClonedNamespace(source_namespace, namespace_entry,
                                              &save_operations);

@@ -89,6 +89,7 @@ class OriginTrialsWriter(make_runtime_features.RuntimeFeatureWriter):
             'origin_trial_features': self._origin_trial_features,
             'implied_origin_trial_features': self._implied_mappings,
             'input_files': self._input_files,
+            'header_guard': self._header_guard,
         }
 
 

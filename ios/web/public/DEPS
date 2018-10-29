@@ -3,7 +3,6 @@ include_rules = [
   "-ios/web",
   "+ios/web/public",
   "+services/network/public/mojom",
-  "+services/service_manager/embedder/runner",
 ]
 
 specific_include_rules = {

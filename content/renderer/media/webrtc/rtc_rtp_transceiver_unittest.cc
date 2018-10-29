@@ -8,11 +8,11 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_task_environment.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
 #include "content/renderer/media/stream/media_stream_audio_source.h"
@@ -172,7 +172,7 @@ class RTCRtpTransceiverTest : public ::testing::Test {
   }
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
 
  protected:
   std::unique_ptr<MockPeerConnectionDependencyFactory> dependency_factory_;

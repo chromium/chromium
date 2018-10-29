@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="before">Before</div>
+<div><span><p id="after">After</p></span></div>
+
+<script>
+  test(function(t) {
+    var axBefore = accessibilityController.accessibleElementById("before");
+    assert_equals(axBefore.childAtIndex(0).name, "Before");
+    var axAfter = accessibilityController.accessibleElementById("after");
+    assert_equals(axAfter.childAtIndex(0).name, "After");
+}, "Ensure that continuations are included in the accessibility tree.");
+</script>

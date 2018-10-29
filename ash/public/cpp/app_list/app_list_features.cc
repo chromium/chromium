@@ -8,8 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace app_list {
-namespace features {
+namespace app_list_features {
 
 const base::Feature kEnableAnswerCard{"EnableAnswerCard",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
@@ -19,6 +18,8 @@ const base::Feature kEnableBackgroundBlur{"EnableBackgroundBlur",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnablePlayStoreAppSearch{
     "EnablePlayStoreAppSearch", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableAppDataSearch{"EnableAppDataSearch",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableHomeLauncher{"EnableHomeLauncher",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableHomeLauncherGestures{
@@ -54,6 +55,10 @@ bool IsBackgroundBlurEnabled() {
 bool IsPlayStoreAppSearchEnabled() {
   // Not using local static variable to allow tests to change this value.
   return base::FeatureList::IsEnabled(kEnablePlayStoreAppSearch);
+}
+
+bool IsAppDataSearchEnabled() {
+  return base::FeatureList::IsEnabled(kEnableAppDataSearch);
 }
 
 bool IsHomeLauncherEnabled() {
@@ -113,5 +118,4 @@ std::string AppSearchResultRankerPredictorName() {
   return std::string("MrfuAppLaunchPredictor");
 }
 
-}  // namespace features
-}  // namespace app_list
+}  // namespace app_list_features

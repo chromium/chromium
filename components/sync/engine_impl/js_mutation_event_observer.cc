@@ -60,8 +60,7 @@ void JsMutationEventObserver::OnChangesApplied(
   const size_t changes_size = changes.Get().size();
   if (changes_size <= kChangeLimit) {
     auto changes_list = std::make_unique<base::ListValue>();
-    for (ChangeRecordList::const_iterator it = changes.Get().begin();
-         it != changes.Get().end(); ++it) {
+    for (auto it = changes.Get().begin(); it != changes.Get().end(); ++it) {
       changes_list->Append(it->ToValue());
     }
     changes_value = std::move(changes_list);

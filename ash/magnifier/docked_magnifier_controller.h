@@ -57,9 +57,9 @@ class ASH_EXPORT DockedMagnifierController
   // the rest of the screen.
   static constexpr int kSeparatorHeight = 10;
 
-  // The value by which the screen height is devided to calculate the height of
+  // The value by which the screen height is divided to calculate the height of
   // the magnifier viewport.
-  static constexpr int kScreenHeightDevisor = 3;
+  static constexpr int kScreenHeightDivisor = 3;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test);
 

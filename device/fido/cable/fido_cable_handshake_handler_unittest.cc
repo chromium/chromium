@@ -13,9 +13,9 @@
 #include "base/optional.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/cbor/cbor_reader.h"
-#include "components/cbor/cbor_values.h"
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "crypto/hkdf.h"
 #include "crypto/hmac.h"
 #include "device/bluetooth/test/bluetooth_test.h"
@@ -208,13 +208,13 @@ class FakeCableAuthenticator {
       return false;
     }
 
-    const auto& client_hello_cbor = cbor::CBORReader::Read(client_hello);
+    const auto& client_hello_cbor = cbor::Reader::Read(client_hello);
     if (!client_hello_cbor)
       return false;
 
     const auto& message_map = client_hello_cbor->GetMap();
-    auto hello_message_it = message_map.find(cbor::CBORValue(0));
-    auto client_random_nonce_it = message_map.find(cbor::CBORValue(1));
+    auto hello_message_it = message_map.find(cbor::Value(0));
+    auto client_random_nonce_it = message_map.find(cbor::Value(1));
     if (hello_message_it == message_map.end() ||
         client_random_nonce_it == message_map.end())
       return false;

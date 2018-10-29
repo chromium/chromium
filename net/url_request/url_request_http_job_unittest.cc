@@ -66,7 +66,7 @@ const char kSimpleGetMockWrite[] =
     "GET / HTTP/1.1\r\n"
     "Host: www.example.com\r\n"
     "Connection: keep-alive\r\n"
-    "User-Agent:\r\n"
+    "User-Agent: \r\n"
     "Accept-Encoding: gzip, deflate\r\n"
     "Accept-Language: en-us,fr\r\n\r\n";
 
@@ -74,7 +74,7 @@ const char kSimpleHeadMockWrite[] =
     "HEAD / HTTP/1.1\r\n"
     "Host: www.example.com\r\n"
     "Connection: keep-alive\r\n"
-    "User-Agent:\r\n"
+    "User-Agent: \r\n"
     "Accept-Encoding: gzip, deflate\r\n"
     "Accept-Language: en-us,fr\r\n\r\n";
 
@@ -249,7 +249,7 @@ TEST(URLRequestHttpJobWithProxy, TestSuccessfulWithOneProxy) {
       "GET http://www.example.com/ HTTP/1.1\r\n"
       "Host: www.example.com\r\n"
       "Proxy-Connection: keep-alive\r\n"
-      "User-Agent:\r\n"
+      "User-Agent: \r\n"
       "Accept-Encoding: gzip, deflate\r\n"
       "Accept-Language: en-us,fr\r\n\r\n";
 
@@ -755,7 +755,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.redirect.com\r\n"
                 "Connection: keep-alive\r\n"
-                "User-Agent:\r\n"
+                "User-Agent: \r\n"
                 "Accept-Encoding: gzip, deflate\r\n"
                 "Accept-Language: en-us,fr\r\n\r\n")};
 
@@ -1379,7 +1379,7 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, BrotliAdvertisement) {
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.com\r\n"
                 "Connection: keep-alive\r\n"
-                "User-Agent:\r\n"
+                "User-Agent: \r\n"
                 "Accept-Encoding: gzip, deflate, br\r\n"
                 "Accept-Language: en-us,fr\r\n\r\n")};
   MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
@@ -1500,7 +1500,7 @@ TEST_F(URLRequestHttpJobWebSocketTest, CreateHelperPassedThrough) {
                 "Upgrade: websocket\r\n"
                 "Origin: http://www.example.org\r\n"
                 "Sec-WebSocket-Version: 13\r\n"
-                "User-Agent:\r\n"
+                "User-Agent: \r\n"
                 "Accept-Encoding: gzip, deflate\r\n"
                 "Accept-Language: en-us,fr\r\n"
                 "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n"

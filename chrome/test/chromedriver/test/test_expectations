@@ -12,18 +12,20 @@ import fnmatch
 
 _REVISION_NEGATIVE_FILTER = {}
 _REVISION_NEGATIVE_FILTER['HEAD'] = [
+    # marked as not yet implemented with chrome but already works
+    'ChildrenFindingTest.testShouldNotReturnRootElementWhenFindingChildrenById',
+    'ClearTest.shouldBeAbleToClearDateInput',
+    'ClearTest.shouldBeAbleToClearDatetimeLocalInput',
+    'ClearTest.shouldBeAbleToClearMonthInput',
+    'ClearTest.shouldBeAbleToClearTimeInput',
+    'ClearTest.shouldBeAbleToClearWeekInput',
+
     # Flaky: https://bugs.chromium.org/p/chromedriver/issues/detail?id=528
     'PageLoadingTest.testShouldDoNothingIfThereIsNothingToGoBackTo',
 
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2532
     'SlowLoadingPageTest.testRefreshShouldBlockUntilPageLoads',
     'PageLoadingTest.testShouldTimeoutIfAPageTakesTooLongToRefresh',
-
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2572
-    'ChromeOptionsFunctionalTest.canAddExtensionFromFile',
-    'ChromeOptionsFunctionalTest.canAddExtensionFromStringEncodedInBase64',
-    'ChromeOptionsFunctionalTest.canSetAcceptInsecureCerts',
-    'ChromeOptionsFunctionalTest.canStartChromeWithCustomOptions',
 ]
 
 _OS_NEGATIVE_FILTER = {}
@@ -32,9 +34,6 @@ _OS_NEGATIVE_FILTER['win'] = [
 _OS_NEGATIVE_FILTER['linux'] = [
 ]
 _OS_NEGATIVE_FILTER['mac'] = [
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2480
-    'TakesScreenshotTest.testShouldCaptureScreenshotOfCurrentViewport',
-
     # https://crbug.com/868599
     'WindowTest.testCanMaximizeTheWindowFromFrame',
     'WindowTest.testCanMaximizeTheWindowFromIframe',
@@ -67,16 +66,31 @@ _OS_NEGATIVE_FILTER['android:chrome'] = [
     'SelectElementTest.shouldAllowUserToDeselectOptionsByVisibleText',
     'SessionHandlingTest.callingAnyOperationAfterClosingTheLastWindowShouldThrowAnException',
     'SessionHandlingTest.callingQuitAfterClosingTheLastWindowIsANoOp',
-    'TakesScreenshotTest.testCaptureToBase64',
-    'TakesScreenshotTest.testSaveScreenshotAsFile',
-    'TakesScreenshotTest.testShouldCaptureScreenshotAtFramePage',
-    'TakesScreenshotTest.testShouldCaptureScreenshotAtFramePageAfterSwitching',
-    'TakesScreenshotTest.testShouldCaptureScreenshotAtIFramePageAfterSwitching',
 
     # Tests require multiple sessions, not supported on Android'
     'CorrectEventFiringTest.testShouldFireFocusEventInNonTopmostWindow',
     'PerformanceLoggingTest.testLogsSingleHttpCommand',
+    'PerformanceLogTypeTest.shouldBeAbleToEnablePerformanceLog',
+    'PerformanceLogTypeTest.pageLoadShouldProducePerformanceLogEntries',
     'ProxySettingTest.*',
+    'CorrectEventFiringTest.testSendingKeysToAnotherElementShouldCauseTheBlurEventToFireInNonTopmostWindow',
+    'ReferrerTest.navigationWhenProxyInterceptsASpecificUrl',
+    'ReferrerTest.crossDomainHistoryNavigationWhenProxyInterceptsHostRequests',
+    'ReferrerTest.crossDomainHistoryNavigationWithAProxiedHost',
+
+    # Tests require proxy server can't be run on Android
+    'ReferrerTest.crossDomainHistoryNavigationWithADirectProxy',
+    'ReferrerTest.basicHistoryNavigationWithADirectProxy',
+    'ReferrerTest.crossDomainHistoryNavigationWithoutAProxy',
+    'ReferrerTest.basicHistoryNavigationWithoutAProxy',
+
+    # Test with file upload not supported on Android
+    'UploadTest.testUploadingWithHiddenFileInput',
+
+    # This tests are failing because of Keys.CONTROL/SHIFT/.. are not being supported for drop down items.
+    'CombinedInputActionsTest.testControlClickingOnMultiSelectionList',
+    'CombinedInputActionsTest.testShiftClickingOnMultiSelectionList',
+    'CombinedInputActionsTest.testPlainClickingOnMultiSelectionList',
 
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2376
     'ImplicitWaitTest.testShouldImplicitlyWaitForASingleElement',
@@ -154,23 +168,17 @@ _OS_NEGATIVE_FILTER['android:chrome'] = [
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2376
     'ImplicitWaitTest.testShouldRetainImplicitlyWaitFromTheReturnedWebDriverOfFrameSwitchTo',
 
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2480
-    'CorrectEventFiringTest.testSendingKeysToAnotherElementShouldCauseTheBlurEventToFireInNonTopmostWindow',
-    'CorrectEventFiringTest.testClickAnElementThatDisappear',
-    'ImplicitWaitTest.testShouldImplicitlyWaitForASingleElement',
-    'ReferrerTest.crossDomainHistoryNavigationWithADirectProxy',
-    'ReferrerTest.navigationWhenProxyInterceptsASpecificUrl',
-    'ReferrerTest.crossDomainHistoryNavigationWithoutAProxy',
-    'ReferrerTest.basicHistoryNavigationWithoutAProxy',
-    'ReferrerTest.basicHistoryNavigationWithADirectProxy',
-    'ReferrerTest.crossDomainHistoryNavigationWhenProxyInterceptsHostRequests',
-    'ReferrerTest.crossDomainHistoryNavigationWithAProxiedHost',
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2594
+    'TakesScreenshotTest.testShouldCaptureScreenshotAtFramePage',
+    'TakesScreenshotTest.testShouldCaptureScreenshotAtFramePageAfterSwitching',
+    'TakesScreenshotTest.testShouldCaptureScreenshotAtIFramePageAfterSwitching',
     'TakesScreenshotTest.testShouldCaptureScreenshotOfCurrentViewport',
-    'UploadTest.testUploadingWithHiddenFileInput',
-    'CombinedInputActionsTest.testControlClickingOnMultiSelectionList',
-    'CombinedInputActionsTest.testShiftClickingOnMultiSelectionList',
-    'CombinedInputActionsTest.testPlainClickingOnMultiSelectionList',
-    'CorrectEventFiringTest.testClickingAnUnfocusableChildShouldNotBlurTheParent',
+
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2601
+    'BasicKeyboardInterfaceTest.testSelectionSelectBySymbol',
+
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2611
+    'CorrectEventFiringTest.testClickAnElementThatDisappear',
 ]
 
 _OS_NEGATIVE_FILTER['android:chrome_stable'] = (
@@ -195,8 +203,9 @@ _OS_NEGATIVE_FILTER['android:chromedriver_webview_shell'] = (
         'VisibilityTest.testShouldModifyTheVisibilityOfAnElementDynamically',
          # Not applicable on ChromeDriverWebViewShell (doesn't support tabs).
         'WindowSwitchingTest.*',
-        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2480
+        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2595
         'TakesScreenshotTest.*',
+
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2376
         'ImplicitWaitTest.testShouldRetainImplicitlyWaitFromTheReturnedWebDriverOfFrameSwitchTo',
     ]

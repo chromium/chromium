@@ -14,7 +14,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/views/layout/box_layout.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -48,6 +47,7 @@ SaveCardSignInPromoBubbleViews::CreateMainContentView() {
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   view->set_id(DialogViewId::SIGN_IN_PROMO_VIEW);
 
+  std::unique_ptr<views::View> signin_view;
   Profile* profile = controller()->GetProfile();
   sync_promo_delegate_ =
       std::make_unique<SaveCardSignInPromoBubbleViews::SyncPromoDelegate>(
@@ -55,19 +55,21 @@ SaveCardSignInPromoBubbleViews::CreateMainContentView() {
           signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE);
   if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    view->AddChildView(new DiceBubbleSyncPromoView(
+    signin_view = std::make_unique<DiceBubbleSyncPromoView>(
         profile, sync_promo_delegate_.get(),
-        signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE));
+        signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE);
 #else
     NOTREACHED();
 #endif
   } else {
-    view->AddChildView(new BubbleSyncPromoView(
+    signin_view = std::make_unique<BubbleSyncPromoView>(
         sync_promo_delegate_.get(),
         signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE,
         IDS_AUTOFILL_SIGNIN_PROMO_LINK_DICE_DISABLED,
-        IDS_AUTOFILL_SIGNIN_PROMO_MESSAGE_DICE_DISABLED));
+        IDS_AUTOFILL_SIGNIN_PROMO_MESSAGE_DICE_DISABLED);
   }
+  signin_view->set_id(DialogViewId::SIGN_IN_VIEW);
+  view->AddChildView(signin_view.release());
   return view;
 }
 

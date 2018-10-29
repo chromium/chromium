@@ -52,10 +52,10 @@ namespace blink {
 
 namespace {
 
-using PluginSet = PersistentHeapHashSet<Member<WebPluginContainerImpl>>;
+using PluginSet = HeapHashSet<Member<WebPluginContainerImpl>>;
 PluginSet& PluginsPendingDispose() {
-  DEFINE_STATIC_LOCAL(PluginSet, set, ());
-  return set;
+  DEFINE_STATIC_LOCAL(Persistent<PluginSet>, set, (new PluginSet));
+  return *set;
 }
 
 bool DoesParentAllowLazyLoadingChildren(Document& document) {
@@ -133,7 +133,7 @@ void HTMLFrameOwnerElement::SetContentFrame(Frame& frame) {
       layer->SetNeedsCompositingInputsUpdate();
   }
   SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                             StyleChangeReason::kFrame));
+                                             style_change_reason::kFrame));
 
   for (ContainerNode* node = this; node; node = node->ParentOrShadowHostNode())
     node->IncrementConnectedSubframeCount();
@@ -364,7 +364,10 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
 
   if (ContentFrame()) {
     // TODO(sclittle): Support lazily loading frame navigations.
-    ContentFrame()->ScheduleNavigation(GetDocument(), url, replace_current_item,
+    WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
+    if (replace_current_item)
+      frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
+    ContentFrame()->ScheduleNavigation(GetDocument(), url, frame_load_type,
                                        UserGestureStatus::kNone);
     return true;
   }

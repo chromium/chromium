@@ -56,7 +56,8 @@ interface ProxyResolvingSocketFactory {
   // when the implementation of this factory goes away.
   CreateProxyResolvingSocket(url.mojom.Url url, bool use_tls,
       MutableNetworkTrafficAnnotationTag traffic_annotation,
-      ProxyResolvingSocket& socket)
+      ProxyResolvingSocket& socket,
+      SocketObserver? observer)
      => (int32 result,
          net.interfaces.IPEndPoint? local_addr,
          net.interfaces.IPEndPoint? peer_addr,

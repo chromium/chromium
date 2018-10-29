@@ -25,6 +25,7 @@
 #include "util/linux/exception_handler_client.h"
 #include "util/linux/ptrace_client.h"
 #include "util/linux/scoped_pr_set_ptracer.h"
+#include "util/misc/uuid.h"
 #include "util/synchronization/semaphore.h"
 #include "util/thread/thread.h"
 
@@ -101,7 +102,8 @@ class TestDelegate : public ExceptionHandlerServer::Delegate {
   }
 
   bool HandleException(pid_t client_process_id,
-                       const ClientInformation& info) override {
+                       const ClientInformation& info,
+                       UUID* local_report_id = nullptr) override {
     DirectPtraceConnection connection;
     bool connected = connection.Initialize(client_process_id);
     EXPECT_TRUE(connected);
@@ -114,7 +116,8 @@ class TestDelegate : public ExceptionHandlerServer::Delegate {
 
   bool HandleExceptionWithBroker(pid_t client_process_id,
                                  const ClientInformation& info,
-                                 int broker_sock) override {
+                                 int broker_sock,
+                                 UUID* local_report_id = nullptr) override {
     PtraceClient client;
     bool connected = client.Initialize(broker_sock, client_process_id);
     EXPECT_TRUE(connected);

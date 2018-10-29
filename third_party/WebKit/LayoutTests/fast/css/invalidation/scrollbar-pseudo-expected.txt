@@ -2,7 +2,6 @@ Style invalidation for scrollbar pseudo elements.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(scroller1, '::-webkit-scrollbar').backgroundColor is transparent
 PASS internals.updateStyleAndReturnAffectedElementCount() is 2
 PASS getComputedStyle(scroller1, '::-webkit-scrollbar').backgroundColor is green

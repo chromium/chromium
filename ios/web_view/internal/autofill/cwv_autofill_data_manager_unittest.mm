@@ -16,7 +16,7 @@
 #include "ios/web/public/test/test_web_thread_bundle.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
-#import "ios/web_view/public/cwv_autofill_data_manager_delegate.h"
+#import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -101,16 +101,20 @@ class CWVAutofillDataManagerTest : public PlatformTest {
 
 // Tests CWVAutofillDataManager properly invokes did change callback.
 TEST_F(CWVAutofillDataManagerTest, DidChangeCallback) {
-  id delegate = OCMProtocolMock(@protocol(CWVAutofillDataManagerDelegate));
-  autofill_data_manager_.delegate = delegate;
-
-  // [delegate expect] returns an autoreleased object, but it must be destroyed
-  // before this test exits to avoid holding on to |autofill_data_manager_|.
+  // OCMock objects are often autoreleased, but it must be destroyed before this
+  // test exits to avoid holding on to |autofill_data_manager_|.
   @autoreleasepool {
-    [[delegate expect] autofillDataManagerDataDidChange:autofill_data_manager_];
-    personal_data_manager_->AddProfile(autofill::test::GetFullProfile());
+    id observer = OCMProtocolMock(@protocol(CWVAutofillDataManagerObserver));
 
-    [delegate verify];
+    [autofill_data_manager_ addObserver:observer];
+    [[observer expect] autofillDataManagerDataDidChange:autofill_data_manager_];
+    personal_data_manager_->AddProfile(autofill::test::GetFullProfile());
+    [observer verify];
+
+    [autofill_data_manager_ removeObserver:observer];
+    [[observer reject] autofillDataManagerDataDidChange:autofill_data_manager_];
+    personal_data_manager_->AddProfile(autofill::test::GetFullProfile2());
+    [observer verify];
   }
 }
 

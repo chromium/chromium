@@ -259,13 +259,7 @@ bool AllocationContextTracker::GetContextSnapshot(AllocationContext* ctx) {
 
   ctx->backtrace.frame_count = backtrace - std::begin(ctx->backtrace.frames);
 
-  // TODO(ssid): Fix crbug.com/594803 to add file name as 3rd dimension
-  // (component name) in the heap profiler and not piggy back on the type name.
-  if (!task_contexts_.empty()) {
-    ctx->type_name = task_contexts_.back();
-  } else {
-    ctx->type_name = nullptr;
-  }
+  ctx->type_name = TaskContext();
 
   return true;
 }

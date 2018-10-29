@@ -77,7 +77,7 @@ void LauncherSearchResult::OnIconImageChanged(
 void LauncherSearchResult::OnBadgeIconImageChanged(
     LauncherSearchIconImageLoader* image_loader) {
   DCHECK_EQ(image_loader, icon_image_loader_.get());
-  SetBadgeIcon(icon_image_loader_->GetBadgeIconImage());
+  // No badging is required.
 }
 
 LauncherSearchResult::LauncherSearchResult(
@@ -106,7 +106,6 @@ void LauncherSearchResult::Initialize() {
   icon_image_loader_->AddObserver(this);
 
   SetIcon(icon_image_loader_->GetIconImage());
-  SetBadgeIcon(icon_image_loader_->GetBadgeIconImage());
 }
 
 std::string LauncherSearchResult::GetSearchResultId() {

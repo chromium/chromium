@@ -248,6 +248,34 @@ TEST_F(DataReductionProxyMutableConfigValuesTest, OverrideDataReductionProxy) {
   }
 }
 
+TEST_F(DataReductionProxyMutableConfigValuesTest, GetAllConfiguredProxies) {
+  Init();
+  net::ProxyList expected_proxies;
+  EXPECT_TRUE(mutable_config_values()->GetAllConfiguredProxies().Equals(
+      expected_proxies));
+
+  net::ProxyServer proxy_server1 =
+      net::ProxyServer::FromPacString("PROXY proxy1.net");
+  mutable_config_values()->UpdateValues(
+      {DataReductionProxyServer(proxy_server1, ProxyServer::CORE)});
+  expected_proxies.SetSingleProxyServer(proxy_server1);
+
+  EXPECT_TRUE(mutable_config_values()->GetAllConfiguredProxies().Equals(
+      expected_proxies));
+
+  net::ProxyServer proxy_server2 =
+      net::ProxyServer::FromPacString("PROXY proxy2.net");
+  mutable_config_values()->UpdateValues(
+      {DataReductionProxyServer(proxy_server2, ProxyServer::CORE)});
+
+  // First proxy server should also still be in proxy list.
+  expected_proxies.Clear();
+  expected_proxies.AddProxyServer(proxy_server2);
+  expected_proxies.AddProxyServer(proxy_server1);
+  EXPECT_TRUE(mutable_config_values()->GetAllConfiguredProxies().Equals(
+      expected_proxies));
+}
+
 }  // namespace
 
 }  // namespace data_reduction_proxy

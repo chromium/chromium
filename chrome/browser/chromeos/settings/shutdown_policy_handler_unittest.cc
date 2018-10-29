@@ -25,7 +25,7 @@ class ShutdownPolicyHandlerTest : public testing::Test,
   void SetUp() override {
     testing::Test::SetUp();
     DBusThreadManager::Initialize();
-    settings_helper_.ReplaceProvider(kRebootOnShutdown);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
   }
 
   void TearDown() override { DBusThreadManager::Shutdown(); }

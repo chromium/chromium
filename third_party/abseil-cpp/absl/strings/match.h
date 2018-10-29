@@ -17,7 +17,7 @@
 // File: match.h
 // -----------------------------------------------------------------------------
 //
-// This file contains simple utilities for performing std::string matching checks.
+// This file contains simple utilities for performing string matching checks.
 // All of these function parameters are specified as `absl::string_view`,
 // meaning that these functions can accept `std::string`, `absl::string_view` or
 // nul-terminated C-style strings.
@@ -41,14 +41,14 @@ namespace absl {
 
 // StrContains()
 //
-// Returns whether a given std::string `haystack` contains the substring `needle`.
+// Returns whether a given string `haystack` contains the substring `needle`.
 inline bool StrContains(absl::string_view haystack, absl::string_view needle) {
   return haystack.find(needle, 0) != haystack.npos;
 }
 
 // StartsWith()
 //
-// Returns whether a given std::string `text` begins with `prefix`.
+// Returns whether a given string `text` begins with `prefix`.
 inline bool StartsWith(absl::string_view text, absl::string_view prefix) {
   return prefix.empty() ||
          (text.size() >= prefix.size() &&
@@ -57,7 +57,7 @@ inline bool StartsWith(absl::string_view text, absl::string_view prefix) {
 
 // EndsWith()
 //
-// Returns whether a given std::string `text` ends with `suffix`.
+// Returns whether a given string `text` ends with `suffix`.
 inline bool EndsWith(absl::string_view text, absl::string_view suffix) {
   return suffix.empty() ||
          (text.size() >= suffix.size() &&
@@ -66,16 +66,22 @@ inline bool EndsWith(absl::string_view text, absl::string_view suffix) {
          );
 }
 
+// EqualsIgnoreCase()
+//
+// Returns whether given ASCII strings `piece1` and `piece2` are equal, ignoring
+// case in the comparison.
+bool EqualsIgnoreCase(absl::string_view piece1, absl::string_view piece2);
+
 // StartsWithIgnoreCase()
 //
-// Returns whether a given std::string `text` starts with `starts_with`, ignoring
-// case in the comparison.
+// Returns whether a given ASCII string `text` starts with `starts_with`,
+// ignoring case in the comparison.
 bool StartsWithIgnoreCase(absl::string_view text, absl::string_view prefix);
 
 // EndsWithIgnoreCase()
 //
-// Returns whether a given std::string `text` ends with `ends_with`, ignoring case
-// in the comparison.
+// Returns whether a given ASCII string `text` ends with `ends_with`, ignoring
+// case in the comparison.
 bool EndsWithIgnoreCase(absl::string_view text, absl::string_view suffix);
 
 }  // namespace absl

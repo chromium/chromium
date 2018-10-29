@@ -59,7 +59,7 @@ class WorkerFetchContext final : public BaseFetchContext {
   std::unique_ptr<WebSocketHandshakeThrottle> CreateWebSocketHandshakeThrottle()
       override;
   bool ShouldBlockFetchByMixedContentCheck(
-      WebURLRequest::RequestContext,
+      mojom::RequestContextType,
       network::mojom::RequestContextFrameType,
       ResourceRequest::RedirectStatus,
       const KURL&,
@@ -93,7 +93,7 @@ class WorkerFetchContext final : public BaseFetchContext {
   void DispatchDidReceiveResponse(unsigned long identifier,
                                   const ResourceResponse&,
                                   network::mojom::RequestContextFrameType,
-                                  WebURLRequest::RequestContext,
+                                  mojom::RequestContextType,
                                   Resource*,
                                   ResourceResponseType) override;
   void DispatchDidReceiveData(unsigned long identifier,
@@ -116,7 +116,6 @@ class WorkerFetchContext final : public BaseFetchContext {
                                const ClientHintsPreferences&,
                                const FetchParameters::ResourceWidth&,
                                ResourceRequest&) override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetLoadingTaskRunner() override;
   bool DefersLoading() const override;
 
   std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
@@ -135,7 +134,7 @@ class WorkerFetchContext final : public BaseFetchContext {
   WorkerFetchContext(WorkerOrWorkletGlobalScope&,
                      std::unique_ptr<WebWorkerFetchContext>);
 
-  void SetFirstPartyCookieAndRequestorOrigin(ResourceRequest&);
+  void SetFirstPartyCookie(ResourceRequest&);
 
   const Member<WorkerOrWorkletGlobalScope> global_scope_;
   const std::unique_ptr<WebWorkerFetchContext> web_context_;
@@ -150,7 +149,6 @@ class WorkerFetchContext final : public BaseFetchContext {
   std::unique_ptr<WebURLLoaderFactory> script_loader_factory_;
 
   Member<SubresourceFilter> subresource_filter_;
-  const scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
 
   const Member<FetchClientSettingsObjectImpl> fetch_client_settings_object_;
 

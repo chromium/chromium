@@ -5,6 +5,7 @@ three
 five
 four
 
+
 Expected result:
 one
 three

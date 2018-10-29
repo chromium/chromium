@@ -20,6 +20,11 @@
 #include "ash/highlighter/highlighter_controller.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
+#include "ui/display/display_observer.h"
+#include "ui/events/event_observer.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/keyboard/keyboard_controller_observer.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace chromeos {
@@ -48,7 +53,10 @@ class ASH_EXPORT AssistantUiController
       public AssistantMiniViewDelegate,
       public CaptionBarDelegate,
       public DialogPlateObserver,
-      public HighlighterController::Observer {
+      public HighlighterController::Observer,
+      public keyboard::KeyboardControllerObserver,
+      public display::DisplayObserver,
+      public ui::EventObserver {
  public:
   explicit AssistantUiController(AssistantController* assistant_controller);
   ~AssistantUiController() override;
@@ -95,12 +103,23 @@ class ASH_EXPORT AssistantUiController
   void OnDeepLinkReceived(
       assistant::util::DeepLinkType type,
       const std::map<std::string, std::string>& params) override;
-  void OnUrlOpened(const GURL& url) override;
+  void OnUrlOpened(const GURL& url, bool from_server) override;
 
   // AssistantUiModelObserver:
   void OnUiVisibilityChanged(AssistantVisibility new_visibility,
                              AssistantVisibility old_visibility,
                              AssistantSource source) override;
+
+  // keyboard::KeyboardControllerObserver:
+  void OnKeyboardWorkspaceOccludedBoundsChanged(
+      const gfx::Rect& new_bounds) override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
+
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override;
 
   void ShowUi(AssistantSource source);
   void HideUi(AssistantSource source);
@@ -114,6 +133,15 @@ class ASH_EXPORT AssistantUiController
   // the basis of interaction/widget visibility state.
   void UpdateUiMode(base::Optional<AssistantUiMode> ui_mode = base::nullopt);
 
+  // Calculate and update the usable work area.
+  void UpdateUsableWorkArea(aura::Window* root_window);
+
+  // Construct |container_view_| and add keyboard/display observers.
+  void CreateContainerView();
+
+  // Reset |container_view_| and remove keyboard/display observers.
+  void ResetContainerView();
+
   AssistantController* const assistant_controller_;  // Owned by Shell.
 
   // Owned by AssistantController.
@@ -123,6 +151,10 @@ class ASH_EXPORT AssistantUiController
 
   AssistantContainerView* container_view_ =
       nullptr;  // Owned by view hierarchy.
+
+  std::unique_ptr<views::EventMonitor> event_monitor_;
+
+  gfx::Rect keyboard_workspace_occluded_bounds_;
 
   // When hidden, Assistant automatically closes itself to finish the previous
   // session. We delay this behavior to allow the user an opportunity to resume.

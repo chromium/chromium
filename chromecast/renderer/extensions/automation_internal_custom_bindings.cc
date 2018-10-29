@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromecast/common/extensions_api/automation_api_constants.h"
 #include "chromecast/common/extensions_api/cast_extension_messages.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -93,10 +92,8 @@ static gfx::Rect ComputeGlobalNodeBounds(AutomationAXTreeWrapper* tree_wrapper,
     // All trees other than the desktop tree are scaled by the device
     // scale factor. When crossing out of another tree into the desktop
     // tree, unscale the bounds by the device scale factor.
-    if (previous_tree_wrapper->tree_id() !=
-            extensions::api::automation::kDesktopTreeID &&
-        tree_wrapper->tree_id() ==
-            extensions::api::automation::kDesktopTreeID) {
+    if (previous_tree_wrapper->tree_id() != ui::DesktopAXTreeID() &&
+        tree_wrapper->tree_id() == ui::DesktopAXTreeID()) {
       float scale_factor = tree_wrapper->owner()->GetDeviceScaleFactor();
       if (scale_factor > 0)
         bounds.Scale(1.0 / scale_factor);
@@ -108,9 +105,10 @@ static gfx::Rect ComputeGlobalNodeBounds(AutomationAXTreeWrapper* tree_wrapper,
   return gfx::ToEnclosingRect(bounds);
 }
 
-ui::AXNode* FindNodeWithChildTreeId(ui::AXNode* node, int child_tree_id) {
-  if (child_tree_id ==
-      node->data().GetIntAttribute(ax::mojom::IntAttribute::kChildTreeId))
+ui::AXNode* FindNodeWithChildTreeId(ui::AXNode* node,
+                                    ui::AXTreeID child_tree_id) {
+  if (child_tree_id == ui::AXTreeID::FromString(node->data().GetStringAttribute(
+                           ax::mojom::StringAttribute::kChildTreeId)))
     return node;
 
   for (int i = 0; i < node->child_count(); ++i) {
@@ -142,13 +140,11 @@ class TreeIDWrapper : public base::RefCountedThreadSafe<TreeIDWrapper> {
 
   void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Isolate* isolate = automation_bindings_->GetIsolate();
-    if (args.Length() != 1 || !args[0]->IsNumber())
+    if (args.Length() != 1 || !args[0]->IsString())
       ThrowInvalidArgumentsException(automation_bindings_);
 
-    int tree_id =
-        args[0]
-            ->Int32Value(automation_bindings_->context()->v8_context())
-            .FromMaybe(0);
+    ui::AXTreeID tree_id =
+        ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
     AutomationAXTreeWrapper* tree_wrapper =
         automation_bindings_->GetAutomationAXTreeWrapperFromTreeID(tree_id);
     if (!tree_wrapper)
@@ -190,12 +186,13 @@ class NodeIDWrapper : public base::RefCountedThreadSafe<NodeIDWrapper> {
 
   void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Isolate* isolate = automation_bindings_->GetIsolate();
-    if (args.Length() < 2 || !args[0]->IsNumber() || !args[1]->IsNumber())
+    if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber())
       ThrowInvalidArgumentsException(automation_bindings_);
 
     v8::Local<v8::Context> context =
         automation_bindings_->context()->v8_context();
-    int tree_id = args[0]->Int32Value(context).FromMaybe(0);
+    ui::AXTreeID tree_id =
+        ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
     int node_id = args[1]->Int32Value(context).FromMaybe(0);
 
     AutomationAXTreeWrapper* tree_wrapper =
@@ -242,14 +239,15 @@ class NodeIDPlusAttributeWrapper
 
   void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Isolate* isolate = automation_bindings_->GetIsolate();
-    if (args.Length() < 3 || !args[0]->IsNumber() || !args[1]->IsNumber() ||
+    if (args.Length() < 3 || !args[0]->IsString() || !args[1]->IsNumber() ||
         !args[2]->IsString()) {
       ThrowInvalidArgumentsException(automation_bindings_);
     }
 
     v8::Local<v8::Context> context =
         automation_bindings_->context()->v8_context();
-    int tree_id = args[0]->Int32Value(context).FromMaybe(0);
+    ui::AXTreeID tree_id =
+        ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
     int node_id = args[1]->Int32Value(context).FromMaybe(0);
     std::string attribute = *v8::String::Utf8Value(isolate, args[2]);
 
@@ -298,14 +296,15 @@ class NodeIDPlusRangeWrapper
 
   void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Isolate* isolate = automation_bindings_->GetIsolate();
-    if (args.Length() < 4 || !args[0]->IsNumber() || !args[1]->IsNumber() ||
+    if (args.Length() < 4 || !args[0]->IsString() || !args[1]->IsNumber() ||
         !args[2]->IsNumber() || !args[3]->IsNumber()) {
       ThrowInvalidArgumentsException(automation_bindings_);
     }
 
     v8::Local<v8::Context> context =
         automation_bindings_->context()->v8_context();
-    int tree_id = args[0]->Int32Value(context).FromMaybe(0);
+    ui::AXTreeID tree_id =
+        ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
     int node_id = args[1]->Int32Value(context).FromMaybe(0);
     int start = args[2]->Int32Value(context).FromMaybe(0);
     int end = args[3]->Int32Value(context).FromMaybe(0);
@@ -968,7 +967,7 @@ void AutomationInternalCustomBindings::OnMessageReceived(
 }  // clang-format on
 
 AutomationAXTreeWrapper* AutomationInternalCustomBindings::
-    GetAutomationAXTreeWrapperFromTreeID(int tree_id) {
+    GetAutomationAXTreeWrapperFromTreeID(ui::AXTreeID tree_id) {
   const auto iter = tree_id_to_tree_wrapper_map_.find(tree_id);
   if (iter == tree_id_to_tree_wrapper_map_.end())
     return nullptr;
@@ -1032,12 +1031,13 @@ void AutomationInternalCustomBindings::GetSchemaAdditions(
 
 void AutomationInternalCustomBindings::DestroyAccessibilityTree(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() != 1 || !args[0]->IsNumber()) {
+  if (args.Length() != 1 || !args[0]->IsString()) {
     ThrowInvalidArgumentsException(this);
     return;
   }
 
-  int tree_id = args[0]->Int32Value(context()->v8_context()).FromMaybe(0);
+  ui::AXTreeID tree_id = ui::AXTreeID::FromString(
+      *v8::String::Utf8Value(args.GetIsolate(), args[0]));
   auto iter = tree_id_to_tree_wrapper_map_.find(tree_id);
   if (iter == tree_id_to_tree_wrapper_map_.end())
     return;
@@ -1096,12 +1096,14 @@ bool AutomationInternalCustomBindings::GetFocusInternal(
 
   // If the focused node is the owner of a child tree, that indicates
   // a node within the child tree is the one that actually has focus.
-  while (focus->data().HasIntAttribute(ax::mojom::IntAttribute::kChildTreeId)) {
+  while (focus->data().HasStringAttribute(
+      ax::mojom::StringAttribute::kChildTreeId)) {
     // Try to keep following focus recursively, by letting |tree_id| be the
     // new subtree to search in, while keeping |focus_tree_id| set to the tree
     // where we know we found a focused node.
-    int child_tree_id =
-        focus->data().GetIntAttribute(ax::mojom::IntAttribute::kChildTreeId);
+    ui::AXTreeID child_tree_id =
+        ui::AXTreeID::FromString(focus->data().GetStringAttribute(
+            ax::mojom::StringAttribute::kChildTreeId));
 
     AutomationAXTreeWrapper* child_tree_wrapper =
         GetAutomationAXTreeWrapperFromTreeID(child_tree_id);
@@ -1110,7 +1112,10 @@ bool AutomationInternalCustomBindings::GetFocusInternal(
 
     // If |child_tree_wrapper| is a frame tree that indicates a focused frame,
     // jump to that frame if possible.
-    if (child_tree_wrapper->tree()->data().focused_tree_id > 0) {
+    ui::AXTreeID focused_tree_id =
+        child_tree_wrapper->tree()->data().focused_tree_id;
+    if (focused_tree_id != ui::AXTreeIDUnknown() &&
+        focused_tree_id != ui::DesktopAXTreeID()) {
       AutomationAXTreeWrapper* focused_tree_wrapper =
           GetAutomationAXTreeWrapperFromTreeID(
               child_tree_wrapper->tree()->data().focused_tree_id);
@@ -1135,12 +1140,13 @@ bool AutomationInternalCustomBindings::GetFocusInternal(
 
 void AutomationInternalCustomBindings::GetFocus(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() != 1 || !args[0]->IsNumber()) {
+  if (args.Length() != 1 || !args[0]->IsString()) {
     ThrowInvalidArgumentsException(this);
     return;
   }
 
-  int tree_id = args[0]->Int32Value(context()->v8_context()).FromMaybe(0);
+  ui::AXTreeID tree_id = ui::AXTreeID::FromString(
+      *v8::String::Utf8Value(args.GetIsolate(), args[0]));
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(tree_id);
   if (!tree_wrapper)
@@ -1151,19 +1157,21 @@ void AutomationInternalCustomBindings::GetFocus(
   if (!GetFocusInternal(tree_wrapper, &focused_tree_wrapper, &focused_node))
     return;
 
-  args.GetReturnValue().Set(gin::DataObjectBuilder(GetIsolate())
-                                .Set("treeId", focused_tree_wrapper->tree_id())
-                                .Set("nodeId", focused_node->id())
-                                .Build());
+  args.GetReturnValue().Set(
+      gin::DataObjectBuilder(GetIsolate())
+          .Set("treeId", focused_tree_wrapper->tree_id().ToString())
+          .Set("nodeId", focused_node->id())
+          .Build());
 }
 
 void AutomationInternalCustomBindings::GetHtmlAttributes(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = GetIsolate();
-  if (args.Length() < 2 || !args[0]->IsNumber() || !args[1]->IsNumber())
+  if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber())
     ThrowInvalidArgumentsException(this);
 
-  int tree_id = args[0]->Int32Value(context()->v8_context()).FromMaybe(0);
+  ui::AXTreeID tree_id =
+      ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
   int node_id = args[1]->Int32Value(context()->v8_context()).FromMaybe(0);
 
   AutomationAXTreeWrapper* tree_wrapper =
@@ -1184,10 +1192,11 @@ void AutomationInternalCustomBindings::GetHtmlAttributes(
 void AutomationInternalCustomBindings::GetState(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = GetIsolate();
-  if (args.Length() < 2 || !args[0]->IsNumber() || !args[1]->IsNumber())
+  if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber())
     ThrowInvalidArgumentsException(this);
 
-  int tree_id = args[0]->Int32Value(context()->v8_context()).FromMaybe(0);
+  ui::AXTreeID tree_id =
+      ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
   int node_id = args[1]->Int32Value(context()->v8_context()).FromMaybe(0);
 
   AutomationAXTreeWrapper* tree_wrapper =
@@ -1209,7 +1218,7 @@ void AutomationInternalCustomBindings::GetState(
   }
 
   AutomationAXTreeWrapper* top_tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(0);
+      GetAutomationAXTreeWrapperFromTreeID(ui::DesktopAXTreeID());
   if (!top_tree_wrapper)
     top_tree_wrapper = tree_wrapper;
   AutomationAXTreeWrapper* focused_tree_wrapper = nullptr;
@@ -1244,13 +1253,14 @@ ui::AXNode* AutomationInternalCustomBindings::GetParent(
   if (node->parent())
     return node->parent();
 
-  int parent_tree_id = (*in_out_tree_wrapper)->tree()->data().parent_tree_id;
+  ui::AXTreeID parent_tree_id =
+      (*in_out_tree_wrapper)->tree()->data().parent_tree_id;
 
   // Try the desktop tree if the parent is unknown. If this tree really is
   // a child of the desktop tree, we'll find its parent, and if not, the
   // search, below, will fail until the real parent tree loads.
-  if (parent_tree_id < 0)
-    parent_tree_id = extensions::api::automation::kDesktopTreeID;
+  if (parent_tree_id == ui::AXTreeIDUnknown())
+    parent_tree_id = ui::DesktopAXTreeID();
 
   AutomationAXTreeWrapper* parent_tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(parent_tree_id);
@@ -1263,8 +1273,9 @@ ui::AXNode* AutomationInternalCustomBindings::GetParent(
     ui::AXNode* parent = parent_tree_wrapper->tree()->GetFromId(
         (*in_out_tree_wrapper)->host_node_id());
     if (parent) {
-      int parent_child_tree_id =
-          parent->data().GetIntAttribute(ax::mojom::IntAttribute::kChildTreeId);
+      ui::AXTreeID parent_child_tree_id =
+          ui::AXTreeID::FromString(parent->data().GetStringAttribute(
+              ax::mojom::StringAttribute::kChildTreeId));
       if (parent_child_tree_id == (*in_out_tree_wrapper)->tree_id()) {
         *in_out_tree_wrapper = parent_tree_wrapper;
         return parent;
@@ -1326,7 +1337,8 @@ void AutomationInternalCustomBindings::GetChildIDAtIndex(
     return;
   }
 
-  int tree_id = args[0]->Int32Value(context()->v8_context()).FromMaybe(0);
+  ui::AXTreeID tree_id = ui::AXTreeID::FromString(
+      *v8::String::Utf8Value(args.GetIsolate(), args[0]));
   int node_id = args[1]->Int32Value(context()->v8_context()).FromMaybe(0);
 
   const auto iter = tree_id_to_tree_wrapper_map_.find(tree_id);
@@ -1354,7 +1366,7 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
     const ExtensionMsg_AccessibilityEventBundleParams& event_bundle,
     bool is_active_profile) {
   is_active_profile_ = is_active_profile;
-  int tree_id = event_bundle.tree_id;
+  ui::AXTreeID tree_id = event_bundle.tree_id;
   AutomationAXTreeWrapper* tree_wrapper;
   auto iter = tree_id_to_tree_wrapper_map_.find(tree_id);
   if (iter == tree_id_to_tree_wrapper_map_.end()) {
@@ -1370,7 +1382,7 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
   if (!tree_wrapper->OnAccessibilityEvents(event_bundle, is_active_profile)) {
     LOG(ERROR) << tree_wrapper->tree()->error();
     base::ListValue args;
-    args.AppendInteger(tree_id);
+    args.AppendString(tree_id.ToString());
     bindings_system_->DispatchEventInContext(
         "automationInternal.onAccessibilityTreeSerializationError", &args,
         nullptr, context());
@@ -1380,7 +1392,7 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
 
 void AutomationInternalCustomBindings::OnAccessibilityLocationChange(
     const ExtensionMsg_AccessibilityLocationChangeParams& params) {
-  int tree_id = params.tree_id;
+  ui::AXTreeID tree_id = params.tree_id;
   auto iter = tree_id_to_tree_wrapper_map_.find(tree_id);
   if (iter == tree_id_to_tree_wrapper_map_.end())
     return;
@@ -1403,7 +1415,7 @@ void AutomationInternalCustomBindings::SendTreeChangeEvent(
 
   // Always notify the custom bindings when there's a node with a child tree
   // ID that might need to be loaded.
-  if (node->data().HasIntAttribute(ax::mojom::IntAttribute::kChildTreeId))
+  if (node->data().HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId))
     SendChildTreeIDEvent(tree, node);
 
   bool has_filter = false;
@@ -1435,7 +1447,7 @@ void AutomationInternalCustomBindings::SendTreeChangeEvent(
   if (iter == axtree_to_tree_wrapper_map_.end())
     return;
 
-  int tree_id = iter->second->tree_id();
+  ui::AXTreeID tree_id = iter->second->tree_id();
 
   for (const auto& observer : tree_change_observers_) {
     switch (observer.filter) {
@@ -1460,7 +1472,7 @@ void AutomationInternalCustomBindings::SendTreeChangeEvent(
 
     base::ListValue args;
     args.AppendInteger(observer.id);
-    args.AppendInteger(tree_id);
+    args.AppendString(tree_id.ToString());
     args.AppendInteger(node->id());
     args.AppendString(ToString(change_type));
     bindings_system_->DispatchEventInContext("automationInternal.onTreeChange",
@@ -1469,12 +1481,12 @@ void AutomationInternalCustomBindings::SendTreeChangeEvent(
 }
 
 void AutomationInternalCustomBindings::SendAutomationEvent(
-    int tree_id,
+    ui::AXTreeID tree_id,
     const gfx::Point& mouse_location,
     ui::AXEvent& event,
     api::automation::EventType event_type) {
   auto event_params = std::make_unique<base::DictionaryValue>();
-  event_params->SetInteger("treeID", tree_id);
+  event_params->SetString("treeID", tree_id.ToString());
   event_params->SetInteger("targetID", event.id);
   event_params->SetString("eventType", api::automation::ToString(event_type));
   event_params->SetString("eventFrom", ui::ToString(event.event_from));
@@ -1493,10 +1505,10 @@ void AutomationInternalCustomBindings::SendChildTreeIDEvent(ui::AXTree* tree,
   if (iter == axtree_to_tree_wrapper_map_.end())
     return;
 
-  int tree_id = iter->second->tree_id();
+  ui::AXTreeID tree_id = iter->second->tree_id();
 
   base::ListValue args;
-  args.AppendInteger(tree_id);
+  args.AppendString(tree_id.ToString());
   args.AppendInteger(node->id());
   bindings_system_->DispatchEventInContext("automationInternal.onChildTreeID",
                                            &args, nullptr, context());
@@ -1509,10 +1521,10 @@ void AutomationInternalCustomBindings::SendNodesRemovedEvent(
   if (iter == axtree_to_tree_wrapper_map_.end())
     return;
 
-  int tree_id = iter->second->tree_id();
+  ui::AXTreeID tree_id = iter->second->tree_id();
 
   base::ListValue args;
-  args.AppendInteger(tree_id);
+  args.AppendString(tree_id.ToString());
   {
     auto nodes = std::make_unique<base::ListValue>();
     for (auto id : ids)

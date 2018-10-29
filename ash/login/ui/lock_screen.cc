@@ -16,7 +16,6 @@
 #include "ash/tray_action/tray_action.h"
 #include "ash/wallpaper/wallpaper_controller.h"
 #include "base/command_line.h"
-#include "base/timer/timer.h"
 #include "chromeos/chromeos_switches.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -24,9 +23,6 @@
 
 namespace ash {
 namespace {
-
-constexpr base::TimeDelta kShowLoginScreenTimeout =
-    base::TimeDelta::FromSeconds(5);
 
 // Global lock screen instance. There can only ever be on lock screen at a
 // time.
@@ -86,28 +82,18 @@ void LockScreen::Show(ScreenType type) {
   }
 
   instance_->window_->set_data_dispatcher(std::move(data_dispatcher));
-  const base::RepeatingClosure show_screen = base::BindRepeating([]() {
-    // |instance_| may already be destroyed in tests.
-    if (!instance_ || instance_->is_shown_)
-      return;
-    instance_->is_shown_ = true;
-    instance_->window_->Show();
-  });
-  if (type == ScreenType::kLogin) {
-    // Postpone showing the login screen after the animation of the first
-    // wallpaper completes, to make the transition smooth.
-    Shell::Get()->wallpaper_controller()->AddFirstWallpaperAnimationEndCallback(
-        show_screen, instance_->window_->GetNativeView());
-    // In case the wallpaper animation takes forever to complete, set a timer to
-    // make sure the login screen is shown eventually. This should never happen,
-    // so use an extra long time-out value to raise awareness.
-    instance_->show_login_screen_fallback_timer_ =
-        std::make_unique<base::OneShotTimer>();
-    instance_->show_login_screen_fallback_timer_->Start(
-        FROM_HERE, kShowLoginScreenTimeout, show_screen);
-  } else {
-    show_screen.Run();
-  }
+  // Postpone showing the screen after the animation of the first wallpaper
+  // completes, to make the transition smooth. The callback will be dispatched
+  // immediately if the animation is already complete (e.g. kLock).
+  Shell::Get()->wallpaper_controller()->AddFirstWallpaperAnimationEndCallback(
+      base::BindOnce([]() {
+        // |instance_| may already be destroyed in tests.
+        if (!instance_ || instance_->is_shown_)
+          return;
+        instance_->is_shown_ = true;
+        instance_->window_->Show();
+      }),
+      instance_->window_->GetNativeView());
 }
 
 // static

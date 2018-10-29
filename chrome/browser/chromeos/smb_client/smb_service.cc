@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
+#include "chrome/browser/chromeos/file_system_provider/mount_path_util.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/smb_client/discovery/mdns_host_locator.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
 #include "chrome/browser/chromeos/smb_client/smb_service_helper.h"
 #include "chrome/browser/chromeos/smb_client/smb_url.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -35,6 +37,10 @@ namespace chromeos {
 namespace smb_client {
 
 namespace {
+
+const char kShareUrlKey[] = "share_url";
+const char kModeKey[] = "mode";
+const char kModeDropDownValue[] = "drop_down";
 
 bool ContainsAt(const std::string& username) {
   return username.find('@') != std::string::npos;
@@ -60,6 +66,19 @@ bool IsEnabledByFlag() {
 }
 
 // Metric recording functions.
+
+// This enum is used to define the buckets for an enumerated UMA histogram.
+// Hence,
+//   (a) existing enumerated constants should never be deleted or reordered, and
+//   (b) new constants should only be appended at the end of the enumeration.
+enum class AuthMethod {
+  kNoCredentials = 0,
+  kUsernameOnly = 1,
+  kUsernameAndPassword = 2,
+  kSSOKerberos = 3,
+  kMaxValue = kSSOKerberos,
+};
+
 void RecordMountResult(SmbMountResult result) {
   DCHECK_LE(result, SmbMountResult::kMaxValue);
   UMA_HISTOGRAM_ENUMERATION("NativeSmbFileShare.MountResult", result);
@@ -68,6 +87,11 @@ void RecordMountResult(SmbMountResult result) {
 void RecordRemountResult(SmbMountResult result) {
   DCHECK_LE(result, SmbMountResult::kMaxValue);
   UMA_HISTOGRAM_ENUMERATION("NativeSmbFileShare.RemountResult", result);
+}
+
+void RecordAuthenticationMethod(AuthMethod method) {
+  DCHECK_LE(method, AuthMethod::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION("NativeSmbFileShare.AuthenticationMethod", method);
 }
 
 std::unique_ptr<TempFileManager> CreateTempFileManager() {
@@ -101,25 +125,25 @@ void SmbService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kNetworkFileSharesAllowed, true);
   registry->RegisterBooleanPref(prefs::kNetBiosShareDiscoveryEnabled, true);
+  registry->RegisterBooleanPref(prefs::kNTLMShareAuthenticationEnabled, true);
+  registry->RegisterListPref(prefs::kNetworkFileSharesPreconfiguredShares);
 }
 
 void SmbService::Mount(const file_system_provider::MountOptions& options,
                        const base::FilePath& share_path,
                        const std::string& username,
                        const std::string& password,
+                       bool use_chromad_kerberos,
                        MountResponse callback) {
   DCHECK(temp_file_manager_);
 
-  CallMount(options, share_path, username, password, std::move(callback));
-}
-
-void SmbService::GatherSharesInNetwork(GatherSharesResponse shares_callback) {
-  share_finder_->GatherSharesInNetwork(base::DoNothing(),
-                                       std::move(shares_callback));
+  CallMount(options, share_path, username, password, use_chromad_kerberos,
+            std::move(callback));
 }
 
 void SmbService::GatherSharesInNetwork(HostDiscoveryResponse discovery_callback,
                                        GatherSharesResponse shares_callback) {
+  shares_callback.Run(GetPreconfiguredSharePathsForDropDown());
   share_finder_->GatherSharesInNetwork(std::move(discovery_callback),
                                        std::move(shares_callback));
 }
@@ -128,26 +152,34 @@ void SmbService::CallMount(const file_system_provider::MountOptions& options,
                            const base::FilePath& share_path,
                            const std::string& username_input,
                            const std::string& password_input,
+                           bool use_chromad_kerberos,
                            MountResponse callback) {
   std::string username;
   std::string password;
   std::string workgroup;
 
-  bool is_kerberos_chromad = false;
-
-  if (username_input.empty()) {
-    // If no credentials were provided and the user is ChromAD, pass the users
-    // username and workgroup for their email address to be used for Kerberos
-    // authentication.
+  if (use_chromad_kerberos) {
+    RecordAuthenticationMethod(AuthMethod::kSSOKerberos);
+    // Get the user's username and workgroup from their email address to be used
+    // for Kerberos authentication.
     user_manager::User* user =
         chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
-    if (user && user->IsActiveDirectoryUser()) {
+    if (user) {
+      DCHECK(user->IsActiveDirectoryUser());
       ParseUserPrincipalName(user->GetDisplayEmail(), &username, &workgroup);
-      is_kerberos_chromad = true;
     }
   } else {
-    // Credentials were provided so use them and parse the username into
-    // username and workgroup if neccessary.
+    // Record authentication method metrics.
+    if (!username_input.empty() && !password_input.empty()) {
+      RecordAuthenticationMethod(AuthMethod::kUsernameAndPassword);
+    } else if (!username_input.empty()) {
+      RecordAuthenticationMethod(AuthMethod::kUsernameOnly);
+    } else {
+      RecordAuthenticationMethod(AuthMethod::kNoCredentials);
+    }
+
+    // Use provided credentials and parse the username into username and
+    // workgroup if necessary.
     username = username_input;
     password = password_input;
     if (ContainsAt(username)) {
@@ -162,13 +194,19 @@ void SmbService::CallMount(const file_system_provider::MountOptions& options,
     return;
   }
 
-  const base::FilePath mount_path(share_finder_->GetResolvedUrl(parsed_url));
+  // If using kerberos, the hostname should not be resolved since kerberos
+  // service tickets are keyed on hosname.
+  const base::FilePath mount_path =
+      use_chromad_kerberos
+          ? share_path
+          : base::FilePath(share_finder_->GetResolvedUrl(parsed_url));
+
   GetSmbProviderClient()->Mount(
-      mount_path, workgroup, username,
+      mount_path, IsNTLMAuthenticationEnabled(), workgroup, username,
       temp_file_manager_->WritePasswordToFile(password),
       base::BindOnce(&SmbService::OnMountResponse, AsWeakPtr(),
                      base::Passed(&callback), options, share_path,
-                     is_kerberos_chromad));
+                     use_chromad_kerberos));
 }
 
 void SmbService::OnMountResponse(
@@ -191,6 +229,10 @@ void SmbService::OnMountResponse(
 
   base::File::Error result =
       GetProviderService()->MountFileSystem(provider_id_, mount_options);
+
+  if (result == base::File::FILE_OK) {
+    OpenFileManager(mount_options.file_system_id);
+  }
 
   FireMountCallback(std::move(callback), TranslateErrorToMountResult(result));
 
@@ -263,13 +305,18 @@ void SmbService::Remount(const ProvidedFileSystemInfo& file_system_info) {
     return;
   }
 
-  const base::FilePath mount_path(share_finder_->GetResolvedUrl(parsed_url));
+  // If using kerberos, the hostname should not be resolved since kerberos
+  // service tickets are keyed on hosname.
+  const base::FilePath mount_path =
+      is_kerberos_chromad
+          ? share_path
+          : base::FilePath(share_finder_->GetResolvedUrl(parsed_url));
 
   // An empty password is passed to Remount to conform with the credentials API
   // which expects username & workgroup strings along with a password file
   // descriptor.
   GetSmbProviderClient()->Remount(
-      mount_path, mount_id, workgroup, username,
+      mount_path, mount_id, IsNTLMAuthenticationEnabled(), workgroup, username,
       temp_file_manager_->WritePasswordToFile("" /* password */),
       base::BindOnce(&SmbService::OnRemountResponse, AsWeakPtr(),
                      file_system_info.file_system_id()));
@@ -379,12 +426,44 @@ void SmbService::SetUpNetBiosHostLocator() {
   share_finder_->RegisterHostLocator(std::move(netbios_host_locator));
 }
 
+void SmbService::OpenFileManager(const std::string& file_system_id) {
+  base::FilePath mount_path = file_system_provider::util::GetMountPath(
+      profile_, provider_id_, file_system_id);
+
+  platform_util::ShowItemInFolder(profile_, mount_path);
+}
+
 bool SmbService::IsAllowedByPolicy() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kNetworkFileSharesAllowed);
 }
 
 bool SmbService::IsNetBiosDiscoveryEnabled() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kNetBiosShareDiscoveryEnabled);
+}
+
+bool SmbService::IsNTLMAuthenticationEnabled() const {
+  return profile_->GetPrefs()->GetBoolean(
+      prefs::kNTLMShareAuthenticationEnabled);
+}
+
+std::vector<SmbUrl> SmbService::GetPreconfiguredSharePathsForDropDown() const {
+  std::vector<SmbUrl> preconfigured_urls;
+
+  const base::Value* preconfigured_shares = profile_->GetPrefs()->GetList(
+      prefs::kNetworkFileSharesPreconfiguredShares);
+
+  for (const base::Value& info : preconfigured_shares->GetList()) {
+    // |info| is a dictionary with entries for |share_url| and |mode|.
+    const base::Value* share_url = info.FindKey(kShareUrlKey);
+    const base::Value* mode = info.FindKey(kModeKey);
+
+    DCHECK(mode->GetString() == kModeDropDownValue);
+
+    if (mode->GetString() == kModeDropDownValue) {
+      preconfigured_urls.emplace_back(share_url->GetString());
+    }
+  }
+  return preconfigured_urls;
 }
 
 void SmbService::RecordMountCount() const {

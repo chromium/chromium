@@ -17,7 +17,7 @@ class ContentSuggestionsService;
 
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
-@class ContentSuggestionsHeaderViewController;
+@class ContentSuggestionsHeaderSynchronizer;
 @class ContentSuggestionsMediator;
 @class ContentSuggestionsMetricsRecorder;
 @class ContentSuggestionsViewController;
@@ -59,6 +59,8 @@ initWithWebStateList:(nonnull WebStateList*)webStateList
 // View Controller displaying the suggestions.
 @property(nonatomic, weak, nullable)
     ContentSuggestionsViewController* suggestionsViewController;
+@property(nonatomic, weak, nullable)
+    ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
 // Mediator for the ContentSuggestions.
 @property(nonatomic, strong, nonnull)
     ContentSuggestionsMediator* suggestionsMediator;

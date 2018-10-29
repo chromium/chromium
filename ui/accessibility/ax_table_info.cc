@@ -18,7 +18,7 @@ void FindCells(AXNode* node, std::vector<AXNode*>* cells) {
     if (child->data().HasState(ax::mojom::State::kIgnored) ||
         child->data().role == ax::mojom::Role::kGenericContainer)
       FindCells(child, cells);
-    else if (IsCellOrTableHeaderRole(child->data().role))
+    else if (IsCellOrTableHeader(child->data().role))
       cells->push_back(child);
   }
 }
@@ -48,7 +48,7 @@ AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
   DCHECK(node == tree->root());
 #endif
 
-  if (!IsTableLikeRole(table_node->data().role))
+  if (!IsTableLike(table_node->data().role))
     return nullptr;
 
   AXTableInfo* info = new AXTableInfo(tree, table_node);
@@ -59,7 +59,7 @@ AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
 }
 
 bool AXTableInfo::Update() {
-  if (!IsTableLikeRole(table_node_->data().role))
+  if (!IsTableLike(table_node_->data().role))
     return false;
 
   col_headers.clear();
@@ -199,7 +199,7 @@ void AXTableInfo::UpdateExtraMacNodes() {
 AXNode* AXTableInfo::CreateExtraMacColumnNode(int col_index) {
   int32_t id = tree_->GetNextNegativeInternalNodeId();
   int32_t index_in_parent = col_index + table_node_->child_count();
-  AXNode* node = new AXNode(table_node_, id, index_in_parent);
+  AXNode* node = new AXNode(tree_, table_node_, id, index_in_parent);
   AXNodeData data;
   data.id = id;
   data.role = ax::mojom::Role::kColumn;
@@ -212,7 +212,7 @@ AXNode* AXTableInfo::CreateExtraMacColumnNode(int col_index) {
 AXNode* AXTableInfo::CreateExtraMacTableHeaderNode() {
   int32_t id = tree_->GetNextNegativeInternalNodeId();
   int32_t index_in_parent = col_count + table_node_->child_count();
-  AXNode* node = new AXNode(table_node_, id, index_in_parent);
+  AXNode* node = new AXNode(tree_, table_node_, id, index_in_parent);
   AXNodeData data;
   data.id = id;
   data.role = ax::mojom::Role::kTableHeaderContainer;

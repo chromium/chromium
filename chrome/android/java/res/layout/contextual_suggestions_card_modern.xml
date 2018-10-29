@@ -5,9 +5,9 @@
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/SuggestionCardModern"
+    android:background="@drawable/hairline_border_card_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/snippets_padding">
@@ -99,7 +99,6 @@
                 android:layout_marginStart="6dp"
                 android:contentDescription="@string/accessibility_ntp_offline_badge"
                 android:visibility="gone"
-                android:src="@drawable/offline_pin_round"
-                app:chrometint="@color/default_icon_color" />
+                android:src="@drawable/offline_pin_round" />
         </LinearLayout>
 </RelativeLayout>

@@ -518,7 +518,7 @@ void VideoCaptureDeviceAndroid::OnPhotoTaken(
 
   if (data != nullptr) {
     mojom::BlobPtr blob = mojom::Blob::New();
-    base::android::JavaByteArrayToByteVector(env, data.obj(), &blob->data);
+    base::android::JavaByteArrayToByteVector(env, data, &blob->data);
     blob->mime_type = blob->data.empty() ? "" : "image/jpeg";
     std::move(*cb).Run(std::move(blob));
   }

@@ -60,7 +60,8 @@ class TabManagerFeaturesTest : public testing::Test {
       base::TimeDelta high_occluded_timeout,
       base::TimeDelta freeze_timeout,
       base::TimeDelta unfreeze_timeout,
-      base::TimeDelta refreeze_timeout) {
+      base::TimeDelta refreeze_timeout,
+      bool disable_heuristics_protections) {
     ProactiveTabFreezeAndDiscardParams params =
         GetProactiveTabFreezeAndDiscardParams(memory_in_gb);
 
@@ -85,6 +86,9 @@ class TabManagerFeaturesTest : public testing::Test {
     EXPECT_EQ(freeze_timeout, params.freeze_timeout);
     EXPECT_EQ(unfreeze_timeout, params.unfreeze_timeout);
     EXPECT_EQ(refreeze_timeout, params.refreeze_timeout);
+
+    EXPECT_EQ(disable_heuristics_protections,
+              params.disable_heuristics_protections);
   }
 
   void ExpectSiteCharacteristicsDatabaseParams(
@@ -163,8 +167,9 @@ class TabManagerFeaturesTest : public testing::Test {
         base::TimeDelta::FromSeconds(
             ProactiveTabFreezeAndDiscardParams::kUnfreezeTimeout.default_value),
         base::TimeDelta::FromSeconds(
-            ProactiveTabFreezeAndDiscardParams::kRefreezeTimeout
-                .default_value));
+            ProactiveTabFreezeAndDiscardParams::kRefreezeTimeout.default_value),
+        ProactiveTabFreezeAndDiscardParams::kDisableHeuristicsProtections
+            .default_value);
   }
 
   void ExpectDefaultSiteCharacteristicsDatabaseParams() {
@@ -245,6 +250,9 @@ TEST_F(TabManagerFeaturesTest,
   SetParam(ProactiveTabFreezeAndDiscardParams::kFreezeTimeout.name, "b");
   SetParam(ProactiveTabFreezeAndDiscardParams::kUnfreezeTimeout.name, "i");
   SetParam(ProactiveTabFreezeAndDiscardParams::kRefreezeTimeout.name, "m");
+  SetParam(
+      ProactiveTabFreezeAndDiscardParams::kDisableHeuristicsProtections.name,
+      "bleh");
   EnableProactiveTabFreezeAndDiscard();
   ExpectDefaultProactiveTabFreezeAndDiscardParams();
 }
@@ -270,6 +278,9 @@ TEST_F(TabManagerFeaturesTest, GetProactiveTabFreezeAndDiscardParams) {
   SetParam(ProactiveTabFreezeAndDiscardParams::kFreezeTimeout.name, "10");
   SetParam(ProactiveTabFreezeAndDiscardParams::kUnfreezeTimeout.name, "20");
   SetParam(ProactiveTabFreezeAndDiscardParams::kRefreezeTimeout.name, "30");
+  SetParam(
+      ProactiveTabFreezeAndDiscardParams::kDisableHeuristicsProtections.name,
+      "true");
   EnableProactiveTabFreezeAndDiscard();
 
   // Should snap |moderate_loaded_tab_count| to |low_loaded_tab_count|, when the
@@ -280,7 +291,7 @@ TEST_F(TabManagerFeaturesTest, GetProactiveTabFreezeAndDiscardParams) {
       true, true, true, 7, 7, 42, memory_in_gb_low,
       base::TimeDelta::FromSeconds(60), base::TimeDelta::FromSeconds(120),
       base::TimeDelta::FromSeconds(247), base::TimeDelta::FromSeconds(10),
-      base::TimeDelta::FromSeconds(20), base::TimeDelta::FromSeconds(30));
+      base::TimeDelta::FromSeconds(20), base::TimeDelta::FromSeconds(30), true);
 
   // Should snap |moderate_loaded_tab_count| to |high_loaded_tab_count|, when
   // the amount of physical memory is so high that (|memory_in_gb| *
@@ -290,7 +301,7 @@ TEST_F(TabManagerFeaturesTest, GetProactiveTabFreezeAndDiscardParams) {
       true, true, true, 7, 42, 42, memory_in_gb_high,
       base::TimeDelta::FromSeconds(60), base::TimeDelta::FromSeconds(120),
       base::TimeDelta::FromSeconds(247), base::TimeDelta::FromSeconds(10),
-      base::TimeDelta::FromSeconds(20), base::TimeDelta::FromSeconds(30));
+      base::TimeDelta::FromSeconds(20), base::TimeDelta::FromSeconds(30), true);
 
   // Tests normal case where |memory_in gb| * |moderate_tab_count_per_gb_ram| is
   // in the interval [low_loaded_tab_count, high_loaded_tab_count].
@@ -299,7 +310,7 @@ TEST_F(TabManagerFeaturesTest, GetProactiveTabFreezeAndDiscardParams) {
       true, true, true, 7, 16, 42, memory_in_gb_normal,
       base::TimeDelta::FromSeconds(60), base::TimeDelta::FromSeconds(120),
       base::TimeDelta::FromSeconds(247), base::TimeDelta::FromSeconds(10),
-      base::TimeDelta::FromSeconds(20), base::TimeDelta::FromSeconds(30));
+      base::TimeDelta::FromSeconds(20), base::TimeDelta::FromSeconds(30), true);
 }
 
 TEST_F(TabManagerFeaturesTest,

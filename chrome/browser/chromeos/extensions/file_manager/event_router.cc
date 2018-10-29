@@ -905,9 +905,9 @@ void EventRouter::DispatchDirectoryChangeEventImpl(
     NOTREACHED();
     return;
   }
-  linked_ptr<drive::FileChange> changes;
+  std::unique_ptr<drive::FileChange> changes;
   if (list)
-    changes.reset(new drive::FileChange(*list));  // Copy
+    changes = std::make_unique<drive::FileChange>(*list);  // Copy
 
   for (size_t i = 0; i < extension_ids.size(); ++i) {
     std::string* extension_id = new std::string(extension_ids[i]);
@@ -922,13 +922,13 @@ void EventRouter::DispatchDirectoryChangeEventImpl(
         profile_, *extension_id, file_definition,
         base::BindOnce(
             &EventRouter::DispatchDirectoryChangeEventWithEntryDefinition,
-            weak_factory_.GetWeakPtr(), changes, base::Owned(extension_id),
-            got_error));
+            weak_factory_.GetWeakPtr(), std::move(changes),
+            base::Owned(extension_id), got_error));
   }
 }
 
 void EventRouter::DispatchDirectoryChangeEventWithEntryDefinition(
-    const linked_ptr<drive::FileChange> list,
+    std::unique_ptr<drive::FileChange> list,
     const std::string* extension_id,
     bool watcher_error,
     const EntryDefinition& entry_definition) {
@@ -946,7 +946,7 @@ void EventRouter::DispatchDirectoryChangeEventWithEntryDefinition(
       : file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
 
   // Detailed information is available.
-  if (list.get()) {
+  if (list) {
     event.changed_files =
         std::make_unique<std::vector<file_manager_private::FileChange>>();
 

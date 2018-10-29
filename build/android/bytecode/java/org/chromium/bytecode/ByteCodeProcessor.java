@@ -27,6 +27,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -59,9 +63,12 @@ class ByteCodeProcessor {
         zipStream.closeEntry();
     }
 
-    private static void process(String inputJarPath, String outputJarPath, boolean shouldAssert,
-            boolean shouldUseCustomResources, boolean shouldUseThreadAnnotations,
-            ClassLoader classPathJarsClassLoader) {
+    private static void process(String inputJarPath, String outputJarPath, boolean verbose,
+            boolean isPrebuilt, boolean shouldAssert, boolean shouldUseCustomResources,
+            boolean shouldUseThreadAnnotations, boolean shouldCheckClassPath,
+            ClassLoader directClassPathClassLoader, ClassLoader fullClassPathClassLoader,
+            Set<String> jarsOnlyInFullClassPath) throws ClassPathValidator.ClassNotLoadedException {
+        ClassPathValidator validator = new ClassPathValidator();
         String tempJarPath = outputJarPath + TEMPORARY_FILE_SUFFIX;
         try (ZipInputStream inputStream = new ZipInputStream(
                      new BufferedInputStream(new FileInputStream(inputJarPath)));
@@ -80,13 +87,18 @@ class ByteCodeProcessor {
 
                 ClassReader reader = new ClassReader(readAllBytes(inputStream));
 
+                if (shouldCheckClassPath) {
+                    validator.validateClassPathsAndOutput(reader, directClassPathClassLoader,
+                            fullClassPathClassLoader, jarsOnlyInFullClassPath, isPrebuilt, verbose);
+                }
+
                 ClassWriter writer;
                 if (shouldUseCustomResources) {
                     // Use the COMPUTE_FRAMES flag to have asm figure out the stack map frames.
                     // This is necessary because GCMBaseIntentService in android_gcm_java contains
                     // incorrect stack map frames. This option slows down processing time by 2x.
                     writer = new CustomClassLoaderClassWriter(
-                            classPathJarsClassLoader, reader, COMPUTE_FRAMES);
+                            fullClassPathClassLoader, reader, COMPUTE_FRAMES);
                 } else {
                     writer = new ClassWriter(reader, 0);
                 }
@@ -109,7 +121,7 @@ class ByteCodeProcessor {
                 }
                 if (shouldUseCustomResources) {
                     chain = new CustomResourcesClassAdapter(chain, reader.getClassName(),
-                            reader.getSuperName(), classPathJarsClassLoader);
+                            reader.getSuperName(), fullClassPathClassLoader);
                 }
                 reader.accept(chain, 0);
                 byte[] patchedByteCode = writer.toByteArray();
@@ -124,6 +136,15 @@ class ByteCodeProcessor {
             Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ioException) {
             throw new RuntimeException(ioException);
+        }
+
+        if (validator.getNumClassPathErrors() > 0) {
+            System.err.println("Missing " + validator.getNumClassPathErrors()
+                    + " classes missing in direct classpath. To fix, add GN deps for:");
+            for (String s : validator.getClassPathMissingJars()) {
+                System.err.println(s);
+            }
+            System.exit(1);
         }
     }
 
@@ -141,11 +162,12 @@ class ByteCodeProcessor {
      * Loads a list of jars and returns a ClassLoader capable of loading all classes found in the
      * given jars.
      */
-    private static ClassLoader loadJars(ArrayList<String> paths) {
+    static ClassLoader loadJars(Collection<String> paths) {
         URL[] jarUrls = new URL[paths.size()];
-        for (int i = 0; i < paths.size(); ++i) {
+        int i = 0;
+        for (String path : paths) {
             try {
-                jarUrls[i] = new File(paths.get(i)).toURI().toURL();
+                jarUrls[i++] = new File(path).toURI().toURL();
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
@@ -153,23 +175,44 @@ class ByteCodeProcessor {
         return new URLClassLoader(jarUrls);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassPathValidator.ClassNotLoadedException {
         // Invoke this script using //build/android/gyp/bytecode_processor.py
-        String inputJarPath = args[0];
-        String outputJarPath = args[1];
-        boolean shouldAssert = args[2].equals("--enable-assert");
-        boolean shouldUseCustomResources = args[3].equals("--enable-custom-resources");
-        boolean shouldUseThreadAnnotations = args[4].equals("--enable-thread-annotations");
+        int currIndex = 0;
+        String inputJarPath = args[currIndex++];
+        String outputJarPath = args[currIndex++];
+        boolean verbose = args[currIndex++].equals("--verbose");
+        boolean isPrebuilt = args[currIndex++].equals("--is-prebuilt");
+        boolean shouldAssert = args[currIndex++].equals("--enable-assert");
+        boolean shouldUseCustomResources = args[currIndex++].equals("--enable-custom-resources");
+        boolean shouldUseThreadAnnotations =
+                args[currIndex++].equals("--enable-thread-annotations");
+        boolean shouldCheckClassPath = args[currIndex++].equals("--enable-check-class-path");
+        int sdkJarsLength = Integer.parseInt(args[currIndex++]);
+        List<String> sdkJarPaths =
+                Arrays.asList(Arrays.copyOfRange(args, currIndex, currIndex + sdkJarsLength));
+        currIndex += sdkJarsLength;
+
+        int directJarsLength = Integer.parseInt(args[currIndex++]);
+        ArrayList<String> directClassPathJarPaths = new ArrayList<>();
+        directClassPathJarPaths.add(inputJarPath);
+        directClassPathJarPaths.addAll(sdkJarPaths);
+        directClassPathJarPaths.addAll(
+                Arrays.asList(Arrays.copyOfRange(args, currIndex, currIndex + directJarsLength)));
+        currIndex += directJarsLength;
+        ClassLoader directClassPathClassLoader = loadJars(directClassPathJarPaths);
 
         // Load all jars that are on the classpath for the input jar for analyzing class hierarchy.
-        ClassLoader classPathJarsClassLoader = null;
-        if (shouldUseCustomResources) {
-            ArrayList<String> classPathJarsPaths = new ArrayList<>();
-            classPathJarsPaths.add(inputJarPath);
-            classPathJarsPaths.addAll(Arrays.asList(Arrays.copyOfRange(args, 4, args.length)));
-            classPathJarsClassLoader = loadJars(classPathJarsPaths);
-        }
-        process(inputJarPath, outputJarPath, shouldAssert, shouldUseCustomResources,
-                shouldUseThreadAnnotations, classPathJarsClassLoader);
+        Set<String> fullClassPathJarPaths = new HashSet<>();
+        fullClassPathJarPaths.clear();
+        fullClassPathJarPaths.add(inputJarPath);
+        fullClassPathJarPaths.addAll(sdkJarPaths);
+        fullClassPathJarPaths.addAll(
+                Arrays.asList(Arrays.copyOfRange(args, currIndex, args.length)));
+        ClassLoader fullClassPathClassLoader = loadJars(fullClassPathJarPaths);
+        fullClassPathJarPaths.removeAll(directClassPathJarPaths);
+
+        process(inputJarPath, outputJarPath, verbose, isPrebuilt, shouldAssert,
+                shouldUseCustomResources, shouldUseThreadAnnotations, shouldCheckClassPath,
+                directClassPathClassLoader, fullClassPathClassLoader, fullClassPathJarPaths);
     }
 }

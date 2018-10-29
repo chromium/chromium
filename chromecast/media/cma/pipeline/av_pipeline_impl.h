@@ -132,6 +132,9 @@ class AvPipelineImpl : CmaBackend::Decoder::Delegate {
                       bool is_at_max_capacity);
   void UpdatePlayableFrames();
 
+  std::unique_ptr<StreamDecryptor> CreateStreamDecryptor(
+      CastKeySystem key_system);
+
   base::ThreadChecker thread_checker_;
 
   CmaBackend::Decoder* const decoder_;

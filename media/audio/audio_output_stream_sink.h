@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_renderer_sink.h"
@@ -75,7 +76,7 @@ class MEDIA_EXPORT AudioOutputStreamSink
   // |active_params_| is set on the audio thread and therefore does not need
   // synchronization.
   AudioParameters active_params_;
-  RenderCallback* active_render_callback_;
+  RenderCallback* active_render_callback_ GUARDED_BY(callback_lock_);
 
   // Lock to synchronize setting and clearing of |active_render_callback_|.
   base::Lock callback_lock_;

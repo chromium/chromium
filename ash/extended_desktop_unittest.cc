@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -84,13 +83,18 @@ class MoveWindowByClickEventHandler : public ui::EventHandler {
 // An event handler which records the event's locations.
 class EventLocationRecordingEventHandler : public ui::EventHandler {
  public:
-  explicit EventLocationRecordingEventHandler() { reset(); }
+  EventLocationRecordingEventHandler() { Reset(); }
   ~EventLocationRecordingEventHandler() override = default;
 
-  std::string GetLocationsAndReset() {
-    std::string result = location_.ToString() + " " + root_location_.ToString();
-    reset();
-    return result;
+  // |location_| is relative to the target window.
+  std::string GetLocation() const { return location_.ToString(); }
+
+  // |root_location_| is relative to the display where the event started.
+  std::string GetRootLocation() const { return root_location_.ToString(); }
+
+  void Reset() {
+    location_.SetPoint(-999, -999);
+    root_location_.SetPoint(-999, -999);
   }
 
  private:
@@ -101,11 +105,6 @@ class EventLocationRecordingEventHandler : public ui::EventHandler {
       location_ = event->location();
       root_location_ = event->root_location();
     }
-  }
-
-  void reset() {
-    location_.SetPoint(-999, -999);
-    root_location_.SetPoint(-999, -999);
   }
 
   gfx::Point root_location_;
@@ -164,9 +163,11 @@ class ExtendedDesktopTest : public AshTestBase {
 
  protected:
   bool IsBubbleShown() {
-    return features::IsSystemTrayUnifiedEnabled()
-               ? GetPrimaryUnifiedSystemTray()->IsBubbleShown()
-               : GetPrimarySystemTray()->HasSystemBubble();
+    return GetPrimaryUnifiedSystemTray()->IsBubbleShown();
+  }
+
+  gfx::Rect GetSystemTrayBoundsInScreen() {
+    return GetPrimaryUnifiedSystemTray()->GetBoundsInScreen();
   }
 
  private:
@@ -738,8 +739,7 @@ TEST_F(ExtendedDesktopTest, OpenSystemTray) {
 
   // Opens the tray by a dummy click event and makes sure that adding/removing
   // displays doesn't break anything.
-  event_generator->MoveMouseToCenterOf(
-      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->GetNativeWindow());
+  event_generator->MoveMouseTo(GetSystemTrayBoundsInScreen().CenterPoint());
   event_generator->ClickLeftButton();
   EXPECT_TRUE(IsBubbleShown());
 
@@ -866,35 +866,63 @@ TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
   EXPECT_EQ("abcde", base::UTF16ToASCII(textfield->text()));
 }
 
+// Verifies that clicking in the primary display and dragging to the secondary
+// display correctly sets the event location (window local) and root_location
+// (in screen coordinates) for the mouse event. https://crrev.com/11691010
 TEST_F(ExtendedDesktopTest, PassiveGrab) {
   // This test deals with input events but not visuals so don't throttle input
   // on visuals.
   Shell::Get()->aura_env()->set_throttle_input_on_resize_for_testing(false);
   EventLocationRecordingEventHandler event_handler;
-  ash::Shell::Get()->AddPreTargetHandler(&event_handler);
+  Shell::Get()->AddPreTargetHandler(&event_handler);
 
-  UpdateDisplay("300x300,200x200");
+  // Create large displays so the widget won't be moved after creation.
+  // https://crbug.com/890633
+  UpdateDisplay("1000x1000,1000x1000");
 
   views::Widget* widget = CreateTestWidget(gfx::Rect(50, 50, 200, 200));
   widget->Show();
-  ASSERT_EQ("50,44 200x200", widget->GetWindowBoundsInScreen().ToString());
+  ASSERT_EQ("50,50 200x200", widget->GetWindowBoundsInScreen().ToString());
 
+  // Move the mouse to the center of the window.
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(150, 150);
-  EXPECT_EQ("100,106 150,150", event_handler.GetLocationsAndReset());
 
+  // Location is relative to the window.
+  EXPECT_EQ("100,100", event_handler.GetLocation());
+
+  // Root location is relative to the display.
+  EXPECT_EQ("150,150", event_handler.GetRootLocation());
+  event_handler.Reset();
+
+  // Drag the mouse to the secondary display. Does not drag the window.
   generator->PressLeftButton();
-  generator->MoveMouseTo(400, 150);
+  generator->MoveMouseBy(1000, 0);
 
-  EXPECT_EQ("350,106 400,150", event_handler.GetLocationsAndReset());
+  // Location is relative to the original window.
+  EXPECT_EQ("1100,100", event_handler.GetLocation());
 
+  // Root location is relative to the original display.
+  EXPECT_EQ("1150,150", event_handler.GetRootLocation());
+  event_handler.Reset();
+
+  // End the drag.
   generator->ReleaseLeftButton();
-  EXPECT_EQ("-999,-999 -999,-999", event_handler.GetLocationsAndReset());
+  EXPECT_EQ("-999,-999", event_handler.GetRootLocation());
+  EXPECT_EQ("-999,-999", event_handler.GetLocation());
+  event_handler.Reset();
 
-  generator->MoveMouseTo(400, 150);
-  EXPECT_EQ("100,6 100,150", event_handler.GetLocationsAndReset());
+  // Move the mouse to the top-left of the secondary display.
+  generator->MoveMouseTo(1001, 1);
 
-  ash::Shell::Get()->RemovePreTargetHandler(&event_handler);
+  // Location is relative to the new display.
+  EXPECT_EQ("1,1", event_handler.GetLocation());
+
+  // Root location is relative to the new display.
+  EXPECT_EQ("1,1", event_handler.GetRootLocation());
+  event_handler.Reset();
+
+  Shell::Get()->RemovePreTargetHandler(&event_handler);
 }
 
 }  // namespace ash

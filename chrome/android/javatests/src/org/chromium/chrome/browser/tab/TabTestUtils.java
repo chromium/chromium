@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.view.View;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.ThreadUtils;
 
 /**
  * Exposes helper functions to be used in tests to instrument tab interaction.
@@ -53,8 +56,28 @@ public class TabTestUtils {
      * @param sadTabShown Whether the sad tab was shown.
      */
     public static void simulateCrash(Tab tab, boolean sadTabShown) {
+        setupSadTab(tab, sadTabShown);
         RewindableIterator<TabObserver> observers = tab.getTabObservers();
-        while (observers.hasNext()) observers.next().onCrash(tab, sadTabShown);
+        while (observers.hasNext()) observers.next().onCrash(tab);
+    }
+
+    private static void setupSadTab(Tab tab, boolean show) {
+        boolean isShowing = SadTab.isShowing(tab);
+        if (!show && isShowing) {
+            SadTab.get(tab).removeIfPresent();
+        } else if (show && !isShowing) {
+            SadTab sadTab = new SadTab(tab) {
+                @Override
+                public View createView(Runnable suggestionAction, Runnable buttonAction,
+                        boolean showSendFeedbackView, boolean isIncognito) {
+                    return new View(tab.getThemedApplicationContext());
+                }
+            };
+            ThreadUtils.runOnUiThreadBlocking(() -> {
+                SadTab.initForTesting(tab, sadTab);
+                sadTab.show();
+            });
+        }
     }
 
     /**

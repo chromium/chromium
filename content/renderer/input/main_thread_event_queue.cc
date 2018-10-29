@@ -236,10 +236,8 @@ MainThreadEventQueue::MainThreadEventQueue(
       use_raf_fallback_timer_(true) {
   raf_fallback_timer_.SetTaskRunner(main_task_runner);
 
-  event_predictor_ =
-      base::FeatureList::IsEnabled(features::kResamplingInputEvents)
-          ? std::make_unique<InputEventPrediction>()
-          : nullptr;
+  event_predictor_ = std::make_unique<InputEventPrediction>(
+      base::FeatureList::IsEnabled(features::kResamplingInputEvents));
 }
 
 MainThreadEventQueue::~MainThreadEventQueue() {}
@@ -586,8 +584,7 @@ void MainThreadEventQueue::HandleEventResampling(
     base::TimeTicks frame_time) {
   if (item->IsWebInputEvent() && allow_raf_aligned_input_ && event_predictor_) {
     QueuedWebInputEvent* event = static_cast<QueuedWebInputEvent*>(item.get());
-    event_predictor_->HandleEvents(event->coalesced_event(), frame_time,
-                                   &event->event());
+    event_predictor_->HandleEvents(event->coalesced_event(), frame_time);
   }
 }
 

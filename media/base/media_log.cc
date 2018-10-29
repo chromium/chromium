@@ -192,7 +192,7 @@ MediaLog::~MediaLog() {
 }
 
 void MediaLog::AddEvent(std::unique_ptr<MediaLogEvent> event) {
-  base::AutoLock auto_lock(lock());
+  base::AutoLock auto_lock(parent_log_record_->lock);
   // Forward to the parent log's implementation.
   if (parent_log_record_->media_log)
     parent_log_record_->media_log->AddEventLocked(std::move(event));
@@ -201,7 +201,7 @@ void MediaLog::AddEvent(std::unique_ptr<MediaLogEvent> event) {
 void MediaLog::AddEventLocked(std::unique_ptr<MediaLogEvent> event) {}
 
 std::string MediaLog::GetErrorMessage() {
-  base::AutoLock auto_lock(lock());
+  base::AutoLock auto_lock(parent_log_record_->lock);
   // Forward to the parent log's implementation.
   if (parent_log_record_->media_log)
     return parent_log_record_->media_log->GetErrorMessageLocked();
@@ -214,7 +214,7 @@ std::string MediaLog::GetErrorMessageLocked() {
 }
 
 void MediaLog::RecordRapporWithSecurityOrigin(const std::string& metric) {
-  base::AutoLock auto_lock(lock());
+  base::AutoLock auto_lock(parent_log_record_->lock);
   // Forward to the parent log's implementation.
   if (parent_log_record_->media_log)
     parent_log_record_->media_log->RecordRapporWithSecurityOriginLocked(metric);
@@ -370,7 +370,7 @@ MediaLog::ParentLogRecord::ParentLogRecord(MediaLog* log) : media_log(log) {}
 MediaLog::ParentLogRecord::~ParentLogRecord() = default;
 
 void MediaLog::InvalidateLog() {
-  base::AutoLock auto_lock(lock());
+  base::AutoLock auto_lock(parent_log_record_->lock);
   // It's almost certainly unintentional to invalidate a parent log.
   DCHECK(parent_log_record_->media_log == nullptr ||
          parent_log_record_->media_log == this);

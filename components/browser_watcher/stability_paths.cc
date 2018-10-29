@@ -46,8 +46,7 @@ bool SetPmaFileDeleted(const base::FilePath& file_path) {
   // Map the file read-write so it can guarantee consistency between
   // the analyzer and any trackers that may still be active.
   std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
-  mmfile->Initialize(file_path, MemoryMappedFile::READ_WRITE);
-  if (!mmfile->IsValid())
+  if (!mmfile->Initialize(file_path, MemoryMappedFile::READ_WRITE))
     return false;
   if (!FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, true))
     return false;

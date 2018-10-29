@@ -52,7 +52,7 @@ TEST_F(StructTraitsTest, LatencyInfo) {
   EXPECT_EQ(10, latency.ukm_source_id());
   EXPECT_TRUE(latency.terminated());
 
-  latency.set_source_event_type(ui::TOUCH);
+  latency.set_source_event_type(ui::SourceEventType::TOUCH);
 
   mojom::TraitsTestServicePtr proxy = GetTraitsTestProxy();
   LatencyInfo output;

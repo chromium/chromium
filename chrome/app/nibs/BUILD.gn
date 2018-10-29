@@ -8,24 +8,12 @@ import("//ui/base/ui_features.gni")
 assert(is_mac)
 
 translated_xibs = [
-  "AppMenu.xib",
-  "DownloadItem.xib",
-  "DownloadShelf.xib",
-  "HungRendererDialog.xib",
-  "OneClickSigninDialog.xib",
   "SaveAccessoryView.xib",
   "TaskManager.xib",
-  "Toolbar.xib",
-]
-
-untranslated_xibs = [
-  "BookmarkBarFolderWindow.xib",
-  "FindBar.xib",
-  "InfoBar.xib",
 ]
 
 mac_xib_bundle_data("chrome_xibs") {
-  sources = translated_xibs + untranslated_xibs
+  sources = translated_xibs
 }
 
 action("localizer_table") {

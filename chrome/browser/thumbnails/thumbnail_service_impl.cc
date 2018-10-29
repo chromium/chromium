@@ -6,11 +6,13 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/thumbnails/thumbnailing_context.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
@@ -61,8 +63,8 @@ void ThumbnailServiceImpl::AddForcedURL(const GURL& url) {
   if (!local_ptr)
     return;
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::Bind(AddForcedURLOnUIThread, local_ptr, url));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::Bind(AddForcedURLOnUIThread, local_ptr, url));
 }
 
 bool ThumbnailServiceImpl::ShouldAcquirePageThumbnail(

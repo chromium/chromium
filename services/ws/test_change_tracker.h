@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "services/ws/common/types.h"
 #include "services/ws/public/mojom/window_tree.mojom.h"
 #include "ui/gfx/geometry/mojo/geometry.mojom.h"
@@ -37,7 +38,7 @@ enum ChangeType {
   CHANGE_TYPE_NODE_DRAWN_STATE_CHANGED,
   CHANGE_TYPE_NODE_DELETED,
   CHANGE_TYPE_INPUT_EVENT,
-  CHANGE_TYPE_POINTER_WATCHER_EVENT,
+  CHANGE_TYPE_OBSERVED_EVENT,
   CHANGE_TYPE_PROPERTY_CHANGED,
   CHANGE_TYPE_FOCUSED,
   CHANGE_TYPE_CURSOR_CHANGED,
@@ -45,8 +46,8 @@ enum ChangeType {
   CHANGE_TYPE_ON_TOP_LEVEL_CREATED,
   CHANGE_TYPE_OPACITY,
   CHANGE_TYPE_REQUEST_CLOSE,
-  CHANGE_TYPE_SURFACE_CHANGED,
   CHANGE_TYPE_TRANSFORM_CHANGED,
+  CHANGE_TYPE_DISPLAY_CHANGED,
   CHANGE_TYPE_DRAG_DROP_START,
   CHANGE_TYPE_DRAG_ENTER,
   CHANGE_TYPE_DRAG_OVER,
@@ -55,6 +56,7 @@ enum ChangeType {
   CHANGE_TYPE_DRAG_DROP_DONE,
   CHANGE_TYPE_TOPMOST_WINDOW_CHANGED,
   CHANGE_TYPE_ON_PERFORM_DRAG_DROP_COMPLETED,
+  CHANGE_TYPE_ON_OCCLUSION_STATE_CHANGED,
 };
 
 // TODO(sky): consider nuking and converting directly to WindowData.
@@ -69,9 +71,9 @@ struct TestWindow {
   // Returns a string description that includes visible and drawn.
   std::string ToString2() const;
 
-  Id parent_id;
-  Id window_id;
-  bool visible;
+  Id parent_id = 0;
+  Id window_id = 0;
+  bool visible = false;
   gfx::Rect bounds;
   std::map<std::string, std::vector<uint8_t>> properties;
 };
@@ -83,35 +85,33 @@ struct Change {
   Change(const Change& other);
   ~Change();
 
-  ChangeType type;
+  ChangeType type = CHANGE_TYPE_EMBED;
   std::vector<TestWindow> windows;
-  Id window_id;
-  Id window_id2;
-  Id window_id3;
+  Id window_id = 0;
+  Id window_id2 = 0;
+  Id window_id3 = 0;
   gfx::Rect bounds;
   gfx::Rect bounds2;
   viz::FrameSinkId frame_sink_id;
   base::Optional<viz::LocalSurfaceId> local_surface_id;
-  int32_t event_action;
-  bool matches_pointer_watcher;
+  int32_t event_action = 0;
+  bool matches_event_observer = false;
   std::string embed_url;
   mojom::OrderDirection direction;
-  bool bool_value;
-  float float_value;
+  bool bool_value = false;
+  float float_value = 0.f;
   std::string property_key;
   std::string property_value;
-  ui::CursorType cursor_type;
-  uint32_t change_id;
-  viz::SurfaceId surface_id;
-  gfx::Size frame_size;
-  float device_scale_factor;
+  ui::CursorType cursor_type = ui::CursorType::kNull;
+  uint32_t change_id = 0u;
   gfx::Transform transform;
   // Set in OnWindowInputEvent() if the event is a KeyEvent.
   base::flat_map<std::string, std::vector<uint8_t>> key_event_properties;
-  int64_t display_id;
+  int64_t display_id = 0;
   gfx::Point location1;
   base::flat_map<std::string, std::vector<uint8_t>> drag_data;
-  uint32_t drag_drop_action;
+  uint32_t drag_drop_action = 0u;
+  base::Optional<mojom::OcclusionState> occlusion_state;
 };
 
 // The ChangeToDescription related functions convert a Change into a string.
@@ -146,6 +146,8 @@ void WindowDatasToTestWindows(const std::vector<mojom::WindowDataPtr>& data,
                               std::vector<TestWindow>* test_windows);
 
 // Returns true if |changes| contains a Change matching |change_description|.
+// |change_description| is a pattern which should be compared with
+// base::MatchPattern (see base/strings/pattern.h for the details).
 bool ContainsChange(const std::vector<Change>& changes,
                     const std::string& change_description);
 
@@ -200,11 +202,13 @@ class TestChangeTracker {
   void OnWindowDeleted(Id window_id);
   void OnWindowVisibilityChanged(Id window_id, bool visible);
   void OnWindowOpacityChanged(Id window_id, float opacity);
+  void OnWindowDisplayChanged(Id window_id, int64_t display_id);
   void OnWindowParentDrawnStateChanged(Id window_id, bool drawn);
   void OnWindowInputEvent(Id window_id,
                           const ui::Event& event,
                           int64_t display_id,
-                          bool matches_pointer_watcher);
+                          bool matches_event_observer);
+  void OnObservedInputEvent(const ui::Event& event);
   void OnPointerEventObserved(const ui::Event& event, Id window_id);
   void OnWindowSharedPropertyChanged(
       Id window_id,
@@ -216,8 +220,6 @@ class TestChangeTracker {
   void OnTopLevelCreated(uint32_t change_id,
                          mojom::WindowDataPtr window_data,
                          bool drawn);
-  void OnWindowSurfaceChanged(Id window_id,
-                              const viz::SurfaceInfo& surface_info);
   void OnDragDropStart(
       const base::flat_map<std::string, std::vector<uint8_t>>& drag_data);
   void OnDragEnter(Id window_id);
@@ -230,6 +232,8 @@ class TestChangeTracker {
                                   bool success,
                                   uint32_t action_taken);
   void RequestClose(Id window_id);
+  void OnOcclusionStateChanged(Id window_id,
+                               mojom::OcclusionState occlusion_state);
 
  private:
   void AddChange(const Change& change);

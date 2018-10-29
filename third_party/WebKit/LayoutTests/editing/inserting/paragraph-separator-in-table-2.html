@@ -1,6 +1,8 @@
 <script>
-if (window.testRunner)
-     testRunner.dumpEditingCallbacks();
+if (window.testRunner) {
+    testRunner.dumpEditingCallbacks();
+    testRunner.dumpAsLayoutWithPixelResults();
+}
 </script>
 <p>This tests InsertParagraphSeparator inside table cells.  The first cell should contain 'Cell' and a newline, and the second cell should contain 'Two'.</p>
 

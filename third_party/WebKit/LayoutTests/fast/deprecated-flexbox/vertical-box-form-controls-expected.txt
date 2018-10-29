@@ -1,11 +1,6 @@
-
-
-
-
 Check if form controls in vertical flex box will stretch horizontally when rendered as box as opposed to inline-box. If you see any red, then the test has failed.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 Button
 PASS element.offsetHeight is 100

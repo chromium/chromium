@@ -15,3 +15,4 @@ PASS: typeof childWindow.f should be undefined and is.
 PASS: 'name' in childWindow should be true and is.
 PASS: childWindow.name should be test and is.
 
+

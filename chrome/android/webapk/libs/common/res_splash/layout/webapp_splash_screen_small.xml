@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<!-- The spec offsets the center of the ImageView from the center of the screen by either 16 or
+     24dp, depending on the device type.  That's implemented here by adding a bottom margin of twice
+     that amount to the RelativeLayout, which effectively moves its center upward by the desired dp.
+ -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/webapp_splash_screen_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="@dimen/webapp_splash_offset" >
+
+    <ImageView
+        android:id="@+id/webapp_splash_screen_icon"
+        android:layout_width="@dimen/webapp_splash_small_image_size"
+        android:layout_height="@dimen/webapp_splash_small_image_size"
+        android:layout_centerInParent="true"
+        android:scaleType="center"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/webapp_splash_screen_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/webapp_splash_screen_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/webapp_splash_small_title_margin_top"
+        style="@style/WebappSplashScreenTextTheme" />
+
+</RelativeLayout>

@@ -4,7 +4,6 @@
 
 #include "ash/system/network/network_row_title_view.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/strings/string16.h"
@@ -17,10 +16,7 @@ namespace ash {
 
 namespace {
 
-const int kLineHeightTitle = 4;
-const int kLineHeightSubtitle = 3;
-// In UnifiedSystemTray, both line heights are same.
-const int kLineHeightUnified = 20;
+const int kLineHeight = 20;
 
 }  // namespace
 
@@ -32,18 +28,14 @@ NetworkRowTitleView::NetworkRowTitleView(int title_message_id)
 
   TrayPopupItemStyle title_style(TrayPopupItemStyle::FontStyle::SUB_HEADER);
   title_style.SetupLabel(title_);
-  subtitle_->SetLineHeight(features::IsSystemTrayUnifiedEnabled()
-                               ? kLineHeightUnified
-                               : kLineHeightTitle);
+  title_->SetLineHeight(kLineHeight);
   title_->SetText(l10n_util::GetStringUTF16(title_message_id));
   AddChildView(title_);
 
   TrayPopupItemStyle subtitle_style(TrayPopupItemStyle::FontStyle::SYSTEM_INFO);
   subtitle_style.SetupLabel(subtitle_);
   subtitle_->SetMultiLine(true);
-  subtitle_->SetLineHeight(features::IsSystemTrayUnifiedEnabled()
-                               ? kLineHeightUnified
-                               : kLineHeightSubtitle);
+  subtitle_->SetLineHeight(kLineHeight);
   subtitle_->SetVisible(false);
   AddChildView(subtitle_);
 }

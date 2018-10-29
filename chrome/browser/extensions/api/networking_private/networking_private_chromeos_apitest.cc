@@ -355,7 +355,7 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     content::RunAllPendingInMessageLoop();
 
     NetworkingPrivateDelegateFactory::GetInstance()->SetTestingFactory(
-        profile(), &CreateNetworkingPrivateDelegate);
+        profile(), base::BindRepeating(&CreateNetworkingPrivateDelegate));
 
     InitializeSanitizedUsername();
 

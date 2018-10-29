@@ -54,7 +54,6 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -487,8 +486,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       url_strings.swap(*create_data->url->as_strings);
 
     // Second, resolve, validate and convert them to GURLs.
-    for (std::vector<std::string>::iterator i = url_strings.begin();
-         i != url_strings.end(); ++i) {
+    for (auto i = url_strings.begin(); i != url_strings.end(); ++i) {
       GURL url = ExtensionTabUtil::ResolvePossiblyRelativeURL(*i, extension());
       if (!url.is_valid())
         return RespondNow(Error(tabs_constants::kInvalidUrlError, *i));
@@ -1271,7 +1269,6 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   // -favIconUrl
 
   // Navigate the tab to a new location if the url is different.
-  bool is_async = false;
   if (params->update_properties.url.get()) {
     std::string updated_url = *params->update_properties.url;
     if (browser->profile()->GetProfileType() == Profile::INCOGNITO_PROFILE &&
@@ -1279,7 +1276,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
       return RespondNow(Error(ErrorUtils::FormatErrorMessage(
           tabs_constants::kURLsNotAllowedInIncognitoError, updated_url)));
     }
-    if (!UpdateURL(updated_url, tab_id, &is_async, &error))
+    if (!UpdateURL(updated_url, tab_id, &error))
       return RespondNow(Error(error));
   }
 
@@ -1314,23 +1311,11 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     tab_index = tab_strip->GetIndexOfWebContents(contents);
   }
 
-  if (params->update_properties.muted.get()) {
-    TabMutedResult tab_muted_result = chrome::SetTabAudioMuted(
-        contents, *params->update_properties.muted,
-        TabMutedReason::EXTENSION, extension()->id());
-
-    switch (tab_muted_result) {
-      case TabMutedResult::SUCCESS:
-        break;
-      case TabMutedResult::FAIL_NOT_ENABLED:
-        return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-            tabs_constants::kCannotUpdateMuteDisabled,
-            base::IntToString(tab_id), ::switches::kEnableTabAudioMuting)));
-      case TabMutedResult::FAIL_TABCAPTURE:
-        return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-            tabs_constants::kCannotUpdateMuteCaptured,
-            base::IntToString(tab_id))));
-    }
+  if (params->update_properties.muted.get() &&
+      !chrome::SetTabAudioMuted(contents, *params->update_properties.muted,
+                                TabMutedReason::EXTENSION, extension()->id())) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        tabs_constants::kCannotUpdateMuteCaptured, base::IntToString(tab_id))));
   }
 
   if (params->update_properties.opener_tab_id.get()) {
@@ -1360,15 +1345,11 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
         ->SetAutoDiscardable(state);
   }
 
-  if (!is_async)
-    return RespondNow(GetResult());
-
-  return RespondLater();
+  return RespondNow(GetResult());
 }
 
 bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
                                    int tab_id,
-                                   bool* is_async,
                                    std::string* error) {
   GURL url =
       ExtensionTabUtil::ResolvePossiblyRelativeURL(url_string, extension());
@@ -1388,32 +1369,10 @@ bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
   const bool is_javascript_scheme = url.SchemeIs(url::kJavaScriptScheme);
   UMA_HISTOGRAM_BOOLEAN("Extensions.ApiTabUpdateJavascript",
                         is_javascript_scheme);
-  // JavaScript URLs can do the same kinds of things as cross-origin XHR, so
-  // we need to check host permissions before allowing them.
+  // JavaScript URLs are forbidden in chrome.tabs.update().
   if (is_javascript_scheme) {
-    if (!extension()->permissions_data()->CanAccessPage(web_contents_->GetURL(),
-                                                        tab_id, error)) {
-      return false;
-    }
-
-    TabHelper::FromWebContents(web_contents_)
-        ->script_executor()
-        ->ExecuteScript(
-            HostID(HostID::EXTENSIONS, extension_id()),
-            ScriptExecutor::JAVASCRIPT,
-            net::UnescapeURLComponent(
-                url.GetContent(),
-                net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
-                    net::UnescapeRule::PATH_SEPARATORS |
-                    net::UnescapeRule::SPACES),
-            ScriptExecutor::SINGLE_FRAME, ExtensionApiFrameIdMap::kTopFrameId,
-            ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-            ScriptExecutor::MAIN_WORLD, ScriptExecutor::DEFAULT_PROCESS, GURL(),
-            GURL(), user_gesture(), base::nullopt, ScriptExecutor::NO_RESULT,
-            base::Bind(&TabsUpdateFunction::OnExecuteCodeFinished, this));
-
-    *is_async = true;
-    return true;
+    *error = tabs_constants::kJavaScriptUrlsNotAllowedInTabsUpdate;
+    return false;
   }
 
   bool use_renderer_initiated = false;
@@ -1427,14 +1386,8 @@ bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
   load_params.is_renderer_initiated = use_renderer_initiated;
   web_contents_->GetController().LoadURLWithParams(load_params);
 
-  // The URL of a tab contents never actually changes to a JavaScript URL, so
-  // this check only makes sense in other cases.
-  if (!url.SchemeIs(url::kJavaScriptScheme)) {
-    // The URL should be present in the pending entry, though it may not be
-    // visible in the omnibox until it commits.
-    DCHECK_EQ(
-        url, web_contents_->GetController().GetPendingEntry()->GetVirtualURL());
-  }
+  DCHECK_EQ(url,
+            web_contents_->GetController().GetPendingEntry()->GetVirtualURL());
 
   return true;
 }

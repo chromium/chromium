@@ -32,10 +32,6 @@ struct StructTraits<media::mojom::VideoDecoderConfigDataView,
     return input.format();
   }
 
-  static media::ColorSpace color_space(const media::VideoDecoderConfig& input) {
-    return input.color_space();
-  }
-
   static const gfx::Size& coded_size(const media::VideoDecoderConfig& input) {
     return input.coded_size();
   }

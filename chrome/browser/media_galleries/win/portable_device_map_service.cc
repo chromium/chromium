@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "base/threading/thread_restrictions.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {
@@ -24,7 +23,6 @@ PortableDeviceMapService* PortableDeviceMapService::GetInstance() {
 void PortableDeviceMapService::AddPortableDevice(
     const base::string16& device_location,
     IPortableDevice* device) {
-  base::AssertBlockingAllowed();
   DCHECK(!device_location.empty());
   DCHECK(device);
   base::AutoLock lock(lock_);
@@ -43,7 +41,6 @@ void PortableDeviceMapService::MarkPortableDeviceForDeletion(
 
 void PortableDeviceMapService::RemovePortableDevice(
     const base::string16& device_location) {
-  base::AssertBlockingAllowed();
   DCHECK(!device_location.empty());
   base::AutoLock lock(lock_);
   PortableDeviceMap::const_iterator it = device_map_.find(device_location);
@@ -53,7 +50,6 @@ void PortableDeviceMapService::RemovePortableDevice(
 
 IPortableDevice* PortableDeviceMapService::GetPortableDevice(
     const base::string16& device_location) {
-  base::AssertBlockingAllowed();
   DCHECK(!device_location.empty());
   base::AutoLock lock(lock_);
   PortableDeviceMap::const_iterator it = device_map_.find(device_location);

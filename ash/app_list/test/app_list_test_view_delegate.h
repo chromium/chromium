@@ -66,6 +66,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   void ViewShown(int64_t display_id) override {}
   void DismissAppList() override;
   void ViewClosing() override {}
+  void ViewClosed() override {}
   void GetWallpaperProminentColors(
       GetWallpaperProminentColorsCallback callback) override {}
   void ActivateItem(const std::string& id, int event_flags) override;
@@ -76,9 +77,9 @@ class AppListTestViewDelegate : public AppListViewDelegate,
                                int event_flags) override {}
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
                                 ui::MenuSourceType source_type) override;
-  bool ProcessHomeLauncherGesture(ui::EventType type,
+  bool ProcessHomeLauncherGesture(ui::GestureEvent* event,
                                   const gfx::Point& screen_location) override;
-  bool IsSwipingUpOnShelf() override;
+  bool CanProcessEventsOnApplistViews() override;
   ws::WindowService* GetWindowService() override;
 
   // Do a bulk replacement of the items in the model.

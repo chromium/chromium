@@ -15,30 +15,31 @@
   <link rel="stylesheet" type="text/css" href="css/arrow_box.css">
   <link rel="stylesheet" type="text/css" href="css/cast_menu.css">
 
-  <link rel="import" href="chrome://resources/polymer/v1_0/paper-slider/paper-slider.html">
   <link rel="import" href="chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_icon_button.html">
-
-  <style is="custom-style">
-    files-icon-button {
-      --files-ripple: {
-        background-color: black;
-      };
-      --files-toggle-ripple: {
-        background-color: black;
-      };
-      --files-toggle-ripple-activated: {
-        background-color: black;
-      };
-    }
-    paper-slider {
-      --paper-slider-knob-color: rgb(64, 138, 241);
-      --paper-slider-active-color: rgb(66, 133, 244);
-    }
-  </style>
+  <link rel="import" href="chrome://resources/polymer/v1_0/paper-slider/paper-slider.html">
 
   <script src="js/video_player_scripts.js"></script>
 </head>
 <body>
+  <custom-style>
+    <style is="custom-style">
+      files-icon-button {
+        --files-ripple: {
+          background-color: black;
+        };
+        --files-toggle-ripple: {
+          background-color: black;
+        };
+        --files-toggle-ripple-activated: {
+          background-color: black;
+        };
+      }
+      paper-slider {
+        --paper-slider-knob-color: rgb(64, 138, 241);
+        --paper-slider-active-color: rgb(66, 133, 244);
+      }
+    </style>
+  </custom-style>
   <div id="video-player" tools>
     <cr-menu id='cast-menu' class='cast-menu tool'
           i18n-values="playon-text:VIDEO_PLAYER_PLAY_ON"></cr-menu>

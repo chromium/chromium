@@ -9,7 +9,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_loop.h"
-#include "base/threading/thread.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/wrapped_window_proc.h"
 #include "gpu/ipc/common/gpu_messages.h"
@@ -21,47 +20,9 @@
 
 namespace gpu {
 
-// This owns the thread and contains data that's shared between the threads.
-struct SharedData {
-  SharedData() : thread("Window owner thread") {}
-
-  base::Lock rect_lock;
-  gfx::Rect rect_to_clear;
-
-  base::Thread thread;
-};
-
 namespace {
 
 ATOM g_window_class;
-
-// This runs on the window owner thread.
-LRESULT CALLBACK IntermediateWindowProc(HWND window,
-                                        UINT message,
-                                        WPARAM w_param,
-                                        LPARAM l_param) {
-  switch (message) {
-    case WM_ERASEBKGND:
-      // Prevent windows from erasing the background.
-      return 1;
-    case WM_PAINT:
-      PAINTSTRUCT paint;
-      if (BeginPaint(window, &paint)) {
-        SharedData* shared_data =
-            reinterpret_cast<SharedData*>(gfx::GetWindowUserData(window));
-        DCHECK(shared_data);
-        {
-          base::AutoLock lock(shared_data->rect_lock);
-          shared_data->rect_to_clear.Union(gfx::Rect(paint.rcPaint));
-        }
-
-        EndPaint(window, &paint);
-      }
-      return 0;
-    default:
-      return DefWindowProc(window, message, w_param, l_param);
-  }
-}
 
 // This runs on the window owner thread.
 void InitializeWindowClass() {
@@ -71,9 +32,9 @@ void InitializeWindowClass() {
   WNDCLASSEX intermediate_class;
   base::win::InitializeWindowClass(
       L"Intermediate D3D Window",
-      &base::win::WrappedWindowProc<IntermediateWindowProc>, CS_OWNDC, 0, 0,
-      nullptr, reinterpret_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)), nullptr,
-      nullptr, nullptr, &intermediate_class);
+      &base::win::WrappedWindowProc<::DefWindowProc>, CS_OWNDC, 0, 0, nullptr,
+      reinterpret_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)), nullptr, nullptr,
+      nullptr, &intermediate_class);
   g_window_class = RegisterClassEx(&intermediate_class);
   if (!g_window_class) {
     LOG(ERROR) << "RegisterClass failed.";
@@ -122,7 +83,6 @@ class HiddenPopupWindow : public gfx::WindowImpl {
 // This runs on the window owner thread.
 void CreateWindowsOnThread(const gfx::Size& size,
                            base::WaitableEvent* event,
-                           SharedData* shared_data,
                            HWND* child_window,
                            HWND* parent_window) {
   InitializeWindowClass();
@@ -131,20 +91,25 @@ void CreateWindowsOnThread(const gfx::Size& size,
   // Create hidden parent window on the current thread.
   *parent_window = HiddenPopupWindow::Create();
   // Create child window.
+  // WS_EX_NOPARENTNOTIFY and WS_EX_LAYERED make the window transparent for
+  // input. WS_EX_NOREDIRECTIONBITMAP avoids allocating a
+  // bitmap that would otherwise be allocated with WS_EX_LAYERED, the bitmap is
+  // only necessary if using Gdi objects with the window.
   HWND window = CreateWindowEx(
-      WS_EX_NOPARENTNOTIFY, reinterpret_cast<wchar_t*>(g_window_class), L"",
+      WS_EX_NOPARENTNOTIFY | WS_EX_LAYERED | WS_EX_TRANSPARENT |
+          WS_EX_NOREDIRECTIONBITMAP,
+      reinterpret_cast<wchar_t*>(g_window_class), L"",
       WS_CHILDWINDOW | WS_DISABLED | WS_VISIBLE, 0, 0, size.width(),
       size.height(), *parent_window, nullptr, nullptr, nullptr);
   CHECK(window);
   *child_window = window;
-  gfx::SetWindowUserData(window, shared_data);
   event->Signal();
 }
 
 // This runs on the main thread after the window was destroyed on window owner
 // thread.
-void DestroySharedData(std::unique_ptr<SharedData> shared_data) {
-  shared_data->thread.Stop();
+void DestroyThread(std::unique_ptr<base::Thread> thread) {
+  thread->Stop();
 }
 
 // This runs on the window owner thread.
@@ -164,10 +129,9 @@ bool ChildWindowWin::Initialize() {
   if (window_)
     return true;
 
-  shared_data_ = std::make_unique<SharedData>();
-
+  thread_ = std::make_unique<base::Thread>("Window owner thread");
   base::Thread::Options options(base::MessageLoop::TYPE_UI, 0);
-  shared_data_->thread.StartWithOptions(options);
+  thread_->StartWithOptions(options);
 
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -175,44 +139,30 @@ bool ChildWindowWin::Initialize() {
   RECT window_rect;
   GetClientRect(parent_window_, &window_rect);
 
-  shared_data_->thread.task_runner()->PostTask(
+  thread_->task_runner()->PostTask(
       FROM_HERE,
       base::Bind(&CreateWindowsOnThread, gfx::Rect(window_rect).size(), &event,
-                 shared_data_.get(), &window_, &initial_parent_window_));
+                 &window_, &initial_parent_window_));
   event.Wait();
 
   delegate_->DidCreateAcceleratedSurfaceChildWindow(parent_window_, window_);
   return true;
 }
 
-void ChildWindowWin::ClearInvalidContents() {
-  base::AutoLock lock(shared_data_->rect_lock);
-  if (!shared_data_->rect_to_clear.IsEmpty()) {
-    base::win::ScopedGetDC dc(window_);
-
-    RECT rect = shared_data_->rect_to_clear.ToRECT();
-
-    // DirectComposition composites with the contents under the SwapChain,
-    // so ensure that's cleared. GDI treats black as transparent.
-    FillRect(dc, &rect, reinterpret_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
-    shared_data_->rect_to_clear = gfx::Rect();
-  }
-}
-
 ChildWindowWin::~ChildWindowWin() {
-  if (shared_data_) {
-    scoped_refptr<base::TaskRunner> task_runner =
-        shared_data_->thread.task_runner();
+  if (thread_) {
+    scoped_refptr<base::TaskRunner> task_runner = thread_->task_runner();
     task_runner->PostTaskAndReply(
         FROM_HERE,
-        base::Bind(&DestroyWindowsOnThread, window_, initial_parent_window_),
-        base::Bind(&DestroySharedData, base::Passed(std::move(shared_data_))));
+        base::BindOnce(&DestroyWindowsOnThread, window_,
+                       initial_parent_window_),
+        base::BindOnce(&DestroyThread, base::Passed(std::move(thread_))));
   }
 }
 
 scoped_refptr<base::TaskRunner> ChildWindowWin::GetTaskRunnerForTesting() {
-  DCHECK(shared_data_);
-  return shared_data_->thread.task_runner();
+  DCHECK(thread_);
+  return thread_->task_runner();
 }
 
 }  // namespace gpu

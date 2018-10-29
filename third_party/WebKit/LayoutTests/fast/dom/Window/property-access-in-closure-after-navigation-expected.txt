@@ -2,7 +2,6 @@ Test that an inner global captured in a closure acts as if its creating context 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window is self
 PASS window is frames
 PASS parent is top

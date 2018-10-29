@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/url_request/test_url_request_interceptor.h"
@@ -99,7 +100,7 @@ class ImageWriterWriteFromUrlOperationTest : public ImageWriterUnitTestBase {
 
     // Turn on interception and set up our dummy file.
     get_interceptor_.reset(new GetInterceptor(
-        BrowserThread::GetTaskRunnerForThread(BrowserThread::IO),
+        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}),
         base::CreateTaskRunnerWithTraits(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})));

@@ -57,7 +57,7 @@ class Cache {
     base::AutoLock auto_lock(lock_);
 
     // If we find a cached set of rules, return a pointer to the data.
-    CompiledRuleCache::iterator cache_iter = data_.find(region);
+    auto cache_iter = data_.find(region);
     if (cache_iter != data_.end())
       return &cache_iter->second;
 

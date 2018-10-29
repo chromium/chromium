@@ -30,7 +30,12 @@ namespace blink {
 // https://crbug.com/753605
 class PLATFORM_EXPORT VideoFrameResourceProvider {
  public:
-  explicit VideoFrameResourceProvider(const cc::LayerTreeSettings&);
+  // |use_sync_primitives| controls whether we ScopedAllowBaseSyncPrimitives
+  // when calling into |resource_updater_|.  It waits, but the cc impl thread
+  // doesn't seem to mind.  It does mind, however, the ScopedAllow.  When this
+  // is run on the media thread, we need to ScopedAllow first.
+  VideoFrameResourceProvider(const cc::LayerTreeSettings&,
+                             bool use_sync_primitives);
 
   virtual ~VideoFrameResourceProvider();
 
@@ -59,6 +64,7 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
   viz::ContextProvider* context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
   std::unique_ptr<media::VideoResourceUpdater> resource_updater_;
+  bool use_sync_primitives_ = false;
 };
 
 }  // namespace blink

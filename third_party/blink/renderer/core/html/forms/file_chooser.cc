@@ -28,12 +28,17 @@
 
 #include "third_party/blink/renderer/core/html/forms/file_chooser.h"
 
+#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/page/chrome_client_impl.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 
 namespace blink {
+
+using mojom::blink::FileChooserFileInfo;
+using mojom::blink::FileChooserFileInfoPtr;
+using mojom::blink::NativeFileInfo;
 
 FileChooserClient::~FileChooserClient() = default;
 
@@ -83,24 +88,21 @@ bool FileChooser::OpenFileChooser(ChromeClientImpl& chrome_client_impl) {
 void FileChooser::DidChooseFile(const WebVector<WebString>& file_names) {
   FileChooserFileInfoList file_info;
   for (size_t i = 0; i < file_names.size(); ++i)
-    file_info.push_back(FileChooserFileInfo(file_names[i]));
+    file_info.push_back(CreateFileChooserFileInfoNative(file_names[i]));
   ChooseFiles(file_info);
 }
 
 void FileChooser::DidChooseFile(const WebVector<SelectedFileInfo>& files) {
   FileChooserFileInfoList file_info;
   for (size_t i = 0; i < files.size(); ++i) {
+    DCHECK(!files[i].is_directory);
     if (files[i].file_system_url.IsEmpty()) {
-      file_info.push_back(
-          FileChooserFileInfo(files[i].path, files[i].display_name));
+      file_info.push_back(FileChooserFileInfo::NewNativeFile(
+          NativeFileInfo::New(files[i].file_path, files[i].display_name)));
     } else {
-      FileMetadata metadata;
-      metadata.modification_time = files[i].modification_time * kMsPerSecond;
-      metadata.length = files[i].length;
-      metadata.type = files[i].is_directory ? FileMetadata::kTypeDirectory
-                                            : FileMetadata::kTypeFile;
-      file_info.push_back(
-          FileChooserFileInfo(files[i].file_system_url, metadata));
+      file_info.push_back(CreateFileChooserFileInfoFileSystem(
+          files[i].file_system_url, files[i].modification_time,
+          files[i].length));
     }
   }
   ChooseFiles(file_info);
@@ -111,7 +113,16 @@ void FileChooser::ChooseFiles(const FileChooserFileInfoList& files) {
   if (params_.selected_files.size() == files.size()) {
     bool was_changed = false;
     for (unsigned i = 0; i < files.size(); ++i) {
-      if (String(params_.selected_files[i]) != files[i].path) {
+      // TODO(tkent): If a file system URL was already selected, and new
+      // chooser session selects the same one, a |change| event is
+      // dispatched unexpectedly.
+      // |selected_files| is created by FileList::
+      // PathsForUserVisibleFiles(), and it returns File::name() for
+      // file system URLs. Comparing File::name() doesn't make
+      // sense. We should compare file system URLs.
+      if (!files[i]->is_native_file() ||
+          params_.selected_files[i] !=
+              FilePathToWebString(files[i]->get_native_file()->file_path)) {
         was_changed = true;
         break;
       }
@@ -134,6 +145,21 @@ void FileChooser::DidCloseChooser() {
       chrome_client_impl_->UnregisterPopupOpeningObserver(client_);
   }
   Release();
+}
+
+FileChooserFileInfoPtr CreateFileChooserFileInfoNative(
+    const String& path,
+    const String& display_name) {
+  return FileChooserFileInfo::NewNativeFile(
+      NativeFileInfo::New(StringToFilePath(path), display_name));
+}
+
+FileChooserFileInfoPtr CreateFileChooserFileInfoFileSystem(
+    const KURL& url,
+    base::Time modification_time,
+    int64_t length) {
+  return FileChooserFileInfo::NewFileSystem(
+      mojom::blink::FileSystemFileInfo::New(url, modification_time, length));
 }
 
 }  // namespace blink

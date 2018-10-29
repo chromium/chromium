@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -22,10 +23,6 @@ class ScriptState;
 // implemented with V8 Extras.
 // The stream will be immediately locked by the consumer and will never be
 // released.
-//
-// The ReadableStreamReader handle held in a ReadableStreamDataConsumerHandle
-// is weak. A user must guarantee that the ReadableStreamReader object is kept
-// alive appropriately.
 class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   USING_PRE_FINALIZER(ReadableStreamBytesConsumer, Dispose);
 
@@ -55,11 +52,7 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   void OnRejected();
   void Notify();
 
-  // |m_reader| is a weak persistent. It should be kept alive by someone
-  // outside of ReadableStreamBytesConsumer.
-  // Holding a ScopedPersistent here is safe in terms of cross-world wrapper
-  // leakage because we read only Uint8Array chunks from the reader.
-  ScopedPersistent<v8::Value> reader_;
+  TraceWrapperV8Reference<v8::Value> reader_;
   Member<ScriptState> script_state_;
   Member<BytesConsumer::Client> client_;
   Member<DOMUint8Array> pending_buffer_;

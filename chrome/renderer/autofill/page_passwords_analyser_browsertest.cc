@@ -190,7 +190,7 @@ TEST_F(PagePasswordsAnalyserTest, ElementsWithDuplicateIds) {
   LoadTestCase(kElementsWithDuplicateIds);
 
   Expect("Found 2 elements with non-unique id #duplicate:",
-         PageFormAnalyserLogger::kError, {0, 1});
+         PageFormAnalyserLogger::kWarning, {0, 1});
 
   RunTestCase();
 }

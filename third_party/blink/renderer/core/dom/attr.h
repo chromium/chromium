@@ -79,13 +79,13 @@ class CORE_EXPORT Attr final : public Node {
 
   // Attr wraps either an element/name, or a name/value pair (when it's a
   // standalone Node.)
-  // Note that m_name is always set, but m_element/m_standaloneValue may be
-  // null.
+  // Note that name_ is always set, but element_ /
+  // standalone_value_or_attached_local_name_ may be null.
   TraceWrapperMember<Element> element_;
   QualifiedName name_;
   // Holds the value if it is a standalone Node, or the local name of the
   // attribute it is attached to on an Element. The latter may (letter case)
-  // differ from m_name's local name. As these two modes are non-overlapping,
+  // differ from name_'s local name. As these two modes are non-overlapping,
   // use a single field.
   AtomicString standalone_value_or_attached_local_name_;
 };

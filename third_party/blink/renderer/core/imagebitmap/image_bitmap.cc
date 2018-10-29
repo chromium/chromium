@@ -30,7 +30,7 @@ namespace blink {
 constexpr const char* kImageOrientationFlipY = "flipY";
 constexpr const char* kImageBitmapOptionNone = "none";
 constexpr const char* kImageBitmapOptionDefault = "default";
-constexpr const char* kImageBitmapPixelFormat8888 = "8-8-8-8";
+constexpr const char* kImageBitmapPixelFormatUint8Name = "uint8";
 constexpr const char* kImageBitmapOptionPremultiply = "premultiply";
 constexpr const char* kImageBitmapOptionResizeQualityHigh = "high";
 constexpr const char* kImageBitmapOptionResizeQualityMedium = "medium";
@@ -71,8 +71,8 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions& options,
     DCHECK(options.imageOrientation() == kImageBitmapOptionNone);
   }
 
-  if (options.imagePixelFormat() == kImageBitmapPixelFormat8888)
-    parsed_options.pixel_format = kImageBitmapPixelFormat_8888;
+  if (options.imagePixelFormat() == kImageBitmapPixelFormatUint8Name)
+    parsed_options.pixel_format = kImageBitmapPixelFormat_Uint8;
 
   if (options.premultiplyAlpha() == kImageBitmapOptionNone) {
     parsed_options.premultiply_alpha = false;
@@ -96,7 +96,8 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions& options,
     parsed_options.color_params.SetCanvasPixelFormat(kF16CanvasPixelFormat);
     if (options.colorSpaceConversion() ==
         kLinearRGBImageBitmapColorSpaceConversion) {
-      parsed_options.color_params.SetCanvasColorSpace(kSRGBCanvasColorSpace);
+      parsed_options.color_params.SetCanvasColorSpace(
+          kLinearRGBCanvasColorSpace);
     } else if (options.colorSpaceConversion() ==
                kP3ImageBitmapColorSpaceConversion) {
       parsed_options.color_params.SetCanvasColorSpace(kP3CanvasColorSpace);
@@ -177,32 +178,10 @@ bool DstBufferSizeHasOverflow(const ImageBitmap::ParsedOptions& options) {
   return false;
 }
 
-SkImageInfo GetSkImageInfo(sk_sp<SkImage> skia_image) {
-  SkColorType color_type = kN32_SkColorType;
-  sk_sp<SkColorSpace> color_space = skia_image->refColorSpace();
-
-  if (skia_image->colorType() == kRGBA_F16_SkColorType ||
-      (skia_image->colorSpace() && skia_image->colorSpace()->gammaIsLinear())) {
-    color_type = kRGBA_F16_SkColorType;
-  }
-
-  if (color_type == kN32_SkColorType && skia_image->colorSpace() &&
-      skia_image->colorSpace()->isSRGB()) {
-    // Skia is in the middle of transitioning this scenario from meaning
-    // linearly blended sRGB 8888 to non-linearly blended sRGB 8888.  While the
-    // transition is happening, we'll strip the color space to force
-    // non-linearly blended sRGB 8888.  (This nullptr will continue to mean
-    // non-linearly blended sRGB 8888 after the transition too,  so there's
-    // really no harm leaving this indefinitely.)
-    color_space.reset(nullptr);
-  }
-  return SkImageInfo::Make(skia_image->width(), skia_image->height(),
-                           color_type, skia_image->alphaType(),
-                           std::move(color_space));
-}
-
-SkImageInfo GetSkImageInfo(const scoped_refptr<StaticBitmapImage>& image) {
-  return GetSkImageInfo(image->PaintImageForCurrentFrame().GetSkImage());
+SkImageInfo GetSkImageInfo(const scoped_refptr<StaticBitmapImage>& input) {
+  auto image = input->PaintImageForCurrentFrame().GetSkImage();
+  return SkImageInfo::Make(image->width(), image->height(), image->colorType(),
+                           image->alphaType(), image->refColorSpace());
 }
 
 // This function results in a readback due to using SkImage::readPixels().
@@ -369,7 +348,7 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
           sk_image.get(),
           SkRect::MakeWH(parsed_options.resize_width,
                          parsed_options.resize_height),
-          &paint, SkCanvas::SrcRectConstraint::kStrict_SrcRectConstraint);
+          &paint);
       resized_sk_image = surface->makeImageSnapshot();
     }
   }
@@ -410,8 +389,7 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
 scoped_refptr<StaticBitmapImage> ApplyColorSpaceConversion(
     scoped_refptr<StaticBitmapImage>&& image,
     ImageBitmap::ParsedOptions& options) {
-  sk_sp<SkColorSpace> color_space =
-      options.color_params.GetSkColorSpaceForSkSurfaces();
+  sk_sp<SkColorSpace> color_space = options.color_params.GetSkColorSpace();
   SkColorType color_type = kN32_SkColorType;
   sk_sp<SkImage> sk_image = image->PaintImageForCurrentFrame().GetSkImage();
   // If we should preserve color precision, don't lose it in color space
@@ -446,8 +424,8 @@ scoped_refptr<StaticBitmapImage> GetImageWithPixelFormat(
     ImageBitmapPixelFormat pixel_format) {
   if (pixel_format == kImageBitmapPixelFormat_Default)
     return std::move(image);
-  // If the the image is not half float backed, default and 8-8-8-8 image bitmap
-  // pixel formats result in the same 8-8-8-8 backed image bitmap.
+  // If the the image is not half float backed, default and uint8 image bitmap
+  // pixel formats result in the same uint8 backed image bitmap.
   sk_sp<SkImage> skia_image = image->PaintImageForCurrentFrame().GetSkImage();
   if (skia_image->colorType() != kRGBA_F16_SkColorType)
     return std::move(image);
@@ -593,6 +571,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
 
   image_->SetOriginClean(
       !image->WouldTaintOrigin(document->GetSecurityOrigin()));
+  UpdateImageBitmapMemoryUsage();
 }
 
 ImageBitmap::ImageBitmap(HTMLVideoElement* video,
@@ -628,6 +607,7 @@ ImageBitmap::ImageBitmap(HTMLVideoElement* video,
 
   image_->SetOriginClean(
       !video->WouldTaintOrigin(document->GetSecurityOrigin()));
+  UpdateImageBitmapMemoryUsage();
 }
 
 ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
@@ -653,6 +633,7 @@ ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
     return;
 
   image_->SetOriginClean(canvas->OriginClean());
+  UpdateImageBitmapMemoryUsage();
 }
 
 ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
@@ -679,6 +660,7 @@ ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
   if (!image_)
     return;
   image_->SetOriginClean(offscreen_canvas->OriginClean());
+  UpdateImageBitmapMemoryUsage();
 }
 
 ImageBitmap::ImageBitmap(const void* pixel_data,
@@ -700,6 +682,7 @@ ImageBitmap::ImageBitmap(const void* pixel_data,
   if (!image_)
     return;
   image_->SetOriginClean(is_image_bitmap_origin_clean);
+  UpdateImageBitmapMemoryUsage();
 }
 
 ImageBitmap::ImageBitmap(ImageData* data,
@@ -775,6 +758,8 @@ ImageBitmap::ImageBitmap(ImageData* data,
   // resize if up-scaling
   if (up_scaling)
     image_ = ScaleImage(std::move(image_), parsed_options);
+
+  UpdateImageBitmapMemoryUsage();
 }
 
 ImageBitmap::ImageBitmap(ImageBitmap* bitmap,
@@ -797,6 +782,7 @@ ImageBitmap::ImageBitmap(ImageBitmap* bitmap,
     return;
 
   image_->SetOriginClean(bitmap->OriginClean());
+  UpdateImageBitmapMemoryUsage();
 }
 
 ImageBitmap::ImageBitmap(scoped_refptr<StaticBitmapImage> image,
@@ -817,10 +803,12 @@ ImageBitmap::ImageBitmap(scoped_refptr<StaticBitmapImage> image,
     return;
 
   image_->SetOriginClean(origin_clean);
+  UpdateImageBitmapMemoryUsage();
 }
 
 ImageBitmap::ImageBitmap(scoped_refptr<StaticBitmapImage> image) {
   image_ = std::move(image);
+  UpdateImageBitmapMemoryUsage();
 }
 
 scoped_refptr<StaticBitmapImage> ImageBitmap::Transfer() {
@@ -830,7 +818,25 @@ scoped_refptr<StaticBitmapImage> ImageBitmap::Transfer() {
   return std::move(image_);
 }
 
-ImageBitmap::~ImageBitmap() = default;
+void ImageBitmap::UpdateImageBitmapMemoryUsage() {
+  // TODO(fserb): We should be calling GetCanvasColorParams().BytesPerPixel()
+  // but this is breaking some tests due to the repaint of the image.
+  int bytes_per_pixel = 4;
+
+  base::CheckedNumeric<int32_t> memory_usage_checked = bytes_per_pixel;
+  memory_usage_checked *= image_->width();
+  memory_usage_checked *= image_->height();
+  int32_t new_memory_usage =
+      memory_usage_checked.ValueOrDefault(std::numeric_limits<int32_t>::max());
+  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+      new_memory_usage - memory_usage_);
+  memory_usage_ = new_memory_usage;
+}
+
+ImageBitmap::~ImageBitmap() {
+  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+      -memory_usage_);
+}
 
 ImageBitmap* ImageBitmap::Create(ImageElementBase* image,
                                  base::Optional<IntRect> crop_rect,
@@ -996,7 +1002,7 @@ ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
                                      draw_dst_rect, parsed_options.flip_y);
   std::unique_ptr<ParsedOptions> passed_parsed_options =
       std::make_unique<ParsedOptions>(parsed_options);
-  BackgroundScheduler::PostOnBackgroundThread(
+  background_scheduler::PostOnBackgroundThread(
       FROM_HERE,
       CrossThreadBind(&RasterizeImageOnBackgroundThread,
                       WrapCrossThreadPersistent(resolver),

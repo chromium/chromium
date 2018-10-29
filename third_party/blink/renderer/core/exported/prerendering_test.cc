@@ -58,7 +58,7 @@ namespace blink {
 namespace {
 
 WebURL ToWebURL(const char* url) {
-  return WebURL(blink::URLTestHelpers::ToKURL(url));
+  return WebURL(blink::url_test_helpers::ToKURL(url));
 }
 
 class TestWebPrerendererClient : public WebPrerendererClient {
@@ -168,23 +168,24 @@ class PrerenderingTest : public testing::Test {
   }
 
   void Initialize(const char* base_url, const char* file_name) {
-    URLTestHelpers::RegisterMockedURLLoadFromBase(
+    url_test_helpers::RegisterMockedURLLoadFromBase(
         WebString::FromUTF8(base_url), blink::test::CoreTestDataPath(),
         WebString::FromUTF8(file_name));
     web_view_helper_.Initialize();
     web_view_helper_.GetWebView()->SetPrerendererClient(&prerenderer_client_);
 
-    FrameTestHelpers::LoadFrame(web_view_helper_.GetWebView()->MainFrameImpl(),
-                                std::string(base_url) + file_name);
+    frame_test_helpers::LoadFrame(
+        web_view_helper_.GetWebView()->MainFrameImpl(),
+        std::string(base_url) + file_name);
   }
 
   void NavigateAway() {
-    FrameTestHelpers::LoadFrame(web_view_helper_.GetWebView()->MainFrameImpl(),
-                                "about:blank");
+    frame_test_helpers::LoadFrame(
+        web_view_helper_.GetWebView()->MainFrameImpl(), "about:blank");
   }
 
   void Close() {
-    web_view_helper_.LocalMainFrame()->CollectGarbage();
+    web_view_helper_.LocalMainFrame()->CollectGarbageForTesting();
     web_view_helper_.Reset();
 
     WebCache::Clear();
@@ -227,7 +228,7 @@ class PrerenderingTest : public testing::Test {
   TestPrerenderingSupport prerendering_support_;
   TestWebPrerendererClient prerenderer_client_;
 
-  FrameTestHelpers::WebViewHelper web_view_helper_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
 }  // namespace

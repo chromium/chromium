@@ -4,10 +4,13 @@
 
 #include "components/invalidation/impl/per_user_topic_registration_manager.h"
 
+#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/message_loop/message_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "components/invalidation/impl/json_unsafe_parser.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -31,6 +34,9 @@ const char kProjectId[] = "8181035976";
 
 const char kTypeRegisteredForInvalidation[] =
     "invalidation.registered_for_invalidation";
+
+const char kActiveRegistrationToken[] =
+    "invalidation.active_registration_token";
 
 const char kFakeInstanceIdToken[] = "fake_instance_id_token";
 
@@ -59,10 +65,10 @@ network::ResourceResponseHead CreateHeadersForTest(int responce_code) {
   return head;
 }
 
-GURL FullSubscriptionUrl() {
+GURL FullSubscriptionUrl(const std::string& token) {
   return GURL(base::StringPrintf(
       "%s/v1/perusertopics/%s/rel/topics/?subscriber_token=%s",
-      kInvalidationRegistrationScope, kProjectId, kFakeInstanceIdToken));
+      kInvalidationRegistrationScope, kProjectId, token.c_str()));
 }
 
 GURL FullUnSubscriptionUrlForTopic(const std::string& topic) {
@@ -114,15 +120,18 @@ class PerUserTopicRegistrationManagerTest : public testing::Test {
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
-  void AddCorrectSubscriptionResponce() {
-    std::string response_body = R"(
-    {
-      "privateTopicName": "test-pr"
-    }
-  )";
+  void AddCorrectSubscriptionResponce(
+      const std::string& private_topic = std::string(),
+      const std::string& token = kFakeInstanceIdToken) {
+    std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
+    value->SetString("privateTopicName",
+                     private_topic.empty() ? "test-pr" : private_topic.c_str());
+    std::string serialized_response;
+    JSONStringValueSerializer serializer(&serialized_response);
+    serializer.Serialize(*value);
     url_loader_factory()->AddResponse(
-        FullSubscriptionUrl(), CreateHeadersForTest(net::HTTP_OK),
-        response_body, CreateStatusForTest(net::OK, response_body));
+        FullSubscriptionUrl(token), CreateHeadersForTest(net::HTTP_OK),
+        serialized_response, CreateStatusForTest(net::OK, serialized_response));
   }
 
   void AddCorrectUnSubscriptionResponceForTopic(const std::string& topic) {
@@ -155,7 +164,8 @@ TEST_F(PerUserTopicRegistrationManagerTest,
   std::string response_body;
 
   url_loader_factory()->AddResponse(
-      FullSubscriptionUrl(), CreateHeadersForTest(net::HTTP_OK), response_body,
+      FullSubscriptionUrl(kFakeInstanceIdToken),
+      CreateHeadersForTest(net::HTTP_OK), response_body,
       CreateStatusForTest(net::OK, response_body));
 
   per_user_topic_registration_manager->UpdateRegisteredTopics(
@@ -231,6 +241,57 @@ TEST_F(PerUserTopicRegistrationManagerTest,
     const base::Value* private_topic_value =
         topics->FindKeyOfType(id, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
+  }
+}
+
+TEST_F(PerUserTopicRegistrationManagerTest,
+       ShouldDropSavedTopicsOnTokenChange) {
+  TopicSet ids = GetSequenceOfTopics(kInvalidationObjectIdsCount);
+
+  auto per_user_topic_registration_manager = BuildRegistrationManager();
+
+  EXPECT_TRUE(per_user_topic_registration_manager->GetRegisteredIds().empty());
+
+  AddCorrectSubscriptionResponce("old-token-topic");
+
+  per_user_topic_registration_manager->UpdateRegisteredTopics(
+      ids, kFakeInstanceIdToken);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(ids, per_user_topic_registration_manager->GetRegisteredIds());
+
+  for (const auto& id : ids) {
+    const base::DictionaryValue* topics =
+        pref_service()->GetDictionary(kTypeRegisteredForInvalidation);
+    const base::Value* private_topic_value =
+        topics->FindKeyOfType(id, base::Value::Type::STRING);
+    ASSERT_NE(private_topic_value, nullptr);
+    std::string private_topic;
+    private_topic_value->GetAsString(&private_topic);
+    EXPECT_EQ(private_topic, "old-token-topic");
+  }
+
+  EXPECT_EQ(kFakeInstanceIdToken,
+            pref_service()->GetString(kActiveRegistrationToken));
+
+  std::string token = "new-fake-token";
+  AddCorrectSubscriptionResponce("new-token-topic", token);
+
+  per_user_topic_registration_manager->UpdateRegisteredTopics(ids, token);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(token, pref_service()->GetString(kActiveRegistrationToken));
+  EXPECT_EQ(ids, per_user_topic_registration_manager->GetRegisteredIds());
+
+  for (const auto& id : ids) {
+    const base::DictionaryValue* topics =
+        pref_service()->GetDictionary(kTypeRegisteredForInvalidation);
+    const base::Value* private_topic_value =
+        topics->FindKeyOfType(id, base::Value::Type::STRING);
+    ASSERT_NE(private_topic_value, nullptr);
+    std::string private_topic;
+    private_topic_value->GetAsString(&private_topic);
+    EXPECT_EQ(private_topic, "new-token-topic");
   }
 }
 

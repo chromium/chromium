@@ -6,6 +6,7 @@
 iframe = document.querySelector('iframe');
 iframe.contentDocument.onselectstart = () => iframe.remove();
 
-test(() => iframe.contentDocument.execCommand('selectAll'),
-     'Should not crash if selectstart event handler detaches frame');
+test(() => {
+  iframe.contentDocument.execCommand('selectAll');
+}, 'Should not crash if selectstart event handler detaches frame');
 </script>

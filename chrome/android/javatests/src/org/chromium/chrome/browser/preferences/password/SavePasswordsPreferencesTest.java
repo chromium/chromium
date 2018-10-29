@@ -72,6 +72,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.IntStringCallback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
@@ -92,6 +93,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -128,13 +130,13 @@ public class SavePasswordsPreferencesTest {
 
         // The following three data members are set once {@link #serializePasswords()} is called.
         @Nullable
-        private Callback<Integer> mExportSuccessCallback;
+        private IntStringCallback mExportSuccessCallback;
 
         @Nullable
         private Callback<String> mExportErrorCallback;
 
         @Nullable
-        private String mExportFileName;
+        private String mExportTargetPath;
 
         public void setSavedPasswords(ArrayList<SavedPasswordEntry> savedPasswords) {
             mSavedPasswords = savedPasswords;
@@ -144,7 +146,7 @@ public class SavePasswordsPreferencesTest {
             mSavedPasswordExeptions = savedPasswordExceptions;
         }
 
-        public Callback<Integer> getExportSuccessCallback() {
+        public IntStringCallback getExportSuccessCallback() {
             return mExportSuccessCallback;
         }
 
@@ -152,8 +154,8 @@ public class SavePasswordsPreferencesTest {
             return mExportErrorCallback;
         }
 
-        public String getExportFileName() {
-            return mExportFileName;
+        public String getExportTargetPath() {
+            return mExportTargetPath;
         }
 
         /**
@@ -197,11 +199,11 @@ public class SavePasswordsPreferencesTest {
         }
 
         @Override
-        public void serializePasswords(String targetPath, Callback<Integer> successCallback,
+        public void serializePasswords(String targetPath, IntStringCallback successCallback,
                 Callback<String> errorCallback) {
             mExportSuccessCallback = successCallback;
             mExportErrorCallback = errorCallback;
-            mExportFileName = targetPath;
+            mExportTargetPath = targetPath;
         }
     }
 
@@ -398,6 +400,17 @@ public class SavePasswordsPreferencesTest {
             Thread.sleep(100);
     }
 
+    /**
+     * Create a temporary file in the cache sub-directory for exported passwords, which the test can
+     * try to use for sharing.
+     * @return The {@link File} handle for such temporary file.
+     */
+    private File createFakeExportedPasswordsFile() throws IOException {
+        File passwordsDir = new File(ExportFlow.getTargetDirectory());
+        // Ensure that the directory exists.
+        passwordsDir.mkdir();
+        return File.createTempFile("test", ".csv", passwordsDir);
+    }
 
     /**
      * Ensure that resetting of empty passwords list works.
@@ -599,8 +612,8 @@ public class SavePasswordsPreferencesTest {
         Espresso.onView(withText(R.string.save_password_preferences_export_action_title))
                 .perform(click());
 
-        File exportPath = new File(mHandler.getExportFileName());
-        Assert.assertTrue(exportPath.canRead());
+        Assert.assertNotNull(mHandler.getExportTargetPath());
+        Assert.assertFalse(mHandler.getExportTargetPath().isEmpty());
     }
 
     /**
@@ -839,9 +852,9 @@ public class SavePasswordsPreferencesTest {
         Intents.init();
 
         reauthenticateAndRequestExport(preferences);
-
+        File tempFile = createFakeExportedPasswordsFile();
         // Pretend that passwords have been serialized to go directly to the intent.
-        mHandler.getExportSuccessCallback().onResult(123);
+        mHandler.getExportSuccessCallback().onResult(123, tempFile.getPath());
 
         // Before triggering the sharing intent chooser, stub it out to avoid leaving system UI open
         // after the test is finished.
@@ -868,6 +881,8 @@ public class SavePasswordsPreferencesTest {
                         allOf(hasAction(equalTo(Intent.ACTION_SEND)), hasType("text/csv"))))));
 
         Intents.release();
+
+        tempFile.delete();
 
         Assert.assertEquals(1, successDelta.getDelta());
         Assert.assertEquals(1, countDelta.getDelta());
@@ -905,8 +920,9 @@ public class SavePasswordsPreferencesTest {
             }
         });
 
+        File tempFile = createFakeExportedPasswordsFile();
         // Pretend that passwords have been serialized to go directly to the intent.
-        mHandler.getExportSuccessCallback().onResult(56);
+        mHandler.getExportSuccessCallback().onResult(56, tempFile.getPath());
 
         // Before triggering the sharing intent chooser, stub it out to avoid leaving system UI open
         // after the test is finished.
@@ -929,6 +945,8 @@ public class SavePasswordsPreferencesTest {
                         allOf(hasAction(equalTo(Intent.ACTION_SEND)), hasType("text/csv"))))));
 
         Intents.release();
+
+        tempFile.delete();
 
         Assert.assertEquals(1, successDelta.getDelta());
         Assert.assertEquals(1, countDelta.getDelta());
@@ -1120,8 +1138,9 @@ public class SavePasswordsPreferencesTest {
                 "PasswordManager.Android.ExportPasswordsProgressBarUsage",
                 ExportFlow.PROGRESS_HIDDEN_DELAYED);
 
+        File tempFile = createFakeExportedPasswordsFile();
         // Now pretend that passwords have been serialized.
-        mHandler.getExportSuccessCallback().onResult(12);
+        mHandler.getExportSuccessCallback().onResult(12, tempFile.getPath());
 
         // Check that the progress bar is still shown, though, because the timer has not gone off
         // yet.
@@ -1138,6 +1157,9 @@ public class SavePasswordsPreferencesTest {
                         allOf(hasAction(equalTo(Intent.ACTION_SEND)), hasType("text/csv"))))));
 
         Intents.release();
+
+        tempFile.delete();
+
         Assert.assertEquals(1, progressBarDelta.getDelta());
     }
 
@@ -1181,9 +1203,11 @@ public class SavePasswordsPreferencesTest {
                 "PasswordManager.Android.ExportPasswordsProgressBarUsage",
                 ExportFlow.PROGRESS_HIDDEN_DIRECTLY);
 
+        File tempFile = createFakeExportedPasswordsFile();
+
         // Now pretend that passwords have been serialized.
         allowProgressBarToBeHidden(preferences);
-        mHandler.getExportSuccessCallback().onResult(12);
+        mHandler.getExportSuccessCallback().onResult(12, tempFile.getPath());
 
         // After simulating the serialized passwords being received, check that the progress bar is
         // hidden.
@@ -1195,6 +1219,9 @@ public class SavePasswordsPreferencesTest {
                         allOf(hasAction(equalTo(Intent.ACTION_SEND)), hasType("text/csv"))))));
 
         Intents.release();
+
+        tempFile.delete();
+
         Assert.assertEquals(1, progressBarDelta.getDelta());
     }
 

@@ -2,7 +2,6 @@ Tests cloneNode for HTMLDocument.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.cloneNode(false).__proto__ is HTMLDocument.prototype
 PASS className(document.cloneNode(false)) is "HTMLDocument"
 PASS document.cloneNode(true).title is document.title

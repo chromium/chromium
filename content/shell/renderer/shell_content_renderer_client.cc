@@ -44,15 +44,15 @@ namespace content {
 namespace {
 
 // A test service which can be driven by browser tests for various reasons.
-class TestServiceImpl : public mojom::TestService {
+class TestRendererServiceImpl : public mojom::TestService {
  public:
-  explicit TestServiceImpl(mojom::TestServiceRequest request)
+  explicit TestRendererServiceImpl(mojom::TestServiceRequest request)
       : binding_(this, std::move(request)) {
     binding_.set_connection_error_handler(base::BindOnce(
-        &TestServiceImpl::OnConnectionError, base::Unretained(this)));
+        &TestRendererServiceImpl::OnConnectionError, base::Unretained(this)));
   }
 
-  ~TestServiceImpl() override {}
+  ~TestRendererServiceImpl() override {}
 
  private:
   void OnConnectionError() { delete this; }
@@ -93,12 +93,12 @@ class TestServiceImpl : public mojom::TestService {
 
   mojo::Binding<mojom::TestService> binding_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestServiceImpl);
+  DISALLOW_COPY_AND_ASSIGN(TestRendererServiceImpl);
 };
 
-void CreateTestService(mojom::TestServiceRequest request) {
+void CreateRendererTestService(mojom::TestServiceRequest request) {
   // Owns itself.
-  new TestServiceImpl(std::move(request));
+  new TestRendererServiceImpl(std::move(request));
 }
 
 }  // namespace
@@ -113,7 +113,8 @@ void ShellContentRendererClient::RenderThreadStarted() {
 
   auto registry = std::make_unique<service_manager::BinderRegistry>();
   registry->AddInterface<mojom::TestService>(
-      base::Bind(&CreateTestService), base::ThreadTaskRunnerHandle::Get());
+      base::Bind(&CreateRendererTestService),
+      base::ThreadTaskRunnerHandle::Get());
   registry->AddInterface<mojom::PowerMonitorTest>(
       base::Bind(&PowerMonitorTestImpl::MakeStrongBinding,
                  base::Passed(std::make_unique<PowerMonitorTestImpl>())),

@@ -91,17 +91,24 @@ interface AccountStatusChangeDelegate {
   // called if the current user has not yet set up MultiDevice features.
   OnPotentialHostExistsForNewUser();
 
+  // Callback which indicates that the account left the state of having a
+  // potential host ready for setup. Note that it is called both when a host is
+  // set and when there are simply no host devices (i.e. neither potential nor
+  // set) on the account anymore. This function is only called if the current
+  // user has not yet set up MultiDevice features and received backend
+  // confirmation.
+  OnNoLongerNewUser();
+
   // Callback which indicates that the currently-connected MultiDevice host has
   // changed. This likely means that the user has changed MultiDevice settings
   // on another device. This function is only called if the current user has
-  // already set up MultiDevice features. Note: |new_host_device_name| is
-  // expected to be a UTF-8 string.
+  // already set up MultiDevice features.
   OnConnectedHostSwitchedForExistingUser(string new_host_device_name);
 
   // Callback which indicates that a new Chromebook was added to the account of
   // the current user. This function is only called if the current user has
   // already set up MultiDevice features.
-  OnNewChromebookAddedForExistingUser();
+  OnNewChromebookAddedForExistingUser(string new_host_device_name);
 };
 
 interface HostStatusObserver {
@@ -118,8 +125,8 @@ interface FeatureStateObserver {
 };
 
 // Provides an API to the MultiDevice Setup flow. Designed to be exposed
-// primarily to the MultiDevice setup flow at chrome://multidevice-setup (normal
-// usage) as well as the ProximityAuth debug WebUI page at
+// primarily to the MultiDevice setup flow at chrome://multidevice-setup and
+// chrome://oobe (normal usage) as well as the ProximityAuth debug WebUI page at
 // chrome://proximity-auth (debugging only).
 interface MultiDeviceSetup {
   // Registers the "account status change" delegate to be used by the service.
@@ -193,4 +200,13 @@ interface MultiDeviceSetup {
   // intended to be used only for debugging in the chrome://proximity-auth page.
   // During normal usage, events are triggered internally within the service.
   TriggerEventForDebugging(EventTypeForDebugging type) => (bool success);
+};
+
+// Provides an API for setting a MultiDevice host without the need to provide an
+// auth token. This interface should only be used in circumstances when the user
+// has just entered their password.
+interface PrivilegedHostDeviceSetter {
+  // Same functionality as MultiDeviceSetup's SetHostDevice() function above,
+  // except that no auth token is required.
+  SetHostDevice(string device_id) => (bool success);
 };

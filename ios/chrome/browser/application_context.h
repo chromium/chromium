@@ -31,11 +31,12 @@ class MetricsServicesManager;
 }
 
 namespace net {
+class NetLog;
 class URLRequestContextGetter;
 }
 
 namespace net_log {
-class ChromeNetLog;
+class NetExportFileWriter;
 }
 
 namespace network {
@@ -124,8 +125,10 @@ class ApplicationContext {
   // Gets the RapporServiceImpl. May return null.
   virtual rappor::RapporServiceImpl* GetRapporServiceImpl() = 0;
 
-  // Gets the ChromeNetLog.
-  virtual net_log::ChromeNetLog* GetNetLog() = 0;
+  // Gets the NetLog.
+  virtual net::NetLog* GetNetLog() = 0;
+
+  virtual net_log::NetExportFileWriter* GetNetExportFileWriter() = 0;
 
   // Gets the NetworkTimeTracker.
   virtual network_time::NetworkTimeTracker* GetNetworkTimeTracker() = 0;

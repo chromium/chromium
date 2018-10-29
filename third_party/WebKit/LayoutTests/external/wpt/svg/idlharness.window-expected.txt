@@ -185,6 +185,38 @@ PASS SVGLengthList interface: operation insertItemBefore(SVGLength, unsigned lon
 PASS SVGLengthList interface: operation replaceItem(SVGLength, unsigned long)
 PASS SVGLengthList interface: operation removeItem(unsigned long)
 PASS SVGLengthList interface: operation appendItem(SVGLength)
+PASS SVGStringList interface: existence and properties of interface object
+PASS SVGStringList interface object length
+PASS SVGStringList interface object name
+PASS SVGStringList interface: existence and properties of interface prototype object
+PASS SVGStringList interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGStringList interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGStringList interface: attribute length
+PASS SVGStringList interface: attribute numberOfItems
+PASS SVGStringList interface: operation clear()
+PASS SVGStringList interface: operation initialize(DOMString)
+PASS SVGStringList interface: operation getItem(unsigned long)
+PASS SVGStringList interface: operation insertItemBefore(DOMString, unsigned long)
+PASS SVGStringList interface: operation replaceItem(DOMString, unsigned long)
+PASS SVGStringList interface: operation removeItem(unsigned long)
+PASS SVGStringList interface: operation appendItem(DOMString)
+PASS SVGStringList must be primary interface of objects.a.requiredExtensions
+PASS Stringification of objects.a.requiredExtensions
+PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "length" with the proper type
+PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "numberOfItems" with the proper type
+PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "clear()" with the proper type
+PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "initialize(DOMString)" with the proper type
+PASS SVGStringList interface: calling initialize(DOMString) on objects.a.requiredExtensions with too few arguments must throw TypeError
+PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "getItem(unsigned long)" with the proper type
+PASS SVGStringList interface: calling getItem(unsigned long) on objects.a.requiredExtensions with too few arguments must throw TypeError
+PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "insertItemBefore(DOMString, unsigned long)" with the proper type
+PASS SVGStringList interface: calling insertItemBefore(DOMString, unsigned long) on objects.a.requiredExtensions with too few arguments must throw TypeError
+PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "replaceItem(DOMString, unsigned long)" with the proper type
+PASS SVGStringList interface: calling replaceItem(DOMString, unsigned long) on objects.a.requiredExtensions with too few arguments must throw TypeError
+PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "removeItem(unsigned long)" with the proper type
+PASS SVGStringList interface: calling removeItem(unsigned long) on objects.a.requiredExtensions with too few arguments must throw TypeError
+PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "appendItem(DOMString)" with the proper type
+PASS SVGStringList interface: calling appendItem(DOMString) on objects.a.requiredExtensions with too few arguments must throw TypeError
 PASS SVGAnimatedBoolean interface: existence and properties of interface object
 PASS SVGAnimatedBoolean interface object length
 PASS SVGAnimatedBoolean interface object name
@@ -305,38 +337,6 @@ PASS SVGAnimatedLengthList must be primary interface of objects.text.x
 PASS Stringification of objects.text.x
 PASS SVGAnimatedLengthList interface: objects.text.x must inherit property "baseVal" with the proper type
 PASS SVGAnimatedLengthList interface: objects.text.x must inherit property "animVal" with the proper type
-PASS SVGStringList interface: existence and properties of interface object
-PASS SVGStringList interface object length
-PASS SVGStringList interface object name
-PASS SVGStringList interface: existence and properties of interface prototype object
-PASS SVGStringList interface: existence and properties of interface prototype object's "constructor" property
-PASS SVGStringList interface: existence and properties of interface prototype object's @@unscopables property
-PASS SVGStringList interface: attribute length
-PASS SVGStringList interface: attribute numberOfItems
-PASS SVGStringList interface: operation clear()
-PASS SVGStringList interface: operation initialize(DOMString)
-PASS SVGStringList interface: operation getItem(unsigned long)
-PASS SVGStringList interface: operation insertItemBefore(DOMString, unsigned long)
-PASS SVGStringList interface: operation replaceItem(DOMString, unsigned long)
-PASS SVGStringList interface: operation removeItem(unsigned long)
-PASS SVGStringList interface: operation appendItem(DOMString)
-PASS SVGStringList must be primary interface of objects.a.requiredExtensions
-PASS Stringification of objects.a.requiredExtensions
-PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "length" with the proper type
-PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "numberOfItems" with the proper type
-PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "clear()" with the proper type
-PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "initialize(DOMString)" with the proper type
-PASS SVGStringList interface: calling initialize(DOMString) on objects.a.requiredExtensions with too few arguments must throw TypeError
-PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "getItem(unsigned long)" with the proper type
-PASS SVGStringList interface: calling getItem(unsigned long) on objects.a.requiredExtensions with too few arguments must throw TypeError
-PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "insertItemBefore(DOMString, unsigned long)" with the proper type
-PASS SVGStringList interface: calling insertItemBefore(DOMString, unsigned long) on objects.a.requiredExtensions with too few arguments must throw TypeError
-PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "replaceItem(DOMString, unsigned long)" with the proper type
-PASS SVGStringList interface: calling replaceItem(DOMString, unsigned long) on objects.a.requiredExtensions with too few arguments must throw TypeError
-PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "removeItem(unsigned long)" with the proper type
-PASS SVGStringList interface: calling removeItem(unsigned long) on objects.a.requiredExtensions with too few arguments must throw TypeError
-PASS SVGStringList interface: objects.a.requiredExtensions must inherit property "appendItem(DOMString)" with the proper type
-PASS SVGStringList interface: calling appendItem(DOMString) on objects.a.requiredExtensions with too few arguments must throw TypeError
 PASS SVGUnitTypes interface: existence and properties of interface object
 PASS SVGUnitTypes interface object length
 PASS SVGUnitTypes interface object name

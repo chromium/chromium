@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_COMMON_ALIAS_H_
 #define EXTENSIONS_COMMON_ALIAS_H_
 
-#include <string>
-
 namespace extensions {
 
 // Information about an alias.
@@ -15,24 +13,18 @@ namespace extensions {
 // features when they get renamed. Old feature name can be defined as an alias
 // for the new feature name - this would ensure that the extensions using the
 // old feature name don't break.
-class Alias {
- public:
-  // |name|: The alias name.
-  // |real_name|: The real name behind alias.
-  Alias(const char* const name, const char* const real_name)
-      : name_(name), real_name_(real_name) {}
-  ~Alias() {}
+struct Alias {
+  // This struct is meant to contain pointers to character string constants,
+  // so the lifetime of the pointer parameters should exceed that of the Alias
+  // instance.
+  constexpr Alias(const char* name, const char* real_name)
+      : name(name), real_name(real_name) {}
 
-  const std::string& name() const { return name_; }
-
-  const std::string& real_name() const { return real_name_; }
-
- private:
   // The alias name.
-  std::string name_;
+  const char* name;
 
   // The real name behind the alias.
-  std::string real_name_;
+  const char* real_name;
 };
 
 }  // namespace extensions

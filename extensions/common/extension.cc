@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <iterator>
 #include <utility>
 
 #include "base/base64.h"
@@ -394,7 +395,7 @@ bool Extension::ShouldExposeViaManagementAPI() const {
 Extension::ManifestData* Extension::GetManifestData(const std::string& key)
     const {
   DCHECK(finished_parsing_manifest_ || thread_checker_.CalledOnValidThread());
-  ManifestDataMap::const_iterator iter = manifest_data_.find(key);
+  auto iter = manifest_data_.find(key);
   if (iter != manifest_data_.end())
     return iter->second.get();
   return NULL;
@@ -428,14 +429,14 @@ const std::string Extension::GetVersionForDisplay() const {
   return VersionString();
 }
 
-void Extension::AddInstallWarning(const InstallWarning& new_warning) {
-  install_warnings_.push_back(new_warning);
+void Extension::AddInstallWarning(InstallWarning new_warning) {
+  install_warnings_.push_back(std::move(new_warning));
 }
 
-void Extension::AddInstallWarnings(
-    const std::vector<InstallWarning>& new_warnings) {
+void Extension::AddInstallWarnings(std::vector<InstallWarning> new_warnings) {
   install_warnings_.insert(install_warnings_.end(),
-                           new_warnings.begin(), new_warnings.end());
+                           std::make_move_iterator(new_warnings.begin()),
+                           std::make_move_iterator(new_warnings.end()));
 }
 
 bool Extension::is_app() const {

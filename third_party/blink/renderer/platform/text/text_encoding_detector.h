@@ -31,7 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_ENCODING_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_ENCODING_DETECTOR_H_
 
+#include <stdint.h>
 #include <cstddef>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace WTF {
@@ -49,7 +51,7 @@ class KURL;
 // |hintUserLanguage| is an optional language code like "fr", and can be
 // |nullptr.
 PLATFORM_EXPORT bool DetectTextEncoding(const char* data,
-                                        size_t length,
+                                        uint32_t length,
                                         const char* hint_encoding_name,
                                         const KURL& hint_url,
                                         const char* hint_user_language,

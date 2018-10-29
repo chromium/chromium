@@ -26,6 +26,7 @@ class MediaControlPopupMenuElement : public MediaControlDivElement {
 
   // Node override.
   void DefaultEventHandler(Event&) override;
+  bool KeepEventInNode(const Event&) const override;
   void RemovedFrom(ContainerNode&) override;
 
   void Trace(blink::Visitor*) override;

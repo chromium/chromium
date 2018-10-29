@@ -5,4 +5,3 @@ When this test succeeds, you will see nothing. When this test fails, you will cr
 DNE_ONERROR called
 DNE_ONERROR called
 SUCCESS. Two errors.
-

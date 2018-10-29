@@ -119,7 +119,7 @@ class CORE_EXPORT SelectionController final
   FrameSelection& Selection() const;
 
   // Implements |DocumentShutdownObserver|.
-  // TODO(yosin): We should relocate |m_originalBaseInFlatTree| when DOM tree
+  // TODO(yosin): We should relocate |original_base_in_flat_tree_| when DOM tree
   // changed.
   void ContextDestroyed(Document*) final;
 

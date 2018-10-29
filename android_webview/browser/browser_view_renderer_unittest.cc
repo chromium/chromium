@@ -14,8 +14,10 @@
 #include "android_webview/browser/test/rendering_test.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
+#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/test/test_synchronous_compositor_android.h"
 
 namespace android_webview {
@@ -408,7 +410,7 @@ class SwitchLayerTreeFrameSinkIdTest : public ResourceRenderingTest {
         // Second output surface.
         {1u, 1u}, {1u, 1u}, {1u, 2u}, {1u, 2u}, {1u, 3u}, {1u, 3u}, {1u, 4u},
     };
-    if (frame_number >= static_cast<int>(arraysize(infos))) {
+    if (frame_number >= static_cast<int>(base::size(infos))) {
       return nullptr;
     }
 
@@ -553,10 +555,19 @@ class DidReachMaximalScrollOffsetTest : public RenderingTest {
  public:
   void StartTest() override {
     browser_view_renderer_->SetDipScale(kDipScale);
+    gfx::Vector2dF total_scroll_offset = kTotalScrollOffset;
+    gfx::Vector2dF total_max_scroll_offset = kTotalMaxScrollOffset;
+    gfx::SizeF scrollable_size = kScrollableSize;
+    // When --use-zoom-for-dsf is enabled, these value are in physical pixel.
+    if (content::IsUseZoomForDSFEnabled()) {
+      total_scroll_offset.Scale(kDipScale);
+      total_max_scroll_offset.Scale(kDipScale);
+      scrollable_size.Scale(kDipScale);
+    }
     // |UpdateRootLayerState()| will call |SetTotalRootLayerScrollOffset()|.
     browser_view_renderer_->UpdateRootLayerState(
-        ActiveCompositor(), kTotalScrollOffset, kTotalMaxScrollOffset,
-        kScrollableSize, kPageScaleFactor, kMinPageScaleFactor,
+        ActiveCompositor(), total_scroll_offset, total_max_scroll_offset,
+        scrollable_size, kPageScaleFactor, kMinPageScaleFactor,
         kMaxPageScaleFactor);
   }
 

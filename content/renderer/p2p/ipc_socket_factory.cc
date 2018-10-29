@@ -226,7 +226,7 @@ class AsyncAddressResolverImpl : public rtc::AsyncResolverInterface {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  int port_;   // Port number in |addr| from Start() method.
+  rtc::SocketAddress addr_;                // Address to resolve.
   std::vector<rtc::IPAddress> addresses_;  // Resolved addresses.
 };
 
@@ -664,9 +664,9 @@ AsyncAddressResolverImpl::~AsyncAddressResolverImpl() {
 
 void AsyncAddressResolverImpl::Start(const rtc::SocketAddress& addr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Copy port number from |addr|. |port_| must be copied
-  // when resolved address is returned in GetResolvedAddress.
-  port_ = addr.port();
+  // Port and hostname must be copied to the resolved address returned from
+  // GetResolvedAddress.
+  addr_ = addr;
 
   resolver_->Start(addr, base::Bind(
       &AsyncAddressResolverImpl::OnAddressResolved,
@@ -682,8 +682,8 @@ bool AsyncAddressResolverImpl::GetResolvedAddress(
 
   for (size_t i = 0; i < addresses_.size(); ++i) {
     if (family == addresses_[i].family()) {
+      *addr = addr_;
       addr->SetResolvedIP(addresses_[i]);
-      addr->SetPort(port_);
       return true;
     }
   }

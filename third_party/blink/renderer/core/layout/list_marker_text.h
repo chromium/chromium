@@ -33,7 +33,7 @@ namespace blink {
 // Utility routines for working with lists. Encapsulates complex
 // language-specific logic including fallback to alternate languages when
 // counter values cannot be represented in a particular language.
-namespace ListMarkerText {
+namespace list_marker_text {
 
 // Returns the suffix character, such as '.', for the given list type and
 // item count number.
@@ -43,7 +43,7 @@ UChar Suffix(EListStyleType, int count);
 // type and item count number. Does not include any suffix character.
 String GetText(EListStyleType, int count);
 
-}  // namespace ListMarkerText
+}  // namespace list_marker_text
 
 }  // namespace blink
 

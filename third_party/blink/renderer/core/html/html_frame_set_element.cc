@@ -127,7 +127,9 @@ void HTMLFrameSetElement::ParseAttribute(
   } else if (name == onbeforeunloadAttr) {
     GetDocument().SetWindowAttributeEventListener(
         EventTypeNames::beforeunload,
-        CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
+        CreateAttributeEventListener(
+            GetDocument().GetFrame(), name, value,
+            JSEventHandler::HandlerType::kOnBeforeUnloadEventHandler));
   } else if (name == onunloadAttr) {
     GetDocument().SetWindowAttributeEventListener(
         EventTypeNames::unload,
@@ -147,7 +149,9 @@ void HTMLFrameSetElement::ParseAttribute(
   } else if (name == onerrorAttr) {
     GetDocument().SetWindowAttributeEventListener(
         EventTypeNames::error,
-        CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
+        CreateAttributeEventListener(
+            GetDocument().GetFrame(), name, value,
+            JSEventHandler::HandlerType::kOnErrorEventHandler));
   } else if (name == onfocusAttr) {
     GetDocument().SetWindowAttributeEventListener(
         EventTypeNames::focus,

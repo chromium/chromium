@@ -11,7 +11,7 @@
 #include "base/macros.h"
 
 namespace ui {
-class PointerEvent;
+class TouchEvent;
 }
 
 namespace views {
@@ -28,7 +28,7 @@ class TapRenderer {
   ~TapRenderer();
 
   // Receives a touch event and draws its touch point.
-  void HandleTouchEvent(const ui::PointerEvent& event);
+  void HandleTouchEvent(const ui::TouchEvent& event);
 
  private:
   friend class TapVisualizerAppTestApi;

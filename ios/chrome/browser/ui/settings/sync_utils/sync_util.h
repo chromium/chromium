@@ -18,9 +18,9 @@ class ChromeBrowserState;
 }
 
 // Gets the top-level description message associated with the sync error state
-// of |browserState|. Returns nil if there is no sync error.
-NSString* GetSyncErrorDescriptionForBrowserState(
-    ios::ChromeBrowserState* browserState);
+// of |syncSetupService|. Returns nil if there is no sync error.
+NSString* GetSyncErrorDescriptionForSyncSetupService(
+    SyncSetupService* syncSetupService);
 
 // Gets the string message associated with the sync error state of
 // |browserState|. The returned error message does not contain any links.

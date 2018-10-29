@@ -32,7 +32,6 @@ DataReductionProxyData::RequestInfo::RequestInfo(const RequestInfo& other)
 
 DataReductionProxyData::DataReductionProxyData()
     : used_data_reduction_proxy_(false),
-      lofi_requested_(false),
       client_lofi_requested_(false),
       lite_page_received_(false),
       lofi_policy_received_(false),

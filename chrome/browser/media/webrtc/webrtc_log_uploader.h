@@ -16,6 +16,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/media/webrtc/webrtc_logging_handler_host.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -104,6 +105,10 @@ class WebRtcLogUploader {
   FRIEND_TEST_ALL_PREFIXES(WebRtcLogUploaderTest,
                            AddUploadedLogInfoToUploadListFile);
 
+  void InitURLLoaderFactoryIfNeeded();
+
+  void OnFactoryConnectionClosed();
+
   // Sets up a multipart body to be uploaded. The body is produced according
   // to RFC 2046.
   void SetupMultipart(std::string* post_data,
@@ -187,6 +192,9 @@ class WebRtcLogUploader {
 
   // When shutting down, don't create new URL loaders.
   bool shutting_down_;
+
+  // URLLoaderFactory bound to the IO thread.
+  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(WebRtcLogUploader);
 };

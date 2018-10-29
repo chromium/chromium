@@ -16,9 +16,12 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/window/dialog_delegate.h"
 
+namespace identity {
+class IdentityManager;
+}
+
 class Browser;
 class Profile;
-class SigninManager;
 
 // A modal dialog that displays a warning message of the auth failure
 // and ask user to sign in again.
@@ -33,7 +36,7 @@ class ForcedReauthenticationDialogView : public views::DialogDelegateView {
   // Dialog will delete itself after closing.
   static ForcedReauthenticationDialogView* ShowDialog(
       Profile* profile,
-      SigninManager* signin_manager,
+      identity::IdentityManager* identity_manager,
       base::TimeDelta countdown_duration);
 
   // override views::DialogDelegateView
@@ -57,14 +60,14 @@ class ForcedReauthenticationDialogView : public views::DialogDelegateView {
  private:
   // Show the dialog for |browser|. The dialog will delete itself after closing.
   ForcedReauthenticationDialogView(Browser* browser,
-                                   SigninManager* signin_manager,
+                                   identity::IdentityManager* identity_manager,
                                    base::TimeDelta countdown_duration);
 
   void OnCountDown();
   base::TimeDelta GetTimeRemaining() const;
 
   Browser* const browser_;
-  SigninManager* signin_manager_;
+  identity::IdentityManager* identity_manager_;
 
   const base::TimeTicks desired_close_time_;
 
@@ -84,7 +87,7 @@ class ForcedReauthenticationDialogImpl : public ForcedReauthenticationDialog {
 
   // override ForcedReauthenticationDialog
   void ShowDialog(Profile* profile,
-                  SigninManager* signin_manager,
+                  identity::IdentityManager* identity_manager,
                   base::TimeDelta countdown_duration) override;
 
  private:

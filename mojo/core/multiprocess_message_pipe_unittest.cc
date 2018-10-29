@@ -1331,9 +1331,13 @@ INSTANTIATE_TEST_CASE_P(
     ,
     MultiprocessMessagePipeTestWithPeerSupport,
     testing::Values(test::MojoTestBase::LaunchType::CHILD,
-                    test::MojoTestBase::LaunchType::PEER,
+                    test::MojoTestBase::LaunchType::PEER
+#if !defined(OS_FUCHSIA)
+                    ,
                     test::MojoTestBase::LaunchType::NAMED_CHILD,
-                    test::MojoTestBase::LaunchType::NAMED_PEER));
+                    test::MojoTestBase::LaunchType::NAMED_PEER
+#endif  // !defined(OS_FUCHSIA)
+                    ));
 }  // namespace
 }  // namespace core
 }  // namespace mojo

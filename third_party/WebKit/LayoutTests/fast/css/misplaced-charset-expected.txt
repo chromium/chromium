@@ -3,4 +3,5 @@ Test for bug 36515: CSS style definitions are ignored if they just follow a "@ch
 There should be two green squares below:
 
 
+
 PASS

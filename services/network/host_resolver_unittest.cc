@@ -206,6 +206,7 @@ TEST_F(HostResolverTest, Source) {
   constexpr char kAnyResult[] = "1.2.3.4";
   constexpr char kSystemResult[] = "127.0.0.1";
   constexpr char kDnsResult[] = "168.100.12.23";
+  constexpr char kMdnsResult[] = "200.1.2.3";
   auto inner_resolver = std::make_unique<net::MockHostResolver>();
   inner_resolver->rules_map()[net::HostResolverSource::ANY]->AddRule(
       kDomain, kAnyResult);
@@ -213,6 +214,8 @@ TEST_F(HostResolverTest, Source) {
       kDomain, kSystemResult);
   inner_resolver->rules_map()[net::HostResolverSource::DNS]->AddRule(
       kDomain, kDnsResult);
+  inner_resolver->rules_map()[net::HostResolverSource::MULTICAST_DNS]->AddRule(
+      kDomain, kMdnsResult);
 
   net::NetLog net_log;
   HostResolver resolver(inner_resolver.get(), &net_log);
@@ -258,6 +261,23 @@ TEST_F(HostResolverTest, Source) {
   EXPECT_EQ(net::OK, dns_client.result_error());
   EXPECT_THAT(dns_client.result_addresses().value().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint(kDnsResult, 80)));
+
+#if BUILDFLAG(ENABLE_MDNS)
+  base::RunLoop mdns_run_loop;
+  mojom::ResolveHostClientPtr mdns_client_ptr;
+  TestResolveHostClient mdns_client(&mdns_client_ptr, &mdns_run_loop);
+  mojom::ResolveHostParametersPtr mdns_parameters =
+      mojom::ResolveHostParameters::New();
+  mdns_parameters->source = net::HostResolverSource::MULTICAST_DNS;
+  resolver.ResolveHost(net::HostPortPair(kDomain, 80),
+                       std::move(mdns_parameters), std::move(mdns_client_ptr));
+
+  mdns_run_loop.Run();
+
+  EXPECT_EQ(net::OK, mdns_client.result_error());
+  EXPECT_THAT(mdns_client.result_addresses().value().endpoints(),
+              testing::ElementsAre(CreateExpectedEndPoint(kMdnsResult, 80)));
+#endif  // BUILDFLAG(ENABLE_MDNS)
 }
 
 // Test that cached results are properly keyed by requested source.

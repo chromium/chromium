@@ -26,7 +26,7 @@ const QuicByteCount kTxQueueSize = 1000;
 
 // Generate a random local network host-port tuple based on the name of the
 // endpoint.
-QuicSocketAddress GetAddressFromName(std::string name);
+QuicSocketAddress GetAddressFromName(QuicString name);
 
 // A QUIC connection endpoint.  Wraps around QuicConnection.  In order to
 // initiate a transfer, the caller has to call AddBytesToTransfer().  The data
@@ -40,8 +40,8 @@ class QuicEndpoint : public Endpoint,
                      public SessionNotifierInterface {
  public:
   QuicEndpoint(Simulator* simulator,
-               std::string name,
-               std::string peer_name,
+               QuicString name,
+               QuicString peer_name,
                Perspective perspective,
                QuicConnectionId connection_id);
   ~QuicEndpoint() override;
@@ -91,7 +91,7 @@ class QuicEndpoint : public Endpoint,
   void OnGoAway(const QuicGoAwayFrame& frame) override {}
   void OnMessageReceived(QuicStringPiece message) override {}
   void OnConnectionClosed(QuicErrorCode error,
-                          const std::string& error_details,
+                          const QuicString& error_details,
                           ConnectionCloseSource source) override {}
   void OnWriteBlocked() override {}
   void OnSuccessfulVersionNegotiation(
@@ -163,7 +163,7 @@ class QuicEndpoint : public Endpoint,
   // write-blocked.
   void WriteStreamData();
 
-  std::string peer_name_;
+  QuicString peer_name_;
 
   Writer writer_;
   DataProducer producer_;
@@ -197,7 +197,7 @@ class QuicEndpoint : public Endpoint,
 class QuicEndpointMultiplexer : public Endpoint,
                                 public UnconstrainedPortInterface {
  public:
-  QuicEndpointMultiplexer(std::string name,
+  QuicEndpointMultiplexer(QuicString name,
                           std::initializer_list<QuicEndpoint*> endpoints);
   ~QuicEndpointMultiplexer() override;
 
@@ -212,7 +212,7 @@ class QuicEndpointMultiplexer : public Endpoint,
   void Act() override {}
 
  private:
-  QuicUnorderedMap<std::string, QuicEndpoint*> mapping_;
+  QuicUnorderedMap<QuicString, QuicEndpoint*> mapping_;
 };
 
 }  // namespace simulator

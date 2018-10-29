@@ -225,7 +225,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
       Java_MediaCodecBridgeBuilder_createAudioDecoder(
           env, j_mime, media_crypto, config.samples_per_second(), channel_count,
           j_csd0, j_csd1, j_csd2, output_frame_has_adts_header,
-          !on_buffers_available_cb.is_null()));
+          !!on_buffers_available_cb));
 
   if (j_bridge.is_null())
     return nullptr;
@@ -274,7 +274,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
       Java_MediaCodecBridgeBuilder_createVideoDecoder(
           env, j_mime, static_cast<int>(codec_type), media_crypto, size.width(),
           size.height(), surface, j_csd0, j_csd1, j_hdr_metadata,
-          allow_adaptive_playback, !on_buffers_available_cb.is_null()));
+          allow_adaptive_playback, !!on_buffers_available_cb));
   if (j_bridge.is_null())
     return nullptr;
 
@@ -329,7 +329,7 @@ MediaCodecBridgeImpl::MediaCodecBridgeImpl(
       j_bridge_(std::move(j_bridge)) {
   DCHECK(!j_bridge_.is_null());
 
-  if (on_buffers_available_cb_.is_null())
+  if (!on_buffers_available_cb_)
     return;
 
   DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),

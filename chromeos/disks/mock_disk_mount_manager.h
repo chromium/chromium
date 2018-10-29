@@ -28,8 +28,8 @@ class MockDiskMountManager : public DiskMountManager {
 
   // DiskMountManager override.
   MOCK_METHOD0(Init, void(void));
-  MOCK_METHOD1(AddObserver, void(DiskMountManager::Observer*));
-  MOCK_METHOD1(RemoveObserver, void(DiskMountManager::Observer*));
+  void AddObserver(DiskMountManager::Observer*) override;
+  void RemoveObserver(DiskMountManager::Observer*) override;
   MOCK_CONST_METHOD0(disks, const DiskMountManager::DiskMap&(void));
   MOCK_CONST_METHOD1(FindDiskBySourcePath, const Disk*(const std::string&));
   MOCK_CONST_METHOD0(mount_points,

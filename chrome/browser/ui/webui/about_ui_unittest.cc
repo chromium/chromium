@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -39,6 +40,12 @@ class TestDataReceiver {
 
   std::string data() const { return data_; }
 
+  std::string Base64DecodedData() const {
+    std::string decoded;
+    base::Base64Decode(data_, &decoded);
+    return decoded;
+  }
+
   void OnDataReceived(scoped_refptr<base::RefCountedMemory> bytes) {
     data_received_ = true;
     data_ = base::StringPiece(reinterpret_cast<const char*>(bytes->front()),
@@ -55,6 +62,7 @@ class TestDataReceiver {
 
 }  // namespace
 
+// Base class for ChromeOS offline terms tests.
 class ChromeOSTermsTest : public testing::Test {
  protected:
   ChromeOSTermsTest()
@@ -90,17 +98,32 @@ class ChromeOSTermsTest : public testing::Test {
     return true;
   }
 
+  // Creates directory for the given |locale| that contains privacy_policy.pdf.
+  // Writes the |locale| string to the created file.
+  bool CreatePrivacyPolicyForLocale(const std::string& locale) {
+    base::FilePath dir = arc_tos_dir_.Append(base::ToLowerASCII(locale));
+    if (!base::CreateDirectory(dir))
+      return false;
+
+    if (base::WriteFile(dir.AppendASCII("privacy_policy.pdf"), locale.c_str(),
+                        locale.length()) != static_cast<int>(locale.length())) {
+      return false;
+    }
+    return true;
+  }
+
   // Sets device region in VPD.
   void SetRegion(const std::string& region) {
     statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
                                              region);
   }
 
-  // Starts data request.
-  void StartRequest(TestDataReceiver* data_receiver) {
+  // Starts data request with the |request_url|.
+  void StartRequest(const std::string& request_url,
+                    TestDataReceiver* data_receiver) {
     content::ResourceRequestInfo::WebContentsGetter wc_getter;
     tested_html_source_->StartDataRequest(
-        chrome::kArcTermsURLPath, std::move(wc_getter),
+        request_url, std::move(wc_getter),
         base::BindRepeating(&TestDataReceiver::OnDataReceived,
                             base::Unretained(data_receiver)));
     scoped_task_environment_.RunUntilIdle();
@@ -124,13 +147,20 @@ TEST_F(ChromeOSTermsTest, NoData) {
   SetRegion("ca");
   ScopedBrowserLocale browser_locale("en-CA");
 
-  TestDataReceiver data_receiver;
-  StartRequest(&data_receiver);
+  TestDataReceiver terms_data_receiver;
+  StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-  EXPECT_TRUE(data_receiver.data_received());
-  EXPECT_EQ("", data_receiver.data());
+  EXPECT_TRUE(terms_data_receiver.data_received());
+  EXPECT_EQ("", terms_data_receiver.data());
+
+  TestDataReceiver privacy_policy_data_receiver;
+  StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_policy_data_receiver);
+
+  EXPECT_TRUE(privacy_policy_data_receiver.data_received());
+  EXPECT_EQ("", privacy_policy_data_receiver.data());
 }
 
+// Demo mode ARC++ ToS and privacy policy test.
 class DemoModeChromeOSTermsTest : public ChromeOSTermsTest {
  protected:
   DemoModeChromeOSTermsTest() = default;
@@ -161,19 +191,33 @@ class DemoModeChromeOSTermsTest : public ChromeOSTermsTest {
     ASSERT_TRUE(CreateTermsForLocale("nl-BE"));
     ASSERT_TRUE(CreateTermsForLocale("nl-NL"));
     ASSERT_TRUE(CreateTermsForLocale("sv-SE"));
+
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("da-DK"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("de-de"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("en-US"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("eu"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("fi-FI"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("fr-BE"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("fr-CA"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("fr-FR"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("ko-KR"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("nb-NO"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("nl-BE"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("nl-NL"));
+    ASSERT_TRUE(CreatePrivacyPolicyForLocale("sv-SE"));
   }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DemoModeChromeOSTermsTest);
 };
 
-TEST_F(DemoModeChromeOSTermsTest, SimpleRegion) {
+TEST_F(DemoModeChromeOSTermsTest, TermsSimpleRegion) {
   SetRegion("ca");
   for (const char* locale : {"en-CA", "fr-CA"}) {
     ScopedBrowserLocale browser_locale(locale);
 
     TestDataReceiver data_receiver;
-    StartRequest(&data_receiver);
+    StartRequest(chrome::kArcTermsURLPath, &data_receiver);
 
     EXPECT_TRUE(data_receiver.data_received());
     EXPECT_EQ(locale, data_receiver.data());
@@ -187,11 +231,18 @@ TEST_F(DemoModeChromeOSTermsTest, ComplexRegion) {
        {"ca.hybridansi", "ca.ansi", "ca.multix", "ca.fr"}) {
     SetRegion(region);
 
-    TestDataReceiver data_receiver;
-    StartRequest(&data_receiver);
+    TestDataReceiver terms_data_receiver;
+    StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-    EXPECT_TRUE(data_receiver.data_received());
-    EXPECT_EQ(kLocale, data_receiver.data());
+    EXPECT_TRUE(terms_data_receiver.data_received());
+    EXPECT_EQ(kLocale, terms_data_receiver.data());
+
+    TestDataReceiver privacy_data_receiver;
+    StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+    // Privacy policy for en-CA defaults to en-US.
+    EXPECT_TRUE(privacy_data_receiver.data_received());
+    EXPECT_EQ("en-US", privacy_data_receiver.Base64DecodedData());
   }
 }
 
@@ -200,72 +251,112 @@ TEST_F(DemoModeChromeOSTermsTest, NotCaseSensitive) {
   for (const char* locale : {"EN-CA", "en-CA", "EN-ca"}) {
     ScopedBrowserLocale browser_locale(locale);
 
-    TestDataReceiver data_receiver;
-    StartRequest(&data_receiver);
+    TestDataReceiver terms_data_receiver;
+    StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-    EXPECT_TRUE(data_receiver.data_received());
-    EXPECT_EQ("en-CA", data_receiver.data());
+    EXPECT_TRUE(terms_data_receiver.data_received());
+    EXPECT_EQ("en-CA", terms_data_receiver.data());
+
+    TestDataReceiver privacy_data_receiver;
+    StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+    // Privacy policy for en-CA defaults to en-US.
+    EXPECT_TRUE(privacy_data_receiver.data_received());
+    EXPECT_EQ("en-US", privacy_data_receiver.Base64DecodedData());
   }
 }
 
-TEST_F(DemoModeChromeOSTermsTest, DefaultToEuRegion) {
+TEST_F(DemoModeChromeOSTermsTest, DefaultsForEuRegion) {
   const std::string kLocale = "pl-PL";
   ScopedBrowserLocale browser_locale(kLocale);
   SetRegion("pl");
 
-  TestDataReceiver data_receiver;
-  StartRequest(&data_receiver);
+  TestDataReceiver terms_data_receiver;
+  StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-  EXPECT_TRUE(data_receiver.data_received());
-  EXPECT_EQ("eu", data_receiver.data());
+  EXPECT_TRUE(terms_data_receiver.data_received());
+  EXPECT_EQ("eu", terms_data_receiver.data());
+
+  TestDataReceiver privacy_data_receiver;
+  StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+  EXPECT_TRUE(privacy_data_receiver.data_received());
+  EXPECT_EQ("eu", privacy_data_receiver.Base64DecodedData());
 }
 
-TEST_F(DemoModeChromeOSTermsTest, DefaultToEmeaRegion) {
+TEST_F(DemoModeChromeOSTermsTest, DefaultsForEmeaRegion) {
   const std::string kLocale = "fr-CH";
   ScopedBrowserLocale browser_locale(kLocale);
   SetRegion("ch");
 
-  TestDataReceiver data_receiver;
-  StartRequest(&data_receiver);
+  TestDataReceiver terms_data_receiver;
+  StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-  EXPECT_TRUE(data_receiver.data_received());
-  EXPECT_EQ("emea", data_receiver.data());
+  EXPECT_TRUE(terms_data_receiver.data_received());
+  EXPECT_EQ("emea", terms_data_receiver.data());
+
+  TestDataReceiver privacy_data_receiver;
+  StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+  // Privacy policy for EMEA defaults to en-US.
+  EXPECT_TRUE(privacy_data_receiver.data_received());
+  EXPECT_EQ("en-US", privacy_data_receiver.Base64DecodedData());
 }
 
-TEST_F(DemoModeChromeOSTermsTest, DefaultToApacRegion) {
+TEST_F(DemoModeChromeOSTermsTest, DefaultsForApacRegion) {
   const std::string kLocale = "en-PH";
   ScopedBrowserLocale browser_locale(kLocale);
   SetRegion("ph");
 
-  TestDataReceiver data_receiver;
-  StartRequest(&data_receiver);
+  TestDataReceiver terms_data_receiver;
+  StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-  EXPECT_TRUE(data_receiver.data_received());
-  EXPECT_EQ("apac", data_receiver.data());
+  EXPECT_TRUE(terms_data_receiver.data_received());
+  EXPECT_EQ("apac", terms_data_receiver.data());
+
+  TestDataReceiver privacy_data_receiver;
+  StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+  // Privacy policy for APAC defaults to en-US.
+  EXPECT_TRUE(privacy_data_receiver.data_received());
+  EXPECT_EQ("en-US", privacy_data_receiver.Base64DecodedData());
 }
 
-TEST_F(DemoModeChromeOSTermsTest, DefaultToAmericasRegion) {
+TEST_F(DemoModeChromeOSTermsTest, DefaultsForAmericasRegion) {
   const std::string kLocale = "en-MX";
   ScopedBrowserLocale browser_locale(kLocale);
   SetRegion("mx");
 
-  TestDataReceiver data_receiver;
-  StartRequest(&data_receiver);
+  // Both ToS and privacy policy default to en-US for AMERICAS.
+  TestDataReceiver terms_data_receiver;
+  StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-  EXPECT_TRUE(data_receiver.data_received());
-  EXPECT_EQ("en-US", data_receiver.data());
+  EXPECT_TRUE(terms_data_receiver.data_received());
+  EXPECT_EQ("en-US", terms_data_receiver.data());
+
+  TestDataReceiver privacy_data_receiver;
+  StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+  EXPECT_TRUE(privacy_data_receiver.data_received());
+  EXPECT_EQ("en-US", privacy_data_receiver.Base64DecodedData());
 }
 
-TEST_F(DemoModeChromeOSTermsTest, DefaultToEnUs) {
+TEST_F(DemoModeChromeOSTermsTest, DefaultsToEnUs) {
   const std::string kLocale = "en-SA";
   ScopedBrowserLocale browser_locale(kLocale);
   SetRegion("sa");
 
-  TestDataReceiver data_receiver;
-  StartRequest(&data_receiver);
+  TestDataReceiver terms_data_receiver;
+  StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-  EXPECT_TRUE(data_receiver.data_received());
-  EXPECT_EQ("en-US", data_receiver.data());
+  EXPECT_TRUE(terms_data_receiver.data_received());
+  EXPECT_EQ("en-US", terms_data_receiver.data());
+
+  TestDataReceiver privacy_data_receiver;
+  StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+  EXPECT_TRUE(privacy_data_receiver.data_received());
+  EXPECT_EQ("en-US", privacy_data_receiver.Base64DecodedData());
 }
 
 TEST_F(DemoModeChromeOSTermsTest, NoLangCountryCombination) {
@@ -274,22 +365,34 @@ TEST_F(DemoModeChromeOSTermsTest, NoLangCountryCombination) {
     const std::string kLocale = "nl-BE";
     ScopedBrowserLocale browser_locale(kLocale);
 
-    TestDataReceiver data_receiver;
-    StartRequest(&data_receiver);
+    TestDataReceiver terms_data_receiver;
+    StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-    EXPECT_TRUE(data_receiver.data_received());
-    EXPECT_EQ(kLocale, data_receiver.data());
+    EXPECT_TRUE(terms_data_receiver.data_received());
+    EXPECT_EQ(kLocale, terms_data_receiver.data());
+
+    TestDataReceiver privacy_data_receiver;
+    StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+    EXPECT_TRUE(privacy_data_receiver.data_received());
+    EXPECT_EQ(kLocale, privacy_data_receiver.Base64DecodedData());
   }
   {
     const std::string kLocale = "de-BE";
     ScopedBrowserLocale browser_locale(kLocale);
 
-    TestDataReceiver data_receiver;
-    StartRequest(&data_receiver);
+    TestDataReceiver terms_data_receiver;
+    StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
     // No language - country combination - defaults to region.
-    EXPECT_TRUE(data_receiver.data_received());
-    EXPECT_EQ("eu", data_receiver.data());
+    EXPECT_TRUE(terms_data_receiver.data_received());
+    EXPECT_EQ("eu", terms_data_receiver.data());
+
+    TestDataReceiver privacy_data_receiver;
+    StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+    EXPECT_TRUE(privacy_data_receiver.data_received());
+    EXPECT_EQ("eu", privacy_data_receiver.Base64DecodedData());
   }
 }
 
@@ -298,11 +401,17 @@ TEST_F(DemoModeChromeOSTermsTest, InvalidRegion) {
   ScopedBrowserLocale browser_locale(kLocale);
   for (const char* region : {"", " ", ".", "..", "-", "xyz"}) {
     SetRegion(region);
-    TestDataReceiver data_receiver;
-    StartRequest(&data_receiver);
+    TestDataReceiver terms_data_receiver;
+    StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-    EXPECT_TRUE(data_receiver.data_received());
-    EXPECT_EQ("en-US", data_receiver.data());
+    EXPECT_TRUE(terms_data_receiver.data_received());
+    EXPECT_EQ("en-US", terms_data_receiver.data());
+
+    TestDataReceiver privacy_data_receiver;
+    StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+    EXPECT_TRUE(privacy_data_receiver.data_received());
+    EXPECT_EQ("en-US", privacy_data_receiver.Base64DecodedData());
   }
 }
 
@@ -311,10 +420,16 @@ TEST_F(DemoModeChromeOSTermsTest, InvalidLocale) {
   for (const char* locale : {"", " ", ".", "-", "-sv"}) {
     ScopedBrowserLocale browser_locale(locale);
 
-    TestDataReceiver data_receiver;
-    StartRequest(&data_receiver);
+    TestDataReceiver terms_data_receiver;
+    StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
 
-    EXPECT_TRUE(data_receiver.data_received());
-    EXPECT_EQ("eu", data_receiver.data());
+    EXPECT_TRUE(terms_data_receiver.data_received());
+    EXPECT_EQ("eu", terms_data_receiver.data());
+
+    TestDataReceiver privacy_data_receiver;
+    StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_data_receiver);
+
+    EXPECT_TRUE(privacy_data_receiver.data_received());
+    EXPECT_EQ("eu", privacy_data_receiver.Base64DecodedData());
   }
 }

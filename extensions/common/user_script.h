@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_COMMON_USER_SCRIPT_H_
 #define EXTENSIONS_COMMON_USER_SCRIPT_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -229,6 +230,13 @@ class UserScript {
   // otherwise.
   bool MatchesURL(const GURL& url) const;
 
+  // Returns true if the script should be applied to the given
+  // |effective_document_url| (calculated by the caller based on
+  // match_about_blank()| while also taking into account whether the document's
+  // frame |is_subframe| and what the |top_level_origin| is.
+  bool MatchesDocument(const GURL& effective_document_url,
+                       bool is_subframe) const;
+
   // Serializes the UserScript into a pickle. The content of the scripts and
   // paths to UserScript::Files will not be serialized!
   void Pickle(base::Pickle* pickle) const;
@@ -327,7 +335,7 @@ class UserScript {
 // Information we need while removing scripts from a UserScriptLoader.
 struct UserScriptIDPair {
   UserScriptIDPair(int id, const HostID& host_id);
-  UserScriptIDPair(int id);
+  explicit UserScriptIDPair(int id);
 
   int id;
   HostID host_id;

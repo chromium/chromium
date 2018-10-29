@@ -437,7 +437,7 @@ static String SerializeTimeStamp(double time_stamp) {
   unsigned seconds = value % 60;
   value /= 60;
   unsigned minutes = value % 60;
-  unsigned hours = value / 60;
+  unsigned hours = static_cast<unsigned>(value / 60);
   return String::Format("%02u:%02u:%02u.%03u", hours, minutes, seconds,
                         milliseconds);
 }
@@ -564,7 +564,7 @@ void VTTTreeBuilder::ConstructTreeFromToken(Document& document) {
         break;
 
       // The only non-VTTElement would be the DocumentFragment root. (Text
-      // nodes and PIs will never appear as m_currentNode.)
+      // nodes and PIs will never appear as current_node_.)
       if (!current_node_->IsVTTElement())
         break;
 

@@ -41,7 +41,7 @@ class PasswordStoreDefault : public PasswordStore {
   ~PasswordStoreDefault() override;
 
   // Opens |login_db_| on the background sequence.
-  void InitOnBackgroundSequence(
+  bool InitOnBackgroundSequence(
       const syncer::SyncableService::StartSyncFlare& flare) override;
 
   // Implements PasswordStore interface.

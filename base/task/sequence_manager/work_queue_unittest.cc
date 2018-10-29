@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/task/sequence_manager/real_time_domain.h"
+#include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,8 +35,10 @@ struct Cancelable {
 class WorkQueueTest : public testing::Test {
  public:
   void SetUp() override {
+    dummy_sequence_manager_ = SequenceManagerImpl::CreateUnbound(nullptr);
     time_domain_.reset(new RealTimeDomain());
-    task_queue_ = std::make_unique<TaskQueueImpl>(nullptr, time_domain_.get(),
+    task_queue_ = std::make_unique<TaskQueueImpl>(dummy_sequence_manager_.get(),
+                                                  time_domain_.get(),
                                                   TaskQueue::Spec("test"));
 
     work_queue_.reset(new WorkQueue(task_queue_.get(), "test",
@@ -44,35 +47,38 @@ class WorkQueueTest : public testing::Test {
     work_queue_sets_->AddQueue(work_queue_.get(), 0);
   }
 
-  void TearDown() override { work_queue_sets_->RemoveQueue(work_queue_.get()); }
+  void TearDown() override {
+    work_queue_sets_->RemoveQueue(work_queue_.get());
+
+    task_queue_->ClearSequenceManagerForTesting();
+  }
 
  protected:
-  TaskQueueImpl::Task FakeCancelableTaskWithEnqueueOrder(
-      int enqueue_order,
-      WeakPtr<Cancelable> weak_ptr) {
-    TaskQueueImpl::Task fake_task(
-        TaskQueue::PostedTask(BindOnce(&Cancelable::NopTask, weak_ptr),
-                              FROM_HERE),
+  Task FakeCancelableTaskWithEnqueueOrder(int enqueue_order,
+                                          WeakPtr<Cancelable> weak_ptr) {
+    Task fake_task(
+        PostedTask(BindOnce(&Cancelable::NopTask, weak_ptr), FROM_HERE),
         TimeTicks(), EnqueueOrder(),
         EnqueueOrder::FromIntForTesting(enqueue_order));
     return fake_task;
   }
 
-  TaskQueueImpl::Task FakeTaskWithEnqueueOrder(int enqueue_order) {
-    TaskQueueImpl::Task fake_task(
-        TaskQueue::PostedTask(BindOnce(&NopTask), FROM_HERE), TimeTicks(),
-        EnqueueOrder(), EnqueueOrder::FromIntForTesting(enqueue_order));
+  Task FakeTaskWithEnqueueOrder(int enqueue_order) {
+    Task fake_task(PostedTask(BindOnce(&NopTask), FROM_HERE), TimeTicks(),
+                   EnqueueOrder(),
+                   EnqueueOrder::FromIntForTesting(enqueue_order));
     return fake_task;
   }
 
-  TaskQueueImpl::Task FakeNonNestableTaskWithEnqueueOrder(int enqueue_order) {
-    TaskQueueImpl::Task fake_task(
-        TaskQueue::PostedTask(BindOnce(&NopTask), FROM_HERE), TimeTicks(),
-        EnqueueOrder(), EnqueueOrder::FromIntForTesting(enqueue_order));
+  Task FakeNonNestableTaskWithEnqueueOrder(int enqueue_order) {
+    Task fake_task(PostedTask(BindOnce(&NopTask), FROM_HERE), TimeTicks(),
+                   EnqueueOrder(),
+                   EnqueueOrder::FromIntForTesting(enqueue_order));
     fake_task.nestable = Nestable::kNonNestable;
     return fake_task;
   }
 
+  std::unique_ptr<SequenceManagerImpl> dummy_sequence_manager_;
   std::unique_ptr<RealTimeDomain> time_domain_;
   std::unique_ptr<TaskQueueImpl> task_queue_;
   std::unique_ptr<WorkQueue> work_queue_;

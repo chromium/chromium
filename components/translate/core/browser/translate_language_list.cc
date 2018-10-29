@@ -173,7 +173,7 @@ void TranslateLanguageList::GetSupportedLanguages(
     bool translate_allowed,
     std::vector<std::string>* languages) {
   DCHECK(languages && languages->empty());
-  std::set<std::string>::const_iterator iter = supported_languages_.begin();
+  auto iter = supported_languages_.begin();
   for (; iter != supported_languages_.end(); ++iter)
     languages->push_back(*iter);
 

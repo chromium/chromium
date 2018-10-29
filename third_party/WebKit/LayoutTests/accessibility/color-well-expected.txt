@@ -3,7 +3,6 @@ This test ensures that the correct accessibility properties can be retrieved fro
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS axColorwell.role is "AXRole: AXColorWell"
 PASS axColorwell.colorValue is 4278190080
 PASS axColorwell.stringValue is "AXValue: rgba(0, 0, 0, 1)"
@@ -16,4 +15,5 @@ PASS axColorwell.stringValue is "AXValue: rgba(0, 0, 0, 1)"
 PASS successfullyParsed is true
 
 TEST COMPLETE
-    
+
+  

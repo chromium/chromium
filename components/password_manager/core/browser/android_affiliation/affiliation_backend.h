@@ -33,6 +33,7 @@ class Time;
 }  // namespace base
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactoryInfo;
 }  // namespace network
 
@@ -71,6 +72,7 @@ class AffiliationBackend : public FacetManagerHost,
   // affiliation information locally will be opened/created at |db_path|.
   void Initialize(std::unique_ptr<network::SharedURLLoaderFactoryInfo>
                       url_loader_factory_info,
+                  network::NetworkConnectionTracker* network_connection_tracker,
                   const base::FilePath& db_path);
 
   // Implementations for methods of the same name in AffiliationService. They

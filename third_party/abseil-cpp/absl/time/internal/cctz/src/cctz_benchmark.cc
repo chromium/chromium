@@ -778,13 +778,13 @@ void BM_Zone_UTCTimeZone(benchmark::State& state) {
 }
 BENCHMARK(BM_Zone_UTCTimeZone);
 
-// In each "ToDateTime" benchmark we switch between two instants
-// separated by at least one transition in order to defeat any
-// internal caching of previous results (e.g., see local_time_hint_).
+// In each "ToCivil" benchmark we switch between two instants separated
+// by at least one transition in order to defeat any internal caching of
+// previous results (e.g., see local_time_hint_).
 //
 // The "UTC" variants use UTC instead of the Google/local time zone.
 
-void BM_Time_ToDateTime_CCTZ(benchmark::State& state) {
+void BM_Time_ToCivil_CCTZ(benchmark::State& state) {
   const cctz::time_zone tz = TestTimeZone();
   std::chrono::system_clock::time_point tp =
       std::chrono::system_clock::from_time_t(1384569027);
@@ -796,9 +796,9 @@ void BM_Time_ToDateTime_CCTZ(benchmark::State& state) {
     benchmark::DoNotOptimize(cctz::convert(tp, tz));
   }
 }
-BENCHMARK(BM_Time_ToDateTime_CCTZ);
+BENCHMARK(BM_Time_ToCivil_CCTZ);
 
-void BM_Time_ToDateTime_Libc(benchmark::State& state) {
+void BM_Time_ToCivil_Libc(benchmark::State& state) {
   // No timezone support, so just use localtime.
   time_t t = 1384569027;
   time_t t2 = 1418962578;
@@ -813,9 +813,9 @@ void BM_Time_ToDateTime_Libc(benchmark::State& state) {
 #endif
   }
 }
-BENCHMARK(BM_Time_ToDateTime_Libc);
+BENCHMARK(BM_Time_ToCivil_Libc);
 
-void BM_Time_ToDateTimeUTC_CCTZ(benchmark::State& state) {
+void BM_Time_ToCivilUTC_CCTZ(benchmark::State& state) {
   const cctz::time_zone tz = cctz::utc_time_zone();
   std::chrono::system_clock::time_point tp =
       std::chrono::system_clock::from_time_t(1384569027);
@@ -824,9 +824,9 @@ void BM_Time_ToDateTimeUTC_CCTZ(benchmark::State& state) {
     benchmark::DoNotOptimize(cctz::convert(tp, tz));
   }
 }
-BENCHMARK(BM_Time_ToDateTimeUTC_CCTZ);
+BENCHMARK(BM_Time_ToCivilUTC_CCTZ);
 
-void BM_Time_ToDateTimeUTC_Libc(benchmark::State& state) {
+void BM_Time_ToCivilUTC_Libc(benchmark::State& state) {
   time_t t = 1384569027;
   struct tm tm;
   while (state.KeepRunning()) {
@@ -838,16 +838,16 @@ void BM_Time_ToDateTimeUTC_Libc(benchmark::State& state) {
 #endif
   }
 }
-BENCHMARK(BM_Time_ToDateTimeUTC_Libc);
+BENCHMARK(BM_Time_ToCivilUTC_Libc);
 
-// In each "FromDateTime" benchmark we switch between two YMDhms
-// values separated by at least one transition in order to defeat any
-// internal caching of previous results (e.g., see time_local_hint_).
+// In each "FromCivil" benchmark we switch between two YMDhms values
+// separated by at least one transition in order to defeat any internal
+// caching of previous results (e.g., see time_local_hint_).
 //
 // The "UTC" variants use UTC instead of the Google/local time zone.
 // The "Day0" variants require normalization of the day of month.
 
-void BM_Time_FromDateTime_CCTZ(benchmark::State& state) {
+void BM_Time_FromCivil_CCTZ(benchmark::State& state) {
   const cctz::time_zone tz = TestTimeZone();
   int i = 0;
   while (state.KeepRunning()) {
@@ -860,9 +860,9 @@ void BM_Time_FromDateTime_CCTZ(benchmark::State& state) {
     }
   }
 }
-BENCHMARK(BM_Time_FromDateTime_CCTZ);
+BENCHMARK(BM_Time_FromCivil_CCTZ);
 
-void BM_Time_FromDateTime_Libc(benchmark::State& state) {
+void BM_Time_FromCivil_Libc(benchmark::State& state) {
   // No timezone support, so just use localtime.
   int i = 0;
   while (state.KeepRunning()) {
@@ -886,20 +886,20 @@ void BM_Time_FromDateTime_Libc(benchmark::State& state) {
     benchmark::DoNotOptimize(mktime(&tm));
   }
 }
-BENCHMARK(BM_Time_FromDateTime_Libc);
+BENCHMARK(BM_Time_FromCivil_Libc);
 
-void BM_Time_FromDateTimeUTC_CCTZ(benchmark::State& state) {
+void BM_Time_FromCivilUTC_CCTZ(benchmark::State& state) {
   const cctz::time_zone tz = cctz::utc_time_zone();
   while (state.KeepRunning()) {
     benchmark::DoNotOptimize(
         cctz::convert(cctz::civil_second(2014, 12, 18, 20, 16, 18), tz));
   }
 }
-BENCHMARK(BM_Time_FromDateTimeUTC_CCTZ);
+BENCHMARK(BM_Time_FromCivilUTC_CCTZ);
 
-// There is no BM_Time_FromDateTimeUTC_Libc.
+// There is no BM_Time_FromCivilUTC_Libc.
 
-void BM_Time_FromDateTimeDay0_CCTZ(benchmark::State& state) {
+void BM_Time_FromCivilDay0_CCTZ(benchmark::State& state) {
   const cctz::time_zone tz = TestTimeZone();
   int i = 0;
   while (state.KeepRunning()) {
@@ -912,9 +912,9 @@ void BM_Time_FromDateTimeDay0_CCTZ(benchmark::State& state) {
     }
   }
 }
-BENCHMARK(BM_Time_FromDateTimeDay0_CCTZ);
+BENCHMARK(BM_Time_FromCivilDay0_CCTZ);
 
-void BM_Time_FromDateTimeDay0_Libc(benchmark::State& state) {
+void BM_Time_FromCivilDay0_Libc(benchmark::State& state) {
   // No timezone support, so just use localtime.
   int i = 0;
   while (state.KeepRunning()) {
@@ -938,7 +938,7 @@ void BM_Time_FromDateTimeDay0_Libc(benchmark::State& state) {
     benchmark::DoNotOptimize(mktime(&tm));
   }
 }
-BENCHMARK(BM_Time_FromDateTimeDay0_Libc);
+BENCHMARK(BM_Time_FromCivilDay0_Libc);
 
 const char* const kFormats[] = {
     RFC1123_full,         // 0

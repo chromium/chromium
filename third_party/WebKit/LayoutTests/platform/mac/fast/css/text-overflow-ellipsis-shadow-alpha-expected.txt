@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x99
-  LayoutBlockFlow {HTML} at (0,0) size 800x99
-    LayoutBlockFlow {BODY} at (8,8) size 784x83
-layer at (8,8) size 144x83 scrollWidth 160
-  LayoutBlockFlow {DIV} at (0,0) size 144x83 [color=#00000000]
-    LayoutText {#text} at (0,0) size 161x83
-      text run at (0,0) width 161: "Blink"

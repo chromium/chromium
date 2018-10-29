@@ -59,7 +59,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
         content::NotificationService::NoDetails());
   }
 
-  scoped_refptr<Extension> CreateExtension(const std::string& id_input) {
+  scoped_refptr<const Extension> CreateExtension(const std::string& id_input) {
     std::unique_ptr<base::DictionaryValue> manifest =
         DictionaryBuilder()
             .Set("name", "extension")
@@ -70,7 +70,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
     return CreateExtension(id_input, std::move(manifest));
   }
 
-  scoped_refptr<Extension> CreateTheme(const std::string& id_input) {
+  scoped_refptr<const Extension> CreateTheme(const std::string& id_input) {
     std::unique_ptr<base::DictionaryValue> manifest =
         DictionaryBuilder()
             .Set("name", "theme")
@@ -82,7 +82,8 @@ class RendererStartupHelperTest : public ExtensionsTest {
     return CreateExtension(id_input, std::move(manifest));
   }
 
-  scoped_refptr<Extension> CreatePlatformApp(const std::string& id_input) {
+  scoped_refptr<const Extension> CreatePlatformApp(
+      const std::string& id_input) {
     std::unique_ptr<base::Value> background =
         DictionaryBuilder()
             .Set("scripts", ListBuilder().Append("background.js").Build())
@@ -100,11 +101,11 @@ class RendererStartupHelperTest : public ExtensionsTest {
     return CreateExtension(id_input, std::move(manifest));
   }
 
-  void AddExtensionToRegistry(scoped_refptr<Extension> extension) {
+  void AddExtensionToRegistry(scoped_refptr<const Extension> extension) {
     registry_->AddEnabled(extension);
   }
 
-  void RemoveExtensionFromRegistry(scoped_refptr<Extension> extension) {
+  void RemoveExtensionFromRegistry(scoped_refptr<const Extension> extension) {
     registry_->RemoveEnabled(extension->id());
   }
 
@@ -135,10 +136,10 @@ class RendererStartupHelperTest : public ExtensionsTest {
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
   std::unique_ptr<content::MockRenderProcessHost>
       incognito_render_process_host_;
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
 
  private:
-  scoped_refptr<Extension> CreateExtension(
+  scoped_refptr<const Extension> CreateExtension(
       const std::string& id_input,
       std::unique_ptr<base::DictionaryValue> manifest) {
     return ExtensionBuilder()
@@ -251,7 +252,7 @@ TEST_F(RendererStartupHelperTest, LoadTheme) {
   SimulateRenderProcessCreated(render_process_host_.get());
   EXPECT_TRUE(IsProcessInitialized(render_process_host_.get()));
 
-  scoped_refptr<Extension> extension(CreateTheme("theme"));
+  scoped_refptr<const Extension> extension(CreateTheme("theme"));
   ASSERT_TRUE(extension->is_theme());
 
   IPC::TestSink& sink = render_process_host_->sink();
@@ -352,7 +353,8 @@ TEST_F(RendererStartupHelperTest, PlatformAppInIncognitoRenderer) {
 
   IPC::TestSink& incognito_sink = incognito_render_process_host_->sink();
 
-  scoped_refptr<Extension> platform_app(CreatePlatformApp("platform_app"));
+  scoped_refptr<const Extension> platform_app(
+      CreatePlatformApp("platform_app"));
   ASSERT_TRUE(platform_app->is_platform_app());
   EXPECT_FALSE(util::IsIncognitoEnabled(platform_app->id(), browser_context()));
   EXPECT_FALSE(util::CanBeIncognitoEnabled(platform_app.get()));

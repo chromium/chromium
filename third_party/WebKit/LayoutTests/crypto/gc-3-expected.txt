@@ -2,7 +2,6 @@ Test that window.crypto wrapper protects all dependencies, so it can always be u
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS [object Crypto] is defined.
 PASS [object SubtleCrypto] is defined.
 PASS successfullyParsed is true

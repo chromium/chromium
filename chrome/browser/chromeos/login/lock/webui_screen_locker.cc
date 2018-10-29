@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/helper.h"
@@ -31,6 +32,7 @@
 #include "components/login/base_screen_handler_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -256,26 +258,13 @@ void WebUIScreenLocker::OnAshLockAnimationFinished() {
 
 void WebUIScreenLocker::SetFingerprintState(
     const AccountId& account_id,
-    ScreenLocker::FingerprintState state) {
-  // TODO(xiaoyinh@): Modify JS side to consolidate removeUserPodFingerprintIcon
-  // and setUserPodFingerprintIcon into single JS function.
-  if (state == ScreenLocker::FingerprintState::kRemoved) {
-    GetWebUI()->CallJavascriptFunctionUnsafe(
-        "login.AccountPickerScreen.removeUserPodFingerprintIcon",
-        ::login::MakeValue(account_id));
-    return;
-  }
+    ash::mojom::FingerprintState state) {
+  NOTREACHED();
+}
 
-  chromeos::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      chromeos::quick_unlock::QuickUnlockFactory::GetForAccountId(account_id);
-  if (!quick_unlock_storage ||
-      !quick_unlock_storage->IsFingerprintAuthenticationAvailable()) {
-    state = ScreenLocker::FingerprintState::kHidden;
-  }
-  GetWebUI()->CallJavascriptFunctionUnsafe(
-      "login.AccountPickerScreen.setUserPodFingerprintIcon",
-      ::login::MakeValue(account_id),
-      ::login::MakeValue(static_cast<int>(state)));
+void WebUIScreenLocker::NotifyFingerprintAuthResult(const AccountId& account_id,
+                                                    bool success) {
+  NOTREACHED();
 }
 
 content::WebContents* WebUIScreenLocker::GetWebContents() {
@@ -348,26 +337,24 @@ void WebUIScreenLocker::OnWidgetDestroying(views::Widget* widget) {
 void WebUIScreenLocker::LidEventReceived(PowerManagerClient::LidState state,
                                          const base::TimeTicks& time) {
   if (state == PowerManagerClient::LidState::OPEN) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
-        base::BindOnce(&WebUIScreenLocker::FocusUserPod,
-                       weak_factory_.GetWeakPtr()));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             base::BindOnce(&WebUIScreenLocker::FocusUserPod,
+                                            weak_factory_.GetWeakPtr()));
   }
 }
 
 void WebUIScreenLocker::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&WebUIScreenLocker::ResetAndFocusUserPod,
                      weak_factory_.GetWeakPtr()));
 }
 
 void WebUIScreenLocker::SuspendDone(const base::TimeDelta& sleep_duration) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::BindOnce(&WebUIScreenLocker::FocusUserPod,
-                     weak_factory_.GetWeakPtr()));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(&WebUIScreenLocker::FocusUserPod,
+                                          weak_factory_.GetWeakPtr()));
 }
 
 void WebUIScreenLocker::RenderProcessGone(base::TerminationStatus status) {

@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -119,15 +118,6 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase,
       // Force audio service out of process to disabled.
       audio_service_features_.InitWithFeatures({}, audio_service_oop_features);
     }
-#if defined(OS_WIN)
-    // TODO(https://crbug.com/867827) remove histogram allocator creation when
-    // removing output controller checks.
-    if (!base::GlobalHistogramAllocator::Get()) {
-      const int32_t kAllocatorMemorySize = 8 << 20;
-      base::GlobalHistogramAllocator::CreateWithLocalMemory(
-          kAllocatorMemorySize, 0, "HistogramAllocatorTest");
-    }
-#endif
   }
   ~WebRtcGetUserMediaBrowserTest() override {}
 
@@ -168,8 +158,7 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase,
     base::ListValue* values;
     ASSERT_TRUE(value->GetAsList(&values));
 
-    for (base::ListValue::iterator it = values->begin();
-         it != values->end(); ++it) {
+    for (auto it = values->begin(); it != values->end(); ++it) {
       const base::DictionaryValue* dict;
       std::string kind;
       std::string device_id;

@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
+#include "base/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/common/content_export.h"
 
@@ -28,7 +30,8 @@ namespace surface_utils {
 // Directly connects HostFrameSinkManager to FrameSinkManagerImpl without Mojo.
 CONTENT_EXPORT void ConnectWithLocalFrameSinkManager(
     viz::HostFrameSinkManager* host_frame_sink_manager,
-    viz::FrameSinkManagerImpl* frame_sink_manager_impl);
+    viz::FrameSinkManagerImpl* frame_sink_manager_impl,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner = nullptr);
 
 }  // namespace surface_utils
 

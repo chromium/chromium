@@ -4,7 +4,6 @@
 
 #include "ash/system/screen_security/screen_security_notification_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -77,8 +76,7 @@ void ScreenSecurityNotificationController::CreateNotification(
           data, std::move(delegate), kNotificationScreenshareIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   notification->SetSystemPriority();
-  if (features::IsSystemTrayUnifiedEnabled())
-    notification->set_pinned(true);
+  notification->set_pinned(true);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
 }

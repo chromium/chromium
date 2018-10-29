@@ -885,8 +885,7 @@ bool Rankings::IsTail(CacheAddr addr, List* list) const {
 // of cache iterators and update all that are pointing to the given node.
 void Rankings::UpdateIterators(CacheRankingsBlock* node) {
   CacheAddr address = node->address().value();
-  for (IteratorList::iterator it = iterators_.begin(); it != iterators_.end();
-       ++it) {
+  for (auto it = iterators_.begin(); it != iterators_.end(); ++it) {
     if (it->first == address && it->second->HasData()) {
       CacheRankingsBlock* other = it->second;
       *other->Data() = *node->Data();
@@ -896,8 +895,7 @@ void Rankings::UpdateIterators(CacheRankingsBlock* node) {
 
 void Rankings::InvalidateIterators(CacheRankingsBlock* node) {
   CacheAddr address = node->address().value();
-  for (IteratorList::iterator it = iterators_.begin(); it != iterators_.end();
-       ++it) {
+  for (auto it = iterators_.begin(); it != iterators_.end(); ++it) {
     if (it->first == address)
       it->second->Discard();
   }

@@ -13,7 +13,6 @@
 namespace resource_coordinator {
 
 class FrameCoordinationUnitImpl;
-class ProcessCoordinationUnitImpl;
 
 class ProcessCoordinationUnitImpl
     : public CoordinationUnitInterface<ProcessCoordinationUnitImpl,
@@ -30,7 +29,6 @@ class ProcessCoordinationUnitImpl
 
   // mojom::ProcessCoordinationUnit implementation.
   void AddFrame(const CoordinationUnitID& cu_id) override;
-  void RemoveFrame(const CoordinationUnitID& cu_id) override;
   void SetCPUUsage(double cpu_usage) override;
   void SetExpectedTaskQueueingDuration(base::TimeDelta duration) override;
   void SetLaunchTime(base::Time launch_time) override;
@@ -53,24 +51,37 @@ class ProcessCoordinationUnitImpl
       const;
 
   base::ProcessId process_id() const { return process_id_; }
+  base::Time launch_time() const { return launch_time_; }
+
+  // Removes |frame_cu| from the set of frames hosted by this process. Invoked
+  // from the destructor of FrameCoordinationUnitImpl.
+  void RemoveFrame(FrameCoordinationUnitImpl* frame_cu);
+
+  // Invoked when the state of a frame hosted by this process changes.
+  void OnFrameLifecycleStateChanged(FrameCoordinationUnitImpl* frame_cu,
+                                    mojom::LifecycleState old_state);
 
  private:
-  friend class FrameCoordinationUnitImpl;
-
   // CoordinationUnitInterface implementation.
   void OnEventReceived(mojom::Event event) override;
   void OnPropertyChanged(mojom::PropertyType property_type,
                          int64_t value) override;
 
-  bool AddFrame(FrameCoordinationUnitImpl* frame_cu);
-  bool RemoveFrame(FrameCoordinationUnitImpl* frame_cu);
+  void AddFrameImpl(FrameCoordinationUnitImpl* frame_cu);
+
+  void DecrementNumFrozenFrames();
+  void IncrementNumFrozenFrames();
 
   base::TimeDelta cumulative_cpu_usage_;
   uint64_t private_footprint_kb_ = 0u;
 
   base::ProcessId process_id_ = base::kNullProcessId;
+  base::Time launch_time_;
 
   std::set<FrameCoordinationUnitImpl*> frame_coordination_units_;
+
+  // The number of frames hosted by this process that are frozen.
+  int num_frozen_frames_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(ProcessCoordinationUnitImpl);
 };

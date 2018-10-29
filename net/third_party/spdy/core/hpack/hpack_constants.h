@@ -5,8 +5,8 @@
 #ifndef NET_THIRD_PARTY_SPDY_CORE_HPACK_HPACK_CONSTANTS_H_
 #define NET_THIRD_PARTY_SPDY_CORE_HPACK_HPACK_CONSTANTS_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #include <vector>
 
@@ -70,11 +70,13 @@ const HpackPrefix kLiteralNoIndexOpcode = {0b0000, 4};
 // varint-encoded table size with a 5-bit prefix.
 const HpackPrefix kHeaderTableSizeUpdateOpcode = {0b001, 3};
 
-// Returns symbol code table from RFC 7541, "Appendix C. Huffman Code".
-SPDY_EXPORT_PRIVATE std::vector<HpackHuffmanSymbol> HpackHuffmanCode();
+// Symbol code table from RFC 7541, "Appendix C. Huffman Code".
+SPDY_EXPORT_PRIVATE const std::vector<HpackHuffmanSymbol>&
+HpackHuffmanCodeVector();
 
-// Returns static table from RFC 7541, "Appendix B. Static Table Definition".
-SPDY_EXPORT_PRIVATE std::vector<HpackStaticEntry> HpackStaticTableVector();
+// Static table from RFC 7541, "Appendix B. Static Table Definition".
+SPDY_EXPORT_PRIVATE const std::vector<HpackStaticEntry>&
+HpackStaticTableVector();
 
 // Returns a HpackHuffmanTable instance initialized with |kHpackHuffmanCode|.
 // The instance is read-only, has static lifetime, and is safe to share amoung

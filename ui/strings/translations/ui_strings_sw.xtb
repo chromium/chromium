@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{Dakika 1 iliyopita}other{Dakika # zilizopita}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{Dak 1}other{Dak #}}</translation>
 <translation id="1243314992276662751">Pakia</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">PROGRAMU ZINAZOPENDEKEZWA</translation>
 <translation id="1368832886055348810">Kushoto hadi Kulia</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Ukurasa mmoja chini</translation>
 <translation id="8245914219290430011">Kichupo</translation>
+<translation id="8259556432390118667">Thamani ya rangi ya hex</translation>
 <translation id="8328145009876646418">Ncha ya Kushoto</translation>
 <translation id="8331626408530291785">Sogeza Juu</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{Mwaka 1}other{Miaka #}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">Chaguomsingi</translation>
 <translation id="8806053966018712535">Folda ya <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">Eleza kuhusu picha</translation>
+<translation id="8841375032071747811">Kitufe cha Nyuma</translation>
 <translation id="8901569739625249689">KB <ph name="QUANTITY" /></translation>
 <translation id="9002566407876343676">fungua</translation>
 <translation id="9038489124413477075">Folda isiyo na jina</translation>

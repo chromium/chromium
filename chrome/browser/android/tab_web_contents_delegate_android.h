@@ -36,6 +36,7 @@ class TabWebContentsDelegateAndroid
   ~TabWebContentsDelegateAndroid() override;
 
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      std::unique_ptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
   std::unique_ptr<content::BluetoothChooser> RunBluetoothChooser(
       content::RenderFrameHost* frame,
@@ -91,6 +92,11 @@ class TabWebContentsDelegateAndroid
                            const GURL& url) override;
   void UpdateUserGestureCarryoverInfo(
       content::WebContents* web_contents) override;
+  std::unique_ptr<content::WebContents> SwapWebContents(
+      content::WebContents* old_contents,
+      std::unique_ptr<content::WebContents> new_contents,
+      bool did_start_load,
+      bool did_finish_load) override;
 
  private:
   // NotificationObserver implementation.

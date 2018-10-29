@@ -16,7 +16,11 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
+#include "chrome/browser/loader/chrome_navigation_data.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/previews/previews_service.h"
+#include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
@@ -25,14 +29,17 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_config.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_io_data.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/data_reduction_proxy/core/browser/data_store.h"
+#include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/previews/content/previews_ui_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/network_service_instance.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -175,8 +182,8 @@ DataReductionProxyChromeSettings::MigrateDataReductionProxyOffProxyPrefsHelper(
 
 DataReductionProxyChromeSettings::DataReductionProxyChromeSettings()
     : data_reduction_proxy::DataReductionProxySettings(),
-      data_reduction_proxy_enabled_pref_name_(prefs::kDataSaverEnabled) {
-}
+      data_reduction_proxy_enabled_pref_name_(prefs::kDataSaverEnabled),
+      profile_(nullptr) {}
 
 DataReductionProxyChromeSettings::~DataReductionProxyChromeSettings() {
 }
@@ -192,10 +199,12 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
     data_reduction_proxy::DataReductionProxyIOData* io_data,
     PrefService* profile_prefs,
     net::URLRequestContextGetter* request_context_getter,
+    Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<data_reduction_proxy::DataStore> store,
     const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner) {
+  profile_ = profile;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if defined(OS_ANDROID)
   // On mobile we write Data Reduction Proxy prefs directly to the pref service.
@@ -210,11 +219,14 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
 
   std::unique_ptr<data_reduction_proxy::DataReductionProxyService> service =
       std::make_unique<data_reduction_proxy::DataReductionProxyService>(
-          this, profile_prefs, request_context_getter, std::move(store),
+          this, profile_prefs, request_context_getter, url_loader_factory,
+          std::move(store),
           std::make_unique<
               data_reduction_proxy::DataReductionProxyPingbackClientImpl>(
               url_loader_factory, ui_task_runner),
-          g_browser_process->network_quality_tracker(), ui_task_runner,
+          g_browser_process->network_quality_tracker(),
+          content::GetNetworkConnectionTracker(),
+          g_browser_process->data_use_measurement(), ui_task_runner,
           io_data->io_task_runner(), db_task_runner, commit_delay);
   data_reduction_proxy::DataReductionProxySettings::
       InitDataReductionProxySettings(data_reduction_proxy_enabled_pref_name_,
@@ -229,6 +241,75 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
               &ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial));
   // TODO(bengr): Remove after M46. See http://crbug.com/445599.
   MigrateDataReductionProxyOffProxyPrefs(profile_prefs);
+}
+
+void DataReductionProxyChromeSettings::SetIgnoreLongTermBlackListRules(
+    bool ignore_long_term_black_list_rules) {
+  // |previews_service| is null if |profile_| is off the record.
+  PreviewsService* previews_service =
+      PreviewsServiceFactory::GetForProfile(profile_);
+  if (previews_service && previews_service->previews_ui_service()) {
+    previews_service->previews_ui_service()
+        ->SetIgnoreLongTermBlackListForServerPreviews(
+            ignore_long_term_black_list_rules);
+  }
+}
+
+std::unique_ptr<data_reduction_proxy::DataReductionProxyData>
+DataReductionProxyChromeSettings::CreateDataFromNavigationHandle(
+    content::NavigationHandle* handle,
+    const net::HttpResponseHeaders* headers) {
+  ChromeNavigationData* chrome_navigation_data =
+      static_cast<ChromeNavigationData*>(handle->GetNavigationData());
+  if (chrome_navigation_data) {
+    if (chrome_navigation_data->GetDataReductionProxyData())
+      return chrome_navigation_data->GetDataReductionProxyData()->DeepCopy();
+    return nullptr;
+  }
+
+  // Some unit tests don't have data_reduction_proxy_service() set.
+  if (!data_reduction_proxy_service())
+    return nullptr;
+
+  // TODO(721403): Need to fill in:
+  //  - client_lofi_requestd_
+  //  - session_key_
+  //  - page_id_
+  //  - request_info_
+  auto data = std::make_unique<data_reduction_proxy::DataReductionProxyData>();
+  data->set_request_url(handle->GetURL());
+  data->set_effective_connection_type(
+      data_reduction_proxy_service()->GetEffectiveConnectionType());
+  data->set_connection_type(net::NetworkChangeNotifier::ConnectionType(
+      data_reduction_proxy_service()->GetConnectionType()));
+  data->set_used_data_reduction_proxy(
+      IsConfiguredDataReductionProxy(handle->GetProxyServer()));
+
+  if (!headers || headers->IsRedirect(nullptr))
+    return data;
+
+  if (handle->WasResponseCached() &&
+      headers->HasHeader(data_reduction_proxy::chrome_proxy_header())) {
+    data->set_was_cached_data_reduction_proxy_response(true);
+  }
+
+  switch (data_reduction_proxy::ParseResponseTransform(*headers)) {
+    case data_reduction_proxy::TRANSFORM_LITE_PAGE:
+      data->set_lite_page_received(true);
+      break;
+    case data_reduction_proxy::TRANSFORM_PAGE_POLICIES_EMPTY_IMAGE:
+      data->set_lofi_policy_received(true);
+      break;
+    case data_reduction_proxy::TRANSFORM_EMPTY_IMAGE:
+      data->set_lofi_received(true);
+      break;
+    case data_reduction_proxy::TRANSFORM_IDENTITY:
+    case data_reduction_proxy::TRANSFORM_COMPRESSED_VIDEO:
+    case data_reduction_proxy::TRANSFORM_NONE:
+    case data_reduction_proxy::TRANSFORM_UNKNOWN:
+      break;
+  }
+  return data;
 }
 
 // static

@@ -4,8 +4,10 @@
 
 #include "content/browser/renderer_host/media/media_capture_devices_impl.h"
 
+#include "base/task/post_task.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -14,8 +16,8 @@ namespace {
 
 void EnsureMonitorCaptureDevices() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &MediaStreamManager::EnsureDeviceMonitorStarted,
           base::Unretained(
@@ -57,8 +59,8 @@ void MediaCaptureDevicesImpl::AddVideoCaptureObserver(
   MediaStreamManager* media_stream_manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();
   if (media_stream_manager != nullptr) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&MediaStreamManager::AddVideoCaptureObserver,
                        base::Unretained(media_stream_manager), observer));
   } else {
@@ -70,8 +72,8 @@ void MediaCaptureDevicesImpl::RemoveAllVideoCaptureObservers() {
   MediaStreamManager* media_stream_manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();
   if (media_stream_manager != nullptr) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&MediaStreamManager::RemoveAllVideoCaptureObservers,
                        base::Unretained(media_stream_manager)));
   } else {
@@ -84,8 +86,8 @@ void MediaCaptureDevicesImpl::OnAudioCaptureDevicesChanged(
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     UpdateAudioDevicesOnUIThread(devices);
   } else {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&MediaCaptureDevicesImpl::UpdateAudioDevicesOnUIThread,
                        base::Unretained(this), devices));
   }
@@ -96,8 +98,8 @@ void MediaCaptureDevicesImpl::OnVideoCaptureDevicesChanged(
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     UpdateVideoDevicesOnUIThread(devices);
   } else {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&MediaCaptureDevicesImpl::UpdateVideoDevicesOnUIThread,
                        base::Unretained(this), devices));
   }

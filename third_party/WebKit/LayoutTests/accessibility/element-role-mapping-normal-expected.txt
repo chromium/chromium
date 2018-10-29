@@ -1,6 +1,7 @@
 This is a Header for this page
 Heading
 Division
+
 Paragraph
 
 韓國한국
@@ -11,28 +12,36 @@ Milk
 x + a / b
 Most important heading here
 Google Chrome
+
 Google Chrome is a free, open-source web browser developed by Google, released in 2008.
 
 Footer in article
 
 HTML | CSS | JavaScript |
+
 Text that appears under aside
 
 Text in a    pre
 element
+
 Most important heading here
+
 Section
 
 Footer in section
 
 Written by Julie
 Visit us at:www.chromium.org
-January This is an open dialog window
+
+
+January
+This is an open dialog window
 
 Caption
 Cell1	Cell2
 
 Fig1. - Blue Box
+
 
 This is a footer.
 
@@ -41,7 +50,6 @@ End of test
 This test make sure that unfocuasable elements are mapped implicitly to AX roles.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 AXRole: AXWebArea
     AXRole: AXBanner
@@ -187,6 +195,7 @@ element
                 AXRole: AXInlineTextBox "This is a footer."
     AXRole: AXParagraph
         AXRole: AXStaticText "End of test"
+
 PASS successfullyParsed is true
 
 TEST COMPLETE

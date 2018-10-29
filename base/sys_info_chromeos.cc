@@ -88,7 +88,7 @@ class ChromeOSVersionInfo {
   }
 
   bool GetLsbReleaseValue(const std::string& key, std::string* value) {
-    SysInfo::LsbReleaseMap::const_iterator iter = lsb_release_map_.find(key);
+    LsbReleaseMap::const_iterator iter = lsb_release_map_.find(key);
     if (iter == lsb_release_map_.end())
       return false;
     *value = iter->second;
@@ -104,9 +104,6 @@ class ChromeOSVersionInfo {
   }
 
   const Time& lsb_release_time() const { return lsb_release_time_; }
-  const SysInfo::LsbReleaseMap& lsb_release_map() const {
-    return lsb_release_map_;
-  }
   bool is_running_on_chromeos() const { return is_running_on_chromeos_; }
 
  private:
@@ -154,8 +151,9 @@ class ChromeOSVersionInfo {
     }
   }
 
+  using LsbReleaseMap = std::map<std::string, std::string>;
   Time lsb_release_time_;
-  SysInfo::LsbReleaseMap lsb_release_map_;
+  LsbReleaseMap lsb_release_map_;
   int32_t major_version_;
   int32_t minor_version_;
   int32_t bugfix_version_;
@@ -194,11 +192,6 @@ std::string SysInfo::KernelVersion() {
     return std::string();
   }
   return std::string(info.release);
-}
-
-// static
-const SysInfo::LsbReleaseMap& SysInfo::GetLsbReleaseMap() {
-  return GetChromeOSVersionInfo().lsb_release_map();
 }
 
 // static

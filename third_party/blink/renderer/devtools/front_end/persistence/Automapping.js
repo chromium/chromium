@@ -166,6 +166,8 @@ Persistence.Automapping = class {
     if (networkSourceCode[Persistence.Automapping._processingPromise] ||
         networkSourceCode[Persistence.Automapping._status])
       return;
+    if (networkSourceCode.url().startsWith('wasm://'))
+      return;
     const createBindingPromise =
         this._createBinding(networkSourceCode).then(validateStatus.bind(this)).then(onStatus.bind(this));
     networkSourceCode[Persistence.Automapping._processingPromise] = createBindingPromise;

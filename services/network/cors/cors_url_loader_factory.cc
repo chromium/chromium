@@ -34,6 +34,7 @@ CORSURLLoaderFactory::CORSURLLoaderFactory(
           this)),
       origin_access_list_(origin_access_list) {
   DCHECK(context_);
+  DCHECK(origin_access_list_);
   bindings_.AddBinding(this, std::move(request));
   bindings_.set_connection_error_handler(base::BindRepeating(
       &CORSURLLoaderFactory::DeleteIfNeeded, base::Unretained(this)));

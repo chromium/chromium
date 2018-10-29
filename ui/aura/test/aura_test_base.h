@@ -6,7 +6,6 @@
 #define UI_AURA_TEST_AURA_TEST_BASE_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -89,18 +88,11 @@ class AuraTestBase : public testing::Test, public WindowTreeClientDelegate {
   }
   ws::mojom::WindowTreeClient* window_tree_client();
 
-  std::vector<std::unique_ptr<ui::PointerEvent>>& observed_pointer_events() {
-    return observed_pointer_events_;
-  }
-
   // WindowTreeClientDelegate:
   void OnEmbed(std::unique_ptr<WindowTreeHostMus> window_tree_host) override;
   void OnUnembed(Window* root) override;
   void OnEmbedRootDestroyed(WindowTreeHostMus* window_tree_host) override;
   void OnLostConnection(WindowTreeClient* client) override;
-  void OnPointerEventObserved(const ui::PointerEvent& event,
-                              const gfx::Point& location_in_screen,
-                              Window* target) override;
   PropertyConverter* GetPropertyConverter() override;
 
  private:
@@ -115,7 +107,6 @@ class AuraTestBase : public testing::Test, public WindowTreeClientDelegate {
   PropertyConverter property_converter_;
   std::unique_ptr<AuraTestHelper> helper_;
   std::unique_ptr<AuraTestContextFactory> mus_context_factory_;
-  std::vector<std::unique_ptr<ui::PointerEvent>> observed_pointer_events_;
 
   DISALLOW_COPY_AND_ASSIGN(AuraTestBase);
 };

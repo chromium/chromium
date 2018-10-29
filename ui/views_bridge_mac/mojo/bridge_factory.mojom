@@ -9,10 +9,12 @@ import "ui/views_bridge_mac/mojo/bridged_native_widget_host.mojom";
 
 // The interface through which a bridge is created and connected to its host.
 interface BridgeFactory {
-  CreateBridge(
+  // Create a bridge for a native widget. The resulting object will be owned by
+  // the connection for |host|. Closing that connection will result in deleting
+  // the bridge.
+  CreateBridgedNativeWidget(
       uint64 bridge_id,
-      BridgedNativeWidget& bridge_request,
-      BridgedNativeWidgetHost host);
-  DestroyBridge(uint64 bridge_id);
+      associated BridgedNativeWidget& bridge_request,
+      associated BridgedNativeWidgetHost host);
 };
 

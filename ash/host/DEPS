@@ -5,6 +5,7 @@ include_rules = [
   "+ash/ash_export.h",
   "+ash/public/cpp/ash_switches.h",
   "+ash/window_factory.h",
+  "+ash/ws",
 ]
 
 specific_include_rules = {

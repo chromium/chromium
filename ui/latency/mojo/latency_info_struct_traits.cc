@@ -12,23 +12,23 @@ namespace {
 
 ui::mojom::SourceEventType UISourceEventTypeToMojo(ui::SourceEventType type) {
   switch (type) {
-    case ui::UNKNOWN:
+    case ui::SourceEventType::UNKNOWN:
       return ui::mojom::SourceEventType::UNKNOWN;
-    case ui::WHEEL:
+    case ui::SourceEventType::WHEEL:
       return ui::mojom::SourceEventType::WHEEL;
-    case ui::MOUSE:
+    case ui::SourceEventType::MOUSE:
       return ui::mojom::SourceEventType::MOUSE;
-    case ui::TOUCH:
+    case ui::SourceEventType::TOUCH:
       return ui::mojom::SourceEventType::TOUCH;
-    case ui::INERTIAL:
+    case ui::SourceEventType::INERTIAL:
       return ui::mojom::SourceEventType::INERTIAL;
-    case ui::KEY_PRESS:
+    case ui::SourceEventType::KEY_PRESS:
       return ui::mojom::SourceEventType::KEY_PRESS;
-    case ui::TOUCHPAD:
+    case ui::SourceEventType::TOUCHPAD:
       return ui::mojom::SourceEventType::TOUCHPAD;
-    case ui::FRAME:
+    case ui::SourceEventType::FRAME:
       return ui::mojom::SourceEventType::FRAME;
-    case ui::OTHER:
+    case ui::SourceEventType::OTHER:
       return ui::mojom::SourceEventType::OTHER;
   }
   NOTREACHED();
@@ -38,23 +38,23 @@ ui::mojom::SourceEventType UISourceEventTypeToMojo(ui::SourceEventType type) {
 ui::SourceEventType MojoSourceEventTypeToUI(ui::mojom::SourceEventType type) {
   switch (type) {
     case ui::mojom::SourceEventType::UNKNOWN:
-      return ui::UNKNOWN;
+      return ui::SourceEventType::UNKNOWN;
     case ui::mojom::SourceEventType::WHEEL:
-      return ui::WHEEL;
+      return ui::SourceEventType::WHEEL;
     case ui::mojom::SourceEventType::MOUSE:
-      return ui::MOUSE;
+      return ui::SourceEventType::MOUSE;
     case ui::mojom::SourceEventType::TOUCH:
-      return ui::TOUCH;
+      return ui::SourceEventType::TOUCH;
     case ui::mojom::SourceEventType::INERTIAL:
-      return ui::INERTIAL;
+      return ui::SourceEventType::INERTIAL;
     case ui::mojom::SourceEventType::KEY_PRESS:
-      return ui::KEY_PRESS;
+      return ui::SourceEventType::KEY_PRESS;
     case ui::mojom::SourceEventType::TOUCHPAD:
-      return ui::TOUCHPAD;
+      return ui::SourceEventType::TOUCHPAD;
     case ui::mojom::SourceEventType::FRAME:
-      return ui::FRAME;
+      return ui::SourceEventType::FRAME;
     case ui::mojom::SourceEventType::OTHER:
-      return ui::OTHER;
+      return ui::SourceEventType::OTHER;
   }
   NOTREACHED();
   return ui::SourceEventType::UNKNOWN;

@@ -29,6 +29,12 @@ class FakeClientCertIdentity : public ClientCertIdentity {
       const std::string& cert_filename,
       const std::string& key_filename);
 
+  // Creates a FakeClientCertIdentity from a certificate file (DER or PEM).
+  // Signing attempts will fail. Returns nullptr on error.
+  static std::unique_ptr<FakeClientCertIdentity> CreateFromCertAndFailSigning(
+      const base::FilePath& dir,
+      const std::string& cert_filename);
+
   // Duplicates the FakeClientCertIdentity.
   std::unique_ptr<FakeClientCertIdentity> Copy();
 

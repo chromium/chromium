@@ -16,6 +16,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_metadata.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -38,12 +39,14 @@ base::string16 GetLabel(AutofillProfile* profile) {
   return labels[0];
 }
 
-void SetupTestProfile(AutofillProfile& profile) {
+void SetupValidatedTestProfile(AutofillProfile& profile) {
   profile.set_guid(base::GenerateGUID());
   profile.set_origin(kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
+  profile.SetClientValidityFromBitfieldValue(1984);
+  profile.set_is_client_validity_states_updated(true);
 }
 
 std::vector<AutofillProfile*> ToRawPointerVector(
@@ -704,9 +707,25 @@ TEST(AutofillProfileTest, IsSubsetOf) {
   EXPECT_FALSE(a->IsSubsetOf(*b, "en-US"));
 }
 
+TEST(AutofillProfileTest, SetRawInfo_UpdateValidityFlag) {
+  AutofillProfile a;
+  SetupValidatedTestProfile(a);
+  EXPECT_TRUE(a.is_client_validity_states_updated());
+
+  a.SetRawInfo(NAME_FULL, ASCIIToUTF16("Alice Munro"));
+  // NAME_FULL is NOT validated through the client API (not supported),
+  // therefore it should not change the validity flag.
+  EXPECT_TRUE(a.is_client_validity_states_updated());
+
+  a.SetRawInfo(ADDRESS_HOME_CITY, ASCIIToUTF16("Ooz"));
+  // ADDRESS_HOME_CITY IS validated through the client API, therefore it should
+  // change the flag to false.
+  EXPECT_FALSE(a.is_client_validity_states_updated());
+}
+
 TEST(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
   AutofillProfile a;
-  SetupTestProfile(a);
+  SetupValidatedTestProfile(a);
 
   // Create an identical profile except that the new profile:
   //   (1) Has a different origin,
@@ -725,6 +744,8 @@ TEST(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
   b.set_language_code("en");
 
   EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
+  // Merge has modified profile a, the validation is not updated.
+  EXPECT_FALSE(a.is_client_validity_states_updated());
   EXPECT_EQ(kSettingsOrigin, a.origin());
   EXPECT_EQ(ASCIIToUTF16("Unit 5, area 51"), a.GetRawInfo(ADDRESS_HOME_LINE2));
   EXPECT_EQ(ASCIIToUTF16("Fox"), a.GetRawInfo(COMPANY_NAME));
@@ -735,13 +756,18 @@ TEST(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
 
 TEST(AutofillProfileTest, MergeDataFrom_SameProfile) {
   AutofillProfile a;
-  SetupTestProfile(a);
+  SetupValidatedTestProfile(a);
 
   // The profile has no full name yet. Merge will add it.
   AutofillProfile b = a;
   b.set_guid(base::GenerateGUID());
   EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
+  // Merge has modified profile a, the validation is not updated.
+  EXPECT_FALSE(a.is_client_validity_states_updated());
   EXPECT_EQ(1u, a.use_count());
+
+  // pretend that the profile is re-validated.
+  a.set_is_client_validity_states_updated(true);
 
   // Now the profile is fully populated. Merging it again has no effect (except
   // for usage statistics).
@@ -749,6 +775,8 @@ TEST(AutofillProfileTest, MergeDataFrom_SameProfile) {
   c.set_guid(base::GenerateGUID());
   c.set_use_count(3);
   EXPECT_FALSE(a.MergeDataFrom(c, "en-US"));
+  // Merge has not modified anything, the validation should not changed.
+  EXPECT_TRUE(a.is_client_validity_states_updated());
   EXPECT_EQ(3u, a.use_count());
 }
 
@@ -1688,6 +1716,80 @@ TEST(AutofillProfileTest, SetClientValidityFromBitfieldValue_Mixed) {
   EXPECT_EQ(AutofillProfile::INVALID,
             profile.GetValidityState(PHONE_HOME_WHOLE_NUMBER,
                                      AutofillProfile::AutofillProfile::CLIENT));
+}
+
+TEST(AutofillProfileTest, GetMetadata) {
+  AutofillProfile local_profile = test::GetFullProfile();
+  local_profile.set_use_count(2);
+  local_profile.set_use_date(base::Time::FromDoubleT(25));
+  local_profile.set_has_converted(false);
+  AutofillMetadata local_metadata = local_profile.GetMetadata();
+  EXPECT_EQ(local_profile.guid(), local_metadata.id);
+  EXPECT_EQ(local_profile.has_converted(), local_metadata.has_converted);
+  EXPECT_EQ(local_profile.use_count(), local_metadata.use_count);
+  EXPECT_EQ(local_profile.use_date(), local_metadata.use_date);
+
+  AutofillProfile server_profile = test::GetServerProfile();
+  server_profile.set_use_count(10);
+  server_profile.set_use_date(base::Time::FromDoubleT(100));
+  server_profile.set_has_converted(true);
+  AutofillMetadata server_metadata = server_profile.GetMetadata();
+  EXPECT_EQ(server_profile.server_id(), server_metadata.id);
+  EXPECT_EQ(server_profile.has_converted(), server_metadata.has_converted);
+  EXPECT_EQ(server_profile.use_count(), server_metadata.use_count);
+  EXPECT_EQ(server_profile.use_date(), server_metadata.use_date);
+}
+
+TEST(AutofillProfileTest, SetMetadata_MatchingId) {
+  AutofillProfile local_profile = test::GetFullProfile();
+  AutofillMetadata local_metadata;
+  local_metadata.id = local_profile.guid();
+  local_metadata.use_count = 100;
+  local_metadata.use_date = base::Time::FromDoubleT(50);
+  local_metadata.has_converted = true;
+  EXPECT_TRUE(local_profile.SetMetadata(local_metadata));
+  EXPECT_EQ(local_metadata.id, local_profile.guid());
+  EXPECT_EQ(local_metadata.has_converted, local_profile.has_converted());
+  EXPECT_EQ(local_metadata.use_count, local_profile.use_count());
+  EXPECT_EQ(local_metadata.use_date, local_profile.use_date());
+
+  AutofillProfile server_profile = test::GetServerProfile();
+  AutofillMetadata server_metadata;
+  server_metadata.id = server_profile.server_id();
+  server_metadata.use_count = 100;
+  server_metadata.use_date = base::Time::FromDoubleT(50);
+  server_metadata.has_converted = true;
+  EXPECT_TRUE(server_profile.SetMetadata(server_metadata));
+  EXPECT_EQ(server_metadata.id, server_profile.server_id());
+  EXPECT_EQ(server_metadata.has_converted, server_profile.has_converted());
+  EXPECT_EQ(server_metadata.use_count, server_profile.use_count());
+  EXPECT_EQ(server_metadata.use_date, server_profile.use_date());
+}
+
+TEST(AutofillProfileTest, SetMetadata_NotMatchingId) {
+  AutofillProfile local_profile = test::GetFullProfile();
+  AutofillMetadata local_metadata;
+  local_metadata.id = "WrongId";
+  local_metadata.use_count = 100;
+  local_metadata.use_date = base::Time::FromDoubleT(50);
+  local_metadata.has_converted = true;
+  EXPECT_FALSE(local_profile.SetMetadata(local_metadata));
+  EXPECT_NE(local_metadata.id, local_profile.guid());
+  EXPECT_NE(local_metadata.has_converted, local_profile.has_converted());
+  EXPECT_NE(local_metadata.use_count, local_profile.use_count());
+  EXPECT_NE(local_metadata.use_date, local_profile.use_date());
+
+  AutofillProfile server_profile = test::GetServerProfile();
+  AutofillMetadata server_metadata;
+  server_metadata.id = "WrongId";
+  server_metadata.use_count = 100;
+  server_metadata.use_date = base::Time::FromDoubleT(50);
+  server_metadata.has_converted = true;
+  EXPECT_FALSE(server_profile.SetMetadata(server_metadata));
+  EXPECT_NE(server_metadata.id, server_profile.guid());
+  EXPECT_NE(server_metadata.has_converted, server_profile.has_converted());
+  EXPECT_NE(server_metadata.use_count, server_profile.use_count());
+  EXPECT_NE(server_metadata.use_date, server_profile.use_date());
 }
 
 }  // namespace autofill

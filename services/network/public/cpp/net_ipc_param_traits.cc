@@ -222,6 +222,47 @@ void ParamTraits<scoped_refptr<net::HttpResponseHeaders>>::Log(
   l->append("<HttpResponseHeaders>");
 }
 
+void ParamTraits<net::ProxyServer>::Write(base::Pickle* m,
+                                          const param_type& p) {
+  net::ProxyServer::Scheme scheme = p.scheme();
+  WriteParam(m, scheme);
+  // When scheme is either 'direct' or 'invalid' |host_port_pair|
+  // should not be called, as per the method implementation body.
+  if (scheme != net::ProxyServer::SCHEME_DIRECT &&
+      scheme != net::ProxyServer::SCHEME_INVALID) {
+    WriteParam(m, p.host_port_pair());
+  }
+  WriteParam(m, p.is_trusted_proxy());
+}
+
+bool ParamTraits<net::ProxyServer>::Read(const base::Pickle* m,
+                                         base::PickleIterator* iter,
+                                         param_type* r) {
+  net::ProxyServer::Scheme scheme;
+  bool is_trusted_proxy = false;
+  if (!ReadParam(m, iter, &scheme))
+    return false;
+
+  // When scheme is either 'direct' or 'invalid' |host_port_pair|
+  // should not be called, as per the method implementation body.
+  net::HostPortPair host_port_pair;
+  if (scheme != net::ProxyServer::SCHEME_DIRECT &&
+      scheme != net::ProxyServer::SCHEME_INVALID &&
+      !ReadParam(m, iter, &host_port_pair)) {
+    return false;
+  }
+
+  if (!ReadParam(m, iter, &is_trusted_proxy))
+    return false;
+
+  *r = net::ProxyServer(scheme, host_port_pair, is_trusted_proxy);
+  return true;
+}
+
+void ParamTraits<net::ProxyServer>::Log(const param_type& p, std::string* l) {
+  l->append("<ProxyServer>");
+}
+
 void ParamTraits<net::OCSPVerifyResult>::Write(base::Pickle* m,
                                                const param_type& p) {
   WriteParam(m, p.response_status);
@@ -285,13 +326,12 @@ void ParamTraits<net::SSLInfo>::Write(base::Pickle* m, const param_type& p) {
   WriteParam(m, p.cert_status);
   WriteParam(m, p.security_bits);
   WriteParam(m, p.key_exchange_group);
+  WriteParam(m, p.peer_signature_algorithm);
   WriteParam(m, p.connection_status);
   WriteParam(m, p.is_issued_by_known_root);
   WriteParam(m, p.pkp_bypassed);
   WriteParam(m, p.client_cert_sent);
   WriteParam(m, p.channel_id_sent);
-  WriteParam(m, p.token_binding_negotiated);
-  WriteParam(m, p.token_binding_key_param);
   WriteParam(m, p.handshake_type);
   WriteParam(m, p.public_key_hashes);
   WriteParam(m, p.pinning_failure_log);
@@ -314,13 +354,12 @@ bool ParamTraits<net::SSLInfo>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->cert_status) &&
          ReadParam(m, iter, &r->security_bits) &&
          ReadParam(m, iter, &r->key_exchange_group) &&
+         ReadParam(m, iter, &r->peer_signature_algorithm) &&
          ReadParam(m, iter, &r->connection_status) &&
          ReadParam(m, iter, &r->is_issued_by_known_root) &&
          ReadParam(m, iter, &r->pkp_bypassed) &&
          ReadParam(m, iter, &r->client_cert_sent) &&
          ReadParam(m, iter, &r->channel_id_sent) &&
-         ReadParam(m, iter, &r->token_binding_negotiated) &&
-         ReadParam(m, iter, &r->token_binding_key_param) &&
          ReadParam(m, iter, &r->handshake_type) &&
          ReadParam(m, iter, &r->public_key_hashes) &&
          ReadParam(m, iter, &r->pinning_failure_log) &&
@@ -485,36 +524,34 @@ void ParamTraits<net::LoadTimingInfo>::Log(const param_type& p,
 }
 
 void ParamTraits<url::Origin>::Write(base::Pickle* m, const url::Origin& p) {
-  WriteParam(m, p.unique());
-  WriteParam(m, p.scheme());
-  WriteParam(m, p.host());
-  WriteParam(m, p.port());
+  WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().scheme());
+  WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().host());
+  WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().port());
+  WriteParam(m, p.GetNonceForSerialization());
 }
 
 bool ParamTraits<url::Origin>::Read(const base::Pickle* m,
                                     base::PickleIterator* iter,
                                     url::Origin* p) {
-  bool unique;
   std::string scheme;
   std::string host;
   uint16_t port;
-  if (!ReadParam(m, iter, &unique) || !ReadParam(m, iter, &scheme) ||
-      !ReadParam(m, iter, &host) || !ReadParam(m, iter, &port)) {
+  base::Optional<base::UnguessableToken> nonce_if_opaque;
+  if (!ReadParam(m, iter, &scheme) || !ReadParam(m, iter, &host) ||
+      !ReadParam(m, iter, &port) || !ReadParam(m, iter, &nonce_if_opaque)) {
     return false;
   }
 
-  if (unique) {
-    *p = url::Origin();
-  } else {
-    base::Optional<url::Origin> origin =
-        url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(scheme, host,
-                                                                   port);
-    if (!origin.has_value())
-      return false;
+  base::Optional<url::Origin> creation_result =
+      nonce_if_opaque
+          ? url::Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
+                scheme, host, port, url::Origin::Nonce(*nonce_if_opaque))
+          : url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(
+                scheme, host, port);
+  if (!creation_result)
+    return false;
 
-    *p = origin.value();
-  }
-
+  *p = std::move(creation_result.value());
   return true;
 }
 

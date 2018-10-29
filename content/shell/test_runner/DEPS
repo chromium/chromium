@@ -11,6 +11,7 @@ include_rules = [
   "+net/base",
   "+services/device/public/cpp/generic_sensor",
   "+services/device/public/mojom",
+  "+services/network/public/mojom/cors.mojom.h",
   "+services/service_manager/public/cpp",
   "+skia",
   "+third_party/khronos/GLES2/gl2.h",

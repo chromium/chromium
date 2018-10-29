@@ -249,10 +249,10 @@ Status ExecuteWindowCommand(const WindowCommand& command,
 
     // Close the dialog depending on the unexpectedalert behaviour set by user
     // before returning an error, so that subsequent commands do not fail.
-    std::string alert_behaviour = session->unexpected_alert_behaviour;
-    if (alert_behaviour == kAccept)
+    std::string prompt_behavior = session->unhandled_prompt_behavior;
+    if (prompt_behavior == kAccept)
       status = dialog_manager->HandleDialog(true, session->prompt_text.get());
-    else if (alert_behaviour == kDismiss)
+    else if (prompt_behavior == kDismiss)
       status = dialog_manager->HandleDialog(false, session->prompt_text.get());
     if (status.IsError())
       return status;

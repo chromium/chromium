@@ -16,8 +16,18 @@ message ClientContextProto {
 
 // Get the list of scripts that can potentially be run on a url.
 message SupportsScriptRequestProto {
-  required string url = 1;
-  required ClientContextProto client_context = 3;
+  optional string url = 1;
+
+  // Parameters that can be used to filter the scripts suitable for execution.
+  repeated ScriptParameterProto script_parameters = 2;
+
+  optional ClientContextProto client_context = 3;
+}
+
+message ScriptParameterProto {
+  // Parameter name, as found in the Intent, without prefix.
+  optional string name = 3;
+  optional string value = 2;
 }
 
 // Response of the list of supported scripts.
@@ -36,12 +46,20 @@ message SupportedScriptProto {
 
     // Precondition contains a set of conditions that must hold for a script to
     // be executed. No precondition means that a script can run in any case.
-    optional ScriptPreconditionProto precondition = 2;
+    optional ScriptPreconditionProto precondition = 3;
+
+    // Text display at the same time as the script is proposed. If more than one
+    // script has an initial prompt, the prompt of the highest-priority script
+    // wins.
+    optional string initial_prompt = 4;
 
     // Display priority of the script. Lowest number has highest priority, which
     // means a script with priority 0 should be displayed before a script with
     // priority 1.
     optional int32 priority = 5;
+
+    // Whether the script should be highlighted.
+    optional bool highlight = 7;
 
     // When set to true this script can be run in 'autostart mode'. Script won't
     // be shown.
@@ -50,13 +68,70 @@ message SupportedScriptProto {
   optional PresentationProto presentation = 2;
 }
 
+enum ScriptStatusProto {
+  // Never explicitly set. Reading this value means the enum field is either
+  // not set or set to a value not listed here.
+  UNKNOWN_SCRIPT_STATUS = 0;
+  // The script finished successfully.
+  SCRIPT_STATUS_SUCCESS = 1;
+  // The script failed.
+  SCRIPT_STATUS_FAILURE = 2;
+  // The user cancelled the script.
+  SCRIPT_STATUS_CANCELLED = 3;
+  // The script is currently running.
+  SCRIPT_STATUS_RUNNING = 4;
+  // The script was not run.
+  SCRIPT_STATUS_NOT_RUN = 5;
+}
+
+// Condition on the status of a previous script run.
+message ScriptStatusMatchProto {
+  enum Comparator {
+    UNSPECIFIED = 0;
+    EQUAL = 1;
+    DIFFERENT = 2;
+  }
+
+  // Required. Path of the script whose status should be checked.
+  optional string script = 1;
+
+  // Required. The status the script should have for the condition to hold.
+  optional ScriptStatusProto status = 2;
+
+  // Optional. The comparison performed when checking the status. It will be
+  // interpreted as EQUAL if not set.
+  optional Comparator comparator = 3;
+}
+
 message ScriptPreconditionProto {
   // Combined with AND: the elements referenced here must be present.
   repeated ElementReferenceProto elements_exist = 3;
-  // Pattern of the path parts of the URL.
+  // Pattern of the path parts of the URL, including query and '#''.
   repeated string path_pattern = 5;
   // Domain (exact match) excluding the last '/' character.
   repeated string domain = 6;
+  // Combined with AND: all matches must be true for precondition to hold.
+  repeated ScriptParameterMatchProto script_parameter_match = 7;
+  repeated ScriptStatusMatchProto script_status_match = 8;
+  repeated FormValueMatchProto form_value_match = 9;
+}
+
+message ScriptParameterMatchProto {
+  // Parameter name, as found in the Intent, without prefix.
+  optional string name = 4;
+
+  // Checks whether the script parameter is present.
+  optional bool exists = 2 [default = true];
+
+  // Checks whether the script parameter has exact value. Empty or missing value
+  // is treated as wildcard - any value will pass.
+  optional string value_equals = 3;
+}
+
+message FormValueMatchProto {
+  // Required. The selector associated to the form element whose value should be
+  // checked.
+  optional ElementReferenceProto element = 1;
 }
 
 enum PolicyType {
@@ -82,9 +157,13 @@ message InitialScriptActionsRequestProto {
     // The backend expects the |script_path| to be a repeated field. This field
     // is expected to contain only one element.
     repeated string script_path = 1;
+    // The exact URL on which the script is triggered.
+    optional string url = 2;
     optional PolicyType policy = 3;
   }
   optional QueryProto query = 3;
+
+  repeated ScriptParameterProto script_parameters = 2;
 }
 
 // Next request to get a script's actions.
@@ -117,67 +196,48 @@ message ActionProto {
 
   oneof action_info {
     ClickProto click = 5;
+    SetFormFieldValueProto set_form_value = 6;
     SelectOptionProto select_option = 7;
+    NavigateProto navigate = 9;
     TellProto tell = 11;
     FocusElementProto focus_element = 12;
     WaitForDomProto wait_for_dom = 19;
     UseCreditCardProto use_card = 28;
     UseAddressProto use_address = 29;
     UploadDomProto upload_dom = 18;
-  }
-}
-
-message NodeProto {
-  // Note: these use the same constant value as the DOM spec,
-  // except for UNKNOWN.
-  // https://developer.mozilla.org/en/docs/Web/API/Node/nodeType
-  enum Type {
-    UNKNOWN = 0;
-    ELEMENT = 1;
-    TEXT = 3;
-    DOCUMENT = 9;
+    ShowProgressBarProto show_progress_bar = 24;
+    HighlightElementProto highlight_element = 31;
+    ShowDetailsProto show_details = 32;
+    ResetProto reset = 34;
+    StopProto stop = 35;
+    GetPaymentInformationProto get_payment_information = 36;
   }
 
-  message Attribute {
-    optional string name = 1;
-    optional string value = 2;
-  }
-
-  optional Type type = 1;
-
-  // For ELEMENT nodes: the <TAG> name, *always* in UPPERCASE.
-  // For TEXT nodes: the text content.
-  optional string value = 2;
-  repeated Attribute attribute = 3;
-
-  // Children in the order of their indices.
-  repeated NodeProto child = 7;
-}
-
-message TreeProto {
-  optional NodeProto root = 1;
-  optional string url = 5;
-}
-
-message PageContentProto {
-  optional TreeProto dom_tree = 1;
-  optional string url = 3;
+  // Set to true to make the client remove any contextual information if the
+  // script finishes with this action. It has no effect if there is any other
+  // action sent to the client after this one. Default is false.
+  optional bool clean_contextual_ui = 33;
 }
 
 message ProcessedActionProto {
   // The action that was processed.
   optional ActionProto action = 1;
 
-  optional ProcessedActionStatus status = 2;
+  optional ProcessedActionStatusProto status = 2;
 
-  optional PageContentProto page_content = 3;
+  oneof result_data {
+    string html_source = 12;
+    // Should be set as a result of GetPaymentInformationAction.
+    string card_issuer_network = 13;
+  }
 }
 
-enum ProcessedActionStatus {
+enum ProcessedActionStatusProto {
   UNKNOWN_ACTION_STATUS = 0;
   ELEMENT_RESOLUTION_FAILED = 1;
   ACTION_APPLIED = 2;
   OTHER_ACTION_STATUS = 3;
+  PAYMENT_REQUEST_ERROR = 4;
 }
 
 // A reference to an unique element on the page, possibly nested in frames.
@@ -187,12 +247,12 @@ message ElementReferenceProto {
   // document.
   // APIs are free to reject element references that do not refer to unique
   // elements (i.e. resolve to more than one element on the page).
-  repeated string selectors = 1;
+  repeated string selectors = 2;
 }
 
 // Contain all arguments to perform a click.
 message ClickProto {
-  required ElementReferenceProto element_to_click = 1;
+  optional ElementReferenceProto element_to_click = 1;
 }
 
 // Contain all arguments to perform a select option action.
@@ -217,10 +277,43 @@ message FocusElementProto {
   optional string title = 2;
 }
 
+message AutofillStrings {
+  optional string fill_manually = 1;
+
+  optional string fill_form = 2;
+
+  optional string check_form = 3;
+}
+
 // Fill a form with an address if there is, otherwise fail this action.
 message UseAddressProto {
-  // Message used to indicate which form fields should be filled.
-  message RequiredField { optional ElementReferenceProto element = 2; }
+  // Message used to indicate what form fields should be filled with what
+  // information coming from the address.
+  message RequiredField {
+    enum AddressField {
+      UNDEFINED = 0;
+      FIRST_NAME = 1;
+      LAST_NAME = 2;
+      FULL_NAME = 3;
+      PHONE_NUMBER = 4;
+      EMAIL = 5;
+      ORGANIZATION = 6;
+      COUNTRY_CODE = 7;
+      REGION = 8;  // e.g. state
+      STREET_ADDRESS = 9;
+      LOCALITY = 10;  // e.g. city
+      DEPENDANT_LOCALITY = 11;
+      POSTAL_CODE = 12;
+    }
+
+    optional AddressField address_field = 1;
+
+    optional ElementReferenceProto element = 2;
+
+    // Whether we should simulate actual key presses when filling |element| with
+    // its corresponding value.
+    optional bool simulate_key_presses = 3;
+  }
 
   // An optional name to allow to handle multiple addresses selection (for
   // instance a billing and a delivery address).
@@ -231,10 +324,15 @@ message UseAddressProto {
   optional string prompt = 2;
 
   // Reference to an element in the form that should be filled.
-  required ElementReferenceProto form_field_element = 4;
+  optional ElementReferenceProto form_field_element = 4;
 
   // An optional list of fields that should be filled by this action.
   repeated RequiredField required_fields = 6;
+
+  // If set to false, clear the overlay for the duration of the action.
+  optional bool show_overlay = 7 [default = true];
+
+  optional AutofillStrings strings = 8;
 }
 
 // Fill a form with a credit card if there is, otherwise fail this action.
@@ -244,21 +342,22 @@ message UseCreditCardProto {
   optional string prompt = 1;
 
   // A reference to the card number field in the form that should be filled.
-  required ElementReferenceProto form_field_element = 3;
+  optional ElementReferenceProto form_field_element = 3;
+
+  // If set to false, clear the overlay for the duration of the action.
+  optional bool show_overlay = 5 [default = true];
+
+  optional AutofillStrings strings = 8;
 }
 
 // Ask Chrome to wait for an element in the DOM. This can be used to only
 // proceed to the next action once the page is ready.
 message WaitForDomProto {
-  // The element to wait.
-  required ElementReferenceProto element = 1;
-
   // Fail after waiting this amount of time.
-  optional int32 timeout_ms = 2;
+  optional int32 timeout_ms = 1;
 
-  // If true, wait for the given element to be absent, otherwise wait for
-  // existence.
-  optional bool check_for_absence = 3;
+  // The element to wait for.
+  repeated string selectors = 2;
 }
 
 // Volatile upload of a portion of the dom for backend analysis, does not store
@@ -267,4 +366,105 @@ message UploadDomProto {
   // The element that should be a root of uploaded DOM. If empty then the whole
   // page is returned.
   optional ElementReferenceProto tree_root = 1;
+}
+
+// Shows the progress bar.
+message ShowProgressBarProto {
+  // Specifies whether the progress is done and should be removed.
+  optional bool done = 2;
+
+  // Message to show on the progress bar while loading.
+  optional string message = 3;
+
+  // Value between 0 and 100 indicating the current progress. Values above 100
+  // will be capped to 100, values below 0 will be capped to 0 by the client.
+  // NOTE: Setting |progress| to 100 is an equivalent of setting |done| to true.
+  optional int32 progress = 6;
+}
+
+// Contain all arguments to perform a highlight element action.
+message HighlightElementProto {
+  // The element to highlight.
+  optional ElementReferenceProto element = 1;
+}
+
+// Load the given URL in the current tab.
+message NavigateProto {
+  optional string url = 1;
+}
+
+// Asks user to provide the data used by UseAddressAction and
+// UseCreditCardAction.
+message GetPaymentInformationProto {
+  optional string prompt = 1;
+  // If present will save the billing address inside the memory under the
+  // specified name. If empty we won't ask for the billing address. Data saved
+  // under this name can be reused by UseAddressAction.
+  optional string billing_address_name = 2;
+  // If present will save the shipping address inside the memory under the
+  // specified name. If empty we won't ask for the shipping address. Data saved
+  // under this name can be reused by UseAddressAction.
+  optional string shipping_address_name = 3;
+  // When 'true' will ask the user for the credit card.
+  optional bool ask_for_payment = 4;
+}
+
+// Resets Autofill Assistant: clears any state and server payload.
+message ResetProto {}
+
+// Stop Autofill Assistant.
+message StopProto {}
+
+message DateProto {
+  optional int64 year = 1;
+
+  // Month of the year in the range [1-12].
+  optional int32 month = 2;
+
+  // Day of the month in the range [1-31].
+  optional int32 day = 3;
+}
+
+message TimeProto {
+  // Hour in the range [0-23].
+  optional int32 hour = 1;
+
+  // Minute in the range [0-59].
+  optional int32 minute = 2;
+
+  // Second in the range [0-59].
+  optional int32 second = 3;
+}
+
+message DateTimeProto {
+  optional DateProto date = 1;
+  optional TimeProto time = 2;
+}
+
+message DetailsProto {
+  optional string title = 1;
+
+  optional string url = 2;
+
+  optional DateTimeProto datetime = 3;
+
+  optional string description = 4;
+}
+
+// Show contextual information.
+message ShowDetailsProto {
+  optional DetailsProto details = 1;
+}
+
+// Set the value of an form element.
+message SetFormFieldValueProto {
+  message KeyPress {
+    oneof keypress { string text = 1; }
+  }
+
+  // A reference to the form element whose value should be set.
+  optional ElementReferenceProto element = 1;
+
+  // The value to set.
+  repeated KeyPress value = 2;
 }

@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_switch_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_collapsible_item.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services_settings_local_commands.h"
 #import "ios/chrome/browser/ui/settings/google_services_settings_service_delegate.h"
@@ -125,10 +126,14 @@ constexpr NSInteger kSectionOffset = 1000;
     case GoogleServicesSettingsCommandIDToggleBetterSearchAndBrowsingService:
       [self.serviceDelegate toggleBetterSearchAndBrowsingServiceWithValue:isOn];
       break;
+    case GoogleServicesSettingsCommandIDRestartAuthenticationFlow:
+    case GoogleServicesSettingsReauthDialogAsSyncIsInAuthError:
+    case GoogleServicesSettingsCommandIDShowPassphraseDialog:
     case GoogleServicesSettingsCommandIDNoOp:
     case GoogleServicesSettingsCommandIDOpenGoogleActivityControlsDialog:
     case GoogleServicesSettingsCommandIDOpenEncryptionDialog:
     case GoogleServicesSettingsCommandIDOpenManageSyncedDataWebPage:
+      // Command ID not related with switch action.
       NOTREACHED();
       break;
   }
@@ -149,6 +154,24 @@ constexpr NSInteger kSectionOffset = 1000;
     switchCell.switchView.tag = [self tagForIndexPath:indexPath];
   }
   return cell;
+}
+
+#pragma mark - GoogleServicesSettingsConsumer
+
+- (void)insertSections:(NSIndexSet*)sections {
+  if (!self.collectionViewModel) {
+    // No need to reload since the model has not been loaded yet.
+    return;
+  }
+  [self.collectionView insertSections:sections];
+}
+
+- (void)deleteSections:(NSIndexSet*)sections {
+  if (!self.collectionViewModel) {
+    // No need to reload since the model has not been loaded yet.
+    return;
+  }
+  [self.collectionView deleteSections:sections];
 }
 
 - (void)reloadSections:(NSIndexSet*)sections {
@@ -214,13 +237,19 @@ constexpr NSInteger kSectionOffset = 1000;
       [self.collectionViewModel itemAtIndexPath:indexPath];
   if ([item isKindOfClass:[SyncSwitchItem class]]) {
     return NO;
-  } else if ([item isKindOfClass:[SettingsCollapsibleItem class]]) {
+  } else if ([item isKindOfClass:[SettingsCollapsibleItem class]] ||
+             [item isKindOfClass:[SettingsImageDetailTextItem class]]) {
     return YES;
   } else if ([item isKindOfClass:[CollectionViewTextItem class]]) {
     CollectionViewTextItem* textItem =
         base::mac::ObjCCast<CollectionViewTextItem>(item);
     return textItem.enabled;
   }
+  // The highlight of an item should be explicitly defined. If the item can be
+  // highlighted, then a command ID should be defined in
+  // -[GoogleServicesSettingsViewController collectionView:
+  // didSelectItemAtIndexPath:].
+  NOTREACHED();
   return NO;
 }
 
@@ -233,12 +262,32 @@ constexpr NSInteger kSectionOffset = 1000;
     [self toggleSectionWithIndexPath:indexPath];
     return;
   }
-  CollectionViewTextItem* textItem =
-      base::mac::ObjCCastStrict<CollectionViewTextItem>(
-          [self.collectionViewModel itemAtIndexPath:indexPath]);
   GoogleServicesSettingsCommandID commandID =
-      static_cast<GoogleServicesSettingsCommandID>(textItem.commandID);
+      GoogleServicesSettingsCommandIDNoOp;
+  if ([item isKindOfClass:[CollectionViewTextItem class]]) {
+    CollectionViewTextItem* textItem =
+        base::mac::ObjCCast<CollectionViewTextItem>(item);
+    commandID =
+        static_cast<GoogleServicesSettingsCommandID>(textItem.commandID);
+  } else if ([item isKindOfClass:[SettingsImageDetailTextItem class]]) {
+    SettingsImageDetailTextItem* imageDetailTextItem =
+        base::mac::ObjCCast<SettingsImageDetailTextItem>(item);
+    commandID = static_cast<GoogleServicesSettingsCommandID>(
+        imageDetailTextItem.commandID);
+  } else {
+    // A command ID should be defined when the cell is selected.
+    NOTREACHED();
+  }
   switch (commandID) {
+    case GoogleServicesSettingsCommandIDRestartAuthenticationFlow:
+      [self.localDispatcher restartAuthenticationFlow];
+      break;
+    case GoogleServicesSettingsReauthDialogAsSyncIsInAuthError:
+      [self.localDispatcher openReauthDialogAsSyncIsInAuthError];
+      break;
+    case GoogleServicesSettingsCommandIDShowPassphraseDialog:
+      [self.localDispatcher openPassphraseDialog];
+      break;
     case GoogleServicesSettingsCommandIDOpenGoogleActivityControlsDialog:
       [self.localDispatcher openGoogleActivityControlsDialog];
       break;
@@ -256,6 +305,7 @@ constexpr NSInteger kSectionOffset = 1000;
     case GoogleServicesSettingsCommandIDTogglePreloadPagesService:
     case GoogleServicesSettingsCommandIDToggleImproveChromeService:
     case GoogleServicesSettingsCommandIDToggleBetterSearchAndBrowsingService:
+      // Command ID not related with cell selection.
       NOTREACHED();
       break;
   }

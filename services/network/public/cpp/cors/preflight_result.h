@@ -56,7 +56,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) PreflightResult final {
   // added by the user agent. They must be checked separately and rejected for
   // JavaScript-initiated requests.
   base::Optional<CORSErrorStatus> EnsureAllowedCrossOriginHeaders(
-      const net::HttpRequestHeaders& headers) const;
+      const net::HttpRequestHeaders& headers,
+      bool is_revalidating) const;
 
   // Checks if the given combination of |credentials_mode|, |method|, and
   // |headers| is allowed by the CORS-preflight response.
@@ -64,7 +65,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) PreflightResult final {
   // EnsureAllowCrossOriginHeaders does not.
   bool EnsureAllowedRequest(mojom::FetchCredentialsMode credentials_mode,
                             const std::string& method,
-                            const net::HttpRequestHeaders& headers) const;
+                            const net::HttpRequestHeaders& headers,
+                            bool is_revalidating) const;
 
   // Refers the cache expiry time.
   base::TimeTicks absolute_expiry_time() const { return absolute_expiry_time_; }

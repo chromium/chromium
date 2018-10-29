@@ -49,8 +49,8 @@ To add a new data source:
 
 * Add a new string identifier in [perfetto_service.mojom](/services/tracing/public/mojom/perfetto_service.mojom).
 * Register the data source in [ProducerHost::OnConnect](/services/tracing/perfetto/producer_host.cc).
-* Set up the data source in [ProducerClient::CreateDataSourceInstance](/services/tracing/public/cpp/perfetto/producer_client.cc).
-* Tear down the data source in [ProducerClient::TearDownDataSourceInstance](/services/tracing/public/cpp/perfetto/producer_client.cc).
+* Set up the data source in [ProducerClient::StartDataSource](/services/tracing/public/cpp/perfetto/producer_client.cc).
+* Tear down the data source in [ProducerClient::StopDataSource](/services/tracing/public/cpp/perfetto/producer_client.cc).
 * For each thread that wants to log a proto, use a separate TraceWriter created using
   [ProducerClient::CreateTraceWriter](/services/tracing/public/cpp/perfetto/producer_client.cc).
 

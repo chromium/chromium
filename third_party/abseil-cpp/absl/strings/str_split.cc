@@ -43,10 +43,11 @@ absl::string_view GenericFind(absl::string_view text,
   if (delimiter.empty() && text.length() > 0) {
     // Special case for empty std::string delimiters: always return a zero-length
     // absl::string_view referring to the item at position 1 past pos.
-    return absl::string_view(text.begin() + pos + 1, 0);
+    return absl::string_view(text.data() + pos + 1, 0);
   }
   size_t found_pos = absl::string_view::npos;
-  absl::string_view found(text.end(), 0);  // By default, not found
+  absl::string_view found(text.data() + text.size(),
+                          0);  // By default, not found
   found_pos = find_policy.Find(text, delimiter, pos);
   if (found_pos != absl::string_view::npos) {
     found = absl::string_view(text.data() + found_pos,
@@ -87,7 +88,7 @@ absl::string_view ByString::Find(absl::string_view text, size_t pos) const {
     // absl::string_view.
     size_t found_pos = text.find(delimiter_[0], pos);
     if (found_pos == absl::string_view::npos)
-      return absl::string_view(text.end(), 0);
+      return absl::string_view(text.data() + text.size(), 0);
     return text.substr(found_pos, 1);
   }
   return GenericFind(text, delimiter_, pos, LiteralPolicy());
@@ -100,7 +101,7 @@ absl::string_view ByString::Find(absl::string_view text, size_t pos) const {
 absl::string_view ByChar::Find(absl::string_view text, size_t pos) const {
   size_t found_pos = text.find(c_, pos);
   if (found_pos == absl::string_view::npos)
-    return absl::string_view(text.end(), 0);
+    return absl::string_view(text.data() + text.size(), 0);
   return text.substr(found_pos, 1);
 }
 
@@ -128,9 +129,9 @@ absl::string_view ByLength::Find(absl::string_view text,
   // If the std::string is shorter than the chunk size we say we
   // "can't find the delimiter" so this will be the last chunk.
   if (substr.length() <= static_cast<size_t>(length_))
-    return absl::string_view(text.end(), 0);
+    return absl::string_view(text.data() + text.size(), 0);
 
-  return absl::string_view(substr.begin() + length_, 0);
+  return absl::string_view(substr.data() + length_, 0);
 }
 
 }  // namespace absl

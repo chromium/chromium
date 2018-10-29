@@ -358,14 +358,6 @@ class RenderTextTest : public testing::Test,
         renderer_(canvas()) {}
 
  protected:
-  bool IsWin8Plus() const {
-#if defined(OS_WIN)
-    return base::win::GetVersion() >= base::win::VERSION_WIN8;
-#else
-    return false;
-#endif
-  }
-
   std::unique_ptr<RenderText> CreateRenderTextInstance() const {
     switch (GetParam()) {
       case RENDER_TEXT_HARFBUZZ:

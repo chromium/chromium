@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "device/udev_linux/scoped_udev.h"
@@ -32,7 +33,6 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
 
   // MidiManager implementation.
   void StartInitialization() override;
-  void Finalize() override;
   void DispatchSendMidiData(MidiManagerClient* client,
                             uint32_t port_index,
                             const std::vector<uint8_t>& data,
@@ -406,8 +406,8 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
   MidiPortState port_state_;
 
   // One input port, many output ports.
-  base::Lock out_ports_lock_;  // guards out_ports_
-  OutPortMap out_ports_;       // guarded by out_ports_lock_
+  base::Lock out_ports_lock_;
+  OutPortMap out_ports_ GUARDED_BY(out_ports_lock_);
 
   // Mapping from ALSA client:port to our index.
   SourceMap source_map_;
@@ -421,15 +421,11 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
   // wait for our information from ALSA and udev to get back in sync.
   int alsa_card_midi_count_ = 0;
 
-  // Guards members below. They are initialized before posting any tasks running
-  // on TaskRunner, and finalized after all posted tasks run.
-  base::Lock lazy_init_member_lock_;
-
   // ALSA seq handles and ids.
   ScopedSndSeqPtr in_client_;
   int in_client_id_;
-  base::Lock out_client_lock_;  // guards out_client_
-  ScopedSndSeqPtr out_client_;  // guarded by out_client_lock_
+  ScopedSndSeqPtr out_client_ GUARDED_BY(out_client_lock_);
+  base::Lock out_client_lock_;
   int out_client_id_;
   int in_port_id_;
 

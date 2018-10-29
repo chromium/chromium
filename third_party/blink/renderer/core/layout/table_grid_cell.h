@@ -23,7 +23,7 @@ class LayoutTableCell;
 //   both LayoutTableCell B and C cover the TableGridCell at (1,1).
 
 class TableGridCell {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // We can't inline the constructor and destructor because cells_ needs full

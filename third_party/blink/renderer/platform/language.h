@@ -41,7 +41,7 @@ PLATFORM_EXPORT AtomicString DefaultLanguage();
 PLATFORM_EXPORT Vector<AtomicString> UserPreferredLanguages();
 PLATFORM_EXPORT void OverrideUserPreferredLanguagesForTesting(
     const Vector<AtomicString>&);
-PLATFORM_EXPORT size_t
+PLATFORM_EXPORT wtf_size_t
 IndexOfBestMatchingLanguageInList(const AtomicString& language,
                                   const Vector<AtomicString>& language_list);
 PLATFORM_EXPORT void InitializePlatformLanguage();

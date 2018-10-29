@@ -15,7 +15,7 @@ test(function() {
     assert_true(selection.isCollapsed, 'isCollapsed');
     assert_equals(selection.anchorNode, document.getElementById('start').firstChild, 'DOM anchorNode');
     assert_equals(selection.anchorOffset, 2, 'DOM anchorOffset');
-    assert_exists(window, 'internals');
+    assert_own_property(window, 'internals');
     assert_equals(internals.visibleSelectionAnchorNode, sample.lastChild, 'Canonicalized anchorNode');
     assert_equals(internals.visibleSelectionAnchorOffset, 3, 'Canoincalized anchorOffset');
 });

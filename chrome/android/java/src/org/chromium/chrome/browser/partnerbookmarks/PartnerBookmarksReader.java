@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.partnerbookmarks;
 
 import android.content.Context;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.util.ViewUtils;
 

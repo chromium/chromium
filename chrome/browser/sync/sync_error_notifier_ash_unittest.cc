@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -73,7 +74,7 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
 
     FakeLoginUIService* login_ui_service = static_cast<FakeLoginUIService*>(
         LoginUIServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(), BuildMockLoginUIService));
+            profile(), base::BindRepeating(&BuildMockLoginUIService)));
     login_ui_service->SetLoginUI(&login_ui_);
 
     error_notifier_ =

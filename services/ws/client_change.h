@@ -32,6 +32,8 @@ enum class ClientChangeType {
   kFocus,
   // Used for WindowTree::SetWindowProperty().
   kProperty,
+  // Used for WindowTree::SetWindowVisibility().
+  kVisibility,
 };
 
 // ClientChange represents an incoming request from a WindowTreeClient. For
@@ -39,24 +41,33 @@ enum class ClientChangeType {
 // the window.
 class COMPONENT_EXPORT(WINDOW_SERVICE) ClientChange {
  public:
+  // |property_key| is only used for changes of type kProperty.
   ClientChange(ClientChangeTracker* tracker,
                aura::Window* window,
-               ClientChangeType type);
+               ClientChangeType type,
+               const void* property_key = nullptr);
   ~ClientChange();
 
   // The window the changes associated with. Is null if the window has been
   // destroyed during processing.
   aura::Window* window() {
+    return const_cast<aura::Window*>(
+        const_cast<const ClientChange*>(this)->window());
+  }
+
+  const aura::Window* window() const {
     return !window_tracker_.windows().empty() ? window_tracker_.windows()[0]
                                               : nullptr;
   }
 
   ClientChangeType type() const { return type_; }
+  const void* property_key() const { return property_key_; }
 
  private:
   ClientChangeTracker* tracker_;
   aura::WindowTracker window_tracker_;
   const ClientChangeType type_;
+  const void* property_key_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientChange);
 };

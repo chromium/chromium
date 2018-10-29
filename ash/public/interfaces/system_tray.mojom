@@ -112,6 +112,9 @@ interface SystemTrayClient {
   // Shows settings related to input methods.
   ShowIMESettings();
 
+  // Shows settings related to MultiDevice features.
+  ShowConnectedDevicesSettings();
+
   // Shows the about chrome OS page and checks for updates after the page is
   // loaded.
   ShowAboutChromeOS();

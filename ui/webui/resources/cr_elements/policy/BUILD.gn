@@ -54,6 +54,7 @@ js_library("cr_policy_network_indicator") {
   deps = [
     ":cr_policy_indicator_behavior",
     ":cr_policy_network_behavior",
+    ":cr_tooltip_icon",
     "../chromeos/network:cr_onc_types",
   ]
 }

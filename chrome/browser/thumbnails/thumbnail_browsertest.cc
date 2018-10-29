@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
@@ -178,7 +179,7 @@ class ThumbnailTest : public InProcessBrowserTest {
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     ThumbnailServiceFactory::GetInstance()->SetTestingFactory(
-        context, &ThumbnailTest::CreateThumbnailService);
+        context, base::BindRepeating(&ThumbnailTest::CreateThumbnailService));
   }
 
   std::unique_ptr<

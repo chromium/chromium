@@ -79,11 +79,12 @@ class PLATFORM_EXPORT Region {
 
  private:
   struct Span {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
-    Span(int y, size_t segment_index) : y(y), segment_index(segment_index) {}
+    DISALLOW_NEW();
+    Span(int y, wtf_size_t segment_index)
+        : y(y), segment_index(segment_index) {}
 
     int y;
-    size_t segment_index;
+    wtf_size_t segment_index;
   };
 
   // Shape composed of non-overlapping rectangles implied by segments [x, max_x)
@@ -99,7 +100,7 @@ class PLATFORM_EXPORT Region {
    public:
     Shape();
     Shape(const IntRect&);
-    Shape(size_t segments_capacity, size_t spans_capacity);
+    Shape(wtf_size_t segments_capacity, wtf_size_t spans_capacity);
 
     IntRect Bounds() const;
     bool IsEmpty() const { return spans_.IsEmpty(); }
@@ -108,12 +109,12 @@ class PLATFORM_EXPORT Region {
     typedef const Span* SpanIterator;
     SpanIterator SpansBegin() const;
     SpanIterator SpansEnd() const;
-    size_t SpansSize() const { return spans_.size(); }
+    wtf_size_t SpansSize() const { return spans_.size(); }
 
     typedef const int* SegmentIterator;
     SegmentIterator SegmentsBegin(SpanIterator) const;
     SegmentIterator SegmentsEnd(SpanIterator) const;
-    size_t SegmentsSize() const { return segments_.size(); }
+    wtf_size_t SegmentsSize() const { return segments_.size(); }
 
     static Shape UnionShapes(const Shape& shape1, const Shape& shape2);
     static Shape IntersectShapes(const Shape& shape1, const Shape& shape2);

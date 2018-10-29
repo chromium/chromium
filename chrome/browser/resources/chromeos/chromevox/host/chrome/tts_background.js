@@ -42,12 +42,6 @@ cvox.Utterance.nextUtteranceId_ = 1;
 cvox.TtsBackground = function() {
   goog.base(this);
 
-  // Use the current locale as the speech language if not otherwise
-  // specified.
-  if (this.ttsProperties['lang'] == undefined) {
-    this.ttsProperties['lang'] = chrome.i18n.getUILanguage();
-  }
-
   this.lastEventType = 'end';
 
   /** @private {number} */

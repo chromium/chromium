@@ -31,8 +31,8 @@ TEST(SyncableIdTest, TestIDCreation) {
   v.push_back(Id::CreateFromClientString("A"));
   v.push_back(Id::CreateFromServerId("A"));
 
-  for (vector<Id>::iterator i = v.begin(); i != v.end(); ++i) {
-    for (vector<Id>::iterator j = v.begin(); j != i; ++j) {
+  for (auto i = v.begin(); i != v.end(); ++i) {
+    for (auto j = v.begin(); j != i; ++j) {
       ASSERT_NE(*i, *j) << "mis equated two distinct ids";
     }
     ASSERT_EQ(*i, *i) << "self-equality failed";
@@ -57,14 +57,14 @@ TEST(SyncableIdTest, GetLeastIdForLexicographicComparison) {
     v.push_back(Id::CreateFromClientString(one_character_id));
   }
 
-  for (vector<Id>::iterator i = v.begin(); i != v.end(); ++i) {
+  for (auto i = v.begin(); i != v.end(); ++i) {
     // The following looks redundant, but we're testing a custom operator<.
     ASSERT_LT(Id::GetLeastIdForLexicographicComparison(), *i);
     ASSERT_NE(*i, i->GetLexicographicSuccessor());
     ASSERT_NE(i->GetLexicographicSuccessor(), *i);
     ASSERT_LT(*i, i->GetLexicographicSuccessor());
     ASSERT_GT(i->GetLexicographicSuccessor(), *i);
-    for (vector<Id>::iterator j = v.begin(); j != v.end(); ++j) {
+    for (auto j = v.begin(); j != v.end(); ++j) {
       if (j == i)
         continue;
       if (*j < *i) {

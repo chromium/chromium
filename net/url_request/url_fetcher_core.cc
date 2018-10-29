@@ -574,7 +574,7 @@ void URLFetcherCore::StartURLRequest() {
   request_->SetReferrer(referrer_);
   request_->set_referrer_policy(referrer_policy_);
   request_->set_site_for_cookies(initiator_.has_value() &&
-                                         !initiator_.value().unique()
+                                         !initiator_.value().opaque()
                                      ? initiator_.value().GetURL()
                                      : original_url_);
   request_->set_initiator(initiator_);

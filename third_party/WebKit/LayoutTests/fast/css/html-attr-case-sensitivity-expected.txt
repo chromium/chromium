@@ -2,7 +2,6 @@ This tests that [attr=value] CSS selectors are case sensitive depending on attr
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS isCaseSensitive("abbr") is true
 PASS isCaseSensitive("accept-charset") is false
 PASS isCaseSensitive("accept") is false

@@ -1,11 +1,13 @@
 1a	1b
 2a	2b
 Button inside table
+
+
 Button inside table
+
 This makes sure that a table with ARIA roles on the tbody or rows is not treated as a data table.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS list.role is 'AXRole: AXList'
 PASS item1.role is 'AXRole: AXListItem'

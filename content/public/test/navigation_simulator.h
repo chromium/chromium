@@ -203,6 +203,12 @@ class NavigationSimulator : public WebContentsObserver {
   // Simulates the commit of a navigation or an error page aborting.
   virtual void AbortCommit();
 
+  // Simulates the navigation failing with the error code |error_code| and
+  // response headers |response_headers|.
+  virtual void FailWithResponseHeaders(
+      int error_code,
+      scoped_refptr<net::HttpResponseHeaders> response_headers);
+
   // Simulates the navigation failing with the error code |error_code|.
   virtual void Fail(int error_code);
 

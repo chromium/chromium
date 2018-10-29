@@ -24,7 +24,7 @@ class CORE_EXPORT AbortSignal final : public EventTargetWithInlineData {
   explicit AbortSignal(ExecutionContext*);
   ~AbortSignal() override;
 
-  // AbortSignal.idl
+  // abort_signal.idl
   bool aborted() const { return aborted_flag_; }
   DEFINE_ATTRIBUTE_EVENT_LISTENER(abort);
 

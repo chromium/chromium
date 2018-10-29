@@ -5,8 +5,10 @@
 #include "chrome/browser/chromeos/login/screenshot_testing/screenshot_testing_mixin.h"
 
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -56,8 +58,8 @@ void ScreenshotTestingMixin::SynchronizeAnimationLoadWithCompositor() {
 
 void ScreenshotTestingMixin::HandleAnimationLoad() {
   timer_.Stop();
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   animation_waiter_quitter_);
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           animation_waiter_quitter_);
 }
 
 }  // namespace chromeos

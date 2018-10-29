@@ -23,6 +23,8 @@ viewer-pdf-toolbar {
 #plugin {
   height: 100%;
   position: fixed;
+  /* The viewer implements a custom pinch zoom. */
+  touch-action: pan-x pan-y;
   width: 100%;
   z-index: 1;
 }

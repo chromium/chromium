@@ -1,0 +1,28 @@
+<!doctype html>
+<style>
+  @keyframes animation-a {
+    0% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+  }
+  @keyframes animation-b {
+    100% {
+      transform: scale(1);
+    }
+  }
+</style>
+<div style="animation: animation-a .01s .01s 1 linear forwards;">
+  <div id="target" style="animation: animation-b .1s 0.1s 1 linear forwards;"></div>
+</div>
+<div id="test">This tests waiting for a composited animation to end. It passes if it does not crash.</div>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+target.addEventListener('animationend', function() {
+  if (window.testRunner)
+    testRunner.notifyDone();
+});
+</script>

@@ -4,20 +4,20 @@
 
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
 
-#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 
 namespace ui {
 
 const AXNodeData& AXPlatformNodeDelegateBase::GetData() const {
-  CR_DEFINE_STATIC_LOCAL(AXNodeData, empty_data, ());
-  return empty_data;
+  static base::NoDestructor<AXNodeData> empty_data;
+  return *empty_data;
 }
 
 const AXTreeData& AXPlatformNodeDelegateBase::GetTreeData() const {
-  CR_DEFINE_STATIC_LOCAL(AXTreeData, empty_data, ());
-  return empty_data;
+  static base::NoDestructor<AXTreeData> empty_data;
+  return *empty_data;
 }
 
 gfx::NativeWindow AXPlatformNodeDelegateBase::GetTopLevelWidget() {
@@ -74,20 +74,22 @@ int AXPlatformNodeDelegateBase::GetTableColCount() const {
   return 0;
 }
 
-std::vector<int32_t> AXPlatformNodeDelegateBase::GetColHeaderNodeIds() const {
+const std::vector<int32_t> AXPlatformNodeDelegateBase::GetColHeaderNodeIds()
+    const {
   return std::vector<int32_t>();
 }
 
-std::vector<int32_t> AXPlatformNodeDelegateBase::GetColHeaderNodeIds(
+const std::vector<int32_t> AXPlatformNodeDelegateBase::GetColHeaderNodeIds(
     int32_t col_index) const {
   return std::vector<int32_t>();
 }
 
-std::vector<int32_t> AXPlatformNodeDelegateBase::GetRowHeaderNodeIds() const {
+const std::vector<int32_t> AXPlatformNodeDelegateBase::GetRowHeaderNodeIds()
+    const {
   return std::vector<int32_t>();
 }
 
-std::vector<int32_t> AXPlatformNodeDelegateBase::GetRowHeaderNodeIds(
+const std::vector<int32_t> AXPlatformNodeDelegateBase::GetRowHeaderNodeIds(
     int32_t row_index) const {
   return std::vector<int32_t>();
 }
@@ -97,8 +99,8 @@ int32_t AXPlatformNodeDelegateBase::GetCellId(int32_t row_index,
   return -1;
 }
 
-int32_t AXPlatformNodeDelegateBase::CellIdToIndex(int32_t cell_id) const {
-  return 0;
+int32_t AXPlatformNodeDelegateBase::GetTableCellIndex() const {
+  return -1;
 }
 
 int32_t AXPlatformNodeDelegateBase::CellIndexToId(int32_t cell_index) const {
@@ -131,8 +133,8 @@ std::set<int32_t> AXPlatformNodeDelegateBase::GetReverseRelations(
 }
 
 const AXUniqueId& AXPlatformNodeDelegateBase::GetUniqueId() const {
-  CR_DEFINE_STATIC_LOCAL(AXUniqueId, dummy_unique_id, ());
-  return dummy_unique_id;
+  static base::NoDestructor<AXUniqueId> dummy_unique_id;
+  return *dummy_unique_id;
 }
 
 }  // namespace ui

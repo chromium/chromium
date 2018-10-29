@@ -24,7 +24,7 @@
         {
           "object": "LayoutBlockFlow DIV",
           "rect": [10, 10, 50, 50],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "transform": 1

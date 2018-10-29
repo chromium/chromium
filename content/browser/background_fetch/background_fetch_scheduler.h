@@ -46,12 +46,10 @@ class CONTENT_EXPORT BackgroundFetchScheduler {
     virtual void StartRequest(scoped_refptr<BackgroundFetchRequestInfo> request,
                               RequestFinishedCallback callback) = 0;
 
-    // Whether the controller has a request that is being serviced by
-    // DownloadService. This can span sessions.
-    virtual bool IsProcessingARequest() = 0;
-
-    // Resumes a fetch started in a previous session.
-    virtual void Resume(RequestFinishedCallback request_finished_callback) = 0;
+    // Returns a list of requests that started in a previous session and did not
+    // complete. Clears the list of outstanding GUIDs in the controller.
+    virtual std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
+    TakeOutstandingRequests() = 0;
 
     void Finish(blink::mojom::BackgroundFetchFailureReason reason_to_abort);
 

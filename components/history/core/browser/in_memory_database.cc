@@ -68,7 +68,7 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   // Attach to the history database on disk.  (We can't ATTACH in the middle of
   // a transaction.)
   sql::Statement attach(GetDB().GetUniqueStatement("ATTACH ? AS history"));
-#if defined(OS_POSIX)
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
   attach.BindString(0, history_name.value());
 #else
   attach.BindString(0, base::WideToUTF8(history_name.value()));

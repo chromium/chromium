@@ -130,6 +130,9 @@ TypeConverter<CredentialManagerError, AuthenticatorStatus>::Convert(
       return CredentialManagerError::NOT_IMPLEMENTED;
     case blink::mojom::blink::AuthenticatorStatus::NOT_FOCUSED:
       return CredentialManagerError::NOT_FOCUSED;
+    case blink::mojom::blink::AuthenticatorStatus::
+        RESIDENT_CREDENTIALS_UNSUPPORTED:
+      return CredentialManagerError::RESIDENT_CREDENTIALS_UNSUPPORTED;
     case blink::mojom::blink::AuthenticatorStatus::ALGORITHM_UNSUPPORTED:
       return CredentialManagerError::ANDROID_ALGORITHM_UNSUPPORTED;
     case blink::mojom::blink::AuthenticatorStatus::EMPTY_ALLOW_CREDENTIALS:
@@ -436,6 +439,9 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
       if (mojo_cable) {
         mojo_options->cable_registration_data = std::move(mojo_cable);
       }
+    }
+    if (extensions.hasHmacCreateSecret()) {
+      mojo_options->hmac_create_secret = extensions.hmacCreateSecret();
     }
   }
 

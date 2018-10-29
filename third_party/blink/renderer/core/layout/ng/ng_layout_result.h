@@ -20,7 +20,9 @@
 
 namespace blink {
 
+class NGBoxFragmentBuilder;
 class NGExclusionSpace;
+class NGLineBoxFragmentBuilder;
 struct NGPositionedFloat;
 
 // The NGLayoutResult stores the resulting data from layout. This includes
@@ -38,6 +40,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     // enough to store.
   };
 
+  NGLayoutResult(const NGLayoutResult&);
   ~NGLayoutResult();
 
   scoped_refptr<const NGPhysicalFragment> PhysicalFragment() const {
@@ -77,7 +80,9 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
   const NGMarginStrut EndMarginStrut() const { return end_margin_strut_; }
 
   const LayoutUnit IntrinsicBlockSize() const {
-    DCHECK(root_fragment_->Type() == NGPhysicalFragment::kFragmentBox);
+    DCHECK(root_fragment_->Type() == NGPhysicalFragment::kFragmentBox ||
+           root_fragment_->Type() ==
+               NGPhysicalFragment::kFragmentRenderedLegend);
     return intrinsic_block_size_;
   }
 
@@ -108,29 +113,17 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
   // the block, and the block will fail to clear).
   NGFloatTypes AdjoiningFloatTypes() const { return adjoining_floats_; }
 
-  scoped_refptr<NGLayoutResult> CloneWithoutOffset() const;
-
  private:
-  friend class NGFragmentBuilder;
+  friend class NGBoxFragmentBuilder;
   friend class NGLineBoxFragmentBuilder;
 
+  // This constructor requires a non-null fragment and sets a success status.
   NGLayoutResult(scoped_refptr<const NGPhysicalFragment> physical_fragment,
-                 Vector<NGOutOfFlowPositionedDescendant>&&
-                     out_of_flow_positioned_descendants,
-                 Vector<NGPositionedFloat>&& positioned_floats,
-                 const NGUnpositionedListMarker& unpositioned_list_marker,
-                 NGExclusionSpace&& exclusion_space,
-                 LayoutUnit bfc_line_offset,
-                 const base::Optional<LayoutUnit> bfc_block_offset,
-                 const NGMarginStrut end_margin_strut,
-                 const LayoutUnit intrinsic_block_size,
-                 LayoutUnit minimal_space_shortage,
-                 EBreakBetween initial_break_before,
-                 EBreakBetween final_break_after,
-                 bool has_forced_break,
-                 bool is_pushed_by_floats,
-                 NGFloatTypes adjoining_floats,
-                 NGLayoutResultStatus status);
+                 NGBoxFragmentBuilder*);
+  // This constructor is for a non-success status.
+  NGLayoutResult(NGLayoutResultStatus, NGBoxFragmentBuilder*);
+  NGLayoutResult(scoped_refptr<const NGPhysicalFragment> physical_fragment,
+                 NGLineBoxFragmentBuilder*);
 
   NGLink root_fragment_;
   Vector<NGOutOfFlowPositionedDescendant> oof_positioned_descendants_;

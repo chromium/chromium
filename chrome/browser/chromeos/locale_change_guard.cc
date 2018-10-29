@@ -168,7 +168,7 @@ void LocaleChangeGuard::Check() {
 
     // Ensure that synchronization does not change the locale to a value not
     // allowed by enterprise policy.
-    if (!chromeos::locale_util::IsAllowedUILocale(to_locale, prefs))
+    if (!chromeos::locale_util::IsAllowedUILanguage(to_locale, prefs))
       prefs->SetString(language::prefs::kApplicationLocale, cur_locale);
     return;
   }

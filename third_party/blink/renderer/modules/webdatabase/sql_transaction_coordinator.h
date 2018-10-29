@@ -56,7 +56,7 @@ class SQLTransactionCoordinator
  private:
   typedef Deque<CrossThreadPersistent<SQLTransactionBackend>> TransactionsQueue;
   struct CoordinationInfo {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     TransactionsQueue pending_transactions;

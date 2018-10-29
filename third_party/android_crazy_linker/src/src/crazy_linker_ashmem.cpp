@@ -48,11 +48,12 @@ bool AshmemRegion::SetProtectionFlags(int prot) {
 // static
 bool AshmemRegion::CheckFileDescriptorIsReadOnly(int fd) {
   const size_t map_size = PAGE_SIZE;
-  ScopedMemoryMapping map;
 
   // First, check that trying to map a page of the region with PROT_WRITE
   // fails with EPERM.
-  if (map.Allocate(NULL, map_size, MemoryMapping::CAN_WRITE, fd)) {
+  MemoryMapping map =
+      MemoryMapping::Create(nullptr, map_size, MemoryMapping::CAN_WRITE, fd);
+  if (map.IsValid()) {
     LOG("Region could be mapped writable. Should not happen.");
     errno = EPERM;
     return false;
@@ -64,7 +65,8 @@ bool AshmemRegion::CheckFileDescriptorIsReadOnly(int fd) {
 
   // Second, check that it can be mapped PROT_READ, but cannot be remapped
   // with PROT_READ | PROT_WRITE through mprotect().
-  if (!map.Allocate(NULL, map_size, MemoryMapping::CAN_READ, fd)) {
+  map = MemoryMapping::Create(nullptr, map_size, MemoryMapping::CAN_READ, fd);
+  if (!map.IsValid()) {
     LOG_ERRNO("Failed to map region read-only");
     return false;
   }

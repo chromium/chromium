@@ -47,5 +47,6 @@ cast_source_set("base") {
     "//chromecast/media/base:media_codec_support",
     "//media",
     "//media:shared_memory_support",
+    "//ui/gfx",
   ]
 }

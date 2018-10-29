@@ -18,6 +18,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/cors/preflight_timing_info.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -199,8 +200,10 @@ class PreflightControllerTest : public testing::Test {
   }
 
  protected:
-  void HandleRequestCompletion(int net_error,
-                               base::Optional<CORSErrorStatus> status) {
+  void HandleRequestCompletion(
+      int net_error,
+      base::Optional<CORSErrorStatus> status,
+      base::Optional<PreflightTimingInfo> timing_info) {
     net_error_ = net_error;
     status_ = status;
     run_loop_->Quit();

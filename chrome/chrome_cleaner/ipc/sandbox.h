@@ -21,6 +21,9 @@
 
 namespace chrome_cleaner {
 
+using SandboxConnectionErrorCallback =
+    base::RepeatingCallback<void(SandboxType)>;
+
 // The suffix to append to log files for sandboxed processes.
 extern const wchar_t kSandboxLogFileSuffix[];
 
@@ -124,6 +127,8 @@ ResultCode RunSandboxTarget(const base::CommandLine& command_line,
 // Retrieves system resource usage stats for all sandbox target processes, even
 // if the target processes have already exited.
 std::map<SandboxType, SystemResourceUsage> GetSandboxSystemResourceUsage();
+
+ResultCode GetResultCodeForSandboxConnectionError(SandboxType sandbox_type);
 
 }  // namespace chrome_cleaner
 

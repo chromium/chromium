@@ -269,8 +269,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldIdentifier) {
       __gCrWeb.form.getFormControlElements(form) :
       getUnownedAutofillableFormFieldElements_(document.all, /*fieldsets=*/[]);
 
-  for (var i = 0, delay = 0; i < controlElements.length;
-       ++i, delay += __gCrWeb.autofill.delayBetweenFieldFillingMs) {
+  for (var i = 0, delay = 0; i < controlElements.length; ++i) {
     var element = controlElements[i];
     if (!__gCrWeb.fill.isAutofillableElement(element))
       continue;
@@ -313,6 +312,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldIdentifier) {
         });
       }, _delay);
     })(element, fieldData.value, fieldData.section, delay);
+    delay += __gCrWeb.autofill.delayBetweenFieldFillingMs;
   }
 
   if (form) {
@@ -361,8 +361,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
     }
   }
 
-  for (var i = 0, delay = 0; i < controlElements.length;
-       ++i, delay += __gCrWeb.autofill.delayBetweenFieldFillingMs) {
+  for (var i = 0, delay = 0; i < controlElements.length; ++i) {
     var element = controlElements[i];
     if (!element.isAutofilled || element.disabled)
       continue;
@@ -393,6 +392,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
               });
         }, _delay);
       })(element, value, delay);
+      delay += __gCrWeb.autofill.delayBetweenFieldFillingMs;
     }
   }
 };

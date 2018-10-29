@@ -20,6 +20,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -88,6 +89,7 @@
 #include "components/signin/core/browser/signin_manager.h"
 #include "components/signin/core/browser/signin_pref_names.h"
 #include "components/sync/base/stop_source.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
@@ -162,8 +164,8 @@ enum class ProfileDeletionStage {
 };
 using ProfileDeletionMap = std::map<base::FilePath, ProfileDeletionStage>;
 ProfileDeletionMap& ProfilesToDelete() {
-  CR_DEFINE_STATIC_LOCAL(ProfileDeletionMap, profiles_to_delete, ());
-  return profiles_to_delete;
+  static base::NoDestructor<ProfileDeletionMap> profiles_to_delete;
+  return *profiles_to_delete;
 }
 
 int64_t ComputeFilesSize(const base::FilePath& directory,
@@ -573,7 +575,7 @@ void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
   }
 
   // Create the profile if needed and collect its ProfileInfo.
-  ProfilesInfoMap::iterator iter = profiles_info_.find(profile_path);
+  auto iter = profiles_info_.find(profile_path);
   ProfileInfo* info = NULL;
 
   if (iter != profiles_info_.end()) {
@@ -615,8 +617,8 @@ void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
 }
 
 bool ProfileManager::IsValidProfile(const void* profile) {
-  for (ProfilesInfoMap::iterator iter = profiles_info_.begin();
-       iter != profiles_info_.end(); ++iter) {
+  for (auto iter = profiles_info_.begin(); iter != profiles_info_.end();
+       ++iter) {
     if (iter->second->created) {
       Profile* candidate = iter->second->profile.get();
       if (candidate == profile ||
@@ -731,8 +733,8 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles(
 
 std::vector<Profile*> ProfileManager::GetLoadedProfiles() const {
   std::vector<Profile*> profiles;
-  for (ProfilesInfoMap::const_iterator iter = profiles_info_.begin();
-       iter != profiles_info_.end(); ++iter) {
+  for (auto iter = profiles_info_.begin(); iter != profiles_info_.end();
+       ++iter) {
     if (iter->second->created)
       profiles.push_back(iter->second->profile.get());
   }
@@ -957,8 +959,8 @@ void ProfileManager::CleanUpDeletedProfiles() {
             base::BindOnce(&ProfileCleanedUp, &value));
       } else {
         // Everything is fine, the profile was removed on shutdown.
-        BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                                base::BindOnce(&ProfileCleanedUp, &value));
+        base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                                 base::BindOnce(&ProfileCleanedUp, &value));
       }
     } else {
       LOG(ERROR) << "Found invalid profile path in deleted_profiles: "
@@ -1091,9 +1093,6 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
 #if defined(OS_WIN) && defined(GOOGLE_CHROME_BUILD)
     // Enterprise users should not be included in any NUX flow.
     if (!base::win::IsEnterpriseManaged()) {
-      profile->GetPrefs()->SetBoolean(prefs::kHasSeenGoogleAppsPromoPage,
-                                      false);
-      profile->GetPrefs()->SetBoolean(prefs::kHasSeenEmailPromoPage, false);
       profile->GetPrefs()->SetBoolean(prefs::kOnboardDuringNUX, true);
     }
 #endif  // defined(OS_WIN) && defined(GOOGLE_CHROME_BUILD)
@@ -1237,7 +1236,7 @@ void ProfileManager::OnProfileCreated(Profile* profile,
                                       bool is_new_profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  ProfilesInfoMap::iterator iter = profiles_info_.find(profile->GetPath());
+  auto iter = profiles_info_.find(profile->GetPath());
   DCHECK(iter != profiles_info_.end());
   ProfileInfo* info = iter->second.get();
 
@@ -1641,7 +1640,7 @@ ProfileManager::ProfileInfo* ProfileManager::RegisterProfile(
 
 ProfileManager::ProfileInfo* ProfileManager::GetProfileInfoByPath(
     const base::FilePath& path) const {
-  ProfilesInfoMap::const_iterator iter = profiles_info_.find(path);
+  auto iter = profiles_info_.find(path);
   return (iter == profiles_info_.end()) ? NULL : iter->second.get();
 }
 
@@ -1681,8 +1680,8 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
       // in.
       if (signin_util::IsForceSigninEnabled() && was_authenticated_status &&
           !entry->IsAuthenticated()) {
-        BrowserThread::PostTask(
-            BrowserThread::UI, FROM_HERE,
+        base::PostTaskWithTraits(
+            FROM_HERE, {BrowserThread::UI},
             base::BindOnce(&SignOut, SigninManager::FromSigninManagerBase(
                                          signin_manager)));
       }

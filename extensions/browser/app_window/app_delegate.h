@@ -19,6 +19,7 @@ class FileChooserParams;
 namespace content {
 class BrowserContext;
 class ColorChooser;
+class FileSelectListener;
 class RenderFrameHost;
 class RenderViewHost;
 class WebContents;
@@ -70,6 +71,7 @@ class AppDelegate {
       SkColor initial_color) = 0;
   virtual void RunFileChooser(
       content::RenderFrameHost* render_frame_host,
+      std::unique_ptr<content::FileSelectListener> listener,
       const blink::mojom::FileChooserParams& params) = 0;
   virtual void RequestMediaAccessPermission(
       content::WebContents* web_contents,

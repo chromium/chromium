@@ -7,6 +7,7 @@
 
 import argparse
 import ctypes
+import glob
 import evdev
 import os
 import sys
@@ -52,11 +53,14 @@ def dump_absinfo(out, capabilities, identifier):
   out.write('};\n')
 
 
-def dump_capabilities(out, dev, identifier):
+def dump_capabilities(out, dev, identifier=None):
   capabilities = dev.capabilities()
   has_abs = evdev.ecodes.EV_ABS in capabilities
 
-  sysfs_path = '/sys/class/input/' + os.path.basename(dev.fn)
+  basename = os.path.basename(dev.fn)
+  sysfs_path = '/sys/class/input/' + basename
+  if not identifier:
+    identifier = 'kInputDevice_' + basename
 
   # python-evdev is missing some features
   uniq = open(sysfs_path + '/device/uniq', 'r').read().strip()
@@ -121,14 +125,20 @@ def dump_capabilities(out, dev, identifier):
 
 def main(argv):
   parser = argparse.ArgumentParser()
-  parser.add_argument('device')
-  parser.add_argument('identifier')
+  parser.add_argument('device', nargs='?')
+  parser.add_argument('identifier', nargs='?')
   args = parser.parse_args(argv)
 
-  dev = evdev.InputDevice(args.device)
-  out = sys.stdout
+  if args.device:
+    devices = [args.device]
+  else:
+    devices = glob.glob('/dev/input/event*')
 
-  dump_capabilities(out, dev, args.identifier)
+  out = sys.stdout
+  for device in devices:
+    dev = evdev.InputDevice(device)
+    dump_capabilities(out, dev, args.identifier)
+
   return 0
 
 

@@ -12,7 +12,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-import org.chromium.base.AsyncTask;
+import org.chromium.base.task.AsyncTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;

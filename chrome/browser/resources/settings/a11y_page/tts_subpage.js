@@ -75,7 +75,7 @@ Polymer({
   /**
    * Ticks for the Speech Rate slider. Non-linear as we expect people
    * to want more control near 1.0.
-   * @return Array<SliderTick>
+   * @return Array<cr_slider.SliderTick>
    * @private
    */
   speechRateTicks_: function() {
@@ -91,7 +91,7 @@ Polymer({
   /**
    * Ticks for the Speech Pitch slider. Valid pitches are between 0 and 2,
    * exclusive of 0.
-   * @return Array<SliderTick>
+   * @return Array<cr_slider.SliderTick>
    * @private
    */
   speechPitchTicks_: function() {
@@ -104,7 +104,7 @@ Polymer({
    * Ticks for the Speech Volume slider. Valid volumes are between 0 and
    * 1 (100%), but volumes lower than .2 are excluded as being too quiet.
    * The values are linear between .2 and 1.0.
-   * @return Array<SliderTick>
+   * @return Array<cr_slider.SliderTick>
    * @private
    */
   speechVolumeTicks_: function() {
@@ -116,7 +116,7 @@ Polymer({
   /**
    * Initializes i18n labels for ticks arrays.
    * @param {number} tick The value to make a tick for.
-   * @return {SliderTick}
+   * @return {cr_slider.SliderTick}
    * @private
    */
   initTick_: function(tick) {

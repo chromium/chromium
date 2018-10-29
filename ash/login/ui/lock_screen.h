@@ -5,17 +5,11 @@
 #ifndef ASH_LOGIN_UI_LOCK_SCREEN_H_
 #define ASH_LOGIN_UI_LOCK_SCREEN_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/session/session_observer.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-
-namespace base {
-class OneShotTimer;
-}
 
 namespace ash {
 
@@ -88,10 +82,6 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
 
   // Unowned pointer to the LockContentsView hosted in lock window.
   LockContentsView* contents_view_ = nullptr;
-
-  // The fallback timer that ensures the login screen is shown in case the first
-  // wallpaper animation takes an extra long time to complete.
-  std::unique_ptr<base::OneShotTimer> show_login_screen_fallback_timer_;
 
   bool is_shown_ = false;
 

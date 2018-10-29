@@ -97,8 +97,6 @@ class ReferenceGroup {
   using WriterFactory = std::unique_ptr<ReferenceWriter> (Disassembler::*)(
       MutableBufferView image);
 
-  ReferenceGroup() = default;
-
   // RefinedGeneratorFactory and RefinedReceptorFactory don't have to be
   // identical to GeneratorFactory and ReceptorFactory, but they must be
   // convertible. As a result, they can be pointer to member function of a

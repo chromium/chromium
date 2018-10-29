@@ -10,10 +10,12 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -75,8 +77,8 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     system_request_context_getter_ = new net::TestURLRequestContextGetter(
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::IO));
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::IO}));
 
     signin_browser_context_ = std::make_unique<TestingProfile>();
 
@@ -217,8 +219,8 @@ TEST_F(SigninPartitionManagerTest, TestSubsequentAttempts) {
 
 TEST_F(SigninPartitionManagerTest, HttpAuthCacheTransferred) {
   base::RunLoop loop_prepare;
-  content::BrowserThread::PostTaskAndReply(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReply(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(AddEntryToHttpAuthCache,
                      base::RetainedRef(GetSystemURLRequestContextGetter())),
       loop_prepare.QuitClosure());
@@ -232,8 +234,8 @@ TEST_F(SigninPartitionManagerTest, HttpAuthCacheTransferred) {
 
   bool entry_found = false;
   base::RunLoop loop_check;
-  content::BrowserThread::PostTaskAndReply(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReply(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(IsEntryInHttpAuthCache,
                      base::RetainedRef(signin_url_request_context_getter),
                      &entry_found),

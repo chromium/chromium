@@ -17,14 +17,12 @@ import static org.chromium.chrome.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
-import android.content.Context;
+import android.app.Activity;
 import android.support.design.widget.TabLayout;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.PerformException;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.ViewInteraction;
-import android.support.v7.content.res.AppCompatResources;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -35,7 +33,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.InsetObserverView;
+import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
@@ -44,7 +42,6 @@ import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.ui.DropdownPopupWindowInterface;
-import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -58,60 +55,16 @@ public class ManualFillingTestHelper {
     private final AtomicReference<WebContents> mWebContentsRef = new AtomicReference<>();
     private TestInputMethodManagerWrapper mInputMethodManagerWrapper;
 
-    private class FakeKeyboard extends KeyboardVisibilityDelegate {
-        static final int KEYBOARD_HEIGHT = 400;
-        private boolean mIsShowing;
-
-        @Override
-        public void showKeyboard(View view) {
-            mIsShowing = true;
-            ThreadUtils.runOnUiThreadBlocking(() -> {
-                mActivityTestRule.getActivity()
-                        .getManualFillingController()
-                        .getMediatorForTesting()
-                        .onKeyboardVisibilityChanged(mIsShowing);
-            });
-        }
-
-        @Override
-        public boolean hideKeyboard(View view) {
-            boolean keyboardWasVisible = mIsShowing;
-            mIsShowing = false;
-            ThreadUtils.runOnUiThreadBlocking(() -> {
-                mActivityTestRule.getActivity()
-                        .getManualFillingController()
-                        .getMediatorForTesting()
-                        .onKeyboardVisibilityChanged(mIsShowing);
-            });
-            return keyboardWasVisible;
-        }
-
-        @Override
-        public int calculateKeyboardHeight(Context context, View rootView) {
-            return mIsShowing ? KEYBOARD_HEIGHT : 0;
-        }
-
-        /**
-         * Creates an inset observer view calculating the bottom inset based on the fake keyboard.
-         * @param context Context used to instantiate this view.
-         * @return a {@link InsetObserverView}
-         */
-        InsetObserverView createInsetObserver(Context context) {
-            return new InsetObserverView(context) {
-                @Override
-                public int getSystemWindowInsetsBottom() {
-                    return mIsShowing ? KEYBOARD_HEIGHT : 0;
-                }
-            };
-        }
+    public FakeKeyboard getKeyboard() {
+        return (FakeKeyboard) mActivityTestRule.getKeyboardDelegate();
     }
-    private final FakeKeyboard mKeyboard = new FakeKeyboard();
 
     ManualFillingTestHelper(ChromeTabbedActivityTestRule activityTestRule) {
         mActivityTestRule = activityTestRule;
     }
 
     public void loadTestPage(boolean isRtl) throws InterruptedException {
+        ChromeWindow.setKeyboardVisibilityDelegateFactory(FakeKeyboard::new);
         mActivityTestRule.startMainActivityWithURL(UrlUtils.encodeHtmlDataUri("<html"
                 + (isRtl ? " dir=\"rtl\"" : "") + "><head>"
                 + "<meta name=\"viewport\""
@@ -123,14 +76,14 @@ public class ManualFillingTestHelper {
                 + "</form></body></html>"));
         setRtlForTesting(isRtl);
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+            ChromeTabbedActivity activity = (ChromeTabbedActivity) mActivityTestRule.getActivity();
             mWebContentsRef.set(activity.getActivityTab().getWebContents());
             activity.getManualFillingController()
                     .getMediatorForTesting()
-                    .setInsetObserverViewSupplier(() -> {
-                        return mKeyboard.createInsetObserver(
-                                activity.getInsetObserverView().getContext());
-                    });
+                    .setInsetObserverViewSupplier(
+                            ()
+                                    -> getKeyboard().createInsetObserver(
+                                            activity.getInsetObserverView().getContext()));
             // The TestInputMethodManagerWrapper intercepts showSoftInput so that a keyboard is
             // never brought up.
             final ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mWebContentsRef.get());
@@ -138,36 +91,42 @@ public class ManualFillingTestHelper {
             imeAdapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
         });
         DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), "password");
-        KeyboardVisibilityDelegate.setDelegateForTesting(mKeyboard); // Use a fake keyboard.
     }
+
     public void clear() {
-        KeyboardVisibilityDelegate.clearDelegateForTesting();
+        ChromeWindow.resetKeyboardVisibilityDelegateFactory();
     }
 
     public void waitForKeyboard() {
         CriteriaHelper.pollUiThread(() -> {
-            return mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
-                    InstrumentationRegistry.getContext(),
-                    mActivityTestRule.getActivity().getCurrentFocus());
+            Activity activity = mActivityTestRule.getActivity();
+            return getKeyboard().isAndroidSoftKeyboardShowing(activity, activity.getCurrentFocus());
         });
     }
 
     public void waitForKeyboardToDisappear() {
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> !KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
-                                InstrumentationRegistry.getContext(),
-                                mActivityTestRule.getActivity().getCurrentFocus()));
+        CriteriaHelper.pollUiThread(() -> {
+            Activity activity = mActivityTestRule.getActivity();
+            return !getKeyboard().isAndroidSoftKeyboardShowing(
+                    activity, activity.getCurrentFocus());
+        });
     }
 
     public void clickPasswordField() throws TimeoutException, InterruptedException {
         DOMUtils.clickNode(mWebContentsRef.get(), "password");
-        mKeyboard.showKeyboard(null);
+        requestShowKeyboardAccessory();
+        getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
     }
 
-    public void clickEmailField() throws TimeoutException, InterruptedException {
+    public void clickEmailField(boolean forceAccessory)
+            throws TimeoutException, InterruptedException {
         DOMUtils.clickNode(mWebContentsRef.get(), "email");
-        mKeyboard.showKeyboard(null);
+        if (forceAccessory) {
+            requestShowKeyboardAccessory();
+        } else {
+            requestHideKeyboardAccessory();
+        }
+        getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
     }
 
     public DropdownPopupWindowInterface waitForAutofillPopup(String filterInput)
@@ -210,19 +169,21 @@ public class ManualFillingTestHelper {
      */
     public void clickSubmit() throws TimeoutException, InterruptedException {
         DOMUtils.clickNode(mWebContentsRef.get(), "submit");
-        mKeyboard.hideKeyboard(null);
+        getKeyboard().hideAndroidSoftKeyboard(null);
     }
 
     /**
-     * Creates and adds an empty tab without listener to keyboard accessory and sheet.
+     * Creates and adds a password tab to keyboard accessory and sheet.
      */
     public void createTestTab() {
-        mActivityTestRule.getActivity().getManualFillingController().getMediatorForTesting().addTab(
-                new KeyboardAccessoryData.Tab(
-                        AppCompatResources.getDrawable(InstrumentationRegistry.getContext(),
-                                android.R.drawable.ic_lock_lock),
-                        "TestTabDescription", R.layout.empty_accessory_sheet, AccessoryTabType.ALL,
-                        null));
+        KeyboardAccessoryData.Provider<KeyboardAccessoryData.Item> provider =
+                new KeyboardAccessoryData.PropertyProvider<>();
+        mActivityTestRule.getActivity().getManualFillingController().registerPasswordProvider(
+                provider);
+        provider.notifyObservers(new KeyboardAccessoryData.Item[] {
+                KeyboardAccessoryData.Item.createSuggestion("TestName", "", false, null, null),
+                KeyboardAccessoryData.Item.createSuggestion(
+                        "TestPassword", "", false, (item) -> {}, null)});
     }
 
     /**
@@ -250,7 +211,7 @@ public class ManualFillingTestHelper {
                             .withCause(new Throwable("No tab at index " + tabIndex))
                             .build();
                 }
-                tabLayout.getTabAt(tabIndex).select();
+                ThreadUtils.runOnUiThread(() -> tabLayout.getTabAt(tabIndex).select());
             }
         };
     }
@@ -269,6 +230,32 @@ public class ManualFillingTestHelper {
     public void waitToBeHidden(Matcher<View> matcher) {
         onView(isRoot()).check((r, e) -> {
             waitForView((ViewGroup) r, matcher, VIEW_INVISIBLE | VIEW_NULL | VIEW_GONE);
+        });
+    }
+
+    /**
+     * In order to make sure the keyboard accessory is only shown on appropriate fields, a request
+     * to show is usually sent from the native side. This method simulates that request.
+     */
+    private void requestShowKeyboardAccessory() {
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity()
+                    .getManualFillingController()
+                    .getMediatorForTesting()
+                    .showWhenKeyboardIsVisible();
+        });
+    }
+
+    /**
+     * In order to make sure the keyboard accessory is only shown on appropriate fields, a request
+     * from the native side can request to hide it. This method simulates that request.
+     */
+    private void requestHideKeyboardAccessory() {
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity()
+                    .getManualFillingController()
+                    .getMediatorForTesting()
+                    .hide();
         });
     }
 }

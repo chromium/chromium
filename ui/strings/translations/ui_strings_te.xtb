@@ -6,6 +6,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 నిమిషం క్రితం}other{# నిమిషాల క్రితం}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1ని}other{#ని}}</translation>
 <translation id="1243314992276662751">అప్‌లోడ్ చేయి</translation>
+<translation id="1269641567813814718">Win</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">సిఫార్సు చేసిన యాప్‌లు</translation>
 <translation id="1368832886055348810">ఎడమ నుండి కుడికి</translation>
@@ -92,7 +93,7 @@
 <translation id="528468243742722775">ముగింపు</translation>
 <translation id="5329858601952122676">&amp;తొలగించు</translation>
 <translation id="5463830097259460683">ఎమోజి &amp;&amp; చిహ్నాలు</translation>
-<translation id="5476505524087279545">ఎంపిక  చెయ్యబడలేదు</translation>
+<translation id="5476505524087279545">ఎంపిక చేయబడలేదు</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> సిస్టమ్</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">ఎడమ బాణం</translation>
@@ -157,6 +158,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">పేజీ క్రిందికి</translation>
 <translation id="8245914219290430011">ట్యాబ్</translation>
+<translation id="8259556432390118667">హెక్స్ రంగు విలువ</translation>
 <translation id="8328145009876646418">ఎడమ హద్దు</translation>
 <translation id="8331626408530291785">పైకి స్క్రోల్ చెయ్యి</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 సంవత్సరం}other{# సంవత్సరాలు}}</translation>
@@ -172,6 +174,7 @@
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
 <translation id="8806053966018712535">ఫోల్డర్ <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">చిత్రాన్ని అనులేఖించు</translation>
+<translation id="8841375032071747811">వెనుకకు బటన్</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="9002566407876343676">తెరువు</translation>
 <translation id="9038489124413477075">పేరులేని ఫోల్డర్</translation>

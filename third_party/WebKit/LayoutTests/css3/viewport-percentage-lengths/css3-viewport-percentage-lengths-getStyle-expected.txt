@@ -2,7 +2,6 @@ Test for Bug: 27160/91440 - Implement vw/vh/vmin/vmax (viewport sizes) from CSS 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test for vw
 PASS style.getPropertyValue("height") is '240px'
 PASS style.getPropertyValue("width") is '240px'

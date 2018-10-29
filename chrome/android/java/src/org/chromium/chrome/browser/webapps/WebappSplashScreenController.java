@@ -7,14 +7,10 @@ package org.chromium.chrome.browser.webapps;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
@@ -32,6 +28,7 @@ import org.chromium.chrome.browser.util.ColorUtils;
 import org.chromium.chrome.browser.webapps.WebappActivity.ActivityType;
 import org.chromium.net.NetError;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.webapk.lib.common.splash.SplashLayout;
 
 /** Shows and hides splash screen. */
 class WebappSplashScreenController extends EmptyTabObserver {
@@ -161,7 +158,7 @@ class WebappSplashScreenController extends EmptyTabObserver {
     }
 
     @Override
-    public void onCrash(Tab tab, boolean sadTabShown) {
+    public void onCrash(Tab tab) {
         animateHidingSplashScreen(tab, WebappUma.SplashScreenHidesReason.CRASH);
     }
 
@@ -235,64 +232,38 @@ class WebappSplashScreenController extends EmptyTabObserver {
         Context context = ContextUtils.getApplicationContext();
         Resources resources = context.getResources();
 
-        Bitmap displayIcon = (splashImage == null) ? webappInfo.icon() : splashImage;
-        int minimiumSizeThreshold =
-                resources.getDimensionPixelSize(R.dimen.webapp_splash_image_size_minimum);
-        int bigThreshold =
-                resources.getDimensionPixelSize(R.dimen.webapp_splash_image_size_threshold);
-
-        DisplayMetrics metrics =
-                ContextUtils.getApplicationContext().getResources().getDisplayMetrics();
-        int displayIconSmallestEdge = 0;
-        if (displayIcon != null) {
-            displayIconSmallestEdge = Math.min(
-                    displayIcon.getScaledWidth(metrics), displayIcon.getScaledHeight(metrics));
+        Bitmap displayIcon = splashImage;
+        boolean displayIconGenerated = false;
+        if (displayIcon == null) {
+            displayIcon = webappInfo.icon();
+            displayIconGenerated = webappInfo.isIconGenerated();
         }
+        @SplashLayout.IconClassification
+        int displayIconClassification =
+                SplashLayout.classifyIcon(resources, displayIcon, displayIconGenerated);
 
-        // Inflate the correct layout for the image.
-        int layoutId;
-        if (displayIconSmallestEdge < minimiumSizeThreshold
-                || (displayIcon == webappInfo.icon() && webappInfo.isIconGenerated())) {
+        if (displayIconClassification == SplashLayout.IconClassification.INVALID) {
             mWebappUma.recordSplashscreenIconType(WebappUma.SplashScreenIconType.NONE);
-            layoutId = R.layout.webapp_splash_screen_no_icon;
         } else {
-            // The size of the splash screen image determines which layout to use.
-            boolean isUsingSmallSplashImage = displayIconSmallestEdge <= bigThreshold;
-            if (isUsingSmallSplashImage) {
-                layoutId = R.layout.webapp_splash_screen_small;
-            } else {
-                layoutId = R.layout.webapp_splash_screen_large;
-            }
-
             // Record stats about the splash screen.
             @WebappUma.SplashScreenIconType
             int splashScreenIconType;
             if (splashImage == null) {
                 splashScreenIconType = WebappUma.SplashScreenIconType.FALLBACK;
-            } else if (isUsingSmallSplashImage) {
+            } else if (displayIconClassification == SplashLayout.IconClassification.SMALL) {
                 splashScreenIconType = WebappUma.SplashScreenIconType.CUSTOM_SMALL;
             } else {
                 splashScreenIconType = WebappUma.SplashScreenIconType.CUSTOM;
             }
             mWebappUma.recordSplashscreenIconType(splashScreenIconType);
             mWebappUma.recordSplashscreenIconSize(
-                    Math.round(displayIconSmallestEdge / resources.getDisplayMetrics().density));
+                    Math.round(displayIcon.getScaledWidth(resources.getDisplayMetrics())
+                            / resources.getDisplayMetrics().density));
         }
 
-        ViewGroup subLayout =
-                (ViewGroup) LayoutInflater.from(context).inflate(layoutId, mSplashScreen, true);
-
-        // Set up the elements of the splash screen.
-        TextView appNameView = (TextView) subLayout.findViewById(R.id.webapp_splash_screen_name);
-        ImageView splashIconView =
-                (ImageView) subLayout.findViewById(R.id.webapp_splash_screen_icon);
-        appNameView.setText(webappInfo.name());
-        if (splashIconView != null) splashIconView.setImageBitmap(displayIcon);
-
-        if (ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor)) {
-            appNameView.setTextColor(
-                    ApiCompatibilityUtils.getColor(resources, R.color.webapp_splash_title_light));
-        }
+        SplashLayout.createLayout(context, mSplashScreen, displayIcon, displayIconClassification,
+                webappInfo.name(),
+                ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor));
 
         if (mNativeLoaded) mWebappUma.commitMetrics();
     }

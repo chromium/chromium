@@ -462,9 +462,9 @@ std::vector<std::unique_ptr<TestProfilerInfo>> CreateProfilers(
   DCHECK(!params.empty());
 
   std::vector<std::unique_ptr<TestProfilerInfo>> profilers;
-  for (size_t i = 0; i < params.size(); ++i) {
+  for (const auto& i : params) {
     profilers.push_back(
-        std::make_unique<TestProfilerInfo>(target_thread_id, params[i]));
+        std::make_unique<TestProfilerInfo>(target_thread_id, i));
   }
 
   return profilers;
@@ -651,7 +651,7 @@ void TestLibraryUnload(bool wait_until_unloaded) {
 
   // Check that the stack contains a frame for
   // TargetThread::SignalAndWaitUntilSignaled().
-  Frames::const_iterator end_frame = FindFirstFrameWithinFunction(
+  auto end_frame = FindFirstFrameWithinFunction(
       frames, &TargetThread::SignalAndWaitUntilSignaled);
   ASSERT_TRUE(end_frame != frames.end())
       << "Function at "
@@ -684,7 +684,7 @@ void TestLibraryUnload(bool wait_until_unloaded) {
 
     // Check that the stack contains a frame for
     // TargetThread::CallThroughOtherLibrary().
-    Frames::const_iterator other_library_frame = FindFirstFrameWithinFunction(
+    auto other_library_frame = FindFirstFrameWithinFunction(
         frames, &TargetThread::CallThroughOtherLibrary);
     ASSERT_TRUE(other_library_frame != frames.end())
         << "Function at "
@@ -753,7 +753,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Basic) {
 
   // Check that the stack contains a frame for
   // TargetThread::SignalAndWaitUntilSignaled().
-  Frames::const_iterator loc = FindFirstFrameWithinFunction(
+  auto loc = FindFirstFrameWithinFunction(
       frames, &TargetThread::SignalAndWaitUntilSignaled);
   ASSERT_TRUE(loc != frames.end())
       << "Function at "
@@ -800,7 +800,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Alloca) {
 
   // Check that the stack contains a frame for
   // TargetThread::SignalAndWaitUntilSignaled().
-  Frames::const_iterator end_frame = FindFirstFrameWithinFunction(
+  auto end_frame = FindFirstFrameWithinFunction(
       frames, &TargetThread::SignalAndWaitUntilSignaled);
   ASSERT_TRUE(end_frame != frames.end())
       << "Function at "
@@ -810,7 +810,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Alloca) {
       << FormatSampleForDiagnosticOutput(frames);
 
   // Check that the stack contains a frame for TargetThread::CallWithAlloca().
-  Frames::const_iterator alloca_frame =
+  auto alloca_frame =
       FindFirstFrameWithinFunction(frames, &TargetThread::CallWithAlloca);
   ASSERT_TRUE(alloca_frame != frames.end())
       << "Function at "
@@ -1257,18 +1257,18 @@ PROFILER_TEST_F(StackSamplingProfilerTest, ConcurrentProfiling_Mixed) {
     std::vector<std::unique_ptr<TestProfilerInfo>> profiler_infos =
         CreateProfilers(target_thread_id, params);
 
-    for (size_t i = 0; i < profiler_infos.size(); ++i)
-      profiler_infos[i]->profiler.Start();
+    for (auto& i : profiler_infos)
+      i->profiler.Start();
 
     // Wait for one profiler to finish.
     size_t completed_profiler = WaitForSamplingComplete(profiler_infos);
     EXPECT_EQ(10u,
               profiler_infos[completed_profiler]->profile.frame_sets.size());
     // Stop and destroy all profilers, always in the same order. Don't crash.
-    for (size_t i = 0; i < profiler_infos.size(); ++i)
-      profiler_infos[i]->profiler.Stop();
-    for (size_t i = 0; i < profiler_infos.size(); ++i)
-      profiler_infos[i].reset();
+    for (auto& i : profiler_infos)
+      i->profiler.Stop();
+    for (auto& i : profiler_infos)
+      i.reset();
   });
 }
 
@@ -1314,7 +1314,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_OtherLibrary) {
 
   // Check that the stack contains a frame for
   // TargetThread::CallThroughOtherLibrary().
-  Frames::const_iterator other_library_frame = FindFirstFrameWithinFunction(
+  auto other_library_frame = FindFirstFrameWithinFunction(
       frames, &TargetThread::CallThroughOtherLibrary);
   ASSERT_TRUE(other_library_frame != frames.end())
       << "Function at "
@@ -1325,7 +1325,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_OtherLibrary) {
 
   // Check that the stack contains a frame for
   // TargetThread::SignalAndWaitUntilSignaled().
-  Frames::const_iterator end_frame = FindFirstFrameWithinFunction(
+  auto end_frame = FindFirstFrameWithinFunction(
       frames, &TargetThread::SignalAndWaitUntilSignaled);
   ASSERT_TRUE(end_frame != frames.end())
       << "Function at "

@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxContentEditableExtractorUnitTest() {}
+function ChromeVoxContentEditableExtractorUnitTest() {}
 
-CvoxContentEditableExtractorUnitTest.prototype = {
+ChromeVoxContentEditableExtractorUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -37,7 +37,7 @@ function setSelection(startNode, startOffset, endNode, endOffset) {
   sel.addRange(r);
 }
 
-TEST_F('CvoxContentEditableExtractorUnitTest', 'EmptyElement', function() {
+TEST_F('ChromeVoxContentEditableExtractorUnitTest', 'EmptyElement', function() {
   this.loadDoc(function() {/*!
     <div>
       <div id="textbox" contentEditable="true"></div>
@@ -58,7 +58,8 @@ TEST_F('CvoxContentEditableExtractorUnitTest', 'EmptyElement', function() {
 /**
  * Test getting text and selections from a single contenteditable node.
  */
-TEST_F('CvoxContentEditableExtractorUnitTest', 'SingleTextNode', function() {
+TEST_F('ChromeVoxContentEditableExtractorUnitTest', 'SingleTextNode',
+       function() {
   this.loadDoc(function() {/*!
     <div>
       <div id="textbox" contentEditable="true">Hello</div>
@@ -102,7 +103,7 @@ TEST_F('CvoxContentEditableExtractorUnitTest', 'SingleTextNode', function() {
  * Test getting text and selections from a contenteditable node with
  * nonprinted whitespace.
  */
-TEST_F('CvoxContentEditableExtractorUnitTest', 'TextWithWhitespace',
+TEST_F('ChromeVoxContentEditableExtractorUnitTest', 'TextWithWhitespace',
     function() {
   this.loadDoc(function() {/*!
     <div>
@@ -152,7 +153,7 @@ TEST_F('CvoxContentEditableExtractorUnitTest', 'TextWithWhitespace',
  * Test getting text and selections from a contenteditable node with
  * preformatted text.
  */
-TEST_F('CvoxContentEditableExtractorUnitTest', 'Preformatted', function() {
+TEST_F('ChromeVoxContentEditableExtractorUnitTest', 'Preformatted', function() {
   this.loadDoc(function() {/*!
     <div>
       <pre id="textbox" contentEditable="true">aaaaaaaaaa
@@ -185,7 +186,7 @@ cccccccccc</pre>
  * Test getting text and selections from a contenteditable node with
  * wrapping.
  */
-TEST_F('CvoxContentEditableExtractorUnitTest', 'WordWrap', function() {
+TEST_F('ChromeVoxContentEditableExtractorUnitTest', 'WordWrap', function() {
   this.loadDoc(function() {/*!
     <div>
       <div id="textbox"
@@ -218,7 +219,7 @@ TEST_F('CvoxContentEditableExtractorUnitTest', 'WordWrap', function() {
  * Test getting text and lines from a contenteditable region
  * containing two paragraphs and an explicit line break.
  */
-TEST_F('CvoxContentEditableExtractorUnitTest', 'TwoParas', function() {
+TEST_F('ChromeVoxContentEditableExtractorUnitTest', 'TwoParas', function() {
   this.loadDoc(function() {/*!
     <div>
       <div id="textbox" contentEditable="true">
@@ -245,7 +246,7 @@ TEST_F('CvoxContentEditableExtractorUnitTest', 'TwoParas', function() {
  * Test getting text and lines from a contenteditable region
  * containing two paragraphs, this time with added whitespace.
  */
-TEST_F('CvoxContentEditableExtractorUnitTest', 'TwoParasWithWhitespace',
+TEST_F('ChromeVoxContentEditableExtractorUnitTest', 'TwoParasWithWhitespace',
     function() {
   this.loadDoc(function() {/*!
     <div>
@@ -273,7 +274,8 @@ TEST_F('CvoxContentEditableExtractorUnitTest', 'TwoParasWithWhitespace',
  * Test getting text and lines from a contenteditable region
  * containing some raw text and then some text in a block-level element.
  */
-TEST_F('CvoxContentEditableExtractorUnitTest', 'NodePlusElement', function() {
+TEST_F('ChromeVoxContentEditableExtractorUnitTest', 'NodePlusElement',
+       function() {
   this.loadDoc(function() {/*!
     <div>
       <div id="textbox"

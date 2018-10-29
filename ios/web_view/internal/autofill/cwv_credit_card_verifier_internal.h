@@ -38,6 +38,10 @@ class CreditCard;
 - (void)didReceiveUnmaskVerificationResult:
     (autofill::AutofillClient::PaymentsRpcResult)result;
 
+// Use to notify CWVCreditCardVerifier that it needs to obtain risk data for
+// credit card verification and to pass it back in |callback|.
+- (void)loadRiskData:(base::OnceCallback<void(const std::string&)>)callback;
+
 @end
 
 NS_ASSUME_NONNULL_END

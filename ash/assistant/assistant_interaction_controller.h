@@ -5,17 +5,21 @@
 #ifndef ASH_ASSISTANT_ASSISTANT_INTERACTION_CONTROLLER_H_
 #define ASH_ASSISTANT_ASSISTANT_INTERACTION_CONTROLLER_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "ash/assistant/assistant_controller_observer.h"
+#include "ash/assistant/assistant_response_processor.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
+#include "ash/assistant/model/assistant_response_observer.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/assistant/ui/dialog_plate/dialog_plate.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
 
@@ -23,11 +27,13 @@ namespace ash {
 
 class AssistantController;
 class AssistantInteractionModelObserver;
+class AssistantResponseProcessor;
 
 class AssistantInteractionController
     : public chromeos::assistant::mojom::AssistantInteractionSubscriber,
       public AssistantControllerObserver,
       public AssistantInteractionModelObserver,
+      public AssistantResponseObserver,
       public AssistantUiModelObserver,
       public HighlighterController::Observer,
       public DialogPlateObserver {
@@ -62,6 +68,12 @@ class AssistantInteractionController
   // AssistantInteractionModelObserver:
   void OnInteractionStateChanged(InteractionState interaction_state) override;
   void OnInputModalityChanged(InputModality input_modality) override;
+  void OnMicStateChanged(MicState mic_state) override;
+  void OnResponseChanged(
+      const std::shared_ptr<AssistantResponse>& response) override;
+
+  // AssistantResponseObserver:
+  void OnResponseDestroying(AssistantResponse& response) override;
 
   // AssistantUiModelObserver:
   void OnUiModeChanged(AssistantUiMode ui_mode) override;
@@ -77,7 +89,8 @@ class AssistantInteractionController
   void OnInteractionStarted(bool is_voice_interaction) override;
   void OnInteractionFinished(
       AssistantInteractionResolution resolution) override;
-  void OnHtmlResponse(const std::string& response) override;
+  void OnHtmlResponse(const std::string& response,
+                      const std::string& fallback) override;
   void OnSuggestionsResponse(
       std::vector<AssistantSuggestionPtr> response) override;
   void OnTextResponse(const std::string& response) override;
@@ -99,11 +112,18 @@ class AssistantInteractionController
   void OnSuggestionChipPressed(const AssistantSuggestion* suggestion);
 
  private:
+  bool HasUnprocessedPendingResponse();
+
+  void OnProcessPendingResponse();
+  void OnPendingResponseProcessed(bool success);
+
+  void OnUiVisible(AssistantSource source);
+
   void StartMetalayerInteraction(const gfx::Rect& region);
   void StartScreenContextInteraction();
   void StartTextInteraction(const std::string text);
   void StartVoiceInteraction();
-  void StopActiveInteraction();
+  void StopActiveInteraction(bool cancel_conversation);
 
   void OpenUrl(const GURL& url);
 
@@ -115,7 +135,11 @@ class AssistantInteractionController
   mojo::Binding<chromeos::assistant::mojom::AssistantInteractionSubscriber>
       assistant_interaction_subscriber_binding_;
 
+  AssistantResponseProcessor assistant_response_processor_;
+
   AssistantInteractionModel model_;
+
+  base::WeakPtrFactory<AssistantInteractionController> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantInteractionController);
 };

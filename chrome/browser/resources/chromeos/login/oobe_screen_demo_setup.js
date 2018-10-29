@@ -8,7 +8,7 @@
 
 login.createScreen('DemoSetupScreen', 'demo-setup', function() {
   return {
-    EXTERNAL_API: ['onSetupFinished'],
+    EXTERNAL_API: ['onSetupSucceeded', 'onSetupFailed'],
 
     /**
      * Demo setup module.
@@ -37,14 +37,17 @@ login.createScreen('DemoSetupScreen', 'demo-setup', function() {
       this.demoSetupModule_.reset();
     },
 
+    /** Called when demo mode setup succeeded. */
+    onSetupSucceeded: function() {
+      this.demoSetupModule_.onSetupSucceeded();
+    },
+
     /**
-     * Called when demo mode setup finished.
-     * @param {boolean} isSuccess Whether demo setup finished successfully.
-     * @param {string} message Error message to be displayed to the user,
-     *  populated if setup finished with an error.
+     * Called when demo mode setup failed.
+     * @param {string} message Error message to be displayed to the user.
      */
-    onSetupFinished: function(isSuccess, message) {
-      this.demoSetupModule_.onSetupFinished(isSuccess, message);
+    onSetupFailed: function(message) {
+      this.demoSetupModule_.onSetupFailed(message);
     },
   };
 });

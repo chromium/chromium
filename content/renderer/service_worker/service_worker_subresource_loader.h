@@ -75,13 +75,18 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       base::Optional<blink::ServiceWorkerStatusCode> status);
 
   // blink::mojom::ServiceWorkerFetchResponseCallback overrides:
-  void OnResponse(blink::mojom::FetchAPIResponsePtr response,
-                  base::TimeTicks dispatch_event_time) override;
+  void OnResponse(
+      blink::mojom::FetchAPIResponsePtr response,
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
   void OnResponseStream(
       blink::mojom::FetchAPIResponsePtr response,
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
-      base::TimeTicks dispatch_event_time) override;
-  void OnFallback(base::TimeTicks dispatch_event_time) override;
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
+  void OnFallback(
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
+
+  void UpdateResponseTiming(
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing);
 
   void StartResponse(blink::mojom::FetchAPIResponsePtr response,
                      blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream);
@@ -108,6 +113,11 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // Calls url_loader_client_->OnComplete(). Expected to be called after
   // CommitResponseHeaders (i.e. status_ == kSentHeader).
   void CommitCompleted(int error_code);
+
+  // Record loading milestones. Called after a response is completed or
+  // a request is fall back to network. Never called when an error is
+  // occurred. |handled| is true when a fetch handler handled a request.
+  void RecordTimingMetrics(bool handled);
 
   network::ResourceResponseHead response_head_;
   base::Optional<net::RedirectInfo> redirect_info_;
@@ -162,6 +172,8 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // The task runner where this loader is running.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  blink::mojom::ServiceWorkerFetchEventTimingPtr fetch_event_timing_;
+
   base::WeakPtrFactory<ServiceWorkerSubresourceLoader> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerSubresourceLoader);
@@ -180,9 +192,8 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoaderFactory
   // default URLLoaderFactory for network fallback. This should be the
   // URLLoaderFactory that directly goes to network without going through
   // any custom URLLoader factories.
-  // |task_runner| is the runner where this loader runs. (We need to pass
-  // this around because calling base::SequencedTaskRunnerHandle is
-  // prohibited in the renderer :()
+  // |task_runner| is the runner where this loader runs. In production it runs,
+  // on a background thread.
   static void Create(
       scoped_refptr<ControllerServiceWorkerConnector> controller_connector,
       scoped_refptr<network::SharedURLLoaderFactory> fallback_factory,

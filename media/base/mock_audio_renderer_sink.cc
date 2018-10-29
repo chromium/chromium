@@ -29,12 +29,11 @@ MockAudioRendererSink::MockAudioRendererSink(
 
 MockAudioRendererSink::~MockAudioRendererSink() = default;
 
-void MockAudioRendererSink::SwitchOutputDevice(
-    const std::string& device_id,
-    const OutputDeviceStatusCB& callback) {
+void MockAudioRendererSink::SwitchOutputDevice(const std::string& device_id,
+                                               OutputDeviceStatusCB callback) {
   // NB: output device won't be changed, since it's not required by any tests
   // now.
-  callback.Run(output_device_info_.device_status());
+  std::move(callback).Run(output_device_info_.device_status());
 }
 
 void MockAudioRendererSink::Initialize(const AudioParameters& params,

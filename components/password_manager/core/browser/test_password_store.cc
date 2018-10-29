@@ -35,7 +35,7 @@ bool TestPasswordStore::IsEmpty() const {
   // The store is empty, if the sum of all stored passwords across all entries
   // in |stored_passwords_| is 0.
   size_t number_of_passwords = 0u;
-  for (PasswordMap::const_iterator it = stored_passwords_.begin();
+  for (auto it = stored_passwords_.begin();
        !number_of_passwords && it != stored_passwords_.end(); ++it) {
     number_of_passwords += it->second.size();
   }
@@ -60,8 +60,7 @@ PasswordStoreChangeList TestPasswordStore::UpdateLoginImpl(
   PasswordStoreChangeList changes;
   std::vector<autofill::PasswordForm>& forms =
       stored_passwords_[form.signon_realm];
-  for (std::vector<autofill::PasswordForm>::iterator it = forms.begin();
-       it != forms.end(); ++it) {
+  for (auto it = forms.begin(); it != forms.end(); ++it) {
     if (ArePasswordFormUniqueKeyEqual(form, *it)) {
       *it = form;
       changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE, form));
@@ -75,7 +74,7 @@ PasswordStoreChangeList TestPasswordStore::RemoveLoginImpl(
   PasswordStoreChangeList changes;
   std::vector<autofill::PasswordForm>& forms =
       stored_passwords_[form.signon_realm];
-  std::vector<autofill::PasswordForm>::iterator it = forms.begin();
+  auto it = forms.begin();
   while (it != forms.end()) {
     if (ArePasswordFormUniqueKeyEqual(form, *it)) {
       it = forms.erase(it);

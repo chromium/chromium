@@ -97,9 +97,6 @@ class NET_EXPORT ChannelIDStore {
   // Signals to the backing store that any pending writes should be flushed.
   virtual void Flush() = 0;
 
-  // Helper function that adds all keypairs from |list| into this instance.
-  void InitializeFrom(const ChannelIDList& list);
-
   // Returns the number of keypairs in the store.  May return 0 if the backing
   // store is not loaded yet.
   // Public only for unit testing.

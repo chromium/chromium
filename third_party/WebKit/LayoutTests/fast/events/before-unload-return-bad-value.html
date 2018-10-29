@@ -14,10 +14,12 @@ function test(frame) {
     alreadyTested = true;
 
     frame.contentWindow.onbeforeunload = function(event) {
+        // This exception should be caught by |window.onerror|, not
+        // |frame.contentWindow.onerror| in this test case.
         return {toString: function() { throw "Exception in toString()"; }};
     };
 
-    frame.contentWindow.onerror = function(msg) {
+    window.onerror = function(msg) {
         testMessage = msg;
         testPassed("Exception was thrown");
         shouldBeEqualToString("testMessage", "Uncaught Exception in toString()");

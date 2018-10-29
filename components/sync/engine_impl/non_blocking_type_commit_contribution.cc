@@ -22,11 +22,13 @@ NonBlockingTypeCommitContribution::NonBlockingTypeCommitContribution(
     const CommitRequestDataList& commit_requests,
     ModelTypeWorker* worker,
     Cryptographer* cryptographer,
+    PassphraseType passphrase_type,
     DataTypeDebugInfoEmitter* debug_info_emitter,
     bool only_commit_specifics)
     : type_(type),
       worker_(worker),
       cryptographer_(cryptographer),
+      passphrase_type_(passphrase_type),
       context_(context),
       commit_requests_(commit_requests),
       cleaned_up_(false),
@@ -58,6 +60,11 @@ void NonBlockingTypeCommitContribution::AddToCommitMessage(
       PopulateCommitProto(commit_request, sync_entity);
       AdjustCommitProto(sync_entity);
     }
+
+    // Purposefully crash if we have client only data, as this could result in
+    // sending password in plain text.
+    CHECK(
+        !sync_entity->specifics().password().has_client_only_encrypted_data());
 
     // Update the relevant counter based on the type of the commit request.
     if (commit_request.entity->is_deleted()) {
@@ -220,7 +227,16 @@ void NonBlockingTypeCommitContribution::AdjustCommitProto(
   }
 
   // Encrypt the specifics and hide the title if necessary.
-  if (cryptographer_) {
+  if (commit_proto->specifics().has_password()) {
+    // If explicit encryption is enabled, password metadata fields must be
+    // cleared. See documentation in password_specifics.proto.
+    if (IsExplicitPassphrase(passphrase_type_)) {
+      commit_proto->mutable_specifics()
+          ->mutable_password()
+          ->clear_unencrypted_metadata();
+    }
+    commit_proto->set_name("encrypted");
+  } else if (cryptographer_) {
     if (commit_proto->has_specifics()) {
       sync_pb::EntitySpecifics encrypted_specifics;
       bool result = cryptographer_->Encrypt(

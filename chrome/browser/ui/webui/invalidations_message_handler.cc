@@ -8,8 +8,10 @@
 
 #include "base/bind.h"
 #include "chrome/browser/invalidation/deprecated_profile_invalidation_provider_factory.h"
+#include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/invalidation/impl/invalidation_logger.h"
+#include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -43,9 +45,16 @@ void InvalidationsMessageHandler::RegisterMessages() {
 }
 
 void InvalidationsMessageHandler::UIReady(const base::ListValue* args) {
-  invalidation::ProfileInvalidationProvider* invalidation_provider =
-      invalidation::DeprecatedProfileInvalidationProviderFactory::GetForProfile(
-          Profile::FromWebUI(web_ui()));
+  invalidation::ProfileInvalidationProvider* invalidation_provider;
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (base::FeatureList::IsEnabled(invalidation::switches::kFCMInvalidations)) {
+    invalidation_provider =
+        invalidation::ProfileInvalidationProviderFactory::GetForProfile(
+            profile);
+  } else {
+    invalidation_provider = invalidation::
+        DeprecatedProfileInvalidationProviderFactory::GetForProfile(profile);
+  }
   if (invalidation_provider) {
     logger_ = invalidation_provider->GetInvalidationService()->
         GetInvalidationLogger();
@@ -75,9 +84,8 @@ void InvalidationsMessageHandler::UpdateContent(const base::ListValue* args) {
 void InvalidationsMessageHandler::OnRegistrationChange(
     const std::multiset<std::string>& registered_handlers) {
   base::ListValue list_of_handlers;
-  for (std::multiset<std::string>::const_iterator it =
-       registered_handlers.begin();
-       it != registered_handlers.end(); ++it) {
+  for (auto it = registered_handlers.begin(); it != registered_handlers.end();
+       ++it) {
     list_of_handlers.AppendString(*it);
   }
   web_ui()->CallJavascriptFunctionUnsafe("chrome.invalidations.updateHandlers",
@@ -97,9 +105,7 @@ void InvalidationsMessageHandler::OnUpdateIds(
     const std::string& handler_name,
     const syncer::ObjectIdCountMap& ids) {
   base::ListValue list_of_objects;
-  for (syncer::ObjectIdCountMap::const_iterator it = ids.begin();
-       it != ids.end();
-       ++it) {
+  for (auto it = ids.begin(); it != ids.end(); ++it) {
     std::unique_ptr<base::DictionaryValue> dic(new base::DictionaryValue());
     dic->SetString("name", (it->first).name());
     dic->SetInteger("source", (it->first).source());

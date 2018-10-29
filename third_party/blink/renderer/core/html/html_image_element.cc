@@ -105,8 +105,8 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       sizes_set_width_(false),
       referrer_policy_(kReferrerPolicyDefault) {
   SetHasCustomStyleCallbacks();
-  if (MediaElementParserHelpers::IsMediaElement(this) &&
-      !MediaElementParserHelpers::IsUnsizedMediaEnabled(document)) {
+  if (media_element_parser_helpers::IsMediaElement(this) &&
+      !media_element_parser_helpers::IsUnsizedMediaEnabled(document)) {
     is_default_overridden_intrinsic_size_ = true;
     overridden_intrinsic_size_ =
         IntSize(LayoutReplaced::kDefaultWidth, LayoutReplaced::kDefaultHeight);
@@ -301,7 +301,7 @@ void HTMLImageElement::ParseAttribute(
                  ExperimentalProductivityFeaturesEnabled()) {
     String message;
     bool intrinsic_size_changed =
-        MediaElementParserHelpers::ParseIntrinsicSizeAttribute(
+        media_element_parser_helpers::ParseIntrinsicSizeAttribute(
             params.new_value, this, &overridden_intrinsic_size_,
             &is_default_overridden_intrinsic_size_, &message);
     if (!message.IsEmpty()) {
@@ -313,7 +313,8 @@ void HTMLImageElement::ParseAttribute(
         GetLayoutObject()->IsLayoutImage())
       ToLayoutImage(GetLayoutObject())->IntrinsicSizeChanged();
   } else if (name == lazyloadAttr &&
-             EqualIgnoringASCIICase(params.new_value, "off")) {
+             EqualIgnoringASCIICase(params.new_value, "off") &&
+             !GetDocument().IsLazyLoadPolicyEnforced()) {
     GetImageLoader().LoadDeferredImage(referrer_policy_);
   } else {
     HTMLElement::ParseAttribute(params);
@@ -445,15 +446,11 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
     }
   }
 
-  // If we have been inserted from a layoutObject-less document,
-  // our loader may have not fetched the image, so do it now.
-  if ((insertion_point.isConnected() && !GetImageLoader().GetContent() &&
-       !GetImageLoader().HasPendingActivity()) ||
-      image_was_modified) {
+  if (image_was_modified ||
+      GetImageLoader().ShouldUpdateOnInsertedInto(insertion_point)) {
     GetImageLoader().UpdateFromElement(ImageLoader::kUpdateNormal,
                                        referrer_policy_);
   }
-
   return HTMLElement::InsertedInto(insertion_point);
 }
 
@@ -796,9 +793,9 @@ void HTMLImageElement::DidAddUserAgentShadowRoot(ShadowRoot&) {
 }
 
 void HTMLImageElement::EnsureFallbackForGeneratedContent() {
-  // The special casing for generated content in createLayoutObject breaks the
+  // The special casing for generated content in CreateLayoutObject breaks the
   // invariant that the layout object attached to this element will always be
-  // appropriate for |m_layoutDisposition|. Force recreate it.
+  // appropriate for |layout_disposition_|. Force recreate it.
   // TODO(engedy): Remove this hack. See: https://crbug.com/671953.
   SetLayoutDisposition(LayoutDisposition::kFallbackContent,
                        true /* force_reattach */);

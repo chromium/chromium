@@ -11,8 +11,8 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "content/renderer/pepper/pepper_device_enumeration_host_helper.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/host_message_context.h"
@@ -146,7 +146,8 @@ class PepperDeviceEnumerationHostHelperTest : public testing::Test {
   ppapi::host::PpapiHost ppapi_host_;
   ppapi::host::ResourceHost resource_host_;
   PepperDeviceEnumerationHostHelper device_enumeration_;
-  base::MessageLoop message_loop_;  // required for async calls to work.
+  base::test::ScopedTaskEnvironment
+      task_environment_;  // required for async calls to work.
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PepperDeviceEnumerationHostHelperTest);

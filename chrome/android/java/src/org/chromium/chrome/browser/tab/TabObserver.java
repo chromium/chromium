@@ -125,9 +125,8 @@ public interface TabObserver {
     /**
      * Called when the ContentView of a {@link Tab} crashes.
      * @param tab The notifying {@link Tab}.
-     * @param sadTabShown Whether or not the sad tab was shown
      */
-    void onCrash(Tab tab, boolean sadTabShown);
+    void onCrash(Tab tab);
 
     /**
      * Called when restore of the corresponding tab is triggered.
@@ -316,9 +315,10 @@ public interface TabObserver {
 
     /**
      * Called when renderer changes its state about being responsive to requests.
+     * @param tab The notifying {@link Tab}.
      * @param {@code true} if the renderer becomes responsive, otherwise {@code false}.
      */
-    public void onRendererResponsiveStateChanged(boolean isResponsive);
+    public void onRendererResponsiveStateChanged(Tab tab, boolean isResponsive);
 
     /**
      * Called when navigation entries of a tab have been deleted.

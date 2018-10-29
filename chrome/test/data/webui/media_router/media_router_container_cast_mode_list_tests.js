@@ -344,19 +344,20 @@ cr.define('media_router_container_cast_mode_list', function() {
           assertEquals(fakeCastModeList[0].description, container.headerText);
 
           setTimeout(function() {
-            var sinkList = container.shadowRoot.getElementById('sink-list')
-                               .querySelectorAll('button.selectable-item');
-
-            // The sink list is empty because none of the sinks in
+            var sinkList = container.shadowRoot.getElementById('sink-list');
+            // The sink list is hidden because none of the sinks in
             // fakeSinkList is compatible with cast mode 0.
-            assertEquals(0, sinkList.length);
+            assertEquals('none', window.getComputedStyle(sinkList).display);
             MockInteractions.tap(castModeList[2]);
             assertEquals(fakeCastModeList[2].description, container.headerText);
 
             setTimeout(function() {
-              var sinkList = container.shadowRoot.getElementById('sink-list')
-                                 .querySelectorAll('button.selectable-item');
-              assertEquals(3, sinkList.length);
+              var sinkList = container.shadowRoot.getElementById('sink-list');
+              var sinkListElements =
+                  sinkList.querySelectorAll('button.selectable-item');
+              assertNotEquals(
+                  'none', window.getComputedStyle(sinkList).display);
+              assertEquals(3, sinkListElements.length);
               done();
             });
           });
@@ -467,9 +468,10 @@ cr.define('media_router_container_cast_mode_list', function() {
                     fakeCastModeList[1].description, container.headerText);
                 assertEquals(
                     fakeCastModeList[1].type, container.shownCastModeValue_);
-                var sinkList = container.shadowRoot.getElementById('sink-list')
-                                   .querySelectorAll('button.selectable-item');
-                assertEquals(0, sinkList.length);
+
+                // The sink list is hidden since there are no compatible sinks.
+                var sinkList = container.shadowRoot.getElementById('sink-list');
+                assertEquals('none', window.getComputedStyle(sinkList).display);
                 done();
               });
             });

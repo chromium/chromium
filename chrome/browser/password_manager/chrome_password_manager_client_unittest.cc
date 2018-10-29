@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
@@ -186,7 +187,7 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
     ProfileSyncServiceMock* mock_sync_service =
         static_cast<ProfileSyncServiceMock*>(
             ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-                profile(), BuildMockProfileSyncService));
+                profile(), base::BindRepeating(&BuildMockProfileSyncService)));
 
     EXPECT_CALL(*mock_sync_service, IsFirstSetupComplete())
         .WillRepeatedly(Return(true));
@@ -493,9 +494,11 @@ TEST_F(ChromePasswordManagerClientTest,
   // PasswordStore is needed for processing forms in PasswordManager later in
   // the test.
   PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(), password_manager::BuildPasswordStore<
-                     content::BrowserContext,
-                     testing::NiceMock<password_manager::MockPasswordStore>>);
+      profile(),
+      base::BindRepeating(
+          &password_manager::BuildPasswordStore<
+              content::BrowserContext,
+              testing::NiceMock<password_manager::MockPasswordStore>>));
 
   // about:blank is one of the pages where password manager should not work.
   const GURL kUrlOff(url::kAboutBlankURL);

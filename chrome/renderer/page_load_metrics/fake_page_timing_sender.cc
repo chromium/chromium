@@ -18,8 +18,10 @@ void FakePageTimingSender::SendTiming(
     const mojom::PageLoadTimingPtr& timing,
     const mojom::PageLoadMetadataPtr& metadata,
     mojom::PageLoadFeaturesPtr new_features,
-    std::vector<mojom::ResourceDataUpdatePtr> resources) {
-  validator_->UpdateTiming(timing, metadata, new_features, resources);
+    std::vector<mojom::ResourceDataUpdatePtr> resources,
+    const mojom::PageRenderData& render_data) {
+  validator_->UpdateTiming(timing, metadata, new_features, resources,
+                           render_data);
 }
 
 FakePageTimingSender::PageTimingValidator::PageTimingValidator() {}
@@ -91,11 +93,18 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedCssProperties()
       << "More CSS Properties are actually observed than expected";
 }
 
+void FakePageTimingSender::PageTimingValidator::VerifyExpectedRenderData()
+    const {
+  EXPECT_FLOAT_EQ(expected_render_data_.layout_jank_score,
+                  actual_render_data_.layout_jank_score);
+}
+
 void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const mojom::PageLoadTimingPtr& timing,
     const mojom::PageLoadMetadataPtr& metadata,
     const mojom::PageLoadFeaturesPtr& new_features,
-    const std::vector<mojom::ResourceDataUpdatePtr>& resources) {
+    const std::vector<mojom::ResourceDataUpdatePtr>& resources,
+    const mojom::PageRenderData& render_data) {
   actual_timings_.push_back(timing.Clone());
   for (const auto feature : new_features->features) {
     EXPECT_EQ(actual_features_.find(feature), actual_features_.end())
@@ -109,9 +118,11 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
         << "has been sent more than once";
     actual_css_properties_.insert(css_property_id);
   }
+  actual_render_data_.layout_jank_score = render_data.layout_jank_score;
   VerifyExpectedTimings();
   VerifyExpectedFeatures();
   VerifyExpectedCssProperties();
+  VerifyExpectedRenderData();
 }
 
 }  // namespace page_load_metrics

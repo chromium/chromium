@@ -47,7 +47,7 @@ base::LazyInstance<base::FilePath>::Leaky g_debug_dump_info =
 #if defined(OS_WIN)
 void DebugDumpPageTask(const base::string16& doc_name,
                        const PrintedPage* page) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   DCHECK(PrintedDocument::HasDebugDumpPath());
 
@@ -64,7 +64,7 @@ void DebugDumpPageTask(const base::string16& doc_name,
 #else
 void DebugDumpTask(const base::string16& doc_name,
                    const MetafilePlayer* metafile) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   DCHECK(PrintedDocument::HasDebugDumpPath());
 
@@ -82,7 +82,7 @@ void DebugDumpTask(const base::string16& doc_name,
 void DebugDumpDataTask(const base::string16& doc_name,
                        const base::FilePath::StringType& extension,
                        const base::RefCountedMemory* data) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
 
   base::FilePath path =
       PrintedDocument::CreateDebugDumpPath(doc_name, extension);

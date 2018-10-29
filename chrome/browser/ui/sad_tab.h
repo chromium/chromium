@@ -25,12 +25,6 @@ class SadTab {
 
   // Factory function to create the platform specific implementations.
   static SadTab* Create(content::WebContents* web_contents, SadTabKind kind);
-#if defined(OS_MACOSX)
-  // Temporary shim for Polychrome. See bottom of first comment in
-  // https://crbug.com/80495 for details.
-  static SadTab* CreateCocoa(content::WebContents* web_contents,
-                             SadTabKind kind);
-#endif
 
   // Returns true if the sad tab should be shown.
   static bool ShouldShow(base::TerminationStatus status);

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -32,6 +33,7 @@
 #include "content/common/service_worker/service_worker_provider.mojom.h"
 #include "content/common/shared_worker/shared_worker_client.mojom.h"
 #include "content/common/throttling_url_loader.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,6 +41,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/bind_interface_helpers.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/renderer_preferences.h"
 #include "mojo/public/cpp/bindings/strong_associated_binding.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -64,15 +67,16 @@ std::unique_ptr<URLLoaderFactoryBundleInfo> CreateFactoryBundle(
     StoragePartitionImpl* storage_partition,
     bool file_support) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(blink::ServiceWorkerUtils::IsServicificationEnabled());
 
-  ContentBrowserClient::NonNetworkURLLoaderFactoryMap factories;
+  ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
   GetContentClient()
       ->browser()
       ->RegisterNonNetworkSubresourceURLLoaderFactories(
-          process_id, MSG_ROUTING_NONE, &factories);
+          process_id, MSG_ROUTING_NONE, &non_network_factories);
 
   auto factory_bundle = std::make_unique<URLLoaderFactoryBundleInfo>();
-  for (auto& pair : factories) {
+  for (auto& pair : non_network_factories) {
     const std::string& scheme = pair.first;
     std::unique_ptr<network::mojom::URLLoaderFactory> factory =
         std::move(pair.second);
@@ -80,8 +84,8 @@ std::unique_ptr<URLLoaderFactoryBundleInfo> CreateFactoryBundle(
     network::mojom::URLLoaderFactoryPtr factory_ptr;
     mojo::MakeStrongBinding(std::move(factory),
                             mojo::MakeRequest(&factory_ptr));
-    factory_bundle->factories_info().emplace(scheme,
-                                             factory_ptr.PassInterface());
+    factory_bundle->scheme_specific_factory_infos().emplace(
+        scheme, factory_ptr.PassInterface());
   }
 
   if (file_support) {
@@ -93,8 +97,25 @@ std::unique_ptr<URLLoaderFactoryBundleInfo> CreateFactoryBundle(
     network::mojom::URLLoaderFactoryPtr file_factory_ptr;
     mojo::MakeStrongBinding(std::move(file_factory),
                             mojo::MakeRequest(&file_factory_ptr));
-    factory_bundle->factories_info().emplace(url::kFileScheme,
-                                             file_factory_ptr.PassInterface());
+    factory_bundle->scheme_specific_factory_infos().emplace(
+        url::kFileScheme, file_factory_ptr.PassInterface());
+  }
+
+  // Use RenderProcessHost's network factory as the default factory if
+  // NetworkService is off. If NetworkService is on the default factory is
+  // set in CreateScriptLoaderOnIO().
+  if (!base::FeatureList::IsEnabled(network::features::kNetworkService)) {
+    // Using an opaque origin here should be safe - the URLLoaderFactory created
+    // for such origin shouldn't have any special privileges.  Additionally, the
+    // origin should not be inspected at all in the legacy, non-NetworkService
+    // path.
+    const url::Origin kSafeOrigin = url::Origin();
+
+    network::mojom::URLLoaderFactoryPtr default_factory;
+    RenderProcessHost::FromID(process_id)
+        ->CreateURLLoaderFactory(kSafeOrigin,
+                                 mojo::MakeRequest(&default_factory));
+    factory_bundle->default_factory_info() = default_factory.PassInterface();
   }
 
   return factory_bundle;
@@ -111,8 +132,8 @@ void DidCreateScriptLoaderOnIO(
     base::Optional<SubresourceLoaderParams> subresource_loader_params,
     bool success) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(std::move(callback),
                      std::move(service_worker_provider_info),
                      std::move(main_script_loader_factory),
@@ -149,22 +170,24 @@ void CreateScriptLoaderOnIO(
     url_loader_factory = network::SharedURLLoaderFactory::Create(
         std::move(blob_url_loader_factory_info));
   } else {
-    // Add the default factory to the bundle for browser.
-    DCHECK(!factory_bundle_for_browser_info->default_factory_info());
-
     // Create a factory bundle to use.
     scoped_refptr<URLLoaderFactoryBundle> factory_bundle =
         base::MakeRefCounted<URLLoaderFactoryBundle>(
             std::move(factory_bundle_for_browser_info));
 
-    // Get the direct network factory from |loader_factory_getter|. When
-    // NetworkService is enabled, it returns a factory that doesn't support
-    // reconnection to the network service after a crash, but it's OK since it's
-    // used for a single shared worker startup.
-    network::mojom::URLLoaderFactoryPtr network_factory_ptr;
-    loader_factory_getter->CloneNetworkFactory(
-        mojo::MakeRequest(&network_factory_ptr));
-    factory_bundle->SetDefaultFactory(std::move(network_factory_ptr));
+    // Add the default factory to the bundle for browser if NetworkService
+    // is on. When NetworkService is off, we already created the default factory
+    // in CreateFactoryBundle().
+    if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
+      // Get the direct network factory from |loader_factory_getter|. When
+      // NetworkService is enabled, it returns a factory that doesn't support
+      // reconnection to the network service after a crash, but it's OK since
+      // it's used for a single shared worker startup.
+      network::mojom::URLLoaderFactoryPtr network_factory_ptr;
+      loader_factory_getter->CloneNetworkFactory(
+          mojo::MakeRequest(&network_factory_ptr));
+      factory_bundle->SetDefaultFactory(std::move(network_factory_ptr));
+    }
 
     url_loader_factory = factory_bundle;
   }
@@ -191,9 +214,8 @@ void CreateScriptLoaderOnIO(
 
     SharedWorkerScriptFetcher::CreateAndStart(
         std::make_unique<SharedWorkerScriptLoaderFactory>(
-            process_id, context.get(), host,
-            std::move(appcache_host), context->resource_context(),
-            std::move(url_loader_factory)),
+            process_id, host, std::move(appcache_host),
+            context->resource_context(), std::move(url_loader_factory)),
         std::move(throttles), std::move(resource_request),
         base::BindOnce(DidCreateScriptLoaderOnIO, std::move(callback),
                        std::move(provider_info),
@@ -206,9 +228,8 @@ void CreateScriptLoaderOnIO(
   network::mojom::URLLoaderFactoryAssociatedPtrInfo main_script_loader_factory;
   mojo::MakeStrongAssociatedBinding(
       std::make_unique<SharedWorkerScriptLoaderFactory>(
-          process_id, context.get(), host->AsWeakPtr(),
-          std::move(appcache_host), context->resource_context(),
-          std::move(url_loader_factory)),
+          process_id, host->AsWeakPtr(), std::move(appcache_host),
+          context->resource_context(), std::move(url_loader_factory)),
       mojo::MakeRequest(&main_script_loader_factory));
 
   DidCreateScriptLoaderOnIO(std::move(callback), std::move(provider_info),
@@ -272,6 +293,12 @@ void SharedWorkerServiceImpl::TerminateAllWorkersForTesting(
     for (auto it = worker_hosts_.begin(); it != worker_hosts_.end();)
       (*it++)->TerminateWorker();
   }
+}
+
+void SharedWorkerServiceImpl::SetWorkerTerminationCallbackForTesting(
+    base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  terminate_all_workers_callback_ = std::move(callback);
 }
 
 void SharedWorkerServiceImpl::ConnectToWorker(
@@ -340,7 +367,7 @@ void SharedWorkerServiceImpl::DestroyHost(SharedWorkerHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   worker_hosts_.erase(worker_hosts_.find(host));
 
-  // Complete the call to TerminateAllWorkersForTesting if no more workers.
+  // Run the termination callback if no more workers.
   if (worker_hosts_.empty() && terminate_all_workers_callback_)
     std::move(terminate_all_workers_callback_).Run();
 }
@@ -348,29 +375,50 @@ void SharedWorkerServiceImpl::DestroyHost(SharedWorkerHost* host) {
 // TODO(nhiroki): Align this function with AddAdditionalRequestHeaders() in
 // navigation_request.cc, FrameFetchContext, and WorkerFetchContext.
 void SharedWorkerServiceImpl::AddAdditionalRequestHeaders(
-    net::HttpRequestHeaders* headers,
+    network::ResourceRequest* resource_request,
     BrowserContext* browser_context) {
   DCHECK(base::FeatureList::IsEnabled(network::features::kNetworkService));
 
+  // TODO(nhiroki): Return early when the request is neither HTTP nor HTTPS
+  // (i.e., Blob URL or Data URL). This should be checked by
+  // SchemeIsHTTPOrHTTPS(), but currently cross-origin workers on extensions
+  // are allowed and the check doesn't work well. See https://crbug.com/867302.
+
   // Set the "Accept" header.
-  headers->SetHeaderIfMissing(network::kAcceptHeader,
-                              network::kDefaultAcceptHeader);
+  resource_request->headers.SetHeaderIfMissing(network::kAcceptHeader,
+                                               network::kDefaultAcceptHeader);
 
   // Set the "DNT" header if necessary.
   RendererPreferences renderer_preferences;
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
       browser_context, &renderer_preferences);
   if (renderer_preferences.enable_do_not_track)
-    headers->SetHeaderIfMissing(kDoNotTrackHeader, "1");
+    resource_request->headers.SetHeaderIfMissing(kDoNotTrackHeader, "1");
 
   // Set the "Save-Data" header if necessary.
   if (GetContentClient()->browser()->IsDataSaverEnabled(browser_context) &&
       !base::GetFieldTrialParamByFeatureAsBool(features::kDataSaverHoldback,
                                                "holdback_web", false)) {
-    headers->SetHeaderIfMissing("Save-Data", "on");
+    resource_request->headers.SetHeaderIfMissing("Save-Data", "on");
   }
 
-  // TODO(nhiroki): Set the "Sec-Metadata" header (https://crbug.com/715632).
+  // Set the "Sec-Metadata" header if necessary.
+  if (base::FeatureList::IsEnabled(features::kSecMetadata) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures)) {
+    // The worker's origin can be different from the constructor's origin, for
+    // example, when the worker created from the extension.
+    // TODO(hiroshige): Add DCHECK to make sure the same-originness once the
+    // cross-origin workers are deprecated (https://crbug.com/867302).
+    std::string site_value = "cross-site";
+    if (resource_request->request_initiator->IsSameOriginWith(
+            url::Origin::Create(resource_request->url))) {
+      site_value = "same-origin";
+    }
+    std::string value = base::StringPrintf("destination=sharedworker, site=%s",
+                                           site_value.c_str());
+    resource_request->headers.SetHeaderIfMissing("Sec-Metadata", value);
+  }
 }
 
 void SharedWorkerServiceImpl::CreateWorker(
@@ -424,7 +472,7 @@ void SharedWorkerServiceImpl::CreateWorker(
 
       auto* render_process_host = RenderProcessHost::FromID(process_id);
       DCHECK(!IsShuttingDown(render_process_host));
-      AddAdditionalRequestHeaders(&resource_request->headers,
+      AddAdditionalRequestHeaders(resource_request.get(),
                                   render_process_host->GetBrowserContext());
     }
 
@@ -439,8 +487,8 @@ void SharedWorkerServiceImpl::CreateWorker(
       weak_host->SetAppCacheHandle(std::move(appcache_handle));
     }
 
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &CreateScriptLoaderOnIO,
             storage_partition_->url_loader_factory_getter(),

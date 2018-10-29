@@ -12,6 +12,7 @@ enum PermissionName {
     "microphone",
     // "speaker",
     // "device-info",
+    "background-fetch",
     "background-sync",
     // "bluetooth",
     "persistent-storage",

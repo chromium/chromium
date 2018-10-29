@@ -12,6 +12,8 @@
 #include "services/ws/common/switches.h"
 #include "services/ws/embedding.h"
 #include "services/ws/event_injector.h"
+#include "services/ws/event_queue.h"
+#include "services/ws/host_event_queue.h"
 #include "services/ws/public/cpp/host/gpu_interface_provider.h"
 #include "services/ws/public/mojom/window_manager.mojom.h"
 #include "services/ws/remoting_event_injector.h"
@@ -24,6 +26,7 @@
 #include "services/ws/window_tree.h"
 #include "services/ws/window_tree_factory.h"
 #include "ui/aura/env.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/base/mojo/clipboard_host.h"
 #include "ui/wm/core/shadow_types.h"
 
@@ -44,7 +47,8 @@ WindowService::WindowService(
       next_client_id_(decrement_client_ids ? kInitialClientIdDecrement
                                            : kInitialClientId),
       decrement_client_ids_(decrement_client_ids),
-      ime_registrar_(&ime_driver_) {
+      ime_registrar_(&ime_driver_),
+      event_queue_(std::make_unique<EventQueue>(this)) {
   DCHECK(focus_client);  // A |focus_client| must be provided.
   // MouseLocationManager is necessary for providing the shared memory with the
   // location of the mouse to clients.
@@ -58,6 +62,11 @@ WindowService::WindowService(
       ::wm::kShadowElevationKey,
       mojom::WindowManager::kShadowElevation_Property,
       aura::PropertyConverter::CreateAcceptAnyValueCallback());
+
+  // Extends WindowOcclusionTracker to treat windows with remote client as
+  // has-content.
+  env_->GetWindowOcclusionTracker()->set_window_has_content_callback(
+      base::BindRepeating(&WindowService::HasRemoteClient));
 }
 
 WindowService::~WindowService() {
@@ -109,6 +118,12 @@ void WindowService::SetDisplayForNewWindows(int64_t display_id) {
 // static
 bool WindowService::HasRemoteClient(const aura::Window* window) {
   return ServerWindow::GetMayBeNull(window);
+}
+
+// static
+bool WindowService::IsTopLevelWindow(const aura::Window* window) {
+  const ServerWindow* server_window = ServerWindow::GetMayBeNull(window);
+  return server_window && server_window->IsTopLevel();
 }
 
 WindowService::TreeAndWindowId
@@ -195,6 +210,13 @@ std::string WindowService::GetIdForDebugging(aura::Window* window) {
   if (!server_window)
     return std::string();
   return server_window->GetIdForDebugging();
+}
+
+std::unique_ptr<HostEventQueue> WindowService::RegisterHostEventDispatcher(
+    aura::WindowTreeHost* window_tree_host,
+    HostEventDispatcher* dispatcher) {
+  return event_queue_->RegisterHostEventDispatcher(window_tree_host,
+                                                   dispatcher);
 }
 
 void WindowService::OnStart() {

@@ -28,71 +28,73 @@
   <link rel="import" href="chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_tooltip.html">
 
   <script src="js/gallery_scripts.js"></script>
-  <style is="custom-style">
-    cr-checkbox {
-      --cr-checkbox-checked-box-color: white;
-      --cr-checkbox-label-color: white;
-      --cr-checkbox-label-container: {
-        -webkit-padding-start: 6px;
-      };
-      --cr-checkbox-mark-color: black;
-      --cr-checkbox-ripple-checked-color: white;
-      --cr-checkbox-ripple-size: 38px;
-      --cr-checkbox-ripple-unchecked-color: white;
-      --cr-checkbox-size: 14px;
-      --cr-checkbox-unchecked-box-color: white;
-    }
-    paper-slider {
-      --paper-slider-active-color: white;
-      --paper-slider-container-color: rgba(255, 255, 255, 0.2);
-      --paper-slider-knob-color: white;
-      --paper-slider-secondary-color: transparent;
-    }
-    paper-progress {
-      --paper-progress-container-color: rgba(0, 0, 0, 0.3);
-      --paper-progress-active-color: #1AC222;
-    }
-    paper-button {
-      --paper-button-ink-color: black;
-    }
-    files-toggle-ripple {
-      --files-toggle-ripple-activated: {
-        opacity: 0.4;
-      };
-    }
-
-    cr-input {
-      --cr-form-field-label: {
-        color: rgba(255, 255, 255, 0.54);
-        display: block;
-        font-size: var(--cr-form-field-label-font-size);
-        letter-spacing: 0.4px;
-        line-height: var(--cr-form-field-label-font-size);
-        margin-bottom: 0;
-      }
-      --cr-input-color: white;
-      --cr-input-container: {
-        border-radius: 0;
-      }
-      --cr-input-input: {
-        background-color: transparent;
-        border-bottom: 1px solid var(--paper-grey-800);
-      }
-      --cr-input-padding-end: 0;
-      --cr-input-padding-start: 0;
-      --cr-input-error-display: none;
-      --cr-input-focus-color: white;
-    }
-
-    #rename-input {
-      font-size: 16px;
-      margin: 8px 0;
-      min-width: 160px;
-      text-overflow: ellipsis;
-    }
-  </style>
 </head>
 <body>
+  <custom-style>
+    <style is="custom-style">
+      cr-checkbox {
+        --cr-checkbox-checked-box-color: white;
+        --cr-checkbox-label-color: white;
+        --cr-checkbox-label-container: {
+          -webkit-padding-start: 6px;
+        };
+        --cr-checkbox-mark-color: black;
+        --cr-checkbox-ripple-checked-color: white;
+        --cr-checkbox-ripple-size: 38px;
+        --cr-checkbox-ripple-unchecked-color: white;
+        --cr-checkbox-size: 14px;
+        --cr-checkbox-unchecked-box-color: white;
+      }
+      paper-slider {
+        --paper-slider-active-color: white;
+        --paper-slider-container-color: rgba(255, 255, 255, 0.2);
+        --paper-slider-knob-color: white;
+        --paper-slider-secondary-color: transparent;
+      }
+      paper-progress {
+        --paper-progress-container-color: rgba(0, 0, 0, 0.3);
+        --paper-progress-active-color: #1AC222;
+      }
+      paper-button {
+        --paper-button-ink-color: black;
+      }
+      files-toggle-ripple {
+        --files-toggle-ripple-activated: {
+          opacity: 0.4;
+        };
+      }
+
+      cr-input {
+        --cr-form-field-label: {
+          color: rgba(255, 255, 255, 0.54);
+          display: block;
+          font-size: var(--cr-form-field-label-font-size);
+          letter-spacing: 0.4px;
+          line-height: var(--cr-form-field-label-font-size);
+          margin-bottom: 0;
+        }
+        --cr-input-background-color: transparent;
+        --cr-input-color: white;
+        --cr-input-container: {
+          border-radius: 0;
+        }
+        --cr-input-input: {
+          border-bottom: 1px solid var(--paper-grey-800);
+        }
+        --cr-input-padding-end: 0;
+        --cr-input-padding-start: 0;
+        --cr-input-error-display: none;
+        --cr-input-focus-color: white;
+      }
+
+      #rename-input {
+        font-size: 16px;
+        margin: 8px 0;
+        min-width: 160px;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </custom-style>
   <div class="gallery">
     <div id="content" class="content">
       <div class="thumbnail-view"></div>

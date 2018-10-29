@@ -113,6 +113,8 @@ class ServiceProcessControl : public UpgradeObserver {
     return remote_interfaces_;
   }
 
+  base::ProcessId GetLaunchedPidForTesting() const { return saved_pid_; }
+
  private:
   // This class is responsible for launching the service process on the
   // PROCESS_LAUNCHER thread.
@@ -126,6 +128,7 @@ class ServiceProcessControl : public UpgradeObserver {
     void Run(const base::Closure& task);
 
     bool launched() const { return launched_; }
+    base::ProcessId saved_pid() const { return saved_pid_; }
 
    private:
     friend class base::RefCountedThreadSafe<ServiceProcessControl::Launcher>;
@@ -142,6 +145,10 @@ class ServiceProcessControl : public UpgradeObserver {
     bool launched_;
     uint32_t retry_count_;
     base::Process process_;
+
+    // Used to save the process id for |process_| upon successful launch.
+    // Only used for testing.
+    base::ProcessId saved_pid_;
   };
 
   friend class MockServiceProcessControl;
@@ -203,6 +210,9 @@ class ServiceProcessControl : public UpgradeObserver {
 
   // If true changes to UpgradeObserver are applied, if false they are ignored.
   bool apply_changes_from_upgrade_observer_;
+
+  // Same as |Launcher::saved_pid_|.
+  base::ProcessId saved_pid_;
 
   base::WeakPtrFactory<ServiceProcessControl> weak_factory_;
 

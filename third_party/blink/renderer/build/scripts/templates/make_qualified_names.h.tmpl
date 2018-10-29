@@ -16,7 +16,7 @@ namespace blink {
 
 class {{namespace}}QualifiedName : public QualifiedName { };
 
-namespace {{namespace}}Names {
+namespace {{cpp_namespace}} {
 
 {% set symbol_export = '%s ' % export if export else '' %}
 // Namespace
@@ -33,18 +33,18 @@ namespace {{namespace}}Names {
 {% endfor %}
 
 {% if tags %}
-const unsigned {{namespace}}TagsCount = {{tags|count}};
-{{symbol_export}}std::unique_ptr<const {{namespace}}QualifiedName*[]> get{{namespace}}Tags();
+constexpr unsigned kTagsCount = {{tags|count}};
+{{symbol_export}}std::unique_ptr<const {{namespace}}QualifiedName*[]> GetTags();
 {% endif %}
 
-const unsigned {{namespace}}AttrsCount = {{attrs|count}};
+constexpr unsigned kAttrsCount = {{attrs|count}};
 {% if namespace != 'HTML' %}
-std::unique_ptr<const QualifiedName*[]> get{{namespace}}Attrs();
+std::unique_ptr<const QualifiedName*[]> GetAttrs();
 {% endif %}
 
 void init();
 
-}  // namespace {{namespace}}Names
+}  // namespace {{cpp_namespace}}
 }  // namespace blink
 
 #endif  // {{header_guard}}

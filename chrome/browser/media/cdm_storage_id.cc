@@ -55,7 +55,7 @@ std::vector<uint8_t> CalculateStorageId(
     return {};
   }
 
-  if (origin.unique()) {
+  if (origin.opaque()) {
     DLOG(ERROR) << "Unexpected origin: " << origin;
     return {};
   }

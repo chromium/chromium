@@ -23,6 +23,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 class ChromeThreadPoolExecutor extends ThreadPoolExecutor {
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
+    // Core pool is still used despite allowCoreThreadTimeOut(true) being called - while the core
+    // pool can still timeout, the thread pool will still start up threads more aggressively while
+    // under the CORE_POOL_SIZE.
+    private static final int CORE_POOL_SIZE = Math.max(2, Math.min(CPU_COUNT - 1, 4));
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE_SECONDS = 30;
 
@@ -41,7 +45,8 @@ class ChromeThreadPoolExecutor extends ThreadPoolExecutor {
     private static final int RUNNABLE_WARNING_COUNT = 32;
 
     ChromeThreadPoolExecutor() {
-        this(0, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, SECONDS, sPoolWorkQueue, sThreadFactory);
+        this(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, SECONDS, sPoolWorkQueue,
+                sThreadFactory);
     }
 
     @VisibleForTesting

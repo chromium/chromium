@@ -19,5 +19,7 @@ font {
 <script>
 // Regression test for crbug.com/752941
 // TODO(editing-dev): Convert it to unit test once crbug.com/754012 is fixed.
-test(() => window.find('C'), 'Should not crash in finding string');
+test(() => {
+  window.find('C');
+}, 'Should not crash in finding string');
 </script>

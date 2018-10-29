@@ -19,12 +19,11 @@ typedef ServiceWorkerRegisterJobBase::RegistrationJobType RegistrationJobType;
 
 ServiceWorkerUnregisterJob::ServiceWorkerUnregisterJob(
     base::WeakPtr<ServiceWorkerContextCore> context,
-    const GURL& pattern)
+    const GURL& scope)
     : context_(context),
-      pattern_(pattern),
+      scope_(scope),
       is_promise_resolved_(false),
-      weak_factory_(this) {
-}
+      weak_factory_(this) {}
 
 ServiceWorkerUnregisterJob::~ServiceWorkerUnregisterJob() {}
 
@@ -33,9 +32,9 @@ void ServiceWorkerUnregisterJob::AddCallback(UnregistrationCallback callback) {
 }
 
 void ServiceWorkerUnregisterJob::Start() {
-  context_->storage()->FindRegistrationForPattern(
-      pattern_, base::BindOnce(&ServiceWorkerUnregisterJob::OnRegistrationFound,
-                               weak_factory_.GetWeakPtr()));
+  context_->storage()->FindRegistrationForScope(
+      scope_, base::BindOnce(&ServiceWorkerUnregisterJob::OnRegistrationFound,
+                             weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerUnregisterJob::Abort() {
@@ -47,7 +46,7 @@ bool ServiceWorkerUnregisterJob::Equals(
     ServiceWorkerRegisterJobBase* job) const {
   if (job->GetType() != GetType())
     return false;
-  return static_cast<ServiceWorkerUnregisterJob*>(job)->pattern_ == pattern_;
+  return static_cast<ServiceWorkerUnregisterJob*>(job)->scope_ == scope_;
 }
 
 RegistrationJobType ServiceWorkerUnregisterJob::GetType() const {
@@ -84,7 +83,7 @@ void ServiceWorkerUnregisterJob::Complete(
     int64_t registration_id,
     blink::ServiceWorkerStatusCode status) {
   CompleteInternal(registration_id, status);
-  context_->job_coordinator()->FinishJob(pattern_, this);
+  context_->job_coordinator()->FinishJob(scope_, this);
 }
 
 void ServiceWorkerUnregisterJob::CompleteInternal(

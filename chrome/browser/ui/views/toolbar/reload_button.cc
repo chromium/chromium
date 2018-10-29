@@ -33,7 +33,7 @@ const int kReloadMenuItems[]  = {
 };
 
 const gfx::VectorIcon& GetIconForMode(bool is_reload) {
-  if (ui::MaterialDesignController::IsTouchOptimizedUiEnabled())
+  if (ui::MaterialDesignController::touch_ui())
     return is_reload ? kReloadTouchIcon : kNavigateStopTouchIcon;
 
   return is_reload ? vector_icons::kReloadIcon : kNavigateStopIcon;

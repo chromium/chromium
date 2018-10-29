@@ -119,9 +119,8 @@ void AutocompleteActionPredictor::RegisterTransitionalMatches(
   const base::string16 lower_user_text(base::i18n::ToLower(user_text));
 
   // Merge this in to an existing match if we already saw |user_text|
-  std::vector<TransitionalMatch>::iterator match_it =
-      std::find(transitional_matches_.begin(), transitional_matches_.end(),
-                lower_user_text);
+  auto match_it = std::find(transitional_matches_.begin(),
+                            transitional_matches_.end(), lower_user_text);
 
   if (match_it == transitional_matches_.end()) {
     if (transitional_matches_size_ + lower_user_text.length() >
@@ -285,7 +284,7 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
       row.user_text = key.user_text;
       row.url = key.url;
 
-      DBCacheMap::iterator it = db_cache_.find(key);
+      auto it = db_cache_.find(key);
       if (it == db_cache_.end()) {
         row.id = base::GenerateGUID();
         row.number_of_hits = is_hit ? 1 : 0;
@@ -367,7 +366,7 @@ void AutocompleteActionPredictor::DeleteRowsFromCaches(
   DCHECK(initialized_);
   DCHECK(id_list);
 
-  for (DBCacheMap::iterator it = db_cache_.begin(); it != db_cache_.end();) {
+  for (auto it = db_cache_.begin(); it != db_cache_.end();) {
     if (std::find_if(rows.begin(), rows.end(),
                      history::URLRow::URLRowHasURL(it->first.url)) !=
         rows.end()) {
@@ -388,8 +387,7 @@ void AutocompleteActionPredictor::AddAndUpdateRows(
   if (!initialized_)
     return;
 
-  for (AutocompleteActionPredictorTable::Rows::const_iterator it =
-       rows_to_add.begin(); it != rows_to_add.end(); ++it) {
+  for (auto it = rows_to_add.begin(); it != rows_to_add.end(); ++it) {
     const DBCacheKey key = { it->user_text, it->url };
     DBCacheValue value = { it->number_of_hits, it->number_of_misses };
 
@@ -400,11 +398,10 @@ void AutocompleteActionPredictor::AddAndUpdateRows(
     UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.DatabaseAction",
                               DATABASE_ACTION_ADD, DATABASE_ACTION_COUNT);
   }
-  for (AutocompleteActionPredictorTable::Rows::const_iterator it =
-       rows_to_update.begin(); it != rows_to_update.end(); ++it) {
+  for (auto it = rows_to_update.begin(); it != rows_to_update.end(); ++it) {
     const DBCacheKey key = { it->user_text, it->url };
 
-    DBCacheMap::iterator db_it = db_cache_.find(key);
+    auto db_it = db_cache_.find(key);
     DCHECK(db_it != db_cache_.end());
     DCHECK(db_id_cache_.find(key) != db_id_cache_.end());
 
@@ -491,7 +488,7 @@ void AutocompleteActionPredictor::DeleteOldIdsFromCaches(
   DCHECK(url_db);
   DCHECK(id_list);
 
-  for (DBCacheMap::iterator it = db_cache_.begin(); it != db_cache_.end();) {
+  for (auto it = db_cache_.begin(); it != db_cache_.end();) {
     history::URLRow url_row;
 
     if ((url_db->GetRowForURL(it->first.url, &url_row) == 0) ||

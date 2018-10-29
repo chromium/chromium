@@ -1396,10 +1396,6 @@ GLES2CopySubTextureCHROMIUM(GLuint source_id,
       yoffset, x, y, width, height, unpack_flip_y, unpack_premultiply_alpha,
       unpack_unmultiply_alpha);
 }
-void GL_APIENTRY GLES2CompressedCopyTextureCHROMIUM(GLuint source_id,
-                                                    GLuint dest_id) {
-  gles2::GetGLContext()->CompressedCopyTextureCHROMIUM(source_id, dest_id);
-}
 void GL_APIENTRY GLES2DrawArraysInstancedANGLE(GLenum mode,
                                                GLint first,
                                                GLsizei count,
@@ -1424,6 +1420,12 @@ void GL_APIENTRY GLES2ProduceTextureDirectCHROMIUM(GLuint texture,
 }
 GLuint GL_APIENTRY GLES2CreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox) {
   return gles2::GetGLContext()->CreateAndConsumeTextureCHROMIUM(mailbox);
+}
+GLuint GL_APIENTRY
+GLES2CreateAndTexStorage2DSharedImageCHROMIUM(GLenum internalFormat,
+                                              const GLbyte* mailbox) {
+  return gles2::GetGLContext()->CreateAndTexStorage2DSharedImageCHROMIUM(
+      internalFormat, mailbox);
 }
 void GL_APIENTRY GLES2BindUniformLocationCHROMIUM(GLuint program,
                                                   GLint location,
@@ -1558,6 +1560,9 @@ GLES2ScheduleDCLayerCHROMIUM(GLsizei num_textures,
   gles2::GetGLContext()->ScheduleDCLayerCHROMIUM(
       num_textures, contents_texture_ids, contents_rect, background_color,
       edge_aa_mask, bounds_rect, filter, is_protected_video);
+}
+void GL_APIENTRY GLES2SetActiveURLCHROMIUM(const char* url) {
+  gles2::GetGLContext()->SetActiveURLCHROMIUM(url);
 }
 void GL_APIENTRY GLES2MatrixLoadfCHROMIUM(GLenum matrixMode, const GLfloat* m) {
   gles2::GetGLContext()->MatrixLoadfCHROMIUM(matrixMode, m);
@@ -2882,10 +2887,6 @@ extern const NameToFunc g_gles2_function_table[] = {
         reinterpret_cast<GLES2FunctionPointer>(glCopySubTextureCHROMIUM),
     },
     {
-        "glCompressedCopyTextureCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glCompressedCopyTextureCHROMIUM),
-    },
-    {
         "glDrawArraysInstancedANGLE",
         reinterpret_cast<GLES2FunctionPointer>(glDrawArraysInstancedANGLE),
     },
@@ -2905,6 +2906,11 @@ extern const NameToFunc g_gles2_function_table[] = {
         "glCreateAndConsumeTextureCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(
             glCreateAndConsumeTextureCHROMIUM),
+    },
+    {
+        "glCreateAndTexStorage2DSharedImageCHROMIUM",
+        reinterpret_cast<GLES2FunctionPointer>(
+            glCreateAndTexStorage2DSharedImageCHROMIUM),
     },
     {
         "glBindUniformLocationCHROMIUM",
@@ -3007,6 +3013,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glScheduleDCLayerCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(glScheduleDCLayerCHROMIUM),
+    },
+    {
+        "glSetActiveURLCHROMIUM",
+        reinterpret_cast<GLES2FunctionPointer>(glSetActiveURLCHROMIUM),
     },
     {
         "glMatrixLoadfCHROMIUM",

@@ -6,7 +6,7 @@ v8.compile Properties:
     data : {
         columnNumber : 0
         lineNumber : 0
-        notStreamedReason : "inline script"
+        notStreamedReason : "worker top-level scripts are not streamable"
         streamed : <boolean>
         url : .../devtools/service-workers/resources/v8-cache-worker.js
     }

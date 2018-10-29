@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         tools:text="Status card body can be over multiple lines and quite wide" />
 
-    <Button
+    <org.chromium.ui.widget.ButtonCompat
         style="@style/SuggestionCardAction"
         android:id="@+id/status_action_button"
         android:layout_width="wrap_content"

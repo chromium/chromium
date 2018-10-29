@@ -6,33 +6,41 @@ Scripts must be disabled for the document created using DOMParser.parseFromStrin
 Sample text content
 PASS
 
+
 2. Should support mime-type = "text/xml"
 Root element: root
 PASS
+
 
 3. Should support mime-type = "application/xml"
 Root element: root
 PASS
 
+
 4. Should support mime-type = "application/xhtml+xml"
 Root element: html
 PASS
+
 
 5. Should support mime-type = "image/svg+xml"
 Root element: svg
 PASS
 
+
 6. Should THROW exception for mime-type = "text/xsl"
 TypeError: Failed to execute 'parseFromString' on 'DOMParser': The provided value 'text/xsl' is not a valid enum value of type SupportedType.
 PASS
+
 
 7. Should THROW exception for mime-type = "text/dummy+xml"
 TypeError: Failed to execute 'parseFromString' on 'DOMParser': The provided value 'text/dummy+xml' is not a valid enum value of type SupportedType.
 PASS
 
+
 8. Should THROW exception for mime-type = "text/XML"
 TypeError: Failed to execute 'parseFromString' on 'DOMParser': The provided value 'text/XML' is not a valid enum value of type SupportedType.
 PASS
+
 
 9. Should THROW exception for mime-type = "TEXT/html"
 TypeError: Failed to execute 'parseFromString' on 'DOMParser': The provided value 'TEXT/html' is not a valid enum value of type SupportedType.

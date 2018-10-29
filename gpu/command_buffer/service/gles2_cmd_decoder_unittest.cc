@@ -299,7 +299,7 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
                                           GL_RGBA, GL_UNSIGNED_BYTE);
   EXPECT_EQ(abstract_texture->GetTextureBase()->target(), target);
   EXPECT_EQ(abstract_texture->service_id(), service_id);
-  Texture* texture = static_cast<Texture*>(abstract_texture->GetTextureBase());
+  Texture* texture = Texture::CheckedCast(abstract_texture->GetTextureBase());
   EXPECT_EQ(texture->SafeToRenderFrom(), false);
 
   // Set some parameters, and verify that we set them.
@@ -443,7 +443,7 @@ TEST_P(GLES2DecoderTest, TestAbstractTextureSetClearedWorks) {
                                           1,                    /* depth */
                                           0,                    /* border */
                                           GL_RGBA, GL_UNSIGNED_BYTE);
-  Texture* texture = static_cast<Texture*>(abstract_texture->GetTextureBase());
+  Texture* texture = Texture::CheckedCast(abstract_texture->GetTextureBase());
 
   // Texture should start off unrenderable.
   EXPECT_EQ(texture->SafeToRenderFrom(), false);

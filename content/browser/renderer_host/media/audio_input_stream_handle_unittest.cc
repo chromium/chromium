@@ -9,10 +9,10 @@
 
 #include "base/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_task_environment.h"
 #include "media/audio/audio_input_delegate.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -122,7 +122,7 @@ class AudioInputStreamHandleTest : public Test {
   }
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
   StrictMock<MockRendererAudioInputStreamFactoryClient> client_;
   mojom::RendererAudioInputStreamFactoryClientPtr client_ptr_;
   mojo::Binding<mojom::RendererAudioInputStreamFactoryClient> client_binding_;

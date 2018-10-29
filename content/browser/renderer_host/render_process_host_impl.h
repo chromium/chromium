@@ -24,6 +24,7 @@
 #include "base/process/process.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
 #include "content/browser/child_process_launcher.h"
@@ -39,6 +40,7 @@
 #include "content/common/media/renderer_audio_output_stream_factory.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/renderer_host.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/service_manager_connection.h"
@@ -57,6 +59,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_partition_service.mojom.h"
+#include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gpu_switching_observer.h"
@@ -216,6 +219,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   resource_coordinator::ProcessResourceCoordinator*
   GetProcessResourceCoordinator() override;
   void CreateURLLoaderFactory(
+      const url::Origin& origin,
       network::mojom::URLLoaderFactoryRequest request) override;
 
   void SetIsNeverSuitableForReuse() override;
@@ -256,8 +260,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Used to extend the lifetime of the sessions until the render view
   // in the renderer is fully closed. This is static because its also called
   // with mock hosts as input in test cases. The RenderWidget routing associated
-  // with the view is used as the key since the ViewMsg_Close and
-  // ViewHostMsg_Close_ACK logic is centered around RenderWidgets.
+  // with the view is used as the key since the WidgetMsg_Close and
+  // WidgetHostMsg_Close_ACK logic is centered around RenderWidgets.
   static void ReleaseOnCloseACK(RenderProcessHost* host,
                                 const SessionStorageNamespaceMap& sessions,
                                 int widget_route_id);
@@ -316,7 +320,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // handles all cases.  These cases include:
   // - process-per-site: see
   //   RegisterSoleProcessHostForSite/GetSoleProcessHostForSite.
-  // - TDI: see GetDefaultSubframeProcessHost.
   // - REUSE_PENDING_OR_COMMITTED reuse policy (for ServiceWorkers and OOPIFs):
   //   see FindReusableProcessHostForSiteInstance.
   // - normal process reuse when over process limit:  see
@@ -446,6 +449,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // before the process shuts down.
   void DelayProcessShutdownForUnload(const base::TimeDelta& timeout);
 
+  // Binds request to the FileSystemManager instance owned by the render process
+  // host, and is used by workers via RendererInterfaceBinders.
+  void BindFileSystemManager(blink::mojom::FileSystemManagerRequest request);
   FileSystemManagerImpl* GetFileSystemManagerForTesting() {
     return file_system_manager_impl_.get();
   }
@@ -576,12 +582,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
                                base::TimeTicks start,
                                base::TimeTicks end);
 
-  // Returns the default subframe RenderProcessHost to use for |site_instance|.
-  static RenderProcessHost* GetDefaultSubframeProcessHost(
-      BrowserContext* browser_context,
-      SiteInstanceImpl* site_instance,
-      bool is_for_guests_only);
-
   // Get an existing RenderProcessHost associated with the given browser
   // context, if possible.  The renderer process is chosen randomly from
   // suitable renderers that share the same context and type (determined by the
@@ -649,7 +649,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
     registry->AddInterface(
         base::Bind(&InterfaceGetter<CallbackType>::GetInterfaceOnUIThread,
                    instance_weak_factory_->GetWeakPtr(), callback),
-        BrowserThread::GetTaskRunnerForThread(BrowserThread::UI));
+        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI}));
   }
 
   // Callback to unblock process shutdown after waiting for unload handlers to
@@ -887,6 +887,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
       compositing_mode_reporter_;
 
   bool cleanup_corb_exception_for_plugin_upon_destruction_ = false;
+
+  // Fields for recording MediaStream UMA.
+  bool has_recorded_media_stream_frame_depth_metric_ = false;
 
   base::WeakPtrFactory<RenderProcessHostImpl> weak_factory_;
 

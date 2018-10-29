@@ -85,8 +85,6 @@ component("midi") {
     "midi_manager_mac.h",
     "midi_message_queue.cc",
     "midi_message_queue.h",
-    "midi_port_info.cc",
-    "midi_port_info.h",
     "midi_service.cc",
     "midi_service.h",
     "midi_switches.cc",
@@ -191,6 +189,7 @@ test("midi_unittests") {
   configs += [ ":midi_config" ]
   deps = [
     ":midi",
+    ":mojo",
     "//base/test/:run_all_unittests",
     "//base/test/:test_support",
     "//testing/gtest",

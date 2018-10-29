@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/data_device.h"
 #include "components/exo/file_helper.h"
@@ -67,14 +67,14 @@ std::unique_ptr<Surface> Display::CreateSurface() {
 }
 
 std::unique_ptr<SharedMemory> Display::CreateSharedMemory(
-    const base::SharedMemoryHandle& handle,
-    size_t size) {
-  TRACE_EVENT1("exo", "Display::CreateSharedMemory", "size", size);
+    base::UnsafeSharedMemoryRegion shared_memory_region) {
+  TRACE_EVENT1("exo", "Display::CreateSharedMemory", "size",
+               shared_memory_region.GetSize());
 
-  if (!base::SharedMemory::IsHandleValid(handle))
+  if (!shared_memory_region.IsValid())
     return nullptr;
 
-  return std::make_unique<SharedMemory>(handle);
+  return std::make_unique<SharedMemory>(std::move(shared_memory_region));
 }
 
 #if defined(USE_OZONE)

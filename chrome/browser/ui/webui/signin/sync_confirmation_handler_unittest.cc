@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/scoped_observer.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -167,10 +168,13 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{AccountFetcherServiceFactory::GetInstance(),
-             FakeAccountFetcherServiceBuilder::BuildForTests},
-            {SigninManagerFactory::GetInstance(), BuildFakeSigninManagerBase},
-            {ConsentAuditorFactory::GetInstance(), BuildFakeConsentAuditor}};
+    return {
+        {AccountFetcherServiceFactory::GetInstance(),
+         base::BindRepeating(&FakeAccountFetcherServiceBuilder::BuildForTests)},
+        {SigninManagerFactory::GetInstance(),
+         base::BindRepeating(&BuildFakeSigninManagerForTesting)},
+        {ConsentAuditorFactory::GetInstance(),
+         base::BindRepeating(&BuildFakeConsentAuditor)}};
   }
 
   const std::unordered_map<std::string, int>& GetStringToGrdIdMap() {

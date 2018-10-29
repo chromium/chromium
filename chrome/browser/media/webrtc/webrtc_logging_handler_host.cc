@@ -20,6 +20,7 @@
 #include "chrome/common/media/webrtc_logging_messages.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
@@ -174,8 +175,8 @@ void WebRtcLoggingHandlerHost::StoreLog(
   }
 
   if (rtp_dump_handler_) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(stop_rtp_dump_callback_, true, true));
 
     rtp_dump_handler_->StopOngoingDumps(
@@ -241,8 +242,8 @@ void WebRtcLoggingHandlerHost::StopRtpDump(
   }
 
   if (!stop_rtp_dump_callback_.is_null()) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(stop_rtp_dump_callback_,
                        type == RTP_DUMP_INCOMING || type == RTP_DUMP_BOTH,
                        type == RTP_DUMP_OUTGOING || type == RTP_DUMP_BOTH));
@@ -282,8 +283,8 @@ void WebRtcLoggingHandlerHost::GrantLogsDirectoryAccess(
     const base::FilePath& logs_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (logs_path.empty()) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(error_callback, "Logs directory not available"));
     return;
   }
@@ -304,8 +305,8 @@ void WebRtcLoggingHandlerHost::GrantLogsDirectoryAccess(
   policy->GrantReadFileSystem(render_process_id_, filesystem_id);
   // Delete is needed to prevent accumulation of files.
   policy->GrantDeleteFromFileSystem(render_process_id_, filesystem_id);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(callback, filesystem_id, registered_name));
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -317,8 +318,8 @@ void WebRtcLoggingHandlerHost::OnRtpPacket(
     bool incoming) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&WebRtcLoggingHandlerHost::DumpRtpPacketOnIOThread, this,
                      std::move(packet_header), header_length, packet_length,
                      incoming));
@@ -341,32 +342,35 @@ void WebRtcLoggingHandlerHost::DumpRtpPacketOnIOThread(
 
 void WebRtcLoggingHandlerHost::OnChannelClosing() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  switch (text_log_handler_->GetState()) {
-    case WebRtcTextLogHandler::STARTING:
-    case WebRtcTextLogHandler::STARTED:
-    case WebRtcTextLogHandler::STOPPING:
-    case WebRtcTextLogHandler::STOPPED:
-      text_log_handler_->ChannelClosing();
-      if (upload_log_on_render_close_) {
-        base::PostTaskAndReplyWithResult(
-            log_uploader_->background_task_runner().get(), FROM_HERE,
-            base::Bind(
-                &WebRtcLoggingHandlerHost::GetLogDirectoryAndEnsureExists,
-                this),
-            base::Bind(&WebRtcLoggingHandlerHost::TriggerUpload, this,
-                       UploadDoneCallback()));
-      } else {
-        log_uploader_->LoggingStoppedDontUpload();
-        text_log_handler_->DiscardLog();
-      }
-      break;
-    case WebRtcTextLogHandler::CLOSED:
-    case WebRtcTextLogHandler::CHANNEL_CLOSING:
-      // Do nothing
-      break;
-    default:
-      NOTREACHED();
+
+  if (!text_log_handler_->GetChannelIsClosing()) {
+    switch (text_log_handler_->GetState()) {
+      case WebRtcTextLogHandler::STARTING:
+      case WebRtcTextLogHandler::STARTED:
+      case WebRtcTextLogHandler::STOPPING:
+      case WebRtcTextLogHandler::STOPPED:
+        text_log_handler_->ChannelClosing();
+        if (upload_log_on_render_close_) {
+          base::PostTaskAndReplyWithResult(
+              log_uploader_->background_task_runner().get(), FROM_HERE,
+              base::BindOnce(
+                  &WebRtcLoggingHandlerHost::GetLogDirectoryAndEnsureExists,
+                  this),
+              base::BindOnce(&WebRtcLoggingHandlerHost::TriggerUpload, this,
+                             UploadDoneCallback()));
+        } else {
+          log_uploader_->LoggingStoppedDontUpload();
+          text_log_handler_->DiscardLog();
+        }
+        break;
+      case WebRtcTextLogHandler::CLOSED:
+        // Do nothing
+        break;
+      default:
+        NOTREACHED();
+    }
   }
+
   content::BrowserMessageFilter::OnChannelClosing();
 }
 
@@ -436,8 +440,8 @@ void WebRtcLoggingHandlerHost::TriggerUpload(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (rtp_dump_handler_) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(stop_rtp_dump_callback_, true, true));
 
     rtp_dump_handler_->StopOngoingDumps(
@@ -458,10 +462,17 @@ void WebRtcLoggingHandlerHost::StoreLogInDirectory(
     const base::FilePath& directory) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (text_log_handler_->GetState() != WebRtcTextLogHandler::STOPPED &&
-      text_log_handler_->GetState() != WebRtcTextLogHandler::CHANNEL_CLOSING) {
-    BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+  // If channel is not closing, storing is only allowed when in STOPPED state.
+  // If channel is closing, storing is allowed for all states except CLOSED.
+  const WebRtcTextLogHandler::LoggingState text_logging_state =
+      text_log_handler_->GetState();
+  const bool channel_is_closing = text_log_handler_->GetChannelIsClosing();
+  if ((!channel_is_closing &&
+       text_logging_state != WebRtcTextLogHandler::STOPPED) ||
+      (channel_is_closing &&
+       text_log_handler_->GetState() == WebRtcTextLogHandler::CLOSED)) {
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(done_callback, false,
                        "Logging not stopped or no log open."));
     return;
@@ -472,6 +483,8 @@ void WebRtcLoggingHandlerHost::StoreLogInDirectory(
   std::unique_ptr<WebRtcLogBuffer> log_buffer;
   std::unique_ptr<MetaDataMap> meta_data;
   text_log_handler_->ReleaseLog(&log_buffer, &meta_data);
+  CHECK(log_buffer.get()) << "State=" << text_log_handler_->GetState()
+                          << ", uorc=" << upload_log_on_render_close_;
 
   log_uploader_->background_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&WebRtcLogUploader::LoggingStoppedDoStore,
@@ -485,10 +498,17 @@ void WebRtcLoggingHandlerHost::DoUploadLogAndRtpDumps(
     const UploadDoneCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (text_log_handler_->GetState() != WebRtcTextLogHandler::STOPPED &&
-      text_log_handler_->GetState() != WebRtcTextLogHandler::CHANNEL_CLOSING) {
-    BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+  // If channel is not closing, upload is only allowed when in STOPPED state.
+  // If channel is closing, uploading is allowed for all states except CLOSED.
+  const WebRtcTextLogHandler::LoggingState text_logging_state =
+      text_log_handler_->GetState();
+  const bool channel_is_closing = text_log_handler_->GetChannelIsClosing();
+  if ((!channel_is_closing &&
+       text_logging_state != WebRtcTextLogHandler::STOPPED) ||
+      (channel_is_closing &&
+       text_log_handler_->GetState() == WebRtcTextLogHandler::CLOSED)) {
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(callback, false, "",
                        "Logging not stopped or no log open."));
     return;
@@ -503,6 +523,8 @@ void WebRtcLoggingHandlerHost::DoUploadLogAndRtpDumps(
   std::unique_ptr<WebRtcLogBuffer> log_buffer;
   std::unique_ptr<MetaDataMap> meta_data;
   text_log_handler_->ReleaseLog(&log_buffer, &meta_data);
+  CHECK(log_buffer.get()) << "State=" << text_log_handler_->GetState()
+                          << ", uorc=" << upload_log_on_render_close_;
 
   log_uploader_->background_task_runner()->PostTask(
       FROM_HERE,
@@ -562,6 +584,6 @@ void WebRtcLoggingHandlerHost::FireGenericDoneCallback(
   DCHECK(!callback.is_null());
   DCHECK_EQ(success, error_message.empty());
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, success, error_message));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, success, error_message));
 }

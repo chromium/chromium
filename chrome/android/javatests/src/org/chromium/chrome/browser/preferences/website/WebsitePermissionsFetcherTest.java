@@ -161,8 +161,8 @@ public class WebsitePermissionsFetcherTest {
                 }
 
                 // This should not time out. See crbug.com/732907.
-                WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(waiter);
-                fetcher.fetchAllPreferences();
+                WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher();
+                fetcher.fetchAllPreferences(waiter);
             }
         });
         waiter.waitForCallback(0, 1, scaleTimeout(1000), TimeUnit.MILLISECONDS);

@@ -274,12 +274,9 @@ class ObfuscatedFileUtilTest : public testing::Test {
 
   void GetUsageFromQuotaManager() {
     int64_t quota = -1;
-    quota_status_ =
-        AsyncFileTestHelper::GetUsageAndQuota(quota_manager_.get(),
-                                              origin(),
-                                              sandbox_file_system_.type(),
-                                              &usage_,
-                                              &quota);
+    quota_status_ = AsyncFileTestHelper::GetUsageAndQuota(
+        quota_manager_.get(), url::Origin::Create(origin()),
+        sandbox_file_system_.type(), &usage_, &quota);
     EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, quota_status_);
   }
 
@@ -386,20 +383,18 @@ class ObfuscatedFileUtilTest : public testing::Test {
       const std::set<base::FilePath::StringType>& files,
       const std::set<base::FilePath::StringType>& directories) {
     std::unique_ptr<FileSystemOperationContext> context;
-    std::set<base::FilePath::StringType>::const_iterator iter;
-    for (iter = files.begin(); iter != files.end(); ++iter) {
+    for (const auto& file : files) {
       bool created = true;
       context.reset(NewContext(nullptr));
-      ASSERT_EQ(base::File::FILE_OK,
-                ofu()->EnsureFileExists(context.get(),
-                                        FileSystemURLAppend(root_url, *iter),
-                                        &created));
+      ASSERT_EQ(
+          base::File::FILE_OK,
+          ofu()->EnsureFileExists(
+              context.get(), FileSystemURLAppend(root_url, file), &created));
       ASSERT_FALSE(created);
     }
-    for (iter = directories.begin(); iter != directories.end(); ++iter) {
+    for (const auto& directory : directories) {
       context.reset(NewContext(nullptr));
-      EXPECT_TRUE(DirectoryExists(
-          FileSystemURLAppend(root_url, *iter)));
+      EXPECT_TRUE(DirectoryExists(FileSystemURLAppend(root_url, directory)));
     }
   }
 
@@ -470,23 +465,22 @@ class ObfuscatedFileUtilTest : public testing::Test {
     directories->insert(FILE_PATH_LITERAL("fourth"));
     directories->insert(FILE_PATH_LITERAL("fifth"));
     directories->insert(FILE_PATH_LITERAL("sixth"));
-    std::set<base::FilePath::StringType>::iterator iter;
-    for (iter = files->begin(); iter != files->end(); ++iter) {
+    for (const auto& file : *files) {
       bool created = false;
       context.reset(NewContext(nullptr));
-      ASSERT_EQ(base::File::FILE_OK,
-                ofu()->EnsureFileExists(context.get(),
-                                        FileSystemURLAppend(root_url, *iter),
-                                        &created));
+      ASSERT_EQ(
+          base::File::FILE_OK,
+          ofu()->EnsureFileExists(
+              context.get(), FileSystemURLAppend(root_url, file), &created));
       ASSERT_TRUE(created);
     }
-    for (iter = directories->begin(); iter != directories->end(); ++iter) {
+    for (const auto& directory : *directories) {
       bool exclusive = true;
       bool recursive = false;
       context.reset(NewContext(nullptr));
       EXPECT_EQ(base::File::FILE_OK,
                 ofu()->CreateDirectory(context.get(),
-                                       FileSystemURLAppend(root_url, *iter),
+                                       FileSystemURLAppend(root_url, directory),
                                        exclusive, recursive));
     }
     ValidateTestDirectory(root_url, *files, *directories);
@@ -1290,11 +1284,9 @@ TEST_F(ObfuscatedFileUtilTest, TestPathQuotas) {
   std::vector<base::FilePath::StringType> components;
   url.path().GetComponents(&components);
   path_cost = 0;
-  typedef std::vector<base::FilePath::StringType>::iterator iterator;
-  for (iterator iter = components.begin();
-       iter != components.end(); ++iter) {
-    path_cost += ObfuscatedFileUtil::ComputeFilePathCost(
-        base::FilePath(*iter));
+  for (const auto& component : components) {
+    path_cost +=
+        ObfuscatedFileUtil::ComputeFilePathCost(base::FilePath(component));
   }
   context.reset(NewContext(nullptr));
   context->set_allowed_bytes_growth(1024);

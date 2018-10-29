@@ -13,9 +13,17 @@ package media;
 message DecodeStatsProto {
   // Required. Count of decoded video frames.
   optional uint64 frames_decoded = 1;
+
   // Required. Count of dropped video frames. Should not exceed
   // |frames_decoded|.
   optional uint64 frames_dropped = 2;
+
   // Required. Count of power efficiently decoded frames.
-  optional uint64 frames_decoded_power_efficient = 3 [default = 0];
+  optional uint64 frames_power_efficient = 3;
+
+  // Required. Time of last data write from base::Time::ToJsTime(). Data will be
+  // discarded when the date indicates its very old. This avoids a circumstance
+  // where a few bad outlier playbacks permanently define a machines
+  // capabilities.
+  optional double last_write_date = 7;
 }

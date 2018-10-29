@@ -3,19 +3,21 @@
 // found in the LICENSE file.
 
 #include "net/third_party/quic/core/frames/quic_blocked_frame.h"
+#include "net/third_party/quic/core/quic_constants.h"
 
 namespace quic {
 
-QuicBlockedFrame::QuicBlockedFrame() : stream_id(0), offset(0) {}
+QuicBlockedFrame::QuicBlockedFrame()
+    : control_frame_id(kInvalidControlFrameId), stream_id(0), offset(0) {}
 
 QuicBlockedFrame::QuicBlockedFrame(QuicControlFrameId control_frame_id,
                                    QuicStreamId stream_id)
-    : QuicControlFrame(control_frame_id), stream_id(stream_id), offset(0) {}
+    : control_frame_id(control_frame_id), stream_id(stream_id), offset(0) {}
 
 QuicBlockedFrame::QuicBlockedFrame(QuicControlFrameId control_frame_id,
                                    QuicStreamId stream_id,
                                    QuicStreamOffset offset)
-    : QuicControlFrame(control_frame_id),
+    : control_frame_id(control_frame_id),
       stream_id(stream_id),
       offset(offset) {}
 

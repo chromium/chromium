@@ -23,7 +23,7 @@
 namespace chromeos {
 namespace {
 
-const char* kWhitelistedDirectory = "oobe_videos";
+const char kWhitelistedDirectory[] = "oobe_videos";
 
 bool IsWhitelisted(const std::string& path) {
   base::FilePath file_path(path);

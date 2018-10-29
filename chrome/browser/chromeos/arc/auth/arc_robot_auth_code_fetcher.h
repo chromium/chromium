@@ -31,7 +31,7 @@ class ArcRobotAuthCodeFetcher : public ArcAuthCodeFetcher {
   ~ArcRobotAuthCodeFetcher() override;
 
   // ArcAuthCodeFetcher:
-  void Fetch(const FetchCallback& callback) override;
+  void Fetch(FetchCallback callback) override;
 
  private:
   void OnFetchRobotAuthCodeCompleted(

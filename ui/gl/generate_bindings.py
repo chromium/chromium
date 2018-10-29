@@ -238,10 +238,6 @@ GL_FUNCTIONS = [
   'names': ['glCompileShader'],
   'arguments': 'GLuint shader', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glCompressedCopyTextureCHROMIUM',
-                 'extensions': ['GL_CHROMIUM_copy_compressed_texture'], }],
-  'arguments': 'GLuint sourceId, GLuint destId', },
-{ 'return_type': 'void',
   'names': ['glCompressedTexImage2D'],
   'arguments':
       'GLenum target, GLint level, GLenum internalformat, GLsizei width, '
@@ -2338,24 +2334,6 @@ EGL_FUNCTIONS = [
   'names': ['eglPostSubBufferNV'],
   'arguments': 'EGLDisplay dpy, EGLSurface surface, '
     'EGLint x, EGLint y, EGLint width, EGLint height', },
-{ 'return_type': 'EGLint',
-  'versions': [{ 'name': 'eglProgramCacheGetAttribANGLE',
-                 'extensions': ['EGL_ANGLE_program_cache_control'] }],
-  'arguments': 'EGLDisplay dpy, EGLenum attrib', },
-{ 'return_type': 'void',
-  'versions': [{ 'name': 'eglProgramCachePopulateANGLE',
-                 'extensions': ['EGL_ANGLE_program_cache_control'] }],
-  'arguments': 'EGLDisplay dpy, const void* key, '
-    'EGLint keysize, const void* binary, EGLint binarysize', },
-{ 'return_type': 'void',
-  'versions': [{ 'name': 'eglProgramCacheQueryANGLE',
-                 'extensions': ['EGL_ANGLE_program_cache_control'] }],
-  'arguments': 'EGLDisplay dpy, EGLint index, '
-    'void* key, EGLint* keysize, void* binary, EGLint* binarysize', },
-{ 'return_type': 'EGLint',
-  'versions': [{ 'name': 'eglProgramCacheResizeANGLE',
-                 'extensions': ['EGL_ANGLE_program_cache_control'] }],
-  'arguments': 'EGLDisplay dpy, EGLint limit, EGLenum mode', },
 { 'return_type': 'EGLenum',
   'names': ['eglQueryAPI'],
   'arguments': 'void', },
@@ -2397,6 +2375,11 @@ EGL_FUNCTIONS = [
 { 'return_type': 'EGLBoolean',
   'names': ['eglReleaseThread'],
   'arguments': 'void', },
+{ 'return_type': 'void',
+  'versions': [{ 'name': 'eglSetBlobCacheFuncsANDROID',
+                 'extensions': ['EGL_ANDROID_blob_cache'] }],
+  'arguments':
+      'EGLDisplay dpy, EGLSetBlobFuncANDROID set, EGLGetBlobFuncANDROID get' },
 { 'return_type': 'EGLBoolean',
   'versions': [{ 'name': 'eglStreamAttribKHR',
                  'extensions': ['EGL_KHR_stream'] }],
@@ -3222,6 +3205,9 @@ void DriverEGL::InitializeExtensionBindings() {
         r'(const )?[a-zA-Z0-9_]+\* ([a-zA-Z0-9_]+)',
         r'CONSTVOID_\2', log_argument_names)
     log_argument_names = re.sub(
+        r'(const )?EGL[GS]etBlobFuncANDROID ([a-zA-Z0-9_]+)',
+        r'FUNCPTR_\2', log_argument_names)
+    log_argument_names = re.sub(
         r'(?<!E)GLboolean ([a-zA-Z0-9_]+)', r'GLboolean_\1', log_argument_names)
     log_argument_names = re.sub(
         r'GLDEBUGPROC ([a-zA-Z0-9_]+)',
@@ -3243,6 +3229,9 @@ void DriverEGL::InitializeExtensionBindings() {
     log_argument_names = re.sub(
         r'CONSTVOID_([a-zA-Z0-9_]+)',
         r'static_cast<const void*>(\1)', log_argument_names)
+    log_argument_names = re.sub(
+        r'FUNCPTR_([a-zA-Z0-9_]+)',
+        r'reinterpret_cast<const void*>(\1)', log_argument_names)
     log_argument_names = re.sub(
         r'CONSTCHAR_([a-zA-Z0-9_]+)', r'\1', log_argument_names)
     log_argument_names = re.sub(

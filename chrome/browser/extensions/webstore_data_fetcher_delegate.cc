@@ -11,8 +11,6 @@ const char WebstoreDataFetcherDelegate::kIconUrlKey[] = "icon_url";
 const char WebstoreDataFetcherDelegate::kIdKey[] = "id";
 const char WebstoreDataFetcherDelegate::kExternalInstallDefaultButtonKey[] =
     "external_install_default_button";
-const char WebstoreDataFetcherDelegate::kInlineInstallNotSupportedKey[] =
-    "inline_install_not_supported";
 const char WebstoreDataFetcherDelegate::kLocalizedDescriptionKey[] =
     "localized_description";
 const char WebstoreDataFetcherDelegate::kLocalizedNameKey[] = "localized_name";

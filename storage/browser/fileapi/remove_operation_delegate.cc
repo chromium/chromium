@@ -13,71 +13,77 @@ namespace storage {
 RemoveOperationDelegate::RemoveOperationDelegate(
     FileSystemContext* file_system_context,
     const FileSystemURL& url,
-    const StatusCallback& callback)
+    StatusCallback callback)
     : RecursiveOperationDelegate(file_system_context),
       url_(url),
-      callback_(callback),
-      weak_factory_(this) {
-}
+      callback_(std::move(callback)),
+      weak_factory_(this) {}
 
 RemoveOperationDelegate::~RemoveOperationDelegate() = default;
 
 void RemoveOperationDelegate::Run() {
-  operation_runner()->RemoveFile(url_, base::Bind(
-      &RemoveOperationDelegate::DidTryRemoveFile, weak_factory_.GetWeakPtr()));
+#if DCHECK_IS_ON()
+  DCHECK(!did_run_);
+  did_run_ = true;
+#endif
+  operation_runner()->RemoveFile(
+      url_, base::BindOnce(&RemoveOperationDelegate::DidTryRemoveFile,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void RemoveOperationDelegate::RunRecursively() {
+#if DCHECK_IS_ON()
+  DCHECK(!did_run_);
+  did_run_ = true;
+#endif
   StartRecursiveOperation(url_, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-                          callback_);
+                          std::move(callback_));
 }
 
 void RemoveOperationDelegate::ProcessFile(const FileSystemURL& url,
-                                          const StatusCallback& callback) {
+                                          StatusCallback callback) {
   operation_runner()->RemoveFile(
-      url,
-      base::Bind(&RemoveOperationDelegate::DidRemoveFile,
-                 weak_factory_.GetWeakPtr(), callback));
+      url, base::BindOnce(&RemoveOperationDelegate::DidRemoveFile,
+                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void RemoveOperationDelegate::ProcessDirectory(const FileSystemURL& url,
-                                               const StatusCallback& callback) {
-  callback.Run(base::File::FILE_OK);
+                                               StatusCallback callback) {
+  std::move(callback).Run(base::File::FILE_OK);
 }
 
-void RemoveOperationDelegate::PostProcessDirectory(
-    const FileSystemURL& url, const StatusCallback& callback) {
-  operation_runner()->RemoveDirectory(url, callback);
+void RemoveOperationDelegate::PostProcessDirectory(const FileSystemURL& url,
+                                                   StatusCallback callback) {
+  operation_runner()->RemoveDirectory(url, std::move(callback));
 }
 
 void RemoveOperationDelegate::DidTryRemoveFile(base::File::Error error) {
   if (error != base::File::FILE_ERROR_NOT_A_FILE &&
       error != base::File::FILE_ERROR_SECURITY) {
-    callback_.Run(error);
+    std::move(callback_).Run(error);
     return;
   }
   operation_runner()->RemoveDirectory(
-      url_,
-      base::Bind(&RemoveOperationDelegate::DidTryRemoveDirectory,
-                 weak_factory_.GetWeakPtr(), error));
+      url_, base::BindOnce(&RemoveOperationDelegate::DidTryRemoveDirectory,
+                           weak_factory_.GetWeakPtr(), error));
 }
 
 void RemoveOperationDelegate::DidTryRemoveDirectory(
     base::File::Error remove_file_error,
     base::File::Error remove_directory_error) {
-  callback_.Run(
-      remove_directory_error == base::File::FILE_ERROR_NOT_A_DIRECTORY ?
-      remove_file_error :
-      remove_directory_error);
+  std::move(callback_).Run(remove_directory_error ==
+                                   base::File::FILE_ERROR_NOT_A_DIRECTORY
+                               ? remove_file_error
+                               : remove_directory_error);
 }
 
-void RemoveOperationDelegate::DidRemoveFile(const StatusCallback& callback,
+void RemoveOperationDelegate::DidRemoveFile(StatusCallback callback,
                                             base::File::Error error) {
   if (error == base::File::FILE_ERROR_NOT_FOUND) {
-    callback.Run(base::File::FILE_OK);
+    std::move(callback).Run(base::File::FILE_OK);
     return;
   }
-  callback.Run(error);
+  std::move(callback).Run(error);
 }
 
 }  // namespace storage

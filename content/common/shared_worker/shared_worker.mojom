@@ -19,5 +19,6 @@ interface SharedWorker {
 
   // Binds a DevToolsAgent interface for this shared worker, used for
   // remote debugging. See DevToolsAgent for details.
-  BindDevToolsAgent(associated blink.mojom.DevToolsAgent& devtools_agent);
+  BindDevToolsAgent(associated blink.mojom.DevToolsAgentHost agent_host,
+                    associated blink.mojom.DevToolsAgent& agent);
 };

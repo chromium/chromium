@@ -18,14 +18,9 @@
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "NGPhysicalTextFragment 'before'",
-          "rect": [100, 120, 40, 19],
-          "reason": "disappeared"
-        },
-        {
           "object": "NGPhysicalTextFragment 'after'",
-          "rect": [100, 120, 29, 19],
-          "reason": "appeared"
+          "rect": [100, 120, 40, 19],
+          "reason": "full"
         }
       ]
     }

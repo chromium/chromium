@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
-
 #include "net/third_party/spdy/core/spdy_protocol_test_utils.h"
+
+#include <cstdint>
+
 #include "net/third_party/spdy/platform/api/spdy_string_piece.h"
 
 namespace spdy {
@@ -16,22 +17,17 @@ namespace test {
 ::testing::AssertionResult VerifySpdyFrameWithHeaderBlockIREquals(
     const SpdyFrameWithHeaderBlockIR& expected,
     const SpdyFrameWithHeaderBlockIR& actual) {
-  DVLOG(1) << "VerifySpdyFrameWithHeaderBlockIREquals";
-  if (actual.header_block() != expected.header_block())
-    return ::testing::AssertionFailure();
-
+  VLOG(1) << "VerifySpdyFrameWithHeaderBlockIREquals";
+  VERIFY_TRUE(actual.header_block() == expected.header_block());
   return ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult VerifySpdyFrameIREquals(const SpdyAltSvcIR& expected,
                                                    const SpdyAltSvcIR& actual) {
-  if (expected.stream_id() != actual.stream_id())
-    return ::testing::AssertionFailure();
-  if (expected.origin() != actual.origin())
-    return ::testing::AssertionFailure();
-  if (actual.altsvc_vector() != expected.altsvc_vector())
-    return ::testing::AssertionFailure();
-
+  VERIFY_EQ(expected.stream_id(), actual.stream_id());
+  VERIFY_EQ(expected.origin(), actual.origin());
+  VERIFY_THAT(actual.altsvc_vector(),
+              ::testing::ContainerEq(expected.altsvc_vector()));
   return ::testing::AssertionSuccess();
 }
 
@@ -44,133 +40,103 @@ namespace test {
 
 ::testing::AssertionResult VerifySpdyFrameIREquals(const SpdyDataIR& expected,
                                                    const SpdyDataIR& actual) {
-  DVLOG(1) << "VerifySpdyFrameIREquals SpdyDataIR";
-  if (expected.stream_id() != actual.stream_id())
-    return ::testing::AssertionFailure();
-  if (expected.fin() != actual.fin())
-    return ::testing::AssertionFailure();
-  if (expected.data_len() != actual.data_len())
-    return ::testing::AssertionFailure();
-  if (expected.data() == nullptr && actual.data() != nullptr)
-    return ::testing::AssertionFailure();
-  if (SpdyStringPiece(expected.data(), expected.data_len()) !=
-      SpdyStringPiece(actual.data(), actual.data_len()))
-    return ::testing::AssertionFailure();
-  if (!VerifySpdyFrameWithPaddingIREquals(expected, actual))
-    return ::testing::AssertionFailure();
-
+  VLOG(1) << "VerifySpdyFrameIREquals SpdyDataIR";
+  VERIFY_EQ(expected.stream_id(), actual.stream_id());
+  VERIFY_EQ(expected.fin(), actual.fin());
+  VERIFY_EQ(expected.data_len(), actual.data_len());
+  if (expected.data() == nullptr) {
+    VERIFY_EQ(nullptr, actual.data());
+  } else {
+    VERIFY_EQ(SpdyStringPiece(expected.data(), expected.data_len()),
+              SpdyStringPiece(actual.data(), actual.data_len()));
+  }
+  VERIFY_SUCCESS(VerifySpdyFrameWithPaddingIREquals(expected, actual));
   return ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult VerifySpdyFrameIREquals(const SpdyGoAwayIR& expected,
                                                    const SpdyGoAwayIR& actual) {
-  DVLOG(1) << "VerifySpdyFrameIREquals SpdyGoAwayIR";
-  if (expected.last_good_stream_id() != actual.last_good_stream_id())
-    return ::testing::AssertionFailure();
-  if (expected.error_code() != actual.error_code())
-    return ::testing::AssertionFailure();
-  if (expected.description() != actual.description())
-    return ::testing::AssertionFailure();
-
+  VLOG(1) << "VerifySpdyFrameIREquals SpdyGoAwayIR";
+  VERIFY_EQ(expected.last_good_stream_id(), actual.last_good_stream_id());
+  VERIFY_EQ(expected.error_code(), actual.error_code());
+  VERIFY_EQ(expected.description(), actual.description());
   return ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult VerifySpdyFrameIREquals(
     const SpdyHeadersIR& expected,
     const SpdyHeadersIR& actual) {
-  DVLOG(1) << "VerifySpdyFrameIREquals SpdyHeadersIR";
-  if (expected.stream_id() != actual.stream_id())
-    return ::testing::AssertionFailure();
-  if (expected.fin() != actual.fin())
-    return ::testing::AssertionFailure();
-  if (!VerifySpdyFrameWithHeaderBlockIREquals(expected, actual))
-    return ::testing::AssertionFailure();
-  if (expected.has_priority() != actual.has_priority())
-    return ::testing::AssertionFailure();
+  VLOG(1) << "VerifySpdyFrameIREquals SpdyHeadersIR";
+  VERIFY_EQ(expected.stream_id(), actual.stream_id());
+  VERIFY_EQ(expected.fin(), actual.fin());
+  VERIFY_SUCCESS(VerifySpdyFrameWithHeaderBlockIREquals(expected, actual));
+  VERIFY_EQ(expected.has_priority(), actual.has_priority());
   if (expected.has_priority()) {
-    if (!VerifySpdyFrameWithPriorityIREquals(expected, actual))
-      return ::testing::AssertionFailure();
+    VERIFY_SUCCESS(VerifySpdyFrameWithPriorityIREquals(expected, actual));
   }
-  if (!VerifySpdyFrameWithPaddingIREquals(expected, actual))
-    return ::testing::AssertionFailure();
-
+  VERIFY_SUCCESS(VerifySpdyFrameWithPaddingIREquals(expected, actual));
   return ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult VerifySpdyFrameIREquals(const SpdyPingIR& expected,
                                                    const SpdyPingIR& actual) {
-  DVLOG(1) << "VerifySpdyFrameIREquals SpdyPingIR";
-  if (expected.id() != actual.id())
-    return ::testing::AssertionFailure();
-  if (expected.is_ack() != actual.is_ack())
-    return ::testing::AssertionFailure();
-
+  VLOG(1) << "VerifySpdyFrameIREquals SpdyPingIR";
+  VERIFY_EQ(expected.id(), actual.id());
+  VERIFY_EQ(expected.is_ack(), actual.is_ack());
   return ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult VerifySpdyFrameIREquals(
     const SpdyPriorityIR& expected,
     const SpdyPriorityIR& actual) {
-  DVLOG(1) << "VerifySpdyFrameIREquals SpdyPriorityIR";
-  if (expected.stream_id() != actual.stream_id())
-    return ::testing::AssertionFailure();
-  if (!VerifySpdyFrameWithPriorityIREquals(expected, actual))
-    return ::testing::AssertionFailure();
-
+  VLOG(1) << "VerifySpdyFrameIREquals SpdyPriorityIR";
+  VERIFY_EQ(expected.stream_id(), actual.stream_id());
+  VERIFY_SUCCESS(VerifySpdyFrameWithPriorityIREquals(expected, actual));
   return ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult VerifySpdyFrameIREquals(
     const SpdyPushPromiseIR& expected,
     const SpdyPushPromiseIR& actual) {
-  DVLOG(1) << "VerifySpdyFrameIREquals SpdyPushPromiseIR";
-  if (expected.stream_id() != actual.stream_id())
-    return ::testing::AssertionFailure();
-  if (!VerifySpdyFrameWithPaddingIREquals(expected, actual))
-    return ::testing::AssertionFailure();
-  if (expected.promised_stream_id() != actual.promised_stream_id())
-    return ::testing::AssertionFailure();
-  if (!VerifySpdyFrameWithHeaderBlockIREquals(expected, actual))
-    return ::testing::AssertionFailure();
-
+  VLOG(1) << "VerifySpdyFrameIREquals SpdyPushPromiseIR";
+  VERIFY_EQ(expected.stream_id(), actual.stream_id());
+  VERIFY_SUCCESS(VerifySpdyFrameWithPaddingIREquals(expected, actual));
+  VERIFY_EQ(expected.promised_stream_id(), actual.promised_stream_id());
+  VERIFY_SUCCESS(VerifySpdyFrameWithHeaderBlockIREquals(expected, actual));
   return ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult VerifySpdyFrameIREquals(
     const SpdyRstStreamIR& expected,
     const SpdyRstStreamIR& actual) {
-  DVLOG(1) << "VerifySpdyFrameIREquals SpdyRstStreamIR";
-  if (expected.stream_id() != actual.stream_id())
-    return ::testing::AssertionFailure();
-  if (expected.error_code() != actual.error_code())
-    return ::testing::AssertionFailure();
-
+  VLOG(1) << "VerifySpdyFrameIREquals SpdyRstStreamIR";
+  VERIFY_EQ(expected.stream_id(), actual.stream_id());
+  VERIFY_EQ(expected.error_code(), actual.error_code());
   return ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult VerifySpdyFrameIREquals(
     const SpdySettingsIR& expected,
     const SpdySettingsIR& actual) {
-  DVLOG(1) << "VerifySpdyFrameIREquals SpdySettingsIR";
+  VLOG(1) << "VerifySpdyFrameIREquals SpdySettingsIR";
   // Note, ignoring non-HTTP/2 fields such as clear_settings.
-  if (expected.is_ack() != actual.is_ack())
-    return ::testing::AssertionFailure();
+  VERIFY_EQ(expected.is_ack(), actual.is_ack());
 
-  if (expected.values().size() != actual.values().size())
-    return ::testing::AssertionFailure();
+  // Note, the following doesn't work because there isn't a comparator and
+  // formatter for SpdySettingsIR::Value. Fixable if we cared.
+  //
+  //   VERIFY_THAT(actual.values(), ::testing::ContainerEq(actual.values()));
+
+  VERIFY_EQ(expected.values().size(), actual.values().size());
   for (const auto& entry : expected.values()) {
     const auto& param = entry.first;
     auto actual_itr = actual.values().find(param);
-    if (actual_itr == actual.values().end()) {
-      DVLOG(1) << "actual doesn't contain param: " << param;
-      return ::testing::AssertionFailure();
-    }
+    VERIFY_TRUE(!(actual_itr == actual.values().end()))
+        << "actual doesn't contain param: " << param;
     uint32_t expected_value = entry.second;
     uint32_t actual_value = actual_itr->second;
-    if (expected_value != actual_value) {
-      DVLOG(1) << "Values don't match for parameter: " << param;
-      return ::testing::AssertionFailure();
-    }
+    VERIFY_EQ(expected_value, actual_value)
+        << "Values don't match for parameter: " << param;
   }
 
   return ::testing::AssertionSuccess();
@@ -179,12 +145,9 @@ namespace test {
 ::testing::AssertionResult VerifySpdyFrameIREquals(
     const SpdyWindowUpdateIR& expected,
     const SpdyWindowUpdateIR& actual) {
-  DVLOG(1) << "VerifySpdyFrameIREquals SpdyWindowUpdateIR";
-  if (expected.stream_id() != actual.stream_id())
-    return ::testing::AssertionFailure();
-  if (expected.delta() != actual.delta())
-    return ::testing::AssertionFailure();
-
+  VLOG(1) << "VerifySpdyFrameIREquals SpdyWindowUpdateIR";
+  VERIFY_EQ(expected.stream_id(), actual.stream_id());
+  VERIFY_EQ(expected.delta(), actual.delta());
   return ::testing::AssertionSuccess();
 }
 

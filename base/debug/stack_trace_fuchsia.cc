@@ -16,6 +16,7 @@
 #include <zircon/types.h>
 
 #include <algorithm>
+#include <array>
 #include <iomanip>
 #include <iostream>
 
@@ -69,7 +70,7 @@ class SymbolMap {
   void Populate();
 
   // Sorted in descending order by address, for lookup purposes.
-  Entry entries_[kMaxMapEntries];
+  std::array<Entry, kMaxMapEntries> entries_;
 
   size_t count_ = 0;
   bool valid_ = false;
@@ -135,7 +136,7 @@ void SymbolMap::Populate() {
 
   // Copy the contents of the link map linked list to |entries_|.
   while (lmap != nullptr) {
-    if (count_ >= arraysize(entries_)) {
+    if (count_ >= entries_.size()) {
       break;
     }
     SymbolMap::Entry* next_entry = &entries_[count_];
@@ -148,8 +149,8 @@ void SymbolMap::Populate() {
   }
 
   std::sort(
-      &entries_[0], &entries_[count_ - 1],
-      [](const Entry& a, const Entry& b) -> bool { return a.addr >= b.addr; });
+      entries_.begin(), entries_.begin() + count_,
+      [](const Entry& a, const Entry& b) -> bool { return a.addr > b.addr; });
 
   valid_ = true;
 }

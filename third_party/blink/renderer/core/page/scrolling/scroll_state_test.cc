@@ -69,9 +69,9 @@ TEST_F(ScrollStateTest, CurrentNativeScrollingElement) {
   ScrollState* scroll_state = CreateScrollState(0, 0, false, false);
   Element* element =
       Element::Create(QualifiedName::Null(), Document::CreateForTest());
-  scroll_state->SetCurrentNativeScrollingElement(element);
+  scroll_state->SetCurrentNativeScrollingNode(element);
 
-  EXPECT_EQ(element, scroll_state->CurrentNativeScrollingElement());
+  EXPECT_EQ(element, scroll_state->CurrentNativeScrollingNode());
 }
 
 TEST_F(ScrollStateTest, FullyConsumed) {

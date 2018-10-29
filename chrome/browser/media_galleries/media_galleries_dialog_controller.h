@@ -35,12 +35,6 @@ class MediaGalleriesDialog {
   // Constructs a platform-specific dialog owned and controlled by |controller|.
   static MediaGalleriesDialog* Create(
       MediaGalleriesDialogController* controller);
-#if defined(OS_MACOSX)
-  // Temporary shim for Polychrome. See bottom of first comment in
-  // https://crbug.com/80495 for details.
-  static MediaGalleriesDialog* CreateCocoa(
-      MediaGalleriesDialogController* controller);
-#endif
  private:
   friend class TestMediaGalleriesAddScanResultsFunction;
 

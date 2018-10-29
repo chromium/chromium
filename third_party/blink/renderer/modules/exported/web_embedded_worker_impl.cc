@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_inspector_proxy.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_client.h"
-#include "third_party/blink/renderer/modules/service_worker/service_worker_container_client.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope_client.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope_proxy.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_installed_scripts_manager.h"
@@ -66,7 +65,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/substitute_data.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer_policy.h"
@@ -170,7 +168,7 @@ void WebEmbeddedWorkerImpl::StartWorkerContext(
   // https://crbug.com/590714
   KURL script_url = worker_start_data_.script_url;
   worker_start_data_.address_space = mojom::IPAddressSpace::kPublic;
-  if (NetworkUtils::IsReservedIPAddress(script_url.Host()))
+  if (network_utils::IsReservedIPAddress(script_url.Host()))
     worker_start_data_.address_space = mojom::IPAddressSpace::kPrivate;
   if (SecurityOrigin::Create(script_url)->IsLocalhost())
     worker_start_data_.address_space = mojom::IPAddressSpace::kLocal;
@@ -271,9 +269,14 @@ void WebEmbeddedWorkerImpl::AddMessageToConsole(
 }
 
 void WebEmbeddedWorkerImpl::BindDevToolsAgent(
+    mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
     mojo::ScopedInterfaceEndpointHandle devtools_agent_request) {
-  shadow_page_->BindDevToolsAgent(mojom::blink::DevToolsAgentAssociatedRequest(
-      std::move(devtools_agent_request)));
+  shadow_page_->DevToolsAgent()->BindRequest(
+      mojom::blink::DevToolsAgentHostAssociatedPtrInfo(
+          std::move(devtools_agent_host_ptr_info),
+          mojom::blink::DevToolsAgentHost::Version_),
+      mojom::blink::DevToolsAgentAssociatedRequest(
+          std::move(devtools_agent_request)));
 }
 
 void WebEmbeddedWorkerImpl::PostMessageToPageInspector(int session_id,
@@ -306,13 +309,20 @@ void WebEmbeddedWorkerImpl::OnShadowPageInitialized() {
     return;
   }
 
+  // If this is a module service worker, start the worker thread now. The worker
+  // thread will fetch the script.
+  if (worker_start_data_.script_type == mojom::ScriptType::kModule) {
+    StartWorkerThread();
+    return;
+  }
+
   // Note: We only get here if this is a new (i.e., not installed) service
   // worker.
   DCHECK(!main_script_loader_);
   main_script_loader_ = WorkerClassicScriptLoader::Create();
   main_script_loader_->LoadTopLevelScriptAsynchronously(
       *shadow_page_->GetDocument(), worker_start_data_.script_url,
-      WebURLRequest::kRequestContextServiceWorker,
+      mojom::RequestContextType::SERVICE_WORKER,
       network::mojom::FetchRequestMode::kSameOrigin,
       network::mojom::FetchCredentialsMode::kSameOrigin,
       worker_start_data_.address_space, base::OnceClosure(),
@@ -372,8 +382,6 @@ void WebEmbeddedWorkerImpl::StartWorkerThread() {
   ProvideServiceWorkerGlobalScopeClientToWorker(
       worker_clients,
       new ServiceWorkerGlobalScopeClient(*worker_context_client_));
-  ProvideServiceWorkerContainerClientToWorker(
-      worker_clients, worker_context_client_->CreateServiceWorkerProvider());
 
   std::unique_ptr<WebWorkerFetchContext> web_worker_fetch_context =
       worker_context_client_->CreateServiceWorkerFetchContext(
@@ -441,10 +449,9 @@ void WebEmbeddedWorkerImpl::StartWorkerThread() {
         std::move(interface_provider_info_));
   }
 
-  if (RuntimeEnabledFeatures::ServiceWorkerScriptFullCodeCacheEnabled()) {
-    global_scope_creation_params->v8_cache_options =
-        kV8CacheOptionsFullCodeWithoutHeatCheck;
-  }
+  // Generate the full code cache in the first execution of the script.
+  global_scope_creation_params->v8_cache_options =
+      kV8CacheOptionsFullCodeWithoutHeatCheck;
 
   worker_thread_ = std::make_unique<ServiceWorkerThread>(
       ServiceWorkerGlobalScopeProxy::Create(*this, *worker_context_client_),

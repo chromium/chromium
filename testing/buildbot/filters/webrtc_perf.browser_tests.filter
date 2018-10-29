@@ -1,9 +1,0 @@
-WebRtcAudioQualityBrowserTest.*
-WebRtcInternalsPerfBrowserTest.*
-WebRtcStatsPerfBrowserTest.*
-WebRtcVideoDisplayPerfBrowserTests*
-WebRtcVideoQualityBrowserTests*
-
-# This one is actually not a perf test, but we group it in with the perf
-# since it's just one test.
-WebRtcWebcamBrowserTests*

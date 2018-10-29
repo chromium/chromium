@@ -7,4 +7,3 @@ PASS window.colorChannels[2] is 0
 PASS window.colorChannels[0] is 0
 PASS window.colorChannels[1] is 128
 PASS window.colorChannels[2] is 0
-

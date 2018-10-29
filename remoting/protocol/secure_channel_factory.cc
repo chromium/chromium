@@ -39,7 +39,7 @@ void SecureChannelFactory::CreateChannel(
 
 void SecureChannelFactory::CancelChannelCreation(
     const std::string& name) {
-  AuthenticatorMap::iterator it = channel_authenticators_.find(name);
+  auto it = channel_authenticators_.find(name);
   if (it == channel_authenticators_.end()) {
     channel_factory_->CancelChannelCreation(name);
   } else {
@@ -73,7 +73,7 @@ void SecureChannelFactory::OnSecureChannelCreated(
     std::unique_ptr<P2PStreamSocket> socket) {
   DCHECK((socket && error == net::OK) || (!socket && error != net::OK));
 
-  AuthenticatorMap::iterator it = channel_authenticators_.find(name);
+  auto it = channel_authenticators_.find(name);
   DCHECK(it != channel_authenticators_.end());
   delete it->second;
   channel_authenticators_.erase(it);

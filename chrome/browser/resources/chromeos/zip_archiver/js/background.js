@@ -4,6 +4,18 @@
 
 'use strict';
 
+if (chrome.test) {
+  chrome.test.onMessage.addListener((msg) => {
+    if (msg.data != 'preloadZip')
+      return;
+
+    console.info('Preloading NaCl module');
+    unpacker.app.loadNaclModule(
+        unpacker.app.DEFAULT_MODULE_NMF, unpacker.app.DEFAULT_MODULE_TYPE);
+  });
+  chrome.test.sendMessage(JSON.stringify({name: 'zipArchiverLoaded'}));
+}
+
 function setupZipArchiver() {
   chrome.fileSystemProvider.onUnmountRequested.addListener(
       unpacker.app.onUnmountRequested);
@@ -17,9 +29,6 @@ function setupZipArchiver() {
       unpacker.app.onCloseFileRequested);
   chrome.fileSystemProvider.onReadFileRequested.addListener(
       unpacker.app.onReadFileRequested);
-
-  // Load the PNaCl module.
-  unpacker.app.loadNaclModule('module.nmf', 'application/x-pnacl');
 
   // Load translations
   unpacker.app.loadStringData();

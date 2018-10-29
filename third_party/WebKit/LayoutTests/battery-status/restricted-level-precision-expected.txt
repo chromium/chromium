@@ -2,7 +2,6 @@ Test to ensure level is reported with restricted precision.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 batteryStatusSuccess invoked
 PASS battery.level is levelRounded
 PASS successfullyParsed is true

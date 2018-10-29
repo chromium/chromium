@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1018939186200882850">የምናሌ ንጥል</translation>
-<translation id="1020833440720551630">የድምጽ ትራክ ላይ ድምጸ-ከል አድርግ</translation>
 <translation id="10623998915015855">የማቀያየሪያ አዝራር</translation>
 <translation id="1088086359088493902">ሰኮንዶች</translation>
 <translation id="1171774979989969504">እባክዎ የኢሜይል አድራሻ ያስገቡ።</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">ክሬዲቶች</translation>
 <translation id="1342835525016946179">ጽሑፍ</translation>
 <translation id="1359897965706325498">ሰንደቅ</translation>
-<translation id="1548116112524424341">ቪዲዮን በስዕል-ውስጥ-ስዕል ሁነታ አጫውት</translation>
 <translation id="1589122976691792535">ክልል</translation>
 <translation id="1591562245178063882">በዚህ ወር</translation>
 <translation id="1637811476055996098">ፋይሎችን ይምረጡ</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">የዛፍ ፍርግርግ</translation>
 <translation id="1822429046913737220">ጥዋት/ከሰዓት</translation>
 <translation id="1832974991323546415">በርቀት መሳሪያ ላይ አጫውት</translation>
-<translation id="1838818994221231429">ሙሉ ማያ ገጽን ወደ የተቆረጠው የማሳያ አካባቢ ይቀይሩ</translation>
 <translation id="190587075670221089">ስረዛ</translation>
 <translation id="1907737156431278478">ምሳሌ</translation>
 <translation id="1921819250265091946">ቀቀ</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">ሰዓት</translation>
 <translation id="5630795885300617244">10 ሴ ለመዝለል ወደ ግራ ወይም ቀኝ ሁለቴ መታ ያድርጉ</translation>
 <translation id="5631759159893697722">ረቂቅ</translation>
-<translation id="5641012560118721995">መልሶ ማጫወትን ለአፍታ አቁም</translation>
 <translation id="5643186887447432888">አዝራር</translation>
 <translation id="5677946354068040947">ተጨማሪ አማራጮች</translation>
 <translation id="576709008726043716">መግቢያ</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="5966707198760109579">ሳምንት</translation>
 <translation id="5987525920412732405">ማሾሪያ አዝራር</translation>
+<translation id="6011459053400940133">የድምጽ ተንሸራታች</translation>
 <translation id="6015796118275082299">ዓመት</translation>
 <translation id="6023896073578205740">የዝርዝር ሳጥን</translation>
-<translation id="6101327004457443354">የድምጹ ትራክ ድምጸ-ከል አንሳ</translation>
 <translation id="6150588977291308318">ዋቢ መጽሐፍት</translation>
 <translation id="6164829606128959761">ሜትር</translation>
 <translation id="6166809985690652833">ድሕረ ቃል</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">ሰዓቶች</translation>
 <translation id="7681220483256441252">መረጃ ጠቋሚ</translation>
 <translation id="7720026100085573005">ቀሪ ጊዜ</translation>
-<translation id="7740016676195725605">የተዘጉ የስዕል መግለጫዎችን ማሳየት አቁም</translation>
 <translation id="7740050170769002709">የኤች ቲ ኤም ኤል ይዘት</translation>
 <translation id="7750228210027921155">በሥዕል ውስጥ ሥዕል</translation>
 <translation id="7789962463072032349">ላፍታ አቁም</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">የጽሑፍ መስክ ፈልግ</translation>
 <translation id="8057695513531652401">ማስታወቂያ</translation>
 <translation id="8105797009065549151">ማስታወሻ ማጣቀሻ</translation>
-<translation id="8115662671911883373">የተዘጉ የስዕል መግለጫዎችን ማሳየት ጀምር</translation>
 <translation id="8117451130807776954">በዚህ ሳምንት</translation>
-<translation id="819205353528511139">ፊልሙን በሙሉ ማያ ገጽ ሁነታ አጫውት</translation>
 <translation id="8199524924445686405">ዓዓዓዓ</translation>
 <translation id="8284326494547611709">መግለጫ ጽሑፎች</translation>
 <translation id="835897206747267392">ልክ ያልሆነ እሴት።</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">በርቀት መልሶ ማጫወትን ተቆጣጠር</translation>
 <translation id="862370744433916922">የግርጌ ጽሑፍ</translation>
 <translation id="8750798805984357768">እባክዎ ከእነዚህ አማራጮች ውስጥ አንዱን ይምረጡ።</translation>
-<translation id="8785498733064193001">መልሶ ማጫወት ይጀምሩ</translation>
 <translation id="8808573423886751634">ምዕራፍ</translation>
 <translation id="8845239796550121995">አሁን ወደ የእርስዎ ቴሌቪዥን cast በማድረግ ላይ</translation>
 <translation id="8851136666856101339">main</translation>

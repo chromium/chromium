@@ -10,8 +10,10 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string16.h"
+#include "base/task/post_task.h"
 #include "content/browser/notifications/notification_event_dispatcher_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/notification_database_data.h"
@@ -178,8 +180,8 @@ void BlinkNotificationServiceImpl::DisplayPersistentNotification(
       GetNotificationService()->ReadNextPersistentNotificationId(
           browser_context_);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&BlinkNotificationServiceImpl::
                          DisplayPersistentNotificationOnIOThread,
                      weak_factory_for_io_.GetWeakPtr(),
@@ -225,8 +227,8 @@ void BlinkNotificationServiceImpl::
         const std::string& notification_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!success) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(std::move(callback),
                        PersistentNotificationError::INTERNAL_ERROR));
     return;
@@ -257,20 +259,20 @@ void BlinkNotificationServiceImpl::
   // Display the notification if the Service Worker's origin matches the origin
   // of the notification's sender.
   if (service_worker_status == blink::ServiceWorkerStatusCode::kOk &&
-      registration->pattern().GetOrigin() == origin_.GetURL()) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+      registration->scope().GetOrigin() == origin_.GetURL()) {
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &PlatformNotificationService::DisplayPersistentNotification,
             base::Unretained(GetNotificationService()), browser_context_,
-            notification_id, registration->pattern(), origin_.GetURL(),
+            notification_id, registration->scope(), origin_.GetURL(),
             platform_notification_data, notification_resources));
 
     error = PersistentNotificationError::NONE;
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(std::move(callback), error));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(std::move(callback), error));
 }
 
 void BlinkNotificationServiceImpl::ClosePersistentNotification(
@@ -288,8 +290,8 @@ void BlinkNotificationServiceImpl::ClosePersistentNotification(
   // Deleting the data associated with |notification_id| from the notification
   // database has to be done on the IO thread, but there's no reason to postpone
   // removing the notification from the user's display until that's done.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&PlatformNotificationContextImpl::DeleteNotificationData,
                      notification_context_, notification_id, origin_.GetURL(),
                      base::DoNothing()));
@@ -314,8 +316,8 @@ void BlinkNotificationServiceImpl::GetNotifications(
       &BlinkNotificationServiceImpl::DidGetNotificationsOnIOThread,
       weak_factory_for_io_.GetWeakPtr(), filter_tag, std::move(callback));
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&PlatformNotificationContextImpl::
                          ReadAllNotificationDataForServiceWorkerRegistration,
                      notification_context_, origin_.GetURL(),
@@ -344,8 +346,8 @@ void BlinkNotificationServiceImpl::DidGetNotificationsOnIOThread(
   }
 
   // Make sure to invoke the |callback| on the UI thread again.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(std::move(callback), std::move(ids), std::move(datas)));
 }
 

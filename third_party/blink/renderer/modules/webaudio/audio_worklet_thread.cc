@@ -52,28 +52,10 @@ WorkerBackingThread& AudioWorkletThread::GetWorkerBackingThread() {
   return *WorkletThreadHolder<AudioWorkletThread>::GetInstance()->GetThread();
 }
 
-void CollectAllGarbageOnAudioWorkletThread(WaitableEvent* done_event) {
-  blink::ThreadState::Current()->CollectAllGarbage();
-  done_event->Signal();
-}
-
-void AudioWorkletThread::CollectAllGarbage() {
-  DCHECK(IsMainThread());
-  WaitableEvent done_event;
-  WorkletThreadHolder<AudioWorkletThread>* worklet_thread_holder =
-      WorkletThreadHolder<AudioWorkletThread>::GetInstance();
-  if (!worklet_thread_holder)
-    return;
-  worklet_thread_holder->GetThread()->BackingThread().PostTask(
-      FROM_HERE, CrossThreadBind(&CollectAllGarbageOnAudioWorkletThread,
-                                 CrossThreadUnretained(&done_event)));
-  done_event.Wait();
-}
-
 void AudioWorkletThread::EnsureSharedBackingThread() {
   DCHECK(IsMainThread());
   WorkletThreadHolder<AudioWorkletThread>::EnsureInstance(
-      WebThreadCreationParams(blink::WebThreadType::kWebAudioThread));
+      ThreadCreationParams(WebThreadType::kWebAudioThread));
 }
 
 void AudioWorkletThread::ClearSharedBackingThread() {
@@ -82,24 +64,11 @@ void AudioWorkletThread::ClearSharedBackingThread() {
   WorkletThreadHolder<AudioWorkletThread>::ClearInstance();
 }
 
-WebThread* AudioWorkletThread::GetSharedBackingThread() {
-  DCHECK(IsMainThread());
-  WorkletThreadHolder<AudioWorkletThread>* instance =
-      WorkletThreadHolder<AudioWorkletThread>::GetInstance();
-  return &(instance->GetThread()->BackingThread().PlatformThread());
-}
-
-void AudioWorkletThread::CreateSharedBackingThreadForTest() {
-  WorkletThreadHolder<AudioWorkletThread>::CreateForTest(
-      WebThreadCreationParams(blink::WebThreadType::kWebAudioThread));
-}
-
 WorkerOrWorkletGlobalScope* AudioWorkletThread::CreateWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
                "AudioWorkletThread::createWorkerGlobalScope");
-  return AudioWorkletGlobalScope::Create(std::move(creation_params),
-                                         GetIsolate(), this);
+  return AudioWorkletGlobalScope::Create(std::move(creation_params), this);
 }
 
 }  // namespace blink

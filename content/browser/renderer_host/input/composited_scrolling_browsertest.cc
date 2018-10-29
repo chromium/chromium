@@ -163,8 +163,7 @@ IN_PROC_BROWSER_TEST_F(CompositedScrollingBrowserTest,
   int scroll_distance =
       DoTouchScroll(gfx::Point(50, 150), gfx::Vector2d(0, 100));
   // The scroll distance is increased due to the rotation of the scroller.
-  EXPECT_EQ(std::floor(100 / std::cos(gfx::DegToRad(30.f))) - 1,
-            scroll_distance);
+  EXPECT_EQ(std::floor(100 / std::cos(gfx::DegToRad(30.f))), scroll_distance);
 }
 
 }  // namespace content

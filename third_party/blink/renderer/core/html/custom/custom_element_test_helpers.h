@@ -23,7 +23,6 @@
 
 namespace blink {
 
-class CSSStyleSheet;
 class CustomElementDescriptor;
 
 class TestCustomElementDefinitionBuilder
@@ -32,36 +31,26 @@ class TestCustomElementDefinitionBuilder
 
  public:
   TestCustomElementDefinitionBuilder() = default;
-  explicit TestCustomElementDefinitionBuilder(
-      CSSStyleSheet* default_style_sheet)
-      : default_style_sheet_(default_style_sheet) {}
 
   bool CheckConstructorIntrinsics() override { return true; }
   bool CheckConstructorNotRegistered() override { return true; }
-  bool CheckPrototype() override { return true; }
   bool RememberOriginalProperties() override { return true; }
   CustomElementDefinition* Build(const CustomElementDescriptor&,
                                  CustomElementDefinition::Id) override;
 
  private:
-  const Member<CSSStyleSheet> default_style_sheet_;
 
   DISALLOW_COPY_AND_ASSIGN(TestCustomElementDefinitionBuilder);
 };
 
 class TestCustomElementDefinition : public CustomElementDefinition {
  public:
-  TestCustomElementDefinition(const CustomElementDescriptor& descriptor,
-                              CSSStyleSheet* default_style_sheet)
-      : CustomElementDefinition(descriptor, default_style_sheet) {}
-
   TestCustomElementDefinition(const CustomElementDescriptor& descriptor)
       : CustomElementDefinition(descriptor) {}
 
   TestCustomElementDefinition(const CustomElementDescriptor& descriptor,
                               HashSet<AtomicString>&& observed_attributes)
       : CustomElementDefinition(descriptor,
-                                nullptr,
                                 std::move(observed_attributes)) {}
 
   ~TestCustomElementDefinition() override = default;

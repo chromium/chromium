@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -71,7 +72,7 @@ class SigninManagerAndroidTest : public ::testing::Test {
     // Creating a BookmarkModel also a creates a StubOfflinePageModel.
     // We need to replace this with a mock that responds to deletions.
     offline_pages::OfflinePageModelFactory::GetInstance()->SetTestingFactory(
-        profile_, BuildOfflinePageModel);
+        profile_, base::BindRepeating(&BuildOfflinePageModel));
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(profile_);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);

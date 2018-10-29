@@ -26,14 +26,18 @@ namespace quic {
                                                       : "Client:"  \
                                                         " ")
 
-QuicSpdyStream::QuicSpdyStream(QuicStreamId id, QuicSpdySession* spdy_session)
-    : QuicStream(id, spdy_session, /*is_static=*/false),
+QuicSpdyStream::QuicSpdyStream(QuicStreamId id,
+                               QuicSpdySession* spdy_session,
+                               StreamType type)
+    : QuicStream(id, spdy_session, /*is_static=*/false, type),
       spdy_session_(spdy_session),
       visitor_(nullptr),
       headers_decompressed_(false),
       trailers_decompressed_(false),
       trailers_consumed_(false) {
-  DCHECK_NE(kCryptoStreamId, id);
+  DCHECK_NE(QuicUtils::GetCryptoStreamId(
+                spdy_session->connection()->transport_version()),
+            id);
   // Don't receive any callbacks from the sequencer until headers
   // are complete.
   sequencer()->SetBlockedUntilFlush();

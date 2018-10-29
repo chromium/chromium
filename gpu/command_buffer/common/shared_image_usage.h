@@ -20,6 +20,10 @@ enum SharedImageUsage : uint32_t {
   SHARED_IMAGE_USAGE_DISPLAY = 1 << 3,
   // Image will be used as a scanout buffer (overlay)
   SHARED_IMAGE_USAGE_SCANOUT = 1 << 4,
+  // Image will be used in OOP rasterization
+  // TODO(backer): Fold back into SHARED_IMAGE_USAGE_RASTER once RasterInterface
+  // can CPU raster (CopySubImage?) to SkImage.
+  SHARED_IMAGE_USAGE_OOP_RASTERIZATION = 1 << 5,
 };
 
 }  // namespace gpu

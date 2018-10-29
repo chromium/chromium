@@ -20,22 +20,12 @@
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='target'",
           "rect": [22, 50, 226, 167],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='target'",
-          "rect": [22, 50, 226, 167],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'PASS'",
           "rect": [23, 51, 72, 110],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'FAIL'",
-          "rect": [23, 51, 69, 109],
-          "reason": "disappeared"
+          "reason": "full"
         }
       ]
     }

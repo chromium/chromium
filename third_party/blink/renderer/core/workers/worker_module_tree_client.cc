@@ -23,9 +23,11 @@ void WorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
     ModuleScript* module_script) {
   auto* execution_context =
       ExecutionContext::From(modulator_->GetScriptState());
+  blink::WorkerReportingProxy& worker_reporting_proxy =
+      To<WorkerGlobalScope>(execution_context)->ReportingProxy();
 
   if (!module_script) {
-    // Step 13: "If the algorithm asynchronously completes with null, queue
+    // Step 12: "If the algorithm asynchronously completes with null, queue
     // a task to fire an event named error at worker, and return."
     // This ErrorEvent object is just used for passing error information to a
     // worker object on the parent context thread and not dispatched directly.
@@ -35,15 +37,13 @@ void WorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
     return;
   }
 
-  // Step 13: "Otherwise, continue the rest of these steps after the algorithm's
+  // Step 12: "Otherwise, continue the rest of these steps after the algorithm's
   // asynchronous completion, with script being the asynchronous completion
   // value."
-
+  worker_reporting_proxy.WillEvaluateModuleScript();
   ScriptValue error = modulator_->ExecuteModule(
       module_script, Modulator::CaptureEvalErrorFlag::kReport);
-  ToWorkerGlobalScope(execution_context)
-      ->ReportingProxy()
-      .DidEvaluateModuleScript(error.IsEmpty());
+  worker_reporting_proxy.DidEvaluateModuleScript(error.IsEmpty());
 }
 
 void WorkerModuleTreeClient::Trace(blink::Visitor* visitor) {

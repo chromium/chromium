@@ -133,6 +133,8 @@ bool WebNode::IsCommentNode() const {
 bool WebNode::IsFocusable() const {
   if (!private_->IsElementNode())
     return false;
+  if (!private_->GetDocument().IsRenderingReady())
+    return false;
   private_->GetDocument().UpdateStyleAndLayoutTreeForNode(private_.Get());
   return ToElement(private_.Get())->IsFocusable();
 }

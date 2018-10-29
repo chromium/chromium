@@ -182,13 +182,13 @@ Polymer({
    * Get an appropriate favicon that represents this group of eTLD+1 sites as a
    * whole.
    * @param {SiteGroup} siteGroup The eTLD+1 group of origins.
-   * @return {string} CSS to apply to show the appropriate favicon.
+   * @return {string} URL that is used for fetching the favicon
    * @private
    */
   getSiteGroupIcon_: function(siteGroup) {
     // TODO(https://crbug.com/835712): Implement heuristic for finding a good
     // favicon.
-    return this.computeSiteIcon(siteGroup.origins[0].origin);
+    return siteGroup.origins[0].origin;
   },
 
   /**

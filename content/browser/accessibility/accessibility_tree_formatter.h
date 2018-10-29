@@ -51,7 +51,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatter {
   };
 
   // Create the appropriate native subclass of AccessibilityTreeFormatter.
-  static AccessibilityTreeFormatter* Create();
+  static std::unique_ptr<AccessibilityTreeFormatter> Create();
 
   static bool MatchesFilters(
       const std::vector<Filter>& filters,

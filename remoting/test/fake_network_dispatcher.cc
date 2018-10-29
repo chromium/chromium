@@ -62,7 +62,7 @@ void FakeNetworkDispatcher::DeliverPacket(
   {
     base::AutoLock auto_lock(nodes_lock_);
 
-    NodesMap::iterator node_it = nodes_.find(to.ipaddr());
+    auto node_it = nodes_.find(to.ipaddr());
     if (node_it == nodes_.end()) {
       LOG(ERROR) << "Tried to deliver packet to unknown target: "
                  << to.ToString();

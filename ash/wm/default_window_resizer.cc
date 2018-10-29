@@ -43,6 +43,8 @@ void DefaultWindowResizer::RevertDrag() {
     window_state_->SetRestoreBoundsInScreen(details().restore_bounds);
 }
 
+void DefaultWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {}
+
 DefaultWindowResizer::DefaultWindowResizer(wm::WindowState* window_state)
     : WindowResizer(window_state), did_move_or_resize_(false) {
   DCHECK(details().is_resizable);

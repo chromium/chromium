@@ -20,19 +20,23 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_info.h"
+#include "base/task/post_task.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/scheduler/browser_task_executor.h"
+#include "content/browser/startup_helper.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/app/content_main.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/common/service_manager_connection.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/test/browser_test_utils.h"
@@ -48,7 +52,6 @@
 #include "services/service_manager/embedder/switches.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "ui/base/platform_window_defaults.h"
-#include "ui/base/test/material_design_controller_test_api.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/display/display_switches.h"
 #include "ui/gl/gl_implementation.h"
@@ -92,7 +95,7 @@ void DumpStackTraceSignalHandler(int signal) {
 void RunTaskOnRendererThread(const base::Closure& task,
                              const base::Closure& quit_task) {
   task.Run();
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, quit_task);
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, quit_task);
 }
 
 void TraceStopTracingComplete(const base::Closure& quit,
@@ -164,10 +167,6 @@ BrowserTestBase::~BrowserTestBase() {
 
 void BrowserTestBase::SetUp() {
   set_up_called_ = true;
-  // ContentTestSuiteBase might have already initialized
-  // MaterialDesignController in browser_tests suite.
-  // Uninitialize here to let the browser process do it.
-  ui::test::MaterialDesignControllerTestAPI::Uninitialize();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -324,6 +323,9 @@ void BrowserTestBase::SetUp() {
   params.ui_task = ui_task.release();
   params.created_main_parts_closure = created_main_parts_closure.release();
   base::TaskScheduler::Create("Browser");
+  DCHECK(!field_trial_list_);
+  field_trial_list_ = SetUpFieldTrialsAndFeatureList();
+  StartBrowserTaskScheduler();
   BrowserTaskExecutor::Create();
   // TODO(phajdan.jr): Check return code, http://crbug.com/374738 .
   BrowserMain(params);
@@ -497,10 +499,8 @@ void BrowserTestBase::InitializeNetworkProcess() {
 
   // Send the host resolver rules to the network service if it's in use. No need
   // to do this if it's running in the browser process though.
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService) ||
-      IsNetworkServiceRunningInProcess()) {
+  if (!IsOutOfProcessNetworkService())
     return;
-  }
 
   net::RuleBasedHostResolverProc::RuleList rules = host_resolver()->GetRules();
   std::vector<network::mojom::RulePtr> mojo_rules;

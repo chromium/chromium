@@ -186,17 +186,21 @@ std::ostream& operator<<(std::ostream& os, const QuicEncryptedPacket& s) {
 QuicReceivedPacket::QuicReceivedPacket(const char* buffer,
                                        size_t length,
                                        QuicTime receipt_time)
-    : QuicEncryptedPacket(buffer, length),
-      receipt_time_(receipt_time),
-      ttl_(0) {}
+    : QuicReceivedPacket(buffer,
+                         length,
+                         receipt_time,
+                         false /* owns_buffer */) {}
 
 QuicReceivedPacket::QuicReceivedPacket(const char* buffer,
                                        size_t length,
                                        QuicTime receipt_time,
                                        bool owns_buffer)
-    : QuicEncryptedPacket(buffer, length, owns_buffer),
-      receipt_time_(receipt_time),
-      ttl_(0) {}
+    : QuicReceivedPacket(buffer,
+                         length,
+                         receipt_time,
+                         owns_buffer,
+                         0 /* ttl */,
+                         true /* ttl_valid */) {}
 
 QuicReceivedPacket::QuicReceivedPacket(const char* buffer,
                                        size_t length,
@@ -204,13 +208,49 @@ QuicReceivedPacket::QuicReceivedPacket(const char* buffer,
                                        bool owns_buffer,
                                        int ttl,
                                        bool ttl_valid)
+    : quic::QuicReceivedPacket(buffer,
+                               length,
+                               receipt_time,
+                               owns_buffer,
+                               ttl,
+                               ttl_valid,
+                               nullptr /* packet_headers */,
+                               0 /* headers_length */,
+                               false /* owns_header_buffer */) {}
+
+QuicReceivedPacket::QuicReceivedPacket(const char* buffer,
+                                       size_t length,
+                                       QuicTime receipt_time,
+                                       bool owns_buffer,
+                                       int ttl,
+                                       bool ttl_valid,
+                                       char* packet_headers,
+                                       size_t headers_length,
+                                       bool owns_header_buffer)
     : QuicEncryptedPacket(buffer, length, owns_buffer),
       receipt_time_(receipt_time),
-      ttl_(ttl_valid ? ttl : -1) {}
+      ttl_(ttl_valid ? ttl : -1),
+      packet_headers_(packet_headers),
+      headers_length_(headers_length),
+      owns_header_buffer_(owns_header_buffer) {}
+
+QuicReceivedPacket::~QuicReceivedPacket() {
+  if (owns_header_buffer_) {
+    delete[] static_cast<char*>(packet_headers_);
+  }
+}
 
 std::unique_ptr<QuicReceivedPacket> QuicReceivedPacket::Clone() const {
   char* buffer = new char[this->length()];
   memcpy(buffer, this->data(), this->length());
+  if (this->packet_headers()) {
+    char* headers_buffer = new char[this->headers_length()];
+    memcpy(headers_buffer, this->packet_headers(), this->headers_length());
+    return QuicMakeUnique<QuicReceivedPacket>(
+        buffer, this->length(), receipt_time(), true, ttl(), ttl() >= 0,
+        headers_buffer, this->headers_length(), true);
+  }
+
   return QuicMakeUnique<QuicReceivedPacket>(
       buffer, this->length(), receipt_time(), true, ttl(), ttl() >= 0);
 }

@@ -11,6 +11,7 @@
 
 namespace gl {
 struct GLVersionInfo;
+class ProgressReporter;
 }
 
 namespace gl {
@@ -20,7 +21,8 @@ namespace init {
 // GL bindings.
 GL_INIT_EXPORT sk_sp<GrGLInterface> CreateGrGLInterface(
     const gl::GLVersionInfo& version_info,
-    bool use_version_es2);
+    bool use_version_es2,
+    gl::ProgressReporter* progress_reporter = nullptr);
 
 }  // namespace init
 }  // namespace gl

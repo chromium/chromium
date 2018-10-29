@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 class PrefService;
 
@@ -25,7 +26,9 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyManager
       std::unique_ptr<MachineLevelUserCloudPolicyStore> store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const base::FilePath& policy_dir,
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      network::NetworkConnectionTrackerGetter
+          network_connection_tracker_getter);
   ~MachineLevelUserCloudPolicyManager() override;
 
   // Initializes the cloud connection. |local_state| must stay valid until this

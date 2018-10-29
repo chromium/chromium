@@ -37,6 +37,9 @@ class TestNavigableContentsClient : public mojom::NavigableContentsClient {
                                response_headers) override {}
   void DidStopLoading() override {}
   void DidAutoResizeView(const gfx::Size& new_size) override {}
+  void DidSuppressNavigation(const GURL& url,
+                             WindowOpenDisposition disposition,
+                             bool from_user_gesture) override {}
 
   DISALLOW_COPY_AND_ASSIGN(TestNavigableContentsClient);
 };

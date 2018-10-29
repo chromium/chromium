@@ -20,7 +20,6 @@
 #include "content/common/input/input_handler.mojom.h"
 #include "content/common/input/web_touch_event_traits.h"
 #include "content/common/input_messages.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/common/content_switches.h"
@@ -33,9 +32,6 @@
 
 namespace content {
 
-using base::Time;
-using base::TimeDelta;
-using base::TimeTicks;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebKeyboardEvent;
@@ -99,17 +95,21 @@ InputRouterImpl::InputRouterImpl(
 InputRouterImpl::~InputRouterImpl() {}
 
 void InputRouterImpl::SendMouseEvent(
-    const MouseEventWithLatencyInfo& mouse_event) {
-  if (mouse_event.event.GetType() == WebInputEvent::kMouseDown &&
-      gesture_event_queue_.GetTouchpadTapSuppressionController()
-          ->ShouldSuppressMouseDown(mouse_event))
+    const MouseEventWithLatencyInfo& mouse_event,
+    MouseEventCallback event_result_callback) {
+  if ((mouse_event.event.GetType() == WebInputEvent::kMouseDown &&
+       gesture_event_queue_.GetTouchpadTapSuppressionController()
+           ->ShouldSuppressMouseDown(mouse_event)) ||
+      (mouse_event.event.GetType() == WebInputEvent::kMouseUp &&
+       gesture_event_queue_.GetTouchpadTapSuppressionController()
+           ->ShouldSuppressMouseUp())) {
+    std::move(event_result_callback)
+        .Run(mouse_event, InputEventAckSource::BROWSER,
+             INPUT_EVENT_ACK_STATE_IGNORED);
     return;
-  if (mouse_event.event.GetType() == WebInputEvent::kMouseUp &&
-      gesture_event_queue_.GetTouchpadTapSuppressionController()
-          ->ShouldSuppressMouseUp())
-    return;
+  }
 
-  SendMouseEventImmediately(mouse_event);
+  SendMouseEventImmediately(mouse_event, std::move(event_result_callback));
 }
 
 void InputRouterImpl::SendWheelEvent(
@@ -118,11 +118,12 @@ void InputRouterImpl::SendWheelEvent(
 }
 
 void InputRouterImpl::SendKeyboardEvent(
-    const NativeWebKeyboardEventWithLatencyInfo& key_event) {
+    const NativeWebKeyboardEventWithLatencyInfo& key_event,
+    KeyboardEventCallback event_result_callback) {
   gesture_event_queue_.StopFling();
-  gesture_event_queue_.FlingHasBeenHalted();
-  mojom::WidgetInputHandler::DispatchEventCallback callback = base::BindOnce(
-      &InputRouterImpl::KeyboardEventHandled, weak_this_, key_event);
+  mojom::WidgetInputHandler::DispatchEventCallback callback =
+      base::BindOnce(&InputRouterImpl::KeyboardEventHandled, weak_this_,
+                     key_event, std::move(event_result_callback));
   FilterAndSendWebInputEvent(key_event.event, key_event.latency,
                              std::move(callback));
 }
@@ -169,8 +170,7 @@ void InputRouterImpl::SendGestureEvent(
     touch_event_queue_.OnGestureScrollEvent(gesture_event);
   }
 
-  if (blink::WebInputEvent::IsPinchGestureEventType(
-          gesture_event.event.GetType()) &&
+  if (gesture_event.event.IsTouchpadZoomEvent() &&
       gesture_event.event.NeedsWheelEvent()) {
     touchpad_pinch_event_queue_.QueueEvent(gesture_event);
     return;
@@ -185,10 +185,10 @@ void InputRouterImpl::SendGestureEvent(
 
 void InputRouterImpl::SendTouchEvent(
     const TouchEventWithLatencyInfo& touch_event) {
-  TouchEventWithLatencyInfo updatd_touch_event = touch_event;
-  SetMovementXYForTouchPoints(&updatd_touch_event.event);
-  input_stream_validator_.Validate(updatd_touch_event.event);
-  touch_event_queue_.QueueEvent(updatd_touch_event);
+  TouchEventWithLatencyInfo updated_touch_event = touch_event;
+  SetMovementXYForTouchPoints(&updated_touch_event.event);
+  input_stream_validator_.Validate(updated_touch_event.event);
+  touch_event_queue_.QueueEvent(updated_touch_event);
 }
 
 void InputRouterImpl::NotifySiteIsMobileOptimized(bool is_mobile_optimized) {
@@ -274,18 +274,6 @@ void InputRouterImpl::SetMouseCapture(bool capture) {
   client_->SetMouseCapture(capture);
 }
 
-bool InputRouterImpl::OnMessageReceived(const IPC::Message& message) {
-  // TODO(dtapuska): Move these to mojo
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(InputRouterImpl, message)
-    IPC_MESSAGE_HANDLER(ViewHostMsg_HasTouchEventHandlers,
-                        OnHasTouchEventHandlers)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  return handled;
-}
-
 void InputRouterImpl::SetMovementXYForTouchPoints(blink::WebTouchEvent* event) {
   for (size_t i = 0; i < event->touches_length; ++i) {
     blink::WebTouchPoint* touch_point = &event->touches[i];
@@ -317,9 +305,11 @@ void InputRouterImpl::SetMovementXYForTouchPoints(blink::WebTouchEvent* event) {
 // Forwards MouseEvent without passing it through
 // TouchpadTapSuppressionController.
 void InputRouterImpl::SendMouseEventImmediately(
-    const MouseEventWithLatencyInfo& mouse_event) {
-  mojom::WidgetInputHandler::DispatchEventCallback callback = base::BindOnce(
-      &InputRouterImpl::MouseEventHandled, weak_this_, mouse_event);
+    const MouseEventWithLatencyInfo& mouse_event,
+    MouseEventCallback event_result_callback) {
+  mojom::WidgetInputHandler::DispatchEventCallback callback =
+      base::BindOnce(&InputRouterImpl::MouseEventHandled, weak_this_,
+                     mouse_event, std::move(event_result_callback));
   FilterAndSendWebInputEvent(mouse_event.event, mouse_event.latency,
                              std::move(callback));
 }
@@ -485,6 +475,7 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
 
 void InputRouterImpl::KeyboardEventHandled(
     const NativeWebKeyboardEventWithLatencyInfo& event,
+    KeyboardEventCallback event_result_callback,
     InputEventAckSource source,
     const ui::LatencyInfo& latency,
     InputEventAckState state,
@@ -497,7 +488,7 @@ void InputRouterImpl::KeyboardEventHandled(
   if (source != InputEventAckSource::BROWSER)
     client_->DecrementInFlightEventCount(source);
   event.latency.AddNewLatencyFrom(latency);
-  disposition_handler_->OnKeyboardEventAck(event, source, state);
+  std::move(event_result_callback).Run(event, source, state);
 
   // WARNING: This InputRouterImpl can be deallocated at this point
   // (i.e.  in the case of Ctrl+W, where the call to
@@ -507,6 +498,7 @@ void InputRouterImpl::KeyboardEventHandled(
 
 void InputRouterImpl::MouseEventHandled(
     const MouseEventWithLatencyInfo& event,
+    MouseEventCallback event_result_callback,
     InputEventAckSource source,
     const ui::LatencyInfo& latency,
     InputEventAckState state,
@@ -519,7 +511,7 @@ void InputRouterImpl::MouseEventHandled(
   if (source != InputEventAckSource::BROWSER)
     client_->DecrementInFlightEventCount(source);
   event.latency.AddNewLatencyFrom(latency);
-  disposition_handler_->OnMouseEventAck(event, source, state);
+  std::move(event_result_callback).Run(event, source, state);
 }
 
 void InputRouterImpl::TouchEventHandled(
@@ -599,7 +591,6 @@ void InputRouterImpl::OnHasTouchEventHandlers(bool has_handlers) {
 
   touch_action_filter_.OnHasTouchEventHandlers(has_handlers);
   touch_event_queue_.OnHasTouchEventHandlers(has_handlers);
-  client_->OnHasTouchEventHandlers(has_handlers);
 }
 
 void InputRouterImpl::ForceSetTouchActionAuto() {
@@ -607,8 +598,8 @@ void InputRouterImpl::ForceSetTouchActionAuto() {
   touch_action_filter_.OnSetTouchAction(cc::kTouchActionAuto);
 }
 
-void InputRouterImpl::OnHasTouchEventHandlersForTest(bool has_handlers) {
-  touch_action_filter_.OnHasTouchEventHandlers(has_handlers);
+void InputRouterImpl::ForceResetTouchActionForTest() {
+  touch_action_filter_.ForceResetTouchActionForTest();
 }
 
 void InputRouterImpl::OnSetTouchAction(cc::TouchAction touch_action) {

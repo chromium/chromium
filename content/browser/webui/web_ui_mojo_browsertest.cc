@@ -110,10 +110,23 @@ class TestWebUIController : public WebUIController {
                       int bindings = BINDINGS_POLICY_MOJO_WEB_UI)
       : WebUIController(web_ui), run_loop_(run_loop) {
     web_ui->SetBindings(bindings);
-    WebUIDataSource* data_source = WebUIDataSource::Create("mojo-web-ui");
-    data_source->SetRequestFilter(base::Bind(&GetResource));
-    WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                         data_source);
+    {
+      WebUIDataSource* data_source = WebUIDataSource::Create("mojo-web-ui");
+      data_source->SetRequestFilter(base::BindRepeating(&GetResource));
+      WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
+                           data_source);
+    }
+    {
+      WebUIDataSource* data_source = WebUIDataSource::Create("dummy-web-ui");
+      data_source->SetRequestFilter(base::BindRepeating(
+          [](const std::string& id,
+             const WebUIDataSource::GotDataCallback& callback) {
+            callback.Run(new base::RefCountedString);
+            return true;
+          }));
+      WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
+                           data_source);
+    }
   }
 
  protected:
@@ -246,9 +259,9 @@ class WebUIMojoTest : public ContentBrowserTest {
   TestWebUIControllerFactory* factory() { return &factory_; }
 
   void NavigateWithNewWebUI(const std::string& path) {
-    // Load an invalid URL first so that a new WebUI is set up when we load
+    // Load a dummy WebUI URL first so that a new WebUI is set up when we load
     // the URL we're actually interested in.
-    EXPECT_FALSE(NavigateToURL(shell(), GURL()));
+    EXPECT_TRUE(NavigateToURL(shell(), GURL("chrome://dummy-web-ui")));
 
     constexpr char kChromeUIMojoWebUIOrigin[] = "chrome://mojo-web-ui/";
     EXPECT_TRUE(NavigateToURL(shell(), GURL(kChromeUIMojoWebUIOrigin + path)));

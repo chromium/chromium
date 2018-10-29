@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container_view.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/common/extensions/api/extension_action/action_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -35,7 +34,6 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_utils.h"
@@ -122,11 +120,6 @@ bool IsBrowserFullscreen(Browser* browser) {
 
 PageActionIconContainerView* GetAnchorViewForBrowser(Browser* browser,
                                                      bool is_fullscreen) {
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    return nullptr;  // Cocoa browsers always use anchor rects instead of views.
-#endif
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!is_fullscreen ||
       browser_view->immersive_mode_controller()->IsRevealed()) {
@@ -134,9 +127,6 @@ PageActionIconContainerView* GetAnchorViewForBrowser(Browser* browser,
         ->GetPageActionIconContainerView();
   }
   return nullptr;
-#else  // OS_MACOSX && !MAC_VIEWS_BROWSER
-  return nullptr;
-#endif
 }
 
 PageActionIconContainerView* GetAnchorViewForBrowser(Browser* browser) {
@@ -146,19 +136,10 @@ PageActionIconContainerView* GetAnchorViewForBrowser(Browser* browser) {
 
 ImmersiveModeController* GetImmersiveModeControllerForBrowser(
     Browser* browser) {
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    return nullptr;
-#endif
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   return browser_view->immersive_mode_controller();
-#else
-  return nullptr;
-#endif
 }
 
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
 void ParentToViewsBrowser(Browser* browser,
                           ZoomBubbleView* zoom_bubble,
                           views::View* anchor_view,
@@ -177,33 +158,12 @@ void ParentToViewsBrowser(Browser* browser,
 
   views::BubbleDialogDelegateView::CreateBubble(zoom_bubble);
 }
-#endif
-
-#if defined(OS_MACOSX)
-void ParentToCocoaBrowser(Browser* browser, ZoomBubbleView* zoom_bubble) {
-  gfx::NativeView parent =
-      platform_util::GetViewForWindow(browser->window()->GetNativeWindow());
-  DCHECK(parent);
-  zoom_bubble->SetArrow(views::BubbleBorder::TOP_RIGHT);
-  zoom_bubble->set_parent_window(parent);
-  views::BubbleDialogDelegateView::CreateBubble(zoom_bubble);
-}
-#endif
 
 void ParentToBrowser(Browser* browser,
                      ZoomBubbleView* zoom_bubble,
                      views::View* anchor_view,
                      content::WebContents* web_contents) {
-#if defined(OS_MACOSX) && BUILDFLAG(MAC_VIEWS_BROWSER)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    ParentToCocoaBrowser(browser, zoom_bubble);
-  else
-    ParentToViewsBrowser(browser, zoom_bubble, anchor_view, web_contents);
-#elif defined(OS_MACOSX)
-  ParentToCocoaBrowser(browser, zoom_bubble);
-#else
   ParentToViewsBrowser(browser, zoom_bubble, anchor_view, web_contents);
-#endif
 }
 
 // Find the extension that initiated the zoom change, if any.
@@ -357,10 +317,6 @@ base::string16 ZoomBubbleView::GetAccessibleWindowTitle() const {
       page_action_icon_container_view->GetPageActionIconView(
           PageActionIconType::kZoom);
   return zoom_view->GetTextForTooltipAndAccessibleName();
-}
-
-views::View* ZoomBubbleView::GetInitiallyFocusedView() {
-  return reset_button_;
 }
 
 int ZoomBubbleView::GetDialogButtons() const {

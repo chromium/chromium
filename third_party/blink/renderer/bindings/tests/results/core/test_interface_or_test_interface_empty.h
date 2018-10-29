@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef TestInterfaceOrTestInterfaceEmpty_h
-#define TestInterfaceOrTestInterfaceEmpty_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_TEST_INTERFACE_OR_TEST_INTERFACE_EMPTY_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_TEST_INTERFACE_OR_TEST_INTERFACE_EMPTY_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -25,7 +25,7 @@ class TestInterfaceEmpty;
 class TestInterfaceImplementation;
 
 class CORE_EXPORT TestInterfaceOrTestInterfaceEmpty final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   TestInterfaceOrTestInterfaceEmpty();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -95,4 +95,4 @@ struct V8TypeOf<TestInterfaceOrTestInterfaceEmpty> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::TestInterfaceOrTestInterfaceEmpty);
 
-#endif  // TestInterfaceOrTestInterfaceEmpty_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_TEST_INTERFACE_OR_TEST_INTERFACE_EMPTY_H_

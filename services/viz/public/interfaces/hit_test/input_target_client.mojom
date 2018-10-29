@@ -18,6 +18,7 @@ interface InputTargetClient {
   // out-of-process iframe).
   // |local_point| is the point in the coordinate space of the RenderWidget
   // indicated by the FrameSinkId.
-  FrameSinkIdAt(gfx.mojom.Point point) => (FrameSinkId id,
-                                           gfx.mojom.PointF local_point);
+  // |trace_id| is used for trace events and does not change the functionality.
+  FrameSinkIdAt(gfx.mojom.PointF point, uint64 trace_id) =>
+     (FrameSinkId id, gfx.mojom.PointF local_point);
 };

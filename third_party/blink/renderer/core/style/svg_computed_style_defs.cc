@@ -104,23 +104,30 @@ bool StyleStopData::operator==(const StyleStopData& other) const {
 }
 
 StyleMiscData::StyleMiscData()
-    : flood_color(SVGComputedStyle::InitialFloodColor()),
-      flood_opacity(SVGComputedStyle::InitialFloodOpacity()),
+    : baseline_shift_value(SVGComputedStyle::InitialBaselineShiftValue()),
+      flood_color(SVGComputedStyle::InitialFloodColor()),
       lighting_color(SVGComputedStyle::InitialLightingColor()),
-      baseline_shift_value(SVGComputedStyle::InitialBaselineShiftValue()) {}
+      flood_opacity(SVGComputedStyle::InitialFloodOpacity()),
+      flood_color_is_current_color(false),
+      lighting_color_is_current_color(false) {}
 
 StyleMiscData::StyleMiscData(const StyleMiscData& other)
     : RefCounted<StyleMiscData>(),
+      baseline_shift_value(other.baseline_shift_value),
       flood_color(other.flood_color),
-      flood_opacity(other.flood_opacity),
       lighting_color(other.lighting_color),
-      baseline_shift_value(other.baseline_shift_value) {}
+      flood_opacity(other.flood_opacity),
+      flood_color_is_current_color(other.flood_color_is_current_color),
+      lighting_color_is_current_color(other.lighting_color_is_current_color) {}
 
 bool StyleMiscData::operator==(const StyleMiscData& other) const {
-  return flood_opacity == other.flood_opacity &&
-         flood_color == other.flood_color &&
+  return flood_color == other.flood_color &&
          lighting_color == other.lighting_color &&
-         baseline_shift_value == other.baseline_shift_value;
+         baseline_shift_value == other.baseline_shift_value &&
+         flood_opacity == other.flood_opacity &&
+         flood_color_is_current_color == other.flood_color_is_current_color &&
+         lighting_color_is_current_color ==
+             other.lighting_color_is_current_color;
 }
 
 StyleResourceData::StyleResourceData()

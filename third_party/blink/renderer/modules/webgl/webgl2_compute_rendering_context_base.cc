@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/webgl/webgl2_compute_rendering_context_base.h"
 
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -53,6 +55,30 @@ void WebGL2ComputeRenderingContextBase::memoryBarrier(GLbitfield barriers) {
 void WebGL2ComputeRenderingContextBase::memoryBarrierByRegion(
     GLbitfield barriers) {
   ContextGL()->MemoryBarrierByRegion(barriers);
+}
+
+ScriptValue WebGL2ComputeRenderingContextBase::getParameter(
+    ScriptState* script_state,
+    GLenum pname) {
+  if (isContextLost())
+    return ScriptValue::CreateNull(script_state);
+  switch (pname) {
+    case GL_SHADING_LANGUAGE_VERSION: {
+      return WebGLAny(
+          script_state,
+          "WebGL GLSL ES 3.10 (" +
+              String(ContextGL()->GetString(GL_SHADING_LANGUAGE_VERSION)) +
+              ")");
+    }
+    case GL_VERSION: {
+      return WebGLAny(script_state,
+                      "WebGL 2.0 Compute (" +
+                          String(ContextGL()->GetString(GL_VERSION)) + ")");
+    }
+
+    default:
+      return WebGL2RenderingContextBase::getParameter(script_state, pname);
+  }
 }
 
 void WebGL2ComputeRenderingContextBase::Trace(blink::Visitor* visitor) {

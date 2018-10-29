@@ -2,7 +2,6 @@ Test that setting and getting grid-column and grid-row works as expected
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test getting grid-column and grid-row set through CSS
 PASS getComputedStyle(gridItemWithNoCSSRule, '').getPropertyValue('grid-column') is "auto / auto"
 PASS getComputedStyle(gridItemWithNoCSSRule, '').getPropertyValue('grid-column-start') is "auto"
@@ -107,6 +106,7 @@ PASS getComputedStyle(gridItemWithNamedGridAreaAndSpan, '').getPropertyValue('gr
 PASS getComputedStyle(gridItemWithNamedGridAreaAndSpan, '').getPropertyValue('grid-row-start') is "firstArea"
 PASS getComputedStyle(gridItemWithNamedGridAreaAndSpan, '').getPropertyValue('grid-row-end') is "span 2"
 
+
 Test the initial value
 PASS getComputedStyle(element, '').getPropertyValue('grid-column') is 'auto / auto'
 PASS getComputedStyle(element, '').getPropertyValue('grid-column-start') is 'auto'
@@ -114,6 +114,7 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-column-end') is 'auto'
 PASS getComputedStyle(element, '').getPropertyValue('grid-row') is 'auto / auto'
 PASS getComputedStyle(element, '').getPropertyValue('grid-row-start') is 'auto'
 PASS getComputedStyle(element, '').getPropertyValue('grid-row-end') is 'auto'
+
 
 Test getting and setting grid-column and grid-row through JS
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column') is "18 / auto"
@@ -231,6 +232,7 @@ PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row') is "span 3 firs
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-start') is "span 3 first"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-end') is "span 7 last"
 
+
 Test setting grid-column and grid-row back to 'auto' through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-column') is '18 / 19'
 PASS getComputedStyle(element, '').getPropertyValue('grid-column-start') is '18'
@@ -244,6 +246,7 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-column-end') is 'auto'
 PASS getComputedStyle(element, '').getPropertyValue('grid-row') is 'auto / auto'
 PASS getComputedStyle(element, '').getPropertyValue('grid-row-start') is 'auto'
 PASS getComputedStyle(element, '').getPropertyValue('grid-row-end') is 'auto'
+
 
 Test getting and setting 'initial' grid-column and grid-row through JS
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column') is "1 / span 2"
@@ -265,6 +268,7 @@ PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row') is "auto / auto
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-start') is "auto"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-end') is "auto"
 
+
 Test getting and setting 'inherit' grid-column and grid-row through JS
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column') is "1 / auto"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-start') is "1"
@@ -284,6 +288,7 @@ PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column-end') is "span
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row') is "span 1 / 7"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-start') is "span 1"
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-row-end') is "7"
+
 
 Test getting and setting invalid grid-column and grid-row through JS
 PASS getComputedStyle(gridItem, '').getPropertyValue('grid-column') is "auto / auto"

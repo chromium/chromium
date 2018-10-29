@@ -63,7 +63,7 @@ bool StreamRegistry::CloneStream(const GURL& url, const GURL& src_url) {
 void StreamRegistry::UnregisterStream(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  StreamMap::iterator iter = streams_.find(url);
+  auto iter = streams_.find(url);
   if (iter == streams_.end())
     return;
 
@@ -83,7 +83,7 @@ bool StreamRegistry::UpdateMemoryUsage(const GURL& url,
                                        size_t increase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  StreamMap::iterator iter = streams_.find(url);
+  auto iter = streams_.find(url);
   // A Stream must be registered with its parent registry to get memory.
   if (iter == streams_.end())
     return false;

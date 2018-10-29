@@ -323,6 +323,7 @@ libvpx_srcs_x86 = [
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/bitdepth_conversion_sse2.h",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/convolve.h",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/convolve_avx2.h",
+  "//third_party/libvpx/source/libvpx/vpx_dsp/x86/convolve_sse2.h",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/convolve_ssse3.h",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/fwd_dct32x32_impl_avx2.h",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/fwd_dct32x32_impl_sse2.h",
@@ -439,6 +440,7 @@ libvpx_srcs_x86_sse2 = [
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/quantize_sse2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/sum_squares_sse2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/variance_sse2.c",
+  "//third_party/libvpx/source/libvpx/vpx_dsp/x86/vpx_subpixel_4t_intrin_sse2.c",
 ]
 libvpx_srcs_x86_sse3 = []
 libvpx_srcs_x86_ssse3 = [
@@ -797,6 +799,7 @@ libvpx_srcs_x86_64 = [
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/bitdepth_conversion_sse2.h",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/convolve.h",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/convolve_avx2.h",
+  "//third_party/libvpx/source/libvpx/vpx_dsp/x86/convolve_sse2.h",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/convolve_ssse3.h",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/fwd_dct32x32_impl_avx2.h",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/fwd_dct32x32_impl_sse2.h",
@@ -918,6 +921,7 @@ libvpx_srcs_x86_64_sse2 = [
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/quantize_sse2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/sum_squares_sse2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/variance_sse2.c",
+  "//third_party/libvpx/source/libvpx/vpx_dsp/x86/vpx_subpixel_4t_intrin_sse2.c",
 ]
 libvpx_srcs_x86_64_sse3 = []
 libvpx_srcs_x86_64_ssse3 = [

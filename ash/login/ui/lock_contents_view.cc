@@ -25,15 +25,18 @@
 #include "ash/login/ui/note_action_launch_button.h"
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/login/ui/views_utils.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/power/power_button_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -184,22 +187,10 @@ void MakeSectionBold(views::StyledLabel* label,
   add_style(regular_style, *bold_start + bold_length + 1, text.length());
 }
 
-// Helper function to create a label for the dev channel info view.
-views::Label* CreateInfoLabel() {
-  views::Label* label = new views::Label();
-  label->SetAutoColorReadabilityEnabled(false);
-  label->SetEnabledColor(SK_ColorWHITE);
-  label->SetFontList(views::Label::GetDefaultFontList().Derive(
-      -1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
-  label->SetSubpixelRenderingEnabled(false);
-
-  return label;
-}
-
 keyboard::KeyboardController* GetKeyboardControllerForWidget(
     const views::Widget* widget) {
   auto* keyboard_controller = keyboard::KeyboardController::Get();
-  if (!keyboard_controller->enabled())
+  if (!keyboard_controller->IsEnabled())
     return nullptr;
 
   aura::Window* keyboard_window = keyboard_controller->GetRootWindow();
@@ -209,6 +200,12 @@ keyboard::KeyboardController* GetKeyboardControllerForWidget(
 
 bool IsPublicAccountUser(const mojom::LoginUserInfoPtr& user) {
   return user->basic_user_info->type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+}
+
+bool IsTabletMode() {
+  return Shell::Get()
+      ->tablet_mode_controller()
+      ->IsTabletModeWindowManagerEnabled();
 }
 
 //
@@ -312,8 +309,8 @@ LoginBubble* LockContentsView::TestApi::warning_banner_bubble() const {
   return view_->warning_banner_bubble_.get();
 }
 
-views::View* LockContentsView::TestApi::dev_channel_info() const {
-  return view_->dev_channel_info_;
+views::View* LockContentsView::TestApi::system_info() const {
+  return view_->system_info_;
 }
 
 LoginExpandedPublicAccountView* LockContentsView::TestApi::expanded_view()
@@ -327,9 +324,7 @@ views::View* LockContentsView::TestApi::main_view() const {
 
 LockContentsView::UserState::UserState(const mojom::LoginUserInfoPtr& user_info)
     : account_id(user_info->basic_user_info->account_id) {
-  fingerprint_state = user_info->allow_fingerprint_unlock
-                          ? mojom::FingerprintUnlockState::AVAILABLE
-                          : mojom::FingerprintUnlockState::UNAVAILABLE;
+  fingerprint_state = user_info->fingerprint_state;
   if (user_info->auth_type == proximity_auth::mojom::AuthType::ONLINE_SIGN_IN)
     force_online_sign_in = true;
 }
@@ -379,14 +374,14 @@ LockContentsView::LockContentsView(
   top_header_->SetLayoutManager(std::move(top_header_layout));
   AddChildView(top_header_);
 
-  dev_channel_info_ = new views::View();
-  auto dev_channel_info_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(5, 8));
-  dev_channel_info_layout->set_cross_axis_alignment(
+  system_info_ = new views::View();
+  auto* system_info_layout =
+      system_info_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::kVertical, gfx::Insets(5, 8)));
+  system_info_layout->set_cross_axis_alignment(
       views::BoxLayout::CROSS_AXIS_ALIGNMENT_END);
-  dev_channel_info_->SetLayoutManager(std::move(dev_channel_info_layout));
-  dev_channel_info_->SetVisible(false);
-  top_header_->AddChildView(dev_channel_info_);
+  system_info_->SetVisible(false);
+  top_header_->AddChildView(system_info_);
 
   note_action_ = new NoteActionLaunchButton(initial_note_action_state);
   top_header_->AddChildView(note_action_);
@@ -558,11 +553,14 @@ void LockContentsView::OnUsersChanged(
     const std::vector<mojom::LoginUserInfoPtr>& users) {
   // The debug view will potentially call this method many times. Make sure to
   // invalidate any child references.
-  main_view_->RemoveAllChildViews(true /*delete_children*/);
   primary_big_view_ = nullptr;
   opt_secondary_big_view_ = nullptr;
   users_list_ = nullptr;
   layout_actions_.clear();
+  // Removing child views can change focus, which may result in LockContentsView
+  // getting focused. Make sure to clear internal references before that happens
+  // so there is not stale-pointer usage. See crbug.com/884402.
+  main_view_->RemoveAllChildViews(true /*delete_children*/);
 
   // Build user state list. Preserve previous state if the user already exists.
   std::vector<UserState> new_users;
@@ -609,6 +607,11 @@ void LockContentsView::OnUsersChanged(
   // Force layout.
   PreferredSizeChanged();
   Layout();
+
+  // If one of the child views had focus before we deleted them, then this view
+  // will get focused. Move focus back to the primary big view.
+  if (HasFocus())
+    primary_big_view_->RequestFocus();
 }
 
 void LockContentsView::OnPinEnabledForUserChanged(const AccountId& user,
@@ -625,6 +628,82 @@ void LockContentsView::OnPinEnabledForUserChanged(const AccountId& user,
       TryToFindBigUser(user, true /*require_auth_active*/);
   if (big_user && big_user->auth_user())
     LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
+}
+
+void LockContentsView::OnFingerprintStateChanged(
+    const AccountId& account_id,
+    mojom::FingerprintState state) {
+  UserState* user_state = FindStateForUser(account_id);
+  if (!user_state)
+    return;
+
+  user_state->fingerprint_state = state;
+  LoginBigUserView* big_view =
+      TryToFindBigUser(account_id, true /*require_auth_active*/);
+  if (!big_view || !big_view->auth_user())
+    return;
+
+  // TODO(crbug.com/893298): Re-enable animation once the error bubble supports
+  // being displayed on the left. This also requires that we dynamically
+  // track/update the position of the bubble, or alternatively we set the bubble
+  // location to the target animation position and not the current position.
+  bool animate = true;
+  if (user_state->fingerprint_state ==
+      mojom::FingerprintState::DISABLED_FROM_TIMEOUT) {
+    animate = false;
+  }
+
+  big_view->auth_user()->SetFingerprintState(user_state->fingerprint_state);
+  LayoutAuth(big_view, nullptr /*opt_to_hide*/, animate);
+
+  if (user_state->fingerprint_state ==
+      mojom::FingerprintState::DISABLED_FROM_TIMEOUT) {
+    base::string16 error_text = l10n_util::GetStringUTF16(
+        IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_TIMEOUT);
+    auto* label = new views::Label(error_text);
+    label->SetAutoColorReadabilityEnabled(false);
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label->SetEnabledColor(SK_ColorWHITE);
+    label->SetSubpixelRenderingEnabled(false);
+    const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
+    label->SetFontList(base_font_list.Derive(0, gfx::Font::FontStyle::NORMAL,
+                                             gfx::Font::Weight::NORMAL));
+    label->SetMultiLine(true);
+    label->SetAllowCharacterBreak(true);
+    // Make sure to set a maximum label width, otherwise text wrapping will
+    // significantly increase width and layout may not work correctly if
+    // the input string is very long.
+    label->SetMaximumWidth(
+        big_view->auth_user()->password_view()->GetPreferredSize().width());
+
+    auto* container = new NonAccessibleView();
+    container->SetLayoutManager(
+        std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
+    container->AddChildView(label);
+
+    auth_error_bubble_->ShowErrorBubble(
+        container, big_view->auth_user()->password_view() /*anchor_view*/,
+        LoginBubble::kFlagPersistent);
+  }
+}
+
+void LockContentsView::OnFingerprintAuthResult(const AccountId& account_id,
+                                               bool success) {
+  // Make sure the display backlight is not forced off if there is a fingerprint
+  // authentication attempt. If the display backlight is off, then the device
+  // will authenticate and dismiss the lock screen but it will not be visible to
+  // the user.
+  Shell::Get()->power_button_controller()->StopForcingBacklightsOff();
+
+  // |account_id| comes from IPC, make sure it refers to a valid user. The
+  // fingerprint scan could have also happened while switching users, so the
+  // associated account is no longer a big user.
+  LoginBigUserView* big_view =
+      TryToFindBigUser(account_id, true /*require_auth_active*/);
+  if (!big_view || !big_view->auth_user())
+    return;
+
+  big_view->auth_user()->NotifyFingerprintAuthResult(success);
 }
 
 void LockContentsView::OnAuthEnabledForUserChanged(
@@ -748,34 +827,43 @@ void LockContentsView::OnLockScreenNoteStateChanged(
   }
 }
 
-void LockContentsView::OnDevChannelInfoChanged(
+void LockContentsView::OnSystemInfoChanged(
+    bool show,
     const std::string& os_version_label_text,
     const std::string& enterprise_info_text,
     const std::string& bluetooth_name) {
   DCHECK(!os_version_label_text.empty() || !enterprise_info_text.empty() ||
          !bluetooth_name.empty());
 
-  if (!dev_channel_info_->visible()) {
-    // Initialize the dev channel info view.
-    dev_channel_info_->SetVisible(true);
+  // Helper function to create a label for the system info view.
+  auto create_info_label = []() -> views::Label* {
+    views::Label* label = new views::Label();
+    label->SetAutoColorReadabilityEnabled(false);
+    label->SetEnabledColor(SK_ColorWHITE);
+    label->SetFontList(views::Label::GetDefaultFontList().Derive(
+        -1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+    label->SetSubpixelRenderingEnabled(false);
+    return label;
+  };
+
+  // Initialize the system info view.
+  if (system_info_->child_count() == 0) {
     for (int i = 0; i < 3; ++i)
-      dev_channel_info_->AddChildView(CreateInfoLabel());
+      system_info_->AddChildView(create_info_label());
   }
 
-  views::Label* version_label =
-      static_cast<views::Label*>(dev_channel_info_->child_at(0));
-  version_label->SetVisible(!os_version_label_text.empty());
-  version_label->SetText(base::UTF8ToUTF16(os_version_label_text));
+  if (show)
+    system_info_->SetVisible(true);
 
-  views::Label* enterprise_label =
-      static_cast<views::Label*>(dev_channel_info_->child_at(1));
-  enterprise_label->SetVisible(!enterprise_info_text.empty());
-  enterprise_label->SetText(base::UTF8ToUTF16(enterprise_info_text));
-
-  views::Label* bluetooth_label =
-      static_cast<views::Label*>(dev_channel_info_->child_at(2));
-  bluetooth_label->SetVisible(!bluetooth_name.empty());
-  bluetooth_label->SetText(base::UTF8ToUTF16(bluetooth_name));
+  auto update_label = [&](int index, const std::string& text) {
+    views::Label* label =
+        static_cast<views::Label*>(system_info_->child_at(index));
+    label->SetText(base::UTF8ToUTF16(text));
+    label->SetVisible(!text.empty());
+  };
+  update_label(0, os_version_label_text);
+  update_label(1, enterprise_info_text);
+  update_label(2, bluetooth_name);
 
   LayoutTopHeader();
 }
@@ -881,23 +969,6 @@ void LockContentsView::OnDetachableBasePairingStatusChanged(
     GetWidget()->GetFocusManager()->ClearFocus();
 }
 
-void LockContentsView::OnFingerprintUnlockStateChanged(
-    const AccountId& account_id,
-    mojom::FingerprintUnlockState state) {
-  UserState* user_state = FindStateForUser(account_id);
-  if (!user_state)
-    return;
-
-  user_state->fingerprint_state = state;
-  LoginBigUserView* big_view =
-      TryToFindBigUser(account_id, true /*require_auth_active*/);
-  if (!big_view || !big_view->auth_user())
-    return;
-
-  big_view->auth_user()->SetFingerprintState(user_state->fingerprint_state);
-  LayoutAuth(big_view, nullptr /*opt_to_hide*/, true /*animate*/);
-}
-
 void LockContentsView::SetAvatarForUser(const AccountId& account_id,
                                         const mojom::UserAvatarPtr& avatar) {
   auto replace = [&](const mojom::LoginUserInfoPtr& user) {
@@ -993,9 +1064,9 @@ void LockContentsView::OnStateChanged(
 
 void LockContentsView::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
-  LoginAuthUserView* auth_user = CurrentBigUserView()->auth_user();
-  if (auth_user)
-    auth_user->password_view()->Clear();
+  LoginBigUserView* big_user = CurrentBigUserView();
+  if (big_user && big_user->auth_user())
+    big_user->auth_user()->password_view()->Clear();
 }
 
 void LockContentsView::ShowAuthErrorMessageForDebug(int unlock_attempt) {
@@ -1171,11 +1242,10 @@ void LockContentsView::DoLayout() {
 }
 
 void LockContentsView::LayoutTopHeader() {
-  int preferred_width = dev_channel_info_->GetPreferredSize().width() +
+  int preferred_width = system_info_->GetPreferredSize().width() +
                         note_action_->GetPreferredSize().width();
-  int preferred_height =
-      std::max(dev_channel_info_->GetPreferredSize().height(),
-               note_action_->GetPreferredSize().height());
+  int preferred_height = std::max(system_info_->GetPreferredSize().height(),
+                                  note_action_->GetPreferredSize().height());
   top_header_->SetPreferredSize(gfx::Size(preferred_width, preferred_height));
   top_header_->SizeToPreferredSize();
   top_header_->Layout();
@@ -1284,11 +1354,19 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
         if (state->enable_tap_auth)
           to_update_auth |= LoginAuthUserView::AUTH_TAP;
-        if (state->fingerprint_state !=
-            mojom::FingerprintUnlockState::UNAVAILABLE) {
+        if (state->fingerprint_state != mojom::FingerprintState::UNAVAILABLE &&
+            state->fingerprint_state !=
+                mojom::FingerprintState::DISABLED_FROM_TIMEOUT) {
           to_update_auth |= LoginAuthUserView::AUTH_FINGERPRINT;
         }
+
+        // External binary based authentication is only available for unlock.
+        if (screen_type_ == LockScreen::ScreenType::kLock &&
+            base::FeatureList::IsEnabled(features::kUnlockWithExternalBinary)) {
+          to_update_auth |= LoginAuthUserView::AUTH_EXTERNAL_BINARY;
+        }
       }
+
       view->auth_user()->SetAuthMethods(to_update_auth, state->show_pin);
     } else if (view->public_account()) {
       view->public_account()->SetAuthEnabled(true /*enabled*/, animate);
@@ -1465,8 +1543,8 @@ void LockContentsView::ShowAuthErrorMessage() {
   base::Optional<int> bold_start;
   int bold_length = 0;
   // Display a hint to switch keyboards if there are other active input
-  // methods.
-  if (ime_controller->available_imes().size() > 1) {
+  // methods in clamshell mode.
+  if (ime_controller->available_imes().size() > 1 && !IsTabletMode()) {
     error_text += base::ASCIIToUTF16(" ");
     bold_start = error_text.length();
     base::string16 shortcut =
@@ -1663,6 +1741,8 @@ void LockContentsView::RegisterAccelerators() {
       AcceleratorAction::kFocusNextUser;
   accel_map_[ui::Accelerator(ui::VKEY_LEFT, 0)] =
       AcceleratorAction::kFocusPreviousUser;
+  accel_map_[ui::Accelerator(ui::VKEY_V, ui::EF_ALT_DOWN)] =
+      AcceleratorAction::kShowSystemInfo;
 
   // Login-only accelerators:
   if (screen_type_ == LockScreen::ScreenType::kLogin) {
@@ -1681,6 +1761,7 @@ void LockContentsView::RegisterAccelerators() {
     }
   }
 
+  // Register the accelerators.
   AcceleratorController* controller = Shell::Get()->accelerator_controller();
   for (const auto& item : accel_map_)
     controller->Register({item.first}, this);
@@ -1688,18 +1769,24 @@ void LockContentsView::RegisterAccelerators() {
 
 void LockContentsView::PerformAction(AcceleratorAction action) {
   switch (action) {
-    case AcceleratorAction::kShowFeedback:
-      Shell::Get()->login_screen_controller()->ShowFeedback();
-      return;
     case AcceleratorAction::kFocusNextUser:
       FocusNextUser();
-      return;
+      break;
     case AcceleratorAction::kFocusPreviousUser:
       FocusPreviousUser();
-      return;
+      break;
+    case AcceleratorAction::kShowSystemInfo:
+      if (!system_info_->visible()) {
+        system_info_->SetVisible(true);
+        LayoutTopHeader();
+      }
+      break;
+    case AcceleratorAction::kShowFeedback:
+      Shell::Get()->login_screen_controller()->ShowFeedback();
+      break;
     case AcceleratorAction::kShowResetScreen:
       Shell::Get()->login_screen_controller()->ShowResetScreen();
-      return;
+      break;
     default:
       NOTREACHED();
   }

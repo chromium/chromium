@@ -78,7 +78,7 @@ void VmApplicationsServiceProvider::UpdateApplicationList(
   }
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (IsCrostiniEnabled(profile)) {
+  if (crostini::IsCrostiniEnabled(profile)) {
     crostini::CrostiniRegistryService* registry_service =
         crostini::CrostiniRegistryServiceFactory::GetForProfile(profile);
     registry_service->UpdateApplicationList(request);
@@ -104,8 +104,8 @@ void VmApplicationsServiceProvider::LaunchTerminal(
   }
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (IsCrostiniEnabled(profile) &&
-      request.owner_id() == CryptohomeIdForProfile(profile)) {
+  if (crostini::IsCrostiniEnabled(profile) &&
+      request.owner_id() == crostini::CryptohomeIdForProfile(profile)) {
     crostini::CrostiniManager::GetForProfile(profile)->LaunchContainerTerminal(
         request.vm_name(), request.container_name(),
         std::vector<std::string>(request.params().begin(),
@@ -131,7 +131,7 @@ void VmApplicationsServiceProvider::UpdateMimeTypes(
   }
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (IsCrostiniEnabled(profile)) {
+  if (crostini::IsCrostiniEnabled(profile)) {
     crostini::CrostiniMimeTypesService* mime_types_service =
         crostini::CrostiniMimeTypesServiceFactory::GetForProfile(profile);
     mime_types_service->UpdateMimeTypes(request);

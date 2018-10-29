@@ -23,6 +23,7 @@ source_set("spinlock_wait") {
   public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
   sources = [
     "internal/spinlock_akaros.inc",
+    "internal/spinlock_linux.inc",
     "internal/spinlock_posix.inc",
     "internal/spinlock_wait.cc",
     "internal/spinlock_win32.inc",
@@ -71,6 +72,7 @@ source_set("dynamic_annotations") {
   public = [
     "dynamic_annotations.h",
   ]
+
   # Abseil's dynamic annotations are only visible inside Abseil because
   # their usage is deprecated in Chromium (see README.chromium for more info).
   visibility = []
@@ -295,4 +297,20 @@ source_set("endian") {
     ":config",
     ":core_headers",
   ]
+}
+
+source_set("bits") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public = [
+    "internal/bits.h",
+  ]
+  deps = [
+    ":core_headers",
+  ]
+  visibility = []
+  visibility += [ "../*" ]
 }

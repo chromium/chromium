@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/values_test_util.h"
@@ -66,7 +67,7 @@ class DevicePermissionsManagerTest : public testing::Test {
                                 "}"));
 
     HidDeviceManager::GetFactoryInstance()->SetTestingFactory(
-        env_->profile(), &CreateHidDeviceManager);
+        env_->profile(), base::BindRepeating(&CreateHidDeviceManager));
     device0_ =
         new MockUsbDevice(0, 0, "Test Manufacturer", "Test Product", "ABCDE");
     device1_ = new MockUsbDevice(0, 0, "Test Manufacturer", "Test Product", "");

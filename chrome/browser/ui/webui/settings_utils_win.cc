@@ -41,25 +41,29 @@ class ManageCertificatesDialog : public ui::BaseShellDialogImpl {
       return;
     }
 
-    RunState run_state = BeginRun(parent);
-    run_state.dialog_thread->task_runner()->PostTaskAndReply(
-        FROM_HERE, base::Bind(&ManageCertificatesDialog::ShowOnDialogThread,
-                              base::Unretained(this), run_state),
-        base::Bind(&ManageCertificatesDialog::OnDialogClosed,
-                   base::Unretained(this), run_state, callback));
+    std::unique_ptr<RunState> run_state = BeginRun(parent);
+
+    base::SingleThreadTaskRunner* task_runner =
+        run_state->dialog_task_runner.get();
+    task_runner->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&ManageCertificatesDialog::ShowOnDialogThread,
+                       base::Unretained(this), parent),
+        base::BindOnce(&ManageCertificatesDialog::OnDialogClosed,
+                       base::Unretained(this), std::move(run_state), callback));
   }
 
  private:
-  void ShowOnDialogThread(const RunState& run_state) {
+  void ShowOnDialogThread(HWND owner) {
     CRYPTUI_CERT_MGR_STRUCT cert_mgr = {0};
     cert_mgr.dwSize = sizeof(CRYPTUI_CERT_MGR_STRUCT);
-    cert_mgr.hwndParent = run_state.owner;
+    cert_mgr.hwndParent = owner;
     ::CryptUIDlgCertMgr(&cert_mgr);
   }
 
-  void OnDialogClosed(const RunState& run_state,
+  void OnDialogClosed(std::unique_ptr<RunState> run_state,
                       const base::Closure& callback) {
-    EndRun(run_state);
+    EndRun(std::move(run_state));
     // May delete |this|.
     callback.Run();
   }

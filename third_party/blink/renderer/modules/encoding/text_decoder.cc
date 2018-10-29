@@ -43,7 +43,7 @@ TextDecoder* TextDecoder::Create(const String& label,
                                  const TextDecoderOptions& options,
                                  ExceptionState& exception_state) {
   WTF::TextEncoding encoding(
-      label.StripWhiteSpace(&Encoding::IsASCIIWhiteSpace));
+      label.StripWhiteSpace(&encoding::IsASCIIWhiteSpace));
   // The replacement encoding is not valid, but the Encoding API also
   // rejects aliases of the replacement encoding.
   if (!encoding.IsValid() || !strcasecmp(encoding.GetName(), "replacement")) {
@@ -83,18 +83,18 @@ String TextDecoder::decode(const BufferSource& input,
   if (input.IsArrayBufferView()) {
     const char* start = static_cast<const char*>(
         input.GetAsArrayBufferView().View()->BaseAddress());
-    size_t length = input.GetAsArrayBufferView().View()->byteLength();
+    uint32_t length = input.GetAsArrayBufferView().View()->byteLength();
     return decode(start, length, options, exception_state);
   }
   DCHECK(input.IsArrayBuffer());
   const char* start =
       static_cast<const char*>(input.GetAsArrayBuffer()->Data());
-  size_t length = input.GetAsArrayBuffer()->ByteLength();
+  uint32_t length = input.GetAsArrayBuffer()->ByteLength();
   return decode(start, length, options, exception_state);
 }
 
 String TextDecoder::decode(const char* start,
-                           size_t length,
+                           uint32_t length,
                            const TextDecodeOptions& options,
                            ExceptionState& exception_state) {
   WTF::FlushBehavior flush =

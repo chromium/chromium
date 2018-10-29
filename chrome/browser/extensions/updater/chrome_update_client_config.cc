@@ -17,6 +17,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/protocol_handler.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -213,6 +214,11 @@ std::vector<uint8_t> ChromeUpdateClientConfig::GetRunActionKeyHash() const {
 
 std::string ChromeUpdateClientConfig::GetAppGuid() const {
   return impl_.GetAppGuid();
+}
+
+std::unique_ptr<update_client::ProtocolHandlerFactory>
+ChromeUpdateClientConfig::GetProtocolHandlerFactory() const {
+  return impl_.GetProtocolHandlerFactory();
 }
 
 ChromeUpdateClientConfig::~ChromeUpdateClientConfig() {}

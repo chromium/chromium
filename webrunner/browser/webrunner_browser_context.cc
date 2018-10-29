@@ -12,6 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_context.h"
 #include "net/url_request/url_request_context.h"
@@ -156,10 +158,10 @@ net::URLRequestContextGetter* WebRunnerBrowserContext::CreateRequestContext(
     content::URLRequestInterceptorScopedVector request_interceptors) {
   DCHECK(!url_request_getter_);
   url_request_getter_ = new WebRunnerURLRequestContextGetter(
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::IO),
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::IO}),
       net_log_.get(), std::move(*protocol_handlers),
-      std::move(request_interceptors));
+      std::move(request_interceptors), data_dir_path_);
   resource_context_->set_url_request_context_getter(url_request_getter_);
   return url_request_getter_.get();
 }

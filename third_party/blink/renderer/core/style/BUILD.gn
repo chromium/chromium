@@ -63,7 +63,6 @@ blink_core_sources("rendering") {
     "shadow_list.cc",
     "shadow_list.h",
     "shape_clip_path_operation.h",
-    "shape_value.cc",
     "shape_value.h",
     "style_content_alignment_data.h",
     "style_difference.cc",

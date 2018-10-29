@@ -7,7 +7,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     if (event.request.url.indexOf('BrokenChunked') != -1) {
       event.respondWith(
-        event.preloadResponse
+        event.preloadResponse.then(r => r.text())
           .catch(_ => { return new Response('dummy'); }));
       return;
     }

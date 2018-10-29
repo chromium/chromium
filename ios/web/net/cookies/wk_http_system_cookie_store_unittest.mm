@@ -14,8 +14,6 @@
 #include "ios/web/public/test/test_web_thread_bundle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
-
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -111,6 +109,3 @@ INSTANTIATE_TYPED_TEST_CASE_P(WKHTTPSystemCookieStore,
                               WKHTTPSystemCookieStoreTestDelegate);
 
 }  // namespace net
-
-#endif  // defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >=
-//__IPHONE_11_0)

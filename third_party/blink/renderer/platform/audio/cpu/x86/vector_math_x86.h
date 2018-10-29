@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
-namespace VectorMath {
+namespace vector_math {
 namespace X86 {
 
 struct FrameCounts {
@@ -407,7 +407,7 @@ static ALWAYS_INLINE void Zvmul(const float* real1p,
 }
 
 }  // namespace X86
-}  // namespace VectorMath
+}  // namespace vector_math
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_X86_VECTOR_MATH_X86_H_

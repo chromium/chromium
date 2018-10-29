@@ -49,7 +49,7 @@ bool VaapiVP9Accelerator::SubmitDecode(
     const base::Closure& done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // |done_cb| should be null as we return false from IsFrameContextRequired().
-  DCHECK(done_cb.is_null());
+  DCHECK(!done_cb);
 
   VADecPictureParameterBufferVP9 pic_param;
   memset(&pic_param, 0, sizeof(pic_param));

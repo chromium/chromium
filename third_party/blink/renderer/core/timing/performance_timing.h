@@ -47,6 +47,7 @@ class DocumentTiming;
 class InteractiveDetector;
 class LocalFrame;
 class PaintTiming;
+class PaintTracker;
 class ResourceLoadTiming;
 class ScriptState;
 class ScriptValue;
@@ -108,6 +109,16 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // TODO(crbug.com/848639): This function is exposed as an experiment, and if
   // not useful, this function can be removed.
   unsigned long long FirstMeaningfulPaintCandidate() const;
+  // The time of the first paint after the largest image within viewport being
+  // fully loaded.
+  unsigned long long LargestImagePaint() const;
+  // The time of the first paint after the last image within viewport being
+  // fully loaded.
+  unsigned long long LastImagePaint() const;
+  // The time of the first paint of the largest text within viewport.
+  unsigned long long LargestTextPaint() const;
+  // The time of the first paint of the last text within viewport.
+  unsigned long long LastTextPaint() const;
   // The first time the page is considered 'interactive'. This is determined
   // using heuristics based on main thread and network activity.
   unsigned long long PageInteractive() const;
@@ -151,6 +162,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   const CSSTiming* CssTiming() const;
   const DocumentParserTiming* GetDocumentParserTiming() const;
   const PaintTiming* GetPaintTiming() const;
+  PaintTracker* GetPaintTracker() const;
   DocumentLoader* GetDocumentLoader() const;
   DocumentLoadTiming* GetDocumentLoadTiming() const;
   ResourceLoadTiming* GetResourceLoadTiming() const;

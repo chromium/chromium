@@ -44,7 +44,7 @@
 
 namespace blink {
 
-typedef size_t TokenPreloadScannerCheckpoint;
+typedef wtf_size_t TokenPreloadScannerCheckpoint;
 
 class HTMLParserOptions;
 class HTMLTokenizer;
@@ -74,6 +74,7 @@ struct CORE_EXPORT CachedDocumentParameters {
   bool viewport_meta_enabled;
   ReferrerPolicy referrer_policy;
   SubresourceIntegrity::IntegrityFeatures integrity_features;
+  bool lazyload_policy_enforced;
 
  private:
   explicit CachedDocumentParameters(Document*);

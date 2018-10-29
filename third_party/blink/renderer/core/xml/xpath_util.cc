@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
-namespace XPath {
+namespace xpath {
 
 bool IsRootDomNode(Node* node) {
   return node && !node->parentNode();
@@ -84,5 +84,5 @@ bool IsValidContextNode(Node* node) {
   return false;
 }
 
-}  // namespace XPath
+}  // namespace xpath
 }  // namespace blink

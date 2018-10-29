@@ -282,7 +282,7 @@ TEST(ScriptModuleTest, Evaluate) {
       scope.GetFrame()
           .GetScriptController()
           .ExecuteScriptInMainWorldAndReturnValue(
-              ScriptSourceCode("window.foo"), KURL(), kNotSharableCrossOrigin);
+              ScriptSourceCode("window.foo"), KURL(), kOpaqueResource);
   ASSERT_TRUE(value->IsString());
   EXPECT_EQ("bar", ToCoreString(v8::Local<v8::String>::Cast(value)));
 

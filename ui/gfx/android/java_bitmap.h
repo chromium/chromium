@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 

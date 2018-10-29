@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "net/http/http_response_headers.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -23,6 +24,9 @@ class COMPONENT_EXPORT(CONTENT_SERVICE_CPP) NavigableContentsObserver
       const net::HttpResponseHeaders* response_headers) {}
   virtual void DidStopLoading() {}
   virtual void DidAutoResizeView(const gfx::Size& new_size) {}
+  virtual void DidSuppressNavigation(const GURL& url,
+                                     WindowOpenDisposition disposition,
+                                     bool from_user_gesture) {}
 };
 
 }  // namespace content

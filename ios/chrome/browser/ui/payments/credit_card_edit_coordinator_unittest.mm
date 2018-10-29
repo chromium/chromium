@@ -119,15 +119,17 @@ class PaymentRequestCreditCardEditCoordinatorTest
     personal_data_manager_.SetAutofillWalletImportEnabled(true);
   }
 
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     payment_request_ = std::make_unique<MockPaymentRequest>(
         payment_request_test_util::CreateTestWebPaymentRequest(),
         browser_state(), web_state(), &personal_data_manager_);
   }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 
   autofill::TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<MockPaymentRequest> payment_request_;

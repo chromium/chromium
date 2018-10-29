@@ -11,10 +11,10 @@
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
 #import "ios/chrome/browser/ui/infobars/infobar_view_sizing_delegate.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -63,9 +63,7 @@ const CGFloat kButtonCornerRadius = 8.0;
 
 // Returns the font for the infobar message.
 UIFont* InfoBarMessageFont() {
-  return IsRefreshInfobarEnabled()
-             ? [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-             : [MDCTypography subheadFont];
+  return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 }  // namespace
@@ -157,33 +155,23 @@ UIFont* InfoBarMessageFont() {
 }
 
 - (void)layoutSubviews {
+  // Set a bottom margin equal to the height of the secondary toolbar, if any.
+  // Deduct the bottom safe area inset as it is already included in the height
+  // of the secondary toolbar.
+  // TODO(crbug.com/894449): This won't update the infobar's position after the
+  // secondary toolbar reappears. Consider adding a constraint to the
+  // |layoutGuide| in |didMoveToSuperview|.
+  NamedGuide* layoutGuide =
+      [NamedGuide guideWithName:kSecondaryToolbarGuide view:self];
+  self.footerViewBottomAnchorConstraint.constant =
+      layoutGuide.layoutFrame.size.height;
+
   [super layoutSubviews];
 
   [self.sizingDelegate didSetInfoBarTargetHeight:CGRectGetHeight(self.frame)];
 }
 
-- (void)setFrame:(CGRect)frame {
-  [super setFrame:frame];
-
-  // Updates layout of subviews immediately, if layout updates are pending,
-  // rather than waiting for the next update cycle. Otherwise, the layout breaks
-  // on iPhone X.
-  // TODO(crbug.com/862688): Investigate why this is happening.
-  [self layoutIfNeeded];
-}
-
 - (CGSize)sizeThatFits:(CGSize)size {
-  // Set a bottom margin equal to the height of the secondary toolbar, if any.
-  // Deduct the bottom safe area inset as it is already included in the height
-  // of the secondary toolbar.
-  NamedGuide* layoutGuide =
-      [NamedGuide guideWithName:kSecondaryToolbarGuide view:self];
-  CGFloat bottomSafeAreaInset = SafeAreaInsetsForView(self).bottom;
-  self.footerViewBottomAnchorConstraint.constant =
-      layoutGuide.constrained
-          ? layoutGuide.layoutFrame.size.height - bottomSafeAreaInset
-          : 0;
-
   CGSize computedSize = [self systemLayoutSizeFittingSize:size];
   return CGSizeMake(size.width, computedSize.height);
 }
@@ -200,20 +188,6 @@ UIFont* InfoBarMessageFont() {
   id<LayoutGuideProvider> safeAreaLayoutGuide =
       SafeAreaLayoutGuideForView(self);
 
-  // The drop shadow is at the top of the view, placed outside of its bounds.
-  if (!IsRefreshInfobarEnabled()) {
-    UIImage* shadowImage = [UIImage imageNamed:@"infobar_shadow"];
-    UIImageView* shadowView = [[UIImageView alloc] initWithImage:shadowImage];
-    shadowView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:shadowView];
-    [NSLayoutConstraint activateConstraints:@[
-      [self.leadingAnchor constraintEqualToAnchor:shadowView.leadingAnchor],
-      [self.trailingAnchor constraintEqualToAnchor:shadowView.trailingAnchor],
-      [self.topAnchor constraintEqualToAnchor:shadowView.topAnchor
-                                     constant:shadowView.image.size.height],
-    ]];
-  }
-
   // Add the icon. The icon is fixed to the top leading corner of the infobar.
   // |iconContainerView| is used here because the AutoLayout constraints for
   // UIImageView would get ignored otherwise.
@@ -224,9 +198,7 @@ UIFont* InfoBarMessageFont() {
     iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     iconContainerView.clipsToBounds = YES;
     UIImageView* iconImageView = [[UIImageView alloc] initWithImage:self.icon];
-    if (IsRefreshInfobarEnabled()) {
-      iconImageView.tintColor = UIColorFromRGB(kIconTintColor);
-    }
+    iconImageView.tintColor = UIColorFromRGB(kIconTintColor);
     [iconContainerView addSubview:iconImageView];
     AddSameConstraints(iconContainerView, iconImageView);
     [self addSubview:iconContainerView];
@@ -284,9 +256,7 @@ UIFont* InfoBarMessageFont() {
   // Add the close button. The close button is fixed to the trailing edge of the
   // infobar since it cannot expand.
   DCHECK(self.closeButtonImage);
-  UIButton* closeButton =
-      [UIButton buttonWithType:IsRefreshInfobarEnabled() ? UIButtonTypeSystem
-                                                         : UIButtonTypeCustom];
+  UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
   [closeButton setImage:self.closeButtonImage forState:UIControlStateNormal];
   closeButton.contentEdgeInsets =
@@ -296,10 +266,8 @@ UIFont* InfoBarMessageFont() {
                   action:@selector(didTapClose)
         forControlEvents:UIControlEventTouchUpInside];
   [closeButton setAccessibilityLabel:l10n_util::GetNSString(IDS_CLOSE)];
-  if (IsRefreshInfobarEnabled()) {
-    closeButton.tintColor = [UIColor blackColor];
-    closeButton.alpha = 0.20;
-  }
+  closeButton.tintColor = [UIColor blackColor];
+  closeButton.alpha = 0.20;
   // Prevent the button from shrinking or expanding horizontally.
   [closeButton
       setContentCompressionResistancePriority:UILayoutPriorityRequired
@@ -348,8 +316,8 @@ UIFont* InfoBarMessageFont() {
         UIEdgeInsetsMake(kButtonsTopPadding, kPadding, kPadding, kPadding);
     [self addSubview:footerView];
 
-    self.footerViewBottomAnchorConstraint = [safeAreaLayoutGuide.bottomAnchor
-        constraintEqualToAnchor:footerView.bottomAnchor];
+    self.footerViewBottomAnchorConstraint =
+        [self.bottomAnchor constraintEqualToAnchor:footerView.bottomAnchor];
     [NSLayoutConstraint activateConstraints:@[
       [safeAreaLayoutGuide.leadingAnchor
           constraintEqualToAnchor:footerView.leadingAnchor],
@@ -628,14 +596,11 @@ UIFont* InfoBarMessageFont() {
                 action:action
       forControlEvents:UIControlEventTouchUpInside];
   [button setUnderlyingColorHint:[UIColor blackColor]];
-
-  if (IsRefreshInfobarEnabled()) {
-    button.uppercaseTitle = NO;
-    button.layer.cornerRadius = kButtonCornerRadius;
-    [button
-        setTitleFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-            forState:UIControlStateNormal];
-  }
+  button.uppercaseTitle = NO;
+  button.layer.cornerRadius = kButtonCornerRadius;
+  [button
+      setTitleFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
+          forState:UIControlStateNormal];
 
   if (palette) {
     button.hasOpaqueBackground = YES;

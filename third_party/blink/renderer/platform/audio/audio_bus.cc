@@ -44,7 +44,7 @@
 
 namespace blink {
 
-using namespace VectorMath;
+using namespace vector_math;
 
 const unsigned kMaxBusChannels = 32;
 

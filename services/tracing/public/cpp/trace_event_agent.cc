@@ -36,6 +36,8 @@ namespace {
 
 const char kTraceEventLabel[] = "traceEvents";
 
+tracing::TraceEventAgent* g_trace_event_agent;
+
 }  // namespace
 
 namespace tracing {
@@ -123,9 +125,13 @@ TraceEventAgent::TraceEventAgent(service_manager::Connector* connector,
                 false,
 #endif
                 base::trace_event::TraceLog::GetInstance()->process_id()) {
+  DCHECK(!g_trace_event_agent);
+  g_trace_event_agent = this;
 }
 
-TraceEventAgent::~TraceEventAgent() = default;
+TraceEventAgent::~TraceEventAgent() {
+  g_trace_event_agent = nullptr;
+}
 
 void TraceEventAgent::RequestClockSyncMarker(
     const std::string& sync_id,

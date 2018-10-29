@@ -97,9 +97,11 @@ RuntimeCallStatsCounter=*
 SameObject
 SaveSameObject
 SecureContext=|*
-SetterCallWith=ExecutionContext|ScriptArguments|CurrentWindow|EnteredWindow
+Serializable
+SetterCallWith=ExecutionContext|ScriptState|ScriptArguments|CurrentWindow|EnteredWindow
+Transferable
 TreatNonObjectAsNull
-TreatNullAs=NullString|EmptyString
+TreatNullAs=EmptyString
 URL
 Unforgeable
 Unscopable

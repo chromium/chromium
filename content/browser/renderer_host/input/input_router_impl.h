@@ -66,11 +66,12 @@ class CONTENT_EXPORT InputRouterImpl : public InputRouter,
   ~InputRouterImpl() override;
 
   // InputRouter
-  void SendMouseEvent(const MouseEventWithLatencyInfo& mouse_event) override;
+  void SendMouseEvent(const MouseEventWithLatencyInfo& mouse_event,
+                      MouseEventCallback event_result_callback) override;
   void SendWheelEvent(
       const MouseWheelEventWithLatencyInfo& wheel_event) override;
-  void SendKeyboardEvent(
-      const NativeWebKeyboardEventWithLatencyInfo& key_event) override;
+  void SendKeyboardEvent(const NativeWebKeyboardEventWithLatencyInfo& key_event,
+                         KeyboardEventCallback event_result_callback) override;
   void SendGestureEvent(
       const GestureEventWithLatencyInfo& gesture_event) override;
   void SendTouchEvent(const TouchEventWithLatencyInfo& touch_event) override;
@@ -99,6 +100,7 @@ class CONTENT_EXPORT InputRouterImpl : public InputRouter,
       const gfx::Range& range,
       const std::vector<gfx::Rect>& bounds) override;
   void SetMouseCapture(bool capture) override;
+  void OnHasTouchEventHandlers(bool has_handlers) override;
 
   // Exposed so that tests can swap out the implementation and intercept calls.
   mojo::Binding<mojom::WidgetInputHandlerHost>&
@@ -106,13 +108,7 @@ class CONTENT_EXPORT InputRouterImpl : public InputRouter,
     return frame_host_binding_;
   }
 
-  // IPC::Listener
-  bool OnMessageReceived(const IPC::Message& message) override;
-
-  void OnHasTouchEventHandlersForTest(bool has_handlers);
-  int num_of_active_touches_for_test() {
-    return touch_action_filter_.num_of_active_touches_for_test();
-  }
+  void ForceResetTouchActionForTest();
 
  private:
   friend class InputRouterImplTest;
@@ -123,7 +119,8 @@ class CONTENT_EXPORT InputRouterImpl : public InputRouter,
   // Keeps track of last position of touch points and sets MovementXY for them.
   void SetMovementXYForTouchPoints(blink::WebTouchEvent* event);
 
-  void SendMouseEventImmediately(const MouseEventWithLatencyInfo& mouse_event);
+  void SendMouseEventImmediately(const MouseEventWithLatencyInfo& mouse_event,
+                                 MouseEventCallback event_result_callback);
 
   // PassthroughTouchEventQueueClient
   void SendTouchEventImmediately(
@@ -171,6 +168,7 @@ class CONTENT_EXPORT InputRouterImpl : public InputRouter,
 
   void KeyboardEventHandled(
       const NativeWebKeyboardEventWithLatencyInfo& event,
+      KeyboardEventCallback event_result_callback,
       InputEventAckSource source,
       const ui::LatencyInfo& latency,
       InputEventAckState state,
@@ -178,6 +176,7 @@ class CONTENT_EXPORT InputRouterImpl : public InputRouter,
       const base::Optional<cc::TouchAction>& touch_action);
   void MouseEventHandled(
       const MouseEventWithLatencyInfo& event,
+      MouseEventCallback event_result_callback,
       InputEventAckSource source,
       const ui::LatencyInfo& latency,
       InputEventAckState state,
@@ -204,9 +203,6 @@ class CONTENT_EXPORT InputRouterImpl : public InputRouter,
       InputEventAckState state,
       const base::Optional<ui::DidOverscrollParams>& overscroll,
       const base::Optional<cc::TouchAction>& touch_action);
-
-  // IPC message handlers
-  void OnHasTouchEventHandlers(bool has_handlers);
 
   // Called when a touch timeout-affecting bit has changed, in turn toggling the
   // touch ack timeout feature of the |touch_event_queue_| as appropriate. Input

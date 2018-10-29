@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "content/browser/loader/mock_resource_loader.h"
 #include "content/browser/loader/resource_request_info_impl.h"
 #include "content/browser/loader/test_resource_handler.h"
@@ -222,7 +222,8 @@ class ThrottlingResourceHandlerTest : public testing::Test {
 
  protected:
   // Needs to be first, so it's destroyed last.
-  base::MessageLoopForIO message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_{
+      base::test::ScopedTaskEnvironment::MainThreadType::IO};
 
   // Machinery to construct a URLRequest that's just used as an argument to
   // methods that expect one, and is never actually started.

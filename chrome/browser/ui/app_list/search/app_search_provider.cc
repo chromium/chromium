@@ -402,7 +402,7 @@ class InternalDataSource : public AppSearchProvider::DataSource,
   void AddApps(AppSearchProvider::Apps* apps) override {
     for (const auto& internal_app : GetInternalAppList(profile())) {
       if (!std::strcmp(internal_app.app_id, kInternalAppIdContinueReading)) {
-        if (!features::IsContinueReadingEnabled())
+        if (!app_list_features::IsContinueReadingEnabled())
           continue;
 
         auto* service =
@@ -475,7 +475,8 @@ class CrostiniDataSource : public AppSearchProvider::DataSource,
 
       // Until it's been installed, the Terminal is hidden unless you search
       // for 'Terminal' exactly (case insensitive).
-      if (app_id == kCrostiniTerminalId && !IsCrostiniEnabled(profile())) {
+      if (app_id == crostini::kCrostiniTerminalId &&
+          !crostini::IsCrostiniEnabled(profile())) {
         apps->back()->set_recommendable(false);
         apps->back()->set_require_exact_match(true);
       }
@@ -521,7 +522,7 @@ AppSearchProvider::AppSearchProvider(Profile* profile,
       std::make_unique<ExtensionDataSource>(profile, this));
   if (arc::IsArcAllowedForProfile(profile))
     data_sources_.emplace_back(std::make_unique<ArcDataSource>(profile, this));
-  if (IsCrostiniUIAllowedForProfile(profile)) {
+  if (crostini::IsCrostiniUIAllowedForProfile(profile)) {
     data_sources_.emplace_back(
         std::make_unique<CrostiniDataSource>(profile, this));
   }

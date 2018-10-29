@@ -6,11 +6,13 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -753,8 +755,8 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessZerosAudioStreams) {
     // Cycle UI and IO loop once to ensure OnChannelClosing() has been delivered
     // to audio stream owners and they get a chance to notify of stream closure.
     base::RunLoop run_loop;
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            media::BindToCurrentLoop(run_loop.QuitClosure()));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                             media::BindToCurrentLoop(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -852,8 +854,8 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
     // Cycle UI and IO loop once to ensure OnChannelClosing() has been delivered
     // to audio stream owners and they get a chance to notify of stream closure.
     base::RunLoop run_loop;
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            media::BindToCurrentLoop(run_loop.QuitClosure()));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                             media::BindToCurrentLoop(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -917,8 +919,8 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
     // Cycle UI and IO loop once to ensure OnChannelClosing() has been delivered
     // to audio stream owners and they get a chance to notify of stream closure.
     base::RunLoop run_loop;
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            media::BindToCurrentLoop(run_loop.QuitClosure()));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                             media::BindToCurrentLoop(run_loop.QuitClosure()));
     run_loop.Run();
   }
 

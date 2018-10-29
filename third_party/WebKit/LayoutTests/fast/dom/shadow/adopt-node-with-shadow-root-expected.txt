@@ -2,5 +2,5 @@ CONSOLE WARNING: line 12: Element.createShadowRoot is deprecated and will be rem
 PASS successfullyParsed is true
 
 TEST COMPLETE
-PASS document.adoptNode(shadow) threw exception HierarchyRequestError: Failed to execute 'adoptNode' on 'Document': The node provided is a shadow root, which may not be adopted..
 
+PASS document.adoptNode(shadow) threw exception HierarchyRequestError: Failed to execute 'adoptNode' on 'Document': The node provided is a shadow root, which may not be adopted..

@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_SERVICE_WORKER_WEB_SERVICE_WORKER_PROVIDER_CLIENT_H_
 
 #include "third_party/blink/public/common/messaging/transferable_message.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_object_info.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -40,8 +40,6 @@
 #include <memory>
 
 namespace blink {
-
-class WebServiceWorker;
 
 // See WebServiceWorkerProvider for full documentation.
 //
@@ -52,10 +50,10 @@ class WebServiceWorkerProviderClient {
  public:
   virtual ~WebServiceWorkerProviderClient() = default;
 
-  virtual void SetController(std::unique_ptr<WebServiceWorker::Handle>,
+  virtual void SetController(WebServiceWorkerObjectInfo,
                              bool should_notify_controller_change) = 0;
 
-  virtual void DispatchMessageEvent(std::unique_ptr<WebServiceWorker::Handle>,
+  virtual void DispatchMessageEvent(WebServiceWorkerObjectInfo,
                                     TransferableMessage) = 0;
   virtual void CountFeature(mojom::WebFeature) = 0;
 };

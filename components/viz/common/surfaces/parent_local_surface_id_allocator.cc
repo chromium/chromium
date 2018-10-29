@@ -19,11 +19,13 @@ ParentLocalSurfaceIdAllocator::ParentLocalSurfaceIdAllocator()
 }
 
 bool ParentLocalSurfaceIdAllocator::UpdateFromChild(
-    const LocalSurfaceId& child_allocated_local_surface_id) {
+    const LocalSurfaceId& child_allocated_local_surface_id,
+    base::TimeTicks child_local_surface_id_allocation_time) {
   if (child_allocated_local_surface_id.child_sequence_number() >
       current_local_surface_id_.child_sequence_number()) {
     current_local_surface_id_.child_sequence_number_ =
         child_allocated_local_surface_id.child_sequence_number_;
+    allocation_time_ = child_local_surface_id_allocation_time;
     is_invalid_ = false;
     TRACE_EVENT_WITH_FLOW2(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
@@ -49,6 +51,7 @@ void ParentLocalSurfaceIdAllocator::Invalidate() {
 const LocalSurfaceId& ParentLocalSurfaceIdAllocator::GenerateId() {
   if (!is_allocation_suppressed_) {
     ++current_local_surface_id_.parent_sequence_number_;
+    allocation_time_ = base::TimeTicks::Now();
     TRACE_EVENT_WITH_FLOW2(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "LocalSurfaceId.Embed.Flow",

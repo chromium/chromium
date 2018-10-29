@@ -17,8 +17,6 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_server.h"
 #include "net/base/load_flags.h"
 #include "net/base/proxy_server.h"
-#include "net/log/net_log_source_type.h"
-#include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/socket_test_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -207,9 +205,7 @@ TEST(ChromeNetworkDailyDataSavingMetricsTest,
           data_reduction_proxy_config.proxy_rules().proxies_for_http);
       EXPECT_TRUE(context.proxy_resolution_service()->MarkProxiesAsBadUntil(
           proxy_info, test_case.bypass_duration,
-          std::vector<net::ProxyServer>(),
-          net::NetLogWithSource::Make(context.net_log(),
-                                      net::NetLogSourceType::NONE)));
+          std::vector<net::ProxyServer>(), net::NetLogWithSource()));
     }
 
     EXPECT_EQ(test_case.expected_request_type,

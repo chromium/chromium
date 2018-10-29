@@ -183,3 +183,15 @@ TEST(NotificationLaunchIdTest, ParsingErrorCases) {
     EXPECT_FALSE(id.is_valid());
   }
 }
+
+TEST(NotificationLaunchIdTest, GetProfileIdFromLaunchId) {
+  // Given a valid launch id, the profile id can be obtained correctly.
+  ASSERT_EQ(NotificationLaunchId::GetProfileIdFromLaunchId(
+                L"1|1|0|Default|0|https://example.com/|notification_id"),
+            "Default");
+
+  // Given an invalid launch id, the profile id is set to an empty string.
+  ASSERT_EQ(NotificationLaunchId::GetProfileIdFromLaunchId(
+                L"1|Default|0|https://example.com/|notification_id"),
+            "");
+}

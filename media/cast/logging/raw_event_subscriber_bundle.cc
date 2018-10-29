@@ -54,7 +54,7 @@ void RawEventSubscriberBundle::AddEventSubscribers(bool is_audio) {
     receiver_offset_estimator_.reset(new ReceiverTimeOffsetEstimatorImpl);
     cast_environment_->logger()->Subscribe(receiver_offset_estimator_.get());
   }
-  SubscribersMapByStream::iterator it = subscribers_.find(is_audio);
+  auto it = subscribers_.find(is_audio);
   if (it != subscribers_.end())
     return;
 
@@ -65,7 +65,7 @@ void RawEventSubscriberBundle::AddEventSubscribers(bool is_audio) {
 }
 
 void RawEventSubscriberBundle::RemoveEventSubscribers(bool is_audio) {
-  SubscribersMapByStream::iterator it = subscribers_.find(is_audio);
+  auto it = subscribers_.find(is_audio);
   if (it == subscribers_.end())
     return;
 
@@ -78,14 +78,14 @@ void RawEventSubscriberBundle::RemoveEventSubscribers(bool is_audio) {
 
 EncodingEventSubscriber*
 RawEventSubscriberBundle::GetEncodingEventSubscriber(bool is_audio) {
-  SubscribersMapByStream::iterator it = subscribers_.find(is_audio);
+  auto it = subscribers_.find(is_audio);
   return it == subscribers_.end() ?
       NULL : it->second->GetEncodingEventSubscriber();
 }
 
 StatsEventSubscriber*
 RawEventSubscriberBundle::GetStatsEventSubscriber(bool is_audio) {
-  SubscribersMapByStream::iterator it = subscribers_.find(is_audio);
+  auto it = subscribers_.find(is_audio);
   return it == subscribers_.end() ?
       NULL : it->second->GetStatsEventSubscriber();
 }

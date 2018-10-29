@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
 
+#include "base/bind.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_factory.h"
@@ -138,7 +139,8 @@ class PresentationServiceDelegateImplTest
     content::WebContents* wc = GetWebContents();
     router_ = static_cast<MockMediaRouter*>(
         MediaRouterFactory::GetInstance()->SetTestingFactoryAndUse(
-            web_contents()->GetBrowserContext(), &MockMediaRouter::Create));
+            web_contents()->GetBrowserContext(),
+            base::BindRepeating(&MockMediaRouter::Create)));
     ASSERT_TRUE(wc);
     PresentationServiceDelegateImpl::CreateForWebContents(wc);
     delegate_impl_ = PresentationServiceDelegateImpl::FromWebContents(wc);
@@ -209,7 +211,7 @@ class PresentationServiceDelegateImplTest
 
   void SetMockLocalPresentationManager() {
     LocalPresentationManagerFactory::GetInstanceForTest()->SetTestingFactory(
-        profile(), &BuildMockLocalPresentationManager);
+        profile(), base::BindRepeating(&BuildMockLocalPresentationManager));
     mock_local_manager_ = static_cast<MockLocalPresentationManager*>(
         LocalPresentationManagerFactory::GetOrCreateForBrowserContext(
             profile()));

@@ -182,7 +182,10 @@ class TetherService
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestCellularIsAvailable);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestDisabled);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestEnabled);
-  FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestEnabled_MultiDeviceFlags);
+  FRIEND_TEST_ALL_PREFIXES(TetherServiceTest,
+                           TestUserPrefChangesViaFeatureStateChange);
+  FRIEND_TEST_ALL_PREFIXES(TetherServiceTest,
+                           TestUserPrefChangesViaTechnologyStateChange);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestBluetoothNotification);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestBluetoothNotPresent);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestMetricsFalsePositives);
@@ -259,6 +262,8 @@ class TetherService
   // intermediate states (BLE_NOT_PRESENT or NO_AVAILABLE_HOSTS), since these
   // are ephemeral. Returns whether a false positive case was handled.
   bool HandleFeatureStateMetricIfUninitialized();
+
+  void LogUserPreferenceChanged(bool is_now_enabled);
 
   void SetTestDoubles(std::unique_ptr<chromeos::tether::NotificationPresenter>
                           notification_presenter,

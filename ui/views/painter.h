@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/nine_image_painter_factory.h"
 #include "ui/gfx/geometry/insets.h"
@@ -57,14 +58,18 @@ class VIEWS_EXPORT Painter {
   static std::unique_ptr<Painter> CreateSolidRoundRectPainter(
       SkColor color,
       float radius,
-      const gfx::Insets& insets = gfx::Insets());
+      const gfx::Insets& insets = gfx::Insets(),
+      SkBlendMode blend_mode = SkBlendMode::kSrcOver,
+      bool antialias = true);
 
   // Creates a painter that draws a RoundRect with a solid color and a given
   // corner radius, and also adds a 1px border (inset) in the given color.
   static std::unique_ptr<Painter> CreateRoundRectWith1PxBorderPainter(
       SkColor bg_color,
       SkColor stroke_color,
-      float radius);
+      float radius,
+      SkBlendMode blend_mode = SkBlendMode::kSrcOver,
+      bool antialias = true);
 
   // Creates a painter that divides |image| into nine regions. The four corners
   // are rendered at the size specified in insets (eg. the upper-left corner is

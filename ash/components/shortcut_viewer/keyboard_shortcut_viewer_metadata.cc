@@ -937,6 +937,15 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
 
       {// |categories|
        {ShortcutCategory::kTextEditing},
+       IDS_KSV_DESCRIPTION_GO_TO_END_OF_DOCUMENT,
+       IDS_KSV_SHORTCUT_ONE_MODIFIER_ONE_KEY,
+       // |accelerator_ids|
+       {},
+       // |shortcut_key_codes|
+       {ui::VKEY_COMMAND, ui::VKEY_UNKNOWN, ui::VKEY_RIGHT}},
+
+      {// |categories|
+       {ShortcutCategory::kTextEditing},
        IDS_KSV_DESCRIPTION_GO_TO_BEGINNING_OF_DOCUMENT,
        IDS_KSV_SHORTCUT_TWO_MODIFIERS_ONE_KEY,
        // |accelerator_ids|
@@ -944,6 +953,15 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        // |shortcut_key_codes|
        {ui::VKEY_CONTROL, ui::VKEY_UNKNOWN, ui::VKEY_COMMAND, ui::VKEY_UNKNOWN,
         ui::VKEY_LEFT}},
+
+      {// |categories|
+       {ShortcutCategory::kTextEditing},
+       IDS_KSV_DESCRIPTION_GO_TO_BEGINNING_OF_DOCUMENT,
+       IDS_KSV_SHORTCUT_ONE_MODIFIER_ONE_KEY,
+       // |accelerator_ids|
+       {},
+       // |shortcut_key_codes|
+       {ui::VKEY_COMMAND, ui::VKEY_UNKNOWN, ui::VKEY_LEFT}},
 
       {// |categories|
        {ShortcutCategory::kTextEditing},

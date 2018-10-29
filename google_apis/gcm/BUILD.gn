@@ -132,6 +132,7 @@ if (!is_ios) {
       "//net",
       "//net:test_support",
       "//services/network:network_service",
+      "//services/network:test_support",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//third_party/protobuf:protobuf_lite",

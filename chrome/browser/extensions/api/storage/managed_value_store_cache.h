@@ -44,8 +44,8 @@ class ManagedValueStoreCache : public ValueStoreCache,
   // |observers| is the list of SettingsObservers to notify when a ValueStore
   // changes.
   ManagedValueStoreCache(content::BrowserContext* context,
-                         const scoped_refptr<ValueStoreFactory>& factory,
-                         const scoped_refptr<SettingsObserverList>& observers);
+                         scoped_refptr<ValueStoreFactory> factory,
+                         scoped_refptr<SettingsObserverList> observers);
   ~ManagedValueStoreCache() override;
 
  private:

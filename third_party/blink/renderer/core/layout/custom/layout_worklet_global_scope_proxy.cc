@@ -73,7 +73,7 @@ void LayoutWorkletGlobalScopeProxy::WorkletObjectDestroyed() {
 
 void LayoutWorkletGlobalScopeProxy::TerminateWorkletGlobalScope() {
   DCHECK(IsMainThread());
-  global_scope_->Terminate();
+  global_scope_->Dispose();
   // Nullify these fields to cut a potential reference cycle.
   global_scope_ = nullptr;
   reporting_proxy_.reset();

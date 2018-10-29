@@ -194,16 +194,31 @@ namespace developerPrivate {
     DOMString[] submessages;
   };
 
+  dictionary SiteControl {
+    // The host pattern for the site.
+    DOMString host;
+    // Whether the pattern has been granted.
+    boolean granted;
+  };
+
+  dictionary SpecificSiteControls {
+    // True if |hosts| contains an all hosts like pattern.
+    boolean hasAllHosts;
+
+    // The site controls for all granted and requested patterns.
+    SiteControl[] hosts;
+  };
+
   dictionary Permissions {
     Permission[] simplePermissions;
 
-    // Only populated for extensions affected by the runtime host
-    // permissions feature.
+    // Only populated for extensions that can be affected by the runtime host
+    // permissions feature.The current host access.
     HostAccess? hostAccess;
 
     // Only populated for extensions affected by the runtime host
     // permissions feature and |hostAccess| is equal to ON_SPECIFIC_SITES.
-    DOMString[]? runtimeHostPermissions;
+    SpecificSiteControls? specificSiteControls;
   };
 
   dictionary ExtensionInfo {

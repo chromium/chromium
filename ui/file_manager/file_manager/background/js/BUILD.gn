@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/closure_compiler/js_unit_tests.gni")
 
 # TODO(tapted): This folder should be restricted to file_manager, but related
 # apps currently depend on background_base, which depends on
@@ -17,10 +18,18 @@ related_apps = [
   "//ui/file_manager/video_player/*",
 ]
 
+group("closure_compile") {
+  testonly = true
+  deps = [
+    ":closure_compile_module",
+    ":unit_tests_type_check",
+  ]
+}
+
 # Default to private.
 visibility = [ ":*" ]
 
-js_type_check("closure_compile") {
+js_type_check("closure_compile_module") {
   deps = [
     ":app_window_wrapper",
     ":app_windows",
@@ -55,7 +64,6 @@ js_type_check("closure_compile") {
 js_library("closure_compile_externs") {
   sources = []
   externs_list = [
-    "$externs_path/command_line_private.js",
     "$externs_path/metrics_private.js",
     "../../../externs/background/file_browser_background.js",
     "../../../externs/background/file_browser_background_full.js",
@@ -64,13 +72,9 @@ js_library("closure_compile_externs") {
     "../../../externs/background/media_scanner.js",
     "../../../externs/background_window.js",
     "../../../externs/css_rule.js",
-    "../../../externs/entry_location.js",
     "../../../externs/file_operation_progress_event.js",
     "../../../externs/launcher_search_provider.js",
     "../../../externs/platform.js",
-    "../../../externs/volume_info.js",
-    "../../../externs/volume_info_list.js",
-    "../../../externs/volume_manager.js",
     "//third_party/analytics/externs.js",
   ]
 }
@@ -149,6 +153,7 @@ js_library("entry_location_impl") {
   deps = [
     "../../common/js:volume_manager_common",
   ]
+  externs_list = [ "../../../externs/entry_location.js" ]
 }
 
 js_library("file_operation_handler") {
@@ -262,18 +267,8 @@ js_library("test_util_base") {
 
   deps = [
     ":app_windows",
-    "../../common/js:error_util",
-  ]
-
-  # The callback test_util_base.js passes to chrome.runtime.onMessageExternal()
-  # requires chrome_extensions.js, which has a dependency on chrome.js. Ensure
-  # the externs are introduced at the same time (in this order). Note we are
-  # lucky the list below also sorts in this order, or we'd need some other fix.
-  # A compile error results if the dependency walker encounters a target
-  # that puts chrome_extensions.js into the argument list before chrome.js.
-  externs_list = [
-    "$externs_path/chrome.js",
-    "$externs_path/chrome_extensions.js",
+    "../../../externs:webview_tag",
+    "//ui/file_manager/base/js:error_counter",
   ]
 }
 
@@ -281,6 +276,7 @@ js_library("volume_info_impl") {
   deps = [
     "../../common/js:volume_manager_common",
   ]
+  externs_list = [ "../../../externs/volume_info.js" ]
 }
 
 js_library("volume_info_list_impl") {
@@ -291,6 +287,7 @@ js_library("volume_info_list_impl") {
     "//ui/webui/resources/js/cr:ui",
     "//ui/webui/resources/js/cr/ui:array_data_model",
   ]
+  externs_list = [ "../../../externs/volume_info_list.js" ]
 }
 
 js_library("volume_manager_impl") {
@@ -300,11 +297,21 @@ js_library("volume_manager_impl") {
     ":volume_manager_util",
     "../../common/js:async_util",
   ]
+  externs_list = [ "../../../externs/volume_manager.js" ]
 }
 
 js_library("volume_manager_factory") {
   deps = [
     ":volume_manager_impl",
+  ]
+}
+
+js_unittest("volume_manager_unittest") {
+  deps = [
+    ":volume_manager_factory",
+    "//ui/file_manager/base/js:mock_chrome",
+    "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
   ]
 }
 
@@ -315,5 +322,11 @@ js_library("volume_manager_util") {
     "../../common/js:metrics_events",
     "../../common/js:util",
     "../../common/js:volume_manager_common",
+  ]
+}
+
+js_unit_tests("unit_tests") {
+  deps = [
+    ":volume_manager_unittest",
   ]
 }

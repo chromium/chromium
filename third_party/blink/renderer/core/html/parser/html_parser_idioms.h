@@ -103,6 +103,11 @@ inline bool IsComma(CharType character) {
 }
 
 template <typename CharType>
+inline bool IsColon(CharType character) {
+  return character == ':';
+}
+
+template <typename CharType>
 inline bool IsHTMLSpaceOrComma(CharType character) {
   return IsComma(character) || IsHTMLSpace(character);
 }

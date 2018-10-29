@@ -298,12 +298,12 @@ WebMediaConstraints ParseOptions(ExecutionContext* context,
   if (options.IsNull()) {
     // Do nothing.
   } else if (options.IsMediaTrackConstraints()) {
-    constraints = MediaConstraintsImpl::Create(
+    constraints = media_constraints_impl::Create(
         context, options.GetAsMediaTrackConstraints(), error_state);
   } else {
     DCHECK(options.IsBoolean());
     if (options.GetAsBoolean()) {
-      constraints = MediaConstraintsImpl::Create();
+      constraints = media_constraints_impl::Create();
     }
   }
 
@@ -372,25 +372,47 @@ UserMediaRequest* UserMediaRequest::Create(
     return nullptr;
 
   if (media_type == WebUserMediaRequest::MediaType::kDisplayMedia) {
-    // TODO(emircan): Support constraints after the spec change.
-    // https://w3c.github.io/mediacapture-screen-share/#constraints
-    // 5.2 Constraining Display Surface Selection
-    // The getDisplayMedia function does not permit the use of constraints for
-    // selection of a source as described in the getUserMedia() algorithm.
-    // Prior to invoking the getUserMedia() algorithm, if either of the video
-    // and audio attributes are set to a MediaTrackConstraints value (as
-    // opposed to being absent or set to a Boolean value), reject the promise
-    // with a InvalidAccessError and abort.
-    if (options.audio().IsMediaTrackConstraints() ||
-        options.video().IsMediaTrackConstraints()) {
-      error_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidAccessError,
-          "getDisplayMedia() does not permit the use of constraints.");
+    // https://w3c.github.io/mediacapture-screen-share/#navigator-additions
+    // 5.1 Navigator Additions
+    // 1. Let constraints be the method's first argument.
+    // 2. For each member present in constraints whose value, value, is a
+    // dictionary, run the following steps:
+    //   1. If value contains a member named advanced, return a promise rejected
+    //   with a newly created TypeError.
+    //   2. If value contains a member which in turn is a dictionary containing
+    //   a member named either min or exact, return a promise rejected with a
+    //   newly created TypeError.
+    // 3. Let requestedMediaTypes be the set of media types in constraints with
+    // either a dictionary value or a value of true.
+    // 4. If requestedMediaTypes is the empty set, set requestedMediaTypes to a
+    // set containing "video".
+    if ((!audio.IsNull() && !audio.Advanced().empty()) ||
+        (!video.IsNull() && !video.Advanced().empty())) {
+      error_state.ThrowTypeError("Advanced constraints are not supported");
       return nullptr;
     }
-    // TODO(emircan): Enable when audio capture is supported.
+    if ((!audio.IsNull() && audio.Basic().HasMin()) ||
+        (!video.IsNull() && video.Basic().HasMin())) {
+      error_state.ThrowTypeError("min constraints are not supported");
+      return nullptr;
+    }
+    if ((!audio.IsNull() && audio.Basic().HasExact()) ||
+        (!video.IsNull() && video.Basic().HasExact())) {
+      error_state.ThrowTypeError("exact constraints are not supported");
+      return nullptr;
+    }
+    if (audio.IsNull() && video.IsNull()) {
+      video = ParseOptions(context,
+                           BooleanOrMediaTrackConstraints::FromBoolean(true),
+                           error_state);
+      if (error_state.HadException())
+        return nullptr;
+    }
+
+    // TODO(emircan): Enable when audio capture is actually supported, see
+    // https://crbug.com/896333.
     if (!options.audio().IsNull() && options.audio().GetAsBoolean()) {
-      error_state.ThrowTypeError("Audio is not supported");
+      error_state.ThrowTypeError("Audio capture is not supported");
       return nullptr;
     }
   }
@@ -492,17 +514,15 @@ bool UserMediaRequest::IsSecureContextUse(String& error_message) {
 
     // Feature policy deprecation messages.
     if (Audio()) {
-      if (!document->GetFrame()->IsFeatureEnabled(
-              mojom::FeaturePolicyFeature::kMicrophone,
-              ReportOptions::kReportOnFailure)) {
+      if (!document->IsFeatureEnabled(mojom::FeaturePolicyFeature::kMicrophone,
+                                      ReportOptions::kReportOnFailure)) {
         UseCounter::Count(
             document, WebFeature::kMicrophoneDisabledByFeaturePolicyEstimate);
       }
     }
     if (Video()) {
-      if (!document->GetFrame()->IsFeatureEnabled(
-              mojom::FeaturePolicyFeature::kCamera,
-              ReportOptions::kReportOnFailure)) {
+      if (!document->IsFeatureEnabled(mojom::FeaturePolicyFeature::kCamera,
+                                      ReportOptions::kReportOnFailure)) {
         UseCounter::Count(document,
                           WebFeature::kCameraDisabledByFeaturePolicyEstimate);
       }
@@ -525,11 +545,7 @@ bool UserMediaRequest::IsSecureContextUse(String& error_message) {
 }
 
 Document* UserMediaRequest::OwnerDocument() {
-  if (ExecutionContext* context = GetExecutionContext()) {
-    return ToDocument(context);
-  }
-
-  return nullptr;
+  return To<Document>(GetExecutionContext());
 }
 
 void UserMediaRequest::Start() {

@@ -75,9 +75,7 @@ initWithBaseViewController:(UIViewController*)baseViewController
 }
 
 - (void)infobarLinkDidPress:(NSUInteger)tag {
-  [super infobarLinkDidPress:tag];
-  if (tag != kAccountTag)
-    return;
+  DCHECK_EQ(kAccountTag, tag);
 
   DCHECK(self.baseViewController);
   self.selectorCoordinator = [[SelectorCoordinator alloc]

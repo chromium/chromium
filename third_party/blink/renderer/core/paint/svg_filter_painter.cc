@@ -67,7 +67,7 @@ static void PaintFilteredContent(GraphicsContext& context,
 
   DrawingRecorder recorder(context, object, DisplayItem::kSVGFilter);
   sk_sp<PaintFilter> image_filter =
-      PaintFilterBuilder::Build(effect, kInterpolationSpaceSRGB);
+      paint_filter_builder::Build(effect, kInterpolationSpaceSRGB);
   context.Save();
 
   // Clip drawing of filtered image to the minimum required paint rect.
@@ -153,8 +153,8 @@ void SVGFilterPainter::FinishEffect(
   if (filter_data->state_ == FilterData::kRecordingContent) {
     DCHECK(filter->GetSourceGraphic());
     sk_sp<PaintRecord> content = recording_context.EndContent(bounds);
-    PaintFilterBuilder::BuildSourceGraphic(filter->GetSourceGraphic(),
-                                           std::move(content), bounds);
+    paint_filter_builder::BuildSourceGraphic(filter->GetSourceGraphic(),
+                                             std::move(content), bounds);
     filter_data->state_ = FilterData::kReadyToPaint;
   }
 

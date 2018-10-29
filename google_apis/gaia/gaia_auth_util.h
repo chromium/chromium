@@ -11,11 +11,6 @@
 
 class GURL;
 
-namespace net {
-class URLFetcher;
-class URLRequest;
-} // namespace net
-
 namespace gaia {
 
 struct ListedAccount {
@@ -65,12 +60,6 @@ bool IsGaiaSignonRealm(const GURL& url);
 bool ParseListAccountsData(const std::string& data,
                            std::vector<ListedAccount>* accounts,
                            std::vector<ListedAccount>* signed_out_accounts);
-
-// Returns true if the URL request originated from GAIA.
-bool RequestOriginatedFromGaia(const net::URLRequest& request);
-
-// Marks the URL request as a Gaia request.
-void MarkURLFetcherAsGaia(net::URLFetcher* request);
 
 }  // namespace gaia
 

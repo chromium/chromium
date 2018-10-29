@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.contextual_suggestions;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.view.LayoutInflater;
@@ -13,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ntp.ContextMenuManager;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsRecyclerView;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
@@ -25,6 +24,7 @@ import org.chromium.ui.base.WindowAndroid;
  * {@link ContextualSuggestionsCoordinator} and lifecycle of sub-component objects.
  */
 class ContentCoordinator {
+    private static final String CONTEXT_MENU_USER_ACTION_PREFIX = "ContextualSuggestions";
     private final SuggestionsRecyclerView mRecyclerView;
 
     private ContextualSuggestionsModel mModel;
@@ -70,7 +70,8 @@ class ContentCoordinator {
         mWindowAndroid = windowAndroid;
 
         mContextMenuManager = new ContextMenuManager(uiDelegate.getNavigationDelegate(),
-                mRecyclerView::setTouchEnabled, closeContextMenuCallback, true);
+                mRecyclerView::setTouchEnabled, closeContextMenuCallback,
+                CONTEXT_MENU_USER_ACTION_PREFIX);
         mWindowAndroid.addContextMenuCloseListener(mContextMenuManager);
 
         ClusterList clusterList = mModel.getClusterList();
@@ -86,13 +87,6 @@ class ContentCoordinator {
                 mModel.setToolbarShadowVisibility(mRecyclerView.canScrollVertically(-1));
             }
         });
-
-        if (mModel.isSlimPeekEnabled()) {
-            ViewCompat.setPaddingRelative(mRecyclerView, ViewCompat.getPaddingStart(mRecyclerView),
-                    context.getResources().getDimensionPixelSize(
-                            R.dimen.bottom_control_container_slim_expanded_height),
-                    ViewCompat.getPaddingEnd(mRecyclerView), mRecyclerView.getPaddingBottom());
-        }
     }
 
     /** Destroy the content component. */

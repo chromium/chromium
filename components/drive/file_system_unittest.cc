@@ -16,9 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "components/drive/chromeos/drive_change_list_loader.h"
 #include "components/drive/chromeos/drive_test_util.h"
 #include "components/drive/chromeos/fake_free_disk_space_getter.h"
@@ -116,11 +114,35 @@ class MockDirectoryChangeObserver : public FileSystemObserver {
   DISALLOW_COPY_AND_ASSIGN(MockDirectoryChangeObserver);
 };
 
+struct DestroyHelper {
+  // FileSystemTest needs to be default constructible, so we provide a default
+  // constructor here.
+  DestroyHelper() = default;
+
+  explicit DestroyHelper(
+      scoped_refptr<base::TestMockTimeTaskRunner> task_runner)
+      : task_runner_(task_runner) {}
+
+  template <typename T>
+  void operator()(T* object) const {
+    DCHECK(task_runner_);
+    if (object) {
+      object->Destroy();
+      task_runner_->RunUntilIdle();
+    }
+  }
+
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+};
+
 }  // namespace
 
 class FileSystemTest : public testing::Test {
  protected:
   void SetUp() override {
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
+        base::TestMockTimeTaskRunner::Type::kBoundToThread);
+
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     test_util::RegisterDrivePrefs(pref_service_->registry());
@@ -133,7 +155,7 @@ class FileSystemTest : public testing::Test {
 
     scheduler_ = std::make_unique<JobScheduler>(
         pref_service_.get(), logger_.get(), fake_drive_service_.get(),
-        base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+        task_runner_.get(), nullptr);
 
     mock_directory_observer_ = std::make_unique<MockDirectoryChangeObserver>();
 
@@ -143,29 +165,34 @@ class FileSystemTest : public testing::Test {
   void SetUpResourceMetadataAndFileSystem() {
     const base::FilePath metadata_dir = temp_dir_.GetPath().AppendASCII("meta");
     ASSERT_TRUE(base::CreateDirectory(metadata_dir));
-    metadata_storage_.reset(new internal::ResourceMetadataStorage(
-        metadata_dir, base::ThreadTaskRunnerHandle::Get().get()));
+    metadata_storage_ =
+        std::unique_ptr<internal::ResourceMetadataStorage, DestroyHelper>(
+            new internal::ResourceMetadataStorage(metadata_dir,
+                                                  task_runner_.get()),
+            DestroyHelper(task_runner_.get()));
     ASSERT_TRUE(metadata_storage_->Initialize());
 
     const base::FilePath cache_dir = temp_dir_.GetPath().AppendASCII("files");
     ASSERT_TRUE(base::CreateDirectory(cache_dir));
-    cache_.reset(new internal::FileCache(
-        metadata_storage_.get(),
-        cache_dir,
-        base::ThreadTaskRunnerHandle::Get().get(),
-        fake_free_disk_space_getter_.get()));
+    cache_ = std::unique_ptr<internal::FileCache, DestroyHelper>(
+        new internal::FileCache(metadata_storage_.get(), cache_dir,
+                                task_runner_.get(),
+                                fake_free_disk_space_getter_.get()),
+        DestroyHelper(task_runner_.get()));
     ASSERT_TRUE(cache_->Initialize());
 
-    resource_metadata_.reset(new internal::ResourceMetadata(
-        metadata_storage_.get(), cache_.get(),
-        base::ThreadTaskRunnerHandle::Get()));
+    resource_metadata_ =
+        std::unique_ptr<internal::ResourceMetadata, DestroyHelper>(
+            new internal::ResourceMetadata(metadata_storage_.get(),
+                                           cache_.get(), task_runner_.get()),
+            DestroyHelper(task_runner_.get()));
     ASSERT_EQ(FILE_ERROR_OK, resource_metadata_->Initialize());
 
     const base::FilePath temp_file_dir = temp_dir_.GetPath().AppendASCII("tmp");
     ASSERT_TRUE(base::CreateDirectory(temp_file_dir));
     file_system_ = std::make_unique<FileSystem>(
         logger_.get(), cache_.get(), scheduler_.get(), resource_metadata_.get(),
-        base::ThreadTaskRunnerHandle::Get().get(), temp_file_dir);
+        task_runner_.get(), temp_file_dir, task_runner_->GetMockClock());
     file_system_->AddObserver(mock_directory_observer_.get());
 
     // Disable delaying so that the sync starts immediately.
@@ -181,7 +208,7 @@ class FileSystemTest : public testing::Test {
     FileError error = FILE_ERROR_FAILED;
     file_system_->change_list_loader_for_testing()->LoadIfNeeded(
         google_apis::test_util::CreateCopyResultCallback(&error));
-    content::RunAllTasksUntilIdle();
+    task_runner_->RunUntilIdle();
     return error == FILE_ERROR_OK;
   }
 
@@ -193,7 +220,7 @@ class FileSystemTest : public testing::Test {
     file_system_->GetResourceEntry(
         file_path,
         google_apis::test_util::CreateCopyResultCallback(&error, &entry));
-    content::RunAllTasksUntilIdle();
+    task_runner_->RunUntilIdle();
 
     return entry;
   }
@@ -207,7 +234,7 @@ class FileSystemTest : public testing::Test {
         file_path,
         base::Bind(&AccumulateReadDirectoryResult, entries.get()),
         google_apis::test_util::CreateCopyResultCallback(&error));
-    content::RunAllTasksUntilIdle();
+    task_runner_->RunUntilIdle();
     if (error != FILE_ERROR_OK)
       entries.reset();
     return entries;
@@ -243,22 +270,23 @@ class FileSystemTest : public testing::Test {
 
     const base::FilePath metadata_dir = temp_dir_.GetPath().AppendASCII("meta");
     ASSERT_TRUE(base::CreateDirectory(metadata_dir));
-    std::unique_ptr<internal::ResourceMetadataStorage,
-                    test_util::DestroyHelperForTests>
+    std::unique_ptr<internal::ResourceMetadataStorage, DestroyHelper>
         metadata_storage(new internal::ResourceMetadataStorage(
-            metadata_dir, base::ThreadTaskRunnerHandle::Get().get()));
+                             metadata_dir, task_runner_.get()),
+                         DestroyHelper(task_runner_.get()));
 
     const base::FilePath cache_dir = temp_dir_.GetPath().AppendASCII("files");
-    std::unique_ptr<internal::FileCache, test_util::DestroyHelperForTests>
-        cache(new internal::FileCache(metadata_storage.get(), cache_dir,
-                                      base::ThreadTaskRunnerHandle::Get().get(),
-                                      fake_free_disk_space_getter_.get()));
+    std::unique_ptr<internal::FileCache, DestroyHelper> cache(
+        new internal::FileCache(metadata_storage.get(), cache_dir,
+                                task_runner_.get(),
+                                fake_free_disk_space_getter_.get()),
+        DestroyHelper(task_runner_.get()));
 
-    std::unique_ptr<internal::ResourceMetadata,
-                    test_util::DestroyHelperForTests>
-        resource_metadata(new internal::ResourceMetadata(
-            metadata_storage_.get(), cache.get(),
-            base::ThreadTaskRunnerHandle::Get()));
+    std::unique_ptr<internal::ResourceMetadata, DestroyHelper>
+        resource_metadata(
+            new internal::ResourceMetadata(metadata_storage_.get(), cache.get(),
+                                           task_runner_.get()),
+            DestroyHelper(task_runner_.get()));
 
     ASSERT_EQ(FILE_ERROR_OK, resource_metadata->Initialize());
 
@@ -429,7 +457,7 @@ class FileSystemTest : public testing::Test {
     return true;
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::ScopedTempDir temp_dir_;
   // We don't use TestingProfile::GetPrefs() in favor of having less
   // dependencies to Profile in general.
@@ -441,12 +469,10 @@ class FileSystemTest : public testing::Test {
   std::unique_ptr<JobScheduler> scheduler_;
   std::unique_ptr<MockDirectoryChangeObserver> mock_directory_observer_;
 
-  std::unique_ptr<internal::ResourceMetadataStorage,
-                  test_util::DestroyHelperForTests>
+  std::unique_ptr<internal::ResourceMetadataStorage, DestroyHelper>
       metadata_storage_;
-  std::unique_ptr<internal::FileCache, test_util::DestroyHelperForTests> cache_;
-  std::unique_ptr<internal::ResourceMetadata, test_util::DestroyHelperForTests>
-      resource_metadata_;
+  std::unique_ptr<internal::FileCache, DestroyHelper> cache_;
+  std::unique_ptr<internal::ResourceMetadata, DestroyHelper> resource_metadata_;
   std::unique_ptr<FileSystem> file_system_;
 };
 
@@ -461,7 +487,7 @@ TEST_F(FileSystemTest, SearchByHashes) {
   file_system_->SearchByHashes(
       hashes,
       google_apis::test_util::CreateCopyResultCallback(&error, &results));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(FILE_PATH_LITERAL("drive/root/File1"), results[0].path.value());
@@ -471,7 +497,7 @@ TEST_F(FileSystemTest, SearchByHashes) {
   file_system_->SearchByHashes(
       hashes,
       google_apis::test_util::CreateCopyResultCallback(&error, &results));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
   ASSERT_EQ(2u, results.size());
   std::sort(results.begin(), results.end(), &CompareHashAndFilePath);
@@ -486,7 +512,7 @@ TEST_F(FileSystemTest, SearchByHashes) {
   file_system_->SearchByHashes(
       hashes,
       google_apis::test_util::CreateCopyResultCallback(&error, &results));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
   ASSERT_EQ(3u, results.size());
   std::sort(results.begin(), results.end(), &CompareHashAndFilePath);
@@ -508,7 +534,7 @@ TEST_F(FileSystemTest, Copy) {
                      dest_file_path,
                      false,  // preserve_last_modified,
                      google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   // Entry is added on the server.
@@ -520,7 +546,7 @@ TEST_F(FileSystemTest, Copy) {
   fake_drive_service_->GetFileResource(
       entry->resource_id(),
       google_apis::test_util::CreateCopyResultCallback(&status, &server_entry));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(google_apis::HTTP_SUCCESS, status);
   ASSERT_TRUE(server_entry);
   EXPECT_EQ(entry->title(), server_entry->title());
@@ -541,7 +567,7 @@ TEST_F(FileSystemTest, Move) {
   file_system_->Move(src_file_path,
                      dest_file_path,
                      google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   // Entry is moved on the server.
@@ -553,7 +579,7 @@ TEST_F(FileSystemTest, Move) {
   fake_drive_service_->GetFileResource(
       entry->resource_id(),
       google_apis::test_util::CreateCopyResultCallback(&status, &server_entry));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(google_apis::HTTP_SUCCESS, status);
   ASSERT_TRUE(server_entry);
   EXPECT_EQ(entry->title(), server_entry->title());
@@ -572,7 +598,7 @@ TEST_F(FileSystemTest, Remove) {
       file_path,
       false,  // is_resursive
       google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   // Entry is removed on the server.
@@ -581,7 +607,7 @@ TEST_F(FileSystemTest, Remove) {
   fake_drive_service_->GetFileResource(
       entry->resource_id(),
       google_apis::test_util::CreateCopyResultCallback(&status, &server_entry));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(google_apis::HTTP_SUCCESS, status);
   ASSERT_TRUE(server_entry);
   EXPECT_TRUE(server_entry->labels().is_trashed());
@@ -597,7 +623,7 @@ TEST_F(FileSystemTest, CreateDirectory) {
       true,  // is_exclusive
       false,  // is_recursive
       google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   // Directory is created on the server.
@@ -609,7 +635,7 @@ TEST_F(FileSystemTest, CreateDirectory) {
   fake_drive_service_->GetFileResource(
       entry->resource_id(),
       google_apis::test_util::CreateCopyResultCallback(&status, &server_entry));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(google_apis::HTTP_SUCCESS, status);
   ASSERT_TRUE(server_entry);
   EXPECT_EQ(entry->title(), server_entry->title());
@@ -626,7 +652,7 @@ TEST_F(FileSystemTest, CreateFile) {
       true,  // is_exclusive
       "text/plain",
       google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   // File is created on the server.
@@ -638,7 +664,7 @@ TEST_F(FileSystemTest, CreateFile) {
   fake_drive_service_->GetFileResource(
       entry->resource_id(),
       google_apis::test_util::CreateCopyResultCallback(&status, &server_entry));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(google_apis::HTTP_SUCCESS, status);
   ASSERT_TRUE(server_entry);
   EXPECT_EQ(entry->title(), server_entry->title());
@@ -663,7 +689,7 @@ TEST_F(FileSystemTest, TouchFile) {
       last_accessed,
       last_modified,
       google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   // File is touched on the server.
@@ -672,7 +698,7 @@ TEST_F(FileSystemTest, TouchFile) {
   fake_drive_service_->GetFileResource(
       entry->resource_id(),
       google_apis::test_util::CreateCopyResultCallback(&status, &server_entry));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(google_apis::HTTP_SUCCESS, status);
   ASSERT_TRUE(server_entry);
   EXPECT_EQ(last_accessed, server_entry->last_viewed_by_me_date());
@@ -692,7 +718,7 @@ TEST_F(FileSystemTest, TruncateFile) {
       file_path,
       kLength,
       google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   // File is touched on the server.
@@ -701,7 +727,7 @@ TEST_F(FileSystemTest, TruncateFile) {
   fake_drive_service_->GetFileResource(
       entry->resource_id(),
       google_apis::test_util::CreateCopyResultCallback(&status, &server_entry));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(google_apis::HTTP_SUCCESS, status);
   ASSERT_TRUE(server_entry);
   EXPECT_EQ(kLength, server_entry->file_size());
@@ -817,14 +843,14 @@ TEST_F(FileSystemTest, ReadDirectory_Root) {
       ReadDirectorySync(base::FilePath::FromUTF8Unsafe("drive")));
   // The root directory should be read correctly.
   ASSERT_TRUE(entries);
-  ASSERT_EQ(4U, entries->size());
+  ASSERT_EQ(5U, entries->size());
 
   // The found three directories should be /drive/root, /drive/other,
   // /drive/trash and /drive/team_drives.
   std::set<base::FilePath> found;
   for (size_t i = 0; i < entries->size(); ++i)
     found.insert(base::FilePath::FromUTF8Unsafe((*entries)[i].title()));
-  EXPECT_EQ(4U, found.size());
+  EXPECT_EQ(5U, found.size());
   EXPECT_EQ(1U, found.count(base::FilePath::FromUTF8Unsafe(
                     util::kDriveMyDriveRootDirName)));
   EXPECT_EQ(1U, found.count(
@@ -833,6 +859,8 @@ TEST_F(FileSystemTest, ReadDirectory_Root) {
                     base::FilePath::FromUTF8Unsafe(util::kDriveTrashDirName)));
   EXPECT_EQ(1U, found.count(base::FilePath::FromUTF8Unsafe(
                     util::kDriveTeamDrivesDirName)));
+  EXPECT_EQ(1U, found.count(base::FilePath::FromUTF8Unsafe(
+                    util::kDriveComputersDirName)));
 }
 
 TEST_F(FileSystemTest, ReadDirectory_TeamDrivesRoot) {
@@ -997,7 +1025,7 @@ TEST_F(FileSystemTest, LoadFileSystemFromUpToDateCache) {
   const int start_page_toke_load_count_before =
       fake_drive_service_->start_page_token_load_count();
   file_system_->CheckForUpdates();
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_LT(start_page_toke_load_count_before,
             fake_drive_service_->start_page_token_load_count());
 }
@@ -1039,7 +1067,7 @@ TEST_F(FileSystemTest, LoadFileSystemFromCacheWhileOffline) {
 
   file_system_->CheckForUpdates();
 
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(1, fake_drive_service_->start_page_token_load_count());
   EXPECT_EQ(1, fake_drive_service_->change_list_load_count());
 
@@ -1083,7 +1111,7 @@ TEST_F(FileSystemTest, CreateDirectoryByImplicitLoad) {
       true,  // is_exclusive
       false,  // is_recursive
       google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
 
   // It should fail because is_exclusive is set to true.
   EXPECT_EQ(FILE_ERROR_EXISTS, error);
@@ -1101,7 +1129,7 @@ TEST_F(FileSystemTest, CreateDirectoryRecursively) {
       true,  // is_exclusive
       true,  // is_recursive
       google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
 
   EXPECT_EQ(FILE_ERROR_OK, error);
 
@@ -1152,6 +1180,9 @@ TEST_F(FileSystemTest, ReadDirectoryAfterUpdateWhileLoading) {
   // Notify the update to the file system.
   file_system_->CheckForUpdates();
 
+  // Fast forward the clock, so that a new read of the directory is started.
+  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(1));
+
   // Read the directory once again. Although the full feed fetching is not yet
   // finished, the "fast fetch" of the directory works and the refreshed content
   // is returned.
@@ -1174,7 +1205,7 @@ TEST_F(FileSystemTest, PinAndUnpin) {
   FileError error = FILE_ERROR_FAILED;
   file_system_->Pin(file_path,
                     google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   entry = GetResourceEntrySync(file_path);
@@ -1186,7 +1217,7 @@ TEST_F(FileSystemTest, PinAndUnpin) {
   error = FILE_ERROR_FAILED;
   file_system_->Unpin(file_path,
                       google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   entry = GetResourceEntrySync(file_path);
@@ -1221,7 +1252,7 @@ TEST_F(FileSystemTest, PinAndUnpin_NotSynced) {
       file_path,
       google_apis::test_util::CreateCopyResultCallback(&error_unpin));
 
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error_pin);
   EXPECT_EQ(FILE_ERROR_OK, error_unpin);
 
@@ -1238,7 +1269,7 @@ TEST_F(FileSystemTest, GetAvailableSpace) {
   file_system_->GetAvailableSpace(
       google_apis::test_util::CreateCopyResultCallback(
           &error, &bytes_total, &bytes_used));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(6789012345LL, bytes_used);
   EXPECT_EQ(9876543210LL, bytes_total);
 }
@@ -1256,7 +1287,7 @@ TEST_F(FileSystemTest, MarkCacheFileAsMountedAndUnmounted) {
       file_in_root,
       google_apis::test_util::CreateCopyResultCallback(
           &error, &file_path, &entry));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   // Test for mounting.
@@ -1265,7 +1296,7 @@ TEST_F(FileSystemTest, MarkCacheFileAsMountedAndUnmounted) {
   file_system_->MarkCacheFileAsMounted(
       file_in_root,
       google_apis::test_util::CreateCopyResultCallback(&error, &file_path));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   error = FILE_ERROR_FAILED;
@@ -1273,7 +1304,7 @@ TEST_F(FileSystemTest, MarkCacheFileAsMountedAndUnmounted) {
   file_system_->IsCacheFileMarkedAsMounted(
       file_in_root, google_apis::test_util::CreateCopyResultCallback(
                         &error, &is_marked_as_mounted));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
   EXPECT_TRUE(is_marked_as_mounted);
 
@@ -1285,7 +1316,7 @@ TEST_F(FileSystemTest, MarkCacheFileAsMountedAndUnmounted) {
   file_system_->MarkCacheFileAsUnmounted(
       file_path,
       google_apis::test_util::CreateCopyResultCallback(&error));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
 
   error = FILE_ERROR_FAILED;
@@ -1293,7 +1324,7 @@ TEST_F(FileSystemTest, MarkCacheFileAsMountedAndUnmounted) {
   file_system_->IsCacheFileMarkedAsMounted(
       file_in_root, google_apis::test_util::CreateCopyResultCallback(
                         &error, &is_marked_as_mounted));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
   EXPECT_FALSE(is_marked_as_mounted);
 
@@ -1313,7 +1344,7 @@ TEST_F(FileSystemTest, FreeDiskSpaceIfNeededFor) {
   file_system_->GetFile(file_in_root,
                         google_apis::test_util::CreateCopyResultCallback(
                             &error, &file_path, &entry));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(FILE_ERROR_OK, error);
   ASSERT_TRUE(entry);
   EXPECT_TRUE(entry->file_specific_info().cache_state().is_present());
@@ -1322,7 +1353,7 @@ TEST_F(FileSystemTest, FreeDiskSpaceIfNeededFor) {
   file_system_->FreeDiskSpaceIfNeededFor(
       512LL << 40,
       google_apis::test_util::CreateCopyResultCallback(&available));
-  content::RunAllTasksUntilIdle();
+  task_runner_->RunUntilIdle();
   ASSERT_FALSE(available);
 
   entry = GetResourceEntrySync(file_in_root);

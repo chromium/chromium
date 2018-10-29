@@ -137,8 +137,8 @@ AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format);
 // Converts video formats to its corresponding FFmpeg's pixel formats.
 AVPixelFormat VideoPixelFormatToAVPixelFormat(VideoPixelFormat video_format);
 
-ColorSpace AVColorSpaceToColorSpace(AVColorSpace color_space,
-                                    AVColorRange color_range);
+VideoColorSpace AVColorSpaceToColorSpace(AVColorSpace color_space,
+                                         AVColorRange color_range);
 
 // Converts an AVERROR error number to a description.
 std::string AVErrorToString(int errnum);

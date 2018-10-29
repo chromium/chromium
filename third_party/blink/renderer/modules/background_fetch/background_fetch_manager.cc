@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/use_counter.h"
-#include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_bridge.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_icon_loader.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_options.h"
@@ -84,14 +83,6 @@ bool ShouldBlockScheme(const KURL& request_url) {
          !request_url.ProtocolIs(WTF::g_https_atom);
 }
 
-bool ShouldBlockMixedContent(ExecutionContext* execution_context,
-                             const KURL& request_url) {
-  // TODO(crbug.com/757441): Using MixedContentChecker::ShouldBlockFetch would
-  // log better metrics.
-  return MixedContentChecker::IsMixedContent(
-      execution_context->GetSecurityOrigin(), request_url);
-}
-
 bool ShouldBlockDanglingMarkup(const KURL& request_url) {
   // "If request's url's potentially-dangling-markup flag is set, and request's
   // url's scheme is an HTTP(S) scheme, then set response to a network error."
@@ -101,29 +92,9 @@ bool ShouldBlockDanglingMarkup(const KURL& request_url) {
          request_url.ProtocolIsInHTTPFamily();
 }
 
-bool ShouldBlockCORSPreflight(ExecutionContext* execution_context,
-                              const WebServiceWorkerRequest& web_request,
-                              const KURL& request_url) {
-  // Requests that require CORS preflights are temporarily blocked, because the
-  // browser side of Background Fetch doesn't yet support performing CORS
-  // checks. TODO(crbug.com/711354): Remove this temporary block.
-
-  // Same origin requests don't require a CORS preflight.
-  // https://fetch.spec.whatwg.org/#main-fetch
-  // TODO(crbug.com/711354): Make sure that cross-origin redirects are disabled.
-  bool same_origin =
-      execution_context->GetSecurityOrigin()->CanRequest(request_url);
-  if (same_origin)
-    return false;
-
-  // Requests that are more involved than what is possible with HTML's form
-  // element require a CORS-preflight request.
-  // https://fetch.spec.whatwg.org/#main-fetch
-  if (!CORS::IsCORSSafelistedMethod(web_request.Method()) ||
-      !CORS::ContainsOnlyCORSSafelistedHeaders(web_request.Headers())) {
-    return true;
-  }
-
+bool ShouldBlockGateWayAttacks(ExecutionContext* execution_context,
+                               const WebServiceWorkerRequest& web_request,
+                               const KURL& request_url) {
   if (RuntimeEnabledFeatures::CorsRFC1918Enabled()) {
     mojom::IPAddressSpace requestor_space =
         execution_context->GetSecurityContext().AddressSpace();
@@ -132,7 +103,7 @@ bool ShouldBlockCORSPreflight(ExecutionContext* execution_context,
     // all this up to //net and //content in order to have any real impact on
     // gateway attacks. That turns out to be a TON of work (crbug.com/378566).
     mojom::IPAddressSpace target_space = mojom::IPAddressSpace::kPublic;
-    if (NetworkUtils::IsReservedIPAddress(request_url.Host()))
+    if (network_utils::IsReservedIPAddress(request_url.Host()))
       target_space = mojom::IPAddressSpace::kPrivate;
     if (SecurityOrigin::Create(request_url)->IsLocalhost())
       target_space = mojom::IPAddressSpace::kLocal;
@@ -150,8 +121,7 @@ bool ShouldBlockCORSPreflight(ExecutionContext* execution_context,
 BackgroundFetchManager::BackgroundFetchManager(
     ServiceWorkerRegistration* registration)
     : ContextLifecycleObserver(registration->GetExecutionContext()),
-      registration_(registration),
-      loader_(new BackgroundFetchIconLoader()) {
+      registration_(registration) {
   DCHECK(registration);
   bridge_ = BackgroundFetchBridge::From(registration_);
 }
@@ -180,8 +150,8 @@ ScriptPromise BackgroundFetchManager::fetch(
   UMA_HISTOGRAM_BOOLEAN("BackgroundFetch.HasRequestsWithBody",
                         has_requests_with_body);
 
-  // TODO(crbug.com/789854): Stop bailing here once we support uploads.
-  if (has_requests_with_body) {
+  if (has_requests_with_body &&
+      !RuntimeEnabledFeatures::BackgroundFetchUploadsEnabled()) {
     return ScriptPromise::Reject(
         script_state, V8ThrowException::CreateTypeError(
                           script_state->GetIsolate(),
@@ -201,14 +171,6 @@ ScriptPromise BackgroundFetchManager::fetch(
   // the Download Service in the browser process can use it without having to
   // spin up a renderer process.
   for (const WebServiceWorkerRequest& web_request : web_requests) {
-    // TODO(crbug.com/757441): Decide whether to support upgrading requests to
-    // potentially secure URLs (https://w3c.github.io/webappsec-upgrade-
-    // insecure-requests/) and/or HSTS rewriting. Since this is a new API only
-    // exposed on Secure Contexts, and the Mixed Content check below will block
-    // any requests to insecure contexts, it'd be cleanest not to support it.
-    // Depends how closely compatible with Fetch we want to be. If support is
-    // added, make sure to report CSP violations before upgrading the URL.
-
     KURL request_url(web_request.Url());
 
     if (!request_url.IsValid()) {
@@ -225,7 +187,7 @@ ScriptPromise BackgroundFetchManager::fetch(
     }
 
     // Check this before mixed content, so that if mixed content is blocked by
-    // CSP they get a CSP warning rather than a mixed content warning.
+    // CSP they get a CSP warning rather than a mixed content failure.
     if (ShouldBlockDueToCSP(execution_context, request_url)) {
       return RejectWithTypeError(script_state, request_url,
                                  "it violates the Content Security Policy");
@@ -247,22 +209,16 @@ ScriptPromise BackgroundFetchManager::fetch(
                                  "for loopback IPs");
     }
 
-    // Blocking fetches due to mixed content is done after Content Security
-    // Policy to prioritize warnings caused by the latter.
-    if (ShouldBlockMixedContent(execution_context, request_url)) {
-      return RejectWithTypeError(script_state, request_url,
-                                 "it is insecure; use https instead");
-    }
-
     if (ShouldBlockDanglingMarkup(request_url)) {
       return RejectWithTypeError(script_state, request_url,
                                  "it contains dangling markup");
     }
 
-    if (ShouldBlockCORSPreflight(execution_context, web_request, request_url)) {
+    if (ShouldBlockGateWayAttacks(execution_context, web_request,
+                                  request_url)) {
       return RejectWithTypeError(script_state, request_url,
-                                 "CORS preflights are not yet supported "
-                                 "by this browser");
+                                 "Requestor IP address space doesn't match the "
+                                 "target address space.");
     }
 
     kurls.insert(request_url);
@@ -295,16 +251,19 @@ ScriptPromise BackgroundFetchManager::fetch(
   mojom::blink::BackgroundFetchOptionsPtr options_ptr =
       mojom::blink::BackgroundFetchOptions::From(options);
   if (options.icons().size()) {
-    loader_->Start(
+    BackgroundFetchIconLoader* loader = new BackgroundFetchIconLoader();
+    loaders_.push_back(loader);
+    loader->Start(
         bridge_.Get(), execution_context, options.icons(),
         WTF::Bind(&BackgroundFetchManager::DidLoadIcons, WrapPersistent(this),
                   id, WTF::Passed(std::move(web_requests)),
-                  std::move(options_ptr), WrapPersistent(resolver)));
+                  std::move(options_ptr), WrapPersistent(resolver),
+                  WrapWeakPersistent(loader)));
     return promise;
   }
 
   DidLoadIcons(id, std::move(web_requests), std::move(options_ptr), resolver,
-               SkBitmap(), -1 /* ideal_to_chosen_icon_size */);
+               nullptr, SkBitmap(), -1 /* ideal_to_chosen_icon_size */);
   return promise;
 }
 
@@ -313,8 +272,12 @@ void BackgroundFetchManager::DidLoadIcons(
     Vector<WebServiceWorkerRequest> web_requests,
     mojom::blink::BackgroundFetchOptionsPtr options,
     ScriptPromiseResolver* resolver,
+    BackgroundFetchIconLoader* loader,
     const SkBitmap& icon,
     int64_t ideal_to_chosen_icon_size) {
+  if (loader)
+    loaders_.erase(std::find(loaders_.begin(), loaders_.end(), loader));
+
   auto ukm_data = mojom::blink::BackgroundFetchUkmData::New();
   ukm_data->ideal_to_chosen_icon_size = ideal_to_chosen_icon_size;
   bridge_->Fetch(
@@ -366,6 +329,11 @@ void BackgroundFetchManager::DidFetch(
       resolver->Reject(DOMException::Create(
           DOMExceptionCode::kQuotaExceededError, "Quota exceeded."));
       return;
+    case mojom::blink::BackgroundFetchError::REGISTRATION_LIMIT_EXCEEDED:
+      resolver->Reject(V8ThrowException::CreateTypeError(
+          script_state->GetIsolate(),
+          "There are too many active fetches for this origin."));
+      return;
     case mojom::blink::BackgroundFetchError::INVALID_ARGUMENT:
     case mojom::blink::BackgroundFetchError::INVALID_ID:
       // Not applicable for this callback.
@@ -381,6 +349,15 @@ ScriptPromise BackgroundFetchManager::get(ScriptState* script_state,
   // if |registration_| has not been activated we can skip the Mojo roundtrip.
   if (!registration_->active())
     return ScriptPromise::CastUndefined(script_state);
+
+  ScriptState::Scope scope(script_state);
+
+  if (id.IsEmpty()) {
+    return ScriptPromise::Reject(
+        script_state,
+        V8ThrowException::CreateTypeError(script_state->GetIsolate(),
+                                          "The provided id is invalid."));
+  }
 
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -416,7 +393,7 @@ Vector<WebServiceWorkerRequest> BackgroundFetchManager::CreateWebRequestVector(
 
     web_requests.resize(request_vector.size());
 
-    for (size_t i = 0; i < request_vector.size(); ++i) {
+    for (wtf_size_t i = 0; i < request_vector.size(); ++i) {
       const RequestOrUSVString& request_or_url = request_vector[i];
 
       Request* request = nullptr;
@@ -501,6 +478,7 @@ void BackgroundFetchManager::DidGetRegistration(
     case mojom::blink::BackgroundFetchError::INVALID_ARGUMENT:
     case mojom::blink::BackgroundFetchError::PERMISSION_DENIED:
     case mojom::blink::BackgroundFetchError::QUOTA_EXCEEDED:
+    case mojom::blink::BackgroundFetchError::REGISTRATION_LIMIT_EXCEEDED:
       // Not applicable for this callback.
       break;
   }
@@ -552,6 +530,7 @@ void BackgroundFetchManager::DidGetDeveloperIds(
     case mojom::blink::BackgroundFetchError::PERMISSION_DENIED:
     case mojom::blink::BackgroundFetchError::SERVICE_WORKER_UNAVAILABLE:
     case mojom::blink::BackgroundFetchError::QUOTA_EXCEEDED:
+    case mojom::blink::BackgroundFetchError::REGISTRATION_LIMIT_EXCEEDED:
       // Not applicable for this callback.
       break;
   }
@@ -562,15 +541,17 @@ void BackgroundFetchManager::DidGetDeveloperIds(
 void BackgroundFetchManager::Trace(blink::Visitor* visitor) {
   visitor->Trace(registration_);
   visitor->Trace(bridge_);
-  visitor->Trace(loader_);
+  visitor->Trace(loaders_);
   ContextLifecycleObserver::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 
 void BackgroundFetchManager::ContextDestroyed(ExecutionContext* context) {
-  if (loader_) {
-    loader_->Stop();
+  for (const auto& loader : loaders_) {
+    if (loader)
+      loader->Stop();
   }
+  loaders_.clear();
 }
 
 }  // namespace blink

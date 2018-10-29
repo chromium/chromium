@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkPoint.h"
+#include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 
 namespace blink {
@@ -117,6 +118,10 @@ FloatPoint::operator gfx::ScrollOffset() const {
 
 FloatPoint::operator gfx::Vector2dF() const {
   return gfx::Vector2dF(x_, y_);
+}
+
+FloatPoint::operator gfx::Point3F() const {
+  return gfx::Point3F(x_, y_, 0.f);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const FloatPoint& point) {

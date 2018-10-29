@@ -49,15 +49,9 @@ void MediaRouterDialogControllerViewsTest::OpenMediaRouterDialog() {
   ASSERT_TRUE(dialog_controller_->IsShowingMediaRouterDialog());
 }
 
-// TODO(crbug.com/883976): OpenCloseMediaRouterDialog is failing on mac.
-#if defined(OS_MACOSX)
-#define MAYBE_OpenCloseMediaRouterDialog DISABLED_OpenCloseMediaRouterDialog
-#else
-#define MAYBE_OpenCloseMediaRouterDialog OpenCloseMediaRouterDialog
-#endif
 // Create/Get a media router dialog for initiator.
 IN_PROC_BROWSER_TEST_F(MediaRouterDialogControllerViewsTest,
-                       MAYBE_OpenCloseMediaRouterDialog) {
+                       OpenCloseMediaRouterDialog) {
   OpenMediaRouterDialog();
   views::Widget* widget = CastDialogView::GetCurrentDialogWidget();
   ASSERT_TRUE(widget);

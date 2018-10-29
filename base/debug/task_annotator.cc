@@ -44,10 +44,8 @@ void TaskAnnotator::WillQueueTask(const char* queue_function,
                            TRACE_EVENT_FLAG_FLOW_OUT);
   }
 
-  // TODO(https://crbug.com/826902): Fix callers that invoke WillQueueTask()
-  // twice for the same PendingTask.
-  // DCHECK(!pending_task.task_backtrace[0])
-  //     << "Task backtrace was already set, task posted twice??";
+  DCHECK(!pending_task->task_backtrace[0])
+      << "Task backtrace was already set, task posted twice??";
   if (!pending_task->task_backtrace[0]) {
     const PendingTask* parent_task = GetTLSForCurrentPendingTask()->Get();
     if (parent_task) {

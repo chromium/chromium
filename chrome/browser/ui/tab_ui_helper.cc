@@ -18,10 +18,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/resources/grit/ui_resources.h"
 
-#if defined(OS_MACOSX)
-#include "chrome/browser/ui/views_mode_controller.h"
-#endif
-
 namespace {
 
 base::string16 FormatUrlToSubdomain(const GURL& url) {
@@ -60,15 +56,6 @@ base::string16 TabUIHelper::GetTitle() const {
 gfx::Image TabUIHelper::GetFavicon() const {
   if (ShouldUseFaviconFromHistory() && tab_ui_data_)
     return tab_ui_data_->favicon;
-
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    return gfx::Image();
-// For views browser windows on Mac, it will fall through to be handled
-// in the following function. If default favicon needs to be drawn more
-// visible on dark theme, consider porting code from
-// mac::FaviconForWebContents().
-#endif
   return favicon::TabFaviconFromWebContents(web_contents());
 }
 

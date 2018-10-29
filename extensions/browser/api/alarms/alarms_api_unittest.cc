@@ -15,8 +15,8 @@
 #include "extensions/browser/api/alarms/alarm_manager.h"
 #include "extensions/browser/api/alarms/alarms_api.h"
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
-#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
 #include "ipc/ipc_test_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,8 +25,6 @@
 typedef extensions::api::alarms::Alarm JsAlarm;
 
 namespace extensions {
-
-namespace utils = api_test_utils;
 
 namespace {
 
@@ -582,7 +580,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollScheduling) {
 
 TEST_F(ExtensionAlarmsSchedulingTest, ReleasedExtensionPollsInfrequently) {
   set_extension(
-      utils::CreateEmptyExtensionWithLocation(extensions::Manifest::INTERNAL));
+      ExtensionBuilder("Test").SetLocation(Manifest::INTERNAL).Build());
   test_clock_.SetNow(base::Time::FromJsTime(300000));
   CreateAlarm("[\"a\", {\"when\": 300010}]");
   CreateAlarm("[\"b\", {\"when\": 340000}]");
@@ -616,7 +614,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, TimerRunning) {
 
 TEST_F(ExtensionAlarmsSchedulingTest, MinimumGranularity) {
   set_extension(
-      utils::CreateEmptyExtensionWithLocation(extensions::Manifest::INTERNAL));
+      ExtensionBuilder("Test").SetLocation(Manifest::INTERNAL).Build());
   test_clock_.SetNow(base::Time::FromJsTime(0));
   CreateAlarm("[\"a\", {\"periodInMinutes\": 2}]");
   test_clock_.Advance(base::TimeDelta::FromSeconds(1));
@@ -642,9 +640,9 @@ TEST_F(ExtensionAlarmsSchedulingTest, DifferentMinimumGranularities) {
   // Create a new extension, which is packed, and has a granularity of 1 minute.
   // CreateAlarm() uses extension_, so keep a ref of the old one around, and
   // repopulate extension_.
-  scoped_refptr<Extension> extension2(extension_ref());
+  scoped_refptr<const Extension> extension2(extension_ref());
   set_extension(
-      utils::CreateEmptyExtensionWithLocation(extensions::Manifest::INTERNAL));
+      ExtensionBuilder("Test").SetLocation(Manifest::INTERNAL).Build());
 
   CreateAlarm("[\"b\", {\"periodInMinutes\": 2}]");
 

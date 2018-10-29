@@ -84,7 +84,7 @@ class TestExtensionPrefs {
   std::string AddExtensionAndReturnId(const std::string& name);
 
   // This will add extension in our ExtensionPrefs.
-  void AddExtension(Extension* extension);
+  void AddExtension(const Extension* extension);
 
   std::unique_ptr<PrefService> CreateIncognitoPrefService() const;
 

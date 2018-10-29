@@ -38,6 +38,17 @@ public class AuthException extends Exception {
     }
 
     /**
+     * Constructs an instance without a wrapped exception, based on transience flag and message.
+     * @param isTransientError Whether the error is transient and we can retry.
+     *         Use {@link #TRANSIENT} and {@link #NONTRANSIENT} for readability.
+     * @param message Message describing context in which auth failure happened.
+     */
+    public AuthException(boolean isTransientError, String message) {
+        super(message);
+        mIsTransientError = isTransientError;
+    }
+
+    /**
      * @return Whether the error is transient and we can retry.
      */
     public boolean isTransientError() {

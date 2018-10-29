@@ -92,6 +92,14 @@ QuicPacketCreatorPeer::SerializeConnectivityProbingPacket(
 }
 
 // static
+OwningSerializedPacketPointer
+QuicPacketCreatorPeer::SerializePathChallengeConnectivityProbingPacket(
+    QuicPacketCreator* creator,
+    QuicPathFrameBuffer* payload) {
+  return creator->SerializePathChallengeConnectivityProbingPacket(payload);
+}
+
+// static
 EncryptionLevel QuicPacketCreatorPeer::GetEncryptionLevel(
     QuicPacketCreator* creator) {
   return creator->packet_.encryption_level;

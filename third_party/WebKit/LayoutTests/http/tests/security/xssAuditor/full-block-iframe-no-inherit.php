@@ -8,7 +8,7 @@ header("X-XSS-Protection: 1; mode=block");
 <script>
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.dumpChildFramesAsText();
+    testRunner.dumpChildFrames();
     testRunner.waitUntilDone();
     testRunner.setXSSAuditorEnabled(true);
 }

@@ -103,7 +103,7 @@ UnlockManagerImpl::UnlockManagerImpl(
 
   DBusThreadManager::Get()->GetPowerManagerClient()->AddObserver(this);
 
-  SetWakingUpState(true);
+  SetWakingUpState(true /* is_waking_up */);
 
   if (device::BluetoothAdapterFactory::IsBluetoothSupported()) {
     device::BluetoothAdapterFactory::GetAdapter(
@@ -142,7 +142,8 @@ void UnlockManagerImpl::SetRemoteDeviceLifeCycle(
 
   life_cycle_ = life_cycle;
   if (life_cycle_) {
-    SetWakingUpState(true);
+    AttemptToStartRemoteDeviceLifecycle();
+    SetWakingUpState(true /* is_waking_up */);
   } else {
     proximity_monitor_.reset();
   }
@@ -162,7 +163,7 @@ void UnlockManagerImpl::OnLifeCycleStateChanged() {
   }
 
   if (state == RemoteDeviceLifeCycle::State::AUTHENTICATION_FAILED)
-    SetWakingUpState(false);
+    SetWakingUpState(false /* is_waking_up */);
 
   UpdateLockScreen();
 }
@@ -190,13 +191,12 @@ void UnlockManagerImpl::OnRemoteStatusUpdate(
       GetScreenlockStateFromRemoteUpdate(status_update)));
 
   // This also calls |UpdateLockScreen()|
-  SetWakingUpState(false);
+  SetWakingUpState(false /* is_waking_up */);
 }
 
 void UnlockManagerImpl::OnDecryptResponse(const std::string& decrypted_bytes) {
   if (!is_attempting_auth_) {
-    PA_LOG(ERROR) << "Decrypt response received but not attempting "
-                  << "auth.";
+    PA_LOG(ERROR) << "Decrypt response received but not attempting auth.";
     return;
   }
 
@@ -212,8 +212,7 @@ void UnlockManagerImpl::OnDecryptResponse(const std::string& decrypted_bytes) {
 
 void UnlockManagerImpl::OnUnlockResponse(bool success) {
   if (!is_attempting_auth_) {
-    PA_LOG(ERROR) << "Unlock response received but not attempting "
-                  << "auth.";
+    PA_LOG(ERROR) << "Unlock response received but not attempting auth.";
     return;
   }
 
@@ -248,12 +247,8 @@ void UnlockManagerImpl::OnScreenDidUnlock(
 void UnlockManagerImpl::OnFocusedUserChanged(const AccountId& account_id) {}
 
 void UnlockManagerImpl::OnScreenLockedOrUnlocked(bool is_locked) {
-  if (is_locked && bluetooth_adapter_ && bluetooth_adapter_->IsPowered() &&
-      life_cycle_ &&
-      life_cycle_->GetState() ==
-          RemoteDeviceLifeCycle::State::FINDING_CONNECTION) {
-    SetWakingUpState(true);
-  }
+  if (is_locked && IsBluetoothPresentAndPowered() && life_cycle_)
+    SetWakingUpState(true /* is_waking_up */);
 
   is_locked_ = is_locked;
   UpdateProximityMonitorState();
@@ -276,7 +271,22 @@ void UnlockManagerImpl::AdapterPoweredChanged(device::BluetoothAdapter* adapter,
 }
 
 void UnlockManagerImpl::SuspendDone(const base::TimeDelta& sleep_duration) {
-  SetWakingUpState(true);
+  SetWakingUpState(true /* is_waking_up */);
+}
+
+bool UnlockManagerImpl::IsBluetoothPresentAndPowered() const {
+  return bluetooth_adapter_ && bluetooth_adapter_->IsPresent() &&
+         bluetooth_adapter_->IsPowered();
+}
+
+void UnlockManagerImpl::AttemptToStartRemoteDeviceLifecycle() {
+  if (IsBluetoothPresentAndPowered() && life_cycle_ &&
+      life_cycle_->GetState() == RemoteDeviceLifeCycle::State::STOPPED) {
+    // If Bluetooth is disabled after this, |life_cycle_| will be notified by
+    // SecureChannel that the connection attempt failed. From that point on,
+    // |life_cycle_| will wait to be started again by UnlockManager.
+    life_cycle_->Start();
+  }
 }
 
 void UnlockManagerImpl::OnAuthAttempted(mojom::AuthType auth_type) {
@@ -388,16 +398,13 @@ ScreenlockState UnlockManagerImpl::GetScreenlockState() {
   if (!life_cycle_)
     return ScreenlockState::INACTIVE;
 
-  RemoteDeviceLifeCycle::State life_cycle_state = life_cycle_->GetState();
-  if (life_cycle_state == RemoteDeviceLifeCycle::State::STOPPED)
-    return ScreenlockState::INACTIVE;
-
-  if (!bluetooth_adapter_ || !bluetooth_adapter_->IsPowered())
+  if (!IsBluetoothPresentAndPowered())
     return ScreenlockState::NO_BLUETOOTH;
 
   if (IsUnlockAllowed())
     return ScreenlockState::AUTHENTICATED;
 
+  RemoteDeviceLifeCycle::State life_cycle_state = life_cycle_->GetState();
   if (life_cycle_state == RemoteDeviceLifeCycle::State::AUTHENTICATION_FAILED)
     return ScreenlockState::PHONE_NOT_AUTHENTICATED;
 
@@ -448,6 +455,8 @@ ScreenlockState UnlockManagerImpl::GetScreenlockState() {
 }
 
 void UnlockManagerImpl::UpdateLockScreen() {
+  AttemptToStartRemoteDeviceLifecycle();
+
   UpdateProximityMonitorState();
 
   ScreenlockState new_state = GetScreenlockState();

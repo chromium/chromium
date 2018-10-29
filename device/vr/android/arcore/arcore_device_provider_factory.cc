@@ -10,20 +10,20 @@
 namespace device {
 
 namespace {
-ARCoreDeviceProviderFactory* g_arcore_device_provider_factory = nullptr;
+ArCoreDeviceProviderFactory* g_arcore_device_provider_factory = nullptr;
 }  // namespace
 
 // static
 std::unique_ptr<device::VRDeviceProvider>
-ARCoreDeviceProviderFactory::Create() {
+ArCoreDeviceProviderFactory::Create() {
   if (!g_arcore_device_provider_factory)
     return nullptr;
   return g_arcore_device_provider_factory->CreateDeviceProvider();
 }
 
 // static
-void ARCoreDeviceProviderFactory::Install(
-    std::unique_ptr<ARCoreDeviceProviderFactory> factory) {
+void ArCoreDeviceProviderFactory::Install(
+    std::unique_ptr<ArCoreDeviceProviderFactory> factory) {
   DCHECK_NE(g_arcore_device_provider_factory, factory.get());
   if (g_arcore_device_provider_factory)
     delete g_arcore_device_provider_factory;

@@ -38,7 +38,7 @@ namespace blink {
 struct WebImeTextSpan;
 
 class CORE_EXPORT ImeTextSpan {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum class Type { kComposition, kSuggestion, kMisspellingSuggestion };

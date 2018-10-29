@@ -50,7 +50,7 @@ source_set("translate") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/ui/infobars",
+    "//ios/chrome/browser/ui/infobars:infobars_ui",
     "//ios/chrome/browser/ui/util",
     "//ios/web",
     "//third_party/metrics_proto",

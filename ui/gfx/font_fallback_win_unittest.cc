@@ -10,34 +10,6 @@
 
 namespace gfx {
 
-namespace {
-
-// Subclass of LinkedFontsIterator for testing that allows mocking the linked
-// fonts vector.
-class TestLinkedFontsIterator : public internal::LinkedFontsIterator {
- public:
-  explicit TestLinkedFontsIterator(Font font) : LinkedFontsIterator(font) {
-  }
-
-  ~TestLinkedFontsIterator() override {}
-
-  // Add a linked font to the mocked vector of linked fonts.
-  void AddLinkedFontForTesting(Font font) {
-    test_linked_fonts.push_back(font);
-  }
-
-  const std::vector<Font>* GetLinkedFonts() const override {
-    return &test_linked_fonts;
-  }
-
- private:
-  std::vector<Font> test_linked_fonts;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLinkedFontsIterator);
-};
-
-}  // namespace
-
 TEST(FontFallbackWinTest, ParseFontLinkEntry) {
   std::string file;
   std::string font;
@@ -82,38 +54,6 @@ TEST(FontFallbackWinTest, ParseFontFamilyString) {
   EXPECT_EQ("Meiryo Italic", font_names[1]);
   EXPECT_EQ("Meiryo UI", font_names[2]);
   EXPECT_EQ("Meiryo UI Italic", font_names[3]);
-}
-
-TEST(FontFallbackWinTest, LinkedFontsIterator) {
-  TestLinkedFontsIterator iterator(Font("Arial", 16));
-  iterator.AddLinkedFontForTesting(Font("Times New Roman", 16));
-
-  Font font;
-  EXPECT_TRUE(iterator.NextFont(&font));
-  ASSERT_EQ("Arial", font.GetFontName());
-
-  EXPECT_TRUE(iterator.NextFont(&font));
-  ASSERT_EQ("Times New Roman", font.GetFontName());
-
-  EXPECT_FALSE(iterator.NextFont(&font));
-}
-
-TEST(FontFallbackWinTest, LinkedFontsIteratorSetNextFont) {
-  TestLinkedFontsIterator iterator(Font("Arial", 16));
-  iterator.AddLinkedFontForTesting(Font("Times New Roman", 16));
-
-  Font font;
-  EXPECT_TRUE(iterator.NextFont(&font));
-  ASSERT_EQ("Arial", font.GetFontName());
-
-  iterator.SetNextFont(Font("Tahoma", 16));
-  EXPECT_TRUE(iterator.NextFont(&font));
-  ASSERT_EQ("Tahoma", font.GetFontName());
-
-  EXPECT_TRUE(iterator.NextFont(&font));
-  ASSERT_EQ("Times New Roman", font.GetFontName());
-
-  EXPECT_FALSE(iterator.NextFont(&font));
 }
 
 TEST(FontFallbackWinTest, FontFallback) {

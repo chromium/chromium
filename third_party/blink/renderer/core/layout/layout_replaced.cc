@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 namespace blink {
 
@@ -683,7 +683,7 @@ LayoutUnit LayoutReplaced::ComputeConstrainedLogicalWidth(
   // 'margin-left' + 'border-left-width' + 'padding-left' + 'width' +
   // 'padding-right' + 'border-right-width' + 'margin-right' = width of
   // containing block
-  LayoutUnit logical_width = ContainingBlock()->AvailableLogicalWidth();
+  LayoutUnit logical_width = ContainingBlockLogicalWidthForContent();
 
   // This solves above equation for 'width' (== logicalWidth).
   LayoutUnit margin_start =
@@ -975,8 +975,10 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
 }
 
 LayoutRect LayoutReplaced::LocalSelectionRect() const {
-  if (!IsSelected())
+  if (GetSelectionState() == SelectionState::kNone ||
+      GetSelectionState() == SelectionState::kContain) {
     return LayoutRect();
+  }
 
   if (IsInline()) {
     const auto fragments = NGPaintFragment::InlineFragmentsFor(this);

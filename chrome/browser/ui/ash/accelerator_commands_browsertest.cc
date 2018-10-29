@@ -4,9 +4,8 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 
-#include "ash/accelerators/accelerator_commands.h"
-#include "ash/shell.h"
-#include "ash/wm/window_state.h"
+#include "ash/public/interfaces/constants.mojom.h"
+#include "ash/public/interfaces/shell_test_api.mojom.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "build/build_config.h"
@@ -15,13 +14,20 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/common/service_manager_connection.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "services/service_manager/public/cpp/connector.h"
 #include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/test/mus/change_completion_waiter.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -43,14 +49,22 @@ class MaximizableWidgetDelegate : public views::WidgetDelegateView {
   DISALLOW_COPY_AND_ASSIGN(MaximizableWidgetDelegate);
 };
 
-// Returns true if |window_state|'s window is in immersive fullscreen. Infer
-// whether the window is in immersive fullscreen based on whether the shelf is
-// hidden when the window is fullscreen. (This is not quite right because the
-// shelf is hidden if a window is in both immersive fullscreen and tab
-// fullscreen.)
-bool IsInImmersiveFullscreen(ash::wm::WindowState* window_state) {
-  return window_state->IsFullscreen() &&
-         !window_state->GetHideShelfWhenFullscreen();
+// Tells Ash to toggle fullscreen as if the user had pressed the hardware
+// fullscreen key.
+void ToggleFullscreen() {
+  ash::mojom::ShellTestApiPtr shell_test_api;
+  content::ServiceManagerConnection::GetForProcess()
+      ->GetConnector()
+      ->BindInterface(ash::mojom::kServiceName, &shell_test_api);
+  ash::mojom::ShellTestApiAsyncWaiter waiter(shell_test_api.get());
+  waiter.ToggleFullscreen();
+  aura::test::WaitForAllChangesToComplete();
+}
+
+bool IsInImmersive(aura::Window* window) {
+  aura::Window* toplevel =
+      features::IsUsingWindowService() ? window->GetRootWindow() : window;
+  return toplevel->GetProperty(aura::client::kImmersiveFullscreenKey);
 }
 
 }  // namespace
@@ -63,20 +77,22 @@ class AcceleratorCommandsFullscreenBrowserTest
       : initial_show_state_(GetParam()) {}
   virtual ~AcceleratorCommandsFullscreenBrowserTest() {}
 
-  // Sets |window_state|'s show state to |initial_show_state_|.
-  void SetToInitialShowState(ash::wm::WindowState* window_state) {
+  // Sets |widget|'s show state to |initial_show_state_|.
+  void SetToInitialShowState(views::Widget* widget) {
     if (initial_show_state_ == ui::SHOW_STATE_MAXIMIZED)
-      window_state->Maximize();
+      widget->Maximize();
     else
-      window_state->Restore();
+      widget->Restore();
   }
 
-  // Returns true if |window_state|'s show state is |initial_show_state_|.
-  bool IsInitialShowState(const ash::wm::WindowState* window_state) const {
-    if (initial_show_state_ == ui::SHOW_STATE_MAXIMIZED)
-      return window_state->IsMaximized();
-    else
-      return window_state->IsNormalStateType();
+  // Returns true if |widget|'s show state is |initial_show_state_|.
+  bool IsInitialShowState(const views::Widget* widget) const {
+    if (initial_show_state_ == ui::SHOW_STATE_MAXIMIZED) {
+      return widget->IsMaximized();
+    } else {
+      return !widget->IsMaximized() && !widget->IsFullscreen() &&
+             !widget->IsMinimized();
+    }
   }
 
  private:
@@ -88,29 +104,33 @@ class AcceleratorCommandsFullscreenBrowserTest
 // Test that toggling window fullscreen works properly.
 IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
                        ToggleFullscreen) {
-  ASSERT_TRUE(ash::Shell::HasInstance()) << "No Instance";
-
   // 1) Browser windows.
+  aura::Window* window = browser()->window()->GetNativeWindow();
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   ASSERT_TRUE(browser()->is_type_tabbed());
-  ash::wm::WindowState* window_state =
-      ash::wm::GetWindowState(browser()->window()->GetNativeWindow());
-  ASSERT_TRUE(window_state->IsActive());
-  SetToInitialShowState(window_state);
-  EXPECT_TRUE(IsInitialShowState(window_state));
+  ASSERT_TRUE(widget->IsActive());
+  SetToInitialShowState(widget);
+  EXPECT_TRUE(IsInitialShowState(widget));
 
-  ash::accelerators::ToggleFullscreen();
-  EXPECT_TRUE(window_state->IsFullscreen());
-  EXPECT_TRUE(IsInImmersiveFullscreen(window_state));
+  // Wait for Ash to become aware of active widget.
+  aura::test::WaitForAllChangesToComplete();
 
-  ash::accelerators::ToggleFullscreen();
-  EXPECT_TRUE(IsInitialShowState(window_state));
+  ToggleFullscreen();
+  EXPECT_TRUE(IsInImmersive(window));
+
+  ToggleFullscreen();
+  EXPECT_FALSE(IsInImmersive(window));
+  EXPECT_TRUE(IsInitialShowState(widget));
 
   // 2) ToggleFullscreen() should have no effect on windows which cannot be
   // maximized.
-  window_state->window()->SetProperty(aura::client::kResizeBehaviorKey,
-                                      ws::mojom::kResizeBehaviorNone);
-  ash::accelerators::ToggleFullscreen();
-  EXPECT_TRUE(IsInitialShowState(window_state));
+  aura::Window* toplevel =
+      features::IsUsingWindowService() ? window->GetRootWindow() : window;
+  toplevel->SetProperty(aura::client::kResizeBehaviorKey,
+                        ws::mojom::kResizeBehaviorNone);
+  aura::test::WaitForAllChangesToComplete();
+  ToggleFullscreen();
+  EXPECT_TRUE(IsInitialShowState(widget));
 
   // 3) Hosted apps.
   Browser::CreateParams browser_create_params(
@@ -121,18 +141,21 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
   Browser* app_host_browser = new Browser(browser_create_params);
   ASSERT_TRUE(app_host_browser->is_app());
   AddBlankTabAndShow(app_host_browser);
-  window_state =
-      ash::wm::GetWindowState(app_host_browser->window()->GetNativeWindow());
-  ASSERT_TRUE(window_state->IsActive());
-  SetToInitialShowState(window_state);
-  EXPECT_TRUE(IsInitialShowState(window_state));
+  window = app_host_browser->window()->GetNativeWindow();
+  widget = views::Widget::GetWidgetForNativeWindow(window);
+  ASSERT_TRUE(widget->IsActive());
+  SetToInitialShowState(widget);
+  EXPECT_TRUE(IsInitialShowState(widget));
 
-  ash::accelerators::ToggleFullscreen();
-  EXPECT_TRUE(window_state->IsFullscreen());
-  EXPECT_TRUE(IsInImmersiveFullscreen(window_state));
+  // Wait for Ash to become aware of active widget.
+  aura::test::WaitForAllChangesToComplete();
 
-  ash::accelerators::ToggleFullscreen();
-  EXPECT_TRUE(IsInitialShowState(window_state));
+  ToggleFullscreen();
+  EXPECT_TRUE(IsInImmersive(window));
+
+  ToggleFullscreen();
+  EXPECT_FALSE(IsInImmersive(window));
+  EXPECT_TRUE(IsInitialShowState(widget));
 
   // 4) Popup browser windows.
   browser_create_params =
@@ -141,40 +164,49 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
   ASSERT_TRUE(popup_browser->is_type_popup());
   ASSERT_FALSE(popup_browser->is_app());
   AddBlankTabAndShow(popup_browser);
-  window_state =
-      ash::wm::GetWindowState(popup_browser->window()->GetNativeWindow());
-  ASSERT_TRUE(window_state->IsActive());
-  SetToInitialShowState(window_state);
-  EXPECT_TRUE(IsInitialShowState(window_state));
+  window = popup_browser->window()->GetNativeWindow();
+  widget = views::Widget::GetWidgetForNativeWindow(window);
+  ASSERT_TRUE(widget->IsActive());
+  SetToInitialShowState(widget);
+  EXPECT_TRUE(IsInitialShowState(widget));
 
-  ash::accelerators::ToggleFullscreen();
-  EXPECT_TRUE(window_state->IsFullscreen());
-  EXPECT_TRUE(IsInImmersiveFullscreen(window_state));
+  // Wait for Ash to become aware of active widget.
+  aura::test::WaitForAllChangesToComplete();
 
-  ash::accelerators::ToggleFullscreen();
-  EXPECT_TRUE(IsInitialShowState(window_state));
+  ToggleFullscreen();
+  EXPECT_TRUE(IsInImmersive(window));
+
+  ToggleFullscreen();
+  EXPECT_FALSE(IsInImmersive(window));
+  EXPECT_TRUE(IsInitialShowState(widget));
 
   // 5) Miscellaneous windows (e.g. task manager).
   views::Widget::InitParams params;
   params.delegate = new MaximizableWidgetDelegate();
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  std::unique_ptr<views::Widget> widget(new views::Widget);
+  views::Widget misc_widget;
+  widget = &misc_widget;
   widget->Init(params);
   widget->Show();
+  window = widget->GetNativeWindow();
 
-  window_state = ash::wm::GetWindowState(widget->GetNativeWindow());
-  ASSERT_TRUE(window_state->IsActive());
-  SetToInitialShowState(window_state);
-  EXPECT_TRUE(IsInitialShowState(window_state));
+  ASSERT_TRUE(widget->IsActive());
+  SetToInitialShowState(widget);
+  EXPECT_TRUE(IsInitialShowState(widget));
 
-  ash::accelerators::ToggleFullscreen();
-  EXPECT_TRUE(window_state->IsFullscreen());
-  EXPECT_TRUE(IsInImmersiveFullscreen(window_state));
+  // Wait for Ash to become aware of active widget.
+  aura::test::WaitForAllChangesToComplete();
+
+  ToggleFullscreen();
+  EXPECT_TRUE(IsInImmersive(window));
+
+  ToggleFullscreen();
+  EXPECT_FALSE(IsInImmersive(window));
+  EXPECT_TRUE(IsInitialShowState(widget));
 
   // TODO(pkotwicz|oshima): Make toggling fullscreen restore the window to its
   // show state prior to entering fullscreen.
-  ash::accelerators::ToggleFullscreen();
-  EXPECT_FALSE(window_state->IsFullscreen());
+  EXPECT_FALSE(widget->IsFullscreen());
 }
 
 INSTANTIATE_TEST_CASE_P(InitiallyRestored,
@@ -217,7 +249,6 @@ class AcceleratorCommandsPlatformAppFullscreenBrowserTest
 // Test the behavior of platform apps when ToggleFullscreen() is called.
 IN_PROC_BROWSER_TEST_P(AcceleratorCommandsPlatformAppFullscreenBrowserTest,
                        ToggleFullscreen) {
-  ASSERT_TRUE(ash::Shell::HasInstance()) << "No Instance";
   const extensions::Extension* extension =
       LoadAndLaunchPlatformApp("minimal", "Launched");
 
@@ -235,13 +266,15 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsPlatformAppFullscreenBrowserTest,
     ASSERT_TRUE(app_window->GetBaseWindow()->IsActive());
     EXPECT_TRUE(IsInitialShowState(app_window));
 
-    ash::accelerators::ToggleFullscreen();
-    EXPECT_TRUE(native_app_window->IsFullscreen());
-    ash::wm::WindowState* window_state =
-        ash::wm::GetWindowState(native_app_window->GetNativeWindow());
-    EXPECT_TRUE(IsInImmersiveFullscreen(window_state));
+    // Wait for Ash to become aware of active widget.
+    aura::test::WaitForAllChangesToComplete();
 
-    ash::accelerators::ToggleFullscreen();
+    ToggleFullscreen();
+    EXPECT_TRUE(native_app_window->IsFullscreen());
+    EXPECT_TRUE(IsInImmersive(native_app_window->GetNativeWindow()));
+
+    ToggleFullscreen();
+    EXPECT_FALSE(native_app_window->IsFullscreen());
     EXPECT_TRUE(IsInitialShowState(app_window));
 
     CloseAppWindow(app_window);
@@ -260,13 +293,15 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsPlatformAppFullscreenBrowserTest,
     SetToInitialShowState(app_window);
     EXPECT_TRUE(IsInitialShowState(app_window));
 
-    ash::accelerators::ToggleFullscreen();
-    EXPECT_TRUE(native_app_window->IsFullscreen());
-    ash::wm::WindowState* window_state =
-        ash::wm::GetWindowState(native_app_window->GetNativeWindow());
-    EXPECT_FALSE(IsInImmersiveFullscreen(window_state));
+    // Wait for Ash to become aware of active widget.
+    aura::test::WaitForAllChangesToComplete();
 
-    ash::accelerators::ToggleFullscreen();
+    ToggleFullscreen();
+    EXPECT_TRUE(native_app_window->IsFullscreen());
+    EXPECT_FALSE(IsInImmersive(native_app_window->GetNativeWindow()));
+
+    ToggleFullscreen();
+    EXPECT_FALSE(native_app_window->IsFullscreen());
     EXPECT_TRUE(IsInitialShowState(app_window));
 
     CloseAppWindow(app_window);

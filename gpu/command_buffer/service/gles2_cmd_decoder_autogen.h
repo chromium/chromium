@@ -4707,18 +4707,6 @@ error::Error GLES2DecoderImpl::HandleCopySubTextureCHROMIUM(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleCompressedCopyTextureCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::CompressedCopyTextureCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::CompressedCopyTextureCHROMIUM*>(
-          cmd_data);
-  GLuint source_id = static_cast<GLuint>(c.source_id);
-  GLuint dest_id = static_cast<GLuint>(c.dest_id);
-  DoCompressedCopyTextureCHROMIUM(source_id, dest_id);
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderImpl::HandleProduceTextureDirectCHROMIUMImmediate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -4763,6 +4751,38 @@ error::Error GLES2DecoderImpl::HandleCreateAndConsumeTextureINTERNALImmediate(
     return error::kOutOfBounds;
   }
   DoCreateAndConsumeTextureINTERNAL(texture, mailbox);
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderImpl::HandleCreateAndTexStorage2DSharedImageINTERNALImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate&
+      c = *static_cast<const volatile gles2::cmds::
+                           CreateAndTexStorage2DSharedImageINTERNALImmediate*>(
+          cmd_data);
+  GLuint texture = static_cast<GLuint>(c.texture);
+  GLenum internalFormat = static_cast<GLenum>(c.internalFormat);
+  uint32_t data_size;
+  if (!GLES2Util::ComputeDataSize<GLbyte, 16>(1, &data_size)) {
+    return error::kOutOfBounds;
+  }
+  if (data_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLbyte* mailbox = GetImmediateDataAs<volatile const GLbyte*>(
+      c, data_size, immediate_data_size);
+  if (!validators_->texture_internal_format.IsValid(internalFormat)) {
+    LOCAL_SET_GL_ERROR_INVALID_ENUM(
+        "glCreateAndTexStorage2DSharedImageINTERNAL", internalFormat,
+        "internalFormat");
+    return error::kNoError;
+  }
+  if (mailbox == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoCreateAndTexStorage2DSharedImageINTERNAL(texture, internalFormat, mailbox);
   return error::kNoError;
 }
 

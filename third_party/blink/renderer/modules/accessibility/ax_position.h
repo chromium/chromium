@@ -39,7 +39,7 @@ enum class AXPositionAdjustmentBehavior { kMoveLeft, kMoveRight };
 // between two characters. Another way of calling these types of positions is
 // object anchored and text anchored.
 class MODULES_EXPORT AXPosition final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   //

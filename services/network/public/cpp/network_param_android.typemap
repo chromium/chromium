@@ -1,0 +1,15 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//services/network/public/mojom/network_param.mojom"
+os_whitelist = [ "android" ]
+public_headers = [ "//base/android/application_status_listener.h" ]
+traits_headers =
+    [ "//services/network/public/cpp/network_param_mojom_traits.h" ]
+
+deps = [
+  "//base",
+]
+type_mappings =
+    [ "network.mojom.ApplicationState=base::android::ApplicationState" ]

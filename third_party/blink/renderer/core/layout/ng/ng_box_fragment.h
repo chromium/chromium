@@ -36,8 +36,16 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
   NGLineHeightMetrics BaselineMetrics(const NGBaselineRequest&,
                                       const NGConstraintSpace&) const;
 
-  NGBoxStrut Borders() const;
-  NGBoxStrut Padding() const;
+  NGBoxStrut Borders() const {
+    const auto& physical_fragment = ToNGPhysicalBoxFragment(physical_fragment_);
+    return physical_fragment.Borders().ConvertToLogical(GetWritingMode(),
+                                                        direction_);
+  }
+  NGBoxStrut Padding() const {
+    const auto& physical_fragment = ToNGPhysicalBoxFragment(physical_fragment_);
+    return physical_fragment.Padding().ConvertToLogical(GetWritingMode(),
+                                                        direction_);
+  }
 
  protected:
   TextDirection direction_;

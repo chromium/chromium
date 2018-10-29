@@ -2,7 +2,6 @@ This test checks that getComputedStyle returns pixel values for viewport units t
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS parseFloat(getComputedStyle(test).fontSize) is within 1 of 165.8
 PASS parseFloat(getComputedStyle(test).fontSize) is within 1 of 115.2
 PASS parseFloat(getComputedStyle(test).fontSize) is within 1 of 96

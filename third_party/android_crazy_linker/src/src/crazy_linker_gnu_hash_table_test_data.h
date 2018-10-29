@@ -13,9 +13,9 @@ namespace crazy {
 namespace testing {
 
 // GNU hash table: num_buckets=4 bloom_size=2 bloom_shift=5
-// 
+//
 // idx symbol               hash      bucket  bloom32  bloom64  chain
-// 
+//
 //   0 ST_UNDEF
 //   1 cfsetispeed          830acc54  0       0:20:02  1:20:34  830acc54
 //   2 strsigna             90f1e4b0  0       1:16:05  0:48:37  90f1e4b0
@@ -32,33 +32,33 @@ namespace testing {
 //  13 getspen              f07b2a7b  3       1:27:19  1:59:19  f07b2a7a
 //  14 pthread_mutex_lock   4f152227  3       1:07:17  0:39:17  4f152226
 //  15 getopt_long_onl      57b1584f  3       0:15:02  1:15:02  57b1584f
-// 
+//
 // Buckets: 1, 5, 8, 13
-// 
+//
 // Bloom filter (32 bits):
 // bit#       24       16        8        0
 //      .x....xx ...x.x.. xx...... .....x.x
 //      xxx.x... ....xxxx .x..x.x. x.x.xx..
-// 
+//
 //   also as:  0x4314c005 0xe80f4aac
-// 
+//
 // Bloom filter (64 bits):
 // bit#       56       48       40       32       24       16        8        0
 //      .......x .......x .x....x. x.x..... ..x...x. ...x..x. ........ .......x
 //      .x..x... .....x.. ....x.x. .....x.. xx..x... ...xxx.. xx...... ....xx.x
-// 
+//
 //   also as:  0x010142a022120001 0x48040a04c81cc00d
-// 
+//
 static const char kTestGnuStringTable[145] = {
-    '\0','c','f','s','e','t','i','s','p','e','e','d','\0','s','t','r','s',
-    'i','g','n','a','\0','h','c','r','e','a','t','e','_','\0','e','n','d',
-    'r','p','c','e','n','\0','u','s','e','l','i','b','\0','g','e','t','t',
-    'y','e','n','\0','u','m','o','u','n','\0','f','r','e','e','l','o','c',
-    'a','l','\0','l','i','s','t','x','a','t','t','\0','i','s','n','a','n',
-    '\0','i','s','i','n','f','\0','s','e','t','r','l','i','m','i','\0','g',
-    'e','t','s','p','e','n','\0','p','t','h','r','e','a','d','_','m','u','t',
-    'e','x','_','l','o','c','k','\0','g','e','t','o','p','t','_','l','o','n',
-    'g','_','o','n','l','\0','\0'};
+    '\0','c','f','s','e','t','i','s','p','e','e','d','\0','s','t','r','s','i',
+    'g','n','a','\0','h','c','r','e','a','t','e','_','\0','e','n','d','r','p',
+    'c','e','n','\0','u','s','e','l','i','b','\0','g','e','t','t','y','e','n',
+    '\0','u','m','o','u','n','\0','f','r','e','e','l','o','c','a','l','\0','l',
+    'i','s','t','x','a','t','t','\0','i','s','n','a','n','\0','i','s','i','n',
+    'f','\0','s','e','t','r','l','i','m','i','\0','g','e','t','s','p','e','n',
+    '\0','p','t','h','r','e','a','d','_','m','u','t','e','x','_','l','o','c',
+    'k','\0','g','e','t','o','p','t','_','l','o','n','g','_','o','n','l','\0',
+    '\0'};
 
 // Auto-generated macro used to list all symbols
 // XX must be a macro that takes the following parameters:

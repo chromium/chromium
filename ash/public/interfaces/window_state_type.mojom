@@ -37,5 +37,5 @@ enum WindowStateType {
   PIP,
 };
 
-// The window's extended state. Maps to ash::aura::kWindowStateTypeKey.
+// The window's extended state. Maps to ash::kWindowStateTypeKey.
 const string kWindowStateType_Property = "ash:window-state-type";

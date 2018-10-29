@@ -17,7 +17,15 @@ class FilePath;
 // the un-uploaded Minidump directory, managed by the MinidumpUploadService.
 class CrashUploadListAndroid : public TextLogUploadList {
  public:
-  CrashUploadListAndroid(const base::FilePath& upload_log_path);
+  explicit CrashUploadListAndroid(const base::FilePath& upload_log_path);
+
+  // Returns true if the browser crash metrics were initialized, only happens
+  // when minidump service is started.
+  static bool BrowserCrashMetricsInitialized();
+
+  // Returns true if a browser crash was observed in recent sessions. Can be
+  // called only when BrowserCrashMetricsInitialized() returns true.
+  static bool DidBrowserCrashRecently();
 
  protected:
   ~CrashUploadListAndroid() override;

@@ -304,13 +304,13 @@ TEST_F(CoreAudioUtilWinTest, SharedModeInitialize) {
 
   // Perform a shared-mode initialization without event-driven buffer handling.
   uint32_t endpoint_buffer_size = 0;
-  HRESULT hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL,
-                                                   &endpoint_buffer_size, NULL);
+  HRESULT hr = CoreAudioUtil::SharedModeInitialize(
+      client.Get(), &format, NULL, 0, &endpoint_buffer_size, NULL);
   EXPECT_TRUE(SUCCEEDED(hr));
   EXPECT_GT(endpoint_buffer_size, 0u);
 
   // It is only possible to create a client once.
-  hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL,
+  hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
                                            &endpoint_buffer_size, NULL);
   EXPECT_FALSE(SUCCEEDED(hr));
   EXPECT_EQ(hr, AUDCLNT_E_ALREADY_INITIALIZED);
@@ -319,7 +319,7 @@ TEST_F(CoreAudioUtilWinTest, SharedModeInitialize) {
   client = CoreAudioUtil::CreateClient(AudioDeviceDescription::kDefaultDeviceId,
                                        eRender, eConsole);
   EXPECT_TRUE(client.Get());
-  hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL,
+  hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
                                            &endpoint_buffer_size, NULL);
   EXPECT_TRUE(SUCCEEDED(hr));
   EXPECT_GT(endpoint_buffer_size, 0u);
@@ -333,7 +333,7 @@ TEST_F(CoreAudioUtilWinTest, SharedModeInitialize) {
   format.Format.nSamplesPerSec = format.Format.nSamplesPerSec + 1;
   EXPECT_FALSE(CoreAudioUtil::IsFormatSupported(
       client.Get(), AUDCLNT_SHAREMODE_SHARED, &format));
-  hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL,
+  hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
                                            &endpoint_buffer_size, NULL);
   EXPECT_TRUE(FAILED(hr));
   EXPECT_EQ(hr, E_INVALIDARG);
@@ -350,8 +350,9 @@ TEST_F(CoreAudioUtilWinTest, SharedModeInitialize) {
       SUCCEEDED(CoreAudioUtil::GetSharedModeMixFormat(client.Get(), &format)));
   EXPECT_TRUE(CoreAudioUtil::IsFormatSupported(
       client.Get(), AUDCLNT_SHAREMODE_SHARED, &format));
-  hr = CoreAudioUtil::SharedModeInitialize(
-      client.Get(), &format, event_handle.Get(), &endpoint_buffer_size, NULL);
+  hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format,
+                                           event_handle.Get(), 0,
+                                           &endpoint_buffer_size, NULL);
   EXPECT_TRUE(SUCCEEDED(hr));
   EXPECT_GT(endpoint_buffer_size, 0u);
 }
@@ -381,7 +382,7 @@ TEST_F(CoreAudioUtilWinTest, CreateRenderAndCaptureClients) {
       EXPECT_FALSE(render_client.Get());
 
       // Do a proper initialization and verify that it works this time.
-      CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL,
+      CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
                                           &endpoint_buffer_size, NULL);
       render_client = CoreAudioUtil::CreateRenderClient(client.Get());
       EXPECT_TRUE(render_client.Get());
@@ -393,7 +394,7 @@ TEST_F(CoreAudioUtilWinTest, CreateRenderAndCaptureClients) {
       EXPECT_FALSE(capture_client.Get());
 
       // Do a proper initialization and verify that it works this time.
-      CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL,
+      CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
                                           &endpoint_buffer_size, NULL);
       capture_client = CoreAudioUtil::CreateCaptureClient(client.Get());
       EXPECT_TRUE(capture_client.Get());
@@ -414,7 +415,7 @@ TEST_F(CoreAudioUtilWinTest, FillRenderEndpointBufferWithSilence) {
   uint32_t endpoint_buffer_size = 0;
   EXPECT_TRUE(
       SUCCEEDED(CoreAudioUtil::GetSharedModeMixFormat(client.Get(), &format)));
-  CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL,
+  CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
                                       &endpoint_buffer_size, NULL);
   EXPECT_GT(endpoint_buffer_size, 0u);
 
@@ -515,6 +516,11 @@ TEST_F(CoreAudioUtilWinTest, CheckGetPreferredAudioParametersUMAStats) {
       AudioDeviceDescription::kDefaultDeviceId, true, &output_params);
   EXPECT_TRUE(SUCCEEDED(hr));
   EXPECT_TRUE(output_params.IsValid());
+
+  AudioParameters::HardwareCapabilities output_hardware_capabilities =
+      output_params.hardware_capabilities().value_or(
+          AudioParameters::HardwareCapabilities());
+
   tester.ExpectTotalCount(
       "Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin."
       "CreateDeviceEnumeratorResult",
@@ -531,10 +537,65 @@ TEST_F(CoreAudioUtilWinTest, CheckGetPreferredAudioParametersUMAStats) {
       "Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin."
       "GetMixFormatResult",
       1);
-  tester.ExpectTotalCount(
-      "Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin."
-      "GetDevicePeriodResult",
-      1);
+
+  // If we have a min_frames_per_buffer then it came from the new API.
+  if (!output_hardware_capabilities.min_frames_per_buffer) {
+    tester.ExpectTotalCount(
+        "Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin."
+        "GetDevicePeriodResult",
+        1);
+  }
+}
+
+TEST_F(CoreAudioUtilWinTest, SharedModeLowerBufferSize) {
+  ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable());
+
+  AudioParameters params;
+  EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+      AudioDeviceDescription::kDefaultDeviceId, true, &params)));
+
+  AudioParameters::HardwareCapabilities hardware_capabilities =
+      params.hardware_capabilities().value_or(
+          AudioParameters::HardwareCapabilities());
+
+  // If min_frames_per_buffer is 0 then we don't support the IAudioClient3
+  // low-latency API.
+  ABORT_AUDIO_TEST_IF_NOT(hardware_capabilities.min_frames_per_buffer > 0);
+
+  // Nothing to test if the default is already the minimum.
+  ABORT_AUDIO_TEST_IF_NOT(hardware_capabilities.min_frames_per_buffer <
+                          params.frames_per_buffer());
+
+  ComPtr<IAudioClient> default_client;
+  default_client = CoreAudioUtil::CreateClient(
+      AudioDeviceDescription::kDefaultDeviceId, eRender, eConsole);
+  EXPECT_TRUE(default_client.Get());
+
+  WAVEFORMATPCMEX format;
+  EXPECT_TRUE(SUCCEEDED(
+      CoreAudioUtil::GetSharedModeMixFormat(default_client.Get(), &format)));
+
+  uint32_t default_endpoint_buffer_size = 0;
+  HRESULT hr = CoreAudioUtil::SharedModeInitialize(
+      default_client.Get(), &format, NULL, 0, &default_endpoint_buffer_size,
+      NULL);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_GT(default_endpoint_buffer_size, 0u);
+
+  ComPtr<IAudioClient> low_latency_client;
+  low_latency_client = CoreAudioUtil::CreateClient(
+      AudioDeviceDescription::kDefaultDeviceId, eRender, eConsole);
+  EXPECT_TRUE(low_latency_client.Get());
+
+  uint32_t low_latency_endpoint_buffer_size = 0;
+  hr = CoreAudioUtil::SharedModeInitialize(
+      low_latency_client.Get(), &format, NULL,
+      hardware_capabilities.min_frames_per_buffer,
+      &low_latency_endpoint_buffer_size, NULL);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_GT(low_latency_endpoint_buffer_size, 0u);
+
+  EXPECT_LT(low_latency_endpoint_buffer_size, default_endpoint_buffer_size);
 }
 
 }  // namespace media

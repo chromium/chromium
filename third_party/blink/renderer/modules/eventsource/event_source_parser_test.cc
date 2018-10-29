@@ -95,7 +95,9 @@ class EventSourceParserTest : public testing::Test {
         parser_(new EventSourceParser(AtomicString(), client_)) {}
   ~EventSourceParserTest() override = default;
 
-  void Enqueue(const char* data) { parser_->AddBytes(data, strlen(data)); }
+  void Enqueue(const char* data) {
+    parser_->AddBytes(data, static_cast<uint32_t>(strlen(data)));
+  }
   void EnqueueOneByOne(const char* data) {
     const char* p = data;
     while (*p != '\0')

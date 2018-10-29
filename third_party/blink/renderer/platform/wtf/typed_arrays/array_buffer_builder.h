@@ -73,7 +73,7 @@ class WTF_EXPORT ArrayBufferBuilder final {
   unsigned ByteLength() const { return bytes_used_; }
 
   // Number of bytes allocated.
-  unsigned Capacity() const { return buffer_->ByteLength(); }
+  size_t Capacity() const { return buffer_->ByteLength(); }
 
   void ShrinkToFit();
 

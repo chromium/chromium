@@ -1,5 +1,5 @@
-CONSOLE WARNING: line 1: The provided value 'dkjdfkjdfkj' is not a valid enum value of type XMLHttpRequestResponseType.
-CONSOLE WARNING: line 1: The provided value 'asdfasdfasd' is not a valid enum value of type XMLHttpRequestResponseType.
+CONSOLE WARNING: The provided value 'dkjdfkjdfkj' is not a valid enum value of type XMLHttpRequestResponseType.
+CONSOLE WARNING: The provided value 'asdfasdfasd' is not a valid enum value of type XMLHttpRequestResponseType.
 This test checks if setting non-supported type does not throw an exception
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

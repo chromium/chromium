@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x161
-  LayoutBlockFlow {HTML} at (0,0) size 800x161.19
-    LayoutBlockFlow {BODY} at (9.59,9.59) size 780.81x142
-      LayoutBlockFlow {DIV} at (0,0) size 780.81x22
-        LayoutText {#text} at (0,0) size 384x22
-          text run at (0,0) width 384: "This test passes if the div below is a green square."
-      LayoutBlockFlow {DIV} at (0,22) size 120x120

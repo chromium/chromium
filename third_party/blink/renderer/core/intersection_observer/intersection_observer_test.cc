@@ -67,11 +67,11 @@ class IntersectionObserverV2Test : public IntersectionObserverTest,
  public:
   IntersectionObserverV2Test()
       : IntersectionObserverTest(), ScopedIntersectionObserverV2ForTest(true) {
-    IntersectionObserver::SetV2ThrottleDelayEnabledForTesting(false);
+    IntersectionObserver::SetThrottleDelayEnabledForTesting(false);
   }
 
   ~IntersectionObserverV2Test() override {
-    IntersectionObserver::SetV2ThrottleDelayEnabledForTesting(true);
+    IntersectionObserver::SetThrottleDelayEnabledForTesting(true);
   }
 };
 
@@ -352,11 +352,29 @@ TEST_F(IntersectionObserverV2Test, TrackVisibilityInit) {
       new TestIntersectionObserverDelegate(GetDocument());
   IntersectionObserver* observer = IntersectionObserver::Create(
       observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
   EXPECT_FALSE(observer->trackVisibility());
+
+  // This should fail because no delay is set.
   observer_init.setTrackVisibility(true);
   observer = IntersectionObserver::Create(observer_init, *observer_delegate,
                                           exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+
+  // This should fail because the delay is < 100.
+  exception_state.ClearException();
+  observer_init.setDelay(99.9);
+  observer = IntersectionObserver::Create(observer_init, *observer_delegate,
+                                          exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+
+  exception_state.ClearException();
+  observer_init.setDelay(101.);
+  observer = IntersectionObserver::Create(observer_init, *observer_delegate,
+                                          exception_state);
+  ASSERT_FALSE(exception_state.HadException());
   EXPECT_TRUE(observer->trackVisibility());
+  EXPECT_EQ(observer->delay(), 101.);
 }
 
 TEST_F(IntersectionObserverV2Test, BasicOcclusion) {
@@ -378,6 +396,7 @@ TEST_F(IntersectionObserverV2Test, BasicOcclusion) {
 
   IntersectionObserverInit observer_init;
   observer_init.setTrackVisibility(true);
+  observer_init.setDelay(100);
   DummyExceptionStateForTesting exception_state;
   TestIntersectionObserverDelegate* observer_delegate =
       new TestIntersectionObserverDelegate(GetDocument());
@@ -435,6 +454,7 @@ TEST_F(IntersectionObserverV2Test, BasicOpacity) {
 
   IntersectionObserverInit observer_init;
   observer_init.setTrackVisibility(true);
+  observer_init.setDelay(100);
   DummyExceptionStateForTesting exception_state;
   TestIntersectionObserverDelegate* observer_delegate =
       new TestIntersectionObserverDelegate(GetDocument());
@@ -483,6 +503,7 @@ TEST_F(IntersectionObserverV2Test, BasicTransform) {
 
   IntersectionObserverInit observer_init;
   observer_init.setTrackVisibility(true);
+  observer_init.setDelay(100);
   DummyExceptionStateForTesting exception_state;
   TestIntersectionObserverDelegate* observer_delegate =
       new TestIntersectionObserverDelegate(GetDocument());

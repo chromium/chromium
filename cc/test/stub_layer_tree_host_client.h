@@ -17,14 +17,11 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void WillBeginMainFrame() override {}
   void DidBeginMainFrame() override {}
   void BeginMainFrame(const viz::BeginFrameArgs& args) override {}
+  void RecordEndOfFrameMetrics(base::TimeTicks) override {}
   void BeginMainFrameNotExpectedSoon() override {}
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}
   void UpdateLayerTreeHost() override {}
-  void ApplyViewportDeltas(const gfx::Vector2dF& inner_delta,
-                           const gfx::Vector2dF& outer_delta,
-                           const gfx::Vector2dF& elastic_overscroll_delta,
-                           float page_scale,
-                           float top_controls_delta) override {}
+  void ApplyViewportChanges(const ApplyViewportChangesArgs&) override {}
   void RecordWheelAndTouchScrollingCount(bool has_scrolled_by_wheel,
                                          bool has_scrolled_by_touch) override {}
   void RequestNewLayerTreeFrameSink() override {}

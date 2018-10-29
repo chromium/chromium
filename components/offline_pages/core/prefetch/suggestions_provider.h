@@ -43,9 +43,9 @@ class SuggestionsProvider {
       base::OnceCallback<void(std::vector<PrefetchSuggestion>)>;
 
   // Request the list of current article suggestions, to be returned via the
-  // provided callback in descending priority order. Freshest articles are
-  // prefetched first based both on the order they are listed and on the
-  // timestamp at which the suggestion was last seen.
+  // provided callback (via PostTask) in descending priority order. Freshest
+  // articles are prefetched first based both on the order they are listed and
+  // on the timestamp at which the suggestion was last seen.
   virtual void GetCurrentArticleSuggestions(
       SuggestionCallback suggestions_callback) = 0;
 

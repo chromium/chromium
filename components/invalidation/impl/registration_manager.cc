@@ -79,13 +79,11 @@ ObjectIdSet RegistrationManager::UpdateRegisteredIds(const ObjectIdSet& ids) {
                       std::inserter(to_unregister, to_unregister.begin()),
                       ObjectIdLessThan());
 
-  for (ObjectIdSet::const_iterator it = to_unregister.begin();
-       it != to_unregister.end(); ++it) {
+  for (auto it = to_unregister.begin(); it != to_unregister.end(); ++it) {
     UnregisterId(*it);
   }
 
-  for (ObjectIdSet::const_iterator it = to_register.begin();
-       it != to_register.end(); ++it) {
+  for (auto it = to_register.begin(); it != to_register.end(); ++it) {
     if (!base::ContainsKey(registration_statuses_, *it)) {
       registration_statuses_[*it] =
           std::make_unique<RegistrationStatus>(*it, this);

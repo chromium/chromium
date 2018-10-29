@@ -21,7 +21,7 @@
 <link rel="import" href="../crostini_page/crostini_page.html">
 <link rel="import" href="../device_page/device_page.html">
 <link rel="import" href="../internet_page/internet_page.html">
-<link rel="import" href="../multidevice_page/multidevice_page_container.html">
+<link rel="import" href="../multidevice_page/multidevice_page.html">
 </if>
 
 <if expr="not chromeos">
@@ -122,12 +122,9 @@
             if="[[canShowMultideviceSection_(showMultidevice, pageVisibility)]]"
             restamp>
           <settings-section page-title="$i18n{multidevicePageTitle}"
-              section="multidevice"
-              hidden$="[[!doesChromebookSupportMultiDeviceSection_]]">
-            <settings-multidevice-page-container
-                does-chromebook-support-multi-device-features=
-                    "{{doesChromebookSupportMultiDeviceSection_}}">
-            </settings-multidevice-page-container>
+              section="multidevice">
+            <settings-multidevice-page prefs="{{prefs}}">
+            </settings-multidevice-page>
           </settings-section>
         </template>
 </if>

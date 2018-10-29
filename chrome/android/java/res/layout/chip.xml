@@ -13,14 +13,14 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:background="@drawable/chip_bg">
-    <org.chromium.chrome.browser.widget.TintedImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/icon"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginStart="8dp"
         android:gravity="center"
         android:scaleType="fitCenter"
-        app:chrometint="@color/dark_mode_tint" />
+        app:tint="@color/dark_mode_tint" />
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"

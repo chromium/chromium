@@ -1,0 +1,22 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/serial
+
+[
+    Exposed(Window Serial,DedicatedWorker Serial),
+    SecureContext
+] interface SerialPort {
+    // TODO(https://crbug.com/888165): "any" is used here because the IDL
+    // processor does not recognize ReadableStream or WritableStream when
+    // implemented with V8 extras.
+    [CallWith=ScriptState] readonly attribute any in;
+    [CallWith=ScriptState] readonly attribute any out;
+
+    [CallWith=ScriptState, MeasureAs=SerialPortOpen]
+    Promise<void> open(SerialOptions options);
+
+    [CallWith=ScriptState, MeasureAs=SerialPortClose]
+    Promise<void> close();
+};

@@ -36,7 +36,7 @@ namespace blink {
 // The InputStream is made up of a sequence of SegmentedStrings:
 //
 // [--current--][--next--][--next--] ... [--next--]
-//            /\                         (also called m_last)
+//            /\                         (also called last_)
 //            L_ current insertion point
 //
 // The current segmented string is stored in InputStream.  Each of the
@@ -46,7 +46,7 @@ namespace blink {
 // document.write() will add characters at the current insertion point, which
 // appends them to the "current" string.
 //
-// m_last is a pointer to the last of the afterInsertionPoint strings. The
+// last_ is a pointer to the last of the afterInsertionPoint strings. The
 // network adds data at the end of the InputStream, which appends them to the
 // "last" string.
 class HTMLInputStream {
@@ -80,7 +80,7 @@ class HTMLInputStream {
     first_ = SegmentedString();
     if (last_ == &first_) {
       // We used to only have one SegmentedString in the InputStream but now we
-      // have two.  That means m_first is no longer also the m_last string,
+      // have two.  That means first_ is no longer also the last_ string,
       // |next| is now the last one.
       last_ = &next;
     }
@@ -90,13 +90,13 @@ class HTMLInputStream {
     first_.Append(next);
     if (last_ == &next) {
       // The string |next| used to be the last SegmentedString in
-      // the InputStream.  Now that it's been merged into m_first,
-      // that makes m_first the last one.
+      // the InputStream.  Now that it's been merged into first_,
+      // that makes first_ the last one.
       last_ = &first_;
     }
     if (next.IsClosed()) {
-      // We also need to merge the "closed" state from next to m_first.
-      // Arguably, this work could be done in append().
+      // We also need to merge the "closed" state from next to first_.
+      // Arguably, this work could be done in Append().
       first_.Close();
     }
   }

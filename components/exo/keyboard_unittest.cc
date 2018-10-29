@@ -4,6 +4,7 @@
 
 #include "components/exo/keyboard.h"
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/macros.h"
@@ -305,10 +306,15 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged) {
   ui::DeviceHotplugEventObserver* device_data_manager =
       ui::DeviceDataManager::GetInstance();
   ASSERT_TRUE(device_data_manager != nullptr);
-  // Make sure that DeviceDataManager has one external keyboard.
-  const std::vector<ui::InputDevice> keyboards{ui::InputDevice(
-      2, ui::InputDeviceType::INPUT_DEVICE_EXTERNAL, "keyboard")};
+  // Make sure that DeviceDataManager has one external keyboard...
+  const std::vector<ui::InputDevice> keyboards{
+      ui::InputDevice(2, ui::InputDeviceType::INPUT_DEVICE_USB, "keyboard")};
   device_data_manager->OnKeyboardDevicesUpdated(keyboards);
+  // and a touch screen.
+  const std::vector<ui::TouchscreenDevice> touch_screen{
+      ui::TouchscreenDevice(3, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+                            "touch", gfx::Size(600, 400), 1)};
+  device_data_manager->OnTouchscreenDevicesUpdated(touch_screen);
 
   ash::TabletModeController* tablet_mode_controller =
       ash::Shell::Get()->tablet_mode_controller();
@@ -329,13 +335,57 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged) {
   device_data_manager->OnKeyboardDevicesUpdated(
       std::vector<ui::InputDevice>({}));
 
-  // Re-adding keyboards calls OnKeyboardTypeChanged() with true;
+  // Re-adding keyboards calls OnKeyboardTypeChanged() with true.
   EXPECT_CALL(configuration_delegate, OnKeyboardTypeChanged(true));
   device_data_manager->OnKeyboardDevicesUpdated(keyboards);
 
   keyboard.reset();
 
   tablet_mode_controller->EnableTabletModeWindowManager(false);
+}
+
+TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+  gfx::Size buffer_size(10, 10);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
+
+  ui::DeviceHotplugEventObserver* device_data_manager =
+      ui::DeviceDataManager::GetInstance();
+  ASSERT_TRUE(device_data_manager != nullptr);
+  // Make sure that DeviceDataManager has one external keyboard.
+  const std::vector<ui::InputDevice> keyboards{
+      ui::InputDevice(2, ui::InputDeviceType::INPUT_DEVICE_USB, "keyboard")};
+  device_data_manager->OnKeyboardDevicesUpdated(keyboards);
+
+  MockKeyboardDelegate delegate;
+  Seat seat;
+  auto keyboard = std::make_unique<Keyboard>(&delegate, &seat);
+  MockKeyboardDeviceConfigurationDelegate configuration_delegate;
+
+  EXPECT_CALL(configuration_delegate, OnKeyboardTypeChanged(true));
+  keyboard->SetDeviceConfigurationDelegate(&configuration_delegate);
+  EXPECT_TRUE(keyboard->HasDeviceConfigurationDelegate());
+
+  ash::AccessibilityController* accessibility_controller =
+      ash::Shell::Get()->accessibility_controller();
+
+  // Enable a11y keyboard calls OnKeyboardTypeChanged() with false.
+  EXPECT_CALL(configuration_delegate, OnKeyboardTypeChanged(false));
+  accessibility_controller->SetVirtualKeyboardEnabled(true);
+
+  // Disable a11y keyboard calls OnKeyboardTypeChanged() with true.
+  EXPECT_CALL(configuration_delegate, OnKeyboardTypeChanged(true));
+  accessibility_controller->SetVirtualKeyboardEnabled(false);
+
+  keyboard.reset();
 }
 
 TEST_F(KeyboardTest, KeyboardObserver) {

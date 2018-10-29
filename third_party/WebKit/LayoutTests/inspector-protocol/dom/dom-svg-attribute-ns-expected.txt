@@ -1,0 +1,6 @@
+Test that namespaced attributes can be modified.
+Original attribute:
+xlink:href=fake_original_image.png
+Modified attribute:
+xlink:href=fake_modified_image.png
+

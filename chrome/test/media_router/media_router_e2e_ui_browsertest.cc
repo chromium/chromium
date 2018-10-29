@@ -14,46 +14,6 @@
 
 namespace media_router {
 
-IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_MirrorHTML5Video) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  content::WebContents* dialog_contents = OpenMRDialog(web_contents);
-  ASSERT_TRUE(dialog_contents);
-
-  // Wait util the dialog finishes rendering.
-  WaitUntilDialogFullyLoaded(dialog_contents);
-  WaitUntilSinkDiscoveredOnUI();
-  ChooseSink(web_contents, receiver());
-
-  // Mirror tab for 10s.
-  Wait(base::TimeDelta::FromSeconds(10));
-  dialog_contents = OpenMRDialog(web_contents);
-  WaitUntilDialogFullyLoaded(dialog_contents);
-
-  // Check the mirroring session has started successfully.
-  ASSERT_TRUE(!GetRouteId(receiver()).empty());
-  OpenMediaPage();
-
-  // Play the video on loop and wait 5s for it to play smoothly.
-  std::string script = "document.getElementsByTagName('video')[0].loop=true;";
-  ExecuteScript(web_contents, script);
-  Wait(base::TimeDelta::FromSeconds(5));
-
-  // Go to full screen and wait 5s for it to play smoothly.
-  script = "document.getElementsByTagName('video')[0]."
-      "webkitRequestFullScreen();";
-  ExecuteScript(web_contents, script);
-  Wait(base::TimeDelta::FromSeconds(5));
-  dialog_contents = OpenMRDialog(web_contents);
-  WaitUntilDialogFullyLoaded(dialog_contents);
-
-  // Check the mirroring session is still live.
-  ASSERT_TRUE(!GetRouteId(receiver()).empty());
-  Wait(base::TimeDelta::FromSeconds(20));
-  CloseRouteOnUI();
-}
-
 IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest,
                        MANUAL_OpenLocalMediaFileFullscreen) {
   GURL file_url = ui_test_utils::GetTestUrl(
@@ -85,8 +45,8 @@ IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest,
   WaitUntilSinkDiscoveredOnUI();
   ChooseSink(web_contents, receiver());
 
-  // Play the file for 15 seconds.
-  Wait(base::TimeDelta::FromSeconds(15));
+  // Play the file for 10 seconds.
+  Wait(base::TimeDelta::FromSeconds(10));
 
   // Expect that the current tab has the file open in it.
   ASSERT_EQ(file_url, web_contents->GetURL());
@@ -98,7 +58,58 @@ IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest,
       "(document.webkitCurrentFullScreenElement != null);";
   CHECK(content::ExecuteScriptAndExtractBool(web_contents, is_fullscreen_script,
                                              &is_fullscreen));
+
   ASSERT_TRUE(is_fullscreen);
+  if (IsDialogClosed(web_contents))
+    OpenMRDialog(web_contents);
+  CloseRouteOnUI();
+  // Wait 15s for Chromecast to back to home screen and ready to use status.
+  Wait(base::TimeDelta::FromSeconds(15));
+}
+
+IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest, MANUAL_MirrorHTML5Video) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::WebContents* dialog_contents = OpenMRDialog(web_contents);
+  ASSERT_TRUE(dialog_contents);
+
+  // Wait until the dialog finishes rendering.
+  WaitUntilDialogFullyLoaded(dialog_contents);
+  WaitUntilSinkDiscoveredOnUI();
+  ChooseSink(web_contents, receiver());
+
+  // Mirror tab for 10s.
+  Wait(base::TimeDelta::FromSeconds(10));
+  if (IsDialogClosed(web_contents))
+    dialog_contents = OpenMRDialog(web_contents);
+  WaitUntilDialogFullyLoaded(dialog_contents);
+
+  // Check the mirroring session has started successfully.
+  ASSERT_TRUE(!GetRouteId(receiver()).empty());
+  OpenMediaPage();
+
+  // Play the video on loop and wait 5s for it to play smoothly.
+  std::string script = "document.getElementsByTagName('video')[0].loop=true;";
+  ExecuteScript(web_contents, script);
+  Wait(base::TimeDelta::FromSeconds(5));
+
+  // Go to full screen and wait 5s for it to play smoothly.
+  script =
+      "document.getElementsByTagName('video')[0]."
+      "webkitRequestFullScreen();";
+  ExecuteScript(web_contents, script);
+  Wait(base::TimeDelta::FromSeconds(5));
+  if (IsDialogClosed(web_contents))
+    dialog_contents = OpenMRDialog(web_contents);
+  WaitUntilDialogFullyLoaded(dialog_contents);
+
+  // Check the mirroring session is still live.
+  ASSERT_TRUE(!GetRouteId(receiver()).empty());
+  Wait(base::TimeDelta::FromSeconds(20));
+  if (IsDialogClosed(web_contents))
+    OpenMRDialog(web_contents);
+  CloseRouteOnUI();
 }
 
 }  // namespace media_router

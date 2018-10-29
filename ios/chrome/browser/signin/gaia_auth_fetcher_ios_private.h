@@ -36,7 +36,8 @@ class GaiaAuthFetcherIOSBridge : ActiveStateManager::Observer {
   //   will be a POST request.
   void Fetch(const GURL& url,
              const std::string& headers,
-             const std::string& body);
+             const std::string& body,
+             bool shouldUseXmlHTTPRequest);
 
   // Cancels the current fetch.
   void Cancel();
@@ -61,7 +62,8 @@ class GaiaAuthFetcherIOSBridge : ActiveStateManager::Observer {
     Request();
     Request(const GURL& url,
             const std::string& headers,
-            const std::string& body);
+            const std::string& body,
+            bool shouldUseXmlHTTPRequest);
     // Whether the request is pending (i.e. awaiting to be processed or
     // currently being processed).
     bool pending;
@@ -71,6 +73,9 @@ class GaiaAuthFetcherIOSBridge : ActiveStateManager::Observer {
     std::string headers;
     // HTTP body to add to the request.
     std::string body;
+    // Whether XmlHTTPRequest should be injected in JS instead of using
+    // WKWebView directly.
+    bool shouldUseXmlHTTPRequest;
   };
 
   // Fetches the pending request if it exists.

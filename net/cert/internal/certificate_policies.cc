@@ -211,8 +211,7 @@ bool ParseCertificatePoliciesExtension(const der::Input& extension_value,
     // Build the |policies| vector in sorted order (sorted on DER encoded policy
     // OID). Use a binary search to check whether a duplicate policy is present,
     // and if not, where to insert the policy to maintain the sorted order.
-    std::vector<der::Input>::iterator i =
-        std::lower_bound(policies->begin(), policies->end(), policy_oid);
+    auto i = std::lower_bound(policies->begin(), policies->end(), policy_oid);
     // RFC 5280 section 4.2.1.4: A certificate policy OID MUST NOT appear more
     // than once in a certificate policies extension.
     if (i != policies->end() && *i == policy_oid) {

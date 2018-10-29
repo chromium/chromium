@@ -12,7 +12,6 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
 namespace base {
@@ -46,10 +45,6 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   // notification-launch-id switch.
   static bool HandleActivation(const base::CommandLine& command_line);
 
-  // Extracts the profile ID from |launch_id_str|.
-  static std::string GetProfileIdFromLaunchId(
-      const base::string16& launch_id_str);
-
   // Checks if native notification is enabled.
   static bool NativeNotificationEnabled();
 
@@ -82,16 +77,16 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
 
   // Obtain an IToastNotification interface from a given XML (provided by the
   // NotificationTemplateBuilder). For testing use only.
-  HRESULT GetToastNotificationForTesting(
+  Microsoft::WRL::ComPtr<ABI::Windows::UI::Notifications::IToastNotification>
+  GetToastNotificationForTesting(
       const message_center::Notification& notification,
       const NotificationTemplateBuilder& notification_template_builder,
       const std::string& profile_id,
-      bool incognito,
-      ABI::Windows::UI::Notifications::IToastNotification** toast_notification);
+      bool incognito);
 
   scoped_refptr<NotificationPlatformBridgeWinImpl> impl_;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> notification_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeWin);
 };

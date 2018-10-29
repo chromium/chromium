@@ -1,5 +1,5 @@
-The _before_selection_ word is before the selection, so we shouldn't be able to find it if span_to_select is selected. 
-The _in_selection_ word is in the selection and we should always be able to find it. 
+The _before_selection_ word is before the selection, so we shouldn't be able to find it if span_to_select is selected.
+The _in_selection_ word is in the selection and we should always be able to find it.
 The _after_selection_ word is after the selection and we should always be able to find that too.
 PASS testRunner.findString("_before_selection_", []) is true
 PASS testRunner.findString("_in_selection_", []) is true

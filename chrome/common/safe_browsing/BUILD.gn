@@ -41,10 +41,10 @@ if (safe_browsing_mode == 1) {
     ]
   }
 
-  source_set("download_protection_util") {
+  source_set("download_type_util") {
     sources = [
-      "download_protection_util.cc",
-      "download_protection_util.h",
+      "download_type_util.cc",
+      "download_type_util.h",
     ]
     deps = [
       ":file_type_policies",
@@ -64,7 +64,7 @@ if (safe_browsing_mode == 1) {
 
     deps = [
       ":archive_analyzer_results",
-      ":download_protection_util",
+      ":download_type_util",
       ":file_type_policies",
       "//base",
       "//base:i18n",
@@ -98,6 +98,20 @@ if (safe_browsing_mode == 1) {
 
     deps = [
       "//base:base",
+    ]
+  }
+
+  source_set("mock_binary_feature_extractor") {
+    testonly = true
+
+    sources = [
+      "mock_binary_feature_extractor.cc",
+      "mock_binary_feature_extractor.h",
+    ]
+
+    deps = [
+      ":safe_browsing",
+      "//testing/gmock",
     ]
   }
 }
@@ -135,7 +149,7 @@ source_set("safe_browsing") {
 
     deps += [
       ":archive_analyzer_results",
-      ":download_protection_util",
+      ":download_type_util",
       ":rar_analyzer",
       "//components/safe_browsing:features",
     ]

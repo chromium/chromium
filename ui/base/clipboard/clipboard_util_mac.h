@@ -9,6 +9,7 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
+#include "ui/base/clipboard/clipboard_types.h"
 #include "ui/base/ui_base_export.h"
 
 namespace ui {
@@ -68,6 +69,9 @@ class UI_BASE_EXPORT ClipboardUtil {
   static bool URLsAndTitlesFromPasteboard(NSPasteboard* pboard,
                                           NSArray** urls,
                                           NSArray** titles);
+
+  // Gets the NSPasteboard specified from the clipboard type.
+  static NSPasteboard* PasteboardFromType(ui::ClipboardType type);
 };
 }
 

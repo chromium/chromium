@@ -1,6 +1,8 @@
 <script>
-if (window.testRunner)
+if (window.testRunner) {
     testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
 </script>
 <body>
 This tests that calling document.open on a document that has a pending load correctly cancels the load and does not crash even if the frame is removed.
@@ -12,6 +14,7 @@ const client = new frame.contentWindow.XMLHttpRequest();
 client.open("GET", "data:text/html,");
 client.onabort = e => {
   div.remove();
+  testRunner.notifyDone();
 };
 client.send();
 frame.contentWindow.document.open();

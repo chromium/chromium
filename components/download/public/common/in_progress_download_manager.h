@@ -31,7 +31,6 @@ class DownloadDBCache;
 class DownloadStartObserver;
 class DownloadURLLoaderFactoryGetter;
 class DownloadUrlParameters;
-class InProgressCache;
 struct DownloadDBEntry;
 
 // Manager for handling all active downloads.
@@ -70,7 +69,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
 
   using IsOriginSecureCallback = base::RepeatingCallback<bool(const GURL&)>;
   InProgressDownloadManager(Delegate* delegate,
-                            const base::FilePath& metadata_cache_dir,
+                            const base::FilePath& in_progress_db_dir,
                             const IsOriginSecureCallback& is_origin_secure_cb);
   ~InProgressDownloadManager() override;
   // Called to start a download.
@@ -153,7 +152,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
   }
 
  private:
-  void Initialize(const base::FilePath& metadata_cache_dir);
+  void Initialize(const base::FilePath& in_progress_db_dir);
 
   // UrlDownloadHandler::Delegate implementations.
   void OnUrlDownloadStarted(
@@ -164,9 +163,6 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
   void OnUrlDownloadStopped(UrlDownloadHandler* downloader) override;
   void OnUrlDownloadHandlerCreated(
       UrlDownloadHandler::UniqueUrlDownloadHandlerPtr downloader) override;
-
-  // Called when |download_metadata_cache_| is initialized.
-  void OnMetadataCacheInitialized(const base::FilePath& metadata_cache_dir);
 
   // Called when the object is initialized.
   void OnInitialized(bool success,
@@ -191,9 +187,6 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
 
   // Factory for the creation of download files.
   std::unique_ptr<DownloadFileFactory> file_factory_;
-
-  // Cache for storing metadata about in progress downloads.
-  std::unique_ptr<InProgressCache> download_metadata_cache_;
 
   // Cache for DownloadDB.
   std::unique_ptr<DownloadDBCache> download_db_cache_;

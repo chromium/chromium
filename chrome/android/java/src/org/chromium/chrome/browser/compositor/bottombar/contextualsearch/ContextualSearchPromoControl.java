@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
-import org.chromium.chrome.browser.compositor.animation.CompositorAnimator.AnimatorUpdateListener;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
@@ -291,12 +290,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
                 CompositorAnimator.ofFloat(mOverlayPanel.getAnimationHandler(), 1.f, 0.f,
                         OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, null);
 
-        collapse.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(CompositorAnimator animator) {
-                updateAppearance(animator.getAnimatedValue());
-            }
-        });
+        collapse.addUpdateListener(animator -> updateAppearance(animator.getAnimatedValue()));
 
         collapse.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -354,21 +348,13 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
 
         // "Allow" button.
         Button allowButton = (Button) view.findViewById(R.id.contextual_search_allow_button);
-        allowButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ContextualSearchPromoControl.this.handlePromoChoice(true);
-            }
-        });
+        allowButton.setOnClickListener(
+                v -> ContextualSearchPromoControl.this.handlePromoChoice(true));
 
         // "No thanks" button.
         Button noThanksButton = (Button) view.findViewById(R.id.contextual_search_no_thanks_button);
-        noThanksButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ContextualSearchPromoControl.this.handlePromoChoice(false);
-            }
-        });
+        noThanksButton.setOnClickListener(
+                v -> ContextualSearchPromoControl.this.handlePromoChoice(false));
 
         // Fill in text with link to Settings.
         TextView promoText = (TextView) view.findViewById(R.id.contextual_search_promo_text);

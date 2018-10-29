@@ -24,7 +24,7 @@ namespace blink {
 // This is expected to be owned by the paint artifact which also owns the
 // related drawings.
 struct PLATFORM_EXPORT PaintChunk {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
   using Id = DisplayItem::Id;
 
@@ -78,8 +78,8 @@ struct PLATFORM_EXPORT PaintChunk {
     size_t total_size = sizeof(*this);
     if (hit_test_data) {
       total_size += sizeof(*hit_test_data);
-      total_size += hit_test_data->touch_action_rects.capacity() *
-                    sizeof(TouchActionRect);
+      total_size +=
+          hit_test_data->touch_action_rects.capacity() * sizeof(HitTestRect);
     }
     return total_size;
   }

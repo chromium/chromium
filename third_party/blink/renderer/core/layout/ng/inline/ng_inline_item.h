@@ -26,7 +26,7 @@ class LayoutObject;
 // In this representation TextNodes are merged up into their parent inline
 // element where possible.
 class CORE_EXPORT NGInlineItem {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum NGInlineItemType {
@@ -92,6 +92,7 @@ class CORE_EXPORT NGInlineItem {
   // If this item should create a box fragment. Box fragments can be omitted for
   // optimization if this is false.
   bool ShouldCreateBoxFragment() const { return should_create_box_fragment_; }
+  void SetShouldCreateBoxFragment() { should_create_box_fragment_ = true; }
 
   unsigned StartOffset() const { return start_offset_; }
   unsigned EndOffset() const { return end_offset_; }
@@ -125,6 +126,14 @@ class CORE_EXPORT NGInlineItem {
     return static_cast<NGCollapseType>(end_collapse_type_);
   }
   void SetEndCollapseType(NGCollapseType type);
+
+  // True if this item was generated (not in DOM).
+  // NGInlineItemsBuilder may generate break opportunitites to express the
+  // context that are lost during the whitespace collapsing. This item is used
+  // during the line breaking and layout, but is not supposed to generate
+  // fragments.
+  bool IsGenerated() const { return is_generated_; }
+  void SetIsGenerated() { is_generated_ = true; }
 
   // Whether the end collapsible space run contains a newline.
   // Valid only when kCollapsible or kCollapsed.
@@ -192,6 +201,7 @@ class CORE_EXPORT NGInlineItem {
   unsigned end_collapse_type_ : 2;  // NGCollapseType
   unsigned is_end_collapsible_newline_ : 1;
   unsigned is_symbol_marker_ : 1;
+  unsigned is_generated_ : 1;
   friend class NGInlineNode;
 };
 

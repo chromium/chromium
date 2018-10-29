@@ -19,7 +19,7 @@ using StorageAreaTest = NativeExtensionBindingsSystemUnittest;
 // Test that trying to use StorageArea.get without a StorageArea `this` fails
 // (with a helpful error message).
 TEST_F(StorageAreaTest, TestUnboundedUse) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo").AddPermission("storage").Build();
   RegisterExtension(extension);
 
@@ -48,7 +48,7 @@ TEST_F(StorageAreaTest, TestUnboundedUse) {
 }
 
 TEST_F(StorageAreaTest, TestUseAfterInvalidation) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo").AddPermission("storage").Build();
   RegisterExtension(extension);
 
@@ -80,7 +80,7 @@ TEST_F(StorageAreaTest, TestUseAfterInvalidation) {
 }
 
 TEST_F(StorageAreaTest, InvalidInvocationError) {
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo").AddPermission("storage").Build();
   RegisterExtension(extension);
 

@@ -353,7 +353,7 @@ int WebSocketTransportClientSocketPool::RequestSocket(
     request_net_log.AddEvent(NetLogEventType::SOCKET_POOL_STALLED_MAX_SOCKETS);
     stalled_request_queue_.emplace_back(casted_params, priority, handle,
                                         std::move(callback), request_net_log);
-    StalledRequestQueue::iterator iterator = stalled_request_queue_.end();
+    auto iterator = stalled_request_queue_.end();
     --iterator;
     DCHECK_EQ(handle, iterator->handle);
     // Because StalledRequestQueue is a std::list, its iterators are guaranteed
@@ -449,15 +449,13 @@ void WebSocketTransportClientSocketPool::FlushWithError(int error) {
   // calls because this method will delete the jobs and call their callbacks
   // anyway.
   flushing_ = true;
-  for (PendingConnectsMap::iterator it = pending_connects_.begin();
-       it != pending_connects_.end();) {
+  for (auto it = pending_connects_.begin(); it != pending_connects_.end();) {
     InvokeUserCallbackLater(it->second->handle(),
                             it->second->release_callback(), error);
     it = pending_connects_.erase(it);
   }
-  for (StalledRequestQueue::iterator it = stalled_request_queue_.begin();
-       it != stalled_request_queue_.end();
-       ++it) {
+  for (auto it = stalled_request_queue_.begin();
+       it != stalled_request_queue_.end(); ++it) {
     InvokeUserCallbackLater(it->handle, std::move(it->callback), error);
   }
   stalled_request_map_.clear();
@@ -644,7 +642,7 @@ void WebSocketTransportClientSocketPool::AddJob(
 }
 
 bool WebSocketTransportClientSocketPool::DeleteJob(ClientSocketHandle* handle) {
-  PendingConnectsMap::iterator it = pending_connects_.find(handle);
+  auto it = pending_connects_.find(handle);
   if (it == pending_connects_.end())
     return false;
   // Deleting a ConnectJob which holds an endpoint lock can lead to a different
@@ -658,7 +656,7 @@ bool WebSocketTransportClientSocketPool::DeleteJob(ClientSocketHandle* handle) {
 const WebSocketTransportConnectJob*
 WebSocketTransportClientSocketPool::LookupConnectJob(
     const ClientSocketHandle* handle) const {
-  PendingConnectsMap::const_iterator it = pending_connects_.find(handle);
+  auto it = pending_connects_.find(handle);
   CHECK(it != pending_connects_.end());
   return it->second.get();
 }
@@ -694,7 +692,7 @@ void WebSocketTransportClientSocketPool::ActivateStalledRequest() {
 
 bool WebSocketTransportClientSocketPool::DeleteStalledRequest(
     ClientSocketHandle* handle) {
-  StalledRequestMap::iterator it = stalled_request_map_.find(handle);
+  auto it = stalled_request_map_.find(handle);
   if (it == stalled_request_map_.end())
     return false;
   stalled_request_queue_.erase(it->second);

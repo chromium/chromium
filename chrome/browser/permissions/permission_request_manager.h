@@ -40,8 +40,11 @@ class PermissionRequestManager
  public:
   class Observer {
    public:
-    virtual ~Observer();
-    virtual void OnBubbleAdded();
+    virtual void OnBubbleAdded() {}
+    virtual void OnBubbleRemoved() {}
+
+   protected:
+    virtual ~Observer() = default;
   };
 
   enum AutoResponseType {
@@ -154,6 +157,7 @@ class PermissionRequestManager
   void RequestFinishedIncludingDuplicates(PermissionRequest* request);
 
   void NotifyBubbleAdded();
+  void NotifyBubbleRemoved();
 
   void DoAutoResponseForTesting();
 

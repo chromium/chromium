@@ -23,6 +23,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_export.h"
+#include "media/base/video_color_space.h"
 
 namespace media {
 
@@ -195,6 +196,7 @@ struct MEDIA_EXPORT Vp9FrameHeader {
   bool RefreshFlag(size_t i) const {
     return !!(refresh_frame_flags & (1u << i));
   }
+  VideoColorSpace GetColorSpace() const;
 
   uint8_t profile;
 

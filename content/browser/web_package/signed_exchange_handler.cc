@@ -4,7 +4,10 @@
 
 #include "content/browser/web_package/signed_exchange_handler.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/frame_host/frame_tree_node.h"
@@ -18,6 +21,7 @@
 #include "content/browser/web_package/signed_exchange_prologue.h"
 #include "content/browser/web_package/signed_exchange_signature_verifier.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -46,6 +50,16 @@ namespace content {
 namespace {
 
 constexpr char kDigestHeader[] = "Digest";
+constexpr char kHistogramSignatureVerificationResult[] =
+    "SignedExchange.SignatureVerificationResult";
+constexpr char kHistogramCertVerificationResult[] =
+    "SignedExchange.CertVerificationResult";
+constexpr char kHistogramCTVerificationResult[] =
+    "SignedExchange.CTVerificationResult";
+constexpr char kHistogramOCSPResponseStatus[] =
+    "SignedExchange.OCSPResponseStatus";
+constexpr char kHistogramOCSPRevocationStatus[] =
+    "SignedExchange.OCSPRevocationStatus";
 
 network::mojom::NetworkContext* g_network_context_for_testing = nullptr;
 
@@ -70,8 +84,8 @@ void OnVerifyCertUI(VerifyCallback callback,
                     int32_t error_code,
                     const net::CertVerifyResult& cv_result,
                     const net::ct::CTVerifyResult& ct_result) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(callback), error_code, cv_result, ct_result));
 }
 
@@ -377,6 +391,7 @@ SignedExchangeHandler::ParseHeadersAndFetchCertificate() {
 
   const bool force_fetch = load_flags_ & net::LOAD_BYPASS_CACHE;
 
+  cert_fetch_start_time_ = base::TimeTicks::Now();
   cert_fetcher_ = std::move(cert_fetcher_factory_)
                       ->CreateFetcherAndStart(
                           cert_url, force_fetch, *version_,
@@ -409,8 +424,13 @@ void SignedExchangeHandler::OnCertReceived(
     std::unique_ptr<SignedExchangeCertificateChain> cert_chain) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeHandler::OnCertReceived");
+  base::TimeDelta cert_fetch_duration =
+      base::TimeTicks::Now() - cert_fetch_start_time_;
   DCHECK_EQ(state_, State::kFetchingCertificate);
   if (result != SignedExchangeLoadResult::kSuccess) {
+    UMA_HISTOGRAM_MEDIUM_TIMES("SignedExchange.Time.CertificateFetch.Failure",
+                               cert_fetch_duration);
+
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy_.get(), "Failed to fetch the certificate.",
         std::make_pair(0 /* signature_index */,
@@ -419,12 +439,16 @@ void SignedExchangeHandler::OnCertReceived(
     return;
   }
 
+  UMA_HISTOGRAM_MEDIUM_TIMES("SignedExchange.Time.CertificateFetch.Success",
+                             cert_fetch_duration);
   unverified_cert_chain_ = std::move(cert_chain);
 
   const SignedExchangeSignatureVerifier::Result verify_result =
       SignedExchangeSignatureVerifier::Verify(
           *envelope_, unverified_cert_chain_->cert(), GetVerificationTime(),
           devtools_proxy_.get());
+  UMA_HISTOGRAM_ENUMERATION(kHistogramSignatureVerificationResult,
+                            verify_result);
   if (verify_result != SignedExchangeSignatureVerifier::Result::kSuccess) {
     base::Optional<SignedExchangeError::Field> error_field =
         SignedExchangeError::GetFieldFromSignatureVerifierResult(verify_result);
@@ -451,8 +475,8 @@ void SignedExchangeHandler::OnCertReceived(
   //   property, or
   const std::string& stapled_ocsp_response = unverified_cert_chain_->ocsp();
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&VerifyCert, certificate, url, stapled_ocsp_response,
                      sct_list_from_cert_cbor, frame_tree_node_id_getter_,
                      base::BindOnce(&SignedExchangeHandler::OnVerifyCert,
@@ -481,12 +505,21 @@ bool SignedExchangeHandler::CheckOCSPStatus(
   //
   // OCSP verification is done in CertVerifier::Verify(), so we just check the
   // result here.
-
-  if (ocsp_result.response_status != net::OCSPVerifyResult::PROVIDED ||
-      ocsp_result.revocation_status != net::OCSPRevocationStatus::GOOD)
-    return false;
-
-  return true;
+  UMA_HISTOGRAM_ENUMERATION(kHistogramOCSPResponseStatus,
+                            ocsp_result.response_status,
+                            static_cast<base::HistogramBase::Sample>(
+                                net::OCSPVerifyResult::RESPONSE_STATUS_MAX) +
+                                1);
+  if (ocsp_result.response_status == net::OCSPVerifyResult::PROVIDED) {
+    UMA_HISTOGRAM_ENUMERATION(kHistogramOCSPRevocationStatus,
+                              ocsp_result.revocation_status,
+                              static_cast<base::HistogramBase::Sample>(
+                                  net::OCSPRevocationStatus::MAX_VALUE) +
+                                  1);
+    if (ocsp_result.revocation_status == net::OCSPRevocationStatus::GOOD)
+      return true;
+  }
+  return false;
 }
 
 void SignedExchangeHandler::OnVerifyCert(
@@ -495,6 +528,11 @@ void SignedExchangeHandler::OnVerifyCert(
     const net::ct::CTVerifyResult& ct_result) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeHandler::OnCertVerifyComplete");
+  // net::Error codes are negative, so we put - in front of it.
+  base::UmaHistogramSparse(kHistogramCertVerificationResult, -error_code);
+  UMA_HISTOGRAM_ENUMERATION(kHistogramCTVerificationResult,
+                            ct_result.policy_compliance,
+                            net::ct::CTPolicyCompliance::CT_POLICY_COUNT);
 
   if (error_code != net::OK) {
     SignedExchangeLoadResult result;

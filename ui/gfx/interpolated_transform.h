@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
+#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/transform.h"
 #include "ui/gfx/transform_util.h"
 

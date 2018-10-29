@@ -34,15 +34,20 @@ class OneShotTimer;
 
 namespace net {
 
+class NetLog;
+
 class MDnsSocketFactoryImpl : public MDnsSocketFactory {
  public:
-  MDnsSocketFactoryImpl() {}
+  MDnsSocketFactoryImpl() : net_log_(nullptr) {}
+  explicit MDnsSocketFactoryImpl(NetLog* net_log) : net_log_(net_log) {}
   ~MDnsSocketFactoryImpl() override {}
 
   void CreateSockets(
       std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) override;
 
  private:
+  NetLog* const net_log_;
+
   DISALLOW_COPY_AND_ASSIGN(MDnsSocketFactoryImpl);
 };
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,7 +18,8 @@ TemplateURLServiceFactoryTestUtil::TemplateURLServiceFactoryTestUtil(
   profile_->CreateWebDataService();
 
   TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile_, TemplateURLServiceFactory::BuildInstanceFor);
+      profile_,
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
 }
 
 TemplateURLServiceFactoryTestUtil::~TemplateURLServiceFactoryTestUtil() {

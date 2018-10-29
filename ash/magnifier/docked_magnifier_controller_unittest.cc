@@ -22,6 +22,10 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/wm/overview/window_selector_controller.h"
+#include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_state.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
@@ -40,6 +44,12 @@ namespace {
 
 constexpr char kUser1Email[] = "user1@dockedmagnifier";
 constexpr char kUser2Email[] = "user2@dockedmagnifier";
+
+// Returns the magnifier area height given the display height.
+int GetMagnifierHeight(int display_height) {
+  return (display_height / DockedMagnifierController::kScreenHeightDivisor) +
+         DockedMagnifierController::kSeparatorHeight;
+}
 
 class DockedMagnifierTest : public NoSessionAshTestBase {
  public:
@@ -250,9 +260,7 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreas) {
   // the separator layer.
   gfx::Rect disp_1_workspace_with_magnifier = disp_1_workarea_no_magnifier;
   const int disp_1_magnifier_height =
-      (disp_1_bounds.height() /
-       DockedMagnifierController::kScreenHeightDevisor) +
-      DockedMagnifierController::kSeparatorHeight;
+      GetMagnifierHeight(disp_1_bounds.height());
   disp_1_workspace_with_magnifier.Inset(0, disp_1_magnifier_height, 0, 0);
   EXPECT_EQ(disp_1_bounds, display_1.bounds());
   EXPECT_EQ(disp_1_workspace_with_magnifier, display_1.work_area());
@@ -287,9 +295,7 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreas) {
   EXPECT_EQ(disp_2_bounds, display_2.bounds());
   gfx::Rect disp_2_workspace_with_magnifier = disp_2_workarea_no_magnifier;
   const int disp_2_magnifier_height =
-      (disp_2_bounds.height() /
-       DockedMagnifierController::kScreenHeightDevisor) +
-      DockedMagnifierController::kSeparatorHeight;
+      GetMagnifierHeight(disp_2_bounds.height());
   disp_2_workspace_with_magnifier.Inset(0, disp_2_magnifier_height, 0, 0);
   EXPECT_EQ(disp_2_workspace_with_magnifier, display_2.work_area());
   // Display 2's mouse is confined outside the viewport.
@@ -311,6 +317,120 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreas) {
             gfx::Rect(gfx::Point(0, 0), disp_1_bounds.size()));
   EXPECT_EQ(host2->GetLastCursorConfineBoundsInPixels(),
             gfx::Rect(gfx::Point(0, 0), disp_2_bounds.size()));
+}
+
+// Test that we exit overview mode when enabling the docked magnifier.
+TEST_F(DockedMagnifierTest, DisplaysWorkAreasOverviewMode) {
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell(SK_ColorWHITE, 100, gfx::Rect(0, 0, 200, 200)));
+  wm::GetWindowState(window.get())->Maximize();
+
+  // Enable overview mode followed by the magnifier.
+  auto* window_selector_controller = Shell::Get()->window_selector_controller();
+  window_selector_controller->ToggleOverview();
+  EXPECT_TRUE(window_selector_controller->IsSelecting());
+  controller()->SetEnabled(true);
+  EXPECT_TRUE(controller()->GetEnabled());
+
+  // Expect that overview mode is exited, the display's work area is updated,
+  // and the window's bounds are updated to be equal to the new display's work
+  // area bounds.
+  EXPECT_FALSE(window_selector_controller->IsSelecting());
+  const display::Display& display = display_manager()->GetDisplayAt(0);
+  gfx::Rect workarea = display.bounds();
+  const int magnifier_height = GetMagnifierHeight(display.bounds().height());
+  workarea.Inset(0, magnifier_height, 0, ShelfConstants::shelf_size());
+  EXPECT_EQ(workarea, display.work_area());
+  EXPECT_EQ(workarea, window->bounds());
+  EXPECT_TRUE(wm::GetWindowState(window.get())->IsMaximized());
+}
+
+// Test that we exist split view and over view modes when a single window is
+// snapped and the other snap region is hosting overview mode.
+TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
+  // Verify that we're in tablet mode.
+  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  EXPECT_TRUE(Shell::Get()
+                  ->tablet_mode_controller()
+                  ->IsTabletModeWindowManagerEnabled());
+
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell(SK_ColorWHITE, 100, gfx::Rect(0, 0, 200, 200)));
+  wm::GetWindowState(window.get())->Maximize();
+
+  auto* split_view_controller = Shell::Get()->split_view_controller();
+  EXPECT_EQ(split_view_controller->state(), SplitViewController::NO_SNAP);
+  EXPECT_EQ(split_view_controller->IsSplitViewModeActive(), false);
+
+  // Simulate going into split view, by enabling overview mode, and snapping
+  // a window to the left.
+  auto* window_selector_controller = Shell::Get()->window_selector_controller();
+  window_selector_controller->ToggleOverview();
+  EXPECT_TRUE(window_selector_controller->IsSelecting());
+  split_view_controller->SnapWindow(window.get(), SplitViewController::LEFT);
+  EXPECT_EQ(split_view_controller->state(), SplitViewController::LEFT_SNAPPED);
+  EXPECT_EQ(split_view_controller->left_window(), window.get());
+  EXPECT_TRUE(window_selector_controller->IsSelecting());
+
+  // Enable the docked magnifier and expect that both overview and split view
+  // modes are exited, and the window remains maximized, and its bounds are
+  // updated to match the new display's work area.
+  controller()->SetEnabled(true);
+  EXPECT_TRUE(controller()->GetEnabled());
+  EXPECT_FALSE(window_selector_controller->IsSelecting());
+  EXPECT_EQ(split_view_controller->state(), SplitViewController::NO_SNAP);
+  EXPECT_EQ(split_view_controller->IsSplitViewModeActive(), false);
+  const display::Display& display = display_manager()->GetDisplayAt(0);
+  const int magnifier_height = GetMagnifierHeight(display.bounds().height());
+  gfx::Rect work_area = display.bounds();
+  work_area.Inset(0, magnifier_height, 0, ShelfConstants::shelf_size());
+  EXPECT_EQ(work_area, display.work_area());
+  EXPECT_EQ(work_area, window->bounds());
+  EXPECT_TRUE(wm::GetWindowState(window.get())->IsMaximized());
+}
+
+// Test that we don't exit split view with two windows snapped on both sides
+// when we enable the docked magnifier, but rather their bounds are updated.
+TEST_F(DockedMagnifierTest, DisplaysWorkAreasDoubleSplitView) {
+  // Verify that we're in tablet mode.
+  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  EXPECT_TRUE(Shell::Get()
+                  ->tablet_mode_controller()
+                  ->IsTabletModeWindowManagerEnabled());
+
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell(SK_ColorWHITE, 100, gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell(SK_ColorWHITE, 200, gfx::Rect(0, 0, 200, 200)));
+
+  auto* window_selector_controller = Shell::Get()->window_selector_controller();
+  window_selector_controller->ToggleOverview();
+  EXPECT_TRUE(window_selector_controller->IsSelecting());
+
+  auto* split_view_controller = Shell::Get()->split_view_controller();
+  EXPECT_EQ(split_view_controller->IsSplitViewModeActive(), false);
+  split_view_controller->SnapWindow(window1.get(), SplitViewController::LEFT);
+  split_view_controller->SnapWindow(window2.get(), SplitViewController::RIGHT);
+  EXPECT_EQ(split_view_controller->IsSplitViewModeActive(), true);
+  EXPECT_EQ(split_view_controller->state(), SplitViewController::BOTH_SNAPPED);
+
+  // Snapping both windows should exit overview mode.
+  EXPECT_FALSE(window_selector_controller->IsSelecting());
+
+  // Enable the docked magnifier, and expect that split view does not exit, and
+  // the two windows heights are updated to be equal to the height of the
+  // updated display's work area.
+  controller()->SetEnabled(true);
+  EXPECT_TRUE(controller()->GetEnabled());
+  EXPECT_EQ(split_view_controller->IsSplitViewModeActive(), true);
+  EXPECT_EQ(split_view_controller->state(), SplitViewController::BOTH_SNAPPED);
+  const display::Display& display = display_manager()->GetDisplayAt(0);
+  const int magnifier_height = GetMagnifierHeight(display.bounds().height());
+  gfx::Rect work_area = display.bounds();
+  work_area.Inset(0, magnifier_height, 0, ShelfConstants::shelf_size());
+  EXPECT_EQ(work_area, display.work_area());
+  EXPECT_EQ(work_area.height(), window1->bounds().height());
+  EXPECT_EQ(work_area.height(), window2->bounds().height());
 }
 
 // Tests that the Docked Magnifier follows touch events.
@@ -361,7 +481,7 @@ TEST_F(DockedMagnifierTest, AddRemoveDisplays) {
   ASSERT_NE(nullptr, viewport_widget);
   EXPECT_EQ(root_windows[0], viewport_widget->GetNativeView()->GetRootWindow());
   const int viewport_1_height =
-      800 / DockedMagnifierController::kScreenHeightDevisor;
+      800 / DockedMagnifierController::kScreenHeightDivisor;
   EXPECT_EQ(gfx::Rect(0, 0, 600, viewport_1_height),
             viewport_widget->GetWindowBoundsInScreen());
 
@@ -386,7 +506,7 @@ TEST_F(DockedMagnifierTest, AddRemoveDisplays) {
   viewport_widget = controller()->GetViewportWidgetForTesting();
   EXPECT_EQ(root_windows[1], viewport_widget->GetNativeView()->GetRootWindow());
   const int viewport_2_height =
-      600 / DockedMagnifierController::kScreenHeightDevisor;
+      600 / DockedMagnifierController::kScreenHeightDivisor;
   EXPECT_EQ(gfx::Rect(600, 0, 400, viewport_2_height),
             viewport_widget->GetWindowBoundsInScreen());
 
@@ -425,7 +545,7 @@ TEST_F(DockedMagnifierTest, TransformSimple) {
   ASSERT_NE(nullptr, viewport_widget);
   EXPECT_EQ(root_windows[0], viewport_widget->GetNativeView()->GetRootWindow());
   const int viewport_height =
-      800 / DockedMagnifierController::kScreenHeightDevisor;
+      800 / DockedMagnifierController::kScreenHeightDivisor;
   EXPECT_EQ(gfx::Rect(0, 0, 800, viewport_height),
             viewport_widget->GetWindowBoundsInScreen());
 

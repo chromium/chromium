@@ -60,8 +60,10 @@ void HostFrameSinkManager::SetBadMessageReceivedFromGpuCallback(
   bad_message_received_from_gpu_callback_ = std::move(callback);
 }
 
-void HostFrameSinkManager::RegisterFrameSinkId(const FrameSinkId& frame_sink_id,
-                                               HostFrameSinkClient* client) {
+void HostFrameSinkManager::RegisterFrameSinkId(
+    const FrameSinkId& frame_sink_id,
+    HostFrameSinkClient* client,
+    ReportFirstSurfaceActivation report_activation) {
   DCHECK(frame_sink_id.is_valid());
   DCHECK(client);
 
@@ -69,7 +71,15 @@ void HostFrameSinkManager::RegisterFrameSinkId(const FrameSinkId& frame_sink_id,
   DCHECK(!data.IsFrameSinkRegistered());
   DCHECK(!data.has_created_compositor_frame_sink);
   data.client = client;
-  frame_sink_manager_->RegisterFrameSinkId(frame_sink_id);
+  data.report_activation = report_activation;
+  frame_sink_manager_->RegisterFrameSinkId(
+      frame_sink_id, report_activation == ReportFirstSurfaceActivation::kYes);
+}
+
+bool HostFrameSinkManager::IsFrameSinkIdRegistered(
+    const FrameSinkId& frame_sink_id) const {
+  auto iter = frame_sink_data_map_.find(frame_sink_id);
+  return iter != frame_sink_data_map_.end() && iter->second.client != nullptr;
 }
 
 void HostFrameSinkManager::InvalidateFrameSinkId(
@@ -231,19 +241,29 @@ void HostFrameSinkManager::UnregisterFrameSinkHierarchy(
     frame_sink_data_map_.erase(parent_frame_sink_id);
 }
 
-void HostFrameSinkManager::DropTemporaryReference(const SurfaceId& surface_id) {
-  frame_sink_manager_->DropTemporaryReference(surface_id);
+bool HostFrameSinkManager::IsFrameSinkHierarchyRegistered(
+    const FrameSinkId& parent_frame_sink_id,
+    const FrameSinkId& child_frame_sink_id) const {
+  auto iter = frame_sink_data_map_.find(parent_frame_sink_id);
+  return iter != frame_sink_data_map_.end() &&
+         base::ContainsValue(iter->second.children, child_frame_sink_id);
 }
 
-void HostFrameSinkManager::WillAssignTemporaryReferencesExternally() {
-  assign_temporary_references_ = false;
-}
+base::Optional<FrameSinkId> HostFrameSinkManager::FindRootFrameSinkId(
+    const FrameSinkId& start) const {
+  auto iter = frame_sink_data_map_.find(start);
+  if (iter == frame_sink_data_map_.end())
+    return base::nullopt;
 
-void HostFrameSinkManager::AssignTemporaryReference(
-    const SurfaceId& surface_id,
-    const FrameSinkId& frame_sink_id) {
-  DCHECK(!assign_temporary_references_);
-  frame_sink_manager_->AssignTemporaryReference(surface_id, frame_sink_id);
+  if (iter->second.is_root)
+    return start;
+
+  for (const FrameSinkId& parent_id : iter->second.parents) {
+    base::Optional<FrameSinkId> root = FindRootFrameSinkId(parent_id);
+    if (root)
+      return root;
+  }
+  return base::nullopt;
 }
 
 void HostFrameSinkManager::AddVideoDetectorObserver(
@@ -311,48 +331,6 @@ HostFrameSinkManager::CreateCompositorFrameSinkSupport(
   return support;
 }
 
-void HostFrameSinkManager::PerformAssignTemporaryReference(
-    const SurfaceId& surface_id) {
-  auto iter = frame_sink_data_map_.find(surface_id.frame_sink_id());
-  if (iter == frame_sink_data_map_.end()) {
-    // We don't have any hierarchy information for what will embed the new
-    // surface, drop the temporary reference.
-    frame_sink_manager_->DropTemporaryReference(surface_id);
-    return;
-  }
-
-  const FrameSinkData& data = iter->second;
-
-  // Display roots don't have temporary references to assign.
-  if (data.is_root)
-    return;
-
-  // If the frame sink has already been invalidated then we just drop the
-  // temporary reference.
-  if (!data.IsFrameSinkRegistered()) {
-    frame_sink_manager_->DropTemporaryReference(surface_id);
-    return;
-  }
-
-  // Find the oldest non-invalidated parent.
-  for (const FrameSinkId& parent_id : data.parents) {
-    const FrameSinkData& parent_data = frame_sink_data_map_[parent_id];
-    if (parent_data.IsFrameSinkRegistered()) {
-      frame_sink_manager_->AssignTemporaryReference(surface_id, parent_id);
-      return;
-    }
-  }
-  // TODO(kylechar): We might need to handle the case where there are multiple
-  // embedders better, so that the owner doesn't remove a surface reference
-  // until the other embedder has added a surface reference. Maybe just letting
-  // the client know what is the owner is sufficient, so the client can handle
-  // this.
-
-  // We don't have any hierarchy information for what will embed the new
-  // surface, drop the temporary reference.
-  frame_sink_manager_->DropTemporaryReference(surface_id);
-}
-
 void HostFrameSinkManager::OnConnectionLost() {
   connection_was_lost_ = true;
 
@@ -374,8 +352,11 @@ void HostFrameSinkManager::RegisterAfterConnectionLoss() {
   for (auto& map_entry : frame_sink_data_map_) {
     const FrameSinkId& frame_sink_id = map_entry.first;
     FrameSinkData& data = map_entry.second;
-    if (data.client)
-      frame_sink_manager_->RegisterFrameSinkId(frame_sink_id);
+    if (data.client) {
+      frame_sink_manager_->RegisterFrameSinkId(
+          frame_sink_id,
+          data.report_activation == ReportFirstSurfaceActivation::kYes);
+    }
     if (!data.synchronization_reporting_label.empty()) {
       frame_sink_manager_->EnableSynchronizationReporting(
           frame_sink_id, data.synchronization_reporting_label);
@@ -395,11 +376,6 @@ void HostFrameSinkManager::RegisterAfterConnectionLoss() {
                                                       child_frame_sink_id);
     }
   }
-}
-
-void HostFrameSinkManager::OnSurfaceCreated(const SurfaceId& surface_id) {
-  if (assign_temporary_references_)
-    PerformAssignTemporaryReference(surface_id);
 }
 
 void HostFrameSinkManager::OnFirstSurfaceActivation(

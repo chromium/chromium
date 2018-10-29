@@ -7,7 +7,7 @@
 #include "base/message_loop/message_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/platform/web_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -17,7 +17,7 @@ FakeRendererScheduler::FakeRendererScheduler() = default;
 
 FakeRendererScheduler::~FakeRendererScheduler() = default;
 
-std::unique_ptr<blink::WebThread> FakeRendererScheduler::CreateMainThread() {
+std::unique_ptr<Thread> FakeRendererScheduler::CreateMainThread() {
   return nullptr;
 }
 

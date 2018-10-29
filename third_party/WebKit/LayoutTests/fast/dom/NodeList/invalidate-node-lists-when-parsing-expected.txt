@@ -7,4 +7,3 @@ If the cache is not invalidated when the testElement is parsed, both before and 
 before: not found
 after: found
 onload: found
-

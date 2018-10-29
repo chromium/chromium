@@ -9,7 +9,7 @@
         {
           "object": "LayoutTableRow TR id='target' class='green'",
           "rect": [8, 10, 106, 100],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

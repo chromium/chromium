@@ -86,62 +86,62 @@
   cursor: default;
 }
 .inputview-font {
-  font-family: Roboto2, Roboto, Noto Sans, Sans-Serif;
+  font-family: Roboto, Noto Sans, Sans-Serif;
 }
 .inputview-font[lang=am] {
-  font-family: Roboto2, Roboto, Noto Sans Armenian, Sans-Serif;
+  font-family: Roboto, Noto Sans Armenian, Noto Sans Fallback, Sans-Serif;
 }
-.inputview-font[lang=il] {
-  font-family: Roboto2, Roboto, Noto Sans Hebrew, Sans-Serif;
+.inputview-font[lang=he] {
+  font-family: Roboto, Noto Sans Hebrew, Noto Sans Fallback, Sans-Serif;
 }
-.inputview-font[lang=jp] {
-  font-family: Roboto2, Roboto, Noto Sans CJK JP, Sans-Serif;
+.inputview-font[lang=ja] {
+  font-family: Roboto, Noto Sans CJK JP, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=ar] {
-  font-family: Roboto2, Roboto, Noto Arabic Naskh ui, Sans-Serif;
+  font-family: Roboto, Noto Arabic Naskh ui, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=bn] {
-  font-family: Roboto2, Roboto, Noto Sans Bengali, Sans-Serif;
+  font-family: Roboto, Noto Sans Bengali, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=ethi] {
-  font-family: Roboto2, Roboto, Noto Sans Ethiopic, Sans-Serif;
+  font-family: Roboto, Noto Sans Ethiopic, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=fa] {
-  font-family: Roboto2, Roboto, Noto Arabic Naskh ui, Sans-Serif;
+  font-family: Roboto, Noto Arabic Naskh ui, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=gu] {
-  font-family: Roboto2, Roboto, Noto Sans Gujarati, Lohit Gujarati, Sans-Serif;
+  font-family: Roboto, Noto Sans Gujarati, Lohit Gujarati, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=kn] {
-  font-family: Roboto2, Roboto, Noto Sans Kannada, Lohit Kannada, Sans-Serif;
+  font-family: Roboto, Noto Sans Kannada, Lohit Kannada, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=ml] {
-  font-family: Roboto2, Roboto, Noto Sans Malayalam, Lohit Malayalam, Sans-Serif;
+  font-family: Roboto, Noto Sans Malayalam, Lohit Malayalam, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=ta] {
-  font-family: Roboto2, Roboto, Noto Sans Tamil, Lohit Tamil, Sans-Serif;
+  font-family: Roboto, Noto Sans Tamil, Lohit Tamil, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=te] {
-  font-family: Roboto2, Roboto, Noto Sans Telugu, Lohit Telugu, Sans-Serif;
+  font-family: Roboto, Noto Sans Telugu, Lohit Telugu, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=th] {
-  font-family: Roboto2, Roboto, Noto Sans Thai, Sans-Serif;
+  font-family: Roboto, Noto Sans Thai, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=zh-CN] {
-  font-family: Roboto2, Roboto, Noto Sans CJK SC, Droid Sans Fallback, Sans-Serif;
+  font-family: Roboto, Noto Sans CJK SC, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-font[lang=zh-TW],
 .inputview-font[lang=zh-HK] {
-  font-family: Roboto2, Roboto, Noto Sans CJK TC, Droid Sans Fallback, Sans-Serif;
+  font-family: Roboto, Noto Sans CJK TC, Noto Sans Fallback, Sans-Serif;
 }
-.inputview-font[lang=kr] {
-  font-family: Roboto2, Roboto, Noto Sans CJK KR, Sans-Serif;
+.inputview-font[lang=ko] {
+  font-family: Roboto, Noto Sans CJK KR, Noto Sans Fallback, Sans-Serif;
 }
 .inputview-emoji-font {
-  font-family: Noto Color Emoji, Noto Emoji, Droid Emoji;
+  font-family: Noto Color Emoji;
 }
 .inputview-emoticon {
-  font-family: Noto Color Emoji, Noto Emoji, Droid Emoji;
+  font-family: Noto Sans-Serif;
 }
 .inputview-modifier {
   display: table-cell;
@@ -849,4 +849,3 @@
   height: 17px;
   width: 16.5px;
 }
-

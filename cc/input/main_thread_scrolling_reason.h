@@ -46,7 +46,6 @@ struct CC_EXPORT MainThreadScrollingReason {
     kHasOpacityAndLCDText = 1 << 16,
     kHasTransformAndLCDText = 1 << 17,
     kBackgroundNotOpaqueInRectAndLCDText = 1 << 18,
-    kHasBorderRadius = 1 << 19,
     kHasClipRelatedProperty = 1 << 20,
     kHasBoxShadowFromNonRootLayer = 1 << 21,
     kIsNotStackingContextAndLCDText = 1 << 22,
@@ -60,19 +59,20 @@ struct CC_EXPORT MainThreadScrollingReason {
     kContinuingMainThreadScroll = 1 << 10,
     kNonInvertibleTransform = 1 << 11,
     kPageBasedScrolling = 1 << 12,
+    kWheelEventHandlerRegion = 1 << 23,
+    kTouchEventHandlerRegion = 1 << 24,
 
     // The maximum number of flags in this struct (excluding itself).
     // New flags should increment this number but it should never be decremented
     // because the values are used in UMA histograms. It should also be noted
     // that it excludes the kNotScrollingOnMain value.
-    kMainThreadScrollingReasonCount = 23,
+    kMainThreadScrollingReasonCount = 25,
   };
 
   static const uint32_t kNonCompositedReasons =
       kHasOpacityAndLCDText | kHasTransformAndLCDText |
-      kBackgroundNotOpaqueInRectAndLCDText | kHasBorderRadius |
-      kHasClipRelatedProperty | kHasBoxShadowFromNonRootLayer |
-      kIsNotStackingContextAndLCDText;
+      kBackgroundNotOpaqueInRectAndLCDText | kHasClipRelatedProperty |
+      kHasBoxShadowFromNonRootLayer | kIsNotStackingContextAndLCDText;
 
   // Returns true if the given MainThreadScrollingReason can be set by the main
   // thread.
@@ -91,7 +91,8 @@ struct CC_EXPORT MainThreadScrollingReason {
     uint32_t reasons_set_by_compositor =
         kNonFastScrollableRegion | kFailedHitTest | kNoScrollingLayer |
         kNotScrollable | kContinuingMainThreadScroll | kNonInvertibleTransform |
-        kPageBasedScrolling;
+        kPageBasedScrolling | kWheelEventHandlerRegion |
+        kTouchEventHandlerRegion;
     return (reasons & reasons_set_by_compositor) == reasons;
   }
 

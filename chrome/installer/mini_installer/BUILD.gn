@@ -5,6 +5,7 @@
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//build/timestamp.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//components/nacl/features.gni")
 import("//third_party/icu/config.gni")
@@ -146,6 +147,8 @@ template("generate_mini_installer") {
       packed_files_rc_file,
     ]
     args = [
+      "--timestamp",
+      build_timestamp,
       "--build_dir",
       rebase_path(root_out_dir, root_build_dir),
       "--staging_dir",

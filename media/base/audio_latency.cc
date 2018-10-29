@@ -141,53 +141,56 @@ int AudioLatency::GetInteractiveBufferSize(int hardware_buffer_size) {
 
 int AudioLatency::GetExactBufferSize(base::TimeDelta duration,
                                      int sample_rate,
-                                     int hardware_buffer_size) {
+                                     int hardware_buffer_size,
+                                     int min_hardware_buffer_size,
+                                     int max_hardware_buffer_size) {
   DCHECK_NE(0, hardware_buffer_size);
+  DCHECK_GE(hardware_buffer_size, min_hardware_buffer_size);
+  DCHECK_GE(max_hardware_buffer_size, min_hardware_buffer_size);
+  DCHECK(max_hardware_buffer_size == 0 ||
+         hardware_buffer_size <= max_hardware_buffer_size);
+  DCHECK(max_hardware_buffer_size == 0 ||
+         max_hardware_buffer_size <= limits::kMaxWebAudioBufferSize);
 
-  const int requested_buffer_size = duration.InSecondsF() * sample_rate;
+  int requested_buffer_size = std::round(duration.InSecondsF() * sample_rate);
 
-// On OSX and CRAS the preferred buffer size is larger than the minimum,
-// however we allow values down to the minimum if requested explicitly.
-#if defined(OS_MACOSX)
-  const int minimum_buffer_size =
-      GetMinAudioBufferSizeMacOS(limits::kMinAudioBufferSize, sample_rate);
-  if (requested_buffer_size > limits::kMaxAudioBufferSize) {
-    // Mac OS is currently the only platform with a max buffer size less than
-    // kMaxWebAudioBufferSize. Since Mac OS audio hardware can run at
-    // kMaxAudioBufferSize (currently 4096) and it only makes sense for Web
-    // Audio to run at multiples of the hardware buffer size, tell Web Audio to
-    // just use web audio max (8192) if the user requests >4096.
-    static_assert(
-        limits::kMaxWebAudioBufferSize % limits::kMaxAudioBufferSize == 0,
-        "Returning kMaxWebAudioBufferSize here assumes it's a multiple of the "
-        "hardware buffer size.");
-    return limits::kMaxWebAudioBufferSize;
-  }
-#elif defined(USE_CRAS)
-  const int minimum_buffer_size = limits::kMinAudioBufferSize;
-  static_assert(limits::kMaxAudioBufferSize >= limits::kMaxWebAudioBufferSize,
-                "Algorithm needs refactoring if kMaxAudioBufferSize for CRAS "
-                "is lowered.");
+  if (min_hardware_buffer_size &&
+      requested_buffer_size <= min_hardware_buffer_size)
+    return min_hardware_buffer_size;
+
+  if (requested_buffer_size <= hardware_buffer_size)
+    return hardware_buffer_size;
+
+#if defined(OS_WIN)
+  // On Windows we allow either exactly the minimum buffer size (using
+  // IAudioClient3) or multiples of the default buffer size using the previous
+  // IAudioClient API.
+  const int multiplier = hardware_buffer_size;
 #else
-  const int minimum_buffer_size = hardware_buffer_size;
+  const int multiplier = min_hardware_buffer_size > 0 ? min_hardware_buffer_size
+                                                      : hardware_buffer_size;
 #endif
 
-  // Round requested size up to next multiple of the minimum hardware size. The
-  // minimum hardware size is one that we know is allowed by the platform audio
-  // layer and may be smaller than its preferred buffer size (the
-  // hardware_buffer_size). For platforms where this is supported we know that
-  // using a buffer size that is a multiple of this minimum is safe.
-  const int buffer_size = std::ceil(std::max(requested_buffer_size, 1) /
-                                    static_cast<double>(minimum_buffer_size)) *
-                          minimum_buffer_size;
+  int buffer_size =
+      std::ceil(requested_buffer_size / static_cast<double>(multiplier)) *
+      multiplier;
 
-  // The maximum must also be a multiple of the minimum hardware buffer size in
-  // case the clamping below is required.
-  const int maximum_buffer_size =
-      (limits::kMaxWebAudioBufferSize / minimum_buffer_size) *
-      minimum_buffer_size;
+  // If the user is requesting a buffer size >= max_hardware_buffer_size then we
+  // want the hardware to run at this max and then only return sizes that are
+  // multiples of this here so that we don't end up with Web Audio running with
+  // a period that's misaligned with the hardware one.
+  if (max_hardware_buffer_size && buffer_size >= max_hardware_buffer_size) {
+    buffer_size = std::ceil(requested_buffer_size /
+                            static_cast<double>(max_hardware_buffer_size)) *
+                  max_hardware_buffer_size;
+  }
 
-  return std::min(maximum_buffer_size,
-                  std::max(buffer_size, minimum_buffer_size));
+  const int platform_max_buffer_size =
+      max_hardware_buffer_size
+          ? (limits::kMaxWebAudioBufferSize / max_hardware_buffer_size) *
+                max_hardware_buffer_size
+          : (limits::kMaxWebAudioBufferSize / multiplier) * multiplier;
+
+  return std::min(buffer_size, platform_max_buffer_size);
 }
 }  // namespace media

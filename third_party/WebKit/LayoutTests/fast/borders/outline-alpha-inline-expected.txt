@@ -1,9 +1,0 @@
-The outlines should be a consistent color all the way around the outline. There should be no dark pixels or blocks at corners or between lines.
-
-Text spanning more than one line.  solid Text spanning more than one line.  double
-
-Text spanning more than one line.  dotted Text spanning more than one line.  dashed
-
-Text spanning more than one line.  ridge Text spanning more than one line.  groove
-
-Text spanning more than one line.  inset Text spanning more than one line.  outset

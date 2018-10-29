@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/strings/string16.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 
@@ -17,9 +18,26 @@
 class OfflineItemUtils {
  public:
   static offline_items_collection::OfflineItem CreateOfflineItem(
+      const std::string& name_space,
       download::DownloadItem* item);
 
-  static std::string GetDownloadNamespace(bool is_off_the_record);
+  static std::string GetDownloadNamespacePrefix(bool is_off_the_record);
+
+  static bool IsDownload(const offline_items_collection::ContentId& id);
+
+  // Converts DownloadInterruptReason to offline_items_collection::FailState.
+  static offline_items_collection::FailState
+  ConvertDownloadInterruptReasonToFailState(
+      download::DownloadInterruptReason reason);
+
+  // Converts offline_items_collection::FailState to DownloadInterruptReason.
+  static download::DownloadInterruptReason
+  ConvertFailStateToDownloadInterruptReason(
+      offline_items_collection::FailState fail_state);
+
+  // Gets the short text to display for a offline_items_collection::FailState.
+  static base::string16 GetFailStateMessage(
+      offline_items_collection::FailState fail_state);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(OfflineItemUtils);

@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/mac/sdk_forward_declarations.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
@@ -13,19 +14,19 @@
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/accelerators_cocoa.h"
-#import "chrome/browser/ui/cocoa/browser_window_controller.h"
-#import "chrome/browser/ui/cocoa/browser_window_views_mac.h"
-#import "chrome/browser/ui/cocoa/fast_resize_view.h"
-#import "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/snapshot/snapshot.h"
+#include "ui/views/view.h"
 
 // Private method, used to identify instantiated services.
 @interface NSSharingService (ExposeName)
@@ -86,12 +87,12 @@ NSString* const kRemindersSharingServiceName =
   [menu removeAllItems];
   [menu setAutoenablesItems:NO];
 
-  Browser* lastActiveBrowser = chrome::GetLastActiveBrowser();
+  Browser* lastActiveBrowser = chrome::FindLastActive();
   BOOL canShare =
       lastActiveBrowser != nullptr &&
       // Avoid |CanEmailPageLocation| segfault in interactive UI tests
       lastActiveBrowser->tab_strip_model()->GetActiveWebContents() != nullptr &&
-      chrome::CanEmailPageLocation(chrome::GetLastActiveBrowser());
+      chrome::CanEmailPageLocation(lastActiveBrowser);
   // Using a real URL instead of empty string to avoid system log about relative
   // URLs in the pasteboard. This URL will not actually be shared to, just used
   // to fetch sharing services that can handle the NSURL type.
@@ -155,18 +156,24 @@ NSString* const kRemindersSharingServiceName =
 
 // Saves details required by delegate methods for the transition animation.
 - (void)saveTransitionDataFromBrowser:(Browser*)browser {
-  windowForShare_ = browser->window()->GetNativeWindow();
+  windowForShare_ = browser->window()->GetNativeWindow().GetNativeNSWindow();
+  BrowserView* browserView = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browserView)
+    return;
 
-  TabWindowController* tabWindowController =
-      TabWindowControllerForWindow(windowForShare_);
-  NSView* contentsView = [tabWindowController tabContentArea];
-  NSRect rectInWindow =
-      [[contentsView superview] convertRect:[contentsView frame] toView:nil];
-  rectForShare_ = [windowForShare_ convertRectToScreen:rectInWindow];
+  views::View* contentsView = browserView->contents_container();
+  if (!contentsView)
+    return;
 
+  gfx::Rect screenRect = contentsView->bounds();
+  views::View::ConvertRectToScreen(browserView, &screenRect);
+
+  rectForShare_ = ScreenRectToNSRect(screenRect);
+
+  gfx::Rect rectInWidget =
+      browserView->ConvertRectToWidget(contentsView->bounds());
   gfx::Image image;
-  gfx::Rect rect = gfx::Rect(NSRectToCGRect([contentsView bounds]));
-  if (ui::GrabViewSnapshot(contentsView, rect, &image)) {
+  if (ui::GrabWindowSnapshot(windowForShare_, rectInWidget, &image)) {
     snapshotForShare_.reset(image.CopyNSImage());
   }
 }
@@ -183,7 +190,7 @@ NSString* const kRemindersSharingServiceName =
 
 // Performs the share action using the sharing service represented by |sender|.
 - (void)performShare:(NSMenuItem*)sender {
-  Browser* browser = chrome::GetLastActiveBrowser();
+  Browser* browser = chrome::FindLastActive();
   DCHECK(browser);
   [self saveTransitionDataFromBrowser:browser];
 

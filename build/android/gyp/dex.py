@@ -8,8 +8,10 @@ import json
 import logging
 import optparse
 import os
+import re
 import shutil
 import sys
+import tempfile
 import zipfile
 
 from util import build_utils
@@ -54,13 +56,36 @@ def _ParseArgs(args):
                     help='A JSON file containing multidex build configuration.')
   parser.add_option('--multi-dex', default=False, action='store_true',
                     help='Generate multiple dex files.')
-  parser.add_option('--d8-jar-path',
-                    help='Path to D8 jar.')
+  parser.add_option('--d8-jar-path', help='Path to D8 jar.')
+  parser.add_option('--release', action='store_true', default=False,
+                    help='Run D8 in release mode. Release mode maximises main '
+                    'dex and deletes non-essential line number information '
+                    '(vs debug which minimizes main dex and keeps all line '
+                    'number information, and then some.')
+  parser.add_option('--min-api',
+                    help='Minimum Android API level compatibility.')
+
+  parser.add_option('--dexlayout-profile',
+                    help=('Text profile for dexlayout. If present, a dexlayout '
+                          'pass will happen'))
+  parser.add_option('--profman-path',
+                    help=('Path to ART profman binary. There should be a '
+                          'lib/ directory at the same path containing shared '
+                          'libraries (shared with dexlayout).'))
+  parser.add_option('--dexlayout-path',
+                    help=('Path to ART dexlayout binary. There should be a '
+                          'lib/ directory at the same path containing shared '
+                          'libraries (shared with dexlayout).'))
+
 
   options, paths = parser.parse_args(args)
 
   required_options = ('d8_jar_path',)
   build_utils.CheckOptions(options, parser, required=required_options)
+
+  if options.dexlayout_profile:
+    build_utils.CheckOptions(options, parser, required=('profman_path',
+                                                        'dexlayout_path'))
 
   if options.multidex_configuration_path:
     with open(options.multidex_configuration_path) as multidex_config_file:
@@ -127,6 +152,128 @@ def _RunD8(dex_cmd, input_paths, output_path):
   build_utils.CheckOutput(dex_cmd, print_stderr=False)
 
 
+def _EnvWithArtLibPath(binary_path):
+  """Return an environment dictionary for ART host shared libraries.
+
+  Args:
+    binary_path: the path to an ART host binary.
+
+  Returns:
+    An environment dictionary where LD_LIBRARY_PATH has been augmented with the
+    shared library path for the binary. This assumes that there is a lib/
+    directory in the same location as the binary.
+  """
+  lib_path = os.path.join(os.path.dirname(binary_path), 'lib')
+  env = os.environ.copy()
+  libraries = [l for l in env.get('LD_LIBRARY_PATH', '').split(':') if l]
+  libraries.append(lib_path)
+  env['LD_LIBRARY_PATH'] = ':'.join(libraries)
+  return env
+
+
+def _CreateBinaryProfile(text_profile, input_dex, profman_path, temp_dir):
+  """Create a binary profile for dexlayout.
+
+  Args:
+    text_profile: The ART text profile that will be converted to a binary
+        profile.
+    input_dex: The input dex file to layout.
+    profman_path: Path to the profman binary.
+    temp_dir: Directory to work in.
+
+  Returns:
+    The name of the binary profile, which will live in temp_dir.
+  """
+  binary_profile = os.path.join(
+      temp_dir, 'binary_profile-for-' + os.path.basename(text_profile))
+  open(binary_profile, 'w').close()  # Touch binary_profile.
+  profman_cmd = [profman_path,
+                 '--apk=' + input_dex,
+                 '--dex-location=' + input_dex,
+                 '--create-profile-from=' + text_profile,
+                 '--reference-profile-file=' + binary_profile]
+  build_utils.CheckOutput(
+    profman_cmd,
+    env=_EnvWithArtLibPath(profman_path),
+    stderr_filter=lambda output:
+        build_utils.FilterLines(output, '|'.join(
+            [r'Could not find (method_id|proto_id|name):',
+             r'Could not create type list'])))
+  return binary_profile
+
+
+def _LayoutDex(binary_profile, input_dex, dexlayout_path, temp_dir):
+  """Layout a dexfile using a profile.
+
+  Args:
+    binary_profile: An ART binary profile, eg output from _CreateBinaryProfile.
+    input_dex: The dex file used to create the binary profile.
+    dexlayout_path: Path to the dexlayout binary.
+    temp_dir: Directory to work in.
+
+  Returns:
+    List of output files produced by dexlayout. This will be one if the input
+    was a single dexfile, or multiple files if the input was a multidex
+    zip. These output files are located in temp_dir.
+  """
+  dexlayout_output_dir = os.path.join(temp_dir, 'dexlayout_output')
+  os.mkdir(dexlayout_output_dir)
+  dexlayout_cmd = [ dexlayout_path,
+                    '-u',  # Update checksum
+                    '-p', binary_profile,
+                    '-w', dexlayout_output_dir,
+                    input_dex ]
+  build_utils.CheckOutput(
+      dexlayout_cmd,
+      env=_EnvWithArtLibPath(dexlayout_path),
+      stderr_filter=lambda output:
+          build_utils.FilterLines(output,
+                                  r'Can.t mmap dex file.*please zipalign'))
+  output_files = os.listdir(dexlayout_output_dir)
+  if not output_files:
+    raise Exception('dexlayout unexpectedly produced no output')
+  return [os.path.join(dexlayout_output_dir, f) for f in output_files]
+
+
+def _ZipMultidex(file_dir, dex_files):
+  """Zip dex files into a multidex.
+
+  Args:
+    file_dir: The directory into which to write the output.
+    dex_files: The dexfiles forming the multizip. Their names must end with
+      classes.dex, classes2.dex, ...
+
+  Returns:
+    The name of the multidex file, which will live in file_dir.
+  """
+  ordered_files = []  # List of (archive name, file name)
+  for f in dex_files:
+    if f.endswith('classes.dex.zip'):
+      ordered_files.append(('classes.dex', f))
+      break
+  if not ordered_files:
+    raise Exception('Could not find classes.dex multidex file in %s',
+                    dex_files)
+  for dex_idx in xrange(2, len(dex_files) + 1):
+    archive_name = 'classes%d.dex' % dex_idx
+    for f in dex_files:
+      if f.endswith(archive_name):
+        ordered_files.append((archive_name, f))
+        break
+    else:
+      raise Exception('Could not find classes%d.dex multidex file in %s',
+                      dex_files)
+  if len(set(f[1] for f in ordered_files)) != len(ordered_files):
+    raise Exception('Unexpected clashing filenames for multidex in %s',
+                    dex_files)
+
+  zip_name = os.path.join(file_dir, 'multidex_classes.zip')
+  build_utils.DoZip(((archive_name, os.path.join(file_dir, file_name))
+                     for archive_name, file_name in ordered_files),
+                    zip_name)
+  return zip_name
+
+
 def main(args):
   options, paths = _ParseArgs(args)
   if ((options.proguard_enabled == 'true'
@@ -148,9 +295,16 @@ def main(args):
   if options.multi_dex:
     input_paths.append(options.main_dex_list_path)
 
-  dex_cmd = ['java', '-jar', options.d8_jar_path]
+  dex_cmd = ['java', '-jar', options.d8_jar_path, '--no-desugaring']
   if options.multi_dex:
     dex_cmd += ['--main-dex-list', options.main_dex_list_path]
+  if options.release:
+    dex_cmd += ['--release']
+  if options.min_api:
+    # TODO(mheikal): Actually pass min-api once catapult/devil dexdump has been
+    # updated. see https://crbug.com/892644
+    # dex_cmd += ['--min-api', options.min_api]
+    pass
 
   is_dex = options.dex_path.endswith('.dex')
   is_jar = options.dex_path.endswith('.jar')
@@ -169,6 +323,21 @@ def main(args):
       _MoveTempDexFile(tmp_dex_dir, options.dex_path)
   else:
     _RunD8(dex_cmd, paths, options.dex_path)
+
+  if options.dexlayout_profile:
+    with build_utils.TempDir() as temp_dir:
+      binary_profile = _CreateBinaryProfile(options.dexlayout_profile,
+                                            options.dex_path,
+                                            options.profman_path, temp_dir)
+      output_files = _LayoutDex(binary_profile, options.dex_path,
+                                options.dexlayout_path, temp_dir)
+      target = None
+      if len(output_files) > 1:
+        target = _ZipMultidex(temp_dir, output_files)
+      else:
+        target = output_files[0]
+      shutil.move(os.path.join(temp_dir, target), options.dex_path)
+
 
   build_utils.WriteDepfile(
       options.depfile, options.dex_path, input_paths, add_pydeps=False)

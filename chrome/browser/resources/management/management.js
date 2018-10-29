@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @typedef {{
+ *    name: string,
+ *    permissions: !Array<string>
+ * }}
+ */
+let Extension;
+
 cr.define('management', function() {
   /**
    * A singleton object that handles communication between browser and WebUI.
@@ -23,6 +31,7 @@ cr.define('management', function() {
       // former case.
       this.browserProxy_.getDeviceManagementStatus()
           .then(function(managedString) {
+            $('management-status').hidden = false;
             document.body.querySelector('#management-status > p').textContent =
                 managedString;
           })
@@ -39,13 +48,46 @@ cr.define('management', function() {
         if (reportingSources.length == 0)
           return;
 
-        $('device-configuration').hidden = false;
+        $('policies').hidden = false;
 
         for (const id of reportingSources) {
           const element = document.createElement('li');
           element.textContent = loadTimeData.getString(id);
           $('reporting-info-list').appendChild(element);
         }
+      });
+
+      // Show names and permissions of |extensions| in a table.
+      this.browserProxy_.getExtensions().then(function(extensions) {
+        if (extensions.length == 0)
+          return;
+
+        const table = $('extensions-table');
+
+        for (const /** Extension */ extension of extensions) {
+          assert(
+              extension.hasOwnProperty('permissions'),
+              'Each extension must have the permissions field');
+          assert(
+              extension.hasOwnProperty('name'),
+              'Each extension must have the name field');
+
+          const permissionsList = document.createElement('ul');
+          for (const perm of extension.permissions) {
+            const permissionElement = document.createElement('li');
+            permissionElement.textContent = perm;
+            permissionsList.appendChild(permissionElement);
+          }
+
+          const row = table.insertRow();
+          const nameCell = row.insertCell();
+          // insertCell(-1) inserts at the last position.
+          const permissionsCell = row.insertCell(-1);
+          nameCell.textContent = extension.name;
+          permissionsCell.appendChild(permissionsList);
+        }
+
+        $('extensions').hidden = false;
       });
     }
   }
@@ -62,6 +104,12 @@ cr.define('management', function() {
      * @return {!Promise<!Array<string>>} Types of device reporting.
      */
     getReportingInfo() {}
+
+    /**
+     * Each extension has a name and a list of permission messages.
+     * @return {!Promise<!Array<!Extension>>} List of extensions.
+     */
+    getExtensions() {}
   }
 
   /**
@@ -76,6 +124,11 @@ cr.define('management', function() {
     /** @override */
     getReportingInfo() {
       return cr.sendWithPromise('getReportingInfo');
+    }
+
+    /** @override */
+    getExtensions() {
+      return cr.sendWithPromise('getExtensions');
     }
   }
 

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/reporter_runner_win.h"
 #include "components/chrome_cleaner/public/interfaces/chrome_prompt.mojom.h"
@@ -190,8 +191,10 @@ class ChromeCleanerController {
   // in the kInfected state. This gracefully handles cases where multiple user
   // responses are received, for example if a user manages to click on a
   // "Cleanup" button multiple times.
-  virtual void ReplyWithUserResponse(Profile* profile,
-                                     UserResponse user_response) = 0;
+  virtual void ReplyWithUserResponse(
+      Profile* profile,
+      extensions::ExtensionService* extension_service,
+      UserResponse user_response) = 0;
 
   // If the controller is in the kRebootRequired state, initiates a reboot of
   // the computer. Call this after obtaining permission from the user to

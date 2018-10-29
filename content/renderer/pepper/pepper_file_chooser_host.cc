@@ -17,6 +17,7 @@
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_file_chooser_completion.h"
@@ -39,7 +40,7 @@ class PepperFileChooserHost::CompletionHandler
       std::vector<PepperFileChooserHost::ChosenFileInfo> files;
       for (size_t i = 0; i < file_names.size(); i++) {
         files.push_back(PepperFileChooserHost::ChosenFileInfo(
-            file_names[i].Utf8(), std::string()));
+            blink::WebStringToFilePath(file_names[i]), std::string()));
       }
       host_->StoreChosenFiles(files);
     }
@@ -53,7 +54,7 @@ class PepperFileChooserHost::CompletionHandler
       std::vector<PepperFileChooserHost::ChosenFileInfo> files;
       for (size_t i = 0; i < file_names.size(); i++) {
         files.push_back(PepperFileChooserHost::ChosenFileInfo(
-            file_names[i].path.Utf8(), file_names[i].display_name.Utf8()));
+            file_names[i].file_path, file_names[i].display_name.Utf8()));
       }
       host_->StoreChosenFiles(files);
     }
@@ -69,9 +70,9 @@ class PepperFileChooserHost::CompletionHandler
 };
 
 PepperFileChooserHost::ChosenFileInfo::ChosenFileInfo(
-    const std::string& path,
+    const base::FilePath& file_path,
     const std::string& display_name)
-    : path(path), display_name(display_name) {}
+    : file_path(file_path), display_name(display_name) {}
 
 PepperFileChooserHost::PepperFileChooserHost(RendererPpapiHost* host,
                                              PP_Instance instance,
@@ -98,7 +99,7 @@ void PepperFileChooserHost::StoreChosenFiles(
   std::vector<base::FilePath> file_paths;
   std::vector<std::string> display_names;
   for (size_t i = 0; i < files.size(); i++) {
-    base::FilePath file_path = base::FilePath::FromUTF8Unsafe(files[i].path);
+    base::FilePath file_path = files[i].file_path;
     file_paths.push_back(file_path);
     create_msgs.push_back(PpapiHostMsg_FileRef_CreateForRawFS(file_path));
     display_names.push_back(files[i].display_name);

@@ -18,8 +18,14 @@
 #include "url/gurl.h"
 
 struct NavigationPredictor::NavigationScore {
-  NavigationScore(const GURL& url, size_t area_rank, double score)
-      : url(url), area_rank(area_rank), score(score) {}
+  NavigationScore(const GURL& url,
+                  size_t area_rank,
+                  double score,
+                  bool contains_image)
+      : url(url),
+        area_rank(area_rank),
+        score(score),
+        contains_image(contains_image) {}
   // URL of the target link.
   const GURL url;
 
@@ -30,6 +36,11 @@ struct NavigationPredictor::NavigationScore {
   // Calculated navigation score, based on |area_rank| and other metrics.
   const double score;
 
+  // Multiple anchor elements may point to the same |url|. |contains_image| is
+  // true if at least one of the anchor elements pointing to |url| contains an
+  // image.
+  const bool contains_image;
+
   // Rank of the |score| in this document. It starts at 0, a lower rank implies
   // a higher |score|.
   base::Optional<size_t> score_rank;
@@ -38,10 +49,45 @@ struct NavigationPredictor::NavigationScore {
 NavigationPredictor::NavigationPredictor(
     content::RenderFrameHost* render_frame_host)
     : browser_context_(
-          render_frame_host->GetSiteInstance()->GetBrowserContext()) {
+          render_frame_host->GetSiteInstance()->GetBrowserContext()),
+      ratio_area_scale_(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kRecordAnchorMetricsVisible,
+          "ratio_area_scale",
+          100)),
+      is_in_iframe_scale_(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kRecordAnchorMetricsVisible,
+          "is_in_iframe_scale",
+          0)),
+      is_same_host_scale_(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kRecordAnchorMetricsVisible,
+          "is_same_host_scale",
+          0)),
+      contains_image_scale_(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kRecordAnchorMetricsVisible,
+          "contains_image_scale",
+          50)),
+      is_url_incremented_scale_(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kRecordAnchorMetricsVisible,
+          "is_url_incremented_scale",
+          100)),
+      source_engagement_score_scale_(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kRecordAnchorMetricsVisible,
+          "source_engagement_score_scale",
+          100)),
+      target_engagement_score_scale_(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kRecordAnchorMetricsVisible,
+          "target_engagement_score_scale",
+          100)),
+      area_rank_scale_(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kRecordAnchorMetricsVisible,
+          "area_rank_scale",
+          100)),
+      sum_scales_(ratio_area_scale_ + is_in_iframe_scale_ +
+                  is_same_host_scale_ + contains_image_scale_ +
+                  is_url_incremented_scale_ + source_engagement_score_scale_ +
+                  target_engagement_score_scale_ + area_rank_scale_) {
   DCHECK(browser_context_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  InitializeFieldTrialMetricScales();
 }
 
 NavigationPredictor::~NavigationPredictor() {
@@ -66,25 +112,6 @@ bool NavigationPredictor::IsValidMetricFromRenderer(
          metric.source_url.SchemeIsHTTPOrHTTPS();
 }
 
-void NavigationPredictor::InitializeFieldTrialMetricScales() {
-  const base::Feature& feature = blink::features::kRecordAnchorMetricsVisible;
-  ratio_area_scale_ = base::GetFieldTrialParamByFeatureAsInt(
-      feature, "ratio_area_scale", ratio_area_scale_);
-  is_in_iframe_scale_ = base::GetFieldTrialParamByFeatureAsInt(
-      feature, "is_in_iframe_scale", is_in_iframe_scale_);
-  is_same_host_scale_ = base::GetFieldTrialParamByFeatureAsInt(
-      feature, "is_same_host_scale", is_same_host_scale_);
-  contains_image_scale_ = base::GetFieldTrialParamByFeatureAsInt(
-      feature, "contains_image_scale", contains_image_scale_);
-  is_url_incremented_scale_ = base::GetFieldTrialParamByFeatureAsInt(
-      feature, "is_url_incremented_scale", is_url_incremented_scale_);
-  source_engagement_score_scale_ = base::GetFieldTrialParamByFeatureAsInt(
-      feature, "source_engagement_score_scale", source_engagement_score_scale_);
-  target_engagement_score_scale_ = base::GetFieldTrialParamByFeatureAsInt(
-      feature, "target_engagement_score_scale", target_engagement_score_scale_);
-  area_rank_scale_ = base::GetFieldTrialParamByFeatureAsInt(
-      feature, "area_rank_scale", area_rank_scale_);
-}
 
 void NavigationPredictor::RecordTimingOnClick() {
   base::TimeTicks current_timing = base::TimeTicks::Now();
@@ -168,7 +195,9 @@ void NavigationPredictor::ReportAnchorElementMetricsOnClick(
         (number_of_anchors_same_host_ * 100) / number_of_anchors);
   }
 
-  if (metrics->contains_image) {
+  // Check if the clicked anchor element contains image or if any other anchor
+  // element pointing to the same url contains an image.
+  if (metrics->contains_image || iter->second->contains_image) {
     UMA_HISTOGRAM_PERCENTAGE(
         "AnchorElementMetrics.Clicked.RatioContainsImage_ContainsImage",
         (number_of_anchors_contains_image_ * 100) / number_of_anchors);
@@ -213,6 +242,11 @@ void NavigationPredictor::MergeMetricsSameTargetUrl(
   metrics_map.reserve(metrics->size());
 
   for (auto& metric : *metrics) {
+    // Do not include anchor elements that point to the same URL as the URL of
+    // the current navigation since these are unlikely to be clicked.
+    if (metric->target_url == metric->source_url)
+      continue;
+
     const std::string& key = metric->target_url.spec();
     auto iter = metrics_map.find(key);
     if (iter == metrics_map.end()) {
@@ -221,6 +255,18 @@ void NavigationPredictor::MergeMetricsSameTargetUrl(
       auto& prev_metric = iter->second;
       prev_metric->ratio_area += metric->ratio_area;
       prev_metric->ratio_visible_area += metric->ratio_visible_area;
+
+      // After merging, value of |ratio_area| can go beyond 1.0. This can
+      // happen, e.g., when there are 2 anchor elements pointing to the same
+      // target. The first anchor element occupies 90% of the viewport. The
+      // second one has size 0.8 times the viewport, and only part of it is
+      // visible in the viewport. In that case, |ratio_area| may be 1.7.
+      if (prev_metric->ratio_area > 1.0)
+        prev_metric->ratio_area = 1.0;
+      DCHECK_LE(0.0, prev_metric->ratio_area);
+      DCHECK_GE(1.0, prev_metric->ratio_area);
+
+      DCHECK_GE(1.0, prev_metric->ratio_visible_area);
 
       // Position related metrics are tricky to merge. Another possible way to
       // merge is simply add up the calculated navigation scores.
@@ -247,6 +293,10 @@ void NavigationPredictor::MergeMetricsSameTargetUrl(
   }
 
   metrics->clear();
+
+  if (metrics_map.empty())
+    return;
+
   metrics->reserve(metrics_map.size());
   for (auto& metric_mapping : metrics_map) {
     metrics->push_back(std::move(metric_mapping.second));
@@ -279,6 +329,9 @@ void NavigationPredictor::ReportAnchorElementMetricsOnLoad(
   document_loaded_timing_ = base::TimeTicks::Now();
 
   MergeMetricsSameTargetUrl(&metrics);
+
+  if (metrics.empty())
+    return;
 
   // Count the number of anchors that have specific metrics.
   for (const auto& metric : metrics) {
@@ -337,7 +390,7 @@ void NavigationPredictor::ReportAnchorElementMetricsOnLoad(
         metrics.size());
 
     navigation_scores.push_back(std::make_unique<NavigationScore>(
-        metric->target_url, area_rank, score));
+        metric->target_url, area_rank, score, metric->contains_image));
   }
 
   // Sort scores by the calculated navigation score in descending order. This
@@ -364,16 +417,56 @@ double NavigationPredictor::CalculateAnchorNavigationScore(
     double target_engagement_score,
     int area_rank,
     int number_of_anchors) const {
+  if (sum_scales_ == 0)
+    return 0.0;
+
+  double max_engagement_points = GetEngagementService()->GetMaxPoints();
+  document_engagement_score /= max_engagement_points;
+  target_engagement_score /= max_engagement_points;
+
+  double area_rank_score =
+      (double)((number_of_anchors - area_rank)) / number_of_anchors;
+
+  DCHECK_LE(0, metrics.ratio_visible_area);
+  DCHECK_GE(1, metrics.ratio_visible_area);
+
+  DCHECK_LE(0, metrics.is_in_iframe);
+  DCHECK_GE(1, metrics.is_in_iframe);
+
+  DCHECK_LE(0, metrics.is_same_host);
+  DCHECK_GE(1, metrics.is_same_host);
+
+  DCHECK_LE(0, metrics.contains_image);
+  DCHECK_GE(1, metrics.contains_image);
+
+  DCHECK_LE(0, metrics.is_url_incremented_by_one);
+  DCHECK_GE(1, metrics.is_url_incremented_by_one);
+
+  DCHECK_LE(0, document_engagement_score);
+  DCHECK_GE(1, document_engagement_score);
+
+  DCHECK_LE(0, target_engagement_score);
+  DCHECK_GE(1, target_engagement_score);
+
+  DCHECK_LE(0, area_rank_score);
+  DCHECK_GE(1, area_rank_score);
+
   // TODO(chelu): https://crbug.com/850624/. Experiment with other heuristic
   // algorithms for computing the anchor elements score.
-  return ratio_area_scale_ * metrics.ratio_visible_area +
-         is_same_host_scale_ * metrics.is_same_host +
-         contains_image_scale_ * metrics.contains_image +
-         is_in_iframe_scale_ * metrics.is_in_iframe +
-         is_url_incremented_scale_ * metrics.is_url_incremented_by_one +
-         source_engagement_score_scale_ * document_engagement_score +
-         target_engagement_score_scale_ * target_engagement_score +
-         area_rank_scale_ * (number_of_anchors - area_rank);
+  double score = ratio_area_scale_ * metrics.ratio_visible_area +
+                 is_in_iframe_scale_ * metrics.is_in_iframe +
+                 is_same_host_scale_ * metrics.is_same_host +
+                 contains_image_scale_ * metrics.contains_image +
+                 is_url_incremented_scale_ * metrics.is_url_incremented_by_one +
+                 source_engagement_score_scale_ * document_engagement_score +
+                 target_engagement_score_scale_ * target_engagement_score +
+                 area_rank_scale_ * (area_rank_score);
+
+  // Normalize to 100.
+  score = score / sum_scales_ * 100.0;
+  DCHECK_LE(0.0, score);
+  DCHECK_GE(100.0, score);
+  return score;
 }
 
 void NavigationPredictor::MaybeTakeActionOnLoad(

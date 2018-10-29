@@ -37,7 +37,7 @@ void Accessibility::InputMethodChanged(InputMethodManager* imm,
   const std::string medium_name = base::UTF16ToUTF8(
       imm_->GetInputMethodUtil()->GetInputMethodMediumName(descriptor));
 
-  AutomationManagerAura::GetInstance()->HandleAlert(profile, medium_name);
+  AutomationManagerAura::GetInstance()->HandleAlert(medium_name);
 }
 
 }  // namespace input_method

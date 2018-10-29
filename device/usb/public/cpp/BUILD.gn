@@ -4,12 +4,34 @@
 
 source_set("cpp") {
   sources = [
-    "filter_utils.cc",
-    "filter_utils.h",
+    "usb_utils.cc",
+    "usb_utils.h",
   ]
 
   deps = [
     "//device/usb",
+    "//device/usb/public/mojom",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_usb_device.cc",
+    "fake_usb_device.h",
+    "fake_usb_device_info.cc",
+    "fake_usb_device_info.h",
+    "fake_usb_device_manager.cc",
+    "fake_usb_device_manager.h",
+  ]
+
+  deps = [
+    ":cpp",
+  ]
+
+  public_deps = [
+    "//base",
     "//device/usb/public/mojom",
   ]
 }

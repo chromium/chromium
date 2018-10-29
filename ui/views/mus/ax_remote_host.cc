@@ -6,10 +6,12 @@
 
 #include <stddef.h>
 
+#include "base/no_destructor.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
+#include "ui/accessibility/platform/aura_window_properties.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/aura/mus/window_tree_client.h"
 #include "ui/aura/window.h"
@@ -27,9 +29,6 @@ using display::Screen;
 
 namespace views {
 
-// For external linkage.
-constexpr int AXRemoteHost::kRemoteAXTreeID;
-
 AXRemoteHost::AXRemoteHost() {
   AXAuraObjCache::GetInstance()->SetDelegate(this);
 }
@@ -42,12 +41,12 @@ AXRemoteHost::~AXRemoteHost() {
 
 void AXRemoteHost::Init(service_manager::Connector* connector) {
   connector->BindInterface(ax::mojom::kAXHostServiceName, &ax_host_ptr_);
-  BindAndSetRemote();
+  BindAndRegisterRemote();
 }
 
 void AXRemoteHost::InitForTesting(ax::mojom::AXHostPtr host_ptr) {
   ax_host_ptr_ = std::move(host_ptr);
-  BindAndSetRemote();
+  BindAndRegisterRemote();
 }
 
 void AXRemoteHost::StartMonitoringWidget(Widget* widget) {
@@ -62,6 +61,10 @@ void AXRemoteHost::StartMonitoringWidget(Widget* widget) {
   widget_ = widget;
   widget_->AddObserver(this);
 
+  DCHECK_NE(tree_id_, ui::AXTreeIDUnknown());
+  widget_->GetNativeWindow()->SetProperty(ui::kChildAXTreeID,
+                                          new std::string(tree_id_.ToString()));
+
   // The cache needs to track the root window to follow focus changes.
   AXAuraObjCache* cache = AXAuraObjCache::GetInstance();
   cache->OnRootWindowObjCreated(widget_->GetNativeWindow());
@@ -71,7 +74,7 @@ void AXRemoteHost::StartMonitoringWidget(Widget* widget) {
   View* contents_view = widget_->widget_delegate()->GetContentsView();
   AXAuraObjWrapper* contents_wrapper = cache->GetOrCreate(contents_view);
 
-  tree_source_ = std::make_unique<AXTreeSourceMus>(contents_wrapper);
+  tree_source_ = std::make_unique<AXTreeSourceMus>(contents_wrapper, tree_id_);
   tree_serializer_ = std::make_unique<AuraAXTreeSerializer>(tree_source_.get());
 
   // Inform the serializer of the display device scale factor.
@@ -96,12 +99,15 @@ void AXRemoteHost::StopMonitoringWidget() {
 }
 
 void AXRemoteHost::HandleEvent(View* view, ax::mojom::Event event_type) {
+  CHECK(view);
+
   if (!enabled_)
     return;
 
-  AXAuraObjWrapper* aura_obj =
-      view ? AXAuraObjCache::GetInstance()->GetOrCreate(view)
-           : tree_source_->GetRoot();
+  // Can return null for views without a widget.
+  AXAuraObjWrapper* aura_obj = AXAuraObjCache::GetInstance()->GetOrCreate(view);
+  if (!aura_obj)
+    return;
   SendEvent(aura_obj, event_type);
 }
 
@@ -168,15 +174,26 @@ void AXRemoteHost::FlushForTesting() {
   ax_host_ptr_.FlushForTesting();
 }
 
-void AXRemoteHost::BindAndSetRemote() {
+void AXRemoteHost::BindAndRegisterRemote() {
   ax::mojom::AXRemoteHostPtr remote;
   binding_.Bind(mojo::MakeRequest(&remote));
-  ax_host_ptr_->SetRemoteHost(std::move(remote));
+  ax_host_ptr_->RegisterRemoteHost(
+      std::move(remote),
+      base::BindOnce(&AXRemoteHost::RegisterRemoteHostCallback,
+                     base::Unretained(this)));
+}
+
+void AXRemoteHost::RegisterRemoteHostCallback(const ui::AXTreeID& tree_id,
+                                              bool enabled) {
+  tree_id_ = tree_id;
+
+  // Set the initial enabled state and send the AX tree if necessary.
+  OnAutomationEnabled(enabled);
 }
 
 void AXRemoteHost::Enable() {
   // Don't early-exit if already enabled. AXRemoteHost can start up in the
-  // "enabled" state even if ChromeVox is on at the moment the app launches.
+  // "enabled" state even if ChromeVox is off at the moment the app launches.
   // Turning on ChromeVox later will generate another OnAutomationEnabled()
   // call and we need to serialize the node tree again. This is similar to
   // AutomationManagerAura's behavior. https://crbug.com/876407
@@ -234,7 +251,7 @@ void AXRemoteHost::SendEvent(AXAuraObjWrapper* aura_obj,
   event.event_type = event_type;
   // Other fields are not used.
 
-  ax_host_ptr_->HandleAccessibilityEvent(kRemoteAXTreeID, updates, event);
+  ax_host_ptr_->HandleAccessibilityEvent(tree_id_, updates, event);
 }
 
 void AXRemoteHost::PerformHitTest(const ui::AXActionData& action) {

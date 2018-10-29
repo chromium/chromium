@@ -37,8 +37,7 @@ void WindowControllerList::AddExtensionWindow(WindowController* window) {
 }
 
 void WindowControllerList::RemoveExtensionWindow(WindowController* window) {
-  ControllerList::iterator iter = std::find(
-      windows_.begin(), windows_.end(), window);
+  auto iter = std::find(windows_.begin(), windows_.end(), window);
   if (iter != windows_.end()) {
     windows_.erase(iter);
     for (auto& observer : observers_)
@@ -59,8 +58,7 @@ WindowController* WindowControllerList::FindWindowForFunctionByIdWithFilter(
     const UIThreadExtensionFunction* function,
     int id,
     WindowController::TypeFilter filter) const {
-  for (ControllerList::const_iterator iter = windows().begin();
-       iter != windows().end(); ++iter) {
+  for (auto iter = windows().begin(); iter != windows().end(); ++iter) {
     if ((*iter)->GetWindowId() == id) {
       if (windows_util::CanOperateOnWindow(function, *iter, filter))
         return *iter;
@@ -81,8 +79,7 @@ WindowController* WindowControllerList::CurrentWindowForFunctionWithFilter(
     WindowController::TypeFilter filter) const {
   WindowController* result = nullptr;
   // Returns either the focused window (if any), or the last window in the list.
-  for (ControllerList::const_iterator iter = windows().begin();
-       iter != windows().end(); ++iter) {
+  for (auto iter = windows().begin(); iter != windows().end(); ++iter) {
     if (windows_util::CanOperateOnWindow(function, *iter, filter)) {
       result = *iter;
       if (result->window()->IsActive())

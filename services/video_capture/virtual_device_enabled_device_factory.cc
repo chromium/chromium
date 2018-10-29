@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "media/capture/video/video_capture_device_info.h"
+#include "services/video_capture/device_factory_media_to_mojo_adapter.h"
 #include "services/video_capture/shared_memory_virtual_device_mojo_adapter.h"
 #include "services/video_capture/texture_virtual_device_mojo_adapter.h"
 
@@ -84,14 +85,20 @@ class VirtualDeviceEnabledDeviceFactory::VirtualDeviceEntry {
 };
 
 VirtualDeviceEnabledDeviceFactory::VirtualDeviceEnabledDeviceFactory(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref,
-    std::unique_ptr<mojom::DeviceFactory> device_factory)
-    : service_ref_(std::move(service_ref)),
-      device_factory_(std::move(device_factory)),
-      weak_factory_(this) {}
+    std::unique_ptr<DeviceFactoryMediaToMojoAdapter> device_factory)
+    : device_factory_(std::move(device_factory)), weak_factory_(this) {}
 
 VirtualDeviceEnabledDeviceFactory::~VirtualDeviceEnabledDeviceFactory() =
     default;
+
+void VirtualDeviceEnabledDeviceFactory::SetServiceRef(
+    std::unique_ptr<service_manager::ServiceContextRef> service_ref) {
+  if (service_ref)
+    device_factory_->SetServiceRef(service_ref->Clone());
+  else
+    device_factory_->SetServiceRef(nullptr);
+  service_ref_ = std::move(service_ref);
+}
 
 void VirtualDeviceEnabledDeviceFactory::GetDeviceInfos(
     GetDeviceInfosCallback callback) {
@@ -157,6 +164,7 @@ void VirtualDeviceEnabledDeviceFactory::AddSharedMemoryVirtualDevice(
                                   std::move(producer_binding));
   virtual_devices_by_id_.insert(
       std::make_pair(device_id, std::move(device_entry)));
+  EmitDevicesChangedEvent();
 }
 
 void VirtualDeviceEnabledDeviceFactory::AddTextureVirtualDevice(
@@ -183,6 +191,15 @@ void VirtualDeviceEnabledDeviceFactory::AddTextureVirtualDevice(
                                   std::move(producer_binding));
   virtual_devices_by_id_.insert(
       std::make_pair(device_id, std::move(device_entry)));
+  EmitDevicesChangedEvent();
+}
+
+void VirtualDeviceEnabledDeviceFactory::RegisterVirtualDevicesChangedObserver(
+    mojom::DevicesChangedObserverPtr observer) {
+  observer.set_connection_error_handler(base::BindOnce(
+      &VirtualDeviceEnabledDeviceFactory::OnDevicesChangedObserverDisconnected,
+      weak_factory_.GetWeakPtr(), &observer));
+  devices_changed_observers_.push_back(std::move(observer));
 }
 
 void VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfos(
@@ -202,12 +219,32 @@ void VirtualDeviceEnabledDeviceFactory::
         const std::string& device_id) {
   virtual_devices_by_id_.at(device_id).StopDevice();
   virtual_devices_by_id_.erase(device_id);
+  EmitDevicesChangedEvent();
 }
 
 void VirtualDeviceEnabledDeviceFactory::
     OnVirtualDeviceConsumerConnectionErrorOrClose(
         const std::string& device_id) {
   virtual_devices_by_id_.at(device_id).StopDevice();
+}
+
+void VirtualDeviceEnabledDeviceFactory::EmitDevicesChangedEvent() {
+  for (auto& observer : devices_changed_observers_)
+    observer->OnDevicesChanged();
+}
+
+void VirtualDeviceEnabledDeviceFactory::OnDevicesChangedObserverDisconnected(
+    mojom::DevicesChangedObserverPtr* observer) {
+  auto iter = std::find_if(
+      devices_changed_observers_.begin(), devices_changed_observers_.end(),
+      [observer](const mojom::DevicesChangedObserverPtr& entry) {
+        return &entry == observer;
+      });
+  if (iter == devices_changed_observers_.end()) {
+    DCHECK(false);
+    return;
+  }
+  devices_changed_observers_.erase(iter);
 }
 
 }  // namespace video_capture

@@ -10,7 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/value_store/leveldb_value_store.h"
@@ -43,9 +45,10 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
                    << " failed: " << result.status().message;
     }
 
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-        base::Bind(&ValueStoreFrontend::Backend::RunCallback,
-                   this, callback, base::Passed(&value)));
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
+        base::Bind(&ValueStoreFrontend::Backend::RunCallback, this, callback,
+                   base::Passed(&value)));
   }
 
   void Set(const std::string& key, std::unique_ptr<base::Value> value) {

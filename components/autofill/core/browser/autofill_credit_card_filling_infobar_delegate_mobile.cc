@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/browser/credit_card.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/strings/grit/components_strings.h"
@@ -27,7 +28,9 @@ AutofillCreditCardFillingInfoBarDelegateMobile::
 #else
       card_label_(base::string16(kMidlineEllipsis) + card.LastFourDigits()),
 #endif
-      card_sub_label_(card.AbbreviatedExpirationDateForDisplay()) {
+      card_sub_label_(card.AbbreviatedExpirationDateForDisplay(
+          !features::
+              IsAutofillSaveCardDialogUnlabeledExpirationDateEnabled())) {
 }
 
 AutofillCreditCardFillingInfoBarDelegateMobile::

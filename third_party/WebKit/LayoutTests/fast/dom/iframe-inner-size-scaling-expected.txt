@@ -2,7 +2,6 @@ This tests that innerWidth/innerHeight on an frame window returns the size of th
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS frame.contentWindow.innerWidth is non-zero.
 PASS frame.contentWindow.innerHeight is non-zero.
 PASS frame.contentWindow.innerWidth is originalWidth
@@ -10,4 +9,5 @@ PASS frame.contentWindow.innerHeight is originalHeight
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

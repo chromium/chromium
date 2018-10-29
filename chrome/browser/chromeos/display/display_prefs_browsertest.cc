@@ -2,22 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/display/display_prefs.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/shell.h"
-#include "base/files/file_path.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/test_file_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/chromeos_switches.h"
 #include "components/prefs/pref_service.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"

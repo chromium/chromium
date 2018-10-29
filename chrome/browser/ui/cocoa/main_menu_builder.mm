@@ -20,46 +20,55 @@ namespace {
 
 using Item = internal::MenuItemBuilder;
 
-base::scoped_nsobject<NSMenuItem> BuildAppMenu(NSApplication* nsapp,
-                                               AppController* app_controller) {
+base::scoped_nsobject<NSMenuItem> BuildAppMenu(
+    NSApplication* nsapp,
+    id app_delegate,
+    const base::string16& product_name,
+    bool is_pwa) {
   base::scoped_nsobject<NSMenuItem> item =
       Item(IDS_APP_MENU_PRODUCT_NAME)
           .tag(IDC_CHROME_MENU)
           .submenu({
             Item(IDS_ABOUT_MAC)
-                .string_format_1(IDS_PRODUCT_NAME)
+                .string_format_1(product_name)
                 .tag(IDC_ABOUT)
-                .target(app_controller)
+                .target(app_delegate)
                 .action(@selector(orderFrontStandardAboutPanel:)),
                 Item().is_separator(),
                 Item(IDS_PREFERENCES)
                     .tag(IDC_OPTIONS)
-                    .target(app_controller)
-                    .action(@selector(showPreferences:)),
-                Item().is_separator(),
+                    .target(app_delegate)
+                    .action(@selector(showPreferences:))
+                    .remove_if(is_pwa),
+                Item().is_separator().remove_if(is_pwa),
                 Item(IDS_CLEAR_BROWSING_DATA)
-                    .command_id(IDC_CLEAR_BROWSING_DATA),
+                    .command_id(IDC_CLEAR_BROWSING_DATA)
+                    .remove_if(is_pwa),
                 Item(IDS_IMPORT_SETTINGS_MENU_MAC)
-                    .command_id(IDC_IMPORT_SETTINGS),
+                    .command_id(IDC_IMPORT_SETTINGS)
+                    .remove_if(is_pwa),
                 Item().is_separator(),
                 Item(IDS_SERVICES_MAC).tag(-1).submenu({}),
                 Item(IDS_HIDE_APP_MAC)
-                    .string_format_1(IDS_PRODUCT_NAME)
+                    .string_format_1(product_name)
                     .tag(IDC_HIDE_APP)
                     .action(@selector(hide:)),
                 Item(IDS_HIDE_OTHERS_MAC)
-                    .action(@selector(hideOtherApplications:)),
+                    .action(@selector(hideOtherApplications:))
+                    .key_equivalent(@"h", NSEventModifierFlagCommand |
+                                              NSEventModifierFlagOption),
                 Item(IDS_SHOW_ALL_MAC)
                     .action(@selector(unhideAllApplications:)),
                 Item().is_separator(),
                 Item(IDS_CONFIRM_TO_QUIT_OPTION)
-                    .target(app_controller)
-                    .action(@selector(toggleConfirmToQuit:)),
+                    .target(app_delegate)
+                    .action(@selector(toggleConfirmToQuit:))
+                    .remove_if(is_pwa),
                 Item().is_separator(),
                 // AppKit inserts "Quit and Keep Windows" as an alternate item
                 // automatically by using the -terminate: action.
                 Item(IDS_EXIT_MAC)
-                    .string_format_1(IDS_PRODUCT_NAME)
+                    .string_format_1(product_name)
                     .tag(IDC_EXIT)
                     .target(nsapp)
                     .action(@selector(terminate:)),
@@ -74,47 +83,57 @@ base::scoped_nsobject<NSMenuItem> BuildAppMenu(NSApplication* nsapp,
   return item;
 }
 
-base::scoped_nsobject<NSMenuItem> BuildFileMenu(NSApplication* nsapp,
-                                                AppController* app_controller) {
+base::scoped_nsobject<NSMenuItem> BuildFileMenu(
+    NSApplication* nsapp,
+    id app_delegate,
+    const base::string16& product_name,
+    bool is_pwa) {
   base::scoped_nsobject<NSMenuItem> item =
       Item(IDS_FILE_MENU_MAC)
           .tag(IDC_FILE_MENU)
           .submenu({
-            Item(IDS_NEW_TAB_MAC).command_id(IDC_NEW_TAB),
+            Item(IDS_NEW_TAB_MAC).command_id(IDC_NEW_TAB).remove_if(is_pwa),
                 Item(IDS_NEW_WINDOW_MAC).command_id(IDC_NEW_WINDOW),
                 Item(IDS_NEW_INCOGNITO_WINDOW_MAC)
-                    .command_id(IDC_NEW_INCOGNITO_WINDOW),
-                Item(IDS_REOPEN_CLOSED_TABS_MAC).command_id(IDC_RESTORE_TAB),
+                    .command_id(IDC_NEW_INCOGNITO_WINDOW)
+                    .remove_if(is_pwa),
+                Item(IDS_REOPEN_CLOSED_TABS_MAC)
+                    .command_id(IDC_RESTORE_TAB)
+                    .remove_if(is_pwa),
                 Item(IDS_OPEN_FILE_MAC).command_id(IDC_OPEN_FILE),
-                Item(IDS_OPEN_LOCATION_MAC).command_id(IDC_FOCUS_LOCATION),
+                Item(IDS_OPEN_LOCATION_MAC)
+                    .command_id(IDC_FOCUS_LOCATION)
+                    .remove_if(is_pwa),
                 Item().is_separator(),
                 // AppKit inserts "Close All" as an alternate item automatically
                 // by using the -performClose: action.
                 Item(IDS_CLOSE_WINDOW_MAC)
                     .tag(IDC_CLOSE_WINDOW)
                     .action(@selector(performClose:)),
-                Item(IDS_CLOSE_TAB_MAC).command_id(IDC_CLOSE_TAB),
-                Item(IDS_SAVE_PAGE_MAC).command_id(IDC_SAVE_PAGE),
-                Item().is_separator(),
-                Item(IDS_SHARE_MAC),
-                Item().is_separator(), Item(IDS_PRINT).command_id(IDC_PRINT),
+                Item(IDS_CLOSE_TAB_MAC)
+                    .command_id(IDC_CLOSE_TAB)
+                    .remove_if(is_pwa),
+                Item(IDS_SAVE_PAGE_MAC)
+                    .command_id(IDC_SAVE_PAGE)
+                    .remove_if(is_pwa),
+                Item().is_separator().remove_if(is_pwa),
+                Item(IDS_SHARE_MAC).remove_if(is_pwa), Item().is_separator(),
+                Item(IDS_PRINT).command_id(IDC_PRINT).remove_if(is_pwa),
                 Item(IDS_PRINT_USING_SYSTEM_DIALOG_MAC)
                     .command_id(IDC_BASIC_PRINT)
-                    .is_alternate(),
+                    .is_alternate()
+                    .remove_if(is_pwa),
           })
           .Build();
-
-  // Wire up some legacy IBOutlets.
-  [app_controller setValue:[[item submenu] itemWithTag:IDC_CLOSE_TAB]
-                    forKey:@"closeTabMenuItem_"];
-  [app_controller setValue:[[item submenu] itemWithTag:IDC_CLOSE_WINDOW]
-                    forKey:@"closeWindowMenuItem_"];
 
   return item;
 }
 
-base::scoped_nsobject<NSMenuItem> BuildEditMenu(NSApplication* nsapp,
-                                                AppController* app_controller) {
+base::scoped_nsobject<NSMenuItem> BuildEditMenu(
+    NSApplication* nsapp,
+    id app_delegate,
+    const base::string16& product_name,
+    bool is_pwa) {
   base::scoped_nsobject<NSMenuItem> item =
       Item(IDS_EDIT_MENU_MAC)
           .tag(IDC_EDIT_MENU)
@@ -141,8 +160,7 @@ base::scoped_nsobject<NSMenuItem> BuildEditMenu(NSApplication* nsapp,
                 Item(IDS_PASTE_MATCH_STYLE_MAC)
                     .action(@selector(pasteAndMatchStyle:))
                     .is_alternate()
-                    .key_equivalent(@"v", NSEventModifierFlagCommand |
-                                              NSEventModifierFlagShift |
+                    .key_equivalent(@"V", NSEventModifierFlagCommand |
                                               NSEventModifierFlagOption),
                 Item(IDS_EDIT_DELETE_MAC)
                     .tag(IDC_CONTENT_CONTEXT_DELETE)
@@ -193,19 +211,24 @@ base::scoped_nsobject<NSMenuItem> BuildEditMenu(NSApplication* nsapp,
   return item;
 }
 
-base::scoped_nsobject<NSMenuItem> BuildViewMenu(NSApplication* nsapp,
-                                                AppController* app_controller) {
+base::scoped_nsobject<NSMenuItem> BuildViewMenu(
+    NSApplication* nsapp,
+    id app_delegate,
+    const base::string16& product_name,
+    bool is_pwa) {
   base::scoped_nsobject<NSMenuItem> item =
       Item(IDS_VIEW_MENU_MAC)
           .tag(IDC_VIEW_MENU)
           .submenu({
             Item(IDS_BOOKMARK_BAR_ALWAYS_SHOW_MAC)
-                .command_id(IDC_SHOW_BOOKMARK_BAR),
+                .command_id(IDC_SHOW_BOOKMARK_BAR)
+                .remove_if(is_pwa),
                 Item(IDS_TOGGLE_FULLSCREEN_TOOLBAR_MAC)
                     .command_id(IDC_TOGGLE_FULLSCREEN_TOOLBAR),
                 Item(IDS_CUSTOMIZE_TOUCH_BAR)
                     .tag(IDC_CUSTOMIZE_TOUCH_BAR)
-                    .action(@selector(toggleTouchBarCustomizationPalette:)),
+                    .action(@selector(toggleTouchBarCustomizationPalette:))
+                    .remove_if(is_pwa),
                 Item().is_separator(),
                 Item(IDS_STOP_MENU_MAC).command_id(IDC_STOP),
                 Item(IDS_RELOAD_MENU_MAC).command_id(IDC_RELOAD),
@@ -240,25 +263,37 @@ base::scoped_nsobject<NSMenuItem> BuildViewMenu(NSApplication* nsapp,
 
 base::scoped_nsobject<NSMenuItem> BuildHistoryMenu(
     NSApplication* nsapp,
-    AppController* app_controller) {
+    id app_delegate,
+    const base::string16& product_name,
+    bool is_pwa) {
   base::scoped_nsobject<NSMenuItem> item =
       Item(IDS_HISTORY_MENU_MAC)
           .tag(IDC_HISTORY_MENU)
           .submenu({
-              Item(IDS_HISTORY_HOME_MAC).command_id(IDC_HOME),
+              Item(IDS_HISTORY_HOME_MAC).command_id(IDC_HOME).remove_if(is_pwa),
               Item(IDS_HISTORY_BACK_MAC).command_id(IDC_BACK),
               Item(IDS_HISTORY_FORWARD_MAC).command_id(IDC_FORWARD),
               Item()
                   .tag(HistoryMenuBridge::kRecentlyClosedSeparator)
-                  .is_separator(),
+                  .is_separator()
+                  .remove_if(is_pwa),
               Item(IDS_HISTORY_CLOSED_MAC)
-                  .tag(HistoryMenuBridge::kRecentlyClosedTitle),
-              Item().tag(HistoryMenuBridge::kVisitedSeparator).is_separator(),
+                  .tag(HistoryMenuBridge::kRecentlyClosedTitle)
+                  .remove_if(is_pwa),
+              Item()
+                  .tag(HistoryMenuBridge::kVisitedSeparator)
+                  .is_separator()
+                  .remove_if(is_pwa),
               Item(IDS_HISTORY_VISITED_MAC)
-                  .tag(HistoryMenuBridge::kVisitedTitle),
-              Item().tag(HistoryMenuBridge::kShowFullSeparator).is_separator(),
+                  .tag(HistoryMenuBridge::kVisitedTitle)
+                  .remove_if(is_pwa),
+              Item()
+                  .tag(HistoryMenuBridge::kShowFullSeparator)
+                  .is_separator()
+                  .remove_if(is_pwa),
               Item(IDS_HISTORY_SHOWFULLHISTORY_LINK)
-                  .command_id(IDC_SHOW_HISTORY),
+                  .command_id(IDC_SHOW_HISTORY)
+                  .remove_if(is_pwa),
           })
           .Build();
   return item;
@@ -266,7 +301,12 @@ base::scoped_nsobject<NSMenuItem> BuildHistoryMenu(
 
 base::scoped_nsobject<NSMenuItem> BuildBookmarksMenu(
     NSApplication* nsapp,
-    AppController* app_controller) {
+    id app_delegate,
+    const base::string16& product_name,
+    bool is_pwa) {
+  if (is_pwa)
+    return base::scoped_nsobject<NSMenuItem>();
+
   base::scoped_nsobject<NSMenuItem> item =
       Item(IDS_BOOKMARKS_MENU)
           .tag(IDC_BOOKMARKS_MENU)
@@ -283,7 +323,12 @@ base::scoped_nsobject<NSMenuItem> BuildBookmarksMenu(
 
 base::scoped_nsobject<NSMenuItem> BuildPeopleMenu(
     NSApplication* nsapp,
-    AppController* app_controller) {
+    id app_delegate,
+    const base::string16& product_name,
+    bool is_pwa) {
+  if (is_pwa)
+    return base::scoped_nsobject<NSMenuItem>();
+
   base::scoped_nsobject<NSMenuItem> item = Item(IDS_PROFILES_OPTIONS_GROUP_NAME)
                                                .tag(IDC_PROFILE_MAIN_MENU)
                                                .submenu({})
@@ -293,7 +338,9 @@ base::scoped_nsobject<NSMenuItem> BuildPeopleMenu(
 
 base::scoped_nsobject<NSMenuItem> BuildWindowMenu(
     NSApplication* nsapp,
-    AppController* app_controller) {
+    id app_delegate,
+    const base::string16& product_name,
+    bool is_pwa) {
   base::scoped_nsobject<NSMenuItem> item =
       Item(IDS_WINDOW_MENU_MAC)
           .tag(IDC_WINDOW_MENU)
@@ -305,17 +352,35 @@ base::scoped_nsobject<NSMenuItem> BuildWindowMenu(
                     .tag(IDC_MAXIMIZE_WINDOW)
                     .action(@selector(performZoom:)),
                 Item().is_separator(),
-                Item(IDS_NEXT_TAB_MAC).command_id(IDC_SELECT_NEXT_TAB),
-                Item(IDS_PREV_TAB_MAC).command_id(IDC_SELECT_PREVIOUS_TAB),
-                Item(IDS_SHOW_AS_TAB).command_id(IDC_SHOW_AS_TAB),
-                Item(IDS_DUPLICATE_TAB_MAC).command_id(IDC_DUPLICATE_TAB),
-                Item(IDS_MUTE_SITE_MAC).command_id(IDC_WINDOW_MUTE_SITE),
-                Item(IDS_PIN_TAB_MAC).command_id(IDC_WINDOW_PIN_TAB),
-                Item().is_separator(),
-                Item(IDS_SHOW_DOWNLOADS_MAC).command_id(IDC_SHOW_DOWNLOADS),
-                Item(IDS_SHOW_EXTENSIONS_MAC).command_id(IDC_MANAGE_EXTENSIONS),
-                Item(IDS_TASK_MANAGER_MAC).command_id(IDC_TASK_MANAGER),
-                Item().is_separator(),
+                Item(IDS_NEXT_TAB_MAC)
+                    .command_id(IDC_SELECT_NEXT_TAB)
+                    .remove_if(is_pwa),
+                Item(IDS_PREV_TAB_MAC)
+                    .command_id(IDC_SELECT_PREVIOUS_TAB)
+                    .remove_if(is_pwa),
+                Item(IDS_SHOW_AS_TAB)
+                    .command_id(IDC_SHOW_AS_TAB)
+                    .remove_if(is_pwa),
+                Item(IDS_DUPLICATE_TAB_MAC)
+                    .command_id(IDC_DUPLICATE_TAB)
+                    .remove_if(is_pwa),
+                Item(IDS_MUTE_SITE_MAC)
+                    .command_id(IDC_WINDOW_MUTE_SITE)
+                    .remove_if(is_pwa),
+                Item(IDS_PIN_TAB_MAC)
+                    .command_id(IDC_WINDOW_PIN_TAB)
+                    .remove_if(is_pwa),
+                Item().is_separator().remove_if(is_pwa),
+                Item(IDS_SHOW_DOWNLOADS_MAC)
+                    .command_id(IDC_SHOW_DOWNLOADS)
+                    .remove_if(is_pwa),
+                Item(IDS_SHOW_EXTENSIONS_MAC)
+                    .command_id(IDC_MANAGE_EXTENSIONS)
+                    .remove_if(is_pwa),
+                Item(IDS_TASK_MANAGER_MAC)
+                    .command_id(IDC_TASK_MANAGER)
+                    .remove_if(is_pwa),
+                Item().is_separator().remove_if(is_pwa),
                 Item(IDS_ALL_WINDOWS_FRONT_MAC)
                     .tag(IDC_ALL_WINDOWS_FRONT)
                     .action(@selector(arrangeInFront:)),
@@ -326,8 +391,14 @@ base::scoped_nsobject<NSMenuItem> BuildWindowMenu(
   return item;
 }
 
-base::scoped_nsobject<NSMenuItem> BuildHelpMenu(NSApplication* nsapp,
-                                                AppController* app_controller) {
+base::scoped_nsobject<NSMenuItem> BuildHelpMenu(
+    NSApplication* nsapp,
+    id app_delegate,
+    const base::string16& product_name,
+    bool is_pwa) {
+  if (is_pwa)
+    return base::scoped_nsobject<NSMenuItem>();
+
   base::scoped_nsobject<NSMenuItem> item =
       Item(IDS_HELP_MENU_MAC)
           .submenu({
@@ -335,7 +406,7 @@ base::scoped_nsobject<NSMenuItem> BuildHelpMenu(NSApplication* nsapp,
             Item(IDS_FEEDBACK_MAC).command_id(IDC_FEEDBACK),
 #endif
                 Item(IDS_HELP_MAC)
-                    .string_format_1(IDS_PRODUCT_NAME)
+                    .string_format_1(product_name)
                     .command_id(IDC_HELP_PAGE_VIA_MENU),
           })
           .Build();
@@ -345,18 +416,23 @@ base::scoped_nsobject<NSMenuItem> BuildHelpMenu(NSApplication* nsapp,
 
 }  // namespace
 
-void BuildMainMenu(NSApplication* nsapp, AppController* app_controller) {
+void BuildMainMenu(NSApplication* nsapp,
+                   id<NSApplicationDelegate> app_delegate,
+                   const base::string16& product_name,
+                   bool is_pwa) {
   base::scoped_nsobject<NSMenu> main_menu([[NSMenu alloc] initWithTitle:@""]);
 
-  using Builder =
-      base::scoped_nsobject<NSMenuItem> (*)(NSApplication*, AppController*);
+  using Builder = base::scoped_nsobject<NSMenuItem> (*)(
+      NSApplication*, id, const base::string16&, bool);
   static const Builder kBuilderFuncs[] = {
       &BuildAppMenu,    &BuildFileMenu,    &BuildEditMenu,
       &BuildViewMenu,   &BuildHistoryMenu, &BuildBookmarksMenu,
       &BuildPeopleMenu, &BuildWindowMenu,  &BuildHelpMenu,
   };
   for (auto* builder : kBuilderFuncs) {
-    [main_menu addItem:builder(nsapp, app_controller)];
+    auto item = builder(nsapp, app_delegate, product_name, is_pwa);
+    if (item)
+      [main_menu addItem:item];
   }
 
   [nsapp setMainMenu:main_menu];
@@ -373,6 +449,9 @@ MenuItemBuilder& MenuItemBuilder::operator=(const MenuItemBuilder&) = default;
 MenuItemBuilder::~MenuItemBuilder() = default;
 
 base::scoped_nsobject<NSMenuItem> MenuItemBuilder::Build() const {
+  if (is_removed_)
+    return base::scoped_nsobject<NSMenuItem>();
+
   if (is_separator_) {
     base::scoped_nsobject<NSMenuItem> item([[NSMenuItem separatorItem] retain]);
     if (tag_) {
@@ -395,12 +474,10 @@ base::scoped_nsobject<NSMenuItem> MenuItemBuilder::Build() const {
   }
 
   NSString* title;
-  if (string_arg1_ != 0) {
-    base::string16 arg1 = l10n_util::GetStringUTF16(string_arg1_);
-    title = l10n_util::GetNSStringFWithFixup(string_id_, arg1);
-  } else {
+  if (!string_arg1_.empty())
+    title = l10n_util::GetNSStringFWithFixup(string_id_, string_arg1_);
+  else
     title = l10n_util::GetNSStringWithFixup(string_id_);
-  }
 
   SEL action = !submenu_.has_value() ? action_ : nil;
 
@@ -416,7 +493,9 @@ base::scoped_nsobject<NSMenuItem> MenuItemBuilder::Build() const {
   if (submenu_.has_value()) {
     base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:title]);
     for (const auto& subitem : submenu_.value()) {
-      [menu addItem:subitem.Build()];
+      base::scoped_nsobject<NSMenuItem> ns_subitem = subitem.Build();
+      if (ns_subitem)
+        [menu addItem:ns_subitem];
     }
     [item setSubmenu:menu];
   }

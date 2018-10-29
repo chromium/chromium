@@ -159,6 +159,140 @@ vr::TrackedDevicePose_t TestHelper::GetPose(bool presenting) {
   return TranslatePose(pose);
 }
 
+vr::ETrackedPropertyError TestHelper::GetInt32TrackedDeviceProperty(
+    unsigned int index,
+    ETrackedDeviceProperty prop,
+    int32_t& prop_value) {
+  vr::ETrackedPropertyError ret = vr::TrackedProp_Success;
+  prop_value = 0;
+  lock_.Acquire();
+  switch (prop) {
+    case vr::Prop_Axis0Type_Int32:
+    case vr::Prop_Axis1Type_Int32:
+    case vr::Prop_Axis2Type_Int32:
+    case vr::Prop_Axis3Type_Int32:
+    case vr::Prop_Axis4Type_Int32: {
+      auto controller_data = test_hook_->WaitGetControllerData(index);
+      if (!controller_data.is_valid) {
+        ret = vr::TrackedProp_WrongDeviceClass;
+        break;
+      }
+      prop_value = static_cast<vr::EVRControllerAxisType>(
+          controller_data.axis_data[prop - vr::Prop_Axis0Type_Int32].axis_type);
+      break;
+    }
+    default:
+      ret = vr::TrackedProp_UnknownProperty;
+  }
+  lock_.Release();
+  return ret;
+}
+
+vr::ETrackedPropertyError TestHelper::GetUint64TrackedDeviceProperty(
+    unsigned int index,
+    ETrackedDeviceProperty prop,
+    uint64_t& prop_value) {
+  vr::ETrackedPropertyError ret = vr::TrackedProp_Success;
+  prop_value = 0;
+  lock_.Acquire();
+  switch (prop) {
+    case vr::Prop_SupportedButtons_Uint64: {
+      auto controller_data = test_hook_->WaitGetControllerData(index);
+      if (!controller_data.is_valid) {
+        ret = vr::TrackedProp_WrongDeviceClass;
+        break;
+      }
+      prop_value = controller_data.supported_buttons;
+      break;
+    }
+    default:
+      ret = vr::TrackedProp_UnknownProperty;
+  }
+  lock_.Release();
+  return ret;
+}
+
+vr::ETrackedControllerRole TestHelper::GetControllerRoleForTrackedDeviceIndex(
+    unsigned int index) {
+  vr::ETrackedControllerRole ret = vr::TrackedControllerRole_Invalid;
+  lock_.Acquire();
+  if (test_hook_) {
+    switch (test_hook_->WaitGetControllerRoleForTrackedDeviceIndex(index)) {
+      case device::kControllerRoleInvalid:
+        break;
+      case device::kControllerRoleLeft:
+        ret = vr::TrackedControllerRole_LeftHand;
+        break;
+      case device::kControllerRoleRight:
+        ret = vr::TrackedControllerRole_RightHand;
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+  lock_.Release();
+  return ret;
+}
+
+vr::ETrackedDeviceClass TestHelper::GetTrackedDeviceClass(unsigned int index) {
+  vr::ETrackedDeviceClass tracked_class = vr::TrackedDeviceClass_Invalid;
+  lock_.Acquire();
+  if (test_hook_) {
+    switch (test_hook_->WaitGetTrackedDeviceClass(index)) {
+      case device::kTrackedDeviceInvalid:
+        break;
+      case device::kTrackedDeviceHmd:
+        tracked_class = vr::TrackedDeviceClass_HMD;
+        break;
+      case device::kTrackedDeviceController:
+        tracked_class = vr::TrackedDeviceClass_Controller;
+        break;
+      case device::kTrackedDeviceGenericTracker:
+        tracked_class = vr::TrackedDeviceClass_GenericTracker;
+        break;
+      case device::kTrackedDeviceTrackingReference:
+        tracked_class = vr::TrackedDeviceClass_TrackingReference;
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+  lock_.Release();
+  return tracked_class;
+}
+
+bool TestHelper::GetControllerState(unsigned int index,
+                                    vr::VRControllerState_t* controller_state) {
+  lock_.Acquire();
+  if (test_hook_) {
+    auto controller_data = test_hook_->WaitGetControllerData(index);
+    lock_.Release();
+    controller_state->unPacketNum = controller_data.packet_number;
+    controller_state->ulButtonPressed = controller_data.buttons_pressed;
+    controller_state->ulButtonTouched = controller_data.buttons_touched;
+    for (unsigned int i = 0; i < device::kMaxNumAxes; ++i) {
+      controller_state->rAxis[i].x = controller_data.axis_data[i].x;
+      controller_state->rAxis[i].y = controller_data.axis_data[i].y;
+    }
+    return controller_data.is_valid;
+  }
+  lock_.Release();
+  return false;
+}
+
+bool TestHelper::GetControllerPose(unsigned int index,
+                                   vr::TrackedDevicePose_t* controller_pose) {
+  lock_.Acquire();
+  if (test_hook_) {
+    auto controller_data = test_hook_->WaitGetControllerData(index);
+    lock_.Release();
+    *controller_pose = TranslatePose(controller_data.pose_data);
+    return controller_data.is_valid && controller_data.pose_data.is_valid;
+  }
+  lock_.Release();
+  return false;
+}
+
 void TestHelper::SetTestHook(device::OpenVRTestHook* hook) {
   lock_.Acquire();
   test_hook_ = hook;

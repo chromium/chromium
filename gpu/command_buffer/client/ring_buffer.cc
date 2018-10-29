@@ -24,12 +24,11 @@ RingBuffer::RingBuffer(unsigned int alignment,
     : helper_(helper),
       base_offset_(base_offset),
       size_(base::checked_cast<unsigned int>(size)),
-      free_offset_(0),
-      in_use_offset_(0),
       alignment_(alignment),
       base_(static_cast<int8_t*>(base) - base_offset) {}
 
 RingBuffer::~RingBuffer() {
+  DCHECK_EQ(num_used_blocks_, 0u);
   for (const auto& block : blocks_)
     DCHECK(block.state != IN_USE);
 }
@@ -56,8 +55,6 @@ void RingBuffer::FreeOldestBlock() {
 
 void* RingBuffer::Alloc(unsigned int size) {
   DCHECK_LE(size, size_) << "attempt to allocate more than maximum memory";
-  DCHECK(blocks_.empty() || blocks_.back().state != IN_USE)
-      << "Attempt to alloc another block before freeing the previous.";
   // Similarly to malloc, an allocation of 0 allocates at least 1 byte, to
   // return different pointers every time.
   if (size == 0) size = 1;
@@ -80,10 +77,13 @@ void* RingBuffer::Alloc(unsigned int size) {
 
   Offset offset = free_offset_;
   blocks_.push_back(Block(offset, size, IN_USE));
+  num_used_blocks_++;
+
   free_offset_ += size;
   if (free_offset_ == size_) {
     free_offset_ = 0;
   }
+
   return GetPointer(offset + base_offset_);
 }
 
@@ -101,9 +101,11 @@ void RingBuffer::FreePendingToken(void* pointer,
           << "block that corresponds to offset already freed";
       block.token = token;
       block.state = FREE_PENDING_TOKEN;
+      num_used_blocks_--;
       return;
     }
   }
+
   NOTREACHED() << "attempt to free non-existant block";
 }
 
@@ -118,6 +120,8 @@ void RingBuffer::DiscardBlock(void* pointer) {
     if (block.offset == offset) {
       DCHECK(block.state != PADDING)
           << "block that corresponds to offset already discarded";
+      if (block.state == IN_USE)
+        num_used_blocks_--;
       block.state = PADDING;
 
       // Remove block if it were in the back along with any extra padding.

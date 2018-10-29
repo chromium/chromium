@@ -29,9 +29,6 @@ async_test(function(t) {
     "when image metadata has no color space and canvas uses the default " +
     "color space.");
 
-// TODO(ccameron): This test was broken by updating default parameters. This
-// should be revisited after updating image data behaviors.
-/*
 async_test(function(t) {
   var image = new Image();
   // This image is 256 by 1 and contains an opaque grayscale ramp from 0 to 255.
@@ -92,7 +89,7 @@ async_test(function(t) {
 }, "Verify that drawImage->getImageData round trip preserves color values " +
     "when image metadata has no color space and canvas uses the srgb " +
     "color space.");
-*/
+
 
 async_test(function(t) {
   var image = new Image();

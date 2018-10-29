@@ -39,7 +39,12 @@ class CORE_EXPORT HitTestLocation {
 
  public:
   // Note that all points are in contents (aka "page") coordinate space for the
-  // document that is being hit tested.
+  // document that is being hit tested. All points and size are in root frame
+  // coordinates (physical pixel scaled by page_scale when zoom for dsf is
+  // enabled; otherwise in dip scaled by page_scale), Which means the points
+  // should already applied page_scale_factor, but not page_zoom_factor and
+  // scroll offset. See:
+  // http://www.chromium.org/developers/design-documents/blink-coordinate-spaces
   HitTestLocation();
   explicit HitTestLocation(const LayoutPoint&);
   explicit HitTestLocation(const IntPoint&);
@@ -70,8 +75,11 @@ class CORE_EXPORT HitTestLocation {
   }
 
   bool Intersects(const LayoutRect&) const;
+  // Uses floating-point intersection, which uses inclusive intersection
+  // (see LayoutRect::InclusiveIntersect for a definition)
   bool Intersects(const FloatRect&) const;
   bool Intersects(const FloatRoundedRect&) const;
+  bool Intersects(const FloatQuad&) const;
   bool ContainsPoint(const FloatPoint&) const;
 
   const FloatPoint& TransformedPoint() const { return transformed_point_; }

@@ -1,24 +1,12 @@
 <script>
-const params = new URLSearchParams(location.search);
-async function run() {
-  let options = {};
-  if (params.get('scope'))
-    options.scope = params.get('scope');
-
-  await navigator.serviceWorker.register(
-      params.get('worker_url'), options);
-  await navigator.serviceWorker.ready;
-  document.title = 'DONE';
-}
-
-async function setup() {
+async function register(worker_url, scope) {
   try {
-    await run();
+    const init = scope ? {scope} : {};
+    await navigator.serviceWorker.register(worker_url, init);
+    await navigator.serviceWorker.ready;
+    return 'DONE';
   } catch (error) {
-    console.error('ERROR: ' + error);
-    document.title = 'ERROR';
+    return `${error}`;
   }
 }
-
-setup();
 </script>

@@ -4,7 +4,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 
 The height of the inner element box should be 100% of the containers height minus the height of horizontal scrollbar. There should be no vertical scrollable content in the container
-
 PASS document.getElementById("container").scrollHeight == document.getElementById("container").clientHeight is true
 Container height = Inner replaced element height + scrollbar height
 PASS document.getElementById("container").offsetHeight > document.getElementById("replacedElement").offsetHeight is true

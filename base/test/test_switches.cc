@@ -40,8 +40,12 @@ const char switches::kTestLauncherListTests[] = "test-launcher-list-tests";
 // Path to test results file in our custom test launcher format.
 const char switches::kTestLauncherOutput[] = "test-launcher-output";
 
+// These two flags has the same effect, but don't use them at the same time.
+// And isolated-script-test-launcher-retry-limit is preferred in the future.
 // Maximum number of times to retry a test after failure.
 const char switches::kTestLauncherRetryLimit[] = "test-launcher-retry-limit";
+const char switches::kIsolatedScriptTestLauncherRetryLimit[] =
+    "isolated-script-test-launcher-retry-limit";
 
 // Path to test results file with all the info from the test launcher.
 const char switches::kTestLauncherSummaryOutput[] =

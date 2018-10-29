@@ -12,13 +12,13 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
-#include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
@@ -122,25 +122,28 @@ void PasswordsPrivateDelegateImpl::GetPasswordExceptionsList(
     get_password_exception_list_callbacks_.push_back(callback);
 }
 
-void PasswordsPrivateDelegateImpl::RemoveSavedPassword(size_t index) {
+void PasswordsPrivateDelegateImpl::RemoveSavedPassword(int id) {
   ExecuteFunction(
       base::Bind(&PasswordsPrivateDelegateImpl::RemoveSavedPasswordInternal,
-                 base::Unretained(this), index));
+                 base::Unretained(this), id));
 }
 
-void PasswordsPrivateDelegateImpl::RemoveSavedPasswordInternal(size_t index) {
-  password_manager_presenter_->RemoveSavedPassword(index);
+void PasswordsPrivateDelegateImpl::RemoveSavedPasswordInternal(int id) {
+  const std::string* sort_key = password_id_generator_.TryGetSortKey(id);
+  if (sort_key)
+    password_manager_presenter_->RemoveSavedPassword(*sort_key);
 }
 
-void PasswordsPrivateDelegateImpl::RemovePasswordException(size_t index) {
+void PasswordsPrivateDelegateImpl::RemovePasswordException(int id) {
   ExecuteFunction(
       base::Bind(&PasswordsPrivateDelegateImpl::RemovePasswordExceptionInternal,
-                 base::Unretained(this), index));
+                 base::Unretained(this), id));
 }
 
-void PasswordsPrivateDelegateImpl::RemovePasswordExceptionInternal(
-    size_t index) {
-  password_manager_presenter_->RemovePasswordException(index);
+void PasswordsPrivateDelegateImpl::RemovePasswordExceptionInternal(int id) {
+  const std::string* sort_key = exception_id_generator_.TryGetSortKey(id);
+  if (sort_key)
+    password_manager_presenter_->RemovePasswordException(*sort_key);
 }
 
 void PasswordsPrivateDelegateImpl::UndoRemoveSavedPasswordOrException() {
@@ -155,15 +158,15 @@ void PasswordsPrivateDelegateImpl::
 }
 
 void PasswordsPrivateDelegateImpl::RequestShowPassword(
-    size_t index,
+    int id,
     content::WebContents* web_contents) {
   ExecuteFunction(
       base::Bind(&PasswordsPrivateDelegateImpl::RequestShowPasswordInternal,
-                 base::Unretained(this), index, web_contents));
+                 base::Unretained(this), id, web_contents));
 }
 
 void PasswordsPrivateDelegateImpl::RequestShowPasswordInternal(
-    size_t index,
+    int id,
     content::WebContents* web_contents) {
   // Save |web_contents| so that the call to RequestShowPassword() below
   // can use this value by calling GetNativeWindow(). Note: This is safe because
@@ -178,7 +181,9 @@ void PasswordsPrivateDelegateImpl::RequestShowPasswordInternal(
   }
 
   // Request the password. When it is retrieved, ShowPassword() will be called.
-  password_manager_presenter_->RequestShowPassword(index);
+  const std::string* sort_key = password_id_generator_.TryGetSortKey(id);
+  if (sort_key)
+    password_manager_presenter_->RequestShowPassword(*sort_key);
 }
 
 bool PasswordsPrivateDelegateImpl::OsReauthCall(
@@ -198,13 +203,13 @@ Profile* PasswordsPrivateDelegateImpl::GetProfile() {
 }
 
 void PasswordsPrivateDelegateImpl::ShowPassword(
-    size_t index,
+    const std::string& sort_key,
     const base::string16& password_value) {
-  PasswordsPrivateEventRouter* router =
-      PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
+  auto* router = PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
   if (router) {
-    router->OnPlaintextPasswordFetched(index,
-                                       base::UTF16ToUTF8(password_value));
+    router->OnPlaintextPasswordFetched(
+        password_id_generator_.GenerateId(sort_key),
+        base::UTF16ToUTF8(password_value));
   }
 }
 
@@ -213,18 +218,15 @@ void PasswordsPrivateDelegateImpl::SetPasswordList(
   // Create a list of PasswordUiEntry objects to send to observers.
   current_entries_.clear();
 
-  for (size_t i = 0; i < password_list.size(); i++) {
-    const auto& form = password_list[i];
-    api::passwords_private::UrlCollection urls =
-        CreateUrlCollectionFromForm(*form);
-
+  for (const auto& form : password_list) {
     api::passwords_private::PasswordUiEntry entry;
-    entry.login_pair.urls = std::move(urls);
+    entry.login_pair.urls = CreateUrlCollectionFromForm(*form);
     entry.login_pair.username = base::UTF16ToUTF8(form->username_value);
-    entry.index = base::checked_cast<int>(i);
+    entry.id = password_id_generator_.GenerateId(
+        password_manager::CreateSortKey(*form));
     entry.num_characters_in_password = form->password_value.length();
 
-    if (!form->federation_origin.unique()) {
+    if (!form->federation_origin.opaque()) {
       entry.federation_text.reset(new std::string(l10n_util::GetStringFUTF8(
           IDS_PASSWORDS_VIA_FEDERATION,
           base::UTF8ToUTF16(form->federation_origin.host()))));
@@ -252,14 +254,11 @@ void PasswordsPrivateDelegateImpl::SetPasswordExceptionList(
   // Creates a list of exceptions to send to observers.
   current_exceptions_.clear();
 
-  for (size_t i = 0; i < password_exception_list.size(); i++) {
-    const auto& form = password_exception_list[i];
-    api::passwords_private::UrlCollection urls =
-        CreateUrlCollectionFromForm(*form);
-
+  for (const auto& form : password_exception_list) {
     api::passwords_private::ExceptionEntry current_exception_entry;
-    current_exception_entry.urls = std::move(urls);
-    current_exception_entry.index = base::checked_cast<int>(i);
+    current_exception_entry.urls = CreateUrlCollectionFromForm(*form);
+    current_exception_entry.id = exception_id_generator_.GenerateId(
+        password_manager::CreateSortKey(*form));
     current_exceptions_.push_back(std::move(current_exception_entry));
   }
 

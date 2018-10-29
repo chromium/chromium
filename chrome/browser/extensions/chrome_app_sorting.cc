@@ -14,6 +14,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -23,6 +24,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/default_app_order.h"
+#include "chrome/browser/ui/app_list/page_break_constants.h"
 #endif
 
 namespace extensions {
@@ -94,8 +96,8 @@ void ChromeAppSorting::MigrateAppIndex(
   typedef std::map<syncer::StringOrdinal, std::map<int, const std::string*>,
                    syncer::StringOrdinal::LessThanFn> AppPositionToIdMapping;
   AppPositionToIdMapping app_launches_to_convert;
-  for (extensions::ExtensionIdList::const_iterator ext_id =
-           extension_ids.begin(); ext_id != extension_ids.end(); ++ext_id) {
+  for (auto ext_id = extension_ids.begin(); ext_id != extension_ids.end();
+       ++ext_id) {
     int old_page_index = 0;
     syncer::StringOrdinal page = GetPageOrdinal(*ext_id);
     if (prefs->ReadPrefAsInteger(*ext_id,
@@ -137,10 +139,9 @@ void ChromeAppSorting::MigrateAppIndex(
   // Remove any empty pages that may have been added. This shouldn't occur,
   // but double check here to prevent future problems with conversions between
   // integers and StringOrdinals.
-  for (PageOrdinalMap::iterator it = ntp_ordinal_map_.begin();
-       it != ntp_ordinal_map_.end();) {
+  for (auto it = ntp_ordinal_map_.begin(); it != ntp_ordinal_map_.end();) {
     if (it->second.empty()) {
-      PageOrdinalMap::iterator prev_it = it;
+      auto prev_it = it;
       ++it;
       ntp_ordinal_map_.erase(prev_it);
     } else {
@@ -159,9 +160,8 @@ void ChromeAppSorting::MigrateAppIndex(
            app_launches_to_convert.begin();
        page_it != app_launches_to_convert.end(); ++page_it) {
     syncer::StringOrdinal page = page_it->first;
-    for (std::map<int, const std::string*>::const_iterator launch_it =
-            page_it->second.begin(); launch_it != page_it->second.end();
-        ++launch_it) {
+    for (auto launch_it = page_it->second.begin();
+         launch_it != page_it->second.end(); ++launch_it) {
       SetAppLaunchOrdinal(*(launch_it->second),
                           CreateNextAppLaunchOrdinal(page));
     }
@@ -169,11 +169,11 @@ void ChromeAppSorting::MigrateAppIndex(
 }
 
 void ChromeAppSorting::FixNTPOrdinalCollisions() {
-  for (PageOrdinalMap::iterator page_it = ntp_ordinal_map_.begin();
+  for (auto page_it = ntp_ordinal_map_.begin();
        page_it != ntp_ordinal_map_.end(); ++page_it) {
     AppLaunchOrdinalMap& page = page_it->second;
 
-    AppLaunchOrdinalMap::iterator app_launch_it = page.begin();
+    auto app_launch_it = page.begin();
     while (app_launch_it != page.end()) {
       int app_count = page.count(app_launch_it->first);
       if (app_count == 1) {
@@ -370,8 +370,7 @@ syncer::StringOrdinal ChromeAppSorting::GetNaturalAppPageOrdinal() const {
   if (ntp_ordinal_map_.empty())
     return syncer::StringOrdinal::CreateInitialOrdinal();
 
-  for (PageOrdinalMap::const_iterator it = ntp_ordinal_map_.begin();
-       it != ntp_ordinal_map_.end(); ++it) {
+  for (auto it = ntp_ordinal_map_.begin(); it != ntp_ordinal_map_.end(); ++it) {
     if (CountItemsVisibleOnNtp(it->second) < kNaturalAppPageSize)
       return it->first;
   }
@@ -429,7 +428,7 @@ int ChromeAppSorting::PageStringOrdinalAsInteger(
   if (!page_ordinal.IsValid())
     return -1;
 
-  PageOrdinalMap::const_iterator it = ntp_ordinal_map_.find(page_ordinal);
+  auto it = ntp_ordinal_map_.find(page_ordinal);
   return it != ntp_ordinal_map_.end() ?
       std::distance(ntp_ordinal_map_.begin(), it) : -1;
 }
@@ -461,8 +460,7 @@ syncer::StringOrdinal ChromeAppSorting::GetMinOrMaxAppLaunchOrdinalsOnPage(
 
   syncer::StringOrdinal return_value;
 
-  PageOrdinalMap::const_iterator page =
-      ntp_ordinal_map_.find(target_page_ordinal);
+  auto page = ntp_ordinal_map_.find(target_page_ordinal);
   if (page != ntp_ordinal_map_.end()) {
     const AppLaunchOrdinalMap& app_list = page->second;
 
@@ -480,8 +478,8 @@ syncer::StringOrdinal ChromeAppSorting::GetMinOrMaxAppLaunchOrdinalsOnPage(
 
 void ChromeAppSorting::InitializePageOrdinalMap(
     const extensions::ExtensionIdList& extension_ids) {
-  for (extensions::ExtensionIdList::const_iterator ext_it =
-           extension_ids.begin(); ext_it != extension_ids.end(); ++ext_it) {
+  for (auto ext_it = extension_ids.begin(); ext_it != extension_ids.end();
+       ++ext_it) {
     AddOrdinalMapping(*ext_it,
                       GetPageOrdinal(*ext_it),
                       GetAppLaunchOrdinal(*ext_it));
@@ -530,12 +528,11 @@ void ChromeAppSorting::RemoveOrdinalMapping(
 
   // Check that the page exists using find to prevent creating a new page
   // if |page_ordinal| isn't a used page.
-  PageOrdinalMap::iterator page_map = ntp_ordinal_map_.find(page_ordinal);
+  auto page_map = ntp_ordinal_map_.find(page_ordinal);
   if (page_map == ntp_ordinal_map_.end())
     return;
 
-  for (AppLaunchOrdinalMap::iterator it =
-           page_map->second.find(app_launch_ordinal);
+  for (auto it = page_map->second.find(app_launch_ordinal);
        it != page_map->second.end(); ++it) {
     if (it->second == extension_id) {
       page_map->second.erase(it);
@@ -583,6 +580,15 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
     default_ordinals_[extension_id].page_ordinal = page_ordinal;
     default_ordinals_[extension_id].app_launch_ordinal = app_launch_ordinal;
     app_launch_ordinal = app_launch_ordinal.CreateAfter();
+#if defined(OS_CHROMEOS)
+    // Default page breaks are installed by default for first-time users so that
+    // we can make default apps span multiple pages in the Launcher without
+    // fully filling those pages. If |extension_id| is of a default page break,
+    // then apps that follow it in the order should have an incremented page
+    // ordinal.
+    if (app_list::IsDefaultPageBreakItem(extension_id))
+      page_ordinal = page_ordinal.CreateAfter();
+#endif  // defined(OS_CHROMEOS)
   }
 }
 
@@ -591,12 +597,12 @@ syncer::StringOrdinal ChromeAppSorting::ResolveCollision(
     const syncer::StringOrdinal& app_launch_ordinal) const {
   DCHECK(page_ordinal.IsValid() && app_launch_ordinal.IsValid());
 
-  PageOrdinalMap::const_iterator page_it = ntp_ordinal_map_.find(page_ordinal);
+  auto page_it = ntp_ordinal_map_.find(page_ordinal);
   if (page_it == ntp_ordinal_map_.end())
     return app_launch_ordinal;
 
   const AppLaunchOrdinalMap& page = page_it->second;
-  AppLaunchOrdinalMap::const_iterator app_it = page.find(app_launch_ordinal);
+  auto app_it = page.find(app_launch_ordinal);
   if (app_it == page.end())
     return app_launch_ordinal;
 
@@ -618,8 +624,7 @@ syncer::StringOrdinal ChromeAppSorting::ResolveCollision(
 size_t ChromeAppSorting::CountItemsVisibleOnNtp(
     const AppLaunchOrdinalMap& m) const {
   size_t result = 0;
-  for (AppLaunchOrdinalMap::const_iterator it = m.begin(); it != m.end();
-       ++it) {
+  for (auto it = m.begin(); it != m.end(); ++it) {
     const std::string& id = it->second;
     if (ntp_hidden_extensions_.count(id) == 0)
       result++;

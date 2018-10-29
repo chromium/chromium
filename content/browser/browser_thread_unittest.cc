@@ -111,10 +111,9 @@ class UIThreadDestructionObserver
       : callback_task_runner_(base::ThreadTaskRunnerHandle::Get()),
         callback_(callback),
         ui_task_runner_(
-            BrowserThread::GetTaskRunnerForThread(BrowserThread::UI)),
+            base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI})),
         did_shutdown_(did_shutdown) {
-    BrowserThread::GetTaskRunnerForThread(BrowserThread::UI)
-        ->PostTask(FROM_HERE, base::BindOnce(&Watch, this));
+    ui_task_runner_->PostTask(FROM_HERE, base::BindOnce(&Watch, this));
   }
 
  private:
@@ -141,15 +140,6 @@ class UIThreadDestructionObserver
   bool* did_shutdown_;
 };
 
-TEST_F(BrowserThreadTest, PostTask) {
-  base::RunLoop run_loop;
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&BasicFunction, run_loop.QuitWhenIdleClosure(),
-                     BrowserThread::IO));
-  run_loop.Run();
-}
-
 TEST_F(BrowserThreadTest, PostTaskWithTraits) {
   base::RunLoop run_loop;
   EXPECT_TRUE(base::PostTaskWithTraits(
@@ -172,16 +162,6 @@ TEST_F(BrowserThreadTest, ReleasedOnCorrectThread) {
     scoped_refptr<DeletedOnIO> test(
         new DeletedOnIO(run_loop.QuitWhenIdleClosure()));
   }
-  run_loop.Run();
-}
-
-TEST_F(BrowserThreadTest, PostTaskViaTaskRunner) {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO);
-  base::RunLoop run_loop;
-  task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&BasicFunction, run_loop.QuitWhenIdleClosure(),
-                                BrowserThread::IO));
   run_loop.Run();
 }
 
@@ -227,32 +207,12 @@ TEST_F(BrowserThreadTest, PostTaskViaCOMSTATaskRunnerWithTraits) {
 }
 #endif  // defined(OS_WIN)
 
-TEST_F(BrowserThreadTest, ReleaseViaTaskRunner) {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::UI);
-
-  base::RunLoop run_loop;
-  ExpectRelease(run_loop.QuitWhenIdleClosure());
-  task_runner->ReleaseSoon(FROM_HERE, this);
-  run_loop.Run();
-}
-
 TEST_F(BrowserThreadTest, ReleaseViaTaskRunnerWithTraits) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
   base::RunLoop run_loop;
   ExpectRelease(run_loop.QuitWhenIdleClosure());
   task_runner->ReleaseSoon(FROM_HERE, this);
-  run_loop.Run();
-}
-
-TEST_F(BrowserThreadTest, PostTaskAndReply) {
-  // Most of the heavy testing for PostTaskAndReply() is done inside the
-  // task runner test.  This just makes sure we get piped through at all.
-  base::RunLoop run_loop;
-  ASSERT_TRUE(BrowserThread::PostTaskAndReply(BrowserThread::IO, FROM_HERE,
-                                              base::DoNothing(),
-                                              run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
 }
 

@@ -5,7 +5,6 @@
  -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
@@ -78,6 +77,5 @@
         android:layout_marginEnd="12dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:textAppearance="@style/WhiteButtonText"
-        app:buttonColor="@color/pref_accent_color" />
+        style="@style/FilledButton" />
 </LinearLayout>

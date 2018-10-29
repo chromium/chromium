@@ -35,7 +35,7 @@ namespace blink {
 
 class Node;
 
-namespace XPath {
+namespace xpath {
 
 class Predicate;
 
@@ -136,7 +136,7 @@ class Step final : public ParseNode {
 
 bool OptimizeStepPair(Step*, Step*);
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink
 

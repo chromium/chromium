@@ -474,7 +474,7 @@ void InputMethodChromeOS::PostProcessUnfilteredKeyPressEvent(
   if (stopped_propagation) {
     ResetContext();
     if (ack_callback)
-      std::move(ack_callback).Run(false);
+      std::move(ack_callback).Run(true);  // true matches |stopped_propagation|.
     return;
   }
 

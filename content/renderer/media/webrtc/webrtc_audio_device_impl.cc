@@ -31,16 +31,16 @@ WebRtcAudioDeviceImpl::WebRtcAudioDeviceImpl()
   // This object can be constructed on either the signaling thread or the main
   // thread, so we need to detach these thread checkers here and have them
   // initialize automatically when the first methods are called.
-  signaling_thread_checker_.DetachFromThread();
-  main_thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(signaling_thread_checker_);
+  DETACH_FROM_THREAD(main_thread_checker_);
 
-  worker_thread_checker_.DetachFromThread();
-  audio_renderer_thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(worker_thread_checker_);
+  DETACH_FROM_THREAD(audio_renderer_thread_checker_);
 }
 
 WebRtcAudioDeviceImpl::~WebRtcAudioDeviceImpl() {
   DVLOG(1) << "WebRtcAudioDeviceImpl::~WebRtcAudioDeviceImpl()";
-  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(!initialized_) << "Terminate must have been called.";
 }
 
@@ -101,7 +101,7 @@ void WebRtcAudioDeviceImpl::RenderData(media::AudioBus* audio_bus,
 }
 
 void WebRtcAudioDeviceImpl::RemoveAudioRenderer(WebRtcAudioRenderer* renderer) {
-  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   base::AutoLock auto_lock(lock_);
   DCHECK_EQ(renderer, renderer_.get());
   // Notify the playout sink of the change.
@@ -112,8 +112,8 @@ void WebRtcAudioDeviceImpl::RemoveAudioRenderer(WebRtcAudioRenderer* renderer) {
 }
 
 void WebRtcAudioDeviceImpl::AudioRendererThreadStopped() {
-  DCHECK(main_thread_checker_.CalledOnValidThread());
-  audio_renderer_thread_checker_.DetachFromThread();
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DETACH_FROM_THREAD(audio_renderer_thread_checker_);
   // Notify the playout sink of the change.
   // Not holding |lock_| because the caller must guarantee that the audio
   // renderer thread is dead, so no race is possible with |playout_sinks_|
@@ -123,7 +123,7 @@ void WebRtcAudioDeviceImpl::AudioRendererThreadStopped() {
 
 void WebRtcAudioDeviceImpl::SetOutputDeviceForAec(
     const std::string& output_device_id) {
-  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   output_device_id_for_aec_ = output_device_id;
   base::AutoLock lock(lock_);
   for (auto* capturer : capturers_) {
@@ -138,7 +138,7 @@ base::UnguessableToken WebRtcAudioDeviceImpl::GetAudioProcessingId() const {
 int32_t WebRtcAudioDeviceImpl::RegisterAudioCallback(
     webrtc::AudioTransport* audio_callback) {
   DVLOG(1) << "WebRtcAudioDeviceImpl::RegisterAudioCallback()";
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   base::AutoLock lock(lock_);
   DCHECK_EQ(audio_transport_callback_ == nullptr, audio_callback != nullptr);
   audio_transport_callback_ = audio_callback;
@@ -147,7 +147,7 @@ int32_t WebRtcAudioDeviceImpl::RegisterAudioCallback(
 
 int32_t WebRtcAudioDeviceImpl::Init() {
   DVLOG(1) << "WebRtcAudioDeviceImpl::Init()";
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
 
   // We need to return a success to continue the initialization of WebRtc VoE
   // because failure on the capturer_ initialization should not prevent WebRTC
@@ -159,7 +159,7 @@ int32_t WebRtcAudioDeviceImpl::Init() {
 
 int32_t WebRtcAudioDeviceImpl::Terminate() {
   DVLOG(1) << "WebRtcAudioDeviceImpl::Terminate()";
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
 
   // Calling Terminate() multiple times in a row is OK.
   if (!initialized_)
@@ -181,23 +181,23 @@ int32_t WebRtcAudioDeviceImpl::Terminate() {
 }
 
 bool WebRtcAudioDeviceImpl::Initialized() const {
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   return initialized_;
 }
 
 int32_t WebRtcAudioDeviceImpl::PlayoutIsAvailable(bool* available) {
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   *available = initialized_;
   return 0;
 }
 
 bool WebRtcAudioDeviceImpl::PlayoutIsInitialized() const {
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   return initialized_;
 }
 
 int32_t WebRtcAudioDeviceImpl::RecordingIsAvailable(bool* available) {
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   base::AutoLock auto_lock(lock_);
   *available = !capturers_.empty();
   return 0;
@@ -205,14 +205,14 @@ int32_t WebRtcAudioDeviceImpl::RecordingIsAvailable(bool* available) {
 
 bool WebRtcAudioDeviceImpl::RecordingIsInitialized() const {
   DVLOG(1) << "WebRtcAudioDeviceImpl::RecordingIsInitialized()";
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   base::AutoLock auto_lock(lock_);
   return !capturers_.empty();
 }
 
 int32_t WebRtcAudioDeviceImpl::StartPlayout() {
   DVLOG(1) << "WebRtcAudioDeviceImpl::StartPlayout()";
-  DCHECK(worker_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   base::AutoLock auto_lock(lock_);
   if (!audio_transport_callback_) {
     LOG(ERROR) << "Audio transport is missing";
@@ -232,8 +232,10 @@ int32_t WebRtcAudioDeviceImpl::StopPlayout() {
   // or the signaling thread (e.g. when we call it ourselves internally).
   // The order in this check is important so that we won't incorrectly
   // initialize worker_thread_checker_ on the signaling thread.
+#if DCHECK_IS_ON()
   DCHECK(signaling_thread_checker_.CalledOnValidThread() ||
          worker_thread_checker_.CalledOnValidThread());
+#endif
   base::AutoLock auto_lock(lock_);
   // webrtc::VoiceEngine assumes that it is OK to call Stop() multiple times.
   playing_ = false;
@@ -241,14 +243,14 @@ int32_t WebRtcAudioDeviceImpl::StopPlayout() {
 }
 
 bool WebRtcAudioDeviceImpl::Playing() const {
-  DCHECK(worker_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   base::AutoLock auto_lock(lock_);
   return playing_;
 }
 
 int32_t WebRtcAudioDeviceImpl::StartRecording() {
   DVLOG(1) << "WebRtcAudioDeviceImpl::StartRecording()";
-  DCHECK(worker_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   DCHECK(initialized_);
   base::AutoLock auto_lock(lock_);
   if (!audio_transport_callback_) {
@@ -268,23 +270,24 @@ int32_t WebRtcAudioDeviceImpl::StopRecording() {
   // or the signaling thread (e.g. when we call it ourselves internally).
   // The order in this check is important so that we won't incorrectly
   // initialize worker_thread_checker_ on the signaling thread.
+#if DCHECK_IS_ON()
   DCHECK(signaling_thread_checker_.CalledOnValidThread() ||
          worker_thread_checker_.CalledOnValidThread());
-
+#endif
   base::AutoLock auto_lock(lock_);
   recording_ = false;
   return 0;
 }
 
 bool WebRtcAudioDeviceImpl::Recording() const {
-  DCHECK(worker_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   base::AutoLock auto_lock(lock_);
   return recording_;
 }
 
 int32_t WebRtcAudioDeviceImpl::SetMicrophoneVolume(uint32_t volume) {
   DVLOG(1) << "WebRtcAudioDeviceImpl::SetMicrophoneVolume(" << volume << ")";
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   DCHECK(initialized_);
 
   // Only one microphone is supported at the moment, which is represented by
@@ -299,7 +302,7 @@ int32_t WebRtcAudioDeviceImpl::SetMicrophoneVolume(uint32_t volume) {
 // TODO(henrika): sort out calling thread once we start using this API.
 int32_t WebRtcAudioDeviceImpl::MicrophoneVolume(uint32_t* volume) const {
   DVLOG(1) << "WebRtcAudioDeviceImpl::MicrophoneVolume()";
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   // We only support one microphone now, which is accessed via the default
   // capturer.
   DCHECK(initialized_);
@@ -312,26 +315,26 @@ int32_t WebRtcAudioDeviceImpl::MicrophoneVolume(uint32_t* volume) const {
 
 int32_t WebRtcAudioDeviceImpl::MaxMicrophoneVolume(uint32_t* max_volume) const {
   DCHECK(initialized_);
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   *max_volume = kMaxVolumeLevel;
   return 0;
 }
 
 int32_t WebRtcAudioDeviceImpl::MinMicrophoneVolume(uint32_t* min_volume) const {
-  DCHECK(signaling_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
   *min_volume = 0;
   return 0;
 }
 
 int32_t WebRtcAudioDeviceImpl::PlayoutDelay(uint16_t* delay_ms) const {
-  DCHECK(worker_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   base::AutoLock auto_lock(lock_);
   *delay_ms = static_cast<uint16_t>(output_delay_ms_);
   return 0;
 }
 
 bool WebRtcAudioDeviceImpl::SetAudioRenderer(WebRtcAudioRenderer* renderer) {
-  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(renderer);
 
   // Here we acquire |lock_| in order to protect the internal state.
@@ -357,7 +360,7 @@ bool WebRtcAudioDeviceImpl::SetAudioRenderer(WebRtcAudioRenderer* renderer) {
   // The new audio renderer will create a new audio renderer thread. Detach
   // |audio_renderer_thread_checker_| from the old thread, if any, and let
   // it attach later to the new thread.
-  audio_renderer_thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(audio_renderer_thread_checker_);
 
   // We acquire |lock_| again and assert our precondition, since we are
   // accessing the internal state again.
@@ -369,7 +372,7 @@ bool WebRtcAudioDeviceImpl::SetAudioRenderer(WebRtcAudioRenderer* renderer) {
 
 void WebRtcAudioDeviceImpl::AddAudioCapturer(
     ProcessedLocalAudioSource* capturer) {
-  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DVLOG(1) << "WebRtcAudioDeviceImpl::AddAudioCapturer()";
   DCHECK(capturer);
   DCHECK(!capturer->device().id.empty());
@@ -382,7 +385,7 @@ void WebRtcAudioDeviceImpl::AddAudioCapturer(
 
 void WebRtcAudioDeviceImpl::RemoveAudioCapturer(
     ProcessedLocalAudioSource* capturer) {
-  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DVLOG(1) << "WebRtcAudioDeviceImpl::RemoveAudioCapturer()";
   DCHECK(capturer);
   base::AutoLock auto_lock(lock_);
@@ -391,7 +394,7 @@ void WebRtcAudioDeviceImpl::RemoveAudioCapturer(
 
 void WebRtcAudioDeviceImpl::AddPlayoutSink(
     WebRtcPlayoutDataSource::Sink* sink) {
-  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(sink);
   base::AutoLock auto_lock(lock_);
   DCHECK(!base::ContainsValue(playout_sinks_, sink));
@@ -400,14 +403,14 @@ void WebRtcAudioDeviceImpl::AddPlayoutSink(
 
 void WebRtcAudioDeviceImpl::RemovePlayoutSink(
     WebRtcPlayoutDataSource::Sink* sink) {
-  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(sink);
   base::AutoLock auto_lock(lock_);
   playout_sinks_.remove(sink);
 }
 
 int WebRtcAudioDeviceImpl::GetAuthorizedDeviceSessionIdForAudioRenderer() {
-  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   base::AutoLock lock(lock_);
   // If there is no capturer or there are more than one open capture devices,
   // return false.

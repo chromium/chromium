@@ -64,8 +64,6 @@ PrefGroupsMap ComputePrefGroups(bool user_events_separate_pref_group) {
 
 }  // namespace
 
-SessionSyncPrefs::~SessionSyncPrefs() {}
-
 CryptoSyncPrefs::~CryptoSyncPrefs() {}
 
 SyncPrefObserver::~SyncPrefObserver() {}
@@ -82,8 +80,6 @@ SyncPrefs::SyncPrefs(PrefService* pref_service) : pref_service_(pref_service) {
   local_sync_enabled_ =
       pref_service_->GetBoolean(prefs::kEnableLocalSyncBackend);
 }
-
-SyncPrefs::SyncPrefs() : pref_service_(nullptr) {}
 
 SyncPrefs::~SyncPrefs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -130,7 +126,6 @@ void SyncPrefs::RegisterProfilePrefs(
 #endif
 
   registry->RegisterBooleanPref(prefs::kSyncHasAuthError, false);
-  registry->RegisterStringPref(prefs::kSyncSessionsGUID, std::string());
   registry->RegisterBooleanPref(prefs::kSyncPassphrasePrompted, false);
   registry->RegisterIntegerPref(prefs::kSyncMemoryPressureWarningCount, -1);
   registry->RegisterBooleanPref(prefs::kSyncShutdownCleanly, false);
@@ -172,8 +167,8 @@ void SyncPrefs::ClearPreferences() {
       prefs::kSyncPassphraseEncryptionTransitionInProgress);
   pref_service_->ClearPref(prefs::kSyncNigoriStateForPassphraseTransition);
 
-  // TODO(nick): The current behavior does not clear
-  // e.g. prefs::kSyncBookmarks.  Is that really what we want?
+  // Note: We do *not* clear prefs which are directly user-controlled such as
+  // the set of preferred data types here.
 }
 
 bool SyncPrefs::IsFirstSetupComplete() const {
@@ -320,16 +315,6 @@ std::string SyncPrefs::GetKeystoreEncryptionBootstrapToken() const {
 void SyncPrefs::SetKeystoreEncryptionBootstrapToken(const std::string& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetString(prefs::kSyncKeystoreEncryptionBootstrapToken, token);
-}
-
-std::string SyncPrefs::GetSyncSessionsGUID() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetString(prefs::kSyncSessionsGUID);
-}
-
-void SyncPrefs::SetSyncSessionsGUID(const std::string& guid) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetString(prefs::kSyncSessionsGUID, guid);
 }
 
 // static
@@ -486,10 +471,11 @@ void SyncPrefs::SetDataTypePreferred(ModelType type, bool is_preferred) {
   pref_service_->SetBoolean(pref_name, is_preferred);
 }
 
+// static
 ModelTypeSet SyncPrefs::ResolvePrefGroups(
     ModelTypeSet registered_types,
     ModelTypeSet types,
-    bool user_events_separate_pref_group) const {
+    bool user_events_separate_pref_group) {
   ModelTypeSet types_with_groups = types;
   for (const auto& pref_group :
        ComputePrefGroups(user_events_separate_pref_group)) {
@@ -606,10 +592,6 @@ void SyncPrefs::GetNigoriSpecificsForPassphraseTransition(
 
 bool SyncPrefs::IsLocalSyncEnabled() const {
   return local_sync_enabled_;
-}
-
-base::FilePath SyncPrefs::GetLocalSyncBackendDir() const {
-  return pref_service_->GetFilePath(prefs::kLocalSyncBackendDir);
 }
 
 }  // namespace syncer

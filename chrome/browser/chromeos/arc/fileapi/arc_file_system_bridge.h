@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_select_files_handler.h"
 #include "chrome/browser/chromeos/arc/fileapi/file_stream_forwarder.h"
 #include "components/arc/common/file_system.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -85,6 +86,8 @@ class ArcFileSystemBridge : public KeyedService, public mojom::FileSystemHost {
                          storage::WatcherManager::ChangeType type) override;
   void OpenFileToRead(const std::string& url,
                       OpenFileToReadCallback callback) override;
+  void SelectFiles(mojom::SelectFilesRequestPtr request,
+                   SelectFilesCallback callback) override;
 
  private:
   // Used to implement OpenFileToRead().
@@ -111,6 +114,8 @@ class ArcFileSystemBridge : public KeyedService, public mojom::FileSystemHost {
   std::map<std::string, GURL> id_to_url_;
 
   std::list<FileStreamForwarderPtr> file_stream_forwarders_;
+
+  std::unique_ptr<ArcSelectFilesHandler> select_files_handler_;
 
   base::WeakPtrFactory<ArcFileSystemBridge> weak_ptr_factory_;
 

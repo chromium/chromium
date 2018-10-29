@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x108
-  LayoutBlockFlow {HTML} at (0,0) size 800x108
-    LayoutBlockFlow {BODY} at (8,8) size 784x0
-      LayoutBlockFlow (floating) {DIV} at (-4216,0) size 5000x100 [bgcolor=#66EEAA]
-        LayoutText {#text} at (4729,0) size 271x19
-          text run at (4729,0) width 271: "Element floated right with a width of 5000px."

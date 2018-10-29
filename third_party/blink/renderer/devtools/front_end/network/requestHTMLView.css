@@ -3,8 +3,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
-.html-preview-frame {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+-theme-preserve, .html-preview-frame {
+  box-shadow: var(--drop-shadow);
+  background: white;
   flex-grow: 1;
   margin: 20px;
 }

@@ -13,7 +13,7 @@ namespace crazy {
 namespace testing {
 
 // SysV ELF hash table: num_buckets=4 num_chain=16
-// 
+//
 // idx symbol               hash      bucket  chain
 //   0 <STN_UNDEF>
 //   1 isnan                0070a47e  2       5
@@ -31,19 +31,19 @@ namespace testing {
 //  13 gettyen              0dcbbfde  2       14
 //  14 uselib               07c9c2f2  2       0
 //  15 cfsetispeed          0b63b274  0       0
-// 
+//
 // Buckets: 2, 8, 1, 3
-// 
+//
 static const char kTestElfStringTable[145] = {
-    '\0','i','s','n','a','n','\0','f','r','e','e','l','o','c','a','l','\0',
-    'h','c','r','e','a','t','e','_','\0','g','e','t','o','p','t','_','l','o',
-    'n','g','_','o','n','l','\0','e','n','d','r','p','c','e','n','\0','p',
-    't','h','r','e','a','d','_','m','u','t','e','x','_','l','o','c','k','\0',
-    'i','s','i','n','f','\0','s','e','t','r','l','i','m','i','\0','g','e',
-    't','s','p','e','n','\0','u','m','o','u','n','\0','s','t','r','s','i',
-    'g','n','a','\0','l','i','s','t','x','a','t','t','\0','g','e','t','t',
-    'y','e','n','\0','u','s','e','l','i','b','\0','c','f','s','e','t','i',
-    's','p','e','e','d','\0','\0'};
+    '\0','i','s','n','a','n','\0','f','r','e','e','l','o','c','a','l','\0','h',
+    'c','r','e','a','t','e','_','\0','g','e','t','o','p','t','_','l','o','n',
+    'g','_','o','n','l','\0','e','n','d','r','p','c','e','n','\0','p','t','h',
+    'r','e','a','d','_','m','u','t','e','x','_','l','o','c','k','\0','i','s',
+    'i','n','f','\0','s','e','t','r','l','i','m','i','\0','g','e','t','s','p',
+    'e','n','\0','u','m','o','u','n','\0','s','t','r','s','i','g','n','a','\0',
+    'l','i','s','t','x','a','t','t','\0','g','e','t','t','y','e','n','\0','u',
+    's','e','l','i','b','\0','c','f','s','e','t','i','s','p','e','e','d','\0',
+    '\0'};
 
 // Auto-generated macro used to list all symbols
 // XX must be a macro that takes the following parameters:

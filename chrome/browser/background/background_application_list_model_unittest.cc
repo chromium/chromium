@@ -357,7 +357,7 @@ void RemoveExtension(extensions::ExtensionService* service,
                      size_t* expected,
                      size_t* count) {  // Maybe remove an extension.
   ExtensionRegistry* registry = ExtensionRegistry::Get(service->profile());
-  ExtensionCollection::iterator cursor = extensions->begin();
+  auto cursor = extensions->begin();
   if (cursor == extensions->end()) {
     // Nothing to remove.  Just verify accounting.
     ASSERT_EQ(0U, *count);
@@ -393,7 +393,7 @@ void TogglePermission(extensions::ExtensionService* service,
                       size_t* expected,
                       size_t* count) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(service->profile());
-  ExtensionCollection::iterator cursor = extensions->begin();
+  auto cursor = extensions->begin();
   if (cursor == extensions->end()) {
     // Nothing to toggle.  Just verify accounting.
     ASSERT_EQ(0U, *count);

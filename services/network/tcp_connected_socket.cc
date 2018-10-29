@@ -20,7 +20,7 @@ namespace network {
 
 namespace {
 
-int ClampBufferSize(int requested_buffer_size) {
+int ClampTCPBufferSize(int requested_buffer_size) {
   return base::ClampToRange(requested_buffer_size, 0,
                             TCPConnectedSocket::kMaxBufferSize);
 }
@@ -32,7 +32,7 @@ int ConfigureSocket(
     net::TransportClientSocket* socket,
     const mojom::TCPConnectedSocketOptions& tcp_connected_socket_options) {
   int send_buffer_size =
-      ClampBufferSize(tcp_connected_socket_options.send_buffer_size);
+      ClampTCPBufferSize(tcp_connected_socket_options.send_buffer_size);
   if (send_buffer_size > 0) {
     int result = socket->SetSendBufferSize(send_buffer_size);
     DCHECK_NE(net::ERR_IO_PENDING, result);
@@ -41,7 +41,7 @@ int ConfigureSocket(
   }
 
   int receive_buffer_size =
-      ClampBufferSize(tcp_connected_socket_options.receive_buffer_size);
+      ClampTCPBufferSize(tcp_connected_socket_options.receive_buffer_size);
   if (receive_buffer_size > 0) {
     int result = socket->SetReceiveBufferSize(receive_buffer_size);
     DCHECK_NE(net::ERR_IO_PENDING, result);
@@ -112,23 +112,37 @@ void TCPConnectedSocket::Connect(
   DCHECK(!socket_);
   DCHECK(callback);
 
-  socket_ = client_socket_factory_->CreateTransportClientSocket(
-      remote_addr_list, nullptr /*socket_performance_watcher*/, net_log_,
-      net::NetLogSource());
+  std::unique_ptr<net::TransportClientSocket> socket =
+      client_socket_factory_->CreateTransportClientSocket(
+          remote_addr_list, nullptr /*socket_performance_watcher*/, net_log_,
+          net::NetLogSource());
+
+  if (local_addr) {
+    int result = socket->Bind(local_addr.value());
+    if (result != net::OK) {
+      OnConnectCompleted(result);
+      return;
+    }
+  }
+
+  return ConnectWithSocket(std::move(socket),
+                           std::move(tcp_connected_socket_options),
+                           std::move(callback));
+}
+
+void TCPConnectedSocket::ConnectWithSocket(
+    std::unique_ptr<net::TransportClientSocket> socket,
+    mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
+    mojom::NetworkContext::CreateTCPConnectedSocketCallback callback) {
+  socket_ = std::move(socket);
   connect_callback_ = std::move(callback);
 
-  int result = net::OK;
-  if (local_addr)
-    result = socket_->Bind(local_addr.value());
-
-  if (result == net::OK) {
-    if (tcp_connected_socket_options) {
-      socket_->SetBeforeConnectCallback(base::BindRepeating(
-          &ConfigureSocket, socket_.get(), *tcp_connected_socket_options));
-    }
-    result = socket_->Connect(base::BindRepeating(
-        &TCPConnectedSocket::OnConnectCompleted, base::Unretained(this)));
+  if (tcp_connected_socket_options) {
+    socket_->SetBeforeConnectCallback(base::BindRepeating(
+        &ConfigureSocket, socket_.get(), *tcp_connected_socket_options));
   }
+  int result = socket_->Connect(base::BindRepeating(
+      &TCPConnectedSocket::OnConnectCompleted, base::Unretained(this)));
 
   if (result == net::ERR_IO_PENDING)
     return;
@@ -147,6 +161,7 @@ void TCPConnectedSocket::UpgradeToTLS(
     std::move(callback).Run(
         net::ERR_NOT_IMPLEMENTED, mojo::ScopedDataPipeConsumerHandle(),
         mojo::ScopedDataPipeProducerHandle(), base::nullopt /* ssl_info*/);
+    return;
   }
   // Wait for data pipes to be closed by the client before doing the upgrade.
   if (socket_data_pump_) {
@@ -168,7 +183,7 @@ void TCPConnectedSocket::SetSendBufferSize(int send_buffer_size,
     std::move(callback).Run(net::ERR_UNEXPECTED);
     return;
   }
-  int result = socket_->SetSendBufferSize(ClampBufferSize(send_buffer_size));
+  int result = socket_->SetSendBufferSize(ClampTCPBufferSize(send_buffer_size));
   std::move(callback).Run(result);
 }
 
@@ -180,7 +195,8 @@ void TCPConnectedSocket::SetReceiveBufferSize(
     std::move(callback).Run(net::ERR_UNEXPECTED);
     return;
   }
-  int result = socket_->SetReceiveBufferSize(ClampBufferSize(send_buffer_size));
+  int result =
+      socket_->SetReceiveBufferSize(ClampTCPBufferSize(send_buffer_size));
   std::move(callback).Run(result);
 }
 

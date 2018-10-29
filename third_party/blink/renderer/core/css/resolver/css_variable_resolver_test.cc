@@ -72,6 +72,10 @@ class CSSVariableResolverTest : public PageTestBase {
     return CSSVariableParser::ParseDeclarationValue(
         name, tokens, false, *CSSParserContext::Create(GetDocument()));
   }
+
+  const CSSValue* CreatePxValue(double px) {
+    return CSSPrimitiveValue::Create(px, CSSPrimitiveValue::UnitType::kPixels);
+  }
 };
 
 TEST_F(CSSVariableResolverTest, ParseEnvVariable_Missing_NestedVar) {
@@ -275,6 +279,103 @@ TEST_F(CSSVariableResolverTest, NeedsResolutionClearedByResolver) {
 
   EXPECT_FALSE(state.Style()->InheritedVariables()->NeedsResolution());
   EXPECT_FALSE(state.Style()->NonInheritedVariables()->NeedsResolution());
+}
+
+TEST_F(CSSVariableResolverTest, RemoveInheritedVariableAtRoot) {
+  scoped_refptr<StyleInheritedVariables> inherited_variables_root =
+      StyleInheritedVariables::Create();
+
+  AtomicString name("--prop");
+  const auto* prop = CreateCustomProperty("test");
+  const CSSValue* value = CreatePxValue(10.0);
+  inherited_variables_root->SetVariable(name, prop->Value());
+  inherited_variables_root->SetRegisteredVariable(name, value);
+
+  EXPECT_TRUE(inherited_variables_root->GetVariable(name));
+  EXPECT_TRUE(inherited_variables_root->RegisteredVariable(name));
+
+  inherited_variables_root->RemoveVariable(name);
+
+  EXPECT_FALSE(inherited_variables_root->GetVariable(name));
+  EXPECT_FALSE(inherited_variables_root->RegisteredVariable(name));
+}
+
+TEST_F(CSSVariableResolverTest, RemoveInheritedVariableAtNonRoot) {
+  scoped_refptr<StyleInheritedVariables> inherited_variables_root =
+      StyleInheritedVariables::Create();
+  scoped_refptr<StyleInheritedVariables> inherited_variables =
+      inherited_variables_root->Copy();
+
+  AtomicString name("--prop");
+  const auto* prop = CreateCustomProperty("test");
+  const CSSValue* value = CreatePxValue(10.0);
+  inherited_variables->SetVariable(name, prop->Value());
+  inherited_variables->SetRegisteredVariable(name, value);
+
+  EXPECT_TRUE(inherited_variables->GetVariable(name));
+  EXPECT_TRUE(inherited_variables->RegisteredVariable(name));
+
+  inherited_variables->RemoveVariable(name);
+
+  EXPECT_FALSE(inherited_variables->GetVariable(name));
+  EXPECT_FALSE(inherited_variables->RegisteredVariable(name));
+}
+
+TEST_F(CSSVariableResolverTest, RemoveVariableInheritedViaRoot) {
+  scoped_refptr<StyleInheritedVariables> inherited_variables_root =
+      StyleInheritedVariables::Create();
+
+  AtomicString name("--prop");
+  const auto* prop = CreateCustomProperty("test");
+  const CSSValue* value = CreatePxValue(10.0);
+  inherited_variables_root->SetVariable(name, prop->Value());
+  inherited_variables_root->SetRegisteredVariable(name, value);
+
+  scoped_refptr<StyleInheritedVariables> inherited_variables =
+      inherited_variables_root->Copy();
+
+  EXPECT_TRUE(inherited_variables->GetVariable(name));
+  EXPECT_TRUE(inherited_variables->RegisteredVariable(name));
+
+  inherited_variables->RemoveVariable(name);
+
+  EXPECT_FALSE(inherited_variables->GetVariable(name));
+  EXPECT_FALSE(inherited_variables->RegisteredVariable(name));
+}
+
+TEST_F(CSSVariableResolverTest, RemoveNonInheritedVariable) {
+  std::unique_ptr<StyleNonInheritedVariables> non_inherited_variables =
+      StyleNonInheritedVariables::Create();
+
+  AtomicString name("--prop");
+  const auto* prop = CreateCustomProperty("test");
+  const CSSValue* value = CreatePxValue(10.0);
+  non_inherited_variables->SetVariable(name, prop->Value());
+  non_inherited_variables->SetRegisteredVariable(name, value);
+
+  EXPECT_TRUE(non_inherited_variables->GetVariable(name));
+  EXPECT_TRUE(non_inherited_variables->RegisteredVariable(name));
+
+  non_inherited_variables->RemoveVariable(name);
+
+  EXPECT_FALSE(non_inherited_variables->GetVariable(name));
+  EXPECT_FALSE(non_inherited_variables->RegisteredVariable(name));
+}
+
+TEST_F(CSSVariableResolverTest, DontCrashWhenSettingInheritedNullVariable) {
+  scoped_refptr<StyleInheritedVariables> inherited_variables =
+      StyleInheritedVariables::Create();
+  AtomicString name("--test");
+  inherited_variables->SetVariable(name, nullptr);
+  inherited_variables->SetRegisteredVariable(name, nullptr);
+}
+
+TEST_F(CSSVariableResolverTest, DontCrashWhenSettingNonInheritedNullVariable) {
+  std::unique_ptr<StyleNonInheritedVariables> inherited_variables =
+      StyleNonInheritedVariables::Create();
+  AtomicString name("--test");
+  inherited_variables->SetVariable(name, nullptr);
+  inherited_variables->SetRegisteredVariable(name, nullptr);
 }
 
 }  // namespace blink

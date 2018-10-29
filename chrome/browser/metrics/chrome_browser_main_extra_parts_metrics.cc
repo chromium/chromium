@@ -63,7 +63,6 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/shell_integration_win.h"
-#include "chrome/installer/util/google_update_settings.h"
 #endif  // defined(OS_WIN)
 
 namespace {
@@ -210,8 +209,6 @@ void RecordMicroArchitectureStats() {
 // startup with metrics that aren't trivial to compute.
 void RecordStartupMetrics() {
 #if defined(OS_WIN)
-  GoogleUpdateSettings::RecordChromeUpdatePolicyHistograms();
-
   const base::win::OSInfo& os_info = *base::win::OSInfo::GetInstance();
   UMA_HISTOGRAM_ENUMERATION("Windows.GetVersionExVersion", os_info.version(),
                             base::win::VERSION_WIN_LAST);

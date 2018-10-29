@@ -9,10 +9,12 @@
 
 #include "base/macros.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/views_export.h"
 
 namespace views {
-class Button;
+class LabelButton;
+class TouchSelectionMenuViews;
 class Widget;
 
 // Views implementation for TouchSelectionMenuRunner.
@@ -26,7 +28,7 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
     ~TestApi();
 
     gfx::Rect GetAnchorRect() const;
-    Button* GetFirstButton() const;
+    LabelButton* GetFirstButton() const;
     Widget* GetWidget() const;
 
    private:
@@ -38,23 +40,28 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
   TouchSelectionMenuRunnerViews();
   ~TouchSelectionMenuRunnerViews() override;
 
- private:
-  friend class TouchSelectionMenuRunnerViewsTestApi;
-  class Menu;
+ protected:
+  // Sets the menu as the currently runner menu and shows it.
+  void ShowMenu(TouchSelectionMenuViews* menu,
+                const gfx::Rect& anchor_rect,
+                const gfx::Size& handle_image_size);
 
   // ui::TouchSelectionMenuRunner:
   bool IsMenuAvailable(
       const ui::TouchSelectionMenuClient* client) const override;
+  void CloseMenu() override;
   void OpenMenu(ui::TouchSelectionMenuClient* client,
                 const gfx::Rect& anchor_rect,
                 const gfx::Size& handle_image_size,
                 aura::Window* context) override;
-  void CloseMenu() override;
   bool IsRunning() const override;
+
+ private:
+  friend class TouchSelectionMenuViews;
 
   // A pointer to the currently running menu, or |nullptr| if no menu is
   // running. The menu manages its own lifetime and deletes itself when closed.
-  Menu* menu_;
+  TouchSelectionMenuViews* menu_;
 
   DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunnerViews);
 };

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -15,7 +14,6 @@
 #include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/payments/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/payments/ios_payment_request_cache_factory.h"
@@ -51,16 +49,6 @@ const NSTimeInterval kPDMMaxDelaySeconds = 10.0;
 @implementation PaymentRequestEGTestBase
 
 #pragma mark - XCTestCase
-
-+ (void)setUp {
-  [super setUp];
-  if (!base::FeatureList::IsEnabled(payments::features::kWebPayments)) {
-    // payments::features::kWebPayments feature is not enabled,
-    // You have to pass --enable-features=WebPayments command line argument in
-    // order to run this test.
-    DCHECK(false);
-  }
-}
 
 - (void)setUp {
   [super setUp];

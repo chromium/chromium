@@ -269,12 +269,13 @@ NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow& context,
 
 NGCaretPosition ComputeNGCaretPosition(const PositionWithAffinity& position) {
   AssertValidPositionForCaretPositionComputation(position);
-  const LayoutBlockFlow* context =
+  LayoutBlockFlow* context =
       NGInlineFormattingContextOf(position.GetPosition());
   if (!context)
     return NGCaretPosition();
 
-  const NGOffsetMapping* mapping = NGOffsetMapping::GetFor(context);
+  const NGOffsetMapping* mapping =
+      NGOffsetMapping::GetForContainingBlockFlow(context);
   DCHECK(mapping);
   const base::Optional<unsigned> maybe_offset =
       mapping->GetTextContentOffset(position.GetPosition());

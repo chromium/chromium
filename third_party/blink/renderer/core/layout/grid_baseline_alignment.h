@@ -142,7 +142,7 @@ class GridBaselineAlignment {
   // added item.
   void UpdateBaselineAlignmentContext(ItemPosition,
                                       unsigned shared_context,
-                                      LayoutBox&,
+                                      const LayoutBox&,
                                       GridAxis);
 
   // Returns the baseline offset of a particular item, based on the

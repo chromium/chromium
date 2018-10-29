@@ -136,6 +136,7 @@ void AppListPresenterImpl::Show(int64_t display_id,
     delegate_->Init(view, display_id, current_apps_page_);
     SetView(view);
   }
+  view_->ShowWhenReady();
   delegate_->OnShown(display_id);
   NotifyTargetVisibilityChanged(GetTargetVisibility());
   NotifyVisibilityChanged(GetTargetVisibility(), display_id);
@@ -160,7 +161,7 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
   if (view_->GetWidget()->IsActive())
     view_->GetWidget()->Deactivate();
 
-  delegate_->OnDismissed();
+  delegate_->OnClosing();
   ScheduleAnimation();
   NotifyTargetVisibilityChanged(GetTargetVisibility());
   NotifyVisibilityChanged(GetTargetVisibility(), display_id);
@@ -212,7 +213,7 @@ void AppListPresenterImpl::EndDragFromShelf(AppListViewState app_list_state) {
       view_->SetState(AppListViewState(app_list_state));
     }
     view_->SetIsInDrag(false);
-    view_->DraggingLayout();
+    view_->UpdateChildViewsYPositionAndOpacity();
   }
 }
 
@@ -232,20 +233,16 @@ void AppListPresenterImpl::UpdateYPositionAndOpacityForHomeLauncher(
                                    static_cast<float>(y_position_in_screen));
   // We want to animate the expand arrow, suggestion chips and apps grid in
   // app_list_main_view, and the search box.
-  std::vector<ui::Layer*> animation_layers = {
-      view_->app_list_main_view()->layer(),
-      view_->search_box_widget()->GetNativeWindow()->layer()};
-  for (auto* layer : animation_layers) {
-    layer->GetAnimator()->StopAnimating();
-    std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
-    if (!callback.is_null()) {
-      settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
-          layer->GetAnimator());
-      callback.Run(settings.get(), /*observe=*/false);
-    }
-    layer->SetOpacity(opacity);
-    layer->SetTransform(translation);
+  ui::Layer* layer = view_->GetWidget()->GetNativeWindow()->layer();
+  layer->GetAnimator()->StopAnimating();
+  std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
+  if (!callback.is_null()) {
+    settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
+        layer->GetAnimator());
+    callback.Run(settings.get(), /*observe=*/false);
   }
+  layer->SetOpacity(opacity);
+  layer->SetTransform(translation);
 }
 
 void AppListPresenterImpl::ScheduleOverviewModeAnimation(bool start,
@@ -279,7 +276,6 @@ void AppListPresenterImpl::SetView(AppListView* view) {
   // Sync the |onscreen_keyboard_shown_| in case |view_| is not initiated when
   // the on-screen is shown.
   view_->set_onscreen_keyboard_shown(delegate_->GetOnScreenKeyboardShown());
-  view_->ShowWhenReady();
 }
 
 void AppListPresenterImpl::ResetView() {
@@ -375,10 +371,8 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
     if (applist_container->Contains(gained_focus) &&
         keyboard::KeyboardController::HasInstance()) {
       auto* const keyboard_controller = keyboard::KeyboardController::Get();
-      if (keyboard_controller->enabled() &&
-          keyboard_controller->IsKeyboardVisible()) {
+      if (keyboard_controller->IsKeyboardVisible())
         keyboard_controller->HideKeyboardImplicitlyBySystem();
-      }
     }
   }
 }
@@ -402,6 +396,10 @@ void AppListPresenterImpl::OnWidgetDestroying(views::Widget* widget) {
   if (is_visible_)
     Dismiss(base::TimeTicks());
   ResetView();
+}
+
+void AppListPresenterImpl::OnWidgetDestroyed(views::Widget* widget) {
+  delegate_->OnClosed();
 }
 
 void AppListPresenterImpl::OnWidgetVisibilityChanged(views::Widget* widget,

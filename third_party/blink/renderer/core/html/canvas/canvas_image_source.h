@@ -62,6 +62,7 @@ class CORE_EXPORT CanvasImageSource {
       const SecurityOrigin* destination_security_origin) const = 0;
 
   virtual bool IsCSSImageValue() const { return false; }
+  virtual bool IsImageElement() const { return false; }
   virtual bool IsVideoElement() const { return false; }
   virtual bool IsCanvasElement() const { return false; }
   virtual bool IsSVGSource() const { return false; }

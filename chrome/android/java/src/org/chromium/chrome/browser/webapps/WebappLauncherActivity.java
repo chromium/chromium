@@ -51,11 +51,23 @@ public class WebappLauncherActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCreateTime = SystemClock.elapsedRealtime();
-        launchActivity();
-        ApiCompatibilityUtils.finishAndRemoveTask(this);
+
+        Intent launchIntent = createLaunchIntent();
+        if (launchIntent == null) {
+            ApiCompatibilityUtils.finishAndRemoveTask(this);
+            return;
+        }
+
+        IntentUtils.safeStartActivity(this, launchIntent);
+
+        if (IntentUtils.isIntentForNewTaskOrNewDocument(launchIntent)) {
+            ApiCompatibilityUtils.finishAndRemoveTask(this);
+        } else {
+            finish();
+        }
     }
 
-    public void launchActivity() {
+    public Intent createLaunchIntent() {
         Intent intent = getIntent();
 
         ChromeWebApkHost.init();
@@ -72,8 +84,7 @@ public class WebappLauncherActivity extends Activity {
         // does not specify required values such as the uri.
         if (webappInfo == null) {
             String url = IntentUtils.safeGetStringExtra(intent, ShortcutHelper.EXTRA_URL);
-            launchInTab(url, ShortcutSource.UNKNOWN);
-            return;
+            return createLaunchInTabIntent(url, ShortcutSource.UNKNOWN);
         }
 
         String webappUrl = webappInfo.uri().toString();
@@ -108,15 +119,14 @@ public class WebappLauncherActivity extends Activity {
             long shellLaunchTimestamp =
                     IntentHandler.getWebApkShellLaunchTimestampFromIntent(intent);
             IntentHandler.addShellLaunchTimestampToIntent(launchIntent, shellLaunchTimestamp);
-            startActivity(launchIntent);
-            return;
+            return launchIntent;
         }
 
         Log.e(TAG, "Shortcut (%s) opened in Chrome.", webappUrl);
 
         // The shortcut data doesn't match the current encoding. Change the intent action to
         // launch the URL with a VIEW Intent in the regular browser.
-        launchInTab(webappUrl, webappSource);
+        return createLaunchInTabIntent(webappUrl, webappSource);
     }
 
     // Gets the source of a WebAPK from the WebappDataStorage if the source has been stored before.
@@ -140,8 +150,8 @@ public class WebappLauncherActivity extends Activity {
         return ShortcutSource.WEBAPK_UNKNOWN;
     }
 
-    private void launchInTab(String webappUrl, int webappSource) {
-        if (TextUtils.isEmpty(webappUrl)) return;
+    private Intent createLaunchInTabIntent(String webappUrl, int webappSource) {
+        if (TextUtils.isEmpty(webappUrl)) return null;
 
         Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webappUrl));
         launchIntent.setClassName(getPackageName(), ChromeLauncherActivity.class.getName());
@@ -149,7 +159,7 @@ public class WebappLauncherActivity extends Activity {
         launchIntent.putExtra(ShortcutHelper.EXTRA_SOURCE, webappSource);
         launchIntent.setFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK | ApiCompatibilityUtils.getActivityNewDocumentFlag());
-        startActivity(launchIntent);
+        return launchIntent;
     }
 
     /**
@@ -180,6 +190,7 @@ public class WebappLauncherActivity extends Activity {
     public static Intent createWebappLaunchIntent(WebappInfo info, boolean isWebApk) {
         String activityName = isWebApk ? WebApkActivity.class.getName()
                 : WebappActivity.class.getName();
+        boolean newTask = true;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             // Specifically assign the app to a particular WebappActivity instance.
             int namespace = isWebApk ? ActivityAssigner.ActivityAssignerNamespace.WEBAPK_NAMESPACE
@@ -201,6 +212,11 @@ public class WebappLauncherActivity extends Activity {
                 }
                 break;
             }
+        } else {
+            if (isWebApk && info.useTransparentSplash()) {
+                activityName = TransparentSplashWebApkActivity.class.getName();
+                newTask = false;
+            }
         }
 
         // Create an intent to launch the Webapp in an unmapped WebappActivity.
@@ -212,14 +228,7 @@ public class WebappLauncherActivity extends Activity {
         // Activity.
         launchIntent.setAction(Intent.ACTION_VIEW);
         launchIntent.setData(Uri.parse(WebappActivity.WEBAPP_SCHEME + "://" + info.id()));
-        launchIntent.setFlags(getWebappActivityIntentFlags());
-        return launchIntent;
-    }
 
-    /**
-     * Returns the set of Intent flags required to correctly launch a WebappActivity.
-     */
-    public static int getWebappActivityIntentFlags() {
         // Setting FLAG_ACTIVITY_CLEAR_TOP handles 2 edge cases:
         // - If a legacy PWA is launching from a notification, we want to ensure that the URL being
         // launched is the URL in the intent. If a paused WebappActivity exists for this id,
@@ -235,9 +244,16 @@ public class WebappLauncherActivity extends Activity {
         // an Intent to an existing top Activity (such as sent from the Webapp Actions Notification)
         // will trigger a new WebappActivity to be launched and onCreate called instead of
         // onNewIntent of the existing WebappActivity being called.
-        return Intent.FLAG_ACTIVITY_NEW_TASK
-                | ApiCompatibilityUtils.getActivityNewDocumentFlag()
-                | Intent.FLAG_ACTIVITY_CLEAR_TOP;
+        // TODO(pkotwicz): Route Webapp Actions Notification actions through new intent filter
+        //                 instead of WebappLauncherActivity. http://crbug.com/894610
+        if (newTask) {
+            launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | ApiCompatibilityUtils.getActivityNewDocumentFlag()
+                    | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        } else {
+            launchIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        }
+        return launchIntent;
     }
 
     /**

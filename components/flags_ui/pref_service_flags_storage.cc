@@ -23,8 +23,8 @@ std::set<std::string> PrefServiceFlagsStorage::GetFlags() {
   const base::ListValue* enabled_experiments =
       prefs_->GetList(prefs::kEnabledLabsExperiments);
   std::set<std::string> flags;
-  for (base::ListValue::const_iterator it = enabled_experiments->begin();
-       it != enabled_experiments->end(); ++it) {
+  for (auto it = enabled_experiments->begin(); it != enabled_experiments->end();
+       ++it) {
     std::string experiment_name;
     if (!it->GetAsString(&experiment_name)) {
       LOG(WARNING) << "Invalid entry in " << prefs::kEnabledLabsExperiments;
@@ -40,8 +40,7 @@ bool PrefServiceFlagsStorage::SetFlags(const std::set<std::string>& flags) {
   base::ListValue* experiments_list = update.Get();
 
   experiments_list->Clear();
-  for (std::set<std::string>::const_iterator it = flags.begin();
-       it != flags.end(); ++it) {
+  for (auto it = flags.begin(); it != flags.end(); ++it) {
     experiments_list->AppendString(*it);
   }
 

@@ -63,7 +63,7 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
   MutexLocker locker(lock_);
 
   CHECK(input_bus);
-  CHECK_EQ(input_bus->length(), AudioUtilities::kRenderQuantumFrames);
+  CHECK_EQ(input_bus->length(), audio_utilities::kRenderQuantumFrames);
   SECURITY_CHECK(input_bus->length() <= fifo_length_);
   SECURITY_CHECK(index_write_ < fifo_length_);
 

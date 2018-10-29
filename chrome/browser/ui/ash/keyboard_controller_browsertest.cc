@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/chrome_keyboard_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -40,10 +41,7 @@ class VirtualKeyboardWebContentTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void TearDown() override {
-    ChromeKeyboardUI::TestApi::SetOverrideVirtualKeyboardUrl(GURL());
-    InProcessBrowserTest::TearDown();
-  }
+  void TearDown() override { InProcessBrowserTest::TearDown(); }
 
   // Ensure that the virtual keyboard is enabled.
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -79,7 +77,8 @@ class VirtualKeyboardWebContentTest : public InProcessBrowserTest {
   void MockEnableIMEInDifferentExtension(const std::string& url,
                                          const gfx::Rect& init_bounds) {
     DCHECK(!url.empty());
-    ChromeKeyboardUI::TestApi::SetOverrideVirtualKeyboardUrl(GURL(url));
+    ChromeKeyboardControllerClient::Get()->set_virtual_keyboard_url_for_test(
+        GURL(url));
     auto* keyboard_controller = keyboard::KeyboardController::Get();
     keyboard_controller->Reload();
     // Mock window.resizeTo that is expected to be called after navigate to a
@@ -187,7 +186,7 @@ class VirtualKeyboardAppWindowTest : public extensions::PlatformAppBrowserTest {
 // Tests that ime window won't overscroll. See crbug.com/529880.
 IN_PROC_BROWSER_TEST_F(VirtualKeyboardAppWindowTest,
                        DisableOverscrollForImeWindow) {
-  scoped_refptr<extensions::Extension> extension =
+  scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetManifest(extensions::DictionaryBuilder()
                            .Set("name", "test extension")

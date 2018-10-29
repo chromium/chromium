@@ -38,8 +38,7 @@ void MockQuotaManagerProxy::GetUsageAndQuota(
     blink::mojom::StorageType type,
     QuotaManager::UsageAndQuotaCallback callback) {
   if (mock_manager()) {
-    mock_manager()->GetUsageAndQuota(origin.GetURL(), type,
-                                     std::move(callback));
+    mock_manager()->GetUsageAndQuota(origin, type, std::move(callback));
   }
 }
 
@@ -62,7 +61,7 @@ void MockQuotaManagerProxy::NotifyStorageModified(
   last_notified_type_ = type;
   last_notified_delta_ = delta;
   if (mock_manager())
-    mock_manager()->UpdateUsage(origin.GetURL(), type, delta);
+    mock_manager()->UpdateUsage(origin, type, delta);
 }
 
 MockQuotaManagerProxy::~MockQuotaManagerProxy() {

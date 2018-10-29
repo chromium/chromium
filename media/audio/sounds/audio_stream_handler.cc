@@ -198,8 +198,8 @@ AudioStreamHandler::~AudioStreamHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsInitialized()) {
     AudioManager::Get()->GetTaskRunner()->PostTask(
-        FROM_HERE, base::Bind(&AudioStreamContainer::Stop,
-                              base::Unretained(stream_.get())));
+        FROM_HERE, base::BindOnce(&AudioStreamContainer::Stop,
+                                  base::Unretained(stream_.get())));
     AudioManager::Get()->GetTaskRunner()->DeleteSoon(FROM_HERE,
                                                      stream_.release());
   }

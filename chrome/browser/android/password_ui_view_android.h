@@ -36,9 +36,13 @@ class PasswordUIViewAndroid : public PasswordUIView {
     // The number of password entries written. 0 if error encountered.
     int entries_count;
 
-    // The system error code recorded after the last write operation. 0 if no
-    // error encountered.
-    logging::SystemErrorCode error;
+    // The path to the temporary file containing the serialized passwords. Empty
+    // if error encountered.
+    std::string exported_file_path;
+
+    // The error description recorded after the last write operation. Empty if
+    // no error encountered.
+    std::string error;
   };
 
   PasswordUIViewAndroid(JNIEnv* env, jobject);
@@ -46,7 +50,7 @@ class PasswordUIViewAndroid : public PasswordUIView {
 
   // PasswordUIView implementation.
   Profile* GetProfile() override;
-  void ShowPassword(size_t index,
+  void ShowPassword(const std::string& sort_key,
                     const base::string16& password_value) override;
   void SetPasswordList(
       const std::vector<std::unique_ptr<autofill::PasswordForm>>& password_list)
@@ -75,7 +79,7 @@ class PasswordUIViewAndroid : public PasswordUIView {
   void HandleSerializePasswords(
       JNIEnv* env,
       const base::android::JavaRef<jobject>&,
-      const base::android::JavaRef<jstring>& java_target_path,
+      const base::android::JavaRef<jstring>& java_target_directory,
       const base::android::JavaRef<jobject>& success_callback,
       const base::android::JavaRef<jobject>& error_callback);
   // Destroy the native implementation.
@@ -112,11 +116,11 @@ class PasswordUIViewAndroid : public PasswordUIView {
 
   // Calls |password_manager_presenter_| to retrieve cached PasswordForm
   // objects, then PasswordCSVWriter to serialize them, and finally writes them
-  // to |target_path|. The steps involve a lot of memory allocation and copying,
-  // as well as I/O operations, so this method should be executed on a suitable
-  // task runner.
+  // to a temporary file in |target_directory|. The steps involve a lot of
+  // memory allocation and copying, as well as I/O operations, so this method
+  // should be executed on a suitable task runner.
   SerializationResult ObtainAndSerializePasswords(
-      const base::FilePath& target_path);
+      const base::FilePath& target_directory);
 
   // Sends |serialization_result| to Java via |success_callback| or
   // |error_callback|, depending on whether the result is a success or an error.

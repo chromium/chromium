@@ -35,6 +35,7 @@
 #include "components/drive/service/fake_drive_service.h"
 #include "components/drive/service/test_util.h"
 #include "components/services/filesystem/public/interfaces/types.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/test_browser_thread.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_utils.h"
@@ -87,8 +88,8 @@ class DriveBackendSyncTest : public testing::Test,
     ASSERT_TRUE(base_dir_.CreateUniqueTempDir());
     in_memory_env_ = leveldb_chrome::NewMemEnv("DriveBackendSyncTest");
 
-    io_task_runner_ = content::BrowserThread::GetTaskRunnerForThread(
-        content::BrowserThread::IO);
+    io_task_runner_ = base::CreateSingleThreadTaskRunnerWithTraits(
+        {content::BrowserThread::IO});
     worker_task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
         {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
     file_task_runner_ = io_task_runner_;
@@ -136,9 +137,7 @@ class DriveBackendSyncTest : public testing::Test,
   }
 
   void TearDown() override {
-    typedef std::map<std::string, CannedSyncableFileSystem*>::iterator iterator;
-    for (iterator itr = file_systems_.begin();
-         itr != file_systems_.end(); ++itr) {
+    for (auto itr = file_systems_.begin(); itr != file_systems_.end(); ++itr) {
       itr->second->TearDown();
       delete itr->second;
     }

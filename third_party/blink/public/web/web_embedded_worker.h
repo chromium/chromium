@@ -84,6 +84,7 @@ class BLINK_EXPORT WebEmbeddedWorker {
   // Inspector related methods.
   virtual void AddMessageToConsole(const WebConsoleMessage&) = 0;
   virtual void BindDevToolsAgent(
+      mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
       mojo::ScopedInterfaceEndpointHandle devtools_agent_request) = 0;
 };
 

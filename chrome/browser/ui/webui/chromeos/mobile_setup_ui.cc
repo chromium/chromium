@@ -33,10 +33,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -52,13 +52,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
-using chromeos::MobileActivator;
-using chromeos::NetworkHandler;
-using chromeos::NetworkState;
-using content::BrowserThread;
-using content::RenderViewHost;
-using content::WebContents;
-using content::WebUIMessageHandler;
+namespace chromeos {
 
 namespace {
 
@@ -83,9 +77,31 @@ const char kJsConnectivityChangedCallback[] =
 void DataRequestFailed(
     const std::string& service_path,
     const content::URLDataSource::GotDataCallback& callback) {
-  NET_LOG_ERROR("Data Request Failed for Mobile Setup", service_path);
+  NET_LOG(ERROR) << "Data Request Failed for Mobile Setup: " << service_path;
   scoped_refptr<base::RefCountedBytes> html_bytes(new base::RefCountedBytes);
   callback.Run(html_bytes.get());
+}
+
+bool HasStringProperty(const base::Value& properties,
+                       const char* key,
+                       std::string* result) {
+  const base::Value* value =
+      properties.FindKeyOfType(key, base::Value::Type::STRING);
+  if (!value) {
+    NET_LOG(ERROR) << "Missing Mobile Setup property: " << key;
+    return false;
+  }
+  *result = value->GetString();
+  return true;
+}
+
+bool HasDictionaryProperty(const base::Value& properties,
+                           const char* key,
+                           const base::Value** result) {
+  *result = properties.FindKeyOfType(key, base::Value::Type::DICTIONARY);
+  if (!result)
+    NET_LOG(ERROR) << "Missing Mobile Setup property: " << key;
+  return !!result;
 }
 
 // Converts the network properties into a JS object.
@@ -94,20 +110,21 @@ void GetDeviceInfo(const base::DictionaryValue& properties,
   std::string name;
   properties.GetStringWithoutPathExpansion(shill::kNameProperty, &name);
   std::string activation_type;
-  properties.GetStringWithoutPathExpansion(
-      shill::kActivationTypeProperty,
-      &activation_type);
+  properties.GetStringWithoutPathExpansion(shill::kActivationTypeProperty,
+                                           &activation_type);
   const base::DictionaryValue* payment_dict;
   std::string payment_url, post_method, post_data;
   if (properties.GetDictionaryWithoutPathExpansion(
           shill::kPaymentPortalProperty, &payment_dict)) {
-    payment_dict->GetStringWithoutPathExpansion(
-        shill::kPaymentPortalURL, &payment_url);
-    payment_dict->GetStringWithoutPathExpansion(
-        shill::kPaymentPortalMethod, &post_method);
-    payment_dict->GetStringWithoutPathExpansion(
-        shill::kPaymentPortalPostData, &post_data);
+    payment_dict->GetStringWithoutPathExpansion(shill::kPaymentPortalURL,
+                                                &payment_url);
+    payment_dict->GetStringWithoutPathExpansion(shill::kPaymentPortalMethod,
+                                                &post_method);
+    payment_dict->GetStringWithoutPathExpansion(shill::kPaymentPortalPostData,
+                                                &post_data);
   }
+  NET_LOG(EVENT) << "MobileSetupUI: Payment URL = " << payment_url
+                 << " Post Data = " << post_data;
 
   value->SetString("activation_type", activation_type);
   value->SetString("carrier", name);
@@ -117,12 +134,12 @@ void GetDeviceInfo(const base::DictionaryValue& properties,
 
   // Use the cached DeviceState properties.
   std::string device_path;
-  if (!properties.GetStringWithoutPathExpansion(
-          shill::kDeviceProperty, &device_path) ||
+  if (!properties.GetStringWithoutPathExpansion(shill::kDeviceProperty,
+                                                &device_path) ||
       device_path.empty()) {
     return;
   }
-  const chromeos::DeviceState* device =
+  const DeviceState* device =
       NetworkHandler::Get()->network_state_handler()->GetDeviceState(
           device_path);
   if (!device)
@@ -181,11 +198,9 @@ class MobileSetupUIHTMLSource : public content::URLDataSource {
 };
 
 // The handler for Javascript messages related to the "register" view.
-class MobileSetupHandler
-  : public WebUIMessageHandler,
-    public MobileActivator::Observer,
-    public chromeos::NetworkStateHandlerObserver,
-    public base::SupportsWeakPtr<MobileSetupHandler> {
+class MobileSetupHandler : public content::WebUIMessageHandler,
+                           public MobileActivator::Observer,
+                           public NetworkStateHandlerObserver {
  public:
   MobileSetupHandler();
   ~MobileSetupHandler() override;
@@ -261,9 +276,7 @@ class MobileSetupHandler
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-MobileSetupUIHTMLSource::MobileSetupUIHTMLSource()
-    : weak_ptr_factory_(this) {
-}
+MobileSetupUIHTMLSource::MobileSetupUIHTMLSource() : weak_ptr_factory_(this) {}
 
 std::string MobileSetupUIHTMLSource::GetSource() const {
   return chrome::kChromeUIMobileSetupHost;
@@ -285,29 +298,26 @@ void MobileSetupUIHTMLSource::GetPropertiesAndStartDataRequest(
     const content::URLDataSource::GotDataCallback& callback,
     const std::string& service_path,
     const base::DictionaryValue& properties) {
-  const base::DictionaryValue* payment_dict;
-  std::string name, usage_url, activation_state, payment_url;
-  if (!properties.GetStringWithoutPathExpansion(
-          shill::kNameProperty, &name) ||
-      !properties.GetStringWithoutPathExpansion(
-          shill::kUsageURLProperty, &usage_url) ||
-      !properties.GetStringWithoutPathExpansion(
-          shill::kActivationStateProperty, &activation_state) ||
-      !properties.GetDictionaryWithoutPathExpansion(
-          shill::kPaymentPortalProperty, &payment_dict) ||
-      !payment_dict->GetStringWithoutPathExpansion(
-          shill::kPaymentPortalURL, &payment_url)) {
+  const base::Value* payment_dict;
+  std::string name, activation_state, payment_url;
+  if (!HasStringProperty(properties, shill::kNameProperty, &name) ||
+      !HasStringProperty(properties, shill::kActivationStateProperty,
+                         &activation_state) ||
+      !HasDictionaryProperty(properties, shill::kPaymentPortalProperty,
+                             &payment_dict) ||
+      !HasStringProperty(*payment_dict, shill::kPaymentPortalURL,
+                         &payment_url)) {
     DataRequestFailed(service_path, callback);
     return;
   }
 
-  if (payment_url.empty() && usage_url.empty() &&
+  if (payment_url.empty() &&
       activation_state != shill::kActivationStateActivated) {
     DataRequestFailed(service_path, callback);
     return;
   }
 
-  NET_LOG_EVENT("Starting mobile setup", service_path);
+  NET_LOG(EVENT) << "Starting mobile setup: " << service_path;
   base::DictionaryValue strings;
 
   strings.SetString("connecting_header",
@@ -325,15 +335,13 @@ void MobileSetupUIHTMLSource::GetPropertiesAndStartDataRequest(
                     l10n_util::GetStringUTF16(IDS_MOBILE_COMPLETED_TEXT));
   strings.SetString("portal_unreachable_header",
                     l10n_util::GetStringUTF16(IDS_MOBILE_NO_CONNECTION_HEADER));
-  strings.SetString("invalid_device_info_header",
+  strings.SetString(
+      "invalid_device_info_header",
       l10n_util::GetStringUTF16(IDS_MOBILE_INVALID_DEVICE_INFO_HEADER));
   strings.SetString("title", l10n_util::GetStringUTF16(IDS_MOBILE_SETUP_TITLE));
-  strings.SetString("close_button",
-                    l10n_util::GetStringUTF16(IDS_CLOSE));
-  strings.SetString("cancel_button",
-                    l10n_util::GetStringUTF16(IDS_CANCEL));
-  strings.SetString("ok_button",
-                    l10n_util::GetStringUTF16(IDS_OK));
+  strings.SetString("close_button", l10n_util::GetStringUTF16(IDS_CLOSE));
+  strings.SetString("cancel_button", l10n_util::GetStringUTF16(IDS_CANCEL));
+  strings.SetString("ok_button", l10n_util::GetStringUTF16(IDS_OK));
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
@@ -373,8 +381,7 @@ void MobileSetupUIHTMLSource::GetPropertiesFailure(
 MobileSetupHandler::MobileSetupHandler()
     : type_(TYPE_UNDETERMINED),
       lte_portal_reachable_(true),
-      weak_ptr_factory_(this) {
-}
+      weak_ptr_factory_(this) {}
 
 MobileSetupHandler::~MobileSetupHandler() {
   if (type_ == TYPE_ACTIVATION) {
@@ -452,7 +459,7 @@ void MobileSetupHandler::HandleStartActivation(const base::ListValue* args) {
   if (path.empty())
     return;
 
-  LOG(WARNING) << "Starting activation for service " << path;
+  NET_LOG(EVENT) << "Starting activation for service: " << path;
 
   type_ = TYPE_ACTIVATION;
   MobileActivator::GetInstance()->AddObserver(this);
@@ -503,8 +510,7 @@ void MobileSetupHandler::HandleGetDeviceInfo(const base::ListValue* args) {
   if (path.empty())
     return;
 
-  chromeos::NetworkStateHandler* nsh =
-      NetworkHandler::Get()->network_state_handler();
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
   // TODO: Figure out why the path has an extra '/' in the front. (e.g. It is
   // '//service/5' instead of '/service/5'.
   const NetworkState* network = nsh->GetNetworkState(path.substr(1));
@@ -523,8 +529,7 @@ void MobileSetupHandler::HandleGetDeviceInfo(const base::ListValue* args) {
       nsh->AddObserver(this, FROM_HERE);
       // Update the network status and notify the webui. This is the initial
       // network state so the webui should be notified no matter what.
-      UpdatePortalReachability(network,
-                               true /* force notification */);
+      UpdatePortalReachability(network, true /* force notification */);
     } else {
       type_ = TYPE_PORTAL;
       // For non-LTE networks network state is ignored, so report the portal is
@@ -556,8 +561,7 @@ void MobileSetupHandler::GetPropertiesFailure(
     const std::string& callback_name,
     const std::string& error_name,
     std::unique_ptr<base::DictionaryValue> error_data) {
-  NET_LOG_ERROR("MobileActivator GetProperties Failed: " + error_name,
-                service_path);
+  NET_LOG(ERROR) << "MobileActivator GetProperties Failed: " << error_name;
   // Invoke |callback_name| with an empty dictionary.
   base::DictionaryValue device_dict;
   web_ui()->CallJavascriptFunctionUnsafe(callback_name, device_dict);
@@ -575,7 +579,7 @@ void MobileSetupHandler::DefaultNetworkChanged(
   const NetworkState* network =
       NetworkHandler::Get()->network_state_handler()->GetNetworkState(path);
   if (!network) {
-    LOG(ERROR) << "Service path lost";
+    NET_LOG(ERROR) << "Service for activation lost: " << path;
     web_ui()->GetWebContents()->Close();
     return;
   }
@@ -595,15 +599,13 @@ void MobileSetupHandler::NetworkConnectionStateChanged(
   UpdatePortalReachability(network, false /* do not force notification */);
 }
 
-void MobileSetupHandler::UpdatePortalReachability(
-    const NetworkState* network,
-    bool force_notification) {
+void MobileSetupHandler::UpdatePortalReachability(const NetworkState* network,
+                                                  bool force_notification) {
   DCHECK(web_ui());
 
   DCHECK_EQ(type_, TYPE_PORTAL_LTE);
 
-  chromeos::NetworkStateHandler* nsh =
-      NetworkHandler::Get()->network_state_handler();
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
   bool portal_reachable =
       (network->IsConnectedState() ||
        (nsh->DefaultNetwork() &&
@@ -623,8 +625,7 @@ void MobileSetupHandler::UpdatePortalReachability(
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-MobileSetupUI::MobileSetupUI(content::WebUI* web_ui)
-    : WebUIController(web_ui) {
+MobileSetupUI::MobileSetupUI(content::WebUI* web_ui) : ui::WebDialogUI(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<MobileSetupHandler>());
 
   // Set up the chrome://mobilesetup/ source.
@@ -634,8 +635,13 @@ MobileSetupUI::MobileSetupUI(content::WebUI* web_ui)
   content::WebContentsObserver::Observe(web_ui->GetWebContents());
 }
 
+MobileSetupUI::~MobileSetupUI() = default;
+
 void MobileSetupUI::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  NET_LOG(EVENT) << "MobileSetupUI: DidFinishNavigation. Committed: "
+                 << navigation_handle->HasCommitted() << " Frame: "
+                 << navigation_handle->GetRenderFrameHost()->GetFrameName();
   if (!navigation_handle->HasCommitted() ||
       navigation_handle->GetRenderFrameHost()->GetFrameName() !=
           "paymentForm") {
@@ -643,6 +649,8 @@ void MobileSetupUI::DidFinishNavigation(
   }
 
   if (navigation_handle->IsErrorPage()) {
+    NET_LOG(ERROR) << "MobileSetupUI: Error: "
+                   << navigation_handle->GetNetErrorCode();
     base::Value result_value(-navigation_handle->GetNetErrorCode());
     web_ui()->CallJavascriptFunctionUnsafe(kJsPortalFrameLoadFailedCallback,
                                            result_value);
@@ -651,3 +659,5 @@ void MobileSetupUI::DidFinishNavigation(
 
   web_ui()->CallJavascriptFunctionUnsafe(kJsPortalFrameLoadCompletedCallback);
 }
+
+}  // namespace chromeos

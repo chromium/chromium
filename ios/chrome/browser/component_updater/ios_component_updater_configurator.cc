@@ -15,6 +15,7 @@
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/protocol_handler.h"
 #include "components/update_client/update_query_params.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/google/google_brand.h"
@@ -57,6 +58,8 @@ class IOSConfigurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::vector<uint8_t> GetRunActionKeyHash() const override;
   std::string GetAppGuid() const override;
+  std::unique_ptr<update_client::ProtocolHandlerFactory>
+  GetProtocolHandlerFactory() const override;
 
  private:
   friend class base::RefCountedThreadSafe<IOSConfigurator>;
@@ -178,6 +181,11 @@ std::vector<uint8_t> IOSConfigurator::GetRunActionKeyHash() const {
 
 std::string IOSConfigurator::GetAppGuid() const {
   return configurator_impl_.GetAppGuid();
+}
+
+std::unique_ptr<update_client::ProtocolHandlerFactory>
+IOSConfigurator::GetProtocolHandlerFactory() const {
+  return configurator_impl_.GetProtocolHandlerFactory();
 }
 
 }  // namespace

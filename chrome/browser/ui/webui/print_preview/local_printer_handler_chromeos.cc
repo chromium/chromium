@@ -27,6 +27,7 @@
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/printing/common/printer_capabilities.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/backend/printing_restrictions.h"
@@ -110,8 +111,8 @@ void LocalPrinterHandlerChromeos::GetDefaultPrinter(DefaultPrinterCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(crbug.com/660898): Add default printers to ChromeOS.
 
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   base::BindOnce(std::move(cb), ""));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(std::move(cb), ""));
 }
 
 void LocalPrinterHandlerChromeos::StartGetPrinters(
@@ -145,8 +146,8 @@ void LocalPrinterHandlerChromeos::StartGetCapability(
       printers_manager_->GetPrinter(printer_name);
   if (!printer) {
     // If the printer was removed, the lookup will fail.
-    content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                     base::BindOnce(std::move(cb), nullptr));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             base::BindOnce(std::move(cb), nullptr));
     return;
   }
 
@@ -186,6 +187,9 @@ void LocalPrinterHandlerChromeos::HandlePrinterSetup(
       policies.SetInteger(
           printing::kAllowedColorModes,
           profile_->GetPrefs()->GetInteger(prefs::kPrintingAllowedColorModes));
+      policies.SetInteger(
+          printing::kAllowedDuplexModes,
+          profile_->GetPrefs()->GetInteger(prefs::kPrintingAllowedDuplexModes));
       // fetch settings on the blocking pool and invoke callback.
       FetchCapabilities(std::move(printer), std::move(policies), std::move(cb));
       return;
@@ -227,6 +231,9 @@ void LocalPrinterHandlerChromeos::StartPrint(
     const gfx::Size& page_size,
     const scoped_refptr<base::RefCountedMemory>& print_data,
     PrintCallback callback) {
+  size_t size_in_kb = print_data->size() / 1024;
+  UMA_HISTOGRAM_MEMORY_KB("Printing.CUPS.PrintDocumentSize", size_in_kb);
+
   printing::StartLocalPrint(ticket_json, print_data, preview_web_contents_,
                             std::move(callback));
 }

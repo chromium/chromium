@@ -14,6 +14,7 @@
 #import "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/post_task.h"
@@ -176,7 +177,7 @@ BOOL ShouldRecordPageLoadStartForNavigation(
       ui::PAGE_TRANSITION_KEYWORD_GENERATED,
   };
 
-  for (size_t i = 0; i < arraysize(kRecordedPageTransitionTypes); ++i) {
+  for (size_t i = 0; i < base::size(kRecordedPageTransitionTypes); ++i) {
     const ui::PageTransition recorded_type = kRecordedPageTransitionTypes[i];
     if (ui::PageTransitionCoreTypeIs(transition, recorded_type)) {
       return YES;

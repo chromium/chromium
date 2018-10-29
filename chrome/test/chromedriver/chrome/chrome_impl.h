@@ -37,7 +37,15 @@ class ChromeImpl : public Chrome {
                        bool w3c_compliant) override;
   Status GetWebViewById(const std::string& id, WebView** web_view) override;
   Status GetWindowSize(const std::string& id, int* width, int* height) override;
+  Status SetWindowSize(const std::string& target_id,
+                       int width, int height) override;
+  Status SetWindowRect(const std::string& target_id,
+                       const base::DictionaryValue& params) override;
   Status GetWindowPosition(const std::string& id, int* x, int* y) override;
+  Status SetWindowPosition(const std::string& target_id, int x, int y) override;
+  Status MaximizeWindow(const std::string& target_id) override;
+  Status MinimizeWindow(const std::string& target_id) override;
+  Status FullScreenWindow(const std::string& target_id) override;
   Status CloseWebView(const std::string& id) override;
   Status ActivateWebView(const std::string& id) override;
   Status SetAcceptInsecureCerts() override;
@@ -68,6 +76,9 @@ class ChromeImpl : public Chrome {
                      Window* window);
   Status ParseWindowBounds(std::unique_ptr<base::DictionaryValue> params,
                            Window* window);
+  Status GetWindowBounds(int window_id, Window* window);
+  Status SetWindowBounds(int window_id,
+                         std::unique_ptr<base::DictionaryValue> bounds);
 
   bool quit_;
   std::unique_ptr<DevToolsHttpClient> devtools_http_client_;

@@ -114,9 +114,11 @@ crbug.com/856601 [ Linux ] http/tests/devtools/elements/styles-4/styles-inline-e
 crbug.com/856601 [ Linux ] http/tests/event-timing/event-timing-retrievability.html [ Pass Timeout ]
 
 # Slow idlharness.js tests on MSAN
+crbug.com/856601 [ Linux ] external/wpt/BackgroundSync/interfaces.https.any.html [ Timeout Pass ]
 crbug.com/856601 [ Linux ] external/wpt/FileAPI/idlharness.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/FileAPI/idlharness.worker.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/idlharness.any.sharedworker.html [ Pass Timeout ]
+crbug.com/856601 [ Linux ] external/wpt/IndexedDB/idlharness.any.worker.html [ Timeout Pass ]
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/idlharness.https.any.serviceworker.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/interfaces.any.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/bluetooth/idl/idlharness.tentative.window.html [ Pass Timeout ]
@@ -128,12 +130,15 @@ crbug.com/856601 [ Linux ] external/wpt/css/cssom-view/interfaces.html [ Pass Ti
 crbug.com/856601 [ Linux ] external/wpt/dom/nodes/Element-classlist.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/encrypted-media/idlharness.https.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/fetch/cors-rfc1918/idlharness.tentative.any.worker.html [ Pass Timeout ]
+crbug.com/856601 [ Linux ] external/wpt/gamepad/idlharness.window.html [ Timeout Pass ]
 crbug.com/856601 [ Linux ] external/wpt/mediacapture-image/idlharness.window.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/mediacapture-streams/idlharness.https.window.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/notifications/idlharness.https.any.html [ Pass Failure Timeout ]
+crbug.com/856601 [ Linux ] external/wpt/notifications/idlharness.https.any.serviceworker.html [ Timeout Pass ]
 crbug.com/856601 [ Linux ] external/wpt/pointerevents/idlharness.window.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/presentation-api/controlling-ua/idlharness.https.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/push-api/idlharness.https.any.html [ Pass Timeout ]
+crbug.com/856601 [ Linux ] external/wpt/push-api/idlharness.https.any.serviceworker.html [ Timeout Pass ]
 crbug.com/856601 [ Linux ] external/wpt/push-api/idlharness.https.any.sharedworker.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/push-api/idlharness.https.any.worker.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/remote-playback/idlharness.window.html [ Pass Timeout ]
@@ -169,6 +174,8 @@ crbug.com/856601 [ Linux ] external/wpt/media-source/idlharness.any.html [ Timeo
 crbug.com/856601 [ Linux ] external/wpt/page-visibility/idlharness.window.html [ Timeout Pass ]
 crbug.com/856601 [ Linux ] virtual/new-remote-playback-pipeline/external/wpt/remote-playback/idlharness.window.html [ Timeout Pass ]
 crbug.com/856601 [ Linux ] virtual/outofblink-cors-ns/external/wpt/xhr/idlharness.any.sharedworker.html [ Timeout Pass ]
+crbug.com/856601 [ Linux ] virtual/outofblink-cors/external/wpt/fetch/api/idl.any.html [ Timeout Pass ]
+crbug.com/856601 [ Linux ] virtual/outofblink-cors/external/wpt/fetch/cors-rfc1918/idlharness.tentative.any.html [ Timeout Pass ]
 crbug.com/856601 [ Linux ] virtual/outofblink-cors/external/wpt/xhr/idlharness.any.html [ Timeout Pass ]
 crbug.com/856601 [ Linux ] virtual/service-worker-servicification/external/wpt/service-workers/service-worker/interfaces-window.https.html [ Timeout Pass ]
 crbug.com/856601 [ Linux ] virtual/webrtc-wpt-unified-plan/external/wpt/webrtc/idlharness.https.window.html [ Timeout Pass ]
@@ -187,3 +194,7 @@ crbug.com/873045 [ Linux ] external/wpt/picture-in-picture/idlharness.window.htm
 # Also flaking according to crbug.com/873045 but mentioned in existing entries above:
 # external/wpt/notifications/idlharness.https.any.worker.html
 # external/wpt/xhr/idlharness.any.worker.html
+
+# Disabled by sheriff due to test crash
+crbug.com/896068 [ Linux ] webaudio/AudioBuffer/huge-buffer.html [ Crash ]
+crbug.com/896068 [ Linux ] webaudio/dom-exceptions.html [ Pass Crash ]

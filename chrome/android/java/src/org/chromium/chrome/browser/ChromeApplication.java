@@ -14,22 +14,22 @@ import android.support.annotation.Nullable;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.BuildConfig;
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.Log;
-import org.chromium.base.Supplier;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.multidex.ChromiumMultiDexInstaller;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.build.BuildHooks;
 import org.chromium.build.BuildHooksAndroid;
 import org.chromium.build.BuildHooksConfig;
+import org.chromium.chrome.browser.crash.ApplicationStatusTracker;
 import org.chromium.chrome.browser.crash.PureJavaExceptionHandler;
 import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -60,28 +60,21 @@ public class ChromeApplication extends Application {
     // Quirk: context.getApplicationContext() returns null during this method.
     @Override
     protected void attachBaseContext(Context context) {
-        boolean browserProcess = ContextUtils.isMainProcess();
-        if (browserProcess) UmaUtils.recordMainEntryPointTime();
+        boolean isBrowserProcess = !ContextUtils.getProcessName().contains(":");
+        if (isBrowserProcess) UmaUtils.recordMainEntryPointTime();
         super.attachBaseContext(context);
         ContextUtils.initApplicationContext(this);
 
-        if (browserProcess) {
+        if (isBrowserProcess) {
             if (BuildConfig.IS_MULTIDEX_ENABLED) {
                 ChromiumMultiDexInstaller.install(this);
             }
             checkAppBeingReplaced();
 
-            // Renderers and GPU process have command line passed to them via IPC
+            // Renderer and GPU processes have command line passed to them via IPC
             // (see ChildProcessService.java).
-            Supplier<Boolean> shouldUseDebugFlags = new Supplier<Boolean>() {
-                @Override
-                public Boolean get() {
-                    ChromePreferenceManager manager = ChromePreferenceManager.getInstance();
-                    return manager.readBoolean(
-                            ChromePreferenceManager.COMMAND_LINE_ON_NON_ROOTED_ENABLED_KEY, false);
-                }
-            };
-            CommandLineInitUtil.initCommandLine(COMMAND_LINE_FILE, shouldUseDebugFlags);
+            CommandLineInitUtil.initCommandLine(
+                    COMMAND_LINE_FILE, ChromeApplication::shouldUseDebugFlags);
 
             // Requires command-line flags.
             TraceEvent.maybeEnableEarlyTracing();
@@ -92,17 +85,18 @@ public class ChromeApplication extends Application {
             // Chrome is just the browser process).
             ApplicationStatus.initialize(this);
 
+            // Register and initialize application status listener for crashes, this needs to be
+            // done as early as possible so that this value is set before any crashes are reported.
+            ApplicationStatusTracker tracker = new ApplicationStatusTracker();
+            tracker.onApplicationStateChange(ApplicationStatus.getStateForApplication());
+            ApplicationStatus.registerApplicationStateListener(tracker);
+
             // Only browser process requires custom resources.
             BuildHooksAndroid.initCustomResources(this);
 
             // Disable MemoryPressureMonitor polling when Chrome goes to the background.
-            ApplicationStatus.registerApplicationStateListener(newState -> {
-                if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES) {
-                    MemoryPressureMonitor.INSTANCE.enablePolling();
-                } else if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES) {
-                    MemoryPressureMonitor.INSTANCE.disablePolling();
-                }
-            });
+            ApplicationStatus.registerApplicationStateListener(
+                    ChromeApplication::updateMemoryPressurePolling);
 
             // Not losing much to not cover the below conditional since it just has simple setters.
             TraceEvent.end("ChromeApplication.attachBaseContext");
@@ -122,6 +116,19 @@ public class ChromeApplication extends Application {
         AsyncTask.takeOverAndroidThreadPool();
     }
 
+    private static Boolean shouldUseDebugFlags() {
+        return ChromePreferenceManager.getInstance().readBoolean(
+                ChromePreferenceManager.COMMAND_LINE_ON_NON_ROOTED_ENABLED_KEY, false);
+    }
+
+    private static void updateMemoryPressurePolling(@ApplicationState int newState) {
+        if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES) {
+            MemoryPressureMonitor.INSTANCE.enablePolling();
+        } else if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES) {
+            MemoryPressureMonitor.INSTANCE.disablePolling();
+        }
+    }
+
     /** Ensure this application object is not out-of-date. */
     private void checkAppBeingReplaced() {
         // During app update the old apk can still be triggered by broadcasts and spin up an
@@ -137,14 +144,19 @@ public class ChromeApplication extends Application {
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
+        if (isSevereMemorySignal(level) && mReferencePool != null) mReferencePool.drain();
+        CustomTabsConnection.onTrimMemory(level);
+    }
+
+    /**
+     * Determines whether the given memory signal is considered severe.
+     * @param level The type of signal as defined in {@link android.content.ComponentCallbacks2}.
+     */
+    public static boolean isSevereMemorySignal(int level) {
         // The conditions are expressed using ranges to capture intermediate levels possibly added
         // to the API in the future.
-        if ((level >= TRIM_MEMORY_RUNNING_LOW && level < TRIM_MEMORY_UI_HIDDEN)
-                || level >= TRIM_MEMORY_MODERATE) {
-            if (mReferencePool != null) mReferencePool.drain();
-
-            CustomTabsConnection.cleanUpUnusedSessions();
-        }
+        return (level >= TRIM_MEMORY_RUNNING_LOW && level < TRIM_MEMORY_UI_HIDDEN)
+                || level >= TRIM_MEMORY_MODERATE;
     }
 
     /**

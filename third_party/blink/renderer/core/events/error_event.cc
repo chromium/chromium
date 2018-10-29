@@ -82,6 +82,10 @@ const AtomicString& ErrorEvent::InterfaceName() const {
   return EventNames::ErrorEvent;
 }
 
+bool ErrorEvent::IsErrorEvent() const {
+  return true;
+}
+
 bool ErrorEvent::CanBeDispatchedInWorld(const DOMWrapperWorld& world) const {
   return !world_ || world_ == &world;
 }

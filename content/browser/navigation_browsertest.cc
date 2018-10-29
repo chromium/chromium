@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -16,8 +17,12 @@
 #include "content/browser/loader/resource_dispatcher_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame_messages.h"
+#include "content/common/view_messages.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_message_filter.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_types.h"
@@ -25,6 +30,7 @@
 #include "content/public/common/browser_side_navigation_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/previews_state.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -32,6 +38,7 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/shell/browser/shell_network_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -134,6 +141,29 @@ class NavigationRecorder : public WebContentsObserver {
 
   std::unique_ptr<base::RunLoop> loop_;
   std::vector<std::string> records_;
+};
+
+// Used to wait for an observed IPC to be received.
+class BrowserMessageObserver : public content::BrowserMessageFilter {
+ public:
+  BrowserMessageObserver(uint32_t observed_message_class,
+                         uint32_t observed_message_type)
+      : content::BrowserMessageFilter(observed_message_class),
+        observed_message_type_(observed_message_type) {}
+
+  bool OnMessageReceived(const IPC::Message& message) override {
+    if (message.type() == observed_message_type_)
+      loop.Quit();
+    return false;
+  }
+
+  void Wait() { loop.Run(); }
+
+ private:
+  ~BrowserMessageObserver() override {}
+  uint32_t observed_message_type_;
+  base::RunLoop loop;
+  DISALLOW_COPY_AND_ASSIGN(BrowserMessageObserver);
 };
 
 }  // namespace
@@ -315,8 +345,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FailedNavigation) {
   {
     TestNavigationObserver observer(shell()->web_contents());
     GURL error_url(embedded_test_server()->GetURL("/close-socket"));
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
     NavigateToURL(shell(), error_url);
     EXPECT_EQ(error_url, observer.last_navigation_url());
@@ -387,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SanitizeReferrer) {
   const GURL kInsecureUrl(embedded_test_server()->GetURL("/title1.html"));
   const Referrer kSecureReferrer(
       GURL("https://secure-url.com"),
-      blink::kWebReferrerPolicyNoReferrerWhenDowngrade);
+      network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade);
   ShellNetworkDelegate::SetCancelURLRequestWithPolicyViolatingReferrerHeader(
       true);
 
@@ -558,10 +588,8 @@ IN_PROC_BROWSER_TEST_F(NavigationDisableWebSecurityTest,
       GURL() /* history_url_for_data_url */, PREVIEWS_UNSPECIFIED,
       base::TimeTicks::Now() /* navigation_start */, "GET",
       nullptr /* post_data */, base::Optional<SourceLocation>(),
-      CSPDisposition::CHECK, false /* started_from_context_menu */,
-      false /* has_user_gesture */,
-      std::vector<ContentSecurityPolicy>() /* initiator_csp */,
-      CSPSource() /* initiator_self_source */);
+      false /* started_from_context_menu */, false /* has_user_gesture */,
+      InitiatorCSPInfo());
   mojom::BeginNavigationParamsPtr begin_params =
       mojom::BeginNavigationParams::New(
           std::string() /* headers */, net::LOAD_NORMAL,
@@ -583,10 +611,10 @@ IN_PROC_BROWSER_TEST_F(NavigationDisableWebSecurityTest,
         mojo::MakeRequestAssociatedWithDedicatedPipe(&navigation_client);
     rfh->frame_host_binding_for_testing().impl()->BeginNavigation(
         common_params, std::move(begin_params), nullptr,
-        navigation_client.PassInterface());
+        navigation_client.PassInterface(), nullptr);
   } else {
     rfh->frame_host_binding_for_testing().impl()->BeginNavigation(
-        common_params, std::move(begin_params), nullptr, nullptr);
+        common_params, std::move(begin_params), nullptr, nullptr, nullptr);
   }
   EXPECT_EQ(bad_message::RFH_BASE_URL_FOR_DATA_URL_SPECIFIED,
             process_kill_waiter.Wait());
@@ -730,8 +758,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
         static_cast<ResourceDispatcherHostImpl*>(ResourceDispatcherHost::Get());
     rdh->CancelRequest(global_id.child_id, global_id.request_id);
   };
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(cancel_request, global_id));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(cancel_request, global_id));
 
   // 3) Check that the load stops properly.
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
@@ -1098,6 +1126,221 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_EQ(6u, recorder.records().size());
   EXPECT_STREQ("did-commit /infinite_load_2.html",
                recorder.records()[5].c_str());
+}
+
+// Renderer initiated back/forward navigation in beforeunload should not prevent
+// the user to navigate away from a website.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, HistoryBackInBeforeUnload) {
+  GURL url_1(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
+                            "onbeforeunload = function() {"
+                            "  history.pushState({}, null, '/');"
+                            "  history.back();"
+                            "};"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+}
+
+// Same as 'HistoryBackInBeforeUnload', but wraps history.back() inside
+// window.setTimeout(). Thus it is executed "outside" of its beforeunload
+// handler and thus avoid basic navigation circumventions.
+// Regression test for: https://crbug.com/879965.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       HistoryBackInBeforeUnloadAfterSetTimeout) {
+  GURL url_1(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
+                            "onbeforeunload = function() {"
+                            "  history.pushState({}, null, '/');"
+                            "  setTimeout(()=>history.back());"
+                            "};"));
+  TestNavigationManager navigation(shell()->web_contents(), url_2);
+  auto ipc_observer = base::MakeRefCounted<BrowserMessageObserver>(
+      ViewMsgStart, ViewHostMsg_GoToEntryAtOffset::ID);
+  static_cast<RenderFrameHostImpl*>(shell()->web_contents()->GetMainFrame())
+      ->GetProcess()
+      ->AddFilter(ipc_observer.get());
+
+  shell()->LoadURL(url_2);
+  ipc_observer->Wait();
+  navigation.WaitForNavigationFinished();
+
+  EXPECT_TRUE(navigation.was_successful());
+}
+
+// Renderer initiated back/forward navigation can't cancel an ongoing browser
+// initiated navigation if it is not user initiated.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       HistoryBackCancelPendingNavigationNoUserGesture) {
+  GURL url_1(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+
+  // 1) A pending browser initiated navigation (omnibox, ...) starts.
+  TestNavigationManager navigation(shell()->web_contents(), url_2);
+  shell()->LoadURL(url_2);
+  EXPECT_TRUE(navigation.WaitForRequestStart());
+
+  // 2) history.back() is sent but is not user initiated.
+  EXPECT_TRUE(
+      ExecuteScriptWithoutUserGesture(shell()->web_contents(),
+                                      "history.pushState({}, null, '/');"
+                                      "history.back();"));
+
+  // 3) The first pending navigation is not canceled and can continue.
+  navigation.WaitForNavigationFinished();  // Resume navigation.
+  EXPECT_TRUE(navigation.was_successful());
+}
+
+// Renderer initiated back/forward navigation can cancel an ongoing browser
+// initiated navigation if it is user initiated.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       HistoryBackCancelPendingNavigationUserGesture) {
+  GURL url_1(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+
+  // 1) A pending browser initiated navigation (omnibox, ...) starts.
+  TestNavigationManager navigation(shell()->web_contents(), url_2);
+  shell()->LoadURL(url_2);
+  EXPECT_TRUE(navigation.WaitForRequestStart());
+
+  // 2) history.back() is sent and is user initiated.
+  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
+                            "history.pushState({}, null, '/');"
+                            "history.back();"));
+
+  // 3) Check the first pending navigation has been canceled.
+  navigation.WaitForNavigationFinished();  // Resume navigation.
+  EXPECT_FALSE(navigation.was_successful());
+}
+
+namespace {
+
+// Checks whether the given urls are requested, and that GetPreviewsState()
+// returns the appropriate value when the Previews are set.
+class PreviewsStateContentBrowserClient : public ContentBrowserClient {
+ public:
+  PreviewsStateContentBrowserClient(const GURL& main_frame_url)
+      : main_frame_url_(main_frame_url),
+        main_frame_url_seen_(false),
+        previews_state_(PREVIEWS_OFF),
+        determine_allowed_previews_called_(false),
+        determine_committed_previews_called_(false) {}
+
+  ~PreviewsStateContentBrowserClient() override {}
+
+  content::PreviewsState DetermineAllowedPreviews(
+      content::PreviewsState initial_state,
+      content::NavigationHandle* navigation_handle) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    EXPECT_FALSE(determine_allowed_previews_called_);
+    determine_allowed_previews_called_ = true;
+    main_frame_url_seen_ = true;
+    EXPECT_EQ(main_frame_url_, navigation_handle->GetURL());
+    return previews_state_;
+  }
+
+  content::PreviewsState DetermineCommittedPreviews(
+      content::PreviewsState initial_state,
+      content::NavigationHandle* navigation_handle,
+      const net::HttpResponseHeaders* response_headers) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    EXPECT_EQ(previews_state_, initial_state);
+    determine_committed_previews_called_ = true;
+    return initial_state;
+  }
+
+  void SetClient() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    content::SetBrowserClientForTesting(this);
+  }
+
+  void Reset(PreviewsState previews_state) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    main_frame_url_seen_ = false;
+    previews_state_ = previews_state;
+    determine_allowed_previews_called_ = false;
+  }
+
+  void CheckResourcesRequested() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    EXPECT_TRUE(determine_allowed_previews_called_);
+    EXPECT_TRUE(determine_committed_previews_called_);
+    EXPECT_TRUE(main_frame_url_seen_);
+  }
+
+ private:
+  const GURL main_frame_url_;
+
+  bool main_frame_url_seen_;
+  PreviewsState previews_state_;
+  bool determine_allowed_previews_called_;
+  bool determine_committed_previews_called_;
+
+  DISALLOW_COPY_AND_ASSIGN(PreviewsStateContentBrowserClient);
+};
+
+}  // namespace
+
+class PreviewsStateBrowserTest : public ContentBrowserTest {
+ public:
+  ~PreviewsStateBrowserTest() override {}
+
+ protected:
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    client_.reset(new PreviewsStateContentBrowserClient(
+        embedded_test_server()->GetURL("/title1.html")));
+
+    client_->SetClient();
+  }
+
+  void Reset(PreviewsState previews_state) { client_->Reset(previews_state); }
+
+  void CheckResourcesRequested() { client_->CheckResourcesRequested(); }
+
+ private:
+  std::unique_ptr<PreviewsStateContentBrowserClient> client_;
+};
+
+// Test that navigating calls GetPreviewsState with SERVER_LOFI_ON.
+IN_PROC_BROWSER_TEST_F(PreviewsStateBrowserTest, ShouldEnableLoFiModeOn) {
+  // Navigate with LoFi on.
+  Reset(SERVER_LOFI_ON);
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), embedded_test_server()->GetURL("/title1.html"), 1);
+  CheckResourcesRequested();
+}
+
+// Test that navigating calls GetPreviewsState returning PREVIEWS_OFF.
+IN_PROC_BROWSER_TEST_F(PreviewsStateBrowserTest, ShouldEnableLoFiModeOff) {
+  // Navigate with No Previews.
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), embedded_test_server()->GetURL("/title1.html"), 1);
+  CheckResourcesRequested();
+}
+
+// Test that reloading calls GetPreviewsState again and changes the Previews
+// state.
+IN_PROC_BROWSER_TEST_F(PreviewsStateBrowserTest, ShouldEnableLoFiModeReload) {
+  // Navigate with GetPreviewsState returning PREVIEWS_OFF.
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), embedded_test_server()->GetURL("/title1.html"), 1);
+  CheckResourcesRequested();
+
+  // Reload. GetPreviewsState should be called.
+  Reset(SERVER_LOFI_ON);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  CheckResourcesRequested();
 }
 
 }  // namespace content

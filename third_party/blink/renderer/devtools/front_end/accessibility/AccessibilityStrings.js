@@ -14,6 +14,10 @@ Accessibility.AccessibilityStrings.AXAttributes = {
     description: 'If true, this element\'s user-entered value does not conform to validation requirement.',
     group: 'AXGlobalStates'
   },
+  'editable': {name: 'Editable', description: 'If and how this element can be edited.'},
+  'focusable': {name: 'Focusable', description: 'If true, this element can recieve focus.'},
+  'focused': {name: 'Focused', description: 'If true, this element currently has focus.'},
+  'settable': {name: 'Can set value', description: 'Whether the value of this element can be set.'},
   'live': {
     name: 'Live region',
     description: 'Whether and what priority of live updates may be expected for this element.',

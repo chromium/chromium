@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "content/common/content_export.h"
 #include "ipc/message_filter.h"
-#include "media/midi/midi_port_info.h"
 #include "media/midi/midi_service.mojom.h"
 #include "third_party/blink/public/platform/modules/webmidi/web_midi_accessor_client.h"
 
@@ -84,8 +83,8 @@ class CONTENT_EXPORT MidiMessageFilter : public IPC::MessageFilter {
   //      existing ports.
   //  (2) To notify the recipient that a new device was connected and that new
   //      ports have been created.
-  void OnAddInputPort(midi::MidiPortInfo info);
-  void OnAddOutputPort(midi::MidiPortInfo info);
+  void OnAddInputPort(midi::mojom::PortInfo info);
+  void OnAddOutputPort(midi::mojom::PortInfo info);
 
   // These functions are called to notify the recipient that a device that is
   // notified via OnAddInputPort() or OnAddOutputPort() gets disconnected, or
@@ -107,8 +106,8 @@ class CONTENT_EXPORT MidiMessageFilter : public IPC::MessageFilter {
   // Following methods, Handle*, run on |main_task_runner_|.
   void HandleClientAdded(midi::mojom::Result result);
 
-  void HandleAddInputPort(midi::MidiPortInfo info);
-  void HandleAddOutputPort(midi::MidiPortInfo info);
+  void HandleAddInputPort(midi::mojom::PortInfo info);
+  void HandleAddOutputPort(midi::mojom::PortInfo info);
   void HandleSetInputPortState(uint32_t port, midi::mojom::PortState state);
   void HandleSetOutputPortState(uint32_t port, midi::mojom::PortState state);
 
@@ -147,8 +146,8 @@ class CONTENT_EXPORT MidiMessageFilter : public IPC::MessageFilter {
   midi::mojom::Result session_result_;
 
   // Holds MidiPortInfoList for input ports and output ports.
-  midi::MidiPortInfoList inputs_;
-  midi::MidiPortInfoList outputs_;
+  std::vector<midi::mojom::PortInfo> inputs_;
+  std::vector<midi::mojom::PortInfo> outputs_;
 
   size_t unacknowledged_bytes_sent_;
 

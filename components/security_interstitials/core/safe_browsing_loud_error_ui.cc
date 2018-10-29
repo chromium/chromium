@@ -29,16 +29,9 @@ const char kSbDiagnosticUrl[] =
 const char kReportPhishingErrorUrl[] =
     "https://www.google.com/safebrowsing/report_error/";
 
-void RecordExtendedReportingPrefChanged(bool report, bool is_scout) {
-  if (is_scout) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "SafeBrowsing.Pref.Scout.SetPref.SBER2Pref.SecurityInterstitial",
-        report);
-  } else {
-    UMA_HISTOGRAM_BOOLEAN(
-        "SafeBrowsing.Pref.Scout.SetPref.SBER1Pref.SecurityInterstitial",
-        report);
-  }
+void RecordExtendedReportingPrefChanged(bool report) {
+  UMA_HISTOGRAM_BOOLEAN(
+      "SafeBrowsing.Pref.Scout.SetPref.SBER2Pref.SecurityInterstitial", report);
 }
 
 }  // namespace
@@ -153,14 +146,14 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
       // User enabled SB Extended Reporting via the checkbox.
       set_extended_reporting(true);
       controller()->SetReportingPreference(true);
-      RecordExtendedReportingPrefChanged(true, is_scout_reporting_enabled());
+      RecordExtendedReportingPrefChanged(true);
       break;
     }
     case CMD_DONT_REPORT: {
       // User disabled SB Extended Reporting via the checkbox.
       set_extended_reporting(false);
       controller()->SetReportingPreference(false);
-      RecordExtendedReportingPrefChanged(false, is_scout_reporting_enabled());
+      RecordExtendedReportingPrefChanged(false);
       break;
     }
     case CMD_SHOW_MORE_SECTION: {
@@ -306,12 +299,10 @@ void SafeBrowsingLoudErrorUI::PopulateExtendedReportingOption(
       security_interstitials::kPrivacyLinkHtml,
       security_interstitials::CMD_OPEN_REPORTING_PRIVACY,
       l10n_util::GetStringUTF8(IDS_SAFE_BROWSING_PRIVACY_POLICY_PAGE).c_str());
-  load_time_data->SetString(security_interstitials::kOptInLink,
-                            l10n_util::GetStringFUTF16(
-                                is_scout_reporting_enabled()
-                                    ? IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE
-                                    : IDS_SAFE_BROWSING_MALWARE_REPORTING_AGREE,
-                                base::UTF8ToUTF16(privacy_link)));
+  load_time_data->SetString(
+      security_interstitials::kOptInLink,
+      l10n_util::GetStringFUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE,
+                                 base::UTF8ToUTF16(privacy_link)));
   load_time_data->SetBoolean(security_interstitials::kBoxChecked,
                              is_extended_reporting_enabled());
 }
@@ -320,7 +311,6 @@ void SafeBrowsingLoudErrorUI::PopulateBillingLoadTimeData(
     base::DictionaryValue* load_time_data) {
   load_time_data->SetBoolean("phishing", false);
   load_time_data->SetBoolean("overridable", true);
-  load_time_data->SetBoolean("hide_primary_button", false);
 
   load_time_data->SetString("heading",
                             l10n_util::GetStringUTF16(IDS_BILLING_HEADING));

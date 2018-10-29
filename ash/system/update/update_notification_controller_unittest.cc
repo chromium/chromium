@@ -9,7 +9,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/message_center/message_center.h"
 
 #if defined(GOOGLE_CHROME_BUILD)
@@ -24,11 +23,6 @@ class UpdateNotificationControllerTest : public AshTestBase {
  public:
   UpdateNotificationControllerTest() = default;
   ~UpdateNotificationControllerTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSystemTrayUnified);
-    AshTestBase::SetUp();
-  }
 
  protected:
   bool HasNotification() {
@@ -78,8 +72,6 @@ class UpdateNotificationControllerTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(UpdateNotificationControllerTest);
 };
 

@@ -35,66 +35,68 @@ class STORAGE_EXPORT FileSystemOperationImpl : public FileSystemOperation {
   // FileSystemOperation overrides.
   void CreateFile(const FileSystemURL& url,
                   bool exclusive,
-                  const StatusCallback& callback) override;
+                  StatusCallback callback) override;
   void CreateDirectory(const FileSystemURL& url,
                        bool exclusive,
                        bool recursive,
-                       const StatusCallback& callback) override;
+                       StatusCallback callback) override;
   void Copy(const FileSystemURL& src_url,
             const FileSystemURL& dest_url,
             CopyOrMoveOption option,
             ErrorBehavior error_behavior,
             const CopyProgressCallback& progress_callback,
-            const StatusCallback& callback) override;
+            StatusCallback callback) override;
   void Move(const FileSystemURL& src_url,
             const FileSystemURL& dest_url,
             CopyOrMoveOption option,
-            const StatusCallback& callback) override;
+            StatusCallback callback) override;
   void DirectoryExists(const FileSystemURL& url,
-                       const StatusCallback& callback) override;
-  void FileExists(const FileSystemURL& url,
-                  const StatusCallback& callback) override;
+                       StatusCallback callback) override;
+  void FileExists(const FileSystemURL& url, StatusCallback callback) override;
   void GetMetadata(const FileSystemURL& url,
                    int fields,
-                   const GetMetadataCallback& callback) override;
+                   GetMetadataCallback callback) override;
   void ReadDirectory(const FileSystemURL& url,
                      const ReadDirectoryCallback& callback) override;
   void Remove(const FileSystemURL& url,
               bool recursive,
-              const StatusCallback& callback) override;
+              StatusCallback callback) override;
+  void WriteBlob(const FileSystemURL& url,
+                 std::unique_ptr<FileWriterDelegate> writer_delegate,
+                 std::unique_ptr<BlobReader> blob_reader,
+                 const WriteCallback& callback) override;
   void Write(const FileSystemURL& url,
              std::unique_ptr<FileWriterDelegate> writer_delegate,
-             std::unique_ptr<BlobReader> blob_reader,
+             mojo::ScopedDataPipeConsumerHandle data_pipe,
              const WriteCallback& callback) override;
   void Truncate(const FileSystemURL& url,
                 int64_t length,
-                const StatusCallback& callback) override;
+                StatusCallback callback) override;
   void TouchFile(const FileSystemURL& url,
                  const base::Time& last_access_time,
                  const base::Time& last_modified_time,
-                 const StatusCallback& callback) override;
+                 StatusCallback callback) override;
   void OpenFile(const FileSystemURL& url,
                 int file_flags,
-                const OpenFileCallback& callback) override;
-  void Cancel(const StatusCallback& cancel_callback) override;
+                OpenFileCallback callback) override;
+  void Cancel(StatusCallback cancel_callback) override;
   void CreateSnapshotFile(const FileSystemURL& path,
                           SnapshotFileCallback callback) override;
   void CopyInForeignFile(const base::FilePath& src_local_disk_path,
                          const FileSystemURL& dest_url,
-                         const StatusCallback& callback) override;
-  void RemoveFile(const FileSystemURL& url,
-                  const StatusCallback& callback) override;
+                         StatusCallback callback) override;
+  void RemoveFile(const FileSystemURL& url, StatusCallback callback) override;
   void RemoveDirectory(const FileSystemURL& url,
-                       const StatusCallback& callback) override;
+                       StatusCallback callback) override;
   void CopyFileLocal(const FileSystemURL& src_url,
                      const FileSystemURL& dest_url,
                      CopyOrMoveOption option,
                      const CopyFileProgressCallback& progress_callback,
-                     const StatusCallback& callback) override;
+                     StatusCallback callback) override;
   void MoveFileLocal(const FileSystemURL& src_url,
                      const FileSystemURL& dest_url,
                      CopyOrMoveOption option,
-                     const StatusCallback& callback) override;
+                     StatusCallback callback) override;
   base::File::Error SyncGetPlatformPath(const FileSystemURL& url,
                                         base::FilePath* platform_path) override;
 
@@ -112,18 +114,17 @@ class STORAGE_EXPORT FileSystemOperationImpl : public FileSystemOperation {
 
   // Queries the quota and usage and then runs the given |task|.
   // If an error occurs during the quota query it runs |error_callback| instead.
-  void GetUsageAndQuotaThenRunTask(
-      const FileSystemURL& url,
-      const base::Closure& task,
-      const base::Closure& error_callback);
+  void GetUsageAndQuotaThenRunTask(const FileSystemURL& url,
+                                   base::OnceClosure task,
+                                   base::OnceClosure error_callback);
 
   // Called after the quota info is obtained from the quota manager
   // (which is triggered by GetUsageAndQuotaThenRunTask).
   // Sets the quota info in the operation_context_ and then runs the given
   // |task| if the returned quota status is successful, otherwise runs
   // |error_callback|.
-  void DidGetUsageAndQuotaAndRunTask(const base::Closure& task,
-                                     const base::Closure& error_callback,
+  void DidGetUsageAndQuotaAndRunTask(base::OnceClosure task,
+                                     base::OnceClosure error_callback,
                                      blink::mojom::QuotaStatusCode status,
                                      int64_t usage,
                                      int64_t quota);
@@ -131,49 +132,50 @@ class STORAGE_EXPORT FileSystemOperationImpl : public FileSystemOperation {
   // The 'body' methods that perform the actual work (i.e. posting the
   // file task on proxy_) after the quota check.
   void DoCreateFile(const FileSystemURL& url,
-                    const StatusCallback& callback, bool exclusive);
+                    StatusCallback callback,
+                    bool exclusive);
   void DoCreateDirectory(const FileSystemURL& url,
-                         const StatusCallback& callback,
+                         StatusCallback callback,
                          bool exclusive,
                          bool recursive);
   void DoCopyFileLocal(const FileSystemURL& src,
                        const FileSystemURL& dest,
                        CopyOrMoveOption option,
                        const CopyFileProgressCallback& progress_callback,
-                       const StatusCallback& callback);
+                       StatusCallback callback);
   void DoMoveFileLocal(const FileSystemURL& src,
                        const FileSystemURL& dest,
                        CopyOrMoveOption option,
-                       const StatusCallback& callback);
+                       StatusCallback callback);
   void DoCopyInForeignFile(const base::FilePath& src_local_disk_file_path,
                            const FileSystemURL& dest,
-                           const StatusCallback& callback);
+                           StatusCallback callback);
   void DoTruncate(const FileSystemURL& url,
-                  const StatusCallback& callback,
+                  StatusCallback callback,
                   int64_t length);
   void DoOpenFile(const FileSystemURL& url,
-                  const OpenFileCallback& callback, int file_flags);
+                  OpenFileCallback callback,
+                  int file_flags);
 
   // Callback for CreateFile for |exclusive|=true cases.
-  void DidEnsureFileExistsExclusive(const StatusCallback& callback,
+  void DidEnsureFileExistsExclusive(StatusCallback callback,
                                     base::File::Error rv,
                                     bool created);
 
   // Callback for CreateFile for |exclusive|=false cases.
-  void DidEnsureFileExistsNonExclusive(const StatusCallback& callback,
+  void DidEnsureFileExistsNonExclusive(StatusCallback callback,
                                        base::File::Error rv,
                                        bool created);
 
-  void DidFinishOperation(const StatusCallback& callback,
-                          base::File::Error rv);
-  void DidDirectoryExists(const StatusCallback& callback,
+  void DidFinishOperation(StatusCallback callback, base::File::Error rv);
+  void DidDirectoryExists(StatusCallback callback,
                           base::File::Error rv,
                           const base::File::Info& file_info);
-  void DidFileExists(const StatusCallback& callback,
+  void DidFileExists(StatusCallback callback,
                      base::File::Error rv,
                      const base::File::Info& file_info);
   void DidDeleteRecursively(const FileSystemURL& url,
-                            const StatusCallback& callback,
+                            StatusCallback callback,
                             base::File::Error rv);
   void DidWrite(const FileSystemURL& url,
                 const WriteCallback& callback,

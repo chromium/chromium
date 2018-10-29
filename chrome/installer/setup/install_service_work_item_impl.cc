@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -59,10 +60,10 @@ InstallServiceWorkItemImpl::ServiceConfig::~ServiceConfig() = default;
 InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
     const base::string16& service_name,
     const base::string16& display_name,
-    const base::string16& service_cmd_line)
+    const base::CommandLine& service_cmd_line)
     : service_name_(service_name),
       display_name_(display_name),
-      service_cmd_line_(service_cmd_line),
+      service_cmd_line_(service_cmd_line.GetCommandLineString()),
       rollback_existing_service_(false),
       rollback_new_service_(false),
       original_service_still_exists_(false) {}
@@ -138,6 +139,34 @@ void InstallServiceWorkItemImpl::RollbackImpl() {
   // issues with reusing the old name.
   LOG_IF(WARNING, !CreateAndSetServiceName());
   LOG_IF(WARNING, !ReinstallOriginalService());
+}
+
+bool InstallServiceWorkItemImpl::DeleteServiceImpl() {
+  scm_.Set(::OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT));
+  if (!scm_.IsValid()) {
+    DPLOG(ERROR) << "::OpenSCManager Failed";
+    return false;
+  }
+
+  if (!OpenService())
+    return false;
+
+  if (!DeleteCurrentService())
+    return false;
+
+  // If the service cannot be deleted, the service name value is not deleted.
+  // This is to allow for identifying that an existing instance of the service
+  // is still installed when a future install or upgrade runs.
+  base::win::RegKey key;
+  auto result = key.Open(HKEY_LOCAL_MACHINE,
+                         install_static::GetClientStateKeyPath().c_str(),
+                         KEY_SET_VALUE | KEY_WOW64_32KEY);
+  if (result != ERROR_SUCCESS)
+    return result == ERROR_FILE_NOT_FOUND || result == ERROR_PATH_NOT_FOUND;
+
+  result = key.DeleteValue(service_name_.c_str());
+  return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND ||
+         result == ERROR_PATH_NOT_FOUND;
 }
 
 bool InstallServiceWorkItemImpl::IsServiceCorrectlyConfigured(
@@ -229,7 +258,7 @@ bool InstallServiceWorkItemImpl::SetServiceName(
 base::string16 InstallServiceWorkItemImpl::GetCurrentServiceName() const {
   base::win::RegKey key;
 
-  LONG result = key.Open(HKEY_LOCAL_MACHINE,
+  auto result = key.Open(HKEY_LOCAL_MACHINE,
                          install_static::GetClientStateKeyPath().c_str(),
                          KEY_QUERY_VALUE | KEY_WOW64_32KEY);
   if (result != ERROR_SUCCESS)

@@ -430,8 +430,8 @@ void IDBRequest::EnqueueResponse(const Vector<String>& string_list) {
   }
 
   DOMStringList* dom_string_list = DOMStringList::Create();
-  for (size_t i = 0; i < string_list.size(); ++i)
-    dom_string_list->Append(string_list[i]);
+  for (const auto& item : string_list)
+    dom_string_list->Append(item);
   EnqueueResultInternal(IDBAny::Create(dom_string_list));
   metrics_.RecordAndReset();
 }

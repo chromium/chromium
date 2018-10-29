@@ -22,7 +22,7 @@ class KeyboardHookBase : public KeyboardHook {
   ~KeyboardHookBase() override;
 
   // KeyboardHook implementation.
-  bool IsKeyLocked(DomCode dom_code) override;
+  bool IsKeyLocked(DomCode dom_code) const override;
 
  protected:
   // Indicates whether |dom_code| should be intercepted by the keyboard hook.

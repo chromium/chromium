@@ -48,7 +48,7 @@ public class BindingManagerTest {
                 null /* serviceBundle */);
         connection.setPid(pid);
         connection.start(false /* useStrongBinding */, null /* serviceCallback */);
-        manager.increaseRecency(connection);
+        manager.addConnection(connection);
         iterable.add(connection);
         connection.removeModerateBinding(); // Remove initial binding.
         return connection;
@@ -181,7 +181,7 @@ public class BindingManagerTest {
             // Verify that each connection has a moderate binding after binding and releasing a
             // strong binding.
             for (ChildProcessConnection connection : connections) {
-                manager.increaseRecency(connection);
+                manager.addConnection(connection);
                 mIterable.add(connection);
                 Assert.assertTrue(message, connection.isModerateBindingBound());
             }
@@ -214,5 +214,46 @@ public class BindingManagerTest {
         // Bringing Chrome to the foreground should not re-add the moderate bindings.
         manager.onBroughtToForeground();
         Assert.assertFalse(connection.isModerateBindingBound());
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testOneWaivedConnection() {
+        final BindingManager manager = mManager;
+        ChildProcessConnection[] connections = new ChildProcessConnection[3];
+        for (int i = 0; i < connections.length; i++) {
+            connections[i] = createTestChildProcessConnection(i + 1 /* pid */, manager, mIterable);
+        }
+
+        // Make sure binding is added for all connections.
+        for (ChildProcessConnection c : connections) {
+            Assert.assertTrue(c.isModerateBindingBound());
+        }
+
+        // Move middle connection to be the first (ie lowest ranked).
+        mIterable.set(0, connections[1]);
+        mIterable.set(1, connections[0]);
+        manager.rankingChanged();
+        Assert.assertTrue(connections[0].isModerateBindingBound());
+        Assert.assertFalse(connections[1].isModerateBindingBound());
+        Assert.assertTrue(connections[2].isModerateBindingBound());
+
+        // Swap back.
+        mIterable.set(0, connections[0]);
+        mIterable.set(1, connections[1]);
+        manager.rankingChanged();
+        Assert.assertFalse(connections[0].isModerateBindingBound());
+        Assert.assertTrue(connections[1].isModerateBindingBound());
+        Assert.assertTrue(connections[2].isModerateBindingBound());
+
+        manager.removeConnection(connections[1]);
+        Assert.assertFalse(connections[0].isModerateBindingBound());
+        Assert.assertFalse(connections[1].isModerateBindingBound());
+        Assert.assertTrue(connections[2].isModerateBindingBound());
+
+        manager.removeConnection(connections[0]);
+        Assert.assertFalse(connections[0].isModerateBindingBound());
+        Assert.assertFalse(connections[1].isModerateBindingBound());
+        Assert.assertTrue(connections[2].isModerateBindingBound());
     }
 }

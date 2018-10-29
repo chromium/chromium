@@ -28,7 +28,9 @@ class WebSocketListener;
 class WebSocket {
  public:
   // |url| must be an IP v4/v6 literal, not a host name.
-  WebSocket(const GURL& url, WebSocketListener* listener);
+  WebSocket(const GURL& url,
+            WebSocketListener* listener,
+            size_t read_buffer_size = 4096);
   virtual ~WebSocket();
 
   // Initializes the WebSocket connection. Invokes the given callback with
@@ -53,7 +55,7 @@ class WebSocket {
   void ContinueWritingIfNecessary();
 
   void Read();
-  void OnRead(int code);
+  void OnRead(bool read_again, int code);
   void OnReadDuringHandshake(const char* data, int len);
   void OnReadDuringOpen(const char* data, int len);
 

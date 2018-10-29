@@ -1,3 +1,7 @@
 self.onmessage = function(e) {
-    self.postMessage(e.data);
+  var data = e.data;  // Force deserialization
+  var workerDeserialize = performance.now();
+  self.postMessage({'recieveddData' : data,
+                    'workerTimeOrigin' : performance.timeOrigin,
+                    'workerDeserialize' : workerDeserialize});
 };

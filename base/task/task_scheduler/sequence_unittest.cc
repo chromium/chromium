@@ -26,7 +26,7 @@ class MockTask {
 
 Task CreateTask(MockTask* mock_task) {
   return Task(FROM_HERE, BindOnce(&MockTask::Run, Unretained(mock_task)),
-              {TaskPriority::BEST_EFFORT}, TimeDelta());
+              TimeDelta());
 }
 
 void ExpectMockTask(MockTask* mock_task, Task* task) {
@@ -44,7 +44,8 @@ TEST(TaskSchedulerSequenceTest, PushTakeRemove) {
   testing::StrictMock<MockTask> mock_task_d;
   testing::StrictMock<MockTask> mock_task_e;
 
-  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>();
+  scoped_refptr<Sequence> sequence =
+      MakeRefCounted<Sequence>(TaskTraits(TaskPriority::BEST_EFFORT));
 
   // Push task A in the sequence. PushTask() should return true since it's the
   // first task->
@@ -94,12 +95,12 @@ TEST(TaskSchedulerSequenceTest, PushTakeRemove) {
   EXPECT_TRUE(sequence->Pop());
 }
 
-// Verifies the sort key of a sequence that contains one BEST_EFFORT task.
+// Verifies the sort key of a BEST_EFFORT sequence that contains one task.
 TEST(TaskSchedulerSequenceTest, GetSortKeyBestEffort) {
-  // Create a sequence with a BEST_EFFORT task.
-  Task best_effort_task(FROM_HERE, DoNothing(), {TaskPriority::BEST_EFFORT},
-                        TimeDelta());
-  scoped_refptr<Sequence> best_effort_sequence = MakeRefCounted<Sequence>();
+  // Create a BEST_EFFORT sequence with a task.
+  Task best_effort_task(FROM_HERE, DoNothing(), TimeDelta());
+  scoped_refptr<Sequence> best_effort_sequence =
+      MakeRefCounted<Sequence>(TaskTraits(TaskPriority::BEST_EFFORT));
   best_effort_sequence->PushTask(std::move(best_effort_task));
 
   // Get the sort key.
@@ -120,12 +121,12 @@ TEST(TaskSchedulerSequenceTest, GetSortKeyBestEffort) {
 }
 
 // Same as TaskSchedulerSequenceTest.GetSortKeyBestEffort, but with a
-// USER_VISIBLE task.
+// USER_VISIBLE sequence.
 TEST(TaskSchedulerSequenceTest, GetSortKeyForeground) {
-  // Create a sequence with a USER_VISIBLE task.
-  Task foreground_task(FROM_HERE, DoNothing(), {TaskPriority::USER_VISIBLE},
-                       TimeDelta());
-  scoped_refptr<Sequence> foreground_sequence = MakeRefCounted<Sequence>();
+  // Create a USER_VISIBLE sequence with a task.
+  Task foreground_task(FROM_HERE, DoNothing(), TimeDelta());
+  scoped_refptr<Sequence> foreground_sequence =
+      MakeRefCounted<Sequence>(TaskTraits(TaskPriority::USER_VISIBLE));
   foreground_sequence->PushTask(std::move(foreground_task));
 
   // Get the sort key.
@@ -147,8 +148,8 @@ TEST(TaskSchedulerSequenceTest, GetSortKeyForeground) {
 // Verify that a DCHECK fires if Pop() is called on a sequence whose front slot
 // isn't empty.
 TEST(TaskSchedulerSequenceTest, PopNonEmptyFrontSlot) {
-  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>();
-  sequence->PushTask(Task(FROM_HERE, DoNothing(), TaskTraits(), TimeDelta()));
+  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(TaskTraits());
+  sequence->PushTask(Task(FROM_HERE, DoNothing(), TimeDelta()));
 
   EXPECT_DCHECK_DEATH({ sequence->Pop(); });
 }
@@ -156,8 +157,8 @@ TEST(TaskSchedulerSequenceTest, PopNonEmptyFrontSlot) {
 // Verify that a DCHECK fires if TakeTask() is called on a sequence whose front
 // slot is empty.
 TEST(TaskSchedulerSequenceTest, TakeEmptyFrontSlot) {
-  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>();
-  sequence->PushTask(Task(FROM_HERE, DoNothing(), TaskTraits(), TimeDelta()));
+  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(TaskTraits());
+  sequence->PushTask(Task(FROM_HERE, DoNothing(), TimeDelta()));
 
   EXPECT_TRUE(sequence->TakeTask());
   EXPECT_DCHECK_DEATH({ sequence->TakeTask(); });
@@ -165,7 +166,7 @@ TEST(TaskSchedulerSequenceTest, TakeEmptyFrontSlot) {
 
 // Verify that a DCHECK fires if TakeTask() is called on an empty sequence.
 TEST(TaskSchedulerSequenceTest, TakeEmptySequence) {
-  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>();
+  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(TaskTraits());
   EXPECT_DCHECK_DEATH({ sequence->TakeTask(); });
 }
 

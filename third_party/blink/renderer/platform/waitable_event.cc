@@ -41,8 +41,8 @@ bool WaitableEvent::IsSignaled() {
 
 size_t WaitableEvent::WaitMultiple(const WTF::Vector<WaitableEvent*>& events) {
   std::vector<base::WaitableEvent*> base_events;
-  for (size_t i = 0; i < events.size(); ++i)
-    base_events.push_back(events[i]->impl_.get());
+  for (WaitableEvent* event : events)
+    base_events.push_back(event->impl_.get());
   size_t idx =
       base::WaitableEvent::WaitMany(base_events.data(), base_events.size());
   DCHECK_LT(idx, events.size());

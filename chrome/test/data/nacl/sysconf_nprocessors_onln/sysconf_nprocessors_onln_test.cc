@@ -76,14 +76,14 @@ void MyInstance::HandleMessage(const pp::Var& message_data) {
 
     for (size_t ix = 0; kMsgHandlers[ix].request != NULL; ++ix) {
       if (op_name == kMsgHandlers[ix].request) {
-        fprintf(stderr, "found at index %u\n", ix);
+        fprintf(stderr, "found at index %zu\n", ix);
         kMsgHandlers[ix].handler(message_data, &sb);
         break;
       }
     }
 
     len = strlen(sb.c_str());
-    fprintf(stderr, "posting reply len %d\n", len);
+    fprintf(stderr, "posting reply len %zu\n", len);
     fprintf(stderr, "posting reply \"%s\".\n", sb.c_str());
 
     PostMessage(pp::Var(sb));

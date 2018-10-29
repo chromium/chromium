@@ -587,6 +587,10 @@ namespace networkingPrivate {
     long? SignalStrength;
   };
 
+  dictionary EAPStateProperties {
+    DOMString? Outer;
+  };
+
   dictionary EthernetProperties {
     boolean? AutoConnect;
     DOMString? Authentication;
@@ -677,6 +681,7 @@ namespace networkingPrivate {
 
   dictionary WiFiStateProperties {
     DOMString? BSSID;
+    EAPStateProperties? EAP;
     long? Frequency;
     DOMString? HexSSID;
     DOMString Security;

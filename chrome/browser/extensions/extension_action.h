@@ -181,6 +181,9 @@ class ExtensionAction {
   // called after SetDefaultIconImage().
   gfx::Image GetDefaultIconImage() const;
 
+  // Returns the placeholder image for the extension.
+  gfx::Image GetPlaceholderIconImage() const;
+
   // Determine whether or not the ExtensionAction has a value set for the given
   // |tab_id| for each property.
   bool HasPopupUrl(int tab_id) const;

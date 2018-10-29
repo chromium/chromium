@@ -36,6 +36,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
 
   void FireSelectedEvent(BrowserAccessibility* node);
   void FireExpandedEvent(BrowserAccessibility* node, bool is_expanded);
+  void FireLoadingEvent(BrowserAccessibility* node, bool is_loading);
 
   AtkObject* parent_object() { return parent_object_; }
 

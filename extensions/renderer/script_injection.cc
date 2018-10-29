@@ -56,7 +56,7 @@ int GetIsolatedWorldIdForInstance(const InjectionHost* injection_host,
 
   int id = 0;
   const std::string& key = injection_host->id().id();
-  IsolatedWorldMap::iterator iter = isolated_worlds.find(key);
+  auto iter = isolated_worlds.find(key);
   if (iter != isolated_worlds.end()) {
     id = iter->second;
   } else {

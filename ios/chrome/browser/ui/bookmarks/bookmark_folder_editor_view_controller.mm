@@ -14,7 +14,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
@@ -25,16 +24,10 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
-#include "ios/chrome/browser/ui/rtl_geometry.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Buttons/src/MDCFlatButton.h"
-#import "ios/third_party/material_components_ios/src/components/NavigationBar/src/MaterialNavigationBar.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/ShadowElevations/src/MaterialShadowElevations.h"
-#import "ios/third_party/material_components_ios/src/components/ShadowLayer/src/MaterialShadowLayer.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -139,15 +132,8 @@ folderEditorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
   DCHECK(bookmarkModel);
   DCHECK(bookmarkModel->loaded());
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    self =
-        [super initWithTableViewStyle:UITableViewStylePlain
-                          appBarStyle:ChromeTableViewControllerStyleNoAppBar];
-  } else {
-    self =
-        [super initWithTableViewStyle:UITableViewStylePlain
-                          appBarStyle:ChromeTableViewControllerStyleWithAppBar];
-  }
+  self = [super initWithTableViewStyle:UITableViewStylePlain
+                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
   if (self) {
     _bookmarkModel = bookmarkModel;
 
@@ -172,15 +158,10 @@ folderEditorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
   self.tableView.rowHeight = UITableViewAutomaticDimension;
   self.tableView.sectionHeaderHeight = 0;
   self.tableView.sectionFooterHeight = 0;
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    self.tableView.tableFooterView = [[UIView alloc] init];
-    [self.tableView
-        setSeparatorInset:UIEdgeInsetsMake(
-                              0, kBookmarkCellHorizontalLeadingInset, 0, 0)];
-  } else {
-    self.navigationController.navigationBarHidden = YES;
-    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-  }
+  self.tableView.tableFooterView = [[UIView alloc] init];
+  [self.tableView
+      setSeparatorInset:UIEdgeInsetsMake(0, kBookmarkCellHorizontalLeadingInset,
+                                         0, 0)];
 
   // Add Done button.
   UIBarButtonItem* doneItem = [[UIBarButtonItem alloc]
@@ -493,27 +474,11 @@ folderEditorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
                            action:nil];
-
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    deleteButton.tintColor = [UIColor redColor];
-    [self.navigationController.toolbar setShadowImage:[UIImage new]
-                                   forToolbarPosition:UIBarPositionAny];
-    [self setToolbarItems:@[ spaceButton, deleteButton, spaceButton ]
-                 animated:NO];
-  } else {
-    self.navigationController.toolbar.barTintColor = [UIColor whiteColor];
-    deleteButton.title = [deleteButton.title uppercaseString];
-    [deleteButton
-        setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                 [[MDCTypography fontLoader]
-                                                     mediumFontOfSize:14],
-                                                 NSFontAttributeName,
-                                                 [UIColor blackColor],
-                                                 NSForegroundColorAttributeName,
-                                                 nil]
-                      forState:UIControlStateNormal];
-    [self setToolbarItems:@[ deleteButton, spaceButton ] animated:NO];
-  }
+  deleteButton.tintColor = [UIColor redColor];
+  [self.navigationController.toolbar setShadowImage:[UIImage new]
+                                 forToolbarPosition:UIBarPositionAny];
+  [self setToolbarItems:@[ spaceButton, deleteButton, spaceButton ]
+               animated:NO];
 }
 
 - (void)updateSaveButtonState {

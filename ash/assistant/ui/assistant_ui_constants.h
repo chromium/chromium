@@ -16,11 +16,13 @@ namespace ash {
 
 // Appearance.
 constexpr int kCornerRadiusDip = 20;
+constexpr int kMiniUiCornerRadiusDip = 24;
 constexpr int kMaxHeightDip = 640;
 constexpr int kPaddingDip = 14;
 constexpr int kPreferredWidthDip = 640;
 constexpr int kSpacingDip = 8;
-constexpr int kVerticalMarginDip = 8;
+constexpr int kMarginDip = 8;
+constexpr int kUiElementHorizontalMarginDip = 32;
 
 // Typography.
 constexpr SkColor kTextColorHint = gfx::kGoogleGrey500;

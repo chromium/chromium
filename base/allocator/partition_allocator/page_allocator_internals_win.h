@@ -6,11 +6,12 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNALS_WIN_H_
 
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
+#include "base/logging.h"
 
 namespace base {
 
 // |VirtualAlloc| will fail if allocation at the hint address is blocked.
-const bool kHintIsAdvisory = false;
+constexpr bool kHintIsAdvisory = false;
 std::atomic<int32_t> s_allocPageErrorCode{ERROR_SUCCESS};
 
 int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
@@ -68,12 +69,10 @@ bool SetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  if (accessibility == PageInaccessible) {
+  if (accessibility == PageInaccessible)
     return VirtualFree(address, length, MEM_DECOMMIT) != 0;
-  } else {
-    return nullptr != VirtualAlloc(address, length, MEM_COMMIT,
-                                   GetAccessFlags(accessibility));
-  }
+  return nullptr != VirtualAlloc(address, length, MEM_COMMIT,
+                                 GetAccessFlags(accessibility));
 }
 
 void FreePagesInternal(void* address, size_t length) {

@@ -50,6 +50,7 @@ class ArcAppResult : public AppResult,
   arc::UserInteractionType GetContextMenuAppLaunchInteraction();
 
   std::unique_ptr<ArcAppIconLoader> icon_loader_;
+  std::unique_ptr<ArcAppIconLoader> chip_icon_loader_;
   std::unique_ptr<ArcAppContextMenu> context_menu_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcAppResult);

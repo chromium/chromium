@@ -11,26 +11,13 @@ template("build_closure") {
     outputs = [
       invoker.target,
     ]
+    response_file_contents = sources
     args = [
       "--target",
       rebase_path(invoker.target, root_build_dir),
+      "--sources-list",
+      "{{response_file_name}}",
     ]
-    if (defined(invoker.json_file)) {
-      # Optionally parse list of sources from a json file. Useful when the list
-      # is sufficiently long to create problems with length restrictions on the
-      # command line.
-      assert(defined(invoker.json_sources))
-      args += [
-        "--json_file",
-        rebase_path(invoker.json_file, root_build_dir),
-        "--json_sources",
-        invoker.json_sources,
-      ]
-    } else {
-      # If the number of source files is short, they can be directly extracted
-      # from the command line.
-      args += [ "--sources" ] + sources
-    }
     if (defined(invoker.path)) {
       args += [
         "--path",

@@ -38,6 +38,10 @@ class NotificationControlButtonsView;
 
 // An base class for a notification entry. Contains background and other
 // elements shared by derived notification views.
+// TODO(pkasting): This class only subclasses InkDropHostView because the
+// NotificationViewMD subclass needs ink drop functionality.  Rework ink drops
+// to not need to be the base class of views which use them, and move the
+// functionality to the subclass that uses these.
 class MESSAGE_CENTER_EXPORT MessageView : public views::InkDropHostView,
                                           public SlideOutController::Delegate,
                                           public views::FocusChangeListener {
@@ -104,13 +108,14 @@ class MESSAGE_CENTER_EXPORT MessageView : public views::InkDropHostView,
   virtual void OnSettingsButtonPressed(const ui::Event& event);
   virtual void OnSnoozeButtonPressed(const ui::Event& event);
 
-  // views::View
+  // views::InkDropHostView:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
+  void PaintChildren(const views::PaintInfo& paint_info) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnFocus() override;
   void OnBlur() override;
@@ -119,9 +124,9 @@ class MESSAGE_CENTER_EXPORT MessageView : public views::InkDropHostView,
   void AddedToWidget() override;
   const char* GetClassName() const final;
 
-  // message_center::SlideOutController::Delegate
+  // message_center::SlideOutController::Delegate:
   ui::Layer* GetSlideOutLayer() override;
-  void OnSlideChanged() override;
+  void OnSlideChanged(bool in_progress) override;
   void OnSlideOut() override;
 
   // views::FocusChangeListener:
@@ -143,15 +148,13 @@ class MESSAGE_CENTER_EXPORT MessageView : public views::InkDropHostView,
   // mode.
   void DisableSlideForcibly(bool disable);
 
+  // Updates the width of the buttons which are hidden and avail by swipe.
+  void SetSlideButtonWidth(int coutrol_button_width);
+
   void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
   std::string notification_id() const { return notification_id_; }
 
  protected:
-  // Creates and add close button to view hierarchy when necessary. Derived
-  // classes should call this after its view hierarchy is populated to ensure
-  // it is on top of other views.
-  void CreateOrUpdateCloseButtonView(const Notification& notification);
-
   virtual void UpdateControlButtonsVisibility() = 0;
 
   // Changes the background color and schedules a paint.

@@ -8,8 +8,12 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_tracker_service.h"
-#include "components/signin/core/browser/signin_manager_base.h"
-#include "google_apis/gaia/oauth2_token_service.h"
+#include "services/identity/public/cpp/access_token_info.h"
+#include "services/identity/public/cpp/identity_manager.h"
+
+namespace identity {
+class PrimaryAccountAccessTokenFetcher;
+}
 
 class Profile;
 
@@ -17,37 +21,17 @@ namespace safe_browsing {
 
 // Responsible for keeping track of advanced protection status of the sign-in
 // profile.
-// Note that for profile that is not signed-in or is in incognito mode, we
-// consider it NOT under advanced protection.
-class AdvancedProtectionStatusManager : public KeyedService,
-                                        public AccountTrackerService::Observer,
-                                        public SigninManagerBase::Observer {
+// Note that for profile that is not signed-in, we consider it NOT under
+// advanced protection.
+// For incognito profile Chrome returns users' advanced protection status
+// of its original profile.
+class AdvancedProtectionStatusManager
+    : public KeyedService,
+      public AccountTrackerService::Observer,
+      public identity::IdentityManager::Observer {
  public:
-  class AdvancedProtectionTokenConsumer : public OAuth2TokenService::Consumer {
-   public:
-    AdvancedProtectionTokenConsumer(const std::string& account_id,
-                                    AdvancedProtectionStatusManager* manager);
-
-    ~AdvancedProtectionTokenConsumer() override;
-
-    // OAuth2TokenService::Consumer implementation.
-    void OnGetTokenSuccess(const OAuth2TokenService::Request* request,
-                           const OAuth2AccessTokenConsumer::TokenResponse&
-                               token_response) override;
-    void OnGetTokenFailure(const OAuth2TokenService::Request* request,
-                           const GoogleServiceAuthError& error) override;
-
-   private:
-    AdvancedProtectionStatusManager* manager_;
-
-    DISALLOW_COPY_AND_ASSIGN(AdvancedProtectionTokenConsumer);
-  };
-
   explicit AdvancedProtectionStatusManager(Profile* profile);
   ~AdvancedProtectionStatusManager() override;
-
-  // If |kAdvancedProtectionStatusFeature| is enabled.
-  static bool IsEnabled();
 
   // If the primary account of |profile| is under advanced protection.
   static bool IsUnderAdvancedProtection(Profile* profile);
@@ -81,6 +65,10 @@ class AdvancedProtectionStatusManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AdvancedProtectionStatusManagerTest, AccountRemoval);
   FRIEND_TEST_ALL_PREFIXES(AdvancedProtectionStatusManagerTest,
                            StayInAdvancedProtection);
+  FRIEND_TEST_ALL_PREFIXES(AdvancedProtectionStatusManagerTest,
+                           AlreadySignedInAndUnderAPIncognito);
+  FRIEND_TEST_ALL_PREFIXES(AdvancedProtectionStatusManagerTest,
+                           AlreadySignedInAndNotUnderAPIncognito);
 
   void Initialize();
 
@@ -98,13 +86,17 @@ class AdvancedProtectionStatusManager : public KeyedService,
   void OnAccountUpdated(const AccountInfo& info) override;
   void OnAccountRemoved(const AccountInfo& info) override;
 
-  // SigninManagerBase::Observer implementations.
-  void GoogleSigninSucceeded(const AccountInfo& account_info) override;
-  void GoogleSignedOut(const AccountInfo& account_info) override;
+  // IdentityManager::Observer implementations.
+  void OnPrimaryAccountSet(const AccountInfo& account_info) override;
+  void OnPrimaryAccountCleared(const AccountInfo& account_info) override;
 
   void OnAdvancedProtectionEnabled();
 
   void OnAdvancedProtectionDisabled();
+
+  void OnAccessTokenFetchComplete(std::string account_id,
+                                  GoogleServiceAuthError error,
+                                  identity::AccessTokenInfo token_info);
 
   // Requests Gaia refresh token to obtain advanced protection status.
   void RefreshAdvancedProtectionStatus();
@@ -123,9 +115,6 @@ class AdvancedProtectionStatusManager : public KeyedService,
   // Decodes |id_token| to get advanced protection status.
   void OnGetIDToken(const std::string& account_id, const std::string& id_token);
 
-  void OnTokenRefreshDone(const OAuth2TokenService::Request* request,
-                          const GoogleServiceAuthError& error);
-
   // Only called in tests.
   void SetMinimumRefreshDelay(const base::TimeDelta& delay);
 
@@ -139,15 +128,13 @@ class AdvancedProtectionStatusManager : public KeyedService,
 
   Profile* const profile_;
 
-  SigninManagerBase* signin_manager_;
+  identity::IdentityManager* identity_manager_;
+  std::unique_ptr<identity::PrimaryAccountAccessTokenFetcher>
+      access_token_fetcher_;
   AccountTrackerService* account_tracker_service_;
 
   // Is the profile account under advanced protection.
   bool is_under_advanced_protection_;
-
-  std::unique_ptr<AdvancedProtectionTokenConsumer> token_consumer_;
-
-  std::unique_ptr<OAuth2TokenService::Request> access_token_request_;
 
   base::OneShotTimer timer_;
   base::Time last_refreshed_;

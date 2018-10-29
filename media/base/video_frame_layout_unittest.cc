@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -33,57 +34,116 @@ std::vector<VideoFrameLayout::Plane> CreatePlanes(
 
 }  // namespace
 
-TEST(VideoFrameLayout, Constructor) {
+TEST(VideoFrameLayout, CreateI420) {
   gfx::Size coded_size = gfx::Size(320, 180);
-  std::vector<int32_t> strides = {384, 192, 192};
-  std::vector<size_t> buffer_sizes = {73728, 18432, 18432};
-  VideoFrameLayout layout(PIXEL_FORMAT_I420, coded_size, strides, buffer_sizes);
+  auto layout = VideoFrameLayout::Create(PIXEL_FORMAT_I420, coded_size);
+  ASSERT_TRUE(layout.has_value());
 
-  EXPECT_EQ(layout.format(), PIXEL_FORMAT_I420);
-  EXPECT_EQ(layout.coded_size(), coded_size);
-  EXPECT_EQ(layout.num_planes(), 3u);
-  EXPECT_EQ(layout.num_buffers(), 3u);
-  EXPECT_EQ(layout.GetTotalBufferSize(), 110592u);
-  for (size_t i = 0; i < 3; ++i) {
-    EXPECT_EQ(layout.planes()[i].stride, strides[i]);
-    EXPECT_EQ(layout.planes()[i].offset, 0u);
-    EXPECT_EQ(layout.buffer_sizes()[i], buffer_sizes[i]);
+  auto num_of_planes = VideoFrame::NumPlanes(PIXEL_FORMAT_I420);
+  EXPECT_EQ(layout->format(), PIXEL_FORMAT_I420);
+  EXPECT_EQ(layout->coded_size(), coded_size);
+  EXPECT_EQ(layout->GetTotalBufferSize(), 0u);
+  EXPECT_EQ(layout->num_planes(), num_of_planes);
+  EXPECT_EQ(layout->num_buffers(), 0u);
+  for (size_t i = 0; i < num_of_planes; ++i) {
+    EXPECT_EQ(layout->planes()[i].stride, 0);
+    EXPECT_EQ(layout->planes()[i].offset, 0u);
   }
 }
 
-TEST(VideoFrameLayout, ConstructorWithPlanes) {
+TEST(VideoFrameLayout, CreateNV12) {
+  gfx::Size coded_size = gfx::Size(320, 180);
+  auto layout = VideoFrameLayout::Create(PIXEL_FORMAT_NV12, coded_size);
+  ASSERT_TRUE(layout.has_value());
+
+  auto num_of_planes = VideoFrame::NumPlanes(PIXEL_FORMAT_NV12);
+  EXPECT_EQ(layout->format(), PIXEL_FORMAT_NV12);
+  EXPECT_EQ(layout->coded_size(), coded_size);
+  EXPECT_EQ(layout->GetTotalBufferSize(), 0u);
+  EXPECT_EQ(layout->num_planes(), num_of_planes);
+  EXPECT_EQ(layout->num_buffers(), 0u);
+  for (size_t i = 0; i < num_of_planes; ++i) {
+    EXPECT_EQ(layout->planes()[i].stride, 0);
+    EXPECT_EQ(layout->planes()[i].offset, 0u);
+  }
+}
+
+TEST(VideoFrameLayout, CreateWithStrides) {
+  gfx::Size coded_size = gfx::Size(320, 180);
+  std::vector<int32_t> strides = {384, 192, 192};
+  std::vector<size_t> buffer_sizes = {73728, 18432, 18432};
+  auto layout = VideoFrameLayout::CreateWithStrides(
+      PIXEL_FORMAT_I420, coded_size, strides, buffer_sizes);
+  ASSERT_TRUE(layout.has_value());
+
+  EXPECT_EQ(layout->format(), PIXEL_FORMAT_I420);
+  EXPECT_EQ(layout->coded_size(), coded_size);
+  EXPECT_EQ(layout->num_planes(), 3u);
+  EXPECT_EQ(layout->num_buffers(), 3u);
+  EXPECT_EQ(layout->GetTotalBufferSize(), 110592u);
+  for (size_t i = 0; i < 3; ++i) {
+    EXPECT_EQ(layout->planes()[i].stride, strides[i]);
+    EXPECT_EQ(layout->planes()[i].offset, 0u);
+    EXPECT_EQ(layout->buffer_sizes()[i], buffer_sizes[i]);
+  }
+}
+
+TEST(VideoFrameLayout, CreateWithStridesNoBufferSizes) {
+  gfx::Size coded_size = gfx::Size(320, 180);
+  std::vector<int32_t> strides = {384, 192, 192};
+  auto layout = VideoFrameLayout::CreateWithStrides(PIXEL_FORMAT_I420,
+                                                    coded_size, strides);
+  ASSERT_TRUE(layout.has_value());
+
+  EXPECT_EQ(layout->format(), PIXEL_FORMAT_I420);
+  EXPECT_EQ(layout->coded_size(), coded_size);
+  EXPECT_EQ(layout->num_planes(), 3u);
+  EXPECT_EQ(layout->num_buffers(), 0u);
+  EXPECT_EQ(layout->GetTotalBufferSize(), 0u);
+  for (size_t i = 0; i < 3; ++i) {
+    EXPECT_EQ(layout->planes()[i].stride, strides[i]);
+    EXPECT_EQ(layout->planes()[i].offset, 0u);
+  }
+}
+
+TEST(VideoFrameLayout, CreateWithPlanes) {
   gfx::Size coded_size = gfx::Size(320, 180);
   std::vector<int32_t> strides = {384, 192, 192};
   std::vector<size_t> offsets = {0, 100, 200};
   std::vector<size_t> buffer_sizes = {73728, 18432, 18432};
-  VideoFrameLayout layout(PIXEL_FORMAT_I420, coded_size,
-                          CreatePlanes(strides, offsets), buffer_sizes);
+  auto layout = VideoFrameLayout::CreateWithPlanes(
+      PIXEL_FORMAT_I420, coded_size, CreatePlanes(strides, offsets),
+      buffer_sizes);
+  ASSERT_TRUE(layout.has_value());
 
-  EXPECT_EQ(layout.format(), PIXEL_FORMAT_I420);
-  EXPECT_EQ(layout.coded_size(), coded_size);
-  EXPECT_EQ(layout.num_planes(), 3u);
-  EXPECT_EQ(layout.num_buffers(), 3u);
-  EXPECT_EQ(layout.GetTotalBufferSize(), 110592u);
+  EXPECT_EQ(layout->format(), PIXEL_FORMAT_I420);
+  EXPECT_EQ(layout->coded_size(), coded_size);
+  EXPECT_EQ(layout->num_planes(), 3u);
+  EXPECT_EQ(layout->num_buffers(), 3u);
+  EXPECT_EQ(layout->GetTotalBufferSize(), 110592u);
   for (size_t i = 0; i < 3; ++i) {
-    EXPECT_EQ(layout.planes()[i].stride, strides[i]);
-    EXPECT_EQ(layout.planes()[i].offset, offsets[i]);
-    EXPECT_EQ(layout.buffer_sizes()[i], buffer_sizes[i]);
+    EXPECT_EQ(layout->planes()[i].stride, strides[i]);
+    EXPECT_EQ(layout->planes()[i].offset, offsets[i]);
+    EXPECT_EQ(layout->buffer_sizes()[i], buffer_sizes[i]);
   }
 }
 
-TEST(VideoFrameLayout, ConstructorNoStrideBufferSize) {
+TEST(VideoFrameLayout, CreateWithPlanesNoBufferSizes) {
   gfx::Size coded_size = gfx::Size(320, 180);
-  VideoFrameLayout layout(PIXEL_FORMAT_I420, coded_size);
+  std::vector<int32_t> strides = {384, 192, 192};
+  std::vector<size_t> offsets = {0, 100, 200};
+  auto layout = VideoFrameLayout::CreateWithPlanes(
+      PIXEL_FORMAT_I420, coded_size, CreatePlanes(strides, offsets));
+  ASSERT_TRUE(layout.has_value());
 
-  EXPECT_EQ(layout.format(), PIXEL_FORMAT_I420);
-  EXPECT_EQ(layout.coded_size(), coded_size);
-  EXPECT_EQ(layout.GetTotalBufferSize(), 0u);
-  EXPECT_EQ(layout.num_planes(), 4u);
-  EXPECT_EQ(layout.num_buffers(), 4u);
-  for (size_t i = 0; i < 4u; ++i) {
-    EXPECT_EQ(layout.planes()[i].stride, 0);
-    EXPECT_EQ(layout.planes()[i].offset, 0u);
-    EXPECT_EQ(layout.buffer_sizes()[i], 0u);
+  EXPECT_EQ(layout->format(), PIXEL_FORMAT_I420);
+  EXPECT_EQ(layout->coded_size(), coded_size);
+  EXPECT_EQ(layout->num_planes(), 3u);
+  EXPECT_EQ(layout->num_buffers(), 0u);
+  EXPECT_EQ(layout->GetTotalBufferSize(), 0u);
+  for (size_t i = 0; i < 3; ++i) {
+    EXPECT_EQ(layout->planes()[i].stride, strides[i]);
+    EXPECT_EQ(layout->planes()[i].offset, offsets[i]);
   }
 }
 
@@ -92,33 +152,35 @@ TEST(VideoFrameLayout, CopyConstructor) {
   std::vector<int32_t> strides = {384, 192, 192};
   std::vector<size_t> offsets = {0, 100, 200};
   std::vector<size_t> buffer_sizes = {73728, 18432, 18432};
-  VideoFrameLayout layout(PIXEL_FORMAT_I420, coded_size,
-                          CreatePlanes(strides, offsets), buffer_sizes);
+  auto layout = VideoFrameLayout::CreateWithPlanes(
+      PIXEL_FORMAT_I420, coded_size, CreatePlanes(strides, offsets),
+      buffer_sizes);
+  ASSERT_TRUE(layout.has_value());
 
-  VideoFrameLayout layout_clone(layout);
-
+  VideoFrameLayout layout_clone(*layout);
   EXPECT_EQ(layout_clone.format(), PIXEL_FORMAT_I420);
   EXPECT_EQ(layout_clone.coded_size(), coded_size);
   EXPECT_EQ(layout_clone.num_planes(), 3u);
   EXPECT_EQ(layout_clone.num_buffers(), 3u);
   EXPECT_EQ(layout_clone.GetTotalBufferSize(), 110592u);
   for (size_t i = 0; i < 3; ++i) {
-    EXPECT_EQ(layout.planes()[i].stride, strides[i]);
-    EXPECT_EQ(layout.planes()[i].offset, offsets[i]);
+    EXPECT_EQ(layout->planes()[i].stride, strides[i]);
+    EXPECT_EQ(layout->planes()[i].offset, offsets[i]);
     EXPECT_EQ(layout_clone.buffer_sizes()[i], buffer_sizes[i]);
   }
 }
 
-TEST(VideoFrameLayout, AssignmentOperator) {
+TEST(VideoFrameLayout, CopyAssignmentOperator) {
   gfx::Size coded_size = gfx::Size(320, 180);
   std::vector<int32_t> strides = {384, 192, 192};
   std::vector<size_t> offsets = {0, 100, 200};
   std::vector<size_t> buffer_sizes = {73728, 18432, 18432};
-  VideoFrameLayout layout(PIXEL_FORMAT_I420, coded_size,
-                          CreatePlanes(strides, offsets), buffer_sizes);
+  auto layout = VideoFrameLayout::CreateWithPlanes(
+      PIXEL_FORMAT_I420, coded_size, CreatePlanes(strides, offsets),
+      buffer_sizes);
+  ASSERT_TRUE(layout.has_value());
 
-  VideoFrameLayout layout_clone = layout;
-
+  VideoFrameLayout layout_clone = *layout;
   EXPECT_EQ(layout_clone.format(), PIXEL_FORMAT_I420);
   EXPECT_EQ(layout_clone.coded_size(), coded_size);
   EXPECT_EQ(layout_clone.num_planes(), 3u);
@@ -136,10 +198,12 @@ TEST(VideoFrameLayout, MoveConstructor) {
   std::vector<int32_t> strides = {384, 192, 192};
   std::vector<size_t> offsets = {0, 100, 200};
   std::vector<size_t> buffer_sizes = {73728, 18432, 18432};
-  VideoFrameLayout layout(PIXEL_FORMAT_I420, coded_size,
-                          CreatePlanes(strides, offsets), buffer_sizes);
+  auto layout = VideoFrameLayout::CreateWithPlanes(
+      PIXEL_FORMAT_I420, coded_size, CreatePlanes(strides, offsets),
+      buffer_sizes);
+  ASSERT_TRUE(layout.has_value());
 
-  VideoFrameLayout layout_move(std::move(layout));
+  VideoFrameLayout layout_move(std::move(*layout));
 
   EXPECT_EQ(layout_move.format(), PIXEL_FORMAT_I420);
   EXPECT_EQ(layout_move.coded_size(), coded_size);
@@ -153,20 +217,22 @@ TEST(VideoFrameLayout, MoveConstructor) {
   }
 
   // Members in object being moved are cleared except const members.
-  EXPECT_EQ(layout.format(), PIXEL_FORMAT_I420);
-  EXPECT_EQ(layout.coded_size(), coded_size);
-  EXPECT_EQ(layout.num_planes(), 0u);
-  EXPECT_EQ(layout.num_buffers(), 0u);
-  EXPECT_EQ(layout.GetTotalBufferSize(), 0u);
+  EXPECT_EQ(layout->format(), PIXEL_FORMAT_I420);
+  EXPECT_EQ(layout->coded_size(), coded_size);
+  EXPECT_EQ(layout->num_planes(), 0u);
+  EXPECT_EQ(layout->num_buffers(), 0u);
+  EXPECT_EQ(layout->GetTotalBufferSize(), 0u);
 }
 
 TEST(VideoFrameLayout, ToString) {
   gfx::Size coded_size = gfx::Size(320, 180);
   std::vector<int32_t> strides = {384, 192, 192};
   std::vector<size_t> buffer_sizes = {73728, 18432, 18432};
-  VideoFrameLayout layout(PIXEL_FORMAT_I420, coded_size, strides, buffer_sizes);
+  auto layout = VideoFrameLayout::CreateWithStrides(
+      PIXEL_FORMAT_I420, coded_size, strides, buffer_sizes);
+  ASSERT_TRUE(layout.has_value());
 
-  EXPECT_EQ(layout.ToString(),
+  EXPECT_EQ(layout->ToString(),
             "VideoFrameLayout format: PIXEL_FORMAT_I420, coded_size: 320x180, "
             "num_buffers: 3, buffer_sizes: [73728, 18432, 18432], "
             "num_planes: 3, "
@@ -178,23 +244,26 @@ TEST(VideoFrameLayout, ToStringOneBuffer) {
   std::vector<int32_t> strides = {384};
   std::vector<size_t> offsets = {100};
   std::vector<size_t> buffer_sizes = {122880};
-  VideoFrameLayout layout(PIXEL_FORMAT_NV12, coded_size,
-                          CreatePlanes(strides, offsets), buffer_sizes);
+  auto layout = VideoFrameLayout::CreateWithPlanes(
+      PIXEL_FORMAT_NV12, coded_size, CreatePlanes(strides, offsets),
+      buffer_sizes);
+  ASSERT_TRUE(layout.has_value());
 
-  EXPECT_EQ(layout.ToString(),
+  EXPECT_EQ(layout->ToString(),
             "VideoFrameLayout format: PIXEL_FORMAT_NV12, coded_size: 320x180, "
-            "num_buffers: 1, buffer_sizes: [122880], "
-            "num_planes: 1, planes (stride, offset): [(384, 100)]");
+            "num_buffers: 1, buffer_sizes: [122880], num_planes: 1, "
+            "planes (stride, offset): [(384, 100)]");
 }
 
 TEST(VideoFrameLayout, ToStringNoBufferInfo) {
   gfx::Size coded_size = gfx::Size(320, 180);
-  VideoFrameLayout layout(PIXEL_FORMAT_NV12, coded_size);
+  auto layout = VideoFrameLayout::Create(PIXEL_FORMAT_NV12, coded_size);
+  ASSERT_TRUE(layout.has_value());
 
-  EXPECT_EQ(layout.ToString(),
+  EXPECT_EQ(layout->ToString(),
             "VideoFrameLayout format: PIXEL_FORMAT_NV12, coded_size: 320x180, "
-            "num_buffers: 4, buffer_sizes: [0, 0, 0, 0], num_planes: 4, "
-            "planes (stride, offset): [(0, 0), (0, 0), (0, 0), (0, 0)]");
+            "num_buffers: 0, buffer_sizes: [], num_planes: 2, "
+            "planes (stride, offset): [(0, 0), (0, 0)]");
 }
 
 }  // namespace media

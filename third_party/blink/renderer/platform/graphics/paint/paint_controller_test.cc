@@ -896,7 +896,7 @@ TEST_P(PaintControllerTest, CachedSubsequenceContainingFragments) {
   FakeDisplayItemClient container("container");
 
   // The first paint.
-  auto paint_container = [this, &context, &container, kFragmentCount]() {
+  auto paint_container = [this, &context, &container]() {
     SubsequenceRecorder r(context, container);
     for (size_t i = 0; i < kFragmentCount; ++i) {
       ScopedDisplayItemFragment scoped_fragment(context, i);

@@ -30,7 +30,7 @@ namespace internal {
 class BASE_EXPORT PlatformNativeWorkerPoolWin : public SchedulerWorkerPool {
  public:
   PlatformNativeWorkerPoolWin(TrackedRef<TaskTracker> task_tracker,
-                              DelayedTaskManager* delayed_task_manager);
+                              TrackedRef<Delegate> delegate);
 
   // Destroying a PlatformNativeWorkerPoolWin is not allowed in
   // production; it is always leaked. In tests, it can only be destroyed after
@@ -42,6 +42,7 @@ class BASE_EXPORT PlatformNativeWorkerPoolWin : public SchedulerWorkerPool {
 
   // SchedulerWorkerPool:
   void JoinForTesting() override;
+  void ReEnqueueSequence(scoped_refptr<Sequence> sequence) override;
 
  private:
   // Callback that gets run by |pool_|. It runs a task off the next sequence on

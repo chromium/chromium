@@ -12,7 +12,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "components/subresource_filter/core/common/document_load_statistics.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/mojom/subresource_filter.mojom.h"
@@ -46,12 +45,14 @@ class DocumentSubresourceFilter {
   const mojom::ActivationState& activation_state() const {
     return activation_state_;
   }
-  const DocumentLoadStatistics& statistics() const { return statistics_; }
+  const mojom::DocumentLoadStatistics& statistics() const {
+    return statistics_;
+  }
 
   // WARNING: This is only to allow DocumentSubresourceFilter's wrappers to
   // modify the |statistics|.
   // TODO(pkalinnikov): Find a better way to achieve this.
-  DocumentLoadStatistics& statistics() { return statistics_; }
+  mojom::DocumentLoadStatistics& statistics() { return statistics_; }
 
   LoadPolicy GetLoadPolicy(
       const GURL& subresource_url,
@@ -77,7 +78,7 @@ class DocumentSubresourceFilter {
   // Equals nullptr iff |activation_state_.filtering_disabled_for_document|.
   std::unique_ptr<FirstPartyOrigin> document_origin_;
 
-  DocumentLoadStatistics statistics_;
+  mojom::DocumentLoadStatistics statistics_;
 
   DISALLOW_COPY_AND_ASSIGN(DocumentSubresourceFilter);
 };

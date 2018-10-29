@@ -39,15 +39,16 @@ def _CheckTestharnessResults(input_api, output_api):
 def _TestharnessGenericBaselinesToCheck(input_api):
     """Returns a list of paths of generic baselines for testharness.js tests."""
     baseline_files = []
+    this_dir = input_api.PresubmitLocalPath()
     for f in input_api.AffectedFiles():
         if f.Action() == 'D':
             continue
         path = f.AbsoluteLocalPath()
         if not path.endswith('-expected.txt'):
             continue
-        if (input_api.os_path.join('LayoutTests', 'platform') in path or
-            input_api.os_path.join('LayoutTests', 'virtual') in path or
-            input_api.os_path.join('LayoutTests', 'flag-specific') in path):
+        if (input_api.os_path.join(this_dir, 'platform') in path or
+            input_api.os_path.join(this_dir, 'virtual') in path or
+            input_api.os_path.join(this_dir, 'flag-specific') in path):
             continue
         baseline_files.append(path)
     return baseline_files
@@ -71,20 +72,18 @@ def _CheckFilesUsingEventSender(input_api, output_api):
 
 
 def _CheckTestExpectations(input_api, output_api):
-    local_paths = [f.LocalPath() for f in input_api.AffectedFiles()]
-    if any('LayoutTests' in path for path in local_paths):
-        lint_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-            '..', '..', 'blink', 'tools', 'lint_test_expectations.py')
-        _, errs = input_api.subprocess.Popen(
-            [input_api.python_executable, lint_path],
-            stdout=input_api.subprocess.PIPE,
-            stderr=input_api.subprocess.PIPE).communicate()
-        if not errs:
-            return [output_api.PresubmitError(
-                "lint_test_expectations.py failed "
-                "to produce output; check by hand. ")]
-        if errs.strip() != 'Lint succeeded.':
-            return [output_api.PresubmitError(errs)]
+    lint_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
+        '..', '..', 'blink', 'tools', 'lint_test_expectations.py')
+    _, errs = input_api.subprocess.Popen(
+        [input_api.python_executable, lint_path],
+        stdout=input_api.subprocess.PIPE,
+        stderr=input_api.subprocess.PIPE).communicate()
+    if not errs:
+        return [output_api.PresubmitError(
+            "lint_test_expectations.py failed "
+            "to produce output; check by hand. ")]
+    if errs.strip() != 'Lint succeeded.':
+        return [output_api.PresubmitError(errs)]
     return []
 
 
@@ -94,7 +93,7 @@ def _CheckForJSTest(input_api, output_api):
 
     def source_file_filter(path):
         return input_api.FilterSourceFile(path,
-                                          white_list=[r'third_party/WebKit/LayoutTests/.*\.(html|js|php|pl|svg)$'])
+                                          white_list=[r'\.(html|js|php|pl|svg)$'])
 
     errors = input_api.canned_checks._FindNewViolationsOfRule(
         lambda _, x: not jstest_re.search(x), input_api, source_file_filter)

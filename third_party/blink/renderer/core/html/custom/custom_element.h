@@ -55,13 +55,13 @@ class CORE_EXPORT CustomElement {
 
     if (name.Is8Bit()) {
       const LChar* characters = name.Characters8();
-      for (size_t i = 1; i < name.length(); ++i) {
+      for (wtf_size_t i = 1; i < name.length(); ++i) {
         if (!Character::IsPotentialCustomElementName8BitChar(characters[i]))
           return false;
       }
     } else {
       const UChar* characters = name.Characters16();
-      for (size_t i = 1; i < name.length();) {
+      for (wtf_size_t i = 1; i < name.length();) {
         UChar32 ch;
         U16_NEXT(characters, i, name.length(), ch);
         if (!Character::IsPotentialCustomElementNameChar(ch))

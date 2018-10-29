@@ -1,6 +1,39 @@
 # crbug.com/738611: Need to test all of WebUI with Polymer 2 while the migration
 # is still ongoing.
+#
+# Failing tests
+#
+# The following tests are currently failing with Polymer 2 on CrOS only. Need to
+# be fixed and moved to the "Passing tests" section further down in this file.
+#
+# NOTE: Please do not add new exclusions to this file. Instead fix the test in
+# question such that it passes with --enable-features=WebUIPolymer2 (and with
+# GN optimize_webui=true and false).
 
+# Failing on Chrome OS only:
+-LoginUITest.OobeCatchException
+-LoginUITest.OobeNoExceptions
+
+# Failing on Chrome OS MSAN only:
+-ActiveDirectoryLoginAutocompleteTest.PRE_TestAutocomplete
+-ActiveDirectoryLoginAutocompleteTest.PRE_LoginSuccess
+-ActiveDirectoryLoginTest.PRE_PasswordChange_LoginSuccess
+-ActiveDirectoryLoginTest.PRE_PasswordChange_UIErrors
+-ActiveDirectoryLoginTest.PRE_LoginErrors
+-ActiveDirectoryLoginTest.PRE_LoginSuccess
+-ActiveDirectoryLoginTest.PRE_PasswordChange_ReopenClearErrors
+-LoginSigninTest.WebUIVisible
+-LoginUITest.PRE_InterruptedAutoStartEnrollment
+-LoginUITest.InterruptedAutoStartEnrollment
+-LoginUITest.PRE_LoginNoExceptions
+-LoginUITest.LoginNoExceptions
+-LoginUITest.PRE_LoginUIVisible
+-OobeDisplayChooserTest.RemovingPrimaryDisplaySanityCheck
+-OobeTest.Accelerator
+-OobeTest.NewUser
+
+# Passing tests
+#
 # There are overall very few WebUI interactive_ui_tests, so list them here
 # explicitly, instead of running all interactive_ui_tests.
 CrElementsActionMenuTest.All
@@ -13,7 +46,8 @@ CrSettingsFocusRowBehavior.FocusTest
 CrSettingsSyncPageTest.All
 MaterialBookmarksFocusTest.All
 MaterialHistoryFocusTest.All
-PrintPreviewDestinationDialogInteractiveTest.FocusSearchBox
-PrintPreviewPrintHeaderInteractiveTest.FocusPrintOnReady
+PrintPreviewDestinationDialogInteractiveTest.*
+PrintPreviewNumberSettingsSectionInteractiveTest.BlurResetsEmptyInput
 PrintPreviewPagesSettingsTest.*
+PrintPreviewPrintHeaderInteractiveTest.FocusPrintOnReady
 SettingsUIBrowserTest.All

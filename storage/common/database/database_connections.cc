@@ -21,8 +21,7 @@ bool DatabaseConnections::IsEmpty() const {
 bool DatabaseConnections::IsDatabaseOpened(
     const std::string& origin_identifier,
     const base::string16& database_name) const {
-  OriginConnections::const_iterator origin_it =
-      connections_.find(origin_identifier);
+  auto origin_it = connections_.find(origin_identifier);
   if (origin_it == connections_.end())
     return false;
   const DBConnections& origin_connections = origin_it->second;
@@ -71,10 +70,9 @@ DatabaseConnections::RemoveConnections(const DatabaseConnections& connections) {
 int64_t DatabaseConnections::GetOpenDatabaseSize(
     const std::string& origin_identifier,
     const base::string16& database_name) const {
-  OriginConnections::const_iterator origin_it =
-      connections_.find(origin_identifier);
+  auto origin_it = connections_.find(origin_identifier);
   DCHECK(origin_it != connections_.end()) << "Database not opened";
-  DBConnections::const_iterator it = origin_it->second.find(database_name);
+  auto it = origin_it->second.find(database_name);
   DCHECK(it != origin_it->second.end()) << "Database not opened";
   return it->second.second;
 }
@@ -102,8 +100,7 @@ bool DatabaseConnections::RemoveConnectionsHelper(
     const std::string& origin_identifier,
     const base::string16& database_name,
     int num_connections) {
-  OriginConnections::iterator origin_iterator =
-      connections_.find(origin_identifier);
+  auto origin_iterator = connections_.find(origin_identifier);
   DCHECK(origin_iterator != connections_.end());
   DBConnections& db_connections = origin_iterator->second;
   int& count = db_connections[database_name].first;

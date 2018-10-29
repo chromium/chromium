@@ -8,7 +8,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ntp_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:contentDescription="@string/accessibility_new_incognito_tab_page" >
 
     <org.chromium.chrome.browser.ntp.NewTabPageScrollView
         android:id="@+id/ntp_scrollview"
@@ -17,10 +20,7 @@
         android:layout_height="match_parent"
         android:fadingEdgeLength="9dp"
         android:fillViewport="false"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:requiresFadingEdge="vertical"
-        android:contentDescription="@string/accessibility_new_incognito_tab_page" >
+        android:requiresFadingEdge="vertical" >
 
         <LinearLayout
             android:id="@+id/new_tab_incognito_container"
@@ -45,9 +45,8 @@
                 android:id="@+id/ntp_incognito_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-light"
                 android:text="@string/new_tab_incognito_header"
-                android:textAppearance="@style/WhiteHeadlineIncognito" />
+                android:textAppearance="@style/WhiteHeadline" />
 
             <TextView
                 android:id="@+id/new_tab_incognito_message"

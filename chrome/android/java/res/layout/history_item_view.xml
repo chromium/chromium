@@ -15,12 +15,12 @@
 
         <include layout="@layout/modern_list_item_view" />
 
-        <org.chromium.chrome.browser.widget.TintedImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/remove"
             style="@style/ListItemEndIconSmall"
             android:contentDescription="@string/remove"
             android:src="@drawable/btn_delete_24dp"
-            app:chrometint="@color/light_icon_color" />
+            app:tint="@color/light_icon_color" />
     </LinearLayout>
 
 </org.chromium.chrome.browser.history.HistoryItemView>

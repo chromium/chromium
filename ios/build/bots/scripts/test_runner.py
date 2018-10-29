@@ -9,11 +9,13 @@ from multiprocessing import pool
 import argparse
 import collections
 import errno
+import glob
 import json
 import os
 import plistlib
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -116,6 +118,26 @@ class XcodePathNotFoundError(TestRunnerError):
   def __init__(self, xcode_path):
     super(XcodePathNotFoundError, self).__init__(
         'xcode_path is not specified or does not exist: "%s"' % xcode_path)
+
+
+class ReplayPathNotFoundError(TestRunnerError):
+  """The requested app was not found."""
+  def __init__(self, replay_path):
+    super(ReplayPathNotFoundError, self).__init__(
+        'Replay path does not exist: %s' % replay_path)
+
+
+class WprToolsNotFoundError(TestRunnerError):
+  """wpr_tools_path is not specified."""
+  def __init__(self, wpr_tools_path):
+    super(WprToolsNotFoundError, self).__init__(
+        'wpr_tools_path is not specified or not found: "%s"' % wpr_tools_path)
+
+
+class ShardingDisabledError(TestRunnerError):
+  """Temporary error indicating that sharding is not yet implemented."""
+  def __init__(self):
+    super(ShardingDisabledError, self).__init__('Sharding has not been implemented!')
 
 
 def get_kif_test_filter(tests, invert=False):
@@ -802,10 +824,10 @@ class SimulatorTestRunner(TestRunner):
       cmd.append(self.xctest_path)
 
     proc = subprocess.Popen(
-      cmd,
-      env=self.get_launch_env(),
-      stdout=subprocess.PIPE,
-      stderr=subprocess.STDOUT,
+        cmd,
+        env=self.get_launch_env(),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
     )
 
     out = []
@@ -910,6 +932,353 @@ class SimulatorTestRunner(TestRunner):
     if self.xctest_path:
       env['NSUnbufferedIO'] = 'YES'
     return env
+
+  def copy_trusted_certificate(self, cert_path):
+    '''Copies a TrustStore file with a trusted HTTPS certificate into all sims.
+
+      This allows the simulators to access HTTPS webpages served through WprGo.
+
+      Args:
+        cert_path: Path to the certificate to copy to all emulators
+    '''
+    trustStores = glob.glob(
+        '{}/Library/Developer/CoreSimulator/Devices/*/data/Library/Keychains/{}'.
+        format(os.path.expanduser('~'), 'TrustStore.sqlite3'))
+    for trustStore in trustStores:
+      print 'Copying TrustStore to {}'.format(trustStore)
+      shutil.copy(cert_path, trustStore)
+
+
+class WprProxySimulatorTestRunner(SimulatorTestRunner):
+  """Class for running simulator tests with WPR against saved website replays"""
+
+  def __init__(
+      self,
+      app_path,
+      iossim_path,
+      replay_path,
+      platform,
+      version,
+      wpr_tools_path,
+      xcode_build_version,
+      out_dir,
+      env_vars=None,
+      mac_toolchain='',
+      retries=None,
+      shards=None,
+      test_args=None,
+      test_cases=None,
+      xcode_path='',
+      xctest=False,
+  ):
+    """Initializes a new instance of this class.
+
+    Args:
+      app_path: Path to the compiled .app or .ipa to run.
+      iossim_path: Path to the compiled iossim binary to use.
+      replay_path: Path to the folder where WPR replay and recipe files live.
+      platform: Name of the platform to simulate. Supported values can be found
+        by running "iossim -l". e.g. "iPhone 5s", "iPad Retina".
+      version: Version of iOS the platform should be running. Supported values
+        can be found by running "iossim -l". e.g. "9.3", "8.2", "7.1".
+      xcode_build_version: Xcode build version to install before running tests.
+      out_dir: Directory to emit test data into.
+      env_vars: List of environment variables to pass to the test itself.
+      mac_toolchain: Command to run `mac_toolchain` tool.
+      retries: Number of times to retry failed test cases.
+      test_args: List of strings to pass as arguments to the test when
+        launching.
+      test_cases: List of tests to be included in the test run. None or [] to
+        include all tests.
+      wpr_tools_path: Path to pre-installed (from CIPD) WPR-related tools
+      xcode_path: Path to Xcode.app folder where its contents will be installed.
+      xctest: Whether or not this is an XCTest.
+
+    Raises:
+      AppNotFoundError: If the given app does not exist.
+      PlugInsNotFoundError: If the PlugIns directory does not exist for XCTests.
+      XcodeVersionNotFoundError: If the given Xcode version does not exist.
+      XCTestPlugInNotFoundError: If the .xctest PlugIn does not exist.
+    """
+    super(WprProxySimulatorTestRunner, self).__init__(
+      app_path,
+      iossim_path,
+      platform,
+      version,
+      xcode_build_version,
+      out_dir,
+      env_vars=env_vars,
+      mac_toolchain=mac_toolchain,
+      retries=retries,
+      shards=shards,
+      test_args=test_args,
+      test_cases=test_cases,
+      xcode_path=xcode_path,
+      xctest=xctest,
+    )
+
+    replay_path = os.path.abspath(replay_path)
+    if not os.path.exists(replay_path):
+      raise ReplayPathNotFoundError(replay_path)
+    self.replay_path = replay_path
+
+    if not os.path.exists(wpr_tools_path):
+      raise WprToolsNotFoundError(wpr_tools_path)
+    self.wpr_tools_path = wpr_tools_path
+
+    self.proxy_process = None
+    self.wprgo_process = None
+
+  def set_up(self):
+    '''Performs setup actions which must occur prior to every test launch.'''
+    super(WprProxySimulatorTestRunner, self).set_up()
+
+    cert_path = "{}/TrustStore_trust.sqlite3".format(self.wpr_tools_path)
+
+    self.copy_trusted_certificate(cert_path)
+    self.proxy_start()
+
+  def tear_down(self):
+    '''Performs cleanup actions which must occur after every test launch.'''
+    super(WprProxySimulatorTestRunner, self).tear_down()
+    self.proxy_stop()
+    self.wprgo_stop()
+
+  def _run(self, cmd, shards=1):
+    '''Runs the specified command, parsing GTest output.
+
+    Args:
+      cmd: List of strings forming the command to run.
+      NOTE: in the case of WprProxySimulatorTestRunner, cmd
+        is just a descriptor for the test, and not indicative
+        of the actual command we build and execute in _run.
+
+    Returns:
+      GTestResult instance.
+    '''
+
+    result = gtest_utils.GTestResult(cmd)
+    completed_without_failure = True
+    total_returncode = 0
+
+    if shards > 1:
+      # TODO(crbug.com/881096): reimplement sharding in the future
+      raise ShardingDisabledError()
+    else:
+      # TODO(crbug.com/812705): Implement test sharding for unit tests.
+      # TODO(crbug.com/812712): Use thread pool for DeviceTestRunner as well.
+
+      # General algorithm explanation (will clean up later)
+      # For each recipe in the test folder, if there is a matching replay,
+      # Run the test suite on it (similar to how SimulatorTestRunner does)
+      # and record the results for that test into the parser.
+      # I still need to take the results from the parser and change the test
+      # name to be the recipe name (since the test suite name is the same)
+      # before loading those results into the result variable.
+      for recipePath in glob.glob('{}/*.test'.format(self.replay_path)):
+        baseName = os.path.basename(recipePath)
+        testName = os.path.splitext(baseName)[0]
+        replayPath = '{}/{}'.format(self.replay_path, testName)
+
+        if os.path.isfile(replayPath):
+          print 'Running test for recipe {}'.format(recipePath)
+          self.wprgo_start(replayPath)
+
+          # TODO(crbug.com/881096): Consider reusing get_launch_command
+          #  and adding the autofillautomation flag to it
+
+          # TODO(crbug.com/881096): We only run AutofillAutomationTestCase
+          #  as we have other unit tests in the suite which are not related
+          #  to testing website recipe/replays. We should consider moving
+          #  one or the other to a different suite.
+
+          # For the website replay test suite, we need to pass in a single
+          # recipe at a time, with the flag "autofillautomation"
+          recipe_cmd = [
+            self.iossim_path, '-d', self.platform, '-s',
+            self.version, '-t', 'AutofillAutomationTestCase', '-c',
+            '-autofillautomation={}'.format(recipePath)
+          ]
+          for env_var in self.env_vars:
+            recipe_cmd.extend(['-e', env_var])
+
+          for test_arg in self.test_args:
+            recipe_cmd.extend(['-c', test_arg])
+
+          recipe_cmd.append(self.app_path)
+          if self.xctest_path:
+            recipe_cmd.append(self.xctest_path)
+
+          proc = subprocess.Popen(
+              recipe_cmd,
+              env=self.get_launch_env(),
+              stdout=subprocess.PIPE,
+              stderr=subprocess.STDOUT,
+          )
+
+          if self.xctest_path:
+            parser = xctest_utils.XCTestLogParser()
+          else:
+            parser = gtest_utils.GTestLogParser()
+
+          while True:
+            line = proc.stdout.readline()
+            if not line:
+              break
+            line = line.rstrip()
+            parser.ProcessLine(line)
+            print line
+            sys.stdout.flush()
+
+          proc.wait()
+          sys.stdout.flush()
+
+          self.wprgo_stop()
+
+          for test in parser.FailedTests(include_flaky=True):
+            # All test names will be the same since we re-run the same suite
+            # therefore, to differentiate the results, we append the recipe
+            # name to the test suite.
+            # This is why we create a new parser for each recipe run, since when
+            # ingesting results from xcode, the test suite name is the same.
+            testWithRecipeName = "{}.{}".format(baseName, test)
+
+            # Test cases are named as <test group>.<test case>. If the test case
+            # is prefixed w/"FLAKY_", it should be reported as flaked not failed
+            if '.' in test and test.split(
+                '.', 1)[1].startswith('FLAKY_'):
+              result.flaked_tests[
+                  testWithRecipeName] = parser.FailureDescription(test)
+            else:
+              result.failed_tests[
+                  testWithRecipeName] = parser.FailureDescription(test)
+
+          for test in parser.PassedTests(include_flaky=True):
+            testWithRecipeName = "{}.{}".format(baseName, test)
+            result.passed_tests.extend([testWithRecipeName])
+
+          # Check for runtime errors.
+          if self.xctest_path and parser.SystemAlertPresent():
+            raise SystemAlertPresentError()
+          if proc.returncode != 0:
+            total_returncode = proc.returncode
+          if parser.CompletedWithoutFailure() == False:
+            completed_without_failure = False
+          print '%s test returned %s' % (recipePath, proc.returncode)
+          print
+
+        else:
+          print 'No matching replay file for recipe {}'.format(
+              recipePath)
+
+    # iossim can return 5 if it exits noncleanly even if all tests passed.
+    # Therefore we cannot rely on process exit code to determine success.
+
+    # NOTE: total_returncode is 0 OR the last non-zero return code from a test.
+    result.finalize(total_returncode, completed_without_failure)
+    return result
+
+  def get_launch_command(self, test_filter=[], invert=False):
+    '''Returns the name of the test, instead of the real launch command.
+    We build our own command in _run, which is what this is usually passed to,
+    so instead we just use this for a test descriptor.
+
+    Args:
+      test_filter: List of test cases to filter.
+      invert: Whether to invert the filter or not. Inverted, the filter will
+      match everything except the given test cases.
+
+    Returns:
+      A list of strings forming the command to launch the test.
+    '''
+
+    invert_str = "Inverted" if invert else ""
+    if test_filter:
+      return [
+        '{} WprProxySimulatorTest'.format(invert_str),
+        'Test folder: {}'.format(self.replay_path)
+      ]
+    else:
+      return [
+        '{} WprProxySimulatorTest'.format(invert_str),
+        'Filter: {}'.format(' '.join(test_filter)),
+        'Test folder: {}'.format(self.replay_path)
+      ]
+
+  def proxy_start(self):
+    '''Starts tsproxy and routes the machine's traffic through tsproxy.'''
+
+    # Stops any straggling instances of WPRgo that may hog ports 8080/8081
+    subprocess.check_call('lsof -ti:8080 | xargs kill -9', shell=True)
+    subprocess.check_call('lsof -ti:8081| xargs kill -9', shell=True)
+
+    # We route all network adapters through the proxy, since it is easier than
+    # determining which network adapter is being used currently.
+    network_services = subprocess.check_output(
+      ['networksetup', '-listallnetworkservices']).strip().split('\n')
+    if len(network_services) > 1:
+      # We ignore the first line as it is a description of the command's output.
+      network_services = network_services[1:]
+
+      for service in network_services:
+        subprocess.check_call([
+          'networksetup', '-setsocksfirewallproxystate', service,
+          'on'
+        ])
+        subprocess.check_call([
+          'networksetup', '-setsocksfirewallproxy', service,
+          '127.0.0.1', '1080'
+        ])
+
+    self.proxy_process = subprocess.Popen(
+        [
+          'python', 'tsproxy.py', '--port=1080', '--desthost=127.0.0.1',
+          '--mapports=443:8081,*:8080'
+        ],
+        cwd='{}/tsproxy'.format(self.wpr_tools_path),
+        env=self.get_launch_env(),
+        stdout=open('stdout_proxy.txt', 'wb+'),
+        stderr=subprocess.STDOUT,
+    )
+
+  def proxy_stop(self):
+    '''Stops tsproxy and disables the machine's proxy settings.'''
+    if self.proxy_process != None:
+      os.kill(self.proxy_process.pid, signal.SIGINT)
+
+    network_services = subprocess.check_output(
+      ['networksetup', '-listallnetworkservices']).strip().split('\n')
+    if len(network_services) > 1:
+      # We ignore the first line as it is a description of the command's output.
+      network_services = network_services[1:]
+
+      for service in network_services:
+        subprocess.check_call([
+          'networksetup', '-setsocksfirewallproxystate', service,
+          'off'
+        ])
+
+  def wprgo_start(self, replay_path):
+    '''Starts WprGo serving the specified replay file.
+
+      Args:
+        replay_path: Path to the WprGo website replay to use.
+    '''
+    self.wprgo_process = subprocess.Popen(
+        [
+          './wpr', 'replay', '--http_port=8080',
+          '--https_port=8081', replay_path
+        ],
+        cwd='{}/web_page_replay_go/'.format(self.wpr_tools_path),
+        env=self.get_launch_env(),
+        stdout=open('stdout_wprgo.txt', 'wb+'),
+        stderr=subprocess.STDOUT,
+    )
+
+  def wprgo_stop(self):
+    '''Stops serving website replays using WprGo.'''
+    if self.wprgo_process != None:
+      os.kill(self.wprgo_process.pid, signal.SIGINT)
 
 
 class DeviceTestRunner(TestRunner):

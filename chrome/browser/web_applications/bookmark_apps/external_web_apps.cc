@@ -4,17 +4,21 @@
 
 #include "chrome/browser/web_applications/bookmark_apps/external_web_apps.h"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -25,8 +29,27 @@
 
 namespace {
 
-constexpr char kWebAppManifestUrl[] = "web_app_manifest_url";
-constexpr char kWebAppStartUrl[] = "web_app_start_url";
+// kAppUrl is a required string specifying a URL inside the scope of the web
+// app that contains a link to the app manifest.
+constexpr char kAppUrl[] = "app_url";
+
+// kCreateShortcuts is an optional boolean which controls whether OS
+// level shortcuts are created. On Chrome OS this controls whether the app is
+// pinned to the shelf.
+// The default value of kCreateShortcuts if false.
+constexpr char kCreateShortcuts[] = "create_shortcuts";
+
+// kFeatureName is an optional string parameter specifying a feature
+// associated with this app. If specified:
+//  - if the feature is enabled, the app will be installed
+//  - if the feature is not enabled, the app will be removed.
+constexpr char kFeatureName[] = "feature_name";
+
+// kLaunchContainer is a required string which can be "window" or "tab"
+// and controls what sort of container the web app is launched in.
+constexpr char kLaunchContainer[] = "launch_container";
+constexpr char kLaunchContainerTab[] = "tab";
+constexpr char kLaunchContainerWindow[] = "window";
 
 #if defined(OS_CHROMEOS)
 // The sub-directory of the extensions directory in which to scan for external
@@ -34,6 +57,30 @@ constexpr char kWebAppStartUrl[] = "web_app_start_url";
 const base::FilePath::CharType kWebAppsSubDirectory[] =
     FILE_PATH_LITERAL("web_apps");
 #endif
+
+bool IsFeatureEnabled(const std::string& feature_name) {
+  // The feature system ensures there is only ever one Feature instance for each
+  // given feature name. To enable multiple apps to be gated by the same field
+  // trial this means there needs to be a global map of Features that is used.
+  static base::NoDestructor<
+      std::map<std::string, std::unique_ptr<base::Feature>>>
+      feature_map;
+  if (!feature_map->count(feature_name)) {
+    // To ensure the string used in the feature (which is a char*) is stable
+    // (i.e. is not freed later on), the key of the map is used. So, first
+    // insert a null Feature into the map, and then swap it with a real Feature
+    // constructed using the pointer from the key.
+    auto it = feature_map->insert(std::make_pair(feature_name, nullptr)).first;
+    it->second = std::make_unique<base::Feature>(
+        base::Feature{it->first.c_str(), base::FEATURE_DISABLED_BY_DEFAULT});
+  }
+
+  // Use the feature from the map, not the one in the pair above, as it has a
+  // stable address.
+  const auto it = feature_map->find(feature_name);
+  DCHECK(it != feature_map->end());
+  return base::FeatureList::IsEnabled(*it->second);
+}
 
 std::vector<web_app::PendingAppManager::AppInfo> ScanDir(base::FilePath dir) {
   base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
@@ -50,44 +97,71 @@ std::vector<web_app::PendingAppManager::AppInfo> ScanDir(base::FilePath dir) {
       continue;
     }
 
+    // TODO(benwells): Remove deprecated use of base::DictionaryValue API.
     JSONFileValueDeserializer deserializer(file);
     std::string error_msg;
     std::unique_ptr<base::Value> value =
         deserializer.Deserialize(nullptr, &error_msg);
     if (!value) {
-      VLOG(2) << file.value() << " was not valid JSON: " << error_msg;
+      LOG(ERROR) << file.value() << " was not valid JSON: " << error_msg;
       continue;
     }
     if (value->type() != base::Value::Type::DICTIONARY) {
-      VLOG(2) << file.value() << " was not a dictionary as the top level";
+      LOG(ERROR) << file.value() << " was not a dictionary as the top level";
       continue;
     }
     std::unique_ptr<base::DictionaryValue> dict_value =
         base::DictionaryValue::From(std::move(value));
 
-    std::string manifest_url_str;
-    if (!dict_value->GetString(kWebAppStartUrl, &manifest_url_str) ||
-        manifest_url_str.empty() || !GURL(manifest_url_str).is_valid()) {
-      VLOG(2) << file.value() << " had an invalid " << kWebAppManifestUrl;
+    std::string feature_name;
+    if (dict_value->GetString(kFeatureName, &feature_name)) {
+      VLOG(1) << file.value() << " checking feature " << feature_name;
+      if (!IsFeatureEnabled(feature_name)) {
+        VLOG(1) << file.value() << " feature not enabled";
+        continue;
+      }
+    }
+
+    std::string app_url_str;
+    if (!dict_value->GetString(kAppUrl, &app_url_str) || app_url_str.empty()) {
+      LOG(ERROR) << file.value() << " had an invalid " << kAppUrl;
+      continue;
+    }
+    GURL app_url(app_url_str);
+    if (!app_url.is_valid()) {
+      LOG(ERROR) << file.value() << " had an invalid " << kAppUrl;
       continue;
     }
 
-    std::string start_url_str;
-    if (!dict_value->GetString(kWebAppStartUrl, &start_url_str) ||
-        start_url_str.empty()) {
-      VLOG(2) << file.value() << " had an invalid " << kWebAppStartUrl;
+    bool create_shortcuts = false;
+    if (dict_value->HasKey(kCreateShortcuts) &&
+        !dict_value->GetBoolean(kCreateShortcuts, &create_shortcuts)) {
+      LOG(ERROR) << file.value() << " had an invalid " << kCreateShortcuts;
       continue;
     }
-    GURL start_url(start_url_str);
-    if (!start_url.is_valid()) {
-      VLOG(2) << file.value() << " had an invalid " << kWebAppStartUrl;
+
+    auto launch_container = web_app::LaunchContainer::kTab;
+    std::string launch_container_str;
+    if (!dict_value->GetString(kLaunchContainer, &launch_container_str)) {
+      LOG(ERROR) << file.value() << " had an invalid " << kLaunchContainer;
+      continue;
+    }
+    if (launch_container_str == kLaunchContainerTab) {
+      launch_container = web_app::LaunchContainer::kTab;
+    } else if (launch_container_str == kLaunchContainerWindow) {
+      launch_container = web_app::LaunchContainer::kWindow;
+    } else {
+      LOG(ERROR) << file.value() << " had an invalid " << kLaunchContainer;
       continue;
     }
 
     app_infos.emplace_back(
-        std::move(start_url),
-        web_app::PendingAppManager::LaunchContainer::kWindow,
-        web_app::PendingAppManager::InstallSource::kExternalDefault);
+        std::move(app_url), launch_container,
+        web_app::InstallSource::kExternalDefault, create_shortcuts,
+        web_app::PendingAppManager::AppInfo::
+            kDefaultOverridePreviousUserUninstall,
+        web_app::PendingAppManager::AppInfo::kDefaultBypassServiceWorkerCheck,
+        true /* require_manifest */);
   }
 
   return app_infos;

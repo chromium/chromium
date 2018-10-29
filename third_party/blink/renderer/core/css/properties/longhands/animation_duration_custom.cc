@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_property_parser_helpers.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/length.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 
 namespace blink {
 namespace CSSLonghand {
@@ -31,10 +31,10 @@ const CSSValue* AnimationDuration::CSSValueFromComputedStyleInternal(
 
 const CSSValue* AnimationDuration::InitialValue() const {
   DEFINE_STATIC_LOCAL(
-      CSSValue, value,
+      Persistent<CSSValue>, value,
       (CSSPrimitiveValue::Create(CSSTimingData::InitialDuration(),
                                  CSSPrimitiveValue::UnitType::kSeconds)));
-  return &value;
+  return value;
 }
 
 }  // namespace CSSLonghand

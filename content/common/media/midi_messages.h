@@ -17,7 +17,6 @@
 #include "content/common/content_export.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/param_traits_macros.h"
-#include "media/midi/midi_port_info.h"
 #include "media/midi/midi_service.mojom.h"
 #include "url/gurl.h"
 
@@ -27,7 +26,7 @@
 
 IPC_ENUM_TRAITS_MAX_VALUE(midi::mojom::PortState, midi::mojom::PortState::LAST)
 
-IPC_STRUCT_TRAITS_BEGIN(midi::MidiPortInfo)
+IPC_STRUCT_TRAITS_BEGIN(midi::mojom::PortInfo)
   IPC_STRUCT_TRAITS_MEMBER(id)
   IPC_STRUCT_TRAITS_MEMBER(manufacturer)
   IPC_STRUCT_TRAITS_MEMBER(name)
@@ -52,10 +51,10 @@ IPC_MESSAGE_CONTROL0(MidiHostMsg_EndSession)
 // Messages sent from the browser to the renderer.
 
 IPC_MESSAGE_CONTROL1(MidiMsg_AddInputPort,
-                     midi::MidiPortInfo /* input port */)
+                     midi::mojom::PortInfo /* input port */)
 
 IPC_MESSAGE_CONTROL1(MidiMsg_AddOutputPort,
-                     midi::MidiPortInfo /* output port */)
+                     midi::mojom::PortInfo /* output port */)
 
 IPC_MESSAGE_CONTROL2(MidiMsg_SetInputPortState,
                      uint32_t /* port */,

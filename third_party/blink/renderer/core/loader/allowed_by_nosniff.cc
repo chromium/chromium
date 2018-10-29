@@ -126,9 +126,13 @@ bool AllowMimeTypeAsScript(const String& mime_type,
 bool MimeTypeAsScriptImpl(ExecutionContext* execution_context,
                           const ResourceResponse& response,
                           bool is_worker_global_scope) {
-  // Is it a file:-URL? If so, decide based on file suffix.
-  if (response.Url().IsLocalFile() &&
-      response.Url().LastPathComponent().EndsWith(".js")) {
+  // The content type is really only meaningful for the http:-family & data
+  // schemes.
+  bool is_http_family_or_data = response.Url().ProtocolIsInHTTPFamily() ||
+                                response.Url().ProtocolIsData();
+  if (!is_http_family_or_data &&
+      (response.Url().LastPathComponent().EndsWith(".js") ||
+       response.Url().LastPathComponent().EndsWith(".mjs"))) {
     return true;
   }
 

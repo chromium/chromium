@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/paint/fieldset_painter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -36,6 +37,10 @@ LayoutFieldset::LayoutFieldset(Element* element) : LayoutBlockFlow(element) {}
 
 void LayoutFieldset::ComputePreferredLogicalWidths() {
   LayoutBlockFlow::ComputePreferredLogicalWidths();
+  // Size-contained elements don't consider their contents for preferred sizing.
+  if (ShouldApplySizeContainment())
+    return;
+
   if (LayoutBox* legend = FindInFlowLegend()) {
     int legend_min_width = legend->MinPreferredLogicalWidth().ToInt();
 
@@ -136,8 +141,19 @@ LayoutObject* LayoutFieldset::LayoutSpecialExcludedChild(bool relayout_children,
   return legend;
 }
 
-LayoutBox* LayoutFieldset::FindInFlowLegend() const {
-  for (LayoutObject* legend = FirstChild(); legend;
+LayoutBox* LayoutFieldset::FindInFlowLegend(const LayoutBlock& fieldset) {
+  DCHECK(fieldset.IsFieldset() || fieldset.IsLayoutNGFieldset());
+  const LayoutBlock* parent = &fieldset;
+  if (RuntimeEnabledFeatures::LayoutNGFieldsetEnabled()) {
+    if (fieldset.IsLayoutNGFieldset()) {
+      // If there is a rendered legend, it will be found inside the anonymous
+      // fieldset wrapper.
+      parent = ToLayoutBlock(fieldset.FirstChild());
+      if (!parent)
+        return nullptr;
+    }
+  }
+  for (LayoutObject* legend = parent->FirstChild(); legend;
        legend = legend->NextSibling()) {
     if (legend->IsFloatingOrOutOfFlowPositioned())
       continue;

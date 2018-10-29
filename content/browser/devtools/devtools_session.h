@@ -11,15 +11,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/values.h"
-#include "content/browser/devtools/devtools_agent_host_impl.h"
-#include "content/browser/devtools/protocol/devtools_domain_handler.h"
+#include "content/browser/devtools/protocol/forward.h"
 #include "mojo/public/cpp/bindings/associated_binding.h"
 #include "third_party/blink/public/web/devtools_agent.mojom.h"
 
 namespace content {
 
 class DevToolsAgentHostClient;
-class RenderFrameHostImpl;
+class DevToolsAgentHostImpl;
+
+namespace protocol {
+class DevToolsDomainHandler;
+}
 
 class DevToolsSession : public protocol::FrontendChannel,
                         public blink::mojom::DevToolsSessionHost {
@@ -29,38 +32,25 @@ class DevToolsSession : public protocol::FrontendChannel,
   ~DevToolsSession() override;
   void Dispose();
 
-  DevToolsAgentHost* agent_host() { return agent_host_; };
+  DevToolsAgentHostImpl* agent_host() { return agent_host_; };
   DevToolsAgentHostClient* client() { return client_; };
 
   // Browser-only sessions do not talk to mojom::DevToolsAgent, but instead
   // handle all protocol messages locally in the browser process.
   void SetBrowserOnly(bool browser_only);
-
   void AddHandler(std::unique_ptr<protocol::DevToolsDomainHandler> handler);
-  // TODO(dgozman): maybe combine this with AttachToAgent?
-  void SetRenderer(int process_host_id, RenderFrameHostImpl* frame_host);
 
-  void AttachToAgent(const blink::mojom::DevToolsAgentAssociatedPtr& agent);
+  void AttachToAgent(blink::mojom::DevToolsAgent* agent);
   void DispatchProtocolMessage(
       const std::string& message,
       std::unique_ptr<base::DictionaryValue> parsed_message);
   void SuspendSendingMessagesToAgent();
   void ResumeSendingMessagesToAgent();
 
-  template <typename Handler>
-  static std::vector<Handler*> HandlersForAgentHost(
-      DevToolsAgentHostImpl* agent_host,
-      const std::string& name) {
-    std::vector<Handler*> result;
-    if (agent_host->sessions().empty())
-      return result;
-    for (DevToolsSession* session : agent_host->sessions()) {
-      auto it = session->handlers_.find(name);
-      if (it != session->handlers_.end())
-        result.push_back(static_cast<Handler*>(it->second.get()));
-    }
-    return result;
-  }
+  using HandlersMap =
+      base::flat_map<std::string,
+                     std::unique_ptr<protocol::DevToolsDomainHandler>>;
+  HandlersMap& handlers() { return handlers_; }
 
  private:
   void SendResponse(std::unique_ptr<base::DictionaryValue> response);
@@ -100,10 +90,7 @@ class DevToolsSession : public protocol::FrontendChannel,
   DevToolsAgentHostImpl* agent_host_;
   DevToolsAgentHostClient* client_;
   bool browser_only_ = false;
-  base::flat_map<std::string, std::unique_ptr<protocol::DevToolsDomainHandler>>
-      handlers_;
-  int process_host_id_;
-  RenderFrameHostImpl* host_;
+  HandlersMap handlers_;
   std::unique_ptr<protocol::UberDispatcher> dispatcher_;
 
   // These messages were queued after suspending, not sent to the agent,

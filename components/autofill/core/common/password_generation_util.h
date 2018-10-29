@@ -79,25 +79,6 @@ enum PasswordGenerationEvent {
   EVENT_ENUM_COUNT
 };
 
-// These values are used for metrics. Entries should not be renumbered and
-// numeric values should never be reused.
-// Metric: PasswordGeneration.UserEvent
-enum class PasswordGenerationUserEvent {
-  // The generated password was accepted by the user.
-  kPasswordAccepted = 0,
-  // The generated password was edited by the user in the field in which
-  // it was filled after being accepted.
-  kPasswordEdited = 1,
-  // The generated password was deleted by the user from the field
-  // in which it was filled after being accepted.
-  kPasswordDeleted = 2,
-  // The generated password was rejected by the user from the modal
-  // dialog, either by pressing "Cancel" in the dialog or by dismissing it.
-  // Only used on Android.
-  kPasswordRejectedInDialog = 3,
-  kMaxValue = kPasswordRejectedInDialog
-};
-
 // Wrapper to store the user interactions with the password generation bubble.
 struct PasswordGenerationActions {
   // Whether the user has clicked on the learn more link.
@@ -146,8 +127,6 @@ struct PasswordGenerationUIData {
 void LogUserActions(PasswordGenerationActions actions);
 
 void LogPasswordGenerationEvent(PasswordGenerationEvent event);
-
-void LogPasswordGenerationUserEvent(PasswordGenerationUserEvent event);
 
 // Enumerates user actions after password generation bubble is shown.
 // These are visible for testing purposes.

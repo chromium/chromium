@@ -54,7 +54,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_registry.h"
@@ -114,7 +113,7 @@ base::FilePath* g_download_directory_for_tests = NULL;
 
 base::FilePath GetDownloadFilePath(const base::FilePath& download_directory,
                                    const std::string& id) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
   // Ensure the download directory exists. TODO(asargent) - make this use
   // common code from the downloads system.
   if (!base::DirectoryExists(download_directory) &&
@@ -659,9 +658,6 @@ void WebstoreInstaller::StartDownload(const std::string& extension_id,
       contents->GetRenderViewHost()->GetRoutingID();
 
   content::RenderFrameHost* render_frame_host = contents->GetMainFrame();
-  content::StoragePartition* storage_partition =
-      BrowserContext::GetStoragePartition(profile_,
-                                          render_frame_host->GetSiteInstance());
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("webstore_installer", R"(
         semantics {
@@ -694,13 +690,13 @@ void WebstoreInstaller::StartDownload(const std::string& extension_id,
         })");
   std::unique_ptr<DownloadUrlParameters> params(new DownloadUrlParameters(
       download_url_, render_process_host_id, render_view_host_routing_id,
-      render_frame_host->GetRoutingID(),
-      storage_partition->GetURLRequestContext(), traffic_annotation));
+      render_frame_host->GetRoutingID(), traffic_annotation));
   params->set_file_path(file);
   if (controller.GetVisibleEntry()) {
     content::Referrer referrer = content::Referrer::SanitizeForRequest(
-        download_url_, content::Referrer(controller.GetVisibleEntry()->GetURL(),
-                                         blink::kWebReferrerPolicyDefault));
+        download_url_,
+        content::Referrer(controller.GetVisibleEntry()->GetURL(),
+                          network::mojom::ReferrerPolicy::kDefault));
     params->set_referrer(referrer.url);
     params->set_referrer_policy(
         content::Referrer::ReferrerPolicyForUrlRequest(referrer.policy));

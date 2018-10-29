@@ -54,45 +54,45 @@ function connect_pcs(localPc, remotePc) {
 }
 
 function verifySenderParameters(parameters, kind) {
-  assert_exists(parameters, "transactionId", "transactionId");
-  assert_exists(parameters, "rtcp", "rtcp");
+  assert_own_property(parameters, "transactionId", "transactionId");
+  assert_own_property(parameters, "rtcp", "rtcp");
 
   assert_greater_than(parameters.codecs.length, 0);
   for(let codec of parameters.codecs) {
     if(kind === 'video') {
-      assert_not_exists(codec, "channels", "no channels on video tracks");
+      assert_false(codec.hasOwnProperty("channels"), "no channels on video tracks");
       assert_equals(codec.clockRate, 90000);
     } else {
-      assert_exists(codec, "channels", "channel count");
+      assert_own_property(codec, "channels", "channel count");
       assert_greater_than(codec.clockRate, 0);
     }
 
-    assert_exists(codec, "mimeType", "mime type");
+    assert_own_property(codec, "mimeType", "mime type");
     assert_true(codec.mimeType.startsWith(kind + "/"));
 
-    assert_exists(codec, "payloadType", "payload type");
+    assert_own_property(codec, "payloadType", "payload type");
   }
 
-  assert_exists(parameters, "headerExtensions", "headerExtension");
+  assert_own_property(parameters, "headerExtensions", "headerExtension");
   for(let header of parameters.headerExtensions) {
-    assert_exists(header, "uri");
-    assert_exists(header, "id");
+    assert_own_property(header, "uri");
+    assert_own_property(header, "id");
   }
 
   assert_greater_than(parameters.encodings.length, 0);
   for(let encoding of parameters.encodings) {
-    assert_not_exists(encoding, "codecPayloadType", "unset codecPayloadType");
-    assert_not_exists(encoding, "dtx", "unset dtx");
+    assert_false(encoding.hasOwnProperty("codecPayloadType"), "unset codecPayloadType");
+    assert_false(encoding.hasOwnProperty("dtx"), "unset dtx");
     assert_true(encoding.active);
     assert_equals(encoding.priority, "low");
-    assert_not_exists(encoding, "ptime", "unset ptime");
-    assert_not_exists(encoding, "maxBitrate", "unset maxBitrate");
-    assert_not_exists(encoding, "maxFramerate", "unset maxFramerate");
-    assert_not_exists(encoding, "scaleResolutionDownBy", "unset scaleResolutionDownBy");
-    assert_not_exists(encoding, "rid", "unset rid");
+    assert_false(encoding.hasOwnProperty("ptime"), "unset ptime");
+    assert_false(encoding.hasOwnProperty("maxBitrate"), "unset maxBitrate");
+    assert_false(encoding.hasOwnProperty("maxFramerate"), "unset maxFramerate");
+    assert_false(encoding.hasOwnProperty("scaleResolutionDownBy"), "unset scaleResolutionDownBy");
+    assert_false(encoding.hasOwnProperty("rid"), "unset rid");
   }
 
-  assert_not_exists(parameters, "degradationPreference", "unimplemented degradationPreference");
+  assert_false(parameters.hasOwnProperty("degradationPreference"), "unimplemented degradationPreference");
 }
 </script>
 </body>

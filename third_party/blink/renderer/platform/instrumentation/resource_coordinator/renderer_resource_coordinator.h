@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_RESOURCE_COORDINATOR_RENDERER_RESOURCE_COORDINATOR_H_
 
 #include "services/resource_coordinator/public/mojom/coordination_unit.mojom-blink.h"
-#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/blink_resource_coordinator_base.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/noncopyable.h"
 
 namespace service_manager {
 class Connector;
@@ -14,8 +15,7 @@ class Connector;
 
 namespace blink {
 
-class PLATFORM_EXPORT RendererResourceCoordinator
-    : public BlinkResourceCoordinatorBase {
+class PLATFORM_EXPORT RendererResourceCoordinator {
   WTF_MAKE_NONCOPYABLE(RendererResourceCoordinator);
 
  public:

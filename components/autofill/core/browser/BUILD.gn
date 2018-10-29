@@ -57,6 +57,8 @@ jumbo_static_library("browser") {
     "autofill_manager.cc",
     "autofill_manager.h",
     "autofill_manager_test_delegate.h",
+    "autofill_metadata.cc",
+    "autofill_metadata.h",
     "autofill_metrics.cc",
     "autofill_metrics.h",
     "autofill_popup_delegate.h",
@@ -78,6 +80,8 @@ jumbo_static_library("browser") {
     "autofill_type.h",
     "autofill_wallet_data_type_controller.cc",
     "autofill_wallet_data_type_controller.h",
+    "autofill_wallet_model_type_controller.cc",
+    "autofill_wallet_model_type_controller.h",
     "card_unmask_delegate.cc",
     "card_unmask_delegate.h",
     "contact_info.cc",
@@ -143,6 +147,8 @@ jumbo_static_library("browser") {
     "phone_number_i18n.h",
     "popup_item_ids.h",
     "popup_types.h",
+    "randomized_encoder.cc",
+    "randomized_encoder.h",
     "rationalization_util.cc",
     "rationalization_util.h",
     "region_combobox_model.cc",
@@ -155,6 +161,8 @@ jumbo_static_library("browser") {
     "search_field.h",
     "state_names.cc",
     "state_names.h",
+    "strike_database.cc",
+    "strike_database.h",
     "subkey_requester.cc",
     "subkey_requester.h",
     "suggestion.cc",
@@ -259,8 +267,10 @@ jumbo_static_library("browser") {
     "//base",
     "//base:i18n",
     "//components/data_use_measurement/core",
+    "//components/history/core/browser",
     "//components/infobars/core",
     "//components/keyed_service/core",
+    "//components/leveldb_proto:leveldb_proto",
     "//components/os_crypt",
     "//components/pref_registry",
     "//components/prefs",
@@ -270,6 +280,7 @@ jumbo_static_library("browser") {
     "//components/variations/net",
     "//components/version_info",
     "//components/webdata/common",
+    "//crypto",
     "//google_apis",
     "//net",
     "//services/identity/public/cpp",
@@ -323,6 +334,8 @@ jumbo_static_library("test_support") {
     "test_autofill_external_delegate.h",
     "test_autofill_manager.cc",
     "test_autofill_manager.h",
+    "test_autofill_profile_validator.cc",
+    "test_autofill_profile_validator.h",
     "test_autofill_provider.cc",
     "test_autofill_provider.h",
     "test_credit_card_save_manager.cc",
@@ -338,10 +351,14 @@ jumbo_static_library("test_support") {
     "test_personal_data_manager.h",
     "test_region_data_loader.cc",
     "test_region_data_loader.h",
+    "test_strike_database.cc",
+    "test_strike_database.h",
     "test_sync_service.cc",
     "test_sync_service.h",
     "webdata/autofill_sync_bridge_test_util.cc",
     "webdata/autofill_sync_bridge_test_util.h",
+    "webdata/mock_autofill_webdata_backend.cc",
+    "webdata/mock_autofill_webdata_backend.h",
   ]
 
   public_deps = [
@@ -353,6 +370,7 @@ jumbo_static_library("test_support") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/leveldb_proto:leveldb_proto",
     "//components/os_crypt",
     "//components/os_crypt:test_support",
     "//components/pref_registry",
@@ -367,6 +385,7 @@ jumbo_static_library("test_support") {
     "//services/network/public/cpp",
     "//skia",
     "//testing/gtest",
+    "//third_party/libaddressinput:test_support",
     "//third_party/libaddressinput:util",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
@@ -474,9 +493,11 @@ source_set("unit_tests") {
     "phone_field_unittest.cc",
     "phone_number_i18n_unittest.cc",
     "phone_number_unittest.cc",
+    "randomized_encoder_unittest.cc",
     "rationalization_util_unittest.cc",
     "region_combobox_model_unittest.cc",
     "search_field_unittest.cc",
+    "strike_database_unittest.cc",
     "subkey_requester_unittest.cc",
     "ui/card_unmask_prompt_controller_impl_unittest.cc",
     "validation_unittest.cc",
@@ -556,6 +577,7 @@ fuzzer_test("form_structure_fuzzer") {
     "form_structure_fuzzer.cc",
   ]
   deps = [
+    # TODO(crbug.com/896313): Reduce the dependency on "browser".
     ":browser",
     "//base:base",
     "//components/autofill/core/common:common",
@@ -579,6 +601,7 @@ if (use_libfuzzer) {
       "form_structure_process_query_response_fuzzer.cc",
     ]
     deps = [
+      # TODO(crbug.com/896313): Reduce the dependency on "browser".
       ":browser",
       "//base:base",
       "//components/autofill/core/browser/proto",
@@ -597,4 +620,20 @@ if (use_libfuzzer) {
       "//third_party/libprotobuf-mutator",
     ]
   }
+}
+
+fuzzer_test("autofill_phone_number_i18n_fuzzer") {
+  sources = [
+    "phone_number_i18n_fuzzer.cc",
+  ]
+
+  deps = [
+    # TODO(crbug.com/896313): Reduce the dependency on "browser".
+    ":browser",
+    "//base",
+    "//base:i18n",
+    "//third_party/libphonenumber",
+  ]
+
+  dict = "phone_number_i18n_fuzzer.dict"
 }

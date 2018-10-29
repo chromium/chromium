@@ -220,9 +220,9 @@ class CORE_EXPORT HTMLFormControlElement : public LabelableElement,
   mutable bool may_have_field_set_ancestor_ : 1;
 
   bool has_validation_message_ : 1;
-  // The initial value of m_willValidate depends on the derived class. We can't
-  // initialize it with a virtual function in the constructor. m_willValidate
-  // is not deterministic as long as m_willValidateInitialized is false.
+  // The initial value of will_validate_ depends on the derived class. We can't
+  // initialize it with a virtual function in the constructor. will_validate_
+  // is not deterministic as long as will_validate_initialized_ is false.
   mutable bool will_validate_initialized_ : 1;
   mutable bool will_validate_ : 1;
 

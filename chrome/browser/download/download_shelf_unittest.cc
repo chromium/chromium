@@ -34,13 +34,17 @@ class DownloadShelfTest : public testing::Test {
   DownloadShelfTest();
 
  protected:
-  download::MockDownloadItem* download_item() { return download_item_.get(); }
+  DownloadUIModelPtr model() {
+    DownloadUIModelPtr model(
+        new DownloadItemModel(download_item_.get()),
+        base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
+    return model;
+  }
+
   content::MockDownloadManager* download_manager() {
     return download_manager_.get();
   }
-  TestDownloadShelf* shelf() {
-    return &shelf_;
-  }
+  TestDownloadShelf* shelf() { return &shelf_; }
   Profile* profile() { return profile_.get(); }
 
   void SetUp() override {
@@ -49,7 +53,7 @@ class DownloadShelfTest : public testing::Test {
   void TearDown() override {
   }
 
- private:
+ protected:
   std::unique_ptr<download::MockDownloadItem> GetInProgressMockDownload();
 
   content::TestBrowserThreadBundle test_browser_thread_bundle_;
@@ -61,6 +65,8 @@ class DownloadShelfTest : public testing::Test {
 
 DownloadShelfTest::DownloadShelfTest() : profile_(new TestingProfile()) {
   download_item_.reset(new ::testing::NiceMock<download::MockDownloadItem>());
+  ON_CALL(*download_item_, GetGuid())
+      .WillByDefault(ReturnRefOfCopy(std::string("TEST_GUID")));
   ON_CALL(*download_item_, GetAutoOpened()).WillByDefault(Return(false));
   ON_CALL(*download_item_, GetMimeType()).WillByDefault(Return("text/plain"));
   ON_CALL(*download_item_, GetOpenWhenComplete()).WillByDefault(Return(false));
@@ -78,12 +84,14 @@ DownloadShelfTest::DownloadShelfTest() : profile_(new TestingProfile()) {
 
   download_manager_.reset(
       new ::testing::NiceMock<content::MockDownloadManager>());
-  ON_CALL(*download_manager_, GetDownload(_))
+  ON_CALL(*download_manager_, GetDownloadByGuid(_))
       .WillByDefault(Return(download_item_.get()));
   ON_CALL(*download_manager_, GetBrowserContext())
       .WillByDefault(Return(profile()));
 
-  shelf_.set_download_manager(download_manager_.get());
+  content::BrowserContext::SetDownloadManagerForTesting(
+      profile_.get(), std::move(download_manager_));
+  shelf_.set_profile(profile_.get());
 }
 
 } // namespace
@@ -114,20 +122,20 @@ TEST_F(DownloadShelfTest, UnhideDoesntShowIfNotShownOnHide) {
 TEST_F(DownloadShelfTest, AddDownloadWhileHiddenUnhides) {
   shelf()->Open();
   shelf()->Hide();
-  shelf()->AddDownload(download_item());
+  shelf()->AddDownload(model());
   EXPECT_TRUE(shelf()->IsShowing());
 }
 
 TEST_F(DownloadShelfTest, AddDownloadWhileHiddenUnhidesAndShows) {
   shelf()->Hide();
-  shelf()->AddDownload(download_item());
+  shelf()->AddDownload(model());
   EXPECT_TRUE(shelf()->IsShowing());
 }
 
 // Normal downloads should be added synchronously and cause the shelf to show.
 TEST_F(DownloadShelfTest, AddNormalDownload) {
   EXPECT_FALSE(shelf()->IsShowing());
-  shelf()->AddDownload(download_item());
+  shelf()->AddDownload(model());
   EXPECT_TRUE(shelf()->did_add_download());
   EXPECT_TRUE(shelf()->IsShowing());
 }
@@ -136,68 +144,35 @@ TEST_F(DownloadShelfTest, AddNormalDownload) {
 // should be added after a delay. For testing, the delay is set to 0 seconds. So
 // the download should be added once the message loop is flushed.
 TEST_F(DownloadShelfTest, AddDelayedDownload) {
-  EXPECT_CALL(*download_item(), ShouldOpenFileBasedOnExtension())
-      .WillRepeatedly(Return(true));
-  ASSERT_TRUE(DownloadItemModel(download_item())
-              .ShouldRemoveFromShelfWhenComplete());
-  shelf()->AddDownload(download_item());
+  ON_CALL(*download_item_, ShouldOpenFileBasedOnExtension())
+      .WillByDefault(Return(true));
+  ASSERT_TRUE(model()->ShouldRemoveFromShelfWhenComplete());
+  shelf()->AddDownload(model());
 
   EXPECT_FALSE(shelf()->did_add_download());
   EXPECT_FALSE(shelf()->IsShowing());
 
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-
-  EXPECT_TRUE(shelf()->did_add_download());
-  EXPECT_TRUE(shelf()->IsShowing());
+  base::RunLoop().RunUntilIdle();
 }
 
 // Add a transient download that completes before the delay. It should not be
 // displayed on the shelf.
 TEST_F(DownloadShelfTest, AddDelayedCompletedDownload) {
-  EXPECT_CALL(*download_item(), ShouldOpenFileBasedOnExtension())
-      .WillRepeatedly(Return(true));
-  ASSERT_TRUE(DownloadItemModel(download_item())
-              .ShouldRemoveFromShelfWhenComplete());
-  shelf()->AddDownload(download_item());
+  ON_CALL(*download_item_, ShouldOpenFileBasedOnExtension())
+      .WillByDefault(Return(true));
+  ASSERT_TRUE(model()->ShouldRemoveFromShelfWhenComplete());
+  ON_CALL(*download_item_, IsTemporary()).WillByDefault(Return(true));
+  shelf()->AddDownload(model());
 
   EXPECT_FALSE(shelf()->did_add_download());
   EXPECT_FALSE(shelf()->IsShowing());
 
-  EXPECT_CALL(*download_item(), GetState())
-      .WillRepeatedly(Return(DownloadItem::COMPLETE));
-  EXPECT_CALL(*download_item(), GetAutoOpened())
-      .WillRepeatedly(Return(true));
+  ON_CALL(*download_item_, GetState())
+      .WillByDefault(Return(DownloadItem::COMPLETE));
+  ON_CALL(*download_item_, GetAutoOpened()).WillByDefault(Return(true));
 
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(shelf()->did_add_download());
   EXPECT_FALSE(shelf()->IsShowing());
-}
-
-// Add a transient download that completes and becomes non-transient before the
-// delay. It should be displayed on the shelf even though it is complete.
-TEST_F(DownloadShelfTest, AddDelayedCompleteNonTransientDownload) {
-  EXPECT_CALL(*download_item(), ShouldOpenFileBasedOnExtension())
-      .WillRepeatedly(Return(true));
-  ASSERT_TRUE(DownloadItemModel(download_item())
-              .ShouldRemoveFromShelfWhenComplete());
-  shelf()->AddDownload(download_item());
-
-  EXPECT_FALSE(shelf()->did_add_download());
-  EXPECT_FALSE(shelf()->IsShowing());
-
-  EXPECT_CALL(*download_item(), GetState())
-      .WillRepeatedly(Return(DownloadItem::COMPLETE));
-  EXPECT_CALL(*download_item(), ShouldOpenFileBasedOnExtension())
-      .WillRepeatedly(Return(false));
-  ASSERT_FALSE(DownloadItemModel(download_item())
-               .ShouldRemoveFromShelfWhenComplete());
-
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-
-  EXPECT_TRUE(shelf()->did_add_download());
-  EXPECT_TRUE(shelf()->IsShowing());
 }

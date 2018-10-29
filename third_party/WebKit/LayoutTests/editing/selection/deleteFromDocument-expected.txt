@@ -6,4 +6,5 @@ PASS test.textContent is "fz"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 fz

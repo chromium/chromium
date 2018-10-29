@@ -5,14 +5,15 @@
 #ifndef NGFragmentationUtils_h
 #define NGFragmentationUtils_h
 
+#include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
 
 class NGConstraintSpace;
-class NGPhysicalFragment;
 
 // Return the total amount of block space spent on a node by fragments
 // preceding this one (but not including this one).
@@ -21,10 +22,21 @@ LayoutUnit PreviouslyUsedBlockSpace(const NGConstraintSpace&,
 
 // Return true if the specified fragment is the first generated fragment of
 // some node.
-bool IsFirstFragment(const NGConstraintSpace&, const NGPhysicalFragment&);
+inline bool IsFirstFragment(const NGConstraintSpace& constraint_space,
+                            const NGPhysicalFragment& fragment) {
+  // TODO(mstensho): Figure out how to behave for non-box fragments here. How
+  // can we tell whether it's the first one? Looking for previously used block
+  // space certainly isn't the answer.
+  if (!fragment.IsBox())
+    return true;
+  return PreviouslyUsedBlockSpace(constraint_space, fragment) <= LayoutUnit();
+}
 
 // Return true if the specified fragment is the final fragment of some node.
-bool IsLastFragment(const NGPhysicalFragment&);
+inline bool IsLastFragment(const NGPhysicalFragment& fragment) {
+  const auto* break_token = fragment.BreakToken();
+  return !break_token || break_token->IsFinished();
+}
 
 // Join two adjacent break values specified on break-before and/or break-
 // after. avoid* values win over auto values, and forced break values win over

@@ -79,6 +79,7 @@ void FakeGCMClient::Initialize(
         void(network::mojom::ProxyResolvingSocketFactoryRequest)>
         get_socket_factory_callback,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
     std::unique_ptr<Encryptor> encryptor,
     Delegate* delegate) {
   product_category_for_subtypes_ =

@@ -28,8 +28,10 @@ Resources
 ScriptDuration
 ScriptPromises
 TaskDuration
+TaskOtherDuration
 Timestamp
 UACSSResources
+V8CompileDuration
 V8PerContextDatas
 WorkerGlobalScopes
 

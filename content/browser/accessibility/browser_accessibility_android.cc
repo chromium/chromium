@@ -18,7 +18,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_role_properties.h"
-#include "ui/accessibility/ax_table_info.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 
@@ -194,8 +193,7 @@ bool BrowserAccessibilityAndroid::IsCollapsed() const {
 
 // TODO(dougt) Move to ax_role_properties?
 bool BrowserAccessibilityAndroid::IsCollection() const {
-  return (ui::IsTableLikeRole(GetRole()) ||
-          GetRole() == ax::mojom::Role::kList ||
+  return (ui::IsTableLike(GetRole()) || GetRole() == ax::mojom::Role::kList ||
           GetRole() == ax::mojom::Role::kListBox ||
           GetRole() == ax::mojom::Role::kDescriptionList ||
           GetRole() == ax::mojom::Role::kTree);
@@ -1326,11 +1324,8 @@ int BrowserAccessibilityAndroid::AndroidRangeType() const {
 }
 
 int BrowserAccessibilityAndroid::RowCount() const {
-  if (ui::IsTableLikeRole(GetRole())) {
-    ui::AXTableInfo* table_info = manager()->ax_tree()->GetTableInfo(node());
-    if (table_info)
-      return table_info->row_count;
-  }
+  if (ui::IsTableLike(GetRole()))
+    return node()->GetTableRowCount();
 
   if (GetRole() == ax::mojom::Role::kList ||
       GetRole() == ax::mojom::Role::kListBox ||
@@ -1343,11 +1338,9 @@ int BrowserAccessibilityAndroid::RowCount() const {
 }
 
 int BrowserAccessibilityAndroid::ColumnCount() const {
-  if (ui::IsTableLikeRole(GetRole())) {
-    ui::AXTableInfo* table_info = manager()->ax_tree()->GetTableInfo(node());
-    if (table_info)
-      return table_info->col_count;
-  }
+  if (ui::IsTableLike(GetRole()))
+    return node()->GetTableColCount();
+
   return 0;
 }
 
@@ -1358,19 +1351,19 @@ int BrowserAccessibilityAndroid::RowIndex() const {
     return GetIndexInParent();
   }
 
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex);
+  return node()->GetTableCellRowIndex();
 }
 
 int BrowserAccessibilityAndroid::RowSpan() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan);
+  return node()->GetTableCellRowSpan();
 }
 
 int BrowserAccessibilityAndroid::ColumnIndex() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex);
+  return node()->GetTableCellColIndex();
 }
 
 int BrowserAccessibilityAndroid::ColumnSpan() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan);
+  return node()->GetTableCellColSpan();
 }
 
 float BrowserAccessibilityAndroid::RangeMin() const {

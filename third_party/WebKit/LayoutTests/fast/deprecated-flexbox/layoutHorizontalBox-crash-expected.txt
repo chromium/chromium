@@ -1,3 +1,2 @@
-
 bug 70183: Crash in LayoutDeprecatedFlexibleBox::layoutHorizontalBox
 If this test did not CRASH or show errors in valgrind, it has PASSED.

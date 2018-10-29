@@ -98,16 +98,9 @@ void DefaultDecoderFactory::CreateVideoDecoders(
           task_runner, gpu_factories, media_log, request_overlay_info_cb,
           target_color_space, video_decoders);
     }
+
     // MojoVideoDecoder replaces any VDA for this platform when it's enabled.
-    bool enable_vda = !base::FeatureList::IsEnabled(media::kMojoVideoDecoder);
-#if defined(OS_WIN)
-    // D3D11VideoDecoder doesn't support as many cases as dxva yet, so don't
-    // turn off hw decode just because it's enabled.
-    // TODO(crbug.com/832171): Move the check for the most common unsupported
-    // cases for D3D11VideoDecoder to the renderer, to save an IPC hop.
-    enable_vda = true;
-#endif
-    if (enable_vda) {
+    if (!base::FeatureList::IsEnabled(media::kMojoVideoDecoder)) {
       video_decoders->push_back(std::make_unique<GpuVideoDecoder>(
           gpu_factories, request_overlay_info_cb, target_color_space,
           media_log));

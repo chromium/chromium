@@ -6,67 +6,14 @@
 
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/platform/dedicated_worker_factory.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
-#include "third_party/blink/renderer/core/dom/abort_signal.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
-#include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
+#include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
 #include "third_party/blink/renderer/core/workers/threaded_object_proxy_base.h"
-#include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/core/workers/worker_options.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 
 namespace blink {
-
-template <wtf_size_t inlineCapacity, typename Allocator>
-struct CrossThreadCopier<
-    Vector<scoped_refptr<SerializedScriptValue>, inlineCapacity, Allocator>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type =
-      Vector<scoped_refptr<SerializedScriptValue>, inlineCapacity, Allocator>;
-  static Type Copy(Type pointer) {
-    return pointer;  // This is in fact a move.
-  }
-};
-
-class ThreadPoolWorkerGlobalScope final : public WorkerGlobalScope {
- public:
-  ThreadPoolWorkerGlobalScope(
-      std::unique_ptr<GlobalScopeCreationParams> creation_params,
-      WorkerThread* thread)
-      : WorkerGlobalScope(std::move(creation_params),
-                          thread,
-                          CurrentTimeTicks()) {}
-
-  ~ThreadPoolWorkerGlobalScope() override = default;
-
-  // EventTarget
-  const AtomicString& InterfaceName() const override {
-    // TODO(japhet): Replaces this with
-    // EventTargetNames::ThreadPoolWorkerGlobalScope.
-    return EventTargetNames::DedicatedWorkerGlobalScope;
-  }
-
-  // WorkerGlobalScope
-  void ImportModuleScript(
-      const KURL& module_url_record,
-      FetchClientSettingsObjectSnapshot* outside_settings_object,
-      network::mojom::FetchCredentialsMode) override {
-    // TODO(japhet): Consider whether modules should be supported.
-    NOTREACHED();
-  }
-
-  void ExceptionThrown(ErrorEvent*) override {}
-};
 
 class ThreadPoolObjectProxy final : public ThreadedObjectProxyBase {
  public:
@@ -76,65 +23,19 @@ class ThreadPoolObjectProxy final : public ThreadedObjectProxyBase {
         messaging_proxy_(messaging_proxy) {}
   ~ThreadPoolObjectProxy() override = default;
 
-  void DidCreateWorkerGlobalScope(
-      WorkerOrWorkletGlobalScope* global_scope) override {
-    global_scope_ = static_cast<ThreadPoolWorkerGlobalScope*>(global_scope);
-  }
-  void WillDestroyWorkerGlobalScope() override { global_scope_ = nullptr; }
   CrossThreadWeakPersistent<ThreadedMessagingProxyBase> MessagingProxyWeakPtr()
       override {
     return messaging_proxy_;
   }
 
-  void ProcessTask(scoped_refptr<SerializedScriptValue> task,
-                   Vector<scoped_refptr<SerializedScriptValue>> arguments,
-                   size_t task_id,
-                   const v8_inspector::V8StackTraceId&);
-
-  void AbortTask(size_t task_id) { cancelled_tasks_.insert(task_id); }
-
  private:
   CrossThreadWeakPersistent<ThreadPoolMessagingProxy> messaging_proxy_;
-  CrossThreadPersistent<ThreadPoolWorkerGlobalScope> global_scope_;
-  HashSet<size_t> cancelled_tasks_;
-};
-
-class ThreadPoolThread final : public WorkerThread {
- public:
-  ThreadPoolThread(ExecutionContext* parent_execution_context,
-                   ThreadPoolObjectProxy& object_proxy)
-      : WorkerThread(object_proxy) {
-    FrameOrWorkerScheduler* scheduler =
-        parent_execution_context ? parent_execution_context->GetScheduler()
-                                 : nullptr;
-    worker_backing_thread_ =
-        WorkerBackingThread::Create(WebThreadCreationParams(GetThreadType())
-                                        .SetFrameOrWorkerScheduler(scheduler));
-  }
-  ~ThreadPoolThread() override = default;
-
- private:
-  WorkerBackingThread& GetWorkerBackingThread() override {
-    return *worker_backing_thread_;
-  }
-  void ClearWorkerBackingThread() override { worker_backing_thread_ = nullptr; }
-
-  WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
-      std::unique_ptr<GlobalScopeCreationParams> creation_params) override {
-    return new ThreadPoolWorkerGlobalScope(std::move(creation_params), this);
-  }
-
-  WebThreadType GetThreadType() const override {
-    // TODO(japhet): Replace with WebThreadType::kThreadPoolWorkerThread.
-    return WebThreadType::kDedicatedWorkerThread;
-  }
-  std::unique_ptr<WorkerBackingThread> worker_backing_thread_;
 };
 
 class ThreadPoolMessagingProxy final : public ThreadedMessagingProxyBase {
  public:
-  ThreadPoolMessagingProxy(ExecutionContext* context, ThreadPool* thread_pool)
-      : ThreadedMessagingProxyBase(context), thread_pool_(thread_pool) {
+  explicit ThreadPoolMessagingProxy(ExecutionContext* context)
+      : ThreadedMessagingProxyBase(context) {
     object_proxy_ = std::make_unique<ThreadPoolObjectProxy>(
         this, GetParentExecutionContextTaskRunners());
   }
@@ -145,113 +46,18 @@ class ThreadPoolMessagingProxy final : public ThreadedMessagingProxyBase {
                            WorkerBackingThreadStartupData::CreateDefault());
   }
   std::unique_ptr<WorkerThread> CreateWorkerThread() override {
-    return std::make_unique<ThreadPoolThread>(GetExecutionContext(),
-                                              *object_proxy_.get());
+    return std::make_unique<ThreadPoolThread>(
+        GetExecutionContext(), *object_proxy_.get(), ThreadPoolThread::kWorker);
   }
 
-  void PostTaskToWorkerGlobalScope(
-      ExecutionContext* context,
-      scoped_refptr<SerializedScriptValue> task,
-      const Vector<scoped_refptr<SerializedScriptValue>>& arguments,
-      size_t task_id,
-      TaskType task_type) {
-    v8_inspector::V8StackTraceId stack_id =
-        ThreadDebugger::From(ToIsolate(context))
-            ->StoreCurrentStackTrace("ThreadPool.postTask");
-    PostCrossThreadTask(
-        *GetWorkerThread()->GetTaskRunner(task_type), FROM_HERE,
-        CrossThreadBind(&ThreadPoolObjectProxy::ProcessTask,
-                        CrossThreadUnretained(object_proxy_.get()),
-                        std::move(task), std::move(arguments), task_id,
-                        stack_id));
-  }
-
-  void PostAbortToWorkerGlobalScope(size_t task_id) {
-    PostCrossThreadTask(
-        *GetWorkerThread()->GetControlTaskRunner(), FROM_HERE,
-        CrossThreadBind(&ThreadPoolObjectProxy::AbortTask,
-                        CrossThreadUnretained(object_proxy_.get()), task_id));
-  }
-
-  void TaskCompleted(size_t task_id,
-                     bool was_rejected,
-                     scoped_refptr<SerializedScriptValue> result) {
-    if (thread_pool_)
-      thread_pool_->TaskCompleted(task_id, was_rejected, std::move(result));
-  }
-
-  void Trace(blink::Visitor* visitor) override {
-    visitor->Trace(thread_pool_);
-    ThreadedMessagingProxyBase::Trace(visitor);
+  ThreadPoolThread* GetWorkerThread() const {
+    return static_cast<ThreadPoolThread*>(
+        ThreadedMessagingProxyBase::GetWorkerThread());
   }
 
  private:
   std::unique_ptr<ThreadPoolObjectProxy> object_proxy_;
-  Member<ThreadPool> thread_pool_;
 };
-
-void ThreadPoolObjectProxy::ProcessTask(
-    scoped_refptr<SerializedScriptValue> task,
-    Vector<scoped_refptr<SerializedScriptValue>> arguments,
-    size_t task_id,
-    const v8_inspector::V8StackTraceId& stack_id) {
-  DCHECK(global_scope_->IsContextThread());
-
-  v8::Isolate* isolate = ToIsolate(global_scope_.Get());
-  ScriptState::Scope scope(global_scope_->ScriptController()->GetScriptState());
-  if (cancelled_tasks_.Contains(task_id)) {
-    cancelled_tasks_.erase(task_id);
-    PostCrossThreadTask(
-        *GetParentExecutionContextTaskRunners()->Get(TaskType::kPostedMessage),
-        FROM_HERE,
-        CrossThreadBind(&ThreadPoolMessagingProxy::TaskCompleted,
-                        messaging_proxy_, task_id, true,
-                        SerializedScriptValue::SerializeAndSwallowExceptions(
-                            isolate, V8String(isolate, "Task aborted"))));
-    return;
-  }
-
-  ThreadDebugger* debugger = ThreadDebugger::From(isolate);
-  debugger->ExternalAsyncTaskStarted(stack_id);
-
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  String core_script =
-      "(" + ToCoreString(task->Deserialize(isolate).As<v8::String>()) + ")";
-  v8::MaybeLocal<v8::Script> script = v8::Script::Compile(
-      isolate->GetCurrentContext(), V8String(isolate, core_script));
-  v8::Local<v8::Function> script_function =
-      script.ToLocalChecked()->Run(context).ToLocalChecked().As<v8::Function>();
-
-  Vector<v8::Local<v8::Value>> params(arguments.size());
-  for (size_t i = 0; i < arguments.size(); i++) {
-    params[i] = arguments[i]->Deserialize(isolate);
-  }
-
-  v8::TryCatch block(isolate);
-  v8::MaybeLocal<v8::Value> ret = script_function->Call(
-      context, script_function, params.size(), params.data());
-  DCHECK_EQ(ret.IsEmpty(), block.HasCaught());
-
-  v8::Local<v8::Value> return_value;
-  if (!ret.IsEmpty()) {
-    return_value = ret.ToLocalChecked();
-    if (return_value->IsPromise())
-      return_value = return_value.As<v8::Promise>()->Result();
-  } else {
-    return_value = block.Exception()->ToString(isolate);
-  }
-
-  debugger->ExternalAsyncTaskFinished(stack_id);
-  // TODO(japhet): Is it ok to always send the completion notification back on
-  // the same task queue, or should this be the task type sent to the worker?
-  PostCrossThreadTask(
-      *GetParentExecutionContextTaskRunners()->Get(TaskType::kPostedMessage),
-      FROM_HERE,
-      CrossThreadBind(&ThreadPoolMessagingProxy::TaskCompleted,
-                      messaging_proxy_, task_id, block.HasCaught(),
-                      SerializedScriptValue::SerializeAndSwallowExceptions(
-                          isolate, return_value)));
-}
 
 service_manager::mojom::blink::InterfaceProviderPtrInfo
 ConnectToWorkerInterfaceProviderForThreadPool(
@@ -278,94 +84,78 @@ ThreadPool* ThreadPool::From(Document& document) {
   return thread_pool;
 }
 
-static const size_t kProxyCount = 2;
+static const size_t kMaxThreadCount = 4;
 
 ThreadPool::ThreadPool(Document& document)
-    : Supplement<Document>(document),
-      document_(document),
-      context_proxies_(kProxyCount) {}
+    : Supplement<Document>(document), ContextLifecycleObserver(&document) {}
 
-ThreadPoolMessagingProxy* ThreadPool::GetProxyForTaskType(TaskType task_type) {
-  DCHECK(document_->IsContextThread());
-  size_t proxy_id = kProxyCount;
-  if (task_type == TaskType::kUserInteraction)
-    proxy_id = 0u;
-  else if (task_type == TaskType::kIdleTask)
-    proxy_id = 1u;
-  DCHECK_LT(proxy_id, kProxyCount);
-
-  if (!context_proxies_[proxy_id]) {
-    base::UnguessableToken devtools_worker_token =
-        document_->GetFrame() ? document_->GetFrame()->GetDevToolsFrameToken()
-                              : base::UnguessableToken::Create();
-    ExecutionContext* context = document_.Get();
-
-    context_proxies_[proxy_id] = new ThreadPoolMessagingProxy(context, this);
-    std::unique_ptr<WorkerSettings> settings =
-        std::make_unique<WorkerSettings>(document_->GetSettings());
-
-    context_proxies_[proxy_id]->StartWorker(
-        std::make_unique<GlobalScopeCreationParams>(
-            context->Url(), ScriptType::kClassic, context->UserAgent(),
-            context->GetContentSecurityPolicy()->Headers(),
-            kReferrerPolicyDefault, context->GetSecurityOrigin(),
-            context->IsSecureContext(), context->GetHttpsState(),
-            WorkerClients::Create(),
-            context->GetSecurityContext().AddressSpace(),
-            OriginTrialContext::GetTokens(context).get(), devtools_worker_token,
-            std::move(settings), kV8CacheOptionsDefault,
-            nullptr /* worklet_module_responses_map */,
-            ConnectToWorkerInterfaceProviderForThreadPool(
-                context, context->GetSecurityOrigin())));
+ThreadPool::~ThreadPool() {
+  DCHECK(IsMainThread());
+  for (auto proxy : thread_proxies_) {
+    proxy->ParentObjectDestroyed();
   }
-  return context_proxies_[proxy_id];
 }
 
-void ThreadPool::PostTask(
-    scoped_refptr<SerializedScriptValue> task,
-    ScriptPromiseResolver* resolver,
-    AbortSignal* signal,
-    const Vector<scoped_refptr<SerializedScriptValue>>& arguments,
-    TaskType task_type) {
-  DCHECK(document_->IsContextThread());
+ThreadPoolThread* ThreadPool::CreateNewThread() {
+  DCHECK(IsMainThread());
+  DCHECK_LT(thread_proxies_.size(), kMaxThreadCount);
+  base::UnguessableToken devtools_worker_token =
+      GetFrame() ? GetFrame()->GetDevToolsFrameToken()
+                 : base::UnguessableToken::Create();
+  ExecutionContext* context = GetExecutionContext();
 
-  GetProxyForTaskType(task_type)->PostTaskToWorkerGlobalScope(
-      document_.Get(), std::move(task), arguments, next_task_id_, task_type);
-  resolvers_.insert(next_task_id_, resolver);
-  if (signal) {
-    signal->AddAlgorithm(WTF::Bind(&ThreadPool::AbortTask, WrapPersistent(this),
-                                   next_task_id_, task_type));
+  ThreadPoolMessagingProxy* proxy = new ThreadPoolMessagingProxy(context);
+  std::unique_ptr<WorkerSettings> settings =
+      std::make_unique<WorkerSettings>(GetFrame()->GetSettings());
+
+  proxy->StartWorker(std::make_unique<GlobalScopeCreationParams>(
+      context->Url(), ScriptType::kClassic, context->UserAgent(),
+      context->GetContentSecurityPolicy()->Headers(), kReferrerPolicyDefault,
+      context->GetSecurityOrigin(), context->IsSecureContext(),
+      context->GetHttpsState(), WorkerClients::Create(),
+      context->GetSecurityContext().AddressSpace(),
+      OriginTrialContext::GetTokens(context).get(), devtools_worker_token,
+      std::move(settings), kV8CacheOptionsDefault,
+      nullptr /* worklet_module_responses_map */,
+      ConnectToWorkerInterfaceProviderForThreadPool(
+          context, context->GetSecurityOrigin())));
+  thread_proxies_.insert(proxy);
+  return proxy->GetWorkerThread();
+}
+
+ThreadPoolThread* ThreadPool::GetLeastBusyThread() {
+  DCHECK(IsMainThread());
+  ThreadPoolThread* least_busy_thread = nullptr;
+  size_t lowest_task_count = std::numeric_limits<std::size_t>::max();
+  for (auto proxy : thread_proxies_) {
+    ThreadPoolThread* current_thread = proxy->GetWorkerThread();
+    size_t current_task_count = current_thread->GetTasksInProgressCount();
+    // If there's an idle thread, use it.
+    if (current_task_count == 0)
+      return current_thread;
+    if (current_task_count < lowest_task_count) {
+      least_busy_thread = current_thread;
+      lowest_task_count = current_task_count;
+    }
   }
-  next_task_id_++;
+
+  if (thread_proxies_.size() == kMaxThreadCount)
+    return least_busy_thread;
+  return CreateNewThread();
 }
 
-void ThreadPool::AbortTask(size_t task_id, TaskType task_type) {
-  DCHECK(document_->IsContextThread());
-  GetProxyForTaskType(task_type)->PostAbortToWorkerGlobalScope(task_id);
-}
-
-void ThreadPool::TaskCompleted(size_t task_id,
-                               bool was_rejected,
-                               scoped_refptr<SerializedScriptValue> result) {
-  DCHECK(document_->IsContextThread());
-  DCHECK(resolvers_.Contains(task_id));
-  DCHECK(result);
-  ScriptPromiseResolver* resolver = resolvers_.Take(task_id);
-  // Need a ScriptState::Scope for Deserialize()
-  ScriptState::Scope scope(resolver->GetScriptState());
-  v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
-  v8::Local<v8::Value> v8_result = result->Deserialize(isolate);
-  if (was_rejected)
-    resolver->Reject(v8::Exception::Error(v8_result.As<v8::String>()));
-  else
-    resolver->Resolve(v8_result);
+void ThreadPool::ContextDestroyed(ExecutionContext*) {
+  DCHECK(IsMainThread());
+  DCHECK(GetExecutionContext()->IsContextThread());
+  for (auto proxy : thread_proxies_) {
+    proxy->TerminateGlobalScope();
+  }
 }
 
 void ThreadPool::Trace(blink::Visitor* visitor) {
   Supplement<Document>::Trace(visitor);
-  visitor->Trace(document_);
-  visitor->Trace(context_proxies_);
-  visitor->Trace(resolvers_);
+  ContextLifecycleObserver::Trace(visitor);
+  visitor->Trace(thread_proxies_);
 }
 
 }  // namespace blink

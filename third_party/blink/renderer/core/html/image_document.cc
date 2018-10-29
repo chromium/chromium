@@ -25,11 +25,11 @@
 #include "third_party/blink/renderer/core/html/image_document.h"
 
 #include <limits>
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/raw_data_document_parser.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/core/frame/content_settings_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -128,8 +128,10 @@ void ImageDocumentParser::AppendBytes(const char* data, size_t length) {
 
   LocalFrame* frame = GetDocument()->GetFrame();
   Settings* settings = frame->GetSettings();
-  if (!frame->GetContentSettingsClient()->AllowImage(
-          !settings || settings->GetImagesEnabled(), GetDocument()->Url()))
+  bool allow_image = !settings || settings->GetImagesEnabled();
+  if (auto* client = frame->GetContentSettingsClient())
+    allow_image = client->AllowImage(allow_image, GetDocument()->Url());
+  if (!allow_image)
     return;
 
   if (GetDocument()->CachedImageResourceDeprecated()) {
@@ -177,8 +179,10 @@ void ImageDocumentParser::Finish() {
     GetDocument()->ImageLoaded();
   }
 
-  if (!IsDetached())
+  if (!IsDetached()) {
+    GetDocument()->SetReadyState(Document::kInteractive);
     GetDocument()->FinishedParsing();
+  }
 }
 
 // --------

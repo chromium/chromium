@@ -63,31 +63,33 @@ class ClientServiceMap {
     client_to_service_map_.clear();
   }
 
-  bool GetServiceID(ClientType client_id, ServiceType* service_id) const {
-    if (client_id < kMaxFlatArraySize) {
-      if (client_id < client_to_service_array_.size() &&
-          client_to_service_array_[client_id] != invalid_service_id()) {
-        if (service_id) {
-          *service_id = client_to_service_array_[client_id];
-        }
-        return true;
-      }
-    } else {
-      auto iter = client_to_service_map_.find(client_id);
-      if (iter != client_to_service_map_.end()) {
-        if (service_id) {
-          *service_id = iter->second;
-        }
-        return true;
-      }
+  ALWAYS_INLINE bool GetServiceID(ClientType client_id,
+                                  ServiceType* service_id) const {
+    DCHECK(service_id);
+    if (client_id >= kMaxFlatArraySize) {
+      return GetServiceIDFromMap(client_id, service_id);
+    }
+
+    if (client_id < client_to_service_array_.size() &&
+        client_to_service_array_[client_id] != invalid_service_id()) {
+      *service_id = client_to_service_array_[client_id];
+      return true;
     }
     if (client_id == 0) {
-      if (service_id) {
-        *service_id = 0;
-      }
+      *service_id = 0;
       return true;
     }
     return false;
+  }
+
+  ALWAYS_INLINE bool HasClientID(ClientType client_id) const {
+    if (client_id >= kMaxFlatArraySize) {
+      return GetServiceIDFromMap(client_id, nullptr);
+    }
+
+    return client_id == 0 ||
+           (client_id < client_to_service_array_.size() &&
+            client_to_service_array_[client_id] != invalid_service_id());
   }
 
   ServiceType GetServiceIDOrInvalid(ClientType client_id) {
@@ -118,10 +120,7 @@ class ClientServiceMap {
       }
     }
     if (service_id == 0) {
-      if (client_id) {
-        *client_id = 0;
-      }
-      return true;
+      *client_id = 0;
     }
     return false;
   }
@@ -148,6 +147,19 @@ class ClientServiceMap {
   static constexpr size_t kMaxFlatArraySize = 0x4000;
 
  private:
+  bool GetServiceIDFromMap(ClientType client_id,
+                           ServiceType* service_id) const {
+    DCHECK(client_id >= kMaxFlatArraySize);
+    auto iter = client_to_service_map_.find(client_id);
+    if (iter != client_to_service_map_.end()) {
+      if (service_id) {
+        *service_id = iter->second;
+      }
+      return true;
+    }
+    return false;
+  }
+
   ServiceType invalid_service_id_;
   std::vector<ServiceType> client_to_service_array_;
   std::unordered_map<ClientType, ServiceType> client_to_service_map_;

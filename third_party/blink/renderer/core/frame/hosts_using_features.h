@@ -57,7 +57,7 @@ class CORE_EXPORT HostsUsingFeatures {
   void UpdateMeasurementsAndClear();
 
   class CORE_EXPORT Value {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
 
    public:
     Value();

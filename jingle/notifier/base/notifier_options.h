@@ -12,6 +12,10 @@
 #include "net/base/host_port_pair.h"
 #include "net/url_request/url_request_context_getter.h"
 
+namespace network {
+class NetworkConnectionTracker;
+}
+
 namespace notifier {
 
 struct NotifierOptions {
@@ -44,6 +48,9 @@ struct NotifierOptions {
 
   // The URLRequestContextGetter to use for doing I/O.
   scoped_refptr<net::URLRequestContextGetter> request_context_getter;
+
+  // Used to listen for network connection changes.
+  network::NetworkConnectionTracker* network_connection_tracker;
 };
 
 }  // namespace notifier

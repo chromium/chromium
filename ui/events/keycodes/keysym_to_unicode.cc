@@ -834,7 +834,7 @@ class KeySymToUnicode {
     }
 
     // Other KeySyms which are not Unicode-style.
-    KeySymToUnicodeMap::const_iterator i = keysym_to_unicode_map_.find(keysym);
+    auto i = keysym_to_unicode_map_.find(keysym);
     return i != keysym_to_unicode_map_.end() ? i->second : 0;
   }
 

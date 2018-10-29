@@ -7,7 +7,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -18,7 +17,6 @@
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/blue_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/painter.h"
@@ -197,12 +195,9 @@ void MdTextButton::UpdatePadding() {
       style::GetFont(style::CONTEXT_BUTTON_MD, style::STYLE_PRIMARY)
           .GetFontSize();
   // TODO(tapted): This should get |target_height| using LayoutProvider::
-  // GetControlHeightForFont(). It can't because that only returns a correct
-  // result with --secondary-ui-md, and MdTextButtons appear in top chrome
-  // without that.
-  const int base_height =
-      ui::MaterialDesignController::IsNewerMaterialUi() ? 32 : 28;
-  int target_height = std::max(base_height + size_delta * 2,
+  // GetControlHeightForFont().
+  constexpr int kBaseHeight = 32;
+  int target_height = std::max(kBaseHeight + size_delta * 2,
                                label()->font_list().GetFontSize() * 2);
 
   int label_height = label()->GetPreferredSize().height();

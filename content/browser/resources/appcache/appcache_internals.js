@@ -31,7 +31,7 @@ cr.define('appcache', function() {
   }
 
   function getFirstAncestor(node, selector) {
-    while(node) {
+    while (node) {
       if (selector(node)) {
         break;
       }
@@ -45,7 +45,8 @@ cr.define('appcache', function() {
       return properties.every(function(key, i) {
         return candidate[key] == values[i];
       });
-    }) || null;
+    }) ||
+        null;
   }
 
   function removeFromList(list, item, properties) {
@@ -53,8 +54,8 @@ cr.define('appcache', function() {
     while (pos < list.length) {
       var candidate = list[pos];
       if (properties.every(function(key) {
-        return candidate[key] == item[key];
-      })) {
+            return candidate[key] == item[key];
+          })) {
         list.splice(pos, 1);
       } else {
         pos++;
@@ -71,8 +72,9 @@ cr.define('appcache', function() {
     var template = jstGetTemplate('appcache-list-template');
     var container = $('appcache-list');
     container.appendChild(template);
-    jstProcess(new JsEvalContext(
-        {appcache_vector: data, partition_path: partition_path}),
+    jstProcess(
+        new JsEvalContext(
+            {appcache_vector: data, partition_path: partition_path}),
         template);
     var removeLinks = container.querySelectorAll('a.remove-manifest');
     for (var i = 0; i < removeLinks.length; ++i) {
@@ -90,15 +92,14 @@ cr.define('appcache', function() {
       hideAppCacheInfo(link);
     } else {
       var manifestURL = getFirstAncestor(link, function(node) {
-        return !!node.manifestURL;
-      }).manifestURL;
+                          return !!node.manifestURL;
+                        }).manifestURL;
       var partitionPath = getFirstAncestor(link, function(node) {
-        return !!node.partitionPath;
-      }).partitionPath;
+                            return !!node.partitionPath;
+                          }).partitionPath;
       var manifest = new Manifest(manifestURL, partitionPath, link);
-      if (getItemByProperties(manifestsToView,
-                              ['url', 'path'],
-                              [manifestURL, partitionPath])) {
+      if (getItemByProperties(
+              manifestsToView, ['url', 'path'], [manifestURL, partitionPath])) {
         return;
       }
       manifestsToView.push(manifest);
@@ -115,8 +116,9 @@ cr.define('appcache', function() {
 
   function onAppCacheDetailsReady(manifestURL, partitionPath, details) {
     if (!details) {
-      console.log('Cannot show details for "' + manifestURL + '" on partition '
-                   + '"' + partitionPath + '".');
+      console.log(
+          'Cannot show details for "' + manifestURL + '" on partition ' +
+          '"' + partitionPath + '".');
       return;
     }
     var manifest = getItemByProperties(
@@ -124,8 +126,8 @@ cr.define('appcache', function() {
     var link = manifest.link;
     removeFromList(manifestsToView, manifest, ['url', 'path']);
     var container = getFirstAncestor(link, function(node) {
-      return node.className === 'appcache-info-item';
-    }).querySelector('.appcache-details');
+                      return node.className === 'appcache-info-item';
+                    }).querySelector('.appcache-details');
     var template = jstGetTemplate('appcache-info-template');
     container.appendChild(template);
     jstProcess(
@@ -163,10 +165,10 @@ cr.define('appcache', function() {
       }
       properties = properties.join(',');
       simpleVector.push({
-        size : details.size,
-        properties : properties,
-        fileUrl : details.url,
-        responseId : details.responseId
+        size: details.size,
+        properties: properties,
+        fileUrl: details.url,
+        responseId: details.responseId
       });
     }
     return simpleVector;
@@ -175,11 +177,11 @@ cr.define('appcache', function() {
   function deleteAppCacheInfoEventHandler(event) {
     var link = event.target;
     var manifestURL = getFirstAncestor(link, function(node) {
-      return !!node.manifestURL;
-    }).manifestURL;
+                        return !!node.manifestURL;
+                      }).manifestURL;
     var partitionPath = getFirstAncestor(link, function(node) {
-      return !!node.partitionPath;
-    }).partitionPath;
+                          return !!node.partitionPath;
+                        }).partitionPath;
     var manifest = new Manifest(manifestURL, partitionPath, link);
     manifestsToDelete.push(manifest);
     chrome.send(DELETE_APPCACHE, [partitionPath, manifestURL]);
@@ -202,60 +204,54 @@ cr.define('appcache', function() {
       }
     } else if (!deleted) {
       // For some reason, the delete command failed.
-      console.log('Manifest "' + manifestURL + '" on partition "'
-                  + partitionPath + ' cannot be accessed.');
+      console.log(
+          'Manifest "' + manifestURL + '" on partition "' + partitionPath +
+          ' cannot be accessed.');
     }
   }
 
   function getFileContentsEventHandler(event) {
     var link = event.target;
     var partitionPath = getFirstAncestor(link, function(node) {
-      return !!node.partitionPath;
-    }).partitionPath;
+                          return !!node.partitionPath;
+                        }).partitionPath;
     var manifestURL = getFirstAncestor(link, function(node) {
-      return !!node.manifestURL;
-    }).manifestURL;
+                        return !!node.manifestURL;
+                      }).manifestURL;
     var groupId = getFirstAncestor(link, function(node) {
-      return !!node.groupId;
-    }).groupId;
+                    return !!node.groupId;
+                  }).groupId;
     var responseId = link.responseId;
 
-    if (!getItemByProperties(fileDetailsRequests,
-                            ['manifestURL', 'groupId', 'responseId'],
-                            [manifestURL, groupId, responseId])) {
-      var fileRequest = new FileRequest(link.innerText, manifestURL,
-                                        partitionPath, groupId, responseId);
+    if (!getItemByProperties(
+            fileDetailsRequests, ['manifestURL', 'groupId', 'responseId'],
+            [manifestURL, groupId, responseId])) {
+      var fileRequest = new FileRequest(
+          link.innerText, manifestURL, partitionPath, groupId, responseId);
       fileDetailsRequests.push(fileRequest);
-      chrome.send(GET_FILE_DETAILS,
-        [partitionPath, manifestURL, groupId, responseId]);
+      chrome.send(
+          GET_FILE_DETAILS, [partitionPath, manifestURL, groupId, responseId]);
     }
   }
 
   function onFileDetailsFailed(response, code) {
-    var request =
-      getItemByProperties(
-        fileDetailsRequests,
-        ['manifestURL', 'groupId', 'responseId'],
+    var request = getItemByProperties(
+        fileDetailsRequests, ['manifestURL', 'groupId', 'responseId'],
         [response.manifestURL, response.groupId, response.responseId]);
-    console.log('Failed to get file information for file "'
-                + request.fileURL + '" from partition "'
-                + request.partitionPath + '" (net result code:' + code +').');
+    console.log(
+        'Failed to get file information for file "' + request.fileURL +
+        '" from partition "' + request.partitionPath +
+        '" (net result code:' + code + ').');
     removeFromList(
-      fileDetailsRequests,
-      request,
-      ['manifestURL', 'groupId', 'responseId']);
+        fileDetailsRequests, request, ['manifestURL', 'groupId', 'responseId']);
   }
 
   function onFileDetailsReady(response, headers, raw_data) {
-    var request =
-      getItemByProperties(
-        fileDetailsRequests,
-        ['manifestURL', 'groupId', 'responseId'],
+    var request = getItemByProperties(
+        fileDetailsRequests, ['manifestURL', 'groupId', 'responseId'],
         [response.manifestURL, response.groupId, response.responseId]);
     removeFromList(
-      fileDetailsRequests,
-      request,
-      ['manifestURL', 'groupId', 'responseId']);
+        fileDetailsRequests, request, ['manifestURL', 'groupId', 'responseId']);
     var doc = window.open().document;
     var head = document.createElement('head');
     doc.title = 'File Details: '.concat(request.fileURL);
@@ -265,7 +261,7 @@ cr.define('appcache', function() {
     var hexDumpDiv = doc.createElement('div');
     hexDumpDiv.innerHTML = raw_data;
     var linkToManifest = doc.createElement('a');
-    linkToManifest.style.color = "#3C66DD";
+    linkToManifest.style.color = '#3C66DD';
     linkToManifest.href = request.fileURL;
     linkToManifest.target = '_blank';
     linkToManifest.innerHTML = request.fileURL;
@@ -282,7 +278,7 @@ cr.define('appcache', function() {
     if (dest.getElementsByTagName('style').length < 1) {
       dest.head.appendChild(dest.createElement('style'));
     }
-    var destStyle=  dest.querySelector('style');
+    var destStyle = dest.querySelector('style');
     var tmp = '';
     for (var i = 0; i < styles.length; ++i) {
       tmp += styles[i].innerHTML;
@@ -294,11 +290,10 @@ cr.define('appcache', function() {
     initialize: initialize,
     onAllAppCacheInfoReady: onAllAppCacheInfoReady,
     onAppCacheInfoDeleted: onAppCacheInfoDeleted,
-    onAppCacheDetailsReady : onAppCacheDetailsReady,
-    onFileDetailsReady : onFileDetailsReady,
+    onAppCacheDetailsReady: onAppCacheDetailsReady,
+    onFileDetailsReady: onFileDetailsReady,
     onFileDetailsFailed: onFileDetailsFailed
   };
-
 });
 
 document.addEventListener('DOMContentLoaded', appcache.initialize);

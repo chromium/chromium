@@ -42,6 +42,7 @@ class OverscrollController;
 class RenderWidgetHostImpl;
 class RenderWidgetHostViewBase;
 class TouchSelectionControllerClientAura;
+class HitTestDebugKeyEventObserver;
 
 // Provides an implementation of ui::EventHandler for use with
 // RenderWidgetHostViewBase. A delegate is required in order to provide platform
@@ -71,6 +72,7 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
     virtual void ForwardKeyboardEventWithLatencyInfo(
         const NativeWebKeyboardEvent& event,
         const ui::LatencyInfo& latency,
+        ui::KeyEvent* original_key_event,
         bool* update_event) = 0;
     // Returns whether the widget needs to grab mouse capture to work properly.
     virtual bool NeedsMouseCapture() = 0;
@@ -289,6 +291,8 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   Delegate* const delegate_;
   aura::Window* window_;
   MouseWheelPhaseHandler mouse_wheel_phase_handler_;
+
+  std::unique_ptr<HitTestDebugKeyEventObserver> debug_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewEventHandler);
 };

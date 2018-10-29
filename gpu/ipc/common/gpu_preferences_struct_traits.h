@@ -97,6 +97,8 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
     out->gl_shader_interm_output = prefs.gl_shader_interm_output();
     out->emulate_shader_precision = prefs.emulate_shader_precision();
     out->max_active_webgl_contexts = prefs.max_active_webgl_contexts();
+    out->enable_android_surface_control =
+        prefs.enable_android_surface_control();
     out->enable_gpu_service_logging = prefs.enable_gpu_service_logging();
     out->enable_gpu_service_tracing = prefs.enable_gpu_service_tracing();
     out->use_passthrough_cmd_decoder = prefs.use_passthrough_cmd_decoder();
@@ -119,6 +121,7 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
     out->enable_oop_rasterization = prefs.enable_oop_rasterization();
     out->disable_oop_rasterization = prefs.disable_oop_rasterization();
     out->enable_oop_rasterization_ddl = prefs.enable_oop_rasterization_ddl();
+    out->enable_raster_to_sk_image = prefs.enable_raster_to_sk_image();
     out->watchdog_starts_backgrounded = prefs.watchdog_starts_backgrounded();
     out->enable_vulkan = prefs.enable_vulkan();
     out->enable_gpu_benchmarking_extension =
@@ -227,6 +230,9 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
   static uint32_t max_active_webgl_contexts(const gpu::GpuPreferences& prefs) {
     return prefs.max_active_webgl_contexts;
   }
+  static bool enable_android_surface_control(const gpu::GpuPreferences& prefs) {
+    return prefs.enable_android_surface_control;
+  }
   static bool enable_gpu_service_logging(const gpu::GpuPreferences& prefs) {
     return prefs.enable_gpu_service_logging;
   }
@@ -259,6 +265,9 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
   }
   static bool enable_oop_rasterization_ddl(const gpu::GpuPreferences& prefs) {
     return prefs.enable_oop_rasterization_ddl;
+  }
+  static bool enable_raster_to_sk_image(const gpu::GpuPreferences& prefs) {
+    return prefs.enable_raster_to_sk_image;
   }
   static bool watchdog_starts_backgrounded(const gpu::GpuPreferences& prefs) {
     return prefs.watchdog_starts_backgrounded;

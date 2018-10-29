@@ -6,22 +6,14 @@ import("//build/config/jumbo.gni")
 import("//testing/test.gni")
 
 cc_remove_configs = []
-cc_add_configs = [ "//build/config:precompiled_headers" ]
+cc_add_configs = [
+  "//build/config:precompiled_headers",
+  "//build/config/compiler:wexit_time_destructors",
+]
 
-if (!is_debug && (is_win || is_android)) {
+if (!is_debug) {
   cc_remove_configs += [ "//build/config/compiler:default_optimization" ]
   cc_add_configs += [ "//build/config/compiler:optimize_max" ]
-}
-
-template("cc_source_set") {
-  jumbo_source_set(target_name) {
-    forward_variables_from(invoker, "*", [ "configs" ])
-    if (defined(invoker.configs)) {
-      configs += invoker.configs
-    }
-    configs -= cc_remove_configs
-    configs += cc_add_configs
-  }
 }
 
 template("cc_component") {
@@ -35,7 +27,7 @@ template("cc_component") {
   }
 }
 
-template("cc_static_library") {
+template("cc_test_static_library") {
   jumbo_static_library(target_name) {
     forward_variables_from(invoker, "*", [ "configs" ])
     if (defined(invoker.configs)) {
@@ -43,6 +35,9 @@ template("cc_static_library") {
     }
     configs -= cc_remove_configs
     configs += cc_add_configs
+
+    # Not needed in test code.
+    configs -= [ "//build/config/compiler:wexit_time_destructors" ]
   }
 }
 
@@ -54,5 +49,8 @@ template("cc_test") {
     }
     configs -= cc_remove_configs
     configs += cc_add_configs
+
+    # Not needed in test code.
+    configs -= [ "//build/config/compiler:wexit_time_destructors" ]
   }
 }

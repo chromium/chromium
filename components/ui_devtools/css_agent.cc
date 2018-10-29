@@ -80,7 +80,7 @@ std::unique_ptr<CSS::CSSStyle> BuildCSSStyle(UIElement* ui_element) {
       .setRange(BuildDefaultSourceRange())
       .setStyleSheetId(base::IntToString(ui_element->node_id()))
       .setCssProperties(std::move(css_properties))
-      .setShorthandEntries(Array<std::string>::create())
+      .setShorthandEntries(Array<protocol::CSS::ShorthandEntry>::create())
       .build();
 }
 

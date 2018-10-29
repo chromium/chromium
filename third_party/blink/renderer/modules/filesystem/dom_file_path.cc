@@ -83,22 +83,22 @@ String DOMFilePath::RemoveExtraParentReferences(const String& path) {
   Vector<String> components;
   Vector<String> canonicalized;
   path.Split(DOMFilePath::kSeparator, components);
-  for (size_t i = 0; i < components.size(); ++i) {
-    if (components[i] == ".")
+  for (const auto& component : components) {
+    if (component == ".")
       continue;
-    if (components[i] == "..") {
+    if (component == "..") {
       if (canonicalized.size() > 0)
         canonicalized.pop_back();
       continue;
     }
-    canonicalized.push_back(components[i]);
+    canonicalized.push_back(component);
   }
   if (canonicalized.IsEmpty())
     return DOMFilePath::kRoot;
   StringBuilder result;
-  for (size_t i = 0; i < canonicalized.size(); ++i) {
+  for (const auto& component : canonicalized) {
     result.Append(DOMFilePath::kSeparator);
-    result.Append(canonicalized[i]);
+    result.Append(component);
   }
   return result.ToString();
 }
@@ -120,13 +120,10 @@ bool DOMFilePath::IsValidPath(const String& path) {
   // ".." or "." is likely an attempt to break out of the sandbox.
   Vector<String> components;
   path.Split(DOMFilePath::kSeparator, components);
-  for (size_t i = 0; i < components.size(); ++i) {
-    if (components[i] == ".")
-      return false;
-    if (components[i] == "..")
-      return false;
-  }
-  return true;
+  return std::none_of(components.begin(), components.end(),
+                      [](const String& component) {
+                        return component == "." || component == "..";
+                      });
 }
 
 bool DOMFilePath::IsValidName(const String& name) {

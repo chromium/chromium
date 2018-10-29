@@ -20,10 +20,6 @@
 #include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/link_listener.h"
 
-namespace chrome {
-class ContentSettingBubbleViewsBridge;
-}
-
 namespace views {
 class ImageButton;
 class RadioButton;
@@ -80,9 +76,6 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
  private:
   class Favicon;
   class ListItemContainer;
-
-  // This allows ContentSettingBubbleViewsBridge to call SetAnchorRect().
-  friend class chrome::ContentSettingBubbleViewsBridge;
 
   // Applies the colors appropriate for |theme| to the learn more button.
   void StyleLearnMoreButton(const ui::NativeTheme* theme);

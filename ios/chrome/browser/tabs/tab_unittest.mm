@@ -241,7 +241,7 @@ class TabTest : public BlockCleanupTest,
     web_state_impl_->OnNavigationStarted(&context1);
 
     web::Referrer empty_referrer;
-    [tab_ navigationManagerImpl]->AddPendingItem(
+    web_state_impl_->GetNavigationManagerImpl().AddPendingItem(
         redirect_url, empty_referrer, ui::PAGE_TRANSITION_CLIENT_REDIRECT,
         web::NavigationInitiationType::RENDERER_INITIATED,
         web::NavigationManager::UserAgentOverrideOption::INHERIT);
@@ -254,7 +254,7 @@ class TabTest : public BlockCleanupTest,
       [fake_wk_list_
           setCurrentURL:base::SysUTF8ToNSString(redirect_url.spec())];
     }
-    [tab_ navigationManagerImpl]->CommitPendingItem();
+    web_state_impl_->GetNavigationManagerImpl().CommitPendingItem();
 
     context2.SetHasCommitted(true);
     web_state_impl_->UpdateHttpResponseHeaders(redirect_url);

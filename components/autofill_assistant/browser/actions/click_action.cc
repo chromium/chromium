@@ -19,23 +19,34 @@ ClickAction::ClickAction(const ActionProto& proto)
 
 ClickAction::~ClickAction() {}
 
-void ClickAction::ProcessAction(ActionDelegate* delegate,
-                                ProcessActionCallback callback) {
-  processed_action_proto_ = std::make_unique<ProcessedActionProto>();
-  std::vector<std::string> selectors;
-  for (const auto& selector : proto_.click().element_to_click().selectors()) {
-    selectors.emplace_back(selector);
+void ClickAction::InternalProcessAction(ActionDelegate* delegate,
+                                        ProcessActionCallback callback) {
+  DCHECK_GT(proto_.click().element_to_click().selectors_size(), 0);
+  delegate->WaitForElement(
+      ExtractSelectors(proto_.click().element_to_click().selectors()),
+      base::BindOnce(&ClickAction::OnWaitForElement,
+                     weak_ptr_factory_.GetWeakPtr(), base::Unretained(delegate),
+                     std::move(callback)));
+}
+
+void ClickAction::OnWaitForElement(ActionDelegate* delegate,
+                                   ProcessActionCallback callback,
+                                   bool element_found) {
+  if (!element_found) {
+    UpdateProcessedAction(ELEMENT_RESOLUTION_FAILED);
+    std::move(callback).Run(std::move(processed_action_proto_));
+    return;
   }
-  DCHECK(!selectors.empty());
+
   delegate->ClickElement(
-      selectors,
+      ExtractSelectors(proto_.click().element_to_click().selectors()),
       base::BindOnce(&::autofill_assistant::ClickAction::OnClick,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ClickAction::OnClick(ProcessActionCallback callback, bool status) {
-  UpdateProcessedAction(status);
+  UpdateProcessedAction(status ? ACTION_APPLIED : OTHER_ACTION_STATUS);
   std::move(callback).Run(std::move(processed_action_proto_));
 }
 
-}  // namespace autofill_assistant.
+}  // namespace autofill_assistant

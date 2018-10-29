@@ -36,6 +36,7 @@ class QUIC_EXPORT_PRIVATE QuicServerSessionBase : public QuicSpdySession {
   // Does not take ownership of |connection|. |crypto_config| must outlive the
   // session. |helper| must outlive any created crypto streams.
   QuicServerSessionBase(const QuicConfig& config,
+                        const ParsedQuicVersionVector& supported_versions,
                         QuicConnection* connection,
                         QuicSession::Visitor* visitor,
                         QuicCryptoServerStream::Helper* helper,
@@ -79,12 +80,12 @@ class QUIC_EXPORT_PRIVATE QuicServerSessionBase : public QuicSpdySession {
   // Return false when connection is closed or forward secure encryption hasn't
   // established yet or number of server initiated streams already reaches the
   // upper limit.
-  bool ShouldCreateOutgoingDynamicStream() override;
+  bool ShouldCreateOutgoingStream() override;
 
   // If we should create an incoming stream, returns true. Otherwise
   // does error handling, including communicating the error to the client and
   // possibly closing the connection, and returns false.
-  bool ShouldCreateIncomingDynamicStream(QuicStreamId id) override;
+  bool ShouldCreateIncomingStream(QuicStreamId id) override;
 
   virtual QuicCryptoServerStreamBase* CreateQuicCryptoServerStream(
       const QuicCryptoServerConfig* crypto_config,

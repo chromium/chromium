@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/location.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_error.h"
@@ -17,8 +16,6 @@ namespace syncer {
 
 class DataTypeErrorHandler {
  public:
-  using ErrorCallback = base::Callback<void(const SyncError&)>;
-
   virtual ~DataTypeErrorHandler() {}
 
   // Call this to disable a datatype while it is running. This is usually

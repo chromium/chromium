@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
 
-#include "base/callback_forward.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -30,7 +29,6 @@ class View;
 // Controller for tabs.
 class TabController {
  public:
-
   virtual const ui::ListSelectionModel& GetSelectionModel() const = 0;
 
   // Returns true if multiple selection is supported.
@@ -66,9 +64,6 @@ class TabController {
 
   // Closes the tab.
   virtual void CloseTab(Tab* tab, CloseTabSource source) = 0;
-
-  // Toggles whether tab-wide audio muting is active.
-  virtual void ToggleTabAudioMute(Tab* tab) = 0;
 
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,
@@ -121,14 +116,8 @@ class TabController {
   // Returns whether |tab| needs to be painted. When this returns true, |clip|
   // is set to the path which should be clipped out of the current tab's region
   // (for hit testing or painting), if any.  |clip| is only non-empty when
-  // stacking tabs; if it is empty, no clipping is needed.  |border_callback| is
-  // a callback which returns a tab's border given its size, and is used in
-  // computing |clip|.
-  virtual bool ShouldPaintTab(
-      const Tab* tab,
-      const base::RepeatingCallback<gfx::Path(const gfx::Rect&)>&
-          border_callback,
-      gfx::Path* clip) = 0;
+  // stacking tabs; if it is empty, no clipping is needed.
+  virtual bool ShouldPaintTab(const Tab* tab, float scale, gfx::Path* clip) = 0;
 
   // Returns the thickness of the stroke around the active tab in DIP.  Returns
   // 0 if there is no stroke.

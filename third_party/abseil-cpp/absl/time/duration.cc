@@ -666,7 +666,7 @@ std::chrono::hours ToChronoHours(Duration d) {
 }
 
 //
-// To/From std::string formatting.
+// To/From string formatting.
 //
 
 namespace {
@@ -744,7 +744,7 @@ void AppendNumberUnit(std::string* out, double n, DisplayUnit unit) {
 }  // namespace
 
 // From Go's doc at http://golang.org/pkg/time/#Duration.String
-//   [FormatDuration] returns a std::string representing the duration in the
+//   [FormatDuration] returns a string representing the duration in the
 //   form "72h3m0.5s".  Leading zero units are omitted.  As a special
 //   case, durations less than one second format use a smaller unit
 //   (milli-, micro-, or nanoseconds) to ensure that the leading digit
@@ -787,8 +787,8 @@ std::string FormatDuration(Duration d) {
 namespace {
 
 // A helper for ParseDuration() that parses a leading number from the given
-// std::string and stores the result in *int_part/*frac_part/*frac_scale.  The
-// given std::string pointer is modified to point to the first unconsumed char.
+// string and stores the result in *int_part/*frac_part/*frac_scale.  The
+// given string pointer is modified to point to the first unconsumed char.
 bool ConsumeDurationNumber(const char** dpp, int64_t* int_part,
                            int64_t* frac_part, int64_t* frac_scale) {
   *int_part = 0;
@@ -816,8 +816,8 @@ bool ConsumeDurationNumber(const char** dpp, int64_t* int_part,
 }
 
 // A helper for ParseDuration() that parses a leading unit designator (e.g.,
-// ns, us, ms, s, m, h) from the given std::string and stores the resulting unit
-// in "*unit".  The given std::string pointer is modified to point to the first
+// ns, us, ms, s, m, h) from the given string and stores the resulting unit
+// in "*unit".  The given string pointer is modified to point to the first
 // unconsumed char.
 bool ConsumeDurationUnit(const char** start, Duration* unit) {
   const char *s = *start;
@@ -850,7 +850,7 @@ bool ConsumeDurationUnit(const char** start, Duration* unit) {
 }  // namespace
 
 // From Go's doc at http://golang.org/pkg/time/#ParseDuration
-//   [ParseDuration] parses a duration std::string.  A duration std::string is
+//   [ParseDuration] parses a duration string.  A duration string is
 //   a possibly signed sequence of decimal numbers, each with optional
 //   fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m".
 //   Valid time units are "ns", "us" "ms", "s", "m", "h".

@@ -607,11 +607,12 @@ TEST(optionalTest, CopyAssignment) {
   opt2_to_empty = empty;
   EXPECT_FALSE(opt2_to_empty);
 
-  EXPECT_FALSE(std::is_copy_assignable<absl::optional<const int>>::value);
-  EXPECT_TRUE(std::is_copy_assignable<absl::optional<Copyable>>::value);
-  EXPECT_FALSE(std::is_copy_assignable<absl::optional<MoveableThrow>>::value);
-  EXPECT_FALSE(std::is_copy_assignable<absl::optional<MoveableNoThrow>>::value);
-  EXPECT_FALSE(std::is_copy_assignable<absl::optional<NonMovable>>::value);
+  EXPECT_FALSE(absl::is_copy_assignable<absl::optional<const int>>::value);
+  EXPECT_TRUE(absl::is_copy_assignable<absl::optional<Copyable>>::value);
+  EXPECT_FALSE(absl::is_copy_assignable<absl::optional<MoveableThrow>>::value);
+  EXPECT_FALSE(
+      absl::is_copy_assignable<absl::optional<MoveableNoThrow>>::value);
+  EXPECT_FALSE(absl::is_copy_assignable<absl::optional<NonMovable>>::value);
 
   EXPECT_TRUE(absl::is_trivially_copy_assignable<int>::value);
   EXPECT_TRUE(absl::is_trivially_copy_assignable<volatile int>::value);
@@ -625,9 +626,9 @@ TEST(optionalTest, CopyAssignment) {
   };
 
   EXPECT_TRUE(absl::is_trivially_copy_assignable<Trivial>::value);
-  EXPECT_FALSE(std::is_copy_assignable<const Trivial>::value);
-  EXPECT_FALSE(std::is_copy_assignable<volatile Trivial>::value);
-  EXPECT_TRUE(std::is_copy_assignable<NonTrivial>::value);
+  EXPECT_FALSE(absl::is_copy_assignable<const Trivial>::value);
+  EXPECT_FALSE(absl::is_copy_assignable<volatile Trivial>::value);
+  EXPECT_TRUE(absl::is_copy_assignable<NonTrivial>::value);
   EXPECT_FALSE(absl::is_trivially_copy_assignable<NonTrivial>::value);
 
   // std::optional doesn't support volatile nontrivial types.
@@ -695,11 +696,11 @@ TEST(optionalTest, MoveAssignment) {
     EXPECT_EQ(1, listener.volatile_move_assign);
   }
 #endif  // ABSL_HAVE_STD_OPTIONAL
-  EXPECT_FALSE(std::is_move_assignable<absl::optional<const int>>::value);
-  EXPECT_TRUE(std::is_move_assignable<absl::optional<Copyable>>::value);
-  EXPECT_TRUE(std::is_move_assignable<absl::optional<MoveableThrow>>::value);
-  EXPECT_TRUE(std::is_move_assignable<absl::optional<MoveableNoThrow>>::value);
-  EXPECT_FALSE(std::is_move_assignable<absl::optional<NonMovable>>::value);
+  EXPECT_FALSE(absl::is_move_assignable<absl::optional<const int>>::value);
+  EXPECT_TRUE(absl::is_move_assignable<absl::optional<Copyable>>::value);
+  EXPECT_TRUE(absl::is_move_assignable<absl::optional<MoveableThrow>>::value);
+  EXPECT_TRUE(absl::is_move_assignable<absl::optional<MoveableNoThrow>>::value);
+  EXPECT_FALSE(absl::is_move_assignable<absl::optional<NonMovable>>::value);
 
   EXPECT_FALSE(
       std::is_nothrow_move_assignable<absl::optional<MoveableThrow>>::value);
@@ -1619,7 +1620,7 @@ TEST(optionalTest, AssignmentConstraints) {
   EXPECT_TRUE(
       (std::is_assignable<absl::optional<AnyLike>&, const AnyLike&>::value));
   EXPECT_TRUE(std::is_move_assignable<absl::optional<AnyLike>>::value);
-  EXPECT_TRUE(std::is_copy_assignable<absl::optional<AnyLike>>::value);
+  EXPECT_TRUE(absl::is_copy_assignable<absl::optional<AnyLike>>::value);
 }
 
 }  // namespace

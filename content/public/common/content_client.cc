@@ -5,6 +5,7 @@
 #include "content/public/common/content_client.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -94,8 +95,8 @@ base::RefCountedMemory* ContentClient::GetDataResourceBytes(
 }
 
 gfx::Image& ContentClient::GetNativeImageNamed(int resource_id) const {
-  CR_DEFINE_STATIC_LOCAL(gfx::Image, kEmptyImage, ());
-  return kEmptyImage;
+  static base::NoDestructor<gfx::Image> kEmptyImage;
+  return *kEmptyImage;
 }
 
 std::string ContentClient::GetProcessTypeNameInEnglish(int type) {

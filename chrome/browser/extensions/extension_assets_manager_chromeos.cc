@@ -17,6 +17,7 @@
 #include "base/memory/singleton.h"
 #include "base/sequenced_task_runner.h"
 #include "base/sys_info.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -26,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -159,13 +161,11 @@ void ExtensionAssetsManagerChromeOS::InstallExtension(
     return;
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&ExtensionAssetsManagerChromeOS::CheckSharedExtension,
-                 extension->id(),
-                 extension->VersionString(),
-                 unpacked_extension_root,
-                 local_install_dir,
-                 profile,
+                 extension->id(), extension->VersionString(),
+                 unpacked_extension_root, local_install_dir, profile,
                  callback));
 }
 
@@ -182,10 +182,10 @@ void ExtensionAssetsManagerChromeOS::UninstallExtension(
   if (GetSharedInstallDir().IsParent(extension_root)) {
     // In some test extensions installed outside local_install_dir emulate
     // previous behavior that just do nothing in this case.
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::Bind(&ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused,
-                   id,
-                   profile));
+                   id, profile));
   }
 }
 
@@ -347,7 +347,8 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtension(
   base::FilePath shared_install_dir = GetSharedInstallDir();
   base::FilePath shared_version_dir = file_util::InstallExtension(
       unpacked_extension_root, id, version, shared_install_dir);
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::Bind(&ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone,
                  id, version, shared_version_dir));
 }

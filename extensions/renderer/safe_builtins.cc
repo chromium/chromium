@@ -162,10 +162,9 @@ class ExtensionImpl : public v8::Extension {
   v8::Local<v8::FunctionTemplate> GetNativeFunctionTemplate(
       v8::Isolate* isolate,
       v8::Local<v8::String> name) override {
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    if (IsTrue(name->Equals(context, ToV8StringUnsafe(isolate, "Apply"))))
+    if (name->StringEquals(ToV8StringUnsafe(isolate, "Apply")))
       return v8::FunctionTemplate::New(isolate, Apply);
-    if (IsTrue(name->Equals(context, ToV8StringUnsafe(isolate, "Save"))))
+    if (name->StringEquals(ToV8StringUnsafe(isolate, "Save")))
       return v8::FunctionTemplate::New(isolate, Save);
     NOTREACHED() << *v8::String::Utf8Value(isolate, name);
     return v8::Local<v8::FunctionTemplate>();

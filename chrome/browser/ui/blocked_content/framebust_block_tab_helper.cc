@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 
 #include "base/logging.h"
+#include "chrome/browser/chrome_notification_types.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/notification_service.h"
 
 FramebustBlockTabHelper::~FramebustBlockTabHelper() = default;
 
@@ -29,11 +32,9 @@ void FramebustBlockTabHelper::OnBlockedUrlClicked(size_t index) {
   const GURL& url = blocked_urls_[index];
   if (!callbacks_[index].is_null())
     std::move(callbacks_[index]).Run(url, index, total_size);
-  web_contents_->OpenURL(content::OpenURLParams(
+  web_contents()->OpenURL(content::OpenURLParams(
       url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_LINK, false));
-  blocked_urls_.clear();
-  callbacks_.clear();
 }
 
 void FramebustBlockTabHelper::AddObserver(Observer* observer) {
@@ -46,4 +47,26 @@ void FramebustBlockTabHelper::RemoveObserver(const Observer* observer) {
 
 FramebustBlockTabHelper::FramebustBlockTabHelper(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
+
+void FramebustBlockTabHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInMainFrame() ||
+      !navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+  blocked_urls_.clear();
+  callbacks_.clear();
+  animation_has_run_ = false;
+
+  // TODO(csharrison): It is a bit ugly that this tab helper has to notify this
+  // change directly. Consider improving this by integrating framebust
+  // information with the TabSpecificContentSetting class. This may be
+  // challenging, since popups and framebusts are controlled by the same content
+  // setting.
+  content::NotificationService::current()->Notify(
+      chrome::NOTIFICATION_WEB_CONTENT_SETTINGS_CHANGED,
+      content::Source<content::WebContents>(web_contents()),
+      content::NotificationService::NoDetails());
+}

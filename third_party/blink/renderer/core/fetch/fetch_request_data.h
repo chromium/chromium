@@ -46,8 +46,8 @@ class FetchRequestData final
   const AtomicString& Method() const { return method_; }
   void SetURL(const KURL& url) { url_ = url; }
   const KURL& Url() const { return url_; }
-  WebURLRequest::RequestContext Context() const { return context_; }
-  void SetContext(WebURLRequest::RequestContext context) { context_ = context; }
+  mojom::RequestContextType Context() const { return context_; }
+  void SetContext(mojom::RequestContextType context) { context_ = context; }
   scoped_refptr<const SecurityOrigin> Origin() { return origin_; }
   void SetOrigin(scoped_refptr<const SecurityOrigin> origin) {
     origin_ = std::move(origin);
@@ -118,7 +118,7 @@ class FetchRequestData final
   KURL url_;
   Member<FetchHeaderList> header_list_;
   // FIXME: Support m_skipServiceWorkerFlag;
-  WebURLRequest::RequestContext context_;
+  mojom::RequestContextType context_;
   scoped_refptr<const SecurityOrigin> origin_;
   // FIXME: Support m_forceOriginHeaderFlag;
   bool same_origin_data_url_flag_;

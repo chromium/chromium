@@ -15,7 +15,7 @@ class BaseLogoView : public views::View {
   enum class State {
     kUndefined,
     kListening,
-    kMicFab,
+    kMic,
     kMoleculeWavy,
     kUserSpeaks,
   };

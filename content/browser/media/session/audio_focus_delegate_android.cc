@@ -30,14 +30,17 @@ void AudioFocusDelegateAndroid::Initialize() {
       Java_AudioFocusDelegate_create(env, reinterpret_cast<intptr_t>(this)));
 }
 
-bool AudioFocusDelegateAndroid::RequestAudioFocus(
+AudioFocusDelegate::AudioFocusResult
+AudioFocusDelegateAndroid::RequestAudioFocus(
     media_session::mojom::AudioFocusType audio_focus_type) {
   JNIEnv* env = base::android::AttachCurrentThread();
   DCHECK(env);
-  return Java_AudioFocusDelegate_requestAudioFocus(
+  bool success = Java_AudioFocusDelegate_requestAudioFocus(
       env, j_media_session_delegate_,
       audio_focus_type ==
           media_session::mojom::AudioFocusType::kGainTransientMayDuck);
+  return success ? AudioFocusDelegate::AudioFocusResult::kSuccess
+                 : AudioFocusDelegate::AudioFocusResult::kFailed;
 }
 
 void AudioFocusDelegateAndroid::AbandonAudioFocus() {
@@ -46,7 +49,7 @@ void AudioFocusDelegateAndroid::AbandonAudioFocus() {
   Java_AudioFocusDelegate_abandonAudioFocus(env, j_media_session_delegate_);
 }
 
-media_session::mojom::AudioFocusType
+base::Optional<media_session::mojom::AudioFocusType>
 AudioFocusDelegateAndroid::GetCurrentFocusType() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   DCHECK(env);

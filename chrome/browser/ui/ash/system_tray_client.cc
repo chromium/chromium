@@ -276,6 +276,10 @@ void SystemTrayClient::ShowIMESettings() {
   ShowSettingsSubPageForActiveUser(chrome::kLanguageOptionsSubPage);
 }
 
+void SystemTrayClient::ShowConnectedDevicesSettings() {
+  ShowSettingsSubPageForActiveUser(chrome::kConnectedDevicesSubPage);
+}
+
 void SystemTrayClient::ShowAboutChromeOS() {
   // We always want to check for updates when showing the about page from the
   // Ash UI.

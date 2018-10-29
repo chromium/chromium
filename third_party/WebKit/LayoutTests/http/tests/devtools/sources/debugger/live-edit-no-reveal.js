@@ -64,7 +64,7 @@
       sourceFrame = panel.visibleView;
       SourcesTestRunner.removeBreakpoint(sourceFrame, 8);
       TestRunner.addSniffer(TestRunner.debuggerModel, '_didEditScriptSource', didEditScriptSource);
-      panel._updateLastModificationTimeForTest();
+      panel._lastModificationTimeoutPassedForTest();
       SourcesTestRunner.replaceInSource(sourceFrame, oldText, newText);
       TestRunner.addResult('Moving cursor to (0, 0).');
       sourceFrame.setSelection(TextUtils.TextRange.createFromLocation(0, 0));
@@ -92,20 +92,20 @@
   }
 
   SourcesTestRunner.runDebuggerTestSuite([
-    function testLiveEditWithoutStepInWhenPausedDoesNotCauseCursorMove(next) {
-      testLiveEditWhenPausedDoesNotCauseCursorMove('function f2()', ' function f2()', next);
-    },
-
-    function testLiveEditWithStepInWhenPausedDoesNotCauseCursorMove(next) {
-      testLiveEditWhenPausedDoesNotCauseCursorMove('return x + f2();', 'return x + f2(); ', next);
-    },
-
     function testLiveEditWithoutStepInWhenPausedThenStepIntoCausesCursorMove(next) {
       testLiveEditWhenPausedThenStepIntoCausesCursorMove('function f2()', ' function f2()', next);
     },
 
     function testLiveEditWithStepInWhenPausedThenStepIntoCausesCursorMove(next) {
       testLiveEditWhenPausedThenStepIntoCausesCursorMove('return x + f2();', 'return x + f2(); ', next);
+    },
+
+    function testLiveEditWithoutStepInWhenPausedDoesNotCauseCursorMove(next) {
+      testLiveEditWhenPausedDoesNotCauseCursorMove('function f2()', ' function f2()', next);
+    },
+
+    function testLiveEditWithStepInWhenPausedDoesNotCauseCursorMove(next) {
+      testLiveEditWhenPausedDoesNotCauseCursorMove('return x + f2();', 'return x + f2(); ', next);
     }
   ]);
 })();

@@ -41,7 +41,7 @@ EntitySpecifics GenerateBookmarkSpecifics(const std::string& url,
   return specifics;
 }
 
-TEST(NonBlockingTypeCommitContribution, PopulateCommitProtoNonBookmark) {
+TEST(NonBlockingTypeCommitContribution, PopulateCommitProtoDefault) {
   const int64_t kBaseVersion = 7;
   base::Time creation_time =
       base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
@@ -131,6 +131,115 @@ TEST(NonBlockingTypeCommitContribution, PopulateCommitProtoBookmark) {
   EXPECT_FALSE(entity.parent_id_string().empty());
   EXPECT_TRUE(entity.unique_position().has_custom_compressed_v1());
   EXPECT_NE(0, entity.position_in_parent());
+}
+
+// Verifies how PASSWORDS protos are committed on the wire, making sure the data
+// is properly encrypted except for password metadata.
+TEST(NonBlockingTypeCommitContribution,
+     PopulateCommitProtoPasswordWithoutCustomPassphrase) {
+  const std::string kEncryptedPasswordBlob = "encryptedpasswordblob";
+  const std::string kMetadataUrl = "http://foo.com";
+  const int64_t kBaseVersion = 7;
+
+  EntityData data;
+  data.client_tag_hash = kTag;
+  data.specifics.mutable_password()->mutable_encrypted()->set_blob(
+      kEncryptedPasswordBlob);
+  data.specifics.mutable_password()->mutable_unencrypted_metadata()->set_url(
+      kMetadataUrl);
+
+  CommitRequestData request_data;
+  request_data.entity = data.PassToPtr();
+  request_data.sequence_number = 2;
+  request_data.base_version = kBaseVersion;
+  base::Base64Encode(base::SHA1HashString(data.specifics.SerializeAsString()),
+                     &request_data.specifics_hash);
+
+  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
+  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS, &observers);
+  NonBlockingTypeCommitContribution contribution(
+      PASSWORDS, sync_pb::DataTypeContext(), {request_data},
+      /*worker=*/nullptr,
+      /*cryptographer*/ nullptr, PassphraseType::IMPLICIT_PASSPHRASE,
+      &debug_info_emitter,
+      /*only_commit_specifics=*/false);
+
+  sync_pb::ClientToServerMessage msg;
+  contribution.AddToCommitMessage(&msg);
+  contribution.CleanUp();
+
+  ASSERT_EQ(1, msg.commit().entries().size());
+  SyncEntity entity = msg.commit().entries(0);
+
+  // Exhaustively verify the populated SyncEntity.
+  EXPECT_TRUE(entity.id_string().empty());
+  EXPECT_EQ(7, entity.version());
+  EXPECT_EQ("encrypted", entity.name());
+  EXPECT_EQ(kTag, entity.client_defined_unique_tag());
+  EXPECT_FALSE(entity.deleted());
+  EXPECT_FALSE(entity.specifics().has_encrypted());
+  EXPECT_TRUE(entity.specifics().has_password());
+  EXPECT_EQ(kEncryptedPasswordBlob,
+            entity.specifics().password().encrypted().blob());
+  EXPECT_EQ(kMetadataUrl,
+            entity.specifics().password().unencrypted_metadata().url());
+  EXPECT_TRUE(entity.parent_id_string().empty());
+  EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
+  EXPECT_EQ(0, entity.position_in_parent());
+}
+
+// Same as above but uses CUSTOM_PASSPHRASE. In this case, field
+// |unencrypted_metadata| should be cleared.
+TEST(NonBlockingTypeCommitContribution,
+     PopulateCommitProtoPasswordWithCustomPassphrase) {
+  const std::string kEncryptedPasswordBlob = "encryptedpasswordblob";
+  const std::string kMetadataUrl = "http://foo.com";
+  const int64_t kBaseVersion = 7;
+
+  EntityData data;
+  data.client_tag_hash = kTag;
+  data.specifics.mutable_password()->mutable_encrypted()->set_blob(
+      kEncryptedPasswordBlob);
+  data.specifics.mutable_password()->mutable_unencrypted_metadata()->set_url(
+      kMetadataUrl);
+
+  CommitRequestData request_data;
+  request_data.entity = data.PassToPtr();
+  request_data.sequence_number = 2;
+  request_data.base_version = kBaseVersion;
+  base::Base64Encode(base::SHA1HashString(data.specifics.SerializeAsString()),
+                     &request_data.specifics_hash);
+
+  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
+  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS, &observers);
+  NonBlockingTypeCommitContribution contribution(
+      PASSWORDS, sync_pb::DataTypeContext(), {request_data},
+      /*worker=*/nullptr,
+      /*cryptographer*/ nullptr, PassphraseType::CUSTOM_PASSPHRASE,
+      &debug_info_emitter,
+      /*only_commit_specifics=*/false);
+
+  sync_pb::ClientToServerMessage msg;
+  contribution.AddToCommitMessage(&msg);
+  contribution.CleanUp();
+
+  ASSERT_EQ(1, msg.commit().entries().size());
+  SyncEntity entity = msg.commit().entries(0);
+
+  // Exhaustively verify the populated SyncEntity.
+  EXPECT_TRUE(entity.id_string().empty());
+  EXPECT_EQ(7, entity.version());
+  EXPECT_EQ("encrypted", entity.name());
+  EXPECT_EQ(kTag, entity.client_defined_unique_tag());
+  EXPECT_FALSE(entity.deleted());
+  EXPECT_FALSE(entity.specifics().has_encrypted());
+  EXPECT_TRUE(entity.specifics().has_password());
+  EXPECT_EQ(kEncryptedPasswordBlob,
+            entity.specifics().password().encrypted().blob());
+  EXPECT_FALSE(entity.specifics().password().has_unencrypted_metadata());
+  EXPECT_TRUE(entity.parent_id_string().empty());
+  EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
+  EXPECT_EQ(0, entity.position_in_parent());
 }
 
 }  // namespace

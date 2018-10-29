@@ -10,7 +10,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -40,16 +39,6 @@ gfx::Rect ImmersiveContextAsh::GetDisplayBoundsInScreen(views::Widget* widget) {
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
   return display.bounds();
-}
-
-void ImmersiveContextAsh::AddPointerWatcher(
-    views::PointerWatcher* watcher,
-    views::PointerWatcherEventTypes events) {
-  Shell::Get()->AddPointerWatcher(watcher, events);
-}
-
-void ImmersiveContextAsh::RemovePointerWatcher(views::PointerWatcher* watcher) {
-  Shell::Get()->RemovePointerWatcher(watcher);
 }
 
 bool ImmersiveContextAsh::DoesAnyWindowHaveCapture() {

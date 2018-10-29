@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORD_UI_VIEW_MOCK_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
@@ -27,7 +28,7 @@ class MockPasswordUIView : public PasswordUIView {
   gfx::NativeWindow GetNativeWindow() const override;
 #endif
 
-  MOCK_METHOD2(ShowPassword, void(size_t, const base::string16&));
+  MOCK_METHOD2(ShowPassword, void(const std::string&, const base::string16&));
 
   MOCK_METHOD1(
       SetPasswordList,

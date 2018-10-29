@@ -18,7 +18,7 @@ import time
 
 from common_args import AddCommonArgs, ConfigureLogging, GetDeploymentTargetForArgs
 from net_test_server import SetupTestServer
-from run_package import RunPackage
+from run_package import RunPackage, RunPackageArgs
 
 DEFAULT_TEST_CONCURRENCY = 4
 TEST_RESULT_PATH = '/data/test_summary.json'
@@ -98,10 +98,10 @@ def main():
     if args.enable_test_server:
       test_server = SetupTestServer(target, test_concurrency)
 
+    run_package_args = RunPackageArgs.FromCommonArgs(args)
     returncode = RunPackage(
         args.output_directory, target, args.package, args.package_name,
-        args.package_dep, child_args, args.include_system_logs,
-        args.install_only, args.package_manifest)
+        args.package_dep, child_args, run_package_args)
 
     if forwarder:
       forwarder.terminate()

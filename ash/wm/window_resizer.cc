@@ -159,7 +159,7 @@ gfx::Rect WindowResizer::CalculateBoundsForDrag(
   float aspect_ratio = aspect_ratio_size ? aspect_ratio_size->width() /
                                                aspect_ratio_size->height()
                                          : 0.0;
-  if (aspect_ratio > 0.0) {
+  if (details().bounds_change & kBoundsChange_Resizes && aspect_ratio > 0.0) {
     CalculateBoundsWithAspectRatio(aspect_ratio, &new_bounds);
     return new_bounds;
   }

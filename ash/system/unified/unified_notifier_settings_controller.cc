@@ -4,8 +4,8 @@
 
 #include "ash/system/unified/unified_notifier_settings_controller.h"
 
-#include "ash/message_center/notifier_settings_view.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/message_center/notifier_settings_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/unified_detailed_view_delegate.h"
 #include "ui/message_center/message_center_observer.h"

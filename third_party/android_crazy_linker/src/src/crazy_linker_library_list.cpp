@@ -291,8 +291,6 @@ void LibraryList::UnloadLibrary(LibraryView* wrap) {
 LibraryView* LibraryList::LoadLibraryWithSystemLinker(const char* lib_name,
                                                       int dlopen_mode,
                                                       Error* error) {
-  LOG("lib_name='%s'", lib_name);
-
   // First check whether a library with the same base name was
   // already loaded.
   LibraryView* view = FindKnownLibrary(lib_name);
@@ -301,7 +299,6 @@ LibraryView* LibraryList::LoadLibraryWithSystemLinker(const char* lib_name,
     return view;
   }
 
-  LOG("Loading system library '%s'", lib_name);
   void* system_lib = SystemLinker::Open(lib_name, dlopen_mode);
   if (!system_lib) {
     error->Format("Can't load system library %s: %s", lib_name,
@@ -314,7 +311,6 @@ LibraryView* LibraryList::LoadLibraryWithSystemLinker(const char* lib_name,
   known_libraries_.PushBack(view);
 
   LOG("System library %s loaded at %p", lib_name, view);
-  LOG("  name=%s\n", view->GetName());
   return view;
 }
 
@@ -361,7 +357,11 @@ LibraryView* LibraryList::LoadLibrary(const char* lib_name,
   }
   LOG("Found library: path %s @ 0x%x", probe.path.c_str(), probe.offset);
 
-  // Load the library
+  if (IsSystemLibraryPath(probe.path.c_str())) {
+    return LoadLibraryWithSystemLinker(probe.path.c_str(), RTLD_NOW, error);
+  }
+
+  // Load the library with the crazy linker.
   ScopedPtr<SharedLibrary> lib(new SharedLibrary());
   if (!lib->Load(probe.path.c_str(), load_address, probe.offset, error))
     return nullptr;

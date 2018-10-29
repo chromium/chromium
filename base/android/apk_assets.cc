@@ -23,7 +23,7 @@ int OpenApkAsset(const std::string& file_path,
   ScopedJavaLocalRef<jlongArray> jarr = Java_ApkAssets_open(
       env, base::android::ConvertUTF8ToJavaString(env, file_path));
   std::vector<jlong> results;
-  base::android::JavaLongArrayToLongVector(env, jarr.obj(), &results);
+  base::android::JavaLongArrayToLongVector(env, jarr, &results);
   CHECK_EQ(3U, results.size());
   int fd = static_cast<int>(results[0]);
   region->offset = results[1];

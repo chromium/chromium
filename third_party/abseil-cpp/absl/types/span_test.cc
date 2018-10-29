@@ -29,6 +29,7 @@
 #include "absl/base/internal/exception_testing.h"
 #include "absl/container/fixed_array.h"
 #include "absl/container/inlined_vector.h"
+#include "absl/hash/hash_testing.h"
 #include "absl/strings/str_cat.h"
 
 namespace {

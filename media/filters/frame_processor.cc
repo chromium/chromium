@@ -196,7 +196,7 @@ MseTrackBuffer::MseTrackBuffer(
       media_log_(media_log),
       parse_warning_cb_(parse_warning_cb) {
   DCHECK(stream_);
-  DCHECK(!parse_warning_cb_.is_null());
+  DCHECK(parse_warning_cb_);
 }
 
 MseTrackBuffer::~MseTrackBuffer() {
@@ -243,7 +243,7 @@ void MseTrackBuffer::EnqueueProcessedFrame(
         // warning's callback.
         media_log_->RecordRapporWithSecurityOrigin(
             "Media.OriginUrl.MSE.KeyframeTimeGreaterThanDependant");
-        DCHECK(!parse_warning_cb_.is_null());
+        DCHECK(parse_warning_cb_);
         parse_warning_cb_.Run(
             SourceBufferParseWarning::kKeyframeTimeGreaterThanDependant);
       }
@@ -298,7 +298,7 @@ FrameProcessor::FrameProcessor(const UpdateDurationCB& update_duration_cb,
       media_log_(media_log),
       range_api_(range_api) {
   DVLOG(2) << __func__ << "()";
-  DCHECK(!update_duration_cb.is_null());
+  DCHECK(update_duration_cb);
 }
 
 FrameProcessor::~FrameProcessor() {
@@ -307,8 +307,8 @@ FrameProcessor::~FrameProcessor() {
 
 void FrameProcessor::SetParseWarningCallback(
     const SourceBufferParseWarningCB& parse_warning_cb) {
-  DCHECK(parse_warning_cb_.is_null());
-  DCHECK(!parse_warning_cb.is_null());
+  DCHECK(!parse_warning_cb_);
+  DCHECK(parse_warning_cb);
   parse_warning_cb_ = parse_warning_cb;
 }
 
@@ -353,7 +353,7 @@ bool FrameProcessor::ProcessFrames(
       // callback.
       media_log_->RecordRapporWithSecurityOrigin(
           "Media.OriginUrl.MSE.MuxedSequenceModeSourceBuffer");
-      DCHECK(!parse_warning_cb_.is_null());
+      DCHECK(parse_warning_cb_);
       parse_warning_cb_.Run(SourceBufferParseWarning::kMuxedSequenceMode);
     }
 

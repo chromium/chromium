@@ -146,7 +146,7 @@ TEST_F(LocalFileStreamWriterTest, CancelBeforeOperation) {
   base::FilePath path = Path("file_a");
   std::unique_ptr<LocalFileStreamWriter> writer(CreateWriter(path, 0));
   // Cancel immediately fails when there's no in-flight operation.
-  int cancel_result = writer->Cancel(base::Bind(&NeverCalled));
+  int cancel_result = writer->Cancel(base::BindOnce(&NeverCalled));
   EXPECT_EQ(net::ERR_UNEXPECTED, cancel_result);
 }
 
@@ -156,7 +156,7 @@ TEST_F(LocalFileStreamWriterTest, CancelAfterFinishedOperation) {
   EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "foo"));
 
   // Cancel immediately fails when there's no in-flight operation.
-  int cancel_result = writer->Cancel(base::Bind(&NeverCalled));
+  int cancel_result = writer->Cancel(base::BindOnce(&NeverCalled));
   EXPECT_EQ(net::ERR_UNEXPECTED, cancel_result);
 
   writer.reset();
@@ -173,7 +173,7 @@ TEST_F(LocalFileStreamWriterTest, CancelWrite) {
   scoped_refptr<net::StringIOBuffer> buffer(
       base::MakeRefCounted<net::StringIOBuffer>("xxx"));
   int result =
-      writer->Write(buffer.get(), buffer->size(), base::Bind(&NeverCalled));
+      writer->Write(buffer.get(), buffer->size(), base::BindOnce(&NeverCalled));
   ASSERT_EQ(net::ERR_IO_PENDING, result);
 
   net::TestCompletionCallback callback;

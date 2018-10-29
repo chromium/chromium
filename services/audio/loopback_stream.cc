@@ -108,9 +108,8 @@ LoopbackStream::~LoopbackStream() {
   if (network_) {
     if (network_->is_started()) {
       coordinator_->RemoveObserver(group_id_, this);
-      for (LoopbackGroupMember* member :
-           coordinator_->GetCurrentMembers(group_id_)) {
-        OnMemberLeftGroup(member);
+      while (!snoopers_.empty()) {
+        OnMemberLeftGroup(snoopers_.begin()->first);
       }
     }
     DCHECK(snoopers_.empty());
@@ -129,10 +128,9 @@ void LoopbackStream::Record() {
   // Begin snooping on all group members. This will set up the mixer network
   // and begin accumulating audio data in the Snoopers' buffers.
   DCHECK(snoopers_.empty());
-  for (LoopbackGroupMember* member :
-       coordinator_->GetCurrentMembers(group_id_)) {
-    OnMemberJoinedGroup(member);
-  }
+  coordinator_->ForEachMemberInGroup(
+      group_id_, base::BindRepeating(&LoopbackStream::OnMemberJoinedGroup,
+                                     base::Unretained(this)));
   coordinator_->AddObserver(group_id_, this);
 
   // Start the data flow.

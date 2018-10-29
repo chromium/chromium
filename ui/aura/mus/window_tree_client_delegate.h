@@ -56,13 +56,6 @@ class AURA_EXPORT WindowTreeClientDelegate {
   // the corresponding WindowTreeClient.
   virtual void OnLostConnection(WindowTreeClient* client) = 0;
 
-  // Called when the WindowTreeClient receives an input event observed via
-  // StartPointerWatcher(). |target| may be null for events that were sent to
-  // windows owned by other processes.
-  virtual void OnPointerEventObserved(const ui::PointerEvent& event,
-                                      const gfx::Point& location_in_screen,
-                                      Window* target) = 0;
-
   virtual PropertyConverter* GetPropertyConverter() = 0;
 
   // See ws::mojom::ScreenProviderObserver for details on this.

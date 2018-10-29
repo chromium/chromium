@@ -163,7 +163,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   bool IsScopedInV0() const;
 
   // Event creation timestamp in milliseconds. It returns a DOMHighResTimeStamp
-  // using the platform timestamp (see |m_platformTimeStamp|).
+  // using the platform timestamp (see |platform_time_stamp_|).
   // For more info see http://crbug.com/160524
   double timeStamp(ScriptState*) const;
   TimeTicks PlatformTimeStamp() const { return platform_time_stamp_; }
@@ -208,6 +208,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   virtual bool IsBeforeTextInsertedEvent() const;
 
   virtual bool IsBeforeUnloadEvent() const;
+  virtual bool IsErrorEvent() const;
 
   virtual bool IsActivateInvisibleEvent() const;
 
@@ -341,8 +342,8 @@ class CORE_EXPORT Event : public ScriptWrappable {
   // does Event Timing report it.
   unsigned executed_listener_or_default_action_ : 1;
 
-  // Whether preventDefault was called when |m_handlingPassive| is
-  // true. This field is reset on each call to setHandlingPassive.
+  // Whether preventDefault was called when |handling_passive_| is
+  // true. This field is reset on each call to SetHandlingPassive.
   unsigned prevent_default_called_during_passive_ : 1;
   // Whether preventDefault was called on uncancelable event.
   unsigned prevent_default_called_on_uncancelable_event_ : 1;

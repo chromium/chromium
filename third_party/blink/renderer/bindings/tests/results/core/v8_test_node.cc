@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -62,7 +62,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestNodeV8Internal {
+namespace test_node_v8_internal {
 
 static void hrefAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
@@ -179,12 +179,12 @@ static void constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
   V8SetReturnValue(info, wrapper);
 }
 
-} // namespace TestNodeV8Internal
+}  // namespace test_node_v8_internal
 
 void V8TestNode::hrefAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestNode_href_Getter");
 
-  TestNodeV8Internal::hrefAttributeGetter(info);
+  test_node_v8_internal::hrefAttributeGetter(info);
 }
 
 void V8TestNode::hrefAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -192,13 +192,13 @@ void V8TestNode::hrefAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestNodeV8Internal::hrefAttributeSetter(v8Value, info);
+  test_node_v8_internal::hrefAttributeSetter(v8Value, info);
 }
 
 void V8TestNode::hrefThrowsAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestNode_hrefThrows_Getter");
 
-  TestNodeV8Internal::hrefThrowsAttributeGetter(info);
+  test_node_v8_internal::hrefThrowsAttributeGetter(info);
 }
 
 void V8TestNode::hrefThrowsAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -206,13 +206,13 @@ void V8TestNode::hrefThrowsAttributeSetterCallback(const v8::FunctionCallbackInf
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestNodeV8Internal::hrefThrowsAttributeSetter(v8Value, info);
+  test_node_v8_internal::hrefThrowsAttributeSetter(v8Value, info);
 }
 
 void V8TestNode::hrefCallWithAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestNode_hrefCallWith_Getter");
 
-  TestNodeV8Internal::hrefCallWithAttributeGetter(info);
+  test_node_v8_internal::hrefCallWithAttributeGetter(info);
 }
 
 void V8TestNode::hrefCallWithAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -220,13 +220,13 @@ void V8TestNode::hrefCallWithAttributeSetterCallback(const v8::FunctionCallbackI
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestNodeV8Internal::hrefCallWithAttributeSetter(v8Value, info);
+  test_node_v8_internal::hrefCallWithAttributeSetter(v8Value, info);
 }
 
 void V8TestNode::hrefByteStringAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestNode_hrefByteString_Getter");
 
-  TestNodeV8Internal::hrefByteStringAttributeGetter(info);
+  test_node_v8_internal::hrefByteStringAttributeGetter(info);
 }
 
 void V8TestNode::hrefByteStringAttributeSetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -234,7 +234,7 @@ void V8TestNode::hrefByteStringAttributeSetterCallback(const v8::FunctionCallbac
 
   v8::Local<v8::Value> v8Value = info[0];
 
-  TestNodeV8Internal::hrefByteStringAttributeSetter(v8Value, info);
+  test_node_v8_internal::hrefByteStringAttributeSetter(v8Value, info);
 }
 
 static const V8DOMConfiguration::AccessorConfiguration V8TestNodeAccessors[] = {
@@ -257,7 +257,7 @@ void V8TestNode::constructorCallback(const v8::FunctionCallbackInfo<v8::Value>& 
     return;
   }
 
-  TestNodeV8Internal::constructor(info);
+  test_node_v8_internal::constructor(info);
 }
 
 static void installV8TestNodeTemplate(

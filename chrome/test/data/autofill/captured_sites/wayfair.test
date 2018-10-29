@@ -1,0 +1,251 @@
+{
+  "startingURL": "https://secure.wayfair.com/v/checkout/onepage/view#billing",
+  "autofillProfile": [
+    {
+      "type": "ADDRESS_HOME_LINE2",
+      "value": "Apt 8"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "value": "2027"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_MONTH",
+      "value": "5"
+    },
+    {
+      "type": "CREDIT_CARD_NAME_FULL",
+      "value": "Milton Waddams"
+    },
+    {
+      "type": "CREDIT_CARD_NUMBER",
+      "value": "9621327911759602"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LEVEL1",
+      "value": "44"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LEVEL2",
+      "value": "Austin"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LINE2",
+      "value": "Apt 8"
+    },
+    {
+      "type": "HTML_TYPE_NAME",
+      "value": "Milton C. Waddams"
+    },
+    {
+      "type": "HTML_TYPE_POSTAL_CODE",
+      "value": "78744"
+    },
+    {
+      "type": "PHONE_HOME_CITY_AND_NUMBER",
+      "value": "5125551234"
+    }
+  ],
+  "passwordManagerProfiles": [],
+  "actions": [
+    {
+      "selector": "//span[text()=\"Change\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 1
+    },
+    {
+      "selector": "//div/div[2]/div/button[normalize-space(text())=\"\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 2
+    },
+    {
+      "selector": "//div[@tabindex=\"0\"]/div/div/button[normalize-space(text())=\"\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 3
+    },
+    {
+      "selector": "//input[@autocomplete=\"name\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 4
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@type=\"text\" and @autocomplete=\"off\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_LINE2",
+      "action_index": 5
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@autocomplete=\"address-line2\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LINE2",
+      "action_index": 6
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Austin",
+      "selector": "//input[@autocomplete=\"address-level2\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LEVEL2",
+      "action_index": 7
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "44",
+      "selector": "//select",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LEVEL1",
+      "action_index": 8
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@autocomplete=\"postal-code\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_POSTAL_CODE",
+      "action_index": 9
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5125551234",
+      "selector": "//input[@maxlength=\"30\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 10
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton C. Waddams",
+      "selector": "//input[@autocomplete=\"name\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_NAME",
+      "action_index": 11
+    },
+    {
+      "selector": "//button[@data-codeception-id=\"address_entry_submit\"]",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 12
+    },
+    {
+      "selector": "//div/div[2]/div/label/div",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 13
+    },
+    {
+      "selector": "//input[@type=\"tel\" and @name=\"c-cn\"]",
+      "context": {
+        "isIframe": true,
+        "browserTest": {
+          "name": "credit_card_iframe"
+        }
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 14
+    },
+    {
+      "context": {
+        "isIframe": true,
+        "browserTest": {
+          "name": "credit_card_iframe"
+        }
+      },
+      "expectedValue": "9621327911759602",
+      "selector": "//input[@type=\"tel\" and @name=\"c-cn\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "CREDIT_CARD_NUMBER",
+      "action_index": 15
+    },
+    {
+      "context": {
+        "isIframe": true,
+        "browserTest": {
+          "name": "credit_card_iframe"
+        }
+      },
+      "expectedValue": "5",
+      "selector": "//select[@name=\"c-exmth\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "CREDIT_CARD_EXP_MONTH",
+      "action_index": 16
+    },
+    {
+      "context": {
+        "isIframe": true,
+        "browserTest": {
+          "name": "credit_card_iframe"
+        }
+      },
+      "expectedValue": "2027",
+      "selector": "//select[@name=\"c-exyr\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "action_index": 17
+    },
+    {
+      "context": {
+        "isIframe": true,
+        "browserTest": {
+          "name": "credit_card_iframe"
+        }
+      },
+      "expectedValue": "Milton Waddams",
+      "selector": "//input[@type=\"text\" and @name=\"c-chn\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "CREDIT_CARD_NAME_FULL",
+      "action_index": 18
+    }
+  ]
+}

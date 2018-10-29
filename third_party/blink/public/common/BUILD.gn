@@ -15,7 +15,7 @@ component("common") {
 
   public_deps = [
     "//third_party/blink/public/common:headers",
-    "//third_party/blink/public/mojom:mojom_core",
+    "//third_party/blink/public/mojom:mojom_modules",
   ]
   deps = [
     "//third_party/blink/common",
@@ -39,9 +39,12 @@ source_set("headers") {
     "cache_storage/cache_storage_utils.h",
     "client_hints/client_hints.h",
     "device_memory/approximated_device_memory.h",
+    "dom_storage/session_storage_namespace_id.h",
+    "download/download_stats.h",
     "experiments/memory_ablation_experiment.h",
     "feature_policy/feature_policy.h",
     "features.h",
+    "frame/frame_owner_element_type.h",
     "frame/frame_policy.h",
     "frame/sandbox_flags.h",
     "frame/user_activation_state.h",
@@ -51,7 +54,7 @@ source_set("headers") {
     "indexeddb/indexeddb_key_path.h",
     "indexeddb/indexeddb_key_range.h",
     "indexeddb/indexeddb_metadata.h",
-    "indexeddb/indexeddb_struct_traits.h",
+    "indexeddb/indexeddb_mojom_traits.h",
     "indexeddb/web_idb_types.h",
     "manifest/manifest.h",
     "manifest/manifest_icon_selector.h",
@@ -82,12 +85,14 @@ source_set("headers") {
 
   public_deps = [
     "//skia",
-    "//third_party/blink/public/mojom:mojom_core_headers",
+    "//third_party/blink/public/mojom:mojom_modules_headers",
   ]
 
   deps = [
     "//base",
+    "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
+    "//mojo/public/mojom/base",
     "//net",
   ]
 

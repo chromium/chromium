@@ -16,6 +16,7 @@
 #include "components/domain_reliability/google_configs.h"
 #include "components/domain_reliability/header.h"
 #include "components/domain_reliability/quic_error_mapping.h"
+#include "content/public/browser/network_service_instance.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -89,6 +90,7 @@ DomainReliabilityMonitor::DomainReliabilityMonitor(
       context_manager_(this),
       pref_task_runner_(pref_thread),
       network_task_runner_(network_thread),
+      network_connection_tracker_(nullptr),
       moved_to_network_thread_(false),
       discard_uploads_set_(false),
       weak_factory_(this) {
@@ -111,6 +113,7 @@ DomainReliabilityMonitor::DomainReliabilityMonitor(
       context_manager_(this),
       pref_task_runner_(pref_thread),
       network_task_runner_(network_thread),
+      network_connection_tracker_(nullptr),
       moved_to_network_thread_(false),
       discard_uploads_set_(false),
       weak_factory_(this) {
@@ -119,7 +122,8 @@ DomainReliabilityMonitor::DomainReliabilityMonitor(
 
 DomainReliabilityMonitor::~DomainReliabilityMonitor() {
   if (moved_to_network_thread_) {
-    net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+    DCHECK(network_connection_tracker_);
+    network_connection_tracker_->RemoveNetworkConnectionObserver(this);
     DCHECK(OnNetworkThread());
   } else {
     DCHECK(OnPrefThread());
@@ -130,10 +134,13 @@ void DomainReliabilityMonitor::MoveToNetworkThread() {
   DCHECK(OnPrefThread());
   DCHECK(!moved_to_network_thread_);
 
+  network_connection_tracker_ = content::GetNetworkConnectionTracker();
   network_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&net::NetworkChangeNotifier::AddNetworkChangeObserver,
-                     base::Unretained(this)));
+      base::BindOnce(
+          &network::NetworkConnectionTracker::AddNetworkConnectionObserver,
+          base::Unretained(network_connection_tracker_),
+          base::Unretained(this)));
   moved_to_network_thread_ = true;
 }
 
@@ -224,8 +231,8 @@ void DomainReliabilityMonitor::OnCompleted(net::URLRequest* request,
   }
 }
 
-void DomainReliabilityMonitor::OnNetworkChanged(
-    net::NetworkChangeNotifier::ConnectionType type) {
+void DomainReliabilityMonitor::OnConnectionChanged(
+    network::mojom::ConnectionType type) {
   last_network_change_time_ = time_->NowTicks();
 }
 

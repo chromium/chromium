@@ -31,7 +31,7 @@ bool IsolatedOriginUtil::DoesOriginMatchIsolatedOrigin(
 
 // static
 bool IsolatedOriginUtil::IsValidIsolatedOrigin(const url::Origin& origin) {
-  if (origin.unique())
+  if (origin.opaque())
     return false;
 
   // Isolated origins should have HTTP or HTTPS schemes.  Hosts in other

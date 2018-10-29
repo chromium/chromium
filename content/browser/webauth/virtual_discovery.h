@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
-#include "device/fido/fido_discovery.h"
+#include "device/fido/fido_device_discovery.h"
 
 namespace device {
 class FidoDevice;
@@ -21,9 +21,10 @@ namespace content {
 
 class ScopedVirtualAuthenticatorEnvironment;
 
-// A fully automated FidoDiscovery implementation, which is disconnected from
-// the real world, and discovers VirtualFidoDevice instances.
-class CONTENT_EXPORT VirtualFidoDiscovery : public ::device::FidoDiscovery {
+// A fully automated FidoDeviceDiscovery implementation, which is disconnected
+// from the real world, and discovers VirtualFidoDevice instances.
+class CONTENT_EXPORT VirtualFidoDiscovery
+    : public ::device::FidoDeviceDiscovery {
  public:
   // The |environment| must outlive this instance.
   VirtualFidoDiscovery(ScopedVirtualAuthenticatorEnvironment* environment,
@@ -36,7 +37,7 @@ class CONTENT_EXPORT VirtualFidoDiscovery : public ::device::FidoDiscovery {
   bool RemoveVirtualDevice(base::StringPiece device_id);
 
  protected:
-  // FidoDiscovery:
+  // FidoDeviceDiscovery:
   void StartInternal() override;
 
  private:

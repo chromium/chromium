@@ -103,7 +103,7 @@ cursors.Cursor = function(node, index) {
   /** @type {number} @private */
   this.index_ = index;
   /** @type {RecoveryStrategy} */
-  this.recovery_ = new AncestryRecoveryStrategy(node);
+  this.recovery_ = new TreePathRecoveryStrategy(node);
 };
 
 /**

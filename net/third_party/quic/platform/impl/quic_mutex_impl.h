@@ -49,7 +49,7 @@
 namespace quic {
 
 // A class wrapping a non-reentrant mutex.
-class QUIC_EXPORT_PRIVATE QuicLockImpl {
+class LOCKABLE QUIC_EXPORT_PRIVATE QuicLockImpl {
  public:
   QuicLockImpl() = default;
 

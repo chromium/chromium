@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/about_flags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/flags_ui/flags_ui_pref_names.h"

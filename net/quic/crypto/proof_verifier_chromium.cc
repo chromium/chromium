@@ -412,7 +412,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
         UMA_HISTOGRAM_ENUMERATION(
             "Net.CertificateTransparency.EVCompliance2.QUIC",
             verify_details_->ct_verify_result.policy_compliance,
-            ct::CTPolicyCompliance::CT_POLICY_MAX);
+            ct::CTPolicyCompliance::CT_POLICY_COUNT);
       }
     }
 
@@ -422,7 +422,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
       UMA_HISTOGRAM_ENUMERATION(
           "Net.CertificateTransparency.ConnectionComplianceStatus2.QUIC",
           verify_details_->ct_verify_result.policy_compliance,
-          ct::CTPolicyCompliance::CT_POLICY_MAX);
+          ct::CTPolicyCompliance::CT_POLICY_COUNT);
     }
 
     int ct_result = OK;
@@ -446,7 +446,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
             "Net.CertificateTransparency.CTRequiredConnectionComplianceStatus2."
             "QUIC",
             verify_details_->ct_verify_result.policy_compliance,
-            ct::CTPolicyCompliance::CT_POLICY_MAX);
+            ct::CTPolicyCompliance::CT_POLICY_COUNT);
       }
     } else {
       verify_details_->ct_verify_result.policy_compliance_required = false;

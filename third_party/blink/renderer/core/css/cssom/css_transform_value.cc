@@ -54,7 +54,7 @@ bool CSSTransformValue::is2D() const {
 
 DOMMatrix* CSSTransformValue::toMatrix(ExceptionState& exception_state) const {
   DOMMatrix* matrix = DOMMatrix::Create();
-  for (size_t i = 0; i < transform_components_.size(); i++) {
+  for (wtf_size_t i = 0; i < transform_components_.size(); i++) {
     const DOMMatrix* matrixComponent =
         transform_components_[i]->toMatrix(exception_state);
     if (matrixComponent) {
@@ -66,7 +66,7 @@ DOMMatrix* CSSTransformValue::toMatrix(ExceptionState& exception_state) const {
 
 const CSSValue* CSSTransformValue::ToCSSValue() const {
   CSSValueList* transform_css_value = CSSValueList::CreateSpaceSeparated();
-  for (size_t i = 0; i < transform_components_.size(); i++) {
+  for (wtf_size_t i = 0; i < transform_components_.size(); i++) {
     const CSSValue* component = transform_components_[i]->ToCSSValue();
     // TODO(meade): Remove this check once numbers and lengths are rewritten.
     if (!component)

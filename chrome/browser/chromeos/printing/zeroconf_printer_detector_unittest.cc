@@ -105,38 +105,38 @@ class DeferringDelegate : public ServiceDiscoveryDeviceLister::Delegate {
   void OnDeviceChanged(const std::string& service_type,
                        bool added,
                        const ServiceDescription& service_description) override {
-    if (actual_ == nullptr) {
+    if (actual_) {
+      actual_->OnDeviceChanged(service_type, added, service_description);
+    } else {
       deferred_callbacks_.push_back(base::BindOnce(
           &DeferringDelegate::OnDeviceChanged, base::Unretained(this),
           service_type, added, service_description));
-    } else {
-      actual_->OnDeviceChanged(service_type, added, service_description);
     }
   }
   // Not guaranteed to be called after OnDeviceChanged.
   void OnDeviceRemoved(const std::string& service_type,
                        const std::string& service_name) override {
-    if (actual_ == nullptr) {
+    if (actual_) {
+      actual_->OnDeviceRemoved(service_type, service_name);
+    } else {
       deferred_callbacks_.push_back(
           base::BindOnce(&DeferringDelegate::OnDeviceRemoved,
                          base::Unretained(this), service_type, service_name));
-    } else {
-      actual_->OnDeviceRemoved(service_type, service_name);
     }
   }
 
   void OnDeviceCacheFlushed(const std::string& service_type) override {
-    if (actual_ == nullptr) {
+    if (actual_) {
+      actual_->OnDeviceCacheFlushed(service_type);
+    } else {
       deferred_callbacks_.push_back(
           base::BindOnce(&DeferringDelegate::OnDeviceCacheFlushed,
                          base::Unretained(this), service_type));
-    } else {
-      actual_->OnDeviceCacheFlushed(service_type);
     }
   }
 
   void SetActual(ServiceDiscoveryDeviceLister::Delegate* actual) {
-    CHECK(actual_ == nullptr);
+    CHECK(!actual_);
     actual_ = actual;
     for (auto& cb : deferred_callbacks_) {
       std::move(cb).Run();

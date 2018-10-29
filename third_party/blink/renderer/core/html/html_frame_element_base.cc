@@ -156,8 +156,11 @@ void HTMLFrameElementBase::ParseAttribute(
       SetScrollingMode(kScrollbarAlwaysOff);
   } else if (name == onbeforeunloadAttr) {
     // FIXME: should <frame> elements have beforeunload handlers?
-    SetAttributeEventListener(EventTypeNames::beforeunload,
-                              CreateAttributeEventListener(this, name, value));
+    SetAttributeEventListener(
+        EventTypeNames::beforeunload,
+        CreateAttributeEventListener(
+            this, name, value,
+            JSEventHandler::HandlerType::kOnBeforeUnloadEventHandler));
   } else {
     HTMLFrameOwnerElement::ParseAttribute(params);
   }

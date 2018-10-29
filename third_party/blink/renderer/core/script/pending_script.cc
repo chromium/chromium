@@ -124,7 +124,7 @@ void PendingScript::MarkParserBlockingLoadStartTime() {
   parser_blocking_load_start_time_ = CurrentTimeTicks();
 }
 
-// https://html.spec.whatwg.org/multipage/scripting.html#execute-the-script-block
+// <specdef href="https://html.spec.whatwg.org/#execute-the-script-block">
 void PendingScript::ExecuteScriptBlock(const KURL& document_url) {
   Document* context_document = element_->GetDocument().ContextDocument();
   if (!context_document) {
@@ -161,8 +161,12 @@ void PendingScript::ExecuteScriptBlock(const KURL& document_url) {
         !element_->AllowInlineScriptForCSP(
             nonce, StartingPosition().line_, script->InlineSourceTextForCSP(),
             ContentSecurityPolicy::InlineType::kBlock)) {
-      // Consider as if "the script's script is null" retrospectively,
-      // if the CSP check fails, which is considered as load failure.
+      // Consider as if:
+      //
+      // <spec step="2">If the script's script is null, ...</spec>
+      //
+      // retrospectively, if the CSP check fails, which is considered as load
+      // failure.
       script = nullptr;
     }
   }
@@ -183,6 +187,7 @@ void PendingScript::ExecuteScriptBlock(const KURL& document_url) {
       parser_blocking_load_start_time, is_controlled_by_script_runner);
 }
 
+// <specdef href="https://html.spec.whatwg.org/#execute-the-script-block">
 void PendingScript::ExecuteScriptBlockInternal(
     Script* script,
     ScriptElementBase* element,
@@ -240,13 +245,13 @@ void PendingScript::ExecuteScriptBlockInternal(
 
     // <spec step="5">Switch on the script's type:</spec>
     //
-    // Step 5.A. "classic" [spec text]
+    // <spec step="5.A">"classic"</spec>
     //
     // <spec step="5.A.1">If the script element's root is not a shadow root,
     // then set the script element's node document's currentScript attribute to
     // the script element. Otherwise, set it to null.</spec>
     //
-    // Step 5.B. "module" [spec text]
+    // <spec step="5.B">"module"</spec>
     //
     // <spec step="5.B.1">Set the script element's node document's currentScript
     // attribute to null.</spec>
@@ -255,14 +260,14 @@ void PendingScript::ExecuteScriptBlockInternal(
       current_script = element;
     context_document->PushCurrentScript(current_script);
 
-    // Step 5.A. "classic" [spec text]
+    // <spec step="5.A">"classic"</spec>
     //
     // <spec step="5.A.2">Run the classic script given by the script's
     // script.</spec>
     //
     // Note: This is where the script is compiled and actually executed.
     //
-    // Step 5.B. "module" [spec text]
+    // <spec step="5.B">"module"</spec>
     //
     // <spec step="5.B.2">Run the module script given by the script's
     // script.</spec>

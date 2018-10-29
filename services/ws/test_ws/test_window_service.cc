@@ -10,12 +10,17 @@
 #include "base/bind_helpers.h"
 #include "mojo/public/cpp/bindings/map.h"
 #include "services/service_manager/public/cpp/connector.h"
+#include "services/ws/host_event_dispatcher.h"
+#include "services/ws/host_event_queue.h"
 #include "services/ws/public/mojom/constants.mojom.h"
+#include "services/ws/test_host_event_dispatcher.h"
 #include "services/ws/test_ws/test_gpu_interface_provider.h"
 #include "services/ws/window_service.h"
 #include "ui/aura/env.h"
 #include "ui/aura/mus/property_utils.h"
 #include "ui/compositor/test/context_factories_for_test.h"
+#include "ui/events/event.h"
+#include "ui/events/event_sink.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
 namespace ws {
@@ -137,6 +142,10 @@ void TestWindowService::CreateService(
       this, std::move(gpu_interface_provider_),
       aura_test_helper_->focus_client(), /*decrement_client_ids=*/false,
       aura_test_helper_->GetEnv());
+  test_host_event_dispatcher_ =
+      std::make_unique<TestHostEventDispatcher>(aura_test_helper_->host());
+  host_event_queue_ = window_service->RegisterHostEventDispatcher(
+      aura_test_helper_->host(), test_host_event_dispatcher_.get());
   service_context_ = std::make_unique<service_manager::ServiceContext>(
       std::move(window_service), std::move(request));
   pid_receiver->SetPID(base::GetCurrentProcId());
@@ -182,7 +191,7 @@ void TestWindowService::CreateGpuHost() {
   discardable_shared_memory_manager_ =
       std::make_unique<discardable_memory::DiscardableSharedMemoryManager>();
 
-  gpu_host_ = std::make_unique<gpu_host::DefaultGpuHost>(
+  gpu_host_ = std::make_unique<gpu_host::GpuHost>(
       this, context()->connector(), discardable_shared_memory_manager_.get());
 
   gpu_interface_provider_ = std::make_unique<TestGpuInterfaceProvider>(

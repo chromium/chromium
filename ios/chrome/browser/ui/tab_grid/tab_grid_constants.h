@@ -48,4 +48,8 @@ extern const CGFloat kTabGridFloatingButtonHorizontalInset;
 extern const CGFloat kTabGridTopToolbarHeight;
 extern const CGFloat kTabGridBottomToolbarHeight;
 
+// The delay (in milliseconds) after closing the last incognito tab and before
+// automatically scrolling to the regular tabs panel.
+extern const int64_t kTabGridScrollAnimationDelayInMilliseconds;
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_TAB_GRID_CONSTANTS_H_

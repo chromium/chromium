@@ -1,4 +1,4 @@
-A link! 
+A link!
 
 Writing just the anchor object - http://localhost/sometestfile.html
 

@@ -7,18 +7,15 @@ package org.chromium.chrome.browser.contextual_suggestions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.content.pm.ActivityInfo;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.MediumTest;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.View.OnLayoutChangeListener;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -29,17 +26,13 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -47,12 +40,11 @@ import org.chromium.chrome.browser.contextual_suggestions.ContextualSuggestionsM
 import org.chromium.chrome.browser.dependency_injection.ChromeAppModule;
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
 import org.chromium.chrome.browser.modelutil.ListObservable;
 import org.chromium.chrome.browser.modelutil.ListObservable.ListObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.ntp.ContextMenuManager;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder.PartialBindCallback;
 import org.chromium.chrome.browser.ntp.snippets.SnippetArticleViewHolder;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -61,32 +53,23 @@ import org.chromium.chrome.browser.tabmodel.TabModel.TabSelectionType;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.browser.toolbar.ToolbarPhone;
 import org.chromium.chrome.browser.widget.bottomsheet.BottomSheet;
-import org.chromium.chrome.browser.widget.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.chrome.test.BottomSheetTestRule;
 import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.RenderTestRule;
-import org.chromium.chrome.test.util.ViewUtils;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.RecyclerViewTestUtils;
 import org.chromium.chrome.test.util.browser.compositor.layouts.DisableChromeAnimations;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.content_public.browser.GestureListenerManager;
-import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.RenderCoordinates;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestWebContentsObserver;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
 
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -94,11 +77,10 @@ import java.util.concurrent.TimeoutException;
 /**
  * Tests related to displaying contextual suggestions in a bottom sheet.
  */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@EnableFeatures(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BOTTOM_SHEET)
+@EnableFeatures(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON)
 public class ContextualSuggestionsTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -108,15 +90,6 @@ public class ContextualSuggestionsTest {
     public TestRule mDisableChromeAnimations = new DisableChromeAnimations();
     @Rule
     public RenderTestRule mRenderTestRule = new RenderTestRule();
-
-    /** Parameter provider for the Slim Peek UI */
-    public static class SlimPeekUIParams implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(new ParameterSet().value(false).name("DisableSlimPeekUI"),
-                    new ParameterSet().value(true).name("EnableSlimPeekUI"));
-        }
-    }
 
     private static final String TEST_PAGE =
             "/chrome/test/data/android/contextual_suggestions/contextual_suggestions_test.html";
@@ -129,6 +102,7 @@ public class ContextualSuggestionsTest {
     private ContextualSuggestionsMediator mMediator;
     private ContextualSuggestionsModel mModel;
     private BottomSheet mBottomSheet;
+    private FakeTracker mFakeTracker;
 
     // Used in multi-instance test.
     private ContextualSuggestionsCoordinator mCoordinator2;
@@ -137,16 +111,6 @@ public class ContextualSuggestionsTest {
     private BottomSheet mBottomSheet2;
 
     private int mNumberOfSourcesCreated;
-
-    @ParameterAnnotations.UseMethodParameterBefore(SlimPeekUIParams.class)
-    public void setupSlimPeekUI(boolean slimPeekUIEnabled) {
-        if (slimPeekUIEnabled) {
-            mRenderTestRule.setVariantPrefix("slim-peek");
-            Features.getInstance().enable(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_SLIM_PEEK_UI);
-        } else {
-            Features.getInstance().disable(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_SLIM_PEEK_UI);
-        }
-    }
 
     private class ContextualSuggestionsModuleForTest extends ContextualSuggestionsModule {
         @Override
@@ -181,7 +145,10 @@ public class ContextualSuggestionsTest {
                 ChromeAppModule.Factory.class, ChromeAppModuleForTest::new);
 
         FetchHelper.setDisableDelayForTesting(true);
-        ContextualSuggestionsMediator.setOverrideBrowserControlsHiddenForTesting(true);
+        ContextualSuggestionsMediator.setOverrideIPHTimeoutForTesting(true);
+
+        mFakeTracker = new FakeTracker(FeatureConstants.CONTEXTUAL_SUGGESTIONS_FEATURE);
+        TrackerFactory.setTrackerForTests(mFakeTracker);
 
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE));
@@ -190,7 +157,7 @@ public class ContextualSuggestionsTest {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = mActivityTestRule.getActivity()
                                    .getComponent()
-                                   .getContextualSuggestionsCoordinator();
+                                   .resolveContextualSuggestionsCoordinator();
             mMediator = mCoordinator.getMediatorForTesting();
             mModel = mCoordinator.getModelForTesting();
 
@@ -213,153 +180,35 @@ public class ContextualSuggestionsTest {
     public void tearDown() {
         mTestServer.stopAndDestroyServer();
         FetchHelper.setDisableDelayForTesting(false);
-        ContextualSuggestionsMediator.setOverrideBrowserControlsHiddenForTesting(false);
+        ContextualSuggestionsMediator.setOverrideIPHTimeoutForTesting(false);
         ModuleFactoryOverrides.clearOverrides();
     }
 
     @Test
     @MediumTest
     @Feature({"ContextualSuggestions"})
-    public void testOpenContextualSuggestionsBottomSheet() {
-        assertEquals("Sheet should still be hidden.", BottomSheet.SheetState.HIDDEN,
-                mBottomSheet.getSheetState());
+    public void testRepeatedOpen() throws Exception {
+        View toolbarButton = getToolbarButton();
+        assertEquals(
+                "Toolbar button should be visible", View.VISIBLE, toolbarButton.getVisibility());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mMediator.showContentInSheetForTesting(true, true);
-            mBottomSheet.endAnimations();
-        });
-
-        assertEquals("Title text should be set.",
-                FakeContextualSuggestionsSource.TEST_TOOLBAR_TITLE, mModel.getTitle());
-
-        assertEquals("Cluster list should be set.",
-                (int) FakeContextualSuggestionsSource.TOTAL_ITEM_COUNT,
-                mModel.getClusterList().getItemCount());
-
-        ContextualSuggestionsBottomSheetContent content =
-                (ContextualSuggestionsBottomSheetContent) mBottomSheet.getCurrentSheetContent();
-        RecyclerView recyclerView = (RecyclerView) content.getContentView();
-        assertEquals("RecyclerView should be empty.", 0, recyclerView.getChildCount());
-
-        assertEquals("Sheet should be peeked.", BottomSheet.SheetState.PEEK,
-                mBottomSheet.getSheetState());
-        assertNull("RecyclerView should still be empty.", recyclerView.getAdapter());
-
-        openSheet();
-
-        assertEquals("RecyclerView should have content.",
-                (int) FakeContextualSuggestionsSource.TOTAL_ITEM_COUNT,
-                recyclerView.getAdapter().getItemCount());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ContextualSuggestions"})
-    @DisabledTest(message = "Flaky - crbug.com/859292")
-    public void testScrollPageToTrigger() throws InterruptedException, TimeoutException {
-        ContextualSuggestionsMediator.setOverrideBrowserControlsHiddenForTesting(false);
-        mMediator.setTargetScrollPercentageForTesting(0f);
-        assertEquals("Sheet should be hidden.", BottomSheet.SheetState.HIDDEN,
-                mBottomSheet.getSheetState());
-
-        CallbackHelper fullyPeekedCallback = new CallbackHelper();
-        mBottomSheet.addObserver(new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetFullyPeeked() {
-                fullyPeekedCallback.notifyCalled();
-            }
-        });
-
-        // Scroll the base page, hiding then reshowing the browser controls.
-        FullscreenManagerTestUtils.disableBrowserOverrides();
-        FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
-                mActivityTestRule, mActivityTestRule.getActivity().getActivityTab());
-
-        // Assert that the sheet is now visible.
-        fullyPeekedCallback.waitForCallback(0);
-        assertEquals("Sheet should be peeked.", BottomSheet.SheetState.PEEK,
-                mBottomSheet.getSheetState());
-        assertTrue("Bottom sheet should contain suggestions content.",
-                mBottomSheet.getCurrentSheetContent()
-                                instanceof ContextualSuggestionsBottomSheetContent);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ContextualSuggestions"})
-    public void testCloseFromPeek() throws InterruptedException, TimeoutException {
-        forceShowSuggestions();
-        simulateClickOnCloseButton();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ContextualSuggestions"})
-    public void testCloseFromOpen() throws InterruptedException, TimeoutException {
-        forceShowSuggestions();
-        openSheet();
-        simulateClickOnCloseButton();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ContextualSuggestions"})
-    public void testTriggerMultipleTimes() throws InterruptedException, TimeoutException {
-        // Show one time and close.
-        forceShowSuggestions();
-        openSheet();
+        clickToolbarButton();
         simulateClickOnCloseButton();
 
-        // Show a second time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mMediator.requestSuggestions("http://www.testurl.com"));
-        forceShowSuggestions();
-        openSheet();
-    }
+        assertEquals(
+                "Toolbar button should be visible", View.VISIBLE, toolbarButton.getVisibility());
 
-    @Test
-    @FlakyTest(message = "https://crbug.com/846619")
-    @MediumTest
-    @Feature({"ContextualSuggestions"})
-    public void testTriggerAfterClose() throws InterruptedException, TimeoutException {
-        int firstTabId = mActivityTestRule.getActivity().getActivityTab().getId();
-        mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(TEST_PAGE));
-        int secondTabId = mActivityTestRule.getActivity().getActivityTab().getId();
+        clickToolbarButton();
+        testOpenFirstSuggestion();
 
-        // Show suggestions on the second tab and simulate clicking close button.
-        forceShowSuggestions();
-        openSheet();
-        simulateClickOnCloseButton();
-
-        // Switch to the first tab and verify that the suggestions can be shown.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), firstTabId);
-        forceShowSuggestions();
-
-        // Switch to the second tab.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), secondTabId);
-        ThreadUtils.runOnUiThreadBlocking(() -> mBottomSheet.endAnimations());
-
-        // Simulate reverse scroll.
-        FullscreenManagerTestUtils.disableBrowserOverrides();
-        FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
-                mActivityTestRule, mActivityTestRule.getActivity().getActivityTab());
-
-        // Verify that the model is empty.
-        assertEquals("Model should be empty.", 0, mModel.getClusterList().getItemCount());
-        assertEquals("Bottom sheet should be hidden.", BottomSheet.SheetState.HIDDEN,
-                mBottomSheet.getSheetState());
-
-        // Switch to the first tab and verify that the suggestions can still be shown.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), firstTabId);
-        forceShowSuggestions();
+        assertEquals("Toolbar button should be visible", View.GONE, toolbarButton.getVisibility());
     }
 
     @Test
     @MediumTest
     @Feature({"ContextualSuggestions"})
-    public void testOpenSuggestion() throws InterruptedException, TimeoutException {
-        forceShowSuggestions();
-        openSheet();
+    public void testOpenSuggestion() throws Exception {
+        clickToolbarButton();
         testOpenFirstSuggestion();
     }
 
@@ -367,8 +216,7 @@ public class ContextualSuggestionsTest {
     @MediumTest
     @Feature({"ContextualSuggestions"})
     public void testOpenArticleInNewTab() throws Exception {
-        forceShowSuggestions();
-        openSheet();
+        clickToolbarButton();
 
         SnippetArticleViewHolder holder = getFirstSuggestionViewHolder();
         String expectedUrl = holder.getUrl();
@@ -376,7 +224,7 @@ public class ContextualSuggestionsTest {
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule, holder.itemView,
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB, false, expectedUrl);
 
-        assertEquals("Sheet should still be opened.", BottomSheet.SheetState.FULL,
+        assertEquals("Sheet should still be opened.", BottomSheet.SheetState.HALF,
                 mBottomSheet.getSheetState());
     }
 
@@ -384,8 +232,7 @@ public class ContextualSuggestionsTest {
     @MediumTest
     @Feature({"ContextualSuggestions"})
     public void testOpenSuggestionInNewTabIncognito() throws Exception {
-        forceShowSuggestions();
-        openSheet();
+        clickToolbarButton();
 
         SnippetArticleViewHolder holder = getFirstSuggestionViewHolder();
         String expectedUrl = holder.getUrl();
@@ -401,44 +248,8 @@ public class ContextualSuggestionsTest {
     @Test
     @MediumTest
     @Feature({"ContextualSuggestions"})
-    public void testMenuButton() throws Exception {
-        forceShowSuggestions();
-        View title =
-                mBottomSheet.getCurrentSheetContent().getToolbarView().findViewById(R.id.title);
-        View menuButton =
-                mBottomSheet.getCurrentSheetContent().getToolbarView().findViewById(R.id.more);
-
-        CallbackHelper layoutHelper = new CallbackHelper();
-        title.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                layoutHelper.notifyCalled();
-            }
-        });
-        layoutHelper.waitForCallback(0);
-
-        int titleWidth = title.getWidth();
-        // Menu button is not visible on peek state.
-        assertEquals(View.GONE, menuButton.getVisibility());
-        assertEquals(0, menuButton.getWidth());
-
-        // Menu button is visible after sheet is opened.
-        openSheet();
-        assertEquals(View.VISIBLE, menuButton.getVisibility());
-
-        // Title view should be resized.
-        ViewUtils.waitForStableView(menuButton);
-        assertNotEquals(0, menuButton.getWidth());
-        assertEquals(titleWidth, title.getWidth() + menuButton.getWidth());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ContextualSuggestions"})
-    public void testShadowVisibleOnScroll() throws InterruptedException, TimeoutException {
-        forceShowSuggestions();
-        openSheet();
+    public void testShadowVisibleOnScroll() throws Exception {
+        clickToolbarButton();
 
         assertFalse("Shadow shouldn't be visible.", mModel.getToolbarShadowVisibility());
 
@@ -463,18 +274,15 @@ public class ContextualSuggestionsTest {
     @Test
     @MediumTest
     @Feature({"ContextualSuggestions"})
+    @DisabledTest(message = "https://crbug.com/890947")
     public void testInProductHelp() throws InterruptedException, TimeoutException {
-        FakeTracker tracker = new FakeTracker(FeatureConstants.CONTEXTUAL_SUGGESTIONS_FEATURE);
-        TrackerFactory.setTrackerForTests(tracker);
-        forceShowSuggestions();
-
         assertTrue(
                 "Help bubble should be showing.", mMediator.getHelpBubbleForTesting().isShowing());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mMediator.getHelpBubbleForTesting().dismiss());
 
         Assert.assertEquals("Help bubble should be dimissed.", 1,
-                tracker.mDimissedCallbackHelper.getCallCount());
+                mFakeTracker.mDimissedCallbackHelper.getCallCount());
     }
 
     @Test
@@ -482,8 +290,7 @@ public class ContextualSuggestionsTest {
     @Feature({"ContextualSuggestions"})
     public void testMultiInstanceMode() throws Exception {
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
-        forceShowSuggestions();
-        openSheet();
+        clickToolbarButton();
 
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         ChromeTabbedActivity activity2 = MultiWindowTestHelper.createSecondChromeTabbedActivity(
@@ -492,7 +299,7 @@ public class ContextualSuggestionsTest {
 
         CallbackHelper allItemsInsertedCallback = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            mCoordinator2 = activity2.getComponent().getContextualSuggestionsCoordinator();
+            mCoordinator2 = activity2.getComponent().resolveContextualSuggestionsCoordinator();
             mMediator2 = mCoordinator2.getMediatorForTesting();
             mModel2 = mCoordinator2.getModelForTesting();
             mBottomSheet2 = activity2.getBottomSheet();
@@ -524,10 +331,9 @@ public class ContextualSuggestionsTest {
         assertEquals("Second model has incorrect number of items.",
                 (int) FakeContextualSuggestionsSource.TOTAL_ITEM_COUNT, itemCount);
 
+        clickToolbarButton(activity2);
+        BottomSheetTestRule.waitForWindowUpdates();
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            mMediator2.showContentInSheetForTesting(true, true);
-            mBottomSheet2.endAnimations();
-
             ContextualSuggestionsBottomSheetContent content1 =
                     (ContextualSuggestionsBottomSheetContent) mBottomSheet.getCurrentSheetContent();
             ContextualSuggestionsBottomSheetContent content2 =
@@ -536,9 +342,9 @@ public class ContextualSuggestionsTest {
             assertNotEquals("There should be two bottom sheet contents", content1, content2);
         });
 
-        assertEquals("Sheet in the second activity should be peeked.", BottomSheet.SheetState.PEEK,
+        assertEquals("Sheet in the second activity should be peeked.", BottomSheet.SheetState.HALF,
                 mBottomSheet2.getSheetState());
-        assertEquals("Sheet in the first activity should be open.", BottomSheet.SheetState.FULL,
+        assertEquals("Sheet in the first activity should be open.", BottomSheet.SheetState.HALF,
                 mBottomSheet.getSheetState());
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -561,29 +367,27 @@ public class ContextualSuggestionsTest {
     @Test
     @MediumTest
     @Feature({"ContextualSuggestions", "UiCatalogue"})
-    @DisableFeatures(FeatureConstants.CONTEXTUAL_SUGGESTIONS_FEATURE)
-    @ParameterAnnotations.UseMethodParameter(SlimPeekUIParams.class)
-    public void testCaptureContextualSuggestionsBottomSheet(boolean slimPeekUIEnabled)
-            throws InterruptedException, TimeoutException {
-        String postfix = slimPeekUIEnabled ? " (slim)" : "";
+    public void testCaptureContextualSuggestionsBottomSheet() throws Exception {
+        dismissHelpBubble();
 
-        forceShowSuggestions();
+        mScreenShooter.shoot("Contextual suggestions: toolbar button");
+
+        clickToolbarButton();
         BottomSheetTestRule.waitForWindowUpdates();
-        mScreenShooter.shoot("Contextual suggestions: peeking" + postfix);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mBottomSheet.setSheetState(BottomSheet.SheetState.HALF, false));
         BottomSheetTestRule.waitForWindowUpdates();
-        mScreenShooter.shoot("Contextual suggestions: half height, images loading" + postfix);
+        mScreenShooter.shoot("Contextual suggestions: half height, images loading");
 
         ThreadUtils.runOnUiThreadBlocking(() -> mFakeSource.runImageFetchCallbacks());
         BottomSheetTestRule.waitForWindowUpdates();
-        mScreenShooter.shoot("Contextual suggestions: half height, images loaded" + postfix);
+        mScreenShooter.shoot("Contextual suggestions: half height, images loaded");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mBottomSheet.setSheetState(BottomSheet.SheetState.FULL, false));
         BottomSheetTestRule.waitForWindowUpdates();
-        mScreenShooter.shoot("Contextual suggestions: full height" + postfix);
+        mScreenShooter.shoot("Contextual suggestions: full height");
 
         ThreadUtils.runOnUiThreadBlocking(() -> {
             RecyclerView view =
@@ -591,25 +395,21 @@ public class ContextualSuggestionsTest {
             view.scrollToPosition(5);
         });
         BottomSheetTestRule.waitForWindowUpdates();
-        mScreenShooter.shoot("Contextual suggestions: scrolled" + postfix);
+        mScreenShooter.shoot("Contextual suggestions: scrolled");
     }
 
     @Test
     @MediumTest
     @Feature({"ContextualSuggestions", "RenderTest"})
-    @DisableFeatures(FeatureConstants.CONTEXTUAL_SUGGESTIONS_FEATURE)
-    @ParameterAnnotations.UseMethodParameter(SlimPeekUIParams.class)
-    public void testRender(boolean slimPeekUIEnabled) throws Exception {
-        // Force suggestions to populate in the bottom sheet, then render the peeking bar.
-        forceShowSuggestions();
-        BottomSheetTestRule.waitForWindowUpdates();
-        mRenderTestRule.render(
-                mBottomSheet.getCurrentSheetContent().getToolbarView(), "peeking_bar");
+    public void testRender() throws Exception {
+        dismissHelpBubble();
 
         // Open the sheet to cause the suggestions to be bound in the RecyclerView, then capture
         // a suggestion with its thumbnail loading.
+        clickToolbarButton();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mBottomSheet.setSheetState(BottomSheet.SheetState.FULL, false));
+
         BottomSheetTestRule.waitForWindowUpdates();
         mRenderTestRule.render(getFirstSuggestionViewHolder().itemView, "suggestion_image_loading");
 
@@ -637,66 +437,11 @@ public class ContextualSuggestionsTest {
         mRenderTestRule.render(mBottomSheet, "full_height_scrolled");
     }
 
+    // Re-enable if peek delay condition is hooked up to toolbar button.
     @Test
     @MediumTest
     @Feature({"ContextualSuggestions"})
-    @DisabledTest(message = "Needs updates for SurfaceSynchronization - crbug.com/876943")
-    public void testPeekWithPageScrollPercentage() throws Exception {
-        // Set the screen orientation to portrait since we scroll the web contents in absolute
-        // pixels in the test.
-        mActivityTestRule.getActivity().setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-
-        CallbackHelper scrollChangedCallback = new CallbackHelper();
-        GestureStateListener gestureStateListener = new GestureStateListener() {
-            @Override
-            public void onScrollOffsetOrExtentChanged(int scrollOffsetY, int scrollExtentY) {
-                scrollChangedCallback.notifyCalled();
-            }
-        };
-        WebContents webContents = mActivityTestRule.getWebContents();
-        GestureListenerManager.fromWebContents(webContents).addListener(gestureStateListener);
-        View view = webContents.getViewAndroidDelegate().getContainerView();
-        int maxScrollOffset =
-                RenderCoordinates.fromWebContents(webContents).getMaxVerticalScrollPixInt();
-
-        // Verify that suggestions are not shown before scroll.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mMediator.showContentInSheetForTesting(false, true));
-        assertEquals("Bottom sheet should be hidden before scroll.", BottomSheet.SheetState.HIDDEN,
-                mBottomSheet.getSheetState());
-
-        // Scroll the page to 30% and verify that the suggestions are not shown.
-        int callCount = scrollChangedCallback.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> view.scrollBy(0, Math.round(maxScrollOffset * 0.3f)));
-        scrollChangedCallback.waitForCallback(callCount);
-
-        // Simulate call to show content without browser controls being hidden.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mMediator.showContentInSheetForTesting(false, true));
-        assertEquals("Bottom sheet should be hidden on 30% scroll percentage.",
-                BottomSheet.SheetState.HIDDEN, mBottomSheet.getSheetState());
-
-        // Scroll the page 20% more for a total of 50% and verify that the suggestions are shown.
-        callCount = scrollChangedCallback.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> view.scrollBy(0, Math.round(maxScrollOffset * 0.2f)));
-        scrollChangedCallback.waitForCallback(callCount);
-
-        // Simulate call to show content without browser controls being hidden.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mMediator.showContentInSheetForTesting(false, true));
-        assertEquals("Bottom sheet should be shown on >=50% scroll percentage.",
-                BottomSheet.SheetState.PEEK, mBottomSheet.getSheetState());
-
-        GestureListenerManager.fromWebContents(webContents).removeListener(gestureStateListener);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ContextualSuggestions"})
+    @DisabledTest
     public void testPeekDelay() throws Exception {
         // Close the suggestions from setUp().
         ThreadUtils.runOnUiThreadBlocking(() -> {
@@ -714,7 +459,7 @@ public class ContextualSuggestionsTest {
 
         // Simulate user scroll by calling showContentInSheet until the sheet is peeked.
         CriteriaHelper.pollUiThread(() -> {
-            mMediator.showContentInSheetForTesting(true, false);
+            mMediator.showContentInSheetForTesting(true);
             mBottomSheet.endAnimations();
             return mBottomSheet.getSheetState() == BottomSheet.SheetState.PEEK;
         });
@@ -731,61 +476,6 @@ public class ContextualSuggestionsTest {
     @Test
     @MediumTest
     @Feature({"ContextualSuggestions"})
-    public void testPeekCount() throws Exception {
-        forceShowSuggestions();
-
-        // Opening the sheet and setting it back to peek state shouldn't affect the peek count.
-        setSheetOffsetForState(BottomSheet.SheetState.FULL);
-        setSheetOffsetForState(BottomSheet.SheetState.PEEK);
-
-        // Hide and peek the bottom sheet for (TEST_PEEK_COUNT - 1) number of times, since
-        // #forceShowSuggestions() has already peeked the bottom sheet once.
-        for (int i = 1; i < FakeContextualSuggestionsSource.TEST_PEEK_COUNT; ++i) {
-            setSheetOffsetForState(BottomSheet.SheetState.HIDDEN);
-
-            // Verify that the suggestions are not cleared.
-            assertEquals("Model has incorrect number of items.",
-                    (int) FakeContextualSuggestionsSource.TOTAL_ITEM_COUNT,
-                    mModel.getClusterList().getItemCount());
-            assertNotNull("Bottom sheet contents should not be null.",
-                    mBottomSheet.getCurrentSheetContent());
-
-            setSheetOffsetForState(BottomSheet.SheetState.PEEK);
-        }
-
-        // Hide the sheet and verify that the suggestions are cleared.
-        setSheetOffsetForState(BottomSheet.SheetState.HIDDEN);
-        assertEquals("Model should be empty.", 0, mModel.getClusterList().getItemCount());
-        assertNull("Bottom sheet contents should be null.", mBottomSheet.getCurrentSheetContent());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ContextualSuggestions"})
-    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON)
-    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BOTTOM_SHEET)
-    public void testToolbarButton() throws Exception {
-        View toolbarButton = getToolbarButton();
-        assertEquals(
-                "Toolbar button should be visible", View.VISIBLE, toolbarButton.getVisibility());
-
-        clickToolbarButton();
-        simulateClickOnCloseButton();
-
-        assertEquals(
-                "Toolbar button should be visible", View.VISIBLE, toolbarButton.getVisibility());
-
-        clickToolbarButton();
-        testOpenFirstSuggestion();
-
-        assertEquals("Toolbar button should be visible", View.GONE, toolbarButton.getVisibility());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ContextualSuggestions"})
-    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON)
-    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BOTTOM_SHEET)
     public void testToolbarButton_ToggleTabSwitcher() throws Exception {
         View toolbarButton = getToolbarButton();
 
@@ -808,8 +498,6 @@ public class ContextualSuggestionsTest {
     @Test
     @MediumTest
     @Feature({"ContextualSuggestions"})
-    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON)
-    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BOTTOM_SHEET)
     public void testToolbarButton_SwitchTabs() throws Exception {
         View toolbarButton = getToolbarButton();
 
@@ -834,8 +522,6 @@ public class ContextualSuggestionsTest {
     @Test
     @MediumTest
     @Feature({"ContextualSuggestions"})
-    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON)
-    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BOTTOM_SHEET)
     public void testToolbarButton_ResponseInTabSwitcher() throws Exception {
         View toolbarButton = getToolbarButton();
 
@@ -843,7 +529,10 @@ public class ContextualSuggestionsTest {
                 "Toolbar button should be visible", View.VISIBLE, toolbarButton.getVisibility());
 
         // Simulate suggestions being cleared.
-        ThreadUtils.runOnUiThreadBlocking(() -> mMediator.clearState());
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mMediator.clearState();
+            getToolbarPhone().endExperimentalButtonAnimationForTesting();
+        });
         assertEquals("Toolbar button should be gone", View.GONE, toolbarButton.getVisibility());
         assertEquals("Suggestions should be cleared", 0, mModel.getClusterList().getItemCount());
 
@@ -872,23 +561,6 @@ public class ContextualSuggestionsTest {
                 "Toolbar button should be visible", View.VISIBLE, toolbarButton.getVisibility());
     }
 
-    private void forceShowSuggestions() throws InterruptedException, TimeoutException {
-        assertEquals("Model has incorrect number of items.",
-                (int) FakeContextualSuggestionsSource.TOTAL_ITEM_COUNT,
-                mModel.getClusterList().getItemCount());
-
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mMediator.showContentInSheetForTesting(true, true);
-            mBottomSheet.endAnimations();
-
-            assertEquals("Sheet should be peeked.", BottomSheet.SheetState.PEEK,
-                    mBottomSheet.getSheetState());
-            assertTrue("Bottom sheet should contain suggestions content.",
-                    mBottomSheet.getCurrentSheetContent()
-                                    instanceof ContextualSuggestionsBottomSheetContent);
-        });
-    }
-
     private void simulateClickOnCloseButton() {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mBottomSheet.getCurrentSheetContent()
@@ -901,19 +573,6 @@ public class ContextualSuggestionsTest {
         assertEquals("Sheet should be hidden.", BottomSheet.SheetState.HIDDEN,
                 mBottomSheet.getSheetState());
         assertNull("Bottom sheet contents should be null.", mBottomSheet.getCurrentSheetContent());
-    }
-
-    private void openSheet() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mBottomSheet.setSheetState(BottomSheet.SheetState.FULL, false));
-    }
-
-    private void setSheetOffsetForState(@BottomSheet.SheetState int state) {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mBottomSheet.setSheetOffsetFromBottomForTesting(
-                    mBottomSheet.getSheetHeightForState(state));
-            mBottomSheet.endAnimations();
-        });
     }
 
     private SnippetArticleViewHolder getFirstSuggestionViewHolder() {
@@ -939,16 +598,20 @@ public class ContextualSuggestionsTest {
     }
 
     private View getToolbarButton() throws ExecutionException {
-        return ThreadUtils.runOnUiThreadBlocking(() -> {
-            return ((ToolbarPhone) mActivityTestRule.getActivity()
-                            .getToolbarManager()
-                            .getToolbarLayout())
-                    .getExperimentalButtonForTesting();
-        });
+        return getToolbarButton(mActivityTestRule.getActivity());
+    }
+
+    private View getToolbarButton(ChromeActivity activity) throws ExecutionException {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> { return getToolbarPhone(activity).getExperimentalButtonForTesting(); });
     }
 
     private void clickToolbarButton() throws ExecutionException {
-        View toolbarButton = getToolbarButton();
+        clickToolbarButton(mActivityTestRule.getActivity());
+    }
+
+    private void clickToolbarButton(ChromeActivity activity) throws ExecutionException {
+        View toolbarButton = getToolbarButton(activity);
         assertEquals(
                 "Toolbar button should be visible", View.VISIBLE, toolbarButton.getVisibility());
 
@@ -980,5 +643,24 @@ public class ContextualSuggestionsTest {
         CriteriaHelper.pollUiThread(() -> {
             return mActivityTestRule.getActivity().getActivityTab().getUrl().equals(expectedUrl);
         });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> getToolbarPhone().endExperimentalButtonAnimationForTesting());
+    }
+
+    private void dismissHelpBubble() {
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            if (mMediator.getHelpBubbleForTesting() != null) {
+                mMediator.getHelpBubbleForTesting().dismiss();
+            }
+        });
+    }
+
+    private ToolbarPhone getToolbarPhone() {
+        return getToolbarPhone(mActivityTestRule.getActivity());
+    }
+
+    private ToolbarPhone getToolbarPhone(ChromeActivity activity) {
+        return (ToolbarPhone) activity.getToolbarManager().getToolbarLayout();
     }
 }

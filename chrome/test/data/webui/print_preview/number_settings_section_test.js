@@ -20,8 +20,8 @@ cr.define('number_settings_section_test', function() {
       document.body.innerHTML = `
         <div id="parentElement">
           <print-preview-number-settings-section id="numberSettings"
-              disabled="false" min-value="1" max-value="100" default-value="50"
-              hint-message="incorrect value entered" input-valid="true">
+              min-value="1" max-value="100" default-value="50"
+              hint-message="incorrect value entered" input-valid>
           </print-preview-number-settings-section>
         </div>`;
       parentElement = document.querySelector('#parentElement');
@@ -44,19 +44,31 @@ cr.define('number_settings_section_test', function() {
         return whenKeyDown;
       };
 
-      return sendKeyDownAndReturnPromise(69, 'e').then(e => {
-        assertTrue(e.defaultPrevented);
-        return sendKeyDownAndReturnPromise(110, '.');
-      }).then(e => {
-        assertTrue(e.defaultPrevented);
-        return sendKeyDownAndReturnPromise(109, '-');
-      }).then(e => {
-        assertTrue(e.defaultPrevented);
-        // Try a valid key.
-        return sendKeyDownAndReturnPromise(49, '1');
-      }).then(e => {
-        assertFalse(e.defaultPrevented);
-      });
+      return sendKeyDownAndReturnPromise(69, 'e')
+          .then(e => {
+            assertTrue(e.defaultPrevented);
+            return sendKeyDownAndReturnPromise(110, '.');
+          })
+          .then(e => {
+            assertTrue(e.defaultPrevented);
+            return sendKeyDownAndReturnPromise(109, '-');
+          })
+          .then(e => {
+            assertTrue(e.defaultPrevented);
+            return sendKeyDownAndReturnPromise(69, 'E');
+          })
+          .then(e => {
+            assertTrue(e.defaultPrevented);
+            return sendKeyDownAndReturnPromise(187, '+');
+          })
+          .then(e => {
+            assertTrue(e.defaultPrevented);
+            // Try a valid key.
+            return sendKeyDownAndReturnPromise(49, '1');
+          })
+          .then(e => {
+            assertFalse(e.defaultPrevented);
+          });
     });
   });
 

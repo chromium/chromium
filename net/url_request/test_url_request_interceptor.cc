@@ -104,7 +104,7 @@ class TestURLRequestInterceptor::Delegate : public URLRequestInterceptor {
       return NULL;
     }
 
-    ResponseMap::const_iterator it = responses_.find(request->url());
+    auto it = responses_.find(request->url());
     if (it == responses_.end()) {
       // Search for this request's url, ignoring any query parameters.
       GURL url = request->url();

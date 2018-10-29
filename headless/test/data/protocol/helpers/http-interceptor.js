@@ -39,7 +39,8 @@
           + (event.params.request.urlFragment || '');
       this.requestedUrls_.push(url);
 
-      if (this.responses_.has(url)) {
+      var response = this.responses_.get(url);
+      if (response) {
         if (!this.disabledRequestedUrlsLogging) {
           this.testRunner_.log(`requested url: ${url}`);
         }
@@ -47,12 +48,12 @@
         this.testRunner_.log(`requested url: ${url} is not known`);
         this.logResponses();
       }
-      const body = this.responses_.get(url).body || '';
-      const headers = this.responses_.get(url).headers || [];
-      const response = headers.join('\r\n') + '\r\n\r\n' + body;
+      const body = (response && response.body) || '';
+      const headers = (response && response.headers) || [];
+      const headers_with_body = headers.join('\r\n') + '\r\n\r\n' + body;
       this.dp_.Network.continueInterceptedRequest({
         interceptionId: event.params.interceptionId,
-        rawResponse: btoa(response)
+        rawResponse: btoa(headers_with_body)
       });
     });
 

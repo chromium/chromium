@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
 
@@ -71,7 +72,7 @@ class OrdinalNumber final {
 // used mostly
 // for saving script source position.
 class TextPosition final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   TextPosition(OrdinalNumber line, OrdinalNumber column)
@@ -107,7 +108,7 @@ class TextPosition final {
   OrdinalNumber column_;
 };
 
-WTF_EXPORT std::unique_ptr<Vector<unsigned>> GetLineEndings(const String&);
+WTF_EXPORT std::unique_ptr<Vector<wtf_size_t>> GetLineEndings(const String&);
 
 }  // namespace WTF
 

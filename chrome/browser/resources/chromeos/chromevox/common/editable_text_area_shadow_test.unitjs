@@ -10,9 +10,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxShadowUnitTest() {}
+function ChromeVoxShadowUnitTest() {}
 
-CvoxShadowUnitTest.prototype = {
+ChromeVoxShadowUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -21,7 +21,7 @@ CvoxShadowUnitTest.prototype = {
   ]
 };
 
-TEST_F('CvoxShadowUnitTest', 'MultilineLines', function() {
+TEST_F('ChromeVoxShadowUnitTest', 'MultilineLines', function() {
   this.loadDoc(function() {/*!
     <div><textarea id="area">
 one
@@ -51,7 +51,7 @@ three
  * Test disabled due to not being reliable if font size changes.
  * See https://codereview.chromium.org/549303004/
  */
-TEST_F('CvoxShadowUnitTest', 'DISABLED_MultilineWrap', function() {
+TEST_F('ChromeVoxShadowUnitTest', 'DISABLED_MultilineWrap', function() {
   this.loadDoc(function() {/*!
     <div><textarea id="area"
           cols=4 rows=20>One two thr fou fiv six sev eig</textarea>

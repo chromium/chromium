@@ -15,7 +15,7 @@
         {
           "object": "LayoutBlockFlow DIV id='parent'",
           "rect": [0, 0, 400, 400],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "transform": 1
@@ -29,7 +29,7 @@
         {
           "object": "LayoutBlockFlow (relative positioned) DIV id='child'",
           "rect": [0, 0, 75, 75],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "transform": 2

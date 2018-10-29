@@ -132,6 +132,10 @@ std::string TouchIdAuthenticator::GetId() const {
   return "TouchIdAuthenticator";
 }
 
+base::string16 TouchIdAuthenticator::GetDisplayName() const {
+  return base::string16();
+}
+
 FidoTransportProtocol TouchIdAuthenticator::AuthenticatorTransport() const {
   return FidoTransportProtocol::kInternal;
 }
@@ -155,6 +159,10 @@ const AuthenticatorSupportedOptions& TouchIdAuthenticator::Options() const {
   static const AuthenticatorSupportedOptions options =
       TouchIdAuthenticatorOptions();
   return options;
+}
+
+bool TouchIdAuthenticator::IsInPairingMode() const {
+  return false;
 }
 
 base::WeakPtr<FidoAuthenticator> TouchIdAuthenticator::GetWeakPtr() {

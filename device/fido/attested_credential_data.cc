@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/numerics/safe_math.h"
+#include "components/cbor/reader.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/opaque_public_key.h"
@@ -16,8 +17,8 @@
 namespace device {
 
 // static
-base::Optional<AttestedCredentialData>
-AttestedCredentialData::DecodeFromCtapResponse(
+base::Optional<std::pair<AttestedCredentialData, base::span<const uint8_t>>>
+AttestedCredentialData::ConsumeFromCtapResponse(
     base::span<const uint8_t> buffer) {
   if (buffer.size() < kAaguidLength)
     return base::nullopt;
@@ -40,11 +41,22 @@ AttestedCredentialData::DecodeFromCtapResponse(
   auto credential_id = buffer.first(credential_id_length);
   buffer = buffer.subspan(credential_id_length);
 
-  auto credential_public_key_data = std::make_unique<OpaquePublicKey>(buffer);
+  // The public key is a CBOR map and is thus variable length. Therefore the
+  // CBOR parser needs to be invoked to find its length, even though the result
+  // is discarded.
+  size_t bytes_read;
+  if (!cbor::Reader::Read(buffer, &bytes_read)) {
+    return base::nullopt;
+  }
+  auto credential_public_key_data =
+      std::make_unique<OpaquePublicKey>(buffer.first(bytes_read));
+  buffer = buffer.subspan(bytes_read);
 
-  return AttestedCredentialData(aaguid, credential_id_length_span,
-                                fido_parsing_utils::Materialize(credential_id),
-                                std::move(credential_public_key_data));
+  return std::make_pair(
+      AttestedCredentialData(aaguid, credential_id_length_span,
+                             fido_parsing_utils::Materialize(credential_id),
+                             std::move(credential_public_key_data)),
+      buffer);
 }
 
 // static

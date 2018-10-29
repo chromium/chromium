@@ -172,7 +172,7 @@ void TextTrack::RemoveAllCues() {
   if (GetCueTimeline())
     GetCueTimeline()->RemoveCues(this, cues_.Get());
 
-  for (size_t i = 0; i < cues_->length(); ++i)
+  for (wtf_size_t i = 0; i < cues_->length(); ++i)
     cues_->AnonymousIndexedGetter(i)->SetTrack(nullptr);
 
   cues_->RemoveAll();

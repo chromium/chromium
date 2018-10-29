@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutTable {TABLE} at (0,0) size 102x2 [bgcolor=#FF0000]
-        LayoutTableSection {TBODY} at (0,0) size 102x2
-          LayoutTableRow {TR} at (0,0) size 102x2
-            LayoutTableCell {TD} at (0,0) size 102x2 [bgcolor=#008000] [r=0 c=0 rs=1 cs=1]

@@ -145,6 +145,11 @@ TEST(VariationsHttpHeadersTest, ShouldAppendHeaders) {
       {"http://wwwgoogleweblight.com", false},
       {"https://www.googleweblight.com", false},
       {"https://a.b.googleweblight.com", false},
+
+      {"http://a.b.litepages.googlezip.net", false},
+      {"https://litepages.googlezip.net", false},
+      {"https://a.litepages.googlezip.net", true},
+      {"https://a.b.litepages.googlezip.net", true},
   };
 
   for (size_t i = 0; i < base::size(cases); ++i) {

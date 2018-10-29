@@ -6,11 +6,23 @@
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/chromeos_features.h"
+#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
+#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace chromeos {
 
 namespace android_sms {
+
+namespace {
+
+bool IsFeatureAllowed(content::BrowserContext* context) {
+  return multidevice_setup::IsFeatureAllowed(
+      multidevice_setup::mojom::Feature::kMessages,
+      Profile::FromBrowserContext(context)->GetPrefs());
+}
+
+}  // namespace
 
 // static
 AndroidSmsServiceFactory* AndroidSmsServiceFactory::GetInstance() {
@@ -38,7 +50,8 @@ AndroidSmsServiceFactory::~AndroidSmsServiceFactory() = default;
 
 KeyedService* AndroidSmsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(
+  if (!IsFeatureAllowed(context) ||
+      !base::FeatureList::IsEnabled(
           chromeos::features::kAndroidMessagesIntegration) ||
       !base::FeatureList::IsEnabled(
           chromeos::features::kEnableUnifiedMultiDeviceSetup) ||
@@ -54,6 +67,10 @@ KeyedService* AndroidSmsServiceFactory::BuildServiceInstanceFor(
 }
 
 bool AndroidSmsServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
+bool AndroidSmsServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 

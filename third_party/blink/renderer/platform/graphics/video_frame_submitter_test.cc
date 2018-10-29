@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "cc/layers/video_frame_provider.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/trees/layer_tree_settings.h"
@@ -101,7 +102,7 @@ class MockVideoFrameResourceProvider
   MockVideoFrameResourceProvider(
       viz::ContextProvider* context_provider,
       viz::SharedBitmapReporter* shared_bitmap_reporter)
-      : blink::VideoFrameResourceProvider(cc::LayerTreeSettings()) {
+      : blink::VideoFrameResourceProvider(cc::LayerTreeSettings(), false) {
     blink::VideoFrameResourceProvider::Initialize(context_provider,
                                                   shared_bitmap_reporter);
   }
@@ -163,10 +164,12 @@ class VideoFrameSubmitterTest : public testing::Test {
     // testing easier without having to worry about the first sent frame.
     submitter_->UpdateSubmissionState(true);
     submitter_->SetCompositorFrameSinkPtrForTesting(&submitter_sink);
-    submitter_->SetSurfaceIdForTesting(viz::SurfaceId(
-        viz::FrameSinkId(1, 1),
-        viz::LocalSurfaceId(11,
-                            base::UnguessableToken::Deserialize(0x111111, 0))));
+    submitter_->SetSurfaceIdForTesting(
+        viz::SurfaceId(
+            viz::FrameSinkId(1, 1),
+            viz::LocalSurfaceId(
+                11, base::UnguessableToken::Deserialize(0x111111, 0))),
+        base::TimeTicks());
   }
 
  protected:

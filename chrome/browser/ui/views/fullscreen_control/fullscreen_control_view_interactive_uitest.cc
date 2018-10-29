@@ -21,7 +21,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -98,7 +97,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   FullscreenControlHost* GetFullscreenControlHost() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->GetFullscreenControlHost();
+    return browser_view->fullscreen_control_host_for_test();
   }
 
   FullscreenControlView* GetFullscreenControlView() {
@@ -159,7 +158,6 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  test::ScopedMacViewsBrowserMode views_mode_{true};
 
 #if defined(USE_AURA)
   std::unique_ptr<aura::test::TestCursorClient> cursor_client_;
@@ -199,18 +197,18 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_MouseExitFullscreen) {
   // fullscreen exit UI.
   ui::MouseEvent mouse_move(ui::ET_MOUSE_MOVED, gfx::Point(1, 1), gfx::Point(),
                             base::TimeTicks(), 0, 0);
-  host->OnMouseEvent(&mouse_move);
+  host->OnMouseEvent(mouse_move);
   ASSERT_TRUE(host->IsVisible());
 
   // Simulate clicking on the fullscreen exit button, which should cause the
-  // browser to exit fullscreen and hide the fullscreen exit control.
+  // browser to exit fullscreen and destroy the exit control and its host.
   ui::MouseEvent mouse_click(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
   GetFullscreenControlView()->ButtonPressed(GetFullscreenExitButton(),
                                             mouse_click);
 
-  ASSERT_FALSE(host->IsVisible());
+  ASSERT_FALSE(GetFullscreenControlHost());
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 
@@ -236,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   // fullscreen exit UI.
   ui::MouseEvent mouse_move(ui::ET_MOUSE_MOVED, gfx::Point(1, 1), gfx::Point(),
                             base::TimeTicks(), 0, 0);
-  host->OnMouseEvent(&mouse_move);
+  host->OnMouseEvent(mouse_move);
   ASSERT_TRUE(host->IsVisible());
 
   // Wait until popup times out. This is one wait for show and one wait for
@@ -249,19 +247,19 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   // UI.
   mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(2, 1),
                               gfx::Point(), base::TimeTicks(), 0, 0);
-  host->OnMouseEvent(&mouse_move);
+  host->OnMouseEvent(mouse_move);
   ASSERT_FALSE(host->IsVisible());
 
   // Simulate moving the mouse out of the buffer area. This resets the state.
   mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(2, 1000),
                               gfx::Point(), base::TimeTicks(), 0, 0);
-  host->OnMouseEvent(&mouse_move);
+  host->OnMouseEvent(mouse_move);
   ASSERT_FALSE(host->IsVisible());
 
   // Simulate moving the mouse to the top again, which should show the exit UI.
   mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(1, 1),
                               gfx::Point(), base::TimeTicks(), 0, 0);
-  host->OnMouseEvent(&mouse_move);
+  host->OnMouseEvent(mouse_move);
   RunLoopUntilVisibilityChanges();
   ASSERT_TRUE(host->IsVisible());
 
@@ -269,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   // hide the exit UI.
   mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(2, 1000),
                               gfx::Point(), base::TimeTicks(), 0, 0);
-  host->OnMouseEvent(&mouse_move);
+  host->OnMouseEvent(mouse_move);
   RunLoopUntilVisibilityChanges();
   ASSERT_FALSE(host->IsVisible());
 
@@ -295,12 +293,12 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_TouchPopupInteraction) {
   ui::TouchEvent touch_event(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
 
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_RELEASED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
 
   ASSERT_FALSE(host->IsVisible());
 
@@ -308,25 +306,25 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_TouchPopupInteraction) {
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
 
   ui::GestureEvent gesture(1, 1, 0, ui::EventTimeForNow(),
                            ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  host->OnGestureEvent(&gesture);
+  host->OnGestureEvent(gesture);
 
   // Wait until the popup is fully shown then release the touch.
   RunLoopUntilVisibilityChanges();
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_RELEASED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
   ASSERT_TRUE(host->IsVisible());
 
   // Simulate pressing outside the popup, which should hide the popup.
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
   RunLoopUntilVisibilityChanges();
   ASSERT_FALSE(host->IsVisible());
 
@@ -334,29 +332,30 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_TouchPopupInteraction) {
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
 
   gesture =
       ui::GestureEvent(1, 1, 0, ui::EventTimeForNow(),
                        ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  host->OnGestureEvent(&gesture);
+  host->OnGestureEvent(gesture);
 
   RunLoopUntilVisibilityChanges();
 
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_RELEASED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
   ASSERT_TRUE(host->IsVisible());
 
-  // Simulate pressing the button.
+  // Simulate pressing the fullscreen exit button, which should cause the
+  // browser to exit fullscreen and destroy the exit control and its host.
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
   GetFullscreenControlView()->ButtonPressed(GetFullscreenExitButton(),
                                             touch_event);
 
-  ASSERT_FALSE(host->IsVisible());
+  ASSERT_FALSE(GetFullscreenControlHost());
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 
@@ -381,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   // Move cursor to the top.
   ui::MouseEvent mouse_move(ui::ET_MOUSE_MOVED, gfx::Point(1, 1), gfx::Point(),
                             base::TimeTicks(), 0, 0);
-  host->OnMouseEvent(&mouse_move);
+  host->OnMouseEvent(mouse_move);
   RunLoopUntilVisibilityChanges();
   ASSERT_TRUE(host->IsVisible());
 
@@ -389,15 +388,15 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   ui::TouchEvent touch_event(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
   ui::GestureEvent gesture(1, 1, 0, ui::EventTimeForNow(),
                            ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  host->OnGestureEvent(&gesture);
+  host->OnGestureEvent(gesture);
 
   // Move cursor out of the buffer area, which should hide the exit UI.
   mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(2, 1000),
                               gfx::Point(), base::TimeTicks(), 0, 0);
-  host->OnMouseEvent(&mouse_move);
+  host->OnMouseEvent(mouse_move);
   RunLoopUntilVisibilityChanges();
   ASSERT_FALSE(host->IsVisible());
 
@@ -405,31 +404,31 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_RELEASED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
   ASSERT_FALSE(host->IsVisible());
 
   // Simulate a press-and-hold to trigger the UI.
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
   gesture =
       ui::GestureEvent(1, 1, 0, ui::EventTimeForNow(),
                        ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  host->OnGestureEvent(&gesture);
+  host->OnGestureEvent(gesture);
   RunLoopUntilVisibilityChanges();
   ASSERT_TRUE(host->IsVisible());
 
   // Move the cursor to the top.
   mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(1, 1),
                               gfx::Point(), base::TimeTicks(), 0, 0);
-  host->OnMouseEvent(&mouse_move);
+  host->OnMouseEvent(mouse_move);
   ASSERT_TRUE(host->IsVisible());
 
   // Move the cursor out of the buffer area, which will have no effect.
   mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(2, 1000),
                               gfx::Point(), base::TimeTicks(), 0, 0);
-  host->OnMouseEvent(&mouse_move);
+  host->OnMouseEvent(mouse_move);
   // This simply times out.
   RunLoopUntilVisibilityChanges();
   ASSERT_TRUE(host->IsVisible());
@@ -438,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  host->OnTouchEvent(&touch_event);
+  host->OnTouchEvent(touch_event);
   RunLoopUntilVisibilityChanges();
   ASSERT_FALSE(host->IsVisible());
 }
@@ -476,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
 
   // Send a key press event to show the popup.
   ui::KeyEvent key_down(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::EF_NONE);
-  host->OnKeyEvent(&key_down);
+  host->OnKeyEvent(key_down);
   // Popup is not shown immediately.
   ASSERT_FALSE(host->IsVisible());
 
@@ -490,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
 
   // Send a key press event to hide the popup.
   ui::KeyEvent key_up(ui::ET_KEY_RELEASED, ui::VKEY_ESCAPE, ui::EF_NONE);
-  host->OnKeyEvent(&key_up);
+  host->OnKeyEvent(key_up);
   hide_run_loop.Run();
   ASSERT_FALSE(host->IsVisible());
 }

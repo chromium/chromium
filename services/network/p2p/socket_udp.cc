@@ -66,6 +66,17 @@ const char* GetTransientErrorName(int error) {
   return "";
 }
 
+std::unique_ptr<net::DatagramServerSocket> DefaultSocketFactory(
+    net::NetLog* net_log) {
+  net::UDPServerSocket* socket =
+      new net::UDPServerSocket(net_log, net::NetLogSource());
+#if defined(OS_WIN)
+  socket->UseNonBlockingIO();
+#endif
+
+  return base::WrapUnique(socket);
+}
+
 }  // namespace
 
 namespace network {
@@ -87,8 +98,7 @@ P2PSocketUdp::PendingPacket::PendingPacket(
 
 P2PSocketUdp::PendingPacket::PendingPacket(const PendingPacket& other) =
     default;
-
-P2PSocketUdp::PendingPacket::~PendingPacket() {}
+P2PSocketUdp::PendingPacket::~PendingPacket() = default;
 
 P2PSocketUdp::P2PSocketUdp(Delegate* Delegate,
                            mojom::P2PSocketClientPtr client,
@@ -97,9 +107,6 @@ P2PSocketUdp::P2PSocketUdp(Delegate* Delegate,
                            net::NetLog* net_log,
                            const DatagramServerSocketFactory& socket_factory)
     : P2PSocket(Delegate, std::move(client), std::move(socket), P2PSocket::UDP),
-      socket_(socket_factory.Run(net_log)),
-      send_pending_(false),
-      last_dscp_(net::DSCP_CS0),
       throttler_(throttler),
       net_log_(net_log),
       socket_factory_(socket_factory) {}
@@ -114,22 +121,19 @@ P2PSocketUdp::P2PSocketUdp(Delegate* Delegate,
                    std::move(socket),
                    throttler,
                    net_log,
-                   base::Bind(&P2PSocketUdp::DefaultSocketFactory)) {}
+                   base::BindRepeating(&DefaultSocketFactory)) {}
 
-P2PSocketUdp::~P2PSocketUdp() {
-  if (state_ == STATE_OPEN) {
-    DCHECK(socket_.get());
-    socket_.reset();
-  }
-}
+P2PSocketUdp::~P2PSocketUdp() = default;
 
 void P2PSocketUdp::Init(const net::IPEndPoint& local_address,
                         uint16_t min_port,
                         uint16_t max_port,
                         const P2PHostAndIPEndPoint& remote_address) {
-  DCHECK_EQ(state_, STATE_UNINITIALIZED);
+  DCHECK(!socket_);
   DCHECK((min_port == 0 && max_port == 0) || min_port > 0);
   DCHECK_LE(min_port, max_port);
+
+  socket_ = socket_factory_.Run(net_log_);
 
   int result = -1;
   if (min_port == 0) {
@@ -177,8 +181,6 @@ void P2PSocketUdp::Init(const net::IPEndPoint& local_address,
   }
   VLOG(1) << "Local address: " << address.ToString();
 
-  state_ = STATE_OPEN;
-
   // NOTE: Remote address will be same as what renderer provided.
   client_->SocketCreated(address, remote_address.ip_address);
 
@@ -202,8 +204,6 @@ void P2PSocketUdp::OnRecv(int result) {
 }
 
 bool P2PSocketUdp::HandleReadResult(int result) {
-  DCHECK_EQ(STATE_OPEN, state_);
-
   if (result > 0) {
     std::vector<int8_t> data(recv_buffer_->data(),
                              recv_buffer_->data() + result);
@@ -342,7 +342,7 @@ void P2PSocketUdp::OnSend(uint64_t packet_id,
   }
 
   // Send next packets if we have them waiting in the buffer.
-  while (state_ == STATE_OPEN && !send_queue_.empty() && !send_pending_) {
+  while (!send_queue_.empty() && !send_pending_) {
     PendingPacket packet = send_queue_.front();
     send_queue_.pop_front();
     if (!DoSend(packet))
@@ -426,27 +426,9 @@ void P2PSocketUdp::SetOption(P2PSocketOption option, int32_t value) {
   }
 }
 
-// TODO(crbug.com/812137): We don't call SetDiffServCodePoint for the Windows
-// UDP socket, because this is known to cause a hanging thread.
 int P2PSocketUdp::SetSocketDiffServCodePointInternal(
     net::DiffServCodePoint dscp) {
-#if defined(OS_WIN)
-  return net::OK;
-#else
   return socket_->SetDiffServCodePoint(dscp);
-#endif
-}
-
-// static
-std::unique_ptr<net::DatagramServerSocket> P2PSocketUdp::DefaultSocketFactory(
-    net::NetLog* net_log) {
-  net::UDPServerSocket* socket =
-      new net::UDPServerSocket(net_log, net::NetLogSource());
-#if defined(OS_WIN)
-  socket->UseNonBlockingIO();
-#endif
-
-  return base::WrapUnique(socket);
 }
 
 }  // namespace network

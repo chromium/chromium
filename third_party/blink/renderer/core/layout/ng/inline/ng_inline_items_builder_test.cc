@@ -24,6 +24,7 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
   void SetUp() override {
     NGLayoutTest::SetUp();
     style_ = ComputedStyle::Create();
+    style_->GetFont().Update(nullptr);
   }
 
   void SetWhiteSpace(EWhiteSpace whitespace) {
@@ -107,8 +108,10 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
           !previous_items.IsEmpty() &&
           reuse_builder.Append(text_, ToLayoutNGText(input.layout_text),
                                previous_items);
-      if (!reused)
-        reuse_builder.Append(input.text, input.layout_text->Style());
+      if (!reused) {
+        reuse_builder.Append(input.text, input.layout_text->Style(),
+                             input.layout_text);
+      }
     }
 
     String reuse_text = reuse_builder.ToString();
@@ -366,6 +369,17 @@ TEST_P(CollapsibleSpaceTest, CollapsedSpaceAfterNoWrap) {
              u"\u200B"
              "wrap"),
       TestAppend({String("nowrap") + space, EWhiteSpace::kNowrap}, {" wrap"}));
+}
+
+TEST_F(NGInlineItemsBuilderTest, GenerateBreakOpportunityAfterLeadingSpaces) {
+  EXPECT_EQ(String(" "
+                   u"\u200B"
+                   "a"),
+            TestAppend({{" a", EWhiteSpace::kPreWrap}}));
+  EXPECT_EQ(String("  "
+                   u"\u200B"
+                   "a"),
+            TestAppend({{"  a", EWhiteSpace::kPreWrap}}));
 }
 
 TEST_F(NGInlineItemsBuilderTest, BidiBlockOverride) {

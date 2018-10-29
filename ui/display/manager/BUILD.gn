@@ -52,6 +52,8 @@ jumbo_component("manager") {
     ]
   }
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//ui/display",
   ]

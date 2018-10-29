@@ -218,7 +218,7 @@ class RequestCoordinator : public KeyedService,
                              int64_t received_bytes) override;
 
   // Returns the request queue used for requests.  Coordinator keeps ownership.
-  RequestQueue* queue() { return queue_.get(); }
+  RequestQueue* queue_for_testing() { return queue_.get(); }
 
   // Return an unowned pointer to the Scheduler.
   Scheduler* scheduler() { return scheduler_.get(); }
@@ -291,18 +291,17 @@ class RequestCoordinator : public KeyedService,
                                 AddRequestResult result,
                                 const SavePageRequest& request);
 
-  void UpdateMultipleRequestsCallback(
-      std::unique_ptr<UpdateRequestsResult> result);
+  void UpdateMultipleRequestsCallback(UpdateRequestsResult result);
 
-  void ReconcileCallback(std::unique_ptr<UpdateRequestsResult> result);
+  void ReconcileCallback(UpdateRequestsResult result);
 
   void HandleRemovedRequestsAndCallback(
       RemoveRequestsCallback callback,
       RequestNotifier::BackgroundSavePageResult status,
-      std::unique_ptr<UpdateRequestsResult> result);
+      UpdateRequestsResult result);
 
   void HandleRemovedRequests(RequestNotifier::BackgroundSavePageResult status,
-                             std::unique_ptr<UpdateRequestsResult> result);
+                             UpdateRequestsResult result);
 
   // Handle updating of request status after cancel is called. Will call
   // HandleCancelRecordResultCallback for UMA handling
@@ -373,7 +372,7 @@ class RequestCoordinator : public KeyedService,
   // started.
   void StartOffliner(int64_t request_id,
                      const std::string& client_namespace,
-                     std::unique_ptr<UpdateRequestsResult> update_result);
+                     UpdateRequestsResult update_result);
 
   // Called by the offliner when an offlining request is completed. (and by
   // tests).
@@ -421,7 +420,7 @@ class RequestCoordinator : public KeyedService,
   // Reports change from marking request, reports an error if it fails.
   void MarkAttemptDone(int64_t request_id,
                        const std::string& name_space,
-                       std::unique_ptr<UpdateRequestsResult> result);
+                       UpdateRequestsResult result);
 
   // Reports offliner status through UMA and event logger.
   void RecordOfflinerResult(const SavePageRequest& request,

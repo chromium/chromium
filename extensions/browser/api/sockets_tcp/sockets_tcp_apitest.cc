@@ -48,7 +48,8 @@ class SocketsTcpApiTest : public ShellApiTest {
 IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketsTcpCreateGood) {
   scoped_refptr<api::SocketsTcpCreateFunction> socket_create_function(
       new api::SocketsTcpCreateFunction());
-  scoped_refptr<Extension> empty_extension = ExtensionBuilder("Test").Build();
+  scoped_refptr<const Extension> empty_extension =
+      ExtensionBuilder("Test").Build();
 
   socket_create_function->set_extension(empty_extension.get());
   socket_create_function->set_has_callback(true);

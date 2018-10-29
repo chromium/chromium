@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/accessibility_util.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -34,23 +34,8 @@ const CGFloat kHorizontalPadding = 16;
 // Horizontal spacing between the favicon and the labels.
 const CGFloat kFaviconAndLabelsHorizontalSpacing = 12;
 
-// Dimension for lock indicator in points.
-const CGFloat kLockIndicatorDimension = 16;
-
 // Dimension for the favicon in points.
 const CGFloat kFaviconDimension = 16;
-
-// There is some empty space between the left and right edges of the lock
-// indicator image contents and the square box it is contained within.
-// This padding represents that difference. This is useful when it comes
-// to aligning the lock indicator image with the title label.
-const CGFloat kLockIndicatorHorizontalPadding = 4;
-
-// There is some empty space between the top and bottom edges of the lock
-// indicator image contents and the square box it is contained within.
-// This padding represents that difference. This is useful when it comes
-// to aligning the lock indicator image with the bottom of the host label.
-const CGFloat kLockIndicatorVerticalPadding = 4;
 }
 
 @implementation PageInfoItem
@@ -83,19 +68,26 @@ const CGFloat kLockIndicatorVerticalPadding = 4;
     [text addAttribute:NSForegroundColorAttributeName
                  value:[[MDCPalette cr_greenPalette] tint700]
                  range:NSMakeRange(0, strlen(url::kHttpsScheme))];
+    if (@available(iOS 11, *)) {
+      // We need to set the font to the attributed portion, or the field doesn't
+      // asjust with dynamic types.
+      [text addAttribute:NSFontAttributeName
+                   value:[[UIFontMetrics defaultMetrics]
+                             scaledFontForFont:[[MDCTypography fontLoader]
+                                                   regularFontOfSize:12]]
+                   range:NSMakeRange(0, strlen(url::kHttpsScheme))];
+    }
     [cell.pageHostLabel setAttributedText:text];
+
     // Set lock image. UIImageRenderingModeAlwaysTemplate is used so that
     // the color of the lock indicator image can be changed to green.
-    cell.pageLockIndicatorView.image = [ResizeImage(
-        NativeImage(IDR_IOS_OMNIBOX_HTTPS_VALID),
-        CGSizeMake(kLockIndicatorDimension, kLockIndicatorDimension),
-        ProjectionMode::kAspectFillNoClipping)
+    cell.pageLockIndicatorView.image = [NativeImage(IDR_IOS_OMNIBOX_HTTPS_VALID)
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   }
 
   // Invalidate the constraints so that layout can account for whether or not a
   // favicon is present.
-  [cell setNeedsUpdateConstraints];
+  [cell updateConstraintsIfNeeded];
 }
 
 @end
@@ -114,6 +106,7 @@ const CGFloat kLockIndicatorVerticalPadding = 4;
   self = [super initWithFrame:frame];
   if (self) {
     self.isAccessibilityElement = YES;
+    self.contentView.clipsToBounds = YES;
 
     // Favicon
     _pageFaviconView = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -123,7 +116,8 @@ const CGFloat kLockIndicatorVerticalPadding = 4;
 
     // Page title
     _pageTitleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    _pageTitleLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:12];
+    SetUILabelScaledFont(_pageTitleLabel,
+                         [[MDCTypography fontLoader] mediumFontOfSize:12]);
     _pageTitleLabel.textColor = [[MDCPalette greyPalette] tint900];
     _pageTitleLabel.backgroundColor = [UIColor clearColor];
     _pageTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -131,7 +125,8 @@ const CGFloat kLockIndicatorVerticalPadding = 4;
 
     // Page host
     _pageHostLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    _pageHostLabel.font = [[MDCTypography fontLoader] regularFontOfSize:12];
+    SetUILabelScaledFont(_pageHostLabel,
+                         [[MDCTypography fontLoader] regularFontOfSize:12]);
     _pageHostLabel.textColor = [[MDCPalette greyPalette] tint600];
     // Truncate host name from the leading side if it is too long. This is
     // according to Eliding Origin Names and Hostnames guideline found here:
@@ -152,6 +147,7 @@ const CGFloat kLockIndicatorVerticalPadding = 4;
     _pageLockIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
     _pageLockIndicatorView.accessibilityIdentifier =
         kPageInfoLockIndicatorImageViewID;
+    _pageLockIndicatorView.contentMode = UIViewContentModeScaleAspectFit;
     [_pageLockIndicatorView
         setTintColor:[[MDCPalette cr_greenPalette] tint700]];
     [self.contentView addSubview:_pageLockIndicatorView];
@@ -172,11 +168,13 @@ const CGFloat kLockIndicatorVerticalPadding = 4;
       // activated in updateConstraints rather than here so that it can
       // depend on whether a favicon is present or not.
       [_pageLockIndicatorView.leadingAnchor
-          constraintEqualToAnchor:_pageTitleLabel.leadingAnchor
-                         constant:-kLockIndicatorHorizontalPadding],
+          constraintEqualToAnchor:_pageTitleLabel.leadingAnchor],
       [_pageLockIndicatorView.bottomAnchor
-          constraintEqualToAnchor:_pageHostLabel.firstBaselineAnchor
-                         constant:kLockIndicatorVerticalPadding],
+          constraintEqualToAnchor:_pageHostLabel.bottomAnchor],
+      [_pageLockIndicatorView.topAnchor
+          constraintEqualToAnchor:_pageHostLabel.topAnchor],
+      [_pageLockIndicatorView.widthAnchor
+          constraintEqualToAnchor:_pageHostLabel.heightAnchor],
 
       [_pageTitleLabel.topAnchor
           constraintEqualToAnchor:self.contentView.topAnchor

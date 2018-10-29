@@ -13,6 +13,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "url/gurl.h"
 
 class Utterance;
@@ -113,9 +114,8 @@ class UtteranceEventDelegate {
 
 // Class that wants to be notified when the set of
 // voices has changed.
-class VoicesChangedDelegate {
+class VoicesChangedDelegate : public base::CheckedObserver {
  public:
-  virtual ~VoicesChangedDelegate() {}
   virtual void OnVoicesChanged() = 0;
 };
 

@@ -3,7 +3,6 @@ getDistributedNodes() should work out of Document
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 getDistributedNodes() should work out of Document
 PASS nodeList.length is expectedNodes.length
 PASS nodeList.item(0) is expectedNodes[0]
@@ -27,4 +26,5 @@ PASS nodeList.item(1) is expectedNodes[1]
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

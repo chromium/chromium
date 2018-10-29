@@ -98,8 +98,6 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
   bool OnCanEnablePrivacyMode(const GURL& url,
                               const GURL& site_for_cookies) const override;
 
-  bool OnAreExperimentalCookieFeaturesEnabled() const override;
-
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
       const GURL& target_url,

@@ -32,7 +32,7 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
       if (invalidation_set->WholeSubtreeInvalid()) {
         node.SetNeedsStyleRecalc(kSubtreeStyleChange,
                                  StyleChangeReasonForTracing::Create(
-                                     StyleChangeReason::kStyleInvalidator));
+                                     style_change_reason::kStyleInvalidator));
         requires_descendant_invalidation = false;
         break;
       }
@@ -40,7 +40,7 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
       if (invalidation_set->InvalidatesSelf()) {
         node.SetNeedsStyleRecalc(kLocalStyleChange,
                                  StyleChangeReasonForTracing::Create(
-                                     StyleChangeReason::kStyleInvalidator));
+                                     style_change_reason::kStyleInvalidator));
       }
 
       if (!invalidation_set->IsEmpty())
@@ -94,7 +94,7 @@ void PendingInvalidations::ScheduleSiblingInvalidationsAsDescendants(
     if (invalidation_set->WholeSubtreeInvalid()) {
       scheduling_parent.SetNeedsStyleRecalc(
           kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                   StyleChangeReason::kStyleInvalidator));
+                                   style_change_reason::kStyleInvalidator));
       return;
     }
     if (invalidation_set->InvalidatesSelf() &&
@@ -106,7 +106,7 @@ void PendingInvalidations::ScheduleSiblingInvalidationsAsDescendants(
       if (descendants->WholeSubtreeInvalid()) {
         scheduling_parent.SetNeedsStyleRecalc(
             kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                     StyleChangeReason::kStyleInvalidator));
+                                     style_change_reason::kStyleInvalidator));
         return;
       }
       if (!pending_invalidations.Descendants().Contains(descendants))

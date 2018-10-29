@@ -55,6 +55,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/test/test_network_connection_tracker.h"
 
 #if defined(OS_MACOSX)
 #include "base/mac/scoped_nsautorelease_pool.h"
@@ -202,6 +203,8 @@ class MCSProbe {
   int server_port_;
 
   // Network state.
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   net::NetLog net_log_;
   std::unique_ptr<net::FileNetLogObserver> logger_;
@@ -232,7 +235,11 @@ MCSProbe::MCSProbe(const base::CommandLine& command_line)
       android_id_(0),
       secret_(0),
       server_port_(0),
+      network_connection_tracker_(
+          network::TestNetworkConnectionTracker::CreateInstance()),
       file_thread_("FileThread") {
+  network_connection_tracker_->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_ETHERNET);
   if (command_line.HasSwitch(kRMQFileName)) {
     gcm_store_path_ = command_line.GetSwitchValuePath(kRMQFileName);
   }
@@ -272,7 +279,7 @@ void MCSProbe::Start() {
       endpoints, kDefaultBackoffPolicy,
       base::BindRepeating(&MCSProbe::RequestProxyResolvingSocketFactory,
                           base::Unretained(this)),
-      &recorder_);
+      &recorder_, network_connection_tracker_.get());
   gcm_store_ = std::make_unique<GCMStoreImpl>(
       gcm_store_path_, file_thread_.task_runner(),
       std::make_unique<FakeEncryptor>());

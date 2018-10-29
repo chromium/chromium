@@ -58,10 +58,10 @@ ServiceWorkerRegistrationInfo::ServiceWorkerRegistrationInfo()
       navigation_preload_header_length(0) {}
 
 ServiceWorkerRegistrationInfo::ServiceWorkerRegistrationInfo(
-    const GURL& pattern,
+    const GURL& scope,
     int64_t registration_id,
     DeleteFlag delete_flag)
-    : pattern(pattern),
+    : scope(scope),
       registration_id(registration_id),
       delete_flag(delete_flag),
       stored_version_size_bytes(0),
@@ -69,7 +69,7 @@ ServiceWorkerRegistrationInfo::ServiceWorkerRegistrationInfo(
       navigation_preload_header_length(0) {}
 
 ServiceWorkerRegistrationInfo::ServiceWorkerRegistrationInfo(
-    const GURL& pattern,
+    const GURL& scope,
     blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
     int64_t registration_id,
     DeleteFlag delete_flag,
@@ -79,7 +79,7 @@ ServiceWorkerRegistrationInfo::ServiceWorkerRegistrationInfo(
     int64_t stored_version_size_bytes,
     bool navigation_preload_enabled,
     size_t navigation_preload_header_length)
-    : pattern(pattern),
+    : scope(scope),
       update_via_cache(update_via_cache),
       registration_id(registration_id),
       delete_flag(delete_flag),

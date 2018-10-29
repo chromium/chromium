@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/infobars/infobar_container_ios.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 #import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/web/web_state/ui/crw_swipe_recognizer_provider.h"

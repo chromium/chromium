@@ -188,7 +188,7 @@ TEST_F(PreflightResultTest, EnsureHeaders) {
     net::HttpRequestHeaders headers;
     headers.AddHeadersFromString(test.request_headers);
     EXPECT_EQ(test.expected_result,
-              result->EnsureAllowedCrossOriginHeaders(headers));
+              result->EnsureAllowedCrossOriginHeaders(headers, false));
   }
 }
 
@@ -201,9 +201,10 @@ TEST_F(PreflightResultTest, EnsureRequest) {
     net::HttpRequestHeaders headers;
     if (!test.request_headers.empty())
       headers.AddHeadersFromString(test.request_headers);
-    EXPECT_EQ(test.expected_result == base::nullopt,
-              result->EnsureAllowedRequest(test.request_credentials_mode,
-                                           test.request_method, headers));
+    EXPECT_EQ(
+        test.expected_result == base::nullopt,
+        result->EnsureAllowedRequest(test.request_credentials_mode,
+                                     test.request_method, headers, false));
   }
 
   for (const auto& test : header_cases) {
@@ -214,9 +215,10 @@ TEST_F(PreflightResultTest, EnsureRequest) {
     net::HttpRequestHeaders headers;
     if (!test.request_headers.empty())
       headers.AddHeadersFromString(test.request_headers);
-    EXPECT_EQ(test.expected_result == base::nullopt,
-              result->EnsureAllowedRequest(test.request_credentials_mode,
-                                           test.request_method, headers));
+    EXPECT_EQ(
+        test.expected_result == base::nullopt,
+        result->EnsureAllowedRequest(test.request_credentials_mode,
+                                     test.request_method, headers, false));
   }
 
   struct {
@@ -245,7 +247,7 @@ TEST_F(PreflightResultTest, EnsureRequest) {
     net::HttpRequestHeaders headers;
     EXPECT_EQ(test.expected_result,
               result->EnsureAllowedRequest(test.request_credentials_mode, "GET",
-                                           headers));
+                                           headers, false));
   }
 }
 

@@ -7,7 +7,9 @@
 #include <windows.h>
 
 #include <iterator>
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -58,12 +60,17 @@ scoped_refptr<sandbox::TargetPolicy> GetSandboxPolicy(
   sandbox_result = policy->SetJobLevel(sandbox::JOB_LOCKDOWN, 0);
   CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
 
+#ifdef NDEBUG
   // Chromium ignores failures on this function but logs a warning. Do the same
   // here.
   // https://chromium.googlesource.com/chromium/src/+/b6a4ff86c730756a73d63cc882ef818fb7818a53/content/common/sandbox_win.cc#420
+  // TODO(crbug.com/893740): SetAlternateDesktop can cause DCHECK's in unit
+  // tests if called more than once. Until we get to the bottom of why, it's
+  // only enabled in release builds.
   sandbox::ResultCode result = policy->SetAlternateDesktop(true);
   LOG_IF(WARNING, result != sandbox::SBOX_ALL_OK)
       << "Failed to apply desktop security";
+#endif
 
   sandbox_result =
       policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
@@ -114,7 +121,13 @@ scoped_refptr<sandbox::TargetPolicy> GetSandboxPolicy(
     LOG_IF(ERROR, sandbox_result != sandbox::SBOX_ALL_OK)
         << "Failed to give the target process access to the product directory";
   }
-#endif
+
+  // Also let it write to stdout and stderr. (If they point to the Windows
+  // console, these calls will silently fail. But this will let output from the
+  // child be captured on the bots or in the msys terminal.)
+  policy->SetStdoutHandle(::GetStdHandle(STD_OUTPUT_HANDLE));
+  policy->SetStderrHandle(::GetStdHandle(STD_ERROR_HANDLE));
+#endif  // CHROME_CLEANER_OFFICIAL_BUILD
 
   policy->SetLockdownDefaultDacl();
 
@@ -386,6 +399,25 @@ ResultCode RunSandboxTarget(const base::CommandLine& command_line,
   NotifyInitializationDone();
 
   return hooks->TargetDroppedPrivileges(command_line);
+}
+
+ResultCode GetResultCodeForSandboxConnectionError(SandboxType sandbox_type) {
+  ResultCode result_code = RESULT_CODE_INVALID;
+  switch (sandbox_type) {
+    case SandboxType::kEset:
+      result_code = RESULT_CODE_ESET_SANDBOX_DISCONNECTED_TOO_SOON;
+      break;
+    case SandboxType::kJsonParser:
+      result_code = RESULT_CODE_JSON_PARSER_SANDBOX_DISCONNECTED_TOO_SOON;
+      break;
+    case SandboxType::kZipArchiver:
+      result_code = RESULT_CODE_ZIP_ARCHIVER_SANDBOX_DISCONNECTED_TOO_SOON;
+      break;
+    default:
+      NOTREACHED() << "No result code for unknown sandbox type "
+                   << static_cast<int>(sandbox_type);
+  }
+  return result_code;
 }
 
 }  // namespace chrome_cleaner

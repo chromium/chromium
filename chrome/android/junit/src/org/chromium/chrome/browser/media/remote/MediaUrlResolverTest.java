@@ -18,10 +18,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.CommandLine;
+import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.asynctask.CustomShadowAsyncTask;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

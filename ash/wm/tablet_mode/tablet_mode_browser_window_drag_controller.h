@@ -34,6 +34,7 @@ class TabletModeBrowserWindowDragController : public WindowResizer {
   void Drag(const gfx::Point& location_in_parent, int event_flags) override;
   void CompleteDrag() override;
   void RevertDrag() override;
+  void FlingOrSwipe(ui::GestureEvent* event) override;
 
   TabletModeWindowDragDelegate* drag_delegate_for_testing() {
     return drag_delegate_.get();

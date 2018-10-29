@@ -9,6 +9,7 @@
 #include "base/stl_util.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/gfx/geometry/safe_integer_conversions.h"
 #include "ui/gfx/transform.h"
@@ -32,27 +33,12 @@ constexpr ui::LayerAnimationElement::AnimatableProperties
 // RenderWidgetHostViewAura. https://crbug.com/827268
 constexpr int kMaxRecomputeOcclusion = 3;
 
-WindowOcclusionTracker* g_tracker = nullptr;
-
-int g_num_pause_occlusion_tracking = 0;
-
 bool WindowOrParentHasShape(Window* window) {
   if (window->layer()->alpha_shape())
     return true;
   if (window->parent())
     return WindowOrParentHasShape(window->parent());
   return false;
-}
-
-// Returns true if |window| opaquely fills its bounds. |window| must be visible.
-bool VisibleWindowIsOpaque(Window* window) {
-  DCHECK(window->IsVisible());
-  DCHECK(window->layer());
-  return !window->transparent() &&
-         window->layer()->type() != ui::LAYER_NOT_DRAWN &&
-         window->layer()->GetCombinedOpacity() == 1.0f &&
-         // For simplicity, a shaped window is not considered opaque.
-         !WindowOrParentHasShape(window);
 }
 
 // Returns the transform of |window| relative to its root.
@@ -112,46 +98,33 @@ bool OcclusionStatesMatch(
 
 }  // namespace
 
-WindowOcclusionTracker::ScopedPauseOcclusionTracking::
-    ScopedPauseOcclusionTracking() {
-  ++g_num_pause_occlusion_tracking;
+WindowOcclusionTracker::ScopedPause::ScopedPause(Env* env) : env_(env) {
+  env_->PauseWindowOcclusionTracking();
 }
 
-WindowOcclusionTracker::ScopedPauseOcclusionTracking::
-    ~ScopedPauseOcclusionTracking() {
-  --g_num_pause_occlusion_tracking;
-  DCHECK_GE(g_num_pause_occlusion_tracking, 0);
-  if (g_tracker)
-    g_tracker->MaybeComputeOcclusion();
+WindowOcclusionTracker::ScopedPause::~ScopedPause() {
+  env_->UnpauseWindowOcclusionTracking();
 }
 
 void WindowOcclusionTracker::Track(Window* window) {
   DCHECK(window);
   DCHECK(window != window->GetRootWindow());
 
-  if (!g_tracker)
-    g_tracker = new WindowOcclusionTracker();
-
-  auto insert_result = g_tracker->tracked_windows_.insert(
-      {window, Window::OcclusionState::UNKNOWN});
+  auto insert_result =
+      tracked_windows_.insert({window, Window::OcclusionState::UNKNOWN});
   DCHECK(insert_result.second);
-  if (!window->HasObserver(g_tracker))
-    window->AddObserver(g_tracker);
+  if (!window_observer_.IsObserving(window))
+    window_observer_.Add(window);
   if (window->GetRootWindow())
-    g_tracker->TrackedWindowAddedToRoot(window);
+    TrackedWindowAddedToRoot(window);
 }
 
 WindowOcclusionTracker::WindowOcclusionTracker() = default;
 
 WindowOcclusionTracker::~WindowOcclusionTracker() = default;
 
-WindowOcclusionTracker* WindowOcclusionTracker::GetInstance() {
-  DCHECK(g_tracker);
-  return g_tracker;
-}
-
 void WindowOcclusionTracker::MaybeComputeOcclusion() {
-  if (g_num_pause_occlusion_tracking ||
+  if (num_pause_occlusion_tracking_ ||
       num_times_occlusion_recomputed_in_current_step_ != 0) {
     return;
   }
@@ -275,6 +248,25 @@ bool WindowOcclusionTracker::RecomputeOcclusionImpl(
   if (VisibleWindowIsOpaque(window))
     occluded_region->op(window_bounds, SkRegion::kUnion_Op);
   return true;
+}
+
+bool WindowOcclusionTracker::VisibleWindowIsOpaque(Window* window) const {
+  DCHECK(window->IsVisible());
+  DCHECK(window->layer());
+  return !window->transparent() && WindowHasContent(window) &&
+         window->layer()->GetCombinedOpacity() == 1.0f &&
+         // For simplicity, a shaped window is not considered opaque.
+         !WindowOrParentHasShape(window);
+}
+
+bool WindowOcclusionTracker::WindowHasContent(Window* window) const {
+  if (window->layer()->type() != ui::LAYER_NOT_DRAWN)
+    return true;
+
+  if (window_has_content_callback_)
+    return window_has_content_callback_.Run(window);
+
+  return false;
 }
 
 void WindowOcclusionTracker::CleanupAnimatedWindows() {
@@ -408,7 +400,7 @@ bool WindowOcclusionTracker::WindowOrDescendantIsOpaque(
       WindowIsAnimated(window)) {
     return false;
   }
-  if (!window->transparent() && window->layer()->type() != ui::LAYER_NOT_DRAWN)
+  if (!window->transparent() && WindowHasContent(window))
     return true;
   for (Window* child_window : window->children()) {
     if (WindowOrDescendantIsOpaque(child_window, true))
@@ -459,9 +451,10 @@ void WindowOcclusionTracker::TrackedWindowRemovedFromRoot(Window* window) {
 void WindowOcclusionTracker::RemoveObserverFromWindowAndDescendants(
     Window* window) {
   if (WindowIsTracked(window)) {
-    DCHECK(window->HasObserver(this));
+    DCHECK(window_observer_.IsObserving(window));
   } else {
-    window->RemoveObserver(this);
+    if (window_observer_.IsObserving(window))
+      window_observer_.Remove(window);
     window->layer()->GetAnimator()->RemoveObserver(this);
     animated_windows_.erase(window);
   }
@@ -470,12 +463,24 @@ void WindowOcclusionTracker::RemoveObserverFromWindowAndDescendants(
 }
 
 void WindowOcclusionTracker::AddObserverToWindowAndDescendants(Window* window) {
-  if (WindowIsTracked(window))
-    DCHECK(window->HasObserver(this));
-  else
-    window->AddObserver(this);
+  if (WindowIsTracked(window)) {
+    DCHECK(window_observer_.IsObserving(window));
+  } else {
+    DCHECK(!window_observer_.IsObserving(window));
+    window_observer_.Add(window);
+  }
   for (Window* child_window : window->children())
     AddObserverToWindowAndDescendants(child_window);
+}
+
+void WindowOcclusionTracker::Pause() {
+  ++num_pause_occlusion_tracking_;
+}
+
+void WindowOcclusionTracker::Unpause() {
+  --num_pause_occlusion_tracking_;
+  DCHECK_GE(num_pause_occlusion_tracking_, 0);
+  MaybeComputeOcclusion();
 }
 
 void WindowOcclusionTracker::OnLayerAnimationEnded(
@@ -498,7 +503,7 @@ void WindowOcclusionTracker::OnWindowHierarchyChanged(
   Window* const window = params.target;
   Window* const root_window = window->GetRootWindow();
   if (root_window && base::ContainsKey(root_windows_, root_window) &&
-      !window->HasObserver(this)) {
+      !window_observer_.IsObserving(window)) {
     AddObserverToWindowAndDescendants(window);
   }
 }
@@ -582,6 +587,7 @@ void WindowOcclusionTracker::OnWindowStackingChanged(Window* window) {
 void WindowOcclusionTracker::OnWindowDestroyed(Window* window) {
   DCHECK(!window->GetRootWindow() || (window == window->GetRootWindow()));
   tracked_windows_.erase(window);
+  window_observer_.Remove(window);
   // Animations should be completed or aborted before a window is destroyed.
   DCHECK(!window->layer()->GetAnimator()->IsAnimatingOnePropertyOf(
       kSkipWindowWhenPropertiesAnimated));

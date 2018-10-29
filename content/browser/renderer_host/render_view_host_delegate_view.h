@@ -80,8 +80,8 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
   // Returns the height of the bottom controls in DIP.
   virtual int GetBottomControlsHeight() const;
 
-  // Returns true if the browser controls resize Blink's view size.
-  virtual bool DoBrowserControlsShrinkBlinkSize() const;
+  // Returns true if the browser controls resize the renderer's view size.
+  virtual bool DoBrowserControlsShrinkRendererSize() const;
 
   // Do post-event tasks for gesture events.
   virtual void GestureEventAck(const blink::WebGestureEvent& event,

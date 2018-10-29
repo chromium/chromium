@@ -20,14 +20,13 @@ namespace media {
 
 FilterGroup::FilterGroup(int num_channels,
                          GroupType type,
-                         bool mix_to_mono,
                          const std::string& name,
                          std::unique_ptr<PostProcessingPipeline> pipeline,
-                         const std::unordered_set<std::string>& device_ids,
+                         const base::flat_set<std::string>& device_ids,
                          const std::vector<FilterGroup*>& mixed_inputs)
     : num_channels_(num_channels),
       type_(type),
-      mix_to_mono_(mix_to_mono),
+      mix_to_mono_(false),
       playout_channel_(kChannelAll),
       name_(name),
       device_ids_(device_ids),
@@ -40,10 +39,6 @@ FilterGroup::FilterGroup(int num_channels,
       post_processing_pipeline_(std::move(pipeline)) {
   for (auto* const m : mixed_inputs) {
     DCHECK_EQ(m->GetOutputChannelCount(), num_channels);
-  }
-  // Don't need mono mixer if input is single channel.
-  if (num_channels == 1) {
-    mix_to_mono_ = false;
   }
 }
 
@@ -82,6 +77,7 @@ float FilterGroup::MixAndFilter(
   AudioContentType content_type = static_cast<AudioContentType>(-1);
 
   rendering_delay.delay_microseconds += GetRenderingDelayMicroseconds();
+  rendering_delay_to_output_ = rendering_delay;
 
   // Recursively mix inputs.
   for (auto* filter_group : mixed_inputs_) {
@@ -198,8 +194,16 @@ float* FilterGroup::GetOutputBuffer() {
 }
 
 int64_t FilterGroup::GetRenderingDelayMicroseconds() {
+  if (output_samples_per_second_ == 0) {
+    return 0;
+  }
   return delay_frames_ * base::Time::kMicrosecondsPerSecond /
          output_samples_per_second_;
+}
+
+MediaPipelineBackend::AudioDecoder::RenderingDelay
+FilterGroup::GetRenderingDelayToOutput() {
+  return rendering_delay_to_output_;
 }
 
 int FilterGroup::GetOutputChannelCount() {

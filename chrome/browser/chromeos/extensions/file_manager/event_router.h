@@ -180,7 +180,7 @@ class EventRouter : public KeyedService,
   // Sends directory change event, after converting the file definition to entry
   // definition.
   void DispatchDirectoryChangeEventWithEntryDefinition(
-      const linked_ptr<drive::FileChange> list,
+      std::unique_ptr<drive::FileChange> list,
       const std::string* extension_id,
       bool watcher_error,
       const EntryDefinition& entry_definition);

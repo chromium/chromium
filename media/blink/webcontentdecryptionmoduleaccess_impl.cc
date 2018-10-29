@@ -75,8 +75,9 @@ void WebContentDecryptionModuleAccessImpl::CreateContentDecryptionModule(
   std::unique_ptr<blink::WebContentDecryptionModuleResult> result_copy(
       new blink::WebContentDecryptionModuleResult(result));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::Bind(&CreateCdm, client_, key_system_, security_origin_,
-                            cdm_config_, base::Passed(&result_copy)));
+      FROM_HERE,
+      base::BindOnce(&CreateCdm, client_, key_system_, security_origin_,
+                     cdm_config_, base::Passed(&result_copy)));
 }
 
 }  // namespace media

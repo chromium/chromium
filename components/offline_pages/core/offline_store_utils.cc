@@ -16,11 +16,12 @@ namespace offline_pages {
 namespace store_utils {
 
 int64_t ToDatabaseTime(base::Time time) {
-  return time.since_origin().InMicroseconds();
+  return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
 base::Time FromDatabaseTime(int64_t serialized_time) {
-  return base::Time() + base::TimeDelta::FromMicroseconds(serialized_time);
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMicroseconds(serialized_time));
 }
 
 std::string ToDatabaseFilePath(const base::FilePath& file_path) {

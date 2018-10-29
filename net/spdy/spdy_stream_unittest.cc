@@ -357,7 +357,7 @@ TEST_F(SpdyStreamTest, PushedStream) {
 
   SpdyStream* push_stream;
   EXPECT_THAT(session->GetPushedStream(pushed_url, pushed_stream_id, IDLE,
-                                       &push_stream, NetLogWithSource()),
+                                       &push_stream),
               IsOk());
   ASSERT_TRUE(push_stream);
   EXPECT_EQ(kPushUrl, push_stream->url().spec());

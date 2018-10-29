@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -35,7 +36,9 @@ class BrowserCompositorMacClient {
   virtual void DestroyCompositorForShutdown() = 0;
   virtual bool SynchronizeVisualProperties(
       const base::Optional<viz::LocalSurfaceId>&
-          child_allocated_local_surface_id) = 0;
+          child_allocated_local_surface_id,
+      const base::Optional<base::TimeTicks>&
+          child_local_surface_id_allocation_time) = 0;
 };
 
 // This class owns a DelegatedFrameHost, and will dynamically attach and
@@ -92,7 +95,8 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   void SynchronizeVisualProperties(
       float new_device_scale_factor,
       const gfx::Size& new_size_in_pixels,
-      const viz::LocalSurfaceId& child_allocated_local_surface_id);
+      const viz::LocalSurfaceId& child_allocated_local_surface_id,
+      base::TimeTicks child_local_surface_id_allocation_time);
 
   // This is used to ensure that the ui::Compositor be attached to the
   // DelegatedFrameHost while the RWHImpl is visible.
@@ -121,9 +125,11 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   viz::ScopedSurfaceIdAllocator GetScopedRendererSurfaceIdAllocator(
       base::OnceCallback<void()> allocation_task);
   const viz::LocalSurfaceId& GetRendererLocalSurfaceId();
+  base::TimeTicks GetRendererLocalSurfaceIdAllocationTime() const;
   const viz::LocalSurfaceId& AllocateNewRendererLocalSurfaceId();
   bool UpdateRendererLocalSurfaceIdFromChild(
-      const viz::LocalSurfaceId& child_allocated_local_surface_id);
+      const viz::LocalSurfaceId& child_allocated_local_surface_id,
+      base::TimeTicks child_local_surface_id_allocation_time);
   void TransformPointToRootSurface(gfx::PointF* point);
 
   // Indicate that the recyclable compositor should be destroyed, and no future
@@ -134,9 +140,10 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   ui::Layer* DelegatedFrameHostGetLayer() const override;
   bool DelegatedFrameHostIsVisible() const override;
   SkColor DelegatedFrameHostGetGutterColor() const override;
-  void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
   void OnBeginFrame(base::TimeTicks frame_time) override;
   void OnFrameTokenChanged(uint32_t frame_token) override;
+  float GetDeviceScaleFactor() const override;
+  void WasEvicted() override;
 
   base::WeakPtr<BrowserCompositorMac> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -157,28 +164,14 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   cc::DeadlinePolicy GetDeadlinePolicy(bool is_resize) const;
 
   // The state of |delegated_frame_host_| and |recyclable_compositor_| to
-  // manage being visible, occluded, hidden, or drawn via a ui::Layer. Note that
-  // TransitionToState will transition through each intermediate state according
-  // to enum values (e.g, going from HasAttachedCompositor to HasNoCompositor
-  // will temporarily go through HasDetachedCompositor).
+  // manage being visible, hidden, or drawn via a ui::Layer.
   enum State {
     // Effects:
     // - |recyclable_compositor_| exists and is attached to
     //   |delegated_frame_host_|.
     // Happens when:
     // - |render_widet_host_| is in the visible state.
-    HasAttachedCompositor = 0,
-    // Effects:
-    // - |recyclable_compositor_| exists, but |delegated_frame_host_| is
-    //   hidden and detached from it.
-    // Happens when:
-    // - The |render_widget_host_| is hidden, but |cocoa_view_| is still in the
-    //   NSWindow hierarchy (e.g, when the window is occluded or offscreen).
-    // - Note: In this state, |recyclable_compositor_| and its CALayers are kept
-    //   around so that we will have content to show when we are un-occluded. If
-    //   we had a way to keep the CALayers attached to the NSView while
-    //   detaching the ui::Compositor, then there would be no need for this
-    HasDetachedCompositor = 1,
+    HasAttachedCompositor,
     // Effects:
     // - |recyclable_compositor_| has been recycled and |delegated_frame_host_|
     //   is hidden and detached from it.
@@ -186,13 +179,13 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
     // - The |render_widget_host_| hidden or gone, and |cocoa_view_| is not
     //   attached to an NSWindow.
     // - This happens for backgrounded tabs.
-    HasNoCompositor = 2,
+    HasNoCompositor,
     // Effects:
     // - |recyclable_compositor_| does not exist. |delegated_frame_host_| is
     //   attached to |parent_ui_layer_|'s compositor.
     // Happens when:
     // - |parent_ui_layer_| is non-nullptr.
-    UseParentLayerCompositor = 3,
+    UseParentLayerCompositor,
   };
   State state_ = HasNoCompositor;
   void UpdateState();

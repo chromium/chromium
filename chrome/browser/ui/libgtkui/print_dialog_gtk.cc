@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/libgtkui/gtk_util.h"
 #include "chrome/browser/ui/libgtkui/printing_gtk_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "printing/metafile.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
@@ -383,9 +384,10 @@ void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
   }
 
   // No errors, continue printing.
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&PrintDialogGtk::SendDocumentToPrinter,
-                                         this, document_name));
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(&PrintDialogGtk::SendDocumentToPrinter, this,
+                     document_name));
 }
 
 void PrintDialogGtk::AddRefToDialog() {

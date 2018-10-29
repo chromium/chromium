@@ -8,8 +8,10 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/local_storage_usage_info.h"
 #include "content/public/browser/storage_partition.h"
@@ -42,8 +44,8 @@ void GetUsageInfoCallback(
         info.origin, info.data_size, info.last_modified));
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, result));
 }
 
 }  // namespace
@@ -120,8 +122,8 @@ void CannedBrowsingDataLocalStorageHelper::StartFetching(
   for (const GURL& url : pending_local_storage_info_)
     result.push_back(LocalStorageInfo(url, 0, base::Time()));
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, result));
 }
 
 void CannedBrowsingDataLocalStorageHelper::DeleteOrigin(

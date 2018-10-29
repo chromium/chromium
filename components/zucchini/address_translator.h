@@ -59,7 +59,7 @@ namespace zucchini {
 using rva_t = uint32_t;
 // Divide by 2 to match |kOffsetBound|.
 constexpr rva_t kRvaBound = static_cast<rva_t>(-1) / 2;
-constexpr rva_t kInvalidRva = static_cast<rva_t>(-1);
+constexpr rva_t kInvalidRva = static_cast<rva_t>(-2);
 
 // A utility to translate between offsets and RVAs in an image.
 class AddressTranslator {
@@ -133,6 +133,7 @@ class AddressTranslator {
     explicit RvaToOffsetCache(const AddressTranslator& translator);
 
     bool IsValid(rva_t rva) const;
+
     offset_t Convert(rva_t rva) const;
 
    private:

@@ -66,12 +66,12 @@ void BrowsingDataCounterBridge::Destroy(JNIEnv* env,
 void BrowsingDataCounterBridge::onCounterFinished(
     std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result) {
   JNIEnv* env = base::android::AttachCurrentThread();
+  Profile* profile =
+      ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
   ScopedJavaLocalRef<jstring> result_string =
       base::android::ConvertUTF16ToJavaString(
-          env,
-          GetChromeCounterTextFromResult(
-              result.get(),
-              ProfileManager::GetActiveUserProfile()->GetOriginalProfile()));
+          env, browsing_data_counter_utils::GetChromeCounterTextFromResult(
+                   result.get(), profile));
   Java_BrowsingDataCounterBridge_onBrowsingDataCounterFinished(env, jobject_,
                                                                result_string);
 }

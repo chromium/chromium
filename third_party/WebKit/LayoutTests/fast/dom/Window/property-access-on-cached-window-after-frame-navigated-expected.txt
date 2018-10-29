@@ -3,7 +3,6 @@ Tests property access on a cached DOMWindow after the associated frame is naviga
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS oldChildWindow.applicationCache.oncached is newChildWindow.applicationCache.oncached
 PASS oldChildWindow.applicationCache.onchecking is newChildWindow.applicationCache.onchecking
 PASS oldChildWindow.applicationCache.ondownloading is newChildWindow.applicationCache.ondownloading
@@ -56,6 +55,8 @@ PASS oldChildWindow.navigator.presentation.defaultRequest is newChildWindow.navi
 PASS oldChildWindow.navigator.presentation.receiver is newChildWindow.navigator.presentation.receiver
 PASS oldChildWindow.navigator.product is newChildWindow.navigator.product
 PASS oldChildWindow.navigator.productSub is newChildWindow.navigator.productSub
+PASS oldChildWindow.navigator.serial.onconnect is newChildWindow.navigator.serial.onconnect
+PASS oldChildWindow.navigator.serial.ondisconnect is newChildWindow.navigator.serial.ondisconnect
 PASS oldChildWindow.navigator.serviceWorker.controller is newChildWindow.navigator.serviceWorker.controller
 PASS oldChildWindow.navigator.serviceWorker.oncontrollerchange is newChildWindow.navigator.serviceWorker.oncontrollerchange
 PASS oldChildWindow.navigator.serviceWorker.onmessage is newChildWindow.navigator.serviceWorker.onmessage
@@ -154,6 +155,8 @@ PASS oldChildWindow.onsearch is newChildWindow.onsearch
 PASS oldChildWindow.onseeked is newChildWindow.onseeked
 PASS oldChildWindow.onseeking is newChildWindow.onseeking
 PASS oldChildWindow.onselect is newChildWindow.onselect
+PASS oldChildWindow.onselectionchange is newChildWindow.onselectionchange
+PASS oldChildWindow.onselectstart is newChildWindow.onselectstart
 PASS oldChildWindow.onstalled is newChildWindow.onstalled
 PASS oldChildWindow.onstorage is newChildWindow.onstorage
 PASS oldChildWindow.onsubmit is newChildWindow.onsubmit
@@ -246,4 +249,5 @@ PASS oldChildWindow.visualViewport.width is newChildWindow.visualViewport.width
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
  

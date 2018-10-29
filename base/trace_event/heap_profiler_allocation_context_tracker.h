@@ -108,6 +108,11 @@ class BASE_EXPORT AllocationContextTracker {
   void PushCurrentTaskContext(const char* context);
   void PopCurrentTaskContext(const char* context);
 
+  // Returns most recent task context added by ScopedTaskExecutionTracker.
+  const char* TaskContext() const {
+    return task_contexts_.empty() ? nullptr : task_contexts_.back();
+  }
+
   // Fills a snapshot of the current thread-local context. Doesn't fill and
   // returns false if allocations are being ignored.
   bool GetContextSnapshot(AllocationContext* snapshot);

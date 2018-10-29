@@ -11,7 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/benchmarks/benchmark_instrumentation.h"
 #include "cc/input/browser_controls_offset_manager.h"
@@ -69,6 +69,7 @@ ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
 
   host_impl_ = layer_tree_host->CreateLayerTreeHostImpl(this);
   const LayerTreeSettings& settings = layer_tree_host->GetSettings();
+  send_compositor_frame_ack_ = settings.send_compositor_frame_ack;
 
   SchedulerSettings scheduler_settings(settings.ToSchedulerSettings());
 
@@ -291,9 +292,11 @@ void ProxyImpl::DidReceiveCompositorFrameAckOnImplThread() {
                "ProxyImpl::DidReceiveCompositorFrameAckOnImplThread");
   DCHECK(IsImplThread());
   scheduler_->DidReceiveCompositorFrameAck();
-  MainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyMain::DidReceiveCompositorFrameAck,
-                                proxy_main_frame_sink_bound_weak_ptr_));
+  if (send_compositor_frame_ack_) {
+    MainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&ProxyMain::DidReceiveCompositorFrameAck,
+                                  proxy_main_frame_sink_bound_weak_ptr_));
+  }
 }
 
 void ProxyImpl::OnCanDrawStateChanged(bool can_draw) {

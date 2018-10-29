@@ -33,53 +33,13 @@
 
 namespace blink {
 
-enum class WebAXDefaultActionVerb {
-  kNone = 0,
-  kActivate,
-  kCheck,
-  kClick,
-
-  // A click will be performed on one of the object's ancestors.
-  // This happens when the object itself is not clickable, but one of its
-  // ancestors has click handlers attached which are able to capture the click
-  // as it bubbles up.
-  kClickAncestor,
-
-  kJump,
-  kOpen,
-  kPress,
-  kSelect,
-  kUncheck
-};
-
-enum WebAXTextDirection {
-  kWebAXTextDirectionLR,
-  kWebAXTextDirectionRL,
-  kWebAXTextDirectionTB,
-  kWebAXTextDirectionBT
-};
-
-enum WebAXTextPosition {
-  kWebAXTextPositionNone = 0,
-  kWebAXTextPositionSubscript,
-  kWebAXTextPositionSuperscript
-};
-
-// Sort direction, only used for roles = ax::mojom::RoleRowHeader and
-// ax::mojom::RoleColumnHeader.
-enum WebAXSortDirection {
-  kWebAXSortDirectionUndefined = 0,
-  kWebAXSortDirectionNone,
-  kWebAXSortDirectionAscending,
-  kWebAXSortDirectionDescending,
-  kWebAXSortDirectionOther
-};
-
-enum WebAXCheckedState {
-  kWebAXCheckedUndefined = 0,
-  kWebAXCheckedFalse,
-  kWebAXCheckedTrue,
-  kWebAXCheckedMixed
+// Used for exposing text attributes.
+enum WebAXTextStyle {
+  kWebAXTextStyleNone = 0,
+  kWebAXTextStyleBold = 1 << 0,
+  kWebAXTextStyleItalic = 1 << 1,
+  kWebAXTextStyleUnderline = 1 << 2,
+  kWebAXTextStyleLineThrough = 1 << 3
 };
 
 // Expanded State.
@@ -107,92 +67,11 @@ enum WebAXOrientation {
   kWebAXOrientationHorizontal,
 };
 
-enum WebAXAriaCurrentState {
-  kWebAXAriaCurrentStateUndefined = 0,
-  kWebAXAriaCurrentStateFalse,
-  kWebAXAriaCurrentStateTrue,
-  kWebAXAriaCurrentStatePage,
-  kWebAXAriaCurrentStateStep,
-  kWebAXAriaCurrentStateLocation,
-  kWebAXAriaCurrentStateDate,
-  kWebAXAriaCurrentStateTime
-};
-
-enum WebAXHasPopup {
-  kWebAXHasPopupFalse = 0,
-  kWebAXHasPopupTrue,
-  kWebAXHasPopupMenu,
-  kWebAXHasPopupListbox,
-  kWebAXHasPopupTree,
-  kWebAXHasPopupGrid,
-  kWebAXHasPopupDialog
-};
-
-// Only used by HTML form controls and any other element that has
-// an aria-invalid attribute specified.
-enum WebAXInvalidState {
-  kWebAXInvalidStateUndefined = 0,
-  kWebAXInvalidStateFalse,
-  kWebAXInvalidStateTrue,
-  kWebAXInvalidStateSpelling,
-  kWebAXInvalidStateGrammar,
-  kWebAXInvalidStateOther
-};
-
 // State of a form control or editors
 enum WebAXRestriction {
   kWebAXRestrictionNone = 0,  // Enabled control or other object not disabled
   kWebAXRestrictionReadOnly,
   kWebAXRestrictionDisabled,
-};
-
-enum WebAXMarkerType {
-  kWebAXMarkerTypeSpelling = 1 << 0,
-  kWebAXMarkerTypeGrammar = 1 << 1,
-  kWebAXMarkerTypeTextMatch = 1 << 2,
-  // Skip DocumentMarker::MarkerType::Composition
-  kWebAXMarkerTypeActiveSuggestion = 1 << 4,
-  kWebAXMarkerTypeSuggestion = 1 << 5,
-};
-
-// Used for exposing text attributes.
-enum WebAXTextStyle {
-  kWebAXTextStyleNone = 0,
-  kWebAXTextStyleBold = 1 << 0,
-  kWebAXTextStyleItalic = 1 << 1,
-  kWebAXTextStyleUnderline = 1 << 2,
-  kWebAXTextStyleLineThrough = 1 << 3
-};
-
-// The source of the accessible name of an element. This is needed
-// because on some platforms this determines how the accessible name
-// is exposed.
-enum WebAXNameFrom {
-  kWebAXNameFromUninitialized = -1,
-  kWebAXNameFromAttribute = 0,
-  kWebAXNameFromAttributeExplicitlyEmpty,
-  kWebAXNameFromCaption,
-  kWebAXNameFromContents,
-  kWebAXNameFromPlaceholder,
-  kWebAXNameFromRelatedElement,
-  kWebAXNameFromValue,
-  kWebAXNameFromTitle,
-};
-
-// The source of the accessible description of an element. This is needed
-// because on some platforms this determines how the accessible description
-// is exposed.
-enum WebAXDescriptionFrom {
-  kWebAXDescriptionFromUninitialized = -1,
-  kWebAXDescriptionFromAttribute = 0,
-  kWebAXDescriptionFromContents,
-  kWebAXDescriptionFromRelatedElement,
-};
-
-// Text affinity for the start or end of a selection.
-enum WebAXTextAffinity {
-  kWebAXTextAffinityUpstream,
-  kWebAXTextAffinityDownstream
 };
 
 //

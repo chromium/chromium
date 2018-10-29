@@ -48,11 +48,16 @@ class MetricsProvider {
   // further notification after this callback.
   virtual void OnAppEnterBackground();
 
+  // Returns whether there are "independent" metrics that can be retrieved
+  // with a call to ProvideIndependentMetrics().
+  virtual bool HasIndependentMetrics();
+
   // Provides a complete and independent system profile + metrics for uploading.
-  // Any histograms added to the |snapshot_manager| will also be included. A
-  // return of false indicates there are none. Will be called repeatedly until
-  // there is nothing else.
-  virtual bool ProvideIndependentMetrics(
+  // This may or may not be executed on a background thread and the callback
+  // executed when complete. Ownership of the passed objects remains with the
+  // caller and those objects must live until the callback is executed.
+  virtual void ProvideIndependentMetrics(
+      base::OnceCallback<void(bool)> done_callback,
       SystemProfileProto* system_profile_proto,
       base::HistogramSnapshotManager* snapshot_manager);
 

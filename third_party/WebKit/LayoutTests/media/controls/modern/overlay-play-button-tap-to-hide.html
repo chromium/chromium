@@ -3,11 +3,18 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../media-controls.js"></script>
+<script src="../overlay-play-button.js"></script>
 <body>
-<video id=video width=400 controls preload=metadata></video>
 <script>
 async_test((t) => {
-  const video = document.getElementById('video');
+  // This test is only valid when the overlay play button is enabled.
+  enableOverlayPlayButtonForTest(t);
+
+  const video = document.createElement('video');
+  video.width = 400;
+  video.controls = true;
+  video.preload = 'metadata'
+  document.body.appendChild(video);
   const button = mediaControlsOverlayPlayButtonInternal(video);
   const controls = mediaControls(video);
   const overlay = mediaControlsOverlayPlayButton(video);

@@ -42,7 +42,6 @@ class BrightnessMonitorImpl : public BrightnessMonitor,
   // BrightnessMonitor overrides:
   void AddObserver(BrightnessMonitor::Observer* observer) override;
   void RemoveObserver(BrightnessMonitor::Observer* observer) override;
-  Status GetStatus() const override;
 
   // chromeos::PowerManagerClient::Observer overrides:
   void ScreenBrightnessChanged(

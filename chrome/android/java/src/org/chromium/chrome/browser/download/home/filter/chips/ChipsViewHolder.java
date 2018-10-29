@@ -5,13 +5,14 @@ package org.chromium.chrome.browser.download.home.filter.chips;
 
 import android.content.res.ColorStateList;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.chromium.chrome.browser.widget.TintedImageView;
+import org.chromium.base.ApiCompatibilityUtils;
 
 /** The {@link ViewHolder} responsible for reflecting a {@link Chip} to a {@link View}. */
 public class ChipsViewHolder extends ViewHolder {
@@ -19,17 +20,17 @@ public class ChipsViewHolder extends ViewHolder {
     private final int mTextStartPaddingWithNoIconPx;
 
     private final TextView mText;
-    private final TintedImageView mImage;
+    private final AppCompatImageView mImage;
 
     /** Builds a ChipsViewHolder around a specific {@link View}. */
     private ChipsViewHolder(View itemView) {
         super(itemView);
 
         mText = itemView.findViewById(org.chromium.chrome.R.id.text);
-        mImage = (TintedImageView) itemView.findViewById(org.chromium.chrome.R.id.icon);
+        mImage = (AppCompatImageView) itemView.findViewById(org.chromium.chrome.R.id.icon);
 
         ColorStateList textColors = mText.getTextColors();
-        if (textColors != null) mImage.setTint(textColors);
+        if (textColors != null) ApiCompatibilityUtils.setImageTintList(mImage, textColors);
 
         mTextStartPaddingWithIconPx = mText.getResources().getDimensionPixelSize(
                 org.chromium.chrome.R.dimen.chip_icon_padding);

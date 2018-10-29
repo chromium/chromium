@@ -16,5 +16,5 @@
     android:paddingEnd="@dimen/selectable_list_layout_row_padding"
     android:background="@null"
     android:src="@drawable/ic_more_vert_black_24dp"
-    app:chrometint="@color/dark_mode_tint"
+    app:tint="@color/dark_mode_tint"
     tools:ignore="ContentDescription" />

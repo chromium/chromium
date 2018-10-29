@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 #define MEDIA_KEY_SESSION_LOG_LEVEL 3
 
@@ -72,7 +73,7 @@ static bool IsValidSessionId(const String& session_id) {
       (session_id.length() > MaxSessionIdLength))
     return false;
 
-  if (!session_id.ContainsOnlyASCII())
+  if (!session_id.ContainsOnlyASCIIOrEmpty())
     return false;
 
   // Check that the sessionId only contains alphanumeric characters.
@@ -895,7 +896,7 @@ void MediaKeySession::Message(MessageType message_type,
       break;
   }
   init.setMessage(DOMArrayBuffer::Create(static_cast<const void*>(message),
-                                         message_length));
+                                         SafeCast<uint32_t>(message_length)));
 
   MediaKeyMessageEvent* event =
       MediaKeyMessageEvent::Create(EventTypeNames::message, init);

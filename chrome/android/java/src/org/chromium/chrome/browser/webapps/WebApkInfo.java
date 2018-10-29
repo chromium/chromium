@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.util.IntentUtils;
 import org.chromium.content_public.common.ScreenOrientationValues;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
+import org.chromium.webapk.lib.common.WebApkMetaDataUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -64,6 +65,7 @@ public class WebApkInfo extends WebappInfo {
     // A serialized string of the Share Target details (if any) for the WebAPK.
     private String mSerializedShareTarget;
     private Map<String, String> mIconUrlToMurmur2HashMap;
+    private boolean mUseTransparentSplash;
 
     public static WebApkInfo createEmpty() {
         return new WebApkInfo();
@@ -97,7 +99,11 @@ public class WebApkInfo extends WebappInfo {
         boolean forceNavigation = IntentUtils.safeGetBooleanExtra(
                 intent, ShortcutHelper.EXTRA_FORCE_NAVIGATION, true);
 
-        return create(webApkPackageName, url, source, forceNavigation);
+        boolean useTransparentSplash = !IntentUtils.isIntentForNewTaskOrNewDocument(intent)
+                && IntentUtils.safeGetBooleanExtra(
+                           intent, WebApkConstants.EXTRA_USE_TRANSPARENT_SPLASH, false);
+
+        return create(webApkPackageName, url, source, forceNavigation, useTransparentSplash);
     }
 
     private static @WebApkDistributor int getDistributor(Bundle bundle, String packageName) {
@@ -124,10 +130,12 @@ public class WebApkInfo extends WebappInfo {
      * @param url Url that the WebAPK should navigate to when launched.
      * @param source Source that the WebAPK was launched from.
      * @param forceNavigation Whether the WebAPK should navigate to {@link url} if it is already
-     *     running.
+     *                        running.
+     * @param useTransparentSplash Whether the WebApkActivity should be fully transparent while the
+     *                             page is loading.
      */
-    public static WebApkInfo create(
-            String webApkPackageName, String url, int source, boolean forceNavigation) {
+    public static WebApkInfo create(String webApkPackageName, String url, int source,
+            boolean forceNavigation, boolean useTransparentSplash) {
         // Unlike non-WebAPK web apps, WebAPK ids are predictable. A malicious actor may send an
         // intent with a valid start URL and arbitrary other data. Only use the start URL, the
         // package name and the ShortcutSource from the launch intent and extract the remaining data
@@ -163,10 +171,11 @@ public class WebApkInfo extends WebappInfo {
                 IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.DISPLAY_MODE));
         int orientation = orientationFromString(
                 IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.ORIENTATION));
-        long themeColor = getLongFromMetaData(bundle, WebApkMetaDataKeys.THEME_COLOR,
-                ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING);
-        long backgroundColor = getLongFromMetaData(bundle, WebApkMetaDataKeys.BACKGROUND_COLOR,
-                ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING);
+        long themeColor = WebApkMetaDataUtils.getLongFromMetaData(bundle,
+                WebApkMetaDataKeys.THEME_COLOR, ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING);
+        long backgroundColor =
+                WebApkMetaDataUtils.getLongFromMetaData(bundle, WebApkMetaDataKeys.BACKGROUND_COLOR,
+                        ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING);
 
         int shellApkVersion =
                 IntentUtils.safeGetInt(bundle, WebApkMetaDataKeys.SHELL_APK_VERSION, 0);
@@ -192,7 +201,8 @@ public class WebApkInfo extends WebappInfo {
                 new Icon(primaryIcon), new Icon(badgeIcon), new Icon(splashIcon), name, shortName,
                 displayMode, orientation, source, themeColor, backgroundColor, webApkPackageName,
                 shellApkVersion, manifestUrl, manifestStartUrl, distributor,
-                iconUrlToMurmur2HashMap, serializedShareTarget, forceNavigation);
+                iconUrlToMurmur2HashMap, serializedShareTarget, forceNavigation,
+                useTransparentSplash);
     }
 
     /**
@@ -224,6 +234,8 @@ public class WebApkInfo extends WebappInfo {
      *                                the WebAPK.
      * @param forceNavigation         Whether the WebAPK should navigate to {@link url} if the
      *                                WebAPK is already open.
+     * @param useTransparentSplash    Whether the WebApkActivity should be fully transparent while
+     *                                the page is loading.
      */
     public static WebApkInfo create(String id, String url, String scope, Icon primaryIcon,
             Icon badgeIcon, Icon splashIcon, String name, String shortName,
@@ -231,7 +243,7 @@ public class WebApkInfo extends WebappInfo {
             long backgroundColor, String webApkPackageName, int shellApkVersion, String manifestUrl,
             String manifestStartUrl, @WebApkDistributor int distributor,
             Map<String, String> iconUrlToMurmur2HashMap, String serializedShareTarget,
-            boolean forceNavigation) {
+            boolean forceNavigation, boolean useTransparentSplash) {
         if (id == null || url == null || manifestStartUrl == null || webApkPackageName == null) {
             Log.e(TAG,
                     "Incomplete data provided: " + id + ", " + url + ", " + manifestStartUrl + ", "
@@ -249,7 +261,8 @@ public class WebApkInfo extends WebappInfo {
         return new WebApkInfo(id, url, scope, primaryIcon, badgeIcon, splashIcon, name, shortName,
                 displayMode, orientation, source, themeColor, backgroundColor, webApkPackageName,
                 shellApkVersion, manifestUrl, manifestStartUrl, distributor,
-                iconUrlToMurmur2HashMap, serializedShareTarget, forceNavigation);
+                iconUrlToMurmur2HashMap, serializedShareTarget, forceNavigation,
+                useTransparentSplash);
     }
 
     protected WebApkInfo(String id, String url, String scope, Icon primaryIcon, Icon badgeIcon,
@@ -258,7 +271,7 @@ public class WebApkInfo extends WebappInfo {
             String webApkPackageName, int shellApkVersion, String manifestUrl,
             String manifestStartUrl, @WebApkDistributor int distributor,
             Map<String, String> iconUrlToMurmur2HashMap, String serializedShareTarget,
-            boolean forceNavigation) {
+            boolean forceNavigation, boolean useTransparentSplash) {
         super(id, url, scope, primaryIcon, name, shortName, displayMode, orientation, source,
                 themeColor, backgroundColor, null /* splash_screen_url */,
                 false /* isIconGenerated */, forceNavigation);
@@ -271,6 +284,7 @@ public class WebApkInfo extends WebappInfo {
         mDistributor = distributor;
         mIconUrlToMurmur2HashMap = iconUrlToMurmur2HashMap;
         mSerializedShareTarget = serializedShareTarget;
+        mUseTransparentSplash = useTransparentSplash;
     }
 
     protected WebApkInfo() {}
@@ -299,6 +313,11 @@ public class WebApkInfo extends WebappInfo {
     @Override
     public String apkPackageName() {
         return mApkPackageName;
+    }
+
+    @Override
+    public boolean useTransparentSplash() {
+        return mUseTransparentSplash;
     }
 
     public int shellApkVersion() {
@@ -361,31 +380,6 @@ public class WebApkInfo extends WebappInfo {
         } catch (Resources.NotFoundException e) {
             return null;
         }
-    }
-
-    /**
-     * Extracts long value from the WebAPK's meta data.
-     * @param metaData WebAPK meta data to extract the long from.
-     * @param name Name of the <meta-data> tag to extract the value from.
-     * @param defaultValue Value to return if long value could not be extracted.
-     * @return long value.
-     */
-    private static long getLongFromMetaData(Bundle metaData, String name, long defaultValue) {
-        String value = metaData.getString(name);
-
-        // The value should be terminated with 'L' to force the value to be a string. According to
-        // https://developer.android.com/guide/topics/manifest/meta-data-element.html numeric
-        // meta data values can only be retrieved via {@link Bundle#getInt()} and
-        // {@link Bundle#getFloat()}. We cannot use {@link Bundle#getFloat()} due to loss of
-        // precision.
-        if (value == null || !value.endsWith("L")) {
-            return defaultValue;
-        }
-        try {
-            return Long.parseLong(value.substring(0, value.length() - 1));
-        } catch (NumberFormatException e) {
-        }
-        return defaultValue;
     }
 
     /**

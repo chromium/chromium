@@ -202,7 +202,9 @@ config("default_sanitizer_ldflags") {
     }
 
     if (use_sanitizer_coverage) {
-      if (use_libfuzzer) {
+      # TODO(crbug.com/892167): Remove the is_mac check when new instrumentation
+      # works on Mac.
+      if (use_libfuzzer && !is_mac) {
         ldflags += [ "-fsanitize=fuzzer-no-link" ]
       } else {
         ldflags += [ "-fsanitize-coverage=$sanitizer_coverage_flags" ]
@@ -227,28 +229,37 @@ config("default_sanitizer_ldflags") {
         }
       }
     }
-  } else if (is_win && is_asan) {
+  } else if (is_win) {
     # Windows directly calls link.exe instead of the compiler driver when
-    # linking.  Hence, pass the runtime libraries instead of -fsanitize=address.
-    # In the static-library build, libraries are different for executables
-    # and dlls, see link_executable and link_shared_library below.
-    # This here handles only the component build.
-    if (target_cpu == "x64") {
-      # Windows 64-bit.
-      if (is_component_build) {
+    # linking.  Hence, pass the runtime libraries instead of -fsanitize=address
+    # or -fsanitize=fuzzer.
+    if (is_asan && is_component_build) {
+      # In the static-library build, ASan libraries are different for
+      # executables and dlls, see link_executable and link_shared_library below.
+      # This here handles only the component build.
+      if (target_cpu == "x64") {
+        # Windows 64-bit.
         libs = [
           "clang_rt.asan_dynamic-x86_64.lib",
           "clang_rt.asan_dynamic_runtime_thunk-x86_64.lib",
         ]
-      }
-    } else {
-      assert(target_cpu == "x86", "WinASan unsupported architecture")
-      if (is_component_build) {
+      } else {
+        assert(target_cpu == "x86", "WinASan unsupported architecture")
         libs = [
           "clang_rt.asan_dynamic-i386.lib",
           "clang_rt.asan_dynamic_runtime_thunk-i386.lib",
         ]
       }
+    }
+    if (use_libfuzzer) {
+      assert(target_cpu == "x64", "LibFuzzer unsupported architecture")
+      assert(!is_component_build,
+             "LibFuzzer only supports non-component builds on Windows")
+
+      # Incremental linking causes padding that messes up SanitizerCoverage.
+      # Don't do it.
+      ldflags = [ "/INCREMENTAL:NO" ]
+      libs = [ "clang_rt.fuzzer_no_main-x86_64.lib" ]
     }
   }
 }
@@ -379,12 +390,21 @@ config("cfi_icall_generalize_pointers") {
   }
 }
 
+config("cfi_icall_disable") {
+  if (is_clang && is_cfi && use_cfi_icall) {
+    cflags = [ "-fno-sanitize=cfi-icall" ]
+  }
+}
+
 config("coverage_flags") {
   cflags = []
   if (use_sanitizer_coverage) {
     # Used by sandboxing code to allow coverage dump to be written on the disk.
     defines = [ "SANITIZER_COVERAGE" ]
-    if (use_libfuzzer) {
+
+    # TODO(crbug.com/892167): Remove the is_mac check when new instrumentation
+    # works on Mac.
+    if (use_libfuzzer && !is_mac) {
       cflags += [ "-fsanitize=fuzzer-no-link" ]
     } else {
       cflags += [

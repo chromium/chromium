@@ -14,8 +14,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#import "chrome/browser/ui/cocoa/browser_window_controller.h"
-#import "chrome/browser/ui/cocoa/browser_window_views_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -103,15 +101,6 @@ NSString* GetTitleForViewsFullscreenMenuItem(Browser* browser) {
 // Get the text for the "Enter/Exit Fullscreen" menu item.
 // TODO(jackhou): Remove the dependency on BrowserWindowController(Private).
 NSString* GetTitleForFullscreenMenuItem(Browser* browser) {
-  NSWindow* ns_window = browser->window()->GetNativeWindow();
-  BrowserWindowController* controller =
-      BrowserWindowControllerForWindow(ns_window);
-  if (controller) {
-    return l10n_util::GetNSString([controller isInAppKitFullscreen]
-                                      ? IDS_EXIT_FULLSCREEN_MAC
-                                      : IDS_ENTER_FULLSCREEN_MAC);
-  }
-
   return GetTitleForViewsFullscreenMenuItem(browser);
 }
 

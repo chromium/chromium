@@ -11,6 +11,7 @@
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/security_style_explanations.h"
@@ -93,6 +94,12 @@ KeyboardEventProcessingResult WebContentsDelegate::PreHandleKeyboardEvent(
   return KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
+bool WebContentsDelegate::HandleKeyboardEvent(
+    WebContents* source,
+    const NativeWebKeyboardEvent& event) {
+  return false;
+}
+
 bool WebContentsDelegate::PreHandleGestureEvent(
     WebContents* source,
     const blink::WebGestureEvent& event) {
@@ -156,6 +163,20 @@ content::ColorChooser* WebContentsDelegate::OpenColorChooser(
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
   return nullptr;
+}
+
+void WebContentsDelegate::RunFileChooser(
+    RenderFrameHost* render_frame_host,
+    std::unique_ptr<FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  listener->FileSelectionCanceled();
+}
+
+void WebContentsDelegate::EnumerateDirectory(
+    WebContents* web_contents,
+    std::unique_ptr<FileSelectListener> listener,
+    const base::FilePath& path) {
+  listener->FileSelectionCanceled();
 }
 
 void WebContentsDelegate::RequestMediaAccessPermission(
@@ -256,7 +277,8 @@ int WebContentsDelegate::GetBottomControlsHeight() const {
   return 0;
 }
 
-bool WebContentsDelegate::DoBrowserControlsShrinkBlinkSize() const {
+bool WebContentsDelegate::DoBrowserControlsShrinkRendererSize(
+    const WebContents* web_contents) const {
   return false;
 }
 
@@ -269,5 +291,13 @@ gfx::Size WebContentsDelegate::EnterPictureInPicture(const viz::SurfaceId&,
 }
 
 void WebContentsDelegate::ExitPictureInPicture() {}
+
+std::unique_ptr<content::WebContents> WebContentsDelegate::SwapWebContents(
+    content::WebContents* old_contents,
+    std::unique_ptr<content::WebContents> new_contents,
+    bool did_start_load,
+    bool did_finish_load) {
+  return new_contents;
+}
 
 }  // namespace content

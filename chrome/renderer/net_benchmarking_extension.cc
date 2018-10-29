@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/net_benchmarking_extension.h"
 
+#include "base/no_destructor.h"
 #include "chrome/common/net_benchmarking.mojom.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/renderer/render_thread.h"
@@ -48,16 +49,25 @@ class NetBenchmarkingWrapper : public v8::Extension {
   v8::Local<v8::FunctionTemplate> GetNativeFunctionTemplate(
       v8::Isolate* isolate,
       v8::Local<v8::String> name) override {
-    if (name->StringEquals(v8::String::NewFromUtf8(isolate, "ClearCache"))) {
+    if (name->StringEquals(
+            v8::String::NewFromUtf8(isolate, "ClearCache",
+                                    v8::NewStringType::kInternalized)
+                .ToLocalChecked())) {
       return v8::FunctionTemplate::New(isolate, ClearCache);
-    } else if (name->StringEquals(v8::String::NewFromUtf8(
-                   isolate, "ClearHostResolverCache"))) {
+    } else if (name->StringEquals(
+                   v8::String::NewFromUtf8(isolate, "ClearHostResolverCache",
+                                           v8::NewStringType::kInternalized)
+                       .ToLocalChecked())) {
       return v8::FunctionTemplate::New(isolate, ClearHostResolverCache);
     } else if (name->StringEquals(
-                   v8::String::NewFromUtf8(isolate, "ClearPredictorCache"))) {
+                   v8::String::NewFromUtf8(isolate, "ClearPredictorCache",
+                                           v8::NewStringType::kInternalized)
+                       .ToLocalChecked())) {
       return v8::FunctionTemplate::New(isolate, ClearPredictorCache);
     } else if (name->StringEquals(
-                   v8::String::NewFromUtf8(isolate, "CloseConnections"))) {
+                   v8::String::NewFromUtf8(isolate, "CloseConnections",
+                                           v8::NewStringType::kInternalized)
+                       .ToLocalChecked())) {
       return v8::FunctionTemplate::New(isolate, CloseConnections);
     }
 
@@ -65,9 +75,9 @@ class NetBenchmarkingWrapper : public v8::Extension {
   }
 
   static chrome::mojom::NetBenchmarking& GetNetBenchmarking() {
-    CR_DEFINE_STATIC_LOCAL(chrome::mojom::NetBenchmarkingPtr, net_benchmarking,
-                           (ConnectToBrowser()));
-    return *net_benchmarking;
+    static base::NoDestructor<chrome::mojom::NetBenchmarkingPtr>
+        net_benchmarking(ConnectToBrowser());
+    return **net_benchmarking;
   }
 
   static chrome::mojom::NetBenchmarkingPtr ConnectToBrowser() {

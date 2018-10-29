@@ -2,8 +2,8 @@ This is a testharness.js-based test.
 PASS getAnimations for non-animated content
 PASS getAnimations for CSS Animations
 FAIL Order of CSS Animations - within an element assert_equals: Order of first animation returned expected (string) "animLeft" but got (undefined) undefined
-FAIL Order of CSS Animations - across elements assert_equals: Order of first animation returned expected Element node <div style="animation: animLeft 100s"></div> but got Element node <div style="animation: animLeft 100s"></div>
-FAIL Order of CSS Animations - across and within elements assert_equals: Target of animation in position 0 expected Element node <div style="animation: animLeft 100s, animTop 100s"></div> but got Element node <div style="animation: animBottom 100s"></div>
+FAIL Order of CSS Animations - across elements assert_equals: Order of second animation returned after tree surgery expected Element node <div style="animation: animLeft 100s"></div> but got Element node <div style="animation: animLeft 100s"></div>
+FAIL Order of CSS Animations - across and within elements assert_equals: Name of animation in position 0 expected (string) "animLeft" but got (undefined) undefined
 FAIL Order of CSS Animations - markup-bound vs free animations assert_equals: Originally, animLeft animation comes first expected (string) "animLeft" but got (undefined) undefined
 FAIL Order of CSS Animations - free animations assert_equals: getAnimations returns free animations expected 2 but got 0
 FAIL Order of CSS Animations and CSS Transitions assert_equals: Transition comes first expected "[object CSSTransition]" but got "[object Animation]"

@@ -12,10 +12,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/unicodestring.h"
 #include "base/rand_util.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/fileapi/file_system_url_loader_factory.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/mime_util.h"
@@ -181,8 +183,8 @@ class FileSystemURLLoaderFactoryTest : public ContentBrowserTest {
 
   void TearDownOnMainThread() override {
     loader_.reset();
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&ShutdownFileSystemContextOnIOThread,
                        std::move(file_system_context_)));
     special_storage_policy_ = nullptr;

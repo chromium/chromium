@@ -76,8 +76,7 @@ InfoBar* InfoBarManager::ReplaceInfoBar(InfoBar* old_infobar,
     return AddInfoBar(std::move(new_infobar));  // Deletes the infobar.
   DCHECK(new_infobar);
 
-  InfoBars::iterator i(std::find(infobars_.begin(), infobars_.end(),
-                                 old_infobar));
+  auto i(std::find(infobars_.begin(), infobars_.end(), old_infobar));
   DCHECK(i != infobars_.end());
 
   InfoBar* new_infobar_ptr = new_infobar.release();
@@ -138,7 +137,7 @@ void InfoBarManager::RemoveInfoBarInternal(InfoBar* infobar, bool animate) {
     return;
   }
 
-  InfoBars::iterator i(std::find(infobars_.begin(), infobars_.end(), infobar));
+  auto i(std::find(infobars_.begin(), infobars_.end(), infobar));
   DCHECK(i != infobars_.end());
 
   // Remove the infobar before notifying, so that if any observers call back to

@@ -14,6 +14,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "content/renderer/media/audio/audio_device_factory.h"
 #include "content/renderer/media/stream/media_stream_audio_track.h"
@@ -25,11 +26,6 @@
 #include "media/base/sample_rates.h"
 #include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/webrtc/api/mediastreaminterface.h"
-
-#if defined(OS_WIN)
-#include "base/win/windows_version.h"
-#include "media/audio/win/core_audio_util_win.h"
-#endif
 
 namespace content {
 
@@ -78,14 +74,14 @@ class SharedAudioRenderer : public MediaStreamAudioRenderer {
 
  protected:
   ~SharedAudioRenderer() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     DVLOG(1) << __func__;
     Stop();
     std::move(on_play_state_removed_).Run(&playing_state_);
   }
 
   void Start() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (started_)
       return;
     started_ = true;
@@ -93,7 +89,7 @@ class SharedAudioRenderer : public MediaStreamAudioRenderer {
   }
 
   void Play() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (!started_ || playing_state_.playing())
       return;
     playing_state_.set_playing(true);
@@ -101,7 +97,7 @@ class SharedAudioRenderer : public MediaStreamAudioRenderer {
   }
 
   void Pause() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (!started_ || !playing_state_.playing())
       return;
     playing_state_.set_playing(false);
@@ -109,7 +105,7 @@ class SharedAudioRenderer : public MediaStreamAudioRenderer {
   }
 
   void Stop() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (!started_)
       return;
     Pause();
@@ -118,36 +114,35 @@ class SharedAudioRenderer : public MediaStreamAudioRenderer {
   }
 
   void SetVolume(float volume) override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     DCHECK(volume >= 0.0f && volume <= 1.0f);
     playing_state_.set_volume(volume);
     on_play_state_changed_.Run(media_stream_, &playing_state_);
   }
 
   media::OutputDeviceInfo GetOutputDeviceInfo() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     return delegate_->GetOutputDeviceInfo();
   }
 
-  void SwitchOutputDevice(
-      const std::string& device_id,
-      const media::OutputDeviceStatusCB& callback) override {
-    DCHECK(thread_checker_.CalledOnValidThread());
-    return delegate_->SwitchOutputDevice(device_id, callback);
+  void SwitchOutputDevice(const std::string& device_id,
+                          media::OutputDeviceStatusCB callback) override {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return delegate_->SwitchOutputDevice(device_id, std::move(callback));
   }
 
   base::TimeDelta GetCurrentRenderTime() const override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     return delegate_->GetCurrentRenderTime();
   }
 
   bool IsLocalRenderer() const override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     return delegate_->IsLocalRenderer();
   }
 
  private:
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
   const scoped_refptr<MediaStreamAudioRenderer> delegate_;
   const blink::WebMediaStream media_stream_;
   bool started_;
@@ -180,13 +175,13 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
 }
 
 WebRtcAudioRenderer::~WebRtcAudioRenderer() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(state_, UNINITIALIZED);
 }
 
 bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
   DVLOG(1) << "WebRtcAudioRenderer::Initialize()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(source);
   DCHECK(!sink_.get());
   DCHECK_GE(session_id_, 0);
@@ -237,7 +232,7 @@ WebRtcAudioRenderer::CreateSharedAudioRendererProxy(
 }
 
 bool WebRtcAudioRenderer::IsStarted() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return start_ref_count_ != 0;
 }
 
@@ -247,13 +242,13 @@ bool WebRtcAudioRenderer::CurrentThreadIsRenderingThread() {
 
 void WebRtcAudioRenderer::Start() {
   DVLOG(1) << "WebRtcAudioRenderer::Start()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ++start_ref_count_;
 }
 
 void WebRtcAudioRenderer::Play() {
   DVLOG(1) << "WebRtcAudioRenderer::Play()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (playing_state_.playing())
     return;
@@ -265,7 +260,7 @@ void WebRtcAudioRenderer::Play() {
 
 void WebRtcAudioRenderer::EnterPlayState() {
   DVLOG(1) << "WebRtcAudioRenderer::EnterPlayState()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_GT(start_ref_count_, 0) << "Did you forget to call Start()?";
   base::AutoLock auto_lock(lock_);
   if (state_ == UNINITIALIZED)
@@ -286,7 +281,7 @@ void WebRtcAudioRenderer::EnterPlayState() {
 
 void WebRtcAudioRenderer::Pause() {
   DVLOG(1) << "WebRtcAudioRenderer::Pause()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!playing_state_.playing())
     return;
 
@@ -297,7 +292,7 @@ void WebRtcAudioRenderer::Pause() {
 
 void WebRtcAudioRenderer::EnterPauseState() {
   DVLOG(1) << "WebRtcAudioRenderer::EnterPauseState()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_GT(start_ref_count_, 0) << "Did you forget to call Start()?";
   base::AutoLock auto_lock(lock_);
   if (state_ == UNINITIALIZED)
@@ -311,7 +306,7 @@ void WebRtcAudioRenderer::EnterPauseState() {
 
 void WebRtcAudioRenderer::Stop() {
   DVLOG(1) << "WebRtcAudioRenderer::Stop()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   {
     base::AutoLock auto_lock(lock_);
     if (state_ == UNINITIALIZED)
@@ -347,7 +342,7 @@ void WebRtcAudioRenderer::Stop() {
 }
 
 void WebRtcAudioRenderer::SetVolume(float volume) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(volume >= 0.0f && volume <= 1.0f);
 
   playing_state_.set_volume(volume);
@@ -355,12 +350,12 @@ void WebRtcAudioRenderer::SetVolume(float volume) {
 }
 
 media::OutputDeviceInfo WebRtcAudioRenderer::GetOutputDeviceInfo() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return sink_ ? sink_->GetOutputDeviceInfo() : media::OutputDeviceInfo();
 }
 
 base::TimeDelta WebRtcAudioRenderer::GetCurrentRenderTime() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::AutoLock auto_lock(lock_);
   return current_time_;
 }
@@ -371,11 +366,11 @@ bool WebRtcAudioRenderer::IsLocalRenderer() const {
 
 void WebRtcAudioRenderer::SwitchOutputDevice(
     const std::string& device_id,
-    const media::OutputDeviceStatusCB& callback) {
+    media::OutputDeviceStatusCB callback) {
   DVLOG(1) << "WebRtcAudioRenderer::SwitchOutputDevice()";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!source_) {
-    callback.Run(media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+    std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
     return;
   }
 
@@ -395,7 +390,7 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
       new_sink->GetOutputDeviceInfo().device_status();
   if (status != media::OUTPUT_DEVICE_STATUS_OK) {
     new_sink->Stop();
-    callback.Run(status);
+    std::move(callback).Run(status);
     return;
   }
 
@@ -414,7 +409,7 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
   sink_->Start();
   sink_->Play();  // Not all the sinks play on start.
 
-  callback.Run(media::OUTPUT_DEVICE_STATUS_OK);
+  std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_OK);
 }
 
 int WebRtcAudioRenderer::Render(base::TimeDelta delay,
@@ -509,13 +504,13 @@ void WebRtcAudioRenderer::SourceCallback(
 
 void WebRtcAudioRenderer::UpdateSourceVolume(
     webrtc::AudioSourceInterface* source) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Note: If there are no playing audio renderers, then the volume will be
   // set to 0.0.
   float volume = 0.0f;
 
-  SourcePlayingStates::iterator entry = source_playing_states_.find(source);
+  auto entry = source_playing_states_.find(source);
   if (entry != source_playing_states_.end()) {
     PlayingStates& states = entry->second;
     for (PlayingStates::const_iterator it = states.begin();
@@ -549,7 +544,7 @@ void WebRtcAudioRenderer::UpdateSourceVolume(
 bool WebRtcAudioRenderer::AddPlayingState(
     webrtc::AudioSourceInterface* source,
     PlayingState* state) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(state->playing());
   // Look up or add the |source| to the map.
   PlayingStates& array = source_playing_states_[source];
@@ -564,15 +559,14 @@ bool WebRtcAudioRenderer::AddPlayingState(
 bool WebRtcAudioRenderer::RemovePlayingState(
     webrtc::AudioSourceInterface* source,
     PlayingState* state) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!state->playing());
-  SourcePlayingStates::iterator found = source_playing_states_.find(source);
+  auto found = source_playing_states_.find(source);
   if (found == source_playing_states_.end())
     return false;
 
   PlayingStates& array = found->second;
-  PlayingStates::iterator state_it =
-      std::find(array.begin(), array.end(), state);
+  auto state_it = std::find(array.begin(), array.end(), state);
   if (state_it == array.end())
     return false;
 
@@ -587,7 +581,7 @@ bool WebRtcAudioRenderer::RemovePlayingState(
 void WebRtcAudioRenderer::OnPlayStateChanged(
     const blink::WebMediaStream& media_stream,
     PlayingState* state) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   blink::WebVector<blink::WebMediaStreamTrack> web_tracks =
       media_stream.AudioTracks();
 
@@ -620,13 +614,12 @@ void WebRtcAudioRenderer::OnPlayStateRemoved(PlayingState* state) {
   // crbug.com/697256.
   // TODO(maxmorin): Clean up cleanup code in this and related classes so that
   // this hack isn't necessary.
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   for (auto it = source_playing_states_.begin();
        it != source_playing_states_.end();) {
     PlayingStates& states = it->second;
     // We cannot use RemovePlayingState as it might invalidate |it|.
-    states.erase(std::remove(states.begin(), states.end(), state),
-                 states.end());
+    base::Erase(states, state);
     if (states.empty())
       it = source_playing_states_.erase(it);
     else
@@ -635,7 +628,7 @@ void WebRtcAudioRenderer::OnPlayStateRemoved(PlayingState* state) {
 }
 
 void WebRtcAudioRenderer::PrepareSink() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   media::AudioParameters new_sink_params;
   {
     base::AutoLock lock(lock_);

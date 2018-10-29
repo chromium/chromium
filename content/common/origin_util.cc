@@ -20,7 +20,7 @@ namespace {
 // SecurityOrigin::create might return unique origins for URLs whose schemes are
 // included in SchemeRegistry::shouldTreatURLSchemeAsNoAccess.
 bool IsOriginUnique(const url::Origin& origin) {
-  return origin.unique() ||
+  return origin.opaque() ||
          base::ContainsValue(url::GetNoAccessSchemes(), origin.scheme());
 }
 

@@ -5,8 +5,6 @@
 #ifndef NET_THIRD_PARTY_SPDY_CORE_HPACK_HPACK_STATIC_TABLE_H_
 #define NET_THIRD_PARTY_SPDY_CORE_HPACK_HPACK_STATIC_TABLE_H_
 
-#include <stddef.h>
-
 #include "net/third_party/spdy/core/hpack/hpack_header_table.h"
 #include "net/third_party/spdy/platform/api/spdy_export.h"
 

@@ -4,6 +4,9 @@
 
 #include "ui/views/widget/native_widget_aura.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
@@ -57,8 +60,7 @@
 
 #if defined(OS_WIN)
 #include "base/win/scoped_gdi_object.h"
-#include "base/win/win_client_metrics.h"
-#include "ui/base/l10n/l10n_util_win.h"
+#include "ui/gfx/platform_font_win.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 #endif
 
@@ -1155,8 +1157,7 @@ void NativeWidgetPrivate::GetAllChildWidgets(gfx::NativeView native_view,
   }
 
   const aura::Window::Windows& child_windows = native_view->children();
-  for (aura::Window::Windows::const_iterator i = child_windows.begin();
-       i != child_windows.end(); ++i) {
+  for (auto i = child_windows.begin(); i != child_windows.end(); ++i) {
     GetAllChildWidgets((*i), children);
   }
 }
@@ -1192,8 +1193,7 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
 
   // First notify all the widgets that they are being disassociated
   // from their previous parent.
-  for (Widget::Widgets::iterator it = widgets.begin();
-      it != widgets.end(); ++it) {
+  for (auto it = widgets.begin(); it != widgets.end(); ++it) {
     (*it)->NotifyNativeViewHierarchyWillChange();
   }
 
@@ -1217,8 +1217,7 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
   }
 
   // And now, notify them that they have a brand new parent.
-  for (Widget::Widgets::iterator it = widgets.begin();
-      it != widgets.end(); ++it) {
+  for (auto it = widgets.begin(); it != widgets.end(); ++it) {
     (*it)->NotifyNativeViewHierarchyChanged();
   }
 }
@@ -1226,11 +1225,8 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
 // static
 gfx::FontList NativeWidgetPrivate::GetWindowTitleFontList() {
 #if defined(OS_WIN)
-  NONCLIENTMETRICS_XP ncm;
-  base::win::GetNonClientMetrics(&ncm);
-  l10n_util::AdjustUIFont(&(ncm.lfCaptionFont));
-  base::win::ScopedHFONT caption_font(CreateFontIndirect(&(ncm.lfCaptionFont)));
-  return gfx::FontList(gfx::Font(caption_font.get()));
+  return gfx::FontList(gfx::PlatformFontWin::GetSystemFont(
+      gfx::PlatformFontWin::SystemFont::kCaption));
 #else
   return gfx::FontList();
 #endif

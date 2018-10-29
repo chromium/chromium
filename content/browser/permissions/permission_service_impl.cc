@@ -82,6 +82,9 @@ bool PermissionDescriptorToPermissionType(
     case PermissionName::PAYMENT_HANDLER:
       *permission_type = PermissionType::PAYMENT_HANDLER;
       return true;
+    case PermissionName::BACKGROUND_FETCH:
+      *permission_type = PermissionType::BACKGROUND_FETCH;
+      return true;
   }
 
   NOTREACHED();

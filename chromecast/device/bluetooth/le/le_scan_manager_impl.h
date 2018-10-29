@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_DEVICE_BLUETOOTH_LE_LE_SCAN_MANAGER_IMPL_H_
 #define CHROMECAST_DEVICE_BLUETOOTH_LE_LE_SCAN_MANAGER_IMPL_H_
 
+#include <deque>
 #include <list>
 #include <map>
 #include <set>
@@ -27,6 +28,8 @@ class LeScanManagerImpl : public LeScanManager,
  public:
   explicit LeScanManagerImpl(bluetooth_v2_shlib::LeScannerImpl* le_scanner);
   ~LeScanManagerImpl() override;
+
+  static constexpr int kMaxScanResultEntries = 1024;
 
   void Initialize(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   void Finalize();
@@ -60,6 +63,10 @@ class LeScanManagerImpl : public LeScanManager,
   scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
   std::map<bluetooth_v2_shlib::Addr, std::list<LeScanResult>>
       addr_to_scan_results_;
+
+  // List of addresses in scan results. Addresses are sorted from most recently
+  // used to least recently used.
+  std::deque<bluetooth_v2_shlib::Addr> scan_result_addr_list_;
 
   int32_t next_scan_handle_id_ = 0;
   std::set<int32_t> scan_handle_ids_;

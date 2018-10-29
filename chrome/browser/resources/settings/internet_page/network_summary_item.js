@@ -102,7 +102,7 @@ Polymer({
    * @private
    */
   getConnectionStateText_: function(networkState) {
-    const state = networkState.ConnectionState;
+    const state = networkState ? networkState.ConnectionState : null;
     if (!state)
       return '';
     const name = CrOnc.getNetworkName(networkState);
@@ -130,8 +130,9 @@ Polymer({
    * @private
    */
   showPolicyIndicator_: function(activeNetworkState) {
-    return activeNetworkState.ConnectionState ==
-        CrOnc.ConnectionState.CONNECTED ||
+    return (activeNetworkState !== undefined &&
+            activeNetworkState.ConnectionState ==
+                CrOnc.ConnectionState.CONNECTED) ||
         this.isPolicySource(activeNetworkState.Source);
   },
 

@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
@@ -65,7 +66,7 @@ std::unique_ptr<media::StreamParser> CreateParserForTypeAndCodecs(
     const std::string& codecs,
     media::MediaLog* media_log) {
   std::vector<std::string> parsed_codec_ids;
-  media::SplitCodecsToVector(codecs, &parsed_codec_ids, false);
+  media::SplitCodecs(codecs, &parsed_codec_ids);
   return media::StreamParserFactory::Create(content_type, parsed_codec_ids,
                                             media_log);
 }
@@ -99,7 +100,7 @@ ChunkDemuxerStream::ChunkDemuxerStream(Type type,
 void ChunkDemuxerStream::StartReturningData() {
   DVLOG(1) << "ChunkDemuxerStream::StartReturningData()";
   base::AutoLock auto_lock(lock_);
-  DCHECK(read_cb_.is_null());
+  DCHECK(!read_cb_);
   ChangeState_Locked(RETURNING_DATA_FOR_READS);
 }
 
@@ -107,13 +108,13 @@ void ChunkDemuxerStream::AbortReads() {
   DVLOG(1) << "ChunkDemuxerStream::AbortReads()";
   base::AutoLock auto_lock(lock_);
   ChangeState_Locked(RETURNING_ABORT_FOR_READS);
-  if (!read_cb_.is_null())
-    base::ResetAndReturn(&read_cb_).Run(kAborted, NULL);
+  if (read_cb_)
+    std::move(read_cb_).Run(kAborted, NULL);
 }
 
 void ChunkDemuxerStream::CompletePendingReadIfPossible() {
   base::AutoLock auto_lock(lock_);
-  if (read_cb_.is_null())
+  if (!read_cb_)
     return;
 
   CompletePendingReadIfPossible_Locked();
@@ -126,9 +127,9 @@ void ChunkDemuxerStream::Shutdown() {
 
   // Pass an end of stream buffer to the pending callback to signal that no more
   // data will be sent.
-  if (!read_cb_.is_null()) {
-    base::ResetAndReturn(&read_cb_).Run(DemuxerStream::kOk,
-                                        StreamParserBuffer::CreateEOSBuffer());
+  if (read_cb_) {
+    std::move(read_cb_).Run(DemuxerStream::kOk,
+                            StreamParserBuffer::CreateEOSBuffer());
   }
 }
 
@@ -145,7 +146,7 @@ bool ChunkDemuxerStream::IsSeekWaitingForData() const {
 void ChunkDemuxerStream::Seek(TimeDelta time) {
   DVLOG(1) << "ChunkDemuxerStream::Seek(" << time.InSecondsF() << ")";
   base::AutoLock auto_lock(lock_);
-  DCHECK(read_cb_.is_null());
+  DCHECK(!read_cb_);
   DCHECK(state_ == UNINITIALIZED || state_ == RETURNING_ABORT_FOR_READS)
       << state_;
 
@@ -163,7 +164,7 @@ bool ChunkDemuxerStream::Append(const StreamParser::BufferQueue& buffers) {
     return false;
   }
 
-  if (!read_cb_.is_null())
+  if (read_cb_)
     CompletePendingReadIfPossible_Locked();
 
   return true;
@@ -238,14 +239,17 @@ Ranges<TimeDelta> ChunkDemuxerStream::GetBufferedRanges(
 }
 
 TimeDelta ChunkDemuxerStream::GetHighestPresentationTimestamp() const {
+  base::AutoLock auto_lock(lock_);
   return SBSTREAM_OP(GetHighestPresentationTimestamp());
 }
 
 TimeDelta ChunkDemuxerStream::GetBufferedDuration() const {
+  base::AutoLock auto_lock(lock_);
   return SBSTREAM_OP(GetBufferedDuration());
 }
 
 size_t ChunkDemuxerStream::GetBufferedSize() const {
+  base::AutoLock auto_lock(lock_);
   return SBSTREAM_OP(GetBufferedSize());
 }
 
@@ -312,14 +316,13 @@ void ChunkDemuxerStream::UnmarkEndOfStream() {
 void ChunkDemuxerStream::Read(const ReadCB& read_cb) {
   base::AutoLock auto_lock(lock_);
   DCHECK_NE(state_, UNINITIALIZED);
-  DCHECK(read_cb_.is_null());
+  DCHECK(!read_cb_);
 
   read_cb_ = BindToCurrentLoop(read_cb);
 
   if (!is_enabled_) {
     DVLOG(1) << "Read from disabled stream, returning EOS";
-    base::ResetAndReturn(&read_cb_).Run(kOk,
-                                        StreamParserBuffer::CreateEOSBuffer());
+    std::move(read_cb_).Run(kOk, StreamParserBuffer::CreateEOSBuffer());
     return;
   }
 
@@ -366,10 +369,9 @@ void ChunkDemuxerStream::SetEnabled(bool enabled, base::TimeDelta timestamp) {
   if (enabled) {
     DCHECK(SBSTREAM_IS_SET);
     SBSTREAM_OP(Seek(timestamp));
-  } else if (!read_cb_.is_null()) {
+  } else if (read_cb_) {
     DVLOG(1) << "Read from disabled stream, returning EOS";
-    base::ResetAndReturn(&read_cb_).Run(kOk,
-                                        StreamParserBuffer::CreateEOSBuffer());
+    std::move(read_cb_).Run(kOk, StreamParserBuffer::CreateEOSBuffer());
   }
 }
 
@@ -380,6 +382,7 @@ TextTrackConfig ChunkDemuxerStream::text_track_config() {
 }
 
 void ChunkDemuxerStream::SetStreamMemoryLimit(size_t memory_limit) {
+  base::AutoLock auto_lock(lock_);
   SBSTREAM_OP(set_memory_limit(memory_limit));
 }
 
@@ -400,7 +403,7 @@ ChunkDemuxerStream::~ChunkDemuxerStream() = default;
 
 void ChunkDemuxerStream::CompletePendingReadIfPossible_Locked() {
   lock_.AssertAcquired();
-  DCHECK(!read_cb_.is_null());
+  DCHECK(read_cb_);
 
   DemuxerStream::Status status = DemuxerStream::kAborted;
   scoped_refptr<StreamParserBuffer> buffer;
@@ -452,7 +455,7 @@ void ChunkDemuxerStream::CompletePendingReadIfPossible_Locked() {
       break;
   }
 
-  base::ResetAndReturn(&read_cb_).Run(status, buffer);
+  std::move(read_cb_).Run(status, buffer);
 }
 
 ChunkDemuxer::ChunkDemuxer(
@@ -474,8 +477,8 @@ ChunkDemuxer::ChunkDemuxer(
       detected_video_track_count_(0),
       detected_text_track_count_(0),
       buffering_by_pts_(base::FeatureList::IsEnabled(kMseBufferByPts)) {
-  DCHECK(!open_cb_.is_null());
-  DCHECK(!encrypted_media_init_data_cb_.is_null());
+  DCHECK(open_cb_);
+  DCHECK(encrypted_media_init_data_cb_);
   MEDIA_LOG(INFO, media_log_)
       << GetDisplayName()
       << (buffering_by_pts_ ? ": buffering by PTS" : ": buffering by DTS");
@@ -488,12 +491,13 @@ std::string ChunkDemuxer::GetDisplayName() const {
 void ChunkDemuxer::Initialize(DemuxerHost* host,
                               const PipelineStatusCB& init_cb) {
   DVLOG(1) << "Init(), buffering_by_pts_=" << buffering_by_pts_;
+  TRACE_EVENT_ASYNC_BEGIN0("media", "ChunkDemuxer::Initialize", this);
 
   base::AutoLock auto_lock(lock_);
   if (state_ == SHUTDOWN) {
     // Init cb must only be run after this method returns, so post.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::Bind(init_cb, DEMUXER_ERROR_COULD_NOT_OPEN));
+    init_cb_ = BindToCurrentLoop(init_cb);
+    RunInitCB_Locked(DEMUXER_ERROR_COULD_NOT_OPEN);
     return;
   }
 
@@ -507,7 +511,7 @@ void ChunkDemuxer::Initialize(DemuxerHost* host,
 
   ChangeState_Locked(INITIALIZING);
 
-  base::ResetAndReturn(&open_cb_).Run();
+  std::move(open_cb_).Run();
 }
 
 void ChunkDemuxer::Stop() {
@@ -518,19 +522,20 @@ void ChunkDemuxer::Stop() {
 void ChunkDemuxer::Seek(TimeDelta time, const PipelineStatusCB& cb) {
   DVLOG(1) << "Seek(" << time.InSecondsF() << ")";
   DCHECK(time >= TimeDelta());
+  TRACE_EVENT_ASYNC_BEGIN0("media", "ChunkDemuxer::Seek", this);
 
   base::AutoLock auto_lock(lock_);
-  DCHECK(seek_cb_.is_null());
+  DCHECK(!seek_cb_);
 
   seek_cb_ = BindToCurrentLoop(cb);
   if (state_ != INITIALIZED && state_ != ENDED) {
-    base::ResetAndReturn(&seek_cb_).Run(PIPELINE_ERROR_INVALID_STATE);
+    RunSeekCB_Locked(PIPELINE_ERROR_INVALID_STATE);
     return;
   }
 
   if (cancel_next_seek_) {
     cancel_next_seek_ = false;
-    base::ResetAndReturn(&seek_cb_).Run(PIPELINE_OK);
+    RunSeekCB_Locked(PIPELINE_OK);
     return;
   }
 
@@ -542,7 +547,7 @@ void ChunkDemuxer::Seek(TimeDelta time, const PipelineStatusCB& cb) {
     return;
   }
 
-  base::ResetAndReturn(&seek_cb_).Run(PIPELINE_OK);
+  RunSeekCB_Locked(PIPELINE_OK);
 }
 
 // Demuxer implementation.
@@ -607,7 +612,7 @@ void ChunkDemuxer::StartWaitingForSeek(TimeDelta seek_time) {
   base::AutoLock auto_lock(lock_);
   DCHECK(state_ == INITIALIZED || state_ == ENDED || state_ == SHUTDOWN ||
          state_ == PARSE_ERROR) << state_;
-  DCHECK(seek_cb_.is_null());
+  DCHECK(!seek_cb_);
 
   if (state_ == SHUTDOWN || state_ == PARSE_ERROR)
     return;
@@ -623,7 +628,7 @@ void ChunkDemuxer::StartWaitingForSeek(TimeDelta seek_time) {
 void ChunkDemuxer::CancelPendingSeek(TimeDelta seek_time) {
   base::AutoLock auto_lock(lock_);
   DCHECK_NE(state_, INITIALIZING);
-  DCHECK(seek_cb_.is_null() || IsSeekWaitingForData_Locked());
+  DCHECK(!seek_cb_ || IsSeekWaitingForData_Locked());
 
   if (cancel_next_seek_)
     return;
@@ -631,12 +636,12 @@ void ChunkDemuxer::CancelPendingSeek(TimeDelta seek_time) {
   AbortPendingReads_Locked();
   SeekAllSources(seek_time);
 
-  if (seek_cb_.is_null()) {
+  if (!seek_cb_) {
     cancel_next_seek_ = true;
     return;
   }
 
-  base::ResetAndReturn(&seek_cb_).Run(PIPELINE_OK);
+  RunSeekCB_Locked(PIPELINE_OK);
 }
 
 ChunkDemuxer::Status ChunkDemuxer::AddId(const std::string& id,
@@ -651,7 +656,7 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(const std::string& id,
 
   // TODO(wolenetz): Change to DCHECK once less verification in release build is
   // needed. See https://crbug.com/786975.
-  CHECK(!init_cb_.is_null());
+  CHECK(init_cb_);
 
   std::unique_ptr<media::StreamParser> stream_parser(
       CreateParserForTypeAndCodecs(content_type, codecs, media_log_));
@@ -853,6 +858,10 @@ bool ChunkDemuxer::EvictCodedFrames(const std::string& id,
   return itr->second->EvictCodedFrames(currentMediaTime, newDataSize);
 }
 
+void ChunkDemuxer::AddBytesReceivedCallback(BytesReceivedCB bytes_received_cb) {
+  bytes_received_cb_ = bytes_received_cb;
+}
+
 bool ChunkDemuxer::AppendData(const std::string& id,
                               const uint8_t* data,
                               size_t length,
@@ -877,6 +886,9 @@ bool ChunkDemuxer::AppendData(const std::string& id,
     if (length == 0u)
       return true;
 
+    if (bytes_received_cb_)
+      bytes_received_cb_.Run(length);
+
     DCHECK(data);
 
     switch (state_) {
@@ -900,11 +912,10 @@ bool ChunkDemuxer::AppendData(const std::string& id,
     }
 
     // Check to see if data was appended at the pending seek point. This
-    // indicates we have parsed enough data to complete the seek.
-    if (old_waiting_for_data && !IsSeekWaitingForData_Locked() &&
-        !seek_cb_.is_null()) {
-      base::ResetAndReturn(&seek_cb_).Run(PIPELINE_OK);
-    }
+    // indicates we have parsed enough data to complete the seek. Work is still
+    // in progress at this point, but it's okay since |seek_cb_| will post.
+    if (old_waiting_for_data && !IsSeekWaitingForData_Locked() && seek_cb_)
+      RunSeekCB_Locked(PIPELINE_OK);
 
     ranges = GetBufferedRanges_Locked();
   }
@@ -928,10 +939,8 @@ void ChunkDemuxer::ResetParserState(const std::string& id,
                                           timestamp_offset);
   // ResetParserState can possibly emit some buffers.
   // Need to check whether seeking can be completed.
-  if (old_waiting_for_data && !IsSeekWaitingForData_Locked() &&
-      !seek_cb_.is_null()) {
-    base::ResetAndReturn(&seek_cb_).Run(PIPELINE_OK);
-  }
+  if (old_waiting_for_data && !IsSeekWaitingForData_Locked() && seek_cb_)
+    RunSeekCB_Locked(PIPELINE_OK);
 }
 
 void ChunkDemuxer::Remove(const std::string& id, TimeDelta start,
@@ -1137,10 +1146,8 @@ void ChunkDemuxer::MarkEndOfStream(PipelineStatus status) {
   ChangeState_Locked(ENDED);
   DecreaseDurationIfNecessary();
 
-  if (old_waiting_for_data && !IsSeekWaitingForData_Locked() &&
-      !seek_cb_.is_null()) {
-    base::ResetAndReturn(&seek_cb_).Run(PIPELINE_OK);
-  }
+  if (old_waiting_for_data && !IsSeekWaitingForData_Locked() && seek_cb_)
+    RunSeekCB_Locked(PIPELINE_OK);
 }
 
 void ChunkDemuxer::UnmarkEndOfStream() {
@@ -1174,8 +1181,8 @@ void ChunkDemuxer::Shutdown() {
 
   ChangeState_Locked(SHUTDOWN);
 
-  if (!seek_cb_.is_null())
-    base::ResetAndReturn(&seek_cb_).Run(PIPELINE_ERROR_ABORT);
+  if (seek_cb_)
+    RunSeekCB_Locked(PIPELINE_ERROR_ABORT);
 }
 
 void ChunkDemuxer::SetMemoryLimitsForTest(DemuxerStream::Type type,
@@ -1210,19 +1217,14 @@ void ChunkDemuxer::ReportError_Locked(PipelineStatus error) {
 
   ChangeState_Locked(PARSE_ERROR);
 
-  PipelineStatusCB cb;
-
-  if (!init_cb_.is_null()) {
-    std::swap(cb, init_cb_);
-  } else {
-    if (!seek_cb_.is_null())
-      std::swap(cb, seek_cb_);
-
-    ShutdownAllStreams();
+  if (init_cb_) {
+    RunInitCB_Locked(error);
+    return;
   }
 
-  if (!cb.is_null()) {
-    cb.Run(error);
+  ShutdownAllStreams();
+  if (seek_cb_) {
+    RunSeekCB_Locked(error);
     return;
   }
 
@@ -1250,15 +1252,12 @@ void ChunkDemuxer::OnSourceInitDone(
 
   // TODO(wolenetz): Change these to DCHECKs once less verification in release
   // build is needed. See https://crbug.com/786975.
-  bool is_initializing = state_ == INITIALIZING;
-  bool init_cb_is_set = !init_cb_.is_null();
-  bool id_is_pending = pending_source_init_ids_.find(source_id) !=
-                       pending_source_init_ids_.end();
   CHECK(!pending_source_init_ids_.empty());
   CHECK(IsValidId(source_id));
-  CHECK(id_is_pending);
-  CHECK(init_cb_is_set);
-  CHECK(is_initializing);
+  CHECK(pending_source_init_ids_.find(source_id) !=
+        pending_source_init_ids_.end());
+  CHECK(init_cb_);
+  CHECK_EQ(state_, INITIALIZING);
   if (audio_streams_.empty() && video_streams_.empty()) {
     ReportError_Locked(DEMUXER_ERROR_COULD_NOT_OPEN);
     return;
@@ -1321,8 +1320,7 @@ void ChunkDemuxer::OnSourceInitDone(
   // build is needed. See https://crbug.com/786975.
   CHECK_EQ(state_, INITIALIZING);
   ChangeState_Locked(INITIALIZED);
-  CHECK(!init_cb_.is_null());
-  base::ResetAndReturn(&init_cb_).Run(PIPELINE_OK);
+  RunInitCB_Locked(PIPELINE_OK);
 }
 
 // static
@@ -1482,6 +1480,22 @@ void ChunkDemuxer::ShutdownAllStreams() {
        ++itr) {
     itr->second->Shutdown();
   }
+}
+
+void ChunkDemuxer::RunInitCB_Locked(PipelineStatus status) {
+  lock_.AssertAcquired();
+  DCHECK(init_cb_);
+  TRACE_EVENT_ASYNC_END1("media", "ChunkDemuxer::Initialize", this, "status",
+                         MediaLog::PipelineStatusToString(status));
+  std::move(init_cb_).Run(status);
+}
+
+void ChunkDemuxer::RunSeekCB_Locked(PipelineStatus status) {
+  lock_.AssertAcquired();
+  DCHECK(seek_cb_);
+  TRACE_EVENT_ASYNC_END1("media", "ChunkDemuxer::Seek", this, "status",
+                         MediaLog::PipelineStatusToString(status));
+  std::move(seek_cb_).Run(status);
 }
 
 }  // namespace media

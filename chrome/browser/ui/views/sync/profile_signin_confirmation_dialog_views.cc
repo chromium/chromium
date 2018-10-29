@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/profiles/profile_chooser_view.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -26,7 +27,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/native_widget_types.h"
@@ -43,10 +43,6 @@
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
-
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
-#include "chrome/browser/ui/views/profiles/profile_chooser_view.h"
-#endif
 
 ProfileSigninConfirmationDialogViews::ProfileSigninConfirmationDialogViews(
     Browser* browser,
@@ -68,7 +64,6 @@ void ProfileSigninConfirmationDialogViews::ShowDialog(
     Profile* profile,
     const std::string& username,
     std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate) {
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
   // Hides the new avatar bubble if it is currently shown. The new avatar bubble
   // should be automatically closed when it loses focus. However on windows the
   // profile signin confirmation dialog is not modal yet thus it does not take
@@ -77,7 +72,6 @@ void ProfileSigninConfirmationDialogViews::ShowDialog(
   // TODO(guohui): removes the workaround once the profile confirmation dialog
   // is fixed.
   ProfileChooserView::Hide();
-#endif
 
   ProfileSigninConfirmationDialogViews* dialog =
       new ProfileSigninConfirmationDialogViews(browser, username,

@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -63,7 +63,7 @@ const struct TestEntry HistoryStateUtilTest::tests_[] = {
 };
 
 TEST_F(HistoryStateUtilTest, TestIsHistoryStateChangeValid) {
-  for (size_t i = 0; i < arraysize(tests_); ++i) {
+  for (size_t i = 0; i < base::size(tests_); ++i) {
     GURL fromUrl(tests_[i].fromUrl);
     GURL toUrl = history_state_util::GetHistoryStateChangeUrl(fromUrl, fromUrl,
                                                               tests_[i].toUrl);
@@ -79,7 +79,7 @@ TEST_F(HistoryStateUtilTest, TestIsHistoryStateChangeValid) {
 }
 
 TEST_F(HistoryStateUtilTest, TestGetHistoryStateChangeUrl) {
-  for (size_t i = 0; i < arraysize(tests_); ++i) {
+  for (size_t i = 0; i < base::size(tests_); ++i) {
     GURL fromUrl(tests_[i].fromUrl);
     GURL expectedResult(tests_[i].expectedUrl);
     GURL actualResult = history_state_util::GetHistoryStateChangeUrl(

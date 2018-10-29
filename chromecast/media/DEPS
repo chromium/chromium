@@ -9,10 +9,12 @@ include_rules = [
   "+media/audio",
   "+media/base",
   "+media/cdm",
+  "+media/filters",
   "+mojo/core/embedder/embedder.h",
   "+mojo/public/cpp/bindings/binding.h",
   "+ui/gfx/geometry",
   "+ui/gfx/overlay_transform.h",
   "+services/service_manager/public",
+  "+third_party/widevine/cdm/buildflags.h",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
 ]

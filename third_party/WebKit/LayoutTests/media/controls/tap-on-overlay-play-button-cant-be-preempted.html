@@ -4,13 +4,21 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../media-controls.js"></script>
+<script src="overlay-play-button.js"></script>
 <div id="outer">
-<video controls width=500 preload=none src="../content/60_sec_video.webm"></video>
 </div>
 <script>
 async_test(t => {
-  const video = document.querySelector('video');
+  // This test is only valid when the overlay play button is enabled.
+  enableOverlayPlayButtonForTest(t);
+
   const outerDiv = document.getElementById('outer');
+  const video = document.createElement('video');
+  video.controls = true;
+  video.width = 500;
+  video.preload = 'none';
+  video.src = '../content/60_sec_video.webm';
+  outerDiv.appendChild(video);
 
   video.addEventListener('loadedmetadata', t.step_func(() => {
     singleTouchOnControl(mediaControlsOverlayPlayButton(video));

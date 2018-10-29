@@ -77,8 +77,10 @@ namespace {
 
 // Describes the possible layouts which can be applied to the rows in the popup.
 enum class PopupItemLayoutType {
-  kLeadingIcon,  // Icon (if any) shown on the leading (left in LTR) side.
-  kTrailingIcon  // Icon (if any) shown on the trailing (right in LTR) side.
+  kLeadingIcon,   // Icon (if any) shown on the leading (left in LTR) side.
+  kTrailingIcon,  // Icon (if any) shown on the trailing (right in LTR) side.
+  kTwoLinesLeadingIcon,  // Icon (if any) shown on the leading (left in LTR)
+                         // side with two line display.
 };
 
 // By default, this returns kLeadingIcon for passwords and kTrailingIcon for all
@@ -91,6 +93,8 @@ PopupItemLayoutType GetLayoutType(int frontend_id) {
       return PopupItemLayoutType::kLeadingIcon;
     case ForcedPopupLayoutState::kTrailingIcon:
       return PopupItemLayoutType::kTrailingIcon;
+    case ForcedPopupLayoutState::kTwoLinesLeadingIcon:
+      return PopupItemLayoutType::kTwoLinesLeadingIcon;
     case ForcedPopupLayoutState::kDefault:
       switch (frontend_id) {
         case autofill::PopupItemId::POPUP_ITEM_ID_USERNAME_ENTRY:
@@ -167,6 +171,7 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   void CreateContent() override;
   void RefreshStyle() override;
 
+  PopupItemLayoutType layout_type() const { return layout_type_; }
   virtual int GetPrimaryTextStyle() = 0;
   virtual views::View* CreateValueLabel();
   // Creates an optional label below the value.
@@ -176,6 +181,10 @@ class AutofillPopupItemView : public AutofillPopupRowView {
 
   // Creates a label matching the style of the description label.
   views::Label* CreateSecondaryLabel(const base::string16& text) const;
+  // Creates a label with a specific context and style.
+  views::Label* CreateLabelWithStyleAndContext(const base::string16& text,
+                                               int text_context,
+                                               int text_style) const;
 
   // Sets |font_weight| as the font weight to be used for primary information on
   // the current item. Returns false if no custom font weight is undefined.
@@ -210,6 +219,8 @@ class AutofillPopupSuggestionView : public AutofillPopupItemView {
   int GetPrimaryTextStyle() override;
   bool ShouldUseCustomFontWeightForPrimaryInfo(
       gfx::Font::Weight* font_weight) const override;
+  views::View* CreateSubtextLabel() override;
+  views::View* CreateDescriptionLabel() override;
 
   AutofillPopupSuggestionView(AutofillPopupViewNativeViews* popup_view,
                               int line_number);
@@ -237,6 +248,8 @@ class PasswordPopupSuggestionView : public AutofillPopupSuggestionView {
  private:
   PasswordPopupSuggestionView(AutofillPopupViewNativeViews* popup_view,
                               int line_number);
+  base::string16 origin_;
+  base::string16 masked_password_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordPopupSuggestionView);
 };
@@ -332,6 +345,8 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   std::vector<base::string16> text;
   text.push_back(suggestion.value);
   text.push_back(suggestion.label);
+  // When two-line display is enabled, this value will be filled and may
+  // repeat information already provided in the label.
   text.push_back(suggestion.additional_label);
 
   base::string16 icon_description;
@@ -386,6 +401,7 @@ void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
 
 void AutofillPopupItemView::CreateContent() {
   AutofillPopupController* controller = popup_view_->controller();
+
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::kHorizontal, gfx::Insets(0, GetHorizontalMargin())));
 
@@ -395,14 +411,17 @@ void AutofillPopupItemView::CreateContent() {
   const gfx::ImageSkia icon =
       controller->layout_model().GetIconImage(line_number_);
 
-  if (!icon.isNull() && layout_type_ == PopupItemLayoutType::kLeadingIcon) {
+  if (!icon.isNull() &&
+      (layout_type_ == PopupItemLayoutType::kLeadingIcon ||
+       layout_type_ == PopupItemLayoutType::kTwoLinesLeadingIcon)) {
     AddIcon(icon);
     AddSpacerWithSize(views::MenuConfig::instance().item_horizontal_padding,
                       /*resize=*/false, layout_manager);
   }
 
-  views::View* value_label = CreateValueLabel();
   views::View* lower_value_label = CreateSubtextLabel();
+  views::View* value_label = CreateValueLabel();
+
   const int kStandardRowHeight =
       views::MenuConfig::instance().touchable_menu_height + extra_height_;
   if (!lower_value_label) {
@@ -454,7 +473,7 @@ views::View* AutofillPopupItemView::CreateValueLabel() {
     return CreateSecondaryLabel(text);
   }
 
-  views::Label* text_label = CreateLabelWithColorReadabilityDisabled(
+  views::Label* text_label = CreateLabelWithStyleAndContext(
       popup_view_->controller()->GetElidedValueAt(line_number_),
       ChromeTextContext::CONTEXT_BODY_TEXT_LARGE, GetPrimaryTextStyle());
 
@@ -463,7 +482,6 @@ views::View* AutofillPopupItemView::CreateValueLabel() {
     text_label->SetFontList(
         text_label->font_list().DeriveWithWeight(font_weight));
   }
-  text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   return text_label;
 }
@@ -480,12 +498,20 @@ views::View* AutofillPopupItemView::CreateDescriptionLabel() {
 
 views::Label* AutofillPopupItemView::CreateSecondaryLabel(
     const base::string16& text) const {
-  views::Label* subtext_label = CreateLabelWithColorReadabilityDisabled(
+  return CreateLabelWithStyleAndContext(
       text, ChromeTextContext::CONTEXT_BODY_TEXT_LARGE,
       ChromeTextStyle::STYLE_SECONDARY);
-  subtext_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+}
 
-  return subtext_label;
+views::Label* AutofillPopupItemView::CreateLabelWithStyleAndContext(
+    const base::string16& text,
+    int text_context,
+    int text_style) const {
+  views::Label* label =
+      CreateLabelWithColorReadabilityDisabled(text, text_context, text_style);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  return label;
 }
 
 void AutofillPopupItemView::AddIcon(gfx::ImageSkia icon) {
@@ -551,6 +577,30 @@ AutofillPopupSuggestionView::AutofillPopupSuggestionView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 
+views::View* AutofillPopupSuggestionView::CreateDescriptionLabel() {
+  // When two-line display is enabled, don't display the description.
+  if (layout_type() == PopupItemLayoutType::kTwoLinesLeadingIcon)
+    return nullptr;
+  return AutofillPopupItemView::CreateDescriptionLabel();
+}
+
+views::View* AutofillPopupSuggestionView::CreateSubtextLabel() {
+  // When two-line display is disabled, use the default behavior for the popup
+  // item.
+  if (layout_type() != PopupItemLayoutType::kTwoLinesLeadingIcon)
+    return AutofillPopupItemView::CreateSubtextLabel();
+
+  base::string16 label_text =
+      popup_view_->controller()->GetSuggestionAt(line_number_).additional_label;
+  if (label_text.empty())
+    return nullptr;
+
+  views::Label* label = CreateLabelWithStyleAndContext(
+      label_text, ChromeTextContext::CONTEXT_BODY_TEXT_SMALL,
+      ChromeTextStyle::STYLE_SECONDARY);
+  return label;
+}
+
 /************** PasswordPopupSuggestionView **************/
 
 PasswordPopupSuggestionView* PasswordPopupSuggestionView::Create(
@@ -568,22 +618,33 @@ views::View* PasswordPopupSuggestionView::CreateValueLabel() {
 }
 
 views::View* PasswordPopupSuggestionView::CreateSubtextLabel() {
-  base::string16 label_text =
-      popup_view_->controller()->GetElidedLabelAt(line_number_);
-  if (label_text.empty())
+  base::string16 text_to_use;
+  if (!origin_.empty()) {
+    // Always use the origin if it's available.
+    text_to_use = origin_;
+  } else if (layout_type() == PopupItemLayoutType::kTwoLinesLeadingIcon) {
+    // In the two-line layout only, the masked password can be used.
+    text_to_use = masked_password_;
+  }
+
+  if (text_to_use.empty())
     return nullptr;
-  views::Label* label = CreateSecondaryLabel(label_text);
+
+  views::Label* label = CreateSecondaryLabel(text_to_use);
   label->SetElideBehavior(gfx::ELIDE_HEAD);
   return new ConstrainedWidthView(label, kAutofillPopupUsernameMaxWidth);
 }
 
 views::View* PasswordPopupSuggestionView::CreateDescriptionLabel() {
-  base::string16 text =
-      popup_view_->controller()->GetSuggestionAt(line_number_).additional_label;
-  if (text.empty())
+  // When no origin text is available, the two-line layout will use the masked
+  // password in the subtext label, so it should not be reused here.
+  if ((origin_.empty() &&
+       layout_type() == PopupItemLayoutType::kTwoLinesLeadingIcon) ||
+      masked_password_.empty()) {
     return nullptr;
+  }
 
-  views::Label* label = CreateSecondaryLabel(text);
+  views::Label* label = CreateSecondaryLabel(masked_password_);
   label->SetElideBehavior(gfx::TRUNCATE);
   return new ConstrainedWidthView(label, kAutofillPopupPasswordMaxWidth);
 }
@@ -596,7 +657,11 @@ bool PasswordPopupSuggestionView::ShouldUseCustomFontWeightForPrimaryInfo(
 PasswordPopupSuggestionView::PasswordPopupSuggestionView(
     AutofillPopupViewNativeViews* popup_view,
     int line_number)
-    : AutofillPopupSuggestionView(popup_view, line_number) {}
+    : AutofillPopupSuggestionView(popup_view, line_number) {
+  origin_ = popup_view_->controller()->GetElidedLabelAt(line_number_);
+  masked_password_ =
+      popup_view_->controller()->GetSuggestionAt(line_number_).additional_label;
+}
 
 /************** AutofillPopupFooterView **************/
 

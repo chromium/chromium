@@ -4,6 +4,7 @@
 
 #include "chrome/browser/data_use_measurement/page_load_capping/page_load_capping_infobar_delegate.h"
 
+#include "base/bind_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/infobars/mock_infobar_service.h"
@@ -61,7 +62,8 @@ TEST_F(PageLoadCappingInfoBarDelegateTest, ClickingCreatesNewInfobar) {
       web_contents(),
       base::BindRepeating(
           &PageLoadCappingInfoBarDelegateTest::PauseSubresourceLoading,
-          base::Unretained(this))));
+          base::Unretained(this)),
+      base::DoNothing()));
   histogram_tester.ExpectUniqueSample(
       "HeavyPageCapping.InfoBarInteraction",
       PageLoadCappingInfoBarDelegate::InfoBarInteraction::kShowedInfoBar, 1);

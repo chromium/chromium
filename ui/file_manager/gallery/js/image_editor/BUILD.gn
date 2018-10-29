@@ -47,7 +47,7 @@ js_library("exif_encoder") {
   externs_list = [ "../../../externs/exif_entry.js" ]
 }
 
-js_library("exif_encoder_unittest") {
+js_unittest("exif_encoder_unittest") {
   deps = [
     ":exif_encoder",
     ":test_util",
@@ -120,12 +120,12 @@ js_library("image_encoder") {
   ]
 }
 
-js_library("image_encoder_unittest") {
+js_unittest("image_encoder_unittest") {
   deps = [
     ":image_encoder",
     ":test_util",
-    "../../../file_manager/common/js:unittest_util",
     "../../../file_manager/foreground/js/metadata:metadata_parser",
+    "//ui/file_manager/base/js:test_error_reporting",
   ]
   externs_list = [ "../../../externs/metadata_worker_window.js" ]
 }
@@ -173,13 +173,13 @@ js_library("image_view") {
     ":image_util",
     ":viewport",
     "..:gallery_item",
-    "../../../file_manager/common/js:metrics",
+    "../../../file_manager/common/js:metrics_base",
     "../../../file_manager/foreground/js:thumbnail_loader",
     "//ui/webui/resources/js:assert",
   ]
 }
 
-js_library("image_view_unittest") {
+js_unittest("image_view_unittest") {
   deps = [
     ":image_view",
     "..:mock_gallery_item",
@@ -207,6 +207,7 @@ js_unit_tests("unit_tests") {
 }
 
 group("closure_compile") {
+  testonly = true
   deps = [
     ":closure_compile_module",
     ":unit_tests_type_check",

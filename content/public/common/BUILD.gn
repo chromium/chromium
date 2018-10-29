@@ -147,8 +147,6 @@ jumbo_source_set("common_sources") {
     "drop_data.h",
     "favicon_url.cc",
     "favicon_url.h",
-    "file_chooser_file_info.cc",
-    "file_chooser_file_info.h",
     "font_cache_dispatcher_win.h",
     "frame_navigate_params.cc",
     "frame_navigate_params.h",
@@ -171,6 +169,8 @@ jumbo_source_set("common_sources") {
     "mhtml_generation_params.h",
     "mime_handler_view_mode.cc",
     "mime_handler_view_mode.h",
+    "network_service_util.cc",
+    "network_service_util.h",
     "origin_util.h",
     "page_importance_signals.h",
     "page_state.cc",
@@ -216,6 +216,7 @@ jumbo_source_set("common_sources") {
     "use_zoom_for_dsf_policy.cc",
     "use_zoom_for_dsf_policy.h",
     "user_agent.h",
+    "was_activated_option.h",
     "web_preferences.cc",
     "web_preferences.h",
     "webplugininfo.cc",
@@ -243,7 +244,6 @@ jumbo_source_set("common_sources") {
     "//net",
     "//services/network:network_service",
     "//services/network/public/mojom",
-    "//services/service_manager/embedder",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
     "//third_party/blink/public:blink_headers",
@@ -259,6 +259,7 @@ jumbo_source_set("common_sources") {
     # needed because of allow_circular_includes_from.
     "//content/common:mojo_bindings",
     "//media",
+    "//media/mojo/interfaces",
     "//ppapi/buildflags",
     "//ppapi/c",
     "//services/network/public/cpp",
@@ -340,11 +341,6 @@ mojom("interfaces") {
     "//extensions/common:mojo_blink",
   ]
 
-  # imports vs deps check is disabled for this target to work around
-  # windows multiple definitions linker error caused by having
-  # both a direct and an indirect dependency on the same target
-  skip_deps_check = true
-
   sources = [
     "appcache_info.mojom",
     "fullscreen_video_element.mojom",
@@ -363,9 +359,18 @@ mojom("interfaces") {
     sources += [ "font_cache_win.mojom" ]
   }
 
+  if (is_mac) {
+    sources += [
+      "ns_view_bridge_factory.mojom",
+      "web_contents_ns_view_bridge.mojom",
+    ]
+  }
+
   public_deps = [
     ":resource_type_bindings",
+    "//mojo/public/mojom/base:base",
     "//services/network/public/mojom",
+    "//services/network/public/mojom:websocket_mojom",
     "//third_party/blink/public:mojo_bindings",
     "//ui/accessibility:ax_enums_mojo",
     "//url/mojom:url_mojom_gurl",

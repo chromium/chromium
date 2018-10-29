@@ -22,7 +22,7 @@
 // N.B.: Web IDL doesn't support multiple inheritance of dictionaries.
 
 enum CanvasPixelFormat {
-    "8-8-8-8", // default
+    "uint8", // default
     "10-10-10-2",
     "12-12-12-12",
     "float16",
@@ -39,7 +39,7 @@ dictionary CanvasContextCreationAttributesModule {
     // Canvas 2D attributes
     boolean alpha = true;  // Also used for WebGL.
     [RuntimeEnabled=CanvasColorManagement] CanvasColorSpace colorSpace = "srgb";
-    [RuntimeEnabled=CanvasColorManagement] CanvasPixelFormat pixelFormat = "8-8-8-8";
+    [RuntimeEnabled=CanvasColorManagement] CanvasPixelFormat pixelFormat = "uint8";
 
     // WebGL attributes
     boolean depth = true;

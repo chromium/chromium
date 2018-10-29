@@ -1,0 +1,15 @@
+Name: enum34
+Short Name: enum34
+URL: https://bitbucket.org/stoneleaf/enum34
+License: BSD
+License File: LICENSE
+Revision: f24487b
+Security Critical: no
+
+
+Description:
+
+'Enum' backported from Python 3.4 to earlier Python versions. Only LICENSE and
+__init__.py are taken, other packaging files, documentation, etc. removed.
+
+Only used at build time.

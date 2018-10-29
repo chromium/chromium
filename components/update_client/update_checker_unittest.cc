@@ -270,9 +270,10 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
 
   // Sanity check the request.
   const auto& request = post_interceptor_->GetRequestBody(0);
-  EXPECT_THAT(request,
-              testing::HasSubstr(
-                  R"(request protocol="3.1" extra="params" testrequest="1")"));
+  EXPECT_THAT(request, testing::HasSubstr(
+                           R"(request protocol="3.1" dedup="cr" )"
+                           R"(acceptformat="crx2,crx3" extra="params" )"
+                           R"(testrequest="1")"));
   // The request must not contain any "dlpref" in the default case.
   EXPECT_THAT(request, testing::Not(testing::HasSubstr(R"( dlpref=")")));
   EXPECT_THAT(request,
@@ -280,7 +281,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
                   std::string(R"(<app appid=")") + kUpdateItemId +
                   R"(" version="0.9" brand="TEST")" +
                   (GetParam() ? R"( installsource="ondemand")" : "") +
-                  R"( ap="some_ap" enabled="1"><updatecheck/><ping r="-2" )"));
+                  R"( ap="some_ap" enabled="1"><updatecheck/><ping r="-2"/>)"));
   EXPECT_THAT(
       request,
       testing::HasSubstr(R"(<packages><package fp="fp1"/></packages></app>)"));
@@ -358,7 +359,7 @@ TEST_F(UpdateCheckerTest, UpdateCheckInvalidAp) {
   EXPECT_THAT(request, testing::HasSubstr(
                            std::string(R"(app appid=")") + kUpdateItemId +
                            R"(" version="0.9" brand="TEST" enabled="1">)" +
-                           R"(<updatecheck/><ping r="-2" )"));
+                           R"(<updatecheck/><ping r="-2"/>)"));
   EXPECT_THAT(
       request,
       testing::HasSubstr(R"(<packages><package fp="fp1"/></packages></app>)"));
@@ -387,7 +388,7 @@ TEST_F(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
       request,
       testing::HasSubstr(
           std::string(R"(<app appid=")") + kUpdateItemId +
-          R"(" version="0.9" enabled="1"><updatecheck/><ping r="-2" )"));
+          R"(" version="0.9" enabled="1"><updatecheck/><ping r="-2"/>)"));
   EXPECT_THAT(
       request,
       testing::HasSubstr(R"(<packages><package fp="fp1"/></packages></app>)"));
@@ -474,7 +475,7 @@ TEST_F(UpdateCheckerTest, UpdateCheckCupError) {
   EXPECT_THAT(request, testing::HasSubstr(
                            std::string(R"(<app appid=")") + kUpdateItemId +
                            R"(" version="0.9" brand="TEST" enabled="1">)" +
-                           R"(<updatecheck/><ping r="-2" )"));
+                           R"(<updatecheck/><ping r="-2"/>)"));
   EXPECT_THAT(
       request,
       testing::HasSubstr(R"(<packages><package fp="fp1"/></packages></app>)"));
@@ -546,7 +547,7 @@ TEST_F(UpdateCheckerTest, UpdateCheckLastRollCall) {
   ASSERT_EQ(2, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
   EXPECT_THAT(post_interceptor_->GetRequestBody(0),
-              testing::HasSubstr(R"(<ping r="5" ping_freshness=)"));
+              testing::HasSubstr(R"(<ping r="5")"));
   EXPECT_THAT(post_interceptor_->GetRequestBody(1),
               testing::HasSubstr(R"(<ping rd="3383" ping_freshness=)"));
 }
@@ -606,7 +607,7 @@ TEST_F(UpdateCheckerTest, UpdateCheckLastActive) {
   ASSERT_EQ(3, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
   EXPECT_THAT(post_interceptor_->GetRequestBody(0),
-              testing::HasSubstr(R"(<ping a="10" r="-2" ping_freshness=)"));
+              testing::HasSubstr(R"(<ping a="10" r="-2"/>)"));
   EXPECT_THAT(
       post_interceptor_->GetRequestBody(1),
       testing::HasSubstr(R"(<ping ad="3383" rd="3383" ping_freshness=)"));
@@ -940,7 +941,7 @@ TEST_F(UpdateCheckerTest, UpdatePauseResume) {
   EXPECT_THAT(request, testing::HasSubstr(
                            std::string(R"(<app appid=")") + kUpdateItemId +
                            R"(" version="0.9" brand="TEST" enabled="1">)" +
-                           R"(<updatecheck/><ping r="-2" )"));
+                           R"(<updatecheck/><ping r="-2"/>)"));
   EXPECT_THAT(
       request,
       testing::HasSubstr(R"(<packages><package fp="fp1"/></packages></app>)"));

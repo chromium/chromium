@@ -38,7 +38,7 @@
 
 namespace blink {
 
-using namespace XPath;
+using namespace xpath;
 
 Parser* Parser::current_parser_ = nullptr;
 

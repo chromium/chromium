@@ -10,19 +10,27 @@ import("//build/util/process_version.gni")
 import("//testing/test.gni")
 import("//tools/grit/repack.gni")
 
-executable("http_service") {
+source_set("http_lib") {
   sources = [
-    "service/http_service_impl.cc",
-    "service/http_service_impl.h",
-    "service/http_service_main.cc",
-    "service/url_loader_impl.cc",
-    "service/url_loader_impl.h",
+    "http_service_impl.cc",
+    "http_service_impl.h",
+    "url_loader_impl.cc",
+    "url_loader_impl.h",
   ]
-  deps = [
+  public_deps = [
     "//base:base",
     "//net:net",
-    "//third_party/fuchsia-sdk:oldhttp",
-    "//third_party/fuchsia-sdk:sys",
+    "//third_party/fuchsia-sdk/sdk:oldhttp",
+    "//third_party/fuchsia-sdk/sdk:sys",
+  ]
+}
+
+executable("http_service") {
+  sources = [
+    "http_service_main.cc",
+  ]
+  deps = [
+    ":http_lib",
   ]
 }
 
@@ -35,4 +43,19 @@ fuchsia_package("http_pkg") {
 fuchsia_package_runner("http_pkg_runner") {
   package = ":http_pkg"
   package_name_override = "http"
+}
+
+test("http_service_tests") {
+  sources = [
+    "http_service_unittest.cc",
+  ]
+  deps = [
+    ":http_lib",
+    "//base/test:run_all_unittests",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+  data = [
+    "testdata/",
+  ]
 }

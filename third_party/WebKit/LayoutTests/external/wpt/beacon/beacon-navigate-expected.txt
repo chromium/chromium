@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: NoData-NAVIGATE
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: NullData-NAVIGATE
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: UndefinedData-NAVIGATE
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallString-NAVIGATE
+FAIL Verify 'navigator.sendbeacon()' successfully sends for variant: SmallBlob-NAVIGATE Failed to execute 'sendBeacon' on 'Navigator': sendBeacon() with a Blob whose type is not any of the CORS-safelisted values for the Content-Type request header is disabled temporarily. See http://crbug.com/490015 for details.
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallBufferSource-NAVIGATE
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallFormData-NAVIGATE
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeEncoded-NAVIGATE
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeForm-NAVIGATE
+PASS Verify 'navigator.sendbeacon()' successfully sends for variant: SmallSafeContentTypeText-NAVIGATE
+Harness: the test ran to completion.
+

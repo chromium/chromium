@@ -649,8 +649,7 @@ HRESULT FontFileStream::RuntimeClassInitialize(HANDLE handle) {
     return E_FAIL;
   }
 
-  data_.Initialize(base::File(duplicate_handle));
-  if (!data_.IsValid()) {
+  if (!data_.Initialize(base::File(duplicate_handle))) {
     LogFontProxyError(MAPPED_FILE_FAILED);
     return E_FAIL;
   }

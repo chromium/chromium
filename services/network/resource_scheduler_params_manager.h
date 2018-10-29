@@ -11,6 +11,7 @@
 #include <map>
 
 #include "base/component_export.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "net/nqe/effective_connection_type.h"
 
@@ -27,7 +28,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
 
     ParamsForNetworkQuality(size_t max_delayable_requests,
                             double non_delayable_weight,
-                            bool delay_requests_on_multiplexed_connections);
+                            bool delay_requests_on_multiplexed_connections,
+                            base::Optional<base::TimeDelta> max_queuing_time);
+
+    ParamsForNetworkQuality(const ParamsForNetworkQuality& other);
 
     // The maximum number of delayable requests allowed.
     size_t max_delayable_requests;
@@ -39,6 +43,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
     // True if requests to servers that support prioritization (e.g.,
     // H2/SPDY/QUIC) should be delayed similar to other HTTP 1.1 requests.
     bool delay_requests_on_multiplexed_connections;
+
+    // The maximum duration for which a request is queued after after which the
+    // request is dispatched to the network.
+    base::Optional<base::TimeDelta> max_queuing_time;
   };
 
   ResourceSchedulerParamsManager();
@@ -73,31 +81,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
   }
 
  private:
-  // Reads the experiments params for DelayRequestsOnMultiplexedConnections
-  // finch experiment, modifies |result| based on the experiment params, and
-  // returns the modified |result|.
-  static ParamsForNetworkQualityContainer
-  GetParamsForDelayRequestsOnMultiplexedConnections(
-      ParamsForNetworkQualityContainer result);
-
-  // Reads experiment parameters and populates
-  // |params_for_network_quality_container_|. It looks for configuration
-  // parameters with sequential numeric suffixes, and stops looking after the
-  // first failure to find an experimetal parameter. A sample configuration is
-  // given below:
-  // "EffectiveConnectionType1": "Slow-2G",
-  // "MaxDelayableRequests1": "6",
-  // "NonDelayableWeight1": "2.0",
-  // "EffectiveConnectionType2": "3G",
-  // "MaxDelayableRequests2": "12",
-  // "NonDelayableWeight2": "3.0",
-  // This config implies that when Effective Connection Type (ECT) is Slow-2G,
-  // then the maximum number of non-delayable requests should be
-  // limited to 6, and the non-delayable request weight should be set to 2.
-  // When ECT is 3G, it should be limited to 12. For all other values of ECT,
-  // the default values are used.
-  static ParamsForNetworkQualityContainer GetParamsForNetworkQualityContainer();
-
   // The number of delayable requests in-flight for different ranges of the
   // network quality.
   ParamsForNetworkQualityContainer params_for_network_quality_container_;

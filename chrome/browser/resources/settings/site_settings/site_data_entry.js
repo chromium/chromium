@@ -18,15 +18,6 @@ Polymer({
   properties: {
     /** @type {!CookieDataSummaryItem} */
     model: Object,
-
-    /**
-     * Icon to use for a given site.
-     * @private
-     */
-    favicon_: {
-      type: String,
-      computed: 'computeFavicon_(model)',
-    },
   },
 
   /** @private {settings.LocalDataBrowserProxy} */
@@ -35,18 +26,6 @@ Polymer({
   /** @override */
   ready: function() {
     this.browserProxy_ = settings.LocalDataBrowserProxyImpl.getInstance();
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  computeFavicon_: function() {
-    const url = this.model.site;
-    // If the url doesn't have a scheme, inject HTTP as the scheme. Otherwise,
-    // the URL isn't valid and no icon will be returned.
-    const urlWithScheme = url.includes('://') ? url : 'http://' + url;
-    return cr.icon.getFavicon(urlWithScheme);
   },
 
   /**

@@ -1827,6 +1827,56 @@ bool TransformationMatrix::IsIntegerTranslation() const {
   return true;
 }
 
+// This is the same as gfx::Transform::Preserves2dAxisAlignment().
+bool TransformationMatrix::Preserves2dAxisAlignment() const {
+  // Check whether an axis aligned 2-dimensional rect would remain axis-aligned
+  // after being transformed by this matrix (and implicitly projected by
+  // dropping any non-zero z-values).
+  //
+  // The 4th column can be ignored because translations don't affect axis
+  // alignment. The 3rd column can be ignored because we are assuming 2d
+  // inputs, where z-values will be zero. The 3rd row can also be ignored
+  // because we are assuming 2d outputs, and any resulting z-value is dropped
+  // anyway. For the inner 2x2 portion, the only effects that keep a rect axis
+  // aligned are (1) swapping axes and (2) scaling axes. This can be checked by
+  // verifying only 1 element of every column and row is non-zero.  Degenerate
+  // cases that project the x or y dimension to zero are considered to preserve
+  // axis alignment.
+  //
+  // If the matrix does have perspective component that is affected by x or y
+  // values: The current implementation conservatively assumes that axis
+  // alignment is not preserved.
+  bool has_x_or_y_perspective = M14() != 0 || M24() != 0;
+  if (has_x_or_y_perspective)
+    return false;
+
+  constexpr double kEpsilon = std::numeric_limits<double>::epsilon();
+
+  int num_non_zero_in_row_1 = 0;
+  int num_non_zero_in_row_2 = 0;
+  int num_non_zero_in_col_1 = 0;
+  int num_non_zero_in_col_2 = 0;
+  if (std::abs(M11()) > kEpsilon) {
+    num_non_zero_in_col_1++;
+    num_non_zero_in_row_1++;
+  }
+  if (std::abs(M12()) > kEpsilon) {
+    num_non_zero_in_col_1++;
+    num_non_zero_in_row_2++;
+  }
+  if (std::abs(M21()) > kEpsilon) {
+    num_non_zero_in_col_2++;
+    num_non_zero_in_row_1++;
+  }
+  if (std::abs(M22()) > kEpsilon) {
+    num_non_zero_in_col_2++;
+    num_non_zero_in_row_2++;
+  }
+
+  return num_non_zero_in_row_1 <= 1 && num_non_zero_in_row_2 <= 1 &&
+         num_non_zero_in_col_1 <= 1 && num_non_zero_in_col_2 <= 1;
+}
+
 FloatSize TransformationMatrix::To2DTranslation() const {
   DCHECK(IsIdentityOr2DTranslation());
   return FloatSize(matrix_[3][0], matrix_[3][1]);

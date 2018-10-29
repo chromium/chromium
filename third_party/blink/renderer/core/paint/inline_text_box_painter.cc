@@ -88,13 +88,6 @@ LayoutObject& InlineTextBoxPainter::InlineLayoutObject() const {
       inline_text_box_.GetLineLayoutItem());
 }
 
-bool InlineTextBoxPainter::PaintsMarkerHighlights(
-    const LayoutObject& layout_object) {
-  return layout_object.GetNode() &&
-         layout_object.GetDocument().Markers().HasMarkers(
-             layout_object.GetNode());
-}
-
 static void ComputeOriginAndWidthForBox(const InlineTextBox& box,
                                         LayoutPoint& local_origin,
                                         LayoutUnit& width) {

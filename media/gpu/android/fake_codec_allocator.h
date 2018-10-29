@@ -9,8 +9,8 @@
 
 #include "base/sequenced_task_runner.h"
 #include "media/base/android/mock_media_codec_bridge.h"
-#include "media/gpu/android/avda_codec_allocator.h"
 #include "media/gpu/android/avda_surface_bundle.h"
+#include "media/gpu/android/codec_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/android/surface_texture.h"
@@ -19,13 +19,13 @@ namespace media {
 
 // A codec allocator that provides a configurable fake implementation
 // and lets you set expecations on the "Mock*" methods.
-class FakeCodecAllocator : public testing::NiceMock<AVDACodecAllocator> {
+class FakeCodecAllocator : public testing::NiceMock<CodecAllocator> {
  public:
   FakeCodecAllocator(scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~FakeCodecAllocator() override;
 
-  void StartThread(AVDACodecAllocatorClient* client) override;
-  void StopThread(AVDACodecAllocatorClient* client) override;
+  void StartThread(CodecAllocatorClient* client) override;
+  void StopThread(CodecAllocatorClient* client) override;
 
   // These are called with some parameters of the codec config by our
   // implementation of their respective functions.  This allows tests to set
@@ -41,7 +41,7 @@ class FakeCodecAllocator : public testing::NiceMock<AVDACodecAllocator> {
 
   std::unique_ptr<MediaCodecBridge> CreateMediaCodecSync(
       scoped_refptr<CodecConfig> config) override;
-  void CreateMediaCodecAsync(base::WeakPtr<AVDACodecAllocatorClient> client,
+  void CreateMediaCodecAsync(base::WeakPtr<CodecAllocatorClient> client,
                              scoped_refptr<CodecConfig> config) override;
   void ReleaseMediaCodec(
       std::unique_ptr<MediaCodecBridge> media_codec,
@@ -82,7 +82,7 @@ class FakeCodecAllocator : public testing::NiceMock<AVDACodecAllocator> {
   // Whether CreateMediaCodecAsync() has been called but a codec hasn't been
   // provided yet.
   bool codec_creation_pending_ = false;
-  base::WeakPtr<AVDACodecAllocatorClient> client_;
+  base::WeakPtr<CodecAllocatorClient> client_;
 
   // The surface bundle of the pending codec creation.
   scoped_refptr<AVDASurfaceBundle> pending_surface_bundle_;

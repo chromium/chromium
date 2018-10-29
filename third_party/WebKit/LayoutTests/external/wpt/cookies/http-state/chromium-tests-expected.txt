@@ -20,7 +20,6 @@ PASS chromium0018 - chromium0018
 PASS chromium0019 - chromium0019
 PASS disabled-chromium0020 - disabled-chromium0020
 PASS chromium0021 - chromium0021
-FAIL disabled-chromium0022 - disabled-chromium0022 assert_equals: expected "AAA=BB" but got "AAA=BBZYX"
-PASS disabled-chromium0023 - disabled-chromium0023
+PASS disabled-chromium0022 - disabled-chromium0022
 Harness: the test ran to completion.
 

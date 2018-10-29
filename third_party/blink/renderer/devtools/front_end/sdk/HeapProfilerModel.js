@@ -45,8 +45,14 @@ SDK.HeapProfilerModel = class extends SDK.SDKModel {
    * @return {!Promise<?Protocol.HeapProfiler.SamplingHeapProfile>}
    */
   stopSampling() {
-    this._isRecording = false;
     return this._heapProfilerAgent.stopSampling();
+  }
+
+  /**
+   * @return {!Promise<?Protocol.HeapProfiler.SamplingHeapProfile>}
+   */
+  getSamplingProfile() {
+    return this._heapProfilerAgent.getSamplingProfile();
   }
 
   startNativeSampling() {

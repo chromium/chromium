@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1018939186200882850">menu item</translation>
-<translation id="1020833440720551630">mute audio track</translation>
 <translation id="10623998915015855">toggle button</translation>
 <translation id="1088086359088493902">Seconds</translation>
 <translation id="1171774979989969504">Please enter an email address.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">credits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="1548116112524424341">play video in picture-in-picture mode</translation>
 <translation id="1589122976691792535">region</translation>
 <translation id="1591562245178063882">This month</translation>
 <translation id="1637811476055996098">Choose Files</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">tree grid</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">play on remote device</translation>
-<translation id="1838818994221231429">toggle full screen into display cutout area</translation>
 <translation id="190587075670221089">deletion</translation>
 <translation id="1907737156431278478">example</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">Double-tap left or right to skip 10s</translation>
 <translation id="5631759159893697722">abstract</translation>
-<translation id="5641012560118721995">pause playback</translation>
 <translation id="5643186887447432888">button</translation>
 <translation id="5677946354068040947">more options</translation>
 <translation id="576709008726043716">introduction</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Reset</translation>
 <translation id="5966707198760109579">Week</translation>
 <translation id="5987525920412732405">spin button</translation>
+<translation id="6011459053400940133">volume slider</translation>
 <translation id="6015796118275082299">Year</translation>
 <translation id="6023896073578205740">list box</translation>
-<translation id="6101327004457443354">un-mute audio track</translation>
 <translation id="6150588977291308318">bibliography</translation>
 <translation id="6164829606128959761">meter</translation>
 <translation id="6166809985690652833">afterword</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Hours</translation>
 <translation id="7681220483256441252">index</translation>
 <translation id="7720026100085573005">remaining time</translation>
-<translation id="7740016676195725605">stop displaying closed captions</translation>
 <translation id="7740050170769002709">HTML content</translation>
 <translation id="7750228210027921155">Picture-in-picture</translation>
 <translation id="7789962463072032349">pause</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">search text field</translation>
 <translation id="8057695513531652401">notice</translation>
 <translation id="8105797009065549151">note reference</translation>
-<translation id="8115662671911883373">start displaying closed captions</translation>
 <translation id="8117451130807776954">This week</translation>
-<translation id="819205353528511139">play film in full screen mode</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8284326494547611709">Captions</translation>
 <translation id="835897206747267392">Invalid value.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">control remote playback</translation>
 <translation id="862370744433916922">subtitle</translation>
 <translation id="8750798805984357768">Please select one of these options.</translation>
-<translation id="8785498733064193001">begin playback</translation>
 <translation id="8808573423886751634">chapter</translation>
 <translation id="8845239796550121995">Now casting to your TV</translation>
 <translation id="8851136666856101339">main</translation>

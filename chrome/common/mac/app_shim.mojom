@@ -4,6 +4,7 @@
 
 module chrome.mojom;
 
+import "content/public/common/ns_view_bridge_factory.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "ui/views_bridge_mac/mojo/bridge_factory.mojom";
 
@@ -24,11 +25,14 @@ interface AppShim {
   // Create the interface through which BridgedNativeWidget instances may be
   // created (for views::Widgets whose NSWindows exist in the app shim process).
   CreateViewsBridgeFactory(
-      views_bridge_mac.mojom.BridgeFactory& views_bridge_factory);
+      associated views_bridge_mac.mojom.BridgeFactory& views_bridge_factory);
 
-  // Signals that a previous LaunchApp message has been processed, and lets the
-  // app shim process know whether it was registered successfully.
-  LaunchAppDone(AppShimLaunchResult launch_result);
+  // Create the interface through which a content structure
+  // (RenderWidgetHostView or WebContentsView) may create an NSView that exists
+  // in the app shim process.
+  CreateContentNSViewBridgeFactory(
+      associated content.mojom.NSViewBridgeFactory&
+          content_ns_views_bridge_factory);
 
   // Instructs the shim to hide the app.
   Hide();
@@ -42,16 +46,6 @@ interface AppShim {
 
 // Interface through which the a process communicates to the browser process.
 interface AppShimHost {
-  // Signals to the main Chrome process that a shim has started. The app shim
-  // process is requesting to be associated with the given profile and app_id.
-  // Once the profile and app_id are stored, and all future messages from the
-  // app shim relate to this app.
-  LaunchApp(AppShim app_shim,
-            mojo_base.mojom.FilePath profile_dir,
-            string app_mode_id,
-            AppShimLaunchType launch_type,
-            array<mojo_base.mojom.FilePath> files);
-
   // Sent when the user has indicated a desire to focus the app, either by
   // clicking on the app's icon in the dock or by selecting it with Cmd+Tab. In
   // response, Chrome brings the app's windows to the foreground, or relaunches
@@ -64,5 +58,20 @@ interface AppShimHost {
 
   // Called when the app shim process notifies that the app should quit.
   QuitApp();
+};
+
+// The initial interface provided by the browser process. Used to bootstrap to
+// the AppShim and AppShimHost interfaces.
+interface AppShimHostBootstrap {
+  // Signals to the main Chrome process that a shim has started. The app shim
+  // process is requesting to be associated with the given profile and app_id.
+  // Once the profile and app_id are stored, and all future messages from the
+  // app shim relate to this app.
+  LaunchApp(AppShimHost& host_request,
+            mojo_base.mojom.FilePath profile_dir,
+            string app_mode_id,
+            AppShimLaunchType launch_type,
+            array<mojo_base.mojom.FilePath> files) =>
+                (AppShimLaunchResult launch_result, AppShim& app_shim_request);
 };
 

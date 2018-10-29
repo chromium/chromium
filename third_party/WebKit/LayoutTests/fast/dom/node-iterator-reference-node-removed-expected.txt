@@ -2,7 +2,6 @@ This test removes the NodeItertor's current reference node, then continues to mo
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS iter.nextNode() is testDiv
 PASS iter.nextNode() is div1
 PASS iter.nextNode() is div2

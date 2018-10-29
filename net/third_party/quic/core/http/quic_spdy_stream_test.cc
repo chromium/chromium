@@ -46,7 +46,7 @@ class TestStream : public QuicSpdyStream {
   TestStream(QuicStreamId id,
              QuicSpdySession* session,
              bool should_process_data)
-      : QuicSpdyStream(id, session),
+      : QuicSpdyStream(id, session, BIDIRECTIONAL),
         should_process_data_(should_process_data) {}
 
   void OnDataAvailable() override {
@@ -1005,9 +1005,13 @@ TEST_P(QuicSpdyStreamTest, HeaderStreamNotiferCorrespondingSpdyStream) {
                                                 ack_listener2);
   stream2_->WriteOrBufferData("Test2", false, nullptr);
 
-  QuicStreamFrame frame1(kHeadersStreamId, false, 0, "Header1");
+  QuicStreamFrame frame1(
+      QuicUtils::GetHeadersStreamId(connection_->transport_version()), false, 0,
+      "Header1");
   QuicStreamFrame frame2(stream_->id(), true, 0, "Test1");
-  QuicStreamFrame frame3(kHeadersStreamId, false, 7, "Header2");
+  QuicStreamFrame frame3(
+      QuicUtils::GetHeadersStreamId(connection_->transport_version()), false, 7,
+      "Header2");
   QuicStreamFrame frame4(stream2_->id(), false, 0, "Test2");
 
   EXPECT_CALL(*ack_listener1, OnPacketRetransmitted(7));
@@ -1063,8 +1067,10 @@ TEST_P(QuicSpdyStreamTest, SetPriorityBeforeUpdateStreamPriority) {
       SupportedVersions(GetParam()));
   std::unique_ptr<TestMockUpdateStreamSession> session(
       new testing::StrictMock<TestMockUpdateStreamSession>(connection));
-  TestStream* stream = new TestStream(GetNthClientInitiatedId(0), session.get(),
-                                      /*should_process_data=*/true);
+  TestStream* stream = new TestStream(
+      QuicSpdySessionPeer::GetNthClientInitiatedStreamId(*session, 0),
+      session.get(),
+      /*should_process_data=*/true);
   session->ActivateStream(QuicWrapUnique(stream));
 
   // QuicSpdyStream::SetPriority() should eventually call UpdateStreamPriority()

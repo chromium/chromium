@@ -1,7 +1,0 @@
-{
-  "icon_url": "inline_install_private/app/icon.png",
-  "users": "17",
-  "average_rating": 3.14,
-  "rating_count": 15,
-  "manifest": "{ \"name\": \"Test App\", \"version\": \"0.5\", \"manifest_version\": 2, \"icons\": { \"48\": \"icon.png\" }, \"app\": { \"background\": { \"scripts\": [\"background.js\"] } } }"
-}

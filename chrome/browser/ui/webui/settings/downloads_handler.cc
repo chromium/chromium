@@ -127,7 +127,8 @@ void DownloadsHandler::HandleGetDownloadLocationText(
 
   ResolveJavascriptCallback(
       base::Value(callback_id),
-      base::Value(file_manager::util::GetDownloadLocationText(profile_, path)));
+      base::Value(
+          file_manager::util::GetPathDisplayTextForSettings(profile_, path)));
 }
 #endif
 

@@ -11,7 +11,6 @@
 IPC_ENUM_TRAITS_MAX_VALUE(ui::LatencyComponentType,
                           ui::LATENCY_COMPONENT_TYPE_LAST)
 
-IPC_ENUM_TRAITS_MAX_VALUE(ui::SourceEventType,
-                          ui::SourceEventType::SOURCE_EVENT_TYPE_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(ui::SourceEventType, ui::SourceEventType::LAST)
 
 #endif  // UI_LATENCY_IPC_LATENCY_INFO_PARAM_TRAITS_MACROS_H_

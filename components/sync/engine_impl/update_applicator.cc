@@ -47,8 +47,7 @@ void UpdateApplicator::AttemptApplications(
   while (!to_apply.empty()) {
     std::vector<int64_t> to_reapply;
 
-    for (std::vector<int64_t>::iterator i = to_apply.begin();
-         i != to_apply.end(); ++i) {
+    for (auto i = to_apply.begin(); i != to_apply.end(); ++i) {
       syncable::MutableEntry entry(trans, syncable::GET_BY_HANDLE, *i);
       UpdateAttemptResponse result =
           AttemptToUpdateEntry(trans, &entry, cryptographer_);

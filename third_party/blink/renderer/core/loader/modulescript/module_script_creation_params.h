@@ -33,7 +33,9 @@ class ModuleScriptCreationParams {
   ~ModuleScriptCreationParams() = default;
 
   ModuleScriptCreationParams IsolatedCopy() const {
-    String isolated_source_text = GetSourceText().ToString().IsolatedCopy();
+    String isolated_source_text =
+        isolated_source_text_ ? isolated_source_text_.IsolatedCopy()
+                              : GetSourceText().ToString().IsolatedCopy();
     return ModuleScriptCreationParams(
         GetResponseUrl().Copy(), isolated_source_text,
         GetFetchCredentialsMode(), GetAccessControlStatus());

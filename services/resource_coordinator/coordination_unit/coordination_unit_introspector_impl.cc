@@ -4,6 +4,8 @@
 
 #include "services/resource_coordinator/coordination_unit/coordination_unit_introspector_impl.h"
 
+#include <set>
+#include <utility>
 #include <vector>
 
 #include "base/process/process_handle.h"
@@ -13,6 +15,27 @@
 #include "services/resource_coordinator/coordination_unit/page_coordination_unit_impl.h"
 #include "services/resource_coordinator/coordination_unit/process_coordination_unit_impl.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
+
+namespace {
+
+using resource_coordinator::ProcessCoordinationUnitImpl;
+using resource_coordinator::PageCoordinationUnitImpl;
+using resource_coordinator::FrameCoordinationUnitImpl;
+
+// Returns true iff the given |process| is responsible for hosting the
+// main-frame of the given |page|.
+bool HostsMainFrame(ProcessCoordinationUnitImpl* process,
+                    PageCoordinationUnitImpl* page) {
+  FrameCoordinationUnitImpl* main_frame = page->GetMainFrameCoordinationUnit();
+  if (main_frame == nullptr) {
+    // |process| can't host a frame that doesn't exist.
+    return false;
+  }
+
+  return main_frame->GetProcessCoordinationUnit() == process;
+}
+
+}  // namespace
 
 namespace resource_coordinator {
 
@@ -35,16 +58,10 @@ void CoordinationUnitIntrospectorImpl::GetProcessToURLMap(
     mojom::ProcessInfoPtr process_info(mojom::ProcessInfo::New());
     process_info->pid = base::checked_cast<base::ProcessId>(pid);
     DCHECK_NE(base::kNullProcessId, process_info->pid);
-
-    int64_t launch_time;
-    if (process_cu->GetProperty(mojom::PropertyType::kLaunchTime,
-                                &launch_time)) {
-      process_info->launch_time = base::Time::FromTimeT(launch_time);
-    }
+    process_info->launch_time = process_cu->launch_time();
 
     std::set<PageCoordinationUnitImpl*> page_cus =
         process_cu->GetAssociatedPageCoordinationUnits();
-    std::vector<resource_coordinator::mojom::PageInfoPtr> page_infos;
     for (PageCoordinationUnitImpl* page_cu : page_cus) {
       int64_t ukm_source_id;
       if (page_cu->GetProperty(
@@ -52,6 +69,8 @@ void CoordinationUnitIntrospectorImpl::GetProcessToURLMap(
               &ukm_source_id)) {
         mojom::PageInfoPtr page_info(mojom::PageInfo::New());
         page_info->ukm_source_id = ukm_source_id;
+        page_info->tab_id = page_cu->id().id;
+        page_info->hosts_main_frame = HostsMainFrame(process_cu, page_cu);
         page_info->is_visible = page_cu->IsVisible();
         page_info->time_since_last_visibility_change =
             page_cu->TimeSinceLastVisibilityChange();

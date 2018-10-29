@@ -1,0 +1,67 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chromecast.media.mixer_service;
+
+message MixerStreamParams {
+  enum StreamType {
+    STREAM_TYPE_DEFAULT = 0;
+    STREAM_TYPE_SFX = 1;
+  }
+  optional StreamType stream_type = 1;
+
+  enum ContentType {
+    CONTENT_TYPE_MEDIA = 0;
+    CONTENT_TYPE_ALARM = 1;
+    CONTENT_TYPE_COMMUNICATION = 2;
+    CONTENT_TYPE_OTHER = 3;
+  }
+  optional ContentType content_type = 2;
+
+  enum SampleFormat {
+    // Interleaved formats:
+    SAMPLE_FORMAT_INT16_I = 0;
+    SAMPLE_FORMAT_INT32_I = 1;
+    SAMPLE_FORMAT_FLOAT_I = 2;
+    // Planar formats:
+    SAMPLE_FORMAT_INT16_P = 3;
+    SAMPLE_FORMAT_INT32_P = 4;
+    SAMPLE_FORMAT_FLOAT_P = 5;
+  }
+  optional SampleFormat sample_format = 3;
+
+  optional string device_id = 4;
+
+  optional int32 sample_rate = 5;
+  optional int32 num_channels = 6;
+  optional sint32 channel_selection = 7 [default = -1];
+
+  optional int32 fill_size_frames = 8;
+  optional int32 start_threshold_frames = 9;
+  optional int32 max_buffered_frames = 10;
+
+  optional bool use_fader = 11;
+  optional int32 fade_frames = 12;
+}
+
+message BufferPushResult {
+  optional fixed64 next_playback_timestamp = 1;
+}
+
+message EosPlayedOut {}
+
+message Volume {
+  optional float volume = 1;
+}
+
+message Generic {
+  optional MixerStreamParams params = 1;
+  optional BufferPushResult push_result = 2;
+  optional EosPlayedOut eos_played_out = 3;
+  optional Volume set_volume = 4;
+}

@@ -1,4 +1,5 @@
 rootWebArea
 ++form
 ++++textField
+++++++genericContainer
 ++++button name='Submit'

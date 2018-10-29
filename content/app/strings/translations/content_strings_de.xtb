@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1018939186200882850">Menüpunkt</translation>
-<translation id="1020833440720551630">Ton ausschalten</translation>
 <translation id="10623998915015855">Schaltfläche zum Umschalten</translation>
 <translation id="1088086359088493902">Sekunden</translation>
 <translation id="1171774979989969504">Geben Sie eine E-Mail-Adresse ein.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">Mitwirkende</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">Banner</translation>
-<translation id="1548116112524424341">Video im Bild-im-Bild-Modus abspielen</translation>
 <translation id="1589122976691792535">Region</translation>
 <translation id="1591562245178063882">Aktueller Monat</translation>
 <translation id="1637811476055996098">Dateien auswählen</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">Baumraster</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">auf Remote-Gerät wiedergeben</translation>
-<translation id="1838818994221231429">Ansicht von Vollbildmodus in Display-Aussparung ein-/ausschalten</translation>
 <translation id="190587075670221089">Löschen</translation>
 <translation id="1907737156431278478">Beispiel</translation>
 <translation id="1921819250265091946">tt</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">Tippen Sie links oder rechts doppelt, um 10 s zu überspringen</translation>
 <translation id="5631759159893697722">Zusammenfassung</translation>
-<translation id="5641012560118721995">Wiedergabe anhalten</translation>
 <translation id="5643186887447432888">Schaltfläche</translation>
 <translation id="5677946354068040947">weitere Optionen</translation>
 <translation id="576709008726043716">Einleitung</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="5966707198760109579">Woche</translation>
 <translation id="5987525920412732405">Drehfeld</translation>
+<translation id="6011459053400940133">Schieberegler für die Lautstärke</translation>
 <translation id="6015796118275082299">Jahr</translation>
 <translation id="6023896073578205740">Listenfeld</translation>
-<translation id="6101327004457443354">Ton anschalten</translation>
 <translation id="6150588977291308318">Bibliografie</translation>
 <translation id="6164829606128959761">Messinstrument</translation>
 <translation id="6166809985690652833">Nachwort</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Stunden</translation>
 <translation id="7681220483256441252">Index</translation>
 <translation id="7720026100085573005">Verbleibende Zeit</translation>
-<translation id="7740016676195725605">Keine Untertitel mehr anzeigen</translation>
 <translation id="7740050170769002709">HTML-Inhalte</translation>
 <translation id="7750228210027921155">Bild-in-Bild</translation>
 <translation id="7789962463072032349">Pausieren</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">Feld für den Suchtext</translation>
 <translation id="8057695513531652401">Bemerkung</translation>
 <translation id="8105797009065549151">Hinweisreferenz</translation>
-<translation id="8115662671911883373">Untertitel ab sofort anzeigen</translation>
 <translation id="8117451130807776954">Diese Woche</translation>
-<translation id="819205353528511139">Film im Vollbildmodus ansehen</translation>
 <translation id="8199524924445686405">jjjj</translation>
 <translation id="8284326494547611709">Untertitel</translation>
 <translation id="835897206747267392">Ungültiger Wert.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">Remote-Wiedergabe steuern</translation>
 <translation id="862370744433916922">Untertitel</translation>
 <translation id="8750798805984357768">Wählen Sie eine dieser Optionen aus.</translation>
-<translation id="8785498733064193001">Wiedergabe starten</translation>
 <translation id="8808573423886751634">Kapitel</translation>
 <translation id="8845239796550121995">Wird gerade auf Ihren Fernseher gestreamt</translation>
 <translation id="8851136666856101339">main</translation>

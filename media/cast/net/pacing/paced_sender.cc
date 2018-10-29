@@ -240,7 +240,7 @@ void PacedSender::CancelSendingPacket(const PacketKey& packet_key) {
   priority_packet_list_.erase(packet_key);
 
   if (VLOG_IS_ON(2)) {
-    PacketSendHistory::iterator history_it = send_history_.find(packet_key);
+    auto history_it = send_history_.find(packet_key);
     if (history_it != send_history_.end())
       ++history_it->second.cancel_count;
   }
@@ -257,14 +257,14 @@ PacketRef PacedSender::PopNextPacket(PacketType* packet_type,
   // |send_history_| for prior transmission attempts.  Packets that have never
   // been transmitted will be popped first.  If all packets have transmitted
   // before, pop the one that has not been re-attempted for the longest time.
-  PacketList::iterator it = list->begin();
+  auto it = list->begin();
   PacketKey last_key = it->first;
   last_key.packet_id = UINT16_C(0xffff);
   PacketSendHistory::const_iterator history_it =
       send_history_.lower_bound(it->first);
   base::TimeTicks earliest_send_time =
       base::TimeTicks() + base::TimeDelta::Max();
-  PacketList::iterator found_it = it;
+  auto found_it = it;
   while (true) {
     if (history_it == send_history_.end() || it->first < history_it->first) {
       // There is no send history for this packet, which means it has not been

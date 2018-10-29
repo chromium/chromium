@@ -155,6 +155,7 @@ const char FakeShillManagerClient::kFakeEthernetNetworkGuid[] = "eth1_guid";
 
 FakeShillManagerClient::FakeShillManagerClient()
     : interactive_delay_(0),
+      cellular_carrier_(shill::kCarrierSprint),
       cellular_technology_(shill::kNetworkTechnologyGsm),
       weak_ptr_factory_(this) {
   ParseCommandLineSwitch();
@@ -350,32 +351,6 @@ void FakeShillManagerClient::GetService(
     const ErrorCallback& error_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(callback, dbus::ObjectPath()));
-}
-
-void FakeShillManagerClient::VerifyDestination(
-    const VerificationProperties& properties,
-    const BooleanCallback& callback,
-    const ErrorCallback& error_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(callback, true));
-}
-
-void FakeShillManagerClient::VerifyAndEncryptCredentials(
-    const VerificationProperties& properties,
-    const std::string& service_path,
-    const StringCallback& callback,
-    const ErrorCallback& error_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, "encrypted_credentials"));
-}
-
-void FakeShillManagerClient::VerifyAndEncryptData(
-    const VerificationProperties& properties,
-    const std::string& data,
-    const StringCallback& callback,
-    const ErrorCallback& error_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, "encrypted_data"));
 }
 
 void FakeShillManagerClient::ConnectToBestServices(
@@ -791,6 +766,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
 
   // Cellular
   state = GetInitialStateForType(shill::kTypeCellular, &enabled);
+  VLOG(1) << "Cellular state: " << state << " Enabled: " << enabled;
   if (state == kTechnologyInitializing) {
     SetTechnologyInitializing(shill::kTypeCellular, true);
   } else if (state != kTechnologyUnavailable) {
@@ -803,9 +779,9 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
     devices->AddDevice("/device/cellular1", shill::kTypeCellular,
                        "stub_cellular_device1");
     SetInitialDeviceProperty("/device/cellular1", shill::kCarrierProperty,
-                             base::Value(shill::kCarrierSprint));
+                             base::Value(cellular_carrier_));
     base::ListValue carrier_list;
-    carrier_list.AppendString(shill::kCarrierSprint);
+    carrier_list.AppendString(cellular_carrier_);
     carrier_list.AppendString(shill::kCarrierGenericUMTS);
     SetInitialDeviceProperty("/device/cellular1",
                              shill::kSupportedCarriersProperty, carrier_list);
@@ -850,6 +826,16 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
             kCellularServicePath, shill::kActivationStateProperty,
             base::Value(shill::kActivationStateNotActivated));
       }
+
+      base::Value payment_portal(base::Value::Type::DICTIONARY);
+      payment_portal.SetKey(shill::kPaymentPortalMethod, base::Value("POST"));
+      payment_portal.SetKey(shill::kPaymentPortalPostData,
+                            base::Value("iccid=123&imei=456&mdn=789"));
+      payment_portal.SetKey(shill::kPaymentPortalURL,
+                            base::Value(cellular_olp_));
+      services->SetServiceProperty(kCellularServicePath,
+                                   shill::kPaymentPortalProperty,
+                                   std::move(payment_portal));
 
       std::string shill_roaming_state;
       if (roaming_state_ == kRoamingRequired)
@@ -1130,6 +1116,12 @@ bool FakeShillManagerClient::ParseOption(const std::string& arg0,
     else
       s_tdls_busy_count = 1;
     return true;
+  } else if (arg0 == "carrier") {
+    cellular_carrier_ = arg1;
+    return true;
+  } else if (arg0 == "olp") {
+    cellular_olp_ = arg1;
+    return true;
   } else if (arg0 == "roaming") {
     // "home", "roaming", or "required"
     roaming_state_ = arg1;
@@ -1150,11 +1142,11 @@ bool FakeShillManagerClient::SetInitialNetworkState(
   std::string state;
   if (state_arg.empty() || state_arg == "1" || state_arg == "on" ||
       state_arg == "enabled" || state_arg == "connected" ||
-      state_arg == "online") {
+      state_arg == "online" || state_arg == "inactive") {
     // Enabled and connected (default value)
     state = shill::kStateOnline;
   } else if (state_arg == "0" || state_arg == "off" ||
-             state_arg == "inactive" || state_arg == shill::kStateIdle) {
+             state_arg == shill::kStateIdle) {
     // Technology enabled, services are created but are not connected.
     state = shill::kStateIdle;
   } else if (type_arg == shill::kTypeWifi && state_arg_as_int > 1) {

@@ -157,7 +157,7 @@ NetworkConnectionHandlerImpl::ConnectRequest::ConnectRequest(
     const ConnectRequest& other) = default;
 
 NetworkConnectionHandlerImpl::NetworkConnectionHandlerImpl()
-    : cert_loader_(NULL),
+    : network_cert_loader_(NULL),
       network_state_handler_(NULL),
       configuration_handler_(NULL),
       logged_in_(false),
@@ -166,8 +166,8 @@ NetworkConnectionHandlerImpl::NetworkConnectionHandlerImpl()
 NetworkConnectionHandlerImpl::~NetworkConnectionHandlerImpl() {
   if (network_state_handler_)
     network_state_handler_->RemoveObserver(this, FROM_HERE);
-  if (cert_loader_)
-    cert_loader_->RemoveObserver(this);
+  if (network_cert_loader_)
+    network_cert_loader_->RemoveObserver(this);
   if (LoginState::IsInitialized())
     LoginState::Get()->RemoveObserver(this);
 }
@@ -179,15 +179,15 @@ void NetworkConnectionHandlerImpl::Init(
   if (LoginState::IsInitialized())
     LoginState::Get()->AddObserver(this);
 
-  if (CertLoader::IsInitialized()) {
-    cert_loader_ = CertLoader::Get();
-    cert_loader_->AddObserver(this);
-    if (cert_loader_->initial_load_finished()) {
+  if (NetworkCertLoader::IsInitialized()) {
+    network_cert_loader_ = NetworkCertLoader::Get();
+    network_cert_loader_->AddObserver(this);
+    if (network_cert_loader_->initial_load_finished()) {
       NET_LOG_EVENT("Certificates Loaded", "");
       certificates_loaded_ = true;
     }
   } else {
-    // TODO(tbarzic): Require a mock or stub cert_loader in tests.
+    // TODO(tbarzic): Require a mock or stub |network_cert_loader| in tests.
     NET_LOG_EVENT("Certificate Loader not initialized", "");
     certificates_loaded_ = true;
   }
@@ -522,7 +522,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
                    << client_cert_type;
 
     // User must be logged in to connect to a network requiring a certificate.
-    if (!logged_in_ || !cert_loader_) {
+    if (!logged_in_ || !network_cert_loader_) {
       NET_LOG(ERROR) << "User not logged in for: " << service_path;
       ErrorCallbackForPendingRequest(service_path, kErrorCertificateRequired);
       return;
@@ -537,7 +537,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     // Check certificate properties from policy.
     if (cert_config_from_policy.client_cert_type ==
         onc::client_cert::kPattern) {
-      if (!ClientCertResolver::ResolveCertificatePatternSync(
+      if (!ClientCertResolver::ResolveClientCertificateSync(
               client_cert_type, cert_config_from_policy, &config_properties)) {
         NET_LOG(ERROR) << "Non matching certificate for: " << service_path;
         ErrorCallbackForPendingRequest(service_path, kErrorCertificateRequired);

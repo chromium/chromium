@@ -19,6 +19,10 @@ public class SelectionDelegate<E> {
     // True if the SelectionDelegate should only support a single item being selected at a time.
     private boolean mIsSingleSelection;
 
+    // If true, we can enter the selection mode even though zero items are currently selected.
+    // When the number of items drops to zero again, this will automatically turn off.
+    private boolean mEnableSelectionForZeroItems;
+
     /**
      * Observer interface to be notified of selection changes.
      * @param <E> The type of the selectable items this delegate interacts with.
@@ -43,6 +47,15 @@ public class SelectionDelegate<E> {
     }
 
     /**
+     * Enables selection mode even though there are zero items selected.
+     * @param enable True, for entering selection mode. False, to turn-off this mode.
+     */
+    public void setSelectionModeEnabledForZeroItems(boolean enable) {
+        mEnableSelectionForZeroItems = enable;
+        notifyObservers();
+    }
+
+    /**
      * Toggles the selected state for the given item.
      * @param item The item to toggle.
      * @return Whether the item is selected.
@@ -54,6 +67,8 @@ public class SelectionDelegate<E> {
             if (mIsSingleSelection) mSelectedItems.clear();
             mSelectedItems.add(item);
         }
+
+        if (mSelectedItems.isEmpty()) mEnableSelectionForZeroItems = false;
 
         notifyObservers();
 
@@ -82,13 +97,14 @@ public class SelectionDelegate<E> {
      * @return Whether any items are selected.
      */
     public boolean isSelectionEnabled() {
-        return !mSelectedItems.isEmpty();
+        return !mSelectedItems.isEmpty() || mEnableSelectionForZeroItems;
     }
 
    /**
     * Clears all selected items.
     */
     public void clearSelection() {
+        mEnableSelectionForZeroItems = false;
         mSelectedItems.clear();
         notifyObservers();
     }

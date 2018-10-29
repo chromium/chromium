@@ -552,7 +552,7 @@ InputEvent::InputType TypingCommand::GetInputType() const {
     return input_type_;
 
   switch (command_type_) {
-    // TODO(chongz): |DeleteSelection| is used by IME but we don't have
+    // TODO(editing-dev): |DeleteSelection| is used by IME but we don't have
     // direction info.
     case kDeleteSelection:
       return InputType::kDeleteContentBackward;

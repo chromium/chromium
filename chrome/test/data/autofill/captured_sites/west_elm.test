@@ -1,0 +1,355 @@
+{
+  "startingURL": "https://www.westelm.com/checkout/shipping.html",
+  "autofillProfile": [
+    {
+      "type": "ADDRESS_HOME_CITY",
+      "value": "Austin"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE1",
+      "value": "4120 Freidrich Lane"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE2",
+      "value": "Apt 8"
+    },
+    {
+      "type": "ADDRESS_HOME_STATE",
+      "value": "TX"
+    },
+    {
+      "type": "ADDRESS_HOME_ZIP",
+      "value": "78744"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "value": "2027"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_MONTH",
+      "value": "5"
+    },
+    {
+      "type": "CREDIT_CARD_NUMBER",
+      "value": "9621327911759602"
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "value": "red.swingline@initech.com"
+    },
+    {
+      "type": "NAME_FULL",
+      "value": "Milton C. Waddams"
+    },
+    {
+      "type": "PHONE_HOME_CITY_AND_NUMBER",
+      "value": "5125551234"
+    }
+  ],
+  "passwordManagerProfiles": [],
+  "actions": [
+    {
+      "selector": "//input[@type=\"text\" and @id=\"shipTo.address.fullName\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 1
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane",
+      "selector": "//input[@type=\"text\" and @id=\"shipTo.address.addrLine1\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_LINE1",
+      "action_index": 2
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@type=\"text\" and @id=\"shipTo.address.addrLine2\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_LINE2",
+      "action_index": 3
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Austin",
+      "selector": "//input[@type=\"text\" and @id=\"shipTo.address.city\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_CITY",
+      "action_index": 4
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "TX",
+      "selector": "//select",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_STATE",
+      "action_index": 5
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@type=\"text\" and @id=\"shipTo.address.zip\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_ZIP",
+      "action_index": 6
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5125551234",
+      "selector": "//input[@type=\"tel\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 7
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton C. Waddams",
+      "selector": "//input[@type=\"text\" and @id=\"shipTo.address.fullName\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "NAME_FULL",
+      "action_index": 8
+    },
+    {
+      "selector": "//button",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 9
+    },
+    {
+      "url": "https://www.westelm.com/checkout/deliveryoptions.html",
+      "context": {
+        "isIframe": false
+      },
+      "type": "loadPage",
+      "action_index": 10
+    },
+    {
+      "selector": "//button",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 11
+    },
+    {
+      "url": "https://www.westelm.com/checkout/billing.html",
+      "context": {
+        "isIframe": false
+      },
+      "type": "loadPage",
+      "action_index": 12
+    },
+    {
+      "selector": "//input[@type=\"text\" and @id=\"address.fullName\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 13
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane",
+      "selector": "//input[@type=\"text\" and @id=\"address.addrLine1\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_LINE1",
+      "action_index": 14
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@type=\"text\" and @id=\"address.addrLine2\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_LINE2",
+      "action_index": 15
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Austin",
+      "selector": "//input[@type=\"text\" and @id=\"address.city\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_CITY",
+      "action_index": 16
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "TX",
+      "selector": "//select",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_STATE",
+      "action_index": 17
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@type=\"text\" and @id=\"address.zip\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_ZIP",
+      "action_index": 18
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5125551234",
+      "selector": "//input[@type=\"tel\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 19
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "red.swingline@initech.com",
+      "selector": "//input[@type=\"email\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "EMAIL_ADDRESS",
+      "action_index": 20
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton C. Waddams",
+      "selector": "//input[@type=\"text\" and @id=\"address.fullName\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "NAME_FULL",
+      "action_index": 21
+    },
+    {
+      "selector": "//button",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 22
+    },
+    {
+      "url": "https://www.westelm.com/checkout/issue/ordererror.html",
+      "context": {
+        "isIframe": false
+      },
+      "type": "loadPage",
+      "action_index": 23
+    },
+    {
+      "selector": "//button",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 24
+    },
+    {
+      "url": "https://www.westelm.com/checkout/payment.html",
+      "context": {
+        "isIframe": false
+      },
+      "type": "loadPage",
+      "action_index": 25
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "index": 2,
+      "selector": "//select[@name=\"creditCard.cardId\"]",
+      "type": "select",
+      "visibility": 3,
+      "action_index": 26
+    },
+    {
+      "selector": "//input[@type=\"text\" and @id=\"creditCard.cardNumber\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 27
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5",
+      "selector": "//select[@name=\"creditCard.cardExpMonth\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_EXP_MONTH",
+      "action_index": 28
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "2027",
+      "selector": "//select[@name=\"creditCard.cardExpYear\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "action_index": 29
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "9621327911759602",
+      "selector": "//input[@type=\"text\" and @id=\"creditCard.cardNumber\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_NUMBER",
+      "action_index": 30
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://html.spec.whatwg.org/C/webappapis.html#event-handler-attributes
+
+// This definition is different from standard in order to handle special types
+// (OnErrorEventHandler, OnBeforeUnloadEventHandler) in the same type with
+// regular EventHandler.
+[TreatNonObjectAsNull]
+callback EventHandlerNonNull = any (any... args);

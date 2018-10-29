@@ -1,4 +1,4 @@
- {
+{
   "layers": [
     {
       "name": "LayoutView #document",

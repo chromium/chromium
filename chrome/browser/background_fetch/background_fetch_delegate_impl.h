@@ -31,10 +31,6 @@ namespace offline_items_collection {
 class OfflineContentAggregator;
 }  // namespace offline_items_collection
 
-namespace storage {
-class BlobDataHandle;
-}  // namespace storage
-
 // Implementation of BackgroundFetchDelegate using the DownloadService. This
 // also implements OfflineContentProvider which allows it to show notifications
 // for its downloads.
@@ -77,18 +73,18 @@ class BackgroundFetchDelegateImpl
   // the bytes downloaded exceed the total download size, if specified.
   void FailFetch(const std::string& job_unique_id);
 
-  void OnDownloadStarted(const std::string& guid,
-                         std::unique_ptr<content::BackgroundFetchResponse>);
+  void OnDownloadStarted(
+      const std::string& guid,
+      std::unique_ptr<content::BackgroundFetchResponse> response);
 
   void OnDownloadUpdated(const std::string& guid, uint64_t bytes_downloaded);
 
   void OnDownloadFailed(const std::string& guid,
-                        download::Client::FailureReason reason);
+                        std::unique_ptr<content::BackgroundFetchResult> result);
 
-  void OnDownloadSucceeded(const std::string& guid,
-                           const base::FilePath& path,
-                           base::Optional<storage::BlobDataHandle> blob_handle,
-                           uint64_t size);
+  void OnDownloadSucceeded(
+      const std::string& guid,
+      std::unique_ptr<content::BackgroundFetchResult> result);
 
   // OfflineContentProvider implementation:
   void OpenItem(offline_items_collection::LaunchLocation location,
@@ -108,12 +104,35 @@ class BackgroundFetchDelegateImpl
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
+  // Whether the provided GUID is resuming from the perspective of Background
+  // Fetch.
+  bool IsGuidOutstanding(const std::string& guid) const;
+
+  // Notifies the OfflineContentAggregator of an interrupted download that is
+  // in a paused state.
+  void RestartPausedDownload(const std::string& download_guid);
+
+  // Returns the set of download GUIDs that have started but did not finish
+  // according to Background Fetch. Clears out all references to outstanding
+  // GUIDs.
+  std::set<std::string> TakeOutstandingGuids();
+
   base::WeakPtr<BackgroundFetchDelegateImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
   struct JobDetails {
+    // If a job is part of the |job_details_map_|, it will have one of these
+    // states.
+    enum class State {
+      kPendingWillStartPaused,
+      kPendingWillStartDownloading,
+      kStartedButPaused,
+      kStartedAndDownloading,
+      kCancelled,
+    };
+
     JobDetails(JobDetails&&);
     JobDetails(
         std::unique_ptr<content::BackgroundFetchDescription> fetch_description,
@@ -122,9 +141,7 @@ class BackgroundFetchDelegateImpl
     ~JobDetails();
 
     void UpdateOfflineItem();
-
-    bool cancelled;
-    bool failed;
+    void MarkJobAsStarted();
 
     // Set of DownloadService GUIDs that are currently downloading. They are
     // added by DownloadUrl and are removed when the download completes, fails
@@ -132,7 +149,10 @@ class BackgroundFetchDelegateImpl
     base::flat_set<std::string> current_download_guids;
 
     offline_items_collection::OfflineItem offline_item;
+    State job_state;
     std::unique_ptr<content::BackgroundFetchDescription> fetch_description;
+
+    base::OnceClosure on_resume;
 
    private:
     // Whether we should report progress of the job in terms of size of
@@ -142,6 +162,10 @@ class BackgroundFetchDelegateImpl
     DISALLOW_COPY_AND_ASSIGN(JobDetails);
   };
 
+  // Starts a download according to |params| belonging to |job_unique_id|.
+  void StartDownload(const std::string& job_unique_id,
+                     const download::DownloadParams& params);
+
   // Updates the OfflineItem that controls the contents of download
   // notifications and notifies any OfflineContentProvider::Observer that was
   // registered with this instance.
@@ -149,6 +173,11 @@ class BackgroundFetchDelegateImpl
 
   void OnDownloadReceived(const std::string& guid,
                           download::DownloadParams::StartResult result);
+
+  // The callback passed to DownloadRequestLimiter::CanDownload().
+  void DidGetPermissionFromDownloadRequestLimiter(
+      GetPermissionForOriginCallback callback,
+      bool has_permission);
 
   // The profile this service is being created for.
   Profile* profile_;

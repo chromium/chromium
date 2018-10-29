@@ -55,7 +55,7 @@ class TabsHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
     bindings_system()->api_system()->GetHooksForAPI("tabs")->SetDelegate(
         std::make_unique<TabsHooksDelegate>(messaging_service_.get()));
 
-    scoped_refptr<Extension> mutable_extension = BuildExtension();
+    scoped_refptr<const Extension> mutable_extension = BuildExtension();
     RegisterExtension(mutable_extension);
     extension_ = mutable_extension;
 
@@ -75,7 +75,7 @@ class TabsHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
   }
   bool UseStrictIPCMessageSender() override { return true; }
 
-  virtual scoped_refptr<Extension> BuildExtension() {
+  virtual scoped_refptr<const Extension> BuildExtension() {
     return ExtensionBuilder("foo").Build();
   }
 

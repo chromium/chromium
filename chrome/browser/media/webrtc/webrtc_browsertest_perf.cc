@@ -237,8 +237,7 @@ void PrintMetricsForSendStreams(const base::DictionaryValue& pc_dict,
   ASSERT_TRUE(pc_dict.GetDictionary("stats", &stats_dict));
   std::set<std::string> ssrc_identifiers = FindAllSsrcIdentifiers(*stats_dict);
 
-  std::set<std::string>::const_iterator ssrc_iterator =
-      ssrc_identifiers.begin();
+  auto ssrc_iterator = ssrc_identifiers.begin();
   for (; ssrc_iterator != ssrc_identifiers.end(); ++ssrc_iterator) {
     const std::string& ssrc = *ssrc_iterator;
     MaybePrintResultsForAudioSend(ssrc, pc_dict, modifier);
@@ -255,8 +254,7 @@ void PrintMetricsForRecvStreams(const base::DictionaryValue& pc_dict,
   ASSERT_TRUE(pc_dict.GetDictionary("stats", &stats_dict));
   std::set<std::string> ssrc_identifiers = FindAllSsrcIdentifiers(*stats_dict);
 
-  std::set<std::string>::const_iterator ssrc_iterator =
-      ssrc_identifiers.begin();
+  auto ssrc_iterator = ssrc_identifiers.begin();
   for (; ssrc_iterator != ssrc_identifiers.end(); ++ssrc_iterator) {
     const std::string& ssrc = *ssrc_iterator;
     MaybePrintResultsForAudioReceive(ssrc, pc_dict, modifier);

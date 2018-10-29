@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system_monitor/system_monitor.h"
+#include "base/system/system_monitor.h"
 #include "base/time/default_tick_clock.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"

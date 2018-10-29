@@ -26,8 +26,9 @@ class PaymentRequestBillingAddressSelectionCoordinatorTest
     : public PaymentRequestUnitTestBase,
       public PlatformTest {
  protected:
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     // Add testing profiles to the database. Make the less frequently used one
     // incomplete.
@@ -56,7 +57,8 @@ class PaymentRequestBillingAddressSelectionCoordinatorTest
     [coordinator_ setPaymentRequest:payment_request()];
   }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 
   UINavigationController* GetNavigationController() {
     return navigation_controller_;

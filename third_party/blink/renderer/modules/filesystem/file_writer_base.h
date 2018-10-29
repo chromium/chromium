@@ -32,28 +32,29 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_WRITER_BASE_H_
 
 #include <memory>
+#include "base/files/file.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
-class WebFileWriter;
-
-class FileWriterBase : public GarbageCollectedMixin {
-  USING_PRE_FINALIZER(FileWriterBase, Dispose);
-
+class MODULES_EXPORT FileWriterBase : public GarbageCollectedMixin {
  public:
   virtual ~FileWriterBase();
-  void Initialize(std::unique_ptr<WebFileWriter>, long long length);
+  void Initialize(const KURL& path, long long length);
 
   long long position() const { return position_; }
   long long length() const { return length_; }
 
   void Trace(blink::Visitor* visitor) override {}
 
+  virtual void Truncate(long long length);
+  virtual void Write(long long position, const String& id);
+  virtual void Cancel();
+
  protected:
   FileWriterBase();
-
-  WebFileWriter* Writer() { return writer_.get(); }
 
   void SetPosition(long long position) { position_ = position; }
 
@@ -61,14 +62,42 @@ class FileWriterBase : public GarbageCollectedMixin {
 
   void SeekInternal(long long position);
 
-  void ResetWriter();
+  // This calls DidSucceed() or DidFail() based on the value of |error_code|.
+  void DidFinish(base::File::Error error_code);
+  void DidSucceed();
+  void DidWrite(int64_t bytes, bool complete);
+  void DidFail(base::File::Error error_code);
+
+  // Derived classes must provide these methods to asynchronously perform
+  // the requested operation, and they must call the appropriate DidSomething
+  // method upon completion and as progress is made in the Write case.
+  virtual void DoTruncate(const KURL& path, int64_t offset) = 0;
+  virtual void DoWrite(const KURL& path,
+                       const String& blob_id,
+                       int64_t offset) = 0;
+  virtual void DoCancel() = 0;
+
+  // These are conditionally called by the Did* methods.
+  virtual void DidWriteImpl(int64_t bytes, bool complete) = 0;
+  virtual void DidFailImpl(base::File::Error error_code) = 0;
+  virtual void DidTruncateImpl() = 0;
 
  private:
-  void Dispose();
+  enum OperationType { kOperationNone, kOperationWrite, kOperationTruncate };
 
-  std::unique_ptr<WebFileWriter> writer_;
+  enum CancelState {
+    kCancelNotInProgress,
+    kCancelSent,
+    kCancelReceivedWriteResponse,
+  };
+
+  void FinishCancel();
+
   long long position_;
   long long length_;
+  KURL path_;
+  OperationType operation_;
+  CancelState cancel_state_;
 };
 
 }  // namespace blink

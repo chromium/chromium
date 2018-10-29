@@ -1,8 +1,8 @@
  
+
 This tests that SVG images are accessible elements and they have the same attributes as real images.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS svgImage.role is realImage.role
 PASS svgImage.name is realImage.name

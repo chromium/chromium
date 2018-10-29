@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/compiler/compiler.gni")
 import("//chrome/process_version_rc_template.gni")
 
 assert(is_win)
@@ -60,15 +61,30 @@ if (current_cpu == "x64") {
 } else {
   # Make sure that we have a copy of gcp_portmon64.dll in the root out
   # directory.
-  copy("copy_gcp_portmon_dll") {
-    if (is_clang) {
-      gcp_portmon64_toolchain = "//build/toolchain/win:win_clang_x64"
-    } else {
-      gcp_portmon64_toolchain = "//build/toolchain/win:x64"
-    }
-    gcp_portmon64_label = ":port_monitor_dll($gcp_portmon64_toolchain)"
+  if (is_clang) {
+    gcp_portmon64_toolchain = "//build/toolchain/win:win_clang_x64"
+  } else {
+    gcp_portmon64_toolchain = "//build/toolchain/win:x64"
+  }
+  gcp_portmon64_label = ":port_monitor_dll($gcp_portmon64_toolchain)"
 
-    gcp_portmon64_out_dir = get_label_info(gcp_portmon64_label, "root_out_dir")
+  gcp_portmon64_out_dir = get_label_info(gcp_portmon64_label, "root_out_dir")
+
+  if (symbol_level > 0) {
+    copy("copy_gcp_portmon_pdb") {
+      visibility = [ ":copy_gcp_portmon_dll" ]
+      sources = [
+        "$gcp_portmon64_out_dir/gcp_portmon64.dll.pdb",
+      ]
+      outputs = [
+        "$root_out_dir/{{source_file_part}}",
+      ]
+      deps = [
+        gcp_portmon64_label,
+      ]
+    }
+  }
+  copy("copy_gcp_portmon_dll") {
     sources = [
       "$gcp_portmon64_out_dir/gcp_portmon64.dll",
     ]
@@ -78,6 +94,9 @@ if (current_cpu == "x64") {
     deps = [
       gcp_portmon64_label,
     ]
+    if (symbol_level > 0) {
+      deps += [ ":copy_gcp_portmon_pdb" ]
+    }
   }
 }
 

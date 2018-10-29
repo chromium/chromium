@@ -209,7 +209,8 @@ void History::go(ScriptState* script_state,
   }
 
   DCHECK(IsMainThread());
-  Document* active_document = ToDocument(ExecutionContext::From(script_state));
+  Document* active_document =
+      To<Document>(ExecutionContext::From(script_state));
   if (!active_document)
     return;
 

@@ -70,9 +70,11 @@ test(function(t) {
 
 test(function(t) {
     assert_equals(axElementById('opt1').role, "AXRole: AXListBoxOption");
+    assert_equals(axElementById('select1').role, "AXRole: AXListBox");
 
     // Change @size to "1"
     document.getElementById('select1').setAttribute('size', '1');
+    assert_equals(axElementById('select1').role, 'AXRole: AXPopUpButton');
     assert_equals(axElementById('opt1').role, 'AXRole: AXMenuListOption');
 
     // Change @size back to "2"

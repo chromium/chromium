@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/model/model_task_test_base.h"
@@ -48,14 +49,16 @@ class AddPageTaskTest : public ModelTaskTestBase {
   void AddPage(const OfflinePageItem& page);
   bool CheckPageStored(const OfflinePageItem& page);
 
-  AddPageResult last_add_page_result() { return last_add_page_result_; }
+  const base::Optional<AddPageResult>& last_add_page_result() {
+    return last_add_page_result_;
+  }
 
  private:
-  AddPageResult last_add_page_result_ = AddPageResult::RESULT_COUNT;
+  base::Optional<AddPageResult> last_add_page_result_;
 };
 
 void AddPageTaskTest::ResetResults() {
-  last_add_page_result_ = AddPageResult::RESULT_COUNT;
+  last_add_page_result_.reset();
 }
 
 void AddPageTaskTest::OnAddPageDone(AddPageResult result) {

@@ -1,6 +1,0 @@
-CONSOLE ERROR: line 248: Uncaught EvalError: Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'unsafe-inline'".
-
-CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "img-src 'none'".
-
-ALERT: PASS (1/1)
-This test ensures that blocking an image via CSP doesn't crash if GC executes before the error event fires.

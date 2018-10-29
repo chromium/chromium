@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
@@ -127,9 +129,25 @@ class NetInfoNetworkQualityEstimatorHoldbackBrowserTest
     if (network_service_enabled_) {
       g_browser_process->network_quality_tracker()
           ->ReportEffectiveConnectionTypeForTesting(type);
+
+      // Values taken from net/nqe/network_quality_estimator_params.h.
+      // TODO(tbansal): Declare the values in a common place, and read
+      // them directly.
+      if (type == net::EFFECTIVE_CONNECTION_TYPE_3G) {
+        g_browser_process->network_quality_tracker()
+            ->ReportRTTsAndThroughputForTesting(
+                base::TimeDelta::FromMilliseconds(450), 400);
+      } else if (type == net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G) {
+        g_browser_process->network_quality_tracker()
+            ->ReportRTTsAndThroughputForTesting(
+                base::TimeDelta::FromMilliseconds(3600), 40);
+      } else {
+        NOTREACHED();
+      }
+      return;
     }
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&SimulateNetworkQualityChangeOnIO, type));
   }
 

@@ -12,15 +12,15 @@
 namespace blink {
 
 USBConfiguration* USBConfiguration::Create(const USBDevice* device,
-                                           size_t configuration_index) {
+                                           wtf_size_t configuration_index) {
   return new USBConfiguration(device, configuration_index);
 }
 
 USBConfiguration* USBConfiguration::Create(const USBDevice* device,
-                                           size_t configuration_value,
+                                           uint8_t configuration_value,
                                            ExceptionState& exception_state) {
   const auto& configurations = device->Info().configurations;
-  for (size_t i = 0; i < configurations.size(); ++i) {
+  for (wtf_size_t i = 0; i < configurations.size(); ++i) {
     if (configurations[i]->configuration_value == configuration_value)
       return new USBConfiguration(device, i);
   }
@@ -29,7 +29,7 @@ USBConfiguration* USBConfiguration::Create(const USBDevice* device,
 }
 
 USBConfiguration::USBConfiguration(const USBDevice* device,
-                                   size_t configuration_index)
+                                   wtf_size_t configuration_index)
     : device_(device), configuration_index_(configuration_index) {
   DCHECK(device_);
   DCHECK_LT(configuration_index_, device_->Info().configurations.size());
@@ -39,7 +39,7 @@ const USBDevice* USBConfiguration::Device() const {
   return device_;
 }
 
-size_t USBConfiguration::Index() const {
+wtf_size_t USBConfiguration::Index() const {
   return configuration_index_;
 }
 
@@ -50,7 +50,7 @@ const device::mojom::blink::UsbConfigurationInfo& USBConfiguration::Info()
 
 HeapVector<Member<USBInterface>> USBConfiguration::interfaces() const {
   HeapVector<Member<USBInterface>> interfaces;
-  for (size_t i = 0; i < Info().interfaces.size(); ++i)
+  for (wtf_size_t i = 0; i < Info().interfaces.size(); ++i)
     interfaces.push_back(USBInterface::Create(this, i));
   return interfaces;
 }

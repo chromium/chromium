@@ -19,7 +19,7 @@ WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(
       is_all_enabled_attrib_buffer_bound_(true) {
   array_buffer_list_.resize(ctx->MaxVertexAttribs());
   attrib_enabled_.resize(ctx->MaxVertexAttribs());
-  for (size_t i = 0; i < attrib_enabled_.size(); ++i) {
+  for (wtf_size_t i = 0; i < attrib_enabled_.size(); ++i) {
     attrib_enabled_[i] = false;
   }
 
@@ -41,9 +41,9 @@ void WebGLVertexArrayObjectBase::DispatchDetached(
   if (bound_element_array_buffer_)
     bound_element_array_buffer_->OnDetached(gl);
 
-  for (size_t i = 0; i < array_buffer_list_.size(); ++i) {
-    if (array_buffer_list_[i])
-      array_buffer_list_[i]->OnDetached(gl);
+  for (WebGLBuffer* buffer : array_buffer_list_) {
+    if (buffer)
+      buffer->OnDetached(gl);
   }
 }
 
@@ -74,7 +74,7 @@ void WebGLVertexArrayObjectBase::SetElementArrayBuffer(WebGLBuffer* buffer) {
   bound_element_array_buffer_ = buffer;
 }
 
-WebGLBuffer* WebGLVertexArrayObjectBase::GetArrayBufferForAttrib(size_t index) {
+WebGLBuffer* WebGLVertexArrayObjectBase::GetArrayBufferForAttrib(GLuint index) {
   DCHECK(index < Context()->MaxVertexAttribs());
   return array_buffer_list_[index].Get();
 }
@@ -103,7 +103,7 @@ bool WebGLVertexArrayObjectBase::GetAttribEnabled(GLuint index) const {
 
 void WebGLVertexArrayObjectBase::UpdateAttribBufferBoundStatus() {
   is_all_enabled_attrib_buffer_bound_ = true;
-  for (size_t i = 0; i < attrib_enabled_.size(); ++i) {
+  for (wtf_size_t i = 0; i < attrib_enabled_.size(); ++i) {
     if (attrib_enabled_[i] && !array_buffer_list_[i]) {
       is_all_enabled_attrib_buffer_bound_ = false;
       return;
@@ -117,7 +117,7 @@ void WebGLVertexArrayObjectBase::UnbindBuffer(WebGLBuffer* buffer) {
     bound_element_array_buffer_ = nullptr;
   }
 
-  for (size_t i = 0; i < array_buffer_list_.size(); ++i) {
+  for (wtf_size_t i = 0; i < array_buffer_list_.size(); ++i) {
     if (array_buffer_list_[i] == buffer) {
       array_buffer_list_[i]->OnDetached(Context()->ContextGL());
       array_buffer_list_[i] = nullptr;

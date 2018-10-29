@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_H_
 
 #include <string>
+#include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
@@ -25,6 +27,13 @@ class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
   // no-op.
   static void Show();
 
+  // Returns the currently displayed dialog. If no dialog exists, returns
+  // nullptr.
+  static MultiDeviceSetupDialog* Get();
+
+  // Registers a callback which will be called when the dialog is closed.
+  void AddOnCloseCallback(base::OnceClosure callback);
+
  protected:
   MultiDeviceSetupDialog();
   ~MultiDeviceSetupDialog() override;
@@ -35,6 +44,10 @@ class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
 
  private:
   static MultiDeviceSetupDialog* current_instance_;
+
+  // List of callbacks that have registered themselves to be invoked once this
+  // dialog is closed.
+  std::vector<base::OnceClosure> on_close_callbacks_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupDialog);
 };

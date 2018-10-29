@@ -80,14 +80,6 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
  private:
   class LoaderClient;
 
-  // We need to keep the wrapper alive in order to make
-  // |Stream()| alive. We can create a wrapper in the constructor, but there is
-  // a chance that GC happens after construction happens before the wrapper is
-  // connected to the value returned to the user in the JS world. This function
-  // posts a task with a ScriptPromise containing the wrapper to avoid that.
-  // TODO(yhirano): Remove this once the unified GC is available.
-  void RetainWrapperUntilV8WrapperGetReturnedToV8(ScriptState*);
-
   BytesConsumer* ReleaseHandle(ExceptionState&);
   void Abort();
   void Close();
@@ -107,13 +99,11 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
                                         ExceptionState&),
       ExceptionState& exception_state);
 
-  static void Noop(ScriptValue) {}
-
   Member<ScriptState> script_state_;
   TraceWrapperV8Reference<v8::Object> stream_;
-  Member<BytesConsumer> consumer_;
+  TraceWrapperMember<BytesConsumer> consumer_;
   // We need this member to keep it alive while loading.
-  Member<FetchDataLoader> loader_;
+  TraceWrapperMember<FetchDataLoader> loader_;
   // We need this to ensure that we detect that abort has been signalled
   // correctly.
   Member<AbortSignal> signal_;

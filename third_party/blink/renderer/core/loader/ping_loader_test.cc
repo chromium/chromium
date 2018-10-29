@@ -48,16 +48,17 @@ class PingLoaderTest : public PageTestBase {
   }
 
   void SetDocumentURL(const KURL& url) {
-    FrameLoadRequest request(nullptr, ResourceRequest(url),
-                             SubstituteData(SharedBuffer::Create()));
-    GetFrame().Loader().CommitNavigation(request);
+    GetFrame().Loader().CommitNavigation(
+        ResourceRequest(url), SubstituteData(SharedBuffer::Create()),
+        ClientRedirectPolicy::kNotClientRedirect,
+        base::UnguessableToken::Create());
     blink::test::RunPendingTasks();
     ASSERT_EQ(url.GetString(), GetDocument().Url().GetString());
   }
 
   const ResourceRequest& PingAndGetRequest(const KURL& ping_url) {
     KURL destination_url("http://navigation.destination");
-    URLTestHelpers::RegisterMockedURLLoad(
+    url_test_helpers::RegisterMockedURLLoad(
         ping_url, test::CoreTestDataPath("bar.html"), "text/html");
     PingLoader::SendLinkAuditPing(&GetFrame(), ping_url, destination_url);
     const ResourceRequest& ping_request = client_->PingRequest();
@@ -107,7 +108,7 @@ TEST_F(PingLoaderTest, LinkAuditPingPriority) {
   SetDocumentURL(KURL("http://localhost/foo.html"));
 
   KURL ping_url("https://localhost/bar.html");
-  URLTestHelpers::RegisterMockedURLLoad(
+  url_test_helpers::RegisterMockedURLLoad(
       ping_url, test::CoreTestDataPath("bar.html"), "text/html");
   PingLoader::SendLinkAuditPing(&GetFrame(), ping_url, destination_url);
   Platform::Current()->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
@@ -121,7 +122,7 @@ TEST_F(PingLoaderTest, ViolationPriority) {
   SetDocumentURL(KURL("http://localhost/foo.html"));
 
   KURL ping_url("https://localhost/bar.html");
-  URLTestHelpers::RegisterMockedURLLoad(
+  url_test_helpers::RegisterMockedURLLoad(
       ping_url, test::CoreTestDataPath("bar.html"), "text/html");
   PingLoader::SendViolationReport(&GetFrame(), ping_url,
                                   EncodedFormData::Create(),
@@ -137,7 +138,7 @@ TEST_F(PingLoaderTest, BeaconPriority) {
   SetDocumentURL(KURL("https://localhost/foo.html"));
 
   KURL ping_url("https://localhost/bar.html");
-  URLTestHelpers::RegisterMockedURLLoad(
+  url_test_helpers::RegisterMockedURLLoad(
       ping_url, test::CoreTestDataPath("bar.html"), "text/html");
   PingLoader::SendBeacon(&GetFrame(), ping_url, "hello");
   Platform::Current()->GetURLLoaderMockFactory()->ServeAsynchronousRequests();

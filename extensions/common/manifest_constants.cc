@@ -715,10 +715,13 @@ const char kMissingFile[] =
 const char kMultipleOverrides[] =
     "An extension cannot override more than one page.";
 const char kNoWildCardsInPaths[] =
-  "Wildcards are not allowed in extent URL pattern paths.";
+    "Wildcards are not allowed in extent URL pattern paths.";
 const char kNPAPIPluginsNotSupported[] = "NPAPI plugins are not supported.";
 const char kOneUISurfaceOnly[] =
     "Only one of 'browser_action', 'page_action', and 'app' can be specified.";
+const char kPermissionMarkedOptionalAndRequired[] =
+    "Optional permission '*' is redundant with the required permissions;"
+    "this permission will be omitted.";
 const char kPermissionMustBeOptional[] =
     "Permission '*' must be specified in the optional section of the manifest.";
 const char kPermissionNotAllowed[] =

@@ -216,6 +216,11 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     virtual void DismissPictureBuffer(int32_t picture_buffer_id) = 0;
 
     // Callback to deliver decoded pictures ready to be displayed.
+    // Note: the decoded pictures might be sent to the client more than once.
+    // The client should call ReusePictureBuffer() once for each PictureReady().
+    // For example, VDA calls Client::PictureReady() twice for a picture buffer.
+    // Then the client should also call VDA::ReusePictureBuffer() twice.
+    // Until that, VDA cannot reuse the picture buffer.
     virtual void PictureReady(const Picture& picture) = 0;
 
     // Callback to notify that decoded has decoded the end of the current
@@ -309,6 +314,11 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   // Sends picture buffers to be reused by the decoder. This needs to be called
   // for each buffer that has been processed so that decoder may know onto which
   // picture buffers it can write the output to.
+  // Note: the decoded pictures might be sent to the client more than once.
+  // The client should call ReusePictureBuffer() once for each PictureReady().
+  // For example, VDA calls Client::PictureReady() twice for a picture buffer.
+  // Then the client should also call VDA::ReusePictureBuffer() twice.
+  // Until that, VDA can really reuse the picture buffer.
   //
   // Parameters:
   //  |picture_buffer_id| id of the picture buffer that is to be reused.

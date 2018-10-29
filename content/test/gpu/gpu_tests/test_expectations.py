@@ -7,13 +7,23 @@ import urlparse
 
 # Valid expectation conditions are:
 #
-# Operating systems:
-#     win, xp, vista, win7, win8, win10, mac, leopard, snowleopard,
-#     lion, mountainlion, mavericks, yosemite, sierra, highsierra,
-#     linux, chromeos, android
+# Operating systems (all of these are mutually exclusive, so don't
+# specify both "android" and "m" in the same expectation, for
+# example):
+#
+#     win, xp, vista, win7, win8, win10
+#
+#     mac, leopard, snowleopard, lion, mountainlion, mavericks,
+#     yosemite, sierra, highsierra, mojave
+#
+#     linux, chromeos
+#
+#     android, l, m, n, o, p, q
 #
 # Browser types:
-#     android-webview-instrumentation, android-content-shell, debug, release
+#
+#     android-webview-instrumentation, android-content-shell,
+#     android-chromium, debug, debug_x64, release, release_x64
 #
 # ASAN conditions:
 #     asan, no_asan
@@ -24,10 +34,12 @@ import urlparse
 
 WIN_CONDITIONS = ['xp', 'vista', 'win7', 'win8', 'win10']
 MAC_CONDITIONS = ['leopard', 'snowleopard', 'lion', 'mountainlion',
-                  'mavericks', 'yosemite', 'sierra', 'highsierra']
+                  'mavericks', 'yosemite', 'sierra', 'highsierra', 'mojave']
+# These aren't expanded out into "lollipop", "marshmallow", etc.
+ANDROID_CONDITIONS = ['l', 'm', 'n', 'o', 'p', 'q']
 
 OS_CONDITIONS = ['win', 'mac', 'linux', 'chromeos', 'android'] + \
-                WIN_CONDITIONS + MAC_CONDITIONS
+                WIN_CONDITIONS + MAC_CONDITIONS + ANDROID_CONDITIONS
 
 BROWSER_TYPE_CONDITIONS = [
     'android-webview-instrumentation', 'android-content-shell',
@@ -82,16 +94,8 @@ class Expectation(object):
     implementation will raise an exception if the condition is
     unsupported.
 
-    Valid expectation conditions are:
-
-    Operating systems:
-      win, xp, vista, win7, mac, leopard, snowleopard, lion,
-      mountainlion, mavericks, yosemite, sierra, linux, chromeos,
-      android
-
-    Browser types:
-      android-webview-instrumentation, android-content-shell,
-      android-chromium, debug, debug_x64, release, release_x64
+    Valid expectation conditions are listed in the comments at the top
+    of this file.
 
     Sample usage in SetExpectations in subclasses:
       self.Fail('gl-enable-vertex-attrib.html',

@@ -886,7 +886,7 @@ void PaymentsClient::StartTokenFetch(bool invalidate_old) {
 
   DCHECK(account_info_getter_);
 
-  OAuth2TokenService::ScopeSet payments_scopes;
+  identity::ScopeSet payments_scopes;
   payments_scopes.insert(kPaymentsOAuth2Scope);
   std::string account_id =
       account_info_getter_->GetAccountInfoForPaymentsServer().account_id;
@@ -905,9 +905,8 @@ void PaymentsClient::StartTokenFetch(bool invalidate_old) {
 
 void PaymentsClient::SetOAuth2TokenAndStartRequest() {
   DCHECK(resource_request_);
-  resource_request_->headers.AddHeaderFromString(
-      net::HttpRequestHeaders::kAuthorization + std::string(": Bearer ") +
-      access_token_);
+  resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                       std::string("Bearer ") + access_token_);
   StartRequest();
 }
 

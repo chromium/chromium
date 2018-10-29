@@ -34,9 +34,9 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/simple_thread.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,12 +88,14 @@ class ThreadPostingAndRunningTask : public SimpleThread {
 
   ThreadPostingAndRunningTask(TaskTracker* tracker,
                               Task* task,
+                              const TaskTraits& traits,
                               Action action,
                               bool expect_post_succeeds)
       : SimpleThread("ThreadPostingAndRunningTask"),
         tracker_(tracker),
-        owned_task_(FROM_HERE, OnceClosure(), TaskTraits(), TimeDelta()),
+        owned_task_(FROM_HERE, OnceClosure(), TimeDelta()),
         task_(task),
+        traits_(traits),
         action_(action),
         expect_post_succeeds_(expect_post_succeeds) {
     EXPECT_TRUE(task_);
@@ -105,12 +107,14 @@ class ThreadPostingAndRunningTask : public SimpleThread {
 
   ThreadPostingAndRunningTask(TaskTracker* tracker,
                               Task task,
+                              const TaskTraits& traits,
                               Action action,
                               bool expect_post_succeeds)
       : SimpleThread("ThreadPostingAndRunningTask"),
         tracker_(tracker),
         owned_task_(std::move(task)),
         task_(&owned_task_),
+        traits_(traits),
         action_(action),
         expect_post_succeeds_(expect_post_succeeds) {
     EXPECT_TRUE(owned_task_.task);
@@ -120,7 +124,8 @@ class ThreadPostingAndRunningTask : public SimpleThread {
   void Run() override {
     bool post_succeeded = true;
     if (action_ == Action::WILL_POST || action_ == Action::WILL_POST_AND_RUN) {
-      post_succeeded = tracker_->WillPostTask(task_);
+      post_succeeded =
+          tracker_->WillPostTask(task_, traits_.shutdown_behavior());
       EXPECT_EQ(expect_post_succeeds_, post_succeeded);
     }
     if (post_succeeded &&
@@ -130,7 +135,7 @@ class ThreadPostingAndRunningTask : public SimpleThread {
       testing::StrictMock<MockCanScheduleSequenceObserver>
           never_notified_observer;
       auto sequence = tracker_->WillScheduleSequence(
-          test::CreateSequenceWithTask(std::move(owned_task_)),
+          test::CreateSequenceWithTask(std::move(owned_task_), traits_),
           &never_notified_observer);
       ASSERT_TRUE(sequence);
       // Expect RunAndPopNextTask to return nullptr since |sequence| is empty
@@ -143,6 +148,7 @@ class ThreadPostingAndRunningTask : public SimpleThread {
   TaskTracker* const tracker_;
   Task owned_task_;
   Task* task_;
+  const TaskTraits traits_;
   const Action action_;
   const bool expect_post_succeeds_;
 
@@ -167,17 +173,17 @@ class TaskSchedulerTaskTrackerTest
  protected:
   TaskSchedulerTaskTrackerTest() = default;
 
-  // Creates a task with |shutdown_behavior|.
-  Task CreateTask(TaskShutdownBehavior shutdown_behavior) {
+  // Creates a task.
+  Task CreateTask() {
     return Task(
         FROM_HERE,
         Bind(&TaskSchedulerTaskTrackerTest::RunTaskCallback, Unretained(this)),
-        TaskTraits(shutdown_behavior), TimeDelta());
+        TimeDelta());
   }
 
-  void DispatchAndRunTaskWithTracker(Task task) {
+  void DispatchAndRunTaskWithTracker(Task task, const TaskTraits& traits) {
     auto sequence = tracker_.WillScheduleSequence(
-        test::CreateSequenceWithTask(std::move(task)),
+        test::CreateSequenceWithTask(std::move(task), traits),
         &never_notified_observer_);
     ASSERT_TRUE(sequence);
     tracker_.RunAndPopNextTask(std::move(sequence), &never_notified_observer_);
@@ -280,15 +286,15 @@ class TaskSchedulerTaskTrackerTest
 }  // namespace
 
 TEST_P(TaskSchedulerTaskTrackerTest, WillPostAndRunBeforeShutdown) {
-  Task task(CreateTask(GetParam()));
+  Task task(CreateTask());
 
   // Inform |task_tracker_| that |task| will be posted.
-  EXPECT_TRUE(tracker_.WillPostTask(&task));
+  EXPECT_TRUE(tracker_.WillPostTask(&task, GetParam()));
 
   // Run the task.
   EXPECT_EQ(0U, NumTasksExecuted());
 
-  DispatchAndRunTaskWithTracker(std::move(task));
+  DispatchAndRunTaskWithTracker(std::move(task), GetParam());
   EXPECT_EQ(1U, NumTasksExecuted());
 
   // Shutdown() shouldn't block.
@@ -310,14 +316,15 @@ TEST_P(TaskSchedulerTaskTrackerTest, WillPostAndRunLongTaskBeforeShutdown) {
             task_barrier->Wait();
           },
           Unretained(&task_running), Unretained(&task_barrier)),
-      TaskTraits(WithBaseSyncPrimitives(), GetParam()), TimeDelta());
+      TimeDelta());
 
   // Inform |task_tracker_| that |blocked_task| will be posted.
-  EXPECT_TRUE(tracker_.WillPostTask(&blocked_task));
+  EXPECT_TRUE(tracker_.WillPostTask(&blocked_task, GetParam()));
 
   // Create a thread to run the task. Wait until the task starts running.
   ThreadPostingAndRunningTask thread_running_task(
       &tracker_, std::move(blocked_task),
+      TaskTraits(WithBaseSyncPrimitives(), GetParam()),
       ThreadPostingAndRunningTask::Action::RUN, false);
   thread_running_task.Start();
   task_running.Wait();
@@ -344,13 +351,14 @@ TEST_P(TaskSchedulerTaskTrackerTest, WillPostAndRunLongTaskBeforeShutdown) {
 
 TEST_P(TaskSchedulerTaskTrackerTest, WillPostBeforeShutdownRunDuringShutdown) {
   // Inform |task_tracker_| that a task will be posted.
-  Task task(CreateTask(GetParam()));
-  EXPECT_TRUE(tracker_.WillPostTask(&task));
+  Task task(CreateTask());
+  EXPECT_TRUE(tracker_.WillPostTask(&task, GetParam()));
 
   // Inform |task_tracker_| that a BLOCK_SHUTDOWN task will be posted just to
   // block shutdown.
-  Task block_shutdown_task(CreateTask(TaskShutdownBehavior::BLOCK_SHUTDOWN));
-  EXPECT_TRUE(tracker_.WillPostTask(&block_shutdown_task));
+  Task block_shutdown_task(CreateTask());
+  EXPECT_TRUE(tracker_.WillPostTask(&block_shutdown_task,
+                                    TaskShutdownBehavior::BLOCK_SHUTDOWN));
 
   // Call Shutdown() asynchronously.
   CallShutdownAsync();
@@ -361,20 +369,21 @@ TEST_P(TaskSchedulerTaskTrackerTest, WillPostBeforeShutdownRunDuringShutdown) {
   EXPECT_EQ(0U, NumTasksExecuted());
   const bool should_run = GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN;
 
-  DispatchAndRunTaskWithTracker(std::move(task));
+  DispatchAndRunTaskWithTracker(std::move(task), GetParam());
   EXPECT_EQ(should_run ? 1U : 0U, NumTasksExecuted());
   VERIFY_ASYNC_SHUTDOWN_IN_PROGRESS();
 
   // Unblock shutdown by running the remaining BLOCK_SHUTDOWN task.
-  DispatchAndRunTaskWithTracker(std::move(block_shutdown_task));
+  DispatchAndRunTaskWithTracker(std::move(block_shutdown_task),
+                                TaskShutdownBehavior::BLOCK_SHUTDOWN);
   EXPECT_EQ(should_run ? 2U : 1U, NumTasksExecuted());
   WAIT_FOR_ASYNC_SHUTDOWN_COMPLETED();
 }
 
 TEST_P(TaskSchedulerTaskTrackerTest, WillPostBeforeShutdownRunAfterShutdown) {
   // Inform |task_tracker_| that a task will be posted.
-  Task task(CreateTask(GetParam()));
-  EXPECT_TRUE(tracker_.WillPostTask(&task));
+  Task task(CreateTask());
+  EXPECT_TRUE(tracker_.WillPostTask(&task, GetParam()));
 
   // Call Shutdown() asynchronously.
   CallShutdownAsync();
@@ -384,7 +393,7 @@ TEST_P(TaskSchedulerTaskTrackerTest, WillPostBeforeShutdownRunAfterShutdown) {
     VERIFY_ASYNC_SHUTDOWN_IN_PROGRESS();
 
     // Run the task to unblock shutdown.
-    DispatchAndRunTaskWithTracker(std::move(task));
+    DispatchAndRunTaskWithTracker(std::move(task), GetParam());
     EXPECT_EQ(1U, NumTasksExecuted());
     WAIT_FOR_ASYNC_SHUTDOWN_COMPLETED();
 
@@ -395,7 +404,7 @@ TEST_P(TaskSchedulerTaskTrackerTest, WillPostBeforeShutdownRunAfterShutdown) {
     WAIT_FOR_ASYNC_SHUTDOWN_COMPLETED();
 
     // The task shouldn't be allowed to run after shutdown.
-    DispatchAndRunTaskWithTracker(std::move(task));
+    DispatchAndRunTaskWithTracker(std::move(task), GetParam());
     EXPECT_EQ(0U, NumTasksExecuted());
   }
 }
@@ -403,8 +412,9 @@ TEST_P(TaskSchedulerTaskTrackerTest, WillPostBeforeShutdownRunAfterShutdown) {
 TEST_P(TaskSchedulerTaskTrackerTest, WillPostAndRunDuringShutdown) {
   // Inform |task_tracker_| that a BLOCK_SHUTDOWN task will be posted just to
   // block shutdown.
-  Task block_shutdown_task(CreateTask(TaskShutdownBehavior::BLOCK_SHUTDOWN));
-  EXPECT_TRUE(tracker_.WillPostTask(&block_shutdown_task));
+  Task block_shutdown_task(CreateTask());
+  EXPECT_TRUE(tracker_.WillPostTask(&block_shutdown_task,
+                                    TaskShutdownBehavior::BLOCK_SHUTDOWN));
 
   // Call Shutdown() asynchronously.
   CallShutdownAsync();
@@ -412,24 +422,25 @@ TEST_P(TaskSchedulerTaskTrackerTest, WillPostAndRunDuringShutdown) {
 
   if (GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN) {
     // Inform |task_tracker_| that a BLOCK_SHUTDOWN task will be posted.
-    Task task(CreateTask(GetParam()));
-    EXPECT_TRUE(tracker_.WillPostTask(&task));
+    Task task(CreateTask());
+    EXPECT_TRUE(tracker_.WillPostTask(&task, GetParam()));
 
     // Run the BLOCK_SHUTDOWN task.
     EXPECT_EQ(0U, NumTasksExecuted());
-    DispatchAndRunTaskWithTracker(std::move(task));
+    DispatchAndRunTaskWithTracker(std::move(task), GetParam());
     EXPECT_EQ(1U, NumTasksExecuted());
   } else {
     // It shouldn't be allowed to post a non BLOCK_SHUTDOWN task.
-    Task task(CreateTask(GetParam()));
-    EXPECT_FALSE(tracker_.WillPostTask(&task));
+    Task task(CreateTask());
+    EXPECT_FALSE(tracker_.WillPostTask(&task, GetParam()));
 
     // Don't try to run the task, because it wasn't allowed to be posted.
   }
 
   // Unblock shutdown by running |block_shutdown_task|.
   VERIFY_ASYNC_SHUTDOWN_IN_PROGRESS();
-  DispatchAndRunTaskWithTracker(std::move(block_shutdown_task));
+  DispatchAndRunTaskWithTracker(std::move(block_shutdown_task),
+                                TaskShutdownBehavior::BLOCK_SHUTDOWN);
   EXPECT_EQ(GetParam() == TaskShutdownBehavior::BLOCK_SHUTDOWN ? 2U : 1U,
             NumTasksExecuted());
   WAIT_FOR_ASYNC_SHUTDOWN_COMPLETED();
@@ -438,10 +449,10 @@ TEST_P(TaskSchedulerTaskTrackerTest, WillPostAndRunDuringShutdown) {
 TEST_P(TaskSchedulerTaskTrackerTest, WillPostAfterShutdown) {
   tracker_.Shutdown();
 
-  Task task(CreateTask(GetParam()));
+  Task task(CreateTask());
 
   // |task_tracker_| shouldn't allow a task to be posted after shutdown.
-  EXPECT_FALSE(tracker_.WillPostTask(&task));
+  EXPECT_FALSE(tracker_.WillPostTask(&task, GetParam()));
 }
 
 // Verify that BLOCK_SHUTDOWN and SKIP_ON_SHUTDOWN tasks can
@@ -451,8 +462,8 @@ TEST_P(TaskSchedulerTaskTrackerTest, SingletonAllowed) {
       (GetParam() != TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN);
 
   Task task(FROM_HERE, BindOnce(&ThreadRestrictions::AssertSingletonAllowed),
-            TaskTraits(GetParam()), TimeDelta());
-  EXPECT_TRUE(tracker_.WillPostTask(&task));
+            TimeDelta());
+  EXPECT_TRUE(tracker_.WillPostTask(&task, GetParam()));
 
   // Set the singleton allowed bit to the opposite of what it is expected to be
   // when |tracker| runs |task| to verify that |tracker| actually sets the
@@ -461,9 +472,10 @@ TEST_P(TaskSchedulerTaskTrackerTest, SingletonAllowed) {
 
   // Running the task should fail iff the task isn't allowed to use singletons.
   if (can_use_singletons) {
-    DispatchAndRunTaskWithTracker(std::move(task));
+    DispatchAndRunTaskWithTracker(std::move(task), GetParam());
   } else {
-    EXPECT_DCHECK_DEATH({ DispatchAndRunTaskWithTracker(std::move(task)); });
+    EXPECT_DCHECK_DEATH(
+        { DispatchAndRunTaskWithTracker(std::move(task), GetParam()); });
   }
 }
 
@@ -474,27 +486,38 @@ TEST_P(TaskSchedulerTaskTrackerTest, IOAllowed) {
   ThreadRestrictions::SetIOAllowed(false);
   Task task_with_may_block(FROM_HERE, Bind([]() {
                              // Shouldn't fail.
-                             AssertBlockingAllowed();
+                             ScopedBlockingCall scope_blocking_call(
+                                 BlockingType::WILL_BLOCK);
                            }),
-                           TaskTraits(MayBlock(), GetParam()), TimeDelta());
-  EXPECT_TRUE(tracker_.WillPostTask(&task_with_may_block));
-  DispatchAndRunTaskWithTracker(std::move(task_with_may_block));
+                           TimeDelta());
+  TaskTraits traits_with_may_block = TaskTraits(MayBlock(), GetParam());
+  EXPECT_TRUE(tracker_.WillPostTask(&task_with_may_block,
+                                    traits_with_may_block.shutdown_behavior()));
+  DispatchAndRunTaskWithTracker(std::move(task_with_may_block),
+                                traits_with_may_block);
 
   // Set the IO allowed bit. Expect TaskTracker to unset it before running a
   // task without the MayBlock() trait.
   ThreadRestrictions::SetIOAllowed(true);
   Task task_without_may_block(
-      FROM_HERE,
-      Bind([]() { EXPECT_DCHECK_DEATH({ AssertBlockingAllowed(); }); }),
-      TaskTraits(GetParam()), TimeDelta());
-  EXPECT_TRUE(tracker_.WillPostTask(&task_without_may_block));
-  DispatchAndRunTaskWithTracker(std::move(task_without_may_block));
+      FROM_HERE, Bind([]() {
+        EXPECT_DCHECK_DEATH({
+          ScopedBlockingCall scope_blocking_call(BlockingType::WILL_BLOCK);
+        });
+      }),
+      TimeDelta());
+  TaskTraits traits_without_may_block = TaskTraits(GetParam());
+  EXPECT_TRUE(tracker_.WillPostTask(
+      &task_without_may_block, traits_without_may_block.shutdown_behavior()));
+  DispatchAndRunTaskWithTracker(std::move(task_without_may_block),
+                                traits_without_may_block);
 }
 
 static void RunTaskRunnerHandleVerificationTask(TaskTracker* tracker,
-                                                Task verify_task) {
+                                                Task verify_task,
+                                                TaskTraits traits) {
   // Pretend |verify_task| is posted to respect TaskTracker's contract.
-  EXPECT_TRUE(tracker->WillPostTask(&verify_task));
+  EXPECT_TRUE(tracker->WillPostTask(&verify_task, traits.shutdown_behavior()));
 
   // Confirm that the test conditions are right (no TaskRunnerHandles set
   // already).
@@ -503,7 +526,7 @@ static void RunTaskRunnerHandleVerificationTask(TaskTracker* tracker,
 
   testing::StrictMock<MockCanScheduleSequenceObserver> never_notified_observer;
   auto sequence = tracker->WillScheduleSequence(
-      test::CreateSequenceWithTask(std::move(verify_task)),
+      test::CreateSequenceWithTask(std::move(verify_task), traits),
       &never_notified_observer);
   ASSERT_TRUE(sequence);
   tracker->RunAndPopNextTask(std::move(sequence), &never_notified_observer);
@@ -521,10 +544,10 @@ static void VerifyNoTaskRunnerHandle() {
 TEST_P(TaskSchedulerTaskTrackerTest, TaskRunnerHandleIsNotSetOnParallel) {
   // Create a task that will verify that TaskRunnerHandles are not set in its
   // scope per no TaskRunner ref being set to it.
-  Task verify_task(FROM_HERE, BindOnce(&VerifyNoTaskRunnerHandle),
-                   TaskTraits(GetParam()), TimeDelta());
+  Task verify_task(FROM_HERE, BindOnce(&VerifyNoTaskRunnerHandle), TimeDelta());
 
-  RunTaskRunnerHandleVerificationTask(&tracker_, std::move(verify_task));
+  RunTaskRunnerHandleVerificationTask(&tracker_, std::move(verify_task),
+                                      TaskTraits(GetParam()));
 }
 
 static void VerifySequencedTaskRunnerHandle(
@@ -544,10 +567,11 @@ TEST_P(TaskSchedulerTaskTrackerTest,
   Task verify_task(FROM_HERE,
                    BindOnce(&VerifySequencedTaskRunnerHandle,
                             Unretained(test_task_runner.get())),
-                   TaskTraits(GetParam()), TimeDelta());
+                   TimeDelta());
   verify_task.sequenced_task_runner_ref = test_task_runner;
 
-  RunTaskRunnerHandleVerificationTask(&tracker_, std::move(verify_task));
+  RunTaskRunnerHandleVerificationTask(&tracker_, std::move(verify_task),
+                                      TaskTraits(GetParam()));
 }
 
 static void VerifyThreadTaskRunnerHandle(
@@ -569,24 +593,23 @@ TEST_P(TaskSchedulerTaskTrackerTest,
   Task verify_task(FROM_HERE,
                    BindOnce(&VerifyThreadTaskRunnerHandle,
                             Unretained(test_task_runner.get())),
-                   TaskTraits(GetParam()), TimeDelta());
+                   TimeDelta());
   verify_task.single_thread_task_runner_ref = test_task_runner;
 
-  RunTaskRunnerHandleVerificationTask(&tracker_, std::move(verify_task));
+  RunTaskRunnerHandleVerificationTask(&tracker_, std::move(verify_task),
+                                      TaskTraits(GetParam()));
 }
 
 TEST_P(TaskSchedulerTaskTrackerTest, FlushPendingDelayedTask) {
-  Task delayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                    TimeDelta::FromDays(1));
-  tracker_.WillPostTask(&delayed_task);
+  Task delayed_task(FROM_HERE, DoNothing(), TimeDelta::FromDays(1));
+  tracker_.WillPostTask(&delayed_task, GetParam());
   // FlushForTesting() should return even if the delayed task didn't run.
   tracker_.FlushForTesting();
 }
 
 TEST_P(TaskSchedulerTaskTrackerTest, FlushAsyncForTestingPendingDelayedTask) {
-  Task delayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                    TimeDelta::FromDays(1));
-  tracker_.WillPostTask(&delayed_task);
+  Task delayed_task(FROM_HERE, DoNothing(), TimeDelta::FromDays(1));
+  tracker_.WillPostTask(&delayed_task, GetParam());
   // FlushAsyncForTesting() should callback even if the delayed task didn't run.
   bool called_back = false;
   tracker_.FlushAsyncForTesting(
@@ -596,9 +619,8 @@ TEST_P(TaskSchedulerTaskTrackerTest, FlushAsyncForTestingPendingDelayedTask) {
 }
 
 TEST_P(TaskSchedulerTaskTrackerTest, FlushPendingUndelayedTask) {
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // FlushForTesting() shouldn't return before the undelayed task runs.
   CallFlushFromAnotherThread();
@@ -606,14 +628,13 @@ TEST_P(TaskSchedulerTaskTrackerTest, FlushPendingUndelayedTask) {
   VERIFY_ASYNC_FLUSH_IN_PROGRESS();
 
   // FlushForTesting() should return after the undelayed task runs.
-  DispatchAndRunTaskWithTracker(std::move(undelayed_task));
+  DispatchAndRunTaskWithTracker(std::move(undelayed_task), GetParam());
   WAIT_FOR_ASYNC_FLUSH_RETURNED();
 }
 
 TEST_P(TaskSchedulerTaskTrackerTest, FlushAsyncForTestingPendingUndelayedTask) {
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // FlushAsyncForTesting() shouldn't callback before the undelayed task runs.
   WaitableEvent event;
@@ -623,14 +644,13 @@ TEST_P(TaskSchedulerTaskTrackerTest, FlushAsyncForTestingPendingUndelayedTask) {
   EXPECT_FALSE(event.IsSignaled());
 
   // FlushAsyncForTesting() should callback after the undelayed task runs.
-  DispatchAndRunTaskWithTracker(std::move(undelayed_task));
+  DispatchAndRunTaskWithTracker(std::move(undelayed_task), GetParam());
   event.Wait();
 }
 
 TEST_P(TaskSchedulerTaskTrackerTest, PostTaskDuringFlush) {
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // FlushForTesting() shouldn't return before the undelayed task runs.
   CallFlushFromAnotherThread();
@@ -638,26 +658,24 @@ TEST_P(TaskSchedulerTaskTrackerTest, PostTaskDuringFlush) {
   VERIFY_ASYNC_FLUSH_IN_PROGRESS();
 
   // Simulate posting another undelayed task.
-  Task other_undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                            TimeDelta());
-  tracker_.WillPostTask(&other_undelayed_task);
+  Task other_undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&other_undelayed_task, GetParam());
 
   // Run the first undelayed task.
-  DispatchAndRunTaskWithTracker(std::move(undelayed_task));
+  DispatchAndRunTaskWithTracker(std::move(undelayed_task), GetParam());
 
   // FlushForTesting() shouldn't return before the second undelayed task runs.
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());
   VERIFY_ASYNC_FLUSH_IN_PROGRESS();
 
   // FlushForTesting() should return after the second undelayed task runs.
-  DispatchAndRunTaskWithTracker(std::move(other_undelayed_task));
+  DispatchAndRunTaskWithTracker(std::move(other_undelayed_task), GetParam());
   WAIT_FOR_ASYNC_FLUSH_RETURNED();
 }
 
 TEST_P(TaskSchedulerTaskTrackerTest, PostTaskDuringFlushAsyncForTesting) {
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // FlushAsyncForTesting() shouldn't callback before the undelayed task runs.
   WaitableEvent event;
@@ -667,12 +685,11 @@ TEST_P(TaskSchedulerTaskTrackerTest, PostTaskDuringFlushAsyncForTesting) {
   EXPECT_FALSE(event.IsSignaled());
 
   // Simulate posting another undelayed task.
-  Task other_undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                            TimeDelta());
-  tracker_.WillPostTask(&other_undelayed_task);
+  Task other_undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&other_undelayed_task, GetParam());
 
   // Run the first undelayed task.
-  DispatchAndRunTaskWithTracker(std::move(undelayed_task));
+  DispatchAndRunTaskWithTracker(std::move(undelayed_task), GetParam());
 
   // FlushAsyncForTesting() shouldn't callback before the second undelayed task
   // runs.
@@ -681,18 +698,16 @@ TEST_P(TaskSchedulerTaskTrackerTest, PostTaskDuringFlushAsyncForTesting) {
 
   // FlushAsyncForTesting() should callback after the second undelayed task
   // runs.
-  DispatchAndRunTaskWithTracker(std::move(other_undelayed_task));
+  DispatchAndRunTaskWithTracker(std::move(other_undelayed_task), GetParam());
   event.Wait();
 }
 
 TEST_P(TaskSchedulerTaskTrackerTest, RunDelayedTaskDuringFlush) {
   // Simulate posting a delayed and an undelayed task.
-  Task delayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                    TimeDelta::FromDays(1));
-  tracker_.WillPostTask(&delayed_task);
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task delayed_task(FROM_HERE, DoNothing(), TimeDelta::FromDays(1));
+  tracker_.WillPostTask(&delayed_task, GetParam());
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // FlushForTesting() shouldn't return before the undelayed task runs.
   CallFlushFromAnotherThread();
@@ -700,7 +715,7 @@ TEST_P(TaskSchedulerTaskTrackerTest, RunDelayedTaskDuringFlush) {
   VERIFY_ASYNC_FLUSH_IN_PROGRESS();
 
   // Run the delayed task.
-  DispatchAndRunTaskWithTracker(std::move(delayed_task));
+  DispatchAndRunTaskWithTracker(std::move(delayed_task), GetParam());
 
   // FlushForTesting() shouldn't return since there is still a pending undelayed
   // task.
@@ -708,7 +723,7 @@ TEST_P(TaskSchedulerTaskTrackerTest, RunDelayedTaskDuringFlush) {
   VERIFY_ASYNC_FLUSH_IN_PROGRESS();
 
   // Run the undelayed task.
-  DispatchAndRunTaskWithTracker(std::move(undelayed_task));
+  DispatchAndRunTaskWithTracker(std::move(undelayed_task), GetParam());
 
   // FlushForTesting() should now return.
   WAIT_FOR_ASYNC_FLUSH_RETURNED();
@@ -716,12 +731,10 @@ TEST_P(TaskSchedulerTaskTrackerTest, RunDelayedTaskDuringFlush) {
 
 TEST_P(TaskSchedulerTaskTrackerTest, RunDelayedTaskDuringFlushAsyncForTesting) {
   // Simulate posting a delayed and an undelayed task.
-  Task delayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                    TimeDelta::FromDays(1));
-  tracker_.WillPostTask(&delayed_task);
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task delayed_task(FROM_HERE, DoNothing(), TimeDelta::FromDays(1));
+  tracker_.WillPostTask(&delayed_task, GetParam());
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // FlushAsyncForTesting() shouldn't callback before the undelayed task runs.
   WaitableEvent event;
@@ -731,7 +744,7 @@ TEST_P(TaskSchedulerTaskTrackerTest, RunDelayedTaskDuringFlushAsyncForTesting) {
   EXPECT_FALSE(event.IsSignaled());
 
   // Run the delayed task.
-  DispatchAndRunTaskWithTracker(std::move(delayed_task));
+  DispatchAndRunTaskWithTracker(std::move(delayed_task), GetParam());
 
   // FlushAsyncForTesting() shouldn't callback since there is still a pending
   // undelayed task.
@@ -739,7 +752,7 @@ TEST_P(TaskSchedulerTaskTrackerTest, RunDelayedTaskDuringFlushAsyncForTesting) {
   EXPECT_FALSE(event.IsSignaled());
 
   // Run the undelayed task.
-  DispatchAndRunTaskWithTracker(std::move(undelayed_task));
+  DispatchAndRunTaskWithTracker(std::move(undelayed_task), GetParam());
 
   // FlushAsyncForTesting() should now callback.
   event.Wait();
@@ -750,9 +763,8 @@ TEST_P(TaskSchedulerTaskTrackerTest, FlushAfterShutdown) {
     return;
 
   // Simulate posting a task.
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // Shutdown() should return immediately since there are no pending
   // BLOCK_SHUTDOWN tasks.
@@ -768,9 +780,8 @@ TEST_P(TaskSchedulerTaskTrackerTest, FlushAfterShutdownAsync) {
     return;
 
   // Simulate posting a task.
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // Shutdown() should return immediately since there are no pending
   // BLOCK_SHUTDOWN tasks.
@@ -790,9 +801,8 @@ TEST_P(TaskSchedulerTaskTrackerTest, ShutdownDuringFlush) {
     return;
 
   // Simulate posting a task.
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // FlushForTesting() shouldn't return before the undelayed task runs or
   // shutdown completes.
@@ -813,9 +823,8 @@ TEST_P(TaskSchedulerTaskTrackerTest, ShutdownDuringFlushAsyncForTesting) {
     return;
 
   // Simulate posting a task.
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // FlushAsyncForTesting() shouldn't callback before the undelayed task runs or
   // shutdown completes.
@@ -835,9 +844,8 @@ TEST_P(TaskSchedulerTaskTrackerTest, ShutdownDuringFlushAsyncForTesting) {
 }
 
 TEST_P(TaskSchedulerTaskTrackerTest, DoublePendingFlushAsyncForTestingFails) {
-  Task undelayed_task(FROM_HERE, DoNothing(), TaskTraits(GetParam()),
-                      TimeDelta());
-  tracker_.WillPostTask(&undelayed_task);
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeDelta());
+  tracker_.WillPostTask(&undelayed_task, GetParam());
 
   // FlushAsyncForTesting() shouldn't callback before the undelayed task runs.
   bool called_back = false;
@@ -846,6 +854,18 @@ TEST_P(TaskSchedulerTaskTrackerTest, DoublePendingFlushAsyncForTestingFails) {
                Unretained(&called_back)));
   EXPECT_FALSE(called_back);
   EXPECT_DCHECK_DEATH({ tracker_.FlushAsyncForTesting(BindOnce([]() {})); });
+}
+
+// Verify that a delayed task does not block shutdown, regardless of its
+// shutdown behavior.
+TEST_P(TaskSchedulerTaskTrackerTest, DelayedTasksDoNotBlockShutdown) {
+  // Simulate posting a delayed task.
+  Task delayed_task(FROM_HERE, DoNothing(), TimeDelta::FromDays(1));
+  EXPECT_TRUE(tracker_.WillPostTask(&delayed_task, GetParam()));
+
+  // Since the delayed task doesn't block shutdown, a call to Shutdown() should
+  // not hang.
+  tracker_.Shutdown();
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -872,12 +892,11 @@ void ExpectSequenceToken(SequenceToken sequence_token) {
 // Verify that SequenceToken::GetForCurrentThread() returns the Sequence's token
 // when a Task runs.
 TEST_F(TaskSchedulerTaskTrackerTest, CurrentSequenceToken) {
-  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>();
+  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(TaskTraits());
 
   const SequenceToken sequence_token = sequence->token();
-  Task task(FROM_HERE, Bind(&ExpectSequenceToken, sequence_token), TaskTraits(),
-            TimeDelta());
-  tracker_.WillPostTask(&task);
+  Task task(FROM_HERE, Bind(&ExpectSequenceToken, sequence_token), TimeDelta());
+  tracker_.WillPostTask(&task, sequence->traits().shutdown_behavior());
 
   sequence->PushTask(std::move(task));
 
@@ -895,17 +914,20 @@ TEST_F(TaskSchedulerTaskTrackerTest, LoadWillPostAndRunBeforeShutdown) {
 
   for (size_t i = 0; i < kLoadTestNumIterations; ++i) {
     threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
-        &tracker_, CreateTask(TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN),
+        &tracker_, CreateTask(),
+        TaskTraits(TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, true));
     threads.back()->Start();
 
     threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
-        &tracker_, CreateTask(TaskShutdownBehavior::SKIP_ON_SHUTDOWN),
+        &tracker_, CreateTask(),
+        TaskTraits(TaskShutdownBehavior::SKIP_ON_SHUTDOWN),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, true));
     threads.back()->Start();
 
     threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
-        &tracker_, CreateTask(TaskShutdownBehavior::BLOCK_SHUTDOWN),
+        &tracker_, CreateTask(),
+        TaskTraits(TaskShutdownBehavior::BLOCK_SHUTDOWN),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, true));
     threads.back()->Start();
   }
@@ -927,28 +949,32 @@ TEST_F(TaskSchedulerTaskTrackerTest,
   std::vector<Task> tasks_skip_on_shutdown;
   std::vector<Task> tasks_block_shutdown;
   for (size_t i = 0; i < kLoadTestNumIterations; ++i) {
-    tasks_continue_on_shutdown.push_back(
-        CreateTask(TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN));
-    tasks_skip_on_shutdown.push_back(
-        CreateTask(TaskShutdownBehavior::SKIP_ON_SHUTDOWN));
-    tasks_block_shutdown.push_back(
-        CreateTask(TaskShutdownBehavior::BLOCK_SHUTDOWN));
+    tasks_continue_on_shutdown.push_back(CreateTask());
+    tasks_skip_on_shutdown.push_back(CreateTask());
+    tasks_block_shutdown.push_back(CreateTask());
   }
+
+  TaskTraits traits_continue_on_shutdown =
+      TaskTraits(TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN);
+  TaskTraits traits_skip_on_shutdown =
+      TaskTraits(TaskShutdownBehavior::SKIP_ON_SHUTDOWN);
+  TaskTraits traits_block_shutdown =
+      TaskTraits(TaskShutdownBehavior::BLOCK_SHUTDOWN);
 
   std::vector<std::unique_ptr<ThreadPostingAndRunningTask>> post_threads;
   for (size_t i = 0; i < kLoadTestNumIterations; ++i) {
     post_threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
-        &tracker_, &tasks_continue_on_shutdown[i],
+        &tracker_, &tasks_continue_on_shutdown[i], traits_continue_on_shutdown,
         ThreadPostingAndRunningTask::Action::WILL_POST, true));
     post_threads.back()->Start();
 
     post_threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
-        &tracker_, &tasks_skip_on_shutdown[i],
+        &tracker_, &tasks_skip_on_shutdown[i], traits_skip_on_shutdown,
         ThreadPostingAndRunningTask::Action::WILL_POST, true));
     post_threads.back()->Start();
 
     post_threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
-        &tracker_, &tasks_block_shutdown[i],
+        &tracker_, &tasks_block_shutdown[i], traits_block_shutdown,
         ThreadPostingAndRunningTask::Action::WILL_POST, true));
     post_threads.back()->Start();
   }
@@ -964,16 +990,18 @@ TEST_F(TaskSchedulerTaskTrackerTest,
   for (size_t i = 0; i < kLoadTestNumIterations; ++i) {
     run_threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
         &tracker_, std::move(tasks_continue_on_shutdown[i]),
-        ThreadPostingAndRunningTask::Action::RUN, false));
+        traits_continue_on_shutdown, ThreadPostingAndRunningTask::Action::RUN,
+        false));
     run_threads.back()->Start();
 
     run_threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
         &tracker_, std::move(tasks_skip_on_shutdown[i]),
-        ThreadPostingAndRunningTask::Action::RUN, false));
+        traits_skip_on_shutdown, ThreadPostingAndRunningTask::Action::RUN,
+        false));
     run_threads.back()->Start();
 
     run_threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
-        &tracker_, std::move(tasks_block_shutdown[i]),
+        &tracker_, std::move(tasks_block_shutdown[i]), traits_block_shutdown,
         ThreadPostingAndRunningTask::Action::RUN, false));
     run_threads.back()->Start();
   }
@@ -990,8 +1018,9 @@ TEST_F(TaskSchedulerTaskTrackerTest,
 TEST_F(TaskSchedulerTaskTrackerTest, LoadWillPostAndRunDuringShutdown) {
   // Inform |task_tracker_| that a BLOCK_SHUTDOWN task will be posted just to
   // block shutdown.
-  Task block_shutdown_task(CreateTask(TaskShutdownBehavior::BLOCK_SHUTDOWN));
-  EXPECT_TRUE(tracker_.WillPostTask(&block_shutdown_task));
+  Task block_shutdown_task(CreateTask());
+  EXPECT_TRUE(tracker_.WillPostTask(&block_shutdown_task,
+                                    TaskShutdownBehavior::BLOCK_SHUTDOWN));
 
   // Call Shutdown() asynchronously.
   CallShutdownAsync();
@@ -1001,17 +1030,20 @@ TEST_F(TaskSchedulerTaskTrackerTest, LoadWillPostAndRunDuringShutdown) {
 
   for (size_t i = 0; i < kLoadTestNumIterations; ++i) {
     threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
-        &tracker_, CreateTask(TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN),
+        &tracker_, CreateTask(),
+        TaskTraits(TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, false));
     threads.back()->Start();
 
     threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
-        &tracker_, CreateTask(TaskShutdownBehavior::SKIP_ON_SHUTDOWN),
+        &tracker_, CreateTask(),
+        TaskTraits(TaskShutdownBehavior::SKIP_ON_SHUTDOWN),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, false));
     threads.back()->Start();
 
     threads.push_back(std::make_unique<ThreadPostingAndRunningTask>(
-        &tracker_, CreateTask(TaskShutdownBehavior::BLOCK_SHUTDOWN),
+        &tracker_, CreateTask(),
+        TaskTraits(TaskShutdownBehavior::BLOCK_SHUTDOWN),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, true));
     threads.back()->Start();
   }
@@ -1026,7 +1058,9 @@ TEST_F(TaskSchedulerTaskTrackerTest, LoadWillPostAndRunDuringShutdown) {
   VERIFY_ASYNC_SHUTDOWN_IN_PROGRESS();
 
   // Unblock shutdown by running |block_shutdown_task|.
-  DispatchAndRunTaskWithTracker(std::move(block_shutdown_task));
+  DispatchAndRunTaskWithTracker(
+      std::move(block_shutdown_task),
+      TaskTraits(TaskShutdownBehavior::BLOCK_SHUTDOWN));
   EXPECT_EQ(kLoadTestNumIterations + 1, NumTasksExecuted());
   WAIT_FOR_ASYNC_SHUTDOWN_COMPLETED();
 }
@@ -1035,13 +1069,16 @@ TEST_F(TaskSchedulerTaskTrackerTest, LoadWillPostAndRunDuringShutdown) {
 // when it can be rescheduled.
 TEST_F(TaskSchedulerTaskTrackerTest,
        RunAndPopNextTaskReturnsSequenceToReschedule) {
-  Task task_1(FROM_HERE, DoNothing(), TaskTraits(), TimeDelta());
-  EXPECT_TRUE(tracker_.WillPostTask(&task_1));
-  Task task_2(FROM_HERE, DoNothing(), TaskTraits(), TimeDelta());
-  EXPECT_TRUE(tracker_.WillPostTask(&task_2));
+  TaskTraits default_traits = {};
+  Task task_1(FROM_HERE, DoNothing(), TimeDelta());
+  EXPECT_TRUE(
+      tracker_.WillPostTask(&task_1, default_traits.shutdown_behavior()));
+  Task task_2(FROM_HERE, DoNothing(), TimeDelta());
+  EXPECT_TRUE(
+      tracker_.WillPostTask(&task_2, default_traits.shutdown_behavior()));
 
   scoped_refptr<Sequence> sequence =
-      test::CreateSequenceWithTask(std::move(task_1));
+      test::CreateSequenceWithTask(std::move(task_1), default_traits);
   sequence->PushTask(std::move(task_2));
   EXPECT_EQ(sequence, tracker_.WillScheduleSequence(sequence, nullptr));
 
@@ -1057,12 +1094,13 @@ void TestWillScheduleBestEffortSequenceWithMaxBestEffortSequences(
   // tasks and scheduling the associated sequences. This should succeed.
   std::vector<scoped_refptr<Sequence>> scheduled_sequences;
   testing::StrictMock<MockCanScheduleSequenceObserver> never_notified_observer;
+  TaskTraits best_effort_traits = TaskTraits(TaskPriority::BEST_EFFORT);
   for (int i = 0; i < max_num_scheduled_best_effort_sequences; ++i) {
-    Task task(FROM_HERE, DoNothing(), TaskTraits(TaskPriority::BEST_EFFORT),
-              TimeDelta());
-    EXPECT_TRUE(tracker.WillPostTask(&task));
+    Task task(FROM_HERE, DoNothing(), TimeDelta());
+    EXPECT_TRUE(
+        tracker.WillPostTask(&task, best_effort_traits.shutdown_behavior()));
     scoped_refptr<Sequence> sequence =
-        test::CreateSequenceWithTask(std::move(task));
+        test::CreateSequenceWithTask(std::move(task), best_effort_traits);
     EXPECT_EQ(sequence,
               tracker.WillScheduleSequence(sequence, &never_notified_observer));
     scheduled_sequences.push_back(std::move(sequence));
@@ -1082,10 +1120,11 @@ void TestWillScheduleBestEffortSequenceWithMaxBestEffortSequences(
         FROM_HERE,
         BindOnce([](bool* extra_task_did_run) { *extra_task_did_run = true; },
                  Unretained(extra_tasks_did_run.back().get())),
-        TaskTraits(TaskPriority::BEST_EFFORT), TimeDelta());
-    EXPECT_TRUE(tracker.WillPostTask(&extra_task));
-    extra_sequences.push_back(
-        test::CreateSequenceWithTask(std::move(extra_task)));
+        TimeDelta());
+    EXPECT_TRUE(tracker.WillPostTask(&extra_task,
+                                     best_effort_traits.shutdown_behavior()));
+    extra_sequences.push_back(test::CreateSequenceWithTask(
+        std::move(extra_task), best_effort_traits));
     extra_observers.push_back(
         std::make_unique<
             testing::StrictMock<MockCanScheduleSequenceObserver>>());
@@ -1155,10 +1194,12 @@ void SetBool(bool* arg) {
 // WillScheduleSequence() returning sequence.
 TEST_F(TaskSchedulerTaskTrackerTest,
        WillScheduleSequenceWithScopedExecutionFence) {
-  Task task_a(FROM_HERE, DoNothing(), TaskTraits(), TimeDelta());
-  EXPECT_TRUE(tracker_.WillPostTask(&task_a));
+  TaskTraits default_traits = {};
+  Task task_a(FROM_HERE, DoNothing(), TimeDelta());
+  EXPECT_TRUE(
+      tracker_.WillPostTask(&task_a, default_traits.shutdown_behavior()));
   scoped_refptr<Sequence> sequence_a =
-      test::CreateSequenceWithTask(std::move(task_a));
+      test::CreateSequenceWithTask(std::move(task_a), default_traits);
   testing::StrictMock<MockCanScheduleSequenceObserver> never_notified_observer;
   EXPECT_EQ(sequence_a, tracker_.WillScheduleSequence(
                             sequence_a, &never_notified_observer));
@@ -1168,10 +1209,11 @@ TEST_F(TaskSchedulerTaskTrackerTest,
   tracker_.SetExecutionFenceEnabled(true);
   bool task_b_1_did_run = false;
   Task task_b_1(FROM_HERE, BindOnce(&SetBool, Unretained(&task_b_1_did_run)),
-                TaskTraits(), TimeDelta());
-  EXPECT_TRUE(tracker_.WillPostTask(&task_b_1));
+                TimeDelta());
+  EXPECT_TRUE(
+      tracker_.WillPostTask(&task_b_1, default_traits.shutdown_behavior()));
   scoped_refptr<Sequence> sequence_b =
-      test::CreateSequenceWithTask(std::move(task_b_1));
+      test::CreateSequenceWithTask(std::move(task_b_1), default_traits);
   testing::StrictMock<MockCanScheduleSequenceObserver> observer_b_1;
   EXPECT_EQ(0, tracker_.GetPreemptedSequenceCountForTesting(
                    TaskPriority::BEST_EFFORT));
@@ -1181,12 +1223,14 @@ TEST_F(TaskSchedulerTaskTrackerTest,
 
   bool task_b_2_did_run = false;
   Task task_b_2(FROM_HERE, BindOnce(&SetBool, Unretained(&task_b_2_did_run)),
-                TaskTraits(TaskPriority::BEST_EFFORT), TimeDelta());
-  EXPECT_TRUE(tracker_.WillPostTask(&task_b_2));
+                TimeDelta());
+  TaskTraits best_effort_traits = TaskTraits(TaskPriority::BEST_EFFORT);
+  EXPECT_TRUE(
+      tracker_.WillPostTask(&task_b_2, best_effort_traits.shutdown_behavior()));
   sequence_b->PushTask(std::move(task_b_2));
   testing::StrictMock<MockCanScheduleSequenceObserver> observer_b_2;
   EXPECT_EQ(nullptr, tracker_.WillScheduleSequence(sequence_b, &observer_b_2));
-  // The TaskPriority of a sequence is the highest priority of among its tasks.
+  // The TaskPriority of the Sequence is unchanged by posting new tasks to it.
   EXPECT_EQ(2, tracker_.GetPreemptedSequenceCountForTesting(
                    TaskPriority::USER_VISIBLE));
 
@@ -1194,10 +1238,11 @@ TEST_F(TaskSchedulerTaskTrackerTest,
   // when the ScopedExecutionFence is enabled.
   bool task_c_did_run = false;
   Task task_c(FROM_HERE, BindOnce(&SetBool, Unretained(&task_c_did_run)),
-              TaskTraits(TaskPriority::BEST_EFFORT), TimeDelta());
-  EXPECT_TRUE(tracker_.WillPostTask(&task_c));
+              TimeDelta());
+  EXPECT_TRUE(
+      tracker_.WillPostTask(&task_c, best_effort_traits.shutdown_behavior()));
   scoped_refptr<Sequence> sequence_c =
-      test::CreateSequenceWithTask(std::move(task_c));
+      test::CreateSequenceWithTask(std::move(task_c), best_effort_traits);
   testing::StrictMock<MockCanScheduleSequenceObserver> observer_c;
   EXPECT_EQ(nullptr, tracker_.WillScheduleSequence(sequence_c, &observer_c));
   EXPECT_EQ(1, tracker_.GetPreemptedSequenceCountForTesting(
@@ -1235,10 +1280,11 @@ TEST_F(TaskSchedulerTaskTrackerTest,
 
   // Verify that WillScheduleSequence() returns the sequence when the
   // ScopedExecutionFence isn't enabled.
-  Task task_d(FROM_HERE, DoNothing(), TaskTraits(), TimeDelta());
-  EXPECT_TRUE(tracker_.WillPostTask(&task_d));
+  Task task_d(FROM_HERE, DoNothing(), TimeDelta());
+  EXPECT_TRUE(
+      tracker_.WillPostTask(&task_d, default_traits.shutdown_behavior()));
   scoped_refptr<Sequence> sequence_d =
-      test::CreateSequenceWithTask(std::move(task_d));
+      test::CreateSequenceWithTask(std::move(task_d), default_traits);
   EXPECT_EQ(sequence_d, tracker_.WillScheduleSequence(
                             sequence_d, &never_notified_observer));
 }
@@ -1252,15 +1298,17 @@ TEST_F(TaskSchedulerTaskTrackerTest,
   constexpr int kMaxNumScheduledBestEffortSequences = 1;
   TaskTracker tracker("Test", kMaxNumScheduledBestEffortSequences);
   testing::StrictMock<MockCanScheduleSequenceObserver> never_notified_observer;
+  TaskTraits best_effort_traits = TaskTraits(TaskPriority::BEST_EFFORT);
 
   // Simulate posting a best-effort task and scheduling the associated sequence.
   // This should succeed.
   bool task_a_1_did_run = false;
   Task task_a_1(FROM_HERE, BindOnce(&SetBool, Unretained(&task_a_1_did_run)),
-                TaskTraits(TaskPriority::BEST_EFFORT), TimeDelta());
-  EXPECT_TRUE(tracker.WillPostTask(&task_a_1));
+                TimeDelta());
+  EXPECT_TRUE(
+      tracker.WillPostTask(&task_a_1, best_effort_traits.shutdown_behavior()));
   scoped_refptr<Sequence> sequence_a =
-      test::CreateSequenceWithTask(std::move(task_a_1));
+      test::CreateSequenceWithTask(std::move(task_a_1), best_effort_traits);
   EXPECT_EQ(sequence_a,
             tracker.WillScheduleSequence(sequence_a, &never_notified_observer));
 
@@ -1269,10 +1317,11 @@ TEST_F(TaskSchedulerTaskTrackerTest,
   // sequences that can be scheduled concurrently is already reached.
   bool task_b_1_did_run = false;
   Task task_b_1(FROM_HERE, BindOnce(&SetBool, Unretained(&task_b_1_did_run)),
-                TaskTraits(TaskPriority::BEST_EFFORT), TimeDelta());
-  EXPECT_TRUE(tracker.WillPostTask(&task_b_1));
+                TimeDelta());
+  EXPECT_TRUE(
+      tracker.WillPostTask(&task_b_1, best_effort_traits.shutdown_behavior()));
   scoped_refptr<Sequence> sequence_b =
-      test::CreateSequenceWithTask(std::move(task_b_1));
+      test::CreateSequenceWithTask(std::move(task_b_1), best_effort_traits);
   testing::StrictMock<MockCanScheduleSequenceObserver> task_b_1_observer;
   EXPECT_FALSE(tracker.WillScheduleSequence(sequence_b, &task_b_1_observer));
 
@@ -1283,8 +1332,9 @@ TEST_F(TaskSchedulerTaskTrackerTest,
   // Post an extra best-effort task in |sequence_a|.
   bool task_a_2_did_run = false;
   Task task_a_2(FROM_HERE, BindOnce(&SetBool, Unretained(&task_a_2_did_run)),
-                TaskTraits(TaskPriority::BEST_EFFORT), TimeDelta());
-  EXPECT_TRUE(tracker.WillPostTask(&task_a_2));
+                TimeDelta());
+  EXPECT_TRUE(
+      tracker.WillPostTask(&task_a_2, best_effort_traits.shutdown_behavior()));
   sequence_a->PushTask(std::move(task_a_2));
 
   // Run the first task in |sequence_a|. RunAndPopNextTask() should return
@@ -1324,12 +1374,12 @@ TEST_F(TaskSchedulerTaskTrackerTest,
   std::vector<scoped_refptr<Sequence>> preempted_sequences;
   for (int i = 0; i < 3; ++i) {
     Task task(FROM_HERE, DoNothing(),
-              TaskTraits(TaskPriority::BEST_EFFORT,
-                         TaskShutdownBehavior::BLOCK_SHUTDOWN),
               TimeDelta());
-    EXPECT_TRUE(tracker.WillPostTask(&task));
-    scoped_refptr<Sequence> sequence =
-        test::CreateSequenceWithTask(std::move(task));
+    EXPECT_TRUE(
+        tracker.WillPostTask(&task, TaskShutdownBehavior::BLOCK_SHUTDOWN));
+    scoped_refptr<Sequence> sequence = test::CreateSequenceWithTask(
+        std::move(task), TaskTraits(TaskPriority::BEST_EFFORT,
+                                    TaskShutdownBehavior::BLOCK_SHUTDOWN));
     EXPECT_FALSE(tracker.WillScheduleSequence(sequence, &observer));
     preempted_sequences.push_back(std::move(sequence));
 
@@ -1369,12 +1419,15 @@ class WaitAllowedTestThread : public SimpleThread {
         FROM_HERE, Bind([]() {
           EXPECT_DCHECK_DEATH({ internal::AssertBaseSyncPrimitivesAllowed(); });
         }),
-        TaskTraits(), TimeDelta());
-    EXPECT_TRUE(task_tracker->WillPostTask(&task_without_sync_primitives));
+        TimeDelta());
+    TaskTraits default_traits = {};
+    EXPECT_TRUE(task_tracker->WillPostTask(&task_without_sync_primitives,
+                                           default_traits.shutdown_behavior()));
     testing::StrictMock<MockCanScheduleSequenceObserver>
         never_notified_observer;
     auto sequence_without_sync_primitives = task_tracker->WillScheduleSequence(
-        test::CreateSequenceWithTask(std::move(task_without_sync_primitives)),
+        test::CreateSequenceWithTask(std::move(task_without_sync_primitives),
+                                     default_traits),
         &never_notified_observer);
     ASSERT_TRUE(sequence_without_sync_primitives);
     task_tracker->RunAndPopNextTask(std::move(sequence_without_sync_primitives),
@@ -1388,10 +1441,15 @@ class WaitAllowedTestThread : public SimpleThread {
           // Shouldn't fail.
           internal::AssertBaseSyncPrimitivesAllowed();
         }),
-        TaskTraits(WithBaseSyncPrimitives()), TimeDelta());
-    EXPECT_TRUE(task_tracker->WillPostTask(&task_with_sync_primitives));
+        TimeDelta());
+    TaskTraits traits_with_sync_primitives =
+        TaskTraits(WithBaseSyncPrimitives());
+    EXPECT_TRUE(task_tracker->WillPostTask(
+        &task_with_sync_primitives,
+        traits_with_sync_primitives.shutdown_behavior()));
     auto sequence_with_sync_primitives = task_tracker->WillScheduleSequence(
-        test::CreateSequenceWithTask(std::move(task_with_sync_primitives)),
+        test::CreateSequenceWithTask(std::move(task_with_sync_primitives),
+                                     traits_with_sync_primitives),
         &never_notified_observer);
     ASSERT_TRUE(sequence_with_sync_primitives);
     task_tracker->RunAndPopNextTask(std::move(sequence_with_sync_primitives),
@@ -1460,13 +1518,13 @@ TEST(TaskSchedulerTaskTrackerHistogramTest, TaskLatency) {
        "UserBlockingTaskPriority_MayBlock"}};
 
   for (const auto& test : kTests) {
-    Task task(FROM_HERE, DoNothing(), test.traits, TimeDelta());
-    ASSERT_TRUE(tracker.WillPostTask(&task));
+    Task task(FROM_HERE, DoNothing(), TimeDelta());
+    ASSERT_TRUE(tracker.WillPostTask(&task, test.traits.shutdown_behavior()));
 
     HistogramTester tester;
 
     auto sequence = tracker.WillScheduleSequence(
-        test::CreateSequenceWithTask(std::move(task)),
+        test::CreateSequenceWithTask(std::move(task), test.traits),
         &never_notified_observer);
     ASSERT_TRUE(sequence);
     tracker.RunAndPopNextTask(std::move(sequence), &never_notified_observer);

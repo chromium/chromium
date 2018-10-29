@@ -15,10 +15,10 @@
             android:id="@+id/layout_container"
             style="@style/ListItemContainer" >
 
-        <org.chromium.chrome.browser.widget.TintedImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/icon_view"
             style="@style/DownloadIconView"
-            app:chrometint="@color/dark_mode_tint" />
+            app:tint="@color/dark_mode_tint" />
 
         <!-- Shown for completed downloads. -->
         <RelativeLayout
@@ -91,7 +91,7 @@
                     android:layout_below="@+id/download_progress_view"
                     android:textAlignment="viewEnd" />
 
-            <org.chromium.chrome.browser.widget.TintedImageButton
+            <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/pause_button"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
@@ -102,9 +102,9 @@
                     android:background="?attr/selectableItemBackground"
                     android:contentDescription="@string/download_notification_pause_button"
                     android:src="@drawable/ic_pause_white_24dp"
-                    app:chrometint="@color/default_icon_color" />
+                    app:tint="@color/default_icon_color" />
 
-            <org.chromium.chrome.browser.widget.TintedImageButton
+            <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/cancel_button"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
@@ -116,7 +116,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:contentDescription="@string/download_notification_cancel_button"
                     android:src="@drawable/btn_close"
-                    app:chrometint="@color/default_icon_color" />
+                    app:tint="@color/default_icon_color" />
         </RelativeLayout>
     </LinearLayout>
 </view>

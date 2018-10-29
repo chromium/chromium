@@ -10,11 +10,16 @@ namespace features {
 
 // Enables or disables integration with Android Messages on Chrome OS.
 const base::Feature kAndroidMessagesIntegration{
-    "AndroidMessagesIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AndroidMessagesIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Point to the production Android Messages URL instead of sandbox.
 const base::Feature kAndroidMessagesProdEndpoint{
-    "AndroidMessagesProdEndpoint", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AndroidMessagesProdEndpoint", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables or disables auto screen-brightness adjustment when ambient light
+// changes.
+const base::Feature kAutoScreenBrightness{"AutoScreenBrightness",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables native ChromeVox support for Arc.
 const base::Feature kChromeVoxArcSupport{"ChromeVoxArcSupport",
@@ -23,14 +28,19 @@ const base::Feature kChromeVoxArcSupport{"ChromeVoxArcSupport",
 // If enabled, DriveFS will be used for Drive sync.
 const base::Feature kDriveFs{"DriveFS", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, MyFiles will be a root/volume and user can create other
+// sub-folders and files in addition to the Downloads folder inside MyFiles.
+const base::Feature kMyFilesVolume{"MyFilesVolume",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the Chrome OS Settings UI will include a menu for the unified
 // MultiDevice settings.
 const base::Feature kEnableUnifiedMultiDeviceSettings{
-    "EnableUnifiedMultiDeviceSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableUnifiedMultiDeviceSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable the device to setup all MultiDevice services in a single workflow.
 const base::Feature kEnableUnifiedMultiDeviceSetup{
-    "EnableUnifiedMultiDeviceSetup", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableUnifiedMultiDeviceSetup", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // TODO(https://crbug.com/837156): Add this feature to chrome://flags.
 // If enabled, allows the qualified IME extension to connect to IME service.
@@ -43,7 +53,14 @@ const base::Feature kInstantTethering{"InstantTethering",
 
 // Enables or disables the MultiDevice API on Chrome OS.
 const base::Feature kMultiDeviceApi{"MultiDeviceApi",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables or disables user activity prediction for power management on
+// Chrome OS.
+// Defined here rather than in //chrome alongside other related features so that
+// PowerPolicyController can check it.
+const base::Feature kUserActivityPrediction{"UserActivityPrediction",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 

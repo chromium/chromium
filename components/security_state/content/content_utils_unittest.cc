@@ -203,14 +203,8 @@ TEST(SecurityStateContentUtilsTest, ConnectionExplanation) {
                                      &security_info.connection_status);
   security_info.key_exchange_group = 29;  // X25519
 
-  const char* protocol;
-  net::SSLVersionToString(&protocol, net::SSL_CONNECTION_VERSION_TLS1_2);
-
   std::string connection_title =
       l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE);
-
-  std::string tls_1_2_connection_string = l10n_util::GetStringFUTF8(
-      IDS_STRONG_SSL_SUMMARY, base::ASCIIToUTF16(protocol));
 
   {
     content::SecurityStyleExplanations explanations;
@@ -218,11 +212,10 @@ TEST(SecurityStateContentUtilsTest, ConnectionExplanation) {
     content::SecurityStyleExplanation explanation;
     ASSERT_TRUE(FindSecurityStyleExplanation(
         explanations.secure_explanations, connection_title,
-        tls_1_2_connection_string, &explanation));
+        l10n_util::GetStringUTF8(IDS_SECURE_SSL_SUMMARY), &explanation));
     EXPECT_EQ(
         "The connection to this site is encrypted and authenticated using TLS "
-        "1.2 (a strong protocol), ECDHE_RSA with X25519 (a strong key "
-        "exchange), and CHACHA20_POLY1305 (a strong cipher).",
+        "1.2, ECDHE_RSA with X25519, and CHACHA20_POLY1305.",
         explanation.description);
   }
 
@@ -235,11 +228,10 @@ TEST(SecurityStateContentUtilsTest, ConnectionExplanation) {
     content::SecurityStyleExplanation explanation;
     ASSERT_TRUE(FindSecurityStyleExplanation(
         explanations.secure_explanations, connection_title,
-        tls_1_2_connection_string, &explanation));
+        l10n_util::GetStringUTF8(IDS_SECURE_SSL_SUMMARY), &explanation));
     EXPECT_EQ(
         "The connection to this site is encrypted and authenticated using TLS "
-        "1.2 (a strong protocol), ECDHE_RSA (a strong key exchange), and "
-        "CHACHA20_POLY1305 (a strong cipher).",
+        "1.2, ECDHE_RSA, and CHACHA20_POLY1305.",
         explanation.description);
   }
 
@@ -254,23 +246,46 @@ TEST(SecurityStateContentUtilsTest, ConnectionExplanation) {
     GetSecurityStyle(security_info, &explanations);
     content::SecurityStyleExplanation explanation;
 
-    net::SSLVersionToString(&protocol, net::SSL_CONNECTION_VERSION_TLS1_3);
-    std::string tls_1_3_connection_string = l10n_util::GetStringFUTF8(
-        IDS_STRONG_SSL_SUMMARY, base::ASCIIToUTF16(protocol));
-
     ASSERT_TRUE(FindSecurityStyleExplanation(
         explanations.secure_explanations, connection_title,
-        tls_1_3_connection_string, &explanation));
+        l10n_util::GetStringUTF8(IDS_SECURE_SSL_SUMMARY), &explanation));
     EXPECT_EQ(
         "The connection to this site is encrypted and authenticated using TLS "
-        "1.3 (a strong protocol), X25519 (a strong key exchange), and "
-        "AES_128_GCM (a strong cipher).",
+        "1.3, X25519, and AES_128_GCM.",
         explanation.description);
   }
 }
 
+void UpdateObsoleteSSLStatus(security_state::SecurityInfo* info) {
+  info->obsolete_ssl_status = net::ObsoleteSSLStatus(
+      info->connection_status, info->peer_signature_algorithm);
+}
+
+bool IsProtocolRecommendation(const std::string& recommendation,
+                              const std::string& bad_protocol) {
+  return recommendation.find(bad_protocol) != std::string::npos &&
+         recommendation.find("TLS 1.2") != std::string::npos;
+}
+
+bool IsKeyExchangeRecommendation(const std::string& recommendation) {
+  return recommendation.find("RSA") != std::string::npos &&
+         recommendation.find("ECDHE") != std::string::npos;
+}
+
+bool IsCipherRecommendation(const std::string& recommendation,
+                            const std::string& bad_cipher) {
+  return recommendation.find(bad_cipher) != std::string::npos &&
+         recommendation.find("GCM") != std::string::npos;
+}
+
+bool IsSignatureRecommendation(const std::string& recommendation) {
+  return recommendation.find("SHA-1") != std::string::npos &&
+         recommendation.find("SHA-2") != std::string::npos;
+}
+
 // Test that obsolete connection explanations are formatted as expected.
 TEST(SecurityStateContentUtilsTest, ObsoleteConnectionExplanation) {
+  // Obsolete cipher.
   security_state::SecurityInfo security_info;
   security_info.cert_status = net::CERT_STATUS_UNABLE_TO_CHECK_REVOCATION;
   security_info.scheme_is_cryptographic = true;
@@ -280,9 +295,7 @@ TEST(SecurityStateContentUtilsTest, ObsoleteConnectionExplanation) {
   net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
                                      &security_info.connection_status);
   security_info.key_exchange_group = 29;  // X25519
-  security_info.obsolete_ssl_status =
-      net::ObsoleteSSLMask::OBSOLETE_SSL_MASK_CIPHER;
-
+  UpdateObsoleteSSLStatus(&security_info);
   {
     content::SecurityStyleExplanations explanations;
     GetSecurityStyle(security_info, &explanations);
@@ -292,10 +305,125 @@ TEST(SecurityStateContentUtilsTest, ObsoleteConnectionExplanation) {
         l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE),
         l10n_util::GetStringUTF8(IDS_OBSOLETE_SSL_SUMMARY), &explanation));
     EXPECT_EQ(
-        "The connection to this site uses TLS 1.2 (a strong protocol), "
-        "ECDHE_RSA with X25519 (a strong key exchange), and AES_128_CBC with "
-        "HMAC-SHA1 (an obsolete cipher).",
+        "The connection to this site is encrypted and authenticated using TLS "
+        "1.2, ECDHE_RSA with X25519, and AES_128_CBC with HMAC-SHA1.",
         explanation.description);
+
+    ASSERT_EQ(1u, explanation.recommendations.size());
+    EXPECT_TRUE(
+        IsCipherRecommendation(explanation.recommendations[0], "AES_128_CBC"))
+        << explanation.recommendations[0];
+  }
+
+  // Obsolete cipher and signature.
+  security_info.peer_signature_algorithm = 0x0201;  // rsa_pkcs1_sha1
+  UpdateObsoleteSSLStatus(&security_info);
+  {
+    content::SecurityStyleExplanations explanations;
+    GetSecurityStyle(security_info, &explanations);
+    content::SecurityStyleExplanation explanation;
+    ASSERT_TRUE(FindSecurityStyleExplanation(
+        explanations.info_explanations,
+        l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE),
+        l10n_util::GetStringUTF8(IDS_OBSOLETE_SSL_SUMMARY), &explanation));
+
+    ASSERT_EQ(2u, explanation.recommendations.size());
+    EXPECT_TRUE(
+        IsCipherRecommendation(explanation.recommendations[0], "AES_128_CBC"))
+        << explanation.recommendations[0];
+    EXPECT_TRUE(IsSignatureRecommendation(explanation.recommendations[1]))
+        << explanation.recommendations[1];
+  }
+
+  // Obsolete protocol version and cipher.
+  security_info.peer_signature_algorithm = 0;  // TLS 1.0 doesn't negotiate a
+                                               // signature algorithm.
+  net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1,
+                                     &security_info.connection_status);
+  UpdateObsoleteSSLStatus(&security_info);
+  {
+    content::SecurityStyleExplanations explanations;
+    GetSecurityStyle(security_info, &explanations);
+    content::SecurityStyleExplanation explanation;
+    ASSERT_TRUE(FindSecurityStyleExplanation(
+        explanations.info_explanations,
+        l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE),
+        l10n_util::GetStringUTF8(IDS_OBSOLETE_SSL_SUMMARY), &explanation));
+
+    ASSERT_EQ(2u, explanation.recommendations.size());
+    EXPECT_TRUE(
+        IsProtocolRecommendation(explanation.recommendations[0], "TLS 1.0"))
+        << explanation.recommendations[0];
+    EXPECT_TRUE(
+        IsCipherRecommendation(explanation.recommendations[1], "AES_128_CBC"))
+        << explanation.recommendations[1];
+  }
+
+  // Obsolete protocol version, cipher, and key exchange.
+  net::SSLConnectionStatusSetCipherSuite(
+      0x000a /* TLS_RSA_WITH_3DES_EDE_CBC_SHA */,
+      &security_info.connection_status);
+  UpdateObsoleteSSLStatus(&security_info);
+  {
+    content::SecurityStyleExplanations explanations;
+    GetSecurityStyle(security_info, &explanations);
+    content::SecurityStyleExplanation explanation;
+    ASSERT_TRUE(FindSecurityStyleExplanation(
+        explanations.info_explanations,
+        l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE),
+        l10n_util::GetStringUTF8(IDS_OBSOLETE_SSL_SUMMARY), &explanation));
+
+    ASSERT_EQ(3u, explanation.recommendations.size());
+    EXPECT_TRUE(
+        IsProtocolRecommendation(explanation.recommendations[0], "TLS 1.0"))
+        << explanation.recommendations[0];
+    EXPECT_TRUE(IsKeyExchangeRecommendation(explanation.recommendations[1]))
+        << explanation.recommendations[1];
+    EXPECT_TRUE(
+        IsCipherRecommendation(explanation.recommendations[2], "3DES_EDE_CBC"))
+        << explanation.recommendations[2];
+  }
+
+  // Obsolete key exchange.
+  net::SSLConnectionStatusSetCipherSuite(
+      0x009c /* TLS_RSA_WITH_AES_128_GCM_SHA256 */,
+      &security_info.connection_status);
+  net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
+                                     &security_info.connection_status);
+  security_info.peer_signature_algorithm = 0x0804;  // rsa_pss_rsae_sha256
+  UpdateObsoleteSSLStatus(&security_info);
+  {
+    content::SecurityStyleExplanations explanations;
+    GetSecurityStyle(security_info, &explanations);
+    content::SecurityStyleExplanation explanation;
+    ASSERT_TRUE(FindSecurityStyleExplanation(
+        explanations.info_explanations,
+        l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE),
+        l10n_util::GetStringUTF8(IDS_OBSOLETE_SSL_SUMMARY), &explanation));
+
+    ASSERT_EQ(1u, explanation.recommendations.size());
+    EXPECT_TRUE(IsKeyExchangeRecommendation(explanation.recommendations[0]))
+        << explanation.recommendations[0];
+  }
+
+  // Obsolete signature.
+  net::SSLConnectionStatusSetCipherSuite(
+      0xc02f /* TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 */,
+      &security_info.connection_status);
+  security_info.peer_signature_algorithm = 0x0201;  // rsa_pkcs1_sha1
+  UpdateObsoleteSSLStatus(&security_info);
+  {
+    content::SecurityStyleExplanations explanations;
+    GetSecurityStyle(security_info, &explanations);
+    content::SecurityStyleExplanation explanation;
+    ASSERT_TRUE(FindSecurityStyleExplanation(
+        explanations.info_explanations,
+        l10n_util::GetStringUTF8(IDS_SSL_CONNECTION_TITLE),
+        l10n_util::GetStringUTF8(IDS_OBSOLETE_SSL_SUMMARY), &explanation));
+
+    ASSERT_EQ(1u, explanation.recommendations.size());
+    EXPECT_TRUE(IsSignatureRecommendation(explanation.recommendations[0]))
+        << explanation.recommendations[0];
   }
 }
 

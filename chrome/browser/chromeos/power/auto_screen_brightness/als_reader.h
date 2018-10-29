@@ -43,10 +43,6 @@ class AlsReader {
   // Adds or removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
-
-  // An observer can call this method to check if ALS has been properly
-  // initialized and ready to use.
-  virtual AlsInitStatus GetInitStatus() const = 0;
 };
 
 }  // namespace auto_screen_brightness

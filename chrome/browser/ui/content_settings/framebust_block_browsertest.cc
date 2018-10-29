@@ -314,3 +314,36 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   observer.Wait();
   EXPECT_TRUE(GetFramebustTabHelper()->blocked_urls().empty());
 }
+
+// Regression test for https://crbug.com/894955, where the framebust UI would
+// persist on subsequent navigations.
+IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
+                       FramebustBlocked_SubsequentNavigation_NoUI) {
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/iframe.html"));
+
+  GURL child_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  NavigateIframeToUrlWithoutGesture(GetWebContents(), "test", child_url);
+
+  content::RenderFrameHost* child =
+      content::ChildFrameAt(GetWebContents()->GetMainFrame(), 0);
+  EXPECT_EQ(child_url, child->GetLastCommittedURL());
+
+  GURL redirect_url = embedded_test_server()->GetURL("b.com", "/title1.html");
+
+  base::RunLoop block_waiter;
+  blocked_url_added_closure_ = block_waiter.QuitClosure();
+  child->ExecuteJavaScriptForTests(base::ASCIIToUTF16(base::StringPrintf(
+      "window.top.location = '%s';", redirect_url.spec().c_str())));
+  block_waiter.Run();
+  EXPECT_TRUE(base::ContainsValue(GetFramebustTabHelper()->blocked_urls(),
+                                  redirect_url));
+
+  // Now, navigate away and check that the UI went away.
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/title2.html"));
+
+  // TODO(csharrison): Ideally we could query the actual UI here. For now, just
+  // look at the internal state of the framebust tab helper.
+  EXPECT_FALSE(GetFramebustTabHelper()->HasBlockedUrls());
+}

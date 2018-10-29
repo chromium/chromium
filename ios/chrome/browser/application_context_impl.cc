@@ -26,7 +26,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
-#include "components/net_log/chrome_net_log.h"
+#include "components/net_log/net_export_file_writer.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -36,6 +36,7 @@
 #include "components/update_client/configurator.h"
 #include "components/update_client/update_query_params.h"
 #include "components/variations/service/variations_service.h"
+#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager_impl.h"
 #include "ios/chrome/browser/chrome_paths.h"
@@ -52,13 +53,14 @@
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/public/web_task_traits.h"
 #include "ios/web/public/web_thread.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/network_change_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace {
 
@@ -100,7 +102,7 @@ ApplicationContextImpl::ApplicationContextImpl(
   DCHECK(!GetApplicationContext());
   SetApplicationContext(this);
 
-  net_log_.reset(new net_log::ChromeNetLog());
+  net_log_ = std::make_unique<net::NetLog>();
 
   SetApplicationLocale(locale);
 
@@ -133,6 +135,8 @@ void ApplicationContextImpl::StartTearDown() {
   metrics_services_manager_.reset();
   network_time_tracker_.reset();
 
+  net_export_file_writer_.reset();
+
   // Need to clear browser states before the IO thread.
   chrome_browser_state_manager_.reset();
 
@@ -145,13 +149,7 @@ void ApplicationContextImpl::StartTearDown() {
     sessions::SessionIdGenerator::GetInstance()->Shutdown();
   }
 
-  if (shared_url_loader_factory_)
-    shared_url_loader_factory_->Detach();
-
-  if (network_context_) {
-    web::WebThread::DeleteSoon(web::WebThread::IO, FROM_HERE,
-                               network_context_owner_.release());
-  }
+  ios_chrome_io_thread_->NetworkTearDown();
 }
 
 void ApplicationContextImpl::PostDestroyThreads() {
@@ -240,28 +238,12 @@ ApplicationContextImpl::GetSystemURLRequestContext() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ApplicationContextImpl::GetSharedURLLoaderFactory() {
-  if (!url_loader_factory_) {
-    auto url_loader_factory_params =
-        network::mojom::URLLoaderFactoryParams::New();
-    url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-    url_loader_factory_params->is_corb_enabled = false;
-    GetSystemNetworkContext()->CreateURLLoaderFactory(
-        mojo::MakeRequest(&url_loader_factory_),
-        std::move(url_loader_factory_params));
-    shared_url_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            url_loader_factory_.get());
-  }
-  return shared_url_loader_factory_;
+  return ios_chrome_io_thread_->GetSharedURLLoaderFactory();
 }
 
 network::mojom::NetworkContext*
 ApplicationContextImpl::GetSystemNetworkContext() {
-  if (!network_context_) {
-    network_context_owner_ = std::make_unique<web::NetworkContextOwner>(
-        GetSystemURLRequestContext(), &network_context_);
-  }
-  return network_context_.get();
+  return ios_chrome_io_thread_->GetSystemNetworkContext();
 }
 
 const std::string& ApplicationContextImpl::GetApplicationLocale() {
@@ -310,9 +292,17 @@ rappor::RapporServiceImpl* ApplicationContextImpl::GetRapporServiceImpl() {
   return GetMetricsServicesManager()->GetRapporServiceImpl();
 }
 
-net_log::ChromeNetLog* ApplicationContextImpl::GetNetLog() {
+net::NetLog* ApplicationContextImpl::GetNetLog() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return net_log_.get();
+}
+
+net_log::NetExportFileWriter* ApplicationContextImpl::GetNetExportFileWriter() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!net_export_file_writer_) {
+    net_export_file_writer_ = std::make_unique<net_log::NetExportFileWriter>();
+  }
+  return net_export_file_writer_.get();
 }
 
 network_time::NetworkTimeTracker*
@@ -425,7 +415,8 @@ void ApplicationContextImpl::CreateGCMDriver() {
       // been shut down, base::Unretained() is safe here.
       base::BindRepeating(&RequestProxyResolvingSocketFactory,
                           base::Unretained(this)),
-      GetSharedURLLoaderFactory(), ::GetChannel(),
+      GetSharedURLLoaderFactory(),
+      GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       IOSChromeGCMProfileServiceFactory::GetProductCategoryForSubtypes(),
       base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::UI}),
       base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::IO}),

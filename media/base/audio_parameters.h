@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
@@ -147,15 +148,36 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     MULTIZONE = 0x80,
   };
 
+  struct HardwareCapabilities {
+    HardwareCapabilities(int min_frames_per_buffer, int max_frames_per_buffer)
+        : min_frames_per_buffer(min_frames_per_buffer),
+          max_frames_per_buffer(max_frames_per_buffer) {}
+    HardwareCapabilities()
+        : min_frames_per_buffer(0), max_frames_per_buffer(0) {}
+
+    // Minimum and maximum buffer sizes supported by the audio hardware. Opening
+    // a device with frames_per_buffer set to a value between min and max should
+    // result in the audio hardware running close to this buffer size, values
+    // above or below will be clamped to the min or max by the audio system.
+    // Either value can be 0 and means that the min or max is not known.
+    int min_frames_per_buffer;
+    int max_frames_per_buffer;
+  };
+
   AudioParameters();
   AudioParameters(Format format,
                   ChannelLayout channel_layout,
                   int sample_rate,
                   int frames_per_buffer);
+  AudioParameters(Format format,
+                  ChannelLayout channel_layout,
+                  int sample_rate,
+                  int frames_per_buffer,
+                  const HardwareCapabilities& hardware_capabilities);
 
   ~AudioParameters();
 
-  // Re-initializes all members.
+  // Re-initializes all members except for |hardware_capabilities_|.
   void Reset(Format format,
              ChannelLayout channel_layout,
              int sample_rate,
@@ -215,6 +237,10 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   }
   int frames_per_buffer() const { return frames_per_buffer_; }
 
+  base::Optional<HardwareCapabilities> hardware_capabilities() const {
+    return hardware_capabilities_;
+  }
+
   void set_effects(int effects) { effects_ = effects; }
   int effects() const { return effects_; }
 
@@ -259,6 +285,10 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   // Optional tag to pass latency info from renderer to browser. Set to
   // AudioLatency::LATENCY_COUNT by default, which means "not specified".
   AudioLatency::LatencyType latency_tag_;
+
+  // Audio hardware specific parameters, these are treated as read-only and
+  // changing them has no effect.
+  base::Optional<HardwareCapabilities> hardware_capabilities_;
 };
 
 // Comparison is useful when AudioParameters is used with std structures.

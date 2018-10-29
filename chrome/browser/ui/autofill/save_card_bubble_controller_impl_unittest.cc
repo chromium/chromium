@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/user_prefs/user_prefs.h"
@@ -49,8 +50,6 @@ class TestSaveCardBubbleControllerImpl : public SaveCardBubbleControllerImpl {
   explicit TestSaveCardBubbleControllerImpl(content::WebContents* web_contents)
       : SaveCardBubbleControllerImpl(web_contents) {}
 
-  void set_elapsed(base::TimeDelta elapsed) { elapsed_ = elapsed; }
-
   void set_security_level(security_state::SecurityLevel security_level) {
     security_level_ = security_level;
   }
@@ -64,14 +63,11 @@ class TestSaveCardBubbleControllerImpl : public SaveCardBubbleControllerImpl {
   }
 
  protected:
-  base::TimeDelta Elapsed() const override { return elapsed_; }
-
   security_state::SecurityLevel GetSecurityLevel() const override {
     return security_level_;
   }
 
  private:
-  base::TimeDelta elapsed_;
   security_state::SecurityLevel security_level_ =
       security_state::SecurityLevel::NONE;
 };
@@ -104,17 +100,17 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
     ASSERT_TRUE(value->GetAsDictionary(&dictionary));
     std::unique_ptr<base::DictionaryValue> legal_message =
         dictionary->CreateDeepCopy();
-    controller()->ShowBubbleForUpload(CreditCard(), std::move(legal_message),
-                                      should_request_name_from_user,
-                                      base::BindOnce(&UploadSaveCardCallback));
+    controller()->OfferUploadSave(
+        CreditCard(), std::move(legal_message), should_request_name_from_user,
+        /*show_bubble=*/true, base::BindOnce(&UploadSaveCardCallback));
   }
 
   void ShowLocalBubble(CreditCard* card = nullptr) {
     // TODO(crbug.com/852562): Migrate this to BindOnce/OnceClosure.
-    controller()->ShowBubbleForLocalSave(
+    controller()->OfferLocalSave(
         card ? CreditCard(*card)
              : autofill::test::GetCreditCard(),  // Visa by default
-        base::Bind(&LocalSaveCardCallback));
+        /*show_bubble=*/true, base::BindOnce(&LocalSaveCardCallback));
   }
 
   void ShowUploadBubble(bool should_request_name_from_user = false) {
@@ -145,6 +141,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
             browser()->tab_strip_model()->GetActiveWebContents()));
   }
 
+  TestAutofillClock test_clock_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -494,7 +491,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // The bubble should still stick around for up to
   // kCardBubbleSurviveNavigationTime (5 seconds) regardless of
   // navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(3));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -502,7 +499,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       "Autofill.SaveCreditCardPrompt.Local.FirstShow", 0);
 
   // Wait 3 more seconds (6 total); bubble should go away on next navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -520,7 +517,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // The bubble should still stick around for up to
   // kCardBubbleSurviveNavigationTime (5 seconds) regardless of
   // navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(3));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -528,7 +525,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       "Autofill.SaveCreditCardPrompt.Local.Reshows", 0);
 
   // Wait 3 more seconds (6 total); bubble should go away on next navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -544,7 +541,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   base::HistogramTester histogram_tester;
   // The bubble should still stick around for up to
   // kCardBubbleSurviveNavigationTime (5 seconds) regardless of navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(3));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -552,7 +549,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       "Autofill.SaveCreditCardPrompt.Upload.FirstShow", 0);
 
   // Wait 3 more seconds (6 total); bubble should go away on next navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -569,7 +566,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // The bubble should still stick around for up to
   // kCardBubbleSurviveNavigationTime (5 seconds) regardless of
   // navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(3));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -578,7 +575,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       0);
 
   // Wait 3 more seconds (6 total); bubble should go away on next navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -596,7 +593,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // The bubble should still stick around for up to
   // kCardBubbleSurviveNavigationTime (5 seconds) regardless of
   // navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(3));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -604,7 +601,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       "Autofill.SaveCreditCardPrompt.Upload.Reshows", 0);
 
   // Wait 3 more seconds (6 total); bubble should go away on next navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -622,7 +619,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // The bubble should still stick around for up to
   // kCardBubbleSurviveNavigationTime (5 seconds) regardless of
   // navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(3));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -631,7 +628,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       0);
 
   // Wait 3 more seconds (6 total); bubble should go away on next navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
 
   controller()->SimulateNavigation();
 
@@ -647,7 +644,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   base::HistogramTester histogram_tester;
   controller()->OnBubbleClosed();
   // Fake-navigate after bubble has been visible for a long time.
-  controller()->set_elapsed(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectUniqueSample(
@@ -663,7 +660,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   base::HistogramTester histogram_tester;
   controller()->OnBubbleClosed();
   // Fake-navigate after bubble has been visible for a long time.
-  controller()->set_elapsed(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectUniqueSample(
@@ -678,7 +675,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   base::HistogramTester histogram_tester;
   controller()->OnBubbleClosed();
   // Fake-navigate after bubble has been visible for a long time.
-  controller()->set_elapsed(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectUniqueSample(
@@ -693,7 +690,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   base::HistogramTester histogram_tester;
   controller()->OnBubbleClosed();
   // Fake-navigate after bubble has been visible for a long time.
-  controller()->set_elapsed(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectUniqueSample(
@@ -709,7 +706,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   base::HistogramTester histogram_tester;
   controller()->OnBubbleClosed();
   // Fake-navigate after bubble has been visible for a long time.
-  controller()->set_elapsed(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectUniqueSample(
@@ -725,7 +722,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   base::HistogramTester histogram_tester;
   controller()->OnBubbleClosed();
   // Fake-navigate after bubble has been visible for a long time.
-  controller()->set_elapsed(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectUniqueSample(
@@ -1030,7 +1027,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   CloseAndReshowBubble();
   controller()->OnBubbleClosed();
 
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(6));
   controller()->SimulateNavigation();
 
   // Icon should disappear after navigating away.
@@ -1048,7 +1045,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   controller()->OnSaveButton();
   CloseAndReshowBubble();
 
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(6));
   controller()->SimulateNavigation();
 
   EXPECT_THAT(
@@ -1068,7 +1065,7 @@ TEST_F(
   CloseAndReshowBubble();
   controller()->OnBubbleClosed();
 
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(6));
   controller()->SimulateNavigation();
 
   EXPECT_THAT(

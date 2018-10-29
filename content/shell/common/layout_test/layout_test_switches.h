@@ -30,6 +30,7 @@ extern const char kEnableLeakDetection[];
 extern const char kEncodeBinary[];
 extern const char kRunWebTests[];
 extern const char kStableReleaseMode[];
+extern const char kTestsInBlink[];
 extern const char kEnableDisplayCompositorPixelDump[];
 
 }  // namespace switches

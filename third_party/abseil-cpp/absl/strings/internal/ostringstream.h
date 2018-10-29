@@ -25,18 +25,18 @@
 namespace absl {
 namespace strings_internal {
 
-// The same as std::ostringstream but appends to a user-specified std::string,
+// The same as std::ostringstream but appends to a user-specified string,
 // and is faster. It is ~70% faster to create, ~50% faster to write to, and
-// completely free to extract the result std::string.
+// completely free to extract the result string.
 //
-//   std::string s;
+//   string s;
 //   OStringStream strm(&s);
 //   strm << 42 << ' ' << 3.14;  // appends to `s`
 //
 // The stream object doesn't have to be named. Starting from C++11 operator<<
 // works with rvalues of std::ostream.
 //
-//   std::string s;
+//   string s;
 //   OStringStream(&s) << 42 << ' ' << 3.14;  // appends to `s`
 //
 // OStringStream is faster to create than std::ostringstream but it's still
@@ -45,14 +45,14 @@ namespace strings_internal {
 //
 // Creates unnecessary instances of OStringStream: slow.
 //
-//   std::string s;
+//   string s;
 //   OStringStream(&s) << 42;
 //   OStringStream(&s) << ' ';
 //   OStringStream(&s) << 3.14;
 //
 // Creates a single instance of OStringStream and reuses it: fast.
 //
-//   std::string s;
+//   string s;
 //   OStringStream strm(&s);
 //   strm << 42;
 //   strm << ' ';

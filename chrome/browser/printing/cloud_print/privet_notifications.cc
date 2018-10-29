@@ -22,7 +22,7 @@
 #include "chrome/browser/printing/cloud_print/privet_device_lister_impl.h"
 #include "chrome/browser/printing/cloud_print/privet_http_asynchronous_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -34,12 +34,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_manager_base.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "net/net_buildflags.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -93,7 +93,7 @@ void PrivetNotificationsListener::DeviceChanged(
     const std::string& name,
     const DeviceDescription& description) {
   ReportPrivetUmaEvent(PRIVET_DEVICE_CHANGED);
-  DeviceContextMap::iterator it = devices_seen_.find(name);
+  auto it = devices_seen_.find(name);
   if (it != devices_seen_.end()) {
     if (!description.id.empty() &&  // Device is registered
         it->second->notification_may_be_active) {
@@ -127,7 +127,7 @@ void PrivetNotificationsListener::CreateInfoOperation(
     return;
 
   std::string name = http_client->GetName();
-  DeviceContextMap::iterator it = devices_seen_.find(name);
+  auto it = devices_seen_.find(name);
   if (it == devices_seen_.end())
     return;
 
@@ -158,7 +158,7 @@ void PrivetNotificationsListener::OnPrivetInfoDone(
 }
 
 void PrivetNotificationsListener::DeviceRemoved(const std::string& name) {
-  DeviceContextMap::iterator it = devices_seen_.find(name);
+  auto it = devices_seen_.find(name);
   if (it == devices_seen_.end())
     return;
 
@@ -307,11 +307,10 @@ void PrivetNotificationService::PrivetRemoveNotification() {
 
 void PrivetNotificationService::Start() {
 #if defined(CHROMEOS)
-  SigninManagerBase* signin_manager =
-      SigninManagerFactory::GetForProfileIfExists(
-          Profile::FromBrowserContext(profile_));
+  auto* identity_manager = IdentityManagerFactory::GetForProfileIfExists(
+      Profile::FromBrowserContext(profile_));
 
-  if (!signin_manager || !signin_manager->IsAuthenticated())
+  if (!identity_manager || !identity_manager->HasPrimaryAccount())
     return;
 #endif
 

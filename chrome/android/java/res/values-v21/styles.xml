@@ -4,6 +4,10 @@
      found in the LICENSE file. -->
 
 <resources>
+    <style name="NavigationPopupDialog" parent="Widget.AppCompat.Light.ListPopupWindow">
+        <item name="android:popupElevation">0dp</item>
+    </style>
+
     <!-- Preferences -->
     <style name="PreferencesTheme" parent="ThemeWithActionBar">
         <item name="android:textColorLink">@color/pref_accent_color</item>

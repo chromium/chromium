@@ -138,7 +138,7 @@ class LinkedHashSetNodeBase {
 
 template <typename ValueArg, typename Allocator>
 class LinkedHashSetNode : public LinkedHashSetNodeBase {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   LinkedHashSetNode(const ValueArg& value,

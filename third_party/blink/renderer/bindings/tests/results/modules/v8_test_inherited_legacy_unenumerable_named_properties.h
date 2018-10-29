@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef V8TestInheritedLegacyUnenumerableNamedProperties_h
-#define V8TestInheritedLegacyUnenumerableNamedProperties_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_MODULES_V8_TEST_INHERITED_LEGACY_UNENUMERABLE_NAMED_PROPERTIES_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_MODULES_V8_TEST_INHERITED_LEGACY_UNENUMERABLE_NAMED_PROPERTIES_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
@@ -67,4 +67,4 @@ struct V8TypeOf<TestInheritedLegacyUnenumerableNamedProperties> {
 
 }  // namespace blink
 
-#endif  // V8TestInheritedLegacyUnenumerableNamedProperties_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_MODULES_V8_TEST_INHERITED_LEGACY_UNENUMERABLE_NAMED_PROPERTIES_H_

@@ -572,6 +572,26 @@ TEST_F(ScreenManagerTest, DISABLED_RejectBufferWithIncompatibleModifiers) {
   window->Shutdown();
 }
 
+TEST_F(ScreenManagerTest, ConfigureDisplayControllerShouldModesetOnce) {
+  std::unique_ptr<ui::DrmWindow> window(
+      new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
+  window->Initialize();
+  window->SetBounds(GetPrimaryBounds());
+  screen_manager_->AddWindow(1, std::move(window));
+
+  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  screen_manager_->ConfigureDisplayController(
+      drm_, kPrimaryCrtc, kPrimaryConnector, GetPrimaryBounds().origin(),
+      kDefaultMode);
+
+  // When a window that had no controller becomes associated with a new
+  // controller, expect the crtc to be modeset once.
+  EXPECT_EQ(drm_->get_set_crtc_call_count(), 1);
+
+  window = screen_manager_->RemoveWindow(1);
+  window->Shutdown();
+}
+
 TEST(ScreenManagerTest2, ShouldNotHardwareMirrorDifferentDrmDevices) {
   auto gbm_device1 = std::make_unique<MockGbmDevice>();
   auto drm_device1 =
@@ -679,6 +699,58 @@ TEST(ScreenManagerTest2, ShouldNotHardwareMirrorDifferentDrmDevices) {
   // Cleanup.
   screen_manager.RemoveWindow(1)->Shutdown();
   screen_manager.RemoveWindow(3)->Shutdown();
+}
+
+// crbug.com/888553
+TEST(ScreenManagerTest2, ShouldNotUnbindFramebufferOnJoiningMirror) {
+  auto gbm_device = std::make_unique<MockGbmDevice>();
+  auto drm_device = base::MakeRefCounted<MockDrmDevice>(std::move(gbm_device));
+  DrmDeviceManager drm_device_manager(nullptr);
+  ScreenManager screen_manager;
+
+  constexpr uint32_t kCrtc39 = 39;
+  constexpr uint32_t kConnector43 = 43;
+  constexpr uint32_t kCrtc41 = 41;
+  constexpr uint32_t kConnector46 = 46;
+
+  constexpr drmModeModeInfo kMode1080p60 = {
+      /* clock= */ 148500,
+      /* hdisplay= */ 1920,
+      /* hsync_start= */ 2008,
+      /* hsync_end= */ 2052,
+      /* htotal= */ 2200,
+      /* hskew= */ 0,
+      /* vdisplay= */ 1080,
+      /* vsync_start= */ 1084,
+      /* vsync_end= */ 1089,
+      /* vtotal= */ 1125,
+      /* vscan= */ 0,
+      /* vrefresh= */ 60,
+      /* flags= */ 0xa,
+      /* type= */ 64,
+      /* name= */ "1920x1080",
+  };
+
+  // Both displays connect at startup.
+  {
+    auto window1 =
+        std::make_unique<DrmWindow>(1, &drm_device_manager, &screen_manager);
+    window1->Initialize();
+    screen_manager.AddWindow(1, std::move(window1));
+    screen_manager.GetWindow(1)->SetBounds(gfx::Rect(0, 0, 1920, 1080));
+    screen_manager.AddDisplayController(drm_device, kCrtc39, kConnector43);
+    screen_manager.AddDisplayController(drm_device, kCrtc41, kConnector46);
+    screen_manager.ConfigureDisplayController(drm_device, kCrtc39, kConnector43,
+                                              gfx::Point(0, 0), kMode1080p60);
+    screen_manager.ConfigureDisplayController(drm_device, kCrtc41, kConnector46,
+                                              gfx::Point(0, 0), kMode1080p60);
+  }
+
+  EXPECT_NE(0u, drm_device->GetFramebufferForCrtc(kCrtc39));
+  EXPECT_NE(0u, drm_device->GetFramebufferForCrtc(kCrtc41));
+
+  // Cleanup.
+  screen_manager.RemoveWindow(1)->Shutdown();
 }
 
 }  // namespace ui

@@ -9,6 +9,8 @@ Rules from the stylesheet:
 #c { background-color: green; }
 #d { }
 #e { }
+
+
 Expected result:
 
 #a { background-color: green; }

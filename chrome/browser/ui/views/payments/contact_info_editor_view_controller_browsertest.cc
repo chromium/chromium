@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest,
       "    phone: 'PHONE ERROR'"
       "  }"
       "}",
-      DialogEvent::CONTACT_INFO_EDITOR_OPENED);
+      DialogEvent::CONTACT_INFO_EDITOR_OPENED, dialog_view());
 
   EXPECT_EQ(base::ASCIIToUTF16("EMAIL ERROR"),
             GetErrorLabelForType(autofill::EMAIL_ADDRESS));
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(
       "    phone: 'PHONE ERROR'"
       "  }"
       "}",
-      DialogEvent::CONTACT_INFO_EDITOR_OPENED);
+      DialogEvent::CONTACT_INFO_EDITOR_OPENED, dialog_view());
 
   EXPECT_EQ(base::ASCIIToUTF16("EMAIL ERROR"),
             GetErrorLabelForType(autofill::EMAIL_ADDRESS));
@@ -411,7 +411,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest,
       "    name: 'NAME ERROR',"
       "    phone: 'PHONE ERROR'"
       "  }"
-      "}");
+      "}",
+      dialog_view());
 
   const int kErrorLabelOffset =
       static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET);

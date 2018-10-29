@@ -26,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/chromeos_switches.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/property/arc_property_bridge.h"
 #include "components/crx_file/id_util.h"
@@ -107,7 +108,9 @@ const std::vector<InternalApp>& GetInternalAppListImpl(bool get_all,
 
   const bool add_discover_app =
       get_all || !chromeos::ProfileHelper::IsEphemeralUserProfile(profile);
-  if (add_discover_app) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kEnableDiscoverApp) &&
+      add_discover_app) {
     internal_app_list->push_back(
         {kInternalAppIdDiscover, IDS_INTERNAL_APP_DISCOVER,
          IDR_DISCOVER_APP_192,

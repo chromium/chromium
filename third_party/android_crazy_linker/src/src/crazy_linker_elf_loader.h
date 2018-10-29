@@ -6,6 +6,7 @@
 #define CRAZY_LINKER_ELF_LOADER_H
 
 #include "crazy_linker_error.h"
+#include "crazy_linker_memory_mapping.h"
 #include "crazy_linker_system.h"  // For ScopedFileDescriptor
 #include "elf_traits.h"
 
@@ -19,8 +20,19 @@ namespace crazy {
 //
 class ElfLoader {
  public:
-  ElfLoader();
-  ~ElfLoader();
+  // Result of the LoadAt method. In case of failure, an invalid instance
+  // will be returned.
+  struct Result {
+    ELF::Addr load_start = 0;
+    ELF::Addr load_size = 0;
+    ELF::Addr load_bias = 0;
+    const ELF::Phdr* phdr = nullptr;
+    size_t phdr_count = 0;
+    MemoryMapping reserved_mapping;
+    Error error;  // empty in case of success.
+
+    constexpr bool IsValid() const { return this->load_start != 0; }
+  };
 
   // Try to load a library at a given address. On failure, this will
   // update the linker error message and returns false.
@@ -34,55 +46,15 @@ class ElfLoader {
   // |wanted_address| is the wanted load address (of the first loadable
   // segment), or 0 to enable randomization.
   //
-  // On success, the library's loadable segments will be mapped in
-  // memory with their original protection. However, no further processing
-  // will be performed.
+  // On success, returns a valid Result instance, where |reserved_mapping| will
+  // map the single range of reserved memory addresses for the ELF object
+  // (including the breakpad guard regions).
   //
-  // On failure, returns false and assign an error message to |error|.
-  bool LoadAt(const char* lib_path,
-              off_t file_offset,
-              uintptr_t wanted_address,
-              Error* error);
-
-  // Only call the following functions after a succesfull LoadAt() call.
-
-  size_t phdr_count() { return phdr_num_; }
-  ELF::Addr load_start() { return reinterpret_cast<ELF::Addr>(load_start_); }
-  ELF::Addr load_size() { return load_size_; }
-  ELF::Addr load_bias() { return load_bias_; }
-  const ELF::Phdr* loaded_phdr() { return loaded_phdr_; }
-
- private:
-  FileDescriptor fd_;
-  const char* path_;
-
-  ELF::Ehdr header_;
-  size_t phdr_num_;
-
-  void* phdr_mmap_;  // temporary copy of the program header.
-  ELF::Phdr* phdr_table_;
-  ELF::Addr phdr_size_;  // and its size.
-
-  off_t file_offset_;
-  void* wanted_load_address_;
-  void* load_start_;     // First page of reserved address space.
-  ELF::Addr load_size_;  // Size in bytes of reserved address space.
-  ELF::Addr load_bias_;  // load_bias, add this value to all "vaddr"
-                         // values in the library to get the corresponding
-                         // memory address.
-
-  const ELF::Phdr* loaded_phdr_;  // points to the loaded program header.
-
-  void* reserved_start_;  // Real first page of reserved address space.
-  size_t reserved_size_;  // Real size in bytes of reserved address space.
-
-  // Individual steps used by ::LoadAt()
-  bool ReadElfHeader(Error* error);
-  bool ReadProgramHeader(Error* error);
-  bool ReserveAddressSpace(Error* error);
-  bool LoadSegments(Error* error);
-  bool FindPhdr(Error* error);
-  bool CheckPhdr(ELF::Addr, Error* error);
+  // On failure, return an invalid Result instance, and sets |*error|.
+  static Result LoadAt(const char* lib_path,
+                       off_t file_offset,
+                       uintptr_t wanted_address,
+                       Error* error);
 };
 
 }  // namespace crazy

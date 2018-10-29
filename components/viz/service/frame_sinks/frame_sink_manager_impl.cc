@@ -33,7 +33,9 @@ FrameSinkManagerImpl::FrameSinkSourceMapping&
 FrameSinkManagerImpl::FrameSinkSourceMapping::operator=(
     FrameSinkSourceMapping&& other) = default;
 
-FrameSinkManagerImpl::FrameSinkData::FrameSinkData() = default;
+FrameSinkManagerImpl::FrameSinkData::FrameSinkData(bool report_activation)
+    : report_activation(report_activation) {}
+
 FrameSinkManagerImpl::FrameSinkData::FrameSinkData(FrameSinkData&& other) =
     default;
 FrameSinkManagerImpl::FrameSinkData::~FrameSinkData() = default;
@@ -74,15 +76,16 @@ void FrameSinkManagerImpl::BindAndSetClient(
   DCHECK(!binding_.is_bound());
   binding_.Bind(std::move(request), std::move(task_runner));
   client_ptr_ = std::move(client);
-
   client_ = client_ptr_.get();
 }
 
 void FrameSinkManagerImpl::SetLocalClient(
-    mojom::FrameSinkManagerClient* client) {
+    mojom::FrameSinkManagerClient* client,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
   DCHECK(!client_ptr_);
-
+  DCHECK(!ui_task_runner_);
   client_ = client;
+  ui_task_runner_ = ui_task_runner;
 }
 
 void FrameSinkManagerImpl::ForceShutdown() {
@@ -92,12 +95,12 @@ void FrameSinkManagerImpl::ForceShutdown() {
   sink_map_.clear();
 }
 
-void FrameSinkManagerImpl::RegisterFrameSinkId(
-    const FrameSinkId& frame_sink_id) {
+void FrameSinkManagerImpl::RegisterFrameSinkId(const FrameSinkId& frame_sink_id,
+                                               bool report_activation) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!base::ContainsKey(frame_sink_data_, frame_sink_id));
 
-  frame_sink_data_.emplace(std::make_pair(frame_sink_id, FrameSinkData()));
+  frame_sink_data_.emplace(std::make_pair(frame_sink_id, report_activation));
 
   if (video_detector_)
     video_detector_->OnFrameSinkIdRegistered(frame_sink_id);
@@ -241,15 +244,6 @@ void FrameSinkManagerImpl::UnregisterFrameSinkHierarchy(
     RecursivelyAttachBeginFrameSource(source_iter.second, source_iter.first);
 }
 
-void FrameSinkManagerImpl::AssignTemporaryReference(const SurfaceId& surface_id,
-                                                    const FrameSinkId& owner) {
-  surface_manager_.AssignTemporaryReference(surface_id, owner);
-}
-
-void FrameSinkManagerImpl::DropTemporaryReference(const SurfaceId& surface_id) {
-  surface_manager_.DropTemporaryReference(surface_id);
-}
-
 void FrameSinkManagerImpl::AddVideoDetectorObserver(
     mojom::VideoDetectorObserverPtr observer) {
   if (!video_detector_) {
@@ -271,8 +265,7 @@ void FrameSinkManagerImpl::EvictSurfaces(
     auto it = support_map_.find(surface_id.frame_sink_id());
     if (it == support_map_.end())
       continue;
-    if (it->second->last_activated_surface_id() == surface_id)
-      it->second->EvictLastActivatedSurface();
+    it->second->EvictSurface(surface_id.local_surface_id());
   }
 }
 
@@ -288,24 +281,18 @@ void FrameSinkManagerImpl::RequestCopyOfOutput(
                                   std::move(request));
 }
 
-void FrameSinkManagerImpl::OnSurfaceCreated(const SurfaceId& surface_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  if (client_) {
-    client_->OnSurfaceCreated(surface_id);
-  } else {
-    // There is no client to assign an owner for the temporary reference, so we
-    // can drop the temporary reference safely.
-    surface_manager_.DropTemporaryReference(surface_id);
-  }
-}
-
 void FrameSinkManagerImpl::OnFirstSurfaceActivation(
     const SurfaceInfo& surface_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_GT(surface_info.device_scale_factor(), 0.0f);
 
-  if (client_)
+  auto it = frame_sink_data_.find(surface_info.id().frame_sink_id());
+  if (it == frame_sink_data_.end())
+    return;
+
+  const FrameSinkData& frame_sink_data = it->second;
+
+  if (client_ && frame_sink_data.report_activation)
     client_->OnFirstSurfaceActivation(surface_info);
 }
 
@@ -511,10 +498,26 @@ void FrameSinkManagerImpl::SubmitHitTestRegionList(
                                             std::move(hit_test_region_list));
 }
 
-void FrameSinkManagerImpl::OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
-                                               uint32_t frame_token) {
+void FrameSinkManagerImpl::OnFrameTokenChangedDirect(
+    const FrameSinkId& frame_sink_id,
+    uint32_t frame_token) {
   if (client_)
     client_->OnFrameTokenChanged(frame_sink_id, frame_token);
+}
+
+void FrameSinkManagerImpl::OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
+                                               uint32_t frame_token) {
+  if (client_ptr_ || !ui_task_runner_) {
+    // This is a Mojo client or a locally-connected client *without* a task
+    // runner. In this case, call directly.
+    OnFrameTokenChangedDirect(frame_sink_id, frame_token);
+  } else {
+    // This is a locally-connected client *with* a task runner - post task.
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FrameSinkManagerImpl::OnFrameTokenChangedDirect,
+                       base::Unretained(this), frame_sink_id, frame_token));
+  }
 }
 
 VideoDetector* FrameSinkManagerImpl::CreateVideoDetectorForTesting(

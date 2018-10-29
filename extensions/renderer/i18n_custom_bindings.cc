@@ -57,8 +57,11 @@ void I18NCustomBindings::GetL10nMessage(
 
 void I18NCustomBindings::GetL10nUILanguage(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  args.GetReturnValue().Set(v8::String::NewFromUtf8(
-      args.GetIsolate(), content::RenderThread::Get()->GetLocale().c_str()));
+  args.GetReturnValue().Set(
+      v8::String::NewFromUtf8(args.GetIsolate(),
+                              content::RenderThread::Get()->GetLocale().c_str(),
+                              v8::NewStringType::kNormal)
+          .ToLocalChecked());
 }
 
 void I18NCustomBindings::DetectTextLanguage(

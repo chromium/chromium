@@ -89,7 +89,7 @@ class ListenerLeakTest : public testing::Test {
   void RunTest(const std::string& filename) {
     std::string base_url("http://www.example.com/");
     std::string file_name(filename);
-    URLTestHelpers::RegisterMockedURLLoadFromBase(
+    url_test_helpers::RegisterMockedURLLoadFromBase(
         WebString::FromUTF8(base_url), blink::test::CoreTestDataPath(),
         WebString::FromUTF8(file_name));
     web_view_helper.InitializeAndLoad(base_url + file_name);
@@ -102,7 +102,7 @@ class ListenerLeakTest : public testing::Test {
   }
 
  protected:
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
 };
 
 // This test tries to create a reference cycle between node and its listener.

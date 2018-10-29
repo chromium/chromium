@@ -42,18 +42,13 @@ public class WebappCustomTabTimeSpentLogger {
     public void onPause() {
         long timeSpent = SystemClock.elapsedRealtime() - mStartTime;
         String umaSuffix;
+        // TODO(peconn): Combine this with TrustedWebActivityOpenTimeRecorder.
         switch (mActivityType) {
             case LaunchSourceType.WEBAPP:
                 umaSuffix = ".Webapp";
                 break;
             case LaunchSourceType.WEBAPK:
                 umaSuffix = ".WebApk";
-                break;
-            case LaunchSourceType.TWA:
-                umaSuffix = ".TWA";
-                break;
-            case LaunchSourceType.MEDIA_LAUNCHER_ACTIVITY:
-                umaSuffix = ".MediaLauncherActivity";
                 break;
             default:
                 umaSuffix = ".Other";

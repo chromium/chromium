@@ -60,11 +60,11 @@ Biquad::Biquad() : has_sample_accurate_values_(false) {
 
   // Allocate enough space for the a-rate filter coefficients to handle a
   // rendering quantum of 128 frames.
-  b0_.Allocate(AudioUtilities::kRenderQuantumFrames);
-  b1_.Allocate(AudioUtilities::kRenderQuantumFrames);
-  b2_.Allocate(AudioUtilities::kRenderQuantumFrames);
-  a1_.Allocate(AudioUtilities::kRenderQuantumFrames);
-  a2_.Allocate(AudioUtilities::kRenderQuantumFrames);
+  b0_.Allocate(audio_utilities::kRenderQuantumFrames);
+  b1_.Allocate(audio_utilities::kRenderQuantumFrames);
+  b2_.Allocate(audio_utilities::kRenderQuantumFrames);
+  a1_.Allocate(audio_utilities::kRenderQuantumFrames);
+  a2_.Allocate(audio_utilities::kRenderQuantumFrames);
 
   // Initialize as pass-thru (straight-wire, no filter effect)
   SetNormalizedCoefficients(0, 1, 0, 0, 1, 0, 0);

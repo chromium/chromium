@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("ios") {
+import("//build/config/jumbo.gni")
+
+jumbo_source_set("ios") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ssl_status_input_event_data.h",

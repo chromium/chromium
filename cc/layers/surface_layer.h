@@ -27,9 +27,9 @@ class CC_EXPORT SurfaceLayer : public Layer {
   static scoped_refptr<SurfaceLayer> Create();
   static scoped_refptr<SurfaceLayer> Create(UpdateSubmissionStateCB);
 
-  void SetPrimarySurfaceId(const viz::SurfaceId& surface_id,
-                           const DeadlinePolicy& deadline_policy);
-  void SetFallbackSurfaceId(const viz::SurfaceId& surface_id);
+  void SetSurfaceId(const viz::SurfaceId& surface_id,
+                    const DeadlinePolicy& deadline_policy);
+  void SetOldestAcceptableFallback(const viz::SurfaceId& surface_id);
 
   // When stretch_content_to_fill_bounds is true, the scale of the embedded
   // surface is ignored and the content will be stretched to fill the bounds.
@@ -49,11 +49,9 @@ class CC_EXPORT SurfaceLayer : public Layer {
   void SetLayerTreeHost(LayerTreeHost* host) override;
   void PushPropertiesTo(LayerImpl* layer) override;
 
-  const viz::SurfaceId& primary_surface_id() const {
-    return surface_range_.end();
-  }
+  const viz::SurfaceId& surface_id() const { return surface_range_.end(); }
 
-  const base::Optional<viz::SurfaceId>& fallback_surface_id() const {
+  const base::Optional<viz::SurfaceId>& oldest_acceptable_fallback() const {
     return surface_range_.start();
   }
 

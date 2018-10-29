@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "components/cbor/cbor_values.h"
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/fido_constants.h"
 
@@ -59,24 +59,24 @@ bool AttestationObject::IsAttestationCertificateInappropriatelyIdentifying() {
 }
 
 std::vector<uint8_t> AttestationObject::SerializeToCBOREncodedBytes() const {
-  cbor::CBORValue::MapValue map;
-  map[cbor::CBORValue(kFormatKey)] =
-      cbor::CBORValue(attestation_statement_->format_name());
-  map[cbor::CBORValue(kAuthDataKey)] =
-      cbor::CBORValue(authenticator_data_.SerializeToByteArray());
-  map[cbor::CBORValue(kAttestationStatementKey)] =
-      cbor::CBORValue(attestation_statement_->GetAsCBORMap());
-  return cbor::CBORWriter::Write(cbor::CBORValue(std::move(map)))
+  cbor::Value::MapValue map;
+  map[cbor::Value(kFormatKey)] =
+      cbor::Value(attestation_statement_->format_name());
+  map[cbor::Value(kAuthDataKey)] =
+      cbor::Value(authenticator_data_.SerializeToByteArray());
+  map[cbor::Value(kAttestationStatementKey)] =
+      cbor::Value(attestation_statement_->GetAsCBORMap());
+  return cbor::Writer::Write(cbor::Value(std::move(map)))
       .value_or(std::vector<uint8_t>());
 }
 
 std::vector<uint8_t> SerializeToCtapStyleCborEncodedBytes(
     const AttestationObject& object) {
-  cbor::CBORValue::MapValue map;
+  cbor::Value::MapValue map;
   map.emplace(1, object.attestation_statement().format_name());
   map.emplace(2, object.authenticator_data().SerializeToByteArray());
   map.emplace(3, object.attestation_statement().GetAsCBORMap());
-  auto encoded_bytes = cbor::CBORWriter::Write(cbor::CBORValue(std::move(map)));
+  auto encoded_bytes = cbor::Writer::Write(cbor::Value(std::move(map)));
   DCHECK(encoded_bytes);
   return std::move(*encoded_bytes);
 }

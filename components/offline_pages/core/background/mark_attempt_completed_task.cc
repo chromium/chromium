@@ -22,17 +22,17 @@ MarkAttemptCompletedTask::MarkAttemptCompletedTask(
 MarkAttemptCompletedTask::~MarkAttemptCompletedTask() {}
 
 void MarkAttemptCompletedTask::UpdateRequestImpl(
-    std::unique_ptr<UpdateRequestsResult> read_result) {
-  if (!ValidateReadResult(read_result.get())) {
+    UpdateRequestsResult read_result) {
+  if (!ValidateReadResult(read_result)) {
     CompleteWithResult(std::move(read_result));
     return;
   }
 
-  // It is perfectly fine to reuse the read_result->updated_items collection, as
+  // It is perfectly fine to reuse the read_result.updated_items collection, as
   // it is owned by this callback and will be destroyed when out of scope.
-  read_result->updated_items[0].MarkAttemptCompleted(fail_state_);
+  read_result.updated_items[0].MarkAttemptCompleted(fail_state_);
   store()->UpdateRequests(
-      read_result->updated_items,
+      read_result.updated_items,
       base::BindOnce(&MarkAttemptCompletedTask::CompleteWithResult,
                      GetWeakPtr()));
 }

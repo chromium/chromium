@@ -20,15 +20,29 @@ class DesktopLinuxBrowserFrameView : public OpaqueBrowserFrameView {
 
  protected:
   // OpaqueBrowserFrameView:
-  void MaybeRedrawFrameButtons() override;
+  void Layout() override;
 
  private:
+  struct DrawFrameButtonParams {
+    bool operator==(const DrawFrameButtonParams& other) const;
+
+    int top_area_height;
+    bool maximized;
+    bool active;
+  };
+
+  // Redraws the image resources associated with the minimize, maximize,
+  // restore, and close buttons.
+  virtual void MaybeUpdateCachedFrameButtonImages();
+
   // Returns one of |{minimize,maximize,restore,close}_button_|
   // corresponding to |type|.
   views::ImageButton* GetButtonFromDisplayType(
       chrome::FrameButtonDisplayType type);
 
   std::unique_ptr<views::NavButtonProvider> nav_button_provider_;
+
+  DrawFrameButtonParams cache_{0, false, false};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopLinuxBrowserFrameView);
 };

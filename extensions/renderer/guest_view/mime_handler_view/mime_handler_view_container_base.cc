@@ -4,7 +4,6 @@
 
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_base.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/guid.h"
 #include "base/lazy_instance.h"
 #include "base/memory/weak_ptr.h"
@@ -177,9 +176,9 @@ MimeHandlerViewContainerBase::MimeHandlerViewContainerBase(
     const content::WebPluginInfo& info,
     const std::string& mime_type,
     const GURL& original_url)
-    : plugin_path_(info.path.MaybeAsASCII()),
+    : original_url_(original_url),
+      plugin_path_(info.path.MaybeAsASCII()),
       mime_type_(mime_type),
-      original_url_(original_url),
       embedder_render_frame_routing_id_(embedder_render_frame->GetRoutingID()),
       before_unload_control_binding_(this),
       weak_factory_(this) {
@@ -220,12 +219,22 @@ bool MimeHandlerViewContainerBase::TryHandleMessage(
   base::PickleIterator iter(message);
   bool success = iter.ReadInt(&element_instance_id);
   DCHECK(success);
-  for (const auto& pair : g_mime_handler_view_container_base_map.Get()) {
-    for (auto* container : pair.second) {
-      if (container->GetInstanceId() == element_instance_id)
-        container->OnHandleMessage(message);
+  MimeHandlerViewContainerBase* target_container = nullptr;
+  for (auto& pair : g_mime_handler_view_container_base_map.Get()) {
+    auto it = std::find_if(
+        pair.second.begin(), pair.second.end(),
+        [&element_instance_id](MimeHandlerViewContainerBase* container) {
+          return container->GetInstanceId() == element_instance_id;
+        });
+    if (it != pair.second.end()) {
+      target_container = *it;
+      break;
     }
   }
+
+  if (target_container)
+    target_container->OnHandleMessage(message);
+
   return false;
 }
 
@@ -288,6 +297,11 @@ bool MimeHandlerViewContainerBase::OnHandleMessage(
     IPC_MESSAGE_HANDLER(
         ExtensionsGuestViewMsg_MimeHandlerViewGuestOnLoadCompleted,
         OnMimeHandlerViewGuestOnLoadCompleted)
+    IPC_MESSAGE_HANDLER(
+        ExtensionsGuestViewMsg_RetryCreatingMimeHandlerViewGuest,
+        OnRetryCreatingMimeHandlerViewGuest)
+    IPC_MESSAGE_HANDLER(ExtensionsGuestViewMsg_DestroyFrameContainer,
+                        OnDestroyFrameContainer)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -300,6 +314,9 @@ void MimeHandlerViewContainerBase::DidReceiveData(const char* data,
 
 void MimeHandlerViewContainerBase::DidFinishLoading() {
   DCHECK(is_embedded_);
+  // Warning: It is possible that |this| gets destroyed after this line (when
+  // the MHVCB is of the frame type and the associated plugin element does not
+  // have a content frame).
   CreateMimeHandlerViewGuestIfNecessary();
 }
 
@@ -317,18 +334,10 @@ void MimeHandlerViewContainerBase::CreateMimeHandlerViewGuestIfNecessary() {
     // TODO(ekaramad): How can this happen? We should destroy the container if
     // this happens at all. The process is however different for a plugin-based
     // container.
-    base::debug::DumpWithoutCrashing();
     return;
   }
 
   auto* guest_view = GetGuestView();
-  if (!guest_view) {
-    // TODO(ekaramad): How can this happen? Is it during startup or perhaps
-    // the interface request is rejected?
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-
   // When the network service is enabled, subresource requests like plugins are
   // made directly from the renderer to the network service. So we need to
   // intercept the URLLoader and send it to the browser so that it can forward
@@ -375,6 +384,16 @@ void MimeHandlerViewContainerBase::CreateMimeHandlerViewGuestIfNecessary() {
   guest_created_ = true;
 }
 
+void MimeHandlerViewContainerBase::OnRetryCreatingMimeHandlerViewGuest(
+    int32_t element_instance_id) {
+  NOTREACHED();
+}
+
+void MimeHandlerViewContainerBase::OnDestroyFrameContainer(
+    int element_instance_id) {
+  NOTREACHED();
+}
+
 void MimeHandlerViewContainerBase::OnMimeHandlerViewGuestOnLoadCompleted(
     int32_t /* element_instance_id */) {
   if (!GetEmbedderRenderFrame())
@@ -410,7 +429,7 @@ void MimeHandlerViewContainerBase::SendResourceRequest() {
   // send credentials/cookies with the request. So, use the default mode
   // "no-cors" and credentials mode "include".
   blink::WebURLRequest request(original_url_);
-  request.SetRequestContext(blink::WebURLRequest::kRequestContextObject);
+  request.SetRequestContext(blink::mojom::RequestContextType::OBJECT);
   // The plugin resource request should skip service workers since "plug-ins
   // may get their security origins from their own urls".
   // https://w3c.github.io/ServiceWorker/#implementer-concerns
@@ -428,6 +447,9 @@ void MimeHandlerViewContainerBase::SetEmbeddedLoader(
     content::mojom::TransferrableURLLoaderPtr transferrable_url_loader) {
   transferrable_url_loader_ = std::move(transferrable_url_loader);
   transferrable_url_loader_->url = GURL(plugin_path_ + base::GenerateGUID());
+  // Warning: It is possible that |this| gets destroyed after this line (when
+  // the MHVCB is of the frame type and the associated plugin element does not
+  // have a content frame).
   CreateMimeHandlerViewGuestIfNecessary();
 }
 

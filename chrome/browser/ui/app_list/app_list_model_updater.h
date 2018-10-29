@@ -145,7 +145,8 @@ class AppListModelUpdater {
 
  protected:
   // Returns the first available position in app list. |top_level_items| are
-  // items without parents.
+  // items without parents. Note that all items in |top_level_items| should have
+  // valid position.
   static syncer::StringOrdinal GetFirstAvailablePositionInternal(
       const std::vector<ChromeAppListItem*>& top_level_items);
 };

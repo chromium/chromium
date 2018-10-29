@@ -815,8 +815,8 @@ def CreateArgumentParser():
       '--use-goma', action='store_true', help='Enable GOMA.', default=False)
   parser.add_argument('--adb-path', help='Path to the adb binary.')
 
-  parser.add_argument('--no-system-health-orderfile', action='store_false',
-                      dest='system_health_orderfile', default=True,
+  parser.add_argument('--system-health-orderfile', action='store_true',
+                      dest='system_health_orderfile', default=False,
                       help=('Create an orderfile based on an about:blank '
                             'startup benchmark instead of system health '
                             'benchmarks.'))

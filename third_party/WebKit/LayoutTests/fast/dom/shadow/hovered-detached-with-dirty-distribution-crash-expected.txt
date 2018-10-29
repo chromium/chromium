@@ -1,3 +1,2 @@
 CONSOLE WARNING: line 18: Element.createShadowRoot is deprecated and will be removed in M73, around March 2019. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 for more details.
 Tests that detaching a hovered node with dirty distributuion doesn't crash.
-

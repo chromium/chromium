@@ -108,6 +108,7 @@ app_runtime::LaunchSource GetLaunchSourceEnum(
   ASSERT_ENUM_EQUAL(SOURCE_TEST);
   ASSERT_ENUM_EQUAL(SOURCE_INSTALLED_NOTIFICATION);
   ASSERT_ENUM_EQUAL(SOURCE_CONTEXT_MENU);
+  ASSERT_ENUM_EQUAL(SOURCE_ARC);
   static_assert(extensions::NUM_APP_LAUNCH_SOURCES ==
                     app_runtime::LaunchSource::LAUNCH_SOURCE_LAST + 1,
                 "");

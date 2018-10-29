@@ -10,8 +10,7 @@
 const void* const kChromeNavigationDataUserDataKey =
     &kChromeNavigationDataUserDataKey;
 
-ChromeNavigationData::ChromeNavigationData()
-    : previews_state_(content::PreviewsTypes::PREVIEWS_UNSPECIFIED) {}
+ChromeNavigationData::ChromeNavigationData() {}
 
 ChromeNavigationData::~ChromeNavigationData() {}
 
@@ -34,9 +33,5 @@ std::unique_ptr<content::NavigationData> ChromeNavigationData::Clone() const {
   if (data_reduction_proxy_data_) {
     copy->SetDataReductionProxyData(data_reduction_proxy_data_->DeepCopy());
   }
-  if (previews_user_data_) {
-    copy->set_previews_user_data(previews_user_data_->DeepCopy());
-  }
-  copy->previews_state_ = previews_state_;
   return std::move(copy);
 }

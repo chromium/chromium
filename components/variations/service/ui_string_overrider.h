@@ -42,10 +42,6 @@ class UIStringOverrider {
   // resources is found. Visible for testing.
   int GetResourceIndex(uint32_t hash);
 
-  // Overrides the string resource specified by |hash| with |string| in the
-  // resource bundle.
-  void OverrideUIString(uint32_t hash, const base::string16& string);
-
  private:
   const uint32_t* const resource_hashes_;
   const int* const resource_indices_;

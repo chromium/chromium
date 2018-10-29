@@ -594,10 +594,19 @@ sandbox::ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
 base::string16 GetAppContainerProfileName(
     const std::string& appcontainer_id,
     service_manager::SandboxType sandbox_type) {
-  DCHECK(sandbox_type == service_manager::SANDBOX_TYPE_GPU);
+  DCHECK(sandbox_type == service_manager::SANDBOX_TYPE_GPU ||
+         sandbox_type == service_manager::SANDBOX_TYPE_XRCOMPOSITING);
   auto sha1 = base::SHA1HashString(appcontainer_id);
-  auto profile_name = base::StrCat(
-      {"chrome.sandbox.gpu", base::HexEncode(sha1.data(), sha1.size())});
+  std::string sandbox_base_name =
+      (sandbox_type == service_manager::SANDBOX_TYPE_XRCOMPOSITING)
+          ? std::string("chrome.sandbox.xrdevice")
+          : std::string("chrome.sandbox.gpu");
+  std::string profile_name = base::StrCat(
+      {sandbox_base_name, base::HexEncode(sha1.data(), sha1.size())});
+  // CreateAppContainerProfile requires that the profile name is at most 64
+  // characters.  The size of sha1 is a constant 40, so validate that the base
+  // names are sufficiently short that the total length is valid.
+  DCHECK(profile_name.length() <= 64);
   return base::UTF8ToWide(profile_name);
 }
 
@@ -605,11 +614,19 @@ sandbox::ResultCode SetupAppContainerProfile(
     sandbox::AppContainerProfile* profile,
     const base::CommandLine& command_line,
     service_manager::SandboxType sandbox_type) {
-  if (sandbox_type != service_manager::SANDBOX_TYPE_GPU)
+  if (sandbox_type != service_manager::SANDBOX_TYPE_GPU &&
+      sandbox_type != service_manager::SANDBOX_TYPE_XRCOMPOSITING)
     return sandbox::SBOX_ERROR_UNSUPPORTED;
 
-  if (!profile->AddImpersonationCapability(L"chromeInstallFiles")) {
+  if (sandbox_type == service_manager::SANDBOX_TYPE_GPU &&
+      !profile->AddImpersonationCapability(L"chromeInstallFiles")) {
     DLOG(ERROR) << "AppContainerProfile::AddImpersonationCapability() failed";
+    return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
+  }
+
+  if (sandbox_type == service_manager::SANDBOX_TYPE_XRCOMPOSITING &&
+      !profile->AddCapability(L"chromeInstallFiles")) {
+    DLOG(ERROR) << "AppContainerProfile::AddCapability() failed";
     return sandbox::SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY;
   }
 
@@ -617,11 +634,21 @@ sandbox::ResultCode SetupAppContainerProfile(
       L"lpacChromeInstallFiles", L"registryRead",
   };
 
-  auto cmdline_caps =
-      base::SplitString(command_line.GetSwitchValueNative(
-                            service_manager::switches::kAddGpuAppContainerCaps),
-                        L",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base_caps.insert(base_caps.end(), cmdline_caps.begin(), cmdline_caps.end());
+  if (sandbox_type == service_manager::SANDBOX_TYPE_GPU) {
+    auto cmdline_caps = base::SplitString(
+        command_line.GetSwitchValueNative(
+            service_manager::switches::kAddGpuAppContainerCaps),
+        L",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    base_caps.insert(base_caps.end(), cmdline_caps.begin(), cmdline_caps.end());
+  }
+
+  if (sandbox_type == service_manager::SANDBOX_TYPE_XRCOMPOSITING) {
+    auto cmdline_caps = base::SplitString(
+        command_line.GetSwitchValueNative(
+            service_manager::switches::kAddXrAppContainerCaps),
+        L",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    base_caps.insert(base_caps.end(), cmdline_caps.begin(), cmdline_caps.end());
+  }
 
   for (const auto& cap : base_caps) {
     if (!profile->AddCapability(cap.c_str())) {
@@ -630,7 +657,9 @@ sandbox::ResultCode SetupAppContainerProfile(
     }
   }
 
-  if (!command_line.HasSwitch(service_manager::switches::kDisableGpuLpac)) {
+  // Enable LPAC for GPU process, but not for XRCompositor service.
+  if (sandbox_type == service_manager::SANDBOX_TYPE_GPU &&
+      !command_line.HasSwitch(service_manager::switches::kDisableGpuLpac)) {
     profile->SetEnableLowPrivilegeAppContainer(true);
   }
 
@@ -938,9 +967,10 @@ sandbox::ResultCode SandboxWin::StartSandboxedProcess(
       return result;
   }
 
-  // Allow the renderer and gpu processes to access the log file.
+  // Allow the renderer, gpu and utility processes to access the log file.
   if (process_type == service_manager::switches::kRendererProcess ||
-      process_type == service_manager::switches::kGpuProcess) {
+      process_type == service_manager::switches::kGpuProcess ||
+      process_type == service_manager::switches::kUtilityProcess) {
     if (logging::IsLoggingToFileEnabled()) {
       DCHECK(base::FilePath(logging::GetLogFileFullPath()).IsAbsolute());
       result = policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,

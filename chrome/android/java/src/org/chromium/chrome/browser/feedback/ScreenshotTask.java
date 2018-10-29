@@ -13,6 +13,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -136,7 +137,7 @@ final class ScreenshotTask implements ScreenshotSource {
         if (!currentTab.isUserInteractable()) return true;
         // If the tab focused and not showing Android widget based content, then use the Compositor
         // based screenshot.
-        if (currentTab.getNativePage() == null && !currentTab.isShowingSadTab()) return true;
+        if (currentTab.getNativePage() == null && !SadTab.isShowing(currentTab)) return true;
 
         // Assume the UI is drawn primarily by Android widgets, so do not use the Compositor
         // screenshot.

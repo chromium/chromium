@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -43,13 +44,14 @@ namespace blink {
 struct Unicode16BitEscapeSequence {
   STATIC_ONLY(Unicode16BitEscapeSequence);
   enum { kSequenceSize = 6 };  // e.g. %u26C4
-  static size_t FindInString(const String& string, size_t start_position) {
+  static wtf_size_t FindInString(const String& string,
+                                 wtf_size_t start_position) {
     return string.Find("%u", start_position);
   }
-  static size_t FindEndOfRun(const String& string,
-                             size_t start_position,
-                             size_t end_position) {
-    size_t run_end = start_position;
+  static wtf_size_t FindEndOfRun(const String& string,
+                                 wtf_size_t start_position,
+                                 wtf_size_t end_position) {
+    wtf_size_t run_end = start_position;
     while (end_position - run_end >= kSequenceSize && string[run_end] == '%' &&
            string[run_end + 1] == 'u' && IsASCIIHexDigit(string[run_end + 2]) &&
            IsASCIIHexDigit(string[run_end + 3]) &&
@@ -62,14 +64,14 @@ struct Unicode16BitEscapeSequence {
 
   template <typename CharType>
   static String DecodeRun(const CharType* run,
-                          size_t run_length,
+                          wtf_size_t run_length,
                           const WTF::TextEncoding&) {
     // Each %u-escape sequence represents a UTF-16 code unit.  See
     // <http://www.w3.org/International/iri-edit/draft-duerst-iri.html#anchor29>.
     // For 16-bit escape sequences, we know that findEndOfRun() has given us a
     // contiguous run of sequences without any intervening characters, so decode
     // the run without additional checks.
-    size_t number_of_sequences = run_length / kSequenceSize;
+    wtf_size_t number_of_sequences = run_length / kSequenceSize;
     StringBuilder builder;
     builder.ReserveCapacity(number_of_sequences);
     while (number_of_sequences--) {
@@ -85,20 +87,21 @@ struct Unicode16BitEscapeSequence {
 
 struct URLEscapeSequence {
   enum { kSequenceSize = 3 };  // e.g. %41
-  static size_t FindInString(const String& string, size_t start_position) {
+  static wtf_size_t FindInString(const String& string,
+                                 wtf_size_t start_position) {
     return string.find('%', start_position);
   }
-  static size_t FindEndOfRun(const String& string,
-                             size_t start_position,
-                             size_t end_position) {
+  static wtf_size_t FindEndOfRun(const String& string,
+                                 wtf_size_t start_position,
+                                 wtf_size_t end_position) {
     // Make the simplifying assumption that supported encodings may have up to
     // two unescaped characters in the range 0x40 - 0x7F as the trailing bytes
     // of their sequences which need to be passed into the decoder as part of
     // the run. In other words, we end the run at the first value outside of the
     // 0x40 - 0x7F range, after two values in this range, or at a %-sign that
     // does not introduce a valid escape sequence.
-    size_t run_end = start_position;
-    int number_of_trailing_characters = 0;
+    wtf_size_t run_end = start_position;
+    wtf_size_t number_of_trailing_characters = 0;
     while (run_end < end_position) {
       if (string[run_end] == '%') {
         if (end_position - run_end >= kSequenceSize &&
@@ -120,7 +123,7 @@ struct URLEscapeSequence {
 
   template <typename CharType>
   static String DecodeRun(const CharType* run,
-                          size_t run_length,
+                          wtf_size_t run_length,
                           const WTF::TextEncoding& encoding) {
     // For URL escape sequences, we know that findEndOfRun() has given us a run
     // where every %-sign introduces a valid escape sequence, but there may be
@@ -143,7 +146,7 @@ struct URLEscapeSequence {
         buffer.size(),
         static_cast<size_t>(p - buffer.data()));  // Prove buffer not overrun.
     return (encoding.IsValid() ? encoding : UTF8Encoding())
-        .Decode(buffer.data(), p - buffer.data());
+        .Decode(buffer.data(), static_cast<wtf_size_t>(p - buffer.data()));
   }
 };
 
@@ -151,13 +154,13 @@ template <typename EscapeSequence>
 String DecodeEscapeSequences(const String& string,
                              const WTF::TextEncoding& encoding) {
   StringBuilder result;
-  size_t length = string.length();
-  size_t decoded_position = 0;
-  size_t search_position = 0;
-  size_t encoded_run_position;
+  wtf_size_t length = string.length();
+  wtf_size_t decoded_position = 0;
+  wtf_size_t search_position = 0;
+  wtf_size_t encoded_run_position;
   while ((encoded_run_position = EscapeSequence::FindInString(
               string, search_position)) != kNotFound) {
-    size_t encoded_run_end =
+    wtf_size_t encoded_run_end =
         EscapeSequence::FindEndOfRun(string, encoded_run_position, length);
     search_position = encoded_run_end;
     if (encoded_run_end == encoded_run_position) {

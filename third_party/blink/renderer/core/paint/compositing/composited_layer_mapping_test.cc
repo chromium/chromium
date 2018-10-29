@@ -59,6 +59,17 @@ class CompositedLayerMappingTest : public RenderingTest {
   void TearDown() override { RenderingTest::TearDown(); }
 };
 
+// Tests the pre-BlinkGenPropertyTrees composited layer mapping code. With BGPT,
+// some layer updates are skipped (see: CLM::UpdateGraphicsLayerConfiguration
+// and CLM::UpdateStickyConstraints).
+class CompositedLayerMappingTestWithoutBGPT
+    : private ScopedBlinkGenPropertyTreesForTest,
+      public CompositedLayerMappingTest {
+ public:
+  CompositedLayerMappingTestWithoutBGPT()
+      : ScopedBlinkGenPropertyTreesForTest(false) {}
+};
+
 TEST_F(CompositedLayerMappingTest, SubpixelAccumulationChange) {
   SetBodyInnerHTML(
       "<div id='target' style='will-change: transform; background: lightblue; "
@@ -467,7 +478,7 @@ TEST_F(CompositedLayerMappingTest, ClippedBigLayer) {
             RecomputeInterestRect(paint_layer->GraphicsLayerBacking()));
 }
 
-TEST_F(CompositedLayerMappingTest, ClippingMaskLayer) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT, ClippingMaskLayer) {
   if (RuntimeEnabledFeatures::SlimmingPaintV2Enabled())
     return;
 
@@ -1146,23 +1157,21 @@ TEST_F(CompositedLayerMappingTest,
       true);
   SetBodyInnerHTML(R"HTML(
     <div id='container' style='overflow: scroll; width: 300px; height:
-    300px; background: white; will-change: transform;'>
-        <div style='background-color: blue; clip-path: circle(600px at 1000px 1000px);
-        width: 2000px; height:
-    2000px;'></div>
+        300px; background: white; will-change: transform;'>
+      <div style='background-color: blue; width: 2000px; height: 2000px;
+           clip-path: circle(600px at 1000px 1000px);'></div>
     </div>
   )HTML");
 
-  PaintLayer* layer =
-      ToLayoutBlock(GetLayoutObjectByElementId("container"))->Layer();
+  const auto* container = ToLayoutBox(GetLayoutObjectByElementId("container"));
   EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            layer->GetBackgroundPaintLocation());
+            container->GetBackgroundPaintLocation());
 
   // We currently don't use composited scrolling when the container has a
   // border-radius so even though we can paint the background onto the scrolling
   // contents layer we don't have a scrolling contents layer to paint into in
   // this case.
-  CompositedLayerMapping* mapping = layer->GetCompositedLayerMapping();
+  const auto* mapping = container->Layer()->GetCompositedLayerMapping();
   EXPECT_FALSE(mapping->HasScrollingLayer());
   EXPECT_FALSE(mapping->BackgroundPaintsOntoScrollingContentsLayer());
 }
@@ -1177,35 +1186,35 @@ TEST_F(CompositedLayerMappingTest,
   // direction to compensate.  To make this a little clearer, for the first
   // example here the layer positions are calculated as:
   //
-  //   m_graphicsLayer x = left_pos - shadow_spread + shadow_x_offset
+  //   graphics_layer_ x = left_pos - shadow_spread + shadow_x_offset
   //                     = 50 - 10 - 10
   //                     = 30
   //
-  //   m_graphicsLayer y = top_pos - shadow_spread + shadow_y_offset
+  //   graphics_layer_ y = top_pos - shadow_spread + shadow_y_offset
   //                     = 50 - 10 + 0
   //                     = 40
   //
-  //   contents x = 50 - m_graphicsLayer x = 50 - 30 = 20
-  //   contents y = 50 - m_graphicsLayer y = 50 - 40 = 10
+  //   contents x = 50 - graphics_layer_ x = 50 - 30 = 20
+  //   contents y = 50 - graphics_layer_ y = 50 - 40 = 10
   //
   // The reason that perspective matters is that it affects which 'contents'
-  // layer is offset; m_childTransformLayer when using perspective, or
-  // m_scrollingLayer when there is no perspective.
+  // layer is offset; child_transform_layer_ when using perspective, or
+  // scrolling_layer_ when there is no perspective.
 
-  SetBodyInnerHTML(
-      "<div id='scroller' style='position: absolute; top: 50px; left: 50px; "
-      "width: 400px; height: 245px; overflow: auto; will-change: transform; "
-      "box-shadow: -10px 0 0 10px; perspective: 1px;'>"
-      "    <div style='position: absolute; top: 50px; bottom: 0; width: 200px; "
-      "height: 200px;'></div>"
-      "</div>"
-
-      "<div id='scroller2' style='position: absolute; top: 400px; left: 50px; "
-      "width: 400px; height: 245px; overflow: auto; will-change: transform; "
-      "box-shadow: -10px 0 0 10px;'>"
-      "    <div style='position: absolute; top: 50px; bottom: 0; width: 200px; "
-      "height: 200px;'></div>"
-      "</div>");
+  SetBodyInnerHTML(R"HTML(
+    <div id='scroller' style='position: absolute; top: 50px; left: 50px;
+        width: 400px; height: 245px; overflow: auto; will-change: transform;
+        box-shadow: -10px 0 0 10px; perspective: 1px;'>
+      <div style='position: absolute; top: 50px; bottom: 0; width: 200px;
+          height: 200px;'></div>
+      </div>
+    <div id='scroller2' style='position: absolute; top: 400px; left: 50px;
+        width: 400px; height: 245px; overflow: auto; will-change: transform;
+        box-shadow: -10px 0 0 10px;'>
+      <div style='position: absolute; top: 50px; bottom: 0; width: 200px;
+          height: 200px;'></div>
+    </div>
+  )HTML");
 
   CompositedLayerMapping* mapping =
       ToLayoutBlock(GetLayoutObjectByElementId("scroller"))
@@ -1252,7 +1261,8 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_FLOAT_EQ(10, scrolling_layer2->GetPosition().y());
 }
 
-TEST_F(CompositedLayerMappingTest, AncestorClippingMaskLayerUpdates) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
+       AncestorClippingMaskLayerUpdates) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #ancestor { width: 100px; height: 100px; overflow: hidden; }
@@ -1332,7 +1342,8 @@ TEST_F(CompositedLayerMappingTest, AncestorClippingMaskLayerUpdates) {
   EXPECT_FALSE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest, AncestorClippingMaskLayerSiblingUpdates) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
+       AncestorClippingMaskLayerSiblingUpdates) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #ancestor { width: 200px; height: 200px; overflow: hidden; }
@@ -1468,7 +1479,8 @@ TEST_F(CompositedLayerMappingTest, AncestorClippingMaskLayerSiblingUpdates) {
   EXPECT_FALSE(child2_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest, AncestorClippingMaskLayerGrandchildUpdates) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
+       AncestorClippingMaskLayerGrandchildUpdates) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #ancestor { width: 200px; height: 200px; overflow: hidden; }
@@ -1581,7 +1593,8 @@ TEST_F(CompositedLayerMappingTest, AncestorClippingMaskLayerGrandchildUpdates) {
   EXPECT_FALSE(grandchild_mapping->AncestorClippingLayer());
 }
 
-TEST_F(CompositedLayerMappingTest, AncestorClipMaskRequiredByBorderRadius) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
+       AncestorClipMaskRequiredByBorderRadius) {
   // Verify that we create the mask layer when the child is contained within
   // the rectangular clip but not contained within the rounded rect clip.
   SetBodyInnerHTML(R"HTML(
@@ -1623,7 +1636,7 @@ TEST_F(CompositedLayerMappingTest, AncestorClipMaskRequiredByBorderRadius) {
   EXPECT_TRUE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest,
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
        AncestorClipMaskNotRequiredByNestedBorderRadius) {
   // This case has the child within all ancestors and does not require a
   // mask.
@@ -1661,7 +1674,7 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_FALSE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest,
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
        AncestorClipMaskRequiredByParentBorderRadius) {
   // This case has the child within the grandparent but not the parent, and does
   // require a mask so that the parent will clip the corners.
@@ -1702,7 +1715,7 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_EQ(120, layer_size.height());
 }
 
-TEST_F(CompositedLayerMappingTest,
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
        AncestorClipMaskNotRequiredByParentBorderRadius) {
   // This case has the child within the grandparent but not the parent, and does
   // not require a mask because the parent does not have border radius
@@ -1740,7 +1753,7 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_FALSE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest,
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
        AncestorClipMaskRequiredByGrandparentBorderRadius1) {
   // This case has the child clipped by the grandparent border radius but not
   // the parent, and requires a mask to clip to the grandparent. Although in
@@ -1783,7 +1796,7 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_EQ(120, layer_size.height());
 }
 
-TEST_F(CompositedLayerMappingTest,
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
        AncestorClipMaskRequiredByGrandparentBorderRadius2) {
   // Similar to the previous case, but here we really do need the mask.
   SetBodyInnerHTML(R"HTML(
@@ -1823,7 +1836,7 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_EQ(160, layer_size.height());
 }
 
-TEST_F(CompositedLayerMappingTest,
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
        AncestorClipMaskNotRequiredByBorderRadiusInside) {
   // Verify that we do not create the mask layer when the child is contained
   // within the rounded rect clip.
@@ -1866,7 +1879,7 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_FALSE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest,
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
        AncestorClipMaskNotRequiredByBorderRadiusOutside) {
   // Verify that we do not create the mask layer when the child is outside
   // the ancestors rectangular clip.
@@ -1909,7 +1922,8 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_FALSE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest, AncestorClipMaskRequiredDueToScaleUp) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
+       AncestorClipMaskRequiredDueToScaleUp) {
   // Verify that we include the mask when the untransformed child does not
   // intersect the border radius but the transformed child does. Here the
   // child is inside the parent and scaled to expand to be clipped.
@@ -1943,7 +1957,8 @@ TEST_F(CompositedLayerMappingTest, AncestorClipMaskRequiredDueToScaleUp) {
   EXPECT_TRUE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest, AncestorClipMaskNotRequiredDueToScaleDown) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
+       AncestorClipMaskNotRequiredDueToScaleDown) {
   // Verify that we exclude the mask when the untransformed child does
   // intersect the border radius but the transformed child does not. Here the
   // child is bigger than the parent and scaled down such that it does not
@@ -1978,7 +1993,8 @@ TEST_F(CompositedLayerMappingTest, AncestorClipMaskNotRequiredDueToScaleDown) {
   EXPECT_FALSE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest, AncestorClipMaskRequiredDueToTranslateInto) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
+       AncestorClipMaskRequiredDueToTranslateInto) {
   // Verify that we include the mask when the untransformed child does not
   // intersect the border radius but the transformed child does. Here the
   // child is outside the parent and translated to be clipped.
@@ -2012,7 +2028,7 @@ TEST_F(CompositedLayerMappingTest, AncestorClipMaskRequiredDueToTranslateInto) {
   EXPECT_TRUE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest,
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
        AncestorClipMaskNotRequiredDueToTranslateOut) {
   // Verify that we exclude the mask when the untransformed child does
   // intersect the border radius but the transformed child does not. Here the
@@ -2047,7 +2063,8 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_FALSE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest, AncestorClipMaskRequiredDueToRotation) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
+       AncestorClipMaskRequiredDueToRotation) {
   // Verify that we include the mask when the untransformed child does not
   // intersect the border radius but the transformed child does. Here the
   // child is just within the mask-not-required area but when rotated requires
@@ -2082,7 +2099,7 @@ TEST_F(CompositedLayerMappingTest, AncestorClipMaskRequiredDueToRotation) {
   EXPECT_TRUE(child_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest,
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
        AncestorClipMaskRequiredByBorderRadiusWithCompositedDescendant) {
   // This case has the child and grandchild within the ancestors and would
   // in principle not need a mask, but does because we cannot efficiently
@@ -2121,7 +2138,7 @@ TEST_F(CompositedLayerMappingTest,
   EXPECT_TRUE(parent_mapping->AncestorClippingMaskLayer());
 }
 
-TEST_F(CompositedLayerMappingTest,
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
        AncestorClipMaskGrandparentBorderRadiusCompositedDescendant) {
   // This case has the child clipped by the grandparent border radius but not
   // the parent, and does not itself require a mask to clip to the grandparent.
@@ -2396,7 +2413,8 @@ TEST_F(CompositedLayerMappingTest, TransformedRasterizationForInlineTransform) {
 // This tests that when the scroller becomes no longer scrollable if a sticky
 // element is promoted for another reason we do remove its composited sticky
 // constraint as it doesn't need to move on the compositor.
-TEST_F(CompositedLayerMappingTest, CompositedStickyConstraintRemovedAndAdded) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT,
+       CompositedStickyConstraintRemovedAndAdded) {
   SetBodyInnerHTML(R"HTML(
     <style>
     .scroller { overflow: auto; height: 200px; }
@@ -2545,7 +2563,7 @@ TEST_F(CompositedLayerMappingTest, ClipPathNoChildContainmentLayer) {
   ASSERT_FALSE(mapping->ClippingLayer());
 }
 
-TEST_F(CompositedLayerMappingTest, ForegroundLayerSizing) {
+TEST_F(CompositedLayerMappingTestWithoutBGPT, ForegroundLayerSizing) {
   // This test verifies the foreground layer is sized to the clip rect.
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='position:relative; z-index:0; width:100px;
@@ -2701,44 +2719,6 @@ transform'></div>
   // 100px down from squashing's main graphics layer.
   EXPECT_EQ(FloatPoint(0, 100),
             squashed->GraphicsLayerBacking()->GetPosition());
-}
-
-TEST_F(CompositedLayerMappingTest, ImageWithInvertFilterLayer) {
-  SetBodyInnerHTML("<img id='image' style='will-change: transform;' src='x'>");
-  ToLayoutImage(GetLayoutObjectByElementId("image"))
-      ->UpdateShouldInvertColorForTest(true);
-  GetDocument().View()->UpdateAllLifecyclePhases();
-  cc::FilterOperations filters;
-  filters.Append(cc::FilterOperation::CreateInvertFilter(1.0f));
-  EXPECT_EQ(filters, ToLayoutBoxModelObject(GetLayoutObjectByElementId("image"))
-                         ->Layer()
-                         ->GraphicsLayerBacking()
-                         ->CcLayer()
-                         ->filters());
-}
-
-TEST_F(CompositedLayerMappingTest, ImageWithInvertFilterLayerUpdated) {
-  SetBodyInnerHTML("<img id='image' style='will-change: transform;' src='x'>");
-  ToLayoutImage(GetLayoutObjectByElementId("image"))
-      ->UpdateShouldInvertColorForTest(true);
-  GetDocument().View()->UpdateAllLifecyclePhases();
-  cc::FilterOperations filters0, filters1;
-  filters0.Append(cc::FilterOperation::CreateInvertFilter(1.0f));
-  EXPECT_EQ(filters0,
-            ToLayoutBoxModelObject(GetLayoutObjectByElementId("image"))
-                ->Layer()
-                ->GraphicsLayerBacking()
-                ->CcLayer()
-                ->filters());
-  ToLayoutImage(GetLayoutObjectByElementId("image"))
-      ->UpdateShouldInvertColorForTest(false);
-  GetDocument().View()->UpdateAllLifecyclePhases();
-  EXPECT_EQ(filters1,
-            ToLayoutBoxModelObject(GetLayoutObjectByElementId("image"))
-                ->Layer()
-                ->GraphicsLayerBacking()
-                ->CcLayer()
-                ->filters());
 }
 
 }  // namespace blink

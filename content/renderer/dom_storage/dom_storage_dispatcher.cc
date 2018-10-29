@@ -171,7 +171,7 @@ class DomStorageDispatcher::ProxyImpl : public DOMStorageProxy {
   }
 
   CachedAreaHolder* GetAreaHolder(const std::string& key) {
-    CachedAreaMap::iterator found = cached_areas_.find(key);
+    auto found = cached_areas_.find(key);
     if (found == cached_areas_.end())
       return nullptr;
     return &(found->second);

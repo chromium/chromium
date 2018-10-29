@@ -17,13 +17,10 @@ namespace {
 using SharedMemoryTest = test::ExoTestBase;
 
 std::unique_ptr<SharedMemory> CreateSharedMemory(size_t size) {
-  std::unique_ptr<base::SharedMemory> shared_memory(new base::SharedMemory);
-  bool rv = shared_memory->CreateAnonymous(size);
-  DCHECK(rv);
-  base::SharedMemoryHandle handle =
-      base::SharedMemory::DuplicateHandle(shared_memory->handle());
-  DCHECK(base::SharedMemory::IsHandleValid(handle));
-  return std::make_unique<SharedMemory>(handle);
+  base::UnsafeSharedMemoryRegion shared_memory =
+      base::UnsafeSharedMemoryRegion::Create(size);
+  DCHECK(shared_memory.IsValid());
+  return std::make_unique<SharedMemory>(std::move(shared_memory));
 }
 
 TEST_F(SharedMemoryTest, CreateBuffer) {

@@ -78,7 +78,7 @@ base::string16 FontFamilyCache::FetchAndCacheFont(const char* script,
                                                   const char* map_name) {
   FontFamilyMap::const_iterator it = font_family_map_.find(map_name);
   if (it != font_family_map_.end()) {
-    ScriptFontMap::const_iterator it2 = it->second.find(script);
+    auto it2 = it->second.find(script);
     if (it2 != it->second.end())
       return it2->second;
   }
@@ -100,7 +100,7 @@ void FontFamilyCache::OnPrefsChanged(const std::string& pref_name) {
       continue;
 
     ScriptFontMap& map = it.second;
-    for (ScriptFontMap::iterator it2 = map.begin(); it2 != map.end(); ++it2) {
+    for (auto it2 = map.begin(); it2 != map.end(); ++it2) {
       const char* script = it2->first;
       size_t script_length = strlen(script);
 

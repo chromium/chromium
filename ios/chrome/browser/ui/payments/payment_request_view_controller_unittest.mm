@@ -123,14 +123,16 @@
 class PaymentRequestViewControllerTest : public CollectionViewControllerTest,
                                          public PaymentRequestUnitTestBase {
  protected:
+  // CollectionViewControllerTest:
   void SetUp() override {
     CollectionViewControllerTest::SetUp();
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     mediator_ = [[TestPaymentRequestMediator alloc] init];
   }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // CollectionViewControllerTest:
+  void TearDown() override { DoTearDown(); }
 
   CollectionViewController* InstantiateController() override {
     PaymentRequestViewController* viewController =

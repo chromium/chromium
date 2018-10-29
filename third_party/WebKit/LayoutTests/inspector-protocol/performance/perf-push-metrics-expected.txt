@@ -24,7 +24,9 @@ title: test1
 	LayoutDuration
 	RecalcStyleDuration
 	ScriptDuration
+	V8CompileDuration
 	TaskDuration
+	TaskOtherDuration
 	JSHeapUsedSize
 	JSHeapTotalSize
 	FirstMeaningfulPaint
@@ -55,7 +57,9 @@ title: test1
 	LayoutDuration
 	RecalcStyleDuration
 	ScriptDuration
+	V8CompileDuration
 	TaskDuration
+	TaskOtherDuration
 	JSHeapUsedSize
 	JSHeapTotalSize
 	FirstMeaningfulPaint
@@ -86,7 +90,9 @@ title:
 	LayoutDuration
 	RecalcStyleDuration
 	ScriptDuration
+	V8CompileDuration
 	TaskDuration
+	TaskOtherDuration
 	JSHeapUsedSize
 	JSHeapTotalSize
 	FirstMeaningfulPaint

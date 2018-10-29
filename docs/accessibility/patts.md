@@ -5,6 +5,8 @@ called PATTS. It's based on the same engine that ships with all Android devices.
 
 [Read more about Text-to-Speech in Chrome](tts.md).
 
+[See also the eSpeak engine](espeak.md).
+
 ## Building from source
 
 This is for Googlers only.

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS Partial namespace WebAssembly: original namespace defined
+FAIL WebAssembly namespace: operation validate(BufferSource) assert_true: property should be enumerable expected true got false
+FAIL WebAssembly namespace: operation compile(BufferSource) assert_true: property should be enumerable expected true got false
+FAIL WebAssembly namespace: operation instantiate(BufferSource, object) assert_true: property should be enumerable expected true got false
+FAIL WebAssembly namespace: operation instantiate(Module, object) assert_true: property should be enumerable expected true got false
+FAIL WebAssembly namespace: operation compileStreaming([object Object]) assert_true: property should be enumerable expected true got false
+FAIL WebAssembly namespace: operation instantiateStreaming([object Object], object) assert_true: property should be enumerable expected true got false
+Harness: the test ran to completion.
+

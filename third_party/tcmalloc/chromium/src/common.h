@@ -305,9 +305,9 @@ class SizeMap {
   }
 };
 
-// Allocates "bytes" worth of memory and returns it.  Increments
-// metadata_system_bytes appropriately.  May return NULL if allocation
-// fails.  Requires pageheap_lock is held.
+// Allocates "bytes" worth of memory with a guard page in front and
+// returns it.  Increments metadata_system_bytes appropriately.  May
+// return NULL if allocation fails.  Requires pageheap_lock is held.
 void* MetaDataAlloc(size_t bytes);
 
 // Returns the total number of bytes allocated from the system.

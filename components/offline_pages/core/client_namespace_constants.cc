@@ -17,6 +17,7 @@ const char kNTPSuggestionsNamespace[] = "ntp_suggestions";
 const char kSuggestedArticlesNamespace[] = "suggested_articles";
 const char kBrowserActionsNamespace[] = "browser_actions";
 const char kLivePageSharingNamespace[] = "live_page_sharing";
+const char kAutoAsyncNamespace[] = "auto_async_loading";
 
 const char kDefaultNamespace[] = "default";
 

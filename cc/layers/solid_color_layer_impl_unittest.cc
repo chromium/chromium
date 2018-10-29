@@ -263,7 +263,7 @@ TEST(SolidColorLayerImplTest, Occlusion) {
 
     LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(),
                                                  gfx::Rect(layer_size));
-    EXPECT_EQ(16u, impl.quad_list().size());
+    EXPECT_EQ(1u, impl.quad_list().size());
   }
 
   {
@@ -277,15 +277,15 @@ TEST(SolidColorLayerImplTest, Occlusion) {
 
   {
     SCOPED_TRACE("Partial occlusion");
-    gfx::Rect occluded(200, 200, 256 * 3, 256 * 3);
+    gfx::Rect occluded(200, 0, 800, 1000);
     impl.AppendQuadsWithOcclusion(solid_color_layer_impl, occluded);
 
     size_t partially_occluded_count = 0;
     LayerTestCommon::VerifyQuadsAreOccluded(
         impl.quad_list(), occluded, &partially_occluded_count);
     // 4 quads are completely occluded, 8 are partially occluded.
-    EXPECT_EQ(16u - 4u, impl.quad_list().size());
-    EXPECT_EQ(8u, partially_occluded_count);
+    EXPECT_EQ(1u, impl.quad_list().size());
+    EXPECT_EQ(1u, partially_occluded_count);
   }
 }
 

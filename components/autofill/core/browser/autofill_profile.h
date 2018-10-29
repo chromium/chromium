@@ -25,6 +25,8 @@
 
 namespace autofill {
 
+struct AutofillMetadata;
+
 // A collection of FormGroups stored in a profile.  AutofillProfile also
 // implements the FormGroup interface so that owners of this object can request
 // form information from the profile, and the profile will delegate the request
@@ -72,6 +74,10 @@ class AutofillProfile : public AutofillDataModel,
   ~AutofillProfile() override;
 
   AutofillProfile& operator=(const AutofillProfile& profile);
+
+  // AutofillDataModel:
+  AutofillMetadata GetMetadata() const override;
+  bool SetMetadata(const AutofillMetadata metadata) override;
 
   // FormGroup:
   void GetMatchingTypes(const base::string16& text,
@@ -252,6 +258,14 @@ class AutofillProfile : public AutofillDataModel,
     return server_validity_states_;
   };
 
+  bool is_client_validity_states_updated() const {
+    return is_client_validity_states_updated_;
+  }
+  void set_is_client_validity_states_updated(
+      bool is_client_validity_states_updated) {
+    is_client_validity_states_updated_ = is_client_validity_states_updated;
+  }
+
  private:
   typedef std::vector<const FormGroup*> FormGroupList;
 
@@ -306,6 +320,10 @@ class AutofillProfile : public AutofillDataModel,
   // Only useful for SERVER_PROFILEs. Whether this server profile has been
   // converted to a local profile.
   bool has_converted_;
+
+  // This flag denotes whether the client_validity_states_ are updated according
+  // to the changes in the autofill profile values.
+  bool is_client_validity_states_updated_ = false;
 
   // A map identifying what fields are valid according to server validation.
   std::map<ServerFieldType, ValidityState> server_validity_states_;

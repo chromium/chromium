@@ -15,8 +15,10 @@
 #include "base/message_loop/message_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "base/test/android/url_utils.h"
 #include "base/test/test_support_android.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/shell/browser/layout_test/blink_test_controller.h"
 #include "content/shell/common/layout_test/layout_test_switches.h"
@@ -111,8 +113,8 @@ void RedirectStream(
   base::WaitableEvent redirected(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::Bind(&CreateAndConnectSocket, port,
                  base::Bind(finish_redirection, &redirected)));
   ScopedAllowWaitForAndroidLayoutTests allow_wait;

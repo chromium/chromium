@@ -13,15 +13,10 @@
 namespace blink {
 
 namespace {
-Element* ElementForId(DOMNodeId element_id) {
-  Node* node = DOMNodeIds::NodeForId(element_id);
+Node* NodeForId(DOMNodeId node_id) {
+  Node* node = DOMNodeIds::NodeForId(node_id);
   DCHECK(node);
-  if (!node)
-    return nullptr;
-  DCHECK(node->IsElementNode());
-  if (!node->IsElementNode())
-    return nullptr;
-  return static_cast<Element*>(node);
+  return node;
 }
 }  // namespace
 
@@ -77,7 +72,7 @@ void ScrollState::distributeToScrollChainDescendant() {
   if (!scroll_chain_.empty()) {
     DOMNodeId descendant_id = scroll_chain_.front();
     scroll_chain_.pop_front();
-    ElementForId(descendant_id)->CallDistributeScroll(*this);
+    NodeForId(descendant_id)->CallDistributeScroll(*this);
   }
 }
 
@@ -93,18 +88,18 @@ void ScrollState::ConsumeDeltaNative(double x, double y) {
     data_->delta_consumed_for_scroll_sequence = true;
 }
 
-Element* ScrollState::CurrentNativeScrollingElement() {
+Node* ScrollState::CurrentNativeScrollingNode() {
   if (data_->current_native_scrolling_element() == CompositorElementId()) {
-    element_.Clear();
+    node_.Clear();
     return nullptr;
   }
-  return element_;
+  return node_;
 }
 
-void ScrollState::SetCurrentNativeScrollingElement(Element* element) {
-  element_ = element;
+void ScrollState::SetCurrentNativeScrollingNode(Node* node) {
+  node_ = node;
   data_->set_current_native_scrolling_element(
-      CompositorElementIdFromDOMNodeId(DOMNodeIds::IdForNode(element)));
+      CompositorElementIdFromDOMNodeId(DOMNodeIds::IdForNode(node)));
 }
 
 }  // namespace blink

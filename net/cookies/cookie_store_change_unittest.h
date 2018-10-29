@@ -2660,6 +2660,23 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, MultipleSubscriptions) {
   cookie_changes_2.clear();
 }
 
+TYPED_TEST_P(CookieStoreChangeNamedTest, SubscriptionOutlivesStore) {
+  if (!TypeParam::supports_named_cookie_tracking)
+    return;
+
+  std::vector<CookieChange> cookie_changes;
+  std::unique_ptr<CookieChangeSubscription> subscription =
+      this->GetCookieStore()->GetChangeDispatcher().AddCallbackForCookie(
+          this->http_www_foo_.url(), "abc",
+          base::BindRepeating(
+              &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
+              base::Unretained(&cookie_changes)));
+  this->ResetCookieStore();
+
+  // |subscription| outlives cookie_store - crash should not happen.
+  subscription.reset();
+}
+
 REGISTER_TYPED_TEST_CASE_P(CookieStoreChangeGlobalTest,
                            NoCookie,
                            InitialCookie,
@@ -2721,7 +2738,8 @@ REGISTER_TYPED_TEST_CASE_P(CookieStoreChangeNamedTest,
                            DifferentSubscriptionsNames,
                            DifferentSubscriptionsPaths,
                            DifferentSubscriptionsFiltering,
-                           MultipleSubscriptions);
+                           MultipleSubscriptions,
+                           SubscriptionOutlivesStore);
 
 }  // namespace net
 

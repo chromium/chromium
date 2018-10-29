@@ -9,9 +9,11 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/i18n/number_formatting.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -89,10 +91,15 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
 
 NotificationCounterView::NotificationCounterView() : TrayItemView(nullptr) {
   CreateImageView();
-  Update();
+  image_view()->set_tooltip_text(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NOTIFICATIONS_LABEL));
+  SetVisible(false);
+  Shell::Get()->session_controller()->AddObserver(this);
 }
 
-NotificationCounterView::~NotificationCounterView() = default;
+NotificationCounterView::~NotificationCounterView() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
+}
 
 void NotificationCounterView::Update() {
   size_t notification_count =
@@ -111,22 +118,38 @@ void NotificationCounterView::Update() {
   SetVisible(true);
 }
 
+void NotificationCounterView::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  Update();
+}
+
 QuietModeView::QuietModeView() : TrayItemView(nullptr) {
   CreateImageView();
+  SetVisible(false);
+  Shell::Get()->session_controller()->AddObserver(this);
+}
+
+QuietModeView::~QuietModeView() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
+}
+
+void QuietModeView::Update() {
   // TODO(yamaguchi): Add this check when new style of the system tray is
   // implemented, so that icon resizing will not happen here.
   // DCHECK_EQ(kTrayIconSize,
   //     gfx::GetDefaultSizeOfVectorIcon(kSystemTrayDoNotDisturbIcon));
-  image_view()->SetImage(gfx::CreateVectorIcon(
-      kSystemTrayDoNotDisturbIcon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
-  Update();
+  if (message_center::MessageCenter::Get()->IsQuietMode()) {
+    image_view()->SetImage(gfx::CreateVectorIcon(
+        kSystemTrayDoNotDisturbIcon,
+        TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
+    SetVisible(true);
+  } else {
+    SetVisible(false);
+  }
 }
 
-QuietModeView::~QuietModeView() = default;
-
-void QuietModeView::Update() {
-  SetVisible(message_center::MessageCenter::Get()->IsQuietMode());
+void QuietModeView::OnSessionStateChanged(session_manager::SessionState state) {
+  Update();
 }
 
 }  // namespace ash

@@ -3,28 +3,28 @@
 // found in the LICENSE file.
 
 /** @type {!MockVolumeManager} */
-var volumeManager;
+let volumeManager;
 
 /** @type {!VolumeInfo} */
-var cameraVolume;
+let cameraVolume;
 
 /** @type {!VolumeInfo} */
-var sdVolume;
+let sdVolume;
 
-/** @type {!VolumeInfo} */
-var driveVolume;
-
-/** @type {!MockFileEntry} */
-var cameraFileEntry;
+/** @type {VolumeInfo} */
+let driveVolume;
 
 /** @type {!MockFileEntry} */
-var rawFileEntry;
+let cameraFileEntry;
 
 /** @type {!MockFileEntry} */
-var sdFileEntry;
+let rawFileEntry;
 
 /** @type {!MockFileEntry} */
-var driveFileEntry;
+let sdFileEntry;
+
+/** @type {!MockFileEntry} */
+let driveFileEntry;
 
 // Sadly, boilerplate setup necessary to include test support classes.
 loadTimeData.data = {
@@ -204,7 +204,7 @@ function testRotateLogs(callback) {
             // Verify the *active* log is deleted.
             assertEquals(0, fileName.search(/[0-9]{6}-import-debug-0.log/),
                 'Filename (' + fileName + ') does not match next pattern.');
-            driveFileEntry.assertRemoved();
+            driveFileEntry.asMock().assertRemoved();
 
             return importer.ChromeLocalStorage.getInstance()
                   .get(importer.Setting.LAST_KNOWN_LOG_ID)
@@ -216,10 +216,16 @@ function testRotateLogs(callback) {
 
 function testRotateLogs_RemembersInitialActiveLog(callback) {
   var nextLogId = 1;
-  var fileFactory = assertFalse;  // Should not be called.
-  var promise = importer.rotateLogs(nextLogId, assertFalse)
-      .then(
-          function() {
+
+  // Should not be called.
+  var fileFactory = (namePromise) => {
+    assertFalse(true);
+    return Promise.resolve();
+  };
+
+  var promise =
+      importer.rotateLogs(nextLogId, fileFactory)
+          .then(function() {
             return importer.ChromeLocalStorage.getInstance()
                   .get(importer.Setting.LAST_KNOWN_LOG_ID)
                   .then(assertEquals.bind(null, nextLogId));
@@ -244,7 +250,7 @@ function testDeflateAppUrl() {
   // And finally that we can reconstitute the original.
   assertEquals(url, importer.inflateAppUrl(deflated),
       'Deflated then inflated URLs must match original URL.');
-};
+}
 
 function testHasMediaDirectory(callback) {
   var dir = createDirectoryEntry(sdVolume, '/DCIM');
@@ -267,12 +273,11 @@ function assertIsNotMediaDir(path) {
 }
 
 function createFileEntry(volume, path) {
-  var entry = new MockFileEntry(
-      volume.fileSystem,
-      path, {
-        size: 1234,
-        modificationTime: new Date().toString()
-      });
+  var entry =
+      new MockFileEntry(volume.fileSystem, path, /** @type{Metadata} */ ({
+                          size: 1234,
+                          modificationTime: new Date().toString()
+                        }));
   // Ensure the file entry has a volumeID...necessary for lookups
   // via the VolumeManager.
   entry.volumeId = volume.volumeId;

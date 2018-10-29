@@ -50,6 +50,10 @@ def _ParseArgs(args):
                       help='Output bundle zip archive.')
   parser.add_argument('--module-zips', required=True,
                       help='GN-list of module zip archives.')
+  parser.add_argument(
+      '--rtxt-in-paths', action='append', help='GN-list of module R.txt files.')
+  parser.add_argument(
+      '--rtxt-out-path', help='Path to combined R.txt file for bundle.')
   parser.add_argument('--uncompressed-assets', action='append',
                       help='GN-list of uncompressed assets.')
   parser.add_argument('--uncompress-shared-libraries', action='append',
@@ -63,6 +67,7 @@ def _ParseArgs(args):
 
   options = parser.parse_args(args)
   options.module_zips = build_utils.ParseGnList(options.module_zips)
+  options.rtxt_in_paths = build_utils.ExpandFileArgs(options.rtxt_in_paths)
 
   if len(options.module_zips) == 0:
     raise Exception('The module zip list cannot be empty.')
@@ -284,6 +289,14 @@ def main(args):
       build_utils.CheckOutput(signing_cmd_args, print_stderr=True)
 
     shutil.move(tmp_bundle, options.out_bundle)
+
+  if options.rtxt_out_path:
+    with open(options.rtxt_out_path, 'w') as rtxt_out:
+      for rtxt_in_path in options.rtxt_in_paths:
+        with open(rtxt_in_path, 'r') as rtxt_in:
+          rtxt_out.write('-- Contents of {}\n'.format(
+              os.path.basename(rtxt_in_path)))
+          rtxt_out.write(rtxt_in.read())
 
 
 if __name__ == '__main__':

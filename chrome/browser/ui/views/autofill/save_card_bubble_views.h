@@ -83,8 +83,8 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
   // footnote.
   virtual std::unique_ptr<views::View> CreateMainContentView();
 
-  // Set the footnote view so that its accessible for testing.
-  void SetFootnoteViewForTesting(views::View* footnote_view);
+  // Called by sub-classes to initialize |footnote_view_|.
+  virtual void InitFootnoteView(views::View* footnote_view);
 
   SaveCardBubbleController* controller() {
     return controller_;
@@ -101,11 +101,7 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
   ~SaveCardBubbleViews() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SaveCardBubbleViewsFullFormBrowserTest,
-                           Upload_ClickingCloseClosesBubble);
-  FRIEND_TEST_ALL_PREFIXES(
-      SaveCardBubbleViewsFullFormBrowserTest,
-      Upload_DecliningUploadDoesNotLogUserAcceptedCardOriginUMA);
+  friend class SaveCardBubbleViewsBrowserTestBase;
 
   views::View* footnote_view_ = nullptr;
 

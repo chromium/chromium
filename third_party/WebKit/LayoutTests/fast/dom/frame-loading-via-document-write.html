@@ -9,7 +9,7 @@ function buildFrameset()
     if (window.testRunner) {
         testRunner.waitUntilDone();
         testRunner.dumpAsText();
-        testRunner.dumpChildFramesAsText();
+        testRunner.dumpChildFrames();
     }
 
     var outHTML="<frameset rows=\"33%, 33%, 33%\">"+

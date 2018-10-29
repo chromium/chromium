@@ -7,6 +7,7 @@
 
 #include <list>
 #include <string>
+#include "base/values.h"
 
 struct BrowserInfo;
 class ChromeDesktopImpl;
@@ -41,10 +42,33 @@ class Chrome {
                                int* width,
                                int* height) = 0;
 
+  // Sets the rect of the specified WebView
+  virtual Status SetWindowRect(const std::string& target_id,
+                               const base::DictionaryValue& params) = 0;
+
+  // Sets the size of the specified WebView.
+  virtual Status SetWindowSize(const std::string& target_id,
+                               int width,
+                               int height) = 0;
+
   // Gets the on-screen position of the specified WebView.
   virtual Status GetWindowPosition(const std::string& target_id,
                                    int* x,
                                    int* y) = 0;
+
+  // Sets the on-screen position of the specified WebView.
+  virtual Status SetWindowPosition(const std::string& target_id,
+                                   int x,
+                                   int y) = 0;
+
+  // Maximizes specified WebView.
+  virtual Status MaximizeWindow(const std::string& target_id) = 0;
+
+  // Minimizes specified WebView.
+  virtual Status MinimizeWindow(const std::string& target_id) = 0;
+
+  // Opens specified WebView in full screen mode.
+  virtual Status FullScreenWindow(const std::string& target_id) = 0;
 
   // Closes the specified WebView.
   virtual Status CloseWebView(const std::string& id) = 0;

@@ -1,22 +1,22 @@
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
-CONSOLE ERROR: line 1: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
+CONSOLE ERROR: WebSocket is already in CLOSING or CLOSED state.
 WebSocket bufferedAmount after closed
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

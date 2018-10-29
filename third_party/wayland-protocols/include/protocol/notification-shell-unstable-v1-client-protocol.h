@@ -31,6 +31,7 @@ extern "C" {
  * @section page_ifaces_notification_shell_unstable_v1 Interfaces
  * - @subpage page_iface_zcr_notification_shell_v1 - A notification window
  * - @subpage page_iface_zcr_notification_shell_surface_v1 - A notification window
+ * - @subpage page_iface_zcr_notification_shell_notification_v1 - A notification
  * @section page_copyright_notification_shell_unstable_v1 Copyright
  * <pre>
  *
@@ -57,6 +58,7 @@ extern "C" {
  * </pre>
  */
 struct wl_surface;
+struct zcr_notification_shell_notification_v1;
 struct zcr_notification_shell_surface_v1;
 struct zcr_notification_shell_v1;
 
@@ -90,6 +92,20 @@ extern const struct wl_interface zcr_notification_shell_v1_interface;
  * notification contents.
  */
 extern const struct wl_interface zcr_notification_shell_surface_v1_interface;
+/**
+ * @page page_iface_zcr_notification_shell_notification_v1 zcr_notification_shell_notification_v1
+ * @section page_iface_zcr_notification_shell_notification_v1_desc Description
+ *
+ * An interface that controls the notification created by create_notification.
+ * @section page_iface_zcr_notification_shell_notification_v1_api API
+ * See @ref iface_zcr_notification_shell_notification_v1.
+ */
+/**
+ * @defgroup iface_zcr_notification_shell_notification_v1 The zcr_notification_shell_notification_v1 interface
+ *
+ * An interface that controls the notification created by create_notification.
+ */
+extern const struct wl_interface zcr_notification_shell_notification_v1_interface;
 
 #ifndef ZCR_NOTIFICATION_SHELL_V1_ERROR_ENUM
 #define ZCR_NOTIFICATION_SHELL_V1_ERROR_ENUM
@@ -146,11 +162,15 @@ zcr_notification_shell_v1_destroy(struct zcr_notification_shell_v1 *zcr_notifica
  *
  * Creates a desktop notification from plain text information.
  */
-static inline void
-zcr_notification_shell_v1_create_notification(struct zcr_notification_shell_v1 *zcr_notification_shell_v1, const char *title, const char *message, const char *display_source, const char *notification_key)
+static inline struct zcr_notification_shell_notification_v1 *
+zcr_notification_shell_v1_create_notification(struct zcr_notification_shell_v1 *zcr_notification_shell_v1, const char *title, const char *message, const char *display_source, const char *notification_key, struct wl_array *buttons)
 {
-	wl_proxy_marshal((struct wl_proxy *) zcr_notification_shell_v1,
-			 ZCR_NOTIFICATION_SHELL_V1_CREATE_NOTIFICATION, title, message, display_source, notification_key);
+	struct wl_proxy *id;
+
+	id = wl_proxy_marshal_constructor((struct wl_proxy *) zcr_notification_shell_v1,
+			 ZCR_NOTIFICATION_SHELL_V1_CREATE_NOTIFICATION, &zcr_notification_shell_notification_v1_interface, NULL, title, message, display_source, notification_key, buttons);
+
+	return (struct zcr_notification_shell_notification_v1 *) id;
 }
 
 /**
@@ -227,6 +247,111 @@ zcr_notification_shell_surface_v1_set_app_id(struct zcr_notification_shell_surfa
 {
 	wl_proxy_marshal((struct wl_proxy *) zcr_notification_shell_surface_v1,
 			 ZCR_NOTIFICATION_SHELL_SURFACE_V1_SET_APP_ID, app_id);
+}
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ * @struct zcr_notification_shell_notification_v1_listener
+ */
+struct zcr_notification_shell_notification_v1_listener {
+	/**
+	 * Notification is closed
+	 *
+	 * Notifies the notification object that the notification is
+	 * closed.
+	 * @param by_user 1 if notification is closed by a user
+	 */
+	void (*closed)(void *data,
+		       struct zcr_notification_shell_notification_v1 *zcr_notification_shell_notification_v1,
+		       uint32_t by_user);
+	/**
+	 * Notification is clicked
+	 *
+	 * Notifies the notification object that the notification or its
+	 * button is clicked.
+	 * @param button_index -1 if the body of the notification is cliked as opposed to a button
+	 */
+	void (*clicked)(void *data,
+			struct zcr_notification_shell_notification_v1 *zcr_notification_shell_notification_v1,
+			int32_t button_index);
+};
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ */
+static inline int
+zcr_notification_shell_notification_v1_add_listener(struct zcr_notification_shell_notification_v1 *zcr_notification_shell_notification_v1,
+						    const struct zcr_notification_shell_notification_v1_listener *listener, void *data)
+{
+	return wl_proxy_add_listener((struct wl_proxy *) zcr_notification_shell_notification_v1,
+				     (void (**)(void)) listener, data);
+}
+
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_DESTROY 0
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLOSE 1
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ */
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLOSED_SINCE_VERSION 1
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ */
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLICKED_SINCE_VERSION 1
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ */
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_DESTROY_SINCE_VERSION 1
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ */
+#define ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLOSE_SINCE_VERSION 1
+
+/** @ingroup iface_zcr_notification_shell_notification_v1 */
+static inline void
+zcr_notification_shell_notification_v1_set_user_data(struct zcr_notification_shell_notification_v1 *zcr_notification_shell_notification_v1, void *user_data)
+{
+	wl_proxy_set_user_data((struct wl_proxy *) zcr_notification_shell_notification_v1, user_data);
+}
+
+/** @ingroup iface_zcr_notification_shell_notification_v1 */
+static inline void *
+zcr_notification_shell_notification_v1_get_user_data(struct zcr_notification_shell_notification_v1 *zcr_notification_shell_notification_v1)
+{
+	return wl_proxy_get_user_data((struct wl_proxy *) zcr_notification_shell_notification_v1);
+}
+
+static inline uint32_t
+zcr_notification_shell_notification_v1_get_version(struct zcr_notification_shell_notification_v1 *zcr_notification_shell_notification_v1)
+{
+	return wl_proxy_get_version((struct wl_proxy *) zcr_notification_shell_notification_v1);
+}
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ *
+ * Destroys the notification object.
+ */
+static inline void
+zcr_notification_shell_notification_v1_destroy(struct zcr_notification_shell_notification_v1 *zcr_notification_shell_notification_v1)
+{
+	wl_proxy_marshal((struct wl_proxy *) zcr_notification_shell_notification_v1,
+			 ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_DESTROY);
+
+	wl_proxy_destroy((struct wl_proxy *) zcr_notification_shell_notification_v1);
+}
+
+/**
+ * @ingroup iface_zcr_notification_shell_notification_v1
+ *
+ * Closes the notification. The closed event is sent after this request.
+ */
+static inline void
+zcr_notification_shell_notification_v1_close(struct zcr_notification_shell_notification_v1 *zcr_notification_shell_notification_v1)
+{
+	wl_proxy_marshal((struct wl_proxy *) zcr_notification_shell_notification_v1,
+			 ZCR_NOTIFICATION_SHELL_NOTIFICATION_V1_CLOSE);
 }
 
 #ifdef  __cplusplus

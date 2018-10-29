@@ -15,7 +15,7 @@
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
 #include "chrome/browser/payments/ssl_validity_checker.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -30,8 +30,8 @@
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_dialog.h"
 #include "components/payments/core/payment_prefs.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
@@ -147,10 +147,10 @@ std::string ChromePaymentRequestDelegate::GetAuthenticatedEmail() const {
   // authenticated.
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  SigninManagerBase* signin_manager =
-      SigninManagerFactory::GetForProfile(profile);
-  if (signin_manager && signin_manager->IsAuthenticated())
-    return signin_manager->GetAuthenticatedAccountInfo().email;
+  identity::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager && identity_manager->HasPrimaryAccount())
+    return identity_manager->GetPrimaryAccountInfo().email;
 
   return std::string();
 }

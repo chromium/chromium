@@ -57,28 +57,24 @@ class ThreadBeginningTransaction : public SimpleThread {
 
 TEST(TaskSchedulerPriorityQueueTest, PushPopPeek) {
   // Create test sequences.
-  scoped_refptr<Sequence> sequence_a(new Sequence);
-  sequence_a->PushTask(Task(FROM_HERE, DoNothing(),
-                            TaskTraits(TaskPriority::USER_VISIBLE),
-                            TimeDelta()));
+  scoped_refptr<Sequence> sequence_a =
+      MakeRefCounted<Sequence>(TaskTraits(TaskPriority::USER_VISIBLE));
+  sequence_a->PushTask(Task(FROM_HERE, DoNothing(), TimeDelta()));
   SequenceSortKey sort_key_a = sequence_a->GetSortKey();
 
-  scoped_refptr<Sequence> sequence_b(new Sequence);
-  sequence_b->PushTask(Task(FROM_HERE, DoNothing(),
-                            TaskTraits(TaskPriority::USER_BLOCKING),
-                            TimeDelta()));
+  scoped_refptr<Sequence> sequence_b =
+      MakeRefCounted<Sequence>(TaskTraits(TaskPriority::USER_BLOCKING));
+  sequence_b->PushTask(Task(FROM_HERE, DoNothing(), TimeDelta()));
   SequenceSortKey sort_key_b = sequence_b->GetSortKey();
 
-  scoped_refptr<Sequence> sequence_c(new Sequence);
-  sequence_c->PushTask(Task(FROM_HERE, DoNothing(),
-                            TaskTraits(TaskPriority::USER_BLOCKING),
-                            TimeDelta()));
+  scoped_refptr<Sequence> sequence_c =
+      MakeRefCounted<Sequence>(TaskTraits(TaskPriority::USER_BLOCKING));
+  sequence_c->PushTask(Task(FROM_HERE, DoNothing(), TimeDelta()));
   SequenceSortKey sort_key_c = sequence_c->GetSortKey();
 
-  scoped_refptr<Sequence> sequence_d(new Sequence);
-  sequence_d->PushTask(Task(FROM_HERE, DoNothing(),
-                            TaskTraits(TaskPriority::BEST_EFFORT),
-                            TimeDelta()));
+  scoped_refptr<Sequence> sequence_d =
+      MakeRefCounted<Sequence>(TaskTraits(TaskPriority::BEST_EFFORT));
+  sequence_d->PushTask(Task(FROM_HERE, DoNothing(), TimeDelta()));
   SequenceSortKey sort_key_d = sequence_d->GetSortKey();
 
   // Create a PriorityQueue and a Transaction.

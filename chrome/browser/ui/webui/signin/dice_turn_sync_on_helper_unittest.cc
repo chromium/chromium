@@ -20,6 +20,7 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/fake_profile_oauth2_token_service_builder.h"
 #include "chrome/browser/signin/fake_signin_manager_builder.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
 #include "chrome/browser/signin/scoped_account_consistency.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
@@ -43,6 +44,7 @@
 #include "components/unified_consent/unified_consent_service.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -125,20 +127,17 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
   static std::unique_ptr<KeyedService> Build(content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
     return std::make_unique<FakeUserPolicySigninService>(
-        profile, SigninManagerFactory::GetForProfile(profile),
-        ProfileOAuth2TokenServiceFactory::GetForProfile(profile));
+        profile, IdentityManagerFactory::GetForProfile(profile));
   }
 
   FakeUserPolicySigninService(Profile* profile,
-                              SigninManager* signin_manager,
-                              ProfileOAuth2TokenService* oauth2_token_service)
+                              identity::IdentityManager* identity_manager)
       : UserPolicySigninService(profile,
                                 nullptr,
                                 nullptr,
                                 nullptr,
-                                signin_manager,
-                                nullptr,
-                                oauth2_token_service) {}
+                                identity_manager,
+                                nullptr) {}
 
   void set_dm_token(const std::string& dm_token) { dm_token_ = dm_token; }
   void set_client_id(const std::string& client_id) { client_id_ = client_id; }
@@ -189,19 +188,22 @@ class DiceTurnSyncOnHelperTestBase : public testing::Test {
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         ProfileOAuth2TokenServiceFactory::GetInstance(),
-        BuildFakeProfileOAuth2TokenService);
-    profile_builder.AddTestingFactory(SigninManagerFactory::GetInstance(),
-                                      BuildFakeSigninManagerBase);
-    profile_builder.AddTestingFactory(ChromeSigninClientFactory::GetInstance(),
-                                      signin::BuildTestSigninClient);
-    profile_builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
-                                      &BuildMockProfileSyncService);
+        base::BindRepeating(&BuildFakeProfileOAuth2TokenService));
+    profile_builder.AddTestingFactory(
+        SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeSigninManagerForTesting));
+    profile_builder.AddTestingFactory(
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&signin::BuildTestSigninClient));
+    profile_builder.AddTestingFactory(
+        ProfileSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildMockProfileSyncService));
     profile_builder.AddTestingFactory(
         policy::UserPolicySigninServiceFactory::GetInstance(),
-        &FakeUserPolicySigninService::Build);
+        base::BindRepeating(&FakeUserPolicySigninService::Build));
     profile_builder.AddTestingFactory(
         UnifiedConsentServiceFactory::GetInstance(),
-        &BuildUnifiedConsentServiceForTesting);
+        base::BindRepeating(&BuildUnifiedConsentServiceForTesting));
     profile_ = profile_builder.Build();
     account_tracker_service_ =
         AccountTrackerServiceFactory::GetForProfile(profile());

@@ -20,12 +20,12 @@
         {
           "object": "NGPhysicalTextFragment 'MIDDLE'",
           "rect": [3, 280, 63, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'MIDDLE'",
           "rect": [3, 90, 63, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

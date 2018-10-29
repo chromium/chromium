@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_ZYGOTE) ZygoteHostImpl
 
   void AdjustRendererOOMScore(base::ProcessHandle process_handle,
                               int score) override;
+  bool HasZygote() { return !zygote_pids_.empty(); }
 
  private:
   friend struct base::DefaultSingletonTraits<ZygoteHostImpl>;

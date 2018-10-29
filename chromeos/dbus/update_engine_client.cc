@@ -380,6 +380,17 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
       return;
     }
     status.status = UpdateStatusFromString(current_operation);
+    // TODO(hunyadym, https://crbug.com/864672): Add a new DBus call to
+    // determine this based on the Omaha response, and not version comparison.
+    const std::string current_version =
+        version_loader::GetVersion(version_loader::VERSION_SHORT);
+    status.is_rollback =
+        version_loader::IsRollback(current_version, status.new_version);
+    if (status.is_rollback) {
+      LOG(WARNING) << "New image is a rollback from " << current_version
+                   << " to " << status.new_version << ".";
+    }
+
     last_status_ = status;
     for (auto& observer : observers_)
       observer.UpdateStatusChanged(status);
@@ -506,7 +517,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     status.new_version = new_version;
     // TODO(hunyadym, https://crbug.com/864672): Add a new DBus call to
     // determine this based on the Omaha response, and not version comparison.
-    std::string current_version =
+    const std::string current_version =
         version_loader::GetVersion(version_loader::VERSION_SHORT);
     status.is_rollback =
         version_loader::IsRollback(current_version, status.new_version);

@@ -56,16 +56,22 @@ class ElementInnerTextCollector final {
     void EmitTab();
     void EmitText(const StringView& text);
     String Finish();
+    void FlushCollapsibleSpace();
 
-    bool HasCollapsibleSpace() const { return has_collapsible_space_; }
+    void SetShouldCollapseWhitespace(bool value) {
+      should_collapse_white_space_ = value;
+    }
 
    private:
-    void FlushCollapsibleSpace();
     void FlushRequiredLineBreak();
 
     StringBuilder builder_;
     int required_line_break_count_ = 0;
-    bool at_start_of_block_ = false;
+
+    // |should_collapse_white_space_| is used for collapsing white spaces around
+    // block, e.g. leading white space at start of block and leading white
+    // spaces after inline-block.
+    bool should_collapse_white_space_ = false;
     bool has_collapsible_space_ = false;
 
     DISALLOW_COPY_AND_ASSIGN(Result);
@@ -243,8 +249,22 @@ bool ElementInnerTextCollector::IsCollapsibleSpace(UChar code_point) {
 // static
 bool ElementInnerTextCollector::IsDisplayBlockLevel(const Node& node) {
   const LayoutObject* const layout_object = node.GetLayoutObject();
-  if (!layout_object || !layout_object->IsLayoutBlock())
+  if (!layout_object)
     return false;
+  if (!layout_object->IsLayoutBlock()) {
+    if (layout_object->IsTableSection()) {
+      // Note: |LayoutTableSeleciton::IsInline()| returns false, but it is not
+      // block-level.
+      return false;
+    }
+    // Note: Block-level replaced elements, e.g. <img style=display:block>,
+    // reach here. Unlike |LayoutBlockFlow::AddChild()|, innerText considers
+    // floats and absolutely-positioned elements as block-level node.
+    return !layout_object->IsInline();
+  }
+  // TODO(crbug.com/567964): Due by the issue, |IsAtomicInlineLevel()| is always
+  // true for replaced elements event if it has display:block, once it is fixed
+  // we should check at first.
   if (layout_object->IsAtomicInlineLevel())
     return false;
   if (layout_object->IsRubyText()) {
@@ -463,6 +483,7 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
   if (IsHTMLBRElement(node)) {
     ProcessChildren(node);
     result_.EmitNewline();
+    result_.SetShouldCollapseWhitespace(true);
     return;
   }
 
@@ -473,7 +494,6 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
   const LayoutObject& layout_object = *node.GetLayoutObject();
   if (style->Display() == EDisplay::kTableCell) {
     ProcessChildrenWithRequiredLineBreaks(node, 0);
-    result_.EmitEndBlock();
     if (layout_object.IsTableCell() &&
         ToLayoutTableCell(layout_object).NextCell())
       result_.EmitTab();
@@ -507,9 +527,17 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
   if (IsDisplayBlockLevel(node))
     return ProcessChildrenWithRequiredLineBreaks(node, 1);
 
-  if (layout_object.IsLayoutBlock())
-    return ProcessChildrenWithRequiredLineBreaks(node, 0);
-  ProcessChildren(node);
+  if (!layout_object.IsAtomicInlineLevel())
+    return ProcessChildren(node);
+
+  // We should emit a space before atomic inline item:
+  // abc <img> def => "abc  def" See http://crbug.com/894701
+  result_.FlushCollapsibleSpace();
+  ProcessChildrenWithRequiredLineBreaks(node, 0);
+  // We should not collapse white space after inline-block:
+  // abc <span style="display:inline-block"></span> def => "abc  def".
+  // See http://crbug.com/890020
+  result_.SetShouldCollapseWhitespace(false);
 }
 
 void ElementInnerTextCollector::ProcessOptionElement(
@@ -585,9 +613,7 @@ void ElementInnerTextCollector::ProcessTextNode(const Text& node) {
 // ----
 
 void ElementInnerTextCollector::Result::EmitBeginBlock() {
-  if (has_collapsible_space_)
-    return;
-  at_start_of_block_ = true;
+  should_collapse_white_space_ = true;
 }
 
 void ElementInnerTextCollector::Result::EmitChar16(UChar code_point) {
@@ -598,11 +624,11 @@ void ElementInnerTextCollector::Result::EmitChar16(UChar code_point) {
   DCHECK_EQ(required_line_break_count_, 0);
   DCHECK(!has_collapsible_space_);
   builder_.Append(code_point);
-  at_start_of_block_ = false;
+  should_collapse_white_space_ = false;
 }
 
 void ElementInnerTextCollector::Result::EmitCollapsibleSpace() {
-  if (at_start_of_block_)
+  if (should_collapse_white_space_)
     return;
   FlushRequiredLineBreak();
   has_collapsible_space_ = true;
@@ -626,6 +652,8 @@ void ElementInnerTextCollector::Result::EmitRequiredLineBreak(int count) {
     return;
   // 4. Remove any runs of consecutive required line break count items at the
   // start or end of results.
+  should_collapse_white_space_ = true;
+  has_collapsible_space_ = false;
   if (builder_.IsEmpty()) {
     DCHECK_EQ(required_line_break_count_, 0);
     return;
@@ -634,21 +662,20 @@ void ElementInnerTextCollector::Result::EmitRequiredLineBreak(int count) {
   // items with a string consisting of as many U+000A LINE FEED (LF) characters
   // as the maximum of the values in the required line break count items.
   required_line_break_count_ = std::max(required_line_break_count_, count);
-  at_start_of_block_ = true;
 }
 
 void ElementInnerTextCollector::Result::EmitTab() {
   if (required_line_break_count_ > 0)
     FlushRequiredLineBreak();
   has_collapsible_space_ = false;
-  at_start_of_block_ = false;
+  should_collapse_white_space_ = false;
   builder_.Append(kTabulationCharacter);
 }
 
 void ElementInnerTextCollector::Result::EmitText(const StringView& text) {
   if (text.IsEmpty())
     return;
-  at_start_of_block_ = false;
+  should_collapse_white_space_ = false;
   if (required_line_break_count_ > 0)
     FlushRequiredLineBreak();
   else

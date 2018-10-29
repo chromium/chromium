@@ -77,4 +77,9 @@ const char kCableClientHelloMessage[] = "caBLE v1 client hello";
 const char kCtap2Version[] = "FIDO_2_0";
 const char kU2fVersion[] = "U2F_V2";
 
+const char kExtensionHmacSecret[] = "hmac-secret";
+
+const base::TimeDelta kBleDevicePairingModeWaitingInterval =
+    base::TimeDelta::FromSeconds(2);
+
 }  // namespace device

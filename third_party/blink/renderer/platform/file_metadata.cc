@@ -36,12 +36,26 @@
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/interface_provider.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_file_info.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "url/gurl.h"
 
 namespace blink {
+
+// static
+FileMetadata FileMetadata::From(const base::File::Info& file_info) {
+  FileMetadata file_metadata;
+  if (file_info.last_modified.is_null())
+    file_metadata.modification_time = std::numeric_limits<double>::quiet_NaN();
+  else
+    file_metadata.modification_time = file_info.last_modified.ToJsTime();
+  file_metadata.length = file_info.size;
+  if (file_info.is_directory)
+    file_metadata.type = FileMetadata::kTypeDirectory;
+  else
+    file_metadata.type = FileMetadata::kTypeFile;
+  return file_metadata;
+}
 
 bool GetFileSize(const String& path, long long& result) {
   FileMetadata metadata;
@@ -83,19 +97,11 @@ bool GetFileMetadata(const String& path, FileMetadata& metadata) {
   return true;
 }
 
-String DirectoryName(const String& path) {
-  return FilePathToWebString(WebStringToFilePath(path).DirName());
-}
-
 KURL FilePathToURL(const String& path) {
   GURL gurl = net::FilePathToFileURL(WebStringToFilePath(path));
   const std::string& url_spec = gurl.possibly_invalid_spec();
   return KURL(AtomicString::FromUTF8(url_spec.data(), url_spec.length()),
               gurl.parsed_for_possibly_invalid_spec(), gurl.is_valid());
 }
-
-STATIC_ASSERT_ENUM(WebFileInfo::kTypeUnknown, FileMetadata::kTypeUnknown);
-STATIC_ASSERT_ENUM(WebFileInfo::kTypeFile, FileMetadata::kTypeFile);
-STATIC_ASSERT_ENUM(WebFileInfo::kTypeDirectory, FileMetadata::kTypeDirectory);
 
 }  // namespace blink

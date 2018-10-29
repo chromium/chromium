@@ -166,6 +166,13 @@ bool ParsePhoneNumber(const base::string16& value,
   if (destination_length > area_length)
     area_length = destination_length;
 
+  if (area_length >= static_cast<int>(national_significant_number.size())) {
+    // For some non-ASCII strings |destination_length| is bigger than phone
+    // string size. It might be because of incorrect treating of non-ASCII
+    // characters.
+    return false;
+  }
+
   std::string area_code;
   std::string subscriber_number;
   if (area_length > 0) {

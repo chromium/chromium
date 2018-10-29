@@ -23,6 +23,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "net/server/http_connection.h"
@@ -152,8 +153,8 @@ bool PipeReader::HandleReadResult(int result) {
     if (read_buffer_->StartOfBuffer()[i] == '\0') {
       std::string str(read_buffer_->StartOfBuffer() + offset, i - offset);
 
-      BrowserThread::PostTask(
-          BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::UI},
           base::BindOnce(&DevToolsPipeHandler::HandleMessage, devtools_handler_,
                          std::move(str)));
       offset = i + 1;
@@ -165,8 +166,8 @@ bool PipeReader::HandleReadResult(int result) {
 }
 
 void PipeReader::ConnectionClosed() {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&DevToolsPipeHandler::Shutdown, devtools_handler_));
 }
 

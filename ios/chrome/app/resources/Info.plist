@@ -189,5 +189,7 @@
 	<string>IDS_IOS_PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>IDS_IOS_BLUETOOTH_USAGE_DESCRIPTION</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>IDS_IOS_FACE_ID_USAGE_DESCRIPTION</string>
 </dict>
 </plist>

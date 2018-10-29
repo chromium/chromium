@@ -75,7 +75,8 @@ bool WebInputMethodControllerImpl::SetComposition(
   }
 
   std::unique_ptr<UserGestureIndicator> gesture_indicator =
-      Frame::NotifyUserActivation(GetFrame(), UserGestureToken::kNewGesture);
+      LocalFrame::NotifyUserActivation(GetFrame(),
+                                       UserGestureToken::kNewGesture);
 
   GetInputMethodController().SetComposition(
       String(text), ImeTextSpanVectorBuilder::Build(ime_text_spans),
@@ -112,7 +113,8 @@ bool WebInputMethodControllerImpl::CommitText(
     const WebRange& replacement_range,
     int relative_caret_position) {
   std::unique_ptr<UserGestureIndicator> gesture_indicator =
-      Frame::NotifyUserActivation(GetFrame(), UserGestureToken::kNewGesture);
+      LocalFrame::NotifyUserActivation(GetFrame(),
+                                       UserGestureToken::kNewGesture);
 
   if (WebPlugin* plugin = FocusedPluginIfInputMethodSupported()) {
     return plugin->CommitText(text, ime_text_spans, replacement_range,

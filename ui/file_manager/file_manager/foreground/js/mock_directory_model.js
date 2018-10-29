@@ -5,7 +5,7 @@
 /**
  * Mock class for DirectoryModel.
  * @constructor
- * @extends {cr.EventTarget}
+ * @extends {DirectoryModel}
  */
 function MockDirectoryModel() {
   /**
@@ -48,8 +48,8 @@ MockDirectoryModel.prototype.navigateToMockEntry = function(entry) {
     var event = new Event('directory-changed');
     event.previousDirEntry = this.currentEntry_;
     event.newDirEntry = entry;
-    event.volumeChanged = this.currentEntry_ &&
-        util.isSameFileSystem(this.currentEntry_, entry);
+    event.volumeChanged =
+        this.currentEntry_ && util.isSameEntry(this.currentEntry_, entry);
     this.currentEntry_ = entry;
     this.dispatchEvent(event);
     resolve();
@@ -59,7 +59,7 @@ MockDirectoryModel.prototype.navigateToMockEntry = function(entry) {
 /**
  * Mock class for FileFilter.
  * @constructor
- * @extends {cr.EventTarget}
+ * @extends {FileFilter}
  */
 function MockFileFilter() {}
 

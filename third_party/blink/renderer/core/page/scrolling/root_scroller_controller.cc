@@ -111,9 +111,7 @@ RootScrollerController* RootScrollerController::Create(Document& document) {
 }
 
 RootScrollerController::RootScrollerController(Document& document)
-    : document_(&document),
-      effective_root_scroller_(&document),
-      document_has_document_element_(false) {}
+    : document_(&document), effective_root_scroller_(&document) {}
 
 void RootScrollerController::Trace(blink::Visitor* visitor) {
   visitor->Trace(document_);
@@ -189,49 +187,37 @@ void RootScrollerController::RecomputeEffectiveRootScroller() {
       new_effective_root_scroller = implicit_root_scroller_;
   }
 
-  // TODO(bokan): This is a terrible hack but required because the viewport
-  // apply scroll works on Elements rather than Nodes. If we're going from
-  // !documentElement to documentElement, we can't early out even if the root
-  // scroller didn't change since the global root scroller didn't have an
-  // Element previously to put it's ViewportScrollCallback onto. We need this
-  // to kick the global root scroller to recompute itself. We can remove this
-  // if ScrollCustomization is moved to the Node rather than Element.
-  bool old_has_document_element = document_has_document_element_;
-  document_has_document_element_ = document_->documentElement();
-
-  if (old_has_document_element || !document_has_document_element_) {
-    if (effective_root_scroller_ == new_effective_root_scroller)
-      return;
-  }
+  if (effective_root_scroller_ == new_effective_root_scroller)
+    return;
 
   Node* old_effective_root_scroller = effective_root_scroller_;
   effective_root_scroller_ = new_effective_root_scroller;
 
-  if (new_effective_root_scroller != old_effective_root_scroller) {
-    if (LayoutBoxModelObject* new_obj =
-            new_effective_root_scroller->GetLayoutBoxModelObject()) {
-      if (new_obj->Layer()) {
-        new_effective_root_scroller->GetLayoutBoxModelObject()
-            ->Layer()
-            ->SetNeedsCompositingInputsUpdate();
-      }
+  DCHECK(new_effective_root_scroller);
+  if (LayoutBoxModelObject* new_obj =
+          new_effective_root_scroller->GetLayoutBoxModelObject()) {
+    if (new_obj->Layer()) {
+      new_effective_root_scroller->GetLayoutBoxModelObject()
+          ->Layer()
+          ->SetNeedsCompositingInputsUpdate();
     }
-    if (old_effective_root_scroller) {
-      if (LayoutBoxModelObject* old_obj =
-              old_effective_root_scroller->GetLayoutBoxModelObject()) {
-        if (old_obj->Layer()) {
-          old_effective_root_scroller->GetLayoutBoxModelObject()
-              ->Layer()
-              ->SetNeedsCompositingInputsUpdate();
-        }
-      }
-    }
-    if (auto* object = old_effective_root_scroller->GetLayoutObject())
-      object->SetIsEffectiveRootScroller(false);
-
-    if (auto* object = new_effective_root_scroller->GetLayoutObject())
-      object->SetIsEffectiveRootScroller(true);
   }
+
+  DCHECK(old_effective_root_scroller);
+  if (LayoutBoxModelObject* old_obj =
+          old_effective_root_scroller->GetLayoutBoxModelObject()) {
+    if (old_obj->Layer()) {
+      old_effective_root_scroller->GetLayoutBoxModelObject()
+          ->Layer()
+          ->SetNeedsCompositingInputsUpdate();
+    }
+  }
+
+  if (auto* object = old_effective_root_scroller->GetLayoutObject())
+    object->SetIsEffectiveRootScroller(false);
+
+  if (auto* object = new_effective_root_scroller->GetLayoutObject())
+    object->SetIsEffectiveRootScroller(true);
 
   ApplyRootScrollerProperties(*old_effective_root_scroller);
   ApplyRootScrollerProperties(*effective_root_scroller_);
@@ -393,8 +379,7 @@ void RootScrollerController::ProcessImplicitCandidates() {
   if (ScrollsVerticalOverflow(*document_->GetLayoutView()))
     return;
 
-  Element* highest_z_element = nullptr;
-  bool highest_is_ambiguous = false;
+  bool multiple_matches = false;
 
   HeapHashSet<WeakMember<Element>> copy(implicit_candidates_);
   for (auto& element : copy) {
@@ -404,36 +389,20 @@ void RootScrollerController::ProcessImplicitCandidates() {
       continue;
     }
 
-    if (!highest_z_element) {
-      highest_z_element = element;
-    } else {
-      int element_z = element->GetLayoutObject()->Style()->ZIndex();
-      int highest_z = highest_z_element->GetLayoutObject()->Style()->ZIndex();
+    if (implicit_root_scroller_)
+      multiple_matches = true;
 
-      if (element_z > highest_z) {
-        highest_z_element = element;
-        highest_is_ambiguous = false;
-      } else if (element_z == highest_z) {
-        highest_is_ambiguous = true;
-      }
-    }
+    implicit_root_scroller_ = element;
   }
 
-  if (highest_is_ambiguous)
+  // Only promote an implicit root scroller if we have a unique match.
+  if (multiple_matches)
     implicit_root_scroller_ = nullptr;
-  else
-    implicit_root_scroller_ = highest_z_element;
 }
 
 PaintLayer* RootScrollerController::RootScrollerPaintLayer() const {
-  return RootScrollerUtil::PaintLayerForRootScroller(effective_root_scroller_);
-}
-
-bool RootScrollerController::ScrollsViewport(const Element& element) const {
-  if (effective_root_scroller_->IsDocumentNode())
-    return element == document_->documentElement();
-
-  return element == effective_root_scroller_.Get();
+  return root_scroller_util::PaintLayerForRootScroller(
+      effective_root_scroller_);
 }
 
 void RootScrollerController::ElementRemoved(const Element& element) {

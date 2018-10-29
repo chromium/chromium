@@ -652,7 +652,7 @@ class GPU_GLES2_EXPORT ProgramManager {
                  uint32_t max_vertex_attribs,
                  const GpuPreferences& gpu_preferences,
                  FeatureInfo* feature_info,
-                 ProgressReporter* progress_reporter);
+                 gl::ProgressReporter* progress_reporter);
   ~ProgramManager();
 
   // Must call before destruction.
@@ -737,7 +737,7 @@ class GPU_GLES2_EXPORT ProgramManager {
   // Used to notify the watchdog thread of progress during destruction,
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
-  ProgressReporter* progress_reporter_;
+  gl::ProgressReporter* progress_reporter_;
 
   DISALLOW_COPY_AND_ASSIGN(ProgramManager);
 };

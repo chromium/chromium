@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
-namespace AudioUtilities {
+namespace audio_utilities {
 
 // Rendering quantum size.  This is how many frames are processed at a time for
 // each node in the audio graph.
@@ -60,7 +60,7 @@ PLATFORM_EXPORT float MaxAudioBufferSampleRate();
 // Check to see if x is a power of two.  If x == 0, returns false.
 PLATFORM_EXPORT bool IsPowerOfTwo(size_t x);
 
-}  // namespace AudioUtilities
+}  // namespace audio_utilities
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_UTILITIES_H_

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/metrics/user_metrics_recorder.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -83,12 +82,9 @@ class VPNListProviderEntry : public views::ButtonListener, public views::View {
       : vpn_provider_(vpn_provider) {
     TrayPopupUtils::ConfigureAsStickyHeader(this);
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    bool show_spacing = features::IsSystemTrayUnifiedEnabled();
-    TriView* tri_view = TrayPopupUtils::CreateSubHeaderRowView(show_spacing);
-    if (show_spacing) {
-      tri_view->AddView(TriView::Container::START,
-                        TrayPopupUtils::CreateMainImageView());
-    }
+    TriView* tri_view = TrayPopupUtils::CreateSubHeaderRowView(true);
+    tri_view->AddView(TriView::Container::START,
+                      TrayPopupUtils::CreateMainImageView());
     AddChildView(tri_view);
 
     views::Label* label = TrayPopupUtils::CreateDefaultLabel();

@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/services/filesystem/public/interfaces/directory.mojom.h"
 #include "components/services/filesystem/public/interfaces/file_system.mojom.h"
 #include "components/services/filesystem/public/interfaces/types.mojom.h"
@@ -13,6 +14,7 @@
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/service_manager/public/cpp/service_context.h"
 #include "services/service_manager/public/cpp/service_test.h"
+#include "third_party/leveldatabase/leveldb_features.h"
 
 namespace leveldb {
 namespace {
@@ -95,12 +97,28 @@ void DatabaseSyncCopyPrefixed(mojom::LevelDBDatabase* database,
   run_loop.Run();
 }
 
+void DatabaseSyncDelete(mojom::LevelDBDatabase* database,
+                        const std::string& key,
+                        mojom::DatabaseError* out_error) {
+  base::RunLoop run_loop;
+  database->Delete(StdStringToUint8Vector(key),
+                   Capture(out_error, run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
 void DatabaseSyncDeletePrefixed(mojom::LevelDBDatabase* database,
                                 const std::string& key_prefix,
                                 mojom::DatabaseError* out_error) {
   base::RunLoop run_loop;
   database->DeletePrefixed(StdStringToUint8Vector(key_prefix),
                            Capture(out_error, run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+void DatabaseSyncRewrite(mojom::LevelDBDatabase* database,
+                         mojom::DatabaseError* out_error) {
+  base::RunLoop run_loop;
+  database->RewriteDB(Capture(out_error, run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -121,6 +139,10 @@ class LevelDBServiceTest : public service_manager::test::ServiceTest {
  protected:
   // Overridden from mojo::test::ApplicationTestBase:
   void SetUp() override {
+    // TODO(dullweber): This doesn't seem to work. The reason is probably that
+    // the LevelDB service is a separate executable here. How should we set
+    // features that affect a service?
+    feature_list_.InitAndEnableFeature(leveldb::kLevelDBRewriteFeature);
     ServiceTest::SetUp();
     connector()->BindInterface("filesystem", &files_);
     connector()->BindInterface("leveldb", &leveldb_);
@@ -145,6 +167,7 @@ class LevelDBServiceTest : public service_manager::test::ServiceTest {
   mojom::LevelDBServicePtr& leveldb() { return leveldb_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   filesystem::mojom::FileSystemPtr files_;
   mojom::LevelDBServicePtr leveldb_;
 
@@ -171,10 +194,7 @@ TEST_F(LevelDBServiceTest, Basic) {
 
   // Delete the key from the database.
   error = mojom::DatabaseError::INVALID_ARGUMENT;
-  base::RunLoop run_loop;
-  database->Delete(StdStringToUint8Vector("key"),
-                   Capture(&error, run_loop.QuitClosure()));
-  run_loop.Run();
+  DatabaseSyncDelete(database.get(), "key", &error);
   EXPECT_EQ(mojom::DatabaseError::OK, error);
 
   // Read the key back from the database.
@@ -541,10 +561,7 @@ TEST_F(LevelDBServiceTest, MemoryDBReadWrite) {
 
   // Delete the key from the database.
   error = mojom::DatabaseError::INVALID_ARGUMENT;
-  base::RunLoop run_loop;
-  database->Delete(StdStringToUint8Vector("key"),
-                   Capture(&error, run_loop.QuitClosure()));
-  run_loop.Run();
+  DatabaseSyncDelete(database.get(), "key", &error);
   EXPECT_EQ(mojom::DatabaseError::OK, error);
 
   // Read the key back from the database.
@@ -664,6 +681,44 @@ TEST_F(LevelDBServiceTest, Prefixed) {
   DatabaseSyncGetPrefixed(database.get(), prefix, &error, &key_values);
   EXPECT_EQ(mojom::DatabaseError::OK, error);
   EXPECT_TRUE(key_values.empty());
+}
+
+TEST_F(LevelDBServiceTest, RewriteDB) {
+  mojom::DatabaseError error;
+  filesystem::mojom::DirectoryPtr directory;
+  GetTempDirectory(&directory);
+
+  mojom::LevelDBDatabaseAssociatedPtr database;
+  leveldb_env::Options options;
+  options.create_if_missing = true;
+  base::RunLoop run_loop;
+  leveldb()->OpenWithOptions(std::move(options), std::move(directory), "test",
+                             base::nullopt, MakeRequest(&database),
+                             Capture(&error, run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_EQ(mojom::DatabaseError::OK, error);
+
+  // Write entries to the database.
+  DatabaseSyncPut(database.get(), "key1", "value1", &error);
+  EXPECT_EQ(mojom::DatabaseError::OK, error);
+  DatabaseSyncPut(database.get(), "key2", "value2", &error);
+  EXPECT_EQ(mojom::DatabaseError::OK, error);
+
+  // Delete key 1.
+  DatabaseSyncDelete(database.get(), "key1", &error);
+  EXPECT_EQ(mojom::DatabaseError::OK, error);
+
+  // Perform a rewrite.
+  DatabaseSyncRewrite(database.get(), &error);
+  EXPECT_EQ(mojom::DatabaseError::OK, error);
+
+  // Read the keys back from the database.
+  std::vector<uint8_t> value;
+  DatabaseSyncGet(database.get(), "key1", &error, &value);
+  EXPECT_EQ(mojom::DatabaseError::NOT_FOUND, error);
+  DatabaseSyncGet(database.get(), "key2", &error, &value);
+  EXPECT_EQ(mojom::DatabaseError::OK, error);
+  EXPECT_EQ("value2", Uint8VectorToStdString(value));
 }
 
 }  // namespace

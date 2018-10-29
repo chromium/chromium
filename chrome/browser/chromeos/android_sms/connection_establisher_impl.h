@@ -23,17 +23,20 @@ class ConnectionEstablisherImpl : public ConnectionEstablisher {
   ~ConnectionEstablisherImpl() override;
 
   void EstablishConnection(
-      content::ServiceWorkerContext* service_worker_context) override;
+      content::ServiceWorkerContext* service_worker_context,
+      ConnectionMode connection_mode) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ConnectionEstablisherImplTest, EstablishConnection);
 
   void SendStartStreamingMessageIfNotConnected(
-      content::ServiceWorkerContext* service_worker_context);
+      content::ServiceWorkerContext* service_worker_context,
+      ConnectionMode connection_mode);
 
   void OnMessageDispatchResult(bool status);
 
   static const char kStartStreamingMessage[];
+  static const char kResumeStreamingMessage[];
   bool is_connected_ = false;
   DISALLOW_COPY_AND_ASSIGN(ConnectionEstablisherImpl);
 };

@@ -6,6 +6,7 @@ PASS window.getComputedStyle(dir2, null).color is "rgb(255, 0, 0)"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 This line should be green (attribute value is case sensitive).
 This line should be purple (attribute value is case sensitive).
 This line should be black (attribute value is case sensitive).

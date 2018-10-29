@@ -909,7 +909,8 @@ TEST_F(TrafficAnnotationAuditorTest, AnnotationsXML) {
   TrafficAnnotationExporter exporter(source_path());
 
   EXPECT_TRUE(exporter.LoadAnnotationsXML());
-  EXPECT_TRUE(exporter.CheckArchivedAnnotations());
+  exporter.CheckArchivedAnnotations(errors());
+  EXPECT_TRUE(errors()->empty());
 }
 
 // Tests if 'annotations.xml' is read and has at least one item.

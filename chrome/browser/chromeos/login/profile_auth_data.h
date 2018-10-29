@@ -8,8 +8,8 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 
-namespace net {
-class URLRequestContextGetter;
+namespace content {
+class StoragePartition;
 }
 
 namespace chromeos {
@@ -18,24 +18,23 @@ namespace chromeos {
 // used for authentication to the user's actual BrowserContext.
 class ProfileAuthData {
  public:
-  // Transfers authentication-related data from |from_context| to |to_context|
-  // and invokes |completion_callback| on the UI thread when the operation has
-  // completed. The following data is transferred:
+  // Transfers authentication-related data from |from_partition| to
+  // |to_partition| and invokes |completion_callback| on the UI thread when the
+  // operation has completed. The following data is transferred:
   // * The proxy authentication state.
-  // * All authentication cookies and channel IDs, if
-  //   |transfer_auth_cookies_and_channel_ids_on_first_login| is true and
-  //   |to_context|'s cookie jar is empty. If the cookie jar is not empty, the
-  //   authentication states in |from_context| and |to_context| should be merged
-  //   using /MergeSession instead.
+  // * All authentication cookies, if
+  //   |transfer_auth_cookies_on_first_login| is true and
+  //   |to_partition|'s cookie jar is empty. If the cookie jar is not empty, the
+  //   authentication states in |from_partition| and |to_partition| should be
+  //   merged using /MergeSession instead.
   // * The authentication cookies set by a SAML IdP, if
   //   |transfer_saml_auth_cookies_on_subsequent_login| is true and
-  //   |to_context|'s cookie jar is not empty.
-  static void Transfer(
-      net::URLRequestContextGetter* from_context,
-      net::URLRequestContextGetter* to_context,
-      bool transfer_auth_cookies_and_channel_ids_on_first_login,
-      bool transfer_saml_auth_cookies_on_subsequent_login,
-      const base::Closure& completion_callback);
+  //   |to_partition|'s cookie jar is not empty.
+  static void Transfer(content::StoragePartition* from_partition,
+                       content::StoragePartition* to_partition,
+                       bool transfer_auth_cookies_on_first_login,
+                       bool transfer_saml_auth_cookies_on_subsequent_login,
+                       const base::Closure& completion_callback);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(ProfileAuthData);

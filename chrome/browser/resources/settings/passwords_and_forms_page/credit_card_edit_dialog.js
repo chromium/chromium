@@ -81,7 +81,7 @@ Polymer({
 
     const date = new Date();
     let firstYear = date.getFullYear();
-    let lastYear = firstYear + 9;  // Show next 9 years (10 total).
+    let lastYear = firstYear + 19;  // Show next 19 years (20 total).
     let selectedYear = parseInt(this.creditCard.expirationYear, 10);
 
     // |selectedYear| must be valid and between first and last years.

@@ -1,0 +1,2 @@
+The file invisible_icon.png is an image with a single visible pixel. It is
+considered "invisible" by our icon analysis code.

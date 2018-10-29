@@ -403,10 +403,6 @@ void GaiaOAuthClient::Core::SendRequestImpl() {
   // Retry is implemented internally.
   request_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
 
-  // TODO(https://crbug.com/808498) re-add data use measurement once
-  // SimpleURLLoader supports it. Previous way of setting it was:
-  // MarkURLFetcherAsGaia(request_.get());
-
   request_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       // Unretained(this) is safe since |this| owns |request_|, and its deletion

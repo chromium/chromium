@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="1018939186200882850">मेनू आइटम</translation>
-<translation id="1020833440720551630">ऑडियो ट्रैक की आवाज़ बंद करें</translation>
 <translation id="10623998915015855">टॉगल बटन</translation>
 <translation id="1088086359088493902">सेकंड</translation>
 <translation id="1171774979989969504">कृपया ई-मेल पता दर्ज करें.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">क्रेडिट</translation>
 <translation id="1342835525016946179">लेख</translation>
 <translation id="1359897965706325498">बैनर</translation>
-<translation id="1548116112524424341">वीडियो को पिक्चर में पिक्चर मोड में चलाएं</translation>
 <translation id="1589122976691792535">क्षेत्र</translation>
 <translation id="1591562245178063882">इस माह</translation>
 <translation id="1637811476055996098">फ़ाइलें चुनें</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">ट्री ग्रिड</translation>
 <translation id="1822429046913737220">पूर्वाह्न/अपराह्न</translation>
 <translation id="1832974991323546415">दूरस्थ डिवाइस पर चलाएं</translation>
-<translation id="1838818994221231429">डिसप्ले कटआउट क्षेत्र में फ़ुलस्क्रीन टॉगल करें</translation>
 <translation id="190587075670221089">मिटाना</translation>
 <translation id="1907737156431278478">उदाहरण</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -86,7 +83,7 @@
 <translation id="3920932319529768807">निष्कर्ष</translation>
 <translation id="3924558731517983934">ऐप्लिकेशन</translation>
 <translation id="3944740393230681990">प्रस्तावना</translation>
-<translation id="3960700977367013758">स्क्रॉल बार</translation>
+<translation id="3960700977367013758">स्क्रोल बार</translation>
 <translation id="4103419683916926126">मिलीसेकंड</translation>
 <translation id="4151657705144244502">ग्राफ़‍िक</translation>
 <translation id="4193965531860883258">भूमिका</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">समय</translation>
 <translation id="5630795885300617244">10 सेकंड आगे या पीछे जाने के लिए बाएं या दाएं पर दो बार टैप करें</translation>
 <translation id="5631759159893697722">संक्षेप</translation>
-<translation id="5641012560118721995">प्लेबैक रोकें</translation>
 <translation id="5643186887447432888">बटन</translation>
 <translation id="5677946354068040947">अधिक विकल्प</translation>
 <translation id="576709008726043716">परिचय</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">रीसेट करें</translation>
 <translation id="5966707198760109579">सप्ताह</translation>
 <translation id="5987525920412732405">स्पिन बटन</translation>
+<translation id="6011459053400940133">वॉल्यूम स्लाइडर</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6023896073578205740">सूची बॉक्स</translation>
-<translation id="6101327004457443354">ऑडियो ट्रैक अनम्यूट करें</translation>
 <translation id="6150588977291308318">संदर्भ सूची</translation>
 <translation id="6164829606128959761">मीटर</translation>
 <translation id="6166809985690652833">उपसंहार</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">घंटे</translation>
 <translation id="7681220483256441252">इंडेक्स</translation>
 <translation id="7720026100085573005">शेष समय</translation>
-<translation id="7740016676195725605">बंद कैप्शन दिखाना रोकें</translation>
 <translation id="7740050170769002709">HTML सामग्री</translation>
 <translation id="7750228210027921155">पिक्चर में पिक्चर</translation>
 <translation id="7789962463072032349">पॉज़ करें</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">लेख फ़ील्ड खोजें</translation>
 <translation id="8057695513531652401">सूचना</translation>
 <translation id="8105797009065549151">नोट संदर्भ</translation>
-<translation id="8115662671911883373">बंद कैप्शन दिखाना प्रारंभ करें</translation>
 <translation id="8117451130807776954">इस सप्ताह</translation>
-<translation id="819205353528511139">फ़िल्म को पूर्ण स्क्रीन मोड में चलाएं</translation>
 <translation id="8199524924445686405">yyyy</translation>
 <translation id="8284326494547611709">कैप्शन</translation>
 <translation id="835897206747267392">अमान्य मान.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">दूरस्थ प्लेबैक नियंत्रित करें</translation>
 <translation id="862370744433916922">सबटाइटल</translation>
 <translation id="8750798805984357768">कृपया इनमें से कोई विकल्प चुनें.</translation>
-<translation id="8785498733064193001">प्लेबैक शुरू करें</translation>
 <translation id="8808573423886751634">पाठ</translation>
 <translation id="8845239796550121995">अब आपके टीवी पर कास्ट हो रहा है</translation>
 <translation id="8851136666856101339">मुख्य</translation>

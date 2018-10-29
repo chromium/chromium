@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.snackbar.Snackbar;
 import org.chromium.chrome.browser.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.snackbar.SnackbarManager.SnackbarController;
-import org.chromium.chrome.browser.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.TabHidingType;
@@ -57,6 +56,7 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
 
     @SuppressLint("StaticFieldLeak")
     private static OfflineIndicatorController sInstance;
+    private static int sTimeToWaitForStableOfflineForTesting;
 
     private boolean mIsShowingOfflineIndicator;
     // Set to true if the offline indicator has been shown once since the activity has resumed.
@@ -142,11 +142,14 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
         }
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (activity == null) return;
+        if (!(activity instanceof ChromeActivity)) return;
+        ChromeActivity chromeActivity = (ChromeActivity) activity;
+        if (chromeActivity.getSnackbarManager() == null) return;
 
         if (isOnline) {
-            hideOfflineIndicator(activity);
+            hideOfflineIndicator(chromeActivity);
         } else {
-            showOfflineIndicator(activity);
+            showOfflineIndicator(chromeActivity);
         }
     }
 
@@ -171,10 +174,7 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
      * being loaded.
      * Returns true if the offline indicator UI is delayed to be shown.
      */
-    private boolean delayShowingOfflineIndicatorIfNeeded(Activity activity) {
-        if (!(activity instanceof ChromeActivity)) return false;
-
-        ChromeActivity chromeActivity = (ChromeActivity) activity;
+    private boolean delayShowingOfflineIndicatorIfNeeded(ChromeActivity chromeActivity) {
         Tab tab = chromeActivity.getActivityTab();
         if (tab == null) return false;
 
@@ -215,10 +215,10 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
         return true;
     }
 
-    private void showOfflineIndicator(Activity activity) {
-        if (mIsShowingOfflineIndicator || !canShowOfflineIndicator(activity)) return;
+    private void showOfflineIndicator(ChromeActivity chromeActivity) {
+        if (mIsShowingOfflineIndicator || !canShowOfflineIndicator(chromeActivity)) return;
 
-        if (delayShowingOfflineIndicatorIfNeeded(activity)) return;
+        if (delayShowingOfflineIndicatorIfNeeded(chromeActivity)) return;
 
         // If this is the first time to show offline indicator, show it. Otherwise, it will only
         // be shown if the user has been continuously online for the required duration, then goes
@@ -230,24 +230,24 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
             return;
         }
 
-        Drawable icon = AppCompatResources.getDrawable(activity, R.drawable.ic_offline_pin_white);
+        Drawable icon =
+                AppCompatResources.getDrawable(chromeActivity, R.drawable.ic_offline_pin_white);
         Snackbar snackbar =
-                Snackbar.make(activity.getString(R.string.offline_indicator_offline_title), this,
-                                Snackbar.TYPE_ACTION, Snackbar.UMA_OFFLINE_INDICATOR)
+                Snackbar.make(chromeActivity.getString(R.string.offline_indicator_offline_title),
+                                this, Snackbar.TYPE_ACTION, Snackbar.UMA_OFFLINE_INDICATOR)
                         .setSingleLine(true)
                         .setProfileImage(icon)
                         .setBackgroundColor(Color.BLACK)
                         .setTextAppearance(R.style.WhiteBody)
                         .setDuration(SNACKBAR_DURATION_MS)
-                        .setAction(
-                                activity.getString(R.string.offline_indicator_view_offline_content),
+                        .setAction(chromeActivity.getString(
+                                           R.string.offline_indicator_view_offline_content),
                                 null);
         if (isUsingTopSnackbar()) {
-            mTopSnackbarManager.show(snackbar, activity);
+            mTopSnackbarManager.show(snackbar, chromeActivity);
         } else {
             // Show a bottom snackbar via SnackbarManager.
-            assert activity instanceof SnackbarManageable;
-            SnackbarManager snackbarManager = ((SnackbarManageable) activity).getSnackbarManager();
+            SnackbarManager snackbarManager = chromeActivity.getSnackbarManager();
             snackbarManager.showSnackbar(snackbar);
         }
 
@@ -257,22 +257,25 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
         mHasOfflineIndicatorShownSinceActivityResumed = true;
     }
 
-    private void hideOfflineIndicator(Activity activity) {
+    private void hideOfflineIndicator(ChromeActivity chromeActivity) {
         if (!mIsShowingOfflineIndicator) return;
 
         if (isUsingTopSnackbar()) {
             mTopSnackbarManager.hide();
         } else {
-            assert activity instanceof SnackbarManageable;
-            SnackbarManager snackbarManager = ((SnackbarManageable) activity).getSnackbarManager();
-            snackbarManager.dismissSnackbars(this);
+            chromeActivity.getSnackbarManager().dismissSnackbars(this);
         }
     }
 
     int getTimeToWaitForStableOffline() {
-        int seconds = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.OFFLINE_INDICATOR, PARAM_STABLE_OFFLINE_WAIT_SECONDS,
-                STABLE_OFFLINE_DEFAULT_WAIT_SECONDS);
+        int seconds;
+        if (sTimeToWaitForStableOfflineForTesting != 0) {
+            seconds = sTimeToWaitForStableOfflineForTesting;
+        } else {
+            seconds = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.OFFLINE_INDICATOR, PARAM_STABLE_OFFLINE_WAIT_SECONDS,
+                    STABLE_OFFLINE_DEFAULT_WAIT_SECONDS);
+        }
         return seconds * 1000;
     }
 
@@ -281,6 +284,11 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
         boolean useBottomSnackbar = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.OFFLINE_INDICATOR, PARAM_BOTTOM_OFFLINE_INDICATOR_ENABLED, false);
         return !useBottomSnackbar;
+    }
+
+    @VisibleForTesting
+    static void setTimeToWaitForStableOfflineForTesting(int waitSeconds) {
+        sTimeToWaitForStableOfflineForTesting = waitSeconds;
     }
 
     @VisibleForTesting

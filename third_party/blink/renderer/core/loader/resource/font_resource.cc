@@ -80,7 +80,7 @@ FontResource* FontResource::Fetch(FetchParameters& params,
                                   FontResourceClient* client) {
   DCHECK_EQ(params.GetResourceRequest().GetFrameType(),
             network::mojom::RequestContextFrameType::kNone);
-  params.SetRequestContext(WebURLRequest::kRequestContextFont);
+  params.SetRequestContext(mojom::RequestContextType::FONT);
   return ToFontResource(
       fetcher->RequestResource(params, FontResourceFactory(), client));
 }

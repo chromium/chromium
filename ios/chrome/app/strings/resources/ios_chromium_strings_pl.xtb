@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Inteligentne rozwiązania Google w Chromium</translation>
 <translation id="2730884209570016437">Chromium nie może użyć aparatu, bo używa go już inna aplikacja</translation>
 <translation id="2797210818057553964">Możesz w każdej chwili zmienić tę opcję w Ustawieniach Chromium</translation>
+<translation id="2915596697727466327">Chromium używa Face ID do autoryzacji dostępu do Twoich haseł.</translation>
 <translation id="3256316712990552818">Skopiowana do Chromium</translation>
 <translation id="3413120535237193088">Aby korzystać ze swoich zakładek na wszystkich urządzeniach, zaloguj się w Chromium.</translation>
 <translation id="3473048256428424907">Włączanie skanera QR w Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Tutaj wyświetlą się karty otwarte w Chromium na innych urządzeniach.</translation>
 <translation id="495292094137889840">Skaner QR w Chromium</translation>
 <translation id="5231355151045086930">Wylogowanie z Chromium</translation>
-<translation id="5416919929805616771">Lubisz Chromium? <ph name="BEGIN_LINK" />Oceń tę aplikację<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Chromium – witamy!</translation>
 <translation id="5945387852661427312">Logujesz się na konto, którym zarządza <ph name="DOMAIN" />, i przekazujesz jego administratorowi kontrolę nad Twoimi danymi Chromium. Zostaną one trwale przypisane do tego konta. Gdy się wylogujesz, znikną one z tego urządzenia, ale pozostaną zapisane na Twoim koncie Google.</translation>
 <translation id="6068866989048414399">Warunki korzystania z Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Przełączasz synchronizację kont z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Twoimi istniejącymi danymi Chromium zarządza <ph name="DOMAIN" />. Dane zostaną usunięte z tego urządzenia, ale pozostaną na koncie <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Wskazówka: <ph name="BEGIN_LINK" />przenieś Chromium do Docka<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Włączenie udostępniania lokalizacji w Chromium pozwala w pełni korzystać z usług Google.</translation>
-<translation id="8353224596138547809">Czy Chromium ma zapisać hasło do tej strony?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" /> możesz zmienić w dowolnym momencie. Google może używać zawartości odwiedzanych przez Ciebie stron oraz informacji o Twojej aktywności i interakcjach w przeglądarce, by personalizować Chromium i usługi Google takie jak Tłumacz, wyszukiwarka czy reklamy.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8809780021347235332">Aby zapisać obrazy, kliknij Ustawienia i pozwól Chromium na użycie zdjęć</translation>

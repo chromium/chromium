@@ -1,5 +1,5 @@
 This test copies all the elements containing event handlers and javascript urls, pastes them in an editable area and verifies that no script, handlers or javascript urls are copied.
-Hello 
+Hello
 CNN Hello  
 This is a form
 Submit.

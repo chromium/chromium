@@ -5,4 +5,3 @@ This page tests global constructor objects like window.HTMLDocument. If it passe
 [Set window.Node = 1]
 [Deleted window.Node]
 [Deleted window.Element]
-

@@ -208,6 +208,7 @@ js_library("site_list") {
     ":constants",
     ":site_list_entry",
     ":site_settings_behavior",
+    "../multidevice_page:multidevice_browser_proxy",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr",

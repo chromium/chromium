@@ -32,6 +32,10 @@ extern const char kProactiveTabFreezeAndDiscardFeatureName[];
 // ProactiveTabFreezeAndDiscard feature.
 extern const char kProactiveTabFreezeAndDiscard_ShouldProactivelyDiscardParam[];
 
+// The name of the |DisableHeuristicsProtections| parameter of the
+// ProactiveTabFreezeAndDiscard feature.
+extern const char kProactiveTabFreezeAndDiscard_DisableHeuristicsParam[];
+
 // Parameters used by the proactive tab discarding feature.
 //
 // Proactive discarding has 5 key parameters:
@@ -125,6 +129,10 @@ struct ProactiveTabFreezeAndDiscardParams {
       &features::kProactiveTabFreezeAndDiscard, "RefreezeTimeout",
       base::TimeDelta::FromMinutes(10).InSeconds()};
 
+  static constexpr base::FeatureParam<bool> kDisableHeuristicsProtections{
+      &features::kProactiveTabFreezeAndDiscard,
+      kProactiveTabFreezeAndDiscard_DisableHeuristicsParam, false};
+
   // Whether tabs should be proactively discarded. When the
   // |kProactiveTabFreezeAndDiscard| feature is enabled and this is false, only
   // proactive tab freezing happens.
@@ -162,6 +170,9 @@ struct ProactiveTabFreezeAndDiscardParams {
   base::TimeDelta unfreeze_timeout;
   // Amount of time that a tab stays unfrozen before being frozen again.
   base::TimeDelta refreeze_timeout;
+  // Disable all the heuristics protections when doing a freezing or discarding
+  // intervention.
+  bool disable_heuristics_protections;
 };
 
 // Parameters used by the site characteristics database.
@@ -316,6 +327,9 @@ GetStaticSiteCharacteristicsDatabaseParams();
 
 // Gets parameters for the infinite session restore feature.
 InfiniteSessionRestoreParams GetInfiniteSessionRestoreParams();
+
+// Gets number of oldest tab that should be scored by TabRanker.
+int GetNumOldestTabsToScoreWithTabRanker();
 
 }  // namespace resource_coordinator
 

@@ -15,7 +15,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
@@ -24,6 +23,7 @@ import com.google.android.libraries.feed.api.scope.FeedStreamScope;
 import com.google.android.libraries.feed.api.stream.Header;
 import com.google.android.libraries.feed.api.stream.NonDismissibleHeader;
 import com.google.android.libraries.feed.api.stream.Stream;
+import com.google.android.libraries.feed.feedapplifecyclelistener.FeedAppLifecycleListener;
 import com.google.android.libraries.feed.host.action.ActionApi;
 import com.google.android.libraries.feed.host.stream.CardConfiguration;
 import com.google.android.libraries.feed.host.stream.SnackbarApi;
@@ -34,8 +34,8 @@ import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.feed.action.FeedActionHandler;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageHost;
-import org.chromium.chrome.browser.ntp.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
@@ -72,7 +72,9 @@ public class FeedNewTabPage extends NewTabPage {
     private @Nullable FeedImageLoader mImageLoader;
     private @Nullable StreamLifecycleManager mStreamLifecycleManager;
     private @Nullable SectionHeaderView mSectionHeaderView;
+    private @Nullable MarginResizer mSectionHeaderViewMarginResizer;
     private @Nullable PersonalizedSigninPromoView mSigninPromoView;
+    private @Nullable MarginResizer mSignInPromoViewMarginResizer;
 
     // Used when Feed is disabled by policy.
     private @Nullable ScrollView mScrollViewForPolicy;
@@ -117,7 +119,6 @@ public class FeedNewTabPage extends NewTabPage {
         private final Resources mResources;
         private final UiConfig mUiConfig;
         private final int mCornerRadius;
-        private final Drawable mCardBackground;
         private final int mCardMargin;
         private final int mCardWideMargin;
 
@@ -126,8 +127,6 @@ public class FeedNewTabPage extends NewTabPage {
             mUiConfig = uiConfig;
             mCornerRadius = mResources.getDimensionPixelSize(
                     R.dimen.content_suggestions_card_modern_corner_radius);
-            mCardBackground = ApiCompatibilityUtils.getDrawable(
-                    mResources, R.drawable.content_card_modern_background);
             mCardMargin = mResources.getDimensionPixelSize(
                     R.dimen.content_suggestions_card_modern_margin);
             mCardWideMargin =
@@ -141,7 +140,8 @@ public class FeedNewTabPage extends NewTabPage {
 
         @Override
         public Drawable getCardBackground() {
-            return mCardBackground;
+            return ApiCompatibilityUtils.getDrawable(
+                    mResources, R.drawable.content_card_modern_background);
         }
 
         @Override
@@ -229,9 +229,8 @@ public class FeedNewTabPage extends NewTabPage {
         // is reparented.
         // TODO(twellington): Move this somewhere it can be shared with NewTabPageView?
         Runnable closeContextMenuCallback = () -> mTab.getActivity().closeContextMenu();
-        mContextMenuManager =
-                new ContextMenuManager(mNewTabPageManager.getNavigationDelegate(), mMediator,
-                        closeContextMenuCallback, false);
+        mContextMenuManager = new ContextMenuManager(mNewTabPageManager.getNavigationDelegate(),
+                mMediator, closeContextMenuCallback, NewTabPage.CONTEXT_MENU_USER_ACTION_PREFIX);
         mTab.getWindowAndroid().addContextMenuCloseListener(mContextMenuManager);
 
         mNewTabPageLayout.initialize(mNewTabPageManager, mTab, mTileGroupDelegate,
@@ -243,9 +242,8 @@ public class FeedNewTabPage extends NewTabPage {
     @Override
     protected void initializeMainView(Context context) {
         int topPadding = context.getResources().getDimensionPixelOffset(R.dimen.tab_strip_height);
+
         mRootView = new RootView(context);
-        mRootView.setLayoutParams(new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         mRootView.setPadding(0, topPadding, 0, 0);
         mUiConfig = new UiConfig(mRootView);
     }
@@ -254,8 +252,8 @@ public class FeedNewTabPage extends NewTabPage {
     public void destroy() {
         super.destroy();
         mMediator.destroy();
-        if (mImageLoader != null) mImageLoader.destroy();
         if (mStreamLifecycleManager != null) mStreamLifecycleManager.destroy();
+        if (mImageLoader != null) mImageLoader.destroy();
         mTab.getWindowAndroid().removeContextMenuCloseListener(mContextMenuManager);
     }
 
@@ -298,15 +296,20 @@ public class FeedNewTabPage extends NewTabPage {
         FeedProcessScope feedProcessScope = FeedProcessScopeFactory.getFeedProcessScope();
         assert feedProcessScope != null;
 
+        FeedAppLifecycle appLifecycle = FeedProcessScopeFactory.getFeedAppLifecycle();
+        appLifecycle.onNTPOpened();
+
         Activity activity = mTab.getActivity();
         Profile profile = mTab.getProfile();
 
         mImageLoader = new FeedImageLoader(profile, activity);
+        FeedLoggingBridge loggingBridge = FeedProcessScopeFactory.getFeedLoggingBridge();
         FeedOfflineIndicator offlineIndicator = FeedProcessScopeFactory.getFeedOfflineIndicator();
         Runnable consumptionObserver =
                 () -> FeedProcessScopeFactory.getFeedScheduler().onSuggestionConsumed();
         ActionApi actionApi = new FeedActionHandler(mNewTabPageManager.getNavigationDelegate(),
-                consumptionObserver, offlineIndicator, OfflinePageBridge.getForProfile(profile));
+                consumptionObserver, offlineIndicator, OfflinePageBridge.getForProfile(profile),
+                loggingBridge);
 
         FeedStreamScope streamScope =
                 feedProcessScope
@@ -314,7 +317,9 @@ public class FeedNewTabPage extends NewTabPage {
                                 new BasicStreamConfiguration(),
                                 new BasicCardConfiguration(activity.getResources(), mUiConfig),
                                 new BasicSnackbarApi(mNewTabPageManager.getSnackbarManager()),
-                                new FeedBasicLogging(), offlineIndicator)
+                                loggingBridge, offlineIndicator,
+                                (FeedAppLifecycleListener)
+                                        feedProcessScope.getAppLifecycleListener())
                         .build();
 
         mStream = streamScope.getStream();
@@ -322,8 +327,9 @@ public class FeedNewTabPage extends NewTabPage {
 
         LayoutInflater inflater = LayoutInflater.from(activity);
         mSectionHeaderView = (SectionHeaderView) inflater.inflate(
-                R.layout.new_tab_page_snippets_expandable_header, null);
-        MarginResizer.createAndAttach(mSectionHeaderView, mUiConfig, mDefaultMargin, mWideMargin);
+                R.layout.new_tab_page_snippets_expandable_header, mRootView, false);
+        mSectionHeaderViewMarginResizer = MarginResizer.createAndAttach(
+                mSectionHeaderView, mUiConfig, mDefaultMargin, mWideMargin);
 
         View view = mStream.getView();
         view.setBackgroundColor(Color.WHITE);
@@ -360,7 +366,11 @@ public class FeedNewTabPage extends NewTabPage {
             mImageLoader.destroy();
             mImageLoader = null;
             mSectionHeaderView = null;
+            mSectionHeaderViewMarginResizer.detach();
+            mSectionHeaderViewMarginResizer = null;
             mSigninPromoView = null;
+            if (mSignInPromoViewMarginResizer != null) mSignInPromoViewMarginResizer.detach();
+            mSignInPromoViewMarginResizer = null;
         }
 
         mScrollViewForPolicy = new ScrollView(mTab.getActivity());
@@ -389,13 +399,10 @@ public class FeedNewTabPage extends NewTabPage {
         if (mSigninPromoView == null) {
             LayoutInflater inflater = LayoutInflater.from(mRootView.getContext());
             mSigninPromoView = (PersonalizedSigninPromoView) inflater.inflate(
-                    R.layout.personalized_signin_promo_view_modern_content_suggestions, null);
-
-            ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.bottomMargin = mDefaultMargin;
-            mSigninPromoView.setLayoutParams(lp);
-            MarginResizer.createAndAttach(mSigninPromoView, mUiConfig, mDefaultMargin, mWideMargin);
+                    R.layout.personalized_signin_promo_view_modern_content_suggestions, mRootView,
+                    false);
+            mSignInPromoViewMarginResizer = MarginResizer.createAndAttach(
+                    mSigninPromoView, mUiConfig, mDefaultMargin, mWideMargin);
         }
         return mSigninPromoView;
     }
@@ -410,19 +417,18 @@ public class FeedNewTabPage extends NewTabPage {
                                   new NonDismissibleHeader(mSectionHeaderView)));
     }
 
-    /**
-     * Configures the {@link FeedNewTabPage} for testing.
-     * @param inTestMode Whether test mode is enabled. If true, test implementations of Feed
-     *                   interfaces will be used to create the {@link FeedProcessScope}. If false,
-     *                   the FeedProcessScope will be reset.
-     */
     @VisibleForTesting
-    public static void setInTestMode(boolean inTestMode) {
-        if (inTestMode) {
-            FeedProcessScopeFactory.createFeedProcessScopeForTesting(new TestFeedScheduler(),
-                    new TestNetworkClient(), new TestFeedOfflineIndicator());
-        } else {
-            FeedProcessScopeFactory.clearFeedProcessScopeForTesting();
-        }
+    FeedNewTabPageMediator getMediatorForTesting() {
+        return mMediator;
+    }
+
+    @Override
+    public View getSignInPromoViewForTesting() {
+        return getSigninPromoView();
+    }
+
+    @Override
+    public View getSectionHeaderViewForTesting() {
+        return getSectionHeaderView();
     }
 }

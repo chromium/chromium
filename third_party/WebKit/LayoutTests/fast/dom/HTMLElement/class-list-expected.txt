@@ -2,7 +2,6 @@ Tests the classList attribute and its properties.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Tests from http://simon.html5.org/test/html/dom/reflecting/DOMTokenList/
 PASS String(element.classList) is "y"
 PASS String(element.className) is "y"

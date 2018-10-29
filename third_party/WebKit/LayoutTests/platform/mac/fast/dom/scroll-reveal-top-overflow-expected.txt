@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600 scrollY 2410.00 scrollWidth 1018 scrollHeight 4010
-  LayoutView at (0,0) size 800x600
-layer at (0,1000) size 1018x600 backgroundClip at (0,0) size 800x600 clip at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 1018x600
-    LayoutBlockFlow {BODY} at (8,8) size 1002x584
-      LayoutBlockFlow {DIV} at (0,-3418) size 1002x4002 [border: (1px solid #FF0000)]
-        LayoutText {#text} at (1,2511) size 18x1490
-          text run at (1,2511) width 1490: "BEGINddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddEND"

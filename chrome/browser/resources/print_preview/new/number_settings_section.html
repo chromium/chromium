@@ -8,23 +8,19 @@
 <dom-module id="print-preview-number-settings-section">
   <template>
     <style include="print-preview-shared">
-      :host([error-displayed_]) print-preview-settings-section {
-        margin-bottom: 8px;
-      }
-
-      :host([error-displayed_]) #section-title {
+      :host(:not([input-valid])) #section-title {
         margin-top: calc(-14px - 2 * .75rem);
       }
 
       :host {
-        --cr-input-width: 50%;
+        /* Width = 3 digits + space + cr-input-padding-end/start */
+        --cr-input-width: calc(4em + 16px);
       }
 
       cr-input {
-        flex: 1;
-        margin-bottom: 2.5px;
         margin-inline-end: 16px;
-        margin-top: 2.5px;
+        min-height: 38px;
+        overflow: hidden;
       }
 
       .input-wrapper {
@@ -33,8 +29,15 @@
         width: 100%;
       }
 
-      :host(:not([error-displayed_])) cr-input {
+      :host([input-valid]) cr-input {
         --cr-input-error-display: none;
+      }
+
+      span[slot=suffix] {
+        max-width: calc(100% - 5em);
+        min-height: 38px;
+        overflow: hidden;
+        word-wrap: break-word;
       }
     </style>
     <print-preview-settings-section>

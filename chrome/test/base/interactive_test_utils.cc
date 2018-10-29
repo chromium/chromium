@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui_test_utils {
@@ -213,5 +215,20 @@ void ClickTask(ui_controls::MouseButton button,
 }
 
 }  // namespace internal
+
+display::Display GetSecondaryDisplay(display::Screen* screen) {
+  for (const auto& iter : screen->GetAllDisplays()) {
+    if (iter.id() != screen->GetPrimaryDisplay().id())
+      return iter;
+  }
+  NOTREACHED();
+  return display::Display();
+}
+
+std::pair<display::Display, display::Display> GetDisplays(
+    display::Screen* screen) {
+  return std::make_pair(screen->GetPrimaryDisplay(),
+                        GetSecondaryDisplay(screen));
+}
 
 }  // namespace ui_test_utils

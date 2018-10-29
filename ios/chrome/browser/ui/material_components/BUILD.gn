@@ -7,7 +7,6 @@ source_set("material_components") {
   sources = [
     "activity_indicator.h",
     "activity_indicator.mm",
-    "app_bar_presenting.h",
     "app_bar_view_controller_presenting.h",
     "chrome_app_bar_view_controller.h",
     "chrome_app_bar_view_controller.m",

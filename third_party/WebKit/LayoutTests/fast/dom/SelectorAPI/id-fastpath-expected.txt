@@ -2,7 +2,6 @@ This tests that the querySelector and querySelectorAll fast path for IDs is not 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.querySelector('div#testid') is correctNode
 PASS document.querySelector('#testid') is correctNode
 PASS document.querySelector('ul#testid') is null

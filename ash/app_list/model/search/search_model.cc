@@ -27,11 +27,13 @@ void SearchModel::SetSearchEngineIsGoogle(bool is_google) {
 std::vector<SearchResult*> SearchModel::FilterSearchResultsByDisplayType(
     SearchResults* results,
     SearchResult::DisplayType display_type,
+    const std::set<std::string>& excludes,
     size_t max_results) {
   std::vector<SearchResult*> matches;
   for (size_t i = 0; i < results->item_count(); ++i) {
     SearchResult* item = results->GetItemAt(i);
-    if (item->display_type() == display_type) {
+    if (item->display_type() == display_type &&
+        excludes.count(item->id()) == 0) {
       matches.push_back(item);
       if (matches.size() == max_results)
         break;

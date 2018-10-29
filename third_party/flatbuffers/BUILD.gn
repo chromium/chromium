@@ -16,7 +16,9 @@ config("flatbuffers_config") {
 # The part of FlatBuffers that Chrome is interested in.
 source_set("flatbuffers") {
   sources = [
+    "src/include/flatbuffers/base.h",
     "src/include/flatbuffers/flatbuffers.h",
+    "src/include/flatbuffers/stl_emulation.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -38,7 +40,6 @@ source_set("compiler_files") {
     "src/grpc/src/compiler/java_generator.cc",
     "src/grpc/src/compiler/java_generator.h",
     "src/grpc/src/compiler/schema_interface.h",
-    "src/include/flatbuffers/base.h",
     "src/include/flatbuffers/code_generators.h",
     "src/include/flatbuffers/flatbuffers.h",
     "src/include/flatbuffers/flatc.h",
@@ -50,7 +51,6 @@ source_set("compiler_files") {
     "src/include/flatbuffers/reflection.h",
     "src/include/flatbuffers/reflection_generated.h",
     "src/include/flatbuffers/registry.h",
-    "src/include/flatbuffers/stl_emulation.h",
     "src/include/flatbuffers/util.h",
     "src/src/code_generators.cpp",
     "src/src/flatc.cpp",

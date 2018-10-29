@@ -140,8 +140,7 @@ class Delegate : public SimpleMenuModel::Delegate {
     EXPECT_FALSE(did_close_);
     did_show_ = true;
     if (auto_close_) {
-      NSArray* modes = [NSArray arrayWithObjects:NSEventTrackingRunLoopMode,
-                                                 NSDefaultRunLoopMode, nil];
+      NSArray* modes = @[ NSEventTrackingRunLoopMode, NSDefaultRunLoopMode ];
       [menu_to_close_ performSelector:@selector(cancelTracking)
                            withObject:nil
                            afterDelay:0.1

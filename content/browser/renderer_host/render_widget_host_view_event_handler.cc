@@ -4,8 +4,11 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 
+#include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "components/viz/common/features.h"
+#include "content/browser/renderer_host/hit_test_debug_key_event_observer.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -20,7 +23,6 @@
 #include "content/public/common/content_features.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_client.h"
-#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/scoped_keyboard_hook.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -65,19 +67,6 @@ BOOL CALLBACK DismissOwnedPopups(HWND window, LPARAM arg) {
 }
 #endif  // defined(OS_WIN)
 
-gfx::PointF GetScreenLocationFromEvent(const ui::LocatedEvent& event) {
-  aura::Window* root =
-      static_cast<aura::Window*>(event.target())->GetRootWindow();
-  aura::client::ScreenPositionClient* spc =
-      aura::client::GetScreenPositionClient(root);
-  if (!spc)
-    return event.root_location_f();
-
-  gfx::PointF screen_location(event.root_location_f());
-  spc->ConvertPointToScreen(root, &screen_location);
-  return screen_location;
-}
-
 bool IsFractionalScaleFactor(float scale_factor) {
   return (scale_factor - static_cast<int>(scale_factor)) > 0;
 }
@@ -115,6 +104,15 @@ bool NeedsInputGrab(content::RenderWidgetHostViewBase* view) {
   return view->GetWidgetType() == content::WidgetType::kPopup;
 }
 
+// Enables hit-test debug logging.
+const char kEnableVizHitTestDebug[] = "enable-viz-hit-test-debug";
+
+inline bool IsVizHitTestingDebugEnabled() {
+  return features::IsVizHitTestingEnabled() &&
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             kEnableVizHitTestDebug);
+}
+
 }  // namespace
 
 namespace content {
@@ -142,7 +140,10 @@ RenderWidgetHostViewEventHandler::RenderWidgetHostViewEventHandler(
       popup_child_event_handler_(nullptr),
       delegate_(delegate),
       window_(nullptr),
-      mouse_wheel_phase_handler_(host_view) {}
+      mouse_wheel_phase_handler_(host_view),
+      debug_observer_(IsVizHitTestingDebugEnabled()
+                          ? std::make_unique<HitTestDebugKeyEventObserver>(host)
+                          : nullptr) {}
 
 RenderWidgetHostViewEventHandler::~RenderWidgetHostViewEventHandler() {}
 
@@ -306,7 +307,7 @@ void RenderWidgetHostViewEventHandler::OnKeyEvent(ui::KeyEvent* event) {
       webkit_event.skip_in_browser = true;
 
     delegate_->ForwardKeyboardEventWithLatencyInfo(
-        webkit_event, *event->latency(), &mark_event_as_handled);
+        webkit_event, *event->latency(), event, &mark_event_as_handled);
   }
   if (mark_event_as_handled)
     event->SetHandled();
@@ -363,8 +364,7 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
     }
 #endif
     blink::WebMouseWheelEvent mouse_wheel_event =
-        ui::MakeWebMouseWheelEvent(static_cast<ui::MouseWheelEvent&>(*event),
-                                   base::Bind(&GetScreenLocationFromEvent));
+        ui::MakeWebMouseWheelEvent(*event->AsMouseWheelEvent());
 
     if (mouse_wheel_event.delta_x != 0 || mouse_wheel_event.delta_y != 0) {
       bool should_route_event = ShouldRouteEvent(event);
@@ -390,8 +390,7 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
       if (event->type() == ui::ET_MOUSE_PRESSED)
         FinishImeCompositionSession();
 
-      blink::WebMouseEvent mouse_event = ui::MakeWebMouseEvent(
-          *event, base::Bind(&GetScreenLocationFromEvent));
+      blink::WebMouseEvent mouse_event = ui::MakeWebMouseEvent(*event);
       ModifyEventMovementAndCoords(*event, &mouse_event);
       if (ShouldRouteEvent(event)) {
         host_->delegate()->GetInputEventRouter()->RouteMouseEvent(
@@ -433,8 +432,8 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
     if (event->finger_count() != 2)
       return;
 #endif
-    blink::WebMouseWheelEvent mouse_wheel_event = ui::MakeWebMouseWheelEvent(
-        *event, base::Bind(&GetScreenLocationFromEvent));
+    blink::WebMouseWheelEvent mouse_wheel_event =
+        ui::MakeWebMouseWheelEvent(*event);
     mouse_wheel_phase_handler_.AddPhaseIfNeededAndScheduleEndEvent(
         mouse_wheel_event, should_route_event);
 
@@ -461,8 +460,7 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
     }
   } else if (event->type() == ui::ET_SCROLL_FLING_START ||
              event->type() == ui::ET_SCROLL_FLING_CANCEL) {
-    blink::WebGestureEvent gesture_event = ui::MakeWebGestureEvent(
-        *event, base::Bind(&GetScreenLocationFromEvent));
+    blink::WebGestureEvent gesture_event = ui::MakeWebGestureEvent(*event);
     if (should_route_event) {
       host_->delegate()->GetInputEventRouter()->RouteGestureEvent(
           host_view_, &gesture_event,
@@ -552,8 +550,7 @@ void RenderWidgetHostViewEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_TAP)
     FinishImeCompositionSession();
 
-  blink::WebGestureEvent gesture =
-      ui::MakeWebGestureEvent(*event, base::Bind(&GetScreenLocationFromEvent));
+  blink::WebGestureEvent gesture = ui::MakeWebGestureEvent(*event);
   if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
     // Webkit does not stop a fling-scroll on tap-down. So explicitly send an
     // event to stop any in-progress flings.
@@ -741,8 +738,7 @@ void RenderWidgetHostViewEventHandler::HandleMouseEventWhileLocked(
 
   if (event->type() == ui::ET_MOUSEWHEEL) {
     blink::WebMouseWheelEvent mouse_wheel_event =
-        ui::MakeWebMouseWheelEvent(static_cast<ui::MouseWheelEvent&>(*event),
-                                   base::Bind(&GetScreenLocationFromEvent));
+        ui::MakeWebMouseWheelEvent(*event->AsMouseWheelEvent());
     if (mouse_wheel_event.delta_x != 0 || mouse_wheel_event.delta_y != 0) {
       if (ShouldRouteEvent(event)) {
         host_->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
@@ -764,8 +760,7 @@ void RenderWidgetHostViewEventHandler::HandleMouseEventWhileLocked(
       return;
     }
 
-    blink::WebMouseEvent mouse_event =
-        ui::MakeWebMouseEvent(*event, base::Bind(&GetScreenLocationFromEvent));
+    blink::WebMouseEvent mouse_event = ui::MakeWebMouseEvent(*event);
 
     bool is_move_to_center_event =
         (event->type() == ui::ET_MOUSE_MOVED ||

@@ -128,8 +128,8 @@ inline bool RangeBoundaryPoint::IsOffsetValid() const {
 
 inline const Position RangeBoundaryPoint::ToPosition() const {
   EnsureOffsetIsValid();
-  // TODO(yosin): We should return |Position::beforeAnchor| when
-  // |m_containerNode| isn't |Text| node.
+  // TODO(yosin): We should return |Position::BeforeAnchor| when
+  // |container_node_| isn't a |Text| node.
   return Position(container_node_.Get(), offset_in_container_);
 }
 

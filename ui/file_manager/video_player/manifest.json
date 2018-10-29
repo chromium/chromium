@@ -3,18 +3,15 @@
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw0/gRbJc545iEGRZs20Rl/HtrSUp8H3gJd4Y6hCe0CG1xQiJhZ5nc8qZyxa96gMxRAKBq54S6sjVVtV6uS70oU6FvrvwItByYkkqr4ZE7eMJKwMqnGItxWbh6KBodf89lpKoIy6MtYTqubBhXB/IQBZsXah90tXwRzaaJNWw+2BBRIhcPsH3ng+wgN7rwFxo4HIv9ZpqkYlx90rwkfjOmKPPnSXyXFIBJfmqfdbd8PLtcxzzOTE+vxwoXZuYWrthKm4uKfNqXIYns74sSJlqyKfctuR+nQdNh8uePv0e+/Ul3wER1/jIXULLjfyoaklyDs+ak3SDf+xWScJ+0LJ0AwIDAQAB",
   "manifest_version": 2,
   "name": "Video Player",
-  "version": "1.0",
+  "version": "1.2",
   "description": "Video Player",
   "display_in_launcher": false,
   "incognito" : "split",
   "icons": {
-    "16": "images/icon/video-player-favicon-16.png",
-    "32": "images/icon/video-player-32.png",
+    "16": "images/icon/video-player-16.png",
     "48": "images/icon/video-player-48.png",
-    "64": "images/icon/video-player-64.png",
-    "96": "images/icon/video-player-96.png",
     "128": "images/icon/video-player-128.png",
-    "256": "images/icon/video-player-256.png"
+    "192": "images/icon/video-player-192.png"
   },
   "permissions": [
     "commandLinePrivate",
@@ -57,7 +54,6 @@
   "app": {
     "background": {
       "scripts": [
-        "chrome://resources/js/analytics.js",
         "chrome://resources/js/cr.js",
         "chrome://resources/js/cr/event_target.js",
         "chrome://resources/js/cr/ui/array_data_model.js",

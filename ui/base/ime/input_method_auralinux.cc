@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/environment.h"
 #include "ui/base/ime/ime_bridge.h"
 #include "ui/base/ime/ime_engine_handler_interface.h"
@@ -52,11 +53,12 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
 
   // If no text input client, do nothing.
   if (!GetTextInputClient())
-    return DispatchKeyEventPostIME(event);
+    return DispatchKeyEventPostIME(event, base::NullCallback());
 
   if (!event->HasNativeEvent() && sending_key_event()) {
     // Faked key events that are sent from input.ime.sendKeyEvents.
-    ui::EventDispatchDetails details = DispatchKeyEventPostIME(event);
+    ui::EventDispatchDetails details =
+        DispatchKeyEventPostIME(event, base::NullCallback());
     if (details.dispatcher_destroyed || details.target_destroyed ||
         event->stopped_propagation()) {
       return details;
@@ -135,7 +137,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::ProcessKeyEventDone(
   ui::EventDispatchDetails details;
   if (event->type() == ui::ET_KEY_PRESSED && filtered) {
     if (NeedInsertChar())
-      details = DispatchKeyEventPostIME(event);
+      details = DispatchKeyEventPostIME(event, base::NullCallback());
     else if (HasInputMethodResult())
       details = SendFakeProcessKeyEvent(event);
     if (details.dispatcher_destroyed)
@@ -194,7 +196,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::ProcessKeyEventDone(
     composition_ = CompositionText();
 
   if (!filtered) {
-    details = DispatchKeyEventPostIME(event);
+    details = DispatchKeyEventPostIME(event, base::NullCallback());
     if (details.dispatcher_destroyed) {
       if (should_stop_propagation)
         event->StopPropagation();
@@ -275,6 +277,14 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
   NotifyTextInputCaretBoundsChanged(client);
   context_->SetCursorLocation(GetTextInputClient()->GetCaretBounds());
 
+  gfx::Range text_range, selection_range;
+  base::string16 text;
+  if (client->GetTextRange(&text_range) &&
+      client->GetTextFromRange(text_range, &text) &&
+      client->GetSelectionRange(&selection_range)) {
+    context_->SetSurroundingText(text, selection_range);
+  }
+
   if (!IsTextInputTypeNone() && text_input_type_ != TEXT_INPUT_TYPE_PASSWORD &&
       GetEngine())
     GetEngine()->SetCompositionBounds(GetCompositionBounds(client));
@@ -306,13 +316,6 @@ void InputMethodAuraLinux::ResetContext() {
 
   context_->Reset();
   context_simple_->Reset();
-
-  // Some input methods may not honour the reset call. Focusing out/in the
-  // |context_| to make sure it gets reset correctly.
-  if (text_input_type_ != TEXT_INPUT_TYPE_NONE) {
-    context_->Blur();
-    context_->Focus();
-  }
 
   composition_ = CompositionText();
   result_text_.clear();
@@ -350,6 +353,14 @@ void InputMethodAuraLinux::OnCommit(const base::string16& text) {
     if (!event.stopped_propagation() && !details.target_destroyed)
       GetTextInputClient()->InsertText(text);
     composition_ = CompositionText();
+  }
+}
+
+void InputMethodAuraLinux::OnDeleteSurroundingText(int32_t index,
+                                                   uint32_t length) {
+  if (GetTextInputClient() && composition_.text.empty()) {
+    uint32_t before = index >= 0 ? 0U : static_cast<uint32_t>(-1 * index);
+    GetTextInputClient()->ExtendSelectionAndDelete(before, length - before);
   }
 }
 
@@ -432,7 +443,8 @@ bool InputMethodAuraLinux::NeedInsertChar() const {
 ui::EventDispatchDetails InputMethodAuraLinux::SendFakeProcessKeyEvent(
     ui::KeyEvent* event) const {
   KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_PROCESSKEY, event->flags());
-  ui::EventDispatchDetails details = DispatchKeyEventPostIME(&key_event);
+  ui::EventDispatchDetails details =
+      DispatchKeyEventPostIME(&key_event, base::NullCallback());
   if (key_event.stopped_propagation())
     event->StopPropagation();
   return details;

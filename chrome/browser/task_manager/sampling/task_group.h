@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
@@ -82,7 +81,6 @@ class TaskGroup {
 #endif
   int64_t gpu_memory() const { return gpu_memory_; }
   bool gpu_memory_has_duplicates() const { return gpu_memory_has_duplicates_; }
-  base::MemoryState memory_state() const { return memory_state_; }
   int64_t per_process_network_usage_rate() const {
     return per_process_network_usage_rate_;
   }
@@ -161,7 +159,6 @@ class TaskGroup {
   int64_t swapped_mem_bytes_;
   int64_t memory_footprint_;
   int64_t gpu_memory_;
-  base::MemoryState memory_state_;
   // The network usage in bytes per second as the sum of all network usages of
   // the individual tasks sharing the same process.
   int64_t per_process_network_usage_rate_;

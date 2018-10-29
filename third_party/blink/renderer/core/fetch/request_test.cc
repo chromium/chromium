@@ -57,9 +57,9 @@ TEST(ServiceWorkerRequestTest, FromAndToWebRequest) {
     const char* value;
   } headers[] = {{"X-Foo", "bar"}, {"X-Quux", "foop"}, {nullptr, nullptr}};
   const String referrer = "http://www.referrer.com/";
-  const WebReferrerPolicy kReferrerPolicy = kWebReferrerPolicyAlways;
-  const WebURLRequest::RequestContext kContext =
-      WebURLRequest::kRequestContextAudio;
+  const network::mojom::ReferrerPolicy kReferrerPolicy =
+      network::mojom::ReferrerPolicy::kAlways;
+  const mojom::RequestContextType kContext = mojom::RequestContextType::AUDIO;
   const network::mojom::FetchRequestMode kMode =
       network::mojom::FetchRequestMode::kNavigate;
   const network::mojom::FetchCredentialsMode kCredentialsMode =
@@ -112,7 +112,8 @@ TEST(ServiceWorkerRequestTest, FromAndToWebRequest) {
   EXPECT_EQ(kRedirectMode, second_web_request.RedirectMode());
   EXPECT_EQ(kContext, second_web_request.GetRequestContext());
   EXPECT_EQ(referrer, KURL(second_web_request.ReferrerUrl()));
-  EXPECT_EQ(kWebReferrerPolicyAlways, second_web_request.GetReferrerPolicy());
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kAlways,
+            second_web_request.GetReferrerPolicy());
   EXPECT_EQ(web_request.Headers(), second_web_request.Headers());
 }
 

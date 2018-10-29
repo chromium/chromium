@@ -93,7 +93,12 @@ cr.define('settings_sync_account_control', function() {
 
       assertVisible(testElement.$$('#promo-header'), true);
       assertVisible(testElement.$$('#avatar-row'), false);
-      assertVisible(testElement.$$('#menu'), false);
+      // TODO (rbpotter): Remove this conditional when the migration to
+      // Polymer 2 is completed.
+      if (Polymer.DomIf)
+        assertEquals(null, testElement.$$('#menu'));
+      else
+        assertVisible(testElement.$$('#menu'), false);
       assertVisible(testElement.$$('#sign-in'), true);
 
       testElement.$$('#sign-in').click();
@@ -146,8 +151,6 @@ cr.define('settings_sync_account_control', function() {
       // correct account when clicked.
       assertVisible(syncButton, true);
       assertVisible(testElement.$$('#turn-off'), false);
-      assertTrue(syncButton.textContent.includes('foo'));
-      assertFalse(syncButton.textContent.includes('bar'));
       syncButton.click();
       Polymer.dom.flush();
 
@@ -175,8 +178,6 @@ cr.define('settings_sync_account_control', function() {
             assertTrue(userInfo.textContent.includes('barName'));
             assertTrue(userInfo.textContent.includes('bar@bar.com'));
             assertVisible(syncButton, true);
-            assertTrue(syncButton.textContent.includes('bar'));
-            assertFalse(syncButton.textContent.includes('foo'));
 
             browserProxy.resetResolver('startSyncingWithEmail');
             syncButton.click();
@@ -358,6 +359,32 @@ cr.define('settings_sync_account_control', function() {
         hasError: true,
         hasUnrecoverableError: true,
         statusAction: settings.StatusAction.NO_ACTION,
+        disabled: false,
+      };
+      assertVisible(testElement.$$('#turn-off'), false);
+      assertVisible(testElement.$$('#sync-paused-button'), false);
+    });
+
+    test('hide buttons', function() {
+      testElement.hideButtons = true;
+      testElement.syncStatus = {
+        signedIn: true,
+        signedInUsername: 'bar@bar.com',
+        statusAction: settings.StatusAction.NO_ACTION,
+        hasError: false,
+        hasUnrecoverableError: false,
+        disabled: false,
+      };
+
+      assertVisible(testElement.$$('#turn-off'), false);
+      assertVisible(testElement.$$('#sync-paused-button'), false);
+
+      testElement.syncStatus = {
+        signedIn: true,
+        signedInUsername: 'bar@bar.com',
+        hasError: true,
+        hasUnrecoverableError: false,
+        statusAction: settings.StatusAction.REAUTHENTICATE,
         disabled: false,
       };
       assertVisible(testElement.$$('#turn-off'), false);

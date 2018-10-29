@@ -1,9 +1,9 @@
 CONSOLE WARNING: line 13: The AudioContext was not allowed to start. It must be resumed (or created) from a user gesture event handler. https://goo.gl/7K7WLu
-CONSOLE WARNING: line 13: The Web Audio autoplay policy will be re-enabled in Chrome 70 (October 2018). Please check that your website is compatible with it. https://goo.gl/7K7WLu
+CONSOLE WARNING: line 13: The Web Audio autoplay policy will be re-enabled in Chrome 71 (December 2018). Please check that your website is compatible with it. https://goo.gl/7K7WLu
 CONSOLE WARNING: line 23: The AudioContext was not allowed to start. It must be resumed (or created) from a user gesture event handler. https://goo.gl/7K7WLu
 CONSOLE WARNING: line 32: The AudioContext was not allowed to start. It must be resumed (or created) from a user gesture event handler. https://goo.gl/7K7WLu
 CONSOLE WARNING: line 36: The AudioContext was not allowed to start. It must be resumed (or created) from a user gesture event handler. https://goo.gl/7K7WLu
-CONSOLE WARNING: line 36: The Web Audio autoplay policy will be re-enabled in Chrome 70 (October 2018). Please check that your website is compatible with it. https://goo.gl/7K7WLu
+CONSOLE WARNING: line 36: The Web Audio autoplay policy will be re-enabled in Chrome 71 (December 2018). Please check that your website is compatible with it. https://goo.gl/7K7WLu
 This is a testharness.js-based test.
 FAIL Verify that autoplaying Web Audio from a cross origin iframe is blocked by mediaPlaybackRequiresUserGesture assert_equals: stateAfterClick expected "running" but got "suspended"
 Harness: the test ran to completion.

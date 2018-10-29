@@ -96,7 +96,10 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
     return throttle_->web_contents_getter_;
   }
 
-  bool IsMainFrame() const override { return throttle_->is_main_frame_; }
+  bool IsMainFrame() const override {
+    return throttle_->request_resource_type_ ==
+           content::RESOURCE_TYPE_MAIN_FRAME;
+  }
 
   GURL GetOrigin() const override {
     return throttle_->request_url_.GetOrigin();
@@ -140,7 +143,6 @@ void URLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,
   request_referrer_ = request->referrer;
   request_resource_type_ =
       static_cast<content::ResourceType>(request->resource_type);
-  is_main_frame_ = request->is_main_frame;
 
   net::HttpRequestHeaders modified_request_headers;
   std::vector<std::string> to_be_removed_request_headers;

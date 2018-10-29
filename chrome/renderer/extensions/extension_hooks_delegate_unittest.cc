@@ -41,7 +41,7 @@ class ExtensionHooksDelegateTest
     bindings_system()->api_system()->GetHooksForAPI("runtime")->SetDelegate(
         std::make_unique<RuntimeHooksDelegate>(messaging_service_.get()));
 
-    scoped_refptr<Extension> mutable_extension = BuildExtension();
+    scoped_refptr<const Extension> mutable_extension = BuildExtension();
     RegisterExtension(mutable_extension);
     extension_ = mutable_extension;
 
@@ -61,7 +61,7 @@ class ExtensionHooksDelegateTest
   }
   bool UseStrictIPCMessageSender() override { return true; }
 
-  virtual scoped_refptr<Extension> BuildExtension() {
+  virtual scoped_refptr<const Extension> BuildExtension() {
     return ExtensionBuilder("foo").Build();
   }
 
@@ -113,7 +113,7 @@ TEST_F(ExtensionHooksDelegateTest, MessagingSanityChecks) {
 TEST_F(ExtensionHooksDelegateTest, SendRequestDisabled) {
   // Construct an extension for which sendRequest is disabled (unpacked
   // extension with an event page).
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
           .SetBackgroundPage(ExtensionBuilder::BackgroundPage::EVENT)
           .SetLocation(Manifest::UNPACKED)

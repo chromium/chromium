@@ -41,6 +41,7 @@ constexpr char kAbusiveWarnMessage[] =
 // tab helper in applying a stronger policy for blocked popups.
 class SafeBrowsingTriggeredPopupBlocker
     : public content::WebContentsObserver,
+      public content::WebContentsUserData<SafeBrowsingTriggeredPopupBlocker>,
       public subresource_filter::SubresourceFilterObserver {
  public:
   // This enum backs a histogram. Please append new entries to the end, and
@@ -71,8 +72,9 @@ class SafeBrowsingTriggeredPopupBlocker
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  static std::unique_ptr<SafeBrowsingTriggeredPopupBlocker> MaybeCreate(
-      content::WebContents* web_contents);
+  // Creates a SafeBrowsingTriggeredPopupBlocker and attaches it (via UserData)
+  // to |web_contents|.
+  static void MaybeCreate(content::WebContents* web_contents);
   ~SafeBrowsingTriggeredPopupBlocker() override;
 
   bool ShouldApplyStrongPopupBlocker(

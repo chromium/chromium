@@ -29,24 +29,24 @@
 namespace blink {
 
 inline SVGForeignObjectElement::SVGForeignObjectElement(Document& document)
-    : SVGGraphicsElement(SVGNames::foreignObjectTag, document),
+    : SVGGraphicsElement(svg_names::kForeignObjectTag, document),
       x_(SVGAnimatedLength::Create(this,
-                                   SVGNames::xAttr,
+                                   svg_names::kXAttr,
                                    SVGLengthMode::kWidth,
                                    SVGLength::Initial::kUnitlessZero,
                                    CSSPropertyX)),
       y_(SVGAnimatedLength::Create(this,
-                                   SVGNames::yAttr,
+                                   svg_names::kYAttr,
                                    SVGLengthMode::kHeight,
                                    SVGLength::Initial::kUnitlessZero,
                                    CSSPropertyY)),
       width_(SVGAnimatedLength::Create(this,
-                                       SVGNames::widthAttr,
+                                       svg_names::kWidthAttr,
                                        SVGLengthMode::kWidth,
                                        SVGLength::Initial::kUnitlessZero,
                                        CSSPropertyWidth)),
       height_(SVGAnimatedLength::Create(this,
-                                        SVGNames::heightAttr,
+                                        svg_names::kHeightAttr,
                                         SVGLengthMode::kHeight,
                                         SVGLength::Initial::kUnitlessZero,
                                         CSSPropertyHeight)) {
@@ -94,9 +94,9 @@ void SVGForeignObjectElement::CollectStyleForPresentationAttribute(
 void SVGForeignObjectElement::SvgAttributeChanged(
     const QualifiedName& attr_name) {
   bool is_width_height_attribute =
-      attr_name == SVGNames::widthAttr || attr_name == SVGNames::heightAttr;
+      attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
   bool is_xy_attribute =
-      attr_name == SVGNames::xAttr || attr_name == SVGNames::yAttr;
+      attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr;
 
   if (is_xy_attribute || is_width_height_attribute) {
     SVGElement::InvalidationGuard invalidation_guard(this);
@@ -106,7 +106,7 @@ void SVGForeignObjectElement::SvgAttributeChanged(
         kLocalStyleChange,
         is_width_height_attribute
             ? StyleChangeReasonForTracing::Create(
-                  StyleChangeReason::kSVGContainerSizeChange)
+                  style_change_reason::kSVGContainerSizeChange)
             : StyleChangeReasonForTracing::FromAttribute(attr_name));
 
     UpdateRelativeLengthsInformation();

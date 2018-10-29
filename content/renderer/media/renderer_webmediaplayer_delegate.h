@@ -69,14 +69,16 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
       int delegate_id,
       const viz::SurfaceId&,
       const gfx::Size&,
-      blink::WebMediaPlayer::PipWindowOpenedCallback) override;
+      blink::WebMediaPlayer::PipWindowOpenedCallback,
+      bool show_play_pause_button) override;
   void DidPictureInPictureModeEnd(int delegate_id, base::OnceClosure) override;
   void DidSetPictureInPictureCustomControls(
       int delegate_id,
       const std::vector<blink::PictureInPictureControlInfo>& controls) override;
   void DidPictureInPictureSurfaceChange(int delegate_id,
                                         const viz::SurfaceId&,
-                                        const gfx::Size&) override;
+                                        const gfx::Size&,
+                                        bool show_play_pause_button) override;
   void RegisterPictureInPictureWindowResizeCallback(
       int player_id,
       blink::WebMediaPlayer::PipWindowResizedCallback) override;

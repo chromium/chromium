@@ -7,12 +7,12 @@
 
 #include <ostream>
 
-#include "net/third_party/quic/core/frames/quic_control_frame.h"
 #include "net/third_party/quic/core/quic_error_codes.h"
+#include "net/third_party/quic/core/quic_types.h"
 
 namespace quic {
 
-struct QUIC_EXPORT_PRIVATE QuicRstStreamFrame : public QuicControlFrame {
+struct QUIC_EXPORT_PRIVATE QuicRstStreamFrame {
   QuicRstStreamFrame();
   QuicRstStreamFrame(QuicControlFrameId control_frame_id,
                      QuicStreamId stream_id,
@@ -26,6 +26,10 @@ struct QUIC_EXPORT_PRIVATE QuicRstStreamFrame : public QuicControlFrame {
   friend QUIC_EXPORT_PRIVATE std::ostream& operator<<(
       std::ostream& os,
       const QuicRstStreamFrame& r);
+
+  // A unique identifier of this control frame. 0 when this frame is received,
+  // and non-zero when sent.
+  QuicControlFrameId control_frame_id;
 
   QuicStreamId stream_id;
 

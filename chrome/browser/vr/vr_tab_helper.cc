@@ -78,20 +78,7 @@ bool VrTabHelper::IsUiSuppressedInVr(content::WebContents* contents,
     case UiSuppressedElement::kContextMenu:
       suppress = true;
       break;
-    // The following are not suppressed if kVrBrowsingNativeAndroidUi is
-    // enabled.
-    case UiSuppressedElement::kPermissionRequest:
-    case UiSuppressedElement::kDownloadPermission:
-    case UiSuppressedElement::kAutofill:
-    case UiSuppressedElement::kJavascriptDialog:
-    case UiSuppressedElement::kMediaPermission:
-    case UiSuppressedElement::kQuotaPermission:
-    case UiSuppressedElement::kPermissionBubbleRequest:
-#if defined(OS_ANDROID)
-      suppress = !base::FeatureList::IsEnabled(
-          chrome::android::kVrBrowsingNativeAndroidUi);
-#endif
-      break;
+    case UiSuppressedElement::kPlaceholderForPreviousHighValue:
     case UiSuppressedElement::kCount:
       suppress = false;
       NOTREACHED();

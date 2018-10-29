@@ -57,7 +57,7 @@ UncheckedScopedBlockingCall::~UncheckedScopedBlockingCall() {
 
 ScopedBlockingCall::ScopedBlockingCall(BlockingType blocking_type)
     : UncheckedScopedBlockingCall(blocking_type) {
-  base::AssertBlockingAllowed();
+  internal::AssertBlockingAllowed();
 }
 
 namespace internal {

@@ -32,7 +32,7 @@
 
 namespace blink {
 
-namespace XPath {
+namespace xpath {
 
 class NodeSet final : public GarbageCollected<NodeSet> {
  public:
@@ -96,7 +96,7 @@ class NodeSet final : public GarbageCollected<NodeSet> {
   HeapVector<Member<Node>> nodes_;
 };
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_NODE_SET_H_

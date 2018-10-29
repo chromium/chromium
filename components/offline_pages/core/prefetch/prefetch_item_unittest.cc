@@ -97,6 +97,18 @@ TEST_F(PrefetchItemTest, OperatorEqualsCopyConstructorAndToString) {
   item1.final_archived_url = GURL("http://test.com/final");
   CheckFieldAndResetItem(item1, "final_archived_url");
 
+  item1.thumbnail_url = GURL("http://thumbnail");
+  CheckFieldAndResetItem(item1, "thumbnail_url");
+
+  item1.favicon_url = GURL("http://favicon");
+  CheckFieldAndResetItem(item1, "favicon_url");
+
+  item1.snippet = "snippet";
+  CheckFieldAndResetItem(item1, "snippet");
+
+  item1.attribution = "attribution";
+  CheckFieldAndResetItem(item1, "attribution");
+
   item1.generate_bundle_attempts = 10;
   CheckFieldAndResetItem(item1, "generate_bundle_attempts");
 

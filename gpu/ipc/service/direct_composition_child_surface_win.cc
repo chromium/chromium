@@ -64,15 +64,18 @@ bool DirectCompositionChildSurfaceWin::Initialize(gl::GLSurfaceFormat format) {
 
   EGLDisplay display = GetDisplay();
 
-  std::vector<EGLint> pbuffer_attribs;
-  pbuffer_attribs.push_back(EGL_WIDTH);
-  pbuffer_attribs.push_back(1);
-  pbuffer_attribs.push_back(EGL_HEIGHT);
-  pbuffer_attribs.push_back(1);
+  EGLint pbuffer_attribs[] = {
+      EGL_WIDTH,
+      1,
+      EGL_HEIGHT,
+      1,
+      EGL_FLEXIBLE_SURFACE_COMPATIBILITY_SUPPORTED_ANGLE,
+      EGL_TRUE,
+      EGL_NONE,
+  };
 
-  pbuffer_attribs.push_back(EGL_NONE);
   default_surface_ =
-      eglCreatePbufferSurface(display, GetConfig(), &pbuffer_attribs[0]);
+      eglCreatePbufferSurface(display, GetConfig(), pbuffer_attribs);
   if (!default_surface_) {
     DLOG(ERROR) << "eglCreatePbufferSurface failed with error "
                 << ui::GetLastEGLErrorString();
@@ -327,20 +330,21 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
 
   g_current_surface = dcomp_surface_.Get();
 
-  std::vector<EGLint> pbuffer_attribs{
+  EGLint pbuffer_attribs[] = {
       EGL_WIDTH,
       size_.width(),
       EGL_HEIGHT,
       size_.height(),
       EGL_FLEXIBLE_SURFACE_COMPATIBILITY_SUPPORTED_ANGLE,
       EGL_TRUE,
-      EGL_NONE};
+      EGL_NONE,
+  };
 
   EGLClientBuffer buffer =
       reinterpret_cast<EGLClientBuffer>(draw_texture_.Get());
-  real_surface_ = eglCreatePbufferFromClientBuffer(
-      GetDisplay(), EGL_D3D_TEXTURE_ANGLE, buffer, GetConfig(),
-      &pbuffer_attribs[0]);
+  real_surface_ =
+      eglCreatePbufferFromClientBuffer(GetDisplay(), EGL_D3D_TEXTURE_ANGLE,
+                                       buffer, GetConfig(), pbuffer_attribs);
   if (!real_surface_) {
     DLOG(ERROR) << "eglCreatePbufferFromClientBuffer failed with error "
                 << ui::GetLastEGLErrorString();

@@ -58,8 +58,8 @@ class KeyboardHandler
   // Initializes the page with the current keyboard information.
   void HandleInitialize(const base::ListValue* args);
 
-  // Shows the Ash keyboard shortcuts overlay.
-  void HandleShowKeyboardShortcutsOverlay(const base::ListValue* args) const;
+  // Shows the Ash keyboard shortcut viewer.
+  void HandleShowKeyboardShortcutViewer(const base::ListValue* args) const;
 
   // Determines what types of keyboards are attached.
   void HandleKeyboardChange(const base::ListValue* args);

@@ -17,12 +17,6 @@ QuarantineFileResult QuarantineFile(const base::FilePath& file,
   return QuarantineFileResult::OK;
 }
 
-bool IsFileQuarantined(const base::FilePath& file,
-                       const GURL& source_url,
-                       const GURL& referrer_url) {
-  return false;
-}
-
 }  // namespace download
 
 #endif  // !WIN && !MAC && !LINUX

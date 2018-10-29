@@ -41,7 +41,7 @@ class DriverTest(unittest.TestCase):
         return Port(MockSystemHost(), 'test', optparse.Values({'configuration': 'Release'}))
 
     def _assert_wrapper(self, wrapper_string, expected_wrapper):
-        wrapper = Driver(self.make_port(), None, pixel_tests=False)._command_wrapper(wrapper_string)
+        wrapper = Driver(self.make_port(), None)._command_wrapper(wrapper_string)
         self.assertEqual(wrapper, expected_wrapper)
 
     def test_command_wrapper(self):
@@ -55,7 +55,7 @@ class DriverTest(unittest.TestCase):
 
     def test_test_to_uri(self):
         port = self.make_port()
-        driver = Driver(port, None, pixel_tests=False)
+        driver = Driver(port, None)
         self.assertEqual(driver.test_to_uri('foo/bar.html'), 'file://%s/foo/bar.html' % port.layout_tests_dir())
         self.assertEqual(driver.test_to_uri('http/tests/foo.html'), 'http://127.0.0.1:8000/foo.html')
         self.assertEqual(driver.test_to_uri('http/tests/https/bar.html'), 'https://127.0.0.1:8443/https/bar.html')
@@ -67,7 +67,7 @@ class DriverTest(unittest.TestCase):
 
     def test_uri_to_test(self):
         port = self.make_port()
-        driver = Driver(port, None, pixel_tests=False)
+        driver = Driver(port, None)
         self.assertEqual(driver.uri_to_test('file://%s/foo/bar.html' % port.layout_tests_dir()), 'foo/bar.html')
         self.assertEqual(driver.uri_to_test('http://127.0.0.1:8000/foo.html'), 'http/tests/foo.html')
         self.assertEqual(driver.uri_to_test('https://127.0.0.1:8443/https/bar.html'), 'http/tests/https/bar.html')
@@ -78,7 +78,7 @@ class DriverTest(unittest.TestCase):
 
     def test_read_block(self):
         port = self.make_port()
-        driver = Driver(port, 0, pixel_tests=False)
+        driver = Driver(port, 0)
         driver._server_process = MockServerProcess(lines=[
             'ActualHash: foobar',
             'Content-Type: my_type',
@@ -94,7 +94,7 @@ class DriverTest(unittest.TestCase):
 
     def test_read_binary_block(self):
         port = self.make_port()
-        driver = Driver(port, 0, pixel_tests=True)
+        driver = Driver(port, 0)
         driver._server_process = MockServerProcess(lines=[
             'ActualHash: actual',
             'ExpectedHash: expected',
@@ -112,7 +112,7 @@ class DriverTest(unittest.TestCase):
 
     def test_read_base64_block(self):
         port = self.make_port()
-        driver = Driver(port, 0, pixel_tests=True)
+        driver = Driver(port, 0)
         driver._server_process = MockServerProcess(lines=[
             'ActualHash: actual',
             'ExpectedHash: expected',
@@ -130,15 +130,15 @@ class DriverTest(unittest.TestCase):
 
     def test_no_timeout(self):
         port = self.make_port()
-        driver = Driver(port, 0, pixel_tests=True, no_timeout=True)
-        cmd_line = driver.cmd_line(True, [])
+        driver = Driver(port, 0, no_timeout=True)
+        cmd_line = driver.cmd_line([])
         self.assertEqual(cmd_line[0], '/mock-checkout/out/Release/content_shell')
         self.assertEqual(cmd_line[-1], '-')
         self.assertIn('--no-timeout', cmd_line)
 
     def test_check_for_driver_crash(self):
         port = self.make_port()
-        driver = Driver(port, 0, pixel_tests=True)
+        driver = Driver(port, 0)
 
         class FakeServerProcess(object):
 
@@ -219,15 +219,15 @@ class DriverTest(unittest.TestCase):
 
     def test_creating_a_port_does_not_write_to_the_filesystem(self):
         port = self.make_port()
-        Driver(port, 0, pixel_tests=True)
+        Driver(port, 0)
         self.assertEqual(port.host.filesystem.written_files, {})
         self.assertIsNone(port.host.filesystem.last_tmpdir)
 
     def test_stop_cleans_up_properly(self):
         port = self.make_port()
         port.server_process_constructor = MockServerProcess
-        driver = Driver(port, 0, pixel_tests=True)
-        driver.start(True, [], None)
+        driver = Driver(port, 0)
+        driver.start([], None)
         last_tmpdir = port.host.filesystem.last_tmpdir
         self.assertIsNotNone(last_tmpdir)
         driver.stop()
@@ -236,15 +236,15 @@ class DriverTest(unittest.TestCase):
     def test_two_starts_cleans_up_properly(self):
         port = self.make_port()
         port.server_process_constructor = MockServerProcess
-        driver = Driver(port, 0, pixel_tests=True)
-        driver.start(True, [], None)
+        driver = Driver(port, 0)
+        driver.start([], None)
         last_tmpdir = port.host.filesystem.last_tmpdir
-        driver._start(True, [])
+        driver._start([])
         self.assertFalse(port.host.filesystem.isdir(last_tmpdir))
 
     def test_start_actually_starts(self):
         port = self.make_port()
         port.server_process_constructor = MockServerProcess
-        driver = Driver(port, 0, pixel_tests=True)
-        driver.start(True, [], None)
+        driver = Driver(port, 0)
+        driver.start([], None)
         self.assertTrue(driver._server_process.started)

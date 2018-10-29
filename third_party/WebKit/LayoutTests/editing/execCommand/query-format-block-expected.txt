@@ -2,7 +2,6 @@ Tests queryCommandValue('formatBlock')
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Basic cases
 PASS queryCommand('formatBlock') returned "" selecting none of "hello"
 PASS queryCommand('formatBlock') returned "" selecting first position of "hello"
@@ -74,6 +73,7 @@ PASS queryCommand('formatBlock') returned "nav" selecting first position of "<na
 PASS queryCommand('formatBlock') returned "p" selecting first position of "<p>hello</p>"
 PASS queryCommand('formatBlock') returned "pre" selecting first position of "<pre>hello</pre>"
 PASS queryCommand('formatBlock') returned "section" selecting first position of "<section>hello</section>"
+
 
 Nested cases
 PASS queryCommand('formatBlock') returned "h2" selecting first position of "<h1><h2>hello</h2></h1>"

@@ -31,6 +31,7 @@ class ASH_EXPORT VoiceInteractionController
   void NotifyFeatureAllowed(mojom::AssistantAllowedState state) override;
   void NotifyNotificationEnabled(bool enabled) override;
   void NotifyLocaleChanged(const std::string& locale) override;
+  void NotifyLaunchWithMicOpen(bool launch_with_mic_open) override;
   void IsSettingEnabled(IsSettingEnabledCallback callback) override;
   void IsSetupCompleted(IsSetupCompletedCallback callback) override;
   void IsContextEnabled(IsContextEnabledCallback callback) override;
@@ -50,6 +51,8 @@ class ASH_EXPORT VoiceInteractionController
   mojom::AssistantAllowedState allowed_state() const { return allowed_state_; }
 
   bool notification_enabled() const { return notification_enabled_; }
+
+  bool launch_with_mic_open() const { return launch_with_mic_open_; }
 
   void FlushForTesting();
 
@@ -79,6 +82,9 @@ class ASH_EXPORT VoiceInteractionController
       mojom::AssistantAllowedState::ALLOWED;
 
   std::string locale_;
+
+  // Whether the Assistant should launch with mic open;
+  bool launch_with_mic_open_ = false;
 
   mojo::BindingSet<mojom::VoiceInteractionController> bindings_;
 

@@ -2,12 +2,12 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/html/icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../extension_control_browser_proxy.html">
 <link rel="import" href="../focus_row_behavior.html">
 <link rel="import" href="search_engine_entry_css.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="../site_favicon.html">
 
 <dom-module id="settings-omnibox-extension-entry">
   <template>
@@ -22,15 +22,10 @@
       .keyword-column {
         flex: 7;
       }
-
-      .favicon-image + span {
-        margin-inline-end: 8px;
-      }
     </style>
     <div class="list-item" focus-row-container>
       <div class="name-column">
-        <span class="favicon-image"
-            style="background-image: [[getIconSet_(engine.iconURL)]]"></span>
+        <site-favicon url="[[engine.iconURL]]"></site-favicon>
         <span>[[engine.displayName]]</span>
       </div>
       <div class="keyword-column">[[engine.keyword]]</div>

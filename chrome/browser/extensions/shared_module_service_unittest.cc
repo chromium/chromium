@@ -29,7 +29,7 @@ namespace {
 
 // Return an extension with |id| which imports all the modules that are in the
 // container |import_ids|.
-scoped_refptr<Extension> CreateExtensionImportingModules(
+scoped_refptr<const Extension> CreateExtensionImportingModules(
     const std::vector<std::string>& import_ids,
     const std::string& id,
     const std::string& version) {
@@ -50,7 +50,8 @@ scoped_refptr<Extension> CreateExtensionImportingModules(
       .Build();
 }
 
-scoped_refptr<Extension> CreateSharedModule(const std::string& module_id) {
+scoped_refptr<const Extension> CreateSharedModule(
+    const std::string& module_id) {
   std::unique_ptr<base::DictionaryValue> manifest =
       DictionaryBuilder()
           .Set("name", "Shared Module")
@@ -127,7 +128,7 @@ TEST_F(SharedModuleServiceUnitTest, AddDependentSharedModules) {
   // Create an extension that has a dependency.
   std::string import_id = crx_file::id_util::GenerateId("id");
   std::string extension_id = crx_file::id_util::GenerateId("extension_id");
-  scoped_refptr<Extension> extension = CreateExtensionImportingModules(
+  scoped_refptr<const Extension> extension = CreateExtensionImportingModules(
       std::vector<std::string>(1, import_id), extension_id, "1.0");
 
   PendingExtensionManager* pending_extension_manager =
@@ -144,13 +145,14 @@ TEST_F(SharedModuleServiceUnitTest, AddDependentSharedModules) {
 
 TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUninstall) {
   // Create a module which exports a resource, and install it.
-  scoped_refptr<Extension> shared_module = CreateSharedModule("shared_module");
+  scoped_refptr<const Extension> shared_module =
+      CreateSharedModule("shared_module");
 
   EXPECT_TRUE(InstallExtension(shared_module.get(), false));
 
   std::string extension_id = crx_file::id_util::GenerateId("extension_id");
   // Create and install an extension that imports our new module.
-  scoped_refptr<Extension> importing_extension =
+  scoped_refptr<const Extension> importing_extension =
       CreateExtensionImportingModules(
           std::vector<std::string>(1, shared_module->id()), extension_id,
           "1.0");
@@ -172,7 +174,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUninstall) {
 
 TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUpdate) {
   // Create two modules which export a resource, and install them.
-  scoped_refptr<Extension> shared_module_1 =
+  scoped_refptr<const Extension> shared_module_1 =
       CreateSharedModule("shared_module_1");
   EXPECT_TRUE(InstallExtension(shared_module_1.get(), false));
 
@@ -186,14 +188,14 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUpdate) {
                    .Set("resources", ListBuilder().Append("foo.js").Build())
                    .Build())
           .Build();
-  scoped_refptr<Extension> shared_module_2 =
+  scoped_refptr<const Extension> shared_module_2 =
       CreateSharedModule("shared_module_2");
   EXPECT_TRUE(InstallExtension(shared_module_2.get(), false));
 
   std::string extension_id = crx_file::id_util::GenerateId("extension_id");
 
   // Create and install an extension v1.0 that imports our new module 1.
-  scoped_refptr<Extension> importing_extension_1 =
+  scoped_refptr<const Extension> importing_extension_1 =
       CreateExtensionImportingModules(
           std::vector<std::string>(1, shared_module_1->id()), extension_id,
           "1.0");
@@ -201,7 +203,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUpdate) {
 
   // Create and install a new version of the extension that imports our new
   // module 2.
-  scoped_refptr<Extension> importing_extension_2 =
+  scoped_refptr<const Extension> importing_extension_2 =
       CreateExtensionImportingModules(
           std::vector<std::string>(1, shared_module_2->id()), extension_id,
           "1.1");
@@ -216,7 +218,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUpdate) {
 
   // Create and install a new version of the extension that does not import any
   // module.
-  scoped_refptr<Extension> importing_extension_3 =
+  scoped_refptr<const Extension> importing_extension_3 =
       CreateExtensionImportingModules(std::vector<std::string>(), extension_id,
                                       "1.2");
   EXPECT_TRUE(InstallExtension(importing_extension_3.get(), true));
@@ -247,7 +249,7 @@ TEST_F(SharedModuleServiceUnitTest, WhitelistedImports) {
                    .Set("resources", ListBuilder().Append("*").Build())
                    .Build())
           .Build();
-  scoped_refptr<Extension> shared_module =
+  scoped_refptr<const Extension> shared_module =
       ExtensionBuilder()
           .SetManifest(std::move(manifest))
           .AddFlags(Extension::FROM_WEBSTORE)
@@ -257,14 +259,14 @@ TEST_F(SharedModuleServiceUnitTest, WhitelistedImports) {
   EXPECT_TRUE(InstallExtension(shared_module.get(), false));
 
   // Create and install an extension with the whitelisted ID.
-  scoped_refptr<Extension> whitelisted_extension =
+  scoped_refptr<const Extension> whitelisted_extension =
       CreateExtensionImportingModules(
           std::vector<std::string>(1, shared_module->id()), whitelisted_id,
           "1.0");
   EXPECT_TRUE(InstallExtension(whitelisted_extension.get(), false));
 
   // Try to install an extension with an ID that is not whitelisted.
-  scoped_refptr<Extension> nonwhitelisted_extension =
+  scoped_refptr<const Extension> nonwhitelisted_extension =
       CreateExtensionImportingModules(
           std::vector<std::string>(1, shared_module->id()), nonwhitelisted_id,
           "1.0");
@@ -277,10 +279,10 @@ TEST_F(SharedModuleServiceUnitTest, WhitelistedImports) {
 
 TEST_F(SharedModuleServiceUnitTest, PruneMultipleSharedModules) {
   // Create two modules which export a resource each, and install it.
-  scoped_refptr<Extension> shared_module_one =
+  scoped_refptr<const Extension> shared_module_one =
       CreateSharedModule("shared_module_one");
   EXPECT_TRUE(InstallExtension(shared_module_one.get(), false));
-  scoped_refptr<Extension> shared_module_two =
+  scoped_refptr<const Extension> shared_module_two =
       CreateSharedModule("shared_module_two");
   EXPECT_TRUE(InstallExtension(shared_module_two.get(), false));
 
@@ -289,7 +291,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneMultipleSharedModules) {
   module_ids.push_back(shared_module_one->id());
   module_ids.push_back(shared_module_two->id());
   // Create and install an extension that imports both the modules.
-  scoped_refptr<Extension> importing_extension =
+  scoped_refptr<const Extension> importing_extension =
       CreateExtensionImportingModules(module_ids, extension_id, "1.0");
   EXPECT_TRUE(InstallExtension(importing_extension.get(), false));
 

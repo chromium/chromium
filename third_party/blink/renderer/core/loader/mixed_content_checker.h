@@ -67,7 +67,7 @@ class CORE_EXPORT MixedContentChecker final {
 
  public:
   static bool ShouldBlockFetch(LocalFrame*,
-                               WebURLRequest::RequestContext,
+                               mojom::RequestContextType,
                                network::mojom::RequestContextFrameType,
                                ResourceRequest::RedirectStatus,
                                const KURL&,
@@ -75,7 +75,7 @@ class CORE_EXPORT MixedContentChecker final {
                                    SecurityViolationReportingPolicy::kReport);
 
   static bool ShouldBlockFetchOnWorker(const WorkerFetchContext&,
-                                       WebURLRequest::RequestContext,
+                                       mojom::RequestContextType,
                                        ResourceRequest::RedirectStatus,
                                        const KURL&,
                                        SecurityViolationReportingPolicy,
@@ -93,6 +93,9 @@ class CORE_EXPORT MixedContentChecker final {
                                 SecurityViolationReportingPolicy =
                                     SecurityViolationReportingPolicy::kReport);
 
+  static bool ShouldAutoupgrade(KURL frame_url,
+                                WebMixedContentContextType type);
+
   static void CheckMixedPrivatePublic(LocalFrame*,
                                       const AtomicString& resource_ip_address);
 
@@ -109,13 +112,13 @@ class CORE_EXPORT MixedContentChecker final {
   static void HandleCertificateError(LocalFrame*,
                                      const ResourceResponse&,
                                      network::mojom::RequestContextFrameType,
-                                     WebURLRequest::RequestContext);
+                                     mojom::RequestContextType);
 
   // Receive information about mixed content found externally.
   static void MixedContentFound(LocalFrame*,
                                 const KURL& main_resource_url,
                                 const KURL& mixed_content_url,
-                                WebURLRequest::RequestContext,
+                                mojom::RequestContextType,
                                 bool was_allowed,
                                 bool had_redirect,
                                 std::unique_ptr<SourceLocation>);
@@ -132,13 +135,13 @@ class CORE_EXPORT MixedContentChecker final {
   static ConsoleMessage* CreateConsoleMessageAboutFetch(
       const KURL&,
       const KURL&,
-      WebURLRequest::RequestContext,
+      mojom::RequestContextType,
       bool allowed,
       std::unique_ptr<SourceLocation>);
   static ConsoleMessage* CreateConsoleMessageAboutWebSocket(const KURL&,
                                                             const KURL&,
                                                             bool allowed);
-  static void Count(Frame*, WebURLRequest::RequestContext, const LocalFrame*);
+  static void Count(Frame*, mojom::RequestContextType, const LocalFrame*);
 
   DISALLOW_COPY_AND_ASSIGN(MixedContentChecker);
 };

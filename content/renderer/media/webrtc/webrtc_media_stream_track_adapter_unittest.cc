@@ -79,6 +79,12 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
         dependency_factory_.get(), main_thread_, webrtc_track);
   }
 
+  void HoldOntoAdapterReference(
+      base::WaitableEvent* waitable_event,
+      scoped_refptr<WebRtcMediaStreamTrackAdapter> adapter) {
+    waitable_event->Wait();
+  }
+
   // Runs message loops on the webrtc signaling thread and optionally the main
   // thread until idle.
   void RunMessageLoopsUntilIdle(bool run_loop_on_main_thread = true) {
@@ -226,6 +232,35 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteTrackExplicitlyInitialized) {
   EXPECT_TRUE(track_adapter_->GetRemoteAudioTrackAdapterForTesting());
   EXPECT_TRUE(
       track_adapter_->GetRemoteAudioTrackAdapterForTesting()->initialized());
+}
+
+TEST_F(WebRtcMediaStreamTrackAdapterTest, LastReferenceOnSignalingThread) {
+  scoped_refptr<MockWebRtcAudioTrack> webrtc_track =
+      MockWebRtcAudioTrack::Create("remote_audio_track");
+  dependency_factory_->GetWebRtcSignalingThread()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &WebRtcMediaStreamTrackAdapterTest::CreateRemoteTrackAdapter,
+          base::Unretained(this), base::Unretained(webrtc_track.get())));
+  // The adapter is initialized implicitly in a PostTask, allow it to run.
+  RunMessageLoopsUntilIdle();
+  DCHECK(track_adapter_);
+  EXPECT_TRUE(track_adapter_->is_initialized());
+
+  base::WaitableEvent waitable_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  dependency_factory_->GetWebRtcSignalingThread()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &WebRtcMediaStreamTrackAdapterTest::HoldOntoAdapterReference,
+          base::Unretained(this), base::Unretained(&waitable_event),
+          track_adapter_));
+  // Clear last reference on main thread.
+  track_adapter_->Dispose();
+  track_adapter_ = nullptr;
+  waitable_event.Signal();
+  RunMessageLoopsUntilIdle();
 }
 
 }  // namespace content

@@ -5,7 +5,6 @@
 # These are typemaps which are exposed by Blink to its embedder.
 typemaps = [
   "//third_party/blink/public/platform/content_security_policy.typemap",
-  "//third_party/blink/public/platform/referrer_policy.typemap",
   "//third_party/blink/public/common/indexeddb/indexeddb.typemap",
   "//third_party/blink/public/common/manifest/display_mode.typemap",
   "//third_party/blink/public/common/manifest/manifest.typemap",

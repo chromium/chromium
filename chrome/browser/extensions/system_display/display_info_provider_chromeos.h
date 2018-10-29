@@ -11,6 +11,7 @@
 #include "ash/public/interfaces/cros_display_config.mojom.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/ash/tablet_mode_client_observer.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 
 namespace service_manager {
@@ -19,7 +20,8 @@ class Connector;
 
 namespace extensions {
 
-class DisplayInfoProviderChromeOS : public DisplayInfoProvider {
+class DisplayInfoProviderChromeOS : public DisplayInfoProvider,
+                                    public TabletModeClientObserver {
  public:
   explicit DisplayInfoProviderChromeOS(service_manager::Connector* connector);
   ~DisplayInfoProviderChromeOS() override;
@@ -52,6 +54,11 @@ class DisplayInfoProviderChromeOS : public DisplayInfoProvider {
   bool ClearTouchCalibration(const std::string& id) override;
   void SetMirrorMode(const api::system_display::MirrorModeInfo& info,
                      ErrorCallback callback) override;
+  void StartObserving() override;
+  void StopObserving() override;
+
+  // TabletModeClientObserver implementation.
+  void OnTabletModeToggled(bool enabled) override;
 
  private:
   void CallSetDisplayLayoutInfo(ash::mojom::DisplayLayoutInfoPtr layout_info,

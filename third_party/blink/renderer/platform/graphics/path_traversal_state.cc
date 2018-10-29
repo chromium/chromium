@@ -37,7 +37,7 @@ static inline float DistanceLine(const FloatPoint& start,
 }
 
 struct QuadraticBezier {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   QuadraticBezier() = default;
   QuadraticBezier(const FloatPoint& s, const FloatPoint& c, const FloatPoint& e)
       : start(s), control(c), end(e), split_depth(0) {}
@@ -74,7 +74,7 @@ struct QuadraticBezier {
 };
 
 struct CubicBezier {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
   CubicBezier() = default;
   CubicBezier(const FloatPoint& s,
               const FloatPoint& c1,

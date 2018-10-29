@@ -71,12 +71,14 @@ class CHROMEOS_EXPORT PowerPolicyController
     bool use_video_activity;
     double ac_brightness_percent;
     double battery_brightness_percent;
+    bool allow_wake_locks;
     bool allow_screen_wake_locks;
     bool enable_auto_screen_lock;
     double presentation_screen_dim_delay_factor;
     double user_activity_screen_dim_delay_factor;
     bool wait_for_initial_user_activity;
     bool force_nonzero_brightness_for_user_activity;
+    bool smart_dim_enabled;
   };
 
   // Returns a string describing |policy|.  Useful for tests.
@@ -127,6 +129,8 @@ class CHROMEOS_EXPORT PowerPolicyController
 
   // PowerManagerClient::Observer implementation:
   void PowerManagerRestarted() override;
+  void ScreenBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
 
  private:
   explicit PowerPolicyController(PowerManagerClient* client);
@@ -170,25 +174,33 @@ class CHROMEOS_EXPORT PowerPolicyController
   power_manager::PowerManagementPolicy prefs_policy_;
 
   // Was ApplyPrefs() called?
-  bool prefs_were_set_;
+  bool prefs_were_set_ = false;
 
   // Maps from an ID representing a request to prevent the screen from
   // getting dimmed or turned off or to prevent the system from suspending
   // to details about the request.
   WakeLockMap wake_locks_;
 
-  // Should TYPE_SCREEN or TYPE_DIM entries in |wake_locks_| be honored?
+  // Should |wake_locks_| be honored?
+  bool honor_wake_locks_ = true;
+
+  // If wake locks are honored, should TYPE_SCREEN or TYPE_DIM entries in
+  // |wake_locks_| be honored?
   // If false, screen wake locks are just treated as TYPE_SYSTEM instead.
-  bool honor_screen_wake_locks_;
+  bool honor_screen_wake_locks_ = true;
 
   // Next ID to be used by an Add*WakeLock() request.
-  int next_wake_lock_id_;
+  int next_wake_lock_id_ = 1;
 
   // True if Chrome is in the process of exiting.
-  bool chrome_is_exiting_;
+  bool chrome_is_exiting_ = false;
 
   // True if a user homedir is in the process of migrating encryption formats.
-  bool encryption_migration_active_;
+  bool encryption_migration_active_ = false;
+
+  // Whether brightness policy value was overridden by a user adjustment in the
+  // current user session.
+  bool per_session_brightness_override_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PowerPolicyController);
 };

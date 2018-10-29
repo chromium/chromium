@@ -23,8 +23,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/ui/settings/reauthentication_module.h"
-#include "ios/chrome/browser/ui/tools_menu/public/tools_menu_constants.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/password_test_util.h"
@@ -879,8 +878,9 @@ PasswordForm CreateSampleFormWithIndex(int index) {
   TapEdit();
 
   // Check that the "Save Passwords" switch is disabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"savePasswordsItem_switch", YES, NO)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::LegacySettingsSwitchCell(
+                                   @"savePasswordsItem_switch", YES, NO)]
       assertWithMatcher:grey_notNil()];
 
   [GetInteractionForPasswordEntry(@"example.com, concrete username")
@@ -1273,7 +1273,7 @@ PasswordForm CreateSampleFormWithIndex(int index) {
   for (BOOL expected_state : kExpectedState) {
     // Toggle the switch. It is located near the top, so if not interactable,
     // try scrolling up.
-    [GetInteractionForListItem(chrome_test_util::SettingsSwitchCell(
+    [GetInteractionForListItem(chrome_test_util::LegacySettingsSwitchCell(
                                    @"savePasswordsItem_switch", expected_state),
                                kGREYDirectionUp)
         performAction:chrome_test_util::TurnSettingsSwitchOn(!expected_state)];
@@ -1299,9 +1299,10 @@ PasswordForm CreateSampleFormWithIndex(int index) {
   // preferences.
   constexpr BOOL kExpectedState[] = {YES, NO};
   for (BOOL expected_initial_state : kExpectedState) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                            @"savePasswordsItem_switch",
-                                            expected_initial_state)]
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::LegacySettingsSwitchCell(
+                                     @"savePasswordsItem_switch",
+                                     expected_initial_state)]
         performAction:chrome_test_util::TurnSettingsSwitchOn(
                           !expected_initial_state)];
     ios::ChromeBrowserState* browserState =
@@ -1640,6 +1641,41 @@ PasswordForm CreateSampleFormWithIndex(int index) {
       assertWithMatcher:grey_nil()];
   [GetInteractionForPasswordEntry(@"exclude2.com")
       assertWithMatcher:grey_notNil()];
+}
+
+// Test search and delete all passwords and blacklisted items.
+- (void)testSearchAndDeleteAllPasswords {
+  SaveExamplePasswordForms();
+  SaveExampleBlacklistedForms();
+
+  OpenPasswordSettings();
+
+  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+      performAction:grey_typeText(@"u\n")];
+
+  TapEdit();
+
+  // Select all.
+  [GetInteractionForPasswordEntry(@"example11.com, user1")
+      performAction:grey_tap()];
+  [GetInteractionForPasswordEntry(@"example12.com, user2")
+      performAction:grey_tap()];
+  [GetInteractionForPasswordEntry(@"exclude1.com") performAction:grey_tap()];
+  [GetInteractionForPasswordEntry(@"exclude2.com") performAction:grey_tap()];
+
+  // Delete them.
+  [[EarlGrey selectElementWithMatcher:DeleteButtonAtBottom()]
+      performAction:grey_tap()];
+
+  // All should be gone.
+  [GetInteractionForPasswordEntry(@"example11.com, user1")
+      assertWithMatcher:grey_nil()];
+  [GetInteractionForPasswordEntry(@"example12.com, user2")
+      assertWithMatcher:grey_nil()];
+  [GetInteractionForPasswordEntry(@"exclude1.com")
+      assertWithMatcher:grey_nil()];
+  [GetInteractionForPasswordEntry(@"exclude2.com")
+      assertWithMatcher:grey_nil()];
 }
 
 // Test that user can't search passwords while in edit mode.

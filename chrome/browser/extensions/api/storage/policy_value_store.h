@@ -31,7 +31,7 @@ namespace extensions {
 class PolicyValueStore : public ValueStore {
  public:
   PolicyValueStore(const std::string& extension_id,
-                   const scoped_refptr<SettingsObserverList>& observers,
+                   scoped_refptr<SettingsObserverList> observers,
                    std::unique_ptr<ValueStore> delegate);
   ~PolicyValueStore() override;
 

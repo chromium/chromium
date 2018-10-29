@@ -152,8 +152,7 @@ void ExtensionActionRunnerUnitTest::RequestInjection(
 
 size_t ExtensionActionRunnerUnitTest::GetExecutionCountForExtension(
     const std::string& extension_id) const {
-  std::map<std::string, int>::const_iterator iter =
-      extension_executions_.find(extension_id);
+  auto iter = extension_executions_.find(extension_id);
   if (iter != extension_executions_.end())
     return iter->second;
   return 0u;
@@ -179,8 +178,8 @@ void ExtensionActionRunnerUnitTest::SetUp() {
       extensions_features::kRuntimeHostPermissions);
 
   // Skip syncing for testing purposes.
-  ExtensionSyncServiceFactory::GetInstance()->SetTestingFactory(profile(),
-                                                                nullptr);
+  ExtensionSyncServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
   TabHelper::CreateForWebContents(web_contents());
   TabHelper* tab_helper = TabHelper::FromWebContents(web_contents());

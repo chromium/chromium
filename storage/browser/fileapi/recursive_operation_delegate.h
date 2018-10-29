@@ -43,18 +43,17 @@ class STORAGE_EXPORT RecursiveOperationDelegate
   // This is called each time a file is found while recursively
   // performing an operation.
   virtual void ProcessFile(const FileSystemURL& url,
-                           const StatusCallback& callback) = 0;
+                           StatusCallback callback) = 0;
 
   // This is called each time a directory is found while recursively
   // performing an operation.
   virtual void ProcessDirectory(const FileSystemURL& url,
-                                const StatusCallback& callback) = 0;
-
+                                StatusCallback callback) = 0;
 
   // This is called each time after files and subdirectories for a
   // directory is processed while recursively performing an operation.
   virtual void PostProcessDirectory(const FileSystemURL& url,
-                                    const StatusCallback& callback) = 0;
+                                    StatusCallback callback) = 0;
 
   // Cancels the currently running operation.
   void Cancel();
@@ -111,7 +110,7 @@ class STORAGE_EXPORT RecursiveOperationDelegate
   // under |root| is processed, or fired earlier when any suboperation fails.
   void StartRecursiveOperation(const FileSystemURL& root,
                                ErrorBehavior error_behavior,
-                               const StatusCallback& callback);
+                               StatusCallback callback);
 
   FileSystemContext* file_system_context() { return file_system_context_; }
   const FileSystemContext* file_system_context() const {

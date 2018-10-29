@@ -15,10 +15,7 @@
 namespace safe_browsing {
 
 // TestSafeBrowsingService functions:
-TestSafeBrowsingService::TestSafeBrowsingService()
-    : SafeBrowsingService(),
-      serialized_download_report_(base::EmptyString()),
-      use_v4_local_db_manager_(false) {
+TestSafeBrowsingService::TestSafeBrowsingService() {
 #if defined(FULL_SAFE_BROWSING)
   services_delegate_ = ServicesDelegate::CreateForTest(this, this);
 #endif  // defined(FULL_SAFE_BROWSING)

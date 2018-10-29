@@ -49,7 +49,7 @@ class CONTENT_EXPORT RenderWidgetInputHandler {
   // Hit test the given point to find out the frame underneath and
   // returns the FrameSinkId for that frame. |local_point| returns the point
   // in the coordinate space of the FrameSinkId that was hit.
-  viz::FrameSinkId GetFrameSinkIdAtPoint(const gfx::Point& point,
+  viz::FrameSinkId GetFrameSinkIdAtPoint(const gfx::PointF& point,
                                          gfx::PointF* local_point);
 
   // Handle input events from the input event provider.

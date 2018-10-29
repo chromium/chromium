@@ -23,7 +23,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/local_storage_usage_info.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -34,6 +33,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -224,9 +224,10 @@ class DOMStorageMigrationBrowserTest : public DOMStorageBrowserTest {
  public:
   DOMStorageMigrationBrowserTest() : DOMStorageBrowserTest() {
     if (IsPreTest())
-      feature_list_.InitAndDisableFeature(features::kMojoSessionStorage);
+      feature_list_.InitAndDisableFeature(
+          blink::features::kOnionSoupDOMStorage);
     else
-      feature_list_.InitAndEnableFeature(features::kMojoSessionStorage);
+      feature_list_.InitAndEnableFeature(blink::features::kOnionSoupDOMStorage);
   }
 
   void SessionStorageTest(const GURL& test_url) {

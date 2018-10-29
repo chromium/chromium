@@ -24,7 +24,6 @@
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/password_manager/core/browser/webdata/logins_table.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/signin/core/browser/webdata/token_service_table.h"
 #include "components/webdata/common/web_database.h"
@@ -64,13 +63,11 @@ class WebDatabaseMigrationTest : public testing::Test {
   void DoMigration() {
     AutofillTable autofill_table;
     KeywordTable keyword_table;
-    LoginsTable logins_table;
     TokenServiceTable token_service_table;
 
     WebDatabase db;
     db.AddTable(&autofill_table);
     db.AddTable(&keyword_table);
-    db.AddTable(&logins_table);
     db.AddTable(&token_service_table);
 
     // This causes the migration to occur.
@@ -129,7 +126,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(WebDatabaseMigrationTest);
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 78;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 80;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -190,8 +187,6 @@ TEST_F(WebDatabaseMigrationTest, MigrateEmptyToCurrent) {
     EXPECT_TRUE(connection.DoesTableExist("autofill_profiles"));
     EXPECT_TRUE(connection.DoesTableExist("credit_cards"));
     EXPECT_TRUE(connection.DoesTableExist("keywords"));
-    // The logins table is obsolete. (We used to store saved passwords here.)
-    EXPECT_FALSE(connection.DoesTableExist("logins"));
     EXPECT_TRUE(connection.DoesTableExist("meta"));
     EXPECT_TRUE(connection.DoesTableExist("token_service"));
     // The web_apps and web_apps_icons tables are obsolete as of version 58.
@@ -1610,5 +1605,85 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion77ToCurrent) {
     EXPECT_EQ(syncer::ModelTypeToHistogramInt(syncer::AUTOFILL),
               s2.ColumnInt(0));
     EXPECT_EQ("state", s2.ColumnString(1));
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion78ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_78.sql")));
+
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+
+    ASSERT_TRUE(connection.DoesTableExist("ie7_logins"));
+    ASSERT_TRUE(connection.DoesTableExist("logins"));
+  }
+
+  DoMigration();
+
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+
+    ASSERT_FALSE(connection.DoesTableExist("ie7_logins"));
+    ASSERT_FALSE(connection.DoesTableExist("logins"));
+  }
+}
+
+// Tests adding "is_client_validity_states_updated" column for the
+// "autofill_profiles" table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion79ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_79.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 79, 79));
+    EXPECT_FALSE(connection.DoesColumnExist(
+        "autofill_profiles", "is_client_validity_states_updated"));
+  }
+  DoMigration();
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist(
+        "autofill_profiles", "is_client_validity_states_updated"));
+    // Data should have been preserved. Validity
+    // is_client_validity_states_updated should have been set to false.
+    sql::Statement s_profiles(connection.GetUniqueStatement(
+        "SELECT guid, company_name, street_address, dependent_locality,"
+        " city, state, zipcode, sorting_code, country_code, date_modified,"
+        " origin, language_code, validity_bitfield, "
+        " is_client_validity_states_updated "
+        " FROM autofill_profiles"));
+    ASSERT_TRUE(s_profiles.Step());
+    EXPECT_EQ("00000000-0000-0000-0000-000000000001",
+              s_profiles.ColumnString(0));
+    EXPECT_EQ(ASCIIToUTF16("Google Inc"), s_profiles.ColumnString16(1));
+    EXPECT_EQ(ASCIIToUTF16("340 Main St"), s_profiles.ColumnString16(2));
+    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(3));
+    EXPECT_EQ(ASCIIToUTF16("Los Angeles"), s_profiles.ColumnString16(4));
+    EXPECT_EQ(ASCIIToUTF16("CA"), s_profiles.ColumnString16(5));
+    EXPECT_EQ(ASCIIToUTF16("90291"), s_profiles.ColumnString16(6));
+    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(7));
+    EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
+    EXPECT_EQ(1395948829, s_profiles.ColumnInt(9));
+    EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
+              s_profiles.ColumnString16(10));
+    EXPECT_EQ("en", s_profiles.ColumnString(11));
+    EXPECT_EQ(1365, s_profiles.ColumnInt(12));
+    // The new is_client_validity_states_updated should have the default value
+    // of FALSE.
+    EXPECT_FALSE(s_profiles.ColumnBool(13));
+
+    // No more entries expected.
+    ASSERT_FALSE(s_profiles.Step());
   }
 }

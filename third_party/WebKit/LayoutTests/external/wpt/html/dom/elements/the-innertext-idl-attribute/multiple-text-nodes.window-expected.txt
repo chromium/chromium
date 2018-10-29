@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Ensure multiple text nodes get rendered properly assert_equals: expected "X Y" but got "XY"
-Harness: the test ran to completion.
-

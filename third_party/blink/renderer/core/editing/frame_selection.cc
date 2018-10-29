@@ -242,7 +242,7 @@ void FrameSelection::DidSetSelectionDeprecated(
   if (!GetSelectionInDOMTree().IsNone() && !options.DoNotSetFocus()) {
     SetFocusedNodeIfNeeded();
     // |setFocusedNodeIfNeeded()| dispatches sync events "FocusOut" and
-    // "FocusIn", |m_frame| may associate to another document.
+    // "FocusIn", |frame_| may associate to another document.
     if (!IsAvailable() || GetDocument() != current_document) {
       // Once we get test case to reach here, we should change this
       // if-statement to |DCHECK()|.
@@ -580,11 +580,10 @@ bool FrameSelection::Contains(const LayoutPoint& point) {
   if (!inner_node || !inner_node->GetLayoutObject())
     return false;
 
-  const VisiblePositionInFlatTree& visible_pos =
-      CreateVisiblePosition(FromPositionInDOMTree<EditingInFlatTreeStrategy>(
-          inner_node->GetLayoutObject()->PositionForPoint(
-              result.LocalPoint())));
-  if (visible_pos.IsNull())
+  const PositionInFlatTreeWithAffinity pos_with_affinity =
+      FromPositionInDOMTree<EditingInFlatTreeStrategy>(
+          inner_node->GetLayoutObject()->PositionForPoint(result.LocalPoint()));
+  if (pos_with_affinity.IsNull())
     return false;
 
   const VisiblePositionInFlatTree& visible_start =
@@ -595,7 +594,7 @@ bool FrameSelection::Contains(const LayoutPoint& point) {
 
   const PositionInFlatTree& start = visible_start.DeepEquivalent();
   const PositionInFlatTree& end = visible_end.DeepEquivalent();
-  const PositionInFlatTree& pos = visible_pos.DeepEquivalent();
+  const PositionInFlatTree& pos = pos_with_affinity.GetPosition();
   return start.CompareTo(pos) <= 0 && pos.CompareTo(end) <= 0;
 }
 
@@ -653,33 +652,19 @@ void FrameSelection::SelectFrameElementInParentIfFullySelected() {
   if (!blink::HasEditableStyle(*owner_element_parent))
     return;
 
-  // Create compute positions before and after the element.
-  unsigned owner_element_node_index = owner_element->NodeIndex();
-  VisiblePosition before_owner_element = CreateVisiblePosition(
-      Position(owner_element_parent, owner_element_node_index));
-  VisiblePosition after_owner_element = CreateVisiblePosition(
-      Position(owner_element_parent, owner_element_node_index + 1),
-      TextAffinity::kUpstreamIfPossible);
-
-  SelectionInDOMTree::Builder builder;
-  builder
-      .SetBaseAndExtentDeprecated(before_owner_element.DeepEquivalent(),
-                                  after_owner_element.DeepEquivalent())
-      .SetAffinity(before_owner_element.Affinity());
-
   // Focus on the parent frame, and then select from before this element to
   // after.
-  VisibleSelection new_selection = CreateVisibleSelection(builder.Build());
-  // TODO(yosin): We should call |FocusController::setFocusedFrame()| before
-  // |createVisibleSelection()|.
   page->GetFocusController().SetFocusedFrame(parent);
-  // setFocusedFrame can dispatch synchronous focus/blur events.  The document
+  // SetFocusedFrame can dispatch synchronous focus/blur events.  The document
   // tree might be modified.
-  if (!new_selection.IsNone() &&
-      new_selection.IsValidFor(*(ToLocalFrame(parent)->GetDocument()))) {
-    ToLocalFrame(parent)->Selection().SetSelectionAndEndTyping(
-        new_selection.AsSelection());
-  }
+  if (!owner_element->isConnected() ||
+      owner_element->GetDocument() != ToLocalFrame(parent)->GetDocument())
+    return;
+  ToLocalFrame(parent)->Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position::BeforeNode(*owner_element),
+                            Position::AfterNode(*owner_element))
+          .Build());
 }
 
 // Returns a shadow tree node for legacy shadow trees, a child of the
@@ -857,10 +842,6 @@ bool FrameSelection::FrameIsFocusedAndActive() const {
          frame_->GetPage()->GetFocusController().IsActive();
 }
 
-bool FrameSelection::NeedsLayoutSelectionUpdate() const {
-  return layout_selection_->HasPendingSelection();
-}
-
 void FrameSelection::CommitAppearanceIfNeeded() {
   return layout_selection_->Commit();
 }
@@ -977,8 +958,10 @@ IntRect FrameSelection::ComputeRectToScroll(
   if (selection.IsCaret())
     return AbsoluteCaretBounds();
   DCHECK(selection.IsRange());
-  if (reveal_extent_option == kRevealExtent)
-    return AbsoluteCaretBoundsOf(CreateVisiblePosition(selection.Extent()));
+  if (reveal_extent_option == kRevealExtent) {
+    return AbsoluteCaretBoundsOf(
+        CreateVisiblePosition(selection.Extent()).ToPositionWithAffinity());
+  }
   layout_selection_->SetHasPendingSelection();
   return layout_selection_->AbsoluteSelectionBounds();
 }
@@ -1123,7 +1106,7 @@ bool FrameSelection::SelectWordAroundCaret() {
 }
 
 GranularityStrategy* FrameSelection::GetGranularityStrategy() {
-  // We do lazy initalization for m_granularityStrategy, because if we
+  // We do lazy initialization for granularity_strategy_, because if we
   // initialize it right in the constructor - the correct settings may not be
   // set yet.
   SelectionStrategy strategy_type = SelectionStrategy::kCharacter;

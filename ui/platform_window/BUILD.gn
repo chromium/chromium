@@ -24,7 +24,7 @@ source_set("platform_window") {
 
   if (is_fuchsia) {
     public_deps = [
-      "//third_party/fuchsia-sdk:viewsv1token",
+      "//third_party/fuchsia-sdk/sdk:viewsv1token",
     ]
   }
 }

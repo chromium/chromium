@@ -326,20 +326,22 @@ FilteredVolumeManager.prototype.getCurrentProfileVolumeInfo =
       this.volumeManager_.getCurrentProfileVolumeInfo(volumeType));
 };
 
-/**
- * Obtains the default display root entry.
- * @param {function(Entry)} callback Callback passed the default display root.
- */
+/** @override */
 FilteredVolumeManager.prototype.getDefaultDisplayRoot =
     function(callback) {
   this.ensureInitialized(function() {
     var defaultVolume = this.getCurrentProfileVolumeInfo(
         VolumeManagerCommon.VolumeType.DOWNLOADS);
-    defaultVolume.resolveDisplayRoot(callback, function() {
-      // defaultVolume is DOWNLOADS and resolveDisplayRoot should succeed.
-      throw new Error(
-          'Unexpectedly failed to obtain the default display root.');
-    });
+    if (defaultVolume) {
+      defaultVolume.resolveDisplayRoot(callback, function() {
+        // defaultVolume is DOWNLOADS and resolveDisplayRoot should succeed.
+        throw new Error(
+            'Unexpectedly failed to obtain the default display root.');
+      });
+    } else {
+      console.warn('Unexpectedly failed to obtain the default display root.');
+      callback(null);
+    }
   }.bind(this));
 };
 

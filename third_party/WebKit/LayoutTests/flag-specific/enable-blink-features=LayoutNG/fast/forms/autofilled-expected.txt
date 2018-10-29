@@ -39,4 +39,3 @@ PASS foregroundOf(select2) is originalForeground
 PASS backgroundOf(select2) is originalBackground
 PASS foregroundOf(select3) is originalForeground
 PASS backgroundOf(select3) is originalBackground
-

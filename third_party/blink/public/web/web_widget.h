@@ -50,6 +50,10 @@
 
 class SkBitmap;
 
+namespace cc {
+struct ApplyViewportChangesArgs;
+}
+
 namespace blink {
 
 class WebCoalescedInputEvent;
@@ -59,6 +63,11 @@ struct WebPoint;
 
 class WebWidget {
  public:
+  // Called during set up of the WebWidget to declare the WebLayerTreeView for
+  // the widget to use. This does not pass ownership, but the caller must keep
+  // the pointer valid until Close() is called.
+  virtual void SetLayerTreeView(WebLayerTreeView*) = 0;
+
   // This method closes and deletes the WebWidget.
   virtual void Close() {}
 
@@ -84,8 +93,12 @@ class WebWidget {
 
   // Called to update imperative animation state. This should be called before
   // paint, although the client can rate-limit these calls.
-  // |lastFrameTimeMonotonic| is in seconds.
+  // |last_frame_time| is in seconds.
   virtual void BeginFrame(base::TimeTicks last_frame_time) {}
+
+  // Called when a main frame time metric should be emitted, along with
+  // any metrics that depend upon the main frame total time.
+  virtual void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) {}
 
   // Called to run through the entire set of document lifecycle phases needed
   // to render a frame of the web widget. This MUST be called before Paint,
@@ -99,12 +112,10 @@ class WebWidget {
   virtual void UpdateLifecycle(
       LifecycleUpdate requested_update = LifecycleUpdate::kAll) {}
 
-  // Performs the complete set of document lifecycle phases, including updates
-  // to the compositor state except rasterization.
-  virtual void UpdateAllLifecyclePhasesAndCompositeForTesting() {}
-
-  // Synchronously rasterizes and composites a frame.
-  virtual void CompositeWithRasterForTesting() {}
+  // Synchronously performs the complete set of document lifecycle phases,
+  // including updates to the compositor state, optionally including
+  // rasterization.
+  virtual void UpdateAllLifecyclePhasesAndCompositeForTesting(bool do_raster) {}
 
   // Called to paint the rectangular region within the WebWidget
   // onto the specified canvas at (viewPort.x,viewPort.y).
@@ -162,11 +173,7 @@ class WebWidget {
 
   // Applies viewport related properties during a commit from the compositor
   // thread.
-  virtual void ApplyViewportDeltas(const WebFloatSize& visual_viewport_delta,
-                                   const WebFloatSize& layout_viewport_delta,
-                                   const WebFloatSize& elastic_overscroll_delta,
-                                   float scale_factor,
-                                   float browser_controls_shown_ratio_delta) {}
+  virtual void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) {}
 
   virtual void RecordWheelAndTouchScrollingCount(bool has_scrolled_by_wheel,
                                                  bool has_scrolled_by_touch) {}
@@ -226,15 +233,17 @@ class WebWidget {
   // but not the select popup.
   virtual WebPagePopup* GetPagePopup() const { return 0; }
 
-  // Updates browser controls constraints and current state. Allows embedder to
-  // control what are valid states for browser controls and if it should
-  // animate.
-  virtual void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                          cc::BrowserControlsState current,
-                                          bool animate) {}
-
   // Called by client to request showing the context menu.
   virtual void ShowContextMenu(WebMenuSourceType) {}
+
+  // When the WebWidget is part of a frame tree, returns the active url for
+  // main frame of that tree, if the main frame is local in that tree. When
+  // the WebWidget is of a different kind (e.g. a popup) it returns the active
+  // url for the main frame of the frame tree that spawned the WebWidget, if
+  // the main frame is local in that tree. When the relevant main frame is
+  // remote in that frame tree, then the url is not known, and an empty url is
+  // returned.
+  virtual WebURL GetURLForDebugTrace() = 0;
 
  protected:
   ~WebWidget() = default;

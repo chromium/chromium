@@ -10,6 +10,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -301,7 +302,7 @@ class TeeHelper final : public GarbageCollectedFinalized<TeeHelper>,
     destination2_->Notify();
   }
 
-  Member<BytesConsumer> src_;
+  TraceWrapperMember<BytesConsumer> src_;
   Member<Destination> destination1_;
   Member<Destination> destination2_;
 };

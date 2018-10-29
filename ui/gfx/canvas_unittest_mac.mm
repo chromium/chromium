@@ -24,9 +24,7 @@ float GetStringNativeWidth(const base::string16& text,
                            const FontList& font_list) {
   NSFont* native_font = font_list.GetPrimaryFont().GetNativeFont();
   NSString* ns_string = base::SysUTF16ToNSString(text);
-  NSDictionary* attributes =
-      [NSDictionary dictionaryWithObject:native_font
-                                  forKey:NSFontAttributeName];
+  NSDictionary* attributes = @{NSFontAttributeName : native_font};
   return [ns_string sizeWithAttributes:attributes].width;
 }
 

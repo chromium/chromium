@@ -18,7 +18,7 @@ class VolumeController : public ash::mojom::VolumeController {
   ~VolumeController() override;
 
   // Overridden from ash::mojom::VolumeClient:
-  void VolumeMute() override;
+  void VolumeMuteToggle() override;
   void VolumeDown() override;
   void VolumeUp() override;
 

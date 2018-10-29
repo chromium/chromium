@@ -20,7 +20,7 @@ namespace mojo {
 template <>
 struct StructTraits<gfx::mojom::ImageSkiaRepDataView, gfx::ImageSkiaRep> {
   static SkBitmap bitmap(const gfx::ImageSkiaRep& input) {
-    return input.sk_bitmap();
+    return input.GetBitmap();
   }
   static float scale(const gfx::ImageSkiaRep& input);
 

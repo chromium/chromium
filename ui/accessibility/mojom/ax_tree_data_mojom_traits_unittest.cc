@@ -12,9 +12,9 @@ using mojo::test::SerializeAndDeserialize;
 
 TEST(AXTreeDataMojomTraitsTest, TestSerializeAndDeserializeAXTreeData) {
   ui::AXTreeData input, output;
-  input.tree_id = 1;
-  input.parent_tree_id = 2;
-  input.focused_tree_id = 3;
+  input.tree_id = ui::AXTreeID::FromString("1");
+  input.parent_tree_id = ui::AXTreeID::FromString("2");
+  input.focused_tree_id = ui::AXTreeID::FromString("3");
   input.doctype = "4";
   input.loaded = true;
   input.loading_progress = 5;
@@ -31,9 +31,9 @@ TEST(AXTreeDataMojomTraitsTest, TestSerializeAndDeserializeAXTreeData) {
 
   EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXTreeData>(&input, &output));
 
-  EXPECT_EQ(1, output.tree_id);
-  EXPECT_EQ(2, output.parent_tree_id);
-  EXPECT_EQ(3, output.focused_tree_id);
+  EXPECT_EQ("1", output.tree_id.ToString());
+  EXPECT_EQ("2", output.parent_tree_id.ToString());
+  EXPECT_EQ("3", output.focused_tree_id.ToString());
   EXPECT_EQ("4", output.doctype);
   EXPECT_EQ(true, output.loaded);
   EXPECT_EQ(5, output.loading_progress);

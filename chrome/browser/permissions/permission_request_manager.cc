@@ -11,16 +11,16 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string16.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker.h"
 #include "chrome/browser/permissions/permission_request.h"
 #include "chrome/browser/permissions/permission_uma_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
-#include "chrome/browser/vr/ui_suppressed_element.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "url/origin.h"
@@ -66,14 +66,6 @@ bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
 
 }  // namespace
 
-// PermissionRequestManager::Observer ------------------------------------------
-
-PermissionRequestManager::Observer::~Observer() {
-}
-
-void PermissionRequestManager::Observer::OnBubbleAdded() {
-}
-
 // PermissionRequestManager ----------------------------------------------------
 
 PermissionRequestManager::PermissionRequestManager(
@@ -97,13 +89,6 @@ void PermissionRequestManager::AddRequest(PermissionRequest* request) {
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDenyPermissionPrompts)) {
-    request->PermissionDenied();
-    request->RequestFinished();
-    return;
-  }
-
-  if (vr::VrTabHelper::IsUiSuppressedInVr(
-          web_contents(), vr::UiSuppressedElement::kPermissionBubbleRequest)) {
     request->PermissionDenied();
     request->RequestFinished();
     return;
@@ -308,8 +293,8 @@ void PermissionRequestManager::ScheduleShowBubble() {
   if (!main_frame_has_fully_loaded_)
     return;
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&PermissionRequestManager::DequeueRequestsAndShowBubble,
                      weak_factory_.GetWeakPtr()));
 }
@@ -354,6 +339,7 @@ void PermissionRequestManager::ShowBubble(bool is_reshow) {
 void PermissionRequestManager::DeleteBubble() {
   DCHECK(view_);
   view_.reset();
+  NotifyBubbleRemoved();
 }
 
 void PermissionRequestManager::FinalizeBubble(
@@ -485,6 +471,11 @@ void PermissionRequestManager::RemoveObserver(Observer* observer) {
 void PermissionRequestManager::NotifyBubbleAdded() {
   for (Observer& observer : observer_list_)
     observer.OnBubbleAdded();
+}
+
+void PermissionRequestManager::NotifyBubbleRemoved() {
+  for (Observer& observer : observer_list_)
+    observer.OnBubbleRemoved();
 }
 
 void PermissionRequestManager::DoAutoResponseForTesting() {

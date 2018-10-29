@@ -47,13 +47,13 @@ void SourceBufferList::Add(SourceBuffer* buffer) {
   ScheduleEvent(EventTypeNames::addsourcebuffer);
 }
 
-void SourceBufferList::insert(size_t position, SourceBuffer* buffer) {
+void SourceBufferList::insert(wtf_size_t position, SourceBuffer* buffer) {
   list_.insert(position, buffer);
   ScheduleEvent(EventTypeNames::addsourcebuffer);
 }
 
 void SourceBufferList::Remove(SourceBuffer* buffer) {
-  size_t index = list_.Find(buffer);
+  wtf_size_t index = list_.Find(buffer);
   if (index == kNotFound)
     return;
   list_.EraseAt(index);

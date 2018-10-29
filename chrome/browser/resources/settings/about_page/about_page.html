@@ -277,8 +277,16 @@
         </div>
 <if expr="chromeos">
         <div class="settings-box padded block" id="regulatoryInfo"
-            hidden$="[[!shouldShowRegulatoryInfo_(regulatoryInfo_)]]">
-          <img src="[[regulatoryInfo_.url]]" alt="[[regulatoryInfo_.text]]">
+            hidden$="[[!shouldShowRegulatoryOrSafetyInfo_(regulatoryInfo_)]]">
+<if expr="_google_chrome">
+          <div class="secondary" hidden$="[[!shouldShowSafetyInfo_()]]">
+            <a target="_blank" href="$i18n{aboutProductSafetyURL}">
+              $i18nRaw{aboutProductSafety}
+            </a>
+          </div>
+</if>
+          <img src="[[regulatoryInfo_.url]]" alt="[[regulatoryInfo_.text]]"
+              hidden$="[[!shouldShowRegulatoryInfo_(regulatoryInfo_)]]">
         </div>
 </if>
       </settings-section>

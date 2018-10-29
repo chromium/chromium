@@ -186,7 +186,7 @@ TEST_F(ParentChildIndexTest, ChildInsertionAndIteration) {
   const OrderedChildSet* children = index_.GetChildren(GetBookmarkRootId());
   ASSERT_TRUE(children);
   ASSERT_EQ(children->size(), 4UL);
-  OrderedChildSet::const_iterator it = children->begin();
+  auto it = children->begin();
   EXPECT_EQ(*it, b1);
   it++;
   EXPECT_EQ(*it, b2);
@@ -358,7 +358,7 @@ TEST_F(ParentChildIndexTest, OrderedAndUnorderedChildren) {
   EXPECT_EQ(3UL, children->size());
 
   // Ensure that the non-positionable item is moved to the far right.
-  OrderedChildSet::const_iterator it = children->begin();
+  auto it = children->begin();
   EXPECT_EQ(*it, b1);
   it++;
   EXPECT_EQ(*it, b2);

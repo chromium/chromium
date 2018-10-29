@@ -127,7 +127,7 @@ TEST(RulesRegistryTest, FillOptionalIdentifiers) {
   EXPECT_EQ(kRuleId, *get_rules_4b[0]->id);
 
   // Create extension
-  scoped_refptr<Extension> extension =
+  scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test").SetID(kExtensionId).Build();
   registry->OnExtensionUninstalled(extension.get());
   EXPECT_EQ(0u /*extensions*/ + 0u /*rules*/,
@@ -209,10 +209,11 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
       "    }"
       "  ]"
       "}");
-  scoped_refptr<Extension> extension = ExtensionBuilder()
-                                           .SetManifest(std::move(manifest))
-                                           .SetID(kExtensionId)
-                                           .Build();
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder()
+          .SetManifest(std::move(manifest))
+          .SetID(kExtensionId)
+          .Build();
 
   scoped_refptr<RulesRegistry> registry = new TestRulesRegistry(
       content::BrowserThread::UI, "declarativeContent.onPageChanged", key);
@@ -276,10 +277,11 @@ TEST(RulesRegistryTest, DeleteRuleInManifest) {
       "    }]"
       "  }]"
       "}");
-  scoped_refptr<Extension> extension = ExtensionBuilder()
-                                           .SetManifest(std::move(manifest))
-                                           .SetID(kExtensionId)
-                                           .Build();
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder()
+          .SetManifest(std::move(manifest))
+          .SetID(kExtensionId)
+          .Build();
 
   scoped_refptr<RulesRegistry> registry = new TestRulesRegistry(
       content::BrowserThread::UI, "declarativeContent.onPageChanged", key);

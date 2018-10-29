@@ -34,8 +34,6 @@
 - (void)showTabViewController:(UIViewController*)viewController
                    completion:(ProceduralBlock)completion;
 
-@optional
-
 // Perform any initial setup required for the appearance of |tabSwitcher|.
 - (void)prepareToShowTabSwitcher:(id<TabSwitcher>)tabSwitcher;
 

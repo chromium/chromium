@@ -13,7 +13,7 @@
 
 namespace blink {
 
-namespace BackgroundScheduler {
+namespace background_scheduler {
 
 // These are a thin wrapper around base::TaskScheduler to accomodate
 // Blink's CrossThreadClosure, which only allows background tasks
@@ -31,7 +31,7 @@ PLATFORM_EXPORT void PostOnBackgroundThreadWithTraits(const base::Location&,
 // TODO(altimin): Expose CreateBackgroundTaskRunnerWithTraits when the
 // need arises.
 
-}  // namespace BackgroundScheduler
+}  // namespace background_scheduler
 
 }  // namespace blink
 

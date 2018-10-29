@@ -59,13 +59,15 @@ const char kConnectivityDiagnosticsPath[] =
 const char kConnectivityDiagnosticsLauncherPath[] =
     "/usr/share/chromeos-assets/connectivity_diagnostics_launcher";
 const char kFirstRunDialogId[] = "jdgcneonijmofocbhmijhacgchbihela";
-const char kSpeechSynthesisExtensionPath[] =
+const char kEspeakSpeechSynthesisExtensionPath[] =
+    "/usr/share/chromeos-assets/speech_synthesis/espeak-ng";
+const char kEspeakSpeechSynthesisExtensionId[] =
+    "dakbfdmgjiabojdgbiljlhgjbokobjpg";
+const char kGoogleSpeechSynthesisExtensionPath[] =
     "/usr/share/chromeos-assets/speech_synthesis/patts";
-const char kSpeechSynthesisExtensionId[] =
+const char kGoogleSpeechSynthesisExtensionId[] =
     "gjjabgpgjpampikjhjpfhneeoapjbjaf";
 const char kWallpaperManagerId[] = "obklkkbkpaoaejdabbfldmcfplpdgolj";
-const char kWebstoreWidgetAppId[] = "fbjakikfhfdajcamjleinfciajelkpek";
-const char kZIPUnpackerExtensionId[] = "oedeeodfidgoollimchfdnbmhcpnklnd";
 const char kZipArchiverExtensionId[] = "dmboannefpncccogfdikhmhpmdnddgoe";
 const char kZipArchiverExtensionPath[] = "chromeos/zip_archiver";
 #endif

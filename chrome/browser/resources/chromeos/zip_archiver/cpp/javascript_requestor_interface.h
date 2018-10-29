@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_JAVASCRIPT_REQUESTOR_INTERFACE_H_
 #define CHROME_BROWSER_RESOURCES_CHROMEOS_ZIP_ARCHIVER_CPP_JAVASCRIPT_REQUESTOR_INTERFACE_H_
 
+#include <cstdint>
 #include <string>
 
 // Makes requests to JavaScript. Requests are asynchronous and responses must be

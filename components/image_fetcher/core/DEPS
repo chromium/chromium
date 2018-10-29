@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/keyed_service",
+  "+components/leveldb_proto",
+  "+components/prefs",
+  "+ui/gfx/codec",
+  "+ui/gfx/geomtery",
+  "+ui/gfx/image",
+]

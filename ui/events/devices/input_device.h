@@ -14,9 +14,10 @@
 namespace ui {
 
 enum InputDeviceType {
-  INPUT_DEVICE_INTERNAL,  // Internally connected input device.
-  INPUT_DEVICE_EXTERNAL,  // Known externally connected input device.
-  INPUT_DEVICE_UNKNOWN,   // Device that may or may not be an external device.
+  INPUT_DEVICE_INTERNAL,   // Internally connected input device.
+  INPUT_DEVICE_USB,        // Known externally connected usb input device.
+  INPUT_DEVICE_BLUETOOTH,  // Known externally connected bluetooth input device.
+  INPUT_DEVICE_UNKNOWN,    // Device that may or may not be an external device.
 };
 
 // Represents an input device state.

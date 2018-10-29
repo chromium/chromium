@@ -117,6 +117,7 @@ void SharedWorkerScriptLoader::MaybeStartLoader(
 
 void SharedWorkerScriptLoader::LoadFromNetwork(
     bool reset_subresource_loader_params) {
+  default_loader_used_ = true;
   network::mojom::URLLoaderClientPtr client;
   if (url_loader_client_binding_)
     url_loader_client_binding_.Unbind();
@@ -243,6 +244,35 @@ void SharedWorkerScriptLoader::OnComplete(
   if (status.error_code == net::OK)
     service_worker_provider_host_->CompleteSharedWorkerPreparation();
   client_->OnComplete(status);
+}
+
+bool SharedWorkerScriptLoader::MaybeCreateLoaderForResponse(
+    const network::ResourceResponseHead& response,
+    network::mojom::URLLoaderPtr* response_url_loader,
+    network::mojom::URLLoaderClientRequest* response_client_request,
+    ThrottlingURLLoader* url_loader) {
+  // TODO(crbug/898755): This is odd that NavigationLoaderInterceptor::
+  // MaybeCreateLoader() is called directly from SharedWorkerScriptLoader. But
+  // NavigationLoaderInterceptor::MaybeCreateLoaderForResponse() is called from
+  // SharedWorkerScriptFetcher::OnReceiveResponse(). This is due to the wired
+  // design of SharedWorkerScriptLoader and SharedWorkerScriptFetcher and the
+  // interceptors. The interceptors should be owned by
+  // SharedWorkerScriptFetcher.
+  DCHECK(default_loader_used_);
+  for (auto& interceptor : interceptors_) {
+    bool skip_other_interceptors = false;
+    if (interceptor->MaybeCreateLoaderForResponse(
+            resource_request_.url, response, response_url_loader,
+            response_client_request, url_loader, &skip_other_interceptors)) {
+      // Both ServiceWorkerRequestHandler and AppCacheRequestHandler don't set
+      // skip_other_interceptors.
+      DCHECK(!skip_other_interceptors);
+      subresource_loader_params_ =
+          interceptor->MaybeCreateSubresourceLoaderParams();
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace content

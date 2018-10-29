@@ -12,6 +12,7 @@
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_image.h"
 #include "cc/raster/tile_task.h"
+#include "cc/tiles/image_decode_cache_utils.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSize.h"

@@ -14,7 +14,8 @@ namespace viz {
 class VIZ_CLIENT_EXPORT HitTestDataProviderDrawQuad
     : public HitTestDataProvider {
  public:
-  explicit HitTestDataProviderDrawQuad(bool should_ask_for_child_region);
+  HitTestDataProviderDrawQuad(bool should_ask_for_child_region,
+                              bool root_accepts_events);
   ~HitTestDataProviderDrawQuad() override;
 
   base::Optional<HitTestRegionList> GetHitTestData(
@@ -22,6 +23,10 @@ class VIZ_CLIENT_EXPORT HitTestDataProviderDrawQuad
 
  private:
   const bool should_ask_for_child_region_;
+
+  // Only used by HitTestRegionList to indicate if it should accept events or
+  // not.
+  const bool root_accepts_events_;
 
   DISALLOW_COPY_AND_ASSIGN(HitTestDataProviderDrawQuad);
 };

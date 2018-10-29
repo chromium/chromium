@@ -32,7 +32,6 @@ class TabLoaderTester {
   void ForceLoadTimerFired();
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-  void OnMemoryStateChange(base::MemoryState state);
   void SetTabLoadingEnabled(bool enabled);
 
   // Accessors to TabLoader internals.

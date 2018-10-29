@@ -2,4 +2,5 @@ This tests for a bug when outdenting an indented list item. You should see 'foo'
 
 foo
 bar
+
 <ul><li>foo</li><li>bar</li></ul>

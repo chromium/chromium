@@ -70,13 +70,15 @@ class MockConsumerEndpoint : public perfetto::TracingService::ConsumerEndpoint {
     mock_service_->OnTracingEnabled(
         config.data_sources()[0].config().chrome_config().trace_config());
   }
-
   void DisableTracing() override { mock_service_->OnTracingDisabled(); }
   void ReadBuffers() override {}
   void FreeBuffers() override {}
   void Flush(uint32_t timeout_ms, FlushCallback callback) override {
     callback(true);
   }
+
+  // Unused in chrome, only meaningful when using TraceConfig.deferred_start.
+  void StartTracing() override {}
 
  private:
   MockService* mock_service_;

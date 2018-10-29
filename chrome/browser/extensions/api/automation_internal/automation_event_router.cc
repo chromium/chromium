@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/extensions/api/automation_api_constants.h"
 #include "chrome/common/extensions/api/automation_internal.h"
 #include "chrome/common/extensions/chrome_extension_messages.h"
 #include "content/public/browser/notification_service.h"
@@ -49,7 +48,7 @@ AutomationEventRouter::~AutomationEventRouter() {
 void AutomationEventRouter::RegisterListenerForOneTree(
     const ExtensionId& extension_id,
     int listener_process_id,
-    int source_ax_tree_id) {
+    ui::AXTreeID source_ax_tree_id) {
   Register(extension_id,
            listener_process_id,
            source_ax_tree_id,
@@ -59,10 +58,7 @@ void AutomationEventRouter::RegisterListenerForOneTree(
 void AutomationEventRouter::RegisterListenerWithDesktopPermission(
     const ExtensionId& extension_id,
     int listener_process_id) {
-  Register(extension_id,
-           listener_process_id,
-           api::automation::kDesktopTreeID,
-           true);
+  Register(extension_id, listener_process_id, ui::DesktopAXTreeID(), true);
 }
 
 void AutomationEventRouter::DispatchAccessibilityEvents(
@@ -102,7 +98,7 @@ void AutomationEventRouter::DispatchAccessibilityLocationChange(
 }
 
 void AutomationEventRouter::DispatchTreeDestroyedEvent(
-    int tree_id,
+    ui::AXTreeID tree_id,
     content::BrowserContext* browser_context) {
   if (listeners_.empty())
     return;
@@ -139,7 +135,7 @@ void AutomationEventRouter::DispatchActionResult(const ui::AXActionData& data,
 }
 
 void AutomationEventRouter::SetTreeDestroyedCallbackForTest(
-    base::RepeatingCallback<void(int)> cb) {
+    base::RepeatingCallback<void(ui::AXTreeID)> cb) {
   tree_destroyed_callback_for_test_ = cb;
 }
 
@@ -152,11 +148,10 @@ AutomationEventRouter::AutomationListener::AutomationListener(
 AutomationEventRouter::AutomationListener::~AutomationListener() {
 }
 
-void AutomationEventRouter::Register(
-    const ExtensionId& extension_id,
-    int listener_process_id,
-    int ax_tree_id,
-    bool desktop) {
+void AutomationEventRouter::Register(const ExtensionId& extension_id,
+                                     int listener_process_id,
+                                     ui::AXTreeID ax_tree_id,
+                                     bool desktop) {
   auto iter =
       std::find_if(listeners_.begin(), listeners_.end(),
                    [listener_process_id](const AutomationListener& item) {

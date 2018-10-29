@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "ui/gfx/geometry/rect.h"
 
 using ::testing::Invoke;
@@ -84,13 +83,13 @@ class RecordInterceptor : public mojom::VideoDecodeStatsRecorder {
 
   void UpdateRecord(mojom::PredictionTargetsPtr targets) override {
     MockUpdateRecord(targets->frames_decoded, targets->frames_dropped,
-                     targets->frames_decoded_power_efficient);
+                     targets->frames_power_efficient);
   }
 
   MOCK_METHOD3(MockUpdateRecord,
                void(uint32_t frames_decoded,
                     uint32_t frames_dropped,
-                    uint32_t frames_decoded_power_efficient));
+                    uint32_t frames_power_efficient));
 
   MOCK_METHOD0(FinalizeRecord, void());
 };
@@ -186,8 +185,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
         std::move(recorder_ptr),
         base::Bind(&VideoDecodeStatsReporterTest::GetPipelineStatsCB,
                    base::Unretained(this)),
-        MakeDefaultVideoConfig(),
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+        MakeDefaultVideoConfig(), task_runner_,
         task_runner_->GetMockTickClock());
   }
 

@@ -29,16 +29,6 @@ inline void SpdyStrAppend(SpdyString* output, const Args&... args) {
   SpdyStrAppendImpl(output, std::forward<const Args&>(args)...);
 }
 
-template <typename... Args>
-inline SpdyString SpdyStringPrintf(const Args&... args) {
-  return SpdyStringPrintfImpl(std::forward<const Args&>(args)...);
-}
-
-template <typename... Args>
-inline void SpdyStringAppendF(const Args&... args) {
-  SpdyStringAppendFImpl(std::forward<const Args&>(args)...);
-}
-
 inline char SpdyHexDigitToInt(char c) {
   return SpdyHexDigitToIntImpl(c);
 }

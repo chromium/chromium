@@ -66,7 +66,7 @@ bool DragCaret::IsContentRichlyEditable() const {
 }
 
 void DragCaret::SetCaretPosition(const PositionWithAffinity& position) {
-  position_ = CreateVisiblePosition(position).ToPositionWithAffinity();
+  position_ = position;
   Document* document = nullptr;
   if (Node* node = position_.AnchorNode()) {
     document = &node->GetDocument();

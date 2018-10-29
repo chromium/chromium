@@ -27,9 +27,11 @@ class PaymentRequestPaymentMethodSelectionMediatorTest
     : public PaymentRequestUnitTestBase,
       public PlatformTest {
  protected:
-  void SetUp() override { PaymentRequestUnitTestBase::SetUp(); }
+  // PlatformTest:
+  void SetUp() override { DoSetUp(); }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 };
 
 // Tests that the expected selectable items are created and that the index of

@@ -2,7 +2,6 @@ Tests that the close method of ImageBitmap does dispose the image data
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS bitmap.width is imgWidth
 PASS bitmap.height is imgHeight
 PASS bitmap.width is imgWidth

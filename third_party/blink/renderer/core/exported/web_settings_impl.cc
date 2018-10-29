@@ -473,10 +473,6 @@ void WebSettingsImpl::SetEditingBehavior(EditingBehavior behavior) {
   settings_->SetEditingBehaviorType(static_cast<EditingBehaviorType>(behavior));
 }
 
-void WebSettingsImpl::SetAcceleratedCompositingEnabled(bool enabled) {
-  settings_->SetAcceleratedCompositingEnabled(enabled);
-}
-
 void WebSettingsImpl::SetMockScrollbarsEnabled(bool enabled) {
   settings_->SetMockScrollbarsEnabled(enabled);
 }
@@ -775,11 +771,11 @@ void WebSettingsImpl::SetLazyImageLoadingDistanceThresholdPx4G(
   settings_->SetLazyImageLoadingDistanceThresholdPx4G(distance_px);
 }
 
-STATIC_ASSERT_ENUM(WebSettings::kImageAnimationPolicyAllowed,
+STATIC_ASSERT_ENUM(WebSettings::ImageAnimationPolicy::kAllowed,
                    kImageAnimationPolicyAllowed);
-STATIC_ASSERT_ENUM(WebSettings::kImageAnimationPolicyAnimateOnce,
+STATIC_ASSERT_ENUM(WebSettings::ImageAnimationPolicy::kAnimateOnce,
                    kImageAnimationPolicyAnimateOnce);
-STATIC_ASSERT_ENUM(WebSettings::kImageAnimationPolicyNoAnimation,
+STATIC_ASSERT_ENUM(WebSettings::ImageAnimationPolicy::kNoAnimation,
                    kImageAnimationPolicyNoAnimation);
 
 }  // namespace blink

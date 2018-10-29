@@ -202,7 +202,7 @@ class RequestQueueStoreTestBase : public testing::Test {
   // Callback used for add/update request.
   void AddOrUpdateDone(UpdateStatus result);
   void AddRequestDone(ItemActionStatus status);
-  void UpdateRequestDone(std::unique_ptr<UpdateRequestsResult> result);
+  void UpdateRequestDone(UpdateRequestsResult result);
   // Callback used for reset.
   void ResetDone(bool result);
 
@@ -284,9 +284,9 @@ void RequestQueueStoreTestBase::AddRequestDone(ItemActionStatus status) {
   last_add_status_ = status;
 }
 
-void RequestQueueStoreTestBase::UpdateRequestDone(
-    std::unique_ptr<UpdateRequestsResult> result) {
-  last_update_result_ = std::move(result);
+void RequestQueueStoreTestBase::UpdateRequestDone(UpdateRequestsResult result) {
+  last_update_result_ =
+      std::make_unique<UpdateRequestsResult>(std::move(result));
 }
 
 void RequestQueueStoreTestBase::ResetDone(bool result) {

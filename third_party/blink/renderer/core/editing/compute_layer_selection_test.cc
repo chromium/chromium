@@ -22,6 +22,8 @@ class ComputeLayerSelectionTest : public EditingTestBase {
  public:
   void SetUp() override {
     EditingTestBase::SetUp();
+    // This Page is not actually being shown by a compositor, but we act like it
+    // will in order to test behaviour.
     GetPage().GetSettings().SetAcceleratedCompositingEnabled(true);
     GetDocument().View()->SetParentVisible(true);
     GetDocument().View()->SetSelfVisible(true);
@@ -312,6 +314,31 @@ TEST_F(ComputeLayerSelectionTest, BlockEndBR3) {
   EXPECT_EQ(layer_selection.start.edge_bottom, gfx::Point(8, 18));
   EXPECT_EQ(layer_selection.end.edge_top, gfx::Point(8, 18));
   EXPECT_EQ(layer_selection.end.edge_bottom, gfx::Point(8, 28));
+}
+
+// crbug.com/889799. Checking when edge_bottom on box boundary, bound is still
+// visible.
+TEST_F(ComputeLayerSelectionTest, SamplePointOnBoundary) {
+  SetBodyContent(R"HTML(
+      <!DOCTYPE html>
+      <style>
+      input {
+        padding: 0px;
+        border: 0px;
+        font-size: 17px;
+        line-height: 18px;
+      }
+      </style>
+      <input id=target value='test test test test'>
+  )HTML");
+  GetDocument().GetFrame()->SetPageZoomFactor(2.625);
+
+  FocusAndSelectAll(ToHTMLInputElement(GetDocument().getElementById("target")));
+
+  const cc::LayerSelection& composited_selection =
+      ComputeLayerSelection(Selection());
+  EXPECT_FALSE(composited_selection.start.hidden);
+  EXPECT_FALSE(composited_selection.end.hidden);
 }
 
 }  // namespace blink

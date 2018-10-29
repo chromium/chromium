@@ -60,11 +60,11 @@ static const int kMaxCapacityInSeconds = 3;
 static const int kStartingCapacityInMs = 200;
 
 // The minimum size in ms for the |audio_buffer_| for encrypted streams.
-// Encrypted audio typically has some extra decryption overhead than clear
-// audio. Thus keep a separate capacity here. The value may or may not be
-// the same as kStartingCapacityInMs above. For more historical context,
-// see https://crbug.com/403462.
-static const int kStartingCapacityForEncryptedInMs = kStartingCapacityInMs;
+// Set this to be larger than |kStartingCapacityInMs| because the performance of
+// encrypted playback is always worse than clear playback, due to decryption and
+// potentially IPC overhead. For the context, see https://crbug.com/403462,
+// https://crbug.com/718161 and https://crbug.com/879970.
+static const int kStartingCapacityForEncryptedInMs = 500;
 
 AudioRendererAlgorithm::AudioRendererAlgorithm()
     : channels_(0),

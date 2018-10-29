@@ -23,11 +23,6 @@ namespace aura {
 namespace client {
 class FocusClient;
 
-enum class WindowEmbedType {
-  NONE,
-  EMBED_IN_OWNER,
-};
-
 // Alphabetical sort.
 
 // A property key to store whether accessibility focus falls back to widget or
@@ -124,6 +119,12 @@ AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
 // ws::mojom::kResizeBehavior values.
 AURA_EXPORT extern const WindowProperty<int32_t>* const kResizeBehaviorKey;
 
+// Reserves a number of dip around the window (i.e. inset from its exterior
+// border) for event routing back to the top level window. This is used for
+// routing events to toplevel window resize handles. It should only be respected
+// for restored windows (maximized and fullscreen can't be drag-resized).
+AURA_EXPORT extern const WindowProperty<int>* const kResizeHandleInset;
+
 // A property key to store the restore bounds in screen coordinates for a
 // window.
 AURA_EXPORT extern const WindowProperty<gfx::Rect*>* const kRestoreBoundsKey;
@@ -148,9 +149,6 @@ AURA_EXPORT extern const WindowProperty<int>* const kTopViewInset;
 
 // A property key to store the window icon, typically 16x16 for title bars.
 AURA_EXPORT extern const WindowProperty<gfx::ImageSkia*>* const kWindowIconKey;
-
-// Indicates the type of embedding within the given window.
-AURA_EXPORT extern const WindowProperty<WindowEmbedType>* const kEmbedType;
 
 // The corner radius of a window in DIPs. Currently only used for shadows.
 // Default is -1, meaning "unspecified". 0 Ensures corners are square.

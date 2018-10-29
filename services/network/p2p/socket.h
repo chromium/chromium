@@ -150,20 +150,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   Delegate* delegate_;
   mojom::P2PSocketClientPtr client_;
   mojo::Binding<mojom::P2PSocket> binding_;
-  State state_;
 
   ProtocolType protocol_type_;
 
  private:
   // Track total delayed packets for calculating how many packets are
   // delayed by system at the end of call.
-  uint32_t send_packets_delayed_total_;
-  uint32_t send_packets_total_;
+  uint32_t send_packets_delayed_total_ = 0;
+  uint32_t send_packets_total_ = 0;
 
   // Track the maximum of consecutive delayed bytes caused by system's
   // EWOULDBLOCK.
-  int32_t send_bytes_delayed_max_;
-  int32_t send_bytes_delayed_cur_;
+  int32_t send_bytes_delayed_max_ = 0;
+  int32_t send_bytes_delayed_cur_ = 0;
 
   base::WeakPtrFactory<P2PSocket> weak_ptr_factory_;
 

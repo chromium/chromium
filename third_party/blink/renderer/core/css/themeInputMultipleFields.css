@@ -13,7 +13,7 @@ input[type="week" i] {
     font-family: monospace;
     overflow: hidden;
     padding: 0;
-    -webkit-padding-start: 1px;
+    padding-inline-start: 1px;
     cursor: default;
 }
 
@@ -93,5 +93,5 @@ input[type="time" i]::-webkit-inner-spin-button,
 input[type="week" i]::-webkit-inner-spin-button {
     /* FIXME: Remove height. */
     height: 1.5em;
-    -webkit-margin-start: 2px;
+    margin-inline-start: 2px;
 }

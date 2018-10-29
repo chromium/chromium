@@ -13,12 +13,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#import "ui/views/cocoa/bridged_native_widget.h"
 #import "ui/views/cocoa/bridged_native_widget_host_impl.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
+#import "ui/views_bridge_mac/bridged_native_widget_impl.h"
 
 using base::ASCIIToUTF16;
 
@@ -56,7 +56,7 @@ using base::ASCIIToUTF16;
 @synthesize draggingFormation;
 @synthesize springLoadingHighlight;
 
-- (id)initWithPasteboard:(NSPasteboard*)pasteboard {
+- (instancetype)initWithPasteboard:(NSPasteboard*)pasteboard {
   if ((self = [super init])) {
     pasteboard_ = pasteboard;
   }
@@ -156,7 +156,9 @@ class DragDropClientMacTest : public WidgetTest {
  public:
   DragDropClientMacTest() : widget_(new Widget) {}
 
-  DragDropClientMac* drag_drop_client() { return bridge_->drag_drop_client(); }
+  DragDropClientMac* drag_drop_client() {
+    return bridge_host_->drag_drop_client();
+  }
 
   NSDragOperation DragUpdate(NSPasteboard* pasteboard) {
     DragDropClientMac* client = drag_drop_client();
@@ -186,10 +188,9 @@ class DragDropClientMacTest : public WidgetTest {
     gfx::Rect bounds(0, 0, 100, 100);
     widget_->SetBounds(bounds);
 
-    bridge_ = BridgedNativeWidgetImpl::GetFromNativeWindow(
-        widget_->GetNativeWindow());
     bridge_host_ = BridgedNativeWidgetHostImpl::GetFromNativeWindow(
         widget_->GetNativeWindow());
+    bridge_ = bridge_host_->bridge_impl();
     widget_->Show();
 
     target_ = new DragDropView();

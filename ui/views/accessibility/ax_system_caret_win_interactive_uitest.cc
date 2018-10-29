@@ -21,6 +21,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/test/gl_surface_test_support.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/test/widget_test.h"
@@ -74,6 +75,132 @@ class AXSystemCaretWinTest : public test::WidgetTest {
   DISALLOW_COPY_AND_ASSIGN(AXSystemCaretWinTest);
 };
 
+class WinAccessibilityCaretEventMonitor {
+ public:
+  WinAccessibilityCaretEventMonitor(UINT event_min, UINT event_max);
+  ~WinAccessibilityCaretEventMonitor();
+
+  // Blocks until the next event is received. When it's received, it
+  // queries accessibility information about the object that fired the
+  // event and populates the event, hwnd, role, state, and name in the
+  // passed arguments.
+  void WaitForNextEvent(DWORD* out_event, UINT* out_role, UINT* out_state);
+
+ private:
+  void OnWinEventHook(HWINEVENTHOOK handle,
+                      DWORD event,
+                      HWND hwnd,
+                      LONG obj_id,
+                      LONG child_id,
+                      DWORD event_thread,
+                      DWORD event_time);
+
+  static void CALLBACK WinEventHookThunk(HWINEVENTHOOK handle,
+                                         DWORD event,
+                                         HWND hwnd,
+                                         LONG obj_id,
+                                         LONG child_id,
+                                         DWORD event_thread,
+                                         DWORD event_time);
+
+  struct EventInfo {
+    DWORD event;
+    HWND hwnd;
+    LONG obj_id;
+    LONG child_id;
+  };
+
+  base::circular_deque<EventInfo> event_queue_;
+  base::RunLoop loop_runner_;
+  HWINEVENTHOOK win_event_hook_handle_;
+  static WinAccessibilityCaretEventMonitor* instance_;
+
+  DISALLOW_COPY_AND_ASSIGN(WinAccessibilityCaretEventMonitor);
+};
+
+// static
+WinAccessibilityCaretEventMonitor*
+    WinAccessibilityCaretEventMonitor::instance_ = NULL;
+
+WinAccessibilityCaretEventMonitor::WinAccessibilityCaretEventMonitor(
+    UINT event_min,
+    UINT event_max) {
+  CHECK(!instance_) << "There can be only one instance of"
+                    << " WinAccessibilityCaretEventMonitor at a time.";
+  instance_ = this;
+  win_event_hook_handle_ =
+      SetWinEventHook(event_min, event_max, NULL,
+                      &WinAccessibilityCaretEventMonitor::WinEventHookThunk,
+                      GetCurrentProcessId(),
+                      0,  // Hook all threads
+                      WINEVENT_OUTOFCONTEXT);
+}
+
+WinAccessibilityCaretEventMonitor::~WinAccessibilityCaretEventMonitor() {
+  UnhookWinEvent(win_event_hook_handle_);
+  instance_ = NULL;
+}
+
+void WinAccessibilityCaretEventMonitor::WaitForNextEvent(DWORD* out_event,
+                                                         UINT* out_role,
+                                                         UINT* out_state) {
+  if (event_queue_.empty())
+    loop_runner_.Run();
+
+  EventInfo event_info = event_queue_.front();
+  event_queue_.pop_front();
+
+  *out_event = event_info.event;
+
+  Microsoft::WRL::ComPtr<IAccessible> acc_obj;
+  base::win::ScopedVariant child_variant;
+  CHECK(S_OK == AccessibleObjectFromEvent(
+                    event_info.hwnd, event_info.obj_id, event_info.child_id,
+                    acc_obj.GetAddressOf(), child_variant.Receive()));
+
+  base::win::ScopedVariant role_variant;
+  if (S_OK == acc_obj->get_accRole(child_variant, role_variant.Receive()))
+    *out_role = V_I4(role_variant.ptr());
+  else
+    *out_role = 0;
+
+  base::win::ScopedVariant state_variant;
+  if (S_OK == acc_obj->get_accState(child_variant, state_variant.Receive()))
+    *out_state = V_I4(state_variant.ptr());
+  else
+    *out_state = 0;
+}
+
+void WinAccessibilityCaretEventMonitor::OnWinEventHook(HWINEVENTHOOK handle,
+                                                       DWORD event,
+                                                       HWND hwnd,
+                                                       LONG obj_id,
+                                                       LONG child_id,
+                                                       DWORD event_thread,
+                                                       DWORD event_time) {
+  EventInfo event_info;
+  event_info.event = event;
+  event_info.hwnd = hwnd;
+  event_info.obj_id = obj_id;
+  event_info.child_id = child_id;
+  event_queue_.push_back(event_info);
+  loop_runner_.Quit();
+}
+
+// static
+void CALLBACK
+WinAccessibilityCaretEventMonitor::WinEventHookThunk(HWINEVENTHOOK handle,
+                                                     DWORD event,
+                                                     HWND hwnd,
+                                                     LONG obj_id,
+                                                     LONG child_id,
+                                                     DWORD event_thread,
+                                                     DWORD event_time) {
+  if (instance_ && obj_id == OBJID_CARET) {
+    instance_->OnWinEventHook(handle, event, hwnd, obj_id, child_id,
+                              event_thread, event_time);
+  }
+}
 }  // namespace
 
 TEST_F(AXSystemCaretWinTest, DISABLED_TestOnCaretBoundsChangeInTextField) {
@@ -181,6 +308,83 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestMovingWindow) {
   // The width and height of the caret shouldn't change.
   EXPECT_EQ(width, width3);
   EXPECT_EQ(height, height3);
+}
+
+TEST_F(AXSystemCaretWinTest, DISABLED_TestCaretMSAAEvents) {
+  TextfieldTestApi textfield_test_api(textfield_);
+  Microsoft::WRL::ComPtr<IAccessible> caret_accessible;
+  gfx::NativeWindow native_window = widget_->GetNativeWindow();
+  ASSERT_NE(nullptr, native_window);
+  HWND hwnd = native_window->GetHost()->GetAcceleratedWidget();
+  EXPECT_HRESULT_SUCCEEDED(AccessibleObjectFromWindow(
+      hwnd, static_cast<DWORD>(OBJID_CARET), IID_IAccessible,
+      reinterpret_cast<void**>(caret_accessible.GetAddressOf())));
+
+  DWORD event;
+  UINT role;
+  UINT state;
+
+  {
+    // Set caret to start of textfield.
+    WinAccessibilityCaretEventMonitor monitor(EVENT_OBJECT_SHOW,
+                                              EVENT_OBJECT_LOCATIONCHANGE);
+    textfield_test_api.ExecuteTextEditCommand(
+        ui::TextEditCommand::MOVE_TO_BEGINNING_OF_DOCUMENT);
+    monitor.WaitForNextEvent(&event, &role, &state);
+    ASSERT_EQ(event, static_cast<DWORD>(EVENT_OBJECT_LOCATIONCHANGE))
+        << "Event should be EVENT_OBJECT_LOCATIONCHANGE";
+    ASSERT_EQ(role, static_cast<UINT>(ROLE_SYSTEM_CARET))
+        << "Role should be ROLE_SYSTEM_CARET";
+    ASSERT_EQ(state, static_cast<UINT>(0)) << "State should be 0";
+  }
+
+  {
+    // Set caret to end of textfield.
+    WinAccessibilityCaretEventMonitor monitor(EVENT_OBJECT_SHOW,
+                                              EVENT_OBJECT_LOCATIONCHANGE);
+    textfield_test_api.ExecuteTextEditCommand(
+        ui::TextEditCommand::MOVE_TO_END_OF_DOCUMENT);
+    monitor.WaitForNextEvent(&event, &role, &state);
+    ASSERT_EQ(event, static_cast<DWORD>(EVENT_OBJECT_LOCATIONCHANGE))
+        << "Event should be EVENT_OBJECT_LOCATIONCHANGE";
+    ASSERT_EQ(role, static_cast<UINT>(ROLE_SYSTEM_CARET))
+        << "Role should be ROLE_SYSTEM_CARET";
+    ASSERT_EQ(state, static_cast<UINT>(0)) << "State should be 0";
+  }
+
+  {
+    // Move focus to a button.
+    LabelButton button(nullptr, base::string16());
+    button.SetBounds(500, 0, 200, 20);
+    widget_->GetRootView()->AddChildView(&button);
+    test::WidgetActivationWaiter waiter(widget_, true);
+    WinAccessibilityCaretEventMonitor monitor(EVENT_OBJECT_SHOW,
+                                              EVENT_OBJECT_LOCATIONCHANGE);
+    widget_->Show();
+    waiter.Wait();
+    button.SetFocusBehavior(View::FocusBehavior::ALWAYS);
+    button.RequestFocus();
+    monitor.WaitForNextEvent(&event, &role, &state);
+    ASSERT_EQ(event, static_cast<DWORD>(EVENT_OBJECT_HIDE))
+        << "Event should be EVENT_OBJECT_HIDE";
+    ASSERT_EQ(role, static_cast<UINT>(ROLE_SYSTEM_CARET))
+        << "Role should be ROLE_SYSTEM_CARET";
+    ASSERT_EQ(state, static_cast<UINT>(STATE_SYSTEM_INVISIBLE))
+        << "State should be STATE_SYSTEM_INVISIBLE";
+  }
+
+  {
+    // Move focus back to the text field.
+    WinAccessibilityCaretEventMonitor monitor(EVENT_OBJECT_SHOW,
+                                              EVENT_OBJECT_LOCATIONCHANGE);
+    textfield_->RequestFocus();
+    monitor.WaitForNextEvent(&event, &role, &state);
+    ASSERT_EQ(event, static_cast<DWORD>(EVENT_OBJECT_SHOW))
+        << "Event should be EVENT_OBJECT_SHOW";
+    ASSERT_EQ(role, static_cast<UINT>(ROLE_SYSTEM_CARET))
+        << "Role should be ROLE_SYSTEM_CARET";
+    ASSERT_EQ(state, static_cast<UINT>(0)) << "State should be 0";
+  }
 }
 
 }  // namespace views

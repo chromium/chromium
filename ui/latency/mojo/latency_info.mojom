@@ -5,7 +5,6 @@
 module ui.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
 
 enum LatencyComponentType {
   // ---------------------------BEGIN COMPONENT-------------------------------

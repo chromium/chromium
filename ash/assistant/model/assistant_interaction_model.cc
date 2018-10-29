@@ -163,7 +163,7 @@ void AssistantInteractionModel::NotifyPendingQueryCleared() {
 
 void AssistantInteractionModel::NotifyResponseChanged() {
   for (AssistantInteractionModelObserver& observer : observers_)
-    observer.OnResponseChanged(*response_);
+    observer.OnResponseChanged(response_);
 }
 
 void AssistantInteractionModel::NotifyResponseCleared() {

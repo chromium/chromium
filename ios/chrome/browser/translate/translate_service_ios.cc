@@ -22,7 +22,7 @@ TranslateServiceIOS::TranslateServiceIOS()
           nullptr,
           base::BindOnce(&ApplicationContext::GetNetworkConnectionTracker,
                          base::Unretained(GetApplicationContext()))) {
-  resource_request_allowed_notifier_.Init(this, false /* leaky */);
+  resource_request_allowed_notifier_.Init(this, true /* leaky */);
 }
 
 TranslateServiceIOS::~TranslateServiceIOS() {

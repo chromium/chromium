@@ -173,10 +173,8 @@ void OSExchangeDataProviderAuraX11::SetFilename(const base::FilePath& path) {
 void OSExchangeDataProviderAuraX11::SetFilenames(
     const std::vector<FileInfo>& filenames) {
   std::vector<std::string> paths;
-  for (std::vector<FileInfo>::const_iterator it = filenames.begin();
-       it != filenames.end();
-       ++it) {
-    std::string url_spec = net::FilePathToFileURL(it->path).spec();
+  for (const auto& filename : filenames) {
+    std::string url_spec = net::FilePathToFileURL(filename.path).spec();
     if (!url_spec.empty())
       paths.push_back(url_spec);
   }
@@ -256,9 +254,8 @@ bool OSExchangeDataProviderAuraX11::GetURLAndTitle(
       }
     } else if (data.GetType() == gfx::GetAtom(Clipboard::kMimeTypeURIList)) {
       std::vector<std::string> tokens = ui::ParseURIList(data);
-      for (std::vector<std::string>::const_iterator it = tokens.begin();
-           it != tokens.end(); ++it) {
-        GURL test_url(*it);
+      for (const std::string& token : tokens) {
+        GURL test_url(token);
         if (!test_url.SchemeIsFile() ||
             policy == OSExchangeData::CONVERT_FILENAMES) {
           *url = test_url;
@@ -292,9 +289,8 @@ bool OSExchangeDataProviderAuraX11::GetFilenames(
   ui::SelectionData data(format_map_.GetFirstOf(requested_types));
   if (data.IsValid()) {
     std::vector<std::string> tokens = ui::ParseURIList(data);
-    for (std::vector<std::string>::const_iterator it = tokens.begin();
-         it != tokens.end(); ++it) {
-      GURL url(*it);
+    for (const std::string& token : tokens) {
+      GURL url(token);
       base::FilePath file_path;
       if (url.SchemeIsFile() && net::FileURLToFilePath(url, &file_path)) {
         filenames->push_back(FileInfo(file_path, base::FilePath()));
@@ -349,9 +345,8 @@ bool OSExchangeDataProviderAuraX11::HasURL(
     } else if (data.GetType() ==
                gfx::GetAtom(ui::Clipboard::kMimeTypeURIList)) {
       std::vector<std::string> tokens = ui::ParseURIList(data);
-      for (std::vector<std::string>::const_iterator it = tokens.begin();
-           it != tokens.end(); ++it) {
-        if (!GURL(*it).SchemeIsFile() ||
+      for (const std::string& token : tokens) {
+        if (!GURL(token).SchemeIsFile() ||
             policy == OSExchangeData::CONVERT_FILENAMES)
           return true;
       }
@@ -377,9 +372,8 @@ bool OSExchangeDataProviderAuraX11::HasFile() const {
   ui::SelectionData data(format_map_.GetFirstOf(requested_types));
   if (data.IsValid()) {
     std::vector<std::string> tokens = ui::ParseURIList(data);
-    for (std::vector<std::string>::const_iterator it = tokens.begin();
-         it != tokens.end(); ++it) {
-      GURL url(*it);
+    for (const std::string& token : tokens) {
+      GURL url(token);
       base::FilePath file_path;
       if (url.SchemeIsFile() && net::FileURLToFilePath(url, &file_path))
         return true;

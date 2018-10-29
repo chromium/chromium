@@ -58,7 +58,6 @@ class GeneratedCodeCacheContext;
 class PlatformNotificationContext;
 class ServiceWorkerContext;
 class SharedWorkerService;
-class WebPackageContext;
 
 #if !defined(OS_ANDROID)
 class HostZoomLevelContext;
@@ -114,7 +113,6 @@ class CONTENT_EXPORT StoragePartition {
   virtual ZoomLevelDelegate* GetZoomLevelDelegate() = 0;
 #endif  // !defined(OS_ANDROID)
   virtual PlatformNotificationContext* GetPlatformNotificationContext() = 0;
-  virtual WebPackageContext* GetWebPackageContext() = 0;
 
   enum : uint32_t {
     REMOVE_DATA_MASK_APPCACHE = 1 << 0,
@@ -163,16 +161,11 @@ class CONTENT_EXPORT StoragePartition {
 
   // Similar to ClearDataForOrigin().
   // Deletes all data out for the StoragePartition if |storage_origin| is empty.
-  // |origin_matcher| is present if special storage policy is to be handled,
-  // otherwise the callback can be null (base::Callback::is_null() == true).
   // |callback| is called when data deletion is done or at least the deletion is
   // scheduled.
-  // storage_origin and origin_matcher_function are used for different
-  // subsystems. One does not imply the other.
   virtual void ClearData(uint32_t remove_mask,
                          uint32_t quota_storage_remove_mask,
                          const GURL& storage_origin,
-                         const OriginMatcherFunction& origin_matcher,
                          const base::Time begin,
                          const base::Time end,
                          base::OnceClosure callback) = 0;
@@ -188,6 +181,10 @@ class CONTENT_EXPORT StoragePartition {
   //   (created_after_time/created_before_time), so when deleting cookies
   //   |begin| and |end| will be used ignoring the interval in
   //   |cookie_deletion_filter|.
+  //   If |perform_cleanup| is true, the storage will try to remove traces
+  //   about deleted data from disk. This is an expensive operation that should
+  //   only be performed if we are sure that almost all data will be deleted
+  //   anyway.
   // * |callback| is called when data deletion is done or at least the deletion
   //   is scheduled.
   // Note: Make sure you know what you are doing before clearing cookies
@@ -197,6 +194,7 @@ class CONTENT_EXPORT StoragePartition {
       uint32_t quota_storage_remove_mask,
       const OriginMatcherFunction& origin_matcher,
       network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
+      bool perform_cleanup,
       const base::Time begin,
       const base::Time end,
       base::OnceClosure callback) = 0;
@@ -210,6 +208,11 @@ class CONTENT_EXPORT StoragePartition {
       const base::Time end,
       const base::Callback<bool(const GURL&)>& url_matcher,
       base::OnceClosure callback) = 0;
+
+  // Clears code caches associated with this StoragePartition.
+  // TODO(crbug.com/866419): Currently we just clear entire caches.
+  // Change it to conditionally clear entries based on the filters.
+  virtual void ClearCodeCaches(base::OnceClosure callback) = 0;
 
   // Write any unwritten data to disk.
   // Note: this method does not sync the data - it only ensures that any

@@ -60,12 +60,12 @@ TEST_F(FileBrowserHandlerManifestTest, GetHandlersRequiresPermission) {
 
   extensions::ExtensionBuilder bad_app_builder;
   bad_app_builder.SetManifest(std::move(bad_manifest_value));
-  scoped_refptr<extensions::Extension> bad_app(bad_app_builder.Build());
+  scoped_refptr<const extensions::Extension> bad_app(bad_app_builder.Build());
   EXPECT_FALSE(FileBrowserHandler::GetHandlers(bad_app.get()));
 
   extensions::ExtensionBuilder good_app_builder;
   good_app_builder.SetManifest(good_manifest_builder.Build());
-  scoped_refptr<extensions::Extension> good_app(good_app_builder.Build());
+  scoped_refptr<const extensions::Extension> good_app(good_app_builder.Build());
   EXPECT_TRUE(FileBrowserHandler::GetHandlers(good_app.get()));
 }
 

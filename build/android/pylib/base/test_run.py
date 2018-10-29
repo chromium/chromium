@@ -24,11 +24,12 @@ class TestRun(object):
   def SetUp(self):
     raise NotImplementedError
 
-  def RunTests(self):
-    """Runs Tests and returns test results.
+  def RunTests(self, results):
+    """Runs Tests and populates |results|.
 
-    Returns:
-      Should return list of |base_test_result.TestRunResults| objects.
+    Args:
+      results: An array that should be populated with
+               |base_test_result.TestRunResults| objects.
     """
     raise NotImplementedError
 

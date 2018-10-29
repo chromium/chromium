@@ -9,14 +9,6 @@
 CoreTabHelperDelegate::~CoreTabHelperDelegate() {
 }
 
-std::unique_ptr<content::WebContents> CoreTabHelperDelegate::SwapTabContents(
-    content::WebContents* old_contents,
-    std::unique_ptr<content::WebContents> new_contents,
-    bool did_start_load,
-    bool did_finish_load) {
-  return nullptr;
-}
-
 bool CoreTabHelperDelegate::CanReloadContents(
     content::WebContents* web_contents) const {
   return true;

@@ -90,6 +90,8 @@ class BackgroundTracingManager {
 
   virtual bool HasActiveScenario() = 0;
 
+  // For tests
+  virtual void AbortScenario() = 0;
   virtual void InvalidateTriggerHandlesForTesting() = 0;
   virtual void FireTimerForTesting() = 0;
 

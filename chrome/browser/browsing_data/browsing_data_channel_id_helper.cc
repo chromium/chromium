@@ -11,7 +11,9 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/ssl/channel_id_service.h"
 #include "net/url_request/url_request_context.h"
@@ -66,8 +68,8 @@ void BrowsingDataChannelIDHelperImpl::StartFetching(
     const FetchResultCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&BrowsingDataChannelIDHelperImpl::FetchOnIOThread, this,
                      callback));
 }
@@ -75,8 +77,8 @@ void BrowsingDataChannelIDHelperImpl::StartFetching(
 void BrowsingDataChannelIDHelperImpl::DeleteChannelID(
     const std::string& server_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&BrowsingDataChannelIDHelperImpl::DeleteOnIOThread, this,
                      server_id));
 }
@@ -105,8 +107,8 @@ void BrowsingDataChannelIDHelperImpl::OnFetchComplete(
     const net::ChannelIDStore::ChannelIDList& channel_id_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!callback.is_null());
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, channel_id_list));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, channel_id_list));
 }
 
 void BrowsingDataChannelIDHelperImpl::DeleteOnIOThread(

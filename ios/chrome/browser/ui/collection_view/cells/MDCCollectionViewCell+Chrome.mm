@@ -13,11 +13,16 @@
 
 @implementation MDCCollectionViewCell (Chrome)
 
+static NSMutableDictionary<NSString*, MDCCollectionViewCell*>*
+    gSharedSizingCells;
+
++ (void)cr_clearPreferredHeightForWidthCellCache {
+  [gSharedSizingCells removeAllObjects];
+}
+
 + (CGFloat)cr_preferredHeightForWidth:(CGFloat)targetWidth
                               forItem:(CollectionViewItem*)item {
   // Dictionary where keys are class names and values are sizing cells.
-  static NSMutableDictionary<NSString*, MDCCollectionViewCell*>*
-      gSharedSizingCells;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     gSharedSizingCells = [NSMutableDictionary dictionary];

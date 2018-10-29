@@ -2,9 +2,8 @@ Verifies hidden, compositor-animated layers still get composited
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
-PASS hiddenLayerIsComposited(documentLayerTree) is true
 
+PASS hiddenLayerIsComposited(documentLayerTree) is true

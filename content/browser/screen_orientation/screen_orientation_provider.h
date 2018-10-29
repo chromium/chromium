@@ -42,7 +42,8 @@ class CONTENT_EXPORT ScreenOrientationProvider
 
   // Provide a delegate which creates delegates for platform implementations.
   // The delegate is not owned by ScreenOrientationProvider.
-  static void SetDelegate(ScreenOrientationDelegate* delegate_);
+  static void SetDelegate(ScreenOrientationDelegate* delegate);
+  static ScreenOrientationDelegate* GetDelegateForTesting();
 
   // WebContentsObserver
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,

@@ -46,7 +46,7 @@ void CustomElementReactionStack::PopInvokingReactions() {
 }
 
 void CustomElementReactionStack::InvokeReactions(ElementQueue& queue) {
-  for (size_t i = 0; i < queue.size(); ++i) {
+  for (wtf_size_t i = 0; i < queue.size(); ++i) {
     Element* element = queue[i];
     if (CustomElementReactionQueue* reactions = map_.at(element)) {
       reactions->InvokeReactions(element);

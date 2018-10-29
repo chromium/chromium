@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
@@ -102,7 +103,7 @@ void OfflinePageTabHelperTest::SetUp() {
   content::RenderViewHostTestHarness::SetUp();
 
   PrefetchServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      browser_context(), BuildTestPrefetchService);
+      browser_context(), base::BindRepeating(&BuildTestPrefetchService));
   prefetch_service_ =
       PrefetchServiceFactory::GetForBrowserContext(browser_context());
 

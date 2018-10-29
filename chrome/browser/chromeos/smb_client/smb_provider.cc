@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -23,9 +25,7 @@ SmbProvider::SmbProvider(UnmountCallback unmount_callback)
                     false /* watchable */,
                     true /* multiple_mounts */,
                     extensions::SOURCE_NETWORK),
-      // TODO(baileyberro): Localize this string, so it shows correctly in all
-      // languages. See l10n_util::GetStringUTF8.
-      name_("SMB Shares"),
+      name_(l10n_util::GetStringUTF8(IDS_SMB_SHARES_ADD_SERVICE_MENU_OPTION)),
       unmount_callback_(std::move(unmount_callback)) {
   icon_set_.SetIcon(IconSet::IconSize::SIZE_16x16,
                     GURL("chrome://theme/IDR_SMB_ICON"));
@@ -62,7 +62,7 @@ const IconSet& SmbProvider::GetIconSet() const {
 bool SmbProvider::RequestMount(Profile* profile) {
   auto* settings_manager = chrome::SettingsWindowManager::GetInstance();
   settings_manager->ShowChromePageForProfile(
-      profile, chrome::GetSettingsUrl(chrome::kSmbSharesPage));
+      profile, chrome::GetSettingsUrl(chrome::kSmbSharesPageAddDialog));
 
   return true;
 }

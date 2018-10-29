@@ -90,6 +90,16 @@ ScriptSourceCode::ScriptSourceCode(ScriptStreamer* streamer,
   DCHECK_EQ(!streamer, reason != ScriptStreamer::NotStreamingReason::kInvalid);
 }
 
+ScriptSourceCode::ScriptSourceCode(const String& source,
+                                   SingleCachedMetadataHandler* cache_handler,
+                                   const KURL& url)
+    : source_(TreatNullSourceAsEmpty(ParkableString(source.Impl()))),
+      cache_handler_(cache_handler),
+      not_streaming_reason_(ScriptStreamer::kWorkerTopLevelScript),
+      url_(url),
+      start_position_(TextPosition::MinimumPosition()),
+      source_location_type_(ScriptSourceLocationType::kUnknown) {}
+
 ScriptSourceCode::~ScriptSourceCode() = default;
 
 void ScriptSourceCode::Trace(blink::Visitor* visitor) {

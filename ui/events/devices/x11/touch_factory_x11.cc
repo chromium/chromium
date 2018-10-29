@@ -312,8 +312,7 @@ void TouchFactory::SetTouchDeviceForTest(
     const std::vector<int>& devices) {
   touch_device_lookup_.reset();
   touch_device_list_.clear();
-  for (std::vector<int>::const_iterator iter = devices.begin();
-       iter != devices.end(); ++iter) {
+  for (auto iter = devices.begin(); iter != devices.end(); ++iter) {
     DCHECK(IsValidDevice(*iter));
     touch_device_lookup_[*iter] = true;
     touch_device_list_[*iter] = {true, EventPointerType::POINTER_TYPE_TOUCH};
@@ -324,8 +323,7 @@ void TouchFactory::SetTouchDeviceForTest(
 void TouchFactory::SetPointerDeviceForTest(
     const std::vector<int>& devices) {
   pointer_device_lookup_.reset();
-  for (std::vector<int>::const_iterator iter = devices.begin();
-       iter != devices.end(); ++iter) {
+  for (auto iter = devices.begin(); iter != devices.end(); ++iter) {
     pointer_device_lookup_[*iter] = true;
   }
 }

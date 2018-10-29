@@ -203,8 +203,8 @@ void PaintOpBufferSerializer::ClearForOpaqueRaster(
   // clear inside of that rect if needed.
   if (device_column.intersect(playback_device_rect)) {
     Save(options, params);
-    ClipRectOp clip_op(SkRect::MakeFromIRect(device_column),
-                       SkClipOp::kIntersect, false);
+    ClipRectOp clip_op(SkRect::Make(device_column), SkClipOp::kIntersect,
+                       false);
     SerializeOp(&clip_op, options, params);
     DrawColorOp clear_op(preamble.background_color, SkBlendMode::kSrc);
     SerializeOp(&clear_op, options, params);
@@ -212,8 +212,7 @@ void PaintOpBufferSerializer::ClearForOpaqueRaster(
   }
   if (device_row.intersect(playback_device_rect)) {
     Save(options, params);
-    ClipRectOp clip_op(SkRect::MakeFromIRect(device_row), SkClipOp::kIntersect,
-                       false);
+    ClipRectOp clip_op(SkRect::Make(device_row), SkClipOp::kIntersect, false);
     SerializeOp(&clip_op, options, params);
     DrawColorOp clear_op(preamble.background_color, SkBlendMode::kSrc);
     SerializeOp(&clear_op, options, params);

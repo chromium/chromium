@@ -23,9 +23,7 @@ bool StructTraits<media::mojom::VideoDecoderConfigDataView,
   if (!input.ReadFormat(&format))
     return false;
 
-  media::ColorSpace color_space;
-  if (!input.ReadColorSpace(&color_space))
-    return false;
+  media::ColorSpace color_space = media::ColorSpace::COLOR_SPACE_UNSPECIFIED;
 
   media::VideoRotation rotation;
   if (!input.ReadVideoRotation(&rotation))

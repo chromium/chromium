@@ -13,15 +13,18 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "storage/browser/storage_browser_export.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
-class GURL;
-
 namespace content {
 class QuotaTemporaryStorageEvictorTest;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace storage {
@@ -89,7 +92,7 @@ class STORAGE_EXPORT QuotaTemporaryStorageEvictor {
                               int64_t total_space,
                               int64_t current_usage,
                               bool current_usage_is_complete);
-  void OnGotEvictionOrigin(const GURL& origin);
+  void OnGotEvictionOrigin(const base::Optional<url::Origin>& origin);
   void OnEvictionComplete(blink::mojom::QuotaStatusCode status);
 
   void OnEvictionRoundStarted();
@@ -103,7 +106,7 @@ class STORAGE_EXPORT QuotaTemporaryStorageEvictor {
   EvictionRoundStatistics round_statistics_;
   base::Time time_of_end_of_last_nonskipped_round_;
   base::Time time_of_end_of_last_round_;
-  std::set<GURL> in_progress_eviction_origins_;
+  std::set<url::Origin> in_progress_eviction_origins_;
 
   int64_t interval_ms_;
   bool timer_disabled_for_testing_;

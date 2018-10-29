@@ -56,7 +56,7 @@ static WorldMap& GetWorldMap() {
 #if DCHECK_IS_ON()
 static bool IsIsolatedWorldId(int world_id) {
   return DOMWrapperWorld::kMainWorldId < world_id &&
-         world_id < DOMWrapperWorld::kIsolatedWorldIdLimit;
+         world_id < DOMWrapperWorld::kDOMWrapperWorldIsolatedWorldIdLimit;
 }
 
 static bool IsMainWorldId(int world_id) {
@@ -85,7 +85,6 @@ DOMWrapperWorld::DOMWrapperWorld(v8::Isolate* isolate,
       break;
     case WorldType::kIsolated:
     case WorldType::kInspectorIsolated:
-    case WorldType::kGarbageCollector:
     case WorldType::kRegExp:
     case WorldType::kTesting:
     case WorldType::kForV8ContextSnapshotNonMain:
@@ -284,7 +283,6 @@ int DOMWrapperWorld::GenerateWorldIdForType(WorldType world_type) {
         return WorldId::kInvalidWorldId;
       return next_devtools_isolated_world_id++;
     }
-    case WorldType::kGarbageCollector:
     case WorldType::kRegExp:
     case WorldType::kTesting:
     case WorldType::kForV8ContextSnapshotNonMain:

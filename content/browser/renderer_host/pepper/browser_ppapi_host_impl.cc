@@ -57,8 +57,7 @@ BrowserPpapiHostImpl::BrowserPpapiHostImpl(
       plugin_path_(plugin_path),
       profile_data_directory_(profile_data_directory),
       in_process_(in_process),
-      external_plugin_(external_plugin),
-      ssl_context_helper_(new SSLContextHelper()) {
+      external_plugin_(external_plugin) {
   message_filter_ = new HostMessageFilter(ppapi_host_.get(), this);
   ppapi_host_->AddHostFactoryFilter(std::unique_ptr<ppapi::host::HostFactory>(
       new ContentBrowserPepperHostFactory(this)));

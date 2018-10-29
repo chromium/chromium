@@ -70,14 +70,13 @@ class ErrorPageTest
         base::BindRepeating(&net::test_server::HandlePrefixedRequest, "/form",
                             base::BindRepeating(&testing::HandleForm)));
 
-    std::vector<base::Feature> enabled_features = {features::kWebErrorPages};
-    std::vector<base::Feature> disabled_features;
     if (GetParam() == NavigationManagerChoice::LEGACY) {
-      disabled_features.push_back(features::kSlimNavigationManager);
+      scoped_feature_list_.InitAndDisableFeature(
+          web::features::kSlimNavigationManager);
     } else {
-      enabled_features.push_back(features::kSlimNavigationManager);
+      scoped_feature_list_.InitAndEnableFeature(
+          web::features::kSlimNavigationManager);
     }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUp() override {

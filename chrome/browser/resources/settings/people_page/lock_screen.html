@@ -2,12 +2,12 @@
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/lock_screen_constants.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
 <link rel="import" href="easy_unlock_browser_proxy.html">
 <link rel="import" href="easy_unlock_turn_off_dialog.html">
@@ -93,9 +93,9 @@
             </template>
           </div>
           <div class="list-frame" >
-            <paper-radio-group id="unlockType"
+            <cr-radio-group id="unlockType"
                 disabled$="[[quickUnlockDisabledByPolicy_]]"
-                selected="{{selectedUnlockType}}" selectable="cr-radio-button">
+                selected="{{selectedUnlockType}}">
               <cr-radio-button name="password" class="list-item underbar">
                 <div class="start">
                   $i18n{lockScreenPasswordOnly}
@@ -121,7 +121,7 @@
                   </div>
                 </template>
               </cr-radio-button>
-            </paper-radio-group>
+            </cr-radio-group>
           </div>
         </div>
       </template>
@@ -132,8 +132,7 @@
         </h2>
         <div class="list-frame">
           <settings-radio-group
-              pref="{{prefs.ash.message_center.lock_screen_mode}}"
-              selectable="cr-radio-button">
+              pref="{{prefs.ash.message_center.lock_screen_mode}}">
             <template is="dom-if"
                 if="[[lockScreenHideSensitiveNotificationSupported_]]">
               <cr-radio-button name="hideSensitive" class="list-item underbar"
@@ -173,7 +172,9 @@
         </div>
       </template>
 
-      <template is="dom-if" if="[[easyUnlockAllowed_]]">
+      <template is="dom-if" if="[[easyUnlockAvailable_(
+          multideviceSettingsEnabled_, easyUnlockAllowed_,
+          easyUnlockInLegacyHostMode_)]]">
         <div id="easyUnlock" class="settings-box two-line">
           <div class="start">
             <div>$i18n{easyUnlockSectionTitle}</div>
@@ -186,18 +187,22 @@
               </a>
             </div>
           </div>
-          <div class="separator"></div>
-          <template is="dom-if" if="[[!easyUnlockEnabled_]]">
-            <paper-button id="easyUnlockSetup" class="secondary-button"
-                on-click="onEasyUnlockSetupTap_">
-              $i18n{easyUnlockSetupButton}
-            </paper-button>
-          </template>
-          <template is="dom-if" if="[[easyUnlockEnabled_]]">
-            <paper-button id="easyUnlockTurnOff" class="secondary-button"
-                on-click="onEasyUnlockTurnOffTap_">
-              $i18n{easyUnlockTurnOffButton}
-            </paper-button>
+          <template is="dom-if" if="[[easyUnlockAvailable_(
+          multideviceSettingsEnabled_, easyUnlockAllowed_,
+          easyUnlockInLegacyHostMode_)]]">
+            <div class="separator"></div>
+            <template is="dom-if" if="[[!easyUnlockEnabled_]]">
+              <paper-button id="easyUnlockSetup" class="secondary-button"
+                  on-click="onEasyUnlockSetupTap_">
+                $i18n{easyUnlockSetupButton}
+              </paper-button>
+            </template>
+            <template is="dom-if" if="[[easyUnlockEnabled_]]">
+              <paper-button id="easyUnlockTurnOff" class="secondary-button"
+                  on-click="onEasyUnlockTurnOffTap_">
+                $i18n{easyUnlockTurnOffButton}
+              </paper-button>
+            </template>
           </template>
         </div>
         <iron-collapse opened="[[easyUnlockEnabled_]]"

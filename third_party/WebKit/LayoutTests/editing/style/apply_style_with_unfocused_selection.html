@@ -4,7 +4,7 @@
 <script src="../assert_selection.js"></script>
 <script>
 test(() => {
-  assert_exists(window, 'eventSender', 'This test requires eventSender');
+  assert_own_property(window, 'eventSender', 'This test requires eventSender');
 
   assert_selection(
   [

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -75,7 +76,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_heuristic_parameters.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_metrics.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
@@ -134,8 +134,11 @@ inline HTMLCanvasElement::HTMLCanvasElement(Document& document)
       externally_allocated_memory_(0),
       gpu_readback_invoked_in_current_frame_(false),
       gpu_readback_successive_frames_(0) {
-  CanvasMetrics::CountCanvasContextUsage(CanvasMetrics::kCanvasCreated);
+  CanvasRenderingContextHost::RecordCanvasSizeToUMA(
+      size_.Width(), size_.Height(), false /* Canvas */);
   UseCounter::Count(document, WebFeature::kHTMLCanvasElement);
+
+  GetDocument().IncrementNumberOfCanvases();
 }
 
 DEFINE_NODE_FACTORY(HTMLCanvasElement)
@@ -228,13 +231,13 @@ HTMLCanvasElement::ContextFactoryVector&
 HTMLCanvasElement::RenderingContextFactories() {
   DCHECK(IsMainThread());
   DEFINE_STATIC_LOCAL(ContextFactoryVector, context_factories,
-                      (CanvasRenderingContext::kContextTypeCount));
+                      (CanvasRenderingContext::kMaxValue));
   return context_factories;
 }
 
 CanvasRenderingContextFactory* HTMLCanvasElement::GetRenderingContextFactory(
     int type) {
-  DCHECK(type < CanvasRenderingContext::kContextTypeCount);
+  DCHECK_LE(type, CanvasRenderingContext::kMaxValue);
   return RenderingContextFactories()[type].get();
 }
 
@@ -242,7 +245,7 @@ void HTMLCanvasElement::RegisterRenderingContextFactory(
     std::unique_ptr<CanvasRenderingContextFactory> rendering_context_factory) {
   CanvasRenderingContext::ContextType type =
       rendering_context_factory->GetContextType();
-  DCHECK(type < CanvasRenderingContext::kContextTypeCount);
+  DCHECK_LE(type, CanvasRenderingContext::kMaxValue);
   DCHECK(!RenderingContextFactories()[type]);
   RenderingContextFactories()[type] = std::move(rendering_context_factory);
 }
@@ -254,7 +257,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
       CanvasRenderingContext::ContextTypeFromId(type);
 
   // Unknown type.
-  if (context_type == CanvasRenderingContext::kContextTypeCount ||
+  if (context_type == CanvasRenderingContext::kContextTypeUnknown ||
       (context_type == CanvasRenderingContext::kContextXRPresent &&
        !OriginTrials::WebXREnabled(&GetDocument()))) {
     return nullptr;
@@ -262,10 +265,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
 
   // Log the aliased context type used.
   if (!context_) {
-    DEFINE_STATIC_LOCAL(
-        EnumerationHistogram, context_type_histogram,
-        ("Canvas.ContextType", CanvasRenderingContext::kContextTypeCount));
-    context_type_histogram.Count(context_type);
+    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.ContextType", context_type);
   }
 
   context_type =
@@ -292,6 +292,8 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
   if (!context_)
     return nullptr;
 
+  UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.IsComposited", context_->IsComposited());
+
   context_creation_was_blocked_ = false;
 
   probe::didCreateCanvasContext(&GetDocument());
@@ -317,6 +319,9 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
     // We don't actually need the begin frame signal when in low latency mode,
     // but we need to subscribe to it or else dispatching frames will not work.
     frame_dispatcher_->SetNeedsBeginFrame(GetPage()->IsPageVisible());
+
+    UseCounter::Count(GetDocument().GetFrame(),
+                      WebFeature::kHTMLCanvasElementLowLatency);
   }
 
   SetNeedsCompositingUpdate();
@@ -390,7 +395,7 @@ void HTMLCanvasElement::FinalizeFrame() {
   if (canvas2d_bridge_) {
     // Compute to determine whether disable accleration is needed
     if (IsAccelerated() &&
-        CanvasHeuristicParameters::kGPUReadbackForcesNoAcceleration &&
+        canvas_heuristic_parameters::kGPUReadbackForcesNoAcceleration &&
         !RuntimeEnabledFeatures::Canvas2dFixedRenderingModeEnabled()) {
       if (gpu_readback_invoked_in_current_frame_) {
         gpu_readback_successive_frames_++;
@@ -400,7 +405,7 @@ void HTMLCanvasElement::FinalizeFrame() {
       }
 
       if (gpu_readback_successive_frames_ >=
-          CanvasHeuristicParameters::kGPUReadbackMinSuccessiveFrames) {
+          canvas_heuristic_parameters::kGPUReadbackMinSuccessiveFrames) {
         DisableAcceleration();
       }
     }
@@ -426,11 +431,9 @@ void HTMLCanvasElement::FinalizeFrame() {
       const SkIRect damage_rect = SkIRect::MakeXYWH(
           int_dirty.X(), int_dirty.Y(), int_dirty.Width(), int_dirty.Height());
       const bool needs_vertical_flip = !RenderingContext()->IsOriginTopLeft();
-      frame_dispatcher_->DispatchFrameSync(std::move(canvas_resource),
-                                           start_time, damage_rect,
-                                           needs_vertical_flip);
-      (void)start_time;
-      (void)damage_rect;
+      frame_dispatcher_->DispatchFrame(std::move(canvas_resource), start_time,
+                                       damage_rect, needs_vertical_flip,
+                                       IsOpaque());
       dirty_rect_ = FloatRect();
     }
   }
@@ -487,7 +490,7 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
       FloatRect mapped_dirty_rect =
           MapRect(dirty_rect_, src_rect, content_rect);
       if (context_->IsComposited()) {
-        // Accelerated 2D canvases need the dirty rect to be expressed relative
+        // Composited 2D canvases need the dirty rect to be expressed relative
         // to the content box, as opposed to the layout box.
         mapped_dirty_rect.MoveBy(-content_rect.Location());
       }
@@ -567,6 +570,9 @@ void HTMLCanvasElement::Reset() {
 
   IntSize old_size = Size();
   IntSize new_size(w, h);
+
+  if (old_size != new_size)
+    CanvasRenderingContextHost::RecordCanvasSizeToUMA(w, h, false /* Canvas */);
 
   // If the size of an existing buffer matches, we can just clear it instead of
   // reallocating.  This optimization is only done for 2D canvases for now.
@@ -654,9 +660,13 @@ static std::pair<blink::Image*, float> BrokenCanvas(float device_scale_factor) {
 SkFilterQuality HTMLCanvasElement::FilterQuality() const {
   if (!isConnected())
     return kLow_SkFilterQuality;
-  HTMLCanvasElement* non_const_this = const_cast<HTMLCanvasElement*>(this);
-  non_const_this->UpdateDistributionForFlatTreeTraversal();
-  const ComputedStyle* style = non_const_this->EnsureComputedStyle();
+
+  const ComputedStyle* style = GetComputedStyle();
+  if (!style) {
+    GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+    HTMLCanvasElement* non_const_this = const_cast<HTMLCanvasElement*>(this);
+    style = non_const_this->EnsureComputedStyle();
+  }
   return (style && style->ImageRendering() == EImageRendering::kPixelated)
              ? kNone_SkFilterQuality
              : kLow_SkFilterQuality;
@@ -995,11 +1005,8 @@ bool HTMLCanvasElement::ShouldAccelerate(AccelerationCriteria criteria) const {
   // since it costs us GPU memory.
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
-  if (!context_provider_wrapper) {
-    CanvasMetrics::CountCanvasContextUsage(
-        CanvasMetrics::kAccelerated2DCanvasGPUContextLost);
+  if (!context_provider_wrapper)
     return false;
-  }
 
   return context_provider_wrapper->Utils()->Accelerated2DCanvasFeatureEnabled();
 }
@@ -1014,17 +1021,12 @@ std::unique_ptr<Canvas2DLayerBridge>
 HTMLCanvasElement::CreateAccelerated2dBuffer() {
   auto surface = std::make_unique<Canvas2DLayerBridge>(
       Size(), Canvas2DLayerBridge::kEnableAcceleration, ColorParams());
-  if (!surface->IsValid()) {
-    CanvasMetrics::CountCanvasContextUsage(
-        CanvasMetrics::kGPUAccelerated2DCanvasImageBufferCreationFailed);
+  if (!surface->IsValid())
     return nullptr;
-  }
 
   if (MemoryCoordinator::IsLowEndDevice())
     surface->DisableDeferral(kDisableDeferralReasonLowEndDevice);
 
-  CanvasMetrics::CountCanvasContextUsage(
-      CanvasMetrics::kGPUAccelerated2DCanvasImageBufferCreated);
   return surface;
 }
 
@@ -1032,14 +1034,9 @@ std::unique_ptr<Canvas2DLayerBridge>
 HTMLCanvasElement::CreateUnaccelerated2dBuffer() {
   auto surface = std::make_unique<Canvas2DLayerBridge>(
       Size(), Canvas2DLayerBridge::kDisableAcceleration, ColorParams());
-  if (surface->IsValid()) {
-    CanvasMetrics::CountCanvasContextUsage(
-        CanvasMetrics::kUnaccelerated2DCanvasImageBufferCreated);
+  if (surface->IsValid())
     return surface;
-  }
 
-  CanvasMetrics::CountCanvasContextUsage(
-      CanvasMetrics::kUnaccelerated2DCanvasImageBufferCreationFailed);
   return nullptr;
 }
 
@@ -1110,13 +1107,15 @@ Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
   return canvas2d_bridge_.get();
 }
 
-void HTMLCanvasElement::SetCanvas2DLayerBridgeForTesting(
+void HTMLCanvasElement::SetResourceProviderForTesting(
+    std::unique_ptr<CanvasResourceProvider> resource_provider,
     std::unique_ptr<Canvas2DLayerBridge> bridge,
     const IntSize& size) {
   DiscardResourceProvider();
   SetIntegralAttribute(widthAttr, size.Width());
   SetIntegralAttribute(heightAttr, size.Height());
   SetCanvas2DLayerBridgeInternal(std::move(bridge));
+  ReplaceResourceProvider(std::move(resource_provider));
 }
 
 void HTMLCanvasElement::DiscardResourceProvider() {
@@ -1155,7 +1154,7 @@ void HTMLCanvasElement::DidMoveToNewDocument(Document& old_document) {
 }
 
 void HTMLCanvasElement::WillDrawImageTo2DContext(CanvasImageSource* source) {
-  if (CanvasHeuristicParameters::kEnableAccelerationToAvoidReadbacks &&
+  if (canvas_heuristic_parameters::kEnableAccelerationToAvoidReadbacks &&
       SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() &&
       source->IsAccelerated() && GetOrCreateCanvas2DLayerBridge() &&
       !canvas2d_bridge_->IsAccelerated() &&
@@ -1215,7 +1214,7 @@ scoped_refptr<Image> HTMLCanvasElement::GetSourceImageForCanvas(
     else
       image = CreateTransparentImage(Size());
   } else {
-    if (CanvasHeuristicParameters::kDisableAccelerationToAvoidReadbacks &&
+    if (canvas_heuristic_parameters::kDisableAccelerationToAvoidReadbacks &&
         !RuntimeEnabledFeatures::Canvas2dFixedRenderingModeEnabled() &&
         hint == kPreferNoAcceleration && canvas2d_bridge_ &&
         canvas2d_bridge_->IsAccelerated()) {
@@ -1393,9 +1392,12 @@ FontSelector* HTMLCanvasElement::GetFontSelector() {
 void HTMLCanvasElement::UpdateMemoryUsage() {
   int non_gpu_buffer_count = 0;
   int gpu_buffer_count = 0;
-  if (Is2d() && canvas2d_bridge_) {
+
+  if (!Is2d() && !Is3d())
+    return;
+  if (ResourceProvider()) {
     non_gpu_buffer_count++;
-    if (canvas2d_bridge_->IsAccelerated()) {
+    if (IsAccelerated()) {
       // The number of internal GPU buffers vary between one (stable
       // non-displayed state) and three (triple-buffered animations).
       // Adding 2 is a pessimistic but relevant estimate.
@@ -1404,14 +1406,8 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
     }
   }
 
-  if (Is3d()) {
-    if (ResourceProvider()) {
-      non_gpu_buffer_count++;
-      if (ResourceProvider()->IsAccelerated())
-        gpu_buffer_count += 2;
-    }
+  if (Is3d())
     non_gpu_buffer_count += context_->ExternallyAllocatedBufferCountPerPixel();
-  }
 
   const int bytes_per_pixel = ColorParams().BytesPerPixel();
 

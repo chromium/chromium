@@ -140,6 +140,35 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
     }
   }
 
+  void GetElementFormAndFieldData(const std::vector<std::string>& selectors,
+                                  size_t expected_form_size) {
+    base::RunLoop run_loop;
+    ContentAutofillDriverFactory::FromWebContents(web_contents())
+        ->DriverForFrame(web_contents()->GetMainFrame())
+        ->GetAutofillAgent()
+        ->GetElementFormAndFieldData(
+            selectors,
+            base::BindOnce(
+                &ContentAutofillDriverBrowserTest::OnGetElementFormAndFieldData,
+                base::Unretained(this), run_loop.QuitClosure(),
+                expected_form_size));
+    run_loop.Run();
+  }
+
+  void OnGetElementFormAndFieldData(const base::Closure& done_callback,
+                                    size_t expected_form_size,
+                                    const autofill::FormData& form_data,
+                                    const autofill::FormFieldData& form_field) {
+    done_callback.Run();
+    if (expected_form_size) {
+      ASSERT_EQ(form_data.fields.size(), expected_form_size);
+      ASSERT_FALSE(form_field.label.empty());
+    } else {
+      ASSERT_EQ(form_data.fields.size(), expected_form_size);
+      ASSERT_TRUE(form_field.label.empty());
+    }
+  }
+
  protected:
   base::Closure web_contents_hidden_callback_;
   base::Closure nav_entry_committed_callback_;
@@ -224,6 +253,33 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
   runner->Run();
   nav_entry_committed_callback_.Reset();
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
+                       GetElementFormAndFieldData) {
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/autofill/autofill_assistant_test_form.html"));
+
+  std::vector<std::string> selectors;
+  selectors.emplace_back("#testformone");
+  selectors.emplace_back("#NAME_FIRST");
+  GetElementFormAndFieldData(selectors, /*expected_form_size=*/9u);
+
+  selectors.clear();
+  selectors.emplace_back("#testformtwo");
+  selectors.emplace_back("#NAME_FIRST");
+  GetElementFormAndFieldData(selectors, /*expected_form_size=*/7u);
+
+  // Multiple corresponding form fields.
+  selectors.clear();
+  selectors.emplace_back("#NAME_FIRST");
+  GetElementFormAndFieldData(selectors, /*expected_form_size=*/0u);
+
+  // No corresponding form field.
+  selectors.clear();
+  selectors.emplace_back("#whatever");
+  GetElementFormAndFieldData(selectors, /*expected_form_size=*/0u);
 }
 
 }  // namespace autofill

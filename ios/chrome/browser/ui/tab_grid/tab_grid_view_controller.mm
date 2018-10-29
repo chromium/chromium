@@ -4,13 +4,15 @@
 
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_view_controller.h"
 
+#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/post_task.h"
+#include "ios/chrome/browser/crash_report/breakpad_helper.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
-#import "ios/chrome/browser/ui/rtl_geometry.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_consumer.h"
@@ -24,9 +26,13 @@
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_top_toolbar.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/web/public/web_task_traits.h"
+#include "ios/web/public/web_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -285,15 +291,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self configureButtonsForActiveAndCurrentPage];
       // Records when the user drags the scrollView to switch pages.
       [self recordActionSwitchingToPage:_currentPage];
-
-      // TODO(crbug.com/872303) : This is a workaround because TabRestoreService
-      // does not notify observers when entries are removed. When close all tabs
-      // removes entries, the remote tabs page in the tab grid are not updated.
-      // This ensures that the table is updated whenever scrolling to it.
-      if (_currentPage == TabGridPageRemoteTabs) {
-        [self.remoteTabsViewController loadModel];
-        [self.remoteTabsViewController.tableView reloadData];
-      }
     }
   }
 }
@@ -304,21 +301,33 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // scrolling.
   self.topToolbar.pageControl.userInteractionEnabled = NO;
   self.pageChangeInteraction = PageChangeInteractionScrollDrag;
-  [self updatePageViewAccessibilityVisibility];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
                   willDecelerate:(BOOL)decelerate {
   // Re-enable the page control since the user isn't dragging anymore.
   self.topToolbar.pageControl.userInteractionEnabled = YES;
-  [self updatePageViewAccessibilityVisibility];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
   // Mark the interaction as ended, so that scrolls that don't change page don't
   // cause other interactions to be mislabeled.
   self.pageChangeInteraction = PageChangeInteractionNone;
-  [self updatePageViewAccessibilityVisibility];
+
+  // Update _currentPage if scroll view has moved to a new page. Especially
+  // important here for 3-finger accessibility swipes since it's not registered
+  // as dragging in scrollViewDidScroll:
+  TabGridPage page = GetPageFromScrollView(scrollView);
+  if (page != _currentPage) {
+    // Original current page is about to not be visible. Disable it from being
+    // focused by VoiceOver.
+    self.currentPageViewController.view.accessibilityElementsHidden = YES;
+    _currentPage = page;
+    // Allow VoiceOver to focus on the new current page's elements.
+    self.currentPageViewController.view.accessibilityElementsHidden = NO;
+    [self broadcastIncognitoContentVisibility];
+    [self configureButtonsForActiveAndCurrentPage];
+  }
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
@@ -422,7 +431,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _incognitoTabsImageDataSource = incognitoTabsImageDataSource;
 }
 
-- (id<RecentTabsTableConsumer>)remoteTabsConsumer {
+- (id<RecentTabsConsumer>)remoteTabsConsumer {
   return self.remoteTabsViewController;
 }
 
@@ -469,11 +478,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         self.remoteTabsViewController.tableView.bounds,
         self.remoteTabsViewController.tableView.safeAreaInsets)));
     self.remoteTabsViewController.additionalSafeAreaInsets = additionalSafeArea;
-  } else {
+  }
+#if !defined(__IPHONE_11_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_11_0
+  else {
     // Must manually account for status bar in pre-iOS 11.
     inset.top += self.topLayoutGuide.length;
     self.remoteTabsViewController.tableView.contentInset = inset;
   }
+#endif
 }
 
 // Sets the proper insets for the Grid ViewControllers to accomodate for the
@@ -496,10 +508,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     inset.right = self.scrollView.safeAreaInsets.right;
     inset.top += self.scrollView.safeAreaInsets.top;
     inset.bottom += self.scrollView.safeAreaInsets.bottom;
-  } else {
+  }
+#if !defined(__IPHONE_11_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_11_0
+  else {
     // Must manually account for status bar in pre-iOS 11.
     inset.top += self.topLayoutGuide.length;
   }
+#endif
   self.incognitoTabsViewController.gridView.contentInset = inset;
   self.regularTabsViewController.gridView.contentInset = inset;
 }
@@ -531,9 +546,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // the ivar may have been set before the scroll view could be updated. Calling
   // this method should always update the scroll view's offset if possible.
 
+  // Original current page is about to not be visible. Disable it from being
+  // focused by VoiceOver.
+  self.currentPageViewController.view.accessibilityElementsHidden = YES;
+
   // If the view isn't loaded yet, just do bookkeeping on _currentPage.
   if (!self.viewLoaded) {
     _currentPage = currentPage;
+    // Allow VoiceOver to focus on the new current page's elements.
+    self.currentPageViewController.view.accessibilityElementsHidden = NO;
     return;
   }
   CGFloat pageWidth = self.scrollView.frame.size.width;
@@ -556,6 +577,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       _currentPage = currentPage;
     }
   }
+  // Allow VoiceOver to focus on the new current page's elements.
+  self.currentPageViewController.view.accessibilityElementsHidden = NO;
+
   // TODO(crbug.com/872303) : This is a workaround because TabRestoreService
   // does not notify observers when entries are removed. When close all tabs
   // removes entries, the remote tabs page in the tab grid are not updated. This
@@ -582,7 +606,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (_scrollViewAnimatingContentOffset == scrollViewAnimatingContentOffset)
     return;
   _scrollViewAnimatingContentOffset = scrollViewAnimatingContentOffset;
-  [self updatePageViewAccessibilityVisibility];
 }
 
 // Adds the scroll view and sets constraints.
@@ -744,13 +767,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
                        constant:topToolbar.intrinsicContentSize.height]
         .active = YES;
-  } else {
+  }
+#if !defined(__IPHONE_11_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_11_0
+  else {
     // Top and bottom layout guides are deprecated starting in iOS 11.
     [topToolbar.bottomAnchor
         constraintEqualToAnchor:self.topLayoutGuide.bottomAnchor
                        constant:topToolbar.intrinsicContentSize.height]
         .active = YES;
   }
+#endif
 }
 
 // Adds the bottom toolbar and sets constraints.
@@ -774,13 +800,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         constraintEqualToAnchor:bottomToolbar.topAnchor
                        constant:bottomToolbar.intrinsicContentSize.height]
         .active = YES;
-  } else {
+  }
+#if !defined(__IPHONE_11_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_11_0
+  else {
     // Top and bottom layout guides are deprecated starting in iOS 11.
     [bottomToolbar.topAnchor
         constraintEqualToAnchor:self.bottomLayoutGuide.topAnchor
                        constant:-bottomToolbar.intrinsicContentSize.height]
         .active = YES;
   }
+#endif
 }
 
 // Adds floating button and constraints.
@@ -906,19 +935,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       forState:UIControlStateNormal];
   self.closeAllButton.accessibilityIdentifier =
       kTabGridCloseAllButtonIdentifier;
-}
-
-// Updates the visibility of the pages' accessibility elements.  When
-// |scrollView| is scrolling, all pages should be visible.  When stationary,
-// however, the accessibility elements of off-screen pages should be hidden.
-- (void)updatePageViewAccessibilityVisibility {
-  BOOL scrolling = self.scrollView.dragging || self.scrollView.decelerating ||
-                   self.scrollViewAnimatingContentOffset;
-  UIViewController* currentPageViewController = self.currentPageViewController;
-  for (UIViewController* pageViewController in self.pageViewControllers) {
-    pageViewController.view.accessibilityElementsHidden =
-        !scrolling && pageViewController != currentPageViewController;
-  }
 }
 
 // Shows the two toolbars and the floating button. Suitable for use in
@@ -1157,6 +1173,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return 12;
 }
 
+// Sets both the current page and page control's selected page to |page|.
+// Animation is used if |animated| is YES.
+- (void)setCurrentPageAndPageControlSelectedPage:(TabGridPage)page
+                                        animated:(BOOL)animated {
+  if (self.topToolbar.pageControl.selectedPage != page)
+    [self.topToolbar.pageControl setSelectedPage:page animated:animated];
+  if (self.currentPage != page)
+    [self setCurrentPage:page animated:animated];
+}
+
 #pragma mark - GridViewControllerDelegate
 
 - (void)gridViewController:(GridViewController*)gridViewController
@@ -1216,7 +1242,37 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self configureButtonsForActiveAndCurrentPage];
   if (gridViewController == self.regularTabsViewController) {
     self.topToolbar.pageControl.regularTabCount = count;
+    breakpad_helper::SetRegularTabCount(count);
+  } else if (gridViewController == self.incognitoTabsViewController) {
+    breakpad_helper::SetIncognitoTabCount(count);
+
+    // No assumption is made as to the state of the UI. This method can be
+    // called with an incognito view controller and a current page that is not
+    // the incognito tabs.
+    if (IsClosingLastIncognitoTabEnabled() && count == 0 &&
+        self.currentPage == TabGridPageIncognitoTabs) {
+      // Show the regular tabs to the user if the last incognito tab is closed.
+      if (self.viewLoaded && self.view.window) {
+        // Visibly scroll to the regular tabs panel after a slight delay when
+        // the user is already in the tab switcher.
+        __weak TabGridViewController* weakSelf = self;
+        base::PostDelayedTaskWithTraits(
+            FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+              [weakSelf setCurrentPageAndPageControlSelectedPage:
+                            TabGridPageRegularTabs
+                                                        animated:YES];
+            }),
+            base::TimeDelta::FromMilliseconds(
+                kTabGridScrollAnimationDelayInMilliseconds));
+      } else {
+        // Directly show the regular tabs in tab switcher without animation if
+        // the user was not already in tab switcher.
+        [self setCurrentPageAndPageControlSelectedPage:TabGridPageRegularTabs
+                                              animated:NO];
+      }
+    }
   }
+
   [self broadcastIncognitoContentVisibility];
 }
 

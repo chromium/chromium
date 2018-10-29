@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -40,7 +40,7 @@ TEST(RectTest, Contains) {
     {0, 0, -10, -10, 0, 0, false},
   #endif
   };
-  for (size_t i = 0; i < arraysize(contains_cases); ++i) {
+  for (size_t i = 0; i < base::size(contains_cases); ++i) {
     const ContainsCase& value = contains_cases[i];
     Rect rect(value.rect_x, value.rect_y, value.rect_width, value.rect_height);
     EXPECT_EQ(value.contained, rect.Contains(value.point_x, value.point_y));
@@ -70,7 +70,7 @@ TEST(RectTest, Intersects) {
     { 10, 10, 10, 10, 20, 15, 10, 10, false },
     { 10, 10, 10, 10, 21, 15, 10, 10, false }
   };
-  for (size_t i = 0; i < arraysize(tests); ++i) {
+  for (size_t i = 0; i < base::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     EXPECT_EQ(tests[i].intersects, r1.Intersects(r2));
@@ -112,7 +112,7 @@ TEST(RectTest, Intersect) {
       0, 0, 2, 2,
       0, 0, 0, 0 }
   };
-  for (size_t i = 0; i < arraysize(tests); ++i) {
+  for (size_t i = 0; i < base::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
@@ -161,7 +161,7 @@ TEST(RectTest, Union) {
       2, 2, 2, 2,
       2, 2, 2, 2 }
   };
-  for (size_t i = 0; i < arraysize(tests); ++i) {
+  for (size_t i = 0; i < base::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
@@ -213,7 +213,7 @@ TEST(RectTest, AdjustToFit) {
       0, 0, 3, 3,
       2, 2, 1, 1 }
   };
-  for (size_t i = 0; i < arraysize(tests); ++i) {
+  for (size_t i = 0; i < base::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
@@ -457,7 +457,7 @@ TEST(RectTest, ScaleRect) {
       std::numeric_limits<float>::max() }
   };
 
-  for (size_t i = 0; i < arraysize(tests); ++i) {
+  for (size_t i = 0; i < base::size(tests); ++i) {
     RectF r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     RectF r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
 
@@ -496,9 +496,12 @@ TEST(RectTest, ToEnclosedRect) {
       {{max_float, max_float, 2.0f, 2.0f}, {max_int, max_int, 0, 0}},
       {{0.0f, 0.0f, max_float, max_float}, {0, 0, max_int, max_int}},
       {{20000.5f, 20000.5f, 0.5f, 0.5f}, {20001, 20001, 0, 0}},
-      {{max_int_f, max_int_f, max_int_f, max_int_f}, {max_int, max_int, 0, 0}}};
+      {{max_int_f, max_int_f, max_int_f, max_int_f}, {max_int, max_int, 0, 0}},
+      {{1.9999f, 2.0002f, 5.9998f, 6.0001f}, {2, 3, 5, 5}},
+      {{1.9999f, 2.0001f, 6.0002f, 5.9998f}, {2, 3, 6, 4}},
+      {{1.9998f, 2.0002f, 6.0001f, 5.9999f}, {2, 3, 5, 5}}};
 
-  for (size_t i = 0; i < arraysize(tests); ++i) {
+  for (size_t i = 0; i < base::size(tests); ++i) {
     RectF source(tests[i].in.x, tests[i].in.y, tests[i].in.width,
                  tests[i].in.height);
     Rect enclosed = ToEnclosedRect(source);
@@ -556,9 +559,12 @@ TEST(RectTest, ToEnclosingRect) {
       {{0.0f, 0.0f, max_float, max_float}, {0, 0, max_int, max_int}},
       {{20000.5f, 20000.5f, 0.5f, 0.5f}, {20000, 20000, 1, 1}},
       {{max_int_f, max_int_f, max_int_f, max_int_f}, {max_int, max_int, 0, 0}},
-      {{-0.5f, -0.5f, 22777712.f, 1.f}, {-1, -1, 22777713, 2}}};
+      {{-0.5f, -0.5f, 22777712.f, 1.f}, {-1, -1, 22777713, 2}},
+      {{1.9999f, 2.0002f, 5.9998f, 6.0001f}, {1, 2, 7, 7}},
+      {{1.9999f, 2.0001f, 6.0002f, 5.9998f}, {1, 2, 8, 6}},
+      {{1.9998f, 2.0002f, 6.0001f, 5.9999f}, {1, 2, 7, 7}}};
 
-  for (size_t i = 0; i < arraysize(tests); ++i) {
+  for (size_t i = 0; i < base::size(tests); ++i) {
     RectF source(tests[i].in.x, tests[i].in.y, tests[i].in.width,
                  tests[i].in.height);
 
@@ -582,6 +588,53 @@ TEST(RectTest, ToEnclosingRect) {
     // And it should cause computation issues for itself.
     EXPECT_LT(0, enclosing.right());
     EXPECT_LT(0, enclosing.bottom());
+  }
+}
+
+TEST(RectTest, ToEnclosingRectIgnoringError) {
+  static const int max_int = std::numeric_limits<int>::max();
+  static const float max_float = std::numeric_limits<float>::max();
+  static const float epsilon_float = std::numeric_limits<float>::epsilon();
+  static const float max_int_f = static_cast<float>(max_int);
+  static const float error = 0.001f;
+  static const struct Test {
+    struct {
+      float x;
+      float y;
+      float width;
+      float height;
+    } in;
+    struct {
+      int x;
+      int y;
+      int width;
+      int height;
+    } expected;
+  } tests[] = {
+      {{0.0f, 0.0f, 0.0f, 0.0f}, {0, 0, 0, 0}},
+      {{5.5f, 5.5f, 0.0f, 0.0f}, {5, 5, 0, 0}},
+      {{3.5f, 2.5f, epsilon_float, -0.0f}, {3, 2, 0, 0}},
+      {{3.5f, 2.5f, 0.f, 0.001f}, {3, 2, 0, 1}},
+      {{-1.5f, -1.5f, 3.0f, 3.0f}, {-2, -2, 4, 4}},
+      {{-1.5f, -1.5f, 3.5f, 3.5f}, {-2, -2, 4, 4}},
+      {{max_float, max_float, 2.0f, 2.0f}, {max_int, max_int, 0, 0}},
+      {{0.0f, 0.0f, max_float, max_float}, {0, 0, max_int, max_int}},
+      {{20000.5f, 20000.5f, 0.5f, 0.5f}, {20000, 20000, 1, 1}},
+      {{max_int_f, max_int_f, max_int_f, max_int_f}, {max_int, max_int, 0, 0}},
+      {{-0.5f, -0.5f, 22777712.f, 1.f}, {-1, -1, 22777713, 2}},
+      {{1.9999f, 2.0002f, 5.9998f, 6.0001f}, {2, 2, 6, 6}},
+      {{1.9999f, 2.0001f, 6.0002f, 5.9998f}, {2, 2, 6, 6}},
+      {{1.9998f, 2.0002f, 6.0001f, 5.9999f}, {2, 2, 6, 6}}};
+
+  for (size_t i = 0; i < base::size(tests); ++i) {
+    RectF source(tests[i].in.x, tests[i].in.y, tests[i].in.width,
+                 tests[i].in.height);
+
+    Rect enclosing = ToEnclosingRectIgnoringError(source, error);
+    EXPECT_EQ(tests[i].expected.x, enclosing.x());
+    EXPECT_EQ(tests[i].expected.y, enclosing.y());
+    EXPECT_EQ(tests[i].expected.width, enclosing.width());
+    EXPECT_EQ(tests[i].expected.height, enclosing.height());
   }
 }
 
@@ -617,7 +670,7 @@ TEST(RectTest, ToFlooredRect) {
       20000, 20000, 0, 0 },
   };
 
-  for (size_t i = 0; i < arraysize(tests); ++i) {
+  for (size_t i = 0; i < base::size(tests); ++i) {
     RectF r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
 
@@ -666,7 +719,7 @@ TEST(RectTest, ScaleToEnclosedRect) {
     }
   };
 
-  for (size_t i = 0; i < arraysize(tests); ++i) {
+  for (size_t i = 0; i < base::size(tests); ++i) {
     Rect result = ScaleToEnclosedRect(tests[i].input_rect,
                                       tests[i].input_scale);
     EXPECT_EQ(tests[i].expected_rect, result);
@@ -710,7 +763,7 @@ TEST(RectTest, ScaleToEnclosingRect) {
     }
   };
 
-  for (size_t i = 0; i < arraysize(tests); ++i) {
+  for (size_t i = 0; i < base::size(tests); ++i) {
     Rect result =
         ScaleToEnclosingRect(tests[i].input_rect, tests[i].input_scale);
     EXPECT_EQ(tests[i].expected_rect, result);
@@ -760,7 +813,7 @@ TEST(RectTest, BoundingRect) {
     { Point(-4, 6), Point(6, -4), Rect(-4, -4, 10, 10) },
   };
 
-  for (size_t i = 0; i < arraysize(int_tests); ++i) {
+  for (size_t i = 0; i < base::size(int_tests); ++i) {
     Rect actual = BoundingRect(int_tests[i].a, int_tests[i].b);
     EXPECT_EQ(int_tests[i].expected, actual);
   }
@@ -797,7 +850,7 @@ TEST(RectTest, BoundingRect) {
       RectF(-4.2f, -4.2f, 11.0f, 11.0f) }
   };
 
-  for (size_t i = 0; i < arraysize(float_tests); ++i) {
+  for (size_t i = 0; i < base::size(float_tests); ++i) {
     RectF actual = BoundingRect(float_tests[i].a, float_tests[i].b);
     EXPECT_RECTF_EQ(float_tests[i].expected, actual);
   }

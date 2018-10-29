@@ -276,6 +276,7 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
 
   std::vector<std::unique_ptr<UkmSource>> unsent_sources;
   int unmatched_sources = 0;
+  std::unordered_map<ukm::SourceIdType, int> serialized_source_type_counts;
   for (auto& kv : recordings_.sources) {
     // If the source id is not whitelisted, don't send it unless it has
     // associated entries and the URL matches a URL of a whitelisted source.
@@ -299,6 +300,8 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
     kv.second->PopulateProto(proto_source);
     if (!ShouldRecordInitialUrl())
       proto_source->clear_initial_url();
+
+    serialized_source_type_counts[GetSourceIdType(kv.first)]++;
   }
   for (const auto& event_and_aggregate : recordings_.event_aggregations) {
     if (event_and_aggregate.second.metrics.empty())
@@ -340,13 +343,29 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
       }
     }
   }
+  int num_serialized_sources = 0;
+  for (const auto& entry : serialized_source_type_counts) {
+    num_serialized_sources += entry.second;
+  }
 
-  UMA_HISTOGRAM_COUNTS_1000("UKM.Sources.SerializedCount",
-                            recordings_.sources.size() - unsent_sources.size());
+  UMA_HISTOGRAM_COUNTS_1000("UKM.Sources.SerializedCount2",
+                            num_serialized_sources);
   UMA_HISTOGRAM_COUNTS_100000("UKM.Entries.SerializedCount2",
                               recordings_.entries.size());
   UMA_HISTOGRAM_COUNTS_1000("UKM.Sources.UnsentSourcesCount",
                             unsent_sources.size());
+  UMA_HISTOGRAM_COUNTS_1000("UKM.Sources.UnmatchedSourcesCount",
+                            unmatched_sources);
+
+  UMA_HISTOGRAM_COUNTS_1000(
+      "UKM.Sources.SerializedCount2.Ukm",
+      serialized_source_type_counts[ukm::SourceIdType::UKM]);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "UKM.Sources.SerializedCount2.Navigation",
+      serialized_source_type_counts[ukm::SourceIdType::NAVIGATION_ID]);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "UKM.Sources.SerializedCount2.App",
+      serialized_source_type_counts[ukm::SourceIdType::APP_ID]);
 
   Report::SourceCounts* source_counts_proto = report->mutable_source_counts();
   source_counts_proto->set_observed(recordings_.source_counts.observed);

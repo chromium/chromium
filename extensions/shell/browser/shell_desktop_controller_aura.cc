@@ -233,12 +233,13 @@ void ShellDesktopControllerAura::OnDisplayModeChanged(
 #endif
 
 ui::EventDispatchDetails ShellDesktopControllerAura::DispatchKeyEventPostIME(
-    ui::KeyEvent* key_event) {
+    ui::KeyEvent* key_event,
+    base::OnceCallback<void(bool)> ack_callback) {
   if (key_event->target()) {
     aura::WindowTreeHost* host = static_cast<aura::Window*>(key_event->target())
                                      ->GetRootWindow()
                                      ->GetHost();
-    return host->DispatchKeyEventPostIME(key_event);
+    return host->DispatchKeyEventPostIME(key_event, std::move(ack_callback));
   }
 
   // Send the key event to the focused window.
@@ -246,10 +247,11 @@ ui::EventDispatchDetails ShellDesktopControllerAura::DispatchKeyEventPostIME(
       const_cast<aura::Window*>(focus_controller_->GetActiveWindow());
   if (active_window) {
     return active_window->GetRootWindow()->GetHost()->DispatchKeyEventPostIME(
-        key_event);
+        key_event, std::move(ack_callback));
   }
 
-  return GetPrimaryHost()->DispatchKeyEventPostIME(key_event);
+  return GetPrimaryHost()->DispatchKeyEventPostIME(key_event,
+                                                   std::move(ack_callback));
 }
 
 void ShellDesktopControllerAura::OnKeepAliveStateChanged(
@@ -337,7 +339,7 @@ void ShellDesktopControllerAura::InitWindowManager() {
   user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
   user_activity_notifier_ =
       std::make_unique<ui::UserActivityPowerManagerNotifier>(
-          user_activity_detector_.get());
+          user_activity_detector_.get(), nullptr /*connector*/);
 #endif
 }
 

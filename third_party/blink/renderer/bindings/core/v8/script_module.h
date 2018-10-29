@@ -30,7 +30,7 @@ class ScriptValue;
 // Currently all ScriptModule users can easily access its context Modulator, so
 // we use it to fill ScriptState in.
 class CORE_EXPORT ScriptModule final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   static ScriptModule Compile(v8::Isolate*,

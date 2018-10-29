@@ -2,7 +2,6 @@ Tests that the NodeList.item() argument is correctly validated.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS nodeList.__proto__ is NodeList.prototype
 PASS nodeList.item(0).id is "a"
 PASS nodeList.item(1).id is "b"

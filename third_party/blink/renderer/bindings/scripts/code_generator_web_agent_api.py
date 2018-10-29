@@ -26,6 +26,7 @@ import sys
 from code_generator import CodeGeneratorBase, render_template, normalize_and_sort_includes
 # TODO(dglazkov): Move TypedefResolver to code_generator.py
 from code_generator_v8 import TypedefResolver
+from utilities import to_header_guard
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '..', '..', 'build', 'scripts'))
@@ -259,6 +260,10 @@ class CodeGeneratorWebAgentAPI(CodeGeneratorBase):
             self.output_dir,
             '%s.%s' % (template_context['class_name']['snake_case'],
                        file_extension))
+        if file_extension == 'h':
+            this_include_header_path = self.normalize_this_header_path(path)
+            template_context['header_guard'] = to_header_guard(this_include_header_path)
+
         text = render_template(template, template_context)
         return (path, text)
 

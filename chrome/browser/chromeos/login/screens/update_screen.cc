@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
@@ -43,6 +44,13 @@ constexpr const char kContextKeyShowCurtain[] = "show-curtain";
 constexpr const char kContextKeyShowProgressMessage[] = "show-progress-msg";
 constexpr const char kContextKeyProgress[] = "progress";
 constexpr const char kContextKeyProgressMessage[] = "progress-msg";
+constexpr const char kContextKeyRequiresPermissionForCelluar[] =
+    "requires-permission-for-cellular";
+
+constexpr const char kUserActionAcceptUpdateOverCellular[] =
+    "update-accept-cellular";
+constexpr const char kUserActionRejectUpdateOverCellular[] =
+    "update-reject-cellular";
 
 #if !defined(OFFICIAL_BUILD)
 constexpr const char kUserActionCancelUpdateShortcut[] = "cancel-update";
@@ -106,9 +114,9 @@ void StartUpdateCallback(UpdateScreen* screen,
 
 // static
 UpdateScreen::InstanceSet& UpdateScreen::GetInstanceSet() {
-  CR_DEFINE_STATIC_LOCAL(std::set<UpdateScreen*>, instance_set, ());
+  static base::NoDestructor<std::set<UpdateScreen*>> instance_set;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);  // not threadsafe.
-  return instance_set;
+  return *instance_set;
 }
 
 // static
@@ -182,6 +190,9 @@ void UpdateScreen::ExitUpdate(UpdateScreen::ExitReason reason) {
       break;
     case REASON_UPDATE_INIT_FAILED:
       Finish(ScreenExitCode::UPDATE_ERROR_CHECKING_FOR_UPDATE);
+      break;
+    case REASON_UPDATE_OVER_CELLULAR_REJECTED:
+      Finish(ScreenExitCode::UPDATE_REJECT_OVER_CELLULAR);
       break;
     case REASON_UPDATE_NON_CRITICAL:
     case REASON_UPDATE_ENDED: {
@@ -315,6 +326,19 @@ void UpdateScreen::UpdateStatusChanged(
         ExitUpdate(REASON_UPDATE_NON_CRITICAL);
       }
       break;
+    case UpdateEngineClient::UPDATE_STATUS_NEED_PERMISSION_TO_UPDATE:
+      VLOG(1) << "Update requires user permission to proceed.";
+      state_ = State::STATE_REQUESTING_USER_PERMISSION;
+      pending_update_version_ = status.new_version;
+      pending_update_size_ = status.new_size;
+
+      DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+
+      MakeSureScreenIsShown();
+      GetContextEditor()
+          .SetBoolean(kContextKeyRequiresPermissionForCelluar, true)
+          .SetBoolean(kContextKeyShowCurtain, false);
+      break;
     case UpdateEngineClient::UPDATE_STATUS_ATTEMPTING_ROLLBACK:
       VLOG(1) << "Attempting rollback";
       break;
@@ -326,7 +350,6 @@ void UpdateScreen::UpdateStatusChanged(
       FALLTHROUGH;
     case UpdateEngineClient::UPDATE_STATUS_ERROR:
     case UpdateEngineClient::UPDATE_STATUS_REPORTING_ERROR_EVENT:
-    case UpdateEngineClient::UPDATE_STATUS_NEED_PERMISSION_TO_UPDATE:
       ExitUpdate(REASON_UPDATE_ENDED);
       break;
     default:
@@ -404,8 +427,9 @@ void UpdateScreen::Show() {
 #if !defined(OFFICIAL_BUILD)
   GetContextEditor().SetBoolean(kContextKeyCancelUpdateShortcutEnabled, true);
 #endif
-  GetContextEditor().SetInteger(kContextKeyProgress,
-                                kBeforeUpdateCheckProgress);
+  GetContextEditor()
+      .SetInteger(kContextKeyProgress, kBeforeUpdateCheckProgress)
+      .SetBoolean(kContextKeyRequiresPermissionForCelluar, false);
 
   if (view_)
     view_->Show();
@@ -423,7 +447,40 @@ void UpdateScreen::OnUserAction(const std::string& action_id) {
     CancelUpdate();
   else
 #endif
+      if (action_id == kUserActionAcceptUpdateOverCellular) {
+    DBusThreadManager::Get()
+        ->GetUpdateEngineClient()
+        ->SetUpdateOverCellularOneTimePermission(
+            pending_update_version_, pending_update_size_,
+            base::BindRepeating(
+                &UpdateScreen::RetryUpdateWithUpdateOverCellularPermissionSet,
+                weak_factory_.GetWeakPtr()));
+  } else if (action_id == kUserActionRejectUpdateOverCellular) {
+    // Reset UI context to show curtain again when the user goes back to the
+    // update screen.
+    GetContextEditor()
+        .SetBoolean(kContextKeyShowCurtain, true)
+        .SetBoolean(kContextKeyRequiresPermissionForCelluar, false);
+    ExitUpdate(REASON_UPDATE_OVER_CELLULAR_REJECTED);
+  } else {
     BaseScreen::OnUserAction(action_id);
+  }
+}
+
+void UpdateScreen::RetryUpdateWithUpdateOverCellularPermissionSet(
+    bool success) {
+  if (success) {
+    GetContextEditor().SetBoolean(kContextKeyRequiresPermissionForCelluar,
+                                  false);
+    StartUpdateCheck();
+  } else {
+    // Reset UI context to show curtain again when the user goes back to the
+    // update screen.
+    GetContextEditor()
+        .SetBoolean(kContextKeyShowCurtain, true)
+        .SetBoolean(kContextKeyRequiresPermissionForCelluar, false);
+    ExitUpdate(REASON_UPDATE_OVER_CELLULAR_REJECTED);
+  }
 }
 
 void UpdateScreen::UpdateDownloadingStats(
@@ -546,6 +603,9 @@ void UpdateScreen::StartUpdateCheck() {
   connect_request_subscription_.reset();
   if (state_ == State::STATE_ERROR)
     HideErrorMessage();
+
+  pending_update_version_ = std::string();
+  pending_update_size_ = 0;
 
   state_ = State::STATE_UPDATE;
   DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);

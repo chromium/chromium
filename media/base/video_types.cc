@@ -63,9 +63,18 @@ std::string VideoPixelFormatToString(VideoPixelFormat format) {
       return "PIXEL_FORMAT_YUV444P12";
     case PIXEL_FORMAT_Y16:
       return "PIXEL_FORMAT_Y16";
+    case PIXEL_FORMAT_ABGR:
+      return "PIXEL_FORMAT_ABGR";
+    case PIXEL_FORMAT_XBGR:
+      return "PIXEL_FORMAT_XBGR";
   }
   NOTREACHED() << "Invalid VideoPixelFormat provided: " << format;
   return "";
+}
+
+std::ostream& operator<<(std::ostream& os, VideoPixelFormat format) {
+  os << VideoPixelFormatToString(format);
+  return os;
 }
 
 std::string FourccToString(uint32_t fourcc) {
@@ -109,6 +118,8 @@ bool IsYuvPlanar(VideoPixelFormat format) {
     case PIXEL_FORMAT_RGB32:
     case PIXEL_FORMAT_MJPEG:
     case PIXEL_FORMAT_Y16:
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_XBGR:
       return false;
   }
   return false;
@@ -139,10 +150,12 @@ bool IsOpaque(VideoPixelFormat format) {
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
     case PIXEL_FORMAT_Y16:
+    case PIXEL_FORMAT_XBGR:
       return true;
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_RGB32:
+    case PIXEL_FORMAT_ABGR:
       break;
   }
   return false;
@@ -168,6 +181,8 @@ size_t BitDepth(VideoPixelFormat format) {
     case PIXEL_FORMAT_RGB32:
     case PIXEL_FORMAT_MJPEG:
     case PIXEL_FORMAT_MT21:
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_XBGR:
       return 8;
     case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV422P9:

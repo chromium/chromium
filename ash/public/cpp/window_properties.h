@@ -19,12 +19,7 @@ template <typename T>
 using WindowProperty = ui::ClassProperty<T>;
 }
 
-namespace base {
-class UnguessableToken;
-}
-
 namespace gfx {
-class ImageSkia;
 class Rect;
 }
 
@@ -39,14 +34,6 @@ enum class BackdropWindowMode {
   kEnabled,   // The window needs a backdrop shown behind it.
   kDisabled,  // The window should never have a backdrop.
   kAuto,  // The window manager decides if the window should have a backdrop.
-};
-
-enum class FrameBackButtonState {
-  kNone,      // Window frame shouldn't have a back button.
-  kEnabled,   // Window frame should have a back button, and it should be
-              // enabled.
-  kDisabled,  // Window frame should have a back button, but it should be
-              // disabled.
 };
 
 // Registers Ash's properties with the given PropertyConverter. This allows Ash
@@ -80,35 +67,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 // If true, will send system keys to the window for dispatch.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kCanConsumeSystemKeysKey;
-
-// The bounds of the window control button container (min/max/restore) relative
-// to the window's frame.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<gfx::Rect*>* const
-    kCaptionButtonBoundsKey;
-
-// The state of the frame back button, whether it's visible and enabled.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<FrameBackButtonState>* const
-    kFrameBackButtonStateKey;
-
-// The frame header's images. Only set on themed windows. The type is a token
-// which can be redeemed with the ClientImageRegistry to get a gfx::ImageSkia.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<
-    base::UnguessableToken*>* const kFrameImageActiveKey;
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<
-    base::UnguessableToken*>* const kFrameImageInactiveKey;
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<
-    base::UnguessableToken*>* const kFrameImageOverlayActiveKey;
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<
-    base::UnguessableToken*>* const kFrameImageOverlayInactiveKey;
-
-// A property that controls where a themed window's image is painted.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<int>* const
-    kFrameImageYInsetKey;
-
-// A property to control the visibility of the frame captions buttons when in
-// tablet mode (when not in tablet mode, this property is ignored).
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kHideCaptionButtonsInTabletModeKey;
 
 // A property key to indicate whether we should hide this window in overview
 // mode and Alt + Tab.
@@ -208,15 +166,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<SkColor>* const
 // A property key to store the inactive color on the window frame.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<SkColor>* const
     kFrameInactiveColorKey;
-
-// True when the frame colors were provided by a hosted app, i.e. by a
-// progressive web app manifest.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kFrameIsThemedByHostedAppKey;
-
-// A property that controls the color of text rendered on a browser frame.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<SkColor>* const
-    kFrameTextColorKey;
 
 // A property key to store ash::WindowPinType for a window.
 // When setting this property to PINNED or TRUSTED_PINNED, the window manager

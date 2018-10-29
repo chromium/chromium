@@ -40,7 +40,6 @@ PASS Uint8Array.length is 3
 PASS Uint8ClampedArray.length is 3
 PASS VTTCue.length is 3
 PASS WebGLContextEvent.length is 1
-PASS WebKitAnimationEvent.length is 1
 PASS WebKitCSSMatrix.length is 0
 PASS WebKitMutationObserver.length is 1
 PASS WebSocket.length is 1

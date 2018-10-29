@@ -104,11 +104,8 @@ class NetworkRequestMetricsBrowserTest
       public testing::WithParamInterface<RequestType> {
  public:
   NetworkRequestMetricsBrowserTest() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features = {
-        features::kNetworkPrediction,
-        predictors::kSpeculativePreconnectFeature};
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitAndDisableFeature(
+        predictors::kSpeculativePreconnectFeature);
   }
   ~NetworkRequestMetricsBrowserTest() override {}
 

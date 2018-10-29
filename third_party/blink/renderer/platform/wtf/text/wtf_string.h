@@ -30,8 +30,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/compiler.h"
-#include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
-#include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -504,12 +502,12 @@ class WTF_EXPORT String {
                                       length);
   }
 
-  bool ContainsOnlyASCII() const {
-    return !impl_ || impl_->ContainsOnlyASCII();
+  bool ContainsOnlyASCIIOrEmpty() const {
+    return !impl_ || impl_->ContainsOnlyASCIIOrEmpty();
   }
-  bool ContainsOnlyLatin1() const;
-  bool ContainsOnlyWhitespace() const {
-    return !impl_ || impl_->ContainsOnlyWhitespace();
+  bool ContainsOnlyLatin1OrEmpty() const;
+  bool ContainsOnlyWhitespaceOrEmpty() const {
+    return !impl_ || impl_->ContainsOnlyWhitespaceOrEmpty();
   }
 
   size_t CharactersSizeInBytes() const {
@@ -587,7 +585,7 @@ inline const UChar* String::GetCharacters<UChar>() const {
   return Characters16();
 }
 
-inline bool String::ContainsOnlyLatin1() const {
+inline bool String::ContainsOnlyLatin1OrEmpty() const {
   if (IsEmpty())
     return true;
 
@@ -677,7 +675,6 @@ using WTF::kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD;
 using WTF::String;
 using WTF::g_empty_string;
 using WTF::g_empty_string16_bit;
-using WTF::CharactersAreAllASCII;
 using WTF::Equal;
 using WTF::Find;
 using WTF::IsSpaceOrNewline;

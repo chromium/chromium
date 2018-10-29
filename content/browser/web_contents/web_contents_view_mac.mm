@@ -23,12 +23,15 @@
 #import "content/browser/web_contents/web_drag_source_mac.h"
 #include "content/common/view_messages.h"
 #include "content/public/browser/interstitial_page.h"
+#include "content/public/browser/ns_view_bridge_factory_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
+#include "mojo/public/cpp/bindings/interface_request.h"
 #include "skia/ext/skia_utils_mac.h"
 #import "third_party/mozilla/NSPasteboard+Utils.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
+#include "ui/base/cocoa/ns_view_ids.h"
 #include "ui/base/dragdrop/cocoa_dnd_util.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
@@ -107,10 +110,13 @@ WebContentsViewMac::WebContentsViewMac(WebContentsImpl* web_contents,
                                        WebContentsViewDelegate* delegate)
     : web_contents_(web_contents),
       delegate_(delegate),
-      allow_other_views_(false) {
-}
+      ns_view_id_(ui::NSViewIds::GetNewId()),
+      ns_view_client_binding_(this) {}
 
 WebContentsViewMac::~WebContentsViewMac() {
+  if (views_host_)
+    views_host_->OnHostableViewDestroying();
+  DCHECK(!views_host_);
   // This handles the case where a renderer close call was deferred
   // while the user was operating a UI control which resulted in a
   // close.  In that case, the Cocoa view outlives the
@@ -196,8 +202,8 @@ void WebContentsViewMac::Focus() {
     delegate()->ResetStoredFocus();
 
   gfx::NativeView native_view = GetNativeViewForFocus();
-  NSWindow* window = [native_view window];
-  [window makeFirstResponder:native_view];
+  NSWindow* window = [native_view.GetNativeNSView() window];
+  [window makeFirstResponder:native_view.GetNativeNSView()];
 }
 
 void WebContentsViewMac::SetInitialFocus() {
@@ -322,21 +328,6 @@ gfx::Rect WebContentsViewMac::GetViewBounds() const {
   return gfx::ScreenRectFromNSRect(window_bounds);
 }
 
-void WebContentsViewMac::SetAllowOtherViews(bool allow) {
-  if (allow_other_views_ == allow)
-    return;
-
-  allow_other_views_ = allow;
-  RenderWidgetHostViewMac* view = static_cast<RenderWidgetHostViewMac*>(
-      web_contents_->GetRenderWidgetHostView());
-  if (view)
-    view->SetAllowPauseForResizeOrRepaint(!allow_other_views_);
-}
-
-bool WebContentsViewMac::GetAllowOtherViews() const {
-  return allow_other_views_;
-}
-
 void WebContentsViewMac::CreateView(
     const gfx::Size& initial_size, gfx::NativeView context) {
   WebContentsViewCocoa* view =
@@ -369,17 +360,23 @@ RenderWidgetHostViewBase* WebContentsViewMac::CreateViewForWidget(
 
     view->SetDelegate(rw_delegate.get());
   }
-  view->SetAllowPauseForResizeOrRepaint(!allow_other_views_);
 
   // Add the RenderWidgetHostView to the ui::Layer heirarchy.
   child_views_.push_back(view->GetWeakPtr());
-  SetParentUiLayer(parent_ui_layer_);
+  if (views_host_) {
+    NSViewBridgeFactoryHost* factory_host =
+        NSViewBridgeFactoryHost::GetFromHostId(
+            views_host_->GetViewsFactoryHostId());
+
+    view->MigrateNSViewBridge(factory_host, ns_view_id_);
+    view->SetParentUiLayer(views_host_->GetUiLayer());
+  }
 
   // Fancy layout comes later; for now just make it our size and resize it
   // with us. In case there are other siblings of the content area, we want
   // to make sure the content area is on the bottom so other things draw over
   // it.
-  NSView* view_view = view->GetNativeView();
+  NSView* view_view = view->GetNativeView().GetNativeNSView();
   [view_view setFrame:[cocoa_view_.get() bounds]];
   [view_view setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
   // Add the new view below all other views; this also keeps it below any
@@ -449,18 +446,104 @@ void WebContentsViewMac::CloseTab() {
   web_contents_->Close(web_contents_->GetRenderViewHost());
 }
 
-void WebContentsViewMac::SetParentUiLayer(ui::Layer* parent_ui_layer) {
-  parent_ui_layer_ = parent_ui_layer;
+void WebContentsViewMac::OnWindowVisibilityChanged(Visibility visibility) {
+  if (!web_contents() || web_contents()->IsBeingDestroyed())
+    return;
+  // TODO(ccameron): Communicate window visibility and occlusion from the remote
+  // process (for now, always treat remote windows as visible).
+  if (ns_view_bridge_remote_)
+    visibility = Visibility::VISIBLE;
+  web_contents()->UpdateWebContentsVisibility(visibility);
+}
+
+std::list<RenderWidgetHostViewMac*> WebContentsViewMac::GetChildViews() {
   // Remove any child NSViews that have been destroyed.
+  std::list<RenderWidgetHostViewMac*> result;
   for (auto iter = child_views_.begin(); iter != child_views_.end();) {
-    if (*iter)
-      (*iter++)->SetParentUiLayer(parent_ui_layer);
-    else
+    if (*iter) {
+      result.push_back(reinterpret_cast<RenderWidgetHostViewMac*>(iter->get()));
+      iter++;
+    } else {
       iter = child_views_.erase(iter);
+    }
+  }
+  return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// WebContentsViewMac, ViewsHostableView:
+
+void WebContentsViewMac::OnViewsHostableAttached(
+    ViewsHostableView::Host* host) {
+  views_host_ = host;
+  [cocoa_view_
+      setAccessibilityParentElement:views_host_->GetAccessibilityElement()];
+
+  // Create an NSView in the target process, if one exists.
+  uint64_t factory_host_id = views_host_->GetViewsFactoryHostId();
+  NSViewBridgeFactoryHost* factory_host =
+      NSViewBridgeFactoryHost::GetFromHostId(factory_host_id);
+  if (factory_host) {
+    mojom::WebContentsNSViewClientAssociatedPtr client;
+    ns_view_client_binding_.Bind(mojo::MakeRequest(&client));
+    mojom::WebContentsNSViewBridgeAssociatedRequest bridge_request =
+        mojo::MakeRequest(&ns_view_bridge_remote_);
+
+    factory_host->GetFactory()->CreateWebContentsNSViewBridge(
+        ns_view_id_, client.PassInterface(), std::move(bridge_request));
+
+    ns_view_bridge_remote_->SetParentViewsNSView(views_host_->GetNSViewId());
+
+    // TODO(ccameron): Communicate window visibility and occlusion from the
+    // remote process (for now, always treat remote windows as visible).
+    OnWindowVisibilityChanged(content::Visibility::VISIBLE);
+  } else if (factory_host_id != NSViewBridgeFactoryHost::kLocalDirectHostId) {
+    LOG(ERROR) << "Failed to look up NSViewBridgeFactoryHost!";
+  }
+
+  for (auto* rwhv_mac : GetChildViews()) {
+    rwhv_mac->MigrateNSViewBridge(factory_host, ns_view_id_);
+    rwhv_mac->SetParentUiLayer(views_host_->GetUiLayer());
   }
 }
 
+void WebContentsViewMac::OnViewsHostableDetached() {
+  DCHECK(views_host_);
+  views_host_ = nullptr;
+
+  for (auto* rwhv_mac : GetChildViews()) {
+    rwhv_mac->MigrateNSViewBridge(nullptr, 0);
+    rwhv_mac->SetParentUiLayer(nullptr);
+  }
+
+  [cocoa_view_ setAccessibilityParentElement:nil];
+
+  // Disconnect from the bridge. This will have the effect of destroying the
+  // associated bridge instance with its NSView.
+  ns_view_client_binding_.Close();
+  ns_view_bridge_remote_.reset();
+}
+
+void WebContentsViewMac::OnViewsHostableShow(
+    const gfx::Rect& bounds_in_window) {
+  if (ns_view_bridge_remote_)
+    ns_view_bridge_remote_->Show(bounds_in_window);
+}
+
+void WebContentsViewMac::OnViewsHostableHide() {
+  if (ns_view_bridge_remote_)
+    ns_view_bridge_remote_->Hide();
+}
+
+void WebContentsViewMac::OnViewsHostableMakeFirstResponder() {
+  if (ns_view_bridge_remote_)
+    ns_view_bridge_remote_->MakeFirstResponder();
+}
+
 }  // namespace content
+
+////////////////////////////////////////////////////////////////////////////////
+// WebContentsViewCocoa
 
 @implementation WebContentsViewCocoa
 
@@ -674,22 +757,18 @@ void WebContentsViewMac::SetParentUiLayer(ui::Layer* parent_ui_layer) {
       FocusThroughTabTraversal(direction == NSSelectingPrevious);
 }
 
-- (void)cr_setParentUiLayer:(ui::Layer*)parentUiLayer {
-  if (webContentsView_)
-    webContentsView_->SetParentUiLayer(parentUiLayer);
-}
-
 - (void)updateWebContentsVisibility {
-  WebContentsImpl* webContents = [self webContents];
-  if (!webContents || webContents->IsBeingDestroyed())
+  if (!webContentsView_)
     return;
-
+  content::Visibility visibility = content::Visibility::VISIBLE;
   if ([self isHiddenOrHasHiddenAncestor] || ![self window])
-    webContents->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+    visibility = content::Visibility::HIDDEN;
   else if ([[self window] occlusionState] & NSWindowOcclusionStateVisible)
-    webContents->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+    visibility = content::Visibility::VISIBLE;
   else
-    webContents->UpdateWebContentsVisibility(content::Visibility::OCCLUDED);
+    visibility = content::Visibility::OCCLUDED;
+  if (webContentsView_)
+    webContentsView_->OnWindowVisibilityChanged(visibility);
 }
 
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize {
@@ -743,9 +822,13 @@ void WebContentsViewMac::SetParentUiLayer(ui::Layer* parent_ui_layer) {
   [self updateWebContentsVisibility];
 }
 
-// AccessibilityHostable protocol implementation.
 - (void)setAccessibilityParentElement:(id)accessibilityParent {
   accessibilityParent_.reset([accessibilityParent retain]);
+}
+
+// ViewsHostable protocol implementation.
+- (ui::ViewsHostableView*)viewsHostableView {
+  return webContentsView_;
 }
 
 // NSAccessibility informal protocol implementation.

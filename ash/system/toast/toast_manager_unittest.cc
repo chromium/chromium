@@ -228,7 +228,8 @@ TEST_F(ToastManagerTest, PositionWithAutoHiddenBottomShelf) {
 
   EXPECT_TRUE(toast_bounds.Intersects(shelf->GetUserWorkAreaBounds()));
   EXPECT_NEAR(root_bounds.CenterPoint().x(), toast_bounds.CenterPoint().x(), 1);
-  EXPECT_EQ(root_bounds.bottom() - kShelfAutoHideSize - ToastOverlay::kOffset,
+  EXPECT_EQ(root_bounds.bottom() - kHiddenShelfInScreenPortion -
+                ToastOverlay::kOffset,
             toast_bounds.bottom());
 }
 

@@ -17,6 +17,7 @@
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
@@ -240,7 +241,7 @@ class MEDIA_EXPORT AudioBufferMemoryPool
  public:
   AudioBufferMemoryPool();
 
-  size_t get_pool_size_for_testing() const { return entries_.size(); }
+  size_t GetPoolSizeForTesting();
 
  private:
   friend class AudioBuffer;
@@ -254,7 +255,7 @@ class MEDIA_EXPORT AudioBufferMemoryPool
 
   base::Lock entry_lock_;
   using MemoryEntry = std::pair<AudioMemory, size_t>;
-  std::list<MemoryEntry> entries_;
+  std::list<MemoryEntry> entries_ GUARDED_BY(entry_lock_);
 
   DISALLOW_COPY_AND_ASSIGN(AudioBufferMemoryPool);
 };

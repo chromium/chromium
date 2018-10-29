@@ -14,6 +14,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.util.MathUtils;
 import org.chromium.chrome.browser.widget.animation.CancelAwareAnimatorListener;
@@ -134,6 +135,9 @@ public class ScrimView extends View implements View.OnClickListener {
     /** The current set of params affecting the scrim. */
     private ScrimParams mActiveParams;
 
+    /** The duration for the fading animation. This can be overridden for testing. */
+    private int mFadeDurationMs;
+
     /**
      * @param context An Android {@link Context} for creating the view.
      * @param scrimDelegate A means of changing the scrim over the status bar.
@@ -146,6 +150,7 @@ public class ScrimView extends View implements View.OnClickListener {
         mParent = parent;
         mDefaultBackgroundColor = ApiCompatibilityUtils.getColor(
                 getResources(), R.color.omnibox_focused_fading_background_color);
+        mFadeDurationMs = FADE_DURATION_MS;
 
         setAlpha(0.0f);
         setVisibility(View.GONE);
@@ -245,7 +250,7 @@ public class ScrimView extends View implements View.OnClickListener {
         }
         if (mOverlayFadeInAnimator == null) {
             mOverlayFadeInAnimator = ObjectAnimator.ofFloat(this, ALPHA, 1f);
-            mOverlayFadeInAnimator.setDuration(FADE_DURATION_MS);
+            mOverlayFadeInAnimator.setDuration(mFadeDurationMs);
             mOverlayFadeInAnimator.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
         }
 
@@ -258,7 +263,7 @@ public class ScrimView extends View implements View.OnClickListener {
     public void hideScrim(boolean fadeOut) {
         if (mOverlayFadeOutAnimator == null) {
             mOverlayFadeOutAnimator = ObjectAnimator.ofFloat(this, ALPHA, 0f);
-            mOverlayFadeOutAnimator.setDuration(FADE_DURATION_MS);
+            mOverlayFadeOutAnimator.setDuration(mFadeDurationMs);
             mOverlayFadeOutAnimator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
             mOverlayFadeOutAnimator.addListener(new CancelAwareAnimatorListener() {
                 @Override
@@ -295,5 +300,10 @@ public class ScrimView extends View implements View.OnClickListener {
     public void onClick(View view) {
         if (mActiveParams == null || mActiveParams.observer == null) return;
         mActiveParams.observer.onScrimClick();
+    }
+
+    @VisibleForTesting
+    public void disableAnimationForTesting(boolean disable) {
+        mFadeDurationMs = disable ? 0 : FADE_DURATION_MS;
     }
 }

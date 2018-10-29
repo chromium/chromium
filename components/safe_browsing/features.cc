@@ -22,9 +22,6 @@ namespace safe_browsing {
 const base::Feature kAdSamplerTriggerFeature{"SafeBrowsingAdSamplerTrigger",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAdvancedProtectionStatusFeature{
-    "AdvancedProtectionStatus", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls the billing interstitial UI.
 const base::Feature kBillingInterstitial{"BillingInterstitial",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -43,7 +40,7 @@ const base::Feature kForceEnableResetPasswordWebUI{
     "ForceEnableResetPasswordWebUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kInspectDownloadedRarFiles{
-    "InspectDownloadedRarFiles", base::FEATURE_DISABLED_BY_DEFAULT};
+    "InspectDownloadedRarFiles", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSuspiciousSiteTriggerQuotaFeature{
     "SafeBrowsingSuspiciousSiteTriggerQuota", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -55,6 +52,9 @@ const base::Feature kTriggerThrottlerDailyQuotaFeature{
     "SafeBrowsingTriggerThrottlerDailyQuota",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kUseLocalBlacklistsV2{"SafeBrowsingUseLocalBlacklistsV2",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 namespace {
 // List of experimental features. Boolean value for each list member should be
 // set to true if the experiment is currently running at a probability other
@@ -65,7 +65,6 @@ constexpr struct {
   bool probabilistically_enabled;
 } kExperimentalFeatures[]{
     {&kAdSamplerTriggerFeature, false},
-    {&kAdvancedProtectionStatusFeature, true},
     {&kBillingInterstitial, true},
     {&kCheckByURLLoaderThrottle, true},
     {&kForceEnableResetPasswordWebUI, true},
@@ -73,6 +72,7 @@ constexpr struct {
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},
     {&kTriggerThrottlerDailyQuotaFeature, false},
+    {&kUseLocalBlacklistsV2, true},
 };
 
 // Adds the name and the enabled/disabled status of a given feature.

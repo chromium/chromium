@@ -67,6 +67,16 @@ void AddMigrators(ConfigurationPolicyProvider* provider) {
 #endif  // !defined(OS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
+bool ProviderHasPolicies(const ConfigurationPolicyProvider* provider) {
+  if (!provider)
+    return false;
+  for (const auto& pair : provider->policies()) {
+    if (!pair.second->empty())
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 ChromeBrowserPolicyConnector::ChromeBrowserPolicyConnector()
@@ -104,6 +114,16 @@ void ChromeBrowserPolicyConnector::Init(
 
 bool ChromeBrowserPolicyConnector::IsEnterpriseManaged() const {
   NOTREACHED() << "This method is only defined for Chrome OS";
+  return false;
+}
+
+bool ChromeBrowserPolicyConnector::HasMachineLevelPolicies() {
+  if (ProviderHasPolicies(GetPlatformProvider()))
+    return true;
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+  if (ProviderHasPolicies(machine_level_user_cloud_policy_manager_))
+    return true;
+#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
   return false;
 }
 

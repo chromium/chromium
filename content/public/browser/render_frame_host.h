@@ -15,10 +15,10 @@
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/blink/public/platform/web_sudden_termination_disabler_type.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -55,7 +55,6 @@ class RenderProcessHost;
 class RenderViewHost;
 class RenderWidgetHostView;
 class SiteInstance;
-struct FileChooserFileInfo;
 
 // The interface provides a communication conduit with a frame in the renderer.
 class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
@@ -76,7 +75,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 #endif
 
   // Returns a RenderFrameHost given its accessibility tree ID.
-  static RenderFrameHost* FromAXTreeID(int ax_tree_id);
+  static RenderFrameHost* FromAXTreeID(ui::AXTreeID ax_tree_id);
 
   // Returns the FrameTreeNode ID corresponding to the specified |process_id|
   // and |routing_id|. This routing ID pair may represent a placeholder for
@@ -97,7 +96,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual int GetRoutingID() = 0;
 
   // Returns the accessibility tree ID for this RenderFrameHost.
-  virtual int GetAXTreeID() = 0;
+  virtual ui::AXTreeID GetAXTreeID() = 0;
 
   // Returns the SiteInstance grouping all RenderFrameHosts that have script
   // access to this RenderFrameHost, and must therefore live in the same
@@ -120,6 +119,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // there is no parent. The result may be in a different process than the
   // current RenderFrameHost.
   virtual RenderFrameHost* GetParent() = 0;
+
+  // Returns whether or not this RenderFrameHost is a descendant of |ancestor|.
+  // This is equivalent to check that |ancestor| is reached by iterating on
+  // GetParent().
+  // This is a strict relationship, a RenderFrameHost is never an ancestor of
+  // itself.
+  virtual bool IsDescendantOf(RenderFrameHost* ancestor) = 0;
 
   // Returns the FrameTreeNode ID for this frame. This ID is browser-global and
   // uniquely identifies a frame that hosts content. The identifier is fixed at
@@ -249,13 +255,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // use by resource metrics.
   virtual int GetProxyCount() = 0;
 
-  // Notifies the Listener that one or more files have been chosen by the user
-  // from a file chooser dialog for the form. |permissions| is the file
-  // selection mode in which the chooser dialog was created.
-  virtual void FilesSelectedInChooser(
-      const std::vector<content::FileChooserFileInfo>& files,
-      blink::mojom::FileChooserParams::Mode permissions) = 0;
-
   // Returns true if the frame has a selection.
   virtual bool HasSelection() = 0;
 
@@ -320,6 +319,15 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // downstream loaders.
   virtual bool CreateNetworkServiceDefaultFactory(
       network::mojom::URLLoaderFactoryRequest default_factory_request) = 0;
+
+  // Requests that future URLLoaderFactoryBundle(s) sent to the renderer should
+  // use a separate URLLoaderFactory for requests initiated by any of the
+  // origins listed in |request_initiators|.  The URLLoaderFactory(s) for each
+  // origin will be created via
+  // ContentBrowserClient::CreateURLLoaderFactoryForNetworkRequests method.
+  virtual void MarkInitiatorsAsRequiringSeparateURLLoaderFactory(
+      std::vector<url::Origin> request_initiators,
+      bool push_to_renderer_now) = 0;
 
  private:
   // This interface should only be implemented inside content.

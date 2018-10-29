@@ -23,6 +23,10 @@ void AdjustForBackwardsRange(int* index, int* count) {
 
 }  // namespace
 
+bool IsIgnorableCharacter(base::char16 c) {
+  return (c == kZeroWidthSpace) || (c == kPDFSoftHyphenMarker);
+}
+
 PDFiumRange::PDFiumRange(PDFiumPage* page, int char_index, int char_count)
     : page_(page), char_index_(char_index), char_count_(char_count) {
 #if DCHECK_IS_ON()
@@ -105,8 +109,7 @@ base::string16 PDFiumRange::GetText() const {
     api_string_adapter.Close(written);
   }
 
-  // Strip ignorable non-displaying whitespace
-  rv.erase(std::remove(rv.begin(), rv.end(), kZeroWidthSpace), rv.end());
+  base::EraseIf(rv, [](base::char16 c) { return IsIgnorableCharacter(c); });
 
   return rv;
 }

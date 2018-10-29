@@ -32,6 +32,10 @@ Polymer({
      * @private
      */
     defaultSetting_: String,
+
+    label: String,
+
+    icon: String,
   },
 
   observers: ['siteChanged_(site)'],

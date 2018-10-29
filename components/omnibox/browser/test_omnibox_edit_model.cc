@@ -12,18 +12,25 @@ TestOmniboxEditModel::TestOmniboxEditModel(OmniboxView* view,
     : OmniboxEditModel(view, controller, std::make_unique<TestOmniboxClient>()),
       popup_is_open_(false) {}
 
+TestOmniboxEditModel::~TestOmniboxEditModel() {}
+
 bool TestOmniboxEditModel::PopupIsOpen() const {
   return popup_is_open_;
 }
 
-AutocompleteMatch TestOmniboxEditModel::CurrentMatch(GURL*) const {
-  return current_match_;
+AutocompleteMatch TestOmniboxEditModel::CurrentMatch(
+    GURL* alternate_nav_url) const {
+  if (override_current_match_)
+    return *override_current_match_;
+
+  return OmniboxEditModel::CurrentMatch(alternate_nav_url);
 }
 
 void TestOmniboxEditModel::SetPopupIsOpen(bool open) {
   popup_is_open_ = open;
 }
 
-void TestOmniboxEditModel::SetCurrentMatch(const AutocompleteMatch& match) {
-  current_match_ = match;
+void TestOmniboxEditModel::SetCurrentMatchForTest(
+    const AutocompleteMatch& match) {
+  override_current_match_ = std::make_unique<AutocompleteMatch>(match);
 }

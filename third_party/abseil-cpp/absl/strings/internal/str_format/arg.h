@@ -33,7 +33,7 @@ struct HasUserDefinedConvert : std::false_type {};
 template <typename T>
 struct HasUserDefinedConvert<
     T, void_t<decltype(AbslFormatConvert(
-           std::declval<const T&>(), std::declval<const ConversionSpec&>(),
+           std::declval<const T&>(), std::declval<ConversionSpec>(),
            std::declval<FormatSink*>()))>> : std::true_type {};
 template <typename T>
 class StreamedWrapper;
@@ -50,25 +50,23 @@ struct VoidPtr {
       : value(ptr ? reinterpret_cast<uintptr_t>(ptr) : 0) {}
   uintptr_t value;
 };
-ConvertResult<Conv::p> FormatConvertImpl(VoidPtr v, const ConversionSpec& conv,
+ConvertResult<Conv::p> FormatConvertImpl(VoidPtr v, ConversionSpec conv,
                                          FormatSinkImpl* sink);
 
 // Strings.
-ConvertResult<Conv::s> FormatConvertImpl(const std::string& v,
-                                         const ConversionSpec& conv,
+ConvertResult<Conv::s> FormatConvertImpl(const std::string& v, ConversionSpec conv,
                                          FormatSinkImpl* sink);
-ConvertResult<Conv::s> FormatConvertImpl(string_view v,
-                                         const ConversionSpec& conv,
+ConvertResult<Conv::s> FormatConvertImpl(string_view v, ConversionSpec conv,
                                          FormatSinkImpl* sink);
 ConvertResult<Conv::s | Conv::p> FormatConvertImpl(const char* v,
-                                                   const ConversionSpec& conv,
+                                                   ConversionSpec conv,
                                                    FormatSinkImpl* sink);
 template <class AbslCord,
           typename std::enable_if<
               std::is_same<AbslCord, ::Cord>::value>::type* = nullptr,
           class AbslCordReader = ::CordReader>
 ConvertResult<Conv::s> FormatConvertImpl(const AbslCord& value,
-                                         const ConversionSpec& conv,
+                                         ConversionSpec conv,
                                          FormatSinkImpl* sink) {
   if (conv.conv().id() != ConversionChar::s) return {false};
 
@@ -104,51 +102,48 @@ using IntegralConvertResult =
 using FloatingConvertResult = ConvertResult<Conv::floating>;
 
 // Floats.
-FloatingConvertResult FormatConvertImpl(float v, const ConversionSpec& conv,
+FloatingConvertResult FormatConvertImpl(float v, ConversionSpec conv,
                                         FormatSinkImpl* sink);
-FloatingConvertResult FormatConvertImpl(double v, const ConversionSpec& conv,
+FloatingConvertResult FormatConvertImpl(double v, ConversionSpec conv,
                                         FormatSinkImpl* sink);
-FloatingConvertResult FormatConvertImpl(long double v,
-                                        const ConversionSpec& conv,
+FloatingConvertResult FormatConvertImpl(long double v, ConversionSpec conv,
                                         FormatSinkImpl* sink);
 
 // Chars.
-IntegralConvertResult FormatConvertImpl(char v, const ConversionSpec& conv,
+IntegralConvertResult FormatConvertImpl(char v, ConversionSpec conv,
                                         FormatSinkImpl* sink);
-IntegralConvertResult FormatConvertImpl(signed char v,
-                                        const ConversionSpec& conv,
+IntegralConvertResult FormatConvertImpl(signed char v, ConversionSpec conv,
                                         FormatSinkImpl* sink);
-IntegralConvertResult FormatConvertImpl(unsigned char v,
-                                        const ConversionSpec& conv,
+IntegralConvertResult FormatConvertImpl(unsigned char v, ConversionSpec conv,
                                         FormatSinkImpl* sink);
 
 // Ints.
 IntegralConvertResult FormatConvertImpl(short v,  // NOLINT
-                                        const ConversionSpec& conv,
+                                        ConversionSpec conv,
                                         FormatSinkImpl* sink);
 IntegralConvertResult FormatConvertImpl(unsigned short v,  // NOLINT
-                                        const ConversionSpec& conv,
+                                        ConversionSpec conv,
                                         FormatSinkImpl* sink);
-IntegralConvertResult FormatConvertImpl(int v, const ConversionSpec& conv,
+IntegralConvertResult FormatConvertImpl(int v, ConversionSpec conv,
                                         FormatSinkImpl* sink);
-IntegralConvertResult FormatConvertImpl(unsigned v, const ConversionSpec& conv,
+IntegralConvertResult FormatConvertImpl(unsigned v, ConversionSpec conv,
                                         FormatSinkImpl* sink);
 IntegralConvertResult FormatConvertImpl(long v,  // NOLINT
-                                        const ConversionSpec& conv,
+                                        ConversionSpec conv,
                                         FormatSinkImpl* sink);
 IntegralConvertResult FormatConvertImpl(unsigned long v,  // NOLINT
-                                        const ConversionSpec& conv,
+                                        ConversionSpec conv,
                                         FormatSinkImpl* sink);
 IntegralConvertResult FormatConvertImpl(long long v,  // NOLINT
-                                        const ConversionSpec& conv,
+                                        ConversionSpec conv,
                                         FormatSinkImpl* sink);
 IntegralConvertResult FormatConvertImpl(unsigned long long v,  // NOLINT
-                                        const ConversionSpec& conv,
+                                        ConversionSpec conv,
                                         FormatSinkImpl* sink);
-IntegralConvertResult FormatConvertImpl(uint128 v, const ConversionSpec& conv,
+IntegralConvertResult FormatConvertImpl(uint128 v, ConversionSpec conv,
                                         FormatSinkImpl* sink);
 template <typename T, enable_if_t<std::is_same<T, bool>::value, int> = 0>
-IntegralConvertResult FormatConvertImpl(T v, const ConversionSpec& conv,
+IntegralConvertResult FormatConvertImpl(T v, ConversionSpec conv,
                                         FormatSinkImpl* sink) {
   return FormatConvertImpl(static_cast<int>(v), conv, sink);
 }
@@ -159,11 +154,11 @@ template <typename T>
 typename std::enable_if<std::is_enum<T>::value &&
                             !HasUserDefinedConvert<T>::value,
                         IntegralConvertResult>::type
-FormatConvertImpl(T v, const ConversionSpec& conv, FormatSinkImpl* sink);
+FormatConvertImpl(T v, ConversionSpec conv, FormatSinkImpl* sink);
 
 template <typename T>
 ConvertResult<Conv::s> FormatConvertImpl(const StreamedWrapper<T>& v,
-                                         const ConversionSpec& conv,
+                                         ConversionSpec conv,
                                          FormatSinkImpl* out) {
   std::ostringstream oss;
   oss << v.v_;
@@ -176,7 +171,7 @@ ConvertResult<Conv::s> FormatConvertImpl(const StreamedWrapper<T>& v,
 struct FormatCountCaptureHelper {
   template <class T = int>
   static ConvertResult<Conv::n> ConvertHelper(const FormatCountCapture& v,
-                                              const ConversionSpec& conv,
+                                              ConversionSpec conv,
                                               FormatSinkImpl* sink) {
     const absl::enable_if_t<sizeof(T) != 0, FormatCountCapture>& v2 = v;
 
@@ -189,7 +184,7 @@ struct FormatCountCaptureHelper {
 
 template <class T = int>
 ConvertResult<Conv::n> FormatConvertImpl(const FormatCountCapture& v,
-                                         const ConversionSpec& conv,
+                                         ConversionSpec conv,
                                          FormatSinkImpl* sink) {
   return FormatCountCaptureHelper::ConvertHelper(v, conv, sink);
 }
@@ -199,20 +194,20 @@ ConvertResult<Conv::n> FormatConvertImpl(const FormatCountCapture& v,
 struct FormatArgImplFriend {
   template <typename Arg>
   static bool ToInt(Arg arg, int* out) {
-    if (!arg.vtbl_->to_int) return false;
-    *out = arg.vtbl_->to_int(arg.data_);
-    return true;
+    // A value initialized ConversionSpec has a `none` conv, which tells the
+    // dispatcher to run the `int` conversion.
+    return arg.dispatcher_(arg.data_, {}, out);
   }
 
   template <typename Arg>
-  static bool Convert(Arg arg, const str_format_internal::ConversionSpec& conv,
+  static bool Convert(Arg arg, str_format_internal::ConversionSpec conv,
                       FormatSinkImpl* out) {
-    return arg.vtbl_->convert(arg.data_, conv, out);
+    return arg.dispatcher_(arg.data_, conv, out);
   }
 
   template <typename Arg>
-  static const void* GetVTablePtrForTest(Arg arg) {
-    return arg.vtbl_;
+  static typename Arg::Dispatcher GetVTablePtrForTest(Arg arg) {
+    return arg.dispatcher_;
   }
 };
 
@@ -229,11 +224,7 @@ class FormatArgImpl {
     char buf[kInlinedSpace];
   };
 
-  struct VTable {
-    bool (*convert)(Data, const str_format_internal::ConversionSpec& conv,
-                    FormatSinkImpl* out);
-    int (*to_int)(Data);
-  };
+  using Dispatcher = bool (*)(Data, ConversionSpec, void* out);
 
   template <typename T>
   struct store_by_value
@@ -252,10 +243,6 @@ class FormatArgImpl {
                                     : (store_by_value<T>::value ? ByValue
                                                                 : ByPointer))> {
   };
-
-  // An instance of an FormatArgImpl::VTable suitable for 'T'.
-  template <typename T>
-  struct TypedVTable;
 
   // To reduce the number of vtables we will decay values before hand.
   // Anything with a user-defined Convert will get its own vtable.
@@ -338,7 +325,10 @@ class FormatArgImpl {
   };
 
   template <typename T>
-  void Init(const T& value);
+  void Init(const T& value) {
+    data_ = Manager<T>::SetValue(value);
+    dispatcher_ = &Dispatch<T>;
+  }
 
   template <typename T>
   static int ToIntVal(const T& val) {
@@ -355,79 +345,75 @@ class FormatArgImpl {
     return static_cast<int>(val);
   }
 
-  Data data_;
-  const VTable* vtbl_;
-};
+  template <typename T>
+  static bool ToInt(Data arg, int* out, std::true_type /* is_integral */,
+                    std::false_type) {
+    *out = ToIntVal(Manager<T>::Value(arg));
+    return true;
+  }
 
-template <typename T>
-struct FormatArgImpl::TypedVTable {
- private:
-  static bool ConvertImpl(Data arg,
-                          const str_format_internal::ConversionSpec& conv,
-                          FormatSinkImpl* out) {
-    return str_format_internal::FormatConvertImpl(Manager<T>::Value(arg), conv,
-                                                  out)
+  template <typename T>
+  static bool ToInt(Data arg, int* out, std::false_type,
+                    std::true_type /* is_enum */) {
+    *out = ToIntVal(static_cast<typename std::underlying_type<T>::type>(
+        Manager<T>::Value(arg)));
+    return true;
+  }
+
+  template <typename T>
+  static bool ToInt(Data, int*, std::false_type, std::false_type) {
+    return false;
+  }
+
+  template <typename T>
+  static bool Dispatch(Data arg, ConversionSpec spec, void* out) {
+    // A `none` conv indicates that we want the `int` conversion.
+    if (ABSL_PREDICT_FALSE(spec.conv().id() == ConversionChar::none)) {
+      return ToInt<T>(arg, static_cast<int*>(out), std::is_integral<T>(),
+                      std::is_enum<T>());
+    }
+
+    return str_format_internal::FormatConvertImpl(
+               Manager<T>::Value(arg), spec, static_cast<FormatSinkImpl*>(out))
         .value;
   }
 
-  template <typename U = T, typename = void>
-  struct ToIntImpl {
-    static constexpr int (*value)(Data) = nullptr;
-  };
-
-  template <typename U>
-  struct ToIntImpl<U,
-                   typename std::enable_if<std::is_integral<U>::value>::type> {
-    static int Invoke(Data arg) { return ToIntVal(Manager<T>::Value(arg)); }
-    static constexpr int (*value)(Data) = &Invoke;
-  };
-
-  template <typename U>
-  struct ToIntImpl<U, typename std::enable_if<std::is_enum<U>::value>::type> {
-    static int Invoke(Data arg) {
-      return ToIntVal(static_cast<typename std::underlying_type<T>::type>(
-          Manager<T>::Value(arg)));
-    }
-    static constexpr int (*value)(Data) = &Invoke;
-  };
-
- public:
-  static constexpr VTable value{&ConvertImpl, ToIntImpl<>::value};
+  Data data_;
+  Dispatcher dispatcher_;
 };
 
-template <typename T>
-constexpr FormatArgImpl::VTable FormatArgImpl::TypedVTable<T>::value;
+#define ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(T, E) \
+  E template bool FormatArgImpl::Dispatch<T>(Data, ConversionSpec, void*)
 
-template <typename T>
-void FormatArgImpl::Init(const T& value) {
-  data_ = Manager<T>::SetValue(value);
-  vtbl_ = &TypedVTable<T>::value;
-}
+#define ABSL_INTERNAL_FORMAT_DISPATCH_OVERLOADS_EXPAND_(...)                   \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(str_format_internal::VoidPtr,     \
+                                             __VA_ARGS__);                     \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(bool, __VA_ARGS__);               \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(char, __VA_ARGS__);               \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(signed char, __VA_ARGS__);        \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(unsigned char, __VA_ARGS__);      \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(short, __VA_ARGS__); /* NOLINT */ \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(unsigned short,      /* NOLINT */ \
+                                             __VA_ARGS__);                     \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(int, __VA_ARGS__);                \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(unsigned int, __VA_ARGS__);       \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(long, __VA_ARGS__); /* NOLINT */  \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(unsigned long,      /* NOLINT */  \
+                                             __VA_ARGS__);                     \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(long long, /* NOLINT */           \
+                                             __VA_ARGS__);                     \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(unsigned long long, /* NOLINT */  \
+                                             __VA_ARGS__);                     \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(uint128, __VA_ARGS__);            \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(float, __VA_ARGS__);              \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(double, __VA_ARGS__);             \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(long double, __VA_ARGS__);        \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(const char*, __VA_ARGS__);        \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(std::string, __VA_ARGS__);             \
+  ABSL_INTERNAL_FORMAT_DISPATCH_INSTANTIATE_(string_view, __VA_ARGS__)
 
-extern template struct FormatArgImpl::TypedVTable<str_format_internal::VoidPtr>;
+ABSL_INTERNAL_FORMAT_DISPATCH_OVERLOADS_EXPAND_(extern);
 
-extern template struct FormatArgImpl::TypedVTable<bool>;
-extern template struct FormatArgImpl::TypedVTable<char>;
-extern template struct FormatArgImpl::TypedVTable<signed char>;
-extern template struct FormatArgImpl::TypedVTable<unsigned char>;
-extern template struct FormatArgImpl::TypedVTable<short>;           // NOLINT
-extern template struct FormatArgImpl::TypedVTable<unsigned short>;  // NOLINT
-extern template struct FormatArgImpl::TypedVTable<int>;
-extern template struct FormatArgImpl::TypedVTable<unsigned>;
-extern template struct FormatArgImpl::TypedVTable<long>;           // NOLINT
-extern template struct FormatArgImpl::TypedVTable<unsigned long>;  // NOLINT
-extern template struct FormatArgImpl::TypedVTable<long long>;      // NOLINT
-extern template struct FormatArgImpl::TypedVTable<
-    unsigned long long>;  // NOLINT
-extern template struct FormatArgImpl::TypedVTable<uint128>;
-
-extern template struct FormatArgImpl::TypedVTable<float>;
-extern template struct FormatArgImpl::TypedVTable<double>;
-extern template struct FormatArgImpl::TypedVTable<long double>;
-
-extern template struct FormatArgImpl::TypedVTable<const char*>;
-extern template struct FormatArgImpl::TypedVTable<std::string>;
-extern template struct FormatArgImpl::TypedVTable<string_view>;
 }  // namespace str_format_internal
 }  // namespace absl
 

@@ -1,5 +1,5 @@
 Tests that the start event is fired at the correct time with different start delays.
 
-PASS: zero-delay: Start event fired immediately
 PASS: negative-delay: Start event fired immediately
+PASS: zero-delay: Start event fired immediately
 PASS: positive-delay: Start event did not fire immediately

@@ -159,9 +159,14 @@ Resource* ResourceManagerImpl::GetStaticResourceWithTint(int res_id,
   // Build a color filter to use on the base resource. This filter multiplies
   // the RGB components by the components of the new color but retains the
   // alpha of the original image.
+  SkScalar color_matrix[20] = {
+      0, 0, 0, 0, SkColorGetR(tint_color),
+      0, 0, 0, 0, SkColorGetG(tint_color),
+      0, 0, 0, 0, SkColorGetB(tint_color),
+      0, 0, 0, 1, 0};
   SkPaint color_filter;
   color_filter.setColorFilter(
-      SkColorFilter::MakeModeFilter(tint_color, SkBlendMode::kModulate));
+      SkColorFilter::MakeMatrixFilterRowMajor255(color_matrix));
 
   // Draw the resource and make it immutable.
   base_image->ui_resource()

@@ -50,20 +50,20 @@ class GIN_EXPORT V8Initializer {
   // so that it will not return if natives cannot be loaded.
   static void LoadV8Natives();
 
-  // Load V8 snapshot from user provided platform file descriptors.
-  // The offset and size arguments, if non-zero, specify the portions
-  // of the files to be loaded. Since the VM can boot with or without
+  // Load V8 snapshot from user provided file.
+  // The region argument, if non-zero, specifies the portions
+  // of the files to be mapped. Since the VM can boot with or without
   // the snapshot, this function does not return a status.
-  static void LoadV8SnapshotFromFD(base::PlatformFile snapshot_fd,
-                                   int64_t snapshot_offset,
-                                   int64_t snapshot_size,
-                                   V8SnapshotFileType snapshot_file_type);
-  // Similar to LoadV8SnapshotFromFD, but for the source of the natives.
+  static void LoadV8SnapshotFromFile(
+      base::File snapshot_file,
+      base::MemoryMappedFile::Region* snapshot_file_region,
+      V8SnapshotFileType snapshot_file_type);
+  // Similar to LoadV8SnapshotFromFile, but for the source of the natives.
   // Without the natives we cannot continue, so this function contains
   // release mode asserts and won't return if it fails.
-  static void LoadV8NativesFromFD(base::PlatformFile natives_fd,
-                                  int64_t natives_offset,
-                                  int64_t natives_size);
+  static void LoadV8NativesFromFile(
+      base::File natives_file,
+      base::MemoryMappedFile::Region* natives_file_region);
 
 #if defined(OS_ANDROID)
   static base::FilePath GetNativesFilePath();

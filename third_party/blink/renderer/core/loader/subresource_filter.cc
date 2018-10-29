@@ -26,7 +26,7 @@ String GetErrorStringForDisallowedLoad(const KURL& url) {
   builder.Append(url.GetString());
   builder.Append(
       " on this site because this site tends to show ads that interrupt, "
-      "distract, or prevent user control. Learn more at "
+      "distract, mislead, or prevent user control. Learn more at "
       "https://www.chromestatus.com/feature/5738264052891648");
   return builder.ToString();
 }
@@ -48,8 +48,8 @@ SubresourceFilter::SubresourceFilter(
   DCHECK(subresource_filter_);
   // Report the main resource as an ad if the subresource filter is
   // associated with an ad subframe.
-  if (execution_context_->IsDocument()) {
-    auto* loader = ToDocument(execution_context_)->Loader();
+  if (auto* document = DynamicTo<Document>(execution_context_.Get())) {
+    auto* loader = document->Loader();
     if (subresource_filter_->GetIsAssociatedWithAdSubframe()) {
       ReportAdRequestId(loader->GetResponse().RequestId());
     }
@@ -60,7 +60,7 @@ SubresourceFilter::~SubresourceFilter() = default;
 
 bool SubresourceFilter::AllowLoad(
     const KURL& resource_url,
-    WebURLRequest::RequestContext request_context,
+    mojom::RequestContextType request_context,
     SecurityViolationReportingPolicy reporting_policy) {
   // TODO(csharrison): Implement a caching layer here which is a HashMap of
   // Pair<url string, context> -> LoadPolicy.
@@ -95,7 +95,7 @@ bool SubresourceFilter::AllowWebSocketConnection(const KURL& url) {
 
 bool SubresourceFilter::IsAdResource(
     const KURL& resource_url,
-    WebURLRequest::RequestContext request_context) {
+    mojom::RequestContextType request_context) {
   if (subresource_filter_->GetIsAssociatedWithAdSubframe())
     return true;
 
@@ -139,8 +139,8 @@ void SubresourceFilter::ReportLoad(
       // TODO(csharrison): Consider posting a task to the main thread from
       // worker thread, or adding support for DidObserveLoadingBehavior to
       // ExecutionContext.
-      if (execution_context_->IsDocument()) {
-        if (DocumentLoader* loader = ToDocument(execution_context_)->Loader()) {
+      if (auto* document = DynamicTo<Document>(execution_context_.Get())) {
+        if (DocumentLoader* loader = document->Loader()) {
           loader->DidObserveLoadingBehavior(
               kWebLoadingBehaviorSubresourceFilterMatch);
         }

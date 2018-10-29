@@ -24,6 +24,18 @@ SourceLocation::SourceLocation(const std::string& url,
 
 SourceLocation::~SourceLocation() = default;
 
+InitiatorCSPInfo::InitiatorCSPInfo() = default;
+InitiatorCSPInfo::InitiatorCSPInfo(
+    CSPDisposition should_check_main_world_csp,
+    const std::vector<ContentSecurityPolicy>& initiator_csp,
+    const base::Optional<CSPSource>& initiator_self_source)
+    : should_check_main_world_csp(should_check_main_world_csp),
+      initiator_csp(initiator_csp),
+      initiator_self_source(initiator_self_source) {}
+InitiatorCSPInfo::InitiatorCSPInfo(const InitiatorCSPInfo& other) = default;
+
+InitiatorCSPInfo::~InitiatorCSPInfo() = default;
+
 CommonNavigationParams::CommonNavigationParams() = default;
 
 CommonNavigationParams::CommonNavigationParams(
@@ -40,11 +52,9 @@ CommonNavigationParams::CommonNavigationParams(
     std::string method,
     const scoped_refptr<network::ResourceRequestBody>& post_data,
     base::Optional<SourceLocation> source_location,
-    CSPDisposition should_check_main_world_csp,
     bool started_from_context_menu,
     bool has_user_gesture,
-    const std::vector<ContentSecurityPolicy>& initiator_csp,
-    const base::Optional<CSPSource>& initiator_self_source,
+    const InitiatorCSPInfo& initiator_csp_info,
     base::TimeTicks input_start)
     : url(url),
       referrer(referrer),
@@ -59,11 +69,9 @@ CommonNavigationParams::CommonNavigationParams(
       method(method),
       post_data(post_data),
       source_location(source_location),
-      should_check_main_world_csp(should_check_main_world_csp),
       started_from_context_menu(started_from_context_menu),
       has_user_gesture(has_user_gesture),
-      initiator_csp(initiator_csp),
-      initiator_self_source(initiator_self_source),
+      initiator_csp_info(initiator_csp_info),
       input_start(input_start) {
   // |method != "POST"| should imply absence of |post_data|.
   if (method != "POST" && post_data) {

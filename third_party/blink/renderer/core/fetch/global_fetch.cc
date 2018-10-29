@@ -59,9 +59,12 @@ class GlobalFetchImpl final
       return ScriptPromise();
 
     probe::willSendXMLHttpOrFetchNetworkRequest(execution_context, r->url());
-    auto promise = fetch_manager_->Fetch(
-        script_state, r->PassRequestData(script_state, exception_state),
-        r->signal(), exception_state);
+    FetchRequestData* request_data =
+        r->PassRequestData(script_state, exception_state);
+    if (exception_state.HadException())
+      return ScriptPromise();
+    auto promise = fetch_manager_->Fetch(script_state, request_data,
+                                         r->signal(), exception_state);
     if (exception_state.HadException())
       return ScriptPromise();
 

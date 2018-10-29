@@ -25,6 +25,44 @@ perf.coldTime = perf.firstTime + COLD_TIME;
 
 let finished = false;
 
+// window.setImmediate allows us to run at fps higher than 60
+if (window.setImmediate === undefined) {
+    let _immediateIdCounter = 1;
+    const _immediateFuncs = {};
+
+    window.setImmediate = (func) => {
+        const index = _immediateIdCounter++;
+        _immediateFuncs[index] = func;
+        window.postMessage("immediate trigger:" + index, "*");
+        return index;
+    };
+
+    window.clearImmediate = (id) => {
+        _immediateFuncs[id];
+    };
+
+    window.addEventListener("message", (event) => {
+        if ((typeof event.data !== "string") ||
+            (event.data.indexOf("immediate trigger:") !== 0)) {
+            return;
+        }
+
+        const index = event.data.slice("immediate trigger:".length);
+
+        const callback = _immediateFuncs[index];
+        if (callback === undefined) {
+            return;
+        }
+
+        delete _immediateFuncs[index];
+
+        callback();
+    });
+}
+
+// Overwrite this function so that tests run at the maximum possible fps
+requestAnimationFrame = window.setImmediate;
+
 perf.ntos = function(n) {
   let unit = "s";
   if (n < 1) {
@@ -138,7 +176,7 @@ perf.measure = function() {
       }
     }
     perf.firstTime = perf.lastTime = t;
-    requestAnimationFrame(perf.measure);
+    window.setImmediate(perf.measure);
     return;
   }
 
@@ -161,7 +199,7 @@ perf.measure = function() {
     }
   }
 
-  requestAnimationFrame(perf.measure);
+  window.setImmediate(perf.measure);
 }
 
 perf.getResults = function() {

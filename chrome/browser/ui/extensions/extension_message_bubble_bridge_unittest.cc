@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/extensions/extension_message_bubble_bridge.h"
+
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -70,11 +72,12 @@ class ExtensionMessageBubbleBridgeUnitTest
     browser_.reset(new Browser(params));
 
     extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
-        ->SetTestingFactory(browser()->profile(), &BuildOverrideRegistrar);
+        ->SetTestingFactory(browser()->profile(),
+                            base::BindRepeating(&BuildOverrideRegistrar));
     extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(
         browser()->profile());
     ToolbarActionsModelFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(), &BuildToolbarModel);
+        browser()->profile(), base::BindRepeating(&BuildToolbarModel));
   }
 
   void TearDown() override {

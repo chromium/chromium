@@ -8,16 +8,17 @@ GEN_INCLUDE(['walker_unittest_base.js']);
 /**
  * Test fixture.
  * @constructor
- * @extends {CvoxWalkerTestBase}
+ * @extends {ChromeVoxWalkerTestBase}
  */
-function CvoxTableWalkerUnitTest() {}
+function ChromeVoxTableWalkerUnitTest() {}
 
-CvoxTableWalkerUnitTest.prototype = {
-  __proto__: CvoxWalkerUnitTestBase.prototype,
+ChromeVoxTableWalkerUnitTest.prototype = {
+  __proto__: ChromeVoxWalkerUnitTestBase.prototype,
 
   /** @override */
-  closureModuleDeps: CvoxWalkerUnitTestBase.prototype.closureModuleDeps.concat(
-      'cvox.TableWalker'),
+  closureModuleDeps:
+      ChromeVoxWalkerUnitTestBase.prototype.closureModuleDeps.concat(
+          'cvox.TableWalker'),
 
   /** @override */
   newWalker: function() {
@@ -32,7 +33,7 @@ CvoxTableWalkerUnitTest.prototype = {
 /**
  * Simple tests for TableWalker
  */
-TEST_F('CvoxTableWalkerUnitTest', 'testSimpleTableWalker', function() {
+TEST_F('ChromeVoxTableWalkerUnitTest', 'testSimpleTableWalker', function() {
   this.loadDoc(function() {/*!
     <p id="before">Before</p>
     <table id="table">
@@ -48,7 +49,7 @@ TEST_F('CvoxTableWalkerUnitTest', 'testSimpleTableWalker', function() {
 /**
  * Test navigating rows.
  */
-TEST_F('CvoxTableWalkerUnitTest', 'testNavigateRows', function() {
+TEST_F('ChromeVoxTableWalkerUnitTest', 'testNavigateRows', function() {
   this.loadDoc(function() {/*!
     <table id="table">
       <tr><td>A</td><td>1</td></tr>
@@ -68,7 +69,7 @@ TEST_F('CvoxTableWalkerUnitTest', 'testNavigateRows', function() {
 /**
  * Test navigating columns.
  */
-TEST_F('CvoxTableWalkerUnitTest', 'testNavigateCols', function() {
+TEST_F('ChromeVoxTableWalkerUnitTest', 'testNavigateCols', function() {
   this.loadDoc(function() {/*!
     <table id="table">
       <tr><td>A</td><td>1</td></tr>

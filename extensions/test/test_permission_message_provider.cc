@@ -17,6 +17,11 @@ PermissionMessages TestPermissionMessageProvider::GetPermissionMessages(
   return PermissionMessages();
 }
 
+PermissionMessages TestPermissionMessageProvider::GetPowerfulPermissionMessages(
+    const PermissionIDSet& permissions) const {
+  return PermissionMessages();
+}
+
 bool TestPermissionMessageProvider::IsPrivilegeIncrease(
     const PermissionSet& granted_permissions,
     const PermissionSet& requested_permissions,

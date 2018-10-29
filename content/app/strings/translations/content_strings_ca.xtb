@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1018939186200882850">element del menú</translation>
-<translation id="1020833440720551630">silencia la pista d'àudio</translation>
 <translation id="10623998915015855">botó de commutació</translation>
 <translation id="1088086359088493902">Segons</translation>
 <translation id="1171774979989969504">Introduïu una adreça electrònica.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">crèdits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">bàner</translation>
-<translation id="1548116112524424341">reprodueix el vídeo en mode de pantalla en pantalla</translation>
 <translation id="1589122976691792535">regió</translation>
 <translation id="1591562245178063882">Aquest mes</translation>
 <translation id="1637811476055996098">Trieu els fitxers</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">quadrícula d'arbre</translation>
 <translation id="1822429046913737220">a. m./p. m.</translation>
 <translation id="1832974991323546415">reprodueix al dispositiu remot</translation>
-<translation id="1838818994221231429">activa o desactiva la pantalla completa a l'àrea del retall de pantalla</translation>
 <translation id="190587075670221089">supressió</translation>
 <translation id="1907737156431278478">exemple</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">Fes doble toc a l'esquerra o a la dreta per saltar 10 s</translation>
 <translation id="5631759159893697722">resum</translation>
-<translation id="5641012560118721995">pausa la reproducció</translation>
 <translation id="5643186887447432888">botó</translation>
 <translation id="5677946354068040947">més opcions</translation>
 <translation id="576709008726043716">introducció</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="5966707198760109579">Setmana</translation>
 <translation id="5987525920412732405">botó de selecció de valors</translation>
+<translation id="6011459053400940133">control lliscant de volum</translation>
 <translation id="6015796118275082299">Any</translation>
 <translation id="6023896073578205740">quadre de llista</translation>
-<translation id="6101327004457443354">deixa de silenciar la pista d'àudio</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">comptador</translation>
 <translation id="6166809985690652833">cloenda</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Hores</translation>
 <translation id="7681220483256441252">índex</translation>
 <translation id="7720026100085573005">temps restant</translation>
-<translation id="7740016676195725605">deixa de mostrar subtítols ocults</translation>
 <translation id="7740050170769002709">Contingut HTML</translation>
 <translation id="7750228210027921155">Pantalla en pantalla</translation>
 <translation id="7789962463072032349">posa en pausa</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">camp de text de la cerca</translation>
 <translation id="8057695513531652401">avís</translation>
 <translation id="8105797009065549151">referència de la nota</translation>
-<translation id="8115662671911883373">comença a mostrar subtítols ocults</translation>
 <translation id="8117451130807776954">Aquesta setmana</translation>
-<translation id="819205353528511139">reprodueix la pel·lícula en mode de pantalla completa</translation>
 <translation id="8199524924445686405">aaaa</translation>
 <translation id="8284326494547611709">Subtítols</translation>
 <translation id="835897206747267392">Valor no vàlid.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">reproducció amb comandament</translation>
 <translation id="862370744433916922">subtítol</translation>
 <translation id="8750798805984357768">Seleccioneu una d'aquestes opcions.</translation>
-<translation id="8785498733064193001">inicia la reproducció</translation>
 <translation id="8808573423886751634">capítol</translation>
 <translation id="8845239796550121995">S'està emetent al televisor</translation>
 <translation id="8851136666856101339">principal</translation>

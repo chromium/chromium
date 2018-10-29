@@ -7,21 +7,27 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 
 class AssistantUiModelObserver;
 
-// Enumeration of Assistant entry/exit points.
+// Enumeration of Assistant entry/exit points, also recorded in histograms.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Only append to this enum is allowed
+// if the possible source grows.
 enum class AssistantSource {
-  kUnspecified,
-  kDeepLink,
-  kHotkey,
-  kHotword,
-  kLauncherSearchBox,
-  kLongPressLauncher,
-  kSetup,
-  kStylus,
+  kUnspecified = 0,
+  kDeepLink = 1,
+  kHotkey = 2,
+  kHotword = 3,
+  kLauncherSearchBox = 4,
+  kLongPressLauncher = 5,
+  kSetup = 6,
+  kStylus = 7,
+  // Special enumerator value used by histogram macros.
+  kMaxValue = kStylus
 };
 
 // Enumeration of Assistant UI modes.
@@ -59,16 +65,32 @@ class AssistantUiModel {
 
   AssistantVisibility visibility() const { return visibility_; }
 
+  // Sets the current usable work area.
+  void SetUsableWorkArea(const gfx::Rect& usable_work_area);
+
+  // Returns the current usable work area.
+  const gfx::Rect& usable_work_area() const { return usable_work_area_; }
+
+  // Returns the UI entry point. Only valid while UI is visible.
+  AssistantSource entry_point() const { return entry_point_; }
+
  private:
   void NotifyUiModeChanged();
   void NotifyUiVisibilityChanged(AssistantVisibility old_visibility,
                                  AssistantSource source);
+  void NotifyUsableWorkAreaChanged();
 
   AssistantUiMode ui_mode_ = AssistantUiMode::kMainUi;
 
   AssistantVisibility visibility_ = AssistantVisibility::kClosed;
 
+  AssistantSource entry_point_ = AssistantSource::kUnspecified;
+
   base::ObserverList<AssistantUiModelObserver>::Unchecked observers_;
+
+  // Usable work area for Assistant. Value is only meaningful when Assistant
+  // UI exists.
+  gfx::Rect usable_work_area_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantUiModel);
 };

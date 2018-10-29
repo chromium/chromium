@@ -160,21 +160,19 @@ AudioInputStream* AudioManagerPulse::MakeLowLatencyInputStream(
 }
 
 std::string AudioManagerPulse::GetDefaultInputDeviceID() {
-#if defined(OS_CHROMEOS)
+  // Do not use the real default input device since it is a fallback
+  // device rather than a default device. Using the default input device
+  // reported by Pulse Audio prevents, for example, input redirection
+  // using the PULSE_SOURCE environment variable.
   return AudioManagerBase::GetDefaultInputDeviceID();
-#else
-  return pulse::GetRealDefaultDeviceId(input_mainloop_, input_context_,
-                                       pulse::RequestType::INPUT);
-#endif
 }
 
 std::string AudioManagerPulse::GetDefaultOutputDeviceID() {
-#if defined(OS_CHROMEOS)
+  // Do not use the real default output device since it is a fallback
+  // device rather than a default device. Using the default output device
+  // reported by Pulse Audio prevents, for example, output redirection
+  // using the PULSE_SINK environment variable.
   return AudioManagerBase::GetDefaultOutputDeviceID();
-#else
-  return pulse::GetRealDefaultDeviceId(input_mainloop_, input_context_,
-                                       pulse::RequestType::OUTPUT);
-#endif
 }
 
 std::string AudioManagerPulse::GetAssociatedOutputDeviceID(
@@ -185,15 +183,13 @@ std::string AudioManagerPulse::GetAssociatedOutputDeviceID(
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(input_mainloop_);
   DCHECK(input_context_);
-  std::string input =
-      (input_device_id == AudioDeviceDescription::kDefaultDeviceId)
-          ? pulse::GetRealDefaultDeviceId(input_mainloop_, input_context_,
-                                          pulse::RequestType::INPUT)
-          : input_device_id;
+
+  if (input_device_id == AudioDeviceDescription::kDefaultDeviceId)
+    return std::string();
 
   std::string input_bus =
-      pulse::GetBusOfInput(input_mainloop_, input_context_, input);
-  return input_bus.empty() ? ""
+      pulse::GetBusOfInput(input_mainloop_, input_context_, input_device_id);
+  return input_bus.empty() ? std::string()
                            : pulse::GetOutputCorrespondingTo(
                                  input_mainloop_, input_context_, input_bus);
 #endif

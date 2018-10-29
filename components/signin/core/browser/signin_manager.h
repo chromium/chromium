@@ -38,6 +38,7 @@
 #include "components/signin/core/browser/account_tracker_service.h"
 #include "components/signin/core/browser/profile_management_switches.h"
 #include "components/signin/core/browser/profile_oauth2_token_service.h"
+#include "components/signin/core/browser/signin_client.h"
 #include "components/signin/core/browser/signin_internals_util.h"
 #include "components/signin/core/browser/signin_manager_base.h"
 #include "components/signin/core/browser/signin_metrics.h"
@@ -180,27 +181,13 @@ class SigninManager : public SigninManagerBase,
   // authenticated. Returns an empty string if no auth is in progress.
   const std::string& GetUsernameForAuthInProgress() const;
 
-  // Set the preference to turn off one-click sign-in so that it won't ever
-  // show it again for the user associated with |prefs| (even if the user tries
-  // a new account).
-  static void DisableOneClickSignIn(PrefService* prefs);
-
-  // Tells the SigninManager whether to prohibit signout for this profile.
-  // If |prohibit_signout| is true, then signout will be prohibited.
-  void ProhibitSignout(bool prohibit_signout);
-
-  // If true, signout is prohibited for this profile (calls to SignOut() are
-  // ignored).
-  bool IsSignoutProhibited() const;
-
  protected:
-  // Flag saying whether signing out is allowed.
-  bool prohibit_signout_;
-
   // The sign out process which is started by SigninClient::PreSignOut()
-  virtual void DoSignOut(signin_metrics::ProfileSignout signout_source_metric,
-                         signin_metrics::SignoutDelete signout_delete_metric,
-                         RemoveAccountsOption remove_option);
+  virtual void OnSignoutDecisionReached(
+      signin_metrics::ProfileSignout signout_source_metric,
+      signin_metrics::SignoutDelete signout_delete_metric,
+      RemoveAccountsOption remove_option,
+      SigninClient::SignoutDecision signout_decision);
 
  private:
   enum SigninType {
@@ -215,9 +202,6 @@ class SigninManager : public SigninManagerBase,
   FRIEND_TEST_ALL_PREFIXES(SigninManagerTest, ClearTransientSigninData);
   FRIEND_TEST_ALL_PREFIXES(SigninManagerTest, ProvideSecondFactorSuccess);
   FRIEND_TEST_ALL_PREFIXES(SigninManagerTest, ProvideSecondFactorFailure);
-
-  // If user was signed in, load tokens from DB if available.
-  void InitTokenService();
 
   // Called to setup the transient signin data during one of the
   // StartSigninXXX methods.  |type| indicates which of the methods is being

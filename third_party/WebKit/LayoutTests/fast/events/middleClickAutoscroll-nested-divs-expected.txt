@@ -1,8 +1,0 @@
-PASS autoscroll started
-Mouse cursor shape: type=SouthPanning hotSpot=0,0
-PASS autoscroll stopped
-PASS Mouse cursor cleared
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

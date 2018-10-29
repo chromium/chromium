@@ -154,8 +154,16 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                   kCanvasCaptureColorTestHtmlFile);
 }
 
+// See https://crbug.com/898286.
+#if defined(OS_ANDROID)
+#define MAYBE_CaptureFromOpaqueCanvas2DHandlesContextLoss \
+  DISABLED_CaptureFromOpaqueCanvas2DHandlesContextLoss
+#else
+#define MAYBE_CaptureFromOpaqueCanvas2DHandlesContextLoss \
+  CaptureFromOpaqueCanvas2DHandlesContextLoss
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
-                       CaptureFromOpaqueCanvas2DHandlesContextLoss) {
+                       MAYBE_CaptureFromOpaqueCanvas2DHandlesContextLoss) {
   MakeTypicalCall("testCanvas2DContextLoss(false);",
                   kCanvasCaptureColorTestHtmlFile);
 }

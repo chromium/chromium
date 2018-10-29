@@ -57,6 +57,9 @@ FeedOfflineBridge::FeedOfflineBridge(const JavaRef<jobject>& j_this,
       offline_host_(offline_host),
       weak_factory_(this) {
   DCHECK(offline_host_);
+  // The host guarantees to not invoke these callbacks until Initialize() exits.
+  // This is important because until the Java bridge's constructor finishes, any
+  // attempt to cross JNI from native to Java will fail.
   offline_host_->Initialize(
       base::BindRepeating(&FeedOfflineBridge::TriggerGetKnownContent,
                           weak_factory_.GetWeakPtr()),
@@ -84,7 +87,7 @@ void FeedOfflineBridge::GetOfflineStatus(JNIEnv* env,
                                          const JavaRef<jobjectArray>& j_urls,
                                          const JavaRef<jobject>& j_callback) {
   std::vector<std::string> urls;
-  base::android::AppendJavaStringArrayToStringVector(env, j_urls.obj(), &urls);
+  base::android::AppendJavaStringArrayToStringVector(env, j_urls, &urls);
   ScopedJavaGlobalRef<jobject> callback(j_callback);
   offline_host_->GetOfflineStatus(
       std::move(urls), base::BindOnce(&OnGetOfflineStatus, callback));
@@ -95,7 +98,7 @@ void FeedOfflineBridge::OnContentRemoved(
     const base::android::JavaRef<jobject>& j_this,
     const base::android::JavaRef<jobjectArray>& j_urls) {
   std::vector<std::string> urls;
-  base::android::AppendJavaStringArrayToStringVector(env, j_urls.obj(), &urls);
+  base::android::AppendJavaStringArrayToStringVector(env, j_urls, &urls);
   offline_host_->OnContentRemoved(urls);
 }
 
@@ -122,14 +125,26 @@ void FeedOfflineBridge::AppendContentMetadata(
     const base::android::JavaRef<jstring>& j_favicon_url,
     const base::android::JavaRef<jstring>& j_snippet) {
   ContentMetadata metadata;
+  DCHECK(!j_url.is_null());
   metadata.url = base::android::ConvertJavaStringToUTF8(env, j_url);
+  DCHECK(!j_title.is_null());
   metadata.title = base::android::ConvertJavaStringToUTF8(env, j_title);
   metadata.time_published = base::Time::FromJavaTime(j_time_published_ms);
-  metadata.image_url = base::android::ConvertJavaStringToUTF8(env, j_image_url);
-  metadata.publisher = base::android::ConvertJavaStringToUTF8(env, j_publisher);
-  metadata.favicon_url =
-      base::android::ConvertJavaStringToUTF8(env, j_favicon_url);
-  metadata.snippet = base::android::ConvertJavaStringToUTF8(env, j_snippet);
+  if (!j_image_url.is_null()) {
+    metadata.image_url =
+        base::android::ConvertJavaStringToUTF8(env, j_image_url);
+  }
+  if (!j_publisher.is_null()) {
+    metadata.publisher =
+        base::android::ConvertJavaStringToUTF8(env, j_publisher);
+  }
+  if (!j_favicon_url.is_null()) {
+    metadata.favicon_url =
+        base::android::ConvertJavaStringToUTF8(env, j_favicon_url);
+  }
+  if (!j_snippet.is_null()) {
+    metadata.snippet = base::android::ConvertJavaStringToUTF8(env, j_snippet);
+  }
   known_content_metadata_buffer_.push_back(std::move(metadata));
 }
 

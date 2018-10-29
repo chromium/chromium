@@ -15,10 +15,6 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if defined(OS_MACOSX)
-#include "ui/base/cocoa/bubble_closer.h"
-#endif
-
 namespace gfx {
 class Point;
 }
@@ -127,13 +123,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
 
   // The time when the popup was shown.
   base::Time show_time_;
-
-#if defined(OS_MACOSX)
-  // Special handler to close the popup on the Mac Cocoa browser.
-  // |parent_widget_| is null on that browser so we can't observe it for
-  // window changes.
-  std::unique_ptr<ui::BubbleCloser> mac_bubble_closer_;
-#endif
 
   base::WeakPtrFactory<AutofillPopupBaseView> weak_ptr_factory_;
 

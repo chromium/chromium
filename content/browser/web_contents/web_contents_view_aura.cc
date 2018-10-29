@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/message_loop/message_loop_current.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
@@ -59,7 +60,6 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -230,11 +230,9 @@ void PrepareDragForDownload(
 
 // Returns the FormatType to store file system files.
 const ui::Clipboard::FormatType& GetFileSystemFileFormatType() {
-  static const char kFormatString[] = "chromium/x-file-system-files";
-  CR_DEFINE_STATIC_LOCAL(ui::Clipboard::FormatType,
-                         format,
-                         (ui::Clipboard::GetFormatType(kFormatString)));
-  return format;
+  static base::NoDestructor<ui::Clipboard::FormatType> format(
+      ui::Clipboard::GetFormatType("chromium/x-file-system-files"));
+  return *format;
 }
 
 
@@ -480,7 +478,7 @@ WebContentsViewAura::WebContentsViewAura(WebContentsImpl* web_contents,
                                          WebContentsViewDelegate* delegate)
     : is_mus_browser_plugin_guest_(web_contents->GetBrowserPluginGuest() !=
                                        nullptr &&
-                                   features::IsUsingWindowService()),
+                                   features::IsMultiProcessMash()),
       web_contents_(web_contents),
       delegate_(delegate),
       current_drag_op_(blink::kWebDragOperationNone),
@@ -763,7 +761,7 @@ void WebContentsViewAura::CreateAuraWindow(aura::Window* context) {
                                           root_window->GetBoundsInScreen());
   }
   window_->layer()->SetMasksToBounds(true);
-  aura::WindowOcclusionTracker::Track(window_.get());
+  window_->TrackOcclusionState();
 
   // WindowObserver is not interesting and is problematic for Browser Plugin
   // guests.

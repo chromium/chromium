@@ -34,9 +34,7 @@ class X509Certificate;
 namespace x509_util {
 
 // Supported digest algorithms for signing certificates.
-enum DigestAlgorithm {
-  DIGEST_SHA256
-};
+enum DigestAlgorithm { DIGEST_SHA256 };
 
 // Generate a 'tls-server-end-point' channel binding based on the specified
 // certificate. Channel bindings are based on RFC 5929.
@@ -120,7 +118,7 @@ NET_EXPORT base::StringPiece CryptoBufferAsStringPiece(
 
 // Creates a new X509Certificate from the chain in |buffers|, which must have at
 // least one element.
-scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
+NET_EXPORT scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
     const STACK_OF(CRYPTO_BUFFER) * buffers);
 
 // Returns the default ParseCertificateOptions for the net stack.
@@ -141,8 +139,8 @@ NET_EXPORT bool SignatureVerifierInitWithCertificate(
     base::span<const uint8_t> signature,
     const CRYPTO_BUFFER* certificate);
 
-} // namespace x509_util
+}  // namespace x509_util
 
-} // namespace net
+}  // namespace net
 
 #endif  // NET_CERT_X509_UTIL_H_

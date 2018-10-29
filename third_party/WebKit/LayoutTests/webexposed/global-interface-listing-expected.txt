@@ -296,7 +296,11 @@ interface AudioContext : BaseAudioContext
     getter baseLatency
     method close
     method constructor
+    method createMediaElementSource
+    method createMediaStreamDestination
+    method createMediaStreamSource
     method getOutputTimestamp
+    method resume
     method suspend
 interface AudioDestinationNode : AudioNode
     attribute @@toStringTag
@@ -442,6 +446,11 @@ interface BackgroundFetchRegistration : EventTarget
     method abort
     method constructor
     setter onprogress
+interface Badge
+    static method clear
+    static method set
+    attribute @@toStringTag
+    method constructor
 interface BarProp
     attribute @@toStringTag
     getter visible
@@ -472,9 +481,6 @@ interface BaseAudioContext : EventTarget
     method createDynamicsCompressor
     method createGain
     method createIIRFilter
-    method createMediaElementSource
-    method createMediaStreamDestination
-    method createMediaStreamSource
     method createOscillator
     method createPanner
     method createPeriodicWave
@@ -482,7 +488,6 @@ interface BaseAudioContext : EventTarget
     method createStereoPanner
     method createWaveShaper
     method decodeAudioData
-    method resume
     setter onstatechange
 interface BatteryManager : EventTarget
     attribute @@toStringTag
@@ -1427,17 +1432,20 @@ interface DetectedBarcode
     getter cornerPoints
     getter rawValue
     method constructor
+    method toJSON
 interface DetectedFace
     attribute @@toStringTag
     getter boundingBox
     getter landmarks
     method constructor
+    method toJSON
 interface DetectedText
     attribute @@toStringTag
     getter boundingBox
     getter cornerPoints
     getter rawValue
     method constructor
+    method toJSON
 interface DeviceMotionEvent : Event
     attribute @@toStringTag
     getter acceleration
@@ -1630,6 +1638,7 @@ interface Document : Node
     method createAttributeNS
     method createCDATASection
     method createCSSStyleSheet
+    method createCSSStyleSheetSync
     method createComment
     method createDocumentFragment
     method createElement
@@ -1898,13 +1907,9 @@ interface Element : Node
     getter onbeforecopy
     getter onbeforecut
     getter onbeforepaste
-    getter oncopy
-    getter oncut
     getter onfullscreenchange
     getter onfullscreenerror
-    getter onpaste
     getter onsearch
-    getter onselectstart
     getter onwebkitfullscreenchange
     getter onwebkitfullscreenerror
     getter outerHTML
@@ -2021,13 +2026,9 @@ interface Element : Node
     setter onbeforecopy
     setter onbeforecut
     setter onbeforepaste
-    setter oncopy
-    setter oncut
     setter onfullscreenchange
     setter onfullscreenerror
-    setter onpaste
     setter onsearch
-    setter onselectstart
     setter onwebkitfullscreenchange
     setter onwebkitfullscreenerror
     setter outerHTML
@@ -2035,6 +2036,10 @@ interface Element : Node
     setter scrollLeft
     setter scrollTop
     setter slot
+interface EnterPictureInPictureEvent : Event
+    attribute @@toStringTag
+    getter pictureInPictureWindow
+    method constructor
 interface ErrorEvent : Event
     attribute @@toStringTag
     getter colno
@@ -2565,7 +2570,9 @@ interface HTMLElement : Element
     getter onclick
     getter onclose
     getter oncontextmenu
+    getter oncopy
     getter oncuechange
+    getter oncut
     getter ondblclick
     getter ondrag
     getter ondragend
@@ -2599,6 +2606,7 @@ interface HTMLElement : Element
     getter onmouseover
     getter onmouseup
     getter onmousewheel
+    getter onpaste
     getter onpause
     getter onplay
     getter onplaying
@@ -2619,6 +2627,8 @@ interface HTMLElement : Element
     getter onseeked
     getter onseeking
     getter onselect
+    getter onselectionchange
+    getter onselectstart
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -2663,7 +2673,9 @@ interface HTMLElement : Element
     setter onclick
     setter onclose
     setter oncontextmenu
+    setter oncopy
     setter oncuechange
+    setter oncut
     setter ondblclick
     setter ondrag
     setter ondragend
@@ -2697,6 +2709,7 @@ interface HTMLElement : Element
     setter onmouseover
     setter onmouseup
     setter onmousewheel
+    setter onpaste
     setter onpause
     setter onplay
     setter onplaying
@@ -2717,6 +2730,8 @@ interface HTMLElement : Element
     setter onseeked
     setter onseeking
     setter onselect
+    setter onselectionchange
+    setter onselectstart
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -3433,6 +3448,7 @@ interface HTMLPictureElement : HTMLElement
 interface HTMLPortalElement : HTMLElement
     attribute @@toStringTag
     getter src
+    method activate
     method constructor
     setter src
 interface HTMLPreElement : HTMLElement
@@ -3875,6 +3891,7 @@ interface IDBFactory
     attribute @@toStringTag
     method cmp
     method constructor
+    method databases
     method deleteDatabase
     method open
 interface IDBIndex
@@ -4689,6 +4706,7 @@ interface Navigator
     getter presentation
     getter product
     getter productSub
+    getter serial
     getter serviceWorker
     getter storage
     getter usb
@@ -4840,6 +4858,7 @@ interface OfflineAudioContext : BaseAudioContext
     getter length
     getter oncomplete
     method constructor
+    method resume
     method startRendering
     method suspend
     setter oncomplete
@@ -5052,9 +5071,15 @@ interface PaymentManager
     getter userHint
     method constructor
     setter userHint
+interface PaymentMethodChangeEvent : PaymentRequestUpdateEvent
+    attribute @@toStringTag
+    getter methodDetails
+    getter methodName
+    method constructor
 interface PaymentRequest : EventTarget
     attribute @@toStringTag
     getter id
+    getter onpaymentmethodchange
     getter onshippingaddresschange
     getter onshippingoptionchange
     getter shippingAddress
@@ -5064,6 +5089,7 @@ interface PaymentRequest : EventTarget
     method canMakePayment
     method constructor
     method show
+    setter onpaymentmethodchange
     setter onshippingaddresschange
     setter onshippingoptionchange
 interface PaymentRequestUpdateEvent : Event
@@ -5129,6 +5155,11 @@ interface PerformanceEventTiming : PerformanceEntry
     getter cancelable
     getter processingEnd
     getter processingStart
+    method constructor
+    method toJSON
+interface PerformanceLayoutJank : PerformanceEntry
+    attribute @@toStringTag
+    getter fraction
     method constructor
     method toJSON
 interface PerformanceLongTaskTiming : PerformanceEntry
@@ -5302,6 +5333,7 @@ interface PointerEvent : MouseEvent
     getter width
     method constructor
     method getCoalescedEvents
+    method getPredictedEvents
 interface PopStateEvent : Event
     attribute @@toStringTag
     getter state
@@ -5473,6 +5505,7 @@ interface RTCIceTransport : EventTarget
     getter gatheringState
     getter ongatheringstatechange
     getter onicecandidate
+    getter onselectedcandidatepairchange
     getter onstatechange
     getter role
     getter state
@@ -5488,6 +5521,7 @@ interface RTCIceTransport : EventTarget
     method stop
     setter ongatheringstatechange
     setter onicecandidate
+    setter onselectedcandidatepairchange
     setter onstatechange
 interface RTCPeerConnection : EventTarget
     static method generateCertificate
@@ -5546,15 +5580,26 @@ interface RTCPeerConnectionIceEvent : Event
     attribute @@toStringTag
     getter candidate
     method constructor
-interface RTCQuicStream
+interface RTCQuicStream : EventTarget
     attribute @@toStringTag
+    getter onstatechange
     getter readBufferedAmount
     getter state
     getter transport
     getter writeBufferedAmount
     method constructor
-interface RTCQuicTransport
+    method finish
+    method reset
+    setter onstatechange
+interface RTCQuicStreamEvent : Event
     attribute @@toStringTag
+    getter stream
+    method constructor
+interface RTCQuicTransport : EventTarget
+    attribute @@toStringTag
+    getter onerror
+    getter onquicstream
+    getter onstatechange
     getter state
     getter transport
     method constructor
@@ -5563,7 +5608,11 @@ interface RTCQuicTransport
     method getLocalParameters
     method getRemoteCertificates
     method getRemoteParameters
+    method start
     method stop
+    setter onerror
+    setter onquicstream
+    setter onstatechange
 interface RTCRtpContributingSource
     attribute @@toStringTag
     getter source
@@ -5916,7 +5965,9 @@ interface SVGElement : Element
     getter onclick
     getter onclose
     getter oncontextmenu
+    getter oncopy
     getter oncuechange
+    getter oncut
     getter ondblclick
     getter ondrag
     getter ondragend
@@ -5950,6 +6001,7 @@ interface SVGElement : Element
     getter onmouseover
     getter onmouseup
     getter onmousewheel
+    getter onpaste
     getter onpause
     getter onplay
     getter onplaying
@@ -5970,6 +6022,8 @@ interface SVGElement : Element
     getter onseeked
     getter onseeking
     getter onselect
+    getter onselectionchange
+    getter onselectstart
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -6001,7 +6055,9 @@ interface SVGElement : Element
     setter onclick
     setter onclose
     setter oncontextmenu
+    setter oncopy
     setter oncuechange
+    setter oncut
     setter ondblclick
     setter ondrag
     setter ondragend
@@ -6035,6 +6091,7 @@ interface SVGElement : Element
     setter onmouseover
     setter onmouseup
     setter onmousewheel
+    setter onpaste
     setter onpause
     setter onplay
     setter onplaying
@@ -6055,6 +6112,8 @@ interface SVGElement : Element
     setter onseeked
     setter onseeking
     setter onselect
+    setter onselectionchange
+    setter onselectstart
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -6869,6 +6928,14 @@ interface ScriptProcessorNode : AudioNode
     getter onaudioprocess
     method constructor
     setter onaudioprocess
+interface ScriptedTaskQueue
+    attribute @@toStringTag
+    method constructor
+    method postTask
+interface ScriptedTaskQueueController
+    attribute @@toStringTag
+    method constructor
+    method default
 interface ScrollTimeline : AnimationTimeline
     attribute @@toStringTag
     getter endScrollOffset
@@ -6940,6 +7007,22 @@ interface SensorErrorEvent : Event
     attribute @@toStringTag
     getter error
     method constructor
+interface Serial : EventTarget
+    attribute @@toStringTag
+    getter onconnect
+    getter ondisconnect
+    method constructor
+    method getPorts
+    method requestPort
+    setter onconnect
+    setter ondisconnect
+interface SerialPort
+    attribute @@toStringTag
+    getter in
+    getter out
+    method close
+    method constructor
+    method open
 interface ServiceWorker : EventTarget
     attribute @@toStringTag
     getter onerror
@@ -7046,6 +7129,10 @@ interface SourceBufferList : EventTarget
     method constructor
     setter onaddsourcebuffer
     setter onremovesourcebuffer
+interface SpeechSynthesisErrorEvent : SpeechSynthesisEvent
+    attribute @@toStringTag
+    getter error
+    method constructor
 interface SpeechSynthesisEvent : Event
     attribute @@toStringTag
     getter charIndex
@@ -7175,6 +7262,11 @@ interface SyncManager
     method constructor
     method getTags
     method register
+interface Task
+    attribute @@toStringTag
+    getter result
+    method cancel
+    method constructor
 interface TaskAttributionTiming : PerformanceEntry
     attribute @@toStringTag
     getter containerId
@@ -7183,6 +7275,13 @@ interface TaskAttributionTiming : PerformanceEntry
     getter containerType
     method constructor
     method toJSON
+interface TaskWorklet : Worklet
+    attribute @@toStringTag
+    method constructor
+    method postTask
+interface TaskWorkletGlobalScope : WorkletGlobalScope
+    attribute @@toStringTag
+    method constructor
 interface Text : CharacterData
     attribute @@toStringTag
     getter assignedSlot
@@ -7394,6 +7493,10 @@ interface TrustedTypePolicyFactory
     method createPolicy
     method getExposedPolicy
     method getPolicyNames
+    method isHTML
+    method isScript
+    method isScriptURL
+    method isURL
 interface TrustedURL
     attribute @@toStringTag
     method constructor
@@ -9855,10 +9958,6 @@ interface WebGLSync
     method constructor
 interface WebGLTexture
     attribute @@toStringTag
-    getter lastUploadedVideoFrameWasSkipped
-    getter lastUploadedVideoHeight
-    getter lastUploadedVideoTimestamp
-    getter lastUploadedVideoWidth
     method constructor
 interface WebGLTransformFeedback
     attribute @@toStringTag
@@ -9883,12 +9982,6 @@ interface WebGPUDevice
     getter adapter
     method constructor
     method dummy
-interface WebKitAnimationEvent : Event
-    attribute @@toStringTag
-    getter animationName
-    getter elapsedTime
-    getter pseudoElement
-    method constructor
 interface WebKitCSSMatrix : DOMMatrixReadOnly
     attribute @@toStringTag
     getter a
@@ -10008,6 +10101,7 @@ interface Worker : EventTarget
 interface WorkerTaskQueue
     attribute @@toStringTag
     method constructor
+    method postFunction
     method postTask
 interface Worklet
     attribute @@toStringTag
@@ -10441,6 +10535,7 @@ interface webkitURL
     attribute textInputController
     attribute top
     attribute window
+    getter TaskQueue
     getter TrustedTypes
     getter applicationCache
     getter caches
@@ -10553,6 +10648,8 @@ interface webkitURL
     getter onseeked
     getter onseeking
     getter onselect
+    getter onselectionchange
+    getter onselectstart
     getter onstalled
     getter onstorage
     getter onsubmit
@@ -10593,6 +10690,7 @@ interface webkitURL
     getter status
     getter statusbar
     getter styleMedia
+    getter taskWorklet
     getter toolbar
     getter visualViewport
     getter webgpu
@@ -10626,6 +10724,7 @@ interface webkitURL
     method postMessage
     method print
     method prompt
+    method queueMicrotask
     method releaseEvents
     method requestAnimationFrame
     method requestIdleCallback
@@ -10641,6 +10740,7 @@ interface webkitURL
     method webkitRequestAnimationFrame
     method webkitRequestFileSystem
     method webkitResolveLocalFileSystemURL
+    setter TaskQueue
     setter clientInformation
     setter cookieStore
     setter defaultStatus
@@ -10741,6 +10841,8 @@ interface webkitURL
     setter onseeked
     setter onseeking
     setter onselect
+    setter onselectionchange
+    setter onselectstart
     setter onstalled
     setter onstorage
     setter onsubmit

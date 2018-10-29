@@ -10,6 +10,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "device/usb/mojo/device_manager_impl.h"
+#include "device/usb/public/mojom/device_manager.mojom.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/device/geolocation/geolocation_provider.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
@@ -155,11 +157,14 @@ class DeviceService : public service_manager::Service {
 
   void BindSerialIoHandlerRequest(mojom::SerialIoHandlerRequest request);
 
+  void BindUsbDeviceManagerRequest(mojom::UsbDeviceManagerRequest request);
+
   std::unique_ptr<PowerMonitorMessageBroadcaster>
       power_monitor_message_broadcaster_;
   std::unique_ptr<PublicIpAddressGeolocationProvider>
       public_ip_address_geolocation_provider_;
   std::unique_ptr<TimeZoneMonitor> time_zone_monitor_;
+  std::unique_ptr<usb::DeviceManagerImpl> usb_device_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

@@ -82,8 +82,6 @@ void FingerprintSetupScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LOCATION_TITLE);
   builder->Add("enrollmentProgressScreenTitle",
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_PROGRESS_TITLE);
-  builder->Add("fingerprintSetupAddFingerprint",
-               IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_ADD_FINGERPRINT);
   builder->Add("setupFingerprintEnrollmentSuccessTitle",
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_SUCCESS_TITLE);
   builder->Add("setupFingerprintEnrollmentSuccessDescription",

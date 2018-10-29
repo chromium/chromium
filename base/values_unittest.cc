@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1208,7 +1207,7 @@ TEST(ValuesTest, Equals) {
 
   std::unique_ptr<ListValue> list(new ListValue);
   list->Append(std::make_unique<Value>());
-  list->Append(WrapUnique(new DictionaryValue));
+  list->Append(std::make_unique<DictionaryValue>());
   auto list_copy = std::make_unique<Value>(list->Clone());
 
   ListValue* list_weak = dv.SetList("f", std::move(list));

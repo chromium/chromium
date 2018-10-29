@@ -16,5 +16,58 @@
     "extension_types": ["platform_app"],
     "location": "component",
     "platforms": ["chromeos"]
+  },
+  "mediaGalleries": {
+    "channel": "stable",
+    "extension_types": [ "platform_app" ]
+  },
+  // TODO(devlin): These all specify the same permissions. There's no need for
+  // child features.
+  "mediaGalleries.allAutoDetected": {
+    "channel": "stable",
+    "extension_types": [ "platform_app" ]
+  },
+  "mediaGalleries.scan": {
+    "channel": "dev",
+    "extension_types": [ "platform_app" ]
+  },
+  "mediaGalleries.read": {
+    "channel": "stable",
+    "extension_types": [ "platform_app" ]
+  },
+  "mediaGalleries.copyTo": {
+    "channel": "stable",
+    "extension_types": [ "platform_app" ]
+  },
+  "mediaGalleries.delete": {
+    "channel": "stable",
+    "extension_types": [ "platform_app" ]
+  },
+  "musicManagerPrivate": {
+    "channel": "stable",
+    "extension_types": ["platform_app"],
+    "whitelist": [
+      "4B1D0E19C6C43C008C44A8278C8B5BFE15ABEB3C", // Music Manager
+      "B8F61FD1B25DE03706DBB8906A73261E4DBB992A", // Test
+      "F7FA7ABC1ECB89BA8EE6656847EFABBF43BB9BCA",
+      "4FE45FA56EF6A25FDE8C302C44045CA9CE8A605A",
+      "3D14248405B8A59043420AAC160077C99E7788A9",
+      "A6C87307BBE5886CC5F1393025000E2FE8060BF2",
+      "3407516021EA3669C0EC8E65E6B9837E5A521B9C"
+    ]
+  },
+  "syncFileSystem": {
+    "channel": "stable",
+    "extension_types": ["platform_app"]
+  },
+  "webstoreWidgetPrivate": {
+    "channel": "stable",
+    "extension_types": ["platform_app"],
+    "platforms": ["chromeos"],
+    "whitelist": [
+      "A948368FC53BE437A55FEB414106E207925482F5",  // Files app
+      "8C726564C6DBE7380BAB388DE6CC7EC93EB44B06",  // Video player
+      "5065C83E84321221675D20FBE4DC43C655CC8C6F"   // Files app tests
+    ]
   }
 }

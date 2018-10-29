@@ -22,7 +22,6 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/host/shader_disk_cache.h"
-#include "ipc/ipc_channel.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
@@ -44,6 +43,7 @@ namespace {
 class FontRenderParams {
  public:
   void Set(const gfx::FontRenderParams& params);
+  void Reset();
   const base::Optional<gfx::FontRenderParams>& Get();
 
  private:
@@ -61,6 +61,11 @@ class FontRenderParams {
 void FontRenderParams::Set(const gfx::FontRenderParams& params) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   params_ = params;
+}
+
+void FontRenderParams::Reset() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  params_ = base::nullopt;
 }
 
 const base::Optional<gfx::FontRenderParams>& FontRenderParams::Get() {
@@ -105,6 +110,43 @@ void OzoneRegisterStartupCallbackHelper(
 
 }  // namespace
 
+VizMainWrapper::VizMainWrapper(mojom::VizMainPtr viz_main_ptr)
+    : viz_main_ptr_(std::move(viz_main_ptr)) {}
+
+VizMainWrapper::VizMainWrapper(
+    mojom::VizMainAssociatedPtr viz_main_associated_ptr)
+    : viz_main_associated_ptr_(std::move(viz_main_associated_ptr)) {}
+
+VizMainWrapper::~VizMainWrapper() = default;
+
+void VizMainWrapper::CreateGpuService(
+    mojom::GpuServiceRequest request,
+    mojom::GpuHostPtr gpu_host,
+    discardable_memory::mojom::DiscardableSharedMemoryManagerPtr
+        discardable_memory_manager,
+    mojo::ScopedSharedBufferHandle activity_flags,
+    gfx::FontRenderParams::SubpixelRendering subpixel_rendering) {
+  if (viz_main_ptr_) {
+    viz_main_ptr_->CreateGpuService(std::move(request), std::move(gpu_host),
+                                    std::move(discardable_memory_manager),
+                                    std::move(activity_flags),
+                                    subpixel_rendering);
+  } else {
+    viz_main_associated_ptr_->CreateGpuService(
+        std::move(request), std::move(gpu_host),
+        std::move(discardable_memory_manager), std::move(activity_flags),
+        subpixel_rendering);
+  }
+}
+
+void VizMainWrapper::CreateFrameSinkManager(
+    mojom::FrameSinkManagerParamsPtr params) {
+  if (viz_main_ptr_)
+    viz_main_ptr_->CreateFrameSinkManager(std::move(params));
+  else
+    viz_main_associated_ptr_->CreateFrameSinkManager(std::move(params));
+}
+
 GpuHostImpl::InitParams::InitParams() = default;
 
 GpuHostImpl::InitParams::InitParams(InitParams&&) = default;
@@ -112,18 +154,15 @@ GpuHostImpl::InitParams::InitParams(InitParams&&) = default;
 GpuHostImpl::InitParams::~InitParams() = default;
 
 GpuHostImpl::GpuHostImpl(Delegate* delegate,
-                         IPC::Channel* channel,
+                         std::unique_ptr<VizMainWrapper> viz_main_ptr,
                          InitParams params)
     : delegate_(delegate),
-      channel_(channel),
+      viz_main_ptr_(std::move(viz_main_ptr)),
       params_(std::move(params)),
       host_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       gpu_host_binding_(this),
       weak_ptr_factory_(this) {
   DCHECK(delegate_);
-  DCHECK(channel_);
-  channel_->GetAssociatedInterfaceSupport()->GetRemoteAssociatedInterface(
-      &viz_main_ptr_);
   mojom::GpuHostPtr host_proxy;
   gpu_host_binding_.Bind(mojo::MakeRequest(&host_proxy));
 
@@ -143,12 +182,20 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
 #endif  // defined(USE_OZONE)
 }
 
-GpuHostImpl::~GpuHostImpl() = default;
+GpuHostImpl::~GpuHostImpl() {
+  SendOutstandingReplies();
+}
 
 // static
 void GpuHostImpl::InitFontRenderParams(const gfx::FontRenderParams& params) {
   DCHECK(!GetFontRenderParams().Get());
   GetFontRenderParams().Set(params);
+}
+
+// static
+void GpuHostImpl::ResetFontRenderParams() {
+  DCHECK(GetFontRenderParams().Get());
+  GetFontRenderParams().Reset();
 }
 
 void GpuHostImpl::OnProcessLaunched(base::ProcessId pid) {
@@ -293,7 +340,13 @@ void GpuHostImpl::InitOzone() {
   // https://crbug.com/608839
   // If the OzonePlatform is not created yet, defer the callback until
   // OzonePlatform instance is created.
-  if (features::IsOzoneDrmMojo()) {
+  //
+  // The Ozone/Wayland requires mojo communication to be established to be
+  // functional with a separate gpu process. Thus, using the PlatformProperties,
+  // check if there is such a requirement.
+  if (features::IsOzoneDrmMojo() || ui::OzonePlatform::EnsureInstance()
+                                        ->GetPlatformProperties()
+                                        .requires_mojo) {
     // TODO(rjkroege): Remove the legacy IPC code paths when no longer
     // necessary. https://crbug.com/806092
     auto interface_binder = base::BindRepeating(&GpuHostImpl::BindInterface,
@@ -444,7 +497,7 @@ void GpuHostImpl::DidInitialize(
       gpu_feature_info.IsWorkaroundEnabled(
           gpu::DONT_DISABLE_WEBGL_WHEN_COMPOSITOR_CONTEXT_LOST);
 
-  delegate_->UpdateGpuInfo(gpu_info, gpu_feature_info,
+  delegate_->DidInitialize(gpu_info, gpu_feature_info,
                            gpu_info_for_hardware_gpu,
                            gpu_feature_info_for_hardware_gpu);
 }

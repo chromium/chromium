@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x20
-  LayoutBlockFlow {test} at (0,0) size 800x20
-    LayoutInline {testA} at (0,0) size 510x19 [bgcolor=#00FF00]
-      LayoutText {#text} at (0,0) size 510x19
-        text run at (0,0) width 510: "This paragraph has no declared namespace and should have a green background."
-    LayoutText {#text} at (0,0) size 0x0

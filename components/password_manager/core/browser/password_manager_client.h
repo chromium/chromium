@@ -12,6 +12,7 @@
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/hsts_query.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -178,13 +179,7 @@ class PasswordManagerClient {
 
   // Reports whether and how passwords are synced in the embedder. The default
   // implementation always returns NOT_SYNCING.
-  // TODO(crbug.com/515108): Factor this out of the client to the sync layer.
   virtual SyncState GetPasswordSyncState() const;
-
-  // Reports whether and how browsing history is synced in the embedder. The
-  // default implementation always returns NOT_SYNCING.
-  // TODO(crbug.com/515108): Factor this out of the client to the sync layer.
-  virtual SyncState GetHistorySyncState() const;
 
   // Returns true if last navigation page had HTTP error i.e 5XX or 4XX
   virtual bool WasLastNavigationHTTPError() const;
@@ -263,6 +258,11 @@ class PasswordManagerClient {
 
   // Returns the favicon service used to retrieve icons for an origin.
   virtual favicon::FaviconService* GetFaviconService();
+
+  // Whether the primary account of the current profile is under Advanced
+  // Protection - a type of Google Account that helps protect our most at-risk
+  // users.
+  virtual bool IsUnderAdvancedProtection() const;
 
   // Causes all live PasswordFormManager objects to query the password store
   // again. Results in updating the fill information on the page.

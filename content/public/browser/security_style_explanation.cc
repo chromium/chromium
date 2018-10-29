@@ -4,41 +4,60 @@
 
 #include "content/public/browser/security_style_explanation.h"
 
+#include <utility>
+
 namespace content {
 
 SecurityStyleExplanation::SecurityStyleExplanation() {}
 
-SecurityStyleExplanation::SecurityStyleExplanation(
-    const std::string& summary,
-    const std::string& description)
-    : SecurityStyleExplanation(std::string(), summary, description) {}
+SecurityStyleExplanation::SecurityStyleExplanation(std::string summary,
+                                                   std::string description)
+    : SecurityStyleExplanation(std::string(),
+                               std::move(summary),
+                               std::move(description)) {}
+
+SecurityStyleExplanation::SecurityStyleExplanation(std::string title,
+                                                   std::string summary,
+                                                   std::string description)
+    : SecurityStyleExplanation(std::move(title),
+                               std::move(summary),
+                               std::move(description),
+                               {}) {}
 
 SecurityStyleExplanation::SecurityStyleExplanation(
-    const std::string& title,
-    const std::string& summary,
-    const std::string& description)
-    : title(title),
-      summary(summary),
-      description(description),
-      mixed_content_type(blink::WebMixedContentContextType::kNotMixedContent) {}
-
-SecurityStyleExplanation::SecurityStyleExplanation(
-    const std::string& title,
-    const std::string& summary,
-    const std::string& description,
+    std::string title,
+    std::string summary,
+    std::string description,
     scoped_refptr<net::X509Certificate> certificate,
     blink::WebMixedContentContextType mixed_content_type)
-    : title(title),
-      summary(summary),
-      description(description),
-      certificate(certificate),
+    : title(std::move(title)),
+      summary(std::move(summary)),
+      description(std::move(description)),
+      certificate(std::move(certificate)),
       mixed_content_type(mixed_content_type) {}
 
 SecurityStyleExplanation::SecurityStyleExplanation(
+    std::string title,
+    std::string summary,
+    std::string description,
+    std::vector<std::string> recommendations)
+    : title(std::move(title)),
+      summary(std::move(summary)),
+      description(std::move(description)),
+      mixed_content_type(blink::WebMixedContentContextType::kNotMixedContent),
+      recommendations(std::move(recommendations)) {}
+
+SecurityStyleExplanation::SecurityStyleExplanation(
     const SecurityStyleExplanation& other) = default;
+
+SecurityStyleExplanation::SecurityStyleExplanation(
+    SecurityStyleExplanation&& other) = default;
 
 SecurityStyleExplanation& SecurityStyleExplanation::operator=(
     const SecurityStyleExplanation& other) = default;
+
+SecurityStyleExplanation& SecurityStyleExplanation::operator=(
+    SecurityStyleExplanation&& other) = default;
 
 SecurityStyleExplanation::~SecurityStyleExplanation() {}
 

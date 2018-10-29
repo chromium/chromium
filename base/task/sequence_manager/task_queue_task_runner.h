@@ -9,19 +9,17 @@
 
 namespace base {
 namespace sequence_manager {
-
-class TaskQueue;
-
 namespace internal {
+
+class TaskQueueProxy;
 
 // TODO(kraynov): Post tasks to a TaskQueue solely using this task runner and
 // drop SingleThreadTaskRunner implementation in the TaskQueue class.
 // See https://crbug.com/865411.
 class BASE_EXPORT TaskQueueTaskRunner : public SingleThreadTaskRunner {
  public:
-  // TODO(kraynov): Use TaskQueueTaskProxy that will be detachable
-  // from TaskQueue(Impl) when it's getting shutdown.
-  TaskQueueTaskRunner(scoped_refptr<TaskQueue> task_queue, int task_type);
+  TaskQueueTaskRunner(scoped_refptr<TaskQueueProxy> task_queue_proxy,
+                      int task_type);
 
   bool PostDelayedTask(const Location& location,
                        OnceClosure callback,
@@ -34,7 +32,7 @@ class BASE_EXPORT TaskQueueTaskRunner : public SingleThreadTaskRunner {
  private:
   ~TaskQueueTaskRunner() override;  // Ref-counted.
 
-  scoped_refptr<TaskQueue> task_queue_;
+  const scoped_refptr<TaskQueueProxy> task_queue_proxy_;
   const int task_type_;
 
   DISALLOW_COPY_AND_ASSIGN(TaskQueueTaskRunner);

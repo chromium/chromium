@@ -14,7 +14,9 @@
 
   var propertiesSection = new ObjectUI.ObjectPropertiesSection(localObject, 'local object');
   propertiesSection.expand();
+  await new Promise(resolve => setTimeout(resolve, 0));
   propertiesSection.objectTreeElement().childAt(1).expand();
+  await new Promise(resolve => setTimeout(resolve, 0));
 
   TestRunner.addResult(TestRunner.textContentWithLineBreaks(propertiesSection.element));
   TestRunner.completeTest();

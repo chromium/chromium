@@ -17,8 +17,7 @@ namespace gpu {
 
 // MemoryTracker implementation that also handles recording UMA histograms for
 // periodic collection, on shutdown and on memory pressure.
-class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker
-    : public gles2::MemoryTracker {
+class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker : public MemoryTracker {
  public:
   GpuCommandBufferMemoryTracker(
       int client_id,
@@ -28,7 +27,7 @@ class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~GpuCommandBufferMemoryTracker() override;
 
-  // gles2::MemoryTracker implementation.
+  // MemoryTracker implementation.
   void TrackMemoryAllocatedChange(uint64_t delta) override;
   uint64_t GetSize() const override;
   uint64_t ClientTracingId() const override;

@@ -5,6 +5,7 @@
 #include "net/base/network_interfaces_fuchsia.h"
 
 #include <fuchsia/netstack/cpp/fidl.h>
+#include <zircon/ethernet/cpp/fidl.h>
 
 #include <string>
 #include <utility>
@@ -25,7 +26,7 @@ using ConnectionType = NetworkChangeNotifier::ConnectionType;
 
 ConnectionType ConvertConnectionType(
     const fuchsia::netstack::NetInterface& iface) {
-  return iface.features & fuchsia::netstack::interfaceFeatureWlan
+  return iface.features & zircon::ethernet::INFO_FEATURE_WLAN
              ? NetworkChangeNotifier::CONNECTION_WIFI
              : NetworkChangeNotifier::CONNECTION_UNKNOWN;
 }
@@ -81,7 +82,7 @@ std::vector<NetworkInterface> NetInterfaceToNetworkInterfaces(
     return output;
 
   // Skip loopback.
-  if (iface_in.features & fuchsia::netstack::interfaceFeatureLoopback)
+  if (iface_in.features & zircon::ethernet::INFO_FEATURE_LOOPBACK)
     return output;
 
   output.push_back(NetworkInterfaceFromAddress(iface_in, 0));

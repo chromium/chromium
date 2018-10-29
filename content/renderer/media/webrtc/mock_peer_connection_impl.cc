@@ -64,7 +64,7 @@ class MockStreamCollection : public webrtc::StreamCollectionInterface {
     streams_.push_back(stream);
   }
   void RemoveStream(MediaStreamInterface* stream) {
-    StreamVector::iterator it = streams_.begin();
+    auto it = streams_.begin();
     for (; it != streams_.end(); ++it) {
       if (it->get() == stream) {
         streams_.erase(it);
@@ -142,6 +142,11 @@ std::string FakeRtpSender::id() const {
 
 std::vector<std::string> FakeRtpSender::stream_ids() const {
   return stream_ids_;
+}
+
+std::vector<webrtc::RtpEncodingParameters> FakeRtpSender::init_send_encodings()
+    const {
+  return {};
 }
 
 webrtc::RtpParameters FakeRtpSender::GetParameters() {
@@ -262,11 +267,6 @@ FakeRtpTransceiver::current_direction() const {
 }
 
 void FakeRtpTransceiver::Stop() {
-  NOTIMPLEMENTED();
-}
-
-void FakeRtpTransceiver::SetCodecPreferences(
-    rtc::ArrayView<webrtc::RtpCodecCapability> codecs) {
   NOTIMPLEMENTED();
 }
 

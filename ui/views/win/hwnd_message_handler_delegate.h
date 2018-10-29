@@ -23,7 +23,6 @@ class Accelerator;
 class InputMethod;
 class KeyEvent;
 class MouseEvent;
-class PointerEvent;
 class ScrollEvent;
 class TouchEvent;
 }
@@ -192,10 +191,6 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // Called when a mouse event is received. Returns true if the event was
   // handled by the delegate.
   virtual bool HandleMouseEvent(ui::MouseEvent* event) = 0;
-
-  // Called when a pointer event is received. Returns true if the event was
-  // handled by the delegate.
-  virtual bool HandlePointerEvent(ui::PointerEvent* event) = 0;
 
   // Called when an untranslated key event is received (i.e. pre-IME
   // translation).

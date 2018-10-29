@@ -321,7 +321,7 @@ void ClickBasedCategoryRanker::OnSuggestionOpened(Category category) {
 
   DecayClicksIfNeeded();
 
-  std::vector<RankedCategory>::iterator current = FindCategory(category);
+  auto current = FindCategory(category);
   DCHECK_GE(current->clicks, 0);
   // The overflow is ignored. It is unlikely to happen, because of click count
   // decay.
@@ -329,7 +329,7 @@ void ClickBasedCategoryRanker::OnSuggestionOpened(Category category) {
 
   // Move the category up if appropriate.
   if (current != ordered_categories_.begin()) {
-    std::vector<RankedCategory>::iterator previous = current - 1;
+    auto previous = current - 1;
     const int passing_margin = GetPositionPassingMargin(previous);
     if (current->clicks >= previous->clicks + passing_margin) {
       const int new_index = previous - ordered_categories_.begin();
@@ -352,9 +352,9 @@ void ClickBasedCategoryRanker::OnCategoryDismissed(Category category) {
 
   const int penalty = GetDismissedCategoryPenalty();
   if (penalty != 0) {  // Dismissed category penalty is turned on?
-    std::vector<RankedCategory>::iterator current = FindCategory(category);
+    auto current = FindCategory(category);
     for (int downgrade = 0; downgrade < penalty; ++downgrade) {
-      std::vector<RankedCategory>::iterator next = current + 1;
+      auto next = current + 1;
       if (next == ordered_categories_.end()) {
         break;
       }
@@ -363,7 +363,7 @@ void ClickBasedCategoryRanker::OnCategoryDismissed(Category category) {
     }
 
     DCHECK(current != ordered_categories_.begin());
-    std::vector<RankedCategory>::iterator previous = current - 1;
+    auto previous = current - 1;
     int new_clicks = std::max(previous->clicks - GetPassingMargin(), 0);
     // The previous category may have more clicks (but not enough to pass the
     // margin, this is possible when penalty >= 2), therefore, we ensure that
@@ -542,7 +542,7 @@ void ClickBasedCategoryRanker::InsertCategoryRelativeToIfNecessary(
     return;
   }
 
-  std::vector<RankedCategory>::iterator anchor_it = FindCategory(anchor);
+  auto anchor_it = FindCategory(anchor);
   ordered_categories_.insert(anchor_it + (after ? 1 : 0),
                              RankedCategory(category_to_insert,
                                             /*clicks=*/anchor_it->clicks,

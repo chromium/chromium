@@ -44,7 +44,7 @@ class MockSeedDB : public VideoDecodeStatsDB {
                     AppendDecodeStatsCB append_done_cb));
   MOCK_METHOD2(GetDecodeStats,
                void(const VideoDescKey& key, GetDecodeStatsCB get_stats_cb));
-  MOCK_METHOD1(DestroyStats, void(base::OnceClosure destroy_done_cb));
+  MOCK_METHOD1(ClearStats, void(base::OnceClosure destroy_done_cb));
 };
 
 class MockDBProvider : public VideoDecodeStatsDBProvider {
@@ -73,7 +73,7 @@ class InMemoryDBTestBase : public testing::Test {
     // The InMemoryDB should NEVER modify the seed DB.
     if (seed_db_) {
       EXPECT_CALL(*seed_db_, AppendDecodeStats(_, _, _)).Times(0);
-      EXPECT_CALL(*seed_db_, DestroyStats(_)).Times(0);
+      EXPECT_CALL(*seed_db_, ClearStats(_)).Times(0);
     }
   }
 
@@ -94,7 +94,7 @@ class InMemoryDBTestBase : public testing::Test {
       GetDecodeStatsCB,
       void(bool success,
            std::unique_ptr<VideoDecodeStatsDB::DecodeStatsEntry> entry));
-  MOCK_METHOD0(DestroyStatsCB, void());
+  MOCK_METHOD0(ClearStatsCB, void());
 
  protected:
   using VideoDescKey = media::VideoDecodeStatsDB::VideoDescKey;
@@ -176,7 +176,7 @@ TEST_F(SeededInMemoryDBTest, ReadExpectingSeedData) {
   scoped_task_environment_.RunUntilIdle();
 }
 
-TEST_F(SeededInMemoryDBTest, AppendReadAndDestroy) {
+TEST_F(SeededInMemoryDBTest, AppendReadAndClear) {
   const DecodeStatsEntry seed_entry(1000, 2, 10);
   const DecodeStatsEntry double_seed_entry(2000, 4, 20);
   const DecodeStatsEntry triple_seed_entry(3000, 6, 30);
@@ -231,9 +231,9 @@ TEST_F(SeededInMemoryDBTest, AppendReadAndDestroy) {
                                  base::Unretained(this)));
 
   // Now destroy the in-memory stats...
-  EXPECT_CALL(*this, DestroyStatsCB());
-  in_memory_db_->DestroyStats(base::BindOnce(
-      &InMemoryDBTestBase::DestroyStatsCB, base::Unretained(this)));
+  EXPECT_CALL(*this, ClearStatsCB());
+  in_memory_db_->ClearStats(base::BindOnce(&InMemoryDBTestBase::ClearStatsCB,
+                                           base::Unretained(this)));
 
   scoped_task_environment_.RunUntilIdle();
   ::testing::Mock::VerifyAndClear(this);
@@ -249,7 +249,7 @@ TEST_F(SeededInMemoryDBTest, AppendReadAndDestroy) {
   scoped_task_environment_.RunUntilIdle();
 }
 
-TEST_F(SeedlessInMemoryDBTest, AppendReadAndDestroy) {
+TEST_F(SeedlessInMemoryDBTest, AppendReadAndClear) {
   const DecodeStatsEntry entry(50, 1, 5);
   const DecodeStatsEntry double_entry(100, 2, 10);
 
@@ -288,9 +288,9 @@ TEST_F(SeedlessInMemoryDBTest, AppendReadAndDestroy) {
   ::testing::Mock::VerifyAndClear(this);
 
   // Now destroy the in-memory stats...
-  EXPECT_CALL(*this, DestroyStatsCB());
-  in_memory_db_->DestroyStats(base::BindOnce(
-      &InMemoryDBTestBase::DestroyStatsCB, base::Unretained(this)));
+  EXPECT_CALL(*this, ClearStatsCB());
+  in_memory_db_->ClearStats(base::BindOnce(&InMemoryDBTestBase::ClearStatsCB,
+                                           base::Unretained(this)));
 
   scoped_task_environment_.RunUntilIdle();
   ::testing::Mock::VerifyAndClear(this);
@@ -396,7 +396,7 @@ TEST_F(SeededInMemoryDBTest, SeedDBTearDownRace) {
   // Establish depends-on connection from InMemoryDB to SeedDB.
   InitializeEmptyDB();
 
-  // Destroying the seed-db dependency should trigger a crash.
+  // Clearing the seed-db dependency should trigger a crash.
   EXPECT_CHECK_DEATH(seed_db_.reset());
 }
 

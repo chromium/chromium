@@ -77,8 +77,8 @@ void FakeVideoDecodeAccelerator::Decode(
   int bitstream_buffer_id = bitstream_buffer.id();
   queued_bitstream_ids_.push(bitstream_buffer_id);
   child_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&FakeVideoDecodeAccelerator::DoPictureReady,
-                            weak_this_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&FakeVideoDecodeAccelerator::DoPictureReady,
+                                weak_this_factory_.GetWeakPtr()));
 }
 
 // Similar to UseOutputBitstreamBuffer for the encode accelerator.
@@ -118,22 +118,22 @@ void FakeVideoDecodeAccelerator::AssignPictureBuffers(
     free_output_buffers_.push(buffers[index].id());
   }
   child_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&FakeVideoDecodeAccelerator::DoPictureReady,
-                            weak_this_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&FakeVideoDecodeAccelerator::DoPictureReady,
+                                weak_this_factory_.GetWeakPtr()));
 }
 
 void FakeVideoDecodeAccelerator::ReusePictureBuffer(int32_t picture_buffer_id) {
   free_output_buffers_.push(picture_buffer_id);
   child_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&FakeVideoDecodeAccelerator::DoPictureReady,
-                            weak_this_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&FakeVideoDecodeAccelerator::DoPictureReady,
+                                weak_this_factory_.GetWeakPtr()));
 }
 
 void FakeVideoDecodeAccelerator::Flush() {
   flushing_ = true;
   child_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&FakeVideoDecodeAccelerator::DoPictureReady,
-                            weak_this_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&FakeVideoDecodeAccelerator::DoPictureReady,
+                                weak_this_factory_.GetWeakPtr()));
 }
 
 void FakeVideoDecodeAccelerator::Reset() {

@@ -35,8 +35,7 @@ namespace {
 // compacting repetitions if necessary.
 std::string StripMatchMarkers(const ACMatchClassifications& matches) {
   ACMatchClassifications unmatched;
-  for (ACMatchClassifications::const_iterator i(matches.begin());
-       i != matches.end(); ++i) {
+  for (auto i(matches.begin()); i != matches.end(); ++i) {
     AutocompleteMatch::AddLastClassificationIfNecessary(
         &unmatched, i->offset, i->style & ~ACMatchClassification::MATCH);
   }
@@ -266,7 +265,7 @@ bool ShortcutsBackend::UpdateShortcut(
     const ShortcutsDatabase::Shortcut& shortcut) {
   if (!initialized())
     return false;
-  GuidMap::iterator it(guid_map_.find(shortcut.id));
+  auto it(guid_map_.find(shortcut.id));
   if (it != guid_map_.end())
     shortcuts_map_.erase(it->second);
   guid_map_[shortcut.id] = shortcuts_map_.insert(
@@ -285,7 +284,7 @@ bool ShortcutsBackend::DeleteShortcutsWithIDs(
   if (!initialized())
     return false;
   for (size_t i = 0; i < shortcut_ids.size(); ++i) {
-    GuidMap::iterator it(guid_map_.find(shortcut_ids[i]));
+    auto it(guid_map_.find(shortcut_ids[i]));
     if (it != guid_map_.end()) {
       shortcuts_map_.erase(it->second);
       guid_map_.erase(it);
@@ -305,7 +304,7 @@ bool ShortcutsBackend::DeleteShortcutsWithURL(const GURL& url,
                                               bool exact_match) {
   const std::string& url_spec = url.spec();
   ShortcutsDatabase::ShortcutIDs shortcut_ids;
-  for (GuidMap::iterator it(guid_map_.begin()); it != guid_map_.end(); ) {
+  for (auto it(guid_map_.begin()); it != guid_map_.end();) {
     if (exact_match ? (it->second->second.match_core.destination_url == url)
                     : base::StartsWith(
                           it->second->second.match_core.destination_url.spec(),

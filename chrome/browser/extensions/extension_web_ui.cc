@@ -179,7 +179,8 @@ void UnregisterAndReplaceOverrideForWebContents(const std::string& page,
   web_contents->GetController().LoadURL(
       url,
       content::Referrer::SanitizeForRequest(
-          url, content::Referrer(url, blink::kWebReferrerPolicyDefault)),
+          url,
+          content::Referrer(url, network::mojom::ReferrerPolicy::kDefault)),
       ui::PAGE_TRANSITION_RELOAD, std::string());
 }
 
@@ -193,7 +194,7 @@ enum UpdateBehavior {
 bool UpdateOverridesList(base::ListValue* overrides_list,
                          const std::string& override_url,
                          UpdateBehavior behavior) {
-  base::ListValue::iterator iter = std::find_if(
+  auto iter = std::find_if(
       overrides_list->begin(), overrides_list->end(),
       [&override_url](const base::Value& value) {
         std::string entry;
@@ -265,8 +266,7 @@ void RunFaviconCallbackAsync(
     const gfx::ImageSkiaRep& image_rep = image_reps[i];
     scoped_refptr<base::RefCountedBytes> bitmap_data(
         new base::RefCountedBytes());
-    if (gfx::PNGCodec::EncodeBGRASkBitmap(image_rep.sk_bitmap(),
-                                          false,
+    if (gfx::PNGCodec::EncodeBGRASkBitmap(image_rep.GetBitmap(), false,
                                           &bitmap_data->data())) {
       favicon_base::FaviconRawBitmapResult bitmap_result;
       bitmap_result.bitmap_data = bitmap_data;
@@ -441,8 +441,8 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
     if (!dict_iter.value().GetAsList(&url_list))
       continue;
 
-    for (base::ListValue::const_iterator list_iter = url_list->begin();
-         list_iter != url_list->end(); ++list_iter) {
+    for (auto list_iter = url_list->begin(); list_iter != url_list->end();
+         ++list_iter) {
       const base::DictionaryValue* dict = nullptr;
       if (!list_iter->GetAsDictionary(&dict))
         continue;

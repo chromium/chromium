@@ -194,13 +194,12 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   std::unique_ptr<CompositorTimingHistory> compositor_timing_history_;
 
   // What the latest deadline was, and when it was scheduled.
-  SchedulerStateMachine::BeginImplFrameDeadlineMode
-      begin_impl_frame_deadline_mode_ =
-          SchedulerStateMachine::BeginImplFrameDeadlineMode::NONE;
   base::TimeTicks deadline_;
   base::TimeTicks deadline_scheduled_at_;
+  SchedulerStateMachine::BeginImplFrameDeadlineMode deadline_mode_;
 
   BeginFrameTracker begin_impl_frame_tracker_;
+  viz::BeginFrameAck last_begin_frame_ack_;
   viz::BeginFrameArgs begin_main_frame_args_;
 
   // Task posted for the deadline or drawing phase of the scheduler. This task
@@ -271,9 +270,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void BeginImplFrameSynchronous(const viz::BeginFrameArgs& args);
   void BeginImplFrame(const viz::BeginFrameArgs& args, base::TimeTicks now);
   void FinishImplFrame();
-  enum BeginFrameResult { kBeginFrameSkipped, kBeginFrameFinished };
-  void SendBeginFrameAck(const viz::BeginFrameArgs& args,
-                         BeginFrameResult result);
+  void SendDidNotProduceFrame(const viz::BeginFrameArgs& args);
   void OnBeginImplFrameDeadline();
   void PollToAdvanceCommitState();
   void BeginMainFrameAnimateAndLayoutOnly(const viz::BeginFrameArgs& args);

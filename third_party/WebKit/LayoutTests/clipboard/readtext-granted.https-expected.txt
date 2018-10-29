@@ -2,7 +2,6 @@ Tests navigator.clipboard.readText() permission success.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS PermissionsHelper.setPermission is defined.
 PASS navigator.clipboard is non-null.
 PASS clipboard.readText() success (as expected).

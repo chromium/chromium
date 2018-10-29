@@ -17,7 +17,8 @@ namespace cryptauth {
 class Connection;
 }  // namespace cryptauth
 
-namespace apps {
+namespace chrome_apps {
+namespace api {
 
 // An ApiResource wrapper for a cryptauth::Connection.
 class EasyUnlockPrivateConnection : public extensions::ApiResource {
@@ -54,10 +55,12 @@ class EasyUnlockPrivateConnection : public extensions::ApiResource {
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockPrivateConnection);
 };
 
-}  // namespace apps
+}  // namespace api
+}  // namespace chrome_apps
 
 using EasyUnlockPrivateConnectionResourceManager =
-    extensions::ApiResourceManager<apps::EasyUnlockPrivateConnection>;
+    extensions::ApiResourceManager<
+        chrome_apps::api::EasyUnlockPrivateConnection>;
 using EasyUnlockPrivateConnectionResourceManagerFactory =
     extensions::BrowserContextKeyedAPIFactory<
         EasyUnlockPrivateConnectionResourceManager>;

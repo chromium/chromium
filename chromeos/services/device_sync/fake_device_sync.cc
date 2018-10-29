@@ -14,7 +14,7 @@ namespace chromeos {
 
 namespace device_sync {
 
-FakeDeviceSync::FakeDeviceSync() = default;
+FakeDeviceSync::FakeDeviceSync() : DeviceSyncBase(nullptr /* gcm_driver */) {}
 
 FakeDeviceSync::~FakeDeviceSync() = default;
 

@@ -10,6 +10,8 @@
 
 @implementation FakeSnapshotGeneratorDelegate
 
+@synthesize view = _view;
+
 - (BOOL)canTakeSnapshotForWebState:(web::WebState*)webState {
   return YES;
 }
@@ -28,6 +30,10 @@
 
 - (void)didUpdateSnapshotForWebState:(web::WebState*)webState
                            withImage:(UIImage*)snapshot {
+}
+
+- (UIView*)viewForWebState:(web::WebState*)webState {
+  return self.view;
 }
 
 @end

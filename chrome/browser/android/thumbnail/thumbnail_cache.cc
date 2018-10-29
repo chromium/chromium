@@ -19,6 +19,7 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/android_opengl/etc1/etc1.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -434,8 +435,8 @@ void ThumbnailCache::MakeSpaceForNewItemIfNecessary(TabId tab_id) {
          riter++) {
       if (cache_.Get(*riter)) {
         key_to_remove = *riter;
-        break;
         found_key_to_remove = true;
+        break;
       }
     }
   }
@@ -554,8 +555,8 @@ void ThumbnailCache::WriteTask(TabId tab_id,
   if (!success)
     base::DeleteFile(file_path, false);
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE, post_write_task);
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           post_write_task);
 }
 
 void ThumbnailCache::PostWriteTask() {
@@ -602,9 +603,8 @@ void ThumbnailCache::CompressionTask(
     }
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(post_compression_task, std::move(compressed_data),
                  content_size));
 }
@@ -772,9 +772,8 @@ void ThumbnailCache::ReadTask(
         base::Bind(post_read_task, std::move(compressed_data), scale,
                    content_size));
   } else {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI,
-        FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::Bind(post_read_task, std::move(compressed_data), scale,
                    content_size));
   }
@@ -879,9 +878,8 @@ void ThumbnailCache::DecompressionTask(
     }
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI,
-      FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(post_decompression_callback, success, raw_data_small));
 }
 

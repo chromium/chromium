@@ -62,6 +62,11 @@ void OverrideBundleID() {
 void RegisterShellCrApp() {
   // Force the NSApplication subclass to be used.
   [ShellCrApplication sharedApplication];
+
+  // If there was an invocation to NSApp prior to this method, then the NSApp
+  // will not be a ShellCrApplication, but will instead be an NSApplication.
+  // This is undesirable and we must enforce that this doesn't happen.
+  CHECK([NSApp isKindOfClass:[ShellCrApplication class]]);
 }
 
 }  // namespace content

@@ -73,10 +73,10 @@ switching between branches):
     you use my naming convention or not), you can know before hand when you
     switch between branches on Windows whether you should expect a major
     rebuild, or a minor rebuild.  If you are able to remember which of your
-    topic branches have .gyp changes and which don't (or I guess you could use
+    topic branches have gn changes and which don't (or I guess you could use
     `git diff` to figure this out), then you will also have a good idea whether
     you need to run `gclient runhooks` or not when you switch branches.  Another
-    nice thing is that yu should never have to run `gclient sync` when you
+    nice thing is that you should never have to run `gclient sync` when you
     switch between branches with the same base revision, unless some of your
     branches have changes to DEPS files.
 

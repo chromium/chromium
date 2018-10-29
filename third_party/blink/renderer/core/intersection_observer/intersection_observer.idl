@@ -19,6 +19,7 @@ callback IntersectionObserverCallback = void (sequence<IntersectionObserverEntry
     readonly attribute DOMString rootMargin;
     // https://github.com/WICG/IntersectionObserver/issues/114
     readonly attribute FrozenArray<double> thresholds;
+    [RuntimeEnabled=IntersectionObserverV2] readonly attribute DOMHighResTimeStamp delay;
     [RuntimeEnabled=IntersectionObserverV2] readonly attribute boolean trackVisibility;
     [RaisesException] void observe(Element target);
     [RaisesException] void unobserve(Element target);

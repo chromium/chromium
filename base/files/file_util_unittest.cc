@@ -2394,15 +2394,15 @@ TEST_F(FileUtilTest, OpenFileNoInheritance) {
 
 TEST_F(FileUtilTest, CreateTemporaryFileTest) {
   FilePath temp_files[3];
-  for (int i = 0; i < 3; i++) {
-    ASSERT_TRUE(CreateTemporaryFile(&(temp_files[i])));
-    EXPECT_TRUE(PathExists(temp_files[i]));
-    EXPECT_FALSE(DirectoryExists(temp_files[i]));
+  for (auto& i : temp_files) {
+    ASSERT_TRUE(CreateTemporaryFile(&i));
+    EXPECT_TRUE(PathExists(i));
+    EXPECT_FALSE(DirectoryExists(i));
   }
   for (int i = 0; i < 3; i++)
     EXPECT_FALSE(temp_files[i] == temp_files[(i+1)%3]);
-  for (int i = 0; i < 3; i++)
-    EXPECT_TRUE(DeleteFile(temp_files[i], false));
+  for (const auto& i : temp_files)
+    EXPECT_TRUE(DeleteFile(i, false));
 }
 
 TEST_F(FileUtilTest, CreateAndOpenTemporaryFileTest) {

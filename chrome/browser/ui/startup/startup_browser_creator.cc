@@ -56,6 +56,7 @@
 #include "components/search_engines/util.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/url_formatter/url_fixer.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_controller.h"
@@ -90,7 +91,7 @@
 #if defined(OS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/metrics/jumplist_metrics_win.h"
-#include "chrome/browser/notifications/notification_platform_bridge_win.h"
+#include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #endif
 
@@ -175,15 +176,15 @@ class ProfileLaunchObserver : public content::NotificationObserver {
     // Check that browsers have been opened for all the launched profiles.
     // Note that browsers opened for profiles that were not added as launched
     // profiles are simply ignored.
-    std::set<const Profile*>::const_iterator i = launched_profiles_.begin();
+    auto i = launched_profiles_.begin();
     for (; i != launched_profiles_.end(); ++i) {
       if (opened_profiles_.find(*i) == opened_profiles_.end())
         return;
     }
     // Asynchronous post to give a chance to the last window to completely
     // open and activate before trying to activate |profile_to_activate_|.
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&ProfileLaunchObserver::ActivateProfile,
                        base::Unretained(this)));
     // Avoid posting more than once before ActivateProfile gets called.
@@ -462,12 +463,6 @@ void StartupBrowserCreator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // creation.
   registry->RegisterBooleanPref(prefs::kHasSeenWelcomePage, true);
 #if defined(OS_WIN) && defined(GOOGLE_CHROME_BUILD)
-  // TODO(scottchen): To make this testable early by trybots, instead of hiding
-  // behind GOOGLE_CHROME_BUILD, use a function that returns true for official
-  // builds and conditionally returns true based on a command line switch to
-  // be set by tests.
-  registry->RegisterBooleanPref(prefs::kHasSeenGoogleAppsPromoPage, true);
-  registry->RegisterBooleanPref(prefs::kHasSeenEmailPromoPage, true);
   // This  will be set to true for newly created profiles, and is used to
   // indicate which users went through FRE after NUX is enabled.
   registry->RegisterBooleanPref(prefs::kOnboardDuringNUX, false);
@@ -806,14 +801,14 @@ bool StartupBrowserCreator::ProcessLastOpenedProfiles(
   size_t DEBUG_num_profiles_at_loop_start = std::numeric_limits<size_t>::max();
   base::debug::Alias(&DEBUG_num_profiles_at_loop_start);
 
-  Profiles::const_iterator DEBUG_it_begin = last_opened_profiles.begin();
+  auto DEBUG_it_begin = last_opened_profiles.begin();
   base::debug::Alias(&DEBUG_it_begin);
-  Profiles::const_iterator DEBUG_it_end = last_opened_profiles.end();
+  auto DEBUG_it_end = last_opened_profiles.end();
   base::debug::Alias(&DEBUG_it_end);
 
   // Launch the profiles in the order they became active.
-  for (Profiles::const_iterator it = last_opened_profiles.begin();
-       it != last_opened_profiles.end(); ++it, ++DEBUG_loop_counter) {
+  for (auto it = last_opened_profiles.begin(); it != last_opened_profiles.end();
+       ++it, ++DEBUG_loop_counter) {
     DEBUG_num_profiles_at_loop_start = last_opened_profiles.size();
     DCHECK(!(*it)->IsGuestSession());
 
@@ -964,9 +959,8 @@ base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
 // all others.
 #if defined(OS_WIN)
   if (command_line.HasSwitch(switches::kNotificationLaunchId)) {
-    std::string profile_id =
-        NotificationPlatformBridgeWin::GetProfileIdFromLaunchId(
-            command_line.GetSwitchValueNative(switches::kNotificationLaunchId));
+    std::string profile_id = NotificationLaunchId::GetProfileIdFromLaunchId(
+        command_line.GetSwitchValueNative(switches::kNotificationLaunchId));
     if (!profile_id.empty()) {
       return user_data_dir.Append(
           base::FilePath(base::UTF8ToUTF16(profile_id)));

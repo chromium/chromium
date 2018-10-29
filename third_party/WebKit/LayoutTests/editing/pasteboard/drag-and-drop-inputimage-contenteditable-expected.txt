@@ -2,9 +2,6 @@ This test verify dragging an image in the page keeps its attributes. To test man
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
-
-
 PASS target.getElementsByTagName("input").length is 1
 PASS target.getElementsByTagName("input")[0].attributes.length is 6
 PASS target.getElementsByTagName("input")[0].id is "source"

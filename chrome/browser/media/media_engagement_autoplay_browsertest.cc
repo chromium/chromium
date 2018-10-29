@@ -293,14 +293,8 @@ IN_PROC_BROWSER_TEST_P(MediaEngagementAutoplayBrowserTest,
   ExpectAutoplayAllowedIfEnabled();
 }
 
-#if defined(OS_LINUX)
-// UsePreloadedData_Allowed/1 is flaky on Linux https://crbug.com/883706
-#define MAYBE_UsePreloadedData_Allowed DISABLED_UsePreloadedData_Allowed
-#else
-#define MAYBE_UsePreloadedData_Allowed UsePreloadedData_Allowed
-#endif
 IN_PROC_BROWSER_TEST_P(MediaEngagementAutoplayBrowserTest,
-                       MAYBE_UsePreloadedData_Allowed) {
+                       UsePreloadedData_Allowed) {
   // Autoplay should be blocked by default if we have a bad score.
   SetScores(PrimaryOrigin(), 0, 0);
   LoadTestPage("engagement_autoplay_test.html");

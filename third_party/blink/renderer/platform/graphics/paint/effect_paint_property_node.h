@@ -82,8 +82,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
       return parent_changed;
 
     DCHECK(!IsParentAlias()) << "Changed the state of an alias node.";
-    SetChanged();
     state_ = std::move(state);
+    SetChanged();
     return true;
   }
 
@@ -153,22 +153,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     DCHECK(!Parent() || !IsParentAlias());
     return state_.compositor_element_id;
   }
-
-#if DCHECK_IS_ON()
-  // The clone function is used by FindPropertiesNeedingUpdate.h for recording
-  // an effect node before it has been updated, to later detect changes.
-  scoped_refptr<EffectPaintPropertyNode> Clone() const {
-    return base::AdoptRef(
-        new EffectPaintPropertyNode(Parent(), State(state_), IsParentAlias()));
-  }
-
-  // The equality operator is used by FindPropertiesNeedingUpdate.h for checking
-  // if an effect node has changed.
-  bool operator==(const EffectPaintPropertyNode& o) const {
-    return Parent() == o.Parent() && state_ == o.state_ &&
-           IsParentAlias() == o.IsParentAlias();
-  }
-#endif
 
   std::unique_ptr<JSONObject> ToJSON() const;
 

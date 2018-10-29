@@ -72,6 +72,8 @@ class MimeHandlerViewContainerBase : public blink::WebAssociatedURLLoaderClient,
 
  protected:
   virtual void CreateMimeHandlerViewGuestIfNecessary();
+  virtual void OnRetryCreatingMimeHandlerViewGuest(int32_t element_instance_id);
+  virtual void OnDestroyFrameContainer(int32_t element_instance_id);
   virtual blink::WebRemoteFrame* GetGuestProxyFrame() const = 0;
   virtual int32_t GetInstanceId() const = 0;
   virtual gfx::Size GetElementSize() const = 0;
@@ -91,6 +93,9 @@ class MimeHandlerViewContainerBase : public blink::WebAssociatedURLLoaderClient,
 
   // Whether the plugin is embedded or not.
   bool is_embedded_;
+
+  // The original URL of the plugin.
+  const GURL original_url_;
 
   // Only valid for the cross-process-frame-based implementation. This holds the
   // routing ID of the frame or proxy whose corresponding WebFrame is the
@@ -114,9 +119,6 @@ class MimeHandlerViewContainerBase : public blink::WebAssociatedURLLoaderClient,
 
   // The MIME type of the plugin.
   const std::string mime_type_;
-
-  // The original URL of the plugin.
-  const GURL original_url_;
 
   // Used when network service is enabled:
   content::mojom::TransferrableURLLoaderPtr transferrable_url_loader_;

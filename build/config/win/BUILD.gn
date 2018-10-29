@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//buildtools/deps_revisions.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/clang/clang.gni")
@@ -139,10 +140,15 @@ config("compiler") {
   if (!is_debug && !is_component_build) {
     # Enable standard linker optimizations like GC (/OPT:REF) and ICF in static
     # release builds. These are implied by /PROFILE below, but /PROFILE is
-    # incompatible with /debug:fastlink and LLD ignores it as of this writing.
+    # incompatible with /debug:fastlink.
     # Release builds always want these optimizations, so enable them explicitly.
+    # TODO(crbug.com/884545): Remove the checks for use_libfuzzer when
+    # libFuzzer's issues with /OPT:REF are resolved upstream.
+    if (!use_libfuzzer) {
+      ldflags += [ "/OPT:REF" ]
+    }
+
     ldflags += [
-      "/OPT:REF",
       "/OPT:ICF",
       "/INCREMENTAL:NO",
       "/FIXED:NO",
@@ -159,7 +165,9 @@ config("compiler") {
     # PDB file by about 5%) but does not otherwise alter the output binary. It
     # is enabled opportunistically for builds where it is not prohibited (not
     # supported when incrementally linking, or using /debug:fastlink).
-    if (!is_win_fastlink) {
+    # /PROFILE implies /OPT:REF. Don't use it with libFuzzer while /OPT:REF
+    # can't be used with libFuzzer. See crbug.com/884545 for more details.
+    if (!is_win_fastlink && !use_libfuzzer) {
       ldflags += [ "/PROFILE" ]
     }
   }
@@ -249,6 +257,8 @@ config("runtime_library") {
     defines += [ "_USING_V110_SDK71_" ]
   }
 
+  # TODO(thomasanderson): Move this into a target in //build/config/c++ and
+  # deduplicate with //build/config/posix/BUILD.gn.
   if (use_custom_libcxx) {
     cflags_cc +=
         [ "-I" + rebase_path("$libcxx_prefix/include", root_build_dir) ]
@@ -256,11 +266,17 @@ config("runtime_library") {
       defines += [ "_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS" ]
     }
 
-    # Prevent libc++ from embedding linker flags to try to automatically link
-    # against its runtime library. This is unnecessary with our build system,
-    # and can also result in build failures if libc++'s name for a library does
-    # not match ours.
-    defines += [ "_LIBCPP_NO_AUTO_LINK" ]
+    defines += [
+      "CR_LIBCXX_REVISION=$libcxx_svn_revision",
+      "CR_LIBCXXABI_REVISION=$libcxxabi_svn_revision",
+      "_LIBCPP_ENABLE_NODISCARD",
+
+      # Prevent libc++ from embedding linker flags to try to automatically link
+      # against its runtime library. This is unnecessary with our build system,
+      # and can also result in build failures if libc++'s name for a library
+      # does not match ours.
+      "_LIBCPP_NO_AUTO_LINK",
+    ]
   }
 
   if (current_os == "winuwp") {
@@ -463,6 +479,9 @@ if (current_cpu == "x64") {
   # The number after the comma is the minimum required OS version.
   # 5.02 = Windows Server 2003.
   subsystem_version_suffix = ",5.02"
+} else if (current_cpu == "arm64") {
+  # Windows ARM64 requires Windows 10.
+  subsystem_version_suffix = ",10.0"
 } else {
   # 5.01 = Windows XP.
   subsystem_version_suffix = ",5.01"

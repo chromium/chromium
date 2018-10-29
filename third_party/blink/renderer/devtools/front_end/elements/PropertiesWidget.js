@@ -57,9 +57,9 @@ Elements.PropertiesWidget = class extends UI.ThrottledWidget {
   /**
    * @override
    * @protected
-   * @return {!Promise.<?>}
+   * @return {!Promise<undefined>}
    */
-  doUpdate() {
+  async doUpdate() {
     if (this._lastRequestedNode) {
       this._lastRequestedNode.domModel().runtimeModel().releaseObjectGroup(Elements.PropertiesWidget._objectGroupName);
       delete this._lastRequestedNode;
@@ -68,84 +68,64 @@ Elements.PropertiesWidget = class extends UI.ThrottledWidget {
     if (!this._node) {
       this.contentElement.removeChildren();
       this.sections = [];
-      return Promise.resolve();
+      return;
     }
 
     this._lastRequestedNode = this._node;
-    return this._node.resolveToObject(Elements.PropertiesWidget._objectGroupName).then(nodeResolved.bind(this));
+    const object = await this._node.resolveToObject(Elements.PropertiesWidget._objectGroupName);
+    if (!object)
+      return;
 
-    /**
-     * @param {?SDK.RemoteObject} object
-     * @this {Elements.PropertiesWidget}
-     */
-    function nodeResolved(object) {
-      if (!object)
-        return;
+    const result = await object.callFunction(protoList);
+    object.release();
 
-      /**
-       * @suppressReceiverCheck
-       * @this {*}
-       */
-      function protoList() {
-        let proto = this;
-        const result = {__proto__: null};
-        let counter = 1;
-        while (proto) {
-          result[counter++] = proto;
-          proto = proto.__proto__;
-        }
-        return result;
-      }
-      const promise = object.callFunctionPromise(protoList).then(nodePrototypesReady.bind(this));
-      object.release();
-      return promise;
+    if (!result.object || result.wasThrown)
+      return;
+
+    const propertiesResult = await result.object.getOwnProperties(false /* generatePreview */);
+    result.object.release();
+
+    if (!propertiesResult || !propertiesResult.properties)
+      return;
+
+    const properties = propertiesResult.properties;
+    const expanded = [];
+    const sections = this.sections || [];
+    for (let i = 0; i < sections.length; ++i)
+      expanded.push(sections[i].expanded);
+
+    this.contentElement.removeChildren();
+    this.sections = [];
+
+    // Get array of property user-friendly names.
+    for (let i = 0; i < properties.length; ++i) {
+      if (!parseInt(properties[i].name, 10))
+        continue;
+      const property = properties[i].value;
+      let title = property.description;
+      title = title.replace(/Prototype$/, '');
+      const section = new ObjectUI.ObjectPropertiesSection(property, title);
+      section.element.classList.add('properties-widget-section');
+      this.sections.push(section);
+      this.contentElement.appendChild(section.element);
+      if (expanded[this.sections.length - 1])
+        section.expand();
+      section.addEventListener(UI.TreeOutline.Events.ElementExpanded, this._propertyExpanded, this);
     }
 
     /**
-     * @param {!{object: ?SDK.RemoteObject, wasThrown: (boolean|undefined)}} result
-     * @this {Elements.PropertiesWidget}
+     * @suppressReceiverCheck
+     * @this {*}
      */
-    function nodePrototypesReady(result) {
-      if (!result.object || result.wasThrown)
-        return;
-
-      const promise = result.object.getOwnPropertiesPromise(false /* generatePreview */).then(fillSection.bind(this));
-      result.object.release();
-      return promise;
-    }
-
-    /**
-     * @param {!{properties: ?Array.<!SDK.RemoteObjectProperty>, internalProperties: ?Array.<!SDK.RemoteObjectProperty>}} result
-     * @this {Elements.PropertiesWidget}
-     */
-    function fillSection(result) {
-      if (!result || !result.properties)
-        return;
-
-      const properties = result.properties;
-      const expanded = [];
-      const sections = this.sections || [];
-      for (let i = 0; i < sections.length; ++i)
-        expanded.push(sections[i].expanded);
-
-      this.contentElement.removeChildren();
-      this.sections = [];
-
-      // Get array of property user-friendly names.
-      for (let i = 0; i < properties.length; ++i) {
-        if (!parseInt(properties[i].name, 10))
-          continue;
-        const property = properties[i].value;
-        let title = property.description;
-        title = title.replace(/Prototype$/, '');
-        const section = new ObjectUI.ObjectPropertiesSection(property, title);
-        section.element.classList.add('properties-widget-section');
-        this.sections.push(section);
-        this.contentElement.appendChild(section.element);
-        if (expanded[this.sections.length - 1])
-          section.expand();
-        section.addEventListener(UI.TreeOutline.Events.ElementExpanded, this._propertyExpanded, this);
+    function protoList() {
+      let proto = this;
+      const result = {__proto__: null};
+      let counter = 1;
+      while (proto) {
+        result[counter++] = proto;
+        proto = proto.__proto__;
       }
+      return result;
     }
   }
 

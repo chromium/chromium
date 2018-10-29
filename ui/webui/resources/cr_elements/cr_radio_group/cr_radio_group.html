@@ -1,0 +1,30 @@
+<link rel="import" href="../../html/polymer.html">
+
+<link rel="import" href="../../html/event_tracker.html">
+<link rel="import" href="../shared_vars_css.html">
+
+<dom-module id="cr-radio-group">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      :host ::slotted(*) {
+        padding: var(--cr-radio-group-item-padding, 12px);
+      }
+
+      :host([disabled]) {
+        cursor: initial;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      :host([disabled]) ::slotted(*) {
+        opacity: var(--cr-disabled-opacity);
+      }
+    </style>
+    <slot></slot>
+  </template>
+  <script src="cr_radio_group.js"></script>
+</dom-module>

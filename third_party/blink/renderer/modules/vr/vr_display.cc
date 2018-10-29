@@ -95,10 +95,11 @@ class VRDisplayFrameRequestCallback
 
 SessionClientBinding::SessionClientBinding(
     VRDisplay* display,
-    bool is_immersive,
+    SessionClientBinding::SessionBindingType immersive,
     device::mojom::blink::XRSessionClientRequest request)
     : display_(display),
-      is_immersive_(is_immersive),
+      is_immersive_(immersive ==
+                    SessionClientBinding::SessionBindingType::kImmersive),
       client_binding_(this, std::move(request)){};
 
 SessionClientBinding::~SessionClientBinding() = default;
@@ -398,7 +399,8 @@ ScriptPromise VRDisplay::requestPresent(ScriptState* script_state,
   // allowed outside a user gesture so that the presented content may be
   // updated.
   if (first_present) {
-    if (!Frame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr)) {
+    if (!LocalFrame::HasTransientUserActivation(doc ? doc->GetFrame()
+                                                    : nullptr)) {
       DOMException* exception =
           DOMException::Create(DOMExceptionCode::kInvalidStateError,
                                "API can only be initiated by a user gesture.");
@@ -565,7 +567,8 @@ void VRDisplay::OnRequestImmersiveSessionReturned(
     if (immersive_client_binding_)
       immersive_client_binding_->Close();
     immersive_client_binding_ = new SessionClientBinding(
-        this, false, std::move(session->client_request));
+        this, SessionClientBinding::SessionBindingType::kImmersive,
+        std::move(session->client_request));
 
     Update(std::move(session->display_info));
 
@@ -589,8 +592,9 @@ void VRDisplay::OnNonImmersiveSessionRequestReturned(
     return;
   }
   non_immersive_provider_.Bind(std::move(session->data_provider));
-  non_immersive_client_binding_ =
-      new SessionClientBinding(this, false, std::move(session->client_request));
+  non_immersive_client_binding_ = new SessionClientBinding(
+      this, SessionClientBinding::SessionBindingType::kNonImmersive,
+      std::move(session->client_request));
   RequestVSync();
 }
 
@@ -934,7 +938,7 @@ void VRDisplay::OnActivate(device::mojom::blink::VRDisplayEventReason reason,
 
   std::unique_ptr<UserGestureIndicator> gesture_indicator;
   if (reason == device::mojom::blink::VRDisplayEventReason::MOUNTED)
-    gesture_indicator = Frame::NotifyUserActivation(doc->GetFrame());
+    gesture_indicator = LocalFrame::NotifyUserActivation(doc->GetFrame());
 
   base::AutoReset<bool> in_activate(&in_display_activate_, true);
 

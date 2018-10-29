@@ -24,25 +24,25 @@ std::string GenerateApplicationNameFromURL(const GURL& url) {
 // are no naming conflicts.
 static const char kCrxAppPrefix[] = "_crx_";
 
-std::string GenerateApplicationNameFromAppId(const std::string& app_id) {
+std::string GenerateApplicationNameFromAppId(const AppId& app_id) {
   std::string t(kCrxAppPrefix);
   t.append(app_id);
   return t;
 }
 
-std::string GetAppIdFromApplicationName(const std::string& app_name) {
+AppId GetAppIdFromApplicationName(const std::string& app_name) {
   std::string prefix(kCrxAppPrefix);
   if (app_name.substr(0, prefix.length()) != prefix)
     return std::string();
   return app_name.substr(prefix.length());
 }
 
-static std::string GenerateExtensionHashFromURL(const GURL& url) {
+static std::string GenerateAppHashFromURL(const GURL& url) {
   return crypto::SHA256HashString(url.spec());
 }
 
-std::string GenerateExtensionIdFromURL(const GURL& url) {
-  return crx_file::id_util::GenerateId(GenerateExtensionHashFromURL(url));
+AppId GenerateAppIdFromURL(const GURL& url) {
+  return crx_file::id_util::GenerateId(GenerateAppHashFromURL(url));
 }
 
 // Generate the public key for the fake extension that we synthesize to contain
@@ -56,9 +56,9 @@ std::string GenerateExtensionIdFromURL(const GURL& url) {
 //
 // (*) The comment above says that we hash the manifest URL, but in practice,
 // it seems that we hash the start URL.
-std::string GenerateExtensionKeyFromURL(const GURL& url) {
+std::string GenerateAppKeyFromURL(const GURL& url) {
   std::string key;
-  base::Base64Encode(GenerateExtensionHashFromURL(url), &key);
+  base::Base64Encode(GenerateAppHashFromURL(url), &key);
   return key;
 }
 

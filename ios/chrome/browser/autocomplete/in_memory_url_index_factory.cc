@@ -66,9 +66,9 @@ InMemoryURLIndexFactory::InMemoryURLIndexFactory()
 InMemoryURLIndexFactory::~InMemoryURLIndexFactory() {}
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactoryFunction
+BrowserStateKeyedServiceFactory::TestingFactory
 InMemoryURLIndexFactory::GetDefaultFactory() {
-  return &BuildInMemoryURLIndex;
+  return base::BindRepeating(&BuildInMemoryURLIndex);
 }
 
 std::unique_ptr<KeyedService> InMemoryURLIndexFactory::BuildServiceInstanceFor(

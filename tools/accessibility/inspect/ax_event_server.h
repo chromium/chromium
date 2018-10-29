@@ -33,7 +33,7 @@ class AXEventServer final {
   // Only one COM initializer per thread is permitted.
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
-  content::AccessibilityEventRecorder& recorder_;
+  std::unique_ptr<content::AccessibilityEventRecorder> recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(AXEventServer);
 };

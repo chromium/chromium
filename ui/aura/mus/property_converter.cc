@@ -116,6 +116,51 @@ PropertyConverter::PropertyConverter() {
 
 PropertyConverter::~PropertyConverter() {}
 
+const void* PropertyConverter::GetPropertyKeyFromTransportName(
+    const std::string& transport_name) {
+  for (const auto& primitive_property : primitive_properties_) {
+    if (primitive_property.second.transport_name == transport_name)
+      return primitive_property.first;
+  }
+
+  for (const auto& image_property : image_properties_) {
+    if (image_property.second == transport_name)
+      return image_property.first->name;
+  }
+
+  for (const auto& rect_property : rect_properties_) {
+    if (rect_property.second == transport_name)
+      return rect_property.first->name;
+  }
+
+  for (const auto& size_property : size_properties_) {
+    if (size_property.second == transport_name)
+      return size_property.first->name;
+  }
+
+  for (const auto& string_property : string_properties_) {
+    if (string_property.second == transport_name)
+      return string_property.first->name;
+  }
+
+  for (const auto& string16_property : string16_properties_) {
+    if (string16_property.second == transport_name)
+      return string16_property.first->name;
+  }
+
+  for (const auto& unguessable_token_property : unguessable_token_properties_) {
+    if (unguessable_token_property.second == transport_name)
+      return unguessable_token_property.first->name;
+  }
+
+  for (const auto& window_ptr_property : window_ptr_properties_) {
+    if (window_ptr_property.second == transport_name)
+      return window_ptr_property.first->name;
+  }
+
+  return nullptr;
+}
+
 bool PropertyConverter::IsTransportNameRegistered(
     const std::string& name) const {
   return transport_names_.count(name) > 0;
@@ -135,7 +180,7 @@ bool PropertyConverter::ConvertPropertyForTransport(
     const gfx::ImageSkia* value = window->GetProperty(image_key);
     if (value) {
       // TODO(crbug.com/667566): Support additional scales or gfx::Image[Skia].
-      SkBitmap bitmap = value->GetRepresentation(1.f).sk_bitmap();
+      SkBitmap bitmap = value->GetRepresentation(1.f).GetBitmap();
       *transport_value = std::make_unique<std::vector<uint8_t>>(
           mojo::ConvertTo<std::vector<uint8_t>>(bitmap));
     } else {
@@ -333,6 +378,9 @@ void PropertyConverter::SetPropertyFromTransportValue(
       return;
     }
   }
+
+  // WARNING: Adding a new map, be sure and update
+  // GetPropertyKeyFromTransportName() as well.
 
   DVLOG(2) << "Unknown mus property name: " << transport_name;
 }

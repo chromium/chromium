@@ -9,6 +9,13 @@ import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
+// Contains either encoded video frame in |encoded_data|, or decoded video
+// frame in |decoded_frame|.
+union VideoFrameData {
+  array<uint8> encoded_data;
+  media.mojom.VideoFrame? decoded_frame;
+};
+
 interface MediaParser {
   // Extracts metadata from media data with |mime_type|, |total_size| and
   // available from |media_data_source|. If there are images referred to in the
@@ -22,15 +29,16 @@ interface MediaParser {
           MediaMetadata metadata,
           array<AttachedImage> attached_images);
 
-  // Extracts one video key frame from |media_data_source|. The frame is still
-  // in encoded format.
+  // Extracts one video key frame from |media_data_source|. Returns the decoded
+  // frame if decoding can be done in utility process, or an encoded frame if
+  // decoding needs to happen in other process.
   [EnableIf=is_android]
   ExtractVideoFrame(string mime_type,
                     uint32 total_size,
                     MediaDataSource media_data_source)
       => (bool success,
-          array<uint8> data,
-          media.mojom.VideoDecoderConfig config);
+          VideoFrameData frame_data,
+          media.mojom.VideoDecoderConfig? config);
 
   // Validates the passed media file with sanity checks, and file decoding
   // for at most |decode_time| wall clock time. Returns |success| true if

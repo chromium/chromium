@@ -20,17 +20,17 @@
         {
           "object": "LayoutImage IMG id='target'",
           "rect": [48, 100, 100, 100],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment '\u2022 '",
           "rect": [30, 185, 7, 19],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment '\u2022 '",
           "rect": [30, 135, 7, 19],
-          "reason": "subtree"
+          "reason": "geometry"
         }
       ]
     }

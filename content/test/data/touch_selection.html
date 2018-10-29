@@ -24,7 +24,7 @@ function get_point_inside(element) {
   var rect = element.getBoundingClientRect();
   var point = {
     x: rect.left + 8,
-    y: (rect.top + rect.bottom) / 2
+    y: rect.top + 8
   };
   window.domAutomationController.send(JSON.stringify(point));
 }

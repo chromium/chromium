@@ -136,7 +136,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
     return false;
 
   std::vector<std::string> codec_vector;
-  SplitCodecsToVector(codecs, &codec_vector, false);
+  SplitCodecs(codecs, &codec_vector);
   for (const std::string& codec : codec_vector) {
     DCHECK_NE(codec, kExtendedVideoCodecStripped)
         << "codecs passed into this function should not be stripped";
@@ -247,8 +247,6 @@ class FakeKeySystems : public KeySystems {
 
     for (const std::string& codec : codecs) {
       DCHECK(IsValidCodec(codec)) << "Invalid codec should not be passed in";
-      DCHECK_NE(codec, kExtendedVideoCodec)
-          << "Extended codec should already been stripped";
 
       if (codec == kUnsupportedCodec ||
           !IsCompatibleWithEmeMediaType(media_type, codec)) {

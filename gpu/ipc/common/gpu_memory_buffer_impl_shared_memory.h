@@ -77,11 +77,13 @@ class GPU_EXPORT GpuMemoryBufferImplSharedMemory : public GpuMemoryBufferImpl {
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       const DestructionCallback& callback,
-      std::unique_ptr<base::SharedMemory> shared_memory,
+      base::UnsafeSharedMemoryRegion shared_memory_region,
+      base::WritableSharedMemoryMapping shared_memory_mapping,
       size_t offset,
       int stride);
 
-  std::unique_ptr<base::SharedMemory> shared_memory_;
+  base::UnsafeSharedMemoryRegion shared_memory_region_;
+  base::WritableSharedMemoryMapping shared_memory_mapping_;
   size_t offset_;
   int stride_;
 

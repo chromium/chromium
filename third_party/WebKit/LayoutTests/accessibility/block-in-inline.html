@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<a id="link" href="#">
+  <b id="inline" role="group">Inline</b>
+  <div id="block">Block</div>
+</a>
+
+<script>
+function IsAncestorOf(ancestor, descendant) {
+    var parent = descendant.parentElement();
+    if (!parent)
+        return false;
+    if (parent.isEqual(ancestor))
+        return true;
+    return IsAncestorOf(ancestor, parent);
+}
+
+test(function(t) {
+    var axLink = accessibilityController.accessibleElementById("link");
+    var axInline = accessibilityController.accessibleElementById("inline");
+    var axBlock = accessibilityController.accessibleElementById("block");
+
+    assert_false(IsAncestorOf(axBlock, axInline));
+    assert_false(IsAncestorOf(axInline, axBlock));
+    assert_true(IsAncestorOf(axLink, axInline));
+    assert_true(IsAncestorOf(axLink, axBlock));
+}, "Ensure that continuations are included in the accessibility tree.");
+</script>

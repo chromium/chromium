@@ -119,8 +119,7 @@ TypeDebugInfoCache::~TypeDebugInfoCache() {}
 
 CommitCounters TypeDebugInfoCache::GetLatestCommitCounters(
     ModelType type) const {
-  std::map<ModelType, CommitCounters>::const_iterator it =
-      commit_counters_map_.find(type);
+  auto it = commit_counters_map_.find(type);
   if (it == commit_counters_map_.end()) {
     return CommitCounters();
   } else {
@@ -130,8 +129,7 @@ CommitCounters TypeDebugInfoCache::GetLatestCommitCounters(
 
 UpdateCounters TypeDebugInfoCache::GetLatestUpdateCounters(
     ModelType type) const {
-  std::map<ModelType, UpdateCounters>::const_iterator it =
-      update_counters_map_.find(type);
+  auto it = update_counters_map_.find(type);
   if (it == update_counters_map_.end()) {
     return UpdateCounters();
   } else {
@@ -141,8 +139,7 @@ UpdateCounters TypeDebugInfoCache::GetLatestUpdateCounters(
 
 StatusCounters TypeDebugInfoCache::GetLatestStatusCounters(
     ModelType type) const {
-  std::map<ModelType, StatusCounters>::const_iterator it =
-      status_counters_map_.find(type);
+  auto it = status_counters_map_.find(type);
   if (it == status_counters_map_.end()) {
     return StatusCounters();
   } else {
@@ -203,8 +200,7 @@ class SyncerTest : public testing::Test,
   }
   void OnReceivedCustomNudgeDelays(
       const std::map<ModelType, base::TimeDelta>& delay_map) override {
-    std::map<ModelType, base::TimeDelta>::const_iterator iter =
-        delay_map.find(SESSIONS);
+    auto iter = delay_map.find(SESSIONS);
     if (iter != delay_map.end() && iter->second > base::TimeDelta())
       last_sessions_commit_delay_ = iter->second;
     iter = delay_map.find(BOOKMARKS);
@@ -1718,15 +1714,13 @@ TEST_F(SyncerTest, TestCommitListOrderingWithNewItems) {
   // first two IDs, and that the children make up the next four.  Other than
   // that, ordering doesn't matter.
 
-  vector<syncable::Id>::const_iterator i =
-      mock_server_->committed_ids().begin();
-  vector<syncable::Id>::const_iterator parents_begin = i;
+  auto i = mock_server_->committed_ids().begin();
+  auto parents_begin = i;
   i++;
   i++;
-  vector<syncable::Id>::const_iterator parents_end = i;
-  vector<syncable::Id>::const_iterator children_begin = i;
-  vector<syncable::Id>::const_iterator children_end =
-      mock_server_->committed_ids().end();
+  auto parents_end = i;
+  auto children_begin = i;
+  auto children_end = mock_server_->committed_ids().end();
 
   EXPECT_EQ(1, count(parents_begin, parents_end, parent1_id));
   EXPECT_EQ(1, count(parents_begin, parents_end, parent2_id));

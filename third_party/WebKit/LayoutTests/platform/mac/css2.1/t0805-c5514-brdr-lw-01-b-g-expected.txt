@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x40
-  LayoutBlockFlow {HTML} at (0,0) size 800x40
-    LayoutBlockFlow {BODY} at (8,8) size 784x24
-      LayoutBlockFlow {DIV} at (0,0) size 784x24
-        LayoutBlockFlow {DIV} at (0,0) size 784x24 [color=#008000] [border: (3px solid #008000) (15px solid #008000)]
-          LayoutText {#text} at (15,3) size 233x18
-            text run at (15,3) width 233: "There should be no red on this page."

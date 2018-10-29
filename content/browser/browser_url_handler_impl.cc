@@ -153,4 +153,8 @@ bool BrowserURLHandlerImpl::ReverseURLRewrite(
   return false;
 }
 
+void BrowserURLHandlerImpl::SetFixupHandlerForTesting(URLHandler handler) {
+  fixup_handler_ = handler;
+}
+
 }  // namespace content

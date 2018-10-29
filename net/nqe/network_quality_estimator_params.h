@@ -124,6 +124,16 @@ class NET_EXPORT NetworkQualityEstimatorParams {
     return lower_bound_http_rtt_transport_rtt_multiplier_;
   }
 
+  // Returns the multiplier by which the end to end RTT estimate should be
+  // multiplied when computing the HTTP RTT. The multiplied value of the
+  // end to end RTT serves as an upper bound to the HTTP RTT estimate. e.g., if
+  // the multiplied end to end RTT is 100 msec., then HTTP RTT estimate can't be
+  // more than |upper_bound_http_rtt_endtoend_rtt_multiplier| times 100 msec.
+  // Returns a negative value if the param is not set.
+  double upper_bound_http_rtt_endtoend_rtt_multiplier() const {
+    return upper_bound_http_rtt_endtoend_rtt_multiplier_;
+  }
+
   // For the purpose of estimating the HTTP RTT, a request is marked as hanging
   // only if its RTT is at least this times the transport RTT estimate.
   int hanging_request_http_rtt_upper_bound_transport_rtt_multiplier() const {
@@ -173,6 +183,18 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   // or shorter than |kMinTransferSizeInBytes| can be used in estimating the
   // network quality. Set to true only for tests.
   bool use_small_responses() const;
+
+  // Returns the typical HTTP RTT that maps to the given
+  // |effective_connection_type|. May return invalid value if
+  // |effective_connection_type| is less than Slow2G or faster than 4G,
+  static base::TimeDelta GetDefaultTypicalHttpRtt(
+      EffectiveConnectionType effective_connection_type);
+
+  // Returns the typical downslink throughput (in kbps) that maps to the given
+  // |effective_connection_type|. May return invalid value if
+  // |effective_connection_type| is less than Slow2G or faster than 4G,
+  static int32_t GetDefaultTypicalDownlinkKbps(
+      EffectiveConnectionType effective_connection_type);
 
   // |use_small_responses| should only be true when testing.
   // Allows the responses smaller than |kMinTransferSizeInBits| to be used for
@@ -236,6 +258,7 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   bool persistent_cache_reading_enabled_;
   const base::TimeDelta min_socket_watcher_notification_interval_;
   const double lower_bound_http_rtt_transport_rtt_multiplier_;
+  const double upper_bound_http_rtt_endtoend_rtt_multiplier_;
   const int hanging_request_http_rtt_upper_bound_transport_rtt_multiplier_;
   const int hanging_request_http_rtt_upper_bound_http_rtt_multiplier_;
   const base::TimeDelta hanging_request_upper_bound_min_http_rtt_;

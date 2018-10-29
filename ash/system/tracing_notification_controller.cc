@@ -4,7 +4,6 @@
 
 #include "ash/system/tracing_notification_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -35,7 +34,6 @@ const char TracingNotificationController::kNotificationId[] = "chrome://slow";
 
 TracingNotificationController::TracingNotificationController()
     : model_(Shell::Get()->system_tray_model()->tracing()) {
-  DCHECK(features::IsSystemTrayUnifiedEnabled());
   model_->AddObserver(this);
   OnTracingModeChanged();
 }

@@ -12,6 +12,7 @@ include_rules = [
   "+components/language",
   "+components/location/android/java",
   "+components/minidump_uploader",
+  "+components/module_installer/android/java/src/org/chromium/components/module_installer",
   "+components/navigation_interception",
   "+components/offline_items_collection/core/android/java",
   "+components/payments/content/android/java/src/org/chromium/components/payments",

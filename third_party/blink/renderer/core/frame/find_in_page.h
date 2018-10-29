@@ -21,7 +21,6 @@ namespace blink {
 
 class WebLocalFrameImpl;
 class WebString;
-struct WebFindOptions;
 struct WebFloatRect;
 
 class CORE_EXPORT FindInPage final
@@ -36,7 +35,7 @@ class CORE_EXPORT FindInPage final
 
   bool FindInternal(int identifier,
                     const WebString& search_text,
-                    const WebFindOptions&,
+                    const mojom::blink::FindOptions&,
                     bool wrap_within_frame,
                     bool* active_now = nullptr);
 

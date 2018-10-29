@@ -13,6 +13,11 @@ namespace content {
 
 class CONTENT_EXPORT CompositorClient {
  public:
+  // Compositor is requesting client to create a new surface and call
+  // SetSurface again. The existing surface if any is cleared from the
+  // compositor before this call.
+  virtual void RecreateSurface() {}
+
   // Gives the client a chance to update the layer tree host before compositing.
   virtual void UpdateLayerTreeHost() {}
 

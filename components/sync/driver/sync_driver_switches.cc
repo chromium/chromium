@@ -46,6 +46,35 @@ const base::Feature kSyncAllowWalletDataInTransportModeWithCustomPassphrase{
 const base::Feature kSyncClearDataOnPassphraseEncryption{
     "ClearSyncDataOnPassphraseEncryption", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// For each below, if enabled, the SyncableService implementation of the
+// corresponding datatype(s) is wrapped within the USS architecture.
+const base::Feature kSyncPseudoUSSAppList{"SyncPseudoUSSAppList",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSApps{"SyncPseudoUSSApps",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSDictionary{"SyncPseudoUSSDictionary",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSExtensionSettings{
+    "SyncPseudoUSSExtensionSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSExtensions{"SyncPseudoUSSExtensions",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSFavicons{"SyncPseudoUSSFavicons",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSHistoryDeleteDirectives{
+    "SyncPseudoUSSHistoryDeleteDirectives", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSPasswords{"SyncPseudoUSSPasswords",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSPreferences{
+    "SyncPseudoUSSPreferences", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSPriorityPreferences{
+    "SyncPseudoUSSPriorityPreferences", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSSearchEngines{
+    "SyncPseudoUSSSearchEngines", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSSupervisedUsers{
+    "SyncPseudoUSSSupervisedUsers", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSyncPseudoUSSThemes{"SyncPseudoUSSThemes",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, allows the Sync machinery ("transport layer") to start
 // independently of Sync-the-feature.
 const base::Feature kSyncStandaloneTransport{"SyncStandaloneTransport",

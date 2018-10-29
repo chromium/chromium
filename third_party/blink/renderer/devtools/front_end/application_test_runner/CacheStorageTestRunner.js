@@ -123,6 +123,10 @@ ApplicationTestRunner.addCacheEntry = function(cacheName, requestUrl, responseTe
   return TestRunner.callFunctionInPageAsync('addCacheEntry', [cacheName, requestUrl, responseText]);
 };
 
+ApplicationTestRunner.addCacheEntryWithNoCorsRequest = function(cacheName, requestUrl) {
+  return TestRunner.callFunctionInPageAsync('addCacheEntryWithNoCorsRequest', [cacheName, requestUrl]);
+};
+
 ApplicationTestRunner.deleteCache = function(cacheName) {
   return TestRunner.callFunctionInPageAsync('deleteCache', [cacheName]);
 };
@@ -156,6 +160,13 @@ TestRunner.deprecatedInitAsync(`
 
       let response = new Response(myBlob, init);
       return cache.put(request, response);
+    }).catch(onCacheStorageError);
+  }
+
+  function addCacheEntryWithNoCorsRequest(cacheName, requestUrl) {
+    return caches.open(cacheName).then(async function(cache) {
+      let request = new Request(requestUrl, {mode: 'no-cors'});
+      return cache.put(request, await fetch(request));
     }).catch(onCacheStorageError);
   }
 

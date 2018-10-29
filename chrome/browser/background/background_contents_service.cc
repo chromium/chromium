@@ -298,8 +298,7 @@ std::vector<BackgroundContents*>
 BackgroundContentsService::GetBackgroundContents() const
 {
   std::vector<BackgroundContents*> contents;
-  for (BackgroundContentsMap::const_iterator it = contents_map_.begin();
-       it != contents_map_.end(); ++it)
+  for (auto it = contents_map_.begin(); it != contents_map_.end(); ++it)
     contents.push_back(it->second.contents);
   return contents;
 }
@@ -806,8 +805,7 @@ BackgroundContents* BackgroundContentsService::GetAppBackgroundContents(
 
 const std::string& BackgroundContentsService::GetParentApplicationId(
     BackgroundContents* contents) const {
-  for (BackgroundContentsMap::const_iterator it = contents_map_.begin();
-       it != contents_map_.end(); ++it) {
+  for (auto it = contents_map_.begin(); it != contents_map_.end(); ++it) {
     if (contents == it->second.contents)
       return it->first;
   }

@@ -117,6 +117,10 @@ public abstract class SwipableOverlayView extends FrameLayout {
         }
     }
 
+    protected WebContents getWebContents() {
+        return mWebContents;
+    }
+
     protected void addToParentView(ViewGroup parentView) {
         if (parentView == null) return;
         if (getParent() == null) {

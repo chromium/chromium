@@ -7,5 +7,3 @@ insertAdjacentHTML: PASS - SyntaxError
 innerHTML: PASS - SyntaxError
 
 outerHTML: PASS - SyntaxError
-
-

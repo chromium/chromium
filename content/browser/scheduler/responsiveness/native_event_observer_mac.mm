@@ -27,9 +27,8 @@ void NativeEventObserver::DeregisterObserver() {
 void NativeEventObserver::WillRunNativeEvent(const void* opaque_identifier) {
   will_run_event_callback_.Run(opaque_identifier);
 }
-void NativeEventObserver::DidRunNativeEvent(const void* opaque_identifier,
-                                            base::TimeTicks creation_time) {
-  did_run_event_callback_.Run(opaque_identifier, creation_time);
+void NativeEventObserver::DidRunNativeEvent(const void* opaque_identifier) {
+  did_run_event_callback_.Run(opaque_identifier);
 }
 
 }  // namespace responsiveness

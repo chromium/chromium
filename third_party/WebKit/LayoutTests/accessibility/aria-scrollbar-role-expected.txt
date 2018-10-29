@@ -1,9 +1,9 @@
 scrollbar
 scrollbar
+
 This tests that the ARIA scrollbar role works correctly
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS scroller.role is 'AXRole: AXScrollBar'
 PASS scroller.intValue is 55

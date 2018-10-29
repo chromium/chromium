@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "components/infobars/core/infobar_manager.h"
 #import "ios/web/public/web_state/web_state_observer.h"
 #import "ios/web/public/web_state/web_state_user_data.h"
@@ -50,14 +51,20 @@ class SnapshotTabHelper : public web::WebStateObserver,
   void RetrieveGreySnapshot(void (^callback)(UIImage*));
 
   // Invalidates the cached snapshot for the current page and forces the
+  // generation of a more recent snapshot. Runs |callback| with a snapshot with
+  // overlaid views (e.g. infobar) of the visible frame. In iOS 11+, snapshots
+  // of a valid web view are taken using WKWebView's snapshotting API.
+  void UpdateSnapshotWithCallback(void (^callback)(UIImage*));
+
+  // Invalidates the cached snapshot for the current page and forces the
   // generation of a more recent snapshot. Returns the snapshot with or
-  // without the overlayed views (e.g. infobar, voice search button, ...)
-  // and either of the visible frame or of the full screen.
+  // without the overlaid views (e.g. infobar) and either of the visible frame
+  // or of the full screen.
   UIImage* UpdateSnapshot(bool with_overlays, bool visible_frame_only);
 
   // Generates a snapshot for the current page. Returns the snapshot with
-  // or without the overlayed views (e.g. infobar, voice search button, ...)
-  // and either of the visible frame of of the full screen.
+  // or without the overlaid views (e.g. infobar) and either of the visible
+  // frame of of the full screen.
   UIImage* GenerateSnapshot(bool with_overlays, bool visible_frame_only);
 
   // When snapshot coalescing is enabled, multiple calls to generate a
@@ -83,6 +90,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
   SnapshotTabHelper(web::WebState* web_state, NSString* session_id);
 
   // web::WebStateObserver implementation.
+  void DidStartLoading(web::WebState* web_state) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
@@ -93,6 +101,10 @@ class SnapshotTabHelper : public web::WebStateObserver,
   std::unique_ptr<infobars::InfoBarManager::Observer> infobar_observer_;
   bool ignore_next_load_ = false;
   bool pause_snapshotting_ = false;
+
+  // Used to ensure |UpdateSnapshotWithCallback()| is not run when this object
+  // is destroyed.
+  base::WeakPtrFactory<SnapshotTabHelper> weak_ptr_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(SnapshotTabHelper);
 };

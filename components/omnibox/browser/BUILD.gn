@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/jumbo.gni")
+import("//build/config/ui.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//components/vector_icons/vector_icons.gni")
@@ -27,23 +28,41 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "answer_finance.icon",
     "answer_sunrise.icon",
     "answer_when_is.icon",
+    "blank.icon",
+    "bookmark.icon",
+    "clear.icon",
     "drive_docs.icon",
+    "drive_forms.icon",
     "drive_logo.icon",
     "drive_sheets.icon",
     "drive_slides.icon",
-    "blank.icon",
     "calculator.icon",
     "extension_app.icon",
+    "find_in_page.icon",
     "http.icon",
+    "https_invalid.icon",
+    "https_valid.icon",
+    "https_valid_in_chip.icon",
     "keyword_search.icon",
-    "md_page.icon",
+    "offline_pin.icon",
+    "open_in_new.icon",
+    "page.icon",
+    "pedal.icon",
+    "product.icon",
+    "star_active.icon",
     "star.icon",
     "switch.icon",
     "tab.icon",
-    "touchable_bookmark.icon",
-    "touchable_clear.icon",
-    "touchable_page.icon",
-    "touchable_search.icon",
+  ]
+}
+
+static_library("vector_icons") {
+  sources = get_target_outputs(":omnibox_vector_icons")
+  deps = [
+    ":omnibox_vector_icons",
+    "//components/vector_icons",
+    "//skia",
+    "//ui/gfx",
   ]
 }
 
@@ -117,6 +136,12 @@ jumbo_static_library("browser") {
     "omnibox_metrics_provider.cc",
     "omnibox_metrics_provider.h",
     "omnibox_navigation_observer.h",
+    "omnibox_pedal.cc",
+    "omnibox_pedal.h",
+    "omnibox_pedal_implementations.cc",
+    "omnibox_pedal_implementations.h",
+    "omnibox_pedal_provider.cc",
+    "omnibox_pedal_provider.h",
     "omnibox_popup_model.cc",
     "omnibox_popup_model.h",
     "omnibox_popup_view.h",
@@ -148,6 +173,13 @@ jumbo_static_library("browser") {
     "tailored_word_break_iterator.h",
     "titled_url_match_utils.cc",
     "titled_url_match_utils.h",
+    "toolbar_field_trial.cc",
+    "toolbar_field_trial.h",
+    "toolbar_model.h",
+    "toolbar_model_delegate.cc",
+    "toolbar_model_delegate.h",
+    "toolbar_model_impl.cc",
+    "toolbar_model_impl.h",
     "url_index_private_data.cc",
     "url_index_private_data.h",
     "url_prefix.cc",
@@ -161,14 +193,16 @@ jumbo_static_library("browser") {
   defines = [ "OMNIBOX_BROWSER_IMPLEMENTATION" ]
 
   public_deps = [
+    "//base",
     "//components/history/core/browser",
     "//components/omnibox/common",
+    "//components/security_state/core",
     "//third_party/metrics_proto",
+    "//url",
   ]
   deps = [
     ":buildflags",
     ":in_memory_url_index_cache_proto",
-    "//base",
     "//base:i18n",
     "//components/bookmarks/browser",
     "//components/data_use_measurement/core",
@@ -187,7 +221,6 @@ jumbo_static_library("browser") {
     "//components/sessions",
     "//components/strings",
     "//components/sync",
-    "//components/toolbar",
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/net",
@@ -199,19 +232,11 @@ jumbo_static_library("browser") {
     "//third_party/protobuf:protobuf_lite",
     "//ui/base",
     "//ui/gfx",
-    "//url",
   ]
 
   if ((!is_android || enable_vr) && !is_ios) {
-    sources += get_target_outputs(":omnibox_vector_icons")
-    deps += [
-      ":omnibox_vector_icons",
-      "//components/vector_icons",
-    ]
+    deps += [ ":vector_icons" ]
   }
-
-  # TODO(brettw) Fix the include cycle and remove this line.
-  allow_circular_includes_from = [ "//components/search_engines" ]
 }
 
 if (is_android) {
@@ -259,26 +284,37 @@ jumbo_static_library("test_support") {
     "test_omnibox_view.h",
     "test_scheme_classifier.cc",
     "test_scheme_classifier.h",
+    "test_toolbar_model.cc",
+    "test_toolbar_model.h",
+  ]
+
+  public_deps = [
+    ":browser",
+    "//base",
   ]
 
   deps = [
-    ":browser",
-    "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/history/core/browser",
     "//components/history/core/test",
+    "//components/resources",
     "//components/search_engines",
     "//components/sessions",
-    "//components/toolbar:test_support",
     "//net",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/metrics_proto",
     "//ui/base",
+    "//ui/gfx",
   ]
+
+  if (toolkit_views) {
+    # Needed to get the TOOLKIT_VIEWS define.
+    deps += [ "//ui/views" ]
+  }
 }
 
 bundle_data("unit_tests_bundle_data") {
@@ -320,6 +356,8 @@ source_set("unit_tests") {
     "omnibox_controller_unittest.cc",
     "omnibox_edit_model_unittest.cc",
     "omnibox_field_trial_unittest.cc",
+    "omnibox_pedal_provider_unittest.cc",
+    "omnibox_pedal_unittest.cc",
     "omnibox_popup_model_unittest.cc",
     "omnibox_view_unittest.cc",
     "query_in_omnibox_unittest.cc",
@@ -331,6 +369,7 @@ source_set("unit_tests") {
     "suggestion_answer_unittest.cc",
     "tailored_word_break_iterator_unittest.cc",
     "titled_url_match_utils_unittest.cc",
+    "toolbar_model_impl_unittest.cc",
     "url_prefix_unittest.cc",
     "zero_suggest_provider_unittest.cc",
   ]
@@ -351,7 +390,6 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/sessions",
     "//components/strings",
-    "//components/toolbar:test_support",
     "//components/url_formatter",
     "//components/variations",
     "//services/network:test_support",

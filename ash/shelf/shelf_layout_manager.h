@@ -20,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "base/timer/timer.h"
+#include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/keyboard/keyboard_controller_observer.h"
@@ -52,6 +53,7 @@ class ASH_EXPORT ShelfLayoutManager
       public keyboard::KeyboardControllerObserver,
       public LockStateObserver,
       public wm::WmSnapToPixelLayoutManager,
+      public display::DisplayObserver,
       public SessionObserver,
       public WallpaperControllerObserver {
  public:
@@ -80,7 +82,7 @@ class ASH_EXPORT ShelfLayoutManager
   bool IsVisible() const;
 
   // Returns the ideal bounds of the shelf assuming it is visible.
-  gfx::Rect GetIdealBounds();
+  gfx::Rect GetIdealBounds() const;
 
   // Returns the preferred size of the shelf for the target visibility state.
   gfx::Size GetPreferredSize();
@@ -108,7 +110,6 @@ class ASH_EXPORT ShelfLayoutManager
   // Invoked by the shelf when the auto-hide state may have changed.
   void UpdateAutoHideState();
 
-  // TODO(mash): Add similar event handling support for mash.
   // Updates the auto-hide state for mouse events.
   void UpdateAutoHideForMouseEvent(ui::MouseEvent* event, aura::Window* target);
 
@@ -148,6 +149,11 @@ class ASH_EXPORT ShelfLayoutManager
   // Returns whether background blur is enabled.
   bool IsBackgroundBlurEnabled() { return is_background_blur_enabled_; }
 
+  // Returns whether the shelf should show a blurred background. This may
+  // return false even if background blur is enabled depending on the session
+  // state.
+  bool ShouldBlurShelfBackground();
+
   // Overridden from wm::WmSnapToPixelLayoutManager:
   void OnWindowResized() override;
   void SetChildBounds(aura::Window* child,
@@ -182,6 +188,11 @@ class ASH_EXPORT ShelfLayoutManager
 
   // Overridden from WallpaperControllerObserver:
   void OnWallpaperBlurChanged() override;
+  void OnFirstWallpaperShown() override;
+
+  // DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   // TODO(harrym|oshima): These templates will be moved to a new Shelf class.
   // A helper function for choosing values specific to a shelf alignment.
@@ -232,9 +243,9 @@ class ASH_EXPORT ShelfLayoutManager
 
     float opacity;
     float status_opacity;
-    gfx::Rect shelf_bounds_in_root;
-    gfx::Rect shelf_bounds_in_shelf;
-    gfx::Rect status_bounds_in_shelf;
+    gfx::Rect shelf_bounds;            // Bounds of the shelf within the screen
+    gfx::Rect shelf_bounds_in_shelf;   // Bounds of the shelf minus status area
+    gfx::Rect status_bounds_in_shelf;  // Bounds of status area within shelf
     gfx::Insets work_area_insets;
   };
 
@@ -290,6 +301,11 @@ class ASH_EXPORT ShelfLayoutManager
   // |mouse_over_shelf_when_auto_hide_timer_started_|.
   void StopAutoHideTimer();
 
+  // Returns the bounds of the shelf on the screen. The returned rect does
+  // not include portions of the shelf that extend beyond its own display,
+  // as those are not visible to the user.
+  gfx::Rect GetVisibleShelfBounds() const;
+
   // Returns the bounds of an additional region which can trigger showing the
   // shelf. This region exists to make it easier to trigger showing the shelf
   // when the shelf is auto hidden and the shelf is on the boundary between
@@ -327,7 +343,7 @@ class ASH_EXPORT ShelfLayoutManager
   bool IsShelfAutoHideForFullscreenMaximized() const;
 
   // Gesture related functions:
-  void StartGestureDrag(const ui::GestureEvent& gesture_in_screen);
+  bool StartGestureDrag(const ui::GestureEvent& gesture_in_screen);
   void UpdateGestureDrag(const ui::GestureEvent& gesture_in_screen);
   void CompleteGestureDrag(const ui::GestureEvent& gesture_in_screen);
   void CompleteAppListDrag(const ui::GestureEvent& gesture_in_screen);
@@ -342,6 +358,11 @@ class ASH_EXPORT ShelfLayoutManager
   // Returns true if should change the visibility of the shelf after drag.
   bool ShouldChangeVisibilityAfterDrag(
       const ui::GestureEvent& gesture_in_screen);
+
+  // Updates the mask to limit the content to the non lock screen container.
+  // The mask will be removed if the workspace state is either in fullscreen
+  // or maximized.
+  void UpdateWorkspaceMask(wm::WorkspaceWindowState window_state);
 
   // True when inside UpdateBoundsAndOpacity() method. Used to prevent calling
   // UpdateBoundsAndOpacity() again from SetChildBounds().
@@ -424,6 +445,9 @@ class ASH_EXPORT ShelfLayoutManager
 
   // Whether background blur is enabled.
   const bool is_background_blur_enabled_;
+
+  // The display on which this shelf is shown.
+  display::Display display_;
 
   // The current shelf background. Should not be assigned to directly, use
   // MaybeUpdateShelfBackground() instead.

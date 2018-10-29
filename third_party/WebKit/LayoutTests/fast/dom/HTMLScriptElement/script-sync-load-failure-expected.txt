@@ -3,7 +3,6 @@ Sync scripts that fail to load should not block later sync scripts from executin
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

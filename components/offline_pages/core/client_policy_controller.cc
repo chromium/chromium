@@ -17,51 +17,50 @@ namespace offline_pages {
 ClientPolicyController::ClientPolicyController() {
   policies_.clear();
   // Manually defining client policies for bookmark and last_n.
-  policies_.insert(std::make_pair(
+  policies_.emplace(
       kBookmarkNamespace,
       MakePolicy(kBookmarkNamespace, LifetimeType::TEMPORARY,
-                 base::TimeDelta::FromDays(7), kUnlimitedPages, 1)));
-  policies_.insert(std::make_pair(
+                 base::TimeDelta::FromDays(7), kUnlimitedPages, 1));
+  policies_.emplace(
       kLastNNamespace,
       OfflinePageClientPolicyBuilder(kLastNNamespace, LifetimeType::TEMPORARY,
                                      kUnlimitedPages, kUnlimitedPages)
           .SetExpirePeriod(base::TimeDelta::FromDays(30))
           .SetIsSupportedByRecentTabs(true)
           .SetIsRestrictedToTabFromClientId(true)
-          .Build()));
-  policies_.insert(std::make_pair(
+          .Build());
+  policies_.emplace(
       kAsyncNamespace,
       OfflinePageClientPolicyBuilder(kAsyncNamespace, LifetimeType::PERSISTENT,
                                      kUnlimitedPages, kUnlimitedPages)
           .SetIsSupportedByDownload(true)
           .SetIsUserRequestedDownload(true)
           .SetIsRemovedOnCacheReset(false)
-          .Build()));
-  policies_.insert(std::make_pair(
+          .Build());
+  policies_.emplace(
       kCCTNamespace,
       OfflinePageClientPolicyBuilder(kCCTNamespace, LifetimeType::TEMPORARY,
                                      kUnlimitedPages, 1)
           .SetExpirePeriod(base::TimeDelta::FromDays(2))
           .SetIsDisabledWhenPrefetchDisabled(true)
-          .Build()));
-  policies_.insert(std::make_pair(
-      kDownloadNamespace, OfflinePageClientPolicyBuilder(
-                              kDownloadNamespace, LifetimeType::PERSISTENT,
-                              kUnlimitedPages, kUnlimitedPages)
-                              .SetIsRemovedOnCacheReset(false)
-                              .SetIsSupportedByDownload(true)
-                              .SetIsUserRequestedDownload(true)
-                              .Build()));
-  policies_.insert(std::make_pair(
-      kNTPSuggestionsNamespace,
-      OfflinePageClientPolicyBuilder(kNTPSuggestionsNamespace,
-                                     LifetimeType::PERSISTENT, kUnlimitedPages,
-                                     kUnlimitedPages)
-          .SetIsSupportedByDownload(true)
-          .SetIsUserRequestedDownload(true)
-          .SetIsRemovedOnCacheReset(false)
-          .Build()));
-  policies_.insert(std::make_pair(
+          .Build());
+  policies_.emplace(kDownloadNamespace,
+                    OfflinePageClientPolicyBuilder(
+                        kDownloadNamespace, LifetimeType::PERSISTENT,
+                        kUnlimitedPages, kUnlimitedPages)
+                        .SetIsRemovedOnCacheReset(false)
+                        .SetIsSupportedByDownload(true)
+                        .SetIsUserRequestedDownload(true)
+                        .Build());
+  policies_.emplace(kNTPSuggestionsNamespace,
+                    OfflinePageClientPolicyBuilder(
+                        kNTPSuggestionsNamespace, LifetimeType::PERSISTENT,
+                        kUnlimitedPages, kUnlimitedPages)
+                        .SetIsSupportedByDownload(true)
+                        .SetIsUserRequestedDownload(true)
+                        .SetIsRemovedOnCacheReset(false)
+                        .Build());
+  policies_.emplace(
       kSuggestedArticlesNamespace,
       OfflinePageClientPolicyBuilder(kSuggestedArticlesNamespace,
                                      LifetimeType::TEMPORARY, kUnlimitedPages,
@@ -71,31 +70,37 @@ ClientPolicyController::ClientPolicyController() {
           .SetExpirePeriod(base::TimeDelta::FromDays(30))
           .SetIsSupportedByDownload(IsPrefetchingOfflinePagesEnabled())
           .SetIsSuggested(true)
-          .Build()));
-  policies_.insert(std::make_pair(
-      kBrowserActionsNamespace,
-      OfflinePageClientPolicyBuilder(kBrowserActionsNamespace,
-                                     LifetimeType::PERSISTENT, kUnlimitedPages,
-                                     kUnlimitedPages)
-          .SetIsRemovedOnCacheReset(false)
-          .SetIsSupportedByDownload(true)
-          .SetIsUserRequestedDownload(true)
-          .SetShouldAllowDownload(true)
-          .Build()));
-  policies_.insert(
-      std::make_pair(kLivePageSharingNamespace,
-                     OfflinePageClientPolicyBuilder(kLivePageSharingNamespace,
-                                                    LifetimeType::TEMPORARY,
-                                                    kUnlimitedPages, 1)
-                         .SetIsRemovedOnCacheReset(true)
-                         .SetExpirePeriod(base::TimeDelta::FromHours(1))
-                         .SetIsRestrictedToTabFromClientId(true)
-                         .Build()));
+          .Build());
+  policies_.emplace(kBrowserActionsNamespace,
+                    OfflinePageClientPolicyBuilder(
+                        kBrowserActionsNamespace, LifetimeType::PERSISTENT,
+                        kUnlimitedPages, kUnlimitedPages)
+                        .SetIsRemovedOnCacheReset(false)
+                        .SetIsSupportedByDownload(true)
+                        .SetIsUserRequestedDownload(true)
+                        .SetShouldAllowDownload(true)
+                        .Build());
+  policies_.emplace(kLivePageSharingNamespace,
+                    OfflinePageClientPolicyBuilder(kLivePageSharingNamespace,
+                                                   LifetimeType::TEMPORARY,
+                                                   kUnlimitedPages, 1)
+                        .SetIsRemovedOnCacheReset(true)
+                        .SetExpirePeriod(base::TimeDelta::FromHours(1))
+                        .SetIsRestrictedToTabFromClientId(true)
+                        .Build());
+  policies_.emplace(
+      kAutoAsyncNamespace,
+      OfflinePageClientPolicyBuilder(
+          kAutoAsyncNamespace, LifetimeType::TEMPORARY, kUnlimitedPages, 1)
+          .SetIsRemovedOnCacheReset(true)
+          .SetExpirePeriod(base::TimeDelta::FromDays(30))
+          .SetIsUserRequestedDownload(false)
+          .Build());
 
   // Fallback policy.
-  policies_.insert(std::make_pair(
-      kDefaultNamespace, MakePolicy(kDefaultNamespace, LifetimeType::TEMPORARY,
-                                    base::TimeDelta::FromDays(1), 10, 1)));
+  policies_.emplace(kDefaultNamespace,
+                    MakePolicy(kDefaultNamespace, LifetimeType::TEMPORARY,
+                               base::TimeDelta::FromDays(1), 10, 1));
 }
 
 ClientPolicyController::~ClientPolicyController() {}
@@ -257,7 +262,7 @@ bool ClientPolicyController::ShouldAllowDownloads(
 void ClientPolicyController::AddPolicyForTest(
     const std::string& name_space,
     const OfflinePageClientPolicyBuilder& builder) {
-  policies_.insert(std::make_pair(name_space, builder.Build()));
+  policies_.emplace(name_space, builder.Build());
 }
 
 }  // namespace offline_pages

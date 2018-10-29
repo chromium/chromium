@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "services/ws/public/mojom/cursor/cursor.mojom.h"
@@ -22,6 +23,7 @@
 #include "ui/aura/aura_export.h"
 #include "ui/aura/mus/mus_types.h"
 #include "ui/aura/mus/window_mus.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_port.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/platform_window/mojo/text_input_state.mojom.h"
@@ -44,8 +46,6 @@ namespace aura {
 
 class ClientSurfaceEmbedder;
 class PropertyConverter;
-class Window;
-class WindowPortMusTest;
 class WindowTreeClient;
 class WindowTreeClientPrivate;
 class WindowTreeHostMus;
@@ -106,7 +106,7 @@ class AURA_EXPORT WindowPortMus : public WindowPort, public WindowMus {
   viz::FrameSinkId GenerateFrameSinkIdFromServerId() const;
 
  private:
-  friend class WindowPortMusTest;
+  friend class WindowPortMusTestHelper;
   friend class WindowTreeClient;
   friend class WindowTreeClientPrivate;
   friend class WindowTreeHostMus;
@@ -205,6 +205,11 @@ class AURA_EXPORT WindowPortMus : public WindowPort, public WindowMus {
     std::unique_ptr<ScopedServerChange> change;
   };
 
+  // Derived from WindowObserver to update local occlusion state. Not using
+  // OnVisibilityChanged because occlusion state is based on Window::IsVisible
+  // and needs to consider ancestors' visibility as well.
+  class VisibilityTracker;
+
   // Creates and adds a ServerChange to |server_changes_|. Returns the id
   // assigned to the ServerChange.
   ServerChangeIdType ScheduleChange(const ServerChangeType type,
@@ -220,6 +225,16 @@ class AURA_EXPORT WindowPortMus : public WindowPort, public WindowMus {
 
   ServerChanges::iterator FindChangeByTypeAndData(const ServerChangeType type,
                                                   const ServerChangeData& data);
+
+  // Called to setup state necessary for an embedding. Returns false if an
+  // embedding is not allowed in this window.
+  bool PrepareForEmbed();
+
+  // Called from OnEmbed() with the result of the embedding. |real_callback| is
+  // the callback supplied to the embed call.
+  static void OnEmbedAck(base::WeakPtr<WindowPortMus> window,
+                         ws::mojom::WindowTree::EmbedCallback real_callback,
+                         bool result);
 
   PropertyConverter* GetPropertyConverter();
 
@@ -244,8 +259,9 @@ class AURA_EXPORT WindowPortMus : public WindowPort, public WindowMus {
   const viz::LocalSurfaceId& GetOrAllocateLocalSurfaceId(
       const gfx::Size& surface_size_in_pixels) override;
   void UpdateLocalSurfaceIdFromEmbeddedClient(
-      const viz::LocalSurfaceId& embedded_client_local_surface_id) override;
-  void SetFallbackSurfaceInfo(const viz::SurfaceInfo& surface_info) override;
+      const viz::LocalSurfaceId& embedded_client_local_surface_id,
+      base::TimeTicks embedded_client_local_surface_id_allocation_time)
+      override;
   void DestroyFromServer() override;
   void AddTransientChildFromServer(WindowMus* child) override;
   void RemoveTransientChildFromServer(WindowMus* child) override;
@@ -279,15 +295,28 @@ class AURA_EXPORT WindowPortMus : public WindowPort, public WindowMus {
                          std::unique_ptr<ui::PropertyData> data) override;
   std::unique_ptr<cc::LayerTreeFrameSink> CreateLayerTreeFrameSink() override;
   void AllocateLocalSurfaceId() override;
-  bool IsLocalSurfaceIdAllocationSuppressed() const override;
   viz::ScopedSurfaceIdAllocator GetSurfaceIdAllocator(
       base::OnceCallback<void()> allocation_task) override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() override;
+  base::TimeTicks GetLocalSurfaceIdAllocationTime() const override;
   void OnEventTargetingPolicyChanged() override;
   bool ShouldRestackTransientChildren() override;
+  void RegisterFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
+  void UnregisterFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
+  void TrackOcclusionState() override;
 
   void UpdatePrimarySurfaceId();
-  void UpdateClientSurfaceEmbedder();
+
+  // Called by WindowTreeClient to update window occlusion state.
+  void SetOcclusionStateFromServer(ws::mojom::OcclusionState occlusion_state);
+
+  // Updates |window_| occlusion state to |new_state|.
+  void UpdateOcclusionState(Window::OcclusionState new_state);
+
+  // Update the local occlusion state after visibility of |window_| is changed.
+  // This is called from VisibilityTracker when window_->IsVisible changes to
+  // capture the visibility change from |window_| and its ancestors.
+  void UpdateOcclusionStateAfterVisiblityChange(bool visible);
 
   WindowTreeClient* window_tree_client_;
 
@@ -300,7 +329,6 @@ class AURA_EXPORT WindowPortMus : public WindowPort, public WindowMus {
   ServerChanges server_changes_;
 
   viz::SurfaceId primary_surface_id_;
-  viz::SurfaceInfo fallback_surface_info_;
 
   viz::LocalSurfaceId local_surface_id_;
   // TODO(sad, fsamuel): For 'mash' mode, where the embedder is responsible for
@@ -311,13 +339,28 @@ class AURA_EXPORT WindowPortMus : public WindowPort, public WindowMus {
 
   ui::CursorData cursor_;
 
+  // Set if this class calls SetEmbedFrameSinkId() on the associated window.
+  viz::FrameSinkId embed_frame_sink_id_;
+
   // See description in single place that changes the value for details.
   bool should_restack_transient_children_ = true;
+
+  // True if this window has an embedding.
+  bool has_embedding_ = false;
 
   // When a frame sink is created
   // for a local aura::Window, we need keep a weak ptr of it, so we can update
   // the local surface id when necessary.
   base::WeakPtr<cc::LayerTreeFrameSink> local_layer_tree_frame_sink_;
+
+  // Tracks |window_->IsVisible()| change and update local occlusion state.
+  std::unique_ptr<VisibilityTracker> visibility_tracker_;
+
+  // The occlusion state that is not UNKNOWN before changing to HIDDEN. If the
+  // value is set, it will be used when |window_| becomes visible again. This
+  // allows synchronous occlusion state change when making |window_| visible.
+  // Window Service will send back the real occlusion state later.
+  base::Optional<Window::OcclusionState> occlusion_state_before_hidden_;
 
   base::WeakPtrFactory<WindowPortMus> weak_ptr_factory_;
 

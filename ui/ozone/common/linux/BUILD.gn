@@ -18,7 +18,7 @@ source_set("linux") {
 
   deps = [
     "//base:base",
-    "//third_party/libdrm",
+    "//build/config/linux/libdrm",
     "//third_party/minigbm",
     "//ui/gfx:buffer_types",
     "//ui/gfx:memory_buffer",

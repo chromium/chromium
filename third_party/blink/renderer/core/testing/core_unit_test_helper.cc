@@ -34,8 +34,9 @@ void LocalFrameClientWithParent::Detached(FrameDetachType) {
 }
 
 ChromeClient& RenderingTest::GetChromeClient() const {
-  DEFINE_STATIC_LOCAL(EmptyChromeClient, client, (EmptyChromeClient::Create()));
-  return client;
+  DEFINE_STATIC_LOCAL(Persistent<EmptyChromeClient>, client,
+                      (EmptyChromeClient::Create()));
+  return *client;
 }
 
 RenderingTest::RenderingTest(LocalFrameClient* local_frame_client)
@@ -49,6 +50,17 @@ const Node* RenderingTest::HitTest(int x, int y) {
       location);
   GetLayoutView().HitTest(location, result);
   return result.InnerNode();
+}
+
+HitTestResult::NodeSet RenderingTest::RectBasedHitTest(LayoutRect rect) {
+  HitTestLocation location(rect);
+  HitTestResult result(
+      HitTestRequest(HitTestRequest::kReadOnly | HitTestRequest::kActive |
+                     HitTestRequest::kAllowChildFrameContent |
+                     HitTestRequest::kListBased),
+      location);
+  GetLayoutView().HitTest(location, result);
+  return result.ListBasedTestResult();
 }
 
 void RenderingTest::SetUp() {

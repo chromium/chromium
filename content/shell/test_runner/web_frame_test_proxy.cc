@@ -4,10 +4,112 @@
 
 #include "content/shell/test_runner/web_frame_test_proxy.h"
 
+#include "content/public/renderer/render_frame_observer.h"
+#include "content/shell/test_runner/test_interfaces.h"
+#include "content/shell/test_runner/test_runner.h"
+#include "content/shell/test_runner/web_frame_test_client.h"
+#include "content/shell/test_runner/web_test_delegate.h"
 #include "content/shell/test_runner/web_test_interfaces.h"
 #include "content/shell/test_runner/web_view_test_proxy.h"
+#include "third_party/blink/public/web/web_user_gesture_indicator.h"
 
 namespace test_runner {
+
+namespace {
+
+void PrintFrameUserGestureStatus(WebTestDelegate* delegate,
+                                 blink::WebLocalFrame* frame,
+                                 const char* msg) {
+  bool is_user_gesture =
+      blink::WebUserGestureIndicator::IsProcessingUserGesture(frame);
+  delegate->PrintMessage(std::string("Frame with user gesture \"") +
+                         (is_user_gesture ? "true" : "false") + "\"" + msg);
+}
+
+class TestRenderFrameObserver : public content::RenderFrameObserver {
+ public:
+  TestRenderFrameObserver(content::RenderFrame* frame, WebViewTestProxy* proxy)
+      : RenderFrameObserver(frame), web_view_test_proxy_(proxy) {}
+
+  ~TestRenderFrameObserver() override {}
+
+ private:
+  TestRunner* test_runner() {
+    return web_view_test_proxy_->test_interfaces()->GetTestRunner();
+  }
+
+  WebTestDelegate* delegate() { return web_view_test_proxy_->delegate(); }
+
+  // content::RenderFrameObserver overrides.
+  void OnDestruct() override { delete this; }
+
+  void DidStartProvisionalLoad(blink::WebDocumentLoader* document_loader,
+                               bool is_content_initiated) override {
+    // A provisional load notification is received when a frame navigation is
+    // sent to the browser. We don't want to log it again during commit.
+    if (delegate()->IsNavigationInitiatedByRenderer(
+            document_loader->GetRequest())) {
+      return;
+    }
+
+    if (test_runner()->shouldDumpFrameLoadCallbacks()) {
+      WebFrameTestClient::PrintFrameDescription(delegate(),
+                                                render_frame()->GetWebFrame());
+      delegate()->PrintMessage(" - didStartProvisionalLoadForFrame\n");
+    }
+
+    if (test_runner()->shouldDumpUserGestureInFrameLoadCallbacks()) {
+      PrintFrameUserGestureStatus(delegate(), render_frame()->GetWebFrame(),
+                                  " - in didStartProvisionalLoadForFrame\n");
+    }
+  }
+
+  void DidFailProvisionalLoad(const blink::WebURLError& error) override {
+    if (test_runner()->shouldDumpFrameLoadCallbacks()) {
+      WebFrameTestClient::PrintFrameDescription(delegate(),
+                                                render_frame()->GetWebFrame());
+      delegate()->PrintMessage(" - didFailProvisionalLoadWithError\n");
+    }
+  }
+
+  void DidCommitProvisionalLoad(bool is_same_document_navigation,
+                                ui::PageTransition transition) override {
+    if (test_runner()->shouldDumpFrameLoadCallbacks()) {
+      WebFrameTestClient::PrintFrameDescription(delegate(),
+                                                render_frame()->GetWebFrame());
+      delegate()->PrintMessage(" - didCommitLoadForFrame\n");
+    }
+  }
+
+  void DidFinishDocumentLoad() override {
+    if (test_runner()->shouldDumpFrameLoadCallbacks()) {
+      WebFrameTestClient::PrintFrameDescription(delegate(),
+                                                render_frame()->GetWebFrame());
+      delegate()->PrintMessage(" - didFinishDocumentLoadForFrame\n");
+    }
+  }
+
+  void DidFinishLoad() override {
+    if (test_runner()->shouldDumpFrameLoadCallbacks()) {
+      WebFrameTestClient::PrintFrameDescription(delegate(),
+                                                render_frame()->GetWebFrame());
+      delegate()->PrintMessage(" - didFinishLoadForFrame\n");
+    }
+  }
+
+  void DidHandleOnloadEvents() override {
+    if (test_runner()->shouldDumpFrameLoadCallbacks()) {
+      WebFrameTestClient::PrintFrameDescription(delegate(),
+                                                render_frame()->GetWebFrame());
+      delegate()->PrintMessage(" - didHandleOnloadEventsForFrame\n");
+    }
+  }
+
+  WebViewTestProxy* web_view_test_proxy_;
+  DISALLOW_COPY_AND_ASSIGN(TestRenderFrameObserver);
+};
+
+}  // namespace
 
 WebFrameTestProxy::~WebFrameTestProxy() = default;
 
@@ -20,6 +122,7 @@ void WebFrameTestProxy::Initialize(
 
   test_client_ =
       interfaces->CreateWebFrameTestClient(view_proxy_for_frame, this);
+  new TestRenderFrameObserver(this, view_proxy_for_frame);  // deletes itself.
 }
 
 // WebLocalFrameClient implementation.
@@ -53,44 +156,6 @@ void WebFrameTestProxy::DownloadURL(
                                std::move(blob_url_token));
 }
 
-void WebFrameTestProxy::DidStartProvisionalLoad(
-    blink::WebDocumentLoader* document_loader,
-    blink::WebURLRequest& request) {
-  test_client_->DidStartProvisionalLoad(document_loader, request);
-  RenderFrameImpl::DidStartProvisionalLoad(document_loader, request);
-}
-
-void WebFrameTestProxy::DidFailProvisionalLoad(
-    const blink::WebURLError& error,
-    blink::WebHistoryCommitType commit_type) {
-  test_client_->DidFailProvisionalLoad(error, commit_type);
-  // If the test finished, don't notify the embedder of the failed load,
-  // as we already destroyed the document loader.
-  if (!web_frame()->GetProvisionalDocumentLoader())
-    return;
-  RenderFrameImpl::DidFailProvisionalLoad(error, commit_type);
-}
-
-void WebFrameTestProxy::DidCommitProvisionalLoad(
-    const blink::WebHistoryItem& item,
-    blink::WebHistoryCommitType commit_type,
-    blink::WebGlobalObjectReusePolicy global_object_reuse_policy) {
-  test_client_->DidCommitProvisionalLoad(item, commit_type,
-                                         global_object_reuse_policy);
-  RenderFrameImpl::DidCommitProvisionalLoad(item, commit_type,
-                                            global_object_reuse_policy);
-}
-
-void WebFrameTestProxy::DidFinishSameDocumentNavigation(
-    const blink::WebHistoryItem& item,
-    blink::WebHistoryCommitType commit_type,
-    bool content_initiated) {
-  test_client_->DidFinishSameDocumentNavigation(item, commit_type,
-                                                content_initiated);
-  RenderFrameImpl::DidFinishSameDocumentNavigation(item, commit_type,
-                                                   content_initiated);
-}
-
 void WebFrameTestProxy::DidReceiveTitle(const blink::WebString& title,
                                         blink::WebTextDirection direction) {
   test_client_->DidReceiveTitle(title, direction);
@@ -102,25 +167,15 @@ void WebFrameTestProxy::DidChangeIcon(blink::WebIconURL::Type icon_type) {
   RenderFrameImpl::DidChangeIcon(icon_type);
 }
 
-void WebFrameTestProxy::DidFinishDocumentLoad() {
-  test_client_->DidFinishDocumentLoad();
-  RenderFrameImpl::DidFinishDocumentLoad();
-}
-
-void WebFrameTestProxy::DidHandleOnloadEvents() {
-  test_client_->DidHandleOnloadEvents();
-  RenderFrameImpl::DidHandleOnloadEvents();
-}
-
 void WebFrameTestProxy::DidFailLoad(const blink::WebURLError& error,
                                     blink::WebHistoryCommitType commit_type) {
   test_client_->DidFailLoad(error, commit_type);
   RenderFrameImpl::DidFailLoad(error, commit_type);
 }
 
-void WebFrameTestProxy::DidFinishLoad() {
-  RenderFrameImpl::DidFinishLoad();
-  test_client_->DidFinishLoad();
+void WebFrameTestProxy::DidStartLoading() {
+  test_client_->DidStartLoading();
+  RenderFrameImpl::DidStartLoading();
 }
 
 void WebFrameTestProxy::DidStopLoading() {
@@ -171,14 +226,6 @@ void WebFrameTestProxy::ShowContextMenu(
     const blink::WebContextMenuData& context_menu_data) {
   test_client_->ShowContextMenu(context_menu_data);
   RenderFrameImpl::ShowContextMenu(context_menu_data);
-}
-
-void WebFrameTestProxy::DidDetectXSS(const blink::WebURL& insecure_url,
-                                     bool did_block_entire_page) {
-  // This is not implemented in RenderFrameImpl, so need to explicitly call
-  // into the base proxy.
-  test_client_->DidDetectXSS(insecure_url, did_block_entire_page);
-  RenderFrameImpl::DidDetectXSS(insecure_url, did_block_entire_page);
 }
 
 void WebFrameTestProxy::DidDispatchPingLoader(const blink::WebURL& url) {
@@ -233,8 +280,9 @@ void WebFrameTestProxy::MarkWebAXObjectDirty(const blink::WebAXObject& object,
 
 void WebFrameTestProxy::CheckIfAudioSinkExistsAndIsAuthorized(
     const blink::WebString& sink_id,
-    blink::WebSetSinkIdCallbacks* web_callbacks) {
-  test_client_->CheckIfAudioSinkExistsAndIsAuthorized(sink_id, web_callbacks);
+    std::unique_ptr<blink::WebSetSinkIdCallbacks> web_callbacks) {
+  test_client_->CheckIfAudioSinkExistsAndIsAuthorized(sink_id,
+                                                      std::move(web_callbacks));
 }
 
 void WebFrameTestProxy::DidClearWindowObject() {

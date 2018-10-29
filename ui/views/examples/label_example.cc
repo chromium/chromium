@@ -4,6 +4,8 @@
 
 #include "ui/views/examples/label_example.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,10 +68,7 @@ LabelExample::LabelExample()
       custom_label_(NULL) {
 }
 
-LabelExample::~LabelExample() {
-  // Remove the views first as some reference combobox models.
-  container()->RemoveAllChildViews(true);
-}
+LabelExample::~LabelExample() = default;
 
 void LabelExample::CreateExampleView(View* container) {
   // A very simple label example, followed by additional helpful examples.
@@ -231,9 +230,8 @@ Combobox* LabelExample::AddCombobox(GridLayout* layout,
                                     int count) {
   layout->StartRow(0, 0);
   layout->AddView(new Label(base::ASCIIToUTF16(name)));
-  ExampleComboboxModel* model = new ExampleComboboxModel(strings, count);
-  example_combobox_models_.push_back(base::WrapUnique(model));
-  Combobox* combobox = new Combobox(model);
+  Combobox* combobox =
+      new Combobox(std::make_unique<ExampleComboboxModel>(strings, count));
   combobox->SetSelectedIndex(0);
   combobox->set_listener(this);
   layout->AddView(combobox);

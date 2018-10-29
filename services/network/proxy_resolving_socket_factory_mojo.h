@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingSocketFactoryMojo
       bool use_tls,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojom::ProxyResolvingSocketRequest request,
+      mojom::SocketObserverPtr observer,
       CreateProxyResolvingSocketCallback callback) override;
 
  private:

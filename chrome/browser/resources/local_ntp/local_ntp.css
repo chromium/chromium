@@ -150,6 +150,10 @@ body.hide-fakebox #fakebox {
   display: block;
 }
 
+#logo-doodle-image {
+  outline: none;
+}
+
 #logo-default.fade,
 #logo-doodle.fade {
   transition: opacity 130ms, visibility 130ms;
@@ -671,7 +675,10 @@ html[dir=rtl] #attribution,
 }
 
 #mv-single {
-  border: none;
+  /* Quick fix for 1px jitter that occurs when border is set to none or 0 (see
+   * https://crbug.com/897006).
+   * TODO(kristipark): Revert once this is fixed in the Blink library. */
+  border: 1px solid transparent;
   height: 100%;
   width: 100%;
 }

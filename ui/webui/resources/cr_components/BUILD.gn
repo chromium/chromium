@@ -7,6 +7,9 @@ import("//third_party/closure_compiler/compile_js.gni")
 group("closure_compile") {
   deps = [
     "certificate_manager:closure_compile",
-    "chromeos:closure_compile",
   ]
+
+  if (is_chromeos) {
+    deps += [ "chromeos:closure_compile" ]
+  }
 }

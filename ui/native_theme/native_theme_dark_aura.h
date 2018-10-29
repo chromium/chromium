@@ -6,6 +6,7 @@
 #define UI_NATIVE_THEME_NATIVE_THEME_DARK_AURA_H_
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "ui/native_theme/native_theme_aura.h"
 
 namespace ui {
@@ -20,6 +21,8 @@ class NATIVE_THEME_EXPORT NativeThemeDarkAura : public NativeThemeAura {
   SkColor GetSystemColor(ColorId color_id) const override;
 
  private:
+  friend class base::NoDestructor<NativeThemeDarkAura>;
+
   NativeThemeDarkAura();
   ~NativeThemeDarkAura() override;
 

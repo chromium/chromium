@@ -6,11 +6,13 @@
 
 #include <utility>
 
+#include "base/location.h"
 #include "base/macros.h"
 #include "base/pickle.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -20,15 +22,23 @@
 
 namespace content {
 
-ClipboardHostImpl::ClipboardHostImpl()
-    : clipboard_(ui::Clipboard::GetForCurrentThread()),
+ClipboardHostImpl::ClipboardHostImpl(blink::mojom::ClipboardHostRequest request)
+    : binding_(this, std::move(request)),
+      clipboard_(ui::Clipboard::GetForCurrentThread()),
       clipboard_writer_(
           new ui::ScopedClipboardWriter(ui::CLIPBOARD_TYPE_COPY_PASTE)) {}
 
 void ClipboardHostImpl::Create(blink::mojom::ClipboardHostRequest request) {
-  mojo::MakeStrongBinding(
-      base::WrapUnique<ClipboardHostImpl>(new ClipboardHostImpl()),
-      std::move(request));
+  // Clipboard implementations do interesting things, like run nested message
+  // loops. Since StrongBinding<T> synchronously destroys on failure, that can
+  // result in some unfortunate use-after-frees after the nested message loops
+  // exit.
+  auto* host = new ClipboardHostImpl(std::move(request));
+  host->binding_.set_connection_error_handler(base::BindOnce(
+      [](ClipboardHostImpl* host) {
+        base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, host);
+      },
+      host));
 }
 
 ClipboardHostImpl::~ClipboardHostImpl() {

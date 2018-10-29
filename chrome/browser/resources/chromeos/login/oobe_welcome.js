@@ -77,6 +77,12 @@ Polymer({
     debuggingLinkVisible: Boolean,
   },
 
+  /**
+   * Flag that ensures that OOBE configuration is applied only once.
+   * @private {boolean}
+   */
+  configuration_applied_: false,
+
   /** @override */
   ready: function() {
     this.updateLocalizedContent();
@@ -99,6 +105,8 @@ Polymer({
     let activeScreen = this.getActiveScreen_();
     if (activeScreen.show)
       activeScreen.show();
+
+    window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
   },
 
   /**
@@ -118,9 +126,31 @@ Polymer({
    * @param {!OobeTypes.OobeConfiguration} configuration
    */
   updateOobeConfiguration: function(configuration) {
+    if (!this.is_shown_)
+      return;
+    if (!this.configuration_applied_)
+      window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
+  },
+
+  /**
+   * Called when dialog is shown for the first time.
+   * @private
+   */
+  applyOobeConfiguration_: function() {
     // TODO(antrim): apply a11y options, language selection
+    if (this.configuration_applied_)
+      return;
+    var configuration = Oobe.getInstance().getOobeConfiguration();
+    if (!configuration)
+      return;
+
     if (configuration.welcomeNext)
       this.onWelcomeNextButtonClicked_();
+
+    if (configuration.enableDemoMode)
+      Oobe.getInstance().startDemoModeFlow();
+
+    this.configuration_applied_ = true;
   },
 
   /**

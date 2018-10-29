@@ -181,9 +181,7 @@ IntRect FrameCaret::AbsoluteCaretBounds() const {
   if (!IsActive())
     return AbsoluteBoundsForLocalRect(caret_node, LayoutRect());
   return AbsoluteBoundsForLocalRect(
-      caret_node,
-      CaretDisplayItemClient::ComputeCaretRect(
-          CreateVisiblePosition(CaretPosition()).ToPositionWithAffinity()));
+      caret_node, CaretDisplayItemClient::ComputeCaretRect(CaretPosition()));
 }
 
 void FrameCaret::SetShouldShowBlockCursor(bool should_show_block_cursor) {

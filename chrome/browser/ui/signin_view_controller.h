@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/profile_chooser_constants.h"
+#include "url/gurl.h"
 
 class Browser;
 class SigninViewControllerDelegate;
@@ -42,7 +43,8 @@ class SigninViewController {
   // page.
   void ShowSignin(profiles::BubbleViewMode mode,
                   Browser* browser,
-                  signin_metrics::AccessPoint access_point);
+                  signin_metrics::AccessPoint access_point,
+                  const GURL& redirect_url = GURL::EmptyGURL());
 
 #if !defined(OS_CHROMEOS)
   // Shows the DICE-specific sign-in flow: opens a Gaia sign-in webpage in a new
@@ -51,7 +53,8 @@ class SigninViewController {
                          Browser* browser,
                          signin_metrics::AccessPoint access_point,
                          signin_metrics::PromoAction promo_action,
-                         const std::string& email);
+                         const std::string& email,
+                         const GURL& redirect_url = GURL::EmptyGURL());
 #endif  // !defined(OS_CHROMEOS)
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top

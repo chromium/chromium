@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_util.h"
+#include "content/public/common/process_type.h"
 #include "net/http/http_response_headers.h"
 #include "ui/base/page_transition_types.h"
 
@@ -83,8 +84,19 @@ const char kHistogramFirstContentfulPaint[] =
     "PageLoad.PaintTiming.NavigationToFirstContentfulPaint";
 const char kBackgroundHistogramFirstContentfulPaint[] =
     "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Background";
+const char kHistogramFirstContentfulPaintInitiatingProcess[] =
+    "PageLoad.Internal.PaintTiming.NavigationToFirstContentfulPaint."
+    "InitiatingProcess";
 const char kHistogramFirstMeaningfulPaint[] =
     "PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint";
+const char kHistogramLargestImagePaint[] =
+    "PageLoad.Experimental.PaintTiming.NavigationToLargestImagePaint";
+const char kHistogramLastImagePaint[] =
+    "PageLoad.Experimental.PaintTiming.NavigationToLastImagePaint";
+const char kHistogramLargestTextPaint[] =
+    "PageLoad.Experimental.PaintTiming.NavigationToLargestTextPaint";
+const char kHistogramLastTextPaint[] =
+    "PageLoad.Experimental.PaintTiming.NavigationToLastTextPaint";
 const char kHistogramTimeToInteractive[] =
     "PageLoad.Experimental.NavigationToInteractive";
 const char kHistogramInteractiveToInteractiveDetection[] =
@@ -391,6 +403,12 @@ void CorePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     PAGE_LOAD_HISTOGRAM(internal::kHistogramParseStartToFirstContentfulPaint,
                         timing.paint_timing->first_contentful_paint.value() -
                             timing.parse_timing->parse_start.value());
+    UMA_HISTOGRAM_ENUMERATION(
+        internal::kHistogramFirstContentfulPaintInitiatingProcess,
+        info.user_initiated_info.browser_initiated
+            ? content::PROCESS_TYPE_BROWSER
+            : content::PROCESS_TYPE_RENDERER,
+        content::PROCESS_TYPE_CONTENT_END);
 
     if (was_no_store_main_resource_) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstContentfulPaintNoStore,
@@ -505,6 +523,56 @@ void CorePageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
     PAGE_LOAD_HISTOGRAM(internal::kHistogramForegroundToFirstMeaningfulPaint,
                         timing.paint_timing->first_meaningful_paint.value() -
                             info.first_foreground_time.value());
+  }
+}
+
+void CorePageLoadMetricsObserver::OnLargestImagePaintInMainFrameDocument(
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const page_load_metrics::PageLoadExtraInfo& info) {
+  base::Optional<base::TimeDelta>& largest_image_paint =
+      timing.paint_timing->largest_image_paint;
+  if (largest_image_paint.has_value() &&
+      WasStartedInForegroundOptionalEventInForeground(largest_image_paint,
+                                                      info)) {
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestImagePaint,
+                        largest_image_paint.value());
+  }
+}
+
+void CorePageLoadMetricsObserver::OnLastImagePaintInMainFrameDocument(
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const page_load_metrics::PageLoadExtraInfo& info) {
+  base::Optional<base::TimeDelta>& last_image_paint =
+      timing.paint_timing->last_image_paint;
+  if (last_image_paint.has_value() &&
+      WasStartedInForegroundOptionalEventInForeground(last_image_paint, info)) {
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramLastImagePaint,
+                        last_image_paint.value());
+  }
+}
+
+void CorePageLoadMetricsObserver::OnLargestTextPaintInMainFrameDocument(
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const page_load_metrics::PageLoadExtraInfo& info) {
+  base::Optional<base::TimeDelta>& largest_text_paint =
+      timing.paint_timing->largest_text_paint;
+  if (largest_text_paint.has_value() &&
+      WasStartedInForegroundOptionalEventInForeground(largest_text_paint,
+                                                      info)) {
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestTextPaint,
+                        largest_text_paint.value());
+  }
+}
+
+void CorePageLoadMetricsObserver::OnLastTextPaintInMainFrameDocument(
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const page_load_metrics::PageLoadExtraInfo& info) {
+  base::Optional<base::TimeDelta>& last_text_paint =
+      timing.paint_timing->last_text_paint;
+  if (last_text_paint.has_value() &&
+      WasStartedInForegroundOptionalEventInForeground(last_text_paint, info)) {
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramLastTextPaint,
+                        last_text_paint.value());
   }
 }
 

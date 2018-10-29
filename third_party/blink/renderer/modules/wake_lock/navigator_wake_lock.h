@@ -33,6 +33,7 @@ class NavigatorWakeLock final : public GarbageCollected<NavigatorWakeLock>,
   explicit NavigatorWakeLock(Navigator&);
 
   Member<WakeLock> wake_lock_screen_;
+  Member<WakeLock> wake_lock_system_;
 };
 
 }  // namespace blink

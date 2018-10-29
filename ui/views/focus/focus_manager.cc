@@ -68,8 +68,11 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
       return false;
     }
 
-    if (arrow_key_traversal_enabled_ && ProcessArrowKeyTraversal(event))
+    if ((arrow_key_traversal_enabled_ ||
+         arrow_key_traversal_enabled_for_widget_) &&
+        ProcessArrowKeyTraversal(event)) {
       return false;
+    }
 
     // Intercept arrow key messages to switch between grouped views.
     bool is_left = key_code == ui::VKEY_LEFT || key_code == ui::VKEY_UP;

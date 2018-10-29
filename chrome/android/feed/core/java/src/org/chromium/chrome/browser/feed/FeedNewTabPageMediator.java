@@ -15,9 +15,10 @@ import com.google.android.libraries.feed.api.stream.ScrollListener;
 import com.google.android.libraries.feed.api.stream.Stream;
 
 import org.chromium.base.MemoryPressureListener;
+import org.chromium.base.VisibleForTesting;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ntp.ContextMenuManager;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
@@ -84,8 +85,7 @@ class FeedNewTabPageMediator
 
     /** Update the content based on supervised user or enterprise policy. */
     private void updateContent() {
-        mFeedEnabled =
-                PrefServiceBridge.getInstance().getBoolean(Pref.NTP_ARTICLES_SECTION_ENABLED);
+        mFeedEnabled = FeedProcessScopeFactory.isFeedProcessEnabled();
         if ((mFeedEnabled && mCoordinator.getStream() != null)
                 || (!mFeedEnabled && mCoordinator.getScrollViewForPolicy() != null))
             return;
@@ -119,7 +119,10 @@ class FeedNewTabPageMediator
         };
         stream.addScrollListener(mStreamScrollListener);
 
-        mStreamContentChangedListener = () -> mStreamContentChanged = true;
+        mStreamContentChangedListener = () -> {
+            mStreamContentChanged = true;
+            mSnapScrollHelper.resetSearchBoxOnScroll(true);
+        };
         stream.addOnContentChangedListener(mStreamContentChangedListener);
 
         boolean suggestionsVisible =
@@ -175,6 +178,7 @@ class FeedNewTabPageMediator
         if (mSignInPromo != null) {
             mSignInPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);
         }
+        mStreamContentChanged = true;
     }
 
     /**
@@ -260,9 +264,10 @@ class FeedNewTabPageMediator
 
     @Override
     public boolean isChildVisibleAtPosition(int position) {
+        if (!isScrollViewInitialized()) return false;
+
         if (mFeedEnabled) {
-            return isScrollViewInitialized()
-                    && mCoordinator.getStream().isChildAtPositionVisible(position);
+            return mCoordinator.getStream().isChildAtPositionVisible(position);
         } else {
             ScrollView scrollView = mCoordinator.getScrollViewForPolicy();
             Rect rect = new Rect();
@@ -315,5 +320,16 @@ class FeedNewTabPageMediator
             SigninPromoUtil.setupPromoViewFromCache(mSigninPromoController, mProfileDataCache,
                     mCoordinator.getSigninPromoView(), null);
         }
+    }
+
+    // TODO(huayinz): Return the Model for testing in Coordinator instead once a Model is created.
+    @VisibleForTesting
+    SectionHeader getSectionHeaderForTesting() {
+        return mSectionHeader;
+    }
+
+    @VisibleForTesting
+    SignInPromo getSignInPromoForTesting() {
+        return mSignInPromo;
     }
 }

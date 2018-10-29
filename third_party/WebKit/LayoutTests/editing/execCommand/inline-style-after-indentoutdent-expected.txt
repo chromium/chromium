@@ -2,7 +2,6 @@ This tests createMarkup via insertOrderedList. It makes sure that we don't delet
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS testCreateMarkup('<b>hello</b>') is '<b>hello</b>'
 PASS testCreateMarkup('<strong>hello</strong>') is '<strong>hello</strong>'
 PASS testCreateMarkup('<i>hello</i>') is '<i>hello</i>'

@@ -24,16 +24,16 @@ class VREyeParameters final : public ScriptWrappable {
 
   DOMFloat32Array* offset() const { return offset_; }
   VRFieldOfView* FieldOfView() const { return field_of_view_; }
-  unsigned long renderWidth() const { return render_width_; }
-  unsigned long renderHeight() const { return render_height_; }
+  uint32_t renderWidth() const { return render_width_; }
+  uint32_t renderHeight() const { return render_height_; }
 
   void Trace(blink::Visitor*) override;
 
  private:
   Member<DOMFloat32Array> offset_;
   Member<VRFieldOfView> field_of_view_;
-  unsigned long render_width_;
-  unsigned long render_height_;
+  uint32_t render_width_;
+  uint32_t render_height_;
 };
 
 }  // namespace blink

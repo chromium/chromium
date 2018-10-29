@@ -1,9 +1,9 @@
 h1 test
 h2
+
 This tests that the aria-hidden attribute works correctly with accessibility. The H1 element (and its children) should not appear in the AX hierarchy. The H2 element should be the first child
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS h2.name is 'h2'
 PASS successfullyParsed is true

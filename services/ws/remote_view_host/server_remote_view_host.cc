@@ -14,7 +14,16 @@
 namespace ws {
 
 ServerRemoteViewHost::ServerRemoteViewHost(WindowService* window_service)
-    : window_service_(window_service) {}
+    : window_service_(window_service),
+      embedding_root_(
+          std::make_unique<aura::Window>(nullptr,
+                                         aura::client::WINDOW_TYPE_UNKNOWN,
+                                         window_service_->env())) {
+  embedding_root_->set_owned_by_parent(false);
+  embedding_root_->SetName("ServerRemoteViewHostWindow");
+  embedding_root_->SetType(aura::client::WINDOW_TYPE_CONTROL);
+  embedding_root_->Init(ui::LAYER_NOT_DRAWN);
+}
 
 ServerRemoteViewHost::~ServerRemoteViewHost() = default;
 
@@ -26,13 +35,6 @@ void ServerRemoteViewHost::EmbedUsingToken(
   embed_flags_ = embed_flags;
   embed_callback_ = std::move(callback);
 
-  embedding_root_ = std::make_unique<aura::Window>(
-      nullptr, aura::client::WINDOW_TYPE_UNKNOWN, window_service_->env());
-  embedding_root_->set_owned_by_parent(false);
-  embedding_root_->SetName("ServerRemoteViewHostWindow");
-  embedding_root_->SetType(aura::client::WINDOW_TYPE_CONTROL);
-  embedding_root_->Init(ui::LAYER_NOT_DRAWN);
-
   // TODO(sky): having to wait for being parented is a bit of a hassle. Fix
   // this.
   if (GetWidget())
@@ -40,28 +42,17 @@ void ServerRemoteViewHost::EmbedUsingToken(
 }
 
 void ServerRemoteViewHost::EmbedImpl() {
-  // Should not be attached to anything.
-  DCHECK(!native_view());
-
-  // There is a pending embed request.
-  DCHECK(!embed_token_.is_empty());
-
-  // TODO(sky): fix this, only necessary because of restrictions in WindowTree.
-  // Must happen before EmbedUsingToken call for window server to figure out
-  // the relevant display.
-  Attach(embedding_root_.get());
-
+  DCHECK(IsEmbedPending());
   const bool result = window_service_->CompleteScheduleEmbedForExistingClient(
       embedding_root_.get(), embed_token_, embed_flags_);
-
-  if (!result)
-    embedding_root_.reset();
-
   std::move(embed_callback_).Run(result);
 }
 
 void ServerRemoteViewHost::AddedToWidget() {
-  if (!native_view())
+  if (native_view())
+    return;
+  Attach(embedding_root_.get());
+  if (IsEmbedPending())
     EmbedImpl();
 }
 

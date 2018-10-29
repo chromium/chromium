@@ -36,6 +36,24 @@ void ParamTraits<content::PageState>::Log(
   l->append(")");
 }
 
+void ParamTraits<ui::AXTreeID>::Write(base::Pickle* m, const param_type& p) {
+  WriteParam(m, p.ToString());
+}
+
+bool ParamTraits<ui::AXTreeID>::Read(const base::Pickle* m,
+                                     base::PickleIterator* iter,
+                                     param_type* r) {
+  std::string value;
+  if (!ReadParam(m, iter, &value))
+    return false;
+  *r = ui::AXTreeID::FromString(value);
+  return true;
+}
+
+void ParamTraits<ui::AXTreeID>::Log(const param_type& p, std::string* l) {
+  l->append("<ui::AXTreeID>");
+}
+
 }  // namespace IPC
 
 // Generate param traits write methods.

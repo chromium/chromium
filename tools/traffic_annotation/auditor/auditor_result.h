@@ -45,6 +45,9 @@ class AuditorResult {
                                    // list expresssion.
     ERROR_ANNOTATIONS_XML_UPDATE,  // Annotations XML requires update.
     ERROR_TEST_ANNOTATION,         // Annotation for tests is used.
+    ERROR_INVALID_OS,              // Invalid 'os_list' in annotations.xml
+    ERROR_DEPRECATED_WITH_OS,      // Marked deprecated, but 'os_list' is not
+                                   // empty in annotations.xml.
   };
 
   static const int kNoCodeLineSpecified;

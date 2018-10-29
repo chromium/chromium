@@ -34,6 +34,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/post_task.h"
 #include "base/test/thread_test_helper.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -71,7 +72,9 @@
 #include "components/safe_browsing/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/db/v4_test_util.h"
+#include "components/safe_browsing/features.h"
 #include "components/security_interstitials/core/controller_client.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/navigation_entry.h"
@@ -131,6 +134,7 @@ const char kMalwareJsRequestPage[] = "/safe_browsing/malware_js_request.html";
 const char kMalwareWebSocketPath[] = "/safe_browsing/malware-ws";
 const char kNeverCompletesPath[] = "/never_completes";
 const char kPrefetchMalwarePage[] = "/safe_browsing/prefetch_malware.html";
+const char kBillingInterstitialPage[] = "/safe_browsing/billing.html";
 
 // TODO(ricea): Use net::test_server::HungResponse instead.
 class NeverCompletingHttpResponse : public net::test_server::HttpResponse {
@@ -348,23 +352,23 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   std::string GetThreatHash() const { return threat_hash_; }
 
   void CheckDownloadUrl(const std::vector<GURL>& url_chain) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&TestSBClient::CheckDownloadUrlOnIOThread, this,
                        url_chain));
     content::RunMessageLoop();  // Will stop in OnCheckDownloadUrlResult.
   }
 
   void CheckBrowseUrl(const GURL& url) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&TestSBClient::CheckBrowseUrlOnIOThread, this, url));
     content::RunMessageLoop();  // Will stop in OnCheckBrowseUrlResult.
   }
 
   void CheckResourceUrl(const GURL& url) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&TestSBClient::CheckResourceUrlOnIOThread, this, url));
     content::RunMessageLoop();  // Will stop in OnCheckResourceUrlResult.
   }
@@ -379,25 +383,30 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
                                                                      this);
     if (synchronous_safe_signal) {
       threat_type_ = SB_THREAT_TYPE_SAFE;
-      BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                              base::BindOnce(&TestSBClient::CheckDone, this));
+      base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                               base::BindOnce(&TestSBClient::CheckDone, this));
     }
   }
 
   void CheckBrowseUrlOnIOThread(const GURL& url) {
+    SBThreatTypeSet threat_types = CreateSBThreatTypeSet(
+        {SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_URL_MALWARE,
+         SB_THREAT_TYPE_URL_UNWANTED});
+    if (base::FeatureList::IsEnabled(kBillingInterstitial)) {
+      SBThreatTypeSet billing =
+          CreateSBThreatTypeSet({safe_browsing::SB_THREAT_TYPE_BILLING});
+      threat_types.insert(billing.begin(), billing.end());
+    }
+
     // The async CheckDone() hook will not be called when we have a synchronous
     // safe signal, handle it right away.
     bool synchronous_safe_signal =
         safe_browsing_service_->database_manager()->CheckBrowseUrl(
-            url,
-            CreateSBThreatTypeSet({SB_THREAT_TYPE_URL_PHISHING,
-                                   SB_THREAT_TYPE_URL_MALWARE,
-                                   SB_THREAT_TYPE_URL_UNWANTED}),
-            this);
+            url, threat_types, this);
     if (synchronous_safe_signal) {
       threat_type_ = SB_THREAT_TYPE_SAFE;
-      BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                              base::BindOnce(&TestSBClient::CheckDone, this));
+      base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                               base::BindOnce(&TestSBClient::CheckDone, this));
     }
   }
 
@@ -406,8 +415,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
         safe_browsing_service_->database_manager()->CheckResourceUrl(url, this);
     if (synchronous_safe_signal) {
       threat_type_ = SB_THREAT_TYPE_SAFE;
-      BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                              base::BindOnce(&TestSBClient::CheckDone, this));
+      base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                               base::BindOnce(&TestSBClient::CheckDone, this));
     }
   }
 
@@ -415,8 +424,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   void OnCheckDownloadUrlResult(const std::vector<GURL>& /* url_chain */,
                                 SBThreatType threat_type) override {
     threat_type_ = threat_type;
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(&TestSBClient::CheckDone, this));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(&TestSBClient::CheckDone, this));
   }
 
   // Called when the result of checking a browse URL is known.
@@ -424,8 +433,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
                               SBThreatType threat_type,
                               const ThreatMetadata& /* metadata */) override {
     threat_type_ = threat_type;
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(&TestSBClient::CheckDone, this));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(&TestSBClient::CheckDone, this));
   }
 
   // Called when the result of checking a resource URL is known.
@@ -434,8 +443,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
                                 const std::string& threat_hash) override {
     threat_type_ = threat_type;
     threat_hash_ = threat_hash;
-    BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                            base::BindOnce(&TestSBClient::CheckDone, this));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(&TestSBClient::CheckDone, this));
   }
 
   void CheckDone() { base::RunLoop::QuitCurrentWhenIdleDeprecated(); }
@@ -528,6 +537,13 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   // prefixes for the given URL in the client incident store.
   void MarkUrlForResourceUnexpired(const GURL& bad_url) {
     MarkUrlForListIdUnexpired(bad_url, GetChromeUrlClientIncidentId(),
+                              ThreatPatternType::NONE);
+  }
+
+  // Sets up the prefix database and the full hash cache to match one of the
+  // prefixes for the given URL in the Billing store.
+  void MarkUrlForBillingUnexpired(const GURL& bad_url) {
+    MarkUrlForListIdUnexpired(bad_url, GetUrlBillingId(),
                               ThreatPatternType::NONE);
   }
 
@@ -989,6 +1005,32 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckBrowseUrl) {
 
     client->CheckBrowseUrl(bad_url);
     EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE, client->GetThreatType());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckBrowseUrlForBilling) {
+  const GURL bad_url = embedded_test_server()->GetURL(kBillingInterstitialPage);
+  {
+    scoped_refptr<TestSBClient> client(new TestSBClient);
+
+    // Since the feature isn't enabled and the URL isn't in the database, it is
+    // considered to be safe.
+    client->CheckBrowseUrl(bad_url);
+    EXPECT_EQ(SB_THREAT_TYPE_SAFE, client->GetThreatType());
+
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kBillingInterstitial);
+
+    // Since bad_url is not in database, it is considered to be
+    // safe.
+    client->CheckBrowseUrl(bad_url);
+    EXPECT_EQ(SB_THREAT_TYPE_SAFE, client->GetThreatType());
+
+    MarkUrlForBillingUnexpired(bad_url);
+
+    // Now, the bad_url is not safe since it is added to the database.
+    client->CheckBrowseUrl(bad_url);
+    EXPECT_EQ(SB_THREAT_TYPE_BILLING, client->GetThreatType());
   }
 }
 

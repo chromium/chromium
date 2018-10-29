@@ -29,10 +29,17 @@ class COMPONENT_EXPORT(WINDOW_SERVICE) ClientChangeTracker {
   ClientChangeTracker();
   ~ClientChangeTracker();
 
-  bool IsProcessingChangeForWindow(aura::Window* window, ClientChangeType type);
+  bool IsProcessingChangeForWindow(aura::Window* window,
+                                   ClientChangeType type) const;
+  bool IsProcessingPropertyChangeForWindow(aura::Window* window,
+                                           const void* property_key) const;
 
  private:
   friend class ClientChange;
+
+  bool DoesCurrentChangeEqual(aura::Window* window,
+                              ClientChangeType type,
+                              const void* property_key) const;
 
   // Owned by the caller that created the ClientChange. This is set in
   // ClientChange's constructor and reset in the destructor.

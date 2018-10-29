@@ -126,8 +126,8 @@ class IsolatedAppTest : public ExtensionBrowserTest {
         ProcessMap::Get(browser_context)
             ->GetExtensionsInProcess(
                 contents->GetMainFrame()->GetProcess()->GetID());
-    for (std::set<std::string>::iterator iter = extension_ids.begin();
-         iter != extension_ids.end(); ++iter) {
+    for (auto iter = extension_ids.begin(); iter != extension_ids.end();
+         ++iter) {
       const Extension* installed_app =
           registry->enabled_extensions().GetByID(*iter);
       if (installed_app && installed_app->is_app())

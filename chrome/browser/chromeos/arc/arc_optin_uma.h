@@ -36,7 +36,10 @@ enum class OptInActionType : int {
   // ARC was opted out by user from session.
   SESSION_OPTED_OUT = 9,
 
-  kMaxValue = SESSION_OPTED_OUT,
+  // ARC was opted in due to configuration in OOBE flow.
+  OOBE_OPTED_IN_CONFIGURATION = 10,
+
+  kMaxValue = OOBE_OPTED_IN_CONFIGURATION,
 };
 
 enum class OptInCancelReason {
@@ -156,7 +159,10 @@ enum class ProvisioningResult : int {
   // Device was already provisioned.
   SUCCESS_ALREADY_PROVISIONED = 21,
 
-  kMaxValue = SUCCESS_ALREADY_PROVISIONED,
+  // Account type is not supported for authorization.
+  UNSUPPORTED_ACCOUNT_TYPE = 22,
+
+  kMaxValue = UNSUPPORTED_ACCOUNT_TYPE,
 };
 
 enum class OptInFlowResult : int {

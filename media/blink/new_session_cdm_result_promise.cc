@@ -68,6 +68,8 @@ NewSessionCdmResultPromise::~NewSessionCdmResultPromise() {
 }
 
 void NewSessionCdmResultPromise::resolve(const std::string& session_id) {
+  DVLOG(1) << __func__ << ": session_id = " << session_id;
+
   // |new_session_created_cb_| uses a WeakPtr<> and may not do anything
   // if the session object has been destroyed.
   SessionInitStatus status = SessionInitStatus::UNKNOWN_STATUS;
@@ -93,6 +95,9 @@ void NewSessionCdmResultPromise::resolve(const std::string& session_id) {
 void NewSessionCdmResultPromise::reject(CdmPromise::Exception exception_code,
                                         uint32_t system_code,
                                         const std::string& error_message) {
+  DVLOG(1) << __func__ << ": system_code = " << system_code
+           << ", error_message = " << error_message;
+
   MarkPromiseSettled();
   ReportCdmResultUMA(uma_name_,
                      ConvertCdmExceptionToResultForUMA(exception_code));

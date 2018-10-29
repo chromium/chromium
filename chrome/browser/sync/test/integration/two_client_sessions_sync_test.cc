@@ -7,9 +7,9 @@
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/sessions/session_service.h"
+#include "chrome/browser/sync/test/integration/feature_toggler.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
@@ -32,25 +32,10 @@ using sessions_helper::SessionWindowMap;
 using sessions_helper::SyncedSessionVector;
 using sessions_helper::WindowsMatch;
 
-// Class that enables or disables USS based on test parameter. Must be the first
-// base class of the test fixture.
-class UssSwitchToggler : public testing::WithParamInterface<bool> {
+class TwoClientSessionsSyncTest : public FeatureToggler, public SyncTest {
  public:
-  UssSwitchToggler() {
-    if (GetParam()) {
-      override_features_.InitAndEnableFeature(switches::kSyncUSSSessions);
-    } else {
-      override_features_.InitAndDisableFeature(switches::kSyncUSSSessions);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList override_features_;
-};
-
-class TwoClientSessionsSyncTest : public UssSwitchToggler, public SyncTest {
- public:
-  TwoClientSessionsSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientSessionsSyncTest()
+      : FeatureToggler(switches::kSyncUSSSessions), SyncTest(TWO_CLIENT) {}
   ~TwoClientSessionsSyncTest() override {}
 
   void WaitForWindowsInForeignSession(int index, ScopedWindowMap windows) {

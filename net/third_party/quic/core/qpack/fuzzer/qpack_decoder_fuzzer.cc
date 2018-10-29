@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <limits>
 
-#include "net/third_party/quic/core/qpack/qpack_test_utils.h"
+#include "net/third_party/quic/core/qpack/qpack_decoder_test_utils.h"
 #include "net/third_party/quic/platform/api/quic_fuzzed_data_provider.h"
 #include "net/third_party/quic/platform/api/quic_string_piece.h"
 
@@ -41,7 +41,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   auto fragment_size_generator = std::bind(
       &QuicFuzzedDataProvider::ConsumeUint32InRange, &provider, 1, 64 * 1024);
 
-  QpackTestUtils::Decode(
+  QpackDecode(
       &handler, fragment_size_generator,
       provider.ConsumeRandomLengthString(std::numeric_limits<size_t>::max()));
 

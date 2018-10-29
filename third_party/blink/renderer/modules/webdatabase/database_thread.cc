@@ -60,7 +60,7 @@ void DatabaseThread::Start() {
   if (thread_)
     return;
   thread_ = WebThreadSupportingGC::Create(
-      WebThreadCreationParams(WebThreadType::kDatabaseThread));
+      ThreadCreationParams(WebThreadType::kDatabaseThread));
   thread_->PostTask(FROM_HERE,
                     CrossThreadBind(&DatabaseThread::SetupDatabaseThread,
                                     WrapCrossThreadPersistent(this)));
@@ -86,7 +86,7 @@ void DatabaseThread::Terminate() {
                                       WrapCrossThreadPersistent(this)));
   }
   sync.Wait();
-  // The WebThread destructor blocks until all the tasks of the database
+  // The Thread destructor blocks until all the tasks of the database
   // thread are processed. However, it shouldn't block at all because
   // the database thread has already finished processing the cleanup task.
   thread_.reset();
@@ -171,7 +171,7 @@ void DatabaseThread::ScheduleTask(std::unique_ptr<DatabaseTask> task) {
     DCHECK(!termination_requested_);
   }
 #endif
-  // WebThread takes ownership of the task.
+  // Thread takes ownership of the task.
   thread_->PostTask(FROM_HERE,
                     CrossThreadBind(&DatabaseTask::Run, std::move(task)));
 }

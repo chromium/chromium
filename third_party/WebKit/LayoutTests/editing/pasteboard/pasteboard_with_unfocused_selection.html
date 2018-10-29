@@ -4,7 +4,7 @@
 <script src="../assert_selection.js"></script>
 <script>
 test(() => {
-  assert_exists(window, 'testRunner', 'This test requires testRunner');
+  assert_own_property(window, 'testRunner', 'This test requires testRunner');
 
   assert_selection(
   [
@@ -28,7 +28,7 @@ test(() => {
 }, 'Cutting with unfocused selection in contenteditable div');
 
 test(() => {
-  assert_exists(window, 'testRunner', 'This test requires testRunner');
+  assert_own_property(window, 'testRunner', 'This test requires testRunner');
 
   assert_selection(
   [
@@ -58,7 +58,7 @@ test(() => {
 }, 'Copying with unfocused selection in contenteditable div');
 
 test(() => {
-  assert_exists(window, 'testRunner', 'This test requires testRunner');
+  assert_own_property(window, 'testRunner', 'This test requires testRunner');
 
   assert_selection(
   [
@@ -84,7 +84,7 @@ test(() => {
 }, 'Pasting with unfocused selection in contenteditable div');
 
 test(() => {
-  assert_exists(window, 'testRunner', 'This test requires testRunner');
+  assert_own_property(window, 'testRunner', 'This test requires testRunner');
 
   assert_selection(
   [
@@ -110,8 +110,8 @@ test(() => {
 }, 'Pasting as plain text with unfocused selection in contenteditable div');
 
 test(() => {
-  assert_exists(window, 'testRunner', 'This test requires testRunner');
-  assert_exists(window, 'internals', 'This test requires internal settings');
+  assert_own_property(window, 'testRunner', 'This test requires testRunner');
+  assert_own_property(window, 'internals', 'This test requires internal settings');
   internals.settings.setEditingBehavior('unix');
 
   assert_selection(

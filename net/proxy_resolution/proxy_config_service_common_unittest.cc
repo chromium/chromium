@@ -60,9 +60,8 @@ void MatchesProxyServerHelper(const char* failure_message,
 
 std::string FlattenProxyBypass(const ProxyBypassRules& bypass_rules) {
   std::string flattened_proxy_bypass;
-  for (ProxyBypassRules::RuleList::const_iterator it =
-       bypass_rules.rules().begin();
-       it != bypass_rules.rules().end(); ++it) {
+  for (auto it = bypass_rules.rules().begin(); it != bypass_rules.rules().end();
+       ++it) {
     if (!flattened_proxy_bypass.empty())
       flattened_proxy_bypass += ",";
     flattened_proxy_bypass += (*it)->ToString();

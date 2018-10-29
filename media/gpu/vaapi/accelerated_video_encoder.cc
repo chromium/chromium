@@ -4,19 +4,11 @@
 
 #include "media/gpu/vaapi/accelerated_video_encoder.h"
 
-#include <algorithm>
-
 #include "media/base/video_frame.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
-
-namespace {
-// The maximum size for bitstream buffer, which is chosen empirically for the
-// video smaller than 1080p.
-// TODO(akahuang): Refactor it when we support 4K encoding.
-constexpr size_t kMaxBitstreamBufferSizeInBytes = 2 * 1024 * 1024;  // 2MB
-}  // namespace
 
 AcceleratedVideoEncoder::EncodeJob::EncodeJob(
     scoped_refptr<VideoFrame> input_frame,
@@ -64,11 +56,7 @@ void AcceleratedVideoEncoder::EncodeJob::Execute() {
 }
 
 size_t AcceleratedVideoEncoder::GetBitstreamBufferSize() const {
-  // The buffer size of uncompressed stream is a feasible estimation of the
-  // output buffer size. However, the estimation is loose in high resolution.
-  // Therefore we set an empirical upper bound.
-  size_t uncompressed_buffer_size = GetCodedSize().GetArea() * 3 / 2;
-  return std::min(uncompressed_buffer_size, kMaxBitstreamBufferSizeInBytes);
+  return GetEncodeBitstreamBufferSize();
 }
 
 }  // namespace media

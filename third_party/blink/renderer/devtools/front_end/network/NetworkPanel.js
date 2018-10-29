@@ -662,6 +662,8 @@ Network.NetworkPanel.FilmStripRecorder = class {
       this._tracingModel.dispose();
     this._tracingModel = new SDK.TracingModel(new Bindings.TempFileBackingStorage());
     this._tracingManager.start(this, '-*,disabled-by-default-devtools.screenshot', '');
+
+    Host.userMetrics.actionTaken(Host.UserMetrics.Action.FilmStripStartedRecording);
   }
 
   /**

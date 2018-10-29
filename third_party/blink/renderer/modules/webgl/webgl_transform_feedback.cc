@@ -45,10 +45,9 @@ WebGLTransformFeedback::~WebGLTransformFeedback() {
 }
 
 void WebGLTransformFeedback::DispatchDetached(gpu::gles2::GLES2Interface* gl) {
-  for (size_t i = 0; i < bound_indexed_transform_feedback_buffers_.size();
-       ++i) {
-    if (bound_indexed_transform_feedback_buffers_[i])
-      bound_indexed_transform_feedback_buffers_[i]->OnDetached(gl);
+  for (WebGLBuffer* buffer : bound_indexed_transform_feedback_buffers_) {
+    if (buffer)
+      buffer->OnDetached(gl);
   }
 }
 
@@ -123,16 +122,16 @@ bool WebGLTransformFeedback::HasEnoughBuffers(GLuint num_required) const {
 }
 
 bool WebGLTransformFeedback::UsesBuffer(WebGLBuffer* buffer) {
-  for (size_t i = 0; i < bound_indexed_transform_feedback_buffers_.size();
-       ++i) {
-    if (bound_indexed_transform_feedback_buffers_[i] == buffer)
+  for (WebGLBuffer* feedback_buffer :
+       bound_indexed_transform_feedback_buffers_) {
+    if (feedback_buffer == buffer)
       return true;
   }
   return false;
 }
 
 void WebGLTransformFeedback::UnbindBuffer(WebGLBuffer* buffer) {
-  for (size_t i = 0; i < bound_indexed_transform_feedback_buffers_.size();
+  for (wtf_size_t i = 0; i < bound_indexed_transform_feedback_buffers_.size();
        ++i) {
     if (bound_indexed_transform_feedback_buffers_[i] == buffer) {
       bound_indexed_transform_feedback_buffers_[i]->OnDetached(

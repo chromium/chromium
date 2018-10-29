@@ -31,7 +31,7 @@ namespace policy {
 //   (b) new constants should only be appended at the end of the enumeration.
 //
 // Keep this in sync with EnterprisePolicyLoadStatus in histograms.xml.
-enum PolicyLoadStatus {
+enum PolicyLoadStatusForUma {
   // Policy blob was successfully loaded and parsed.
   LOAD_RESULT_SUCCESS,
 
@@ -51,7 +51,7 @@ enum PolicyLoadStatus {
 // Struct containing the result of a policy load - if |status| ==
 // LOAD_RESULT_SUCCESS, |policy| is initialized from the policy file on disk.
 struct PolicyLoadResult {
-  PolicyLoadStatus status;
+  PolicyLoadStatusForUma status;
   em::PolicyFetchResponse policy;
   em::PolicySigningKey key;
 };

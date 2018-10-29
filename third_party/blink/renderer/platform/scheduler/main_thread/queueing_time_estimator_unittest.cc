@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/queueing_time_estimator.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -13,10 +17,6 @@
 #include "third_party/blink/renderer/platform/scheduler/test/fake_frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/test_queueing_time_estimator_client.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
-
-#include <map>
-#include <string>
-#include <vector>
 
 namespace blink {
 namespace scheduler {
@@ -195,8 +195,8 @@ TEST_F(QueueingTimeEstimatorTest, IgnoreExtremelyLongTasks) {
                 fine_grained);
 }
 
-// If we idle for too long, ignore idling time, even if the renderer is on the
-// foreground. Perhaps the user's machine went to sleep while we were idling.
+// If we idle for too long, ignore idling time, even if the estimator is
+// enabled. Perhaps the user's machine went to sleep while we were idling.
 TEST_F(QueueingTimeEstimatorTest, IgnoreExtremelyLongIdlePeriods) {
   QueueingTimeEstimatorForTest estimator(
       &client, base::TimeDelta::FromSeconds(5), 1, time);
@@ -405,9 +405,9 @@ TEST_F(QueueingTimeEstimatorTest,
 }
 
 // There are multiple windows, but some of the EQTs are not reported due to
-// backgrounded renderer. EQT(win1) = 0. EQT(win3) = (1500+500)/2 = 1000.
+// enabling/disabling. EQT(win1) = 0. EQT(win3) = (1500+500)/2 = 1000.
 // EQT(win4) = 1/2*500/2 = 250. EQT(win7) = 1/5*200/2 = 20.
-TEST_F(QueueingTimeEstimatorTest, BackgroundedEQTsWithSingleStepPerWindow) {
+TEST_F(QueueingTimeEstimatorTest, DisabledEQTsWithSingleStepPerWindow) {
   QueueingTimeEstimatorForTest estimator(
       &client, base::TimeDelta::FromSeconds(1), 1, time);
   time += base::TimeDelta::FromMilliseconds(1000);
@@ -416,12 +416,12 @@ TEST_F(QueueingTimeEstimatorTest, BackgroundedEQTsWithSingleStepPerWindow) {
   time += base::TimeDelta::FromMilliseconds(1001);
 
   // Second window should not be reported.
-  estimator.OnRendererStateChanged(true, time);
+  estimator.OnRecordingStateChanged(true, time);
   estimator.OnExecutionStarted(time, nullptr);
   time += base::TimeDelta::FromMilliseconds(456);
   estimator.OnExecutionStopped(time);
   time += base::TimeDelta::FromMilliseconds(200);
-  estimator.OnRendererStateChanged(false, time);
+  estimator.OnRecordingStateChanged(false, time);
   time += base::TimeDelta::FromMilliseconds(343);
 
   // Third, fourth windows should be reported
@@ -434,9 +434,9 @@ TEST_F(QueueingTimeEstimatorTest, BackgroundedEQTsWithSingleStepPerWindow) {
   estimator.OnExecutionStarted(time, nullptr);
   time += base::TimeDelta::FromMilliseconds(800);
   estimator.OnExecutionStopped(time);
-  estimator.OnRendererStateChanged(true, time);
+  estimator.OnRecordingStateChanged(true, time);
   time += base::TimeDelta::FromMilliseconds(200);
-  estimator.OnRendererStateChanged(false, time);
+  estimator.OnRecordingStateChanged(false, time);
   estimator.OnExecutionStarted(time, nullptr);
   time += base::TimeDelta::FromMilliseconds(999);
 
@@ -461,9 +461,9 @@ TEST_F(QueueingTimeEstimatorTest, BackgroundedEQTsWithSingleStepPerWindow) {
                 fine_grained);
 }
 
-// We only ignore steps that contain some part that is backgrounded. Thus a
-// window could be made up of non-contiguous steps. The following are EQTs, with
-// time deltas with respect to the end of the first, 0-time task:
+// We only ignore steps that contain some time span that is disabled. Thus a
+// window could be made up of non-contiguous steps. The following are EQTs,
+// with time deltas with respect to the end of the first, 0-time task:
 // Win1: [0-1000]. EQT of step [0-1000]: 500/2*1/2 = 125. EQT(win1) = 125/5 =
 // 25.
 // Win2: [0-1000],[2000-3000]. EQT of [2000-3000]: (1000+200)/2*4/5 = 480.
@@ -480,7 +480,7 @@ TEST_F(QueueingTimeEstimatorTest, BackgroundedEQTsWithSingleStepPerWindow) {
 // EQT(win7) = (0+145+900+80+1680)/5 = 561.
 // Win8: [12000-17000]. EQT of [16000-17000]: (1700+700)/2 = 1200. EQT(win8) =
 // (145+900+80+1680+1200)/5 = 801.
-TEST_F(QueueingTimeEstimatorTest, BackgroundedEQTsWithMutipleStepsPerWindow) {
+TEST_F(QueueingTimeEstimatorTest, DisabledEQTsWithMutipleStepsPerWindow) {
   QueueingTimeEstimatorForTest estimator(
       &client, base::TimeDelta::FromSeconds(5), 5, time);
   time += base::TimeDelta::FromMilliseconds(5000);
@@ -492,12 +492,12 @@ TEST_F(QueueingTimeEstimatorTest, BackgroundedEQTsWithMutipleStepsPerWindow) {
   time += base::TimeDelta::FromMilliseconds(500);
   estimator.OnExecutionStopped(time);
 
-  estimator.OnRendererStateChanged(true, time);
+  estimator.OnRecordingStateChanged(true, time);
   // This task should be ignored.
   estimator.OnExecutionStarted(time, nullptr);
   time += base::TimeDelta::FromMilliseconds(800);
   estimator.OnExecutionStopped(time);
-  estimator.OnRendererStateChanged(false, time);
+  estimator.OnRecordingStateChanged(false, time);
 
   time += base::TimeDelta::FromMilliseconds(400);
   estimator.OnExecutionStarted(time, nullptr);
@@ -505,7 +505,7 @@ TEST_F(QueueingTimeEstimatorTest, BackgroundedEQTsWithMutipleStepsPerWindow) {
   estimator.OnExecutionStopped(time);
 
   time += base::TimeDelta::FromMilliseconds(300);
-  estimator.OnRendererStateChanged(true, time);
+  estimator.OnRecordingStateChanged(true, time);
   time += base::TimeDelta::FromMilliseconds(2000);
   // These tasks should be ignored.
   estimator.OnExecutionStarted(time, nullptr);
@@ -514,7 +514,7 @@ TEST_F(QueueingTimeEstimatorTest, BackgroundedEQTsWithMutipleStepsPerWindow) {
   estimator.OnExecutionStarted(time, nullptr);
   time += base::TimeDelta::FromMilliseconds(3400);
   estimator.OnExecutionStopped(time);
-  estimator.OnRendererStateChanged(false, time);
+  estimator.OnRecordingStateChanged(false, time);
 
   time += base::TimeDelta::FromMilliseconds(2000);
   estimator.OnExecutionStarted(time, nullptr);
@@ -527,7 +527,7 @@ TEST_F(QueueingTimeEstimatorTest, BackgroundedEQTsWithMutipleStepsPerWindow) {
   estimator.OnExecutionStopped(time);
 
   // Window with last step should not be reported.
-  estimator.OnRendererStateChanged(true, time);
+  estimator.OnRecordingStateChanged(true, time);
   time += base::TimeDelta::FromMilliseconds(1000);
   estimator.OnExecutionStarted(time, nullptr);
   estimator.OnExecutionStopped(time);

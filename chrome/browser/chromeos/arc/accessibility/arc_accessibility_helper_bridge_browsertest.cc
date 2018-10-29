@@ -70,6 +70,7 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
                        PreferenceChange) {
   ASSERT_EQ(mojom::AccessibilityFilterType::OFF,
             fake_accessibility_helper_instance_->filter_type());
+  EXPECT_FALSE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
 
   exo::test::ExoTestHelper exo_test_helper;
   exo::test::ExoTestWindow test_window_1 =
@@ -125,6 +126,25 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
                   ->GetNativeWindow()
                   ->GetProperty(
                       aura::client::kAccessibilityTouchExplorationPassThrough));
+
+  EXPECT_TRUE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
+}
+
+IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
+                       ExploreByTouchMode) {
+  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  EXPECT_TRUE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
+
+  // Check that explore by touch doesn't get disabled as long as ChromeVox
+  // remains enabled.
+  chromeos::AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
+  EXPECT_TRUE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
+
+  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+  EXPECT_FALSE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
+
+  chromeos::AccessibilityManager::Get()->SetSelectToSpeakEnabled(false);
+  EXPECT_FALSE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
 }
 
 }  // namespace arc

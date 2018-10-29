@@ -29,6 +29,8 @@ class CC_ANIMATION_EXPORT ScrollTimeline {
 
   ScrollTimeline(base::Optional<ElementId> scroller_id,
                  ScrollDirection orientation,
+                 base::Optional<double> start_scroll_offset,
+                 base::Optional<double> end_scroll_offset,
                  double time_range);
   virtual ~ScrollTimeline();
 
@@ -43,6 +45,9 @@ class CC_ANIMATION_EXPORT ScrollTimeline {
                              bool is_active_tree) const;
 
   void SetScrollerId(base::Optional<ElementId> scroller_id);
+  void UpdateStartAndEndScrollOffsets(
+      base::Optional<double> start_scroll_offset,
+      base::Optional<double> end_scroll_offset);
 
   void PushPropertiesTo(ScrollTimeline* impl_timeline);
 
@@ -58,6 +63,9 @@ class CC_ANIMATION_EXPORT ScrollTimeline {
   // The orientation of the ScrollTimeline indicates which axis of the scroller
   // it should base its current time on - either the horizontal or vertical.
   ScrollDirection orientation_;
+
+  base::Optional<double> start_scroll_offset_;
+  base::Optional<double> end_scroll_offset_;
 
   // A ScrollTimeline maps from the scroll offset in the scroller to a time
   // value based on a 'time range'. See the implementation of CurrentTime or the

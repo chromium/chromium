@@ -553,7 +553,6 @@ void DownloadFileImpl::StreamActive(SourceStream* source_stream,
 
 void DownloadFileImpl::OnStreamCompleted(SourceStream* source_stream) {
   DownloadInterruptReason reason = HandleStreamCompletionStatus(source_stream);
-
   SendUpdate();
 
   NotifyObserver(source_stream, reason, InputStream::COMPLETE, false);

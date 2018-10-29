@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "net/nqe/effective_connection_type.h"
-#include "net/nqe/network_quality_estimator_test_util.h"
+#include "services/network/test/test_network_quality_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -19,25 +19,32 @@ TEST(NetworkQualityObserverImplTest, TestObserverNotified) {
   content::TestBrowserThreadBundle thread_bundle(
       content::TestBrowserThreadBundle::Options::IO_MAINLOOP);
 
-  net::TestNetworkQualityEstimator estimator;
-  estimator.SetStartTimeNullHttpRtt(base::TimeDelta::FromMilliseconds(1));
+  network::TestNetworkQualityTracker test_network_quality_tracker;
 
-  NetworkQualityObserverImpl observer(&estimator);
-  // Give a chance for |observer| to register with the |estimator|.
+  NetworkQualityObserverImpl impl(&test_network_quality_tracker);
+
+  test_network_quality_tracker.ReportRTTsAndThroughputForTesting(
+      base::TimeDelta::FromMilliseconds(1), 100);
+
   base::RunLoop().RunUntilIdle();
 
   base::HistogramTester histogram_tester;
-  estimator.SetStartTimeNullHttpRtt(base::TimeDelta::FromMilliseconds(500));
+
+  test_network_quality_tracker.ReportRTTsAndThroughputForTesting(
+      base::TimeDelta::FromMilliseconds(500), 100);
+
   // RTT changed from 1 msec to 500 msec.
   histogram_tester.ExpectBucketCount(
       "NQE.ContentObserver.NetworkQualityMeaningfullyChanged", 1, 1);
 
-  estimator.SetStartTimeNullHttpRtt(base::TimeDelta::FromMilliseconds(625));
+  test_network_quality_tracker.ReportRTTsAndThroughputForTesting(
+      base::TimeDelta::FromMilliseconds(625), 100);
   // RTT changed from 500 msec to 625 msec.
   histogram_tester.ExpectBucketCount(
       "NQE.ContentObserver.NetworkQualityMeaningfullyChanged", 1, 2);
 
-  estimator.SetStartTimeNullHttpRtt(base::TimeDelta::FromMilliseconds(626));
+  test_network_quality_tracker.ReportRTTsAndThroughputForTesting(
+      base::TimeDelta::FromMilliseconds(626), 100);
   // RTT changed from 625 msec to 626 msec which is not a meaningful change.
   histogram_tester.ExpectBucketCount(
       "NQE.ContentObserver.NetworkQualityMeaningfullyChanged", 1, 2);

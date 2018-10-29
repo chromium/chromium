@@ -5,7 +5,8 @@
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller_views.h"
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "ui/views/cocoa/bridged_native_widget.h"
+#include "ui/views/cocoa/bridged_native_widget_host_impl.h"
+#include "ui/views_bridge_mac/bridged_native_widget_impl.h"
 
 @implementation FullscreenToolbarControllerViews
 
@@ -26,17 +27,28 @@
 }
 
 - (BOOL)isFullscreenTransitionInProgress {
-  views::BridgedNativeWidgetImpl* bridge_widget =
-      views::BridgedNativeWidgetImpl::GetFromNativeWindow([self window]);
-  return bridge_widget->in_fullscreen_transition();
+  views::BridgedNativeWidgetHostImpl* bridge_host =
+      views::BridgedNativeWidgetHostImpl::GetFromNativeWindow([self window]);
+  if (bridge_host) {
+    if (bridge_host->bridge_impl())
+      return bridge_host->bridge_impl()->in_fullscreen_transition();
+    else
+      DLOG(ERROR) << "Cannot query remote NSWindow fullscreen status.";
+  }
+  return bridge_host->bridge_impl()->in_fullscreen_transition();
 }
 
 - (NSWindow*)window {
-  NSWindow* ns_window = browserView_->GetNativeWindow();
+  NSWindow* ns_window = browserView_->GetNativeWindow().GetNativeNSWindow();
   if (!ns_view_) {
-    ns_view_.reset(
-        [views::BridgedNativeWidgetImpl::GetFromNativeWindow(ns_window)
-                ->ns_view() retain]);
+    views::BridgedNativeWidgetHostImpl* bridge_host =
+        views::BridgedNativeWidgetHostImpl::GetFromNativeWindow(ns_window);
+    if (bridge_host) {
+      if (bridge_host->bridge_impl())
+        ns_view_.reset([bridge_host->bridge_impl()->ns_view() retain]);
+      else
+        DLOG(ERROR) << "Cannot retain remote NSView.";
+    }
   }
   return ns_window;
 }

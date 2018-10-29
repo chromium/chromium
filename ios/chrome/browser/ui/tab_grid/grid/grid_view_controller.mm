@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_layout.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -425,6 +425,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)replaceItemID:(NSString*)itemID withItem:(GridItem*)item {
+  if ([self indexOfItemWithID:itemID] == NSNotFound)
+    return;
   // Consistency check: |item|'s ID is either |itemID| or not in |items|.
   DCHECK([item.identifier isEqualToString:itemID] ||
          [self indexOfItemWithID:item.identifier] == NSNotFound);

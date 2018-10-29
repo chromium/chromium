@@ -72,6 +72,7 @@ class NoopLocalSiteCharacteristicsDatabase
   void RemoveSiteCharacteristicsFromDB(
       const std::vector<url::Origin>& site_origins) override;
   void ClearDatabase() override;
+  void GetDatabaseSize(GetDatabaseSizeCallback callback) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NoopLocalSiteCharacteristicsDatabase);

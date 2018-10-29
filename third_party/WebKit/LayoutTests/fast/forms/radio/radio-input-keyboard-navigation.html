@@ -27,7 +27,7 @@
 <script>
 	test(function() {
 		document.querySelector("input").focus();
-		assert_exists(window, "eventSender");
+		assert_own_property(window, "eventSender");
 		for (var i = 0; i < 5; i++) {
 			eventSender.keyDown("ArrowDown");
 		}

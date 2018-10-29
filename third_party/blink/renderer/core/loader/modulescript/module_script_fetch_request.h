@@ -21,7 +21,7 @@ class ModuleScriptFetchRequest final {
   // Referrer is set only for internal module script fetch algorithms triggered
   // from ModuleTreeLinker to fetch descendant module scripts.
   ModuleScriptFetchRequest(const KURL& url,
-                           WebURLRequest::RequestContext destination,
+                           mojom::RequestContextType destination,
                            const ScriptFetchOptions& options,
                            const String& referrer_string,
                            const TextPosition& referrer_position)
@@ -33,20 +33,20 @@ class ModuleScriptFetchRequest final {
 
   static ModuleScriptFetchRequest CreateForTest(const KURL& url) {
     return ModuleScriptFetchRequest(
-        url, WebURLRequest::kRequestContextScript, ScriptFetchOptions(),
+        url, mojom::RequestContextType::SCRIPT, ScriptFetchOptions(),
         Referrer::ClientReferrerString(), TextPosition::MinimumPosition());
   }
   ~ModuleScriptFetchRequest() = default;
 
   const KURL& Url() const { return url_; }
-  WebURLRequest::RequestContext Destination() const { return destination_; }
+  mojom::RequestContextType Destination() const { return destination_; }
   const ScriptFetchOptions& Options() const { return options_; }
   const String& ReferrerString() const { return referrer_string_; }
   const TextPosition& GetReferrerPosition() const { return referrer_position_; }
 
  private:
   const KURL url_;
-  const WebURLRequest::RequestContext destination_;
+  const mojom::RequestContextType destination_;
   const ScriptFetchOptions options_;
   const String referrer_string_;
   const TextPosition referrer_position_;

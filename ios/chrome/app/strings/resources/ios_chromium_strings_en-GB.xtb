@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Get Google smarts in Chromium</translation>
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
 <translation id="2797210818057553964">You can customise this at any time in Chromium Settings</translation>
+<translation id="2915596697727466327">Chromium uses Face ID to ensure authorised access to your passwords.</translation>
 <translation id="3256316712990552818">Copied to Chromium</translation>
 <translation id="3413120535237193088">To get your bookmarks on all your devices, sign in to Chromium.</translation>
 <translation id="3473048256428424907">Turn on Chromium QR Scanner</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Tabs that you've opened in Chromium on your other devices will appear here.</translation>
 <translation id="495292094137889840">Start using Chromium QR Scanner</translation>
 <translation id="5231355151045086930">Sign out of Chromium</translation>
-<translation id="5416919929805616771">Enjoying Chromium? <ph name="BEGIN_LINK" />Rate this app<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5945387852661427312">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chromium data. Your data will become permanently tied to this account. Signing out of Chromium will delete your data from this device, but it will remain stored in your Google account.</translation>
 <translation id="6068866989048414399">Chromium Terms of Service</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chromium data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Move Chromium to your dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Get a better Google experience in Chromium based on your location.</translation>
-<translation id="8353224596138547809">Do you want Chromium to save your password for this site?</translation>
 <translation id="8508544542427105412"><ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> can be customised at any time. Google may use content on sites that you visit, as well as browsing activity and interactions, to personalise Chromium and Google services such as Translate, Search and ads.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8809780021347235332">To save images, tap on Settings to let Chromium use your photos</translation>

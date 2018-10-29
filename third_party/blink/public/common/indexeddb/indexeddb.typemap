@@ -10,20 +10,22 @@ public_headers = [
   "//third_party/blink/public/common/indexeddb/indexeddb_metadata.h",
   "//third_party/blink/public/common/indexeddb/web_idb_types.h",
 ]
-traits_headers =
-    [ "//third_party/blink/public/common/indexeddb/indexeddb_struct_traits.h" ]
+traits_headers = [
+  "//mojo/public/cpp/bindings/array_traits_span.h",
+  "//third_party/blink/public/common/indexeddb/indexeddb_mojom_traits.h",
+]
 type_mappings = [
-  "blink.mojom.IDBCursorDirection=blink::WebIDBCursorDirection",
-  "blink.mojom.IDBDataLoss=blink::WebIDBDataLoss",
-  "blink.mojom.IDBDatabaseMetadata=blink::IndexedDBDatabaseMetadata",
-  "blink.mojom.IDBIndexKeys=blink::IndexedDBIndexKeys",
-  "blink.mojom.IDBIndexMetadata=blink::IndexedDBIndexMetadata",
-  "blink.mojom.IDBKey=blink::IndexedDBKey",
-  "blink.mojom.IDBKeyPath=blink::IndexedDBKeyPath",
-  "blink.mojom.IDBKeyRange=blink::IndexedDBKeyRange",
-  "blink.mojom.IDBObjectStoreMetadata=blink::IndexedDBObjectStoreMetadata",
-  "blink.mojom.IDBOperationType=blink::WebIDBOperationType",
-  "blink.mojom.IDBPutMode=blink::WebIDBPutMode",
-  "blink.mojom.IDBTaskType=blink::WebIDBTaskType",
-  "blink.mojom.IDBTransactionMode=blink::WebIDBTransactionMode",
+  "blink.mojom.IDBCursorDirection=::blink::WebIDBCursorDirection",
+  "blink.mojom.IDBDataLoss=::blink::WebIDBDataLoss",
+  "blink.mojom.IDBDatabaseMetadata=::blink::IndexedDBDatabaseMetadata",
+  "blink.mojom.IDBIndexKeys=::blink::IndexedDBIndexKeys",
+  "blink.mojom.IDBIndexMetadata=::blink::IndexedDBIndexMetadata",
+  "blink.mojom.IDBKey=::blink::IndexedDBKey",
+  "blink.mojom.IDBKeyPath=::blink::IndexedDBKeyPath",
+  "blink.mojom.IDBKeyRange=::blink::IndexedDBKeyRange",
+  "blink.mojom.IDBObjectStoreMetadata=::blink::IndexedDBObjectStoreMetadata",
+  "blink.mojom.IDBOperationType=::blink::WebIDBOperationType",
+  "blink.mojom.IDBPutMode=::blink::WebIDBPutMode",
+  "blink.mojom.IDBTaskType=::blink::WebIDBTaskType",
+  "blink.mojom.IDBTransactionMode=::blink::WebIDBTransactionMode",
 ]

@@ -114,7 +114,7 @@ std::pair<TimeDelta, size_t> AnimationContainer::GetMinIntervalAndCount()
   // elements in the set share the same interval).
   TimeDelta min;
   size_t count = 1;
-  Elements::const_iterator i = elements_.begin();
+  auto i = elements_.begin();
   min = (*i)->GetTimerInterval();
   for (++i; i != elements_.end(); ++i) {
     auto interval = (*i)->GetTimerInterval();

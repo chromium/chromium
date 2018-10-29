@@ -53,13 +53,21 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
         {
           name = "crashpad_tests"
         },
+      ]
+
+      # Note that the infix of "crashpad_tests" below in
+      # binary/resource entries should be removed once
+      # crashpad_tests is moved out of the system image;
+      # until then, it is used to disambiguate the crashpad
+      # binaries and data from others within /system/(bin|data).
+      binaries = [
         {
           name = "crashpad_test_test_multiprocess_exec_test_child"
-          dest = "crashpad_test_data/crashpad_test_test_multiprocess_exec_test_child"
+          dest = "crashpad_tests/crashpad_test_test_multiprocess_exec_test_child"
         },
         {
           name = "http_transport_test_server"
-          dest = "crashpad_test_data/http_transport_test_server"
+          dest = "crashpad_tests/http_transport_test_server"
         },
       ]
 
@@ -81,15 +89,15 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       resources = [
         {
           path = "util/net/testdata/ascii_http_body.txt"
-          dest = "crashpad_test_data/util/net/testdata/ascii_http_body.txt"
+          dest = "crashpad_tests/util/net/testdata/ascii_http_body.txt"
         },
         {
           path = "util/net/testdata/binary_http_body.dat"
-          dest = "crashpad_test_data/util/net/testdata/binary_http_body.dat"
+          dest = "crashpad_tests/util/net/testdata/binary_http_body.dat"
         },
         {
           path = "test/test_paths_test_data_root.txt"
-          dest = "crashpad_test_data/test/test_paths_test_data_root.txt"
+          dest = "crashpad_tests/test/test_paths_test_data_root.txt"
         },
       ]
 
@@ -97,16 +105,14 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
         deps += [
           "util:generate_test_server_key",
         ]
-        tests += [
-          # These aren't actually tests, but that seems to be the only way to
-          # convince package() to get them from the output directory.
+        resources += [
           {
-            name = "crashpad_util_test_cert.pem"
-            dest = "crashpad_test_data/crashpad_util_test_cert.pem"
+            path = "$root_out_dir/crashpad_util_test_cert.pem"
+            dest = "crashpad_tests/crashpad_util_test_cert.pem"
           },
           {
-            name = "crashpad_util_test_key.pem"
-            dest = "crashpad_test_data/crashpad_util_test_key.pem"
+            path = "$root_out_dir/crashpad_util_test_key.pem"
+            dest = "crashpad_tests/crashpad_util_test_key.pem"
           },
         ]
       }

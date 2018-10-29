@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BLOCK_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BLOCK_PAINTER_H_
 
+#include "third_party/blink/renderer/core/layout/order_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 
 namespace blink {
@@ -14,7 +15,6 @@ class ScopedPaintState;
 class InlineBox;
 class LayoutBlock;
 class LayoutBox;
-class LayoutFlexibleBox;
 class LayoutPoint;
 
 class BlockPainter {
@@ -33,18 +33,13 @@ class BlockPainter {
 
   // See ObjectPainter::PaintAllPhasesAtomically().
   void PaintAllChildPhasesAtomically(const LayoutBox&, const PaintInfo&);
-  static void PaintChildrenOfFlexibleBox(const LayoutFlexibleBox&,
-                                         const PaintInfo&);
+  void PaintChildrenAtomically(const OrderIterator&, const PaintInfo&);
   static void PaintInlineBox(const InlineBox&, const PaintInfo&);
 
  private:
   // Paint scroll hit test placeholders in the correct paint order (see:
   // ScrollHitTestDisplayItem.h).
   void PaintScrollHitTestDisplayItem(const PaintInfo&);
-  // Paint a hit test display item and record hit test data. This should be
-  // called in the background paint phase even if there is no other painted
-  // content.
-  void RecordHitTestData(const PaintInfo&, const LayoutPoint& paint_offset);
   void PaintBlockFlowContents(const PaintInfo&, const LayoutPoint&);
   void PaintCarets(const PaintInfo&, const LayoutPoint& paint_offset);
 

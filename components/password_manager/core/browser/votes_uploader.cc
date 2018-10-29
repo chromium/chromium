@@ -142,21 +142,6 @@ void VotesUploader::SendVotesOnSave(
     const PasswordForm& submitted_form,
     const std::map<base::string16, const PasswordForm*>& best_matches,
     PasswordForm* pending_credentials) {
-  // if (observed_form_.IsPossibleChangePasswordFormWithoutUsername())
-  // return; // todo: is it needed
-
-  // Send votes for sign-in form.
-  FormData& form_data = pending_credentials->form_data;
-  if (form_data.fields.size() == 2 &&
-      form_data.fields[0].form_control_type == "text" &&
-      form_data.fields[1].form_control_type == "password") {
-    // |form_data| is received from the renderer and does not contain field
-    // values. Fill username field value with username to allow AutofillManager
-    // to detect username autofill type.
-    form_data.fields[0].value = pending_credentials->username_value;
-    SendSignInVote(form_data, submitted_form.submission_event);
-  }
-
   if (pending_credentials->times_used == 1 ||
       IsAddingUsernameToExistingMatch(*pending_credentials, best_matches))
     UploadFirstLoginVotes(best_matches, *pending_credentials, submitted_form);
@@ -236,6 +221,11 @@ bool VotesUploader::UploadPasswordVote(
   if (!has_autofill_vote && !has_password_generation_vote)
     return false;
 
+  if (form_to_upload.form_data.fields.empty()) {
+    // List of fields may be empty in tests.
+    return false;
+  }
+
   AutofillManager* autofill_manager = client_->GetAutofillManagerForMainFrame();
   if (!autofill_manager || !autofill_manager->download_manager())
     return false;
@@ -245,10 +235,6 @@ bool VotesUploader::UploadPasswordVote(
   // credentials, the observed and pending forms are the same.
   FormStructure form_structure(form_to_upload.form_data);
   form_structure.set_submission_event(submitted_form.submission_event);
-  if (!autofill_manager->ShouldUploadForm(form_structure)) {
-    UMA_HISTOGRAM_BOOLEAN("PasswordGeneration.UploadStarted", false);
-    return false;
-  }
 
   ServerFieldTypeSet available_field_types;
   // A map from field names to field types.
@@ -320,7 +306,8 @@ bool VotesUploader::UploadPasswordVote(
 
   bool success = autofill_manager->download_manager()->StartUploadRequest(
       form_structure, false /* was_autofilled */, available_field_types,
-      login_form_signature, true /* observed_submission */);
+      login_form_signature, true /* observed_submission */,
+      nullptr /* prefs */);
 
   UMA_HISTOGRAM_BOOLEAN("PasswordGeneration.UploadStarted", success);
   return success;
@@ -335,10 +322,13 @@ void VotesUploader::UploadFirstLoginVotes(
   if (!autofill_manager || !autofill_manager->download_manager())
     return;
 
+  if (form_to_upload.form_data.fields.empty()) {
+    // List of fields may be empty in tests.
+    return;
+  }
+
   FormStructure form_structure(form_to_upload.form_data);
   form_structure.set_submission_event(form_to_upload.submission_event);
-  if (!autofill_manager->ShouldUploadForm(form_structure))
-    return;
 
   FieldTypeMap field_types = {
       {form_to_upload.username_element, autofill::USERNAME}};
@@ -365,24 +355,7 @@ void VotesUploader::UploadFirstLoginVotes(
 
   autofill_manager->download_manager()->StartUploadRequest(
       form_structure, false /* was_autofilled */, available_field_types,
-      std::string(), true /* observed_submission */);
-}
-
-void VotesUploader::SendSignInVote(
-    const FormData& form_data,
-    const PasswordForm::SubmissionIndicatorEvent& submission_event) {
-  AutofillManager* autofill_manager = client_->GetAutofillManagerForMainFrame();
-  if (!autofill_manager)
-    return;
-  std::unique_ptr<FormStructure> form_structure(new FormStructure(form_data));
-  form_structure->set_submission_event(submission_event);
-  form_structure->set_is_signin_upload(true);
-  DCHECK(form_structure->ShouldBeUploaded());
-  DCHECK_EQ(2u, form_structure->field_count());
-  form_structure->field(1)->set_possible_types({autofill::PASSWORD});
-  autofill_manager->MaybeStartVoteUploadProcess(std::move(form_structure),
-                                                base::TimeTicks::Now(),
-                                                /*observed_submission=*/true);
+      std::string(), true /* observed_submission */, nullptr /* prefs */);
 }
 
 void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {

@@ -407,11 +407,22 @@ def ExtractDeps(dep_zips, deps_dir):
 
 
 class _ResourceBuildContext(object):
-  """A temporary directory for packaging and compiling Android resources."""
-  def __init__(self):
+  """A temporary directory for packaging and compiling Android resources.
+
+  Args:
+    temp_dir: Optional root build directory path. If None, a temporary
+      directory will be created, and removed in Close().
+  """
+  def __init__(self, temp_dir=None):
     """Initialized the context."""
     # The top-level temporary directory.
-    self.temp_dir = tempfile.mkdtemp()
+    if temp_dir:
+      self.temp_dir = temp_dir
+      self.remove_on_exit = False
+    else:
+      self.temp_dir = tempfile.mkdtemp()
+      self.remove_on_exit = True
+
     # A location to store resources extracted form dependency zip files.
     self.deps_dir = os.path.join(self.temp_dir, 'deps')
     os.mkdir(self.deps_dir)
@@ -426,14 +437,15 @@ class _ResourceBuildContext(object):
 
   def Close(self):
     """Close the context and destroy all temporary files."""
-    shutil.rmtree(self.temp_dir)
+    if self.remove_on_exit:
+      shutil.rmtree(self.temp_dir)
 
 
 @contextlib.contextmanager
-def BuildContext():
+def BuildContext(temp_dir=None):
   """Generator for a _ResourceBuildContext instance."""
   try:
-    context = _ResourceBuildContext()
+    context = _ResourceBuildContext(temp_dir)
     yield context
   finally:
     context.Close()

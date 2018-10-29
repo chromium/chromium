@@ -90,8 +90,9 @@ class CONTENT_EXPORT AppCacheURLLoaderJob : public AppCacheJob,
   // Callback invoked when the data pipe can be written to.
   void OnResponseBodyStreamReady(MojoResult result);
 
-  // Mojo binding error handler.
-  void OnConnectionError();
+  // Schedules a task to delete self with some clean-ups. This is also used as
+  // a mojo binding error handler.
+  void DeleteSoon();
 
   void SendResponseInfo();
   void ReadMore();

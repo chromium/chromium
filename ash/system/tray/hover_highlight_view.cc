@@ -4,7 +4,6 @@
 
 #include "ash/system/tray/hover_highlight_view.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -21,7 +20,7 @@
 namespace ash {
 
 HoverHighlightView::HoverHighlightView(ViewClickListener* listener)
-    : HoverHighlightView(listener, features::IsSystemTrayUnifiedEnabled()) {}
+    : HoverHighlightView(listener, true) {}
 
 HoverHighlightView::HoverHighlightView(ViewClickListener* listener,
                                        bool use_unified_theme)
@@ -29,7 +28,7 @@ HoverHighlightView::HoverHighlightView(ViewClickListener* listener,
       listener_(listener),
       use_unified_theme_(use_unified_theme) {
   set_notify_enter_exit_on_child(true);
-  SetInkDropMode(InkDropHostView::InkDropMode::ON);
+  SetInkDropMode(InkDropMode::ON);
 }
 
 HoverHighlightView::~HoverHighlightView() = default;
@@ -203,7 +202,7 @@ void HoverHighlightView::OnSetTooltipText(const base::string16& tooltip_text) {
   if (sub_text_label_)
     sub_text_label_->SetTooltipText(tooltip_text);
   if (left_icon_)
-    left_icon_->SetTooltipText(tooltip_text);
+    left_icon_->set_tooltip_text(tooltip_text);
 }
 
 bool HoverHighlightView::PerformAction(const ui::Event& event) {

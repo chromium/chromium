@@ -1,2 +1,2 @@
 The document.documentURI property should not be affected by the <base> tag.
-LayoutTests/fast/dom/documenturi-not-affected-by-base-tag.html
+fast/dom/documenturi-not-affected-by-base-tag.html

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
+#include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/svg_foreign_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
@@ -124,21 +125,23 @@ void LayoutSVGForeignObject::UpdateLayout() {
     SVGResourcesCache::ClientLayoutChanged(*this);
 }
 
-bool LayoutSVGForeignObject::NodeAtFloatPoint(HitTestResult& result,
-                                              const FloatPoint& point_in_parent,
-                                              HitTestAction hit_test_action) {
-  AffineTransform local_transform = LocalSVGTransform();
-  if (!local_transform.IsInvertible())
+bool LayoutSVGForeignObject::NodeAtPointFromSVG(
+    HitTestResult& result,
+    const HitTestLocation& location_in_parent,
+    const LayoutPoint& accumulated_offset,
+    HitTestAction) {
+  DCHECK_EQ(accumulated_offset, LayoutPoint());
+  TransformedHitTestLocation local_location(location_in_parent,
+                                            LocalSVGTransform());
+  if (!local_location)
     return false;
 
-  FloatPoint local_point = local_transform.Inverse().MapPoint(point_in_parent);
-  LayoutPoint point_in_foreign_object(local_point);
-  // |local_point| already includes the offset of the <foreignObject> element,
-  // but PaintLayer::HitTestLayer assumes it has not been.
-  point_in_foreign_object.MoveBy(-Layer()->LayoutBoxLocation());
-  HitTestLocation location(point_in_foreign_object);
-  HitTestResult layer_result(result.GetHitTestRequest(), location);
-  bool retval = Layer()->HitTest(location, layer_result,
+  // |local_location| already includes the offset of the <foreignObject>
+  // element, but PaintLayer::HitTestLayer assumes it has not been.
+  HitTestLocation local_without_offset(
+      *local_location, -ToLayoutSize(Layer()->LayoutBoxLocation()));
+  HitTestResult layer_result(result.GetHitTestRequest(), local_without_offset);
+  bool retval = Layer()->HitTest(local_without_offset, layer_result,
                                  LayoutRect(LayoutRect::InfiniteIntRect()));
 
   // Preserve the "point in inner node frame" from the original request,

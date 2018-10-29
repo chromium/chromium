@@ -13,6 +13,12 @@ if (is_android) {
 # TODO(crbug.com/706392): Fix password reuse detection for Android.
 password_reuse_detection_support = !is_android && !is_ios
 
+config("password_reuse_detection_config") {
+  if (password_reuse_detection_support) {
+    defines = [ "SYNC_PASSWORD_REUSE_DETECTION_ENABLED" ]
+  }
+}
+
 jumbo_static_library("browser") {
   sources = [
     "android_affiliation/affiliated_match_helper.cc",
@@ -76,6 +82,8 @@ jumbo_static_library("browser") {
     "import/password_csv_reader.h",
     "import/password_importer.cc",
     "import/password_importer.h",
+    "invalid_realm_credential_cleaner.cc",
+    "invalid_realm_credential_cleaner.h",
     "keychain_migration_status_mac.h",
     "log_manager.cc",
     "log_manager.h",
@@ -95,6 +103,8 @@ jumbo_static_library("browser") {
     "password_autofill_manager.h",
     "password_bubble_experiment.cc",
     "password_bubble_experiment.h",
+    "password_data_type_controller.cc",
+    "password_data_type_controller.h",
     "password_form_filling.cc",
     "password_form_filling.h",
     "password_form_manager.cc",
@@ -124,9 +134,12 @@ jumbo_static_library("browser") {
     "password_manager_metrics_util.h",
     "password_manager_util.cc",
     "password_manager_util.h",
+    "password_model_type_controller.cc",
+    "password_model_type_controller.h",
+    "password_model_worker.cc",
+    "password_model_worker.h",
     "password_requirements_service.cc",
     "password_requirements_service.h",
-    "password_reuse_defines.h",
     "password_store.cc",
     "password_store.h",
     "password_store_change.cc",
@@ -139,6 +152,8 @@ jumbo_static_library("browser") {
     "password_store_factory_util.h",
     "password_store_sync.cc",
     "password_store_sync.h",
+    "password_sync_util.cc",
+    "password_sync_util.h",
     "password_syncable_service.cc",
     "password_syncable_service.h",
     "password_ui_utils.cc",
@@ -151,18 +166,21 @@ jumbo_static_library("browser") {
     "sql_table_builder.h",
     "statistics_table.cc",
     "statistics_table.h",
+    "store_metrics_reporter.cc",
+    "store_metrics_reporter.h",
     "suppressed_form_fetcher.cc",
     "suppressed_form_fetcher.h",
+    "sync_credentials_filter.cc",
+    "sync_credentials_filter.h",
     "ui/credential_provider_interface.h",
     "ui/export_flow.h",
     "ui/export_progress_status.h",
     "ui/import_flow.h",
     "votes_uploader.cc",
     "votes_uploader.h",
-    "webdata/logins_table.cc",
-    "webdata/logins_table.h",
-    "webdata/logins_table_win.cc",
   ]
+
+  all_dependent_configs = [ ":password_reuse_detection_config" ]
 
   if (password_reuse_detection_support) {
     sources += [
@@ -202,8 +220,10 @@ jumbo_static_library("browser") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/security_state/core",
+    "//components/signin/core/browser",
     "//components/strings",
     "//components/sync",
+    "//components/sync_preferences",
     "//components/url_formatter",
     "//components/variations",
     "//components/webdata/common",
@@ -224,6 +244,8 @@ jumbo_static_library("browser") {
     sources += [
       "hsts_query.cc",
       "hsts_query.h",
+      "http_credentials_cleaner.cc",
+      "http_credentials_cleaner.h",
     ]
     deps += [ "//components/safe_browsing/common:safe_browsing_prefs" ]
   }
@@ -384,6 +406,7 @@ source_set("unit_tests") {
     "import/csv_reader_unittest.cc",
     "import/password_csv_reader_unittest.cc",
     "import/password_importer_unittest.cc",
+    "invalid_realm_credential_cleaner_unittest.cc",
     "log_manager_unittest.cc",
     "log_router_unittest.cc",
     "login_database_unittest.cc",
@@ -404,13 +427,18 @@ source_set("unit_tests") {
     "password_store_default_unittest.cc",
     "password_store_origin_unittest.h",
     "password_store_unittest.cc",
+    "password_sync_util_unittest.cc",
     "password_syncable_service_unittest.cc",
     "password_ui_utils_unittest.cc",
     "psl_matching_helper_unittest.cc",
     "site_affiliation/asset_link_data_unittest.cc",
     "sql_table_builder_unittest.cc",
     "statistics_table_unittest.cc",
+    "store_metrics_reporter_unittest.cc",
     "suppressed_form_fetcher_unittest.cc",
+    "sync_credentials_filter_unittest.cc",
+    "sync_username_test_base.cc",
+    "sync_username_test_base.h",
     "vote_uploads_test_matchers.h",
     "votes_uploader_unittest.cc",
   ]
@@ -420,7 +448,10 @@ source_set("unit_tests") {
   if (is_ios) {
     sources += [ "login_database_ios_unittest.cc" ]
   } else {
-    sources += [ "hsts_query_unittest.cc" ]
+    sources += [
+      "hsts_query_unittest.cc",
+      "http_credentials_cleaner_unittest.cc",
+    ]
   }
   if (password_reuse_detection_support) {
     sources += [
@@ -451,9 +482,11 @@ source_set("unit_tests") {
     "//components/password_manager/core/common",
     "//components/prefs:test_support",
     "//components/security_state/core",
+    "//components/signin/core/browser:test_support",
     "//components/strings",
     "//components/sync:test_support_driver",
     "//components/sync:test_support_model",
+    "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/variations",
     "//google_apis:google_apis",
@@ -476,11 +509,6 @@ source_set("unit_tests") {
       "//components/safe_browsing:features",
       "//components/safe_browsing/common:safe_browsing_prefs",
     ]
-  }
-
-  if (is_ios) {
-    deps +=
-        [ "//components/password_manager/core/browser/form_parsing:unit_tests" ]
   }
 }
 

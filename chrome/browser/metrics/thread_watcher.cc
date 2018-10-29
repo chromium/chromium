@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -26,6 +27,7 @@
 #include "chrome/common/logging_chrome.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/notification_service.h"
 
 using content::BrowserThread;
@@ -34,7 +36,8 @@ using content::BrowserThread;
 ThreadWatcher::ThreadWatcher(const WatchingParams& params)
     : thread_id_(params.thread_id),
       thread_name_(params.thread_name),
-      watched_runner_(BrowserThread::GetTaskRunnerForThread(params.thread_id)),
+      watched_runner_(
+          base::CreateSingleThreadTaskRunnerWithTraits({params.thread_id})),
       sleep_time_(params.sleep_time),
       unresponsive_time_(params.unresponsive_time),
       ping_time_(base::TimeTicks::Now()),
@@ -399,10 +402,8 @@ void ThreadWatcherList::GetStatusOfThreads(
   if (!g_thread_watcher_list_)
     return;
 
-  for (RegistrationList::iterator it =
-           g_thread_watcher_list_->registered_.begin();
-       g_thread_watcher_list_->registered_.end() != it;
-       ++it) {
+  for (auto it = g_thread_watcher_list_->registered_.begin();
+       g_thread_watcher_list_->registered_.end() != it; ++it) {
     if (it->second->IsVeryUnresponsive())
       ++(*unresponding_thread_count);
     else
@@ -416,10 +417,8 @@ void ThreadWatcherList::WakeUpAll() {
   if (!g_thread_watcher_list_)
     return;
 
-  for (RegistrationList::iterator it =
-           g_thread_watcher_list_->registered_.begin();
-       g_thread_watcher_list_->registered_.end() != it;
-       ++it)
+  for (auto it = g_thread_watcher_list_->registered_.begin();
+       g_thread_watcher_list_->registered_.end() != it; ++it)
     it->second->WakeUp();
 }
 
@@ -511,8 +510,8 @@ void ThreadWatcherList::InitializeAndStartWatching(
   DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
 
   // Disarm the startup timebomb, even if stop has been called.
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(&DisarmStartupTimeBomb));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(&DisarmStartupTimeBomb));
 
   // This method is deferred in relationship to its StopWatchingAll()
   // counterpart. If a previous initialization has already happened, or if
@@ -554,8 +553,7 @@ void ThreadWatcherList::StartWatching(
     const CrashOnHangThreadMap& crash_on_hang_threads) {
   DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
 
-  CrashOnHangThreadMap::const_iterator it =
-      crash_on_hang_threads.find(thread_name);
+  auto it = crash_on_hang_threads.find(thread_name);
   bool crash_on_hang = false;
   if (it != crash_on_hang_threads.end()) {
     crash_on_hang = true;
@@ -585,7 +583,7 @@ void ThreadWatcherList::DeleteAll() {
 
   // Delete all thread watcher objects.
   while (!g_thread_watcher_list_->registered_.empty()) {
-    RegistrationList::iterator it = g_thread_watcher_list_->registered_.begin();
+    auto it = g_thread_watcher_list_->registered_.begin();
     delete it->second;
     g_thread_watcher_list_->registered_.erase(it);
   }
@@ -598,8 +596,7 @@ ThreadWatcher* ThreadWatcherList::Find(const BrowserThread::ID& thread_id) {
   DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
   if (!g_thread_watcher_list_)
     return nullptr;
-  RegistrationList::iterator it =
-      g_thread_watcher_list_->registered_.find(thread_id);
+  auto it = g_thread_watcher_list_->registered_.find(thread_id);
   if (g_thread_watcher_list_->registered_.end() == it)
     return nullptr;
   return it->second;

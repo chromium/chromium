@@ -31,6 +31,7 @@ AXAuraObjCache* AXAuraObjCache::GetInstance() {
 }
 
 AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(View* view) {
+  // Avoid problems with transient focus events. https://crbug.com/729449
   if (!view->GetWidget())
     return nullptr;
   return CreateInternal<AXViewObjWrapper>(view, view_to_id_map_);

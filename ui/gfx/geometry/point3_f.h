@@ -8,14 +8,14 @@
 #include <iosfwd>
 #include <string>
 
+#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
 // A point has an x, y and z coordinate.
-class GFX_EXPORT Point3F {
+class GEOMETRY_EXPORT Point3F {
  public:
   constexpr Point3F() : x_(0), y_(0), z_(0) {}
   constexpr Point3F(float x, float y, float z) : x_(x), y_(y), z_(z) {}
@@ -89,15 +89,15 @@ inline bool operator!=(const Point3F& lhs, const Point3F& rhs) {
 }
 
 // Add a vector to a point, producing a new point offset by the vector.
-GFX_EXPORT Point3F operator+(const Point3F& lhs, const Vector3dF& rhs);
+GEOMETRY_EXPORT Point3F operator+(const Point3F& lhs, const Vector3dF& rhs);
 
 // Subtract a vector from a point, producing a new point offset by the vector's
 // inverse.
-GFX_EXPORT Point3F operator-(const Point3F& lhs, const Vector3dF& rhs);
+GEOMETRY_EXPORT Point3F operator-(const Point3F& lhs, const Vector3dF& rhs);
 
 // Subtract one point from another, producing a vector that represents the
 // distances between the two points along each axis.
-GFX_EXPORT Vector3dF operator-(const Point3F& lhs, const Point3F& rhs);
+GEOMETRY_EXPORT Vector3dF operator-(const Point3F& lhs, const Point3F& rhs);
 
 inline Point3F PointAtOffsetFromOrigin(const Vector3dF& offset) {
   return Point3F(offset.x(), offset.y(), offset.z());

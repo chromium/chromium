@@ -12,7 +12,7 @@
 #include <memory>
 #include <string>
 
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"
 
 namespace base {

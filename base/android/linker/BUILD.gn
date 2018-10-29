@@ -22,4 +22,11 @@ shared_library("chromium_android_linker") {
   # Export JNI symbols.
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
+
+  # The linker is used on Android platforms that do not support GNU-style
+  # hash tables, so ensure one isn't included in it to save space (since the SysV
+  # format is always supported). It would be nice to also remove the GNU version
+  # tables, for the same reason, but a linker flag to disable them doesn't seem
+  # to exist. This saves 52 bytes on ARM.
+  ldflags = [ "-Wl,--hash-style=sysv" ]
 }

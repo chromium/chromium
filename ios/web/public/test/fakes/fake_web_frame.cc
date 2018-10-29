@@ -5,6 +5,8 @@
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 
 #include "base/callback.h"
+#include "base/json/json_writer.h"
+#include "base/values.h"
 
 namespace web {
 FakeWebFrame::FakeWebFrame(const std::string& frame_id,
@@ -26,12 +28,24 @@ GURL FakeWebFrame::GetSecurityOrigin() const {
   return security_origin_;
 }
 bool FakeWebFrame::CanCallJavaScriptFunction() const {
-  return false;
+  return true;
 }
 
 bool FakeWebFrame::CallJavaScriptFunction(
     const std::string& name,
     const std::vector<base::Value>& parameters) {
+  last_javascript_call_ = std::string("__gCrWeb." + name + "(");
+  bool first = true;
+  for (auto& param : parameters) {
+    if (!first) {
+      last_javascript_call_ += ", ";
+    }
+    first = false;
+    std::string paramString;
+    base::JSONWriter::Write(param, &paramString);
+    last_javascript_call_ += paramString;
+  }
+  last_javascript_call_ += ");";
   return false;
 }
 
@@ -40,7 +54,7 @@ bool FakeWebFrame::CallJavaScriptFunction(
     const std::vector<base::Value>& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
-  return false;
+  return CallJavaScriptFunction(name, parameters);
 }
 
 }  // namespace web

@@ -67,6 +67,10 @@ class HidDetectionTest : public OobeBaseTest {
 
     mock_adapter_ = new testing::NiceMock<device::MockBluetoothAdapter>();
     SetUpBluetoothMock(mock_adapter_, true);
+
+    // Note: The SecureChannel service, which is never destroyed until the
+    // browser process is killed, utilizes |mock_adapter_|.
+    testing::Mock::AllowLeak(mock_adapter_.get());
   }
 
   void AddUsbMouse(const std::string& mouse_id) {

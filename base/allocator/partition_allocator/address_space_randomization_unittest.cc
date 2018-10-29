@@ -4,10 +4,10 @@
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 
+#include <vector>
+
 #include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/bit_cast.h"
-#include "base/bits.h"
-#include "base/sys_info.h"
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

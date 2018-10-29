@@ -15,7 +15,7 @@ namespace blink {
 // and the result and the reasons why changes occurred are stored in this class.
 class CORE_EXPORT AddEventListenerOptionsResolved
     : public AddEventListenerOptions {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   AddEventListenerOptionsResolved();

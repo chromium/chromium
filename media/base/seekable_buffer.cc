@@ -168,7 +168,7 @@ bool SeekableBuffer::SeekBackward(int size) {
 void SeekableBuffer::EvictBackwardBuffers() {
   // Advances the iterator until we hit the current pointer.
   while (backward_bytes_ > backward_capacity_) {
-    BufferQueue::iterator i = buffers_.begin();
+    auto i = buffers_.begin();
     if (i == current_buffer_)
       break;
     scoped_refptr<DataBuffer> buffer = *i;
@@ -186,7 +186,7 @@ int SeekableBuffer::InternalRead(uint8_t* data,
   // Counts how many bytes are actually read from the buffer queue.
   int taken = 0;
 
-  BufferQueue::iterator current_buffer = current_buffer_;
+  auto current_buffer = current_buffer_;
   int current_buffer_offset = current_buffer_offset_;
 
   int bytes_to_skip = forward_offset;
@@ -232,7 +232,7 @@ int SeekableBuffer::InternalRead(uint8_t* data,
         UpdateCurrentTime(current_buffer, current_buffer_offset);
       }
 
-      BufferQueue::iterator next = current_buffer;
+      auto next = current_buffer;
       ++next;
       // If we are at the last buffer, don't advance.
       if (next == buffers_.end())

@@ -14,6 +14,10 @@
 
 class NewTabPromoBubbleView;
 
+namespace views {
+class InkDropContainerView;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // NewTabButton
 //
@@ -25,6 +29,8 @@ class NewTabButton : public views::ImageButton,
                      public views::MaskedTargeterDelegate,
                      public views::WidgetObserver {
  public:
+  static const gfx::Size kButtonSize;
+
   NewTabButton(TabStrip* tab_strip, views::ButtonListener* listener);
   ~NewTabButton() override;
 

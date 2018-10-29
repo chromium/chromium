@@ -33,9 +33,15 @@ class CSSOMTypes {
   static bool IsCSSStyleValuePosition(const CSSStyleValue&);
 
   static bool IsPropertySupported(CSSPropertyID);
+  // For registered custom properties, if the CSSStyleValue is accepted
+  // because it matches the registered grammar (and not because it is
+  // a CSSUnsupportedStyleValue with matching name), 'match' will be set
+  // to the component that was matched.
   static bool PropertyCanTake(CSSPropertyID,
+                              const AtomicString& custom_property_name,
                               const PropertyRegistration*,
-                              const CSSStyleValue&);
+                              const CSSStyleValue&,
+                              const CSSSyntaxComponent*& match);
 };
 
 }  // namespace blink

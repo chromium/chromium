@@ -100,8 +100,7 @@ void BrowserProcessSubThread::Init() {
 #endif
 
   if (!is_blocking_allowed_for_testing_) {
-    base::DisallowBlocking();
-    base::DisallowBaseSyncPrimitives();
+    base::DisallowUnresponsiveTasks();
   }
 }
 

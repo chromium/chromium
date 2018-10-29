@@ -20,10 +20,18 @@ struct AccessTokenInfo {
   // The time at which this access token will expire.
   base::Time expiration_time;
 
+  // Contains extra information regarding the user's currently registered
+  // services. It is uncommon for consumers to need to interact with this field.
+  // To interact with it, first parse it via gaia::ParseServiceFlags().
+  std::string id_token;
+
   AccessTokenInfo() = default;
   AccessTokenInfo(const std::string& token_param,
-                  const base::Time& expiration_time_param)
-      : token(token_param), expiration_time(expiration_time_param) {}
+                  const base::Time& expiration_time_param,
+                  const std::string& id_token)
+      : token(token_param),
+        expiration_time(expiration_time_param),
+        id_token(id_token) {}
 };
 
 // Defined for testing purposes only.

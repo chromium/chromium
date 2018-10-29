@@ -14,9 +14,9 @@ import android.os.Debug;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PathUtils;
+import org.chromium.base.task.AsyncTask;
 
 import java.io.File;
 import java.io.FileOutputStream;

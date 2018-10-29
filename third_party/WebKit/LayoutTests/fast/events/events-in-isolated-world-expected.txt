@@ -1,2 +1,2 @@
-CONSOLE MESSAGE: line 1: keydown event in isolated world
+CONSOLE MESSAGE: keydown event in isolated world
 

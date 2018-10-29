@@ -147,38 +147,6 @@ template("google_apis_tmpl") {
       deps += invoker.deps
     }
 
-    if (enable_extensions) {
-      sources += [
-        "drive/auth_service.cc",
-        "drive/auth_service.h",
-        "drive/auth_service_interface.h",
-        "drive/auth_service_observer.h",
-        "drive/base_requests.cc",
-        "drive/base_requests.h",
-        "drive/drive_api_error_codes.cc",
-        "drive/drive_api_error_codes.h",
-        "drive/drive_api_parser.cc",
-        "drive/drive_api_parser.h",
-        "drive/drive_api_requests.cc",
-        "drive/drive_api_requests.h",
-        "drive/drive_api_url_generator.cc",
-        "drive/drive_api_url_generator.h",
-        "drive/drive_common_callbacks.h",
-        "drive/drive_switches.cc",
-        "drive/drive_switches.h",
-        "drive/files_list_request_runner.cc",
-        "drive/files_list_request_runner.h",
-        "drive/request_sender.cc",
-        "drive/request_sender.h",
-        "drive/request_util.cc",
-        "drive/request_util.h",
-        "drive/task_util.cc",
-        "drive/task_util.h",
-        "drive/time_util.cc",
-        "drive/time_util.h",
-      ]
-    }
-
     if (is_mac || is_ios) {
       set_sources_assignment_filter([])
       sources += [
@@ -222,15 +190,6 @@ static_library("test_support") {
     "//services/network:test_support",
     "//services/network/public/cpp",
   ]
-
-  if (enable_extensions) {
-    sources += [
-      "drive/dummy_auth_service.cc",
-      "drive/dummy_auth_service.h",
-      "drive/test_util.cc",
-      "drive/test_util.h",
-    ]
-  }
 }
 
 source_set("run_all_unittests") {
@@ -255,6 +214,7 @@ test("google_apis_unittests") {
     "gaia/oauth2_api_call_flow_unittest.cc",
     "gaia/oauth2_id_token_decoder_unittest.cc",
     "gaia/oauth2_mint_token_flow_unittest.cc",
+    "gaia/oauth2_token_service_delegate_unittest.cc",
     "gaia/oauth2_token_service_request_unittest.cc",
     "gaia/oauth2_token_service_unittest.cc",
     "gaia/oauth_multilogin_result_unittest.cc",
@@ -281,17 +241,7 @@ test("google_apis_unittests") {
   ]
 
   if (enable_extensions) {
-    sources += [
-      "drive/base_requests_server_unittest.cc",
-      "drive/base_requests_unittest.cc",
-      "drive/drive_api_parser_unittest.cc",
-      "drive/drive_api_requests_unittest.cc",
-      "drive/drive_api_url_generator_unittest.cc",
-      "drive/files_list_request_runner_unittest.cc",
-      "drive/request_sender_unittest.cc",
-      "drive/request_util_unittest.cc",
-      "drive/time_util_unittest.cc",
-    ]
+    deps += [ "//google_apis/drive:drive_unittests" ]
   }
 
   if (is_mac || is_ios) {

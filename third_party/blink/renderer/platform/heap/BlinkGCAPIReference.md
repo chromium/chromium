@@ -231,19 +231,14 @@ Classes with this annotation do not need a `Trace()` method, and should not inhe
 
 ### DISALLOW_NEW()
 
-Class-level annotation declaring the class a part object that cannot be separately allocated using `operator new`.
+Class-level annotation declaring the class cannot be separately allocated using `operator new`.
+It can be used on stack, as a part of object, or as a value in a heap collection.
 If the class has `Member<T>` references, you need a `Trace()` method which the object containing the `DISALLOW_NEW()`
 part object must call upon. The clang Blink GC plugin checks and enforces this.
 
 Classes with this annotation need a `Trace()` method, but should not inherit a garbage collected class.
 
-### DISALLOW_NEW_EXCEPT_PLACEMENT_NEW
 
-Class-level annotation allowing only the use of the placement `new` operator. This disallows general allocation of the
-object but allows putting the object as a value object in collections.  If the class has `Member<T>` references,
-you need to declare a `Trace()` method. That trace method will be called automatically by the on-heap collections.
-
-Classes with this annotation need a `Trace()` method, but should not inherit a garbage collected class.
 
 ## Handles
 

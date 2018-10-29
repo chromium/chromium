@@ -31,6 +31,26 @@ constexpr base::TimeDelta ServiceWorkerTimeoutTimer::kIdleDelay;
 constexpr base::TimeDelta ServiceWorkerTimeoutTimer::kEventTimeout;
 constexpr base::TimeDelta ServiceWorkerTimeoutTimer::kUpdateInterval;
 
+ServiceWorkerTimeoutTimer::StayAwakeToken::StayAwakeToken(
+    base::WeakPtr<ServiceWorkerTimeoutTimer> timer)
+    : timer_(std::move(timer)) {
+  DCHECK(timer_);
+  DCHECK(blink::ServiceWorkerUtils::IsServicificationEnabled());
+  timer_->num_of_stay_awake_tokens_++;
+}
+
+ServiceWorkerTimeoutTimer::StayAwakeToken::~StayAwakeToken() {
+  // If |timer_| has already been destroyed, it means the worker thread has
+  // already been killed.
+  if (!timer_)
+    return;
+  DCHECK_GT(timer_->num_of_stay_awake_tokens_, 0);
+  timer_->num_of_stay_awake_tokens_--;
+
+  if (!timer_->HasInflightEvent())
+    timer_->OnNoInflightEvent();
+}
+
 ServiceWorkerTimeoutTimer::ServiceWorkerTimeoutTimer(
     base::RepeatingClosure idle_callback)
     : ServiceWorkerTimeoutTimer(std::move(idle_callback),
@@ -39,7 +59,9 @@ ServiceWorkerTimeoutTimer::ServiceWorkerTimeoutTimer(
 ServiceWorkerTimeoutTimer::ServiceWorkerTimeoutTimer(
     base::RepeatingClosure idle_callback,
     const base::TickClock* tick_clock)
-    : idle_callback_(std::move(idle_callback)), tick_clock_(tick_clock) {
+    : idle_callback_(std::move(idle_callback)),
+      tick_clock_(tick_clock),
+      weak_factory_(this) {
   // |idle_callback_| will be invoked if no event happens in |kIdleDelay|.
   idle_time_ = tick_clock_->NowTicks() + kIdleDelay;
   timer_.Start(FROM_HERE, kUpdateInterval,
@@ -91,10 +113,17 @@ void ServiceWorkerTimeoutTimer::EndEvent(int event_id) {
   DCHECK(iter != id_event_map_.end());
   inflight_events_.erase(iter->second);
   id_event_map_.erase(iter);
-  if (!HasInflightEvent()) {
-    idle_time_ = tick_clock_->NowTicks() + kIdleDelay;
-    MaybeTriggerIdleTimer();
-  }
+
+  if (!HasInflightEvent())
+    OnNoInflightEvent();
+}
+
+std::unique_ptr<ServiceWorkerTimeoutTimer::StayAwakeToken>
+ServiceWorkerTimeoutTimer::CreateStayAwakeToken() {
+  if (!blink::ServiceWorkerUtils::IsServicificationEnabled())
+    return nullptr;
+  return std::make_unique<ServiceWorkerTimeoutTimer::StayAwakeToken>(
+      weak_factory_.GetWeakPtr());
 }
 
 void ServiceWorkerTimeoutTimer::PushPendingTask(
@@ -133,9 +162,8 @@ void ServiceWorkerTimeoutTimer::UpdateStatus() {
   // If the worker is now idle, set the |idle_time_| and possibly trigger the
   // idle callback.
   if (!HasInflightEvent() && idle_time_.is_null()) {
-    idle_time_ = tick_clock_->NowTicks() + kIdleDelay;
-    if (MaybeTriggerIdleTimer())
-      return;
+    OnNoInflightEvent();
+    return;
   }
 
   if (!idle_time_.is_null() && idle_time_ < now) {
@@ -154,8 +182,15 @@ bool ServiceWorkerTimeoutTimer::MaybeTriggerIdleTimer() {
   return true;
 }
 
+void ServiceWorkerTimeoutTimer::OnNoInflightEvent() {
+  DCHECK(!HasInflightEvent());
+  idle_time_ = tick_clock_->NowTicks() + kIdleDelay;
+  MaybeTriggerIdleTimer();
+}
+
 bool ServiceWorkerTimeoutTimer::HasInflightEvent() const {
-  return !inflight_events_.empty() || running_pending_tasks_;
+  return !inflight_events_.empty() || running_pending_tasks_ ||
+         num_of_stay_awake_tokens_ > 0;
 }
 
 ServiceWorkerTimeoutTimer::EventInfo::EventInfo(

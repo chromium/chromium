@@ -2,7 +2,6 @@ Test that font-weight: bolder and font-weight: lighter behave according to spec.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(outer).fontWeight is "100"
 PASS getComputedStyle(bolder).fontWeight is "400"
 PASS getComputedStyle(lighter).fontWeight is "100"

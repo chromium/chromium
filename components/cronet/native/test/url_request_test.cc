@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <atomic>
 #include <memory>
 
 #include "base/files/file_util.h"
@@ -24,6 +25,75 @@ using cronet::test::TestUploadDataProvider;
 using cronet::test::TestUrlRequestCallback;
 
 namespace {
+
+// A Cronet_UrlRequestStatusListener impl that waits for OnStatus callback.
+class StatusListener {
+ public:
+  // |callback| is verified to not yet have reached a final state when
+  // OnStatus() is called back.
+  explicit StatusListener(TestUrlRequestCallback* callback)
+      : status_listener_(Cronet_UrlRequestStatusListener_CreateWith(
+            StatusListener::OnStatus)),
+        callback_(callback),
+        expect_request_not_done_(false) {
+    Cronet_UrlRequestStatusListener_SetClientContext(status_listener_, this);
+  }
+
+  ~StatusListener() {
+    Cronet_UrlRequestStatusListener_Destroy(status_listener_);
+  }
+
+  // Wait for and return request status.
+  Cronet_UrlRequestStatusListener_Status GetStatus(
+      Cronet_UrlRequestPtr request) {
+    Cronet_UrlRequest_GetStatus(request, status_listener_);
+    // NOTE(pauljensen): There's no guarantee this line will get executed
+    // before OnStatus() reads |expect_request_not_done_|.  It's very unlikely
+    // it will get read before this write, but if it does it just means
+    // OnStatus() won't check that the final callback has not been issued yet.
+    expect_request_not_done_ = !Cronet_UrlRequest_IsDone(request);
+    awaiting_status_.Wait();
+    return status_;
+  }
+
+ private:
+  // Cronet_UrlRequestStatusListener OnStatus impl.
+  static void OnStatus(Cronet_UrlRequestStatusListenerPtr self,
+                       Cronet_UrlRequestStatusListener_Status status) {
+    StatusListener* listener = static_cast<StatusListener*>(
+        Cronet_UrlRequestStatusListener_GetClientContext(self));
+
+    // Enforce we call OnStatus() before OnSucceeded/OnFailed/OnCanceled().
+    if (listener->expect_request_not_done_)
+      EXPECT_FALSE(listener->callback_->IsDone());
+
+    listener->status_ = status;
+    listener->awaiting_status_.Signal();
+  }
+
+  Cronet_UrlRequestStatusListenerPtr const status_listener_;
+  TestUrlRequestCallback* const callback_;
+
+  Cronet_UrlRequestStatusListener_Status status_ =
+      Cronet_UrlRequestStatusListener_Status_INVALID;
+  base::WaitableEvent awaiting_status_;
+
+  // Indicates if GetStatus() was called before request finished, indicating
+  // that OnStatus() should be called before request finishes. The writing of
+  // this variable races the reading of it, but it's initialized to a safe
+  // value.
+  std::atomic_bool expect_request_not_done_;
+
+  DISALLOW_COPY_AND_ASSIGN(StatusListener);
+};
+
+// Query and return status of |request|. |callback| is verified to not yet have
+// reached a final state by the time OnStatus is called.
+Cronet_UrlRequestStatusListener_Status GetRequestStatus(
+    Cronet_UrlRequestPtr request,
+    TestUrlRequestCallback* callback) {
+  return StatusListener(callback).GetStatus(request);
+}
 
 // Parameterized off whether to use a direct executor.
 class UrlRequestTest : public ::testing::TestWithParam<bool> {
@@ -657,6 +727,7 @@ TEST_P(UrlRequestTest, MultiRedirect) {
   EXPECT_EQ(2, callback->redirect_count_);
   EXPECT_EQ(200, callback->response_info_->http_status_code);
   EXPECT_EQ(2ul, callback->redirect_response_info_list_.size());
+  EXPECT_EQ(2ul, callback->redirect_url_list_.size());
 
   // Check first redirect (multiredirect.html -> redirect.html).
   TestUrlRequestCallback::UrlResponseInfo first_expected_response_info(
@@ -666,6 +737,8 @@ TEST_P(UrlRequestTest, MultiRedirect) {
            "redirect-header0", "header-value"}));
   ExpectResponseInfoEquals(first_expected_response_info,
                            *callback->redirect_response_info_list_.front());
+  EXPECT_EQ(cronet::TestServer::GetRedirectURL(),
+            callback->redirect_url_list_.front());
 
   // Check second redirect (redirect.html -> success.txt).
   TestUrlRequestCallback::UrlResponseInfo second_expected_response_info(
@@ -677,6 +750,9 @@ TEST_P(UrlRequestTest, MultiRedirect) {
            "redirect-header", "header-value"}));
   ExpectResponseInfoEquals(second_expected_response_info,
                            *callback->redirect_response_info_list_.back());
+  EXPECT_EQ(cronet::TestServer::GetSuccessURL(),
+            callback->redirect_url_list_.back());
+
   // Check final response (success.txt).
   TestUrlRequestCallback::UrlResponseInfo final_expected_response_info(
       std::vector<std::string>({cronet::TestServer::GetMultiRedirectURL(),
@@ -878,6 +954,70 @@ TEST_P(UrlRequestTest, PerfTest) {
   Cronet_EngineParams_Destroy(engine_params);
   Cronet_Engine_Destroy(engine);
   cronet::TestServer::ReleaseBigDataURL();
+}
+
+TEST_P(UrlRequestTest, GetStatus) {
+  Cronet_EnginePtr engine = cronet::test::CreateTestEngine(0);
+  Cronet_UrlRequestPtr request = Cronet_UrlRequest_Create();
+  Cronet_UrlRequestParamsPtr request_params = Cronet_UrlRequestParams_Create();
+  std::string url = cronet::TestServer::GetSimpleURL();
+
+  TestUrlRequestCallback test_callback(GetParam());
+  test_callback.set_auto_advance(false);
+  // Executor provided by the application is owned by |test_callback|.
+  Cronet_ExecutorPtr executor = test_callback.GetExecutor();
+  // Callback provided by the application.
+  Cronet_UrlRequestCallbackPtr callback =
+      test_callback.CreateUrlRequestCallback();
+
+  Cronet_UrlRequest_InitWithParams(request, engine, url.c_str(), request_params,
+                                   callback, executor);
+  EXPECT_EQ(Cronet_UrlRequestStatusListener_Status_INVALID,
+            GetRequestStatus(request, &test_callback));
+
+  Cronet_UrlRequest_Start(request);
+  EXPECT_LE(Cronet_UrlRequestStatusListener_Status_IDLE,
+            GetRequestStatus(request, &test_callback));
+  EXPECT_GE(Cronet_UrlRequestStatusListener_Status_READING_RESPONSE,
+            GetRequestStatus(request, &test_callback));
+
+  test_callback.WaitForNextStep();
+  EXPECT_EQ(Cronet_UrlRequestStatusListener_Status_WAITING_FOR_DELEGATE,
+            GetRequestStatus(request, &test_callback));
+
+  Cronet_BufferPtr buffer = Cronet_Buffer_Create();
+  Cronet_Buffer_InitWithAlloc(buffer, 100);
+  Cronet_UrlRequest_Read(request, buffer);
+  EXPECT_LE(Cronet_UrlRequestStatusListener_Status_IDLE,
+            GetRequestStatus(request, &test_callback));
+  EXPECT_GE(Cronet_UrlRequestStatusListener_Status_READING_RESPONSE,
+            GetRequestStatus(request, &test_callback));
+
+  test_callback.WaitForNextStep();
+  EXPECT_LE(Cronet_UrlRequestStatusListener_Status_IDLE,
+            GetRequestStatus(request, &test_callback));
+  EXPECT_GE(Cronet_UrlRequestStatusListener_Status_READING_RESPONSE,
+            GetRequestStatus(request, &test_callback));
+
+  do {
+    buffer = Cronet_Buffer_Create();
+    Cronet_Buffer_InitWithAlloc(buffer, 100);
+    Cronet_UrlRequest_Read(request, buffer);
+    // Verify that late calls to GetStatus() don't invoke OnStatus() after
+    // final callbacks.
+    GetRequestStatus(request, &test_callback);
+    test_callback.WaitForNextStep();
+  } while (!test_callback.IsDone());
+
+  EXPECT_EQ(Cronet_UrlRequestStatusListener_Status_INVALID,
+            GetRequestStatus(request, &test_callback));
+  ASSERT_EQ("The quick brown fox jumps over the lazy dog.",
+            test_callback.response_as_string_);
+
+  Cronet_UrlRequestParams_Destroy(request_params);
+  Cronet_UrlRequest_Destroy(request);
+  Cronet_UrlRequestCallback_Destroy(callback);
+  Cronet_Engine_Destroy(engine);
 }
 
 }  // namespace

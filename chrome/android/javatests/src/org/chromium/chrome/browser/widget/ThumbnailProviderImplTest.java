@@ -189,6 +189,11 @@ public class ThumbnailProviderImplTest {
         }
 
         @Override
+        public String getMimeType() {
+            return null;
+        }
+
+        @Override
         public @Nullable String getContentId() {
             return "contentId"; // None-null value for ThumbnailProviderImpl to work
         }

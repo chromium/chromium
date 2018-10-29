@@ -54,9 +54,12 @@ being distributed.
 1.  Build the Chromoting host binaries:
 
     ```shell
-    $ ninja -C out/Release remoting_me2me_host remoting_start_host \
+    $ autoninja -C out/Release remoting_me2me_host remoting_start_host \
     remoting_native_messaging_host remoting_native_messaging_manifests
     ```
+
+    (`autoninja` is a wrapper that automatically provides optimal values for the
+    arguments passed to `ninja`.)
 
 1.  When the build finishes, move into the installer directory:
     `$ cd remoting/host/installer/`
@@ -89,7 +92,7 @@ as an extension.
 
     ```shell
     $ GOOGLE_CLIENT_ID_REMOTING_IDENTITY_API=<client id> \
-    ninja -C out/Release remoting_webapp
+    autoninja -C out/Release remoting_webapp
     ```
 
 1.  Install the extension into your Chromium (or Chrome) browser:
@@ -114,7 +117,7 @@ source because no official version is being distributed.
     https://www.chromium.org/developers/how-tos/android-build-instructions
 1.  Move into the `src/` directory that contains your checkout of the Chromium
     code.
-1.  Build the Android app: `$ ninja -C out/Release remoting_apk`
+1.  Build the Android app: `$ autoninja -C out/Release remoting_apk`
 1.  Connect your device and set up USB debugging:
     1.  Plug your device in via USB.
     1.  Open the Settings app and look for the `Developer options` choice.

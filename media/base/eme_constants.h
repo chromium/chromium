@@ -16,28 +16,29 @@ namespace media {
 // http://w3c.github.io/encrypted-media/initdata-format-registry.html#registry
 enum class EmeInitDataType { UNKNOWN, WEBM, CENC, KEYIDS, MAX = KEYIDS };
 
-// Defines bitmask values that specify codecs used in Encrypted Media Extension
-// (EME). Each value represents a codec within a specific container.
-//
-// TODO(yucliu): Remove container name from the enum. See crbug.com/724362 for
-// more details.
+// Defines bitmask values that specify codecs used in Encrypted Media Extensions
+// (EME). Generally codec profiles are not specified and it is assumed that the
+// profile support for encrypted playback is the same as for clear playback.
+// The only exception is VP9 where we have older CDMs only supporting profile 0,
+// while new CDMs could support profile 2. Profile 1 and 3 are not supported by
+// EME, see https://crbug.com/898298.
 enum EmeCodec : uint32_t {
   EME_CODEC_NONE = 0,
-  EME_CODEC_WEBM_OPUS = 1 << 0,
-  EME_CODEC_WEBM_VORBIS = 1 << 1,
-  EME_CODEC_WEBM_VP8 = 1 << 2,
-  EME_CODEC_WEBM_VP9 = 1 << 3,
-  EME_CODEC_MP4_AAC = 1 << 4,
-  // AVC1 is shared by MP4 and MP2T.
-  EME_CODEC_MP4_AVC1 = 1 << 5,
-  EME_CODEC_COMMON_VP9 = 1 << 6,
-  EME_CODEC_MP4_HEVC = 1 << 7,
-  EME_CODEC_MP4_DV_AVC = 1 << 8,
-  EME_CODEC_MP4_DV_HEVC = 1 << 9,
-  EME_CODEC_MP4_AC3 = 1 << 10,
-  EME_CODEC_MP4_EAC3 = 1 << 11,
-  EME_CODEC_MP4_MPEG_H_AUDIO = 1 << 12,
-  EME_CODEC_MP4_FLAC = 1 << 13,
+  EME_CODEC_OPUS = 1 << 0,
+  EME_CODEC_VORBIS = 1 << 1,
+  EME_CODEC_VP8 = 1 << 2,
+  EME_CODEC_VP9_PROFILE0 = 1 << 3,
+  EME_CODEC_AAC = 1 << 4,
+  EME_CODEC_AVC1 = 1 << 5,
+  EME_CODEC_VP9_PROFILE2 = 1 << 6,  // VP9 profiles 2
+  EME_CODEC_HEVC = 1 << 7,
+  EME_CODEC_DOLBY_VISION_AVC = 1 << 8,
+  EME_CODEC_DOLBY_VISION_HEVC = 1 << 9,
+  EME_CODEC_AC3 = 1 << 10,
+  EME_CODEC_EAC3 = 1 << 11,
+  EME_CODEC_MPEG_H_AUDIO = 1 << 12,
+  EME_CODEC_FLAC = 1 << 13,
+  EME_CODEC_AV1 = 1 << 14,
 };
 
 // *_ALL values should only be used for masking, do not use them to specify
@@ -45,42 +46,50 @@ enum EmeCodec : uint32_t {
 
 using SupportedCodecs = uint32_t;
 
+namespace {
+
 constexpr SupportedCodecs GetMp4AudioCodecs() {
-  SupportedCodecs codecs = EME_CODEC_MP4_FLAC;
+  SupportedCodecs codecs = EME_CODEC_FLAC;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  codecs |= EME_CODEC_MP4_AAC;
+  codecs |= EME_CODEC_AAC;
 #if BUILDFLAG(ENABLE_AC3_EAC3_AUDIO_DEMUXING)
-  codecs |= EME_CODEC_MP4_AC3 | EME_CODEC_MP4_EAC3;
+  codecs |= EME_CODEC_AC3 | EME_CODEC_EAC3;
 #endif  // BUILDFLAG(ENABLE_AC3_EAC3_AUDIO_DEMUXING)
 #if BUILDFLAG(ENABLE_MPEG_H_AUDIO_DEMUXING)
-  codecs |= EME_CODEC_MP4_MPEG_H_AUDIO;
+  codecs |= EME_CODEC_MPEG_H_AUDIO;
 #endif  // BUILDFLAG(ENABLE_MPEG_H_AUDIO_DEMUXING)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   return codecs;
 }
 
 constexpr SupportedCodecs GetMp4VideoCodecs() {
-  SupportedCodecs codecs = EME_CODEC_COMMON_VP9;
+  // VP9 codec can be in MP4. Legacy VP9 codec strings ("vp9" and "vp9.0") can
+  // not be in "video/mp4" mime type, but that is enforced by media::MimeUtil.
+  SupportedCodecs codecs = EME_CODEC_VP9_PROFILE0 | EME_CODEC_VP9_PROFILE2;
+  codecs |= EME_CODEC_AV1;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  codecs |= EME_CODEC_MP4_AVC1;
+  codecs |= EME_CODEC_AVC1;
 #if BUILDFLAG(ENABLE_HEVC_DEMUXING)
-  codecs |= EME_CODEC_MP4_HEVC;
+  codecs |= EME_CODEC_HEVC;
 #endif  // BUILDFLAG(ENABLE_HEVC_DEMUXING)
 #if BUILDFLAG(ENABLE_DOLBY_VISION_DEMUXING)
-  codecs |= EME_CODEC_MP4_DV_AVC;
+  codecs |= EME_CODEC_DOLBY_VISION_AVC;
 #if BUILDFLAG(ENABLE_HEVC_DEMUXING)
-  codecs |= EME_CODEC_MP4_DV_HEVC;
+  codecs |= EME_CODEC_DOLBY_VISION_HEVC;
 #endif  // BUILDFLAG(ENABLE_HEVC_DEMUXING)
 #endif  // BUILDFLAG(ENABLE_DOLBY_VISION_DEMUXING)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   return codecs;
 }
 
+}  // namespace
+
 constexpr SupportedCodecs EME_CODEC_WEBM_AUDIO_ALL =
-    EME_CODEC_WEBM_OPUS | EME_CODEC_WEBM_VORBIS;
+    EME_CODEC_OPUS | EME_CODEC_VORBIS;
 
 constexpr SupportedCodecs EME_CODEC_WEBM_VIDEO_ALL =
-    EME_CODEC_WEBM_VP8 | EME_CODEC_WEBM_VP9 | EME_CODEC_COMMON_VP9;
+    EME_CODEC_VP8 | EME_CODEC_VP9_PROFILE0 | EME_CODEC_VP9_PROFILE2 |
+    EME_CODEC_AV1;
 
 constexpr SupportedCodecs EME_CODEC_WEBM_ALL =
     EME_CODEC_WEBM_AUDIO_ALL | EME_CODEC_WEBM_VIDEO_ALL;
@@ -102,7 +111,7 @@ constexpr SupportedCodecs EME_CODEC_ALL =
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
-constexpr SupportedCodecs EME_CODEC_MP2T_VIDEO_ALL = EME_CODEC_MP4_AVC1;
+constexpr SupportedCodecs EME_CODEC_MP2T_VIDEO_ALL = EME_CODEC_AVC1;
 static_assert(
     (EME_CODEC_MP2T_VIDEO_ALL & EME_CODEC_VIDEO_ALL) ==
         EME_CODEC_MP2T_VIDEO_ALL,

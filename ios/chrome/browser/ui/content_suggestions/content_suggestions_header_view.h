@@ -7,12 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/toolbar/toolbar_owner.h"
-
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
 // primary toolbar, doodle, and fake omnibox.
-@interface ContentSuggestionsHeaderView : UIView<ToolbarOwner>
+@interface ContentSuggestionsHeaderView : UIView
 
 // Returns the toolbar view.
 @property(nonatomic, readonly) UIView* toolBarView;

@@ -19,7 +19,7 @@ class ApkAnalyzerTest(unittest.TestCase):
 
   def testUndoHierarchicalSizing_TotalSingleRootNode(self):
     data = [
-      ('<TOTAL>', 5),
+      ('P', '<TOTAL>', 5),
     ]
     nodes = apkanalyzer.UndoHierarchicalSizing(data)
     # No changes expected since there are no child nodes.
@@ -27,19 +27,19 @@ class ApkAnalyzerTest(unittest.TestCase):
 
   def testUndoHierarchicalSizing_TotalSizeMinusChildNode(self):
     data = [
-      ('<TOTAL>', 10),
-      ('child1', 7),
+      ('P', '<TOTAL>', 10),
+      ('C', 'child1', 7),
     ]
     nodes = apkanalyzer.UndoHierarchicalSizing(data)
     self.assertEqualLists([
-      ('<TOTAL>', 3),
-      ('child1', 7),
+      ('P', '<TOTAL>', 3),
+      ('C', 'child1', 7),
     ], nodes)
 
   def testUndoHierarchicalSizing_SiblingAnonymousClass(self):
     data = [
-      ('class1', 10),
-      ('class1$inner', 8),
+      ('C', 'class1', 10),
+      ('C', 'class1$inner', 8),
     ]
     nodes = apkanalyzer.UndoHierarchicalSizing(data)
     # No change in size expected since these should be siblings.
@@ -47,39 +47,50 @@ class ApkAnalyzerTest(unittest.TestCase):
 
   def testUndoHierarchicalSizing_MethodsShouldBeChildNodes(self):
     data = [
-      ('class1', 10),
-      ('class1 method', 8),
+      ('C', 'class1', 10),
+      ('M', 'class1 method', 8),
     ]
     nodes = apkanalyzer.UndoHierarchicalSizing(data)
     self.assertEqualLists([
-      ('class1', 2),
-      ('class1 method', 8),
+      ('C', 'class1', 2),
+      ('M', 'class1 method', 8),
     ], nodes)
 
   def testUndoHierarchicalSizing_ClassIsChildNodeOfPackage(self):
     data = [
-      ('package1', 10),
-      ('package1.class1', 3),
+      ('P', 'package1', 10),
+      ('C', 'package1.class1', 10),
     ]
     nodes = apkanalyzer.UndoHierarchicalSizing(data)
     self.assertEqualLists([
-      ('package1', 7),
-      ('package1.class1', 3),
+      ('C', 'package1.class1', 10),
     ], nodes)
 
   def testUndoHierarchicalSizing_TotalIncludesAllPackages(self):
     data = [
-      ('<TOTAL>', 10),
-      ('package1', 3),
-      ('package2', 4),
-      ('package3', 2),
+      ('P', '<TOTAL>', 10),
+      ('C', 'class1', 3),
+      ('C', 'class2', 4),
+      ('C', 'class3', 2),
     ]
     nodes = apkanalyzer.UndoHierarchicalSizing(data)
     self.assertEqualLists([
-      ('<TOTAL>', 1),
-      ('package1', 3),
-      ('package2', 4),
-      ('package3', 2),
+      ('P', '<TOTAL>', 1),
+      ('C', 'class1', 3),
+      ('C', 'class2', 4),
+      ('C', 'class3', 2),
+    ], nodes)
+
+  def testUndoHierarchicalSizing_PackageAndClassSameName(self):
+    data = [
+      ('P', 'name', 4),
+      ('C', 'name.Class', 4),
+      ('C', 'name', 2),
+    ]
+    nodes = apkanalyzer.UndoHierarchicalSizing(data)
+    self.assertEqualLists([
+      ('C', 'name.Class', 4),
+      ('C', 'name', 2),
     ], nodes)
 
 

@@ -67,6 +67,38 @@ public final class ModuleMetrics {
     }
 
     /**
+     * Possible reasons for destroying a dynamic module. Keep in sync with the
+     * CustomTabs.DynamicModule.DestructionReason enum in histograms.xml. Do not remove
+     * or change existing values other than NUM_ENTRIES.
+     */
+    @IntDef({DestructionReason.NO_CACHING_UNUSED, DestructionReason.CACHED_SEVERE_MEMORY_PRESSURE,
+            DestructionReason.CACHED_MILD_MEMORY_PRESSURE_TIME_EXCEEDED,
+            DestructionReason.CACHED_UI_HIDDEN_TIME_EXCEEDED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DestructionReason {
+        /** No caching enabled and the module is unused. */
+        int NO_CACHING_UNUSED = 0;
+        /** Cached and severe memory pressure. */
+        int CACHED_SEVERE_MEMORY_PRESSURE = 1;
+        /** Cached and mild memory pressure and time exceeded. */
+        int CACHED_MILD_MEMORY_PRESSURE_TIME_EXCEEDED = 2;
+        /** Cached and app hidden and time exceeded. */
+        int CACHED_UI_HIDDEN_TIME_EXCEEDED = 3;
+        /** Upper bound for legal sample values - all sample values have to be strictly lower. */
+        int NUM_ENTRIES = 4;
+    }
+
+    /**
+     * Records the reason for destroying a dynamic module.
+     * @param reason reason key, one of {@link DestructionReason}'s values.
+     */
+    public static void recordDestruction(@DestructionReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram("CustomTabs.DynamicModule.DestructionReason",
+                reason, DestructionReason.NUM_ENTRIES);
+        Log.d(TAG, "Destroyed module, reason: %s", reason);
+    }
+
+    /**
      * SystemClock.uptimeMillis() is used here as it uses the same system call as all the native
      * side of Chrome, and this is the same clock used for page load metrics.
      *
@@ -97,6 +129,12 @@ public final class ModuleMetrics {
     public static void recordEntryPointNewInstanceTime(long startTime) {
         RecordHistogram.recordMediumTimesHistogram(
                 "CustomTabs.DynamicModule.EntryPointNewInstanceTime", now() - startTime,
+                TimeUnit.MILLISECONDS);
+    }
+
+    public static void recordEntryPointInitTime(long startTime) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "CustomTabs.DynamicModule.EntryPointInitTime", now() - startTime,
                 TimeUnit.MILLISECONDS);
     }
 }

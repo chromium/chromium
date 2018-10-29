@@ -36,6 +36,8 @@ component("lib") {
     "service_options.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":constants",
     "//base",

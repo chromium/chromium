@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/system_monitor/system_monitor.h"
+#include "base/system/system_monitor.h"
 #include "base/test/scoped_task_environment.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
 #include "services/audio/traced_service_ref.h"

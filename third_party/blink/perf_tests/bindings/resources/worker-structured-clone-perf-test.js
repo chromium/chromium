@@ -1,24 +1,23 @@
 const WorkerStructuredClonePerfTestRunner = (function() {
   function pingPong(data) {
     return new Promise((resolve, reject) => {
-      let beginSerialize, endSerialize, beginDeserialize, endDeserialize;
+      let mainThreadBeginSerialize, mainThreadEndDeserialize, toWorkerTime, fromWorkerTime, totalTime;
       worker.addEventListener('message', function listener(e) {
         try {
           e.data;  // Force deserialization.
-          endDeserialize = PerfTestRunner.now();
+          mainThreadEndDeserialize = performance.now();
           worker.removeEventListener('message', listener);
-          // TODO(panicker): Deserialize is currently including worker hop and
-          // not accurate. Report this from the worker.
-          resolve([endSerialize - beginSerialize, endDeserialize - beginDeserialize,
-                  endDeserialize - beginSerialize]);
+          // toWorkerTime: Time from main thread beginning serialize to end of worker deserialize
+          toWorkerTime = (e.data.workerDeserialize + (e.data.workerTimeOrigin - performance.timeOrigin)) - mainThreadBeginSerialize;
+          // fromWorkerTime: Time from worker beginning serialize to end of main thread deserialize
+          fromWorkerTime = mainThreadEndDeserialize - (e.data.workerDeserialize + (e.data.workerTimeOrigin - performance.timeOrigin));
+          // totalTime: Time from main thread beginning serialzie to end of main thread deserialize
+          totalTime = mainThreadEndDeserialize - mainThreadBeginSerialize
+          resolve([toWorkerTime, fromWorkerTime, totalTime]);
         } catch (err) { reject(err); }
       });
-      beginSerialize = PerfTestRunner.now();
+      mainThreadBeginSerialize = performance.now();
       worker.postMessage(data);
-      beginDeserialize = endSerialize = PerfTestRunner.now();
-      // While Chrome does the deserialize lazily when e.data is read, this
-      // isn't portable, so it's more fair to measure from when the message is
-      // posted.
     });
   }
 
@@ -36,13 +35,13 @@ const WorkerStructuredClonePerfTestRunner = (function() {
       });
 
       function pingPongUntilDone() {
-        pingPong(test.data).then(([serializeTime, deserializeTime, totalTime]) => {
-          console.log([serializeTime, deserializeTime, totalTime]);
-          if (test.measure === 'serialize')
-            PerfTestRunner.measureValueAsync(serializeTime);
-          else if (test.measure === 'deserialize')
-            PerfTestRunner.measureValueAsync(deserializeTime);
-          else if (test.measure === 'roundtrip')
+        pingPong(test.data).then(([toWorkerTime, fromWorkerTime, totalTime]) => {
+          console.log([toWorkerTime, fromWorkerTime, totalTime]);
+          if (test.measure == 'toWorker')
+            PerfTestRunner.measureValueAsync(toWorkerTime);
+          else if (test.measure === 'fromWorker')
+            PerfTestRunner.measureValueAsync(fromWorkerTime);
+          else if (test.measure == 'roundtrip')
             PerfTestRunner.measureValueAsync(totalTime);
           if (!isDone) pingPongUntilDone();
         });

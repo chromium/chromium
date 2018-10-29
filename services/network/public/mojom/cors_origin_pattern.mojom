@@ -4,6 +4,8 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/cors.mojom";
+
 // Parameters for representing a access origin whitelist or blacklist for CORS.
 struct CorsOriginPattern {
   // The protocol part of the destination URL.
@@ -14,4 +16,10 @@ struct CorsOriginPattern {
 
   // Whether subdomains match this protocol and host pattern.
   bool allow_subdomains;
+
+  // Order of preference in which the pattern is applied.  Higher priority
+  // patterns take precedence over lower ones.  In the case were both a
+  // allow list and block list rule of the same priority match a request,
+  // the block list rule takes priority.
+  CORSOriginAccessMatchPriority priority;
 };

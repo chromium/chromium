@@ -10,10 +10,10 @@ for more details about the presubmit API built into depot_tools.
 
 def _CheckTestDataReadmeUpdated(input_api, output_api):
   """
-  Checks to make sure the README file is updated when changing test files.
+  Checks to make sure the README.md file is updated when changing test files.
   """
   test_data_dir = input_api.os_path.join('media', 'test', 'data')
-  readme_path = input_api.os_path.join('media', 'test', 'data', 'README')
+  readme_path = input_api.os_path.join('media', 'test', 'data', 'README.md')
   test_files = []
   readme_updated = False
   errors = []

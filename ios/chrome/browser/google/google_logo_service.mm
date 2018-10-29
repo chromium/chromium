@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/image_fetcher/ios/ios_image_decoder_impl.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -37,17 +37,17 @@ base::FilePath DoodleDirectory() {
 GoogleLogoService::GoogleLogoService(
     TemplateURLService* template_url_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : LogoServiceImpl(DoodleDirectory(),
-                      // Personalized Doodles aren't supported on iOS (see
-                      // https://crbug.com/711314), so no need to pass a
-                      // GaiaCookieManagerService.
-                      /*cookie_service=*/nullptr,
-                      template_url_service,
-                      image_fetcher::CreateIOSImageDecoder(),
-                      std::move(url_loader_factory),
-                      /*want_gray_logo_getter=*/base::BindRepeating([] {
-                        return !IsUIRefreshPhase1Enabled();
-                      })) {}
+    : LogoServiceImpl(
+          DoodleDirectory(),
+          // Personalized Doodles aren't supported on iOS (see
+          // https://crbug.com/711314), so no need to pass a
+          // GaiaCookieManagerService.
+          /*cookie_service=*/nullptr,
+          template_url_service,
+          image_fetcher::CreateIOSImageDecoder(),
+          std::move(url_loader_factory),
+          /*want_gray_logo_getter=*/base::BindRepeating([] { return false; })) {
+}
 
 GoogleLogoService::~GoogleLogoService() {}
 

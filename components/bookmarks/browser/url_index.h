@@ -56,7 +56,10 @@ class UrlIndex : public HistoryBookmarkModel {
   void GetNodesByUrl(const GURL& url, std::vector<const BookmarkNode*>* nodes);
 
   // Returns true if there is at least one bookmark.
-  bool HasBookmarks();
+  bool HasBookmarks() const;
+
+  // Returns the number of URL bookmarks stored.
+  size_t UrlCount() const;
 
   // HistoryBookmarkModel:
   bool IsBookmarked(const GURL& url) override;
@@ -88,7 +91,7 @@ class UrlIndex : public HistoryBookmarkModel {
   // such, be sure and wrap all usage of it around |url_lock_|.
   using NodesOrderedByUrlSet = std::multiset<BookmarkNode*, NodeUrlComparator>;
   NodesOrderedByUrlSet nodes_ordered_by_url_set_;
-  base::Lock url_lock_;
+  mutable base::Lock url_lock_;
 
   DISALLOW_COPY_AND_ASSIGN(UrlIndex);
 };

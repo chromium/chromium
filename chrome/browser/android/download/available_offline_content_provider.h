@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ANDROID_DOWNLOAD_AVAILABLE_OFFLINE_CONTENT_PROVIDER_H_
 #define CHROME_BROWSER_ANDROID_DOWNLOAD_AVAILABLE_OFFLINE_CONTENT_PROVIDER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/available_offline_content.mojom.h"
@@ -34,7 +37,7 @@ class AvailableOfflineContentProvider
   void Summarize(SummarizeCallback) override;
   void LaunchItem(const std::string& item_id,
                   const std::string& name_space) override;
-  void LaunchDownloadsPage() override;
+  void LaunchDownloadsPage(bool open_prefetched_articles_tab) override;
 
   static void Create(
       content::BrowserContext* browser_context,
@@ -51,11 +54,6 @@ class AvailableOfflineContentProvider
       const std::vector<offline_items_collection::OfflineItem>& all_items);
 
   content::BrowserContext* browser_context_;
-
-  // Records if the last content fetch indicated that prefetched articles are
-  // available or not.
-  // TODO(carlosk): Directly check the existence of prefetched articles.
-  bool has_prefetched_content_ = false;
 
   base::WeakPtrFactory<AvailableOfflineContentProvider> weak_ptr_factory_;
 

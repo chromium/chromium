@@ -7,17 +7,11 @@
 
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 
-namespace content {
-class LayerTreeView;
-}
-
 namespace blink {
 
-class SimWebViewClient final : public FrameTestHelpers::TestWebViewClient {
+class SimWebViewClient final : public frame_test_helpers::TestWebViewClient {
  public:
-  // The LayerTreeView to be returned from InitializeLayerTreeView()
-  // must be constructed before this class, and given to it.
-  explicit SimWebViewClient(content::LayerTreeView&);
+  explicit SimWebViewClient(content::LayerTreeViewDelegate* delegate);
 
   int VisuallyNonEmptyLayoutCount() const {
     return visually_non_empty_layout_count_;
@@ -30,25 +24,24 @@ class SimWebViewClient final : public FrameTestHelpers::TestWebViewClient {
   }
 
   // WebViewClient implementation.
-  WebLayerTreeView* InitializeLayerTreeView() override;
   WebView* CreateView(WebLocalFrame* opener,
                       const WebURLRequest&,
                       const WebWindowFeatures&,
                       const WebString& name,
                       WebNavigationPolicy,
                       bool,
-                      WebSandboxFlags) override;
+                      WebSandboxFlags,
+                      const SessionStorageNamespaceId&) override;
 
  private:
   // WebWidgetClient overrides.
   void DidMeaningfulLayout(WebMeaningfulLayout) override;
 
-  int visually_non_empty_layout_count_;
-  int finished_parsing_layout_count_;
-  int finished_loading_layout_count_;
+  int visually_non_empty_layout_count_ = 0;
+  int finished_parsing_layout_count_ = 0;
+  int finished_loading_layout_count_ = 0;
 
-  content::LayerTreeView* layer_tree_view_;
-  FrameTestHelpers::WebViewHelper web_view_helper_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
 }  // namespace blink

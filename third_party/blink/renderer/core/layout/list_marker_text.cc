@@ -31,7 +31,7 @@
 
 namespace blink {
 
-namespace ListMarkerText {
+namespace list_marker_text {
 
 enum SequenceType { kNumericSequence, kAlphabeticSequence };
 
@@ -924,6 +924,6 @@ String GetText(EListStyleType type, int count) {
   return "";
 }
 
-}  // namespace ListMarkerText
+}  // namespace list_marker_text
 
 }  // namespace blink

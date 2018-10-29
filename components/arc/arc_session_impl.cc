@@ -315,6 +315,8 @@ void ArcSessionImpl::OnLcdDensity(int32_t lcd_density) {
   login_manager::StartArcMiniContainerRequest request;
   request.set_native_bridge_experiment(
       base::FeatureList::IsEnabled(arc::kNativeBridgeExperimentFeature));
+  request.set_arc_file_picker_experiment(
+      base::FeatureList::IsEnabled(arc::kFilePickerExperimentFeature));
   request.set_lcd_density(lcd_density);
 
   VLOG(1) << "Starting ARC mini instance with lcd_density="
@@ -422,7 +424,6 @@ void ArcSessionImpl::DoUpgrade() {
             << packages_cache_mode_string << ".";
   }
 
-  request.set_is_child(upgrade_params_.is_child);
   request.set_supervision_transition(ToLoginManagerSupervisionTransition(
       upgrade_params_.supervision_transition));
   request.set_locale(upgrade_params_.locale);

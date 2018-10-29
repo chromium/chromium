@@ -10,9 +10,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/hosted_app_button_container.h"
+#include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "ui/views/test/test_views.h"
 
 // Tests hosted app windows that use the OpaqueBrowserFrameView implementation
 // for their non client frames.
@@ -53,14 +55,21 @@ class HostedAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
       return false;
 #endif
 
+    opaque_browser_frame_view_ =
+        static_cast<OpaqueBrowserFrameView*>(frame_view);
     hosted_app_button_container_ =
-        static_cast<OpaqueBrowserFrameView*>(frame_view)
-            ->hosted_app_button_container_for_testing();
+        opaque_browser_frame_view_->hosted_app_button_container_for_testing();
     DCHECK(hosted_app_button_container_);
     DCHECK(hosted_app_button_container_->visible());
+
     return true;
   }
 
+  int GetRestoredTitleBarHeight() {
+    return opaque_browser_frame_view_->layout()->NonClientTopHeight(true);
+  }
+
+  OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
   HostedAppButtonContainer* hosted_app_button_container_ = nullptr;
 
  private:
@@ -95,4 +104,24 @@ IN_PROC_BROWSER_TEST_F(HostedAppOpaqueBrowserFrameViewTest, MediumThemeColor) {
     return;
   EXPECT_EQ(hosted_app_button_container_->active_color_for_testing(),
             SK_ColorWHITE);
+}
+
+IN_PROC_BROWSER_TEST_F(HostedAppOpaqueBrowserFrameViewTest,
+                       StaticTitleBarHeight) {
+  if (!InstallAndLaunchHostedApp())
+    return;
+
+  const int title_bar_height = GetRestoredTitleBarHeight();
+  EXPECT_GT(title_bar_height, 0);
+
+  // Add taller children to the hosted app button container.
+  const int container_height = hosted_app_button_container_->height();
+  hosted_app_button_container_->AddChildView(
+      new views::StaticSizedView(gfx::Size(1, title_bar_height * 2)));
+  opaque_browser_frame_view_->Layout();
+
+  // The height of the hosted app button container and title bar should not be
+  // affected.
+  EXPECT_EQ(container_height, hosted_app_button_container_->height());
+  EXPECT_EQ(title_bar_height, GetRestoredTitleBarHeight());
 }

@@ -443,9 +443,9 @@ def DoInline(
     # Replace contents of url() for css attributes: content, background,
     # or *-image.
     return re.sub('(content|background|[\w-]*-image):[^;]*' +
-                  '(url\((?P<quote1>"|\'|)[^"\'()]*(?P=quote1)\)|' +
-                      'image-set\(' +
-                          '([ ]*url\((?P<quote2>"|\'|)[^"\'()]*(?P=quote2)\)' +
+                  '(url\((?!\[\[|{{)(?P<quote1>"|\'|)[^"\'()]*(?P=quote1)\)|' +
+                      'image-set\(([ ]*url\((?!\[\[|{{)' +
+                          '(?P<quote2>"|\'|)[^"\'()]*(?P=quote2)\)' +
                               '[ ]*[0-9.]*x[ ]*(,[ ]*)?)+\))',
                   lambda m: InlineCSSUrls(m, filepath),
                   text)

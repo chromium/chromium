@@ -146,8 +146,7 @@ class ChannelIDServiceJob {
     std::vector<ChannelIDService::Request*> requests;
     requests_.swap(requests);
 
-    for (std::vector<ChannelIDService::Request*>::iterator i = requests.begin();
-         i != requests.end(); i++) {
+    for (auto i = requests.begin(); i != requests.end(); i++) {
       std::unique_ptr<crypto::ECPrivateKey> key_copy;
       if (key)
         key_copy = key->Copy();

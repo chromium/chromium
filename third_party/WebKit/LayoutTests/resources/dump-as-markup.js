@@ -61,7 +61,7 @@ Markup.dump = function(opt_node, opt_description)
         wrapper.insertBefore(document.createTextNode('\nDump of markup 1:\n'), wrapper.firstChild);
     }
 
-    // FIXME: Have this respect testRunner.dumpChildFramesAsText?
+    // FIXME: Have this respect testRunner.dumpChildFrames?
     // FIXME: Should we care about framesets?
     // DocumentFragment doesn't have a getElementsByTagName method.
     if (node.getElementsByTagName) {

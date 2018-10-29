@@ -39,7 +39,7 @@ class PLATFORM_EXPORT EmptyTransformOperations final {
 };
 
 class PLATFORM_EXPORT TransformOperations {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   explicit TransformOperations(bool make_identity = false);
@@ -91,8 +91,8 @@ class PLATFORM_EXPORT TransformOperations {
     return operations_;
   }
 
-  size_t size() const { return operations_.size(); }
-  const TransformOperation* at(size_t index) const {
+  wtf_size_t size() const { return operations_.size(); }
+  const TransformOperation* at(wtf_size_t index) const {
     return index < operations_.size() ? operations_.at(index).get() : nullptr;
   }
 

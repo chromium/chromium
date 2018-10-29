@@ -43,6 +43,11 @@ class ShellPermissionMessageProvider : public PermissionMessageProvider {
     return PermissionMessages();
   }
 
+  PermissionMessages GetPowerfulPermissionMessages(
+      const PermissionIDSet& permissions) const override {
+    return PermissionMessages();
+  }
+
   bool IsPrivilegeIncrease(const PermissionSet& granted_permissions,
                            const PermissionSet& requested_permissions,
                            Manifest::Type extension_type) const override {

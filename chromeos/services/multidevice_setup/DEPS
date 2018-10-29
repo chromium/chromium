@@ -2,7 +2,9 @@ include_rules = [
   "+chrome/common/url_constants.h",
   "+components/proximity_auth/logging/logging.h",
   "+components/cryptauth",
+  '+components/keyed_service/core',
   "+components/sync_preferences/testing_pref_service_syncable.h",
+  "+components/variations",
   "+mojo/public/cpp/bindings",
   "+services/service_manager/public",
 ]

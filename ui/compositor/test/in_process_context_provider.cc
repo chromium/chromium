@@ -119,7 +119,6 @@ gpu::ContextResult InProcessContextProvider::BindToCurrentThread() {
 
   raster_context_ = std::make_unique<gpu::raster::RasterImplementationGLES>(
       context_->GetImplementation(),
-      context_->GetImplementation()->command_buffer(),
       context_->GetImplementation()->capabilities());
 
   return bind_result_;

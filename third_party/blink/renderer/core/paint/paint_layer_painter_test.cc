@@ -80,7 +80,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequence) {
   auto& content2 = *GetLayoutObjectByElementId("content2");
   auto& filler2 = *GetLayoutObjectByElementId("filler2");
 
-  const auto& view_display_item_client = ViewBackgroundClient();
+  const auto& view_display_item_client = ViewScrollingBackgroundClient();
   const auto& view_chunk_client =
       RuntimeEnabledFeatures::SlimmingPaintV2Enabled()
           ? *GetLayoutView().Layer()
@@ -225,7 +225,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceOnInterestRectChange) {
   IntRect interest_rect(0, 0, 400, 300);
   Paint(&interest_rect);
 
-  const auto& background_display_item_client = ViewBackgroundClient();
+  const auto& background_display_item_client = ViewScrollingBackgroundClient();
 
   // Container1 is fully in the interest rect;
   // Container2 is partly (including its stacking chidren) in the interest rect;
@@ -317,7 +317,7 @@ TEST_P(PaintLayerPainterTest,
   LayoutObject& content2 =
       *GetDocument().getElementById("content2")->GetLayoutObject();
 
-  const auto& background_display_item_client = ViewBackgroundClient();
+  const auto& background_display_item_client = ViewScrollingBackgroundClient();
   EXPECT_DISPLAY_LIST(
       RootPaintController().GetDisplayItemList(), 5,
       TestDisplayItem(background_display_item_client, kDocumentBackgroundType),

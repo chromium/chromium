@@ -52,8 +52,8 @@ void HttpServerPropertiesImpl::SetSpdyServers(
   spdy_servers_map_.Swap(*spdy_servers_map);
 
   // Add the entries from the memory cache.
-  for (SpdyServersMap::reverse_iterator it = spdy_servers_map->rbegin();
-       it != spdy_servers_map->rend(); ++it) {
+  for (auto it = spdy_servers_map->rbegin(); it != spdy_servers_map->rend();
+       ++it) {
     // Add the entry if it is not in the cache, otherwise move it to the front
     // of recency list.
     if (spdy_servers_map_.Get(it->first) == spdy_servers_map_.end())
@@ -123,8 +123,7 @@ void HttpServerPropertiesImpl::SetServerNetworkStats(
   server_network_stats_map_.Swap(*server_network_stats_map);
 
   // Add the entries from the memory cache.
-  for (ServerNetworkStatsMap::reverse_iterator it =
-           server_network_stats_map->rbegin();
+  for (auto it = server_network_stats_map->rbegin();
        it != server_network_stats_map->rend(); ++it) {
     if (server_network_stats_map_.Get(it->first) ==
         server_network_stats_map_.end()) {
@@ -141,7 +140,7 @@ void HttpServerPropertiesImpl::SetQuicServerInfoMap(
   quic_server_info_map_.Swap(*quic_server_info_map);
 
   // Add the entries from the memory cache.
-  for (QuicServerInfoMap::reverse_iterator it = quic_server_info_map->rbegin();
+  for (auto it = quic_server_info_map->rbegin();
        it != quic_server_info_map->rend(); ++it) {
     if (quic_server_info_map_.Get(it->first) == quic_server_info_map_.end()) {
       quic_server_info_map_.Put(it->first, it->second);
@@ -151,7 +150,7 @@ void HttpServerPropertiesImpl::SetQuicServerInfoMap(
   // Repopulate |canonical_server_info_map_| to stay in sync with
   // |quic_server_info_map_|.
   canonical_server_info_map_.clear();
-  for (QuicServerInfoMap::reverse_iterator it = quic_server_info_map_.rbegin();
+  for (auto it = quic_server_info_map_.rbegin();
        it != quic_server_info_map_.rend(); ++it) {
     UpdateCanonicalServerInfoMap(it->first);
   }
@@ -224,8 +223,7 @@ bool HttpServerPropertiesImpl::GetSupportsSpdy(
   if (server.host().empty())
     return false;
 
-  SpdyServersMap::iterator spdy_server =
-      spdy_servers_map_.Get(server.Serialize());
+  auto spdy_server = spdy_servers_map_.Get(server.Serialize());
   return spdy_server != spdy_servers_map_.end() && spdy_server->second;
 }
 
@@ -236,8 +234,7 @@ void HttpServerPropertiesImpl::SetSupportsSpdy(
   if (server.host().empty())
     return;
 
-  SpdyServersMap::iterator spdy_server =
-      spdy_servers_map_.Get(server.Serialize());
+  auto spdy_server = spdy_servers_map_.Get(server.Serialize());
   if ((spdy_server != spdy_servers_map_.end()) &&
       (spdy_server->second == support_spdy)) {
     return;
@@ -291,11 +288,10 @@ HttpServerPropertiesImpl::GetAlternativeServiceInfos(
   // |valid_alternative_service_infos|.
   AlternativeServiceInfoVector valid_alternative_service_infos;
   const base::Time now = clock_->Now();
-  AlternativeServiceMap::iterator map_it = alternative_service_map_.Get(origin);
+  auto map_it = alternative_service_map_.Get(origin);
   if (map_it != alternative_service_map_.end()) {
     HostPortPair host_port_pair(origin.host(), origin.port());
-    for (AlternativeServiceInfoVector::iterator it = map_it->second.begin();
-         it != map_it->second.end();) {
+    for (auto it = map_it->second.begin(); it != map_it->second.end();) {
       if (it->expiration() < now) {
         it = map_it->second.erase(it);
         continue;
@@ -329,7 +325,7 @@ HttpServerPropertiesImpl::GetAlternativeServiceInfos(
     return valid_alternative_service_infos;
   }
 
-  CanonicalAltSvcMap::const_iterator canonical = GetCanonicalAltSvcHost(origin);
+  auto canonical = GetCanonicalAltSvcHost(origin);
   if (canonical == canonical_alt_svc_map_.end()) {
     return AlternativeServiceInfoVector();
   }
@@ -337,8 +333,7 @@ HttpServerPropertiesImpl::GetAlternativeServiceInfos(
   if (map_it == alternative_service_map_.end()) {
     return AlternativeServiceInfoVector();
   }
-  for (AlternativeServiceInfoVector::iterator it = map_it->second.begin();
-       it != map_it->second.end();) {
+  for (auto it = map_it->second.begin(); it != map_it->second.end();) {
     if (it->expiration() < now) {
       it = map_it->second.erase(it);
       continue;
@@ -403,7 +398,7 @@ bool HttpServerPropertiesImpl::SetQuicAlternativeService(
 bool HttpServerPropertiesImpl::SetAlternativeServices(
     const url::SchemeHostPort& origin,
     const AlternativeServiceInfoVector& alternative_service_info_vector) {
-  AlternativeServiceMap::iterator it = alternative_service_map_.Peek(origin);
+  auto it = alternative_service_map_.Peek(origin);
 
   if (alternative_service_info_vector.empty()) {
     RemoveAltSvcCanonicalHost(origin);
@@ -590,7 +585,7 @@ void HttpServerPropertiesImpl::SetServerNetworkStats(
 
 void HttpServerPropertiesImpl::ClearServerNetworkStats(
     const url::SchemeHostPort& server) {
-  ServerNetworkStatsMap::iterator it = server_network_stats_map_.Get(server);
+  auto it = server_network_stats_map_.Get(server);
   if (it != server_network_stats_map_.end()) {
     server_network_stats_map_.Erase(it);
   }
@@ -598,7 +593,7 @@ void HttpServerPropertiesImpl::ClearServerNetworkStats(
 
 const ServerNetworkStats* HttpServerPropertiesImpl::GetServerNetworkStats(
     const url::SchemeHostPort& server) {
-  ServerNetworkStatsMap::iterator it = server_network_stats_map_.Get(server);
+  auto it = server_network_stats_map_.Get(server);
   if (it == server_network_stats_map_.end()) {
     return NULL;
   }
@@ -613,7 +608,7 @@ HttpServerPropertiesImpl::server_network_stats_map() const {
 bool HttpServerPropertiesImpl::SetQuicServerInfo(
     const quic::QuicServerId& server_id,
     const std::string& server_info) {
-  QuicServerInfoMap::iterator it = quic_server_info_map_.Peek(server_id);
+  auto it = quic_server_info_map_.Peek(server_id);
   bool changed =
       (it == quic_server_info_map_.end() || it->second != server_info);
   quic_server_info_map_.Put(server_id, server_info);
@@ -623,7 +618,7 @@ bool HttpServerPropertiesImpl::SetQuicServerInfo(
 
 const std::string* HttpServerPropertiesImpl::GetQuicServerInfo(
     const quic::QuicServerId& server_id) {
-  QuicServerInfoMap::iterator it = quic_server_info_map_.Get(server_id);
+  auto it = quic_server_info_map_.Get(server_id);
   if (it != quic_server_info_map_.end()) {
     // Since |canonical_server_info_map_| should always map to the most
     // recent host, update it with the one that became MRU in
@@ -635,8 +630,7 @@ const std::string* HttpServerPropertiesImpl::GetQuicServerInfo(
   // If the exact match for |server_id| wasn't found, check
   // |canonical_server_info_map_| whether there is server info for a host with
   // the same canonical host suffix.
-  CanonicalServerInfoMap::const_iterator canonical_itr =
-      GetCanonicalServerInfoHost(server_id);
+  auto canonical_itr = GetCanonicalServerInfoHost(server_id);
   if (canonical_itr == canonical_server_info_map_.end())
     return nullptr;
 
@@ -686,7 +680,7 @@ void HttpServerPropertiesImpl::SetMaxServerConfigsStoredInProperties(
   // Update the |canonical_server_info_map_| as well, so it stays in sync with
   // |quic_server_info_map_|.
   canonical_server_info_map_ = CanonicalServerInfoMap();
-  for (QuicServerInfoMap::reverse_iterator it = quic_server_info_map_.rbegin();
+  for (auto it = quic_server_info_map_.rbegin();
        it != quic_server_info_map_.rend(); ++it) {
     temp_map.Put(it->first, it->second);
     UpdateCanonicalServerInfoMap(it->first);
@@ -717,7 +711,7 @@ HttpServerPropertiesImpl::GetAlternateProtocolIterator(
   if (it != alternative_service_map_.end())
     return it;
 
-  CanonicalAltSvcMap::const_iterator canonical = GetCanonicalAltSvcHost(server);
+  auto canonical = GetCanonicalAltSvcHost(server);
   if (canonical == canonical_alt_svc_map_.end()) {
     return alternative_service_map_.end();
   }
@@ -761,7 +755,7 @@ HttpServerPropertiesImpl::GetCanonicalAltSvcHost(
 
 void HttpServerPropertiesImpl::RemoveAltSvcCanonicalHost(
     const url::SchemeHostPort& server) {
-  CanonicalAltSvcMap::const_iterator canonical = GetCanonicalAltSvcHost(server);
+  auto canonical = GetCanonicalAltSvcHost(server);
   if (canonical == canonical_alt_svc_map_.end())
     return;
 
@@ -772,11 +766,9 @@ void HttpServerPropertiesImpl::OnExpireBrokenAlternativeService(
     const AlternativeService& expired_alternative_service) {
   // Remove every occurrence of |expired_alternative_service| from
   // |alternative_service_map_|.
-  for (AlternativeServiceMap::iterator map_it =
-           alternative_service_map_.begin();
+  for (auto map_it = alternative_service_map_.begin();
        map_it != alternative_service_map_.end();) {
-    for (AlternativeServiceInfoVector::iterator it = map_it->second.begin();
-         it != map_it->second.end();) {
+    for (auto it = map_it->second.begin(); it != map_it->second.end();) {
       AlternativeService alternative_service(it->alternative_service());
       // Empty hostname in map means hostname of key: substitute before
       // comparing to |expired_alternative_service|.

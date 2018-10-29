@@ -48,6 +48,10 @@ class CORE_EXPORT HTMLFormControlElementWithState
   bool CanContainRangeEndPoint() const final { return false; }
 
   virtual bool ShouldAutocomplete() const;
+  // Implementations of 'autocomplete' IDL attribute.
+  String IDLExposedAutofillValue() const;
+  void setIDLExposedAutofillValue(const String& autocomplete_value);
+
   virtual bool ShouldSaveAndRestoreFormControlState() const;
   virtual FormControlState SaveFormControlState() const;
   // The specified FormControlState must have at least one string value.
@@ -70,6 +74,9 @@ class CORE_EXPORT HTMLFormControlElementWithState
 
  private:
   bool ShouldForceLegacyLayout() const final { return true; }
+
+  // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle
+  bool IsWearingAutofillAnchorMantle() const;
 
   // Pointers for DoublyLinkedListNode<HTMLFormControlElementWithState>. This
   // is used for adding an instance to a list of form controls stored in

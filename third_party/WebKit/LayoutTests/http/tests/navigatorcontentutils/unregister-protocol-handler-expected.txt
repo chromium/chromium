@@ -41,7 +41,6 @@ PASS Invalid url "http://[v8.:::]//url=%s" threw SyntaxError exception.Failed to
 PASS URL with origin different than document origin threw SecurityError exception: "Failed to execute 'unregisterProtocolHandler' on 'Navigator': Can only register custom handler in the document's origin.".
 PASS Valid call succeeded.
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

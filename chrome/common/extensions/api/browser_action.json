@@ -5,7 +5,7 @@
 [
   {
     "namespace": "browserAction",
-    "description": "Use browser actions to put icons in the main Google Chrome toolbar, to the right of the address bar. In addition to its <a href='browserAction#icon'>icon</a>, a browser action can also have a <a href='browserAction#tooltip'>tooltip</a>, a <a href='browserAction#badge'>badge</a>, and a <a href='browserAction#popups'>popup</a>.",
+    "description": "Use browser actions to put icons in the main Google Chrome toolbar, to the right of the address bar. In addition to its <a href='browserAction#icon'>icon</a>, a browser action can have a <a href='browserAction#tooltip'>tooltip</a>, a <a href='browserAction#badge'>badge</a>, and a <a href='browserAction#popups'>popup</a>.",
     "types": [
       {
         "id": "ColorArray",
@@ -23,14 +23,14 @@
         "type": "object",
         "isInstanceOf": "ImageData",
         "additionalProperties": { "type": "any" },
-        "description": "Pixel data for an image. Must be an ImageData object (for example, from a <code>canvas</code> element)."
+        "description": "Pixel data for an image. Must be an ImageData object; for example, from a <code>canvas</code> element."
       }
     ],
     "functions": [
       {
         "name": "setTitle",
         "type": "function",
-        "description": "Sets the title of the browser action. This shows up in the tooltip.",
+        "description": "Sets the title of the browser action. This title appears in the tooltip.",
         "parameters": [
           {
             "name": "details",
@@ -62,7 +62,7 @@
               "tabId": {
                 "type": "integer",
                 "optional": true,
-                "description": "Specify the tab to get the title from. If no tab is specified, the non-tab-specific title is returned."
+                "description": "The tab to get the title from. If no tab is specified, the default title is returned."
               }
             }
           },
@@ -81,7 +81,7 @@
       {
         "name": "setIcon",
         "type": "function",
-        "description": "Sets the icon for the browser action. The icon can be specified either as the path to an image file or as the pixel data from a canvas element, or as dictionary of either one of those. Either the <b>path</b> or the <b>imageData</b> property must be specified.",
+        "description": "Sets the icon for the browser action. The icon can be specified as the path to an image file, as the pixel data from a canvas element, or as a dictionary of one of those. Either the <code>path</code> or the <code>imageData</code> property must be specified.",
         "parameters": [
           {
             "name": "details",
@@ -96,7 +96,7 @@
                   }
                 ],
                 "optional": true,
-                "description": "Either an ImageData object or a dictionary {size -> ImageData} representing icon to be set. If the icon is specified as a dictionary, the actual image to be used is chosen depending on screen's pixel density. If the number of image pixels that fit into one screen space unit equals <code>scale</code>, then image with size <code>scale</code> * n will be selected, where n is the size of the icon in the UI. At least one image must be specified. Note that 'details.imageData = foo' is equivalent to 'details.imageData = {'16': foo}'"
+                "description": "Either an ImageData object or a dictionary {size -> ImageData} representing an icon to be set. If the icon is specified as a dictionary, the image used is chosen depending on the screen's pixel density. If the number of image pixels that fit into one screen space unit equals <code>scale</code>, then an image with size <code>scale</code> * n is selected, where <i>n</i> is the size of the icon in the UI. At least one image must be specified. Note that 'details.imageData = foo' is equivalent to 'details.imageData = {'16': foo}'"
               },
               "path": {
                 "choices": [
@@ -107,7 +107,7 @@
                   }
                 ],
                 "optional": true,
-                "description": "Either a relative image path or a dictionary {size -> relative image path} pointing to icon to be set. If the icon is specified as a dictionary, the actual image to be used is chosen depending on screen's pixel density. If the number of image pixels that fit into one screen space unit equals <code>scale</code>, then image with size <code>scale</code> * n will be selected, where n is the size of the icon in the UI. At least one image must be specified. Note that 'details.path = foo' is equivalent to 'details.path = {'16': foo}'"
+                "description": "Either a relative image path or a dictionary {size -> relative image path} pointing to an icon to be set. If the icon is specified as a dictionary, the image used is chosen depending on the screen's pixel density. If the number of image pixels that fit into one screen space unit equals <code>scale</code>, then an image with size <code>scale</code> * n is selected, where <i>n</i> is the size of the icon in the UI. At least one image must be specified. Note that 'details.path = foo' is equivalent to 'details.path = {'16': foo}'"
               },
               "tabId": {
                 "type": "integer",
@@ -127,7 +127,7 @@
       {
         "name": "setPopup",
         "type": "function",
-        "description": "Sets the html document to be opened as a popup when the user clicks on the browser action's icon.",
+        "description": "Sets the HTML document to be opened as a popup when the user clicks the browser action icon.",
         "parameters": [
           {
             "name": "details",
@@ -141,7 +141,7 @@
               },
               "popup": {
                 "type": "string",
-                "description": "The html file to show in a popup.  If set to the empty string (''), no popup is shown."
+                "description": "The HTML file to show in a popup. If set to the empty string (''), no popup is shown."
               }
             }
           },
@@ -151,7 +151,7 @@
       {
         "name": "getPopup",
         "type": "function",
-        "description": "Gets the html document set as the popup for this browser action.",
+        "description": "Gets the HTML document that is set as the popup for this browser action.",
         "parameters": [
           {
             "name": "details",
@@ -160,7 +160,7 @@
               "tabId": {
                 "type": "integer",
                 "optional": true,
-                "description": "Specify the tab to get the popup from. If no tab is specified, the non-tab-specific popup is returned."
+                "description": "The tab to get the popup from. If no tab is specified, the non-tab-specific popup is returned."
               }
             }
           },
@@ -187,7 +187,7 @@
             "properties": {
               "text": {
                 "type": "string",
-                "description": "Any number of characters can be passed, but only about four can fit in the space."
+                "description": "Any number of characters can be passed, but only about four can fit into the space."
               },
               "tabId": {
                 "type": "integer",
@@ -211,7 +211,7 @@
               "tabId": {
                 "type": "integer",
                 "optional": true,
-                "description": "Specify the tab to get the badge text from. If no tab is specified, the non-tab-specific badge text is returned."
+                "description": "The tab to get the badge text from. If no tab is specified, the non-tab-specific badge text is returned."
               }
             }
           },
@@ -237,7 +237,7 @@
             "type": "object",
             "properties": {
               "color": {
-                "description": "An array of four integers in the range [0,255] that make up the RGBA color of the badge. Can also be a string with a CSS value, red being <code>#FF0000</code> or <code>#F00</code>. Renders colors at full opacity.",
+                "description": "An array of four integers in the range 0-255 that make up the RGBA color of the badge. Can also be a string with a CSS hex color value; for example, <code>#FF0000</code> or <code>#F00</code> (red). Renders colors at full opacity.",
                 "choices": [
                   {"type": "string"},
                   {"$ref": "ColorArray"}
@@ -265,7 +265,7 @@
               "tabId": {
                 "type": "integer",
                 "optional": true,
-                "description": "Specify the tab to get the badge background color from. If no tab is specified, the non-tab-specific badge background color is returned."
+                "description": "The tab to get the badge background color from. If no tab is specified, the non-tab-specific badge background color is returned."
               }
             }
           },
@@ -284,14 +284,14 @@
       {
         "name": "enable",
         "type": "function",
-        "description": "Enables the browser action for a tab. By default, browser actions are enabled.",
+        "description": "Enables the browser action for a tab. Defaults to enabled.",
         "parameters": [
           {
             "type": "integer",
             "optional": true,
             "name": "tabId",
             "minimum": 0,
-            "description": "The id of the tab for which you want to modify the browser action."
+            "description": "The ID of the tab for which to modify the browser action."
           },
           {"type": "function", "name": "callback", "parameters": [], "optional": true}
         ]
@@ -306,7 +306,7 @@
             "optional": true,
             "name": "tabId",
             "minimum": 0,
-            "description": "The id of the tab for which you want to modify the browser action."
+            "description": "The ID of the tab for which to modify the browser action."
           },
           {"type": "function", "name": "callback", "parameters": [], "optional": true}
         ]
@@ -337,7 +337,7 @@
       {
         "name": "onClicked",
         "type": "function",
-        "description": "Fired when a browser action icon is clicked.  This event will not fire if the browser action has a popup.",
+        "description": "Fired when a browser action icon is clicked. Does not fire if the browser action has a popup.",
         "parameters": [
           {
             "name": "tab",

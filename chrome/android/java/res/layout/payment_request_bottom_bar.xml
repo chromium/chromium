@@ -6,7 +6,6 @@
 <!-- Sits at the bottom of the payment request UI. -->
 <org.chromium.chrome.browser.payments.ui.PaymentRequestBottomBar
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_bar"
     android:layout_height="wrap_content"
@@ -34,18 +33,17 @@
         android:layout_width="0dp"
         android:layout_height="0dp" />
 
-    <Button
+    <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/button_secondary"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
-        android:text="@string/payments_edit_button" />
+        android:text="@string/payments_edit_button"
+        style="@style/TextButton" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/button_primary"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
         android:text="@string/payments_pay_button"
-        android:textAppearance="@style/WhiteButtonText"
-        app:buttonColor="@color/light_active_color"
-        app:buttonRaised="false" />
+        style="@style/FilledButton.Flat" />
 </org.chromium.chrome.browser.payments.ui.PaymentRequestBottomBar>

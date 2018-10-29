@@ -70,52 +70,7 @@ void DragWindowResizer::Drag(const gfx::Point& location, int event_flags) {
 
 void DragWindowResizer::CompleteDrag() {
   next_window_resizer_->CompleteDrag();
-
-  GetTarget()->layer()->SetOpacity(details().initial_opacity);
-  drag_window_controller_.reset();
-
-  // TODO(malaykeshav) - This is temporary fix/workaround that keeps performance
-  // but may not give the best UI while dragging. See https://crbug/834114
-  RecursiveSchedulePainter(GetTarget()->layer());
-
-  // Check if the destination is another display.
-  gfx::Point last_mouse_location_in_screen = last_mouse_location_;
-  ::wm::ConvertPointToScreen(GetTarget()->parent(),
-                             &last_mouse_location_in_screen);
-  display::Screen* screen = display::Screen::GetScreen();
-  const display::Display dst_display =
-      screen->GetDisplayNearestPoint(last_mouse_location_in_screen);
-
-  if (dst_display.id() !=
-      screen->GetDisplayNearestWindow(GetTarget()->GetRootWindow()).id()) {
-    // Adjust the size and position so that it doesn't exceed the size of
-    // work area.
-    const gfx::Size& size = dst_display.work_area().size();
-    gfx::Rect bounds = GetTarget()->bounds();
-    if (bounds.width() > size.width()) {
-      int diff = bounds.width() - size.width();
-      bounds.set_x(bounds.x() + diff / 2);
-      bounds.set_width(size.width());
-    }
-    if (bounds.height() > size.height())
-      bounds.set_height(size.height());
-
-    gfx::Rect dst_bounds = bounds;
-    ::wm::ConvertRectToScreen(GetTarget()->parent(), &dst_bounds);
-
-    // Adjust the position so that the cursor is on the window.
-    if (!dst_bounds.Contains(last_mouse_location_in_screen)) {
-      if (last_mouse_location_in_screen.x() < dst_bounds.x())
-        dst_bounds.set_x(last_mouse_location_in_screen.x());
-      else if (last_mouse_location_in_screen.x() > dst_bounds.right())
-        dst_bounds.set_x(last_mouse_location_in_screen.x() -
-                         dst_bounds.width());
-    }
-    ash::wm::AdjustBoundsToEnsureMinimumWindowVisibility(dst_display.bounds(),
-                                                         &dst_bounds);
-
-    GetTarget()->SetBoundsInScreen(dst_bounds, dst_display);
-  }
+  EndDragImpl();
 }
 
 void DragWindowResizer::RevertDrag() {
@@ -123,6 +78,11 @@ void DragWindowResizer::RevertDrag() {
 
   drag_window_controller_.reset();
   GetTarget()->layer()->SetOpacity(details().initial_opacity);
+}
+
+void DragWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
+  next_window_resizer_->FlingOrSwipe(event);
+  EndDragImpl();
 }
 
 DragWindowResizer::DragWindowResizer(
@@ -173,6 +133,54 @@ bool DragWindowResizer::ShouldAllowMouseWarp() {
   return details().window_component == HTCAPTION &&
          !::wm::GetTransientParent(GetTarget()) &&
          wm::IsWindowUserPositionable(GetTarget());
+}
+
+void DragWindowResizer::EndDragImpl() {
+  GetTarget()->layer()->SetOpacity(details().initial_opacity);
+  drag_window_controller_.reset();
+
+  // TODO(malaykeshav) - This is temporary fix/workaround that keeps performance
+  // but may not give the best UI while dragging. See https://crbug/834114
+  RecursiveSchedulePainter(GetTarget()->layer());
+
+  // Check if the destination is another display.
+  gfx::Point last_mouse_location_in_screen = last_mouse_location_;
+  ::wm::ConvertPointToScreen(GetTarget()->parent(),
+                             &last_mouse_location_in_screen);
+  display::Screen* screen = display::Screen::GetScreen();
+  const display::Display dst_display =
+      screen->GetDisplayNearestPoint(last_mouse_location_in_screen);
+
+  if (dst_display.id() !=
+      screen->GetDisplayNearestWindow(GetTarget()->GetRootWindow()).id()) {
+    // Adjust the size and position so that it doesn't exceed the size of
+    // work area.
+    const gfx::Size& size = dst_display.work_area().size();
+    gfx::Rect bounds = GetTarget()->bounds();
+    if (bounds.width() > size.width()) {
+      int diff = bounds.width() - size.width();
+      bounds.set_x(bounds.x() + diff / 2);
+      bounds.set_width(size.width());
+    }
+    if (bounds.height() > size.height())
+      bounds.set_height(size.height());
+
+    gfx::Rect dst_bounds = bounds;
+    ::wm::ConvertRectToScreen(GetTarget()->parent(), &dst_bounds);
+
+    // Adjust the position so that the cursor is on the window.
+    if (!dst_bounds.Contains(last_mouse_location_in_screen)) {
+      if (last_mouse_location_in_screen.x() < dst_bounds.x())
+        dst_bounds.set_x(last_mouse_location_in_screen.x());
+      else if (last_mouse_location_in_screen.x() > dst_bounds.right())
+        dst_bounds.set_x(last_mouse_location_in_screen.x() -
+                         dst_bounds.width());
+    }
+    ash::wm::AdjustBoundsToEnsureMinimumWindowVisibility(dst_display.bounds(),
+                                                         &dst_bounds);
+
+    GetTarget()->SetBoundsInScreen(dst_bounds, dst_display);
+  }
 }
 
 }  // namespace ash

@@ -1,0 +1,53 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file exposes an interface to the chrome://discards Web UI to allow
+// viewing and exploring the CU graph.
+
+module resource_coordinator.mojom;
+
+import "mojo/public/mojom/base/process_id.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Represents the momentary state of a Page CU.
+struct WebUIPageInfo {
+  int64 id;
+
+  int64 main_frame_id;
+
+  string main_frame_url;
+
+  // TODO(siggi): Estimate data.
+};
+
+// Represents the momentary state of a Frame CU.
+struct WebUIFrameInfo {
+  int64 id;
+
+  int64 parent_frame_id;
+  int64 process_id;
+};
+
+// Represents the momentary state of a Process CU.
+struct WebUIProcessInfo {
+  int64 id;
+
+  mojo_base.mojom.ProcessId pid;
+  mojo_base.mojom.TimeDelta cumulative_cpu_usage;
+  uint64 private_footprint_kb;
+};
+
+// Represents the momentary state of an entire RC graph.
+struct WebUIGraph {
+  array<WebUIPageInfo> pages;
+  array<WebUIFrameInfo> frames;
+  array<WebUIProcessInfo> processes;
+};
+
+// This interface allows grabbing the momentary state of the RC graph for
+// visualization or inspection. This is exposed on the RC service, and used
+// from the chrome://discards WebUI graph view tab.
+interface WebUIGraphDump {
+  GetCurrentGraph() => (WebUIGraph graph);
+};

@@ -195,28 +195,20 @@ void ToCookieChangeSubscription(
 const KURL& DefaultCookieURL(ExecutionContext* execution_context) {
   DCHECK(execution_context);
 
-  if (execution_context->IsDocument()) {
-    Document* document = ToDocument(execution_context);
+  if (auto* document = DynamicTo<Document>(execution_context))
     return document->CookieURL();
-  }
 
-  DCHECK(execution_context->IsServiceWorkerGlobalScope());
-  ServiceWorkerGlobalScope* scope =
-      ToServiceWorkerGlobalScope(execution_context);
+  auto* scope = To<ServiceWorkerGlobalScope>(execution_context);
   return scope->Url();
 }
 
 KURL DefaultSiteForCookies(ExecutionContext* execution_context) {
   DCHECK(execution_context);
 
-  if (execution_context->IsDocument()) {
-    Document* document = ToDocument(execution_context);
+  if (auto* document = DynamicTo<Document>(execution_context))
     return document->SiteForCookies();
-  }
 
-  DCHECK(execution_context->IsServiceWorkerGlobalScope());
-  ServiceWorkerGlobalScope* scope =
-      ToServiceWorkerGlobalScope(execution_context);
+  auto* scope = To<ServiceWorkerGlobalScope>(execution_context);
   return scope->Url();
 }
 
@@ -317,8 +309,6 @@ ScriptPromise CookieStore::subscribeToChanges(
     ScriptState* script_state,
     const HeapVector<CookieStoreGetOptions>& subscriptions,
     ExceptionState& exception_state) {
-  DCHECK(GetExecutionContext()->IsServiceWorkerGlobalScope());
-
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
 
@@ -342,8 +332,7 @@ ScriptPromise CookieStore::subscribeToChanges(
     return ScriptPromise();
   }
 
-  ServiceWorkerGlobalScope* scope =
-      ToServiceWorkerGlobalScope(GetExecutionContext());
+  auto* scope = To<ServiceWorkerGlobalScope>(GetExecutionContext());
 
   if (!scope->IsInstalling()) {
     exception_state.ThrowTypeError("Outside the installation phase");
@@ -352,7 +341,7 @@ ScriptPromise CookieStore::subscribeToChanges(
 
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
   int64_t service_worker_registration_id =
-      scope->registration()->WebRegistration()->RegistrationId();
+      scope->registration()->RegistrationId();
   subscription_backend_->AppendSubscriptions(
       service_worker_registration_id, std::move(backend_subscriptions),
       WTF::Bind(&CookieStore::OnSubscribeToCookieChangesResult,
@@ -363,8 +352,6 @@ ScriptPromise CookieStore::subscribeToChanges(
 ScriptPromise CookieStore::getChangeSubscriptions(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  DCHECK(GetExecutionContext()->IsServiceWorkerGlobalScope());
-
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
 
@@ -375,10 +362,9 @@ ScriptPromise CookieStore::getChangeSubscriptions(
   }
 
   ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
-  ServiceWorkerGlobalScope* scope =
-      ToServiceWorkerGlobalScope(GetExecutionContext());
+  auto* scope = To<ServiceWorkerGlobalScope>(GetExecutionContext());
   int64_t service_worker_registration_id =
-      scope->registration()->WebRegistration()->RegistrationId();
+      scope->registration()->RegistrationId();
   subscription_backend_->GetSubscriptions(
       service_worker_registration_id,
       WTF::Bind(&CookieStore::OnGetCookieChangeSubscriptionResult,

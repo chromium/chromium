@@ -404,7 +404,7 @@ void SliderContainerElement::HandleTouchEvent(TouchEvent* event) {
         sliding_direction_ = GetDirection(current_point, start_point_);
       }
 
-      // m_slidingDirection has been updated, so check whether it's okay to
+      // sliding_direction_ has been updated, so check whether it's okay to
       // slide again.
       if (CanSlide()) {
         thumb->SetPositionFromPoint(touches->item(0)->AbsoluteLocation());

@@ -6,11 +6,13 @@
 
 #include "base/guid.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chromeos/chromeos_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -51,8 +53,7 @@ void ClearStoragePartition(content::StoragePartition* storage_partition,
   storage_partition->ClearData(
       content::StoragePartition::REMOVE_DATA_MASK_ALL,
       content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-      content::StoragePartition::OriginMatcherFunction(), base::Time(),
-      base::Time::Max(), std::move(partition_data_cleared));
+      base::Time(), base::Time::Max(), std::move(partition_data_cleared));
 }
 
 net::URLRequestContextGetter* GetSystemURLRequestContextGetter() {
@@ -120,8 +121,8 @@ void SigninPartitionManager::StartSigninSession(
       &InvokeStartSigninSessionDoneCallback, std::move(signin_session_started),
       current_storage_partition_name_);
 
-  BrowserThread::PostTaskAndReply(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReply(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &PrepareSigninURLRequestContextOnIOThread,
           base::RetainedRef(get_system_url_request_context_getter_task_.Run()),

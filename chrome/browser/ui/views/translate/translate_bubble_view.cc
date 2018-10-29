@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/ui/translate/translate_bubble_model_impl.h"
 #include "chrome/browser/ui/translate/translate_bubble_view_state_transition.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -41,10 +39,8 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/blue_button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -71,16 +67,6 @@ class AdvancedViewContainer : public views::View {
  private:
   DISALLOW_COPY_AND_ASSIGN(AdvancedViewContainer);
 };
-
-#if defined(OS_MACOSX)
-bool IsViewsBrowserCocoa() {
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-  return views_mode_controller::IsViewsBrowserCocoa();
-#else
-  return true;
-#endif
-}
-#endif  // defined(OS_MACOSX)
 
 }  // namespace
 
@@ -141,20 +127,6 @@ views::Widget* TranslateBubbleView::ShowBubble(
       new TranslateBubbleModelImpl(step, std::move(ui_delegate)));
   TranslateBubbleView* view = new TranslateBubbleView(
       anchor_view, anchor_point, std::move(model), error_type, web_contents);
-
-#if defined(OS_MACOSX)
-  if (IsViewsBrowserCocoa()) {
-    // On Cocoa, there's no anchor view (|anchor_point| is used to position).
-    // However, the bubble will be set up with no parent and no anchor. That
-    // needs to be set up before showing the bubble.
-    DCHECK(!anchor_view);
-    view->SetArrow(views::BubbleBorder::TOP_RIGHT);
-    view->set_parent_window(platform_util::GetViewForWindow(
-        web_contents->GetTopLevelNativeWindow()));
-  } else {
-    DCHECK(anchor_view);
-  }
-#endif
 
   if (highlighted_button)
     view->SetHighlightedButton(highlighted_button);

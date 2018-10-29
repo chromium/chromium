@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Tests that a MediaStream constructor follows the algorithm set in the spec assert_equals: an ended track gets added via the MediaStream constructor expected object "[object MediaStreamTrack]" but got null
-Harness: the test ran to completion.
-

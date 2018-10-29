@@ -49,18 +49,6 @@ class UserManager {
 
   // Get the path of profile that is being signed in.
   static base::FilePath GetSigninProfilePath();
-#if defined(OS_MACOSX)
-  // Temporary shim for Polychrome. See bottom of first comment in
-  // https://crbug.com/80495 for details.
-  static void ShowCocoa(const base::FilePath& profile_path_to_focus,
-                        profiles::UserManagerAction user_manager_action);
-  static void HideCocoa();
-  static bool IsShowingCocoa();
-  static void OnUserManagerShownCocoa();
-  static void AddOnUserManagerShownCallbackForTestingCocoa(
-      const base::Closure& callback);
-  static base::FilePath GetSigninProfilePathCocoa();
-#endif
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(UserManager);
@@ -113,25 +101,6 @@ class UserManagerProfileDialog {
   // Hides the dialog if it is showing.
   static void HideDialog();
 
-#if defined(OS_MACOSX)
-  // Temporary shim for Polychrome. See bottom of first comment in
-  // https://crbug.com/80495 for details.
-  static void ShowReauthDialogCocoa(content::BrowserContext* browser_context,
-                                    const std::string& email,
-                                    signin_metrics::Reason reason);
-  static void ShowReauthDialogWithProfilePathCocoa(
-      content::BrowserContext* browser_context,
-      const std::string& email,
-      const base::FilePath& profile_path,
-      signin_metrics::Reason reason);
-  static void ShowSigninDialogCocoa(content::BrowserContext* browser_context,
-                                    const base::FilePath& profile_path,
-                                    signin_metrics::Reason reason);
-  static void ShowDialogAndDisplayErrorMessageCocoa(
-      content::BrowserContext* browser_context);
-  static void DisplayErrorMessageCocoa();
-  static void HideDialogCocoa();
-#endif
   // Abstract base class for performing online reauthentication of profiles in
   // the User Manager. It is concretely implemented in UserManagerMac and
   // UserManagerView to specialize the closing of the UI's dialog widgets.

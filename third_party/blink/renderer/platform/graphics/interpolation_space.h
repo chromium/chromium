@@ -42,7 +42,7 @@ enum InterpolationSpace {
   kInterpolationSpaceLinear
 };
 
-namespace InterpolationSpaceUtilities {
+namespace interpolation_space_utilities {
 
 // Convert a Color assumed to be in the |src_interpolation_space| into the
 // |dst_interpolation_space|.
@@ -57,7 +57,7 @@ sk_sp<SkColorFilter> CreateInterpolationSpaceFilter(
     InterpolationSpace src_interpolation_space,
     InterpolationSpace dst_interpolation_space);
 
-}  // namespace InterpolationSpaceUtilities
+}  // namespace interpolation_space_utilities
 
 }  // namespace blink
 

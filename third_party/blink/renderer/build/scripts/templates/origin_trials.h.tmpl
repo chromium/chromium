@@ -3,8 +3,8 @@
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
-#ifndef BLINK_CORE_ORIGIN_TRIALS_ORIGIN_TRIALS_H_
-#define BLINK_CORE_ORIGIN_TRIALS_ORIGIN_TRIALS_H_
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -35,6 +35,6 @@ CORE_EXPORT Vector<AtomicString> GetImpliedTrials(const String& trial_name);
 
 } // namespace OriginTrials
 
-} // namespace blink
+}  // namespace blink
 
-#endif // BLINK_CORE_ORIGIN_TRIALS_ORIGIN_TRIALS_H_
+#endif  // {{header_guard}}

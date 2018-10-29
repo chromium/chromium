@@ -19,10 +19,21 @@ class HoverNotifier;
 
 // This is the big user view for the public account user. It wraps a UserView
 // and a arrow button below.
-// TODO(crbug.com/809635): Add test for this class.
 class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView,
                                               public views::ButtonListener {
  public:
+  // TestApi is used for tests to get internal implementation details.
+  class ASH_EXPORT TestApi {
+   public:
+    explicit TestApi(LoginPublicAccountUserView* view);
+    ~TestApi();
+
+    views::View* arrow_button() const;
+
+   private:
+    LoginPublicAccountUserView* const view_;
+  };
+
   using OnPublicAccountTapped = base::RepeatingClosure;
 
   struct Callbacks {

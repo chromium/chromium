@@ -122,7 +122,7 @@ void AddToList(CSSSelector*& destination,
       if (!selector_to_expand->IsLastInTagHistory())
         destination->SetLastInTagHistory(false);
     }
-    if (selector_to_expand->GetPseudoType() == CSSSelector::kPseudoIS ||
+    if (selector_to_expand->GetPseudoType() == CSSSelector::kPseudoWhere ||
         selector_to_expand->IgnoreSpecificity())
       destination->SetIgnoreSpecificity(true);
     destination->SetLastInSelectorList(false);
@@ -140,17 +140,17 @@ CSSSelectorList CSSSelectorList::ExpandedFirstPseudoClass() const {
   size_t i = 0;
   CSSSelectorList transformed = this->Copy();
   while (!selector_boundaries[i]->HasPseudoMatches() &&
-         !selector_boundaries[i]->HasPseudoIS())
+         !selector_boundaries[i]->HasPseudoWhere())
     ++i;
 
   const CSSSelector* selector_to_expand_begin = selector_boundaries[i];
   const CSSSelector* selector_to_expand_end = selector_boundaries[i + 1];
-  size_t selector_to_expand_length =
-      selector_to_expand_end - selector_to_expand_begin;
+  unsigned selector_to_expand_length =
+      static_cast<unsigned>(selector_to_expand_end - selector_to_expand_begin);
 
   const CSSSelector* simple_selector = selector_to_expand_begin;
   while (simple_selector->GetPseudoType() != CSSSelector::kPseudoMatches &&
-         simple_selector->GetPseudoType() != CSSSelector::kPseudoIS) {
+         simple_selector->GetPseudoType() != CSSSelector::kPseudoWhere) {
     simple_selector = simple_selector->TagHistory();
   }
 
@@ -159,10 +159,11 @@ CSSSelectorList CSSSelectorList::ExpandedFirstPseudoClass() const {
   std::vector<const CSSSelector*> selector_arg_boundaries =
       SelectorBoundaries(*simple_selector->SelectorList());
 
-  size_t num_args = selector_arg_boundaries.size() - 1;
+  wtf_size_t num_args =
+      SafeCast<wtf_size_t>(selector_arg_boundaries.size()) - 1;
   unsigned other_selectors_length = original_length - selector_to_expand_length;
 
-  unsigned expanded_selector_list_length =
+  wtf_size_t expanded_selector_list_length =
       (selector_to_expand_length - 1) * num_args + inner_selector_length +
       other_selectors_length;
 
@@ -181,7 +182,7 @@ CSSSelectorList CSSSelectorList::ExpandedFirstPseudoClass() const {
   CSSSelector* destination = list.selector_array_;
 
   AddToList(destination, selector_boundaries[0], selector_to_expand_begin);
-  for (size_t i = 0; i < num_args; ++i) {
+  for (wtf_size_t i = 0; i < num_args; ++i) {
     AddToList(destination, selector_to_expand_begin, simple_selector);
     AddToList(destination, selector_arg_boundaries[i],
               selector_arg_boundaries[i + 1], simple_selector);
@@ -224,9 +225,9 @@ bool CSSSelectorList::HasPseudoMatches() const {
   return false;
 }
 
-bool CSSSelectorList::HasPseudoIS() const {
+bool CSSSelectorList::HasPseudoWhere() const {
   for (const CSSSelector* s = FirstForCSSOM(); s; s = Next(*s)) {
-    if (s->HasPseudoIS())
+    if (s->HasPseudoWhere())
       return true;
   }
   return false;
@@ -234,7 +235,7 @@ bool CSSSelectorList::HasPseudoIS() const {
 
 bool CSSSelectorList::RequiresExpansion() const {
   for (const CSSSelector* s = FirstForCSSOM(); s; s = Next(*s)) {
-    if (s->HasPseudoMatches() || s->HasPseudoIS())
+    if (s->HasPseudoMatches() || s->HasPseudoWhere())
       return true;
   }
   return false;
@@ -243,7 +244,7 @@ bool CSSSelectorList::RequiresExpansion() const {
 CSSSelectorList CSSSelectorList::AdoptSelectorVector(
     Vector<std::unique_ptr<CSSParserSelector>>& selector_vector) {
   size_t flattened_size = 0;
-  for (size_t i = 0; i < selector_vector.size(); ++i) {
+  for (wtf_size_t i = 0; i < selector_vector.size(); ++i) {
     for (CSSParserSelector* selector = selector_vector[i].get(); selector;
          selector = selector->TagHistory())
       ++flattened_size;
@@ -255,8 +256,8 @@ CSSSelectorList CSSSelectorList::AdoptSelectorVector(
       WTF::Partitions::FastMalloc(WTF::Partitions::ComputeAllocationSize(
                                       flattened_size, sizeof(CSSSelector)),
                                   kCSSSelectorTypeName));
-  size_t array_index = 0;
-  for (size_t i = 0; i < selector_vector.size(); ++i) {
+  wtf_size_t array_index = 0;
+  for (wtf_size_t i = 0; i < selector_vector.size(); ++i) {
     CSSParserSelector* current = selector_vector[i].get();
     while (current) {
       // Move item from the parser selector vector into selector_array_ without
@@ -299,7 +300,7 @@ unsigned CSSSelectorList::ComputeLength() const {
   CSSSelector* current = selector_array_;
   while (!current->IsLastInSelectorList())
     ++current;
-  return (current - selector_array_) + 1;
+  return static_cast<unsigned>(current - selector_array_) + 1;
 }
 
 void CSSSelectorList::DeleteSelectors() {

@@ -289,8 +289,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
     NotifySessionCommand::Type previous_command_type,
     NotifySessionCommand::Result previous_command_result,
     BluetoothRemoteGattService::GattErrorCode previous_command_error_code) {
-  std::set<BluetoothGattNotifySession*>::iterator session_iterator =
-      notify_sessions_.find(session);
+  auto session_iterator = notify_sessions_.find(session);
 
   // If the session does not even belong to this characteristic, we return an
   // error right away.

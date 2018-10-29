@@ -57,7 +57,7 @@ class CORE_EXPORT V0CustomElementProcessingStack
     }
 
    private:
-    size_t saved_element_queue_start_;
+    wtf_size_t saved_element_queue_start_;
   };
 
   static bool InCallbackDeliveryScope() { return element_queue_start_; }
@@ -75,30 +75,30 @@ class CORE_EXPORT V0CustomElementProcessingStack
     // is popped when empty, this sentinel will cause a null deref
     // crash.
     V0CustomElementCallbackQueue* sentinel = nullptr;
-    for (size_t i = 0; i < kNumSentinels; i++)
+    for (wtf_size_t i = 0; i < kNumSentinels; i++)
       flattened_processing_stack_.push_back(sentinel);
     DCHECK_EQ(element_queue_end_, flattened_processing_stack_.size());
   }
 
   // The start of the element queue on the top of the processing
-  // stack. An offset into instance().m_flattenedProcessingStack.
-  static size_t element_queue_start_;
+  // stack. An offset into Instance().flattened_processing_stack_.
+  static wtf_size_t element_queue_start_;
 
   // The end of the element queue on the top of the processing
-  // stack. A cache of instance().m_flattenedProcessingStack.size().
-  static size_t element_queue_end_;
+  // stack. A cache of Instance().flattened_processing_stack_.size().
+  static wtf_size_t element_queue_end_;
 
   static V0CustomElementCallbackQueue::ElementQueueId CurrentElementQueue() {
     return V0CustomElementCallbackQueue::ElementQueueId(element_queue_start_);
   }
 
   static void ProcessElementQueueAndPop();
-  void ProcessElementQueueAndPop(size_t start, size_t end);
+  void ProcessElementQueueAndPop(wtf_size_t start, wtf_size_t end);
 
   // The processing stack, flattened. Element queues lower in the
   // stack appear toward the head of the vector. The first element
   // is a null sentinel value.
-  static const size_t kNumSentinels = 1;
+  static const wtf_size_t kNumSentinels = 1;
   HeapVector<Member<V0CustomElementCallbackQueue>> flattened_processing_stack_;
 
   DISALLOW_COPY_AND_ASSIGN(V0CustomElementProcessingStack);

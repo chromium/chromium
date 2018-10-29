@@ -20,7 +20,7 @@ class LookalikeUrlNavigationObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<LookalikeUrlNavigationObserver> {
  public:
-  // Used for metrics.
+  // Used for metrics. Multiple events can occur per navigation.
   enum class NavigationSuggestionEvent {
     kNone = 0,
     kInfobarShown = 1,
@@ -31,6 +31,17 @@ class LookalikeUrlNavigationObserver
     // Append new items to the end of the list above; do not modify or
     // replace existing values. Comment out obsolete items.
     kMaxValue = kMatchSiteEngagement,
+  };
+
+  // Used for UKM. There is only a single MatchType per navigation.
+  enum class MatchType {
+    kNone = 0,
+    kTopSite = 1,
+    kSiteEngagement = 2,
+
+    // Append new items to the end of the list above; do not modify or replace
+    // existing values. Comment out obsolete items.
+    kMaxValue = kSiteEngagement,
   };
 
   static const char kHistogramName[];

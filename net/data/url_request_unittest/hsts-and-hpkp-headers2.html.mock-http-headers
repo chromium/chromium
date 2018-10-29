@@ -1,8 +1,0 @@
-HTTP/1.1 200 OK
-Cache-Control: private
-Content-Type: text/html; charset=ISO-8859-1
-X-Multiple-Entries: a
-X-Multiple-Entries: b
-Strict-Transport-Security: max-age=12300; includeSubdomains
-Public-Key-Pins: max-age=50000; pin-sha256="9999999999999999999999999999999999999999999="; pin-sha256="jGdOd9afPNVKLxBnAaqWFl5tM1Dbu/54g4ZDgQcJ4BM="
-Public-Key-Pins: max-age=50000; pin-sha256="9999999999999999999999999999999999999999999="; pin-sha256="jGdOd9afPNVKLxBnAaqWFl5tM1Dbu/54g4ZDgQcJ4BM="

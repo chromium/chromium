@@ -82,9 +82,7 @@ class DISPLAY_EXPORT DisplayList {
   // Removes the Display with the specified id.
   void RemoveDisplay(int64_t id);
 
-  base::ObserverList<DisplayObserver>::Unchecked* observers() {
-    return &observers_;
-  }
+  base::ObserverList<DisplayObserver>* observers() { return &observers_; }
 
  private:
   friend class DisplayListObserverLock;
@@ -101,7 +99,7 @@ class DISPLAY_EXPORT DisplayList {
 
   std::vector<Display> displays_;
   int primary_display_index_ = -1;
-  base::ObserverList<DisplayObserver>::Unchecked observers_;
+  base::ObserverList<DisplayObserver> observers_;
 
   int observer_suspend_lock_count_ = 0;
 

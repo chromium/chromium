@@ -85,7 +85,7 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
     arc_test_.app_instance()->SendAppAdded(app);
   }
 
-  scoped_refptr<Extension> CreateExtension(const std::string& id) {
+  scoped_refptr<const Extension> CreateExtension(const std::string& id) {
     return ExtensionBuilder("test").SetID(id).Build();
   }
 
@@ -154,7 +154,8 @@ TEST_F(DualBadgeMapTest, ArcAppToExtensionMapTest) {
   EXPECT_TRUE(0 == extension_ids.size());
 
   // Install Gmail extension app.
-  scoped_refptr<Extension> extension1 = CreateExtension(kGmailExtensionId1);
+  scoped_refptr<const Extension> extension1 =
+      CreateExtension(kGmailExtensionId1);
   AddExtension(extension1.get());
   extension_ids = extensions::util::GetEquivalentInstalledExtensions(
       profile(), kGmailArcPackage);
@@ -162,7 +163,8 @@ TEST_F(DualBadgeMapTest, ArcAppToExtensionMapTest) {
   EXPECT_TRUE(base::ContainsValue(extension_ids, kGmailExtensionId1));
 
   // Install another Gmail extension app.
-  scoped_refptr<Extension> extension2 = CreateExtension(kGmailExtensionId2);
+  scoped_refptr<const Extension> extension2 =
+      CreateExtension(kGmailExtensionId2);
   AddExtension(extension2.get());
   extension_ids = extensions::util::GetEquivalentInstalledExtensions(
       profile(), kGmailArcPackage);
@@ -183,7 +185,7 @@ TEST_F(DualBadgeMapTest, ArcAppToExtensionMapTest) {
   EXPECT_TRUE(0 == extension_ids.size());
 
   // Install an unrelated Google Keep extension app.
-  scoped_refptr<Extension> extension = CreateExtension(kKeepExtensionId);
+  scoped_refptr<const Extension> extension = CreateExtension(kKeepExtensionId);
   AddExtension(extension.get());
   extension_ids = extensions::util::GetEquivalentInstalledExtensions(
       profile(), kGmailArcPackage);

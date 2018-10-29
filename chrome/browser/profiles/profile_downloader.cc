@@ -73,9 +73,8 @@ void ProfileDownloader::StartForAccount(const std::string& account_id) {
     return;
   }
 
-  account_id_ = account_id.empty()
-                    ? identity_manager_->GetPrimaryAccountInfo().account_id
-                    : account_id;
+  account_id_ = account_id.empty() ? identity_manager_->GetPrimaryAccountId()
+                                   : account_id;
   if (identity_manager_->HasAccountWithRefreshToken(account_id_))
     StartFetchingOAuth2AccessToken();
   else
@@ -137,7 +136,7 @@ void ProfileDownloader::StartFetchingImage() {
 }
 
 void ProfileDownloader::StartFetchingOAuth2AccessToken() {
-  OAuth2TokenService::ScopeSet scopes;
+  identity::ScopeSet scopes;
   scopes.insert(GaiaConstants::kGoogleUserInfoProfile);
   // Required to determine if lock should be enabled.
   scopes.insert(GaiaConstants::kGoogleUserInfoEmail);

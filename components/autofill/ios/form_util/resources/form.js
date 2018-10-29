@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Adds listeners that are used to handle forms, enabling autofill
- * and the replacement method to dismiss the keyboard needed because of the
- * Autofill keyboard accessory.
- * Contains method needed to access the forms and their elements.
+ * @fileoverview Contains method needed to access the forms and their elements.
  */
 
 goog.provide('__crWeb.form');
@@ -25,18 +22,6 @@ __gCrWeb['form'] = __gCrWeb.form;
 
 /** Beginning of anonymous object */
 (function() {
-// Skip iframes that have different origins from the main frame. For such
-// frames no form related actions (eg. filling, saving) are supported.
-try {
-  // The following line generates exception for iframes that have different
-  // origin that.
-  // TODO(crbug.com/792642): implement sending messages instead of using
-  // window.top, when messaging framework is ready.
-  if (!window.top.document) return;
-} catch (error) {
-  return;
-}
-
 /**
  * Prefix used in references to form elements that have no 'id' or 'name'
  */
@@ -47,26 +32,6 @@ __gCrWeb.form.kNamelessFormIDPrefix = 'gChrome~form~';
  * are included in a form.
  */
 __gCrWeb.form.kNamelessFieldIDPrefix = 'gChrome~field~';
-
-/**
- * The MutationObserver tracking form related changes.
- */
-__gCrWeb.form.formMutationObserver = null;
-
-/**
- * The form mutation message scheduled to be sent to browser.
- */
-__gCrWeb.form.formMutationMessageToSend = null;
-
-/**
- * A message scheduled to be sent to host on the next runloop.
- */
-__gCrWeb.form.messageToSend = null;
-
-/**
- * The last HTML element that had focus.
- */
-__gCrWeb.form.lastFocusedElement = null;
 
 /**
  * A WeakMap to track if the current value of a field was entered by user or
@@ -306,206 +271,10 @@ __gCrWeb.form.getFormElementFromIdentifier = function(name) {
 };
 
 /**
- * Schedule |mesg| to be sent on next runloop.
- * If called multiple times on the same runloop, only the last message is really
- * sent.
+ * Returns whether the last |input| or |change| event on |element| was
+ * triggered by a user action (was "trusted").
  */
-var sendMessageOnNextLoop_ =
-    function(mesg) {
-  if (!__gCrWeb.form.messageToSend) {
-    setTimeout(function() {
-      __gCrWeb.message.invokeOnHost(__gCrWeb.form.messageToSend);
-      __gCrWeb.form.messageToSend = null;
-    }, 0);
-  }
-  __gCrWeb.form.messageToSend = mesg;
-}
-
-/**
- * Focus, input, change, keyup and blur events for form elements (form and input
- * elements) are messaged to the main application for broadcast to
- * WebStateObservers.
- * Events will be included in a message to be sent in a future runloop (without
- * delay). If an event is already scheduled to be sent, it is replaced by |evt|.
- * Notably, 'blur' event will not be transmitted to the main application if they
- * are triggered by the focus of another element as the 'focus' event will
- * replace it.
- * Only the events targetting the active element (or the previously active in
- * case of 'blur') are sent to the main application.
- * This is done with a single event handler for each type being added to the
- * main document element which checks the source element of the event; this
- * is much easier to manage than adding handlers to individual elements.
- * @private
- */
-var formActivity_ = function(evt) {
-  var target = evt.target;
-  var value = target.value || '';
-  var fieldType = target.type || '';
-  if (evt.type != 'blur') {
-    __gCrWeb.form.lastFocusedElement = document.activeElement;
-  }
-  if (['change', 'input'].includes(evt.type) &&
-      __gCrWeb.form.wasEditedByUser !== null) {
-    __gCrWeb.form.wasEditedByUser.set(target, evt.isTrusted);
-  }
-  if (target != __gCrWeb.form.lastFocusedElement) return;
-  var msg = {
-    'command': 'form.activity',
-    'formName': __gCrWeb.form.getFormIdentifier(evt.target.form),
-    'fieldName': __gCrWeb.form.getFieldName(target),
-    'fieldIdentifier': __gCrWeb.form.getFieldIdentifier(target),
-    'fieldType': fieldType,
-    'type': evt.type,
-    'value': value,
-    'hasUserGesture': evt.isTrusted
-  };
-  sendMessageOnNextLoop_(msg);
-};
-
-
-/**
- * Capture form submit actions.
- */
-var submitHandler_ = function(evt) {
-  var action;
-  if (evt['defaultPrevented']) return;
-  action = evt.target.getAttribute('action');
-  // Default action is to re-submit to same page.
-  if (!action) {
-    action = document.location.href;
-  }
-  __gCrWeb.message.invokeOnHost({
-    'command': 'form.submit',
-    'formName': __gCrWeb.form.getFormIdentifier(evt.srcElement),
-    'href': getFullyQualifiedUrl_(action)
-  });
-};
-
-
-/** @private
- * @param {string} originalURL
- * @return {string}
- */
-var getFullyQualifiedUrl_ = function(originalURL) {
-  // A dummy anchor (never added to the document) is used to obtain the
-  // fully-qualified URL of |originalURL|.
-  var anchor = document.createElement('a');
-  anchor.href = originalURL;
-  return anchor.href;
-};
-
-/**
- * Schedules |msg| to be sent after |delay|. Until |msg| is sent, further calls
- * to this function are ignored.
- */
-var sendFormMutationMessageAfterDelay_ = function(msg, delay) {
-  if (__gCrWeb.form.formMutationMessageToSend) return;
-
-  __gCrWeb.form.formMutationMessageToSend = msg;
-  setTimeout(function() {
-    __gCrWeb.message.invokeOnHost(__gCrWeb.form.formMutationMessageToSend);
-    __gCrWeb.form.formMutationMessageToSend = null;
-  }, delay);
-};
-
-var attachListeners_ = function() {
-  /**
-   * Focus events performed on the 'capture' phase otherwise they are often
-   * not received.
-   * Input and change performed on the 'capture' phase as they are needed to
-   * detect if the current value is entered by the user.
-   */
-  document.addEventListener('focus', formActivity_, true);
-  document.addEventListener('blur', formActivity_, true);
-  document.addEventListener('change', formActivity_, true);
-  document.addEventListener('input', formActivity_, true);
-
-  /**
-   * Other events are watched at the bubbling phase as this seems adequate in
-   * practice and it is less obtrusive to page scripts than capture phase.
-   */
-  document.addEventListener('keyup', formActivity_, false);
-  document.addEventListener('submit', submitHandler_, false);
-};
-
-// Attach the listeners immediatly to try to catch early actions of the user.
-attachListeners_();
-
-// Initial page loading can remove the listeners. Schedule a reattach after page
-// build.
-setTimeout(attachListeners_, 1000);
-
-/**
- * Installs a MutationObserver to track form related changes. Waits |delay|
- * milliseconds before sending a message to browser. A delay is used because
- * form mutations are likely to come in batches. An undefined or zero value for
- * |delay| would stop the MutationObserver, if any.
- * @suppress {checkTypes} Required for for...of loop on mutations.
- */
-__gCrWeb.form['trackFormMutations'] = function(delay) {
-  if (__gCrWeb.form.formMutationObserver) {
-    __gCrWeb.form.formMutationObserver.disconnect();
-    __gCrWeb.form.formMutationObserver = null;
-  }
-
-  if (!delay) return;
-
-  __gCrWeb.form.formMutationObserver =
-      new MutationObserver(function(mutations) {
-        for (var i = 0; i < mutations.length; i++) {
-          var mutation = mutations[i];
-          // Only process mutations to the tree of nodes.
-          if (mutation.type != 'childList') continue;
-          var addedElements = [];
-          for (var j = 0; j < mutation.addedNodes.length; j++) {
-            var node = mutation.addedNodes[j];
-            // Ignore non-element nodes.
-            if (node.nodeType != Node.ELEMENT_NODE) continue;
-            addedElements.push(node);
-            [].push.apply(
-                addedElements, [].slice.call(node.getElementsByTagName('*')));
-          }
-          var form_changed = addedElements.find(function(element) {
-            return element.tagName.match(/(FORM|INPUT|SELECT|OPTION)/);
-          });
-          if (form_changed) {
-            var msg = {
-              'command': 'form.activity',
-              'formName': '',
-              'fieldName': '',
-              'fieldIdentifier': '',
-              'fieldType': '',
-              'type': 'form_changed',
-              'value': '',
-              'hasUserGesture': false
-            };
-            return sendFormMutationMessageAfterDelay_(msg, delay);
-          }
-        }
-      });
-  __gCrWeb.form.formMutationObserver.observe(
-      document, {childList: true, subtree: true});
-};
-
-/**
- * Enables or disables the tracking of input event sources.
- */
-__gCrWeb.form['toggleTrackingUserEditedFields'] =
-    function(track) {
-  if (track) {
-    __gCrWeb.form.wasEditedByUser =
-        __gCrWeb.form.wasEditedByUser || new WeakMap();
-  } else {
-    __gCrWeb.form.wasEditedByUser = null;
-  }
-}
-
-    /**
-     * Returns whether the last |input| or |change| event on |element| was
-     * triggered by a user action (was "trusted").
-     */
-    __gCrWeb.form['fieldWasEditedByUser'] =
-        function(element) {
+__gCrWeb.form['fieldWasEditedByUser'] = function(element) {
   if (__gCrWeb.form.wasEditedByUser === null) {
     // Input event sources is not tracked.
     // Return true to preserve previous behavior.
@@ -515,11 +284,6 @@ __gCrWeb.form['toggleTrackingUserEditedFields'] =
     return false;
   }
   return __gCrWeb.form.wasEditedByUser.get(element);
-}
-
-/** Flush the message queue. */
-if (__gCrWeb.message) {
-  __gCrWeb.message.invokeQueues();
 }
 
 }());  // End of anonymous object

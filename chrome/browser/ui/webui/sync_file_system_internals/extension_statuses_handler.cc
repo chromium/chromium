@@ -38,9 +38,7 @@ void ConvertExtensionStatusToDictionary(
   }
 
   base::ListValue list;
-  for (std::map<GURL, std::string>::const_iterator itr = status_map.begin();
-       itr != status_map.end();
-       ++itr) {
+  for (auto itr = status_map.begin(); itr != status_map.end(); ++itr) {
     std::string extension_id = itr->first.HostNoBrackets();
 
     // Join with human readable extension name.

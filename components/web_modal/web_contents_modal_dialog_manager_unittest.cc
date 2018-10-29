@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "components/web_modal/test_web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/test/test_renderer_host.h"
@@ -107,7 +108,12 @@ class WebContentsModalDialogManagerTest
   gfx::NativeWindow MakeFakeDialog() {
     // WebContentsModalDialogManager treats the dialog window as an opaque
     // type, so creating fake dialog windows using reinterpret_cast is valid.
+#if defined(OS_MACOSX)
+    NSWindow* window = reinterpret_cast<NSWindow*>(next_dialog_id++);
+    return gfx::NativeWindow(window);
+#else
     return reinterpret_cast<gfx::NativeWindow>(next_dialog_id++);
+#endif
   }
 
   int next_dialog_id;

@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -25,6 +26,7 @@
 #include "components/viz/common/features.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/gpu_utils.h"
@@ -235,8 +237,8 @@ void OnVideoMemoryUsageStats(
     const base::Callback<void(const gpu::VideoMemoryUsageStats& stats)>&
         callback,
     const gpu::VideoMemoryUsageStats& stats) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, stats));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, stats));
 }
 
 void RequestVideoMemoryUsageStats(
@@ -249,21 +251,35 @@ void RequestVideoMemoryUsageStats(
       base::BindOnce(&OnVideoMemoryUsageStats, callback));
 }
 
-void UpdateGpuInfoOnIO(const gpu::GPUInfo& gpu_info) {
+#if defined(OS_WIN)
+void UpdateDxDiagNodeOnIO(const gpu::DxDiagNode& dx_diagnostics) {
   // This function is called on the IO thread, but GPUInfo on GpuDataManagerImpl
-  // should be updated on the UI thread (since it can call into functions that
-  // expect to run in the UI thread, e.g. ContentClient::SetGpuInfo()).
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  // should be updated on the UI thread since it can call into functions that
+  // expect to run in the UI thread.
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
-          [](const gpu::GPUInfo& gpu_info) {
-            TRACE_EVENT0("test_gpu", "OnGraphicsInfoCollected");
-            GpuDataManagerImpl::GetInstance()->UpdateGpuInfo(gpu_info,
-                                                             base::nullopt);
+          [](const gpu::DxDiagNode& dx_diagnostics) {
+            GpuDataManagerImpl::GetInstance()->UpdateDxDiagNode(dx_diagnostics);
           },
-          gpu_info));
+          dx_diagnostics));
 }
 
+void UpdateDx12VulkanInfoOnIO(
+    const gpu::Dx12VulkanVersionInfo& dx12_vulkan_version_info) {
+  // This function is called on the IO thread, but GPUInfo on GpuDataManagerImpl
+  // should be updated on the UI thread since it can call into functions that
+  // expect to run in the UI thread.
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
+      base::BindOnce(
+          [](const gpu::Dx12VulkanVersionInfo& dx12_vulkan_version_info) {
+            GpuDataManagerImpl::GetInstance()->UpdateDx12VulkanInfo(
+                dx12_vulkan_version_info);
+          },
+          dx12_vulkan_version_info));
+}
+#endif
 }  // anonymous namespace
 
 GpuDataManagerImplPrivate::GpuDataManagerImplPrivate(GpuDataManagerImpl* owner)
@@ -370,25 +386,26 @@ void GpuDataManagerImplPrivate::RequestCompleteGpuInfoIfNeeded() {
     return;
   if (!NeedsCompleteGpuInfoCollection())
     return;
+
+#if defined(OS_WIN)
   if (!GpuAccessAllowed(nullptr))
     return;
   if (in_process_gpu_)
     return;
-
   complete_gpu_info_already_requested_ = true;
-
-  GpuProcessHost::CallOnIO(
-#if defined(OS_WIN)
-      GpuProcessHost::GPU_PROCESS_KIND_UNSANDBOXED,
+  GpuProcessHost::CallOnIO(GpuProcessHost::GPU_PROCESS_KIND_UNSANDBOXED_NO_GL,
+                           true /* force_create */,
+                           base::Bind([](GpuProcessHost* host) {
+                             if (!host)
+                               return;
+                             host->gpu_service()->RequestCompleteGpuInfo(
+                                 base::BindOnce(&UpdateDxDiagNodeOnIO));
+                           }));
 #else
-      GpuProcessHost::GPU_PROCESS_KIND_SANDBOXED,
+  // NeedsCompleteGpuInfoCollection() always returns false on platforms other
+  // than Windows.
+  NOTREACHED();
 #endif
-      true /* force_create */, base::Bind([](GpuProcessHost* host) {
-        if (!host)
-          return;
-        host->gpu_service()->RequestCompleteGpuInfo(
-            base::BindOnce(&UpdateGpuInfoOnIO));
-      }));
 }
 
 void GpuDataManagerImplPrivate::RequestGpuSupportedRuntimeVersion() {
@@ -396,16 +413,20 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedRuntimeVersion() {
   if (in_process_gpu_)
     return;
   base::OnceClosure task = base::BindOnce([]() {
-    GpuProcessHost* host = GpuProcessHost::Get(
-        GpuProcessHost::GPU_PROCESS_KIND_UNSANDBOXED, true /* force_create */);
+    GpuProcessHost* host =
+        GpuProcessHost::Get(GpuProcessHost::GPU_PROCESS_KIND_UNSANDBOXED_NO_GL,
+                            true /* force_create */);
     if (!host)
       return;
     host->gpu_service()->GetGpuSupportedRuntimeVersion(
-        base::BindOnce(&UpdateGpuInfoOnIO));
+        base::BindOnce(&UpdateDx12VulkanInfoOnIO));
   });
 
-  BrowserThread::PostDelayedTask(BrowserThread::IO, FROM_HERE, std::move(task),
-                                 base::TimeDelta::FromMilliseconds(15000));
+  base::PostDelayedTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                                  std::move(task),
+                                  base::TimeDelta::FromMilliseconds(15000));
+#else
+  NOTREACHED();
 #endif
 }
 
@@ -471,47 +492,54 @@ void GpuDataManagerImplPrivate::UnblockDomainFrom3DAPIs(const GURL& url) {
 void GpuDataManagerImplPrivate::UpdateGpuInfo(
     const gpu::GPUInfo& gpu_info,
     const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu) {
-  bool sandboxed = gpu_info_.sandboxed;
 #if defined(OS_WIN)
-  uint32_t d3d12_feature_level = gpu_info_.d3d12_feature_level;
-  uint32_t vulkan_version = gpu_info_.vulkan_version;
+  // If GPU process crashes and launches again, GPUInfo will be sent back from
+  // the new GPU process again, and may overwrite the DX12, Vulkan, DxDiagNode
+  // info we already collected. This is to make sure it doesn't happen.
+  gpu::DxDiagNode dx_diagnostics = gpu_info_.dx_diagnostics;
+  gpu::Dx12VulkanVersionInfo dx12_vulkan_version_info =
+      gpu_info_.dx12_vulkan_version_info;
 #endif
   gpu_info_ = gpu_info;
+#if defined(OS_WIN)
+  if (!dx_diagnostics.IsEmpty()) {
+    gpu_info_.dx_diagnostics = dx_diagnostics;
+  }
+  if (!dx12_vulkan_version_info.IsEmpty()) {
+    gpu_info_.dx12_vulkan_version_info = dx12_vulkan_version_info;
+  }
+#endif  // OS_WIN
+
   if (!gpu_info_for_hardware_gpu_.IsInitialized()) {
-    if (!!gpu_info_for_hardware_gpu) {
+    if (gpu_info_for_hardware_gpu) {
       DCHECK(gpu_info_for_hardware_gpu->IsInitialized());
       gpu_info_for_hardware_gpu_ = gpu_info_for_hardware_gpu.value();
     } else {
-      gpu_info_for_hardware_gpu_ = gpu_info;
+      gpu_info_for_hardware_gpu_ = gpu_info_;
     }
-  }
-#if defined(OS_WIN)
-  // On Windows, complete GPUInfo is collected through an unsandboxed
-  // GPU process. If the regular GPU process is sandboxed, it should
-  // not be overwritten.
-  if (sandboxed)
-    gpu_info_.sandboxed = true;
-
-  if (d3d12_feature_level) {
-    gpu_info_.d3d12_feature_level = d3d12_feature_level;
-    gpu_info_.supports_dx12 = true;
-  }
-  if (vulkan_version) {
-    gpu_info_.vulkan_version = vulkan_version;
-    gpu_info_.supports_vulkan = true;
-  }
-#else
-  (void)sandboxed;
-#endif  // OS_WIN
-
-  if (complete_gpu_info_already_requested_ &&
-      !NeedsCompleteGpuInfoCollection()) {
-    complete_gpu_info_already_requested_ = false;
   }
 
   GetContentClient()->SetGpuInfo(gpu_info_);
   NotifyGpuInfoUpdate();
 }
+
+#if defined(OS_WIN)
+void GpuDataManagerImplPrivate::UpdateDxDiagNode(
+    const gpu::DxDiagNode& dx_diagnostics) {
+  gpu_info_.dx_diagnostics = dx_diagnostics;
+  if (complete_gpu_info_already_requested_)
+    complete_gpu_info_already_requested_ = false;
+  // No need to call GetContentClient()->SetGpuInfo().
+  NotifyGpuInfoUpdate();
+}
+
+void GpuDataManagerImplPrivate::UpdateDx12VulkanInfo(
+    const gpu::Dx12VulkanVersionInfo& dx12_vulkan_version_info) {
+  gpu_info_.dx12_vulkan_version_info = dx12_vulkan_version_info;
+  // No need to call GetContentClient()->SetGpuInfo().
+  NotifyGpuInfoUpdate();
+}
+#endif
 
 void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
     const gpu::GpuFeatureInfo& gpu_feature_info,
@@ -793,7 +821,7 @@ GpuDataManagerImplPrivate::Are3DAPIsBlockedAtTime(const GURL& url,
   // TODO(kbr): make this pay attention to the TDR thresholds in the
   // Windows registry, but make sure it continues to be testable.
   {
-    std::list<base::Time>::iterator iter = timestamps_of_gpu_resets_.begin();
+    auto iter = timestamps_of_gpu_resets_.begin();
     int num_resets_within_timeframe = 0;
     while (iter != timestamps_of_gpu_resets_.end()) {
       base::Time time = *iter;
@@ -831,8 +859,7 @@ int64_t GpuDataManagerImplPrivate::GetBlockAllDomainsDurationInMs() const {
 
 bool GpuDataManagerImplPrivate::NeedsCompleteGpuInfoCollection() const {
 #if defined(OS_WIN)
-  return (gpu_info_.dx_diagnostics.values.empty() &&
-          gpu_info_.dx_diagnostics.children.empty());
+  return gpu_info_.dx_diagnostics.IsEmpty();
 #else
   return false;
 #endif

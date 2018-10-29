@@ -76,7 +76,7 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   // Check pointers are different, i.e. deep-copied.
   ASSERT_NE(original.get(), copy.get());
 
-  for (size_t i = 0; i < 3; ++i) {
+  for (wtf_size_t i = 0; i < 3; ++i) {
     if (copy_elements[i].filename_.Impl()) {
       EXPECT_NE(original_elements[i].filename_.Impl(),
                 copy_elements[i].filename_.Impl());

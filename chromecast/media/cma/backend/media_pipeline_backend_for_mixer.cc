@@ -190,11 +190,14 @@ bool MediaPipelineBackendForMixer::SetPlaybackRate(float rate) {
 int64_t MediaPipelineBackendForMixer::GetCurrentPts() {
   int64_t timestamp = 0;
   int64_t pts = 0;
+  int64_t video_pts = INT64_MIN;
+  int64_t audio_pts = INT64_MIN;
+
   if (video_decoder_ && video_decoder_->GetCurrentPts(&timestamp, &pts))
-    return pts;
+    video_pts = pts;
   if (audio_decoder_)
-    return audio_decoder_->GetCurrentPts();
-  return std::numeric_limits<int64_t>::min();
+    audio_pts = audio_decoder_->GetCurrentPts();
+  return std::max(audio_pts, video_pts);
 }
 
 bool MediaPipelineBackendForMixer::Primary() const {

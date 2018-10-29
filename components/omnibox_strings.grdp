@@ -61,6 +61,9 @@
   <message name="IDS_DRIVE_SUGGESTION_DOCUMENT" desc="Google Docs product name, for use in omnibox Docs result descriptions.">
     Google Docs
   </message>
+  <message name="IDS_DRIVE_SUGGESTION_FORM" desc="Google Docs product name, for use in omnibox Form result descriptions.">
+    Google Forms
+  </message>
   <message name="IDS_DRIVE_SUGGESTION_SPREADSHEET" desc="Google Sheets product name, for use in omnibox Sheets result descriptions.">
     Google Sheets
   </message>
@@ -74,6 +77,86 @@
     <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$2<ex>Google Docs</ex></ph>
   </message>
 
+  <!-- Omnibox Pedals -->
+  <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT" desc="The button text contents to suggest pedal action, clear browsing data.">
+    Clear Data
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, clear browsing data.">
+    Clear
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, clear browsing data.">
+    Clear Chrome's browsing history data
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_CHANGE_SEARCH_ENGINE_HINT" desc="The button text contents to suggest pedal action, change search engine.">
+    Change Search Engine
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CHANGE_SEARCH_ENGINE_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, change search engine.">
+    Change
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CHANGE_SEARCH_ENGINE_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, change search engine.">
+    Change Search Engine settings in Chrome
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT" desc="The button text contents to suggest pedal action, manage passwords.">
+    Manage Passwords
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, change language.">
+    Manage
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, change language.">
+    Manage passwords in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_CHANGE_HOME_PAGE_HINT" desc="The button text contents to suggest pedal action, change home page.">
+    Change Home Page
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CHANGE_HOME_PAGE_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, change home page.">
+    Change
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CHANGE_HOME_PAGE_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, change home page.">
+    Change home page in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT" desc="The button text contents to suggest pedal action, update credit card.">
+    Update Credit Card
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, update credit card.">
+    Update
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, update credit card.">
+    Update credit card autofill info in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT" desc="The button text contents to suggest pedal action, launch incognito.">
+    Open Incognito Window
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, launch incognito.">
+    Open
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, launch incognito.">
+    Open new Chrome incognito window
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_TRANSLATE_HINT" desc="The button text contents to suggest pedal action, translate.">
+    Translate Page
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_TRANSLATE_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, translate.">
+    Translate
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_TRANSLATE_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, translate.">
+    Translate this page
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT" desc="The button text contents to suggest pedal action, update chrome.">
+    Relaunch to Update
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, update chrome.">
+    Relaunch
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CHROME_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, update chrome.">
+    Relaunch
+  </message>
 
   <!-- Accessibility labels for autocomplete match types.
        These are parameterized on the text being completed into the omnibox.

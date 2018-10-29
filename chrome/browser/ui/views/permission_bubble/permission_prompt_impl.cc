@@ -145,7 +145,6 @@ PermissionsBubbleDialogDelegateView::PermissionsBubbleDialogDelegateView(
     const gfx::VectorIcon& vector_id = requests[index]->GetIconId();
     icon->SetImage(gfx::CreateVectorIcon(vector_id, kPermissionIconSize,
                                          gfx::kChromeIconGrey));
-    icon->SetTooltipText(base::string16());  // Redundant with the text fragment
     label_container->AddChildView(icon);
     views::Label* label =
         new views::Label(requests.at(index)->GetMessageTextFragment());

@@ -18,8 +18,8 @@
 #include "google_apis/gcm/protocol/mcs.pb.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/network_change_notifier.h"
 #include "net/log/net_log_with_source.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "url/gurl.h"
 
@@ -27,16 +27,17 @@ namespace gcm {
 
 class GCMStatsRecorder;
 
-class GCM_EXPORT ConnectionFactoryImpl :
-    public ConnectionFactory,
-    public net::NetworkChangeNotifier::NetworkChangeObserver {
+class GCM_EXPORT ConnectionFactoryImpl
+    : public ConnectionFactory,
+      public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   ConnectionFactoryImpl(
       const std::vector<GURL>& mcs_endpoints,
       const net::BackoffEntry::Policy& backoff_policy,
       GetProxyResolvingFactoryCallback get_socket_factory_callback,
       // need task runner here.
-      GCMStatsRecorder* recorder);
+      GCMStatsRecorder* recorder,
+      network::NetworkConnectionTracker* network_connection_tracker);
   ~ConnectionFactoryImpl() override;
 
   // ConnectionFactory implementation.
@@ -52,9 +53,8 @@ class GCM_EXPORT ConnectionFactoryImpl :
   void SignalConnectionReset(ConnectionResetReason reason) override;
   void SetConnectionListener(ConnectionListener* listener) override;
 
-  // NetworkChangeObserver implementation.
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override;
+  // NetworkConnectionTracker implementation.
+  void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // Returns the server to which the factory is currently connected, or if
   // a connection is currently pending, the server to which the next connection
@@ -156,7 +156,7 @@ class GCM_EXPORT ConnectionFactoryImpl :
   // expiration.
   bool waiting_for_backoff_;
 
-  // Whether the NetworkChangeNotifier has informed the client that there is
+  // Whether the NetworkConnectionTracker has informed the client that there is
   // no current connection. No connection attempts will be made until the
   // client is informed of a valid connection type.
   bool waiting_for_network_online_;
@@ -184,7 +184,11 @@ class GCM_EXPORT ConnectionFactoryImpl :
   // Recorder that records GCM activities for debugging purpose. Not owned.
   GCMStatsRecorder* recorder_;
 
-  // Listener for connection change events.
+  // Notifies this class of network connection changes.
+  // Must outlive the ConnectionFactoryImpl.
+  network::NetworkConnectionTracker* network_connection_tracker_;
+
+  // The currently registered listener to notify of connection changes.
   ConnectionListener* listener_;
 
   base::WeakPtrFactory<ConnectionFactoryImpl> weak_ptr_factory_;

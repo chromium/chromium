@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/script/document_modulator_impl.h"
 #include "third_party/blink/renderer/core/script/worker_modulator_impl.h"
 #include "third_party/blink/renderer/core/script/worklet_modulator_impl.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
@@ -34,8 +35,7 @@ Modulator* Modulator::From(ScriptState* script_state) {
   if (modulator)
     return modulator;
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  if (execution_context->IsDocument()) {
-    Document* document = ToDocument(execution_context);
+  if (auto* document = DynamicTo<Document>(execution_context)) {
     modulator =
         DocumentModulatorImpl::Create(script_state, document->Fetcher());
     Modulator::SetModulator(script_state, modulator);
@@ -43,20 +43,20 @@ Modulator* Modulator::From(ScriptState* script_state) {
     // See comment in LocalDOMWindow::modulator_ for this workaround.
     LocalDOMWindow* window = document->ExecutingWindow();
     window->SetModulator(modulator);
-  } else if (execution_context->IsWorkletGlobalScope()) {
+  } else if (auto* scope = DynamicTo<WorkletGlobalScope>(execution_context)) {
     modulator = WorkletModulatorImpl::Create(script_state);
     Modulator::SetModulator(script_state, modulator);
 
     // See comment in WorkerOrWorkletGlobalScope::modulator_ for this
     // workaround.
-    ToWorkerOrWorkletGlobalScope(execution_context)->SetModulator(modulator);
-  } else if (execution_context->IsWorkerGlobalScope()) {
+    scope->SetModulator(modulator);
+  } else if (auto* scope = DynamicTo<WorkerGlobalScope>(execution_context)) {
     modulator = WorkerModulatorImpl::Create(script_state);
     Modulator::SetModulator(script_state, modulator);
 
     // See comment in WorkerOrWorkletGlobalScope::modulator_ for this
     // workaround.
-    ToWorkerOrWorkletGlobalScope(execution_context)->SetModulator(modulator);
+    scope->SetModulator(modulator);
   } else {
     NOTREACHED();
   }

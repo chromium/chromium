@@ -241,12 +241,7 @@ TEST_F(MultiDeviceSetupHostBackendDelegateImplTest, Success) {
 
   // Remove device 0 such that there is no longer a host..
   AttemptToSetMultiDeviceHostOnBackend(base::nullopt);
-  // There should be two SetSoftwareFeatureState calls: disable
-  // BETTER_TOGETHER_HOST and disable EASY_UNLOCK_HOST.
-  EXPECT_EQ(2, GetSetSoftwareFeatureStateCallbackQueueSize());
-  InvokePendingSetSoftwareFeatureStateCallback(
-      device_sync::mojom::NetworkRequestResult::kSuccess,
-      false /* expected_to_notify_observer_and_start_retry_timer */);
+  EXPECT_EQ(1, GetSetSoftwareFeatureStateCallbackQueueSize());
   InvokePendingSetSoftwareFeatureStateCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
@@ -471,12 +466,7 @@ TEST_F(MultiDeviceSetupHostBackendDelegateImplTest,
 
   // The delegate should have started a request as soon as it was created.
   // Simulate it succeeding.
-  // There should be two SetSoftwareFeatureState calls: disable
-  // BETTER_TOGETHER_HOST and disable EASY_UNLOCK_HOST.
-  EXPECT_EQ(2, GetSetSoftwareFeatureStateCallbackQueueSize());
-  InvokePendingSetSoftwareFeatureStateCallback(
-      device_sync::mojom::NetworkRequestResult::kSuccess,
-      false /* expected_to_notify_observer_and_start_retry_timer */);
+  EXPECT_EQ(1, GetSetSoftwareFeatureStateCallbackQueueSize());
   InvokePendingSetSoftwareFeatureStateCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);

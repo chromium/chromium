@@ -30,16 +30,20 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 
-#include "third_party/blink/renderer/platform/PlatformProbeSink.h"
+#include "third_party/blink/renderer/platform/platform_probe_sink.h"
 #include "third_party/blink/renderer/platform/probe/platform_trace_events_agent.h"
 
 namespace blink {
 
-FetchContext& FetchContext::NullInstance() {
-  return *(new FetchContext);
+FetchContext& FetchContext::NullInstance(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  return *(new FetchContext(std::move(task_runner)));
 }
 
-FetchContext::FetchContext() : platform_probe_sink_(new PlatformProbeSink) {
+FetchContext::FetchContext(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : platform_probe_sink_(new PlatformProbeSink),
+      task_runner_(std::move(task_runner)) {
   platform_probe_sink_->addPlatformTraceEvents(new PlatformTraceEventsAgent);
 }
 
@@ -78,7 +82,7 @@ void FetchContext::DispatchDidReceiveResponse(
     unsigned long,
     const ResourceResponse&,
     network::mojom::RequestContextFrameType FrameType,
-    WebURLRequest::RequestContext,
+    mojom::RequestContextType,
     Resource*,
     ResourceResponseType) {}
 

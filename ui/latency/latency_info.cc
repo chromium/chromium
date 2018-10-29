@@ -283,7 +283,7 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
                            "trace_id", trace_id_);
   }
 
-  LatencyMap::iterator it = latency_components_.find(component);
+  auto it = latency_components_.find(component);
   DCHECK(it == latency_components_.end());
   latency_components_[component] = time;
 
@@ -327,7 +327,7 @@ LatencyInfo::AsTraceableData() {
 
 bool LatencyInfo::FindLatency(LatencyComponentType type,
                               base::TimeTicks* output) const {
-  LatencyMap::const_iterator it = latency_components_.find(type);
+  auto it = latency_components_.find(type);
   if (it == latency_components_.end())
     return false;
   if (output)

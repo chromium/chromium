@@ -54,12 +54,12 @@ FontFaceSetDocument::FontFaceSetDocument(Document& document)
 FontFaceSetDocument::~FontFaceSetDocument() = default;
 
 Document* FontFaceSetDocument::GetDocument() const {
-  return ToDocument(GetExecutionContext());
+  return To<Document>(GetExecutionContext());
 }
 
 bool FontFaceSetDocument::InActiveContext() const {
   ExecutionContext* context = GetExecutionContext();
-  return context && ToDocument(context)->IsActive();
+  return context && To<Document>(context)->IsActive();
 }
 
 

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<script>
+  // NOTE: It is important that this test be run with the Android viewport
+  // flags turned on.
+  if (window.internals) {
+    internals.settings.setHideScrollbars(true);
+  }
+</script>
+<style>
+  html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    background-color: palegreen;
+  }
+  #bottom {
+    position: fixed;
+    right: 0px;
+    width: 200px;
+    top: 0px;
+    height: 500px;
+    background-color: coral;
+  }
+</style>
+
+Test passes if the orange bar's top edge is at the top of the screen.
+<div id="bottom"></div>

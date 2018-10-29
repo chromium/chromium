@@ -159,10 +159,10 @@ class AbstractInlineBox {
   enum class InstanceType { kNull, kOldLayout, kNG };
   InstanceType type_;
 
-  union {
-    const InlineBox* inline_box_;
-    NGPaintFragmentTraversalContext paint_fragment_;
-  };
+  // Only one of |inline_box_| or |paint_fragment_| is used, but we cannot make
+  // them union because of non-trivial destructor.
+  const InlineBox* inline_box_;
+  NGPaintFragmentTraversalContext paint_fragment_;
 };
 
 // |SideAffinity| represents the left or right side of a leaf inline

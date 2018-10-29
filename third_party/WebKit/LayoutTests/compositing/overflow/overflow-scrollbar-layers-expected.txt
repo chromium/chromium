@@ -144,12 +144,6 @@
       "transform": 4
     },
     {
-      "name": "Child Containment Layer",
-      "bounds": [100, 100],
-      "drawsContent": false,
-      "transform": 4
-    },
-    {
       "name": "LayoutBlockFlow (positioned) DIV class='content'",
       "bounds": [10, 10],
       "drawsContent": false,

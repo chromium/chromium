@@ -89,8 +89,6 @@ SavePageResult AddPageResultToSavePageResult(AddPageResult add_page_result) {
       return SavePageResult::ALREADY_EXISTS;
     case AddPageResult::STORE_FAILURE:
       return SavePageResult::STORE_FAILURE;
-    case AddPageResult::RESULT_COUNT:
-      break;
   }
   NOTREACHED();
   return SavePageResult::STORE_FAILURE;
@@ -470,12 +468,11 @@ void OfflinePageModelTaskified::InformSavePageDone(SavePageCallback callback,
                                                    const ClientId& client_id,
                                                    int64_t offline_id) {
   UMA_HISTOGRAM_ENUMERATION("OfflinePages.SavePageCount",
-                            model_utils::ToNamespaceEnum(client_id.name_space),
-                            OfflinePagesNamespaceEnumeration::RESULT_COUNT);
+                            model_utils::ToNamespaceEnum(client_id.name_space));
   base::UmaHistogramEnumeration(
       model_utils::AddHistogramSuffix(client_id.name_space,
                                       "OfflinePages.SavePageResult"),
-      result, SavePageResult::RESULT_COUNT);
+      result);
 
   // Report storage usage if saving page succeeded.
   if (result == SavePageResult::SUCCESS)
@@ -562,8 +559,7 @@ void OfflinePageModelTaskified::PublishArchiveDone(
   if (publish_results.move_result != SavePageResult::SUCCESS) {
     // Add UMA for the failure reason.
     UMA_HISTOGRAM_ENUMERATION("OfflinePages.PublishPageResult",
-                              publish_results.move_result,
-                              SavePageResult::RESULT_COUNT);
+                              publish_results.move_result);
 
     std::move(save_page_callback).Run(publish_results.move_result, 0LL);
     return;
@@ -654,16 +650,14 @@ void OfflinePageModelTaskified::OnDeleteDone(
     DeletePageCallback callback,
     DeletePageResult result,
     const std::vector<OfflinePageModel::DeletedPageInfo>& infos) {
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.DeletePageResult", result,
-                            DeletePageResult::RESULT_COUNT);
+  UMA_HISTOGRAM_ENUMERATION("OfflinePages.DeletePageResult", result);
   std::vector<int64_t> system_download_ids;
 
   // Notify observers and run callback.
   for (const auto& info : infos) {
     UMA_HISTOGRAM_ENUMERATION(
         "OfflinePages.DeletePageCount",
-        model_utils::ToNamespaceEnum(info.client_id.name_space),
-        OfflinePagesNamespaceEnumeration::RESULT_COUNT);
+        model_utils::ToNamespaceEnum(info.client_id.name_space));
     offline_event_logger_.RecordPageDeleted(info.offline_id);
     for (Observer& observer : observers_)
       observer.OfflinePageDeleted(info);
@@ -756,8 +750,7 @@ void OfflinePageModelTaskified::OnPersistentPageConsistencyCheckDone(
 void OfflinePageModelTaskified::OnClearCachedPagesDone(
     size_t deleted_page_count,
     ClearStorageResult result) {
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.ClearTemporaryPages.Result", result,
-                            ClearStorageResult::RESULT_COUNT);
+  UMA_HISTOGRAM_ENUMERATION("OfflinePages.ClearTemporaryPages.Result", result);
   if (deleted_page_count > 0) {
     UMA_HISTOGRAM_COUNTS_1M("OfflinePages.ClearTemporaryPages.BatchSize",
                             deleted_page_count);

@@ -43,14 +43,14 @@ void FilterData::Dispose() {
 }
 
 LayoutSVGResourceFilter::LayoutSVGResourceFilter(SVGFilterElement* node)
-    : LayoutSVGResourceContainer(node) {}
+    : LayoutSVGResourceContainer(node), filter_(new FilterMap) {}
 
 LayoutSVGResourceFilter::~LayoutSVGResourceFilter() = default;
 
 void LayoutSVGResourceFilter::DisposeFilterMap() {
-  for (auto& entry : filter_)
+  for (auto& entry : *filter_)
     entry.value->Dispose();
-  filter_.clear();
+  filter_->clear();
 }
 
 void LayoutSVGResourceFilter::WillBeDestroyed() {
@@ -76,22 +76,19 @@ void LayoutSVGResourceFilter::RemoveAllClientsFromCache(
 }
 
 bool LayoutSVGResourceFilter::RemoveClientFromCache(SVGResourceClient& client) {
-  auto entry = filter_.find(&client);
-  if (entry == filter_.end())
+  auto entry = filter_->find(&client);
+  if (entry == filter_->end())
     return false;
   entry->value->Dispose();
-  filter_.erase(entry);
+  filter_->erase(entry);
   return true;
 }
 
 FloatRect LayoutSVGResourceFilter::ResourceBoundingBox(
-    const LayoutObject* object) {
-  if (SVGFilterElement* element = ToSVGFilterElement(GetElement()))
-    return SVGLengthContext::ResolveRectangle<SVGFilterElement>(
-        element, element->filterUnits()->CurrentValue()->EnumValue(),
-        object->ObjectBoundingBox());
-
-  return FloatRect();
+    const FloatRect& reference_box) const {
+  const auto* filter_element = ToSVGFilterElement(GetElement());
+  return SVGLengthContext::ResolveRectangle(filter_element, FilterUnits(),
+                                            reference_box);
 }
 
 SVGUnitTypes::SVGUnitType LayoutSVGResourceFilter::FilterUnits() const {
@@ -113,7 +110,7 @@ void LayoutSVGResourceFilter::PrimitiveAttributeChanged(
     const QualifiedName& attribute) {
   LayoutObject* object = primitive.GetLayoutObject();
 
-  for (auto& filter : filter_) {
+  for (auto& filter : *filter_) {
     FilterData* filter_data = filter.value.Get();
     if (filter_data->state_ != FilterData::kReadyToPaint)
       continue;

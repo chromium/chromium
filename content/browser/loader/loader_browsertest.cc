@@ -16,11 +16,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/loader/resource_dispatcher_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/resource_dispatcher_host_delegate.h"
@@ -67,11 +69,11 @@ class LoaderBrowserTest : public ContentBrowserTest,
  protected:
   void SetUpOnMainThread() override {
     base::FilePath path = GetTestFilePath("", "");
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&net::URLRequestMockHTTPJob::AddUrlHandlers, path));
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
     host_resolver()->AddRule("*", "127.0.0.1");
   }
@@ -286,11 +288,11 @@ std::unique_ptr<net::test_server::HttpResponse> CancelOnRequest(
     return nullptr;
 
   if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                     crash_network_service_callback);
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             crash_network_service_callback);
   } else {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&ResourceDispatcherHostImpl::CancelRequestsForProcess,
                        base::Unretained(ResourceDispatcherHostImpl::Get()),
                        child_id));
@@ -656,6 +658,13 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, RedirectToDataURLBlocked) {
                    "/server-redirect?data:text/plain,redirected1")));
 }
 
+IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, RedirectToAboutURLBlocked) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_FALSE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "/server-redirect?" + std::string(url::kAboutBlankURL))));
+}
+
 namespace {
 
 // Creates a valid filesystem URL.
@@ -715,196 +724,6 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, RedirectToFileSystemURLBlocked) {
                    "/server-redirect?" + CreateFileSystemURL(shell()).spec())));
 }
 
-namespace {
-
-// Checks whether the given urls are requested, and that GetPreviewsState()
-// returns the appropriate value when the Previews are set.
-class PreviewsStateResourceDispatcherHostDelegate
-    : public ResourceDispatcherHostDelegate {
- public:
-  PreviewsStateResourceDispatcherHostDelegate(const GURL& main_frame_url,
-                                              const GURL& subresource_url,
-                                              const GURL& iframe_url)
-      : main_frame_url_(main_frame_url),
-        subresource_url_(subresource_url),
-        iframe_url_(iframe_url),
-        main_frame_url_seen_(false),
-        subresource_url_seen_(false),
-        iframe_url_seen_(false),
-        previews_state_(PREVIEWS_OFF),
-        should_get_previews_state_called_(false) {}
-
-  ~PreviewsStateResourceDispatcherHostDelegate() override {}
-
-  // ResourceDispatcherHostDelegate implementation:
-  void RequestBeginning(
-      net::URLRequest* request,
-      ResourceContext* resource_context,
-      AppCacheService* appcache_service,
-      ResourceType resource_type,
-      std::vector<std::unique_ptr<ResourceThrottle>>* throttles) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    const ResourceRequestInfo* info = ResourceRequestInfo::ForRequest(request);
-    if (request->url() != main_frame_url_ &&
-        request->url() != subresource_url_ && request->url() != iframe_url_)
-      return;
-    if (request->url() == main_frame_url_) {
-      EXPECT_FALSE(main_frame_url_seen_);
-      main_frame_url_seen_ = true;
-    } else if (request->url() == subresource_url_) {
-      EXPECT_TRUE(main_frame_url_seen_);
-      EXPECT_FALSE(subresource_url_seen_);
-      subresource_url_seen_ = true;
-    } else if (request->url() == iframe_url_) {
-      EXPECT_TRUE(main_frame_url_seen_);
-      EXPECT_FALSE(iframe_url_seen_);
-      iframe_url_seen_ = true;
-    }
-    EXPECT_EQ(previews_state_, info->GetPreviewsState());
-  }
-
-  void SetDelegate() {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    ResourceDispatcherHost::Get()->SetDelegate(this);
-  }
-
-  PreviewsState DetermineEnabledPreviews(
-      net::URLRequest* request,
-      content::ResourceContext* resource_context,
-      content::PreviewsState previews_to_allow) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    EXPECT_FALSE(should_get_previews_state_called_);
-    should_get_previews_state_called_ = true;
-    EXPECT_EQ(main_frame_url_, request->url());
-    return previews_state_;
-  }
-
-  void Reset(PreviewsState previews_state) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    main_frame_url_seen_ = false;
-    subresource_url_seen_ = false;
-    iframe_url_seen_ = false;
-    previews_state_ = previews_state;
-    should_get_previews_state_called_ = false;
-  }
-
-  void CheckResourcesRequested(bool should_get_previews_state_called) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    EXPECT_EQ(should_get_previews_state_called,
-              should_get_previews_state_called_);
-    EXPECT_TRUE(main_frame_url_seen_);
-    EXPECT_TRUE(subresource_url_seen_);
-    EXPECT_TRUE(iframe_url_seen_);
-  }
-
- private:
-  const GURL main_frame_url_;
-  const GURL subresource_url_;
-  const GURL iframe_url_;
-
-  bool main_frame_url_seen_;
-  bool subresource_url_seen_;
-  bool iframe_url_seen_;
-  PreviewsState previews_state_;
-  bool should_get_previews_state_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreviewsStateResourceDispatcherHostDelegate);
-};
-
-}  // namespace
-
-class PreviewsStateBrowserTest : public ContentBrowserTest {
- public:
-  ~PreviewsStateBrowserTest() override {}
-
- protected:
-  void SetUpOnMainThread() override {
-    ContentBrowserTest::SetUpOnMainThread();
-
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    delegate_.reset(new PreviewsStateResourceDispatcherHostDelegate(
-        embedded_test_server()->GetURL("/page_with_iframe.html"),
-        embedded_test_server()->GetURL("/image.jpg"),
-        embedded_test_server()->GetURL("/title1.html")));
-
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
-        base::BindOnce(
-            &PreviewsStateResourceDispatcherHostDelegate::SetDelegate,
-            base::Unretained(delegate_.get())));
-  }
-
-  void Reset(PreviewsState previews_state) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
-        base::BindOnce(&PreviewsStateResourceDispatcherHostDelegate::Reset,
-                       base::Unretained(delegate_.get()), previews_state));
-  }
-
-  void CheckResourcesRequested(bool should_get_previews_state_called) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
-        base::BindOnce(&PreviewsStateResourceDispatcherHostDelegate::
-                           CheckResourcesRequested,
-                       base::Unretained(delegate_.get()),
-                       should_get_previews_state_called));
-  }
-
- private:
-  std::unique_ptr<PreviewsStateResourceDispatcherHostDelegate> delegate_;
-};
-
-// Test that navigating calls GetPreviewsState with SERVER_LOFI_ON.
-IN_PROC_BROWSER_TEST_F(PreviewsStateBrowserTest, ShouldEnableLoFiModeOn) {
-  // Navigate with ShouldEnableLoFiMode returning true.
-  Reset(SERVER_LOFI_ON);
-  NavigateToURLBlockUntilNavigationsComplete(
-      shell(), embedded_test_server()->GetURL("/page_with_iframe.html"), 1);
-  CheckResourcesRequested(true);
-}
-
-// Test that navigating calls GetPreviewsState returning PREVIEWS_OFF.
-IN_PROC_BROWSER_TEST_F(PreviewsStateBrowserTest, ShouldEnableLoFiModeOff) {
-  // Navigate with GetPreviewsState returning false.
-  NavigateToURLBlockUntilNavigationsComplete(
-      shell(), embedded_test_server()->GetURL("/page_with_iframe.html"), 1);
-  CheckResourcesRequested(true);
-}
-
-// Test that reloading calls GetPreviewsState again and changes the Previews
-// state.
-IN_PROC_BROWSER_TEST_F(PreviewsStateBrowserTest, ShouldEnableLoFiModeReload) {
-  // Navigate with GetPreviewsState returning PREVIEWS_OFF.
-  NavigateToURLBlockUntilNavigationsComplete(
-      shell(), embedded_test_server()->GetURL("/page_with_iframe.html"), 1);
-  CheckResourcesRequested(true);
-
-  // Reload. GetPreviewsState should be called.
-  Reset(SERVER_LOFI_ON);
-  ReloadBlockUntilNavigationsComplete(shell(), 1);
-  CheckResourcesRequested(true);
-}
-
-// Test that navigating backwards calls GetPreviewsState again and changes
-// the Previews state.
-IN_PROC_BROWSER_TEST_F(PreviewsStateBrowserTest,
-                       ShouldEnableLoFiModeNavigateBackThenForward) {
-  // Navigate with GetPreviewsState returning false.
-  NavigateToURLBlockUntilNavigationsComplete(
-      shell(), embedded_test_server()->GetURL("/page_with_iframe.html"), 1);
-  CheckResourcesRequested(true);
-
-  // Go to a different page.
-  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
-
-  // Go back with GetPreviewsState returning SERVER_LOFI_ON.
-  Reset(SERVER_LOFI_ON);
-  TestNavigationObserver tab_observer(shell()->web_contents(), 1);
-  shell()->GoBackOrForward(-1);
-  tab_observer.Wait();
-  CheckResourcesRequested(true);
-}
 
 namespace {
 

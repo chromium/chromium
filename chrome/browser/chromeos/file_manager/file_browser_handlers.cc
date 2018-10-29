@@ -138,15 +138,16 @@ FileBrowserHandlerList FindFileBrowserHandlersForURL(
 
       // Filter out Files app from handling ZIP files via a handler, as it's
       // now handled by:
-      // - ZIP unpacker extension based on File System Provider API
       // - Zip Archiver native extension component
+      // TODO(amistry): This can be removed once the AVFS-based zip mounting is
+      // removed and zip handling is removed from the file manager's
+      // manifest.json.
       const URLPattern zip_pattern(URLPattern::SCHEME_EXTENSION,
                                    "chrome-extension://*/*.zip");
       if (handler->extension_id() == kFileManagerAppId &&
           zip_pattern.MatchesURL(selected_file_url) &&
-          (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-               chromeos::switches::kDisableNewZIPUnpacker) ||
-           chromeos::switches::IsZipArchiverUnpackerEnabled())) {
+          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+              chromeos::switches::kDisableNewZIPUnpacker)) {
         continue;
       }
       results.push_back(handler);

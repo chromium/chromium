@@ -3,7 +3,6 @@ Tests for node's contains().
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.contains(getNodeInComposedTree("shadowHostA/")) is false
 PASS getNodeInComposedTree("shadowHostA/").contains(document) is false
 PASS document.contains(getNodeInComposedTree("shadowHostA/divA")) is false
@@ -23,4 +22,5 @@ PASS getNodeInComposedTree("shadowHostA/shadowHostB/").contains(getNodeInCompose
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

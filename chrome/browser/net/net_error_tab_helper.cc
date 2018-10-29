@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/io_thread.h"
 #include "chrome/browser/net/dns_probe_service.h"
@@ -16,6 +17,7 @@
 #include "chrome/common/render_messages.h"
 #include "components/error_page/common/net_error_info.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -50,8 +52,8 @@ void OnDnsProbeFinishedOnIOThread(
     DnsProbeStatus result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(callback, result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(callback, result));
 }
 
 // Can only access g_browser_process->io_thread() from the browser thread,
@@ -188,8 +190,8 @@ void NetErrorTabHelper::StartDnsProbe() {
 
   DVLOG(1) << "Starting DNS probe.";
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&StartDnsProbeOnIOThread,
                      base::Bind(&NetErrorTabHelper::OnDnsProbeFinished,
                                 weak_factory_.GetWeakPtr()),

@@ -100,12 +100,6 @@
       "bounds": [340, 282]
     },
     {
-      "name": "Ancestor Clipping Layer",
-      "position": [46, 337],
-      "bounds": [260, 100],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow DIV class='scroller'",
       "position": [37, 328],
       "bounds": [278, 218],
@@ -131,12 +125,6 @@
       "backgroundColor": "#DDDDDD"
     },
     {
-      "name": "Overflow Controls Ancestor Clipping Layer",
-      "position": [46, 337],
-      "bounds": [260, 100],
-      "drawsContent": false
-    },
-    {
       "name": "Overflow Controls Host Layer",
       "position": [61, 352],
       "bounds": [230, 170],
@@ -157,18 +145,6 @@
       "name": "LayoutBlockFlow (relative positioned) DIV class='clipper'",
       "position": [379, 321],
       "bounds": [292, 200]
-    },
-    {
-      "name": "Child Containment Layer",
-      "position": [389, 331],
-      "bounds": [272, 180],
-      "drawsContent": false
-    },
-    {
-      "name": "Ancestor Clipping Layer",
-      "position": [395, 337],
-      "bounds": [260, 100],
-      "drawsContent": false
     },
     {
       "name": "LayoutBlockFlow DIV class='scroller'",
@@ -194,12 +170,6 @@
       "bounds": [196, 212],
       "contentsOpaque": true,
       "backgroundColor": "#DDDDDD"
-    },
-    {
-      "name": "Overflow Controls Ancestor Clipping Layer",
-      "position": [395, 337],
-      "bounds": [260, 100],
-      "drawsContent": false
     },
     {
       "name": "Overflow Controls Host Layer",

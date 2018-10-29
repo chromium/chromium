@@ -28,13 +28,6 @@ using content::DevToolsAgentHost;
 
 namespace extensions {
 
-namespace {
-
-// For binding.
-void DoNothingWithExtensionHost(ExtensionHost* host) {}
-
-}  // namespace
-
 ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context,
                                        Delegate* delegate)
     : browser_context_(browser_context),
@@ -410,8 +403,7 @@ bool ExtensionRegistrar::IsExtensionEnabled(
 
 void ExtensionRegistrar::DidCreateRenderViewForBackgroundPage(
     ExtensionHost* host) {
-  OrphanedDevTools::iterator iter =
-      orphaned_dev_tools_.find(host->extension_id());
+  auto iter = orphaned_dev_tools_.find(host->extension_id());
   if (iter == orphaned_dev_tools_.end())
     return;
   // Keepalive count is reset on extension reload. This re-establishes the
@@ -530,8 +522,7 @@ void ExtensionRegistrar::MaybeSpinUpLazyBackgroundPage(
   // Wake up the event page by posting a dummy task.
   LazyBackgroundTaskQueue* queue =
       LazyBackgroundTaskQueue::Get(browser_context_);
-  queue->AddPendingTask(browser_context_, extension->id(),
-                        base::BindOnce(&DoNothingWithExtensionHost));
+  queue->AddPendingTask(browser_context_, extension->id(), base::DoNothing());
 }
 
 }  // namespace extensions

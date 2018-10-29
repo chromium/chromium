@@ -73,7 +73,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   };
 
   struct IconDirectoryEntry {
-    DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+    DISALLOW_NEW();
     IntSize size_;
     uint16_t bit_count_;
     IntPoint hot_spot_;

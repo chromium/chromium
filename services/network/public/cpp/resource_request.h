@@ -70,6 +70,13 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // Additional HTTP request headers.
   net::HttpRequestHeaders headers;
 
+  // 'X-Requested-With' header value. Some consumers want to set this header,
+  // but such internal headers must be ignored by CORS checks (which run inside
+  // Network Service), so the value is stored here (rather than in |headers|)
+  // and later populated in the headers after CORS check.
+  // TODO(toyoshim): Remove it once PPAPI is deprecated.
+  std::string requested_with;
+
   // net::URLRequest load flags (0 by default).
   int load_flags = 0;
 
@@ -217,8 +224,22 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // HTTPS due to an Upgrade-Insecure-Requests requirement.
   bool upgrade_if_insecure = false;
 
+  // True when the request is revalidating.
+  // Some users, notably blink, has its own cache. This flag is set to exempt
+  // some CORS logic for a revalidating request.
+  bool is_revalidating = false;
+
   // The profile ID of network conditions to throttle the network request.
   base::Optional<base::UnguessableToken> throttling_profile_id;
+
+  // Headers that will be added pre and post cache if the network context uses
+  // the custom proxy for this request. The custom proxy is used for requests
+  // that match the custom proxy config, and would otherwise be made direct.
+  net::HttpRequestHeaders custom_proxy_pre_cache_headers;
+  net::HttpRequestHeaders custom_proxy_post_cache_headers;
+
+  // Whether to use the alternate proxies set in the custom proxy config.
+  bool custom_proxy_use_alternate_proxy_list = false;
 };
 
 }  // namespace network

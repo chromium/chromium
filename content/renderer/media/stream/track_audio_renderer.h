@@ -77,7 +77,7 @@ class CONTENT_EXPORT TrackAudioRenderer
   base::TimeDelta GetCurrentRenderTime() const override;
   bool IsLocalRenderer() const override;
   void SwitchOutputDevice(const std::string& device_id,
-                          const media::OutputDeviceStatusCB& callback) override;
+                          media::OutputDeviceStatusCB callback) override;
 
  protected:
   ~TrackAudioRenderer() override;

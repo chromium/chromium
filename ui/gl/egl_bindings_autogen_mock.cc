@@ -391,43 +391,6 @@ MockEGLInterface::Mock_eglPostSubBufferNV(EGLDisplay dpy,
   return interface_->PostSubBufferNV(dpy, surface, x, y, width, height);
 }
 
-EGLint GL_BINDING_CALL
-MockEGLInterface::Mock_eglProgramCacheGetAttribANGLE(EGLDisplay dpy,
-                                                     EGLenum attrib) {
-  MakeEglMockFunctionUnique("eglProgramCacheGetAttribANGLE");
-  return interface_->ProgramCacheGetAttribANGLE(dpy, attrib);
-}
-
-void GL_BINDING_CALL
-MockEGLInterface::Mock_eglProgramCachePopulateANGLE(EGLDisplay dpy,
-                                                    const void* key,
-                                                    EGLint keysize,
-                                                    const void* binary,
-                                                    EGLint binarysize) {
-  MakeEglMockFunctionUnique("eglProgramCachePopulateANGLE");
-  interface_->ProgramCachePopulateANGLE(dpy, key, keysize, binary, binarysize);
-}
-
-void GL_BINDING_CALL
-MockEGLInterface::Mock_eglProgramCacheQueryANGLE(EGLDisplay dpy,
-                                                 EGLint index,
-                                                 void* key,
-                                                 EGLint* keysize,
-                                                 void* binary,
-                                                 EGLint* binarysize) {
-  MakeEglMockFunctionUnique("eglProgramCacheQueryANGLE");
-  interface_->ProgramCacheQueryANGLE(dpy, index, key, keysize, binary,
-                                     binarysize);
-}
-
-EGLint GL_BINDING_CALL
-MockEGLInterface::Mock_eglProgramCacheResizeANGLE(EGLDisplay dpy,
-                                                  EGLint limit,
-                                                  EGLenum mode) {
-  MakeEglMockFunctionUnique("eglProgramCacheResizeANGLE");
-  return interface_->ProgramCacheResizeANGLE(dpy, limit, mode);
-}
-
 EGLenum GL_BINDING_CALL MockEGLInterface::Mock_eglQueryAPI(void) {
   MakeEglMockFunctionUnique("eglQueryAPI");
   return interface_->QueryAPI();
@@ -501,6 +464,14 @@ MockEGLInterface::Mock_eglReleaseTexImage(EGLDisplay dpy,
 EGLBoolean GL_BINDING_CALL MockEGLInterface::Mock_eglReleaseThread(void) {
   MakeEglMockFunctionUnique("eglReleaseThread");
   return interface_->ReleaseThread();
+}
+
+void GL_BINDING_CALL
+MockEGLInterface::Mock_eglSetBlobCacheFuncsANDROID(EGLDisplay dpy,
+                                                   EGLSetBlobFuncANDROID set,
+                                                   EGLGetBlobFuncANDROID get) {
+  MakeEglMockFunctionUnique("eglSetBlobCacheFuncsANDROID");
+  interface_->SetBlobCacheFuncsANDROID(dpy, set, get);
 }
 
 EGLBoolean GL_BINDING_CALL
@@ -723,18 +694,6 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglMakeCurrent);
   if (strcmp(name, "eglPostSubBufferNV") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglPostSubBufferNV);
-  if (strcmp(name, "eglProgramCacheGetAttribANGLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_eglProgramCacheGetAttribANGLE);
-  if (strcmp(name, "eglProgramCachePopulateANGLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_eglProgramCachePopulateANGLE);
-  if (strcmp(name, "eglProgramCacheQueryANGLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_eglProgramCacheQueryANGLE);
-  if (strcmp(name, "eglProgramCacheResizeANGLE") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_eglProgramCacheResizeANGLE);
   if (strcmp(name, "eglQueryAPI") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryAPI);
   if (strcmp(name, "eglQueryContext") == 0)
@@ -756,6 +715,9 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglReleaseTexImage);
   if (strcmp(name, "eglReleaseThread") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglReleaseThread);
+  if (strcmp(name, "eglSetBlobCacheFuncsANDROID") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglSetBlobCacheFuncsANDROID);
   if (strcmp(name, "eglStreamAttribKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglStreamAttribKHR);
   if (strcmp(name, "eglStreamConsumerAcquireKHR") == 0)

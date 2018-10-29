@@ -31,15 +31,18 @@
     function testBlurWithoutRelatedTarget(next) {
       const activeElement = document.deepActiveElement();
       TestRunner.addResult(`Active element: ${activeElement.tagName}`);
-      activeElement.dispatchEvent(new FocusEvent('blur'));
+      activeElement.blur();
       dumpIsEditing();
+      activeElement.focus();
       next();
     },
 
     function testBlurWithRelatedTarget(next) {
       const activeElement = document.deepActiveElement();
       TestRunner.addResult(`Active element: ${activeElement.tagName}`);
-      activeElement.dispatchEvent(new FocusEvent('blur', {relatedTarget: document.body}));
+      const dummy = createElement('button');
+      document.body.appendChild(dummy);
+      dummy.focus();
       dumpIsEditing();
       next();
     },

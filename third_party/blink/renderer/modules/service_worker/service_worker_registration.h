@@ -6,15 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_REGISTRATION_H_
 
 #include <memory>
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration_proxy.h"
+#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-blink.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration_object_info.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/modules/service_worker/navigation_preload_manager.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker.h"
-#include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -23,25 +24,38 @@ namespace blink {
 class ScriptPromise;
 class ScriptState;
 
-// The implementation of a service worker registration object in Blink. Actual
-// registration representation is in the embedder and this class accesses it
-// via WebServiceWorkerRegistration::Handle object.
+// The implementation of a service worker registration object in Blink.
 class ServiceWorkerRegistration final
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<ServiceWorkerRegistration>,
       public ContextLifecycleObserver,
-      public WebServiceWorkerRegistrationProxy,
-      public Supplementable<ServiceWorkerRegistration> {
+      public Supplementable<ServiceWorkerRegistration>,
+      public mojom::blink::ServiceWorkerRegistrationObject {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(ServiceWorkerRegistration);
-  USING_PRE_FINALIZER(ServiceWorkerRegistration, Dispose);
 
  public:
   // Called from CallbackPromiseAdapter.
-  using WebType = std::unique_ptr<WebServiceWorkerRegistration::Handle>;
+  using WebType = WebServiceWorkerRegistrationObjectInfo;
   static ServiceWorkerRegistration* Take(
       ScriptPromiseResolver*,
-      std::unique_ptr<WebServiceWorkerRegistration::Handle>);
+      WebServiceWorkerRegistrationObjectInfo);
+
+  ServiceWorkerRegistration(ExecutionContext*,
+                            WebServiceWorkerRegistrationObjectInfo);
+
+  // Eager finalization needed to promptly invalidate the corresponding entry of
+  // the (registration id, WeakMember<ServiceWorkerRegistration>) map inside
+  // ServiceWorkerContainerClient.
+  EAGERLY_FINALIZE();
+
+  // Called in 2 scenarios:
+  //   - when constructing |this|.
+  //   - when the browser process sends a new
+  //   WebServiceWorkerRegistrationObjectInfo and |this| already exists for the
+  //   described ServiceWorkerRegistration, the new info may contain some
+  //   information to be updated, e.g. {installing,waiting,active} objects.
+  void Attach(WebServiceWorkerRegistrationObjectInfo);
 
   // ScriptWrappable overrides.
   bool HasPendingActivity() const final;
@@ -52,18 +66,6 @@ class ServiceWorkerRegistration final
     return ContextLifecycleObserver::GetExecutionContext();
   }
 
-  // WebServiceWorkerRegistrationProxy overrides.
-  void DispatchUpdateFoundEvent() override;
-  void SetInstalling(std::unique_ptr<WebServiceWorker::Handle>) override;
-  void SetWaiting(std::unique_ptr<WebServiceWorker::Handle>) override;
-  void SetActive(std::unique_ptr<WebServiceWorker::Handle>) override;
-
-  // Returns an existing registration object for the handle if it exists.
-  // Otherwise, returns a new registration object.
-  static ServiceWorkerRegistration* GetOrCreate(
-      ExecutionContext*,
-      std::unique_ptr<WebServiceWorkerRegistration::Handle>);
-
   ServiceWorker* installing() { return installing_; }
   ServiceWorker* waiting() { return waiting_; }
   ServiceWorker* active() { return active_; }
@@ -72,9 +74,12 @@ class ServiceWorkerRegistration final
   String scope() const;
   String updateViaCache() const;
 
-  WebServiceWorkerRegistration* WebRegistration() {
-    return handle_->Registration();
-  }
+  int64_t RegistrationId() const { return registration_id_; }
+
+  void EnableNavigationPreload(bool enable, ScriptPromiseResolver* resolver);
+  void GetNavigationPreloadState(ScriptPromiseResolver* resolver);
+  void SetNavigationPreloadHeader(const String& value,
+                                  ScriptPromiseResolver* resolver);
 
   ScriptPromise update(ScriptState*);
   ScriptPromise unregister(ScriptState*);
@@ -86,21 +91,46 @@ class ServiceWorkerRegistration final
   void Trace(blink::Visitor*) override;
 
  private:
-  ServiceWorkerRegistration(
-      ExecutionContext*,
-      std::unique_ptr<WebServiceWorkerRegistration::Handle>);
-  void Dispose();
-
   // ContextLifecycleObserver overrides.
   void ContextDestroyed(ExecutionContext*) override;
 
-  // A handle to the registration representation in the embedder.
-  std::unique_ptr<WebServiceWorkerRegistration::Handle> handle_;
+  // Implements mojom::blink::ServiceWorkerRegistrationObject.
+  void SetServiceWorkerObjects(
+      mojom::blink::ChangedServiceWorkerObjectsMaskPtr changed_mask,
+      mojom::blink::ServiceWorkerObjectInfoPtr installing,
+      mojom::blink::ServiceWorkerObjectInfoPtr waiting,
+      mojom::blink::ServiceWorkerObjectInfoPtr active) override;
+  void SetUpdateViaCache(
+      mojom::blink::ServiceWorkerUpdateViaCache update_via_cache) override;
+  void UpdateFound() override;
 
   Member<ServiceWorker> installing_;
   Member<ServiceWorker> waiting_;
   Member<ServiceWorker> active_;
   Member<NavigationPreloadManager> navigation_preload_;
+
+  const int64_t registration_id_;
+  const KURL scope_;
+  const mojom::ScriptType type_;
+  mojom::ServiceWorkerUpdateViaCache update_via_cache_;
+  // Both |host_| and |binding_| are associated with
+  // content.mojom.ServiceWorkerContainer interface for a Document, and
+  // content.mojom.ServiceWorker interface for a ServiceWorkerGlobalScope.
+  //
+  // |host_| keeps the Mojo connection to the
+  // browser-side ServiceWorkerRegistrationObjectHost, whose lifetime is bound
+  // to the Mojo connection. It is bound on the
+  // main thread for service worker clients (document), and is bound on the
+  // service worker thread for service worker execution contexts.
+  mojom::blink::ServiceWorkerRegistrationObjectHostAssociatedPtr host_;
+  // |binding_| keeps the Mojo binding to serve its other Mojo endpoint (i.e.
+  // the caller end) held by the ServiceWorkerRegistrationObjectHost in
+  // the browser process.
+  // It is bound on the main thread for service worker clients (document), and
+  // is bound on the service worker thread for service worker execution
+  // contexts.
+  mojo::AssociatedBinding<mojom::blink::ServiceWorkerRegistrationObject>
+      binding_;
 
   bool stopped_;
 };
@@ -110,13 +140,12 @@ class ServiceWorkerRegistrationArray {
 
  public:
   // Called from CallbackPromiseAdapter.
-  using WebType = std::unique_ptr<
-      WebVector<std::unique_ptr<WebServiceWorkerRegistration::Handle>>>;
+  using WebType = WebVector<WebServiceWorkerRegistrationObjectInfo>;
   static HeapVector<Member<ServiceWorkerRegistration>> Take(
       ScriptPromiseResolver* resolver,
       WebType web_service_worker_registrations) {
     HeapVector<Member<ServiceWorkerRegistration>> registrations;
-    for (auto& registration : *web_service_worker_registrations) {
+    for (auto& registration : web_service_worker_registrations) {
       registrations.push_back(
           ServiceWorkerRegistration::Take(resolver, std::move(registration)));
     }

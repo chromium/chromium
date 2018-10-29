@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "ui/base/clipboard/clipboard_types.h"
 #include "url/gurl.h"
@@ -88,16 +89,21 @@ struct BookmarkNodeData {
    private:
     friend struct BookmarkNodeData;
 
+#if !defined(OS_MACOSX)
     // For reading/writing this Element.
     void WriteToPickle(base::Pickle* pickle) const;
     bool ReadFromPickle(base::PickleIterator* iterator);
+#endif
 
     // ID of the node.
     int64_t id_;
   };
 
-  // The MIME type for the clipboard format for BookmarkNodeData.
+#if !defined(OS_MACOSX)
+  // The MIME type for the clipboard format for BookmarkNodeData. This type is
+  // not used on the Mac.
   static const char kClipboardFormatString[];
+#endif
 
   BookmarkNodeData();
   BookmarkNodeData(const BookmarkNodeData& other);
@@ -140,12 +146,14 @@ struct BookmarkNodeData {
   bool Read(const ui::OSExchangeData& data);
 #endif
 
+#if !defined(OS_MACOSX)
   // Writes the data for a drag to |pickle|.
   void WriteToPickle(const base::FilePath& profile_path,
                      base::Pickle* pickle) const;
 
   // Reads the data for a drag from a |pickle|.
   bool ReadFromPickle(base::Pickle* pickle);
+#endif
 
   // Returns the nodes represented by this DragData. If this DragData was
   // created from the same profile then the nodes from the model are returned.

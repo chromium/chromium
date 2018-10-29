@@ -4,8 +4,8 @@
 //
 // Sync protocol for communication between sync client and server.
 
-// Update proto_value_conversions{.h,.cc,_unittest.cc} if you change
-// any fields in this file.
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
 
 syntax = "proto2";
 

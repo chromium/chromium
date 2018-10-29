@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_border_edges.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
@@ -21,7 +22,6 @@ class HitTestLocation;
 class HitTestRequest;
 class HitTestResult;
 class LayoutRect;
-class NGPaintFragment;
 class NGPhysicalFragment;
 class ScopedPaintState;
 struct PaintInfo;
@@ -78,16 +78,15 @@ class NGBoxFragmentPainter : public BoxPainterBase {
   void PaintAllPhasesAtomically(const PaintInfo&,
                                 bool is_self_painting);
   void PaintBlockChildren(const PaintInfo&);
-  void PaintLineBoxChildren(const Vector<scoped_refptr<NGPaintFragment>>&,
+  void PaintLineBoxChildren(NGPaintFragment::ChildList,
                             const PaintInfo&,
                             const LayoutPoint& paint_offset);
-  void PaintInlineChildren(const Vector<scoped_refptr<NGPaintFragment>>&,
+  void PaintInlineChildren(NGPaintFragment::ChildList,
                            const PaintInfo&,
                            const LayoutPoint& paint_offset);
-  void PaintInlineChildrenOutlines(
-      const Vector<scoped_refptr<NGPaintFragment>>&,
-      const PaintInfo&,
-      const LayoutPoint& paint_offset);
+  void PaintInlineChildrenOutlines(NGPaintFragment::ChildList,
+                                   const PaintInfo&,
+                                   const LayoutPoint& paint_offset);
   void PaintInlineChildBoxUsingLegacyFallback(const NGPhysicalFragment&,
                                               const PaintInfo&);
   void PaintBlockFlowContents(const PaintInfo&,
@@ -99,8 +98,7 @@ class NGBoxFragmentPainter : public BoxPainterBase {
   void PaintTextChild(const NGPaintFragment&,
                       const PaintInfo&,
                       const LayoutPoint& paint_offset);
-  void PaintFloatingChildren(const Vector<scoped_refptr<NGPaintFragment>>&,
-                             const PaintInfo&);
+  void PaintFloatingChildren(NGPaintFragment::ChildList, const PaintInfo&);
   void PaintFloats(const PaintInfo&);
   void PaintMask(const PaintInfo&, const LayoutPoint& paint_offset);
   void PaintOverflowControlsIfNeeded(const PaintInfo&,
@@ -115,6 +113,9 @@ class NGBoxFragmentPainter : public BoxPainterBase {
                    const LayoutPoint& paint_offset);
   void PaintCarets(const PaintInfo&, const LayoutPoint& paint_offset);
 
+  void RecordHitTestData(const PaintInfo& paint_info,
+                         const LayoutPoint& paint_offset);
+
   bool IsInSelfHitTestingPhase(HitTestAction) const;
   bool VisibleToHitTestRequest(const HitTestRequest&) const;
 
@@ -124,7 +125,7 @@ class NGBoxFragmentPainter : public BoxPainterBase {
   // box in paint layer. Note that this includes scrolling offset when the
   // container has 'overflow: scroll'.
   bool HitTestChildren(HitTestResult&,
-                       const Vector<scoped_refptr<NGPaintFragment>>&,
+                       NGPaintFragment::ChildList,
                        const HitTestLocation& location_in_container,
                        const LayoutPoint& physical_offset,
                        HitTestAction);

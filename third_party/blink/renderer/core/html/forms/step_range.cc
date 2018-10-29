@@ -90,7 +90,7 @@ Decimal StepRange::ClampValue(const Decimal& value) const {
       rounded_value > maximum_
           ? rounded_value - step_
           : (rounded_value < minimum_ ? rounded_value + step_ : rounded_value);
-  // clampedValue can be outside of [m_minimum, m_maximum] if m_step is huge.
+  // clamped_value can be outside of [minimum_, maximum_] if step_ is huge.
   if (clamped_value < minimum_ || clamped_value > maximum_)
     return in_range_value;
   return clamped_value;

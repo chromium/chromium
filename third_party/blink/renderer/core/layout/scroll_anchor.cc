@@ -99,9 +99,7 @@ static LayoutRect RelativeBounds(const LayoutObject* layout_object,
       local_bounds.ShiftMaxYEdgeTo(max_y);
     }
   } else if (layout_object->IsText()) {
-    // TODO(skobes): Use first and last InlineTextBox only?
-    for (InlineTextBox* box : ToLayoutText(layout_object)->TextBoxes())
-      local_bounds.Unite(box->FrameRect());
+    local_bounds.Unite(ToLayoutText(layout_object)->LinesBoundingBox());
   } else {
     // Only LayoutBox and LayoutText are supported.
     NOTREACHED();
@@ -155,14 +153,14 @@ static const AtomicString UniqueClassnameAmongSiblings(Element* element) {
                               *sibling_element->ToNode())) {
     if (sibling_element->HasClass() && sibling_element != element) {
       const SpaceSplitString& class_names = sibling_element->ClassNames();
-      for (size_t i = 0; i < class_names.size(); ++i) {
+      for (wtf_size_t i = 0; i < class_names.size(); ++i) {
         classname_filter->Add(class_names[i]);
       }
     }
   }
 
   const SpaceSplitString& class_names = element->ClassNames();
-  for (size_t i = 0; i < class_names.size(); ++i) {
+  for (wtf_size_t i = 0; i < class_names.size(); ++i) {
     // MayContain allows for false positives, but a false positive is relatively
     // harmless; it just means we have to choose a different classname, or in
     // the worst case a different selector.
@@ -465,13 +463,21 @@ void ScrollAnchor::Adjust() {
 }
 
 bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
-  if (!scroller_ || anchor_object_ || !serialized_anchor.IsValid()) {
+  if (!scroller_ || !serialized_anchor.IsValid()) {
     return false;
   }
 
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Layout.ScrollAnchor.TimeToRestoreAnchor");
   DEFINE_STATIC_LOCAL(EnumerationHistogram, restoration_status_histogram,
                       ("Layout.ScrollAnchor.RestorationStatus", kStatusCount));
+
+  if (anchor_object_ && serialized_anchor.selector == saved_selector_) {
+    return true;
+  }
+
+  if (anchor_object_) {
+    return false;
+  }
 
   Document* document = &(ScrollerLayoutBox(scroller_)->GetDocument());
 
@@ -533,6 +539,7 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
 
     saved_selector_ = serialized_anchor.selector;
     restoration_status_histogram.Count(kSuccess);
+
     return true;
   }
 

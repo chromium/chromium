@@ -97,7 +97,8 @@ class ArcTermsOfServiceDefaultNegotiatorTest
 
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{ConsentAuditorFactory::GetInstance(), BuildFakeConsentAuditor}};
+    return {{ConsentAuditorFactory::GetInstance(),
+             base::BindRepeating(&BuildFakeConsentAuditor)}};
   }
 
  private:

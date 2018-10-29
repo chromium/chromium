@@ -30,7 +30,7 @@ namespace em = enterprise_management;
 namespace policy {
 namespace {
 
-// List of policies where variables like ${machine_name} should be expanded.
+// List of policies where variables like ${MACHINE_NAME} should be expanded.
 constexpr const char* kPoliciesToExpand[] = {key::kNativePrinters};
 
 // Fetch policy every 90 minutes which matches the Windows default:
@@ -173,7 +173,7 @@ void ActiveDirectoryPolicyManager::PublishPolicy() {
   policy_map.SetSourceForAll(POLICY_SOURCE_ACTIVE_DIRECTORY);
   SetEnterpriseUsersDefaults(&policy_map);
 
-  // Expand e.g. ${machine_name} for a selected set of policies.
+  // Expand e.g. ${MACHINE_NAME} for a selected set of policies.
   ExpandVariables(&policy_map);
 
   // Policy is ready, send it off.
@@ -224,8 +224,11 @@ void ActiveDirectoryPolicyManager::ExpandVariables(PolicyMap* policy_map) {
     return;
   }
 
+  // TODO(rsorokin): remove "machine_name" in M72 (see
+  // https://crbug.com/875876).
   chromeos::VariableExpander expander(
-      {{"machine_name", policy->machine_name()}});
+      {{"MACHINE_NAME", policy->machine_name()},
+       {"machine_name", policy->machine_name()}});
   for (const char* policy_name : kPoliciesToExpand) {
     base::Value* value = policy_map->GetMutableValue(policy_name);
     if (value) {

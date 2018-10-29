@@ -82,12 +82,15 @@ ResetSettingsHandler::~ResetSettingsHandler() {}
 ResetSettingsHandler* ResetSettingsHandler::Create(
     content::WebUIDataSource* html_source, Profile* profile) {
 #if defined(OS_CHROMEOS)
+  // TODO(crbug.com/891905): Centralize powerwash restriction checks.
   bool allow_powerwash = false;
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  allow_powerwash = !connector->IsEnterpriseManaged() &&
+  allow_powerwash =
+      !connector->IsEnterpriseManaged() &&
       !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
-      !user_manager::UserManager::Get()->IsLoggedInAsSupervisedUser();
+      !user_manager::UserManager::Get()->IsLoggedInAsSupervisedUser() &&
+      !user_manager::UserManager::Get()->IsLoggedInAsChildUser();
   html_source->AddBoolean("allowPowerwash", allow_powerwash);
 #endif  // defined(OS_CHROMEOS)
 

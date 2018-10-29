@@ -239,7 +239,7 @@ class CableMockAdapter : public MockBluetoothAdapter {
   void ExpectDiscoveryWithScanCallback() {
     EXPECT_CALL(*this, StartDiscoverySessionWithFilterRaw(_, _, _))
         .WillOnce(::testing::WithArg<1>(
-            [this](const auto& callback) { callback.Run(nullptr); }));
+            [](const auto& callback) { callback.Run(nullptr); }));
   }
 
   void ExpectDiscoveryWithScanCallback(
@@ -317,7 +317,7 @@ class FidoCableDiscoveryTest : public ::testing::Test {
 TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsNewDevice) {
   auto cable_discovery = CreateDiscovery();
   NiceMock<MockFidoDiscoveryObserver> mock_observer;
-  EXPECT_CALL(mock_observer, DeviceAdded(_, _));
+  EXPECT_CALL(mock_observer, AuthenticatorAdded(_, _));
   cable_discovery->set_observer(&mock_observer);
 
   auto mock_adapter =
@@ -336,7 +336,7 @@ TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsNewDevice) {
 TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsNewAppleDevice) {
   auto cable_discovery = CreateDiscovery();
   NiceMock<MockFidoDiscoveryObserver> mock_observer;
-  EXPECT_CALL(mock_observer, DeviceAdded(_, _));
+  EXPECT_CALL(mock_observer, AuthenticatorAdded(_, _));
   cable_discovery->set_observer(&mock_observer);
 
   auto mock_adapter =
@@ -357,7 +357,7 @@ TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsNewAppleDevice) {
 TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsIncorrectDevice) {
   auto cable_discovery = CreateDiscovery();
   NiceMock<MockFidoDiscoveryObserver> mock_observer;
-  EXPECT_CALL(mock_observer, DeviceAdded(_, _)).Times(0);
+  EXPECT_CALL(mock_observer, AuthenticatorAdded(_, _)).Times(0);
   cable_discovery->set_observer(&mock_observer);
 
   auto mock_adapter =
@@ -395,7 +395,7 @@ TEST_F(FidoCableDiscoveryTest, TestDiscoveryWithMultipleEids) {
   mock_adapter->ExpectDiscoveryWithScanCallback(kAuthenticatorEid);
 
   NiceMock<MockFidoDiscoveryObserver> mock_observer;
-  EXPECT_CALL(mock_observer, DeviceAdded(_, _));
+  EXPECT_CALL(mock_observer, AuthenticatorAdded(_, _));
   cable_discovery->set_observer(&mock_observer);
 
   Sequence sequence;
@@ -424,7 +424,7 @@ TEST_F(FidoCableDiscoveryTest, TestDiscoveryWithPartialAdvertisementSuccess) {
   auto cable_discovery =
       std::make_unique<FakeFidoCableDiscovery>(std::move(discovery_data));
   NiceMock<MockFidoDiscoveryObserver> mock_observer;
-  EXPECT_CALL(mock_observer, DeviceAdded(_, _));
+  EXPECT_CALL(mock_observer, AuthenticatorAdded(_, _));
   cable_discovery->set_observer(&mock_observer);
 
   auto mock_adapter =
@@ -456,7 +456,7 @@ TEST_F(FidoCableDiscoveryTest, TestDiscoveryWithAdvertisementFailures) {
       std::make_unique<FakeFidoCableDiscovery>(std::move(discovery_data));
 
   NiceMock<MockFidoDiscoveryObserver> mock_observer;
-  EXPECT_CALL(mock_observer, DeviceAdded(_, _)).Times(0);
+  EXPECT_CALL(mock_observer, AuthenticatorAdded(_, _)).Times(0);
   cable_discovery->set_observer(&mock_observer);
 
   auto mock_adapter =
@@ -504,7 +504,7 @@ TEST_F(FidoCableDiscoveryTest, TestUnregisterAdvertisementUponDestruction) {
 TEST_F(FidoCableDiscoveryTest, TestResumeDiscoveryAfterPoweredOn) {
   auto cable_discovery = CreateDiscovery();
   NiceMock<MockFidoDiscoveryObserver> mock_observer;
-  EXPECT_CALL(mock_observer, DeviceAdded);
+  EXPECT_CALL(mock_observer, AuthenticatorAdded);
   cable_discovery->set_observer(&mock_observer);
 
   auto mock_adapter =

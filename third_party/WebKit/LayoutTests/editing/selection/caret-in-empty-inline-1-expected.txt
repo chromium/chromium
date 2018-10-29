@@ -3,6 +3,7 @@ Bug 85793: Caret is not rendered in empty inline contenteditable elements
 This test verifies that an empty inline contenteditable element gets a valid caret rect.
 
 
+
 PASS caretRect.left is 8
 PASS caretRect.top is 160
 PASS caretRect.width is 1

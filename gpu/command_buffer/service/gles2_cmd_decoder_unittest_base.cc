@@ -211,13 +211,14 @@ void GLES2DecoderTestBase::InitDecoderWithWorkarounds(
   scoped_refptr<FeatureInfo> feature_info =
       new FeatureInfo(workarounds, gpu_feature_info);
 
-  group_ = scoped_refptr<ContextGroup>(new ContextGroup(
-      gpu_preferences_, GetParam(), &mailbox_manager_,
-      std::move(memory_tracker_), &shader_translator_cache_,
-      &framebuffer_completeness_cache_, feature_info,
-      normalized_init.bind_generates_resource, &image_manager_,
-      nullptr /* image_factory */, nullptr /* progress_reporter */,
-      gpu_feature_info, &discardable_manager_));
+  group_ = scoped_refptr<ContextGroup>(
+      new ContextGroup(gpu_preferences_, GetParam(), &mailbox_manager_,
+                       std::move(memory_tracker_), &shader_translator_cache_,
+                       &framebuffer_completeness_cache_, feature_info,
+                       normalized_init.bind_generates_resource, &image_manager_,
+                       nullptr /* image_factory */,
+                       nullptr /* progress_reporter */, gpu_feature_info,
+                       &discardable_manager_, nullptr, &shared_image_manager_));
   bool use_default_textures = normalized_init.bind_generates_resource;
 
   InSequence sequence;
@@ -2429,7 +2430,8 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       &shader_translator_cache_, &framebuffer_completeness_cache_, feature_info,
       context_creation_attribs_.bind_generates_resource, &image_manager_,
       nullptr /* image_factory */, nullptr /* progress_reporter */,
-      GpuFeatureInfo(), &discardable_manager_);
+      GpuFeatureInfo(), &discardable_manager_,
+      &passthrough_discardable_manager_, &shared_image_manager_);
 
   surface_ = gl::init::CreateOffscreenGLSurface(
       context_creation_attribs_.offscreen_framebuffer_size);
@@ -2557,11 +2559,23 @@ void GLES2DecoderPassthroughTestBase::DoBufferSubData(GLenum target,
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 }
 
+void GLES2DecoderPassthroughTestBase::DoGenTexture(GLuint client_id) {
+  GenHelper<cmds::GenTexturesImmediate>(client_id);
+}
+
+bool GLES2DecoderPassthroughTestBase::DoIsTexture(GLuint client_id) {
+  return IsObjectHelper<cmds::IsTexture>(client_id);
+}
+
 void GLES2DecoderPassthroughTestBase::DoBindTexture(GLenum target,
                                                     GLuint client_id) {
   cmds::BindTexture cmd;
   cmd.Init(target, client_id);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+}
+
+void GLES2DecoderPassthroughTestBase::DoDeleteTexture(GLuint client_id) {
+  GenHelper<cmds::DeleteTexturesImmediate>(client_id);
 }
 
 void GLES2DecoderPassthroughTestBase::DoTexImage2D(
@@ -2613,6 +2627,45 @@ void GLES2DecoderPassthroughTestBase::DoBindRenderbuffer(GLenum target,
                                                          GLuint client_id) {
   cmds::BindRenderbuffer cmd;
   cmd.Init(target, client_id);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+}
+
+void GLES2DecoderPassthroughTestBase::DoGetIntegerv(GLenum pname,
+                                                    GLint* result,
+                                                    size_t num_results) {
+  cmds::GetIntegerv cmd;
+  cmd.Init(pname, shared_memory_id_, shared_memory_offset_);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  cmds::GetIntegerv::Result* cmd_result =
+      GetSharedMemoryAs<cmds::GetIntegerv::Result*>();
+  DCHECK(static_cast<size_t>(cmd_result->GetNumResults()) >= num_results);
+  std::copy(cmd_result->GetData(), cmd_result->GetData() + num_results, result);
+}
+
+void GLES2DecoderPassthroughTestBase::DoInitializeDiscardableTextureCHROMIUM(
+    GLuint client_id) {
+  int32_t shmem_id = 0;
+  scoped_refptr<gpu::Buffer> buffer =
+      command_buffer_service_->CreateTransferBufferHelper(sizeof(uint32_t),
+                                                          &shmem_id);
+  ClientDiscardableHandle handle(buffer, 0, shmem_id);
+
+  cmds::InitializeDiscardableTextureCHROMIUM cmd;
+  cmd.Init(client_id, shmem_id, 0);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+}
+
+void GLES2DecoderPassthroughTestBase::DoUnlockDiscardableTextureCHROMIUM(
+    GLuint client_id) {
+  cmds::UnlockDiscardableTextureCHROMIUM cmd;
+  cmd.Init(client_id);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+}
+
+void GLES2DecoderPassthroughTestBase::DoLockDiscardableTextureCHROMIUM(
+    GLuint client_id) {
+  cmds::LockDiscardableTextureCHROMIUM cmd;
+  cmd.Init(client_id);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 }
 

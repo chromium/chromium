@@ -29,7 +29,6 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/request_context_frame_type.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client_walker.h"
@@ -37,6 +36,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
@@ -54,7 +54,7 @@ RawResource* RawResource::FetchImport(FetchParameters& params,
                                       RawResourceClient* client) {
   DCHECK_EQ(params.GetResourceRequest().GetFrameType(),
             network::mojom::RequestContextFrameType::kNone);
-  params.SetRequestContext(WebURLRequest::kRequestContextImport);
+  params.SetRequestContext(mojom::RequestContextType::IMPORT);
   return ToRawResource(fetcher->RequestResource(
       params, RawResourceFactory(ResourceType::kImportResource), client));
 }
@@ -65,7 +65,7 @@ RawResource* RawResource::Fetch(FetchParameters& params,
   DCHECK_EQ(params.GetResourceRequest().GetFrameType(),
             network::mojom::RequestContextFrameType::kNone);
   DCHECK_NE(params.GetResourceRequest().GetRequestContext(),
-            WebURLRequest::kRequestContextUnspecified);
+            mojom::RequestContextType::UNSPECIFIED);
   return ToRawResource(fetcher->RequestResource(
       params, RawResourceFactory(ResourceType::kRaw), client));
 }
@@ -78,17 +78,17 @@ RawResource* RawResource::FetchMainResource(
   DCHECK_NE(params.GetResourceRequest().GetFrameType(),
             network::mojom::RequestContextFrameType::kNone);
   DCHECK(params.GetResourceRequest().GetRequestContext() ==
-             WebURLRequest::kRequestContextForm ||
+             mojom::RequestContextType::FORM ||
          params.GetResourceRequest().GetRequestContext() ==
-             WebURLRequest::kRequestContextFrame ||
+             mojom::RequestContextType::FRAME ||
          params.GetResourceRequest().GetRequestContext() ==
-             WebURLRequest::kRequestContextHyperlink ||
+             mojom::RequestContextType::HYPERLINK ||
          params.GetResourceRequest().GetRequestContext() ==
-             WebURLRequest::kRequestContextIframe ||
+             mojom::RequestContextType::IFRAME ||
          params.GetResourceRequest().GetRequestContext() ==
-             WebURLRequest::kRequestContextInternal ||
+             mojom::RequestContextType::INTERNAL ||
          params.GetResourceRequest().GetRequestContext() ==
-             WebURLRequest::kRequestContextLocation);
+             mojom::RequestContextType::LOCATION);
 
   return ToRawResource(fetcher->RequestResource(
       params, RawResourceFactory(ResourceType::kMainResource), client,
@@ -101,9 +101,9 @@ RawResource* RawResource::FetchMedia(FetchParameters& params,
   DCHECK_EQ(params.GetResourceRequest().GetFrameType(),
             network::mojom::RequestContextFrameType::kNone);
   auto context = params.GetResourceRequest().GetRequestContext();
-  DCHECK(context == WebURLRequest::kRequestContextAudio ||
-         context == WebURLRequest::kRequestContextVideo);
-  ResourceType type = (context == WebURLRequest::kRequestContextAudio)
+  DCHECK(context == mojom::RequestContextType::AUDIO ||
+         context == mojom::RequestContextType::VIDEO);
+  ResourceType type = (context == mojom::RequestContextType::AUDIO)
                           ? ResourceType::kAudio
                           : ResourceType::kVideo;
   return ToRawResource(
@@ -115,7 +115,7 @@ RawResource* RawResource::FetchTextTrack(FetchParameters& params,
                                          RawResourceClient* client) {
   DCHECK_EQ(params.GetResourceRequest().GetFrameType(),
             network::mojom::RequestContextFrameType::kNone);
-  params.SetRequestContext(WebURLRequest::kRequestContextTrack);
+  params.SetRequestContext(mojom::RequestContextType::TRACK);
   return ToRawResource(fetcher->RequestResource(
       params, RawResourceFactory(ResourceType::kTextTrack), client));
 }
@@ -126,7 +126,7 @@ RawResource* RawResource::FetchManifest(FetchParameters& params,
   DCHECK_EQ(params.GetResourceRequest().GetFrameType(),
             network::mojom::RequestContextFrameType::kNone);
   DCHECK_EQ(params.GetResourceRequest().GetRequestContext(),
-            WebURLRequest::kRequestContextManifest);
+            mojom::RequestContextType::MANIFEST);
   return ToRawResource(fetcher->RequestResource(
       params, RawResourceFactory(ResourceType::kManifest), client));
 }
@@ -257,6 +257,12 @@ void RawResource::SetSerializedCachedMetadata(const char* data, size_t size) {
     if (cache_handler) {
       cache_handler->SetSerializedCachedMetadata(data, size);
     }
+  } else if (GetType() == ResourceType::kRaw) {
+    ScriptCachedMetadataHandler* cache_handler =
+        static_cast<ScriptCachedMetadataHandler*>(Resource::CacheHandler());
+    if (cache_handler) {
+      cache_handler->SetSerializedCachedMetadata(data, size);
+    }
   }
 
   ResourceClientWalker<RawResourceClient> w(Clients());
@@ -360,8 +366,7 @@ static bool ShouldIgnoreHeaderForCacheReuse(AtomicString header_name) {
 }
 
 Resource::MatchStatus RawResource::CanReuse(
-    const FetchParameters& new_fetch_parameters,
-    scoped_refptr<const SecurityOrigin> new_source_origin) const {
+    const FetchParameters& new_fetch_parameters) const {
   const ResourceRequest& new_request =
       new_fetch_parameters.GetResourceRequest();
   // Ensure most headers match the existing headers before continuing. Note that
@@ -388,7 +393,7 @@ Resource::MatchStatus RawResource::CanReuse(
     }
   }
 
-  return Resource::CanReuse(new_fetch_parameters, std::move(new_source_origin));
+  return Resource::CanReuse(new_fetch_parameters);
 }
 
 RawResourceClientStateChecker::RawResourceClientStateChecker()

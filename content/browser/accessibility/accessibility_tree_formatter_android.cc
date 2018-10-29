@@ -80,8 +80,9 @@ class AccessibilityTreeFormatterAndroid
 };
 
 // static
-AccessibilityTreeFormatter* AccessibilityTreeFormatter::Create() {
-  return new AccessibilityTreeFormatterAndroid();
+std::unique_ptr<AccessibilityTreeFormatter>
+AccessibilityTreeFormatter::Create() {
+  return std::make_unique<AccessibilityTreeFormatterAndroid>();
 }
 
 AccessibilityTreeFormatterAndroid::AccessibilityTreeFormatterAndroid() {

@@ -200,8 +200,8 @@ public class ChosenObjectPreferences
      * resetList() is called to refresh the view when the data is ready.
      */
     private void getInfo() {
-        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(new ResultsPopulator());
-        fetcher.fetchPreferencesForCategory(mCategory);
+        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher();
+        fetcher.fetchPreferencesForCategory(mCategory, new ResultsPopulator());
     }
 
     private void resetList() {

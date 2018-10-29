@@ -141,7 +141,7 @@ LocalCaretRect ComputeLocalCaretRect(const NGCaretPosition& caret_position) {
       // See core/layout/README.md#coordinate-spaces for details.
       if (fragment.Style().IsFlippedBlocksWritingMode()) {
         const LayoutBlockFlow* container =
-            layout_object->EnclosingNGBlockFlow();
+            layout_object->ContainingNGBlockFlow();
         container->FlipForWritingMode(layout_rect);
       }
 

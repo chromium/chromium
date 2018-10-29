@@ -175,18 +175,18 @@ bool IsOnAccessControlResponseHeaderWhitelist(const WebString& name) {
 // No-CORS mode is highly discouraged from using it for new features. Only
 // legacy usages for backward compatibility are allowed except for well-designed
 // usages over the fetch API.
-bool IsNoCORSAllowedContext(WebURLRequest::RequestContext context) {
+bool IsNoCORSAllowedContext(mojom::RequestContextType context) {
   switch (context) {
-    case WebURLRequest::kRequestContextAudio:
-    case WebURLRequest::kRequestContextFavicon:
-    case WebURLRequest::kRequestContextFetch:
-    case WebURLRequest::kRequestContextImage:
-    case WebURLRequest::kRequestContextObject:
-    case WebURLRequest::kRequestContextPlugin:
-    case WebURLRequest::kRequestContextScript:
-    case WebURLRequest::kRequestContextSharedWorker:
-    case WebURLRequest::kRequestContextVideo:
-    case WebURLRequest::kRequestContextWorker:
+    case mojom::RequestContextType::AUDIO:
+    case mojom::RequestContextType::FAVICON:
+    case mojom::RequestContextType::FETCH:
+    case mojom::RequestContextType::IMAGE:
+    case mojom::RequestContextType::OBJECT:
+    case mojom::RequestContextType::PLUGIN:
+    case mojom::RequestContextType::SCRIPT:
+    case mojom::RequestContextType::SHARED_WORKER:
+    case mojom::RequestContextType::VIDEO:
+    case mojom::RequestContextType::WORKER:
       return true;
     default:
       return false;

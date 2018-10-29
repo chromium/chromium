@@ -43,7 +43,7 @@ class StorageInfoFetcher :
   void GetUsageInfo(storage::GetUsageInfoCallback callback);
 
   // Called when usage information is available.
-  void OnGetUsageInfoInternal(const storage::UsageInfoEntries& entries);
+  void OnGetUsageInfoInternal(storage::UsageInfoEntries entries);
 
   // Reports back to all observers that information is available.
   void OnFetchCompleted();

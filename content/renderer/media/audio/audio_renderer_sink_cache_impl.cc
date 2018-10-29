@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -337,16 +338,13 @@ void AudioRendererSinkCacheImpl::CacheOrStopUnusedSink(
 
 void AudioRendererSinkCacheImpl::DropSinksForFrame(int source_render_frame_id) {
   base::AutoLock auto_lock(cache_lock_);
-  cache_.erase(std::remove_if(cache_.begin(), cache_.end(),
-                              [source_render_frame_id](const CacheEntry& val) {
-                                if (val.source_render_frame_id ==
-                                    source_render_frame_id) {
-                                  val.sink->Stop();
-                                  return true;
-                                }
-                                return false;
-                              }),
-               cache_.end());
+  base::EraseIf(cache_, [source_render_frame_id](const CacheEntry& val) {
+    if (val.source_render_frame_id == source_render_frame_id) {
+      val.sink->Stop();
+      return true;
+    }
+    return false;
+  });
 }
 
 int AudioRendererSinkCacheImpl::GetCacheSizeForTesting() {

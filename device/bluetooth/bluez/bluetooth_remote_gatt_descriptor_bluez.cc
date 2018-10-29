@@ -27,8 +27,7 @@ namespace {
 // Stream operator for logging vector<uint8_t>.
 std::ostream& operator<<(std::ostream& out, const std::vector<uint8_t> bytes) {
   out << "[";
-  for (std::vector<uint8_t>::const_iterator iter = bytes.begin();
-       iter != bytes.end(); ++iter) {
+  for (auto iter = bytes.begin(); iter != bytes.end(); ++iter) {
     out << base::StringPrintf("%02X", *iter);
   }
   return out << "]";

@@ -36,8 +36,8 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   const int kObservers = 5;
 
   PowerMonitorTestObserver observers[kObservers];
-  for (int index = 0; index < kObservers; ++index)
-    monitor()->AddObserver(&observers[index]);
+  for (auto& index : observers)
+    monitor()->AddObserver(&index);
 
   // Sending resume when not suspended should have no effect.
   source()->GenerateResumeEvent();
@@ -46,8 +46,8 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   // Pretend we suspended.
   source()->GenerateSuspendEvent();
   // Ensure all observers were notified of the event
-  for (int index = 0; index < kObservers; ++index)
-    EXPECT_EQ(observers[index].suspends(), 1);
+  for (const auto& index : observers)
+    EXPECT_EQ(index.suspends(), 1);
 
   // Send a second suspend notification.  This should be suppressed.
   source()->GenerateSuspendEvent();

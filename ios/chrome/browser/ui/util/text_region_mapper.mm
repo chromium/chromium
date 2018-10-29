@@ -10,10 +10,10 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "ios/chrome/browser/ui/ui_util.h"
 #import "ios/chrome/browser/ui/util/core_text_util.h"
 #import "ios/chrome/browser/ui/util/manual_text_framer.h"
 #import "ios/chrome/browser/ui/util/text_frame.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

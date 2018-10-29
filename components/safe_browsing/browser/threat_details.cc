@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/base_ui_manager.h"
 #include "components/safe_browsing/browser/referrer_chain_provider.h"
@@ -25,6 +26,7 @@
 #include "components/safe_browsing/db/hit_report.h"
 #include "components/safe_browsing/features.h"
 #include "components/safe_browsing/web_ui/safe_browsing_ui.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -426,8 +428,7 @@ ClientSafeBrowsingReportRequest::Resource* ThreatDetails::AddUrl(
     url_resource->set_parent_id(parent_resource->id());
   }
   if (children) {
-    for (std::vector<GURL>::const_iterator it = children->begin();
-         it != children->end(); ++it) {
+    for (auto it = children->begin(); it != children->end(); ++it) {
       // TODO(lpz): Should this first check if the child URL is reportable
       // before creating the resource?
       ClientSafeBrowsingReportRequest::Resource* child_resource =
@@ -793,8 +794,8 @@ void ThreatDetails::OnCacheCollectionReady() {
     return;
   }
 
-  BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&WebUIInfoSingleton::AddToCSBRRsSent,
                      base::Unretained(WebUIInfoSingleton::GetInstance()),
                      std::move(report_)));
@@ -820,8 +821,8 @@ void ThreatDetails::MaybeFillReferrerChain() {
 
 void ThreatDetails::AllDone() {
   is_all_done_ = true;
-  BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(done_callback_, base::Unretained(web_contents())));
 }
 

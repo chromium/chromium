@@ -286,8 +286,7 @@ void ProcessManager::RegisterRenderFrameHost(
 
 void ProcessManager::UnregisterRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {
-  ExtensionRenderFrames::iterator frame =
-      all_extension_frames_.find(render_frame_host);
+  auto frame = all_extension_frames_.find(render_frame_host);
 
   if (frame != all_extension_frames_.end()) {
     std::string extension_id = GetExtensionID(render_frame_host);
@@ -713,8 +712,7 @@ void ProcessManager::CloseBackgroundHost(ExtensionHost* host) {
 
 void ProcessManager::AcquireLazyKeepaliveCountForFrame(
     content::RenderFrameHost* render_frame_host) {
-  ExtensionRenderFrames::iterator it =
-      all_extension_frames_.find(render_frame_host);
+  auto it = all_extension_frames_.find(render_frame_host);
   if (it == all_extension_frames_.end())
     return;
 
@@ -732,8 +730,7 @@ void ProcessManager::AcquireLazyKeepaliveCountForFrame(
 
 void ProcessManager::ReleaseLazyKeepaliveCountForFrame(
     content::RenderFrameHost* render_frame_host) {
-  ExtensionRenderFrames::iterator iter =
-      all_extension_frames_.find(render_frame_host);
+  auto iter = all_extension_frames_.find(render_frame_host);
   if (iter == all_extension_frames_.end())
     return;
 
@@ -877,8 +874,8 @@ void ProcessManager::UnregisterExtension(const std::string& extension_id) {
   // decrement the lazy_keepalive_count to negative for the new extension
   // instance when they are destroyed. Since we are erasing the background page
   // data for the unloaded extension, unregister the RenderFrameHosts too.
-  for (ExtensionRenderFrames::iterator it = all_extension_frames_.begin();
-       it != all_extension_frames_.end(); ) {
+  for (auto it = all_extension_frames_.begin();
+       it != all_extension_frames_.end();) {
     content::RenderFrameHost* host = it->first;
     if (GetExtensionID(host) == extension_id) {
       all_extension_frames_.erase(it++);

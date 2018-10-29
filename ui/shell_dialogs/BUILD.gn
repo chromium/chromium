@@ -18,6 +18,8 @@ jumbo_component("shell_dialogs") {
     "base_shell_dialog.h",
     "base_shell_dialog_win.cc",
     "base_shell_dialog_win.h",
+    "execute_select_file_win.cc",
+    "execute_select_file_win.h",
     "select_file_dialog.cc",
     "select_file_dialog.h",
     "select_file_dialog_factory.cc",
@@ -103,6 +105,7 @@ if (is_mac) {
 test("shell_dialogs_unittests") {
   testonly = true
   sources = [
+    "execute_select_file_win_unittest.cc",
     "run_all_unittests.cc",
     "select_file_dialog_mac_unittest.mm",
     "select_file_dialog_unittest.cc",
@@ -114,7 +117,9 @@ test("shell_dialogs_unittests") {
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
+    "//ui/resources:ui_test_pak_data",
+    "//ui/strings",
   ]
 
   if (is_mac) {

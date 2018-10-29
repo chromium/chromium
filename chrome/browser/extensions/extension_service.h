@@ -409,9 +409,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Reloads all extensions. Does not notify that extensions are ready.
   void ReloadExtensionsForTest();
 
-  // Enable Zip Unpacker Extension component extensions for unit test.
-  void EnableZipUnpackerExtensionForTest();
-
   // Clear all ExternalProviders.
   void ClearProvidersForTesting();
 
@@ -477,12 +474,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // For the extension in |version_path| with |id|, check to see if it's an
   // externally managed extension.  If so, uninstall it.
   void CheckExternalUninstall(const std::string& id);
-
-  // Attempt to enable Zip Unpacker component extension if it is disabled.
-  // This function doesn't override MUST_REAMIN_DISABLED management policy.
-  // Component extensions are managed and cannot be disabled by user, however,
-  // there are some cases having a disabled component extension in profile.
-  void EnableZipUnpackerExtension();
 
   // Attempt to enable all disabled extensions which the only disabled reason is
   // reloading.

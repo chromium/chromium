@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "components/safe_browsing/common/safebrowsing_constants.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/net_buildflags.h"
@@ -37,8 +39,8 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
     network_context_.reset();
     request_context_getter_ = nullptr;
     if (internal_state_) {
-      content::BrowserThread::PostTask(
-          content::BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(&InternalState::Reset, internal_state_));
     }
   }
@@ -113,8 +115,8 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
     void Initialize(
         scoped_refptr<net::URLRequestContextGetter> request_context_getter,
         network::mojom::NetworkContextRequest network_context_request) {
-      content::BrowserThread::PostTask(
-          content::BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(&InternalState::InitOnIO, this, request_context_getter,
                          std::move(network_context_request)));
     }

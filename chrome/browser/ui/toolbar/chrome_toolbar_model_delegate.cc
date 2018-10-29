@@ -25,8 +25,7 @@
 #include "extensions/common/constants.h"
 
 #if !defined(OS_ANDROID)
-#include "components/omnibox/browser/vector_icons.h" // nogncheck
-#include "components/toolbar/vector_icons.h"  // nogncheck
+#include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -112,17 +111,31 @@ scoped_refptr<net::X509Certificate> ChromeToolbarModelDelegate::GetCertificate()
   return entry->GetSSL().certificate;
 }
 
-bool ChromeToolbarModelDelegate::FailsMalwareCheck() const {
+bool ChromeToolbarModelDelegate::FailsBillingCheck() const {
   content::WebContents* web_contents = GetActiveWebContents();
   // If there is no active WebContents (which can happen during toolbar
-  // initialization), so nothing can fail.
+  // initialization), nothing can fail.
   if (!web_contents)
     return false;
   security_state::SecurityInfo security_info;
   SecurityStateTabHelper::FromWebContents(web_contents)
       ->GetSecurityInfo(&security_info);
-  return security_info.malicious_content_status !=
-         security_state::MALICIOUS_CONTENT_STATUS_NONE;
+  return security_info.malicious_content_status ==
+         security_state::MALICIOUS_CONTENT_STATUS_BILLING;
+}
+
+bool ChromeToolbarModelDelegate::FailsMalwareCheck() const {
+  content::WebContents* web_contents = GetActiveWebContents();
+  // If there is no active WebContents (which can happen during toolbar
+  // initialization), nothing can fail.
+  if (!web_contents)
+    return false;
+  security_state::SecurityInfo security_info;
+  SecurityStateTabHelper::FromWebContents(web_contents)
+      ->GetSecurityInfo(&security_info);
+  const auto status = security_info.malicious_content_status;
+  return status != security_state::MALICIOUS_CONTENT_STATUS_BILLING &&
+         status != security_state::MALICIOUS_CONTENT_STATUS_NONE;
 }
 
 const gfx::VectorIcon* ChromeToolbarModelDelegate::GetVectorIconOverride()
@@ -132,7 +145,7 @@ const gfx::VectorIcon* ChromeToolbarModelDelegate::GetVectorIconOverride()
   GetURL(&url);
 
   if (url.SchemeIs(content::kChromeUIScheme))
-    return &toolbar::kProductIcon;
+    return &omnibox::kProductIcon;
 
   if (url.SchemeIs(extensions::kExtensionScheme))
     return &omnibox::kExtensionAppIcon;

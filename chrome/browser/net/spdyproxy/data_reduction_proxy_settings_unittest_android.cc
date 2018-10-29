@@ -127,7 +127,7 @@ TEST_F(DataReductionProxyMockSettingsAndroidTest,
   ASSERT_FALSE(result.is_null());
 
   std::vector<int64_t> result_vector;
-  base::android::JavaLongArrayToInt64Vector(env_, result.obj(), &result_vector);
+  base::android::JavaLongArrayToInt64Vector(env_, result, &result_vector);
 
   std::vector<int64_t> expected_vector;
   for (size_t i = data_reduction_proxy::kNumDaysInHistory; i;)
@@ -143,7 +143,7 @@ TEST_F(DataReductionProxyMockSettingsAndroidTest,
   ASSERT_FALSE(result.is_null());
 
   std::vector<int64_t> result_vector;
-  base::android::JavaLongArrayToInt64Vector(env_, result.obj(), &result_vector);
+  base::android::JavaLongArrayToInt64Vector(env_, result, &result_vector);
 
   std::vector<int64_t> expected_vector;
   for (size_t i = data_reduction_proxy::kNumDaysInHistory; i;)

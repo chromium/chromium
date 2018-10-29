@@ -2,7 +2,6 @@ Non-relevant properties on mutation records should be null, except for NodeLists
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 characterData record:
 PASS record.attributeName is null
 PASS record.attributeNamespace is null

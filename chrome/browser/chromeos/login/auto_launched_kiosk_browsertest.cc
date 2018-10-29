@@ -419,6 +419,7 @@ class AutoLaunchedKioskTest : public extensions::ExtensionApiTest {
             .Set("PublicAccounts",
                  extensions::ListBuilder().Append(GetTestAppUserId()).Build())
             .Build();
+    local_state->SetKey(prefs::kOobeComplete, base::Value(true));
 
     JSONFileValueSerializer serializer(
         user_data_path.Append(chrome::kLocalStateFilename));

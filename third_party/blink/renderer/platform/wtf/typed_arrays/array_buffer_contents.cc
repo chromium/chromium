@@ -53,7 +53,7 @@ ArrayBufferContents::ArrayBufferContents()
     : holder_(base::AdoptRef(new DataHolder())) {}
 
 ArrayBufferContents::ArrayBufferContents(
-    unsigned num_elements,
+    size_t num_elements,
     unsigned element_byte_size,
     SharingType is_shared,
     ArrayBufferContents::InitializationPolicy policy)

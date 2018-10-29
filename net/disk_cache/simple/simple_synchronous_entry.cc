@@ -567,7 +567,7 @@ void SimpleSynchronousEntry::ReadSparseData(const SparseRequest& in_entry_op,
   }
 
   // Find the first sparse range at or after the requested offset.
-  SparseRangeIterator it = sparse_ranges_.lower_bound(offset);
+  auto it = sparse_ranges_.lower_bound(offset);
 
   if (it != sparse_ranges_.begin()) {
     // Hop back one range and read the one overlapping with the start.
@@ -655,7 +655,7 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
     out_entry_stat->set_sparse_data_size(0);
   }
 
-  SparseRangeIterator it = sparse_ranges_.lower_bound(offset);
+  auto it = sparse_ranges_.lower_bound(offset);
 
   if (it != sparse_ranges_.begin()) {
     --it;
@@ -740,7 +740,7 @@ void SimpleSynchronousEntry::GetAvailableRange(const SparseRequest& in_entry_op,
   int64_t offset = in_entry_op.sparse_offset;
   int len = in_entry_op.buf_len;
 
-  SparseRangeIterator it = sparse_ranges_.lower_bound(offset);
+  auto it = sparse_ranges_.lower_bound(offset);
 
   int64_t start = offset;
   int64_t avail_so_far = 0;
@@ -835,8 +835,7 @@ void SimpleSynchronousEntry::Close(
   base::ElapsedTimer close_time;
   DCHECK(stream_0_data);
 
-  for (std::vector<CRCRecord>::iterator it = crc32s_to_write->begin();
-       it != crc32s_to_write->end(); ++it) {
+  for (auto it = crc32s_to_write->begin(); it != crc32s_to_write->end(); ++it) {
     const int stream_index = it->index;
     const int file_index = GetFileIndexFromStreamIndex(stream_index);
     if (empty_file_omitted_[file_index])

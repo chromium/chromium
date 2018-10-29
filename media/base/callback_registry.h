@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "media/base/bind_to_current_loop.h"
 
 namespace media {
@@ -92,8 +93,8 @@ class CallbackRegistry<void(Args...)> {
   }
 
   base::Lock lock_;
-  uint32_t next_registration_id_ = 0;
-  std::map<uint32_t, CallbackType> callbacks_;
+  uint32_t next_registration_id_ GUARDED_BY(lock_) = 0;
+  std::map<uint32_t, CallbackType> callbacks_ GUARDED_BY(lock_);
 
   DISALLOW_COPY_AND_ASSIGN(CallbackRegistry);
 };

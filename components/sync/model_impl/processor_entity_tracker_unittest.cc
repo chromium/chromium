@@ -544,4 +544,46 @@ TEST_F(ProcessorEntityTrackerTest, RestoredLocalChangeWithUpdatedSpecifics) {
   // No verification is necessary. SetCommitData shouldn't DCHECK.
 }
 
+// Tests the scenario where a local creation conflicts with a remote deletion,
+// where usually (and in this test) local wins. In this case, the remote update
+// should be ignored but the server IDs should be updated.
+TEST_F(ProcessorEntityTrackerTest, LocalCreationConflictsWithServerTombstone) {
+  std::unique_ptr<ProcessorEntityTracker> entity = CreateNew();
+  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue1));
+
+  ASSERT_TRUE(entity->IsUnsynced());
+  ASSERT_TRUE(entity->RequiresCommitRequest());
+  ASSERT_FALSE(entity->RequiresCommitData());
+  ASSERT_TRUE(entity->HasCommitData());
+  ASSERT_FALSE(entity->metadata().is_deleted());
+  ASSERT_TRUE(entity->metadata().server_id().empty());
+
+  {
+    // Local creation should use a temporary server ID (which in this tracker
+    // involves an empty string).
+    CommitRequestData request;
+    entity->InitializeCommitRequestData(&request);
+    EXPECT_TRUE(request.entity->id.empty());
+  }
+
+  // Before anything gets committed, we receive a remote tombstone, but local
+  // would usually win so the remote update is ignored.
+  entity->RecordIgnoredUpdate(
+      GenerateTombstone(*entity, kHash, kId, kName, base::Time::Now(), 2));
+
+  EXPECT_EQ(kId, entity->metadata().server_id());
+  EXPECT_TRUE(entity->IsUnsynced());
+  EXPECT_TRUE(entity->RequiresCommitRequest());
+  EXPECT_FALSE(entity->RequiresCommitData());
+  EXPECT_TRUE(entity->HasCommitData());
+  EXPECT_FALSE(entity->metadata().is_deleted());
+
+  // Generate a commit request. The server ID should have been reused from the
+  // otherwise ignored update.
+  const sync_pb::EntityMetadata metadata_v1 = entity->metadata();
+  CommitRequestData request;
+  entity->InitializeCommitRequestData(&request);
+  EXPECT_EQ(kId, request.entity->id);
+}
+
 }  // namespace syncer

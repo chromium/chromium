@@ -1,0 +1,258 @@
+{
+  "startingURL": "https://secure.newegg.com/GlobalShopping/CheckoutStep1.aspx?CartID=639%2bFRMFKUSESAKWH8A&IsCombineGuest=1",
+  "autofillProfile": [
+    {
+      "type": "ADDRESS_HOME_CITY",
+      "value": "Austin"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE1",
+      "value": "4120 Freidrich Lane"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE2",
+      "value": "Apt 8"
+    },
+    {
+      "type": "ADDRESS_HOME_STATE",
+      "value": "TX"
+    },
+    {
+      "type": "ADDRESS_HOME_ZIP",
+      "value": "78744"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "value": "2027"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_MONTH",
+      "value": "05"
+    },
+    {
+      "type": "CREDIT_CARD_NAME_FULL",
+      "value": "Milton Waddams"
+    },
+    {
+      "type": "CREDIT_CARD_NUMBER",
+      "value": "9621327911759602"
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "value": "red.swingline@initech.com"
+    },
+    {
+      "type": "NAME_FIRST",
+      "value": "Milton"
+    },
+    {
+      "type": "NAME_LAST",
+      "value": "Waddams"
+    },
+    {
+      "type": "PHONE_HOME_CITY_AND_NUMBER",
+      "value": "(512) 555-1234"
+    }
+  ],
+  "passwordManagerProfiles": [],
+  "actions": [
+    {
+      "selector": "//input[@validgroup=\"g1\" and @name=\"SFirstName\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 7,
+      "action_index": 1
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Waddams",
+      "selector": "//input[@validgroup=\"g1\" and @name=\"SLastName\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "NAME_LAST",
+      "action_index": 2
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane",
+      "selector": "//input[@data-msg-required=\"This field is required.\" and @name=\"SAddress1\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_LINE1",
+      "action_index": 3
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@type=\"text\" and @name=\"SAddress2\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_LINE2",
+      "action_index": 4
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Austin",
+      "selector": "//input[@data-msg-required=\"This field is required.\" and @name=\"SCity\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_CITY",
+      "action_index": 5
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "TX",
+      "selector": "//select[@selectstate]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_STATE",
+      "action_index": 6
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@maxlength=\"20\" and @name=\"SZip\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "ADDRESS_HOME_ZIP",
+      "action_index": 7
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "(512) 555-1234",
+      "selector": "//input[@data-msg-required=\"This field is required.\" and @name=\"ShippingPhone\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 8
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "red.swingline@initech.com",
+      "selector": "//li/ul/li[4]/input[@data-msg-required=\"This field is required.\" and @data-msg-emailvalidate=\"Please enter a valid email address.\" and @maxlength=\"128\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "EMAIL_ADDRESS",
+      "action_index": 9
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton",
+      "selector": "//input[@validgroup=\"g1\" and @name=\"SFirstName\"]",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "NAME_FIRST",
+      "action_index": 10
+    },
+    {
+      "selector": "//a[@href=\"javascript:Biz.GlobalShopping.CheckOut.continueToBilling();\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 11
+    },
+    {
+      "url": "https://secure.newegg.com/GlobalShopping/CheckoutStep2.aspx?CartID=335%2bFRMFKUSESAKWH8A&IsCombineGuest=1",
+      "context": {
+        "isIframe": false
+      },
+      "type": "loadPage",
+      "action_index": 12
+    },
+    {
+      "selector": "//input[@type=\"checkbox\" and @id=\"billingsameaddress\"]",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 13
+    },
+    {
+      "selector": "//input[@data-msg-required=\"This field is required.\" and @data-msg-validateisnumeric=\"Please enter a valid cardholder name.\" and @name=\"Card_HolderNameNew\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 14
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton Waddams",
+      "selector": "//input[@data-msg-required=\"This field is required.\" and @data-msg-validateisnumeric=\"Please enter a valid cardholder name.\" and @name=\"Card_HolderNameNew\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_NAME_FULL",
+      "action_index": 15
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "9 6 2 1   3 2 7 9   1 1 7 5   9 6 0 2",
+      "selector": "//input[@data-msg-required=\"This field is required.\" and @data-msg-cacreditcard=\"We are temporarily unable to accept Discover cards.\" and @id=\"Card_CCNUMBERNEW\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_NUMBER",
+      "action_index": 16
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "05",
+      "selector": "//select[@name=\"Card_exp_monthNew\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_EXP_MONTH",
+      "action_index": 17
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "2027",
+      "selector": "//select[@name=\"Card_exp_yearNew\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "action_index": 18
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "9621327911759602",
+      "selector": "//input[@type=\"text\" and @name=\"GiftCode\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_NUMBER",
+      "action_index": 19
+    }
+  ]
+}

@@ -57,6 +57,7 @@ public class WebappTabDelegate extends TabDelegate {
         intent.setData(Uri.parse(url));
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_SEND_TO_EXTERNAL_DEFAULT_HANDLER, true);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_CHROME, true);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_WEBAPK, true);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_BROWSER_LAUNCH_SOURCE, mActivityType);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, mApkPackageName);
         addAsyncTabExtras(asyncParams, parentId, false /* isChromeUI */, assignedTabId, intent);
@@ -85,8 +86,8 @@ public class WebappTabDelegate extends TabDelegate {
             for (String result : ExternalNavigationDelegateImpl.getSpecializedHandlersWithFilter(
                          handlers, null, null)) {
                 if (result.equals(mApkPackageName)) {
-                    // Current webapk matches, don't intercept so that we can launch a cct. See
-                    // http://crbug.com/831806 for more context.
+                    // Current WebAPK matches and this is a HTTP(s) link. Don't intercept so that we
+                    // can launch a CCT. See http://crbug.com/831806 for more context.
                     return false;
                 } else {
                     foundSpecializedHandler = true;

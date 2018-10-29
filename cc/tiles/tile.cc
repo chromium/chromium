@@ -10,7 +10,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "cc/tiles/tile_manager.h"
 #include "components/viz/common/resources/resource_sizes.h"

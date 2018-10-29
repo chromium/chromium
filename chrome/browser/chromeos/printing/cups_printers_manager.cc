@@ -62,8 +62,8 @@ class PrinterDetectorObserverProxy : public PrinterDetector::Observer {
       const std::vector<PrinterDetector::DetectedPrinter>& printers) override;
 
  private:
-  CupsPrintersManagerImpl* parent_;
-  int id_;
+  CupsPrintersManagerImpl* const parent_;
+  const int id_;
   SEQUENCE_CHECKER(sequence_);
   ScopedObserver<PrinterDetector, PrinterDetector::Observer> observer_;
 };
@@ -170,7 +170,7 @@ class CupsPrintersManagerImpl : public CupsPrintersManager,
   void RemoveConfiguredPrinter(const std::string& printer_id) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     auto existing = synced_printers_manager_->GetPrinter(printer_id);
-    if (existing != nullptr) {
+    if (existing) {
       event_tracker_->RecordPrinterRemoved(*existing);
     }
     synced_printers_manager_->RemoveConfiguredPrinter(printer_id);
@@ -345,7 +345,7 @@ class CupsPrintersManagerImpl : public CupsPrintersManager,
   void MaybeRecordInstallation(const Printer& printer,
                                bool is_automatic_installation) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    if (synced_printers_manager_->GetPrinter(printer.id()) != nullptr) {
+    if (synced_printers_manager_->GetPrinter(printer.id())) {
       // It's just an update, not a new installation, so don't record an event.
       return;
     }
@@ -359,7 +359,7 @@ class CupsPrintersManagerImpl : public CupsPrintersManager,
       const auto* detected = FindDetectedPrinter(printer.id());
       // We should have the full DetectedPrinter.  We
       // can't log the printer if we don't have it.
-      if (detected == nullptr) {
+      if (!detected) {
         LOG(WARNING) << "Failed to find USB printer " << printer.id()
                      << " for installation event logging";
         return;
@@ -419,7 +419,7 @@ class CupsPrintersManagerImpl : public CupsPrintersManager,
       }
       auto it = detected_printer_ppd_references_.find(detected.printer.id());
       if (it != detected_printer_ppd_references_.end()) {
-        if (it->second == nullptr) {
+        if (!it->second) {
           // If the detected printer supports ipp-over-usb and we could not find
           // a ppd for it, then we switch to the ippusb scheme and mark it as
           // autoconf.
@@ -466,7 +466,7 @@ class CupsPrintersManagerImpl : public CupsPrintersManager,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     if (IsUsbPrinter(printer)) {
       const auto* detected = FindDetectedPrinter(printer.id());
-      if (detected == nullptr) {
+      if (!detected) {
         LOG(WARNING) << "Failed to find USB printer " << printer.id()
                      << " for abandoned event logging";
         return;
@@ -502,7 +502,7 @@ class CupsPrintersManagerImpl : public CupsPrintersManager,
     if (code == PpdProvider::SUCCESS) {
       // If we got something, populate the entry.  Otherwise let it
       // just remain null.
-      value.reset(new Printer::PpdReference(ref));
+      value = std::make_unique<Printer::PpdReference>(ref);
     }
     RebuildDetectedLists();
   }
@@ -514,7 +514,7 @@ class CupsPrintersManagerImpl : public CupsPrintersManager,
   std::vector<PrinterDetector::DetectedPrinter> zeroconf_detections_;
 
   // Not owned.
-  SyncedPrintersManager* synced_printers_manager_;
+  SyncedPrintersManager* const synced_printers_manager_;
   ScopedObserver<SyncedPrintersManager, SyncedPrintersManager::Observer>
       synced_printers_manager_observer_;
 
@@ -528,13 +528,10 @@ class CupsPrintersManagerImpl : public CupsPrintersManager,
   scoped_refptr<PpdProvider> ppd_provider_;
 
   // Not owned
-  PrinterEventTracker* event_tracker_;
+  PrinterEventTracker* const event_tracker_;
 
   // Categorized printers.  This is indexed by PrinterClass.
   std::vector<std::vector<Printer>> printers_;
-
-  // Printer ids that occur in one of our categories or printers.
-  std::unordered_set<std::string> known_printer_ids_;
 
   // This is a dual-purpose structure.  The keys in the map are printer ids.
   // If an entry exists in this map it means we have received a response from
@@ -581,7 +578,7 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
 }
 
 // static
-std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
+std::unique_ptr<CupsPrintersManager> CupsPrintersManager::CreateForTesting(
     SyncedPrintersManager* synced_printers_manager,
     std::unique_ptr<PrinterDetector> usb_detector,
     std::unique_ptr<PrinterDetector> zeroconf_detector,

@@ -33,7 +33,7 @@ ScriptPromise DocumentPictureInPicture::exitPictureInPicture(
   PictureInPictureControllerImpl& controller =
       PictureInPictureControllerImpl::From(document);
   Element* picture_in_picture_element =
-      controller.PictureInPictureElement(ToTreeScope(document));
+      controller.PictureInPictureElement(document);
 
   if (!picture_in_picture_element) {
     return ScriptPromise::RejectWithDOMException(

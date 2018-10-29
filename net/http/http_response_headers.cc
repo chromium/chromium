@@ -10,6 +10,7 @@
 #include "net/http/http_response_headers.h"
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <unordered_map>
 #include <utility>
@@ -71,6 +72,8 @@ const char* const kCookieResponseHeaders[] = {
 // This avoids erroneously re-processing them on page loads from cache ---
 // they are defined to be valid only on live and error-free HTTPS
 // connections.
+// TODO(https://crbug.com/893055): remove Public-Key-Pins from non-cachable
+// headers?
 const char* const kSecurityStateHeaders[] = {
   "strict-transport-security",
   "public-key-pins"
@@ -79,24 +82,31 @@ const char* const kSecurityStateHeaders[] = {
 // These response headers are not copied from a 304/206 response to the cached
 // response headers.  This list is based on Mozilla's nsHttpResponseHead.cpp.
 const char* const kNonUpdatedHeaders[] = {
-  "connection",
-  "proxy-connection",
-  "keep-alive",
-  "www-authenticate",
-  "proxy-authenticate",
-  "trailer",
-  "transfer-encoding",
-  "upgrade",
-  "etag",
-  "x-frame-options",
-  "x-xss-protection",
+    "connection",
+    "proxy-connection",
+    "keep-alive",
+    "www-authenticate",
+    "proxy-authenticate",
+    "proxy-authorization",
+    "te",
+    "trailer",
+    "transfer-encoding",
+    "upgrade",
+    "content-location",
+    "content-md5",
+    "etag",
+    "content-encoding",
+    "content-range",
+    "content-type",
+    "content-length",
+    "x-frame-options",
+    "x-xss-protection",
 };
 
 // Some header prefixes mean "Don't copy this header from a 304 response.".
 // Rather than listing all the relevant headers, we can consolidate them into
 // this list:
 const char* const kNonUpdatedHeaderPrefixes[] = {
-  "content-",
   "x-content-",
   "x-webkit-"
 };
@@ -114,11 +124,19 @@ bool ShouldUpdateHeader(base::StringPiece name) {
   return true;
 }
 
-void CheckDoesNotHaveEmbededNulls(const std::string& str) {
+bool HasEmbeddedNulls(base::StringPiece str) {
+  for (char c : str) {
+    if (c == '\0')
+      return true;
+  }
+  return false;
+}
+
+void CheckDoesNotHaveEmbeddedNulls(base::StringPiece str) {
   // Care needs to be taken when adding values to the raw headers string to
   // make sure it does not contain embeded NULLs. Any embeded '\0' may be
   // understood as line terminators and change how header lines get tokenized.
-  CHECK(str.find('\0') == std::string::npos);
+  CHECK(!HasEmbeddedNulls(str));
 }
 
 }  // namespace
@@ -166,6 +184,18 @@ HttpResponseHeaders::HttpResponseHeaders(base::PickleIterator* iter)
   std::string raw_input;
   if (iter->ReadString(&raw_input))
     Parse(raw_input);
+}
+
+scoped_refptr<HttpResponseHeaders> HttpResponseHeaders::TryToCreate(
+    base::StringPiece headers) {
+  // Reject strings with nulls.
+  if (HasEmbeddedNulls(headers) ||
+      headers.size() > std::numeric_limits<int>::max()) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<HttpResponseHeaders>(
+      HttpUtil::AssembleRawHeaders(headers.data(), headers.size()));
 }
 
 void HttpResponseHeaders::Persist(base::Pickle* pickle,
@@ -355,7 +385,7 @@ void HttpResponseHeaders::RemoveHeaderLine(const std::string& name,
 }
 
 void HttpResponseHeaders::AddHeader(const std::string& header) {
-  CheckDoesNotHaveEmbededNulls(header);
+  CheckDoesNotHaveEmbeddedNulls(header);
   DCHECK_EQ('\0', raw_headers_[raw_headers_.size() - 2]);
   DCHECK_EQ('\0', raw_headers_[raw_headers_.size() - 1]);
   // Don't copy the last null.
@@ -375,7 +405,7 @@ void HttpResponseHeaders::AddCookie(const std::string& cookie_string) {
 }
 
 void HttpResponseHeaders::ReplaceStatusLine(const std::string& new_status) {
-  CheckDoesNotHaveEmbededNulls(new_status);
+  CheckDoesNotHaveEmbeddedNulls(new_status);
   // Copy up to the null byte.  This just copies the status line.
   std::string new_raw_headers(new_status);
   new_raw_headers.push_back('\0');

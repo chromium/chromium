@@ -21,7 +21,6 @@ RequestExtraData::RequestExtraData()
       originated_from_service_worker_(false),
       initiated_in_secure_context_(false),
       is_for_no_state_prefetch_(false),
-      download_to_network_cache_only_(false),
       block_mixed_plugin_content_(false),
       navigation_initiated_by_renderer_(false),
       attach_same_site_cookies_(false) {}

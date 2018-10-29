@@ -18,9 +18,6 @@ class MinimizeButtonMetrics {
   MinimizeButtonMetrics();
   ~MinimizeButtonMetrics();
 
-  // Returns the height of the native caption buttons in DIPs.
-  static int GetCaptionButtonHeightInDIPs();
-
   void Init(HWND hwnd);
 
   // Obtain the X offset of the native minimize button. Since Windows can lie

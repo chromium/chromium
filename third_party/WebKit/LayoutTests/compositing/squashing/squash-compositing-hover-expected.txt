@@ -65,6 +65,7 @@ Case 1, original layer tree:
     }
   ]
 }
+
 Case 2: hovering over the "middle" element (causes that div to become its own composited layer)
 {
   "layers": [
@@ -146,6 +147,7 @@ Case 2: hovering over the "middle" element (causes that div to become its own co
     }
   ]
 }
+
 Case 3: hovering over the "middle2" element (causes that div to become its own composited layer)
 {
   "layers": [
@@ -237,6 +239,7 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
     }
   ]
 }
+
 Case 4: hovering over the "top" element (causes that div to become its own composited layer)
 {
   "layers": [
@@ -318,6 +321,7 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
     }
   ]
 }
+
 Case 5: back to situation in case 1
 {
   "layers": [

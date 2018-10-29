@@ -38,10 +38,63 @@
 
 namespace ash {
 
+WorkspaceLayoutManager::SettingsBubbleWindowObserver::
+    SettingsBubbleWindowObserver(
+        WorkspaceLayoutManager* workspace_layout_manager)
+    : workspace_layout_manager_(workspace_layout_manager) {}
+
+WorkspaceLayoutManager::SettingsBubbleWindowObserver::
+    ~SettingsBubbleWindowObserver() {
+  for (auto* window : windows_)
+    window->RemoveObserver(this);
+}
+
+void WorkspaceLayoutManager::SettingsBubbleWindowObserver::ObserveWindow(
+    aura::Window* window) {
+  if (!windows_.count(window)) {
+    windows_.insert(window);
+    window->AddObserver(this);
+  }
+}
+
+void WorkspaceLayoutManager::SettingsBubbleWindowObserver::
+    OnWindowHierarchyChanged(const HierarchyChangeParams& params) {
+  if (params.new_parent &&
+      params.new_parent !=
+          workspace_layout_manager_->settings_bubble_container_) {
+    StopOberservingWindow(params.target);
+  }
+}
+
+void WorkspaceLayoutManager::SettingsBubbleWindowObserver::
+    OnWindowVisibilityChanged(aura::Window* window, bool visible) {
+  workspace_layout_manager_->NotifySystemUiAreaChanged();
+}
+
+void WorkspaceLayoutManager::SettingsBubbleWindowObserver::OnWindowDestroying(
+    aura::Window* window) {
+  StopOberservingWindow(window);
+}
+
+void WorkspaceLayoutManager::SettingsBubbleWindowObserver::
+    OnWindowBoundsChanged(aura::Window* window,
+                          const gfx::Rect& old_bounds,
+                          const gfx::Rect& new_bounds,
+                          ui::PropertyChangeReason reason) {
+  workspace_layout_manager_->NotifySystemUiAreaChanged();
+}
+
+void WorkspaceLayoutManager::SettingsBubbleWindowObserver::
+    StopOberservingWindow(aura::Window* window) {
+  windows_.erase(window);
+  window->RemoveObserver(this);
+}
+
 WorkspaceLayoutManager::WorkspaceLayoutManager(aura::Window* window)
     : window_(window),
       root_window_(window->GetRootWindow()),
       root_window_controller_(RootWindowController::ForWindow(root_window_)),
+      settings_bubble_window_observer_(this),
       work_area_in_parent_(
           screen_util::GetDisplayWorkAreaBoundsInParent(window_)),
       is_fullscreen_(wm::GetWindowForFullscreenMode(window) != nullptr) {
@@ -52,11 +105,15 @@ WorkspaceLayoutManager::WorkspaceLayoutManager(aura::Window* window)
   DCHECK(window->GetProperty(::wm::kSnapChildrenToPixelBoundary));
   backdrop_controller_ = std::make_unique<BackdropController>(window_);
   keyboard::KeyboardController::Get()->AddObserver(this);
+  settings_bubble_container_ = window->GetRootWindow()->GetChildById(
+      kShellWindowId_SettingBubbleContainer);
 }
 
 WorkspaceLayoutManager::~WorkspaceLayoutManager() {
   if (root_window_)
     root_window_->RemoveObserver(this);
+  if (settings_bubble_container_)
+    settings_bubble_container_->RemoveObserver(this);
   for (aura::Window* window : windows_) {
     wm::WindowState* window_state = wm::GetWindowState(window);
     window_state->RemoveObserver(this);
@@ -147,6 +204,14 @@ void WorkspaceLayoutManager::SetChildBounds(aura::Window* child,
 //////////////////////////////////////////////////////////////////////////////
 // WorkspaceLayoutManager, keyboard::KeyboardControllerObserver implementation:
 
+void WorkspaceLayoutManager::OnKeyboardVisibleBoundsChanged(
+    const gfx::Rect& new_bounds) {
+  auto* keyboard_window =
+      keyboard::KeyboardController::Get()->GetKeyboardWindow();
+  if (keyboard_window && keyboard_window->GetRootWindow() == root_window_)
+    NotifySystemUiAreaChanged();
+}
+
 void WorkspaceLayoutManager::OnKeyboardWorkspaceDisplacingBoundsChanged(
     const gfx::Rect& new_bounds) {
   aura::Window* window = wm::GetActiveWindow();
@@ -186,11 +251,22 @@ void WorkspaceLayoutManager::OnKeyboardWorkspaceDisplacingBoundsChanged(
   }
 }
 
+void WorkspaceLayoutManager::OnStateChanged(
+    keyboard::KeyboardControllerState state) {
+  auto* keyboard_window =
+      keyboard::KeyboardController::Get()->GetKeyboardWindow();
+  if (keyboard_window && keyboard_window->GetRootWindow() == root_window_)
+    NotifySystemUiAreaChanged();
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // WorkspaceLayoutManager, aura::WindowObserver implementation:
 
 void WorkspaceLayoutManager::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
+  if (params.new_parent && params.new_parent == settings_bubble_container_)
+    settings_bubble_window_observer_.ObserveWindow(params.target);
+
   if (!wm::GetWindowState(params.target)->IsActive())
     return;
   // If the window is already tracked by the workspace this update would be
@@ -207,6 +283,11 @@ void WorkspaceLayoutManager::OnWindowHierarchyChanged(
     UpdateFullscreenState();
     UpdateShelfVisibility();
   }
+}
+
+void WorkspaceLayoutManager::OnWindowAdded(aura::Window* window) {
+  if (window->parent() == settings_bubble_container_)
+    settings_bubble_window_observer_.ObserveWindow(window);
 }
 
 void WorkspaceLayoutManager::OnWindowPropertyChanged(aura::Window* window,
@@ -236,6 +317,8 @@ void WorkspaceLayoutManager::OnWindowDestroying(aura::Window* window) {
     root_window_->RemoveObserver(this);
     root_window_ = nullptr;
   }
+  if (settings_bubble_container_ == window)
+    settings_bubble_container_ = nullptr;
 }
 
 void WorkspaceLayoutManager::OnWindowBoundsChanged(
@@ -397,6 +480,13 @@ void WorkspaceLayoutManager::UpdateAlwaysOnTop(aura::Window* window_on_top) {
       window_state->DisableAlwaysOnTop(window_on_top);
     else
       window_state->RestoreAlwaysOnTop();
+  }
+}
+
+void WorkspaceLayoutManager::NotifySystemUiAreaChanged() {
+  for (auto* window : windows_) {
+    wm::WMEvent event(wm::WM_EVENT_SYSTEM_UI_AREA_CHANGED);
+    wm::GetWindowState(window)->OnWMEvent(&event);
   }
 }
 

@@ -9,12 +9,12 @@
         {
           "object": "LayoutTableRow TR id='row1'",
           "rect": [20, 20, 160, 51],
-          "reason": "style change"
+          "reason": "background"
         },
         {
-          "object": "LayoutTableRow TR id='row1'",
+          "object": "LayoutTableRow TR id='row1' class='change'",
           "rect": [20, 20, 160, 51],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

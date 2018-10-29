@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 
 namespace {
 
@@ -66,10 +65,6 @@ AppMenu* AppMenuTestApiViews::GetAppMenu() {
 namespace test {
 
 std::unique_ptr<AppMenuTestApi> AppMenuTestApi::Create(Browser* browser) {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    return AppMenuTestApi::CreateCocoa(browser);
-#endif
   return std::make_unique<AppMenuTestApiViews>(browser);
 }
 

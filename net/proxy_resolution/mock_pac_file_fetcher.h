@@ -44,7 +44,7 @@ class MockPacFileFetcher : public PacFileFetcher {
   GURL pending_request_url_;
   CompletionOnceCallback pending_request_callback_;
   base::string16* pending_request_text_;
-  bool waiting_for_fetch_;
+  base::OnceClosure on_fetch_complete_;
   bool is_shutdown_;
 };
 

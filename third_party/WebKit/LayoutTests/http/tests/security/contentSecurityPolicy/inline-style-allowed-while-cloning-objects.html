@@ -2,11 +2,11 @@
 <html>
 <head>
     <meta http-equiv="Content-Security-Policy" content="style-src 'self';">
-    <script src="/js-test-resources/js-test.js"></script>
+    <script src="/js-test-resources/testharness.js"></script>
+    <script src="/js-test-resources/testharnessreport.js"></script>
     <script>
-        window.onload = function () {
-            debug("This test ensures that styles can be set by object.cloneNode()");
-
+        const testCase = async_test('Styles can be set by object.cloneNode()');
+        window.onload = testCase.step_func_done(() => {
             window.nodes = document.getElementById('nodes');
             window.node1 = document.getElementById('node1');
             window.node1.style.background = "yellow";
@@ -25,21 +25,21 @@
             nodes.appendChild(node3);
             nodes.appendChild(node4);
 
-            shouldBeEqualToString("node1.style.background", "yellow");
-            shouldBeEqualToString("node2.style.background", "yellow");
-            shouldBeEqualToString("node3.style.background", "blue");
-            shouldBeEqualToString("node4.style.background", "blue");
+            assert_equals(node1.style.background, "yellow");
+            assert_equals(node2.style.background, "yellow");
+            assert_equals(node3.style.background, "blue");
+            assert_equals(node4.style.background, "blue");
   
-            shouldBeEqualToString("node1.style.color", "red");
-            shouldBeEqualToString("node2.style.color", "red");
-            shouldBeEqualToString("node3.style.color", "green");
-            shouldBeEqualToString("node4.style.color", "green");
+            assert_equals(node1.style.color, "red");
+            assert_equals(node2.style.color, "red");
+            assert_equals(node3.style.color, "green");
+            assert_equals(node4.style.color, "green");
 
-            shouldBe("window.getComputedStyle(node1).background", "window.getComputedStyle(node2).background");
-            shouldBe("window.getComputedStyle(node3).background", "window.getComputedStyle(node4).background");
+            assert_equals(window.getComputedStyle(node1).background, window.getComputedStyle(node2).background);
+            assert_equals(window.getComputedStyle(node3).background, window.getComputedStyle(node4).background);
 
-            shouldBe("window.getComputedStyle(node1).color", "window.getComputedStyle(node2).color");
-            shouldBe("window.getComputedStyle(node3).color", "window.getComputedStyle(node4).color");
+            assert_equals(window.getComputedStyle(node1).color, window.getComputedStyle(node2).color);
+            assert_equals(window.getComputedStyle(node3).color, window.getComputedStyle(node4).color);
 
             window.ops = document.getElementById('ops');
             ops.style.color = 'red';
@@ -49,21 +49,19 @@
             violetOps.style.background = 'rgb(238, 130, 238)';
             document.getElementsByTagName('body')[0].appendChild(clonedOps);
 
-            shouldBeEqualToString("ops.style.background", "");
-            debug("getComputedStyle(clonedOps).background: " + window.getComputedStyle(ops).background);
-            shouldBeEqualToString("ops.style.color", "red");
-            shouldBeEqualToString("clonedOps.style.background", "");
-            shouldBeEqualToString("violetOps.style.background", "rgb(238, 130, 238)");
+            assert_equals(ops.style.background, "");
+            assert_equals(ops.style.color, "red");
+            assert_equals(clonedOps.style.background, "");
+            assert_equals(violetOps.style.background, "rgb(238, 130, 238)");
 
-            shouldBe("window.getComputedStyle(clonedOps).background", "window.getComputedStyle(ops).background");
-            shouldBe("window.getComputedStyle(clonedOps).color", "window.getComputedStyle(ops).color");
-            debug("getComputedStyle(violetOps).background: " + window.getComputedStyle(violetOps).background);
-            shouldNotBe("window.getComputedStyle(ops).background", "window.getComputedStyle(violetOps).background");
-            shouldNotBe("window.getComputedStyle(clonedOps).background", "window.getComputedStyle(violetOps).background");
+            assert_equals(window.getComputedStyle(clonedOps).background, window.getComputedStyle(ops).background);
+            assert_equals(window.getComputedStyle(clonedOps).color, window.getComputedStyle(ops).color);
+            assert_not_equals(window.getComputedStyle(ops).background, window.getComputedStyle(violetOps).background);
+            assert_not_equals(window.getComputedStyle(clonedOps).background, window.getComputedStyle(violetOps).background);
 
-            shouldBeEqualToString("ops.id", "ops");
-            shouldBe("ops.id", "clonedOps.id");
-       };
+            assert_equals(ops.id, "ops");
+            assert_equals(ops.id, clonedOps.id);
+       });
     </script>
 </head>
 <body>

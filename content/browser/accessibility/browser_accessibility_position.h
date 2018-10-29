@@ -17,7 +17,7 @@ namespace content {
 
 class BrowserAccessibility;
 
-using AXTreeID = ui::AXTreeIDRegistry::AXTreeID;
+using AXTreeID = ui::AXTreeID;
 
 class BrowserAccessibilityPosition
     : public ui::AXPosition<BrowserAccessibilityPosition,

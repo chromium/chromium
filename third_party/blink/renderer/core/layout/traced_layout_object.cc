@@ -30,7 +30,7 @@ void DumpToTracedValue(const LayoutObject& object,
         traced_value->SetString("htmlId", element.GetIdAttribute());
       if (element.HasClass()) {
         traced_value->BeginArray("classNames");
-        for (size_t i = 0; i < element.ClassNames().size(); ++i)
+        for (wtf_size_t i = 0; i < element.ClassNames().size(); ++i)
           traced_value->PushString(element.ClassNames()[i]);
         traced_value->EndArray();
       }

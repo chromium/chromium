@@ -92,13 +92,6 @@ void AutofillPopupBaseView::DoShow() {
   DoUpdateBoundsAndRedrawPopup();
   GetWidget()->Show();
 
-#if defined(OS_MACOSX)
-  mac_bubble_closer_ = std::make_unique<ui::BubbleCloser>(
-      GetWidget()->GetNativeWindow(),
-      base::BindRepeating(&AutofillPopupBaseView::HideController,
-                          base::Unretained(this)));
-#endif
-
   // Showing the widget can change native focus (which would result in an
   // immediate hiding of the popup). Only start observing after shown.
   if (initialize_widget)

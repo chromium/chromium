@@ -223,7 +223,7 @@ class CORE_EXPORT AtomicHTMLToken {
 
 inline void AtomicHTMLToken::InitializeAttributes(
     const HTMLToken::AttributeList& attributes) {
-  size_t size = attributes.size();
+  wtf_size_t size = attributes.size();
   if (!size)
     return;
 

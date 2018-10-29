@@ -147,12 +147,14 @@ class CORE_EXPORT EventHandler final
 
   WebInputEventResult HandleMouseMoveEvent(
       const WebMouseEvent&,
-      const Vector<WebMouseEvent>& coalesced_events);
+      const Vector<WebMouseEvent>& coalesced_events,
+      const Vector<WebMouseEvent>& predicted_events);
   void HandleMouseLeaveEvent(const WebMouseEvent&);
 
   WebInputEventResult HandlePointerEvent(
       const WebPointerEvent&,
-      const Vector<WebPointerEvent>& coalesced_events);
+      const Vector<WebPointerEvent>& coalesced_events,
+      const Vector<WebPointerEvent>& predicted_events);
 
   WebInputEventResult DispatchBufferedTouchEvents();
 
@@ -165,6 +167,7 @@ class CORE_EXPORT EventHandler final
       const WebMouseEvent&,
       const AtomicString& event_type,
       const Vector<WebMouseEvent>& coalesced_events,
+      const Vector<WebMouseEvent>& predicted_events,
       const String& canvas_node_id = String());
 
   // Called on the local root frame exactly once per gesture event.
@@ -304,7 +307,8 @@ class CORE_EXPORT EventHandler final
 
   WebInputEventResult HandleMouseMoveOrLeaveEvent(
       const WebMouseEvent&,
-      const Vector<WebMouseEvent>&,
+      const Vector<WebMouseEvent>& coalesced_events,
+      const Vector<WebMouseEvent>& predicted_events,
       HitTestResult* hovered_node = nullptr,
       HitTestLocation* hit_test_location = nullptr,
       bool only_update_scrollbars = false,
@@ -355,14 +359,16 @@ class CORE_EXPORT EventHandler final
       Node* target,
       const String& canvas_region_id,
       const WebMouseEvent&,
-      const Vector<WebMouseEvent>& coalesced_events);
+      const Vector<WebMouseEvent>& coalesced_events,
+      const Vector<WebMouseEvent>& predicted_events);
 
   WebInputEventResult PassMousePressEventToSubframe(
       MouseEventWithHitTestResults&,
       LocalFrame* subframe);
   WebInputEventResult PassMouseMoveEventToSubframe(
       MouseEventWithHitTestResults&,
-      const Vector<WebMouseEvent>&,
+      const Vector<WebMouseEvent>& coalesced_events,
+      const Vector<WebMouseEvent>& predicted_events,
       LocalFrame* subframe,
       HitTestResult* hovered_node = nullptr,
       HitTestLocation* hit_test_location = nullptr);
@@ -389,6 +395,8 @@ class CORE_EXPORT EventHandler final
 
   bool RootFrameTouchPointerActiveInCurrentFrame(int pointer_id) const;
 
+  void CaptureMouseEventsToWidget(bool);
+
   // NOTE: If adding a new field to this class please ensure that it is
   // cleared in |EventHandler::clear()|.
 
@@ -405,6 +413,10 @@ class CORE_EXPORT EventHandler final
 
   Member<Node> capturing_mouse_events_node_;
   bool event_handler_will_reset_capturing_mouse_events_node_;
+
+  // Indicates whether the current widget is capturing mouse input.
+  // Only used for local frame root EventHandlers.
+  bool is_widget_capturing_mouse_events_ = false;
 
   Member<LocalFrame> last_mouse_move_event_subframe_;
   Member<Scrollbar> last_scrollbar_under_mouse_;

@@ -106,7 +106,7 @@ Emulation.DeviceModeWrapper.ActionDelegate = class {
             return true;
           async function captureClip() {
             const object = await node.resolveToObject();
-            const result = await object.callFunctionPromise(function() {
+            const result = await object.callFunction(function() {
               const rect = this.getBoundingClientRect();
               const docRect = this.ownerDocument.documentElement.getBoundingClientRect();
               return JSON.stringify({

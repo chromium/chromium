@@ -420,8 +420,7 @@ WebContents* PrerenderManager::SwapInternal(const GURL& url,
   process_host->RemoveObserver(this);
   prerender_process_hosts_.erase(process_host);
 
-  PrerenderDataVector::iterator to_erase =
-      FindIteratorForPrerenderContents(prerender_data->contents());
+  auto to_erase = FindIteratorForPrerenderContents(prerender_data->contents());
   DCHECK(active_prerenders_.end() != to_erase);
   DCHECK_EQ(prerender_data, to_erase->get());
   std::unique_ptr<PrerenderContents> prerender_contents(
@@ -441,10 +440,9 @@ WebContents* PrerenderManager::SwapInternal(const GURL& url,
       &web_contents->GetController(), should_replace_current_entry);
   WebContents* raw_new_web_contents = new_web_contents.get();
   std::unique_ptr<content::WebContents> old_web_contents =
-      CoreTabHelper::FromWebContents(web_contents)
-          ->delegate()
-          ->SwapTabContents(web_contents, std::move(new_web_contents), true,
-                            prerender_contents->has_finished_loading());
+      web_contents->GetDelegate()->SwapWebContents(
+          web_contents, std::move(new_web_contents), true,
+          prerender_contents->has_finished_loading());
   prerender_contents->CommitHistory(raw_new_web_contents);
 
   // Update PPLT metrics:
@@ -480,7 +478,7 @@ void PrerenderManager::MoveEntryToPendingDelete(PrerenderContents* entry,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(entry);
 
-  PrerenderDataVector::iterator it = FindIteratorForPrerenderContents(entry);
+  auto it = FindIteratorForPrerenderContents(entry);
   DCHECK(it != active_prerenders_.end());
   to_delete_prerenders_.push_back(std::move(*it));
   active_prerenders_.erase(it);
@@ -753,8 +751,8 @@ PrerenderManager::PrerenderData::ReleaseContents() {
 void PrerenderManager::SourceNavigatedAway(PrerenderData* prerender_data) {
   // The expiry time of our prerender data will likely change because of
   // this navigation. This requires a re-sort of |active_prerenders_|.
-  for (PrerenderDataVector::iterator it = active_prerenders_.begin();
-       it != active_prerenders_.end(); ++it) {
+  for (auto it = active_prerenders_.begin(); it != active_prerenders_.end();
+       ++it) {
     PrerenderData* data = it->get();
     if (data == prerender_data) {
       data->set_expiry_time(std::min(data->expiry_time(),
@@ -1044,8 +1042,8 @@ PrerenderManager::PrerenderData* PrerenderManager::FindPrerenderData(
 PrerenderManager::PrerenderDataVector::iterator
 PrerenderManager::FindIteratorForPrerenderContents(
     PrerenderContents* prerender_contents) {
-  for (PrerenderDataVector::iterator it = active_prerenders_.begin();
-       it != active_prerenders_.end(); ++it) {
+  for (auto it = active_prerenders_.begin(); it != active_prerenders_.end();
+       ++it) {
     if ((*it)->contents() == prerender_contents)
       return it;
   }

@@ -41,7 +41,11 @@ if (is_debug) {
 
     # Don't define _DEBUG. Modest savings, but good for consistency.
     "//build/config:debug",
+
+    # Don't enable sanitizers for build tools. They slow down the overall build.
+    "//build/config/sanitizers:default_sanitizer_flags",
   ]
+
   configs_to_add += [
     "//build/config:release",
     "//build/config/compiler:optimize_max",

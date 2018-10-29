@@ -180,8 +180,8 @@ void BrowserList::TryToCloseBrowserList(const BrowserVector& browsers_to_close,
                                         const CloseCallback& on_close_aborted,
                                         const base::FilePath& profile_path,
                                         const bool skip_beforeunload) {
-  for (BrowserVector::const_iterator it = browsers_to_close.begin();
-       it != browsers_to_close.end(); ++it) {
+  for (auto it = browsers_to_close.begin(); it != browsers_to_close.end();
+       ++it) {
     if ((*it)->TryToCloseWindow(
             skip_beforeunload,
             base::Bind(&BrowserList::PostTryToCloseBrowserWindow,
@@ -220,8 +220,8 @@ void BrowserList::PostTryToCloseBrowserWindow(
                           profile_path, skip_beforeunload);
   } else if (!resetting_handlers) {
     base::AutoReset<bool> resetting_handlers_scoper(&resetting_handlers, true);
-    for (BrowserVector::const_iterator it = browsers_to_close.begin();
-         it != browsers_to_close.end(); ++it) {
+    for (auto it = browsers_to_close.begin(); it != browsers_to_close.end();
+         ++it) {
       (*it)->ResetTryToCloseWindow();
     }
     if (on_close_aborted)
@@ -311,16 +311,13 @@ bool BrowserList::IsIncognitoSessionActive() {
 }
 
 // static
-bool BrowserList::IsIncognitoSessionActiveForProfile(Profile* profile) {
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->profile()->IsSameProfile(profile) &&
-        browser->profile()->IsOffTheRecord()) {
-      return true;
-    }
-  }
-  return false;
+int BrowserList::GetIncognitoSessionsActiveForProfile(Profile* profile) {
+  BrowserList* list = BrowserList::GetInstance();
+  return std::count_if(list->begin(), list->end(), [profile](Browser* browser) {
+    return browser->profile()->IsSameProfile(profile) &&
+           browser->profile()->IsOffTheRecord();
+  });
 }
-
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserList, private:
 
@@ -333,7 +330,7 @@ BrowserList::~BrowserList() {
 // static
 void BrowserList::RemoveBrowserFrom(Browser* browser,
                                     BrowserVector* browser_list) {
-  BrowserVector::iterator remove_browser =
+  auto remove_browser =
       std::find(browser_list->begin(), browser_list->end(), browser);
   if (remove_browser != browser_list->end())
     browser_list->erase(remove_browser);

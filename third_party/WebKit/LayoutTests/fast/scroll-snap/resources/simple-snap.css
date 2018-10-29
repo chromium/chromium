@@ -1,0 +1,35 @@
+body {
+  margin: 0px;
+}
+#scroller {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  overflow: scroll;
+  scroll-snap-type: both mandatory;
+  padding: 0px;
+}
+.snap {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-color: blue;
+  scroll-snap-align: start;
+}
+#space {
+  position: absolute;
+  width: 1000px;
+  height: 1000px;
+}
+.left {
+  left: 0px;
+}
+.top {
+  top: 0px;
+}
+.right {
+  left: 400px;
+}
+.bottom {
+  top: 400px;
+}

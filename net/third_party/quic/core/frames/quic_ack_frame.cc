@@ -23,7 +23,12 @@ bool IsAwaitingPacket(const QuicAckFrame& ack_frame,
 }
 
 QuicAckFrame::QuicAckFrame()
-    : largest_acked(0), ack_delay_time(QuicTime::Delta::Infinite()) {}
+    : largest_acked(0),
+      ack_delay_time(QuicTime::Delta::Infinite()),
+      ecn_counters_populated(false),
+      ect_0_count(0),
+      ect_1_count(0),
+      ecn_ce_count(0) {}
 
 QuicAckFrame::QuicAckFrame(const QuicAckFrame& other) = default;
 
@@ -38,7 +43,15 @@ std::ostream& operator<<(std::ostream& os, const QuicAckFrame& ack_frame) {
        ack_frame.received_packet_times) {
     os << p.first << " at " << p.second.ToDebuggingValue() << " ";
   }
-  os << " ] }\n";
+  os << " ]";
+  os << ", ecn_counters_populated: " << ack_frame.ecn_counters_populated;
+  if (ack_frame.ecn_counters_populated) {
+    os << ", ect_0_count: " << ack_frame.ect_0_count
+       << ", ect_1_count: " << ack_frame.ect_1_count
+       << ", ecn_ce_count: " << ack_frame.ecn_ce_count;
+  }
+
+  os << " }\n";
   return os;
 }
 

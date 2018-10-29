@@ -293,6 +293,7 @@ struct BluetoothCreateSdpRecordResult {
 };
 
 // Next Method ID: 45
+// Deprecated method ID: 20, 21
 interface BluetoothHost {
   EnableAdapter@0() => (BluetoothAdapterState state);
   DisableAdapter@1() => (BluetoothAdapterState state);
@@ -320,8 +321,6 @@ interface BluetoothHost {
   [MinVersion=1] DisconnectLEDevice@17(BluetoothAddress remote_addr);
   [MinVersion=1] SearchService@18(BluetoothAddress remote_addr);
   [MinVersion=1] GetGattDB@19(BluetoothAddress remote_addr);
-  [MinVersion=1] StartLEListen@20() => (BluetoothGattStatus status);
-  [MinVersion=1] StopLEListen@21() => (BluetoothGattStatus status);
   [MinVersion=1] ReadGattCharacteristic@22(BluetoothAddress remote_addr,
                                            BluetoothGattServiceID service_id,
                                            BluetoothGattID char_id)

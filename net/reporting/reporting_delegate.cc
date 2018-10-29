@@ -4,16 +4,12 @@
 
 #include "net/reporting/reporting_delegate.h"
 
-#include "base/json/json_reader.h"
 #include "net/base/network_delegate.h"
 #include "net/url_request/url_request_context.h"
 
 namespace net {
 
 namespace {
-
-const int kMaxJsonSize = 16 * 1024;
-const int kMaxJsonDepth = 5;
 
 class ReportingDelegateImpl : public ReportingDelegate {
  public:
@@ -51,22 +47,6 @@ class ReportingDelegateImpl : public ReportingDelegate {
                     const GURL& endpoint) const override {
     return network_delegate() &&
            network_delegate()->CanUseReportingClient(origin, endpoint);
-  }
-
-  void ParseJson(const std::string& unsafe_json,
-                 const JsonSuccessCallback& success_callback,
-                 const JsonFailureCallback& failure_callback) const override {
-    if (unsafe_json.size() > kMaxJsonSize) {
-      failure_callback.Run();
-      return;
-    }
-
-    std::unique_ptr<base::Value> value = base::JSONReader::Read(
-        unsafe_json, base::JSON_PARSE_RFC, kMaxJsonDepth);
-    if (value)
-      success_callback.Run(std::move(value));
-    else
-      failure_callback.Run();
   }
 
  private:

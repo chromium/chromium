@@ -132,7 +132,7 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                         CompletionOnceCallback callback) override;
   bool CouldBeSparse() const override;
   void CancelSparseIO() override {}
-  int ReadyForSparseIO(CompletionOnceCallback callback) override;
+  net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
   void SetLastUsedTimeForTest(base::Time time) override;
   size_t EstimateMemoryUsage() const;
 

@@ -11,14 +11,10 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory_handle.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image_memory.h"
-
-namespace base {
-class SharedMemory;
-}
 
 namespace gl {
 
@@ -26,7 +22,7 @@ class GL_EXPORT GLImageSharedMemory : public GLImageMemory {
  public:
   GLImageSharedMemory(const gfx::Size& size, unsigned internalformat);
 
-  bool Initialize(const base::SharedMemoryHandle& handle,
+  bool Initialize(const base::UnsafeSharedMemoryRegion& shared_memory_region,
                   gfx::GenericSharedMemoryId shared_memory_id,
                   gfx::BufferFormat format,
                   size_t offset,
@@ -41,7 +37,7 @@ class GL_EXPORT GLImageSharedMemory : public GLImageMemory {
   ~GLImageSharedMemory() override;
 
  private:
-  std::unique_ptr<base::SharedMemory> shared_memory_;
+  base::WritableSharedMemoryMapping shared_memory_mapping_;
   gfx::GenericSharedMemoryId shared_memory_id_;
 
   DISALLOW_COPY_AND_ASSIGN(GLImageSharedMemory);

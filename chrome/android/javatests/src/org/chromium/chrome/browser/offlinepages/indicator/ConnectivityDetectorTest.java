@@ -33,6 +33,11 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     private @ConnectivityDetector.ConnectionState int mConnectionState =
             ConnectivityDetector.ConnectionState.NONE;
     private Semaphore mSemaphore = new Semaphore(0);
+    // This test focuses on testing ConnectivityDetector functionalities, including http probes.
+    // So don't skip http probes here.
+    private ConnectivityDetectorDelegateStub mConnectivityDetectorDelegate =
+            new ConnectivityDetectorDelegateStub(ConnectivityDetector.ConnectionState.NO_INTERNET,
+                    false /*shouldSkipHttpProbes*/);
 
     @Rule
     public NativeLibraryTestRule mNativeLibraryTestRule = new NativeLibraryTestRule();
@@ -45,10 +50,16 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
                 NetworkChangeNotifier.init();
             }
             NetworkChangeNotifier.forceConnectivityState(true);
-
-            ConnectivityDetector.skipSystemCheckForTesting();
+            ConnectivityDetector.overrideConnectivityCheckInitialDelayMs(1000);
+            ConnectivityDetector.setDelegateForTesting(mConnectivityDetectorDelegate);
             mConnectivityDetector = new ConnectivityDetector(this);
+            mConnectivityDetectorDelegate.setConnectionStateFromSystem(
+                    ConnectivityDetector.ConnectionState.NONE);
         });
+        // Wait until the initial detection logic finishes to give all tests the same starting
+        // point.
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.NO_INTERNET, mConnectionState);
     }
 
     @Override
@@ -56,6 +67,61 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
             @ConnectivityDetector.ConnectionState int connectionState) {
         mConnectionState = connectionState;
         mSemaphore.release();
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaulateConnectionStateBySystem() throws Exception {
+        setNetworkConnectivity(false);
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.DISCONNECTED, mConnectionState);
+
+        mConnectivityDetectorDelegate.setConnectionStateFromSystem(
+                ConnectivityDetector.ConnectionState.CAPTIVE_PORTAL);
+        setNetworkConnectivity(true);
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.CAPTIVE_PORTAL, mConnectionState);
+    }
+
+    @Test
+    @MediumTest
+    public void testReevaulateConnectionStateBySystem() throws Exception {
+        setNetworkConnectivity(false);
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.DISCONNECTED, mConnectionState);
+
+        mConnectivityDetectorDelegate.setConnectionStateFromSystem(
+                ConnectivityDetector.ConnectionState.CAPTIVE_PORTAL);
+        setNetworkConnectivity(true);
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.CAPTIVE_PORTAL, mConnectionState);
+
+        // detect() should get the connection info from the system again.
+        mConnectivityDetectorDelegate.setConnectionStateFromSystem(
+                ConnectivityDetector.ConnectionState.VALIDATED);
+        mConnectivityDetector.detect();
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.VALIDATED, mConnectionState);
+    }
+
+    @Test
+    @MediumTest
+    public void testReevaulateConnectionStateBySystemAfterBackoff() throws Exception {
+        setNetworkConnectivity(false);
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.DISCONNECTED, mConnectionState);
+
+        mConnectivityDetectorDelegate.setConnectionStateFromSystem(
+                ConnectivityDetector.ConnectionState.CAPTIVE_PORTAL);
+        setNetworkConnectivity(true);
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.CAPTIVE_PORTAL, mConnectionState);
+
+        // We should get the connection info from the system again after some delay.
+        mConnectivityDetectorDelegate.setConnectionStateFromSystem(
+                ConnectivityDetector.ConnectionState.VALIDATED);
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.VALIDATED, mConnectionState);
     }
 
     @Test
@@ -222,6 +288,38 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
         // CAPTIVE_PORTAL state.
         Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(ConnectivityDetector.ConnectionState.CAPTIVE_PORTAL, mConnectionState);
+    }
+
+    @Test
+    @MediumTest
+    public void testDetectValidatedStateAfterBackoff() throws Exception {
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        String hasContentUrl = testServer.getURL("/echo?status=200");
+        String noContentUrl = testServer.getURL("/nocontent");
+        ConnectivityDetector.overrideDefaultProbeUrlForTesting(hasContentUrl);
+        ConnectivityDetector.overrideFallbackProbeUrlForTesting(hasContentUrl);
+
+        setNetworkConnectivity(false);
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.DISCONNECTED, mConnectionState);
+        setNetworkConnectivity(true);
+        // Probing default URL gets back 200 which should trigger CAPTIVE_PORTAL state.
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.CAPTIVE_PORTAL, mConnectionState);
+        // Twist the connection state to one different from CAPTIVE_PORTAL in order to get the
+        // callback called with 2nd probe. This is because the callback will not be called if
+        // connection state does not change based on the result from 2nd probe.
+        setConnectionState(ConnectivityDetector.ConnectionState.NONE);
+        // Probing fallback URL immediately after default URL gets back 200 which should trigger
+        // CAPTIVE_PORTAL state.
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.CAPTIVE_PORTAL, mConnectionState);
+        // After backoff, 2nd probe of default URL gets back "204 no content" which should trigger
+        // VALIDATED state.
+        ConnectivityDetector.overrideDefaultProbeUrlForTesting(noContentUrl);
+        Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(ConnectivityDetector.ConnectionState.VALIDATED, mConnectionState);
     }
 
     private static void setNetworkConnectivity(boolean connected) {

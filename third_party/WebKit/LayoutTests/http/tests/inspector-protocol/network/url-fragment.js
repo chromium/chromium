@@ -5,22 +5,28 @@
   dp.Network.enable();
   dp.Page.enable();
 
-  dp.Network.onRequestIntercepted(event => {
-    const request = event.params.request;
-    testRunner.log(`Intercepted URL: ${request.url} fragment: ${request.urlFragment}`);
-    dp.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId});
-  });
-  dp.Network.onRequestWillBeSent(event => {
-    const request = event.params.request;
-    testRunner.log(`Request will be sent: ${request.url} fragment: ${request.urlFragment}`);
-  });
-  dp.Network.setRequestInterception({patterns: [{}]});
-  const pageURL = '/inspector-protocol/network/resources/simple.html';
-  await dp.Page.navigate({url: pageURL});
-  await dp.Page.navigate({url: pageURL + '#ref'});
+  async function dumpEventsAndContinue() {
+    const requestInterceptedPromise = dp.Network.onceRequestIntercepted();
+    const requestWillBeSentPromise = dp.Network.onceRequestWillBeSent();
+    const interceptedRequestParams =  (await requestInterceptedPromise).params;
+    const interceptedRequest = interceptedRequestParams.request;
+    const sentRequest = (await requestWillBeSentPromise).params.request;
+
+    testRunner.log(`Request will be sent: ${sentRequest.url} fragment: ${sentRequest.urlFragment}`);
+    testRunner.log(`Intercepted URL: ${interceptedRequest.url} fragment: ${interceptedRequest.urlFragment}`);
+    dp.Network.continueInterceptedRequest({interceptionId: interceptedRequestParams.interceptionId});
+  }
+
+  await dp.Network.setRequestInterception({patterns: [{}]});
+  const navigatePromise = dp.Page.navigate({url: 'http://127.0.0.1:8000/devtools/network/resources/empty.html#ref'});
+  await dumpEventsAndContinue();
+  await navigatePromise;
   const resourceURL = '/devtools/network/resources/resource.php';
-  await session.evaluateAsync(`fetch("${resourceURL}")`);
-  await session.evaluateAsync(`fetch("${resourceURL}#ref")`);
-  await session.evaluateAsync(`fetch("${resourceURL}#")`);
+  session.evaluateAsync(`fetch("${resourceURL}")`);
+  await dumpEventsAndContinue();
+  session.evaluateAsync(`fetch("${resourceURL}#ref")`);
+  dumpEventsAndContinue();
+  session.evaluateAsync(`fetch("${resourceURL}#")`);
+  await dumpEventsAndContinue();
   testRunner.completeTest();
 })

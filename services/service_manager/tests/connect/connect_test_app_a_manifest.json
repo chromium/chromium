@@ -10,7 +10,9 @@
         "connect_unittests:standalone_app": [
           "service_manager.test.mojom.StandaloneApp"
         ],
-        "connect_unittests:user_id_test": [ "service_manager.test.mojom.UserIdTest" ]
+        "connect_unittests:identity_test":[
+          "service_manager.test.mojom.IdentityTest"
+        ]
       },
       "requires": {
         "connect_unittests": [ "connect_unittests:exposed_interface" ],

@@ -4,21 +4,18 @@
 
 #include "chrome/browser/chromeos/accessibility/ax_host_service.h"
 
+#include <utility>
+
 #include "base/bind.h"
-#include "chrome/browser/extensions/api/automation_internal/automation_event_router.h"
-#include "chrome/common/extensions/chrome_extension_messages.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "services/service_manager/public/cpp/service_context.h"
-#include "ui/accessibility/ax_event.h"
-#include "ui/aura/env.h"
-#include "ui/views/mus/ax_remote_host.h"
+#include "base/stl_util.h"
+#include "chrome/browser/chromeos/accessibility/ax_remote_host_delegate.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 AXHostService* AXHostService::instance_ = nullptr;
 
 bool AXHostService::automation_enabled_ = false;
 
-AXHostService::AXHostService()
-    : ui::AXHostDelegate(views::AXRemoteHost::kRemoteAXTreeID) {
+AXHostService::AXHostService() {
   DCHECK(!instance_);
   instance_ = this;
   registry_.AddInterface<ax::mojom::AXHost>(
@@ -44,43 +41,43 @@ void AXHostService::OnBindInterface(
   registry_.BindInterface(interface_name, std::move(interface_pipe));
 }
 
-void AXHostService::SetRemoteHost(ax::mojom::AXRemoteHostPtr remote) {
-  remote_host_ = std::move(remote);
+void AXHostService::RegisterRemoteHost(
+    ax::mojom::AXRemoteHostPtr remote_host_ptr,
+    RegisterRemoteHostCallback cb) {
+  // Create the AXRemoteHostDelegate first so a tree ID will be assigned.
+  auto remote_host_delegate =
+      std::make_unique<AXRemoteHostDelegate>(this, std::move(remote_host_ptr));
+  ui::AXTreeID tree_id = remote_host_delegate->tree_id();
+  DCHECK_NE(ui::AXTreeIDUnknown(), tree_id);
+  DCHECK(!base::ContainsKey(remote_host_delegate_map_, tree_id));
+  remote_host_delegate_map_[tree_id] = std::move(remote_host_delegate);
 
-  // Handle both clean and unclean shutdown.
-  remote_host_.set_connection_error_handler(base::BindOnce(
-      &AXHostService::OnRemoteHostDisconnected, base::Unretained(this)));
-
-  // Ensure remote host knows the initial state.
-  remote_host_->OnAutomationEnabled(automation_enabled_);
+  // Inform the remote process of the tree ID.
+  std::move(cb).Run(tree_id, automation_enabled_);
 }
 
 void AXHostService::HandleAccessibilityEvent(
-    int32_t tree_id,
+    const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
     const ui::AXEvent& event) {
-  DCHECK_EQ(tree_id, views::AXRemoteHost::kRemoteAXTreeID);
-  ExtensionMsg_AccessibilityEventBundleParams event_bundle;
-  event_bundle.tree_id = tree_id;
-  for (const ui::AXTreeUpdate& update : updates)
-    event_bundle.updates.push_back(update);
-  event_bundle.events.push_back(event);
-  event_bundle.mouse_location = aura::Env::GetInstance()->last_mouse_location();
-
-  // Forward the tree updates and the event to the accessibility extension.
-  extensions::AutomationEventRouter::GetInstance()->DispatchAccessibilityEvents(
-      event_bundle);
+  auto it = remote_host_delegate_map_.find(tree_id);
+  if (it == remote_host_delegate_map_.end())
+    return;
+  AXRemoteHostDelegate* delegate = it->second.get();
+  delegate->HandleAccessibilityEvent(tree_id, updates, event);
 }
 
-void AXHostService::PerformAction(const ui::AXActionData& data) {
-  // TODO(jamescook): This assumes a single remote host. Need to have one
-  // AXHostDelegate per remote host and only send to the appropriate one.
-  if (remote_host_)
-    remote_host_->PerformAction(data);
+void AXHostService::OnRemoteHostDisconnected(const ui::AXTreeID& tree_id) {
+  // AXRemoteHostDelegate notified the extension that the tree was destroyed.
+  // Delete the AXRemoteHostDelegate.
+  remote_host_delegate_map_.erase(tree_id);
 }
 
 void AXHostService::FlushForTesting() {
-  remote_host_.FlushForTesting();
+  for (const auto& pair : remote_host_delegate_map_) {
+    AXRemoteHostDelegate* delegate = pair.second.get();
+    delegate->FlushForTesting();
+  }
 }
 
 void AXHostService::AddBinding(ax::mojom::AXHostRequest request) {
@@ -88,11 +85,8 @@ void AXHostService::AddBinding(ax::mojom::AXHostRequest request) {
 }
 
 void AXHostService::NotifyAutomationEnabled() {
-  if (remote_host_)
-    remote_host_->OnAutomationEnabled(automation_enabled_);
-}
-
-void AXHostService::OnRemoteHostDisconnected() {
-  extensions::AutomationEventRouter::GetInstance()->DispatchTreeDestroyedEvent(
-      views::AXRemoteHost::kRemoteAXTreeID, nullptr /* browser_context */);
+  for (const auto& pair : remote_host_delegate_map_) {
+    AXRemoteHostDelegate* delegate = pair.second.get();
+    delegate->OnAutomationEnabled(automation_enabled_);
+  }
 }

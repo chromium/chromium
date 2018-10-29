@@ -174,7 +174,7 @@ bool LauncherControllerHelper::IsValidIDForCurrentUser(
   crostini::CrostiniRegistryService* registry_service =
       crostini::CrostiniRegistryServiceFactory::GetForProfile(profile_);
   if (registry_service && registry_service->IsCrostiniShelfAppId(id)) {
-    return IsCrostiniUIAllowedForProfile(profile_) &&
+    return crostini::IsCrostiniUIAllowedForProfile(profile_) &&
            registry_service->GetRegistration(id).has_value();
   }
 
@@ -218,7 +218,7 @@ void LauncherControllerHelper::LaunchApp(const ash::ShelfID& id,
     // This expects a valid app list id, which is fine as we only get here for
     // shelf entries associated with an actual app and not arbitrary Crostini
     // windows.
-    LaunchCrostiniApp(profile_, app_id, display_id);
+    crostini::LaunchCrostiniApp(profile_, app_id, display_id);
     return;
   }
 

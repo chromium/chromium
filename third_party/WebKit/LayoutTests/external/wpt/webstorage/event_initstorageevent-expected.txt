@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL initStorageEvent with 0 arguments assert_throws: function "() => event.initStorageEvent()" did not throw
+FAIL initStorageEvent with 1 argument assert_equals: event.key expected (object) null but got (string) "undefined"
+PASS initStorageEvent with 8 sensible arguments
+FAIL initStorageEvent with 8 null arguments assert_equals: event.key expected (object) null but got (string) "null"
+FAIL initStorageEvent with 8 undefined arguments assert_equals: event.key expected (object) null but got (string) "undefined"
+Harness: the test ran to completion.
+

@@ -127,6 +127,10 @@ enum class TaskType : unsigned {
   // Tasks used for DedicatedWorker's requestAnimationFrame.
   kWorkerAnimation = 51,
 
+  // For tasks started with the experimental Scheduling API
+  kExperimentalWebSchedulingUserInteraction = 53,
+  kExperimentalWebSchedulingBestEffort = 54,
+
   ///////////////////////////////////////
   // Not-speced tasks should use one of the following task types
   ///////////////////////////////////////
@@ -177,6 +181,9 @@ enum class TaskType : unsigned {
   // * //third_party/blink/renderer/core/workers
   kInternalWorker = 36,
 
+  // Translation task that freezes when the frame is not visible.
+  kInternalTranslation = 55,
+
   // Tasks used at IntersectionObserver.
   kInternalIntersectionObserver = 44,
 
@@ -198,7 +205,7 @@ enum class TaskType : unsigned {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kCount = 53,
+  kCount = 56,
 };
 
 }  // namespace blink

@@ -29,6 +29,8 @@ class GPU_GLES2_EXPORT ProgramCache {
   static const size_t kHashLength = base::kSHA1Length;
 
   typedef std::map<std::string, GLint> LocationMap;
+  using CacheProgramCallback =
+      ::base::RepeatingCallback<void(const std::string&, const std::string&)>;
 
   enum LinkedProgramStatus {
     LINK_UNKNOWN,
@@ -93,6 +95,9 @@ class GPU_GLES2_EXPORT ProgramCache {
   void HandleMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
+  void SetCacheProgramCallback(CacheProgramCallback callback);
+  void ResetCacheProgramCallback();
+
  protected:
   size_t max_size_bytes() const { return max_size_bytes_; }
 
@@ -114,6 +119,10 @@ class GPU_GLES2_EXPORT ProgramCache {
       char* result) const;
 
   void Evict(const std::string& program_hash);
+
+  // Used by the passthrough program cache to notify when a new blob is
+  // inserted.
+  CacheProgramCallback cache_program_callback_;
 
  private:
   typedef base::hash_map<std::string,

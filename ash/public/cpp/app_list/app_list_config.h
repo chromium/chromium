@@ -42,15 +42,15 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int search_tile_badge_icon_dimension() const {
     return search_tile_badge_icon_dimension_;
   }
-  int search_tile_badge_background_radius() const {
-    return search_tile_badge_background_radius_;
+  int search_tile_badge_icon_offset() const {
+    return search_tile_badge_icon_offset_;
   }
   int search_list_icon_dimension() const { return search_list_icon_dimension_; }
   int search_list_badge_icon_dimension() const {
     return search_list_badge_icon_dimension_;
   }
-  int recommended_app_icon_dimension() const {
-    return recommended_app_icon_dimension_;
+  int suggestion_chip_icon_dimension() const {
+    return suggestion_chip_icon_dimension_;
   }
   int app_title_max_line_height() const { return app_title_max_line_height_; }
   const gfx::FontList& app_title_font() const { return app_title_font_; }
@@ -175,9 +175,8 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // The badge icon dimension of tile views in search result page view.
   int search_tile_badge_icon_dimension_;
 
-  // The badge background corner radius of tile views in search result page
-  // view.
-  int search_tile_badge_background_radius_;
+  // The badge icon offset of tile views in search result page view.
+  int search_tile_badge_icon_offset_;
 
   // The icon dimension of list views in search result page view.
   int search_list_icon_dimension_;
@@ -187,7 +186,7 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int search_list_badge_icon_dimension_;
 
   // The suggestion chip icon dimension.
-  int recommended_app_icon_dimension_;
+  int suggestion_chip_icon_dimension_;
 
   // The maximum line height for app title in app list.
   int app_title_max_line_height_;

@@ -324,12 +324,13 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
   return cached_metadata;
 }
 
-STATIC_ASSERT_ENUM(WebSettings::kV8CacheOptionsDefault, kV8CacheOptionsDefault);
-STATIC_ASSERT_ENUM(WebSettings::kV8CacheOptionsNone, kV8CacheOptionsNone);
-STATIC_ASSERT_ENUM(WebSettings::kV8CacheOptionsCode, kV8CacheOptionsCode);
-STATIC_ASSERT_ENUM(WebSettings::kV8CacheOptionsCodeWithoutHeatCheck,
+STATIC_ASSERT_ENUM(WebSettings::V8CacheOptions::kDefault,
+                   kV8CacheOptionsDefault);
+STATIC_ASSERT_ENUM(WebSettings::V8CacheOptions::kNone, kV8CacheOptionsNone);
+STATIC_ASSERT_ENUM(WebSettings::V8CacheOptions::kCode, kV8CacheOptionsCode);
+STATIC_ASSERT_ENUM(WebSettings::V8CacheOptions::kCodeWithoutHeatCheck,
                    kV8CacheOptionsCodeWithoutHeatCheck);
-STATIC_ASSERT_ENUM(WebSettings::kV8CacheOptionsFullCodeWithoutHeatCheck,
+STATIC_ASSERT_ENUM(WebSettings::V8CacheOptions::kFullCodeWithoutHeatCheck,
                    kV8CacheOptionsFullCodeWithoutHeatCheck);
 
 }  // namespace blink

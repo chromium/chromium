@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
@@ -50,11 +51,8 @@ class WMStateWaiter : public X11PropertyChangeWaiter {
   // X11PropertyChangeWaiter:
   bool ShouldKeepOnWaiting(const ui::PlatformEvent& event) override {
     std::vector<Atom> hints;
-    if (ui::GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &hints)) {
-      auto it = std::find(hints.cbegin(), hints.cend(), gfx::GetAtom(hint_));
-      bool hint_set = (it != hints.cend());
-      return hint_set != wait_till_set_;
-    }
+    if (ui::GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &hints))
+      return base::ContainsValue(hints, gfx::GetAtom(hint_)) != wait_till_set_;
     return true;
   }
 
@@ -191,8 +189,9 @@ class DesktopWindowTreeHostX11Test : public ViewsTestBase {
   DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostX11Test);
 };
 
+// https://crbug.com/898742: Test is flaky.
 // Tests that the shape is properly set on the x window.
-TEST_F(DesktopWindowTreeHostX11Test, Shape) {
+TEST_F(DesktopWindowTreeHostX11Test, DISABLED_Shape) {
   if (!ui::IsShapeExtensionAvailable())
     return;
 

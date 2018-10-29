@@ -6,12 +6,8 @@
 
 #include <utility>
 
-#include "base/process/kill.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "content/public/browser/child_process_data.h"
-#include "content/public/browser/child_process_termination_info.h"
-#include "content/public/common/process_type.h"
 #include "services/audio/public/mojom/constants.mojom.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
@@ -181,68 +177,6 @@ TEST(AudioServiceListenerTest, OnAudioServiceCreated_ProcessIdNotNull) {
       MakeTestServiceInfo(audio_service_identity, pid));
   audio_service_listener.OnServiceStarted(audio_service_identity, pid);
   EXPECT_EQ(pid, audio_service_listener.GetProcessId());
-}
-
-TEST(AudioServiceListenerTest,
-     AudioProcessDisconnected_LogProcessTerminationStatus_ProcessIdNull) {
-  base::HistogramTester histogram_tester;
-  AudioServiceListener audio_service_listener(nullptr);
-  service_manager::Identity audio_service_identity(audio::mojom::kServiceName);
-  base::ProcessHandle handle = base::GetCurrentProcessHandle();
-  base::ProcessId pid = base::GetCurrentProcId();
-  audio_service_listener.OnServiceCreated(
-      MakeTestServiceInfo(audio_service_identity, pid));
-  audio_service_listener.OnServiceStarted(audio_service_identity, pid);
-  ChildProcessData data(content::ProcessType::PROCESS_TYPE_UTILITY);
-  data.SetHandle(handle);
-  audio_service_listener.BrowserChildProcessHostDisconnected(data);
-  histogram_tester.ExpectUniqueSample(
-      "Media.AudioService.ObservedProcessTerminationStatus",
-      AudioServiceListener::Metrics::ServiceProcessTerminationStatus::
-          kDisconnect,
-      1);
-  EXPECT_EQ(base::kNullProcessId, audio_service_listener.GetProcessId());
-}
-
-TEST(AudioServiceListenerTest,
-     AudioProcessCrashed_LogProcessTerminationStatus_ProcessIdNull) {
-  base::HistogramTester histogram_tester;
-  AudioServiceListener audio_service_listener(nullptr);
-  service_manager::Identity audio_service_identity(audio::mojom::kServiceName);
-  base::ProcessHandle handle = base::GetCurrentProcessHandle();
-  base::ProcessId pid = base::GetCurrentProcId();
-  audio_service_listener.OnServiceCreated(
-      MakeTestServiceInfo(audio_service_identity, pid));
-  audio_service_listener.OnServiceStarted(audio_service_identity, pid);
-  ChildProcessData data(content::ProcessType::PROCESS_TYPE_UTILITY);
-  data.SetHandle(handle);
-  audio_service_listener.BrowserChildProcessCrashed(
-      data, content::ChildProcessTerminationInfo());
-  histogram_tester.ExpectUniqueSample(
-      "Media.AudioService.ObservedProcessTerminationStatus",
-      AudioServiceListener::Metrics::ServiceProcessTerminationStatus::kCrash,
-      1);
-  EXPECT_EQ(base::kNullProcessId, audio_service_listener.GetProcessId());
-}
-
-TEST(AudioServiceListenerTest,
-     AudioProcessKilled_LogProcessTerminationStatus_ProcessIdNull) {
-  base::HistogramTester histogram_tester;
-  AudioServiceListener audio_service_listener(nullptr);
-  service_manager::Identity audio_service_identity(audio::mojom::kServiceName);
-  base::ProcessHandle handle = base::GetCurrentProcessHandle();
-  base::ProcessId pid = base::GetCurrentProcId();
-  audio_service_listener.OnServiceCreated(
-      MakeTestServiceInfo(audio_service_identity, pid));
-  audio_service_listener.OnServiceStarted(audio_service_identity, pid);
-  ChildProcessData data(content::ProcessType::PROCESS_TYPE_UTILITY);
-  data.SetHandle(handle);
-  audio_service_listener.BrowserChildProcessKilled(
-      data, content::ChildProcessTerminationInfo());
-  histogram_tester.ExpectUniqueSample(
-      "Media.AudioService.ObservedProcessTerminationStatus",
-      AudioServiceListener::Metrics::ServiceProcessTerminationStatus::kKill, 1);
-  EXPECT_EQ(base::kNullProcessId, audio_service_listener.GetProcessId());
 }
 
 }  // namespace content

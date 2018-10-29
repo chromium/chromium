@@ -56,7 +56,7 @@ void AtomicHTMLToken::Show() const {
     default:
       break;
   }
-  // TODO(kouhei): print m_attributes?
+  // TODO(kouhei): print attributes_?
   printf("\n");
 }
 #endif

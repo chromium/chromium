@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/webui/chromeos/cryptohome_web_ui_handler.h"
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "base/values.h"
 #include "chromeos/dbus/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 #include "crypto/nss_util.h"
@@ -39,9 +41,8 @@ void CryptohomeWebUIHandler::OnPageLoaded(const base::ListValue* args) {
   cryptohome_client->Pkcs11IsTpmTokenReady(
       GetCryptohomeBoolCallback("pkcs11-is-tpm-token-ready"));
 
-  BrowserThread::PostTaskAndReplyWithResult(
-      BrowserThread::IO,
-      FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {BrowserThread::IO},
       base::Bind(&crypto::IsTPMTokenReady, base::Closure()),
       base::Bind(&CryptohomeWebUIHandler::DidGetNSSUtilInfoOnUIThread,
                  weak_ptr_factory_.GetWeakPtr()));

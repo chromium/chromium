@@ -52,9 +52,6 @@ class BrightnessMonitor {
   // Adds or removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
-
-  // An observer can call this method to check BrightnessMonitor's status.
-  virtual Status GetStatus() const = 0;
 };
 
 }  // namespace auto_screen_brightness

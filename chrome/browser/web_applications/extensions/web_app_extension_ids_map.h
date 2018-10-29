@@ -40,15 +40,14 @@ class ExtensionIdsMap {
                              const std::string& extension_id);
 
   // Returns the URLs of the apps that were installed from |install_source|.
-  static std::vector<GURL> GetInstalledAppUrls(
-      Profile* profile,
-      PendingAppManager::InstallSource install_source);
+  static std::vector<GURL> GetInstalledAppUrls(Profile* profile,
+                                               InstallSource install_source);
 
   explicit ExtensionIdsMap(PrefService* pref_service);
 
   void Insert(const GURL& url,
               const std::string& extension_id,
-              PendingAppManager::InstallSource install_source);
+              InstallSource install_source);
   base::Optional<std::string> LookupExtensionId(const GURL& url);
 
  private:

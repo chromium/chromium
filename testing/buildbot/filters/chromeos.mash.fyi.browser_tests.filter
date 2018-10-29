@@ -33,9 +33,9 @@
 -AutomationApiTestWithDeviceScaleFactor.*
 -AutomationManagerAuraBrowserTest.*
 
-# The browser frame is a work in progress.
--BrowserNonClientFrameViewAshTest.AvatarDisplayOnTeleportedWindow/*
--BrowserNonClientFrameViewAshTest.HeaderHeightForSnappedBrowserInSplitView/*
+# ChromeVox and Select-to-Speak not yet supported. https://crbug.com/594887
+-ChromeVox*
+-SelectToSpeak*
 
 # Touch gestures don't work in webcontents. https://crbug.com/866991.
 -TopControlsSlideControllerTest.TestScrollingMaximizedPageBeforeGoingToTabletMode
@@ -44,14 +44,6 @@
 -TopControlsSlideControllerTest.TestClosingATab
 -TopControlsSlideControllerTest.TestFocusEditableElements
 -TopControlsSlideControllerTest.DisplayRotation
-
-# Direct access to ash window frames, tablet mode, overview mode, etc.
--NonHomeLauncherBrowserNonClientFrameViewAshTest.*
-
-# Fix immersive fullscreen mode in mash. https://crbug.com/844748.
-# Needs EventGenerator to work across window tree hosts. crbug.com/814675
--ImmersiveModeBrowserViewTest.TestCaptionButtonsReceiveEventsInAppImmersiveMode*
--ImmersiveModeBrowserViewTest.TestCaptionButtonsReceiveEventsInBrowserImmersiveMode*
 
 # ash::Shell access from ChromeViewsDelegate::CreateDefaultNonClientFrameView()
 # e.g. from chromeos::CaptivePortalWindowProxy::Show().
@@ -104,10 +96,6 @@
 # TODO: Very slow (>25 seconds) and occasional timeouts.
 -ExecuteScriptApiTest/DestructiveScriptTest.*
 
-# Fails: immersive_controller->IsRevealed() returns false.
-# http://crbug.com/791148
--ZoomBubbleBrowserTest.*
-
 # ozone_platform.cc(61) Check failed: instance_. OzonePlatform is not initialized
 -ExtensionWebstoreGetWebGLStatusTest.*
 
@@ -124,11 +112,6 @@
 # ash::Shell::display_manager() to get display state.
 # http://crbug.com/831826
 -PolicyTest.UnifiedDesktopEnabledByDefault
-
-# IME accesses ash::Shell for root window.
--InputMethodEngineBrowserTest/InputMethodEngineBrowserTest.*
--InputMethodEngineComponentExtensionBrowserTest/InputMethodEngineBrowserTest.*
--InputMethodEngineIncognitoBrowserTest/InputMethodEngineBrowserTest.*
 
 # KeyboardOverlayUI uses ash::Shell.
 -KeyboardOverlayUIBrowserTest.*
@@ -151,9 +134,6 @@
 
 # JS failure: hasAccessToCurrentWindow: FAIL (no message)
 -LockScreenNoteTakingTest.*
-
-# desktop_window_tree_host_mus.cc(796) Check failed: !window->GetRootWindow() || this->window() == window->GetRootWindow().
--LoginFeedbackTest.*
 
 # Missing magnification manager and also RefCounted check failed:
 # CalledOnValidSequence() from SchedulerWorkerDelegate::OnMainExit
@@ -221,6 +201,7 @@
 -DefaultKeyboardExtensionBrowserTest.*
 -KeyboardEndToEndFocusTest.*
 -KeyboardEndToEndFormTest.*
+-KeyboardEndToEndOverscrollTest.*
 -KioskVirtualKeyboardTest.*
 -VirtualKeyboardAppWindowTest.*
 -VirtualKeyboardStateTest.*
@@ -243,7 +224,7 @@
 -EnterpriseEnrollmentTest.TestActiveDirectoryEnrollment_Success
 
 # Needs EventGenerator to work across window tree hosts. crbug.com/814675
--RoundedOmniboxPopupContentsViewTest.ClickOmnibox*
+-OmniboxPopupContentsViewTest.ClickOmnibox
 
 # HostedAppMenu needs porting to BrowserNonClientFrameViewMash crbug.com/813666
 -HostedAppPWAOnlyTest.AppInfoOpensPageInfo*
@@ -260,10 +241,6 @@
 
 # Flaky segfaults: https://crbug.com/818147
 -ExtensionApiTest.BookmarkManager
-
-# Segfaults after massive recursion setting ash::kWindowStateTypeKey:
-# crbug.com/824458
--PresentationReceiverWindowViewBrowserTest.ChromeOSHardwareFullscreenButton
 
 # RenderFrameMetadata observation not supported: https://crbug.com/820974
 -WebViewFocusBrowserPluginSpecificTest.*
@@ -287,19 +264,6 @@
 -BrowserActionApiTest.TestPictureInPictureOnBrowserActionIconClick
 -PlatformAppBrowserTest.PictureInPicture
 -PictureInPictureLazyBackgroundPageApiTest.PictureInPictureInBackgroundPage
-
-# These started failing with the switch to ws2.
-# https:://crbug.com/855767
--AppWindowApiTest.OnRestoredEvent
--BrowserActionApiTest.BrowserActionPopupWithIframe
--FirstRunUIBrowserTest.ModalWindowDoesNotBlock
--LauncherPlatformAppBrowserTest.AltNumberAppsTabbing
--LauncherPlatformAppBrowserTest.PackagedAppClickBehaviorInMinimizeMode
--LoginWebDialogTest.CannotMinimize
--LoginWebDialogTest.CloseDialogByAccelerator
--ShelfAppBrowserTest.AltNumberTabsTabbing
--ShelfAppBrowserTestNoDefaultBrowser.AltNumberBrowserTabbing
--ShelfAppBrowserTestNoDefaultBrowser.BrowserShortcutLauncherItemController
 
 # Excluded from Mash because pointer events from EventGenerator aren't seen.
 # https://crbug.com/814675

@@ -32,11 +32,12 @@ class ProcessInternalsUI : public WebUIController, public WebContentsObserver {
     registry_.AddInterface(std::move(binder));
   }
   void BindProcessInternalsHandler(
-      ::mojom::ProcessInternalsHandlerRequest request);
+      ::mojom::ProcessInternalsHandlerRequest request,
+      RenderFrameHost* render_frame_host);
 
  private:
   std::unique_ptr<::mojom::ProcessInternalsHandler> ui_handler_;
-  service_manager::BinderRegistry registry_;
+  service_manager::BinderRegistryWithArgs<content::RenderFrameHost*> registry_;
 
   DISALLOW_COPY_AND_ASSIGN(ProcessInternalsUI);
 };

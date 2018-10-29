@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -116,7 +117,7 @@ class CONTENT_EXPORT AppCacheUpdateJob
     scoped_refptr<AppCacheResponseInfo> existing_response_info;
   };
 
-  AppCacheResponseWriter* CreateResponseWriter();
+  std::unique_ptr<AppCacheResponseWriter> CreateResponseWriter();
 
   // Methods for AppCacheStorage::Delegate.
   void OnResponseInfoLoaded(AppCacheResponseInfo* response_info,

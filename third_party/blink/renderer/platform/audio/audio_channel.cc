@@ -35,7 +35,7 @@
 
 namespace blink {
 
-using namespace VectorMath;
+using namespace vector_math;
 
 void AudioChannel::ResizeSmaller(size_t new_length) {
   DCHECK_LE(new_length, length_);

@@ -47,6 +47,8 @@ struct Suggestion {
   base::string16 value;
   base::string16 label;
   // Used only for passwords to show the password value.
+  // Also used to display an extra line of information if two line
+  // display is enabled.
   base::string16 additional_label;
   // Contains an image to display for the suggestion.
   gfx::Image custom_icon;

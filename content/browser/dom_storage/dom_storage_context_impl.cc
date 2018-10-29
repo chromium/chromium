@@ -27,7 +27,6 @@
 #include "content/browser/dom_storage/dom_storage_namespace.h"
 #include "content/browser/dom_storage/dom_storage_task_runner.h"
 #include "content/browser/dom_storage/session_storage_database.h"
-#include "content/common/dom_storage/dom_storage_namespace_ids.h"
 #include "content/common/dom_storage/dom_storage_types.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/local_storage_usage_info.h"
@@ -109,7 +108,7 @@ DOMStorageNamespace* DOMStorageContextImpl::GetStorageNamespace(
     const std::string& namespace_id) {
   if (is_shutdown_)
     return nullptr;
-  StorageNamespaceMap::iterator found = namespaces_.find(namespace_id);
+  auto found = namespaces_.find(namespace_id);
   if (found == namespaces_.end())
     return nullptr;
   return found->second.get();
@@ -301,7 +300,7 @@ void DOMStorageContextImpl::CloneSessionNamespace(
     return;
   DCHECK(!existing_id.empty());
   DCHECK(!new_id.empty());
-  StorageNamespaceMap::iterator found = namespaces_.find(existing_id);
+  auto found = namespaces_.find(existing_id);
   if (found != namespaces_.end()) {
     namespaces_[new_id] = found->second->Clone(new_id);
     return;

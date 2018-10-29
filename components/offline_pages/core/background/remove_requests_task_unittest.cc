@@ -32,7 +32,7 @@ class RemoveRequestsTaskTest : public RequestQueueTaskTestBase {
   void PumpLoop();
 
   void AddRequestsToStore();
-  void RemoveRequestsCallback(std::unique_ptr<UpdateRequestsResult> result);
+  void RemoveRequestsCallback(UpdateRequestsResult result);
 
   UpdateRequestsResult* last_result() const { return result_.get(); }
 
@@ -62,8 +62,8 @@ void RemoveRequestsTaskTest::AddRequestsToStore() {
 }
 
 void RemoveRequestsTaskTest::RemoveRequestsCallback(
-    std::unique_ptr<UpdateRequestsResult> result) {
-  result_ = std::move(result);
+    UpdateRequestsResult result) {
+  result_ = std::make_unique<UpdateRequestsResult>(std::move(result));
 }
 
 void RemoveRequestsTaskTest::AddRequestDone(ItemActionStatus status) {

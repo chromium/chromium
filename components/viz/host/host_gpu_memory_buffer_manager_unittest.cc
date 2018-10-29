@@ -111,11 +111,13 @@ class TestGpuService : public mojom::GpuService {
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override {}
 
+#if defined(OS_WIN)
   void RequestCompleteGpuInfo(
       RequestCompleteGpuInfoCallback callback) override {}
 
   void GetGpuSupportedRuntimeVersion(
       GetGpuSupportedRuntimeVersionCallback callback) override {}
+#endif
 
   void RequestHDRStatus(RequestHDRStatusCallback callback) override {}
 
@@ -292,7 +294,6 @@ TEST_F(HostGpuMemoryBufferManagerTest, RequestsFromUntrustedClientsValidated) {
   const auto buffer_id = static_cast<gfx::GpuMemoryBufferId>(1);
   const int client_id = 2;
   // SCANOUT cannot be used if native gpu memory buffer is not supported.
-  // When ATC is used, both width and height should be multiples of 4.
   struct {
     gfx::BufferUsage usage;
     gfx::BufferFormat format;
@@ -300,7 +301,6 @@ TEST_F(HostGpuMemoryBufferManagerTest, RequestsFromUntrustedClientsValidated) {
     bool expect_null_handle;
   } configs[] = {
       {gfx::BufferUsage::SCANOUT, gfx::BufferFormat::YVU_420, {10, 20}, true},
-      {gfx::BufferUsage::GPU_READ, gfx::BufferFormat::ATC, {10, 20}, true},
       {gfx::BufferUsage::GPU_READ, gfx::BufferFormat::YVU_420, {64, 64}, false},
   };
   for (const auto& config : configs) {

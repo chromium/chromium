@@ -135,8 +135,7 @@ FakeDatagramChannelFactory::FakeDatagramChannelFactory()
 }
 
 FakeDatagramChannelFactory::~FakeDatagramChannelFactory() {
-  for (ChannelsMap::iterator it = channels_.begin(); it != channels_.end();
-       ++it) {
+  for (auto it = channels_.begin(); it != channels_.end(); ++it) {
     EXPECT_FALSE(it->second);
   }
 }

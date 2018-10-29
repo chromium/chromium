@@ -22,6 +22,7 @@ WebGLContextAttributes ToWebGLContextAttributes(
       attrs.fail_if_major_performance_caveat);
   result.setCompatibleXRDevice(
       static_cast<XRDevice*>(attrs.compatible_xr_device.Get()));
+  result.setLowLatency(attrs.low_latency);
   return result;
 }
 

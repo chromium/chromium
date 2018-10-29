@@ -277,8 +277,8 @@ void NormalizeXboxOneButtonData(const XboxOneButtonData& data,
                 &normalized_data->axes[2], &normalized_data->axes[3]);
 }
 
-XboxControllerMac::ControllerType ControllerTypeFromIds(int vendor_id,
-                                                        int product_id) {
+XboxControllerMac::ControllerType ControllerTypeFromIds(uint16_t vendor_id,
+                                                        uint16_t product_id) {
   if (vendor_id == XboxControllerMac::kVendorMicrosoft) {
     switch (product_id) {
       case XboxControllerMac::kProductXbox360Controller:
@@ -438,12 +438,12 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
   if (!SUCCEEDED(res) || !device_)
     return OPEN_FAILED;
 
-  UInt16 vendor_id;
+  uint16_t vendor_id;
   kr = (*device_)->GetDeviceVendor(device_, &vendor_id);
   if (kr != KERN_SUCCESS || vendor_id != kVendorMicrosoft)
     return OPEN_FAILED;
 
-  UInt16 product_id;
+  uint16_t product_id;
   kr = (*device_)->GetDeviceProduct(device_, &product_id);
   if (kr != KERN_SUCCESS)
     return OPEN_FAILED;
@@ -633,7 +633,7 @@ void XboxControllerMac::SetLEDPattern(LEDPattern pattern) {
   }
 }
 
-int XboxControllerMac::GetVendorId() const {
+uint16_t XboxControllerMac::GetVendorId() const {
   switch (controller_type_) {
     case XBOX_360_CONTROLLER:
     case XBOX_ONE_CONTROLLER_2013:
@@ -646,7 +646,7 @@ int XboxControllerMac::GetVendorId() const {
   }
 }
 
-int XboxControllerMac::GetProductId() const {
+uint16_t XboxControllerMac::GetProductId() const {
   switch (controller_type_) {
     case XBOX_360_CONTROLLER:
       return kProductXbox360Controller;

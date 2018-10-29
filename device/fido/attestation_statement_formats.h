@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "components/cbor/cbor_values.h"
+#include "components/cbor/values.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/fido_constants.h"
 
@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAttestationStatement
   ~FidoAttestationStatement() override;
 
   // AttestationStatement
-  cbor::CBORValue::MapValue GetAsCBORMap() const override;
+  cbor::Value::MapValue GetAsCBORMap() const override;
   bool IsSelfAttestation() override;
   bool IsAttestationCertificateInappropriatelyIdentifying() override;
   base::Optional<base::span<const uint8_t>> GetLeafCertificate() const override;
@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PackedAttestationStatement
   ~PackedAttestationStatement() override;
 
   // AttestationStatement
-  cbor::CBORValue::MapValue GetAsCBORMap() const override;
+  cbor::Value::MapValue GetAsCBORMap() const override;
   bool IsSelfAttestation() override;
   bool IsAttestationCertificateInappropriatelyIdentifying() override;
   base::Optional<base::span<const uint8_t>> GetLeafCertificate() const override;

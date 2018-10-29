@@ -7,12 +7,12 @@
 #include "base/sys_info.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/web_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
@@ -62,14 +62,14 @@ MemoryCoordinator& MemoryCoordinator::Instance() {
   return *external.Get();
 }
 
-void MemoryCoordinator::RegisterThread(WebThread* thread) {
-  MutexLocker lock(web_threads_mutex_);
-  web_threads_.insert(thread);
+void MemoryCoordinator::RegisterThread(Thread* thread) {
+  MutexLocker lock(threads_mutex_);
+  threads_.insert(thread);
 }
 
-void MemoryCoordinator::UnregisterThread(WebThread* thread) {
-  MutexLocker lock(web_threads_mutex_);
-  web_threads_.erase(thread);
+void MemoryCoordinator::UnregisterThread(Thread* thread) {
+  MutexLocker lock(threads_mutex_);
+  threads_.erase(thread);
 }
 
 MemoryCoordinator::MemoryCoordinator() = default;
@@ -111,8 +111,8 @@ void MemoryCoordinator::OnPurgeMemory() {
   WTF::Partitions::DecommitFreeableMemory();
 
   // Thread-specific data never issues a layout, so we are safe here.
-  MutexLocker lock(web_threads_mutex_);
-  for (auto* thread : web_threads_) {
+  MutexLocker lock(threads_mutex_);
+  for (auto* thread : threads_) {
     if (!thread->GetTaskRunner())
       continue;
 

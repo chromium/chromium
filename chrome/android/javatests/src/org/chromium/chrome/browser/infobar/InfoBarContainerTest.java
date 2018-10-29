@@ -26,14 +26,12 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -85,8 +83,7 @@ public class InfoBarContainerTest {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         // Register for animation notifications
-        InfoBarContainer container =
-                mActivityTestRule.getActivity().getActivityTab().getInfoBarContainer();
+        InfoBarContainer container = mActivityTestRule.getInfoBarContainer();
         mListener =  new InfoBarTestAnimationListener();
         container.addAnimationListener(mListener);
 
@@ -289,19 +286,14 @@ public class InfoBarContainerTest {
     /**
      * Tests that adding and removing correctly manages the transparent region, which allows for
      * optimizations in SurfaceFlinger (less overlays).
-     * TODO(https://crbug.com/876097): Remove the DisableFeatures block turning off contextual
-     * suggestions.
      */
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @Features.DisableFeatures({ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BOTTOM_SHEET,
-            ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON})
     public void testAddAndDismissSurfaceFlingerOverlays() throws Exception {
         final ViewGroup decorView =
                 (ViewGroup) mActivityTestRule.getActivity().getWindow().getDecorView();
-        final InfoBarContainer infoBarContainer =
-                mActivityTestRule.getActivity().getActivityTab().getInfoBarContainer();
+        final InfoBarContainer infoBarContainer = mActivityTestRule.getInfoBarContainer();
 
         // Detect layouts. Note this doesn't actually need to be atomic (just final).
         final AtomicInteger layoutCount = new AtomicInteger();

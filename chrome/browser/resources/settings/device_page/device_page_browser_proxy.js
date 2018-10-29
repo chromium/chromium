@@ -90,8 +90,8 @@ cr.define('settings', function() {
     /** Initializes the keyboard WebUI handler. */
     initializeKeyboard() {}
 
-    /** Shows the Ash keyboard shortcuts overlay. */
-    showKeyboardShortcutsOverlay() {}
+    /** Shows the Ash keyboard shortcut viewer. */
+    showKeyboardShortcutViewer() {}
 
     /** Requests a power status update. */
     updatePowerStatus() {}
@@ -173,8 +173,8 @@ cr.define('settings', function() {
     }
 
     /** @override */
-    showKeyboardShortcutsOverlay() {
-      chrome.send('showKeyboardShortcutsOverlay');
+    showKeyboardShortcutViewer() {
+      chrome.send('showKeyboardShortcutViewer');
     }
 
     /** @override */

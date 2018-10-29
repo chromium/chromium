@@ -28,10 +28,10 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PathUtils;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.blink_public.web.WebReferrerPolicy;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
@@ -54,6 +54,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
@@ -342,7 +343,9 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
      */
     public static boolean isPackageSpecializedHandler(String packageName, Intent intent) {
         Context context = ContextUtils.getApplicationContext();
-        try {
+        // On certain Samsung devices, queryIntentActivities can trigger a
+        // StrictModeDiskReadViolation (https://crbug.com/894160).
+        try (StrictModeContext unused = StrictModeContext.allowDiskReads()){
             List<ResolveInfo> handlers = context.getPackageManager().queryIntentActivities(
                     intent, PackageManager.GET_RESOLVED_FILTER);
             return getSpecializedHandlersWithFilter(handlers, packageName, intent).size() > 0;
@@ -538,8 +541,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
         LoadUrlParams loadUrlParams = new LoadUrlParams(url, PageTransition.AUTO_TOPLEVEL);
         if (!TextUtils.isEmpty(referrerUrl)) {
-            Referrer referrer =
-                    new Referrer(referrerUrl, WebReferrerPolicy.ALWAYS);
+            Referrer referrer = new Referrer(referrerUrl, ReferrerPolicy.ALWAYS);
             loadUrlParams.setReferrer(referrer);
         }
         tab.loadUrl(loadUrlParams);
@@ -550,8 +552,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         int transitionType = PageTransition.LINK;
         final LoadUrlParams loadUrlParams = new LoadUrlParams(url, transitionType);
         if (!TextUtils.isEmpty(referrerUrl)) {
-            Referrer referrer =
-                    new Referrer(referrerUrl, WebReferrerPolicy.ALWAYS);
+            Referrer referrer = new Referrer(referrerUrl, ReferrerPolicy.ALWAYS);
             loadUrlParams.setReferrer(referrer);
         }
         if (hasValidTab()) {
@@ -685,5 +686,10 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
      */
     private boolean hasValidTab() {
         return mTab != null && !mIsTabDestroyed;
+    }
+
+    @Override
+    public boolean isIntentForTrustedCallingApp(Intent intent) {
+        return false;
     }
 }

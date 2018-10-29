@@ -175,9 +175,8 @@ bool RecursiveMutex::TryLock() {
   return true;
 }
 
-ThreadCondition::ThreadCondition(Mutex& mutex) : mutex_(mutex.Impl()) {
-  InitializeConditionVariable(&condition_);
-}
+ThreadCondition::ThreadCondition(Mutex& mutex)
+  : condition_(CONDITION_VARIABLE_INIT), mutex_(mutex.Impl()) {}
 
 ThreadCondition::~ThreadCondition() {}
 

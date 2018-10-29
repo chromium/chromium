@@ -17,6 +17,8 @@ namespace cryptotokenPrivate {
     // The AppId (see definition, above) that was used in the registration
     // request and which has been authenticated by |canOriginAssertAppId|.
     DOMString appId;
+    // The origin of the caller.
+    DOMString origin;
     // Identifies the tab in which the registration is occuring so that any
     // permissions prompt is correctly located.
     long tabId;

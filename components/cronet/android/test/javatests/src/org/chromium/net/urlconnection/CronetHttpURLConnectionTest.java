@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1464,5 +1465,32 @@ public class CronetHttpURLConnectionTest {
         assertNotNull(task.get());
         s.close();
         connection.disconnect();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    @OnlyRunCronetHttpURLConnection // Not interested in system crashes.
+    // Regression test for crashes in disconnect() impl.
+    public void testCancelRace() throws Exception {
+        URL url = new URL(NativeTestServer.getEchoMethodURL());
+        final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        final AtomicBoolean connected = new AtomicBoolean();
+        // Start request on another thread.
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    assertEquals(200, urlConnection.getResponseCode());
+                } catch (IOException e) {
+                }
+                connected.set(true);
+            }
+        })
+                .start();
+        // Repeatedly call disconnect().  This used to crash.
+        do {
+            urlConnection.disconnect();
+        } while (!connected.get());
     }
 }

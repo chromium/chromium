@@ -32,15 +32,6 @@ Polymer({
     model: Object,
   },
 
-  /**
-   * @param {string} url Location of an image to get a set of icons for.
-   * @return {string} A set of icon URLs.
-   * @private
-   */
-  getIconSet_: function(url) {
-    return cr.icon.getFavicon(url);
-  },
-
   /** @private */
   onRemoveTap_: function() {
     this.$$('cr-action-menu').close();

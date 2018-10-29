@@ -43,6 +43,13 @@ Tests relationship accessibility values.
   },
   "properties": [
     {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
+    {
       "name": "required",
       "value": {
         "type": "boolean",
@@ -120,6 +127,13 @@ Tests relationship accessibility values.
     ]
   },
   "properties": [
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    },
     {
       "name": "required",
       "value": {

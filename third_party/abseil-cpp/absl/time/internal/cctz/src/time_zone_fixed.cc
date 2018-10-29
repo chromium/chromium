@@ -15,8 +15,8 @@
 #include "time_zone_fixed.h"
 
 #include <algorithm>
+#include <cassert>
 #include <chrono>
-#include <cstdio>
 #include <cstring>
 #include <string>
 
@@ -29,8 +29,15 @@ namespace {
 // The prefix used for the internal names of fixed-offset zones.
 const char kFixedOffsetPrefix[] = "Fixed/UTC";
 
+const char kDigits[] = "0123456789";
+
+char* Format02d(char* p, int v) {
+  *p++ = kDigits[(v / 10) % 10];
+  *p++ = kDigits[v % 10];
+  return p;
+}
+
 int Parse02d(const char* p) {
-  static const char kDigits[] = "0123456789";
   if (const char* ap = std::strchr(kDigits, *p)) {
     int v = static_cast<int>(ap - kDigits);
     if (const char* bp = std::strchr(kDigits, *++p)) {
@@ -95,9 +102,17 @@ std::string FixedOffsetToName(const seconds& offset) {
   }
   int hours = minutes / 60;
   minutes %= 60;
-  char buf[sizeof(kFixedOffsetPrefix) + sizeof("-24:00:00")];
-  snprintf(buf, sizeof(buf), "%s%c%02d:%02d:%02d",
-           kFixedOffsetPrefix, sign, hours, minutes, seconds);
+  char buf[sizeof(kFixedOffsetPrefix) - 1 + sizeof("-24:00:00")];
+  std::strcpy(buf, kFixedOffsetPrefix);
+  char* ep = buf + sizeof(kFixedOffsetPrefix) - 1;
+  *ep++ = sign;
+  ep = Format02d(ep, hours);
+  *ep++ = ':';
+  ep = Format02d(ep, minutes);
+  *ep++ = ':';
+  ep = Format02d(ep, seconds);
+  *ep++ = '\0';
+  assert(ep == buf + sizeof(buf));
   return buf;
 }
 

@@ -1,0 +1,7 @@
+Tests that we skip all pauses during navigation
+Navigate page..
+Wait for ready message..
+done!
+Script execution paused.
+Script execution resumed.
+

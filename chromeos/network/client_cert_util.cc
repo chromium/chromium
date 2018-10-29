@@ -31,7 +31,10 @@ const char kDefaultTPMPin[] = "111111";
 
 namespace {
 
-void GetClientCertTypeAndPattern(
+// Extracts the type and descriptor (referenced GUID or client cert pattern) of
+// a ONC-specified client certificate specification for a network
+// (|dict_with_client_cert|) and stores it in |cert_config|.
+void GetClientCertTypeAndDescriptor(
     onc::ONCSource onc_source,
     const base::DictionaryValue& dict_with_client_cert,
     ClientCertConfig* cert_config) {
@@ -52,6 +55,12 @@ void GetClientCertTypeAndPattern(
       bool success = cert_config->pattern.ReadFromONCDictionary(*pattern);
       DCHECK(success);
     }
+  } else if (cert_config->client_cert_type == kRef) {
+    const base::Value* client_cert_ref_key =
+        dict_with_client_cert.FindKeyOfType(kClientCertRef,
+                                            base::Value::Type::STRING);
+    if (client_cert_ref_key)
+      cert_config->guid = client_cert_ref_key->GetString();
   }
 }
 
@@ -257,6 +266,8 @@ ClientCertConfig::ClientCertConfig()
 
 ClientCertConfig::ClientCertConfig(const ClientCertConfig& other) = default;
 
+ClientCertConfig::~ClientCertConfig() = default;
+
 void OncToClientCertConfig(::onc::ONCSource onc_source,
                            const base::DictionaryValue& network_config,
                            ClientCertConfig* cert_config) {
@@ -310,8 +321,8 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
   }
 
   if (dict_with_client_cert) {
-    GetClientCertTypeAndPattern(onc_source, *dict_with_client_cert,
-                                cert_config);
+    GetClientCertTypeAndDescriptor(onc_source, *dict_with_client_cert,
+                                   cert_config);
   }
 }
 

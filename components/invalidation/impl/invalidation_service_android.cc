@@ -93,9 +93,8 @@ std::string InvalidationServiceAndroid::GetInvalidatorClientId() const {
       Java_InvalidationService_getInvalidatorClientId(env, java_ref_);
 
   // Convert it into a more convenient format for C++.
-  std::vector<uint8_t> id_bytes;
-  base::android::JavaByteArrayToByteVector(env, id_bytes_java.obj(), &id_bytes);
-  std::string id(id_bytes.begin(), id_bytes.end());
+  std::string id;
+  base::android::JavaByteArrayToString(env, id_bytes_java, &id);
 
   return id;
 }

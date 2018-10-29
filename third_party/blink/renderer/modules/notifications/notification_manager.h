@@ -18,7 +18,6 @@ namespace blink {
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
-class WebServiceWorkerRegistration;
 
 // The notification manager, unique to the execution context, is responsible for
 // connecting and communicating with the Mojo notification service.
@@ -61,7 +60,7 @@ class NotificationManager final
 
   // Shows a notification from a service worker.
   void DisplayPersistentNotification(
-      blink::WebServiceWorkerRegistration* service_worker_registration,
+      int64_t service_worker_registration_id,
       mojom::blink::NotificationDataPtr notification_data,
       mojom::blink::NotificationResourcesPtr notification_resources,
       ScriptPromiseResolver* resolver);
@@ -72,10 +71,9 @@ class NotificationManager final
   // Asynchronously gets the persistent notifications belonging to the Service
   // Worker Registration. If |filter_tag| is not an empty string, only the
   // notification with the given tag will be considered.
-  void GetNotifications(
-      WebServiceWorkerRegistration* service_worker_registration,
-      const WebString& filter_tag,
-      ScriptPromiseResolver* resolver);
+  void GetNotifications(int64_t service_worker_registration_id,
+                        const WebString& filter_tag,
+                        ScriptPromiseResolver* resolver);
 
   void Trace(blink::Visitor* visitor) override;
 

@@ -20,12 +20,12 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV id='toMove'",
           "rect": [158, 278, 100, 100],
-          "reason": "style change"
+          "reason": "background"
         },
         {
           "object": "LayoutBlockFlow (positioned) DIV id='toMove'",
           "rect": [18, 278, 100, 100],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "transform": 1

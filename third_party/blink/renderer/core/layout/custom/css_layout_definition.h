@@ -43,7 +43,7 @@ class CSSLayoutDefinition final
   // CSSLayoutDefinition.
   class Instance final : public GarbageCollectedFinalized<Instance> {
    public:
-    Instance(CSSLayoutDefinition*, v8::Local<v8::Object> instance);
+    Instance(CSSLayoutDefinition*, v8::Local<v8::Value> instance);
 
     // Runs the web developer defined layout, returns true if everything
     // succeeded. It populates the FragmentResultOptions dictionary, and
@@ -58,7 +58,7 @@ class CSSLayoutDefinition final
     void ReportException(ExceptionState*);
 
     Member<CSSLayoutDefinition> definition_;
-    ScopedPersistent<v8::Object> instance_;
+    ScopedPersistent<v8::Value> instance_;
   };
 
   // Creates an instance of the web developer defined class. May return a

@@ -290,10 +290,10 @@ class StalledInStartWorkerHelper : public EmbeddedWorkerTestHelper {
 };
 
 TEST_P(EmbeddedWorkerInstanceTest, StartAndStop) {
-  const GURL pattern("http://example.com/");
+  const GURL scope("http://example.com/");
   const GURL url("http://example.com/worker.js");
 
-  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(pattern, url);
+  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
   std::unique_ptr<EmbeddedWorkerInstance> worker =
       embedded_worker_registry()->CreateWorker(pair.second.get());
   EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
@@ -329,10 +329,10 @@ TEST_P(EmbeddedWorkerInstanceTest, StartAndStop) {
 // Test that a worker that failed twice will use a new render process
 // on the next attempt.
 TEST_P(EmbeddedWorkerInstanceTest, ForceNewProcess) {
-  const GURL pattern("http://example.com/");
+  const GURL scope("http://example.com/");
   const GURL url("http://example.com/worker.js");
 
-  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(pattern, url);
+  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
   const int64_t service_worker_version_id = pair.second->version_id();
   std::unique_ptr<EmbeddedWorkerInstance> worker =
       embedded_worker_registry()->CreateWorker(pair.second.get());
@@ -367,10 +367,10 @@ TEST_P(EmbeddedWorkerInstanceTest, ForceNewProcess) {
 }
 
 TEST_P(EmbeddedWorkerInstanceTest, StopWhenDevToolsAttached) {
-  const GURL pattern("http://example.com/");
+  const GURL scope("http://example.com/");
   const GURL url("http://example.com/worker.js");
 
-  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(pattern, url);
+  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
   std::unique_ptr<EmbeddedWorkerInstance> worker =
       embedded_worker_registry()->CreateWorker(pair.second.get());
   EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
@@ -406,15 +406,13 @@ TEST_P(EmbeddedWorkerInstanceTest, StopWhenDevToolsAttached) {
 // Test that the removal of a worker from the registry doesn't remove
 // other workers in the same process.
 TEST_P(EmbeddedWorkerInstanceTest, RemoveWorkerInSharedProcess) {
-  const GURL pattern("http://example.com/");
+  const GURL scope("http://example.com/");
   const GURL url("http://example.com/worker.js");
 
-  RegistrationAndVersionPair pair1 =
-      PrepareRegistrationAndVersion(pattern, url);
+  RegistrationAndVersionPair pair1 = PrepareRegistrationAndVersion(scope, url);
   std::unique_ptr<EmbeddedWorkerInstance> worker1 =
       embedded_worker_registry()->CreateWorker(pair1.second.get());
-  RegistrationAndVersionPair pair2 =
-      PrepareRegistrationAndVersion(pattern, url);
+  RegistrationAndVersionPair pair2 = PrepareRegistrationAndVersion(scope, url);
   std::unique_ptr<EmbeddedWorkerInstance> worker2 =
       embedded_worker_registry()->CreateWorker(pair2.second.get());
 
@@ -634,10 +632,10 @@ TEST_P(EmbeddedWorkerInstanceTest, StopAfterSendingStartWorkerMessage) {
 }
 
 TEST_P(EmbeddedWorkerInstanceTest, Detach) {
-  const GURL pattern("http://example.com/");
+  const GURL scope("http://example.com/");
   const GURL url("http://example.com/worker.js");
 
-  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(pattern, url);
+  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
   std::unique_ptr<EmbeddedWorkerInstance> worker =
       embedded_worker_registry()->CreateWorker(pair.second.get());
   worker->AddObserver(this);
@@ -660,13 +658,13 @@ TEST_P(EmbeddedWorkerInstanceTest, Detach) {
 
 // Test for when sending the start IPC failed.
 TEST_P(EmbeddedWorkerInstanceTest, FailToSendStartIPC) {
-  const GURL pattern("http://example.com/");
+  const GURL scope("http://example.com/");
   const GURL url("http://example.com/worker.js");
 
   // Let StartWorker fail; mojo IPC fails to connect to a remote interface.
   helper_->RegisterMockInstanceClient(nullptr);
 
-  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(pattern, url);
+  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
   std::unique_ptr<EmbeddedWorkerInstance> worker =
       embedded_worker_registry()->CreateWorker(pair.second.get());
   worker->AddObserver(this);
@@ -706,7 +704,7 @@ class FailEmbeddedWorkerInstanceClientImpl
 };
 
 TEST_P(EmbeddedWorkerInstanceTest, RemoveRemoteInterface) {
-  const GURL pattern("http://example.com/");
+  const GURL scope("http://example.com/");
   const GURL url("http://example.com/worker.js");
 
   // Let StartWorker fail; binding is discarded in the middle of IPC
@@ -715,7 +713,7 @@ TEST_P(EmbeddedWorkerInstanceTest, RemoveRemoteInterface) {
           helper_->AsWeakPtr()));
   ASSERT_EQ(mock_instance_clients()->size(), 1UL);
 
-  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(pattern, url);
+  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
   std::unique_ptr<EmbeddedWorkerInstance> worker =
       embedded_worker_registry()->CreateWorker(pair.second.get());
   worker->AddObserver(this);
@@ -760,7 +758,7 @@ class StoreMessageInstanceClient
 };
 
 TEST_P(EmbeddedWorkerInstanceTest, AddMessageToConsole) {
-  const GURL pattern("http://example.com/");
+  const GURL scope("http://example.com/");
   const GURL url("http://example.com/worker.js");
   std::unique_ptr<StoreMessageInstanceClient> instance_client =
       std::make_unique<StoreMessageInstanceClient>(helper_->AsWeakPtr());
@@ -768,7 +766,7 @@ TEST_P(EmbeddedWorkerInstanceTest, AddMessageToConsole) {
   helper_->RegisterMockInstanceClient(std::move(instance_client));
   ASSERT_EQ(mock_instance_clients()->size(), 1UL);
 
-  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(pattern, url);
+  RegistrationAndVersionPair pair = PrepareRegistrationAndVersion(scope, url);
   std::unique_ptr<EmbeddedWorkerInstance> worker =
       embedded_worker_registry()->CreateWorker(pair.second.get());
   worker->AddObserver(this);

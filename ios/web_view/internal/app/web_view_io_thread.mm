@@ -12,8 +12,7 @@
 
 namespace ios_web_view {
 
-WebViewIOThread::WebViewIOThread(PrefService* local_state,
-                                 net_log::ChromeNetLog* net_log)
+WebViewIOThread::WebViewIOThread(PrefService* local_state, net::NetLog* net_log)
     : IOSIOThread(local_state, net_log) {}
 
 WebViewIOThread::~WebViewIOThread() = default;

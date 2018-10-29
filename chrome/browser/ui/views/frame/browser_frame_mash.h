@@ -20,6 +20,9 @@ class BrowserFrameMash : public views::DesktopNativeWidgetAura,
   ~BrowserFrameMash() override;
 
  private:
+  // views::DesktopNativeWidgetAura:
+  void OnWindowTargetVisibilityChanged(bool visible) override;
+
   // Overridden from NativeBrowserFrame:
   views::Widget::InitParams GetWidgetParams() override;
   bool UseCustomFrame() const override;

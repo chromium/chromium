@@ -39,7 +39,7 @@ void MediaDrmBridgeFactory::Create(
     const CdmCreatedCB& cdm_created_cb) {
   DCHECK(MediaDrmBridge::IsKeySystemSupported(key_system));
   DCHECK(MediaDrmBridge::IsAvailable());
-  DCHECK(!security_origin.unique());
+  DCHECK(!security_origin.opaque());
   DCHECK(scheme_uuid_.empty()) << "This factory can only be used once.";
 
   scheme_uuid_ = MediaDrmBridge::GetUUID(key_system);

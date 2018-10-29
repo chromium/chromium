@@ -12,7 +12,7 @@ import sys
 
 from common_args import AddCommonArgs, ConfigureLogging, \
                         GetDeploymentTargetForArgs
-from run_package import RunPackage
+from run_package import RunPackage, RunPackageArgs
 
 
 def main():
@@ -25,10 +25,11 @@ def main():
 
   with GetDeploymentTargetForArgs(args) as target:
     target.Start()
+
+    run_package_args = RunPackageArgs.FromCommonArgs(args)
     return RunPackage(
         args.output_directory, target, args.package, args.package_name,
-        args.package_dep, args.child_args, args.include_system_logs,
-        args.install_only, args.package_manifest)
+        args.package_dep, args.child_args, run_package_args)
 
 
 if __name__ == '__main__':

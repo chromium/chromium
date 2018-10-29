@@ -17,15 +17,14 @@ constexpr cdm::ColorSpace kUnspecifiedColorSpace = {2, 2, 2,
 
 gfx::ColorSpace::RangeID ToGfxColorSpaceRange(cdm::ColorRange range) {
   switch (range) {
+    case cdm::ColorRange::kInvalid:
+      return gfx::ColorSpace::RangeID::INVALID;
     case cdm::ColorRange::kLimited:
       return gfx::ColorSpace::RangeID::LIMITED;
     case cdm::ColorRange::kFull:
       return gfx::ColorSpace::RangeID::FULL;
     case cdm::ColorRange::kDerived:
       return gfx::ColorSpace::RangeID::DERIVED;
-    default:
-      DVLOG(1) << "Invalid color range";
-      return gfx::ColorSpace::RangeID::INVALID;
   }
 }
 

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_DRIVE_DRIVE_NOTIFICATION_OBSERVER_H_
 #define COMPONENTS_DRIVE_DRIVE_NOTIFICATION_OBSERVER_H_
 
-#include <set>
+#include <map>
 #include <string>
 
 namespace drive {
@@ -14,10 +14,12 @@ namespace drive {
 // updates.
 class DriveNotificationObserver {
  public:
-  // Called when a notification from Google Drive is received. |ids| is the set
-  // of objects that raised the notification, either a team drive id or empty
-  // string to represent the users default corpus.
-  virtual void OnNotificationReceived(const std::set<std::string>& ids) = 0;
+  // Called when a notification from Google Drive is received. |invalidations|
+  // is the map from objects that raised the notification to the changelist,
+  // either a team drive id or empty string to represent the users default
+  // corpus, to the change ID.
+  virtual void OnNotificationReceived(
+      const std::map<std::string, int64_t>& invalidations) = 0;
 
   // Called when there has not been a recent notification from Google Drive and
   // the timer used for polling Google Drive fired.

@@ -164,7 +164,7 @@ class HttpProxyClientSocketPoolTest
             OnHostResolutionCallback(),
             TransportSocketParams::COMBINE_CONNECT_AND_WRITE_DEFAULT),
         NULL, NULL, HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
-        PRIVACY_MODE_DISABLED, 0);
+        PRIVACY_MODE_DISABLED, false /* ignore_certificate_errors */);
   }
 
   // Returns the a correctly constructed HttpProxyParms

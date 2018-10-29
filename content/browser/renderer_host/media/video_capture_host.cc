@@ -8,9 +8,11 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/task/post_task.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -109,8 +111,8 @@ void VideoCaptureHost::OnError(VideoCaptureControllerID controller_id,
                                media::VideoCaptureError error) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&VideoCaptureHost::DoError, weak_factory_.GetWeakPtr(),
                      controller_id, error));
 }
@@ -157,8 +159,8 @@ void VideoCaptureHost::OnBufferReady(
 void VideoCaptureHost::OnEnded(VideoCaptureControllerID controller_id) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&VideoCaptureHost::DoEnded, weak_factory_.GetWeakPtr(),
                      controller_id));
 }
@@ -399,8 +401,8 @@ void VideoCaptureHost::NotifyStreamAdded() {
   ++number_of_active_streams_;
   // base::Unretained() usage is safe because |render_process_host_delegate_|
   // is destroyed on UI thread.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&RenderProcessHostDelegate::NotifyStreamAdded,
                      base::Unretained(render_process_host_delegate_.get())));
 }
@@ -416,8 +418,8 @@ void VideoCaptureHost::NotifyStreamRemoved() {
   --number_of_active_streams_;
   // base::Unretained() usage is safe because |render_process_host_delegate_| is
   // destroyed on UI thread.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&RenderProcessHostDelegate::NotifyStreamRemoved,
                      base::Unretained(render_process_host_delegate_.get())));
 }

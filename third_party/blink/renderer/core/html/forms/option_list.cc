@@ -12,8 +12,8 @@ namespace blink {
 
 void OptionListIterator::Advance(HTMLOptionElement* previous) {
   // This function returns only
-  // - An OPTION child of m_select, or
-  // - An OPTION child of an OPTGROUP child of m_select.
+  // - An OPTION child of select_, or
+  // - An OPTION child of an OPTGROUP child of select_.
 
   Element* current;
   if (previous) {

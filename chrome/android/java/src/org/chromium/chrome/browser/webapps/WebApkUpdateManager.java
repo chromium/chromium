@@ -229,7 +229,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer {
      * Whether there is a new version of the //chrome/android/webapk/shell_apk code.
      */
     private static boolean isShellApkVersionOutOfDate(WebApkInfo info) {
-        return info.shellApkVersion() < WebApkVersion.CURRENT_SHELL_APK_VERSION;
+        return info.shellApkVersion() < WebApkVersion.REQUEST_UPDATE_FOR_SHELL_APK_VERSION;
     }
 
     /**
@@ -249,7 +249,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer {
         if (!info.apkPackageName().startsWith(WEBAPK_PACKAGE_PREFIX)) return false;
 
         if (isShellApkVersionOutOfDate(info)
-                && WebApkVersion.CURRENT_SHELL_APK_VERSION
+                && WebApkVersion.REQUEST_UPDATE_FOR_SHELL_APK_VERSION
                         > mStorage.getLastRequestedShellApkVersion()) {
             return true;
         }
@@ -267,7 +267,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer {
         mStorage.updateTimeOfLastWebApkUpdateRequestCompletion();
         mStorage.updateDidLastWebApkUpdateRequestSucceed(result == WebApkInstallResult.SUCCESS);
         mStorage.setRelaxedUpdates(relaxUpdates);
-        mStorage.updateLastRequestedShellApkVersion(WebApkVersion.CURRENT_SHELL_APK_VERSION);
+        mStorage.updateLastRequestedShellApkVersion(
+                WebApkVersion.REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
     }
 
     /**

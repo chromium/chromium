@@ -27,6 +27,7 @@ void EmptyClient::OnDownloadUpdated(const std::string& guid,
                                     uint64_t bytes_downloaded) {}
 
 void EmptyClient::OnDownloadFailed(const std::string& guid,
+                                   const CompletionInfo& completion_info,
                                    FailureReason reason) {}
 
 void EmptyClient::OnDownloadSucceeded(const std::string& guid,

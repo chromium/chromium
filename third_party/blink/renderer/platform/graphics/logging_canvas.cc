@@ -354,7 +354,6 @@ String StringForSkPaintFlags(const SkPaint& paint) {
   AppendFlagToString(&flags_string, paint.isEmbeddedBitmapText(),
                      "EmbeddedBitmapText");
   AppendFlagToString(&flags_string, paint.isAutohinted(), "Autohinted");
-  AppendFlagToString(&flags_string, paint.isVerticalText(), "VerticalText");
   return flags_string;
 }
 
@@ -368,20 +367,6 @@ String FilterQualityName(SkFilterQuality filter_quality) {
       return "Medium";
     case kHigh_SkFilterQuality:
       return "High";
-    default:
-      NOTREACHED();
-      return "?";
-  };
-}
-
-String TextAlignName(SkPaint::Align align) {
-  switch (align) {
-    case SkPaint::kLeft_Align:
-      return "Left";
-    case SkPaint::kCenter_Align:
-      return "Center";
-    case SkPaint::kRight_Align:
-      return "Right";
     default:
       NOTREACHED();
       return "?";
@@ -475,7 +460,6 @@ std::unique_ptr<JSONObject> ObjectForSkPaint(const SkPaint& paint) {
   paint_item->SetString("flags", StringForSkPaintFlags(paint));
   paint_item->SetString("filterLevel",
                         FilterQualityName(paint.getFilterQuality()));
-  paint_item->SetString("textAlign", TextAlignName(paint.getTextAlign()));
   paint_item->SetString("strokeCap", StrokeCapName(paint.getStrokeCap()));
   paint_item->SetString("strokeJoin", StrokeJoinName(paint.getStrokeJoin()));
   paint_item->SetString("styleName", StyleName(paint.getStyle()));

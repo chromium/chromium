@@ -10,6 +10,12 @@
 
 namespace base {
 
+// A "blocking call" refers to any call that causes the calling thread to wait
+// off-CPU. It includes but is not limited to calls that wait on synchronous
+// file I/O operations: read or write a file from disk, interact with a pipe or
+// a socket, rename or delete a file, enumerate files in a directory, etc.
+// Acquiring a low contention lock is not considered a blocking call.
+
 // BlockingType indicates the likelihood that a blocking call will actually
 // block.
 enum class BlockingType {
@@ -46,14 +52,16 @@ class BASE_EXPORT UncheckedScopedBlockingCall {
 
 }  // namespace internal
 
-// This class must be instantiated in every scope where a blocking call is made.
-// When a ScopedBlockingCall is instantiated, it asserts that blocking calls are
-// allowed in its scope with a call to base::AssertBlockingAllowed(). CPU usage
-// should be minimal within that scope. //base APIs that block instantiate their
-// own ScopedBlockingCall; it is not necessary to instantiate another
-// ScopedBlockingCall in the scope where these APIs are used. Nested
-// ScopedBlockingCalls are supported (mostly a no-op except for WILL_BLOCK
-// nested within MAY_BLOCK which will result in immediate WILL_BLOCK semantics).
+// This class must be instantiated in every scope where a blocking call is made
+// and serves as a precise annotation of the scope that may/will block for the
+// scheduler. When a ScopedBlockingCall is instantiated, it asserts that
+// blocking calls are allowed in its scope with a call to
+// base::AssertBlockingAllowed(). CPU usage should be minimal within that scope.
+// //base APIs that block instantiate their own ScopedBlockingCall; it is not
+// necessary to instantiate another ScopedBlockingCall in the scope where these
+// APIs are used. Nested ScopedBlockingCalls are supported (mostly a no-op
+// except for WILL_BLOCK nested within MAY_BLOCK which will result in immediate
+// WILL_BLOCK semantics).
 //
 // Good:
 //   Data data;

@@ -52,7 +52,7 @@ class TestStreamSender final : public mojom::RemotingDataStreamSender {
  private:
   void OnFrameRead(bool success) {
     DCHECK(success);
-    if (!send_frame_to_sink_cb_.is_null())
+    if (send_frame_to_sink_cb_)
       send_frame_to_sink_cb_.Run(next_frame_data_, type_);
     next_frame_data_.resize(0);
   }
@@ -106,7 +106,7 @@ class TestRemoter final : public mojom::Remoter {
   }
 
   void SendMessageToSink(const std::vector<uint8_t>& message) override {
-    if (!send_message_to_sink_cb_.is_null())
+    if (send_message_to_sink_cb_)
       send_message_to_sink_cb_.Run(message);
   }
 

@@ -44,15 +44,12 @@ class TestGuestViewManager : public GuestViewManager {
   // Returns the size of the set of removed instance IDs.
   size_t GetNumRemovedInstanceIDs() const;
 
-  using GuestViewCreateFunction =
-      base::Callback<GuestViewBase*(content::WebContents*)>;
-
   template <typename T>
   void RegisterTestGuestViewType(
       const GuestViewCreateFunction& create_function) {
     auto registry_entry = std::make_pair(
         T::Type,
-        GuestViewData(create_function, base::Bind(&T::CleanUp)));
+        GuestViewData(create_function, base::BindRepeating(&T::CleanUp)));
     guest_view_registry_.insert(registry_entry);
   }
 

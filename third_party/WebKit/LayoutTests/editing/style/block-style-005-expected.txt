@@ -2,6 +2,8 @@ You should see one "x" followed by two blank lines. The blank lines should be th
 x
 
 
+
+
 execInsertParagraphCommand: <div id="test" class="editing">x</div><div id="test" class="editing"><br></div>
 execInsertParagraphCommand: <div id="test" class="editing">x</div><div id="test" class="editing"><br></div><div id="test" class="editing"><br></div>
 execTypeCharacterCommand: <div id="test" class="editing">x</div><div id="test" class="editing"><br></div><div id="test" class="editing">x</div>

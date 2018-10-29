@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_CLOSE_IMAGE_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_CLOSE_IMAGE_BUTTON_H_
 
+#include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {
@@ -24,7 +25,8 @@ class CloseImageButton : public views::ImageButton {
   void OnBlur() override;
 
   // Sets the position of itself with an offset from the given window size.
-  void SetPosition(const gfx::Size& size);
+  void SetPosition(const gfx::Size& size,
+                   OverlayWindowViews::WindowQuadrant quadrant);
 
  private:
   const gfx::ImageSkia close_background_;

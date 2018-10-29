@@ -10,12 +10,12 @@
 #include "ash/public/interfaces/ime_info.mojom.h"
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_observer.h"
 #include "base/macros.h"
 #include "ui/base/ime/chromeos/public/interfaces/ime_keyset.mojom.h"
 #include "ui/keyboard/keyboard_controller_observer.h"
-#include "ui/views/bubble/tray_bubble_view.h"
 
 namespace views {
 class ImageView;
@@ -53,24 +53,21 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   base::string16 GetAccessibleNameForTray() override;
-  void HideBubbleWithView(const views::TrayBubbleView* bubble_view) override;
+  void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
   void ShowBubble(bool show_by_click) override;
-  views::TrayBubbleView* GetBubbleView() override;
+  TrayBubbleView* GetBubbleView() override;
 
   // IMEObserver:
   void OnIMERefresh() override;
   void OnIMEMenuActivationChanged(bool is_activated) override;
 
-  // views::TrayBubbleView::Delegate:
-  void BubbleViewDestroyed() override;
-  void OnMouseEnteredView() override;
-  void OnMouseExitedView() override;
+  // TrayBubbleView::Delegate:
   base::string16 GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
-  void HideBubble(const views::TrayBubbleView* bubble_view) override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // keyboard::KeyboardControllerObserver:
   void OnKeyboardHidden(bool is_temporary_hide) override;

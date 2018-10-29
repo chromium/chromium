@@ -86,8 +86,19 @@ void ConsumerStatusReportingService::CreateStatusUploaderIfNeeded(
           policy::DeviceStatusCollector::CPUStatisticsFetcher(),
           policy::DeviceStatusCollector::CPUTempFetcher(),
           policy::DeviceStatusCollector::AndroidStatusFetcher(),
-          day_reset_time_, false /* is_enterprise_reporting */),
+          policy::DeviceStatusCollector::TpmStatusFetcher(), day_reset_time_,
+          false /* is_enterprise_reporting */),
       base::ThreadTaskRunnerHandle::Get(), kStatusUploadFrequency);
+}
+
+void ConsumerStatusReportingService::RequestImmediateStatusReport() {
+  status_uploader_->ScheduleNextStatusUploadImmediately();
+}
+
+base::TimeDelta ConsumerStatusReportingService::GetChildScreenTime() const {
+  return const_cast<policy::DeviceStatusCollector*>(
+             status_uploader_->device_status_collector())
+      ->GetActiveChildScreenTime();
 }
 
 void ConsumerStatusReportingService::OnTimeLimitsPolicyChanged() {

@@ -4,11 +4,12 @@
 
 #include "ui/keyboard/container_fullscreen_behavior.h"
 
+#include "ui/aura/window.h"
+
 namespace keyboard {
 
-ContainerFullscreenBehavior::ContainerFullscreenBehavior(
-    KeyboardController* controller)
-    : ContainerFullWidthBehavior(controller) {}
+ContainerFullscreenBehavior::ContainerFullscreenBehavior(Delegate* delegate)
+    : ContainerFullWidthBehavior(delegate) {}
 
 ContainerFullscreenBehavior::~ContainerFullscreenBehavior() {}
 

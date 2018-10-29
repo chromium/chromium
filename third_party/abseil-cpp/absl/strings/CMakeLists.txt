@@ -32,7 +32,6 @@ list(APPEND STRINGS_PUBLIC_HEADERS
 
 
 list(APPEND STRINGS_INTERNAL_HEADERS
-  "internal/bits.h"
   "internal/char_map.h"
   "internal/charconv_bigint.h"
   "internal/charconv_parse.h"

@@ -9,17 +9,18 @@ Prerequisite:
 
 ## Setting up CLion
 
-1. Install CLion 
-                
-1. Authenticate License
-    - https://g3doc.corp.google.com/devtools/ide/intellij/g3doc/docs/license-server.md?cl=head            
+1. Install CLion.
+    - Googlers only: See
+      [go/intellij-getting-started](https://goto.google.com/intellij-getting-started)
+      for installation and license authentication instructions.
 
 1. Run CLion
 
 1. Increase CLion's memory allocation
     - This step will help performance with large projects
     1. Option 1
-        1. At the startup dialogue, in the bottom right corner, click `configure`
+        1. At the startup dialogue, in the bottom right corner, click
+           `Configure`.
         1. Setup `Edit Custom VM Options`:
             ```
             -Xss2m
@@ -38,30 +39,33 @@ Prerequisite:
 ## Chromium in CLion
 
 1. Import project
-    - At the startup dialogue, select `Import Project` and select your chromium directory
+    - At the startup dialog, select `Import Project` and select your `chromium`
+      directory; this should be the parent directory to `src`. Selecting `src`
+      instead would result in a bunch of CLion IDE files appearing in your
+      repository.
 
-1. Modify the `CMakeList.txt` file
-    1. Open the `CMakeList.txt` file
+1. Modify the `CMakeLists.txt` file
+    1. Open the `CMakeLists.txt` file
     1. Add the following to the top
         ```
         set(CMAKE_BUILD_TYPE Debug)
         include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
         ```
-    1. Remove any other `include_directories` the file contains
-        - the head should look like
-            ```
-            cmake_minimum_required(VERSION 3.10)
-            project(chromium)
+    1. Remove any other `include_directories` the file contains. The beginning
+       of the file should now look like:
+        ```
+        cmake_minimum_required(VERSION 3.10)
+        project(chromium)
 
-            set(CMAKE_CXX_STANDARD 11)
+        set(CMAKE_CXX_STANDARD 11)
 
-            set(CMAKE_BUILD_TYPE Debug)
+        set(CMAKE_BUILD_TYPE Debug)
 
-            include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-            add_executable(chromium
-                ...)
-            ```
+        add_executable(chromium
+            ...)
+        ```
 
 ## Building, Running, and Debugging within CLion
 
@@ -107,7 +111,7 @@ For some reason, when installing 2018.1 through a package manager, it did not cr
     1. Run CLion through the terminal `/opt/clion-2018.1/bin/clion.sh`
     1. At the startup dialogue, in the bottom right corner, click `configure`
     1. Click `Create Desktop Entry`
-    
+
 ## Optional Performance Steps
 
 ### Mark directories as `Library Files`

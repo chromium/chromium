@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/password_form.h"
+#include "components/autofill/core/common/submission_source.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -132,8 +133,8 @@ class FormStructure {
   // directly.
   bool ShouldBeQueried() const;
 
-  // Returns true if we should upload votes for this form to the crowd-sourcing
-  // server.
+  // Returns true if we should upload Autofill votes for this form to the
+  // crowd-sourcing server. It is not applied for Password Manager votes.
   bool ShouldBeUploaded() const;
 
   // Sets the field types to be those set for |cached_form|.
@@ -248,11 +249,6 @@ class FormStructure {
 
   bool all_fields_are_passwords() const { return all_fields_are_passwords_; }
 
-  bool is_signin_upload() const { return is_signin_upload_; }
-  void set_is_signin_upload(bool is_signin_upload) {
-    is_signin_upload_ = is_signin_upload;
-  }
-
   FormSignature form_signature() const { return form_signature_; }
 
   // Returns a FormData containing the data this form structure knows about.
@@ -296,6 +292,11 @@ class FormStructure {
     return submission_event_;
   }
 #endif
+
+  SubmissionSource submission_source() const { return submission_source_; }
+  void set_submission_source(SubmissionSource submission_source) {
+    submission_source_ = submission_source;
+  }
 
   bool operator==(const FormData& form) const;
   bool operator!=(const FormData& form) const;
@@ -455,6 +456,9 @@ class FormStructure {
   // The name of the form.
   base::string16 form_name_;
 
+  // The title of form submission button.
+  base::string16 button_title_;
+
   // The type of the event that was taken as an indication that the form has
   // been successfully submitted.
   PasswordForm::SubmissionIndicatorEvent submission_event_;
@@ -514,10 +518,6 @@ class FormStructure {
   // True if all form fields are password fields.
   bool all_fields_are_passwords_;
 
-  // True if the form is submitted and has 2 fields: one text and one password
-  // field.
-  bool is_signin_upload_;
-
   // The unique signature for this form, composed of the target url domain,
   // the form name, and the form field names in a 64-bit hash.
   FormSignature form_signature_;
@@ -544,6 +544,8 @@ class FormStructure {
   // UPI-VPA hints, This is a bitmask of DeveloperEngagementMetric and set in
   // DetermineHeuristicTypes().
   int developer_engagement_metrics_;
+
+  SubmissionSource submission_source_ = SubmissionSource::NONE;
 
   DISALLOW_COPY_AND_ASSIGN(FormStructure);
 };

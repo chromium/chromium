@@ -56,12 +56,14 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
   // convert pressure into a float [0, 1]. The range of the pressure is
   // [0, 1024] as specified on MSDN.
   float pressure = static_cast<float>(pointer_pen_info.pressure) / 1024;
-  float rotation = pointer_pen_info.rotation;
+  int rotation_angle = static_cast<int>(pointer_pen_info.rotation) % 180;
+  if (rotation_angle < 0)
+    rotation_angle += 180;
   int tilt_x = pointer_pen_info.tiltX;
   int tilt_y = pointer_pen_info.tiltY;
   ui::PointerDetails pointer_details(
       input_type, mapped_pointer_id, /* radius_x */ 0.0f, /* radius_y */ 0.0f,
-      pressure, rotation, tilt_x, tilt_y, /* tangential_pressure */ 0.0f);
+      pressure, rotation_angle, tilt_x, tilt_y, /* tangential_pressure */ 0.0f);
 
   // If the flag is disabled, we send mouse events for all pen inputs.
   if (!direct_manipulation_enabled_) {
@@ -186,12 +188,9 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateTouchEvent(
 
   const base::TimeTicks event_time = ui::EventTimeForNow();
 
-  int rotation_angle = static_cast<int>(pointer_details.twist) % 180;
-  if (rotation_angle < 0)
-    rotation_angle += 180;
   std::unique_ptr<ui::TouchEvent> event = std::make_unique<ui::TouchEvent>(
       event_type, point, event_time, pointer_details,
-      flags | ui::GetModifiersFromKeyState(), rotation_angle);
+      flags | ui::GetModifiersFromKeyState());
   event->set_hovering(event_type == ui::ET_TOUCH_RELEASED);
   event->latency()->AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, event_time, 1);

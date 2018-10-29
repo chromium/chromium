@@ -177,6 +177,7 @@
             </template>
             <div class="list-item">
               <a is="action-link" class="list-button" id="addLanguages"
+                  disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
                   on-click="onAddLanguagesTap_">
                 $i18n{addLanguages}
               </a>
@@ -333,7 +334,7 @@
                       detailLanguage_, languages.prospectiveUILanguage)]]">
                 <span>$i18n{displayInThisLanguage}</span>
                 <iron-icon class="policy" icon="cr20:domain" hidden$="[[
-                    !detailLanguage_.language.isProhibitedUILocale]]">
+                    !detailLanguage_.language.isProhibitedLanguage]]">
                 </iron-icon>
               </cr-checkbox>
 </if>

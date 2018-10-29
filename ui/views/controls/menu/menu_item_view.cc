@@ -155,7 +155,18 @@ bool MenuItemView::GetTooltipText(const gfx::Point& p,
 }
 
 void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kMenuItem;
+  // Set the role based on the type of menu item.
+  switch (GetType()) {
+    case CHECKBOX:
+      node_data->role = ax::mojom::Role::kMenuItemCheckBox;
+      break;
+    case RADIO:
+      node_data->role = ax::mojom::Role::kMenuItemRadio;
+      break;
+    default:
+      node_data->role = ax::mojom::Role::kMenuItem;
+      break;
+  }
 
   base::string16 item_text;
   if (IsContainer()) {
@@ -867,7 +878,7 @@ void MenuItemView::GetLabelStyle(MenuDelegate::LabelStyle* style) const {
 
 void MenuItemView::AddEmptyMenus() {
   DCHECK(HasSubmenu());
-  if (!submenu_->HasVisibleChildren()) {
+  if (!submenu_->HasVisibleChildren() && !submenu_->HasEmptyMenuItemView()) {
     submenu_->AddChildViewAt(new EmptyMenuMenuItem(this), 0);
   } else {
     for (int i = 0, item_count = submenu_->GetMenuItemCount(); i < item_count;

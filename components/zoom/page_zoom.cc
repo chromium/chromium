@@ -97,8 +97,7 @@ void PageZoom::Zoom(content::WebContents* web_contents,
   if (zoom == content::PAGE_ZOOM_OUT) {
     // Iterate through the zoom levels in reverse order to find the next
     // lower level based on the current zoom level for this page.
-    for (std::vector<double>::reverse_iterator i = zoom_levels.rbegin();
-         i != zoom_levels.rend(); ++i) {
+    for (auto i = zoom_levels.rbegin(); i != zoom_levels.rend(); ++i) {
       double zoom_level = *i;
       if (content::ZoomValuesEqual(zoom_level, current_zoom_level))
         continue;

@@ -276,7 +276,7 @@ TEST_F(PowerAPITest, MultipleExtensions) {
   // Create a second extension that blocks system suspend.  No additional
   // wake lock is needed; the wake lock from the first extension
   // already covers the behavior requested by the second extension.
-  scoped_refptr<Extension> extension2(ExtensionBuilder("Test2").Build());
+  scoped_refptr<const Extension> extension2(ExtensionBuilder("Test2").Build());
   ASSERT_TRUE(CallFunction(REQUEST, kSystemArgs, extension2.get()));
   EXPECT_EQ(NONE, manager_->PopFirstRequest());
 

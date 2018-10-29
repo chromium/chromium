@@ -155,7 +155,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // Returns whether this guest has an associated embedder.
   bool attached() const {
-    return (element_instance_id_ != kInstanceIDNone) && !attach_in_progress_;
+    return !(element_instance_id_ == kInstanceIDNone || attach_in_progress_ ||
+             is_being_destroyed_);
   }
 
   // Returns the instance ID of the <*view> element.
@@ -164,7 +165,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Returns the instance ID of this GuestViewBase.
   int guest_instance_id() const { return guest_instance_id_; }
 
-  // Returns the instance ID of the GuestViewBase's element.
+  // Returns the instance ID of the GuestViewBase's element (unique within an
+  // embedder process). Note: this value is set once after attach is complete.
+  // It will maintain its value during the lifetime of GuestViewBase, even after
+  // |attach()| is false due to |is_being_destroyed_|.
   int element_instance_id() const { return element_instance_id_; }
 
   bool can_owner_receive_events() const { return !!view_instance_id_; }
@@ -220,7 +224,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   virtual void OnRenderFrameHostDeleted(int process_id, int routing_id);
 
   // WebContentsDelegate implementation.
-  void HandleKeyboardEvent(
+  bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
   bool PreHandleGestureEvent(content::WebContents* source,
@@ -357,6 +361,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void ResizeDueToAutoResize(content::WebContents* web_contents,
                              const gfx::Size& new_size) final;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      std::unique_ptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) final;
   bool ShouldFocusPageAfterCrash() final;
   void UpdatePreferredSize(content::WebContents* web_contents,

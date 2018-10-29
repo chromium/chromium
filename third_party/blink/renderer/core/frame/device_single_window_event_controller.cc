@@ -93,12 +93,11 @@ bool DeviceSingleWindowEventController::IsSameSecurityOriginAsMainFrame()
 
 bool DeviceSingleWindowEventController::CheckPolicyFeatures(
     const Vector<mojom::FeaturePolicyFeature>& features) const {
-  LocalFrame* frame = GetDocument().GetFrame();
-  if (!frame)
-    return false;
+  const Document& document = GetDocument();
   return std::all_of(features.begin(), features.end(),
-                     [frame](mojom::FeaturePolicyFeature feature) {
-                       return frame->IsFeatureEnabled(feature);
+                     [&document](mojom::FeaturePolicyFeature feature) {
+                       return document.IsFeatureEnabled(
+                           feature, ReportOptions::kReportOnFailure);
                      });
 }
 

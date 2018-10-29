@@ -6,8 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/gpu/gpu_data_manager_impl_private.h"
@@ -84,8 +84,14 @@ class GpuDataManagerImplPrivateTest : public testing::Test {
     ScopedGpuDataManagerImplPrivate() { EXPECT_TRUE(impl_.private_.get()); }
     ~ScopedGpuDataManagerImplPrivate() = default;
 
-    GpuDataManagerImplPrivate* get() { return impl_.private_.get(); }
-    GpuDataManagerImplPrivate* operator->() { return impl_.private_.get(); }
+    // NO_THREAD_SAFETY_ANALYSIS should be fine below, because unit tests
+    // pinky-promise to only run single-threaded.
+    GpuDataManagerImplPrivate* get() NO_THREAD_SAFETY_ANALYSIS {
+      return impl_.private_.get();
+    }
+    GpuDataManagerImplPrivate* operator->() NO_THREAD_SAFETY_ANALYSIS {
+      return impl_.private_.get();
+    }
 
    private:
     GpuDataManagerImpl impl_;
@@ -97,7 +103,7 @@ class GpuDataManagerImplPrivateTest : public testing::Test {
   void TestBlockingDomainFrom3DAPIs(gpu::DomainGuilt guilt_level);
   void TestUnblockingDomainFrom3DAPIs(gpu::DomainGuilt guilt_level);
 
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
 };
 
 // We use new method instead of GetInstance() method because we want

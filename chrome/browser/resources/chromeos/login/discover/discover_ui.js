@@ -5,6 +5,35 @@
 /**
  * @fileoverview Polymer element for displaying Discover UI.
  */
+function initializeDiscoverAPI() {
+  let discoverCallbacks = {};
+
+  window.discoverSendImpl = (message, callback, parameters) => {
+    assert(message.startsWith('discover.'));
+    // Callback Id should be random to prevent triggering of incorrect
+    // callbacks if Id get screwed.
+    let callbackId;
+    if (callback) {
+      for (let i = 0; i < 10; ++i) {
+        callbackId =
+            String(Math.floor(Math.random() * 2147483647));  // 2^31 - 1
+        if (callbackId && !(callbackId in discoverCallbacks))
+          break;
+      }
+      assert(!(callbackId in discoverCallbacks));
+      discoverCallbacks[callbackId] = callback;
+    }
+    chrome.send(message, [callbackId].concat(parameters));
+  };
+
+  window.discoverReturn = (callbackId, value) => {
+    assert(callbackId in discoverCallbacks);
+    let callback = discoverCallbacks[callbackId];
+    assert(delete (discoverCallbacks[callbackId]));
+    callback.call(null, value);
+  };
+}
+
 {
   const DISCOVER_WELCOME_MODULE = 'discoverWelcome';
 
@@ -12,6 +41,17 @@
     is: 'discover-ui',
 
     behaviors: [I18nBehavior, OobeDialogHostBehavior],
+
+    properties: {
+      /**
+       * When this flag is true, Discover UI is displayed as part of FirstRun
+       * UI.
+       */
+      firstRun: {
+        type: Boolean,
+        value: false,
+      },
+    },
 
     updateLocalizedContent: function() {
       this.i18nUpdateLocale();
@@ -25,6 +65,7 @@
      * @override
      */
     attached: function() {
+      initializeDiscoverAPI();
       // Initialize modules event handlers.
       let modules = Polymer.dom(this.root).querySelectorAll('.module');
       for (let i = 0; i < modules.length; ++i) {
@@ -54,7 +95,11 @@
       this.propagateFullScreenMode('#discoverWelcome');
       this.propagateFullScreenMode('.module');
 
-      this.$.discoverWelcome.show();
+      if (this.firstRun) {
+        this.showModule_('pinSetup');
+      } else {
+        this.showModule_(DISCOVER_WELCOME_MODULE);
+      }
     },
 
     /*

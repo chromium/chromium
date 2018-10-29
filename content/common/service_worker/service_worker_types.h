@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/common/referrer.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/request_context_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
@@ -89,11 +88,6 @@ struct CONTENT_EXPORT ServiceWorkerFetchRequest {
   ServiceWorkerFetchRequest& operator=(const ServiceWorkerFetchRequest& other);
   ~ServiceWorkerFetchRequest();
   size_t EstimatedStructSize();
-  std::string Serialize() const;
-
-  static blink::mojom::FetchCacheMode GetCacheModeFromLoadFlags(int load_flags);
-  static ServiceWorkerFetchRequest ParseFromString(
-      const std::string& serialized);
 
   // Be sure to update EstimatedStructSize(), Serialize(), and ParseFromString()
   // when adding members.

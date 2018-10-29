@@ -40,6 +40,10 @@ namespace {
 constexpr const char kGetAppListUrl[] =
     "https://android.clients.google.com/fdfe/chrome/getfastreinstallappslist";
 
+constexpr int kResponseErrorNotEnoughApps = 5;
+
+constexpr int kResponseErrorNotFirstTimeChromebookUser = 6;
+
 constexpr base::TimeDelta kDownloadTimeOut = base::TimeDelta::FromMinutes(1);
 
 constexpr const int64_t kMaxDownloadBytes = 1024 * 1024;  // 1Mb
@@ -52,8 +56,11 @@ enum RecommendAppsResponseParseResult {
   RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_ERROR = 0,
   RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON = 1,
   RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_APP = 2,
+  RECOMMEND_APPS_RESPONSE_PARSE_RESULT_OWNS_CHROMEBOOK_ALREADY = 3,
+  RECOMMEND_APPS_RESPONSE_PARSE_RESULT_UNKNOWN_ERROR_CODE = 4,
+  RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_ERROR_CODE = 5,
 
-  kMaxValue = RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_APP
+  kMaxValue = RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_ERROR_CODE
 };
 
 bool HasTouchScreen() {
@@ -481,15 +488,8 @@ void RecommendAppsFetcher::OnDownloaded(
     view_->OnLoadError();
     return;
   }
-  // Currently the API uses code 500 to indicate server errors. For example, if
-  // the number of apps is less than the threshold, it returns code 500. In
-  // such cases, we should simply skip the screen.
   response_code = loader->ResponseInfo()->headers->response_code();
   RecordUmaResponseCode(response_code);
-  if (response_code == net::HTTP_INTERNAL_SERVER_ERROR) {
-    view_->OnParseResponseError();
-    return;
-  }
 
   // If the recommended app list could not be downloaded, show an error message
   // to the user.
@@ -532,13 +532,53 @@ base::Optional<base::Value> RecommendAppsFetcher::ParseResponse(
       base::JSONReader::ReadAndReturnError(response, base::JSON_PARSE_RFC,
                                            &error_code, &error_msg);
 
-  if (!json_value || !json_value->is_list()) {
+  if (!json_value || (!json_value->is_list() && !json_value->is_dict())) {
     LOG(ERROR) << "Error parsing response JSON: " << error_msg;
     RecordUmaResponseParseResult(
         RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
     return base::nullopt;
   }
 
+  // If the response is a dictionary, it is an error message in the
+  // following format:
+  //   {"Error code":"error code","Error message":"Error message"}
+  if (json_value->is_dict()) {
+    const base::Value* response_error_code_value =
+        json_value->FindKeyOfType("Error code", base::Value::Type::STRING);
+
+    if (!response_error_code_value) {
+      LOG(ERROR) << "Unable to find error code: response="
+                 << response.substr(0, 128);
+      RecordUmaResponseParseResult(
+          RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
+      return base::nullopt;
+    }
+
+    base::StringPiece response_error_code_str =
+        response_error_code_value->GetString();
+    int response_error_code = 0;
+    if (!base::StringToInt(response_error_code_str, &response_error_code)) {
+      LOG(WARNING) << "Unable to parse error code: " << response_error_code_str;
+      RecordUmaResponseParseResult(
+          RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_ERROR_CODE);
+      return base::nullopt;
+    }
+
+    if (response_error_code == kResponseErrorNotFirstTimeChromebookUser) {
+      RecordUmaResponseParseResult(
+          RECOMMEND_APPS_RESPONSE_PARSE_RESULT_OWNS_CHROMEBOOK_ALREADY);
+    } else if (response_error_code == kResponseErrorNotEnoughApps) {
+      RecordUmaResponseParseResult(RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_APP);
+    } else {
+      LOG(WARNING) << "Unknown error code: " << response_error_code_str;
+      RecordUmaResponseParseResult(
+          RECOMMEND_APPS_RESPONSE_PARSE_RESULT_UNKNOWN_ERROR_CODE);
+    }
+
+    return base::nullopt;
+  }
+
+  // Otherwise, the response should return a list of apps.
   const base::Value::ListStorage& app_list = json_value->GetList();
   if (app_list.empty()) {
     DVLOG(1) << "No app in the response.";

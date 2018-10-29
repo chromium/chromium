@@ -1,0 +1,73 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("components") {
+  sources = [
+    "component_api.h",
+    "component_manager.cc",
+    "component_manager.h",
+    "component_unpacker.cc",
+    "component_unpacker.h",
+    "recovery_component.cc",
+    "recovery_component.h",
+    "system_report_component.cc",
+    "system_report_component.h",
+    "system_restore_point_component.cc",
+    "system_restore_point_component.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//chrome/chrome_cleaner/chrome_utils:chrome_util_lib",
+    "//chrome/chrome_cleaner/chrome_utils:extensions_util_lib",
+    "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/constants:uws_id",
+    "//chrome/chrome_cleaner/http:http",
+    "//chrome/chrome_cleaner/http:http_status_codes",
+    "//chrome/chrome_cleaner/json_parser",
+    "//chrome/chrome_cleaner/logging:common",
+    "//chrome/chrome_cleaner/logging:scoped_timed_task_logger",
+    "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
+    "//chrome/chrome_cleaner/os:cleaner_os",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+    "//components/chrome_cleaner/public/constants:constants",
+    "//components/crx_file",
+    "//crypto:crypto",
+    "//third_party/zlib/google:zip",
+    "//url:url",
+  ]
+}
+
+source_set("unittest_sources") {
+  testonly = true
+
+  sources = [
+    "component_manager_unittest.cc",
+    "recovery_component_unittest.cc",
+    "system_report_component_unittest.cc",
+    "system_restore_point_component_unittest.cc",
+  ]
+
+  deps = [
+    ":components",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/chrome_cleaner/chrome_utils:chrome_util_lib",
+    "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/constants:uws_id",
+    "//chrome/chrome_cleaner/http:mock_http_agent_factory",
+    "//chrome/chrome_cleaner/json_parser",
+    "//chrome/chrome_cleaner/logging:cleaner_logging",
+    "//chrome/chrome_cleaner/logging/proto:chrome_cleaner_report_proto",
+    "//chrome/chrome_cleaner/os:cleaner_os",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/test:test_branding_header",
+    "//chrome/chrome_cleaner/test:test_component",
+    "//chrome/chrome_cleaner/test:test_pup_data",
+    "//chrome/chrome_cleaner/test:test_util",
+    "//components/chrome_cleaner/public/constants",
+    "//testing/gtest",
+  ]
+}

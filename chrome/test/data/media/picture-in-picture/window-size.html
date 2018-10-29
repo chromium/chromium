@@ -99,5 +99,15 @@
     .then(_ => { window.domAutomationController.send(true); })
     .catch(e => { window.domAutomationController.send(false); });
   }
+
+  function changeVideoSrcToMediaStream() {
+    const canvas = document.createElement('canvas');
+    canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height);
+    video.autoplay = true;
+    video.srcObject = canvas.captureStream();
+    video.addEventListener('playing', function() {
+      setTimeout(_ => { window.domAutomationController.send(true); }, 100);
+    }, { once: true });
+  }
 </script>
 </html>

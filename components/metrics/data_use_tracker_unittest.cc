@@ -106,7 +106,7 @@ TEST(DataUseTrackerTest, CheckUpdateUsagePref) {
   int user_pref_value = 0;
   int uma_pref_value = 0;
 
-  data_use_tracker.UpdateMetricsUsagePrefs("", 2 * 100, true);
+  data_use_tracker.UpdateMetricsUsagePrefs(2 * 100, true, false);
   local_state.GetDictionary(prefs::kUserCellDataUse)
       ->GetInteger(kTodayStr, &user_pref_value);
   EXPECT_EQ(2 * 100, user_pref_value);
@@ -114,7 +114,7 @@ TEST(DataUseTrackerTest, CheckUpdateUsagePref) {
       ->GetInteger(kTodayStr, &uma_pref_value);
   EXPECT_EQ(0, uma_pref_value);
 
-  data_use_tracker.UpdateMetricsUsagePrefs("UMA", 100, true);
+  data_use_tracker.UpdateMetricsUsagePrefs(100, true, true);
   local_state.GetDictionary(prefs::kUserCellDataUse)
       ->GetInteger(kTodayStr, &user_pref_value);
   EXPECT_EQ(3 * 100, user_pref_value);

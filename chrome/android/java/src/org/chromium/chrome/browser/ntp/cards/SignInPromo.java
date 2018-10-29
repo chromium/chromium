@@ -168,13 +168,13 @@ public class SignInPromo extends OptionalLeaf {
     }
 
     @VisibleForTesting
-    SigninObserver getSigninObserverForTesting() {
+    public SigninObserver getSigninObserverForTesting() {
         return mSigninObserver;
     }
 
     @VisibleForTesting
-    class SigninObserver implements SignInStateObserver, SignInAllowedObserver,
-                                    ProfileDataCache.Observer, AccountsChangeObserver {
+    public class SigninObserver implements SignInStateObserver, SignInAllowedObserver,
+                                           ProfileDataCache.Observer, AccountsChangeObserver {
         private final SigninManager mSigninManager;
 
         /** Guards {@link #unregister()}, which can be called multiple times. */

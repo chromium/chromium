@@ -232,7 +232,8 @@ inline void AttributeListsIterator::UpdateCharacterData(
 void SVGTextLayoutAttributesBuilder::FillCharacterDataMap(
     const TextPosition& position) {
   AttributeListsIterator attr_lists(position.element);
-  for (unsigned i = 0; attr_lists.HasAttributes() && i < position.length; ++i) {
+  for (wtf_size_t i = 0; attr_lists.HasAttributes() && i < position.length;
+       ++i) {
     SVGCharacterData& data =
         character_data_map_.insert(position.start + i + 1, SVGCharacterData())
             .stored_value->value;

@@ -37,7 +37,7 @@ public class WebappActivityVrTestRule extends WebappActivityTestRule implements 
     }
 
     @Override
-    public SupportedActivity getRestriction() {
+    public @SupportedActivity int getRestriction() {
         return SupportedActivity.WAA;
     }
 

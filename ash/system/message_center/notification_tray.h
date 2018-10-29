@@ -9,13 +9,13 @@
 
 #include "ash/ash_export.h"
 #include "ash/login_status.h"
-#include "ash/message_center/message_center_ui_delegate.h"
+#include "ash/system/message_center/message_center_ui_delegate.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/animation/animation_container.h"
-#include "ui/views/bubble/tray_bubble_view.h"
 
 namespace aura {
 class Window;
@@ -64,27 +64,25 @@ class ASH_EXPORT NotificationTray
                                          const gfx::Rect& new_bounds) override;
   void AnchorUpdated() override;
   base::string16 GetAccessibleNameForTray() override;
-  void HideBubbleWithView(const views::TrayBubbleView* bubble_view) override;
+  void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
   void ShowBubble(bool show_by_click) override;
-  views::TrayBubbleView* GetBubbleView() override;
+  TrayBubbleView* GetBubbleView() override;
 
-  // Overridden from views::TrayBubbleView::Delegate.
+  // Overridden from TrayBubbleView::Delegate.
   void BubbleViewDestroyed() override;
-  void OnMouseEnteredView() override;
-  void OnMouseExitedView() override;
   base::string16 GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
-  void HideBubble(const views::TrayBubbleView* bubble_view) override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // Overridden from message_center::UiDelegate.
   void OnMessageCenterContentsChanged() override;
   bool ShowMessageCenter(bool show_by_click) override;
   void HideMessageCenter() override;
   bool ShowPopups() override;
-  void HidePopups(bool animate) override;
+  void HidePopups() override;
 
   // Activates the notification tray bubble.
   void ActivateBubble();

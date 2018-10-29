@@ -84,8 +84,7 @@ const char kUIShowSurfaceDamageRects[] = "ui-show-surface-damage-rects";
 const char kShowScreenSpaceRects[] = "show-screenspace-rects";
 const char kUIShowScreenSpaceRects[] = "ui-show-screenspace-rects";
 
-// Switches cc machinery to use layer lists instead of layer trees
-const char kEnableLayerLists[] = "enable-layer-lists";
+// Switches the ui compositor to use layer lists instead of layer trees.
 const char kUIEnableLayerLists[] = "ui-enable-layer-lists";
 
 // Prevents the layer tree unit tests from timing out.

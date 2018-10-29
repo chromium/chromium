@@ -530,7 +530,7 @@ TEST(AudioBufferTest, TrimRangeInterleaved) {
 
 TEST(AudioBufferTest, AudioBufferMemoryPool) {
   scoped_refptr<AudioBufferMemoryPool> pool(new AudioBufferMemoryPool());
-  EXPECT_EQ(0u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
 
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_MONO;
   scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<uint8_t>(
@@ -543,29 +543,29 @@ TEST(AudioBufferTest, AudioBufferMemoryPool) {
       kSampleFormatU8, buffer->channel_layout(), buffer->channel_count(),
       buffer->sample_rate(), buffer->frame_count(), &buffer->channel_data()[0],
       buffer->timestamp(), pool);
-  EXPECT_EQ(0u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
   b1 = nullptr;
-  EXPECT_EQ(1u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(1u, pool->GetPoolSizeForTesting());
 
   // Even (especially) when used with CreateBuffer.
   b1 = AudioBuffer::CreateBuffer(kSampleFormatU8, buffer->channel_layout(),
                                  buffer->channel_count(), buffer->sample_rate(),
                                  buffer->frame_count(), pool);
-  EXPECT_EQ(0u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
   scoped_refptr<AudioBuffer> b2 = AudioBuffer::CreateBuffer(
       kSampleFormatU8, buffer->channel_layout(), buffer->channel_count(),
       buffer->sample_rate(), buffer->frame_count(), pool);
-  EXPECT_EQ(0u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
   b2 = nullptr;
-  EXPECT_EQ(1u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(1u, pool->GetPoolSizeForTesting());
   b1 = nullptr;
-  EXPECT_EQ(2u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(2u, pool->GetPoolSizeForTesting());
 
   // A buffer of a different size should not reuse the buffer and drain pool.
   b2 = AudioBuffer::CreateBuffer(kSampleFormatU8, buffer->channel_layout(),
                                  buffer->channel_count(), buffer->sample_rate(),
                                  buffer->frame_count() / 2, pool);
-  EXPECT_EQ(0u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
 
   // Mark pool for destruction and ensure buffer is still valid.
   pool = nullptr;
@@ -578,7 +578,7 @@ TEST(AudioBufferTest, AudioBufferMemoryPool) {
 // Planar allocations use a different path, so make sure pool is used.
 TEST(AudioBufferTest, AudioBufferMemoryPoolPlanar) {
   scoped_refptr<AudioBufferMemoryPool> pool(new AudioBufferMemoryPool());
-  EXPECT_EQ(0u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
 
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_MONO;
   scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<uint8_t>(
@@ -591,15 +591,15 @@ TEST(AudioBufferTest, AudioBufferMemoryPoolPlanar) {
       kSampleFormatPlanarF32, buffer->channel_layout(), buffer->channel_count(),
       buffer->sample_rate(), buffer->frame_count(), &buffer->channel_data()[0],
       buffer->timestamp(), pool);
-  EXPECT_EQ(0u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
   b1 = nullptr;
-  EXPECT_EQ(1u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(1u, pool->GetPoolSizeForTesting());
 
   // Even (especially) when used with CreateBuffer.
   b1 = AudioBuffer::CreateBuffer(kSampleFormatU8, buffer->channel_layout(),
                                  buffer->channel_count(), buffer->sample_rate(),
                                  buffer->frame_count(), pool);
-  EXPECT_EQ(0u, pool->get_pool_size_for_testing());
+  EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
 
   // Mark pool for destruction and ensure buffer is still valid.
   pool = nullptr;

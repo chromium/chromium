@@ -10,9 +10,11 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/extensions/api/networking_private/networking_private_crypto.h"
 #include "chrome/services/wifi_util_win/public/mojom/constants.mojom.h"
 #include "chrome/services/wifi_util_win/public/mojom/wifi_credentials_getter.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/service_manager_connection.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -133,8 +135,8 @@ class NetworkingPrivateCredentialsGetterWin
              const std::string& public_key,
              const CredentialsCallback& callback) override {
     // Bounce to the UI thread to retrieve a service_manager::Connector.
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::Bind(&NetworkingPrivateCredentialsGetterWin::StartOnUIThread,
                    network_guid, public_key, callback));
   }
@@ -151,8 +153,8 @@ class NetworkingPrivateCredentialsGetterWin
         content::ServiceManagerConnection::GetForProcess()
             ->GetConnector()
             ->Clone();
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &NetworkingPrivateCredentialsGetterWin::GetCredentialsOnIOThread,
             network_guid, public_key, callback, std::move(connector)));

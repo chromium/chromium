@@ -50,8 +50,8 @@ CSSImageSetValue::CSSImageSetValue(CSSParserMode parser_mode)
 CSSImageSetValue::~CSSImageSetValue() = default;
 
 void CSSImageSetValue::FillImageSet() {
-  size_t length = this->length();
-  size_t i = 0;
+  wtf_size_t length = this->length();
+  wtf_size_t i = 0;
   while (i < length) {
     const CSSImageValue& image_value = ToCSSImageValue(Item(i));
     String image_url = image_value.Url();
@@ -81,8 +81,8 @@ void CSSImageSetValue::FillImageSet() {
 CSSImageSetValue::ImageWithScale CSSImageSetValue::BestImageForScaleFactor(
     float scale_factor) {
   ImageWithScale image;
-  size_t number_of_images = images_in_set_.size();
-  for (size_t i = 0; i < number_of_images; ++i) {
+  wtf_size_t number_of_images = images_in_set_.size();
+  for (wtf_size_t i = 0; i < number_of_images; ++i) {
     image = images_in_set_.at(i);
     if (image.scale_factor >= scale_factor)
       return image;
@@ -145,8 +145,8 @@ String CSSImageSetValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("-webkit-image-set(");
 
-  size_t length = this->length();
-  size_t i = 0;
+  wtf_size_t length = this->length();
+  wtf_size_t i = 0;
   while (i < length) {
     if (i > 0)
       result.Append(", ");

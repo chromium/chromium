@@ -98,8 +98,7 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
       window = browser_->window();
     } else {
       const BrowserList* browser_list = BrowserList::GetInstance();
-      for (BrowserList::const_reverse_iterator it =
-               browser_list->begin_last_active();
+      for (auto it = browser_list->begin_last_active();
            it != browser_list->end_last_active(); ++it) {
         Browser* last_active = *it;
         if (last_active && last_active->is_type_tabbed()) {

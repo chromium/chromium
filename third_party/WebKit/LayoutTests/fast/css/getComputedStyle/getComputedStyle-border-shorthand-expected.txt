@@ -2,7 +2,6 @@ Tests that border shorthands are computed properly.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS computedStyle.getPropertyValue('border-bottom') is '10px solid rgb(255, 0, 0)'
 PASS computedStyle.getPropertyValue('border-bottom') is '320px solid rgb(0, 0, 255)'
 PASS computedStyle.getPropertyValue('border-bottom') is '0px none rgb(0, 128, 0)'

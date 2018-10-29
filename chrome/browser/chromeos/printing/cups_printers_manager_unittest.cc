@@ -263,7 +263,7 @@ class CupsPrintersManagerTest : public testing::Test,
     // Register the pref |UserNativePrintersAllowed|
     CupsPrintersManager::RegisterProfilePrefs(pref_service_.registry());
 
-    manager_ = CupsPrintersManager::Create(
+    manager_ = CupsPrintersManager::CreateForTesting(
         &synced_printers_manager_, std::move(usb_detector),
         std::move(zeroconf_detector), ppd_provider_, &event_tracker_,
         &pref_service_);

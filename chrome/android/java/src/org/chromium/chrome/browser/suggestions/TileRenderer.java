@@ -16,17 +16,17 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.AsyncTask;
 import org.chromium.base.Log;
 import org.chromium.base.VisibleForTesting;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.favicon.IconType;
 import org.chromium.chrome.browser.favicon.LargeIconBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.suggestions.SuggestionsConfig.TileStyle;
 import org.chromium.chrome.browser.util.ViewUtils;
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
-import org.chromium.chrome.browser.widget.tile.TileWithTextView;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -41,44 +41,41 @@ import java.util.Map;
 public class TileRenderer {
     private static final String TAG = "TileRenderer";
 
-    private static final int ICON_CORNER_RADIUS_DP = 4;
-    private static final int ICON_TEXT_SIZE_DP = 20;
-    private static final int ICON_MIN_SIZE_PX = 24;
-
     private final Resources mResources;
     private final ImageFetcher mImageFetcher;
     private final RoundedIconGenerator mIconGenerator;
 
-    @TileWithTextView.Style
+    @TileStyle
     private final int mStyle;
     private final int mTitleLinesCount;
     private final int mDesiredIconSize;
     private final int mMinIconSize;
+    private final float mIconCornerRadius;
 
     @LayoutRes
     private final int mLayout;
 
-    public TileRenderer(Context context, @TileWithTextView.Style int style, int titleLines,
-            ImageFetcher imageFetcher) {
+    public TileRenderer(
+            Context context, @TileStyle int style, int titleLines, ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
         mStyle = style;
         mTitleLinesCount = titleLines;
 
         mResources = context.getResources();
         mDesiredIconSize = mResources.getDimensionPixelSize(R.dimen.tile_view_icon_size);
-        int desiredIconSizeDp =
-                Math.round(mDesiredIconSize / mResources.getDisplayMetrics().density);
+        mIconCornerRadius = mResources.getDimension(R.dimen.tile_view_icon_corner_radius);
+        int minIconSize = mResources.getDimensionPixelSize(R.dimen.tile_view_icon_min_size);
 
         // On ldpi devices, mDesiredIconSize could be even smaller than the global limit.
-        mMinIconSize = Math.min(mDesiredIconSize, ICON_MIN_SIZE_PX);
+        mMinIconSize = Math.min(mDesiredIconSize, minIconSize);
 
         mLayout = getLayout();
 
-        int cornerRadiusDp = desiredIconSizeDp / 2;
         int iconColor = ApiCompatibilityUtils.getColor(
                 mResources, R.color.default_favicon_background_color);
-        mIconGenerator = new RoundedIconGenerator(mResources, desiredIconSizeDp, desiredIconSizeDp,
-                cornerRadiusDp, iconColor, ICON_TEXT_SIZE_DP);
+        int iconTextSize = mResources.getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
+        mIconGenerator = new RoundedIconGenerator(
+                mDesiredIconSize, mDesiredIconSize, mDesiredIconSize / 2, iconColor, iconTextSize);
     }
 
     /**
@@ -133,7 +130,7 @@ public class TileRenderer {
         SuggestionsTileView tileView =
                 (SuggestionsTileView) LayoutInflater.from(parentView.getContext())
                         .inflate(mLayout, parentView, false);
-        tileView.initialize(tile, mTitleLinesCount, mStyle);
+        tileView.initialize(tile, mTitleLinesCount);
 
         // Note: It is important that the callbacks below don't keep a reference to the tile or
         // modify them as there is no guarantee that the same tile would be used to update the view.
@@ -185,9 +182,8 @@ public class TileRenderer {
     }
 
     public void setTileIconFromBitmap(Tile tile, Bitmap icon) {
-        RoundedBitmapDrawable roundedIcon = ViewUtils.createRoundedBitmapDrawable(icon,
-                Math.round(ICON_CORNER_RADIUS_DP * mResources.getDisplayMetrics().density
-                        * icon.getWidth() / mDesiredIconSize));
+        RoundedBitmapDrawable roundedIcon = ViewUtils.createRoundedBitmapDrawable(
+                icon, Math.round(mIconCornerRadius * icon.getWidth() / mDesiredIconSize));
         roundedIcon.setAntiAlias(true);
         roundedIcon.setFilterBitmap(true);
 
@@ -206,9 +202,9 @@ public class TileRenderer {
     @LayoutRes
     private int getLayout() {
         switch (mStyle) {
-            case TileWithTextView.Style.MODERN:
+            case TileStyle.MODERN:
                 return R.layout.suggestions_tile_view;
-            case TileWithTextView.Style.MODERN_CONDENSED:
+            case TileStyle.MODERN_CONDENSED:
                 return R.layout.suggestions_tile_view_condensed;
         }
         assert false;

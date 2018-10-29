@@ -22,7 +22,7 @@
 // Tells the delegate when a suggestion in|row| was chosen for appending to
 // omnibox.
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-          didSelectRowForAppending:(NSUInteger)row;
+        didTapTrailingButtonForRow:(NSUInteger)row;
 // Tells the delegate when a suggestion in |row| was removed.
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
            didSelectRowForDeletion:(NSUInteger)row;

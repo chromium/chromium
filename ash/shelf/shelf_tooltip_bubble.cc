@@ -6,7 +6,6 @@
 
 #include "ash/system/tray/tray_constants.h"
 #include "ui/aura/window.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 

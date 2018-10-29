@@ -8,11 +8,9 @@
 #include "chrome/browser/chromeos/policy/user_cloud_policy_token_forwarder.h"
 #include "chrome/browser/chromeos/policy/user_policy_manager_factory_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/signin/core/browser/profile_oauth2_token_service.h"
-#include "components/signin/core/browser/signin_manager.h"
+#include "services/identity/public/cpp/identity_manager.h"
 
 namespace policy {
 
@@ -26,8 +24,7 @@ UserCloudPolicyTokenForwarderFactory::UserCloudPolicyTokenForwarderFactory()
     : BrowserContextKeyedServiceFactory(
         "UserCloudPolicyTokenForwarder",
         BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(SigninManagerFactory::GetInstance());
-  DependsOn(ProfileOAuth2TokenServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(UserPolicyManagerFactoryChromeOS::GetInstance());
 }
 
@@ -39,14 +36,11 @@ KeyedService* UserCloudPolicyTokenForwarderFactory::BuildServiceInstanceFor(
   UserCloudPolicyManagerChromeOS* manager =
       UserPolicyManagerFactoryChromeOS::GetCloudPolicyManagerForProfile(
           profile);
-  ProfileOAuth2TokenService* token_service =
-      ProfileOAuth2TokenServiceFactory::GetForProfile(profile);
-  SigninManagerBase* signin_manager =
-      SigninManagerFactory::GetForProfile(profile);
-  if (!signin_manager || !token_service || !manager)
+  identity::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!manager || !identity_manager)
     return nullptr;
-  return new UserCloudPolicyTokenForwarder(manager, token_service,
-                                           signin_manager);
+  return new UserCloudPolicyTokenForwarder(manager, identity_manager);
 }
 
 bool UserCloudPolicyTokenForwarderFactory::

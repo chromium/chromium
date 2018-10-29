@@ -290,8 +290,7 @@ CRLSetResult CheckRevocationWithCRLSet(const CERTCertList* cert_list,
   // We iterate from the root certificate down to the leaf, keeping track of
   // the issuer's SPKI at each step.
   std::string issuer_spki_hash;
-  for (std::vector<CERTCertificate*>::reverse_iterator i = certs.rbegin();
-       i != certs.rend(); ++i) {
+  for (auto i = certs.rbegin(); i != certs.rend(); ++i) {
     CERTCertificate* cert = *i;
 
     base::StringPiece der(reinterpret_cast<char*>(cert->derCert.data),

@@ -84,9 +84,10 @@ void NSSCertDatabaseChromeOS::ListModules(
   NSSCertDatabase::ListModules(modules, need_rw);
 
   size_t pre_size = modules->size();
-  base::EraseIf(*modules,
-                NSSProfileFilterChromeOS::ModuleNotAllowedForProfilePredicate(
-                    profile_filter_));
+  const NSSProfileFilterChromeOS& profile_filter = profile_filter_;
+  base::EraseIf(*modules, [&profile_filter](crypto::ScopedPK11Slot& module) {
+    return !profile_filter.IsModuleAllowed(module.get());
+  });
   DVLOG(1) << "filtered " << pre_size - modules->size() << " of " << pre_size
            << " modules";
 }

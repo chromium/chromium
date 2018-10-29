@@ -97,7 +97,7 @@ testing::AssertionResult ReadMemory(FixedArr* fixed_arr) {
 
 TEST(FixedArrayExceptionSafety, Fill) {
   auto test_fill = testing::MakeExceptionSafetyTester()
-                       .WithInvariants(ReadMemory)
+                       .WithContracts(ReadMemory)
                        .WithOperation([&](FixedArr* fixed_arr_ptr) {
                          auto thrower =
                              Thrower(kUpdatedValue, testing::nothrow_ctor);

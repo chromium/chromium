@@ -285,9 +285,6 @@ crbug.com/676561 [ Android ] images/paletted-png-with-color-profile.html [ WontF
 # Only Windows supports Symbol CMAP encoded fonts.
 crbug.com/627953 [ Android Linux Mac ] fast/text/symbol-cmap.html [ WontFix ]
 
-# wasm tests. Currently under virtual/enable_wasm or virtual/enable_wasm_streaming
-crbug.com/642912 http/tests/wasm/ [ WontFix ]
-
 # These tests require audio codecs which are generally not available;
 # these tests can still be run manually with --skipped=ignore.
 webaudio/codec-tests/aac [ WontFix ]
@@ -1003,6 +1000,10 @@ external/wpt/speech-api/SpeechRecognition-abort-manual.https.html [ WontFix ]
 external/wpt/speech-api/SpeechRecognition-onerror-manual.https.html [ WontFix ]
 external/wpt/speech-api/SpeechRecognition-onresult-manual.https.html [ WontFix ]
 external/wpt/speech-api/SpeechRecognition-stop-manual.https.html [ WontFix ]
+virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-abort-manual.https.html [ WontFix ]
+virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-onerror-manual.https.html [ WontFix ]
+virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-onresult-manual.https.html [ WontFix ]
+virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-stop-manual.https.html [ WontFix ]
 external/wpt/uievents/interface/click-event-manual.htm [ WontFix ]
 external/wpt/uievents/interface/dblclick-event-manual.htm [ WontFix ]
 external/wpt/uievents/keyboard/key-101en-us-manual.html [ WontFix ]
@@ -1917,3 +1918,33 @@ http/tests/cachestorage/large-put.html [ WontFix ]
 # Tests that work only when LazyImageLoading feature is enabled.
 crbug.com/846170 http/tests/lazyload/lazy.html [ WontFix ]
 crbug.com/846170 http/tests/lazyload/attribute.html [ WontFix ]
+crbug.com/846170 http/tests/lazyload/fixed-dimension.html [ WontFix ]
+crbug.com/869492 external/wpt/feature-policy/experimental-features/lazyload/lazyload-disabled-image-tentative.html [ WontFix ]
+crbug.com/869492 external/wpt/feature-policy/experimental-features/lazyload/lazyload-enabled-image-tentative.sub.html [ WontFix ]
+crbug.com/869492 external/wpt/feature-policy/experimental-features/lazyload/lazyload-image-attribute-on-sanity-check-tentative.sub.html [ WontFix ]
+crbug.com/869492 virtual/unified-autoplay/external/wpt/feature-policy/experimental-features/lazyload/lazyload-disabled-image-tentative.html [ WontFix ]
+crbug.com/869492 virtual/unified-autoplay/external/wpt/feature-policy/experimental-features/lazyload/lazyload-enabled-image-tentative.sub.html [ WontFix ]
+crbug.com/869492 virtual/unified-autoplay/external/wpt/feature-policy/experimental-features/lazyload/lazyload-image-attribute-on-sanity-check-tentative.sub.html [ WontFix ]
+crbug.com/869492 virtual/threaded/external/wpt/feature-policy/experimental-features/lazyload/lazyload-disabled-image-tentative.html [ WontFix ]
+crbug.com/869492 virtual/threaded/external/wpt/feature-policy/experimental-features/lazyload/lazyload-enabled-image-tentative.sub.html [ WontFix ]
+crbug.com/869492 virtual/threaded/external/wpt/feature-policy/experimental-features/lazyload/lazyload-image-attribute-on-sanity-check-tentative.sub.html [ WontFix ]
+crbug.com/869492 virtual/video-surface-layer/external/wpt/feature-policy/experimental-features/lazyload/lazyload-disabled-image-tentative.html [ WontFix ]
+crbug.com/869492 virtual/video-surface-layer/external/wpt/feature-policy/experimental-features/lazyload/lazyload-enabled-image-tentative.sub.html [ WontFix ]
+crbug.com/869492 virtual/video-surface-layer/external/wpt/feature-policy/experimental-features/lazyload/lazyload-image-attribute-on-sanity-check-tentative.sub.html [ WontFix ]
+
+# Tests that are not supported if outofblink-cors feature is enabled.
+# These functionarities should be verified on browser_tests for outofblink-cors.
+crbug.com/870172 virtual/outofblink-cors/http/tests/xmlhttprequest/origin-whitelisting-all.html [ WontFix ]
+crbug.com/870172 virtual/outofblink-cors/http/tests/xmlhttprequest/origin-whitelisting-exact-match.html [ WontFix ]
+crbug.com/870172 virtual/outofblink-cors/http/tests/xmlhttprequest/origin-whitelisting-subdomains.html [ WontFix ]
+crbug.com/870172 virtual/outofblink-cors/http/tests/xmlhttprequest/origin-whitelisting-ip-addresses.html [ WontFix ]
+crbug.com/870172 virtual/outofblink-cors-ns/http/tests/xmlhttprequest/origin-whitelisting-all.html [ WontFix ]
+crbug.com/870172 virtual/outofblink-cors-ns/http/tests/xmlhttprequest/origin-whitelisting-exact-match.html [ WontFix ]
+crbug.com/870172 virtual/outofblink-cors-ns/http/tests/xmlhttprequest/origin-whitelisting-subdomains.html [ WontFix ]
+crbug.com/870172 virtual/outofblink-cors-ns/http/tests/xmlhttprequest/origin-whitelisting-ip-addresses.html [ WontFix ]
+
+# Tests that only work when the mixed content autoupgrade experiment is enabled
+http/tests/mixed-autoupgrade [ WontFix ]
+
+# Not expected to pass in default configuration, only virtual test suite.
+crbug.com/830901 fast/webgl/video-metadata/texImage-video-last-uploaded-metadata.html [ WontFix ]

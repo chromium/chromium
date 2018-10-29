@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Tests that a MediaStream can be assigned to a video element with srcObject assert_equals:  A MediaStream does not have a pre-defined duration.  expected Infinity but got NaN
-Harness: the test ran to completion.
-

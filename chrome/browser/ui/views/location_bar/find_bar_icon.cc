@@ -8,8 +8,9 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/toolbar/vector_icons.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/animation/ink_drop.h"
 
 FindBarIcon::FindBarIcon(Browser* browser,
                          PageActionIconView::Delegate* delegate)
@@ -45,7 +46,7 @@ views::BubbleDialogDelegateView* FindBarIcon::GetBubble() const {
 }
 
 const gfx::VectorIcon& FindBarIcon::GetVectorIcon() const {
-  return toolbar::kFindInPageIcon;
+  return omnibox::kFindInPageIcon;
 }
 
 bool FindBarIcon::Update() {

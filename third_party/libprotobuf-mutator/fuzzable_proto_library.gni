@@ -1,3 +1,16 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# A fuzzable_proto_library is a proto_library that is the same as any other in
+# non-fuzzer builds (ie: use_libfuzzer=false). However, in fuzzer builds, the
+# proto_library is built with the full protobuf runtime and any "optimize_for =
+# LITE_RUNTIME" options are ignored. This is done because libprotobuf-mutator
+# needs the full protobuf runtime, but proto_libraries shipped in chrome must
+# use the optimize for LITE_RUNTIME option which is incompatible with the full
+# protobuf runtime. tl;dr: A fuzzable_proto_library is a proto_library that can
+# be fuzzed with libprotobuf-mutator and shipped in Chrome.
+
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 

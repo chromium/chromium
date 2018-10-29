@@ -189,8 +189,7 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
     VLOG(1) << "Current audio tone frequency: " << frequency;
 
     const int kTargetWindowHz = 20;
-    for (std::vector<int>::iterator it = expected_tones_.begin();
-         it != expected_tones_.end(); ++it) {
+    for (auto it = expected_tones_.begin(); it != expected_tones_.end(); ++it) {
       if (abs(static_cast<int>(frequency) - *it) < kTargetWindowHz) {
         LOG(INFO) << "Heard tone at frequency " << *it << " Hz.";
         expected_tones_.erase(it);
@@ -234,7 +233,7 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
             << current_color.u << ", " << current_color.v << ')';
 
     const int kTargetWindow = 10;
-    for (std::vector<YUVColor>::iterator it = expected_yuv_colors_.begin();
+    for (auto it = expected_yuv_colors_.begin();
          it != expected_yuv_colors_.end(); ++it) {
       if (abs(current_color.y - it->y) < kTargetWindow &&
           abs(current_color.u - it->u) < kTargetWindow &&

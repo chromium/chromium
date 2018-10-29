@@ -12,8 +12,6 @@
 
 namespace {
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
-
 // Reported metrics for the content of drag events.
 enum DragContentForReporting {
   UNKNOWN = 0,
@@ -53,15 +51,9 @@ void RecordDragTypesForSession(id<UIDropSession> dropSession)
   }
 }
 
-#endif
-
 }  // namespace
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
 @interface DragAndDropRecorder ()<UIDropInteractionDelegate> {
-#else
-@interface DragAndDropRecorder () {
-#endif
   // The currently active drop sessions.
   NSHashTable* dropSessions_;
 }
@@ -72,19 +64,16 @@ void RecordDragTypesForSession(id<UIDropSession> dropSession)
 - (instancetype)initWithView:(UIView*)view {
   self = [super init];
   if (self) {
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
     if (@available(iOS 11, *)) {
       dropSessions_ = [NSHashTable weakObjectsHashTable];
       UIDropInteraction* dropInteraction =
           [[UIDropInteraction alloc] initWithDelegate:self];
       [view addInteraction:dropInteraction];
     }
-#endif
   }
   return self;
 }
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
 - (BOOL)dropInteraction:(UIDropInteraction*)interaction
        canHandleSession:(id<UIDropSession>)session API_AVAILABLE(ios(11.0)) {
   // |-dropInteraction:canHandleSession:| can be called multiple times for the
@@ -99,6 +88,5 @@ void RecordDragTypesForSession(id<UIDropSession> dropSession)
   // metrics and not intercept events.
   return NO;
 }
-#endif
 
 @end

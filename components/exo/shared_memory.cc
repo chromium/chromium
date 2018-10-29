@@ -34,8 +34,8 @@ bool IsSupportedFormat(gfx::BufferFormat format) {
 ////////////////////////////////////////////////////////////////////////////////
 // SharedMemory, public:
 
-SharedMemory::SharedMemory(const base::SharedMemoryHandle& handle)
-    : shared_memory_(handle, true /* read-only */) {}
+SharedMemory::SharedMemory(base::UnsafeSharedMemoryRegion shared_memory_region)
+    : shared_memory_region_(std::move(shared_memory_region)) {}
 
 SharedMemory::~SharedMemory() {}
 
@@ -63,7 +63,7 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
 
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::SHARED_MEMORY_BUFFER;
-  handle.handle = base::SharedMemory::DuplicateHandle(shared_memory_.handle());
+  handle.region = shared_memory_region_.Duplicate();
   handle.offset = offset;
   handle.stride = stride;
 

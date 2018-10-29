@@ -194,8 +194,12 @@ bool SVGComputedStyle::DiffNeedsPaintInvalidation(
   // Painting related properties only need paint invalidation.
   if (misc.Get() != other->misc.Get()) {
     if (misc->flood_color != other->misc->flood_color ||
+        misc->flood_color_is_current_color !=
+            other->misc->flood_color_is_current_color ||
         misc->flood_opacity != other->misc->flood_opacity ||
-        misc->lighting_color != other->misc->lighting_color)
+        misc->lighting_color != other->misc->lighting_color ||
+        misc->lighting_color_is_current_color !=
+            other->misc->lighting_color_is_current_color)
       return true;
   }
 

@@ -110,7 +110,7 @@ class ComponentLoader {
                                         const std::string& name_string,
                                         const std::string& description_string);
 
-  void AddChromeOsSpeechSynthesisExtension();
+  void AddChromeOsSpeechSynthesisExtensions();
 #endif
 
   void set_ignore_whitelist_for_testing(bool value) {
@@ -166,7 +166,6 @@ class ComponentLoader {
   void AddAudioPlayerExtension();
   void AddGalleryExtension();
   void AddZipArchiverExtension();
-  void AddWebstoreWidgetExtension();
   void AddHangoutServicesExtension();
   void AddImageLoaderExtension();
   void AddNetworkSpeechSynthesisExtension();

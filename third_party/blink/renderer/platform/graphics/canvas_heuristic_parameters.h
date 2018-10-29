@@ -9,7 +9,7 @@
 
 namespace blink {
 
-namespace CanvasHeuristicParameters {
+namespace canvas_heuristic_parameters {
 
 enum {
   // Disable Deferral overdraw parameters
@@ -80,7 +80,7 @@ enum {
 
 };  // enum
 
-}  // namespace CanvasHeuristicParameters
+}  // namespace canvas_heuristic_parameters
 
 }  // namespace blink
 

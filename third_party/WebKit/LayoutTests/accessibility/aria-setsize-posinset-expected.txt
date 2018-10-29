@@ -1,8 +1,8 @@
 Radio 1
+
 This tests that aria-posinset and aria-setsize are exposed to accessibility correctly.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS list.childAtIndex(0).setSize is 10
 PASS list.childAtIndex(1).setSize is 10

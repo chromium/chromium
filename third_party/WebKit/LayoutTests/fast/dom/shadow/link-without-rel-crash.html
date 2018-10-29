@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+
+let t = async_test('Setting rel=stylesheet on link in shadow root does not crash');
+
+function run() {
+  t.step(() => {
+    let link = document.createElement('link');
+    link.setAttribute('href', 'empty.css');
+    let div = document.createElement('div');
+    let shadowRoot = div.attachShadow({mode: 'open'});
+    document.body.append(div);
+    shadowRoot.append(link);
+    link.setAttribute('rel','stylesheet');
+  });
+  t.done();
+}
+
+</script>
+<body onload="run()"></body>

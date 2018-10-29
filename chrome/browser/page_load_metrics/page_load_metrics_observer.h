@@ -318,6 +318,13 @@ class PageLoadMetricsObserver {
   virtual ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
                                  ukm::SourceId source_id);
 
+  // OnDidInternalNavigationAbort is triggered when the main frame navigation
+  // aborts with HTTP responses that don't commit, such as HTTP 204 responses
+  // and downloads. Note that |navigation_handle| will be destroyed
+  // soon after this call. Don't hold a reference to it.
+  virtual void OnDidInternalNavigationAbort(
+      content::NavigationHandle* navigation_handle) {}
+
   // OnDidFinishSubFrameNavigation is triggered when a sub-frame of the
   // committed page has finished navigating. It has either committed, aborted,
   // was a same document navigation, or has been replaced. It is up to the
@@ -406,6 +413,22 @@ class PageLoadMetricsObserver {
       const mojom::PageLoadTiming& timing,
       const PageLoadExtraInfo& extra_info) {}
 
+  // These signatures are used to report the last candidate for each of FCP++
+  // metrics. They will be invoked at the end of page load's life time, around
+  // the time of the OnComplete callback.
+  virtual void OnLargestImagePaintInMainFrameDocument(
+      const mojom::PageLoadTiming& last_candidate,
+      const page_load_metrics::PageLoadExtraInfo& info) {}
+  virtual void OnLastImagePaintInMainFrameDocument(
+      const mojom::PageLoadTiming& last_candidate,
+      const page_load_metrics::PageLoadExtraInfo& info) {}
+  virtual void OnLargestTextPaintInMainFrameDocument(
+      const mojom::PageLoadTiming& last_candidate,
+      const page_load_metrics::PageLoadExtraInfo& info) {}
+  virtual void OnLastTextPaintInMainFrameDocument(
+      const mojom::PageLoadTiming& last_candidate,
+      const page_load_metrics::PageLoadExtraInfo& info) {}
+
   virtual void OnPageInteractive(const mojom::PageLoadTiming& timing,
                                  const PageLoadExtraInfo& extra_info) {}
 
@@ -421,7 +444,7 @@ class PageLoadMetricsObserver {
                                        const PageLoadExtraInfo& extra_info) {}
 
   // Invoked when there is data use for loading a resource on the page
-  // acrosss all frames. This only contains resources that have had new
+  // across all frames. This only contains resources that have had new
   // data use since the last callback.
   virtual void OnResourceDataUseObserved(
       const std::vector<mojom::ResourceDataUpdatePtr>& resources) {}

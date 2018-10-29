@@ -2,7 +2,6 @@ Test that inherit and initial works on unprefixed animations.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Testing inherit.
 PASS computedStyle.animationName is 'anim'
 PASS computedStyle.webkitAnimationName is 'anim'

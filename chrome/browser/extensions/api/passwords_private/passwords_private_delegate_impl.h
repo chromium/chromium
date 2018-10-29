@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
+#include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
 #include "chrome/browser/password_manager/reauth_purpose.h"
 #include "chrome/browser/ui/passwords/password_access_authenticator.h"
 #include "chrome/browser/ui/passwords/password_manager_porter.h"
@@ -47,11 +48,10 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   void SendPasswordExceptionsList() override;
   void GetPasswordExceptionsList(
       const ExceptionEntriesCallback& callback) override;
-  void RemoveSavedPassword(size_t index) override;
-  void RemovePasswordException(size_t index) override;
+  void RemoveSavedPassword(int id) override;
+  void RemovePasswordException(int id) override;
   void UndoRemoveSavedPasswordOrException() override;
-  void RequestShowPassword(size_t index,
-                           content::WebContents* web_contents) override;
+  void RequestShowPassword(int id, content::WebContents* web_contents) override;
   void ImportPasswords(content::WebContents* web_contents) override;
   void ExportPasswords(base::OnceCallback<void(const std::string&)> accepted,
                        content::WebContents* web_contents) override;
@@ -61,9 +61,8 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
 
   // PasswordUIView implementation.
   Profile* GetProfile() override;
-  void ShowPassword(
-      size_t index,
-      const base::string16& plaintext_password) override;
+  void ShowPassword(const std::string& sort_key,
+                    const base::string16& plaintext_password) override;
   void SetPasswordList(
       const std::vector<std::unique_ptr<autofill::PasswordForm>>& password_list)
       override;
@@ -96,11 +95,10 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   // has been initialized or by deferring it until initialization has completed.
   void ExecuteFunction(const base::Closure& callback);
 
-  void RemoveSavedPasswordInternal(size_t index);
-  void RemovePasswordExceptionInternal(size_t index);
+  void RemoveSavedPasswordInternal(int id);
+  void RemovePasswordExceptionInternal(int id);
   void UndoRemoveSavedPasswordOrExceptionInternal();
-  void RequestShowPasswordInternal(size_t index,
-                                   content::WebContents* web_contents);
+  void RequestShowPasswordInternal(int id, content::WebContents* web_contents);
 
   // Triggers an OS-dependent UI to present OS account login challenge and
   // returns true if the user passed that challenge.
@@ -122,6 +120,11 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   // having to request them from |password_manager_presenter_| again.
   UiEntries current_entries_;
   ExceptionEntries current_exceptions_;
+
+  // Generators that map between sort keys used by |password_manager_presenter_|
+  // and ids used by the JavaScript front end.
+  SortKeyIdGenerator password_id_generator_;
+  SortKeyIdGenerator exception_id_generator_;
 
   // Whether SetPasswordList and SetPasswordExceptionList have been called, and
   // whether this class has been initialized, meaning both have been called.

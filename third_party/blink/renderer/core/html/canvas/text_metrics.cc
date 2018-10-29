@@ -13,40 +13,23 @@ constexpr int kHangingAsPercentOfAscent = 80;
 float TextMetrics::GetFontBaseline(const TextBaseline& text_baseline,
                                    const SimpleFontData& font_data) {
   FontMetrics font_metrics = font_data.GetFontMetrics();
-  // If the font is so tiny that the lroundf operations result in two
-  // different types of text baselines to return the same baseline, use
-  // floating point metrics (crbug.com/338908).
-  // If you changed the heuristic here, for consistency please also change it
-  // in SimpleFontData::platformInit().
-  bool use_float_ascent_descent = font_data.EmHeightAscent().ToInt() < 4;
   switch (text_baseline) {
     case kTopTextBaseline:
-      return use_float_ascent_descent
-                 ? font_data.EmHeightAscent().ToFloat()
-                 : lround(font_data.EmHeightAscent().ToFloat());
+      return font_data.EmHeightAscent().ToFloat();
     case kHangingTextBaseline:
       // According to
       // http://wiki.apache.org/xmlgraphics-fop/LineLayout/AlignmentHandling
       // "FOP (Formatting Objects Processor) puts the hanging baseline at 80% of
       // the ascender height"
-      return use_float_ascent_descent
-                 ? font_metrics.FloatAscent() * kHangingAsPercentOfAscent / 100
-                 : font_metrics.Ascent() * kHangingAsPercentOfAscent / 100;
+      return font_metrics.FloatAscent() * kHangingAsPercentOfAscent / 100.0;
     case kIdeographicTextBaseline:
-      return use_float_ascent_descent ? -font_metrics.FloatDescent()
-                                      : -font_metrics.Descent();
+      return -font_metrics.FloatDescent();
     case kBottomTextBaseline:
-      return use_float_ascent_descent
-                 ? -font_data.EmHeightDescent().ToFloat()
-                 : -lround(font_data.EmHeightDescent().ToFloat());
+      return -font_data.EmHeightDescent().ToFloat();
     case kMiddleTextBaseline:
-      return use_float_ascent_descent
-                 ? (-font_data.EmHeightDescent() + font_data.EmHeightAscent())
-                           .ToFloat() /
-                       2.0f
-                 : (-lround(font_data.EmHeightDescent().ToFloat()) +
-                    lround(font_data.EmHeightAscent().ToFloat())) /
-                       2;
+      return (font_data.EmHeightAscent().ToFloat() -
+              font_data.EmHeightDescent().ToFloat()) /
+             2.0f;
     case kAlphabeticTextBaseline:
     default:
       // Do nothing.

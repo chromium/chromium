@@ -122,7 +122,7 @@ TEST(MediaTrackConstraintsTest, ConvertWebConstraintsBasic) {
   WebMediaConstraints input;
   MediaTrackConstraints output;
 
-  MediaConstraintsImpl::ConvertConstraints(input, output);
+  media_constraints_impl::ConvertConstraints(input, output);
 }
 
 TEST(MediaTrackConstraintsTest, ConvertWebSingleStringConstraint) {
@@ -134,7 +134,7 @@ TEST(MediaTrackConstraintsTest, ConvertWebSingleStringConstraint) {
 
   basic.facing_mode.SetIdeal(WebVector<WebString>(&"foo", 1));
   input.Initialize(basic, advanced);
-  MediaConstraintsImpl::ConvertConstraints(input, output);
+  media_constraints_impl::ConvertConstraints(input, output);
   ASSERT_TRUE(output.hasFacingMode());
   ASSERT_TRUE(output.facingMode().IsString());
   EXPECT_EQ("foo", output.facingMode().GetAsString());
@@ -152,7 +152,7 @@ TEST(MediaTrackConstraintsTest, ConvertWebDoubleStringConstraint) {
   std::vector<WebMediaTrackConstraintSet> advanced;
   basic.facing_mode.SetIdeal(buffer);
   input.Initialize(basic, advanced);
-  MediaConstraintsImpl::ConvertConstraints(input, output);
+  media_constraints_impl::ConvertConstraints(input, output);
   ASSERT_TRUE(output.hasFacingMode());
   ASSERT_TRUE(output.facingMode().IsStringSequence());
   auto out_buffer = output.facingMode().GetAsStringSequence();
@@ -166,7 +166,7 @@ TEST(MediaTrackConstraintsTest, ConvertBlinkStringConstraint) {
   StringOrStringSequenceOrConstrainDOMStringParameters parameter;
   parameter.SetString("foo");
   input.setFacingMode(parameter);
-  output = MediaConstraintsImpl::ConvertConstraintsToWeb(input);
+  output = media_constraints_impl::ConvertConstraintsToWeb(input);
   ASSERT_TRUE(output.Basic().facing_mode.HasIdeal());
   ASSERT_EQ(1U, output.Basic().facing_mode.Ideal().size());
   ASSERT_EQ("foo", output.Basic().facing_mode.Ideal()[0]);
@@ -182,14 +182,14 @@ TEST(MediaTrackConstraintsTest, ConvertBlinkComplexStringConstraint) {
   subparameter.setIdeal(inner_string);
   parameter.SetConstrainDOMStringParameters(subparameter);
   input.setFacingMode(parameter);
-  output = MediaConstraintsImpl::ConvertConstraintsToWeb(input);
+  output = media_constraints_impl::ConvertConstraintsToWeb(input);
   ASSERT_TRUE(output.Basic().facing_mode.HasIdeal());
   ASSERT_EQ(1U, output.Basic().facing_mode.Ideal().size());
   ASSERT_EQ("foo", output.Basic().facing_mode.Ideal()[0]);
 
   // Convert this back, and see that it appears as a single string.
   MediaTrackConstraints recycled;
-  MediaConstraintsImpl::ConvertConstraints(output, recycled);
+  media_constraints_impl::ConvertConstraints(output, recycled);
   ASSERT_TRUE(recycled.hasFacingMode());
   ASSERT_TRUE(recycled.facingMode().IsString());
   ASSERT_EQ("foo", recycled.facingMode().GetAsString());
@@ -204,7 +204,7 @@ TEST(MediaTrackConstraintsTest, NakedIsExactInAdvanced) {
   HeapVector<MediaTrackConstraintSet> advanced(1);
   advanced[0].setFacingMode(parameter);
   input.setAdvanced(advanced);
-  output = MediaConstraintsImpl::ConvertConstraintsToWeb(input);
+  output = media_constraints_impl::ConvertConstraintsToWeb(input);
 
   ASSERT_TRUE(output.Basic().facing_mode.HasIdeal());
   ASSERT_FALSE(output.Basic().facing_mode.HasExact());
@@ -235,7 +235,7 @@ TEST(MediaTrackConstraintsTest, IdealAndExactConvertToNaked) {
   advanced.push_back(advanced_element1);
   advanced.push_back(advanced_element2);
   input.Initialize(basic, advanced);
-  MediaConstraintsImpl::ConvertConstraints(input, output);
+  media_constraints_impl::ConvertConstraints(input, output);
   // The first element should return a ConstrainDOMStringParameters
   // with an "ideal" value containing a String value of "ideal".
   // The second element should return a ConstrainDOMStringParameters

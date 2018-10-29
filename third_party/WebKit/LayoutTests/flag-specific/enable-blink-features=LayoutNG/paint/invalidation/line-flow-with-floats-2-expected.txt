@@ -20,342 +20,307 @@
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow P",
           "rect": [8, 74, 418, 526],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow P",
-          "rect": [8, 74, 418, 526],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'had any dispute with the Queen, but she knew that it might'",
           "rect": [14, 541, 407, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'had any dispute with the Queen, but she knew that it might'",
           "rect": [14, 540, 407, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'Alice began to feel very uneasy: to be sure, she had not as yet'",
           "rect": [14, 521, 407, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'Alice began to feel very uneasy: to be sure, she had not as yet'",
           "rect": [14, 520, 407, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'become of me? They\u2019re dreadfully fond of beheading people'",
           "rect": [14, 581, 406, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'become of me? They\u2019re dreadfully fond of beheading people'",
           "rect": [14, 580, 406, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'happen any minute, \u2018and then,\u2019 thought she, \u2018what would'",
           "rect": [14, 561, 406, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'happen any minute, \u2018and then,\u2019 thought she, \u2018what would'",
           "rect": [14, 560, 406, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'getting up and walking off to other parts of the ground, Alice'",
           "rect": [14, 341, 406, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'getting up and walking off to other parts of the ground, Alice'",
           "rect": [14, 340, 406, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'hedgehog to, and, as the doubled-up soldiers were always'",
           "rect": [14, 321, 406, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'hedgehog to, and, as the doubled-up soldiers were always'",
           "rect": [14, 320, 406, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'a ridge or furrow in the way wherever she wanted to send the'",
           "rect": [14, 301, 406, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'a ridge or furrow in the way wherever she wanted to send the'",
           "rect": [14, 300, 406, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'in the act of crawling away: besides all this, there was generally'",
           "rect": [14, 281, 406, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'in the act of crawling away: besides all this, there was generally'",
           "rect": [14, 280, 406, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'provoking to find that the hedgehog had unrolled itself, and was'",
           "rect": [14, 261, 406, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'provoking to find that the hedgehog had unrolled itself, and was'",
           "rect": [14, 260, 406, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'could not help bursting out laughing: and when she had got its'",
           "rect": [14, 221, 406, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'could not help bursting out laughing: and when she had got its'",
           "rect": [14, 220, 406, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'look up in her face, with such a puzzled expression that she'",
           "rect": [14, 201, 406, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'look up in her face, with such a puzzled expression that she'",
           "rect": [14, 200, 406, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'shouting \u2018Off with his head!\u2019 or \u2018Off with her head!\u2019'",
           "rect": [14, 481, 355, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'shouting \u2018Off with his head!\u2019 or \u2018Off with her head!\u2019'",
           "rect": [14, 480, 355, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'was in a furious passion, and went stamping about, and'",
           "rect": [14, 461, 355, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'was in a furious passion, and went stamping about, and'",
           "rect": [14, 460, 355, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'neck nicely straightened out, and was going to give the'",
           "rect": [14, 160, 354, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'neck nicely straightened out, and was going to give the'",
-          "rect": [14, 160, 354, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'hanging down, but generally, just as she had got its'",
           "rect": [14, 140, 354, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'hanging down, but generally, just as she had got its'",
-          "rect": [14, 140, 354, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'away, comfortably enough, under her arm, with its legs'",
           "rect": [14, 120, 354, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'away, comfortably enough, under her arm, with its legs'",
-          "rect": [14, 120, 354, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'her flamingo: she succeeded in getting its body tucked'",
           "rect": [14, 100, 354, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'her flamingo: she succeeded in getting its body tucked'",
-          "rect": [14, 100, 354, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'The chief difficulty Alice found at first was in managing'",
           "rect": [14, 80, 354, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'The chief difficulty Alice found at first was in managing'",
-          "rect": [14, 80, 354, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'soon came to the conclusion that it was a very '",
           "rect": [65, 361, 306, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'soon came to the conclusion that it was a very '",
           "rect": [65, 360, 306, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'for turns, quarrelling all the while, and fighting'",
           "rect": [65, 421, 305, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'for turns, quarrelling all the while, and fighting'",
           "rect": [65, 420, 305, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'The players all played at once without waiting'",
           "rect": [65, 401, 305, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'The players all played at once without waiting'",
           "rect": [65, 400, 305, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'for the hedgehogs; and in a very short time '",
           "rect": [14, 441, 289, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'for the hedgehogs; and in a very short time '",
           "rect": [14, 440, 289, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'head down, and was going to '",
           "rect": [14, 241, 230, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'head down, and was going to '",
           "rect": [14, 240, 230, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'hedgehog a blow with its head, it '",
           "rect": [14, 180, 225, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'hedgehog a blow with its head, it '",
           "rect": [14, 181, 222, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'begin again, it was very'",
           "rect": [243, 241, 178, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'begin again, it was very'",
           "rect": [243, 240, 178, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'about once in a minute.'",
           "rect": [14, 501, 147, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'about once in a minute.'",
           "rect": [14, 500, 147, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment ' twist itself round and'",
           "rect": [277, 180, 144, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment ' twist itself round and'",
           "rect": [279, 181, 142, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'game indeed.'",
           "rect": [65, 381, 85, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'game indeed.'",
           "rect": [65, 380, 85, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'the Queen'",
           "rect": [302, 441, 68, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'the Queen'",
           "rect": [302, 440, 68, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'difficult'",
           "rect": [371, 361, 50, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'difficult'",
           "rect": [371, 360, 50, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (floating) SPAN id='greenFloat'",
           "rect": [372, 404, 48, 81],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (floating) SPAN id='greenFloat'",
           "rect": [372, 403, 48, 81],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (floating) SPAN id='blueFloat'",
           "rect": [14, 364, 48, 65],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow (floating) SPAN id='blueFloat'",
           "rect": [14, 363, 48, 65],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'would'",
           "rect": [235, 180, 46, 20],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'would'",
-          "rect": [238, 180, 41, 19],
-          "reason": "disappeared"
+          "reason": "style change"
         },
         {
           "object": "VerticalScrollbar",

@@ -12,6 +12,8 @@ source_set("cpp") {
     "raster_thread_helper.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//cc",
@@ -48,6 +50,8 @@ source_set("internal") {
     "property_type_converters.cc",
     "raster_thread_helper.cc",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base",

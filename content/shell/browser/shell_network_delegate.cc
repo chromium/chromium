@@ -63,11 +63,6 @@ bool ShellNetworkDelegate::OnCanAccessFile(
   return true;
 }
 
-bool ShellNetworkDelegate::OnAreExperimentalCookieFeaturesEnabled() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableExperimentalWebPlatformFeatures);
-}
-
 bool ShellNetworkDelegate::OnCancelURLRequestWithPolicyViolatingReferrerHeader(
     const net::URLRequest& request,
     const GURL& target_url,

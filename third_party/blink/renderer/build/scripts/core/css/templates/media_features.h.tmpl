@@ -1,10 +1,10 @@
 {% from "templates/macros.tmpl" import license, source_files_for_generated_file %}
-{{ license() }}
+{{license()}}
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
-#ifndef BLINK_CORE_CSS_MEDIA_FEATURES_H_
-#define BLINK_CORE_CSS_MEDIA_FEATURES_H_
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 #define CSS_MEDIAQUERY_NAMES_FOR_EACH_MEDIAFEATURE(macro) \
     {% for entry in entries %}
@@ -14,4 +14,4 @@
     {% endif %}
     {% endfor %}
 
-#endif  // BLINK_CORE_CSS_MEDIA_FEATURES_H_
+#endif  // {{header_guard}}

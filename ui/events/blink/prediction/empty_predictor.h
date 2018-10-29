@@ -15,6 +15,8 @@ class EmptyPredictor : public InputPredictor {
   EmptyPredictor();
   ~EmptyPredictor() override;
 
+  const char* GetName() const override;
+
   void Reset() override;
 
   // store the cur_input in last_input_

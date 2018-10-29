@@ -52,10 +52,10 @@ suite('cr-scrollable-behavior', function() {
     container = testElement.$$('#container');
     ironList = testElement.$$('iron-list');
 
-    // Wait for requestAnimationFrame for CrScrollableBehavior to set the
-    // initial scrollable class properties.
-    window.requestAnimationFrame(function() {
-      done();
+    // Wait for CrScrollableBehavior to set the initial scrollable class
+    // properties.
+    window.requestAnimationFrame(() => {
+      test_util.waitForRender().then(done);
     });
   });
 

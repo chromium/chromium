@@ -81,6 +81,7 @@ Network.ResourceWebSocketFrameView = class extends UI.VBox {
     const mainContainer = new UI.VBox();
     mainContainer.element.appendChild(this._mainToolbar.element);
     this._dataGrid.asWidget().show(mainContainer.element);
+    mainContainer.setMinimumSize(0, 72);
     this._splitWidget.setMainWidget(mainContainer);
 
     this._frameEmptyWidget = new UI.EmptyWidget(Common.UIString('Select frame to browse its content.'));
@@ -168,7 +169,9 @@ Network.ResourceWebSocketFrameView = class extends UI.VBox {
     const selectedNode = /** @type {!Network.ResourceWebSocketFrameNode} */ (event.data);
     this._currentSelectedNode = selectedNode;
     const contentProvider = selectedNode.contentProvider();
-    const content = await contentProvider.requestContent();
+    let content = await contentProvider.requestContent();
+    if (await contentProvider.contentEncoded())
+      content = window.atob(content);
     const jsonView = await SourceFrame.JSONView.createView(content);
     if (this._currentSelectedNode !== selectedNode)
       return;

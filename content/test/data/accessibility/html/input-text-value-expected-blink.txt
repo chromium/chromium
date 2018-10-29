@@ -4,6 +4,7 @@ rootWebArea focusable
 ++++++staticText name='l1'
 ++++++++inlineTextBox name='l1'
 ++++textField focusable name='l1'
+++++++genericContainer
 ++++labelText
 ++++++staticText name='l2'
 ++++++++inlineTextBox name='l2'
@@ -12,6 +13,7 @@ rootWebArea focusable
 ++++++++staticText name='value'
 ++++++++++inlineTextBox name='value'
 ++++textField focusable name='l2'
+++++++genericContainer
 ++++textField focusable name='l2' value='value  *'
 ++++++genericContainer
 ++++++++staticText name='value  *'
@@ -21,11 +23,13 @@ rootWebArea focusable
 ++++++++inlineTextBox name='Email'
 ++++genericContainer
 ++++textField focusable name='Email'
+++++++genericContainer
 ++++textField focusable name='Email' value='value'
 ++++++genericContainer
 ++++++++staticText name='value'
 ++++++++++inlineTextBox name='value'
 ++++textField focusable multiline name='l5'
+++++++genericContainer
 ++++textField focusable multiline name='l6' value='Value'
 ++++++genericContainer
 ++++++++staticText name='Value'

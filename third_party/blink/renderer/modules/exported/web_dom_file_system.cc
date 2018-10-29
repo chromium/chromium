@@ -89,20 +89,20 @@ WebString WebDOMFileSystem::GetName() const {
   return private_->name();
 }
 
-WebFileSystem::Type WebDOMFileSystem::GetType() const {
+WebFileSystemType WebDOMFileSystem::GetType() const {
   DCHECK(private_.Get());
   switch (private_->GetType()) {
     case blink::mojom::FileSystemType::kTemporary:
-      return WebFileSystem::kTypeTemporary;
+      return WebFileSystemType::kWebFileSystemTypeTemporary;
     case blink::mojom::FileSystemType::kPersistent:
-      return WebFileSystem::kTypePersistent;
+      return WebFileSystemType::kWebFileSystemTypePersistent;
     case blink::mojom::FileSystemType::kIsolated:
-      return WebFileSystem::kTypeIsolated;
+      return WebFileSystemType::kWebFileSystemTypeIsolated;
     case blink::mojom::FileSystemType::kExternal:
-      return WebFileSystem::kTypeExternal;
+      return WebFileSystemType::kWebFileSystemTypeExternal;
     default:
       NOTREACHED();
-      return WebFileSystem::kTypeTemporary;
+      return WebFileSystemType::kWebFileSystemTypeTemporary;
   }
 }
 

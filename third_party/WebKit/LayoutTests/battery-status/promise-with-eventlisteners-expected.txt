@@ -2,7 +2,6 @@ Test promise resolution and event listeners callbacks.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 batteryStatusSuccess invoked
 PASS batteryInfo is defined.
 PASS lastSetMockBatteryInfo is defined.

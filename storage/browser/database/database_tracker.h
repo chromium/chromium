@@ -64,14 +64,11 @@ class STORAGE_EXPORT OriginInfo {
       const base::string16& database_name) const;
 
  protected:
-  typedef std::map<base::string16, std::pair<int64_t, base::string16>>
-      DatabaseInfoMap;
-
   OriginInfo(const std::string& origin_identifier, int64_t total_size);
 
   std::string origin_identifier_;
   int64_t total_size_;
-  DatabaseInfoMap database_info_;
+  std::map<base::string16, std::pair<int64_t, base::string16>> database_info_;
 };
 
 // This class manages the main database and keeps track of open databases.
@@ -190,11 +187,7 @@ class STORAGE_EXPORT DatabaseTracker
   friend class content::DatabaseTracker_TestHelper_Test;
   friend class content::MockDatabaseTracker; // for testing
 
-  typedef std::map<std::string, std::set<base::string16> > DatabaseSet;
-  typedef std::vector<std::pair<net::CompletionOnceCallback, DatabaseSet>>
-      PendingDeletionCallbacks;
-  typedef std::map<base::string16, base::File*> FileHandlesMap;
-  typedef std::map<std::string, base::string16> OriginDirectoriesMap;
+  using DatabaseSet = std::map<std::string, std::set<base::string16>>;
 
   class CachedOriginInfo : public OriginInfo {
    public:
@@ -276,7 +269,7 @@ class STORAGE_EXPORT DatabaseTracker
                                     net::CompletionOnceCallback callback);
 
   // Returns the directory where all DB files for the given origin are stored.
-  base::string16 GetOriginDirectory(const std::string& origin_identifier);
+  base::FilePath GetOriginDirectory(const std::string& origin_identifier);
 
   bool is_initialized_ = false;
   const bool is_incognito_;
@@ -298,7 +291,8 @@ class STORAGE_EXPORT DatabaseTracker
 
   // The set of databases that should be deleted but are still opened
   DatabaseSet dbs_to_be_deleted_;
-  PendingDeletionCallbacks deletion_callbacks_;
+  std::vector<std::pair<net::CompletionOnceCallback, DatabaseSet>>
+      deletion_callbacks_;
 
   // Apps and Extensions can have special rights.
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
@@ -315,14 +309,14 @@ class STORAGE_EXPORT DatabaseTracker
   // main DB and journal file that was accessed. When the incognito profile
   // goes away (or when the browser crashes), all these handles will be
   // closed, and the files will be deleted.
-  FileHandlesMap incognito_file_handles_;
+  std::map<base::string16, base::File*> incognito_file_handles_;
 
   // In a non-incognito profile, all DBs in an origin are stored in a directory
   // named after the origin. In an incognito profile though, we do not want the
   // directory structure to reveal the origins visited by the user (in case the
   // browser process crashes and those directories are not deleted). So we use
   // this map to assign directory names that do not reveal this information.
-  OriginDirectoriesMap incognito_origin_directories_;
+  std::map<std::string, base::string16> incognito_origin_directories_;
   int incognito_origin_directories_generator_ = 0;
 
   FRIEND_TEST_ALL_PREFIXES(DatabaseTracker, TestHelper);

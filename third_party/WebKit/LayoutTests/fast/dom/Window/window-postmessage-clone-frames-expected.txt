@@ -11,3 +11,4 @@ PASS: (frames[0].tests[3]).event.data instanceof (frames[0]).File is true of typ
 PASS: (frames[0].tests[4]).eventData instanceof (frames[0]).FileList is true of type boolean
 PASS: (frames[0].tests[4]).event.data instanceof (frames[0]).FileList is true of type boolean
 
+

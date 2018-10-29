@@ -2,7 +2,6 @@ This test checks that the lowsrc attribute of img tags are accessible via JavaSc
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS image.lowsrc is 'http://hostname/lowsrc.png'
 PASS image.lowsrc is 'http://hostname/newlowsrc.png'
 PASS successfullyParsed is true

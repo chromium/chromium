@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -269,56 +270,56 @@ Clipboard::FormatType Clipboard::GetFormatType(
 
 // static
 const Clipboard::FormatType& Clipboard::GetUrlWFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kURLFormat));
-  return type;
+  static base::NoDestructor<FormatType> type(kURLFormat);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetPlainTextFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kPlainTextFormat));
-  return type;
+  static base::NoDestructor<FormatType> type(kPlainTextFormat);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetPlainTextWFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kPlainTextFormat));
-  return type;
+  static base::NoDestructor<FormatType> type(kPlainTextFormat);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetWebKitSmartPasteFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kWebKitSmartPasteFormat));
-  return type;
+  static base::NoDestructor<FormatType> type(kWebKitSmartPasteFormat);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetHtmlFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kHTMLFormat));
-  return type;
+  static base::NoDestructor<FormatType> type(kHTMLFormat);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetRtfFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kRTFFormat));
-  return type;
+  static base::NoDestructor<FormatType> type(kRTFFormat);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetBitmapFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kBitmapFormat));
-  return type;
+  static base::NoDestructor<FormatType> type(kBitmapFormat);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetWebCustomDataFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypeWebCustomData));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypeWebCustomData);
+  return *type;
 }
 
 // static
 const Clipboard::FormatType& Clipboard::GetPepperCustomDataFormatType() {
-  CR_DEFINE_STATIC_LOCAL(FormatType, type, (kMimeTypePepperCustomData));
-  return type;
+  static base::NoDestructor<FormatType> type(kMimeTypePepperCustomData);
+  return *type;
 }
 
 // Clipboard factory method.
@@ -496,10 +497,8 @@ void ClipboardAndroid::WriteObjects(ClipboardType type,
   DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
   g_map.Get().Clear();
 
-  for (ObjectMap::const_iterator iter = objects.begin(); iter != objects.end();
-       ++iter) {
-    DispatchObject(static_cast<ObjectType>(iter->first), iter->second);
-  }
+  for (const auto& object : objects)
+    DispatchObject(static_cast<ObjectType>(object.first), object.second);
 
   g_map.Get().CommitToAndroidClipboard();
 }

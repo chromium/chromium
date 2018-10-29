@@ -4,7 +4,6 @@
   "sandbox_type": "none",
   "interface_provider_specs": {
     "service_manager:connector": {
-      "provides": { "mash:launchable": [ "mash.mojom.Launchable" ] },
       "requires": {
         "*": [ "app", "mash:launchable" ],
         "catalog": [

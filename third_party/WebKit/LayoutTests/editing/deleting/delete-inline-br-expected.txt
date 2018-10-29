@@ -3,6 +3,7 @@ PASS caretRect.top is expectedCaretRect.top
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS successfullyParsed is true
 
 TEST COMPLETE

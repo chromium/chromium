@@ -2,5 +2,6 @@ This is a testharness.js-based test.
 PASS XMLHttpRequest: getAllResponseHeaders()
 FAIL XMLHttpRequest: getAllResponseHeaders() 1 assert_equals: expected "also-here: Mr. PB\r\newok: lego\r\nfoo-test: 1, 2\r\n" but got "also-here: Mr. PB\r\nfoo-test: 1, 2\r\newok: lego\r\n"
 PASS XMLHttpRequest: getAllResponseHeaders() 2
+PASS XMLHttpRequest: getAllResponseHeaders() 3
 Harness: the test ran to completion.
 

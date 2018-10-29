@@ -5,11 +5,16 @@
 #include "components/unified_consent/unified_consent_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "components/prefs/pref_service.h"
 
 namespace {
 
 // Histogram name for the consent bump action.
 const char kConsentBumpActionMetricName[] = "UnifiedConsent.ConsentBump.Action";
+
+// Histogram recorded at startup to log which Google services are enabled.
+const char kSyncAndGoogleServicesSettingsHistogram[] =
+    "UnifiedConsent.SyncAndGoogleServicesSettings";
 
 }  // namespace
 
@@ -30,6 +35,32 @@ void RecordConsentBumpEligibility(bool eligible) {
 
 void RecordUnifiedConsentRevoked(UnifiedConsentRevokeReason reason) {
   UMA_HISTOGRAM_ENUMERATION("UnifiedConsent.RevokeReason", reason);
+}
+
+void RecordSettingsHistogramSample(SettingsHistogramValue value) {
+  UMA_HISTOGRAM_ENUMERATION(kSyncAndGoogleServicesSettingsHistogram, value);
+}
+
+bool RecordSettingsHistogramFromPref(const char* pref_name,
+                                     PrefService* pref_service,
+                                     SettingsHistogramValue value) {
+  if (!pref_service->GetBoolean(pref_name))
+    return false;
+  RecordSettingsHistogramSample(value);
+  return true;
+}
+
+bool RecordSettingsHistogramFromService(
+    UnifiedConsentServiceClient* client,
+    UnifiedConsentServiceClient::Service service,
+    SettingsHistogramValue value) {
+  if (client->GetServiceState(service) !=
+      UnifiedConsentServiceClient::ServiceState::kEnabled) {
+    return false;
+  }
+
+  RecordSettingsHistogramSample(value);
+  return true;
 }
 
 }  // namespace metrics

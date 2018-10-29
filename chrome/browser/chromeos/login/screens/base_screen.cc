@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "chrome/browser/chromeos/login/screens/base_screen_delegate.h"
 #include "chrome/browser/chromeos/login/screens/model_view_channel.h"
+#include "components/user_manager/user_manager.h"
 
 namespace chromeos {
 
@@ -99,6 +100,15 @@ void BaseScreen::CommitContextChanges() {
 
 void BaseScreen::Finish(ScreenExitCode exit_code) {
   base_screen_delegate_->OnExit(exit_code);
+}
+
+bool BaseScreen::IsPublicSessionOrEphemeralLogin() {
+  const user_manager::UserManager* user_manager =
+      user_manager::UserManager::Get();
+  return user_manager->IsLoggedInAsPublicAccount() ||
+         (user_manager->IsCurrentUserNonCryptohomeDataEphemeral() &&
+          user_manager->GetActiveUser()->GetType() !=
+              user_manager::USER_TYPE_REGULAR);
 }
 
 void BaseScreen::OnUserAction(const std::string& action_id) {

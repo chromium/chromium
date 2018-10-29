@@ -3,7 +3,6 @@ This test ensures that the lifecycle callback of a parser-made element is visibl
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.callbacksCalled is ['a', 'b', 'c']
 PASS window.callbacksCalled is ['a', 'b', 'c']
 PASS successfullyParsed is true

@@ -7,8 +7,7 @@
           "content.mojom.LayoutTestBluetoothFakeAdapterSetter",
           "content.mojom.MojoLayoutTestHelper",
           "content.mojom.FakeBluetoothChooser",
-          "bluetooth.mojom.FakeBluetooth",
-          "blink.test.mojom.WebPackageInternals"
+          "bluetooth.mojom.FakeBluetooth"
         ]
       },
       "requires": {

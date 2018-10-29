@@ -40,7 +40,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
-#include "net/log/test_net_log.h"
 #include "net/socket/socket_test_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
@@ -84,6 +83,7 @@ class DataReductionProxyBypassStatsTest : public testing::Test {
 
     test_context_ =
         DataReductionProxyTestContext::Builder().WithMockConfig().Build();
+    test_context_->DisableWarmupURLFetch();
     mock_url_request_ = context_.CreateRequest(GURL(), net::IDLE, &delegate_,
                                                TRAFFIC_ANNOTATION_FOR_TESTS);
   }
@@ -148,6 +148,7 @@ class DataReductionProxyBypassStatsEndToEndTest : public testing::Test {
                             .WithURLRequestContext(&context_)
                             .WithMockClientSocketFactory(&mock_socket_factory_)
                             .Build();
+    drp_test_context_->DisableWarmupURLFetch();
     drp_test_context_->AttachToURLRequestContext(&context_storage_);
     context_.set_client_socket_factory(&mock_socket_factory_);
     proxy_delegate_ = drp_test_context_->io_data()->CreateProxyDelegate();
@@ -601,9 +602,6 @@ TEST_F(DataReductionProxyBypassStatsEndToEndTest,
     const char* initial_response_headers;
   };
   const TestCase test_cases[] = {
-    { "DataReductionProxy.BypassedBytes.MissingViaHeaderOther",
-      "HTTP/1.1 200 OK\r\n\r\n",
-    },
     { "DataReductionProxy.BypassedBytes.Malformed407",
       "HTTP/1.1 407 Proxy Authentication Required\r\n\r\n",
     },
@@ -677,44 +675,6 @@ TEST_F(DataReductionProxyBypassStatsEndToEndTest, BypassedBytesNetErrorOther) {
   histogram_tester.ExpectUniqueSample(
       "DataReductionProxy.BypassOnNetworkErrorPrimary",
       -net::ERR_PROXY_CONNECTION_FAILED, 1);
-}
-
-TEST_F(DataReductionProxyBypassStatsEndToEndTest,
-       BypassedBytesMissingViaHeader4xx) {
-  InitializeContext();
-  const char* test_case_response_headers[] = {
-      "HTTP/1.1 414 Request-URI Too Long\r\n\r\n",
-      "HTTP/1.1 404 Not Found\r\n\r\n",
-  };
-  for (const char* test_case : test_case_response_headers) {
-    ClearBadProxies();
-    // The first request should be bypassed for missing Via header.
-    {
-      base::HistogramTester histogram_tester;
-      CreateAndExecuteRequest(GURL("http://foo.com"), net::LOAD_NORMAL, net::OK,
-                              test_case, kErrorBody.c_str(),
-                              "HTTP/1.1 200 OK\r\n\r\n", kBody.c_str());
-
-      histogram_tester.ExpectUniqueSample(
-          "DataReductionProxy.BypassedBytes.MissingViaHeader4xx", kBody.size(),
-          1);
-      ExpectOtherBypassedBytesHistogramsEmpty(
-          histogram_tester,
-          "DataReductionProxy.BypassedBytes.MissingViaHeader4xx");
-    }
-    // The second request should be sent via the proxy.
-    {
-      base::HistogramTester histogram_tester;
-      CreateAndExecuteRequest(GURL("http://bar.com"), net::LOAD_NORMAL, net::OK,
-                              "HTTP/1.1 200 OK\r\n"
-                              "Via: 1.1 Chrome-Compression-Proxy\r\n\r\n",
-                              kNextBody.c_str(), nullptr, nullptr);
-      histogram_tester.ExpectUniqueSample(
-          "DataReductionProxy.BypassedBytes.NotBypassed", kNextBody.size(), 1);
-      ExpectOtherBypassedBytesHistogramsEmpty(
-          histogram_tester, "DataReductionProxy.BypassedBytes.NotBypassed");
-    }
-  }
 }
 
 TEST_F(DataReductionProxyBypassStatsEndToEndTest,

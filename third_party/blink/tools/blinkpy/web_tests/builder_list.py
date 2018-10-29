@@ -36,9 +36,6 @@ import json
 
 from blinkpy.common.path_finder import PathFinder
 
-# TODO(crbug.com/818301): Remove it when we no longer have bots in this bucket.
-DEFAULT_BUCKET = 'master.tryserver.blink'
-
 
 class BuilderList(object):
 
@@ -83,7 +80,7 @@ class BuilderList(object):
         return sorted({b['port_name'] for b in self._builders.values()})
 
     def bucket_for_builder(self, builder_name):
-        return self._builders[builder_name].get('bucket', DEFAULT_BUCKET)
+        return self._builders[builder_name].get('bucket', '')
 
     def port_name_for_builder_name(self, builder_name):
         return self._builders[builder_name]['port_name']

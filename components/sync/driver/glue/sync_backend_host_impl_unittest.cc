@@ -41,7 +41,6 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google/cacheinvalidation/include/types.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -184,7 +183,6 @@ class SyncEngineTest : public testing::Test {
     credentials_.account_id = "user@example.com";
     credentials_.email = "user@example.com";
     credentials_.sync_token = "sync_token";
-    credentials_.scope_set.insert(GaiaConstants::kChromeSyncOAuth2Scope);
 
     fake_manager_factory_ = std::make_unique<FakeSyncManagerFactory>(
         &fake_manager_, network::TestNetworkConnectionTracker::GetInstance());
@@ -229,8 +227,8 @@ class SyncEngineTest : public testing::Test {
     params.registrar = std::make_unique<SyncBackendRegistrar>(
         std::string(), base::Bind(&SyncClient::CreateModelWorkerForGroup,
                                   base::Unretained(&sync_client_)));
-    params.encryption_observer_proxy =
-        std::make_unique<NullEncryptionObserver>();
+    params.encryption_observer_proxies.push_back(
+        std::make_unique<NullEncryptionObserver>());
     params.http_factory_getter = std::move(http_post_provider_factory_getter);
     params.credentials = credentials_;
     params.sync_manager_factory = std::move(fake_manager_factory_);

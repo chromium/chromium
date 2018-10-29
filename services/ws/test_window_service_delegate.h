@@ -44,6 +44,9 @@ class TestWindowServiceDelegate : public WindowServiceDelegate {
 
   bool cancel_drag_loop_called() const { return cancel_drag_loop_called_; }
 
+  void set_topmost(aura::Window* window) { topmost_ = window; }
+  void set_real_topmost(aura::Window* window) { real_topmost_ = window; }
+
   DragDropCompletedCallback TakeDragLoopCallback();
 
   // WindowServiceDelegate:
@@ -64,6 +67,9 @@ class TestWindowServiceDelegate : public WindowServiceDelegate {
                    ui::DragDropTypes::DragEventSource source,
                    DragDropCompletedCallback callback) override;
   void CancelDragLoop(aura::Window* window) override;
+  aura::Window* GetTopmostWindowAtPoint(const gfx::Point& location_in_screen,
+                                        const std::set<aura::Window*>& ignore,
+                                        aura::Window** real_topmost) override;
 
  private:
   aura::Window* top_level_parent_;
@@ -80,6 +86,9 @@ class TestWindowServiceDelegate : public WindowServiceDelegate {
 
   bool cancel_window_move_loop_called_ = false;
   bool cancel_drag_loop_called_ = false;
+
+  aura::Window* topmost_ = nullptr;
+  aura::Window* real_topmost_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestWindowServiceDelegate);
 };

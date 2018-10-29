@@ -8,11 +8,6 @@
 
 namespace web_resource {
 
-// This feature enables network change notifications from the
-// NetworkConnectionTracker instead of NetworkChangeNotifier.
-const base::Feature kResourceRequestAllowedMigration{
-    "ResourceRequestAllowedMigration", base::FEATURE_DISABLED_BY_DEFAULT};
-
 ResourceRequestAllowedNotifier::ResourceRequestAllowedNotifier(
     PrefService* local_state,
     const char* disable_network_switch,
@@ -27,12 +22,8 @@ ResourceRequestAllowedNotifier::ResourceRequestAllowedNotifier(
       weak_factory_(this) {}
 
 ResourceRequestAllowedNotifier::~ResourceRequestAllowedNotifier() {
-  if (observer_) {
-    if (base::FeatureList::IsEnabled(kResourceRequestAllowedMigration))
-      network_connection_tracker_->RemoveNetworkConnectionObserver(this);
-    else
-      net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-  }
+  if (observer_)
+    network_connection_tracker_->RemoveNetworkConnectionObserver(this);
 }
 
 void ResourceRequestAllowedNotifier::Init(Observer* observer, bool leaky) {
@@ -40,23 +31,18 @@ void ResourceRequestAllowedNotifier::Init(Observer* observer, bool leaky) {
   DCHECK(observer);
   observer_ = observer;
 
-  if (base::FeatureList::IsEnabled(kResourceRequestAllowedMigration)) {
-    DCHECK(network_connection_tracker_getter_);
-    network_connection_tracker_ =
-        std::move(network_connection_tracker_getter_).Run();
+  DCHECK(network_connection_tracker_getter_);
+  network_connection_tracker_ =
+      std::move(network_connection_tracker_getter_).Run();
 
-    if (leaky)
-      network_connection_tracker_->AddLeakyNetworkConnectionObserver(this);
-    else
-      network_connection_tracker_->AddNetworkConnectionObserver(this);
-    if (network_connection_tracker_->GetConnectionType(
-            &connection_type_,
-            base::BindOnce(&ResourceRequestAllowedNotifier::SetConnectionType,
-                           weak_factory_.GetWeakPtr()))) {
-      connection_initialized_ = true;
-    }
-  } else {
-    net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  if (leaky)
+    network_connection_tracker_->AddLeakyNetworkConnectionObserver(this);
+  else
+    network_connection_tracker_->AddNetworkConnectionObserver(this);
+  if (network_connection_tracker_->GetConnectionType(
+          &connection_type_,
+          base::BindOnce(&ResourceRequestAllowedNotifier::SetConnectionType,
+                         weak_factory_.GetWeakPtr()))) {
     connection_initialized_ = true;
   }
 
@@ -90,11 +76,8 @@ ResourceRequestAllowedNotifier::GetResourceRequestsAllowedState() {
 }
 
 bool ResourceRequestAllowedNotifier::IsOffline() {
-  if (base::FeatureList::IsEnabled(kResourceRequestAllowedMigration)) {
-    return !connection_initialized_ ||
-           connection_type_ == network::mojom::ConnectionType::CONNECTION_NONE;
-  }
-  return net::NetworkChangeNotifier::IsOffline();
+  return !connection_initialized_ ||
+         connection_type_ == network::mojom::ConnectionType::CONNECTION_NONE;
 }
 
 bool ResourceRequestAllowedNotifier::ResourceRequestsAllowed() {
@@ -139,20 +122,15 @@ void ResourceRequestAllowedNotifier::OnEulaAccepted() {
   MaybeNotifyObserver();
 }
 
-void ResourceRequestAllowedNotifier::OnNetworkChanged(
-    net::NetworkChangeNotifier::ConnectionType type) {
-  if (type != net::NetworkChangeNotifier::CONNECTION_NONE) {
+void ResourceRequestAllowedNotifier::OnConnectionChanged(
+    network::mojom::ConnectionType type) {
+  SetConnectionType(type);
+  if (type != network::mojom::ConnectionType::CONNECTION_NONE) {
     DVLOG(1) << "Network came online.";
     // MaybeNotifyObserver() internally guarantees that it will only notify the
     // observer if it's currently waiting for the network to come online.
     MaybeNotifyObserver();
   }
-}
-
-void ResourceRequestAllowedNotifier::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  SetConnectionType(type);
-  OnNetworkChanged(net::NetworkChangeNotifier::ConnectionType(type));
 }
 
 void ResourceRequestAllowedNotifier::SetConnectionType(

@@ -52,7 +52,7 @@ class MatchResult;
 class RuleSet;
 class CSSPropertyValueSet;
 class StyleRuleUsageTracker;
-class CSSVariableResolver;
+class PropertyHandle;
 
 enum RuleMatchingBehavior { kMatchAllRules, kMatchAllRulesExcludingSMIL };
 
@@ -79,7 +79,7 @@ class CORE_EXPORT StyleResolver final
       Element&,
       const ComputedStyle& base_style,
       const ComputedStyle* parent_style,
-      const CSSProperty&,
+      const PropertyHandle&,
       const CSSValue*);
 
   scoped_refptr<ComputedStyle> PseudoStyleForElement(
@@ -135,10 +135,6 @@ class CORE_EXPORT StyleResolver final
 
   void SetRuleUsageTracker(StyleRuleUsageTracker*);
   void UpdateMediaType();
-
-  static void ApplyAnimatedCustomProperty(StyleResolverState&,
-                                          CSSVariableResolver&,
-                                          const PropertyHandle&);
 
   static bool HasAuthorBackground(const StyleResolverState&);
 

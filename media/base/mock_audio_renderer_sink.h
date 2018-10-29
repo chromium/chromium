@@ -36,7 +36,7 @@ class MockAudioRendererSink : public SwitchableAudioRendererSink {
   bool IsOptimizedForHardwareParameters() override;
 
   void SwitchOutputDevice(const std::string& device_id,
-                          const OutputDeviceStatusCB& callback) override;
+                          OutputDeviceStatusCB callback) override;
   void Initialize(const AudioParameters& params,
                   RenderCallback* renderer) override;
   AudioRendererSink::RenderCallback* callback() { return callback_; }

@@ -51,6 +51,7 @@ class IntentHelperInstance;
 class KioskHost;
 class KioskInstance;
 class LockScreenInstance;
+class MediaSessionInstance;
 class MetricsHost;
 class MetricsInstance;
 class MidisHost;
@@ -175,6 +176,9 @@ class ArcBridgeService {
   ConnectionHolder<mojom::LockScreenInstance>* lock_screen() {
     return &lock_screen_;
   }
+  ConnectionHolder<mojom::MediaSessionInstance>* media_session() {
+    return &media_session_;
+  }
   ConnectionHolder<mojom::MetricsInstance, mojom::MetricsHost>* metrics() {
     return &metrics_;
   }
@@ -276,6 +280,7 @@ class ArcBridgeService {
       intent_helper_;
   ConnectionHolder<mojom::KioskInstance, mojom::KioskHost> kiosk_;
   ConnectionHolder<mojom::LockScreenInstance> lock_screen_;
+  ConnectionHolder<mojom::MediaSessionInstance> media_session_;
   ConnectionHolder<mojom::MetricsInstance, mojom::MetricsHost> metrics_;
   ConnectionHolder<mojom::MidisInstance, mojom::MidisHost> midis_;
   ConnectionHolder<mojom::NetInstance, mojom::NetHost> net_;

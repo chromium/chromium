@@ -17,6 +17,7 @@
 #include "base/sequenced_task_runner_helpers.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_listener.h"
+#include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/screen_resolution.h"
@@ -79,6 +80,7 @@ class DesktopSessionProxy
       const DesktopEnvironmentOptions& options);
 
   // Mirrors DesktopEnvironment.
+  std::unique_ptr<ActionExecutor> CreateActionExecutor();
   std::unique_ptr<AudioCapturer> CreateAudioCapturer();
   std::unique_ptr<InputInjector> CreateInputInjector();
   std::unique_ptr<ScreenControls> CreateScreenControls();
@@ -131,6 +133,9 @@ class DesktopSessionProxy
 
   // API used to implement the SessionController interface.
   void SetScreenResolution(const ScreenResolution& resolution);
+
+  // API used to implement the ActionExecutor interface.
+  void ExecuteAction(const protocol::ActionRequest& request);
 
   uint32_t desktop_session_id() const { return desktop_session_id_; }
 

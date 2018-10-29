@@ -72,7 +72,7 @@ void FilterDuplicates(
            std::unique_ptr<autofill::PasswordForm>>
       credentials;
   for (auto& form : *forms) {
-    if (!form->federation_origin.unique()) {
+    if (!form->federation_origin.opaque()) {
       federated_forms.push_back(std::move(form));
     } else {
       auto key = std::make_pair(
@@ -168,8 +168,8 @@ void CredentialManagerPendingRequestTask::ProcessForms(
   for (auto& form : results) {
     // Ensure that the form we're looking at matches the password and
     // federation filters provided.
-    if (!((form->federation_origin.unique() && include_passwords_) ||
-          (!form->federation_origin.unique() &&
+    if (!((form->federation_origin.opaque() && include_passwords_) ||
+          (!form->federation_origin.opaque() &&
            federations_.count(form->federation_origin.Serialize())))) {
       continue;
     }
@@ -205,7 +205,7 @@ void CredentialManagerPendingRequestTask::ProcessForms(
       !password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
           delegate_->client()->GetPrefs())) {
     CredentialInfo info(*local_results[0],
-                        local_results[0]->federation_origin.unique()
+                        local_results[0]->federation_origin.opaque()
                             ? CredentialType::CREDENTIAL_TYPE_PASSWORD
                             : CredentialType::CREDENTIAL_TYPE_FEDERATED);
     delegate_->client()->NotifyUserAutoSignin(std::move(local_results),

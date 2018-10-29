@@ -46,8 +46,7 @@ void SyncedPrefChangeRegistrar::Remove(const char* path) {
 }
 
 void SyncedPrefChangeRegistrar::RemoveAll() {
-  for (ObserverMap::iterator iter = observers_.begin();
-       iter != observers_.end(); ++iter) {
+  for (auto iter = observers_.begin(); iter != observers_.end(); ++iter) {
     pref_service_->RemoveSyncedPrefObserver(iter->first, this);
   }
   observers_.clear();

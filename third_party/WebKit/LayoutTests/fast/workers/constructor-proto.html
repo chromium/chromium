@@ -16,7 +16,7 @@ worker.postMessage("eval DONE");
 
 worker.onmessage = function(evt) {
     if (!/DONE/.test(evt.data))
-        debug(evt.data.replace(new RegExp("/.*LayoutTests"), "<...>"));
+        debug(evt.data.replace(new RegExp("/.*(LayoutTests|web_tests)"), "<...>"));
     else
         finishJSTest();
 };

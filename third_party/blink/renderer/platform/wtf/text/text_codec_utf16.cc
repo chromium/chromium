@@ -65,7 +65,7 @@ void TextCodecUTF16::RegisterCodecs(TextCodecRegistrar registrar) {
 }
 
 String TextCodecUTF16::Decode(const char* bytes,
-                              size_t length,
+                              wtf_size_t length,
                               FlushBehavior flush,
                               bool,
                               bool& saw_error) {
@@ -83,16 +83,17 @@ String TextCodecUTF16::Decode(const char* bytes,
   }
 
   const unsigned char* p = reinterpret_cast<const unsigned char*>(bytes);
-  const size_t num_bytes = length + have_lead_byte_;
+  const wtf_size_t num_bytes = length + have_lead_byte_;
   const bool will_have_extra_byte = num_bytes & 1;
-  const size_t num_chars_in = num_bytes / 2;
-  const size_t max_chars_out = num_chars_in + (have_lead_surrogate_ ? 1 : 0) +
-                               (really_flush && will_have_extra_byte ? 1 : 0);
+  const wtf_size_t num_chars_in = num_bytes / 2;
+  const wtf_size_t max_chars_out =
+      num_chars_in + (have_lead_surrogate_ ? 1 : 0) +
+      (really_flush && will_have_extra_byte ? 1 : 0);
 
   StringBuffer<UChar> buffer(max_chars_out);
   UChar* q = buffer.Characters();
 
-  for (size_t i = 0; i < num_chars_in; ++i) {
+  for (wtf_size_t i = 0; i < num_chars_in; ++i) {
     UChar c;
     if (have_lead_byte_) {
       c = little_endian_ ? (lead_byte_ | (p[0] << 8))
@@ -144,21 +145,21 @@ String TextCodecUTF16::Decode(const char* bytes,
     *q++ = kReplacementCharacter;
   }
 
-  buffer.Shrink(q - buffer.Characters());
+  buffer.Shrink(static_cast<wtf_size_t>(q - buffer.Characters()));
 
   return String::Adopt(buffer);
 }
 
 CString TextCodecUTF16::Encode(const UChar* characters,
-                               size_t length,
+                               wtf_size_t length,
                                UnencodableHandling) {
   // We need to be sure we can double the length without overflowing.
   // Since the passed-in length is the length of an actual existing
   // character buffer, each character is two bytes, and we know
   // the buffer doesn't occupy the entire address space, we can
-  // assert here that doubling the length does not overflow size_t
+  // assert here that doubling the length does not overflow wtf_size_t
   // and there's no need for a runtime check.
-  DCHECK_LE(length, std::numeric_limits<size_t>::max() / 2);
+  DCHECK_LE(length, std::numeric_limits<wtf_size_t>::max() / 2);
 
   char* bytes;
   CString result = CString::CreateUninitialized(length * 2, bytes);
@@ -167,13 +168,13 @@ CString TextCodecUTF16::Encode(const UChar* characters,
   // will have null characters inside it. Perhaps the result of encode should
   // not be a CString.
   if (little_endian_) {
-    for (size_t i = 0; i < length; ++i) {
+    for (wtf_size_t i = 0; i < length; ++i) {
       UChar c = characters[i];
       bytes[i * 2] = static_cast<char>(c);
       bytes[i * 2 + 1] = c >> 8;
     }
   } else {
-    for (size_t i = 0; i < length; ++i) {
+    for (wtf_size_t i = 0; i < length; ++i) {
       UChar c = characters[i];
       bytes[i * 2] = c >> 8;
       bytes[i * 2 + 1] = static_cast<char>(c);
@@ -184,21 +185,21 @@ CString TextCodecUTF16::Encode(const UChar* characters,
 }
 
 CString TextCodecUTF16::Encode(const LChar* characters,
-                               size_t length,
+                               wtf_size_t length,
                                UnencodableHandling) {
   // In the LChar case, we do actually need to perform this check in release. :)
-  CHECK_LE(length, std::numeric_limits<size_t>::max() / 2);
+  CHECK_LE(length, std::numeric_limits<wtf_size_t>::max() / 2);
 
   char* bytes;
   CString result = CString::CreateUninitialized(length * 2, bytes);
 
   if (little_endian_) {
-    for (size_t i = 0; i < length; ++i) {
+    for (wtf_size_t i = 0; i < length; ++i) {
       bytes[i * 2] = characters[i];
       bytes[i * 2 + 1] = 0;
     }
   } else {
-    for (size_t i = 0; i < length; ++i) {
+    for (wtf_size_t i = 0; i < length; ++i) {
       bytes[i * 2] = 0;
       bytes[i * 2 + 1] = characters[i];
     }

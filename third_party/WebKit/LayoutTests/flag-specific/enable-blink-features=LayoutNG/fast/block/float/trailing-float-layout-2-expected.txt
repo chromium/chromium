@@ -1,3 +1,0 @@
-
-XYZSaft
-crbug.com/517030: Ensure trailing float gets a layout. Passes if it does not assert

@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/android/feed/feed_host_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
@@ -62,6 +63,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/strike_database.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/browsing_data/core/features.h"
@@ -92,6 +94,7 @@
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "components/webrtc_logging/browser/log_cleanup.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/plugin_data_remover.h"
@@ -103,12 +106,14 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/customtabs/origin_verifier.h"
+#include "chrome/browser/android/feed/feed_lifecycle_bridge.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/media/android/cdm/media_drm_license_manager.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "components/feed/buildflags.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "sql/database.h"
@@ -135,7 +140,8 @@
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_MACOSX)
-#include "device/fido/mac/browsing_data_deletion.h"
+#include "components/os_crypt/os_crypt_pref_names_mac.h"
+#include "device/fido/mac/credential_store.h"
 #endif  // defined(OS_MACOSX)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -152,13 +158,13 @@ namespace {
 // Generic functions but currently only used when ENABLE_NACL.
 #if BUILDFLAG(ENABLE_NACL)
 void UIThreadTrampolineHelper(base::OnceClosure callback) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE, std::move(callback));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, std::move(callback));
 }
 
 // Convenience method to create a callback that can be run on any thread and
 // will post the given |callback| back to the UI thread.
 base::OnceClosure UIThreadTrampoline(base::OnceClosure callback) {
-  // We could directly bind &BrowserThread::PostTask, but that would require
+  // We could directly bind &base::PostTaskWithTraits, but that would require
   // evaluating FROM_HERE when this method is called, as opposed to when the
   // task is actually posted.
   return base::BindOnce(&UIThreadTrampolineHelper, std::move(callback));
@@ -568,10 +574,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // |previews_service| is null if |profile_| is off the record.
     PreviewsService* previews_service =
         PreviewsServiceFactory::GetForProfile(profile_);
-    if (previews_service && previews_service->previews_ui_service()) {
-      previews_service->previews_ui_service()->ClearBlackList(delete_begin_,
-                                                              delete_end_);
-    }
+    if (previews_service)
+      previews_service->ClearBlackList(delete_begin_, delete_end_);
 
     // |previews_service| is null if |profile_| is off the record.
     PageLoadCappingService* page_load_capping_service =
@@ -605,7 +609,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // time. The perf history is a simple summing of decode statistics with no
     // record of when the stats were written nor what site the video was played
     // on.
-    if (delete_begin_ == base::Time()) {
+    if (IsForAllTime()) {
       // TODO(chcunningham): Add UMA to track how often this gets deleted.
       media::VideoDecodePerfHistory* video_decode_perf_history =
           profile_->GetVideoDecodePerfHistory();
@@ -647,7 +651,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // doesn't make sense to apply the time period of deleting in the last X
     // hours/days to the safebrowsing cookies since they aren't the result of
     // any user action.
-    if (delete_begin_ == base::Time()) {
+    if (IsForAllTime()) {
       safe_browsing::SafeBrowsingService* sb_service =
           g_browser_process->safe_browsing_service();
       if (sb_service) {
@@ -788,11 +792,20 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                              CreatePendingTaskCompletionClosureForMojo());
 
 #if defined(OS_MACOSX)
-    auto authenticator_config = ChromeAuthenticatorRequestDelegate::
-        TouchIdAuthenticatorConfigForProfile(profile_);
-    device::fido::mac::DeleteWebAuthnCredentials(
-        authenticator_config.keychain_access_group,
-        authenticator_config.metadata_secret, delete_begin_, delete_end_);
+    device::fido::mac::TouchIdCredentialStore(
+        ChromeAuthenticatorRequestDelegate::
+            TouchIdAuthenticatorConfigForProfile(profile_))
+        .DeleteCredentials(delete_begin_, delete_end_);
+
+    // When clearing passwords for all time, reset preferences that are used to
+    // prevent overwriting the encryption key in the Keychain.
+    if (IsForAllTime()) {
+      PrefService* local_state = g_browser_process->local_state();
+      if (local_state) {
+        local_state->ClearPref(os_crypt::prefs::kKeyCreated);
+        local_state->ClearPref(os_crypt::prefs::kKeyOverwritingPreventions);
+      }
+    }
 #endif  // defined(OS_MACOSX)
   }
 
@@ -836,6 +849,16 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           delete_end_);
       web_data_service->RemoveAutofillDataModifiedBetween(
           delete_begin_, delete_end_);
+
+      // Clear out the Autofill StrikeDatabase in its entirety.
+      // TODO(crbug.com/884817): Respect |delete_begin_| and |delete_end_| and
+      // only clear out entries whose last strikes were created in that
+      // timeframe.
+      autofill::StrikeDatabase* strike_database =
+          autofill::StrikeDatabaseFactory::GetForProfile(profile_);
+      if (strike_database)
+        strike_database->ClearAllStrikes(base::DoNothing());
+
       // Ask for a call back when the above calls are finished.
       web_data_service->GetDBTaskRunner()->PostTaskAndReply(
           FROM_HERE, base::DoNothing(), CreatePendingTaskCompletionClosure());
@@ -859,13 +882,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     web_cache::WebCacheManager::GetInstance()->ClearCache();
 
 #if BUILDFLAG(ENABLE_NACL)
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&ClearNaClCacheOnIOThread,
                        base::AdaptCallbackForRepeating(UIThreadTrampoline(
                            CreatePendingTaskCompletionClosure()))));
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&ClearPnaclCacheOnIOThread, delete_begin_, delete_end_,
                        base::AdaptCallbackForRepeating(UIThreadTrampoline(
                            CreatePendingTaskCompletionClosure()))));
@@ -884,6 +907,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ContentSuggestionsServiceFactory::GetForProfileIfExists(profile_);
     if (content_suggestions_service)
       content_suggestions_service->ClearAllCachedSuggestions();
+
+#if defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_FEED_IN_CHROME)
+    if (base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions))
+      feed::FeedLifecycleBridge::ClearCachedData();
+#endif  // BUILDFLAG(ENABLE_FEED_IN_CHROME)
+#endif  // defined(OS_ANDROID)
 
     // |ui_nqe_service| may be null if |profile_| is not a regular profile.
     UINetworkQualityEstimatorService* ui_nqe_service =
@@ -1144,6 +1174,10 @@ void ChromeBrowsingDataRemoverDelegate::OnKeywordsLoaded(
                                            delete_end_);
   template_url_sub_.reset();
   std::move(done).Run();
+}
+
+bool ChromeBrowsingDataRemoverDelegate::IsForAllTime() const {
+  return delete_begin_ == base::Time() && delete_end_ == base::Time::Max();
 }
 
 #if defined(OS_CHROMEOS)

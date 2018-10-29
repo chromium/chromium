@@ -19,7 +19,6 @@ class DownloadMediaParser;
 class DownloadMediaParserBridge {
  public:
   DownloadMediaParserBridge(
-      int64_t size,
       const std::string& mime_type,
       const base::FilePath& file_path,
       DownloadMediaParser::ParseCompleteCB parse_complete_cb);
@@ -31,6 +30,7 @@ class DownloadMediaParserBridge {
  private:
   // The media parser that does actual jobs in a sandboxed process.
   std::unique_ptr<DownloadMediaParser> parser_;
+  DownloadMediaParser::ParseCompleteCB parse_complete_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadMediaParserBridge);
 };

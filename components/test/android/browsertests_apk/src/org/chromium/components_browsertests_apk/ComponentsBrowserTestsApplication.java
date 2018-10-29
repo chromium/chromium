@@ -24,8 +24,9 @@ public class ComponentsBrowserTestsApplication extends Application {
         super.attachBaseContext(base);
         ContextUtils.initApplicationContext(this);
         // The test harness runs in the main process, and browser in :test_process.
+        boolean isMainProcess = !ContextUtils.getProcessName().contains(":");
         boolean isBrowserProcess = ContextUtils.getProcessName().contains(":test");
-        if (BuildConfig.IS_MULTIDEX_ENABLED && (ContextUtils.isMainProcess() || isBrowserProcess)) {
+        if (BuildConfig.IS_MULTIDEX_ENABLED && (isMainProcess || isBrowserProcess)) {
             ChromiumMultiDexInstaller.install(this);
         }
         if (isBrowserProcess) {

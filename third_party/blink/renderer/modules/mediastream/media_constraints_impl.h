@@ -42,7 +42,7 @@ class Dictionary;
 class ExecutionContext;
 class MediaTrackConstraints;
 
-namespace MediaConstraintsImpl {
+namespace media_constraints_impl {
 
 WebMediaConstraints Create();
 WebMediaConstraints Create(ExecutionContext*,

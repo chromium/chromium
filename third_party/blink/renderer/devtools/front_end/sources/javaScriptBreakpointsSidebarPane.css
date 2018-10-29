@@ -25,6 +25,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    margin-left: 22px;
 }
 
 .breakpoints-list-deactivated {

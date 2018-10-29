@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -23,9 +23,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/core/browser/profile_management_switches.h"
 #include "components/signin/core/browser/signin_header_helper.h"
-#include "components/signin/core/browser/signin_manager.h"
 #include "components/signin/core/browser/signin_metrics.h"
 #include "net/base/url_util.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(OS_ANDROID)
@@ -116,10 +116,10 @@ std::vector<base::string16> SigninGlobalError::GetBubbleViewMessages() {
   std::vector<base::string16> messages;
 
   // If the user isn't signed in, no need to display an error bubble.
-  SigninManagerBase* signin_manager =
-      SigninManagerFactory::GetForProfileIfExists(profile_);
-  if (signin_manager && !signin_manager->IsAuthenticated())
-      return messages;
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile_);
+  if (identity_manager && !identity_manager->HasPrimaryAccount())
+    return messages;
 
   if (!error_controller_->HasError())
     return messages;

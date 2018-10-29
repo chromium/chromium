@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
-#include "components/cbor/cbor_values.h"
+#include "components/cbor/values.h"
 #include "device/fido/fido_constants.h"
 
 namespace device {
@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialParams {
   };
 
   static base::Optional<PublicKeyCredentialParams> CreateFromCBORValue(
-      const cbor::CBORValue& cbor_value);
+      const cbor::Value& cbor_value);
 
   explicit PublicKeyCredentialParams(
       std::vector<CredentialInfo> credential_params);
@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialParams {
   PublicKeyCredentialParams& operator=(PublicKeyCredentialParams&& other);
   ~PublicKeyCredentialParams();
 
-  cbor::CBORValue ConvertToCBOR() const;
+  cbor::Value ConvertToCBOR() const;
   const std::vector<CredentialInfo>& public_key_credential_params() const {
     return public_key_credential_params_;
   }

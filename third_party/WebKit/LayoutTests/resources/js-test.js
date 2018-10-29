@@ -70,7 +70,8 @@ var unexpectedErrorMessage; // set by onerror when expectingError is not true
             var span = document.createElement("div");
             // insert it first so XHTML knows the namespace;
             getOrCreateTestElement("console", "div").appendChild(span);
-            span.innerHTML = msg + '<br />';
+            // Some tests use debug('') to insert an empty line.
+            span.innerHTML = msg !== '' ? msg : '<br />';
         }
     };
 
@@ -741,28 +742,6 @@ function shouldHaveHadError(message)
     testFailed("expectError() not called before shouldHaveHadError()");
 }
 
-// With Oilpan tests that rely on garbage collection need to go through
-// the event loop in order to get precise garbage collections. Oilpan
-// uses conservative stack scanning when not at the event loop and that
-// can artificially keep objects alive. Therefore, tests that need to check
-// that something is dead need to use this asynchronous collectGarbage
-// function.
-function asyncGC(callback) {
-    if (!callback) {
-        return new Promise(resolve => asyncGC(resolve));
-    }
-    var documentsBefore = internals.numberOfLiveDocuments();
-    GCController.collectAll();
-    // FIXME: we need a better way of waiting for chromium events to happen
-    setTimeout(function () {
-        var documentsAfter = internals.numberOfLiveDocuments();
-        if (documentsAfter < documentsBefore)
-            asyncGC(callback);
-        else
-            callback();
-    }, 0);
-}
-
 function gc() {
     if (typeof GCController !== "undefined")
         GCController.collectAll();
@@ -779,15 +758,6 @@ function gc() {
     }
 }
 
-function asyncMinorGC(callback) {
-    if (typeof GCController !== "undefined")
-        GCController.minorCollect();
-    else
-        testFailed("Minor GC is available only when you enable the --expose-gc option in V8.");
-    // FIXME: we need a better way of waiting for chromium events to happen
-    setTimeout(callback, 0);
-}
-
 function setPrintTestResultsLazily() {
     self._lazyTestResults = self._lazyTestResults || [];
 }
@@ -797,7 +767,7 @@ function isSuccessfullyParsed()
     // FIXME: Remove this and only report unexpected syntax errors.
     successfullyParsed = !unexpectedErrorMessage;
     shouldBeTrue("successfullyParsed");
-    debug('<br /><span class="pass">TEST COMPLETE</span>');
+    debug('<br /><span class="pass">TEST COMPLETE<br /></span>');
 }
 
 var wasPostTestScriptParsed, wasFinishJSTestCalled, jsTestIsAsync;

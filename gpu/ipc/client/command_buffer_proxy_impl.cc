@@ -416,8 +416,7 @@ const gpu::Capabilities& CommandBufferProxyImpl::GetCapabilities() const {
 
 int32_t CommandBufferProxyImpl::CreateImage(ClientBuffer buffer,
                                             size_t width,
-                                            size_t height,
-                                            unsigned internal_format) {
+                                            size_t height) {
   CheckLock();
   base::AutoLock lock(last_state_lock_);
   if (last_state_.error != gpu::error::kNoError)
@@ -447,15 +446,12 @@ int32_t CommandBufferProxyImpl::CreateImage(ClientBuffer buffer,
       gpu_memory_buffer->GetFormat(), capabilities_));
   DCHECK(gpu::IsImageSizeValidForGpuMemoryBufferFormat(
       gfx::Size(width, height), gpu_memory_buffer->GetFormat()));
-  DCHECK(gpu::IsImageFormatCompatibleWithGpuMemoryBufferFormat(
-      internal_format, gpu_memory_buffer->GetFormat()));
 
   GpuCommandBufferMsg_CreateImage_Params params;
   params.id = new_id;
   params.gpu_memory_buffer = std::move(handle);
   params.size = gfx::Size(width, height);
   params.format = gpu_memory_buffer->GetFormat();
-  params.internal_format = internal_format;
   params.image_release_count = image_fence_sync;
 
   Send(new GpuCommandBufferMsg_CreateImage(route_id_, params));

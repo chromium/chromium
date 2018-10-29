@@ -9,26 +9,13 @@
 namespace ui {
 
 NativeThemeDarkAura* NativeThemeDarkAura::instance() {
-  CR_DEFINE_STATIC_LOCAL(NativeThemeDarkAura, s_native_theme, ());
-  return &s_native_theme;
+  static base::NoDestructor<NativeThemeDarkAura> s_native_theme;
+  return s_native_theme.get();
 }
 
 SkColor NativeThemeDarkAura::GetSystemColor(ColorId color_id) const {
-  static const SkColor kPrimaryTextColor = SK_ColorWHITE;
-
-  static const SkColor kButtonEnabledColor = SK_ColorWHITE;
-
-  static const SkColor kTextfieldDefaultColor = SK_ColorWHITE;
-  static const SkColor kTextfieldDefaultBackground =
-      SkColorSetRGB(0x62, 0x62, 0x62);
-  static const SkColor kTextSelectionBackgroundFocused =
+  constexpr SkColor kTextSelectionBackgroundFocused =
       SkColorSetA(gfx::kGoogleBlue700, 0xCC);
-
-  static const SkColor kResultsTableNormalBackground =
-      SkColorSetRGB(0x28, 0x28, 0x28);
-  static const SkColor kResultsTableText = SK_ColorWHITE;
-  static const SkColor kResultsTableDimmedText =
-      SkColorSetA(kResultsTableText, 0x80);
 
   switch (color_id) {
     // Window
@@ -39,14 +26,14 @@ SkColor NativeThemeDarkAura::GetSystemColor(ColorId color_id) const {
 
     // Button
     case kColorId_ButtonEnabledColor:
-      return kButtonEnabledColor;
+      return SK_ColorWHITE;
     case kColorId_ProminentButtonColor:
       return gfx::kGoogleBlue600;
 
     // Label
     case kColorId_LabelEnabledColor:
     case kColorId_LabelTextSelectionColor:
-      return kPrimaryTextColor;
+      return SK_ColorWHITE;
     case kColorId_LabelTextSelectionBackgroundFocused:
       return kTextSelectionBackgroundFocused;
 
@@ -58,23 +45,19 @@ SkColor NativeThemeDarkAura::GetSystemColor(ColorId color_id) const {
     // Textfield
     case kColorId_TextfieldDefaultColor:
     case kColorId_TextfieldSelectionColor:
-      return kTextfieldDefaultColor;
+      return SK_ColorWHITE;
     case kColorId_TextfieldDefaultBackground:
-      return kTextfieldDefaultBackground;
+      return SkColorSetRGB(0x62, 0x62, 0x62);
     case kColorId_TextfieldSelectionBackgroundFocused:
       return kTextSelectionBackgroundFocused;
 
     // Results Tables
     case kColorId_ResultsTableNormalBackground:
-      return kResultsTableNormalBackground;
+      return SkColorSetRGB(0x28, 0x28, 0x28);
     case kColorId_ResultsTableNormalText:
-    case kColorId_ResultsTableHoveredText:
-    case kColorId_ResultsTableSelectedText:
-      return kResultsTableText;
-    case kColorId_ResultsTableNormalDimmedText:
-    case kColorId_ResultsTableHoveredDimmedText:
-    case kColorId_ResultsTableSelectedDimmedText:
-      return kResultsTableDimmedText;
+      return SK_ColorWHITE;
+    case kColorId_ResultsTableDimmedText:
+      return SkColorSetA(GetSystemColor(kColorId_ResultsTableNormalText), 0x80);
 
     // FocusableBorder
     case kColorId_FocusedBorderColor:
@@ -93,21 +76,12 @@ SkColor NativeThemeDarkAura::GetSystemColor(ColorId color_id) const {
     case kColorId_TextOnProminentButtonColor:
     case kColorId_ButtonPressedShade:
     case kColorId_ResultsTableHoveredBackground:
-    case kColorId_ResultsTableSelectedBackground:
-    case kColorId_ResultsTableNormalUrl:
-    case kColorId_ResultsTableHoveredUrl:
-    case kColorId_ResultsTableSelectedUrl:
       return NativeThemeAura::GetSystemColor(color_id);
 
     // Any other color is not defined and shouldn't be used in a dark theme.
     case kColorId_UnfocusedBorderColor:
     case kColorId_ButtonDisabledColor:
     case kColorId_ButtonHoverColor:
-    case kColorId_BlueButtonEnabledColor:
-    case kColorId_BlueButtonDisabledColor:
-    case kColorId_BlueButtonPressedColor:
-    case kColorId_BlueButtonHoverColor:
-    case kColorId_BlueButtonShadowColor:
     case kColorId_EnabledMenuItemForegroundColor:
     case kColorId_DisabledMenuItemForegroundColor:
     case kColorId_SelectedMenuItemForegroundColor:
@@ -142,12 +116,6 @@ SkColor NativeThemeDarkAura::GetSystemColor(ColorId color_id) const {
     case kColorId_TableHeaderText:
     case kColorId_TableHeaderBackground:
     case kColorId_TableHeaderSeparator:
-    case kColorId_ResultsTablePositiveText:
-    case kColorId_ResultsTablePositiveHoveredText:
-    case kColorId_ResultsTablePositiveSelectedText:
-    case kColorId_ResultsTableNegativeText:
-    case kColorId_ResultsTableNegativeHoveredText:
-    case kColorId_ResultsTableNegativeSelectedText:
     case kColorId_SeparatorColor:
     case kColorId_ThrobberSpinningColor:
     case kColorId_ThrobberWaitingColor:

@@ -11,13 +11,13 @@
 #include <immintrin.h>
 
 namespace blink {
-namespace VectorMath {
+namespace vector_math {
 namespace AVX {
 
 using MType = __m256;
 
 }  // namespace AVX
-}  // namespace VectorMath
+}  // namespace vector_math
 }  // namespace blink
 
 #define MM_PS(name) _mm256_##name##_ps

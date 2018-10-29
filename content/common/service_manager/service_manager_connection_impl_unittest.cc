@@ -4,8 +4,8 @@
 
 #include "content/common/service_manager/service_manager_connection_impl.h"
 
-#include "base/message_loop/message_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/threading/thread.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/cpp/service.h"
@@ -27,7 +27,7 @@ std::unique_ptr<service_manager::Service> LaunchService(
 }  // namespace
 
 TEST(ServiceManagerConnectionImplTest, ServiceLaunchThreading) {
-  base::MessageLoop message_loop;
+  base::test::ScopedTaskEnvironment task_environment;
   base::Thread io_thread("ServiceManagerConnectionImplTest IO Thread");
   io_thread.Start();
   service_manager::mojom::ServicePtr service;

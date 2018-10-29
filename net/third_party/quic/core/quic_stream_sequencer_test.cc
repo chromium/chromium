@@ -10,8 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
-#include "net/test/gtest_util.h"
 #include "net/third_party/quic/core/quic_stream.h"
 #include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/platform/api/quic_arraysize.h"
@@ -24,7 +22,6 @@
 #include "net/third_party/quic/test_tools/quic_spdy_session_peer.h"
 #include "net/third_party/quic/test_tools/quic_stream_sequencer_peer.h"
 #include "net/third_party/quic/test_tools/quic_test_utils.h"
-#include "testing/gmock_mutant.h"
 
 using testing::_;
 using testing::AnyNumber;
@@ -36,7 +33,7 @@ namespace test {
 class MockStream : public QuicStream {
  public:
   MockStream(QuicSession* session, QuicStreamId id)
-      : QuicStream(id, session, /*is_static=*/false) {}
+      : QuicStream(id, session, /*is_static=*/false, BIDIRECTIONAL) {}
 
   MOCK_METHOD0(OnFinRead, void());
   MOCK_METHOD0(OnDataAvailable, void());
@@ -637,19 +634,6 @@ TEST_F(QuicStreamSequencerTest, OnDataAvailableWhenReadableBytesIncrease) {
   EXPECT_CALL(stream_, OnDataAvailable()).Times(0);
   sequencer_->OnStreamFrame(frame3);
   EXPECT_EQ(11u, sequencer_->NumBytesBuffered());
-}
-
-TEST_F(QuicStreamSequencerTest, OnStreamFrameWithNullSource) {
-  // Pass in a frame with data pointing to null address, expect to close
-  // connection with error.
-  QuicStringPiece source;
-  source.set(nullptr, 5u);
-  QuicStreamFrame frame(
-      QuicSpdySessionPeer::GetNthClientInitiatedStreamId(session_, 0), false, 1,
-      source);
-  EXPECT_CALL(stream_, CloseConnectionWithDetails(
-                           QUIC_STREAM_SEQUENCER_INVALID_STATE, _));
-  sequencer_->OnStreamFrame(frame);
 }
 
 TEST_F(QuicStreamSequencerTest, ReadSingleFrame) {

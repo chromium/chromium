@@ -16,7 +16,7 @@ PageLoadStatistics::PageLoadStatistics(const mojom::ActivationState& state)
 PageLoadStatistics::~PageLoadStatistics() {}
 
 void PageLoadStatistics::OnDocumentLoadStatistics(
-    const DocumentLoadStatistics& statistics) {
+    const mojom::DocumentLoadStatistics& statistics) {
   // Note: Chances of overflow are negligible.
   aggregated_document_statistics_.num_loads_total += statistics.num_loads_total;
   aggregated_document_statistics_.num_loads_evaluated +=

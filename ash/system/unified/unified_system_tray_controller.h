@@ -59,12 +59,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   void HandleEnterpriseInfoAction();
   // Toggle expanded state of UnifiedSystemTrayView. Called from the view.
   void ToggleExpanded();
-  // Clear all notifications. It triggers animation, and does not remove
-  // notifications immediately. Called from the view.
-  void HandleClearAllAction();
-  // Called when notification removing animation is finished. Called from the
-  // view.
-  void OnClearAllAnimationEnded();
   // Called when message center visibility is changed. Called from the
   // view.
   void OnMessageCenterVisibilityUpdated();

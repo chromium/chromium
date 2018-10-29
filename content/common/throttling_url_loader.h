@@ -143,6 +143,9 @@ class CONTENT_EXPORT ThrottlingURLLoader
   // Disconnects the client connection and releases the URLLoader.
   void DisconnectClient(base::StringPiece custom_description);
 
+  // TODO(crbug.com/882661): Remove when the linked bug is fixed.
+  void Crash();
+
   enum DeferredStage {
     DEFERRED_NONE,
     DEFERRED_START,
@@ -245,6 +248,10 @@ class CONTENT_EXPORT ThrottlingURLLoader
   GURL response_url_;
 
   bool response_intercepted_ = false;
+
+  // TODO(crbug.com/882661): Remove these when the linked bug is fixed.
+  bool sent_on_receive_response_ = false;
+  std::vector<std::string> debug_log_;
 
   base::Optional<std::vector<std::string>> to_be_removed_request_headers_;
   base::Optional<net::HttpRequestHeaders> modified_request_headers_;

@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
@@ -142,7 +143,7 @@ class BrowserCloseTest : public testing::Test {
                                int num_windows,
                                int num_downloads) {
     DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
-        profile, &CreateTestingDownloadCoreService);
+        profile, base::BindRepeating(&CreateTestingDownloadCoreService));
     DownloadCoreService* download_core_service(
         DownloadCoreServiceFactory::GetForBrowserContext(profile));
     TestingDownloadCoreService* mock_download_service(

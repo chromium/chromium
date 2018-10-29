@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 322 tests; 243 PASS, 79 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 326 tests; 247 PASS, 79 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS Partial interface Window: original interface defined
 PASS Partial interface Document: original interface defined
@@ -191,7 +191,9 @@ FAIL Window interface: operation scrollTo(unrestricted double, unrestricted doub
 FAIL Window interface: operation scrollBy(ScrollToOptions) assert_equals: property has wrong .length expected 0 but got 2
 FAIL Window interface: operation scrollBy(unrestricted double, unrestricted double) assert_equals: property has wrong .length expected 0 but got 2
 PASS Window interface: attribute screenX
+PASS Window interface: attribute screenLeft
 PASS Window interface: attribute screenY
+PASS Window interface: attribute screenTop
 PASS Window interface: attribute outerWidth
 PASS Window interface: attribute outerHeight
 PASS Window interface: attribute devicePixelRatio
@@ -225,7 +227,9 @@ PASS Window interface: calling scrollBy(ScrollToOptions) on window with too few 
 PASS Window interface: window must inherit property "scrollBy(unrestricted double, unrestricted double)" with the proper type
 PASS Window interface: calling scrollBy(unrestricted double, unrestricted double) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "screenX" with the proper type
+PASS Window interface: window must inherit property "screenLeft" with the proper type
 PASS Window interface: window must inherit property "screenY" with the proper type
+PASS Window interface: window must inherit property "screenTop" with the proper type
 PASS Window interface: window must inherit property "outerWidth" with the proper type
 PASS Window interface: window must inherit property "outerHeight" with the proper type
 PASS Window interface: window must inherit property "devicePixelRatio" with the proper type

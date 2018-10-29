@@ -21,7 +21,9 @@ import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -95,5 +97,13 @@ public class CustomTabsTestUtils {
         Assert.assertTrue(connection.warmup(0));
         startupCallbackHelper.waitForCallback(0);
         return connection;
+    }
+
+    public static void openAppMenuAndAssertMenuShown(CustomTabActivity activity) {
+        ThreadUtils.runOnUiThread(
+                () -> { activity.onMenuOrKeyboardAction(R.id.show_menu, false); });
+
+        CriteriaHelper.pollUiThread(
+                activity.getAppMenuHandler()::isAppMenuShowing, "App menu was not shown");
     }
 }

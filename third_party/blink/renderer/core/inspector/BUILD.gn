@@ -23,6 +23,8 @@ blink_core_sources("inspector") {
     "dev_tools_emulator.h",
     "dev_tools_host.cc",
     "dev_tools_host.h",
+    "devtools_agent.cc",
+    "devtools_agent.h",
     "dom_editor.cc",
     "dom_editor.h",
     "dom_patch_support.cc",

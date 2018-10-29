@@ -95,3 +95,13 @@ enum CORSError {
   // Cross origin redirect location contains credentials such as 'user:pass'.
   kRedirectContainsCredentials,
 };
+
+// Determine which Cors exception takes precedence when multiple matches occur.
+enum CORSOriginAccessMatchPriority {
+  kNoMatchingOrigin,
+  kDefaultPriority,
+  kLowPriority,
+  kMediumPriority,
+  kHighPriority,
+  kMaxPriority
+};

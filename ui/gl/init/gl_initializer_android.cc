@@ -24,13 +24,17 @@ namespace init {
 
 namespace {
 
-bool InitializeStaticEGLInternal() {
 #if BUILDFLAG(USE_STATIC_ANGLE)
+bool InitializeStaticANGLEEGLInternal() {
 #pragma push_macro("eglGetProcAddress")
 #undef eglGetProcAddress
   SetGLGetProcAddressProc(&eglGetProcAddress);
 #pragma pop_macro("eglGetProcAddress")
-#else   // BUILDFLAG(USE_STATIC_ANGLE)
+  return true;
+}
+#endif  // BUILDFLAG(USE_STATIC_ANGLE)
+
+bool InitializeStaticNativeEGLInternal() {
   base::NativeLibrary gles_library = LoadLibraryAndPrintError("libGLESv2.so");
   if (!gles_library)
     return false;
@@ -54,7 +58,32 @@ bool InitializeStaticEGLInternal() {
   SetGLGetProcAddressProc(get_proc_address);
   AddGLNativeLibrary(egl_library);
   AddGLNativeLibrary(gles_library);
+
+  return true;
+}
+
+bool InitializeStaticEGLInternal() {
+  bool initialized = false;
+
+#if BUILDFLAG(USE_STATIC_ANGLE)
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  // Use ANGLE if it is requested via the --use-gl=angle flag and it is
+  // statically linked
+  if (command_line->GetSwitchValueASCII(switches::kUseGL) ==
+      kGLImplementationANGLEName) {
+    initialized = InitializeStaticANGLEEGLInternal();
+  }
 #endif  // BUILDFLAG(USE_STATIC_ANGLE)
+
+  if (!initialized) {
+    initialized = InitializeStaticNativeEGLInternal();
+  }
+
+  if (!initialized) {
+    return false;
+  }
+
   SetGLImplementation(kGLImplementationEGLGLES2);
 
   InitializeStaticGLBindingsGL();

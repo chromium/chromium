@@ -15,6 +15,7 @@ import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
 
 if (enable_pdf) {
@@ -164,8 +165,8 @@ static_library("common") {
     "page_load_metrics/page_load_timing.h",
     "page_load_metrics/page_track_decider.cc",
     "page_load_metrics/page_track_decider.h",
-    "pdf_uma.cc",
-    "pdf_uma.h",
+    "pdf_util.cc",
+    "pdf_util.h",
     "pref_names_util.cc",
     "pref_names_util.h",
     "prerender_messages.h",
@@ -217,6 +218,7 @@ static_library("common") {
     ":common_param_traits_macros",
     ":ini_parser",
     ":mojo_bindings",
+    ":offline_page_auto_fetcher_mojom",
     ":page_load_metrics_mojom",
     ":supervised_user_commands_mojom",
     "//base:base",
@@ -279,7 +281,7 @@ static_library("common") {
     "//skia",
     "//third_party/icu",
     "//third_party/re2",
-    "//third_party/widevine/cdm:headers",
+    "//third_party/widevine/cdm:buildflags",
     "//ui/accessibility",
     "//ui/base",
     "//ui/gfx/ipc",
@@ -303,7 +305,6 @@ static_library("common") {
     sources += [
       "cast_messages.cc",
       "cast_messages.h",
-      "extensions/api/automation_api_constants.h",
       "extensions/api/commands/commands_handler.cc",
       "extensions/api/commands/commands_handler.h",
       "extensions/api/extension_action/action_info.cc",
@@ -322,8 +323,6 @@ static_library("common") {
       "extensions/api/system_indicator/system_indicator_handler.h",
       "extensions/api/url_handlers/url_handlers_parser.cc",
       "extensions/api/url_handlers/url_handlers_parser.h",
-      "extensions/api/webstore/webstore_api_constants.cc",
-      "extensions/api/webstore/webstore_api_constants.h",
       "extensions/chrome_extension_messages.h",
       "extensions/chrome_extensions_api_provider.cc",
       "extensions/chrome_extensions_api_provider.h",
@@ -359,7 +358,6 @@ static_library("common") {
       "extensions/manifest_handlers/theme_handler.h",
       "extensions/manifest_handlers/ui_overrides_handler.cc",
       "extensions/manifest_handlers/ui_overrides_handler.h",
-      "extensions/mojom/inline_install_traits.h",
       "extensions/permissions/chrome_api_permissions.cc",
       "extensions/permissions/chrome_api_permissions.h",
       "extensions/permissions/chrome_permission_message_provider.cc",
@@ -375,7 +373,6 @@ static_library("common") {
     ]
     deps += [ "//chrome/common/apps/platform_apps" ]
     public_deps += [
-      "//chrome/common/extensions:mojo_bindings",
       "//chrome/common/extensions/api",
       "//chrome/common/extensions/api:extensions_features",
       "//device/usb",
@@ -488,6 +485,10 @@ static_library("common") {
       "pepper_permission_util.cc",
       "pepper_permission_util.h",
     ]
+  }
+
+  if (enable_widevine && enable_library_cdms) {
+    deps += [ "//third_party/widevine/cdm:headers" ]
   }
 
   if (safe_browsing_mode != 0) {
@@ -608,10 +609,10 @@ static_library("constants") {
     "//components/nacl/common:switches",
     "//components/offline_pages/buildflags",
     "//extensions/buildflags",
-    "//media/cdm:cdm_paths",  # Needed by chrome_paths.cc.
+    "//media:media_buildflags",
     "//ppapi/buildflags",
     "//printing/buildflags",
-    "//third_party/widevine/cdm:headers",
+    "//third_party/widevine/cdm:buildflags",
   ]
 
   if (is_android) {
@@ -630,6 +631,13 @@ static_library("constants") {
 
   if (is_win) {
     deps += [ "//chrome/install_static:install_static_util" ]
+  }
+
+  if (enable_widevine && enable_library_cdms) {
+    deps += [
+      "//media/cdm:cdm_paths",  # Needed by chrome_paths.cc.
+      "//third_party/widevine/cdm:headers",
+    ]
   }
 }
 
@@ -809,6 +817,15 @@ mojom("supervised_user_commands_mojom") {
 mojom("available_offline_content_mojom") {
   sources = [
     "available_offline_content.mojom",
+  ]
+  public_deps = [
+    "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+mojom("offline_page_auto_fetcher_mojom") {
+  sources = [
+    "offline_page_auto_fetcher.mojom",
   ]
   public_deps = [
     "//url/mojom:url_mojom_gurl",

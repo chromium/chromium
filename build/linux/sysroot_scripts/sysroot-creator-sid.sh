@@ -217,6 +217,8 @@ DEBIAN_PACKAGES="\
   libpcre3-dev
   libpcre32-3
   libpcrecpp0v5
+  libpipewire-0.2-1
+  libpipewire-0.2-dev
   libpixman-1-0
   libpixman-1-dev
   libpng-dev
@@ -236,6 +238,7 @@ DEBIAN_PACKAGES="\
   libsndfile1
   libsoup-gnome2.4-1
   libsoup2.4-1
+  libspa-lib-0.1-dev
   libspeechd-dev
   libspeechd2
   libsqlite3-0
@@ -250,7 +253,7 @@ DEBIAN_PACKAGES="\
   libtiff5
   libudev-dev
   libudev1
-  libunbound2
+  libunbound8
   libunistring2
   libuuid1
   libva-dev
@@ -282,8 +285,10 @@ DEBIAN_PACKAGES="\
   libxau-dev
   libxau6
   libxcb-dri2-0
+  libxcb-dri2-0-dev
   libxcb-dri3-0
   libxcb-glx0
+  libxcb-glx0-dev
   libxcb-present0
   libxcb-render0
   libxcb-render0-dev
@@ -327,9 +332,11 @@ DEBIAN_PACKAGES="\
   libxt6
   libxtst-dev
   libxtst6
+  libxxf86vm-dev
   libxxf86vm1
   linux-libc-dev
   mesa-common-dev
+  shared-mime-info
   speech-dispatcher
   uuid-dev
   wayland-protocols
@@ -376,6 +383,7 @@ DEBIAN_PACKAGES_ARM="
 
 DEBIAN_PACKAGES_ARM64="
   libasan3
+  libdrm-etnaviv1
   libdrm-freedreno1
   libdrm-tegra0
   libgmp10

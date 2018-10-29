@@ -42,13 +42,14 @@ DecodeStatus HpackVarintDecoder::StartExtended(uint8_t prefix_length,
 }
 
 DecodeStatus HpackVarintDecoder::Resume(DecodeBuffer* db) {
+  const uint32_t kMaxOffset = 28;
   CheckNotDone();
   do {
     if (db->Empty()) {
       return DecodeStatus::kDecodeInProgress;
     }
     uint8_t byte = db->DecodeUInt8();
-    if (offset_ == MaxOffset() && byte != 0)
+    if (offset_ == kMaxOffset && byte != 0)
       break;
     value_ += (byte & 0x7f) << offset_;
     if ((byte & 0x80) == 0) {
@@ -56,7 +57,7 @@ DecodeStatus HpackVarintDecoder::Resume(DecodeBuffer* db) {
       return DecodeStatus::kDecodeDone;
     }
     offset_ += 7;
-  } while (offset_ <= MaxOffset());
+  } while (offset_ <= kMaxOffset);
   DLOG(WARNING) << "Variable length int encoding is too large or too long. "
                 << DebugString();
   MarkDone();

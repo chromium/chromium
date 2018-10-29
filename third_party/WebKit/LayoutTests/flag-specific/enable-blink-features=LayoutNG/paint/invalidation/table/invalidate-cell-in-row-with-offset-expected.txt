@@ -37,7 +37,7 @@
         {
           "object": "LayoutNGTableCell TD id='target'",
           "rect": [10, 0, 102, 102],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

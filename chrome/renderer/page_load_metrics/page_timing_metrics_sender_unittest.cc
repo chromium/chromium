@@ -340,4 +340,26 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleCssPropertiesTwice) {
   validator_.VerifyExpectedFeatures();
 }
 
+TEST_F(PageTimingMetricsSenderTest, SendPageRenderData) {
+  mojom::PageLoadTiming timing;
+  InitPageLoadTimingForTest(&timing);
+
+  // We need to send the PageLoadTiming here even though it is not really
+  // related to the PageRenderData.  This is because metrics_sender_ sends
+  // its last_timing_ when the mock timer fires, causing the validator to
+  // look for a matching expectation.
+  metrics_sender_->Send(timing.Clone());
+  validator_.ExpectPageLoadTiming(timing);
+
+  metrics_sender_->DidObserveLayoutJank(0.5);
+  metrics_sender_->DidObserveLayoutJank(0.5);
+  metrics_sender_->DidObserveLayoutJank(0.5);
+
+  mojom::PageRenderData render_data(1.5);
+  validator_.UpdateExpectPageRenderData(render_data);
+
+  metrics_sender_->mock_timer()->Fire();
+  validator_.VerifyExpectedRenderData();
+}
+
 }  // namespace page_load_metrics

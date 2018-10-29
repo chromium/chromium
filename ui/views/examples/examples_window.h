@@ -15,16 +15,11 @@
 namespace views {
 namespace examples {
 
-enum Operation {
-  DO_NOTHING_ON_CLOSE = 0,
-  QUIT_ON_CLOSE,
-};
-
 // Shows a window with the views examples in it. |extra_examples| contains any
 // additional examples to add. |window_context| is used to determine where the
 // window should be created (see |Widget::InitParams::context| for details).
 VIEWS_EXAMPLES_EXPORT void ShowExamplesWindow(
-    Operation operation,
+    base::OnceClosure on_close,
     gfx::NativeWindow window_context = nullptr,
     std::vector<std::unique_ptr<ExampleBase>> extra_examples =
         std::vector<std::unique_ptr<ExampleBase>>());

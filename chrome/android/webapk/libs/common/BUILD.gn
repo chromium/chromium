@@ -8,9 +8,23 @@ android_library("common_java") {
   java_files = [
     "src/org/chromium/webapk/lib/common/WebApkConstants.java",
     "src/org/chromium/webapk/lib/common/WebApkMetaDataKeys.java",
+    "src/org/chromium/webapk/lib/common/WebApkMetaDataUtils.java",
     "src/org/chromium/webapk/lib/common/WebApkVersionUtils.java",
   ]
   srcjar_deps = [ "//chrome/android/webapk/libs/common:identity_service_aidl" ]
+}
+
+android_library("splash_java") {
+  java_files = [ "src/org/chromium/webapk/lib/common/splash/SplashLayout.java" ]
+  deps = [
+    ":splash_resources",
+    "//third_party/android_deps:android_support_annotations_java",
+  ]
+}
+
+android_resources("splash_resources") {
+  resource_dirs = [ "res_splash" ]
+  custom_package = "org.chromium.webapk.lib.common.splash"
 }
 
 android_aidl("identity_service_aidl") {

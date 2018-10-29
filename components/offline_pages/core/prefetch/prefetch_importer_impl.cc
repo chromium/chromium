@@ -28,7 +28,7 @@ enum class PageImportResult {
   OFFLINE_STORE_FAILURE = 3,
   OFFLINE_ITEM_ALREADY_EXISTS = 4,
   // Always leave this item last. Update if the actual last item changes.
-  MAX = OFFLINE_ITEM_ALREADY_EXISTS
+  kMaxValue = OFFLINE_ITEM_ALREADY_EXISTS
 };
 
 PageImportResult FromAddPageResult(AddPageResult result) {
@@ -39,8 +39,6 @@ PageImportResult FromAddPageResult(AddPageResult result) {
       return PageImportResult::OFFLINE_STORE_FAILURE;
     case AddPageResult::ALREADY_EXISTS:
       return PageImportResult::OFFLINE_ITEM_ALREADY_EXISTS;
-    case AddPageResult::RESULT_COUNT:
-      NOTREACHED();
   }
   NOTREACHED();
   return PageImportResult::UNKNOWN;
@@ -48,7 +46,7 @@ PageImportResult FromAddPageResult(AddPageResult result) {
 
 void ReportPageImportResult(PageImportResult result) {
   UMA_HISTOGRAM_ENUMERATION("OfflinePages.Prefetching.OfflinePageImportResult",
-                            result, PageImportResult::MAX);
+                            result);
 }
 
 void MoveFile(const base::FilePath& src_path,

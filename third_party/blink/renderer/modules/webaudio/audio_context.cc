@@ -14,13 +14,18 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_timestamp.h"
 #include "third_party/blink/renderer/modules/webaudio/default_audio_destination_node.h"
+#include "third_party/blink/renderer/modules/webaudio/media_element_audio_source_node.h"
+#include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
+#include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -62,15 +67,15 @@ AudioContext* AudioContext::Create(Document& document,
   AudioContext* audio_context = new AudioContext(document, latency_hint);
   audio_context->PauseIfNeeded();
 
-  if (!AudioUtilities::IsValidAudioBufferSampleRate(
+  if (!audio_utilities::IsValidAudioBufferSampleRate(
           audio_context->sampleRate())) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         ExceptionMessages::IndexOutsideRange(
             "hardware sample rate", audio_context->sampleRate(),
-            AudioUtilities::MinAudioBufferSampleRate(),
+            audio_utilities::MinAudioBufferSampleRate(),
             ExceptionMessages::kInclusiveBound,
-            AudioUtilities::MaxAudioBufferSampleRate(),
+            audio_utilities::MaxAudioBufferSampleRate(),
             ExceptionMessages::kInclusiveBound));
     return audio_context;
   }
@@ -327,6 +332,32 @@ double AudioContext::baseLatency() const {
          static_cast<double>(sampleRate());
 }
 
+MediaElementAudioSourceNode* AudioContext::createMediaElementSource(
+    HTMLMediaElement* media_element,
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+
+  return MediaElementAudioSourceNode::Create(*this, *media_element,
+                                             exception_state);
+}
+
+MediaStreamAudioSourceNode* AudioContext::createMediaStreamSource(
+    MediaStream* media_stream,
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+
+  return MediaStreamAudioSourceNode::Create(*this, *media_stream,
+                                            exception_state);
+}
+
+MediaStreamAudioDestinationNode* AudioContext::createMediaStreamDestination(
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+
+  // Set number of output channels to stereo by default.
+  return MediaStreamAudioDestinationNode::Create(*this, 2, exception_state);
+}
+
 void AudioContext::NotifySourceNodeStart() {
   source_node_started_ = true;
   if (!user_gesture_required_)
@@ -361,13 +392,14 @@ AutoplayPolicy::Type AudioContext::GetAutoplayPolicy() const {
 }
 
 bool AudioContext::AreAutoplayRequirementsFulfilled() const {
+  DCHECK(GetDocument());
+
   switch (GetAutoplayPolicy()) {
     case AutoplayPolicy::Type::kNoUserGestureRequired:
       return true;
     case AutoplayPolicy::Type::kUserGestureRequired:
     case AutoplayPolicy::Type::kUserGestureRequiredForCrossOrigin:
-      return Frame::HasTransientUserActivation(
-          GetDocument() ? GetDocument()->GetFrame() : nullptr);
+      return LocalFrame::HasTransientUserActivation(GetDocument()->GetFrame());
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
       return AutoplayPolicy::IsDocumentAllowedToPlay(*GetDocument());
   }
@@ -394,7 +426,7 @@ bool AudioContext::IsAllowedToStart() const {
   if (!user_gesture_required_)
     return true;
 
-  Document* document = ToDocument(GetExecutionContext());
+  Document* document = To<Document>(GetExecutionContext());
   DCHECK(document);
 
   switch (GetAutoplayPolicy()) {
@@ -422,7 +454,7 @@ bool AudioContext::IsAllowedToStart() const {
 }
 
 void AudioContext::RecordAutoplayMetrics() {
-  if (!autoplay_status_.has_value())
+  if (!autoplay_status_.has_value() || !GetDocument())
     return;
 
   ukm::UkmRecorder* ukm_recorder = GetDocument()->UkmRecorder();

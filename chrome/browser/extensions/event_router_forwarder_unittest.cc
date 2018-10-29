@@ -10,12 +10,14 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "base/test/thread_test_helper.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/test_browser_thread.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -148,14 +150,14 @@ TEST_F(EventRouterForwarderTest, BroadcastRendererIO) {
                                              kEventName, profile1_, url));
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, "", kHistogramValue,
                                              kEventName, profile2_, url));
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&BroadcastEventToRenderers,
-                                         base::Unretained(event_router.get()),
-                                         kHistogramValue, kEventName, url));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&BroadcastEventToRenderers,
+                                          base::Unretained(event_router.get()),
+                                          kHistogramValue, kEventName, url));
 
   // Wait for IO thread's message loop to be processed
   scoped_refptr<base::ThreadTestHelper> helper(new base::ThreadTestHelper(
-      BrowserThread::GetTaskRunnerForThread(BrowserThread::IO).get()));
+      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}).get()));
   ASSERT_TRUE(helper->Run());
 
   base::RunLoop().RunUntilIdle();

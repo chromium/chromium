@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/client/gles2_impl_export.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/mapped_memory.h"
+#include "gpu/command_buffer/client/transfer_buffer.h"
 
 namespace gpu {
 class MappedMemoryManager;
@@ -59,7 +60,17 @@ class GLES2_IMPL_EXPORT ClientTransferCache {
   explicit ClientTransferCache(Client* client);
   ~ClientTransferCache();
 
+  // Adds a transfer cache entry with previously written memory.
+  void AddTransferCacheEntry(uint32_t type,
+                             uint32_t id,
+                             uint32_t shm_id,
+                             uint32_t shm_offset,
+                             size_t size);
+
+  // Map(of either type) must always be followed by an Unmap.
   void* MapEntry(MappedMemoryManager* mapped_memory, size_t size);
+  void* MapTransferBufferEntry(TransferBufferInterface* transfer_buffer,
+                               size_t size);
   void UnmapAndCreateEntry(uint32_t type, uint32_t id);
   bool LockEntry(uint32_t type, uint32_t id);
   void UnlockEntries(const std::vector<std::pair<uint32_t, uint32_t>>& entries);
@@ -68,10 +79,12 @@ class GLES2_IMPL_EXPORT ClientTransferCache {
  private:
   using EntryKey = std::pair<uint32_t, uint32_t>;
   ClientDiscardableHandle::Id FindDiscardableHandleId(const EntryKey& key);
+  ClientDiscardableHandle CreateDiscardableHandle(const EntryKey& key);
 
   Client* const client_;  // not owned --- client_ outlives this
 
   base::Optional<ScopedMappedMemoryPtr> mapped_ptr_;
+  base::Optional<ScopedTransferBufferPtr> transfer_buffer_ptr_;
 
   // Access to other members must always be done with |lock_| held.
   base::Lock lock_;

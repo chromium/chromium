@@ -32,6 +32,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -75,6 +76,9 @@ static const char kWebAuthnTouchIdMetadataSecretPrefName[] =
 static const char kWebAuthnLastTransportUsedPrefName[] =
     "webauthn.last_transport_used";
 
+static const char kWebAuthnBlePairedMacAddressesPrefName[] =
+    "webauthn.ble.paired_mac_addresses";
+
 // static
 void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -85,6 +89,8 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
 
   registry->RegisterStringPref(kWebAuthnLastTransportUsedPrefName,
                                std::string());
+  registry->RegisterListPref(kWebAuthnBlePairedMacAddressesPrefName,
+                             std::make_unique<base::ListValue>());
 }
 
 ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
@@ -103,14 +109,6 @@ ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate() {
     weak_dialog_model_->RemoveObserver(this);
     weak_dialog_model_ = nullptr;
   }
-}
-
-base::Optional<device::FidoTransportProtocol>
-ChromeAuthenticatorRequestDelegate::GetLastTransportUsed() const {
-  PrefService* prefs =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
-  return device::ConvertToFidoTransportProtocol(
-      prefs->GetString(kWebAuthnLastTransportUsedPrefName));
 }
 
 base::WeakPtr<ChromeAuthenticatorRequestDelegate>
@@ -145,7 +143,8 @@ void ChromeAuthenticatorRequestDelegate::DidFailWithInterestingReason(
 void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
     base::OnceClosure cancel_callback,
     device::FidoRequestHandlerBase::RequestCallback request_callback,
-    base::RepeatingClosure bluetooth_adapter_power_on_callback) {
+    base::RepeatingClosure bluetooth_adapter_power_on_callback,
+    device::FidoRequestHandlerBase::BlePairingCallback ble_pairing_callback) {
   request_callback_ = request_callback;
   cancel_callback_ = std::move(cancel_callback);
 
@@ -154,6 +153,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
   transient_dialog_model_holder_->SetRequestCallback(request_callback);
   transient_dialog_model_holder_->SetBluetoothAdapterPowerOnCallback(
       bluetooth_adapter_power_on_callback);
+  transient_dialog_model_holder_->SetBlePairingCallback(ble_pairing_callback);
 
   weak_dialog_model_ = transient_dialog_model_holder_.get();
   weak_dialog_model_->AddObserver(this);
@@ -299,8 +299,7 @@ void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorAdded(
   if (!weak_dialog_model_)
     return;
 
-  weak_dialog_model_->saved_authenticators().emplace_back(
-      authenticator.GetId(), authenticator.AuthenticatorTransport());
+  weak_dialog_model_->AddAuthenticator(authenticator);
 }
 
 void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorRemoved(
@@ -311,11 +310,27 @@ void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorRemoved(
   if (!weak_dialog_model_)
     return;
 
-  auto& saved_authenticators = weak_dialog_model_->saved_authenticators();
-  base::EraseIf(saved_authenticators, [authenticator_id](
-                                          const auto& authenticator_reference) {
-    return authenticator_reference.authenticator_id == authenticator_id;
-  });
+  weak_dialog_model_->RemoveAuthenticator(authenticator_id);
+}
+
+void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorIdChanged(
+    base::StringPiece old_authenticator_id,
+    std::string new_authenticator_id) {
+  if (!weak_dialog_model_)
+    return;
+
+  weak_dialog_model_->UpdateAuthenticatorReferenceId(
+      old_authenticator_id, std::move(new_authenticator_id));
+}
+
+void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorPairingModeChanged(
+    base::StringPiece authenticator_id,
+    bool is_in_pairing_mode) {
+  if (!weak_dialog_model_)
+    return;
+
+  weak_dialog_model_->UpdateAuthenticatorReferencePairingMode(
+      authenticator_id, is_in_pairing_mode);
 }
 
 void ChromeAuthenticatorRequestDelegate::BluetoothAdapterPowerChanged(
@@ -335,4 +350,36 @@ void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
   // |cancel_callback_| will destroy |this|.
   DCHECK(cancel_callback_);
   std::move(cancel_callback_).Run();
+}
+
+void ChromeAuthenticatorRequestDelegate::AddFidoBleDeviceToPairedList(
+    std::string device_address) {
+  ListPrefUpdate update(
+      Profile::FromBrowserContext(browser_context())->GetPrefs(),
+      kWebAuthnBlePairedMacAddressesPrefName);
+  bool already_contains_address = std::any_of(
+      update->begin(), update->end(), [&device_address](const auto& value) {
+        return value.is_string() && value.GetString() == device_address;
+      });
+
+  if (already_contains_address)
+    return;
+
+  update->Append(std::make_unique<base::Value>(std::move(device_address)));
+}
+
+base::Optional<device::FidoTransportProtocol>
+ChromeAuthenticatorRequestDelegate::GetLastTransportUsed() const {
+  PrefService* prefs =
+      Profile::FromBrowserContext(browser_context())->GetPrefs();
+  return device::ConvertToFidoTransportProtocol(
+      prefs->GetString(kWebAuthnLastTransportUsedPrefName));
+}
+
+const base::ListValue*
+ChromeAuthenticatorRequestDelegate::GetPreviouslyPairedFidoBleDeviceAddresses()
+    const {
+  PrefService* prefs =
+      Profile::FromBrowserContext(browser_context())->GetPrefs();
+  return prefs->GetList(kWebAuthnBlePairedMacAddressesPrefName);
 }

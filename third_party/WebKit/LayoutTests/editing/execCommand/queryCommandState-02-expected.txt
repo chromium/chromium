@@ -1,5 +1,6 @@
 This tests queryCommandState.
-Bug 32285 
+
+Bug 32285
 Radar 7442065
 
 one

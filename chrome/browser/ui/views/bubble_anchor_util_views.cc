@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 
 // This file contains the bubble_anchor_util implementation for a Views
 // browser window (BrowserView).
@@ -19,10 +18,6 @@ namespace bubble_anchor_util {
 
 AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
                                                    Anchor anchor) {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    return {};
-#endif
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
 
   if (anchor == kLocationBar && browser_view->GetLocationBarView()->IsDrawn())
@@ -39,10 +34,6 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 }
 
 gfx::Rect GetPageInfoAnchorRect(Browser* browser) {
-#if defined(OS_MACOSX)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    return GetPageInfoAnchorRectCocoa(browser);
-#endif
   // GetPageInfoAnchorConfiguration()'s anchor_view should be preferred if
   // available.
   DCHECK_EQ(GetPageInfoAnchorConfiguration(browser).anchor_view, nullptr);

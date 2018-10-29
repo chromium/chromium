@@ -341,15 +341,6 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
   return nil;
 }
 
-// Override the CRWNativeContentProvider methods to cancel any prerenders that
-// require native content.
-- (id<CRWNativeContent>)controllerForURL:(const GURL&)url
-                               withError:(NSError*)error
-                                  isPost:(BOOL)isPost {
-  [self schedulePrerenderCancel];
-  return nil;
-}
-
 - (CGFloat)nativeContentHeaderHeightForWebState:(web::WebState*)webState {
   return [delegate_ nativeContentHeaderHeightForPreloadController:self
                                                          webState:webState];

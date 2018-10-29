@@ -34,32 +34,32 @@
 namespace blink {
 
 inline SVGImageElement::SVGImageElement(Document& document)
-    : SVGGraphicsElement(SVGNames::imageTag, document),
+    : SVGGraphicsElement(svg_names::kImageTag, document),
       SVGURIReference(this),
       is_default_overridden_intrinsic_size_(false),
       x_(SVGAnimatedLength::Create(this,
-                                   SVGNames::xAttr,
+                                   svg_names::kXAttr,
                                    SVGLengthMode::kWidth,
                                    SVGLength::Initial::kUnitlessZero,
                                    CSSPropertyX)),
       y_(SVGAnimatedLength::Create(this,
-                                   SVGNames::yAttr,
+                                   svg_names::kYAttr,
                                    SVGLengthMode::kHeight,
                                    SVGLength::Initial::kUnitlessZero,
                                    CSSPropertyY)),
       width_(SVGAnimatedLength::Create(this,
-                                       SVGNames::widthAttr,
+                                       svg_names::kWidthAttr,
                                        SVGLengthMode::kWidth,
                                        SVGLength::Initial::kUnitlessZero,
                                        CSSPropertyWidth)),
       height_(SVGAnimatedLength::Create(this,
-                                        SVGNames::heightAttr,
+                                        svg_names::kHeightAttr,
                                         SVGLengthMode::kHeight,
                                         SVGLength::Initial::kUnitlessZero,
                                         CSSPropertyHeight)),
       preserve_aspect_ratio_(SVGAnimatedPreserveAspectRatio::Create(
           this,
-          SVGNames::preserveAspectRatioAttr)),
+          svg_names::kPreserveAspectRatioAttr)),
       image_loader_(SVGImageLoader::Create(this)) {
   AddToPropertyMap(x_);
   AddToPropertyMap(y_);
@@ -67,8 +67,8 @@ inline SVGImageElement::SVGImageElement(Document& document)
   AddToPropertyMap(height_);
   AddToPropertyMap(preserve_aspect_ratio_);
 
-  if (MediaElementParserHelpers::IsMediaElement(this) &&
-      !MediaElementParserHelpers::IsUnsizedMediaEnabled(document)) {
+  if (media_element_parser_helpers::IsMediaElement(this) &&
+      !media_element_parser_helpers::IsUnsizedMediaEnabled(document)) {
     is_default_overridden_intrinsic_size_ = true;
     overridden_intrinsic_size_ =
         IntSize(LayoutReplaced::kDefaultWidth, LayoutReplaced::kDefaultHeight);
@@ -131,10 +131,10 @@ void SVGImageElement::CollectStyleForPresentationAttribute(
 
 void SVGImageElement::SvgAttributeChanged(const QualifiedName& attr_name) {
   bool is_length_attribute =
-      attr_name == SVGNames::xAttr || attr_name == SVGNames::yAttr ||
-      attr_name == SVGNames::widthAttr || attr_name == SVGNames::heightAttr;
+      attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
+      attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
 
-  if (is_length_attribute || attr_name == SVGNames::preserveAspectRatioAttr) {
+  if (is_length_attribute || attr_name == svg_names::kPreserveAspectRatioAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
 
     if (is_length_attribute) {
@@ -168,15 +168,15 @@ void SVGImageElement::SvgAttributeChanged(const QualifiedName& attr_name) {
 
 void SVGImageElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == SVGNames::decodingAttr) {
+  if (params.name == svg_names::kDecodingAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kImageDecodingAttribute);
     decoding_mode_ = ParseImageDecodingMode(params.new_value);
-  } else if (params.name == SVGNames::intrinsicsizeAttr &&
+  } else if (params.name == svg_names::kIntrinsicsizeAttr &&
              RuntimeEnabledFeatures::
                  ExperimentalProductivityFeaturesEnabled()) {
     String message;
     bool intrinsic_size_changed =
-        MediaElementParserHelpers::ParseIntrinsicSizeAttribute(
+        media_element_parser_helpers::ParseIntrinsicSizeAttribute(
             params.new_value, this, &overridden_intrinsic_size_,
             &is_default_overridden_intrinsic_size_, &message);
     if (!message.IsEmpty()) {
@@ -223,7 +223,7 @@ Node::InsertionNotificationRequest SVGImageElement::InsertedInto(
   // A previous loader update may have failed to actually fetch the image if
   // the document was inactive. In that case, force a re-update (but don't
   // clear previous errors).
-  if (root_parent.isConnected() && !GetImageLoader().GetContent())
+  if (GetImageLoader().ShouldUpdateOnInsertedInto(root_parent))
     GetImageLoader().UpdateFromElement(ImageLoader::kUpdateNormal);
 
   return SVGGraphicsElement::InsertedInto(root_parent);

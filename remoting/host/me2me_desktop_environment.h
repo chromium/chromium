@@ -22,6 +22,7 @@ class Me2MeDesktopEnvironment : public BasicDesktopEnvironment {
   ~Me2MeDesktopEnvironment() override;
 
   // DesktopEnvironment interface.
+  std::unique_ptr<ActionExecutor> CreateActionExecutor() override;
   std::unique_ptr<ScreenControls> CreateScreenControls() override;
   std::string GetCapabilities() const override;
 

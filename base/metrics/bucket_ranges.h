@@ -99,6 +99,7 @@ class BASE_EXPORT BucketRanges {
 //////////////////////////////////////////////////////////////////////////////
 // Expose only for test.
 BASE_EXPORT extern const uint32_t kCrcTable[256];
+uint32_t Crc32(uint32_t sum, HistogramBase::Sample value);
 
 }  // namespace base
 

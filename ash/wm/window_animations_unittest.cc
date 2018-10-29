@@ -5,10 +5,12 @@
 #include "ash/wm/window_animations.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_animation_types.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/window_animation_types.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/command_line.h"
 #include "base/time/time.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -17,6 +19,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/keyboard/keyboard_switches.h"
 
 using aura::Window;
 using ui::Layer;
@@ -26,6 +29,12 @@ namespace ash {
 class WindowAnimationsTest : public AshTestBase {
  public:
   WindowAnimationsTest() = default;
+
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        keyboard::switches::kEnableVirtualKeyboard);
+    AshTestBase::SetUp();
+  }
 
   void TearDown() override { AshTestBase::TearDown(); }
 
@@ -270,6 +279,27 @@ TEST_F(WindowAnimationsTest, LockAnimationDuration) {
     window->Show();
     layer->GetAnimator()->StopAnimating();
   }
+}
+
+// Test that a slide out animation slides the window off the screen while
+// modifying the opacity.
+TEST_F(WindowAnimationsTest, SlideOutAnimation) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  window->SetBounds(gfx::Rect(0, 0, 100, 100));
+  window->Show();
+  EXPECT_TRUE(window->layer()->visible());
+
+  ::wm::SetWindowVisibilityAnimationType(
+      window.get(), wm::WINDOW_VISIBILITY_ANIMATION_TYPE_SLIDE_OUT);
+  AnimateOnChildWindowVisibilityChanged(window.get(), false);
+
+  EXPECT_EQ(0.0f, window->layer()->GetTargetOpacity());
+  EXPECT_FALSE(window->layer()->GetTargetVisibility());
+  EXPECT_FALSE(window->layer()->visible());
+  EXPECT_EQ("-150,0 100x100", window->layer()->GetTargetBounds().ToString());
 }
 
 }  // namespace ash

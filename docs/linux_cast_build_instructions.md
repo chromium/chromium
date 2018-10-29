@@ -128,8 +128,11 @@ You might try some of the suggestions on the
 Build cast\_shell with Ninja using the command:
 
 ```shell
-$ ninja -C out/Default cast_shell
+$ autoninja -C out/Default cast_shell
 ```
+
+(`autoninja` is a wrapper that automatically provides optimal values for the
+arguments passed to `ninja`.)
 
 ## Run cast\_shell
 

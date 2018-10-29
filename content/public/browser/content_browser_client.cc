@@ -15,7 +15,6 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/login_delegate.h"
-#include "content/public/browser/memory_coordinator_delegate.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page_navigator.h"
@@ -78,6 +77,7 @@ bool ContentBrowserClient::AllowGpuLaunchRetryOnIOThread() {
 
 GURL ContentBrowserClient::GetEffectiveURL(BrowserContext* browser_context,
                                            const GURL& url) {
+  DCHECK(browser_context);
   return url;
 }
 
@@ -87,6 +87,7 @@ bool ContentBrowserClient::ShouldCompareEffectiveURLsForSiteInstanceSelection(
     bool is_main_frame,
     const GURL& candidate_url,
     const GURL& destination_url) {
+  DCHECK(browser_context);
   return true;
 }
 
@@ -96,6 +97,7 @@ bool ContentBrowserClient::ShouldUseMobileFlingCurve() const {
 
 bool ContentBrowserClient::ShouldUseProcessPerSite(
     BrowserContext* browser_context, const GURL& effective_url) {
+  DCHECK(browser_context);
   return false;
 }
 
@@ -108,11 +110,13 @@ bool ContentBrowserClient::ShouldUseSpareRenderProcessHost(
 bool ContentBrowserClient::DoesSiteRequireDedicatedProcess(
     BrowserContext* browser_context,
     const GURL& effective_site_url) {
+  DCHECK(browser_context);
   return false;
 }
 
 bool ContentBrowserClient::ShouldLockToOrigin(BrowserContext* browser_context,
                                               const GURL& effective_url) {
+  DCHECK(browser_context);
   return true;
 }
 
@@ -125,6 +129,14 @@ void ContentBrowserClient::LogInitiatorSchemeBypassingDocumentBlocking(
     const url::Origin& initiator_origin,
     int render_process_id,
     ResourceType resource_type) {}
+
+network::mojom::URLLoaderFactoryPtrInfo
+ContentBrowserClient::CreateURLLoaderFactoryForNetworkRequests(
+    RenderProcessHost* process,
+    network::mojom::NetworkContext* network_context,
+    const url::Origin& request_initiator) {
+  return network::mojom::URLLoaderFactoryPtrInfo();
+}
 
 void ContentBrowserClient::GetAdditionalViewSourceSchemes(
     std::vector<std::string>* additional_schemes) {
@@ -157,13 +169,7 @@ bool ContentBrowserClient::ShouldAllowOpenURL(SiteInstance* site_instance,
 bool ContentBrowserClient::IsURLAcceptableForWebUI(
     BrowserContext* browser_context,
     const GURL& url) {
-  return false;
-}
-
-bool ContentBrowserClient::
-    ShouldFrameShareParentSiteInstanceDespiteTopDocumentIsolation(
-        const GURL& url,
-        SiteInstance* parent_site_instance) {
+  DCHECK(browser_context);
   return false;
 }
 
@@ -184,6 +190,7 @@ bool ContentBrowserClient::MayReuseHost(RenderProcessHost* process_host) {
 
 bool ContentBrowserClient::ShouldTryToUseExistingProcessHost(
       BrowserContext* browser_context, const GURL& url) {
+  DCHECK(browser_context);
   return false;
 }
 
@@ -246,6 +253,7 @@ std::string ContentBrowserClient::GetApplicationLocale() {
 }
 
 std::string ContentBrowserClient::GetAcceptLangs(BrowserContext* context) {
+  DCHECK(context);
   return std::string();
 }
 
@@ -269,7 +277,7 @@ bool ContentBrowserClient::AllowServiceWorker(
     const GURL& scope,
     const GURL& first_party,
     ResourceContext* context,
-    const base::Callback<WebContents*(void)>& wc_getter) {
+    base::RepeatingCallback<WebContents*()> wc_getter) {
   return true;
 }
 
@@ -281,16 +289,20 @@ bool ContentBrowserClient::AllowSharedWorker(
     BrowserContext* context,
     int render_process_id,
     int render_frame_id) {
+  DCHECK(context);
   return true;
 }
 
 bool ContentBrowserClient::IsDataSaverEnabled(BrowserContext* context) {
+  DCHECK(context);
   return false;
 }
 
 void ContentBrowserClient::UpdateRendererPreferencesForWorker(
     BrowserContext* browser_context,
-    RendererPreferences* out_prefs) {}
+    RendererPreferences* out_prefs) {
+  // |browser_context| may be null (e.g. during shutdown of a service worker).
+}
 
 bool ContentBrowserClient::AllowGetCookie(const GURL& url,
                                           const GURL& first_party,
@@ -345,6 +357,7 @@ ContentBrowserClient::AllowWebBluetooth(
     content::BrowserContext* browser_context,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
+  DCHECK(browser_context);
   return AllowWebBluetoothResult::ALLOW;
 }
 
@@ -360,8 +373,16 @@ void ContentBrowserClient::GetQuotaSettings(
     BrowserContext* context,
     StoragePartition* partition,
     storage::OptionalQuotaSettingsCallback callback) {
+  DCHECK(context);
+
   // By default, no quota is provided, embedders should override.
   std::move(callback).Run(storage::GetNoQuotaSettings());
+}
+
+GeneratedCodeCacheSettings ContentBrowserClient::GetGeneratedCodeCacheSettings(
+    BrowserContext* context) {
+  // By default, code cache is disabled, embedders should override.
+  return GeneratedCodeCacheSettings(false, 0, base::FilePath());
 }
 
 void ContentBrowserClient::AllowCertificateError(
@@ -382,8 +403,9 @@ void ContentBrowserClient::SelectClientCertificate(
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<ClientCertificateDelegate> delegate) {}
 
-net::URLRequestContext* ContentBrowserClient::OverrideRequestContextForURL(
-    const GURL& url, ResourceContext* context) {
+net::CookieStore* ContentBrowserClient::OverrideCookieStoreForURL(
+    const GURL& url,
+    ResourceContext* context) {
   return nullptr;
 }
 
@@ -410,12 +432,15 @@ bool ContentBrowserClient::ShouldUseGmsCoreGeolocationProvider() {
 std::string ContentBrowserClient::GetStoragePartitionIdForSite(
     BrowserContext* browser_context,
     const GURL& site) {
+  DCHECK(browser_context);
   return std::string();
 }
 
 bool ContentBrowserClient::IsValidStoragePartitionId(
     BrowserContext* browser_context,
     const std::string& partition_id) {
+  DCHECK(browser_context);
+
   // Since the GetStoragePartitionIdForChildProcess() only generates empty
   // strings, we should only ever see empty strings coming back.
   return partition_id.empty();
@@ -428,6 +453,8 @@ void ContentBrowserClient::GetStoragePartitionConfigForSite(
     std::string* partition_domain,
     std::string* partition_name,
     bool* in_memory) {
+  DCHECK(browser_context);
+
   partition_domain->clear();
   partition_name->clear();
   *in_memory = false;
@@ -495,17 +522,20 @@ bool ContentBrowserClient::AllowPepperSocketAPI(
     const GURL& url,
     bool private_api,
     const SocketPermissionRequest* params) {
+  DCHECK(browser_context);
   return false;
 }
 
 bool ContentBrowserClient::IsPepperVpnProviderAPIAllowed(
     BrowserContext* browser_context,
     const GURL& url) {
+  DCHECK(browser_context);
   return false;
 }
 
 std::unique_ptr<VpnServiceProxy> ContentBrowserClient::GetVpnServiceProxy(
     BrowserContext* browser_context) {
+  DCHECK(browser_context);
   return nullptr;
 }
 
@@ -525,17 +555,22 @@ TracingDelegate* ContentBrowserClient::GetTracingDelegate() {
 bool ContentBrowserClient::IsPluginAllowedToCallRequestOSFileHandle(
     BrowserContext* browser_context,
     const GURL& url) {
+  DCHECK(browser_context);
   return false;
 }
 
 bool ContentBrowserClient::IsPluginAllowedToUseDevChannelAPIs(
     BrowserContext* browser_context,
     const GURL& url) {
+  // |browser_context| may be null (e.g. when called from
+  // PpapiPluginProcessHost::PpapiPluginProcessHost).
+
   return false;
 }
 
 std::string ContentBrowserClient::GetServiceUserIdForBrowserContext(
     BrowserContext* browser_context) {
+  DCHECK(browser_context);
   return base::GenerateGUID();
 }
 
@@ -562,6 +597,7 @@ void ContentBrowserClient::OpenURL(
     content::BrowserContext* browser_context,
     const content::OpenURLParams& params,
     const base::Callback<void(content::WebContents*)>& callback) {
+  DCHECK(browser_context);
   callback.Run(nullptr);
 }
 
@@ -634,11 +670,6 @@ ContentBrowserClient::GetStartupServices() {
   return std::vector<service_manager::Identity>();
 }
 
-std::unique_ptr<MemoryCoordinatorDelegate>
-ContentBrowserClient::GetMemoryCoordinatorDelegate() {
-  return std::unique_ptr<MemoryCoordinatorDelegate>();
-}
-
 ::rappor::RapporService* ContentBrowserClient::GetRapporService() {
   return nullptr;
 }
@@ -671,9 +702,10 @@ bool ContentBrowserClient::WillCreateURLLoaderFactory(
     BrowserContext* browser_context,
     RenderFrameHost* frame,
     bool is_navigation,
-    const GURL& url,
+    const url::Origin& request_initiator,
     network::mojom::URLLoaderFactoryRequest* factory_request,
     bool* bypass_redirect_checks) {
+  DCHECK(browser_context);
   return false;
 }
 
@@ -696,6 +728,7 @@ network::mojom::NetworkContextPtr ContentBrowserClient::CreateNetworkContext(
     BrowserContext* context,
     bool in_memory,
     const base::FilePath& relative_partition_path) {
+  DCHECK(context);
   if (!base::FeatureList::IsEnabled(network::features::kNetworkService))
     return nullptr;
 
@@ -744,6 +777,7 @@ bool ContentBrowserClient::ShowPaymentHandlerWindow(
     content::BrowserContext* browser_context,
     const GURL& url,
     base::OnceCallback<void(bool, int, int)> callback) {
+  DCHECK(browser_context);
   return false;
 }
 
@@ -804,6 +838,37 @@ bool ContentBrowserClient::IsSafeRedirectTarget(const GURL& url,
 
 void ContentBrowserClient::RegisterRendererPreferenceWatcherForWorkers(
     BrowserContext* browser_context,
-    mojom::RendererPreferenceWatcherPtr watcher) {}
+    mojom::RendererPreferenceWatcherPtr watcher) {
+  // |browser_context| may be null (e.g. during shutdown of a service worker).
+}
+
+base::Optional<std::string> ContentBrowserClient::GetOriginPolicyErrorPage(
+    OriginPolicyErrorReason error_reason,
+    const url::Origin& origin,
+    const GURL& url) {
+  return base::nullopt;
+}
+
+bool ContentBrowserClient::CanIgnoreCertificateErrorIfNeeded() {
+  return false;
+}
+
+void ContentBrowserClient::OnNetworkServiceDataUseUpdate(
+    int32_t network_traffic_annotation_id_hash,
+    int64_t recv_bytes,
+    int64_t sent_bytes) {}
+
+content::PreviewsState ContentBrowserClient::DetermineAllowedPreviews(
+    content::PreviewsState initial_state,
+    content::NavigationHandle* navigation_handle) {
+  return content::PREVIEWS_OFF;
+}
+
+content::PreviewsState ContentBrowserClient::DetermineCommittedPreviews(
+    content::PreviewsState initial_state,
+    content::NavigationHandle* navigation_handle,
+    const net::HttpResponseHeaders* response_headers) {
+  return content::PREVIEWS_OFF;
+}
 
 }  // namespace content

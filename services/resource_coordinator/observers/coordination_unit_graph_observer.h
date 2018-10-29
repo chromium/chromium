@@ -91,6 +91,10 @@ class CoordinationUnitGraphObserver {
       const SystemCoordinationUnitImpl* system_cu,
       const mojom::Event event) {}
 
+  // Called when all the frames in a process become frozen.
+  virtual void OnAllFramesInProcessFrozen(
+      const ProcessCoordinationUnitImpl* process_cu) {}
+
   void set_coordination_unit_graph(
       CoordinationUnitGraph* coordination_unit_graph) {
     coordination_unit_graph_ = coordination_unit_graph;

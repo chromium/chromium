@@ -317,7 +317,7 @@ JSONValue* JSONObject::Get(const String& name) const {
   return it->value.get();
 }
 
-JSONObject::Entry JSONObject::at(size_t index) const {
+JSONObject::Entry JSONObject::at(wtf_size_t index) const {
   const String key = order_[index];
   return std::make_pair(key, data_.find(key)->value.get());
 }
@@ -343,7 +343,7 @@ double JSONObject::DoubleProperty(const String& name,
 
 void JSONObject::Remove(const String& name) {
   data_.erase(name);
-  for (size_t i = 0; i < order_.size(); ++i) {
+  for (wtf_size_t i = 0; i < order_.size(); ++i) {
     if (order_[i] == name) {
       order_.EraseAt(i);
       break;
@@ -353,7 +353,7 @@ void JSONObject::Remove(const String& name) {
 
 void JSONObject::WriteJSON(StringBuilder* output) const {
   output->Append('{');
-  for (size_t i = 0; i < order_.size(); ++i) {
+  for (wtf_size_t i = 0; i < order_.size(); ++i) {
     Dictionary::const_iterator it = data_.find(order_[i]);
     CHECK(it != data_.end());
     if (i)
@@ -368,7 +368,7 @@ void JSONObject::WriteJSON(StringBuilder* output) const {
 void JSONObject::PrettyWriteJSONInternal(StringBuilder* output,
                                          int depth) const {
   output->Append("{\n");
-  for (size_t i = 0; i < order_.size(); ++i) {
+  for (wtf_size_t i = 0; i < order_.size(); ++i) {
     Dictionary::const_iterator it = data_.find(order_[i]);
     CHECK(it != data_.end());
     if (i)
@@ -385,8 +385,7 @@ void JSONObject::PrettyWriteJSONInternal(StringBuilder* output,
 
 std::unique_ptr<JSONValue> JSONObject::Clone() const {
   std::unique_ptr<JSONObject> result = JSONObject::Create();
-  for (size_t i = 0; i < order_.size(); ++i) {
-    String key = order_[i];
+  for (const String& key : order_) {
     Dictionary::const_iterator value = data_.find(key);
     DCHECK(value != data_.end() && value->value);
     result->SetValue(key, value->value->Clone());
@@ -484,7 +483,7 @@ void JSONArray::PushArray(std::unique_ptr<JSONArray> value) {
   data_.push_back(std::move(value));
 }
 
-JSONValue* JSONArray::at(size_t index) const {
+JSONValue* JSONArray::at(wtf_size_t index) const {
   DCHECK_LT(index, data_.size());
   return data_[index].get();
 }

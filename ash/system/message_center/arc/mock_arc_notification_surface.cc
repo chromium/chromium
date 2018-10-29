@@ -12,7 +12,7 @@ MockArcNotificationSurface::MockArcNotificationSurface(
     const std::string& notification_key,
     aura::Env* aura_env)
     : notification_key_(notification_key),
-      ax_tree_id_(-1),
+      ax_tree_id_(ui::AXTreeIDUnknown()),
       native_view_host_(nullptr),
       window_(std::make_unique<aura::Window>(nullptr,
                                              aura::client::WINDOW_TYPE_UNKNOWN,
@@ -62,11 +62,11 @@ views::NativeViewHost* MockArcNotificationSurface::GetAttachedHost() const {
 
 void MockArcNotificationSurface::FocusSurfaceWindow() {}
 
-void MockArcNotificationSurface::SetAXTreeId(int32_t ax_tree_id) {
+void MockArcNotificationSurface::SetAXTreeId(ui::AXTreeID ax_tree_id) {
   ax_tree_id_ = ax_tree_id;
 }
 
-int32_t MockArcNotificationSurface::GetAXTreeId() const {
+ui::AXTreeID MockArcNotificationSurface::GetAXTreeId() const {
   return ax_tree_id_;
 }
 

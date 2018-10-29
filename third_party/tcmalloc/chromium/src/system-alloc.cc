@@ -94,6 +94,7 @@ static const bool kDebugMode = true;
 #endif
 
 // TODO(sanjay): Move the code below into the tcmalloc namespace
+using tcmalloc::kCrash;
 using tcmalloc::kLog;
 using tcmalloc::Log;
 
@@ -250,8 +251,9 @@ COMPILE_ASSERT(kAddressBits <= 8 * sizeof(void*),
 static SpinLock spinlock(SpinLock::LINKER_INITIALIZED);
 
 #if defined(HAVE_MMAP) || defined(MADV_FREE)
-// Page size is initialized on demand (only needed for mmap-based allocators)
+#ifdef HAVE_GETPAGESIZE
 static size_t pagesize = 0;
+#endif
 #endif
 
 // The current system allocator
@@ -658,6 +660,27 @@ void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
     TCMalloc_SystemTaken += *actual_size;
   }
   return result;
+}
+
+void TCMalloc_SystemAddGuard(void* start, size_t size) {
+#ifdef HAVE_GETPAGESIZE
+  if (pagesize == 0)
+    pagesize = getpagesize();
+
+  if (size < pagesize || (reinterpret_cast<size_t>(start) % pagesize) != 0) {
+    Log(kCrash, __FILE__, __LINE__,
+        "FATAL ERROR: alloc size (%d) < pagesize (%d), or start address (%p) "
+        "is not page aligned\n",
+        size, pagesize, start);
+    return;
+  }
+
+  if (mprotect(start, pagesize, PROT_NONE)) {
+    Log(kCrash, __FILE__, __LINE__,
+        "FATAL ERROR: mprotect(%p, %d, PROT_NONE) failed: %s\n", start,
+        pagesize, strerror(errno));
+  }
+#endif
 }
 
 bool TCMalloc_SystemRelease(void* start, size_t length) {

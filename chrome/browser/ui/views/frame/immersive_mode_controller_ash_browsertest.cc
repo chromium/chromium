@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_ash.h"
 
-#include "ash/frame/caption_buttons/frame_caption_button.h"  // mash-ok
-#include "ash/frame/caption_buttons/frame_caption_button_container_view.h"  // mash-ok
+#include "ash/public/cpp/caption_buttons/frame_caption_button.h"
+#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller_test_api.h"
 #include "ash/public/interfaces/constants.mojom.h"
 #include "ash/public/interfaces/shell_test_api.mojom.h"
@@ -122,7 +122,7 @@ class ImmersiveModeControllerAshHostedAppBrowserTest
 
   void VerifyButtonsInImmersiveMode(BrowserNonClientFrameViewAsh* frame_view) {
     HostedAppButtonContainer* container =
-        frame_view->hosted_app_button_container_;
+        frame_view->hosted_app_button_container_for_testing();
     views::test::InkDropHostViewTestApi ink_drop_api(
         container->app_menu_button_);
     EXPECT_TRUE(container->GetContentSettingContainerForTesting()->layer());
@@ -271,7 +271,8 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshHostedAppBrowserTest,
                        FrameLayoutToggleTabletMode) {
   // For mash, the layout is handled in Ash and tested by
   // FrameCaptionButtonContainerViewTest.
-  // TODO(estade): remove this test when mash is default.
+  // TODO(estade): look into enabling for Mash now that the frame is
+  // client-side.
   if (features::IsUsingWindowService())
     return;
 

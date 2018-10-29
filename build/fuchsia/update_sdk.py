@@ -75,7 +75,8 @@ def main():
   # Previously SDK was unpacked in //third_party/fuchsia-sdk instead of
   # //third_party/fuchsia-sdk/sdk . Remove the old files if they are still
   # there.
-  Cleanup(os.path.join(REPOSITORY_ROOT, 'third_party', 'fuchsia-sdk'))
+  sdk_root = os.path.join(REPOSITORY_ROOT, 'third_party', 'fuchsia-sdk')
+  Cleanup(sdk_root)
 
   hash_file = GetSdkHashForPlatform()
   with open(hash_file, 'r') as f:
@@ -85,14 +86,15 @@ def main():
     print >>sys.stderr, 'No SHA1 found in %s' % hash_file
     return 1
 
-  output_dir = os.path.join(REPOSITORY_ROOT, 'third_party', 'fuchsia-sdk',
-                            'sdk')
+  output_dir = os.path.join(sdk_root, 'sdk')
 
   hash_filename = os.path.join(output_dir, '.hash')
   if os.path.exists(hash_filename):
     with open(hash_filename, 'r') as f:
       if f.read().strip() == sdk_hash:
-        # Nothing to do.
+        # Nothing to do. Generate sdk/BUILD.gn anyways, in case the conversion
+        # script changed.
+        subprocess.check_call([os.path.join(sdk_root, 'gen_build_defs.py')])
         return 0
 
   print 'Downloading SDK %s...' % sdk_hash
@@ -112,6 +114,9 @@ def main():
       tarfile.open(mode='r:gz', fileobj=f).extractall(path=output_dir)
   finally:
     os.remove(tmp)
+
+  # Generate sdk/BUILD.gn.
+  subprocess.check_call([os.path.join(sdk_root, 'gen_build_defs.py')])
 
   with open(hash_filename, 'w') as f:
     f.write(sdk_hash)

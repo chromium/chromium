@@ -13,19 +13,27 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/ip_endpoint.h"
-#include "net/socket/tcp_socket.h"
 #include "ppapi/c/pp_instance.h"
+#include "ppapi/c/private/ppb_net_address_private.h"
 #include "ppapi/host/resource_message_filter.h"
-
-struct PP_NetAddress_Private;
+#include "services/network/public/mojom/tcp_socket.mojom.h"
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/network/firewall_hole.h"
 #include "content/public/browser/browser_thread.h"
 #endif  // defined(OS_CHROMEOS)
+
+namespace network {
+namespace mojom {
+class NetworkContext;
+}
+}  // namespace network
 
 namespace ppapi {
 namespace host {
@@ -48,6 +56,11 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
                                      PP_Instance instance,
                                      bool private_api);
 
+  // Sets a global NetworkContext object to be used instead of the real one for
+  // doing all network operations.
+  static void SetNetworkContextForTesting(
+      network::mojom::NetworkContext* network_context);
+
   static size_t GetNumInstances();
 
  protected:
@@ -63,6 +76,7 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
   };
 
   // ppapi::host::ResourceMessageFilter overrides.
+  void OnFilterDestroyed() override;
   scoped_refptr<base::TaskRunner> OverrideTaskRunnerForMessage(
       const IPC::Message& message) override;
   int32_t OnResourceMessageReceived(
@@ -76,13 +90,31 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
   int32_t OnMsgStopListening(const ppapi::host::HostMessageContext* context);
 
   void DoListen(const ppapi::host::ReplyMessageContext& context,
-                const PP_NetAddress_Private& addr,
                 int32_t backlog);
 
   void OnListenCompleted(const ppapi::host::ReplyMessageContext& context,
-                         int net_result);
-  void OnAcceptCompleted(const ppapi::host::ReplyMessageContext& context,
-                         int net_result);
+                         int net_result,
+                         const base::Optional<net::IPEndPoint>& local_addr);
+  void OnAcceptCompleted(
+      const ppapi::host::ReplyMessageContext& context,
+      network::mojom::SocketObserverRequest socket_observer_request,
+      int net_result,
+      const base::Optional<net::IPEndPoint>& remote_addr,
+      network::mojom::TCPConnectedSocketPtr connected_socket,
+      mojo::ScopedDataPipeConsumerHandle receive_stream,
+      mojo::ScopedDataPipeProducerHandle send_stream);
+  void OnAcceptCompletedOnIOThread(
+      const ppapi::host::ReplyMessageContext& context,
+      network::mojom::TCPConnectedSocketPtrInfo connected_socket,
+      network::mojom::SocketObserverRequest socket_observer_request,
+      mojo::ScopedDataPipeConsumerHandle receive_stream,
+      mojo::ScopedDataPipeProducerHandle send_stream,
+      PP_NetAddress_Private pp_local_addr,
+      PP_NetAddress_Private pp_remote_addr);
+
+  // Closes the socket and FirewallHole, if they're open, and prevents
+  // |this| from being used further, even with a new socket.
+  void Close();
 
   void SendListenReply(const ppapi::host::ReplyMessageContext& context,
                        int32_t pp_result,
@@ -99,9 +131,8 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
 
 #if defined(OS_CHROMEOS)
   void OpenFirewallHole(const ppapi::host::ReplyMessageContext& context,
-                        int net_result);
+                        const net::IPEndPoint& local_addr);
   void OnFirewallHoleOpened(const ppapi::host::ReplyMessageContext& context,
-                            int32_t net_result,
                             std::unique_ptr<chromeos::FirewallHole> hole);
 #endif  // defined(OS_CHROMEOS)
 
@@ -113,9 +144,9 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
   PP_Instance instance_;
 
   State state_;
-  std::unique_ptr<net::TCPSocket> socket_;
-  std::unique_ptr<net::TCPSocket> accepted_socket_;
-  net::IPEndPoint accepted_address_;
+  network::mojom::TCPServerSocketPtr socket_;
+
+  PP_NetAddress_Private bound_addr_;
 
 #if defined(OS_CHROMEOS)
   std::unique_ptr<chromeos::FirewallHole,
@@ -129,6 +160,13 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
   const bool private_api_;
   int render_process_id_;
   int render_frame_id_;
+
+  // Used in place of the StoragePartition's NetworkContext when non-null.
+  static network::mojom::NetworkContext* network_context_for_testing;
+
+  // Vends weak pointers on the UI thread, for callbacks passed through Mojo
+  // pipes not owned by |this|. All weak pointers released in Close().
+  base::WeakPtrFactory<PepperTCPServerSocketMessageFilter> weak_ptr_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(PepperTCPServerSocketMessageFilter);
 };

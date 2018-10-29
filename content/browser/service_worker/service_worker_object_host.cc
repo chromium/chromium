@@ -88,7 +88,7 @@ bool PrepareExtendableMessageEventFromClient(
   DCHECK(source_client_info && !source_client_info->client_uuid.empty());
   (*event)->source_info_for_client = std::move(source_client_info);
   // Hide the client url if the client has a unique origin.
-  if ((*event)->source_origin.unique())
+  if ((*event)->source_origin.opaque())
     (*event)->source_info_for_client->url = GURL();
 
   // Reset |registration->self_update_delay| iff postMessage is coming from a
@@ -130,7 +130,7 @@ bool PrepareExtendableMessageEventFromServiceWorker(
 
   (*event)->source_info_for_service_worker = std::move(source_worker_info);
   // Hide the service worker url if the service worker has a unique origin.
-  if ((*event)->source_origin.unique())
+  if ((*event)->source_origin.opaque())
     (*event)->source_info_for_service_worker->url = GURL();
   return true;
 }

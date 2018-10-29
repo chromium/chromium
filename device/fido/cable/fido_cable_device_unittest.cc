@@ -267,8 +267,7 @@ TEST_F(FidoCableDeviceTest, TestCableDeviceFailOnUnexpectedCounter) {
   ConnectWithLength(kControlPointLength);
 
   EXPECT_CALL(*connection(), WriteControlPointPtr(_, _))
-      .WillOnce(Invoke([this, kIncorrectAuthenticatorCounter](const auto& data,
-                                                              auto* cb) {
+      .WillOnce(Invoke([this](const auto& data, auto* cb) {
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(std::move(*cb), true));
 

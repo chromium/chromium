@@ -23,6 +23,9 @@ class BrowserContext;
 
 namespace arc {
 
+extern const char kGoogleDuo[];
+extern const char kInfinitePainter[];
+extern const char kLightRoom[];
 extern const char kPlayStoreAppId[];
 extern const char kPlayBooksAppId[];
 extern const char kPlayGamesAppId[];

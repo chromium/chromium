@@ -79,10 +79,10 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // TabStripModelObserver overrides.
-  void ActiveTabChanged(content::WebContents* old_contents,
-                        content::WebContents* new_contents,
-                        int index,
-                        int reason) override;
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
   // The min/max height of popups.
   static const int kMinWidth;

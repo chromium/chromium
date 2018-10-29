@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactory;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
 import org.chromium.chrome.browser.download.ui.DownloadManagerUi;
 import org.chromium.chrome.browser.util.IntentUtils;
@@ -54,8 +55,12 @@ public class DownloadActivity extends SnackbarActivity {
                 getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
         mPermissionDelegate =
                 new ActivityAndroidPermissionDelegate(new WeakReference<Activity>(this));
+        DownloadManagerUiConfig config = new DownloadManagerUiConfig.Builder()
+                                                 .setIsOffTheRecord(isOffTheRecord)
+                                                 .setIsSeparateActivity(true)
+                                                 .build();
         mDownloadCoordinator = DownloadManagerCoordinatorFactory.create(
-                this, isOffTheRecord, getSnackbarManager(), parentComponent, true);
+                this, config, getSnackbarManager(), parentComponent);
         setContentView(mDownloadCoordinator.getView());
         mIsOffTheRecord = isOffTheRecord;
         mDownloadCoordinator.addObserver(mUiObserver);

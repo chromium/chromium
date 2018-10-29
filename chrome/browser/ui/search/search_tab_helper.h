@@ -107,6 +107,9 @@ class SearchTabHelper : public content::WebContentsObserver,
   bool OnDeleteCustomLink(const GURL& url) override;
   void OnUndoCustomLinkAction() override;
   void OnResetCustomLinks() override;
+  void OnDoesUrlResolve(
+      const GURL& url,
+      chrome::mojom::EmbeddedSearch::DoesUrlResolveCallback callback) override;
   void OnLogEvent(NTPLoggingEventType event, base::TimeDelta time) override;
   void OnLogMostVisitedImpression(
       const ntp_tiles::NTPTileImpression& impression) override;

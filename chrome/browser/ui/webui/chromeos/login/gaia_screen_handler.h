@@ -20,6 +20,10 @@
 
 class AccountId;
 
+namespace net {
+class CanonicalCookie;
+}
+
 namespace policy {
 class TempCertsCacheNSS;
 }
@@ -70,6 +74,11 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void LoadGaiaWithPartition(const GaiaContext& context,
                              const std::string& partition_name);
 
+  // Called after the GAPS cookie, if present, is added to the cookie store.
+  void OnSetCookieForLoadGaiaWithPartition(const GaiaContext& context,
+                                           const std::string& partition_name,
+                                           bool success);
+
   // Callback that loads GAIA after version and stat consent information has
   // been retrieved.
   void LoadGaiaWithPartitionAndVersionAndConsent(
@@ -108,10 +117,15 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void HandleCompleteAuthentication(const std::string& gaia_id,
                                     const std::string& email,
                                     const std::string& password,
-                                    const std::string& auth_code,
                                     bool using_saml,
-                                    const std::string& gaps_cookie,
                                     const ::login::StringList& services);
+  void OnGetCookiesForCompleteAuthentication(
+      const std::string& gaia_id,
+      const std::string& email,
+      const std::string& password,
+      bool using_saml,
+      const ::login::StringList& services,
+      const std::vector<net::CanonicalCookie>& cookies);
   void HandleCompleteLogin(const std::string& gaia_id,
                            const std::string& typed_email,
                            const std::string& password,

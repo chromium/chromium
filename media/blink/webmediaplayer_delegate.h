@@ -123,7 +123,8 @@ class WebMediaPlayerDelegate {
       int delegate_id,
       const viz::SurfaceId&,
       const gfx::Size&,
-      blink::WebMediaPlayer::PipWindowOpenedCallback) = 0;
+      blink::WebMediaPlayer::PipWindowOpenedCallback,
+      bool show_play_pause_button) = 0;
 
   // Notify that the source media player has exited Picture-in-Picture mode.
   virtual void DidPictureInPictureModeEnd(int delegate_id,
@@ -136,9 +137,11 @@ class WebMediaPlayerDelegate {
       const std::vector<blink::PictureInPictureControlInfo>&) = 0;
 
   // Notify that the media player in Picture-in-Picture had a change of surface.
-  virtual void DidPictureInPictureSurfaceChange(int delegate_id,
-                                                const viz::SurfaceId&,
-                                                const gfx::Size&) = 0;
+  virtual void DidPictureInPictureSurfaceChange(
+      int delegate_id,
+      const viz::SurfaceId&,
+      const gfx::Size&,
+      bool show_play_pause_button) = 0;
 
   // Registers a callback associated with a player that will be called when
   // receiving a notification from the browser process that the

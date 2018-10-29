@@ -19,9 +19,6 @@ extern const NSInteger kLabelNumLines;
 // Space between the icon and the title label.
 extern const CGFloat kSpaceIconTitle;
 
-// Size of a Most Visited cell.
-extern const CGSize kCellSize;
-
 // The alpha value for text.
 extern const CGFloat kTitleAlpha;
 

@@ -15,6 +15,7 @@ namespace internal {
 // An immutable but assignable representation of the priority of a Sequence.
 class BASE_EXPORT SequenceSortKey final {
  public:
+  SequenceSortKey() = default;
   SequenceSortKey(TaskPriority priority, TimeTicks next_task_sequenced_time);
 
   TaskPriority priority() const { return priority_; }
@@ -22,8 +23,8 @@ class BASE_EXPORT SequenceSortKey final {
     return next_task_sequenced_time_;
   }
 
-  bool operator<(const SequenceSortKey& other) const;
-  bool operator>(const SequenceSortKey& other) const { return other < *this; }
+  // Lower sort key means more important.
+  bool operator<=(const SequenceSortKey& other) const;
 
   bool operator==(const SequenceSortKey& other) const {
     return priority_ == other.priority_ &&

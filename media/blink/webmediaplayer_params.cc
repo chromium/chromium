@@ -28,7 +28,7 @@ WebMediaPlayerParams::WebMediaPlayerParams(
     mojom::MediaMetricsProviderPtr metrics_provider,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
     scoped_refptr<viz::ContextProvider> context_provider,
-    bool use_surface_layer_for_video)
+    blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video)
     : defer_load_cb_(defer_load_cb),
       audio_renderer_sink_(audio_renderer_sink),
       media_log_(std::move(media_log)),

@@ -52,11 +52,6 @@ const net::ProxyConfig* HeadlessBrowserContextOptions::proxy_config() const {
   return browser_options_->proxy_config.get();
 }
 
-const std::string& HeadlessBrowserContextOptions::host_resolver_rules() const {
-  return ReturnOverriddenValue(host_resolver_rules_,
-                               browser_options_->host_resolver_rules);
-}
-
 const gfx::Size& HeadlessBrowserContextOptions::window_size() const {
   return ReturnOverriddenValue(window_size_, browser_options_->window_size);
 }

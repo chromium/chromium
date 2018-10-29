@@ -24,7 +24,7 @@ function selectFirstFileListItem(appId) {
     return remoteCall.waitForElementLost(appId, '#file-list [selected]');
   }).then(function() {
     // Press DownArrow key to select an item.
-    const key = ['#file-list', 'ArrowDown', 'Down', false, false, false];
+    const key = ['#file-list', 'ArrowDown', false, false, false];
     return remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key);
   }).then(function(result) {
     chrome.test.assertTrue(result);
@@ -58,19 +58,19 @@ function createNewFolder(appId, initialEntrySet, selector) {
   }).then(function(result) {
     chrome.test.assertTrue(result);
     // Press Ctrl+E to create a new folder.
-    const key = ['#file-list', 'e', 'U+0045', true, false, false];
+    const key = ['#file-list', 'e', true, false, false];
     return remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key);
   }).then(function(result) {
     chrome.test.assertTrue(result);
     // Check: a new folder should be shown in the file list.
-    const files = [['New Folder', '--', 'Folder', '']].concat(
+    const files = [['New folder', '--', 'Folder', '']].concat(
         TestEntryInfo.getExpectedRows(initialEntrySet));
     return remoteCall.waitForFiles(
         appId, files, {ignoreLastModifiedTime: true});
   }).then(function() {
     // Check: a new folder should be present in the directory tree.
-    const newSubtreeChildItem = selector +
-        ' .tree-children .tree-item[entry-label="New Folder"]';
+    const newSubtreeChildItem =
+        selector + ' .tree-children .tree-item[entry-label="New folder"]';
     return remoteCall.waitForElement(appId, newSubtreeChildItem);
   }).then(function() {
     // Check: the text input should be shown in the file list.
@@ -83,7 +83,7 @@ function createNewFolder(appId, initialEntrySet, selector) {
   }).then(function(elements) {
     // Check: the new folder only should be 'renaming'.
     chrome.test.assertEq(1, elements.length);
-    chrome.test.assertEq(0, elements[0].text.indexOf('New Folder--'));
+    chrome.test.assertEq(0, elements[0].text.indexOf('New folder--'));
     chrome.test.assertTrue('selected' in elements[0].attributes);
   }).then(function() {
     // Get all file list rows that have attribute 'selected'.
@@ -93,7 +93,7 @@ function createNewFolder(appId, initialEntrySet, selector) {
   }).then(function(elements) {
     // Check: the new folder only should be 'selected'.
     chrome.test.assertEq(1, elements.length);
-    chrome.test.assertEq(0, elements[0].text.indexOf('New Folder--'));
+    chrome.test.assertEq(0, elements[0].text.indexOf('New folder--'));
     chrome.test.assertTrue('renaming' in elements[0].attributes);
   }).then(function() {
     // Type the test folder name.
@@ -101,7 +101,7 @@ function createNewFolder(appId, initialEntrySet, selector) {
         'inputText', appId, [textInput, 'Test Folder Name']);
   }).then(function() {
     // Press the Enter key.
-    const key = [textInput, 'Enter', 'Enter', false, false, false];
+    const key = [textInput, 'Enter', false, false, false];
     return remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key);
   }).then(function(result) {
     chrome.test.assertTrue(result);
@@ -210,7 +210,7 @@ testcase.createFolderNestedDownloads = function() {
           })
           .then(function() {
             return remoteCall.navigateWithDirectoryTree(
-                appId, '/photos', 'Downloads');
+                appId, '/photos', 'My files/Downloads');
           })
           .then(function() {
             return remoteCall.waitForFiles(

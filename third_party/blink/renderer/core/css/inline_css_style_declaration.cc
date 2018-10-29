@@ -43,7 +43,7 @@ void InlineCSSStyleDeclaration::DidMutate(MutationType type) {
   parent_element_->ClearMutableInlineStyleIfEmpty();
   parent_element_->SetNeedsStyleRecalc(
       kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                             StyleChangeReason::kInlineCSSStyleMutated));
+                             style_change_reason::kInlineCSSStyleMutated));
   parent_element_->InvalidateStyleAttribute();
   StyleAttributeMutationScope(this).DidInvalidateStyleAttr();
 }

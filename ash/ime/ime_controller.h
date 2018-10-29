@@ -57,6 +57,7 @@ class ASH_EXPORT ImeController : public mojom::ImeController {
   bool is_voice_enabled() const { return is_voice_enabled_; }
 
   bool managed_by_policy() const { return managed_by_policy_; }
+  bool is_menu_active() const { return is_menu_active_; }
 
   const std::vector<mojom::ImeMenuItem>& current_ime_menu_items() const {
     return current_ime_menu_items_;
@@ -166,6 +167,10 @@ class ASH_EXPORT ImeController : public mojom::ImeController {
 
   // True if voice input should be available from the IME menu.
   bool is_voice_enabled_ = false;
+
+  // True if the IME menu is active. IME related items in system tray should be
+  // removed if |is_menu_active_| is true.
+  bool is_menu_active_ = false;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

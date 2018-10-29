@@ -14,7 +14,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_text_item.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
@@ -52,7 +52,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ContentSettingBackedBoolean* _disablePopupsSetting;
 
   // The item related to the switch for the "Disable Popups" setting.
-  SettingsSwitchItem* _blockPopupsItem;
+  LegacySettingsSwitchItem* _blockPopupsItem;
 }
 
 // Fetch the urls that can display popups and add them to |_exceptions|.
@@ -103,7 +103,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierMainSwitch];
 
   _blockPopupsItem =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeMainSwitch];
+      [[LegacySettingsSwitchItem alloc] initWithType:ItemTypeMainSwitch];
   _blockPopupsItem.text = l10n_util::GetNSString(IDS_IOS_BLOCK_POPUPS);
   _blockPopupsItem.on = [_disablePopupsSetting value];
   _blockPopupsItem.accessibilityIdentifier = @"blockPopupsContentView_switch";
@@ -138,8 +138,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if ([self.collectionViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeMainSwitch) {
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    LegacySettingsSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<LegacySettingsSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(blockPopupsSwitchChanged:)
                     forControlEvents:UIControlEventValueChanged];

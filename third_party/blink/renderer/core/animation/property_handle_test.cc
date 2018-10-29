@@ -9,8 +9,8 @@
 
 namespace blink {
 
-using SVGNames::amplitudeAttr;
-using SVGNames::exponentAttr;
+using svg_names::kAmplitudeAttr;
+using svg_names::kExponentAttr;
 
 class PropertyHandleTest : public testing::Test {};
 
@@ -31,9 +31,9 @@ TEST_F(PropertyHandleTest, Equality) {
   EXPECT_TRUE(PropertyHandle(GetCSSPropertyOpacity()) !=
               PropertyHandle(name_a));
   EXPECT_FALSE(PropertyHandle(GetCSSPropertyOpacity()) ==
-               PropertyHandle(amplitudeAttr));
+               PropertyHandle(kAmplitudeAttr));
   EXPECT_TRUE(PropertyHandle(GetCSSPropertyOpacity()) !=
-              PropertyHandle(amplitudeAttr));
+              PropertyHandle(kAmplitudeAttr));
 
   EXPECT_FALSE(PropertyHandle(name_a) ==
                PropertyHandle(GetCSSPropertyOpacity()));
@@ -47,19 +47,20 @@ TEST_F(PropertyHandleTest, Equality) {
   EXPECT_FALSE(PropertyHandle(name_a) != PropertyHandle(name_a));
   EXPECT_FALSE(PropertyHandle(name_a) == PropertyHandle(name_b));
   EXPECT_TRUE(PropertyHandle(name_a) != PropertyHandle(name_b));
-  EXPECT_FALSE(PropertyHandle(name_a) == PropertyHandle(amplitudeAttr));
-  EXPECT_TRUE(PropertyHandle(name_a) != PropertyHandle(amplitudeAttr));
+  EXPECT_FALSE(PropertyHandle(name_a) == PropertyHandle(kAmplitudeAttr));
+  EXPECT_TRUE(PropertyHandle(name_a) != PropertyHandle(kAmplitudeAttr));
 
-  EXPECT_FALSE(PropertyHandle(amplitudeAttr) ==
+  EXPECT_FALSE(PropertyHandle(kAmplitudeAttr) ==
                PropertyHandle(GetCSSPropertyOpacity()));
-  EXPECT_TRUE(PropertyHandle(amplitudeAttr) !=
+  EXPECT_TRUE(PropertyHandle(kAmplitudeAttr) !=
               PropertyHandle(GetCSSPropertyOpacity()));
-  EXPECT_FALSE(PropertyHandle(amplitudeAttr) == PropertyHandle(name_a));
-  EXPECT_TRUE(PropertyHandle(amplitudeAttr) != PropertyHandle(name_a));
-  EXPECT_TRUE(PropertyHandle(amplitudeAttr) == PropertyHandle(amplitudeAttr));
-  EXPECT_FALSE(PropertyHandle(amplitudeAttr) != PropertyHandle(amplitudeAttr));
-  EXPECT_FALSE(PropertyHandle(amplitudeAttr) == PropertyHandle(exponentAttr));
-  EXPECT_TRUE(PropertyHandle(amplitudeAttr) != PropertyHandle(exponentAttr));
+  EXPECT_FALSE(PropertyHandle(kAmplitudeAttr) == PropertyHandle(name_a));
+  EXPECT_TRUE(PropertyHandle(kAmplitudeAttr) != PropertyHandle(name_a));
+  EXPECT_TRUE(PropertyHandle(kAmplitudeAttr) == PropertyHandle(kAmplitudeAttr));
+  EXPECT_FALSE(PropertyHandle(kAmplitudeAttr) !=
+               PropertyHandle(kAmplitudeAttr));
+  EXPECT_FALSE(PropertyHandle(kAmplitudeAttr) == PropertyHandle(kExponentAttr));
+  EXPECT_TRUE(PropertyHandle(kAmplitudeAttr) != PropertyHandle(kExponentAttr));
 }
 
 TEST_F(PropertyHandleTest, Hash) {
@@ -73,7 +74,7 @@ TEST_F(PropertyHandleTest, Hash) {
   EXPECT_FALSE(PropertyHandle(GetCSSPropertyOpacity()).GetHash() ==
                PropertyHandle(GetCSSPropertyTransform()).GetHash());
   EXPECT_FALSE(PropertyHandle(GetCSSPropertyOpacity()).GetHash() ==
-               PropertyHandle(amplitudeAttr).GetHash());
+               PropertyHandle(kAmplitudeAttr).GetHash());
 
   EXPECT_FALSE(PropertyHandle(name_a).GetHash() ==
                PropertyHandle(GetCSSPropertyOpacity()).GetHash());
@@ -82,16 +83,16 @@ TEST_F(PropertyHandleTest, Hash) {
   EXPECT_FALSE(PropertyHandle(name_a).GetHash() ==
                PropertyHandle(name_b).GetHash());
   EXPECT_FALSE(PropertyHandle(name_a).GetHash() ==
-               PropertyHandle(exponentAttr).GetHash());
+               PropertyHandle(kExponentAttr).GetHash());
 
-  EXPECT_FALSE(PropertyHandle(amplitudeAttr).GetHash() ==
+  EXPECT_FALSE(PropertyHandle(kAmplitudeAttr).GetHash() ==
                PropertyHandle(GetCSSPropertyOpacity()).GetHash());
-  EXPECT_FALSE(PropertyHandle(amplitudeAttr).GetHash() ==
+  EXPECT_FALSE(PropertyHandle(kAmplitudeAttr).GetHash() ==
                PropertyHandle(name_a).GetHash());
-  EXPECT_TRUE(PropertyHandle(amplitudeAttr).GetHash() ==
-              PropertyHandle(amplitudeAttr).GetHash());
-  EXPECT_FALSE(PropertyHandle(amplitudeAttr).GetHash() ==
-               PropertyHandle(exponentAttr).GetHash());
+  EXPECT_TRUE(PropertyHandle(kAmplitudeAttr).GetHash() ==
+              PropertyHandle(kAmplitudeAttr).GetHash());
+  EXPECT_FALSE(PropertyHandle(kAmplitudeAttr).GetHash() ==
+               PropertyHandle(kExponentAttr).GetHash());
 }
 
 TEST_F(PropertyHandleTest, Accessors) {
@@ -99,15 +100,15 @@ TEST_F(PropertyHandleTest, Accessors) {
 
   EXPECT_TRUE(PropertyHandle(GetCSSPropertyOpacity()).IsCSSProperty());
   EXPECT_TRUE(PropertyHandle(name).IsCSSProperty());
-  EXPECT_FALSE(PropertyHandle(amplitudeAttr).IsCSSProperty());
+  EXPECT_FALSE(PropertyHandle(kAmplitudeAttr).IsCSSProperty());
 
   EXPECT_FALSE(PropertyHandle(GetCSSPropertyOpacity()).IsSVGAttribute());
   EXPECT_FALSE(PropertyHandle(name).IsSVGAttribute());
-  EXPECT_TRUE(PropertyHandle(amplitudeAttr).IsSVGAttribute());
+  EXPECT_TRUE(PropertyHandle(kAmplitudeAttr).IsSVGAttribute());
 
   EXPECT_FALSE(PropertyHandle(GetCSSPropertyOpacity()).IsCSSCustomProperty());
   EXPECT_TRUE(PropertyHandle(name).IsCSSCustomProperty());
-  EXPECT_FALSE(PropertyHandle(amplitudeAttr).IsCSSCustomProperty());
+  EXPECT_FALSE(PropertyHandle(kAmplitudeAttr).IsCSSCustomProperty());
 
   EXPECT_EQ(
       PropertyHandle(GetCSSPropertyOpacity()).GetCSSProperty().PropertyID(),
@@ -115,7 +116,7 @@ TEST_F(PropertyHandleTest, Accessors) {
   EXPECT_EQ(PropertyHandle(name).GetCSSProperty().PropertyID(),
             CSSPropertyVariable);
   EXPECT_EQ(PropertyHandle(name).CustomPropertyName(), name);
-  EXPECT_EQ(PropertyHandle(amplitudeAttr).SvgAttribute(), amplitudeAttr);
+  EXPECT_EQ(PropertyHandle(kAmplitudeAttr).SvgAttribute(), kAmplitudeAttr);
 }
 
 }  // namespace blink

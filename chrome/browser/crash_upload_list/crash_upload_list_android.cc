@@ -45,6 +45,18 @@ CrashUploadListAndroid::CrashUploadListAndroid(
 
 CrashUploadListAndroid::~CrashUploadListAndroid() {}
 
+// static
+bool CrashUploadListAndroid::BrowserCrashMetricsInitialized() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_MinidumpUploadService_browserCrashMetricsInitialized(env);
+}
+
+// static
+bool CrashUploadListAndroid::DidBrowserCrashRecently() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_MinidumpUploadService_didBrowserCrashRecently(env);
+}
+
 std::vector<UploadList::UploadInfo> CrashUploadListAndroid::LoadUploadList() {
   // First load the list of successfully uploaded logs.
   std::vector<UploadInfo> uploads = TextLogUploadList::LoadUploadList();

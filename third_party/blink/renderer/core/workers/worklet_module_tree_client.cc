@@ -58,7 +58,7 @@ void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
   ScriptValue error = modulator_->ExecuteModule(
       module_script, Modulator::CaptureEvalErrorFlag::kReport);
 
-  WorkletGlobalScope* global_scope = ToWorkletGlobalScope(
+  WorkletGlobalScope* global_scope = To<WorkletGlobalScope>(
       ExecutionContext::From(modulator_->GetScriptState()));
 
   global_scope->ReportingProxy().DidEvaluateModuleScript(error.IsEmpty());

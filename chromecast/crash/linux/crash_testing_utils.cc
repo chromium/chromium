@@ -62,7 +62,7 @@ int WriteLockFile(const std::string& path, base::ListValue* contents) {
   std::string lockfile;
 
   for (const auto& elem : *contents) {
-    std::unique_ptr<std::string> dump_info = SerializeToJson(elem);
+    base::Optional<std::string> dump_info = SerializeToJson(elem);
     RCHECK(dump_info, -1, "Failed to serialize DumpInfo");
     lockfile += *dump_info;
     lockfile += "\n";  // Add line seperatators

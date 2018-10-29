@@ -34,7 +34,7 @@ class SenderPipeTest : public testing::Test {
   Result Write(int size) { return sender_pipe_->Send(buffer_.data(), size, 1); }
 
   void Read(int size) {
-#if defined(OS_POSIX)
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
     ssize_t bytes_read = read(read_handle_.GetFD().get(), buffer_.data(), size);
     ASSERT_EQ(size, bytes_read);
 #else

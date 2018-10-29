@@ -46,7 +46,7 @@ AbstractWorker::~AbstractWorker() = default;
 KURL AbstractWorker::ResolveURL(ExecutionContext* execution_context,
                                 const String& url,
                                 ExceptionState& exception_state,
-                                WebURLRequest::RequestContext request_context) {
+                                mojom::RequestContextType request_context) {
   KURL script_url = execution_context->CompleteURL(url);
   if (!script_url.IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,

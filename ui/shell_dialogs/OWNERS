@@ -1,2 +1,4 @@
 per-file *android*=miguelg@chromium.org
 per-file *android*=qinmin@chromium.org
+
+per-file *win*=robliao@chromium.org

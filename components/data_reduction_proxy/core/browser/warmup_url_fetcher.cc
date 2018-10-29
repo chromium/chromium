@@ -13,38 +13,56 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
+#include "components/data_reduction_proxy/core/common/data_reduction_proxy_server.h"
 #include "components/data_use_measurement/core/data_use_user_data.h"
+#include "content/public/browser/network_service_instance.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "net/url_request/url_request_status.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace data_reduction_proxy {
 
+namespace {
+
+const int kInvalidResponseCode = -1;
+
+void BindNetworkContextOnUI(network::mojom::CustomProxyConfigPtr config,
+                            network::mojom::NetworkContextRequest request) {
+  auto params = network::mojom::NetworkContextParams::New();
+  params->initial_custom_proxy_config = std::move(config);
+  content::GetNetworkService()->CreateNetworkContext(std::move(request),
+                                                     std::move(params));
+}
+}
+
 WarmupURLFetcher::WarmupURLFetcher(
-    const scoped_refptr<net::URLRequestContextGetter>&
-        url_request_context_getter,
+    scoped_refptr<network::SharedURLLoaderFactory>
+        non_network_service_url_loader_factory,
+    CreateCustomProxyConfigCallback create_custom_proxy_config_callback,
     WarmupURLFetcherCallback callback,
-    GetHttpRttCallback get_http_rtt_callback)
+    GetHttpRttCallback get_http_rtt_callback,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
     : is_fetch_in_flight_(false),
       previous_attempt_counts_(0),
-      url_request_context_getter_(url_request_context_getter),
+      non_network_service_url_loader_factory_(
+          std::move(non_network_service_url_loader_factory)),
+      create_custom_proxy_config_callback_(create_custom_proxy_config_callback),
       callback_(callback),
-      get_http_rtt_callback_(get_http_rtt_callback) {
-  // TODO(crbug.com/721403): DRP is disabled with network service enabled. When
-  // DRP is switched to mojo, we won't need URLRequestContext.
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    DCHECK(url_request_context_getter_);
-  }
+      get_http_rtt_callback_(get_http_rtt_callback),
+      ui_task_runner_(ui_task_runner) {
+  DCHECK(non_network_service_url_loader_factory_);
+  DCHECK(create_custom_proxy_config_callback);
 }
 
 WarmupURLFetcher::~WarmupURLFetcher() {}
 
-void WarmupURLFetcher::FetchWarmupURL(size_t previous_attempt_counts) {
+void WarmupURLFetcher::FetchWarmupURL(
+    size_t previous_attempt_counts,
+    const DataReductionProxyServer& proxy_server) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   previous_attempt_counts_ = previous_attempt_counts;
@@ -56,11 +74,13 @@ void WarmupURLFetcher::FetchWarmupURL(size_t previous_attempt_counts) {
   fetch_delay_timer_.Stop();
 
   if (previous_attempt_counts_ == 0) {
-    FetchWarmupURLNow();
+    FetchWarmupURLNow(proxy_server);
     return;
   }
-  fetch_delay_timer_.Start(FROM_HERE, GetFetchWaitTime(), this,
-                           &WarmupURLFetcher::FetchWarmupURLNow);
+  fetch_delay_timer_.Start(
+      FROM_HERE, GetFetchWaitTime(),
+      base::BindOnce(&WarmupURLFetcher::FetchWarmupURLNow,
+                     base::Unretained(this), proxy_server));
 }
 
 base::TimeDelta WarmupURLFetcher::GetFetchWaitTime() const {
@@ -79,7 +99,8 @@ base::TimeDelta WarmupURLFetcher::GetFetchWaitTime() const {
       "warmup_url_fetch_wait_timer_second_retry_seconds", 30));
 }
 
-void WarmupURLFetcher::FetchWarmupURLNow() {
+void WarmupURLFetcher::FetchWarmupURLNow(
+    const DataReductionProxyServer& proxy_server) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UMA_HISTOGRAM_EXACT_LINEAR("DataReductionProxy.WarmupURL.FetchInitiated", 1,
@@ -109,29 +130,60 @@ void WarmupURLFetcher::FetchWarmupURLNow() {
   GURL warmup_url_with_query_params;
   GetWarmupURLWithQueryParam(&warmup_url_with_query_params);
 
-  fetcher_.reset();
+  url_loader_.reset();
   fetch_timeout_timer_.Stop();
   is_fetch_in_flight_ = true;
 
-  fetcher_ =
-      net::URLFetcher::Create(warmup_url_with_query_params,
-                              net::URLFetcher::GET, this, traffic_annotation);
-  data_use_measurement::DataUseUserData::AttachToFetcher(
-      fetcher_.get(),
-      data_use_measurement::DataUseUserData::DATA_REDUCTION_PROXY);
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = warmup_url_with_query_params;
   // Do not disable cookies. This allows the warmup connection to be reused
-  // for fetching user initiated requests.
-  fetcher_->SetLoadFlags(net::LOAD_BYPASS_CACHE);
-  fetcher_->SetRequestContext(url_request_context_getter_.get());
-  // |fetcher| should not retry on 5xx errors. |fetcher_| should retry on
+  // for loading user initiated requests.
+  resource_request->load_flags = net::LOAD_BYPASS_CACHE;
+
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 traffic_annotation);
+  // |url_loader_| should not retry on 5xx errors. |url_loader_| should retry on
   // network changes since the network stack may receive the connection change
   // event later than |this|.
   static const int kMaxRetries = 5;
-  fetcher_->SetAutomaticallyRetryOn5xx(false);
-  fetcher_->SetAutomaticallyRetryOnNetworkChanges(kMaxRetries);
+  url_loader_->SetRetryOptions(
+      kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+  url_loader_->SetAllowHttpErrorResults(true);
+
   fetch_timeout_timer_.Start(FROM_HERE, GetFetchTimeout(), this,
                              &WarmupURLFetcher::OnFetchTimeout);
-  fetcher_->Start();
+
+  url_loader_->SetOnResponseStartedCallback(base::BindOnce(
+      &WarmupURLFetcher::OnURLLoadResponseStarted, base::Unretained(this)));
+  url_loader_->SetOnRedirectCallback(base::BindRepeating(
+      &WarmupURLFetcher::OnURLLoaderRedirect, base::Unretained(this)));
+  network::mojom::URLLoaderFactory* factory = nullptr;
+  if (params::IsEnabledWithNetworkService())
+    factory = GetNetworkServiceURLLoaderFactory(proxy_server);
+  else
+    factory = non_network_service_url_loader_factory_.get();
+
+  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      factory, base::BindOnce(&WarmupURLFetcher::OnURLLoadComplete,
+                              base::Unretained(this)));
+}
+
+network::mojom::URLLoaderFactory*
+WarmupURLFetcher::GetNetworkServiceURLLoaderFactory(
+    const DataReductionProxyServer& proxy_server) {
+  network::mojom::NetworkContextPtr context;
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BindNetworkContextOnUI,
+                     create_custom_proxy_config_callback_.Run({proxy_server}),
+                     mojo::MakeRequest(&context_)));
+
+  auto factory_params = network::mojom::URLLoaderFactoryParams::New();
+  factory_params->process_id = network::mojom::kBrowserProcessId;
+  factory_params->is_corb_enabled = false;
+  context_->CreateURLLoaderFactory(mojo::MakeRequest(&url_loader_factory_),
+                                   std::move(factory_params));
+  return url_loader_factory_.get();
 }
 
 void WarmupURLFetcher::GetWarmupURLWithQueryParam(
@@ -151,42 +203,59 @@ void WarmupURLFetcher::GetWarmupURLWithQueryParam(
          warmup_url_with_query_params->has_query());
 }
 
-void WarmupURLFetcher::OnURLFetchComplete(const net::URLFetcher* source) {
+void WarmupURLFetcher::OnURLLoadResponseStarted(
+    const GURL& final_url,
+    const network::ResourceResponseHead& response_head) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(source, fetcher_.get());
+  proxy_server_ = response_head.proxy_server;
+}
+
+void WarmupURLFetcher::OnURLLoaderRedirect(
+    const net::RedirectInfo& redirect_info,
+    const network::ResourceResponseHead& response_head,
+    std::vector<std::string>* to_be_removed_headers) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  proxy_server_ = response_head.proxy_server;
+}
+
+void WarmupURLFetcher::OnURLLoadComplete(
+    std::unique_ptr<std::string> response_body) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_fetch_in_flight_);
 
-  UMA_HISTOGRAM_BOOLEAN(
-      "DataReductionProxy.WarmupURL.FetchSuccessful",
-      source->GetStatus().status() == net::URLRequestStatus::SUCCESS);
+  UMA_HISTOGRAM_BOOLEAN("DataReductionProxy.WarmupURL.FetchSuccessful",
+                        !!response_body);
 
   base::UmaHistogramSparse("DataReductionProxy.WarmupURL.NetError",
-                           std::abs(source->GetStatus().error()));
+                           std::abs(url_loader_->NetError()));
 
-  base::UmaHistogramSparse("DataReductionProxy.WarmupURL.HttpResponseCode",
-                           std::abs(source->GetResponseCode()));
-
-  if (source->GetResponseHeaders()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "DataReductionProxy.WarmupURL.HasViaHeader",
-        HasDataReductionProxyViaHeader(*source->GetResponseHeaders(),
-                                       nullptr /* has_intermediary */));
-
-    UMA_HISTOGRAM_ENUMERATION("DataReductionProxy.WarmupURL.ProxySchemeUsed",
-                              util::ConvertNetProxySchemeToProxyScheme(
-                                  source->ProxyServerUsed().scheme()),
-                              PROXY_SCHEME_MAX);
+  scoped_refptr<net::HttpResponseHeaders> response_headers;
+  int response_code = kInvalidResponseCode;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
+    response_headers = url_loader_->ResponseInfo()->headers;
+    response_code = response_headers->response_code();
   }
 
-  if (!GetFieldTrialParamByFeatureAsBool(
-          features::kDataReductionProxyRobustConnection,
-          params::GetWarmupCallbackParamName(), false)) {
+  base::UmaHistogramSparse("DataReductionProxy.WarmupURL.HttpResponseCode",
+                           std::abs(response_code));
+
+  if (response_headers) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "DataReductionProxy.WarmupURL.HasViaHeader",
+        HasDataReductionProxyViaHeader(*response_headers,
+                                       nullptr /* has_intermediary */));
+    UMA_HISTOGRAM_ENUMERATION(
+        "DataReductionProxy.WarmupURL.ProxySchemeUsed",
+        util::ConvertNetProxySchemeToProxyScheme(proxy_server_.scheme()),
+        PROXY_SCHEME_MAX);
+  }
+
+  if (!params::IsWarmupURLFetchCallbackEnabled()) {
     CleanupAfterFetch();
     return;
   }
 
-  if (!source->GetStatus().is_success() &&
-      source->GetStatus().error() == net::ERR_INTERNET_DISCONNECTED) {
+  if (url_loader_->NetError() == net::ERR_INTERNET_DISCONNECTED) {
     // Fetching failed due to Internet unavailability, and not due to some
     // error. No need to run the callback.
     CleanupAfterFetch();
@@ -194,15 +263,13 @@ void WarmupURLFetcher::OnURLFetchComplete(const net::URLFetcher* source) {
   }
 
   bool success_response =
-      source->GetStatus().status() == net::URLRequestStatus::SUCCESS &&
-      params::IsWhitelistedHttpResponseCodeForProbes(
-          source->GetResponseCode()) &&
-      source->GetResponseHeaders() &&
-      HasDataReductionProxyViaHeader(*(source->GetResponseHeaders()),
+      response_body &&
+      params::IsWhitelistedHttpResponseCodeForProbes(response_code) &&
+      response_headers &&
+      HasDataReductionProxyViaHeader(*response_headers,
                                      nullptr /* has_intermediary */);
-  callback_.Run(source->ProxyServerUsed(), success_response
-                                               ? FetchResult::kSuccessful
-                                               : FetchResult::kFailed);
+  callback_.Run(proxy_server_, success_response ? FetchResult::kSuccessful
+                                                : FetchResult::kFailed);
   CleanupAfterFetch();
 }
 
@@ -222,7 +289,7 @@ base::TimeDelta WarmupURLFetcher::GetFetchTimeout() const {
   const base::TimeDelta min_timeout =
       base::TimeDelta::FromSeconds(GetFieldTrialParamByFeatureAsInt(
           features::kDataReductionProxyRobustConnection,
-          "warmup_url_fetch_min_timeout_seconds", 10));
+          "warmup_url_fetch_min_timeout_seconds", 30));
   const base::TimeDelta max_timeout =
       base::TimeDelta::FromSeconds(GetFieldTrialParamByFeatureAsInt(
           features::kDataReductionProxyRobustConnection,
@@ -263,32 +330,30 @@ base::TimeDelta WarmupURLFetcher::GetFetchTimeout() const {
 void WarmupURLFetcher::OnFetchTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_fetch_in_flight_);
-  DCHECK(fetcher_);
+  DCHECK(url_loader_);
 
-  const net::ProxyServer proxy_server = fetcher_->ProxyServerUsed();
-  DCHECK_LE(1, proxy_server.scheme());
+  DCHECK_LE(1, proxy_server_.scheme());
 
   UMA_HISTOGRAM_BOOLEAN("DataReductionProxy.WarmupURL.FetchSuccessful", false);
   base::UmaHistogramSparse("DataReductionProxy.WarmupURL.NetError",
                            net::ERR_ABORTED);
   base::UmaHistogramSparse("DataReductionProxy.WarmupURL.HttpResponseCode",
-                           std::abs(net::URLFetcher::RESPONSE_CODE_INVALID));
+                           std::abs(kInvalidResponseCode));
 
-  if (!GetFieldTrialParamByFeatureAsBool(
-          features::kDataReductionProxyRobustConnection,
-          params::GetWarmupCallbackParamName(), false)) {
+  if (!params::IsWarmupURLFetchCallbackEnabled()) {
     // Running the callback is not enabled.
     CleanupAfterFetch();
     return;
   }
 
-  callback_.Run(proxy_server, FetchResult::kTimedOut);
+  callback_.Run(proxy_server_, FetchResult::kTimedOut);
   CleanupAfterFetch();
 }
 
 void WarmupURLFetcher::CleanupAfterFetch() {
   is_fetch_in_flight_ = false;
-  fetcher_.reset();
+  url_loader_.reset();
+  proxy_server_ = net::ProxyServer();
   fetch_timeout_timer_.Stop();
   fetch_delay_timer_.Stop();
 }

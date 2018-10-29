@@ -64,7 +64,7 @@ class FeedJournalBridge {
                              const base::android::JavaRef<jobject>& j_this);
   void AddAppendOperation(JNIEnv* j_env,
                           const base::android::JavaRef<jobject>& j_this,
-                          const base::android::JavaRef<jstring>& j_value);
+                          const base::android::JavaRef<jbyteArray>& j_value);
   void AddCopyOperation(
       JNIEnv* j_env,
       const base::android::JavaRef<jobject>& j_this,

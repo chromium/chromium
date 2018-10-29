@@ -157,6 +157,66 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmThreadOpcodes:
       blink_feature = WebFeature::kV8WasmThreadOpcodes;
       break;
+    case v8::Isolate::kAtomicsNotify:
+      blink_feature = WebFeature::kV8AtomicsNotify;
+      break;
+    case v8::Isolate::kAtomicsWake:
+      blink_feature = WebFeature::kV8AtomicsWake;
+      break;
+    case v8::Isolate::kCollator:
+      blink_feature = WebFeature::kCollator;
+      break;
+    case v8::Isolate::kNumberFormat:
+      blink_feature = WebFeature::kNumberFormat;
+      break;
+    case v8::Isolate::kDateTimeFormat:
+      blink_feature = WebFeature::kDateTimeFormat;
+      break;
+    case v8::Isolate::kPluralRules:
+      blink_feature = WebFeature::kPluralRules;
+      break;
+    case v8::Isolate::kRelativeTimeFormat:
+      blink_feature = WebFeature::kRelativeTimeFormat;
+      break;
+    case v8::Isolate::kLocale:
+      blink_feature = WebFeature::kLocale;
+      break;
+    case v8::Isolate::kListFormat:
+      blink_feature = WebFeature::kListFormat;
+      break;
+    case v8::Isolate::kSegmenter:
+      blink_feature = WebFeature::kSegmenter;
+      break;
+    case v8::Isolate::kStringLocaleCompare:
+      blink_feature = WebFeature::kStringLocaleCompare;
+      break;
+    case v8::Isolate::kStringToLocaleUpperCase:
+      blink_feature = WebFeature::kStringToLocaleUpperCase;
+      break;
+    case v8::Isolate::kStringToLocaleLowerCase:
+      blink_feature = WebFeature::kStringToLocaleLowerCase;
+      break;
+    case v8::Isolate::kNumberToLocaleString:
+      blink_feature = WebFeature::kNumberToLocaleString;
+      break;
+    case v8::Isolate::kDateToLocaleString:
+      blink_feature = WebFeature::kDateToLocaleString;
+      break;
+    case v8::Isolate::kDateToLocaleDateString:
+      blink_feature = WebFeature::kDateToLocaleDateString;
+      break;
+    case v8::Isolate::kDateToLocaleTimeString:
+      blink_feature = WebFeature::kDateToLocaleTimeString;
+      break;
+    case v8::Isolate::kAttemptOverrideReadOnlyOnPrototypeSloppy:
+      blink_feature = WebFeature::kV8AttemptOverrideReadOnlyOnPrototypeSloppy;
+      break;
+    case v8::Isolate::kAttemptOverrideReadOnlyOnPrototypeStrict:
+      blink_feature = WebFeature::kV8AttemptOverrideReadOnlyOnPrototypeStrict;
+      break;
+    case v8::Isolate::kOptimizedFunctionWithOneShotBytecode:
+      blink_feature = WebFeature::kV8OptimizedFunctionWithOneShotBytecode;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

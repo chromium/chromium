@@ -14,4 +14,5 @@ sources = [
 type_mappings = [ "viz.mojom.TransferableResource=viz::TransferableResource" ]
 deps = [
   "//gpu/ipc/common:struct_traits",
+  "//ui/gfx/geometry/mojo:struct_traits",
 ]

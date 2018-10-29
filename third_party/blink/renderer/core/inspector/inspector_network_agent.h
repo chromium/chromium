@@ -155,8 +155,6 @@ class CORE_EXPORT InspectorNetworkAgent final
 
   void FrameScheduledNavigation(LocalFrame*, ScheduledNavigation*);
   void FrameClearedScheduledNavigation(LocalFrame*);
-  void FrameScheduledClientNavigation(LocalFrame*);
-  void FrameClearedScheduledClientNavigation(LocalFrame*);
 
   void DidCreateWebSocket(ExecutionContext*,
                           unsigned long identifier,
@@ -276,11 +274,8 @@ class CORE_EXPORT InspectorNetworkAgent final
 
   Member<XHRReplayData> pending_xhr_replay_data_;
 
-  typedef HashMap<String, std::unique_ptr<protocol::Network::Initiator>>
-      FrameNavigationInitiatorMap;
-  FrameNavigationInitiatorMap frame_navigation_initiator_map_;
-  HashSet<String> frames_with_scheduled_navigation_;
-  HashSet<String> frames_with_scheduled_client_navigation_;
+  HashMap<String, std::unique_ptr<protocol::Network::Initiator>>
+      frame_navigation_initiator_map_;
 
   HeapHashSet<Member<XMLHttpRequest>> replay_xhrs_;
   HeapHashSet<Member<XMLHttpRequest>> replay_xhrs_to_be_deleted_;

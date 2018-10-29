@@ -3,7 +3,6 @@ Find text in shadow roots.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Starting testSimpleShadow()...
 PASS testRunner.findString("SHADOW", []) is true
 PASS testRunner.findString("HADO", []) is true

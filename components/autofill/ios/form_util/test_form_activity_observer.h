@@ -15,9 +15,11 @@ class WebState;
 namespace autofill {
 // Arguments passed to |DocumentSubmitted|.
 struct TestSubmitDocumentInfo {
+  TestSubmitDocumentInfo();
   web::WebState* web_state = nullptr;
   web::WebFrame* sender_frame = nullptr;
   std::string form_name;
+  std::string form_data;
   bool has_user_gesture;
   bool form_in_main_frame;
 };
@@ -43,6 +45,7 @@ class TestFormActivityObserver : public autofill::FormActivityObserver {
   void DocumentSubmitted(web::WebState* web_state,
                          web::WebFrame* sender_frame,
                          const std::string& form_name,
+                         const std::string& form_data,
                          bool has_user_gesture,
                          bool form_in_main_frame) override;
 

@@ -6,9 +6,9 @@ PASS
 
 You should see exactly 2 'null' lines below:
 null
-null 
+null
 
 You should see exactly 2 'undefined' lines below:
 undefined
-undefined 
+undefined
 

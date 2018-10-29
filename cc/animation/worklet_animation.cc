@@ -112,8 +112,12 @@ void WorkletAnimation::UpdateInputState(MutatorInputState* input_state,
 
   switch (state_) {
     case State::PENDING:
-      input_state->Add(
-          {worklet_animation_id(), name(), current_time, CloneOptions()});
+      // TODO(yigu): cc side WorkletAnimation is only capable of handling single
+      // keyframe effect at the moment. We should pass in the number of effects
+      // once Worklet Group Effect is fully implemented in cc.
+      // https://crbug.com/767043.
+      input_state->Add({worklet_animation_id(), name(), current_time,
+                        CloneOptions(), 1 /* num_effects */});
       state_ = State::RUNNING;
       break;
     case State::RUNNING:
@@ -127,7 +131,10 @@ void WorkletAnimation::UpdateInputState(MutatorInputState* input_state,
 
 void WorkletAnimation::SetOutputState(
     const MutatorOutputState::AnimationState& state) {
-  local_time_ = state.local_time;
+  // TODO(yigu): cc side WorkletAnimation is only capable of handling single
+  // keyframe effect at the moment. https://crbug.com/767043.
+  DCHECK_EQ(state.local_times.size(), 1u);
+  local_time_ = state.local_times[0];
 }
 
 // TODO(crbug.com/780151): Multiply the result by the play back rate.
@@ -159,11 +166,15 @@ bool WorkletAnimation::NeedsUpdate(base::TimeTicks monotonic_time,
   return needs_update;
 }
 
-void WorkletAnimation::SetScrollSourceId(
-    base::Optional<ElementId> scroller_id) {
+void WorkletAnimation::UpdateScrollTimeline(
+    base::Optional<ElementId> scroller_id,
+    base::Optional<double> start_scroll_offset,
+    base::Optional<double> end_scroll_offset) {
   // Calling this method implies that we are a ScrollTimeline based animation,
   // so the below call is done unchecked.
   scroll_timeline_->SetScrollerId(scroller_id);
+  scroll_timeline_->UpdateStartAndEndScrollOffsets(start_scroll_offset,
+                                                   end_scroll_offset);
   SetNeedsPushProperties();
 }
 

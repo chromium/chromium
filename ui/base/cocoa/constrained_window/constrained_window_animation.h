@@ -17,7 +17,7 @@ UI_BASE_EXPORT
   base::scoped_nsobject<NSWindow> window_;
 }
 
-- (id)initWithWindow:(NSWindow*)window;
+- (instancetype)initWithWindow:(NSWindow*)window;
 
 @end
 

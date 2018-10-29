@@ -89,12 +89,12 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
         device.device_name = base::WideToUTF8(friendly_name.get().pwszVal);
       }
 
-      // Append VID/PID to USB devices.
+      // Append suffix to USB and Bluetooth devices.
       std::string controller_id = CoreAudioUtil::GetAudioControllerID(
           audio_device.Get(), enumerator.Get());
-      std::string vid_pid_suffix = GetUsbVidPidSuffixWin(controller_id);
-      if (!vid_pid_suffix.empty())
-        device.device_name += vid_pid_suffix;
+      std::string suffix = GetDeviceSuffixWin(controller_id);
+      if (!suffix.empty())
+        device.device_name += suffix;
     }
 
     // Add combination of user-friendly and unique name to the output list.
@@ -165,14 +165,19 @@ bool GetOutputDeviceNamesWinXP(AudioDeviceNames* device_names) {
                                  waveOutGetDevCapsW>(device_names);
 }
 
-std::string GetUsbVidPidSuffixWin(const std::string& controller_id) {
-  std::string vid_pid;
+std::string GetDeviceSuffixWin(const std::string& controller_id) {
+  std::string suffix;
   if (controller_id.size() >= 21 && controller_id.substr(0, 8) == "USB\\VID_" &&
       controller_id.substr(12, 5) == "&PID_") {
-    vid_pid = " (" + base::ToLowerASCII(controller_id.substr(8, 4)) + ":" +
-              base::ToLowerASCII(controller_id.substr(17, 4)) + ")";
+    suffix = " (" + base::ToLowerASCII(controller_id.substr(8, 4)) + ":" +
+             base::ToLowerASCII(controller_id.substr(17, 4)) + ")";
+  } else if ((controller_id.size() >= 22 &&
+              controller_id.substr(0, 22) == "BTHHFENUM\\BthHFPAudio\\") ||
+             (controller_id.size() >= 8 &&
+              controller_id.substr(0, 8) == "BTHENUM\\")) {
+    suffix = " (Bluetooth)";
   }
-  return vid_pid;
+  return suffix;
 }
 
 }  // namespace media

@@ -1119,7 +1119,7 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   // into account here?
 
   marked_canvas_dirty_ = false;
-  animation_frame_in_progress_ = false;
+  must_paint_to_canvas_ = false;
   active_texture_unit_ = 0;
   pack_alignment_ = 4;
   unpack_alignment_ = 4;
@@ -1348,6 +1348,11 @@ void WebGLRenderingContextBase::MarkContextChanged(
     return;
   }
 
+  // Regardless of whether dirty propagations are optimized away, the back
+  // buffer is now out of sync with respect to the canvas's internal backing
+  // store -- which is only used for certain purposes, like printing.
+  must_paint_to_canvas_ = true;
+
   if (!GetDrawingBuffer()->MarkContentsChanged() && marked_canvas_dirty_) {
     return;
   }
@@ -1361,10 +1366,8 @@ void WebGLRenderingContextBase::MarkContextChanged(
   if (!canvas())
     return;
 
-  marked_canvas_dirty_ = true;
-
-  if (!animation_frame_in_progress_) {
-    animation_frame_in_progress_ = true;
+  if (!marked_canvas_dirty_) {
+    marked_canvas_dirty_ = true;
     LayoutBox* layout_box = canvas()->GetLayoutBox();
     if (layout_box && layout_box->HasAcceleratedCompositing()) {
       layout_box->ContentChanged(change_type);
@@ -1397,7 +1400,7 @@ void WebGLRenderingContextBase::PushFrame() {
 }
 
 void WebGLRenderingContextBase::FinalizeFrame() {
-  animation_frame_in_progress_ = false;
+  marked_canvas_dirty_ = false;
 }
 
 void WebGLRenderingContextBase::OnErrorMessage(const char* message,
@@ -1545,10 +1548,10 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     return false;
 
   bool must_clear_now = ClearIfComposited() != kSkipped;
-  if (!marked_canvas_dirty_ && !must_clear_now)
+  if (!must_paint_to_canvas_ && !must_clear_now)
     return false;
 
-  marked_canvas_dirty_ = false;
+  must_paint_to_canvas_ = false;
 
   if (Host()->ResourceProvider() &&
       Host()->ResourceProvider()->Size() != GetDrawingBuffer()->Size()) {
@@ -1602,8 +1605,9 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     // CopyToPlatformTexture is done correctly. See crbug.com/794706.
     gl->Flush();
 
+    bool flip_y = is_origin_top_left_ && !canvas()->LowLatencyEnabled();
     return drawing_buffer_->CopyToPlatformTexture(
-        gl, GL_TEXTURE_2D, texture_id, true, is_origin_top_left_,
+        gl, GL_TEXTURE_2D, texture_id, true, flip_y,
         IntPoint(0, 0), IntRect(IntPoint(0, 0), drawing_buffer_->Size()),
         source_buffer);
   }
@@ -2412,7 +2416,7 @@ void WebGLRenderingContextBase::deleteTexture(WebGLTexture* texture) {
     return;
 
   int max_bound_texture_index = -1;
-  for (size_t i = 0; i < one_plus_max_non_default_texture_unit_; ++i) {
+  for (wtf_size_t i = 0; i < one_plus_max_non_default_texture_unit_; ++i) {
     if (texture == texture_units_[i].texture2d_binding_) {
       texture_units_[i].texture2d_binding_ = nullptr;
       max_bound_texture_index = i;
@@ -2950,8 +2954,7 @@ ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
   WebGLExtension* extension = nullptr;
 
   if (!isContextLost()) {
-    for (size_t i = 0; i < extensions_.size(); ++i) {
-      ExtensionTracker* tracker = extensions_[i];
+    for (ExtensionTracker* tracker : extensions_) {
       if (tracker->MatchesNameWithPrefixes(name)) {
         if (ExtensionSupportedAndAllowed(tracker)) {
           extension = tracker->GetExtension(this);
@@ -3550,8 +3553,7 @@ WebGLRenderingContextBase::getSupportedExtensions() {
 
   Vector<String> result;
 
-  for (size_t i = 0; i < extensions_.size(); ++i) {
-    ExtensionTracker* tracker = extensions_[i].Get();
+  for (ExtensionTracker* tracker : extensions_) {
     if (ExtensionSupportedAndAllowed(tracker)) {
       const char* const* prefixes = tracker->Prefixes();
       for (; *prefixes; ++prefixes) {
@@ -3850,7 +3852,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
             GLint value[4] = {0};
             ContextGL()->GetUniformiv(ObjectOrZero(program), location, value);
             if (length > 1) {
-              bool bool_value[16] = {0};
+              bool bool_value[4] = {0};
               for (unsigned j = 0; j < length; j++)
                 bool_value[j] = static_cast<bool>(value[j]);
               return WebGLAny(script_state, bool_value, length);
@@ -4296,7 +4298,7 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
                                                  GLenum format,
                                                  GLenum type,
                                                  DOMArrayBufferView* pixels,
-                                                 GLuint offset) {
+                                                 long long offset) {
   if (isContextLost())
     return;
   // Due to WebGL's same-origin restrictions, it is not possible to
@@ -5198,7 +5200,7 @@ void WebGLRenderingContextBase::TexImageViaGPU(
           IntPoint(xoffset, yoffset), source_sub_rectangle);
     } else {
       WebGLRenderingContextBase* gl = source_canvas_webgl_context;
-      if (gl->is_origin_top_left_)
+      if (gl->is_origin_top_left_ && !canvas()->LowLatencyEnabled())
         flip_y = !flip_y;
       ScopedTexture2DRestorer restorer(gl);
       if (!gl->GetDrawingBuffer()->CopyToPlatformTexture(
@@ -6461,12 +6463,11 @@ void WebGLRenderingContextBase::LoseContextImpl(
   auto_recovery_method_ = auto_recovery_method;
 
   // Lose all the extensions.
-  for (size_t i = 0; i < extensions_.size(); ++i) {
-    ExtensionTracker* tracker = extensions_[i];
+  for (ExtensionTracker* tracker : extensions_) {
     tracker->LoseExtension(false);
   }
 
-  for (size_t i = 0; i < kWebGLExtensionNameCount; ++i)
+  for (wtf_size_t i = 0; i < kWebGLExtensionNameCount; ++i)
     extension_enabled_[i] = false;
 
   RemoveAllCompressedTextureFormats();
@@ -6846,7 +6847,7 @@ bool WebGLRenderingContextBase::ValidateSize(const char* function_name,
 
 bool WebGLRenderingContextBase::ValidateString(const char* function_name,
                                                const String& string) {
-  for (size_t i = 0; i < string.length(); ++i) {
+  for (wtf_size_t i = 0; i < string.length(); ++i) {
     if (!ValidateCharacter(string[i])) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name, "string not ASCII");
       return false;
@@ -6856,7 +6857,7 @@ bool WebGLRenderingContextBase::ValidateString(const char* function_name,
 }
 
 bool WebGLRenderingContextBase::ValidateShaderSource(const String& string) {
-  for (size_t i = 0; i < string.length(); ++i) {
+  for (wtf_size_t i = 0; i < string.length(); ++i) {
     // line-continuation character \ is supported in WebGL 2.0.
     if (IsWebGL2OrHigher() && string[i] == '\\') {
       continue;
@@ -7771,13 +7772,13 @@ String WebGLRenderingContextBase::EnsureNotNull(const String& text) const {
 }
 
 WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
-    LRUCanvasResourceProviderCache(size_t capacity)
+    LRUCanvasResourceProviderCache(wtf_size_t capacity)
     : resource_providers_(capacity) {}
 
 CanvasResourceProvider* WebGLRenderingContextBase::
     LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
         const IntSize& size) {
-  size_t i;
+  wtf_size_t i;
   for (i = 0; i < resource_providers_.size(); ++i) {
     CanvasResourceProvider* resource_provider = resource_providers_[i].get();
     if (!resource_provider)
@@ -7797,7 +7798,7 @@ CanvasResourceProvider* WebGLRenderingContextBase::
       nullptr));  // canvas_resource_dispatcher
   if (!temp)
     return nullptr;
-  i = std::min(static_cast<size_t>(resource_providers_.size() - 1), i);
+  i = std::min(resource_providers_.size() - 1, i);
   resource_providers_[i] = std::move(temp);
 
   CanvasResourceProvider* resource_provider = resource_providers_[i].get();
@@ -7806,8 +7807,8 @@ CanvasResourceProvider* WebGLRenderingContextBase::
 }
 
 void WebGLRenderingContextBase::LRUCanvasResourceProviderCache::BubbleToFront(
-    size_t idx) {
-  for (size_t i = idx; i > 0; --i)
+    wtf_size_t idx) {
+  for (wtf_size_t i = idx; i > 0; --i)
     resource_providers_[i].swap(resource_providers_[i - 1]);
 }
 

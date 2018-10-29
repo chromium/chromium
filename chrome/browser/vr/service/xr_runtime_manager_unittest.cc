@@ -111,8 +111,8 @@ TEST_F(XRRuntimeManagerTest, GetNoDevicesTest) {
   EXPECT_TRUE(Provider()->Initialized());
 
   // GetDeviceByIndex should return nullptr if an invalid index in queried.
-  device::mojom::XRRuntime* queried_device =
-      DeviceManager()->GetRuntimeForTest(1);
+  device::mojom::XRRuntime* queried_device = DeviceManager()->GetRuntimeForTest(
+      device::mojom::XRDeviceId::GVR_DEVICE_ID);
   EXPECT_EQ(nullptr, queried_device);
 }
 

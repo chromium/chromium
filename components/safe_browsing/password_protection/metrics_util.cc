@@ -58,8 +58,6 @@ const char kSyncPasswordPageInfoHistogram[] =
     "PasswordProtection.PageInfoAction.SyncPasswordEntry";
 const char kSyncPasswordWarningDialogHistogram[] =
     "PasswordProtection.ModalWarningDialogAction.SyncPasswordEntry";
-const char kVerdictMigrationHistogram[] =
-    "PasswordProtection.NumberOfVerdictsMigratedDuringInitialization";
 
 void LogPasswordEntryRequestOutcome(RequestOutcome outcome,
                                     ReusedPasswordType password_type,
@@ -234,14 +232,17 @@ void LogWarningAction(WarningUIType ui_type,
   }
 }
 
-void LogNumberOfVerdictMigrated(size_t verdicts_migrated) {
-  UMA_HISTOGRAM_COUNTS_100(kVerdictMigrationHistogram, verdicts_migrated);
-}
-
 void LogNumberOfReuseBeforeSyncPasswordChange(size_t reuse_count) {
   UMA_HISTOGRAM_COUNTS_100(
       "PasswordProtection.GaiaPasswordReusesBeforeGaiaPasswordChanged",
       reuse_count);
+}
+
+void LogContentsSize(const gfx::Size& size) {
+  if (size.width() <= 0 || size.height() <= 0)
+    return;
+  UMA_HISTOGRAM_COUNTS_10000("SafeBrowsing.ContentsSize.Width", size.width());
+  UMA_HISTOGRAM_COUNTS_10000("SafeBrowsing.ContentsSize.Height", size.height());
 }
 
 }  // namespace safe_browsing

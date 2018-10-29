@@ -32,7 +32,7 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
       : load_policy_(policy) {}
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                           WebURLRequest::RequestContext) override {
+                           mojom::RequestContextType) override {
     std::string resource_path = WebString(KURL(resource_url).GetPath()).Utf8();
     if (std::find(queried_subresource_paths_.begin(),
                   queried_subresource_paths_.end(),
@@ -73,10 +73,12 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
 };
 
 class SubresourceFilteringWebFrameClient
-    : public FrameTestHelpers::TestWebFrameClient {
+    : public frame_test_helpers::TestWebFrameClient {
  public:
-  void DidStartProvisionalLoad(WebDocumentLoader* data_source,
-                               WebURLRequest& request) override {
+  void DidStartProvisionalLoad(
+      WebDocumentLoader* data_source,
+      WebURLRequest& request,
+      mojo::ScopedMessagePipeHandle navigation_initiator_handle) override {
     // Normally, the filter should be set when the load is committed. For
     // the sake of this test, however, inject it earlier to verify that it
     // is not consulted for the main resource load.
@@ -112,7 +114,8 @@ class WebDocumentSubresourceFilterTest : public testing::Test {
 
   void LoadDocument(TestDocumentSubresourceFilter::LoadPolicy policy) {
     client_.SetLoadPolicyFromNextLoad(policy);
-    FrameTestHelpers::LoadFrame(MainFrame(), BaseURL() + "foo_with_image.html");
+    frame_test_helpers::LoadFrame(MainFrame(),
+                                  BaseURL() + "foo_with_image.html");
   }
 
   void ExpectSubresourceWasLoaded(bool loaded) {
@@ -129,7 +132,7 @@ class WebDocumentSubresourceFilterTest : public testing::Test {
 
  private:
   void RegisterMockedHttpURLLoad(const std::string& file_name) {
-    URLTestHelpers::RegisterMockedURLLoadFromBase(
+    url_test_helpers::RegisterMockedURLLoadFromBase(
         WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
         WebString::FromUTF8(file_name));
   }
@@ -142,7 +145,7 @@ class WebDocumentSubresourceFilterTest : public testing::Test {
   }
 
   SubresourceFilteringWebFrameClient client_;
-  FrameTestHelpers::WebViewHelper web_view_helper_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
   std::string base_url_;
 };
 

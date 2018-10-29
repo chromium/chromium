@@ -32,21 +32,25 @@ Login::Login(
     const ServerList& servers,
     bool try_ssltcp_first,
     const std::string& auth_mechanism,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation)
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    network::NetworkConnectionTracker* network_connection_tracker)
     : delegate_(delegate),
       login_settings_(user_settings,
                       request_context_getter,
                       servers,
                       try_ssltcp_first,
                       auth_mechanism,
-                      traffic_annotation) {
-  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+                      traffic_annotation),
+      network_connection_tracker_(network_connection_tracker) {
+  if (network_connection_tracker_)
+    network_connection_tracker_->AddNetworkConnectionObserver(this);
   // TODO(akalin): Add as DNSObserver once bug 130610 is fixed.
   ResetReconnectState();
 }
 
 Login::~Login() {
-  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  if (network_connection_tracker_)
+    network_connection_tracker_->RemoveNetworkConnectionObserver(this);
 }
 
 void Login::StartConnection() {
@@ -90,8 +94,8 @@ void Login::OnSettingsExhausted() {
   delegate_->OnTransientDisconnection();
 }
 
-void Login::OnNetworkChanged(net::NetworkChangeNotifier::ConnectionType type) {
-  if (type == net::NetworkChangeNotifier::CONNECTION_NONE)
+void Login::OnConnectionChanged(network::mojom::ConnectionType type) {
+  if (type == network::mojom::ConnectionType::CONNECTION_NONE)
     return;
 
   DVLOG(1) << "Network changed";

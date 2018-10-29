@@ -6,8 +6,10 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/fileapi/file_system_url.h"
 
@@ -22,24 +24,24 @@ void OnAddWatcherOnUIThread(
     const ArcDocumentsProviderRoot::StatusCallback& callback,
     base::File::Error result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(callback, result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(callback, result));
 }
 
 void OnRemoveWatcherOnUIThread(
     const ArcDocumentsProviderRoot::StatusCallback& callback,
     base::File::Error result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(callback, result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(callback, result));
 }
 
 void OnNotificationOnUIThread(
     const ArcDocumentsProviderRoot::WatcherCallback& notification_callback,
     ArcDocumentsProviderRoot::ChangeType change_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(notification_callback, change_type));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(notification_callback, change_type));
 }
 
 void AddWatcherOnUIThread(
@@ -111,8 +113,8 @@ void ArcDocumentsProviderWatcherManager::AddWatcher(
     return;
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &AddWatcherOnUIThread, url,
           base::Bind(&ArcDocumentsProviderWatcherManager::OnAddWatcher,
@@ -133,8 +135,8 @@ void ArcDocumentsProviderWatcherManager::RemoveWatcher(
     return;
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &RemoveWatcherOnUIThread, url,
           base::Bind(&ArcDocumentsProviderWatcherManager::OnRemoveWatcher,

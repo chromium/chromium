@@ -100,6 +100,10 @@ std::string ExitCodeToString(ScreenExitCode code) {
       return "FINGERPRINT_SETUP_FINISHED";
     case ScreenExitCode::MARKETING_OPT_IN_FINISHED:
       return "MARKETING_OPT_IN_FINISHED";
+    case ScreenExitCode::ASSISTANT_OPTIN_FLOW_FINISHED:
+      return "ASSISTANT_OPTIN_FLOW_FINISHED";
+    case ScreenExitCode::MULTIDEVICE_SETUP_FINISHED:
+      return "MULTIDEVICE_SETUP_FINISHED";
     case ScreenExitCode::EXIT_CODES_COUNT:
     default:
       NOTREACHED();

@@ -63,3 +63,79 @@ repo upload .
 ```
 
 Note that you shouldn't need to run cros_workon.
+
+## Uprevving Brltty
+
+This section outlines the process to upgrade Brltty to a major release.
+
+### Prerequisites
+
+First, download the latest brltty release tarball
+http://mielke.cc/brltty/archive
+E.g.
+brltty-5.6.tar.gz
+
+The server holding all Chrome OS source packages is Google Cloud Storage. In
+order to update Brltty, you will need to first get started with GCS.
+[Google-internal only](https://sites.google.com/a/google.com/chromeos/resources/engineering/releng/localmirror)
+
+If you follow the alternative cli workflow, you should have the ability to
+list the Chrome OS GCS bucket:
+
+
+```gsutil ls gs://chromeos-localmirror/```
+
+for example:
+gs://chromeos-localmirror/distfiles/brltty-5.6.tar.gz
+is the latest release as of writing.
+
+It will also be handy to checkout brltty.
+
+```Git clone http://github.com/brltty/brltty```
+
+And follow the instructions in the readme to configure/build.
+
+### Upload the latest stable release of brltty.
+
+You can do this via ```gsutil cp```.
+
+After copying, you will likely want the package to be world readable:
+
+    
+```
+gsutil acl ch -u AllUsers:R gs://chromeos-localmirror/distfiles/brltty-5.6.tar.gz
+
+```
+
+### Upreving
+
+Next, you will need to uprev the ebuild. Do this by renaming all files from the previous version to the new one.
+E.g.
+Brltty-5.4.ebuild -> brltty-5.6.ebuild
+
+Note: Manifest has various checksums computed based on the release you uploaded to GCS. Each of these will need to be replaced/updated.
+
+This should be enough to kick off a build. It is likely patches won’t apply cleanly.
+Apply patches
+It is often much easier to apply patches to your local checkout of brltty from github, an build there.
+
+```git tags```
+
+Will ensure you find the right release. You can then checkout that release via
+
+```Git checkout tags/<tag_name>```
+
+### Testing
+
+Once you have a build deployed on a machine, here are a few useful things
+to check:
+* Routing keys within a text field
+* Routing keys on a link
+* Basic braille output
+* Chorded commands (e.g. space + s to toggle speech)
+* Typing (e.g. dots 1-2-3 within a text field)
+* Display specific hardware keys
+* Unload ChromeVox (ctrl+alt+z), plug in a display; ChromeVox should auto
+start
+
+Try to test with at least two displays.

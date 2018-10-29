@@ -18,6 +18,7 @@ class DataTypeManagerMock : public DataTypeManager {
 
   MOCK_METHOD2(Configure, void(ModelTypeSet, const ConfigureContext&));
   MOCK_METHOD1(ReenableType, void(ModelType));
+  MOCK_METHOD1(ReadyForStartChanged, void(ModelType));
   MOCK_METHOD0(ResetDataTypeErrors, void());
   MOCK_METHOD1(PurgeForMigration, void(ModelTypeSet));
   MOCK_METHOD1(Stop, void(ShutdownReason));

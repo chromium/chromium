@@ -10,12 +10,14 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/posix/unix_domain_socket.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
 #include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_service_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/service_manager_connection.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -152,8 +154,8 @@ void ArcTracingBridge::StartTracing(const std::string& config,
                                  mojo::WrapPlatformFile(write_fd.release()),
                                  std::move(callback));
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&ArcTracingReader::StartTracing, reader_.GetWeakPtr(),
                      std::move(read_fd)));
 }
@@ -185,8 +187,8 @@ void ArcTracingBridge::OnArcTracingStopped(bool success) {
     is_stopping_ = false;
     return;
   }
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&ArcTracingReader::StopTracing, reader_.GetWeakPtr(),
                      base::BindOnce(&ArcTracingBridge::OnTracingReaderStopped,
                                     weak_ptr_factory_.GetWeakPtr())));
@@ -264,8 +266,8 @@ void ArcTracingBridge::ArcTracingReader::StopTracing(
   }
   ring_buffer_.Clear();
 
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   base::BindOnce(std::move(callback), data));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(std::move(callback), data));
 }
 
 base::WeakPtr<ArcTracingBridge::ArcTracingReader>

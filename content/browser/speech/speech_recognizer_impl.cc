@@ -10,12 +10,14 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/service_manager/service_manager_context.h"
 #include "content/browser/speech/audio_buffer.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "media/audio/audio_system.h"
@@ -229,20 +231,20 @@ void SpeechRecognizerImpl::StartRecognition(const std::string& device_id) {
   DCHECK(!device_id.empty());
   device_id_ = device_id;
 
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
-                                         this, FSMEventArgs(EVENT_PREPARE)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
+                                          this, FSMEventArgs(EVENT_PREPARE)));
 }
 
 void SpeechRecognizerImpl::AbortRecognition() {
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
-                                         this, FSMEventArgs(EVENT_ABORT)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
+                                          this, FSMEventArgs(EVENT_ABORT)));
 }
 
 void SpeechRecognizerImpl::StopAudioCapture() {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SpeechRecognizerImpl::DispatchEvent, this,
                      FSMEventArgs(EVENT_STOP_CAPTURE)));
 }
@@ -282,15 +284,15 @@ void SpeechRecognizerImpl::Capture(const AudioBus* data,
   // Convert audio from native format to fixed format used by WebSpeech.
   FSMEventArgs event_args(EVENT_AUDIO_DATA);
   event_args.audio_data = audio_converter_->Convert(data);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SpeechRecognizerImpl::DispatchEvent, this, event_args));
   // See http://crbug.com/506051 regarding why one extra convert call can
   // sometimes be required. It should be a rare case.
   if (!audio_converter_->data_was_converted()) {
     event_args.audio_data = audio_converter_->Convert(data);
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&SpeechRecognizerImpl::DispatchEvent, this, event_args));
   }
   // Something is seriously wrong here and we are most likely missing some
@@ -300,8 +302,8 @@ void SpeechRecognizerImpl::Capture(const AudioBus* data,
 
 void SpeechRecognizerImpl::OnCaptureError(const std::string& message) {
   FSMEventArgs event_args(EVENT_AUDIO_ERROR);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SpeechRecognizerImpl::DispatchEvent, this, event_args));
 }
 
@@ -309,8 +311,8 @@ void SpeechRecognizerImpl::OnSpeechRecognitionEngineResults(
     const std::vector<blink::mojom::SpeechRecognitionResultPtr>& results) {
   FSMEventArgs event_args(EVENT_ENGINE_RESULT);
   event_args.engine_results = mojo::Clone(results);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SpeechRecognizerImpl::DispatchEvent, this, event_args));
 }
 
@@ -323,8 +325,8 @@ void SpeechRecognizerImpl::OnSpeechRecognitionEngineError(
     const blink::mojom::SpeechRecognitionError& error) {
   FSMEventArgs event_args(EVENT_ENGINE_ERROR);
   event_args.engine_error = error;
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SpeechRecognizerImpl::DispatchEvent, this, event_args));
 }
 
@@ -782,8 +784,7 @@ SpeechRecognizerImpl::FSMState
 SpeechRecognizerImpl::ProcessFinalResult(const FSMEventArgs& event_args) {
   const std::vector<blink::mojom::SpeechRecognitionResultPtr>& results =
       event_args.engine_results;
-  std::vector<blink::mojom::SpeechRecognitionResultPtr>::const_iterator i =
-      results.begin();
+  auto i = results.begin();
   bool provisional_results_pending = false;
   bool results_are_empty = true;
   for (; i != results.end(); ++i) {

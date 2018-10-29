@@ -99,7 +99,7 @@ Tests that AudioBufferSourceNode supports loop-points with .loopStart and .loopE
             should(
                 Audit
                     .loadFileFromUrl(
-                        'audiobuffersource-loop-points-expected.wav')
+                        'resources/audiobuffersource-loop-points-expected.wav')
                     .then(arrayBuffer => {
                       context.decodeAudioData(arrayBuffer).then(audioBuffer => {
                         expectedAudio = audioBuffer;

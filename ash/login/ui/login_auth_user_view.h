@@ -14,6 +14,7 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/interfaces/user_info.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -79,14 +80,15 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView,
 
   // Flags which describe the set of currently visible auth methods.
   enum AuthMethods {
-    AUTH_NONE = 0,                 // No extra auth methods.
-    AUTH_PASSWORD = 1 << 0,        // Display password.
-    AUTH_PIN = 1 << 1,             // Display PIN keyboard.
-    AUTH_TAP = 1 << 2,             // Tap to unlock.
-    AUTH_ONLINE_SIGN_IN = 1 << 3,  // Force online sign-in.
-    AUTH_FINGERPRINT = 1 << 4,     // Use fingerprint to unlock.
-    AUTH_DISABLED = 1 << 5,        // Disable all the auth methods and show a
-                                   // message to user.
+    AUTH_NONE = 0,                  // No extra auth methods.
+    AUTH_PASSWORD = 1 << 0,         // Display password.
+    AUTH_PIN = 1 << 1,              // Display PIN keyboard.
+    AUTH_TAP = 1 << 2,              // Tap to unlock.
+    AUTH_ONLINE_SIGN_IN = 1 << 3,   // Force online sign-in.
+    AUTH_FINGERPRINT = 1 << 4,      // Use fingerprint to unlock.
+    AUTH_EXTERNAL_BINARY = 1 << 5,  // Authenticate via an external binary.
+    AUTH_DISABLED = 1 << 6,         // Disable all the auth methods and show a
+                                    // message to user.
   };
 
   LoginAuthUserView(const mojom::LoginUserInfoPtr& user,
@@ -113,7 +115,11 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView,
   // Update the displayed name, icon, etc to that of |user|.
   void UpdateForUser(const mojom::LoginUserInfoPtr& user);
 
-  void SetFingerprintState(mojom::FingerprintUnlockState state);
+  // Update the current fingerprint state.
+  void SetFingerprintState(mojom::FingerprintState state);
+
+  // Called to show a fingerprint authentication attempt result.
+  void NotifyFingerprintAuthResult(bool success);
 
   // Set the time when auth will be reenabled. It will be included in the
   // message shown to user when auth method is |AUTH_DISABLED|.
@@ -140,6 +146,8 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView,
   void OnAuthSubmit(const base::string16& password);
   // Called with the result of the request started in |OnAuthSubmit|.
   void OnAuthComplete(base::Optional<bool> auth_success);
+  // Called with the result of the external binary enrollment request.
+  void OnEnrollmentComplete(base::Optional<bool> enrollment_success);
 
   // Called when the user view has been tapped. This will run |on_auth_| if tap
   // to unlock is enabled, or run |OnOnlineSignInMessageTap| if the online
@@ -164,6 +172,9 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView,
   views::LabelButton* online_sign_in_message_ = nullptr;
   DisabledAuthMessageView* disabled_auth_message_ = nullptr;
   FingerprintView* fingerprint_view_ = nullptr;
+  views::LabelButton* external_binary_auth_button_ = nullptr;
+  views::LabelButton* external_binary_enrollment_button_ = nullptr;
+
   // Displays padding between:
   // 1. Password field and pin keyboard
   // 2. Password field and fingerprint view, when pin is not available.

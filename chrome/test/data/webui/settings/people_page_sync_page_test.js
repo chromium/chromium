@@ -74,6 +74,40 @@ cr.define('settings_people_page_sync_page', function() {
       syncAllDataTypesControl.click();
     }
 
+    // Tests the initial layout of the sync section and the personalize section,
+    // depending on the sync state and the unified consent state.
+    function testInitialLayout(
+        unifiedConsentGiven, signedIn, hasError, setupInProgress,
+        syncSectionExpanded, syncSectionDisabled, personalizeSectionExpanded) {
+      syncPage.unifiedConsentEnabled = true;
+      syncPage.prefs = {unified_consent_given: {value: unifiedConsentGiven}};
+      syncPage.syncStatus = {
+        signedIn: signedIn,
+        disabled: false,
+        hasError: hasError,
+        setupInProgress: setupInProgress,
+        statusAction: hasError ? settings.StatusAction.REAUTHENTICATE :
+                                 settings.StatusAction.NO_ACTION,
+      };
+      Polymer.dom.flush();
+
+      const syncSectionToggle = syncPage.$$('#sync-section-toggle');
+      const syncSectionExpandIcon =
+          syncSectionToggle.querySelector('cr-expand-button');
+      const personalizeSectionToggle =
+          syncPage.$$('#personalize-section-toggle');
+      const personalizeSectionExpandIcon =
+          personalizeSectionToggle.querySelector('cr-expand-button');
+      const unifiedConsentToggle = syncPage.$$('#unifiedConsentToggle');
+
+      assertTrue(unifiedConsentToggle.checked == unifiedConsentGiven);
+      assertTrue(syncSectionExpandIcon.expanded == syncSectionExpanded);
+      assertTrue(syncSectionExpandIcon.disabled == syncSectionDisabled);
+      assertTrue(
+          personalizeSectionExpandIcon.expanded == personalizeSectionExpanded);
+      assertFalse(personalizeSectionExpandIcon.disabled);
+    }
+
     setup(function() {
       browserProxy = new TestSyncBrowserProxy();
       settings.SyncBrowserProxyImpl.instance_ = browserProxy;
@@ -237,6 +271,30 @@ cr.define('settings_people_page_sync_page', function() {
       assertFalse(ironCollapse.hidden);
     });
 
+    test(
+        'UnifiedConsentToggleNotifiesHandler_UnifiedConsentEnabled',
+        function() {
+          const unifiedConsentToggle = syncPage.$$('#unifiedConsentToggle');
+          syncPage.syncStatus = {
+            signedIn: true,
+            disabled: false,
+            hasError: false,
+            statusAction: settings.StatusAction.NO_ACTION,
+          };
+          syncPage.unifiedConsentEnabled = true;
+          Polymer.dom.flush();
+
+          assertFalse(unifiedConsentToggle.hidden);
+          assertFalse(unifiedConsentToggle.checked);
+
+          unifiedConsentToggle.click();
+
+          return browserProxy.whenCalled('unifiedConsentToggleChanged')
+              .then(toggleChecked => {
+                assertTrue(toggleChecked);
+              });
+        });
+
     test('SyncSectionLayout_UnifiedConsentEnabled_SignoutCollapse', function() {
       const ironCollapse = syncPage.$$('#sync-section');
       const syncSectionToggle = syncPage.$$('#sync-section-toggle');
@@ -321,6 +379,83 @@ cr.define('settings_people_page_sync_page', function() {
 
       // The unified consent toggle should be hidden.
       assertTrue(unifiedConsentToggle.hidden);
+    });
+
+    test('InitialLayout_UnifiedConsentGiven_SignedIn', function() {
+      testInitialLayout(
+          /*unifiedConsentGiven=*/true,
+          /*signedIn=*/true,
+          /*hasError=*/false,
+          /*setupInProgress=*/false,
+          /*syncSectionExpanded=*/false,
+          /*syncSectionDisabled=*/false,
+          /*personalizeSectionExpanded=*/false);
+    });
+
+    test('InitialLayout_UnifiedConsentGiven_SignedOut', function() {
+      testInitialLayout(
+          /*unifiedConsentGiven=*/true,
+          /*signedIn=*/false,
+          /*hasError=*/false,
+          /*setupInProgress=*/false,
+          /*syncSectionExpanded=*/false,
+          /*syncSectionDisabled=*/true,
+          /*personalizeSectionExpanded=*/false);
+    });
+
+    test('InitialLayout_UnifiedConsentGiven_SyncPaused', function() {
+      testInitialLayout(
+          /*unifiedConsentGiven=*/true,
+          /*signedIn=*/true,
+          /*hasError=*/true,
+          /*setupInProgress=*/false,
+          /*syncSectionExpanded=*/false,
+          /*syncSectionDisabled=*/true,
+          /*personalizeSectionExpanded=*/false);
+    });
+
+    test('InitialLayout_NoUnifiedConsentGiven_SignedIn', function() {
+      testInitialLayout(
+          /*unifiedConsentGiven=*/false,
+          /*signedIn=*/true,
+          /*hasError=*/false,
+          /*setupInProgress=*/false,
+          /*syncSectionExpanded=*/true,
+          /*syncSectionDisabled=*/false,
+          /*personalizeSectionExpanded=*/true);
+    });
+
+    test('InitialLayout_NoUnifiedConsentGiven_SignedOut', function() {
+      testInitialLayout(
+          /*unifiedConsentGiven=*/false,
+          /*signedIn=*/false,
+          /*hasError=*/false,
+          /*setupInProgress=*/false,
+          /*syncSectionExpanded=*/false,
+          /*syncSectionDisabled=*/true,
+          /*personalizeSectionExpanded=*/true);
+    });
+
+    test('InitialLayout_NoUnifiedConsentGiven_SyncPaused', function() {
+      testInitialLayout(
+          /*unifiedConsentGiven=*/false,
+          /*signedIn=*/true,
+          /*hasError=*/true,
+          /*setupInProgress=*/false,
+          /*syncSectionExpanded=*/false,
+          /*syncSectionDisabled=*/true,
+          /*personalizeSectionExpanded=*/true);
+    });
+
+    test('InitialLayout_SetupInProgress', function() {
+      testInitialLayout(
+          /*unifiedConsentGiven=*/true,
+          /*signedIn=*/true,
+          /*hasError=*/false,
+          /*setupInProgress=*/true,
+          /*syncSectionExpanded=*/true,
+          /*syncSectionDisabled=*/false,
+          /*personalizeSectionExpanded=*/true);
     });
 
     test('LoadingAndTimeout', function() {
@@ -516,14 +651,17 @@ cr.define('settings_people_page_sync_page', function() {
 
         Polymer.dom.flush();
 
-        // Need to re-retrieve this, as a different show passphrase radio button
-        // is shown once |syncPrefs.fullEncryptionBody| is non-empty.
-        encryptWithPassphrase =
-            syncPage.$$('cr-radio-button[name="encrypt-with-passphrase"]');
+        return test_util.waitForRender(syncPage).then(() => {
+          // Need to re-retrieve this, as a different show passphrase radio
+          // button is shown once |syncPrefs.fullEncryptionBody| is non-empty.
+          encryptWithPassphrase =
+              syncPage.$$('cr-radio-button[name="encrypt-with-passphrase"]');
 
-        // Assert that the radio boxes are disabled after encryption enabled.
-        assertTrue(encryptWithGoogle.disabled);
-        assertTrue(encryptWithPassphrase.disabled);
+          // Assert that the radio boxes are disabled after encryption enabled.
+          assertTrue(syncPage.$$('cr-radio-group').disabled);
+          assertEquals('-1', encryptWithGoogle.getAttribute('tabindex'));
+          assertEquals('-1', encryptWithPassphrase.getAttribute('tabindex'));
+        });
       }
       return browserProxy.whenCalled('setSyncEncryption').then(verifyPrefs);
     });
@@ -699,8 +837,9 @@ cr.define('settings_people_page_sync_page', function() {
         Polymer.dom.flush();
 
         // Verify that the encryption radio boxes are shown but disabled.
-        assertTrue(encryptWithGoogle.disabled);
-        assertTrue(encryptWithPassphrase.disabled);
+        assertTrue(syncPage.$$('cr-radio-group').disabled);
+        assertEquals('-1', encryptWithGoogle.getAttribute('tabindex'));
+        assertEquals('-1', encryptWithPassphrase.getAttribute('tabindex'));
       });
     });
 

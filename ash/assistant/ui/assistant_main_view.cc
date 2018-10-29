@@ -84,13 +84,10 @@ int AssistantMainView::GetHeightForWidth(int width) const {
   height = std::min(height, kMaxHeightDip);
   height = std::max(height, min_height_dip_);
 
-  // |height| should not exceed workspace height.
-  aura::Window* root_window =
-      parent()->GetWidget()->GetNativeWindow()->GetRootWindow();
-  display::Display display = display::Screen::GetScreen()->GetDisplayMatching(
-      root_window->GetBoundsInScreen());
-  gfx::Rect work_area = display.work_area();
-  height = std::min(height, work_area.height() - 2 * kVerticalMarginDip);
+  // |height| should not exceed the height of the usable work area.
+  gfx::Rect usable_work_area =
+      assistant_controller_->ui_controller()->model()->usable_work_area();
+  height = std::min(height, usable_work_area.height());
 
   return height;
 }
@@ -115,6 +112,12 @@ void AssistantMainView::ChildPreferredSizeChanged(views::View* child) {
 
 void AssistantMainView::ChildVisibilityChanged(views::View* child) {
   PreferredSizeChanged();
+}
+
+views::View* AssistantMainView::FindFirstFocusableView() {
+  // In those instances in which we want to override views::FocusSearch
+  // behavior, DialogPlate will identify the first focusable view.
+  return dialog_plate_->FindFirstFocusableView();
 }
 
 void AssistantMainView::InitLayout() {

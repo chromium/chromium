@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/frame/find_in_page.h"
 
 #include "third_party/blink/public/web/web_document.h"
-#include "third_party/blink/public/web/web_find_options.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_document.h"
@@ -89,18 +88,10 @@ void FindInPage::Find(int request_id,
   bool result = false;
   bool active_now = false;
 
-  WebFindOptions web_options;
-  web_options.forward = options->forward;
-  web_options.match_case = options->match_case;
-  web_options.find_next = options->find_next;
-  web_options.force = options->force;
-  web_options.run_synchronously_for_testing =
-      options->run_synchronously_for_testing;
-
   // Search for an active match only if this frame is focused or if this is a
-  // find next request.
+  // find next
   if (frame_->IsFocused() || options->find_next) {
-    result = FindInternal(request_id, search_text, web_options,
+    result = FindInternal(request_id, search_text, *options,
                           false /* wrap_within_frame */, &active_now);
   }
 
@@ -136,24 +127,35 @@ void FindInPage::Find(int request_id,
     return;
   }
 
-  // Start a new scoping request. If the scoping function determines that it
+  // Start a new scoping  If the scoping function determines that it
   // needs to scope, it will defer until later.
   EnsureTextFinder().StartScopingStringMatches(request_id, search_text,
-                                               web_options);
+                                               *options);
 }
 
-bool WebLocalFrameImpl::Find(int identifier,
-                             const WebString& search_text,
-                             const WebFindOptions& options,
-                             bool wrap_within_frame,
-                             bool* active_now) {
-  return find_in_page_->FindInternal(identifier, search_text, options,
-                                     wrap_within_frame, active_now);
+bool WebLocalFrameImpl::FindForTesting(int identifier,
+                                       const WebString& search_text,
+                                       bool match_case,
+                                       bool forward,
+                                       bool find_next,
+                                       bool force,
+                                       bool wrap_within_frame) {
+  auto options = mojom::blink::FindOptions::New();
+  options->match_case = match_case;
+  options->forward = forward;
+  options->find_next = find_next;
+  options->force = force;
+  options->run_synchronously_for_testing = true;
+  bool result = find_in_page_->FindInternal(identifier, search_text, *options,
+                                            wrap_within_frame, nullptr);
+  find_in_page_->StopFinding(
+      mojom::blink::StopFindAction::kStopFindActionKeepSelection);
+  return result;
 }
 
 bool FindInPage::FindInternal(int identifier,
                               const WebString& search_text,
-                              const WebFindOptions& options,
+                              const mojom::blink::FindOptions& options,
                               bool wrap_within_frame,
                               bool* active_now) {
   if (!frame_->GetFrame())
@@ -170,10 +172,6 @@ bool FindInPage::FindInternal(int identifier,
 
   return EnsureTextFinder().Find(identifier, search_text, options,
                                  wrap_within_frame, active_now);
-}
-
-void WebLocalFrameImpl::StopFindingForTesting(mojom::StopFindAction action) {
-  find_in_page_->StopFinding(action);
 }
 
 void FindInPage::StopFinding(mojom::StopFindAction action) {
@@ -309,7 +307,8 @@ WebPlugin* FindInPage::GetWebPluginForFind() {
 
 void FindInPage::BindToRequest(
     mojom::blink::FindInPageAssociatedRequest request) {
-  binding_.Bind(std::move(request));
+  binding_.Bind(std::move(request),
+                frame_->GetTaskRunner(blink::TaskType::kInternalDefault));
 }
 
 void FindInPage::Dispose() {

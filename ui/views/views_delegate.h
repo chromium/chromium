@@ -23,10 +23,6 @@
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 
-namespace base {
-class TimeDelta;
-}
-
 namespace gfx {
 class ImageSkia;
 class Rect;
@@ -34,13 +30,13 @@ class Rect;
 
 namespace ui {
 class ContextFactory;
+class TouchEditingControllerFactory;
 }
 
 namespace views {
 
 class NativeWidget;
 class NonClientFrameView;
-class ViewsTouchEditingControllerFactory;
 class View;
 class Widget;
 
@@ -129,6 +125,7 @@ class VIEWS_EXPORT ViewsDelegate {
                                        gfx::Rect* bounds,
                                        ui::WindowShowState* show_state) const;
 
+  // Handles an event on a |view|. The |view| must not be null.
   virtual void NotifyAccessibilityEvent(View* view,
                                         ax::mojom::Event event_type);
 
@@ -173,9 +170,6 @@ class VIEWS_EXPORT ViewsDelegate {
   virtual void OnBeforeWidgetInit(Widget::InitParams* params,
                                   internal::NativeWidgetDelegate* delegate);
 
-  // Returns the password reveal duration for Textfield.
-  virtual base::TimeDelta GetTextfieldPasswordRevealDuration();
-
   // Returns true if the operating system's window manager will always provide a
   // title bar with caption buttons (ignoring the setting to
   // |remove_standard_frame| in InitParams). If |maximized|, this applies to
@@ -209,8 +203,13 @@ class VIEWS_EXPORT ViewsDelegate {
  protected:
   ViewsDelegate();
 
+#if defined(USE_AURA)
+  void SetTouchSelectionMenuRunner(
+      std::unique_ptr<TouchSelectionMenuRunnerViews> menu_runner);
+#endif
+
  private:
-  std::unique_ptr<ViewsTouchEditingControllerFactory>
+  std::unique_ptr<ui::TouchEditingControllerFactory>
       editing_controller_factory_;
 
 #if defined(USE_AURA)

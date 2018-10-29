@@ -7,9 +7,6 @@
 /** @typedef {{enabled: boolean, managed: boolean}} */
 let MetricsReporting;
 
-/** @typedef {{enabled: boolean, managed: boolean}} */
-let SberPrefState;
-
 cr.define('settings', function() {
   /** @interface */
   class PrivacyPageBrowserProxy {
@@ -27,12 +24,6 @@ cr.define('settings', function() {
     showManageSSLCertificates() {}
 
     // </if>
-
-    /** @return {!Promise<!SberPrefState>} */
-    getSafeBrowsingExtendedReporting() {}
-
-    /** @param {boolean} enabled */
-    setSafeBrowsingExtendedReportingEnabled(enabled) {}
 
     /** @param {boolean} enabled */
     setBlockAutoplayEnabled(enabled) {}
@@ -54,16 +45,6 @@ cr.define('settings', function() {
     }
 
     // </if>
-
-    /** @override */
-    getSafeBrowsingExtendedReporting() {
-      return cr.sendWithPromise('getSafeBrowsingExtendedReporting');
-    }
-
-    /** @override */
-    setSafeBrowsingExtendedReportingEnabled(enabled) {
-      chrome.send('setSafeBrowsingExtendedReportingEnabled', [enabled]);
-    }
 
     /** @override */
     setBlockAutoplayEnabled(enabled) {

@@ -67,8 +67,7 @@ public class SearchGeolocationDisclosureInfoBarTest {
                 "Wrong starting infobar count", 0, mActivityTestRule.getInfoBars().size());
 
         // Infobar should appear when doing the first search.
-        InfoBarContainer container =
-                mActivityTestRule.getActivity().getActivityTab().getInfoBarContainer();
+        InfoBarContainer container = mActivityTestRule.getInfoBarContainer();
         InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
         container.addAnimationListener(listener);
         mActivityTestRule.loadUrl(mTestServer.getURL(SEARCH_PAGE));
@@ -144,8 +143,7 @@ public class SearchGeolocationDisclosureInfoBarTest {
                 "Wrong starting infobar count", 0, mActivityTestRule.getInfoBars().size());
 
         // Infobar should appear when doing the first search.
-        InfoBarContainer container =
-                mActivityTestRule.getActivity().getActivityTab().getInfoBarContainer();
+        InfoBarContainer container = mActivityTestRule.getInfoBarContainer();
         InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
         container.addAnimationListener(listener);
         mActivityTestRule.loadUrl(mTestServer.getURL(SEARCH_PAGE));

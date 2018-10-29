@@ -2,7 +2,6 @@ Change classes affecting :-webkit-any and :not.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(t1, null).backgroundColor is transparent
 PASS getComputedStyle(t1, null).backgroundColor is green
 PASS getComputedStyle(t2, null).backgroundColor is transparent
@@ -16,6 +15,7 @@ PASS getComputedStyle(t5, null).backgroundColor is green
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Background should be green
 Background should be green
 Background should be green

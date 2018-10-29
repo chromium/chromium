@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1018939186200882850">عنصر القائمة</translation>
-<translation id="1020833440720551630">كتم صوت المقطع الصوتي</translation>
 <translation id="10623998915015855">زر التبديل</translation>
 <translation id="1088086359088493902">ثوانٍ‬‬</translation>
 <translation id="1171774979989969504">يُرجى إدخال عنوان البريد الإلكتروني.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">إسهامات</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">إعلان بانر</translation>
-<translation id="1548116112524424341">تشغيل الفيديو في وضع "نافذة ضمن نافذة"</translation>
 <translation id="1589122976691792535">منطقة</translation>
 <translation id="1591562245178063882">هذا الشهر</translation>
 <translation id="1637811476055996098">اختيار الملفات</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">شبكة متفرعة</translation>
 <translation id="1822429046913737220">صباحًا/مساءً</translation>
 <translation id="1832974991323546415">تشغيل على جهاز بعيد</translation>
-<translation id="1838818994221231429">تبديل وضع ملء الشاشة إلى صورة مقطوعة للشاشة</translation>
 <translation id="190587075670221089">حذف</translation>
 <translation id="1907737156431278478">مثال</translation>
 <translation id="1921819250265091946">يوم</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">الوقت</translation>
 <translation id="5630795885300617244">انقر مرّتين جهة اليمين أو اليسار لتخطي 10 ثوانٍ.</translation>
 <translation id="5631759159893697722">نبذة مختصرة</translation>
-<translation id="5641012560118721995">إيقاف التشغيل مؤقتًا</translation>
 <translation id="5643186887447432888">زر</translation>
 <translation id="5677946354068040947">خيارات إضافية</translation>
 <translation id="576709008726043716">مقدمة</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">إعادة</translation>
 <translation id="5966707198760109579">الأسبوع</translation>
 <translation id="5987525920412732405">زر الدوران</translation>
+<translation id="6011459053400940133">شريط تمرير مستوى الصوت</translation>
 <translation id="6015796118275082299">عام</translation>
 <translation id="6023896073578205740">مربع القائمة</translation>
-<translation id="6101327004457443354">إعادة صوت المقطع الصوتي</translation>
 <translation id="6150588977291308318">قائمة مراجع</translation>
 <translation id="6164829606128959761">متر</translation>
 <translation id="6166809985690652833">كلمة ختامية</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">ساعات</translation>
 <translation id="7681220483256441252">فهرس</translation>
 <translation id="7720026100085573005">المدة المتبقية</translation>
-<translation id="7740016676195725605">إيقاف عرض الترجمة والشرح</translation>
 <translation id="7740050170769002709">‏محتوى HTML</translation>
 <translation id="7750228210027921155">نافذة ضمن النافذة</translation>
 <translation id="7789962463072032349">إيقاف مؤقت</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">الحقل النصي للبحث</translation>
 <translation id="8057695513531652401">ملاحظة</translation>
 <translation id="8105797009065549151">ملاحظة مرجعية</translation>
-<translation id="8115662671911883373">بدء عرض الترجمة والشرح</translation>
 <translation id="8117451130807776954">هذا الأسبوع</translation>
-<translation id="819205353528511139">تشغيل الفيلم في وضع ملء الشاشة</translation>
 <translation id="8199524924445686405">سنة</translation>
 <translation id="8284326494547611709">الترجمة والشرح</translation>
 <translation id="835897206747267392">قيمة غير صحيحة</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">التحكم في التشغيل عن بعد</translation>
 <translation id="862370744433916922">ترجمة مصاحِبة</translation>
 <translation id="8750798805984357768">يُرجى اختيار أحد هذه الخيارات.</translation>
-<translation id="8785498733064193001">بدء التشغيل</translation>
 <translation id="8808573423886751634">فصل</translation>
 <translation id="8845239796550121995">يتم الآن الإرسال إلى جهاز التلفزيون</translation>
 <translation id="8851136666856101339">main</translation>

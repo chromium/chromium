@@ -12,12 +12,14 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/drive/file_system_core_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
@@ -57,11 +59,10 @@ class URLHelper {
       : profile_id_(profile_id), url_(url), callback_(callback) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     Lifetime lifetime(this);
-    BrowserThread::PostTask(BrowserThread::UI,
-                            FROM_HERE,
-                            base::Bind(&URLHelper::RunOnUIThread,
-                                       base::Unretained(this),
-                                       base::Passed(&lifetime)));
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
+        base::Bind(&URLHelper::RunOnUIThread, base::Unretained(this),
+                   base::Passed(&lifetime)));
   }
 
  private:
@@ -125,14 +126,10 @@ class URLHelper {
   void ReplyResult(net::Error error) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    BrowserThread::PostTask(
-        BrowserThread::IO,
-        FROM_HERE,
-        base::Bind(callback_,
-                   error,
-                   file_system_context_,
-                   base::Passed(&isolated_file_system_scope_),
-                   file_system_url_,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
+        base::Bind(callback_, error, file_system_context_,
+                   base::Passed(&isolated_file_system_scope_), file_system_url_,
                    mime_type_));
   }
 

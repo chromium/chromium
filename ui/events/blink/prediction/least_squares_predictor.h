@@ -22,6 +22,8 @@ class LeastSquaresPredictor : public InputPredictor {
   explicit LeastSquaresPredictor();
   ~LeastSquaresPredictor() override;
 
+  const char* GetName() const override;
+
   // Reset the predictor to initial state.
   void Reset() override;
 
@@ -33,7 +35,7 @@ class LeastSquaresPredictor : public InputPredictor {
 
   // Generate the prediction based on stored points and given time_stamp.
   // Return false if no prediction available.
-  bool GeneratePrediction(base::TimeTicks frame_time,
+  bool GeneratePrediction(base::TimeTicks predict_time,
                           InputData* result) const override;
 
  private:

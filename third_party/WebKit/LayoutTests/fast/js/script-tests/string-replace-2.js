@@ -11,8 +11,9 @@ shouldBe("testString.replace(/[aeiou]/gi,'-')",
          "\"-t's th- -nd -f th- w-rld -s w- kn-w -t, -nd - f--l f-n-.\"");
 shouldBe("testString.replace(/[aeiou]/gi, function Capitalize(s){ return s.toUpperCase(); })", 
          "\"It's thE End Of thE wOrld As wE knOw It, And I fEEl fInE.\"");
+// See https://crbug.com/569139.
 shouldBe("testString.replace(/([aeiou])([a-z])/g, function Capitalize(){ return RegExp.$1.toUpperCase()+RegExp.$2; })",
-         "\"It's the End Of the wOrld As we knOw It, And I fEel fIne.\"");
+         "\"It's the Ind In the wInld In we knIn In, Ind I fInl fIne.\"");
 shouldBe("testString.replace(/([aeiou])([a-z])/g, function Capitalize(orig,re1,re2) { return re1.toUpperCase()+re2; })",
         "\"It's the End Of the wOrld As we knOw It, And I fEel fIne.\"");
 shouldBe("testString.replace(/(.*)/g, function replaceWithDollars(matchGroup) { return '$1'; })", "\"$1$1\"");

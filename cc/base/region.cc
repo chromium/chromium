@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "ui/gfx/geometry/vector2d.h"

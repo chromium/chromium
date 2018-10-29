@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller.h"
-#include "ash/accelerators/accelerator_delegate.h"
+#include "ash/accelerators/pre_target_accelerator_handler.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/session/session_controller.h"
 #include "ash/shell.h"
@@ -90,7 +90,7 @@ TEST_F(AcceleratorFilterTest, CanConsumeSystemKeys) {
   std::unique_ptr<ui::AcceleratorHistory> accelerator_history(
       new ui::AcceleratorHistory());
   ::wm::AcceleratorFilter filter(
-      std::unique_ptr<::wm::AcceleratorDelegate>(new AcceleratorDelegate),
+      std::make_unique<PreTargetAcceleratorHandler>(),
       accelerator_history.get());
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
 

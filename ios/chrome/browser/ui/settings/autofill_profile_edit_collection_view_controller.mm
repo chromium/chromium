@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/autofill_profile_edit_collection_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -180,7 +181,7 @@ static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
 
   std::string locale = GetApplicationContext()->GetApplicationLocale();
   [model addSectionWithIdentifier:SectionIdentifierFields];
-  for (size_t i = 0; i < arraysize(kFieldsToDisplay); ++i) {
+  for (size_t i = 0; i < base::size(kFieldsToDisplay); ++i) {
     const AutofillFieldDisplayInfo& field = kFieldsToDisplay[i];
     AutofillEditItem* item =
         [[AutofillEditItem alloc] initWithType:ItemTypeField];

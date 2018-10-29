@@ -18,14 +18,19 @@ BrowserCommandHandlerLinux::BrowserCommandHandlerLinux(
     : browser_view_(browser_view) {
   aura::Window* window = browser_view_->frame()->GetNativeWindow();
   DCHECK(window);
-  if (window)
-    window->AddPreTargetHandler(this);
+  window->AddObserver(this);
+  window->AddPreTargetHandler(this);
 }
 
 BrowserCommandHandlerLinux::~BrowserCommandHandlerLinux() {
   aura::Window* window = browser_view_->frame()->GetNativeWindow();
   if (window)
-    window->RemovePreTargetHandler(this);
+    RemoveObservers(window);
+}
+
+void BrowserCommandHandlerLinux::RemoveObservers(aura::Window* window) {
+  window->RemoveObserver(this);
+  window->RemovePreTargetHandler(this);
 }
 
 void BrowserCommandHandlerLinux::OnMouseEvent(ui::MouseEvent* event) {
@@ -69,4 +74,8 @@ void BrowserCommandHandlerLinux::OnMouseEvent(ui::MouseEvent* event) {
     controller.GoBack();
   else if (forward_button_toggled && controller.CanGoForward())
     controller.GoForward();
+}
+
+void BrowserCommandHandlerLinux::OnWindowDestroying(aura::Window* window) {
+  RemoveObservers(window);
 }

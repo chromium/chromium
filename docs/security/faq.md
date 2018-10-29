@@ -157,8 +157,14 @@ Please do not provide links to vulnerable production sites seen in the wild,
 as that forces us to embargo the information in the bug.
 
 Note that the XSSAuditor is not able to defend against persistent XSS or
-DOM-based XSS. There will also be a number of infrequently occurring reflected
-XSS corner cases that it will never be able to cover. Among these are:
+DOM-based XSS. Nor is it able to defend against injections deep inside
+existing JavaScript blocks, [for
+example](https://bugs.chromium.org/p/chromium/issues/detail?id=135029), since
+the XSSAuditor is part of the HTML parser, not the JavaScript parser.
+
+There will also be a number of infrequently occurring reflected XSS corner
+case in an HTML context that it will never be able to cover. Among
+these are:
 *    Multiple unsanitized variables injected into the page.
 *    Unexpected server side transformation or decoding of the payload.
 

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -72,6 +73,9 @@ class MockWebMediaPlayerForImpl : public EmptyWebMediaPlayer {
   // WebMediaPlayer overrides:
   WebTimeRanges Seekable() const override { return seekable_; }
   bool HasVideo() const override { return true; }
+  SurfaceLayerMode GetVideoSurfaceLayerMode() const override {
+    return SurfaceLayerMode::kAlways;
+  }
 
   WebTimeRanges seekable_;
 };
@@ -321,7 +325,7 @@ void MediaControlsImplTest::MouseMoveTo(WebFloatPoint pos) {
                                  WebInputEvent::GetStaticTimeStampForTests());
   mouse_move_event.SetFrameScale(1);
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
-      mouse_move_event, {});
+      mouse_move_event, {}, {});
 }
 
 void MediaControlsImplTest::MouseUpAt(WebFloatPoint pos) {
@@ -758,7 +762,7 @@ TEST_F(MediaControlsImplTest, TimelineSeekToRoundedEnd) {
   // rounded up slightly to |rounded_up_duration| when setting the timeline's
   // |max| attribute (crbug.com/695065).
   double exact_duration = 596.586667;
-  double rounded_up_duration = 596.587;
+  double rounded_up_duration = 596.586667;
   LoadMediaWithDuration(exact_duration);
 
   // Simulate a click slightly past the end of the track of the timeline's
@@ -1330,8 +1334,9 @@ class ModernMediaControlsImplTest : public MediaControlsImplTest {
 };
 
 TEST_F(ModernMediaControlsImplTest, ControlsShouldUseSafeAreaInsets) {
+  GetDocument().View()->UpdateAllLifecyclePhases();
   {
-    const ComputedStyle* style = MediaControls().EnsureComputedStyle();
+    const ComputedStyle* style = MediaControls().GetComputedStyle();
     EXPECT_EQ(0.0, style->MarginTop().Pixels());
     EXPECT_EQ(0.0, style->MarginLeft().Pixels());
     EXPECT_EQ(0.0, style->MarginBottom().Pixels());
@@ -1351,7 +1356,7 @@ TEST_F(ModernMediaControlsImplTest, ControlsShouldUseSafeAreaInsets) {
   GetDocument().View()->UpdateAllLifecyclePhases();
 
   {
-    const ComputedStyle* style = MediaControls().EnsureComputedStyle();
+    const ComputedStyle* style = MediaControls().GetComputedStyle();
     EXPECT_EQ(1.0, style->MarginTop().Pixels());
     EXPECT_EQ(2.0, style->MarginLeft().Pixels());
     EXPECT_EQ(3.0, style->MarginBottom().Pixels());

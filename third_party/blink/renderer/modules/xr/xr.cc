@@ -6,6 +6,7 @@
 
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/xr/xr_device.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 namespace blink {
 
 namespace {
@@ -73,9 +73,10 @@ ScriptPromise XR::requestDevice(ScriptState* script_state) {
     did_log_requestDevice_ = true;
   }
 
-  if (!frame->IsFeatureEnabled(mojom::FeaturePolicyFeature::kWebVr,
-                               ReportOptions::kReportOnFailure)) {
-    // Only allow the call to be made if the appropraite feature policy is in
+  if (!frame->GetDocument()->IsFeatureEnabled(
+          mojom::FeaturePolicyFeature::kWebVr,
+          ReportOptions::kReportOnFailure)) {
+    // Only allow the call to be made if the appropriate feature policy is in
     // place.
     return ScriptPromise::RejectWithDOMException(
         script_state, DOMException::Create(DOMExceptionCode::kSecurityError,

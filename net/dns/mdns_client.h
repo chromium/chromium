@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_query.h"
@@ -32,6 +33,8 @@ class RecordParsed;
 // time out after a reasonable number of seconds.
 class NET_EXPORT MDnsTransaction {
  public:
+  static const base::TimeDelta kTransactionTimeout;
+
   // Used to signify what type of result the transaction has received.
   enum Result {
     // Passed whenever a record is found.
@@ -174,7 +177,16 @@ class NET_EXPORT MDnsClient {
   static std::unique_ptr<MDnsClient> CreateDefault();
 };
 
-NET_EXPORT IPEndPoint GetMDnsIPEndPoint(AddressFamily address_family);
+// Gets the endpoint for the multicast group a socket should join to receive
+// MDNS messages. Such sockets should also bind to the endpoint from
+// GetMDnsReceiveEndPoint().
+//
+// This is also the endpoint messages should be sent to to send MDNS messages.
+NET_EXPORT IPEndPoint GetMDnsGroupEndPoint(AddressFamily address_family);
+
+// Gets the endpoint sockets should be bound to to receive MDNS messages. Such
+// sockets should also join the multicast group from GetMDnsGroupEndPoint().
+NET_EXPORT IPEndPoint GetMDnsReceiveEndPoint(AddressFamily address_family);
 
 typedef std::vector<std::pair<uint32_t, AddressFamily>>
     InterfaceIndexFamilyList;

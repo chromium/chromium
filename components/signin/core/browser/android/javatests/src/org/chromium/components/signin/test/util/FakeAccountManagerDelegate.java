@@ -21,6 +21,7 @@ import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.AccountManagerDelegateException;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.ProfileDataSource;
 
 import java.lang.annotation.Retention;
@@ -255,8 +256,12 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public String getAuthToken(Account account, String authTokenScope) {
-        AccountHolder ah = getAccountHolder(account);
+    public String getAuthToken(Account account, String authTokenScope) throws AuthException {
+        AccountHolder ah = tryGetAccountHolder(account);
+        if (ah == null) {
+            throw new AuthException(AuthException.NONTRANSIENT,
+                    "Cannot get auth token for unknown account '" + account + "'");
+        }
         assert ah.hasBeenAccepted(authTokenScope);
         synchronized (mAccounts) {
             // Some tests register auth tokens with value null, and those should be preserved.
@@ -327,7 +332,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         ThreadUtils.postOnUiThread(() -> callback.onResult(true));
     }
 
-    private AccountHolder getAccountHolder(Account account) {
+    private AccountHolder tryGetAccountHolder(Account account) {
         if (account == null) {
             throw new IllegalArgumentException("Account can not be null");
         }
@@ -338,6 +343,14 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
                 }
             }
         }
-        throw new IllegalArgumentException("Can not find AccountHolder for account " + account);
+        return null;
+    }
+
+    private AccountHolder getAccountHolder(Account account) {
+        AccountHolder ah = tryGetAccountHolder(account);
+        if (ah == null) {
+            throw new IllegalArgumentException("Can not find AccountHolder for account " + account);
+        }
+        return ah;
     }
 }

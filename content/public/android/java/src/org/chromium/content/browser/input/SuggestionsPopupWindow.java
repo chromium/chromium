@@ -150,7 +150,7 @@ public abstract class SuggestionsPopupWindow
             // Set this on the content view instead of on the PopupWindow so we can retrieve the
             // padding later.
             mContentView.setBackground(ApiCompatibilityUtils.getDrawable(
-                    mContext.getResources(), R.drawable.dropdown_popup_background));
+                    mContext.getResources(), R.drawable.popup_bg));
         }
 
         // mPopupVerticalMargin is the minimum amount of space we want to have between the popup

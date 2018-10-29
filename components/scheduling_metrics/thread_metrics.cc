@@ -35,7 +35,7 @@ ThreadMetrics::~ThreadMetrics() {}
 
 bool ThreadMetrics::ShouldDiscardTask(
     base::sequence_manager::TaskQueue* queue,
-    const base::sequence_manager::TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   // TODO(altimin): Investigate the relationship between thread time and
   // wall time for discarded tasks.
@@ -44,7 +44,7 @@ bool ThreadMetrics::ShouldDiscardTask(
 
 void ThreadMetrics::RecordTaskMetrics(
     base::sequence_manager::TaskQueue* queue,
-    const base::sequence_manager::TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   DCHECK(!has_cpu_timing_for_each_task_ || task_timing.has_thread_time());
   thread_task_duration_reporter_.RecordTask(thread_type_,

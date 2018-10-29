@@ -171,8 +171,8 @@ vulnerability by setting lower TTLs on SW scripts. We also encourage developers
 to [build a kill-switch
 SW](https://stackoverflow.com/questions/33986976/how-can-i-remove-a-buggy-service-worker-or-implement-a-kill-switch/38980776#38980776).
 
-In the near future, the right cleanup strategy (for this and other issues) will
-be [Clear-Site-Data](https://www.w3.org/TR/clear-site-data/).
+The right cleanup strategy (for this and other issues) is
+[Clear-Site-Data](https://www.w3.org/TR/clear-site-data/).
 
 Additionally, site operators should ignore (e.g. respond with `400 Bad Request`)
 requests that have the Service-Worker request header for domains or paths that
@@ -271,8 +271,7 @@ experts to participate in those open fora.
 ## What are some SW best practices for site operators?
 
 *    [Build a kill-switch SW](https://stackoverflow.com/questions/33986976/how-can-i-remove-a-buggy-service-worker-or-implement-a-kill-switch/38980776#38980776).
-*    Use [Clear-Site-Data](https://www.w3.org/TR/clear-site-data/) when it
-     becomes available.
+*    Use [Clear-Site-Data](https://www.w3.org/TR/clear-site-data/).
 *    Be aware of the need for longer session lifetimes, since clients may go
      offline and SWs might need to POST cached requests after coming back
      online. [Here is one way to handle

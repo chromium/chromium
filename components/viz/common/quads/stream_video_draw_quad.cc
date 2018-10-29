@@ -5,7 +5,7 @@
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 
 #include "base/logging.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
 

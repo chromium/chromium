@@ -76,7 +76,8 @@ std::string WebRtcContentBrowserTestBase::ExecuteJavascriptAndReturnResult(
 void WebRtcContentBrowserTestBase::MakeTypicalCall(
     const std::string& javascript,
     const std::string& html_file) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  if (!embedded_test_server()->Started())
+    ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL(html_file));
   NavigateToURL(shell(), url);

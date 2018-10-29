@@ -41,6 +41,10 @@ class PasswordAccessoryViewInterface {
 
       // A single, usually static and interactive suggestion.
       OPTION = 5,  // e.g. the "Manage passwords..." link.
+
+      // A horizontal, non-interactive divider used to visually divide the
+      // accessory sheet from the accessory bar.
+      TOP_DIVIDER = 6,
     };
     // The |text| is caption of the item and what will be filled if selected.
     base::string16 text;
@@ -76,6 +80,12 @@ class PasswordAccessoryViewInterface {
 
   // Opens a keyboard which dismisses the sheet. NoOp without open sheet.
   virtual void SwapSheetWithKeyboard() = 0;
+
+  // Shows the accessory bar when the keyboard is also shown.
+  virtual void ShowWhenKeyboardIsVisible() = 0;
+
+  // Hides the accessory bar and the accessory sheet (if open).
+  virtual void Hide() = 0;
 
  private:
   friend class PasswordAccessoryController;

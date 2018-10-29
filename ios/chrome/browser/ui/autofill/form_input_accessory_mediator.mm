@@ -7,7 +7,9 @@
 #include "base/ios/block_types.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_block.h"
+#import "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/ios/browser/autofill_switches.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
@@ -17,12 +19,15 @@
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
 #import "ios/chrome/browser/passwords/password_generation_utils.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/keyboard_observer_helper.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/url_scheme_util.h"
 #import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
+#include "ios/web/public/web_state/web_frame.h"
+#include "ios/web/public/web_state/web_frames_manager.h"
 #include "ios/web/public/web_state/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -31,6 +36,7 @@
 
 @interface FormInputAccessoryMediator ()<FormActivityObserver,
                                          CRWWebStateObserver,
+                                         KeyboardObserverHelperDelegate,
                                          WebStateListObserving>
 
 // The JS manager for interacting with the underlying form.
@@ -45,6 +51,9 @@
 // The form input handler. This is in charge of form navigation.
 @property(nonatomic, strong)
     FormInputAccessoryViewHandler* formInputAccessoryHandler;
+
+// The observer to determine when the keyboard dissapears and when it stays.
+@property(nonatomic, strong) KeyboardObserverHelper* keyboardObserver;
 
 // Last seen provider. Used to reenable suggestions.
 @property(nonatomic, weak) id<FormInputAccessoryViewProvider> lastProvider;
@@ -84,18 +93,6 @@
   BOOL _suggestionsHaveBeenShown;
 }
 
-@synthesize consumer = _consumer;
-@synthesize currentProvider = _currentProvider;
-@synthesize formInputAccessoryHandler = _formInputAccessoryHandler;
-@synthesize JSSuggestionManager = _JSSuggestionManager;
-@synthesize lastProvider = _lastProvider;
-@synthesize lastSuggestionView = _lastSuggestionView;
-@synthesize manualFillAccessoryViewController =
-    _manualFillAccessoryViewController;
-@synthesize providers = _providers;
-@synthesize suggestionsDisabled = _suggestionsDisabled;
-@synthesize webState = _webState;
-
 - (instancetype)initWithConsumer:(id<FormInputAccessoryConsumer>)consumer
                     webStateList:(WebStateList*)webStateList {
   self = [super init];
@@ -113,6 +110,9 @@
             webState->GetJSInjectionReceiver();
         _JSSuggestionManager = base::mac::ObjCCastStrict<JsSuggestionManager>(
             [injectionReceiver instanceOfClass:[JsSuggestionManager class]]);
+        [_JSSuggestionManager
+            setWebFramesManager:web::WebFramesManager::FromWebState(webState)];
+
         _providers = @[ FormSuggestionTabHelper::FromWebState(webState)
                             ->GetAccessoryViewProvider() ];
         _formActivityObserverBridge =
@@ -131,6 +131,16 @@
                       selector:@selector(handleTextInputDidBeginEditing:)
                           name:UITextFieldTextDidBeginEditingNotification
                         object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(handleTextInputDidEndEditing:)
+                          name:UITextFieldTextDidEndEditingNotification
+                        object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(handleKeyboardWillShow:)
+                          name:UIKeyboardWillShowNotification
+                        object:nil];
+    _keyboardObserver = [[KeyboardObserverHelper alloc] init];
+    _keyboardObserver.delegate = self;
   }
   return self;
 }
@@ -160,6 +170,18 @@
   }
 }
 
+#pragma mark - KeyboardObserverHelperDelegate
+
+- (void)keyboardDidStayOnScreen {
+  [self.consumer removeAnimationsOnKeyboardView];
+}
+
+- (void)keyboardDidHide {
+  if (_webState && _webState->IsVisible()) {
+    [self reset];
+  }
+}
+
 #pragma mark - FormActivityObserver
 
 - (void)webState:(web::WebState*)webState
@@ -175,15 +197,29 @@
     return;
   }
 
+  if (autofill::switches::IsAutofillIFrameMessagingEnabled() &&
+      (!frame || !frame->CanCallJavaScriptFunction())) {
+    [self reset];
+    return;
+  }
+
   if (params.type == "blur" || params.type == "change" ||
       params.type == "form_changed") {
     return;
   }
 
+  [_formInputAccessoryHandler
+      setLastFocusFormActivityWebFrameID:base::SysUTF8ToNSString(
+                                             params.frame_id)];
   [self retrieveAccessoryViewForForm:params webState:webState];
 }
 
 #pragma mark - CRWWebStateObserver
+
+- (void)webStateWasShown:(web::WebState*)webState {
+  DCHECK_EQ(_webState, webState);
+  [self.consumer continueCustomKeyboardView];
+}
 
 - (void)webStateWasHidden:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
@@ -196,6 +232,8 @@
   // element gets the focus. On iPad the keyboard stays dismissed.
   if (IsIPadIdiom()) {
     [self reset];
+  } else {
+    [self.consumer pauseCustomKeyboardView];
   }
 }
 
@@ -216,6 +254,7 @@
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
                      reason:(int)reason {
+  [self reset];
   [self updateWithNewWebState:newWebState];
 }
 
@@ -263,6 +302,8 @@
         webState->GetJSInjectionReceiver();
     self.JSSuggestionManager = base::mac::ObjCCastStrict<JsSuggestionManager>(
         [injectionReceiver instanceOfClass:[JsSuggestionManager class]]);
+    [self.JSSuggestionManager
+        setWebFramesManager:web::WebFramesManager::FromWebState(webState)];
     self.providers = @[ FormSuggestionTabHelper::FromWebState(webState)
                             ->GetAccessoryViewProvider() ];
     _formInputAccessoryHandler.JSSuggestionManager = self.JSSuggestionManager;
@@ -276,12 +317,12 @@
 // Resets the current provider, the consumer view and the navigation handler. As
 // well as reenables suggestions.
 - (void)reset {
-  [self.consumer restoreKeyboardView];
-  self.suggestionsDisabled = NO;
-
-  self.currentProvider = nil;
-
+  [self.consumer restoreOriginalKeyboardView];
+  [self.manualFillAccessoryViewController reset];
   [self.formInputAccessoryHandler reset];
+
+  self.suggestionsDisabled = NO;
+  self.currentProvider = nil;
 }
 
 // Asynchronously queries the providers for an accessory view. Sends it to
@@ -372,25 +413,38 @@ queryViewBlockForProvider:(id<FormInputAccessoryViewProvider>)provider
     self.currentProvider = provider;
   }
   // If Manual Fallback is enabled, add its view after the suggestions.
-  BOOL isManualFillEnabled =
-      base::FeatureList::IsEnabled(autofill::features::kAutofillManualFallback);
-  if (isManualFillEnabled) {
+  if (autofill::features::IsPasswordManualFallbackEnabled()) {
     FormSuggestionView* formSuggestionView =
         base::mac::ObjCCast<FormSuggestionView>(consumerView);
     formSuggestionView.trailingView =
         self.manualFillAccessoryViewController.view;
   }
-
   // Post it to the consumer.
   [self.consumer showCustomInputAccessoryView:consumerView
                            navigationDelegate:self.formInputAccessoryHandler];
 }
 
-// When any text field or text view (e.g. omnibox, settings, card unmask dialog)
-// begins editing, reset ourselves so that we don't present our custom view over
+#pragma mark - Keyboard Notifications
+
+// When the keyboard is shown, send the last suggestions to the consumer.
+- (void)handleKeyboardWillShow:(NSNotification*)notification {
+  if (self.lastSuggestionView) {
+    [self updateWithProvider:self.lastProvider
+              suggestionView:self.lastSuggestionView];
+  }
+}
+
+// When any text field or text view (e.g. omnibox, settings search bar)
+// begins editing, pause the consumer so it doesn't present the custom view over
 // the keyboard.
 - (void)handleTextInputDidBeginEditing:(NSNotification*)notification {
-  [self reset];
+  [self.consumer pauseCustomKeyboardView];
+}
+
+// When any text field or text view (e.g. omnibox, settings, card unmask dialog)
+// ends editing, continue presenting.
+- (void)handleTextInputDidEndEditing:(NSNotification*)notification {
+  [self.consumer continueCustomKeyboardView];
 }
 
 #pragma mark - Tests

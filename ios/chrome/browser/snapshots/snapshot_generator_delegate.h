@@ -41,6 +41,8 @@ class WebState;
 // other actions necessary after a snapshot has been captured.
 - (void)didUpdateSnapshotForWebState:(web::WebState*)webState
                            withImage:(UIImage*)snapshot;
+// Returns the base view to be snapshotted.
+- (UIView*)viewForWebState:(web::WebState*)webState;
 
 @end
 

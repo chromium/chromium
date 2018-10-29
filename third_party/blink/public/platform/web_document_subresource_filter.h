@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DOCUMENT_SUBRESOURCE_FILTER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DOCUMENT_SUBRESOURCE_FILTER_H_
 
-#include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/modules/fetch/fetch_api_request.mojom-shared.h"
 
 namespace blink {
 
@@ -25,7 +25,7 @@ class WebDocumentSubresourceFilter {
 
   virtual ~WebDocumentSubresourceFilter() = default;
   virtual LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                                   WebURLRequest::RequestContext) = 0;
+                                   mojom::RequestContextType) = 0;
   virtual LoadPolicy GetLoadPolicyForWebSocketConnect(const WebURL&) = 0;
 
   // Report that a resource loaded by the document (not a preload) was

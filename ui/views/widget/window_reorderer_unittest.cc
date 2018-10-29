@@ -39,9 +39,8 @@ void SetWindowAndLayerName(aura::Window* window, const std::string& name) {
 // first) of |parent|. The format of the string is "name1 name2 name3 ...".
 std::string ChildWindowNamesAsString(const aura::Window& parent) {
   std::string names;
-  typedef std::vector<aura::Window*> Windows;
-  for (Windows::const_iterator it = parent.children().begin();
-       it != parent.children().end(); ++it) {
+  for (auto it = parent.children().begin(); it != parent.children().end();
+       ++it) {
     if (!names.empty())
       names += " ";
     names += (*it)->GetName();

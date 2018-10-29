@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/toolbar/vector_icons.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace content {
@@ -65,7 +65,7 @@ bool IntentPickerView::IsIncognitoMode() {
 }
 
 const gfx::VectorIcon& IntentPickerView::GetVectorIcon() const {
-  return toolbar::kOpenInNewIcon;
+  return omnibox::kOpenInNewIcon;
 }
 
 base::string16 IntentPickerView::GetTextForTooltipAndAccessibleName() const {

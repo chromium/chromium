@@ -28,8 +28,9 @@ class PaymentRequestContactInfoSelectionCoordinatorTest
     : public PaymentRequestUnitTestBase,
       public PlatformTest {
  protected:
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     // One profile is incomplete.
     AddAutofillProfile(autofill::test::GetFullProfile());
@@ -38,7 +39,8 @@ class PaymentRequestContactInfoSelectionCoordinatorTest
     CreateTestPaymentRequest();
   }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 };
 
 // Tests that invoking start and stop on the coordinator presents and dismisses

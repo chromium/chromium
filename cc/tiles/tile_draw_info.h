@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "cc/resources/resource_pool.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -82,10 +82,6 @@ class CC_EXPORT TileDrawInfo {
   inline bool has_resource() const { return !!resource_; }
 
   const ResourcePool::InUsePoolResource& GetResource();
-
-  inline bool has_compressed_resource() const {
-    return resource_ ? IsResourceFormatCompressed(resource_.format()) : false;
-  }
 
   bool is_checker_imaged() const {
     DCHECK(!resource_is_checker_imaged_ || resource_);

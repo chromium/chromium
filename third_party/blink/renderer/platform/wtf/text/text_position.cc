@@ -31,17 +31,17 @@
 
 namespace WTF {
 
-std::unique_ptr<Vector<unsigned>> GetLineEndings(const String& text) {
-  std::unique_ptr<Vector<unsigned>> result(
-      std::make_unique<Vector<unsigned>>());
+std::unique_ptr<Vector<wtf_size_t>> GetLineEndings(const String& text) {
+  std::unique_ptr<Vector<wtf_size_t>> result(
+      std::make_unique<Vector<wtf_size_t>>());
 
   unsigned start = 0;
   while (start < text.length()) {
-    size_t line_end = text.find('\n', start);
+    wtf_size_t line_end = text.find('\n', start);
     if (line_end == kNotFound)
       break;
 
-    result->push_back(static_cast<unsigned>(line_end));
+    result->push_back(line_end);
     start = line_end + 1;
   }
   result->push_back(text.length());
@@ -63,7 +63,7 @@ TextPosition TextPosition::FromOffsetAndLineEndings(
     const Vector<unsigned>& line_endings) {
   const unsigned* found_line_ending =
       std::lower_bound(line_endings.begin(), line_endings.end(), offset);
-  int line_index = found_line_ending - &line_endings.at(0);
+  int line_index = static_cast<int>(found_line_ending - &line_endings.at(0));
   unsigned line_start_offset =
       line_index > 0 ? line_endings.at(line_index - 1) + 1 : 0;
   int column = offset - line_start_offset;

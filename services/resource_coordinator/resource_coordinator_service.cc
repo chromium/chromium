@@ -69,6 +69,8 @@ void ResourceCoordinatorService::OnStart() {
   registry_.AddInterface(base::BindRepeating(
       &memory_instrumentation::CoordinatorImpl::BindHeapProfilerHelperRequest,
       base::Unretained(memory_instrumentation_coordinator_.get())));
+  registry_.AddInterface(base::BindRepeating(
+      &ResourceCoordinatorService::BindWebUIGraphDump, base::Unretained(this)));
 }
 
 void ResourceCoordinatorService::OnBindInterface(
@@ -77,6 +79,33 @@ void ResourceCoordinatorService::OnBindInterface(
     mojo::ScopedMessagePipeHandle interface_pipe) {
   registry_.BindInterface(interface_name, std::move(interface_pipe),
                           source_info);
+}
+
+void ResourceCoordinatorService::BindWebUIGraphDump(
+    mojom::WebUIGraphDumpRequest request,
+    const service_manager::BindSourceInfo& source_info) {
+  std::unique_ptr<WebUIGraphDumpImpl> graph_dump =
+      std::make_unique<WebUIGraphDumpImpl>(&coordination_unit_graph_);
+
+  auto error_callback =
+      base::BindOnce(&ResourceCoordinatorService::OnGraphDumpConnectionError,
+                     base::Unretained(this), graph_dump.get());
+  graph_dump->Bind(std::move(request), std::move(error_callback));
+
+  graph_dumps_.push_back(std::move(graph_dump));
+}
+
+void ResourceCoordinatorService::OnGraphDumpConnectionError(
+    WebUIGraphDumpImpl* graph_dump) {
+  const auto it = std::find_if(
+      graph_dumps_.begin(), graph_dumps_.end(),
+      [graph_dump](const std::unique_ptr<WebUIGraphDumpImpl>& graph_dump_ptr) {
+        return graph_dump_ptr.get() == graph_dump;
+      });
+
+  DCHECK(it != graph_dumps_.end());
+
+  graph_dumps_.erase(it);
 }
 
 }  // namespace resource_coordinator

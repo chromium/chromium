@@ -620,7 +620,7 @@ TEST(CivilTime, Relational) {
   TEST_RELATIONAL(civil_second(2014, 1, 1, 1, 1, 0),
                   civil_second(2014, 1, 1, 1, 1, 1));
 
-  // Tests the relational operators of two different CivilTime types.
+  // Tests the relational operators of two different civil-time types.
   TEST_RELATIONAL(civil_day(2014, 1, 1), civil_minute(2014, 1, 1, 1, 1));
   TEST_RELATIONAL(civil_day(2014, 1, 1), civil_month(2014, 2));
 

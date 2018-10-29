@@ -285,9 +285,14 @@ void SkiaBenchmarking::GetOpTimings(gin::Arguments* args) {
   }
 
   v8::Local<v8::Object> result = v8::Object::New(isolate);
-  result->Set(v8::String::NewFromUtf8(isolate, "total_time"),
+  result->Set(v8::String::NewFromUtf8(isolate, "total_time",
+                                      v8::NewStringType::kInternalized)
+                  .ToLocalChecked(),
               v8::Number::New(isolate, total_time.InMillisecondsF()));
-  result->Set(v8::String::NewFromUtf8(isolate, "cmd_times"), op_times);
+  result->Set(v8::String::NewFromUtf8(isolate, "cmd_times",
+                                      v8::NewStringType::kInternalized)
+                  .ToLocalChecked(),
+              op_times);
 
   args->Return(result);
 }
@@ -303,9 +308,13 @@ void SkiaBenchmarking::GetInfo(gin::Arguments* args) {
     return;
 
   v8::Local<v8::Object> result = v8::Object::New(isolate);
-  result->Set(v8::String::NewFromUtf8(isolate, "width"),
+  result->Set(v8::String::NewFromUtf8(isolate, "width",
+                                      v8::NewStringType::kInternalized)
+                  .ToLocalChecked(),
               v8::Number::New(isolate, picture->layer_rect.width()));
-  result->Set(v8::String::NewFromUtf8(isolate, "height"),
+  result->Set(v8::String::NewFromUtf8(isolate, "height",
+                                      v8::NewStringType::kInternalized)
+                  .ToLocalChecked(),
               v8::Number::New(isolate, picture->layer_rect.height()));
 
   args->Return(result);

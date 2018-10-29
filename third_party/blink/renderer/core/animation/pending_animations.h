@@ -66,8 +66,26 @@ class CORE_EXPORT PendingAnimations final
         compositor_group_(1) {}
 
   void Add(Animation*);
-  // Returns whether we are waiting for an animation to start and should
-  // service again on the next frame.
+
+  // Attempts to start/update pending composited and non-composited animations.
+  // At the end of this process all pending animations will fall into one of the
+  // following buckets:
+  // - pending: already composited animations that cannot be restarted this
+  //   cycle and are deferred to be tried next cycle.
+  // - started on compositor: animations that could be composited and are
+  //   successfully started on compositor.
+  // - waiting on start time: animations whose start time needs to be
+  //   synchronized with compositor. These may include non-composited
+  //   animations.
+  // - notified of start time: animations whose start time does not need to be
+  //   synchronized with compositor and thus can be immediately notified.
+  // - ignored: animations that are not started and don't need to be notified
+  //   are simply ignored. This allows the rest of animation machinery to add
+  //   animations to the pending list eagerly knowing that the logic here
+  //   ignores them if no action needs to be taken.
+  //
+  // Returns whether we are waiting for an animation to start and should service
+  // again on the next frame.
   bool Update(const base::Optional<CompositorElementIdSet>&,
               bool start_on_compositor = true);
   void NotifyCompositorAnimationStarted(double monotonic_animation_start_time,
@@ -79,6 +97,7 @@ class CORE_EXPORT PendingAnimations final
   void TimerFired(TimerBase*) {
     Update(base::Optional<CompositorElementIdSet>(), false);
   }
+  int NextCompositorGroup();
 
   HeapVector<Member<Animation>> pending_;
   HeapVector<Member<Animation>> waiting_for_compositor_animation_start_;

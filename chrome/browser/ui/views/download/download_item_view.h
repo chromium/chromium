@@ -53,7 +53,6 @@ namespace views {
 class ImageButton;
 class Label;
 class MdTextButton;
-class ViewHierarchyChangedDetails;
 }
 
 // Represents a single download item on the download shelf. Encompasses an icon,
@@ -64,7 +63,7 @@ class DownloadItemView : public views::InkDropHostView,
                          public DownloadUIModel::Observer,
                          public gfx::AnimationDelegate {
  public:
-  DownloadItemView(std::unique_ptr<DownloadUIModel> download,
+  DownloadItemView(DownloadUIModel::DownloadUIModelPtr download,
                    DownloadShelfView* parent,
                    views::View* accessible_alert);
   ~DownloadItemView() override;
@@ -95,6 +94,7 @@ class DownloadItemView : public views::InkDropHostView,
 
   // views::View:
   void Layout() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   gfx::Size CalculatePreferredSize() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -104,17 +104,11 @@ class DownloadItemView : public views::InkDropHostView,
   bool GetTooltipText(const gfx::Point& p,
                       base::string16* tooltip) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
-  void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
 
   // view::InkDropHostView:
-  void AddInkDropLayer(ui::Layer* ink_drop_layer) override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   void OnInkDropCreated() override;
+  SkColor GetInkDropBaseColor() const override;
 
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -135,6 +129,8 @@ class DownloadItemView : public views::InkDropHostView,
   void OnPaint(gfx::Canvas* canvas) override;
   void OnFocus() override;
   void OnBlur() override;
+  void AddedToWidget() override;
+  void OnThemeChanged() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DownloadItemViewDangerousDownloadLabelTest,
@@ -309,8 +305,14 @@ class DownloadItemView : public views::InkDropHostView,
   // Returns a slightly dimmed version of the base text color.
   SkColor GetDimmedTextColor() const;
 
+  // Returns the status text to show in the notification.
+  base::string16 GetStatusText() const;
+
   // The download shelf that owns us.
   DownloadShelfView* shelf_;
+
+  // The focus ring for this Button.
+  std::unique_ptr<views::FocusRing> focus_ring_;
 
   // Elements of our particular download
   base::string16 status_text_;
@@ -351,7 +353,7 @@ class DownloadItemView : public views::InkDropHostView,
   base::CancelableTaskTracker cancelable_task_tracker_;
 
   // A model class to control the status text we display.
-  std::unique_ptr<DownloadUIModel> model_;
+  DownloadUIModel::DownloadUIModelPtr model_;
 
   // Animation for download complete.
   std::unique_ptr<gfx::SlideAnimation> complete_animation_;

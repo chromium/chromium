@@ -78,7 +78,6 @@
 #include "chrome/browser/net/url_request_mock_util.h"
 #include "chrome/browser/permissions/permission_request_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/cloud/test_request_interceptor.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -169,6 +168,7 @@
 #include "components/variations/variations_params_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/download_manager.h"
@@ -187,8 +187,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/service_manager_connection.h"
 #include "content/public/common/service_names.mojom.h"
@@ -203,6 +205,8 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/usb/mock_usb_device.h"
+#include "device/usb/mojo/type_converters.h"
 #include "extensions/browser/api/messaging/messaging_delegate.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -407,15 +411,15 @@ class MakeRequestFail {
   // Sets up the filter on IO thread such that requests to |host| fail.
   explicit MakeRequestFail(const std::string& host) : host_(host) {
     base::RunLoop run_loop;
-    BrowserThread::PostTaskAndReply(BrowserThread::IO, FROM_HERE,
-                                    base::BindOnce(MakeRequestFailOnIO, host_),
-                                    run_loop.QuitClosure());
+    base::PostTaskWithTraitsAndReply(FROM_HERE, {BrowserThread::IO},
+                                     base::BindOnce(MakeRequestFailOnIO, host_),
+                                     run_loop.QuitClosure());
     run_loop.Run();
   }
   ~MakeRequestFail() {
     base::RunLoop run_loop;
-    BrowserThread::PostTaskAndReply(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraitsAndReply(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(UndoMakeRequestFailOnIO, host_), run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -787,8 +791,8 @@ class PolicyTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(chrome_browser_net::SetUrlRequestMocksEnabled, true));
     if (extension_service()->updater()) {
       extension_service()->updater()->SetExtensionCacheForTesting(
@@ -828,8 +832,8 @@ class PolicyTest : public InProcessBrowserTest {
       return;
     }
 
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &net::TransportSecurityState::SetShouldRequireCTForTesting,
             required));
@@ -844,8 +848,8 @@ class PolicyTest : public InProcessBrowserTest {
     void OnScreenshotCompleted(
         ui::ScreenshotResult screenshot_result,
         const base::FilePath& screenshot_path) override {
-      BrowserThread::PostTaskAndReply(BrowserThread::IO, FROM_HERE,
-                                      base::DoNothing(), std::move(done_));
+      base::PostTaskWithTraitsAndReply(FROM_HERE, {BrowserThread::IO},
+                                       base::DoNothing(), std::move(done_));
     }
 
     ~QuitMessageLoopAfterScreenshot() override {}
@@ -1231,7 +1235,7 @@ IN_PROC_BROWSER_TEST_F(LocalePolicyTest, ApplicationLocaleValue) {
 #endif
 
 #if defined(OS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, PRE_AllowedUILocales) {
+IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, PRE_AllowedLanguages) {
   SkipToLoginScreen();
   LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
@@ -1248,13 +1252,13 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, PRE_AllowedUILocales) {
   // Set policy to only allow "fr" as locale.
   std::unique_ptr<base::DictionaryValue> policy =
       std::make_unique<base::DictionaryValue>();
-  base::ListValue allowed_ui_locales;
-  allowed_ui_locales.AppendString("fr");
-  policy->SetKey(key::kAllowedUILocales, std::move(allowed_ui_locales));
+  base::ListValue allowed_languages;
+  allowed_languages.AppendString("fr");
+  policy->SetKey(key::kAllowedLanguages, std::move(allowed_languages));
   user_policy_helper()->UpdatePolicy(*policy, base::DictionaryValue(), profile);
 }
 
-IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedUILocales) {
+IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedLanguages) {
   LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   const user_manager::User* const user =
@@ -1283,7 +1287,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedUILocales) {
 
   // Verifiy that the enforced locale is added into the list of
   // preferred languages.
-  EXPECT_EQ("en-US,fr", prefs->GetString(prefs::kLanguagePreferredLanguages));
+  EXPECT_EQ("fr", prefs->GetString(prefs::kLanguagePreferredLanguages));
 }
 
 IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
@@ -2507,9 +2511,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, ExtensionInstallForcelist) {
   extensions::ProcessManager* manager =
       extensions::ProcessManager::Get(browser()->profile());
   extensions::ProcessManager::FrameSet all_frames = manager->GetAllFrames();
-  for (extensions::ProcessManager::FrameSet::const_iterator iter =
-           all_frames.begin();
-       iter != all_frames.end();) {
+  for (auto iter = all_frames.begin(); iter != all_frames.end();) {
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(*iter);
     ASSERT_TRUE(web_contents);
@@ -3953,8 +3955,8 @@ class RestoreOnStartupPolicyTest
   }
 
   void SetUpOnMainThread() override {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(RedirectHostsToTestData, kRestoredURLs,
                        arraysize(kRestoredURLs)));
   }
@@ -4379,8 +4381,8 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
   ConfigurePolicyMap(&policies, key::kAudioCaptureAllowed, NULL, NULL);
   UpdateProviderPolicy(policies);
 
-  content::BrowserThread::PostTaskAndReply(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReply(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(
           &MediaCaptureDevicesDispatcher::SetTestAudioCaptureDevices,
           base::Unretained(MediaCaptureDevicesDispatcher::GetInstance()),
@@ -4412,8 +4414,8 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
                        key::kAudioCaptureAllowedUrls, allow_pattern[i]);
     UpdateProviderPolicy(policies);
 
-    content::BrowserThread::PostTaskAndReply(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraitsAndReply(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &MediaCaptureDevicesDispatcher::SetTestAudioCaptureDevices,
             base::Unretained(MediaCaptureDevicesDispatcher::GetInstance()),
@@ -4437,8 +4439,8 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
   ConfigurePolicyMap(&policies, key::kVideoCaptureAllowed, NULL, NULL);
   UpdateProviderPolicy(policies);
 
-  content::BrowserThread::PostTaskAndReply(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReply(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(
           &MediaCaptureDevicesDispatcher::SetTestVideoCaptureDevices,
           base::Unretained(MediaCaptureDevicesDispatcher::GetInstance()),
@@ -4470,8 +4472,8 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
                        key::kVideoCaptureAllowedUrls, allow_pattern[i]);
     UpdateProviderPolicy(policies);
 
-    content::BrowserThread::PostTaskAndReply(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraitsAndReply(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &MediaCaptureDevicesDispatcher::SetTestVideoCaptureDevices,
             base::Unretained(MediaCaptureDevicesDispatcher::GetInstance()),
@@ -4578,6 +4580,24 @@ IN_PROC_BROWSER_TEST_P(SSLPolicyTestCommittedInterstitials,
                std::move(disabled_urls), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlacklistPolicy();
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_ok.GetURL("/simple.html"));
+
+  // There should be no interstitial after the page loads.
+  EXPECT_FALSE(IsShowingInterstitial(tab));
+  EXPECT_EQ(base::UTF8ToUTF16("OK"),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+
+  // Now ensure that this setting still works after a network process crash.
+  if (!content::IsOutOfProcessNetworkService())
+    return;
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_ok.GetURL("/title1.html"));
+
+  SimulateNetworkServiceCrash();
+  SetShouldRequireCTForTesting(&required);
 
   ui_test_utils::NavigateToURL(browser(),
                                https_server_ok.GetURL("/simple.html"));
@@ -5370,8 +5390,8 @@ void ComponentUpdaterPolicyTest::UpdateComponent(
 }
 
 void ComponentUpdaterPolicyTest::CallAsync(TestCaseAction action) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(action, base::Unretained(this)));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(action, base::Unretained(this)));
 }
 
 void ComponentUpdaterPolicyTest::OnDemandComplete(update_client::Error error) {
@@ -6267,6 +6287,52 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbDefault) {
             std::make_unique<base::Value>(3));
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(context->CanRequestObjectPermission(kTestUrl, kTestUrl));
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbAllowDevicesForUrls) {
+  const GURL kTestUrl("https://foo.com:443");
+  scoped_refptr<device::UsbDevice> device =
+      base::MakeRefCounted<device::MockUsbDevice>(0, 0, "Google", "Gizmo",
+                                                  "123ABC");
+  auto device_info = device::mojom::UsbDeviceInfo::From(*device);
+
+  // Expect the default permission value to be empty.
+  auto* context = UsbChooserContextFactory::GetForProfile(browser()->profile());
+  EXPECT_FALSE(context->HasDevicePermission(kTestUrl, kTestUrl, *device_info));
+
+  // Update policy to add an entry to the permission value to allow |kTestUrl|
+  // to access the device described by |device_info|.
+  PolicyMap policies;
+
+  base::Value device_value(base::Value::Type::DICTIONARY);
+  device_value.SetKey("vendor_id", base::Value(0));
+  device_value.SetKey("product_id", base::Value(0));
+
+  base::Value devices_value(base::Value::Type::LIST);
+  devices_value.GetList().push_back(std::move(device_value));
+
+  base::Value url_patterns_value(base::Value::Type::LIST);
+  url_patterns_value.GetList().emplace_back(base::Value("https://[*.]foo.com"));
+
+  base::Value entry(base::Value::Type::DICTIONARY);
+  entry.SetKey("devices", std::move(devices_value));
+  entry.SetKey("url_patterns", std::move(url_patterns_value));
+
+  auto policy_value = std::make_unique<base::Value>(base::Value::Type::LIST);
+  policy_value->GetList().push_back(std::move(entry));
+
+  SetPolicy(&policies, key::kWebUsbAllowDevicesForUrls,
+            std::move(policy_value));
+  UpdateProviderPolicy(policies);
+
+  EXPECT_TRUE(context->HasDevicePermission(kTestUrl, kTestUrl, *device_info));
+
+  // Remove the policy to ensure that it can be dynamically updated.
+  SetPolicy(&policies, key::kWebUsbAllowDevicesForUrls,
+            std::make_unique<base::Value>(base::Value::Type::LIST));
+  UpdateProviderPolicy(policies);
+
+  EXPECT_FALSE(context->HasDevicePermission(kTestUrl, kTestUrl, *device_info));
 }
 
 // Similar to PolicyTest but sets the WebAppInstallForceList policy before the

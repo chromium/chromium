@@ -28,6 +28,7 @@
 #include "net/third_party/quic/core/quic_packets.h"
 #include "net/third_party/quic/core/quic_socket_address_coder.h"
 #include "net/third_party/quic/core/quic_time.h"
+#include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/platform/api/quic_string_piece.h"
 
 using std::string;
@@ -141,8 +142,7 @@ std::unique_ptr<base::Value> NetLogQuicAckFrameCallback(
 
   auto received = std::make_unique<base::ListValue>();
   const quic::PacketTimeVector& received_times = frame->received_packet_times;
-  for (quic::PacketTimeVector::const_iterator it = received_times.begin();
-       it != received_times.end(); ++it) {
+  for (auto it = received_times.begin(); it != received_times.end(); ++it) {
     auto info = std::make_unique<base::DictionaryValue>();
     info->SetInteger("packet_number", static_cast<int>(it->first));
     info->SetString("received",
@@ -215,9 +215,7 @@ std::unique_ptr<base::Value> NetLogQuicVersionNegotiationPacketCallback(
     NetLogCaptureMode /* capture_mode */) {
   auto dict = std::make_unique<base::DictionaryValue>();
   auto versions = std::make_unique<base::ListValue>();
-  for (quic::ParsedQuicVersionVector::const_iterator it =
-           packet->versions.begin();
-       it != packet->versions.end(); ++it) {
+  for (auto it = packet->versions.begin(); it != packet->versions.end(); ++it) {
     versions->AppendString(ParsedQuicVersionToString(*it));
   }
   dict->Set("versions", std::move(versions));
@@ -753,7 +751,8 @@ void QuicConnectionLogger::UpdateReceivedFrameCounts(
     quic::QuicStreamId stream_id,
     int num_frames_received,
     int num_duplicate_frames_received) {
-  if (stream_id != quic::kCryptoStreamId) {
+  if (stream_id != quic::QuicUtils::GetCryptoStreamId(
+                       session_->connection()->transport_version())) {
     num_frames_received_ += num_frames_received;
     num_duplicate_frames_received_ += num_duplicate_frames_received;
   }

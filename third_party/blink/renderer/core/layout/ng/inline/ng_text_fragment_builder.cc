@@ -11,30 +11,6 @@
 
 namespace blink {
 
-namespace {
-
-NGLineOrientation ToLineOrientation(WritingMode writing_mode) {
-  switch (writing_mode) {
-    case WritingMode::kHorizontalTb:
-      return NGLineOrientation::kHorizontal;
-    case WritingMode::kVerticalRl:
-    case WritingMode::kVerticalLr:
-    case WritingMode::kSidewaysRl:
-      return NGLineOrientation::kClockWiseVertical;
-    case WritingMode::kSidewaysLr:
-      return NGLineOrientation::kCounterClockWiseVertical;
-  }
-  NOTREACHED();
-  return NGLineOrientation::kHorizontal;
-}
-
-}  // namespace
-
-NGTextFragmentBuilder::NGTextFragmentBuilder(NGInlineNode node,
-                                             WritingMode writing_mode)
-    : NGBaseFragmentBuilder(writing_mode, TextDirection::kLtr),
-      inline_node_(node) {}
-
 void NGTextFragmentBuilder::SetItem(
     NGPhysicalTextFragment::NGTextType text_type,
     const NGInlineItemsData& items_data,
@@ -84,11 +60,7 @@ void NGTextFragmentBuilder::SetText(
 scoped_refptr<const NGPhysicalTextFragment>
 NGTextFragmentBuilder::ToTextFragment() {
   scoped_refptr<const NGPhysicalTextFragment> fragment =
-      base::AdoptRef(new NGPhysicalTextFragment(
-          layout_object_, Style(), style_variant_, text_type_, text_,
-          start_offset_, end_offset_, size_.ConvertToPhysical(GetWritingMode()),
-          ToLineOrientation(GetWritingMode()), end_effect_,
-          std::move(shape_result_)));
+      base::AdoptRef(new NGPhysicalTextFragment(this));
   return fragment;
 }
 

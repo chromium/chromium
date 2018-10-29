@@ -16,7 +16,7 @@ bool ParsePath(const char* input, String& output) {
   String input_string(input);
   SVGPathStringSource source(input_string);
   SVGPathStringBuilder builder;
-  bool had_error = SVGPathParser::ParsePath(source, builder);
+  bool had_error = svg_path_parser::ParsePath(source, builder);
   output = builder.Result();
   // Coerce a null result to empty.
   if (output.IsNull())
@@ -160,7 +160,7 @@ SVGParsingError ParsePathWithError(const char* input) {
   String input_string(input);
   SVGPathStringSource source(input_string);
   SVGPathStringBuilder builder;
-  SVGPathParser::ParsePath(source, builder);
+  svg_path_parser::ParsePath(source, builder);
   return source.ParseError();
 }
 

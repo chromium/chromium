@@ -13,7 +13,6 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/tray/system_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -33,7 +32,6 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "services/service_manager/public/cpp/connector.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
 
@@ -84,8 +82,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   gfx::Rect GetWebContentsBounds() const {
     // TODO(katie): Find a way to get the exact bounds programmatically.
     gfx::Rect bounds = browser()->window()->GetBounds();
-    const int top_inset = ui::MaterialDesignController::IsRefreshUi() ? 75 : 50;
-    bounds.Inset(8, 8, top_inset, 8);
+    bounds.Inset(8, 8, 75, 8);
     return bounds;
   }
 
@@ -160,14 +157,11 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {
-  gfx::Rect tray_bounds =
-      ash::features::IsSystemTrayUnifiedEnabled()
-          ? ash::Shell::Get()
-                ->GetPrimaryRootWindowController()
-                ->GetStatusAreaWidget()
-                ->unified_system_tray()
-                ->GetBoundsInScreen()
-          : ash::Shell::Get()->GetPrimarySystemTray()->GetBoundsInScreen();
+  gfx::Rect tray_bounds = ash::Shell::Get()
+                              ->GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->unified_system_tray()
+                              ->GetBoundsInScreen();
 
   // Hold down Search and click a few pixels into the status tray bounds.
   generator_->PressKey(ui::VKEY_LWIN, 0 /* flags */);

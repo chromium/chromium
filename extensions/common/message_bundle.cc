@@ -69,8 +69,7 @@ bool MessageBundle::Init(const CatalogVector& locale_catalogs,
                          std::string* error) {
   dictionary_.clear();
 
-  for (CatalogVector::const_reverse_iterator it = locale_catalogs.rbegin();
-       it != locale_catalogs.rend(); ++it) {
+  for (auto it = locale_catalogs.rbegin(); it != locale_catalogs.rend(); ++it) {
     base::DictionaryValue* catalog = (*it).get();
     for (base::DictionaryValue::Iterator message_it(*catalog);
          !message_it.IsAtEnd(); message_it.Advance()) {
@@ -113,7 +112,7 @@ bool MessageBundle::AppendReservedMessagesForLocale(
   }
 
   // Add all reserved messages to the dictionary, but check for collisions.
-  SubstitutionMap::iterator it = append_messages.begin();
+  auto it = append_messages.begin();
   for (; it != append_messages.end(); ++it) {
     if (base::ContainsKey(dictionary_, it->first)) {
       *error = ErrorUtils::FormatErrorMessage(
@@ -330,8 +329,7 @@ ExtensionToL10nMessagesMap* GetExtensionToL10nMessagesMap() {
 }
 
 L10nMessagesMap* GetL10nMessagesMap(const std::string& extension_id) {
-  ExtensionToL10nMessagesMap::iterator it =
-      g_extension_to_messages_map.Get().messages_map.find(extension_id);
+  auto it = g_extension_to_messages_map.Get().messages_map.find(extension_id);
   if (it != g_extension_to_messages_map.Get().messages_map.end())
     return &(it->second);
 

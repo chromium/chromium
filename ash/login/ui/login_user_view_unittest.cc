@@ -23,8 +23,8 @@ class LoginUserViewUnittest : public LoginTestBase {
 
   // Builds a new LoginUserView instance and adds it to |container_|.
   LoginUserView* AddUserView(LoginDisplayStyle display_style,
-                             bool show_dropdown) {
-    // TODO(crbug.com/809635): Add test case for show_domain.
+                             bool show_dropdown,
+                             bool public_account) {
     LoginUserView::OnRemoveWarningShown on_remove_warning_shown;
     LoginUserView::OnRemove on_remove;
     if (show_dropdown) {
@@ -35,11 +35,14 @@ class LoginUserViewUnittest : public LoginTestBase {
     }
 
     auto* view =
-        new LoginUserView(display_style, show_dropdown, false /*show_domain*/,
+        new LoginUserView(display_style, show_dropdown, public_account,
                           base::BindRepeating(&LoginUserViewUnittest::OnTapped,
                                               base::Unretained(this)),
                           on_remove_warning_shown, on_remove);
-    mojom::LoginUserInfoPtr user = CreateUser("foo@foo.com");
+
+    std::string email = "foo@foo.com";
+    mojom::LoginUserInfoPtr user =
+        public_account ? CreatePublicAccountUser(email) : CreateUser(email);
     view->UpdateForUser(user, false /*animate*/);
     container_->AddChildView(view);
     widget()->GetContentsView()->Layout();
@@ -79,10 +82,15 @@ class LoginUserViewUnittest : public LoginTestBase {
 
 // Verifies that the user view does not change width for short/long usernames.
 TEST_F(LoginUserViewUnittest, DifferentUsernamesHaveSameWidth) {
-  LoginUserView* large = AddUserView(LoginDisplayStyle::kLarge, false);
-  LoginUserView* small = AddUserView(LoginDisplayStyle::kSmall, false);
+  LoginUserView* large =
+      AddUserView(LoginDisplayStyle::kLarge, false /*show_dropdown*/,
+                  false /*public_account*/);
+  LoginUserView* small =
+      AddUserView(LoginDisplayStyle::kSmall, false /*show_dropdown*/,
+                  false /*public_account*/);
   LoginUserView* extra_small =
-      AddUserView(LoginDisplayStyle::kExtraSmall, false);
+      AddUserView(LoginDisplayStyle::kExtraSmall, false /*show_dropdown*/,
+                  false /*public_account*/);
 
   int large_width = large->size().width();
   int small_width = small->size().width();
@@ -107,10 +115,15 @@ TEST_F(LoginUserViewUnittest, DifferentUsernamesHaveSameWidth) {
 // Verifies that the user views all have different sizes with different display
 // styles.
 TEST_F(LoginUserViewUnittest, DifferentStylesHaveDifferentSizes) {
-  LoginUserView* large = AddUserView(LoginDisplayStyle::kLarge, false);
-  LoginUserView* small = AddUserView(LoginDisplayStyle::kSmall, false);
+  LoginUserView* large =
+      AddUserView(LoginDisplayStyle::kLarge, false /*show_dropdown*/,
+                  false /*public_account*/);
+  LoginUserView* small =
+      AddUserView(LoginDisplayStyle::kSmall, false /*show_dropdown*/,
+                  false /*public_account*/);
   LoginUserView* extra_small =
-      AddUserView(LoginDisplayStyle::kExtraSmall, false);
+      AddUserView(LoginDisplayStyle::kExtraSmall, false /*show_dropdown*/,
+                  false /*public_account*/);
 
   EXPECT_NE(large->size(), gfx::Size());
   EXPECT_NE(large->size(), small->size());
@@ -121,8 +134,12 @@ TEST_F(LoginUserViewUnittest, DifferentStylesHaveDifferentSizes) {
 // Verifies that displaying the dropdown does not change the view size. Further,
 // the dropdown should not change the centering for the user label.
 TEST_F(LoginUserViewUnittest, DropdownDoesNotChangeSize) {
-  LoginUserView* with = AddUserView(LoginDisplayStyle::kLarge, true);
-  LoginUserView* without = AddUserView(LoginDisplayStyle::kLarge, false);
+  LoginUserView* with =
+      AddUserView(LoginDisplayStyle::kLarge, true /*show_dropdown*/,
+                  false /*public_account*/);
+  LoginUserView* without =
+      AddUserView(LoginDisplayStyle::kLarge, false /*show_dropdown*/,
+                  false /*public_account*/);
   EXPECT_NE(with->size(), gfx::Size());
   EXPECT_EQ(with->size(), without->size());
 
@@ -138,7 +155,9 @@ TEST_F(LoginUserViewUnittest, DropdownDoesNotChangeSize) {
 // Verifies that the entire user view is a tap target, and not just (for
 // example) the user icon.
 TEST_F(LoginUserViewUnittest, EntireViewIsTapTarget) {
-  LoginUserView* view = AddUserView(LoginDisplayStyle::kSmall, false);
+  LoginUserView* view =
+      AddUserView(LoginDisplayStyle::kSmall, false /*show_dropdown*/,
+                  false /*public_account*/);
   EXPECT_NE(view->size(), gfx::Size());
 
   // Returns true if there is a tap at |point| offset by |dx|, |dy|.
@@ -165,8 +184,12 @@ TEST_F(LoginUserViewUnittest, EntireViewIsTapTarget) {
 // Verifies the focused user view is opaque. Verifies that a hovered view is
 // opaque. Verifies the interaction between focus and hovered opaqueness.
 TEST_F(LoginUserViewUnittest, FocusHoverOpaqueInteractions) {
-  LoginUserView* one = AddUserView(LoginDisplayStyle::kSmall, false);
-  LoginUserView* two = AddUserView(LoginDisplayStyle::kSmall, false);
+  LoginUserView* one =
+      AddUserView(LoginDisplayStyle::kSmall, false /*show_dropdown*/,
+                  false /*public_account*/);
+  LoginUserView* two =
+      AddUserView(LoginDisplayStyle::kSmall, false /*show_dropdown*/,
+                  false /*public_account*/);
   LoginUserView::TestApi one_test(one);
   LoginUserView::TestApi two_test(two);
 
@@ -207,8 +230,12 @@ TEST_F(LoginUserViewUnittest, FocusHoverOpaqueInteractions) {
 // focus, and that a forced opaque element can transition to both
 // opaque/transparent when losing forced opaque.
 TEST_F(LoginUserViewUnittest, ForcedOpaque) {
-  LoginUserView* one = AddUserView(LoginDisplayStyle::kSmall, false);
-  LoginUserView* two = AddUserView(LoginDisplayStyle::kSmall, false);
+  LoginUserView* one =
+      AddUserView(LoginDisplayStyle::kSmall, false /*show_dropdown*/,
+                  false /*public_account*/);
+  LoginUserView* two =
+      AddUserView(LoginDisplayStyle::kSmall, false /*show_dropdown*/,
+                  false /*public_account*/);
   LoginUserView::TestApi one_test(one);
   LoginUserView::TestApi two_test(two);
 
@@ -248,7 +275,9 @@ TEST_F(LoginUserViewUnittest, ForcedOpaque) {
 // Verifies that a long user name does not push the label or dropdown button
 // outside of the LoginUserView bounds.
 TEST_F(LoginUserViewUnittest, ElideUserLabel) {
-  LoginUserView* view = AddUserView(LoginDisplayStyle::kLarge, true);
+  LoginUserView* view =
+      AddUserView(LoginDisplayStyle::kLarge, true /*show_dropdown*/,
+                  false /*public_account*/);
   LoginUserView::TestApi view_test(view);
 
   mojom::LoginUserInfoPtr user =
@@ -260,6 +289,25 @@ TEST_F(LoginUserViewUnittest, ElideUserLabel) {
       view_test.user_label()->GetVisibleBounds()));
   EXPECT_TRUE(view->GetVisibleBounds().Contains(
       view_test.dropdown()->GetVisibleBounds()));
+}
+
+// Verifies that displaying the domain does not change the view width.
+// Also domain should have the same horizontal centering as user label.
+TEST_F(LoginUserViewUnittest, DomainDoesNotChangeWidth) {
+  LoginUserView* public_account =
+      AddUserView(LoginDisplayStyle::kLarge, false /*show_dropdown*/,
+                  true /*public_account*/);
+  LoginUserView* regular_user =
+      AddUserView(LoginDisplayStyle::kLarge, false /*show_dropdown*/,
+                  false /*public_account*/);
+  EXPECT_NE(regular_user->size().width(), 0);
+  EXPECT_EQ(regular_user->size().width(), public_account->size().width());
+
+  views::View* user_label = LoginUserView::TestApi(public_account).user_label();
+  views::View* user_domain =
+      LoginUserView::TestApi(public_account).user_label();
+  EXPECT_EQ(user_label->GetBoundsInScreen().CenterPoint().x(),
+            user_domain->GetBoundsInScreen().CenterPoint().x());
 }
 
 }  // namespace ash

@@ -2,7 +2,6 @@ Tests the name of the event parameter for inline event attributes
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS type is "object"
 PASS type is "undefined"
 PASS type is "undefined"

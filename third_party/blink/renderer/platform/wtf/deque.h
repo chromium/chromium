@@ -150,10 +150,9 @@ class Deque {
   static_assert(!std::is_polymorphic<T>::value ||
                     !VectorTraits<T>::kCanInitializeWithMemset,
                 "Cannot initialize with memset if there is a vtable");
-  static_assert(Allocator::kIsGarbageCollected ||
-                    !AllowsOnlyPlacementNew<T>::value ||
+  static_assert(Allocator::kIsGarbageCollected || !IsDisallowNew<T>::value ||
                     !IsTraceable<T>::value,
-                "Cannot put DISALLOW_NEW_EXCEPT_PLACEMENT_NEW objects that "
+                "Cannot put DISALLOW_NEW objects that "
                 "have trace methods into an off-heap Deque");
   static_assert(Allocator::kIsGarbageCollected ||
                     !IsPointerToGarbageCollectedType<T>::value,

@@ -15,10 +15,7 @@
 #include "ui/aura/window.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event.h"
-#include "ui/views/pointer_watcher.h"
 #include "ui/views/widget/widget.h"
-
-using views::PointerWatcher;
 
 namespace ash {
 namespace {
@@ -75,10 +72,6 @@ void PointerMetricsRecorderTest::CreateDownEvent(
     ui::EventPointerType pointer_type,
     DownEventFormFactor form_factor,
     AppType destination) {
-  const ui::PointerEvent pointer_event(
-      ui::ET_POINTER_DOWN, gfx::Point(), gfx::Point(), 0, 0,
-      ui::PointerDetails(pointer_type, 0), base::TimeTicks());
-
   aura::Window* window = widget_->GetNativeWindow();
   CHECK(window);
   window->SetProperty(aura::client::kAppType, static_cast<int>(destination));
@@ -99,8 +92,19 @@ void PointerMetricsRecorderTest::CreateDownEvent(
     test_api.SetDisplayRotation(rotation,
                                 display::Display::RotationSource::ACTIVE);
   }
-  pointer_metrics_recorder_->OnPointerEventObserved(pointer_event, gfx::Point(),
-                                                    window);
+  if (pointer_type == ui::EventPointerType::POINTER_TYPE_MOUSE) {
+    ui::MouseEvent mouse_down(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                              base::TimeTicks(), 0, 0);
+    ui::Event::DispatcherApi(&mouse_down).set_target(window);
+    pointer_metrics_recorder_->OnMouseEvent(&mouse_down);
+  } else {
+    // Pen and eraser events are touch events.
+    ui::TouchEvent touch_down(ui::ET_TOUCH_PRESSED, gfx::Point(),
+                              base::TimeTicks(),
+                              ui::PointerDetails(pointer_type, 0));
+    ui::Event::DispatcherApi(&touch_down).set_target(window);
+    pointer_metrics_recorder_->OnTouchEvent(&touch_down);
+  }
 }
 
 }  // namespace
@@ -108,12 +112,9 @@ void PointerMetricsRecorderTest::CreateDownEvent(
 // Verifies that histogram is not recorded when receiving events that are not
 // down events.
 TEST_F(PointerMetricsRecorderTest, NonDownEventsInAllPointerHistogram) {
-  const ui::PointerEvent pointer_event(
-      ui::ET_POINTER_UP, gfx::Point(), gfx::Point(), 0, 0,
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_MOUSE, 0),
-      base::TimeTicks());
-  pointer_metrics_recorder_->OnPointerEventObserved(pointer_event, gfx::Point(),
-                                                    widget_->GetNativeView());
+  ui::MouseEvent mouse_up(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                          base::TimeTicks(), 0, 0);
+  pointer_metrics_recorder_->OnMouseEvent(&mouse_up);
 
   histogram_tester_->ExpectTotalCount(kCombinationHistogramName, 0);
 }
@@ -125,80 +126,6 @@ TEST_F(PointerMetricsRecorderTest, DownEventPerCombination) {
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kClamshell, AppType::OTHERS);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownClamshellOthers), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kClamshell, AppType::BROWSER);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownClamshellBrowser), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kClamshell, AppType::CHROME_APP);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownClamshellChromeApp), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kClamshell, AppType::ARC_APP);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownClamshellArcApp), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kTabletModeLandscape, AppType::OTHERS);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownTabletLandscapeOthers), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kTabletModeLandscape, AppType::BROWSER);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownTabletLandscapeBrowser), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kTabletModeLandscape,
-                  AppType::CHROME_APP);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownTabletLandscapeChromeApp), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kTabletModeLandscape, AppType::ARC_APP);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownTabletLandscapeArcApp), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kTabletModePortrait, AppType::OTHERS);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownTabletPortraitOthers), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kTabletModePortrait, AppType::BROWSER);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownTabletPortraitBrowser), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kTabletModePortrait,
-                  AppType::CHROME_APP);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownTabletPortraitChromeApp), 1);
-
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_UNKNOWN,
-                  DownEventFormFactor::kTabletModePortrait, AppType::ARC_APP);
-  histogram_tester_->ExpectBucketCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kUnknownTabletPortraitArcApp), 1);
 
   CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
                   DownEventFormFactor::kClamshell, AppType::OTHERS);
@@ -422,9 +349,7 @@ TEST_F(PointerMetricsRecorderTest, DownEventPerCombination) {
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric::kStylusTabletPortraitArcApp), 1);
 
-  histogram_tester_->ExpectTotalCount(
-      kCombinationHistogramName,
-      static_cast<int>(DownEventMetric::kCombinationCount));
+  histogram_tester_->ExpectTotalCount(kCombinationHistogramName, 36);
 }
 
 }  // namespace ash

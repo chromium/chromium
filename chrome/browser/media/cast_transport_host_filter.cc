@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/cast_messages.h"
 #include "components/net_log/chrome_net_log.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/service_manager_connection.h"
 #include "media/cast/net/cast_transport.h"
@@ -410,8 +412,8 @@ device::mojom::WakeLock* CastTransportHostFilter::GetWakeLock() {
 
   service_manager::mojom::ConnectorRequest connector_request;
   auto connector = service_manager::Connector::Create(&connector_request);
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&CastBindConnectorRequest, std::move(connector_request)));
 
   device::mojom::WakeLockProviderPtr wake_lock_provider;

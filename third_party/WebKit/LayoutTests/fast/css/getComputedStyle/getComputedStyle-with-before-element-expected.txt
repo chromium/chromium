@@ -2,7 +2,6 @@ Check getComputedStyle for ::before with various combinations of display and con
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS computed.color is 'rgb(0, 128, 0)'
 PASS computed.display is 'inline'
 PASS computed.color is 'rgb(0, 128, 0)'

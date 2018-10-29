@@ -3,6 +3,7 @@ Test for http://crbug.com/240722. If the mouse cursor is not visible, no new hov
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Adding the red and blue divs.
 PASS blueDiv.offsetTop is 200
 PASS redDiv.offsetTop is 50
@@ -24,4 +25,3 @@ PASS blueDiv.innerHTML is ""
 Mouse is invisible, deleting the red div.
 PASS blueDiv.offsetTop is 50
 PASS blueText is "none"
-

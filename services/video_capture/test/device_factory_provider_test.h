@@ -11,6 +11,8 @@
 
 namespace video_capture {
 
+class MockProducer;
+
 // Basic test fixture that sets up a connection to the fake device factory.
 class DeviceFactoryProviderTest : public service_manager::test::ServiceTest {
  public:
@@ -20,6 +22,20 @@ class DeviceFactoryProviderTest : public service_manager::test::ServiceTest {
   void SetUp() override;
 
  protected:
+  struct SharedMemoryVirtualDeviceContext {
+    SharedMemoryVirtualDeviceContext(mojom::ProducerRequest producer_request);
+    ~SharedMemoryVirtualDeviceContext();
+
+    std::unique_ptr<MockProducer> mock_producer;
+    mojom::SharedMemoryVirtualDevicePtr device;
+  };
+
+  std::unique_ptr<SharedMemoryVirtualDeviceContext>
+  AddSharedMemoryVirtualDevice(const std::string& device_id);
+
+  mojom::TextureVirtualDevicePtr AddTextureVirtualDevice(
+      const std::string& device_id);
+
   mojom::DeviceFactoryProviderPtr factory_provider_;
   mojom::DeviceFactoryPtr factory_;
   base::MockCallback<mojom::DeviceFactory::GetDeviceInfosCallback>

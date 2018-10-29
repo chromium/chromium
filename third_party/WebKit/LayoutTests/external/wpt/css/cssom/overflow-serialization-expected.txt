@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL CSSOM - Overflow shorthand serialization assert_equals: Overflow-x/y longhands with different keywords should serialize correctly. expected "overflow: hidden scroll;" but got "overflow: scroll hidden;"
-Harness: the test ran to completion.
-

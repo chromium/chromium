@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
 
+#include "services/network/public/mojom/cors.mojom-shared.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -37,10 +38,12 @@ namespace blink {
 OriginAccessEntry::OriginAccessEntry(
     const String& protocol,
     const String& host,
-    network::cors::OriginAccessEntry::MatchMode match_mode)
+    network::cors::OriginAccessEntry::MatchMode match_mode,
+    network::mojom::CORSOriginAccessMatchPriority priority)
     : private_(std::string(protocol.Utf8().data()),
                std::string(host.Utf8().data()),
-               match_mode) {}
+               match_mode,
+               priority) {}
 
 OriginAccessEntry::OriginAccessEntry(OriginAccessEntry&& from) = default;
 

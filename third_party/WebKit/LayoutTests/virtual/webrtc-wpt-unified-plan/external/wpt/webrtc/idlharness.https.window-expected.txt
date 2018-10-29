@@ -321,7 +321,9 @@ FAIL RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit prope
 FAIL RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit property "getRemoteCertificates()" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit property "onstatechange" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit property "onerror" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL RTCIceTransport interface: existence and properties of interface object assert_throws: interface object didn't throw TypeError when called as a constructor function "function () { [native code] }" did not throw
+FAIL RTCIceTransport interface: existence and properties of interface object assert_throws: interface object didn't throw TypeError when called as a constructor function "function() {
+                new interface_object();
+            }" did not throw
 PASS RTCIceTransport interface object length
 PASS RTCIceTransport interface object name
 PASS RTCIceTransport interface: existence and properties of interface prototype object
@@ -338,7 +340,7 @@ PASS RTCIceTransport interface: operation getLocalParameters()
 PASS RTCIceTransport interface: operation getRemoteParameters()
 PASS RTCIceTransport interface: attribute onstatechange
 PASS RTCIceTransport interface: attribute ongatheringstatechange
-FAIL RTCIceTransport interface: attribute onselectedcandidatepairchange assert_true: The prototype object must have a property "onselectedcandidatepairchange" expected true got false
+PASS RTCIceTransport interface: attribute onselectedcandidatepairchange
 FAIL RTCIceTransport must be primary interface of idlTestObjects.iceTransport assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL Stringification of idlTestObjects.iceTransport assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL RTCIceTransport interface: idlTestObjects.iceTransport must inherit property "role" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"

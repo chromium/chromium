@@ -113,7 +113,10 @@ class AppLauncherTabHelperTest : public PlatformTest {
                                             delegate_);
     // Allow is the default policy for this test.
     abuse_detector_.policy = ExternalAppLaunchPolicyAllow;
-    web_state_.SetNavigationManager(std::make_unique<FakeNavigationManager>());
+    auto navigation_manager = std::make_unique<FakeNavigationManager>();
+    navigation_manager_ = navigation_manager.get();
+    web_state_.SetNavigationManager(std::move(navigation_manager));
+    web_state_.SetCurrentURL(GURL("https://chromium.org"));
     tab_helper_ = AppLauncherTabHelper::FromWebState(&web_state_);
   }
 
@@ -122,8 +125,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
                               bool has_user_gesture) WARN_UNUSED_RESULT {
     NSURL* url = [NSURL URLWithString:url_string];
     web::WebStatePolicyDecider::RequestInfo request_info(
-        ui::PageTransition::PAGE_TRANSITION_LINK,
-        /*source_url=*/GURL::EmptyGURL(), target_frame_is_main,
+        ui::PageTransition::PAGE_TRANSITION_LINK, target_frame_is_main,
         has_user_gesture);
     return tab_helper_->ShouldAllowRequest([NSURLRequest requestWithURL:url],
                                            request_info);
@@ -135,7 +137,8 @@ class AppLauncherTabHelperTest : public PlatformTest {
     chrome_browser_state_ = test_cbs_builder.Build();
     web_state_.SetBrowserState(chrome_browser_state_.get());
     ReadingListModelFactory::GetInstance()->SetTestingFactoryAndUse(
-        chrome_browser_state_.get(), &BuildReadingListModel);
+        chrome_browser_state_.get(),
+        base::BindRepeating(&BuildReadingListModel));
     TabIdTabHelper::CreateForWebState(&web_state_);
     LegacyTabHelper::CreateForWebState(&web_state_);
     is_reading_list_initialized_ = true;
@@ -150,12 +153,17 @@ class AppLauncherTabHelperTest : public PlatformTest {
     if (!is_reading_list_initialized_)
       InitializeReadingListModel();
 
-    GURL test_source_url("http://google.com");
+    web_state_.SetCurrentURL(GURL("https://chromium.org"));
+    GURL pending_url("http://google.com");
+    navigation_manager_->AddItem(pending_url, ui::PAGE_TRANSITION_LINK);
+    web::NavigationItem* item = navigation_manager_->GetItemAtIndex(0);
+    navigation_manager_->SetPendingItem(item);
+    item->SetOriginalRequestURL(pending_url);
+
     ReadingListModel* model = ReadingListModelFactory::GetForBrowserState(
         chrome_browser_state_.get());
     EXPECT_TRUE(model->DeleteAllEntries());
-    model->AddEntry(test_source_url, "unread",
-                    reading_list::ADDED_VIA_CURRENT_APP);
+    model->AddEntry(pending_url, "unread", reading_list::ADDED_VIA_CURRENT_APP);
     abuse_detector_.policy = is_app_blocked ? ExternalAppLaunchPolicyBlock
                                             : ExternalAppLaunchPolicyAllow;
     ui::PageTransition transition_type =
@@ -166,17 +174,19 @@ class AppLauncherTabHelperTest : public PlatformTest {
     NSURL* url = [NSURL
         URLWithString:@"itms-apps://itunes.apple.com/us/app/appname/id123"];
     web::WebStatePolicyDecider::RequestInfo request_info(
-        transition_type, test_source_url,
+        transition_type,
         /*target_frame_is_main=*/true, /*has_user_gesture=*/true);
     EXPECT_FALSE(tab_helper_->ShouldAllowRequest(
         [NSURLRequest requestWithURL:url], request_info));
 
-    const ReadingListEntry* entry = model->GetEntryByURL(test_source_url);
+    const ReadingListEntry* entry = model->GetEntryByURL(pending_url);
     return entry->IsRead() == expected_read_status;
   }
 
   base::test::ScopedTaskEnvironment scoped_task_environment;
   web::TestWebState web_state_;
+  FakeNavigationManager* navigation_manager_ = nullptr;
+
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_ = nil;
   FakeAppLauncherAbuseDetector* abuse_detector_ = nil;
   FakeAppLauncherTabHelperDelegate* delegate_ = nil;
@@ -267,6 +277,9 @@ TEST_F(AppLauncherTabHelperTest, ShouldAllowRequestWithNonAppUrl) {
   EXPECT_TRUE(TestShouldAllowRequest(@"data://test",
                                      /*target_frame_is_main=*/false,
                                      /*has_user_gesture=*/true));
+  EXPECT_TRUE(TestShouldAllowRequest(@"blob://test",
+                                     /*target_frame_is_main=*/false,
+                                     /*has_user_gesture=*/true));
   EXPECT_EQ(0U, delegate_.countOfAppsLaunched);
 }
 
@@ -286,10 +299,46 @@ TEST_F(AppLauncherTabHelperTest, InsecureUrls) {
   EXPECT_FALSE(TestShouldAllowRequest(@"app-settings://",
                                       /*target_frame_is_main=*/true,
                                       /*has_user_gesture=*/false));
-  EXPECT_FALSE(TestShouldAllowRequest(@"u2f-x-callback://test",
+  EXPECT_EQ(0U, delegate_.countOfAppsLaunched);
+}
+
+// Tests that URLs with U2F schemes are handled correctly.
+// This test is using https://chromeiostesting-dot-u2fdemo.appspot.com URL which
+// is a whitelisted URL for the purpose of testing, but the test doesn't send
+// any request to the server.
+TEST_F(AppLauncherTabHelperTest, U2FUrls) {
+  // Add required tab helpers for the U2F check.
+  TabIdTabHelper::CreateForWebState(&web_state_);
+  LegacyTabHelper::CreateForWebState(&web_state_);
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+
+  // "u2f-x-callback" scheme should only be created by the browser. External
+  // URLs with that scheme should be blocked to prevent malicious sites from
+  // bypassing the browser origin/security check for u2f schemes.
+  item->SetURL(GURL("https://chromeiostesting-dot-u2fdemo.appspot.com"));
+  navigation_manager_->SetLastCommittedItem(item.get());
+  EXPECT_FALSE(TestShouldAllowRequest(@"u2f-x-callback://chromium.test",
                                       /*target_frame_is_main=*/true,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(0U, delegate_.countOfAppsLaunched);
+
+  // Source URL is not trusted, so u2f scheme should not be allowed.
+  item->SetURL(GURL("https://chromium.test"));
+  navigation_manager_->SetLastCommittedItem(item.get());
+  EXPECT_FALSE(TestShouldAllowRequest(@"u2f://chromium.test",
+                                      /*target_frame_is_main=*/true,
+                                      /*has_user_gesture=*/false));
+  EXPECT_EQ(0U, delegate_.countOfAppsLaunched);
+
+  // Source URL is trusted, so u2f scheme should be allowed and an external app
+  // is launched via URL with u2f-x-callback scheme.
+  item->SetURL(GURL("https://chromeiostesting-dot-u2fdemo.appspot.com"));
+  navigation_manager_->SetLastCommittedItem(item.get());
+  EXPECT_FALSE(TestShouldAllowRequest(@"u2f://chromium.test",
+                                      /*target_frame_is_main=*/true,
+                                      /*has_user_gesture=*/false));
+  EXPECT_EQ(1U, delegate_.countOfAppsLaunched);
+  EXPECT_TRUE(delegate_.lastLaunchedAppURL.SchemeIs("u2f-x-callback"));
 }
 
 // Tests that URLs with Chrome Bundle schemes are blocked on iframes.

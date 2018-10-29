@@ -17,19 +17,19 @@
 // File: str_replace.h
 // -----------------------------------------------------------------------------
 //
-// This file defines `absl::StrReplaceAll()`, a general-purpose std::string
+// This file defines `absl::StrReplaceAll()`, a general-purpose string
 // replacement function designed for large, arbitrary text substitutions,
 // especially on strings which you are receiving from some other system for
 // further processing (e.g. processing regular expressions, escaping HTML
-// entities, etc. `StrReplaceAll` is designed to be efficient even when only
+// entities, etc.). `StrReplaceAll` is designed to be efficient even when only
 // one substitution is being performed, or when substitution is rare.
 //
-// If the std::string being modified is known at compile-time, and the substitutions
+// If the string being modified is known at compile-time, and the substitutions
 // vary, `absl::Substitute()` may be a better choice.
 //
 // Example:
 //
-// std::string html_escaped = absl::StrReplaceAll(user_input, {
+// string html_escaped = absl::StrReplaceAll(user_input, {
 //                                           {"&", "&amp;"},
 //                                           {"<", "&lt;"},
 //                                           {">", "&gt;"},
@@ -49,16 +49,16 @@ namespace absl {
 
 // StrReplaceAll()
 //
-// Replaces character sequences within a given std::string with replacements provided
+// Replaces character sequences within a given string with replacements provided
 // within an initializer list of key/value pairs. Candidate replacements are
-// considered in order as they occur within the std::string, with earlier matches
+// considered in order as they occur within the string, with earlier matches
 // taking precedence, and longer matches taking precedence for candidates
-// starting at the same position in the std::string. Once a substitution is made, the
+// starting at the same position in the string. Once a substitution is made, the
 // replaced text is not considered for any further substitutions.
 //
 // Example:
 //
-//   std::string s = absl::StrReplaceAll("$who bought $count #Noun. Thanks $who!",
+//   string s = absl::StrReplaceAll("$who bought $count #Noun. Thanks $who!",
 //                                  {{"$count", absl::StrCat(5)},
 //                                   {"$who", "Bob"},
 //                                   {"#Noun", "Apples"}});
@@ -78,28 +78,28 @@ ABSL_MUST_USE_RESULT std::string StrReplaceAll(
 //   replacements["$who"] = "Bob";
 //   replacements["$count"] = "5";
 //   replacements["#Noun"] = "Apples";
-//   std::string s = absl::StrReplaceAll("$who bought $count #Noun. Thanks $who!",
+//   string s = absl::StrReplaceAll("$who bought $count #Noun. Thanks $who!",
 //                                  replacements);
 //   EXPECT_EQ("Bob bought 5 Apples. Thanks Bob!", s);
 //
 //   // A std::vector of std::pair elements can be more efficient.
-//   std::vector<std::pair<const absl::string_view, std::string>> replacements;
+//   std::vector<std::pair<const absl::string_view, string>> replacements;
 //   replacements.push_back({"&", "&amp;"});
 //   replacements.push_back({"<", "&lt;"});
 //   replacements.push_back({">", "&gt;"});
-//   std::string s = absl::StrReplaceAll("if (ptr < &foo)",
+//   string s = absl::StrReplaceAll("if (ptr < &foo)",
 //                                  replacements);
 //   EXPECT_EQ("if (ptr &lt; &amp;foo)", s);
 template <typename StrToStrMapping>
 std::string StrReplaceAll(absl::string_view s, const StrToStrMapping& replacements);
 
 // Overload of `StrReplaceAll()` to replace character sequences within a given
-// output std::string *in place* with replacements provided within an initializer
+// output string *in place* with replacements provided within an initializer
 // list of key/value pairs, returning the number of substitutions that occurred.
 //
 // Example:
 //
-//   std::string s = std::string("$who bought $count #Noun. Thanks $who!");
+//   string s = std::string("$who bought $count #Noun. Thanks $who!");
 //   int count;
 //   count = absl::StrReplaceAll({{"$count", absl::StrCat(5)},
 //                               {"$who", "Bob"},
@@ -112,12 +112,12 @@ int StrReplaceAll(
     std::string* target);
 
 // Overload of `StrReplaceAll()` to replace patterns within a given output
-// std::string *in place* with replacements provided within a container of key/value
+// string *in place* with replacements provided within a container of key/value
 // pairs.
 //
 // Example:
 //
-//   std::string s = std::string("if (ptr < &foo)");
+//   string s = std::string("if (ptr < &foo)");
 //   int count = absl::StrReplaceAll({{"&", "&amp;"},
 //                                    {"<", "&lt;"},
 //                                    {">", "&gt;"}}, &s);

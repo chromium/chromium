@@ -187,6 +187,9 @@ class EmbeddedTestServer {
   // Returns the address list needed to connect to the server.
   bool GetAddressList(AddressList* address_list) const WARN_UNUSED_RESULT;
 
+  // Returns the IP Address to connect to the server as a string.
+  std::string GetIPLiteralString() const;
+
   // Returns the port number used by the server.
   uint16_t port() const { return port_; }
 

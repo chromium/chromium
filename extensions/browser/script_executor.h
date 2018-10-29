@@ -5,8 +5,11 @@
 #ifndef EXTENSIONS_BROWSER_SCRIPT_EXECUTOR_H_
 #define EXTENSIONS_BROWSER_SCRIPT_EXECUTOR_H_
 
-#include "base/callback_forward.h"
-#include "base/observer_list.h"
+#include <map>
+#include <set>
+#include <string>
+
+#include "base/callback.h"
 #include "base/optional.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/user_script.h"
@@ -23,19 +26,24 @@ class WebContents;
 }
 
 namespace extensions {
-class ScriptExecutionObserver;
+
+// Contains all extensions that are executing scripts, mapped to the paths for
+// those scripts. The paths may be an empty set if the script has no path
+// associated with it (e.g. in the case of tabs.executeScript), but there will
+// still be an entry for the extension.
+using ExecutingScriptsMap = std::map<std::string, std::set<std::string>>;
+
+// Callback that ScriptExecutor uses to notify when content scripts and/or
+// tabs.executeScript calls run on a page.
+using ScriptsExecutedNotification = base::RepeatingCallback<
+    void(const content::WebContents*, const ExecutingScriptsMap&, const GURL&)>;
 
 // Interface for executing extension content scripts (e.g. executeScript) as
 // described by the ExtensionMsg_ExecuteCode_Params IPC, and notifying the
 // caller when responded with ExtensionHostMsg_ExecuteCodeFinished.
 class ScriptExecutor {
  public:
-  ScriptExecutor(
-      content::WebContents* web_contents,
-      // |script_observers| is assumed to be owned by |this|'s owner, and in
-      // such a way that |this| is destroyed first.
-      base::ObserverList<ScriptExecutionObserver>::Unchecked* script_observers);
-
+  explicit ScriptExecutor(content::WebContents* web_contents);
   ~ScriptExecutor();
 
   // The type of script being injected.
@@ -79,7 +87,7 @@ class ScriptExecutor {
   // Success is implied by an empty error.
   typedef base::Callback<
       void(const std::string&, const GURL&, const base::ListValue&)>
-      ExecuteScriptCallback;
+      ScriptFinishedCallback;
 
   // Executes a script. The arguments match ExtensionMsg_ExecuteCode_Params in
   // extension_messages.h (request_id is populated automatically).
@@ -105,15 +113,22 @@ class ScriptExecutor {
                      bool user_gesture,
                      base::Optional<CSSOrigin> css_origin,
                      ResultType result_type,
-                     const ExecuteScriptCallback& callback);
+                     const ScriptFinishedCallback& callback);
+
+  // Set the observer for ScriptsExecutedNotification callbacks.
+  void set_observer(ScriptsExecutedNotification observer) {
+    observer_ = std::move(observer);
+  }
 
  private:
   // The next value to use for request_id in ExtensionMsg_ExecuteCode_Params.
-  int next_request_id_;
+  int next_request_id_ = 0;
 
   content::WebContents* web_contents_;
 
-  base::ObserverList<ScriptExecutionObserver>::Unchecked* script_observers_;
+  ScriptsExecutedNotification observer_;
+
+  DISALLOW_COPY_AND_ASSIGN(ScriptExecutor);
 };
 
 }  // namespace extensions

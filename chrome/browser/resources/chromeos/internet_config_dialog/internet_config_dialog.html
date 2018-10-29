@@ -55,12 +55,12 @@
       </style>
 
       <cr-dialog id="dialog" no-cancel>
-        <div slot="title">[[getDialogTitle_(networkProperties_)]]</div>
+        <div slot="title">[[getDialogTitle_(managedProperties_)]]</div>
         <div slot="body">
           <network-config id="networkConfig" class="flex"
               networking-private="[[networkingPrivate]]"
               global-policy="[[globalPolicy_]]"
-              network-properties="{{networkProperties_}}"
+              managed-properties="{{managedProperties_}}"
               enable-connect="{{enableConnect_}}"
               share-allow-enable="[[shareAllowEnable_]]"
               share-default="[[shareDefault_]]"

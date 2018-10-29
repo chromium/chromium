@@ -2,7 +2,6 @@ Check that invalidation sets work for :hover changes.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.internals is defined.
 PASS window.eventSender is defined.
 PASS getComputedStyle(r1, null).backgroundColor is transparent

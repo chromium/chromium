@@ -27,6 +27,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/tools/variable_expander.h"
 #include "components/onc/onc_constants.h"
+#include "crypto/scoped_nss_types.h"
 #include "dbus/object_path.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
@@ -67,10 +68,10 @@ struct MatchingCert {
 };
 
 // Describes a network that is configured with |client_cert_config|, which
-// includes the certificate pattern.
-struct NetworkAndCertPattern {
-  NetworkAndCertPattern(const std::string& network_path,
-                        const client_cert::ClientCertConfig& client_cert_config)
+// includes the certificate config.
+struct NetworkAndCertConfig {
+  NetworkAndCertConfig(const std::string& network_path,
+                       const client_cert::ClientCertConfig& client_cert_config)
       : service_path(network_path), cert_config(client_cert_config) {}
 
   std::string service_path;
@@ -114,6 +115,14 @@ std::map<std::string, std::string> GetSubstitutionsForCert(
   return substitutions;
 }
 
+// Returns true if |client_cert_config| specifies a pattern or reference, i.e.
+// if client certificate resolution should be attempted.
+bool ShouldResolveCert(
+    const client_cert::ClientCertConfig& client_cert_config) {
+  return client_cert_config.client_cert_type == ::onc::client_cert::kPattern ||
+         client_cert_config.client_cert_type == ::onc::client_cert::kRef;
+}
+
 }  // namespace
 
 namespace internal {
@@ -134,10 +143,10 @@ struct MatchingCertAndResolveStatus {
 
 // Describes a network |network_path| and the client cert resolution result.
 struct NetworkAndMatchingCert {
-  NetworkAndMatchingCert(const NetworkAndCertPattern& network_and_pattern,
+  NetworkAndMatchingCert(const NetworkAndCertConfig& network_and_cert_config,
                          base::Optional<MatchingCert> matching_cert)
-      : service_path(network_and_pattern.service_path),
-        cert_config_type(network_and_pattern.cert_config.location),
+      : service_path(network_and_cert_config.service_path),
+        cert_config_type(network_and_cert_config.cert_config.location),
         matching_cert(matching_cert) {}
 
   std::string service_path;
@@ -155,27 +164,45 @@ using internal::NetworkAndMatchingCert;
 
 namespace {
 
-// Returns true if a private key for certificate |cert| is installed.
-// Note that HasPrivateKey is not a cheap operation: it iterates all tokens and
-// attempts to look up the private key.
-bool HasPrivateKey(CERTCertificate* cert) {
-  PK11SlotInfo* slot = PK11_KeyForCertExists(cert, nullptr, nullptr);
-  if (!slot)
-    return false;
+// Returns the nickname of the private key for certificate |cert|, if such a
+// private key is installed. Note that this is not a cheap operation: it
+// iterates all tokens and attempts to look up the private key.
+// A return value of |base::nullopt| means that no private key could be found
+// for |cert|.
+// If a private key could be found for |cert| but it did not have a nickname,
+// will return the empty string.
+base::Optional<std::string> GetPrivateKeyNickname(CERTCertificate* cert) {
+  crypto::ScopedSECKEYPrivateKey key(
+      PK11_FindKeyByAnyCert(cert, nullptr /* wincx */));
+  if (!key)
+    return base::nullopt;
 
-  PK11_FreeSlot(slot);
-  return true;
+  std::string key_nickname;
+  char* nss_key_nickname = PK11_GetPrivateKeyNickname(key.get());
+  if (nss_key_nickname) {
+    key_nickname = nss_key_nickname;
+    PORT_Free(nss_key_nickname);
+  }
+  return key_nickname;
 }
 
 // Describes a certificate which is issued by |issuer| (encoded as PEM).
 // |issuer| can be empty if no issuer certificate is found in the database.
 struct CertAndIssuer {
   CertAndIssuer(net::ScopedCERTCertificate certificate,
-                const std::string& issuer)
-      : cert(std::move(certificate)), pem_encoded_issuer(issuer) {}
+                const std::string& issuer,
+                const std::string& key_nickname)
+      : cert(std::move(certificate)),
+        pem_encoded_issuer(issuer),
+        private_key_nickname(key_nickname) {}
 
   net::ScopedCERTCertificate cert;
   std::string pem_encoded_issuer;
+  // The nickname of the private key associated with |cert|. This is used
+  // for resolving ClientCertRef ONC references, using the fact that
+  // |CertificateImporterImpl| sets the private key nickname to the
+  // ONC-specified GUID.
+  std::string private_key_nickname;
 };
 
 bool CompareCertExpiration(const CertAndIssuer& a, const CertAndIssuer& b) {
@@ -187,12 +214,28 @@ bool CompareCertExpiration(const CertAndIssuer& a, const CertAndIssuer& b) {
 }
 
 // A unary predicate that returns true if the given CertAndIssuer matches the
-// given certificate pattern.
-struct MatchCertWithPattern {
-  explicit MatchCertWithPattern(const CertificatePattern& cert_pattern)
-      : pattern(cert_pattern) {}
+// given certificate config.
+struct MatchCertWithCertConfig {
+  explicit MatchCertWithCertConfig(
+      const client_cert::ClientCertConfig& client_cert_config)
+      : cert_config(client_cert_config) {}
 
   bool operator()(const CertAndIssuer& cert_and_issuer) {
+    if (cert_config.client_cert_type == ::onc::client_cert::kPattern)
+      return MatchByPattern(cert_config.pattern, cert_and_issuer);
+
+    if (cert_config.client_cert_type == ::onc::client_cert::kRef) {
+      // This relies on the fact that |CertificateImporterImpl| sets the
+      // nickname for the imported private key to the GUID.
+      return cert_config.guid == cert_and_issuer.private_key_nickname;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+
+  static bool MatchByPattern(const CertificatePattern& pattern,
+                             const CertAndIssuer& cert_and_issuer) {
     if (!pattern.issuer().Empty() || !pattern.subject().Empty()) {
       // Allow UTF-8 inside PrintableStrings in client certificates. See
       // crbug.com/770323 and crbug.com/788655.
@@ -223,8 +266,7 @@ struct MatchCertWithPattern {
     }
     return true;
   }
-
-  const CertificatePattern pattern;
+  const client_cert::ClientCertConfig cert_config;
 };
 
 // Lookup the issuer certificate of |cert|. If it is available, return the PEM
@@ -258,25 +300,32 @@ std::vector<CertAndIssuer> CreateSortedCertAndIssuerList(
     base::Time now) {
   // Filter all client certs and determines each certificate's issuer, which is
   // required for the pattern matching.
-  // TODO(pmarko): Consider moving the filtering of client certs into
-  // CertLoader. It should not be in ClientCertResolver's responsibility to
-  // decide if a certificate is a valid client certificate or not. Other
-  // consumers of CertLoader could also use a pre-filtered list (e.g.
-  // NetworkCertMigrator). See crbug.com/781693.
+  // TODO(crbug.com/781693): Consider moving the filtering of client certs into
+  // NetworkCertLoader. It should not be in ClientCertResolver's responsibility
+  // to decide if a certificate is a valid client certificate or not. Other
+  // consumers of NetworkCertLoader could also use a pre-filtered list (e.g.
+  // NetworkCertMigrator).
   std::vector<CertAndIssuer> client_certs;
   for (net::ScopedCERTCertificate& scoped_cert : certs) {
     CERTCertificate* cert = scoped_cert.get();
     base::Time not_after;
-    // HasPrivateKey should be invoked after IsCertificateHardwareBacked for
-    // performance reasons.
     if (!net::x509_util::GetValidityTimes(cert, nullptr, &not_after) ||
-        now > not_after || !CertLoader::IsCertificateHardwareBacked(cert) ||
-        !HasPrivateKey(cert)) {
+        now > not_after ||
+        !NetworkCertLoader::IsCertificateHardwareBacked(cert)) {
+      continue;
+    }
+    // GetPrivateKeyNickname should be invoked after the checks above for
+    // performance reasons.
+    base::Optional<std::string> private_key_nickname =
+        GetPrivateKeyNickname(cert);
+    if (!private_key_nickname.has_value()) {
+      // No private key has been found for this certificate.
       continue;
     }
     std::string pem_encoded_issuer = GetPEMEncodedIssuer(cert);
-    client_certs.push_back(
-        CertAndIssuer(std::move(scoped_cert), pem_encoded_issuer));
+    client_certs.push_back(CertAndIssuer(std::move(scoped_cert),
+                                         pem_encoded_issuer,
+                                         private_key_nickname.value()));
   }
 
   std::sort(client_certs.begin(), client_certs.end(), &CompareCertExpiration);
@@ -284,45 +333,46 @@ std::vector<CertAndIssuer> CreateSortedCertAndIssuerList(
 }
 
 // Searches for matches between |networks| and |all_certs| (for networks
-// configured in user policy) / |system_certs| (for networks configured in
-// device policy). Returns the matches that were found. Because this calls NSS
-// functions and is potentially slow, it must be run on a worker thread.
+// configured in user policy) / |system_token_client_certs| (for networks
+// configured in device policy). Returns the matches that were found. Because
+// this calls NSS functions and is potentially slow, it must be run on a worker
+// thread.
 std::vector<NetworkAndMatchingCert> FindCertificateMatches(
     net::ScopedCERTCertificateList all_certs,
-    net::ScopedCERTCertificateList system_certs,
-    const std::vector<NetworkAndCertPattern>& networks,
+    net::ScopedCERTCertificateList system_token_client_certs,
+    const std::vector<NetworkAndCertConfig>& networks,
     base::Time now) {
   std::vector<NetworkAndMatchingCert> matches;
 
   std::vector<CertAndIssuer> all_client_certs(
       CreateSortedCertAndIssuerList(std::move(all_certs), now));
   std::vector<CertAndIssuer> system_client_certs(
-      CreateSortedCertAndIssuerList(std::move(system_certs), now));
+      CreateSortedCertAndIssuerList(std::move(system_token_client_certs), now));
 
-  for (const NetworkAndCertPattern& network_and_pattern : networks) {
+  for (const NetworkAndCertConfig& network_and_cert_config : networks) {
     // Use only certs from the system token if the source of the client cert
     // pattern is device policy.
     std::vector<CertAndIssuer>* client_certs =
-        network_and_pattern.cert_config.onc_source ==
+        network_and_cert_config.cert_config.onc_source ==
                 ::onc::ONC_SOURCE_DEVICE_POLICY
             ? &system_client_certs
             : &all_client_certs;
     auto cert_it = std::find_if(
         client_certs->begin(), client_certs->end(),
-        MatchCertWithPattern(network_and_pattern.cert_config.pattern));
+        MatchCertWithCertConfig(network_and_cert_config.cert_config));
     if (cert_it == client_certs->end()) {
       VLOG(1) << "Couldn't find a matching client cert for network "
-              << network_and_pattern.service_path;
+              << network_and_cert_config.service_path;
       matches.push_back(
-          NetworkAndMatchingCert(network_and_pattern, base::nullopt));
+          NetworkAndMatchingCert(network_and_cert_config, base::nullopt));
       continue;
     }
 
     std::string pkcs11_id;
     int slot_id = -1;
 
-    pkcs11_id =
-        CertLoader::GetPkcs11IdAndSlotForCert(cert_it->cert.get(), &slot_id);
+    pkcs11_id = NetworkCertLoader::GetPkcs11IdAndSlotForCert(
+        cert_it->cert.get(), &slot_id);
     if (pkcs11_id.empty()) {
       LOG(ERROR) << "Couldn't determine PKCS#11 ID.";
       // So far this error is not expected to happen. We can just continue, in
@@ -334,13 +384,13 @@ std::vector<NetworkAndMatchingCert> FindCertificateMatches(
     // client certificate.
     VariableExpander variable_expander(
         GetSubstitutionsForCert(cert_it->cert.get()));
-    std::string identity = network_and_pattern.cert_config.policy_identity;
+    std::string identity = network_and_cert_config.cert_config.policy_identity;
     const bool success = variable_expander.ExpandString(&identity);
     LOG_IF(ERROR, !success)
         << "Error during variable expansion in ONC-configured identity";
 
     matches.push_back(NetworkAndMatchingCert(
-        network_and_pattern, MatchingCert(pkcs11_id, slot_id, identity)));
+        network_and_cert_config, MatchingCert(pkcs11_id, slot_id, identity)));
   }
   return matches;
 }
@@ -357,7 +407,7 @@ void LogError(const std::string& service_path,
 }
 
 bool ClientCertificatesLoaded() {
-  if (!CertLoader::Get()->initial_load_finished()) {
+  if (!NetworkCertLoader::Get()->initial_load_finished()) {
     VLOG(1) << "Certificates not loaded yet.";
     return false;
   }
@@ -380,8 +430,8 @@ ClientCertResolver::~ClientCertResolver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (network_state_handler_)
     network_state_handler_->RemoveObserver(this, FROM_HERE);
-  if (CertLoader::IsInitialized())
-    CertLoader::Get()->RemoveObserver(this);
+  if (NetworkCertLoader::IsInitialized())
+    NetworkCertLoader::Get()->RemoveObserver(this);
   if (managed_network_config_handler_)
     managed_network_config_handler_->RemoveObserver(this);
 }
@@ -398,7 +448,7 @@ void ClientCertResolver::Init(
   managed_network_config_handler_ = managed_network_config_handler;
   managed_network_config_handler_->AddObserver(this);
 
-  CertLoader::Get()->AddObserver(this);
+  NetworkCertLoader::Get()->AddObserver(this);
 }
 
 void ClientCertResolver::AddObserver(Observer* observer) {
@@ -417,28 +467,32 @@ bool ClientCertResolver::IsAnyResolveTaskRunning() const {
 }
 
 // static
-bool ClientCertResolver::ResolveCertificatePatternSync(
+bool ClientCertResolver::ResolveClientCertificateSync(
     const client_cert::ConfigType client_cert_type,
     const client_cert::ClientCertConfig& client_cert_config,
     base::DictionaryValue* shill_properties) {
+  if (!ShouldResolveCert(client_cert_config))
+    return false;
+
   // Prepare and sort the list of known client certs. Use only certs from the
-  // system token if the source of the client cert pattern is device policy.
+  // system token if the source of the client cert config is device policy.
   std::vector<CertAndIssuer> client_certs;
   if (client_cert_config.onc_source == ::onc::ONC_SOURCE_DEVICE_POLICY) {
-    client_certs =
-        CreateSortedCertAndIssuerList(net::x509_util::DupCERTCertificateList(
-                                          CertLoader::Get()->system_certs()),
-                                      base::Time::Now());
+    client_certs = CreateSortedCertAndIssuerList(
+        net::x509_util::DupCERTCertificateList(
+            NetworkCertLoader::Get()->system_token_client_certs()),
+        base::Time::Now());
   } else {
     client_certs = CreateSortedCertAndIssuerList(
-        net::x509_util::DupCERTCertificateList(CertLoader::Get()->all_certs()),
+        net::x509_util::DupCERTCertificateList(
+            NetworkCertLoader::Get()->all_certs()),
         base::Time::Now());
   }
 
-  // Search for a certificate matching the pattern.
+  // Search for a certificate matching the pattern or reference.
   std::vector<CertAndIssuer>::iterator cert_it =
       std::find_if(client_certs.begin(), client_certs.end(),
-                   MatchCertWithPattern(client_cert_config.pattern));
+                   MatchCertWithCertConfig(client_cert_config));
 
   if (cert_it == client_certs.end()) {
     VLOG(1) << "Couldn't find a matching client cert";
@@ -447,8 +501,8 @@ bool ClientCertResolver::ResolveCertificatePatternSync(
   }
 
   int slot_id = -1;
-  std::string pkcs11_id =
-      CertLoader::GetPkcs11IdAndSlotForCert(cert_it->cert.get(), &slot_id);
+  std::string pkcs11_id = NetworkCertLoader::GetPkcs11IdAndSlotForCert(
+      cert_it->cert.get(), &slot_id);
   if (pkcs11_id.empty()) {
     LOG(ERROR) << "Couldn't determine PKCS#11 ID.";
     // So far this error is not expected to happen. We can just continue, in
@@ -555,10 +609,10 @@ void ClientCertResolver::PolicyAppliedToNetwork(
 void ClientCertResolver::ResolveNetworks(
     const NetworkStateHandler::NetworkStateList& networks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<NetworkAndCertPattern> networks_to_resolve;
+  std::vector<NetworkAndCertConfig> networks_to_resolve;
 
-  // Filter networks with ClientCertPattern. As ClientCertPatterns can only be
-  // set by policy, we check there.
+  // Filter networks with ClientCertPattern or ClientCertRef. As these can only
+  // be set by policy, we check there.
   for (const NetworkState* network : networks) {
     // If the network was not known before, mark it as known but with resolving
     // pending.
@@ -566,7 +620,8 @@ void ClientCertResolver::ResolveNetworks(
       networks_status_.insert_or_assign(network->path(),
                                         MatchingCertAndResolveStatus());
 
-    // If this network is not configured, it cannot have a ClientCertPattern.
+    // If this network is not configured, it cannot have a
+    // ClientCertPattern/ClientCertRef.
     if (network->profile_path().empty())
       continue;
 
@@ -587,12 +642,12 @@ void ClientCertResolver::ResolveNetworks(
     client_cert::ClientCertConfig cert_config;
     OncToClientCertConfig(onc_source, *policy, &cert_config);
 
-    // Skip networks that don't have a ClientCertPattern.
-    if (cert_config.client_cert_type != ::onc::client_cert::kPattern)
+    // Skip networks that don't have a ClientCertPattern or ClientCertRef.
+    if (!ShouldResolveCert(cert_config))
       continue;
 
     networks_to_resolve.push_back(
-        NetworkAndCertPattern(network->path(), cert_config));
+        NetworkAndCertConfig(network->path(), cert_config));
   }
 
   if (networks_to_resolve.empty()) {
@@ -606,10 +661,8 @@ void ClientCertResolver::ResolveNetworks(
 
   if (resolve_task_running_) {
     VLOG(1) << "A resolve task is already running. Queue this request.";
-    for (const NetworkAndCertPattern& network_and_pattern :
-         networks_to_resolve) {
-      queued_networks_to_resolve_.insert(network_and_pattern.service_path);
-    }
+    for (const NetworkAndCertConfig& network_to_resolve : networks_to_resolve)
+      queued_networks_to_resolve_.insert(network_to_resolve.service_path);
     return;
   }
 
@@ -620,9 +673,9 @@ void ClientCertResolver::ResolveNetworks(
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&FindCertificateMatches,
                      net::x509_util::DupCERTCertificateList(
-                         CertLoader::Get()->all_certs()),
+                         NetworkCertLoader::Get()->all_certs()),
                      net::x509_util::DupCERTCertificateList(
-                         CertLoader::Get()->system_certs()),
+                         NetworkCertLoader::Get()->system_token_client_certs()),
                      networks_to_resolve, Now()),
       base::BindOnce(&ClientCertResolver::ConfigureCertificates,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -1,0 +1,191 @@
+<h1>User Controls For Host Permissions: Transition Guide</h1>
+
+<h2 id="summary">Summary</h2>
+
+<h3 id="changes">What's changing?</h3>
+<p>
+  Beginning in Chrome 70, users have the ability to restrict extension host
+  access to a custom list of sites, or to configure extensions to require a
+  click to gain access to the current page.
+</p>
+
+<h3 id="affected-apis">Which APIs are affected?</h3>
+<p>
+  This change affects any APIs that are affected by the host permissions
+  specified in your extension's manifest, as well as content scripts.  APIs
+  that require host permissions include
+  <a href="/webRequest">webRequest</a>,
+  <a href="/cookies">cookies</a>,
+  <a href="/tabs#method-executeScript">tabs.executeScript()</a> and
+  <a href="/tabs#method-insertCSS">tabs.insertCSS()</a>, and performing
+  cross-origin requests, such as through an <code>XMLHTTPRequest</code> or the
+  <code>fetch()</code> API.
+</p>
+
+<h2 id="restricting-access">Restricting Access</h2>
+
+<h3 id="user-restricting-access">How can the user restrict access?</h3>
+<p>
+  Users can choose to allow your extension to run on click, on a specific set of
+  sites, or on all requested sites.  These options are presented to users on the
+  <code>chrome://extensions</code> page as well as in the extension context
+  menu.
+</p>
+
+<img src="{{static}}/images/runtime_host_permissions_controls.png"
+    height="250"
+    alt="A screenshot of the context menu controls for runtime host permissions, including options to run the extension on click, on a specific site, or on all sites.">
+
+<h3 id="access-on-click">
+  What happens if a user chooses to run my extension "on click"?
+</h3>
+<p>
+  The extension essentially behaves as though it used the
+  <a href="/activeTab">activeTab</a> permission. The extension is granted
+  temporary access to any host the user clicks the extension on, if that host
+  was requested by the extension (and isn't a restricted site, like
+  chrome://settings).  When set to run on click, Chrome badges your extension
+  with a circle and drop shadow (see below) to indicate that is requesting
+  access on a particular site.
+</p>
+
+<img src="{{static}}/images/runtime_host_permissions_badging.png"
+    height="150"
+    alt="A screenshot of the badging Chrome adds to the extension icon in the toolbar">
+
+<h3 id="access-on-specific-sites">
+  What happens if a user chooses to run my extension on specific sites?
+</h3>
+<p>
+  Your extension is allowed to run automatically on any sites the user has
+  chosen, and can access the site without further user action.  On other sites
+  that your extension requested, but the user did not grant permission to, the
+  behavior is the same as if the user had set the extension to run on click.
+</p>
+
+<h3 id="access-on-all-sites">
+  What happens if a user chooses to run my extension on all sites?
+</h3>
+<p>
+  The extension can automatically access any sites requested in the manifest.
+</p>
+
+<h2 id="api-behaviors">API Behaviors</h2>
+
+<h3 id="web-request-behavior">Web Request API</h3>
+<p>
+  The extension can still intercept, modify, and block any requests from sites
+  it has access to.  For sites the extension does not have access to, Chrome
+  badges the extension to indicate that the extension requests access to the
+  page.  The user can then grant access to the extension; Chrome then prompts
+  the user to refresh the page to allow your extension to intercept the network
+  requests.
+</p>
+
+<h3 id="scripts-behavior">
+  Content Scripts, tabs.executeScript(), tabs.insertCSS()
+</h3>
+<p>
+  The extension can still inject scripts and style sheets automatically for any
+  sites it has access to. For sites the extension does not have access to,
+  Chrome badges the extension to indicate that the extension requests access to
+  the page.  The user can then grant access to the extension.  If the content
+  script was set to inject at document_idle, the script will inject immediately.
+  Otherwise, Chrome prompts the user to refresh the page to allow your extension
+  to inject scripts earlier in page load (at document_start or document_end).
+  The callbacks for the
+  <a href="/tabs#method-executeScript">tabs.executeScript()</a> and
+  <a href="/tabs#method-insertCSS">tabs.insertCSS()</a> methods are only invoked
+  if the user grants access to the site.
+</p>
+
+<h3 id="background-behavior">Cookies and Background Page XHR</h3>
+<p>
+  The extension can still read and modify any cookies from and perform a
+  cross-origin XHR to sites it has access to.  Because there is no tab
+  associated with an extension page accessing another origin's cookies or
+  XHRing to another host, Chrome does not badge the extension to indicate to the
+  user that the extension is requesting to access a site.  Trying to access a
+  cookie for another site or make a cross-origin XHR will fail with an error as
+  if the extension's manifest did not include the host permission.  For these
+  cases, we encourage you to use optional permissions in order to allow the user
+  to grant runtime access to different sites.
+</p>
+
+<p>The example below illustrates how this may work for the cookies API.</p>
+
+<p>Before:</p>
+<pre data-filename="manifest.json">
+  {
+    ...
+    "permissions": ["cookies", "https://example.com"]
+  }
+</pre>
+
+<pre data-filename="background.js">
+  chrome.cookies.get({url: 'https://example.com', name: 'mycookie'},
+                     function(cookie) {
+                       // Use the cookie.
+                     });
+</pre>
+
+<p>After:</p>
+<pre data-filename="manifest.json">
+  {
+    ...
+    "permissions": ["cookies"],
+    "optional_permissions": ["https://example.com"]
+  }
+</pre>
+
+<pre data-filename="background.js">
+  // Note: permissions.request() requires a user gesture, so this
+  // may only be done in response to a user action.
+  chrome.permissions.request(
+      {origins: ['https://example.com']},
+      function(granted) {
+        if (granted) {
+          chrome.cookies.get({url: 'https://example.com', name: 'mycookie'},
+                             function(cookie) {
+                               // Use the cookie.
+                             });
+        } else {
+          // Handle grant failure
+        }
+      });
+</pre>
+
+<h2 id="migration">Migration</h2>
+
+<h3 id="best-practices">
+  What are best practices to avoid being negatively impacted?
+</h3>
+<p>
+  Extensions can use the <a href="/permissions">optional permissions</a>,
+  <a href="/activeTab">activeTab</a>, and
+  <a href="/declarativeContent">declarativeContent</a> APIs to follow best
+  practices.  Optional permissions are granted at runtime, and allow the
+  extension to request specific access to a site.  The
+  <a href="/activeTab">activeTab</a> permission is not affected, and extensions
+  using it continue to work normally. The
+  <a href="/declarativeContent">declarativeContent</a> API is a substitute for
+  many needs to inject scripts into every page.
+</p>
+
+<h3 id="current-settings">What happens to my current users' settings?</h3>
+<p>
+  This change will not immediately affect any current permissions granted to
+  your extension.  That is, it will continue to operate as before unless the
+  user takes action to restrict the sites it is allowed to access.  In future
+  releases, Chrome will provide more controls to users to adjust settings.
+</p>
+
+<h3 id="checking-access">
+  How can I check if my extension has permission to run on a site?
+</h3>
+<p>
+  You can use the
+  <a href="/permissions/#method-contains">permissions.contains()</a> API in
+  order to check whether your extension has been granted access to a given
+  origin.
+</p>

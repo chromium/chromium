@@ -136,8 +136,9 @@ void FeedbackPrivateApiUnittestBase::SetUp() {
   // that there is always a valid ApiResourceManager<LogSourceResource> when
   // subsequent unit tests are running.
   ApiResourceManager<LogSourceResource>::GetFactoryInstance()
-      ->SetTestingFactoryAndUse(browser_context(),
-                                ApiResourceManagerTestFactory);
+      ->SetTestingFactoryAndUse(
+          browser_context(),
+          base::BindRepeating(&ApiResourceManagerTestFactory));
 }
 
 void FeedbackPrivateApiUnittestBase::TearDown() {

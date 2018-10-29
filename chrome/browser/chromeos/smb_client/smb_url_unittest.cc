@@ -31,6 +31,13 @@ class SmbUrlTest : public testing::Test {
     EXPECT_EQ(expected_host, smb_url.GetHost());
   }
 
+  void ExpectValidWindowsUNC(const std::string& url,
+                             const std::string& expected_unc) {
+    SmbUrl smb_url(url);
+    EXPECT_TRUE(smb_url.IsValid());
+    EXPECT_EQ(expected_unc, smb_url.GetWindowsUNCString());
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(SmbUrlTest);
 };
@@ -101,6 +108,17 @@ TEST_F(SmbUrlTest, ReplacesHost) {
 
   // GetHost returns the original host.
   EXPECT_EQ(expected_host, smb_url.GetHost());
+}
+
+TEST_F(SmbUrlTest, GetWindowsURL) {
+  ExpectValidWindowsUNC("smb://server/share", "\\\\server\\share");
+  ExpectValidWindowsUNC("smb://server/share/long/folder",
+                        "\\\\server\\share\\long\\folder");
+  ExpectValidWindowsUNC("smb://server/share/folder.with.dots",
+                        "\\\\server\\share\\folder.with.dots");
+  ExpectValidWindowsUNC("smb://server\\share/mixed\\slashes",
+                        "\\\\server\\share\\mixed\\slashes");
+  ExpectValidWindowsUNC("\\\\server/share", "\\\\server\\share");
 }
 
 }  // namespace smb_client

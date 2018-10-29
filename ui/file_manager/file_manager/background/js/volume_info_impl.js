@@ -47,6 +47,7 @@ function VolumeInfoImpl(
   this.label_ = label;
   this.displayRoot_ = null;
   this.teamDriveDisplayRoot_ = null;
+  this.computersDisplayRoot_ = null;
 
   /**
    * @type {FilesAppEntry} an entry to be used as prefix of this volume on
@@ -54,13 +55,6 @@ function VolumeInfoImpl(
    *     on "Downloads" VolumeInfo.
    */
   this.prefixEntry_ = null;
-
-  /** @type {Promise<boolean>} */
-  this.isTeamDrivesEnabledPromise_ = new Promise(resolve => {
-    chrome.commandLinePrivate.hasSwitch('disable-team-drives', enabled => {
-      resolve(!enabled);
-    });
-  });
 
   /** @type {Object<!FakeEntry>} */
   this.fakeEntries_ = {};
@@ -72,12 +66,12 @@ function VolumeInfoImpl(
     this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_OFFLINE] =
         new FakeEntry(
             str('DRIVE_OFFLINE_COLLECTION_LABEL'),
-            VolumeManagerCommon.RootType.DRIVE_OFFLINE, true);
+            VolumeManagerCommon.RootType.DRIVE_OFFLINE);
 
     this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME] =
         new FakeEntry(
             str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
-            VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME, true);
+            VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME);
   }
 
   // Note: This represents if the mounting of the volume is successfully done
@@ -131,6 +125,14 @@ VolumeInfoImpl.prototype = /** @struct */ {
    */
   get teamDriveDisplayRoot() {
     return this.teamDriveDisplayRoot_;
+  },
+  /**
+   * @return {DirectoryEntry} The display root path of Computers directory.
+   * It is null before finishing to resolve the entry. Valid only for Drive
+   * volume.
+   */
+  get computersDisplayRoot() {
+    return this.computersDisplayRoot_;
   },
   /**
    * @return {Object<!FakeEntry>} Fake entries.
@@ -251,24 +253,44 @@ VolumeInfoImpl.resolveFileSystemUrl_ = function(url) {
  * @return {!Promise<void>}
  */
 VolumeInfoImpl.prototype.resolveTeamDrivesRoot_ = function() {
-  return this.isTeamDrivesEnabledPromise_.then(enabled => {
-    if (!enabled) {
-      return;
-    }
-    return VolumeInfoImpl
-        .resolveFileSystemUrl_(
-            this.fileSystem_.root.toURL() +
-            VolumeManagerCommon.TEAM_DRIVES_DIRECTORY_NAME)
-        .then(
-            teamDrivesRoot => {
-              this.teamDriveDisplayRoot_ = teamDrivesRoot;
-            },
-            error => {
-              if (error.name != 'NotFoundError') {
-                throw error;
-              }
-            });
-  });
+  return VolumeInfoImpl
+      .resolveFileSystemUrl_(
+          this.fileSystem_.root.toURL() +
+          VolumeManagerCommon.TEAM_DRIVES_DIRECTORY_NAME)
+      .then(
+          teamDrivesRoot => {
+            this.teamDriveDisplayRoot_ = teamDrivesRoot;
+          },
+          error => {
+            if (error.name != 'NotFoundError') {
+              throw error;
+            }
+          });
+};
+
+/**
+ * Sets |computersDisplayRoot_| if Computers are enabled.
+ *
+ * If Computers are not enabled, resolveFileSystemUrl_ will return a
+ * 'NotFoundError' which will be caught here. Any other errors will be rethrown.
+ *
+ * The return value will resolve once this operation is complete.
+ * @return {!Promise<void>}
+ */
+VolumeInfoImpl.prototype.resolveComputersRoot_ = function() {
+  return VolumeInfoImpl
+      .resolveFileSystemUrl_(
+          this.fileSystem_.root.toURL() +
+          VolumeManagerCommon.COMPUTERS_DIRECTORY_NAME)
+      .then(
+          (computersRoot) => {
+            this.computersDisplayRoot_ = computersRoot;
+          },
+          (error) => {
+            if (error.name != 'NotFoundError') {
+              throw error;
+            }
+          });
 };
 
 /**
@@ -293,7 +315,8 @@ VolumeInfoImpl.prototype.resolveDisplayRoot = function(opt_onSuccess,
           Promise
               .all([
                 VolumeInfoImpl.resolveFileSystemUrl_(displayRootURL),
-                this.resolveTeamDrivesRoot_()
+                this.resolveTeamDrivesRoot_(),
+                this.resolveComputersRoot_(),
               ])
               .then(([root]) => {
                 return root;

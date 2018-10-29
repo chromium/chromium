@@ -81,7 +81,7 @@ const int kWriteAsyncCallbackBuffersThreshold = kWriteAsyncMaxBuffersThreshold;
 class NET_EXPORT UDPSocketPosixSender
     : public base::RefCountedThreadSafe<UDPSocketPosixSender> {
  public:
-  explicit UDPSocketPosixSender();
+  UDPSocketPosixSender();
 
   SendResult SendBuffers(int fd, DatagramBuffers buffers);
 
@@ -234,8 +234,9 @@ class NET_EXPORT UDPSocketPosix {
   //   alive by the caller until the callback is placed.
   // |callback| is the callback on completion of the RecvFrom.
   // Returns a net error code, or ERR_IO_PENDING if the IO is in progress.
-  // If ERR_IO_PENDING is returned, the caller must keep |buf| and |address|
-  // alive until the callback is called.
+  // If ERR_IO_PENDING is returned, this socket takes a ref to |buf| to keep
+  // it alive until the data is received. However, the caller must keep
+  // |address| alive until the callback is called.
   int RecvFrom(IOBuffer* buf,
                int buf_len,
                IPEndPoint* address,
@@ -247,8 +248,9 @@ class NET_EXPORT UDPSocketPosix {
   // |address| is the recipient address.
   // |callback| is the user callback function to call on complete.
   // Returns a net error code, or ERR_IO_PENDING if the IO is in progress.
-  // If ERR_IO_PENDING is returned, the caller must keep |buf| and |address|
-  // alive until the callback is called.
+  // If ERR_IO_PENDING is returned, this socket copies |address| for
+  // asynchronous sending, and takes a ref to |buf| to keep it alive until the
+  // data is sent.
   int SendTo(IOBuffer* buf,
              int buf_len,
              const IPEndPoint& address,
@@ -287,6 +289,19 @@ class NET_EXPORT UDPSocketPosix {
   // broadcast addresses.
   // Returns a net error code.
   int SetBroadcast(bool broadcast);
+
+  // Sets socket options to allow the socket to share the local address to which
+  // the socket will be bound with other processes and attempt to allow all such
+  // sockets to receive the same multicast messages. Returns a net error code.
+  //
+  // Ability and requirements for different sockets to receive the same messages
+  // varies between POSIX platforms.  For best results in allowing the messages
+  // to be shared, all sockets sharing the same address should join the same
+  // multicast group and interface. Also, the socket should listen to the
+  // specific multicast address rather than a wildcard address (e.g. 0.0.0.0).
+  //
+  // Should be called between Open() and Bind().
+  int AllowAddressSharingForMulticast();
 
   // Joins the multicast group.
   // |group_address| is the group address to join, could be either
@@ -369,7 +384,7 @@ class NET_EXPORT UDPSocketPosix {
   void enable_experimental_recv_optimization() {
     DCHECK_EQ(kInvalidSocket, socket_);
     experimental_recv_optimization_enabled_ = true;
-  };
+  }
 
  protected:
   // WriteAsync batching etc. are to improve throughput of large high

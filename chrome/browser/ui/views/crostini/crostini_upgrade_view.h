@@ -8,7 +8,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace crostini {
-enum class ConciergeClientResult;
+enum class CrostiniResult;
 }  // namespace crostini
 
 class Profile;

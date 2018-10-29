@@ -4,6 +4,8 @@
 
 #include "ui/views/examples/text_example.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/canvas.h"
@@ -129,10 +131,7 @@ class TextExample::TextExampleView : public View {
 
 TextExample::TextExample() : ExampleBase("Text Styles") {}
 
-TextExample::~TextExample() {
-  // Remove the views first as some reference combobox models.
-  container()->RemoveAllChildViews(true);
-}
+TextExample::~TextExample() = default;
 
 Checkbox* TextExample::AddCheckbox(GridLayout* layout, const char* name) {
   Checkbox* checkbox = new Checkbox(base::ASCIIToUTF16(name), this);
@@ -146,9 +145,8 @@ Combobox* TextExample::AddCombobox(GridLayout* layout,
                                    int count) {
   layout->StartRow(0, 0);
   layout->AddView(new Label(base::ASCIIToUTF16(name)));
-  example_combobox_model_.push_back(
-      std::make_unique<ExampleComboboxModel>(strings, count));
-  Combobox* combobox = new Combobox(example_combobox_model_.back().get());
+  Combobox* combobox =
+      new Combobox(std::make_unique<ExampleComboboxModel>(strings, count));
   combobox->SetSelectedIndex(0);
   combobox->set_listener(this);
   layout->AddView(combobox, kNumColumns - 1, 1);
@@ -204,7 +202,8 @@ void TextExample::ButtonPressed(Button* button, const ui::Event& event) {
   int flags = text_view_->flags();
   int style = text_view_->GetStyle();
   SetFlagFromCheckbox(multiline_checkbox_, &flags, gfx::Canvas::MULTI_LINE);
-  SetFlagFromCheckbox(break_checkbox_, &flags, gfx::Canvas::CHARACTER_BREAK);
+  SetFlagFromCheckbox(break_checkbox_, &flags,
+                      gfx::Canvas::CHARACTER_BREAKABLE);
   SetFlagFromCheckbox(italic_checkbox_, &style, gfx::Font::ITALIC);
   SetFlagFromCheckbox(underline_checkbox_, &style, gfx::Font::UNDERLINE);
   text_view_->set_flags(flags);

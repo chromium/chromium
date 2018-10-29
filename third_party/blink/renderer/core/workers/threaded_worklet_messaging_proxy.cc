@@ -35,7 +35,8 @@ ThreadedWorkletMessagingProxy::ThreadedWorkletMessagingProxy(
 
 void ThreadedWorkletMessagingProxy::Initialize(
     WorkerClients* worker_clients,
-    WorkletModuleResponsesMap* module_responses_map) {
+    WorkletModuleResponsesMap* module_responses_map,
+    const base::Optional<WorkerBackingThreadStartupData>& thread_startup_data) {
   DCHECK(IsMainThread());
   if (AskedToTerminate())
     return;
@@ -43,7 +44,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
   worklet_object_proxy_ =
       CreateObjectProxy(this, GetParentExecutionContextTaskRunners());
 
-  Document* document = ToDocument(GetExecutionContext());
+  Document* document = To<Document>(GetExecutionContext());
   ContentSecurityPolicy* csp = document->GetContentSecurityPolicy();
   DCHECK(csp);
 
@@ -63,12 +64,15 @@ void ThreadedWorkletMessagingProxy::Initialize(
           OriginTrialContext::GetTokens(document).get(),
           base::UnguessableToken::Create(),
           std::make_unique<WorkerSettings>(document->GetSettings()),
-          kV8CacheOptionsDefault, module_responses_map);
+          kV8CacheOptionsDefault, module_responses_map,
+          service_manager::mojom::blink::InterfaceProviderPtrInfo(),
+          BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
+          document->GetAgentClusterID());
 
   // Worklets share the pre-initialized backing thread so that we don't have to
   // specify the backing thread startup data.
   InitializeWorkerThread(std::move(global_scope_creation_params),
-                         base::nullopt);
+                         thread_startup_data);
 }
 
 void ThreadedWorkletMessagingProxy::Trace(blink::Visitor* visitor) {

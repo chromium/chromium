@@ -27,7 +27,11 @@ class MockPlatform final : public TestingPlatformSupportWithMockScheduler {
   ~MockPlatform() override = default;
 
   // From blink::Platform:
-  void CacheMetadata(const WebURL& url, Time, const char*, size_t) override {
+  void CacheMetadata(blink::mojom::CodeCacheType cache_type,
+                     const WebURL& url,
+                     Time,
+                     const char*,
+                     size_t) override {
     cached_urls_.push_back(url);
   }
 
@@ -38,7 +42,7 @@ class MockPlatform final : public TestingPlatformSupportWithMockScheduler {
 };
 
 ResourceResponse CreateTestResourceResponse() {
-  ResourceResponse response(URLTestHelpers::ToKURL("https://example.com/"));
+  ResourceResponse response(url_test_helpers::ToKURL("https://example.com/"));
   response.SetHTTPStatusCode(200);
   return response;
 }
@@ -405,8 +409,9 @@ TEST(ResourceTest, RedirectDuringRevalidation) {
 
   // Test the case where a client is added after revalidation is completed.
   Persistent<MockResourceClient> client2 = new MockResourceClient;
-  resource->AddClient(
-      client2, Platform::Current()->CurrentThread()->GetTaskRunner().get());
+  auto* platform = static_cast<TestingPlatformSupportWithMockScheduler*>(
+      Platform::Current());
+  resource->AddClient(client2, platform->test_task_runner().get());
 
   // Because the client is added asynchronously,
   // |runUntilIdle()| is called to make |client2| to be notified.

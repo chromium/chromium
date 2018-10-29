@@ -1,8 +1,6 @@
 # These tests currently fail when run with --enable-features=NetworkSerivce
 # See https://crbug.com/729849
 
-crbug.com/829417 external/wpt/html/browsers/offline/appcache/workers/appcache-worker.https.html [ Timeout ]
-
 Bug(none) http/tests/security/cors-rfc1918 [ Crash Timeout ]
 Bug(none) http/tests/security/powerfulFeatureRestrictions/old-powerful-features-on-insecure-origin.html [ Pass Timeout ]
 Bug(none) virtual/outofblink-cors/http/tests/security/cors-rfc1918 [ Crash Timeout ]
@@ -16,16 +14,12 @@ crbug.com/800898 external/wpt/FileAPI/url/url-in-tags-revoke.window.html [ Pass 
 crbug.com/800898 external/wpt/workers/worker-from-blob-url.window.html [ Pass ]
 crbug.com/595993 external/wpt/service-workers/service-worker/request-end-to-end.https.html [ Pass ]
 crbug.com/862886 external/wpt/service-workers/service-worker/navigation-preload/broken-chunked-encoding.https.html [ Pass ]
+crbug.com/896924 http/tests/inspector-protocol/network/interception-multiclient.js [ Pass ]
 
 # Flaky on non-NetworkService (disabled), consistent failing on NetworkService. Probably due to DCHECK.
 crbug.com/849670 http/tests/devtools/service-workers/service-worker-v8-cache.js [ Pass Failure ]
-crbug.com/850689 http/tests/inspector-protocol/network/interception-cookie.js [ Failure ]
-crbug.com/850689 http/tests/inspector-protocol/network/interception-set-cookie.js [ Failure ]
 
 # This passes in content_shell but not in chrome with network service disabled,
 # because content_shell does not add the about: handler. With network service
 # enabled this fails in both content_shell and chrome.
 Bug(none) http/tests/misc/redirect-to-about-blank.html [ Timeout ]
-
-# PlzWorker: This is tentatively failing because of unimplemented code.
-crbug.com/715632 external/wpt/fetch/sec-metadata/sharedworker.tentative.https.sub.html [ Failure ]

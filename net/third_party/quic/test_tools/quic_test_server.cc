@@ -19,6 +19,7 @@ class CustomStreamSession : public QuicSimpleServerSession {
  public:
   CustomStreamSession(
       const QuicConfig& config,
+      const ParsedQuicVersionVector& supported_versions,
       QuicConnection* connection,
       QuicSession::Visitor* visitor,
       QuicCryptoServerStream::Helper* helper,
@@ -28,6 +29,7 @@ class CustomStreamSession : public QuicSimpleServerSession {
       QuicTestServer::CryptoStreamFactory* crypto_stream_factory,
       QuicSimpleServerBackend* quic_simple_server_backend)
       : QuicSimpleServerSession(config,
+                                supported_versions,
                                 connection,
                                 visitor,
                                 helper,
@@ -37,8 +39,8 @@ class CustomStreamSession : public QuicSimpleServerSession {
         stream_factory_(stream_factory),
         crypto_stream_factory_(crypto_stream_factory) {}
 
-  QuicSpdyStream* CreateIncomingDynamicStream(QuicStreamId id) override {
-    if (!ShouldCreateIncomingDynamicStream(id)) {
+  QuicSpdyStream* CreateIncomingStream(QuicStreamId id) override {
+    if (!ShouldCreateIncomingStream(id)) {
       return nullptr;
     }
     if (stream_factory_) {
@@ -47,7 +49,7 @@ class CustomStreamSession : public QuicSimpleServerSession {
       ActivateStream(QuicWrapUnique(stream));
       return stream;
     }
-    return QuicSimpleServerSession::CreateIncomingDynamicStream(id);
+    return QuicSimpleServerSession::CreateIncomingStream(id);
   }
 
   QuicCryptoServerStreamBase* CreateQuicCryptoServerStream(
@@ -97,14 +99,14 @@ class QuicTestDispatcher : public QuicSimpleDispatcher {
     QuicConnection* connection =
         new QuicConnection(id, client, helper(), alarm_factory(), writer(),
                            /* owns_writer= */ false, Perspective::IS_SERVER,
-                           GetSupportedVersions());
+                           ParsedQuicVersionVector{framer()->version()});
 
     QuicServerSessionBase* session = nullptr;
     if (stream_factory_ != nullptr || crypto_stream_factory_ != nullptr) {
       session = new CustomStreamSession(
-          config(), connection, this, session_helper(), crypto_config(),
-          compressed_certs_cache(), stream_factory_, crypto_stream_factory_,
-          server_backend());
+          config(), GetSupportedVersions(), connection, this, session_helper(),
+          crypto_config(), compressed_certs_cache(), stream_factory_,
+          crypto_stream_factory_, server_backend());
     } else {
       session = session_factory_->CreateSession(
           config(), connection, this, session_helper(), crypto_config(),
@@ -194,6 +196,7 @@ ImmediateGoAwaySession::ImmediateGoAwaySession(
     QuicCompressedCertsCache* compressed_certs_cache,
     QuicSimpleServerBackend* quic_simple_server_backend)
     : QuicSimpleServerSession(config,
+                              CurrentSupportedVersions(),
                               connection,
                               visitor,
                               helper,

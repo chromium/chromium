@@ -91,7 +91,7 @@ void SafeSearchURLReporter::StartFetching(Report* report) {
 void SafeSearchURLReporter::OnGetTokenSuccess(
     const OAuth2TokenService::Request* request,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
-  ReportList::iterator it = reports_.begin();
+  auto it = reports_.begin();
   while (it != reports_.end()) {
     if (request == (*it)->access_token_request.get())
       break;
@@ -158,7 +158,7 @@ void SafeSearchURLReporter::OnGetTokenSuccess(
 void SafeSearchURLReporter::OnGetTokenFailure(
     const OAuth2TokenService::Request* request,
     const GoogleServiceAuthError& error) {
-  ReportList::iterator it = reports_.begin();
+  auto it = reports_.begin();
   while (it != reports_.end()) {
     if (request == (*it)->access_token_request.get())
       break;

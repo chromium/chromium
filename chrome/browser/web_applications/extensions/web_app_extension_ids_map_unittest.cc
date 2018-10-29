@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,7 +19,7 @@
 
 namespace web_app {
 
-using InstallSource = PendingAppManager::InstallSource;
+using InstallSource = InstallSource;
 
 class WebAppExtensionIdsMapTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -39,10 +40,9 @@ class WebAppExtensionIdsMapTest : public ChromeRenderViewHostTestHarness {
     return crx_file::id_util::GenerateId("fake_app_id_for:" + url.spec());
   }
 
-  void SimulatePreviouslyInstalledApp(
-      GURL url,
-      PendingAppManager::InstallSource install_source,
-      const char* format = nullptr) {
+  void SimulatePreviouslyInstalledApp(GURL url,
+                                      InstallSource install_source,
+                                      const char* format = nullptr) {
     std::string id = GenerateFakeExtensionId(url);
     extensions::ExtensionRegistry::Get(profile())->AddEnabled(
         extensions::ExtensionBuilder("Dummy Name").SetID(id).Build());
@@ -53,7 +53,7 @@ class WebAppExtensionIdsMapTest : public ChromeRenderViewHostTestHarness {
       extension_ids_map.Insert(url, id, install_source);
     } else if (std::string(format) == "M70") {
       // Write the M70 format, with an implicit kInternal install source.
-      EXPECT_EQ(PendingAppManager::InstallSource::kInternal, install_source);
+      EXPECT_EQ(InstallSource::kInternal, install_source);
       DictionaryPrefUpdate(profile()->GetPrefs(), prefs::kWebAppsExtensionIDs)
           ->SetKey(url.spec(), base::Value(id));
     } else {

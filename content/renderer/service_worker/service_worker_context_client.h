@@ -46,9 +46,7 @@ class TaskRunner;
 
 namespace blink {
 struct PlatformNotificationData;
-class WebDataConsumerHandle;
 class WebServiceWorkerContextProxy;
-class WebServiceWorkerProvider;
 class WebServiceWorkerResponse;
 class WebURLResponse;
 }
@@ -60,7 +58,6 @@ class HostChildURLLoaderFactoryBundle;
 class ServiceWorkerNetworkProvider;
 class ServiceWorkerProviderContext;
 class ServiceWorkerTimeoutTimer;
-class WebServiceWorkerImpl;
 class WebWorkerFetchContext;
 
 // ServiceWorkerContextClient is a "client" of a service worker execution
@@ -104,11 +101,6 @@ class CONTENT_EXPORT ServiceWorkerContextClient
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner);
   ~ServiceWorkerContextClient() override;
 
-  // Returns the service worker object described by |info|. Creates a new object
-  // if needed, or else returns the existing one.
-  scoped_refptr<WebServiceWorkerImpl> GetOrCreateServiceWorkerObject(
-      blink::mojom::ServiceWorkerObjectInfoPtr info);
-
   // WebServiceWorkerContextClient overrides.
   void WorkerReadyForInspection() override;
   void WorkerContextFailedToStart() override;
@@ -116,8 +108,8 @@ class CONTENT_EXPORT ServiceWorkerContextClient
   void WorkerScriptLoaded() override;
   void WorkerContextStarted(
       blink::WebServiceWorkerContextProxy* proxy) override;
-  void WillEvaluateClassicScript() override;
-  void DidEvaluateClassicScript(bool success) override;
+  void WillEvaluateScript() override;
+  void DidEvaluateScript(bool success) override;
   void DidInitializeWorkerContext(v8::Local<v8::Context> context) override;
   void WillDestroyWorkerContext(v8::Local<v8::Context> context) override;
   void WorkerContextDestroyed() override;
@@ -162,15 +154,18 @@ class CONTENT_EXPORT ServiceWorkerContextClient
                              base::TimeTicks event_dispatch_time) override;
   void RespondToFetchEventWithNoResponse(
       int fetch_event_id,
-      base::TimeTicks event_dispatch_time) override;
+      base::TimeTicks event_dispatch_time,
+      base::TimeTicks respond_with_settled_time) override;
   void RespondToFetchEvent(int fetch_event_id,
                            const blink::WebServiceWorkerResponse& response,
-                           base::TimeTicks event_dispatch_time) override;
+                           base::TimeTicks event_dispatch_time,
+                           base::TimeTicks respond_with_settled_time) override;
   void RespondToFetchEventWithResponseStream(
       int fetch_event_id,
       const blink::WebServiceWorkerResponse& response,
       blink::WebServiceWorkerStreamHandle* web_body_as_stream,
-      base::TimeTicks event_dispatch_time) override;
+      base::TimeTicks event_dispatch_time,
+      base::TimeTicks respond_with_settled_time) override;
   void DidHandleFetchEvent(int fetch_event_id,
                            blink::mojom::ServiceWorkerEventStatus status,
                            base::TimeTicks event_dispatch_time) override;
@@ -214,8 +209,6 @@ class CONTENT_EXPORT ServiceWorkerContextClient
   CreateServiceWorkerNetworkProvider() override;
   std::unique_ptr<blink::WebWorkerFetchContext> CreateServiceWorkerFetchContext(
       blink::WebServiceWorkerNetworkProvider*) override;
-  std::unique_ptr<blink::WebServiceWorkerProvider> CreateServiceWorkerProvider()
-      override;
 
   // Dispatches the fetch event if the worker is running normally, and queues it
   // instead if the worker has already requested to be terminated by the
@@ -235,7 +228,6 @@ class CONTENT_EXPORT ServiceWorkerContextClient
   class NavigationPreloadRequest;
   friend class ControllerServiceWorkerImpl;
   friend class ServiceWorkerContextClientTest;
-  friend class WebServiceWorkerImpl;
   FRIEND_TEST_ALL_PREFIXES(
       ServiceWorkerContextClientTest,
       DispatchOrQueueFetchEvent_RequestedTerminationAndDie);
@@ -338,7 +330,7 @@ class CONTENT_EXPORT ServiceWorkerContextClient
   void OnNavigationPreloadResponse(
       int fetch_event_id,
       std::unique_ptr<blink::WebURLResponse> response,
-      std::unique_ptr<blink::WebDataConsumerHandle> data_consumer_handle);
+      mojo::ScopedDataPipeConsumerHandle data_pipe);
   // Called when the navigation preload request completed. Either
   // OnNavigationPreloadComplete() or OnNavigationPreloadError() must be
   // called to release the preload related resources.
@@ -368,10 +360,8 @@ class CONTENT_EXPORT ServiceWorkerContextClient
   // process. It does this due to idle timeout.
   bool RequestedTermination() const;
 
-  // Keeps the mapping from version id to ServiceWorker object.
-  void AddServiceWorkerObject(int64_t version_id, WebServiceWorkerImpl* worker);
-  void RemoveServiceWorkerObject(int64_t version_id);
-  bool ContainsServiceWorkerObjectForTesting(int64_t version_id);
+  // Stops the worker context. Called on the main thread.
+  void StopWorker();
 
   base::WeakPtr<ServiceWorkerContextClient> GetWeakPtr();
 
@@ -427,6 +417,11 @@ class CONTENT_EXPORT ServiceWorkerContextClient
   // S13nServiceWorker:
   // A URLLoaderFactory instance used for subresource loading.
   scoped_refptr<HostChildURLLoaderFactoryBundle> loader_factories_;
+
+  // Out-of-process NetworkService:
+  // Detects disconnection from the network service.
+  network::mojom::URLLoaderFactoryPtr
+      network_service_connection_error_handler_holder_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextClient);
 };

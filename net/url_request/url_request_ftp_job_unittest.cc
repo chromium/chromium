@@ -761,12 +761,13 @@ TEST_F(URLRequestFtpJobTest, FtpProxyRequestDoNotReuseSocket) {
               "Proxy-Connection: keep-alive\r\n\r\n"),
   };
   MockWrite writes2[] = {
-    MockWrite(ASYNC, 0, "GET /second HTTP/1.1\r\n"
-              "Host: ftp.example.com\r\n"
-              "Connection: keep-alive\r\n"
-              "User-Agent:\r\n"
-              "Accept-Encoding: gzip, deflate\r\n"
-              "Accept-Language: en-us,fr\r\n\r\n"),
+      MockWrite(ASYNC, 0,
+                "GET /second HTTP/1.1\r\n"
+                "Host: ftp.example.com\r\n"
+                "Connection: keep-alive\r\n"
+                "User-Agent: \r\n"
+                "Accept-Encoding: gzip, deflate\r\n"
+                "Accept-Language: en-us,fr\r\n\r\n"),
   };
   MockRead reads1[] = {
     MockRead(ASYNC, 1, "HTTP/1.1 200 OK\r\n"),

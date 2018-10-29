@@ -11,26 +11,32 @@
 
 namespace ui {
 
-WaylandOutput::WaylandOutput(const int64_t display_id, wl_output* output)
-    : display_id_(display_id), output_(output), observer_(nullptr) {
+namespace {
+constexpr float kDefaultScaleFactor = 1.0f;
+}
+
+WaylandOutput::WaylandOutput(const uint32_t output_id, wl_output* output)
+    : output_id_(output_id),
+      output_(output),
+      device_scale_factor_(kDefaultScaleFactor),
+      rect_in_physical_pixels_(gfx::Rect()) {}
+
+WaylandOutput::~WaylandOutput() = default;
+
+void WaylandOutput::Initialize(Delegate* delegate) {
+  DCHECK(!delegate_);
+  delegate_ = delegate;
   static const wl_output_listener output_listener = {
       &WaylandOutput::OutputHandleGeometry, &WaylandOutput::OutputHandleMode,
+      &WaylandOutput::OutputHandleDone, &WaylandOutput::OutputHandleScale,
   };
-  wl_output_add_listener(output, &output_listener, this);
+  wl_output_add_listener(output_.get(), &output_listener, this);
 }
 
-WaylandOutput::~WaylandOutput() {}
-
-void WaylandOutput::SetObserver(Observer* observer) {
-  observer_ = observer;
-  if (current_mode_)
-    observer_->OnOutputReadyForUse();
-}
-
-void WaylandOutput::GetDisplaysSnapshot(display::GetDisplaysCallback callback) {
-  std::vector<display::DisplaySnapshot*> snapshot;
-  snapshot.push_back(current_snapshot_.get());
-  std::move(callback).Run(snapshot);
+void WaylandOutput::TriggerDelegateNotification() const {
+  DCHECK(!rect_in_physical_pixels_.IsEmpty());
+  delegate_->OnOutputHandleMetrics(output_id_, rect_in_physical_pixels_,
+                                   device_scale_factor_);
 }
 
 // static
@@ -45,13 +51,8 @@ void WaylandOutput::OutputHandleGeometry(void* data,
                                          const char* model,
                                          int32_t output_transform) {
   WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
-  wayland_output->current_snapshot_.reset(new display::DisplaySnapshot(
-      wayland_output->display_id_, gfx::Point(x, y),
-      gfx::Size(physical_width, physical_height),
-      display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_NONE, false,
-      false, false, false, gfx::ColorSpace(), model, base::FilePath(),
-      display::DisplaySnapshot::DisplayModeList(), std::vector<uint8_t>(),
-      nullptr, nullptr, 0, 0, gfx::Size()));
+  if (wayland_output)
+    wayland_output->rect_in_physical_pixels_.set_origin(gfx::Point(x, y));
 }
 
 // static
@@ -61,17 +62,27 @@ void WaylandOutput::OutputHandleMode(void* data,
                                      int32_t width,
                                      int32_t height,
                                      int32_t refresh) {
-  WaylandOutput* output = static_cast<WaylandOutput*>(data);
+  WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
+  if (wayland_output && (flags & WL_OUTPUT_MODE_CURRENT)) {
+    wayland_output->rect_in_physical_pixels_.set_width(width);
+    wayland_output->rect_in_physical_pixels_.set_height(height);
+    wayland_output->TriggerDelegateNotification();
+  }
+}
 
-  if (flags & WL_OUTPUT_MODE_CURRENT) {
-    std::unique_ptr<display::DisplayMode> previous_mode =
-        std::move(output->current_mode_);
-    output->current_mode_.reset(
-        new display::DisplayMode(gfx::Size(width, height), false, refresh));
-    output->current_snapshot_->set_current_mode(output->current_mode_.get());
+// static
+void WaylandOutput::OutputHandleDone(void* data, struct wl_output* wl_output) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
 
-    if (output->observer())
-      output->observer()->OnOutputReadyForUse();
+// static
+void WaylandOutput::OutputHandleScale(void* data,
+                                      struct wl_output* wl_output,
+                                      int32_t factor) {
+  WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
+  if (wayland_output) {
+    wayland_output->device_scale_factor_ = factor;
+    wayland_output->TriggerDelegateNotification();
   }
 }
 

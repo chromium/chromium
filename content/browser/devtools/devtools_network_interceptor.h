@@ -12,7 +12,13 @@
 #include "content/browser/devtools/protocol/network.h"
 #include "content/public/common/resource_type.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/auth.h"
 #include "net/base/net_errors.h"
+
+namespace net {
+class AuthChallengeInfo;
+class HttpResponseHeaders;
+}  // namespace net
 
 namespace content {
 
@@ -21,18 +27,15 @@ struct InterceptedRequestInfo {
   ~InterceptedRequestInfo();
 
   std::string interception_id;
-  std::unique_ptr<protocol::Network::Request> network_request;
   base::UnguessableToken frame_id;
   ResourceType resource_type;
   bool is_navigation;
-  protocol::Maybe<bool> is_download;
-  protocol::Maybe<protocol::Object> redirect_headers;
-  protocol::Maybe<int> redirect_status_code;
-  protocol::Maybe<protocol::String> redirect_url;
-  protocol::Maybe<protocol::Network::AuthChallenge> auth_challenge;
   int response_error_code;
-  protocol::Maybe<int> http_response_status_code;
-  protocol::Maybe<protocol::Object> response_headers;
+  std::unique_ptr<protocol::Network::Request> network_request;
+  scoped_refptr<net::AuthChallengeInfo> auth_challenge;
+  scoped_refptr<net::HttpResponseHeaders> response_headers;
+  protocol::Maybe<bool> is_download;
+  protocol::Maybe<protocol::String> redirect_url;
 };
 
 class DevToolsNetworkInterceptor {
@@ -50,32 +53,53 @@ class DevToolsNetworkInterceptor {
                               mojo::ScopedDataPipeConsumerHandle,
                               const std::string& mime_type)>;
 
+  struct AuthChallengeResponse {
+    enum ResponseType {
+      kDefault,
+      kCancelAuth,
+      kProvideCredentials,
+    };
+
+    explicit AuthChallengeResponse(ResponseType response_type);
+    AuthChallengeResponse(const base::string16& username,
+                          const base::string16& password);
+
+    const ResponseType response_type;
+    const net::AuthCredentials credentials;
+
+    DISALLOW_COPY_AND_ASSIGN(AuthChallengeResponse);
+  };
+
   struct Modifications {
+    using HeadersVector = std::vector<std::pair<std::string, std::string>>;
+
     Modifications();
-    Modifications(base::Optional<net::Error> error_reason,
-                  base::Optional<std::string> raw_response,
-                  protocol::Maybe<std::string> modified_url,
-                  protocol::Maybe<std::string> modified_method,
-                  protocol::Maybe<std::string> modified_post_data,
-                  protocol::Maybe<protocol::Network::Headers> modified_headers,
-                  protocol::Maybe<protocol::Network::AuthChallengeResponse>
-                      auth_challenge_response);
+    Modifications(
+        base::Optional<net::Error> error_reason,
+        scoped_refptr<net::HttpResponseHeaders> response_headers,
+        std::unique_ptr<std::string> response_body,
+        protocol::Maybe<std::string> modified_url,
+        protocol::Maybe<std::string> modified_method,
+        protocol::Maybe<std::string> modified_post_data,
+        std::unique_ptr<HeadersVector> modified_headers,
+        std::unique_ptr<AuthChallengeResponse> auth_challenge_response);
     ~Modifications();
 
     // If none of the following are set then the request will be allowed to
     // continue unchanged.
     base::Optional<net::Error> error_reason;   // Finish with error.
-    base::Optional<std::string> raw_response;  // Finish with mock response.
+    // If either of the below fields is set, complete the request by
+    // responding with the provided headers and body.
+    scoped_refptr<net::HttpResponseHeaders> response_headers;
+    std::unique_ptr<std::string> response_body;
 
     // Optionally modify before sending to network.
     protocol::Maybe<std::string> modified_url;
     protocol::Maybe<std::string> modified_method;
     protocol::Maybe<std::string> modified_post_data;
-    protocol::Maybe<protocol::Network::Headers> modified_headers;
-
+    std::unique_ptr<HeadersVector> modified_headers;
     // AuthChallengeResponse is mutually exclusive with the above.
-    protocol::Maybe<protocol::Network::AuthChallengeResponse>
-        auth_challenge_response;
+    std::unique_ptr<AuthChallengeResponse> auth_challenge_response;
   };
 
   enum InterceptionStage {

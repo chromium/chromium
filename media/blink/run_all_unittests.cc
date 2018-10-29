@@ -12,7 +12,6 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/web/blink.h"
 
 #if defined(OS_ANDROID)
@@ -40,7 +39,8 @@ class BlinkPlatformWithTaskEnvironment : public blink::Platform {
  public:
   BlinkPlatformWithTaskEnvironment()
       : main_thread_scheduler_(
-            blink::scheduler::CreateWebMainThreadSchedulerForTests()) {}
+            blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler()) {
+  }
 
   ~BlinkPlatformWithTaskEnvironment() override {
     main_thread_scheduler_->Shutdown();

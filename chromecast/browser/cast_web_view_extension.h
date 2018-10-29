@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chromecast/browser/cast_web_contents_impl.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "content/public/browser/media_capture_devices.h"
 #include "content/public/browser/navigation_handle.h"
@@ -24,14 +25,12 @@
 #include "url/gurl.h"
 
 namespace chromecast {
-namespace shell {
-class RemoteDebuggingServer;
-}
 
 class CastExtensionHost;
 
 // A simplified interface for loading and displaying WebContents in cast_shell.
-class CastWebViewExtension : public CastWebView, content::WebContentsObserver {
+class CastWebViewExtension : public CastWebView,
+                             public content::WebContentsObserver {
  public:
   // |delegate| and |browser_context| should outlive the lifetime of this
   // object.
@@ -52,25 +51,18 @@ class CastWebViewExtension : public CastWebView, content::WebContentsObserver {
   void InitializeWindow(CastWindowManager* window_manager,
                         CastWindowManager::WindowId z_order,
                         VisibilityPriority initial_priority) override;
+  void SetContext(base::Value context) override;
   void GrantScreenAccess() override;
   void RevokeScreenAccess() override;
 
  private:
   // WebContentsObserver implementation:
-  void WebContentsDestroyed() override;
   void RenderViewCreated(content::RenderViewHost* render_view_host) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void DidFailLoad(content::RenderFrameHost* render_frame_host,
-                   const GURL& validated_url,
-                   int error_code,
-                   const base::string16& error_description) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
 
   Delegate* const delegate_;
   const std::unique_ptr<shell::CastContentWindow> window_;
   const std::unique_ptr<CastExtensionHost> extension_host_;
-  shell::RemoteDebuggingServer* remote_debugging_server_;
+  CastWebContentsImpl cast_web_contents_;
   scoped_refptr<content::SiteInstance> site_instance_;
 
   DISALLOW_COPY_AND_ASSIGN(CastWebViewExtension);

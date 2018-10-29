@@ -127,7 +127,7 @@ class WPTGitHub(object):
 
         return response.data['number']
 
-    def update_pr(self, pr_number, desc_title, body):
+    def update_pr(self, pr_number, desc_title=None, body=None, state=None):
         """Updates a PR on GitHub.
 
         API doc: https://developer.github.com/v3/pulls/#update-a-pull-request
@@ -137,11 +137,14 @@ class WPTGitHub(object):
             WPT_GH_REPO_NAME,
             pr_number
         )
-        body = {
-            'title': desc_title,
-            'body': body,
-        }
-        response = self.request(path, method='PATCH', body=body)
+        payload = {}
+        if desc_title:
+            payload['title'] = desc_title
+        if body:
+            payload['body'] = body
+        if state:
+            payload['state'] = state
+        response = self.request(path, method='PATCH', body=payload)
 
         if response.status_code != 200:
             raise GitHubError(200, response.status_code, 'update PR %d' % pr_number)
@@ -179,6 +182,22 @@ class WPTGitHub(object):
         # on success. However in reality it returns a 200.
         if response.status_code not in (200, 204):
             raise GitHubError((200, 204), response.status_code, 'remove label %s from issue %d' % (label, number))
+
+    def add_comment(self, number, comment_body):
+        """Add a comment for an issue (or PR).
+
+        API doc: https://developer.github.com/v3/issues/comments/#create-a-comment
+        """
+        path = '/repos/%s/%s/issues/%d/comments' % (
+            WPT_GH_ORG,
+            WPT_GH_REPO_NAME,
+            number
+        )
+        body = {'body': comment_body}
+        response = self.request(path, method='POST', body=body)
+
+        if response.status_code != 201:
+            raise GitHubError(201, response.status_code, 'add comment %s to issue %d' % (comment_body, number))
 
     def make_pr_from_item(self, item):
         labels = [label['name'] for label in item['labels']]

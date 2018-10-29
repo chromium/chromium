@@ -51,11 +51,10 @@ bool GetDisplayModeForResolution(const ManagedDisplayInfo& info,
   const ManagedDisplayInfo::ManagedDisplayModeList& modes =
       info.display_modes();
   DCHECK_NE(0u, modes.size());
-  ManagedDisplayInfo::ManagedDisplayModeList::const_iterator iter =
-      std::find_if(modes.begin(), modes.end(),
-                   [resolution](const ManagedDisplayMode& mode) {
-                     return mode.size() == resolution;
-                   });
+  auto iter = std::find_if(modes.begin(), modes.end(),
+                           [resolution](const ManagedDisplayMode& mode) {
+                             return mode.size() == resolution;
+                           });
   if (iter == modes.end()) {
     DLOG(WARNING) << "Unsupported resolution was requested:"
                   << resolution.ToString();
@@ -94,8 +93,8 @@ void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs) {
     // Start from (1,1) so that windows won't overlap with native mouse cursor.
     // See |AshTestBase::SetUp()|.
     int next_y = 1;
-    for (DisplayInfoList::iterator iter = display_info_list.begin();
-         iter != display_info_list.end(); ++iter) {
+    for (auto iter = display_info_list.begin(); iter != display_info_list.end();
+         ++iter) {
       gfx::Rect bounds(iter->bounds_in_native().size());
       bounds.set_x(1);
       bounds.set_y(next_y);

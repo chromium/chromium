@@ -102,7 +102,7 @@ class CONTENT_EXPORT RtcDataChannelHandler
   };
 
   scoped_refptr<Observer> observer_;
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   blink::WebRTCDataChannelHandlerClient* webkit_client_;
 };

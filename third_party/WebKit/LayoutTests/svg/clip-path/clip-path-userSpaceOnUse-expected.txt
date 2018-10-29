@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGHiddenContainer {defs} at (0,0) size 0x0
-      LayoutSVGResourceClipper {clipPath} [id="clip"] [clipPathUnits=userSpaceOnUse]
-        LayoutSVGPath {path} at (0,0) size 200x170 [transform={m=((1.00,0.00)(0.00,1.00)) t=(40.00,40.00)}] [fill={[type=SOLID] [color=#000000]}] [data="m 100 0 l 60 170 l -160 -110 l 200 0 l -170 110 Z"]
-    LayoutSVGRect {rect} at (40,40) size 300x300 [fill={[type=SOLID] [color=#008000]}] [x=40.00] [y=40.00] [width=300.00] [height=300.00]
-      [clipPath="clip"] LayoutSVGResourceClipper {clipPath} at (40,40) size 200x170

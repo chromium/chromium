@@ -83,7 +83,8 @@ class TestExtensionEnvironment {
 
   // Generates a valid packaged app manifest with the given ID. If |install|
   // it gets added to the ExtensionService in |profile|.
-  scoped_refptr<Extension> MakePackagedApp(const std::string& id, bool install);
+  scoped_refptr<const Extension> MakePackagedApp(const std::string& id,
+                                                 bool install);
 
   // Returns a test web contents that has a tab id.
   std::unique_ptr<content::WebContents> MakeTab() const;

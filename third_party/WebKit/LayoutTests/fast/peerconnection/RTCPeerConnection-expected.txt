@@ -1,7 +1,7 @@
-CONSOLE WARNING: line 1: The rtcpMuxPolicy option is being considered for removal and may be removed no earlier than M62, around October 2017. If you depend on it, please see https://www.chromestatus.com/features/5654810086866944 for more details.
-CONSOLE WARNING: line 1: Unknown constraint named invalid rejected
-CONSOLE WARNING: line 1: Unknown constraint named valid_but_unsupported_1 rejected
-CONSOLE WARNING: line 1: Unknown constraint named valid_but_unsupported_1 rejected
+CONSOLE WARNING: The rtcpMuxPolicy option is being considered for removal and may be removed no earlier than M62, around October 2017. If you depend on it, please see https://www.chromestatus.com/features/5654810086866944 for more details.
+CONSOLE WARNING: Unknown constraint named invalid rejected
+CONSOLE WARNING: Unknown constraint named valid_but_unsupported_1 rejected
+CONSOLE WARNING: Unknown constraint named valid_but_unsupported_1 rejected
 Tests the RTCPeerConnection constructor.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

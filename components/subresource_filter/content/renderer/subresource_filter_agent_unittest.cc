@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "components/subresource_filter/content/common/subresource_filter_messages.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
-#include "components/subresource_filter/core/common/document_load_statistics.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
@@ -52,7 +51,8 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
   MOCK_METHOD0(GetDocumentURL, GURL());
   MOCK_METHOD0(OnSetSubresourceFilterForCommittedLoadCalled, void());
   MOCK_METHOD0(SignalFirstSubresourceDisallowedForCommittedLoad, void());
-  MOCK_METHOD1(SendDocumentLoadStatistics, void(const DocumentLoadStatistics&));
+  MOCK_METHOD1(SendDocumentLoadStatistics,
+               void(const mojom::DocumentLoadStatistics&));
   MOCK_METHOD0(SendFrameIsAdSubframe, void());
 
   bool IsMainFrame() override { return true; }
@@ -77,6 +77,8 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
   std::unique_ptr<blink::WebDocumentSubresourceFilter> TakeFilter() {
     return std::move(last_injected_filter_);
   }
+
+  using SubresourceFilterAgent::ActivateForNextCommittedLoad;
 
  private:
   std::unique_ptr<blink::WebDocumentSubresourceFilter> last_injected_filter_;
@@ -157,9 +159,7 @@ class SubresourceFilterAgentTest : public ::testing::Test {
   void StartLoadAndSetActivationState(mojom::ActivationState state,
                                       bool is_ad_subframe = false) {
     agent_as_rfo()->DidStartProvisionalLoad(nullptr, true);
-    EXPECT_TRUE(agent_as_rfo()->OnMessageReceived(
-        SubresourceFilterMsg_ActivateForNextCommittedLoad(0, state,
-                                                          is_ad_subframe)));
+    agent()->ActivateForNextCommittedLoad(state.Clone(), is_ad_subframe);
     agent_as_rfo()->DidCommitProvisionalLoad(
         false /* is_same_document_navigation */, ui::PAGE_TRANSITION_LINK);
   }
@@ -202,8 +202,8 @@ class SubresourceFilterAgentTest : public ::testing::Test {
       base::StringPiece url_spec,
       blink::WebDocumentSubresourceFilter::LoadPolicy expected_policy) {
     blink::WebURL url = GURL(url_spec);
-    blink::WebURLRequest::RequestContext request_context =
-        blink::WebURLRequest::kRequestContextImage;
+    blink::mojom::RequestContextType request_context =
+        blink::mojom::RequestContextType::IMAGE;
     blink::WebDocumentSubresourceFilter::LoadPolicy actual_policy =
         agent()->filter()->GetLoadPolicy(url, request_context);
     EXPECT_EQ(expected_policy, actual_policy);
@@ -462,12 +462,11 @@ TEST_F(SubresourceFilterAgentTest,
       SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
   ExpectNoSubresourceFilterGetsInjected();
   agent_as_rfo()->DidStartProvisionalLoad(nullptr, true);
-  mojom::ActivationState state;
-  state.activation_level = mojom::ActivationLevel::kEnabled;
-  state.measure_performance = true;
-  EXPECT_TRUE(agent_as_rfo()->OnMessageReceived(
-      SubresourceFilterMsg_ActivateForNextCommittedLoad(
-          0, state, false /* is_ad_subframe */)));
+  mojom::ActivationStatePtr state = mojom::ActivationState::New();
+  state->activation_level = mojom::ActivationLevel::kEnabled;
+  state->measure_performance = true;
+  agent()->ActivateForNextCommittedLoad(std::move(state),
+                                        false /* is_ad_subframe */);
   agent_as_rfo()->DidFailProvisionalLoad(
       blink::WebURLError(net::ERR_FAILED, blink::WebURL()));
   agent_as_rfo()->DidStartProvisionalLoad(nullptr, true);

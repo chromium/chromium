@@ -56,6 +56,11 @@ const char kRunWebTests[] = "run-web-tests";
 // http://dev.chromium.org/blink/runtime-enabled-features.
 const char kStableReleaseMode[] = "stable-release-mode";
 
+// Test files are in //third_party/blink/web_tests, not in
+// //third_party/WebKit/LayoutTests.
+// TODO(tkent): Remove this flag after the move.
+const char kTestsInBlink[] = "tests-in-blink";
+
 // Enable pixel dumps via "real" surface readbacks, instead of synchronously
 // compositing and reading back pixels.
 const char kEnableDisplayCompositorPixelDump[] =

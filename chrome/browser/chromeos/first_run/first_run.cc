@@ -18,7 +18,8 @@
 #include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/common/chrome_switches.h"
@@ -31,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_info.h"
 #include "components/signin/core/browser/account_tracker_service.h"
+#include "components/signin/core/browser/signin_manager_base.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_observer.h"
@@ -39,7 +41,6 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chromeos {
@@ -74,6 +75,10 @@ void TryLaunchFirstRunDialog(Profile* profile) {
     LaunchDialogForProfile(profile);
     return;
   }
+
+  // TabletModeClient does not exist in some tests.
+  if (TabletModeClient::Get() && TabletModeClient::Get()->tablet_mode_enabled())
+    return;
 
   if (policy::ProfilePolicyConnectorFactory::GetForBrowserContext(profile)
           ->IsManaged())
@@ -122,11 +127,11 @@ class DialogLauncher : public content::NotificationObserver {
 
     // Whether the account is supported for voice interaction.
     bool account_supported = false;
-    identity::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_);
-    if (identity_manager) {
+    SigninManagerBase* signin_manager =
+        SigninManagerFactory::GetForProfileIfExists(profile_);
+    if (signin_manager) {
       std::string hosted_domain =
-          identity_manager->GetPrimaryAccountInfo().hosted_domain;
+          signin_manager->GetAuthenticatedAccountInfo().hosted_domain;
       if (hosted_domain == AccountTrackerService::kNoHostedDomainFound ||
           hosted_domain == "google.com") {
         account_supported = true;

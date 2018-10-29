@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/latency/fixed_point.h"
 #include "ui/latency/frame_metrics_test_common.h"
 
 namespace ui {
@@ -35,10 +36,11 @@ TEST(FrameMetricsWindowedAnalyzerTest, AllResultsTheSame) {
             value * TestWindowedAnalyzerClient::result_scale;
         EXPECT_EQ(analyzer.ComputeWorstMean().value, expected_value)
             << value << " x " << weight;
-        EXPECT_EQ(analyzer.ComputeWorstRMS().value, expected_value)
+        EXPECT_NEAR_SQRT_APPROX(analyzer.ComputeWorstRMS().value,
+                                expected_value)
             << value << " x " << weight;
-        EXPECT_NEAR_SMR(analyzer.ComputeWorstSMR().value, expected_value,
-                        weight)
+        EXPECT_NEAR_SQRT_APPROX(analyzer.ComputeWorstSMR().value,
+                                expected_value)
             << value << " x " << weight;
       }
     }
@@ -57,9 +59,9 @@ TEST(FrameMetricsWindowedAnalyzerTest, AllResultsTheSame) {
       // Makes sure our precision is good enough.
       EXPECT_EQ(analyzer.ComputeWorstMean().value, expected_value)
           << value << " x " << weight;
-      EXPECT_EQ(analyzer.ComputeWorstRMS().value, expected_value)
+      EXPECT_NEAR_SQRT_APPROX(analyzer.ComputeWorstRMS().value, expected_value)
           << value << " x " << weight;
-      EXPECT_NEAR_SMR(analyzer.ComputeWorstSMR().value, expected_value, weight)
+      EXPECT_NEAR_SQRT_APPROX(analyzer.ComputeWorstSMR().value, expected_value)
           << value << " x " << weight;
     }
   }
@@ -125,12 +127,12 @@ TEST(FrameMetricsWindowedAnalyzerTest, AllResultsDifferent) {
   EXPECT_EQ(worst_mean_client.window_end, worst_mean.window_end);
 
   FrameRegionResult worst_smr = analyzer.ComputeWorstSMR();
-  EXPECT_NEAR_SMR(expected_worst_smr, worst_smr.value, kSampleWeight);
+  EXPECT_NEAR_SQRT_APPROX(expected_worst_smr, worst_smr.value);
   EXPECT_EQ(worst_smr_client.window_begin, worst_smr.window_begin);
   EXPECT_EQ(worst_smr_client.window_end, worst_smr.window_end);
 
   FrameRegionResult worst_rms = analyzer.ComputeWorstRMS();
-  EXPECT_DOUBLE_EQ(expected_worst_rms, worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_worst_rms, worst_rms.value);
   EXPECT_EQ(worst_rms_client.window_begin, worst_rms.window_begin);
   EXPECT_EQ(worst_rms_client.window_end, worst_rms.window_end);
 }
@@ -159,12 +161,12 @@ TEST(FrameMetricsWindowedAnalyzerTest, SmallSampleSize) {
   EXPECT_EQ(short_client.window_end, worst_mean.window_end);
 
   FrameRegionResult worst_smr = analyzer.ComputeWorstSMR();
-  EXPECT_NEAR_SMR(expected_initial_value, worst_smr.value, kSampleWeight);
+  EXPECT_NEAR_SQRT_APPROX(expected_initial_value, worst_smr.value);
   EXPECT_EQ(short_client.window_begin, worst_smr.window_begin);
   EXPECT_EQ(short_client.window_end, worst_smr.window_end);
 
   FrameRegionResult worst_rms = analyzer.ComputeWorstRMS();
-  EXPECT_DOUBLE_EQ(expected_initial_value, worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_initial_value, worst_rms.value);
   EXPECT_EQ(short_client.window_begin, worst_rms.window_begin);
   EXPECT_EQ(short_client.window_end, worst_rms.window_end);
 }
@@ -196,12 +198,12 @@ TEST(FrameMetricsWindowedAnalyzerTest, BadFirstSamples) {
   EXPECT_EQ(short_client.window_end, worst_mean.window_end);
 
   worst_smr = analyzer.ComputeWorstSMR();
-  EXPECT_NEAR_SMR(expected_initial_value, worst_smr.value, kSampleWeight);
+  EXPECT_NEAR_SQRT_APPROX(expected_initial_value, worst_smr.value);
   EXPECT_EQ(short_client.window_begin, worst_smr.window_begin);
   EXPECT_EQ(short_client.window_end, worst_smr.window_end);
 
   worst_rms = analyzer.ComputeWorstRMS();
-  EXPECT_DOUBLE_EQ(expected_initial_value, worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_initial_value, worst_rms.value);
   EXPECT_EQ(short_client.window_begin, worst_rms.window_begin);
   EXPECT_EQ(short_client.window_end, worst_rms.window_end);
 
@@ -222,12 +224,12 @@ TEST(FrameMetricsWindowedAnalyzerTest, BadFirstSamples) {
   EXPECT_EQ(long_client.window_end, worst_mean.window_end);
 
   worst_smr = analyzer.ComputeWorstSMR();
-  EXPECT_NEAR_SMR(expected_final_value, worst_smr.value, kSampleWeight);
+  EXPECT_NEAR_SQRT_APPROX(expected_final_value, worst_smr.value);
   EXPECT_EQ(long_client.window_begin, worst_smr.window_begin);
   EXPECT_EQ(long_client.window_end, worst_smr.window_end);
 
   worst_rms = analyzer.ComputeWorstRMS();
-  EXPECT_DOUBLE_EQ(expected_final_value, worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_final_value, worst_rms.value);
   EXPECT_EQ(long_client.window_begin, worst_rms.window_begin);
   EXPECT_EQ(long_client.window_end, worst_rms.window_end);
 }
@@ -257,12 +259,12 @@ TEST(FrameMetricsWindowedAnalyzerTest, ResetWorstValues) {
   EXPECT_EQ(initial_client.window_end, worst_mean.window_end);
 
   worst_smr = analyzer.ComputeWorstSMR();
-  EXPECT_NEAR_SMR(expected_initial_value, worst_smr.value, kSampleWeight);
+  EXPECT_NEAR_SQRT_APPROX(expected_initial_value, worst_smr.value);
   EXPECT_EQ(initial_client.window_begin, worst_smr.window_begin);
   EXPECT_EQ(initial_client.window_end, worst_smr.window_end);
 
   worst_rms = analyzer.ComputeWorstRMS();
-  EXPECT_DOUBLE_EQ(expected_initial_value, worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_initial_value, worst_rms.value);
   EXPECT_EQ(initial_client.window_begin, worst_rms.window_begin);
   EXPECT_EQ(initial_client.window_end, worst_rms.window_end);
 
@@ -277,12 +279,12 @@ TEST(FrameMetricsWindowedAnalyzerTest, ResetWorstValues) {
   EXPECT_EQ(initial_client.window_end, worst_mean.window_end);
 
   worst_smr = analyzer.ComputeWorstSMR();
-  EXPECT_NEAR_SMR(expected_initial_value, worst_smr.value, kSampleWeight);
+  EXPECT_NEAR_SQRT_APPROX(expected_initial_value, worst_smr.value);
   EXPECT_EQ(initial_client.window_begin, worst_smr.window_begin);
   EXPECT_EQ(initial_client.window_end, worst_smr.window_end);
 
   worst_rms = analyzer.ComputeWorstRMS();
-  EXPECT_DOUBLE_EQ(expected_initial_value, worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_initial_value, worst_rms.value);
   EXPECT_EQ(initial_client.window_begin, worst_rms.window_begin);
   EXPECT_EQ(initial_client.window_end, worst_rms.window_end);
 
@@ -308,12 +310,12 @@ TEST(FrameMetricsWindowedAnalyzerTest, ResetWorstValues) {
   EXPECT_EQ(final_client.window_end, worst_mean.window_end);
 
   worst_smr = analyzer.ComputeWorstSMR();
-  EXPECT_NEAR_SMR(expected_final_value, worst_smr.value, kSampleWeight);
+  EXPECT_NEAR_SQRT_APPROX(expected_final_value, worst_smr.value);
   EXPECT_EQ(final_client.window_begin, worst_smr.window_begin);
   EXPECT_EQ(final_client.window_end, worst_smr.window_end);
 
   worst_rms = analyzer.ComputeWorstRMS();
-  EXPECT_DOUBLE_EQ(expected_final_value, worst_rms.value);
+  EXPECT_NEAR_SQRT_APPROX(expected_final_value, worst_rms.value);
   EXPECT_EQ(final_client.window_begin, worst_rms.window_begin);
   EXPECT_EQ(final_client.window_end, worst_rms.window_end);
 }
@@ -349,6 +351,22 @@ class WindowedAnalyzerNaive {
     naive_root_accumulator_ += static_cast<double>(weight) * std::sqrt(value);
     naive_square_accumulator_ += static_cast<double>(weight) * value * value;
     naive_total_weight_ += weight;
+  }
+
+  // Same as AddPatternHelper, but uses each value (+1) as its own weight.
+  // The "Cubed" name comes from the fact that the squared_accumulator
+  // for the RMS will effectively be a "cubed accumulator".
+  void AddCubedPatternHelper(SharedWindowedAnalyzerClient* shared_client,
+                             const std::vector<uint32_t>& values) {
+    for (auto i : values) {
+      shared_client->window_begin += base::TimeDelta::FromMicroseconds(1);
+      shared_client->window_end += base::TimeDelta::FromMicroseconds(1);
+      uint64_t weighted_value = (i * (i + 1));
+      uint64_t updated_value = static_cast<uint64_t>(i);
+      uint64_t weighted_root = (i + 1) * std::sqrt(updated_value << 32);
+      Accumulator96b weighted_square(i, (i + 1));
+      AddSample(i, (i + 1), weighted_value, weighted_root, weighted_square);
+    }
   }
 
   struct Sample {
@@ -412,8 +430,8 @@ void TestNoAccumulatedPrecisionError(uint32_t big_value,
   double naive_root_accumulator_prev = 0;
   double naive_square_accumulator_prev = 0;
   for (size_t i = 1; i <= kRuns; i++) {
-    AddCubedPatternHelper(&shared_client_naive, &analyzer_naive, pattern_bad);
-    AddCubedPatternHelper(&shared_client_naive, &analyzer_naive, pattern_clear);
+    analyzer_naive.AddCubedPatternHelper(&shared_client_naive, pattern_bad);
+    analyzer_naive.AddCubedPatternHelper(&shared_client_naive, pattern_clear);
     EXPECT_EQ(0, analyzer_naive.naive_accumulator_);
     EXPECT_ABS_LT(naive_root_accumulator_prev,
                   analyzer_naive.naive_root_accumulator_);
@@ -427,15 +445,6 @@ void TestNoAccumulatedPrecisionError(uint32_t big_value,
                 analyzer_naive.naive_root_accumulator_);
   EXPECT_ABS_LE(naive_square_error_floor * kRuns,
                 analyzer_naive.naive_square_accumulator_);
-
-  // Verify actual implementation has no error.
-  for (size_t i = 1; i <= kRuns; i++) {
-    AddCubedPatternHelper(&shared_client_impl, &analyzer_impl, pattern_bad);
-    AddCubedPatternHelper(&shared_client_impl, &analyzer_impl, pattern_clear);
-    EXPECT_EQ(0, analyzer_impl.CurrentAccumulator());
-    EXPECT_EQ(0, analyzer_impl.CurrentRootAccumulator());
-    EXPECT_EQ(0, analyzer_impl.CurrentSquareAccumulator());
-  }
 }
 
 // This is a synthetic example that is just outside the dynamic range of a

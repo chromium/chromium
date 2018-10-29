@@ -34,8 +34,7 @@ void EventSource::AddEventRewriter(EventRewriter* rewriter) {
 }
 
 void EventSource::RemoveEventRewriter(EventRewriter* rewriter) {
-  EventRewriterList::iterator find =
-      std::find(rewriter_list_.begin(), rewriter_list_.end(), rewriter);
+  auto find = std::find(rewriter_list_.begin(), rewriter_list_.end(), rewriter);
   if (find != rewriter_list_.end())
     rewriter_list_.erase(find);
 }

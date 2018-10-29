@@ -63,7 +63,7 @@ Network.RequestHTMLView = class extends UI.VBox {
     const iframe = createElement('iframe');
     iframe.className = 'html-preview-frame';
     iframe.setAttribute('sandbox', '');  // Forbid to run JavaScript and set unique origin.
-    iframe.setAttribute('src', this._dataURL);
+    iframe.setAttribute('src', encodeURI(this._dataURL));
     iframe.setAttribute('tabIndex', -1);
     this.contentElement.appendChild(iframe);
   }

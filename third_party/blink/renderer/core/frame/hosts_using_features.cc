@@ -35,8 +35,8 @@ static Document* DocumentFromEventTarget(EventTarget& target) {
   ExecutionContext* execution_context = target.GetExecutionContext();
   if (!execution_context)
     return nullptr;
-  if (execution_context->IsDocument())
-    return ToDocument(execution_context);
+  if (auto* document = DynamicTo<Document>(execution_context))
+    return document;
   if (LocalDOMWindow* executing_window = execution_context->ExecutingWindow())
     return executing_window->document();
   return nullptr;

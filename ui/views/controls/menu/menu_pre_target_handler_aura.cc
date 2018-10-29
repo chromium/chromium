@@ -6,6 +6,7 @@
 
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
@@ -23,16 +24,24 @@ aura::Window* GetOwnerRootWindow(views::Widget* owner) {
 MenuPreTargetHandlerAura::MenuPreTargetHandlerAura(MenuController* controller,
                                                    Widget* owner)
     : controller_(controller), root_(GetOwnerRootWindow(owner)) {
-  aura::Env::GetInstance()->AddPreTargetHandler(
-      this, ui::EventTarget::Priority::kSystem);
   if (root_) {
+    aura_env_ = root_->env();
     wm::GetActivationClient(root_)->AddObserver(this);
     root_->AddObserver(this);
+  } else {
+    // This should only happen in cases like when context menus are shown for
+    // Windows OS system tray items and there is no parent window. This should
+    // not be hit on Chrome OS, where Window Service clients need to install a
+    // pre-target handler on the aura::Env associated with their app window.
+    DCHECK(!features::IsUsingWindowService())
+        << "MenuPreTargetHandlerAura may not work correctly without an owner.";
+    aura_env_ = aura::Env::GetInstance();
   }
+  aura_env_->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
 }
 
 MenuPreTargetHandlerAura::~MenuPreTargetHandlerAura() {
-  aura::Env::GetInstance()->RemovePreTargetHandler(this);
+  aura_env_->RemovePreTargetHandler(this);
   Cleanup();
 }
 

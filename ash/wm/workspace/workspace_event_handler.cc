@@ -18,12 +18,11 @@ namespace ash {
 
 WorkspaceEventHandler::WorkspaceEventHandler(aura::Window* workspace_window)
     : workspace_window_(workspace_window), click_component_(HTNOWHERE) {
-  // TODO(crbug.com/866529): Convert to AddPreTargetHandler.
-  wm::AddLimitedPreTargetHandlerForWindow(this, workspace_window_);
+  workspace_window_->AddPreTargetHandler(this);
 }
 
 WorkspaceEventHandler::~WorkspaceEventHandler() {
-  wm::RemoveLimitedPreTargetHandlerForWindow(this, workspace_window_);
+  workspace_window_->RemovePreTargetHandler(this);
 }
 
 void WorkspaceEventHandler::OnMouseEvent(ui::MouseEvent* event) {

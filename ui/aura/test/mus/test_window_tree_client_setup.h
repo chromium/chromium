@@ -9,18 +9,20 @@
 
 #include "base/macros.h"
 #include "ui/aura/mus/window_tree_client.h"
+#include "ui/aura/test/mus/test_window_tree_delegate.h"
 
 namespace aura {
 
 class TestWindowTree;
+class WindowOcclusionTracker;
 class WindowTreeClientDelegate;
 
 // TestWindowTreeClientSetup is used to create a WindowTreeClient that is not
 // connected to mus.
-class TestWindowTreeClientSetup {
+class TestWindowTreeClientSetup : public TestWindowTreeDelegate {
  public:
   TestWindowTreeClientSetup();
-  ~TestWindowTreeClientSetup();
+  ~TestWindowTreeClientSetup() override;
 
   // Initializes the WindowTreeClient.
   void Init(WindowTreeClientDelegate* window_tree_delegate);
@@ -38,6 +40,15 @@ class TestWindowTreeClientSetup {
  private:
   // Called by both implementations of init to perform common initialization.
   void CommonInit(WindowTreeClientDelegate* window_tree_delegate);
+
+  // TestWindowTreeDelegate:
+  void TrackOcclusionState(ws::Id window_id) override;
+  void PauseWindowOcclusionTracking() override;
+  void UnpauseWindowOcclusionTracking() override;
+
+  // Provide occlusion tracking for simulated server behavior. Needs to be
+  // released after |window_tree_client_|.
+  std::unique_ptr<WindowOcclusionTracker> window_occlusion_tracker_;
 
   std::unique_ptr<TestWindowTree> window_tree_;
 

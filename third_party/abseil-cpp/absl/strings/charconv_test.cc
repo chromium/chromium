@@ -33,7 +33,7 @@ namespace {
 
 #if ABSL_COMPILER_DOES_EXACT_ROUNDING
 
-// Tests that the given std::string is accepted by absl::from_chars, and that it
+// Tests that the given string is accepted by absl::from_chars, and that it
 // converts exactly equal to the given number.
 void TestDoubleParse(absl::string_view str, double expected_number) {
   SCOPED_TRACE(str);
@@ -250,7 +250,7 @@ TEST(FromChars, NearRoundingCasesExplicit) {
   EXPECT_EQ(ToFloat("459926601011.e15"), ldexpf(12466336, 65));
 }
 
-// Common test logic for converting a std::string which lies exactly halfway between
+// Common test logic for converting a string which lies exactly halfway between
 // two target floats.
 //
 // mantissa and exponent represent the precise value between two floating point
@@ -655,7 +655,7 @@ int NextStep(int step) {
 // is correct for in-bounds values, and that overflow and underflow are done
 // correctly for out-of-bounds values.
 //
-// input_generator maps from an integer index to a std::string to test.
+// input_generator maps from an integer index to a string to test.
 // expected_generator maps from an integer index to an expected Float value.
 // from_chars conversion of input_generator(i) should result in
 // expected_generator(i).

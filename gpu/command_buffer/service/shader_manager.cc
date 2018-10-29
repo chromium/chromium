@@ -10,7 +10,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "gpu/command_buffer/service/progress_reporter.h"
+#include "ui/gl/progress_reporter.h"
 
 namespace gpu {
 namespace gles2 {
@@ -277,7 +277,7 @@ const sh::OutputVariable* Shader::GetOutputVariableInfo(
   return nullptr;
 }
 
-ShaderManager::ShaderManager(ProgressReporter* progress_reporter)
+ShaderManager::ShaderManager(gl::ProgressReporter* progress_reporter)
     : progress_reporter_(progress_reporter) {}
 
 ShaderManager::~ShaderManager() {

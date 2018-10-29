@@ -6,17 +6,14 @@ package org.chromium.ui.widget;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.support.annotation.StyleRes;
+import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
-import android.widget.Button;
 
 import org.chromium.ui.R;
 
@@ -26,7 +23,7 @@ import org.chromium.ui.R;
  *
  * Create a button in Java:
  *
- *   new ButtonCompat(context, Color.RED);
+ *   new ButtonCompat(context, R.style.TextButtonThemeOverlay);
  *
  * Create a button in XML:
  *
@@ -34,68 +31,52 @@ import org.chromium.ui.R;
  *       android:layout_width="wrap_content"
  *       android:layout_height="wrap_content"
  *       android:text="Click me"
- *       chrome:buttonColor="#f00" />
+ *       style="@style/TextButton" />
  *
  * Note: To ensure the button's shadow is fully visible, you may need to set
  * android:clipToPadding="false" on the button's parent view.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class ButtonCompat extends Button {
-
-    private static final float PRE_L_PRESSED_BRIGHTNESS = 0.85f;
-    private static final int DISABLED_COLOR = 0x424F4F4F;
-
-    private final int mCornerRadius;
-    private int mColor;
+public class ButtonCompat extends AppCompatButton {
+    private RippleBackgroundHelper mRippleBackgroundHelper;
 
     /**
-     * Returns a new borderless material-style button.
+     * Constructor for programmatically creating a {@link ButtonCompat}.
+     * @param context The {@link Context} for this class.
+     * @param themeOverlay The style resource id that sets android:buttonStyle to specify the button
+     *                     style.
      */
-    public static Button createBorderlessButton(Context context) {
-        return new Button(new ContextThemeWrapper(context, R.style.ButtonCompatBorderlessOverlay));
+    public ButtonCompat(Context context, @StyleRes int themeOverlay) {
+        this(context, null, themeOverlay);
     }
 
     /**
-     * Constructs a button with the given buttonColor as its background. The button is raised if
-     * buttonRaised is true.
-     */
-    public ButtonCompat(Context context, int buttonColor, boolean buttonRaised) {
-        this(context, buttonColor, buttonRaised, null);
-    }
-
-    /**
-     * Constructor for inflating from XML.
+     * Constructor for inflating from XMLs.
      */
     public ButtonCompat(Context context, AttributeSet attrs) {
-        this(context, getColorFromAttributeSet(context, attrs),
-                getRaisedStatusFromAttributeSet(context, attrs), attrs);
+        this(context, attrs, R.style.FilledButtonThemeOverlay);
     }
 
-    private ButtonCompat(
-            Context context, int buttonColor, boolean buttonRaised, AttributeSet attrs) {
-        // To apply the ButtonCompat style to this view, use a ContextThemeWrapper to overlay the
-        // ButtonCompatThemeOverlay, which simply sets the buttonStyle to @style/ButtonCompat.
-        super(new ContextThemeWrapper(context, R.style.ButtonCompatOverlay), attrs);
+    private ButtonCompat(Context context, AttributeSet attrs, @StyleRes int themeOverlay) {
+        super(new ContextThemeWrapper(context, themeOverlay), attrs, android.R.attr.buttonStyle);
 
-        mCornerRadius =
-                context.getResources().getDimensionPixelSize(R.dimen.button_compat_corner_radius);
-        getBackground().mutate();
-        setButtonColor(buttonColor);
+        TypedArray a = getContext().obtainStyledAttributes(
+                attrs, R.styleable.ButtonCompat, android.R.attr.buttonStyle, 0);
+        int buttonColorId =
+                a.getResourceId(R.styleable.ButtonCompat_buttonColor, R.color.blue_when_enabled);
+        int rippleColorId = a.getResourceId(
+                R.styleable.ButtonCompat_rippleColor, R.color.filled_button_ripple_color);
+        boolean buttonRaised = a.getBoolean(R.styleable.ButtonCompat_buttonRaised, true);
+        a.recycle();
+
+        mRippleBackgroundHelper = new RippleBackgroundHelper(this, buttonColorId, rippleColorId);
         setRaised(buttonRaised);
     }
 
     /**
      * Sets the background color of the button.
      */
-    public void setButtonColor(int color) {
-        if (color == mColor) return;
-        mColor = color;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            updateButtonBackgroundL();
-        } else {
-            updateButtonBackgroundPreL();
-        }
+    public void setButtonColor(ColorStateList buttonColorList) {
+        mRippleBackgroundHelper.setBackgroundColor(buttonColorList);
     }
 
     /**
@@ -134,59 +115,8 @@ public class ButtonCompat extends Button {
     @Override
     protected void drawableStateChanged() {
         super.drawableStateChanged();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            updateButtonBackgroundPreL();
+        if (mRippleBackgroundHelper != null) {
+            mRippleBackgroundHelper.onDrawableStateChanged();
         }
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void updateButtonBackgroundL() {
-        ColorStateList csl = new ColorStateList(
-                new int[][] { { -android.R.attr.state_enabled }, {} },
-                new int[] { DISABLED_COLOR, mColor });
-        GradientDrawable shape = (GradientDrawable)
-                ((RippleDrawable) getBackground()).getDrawable(0);
-        shape.mutate();
-        shape.setCornerRadius(mCornerRadius);
-        shape.setColor(csl);
-    }
-
-    private void updateButtonBackgroundPreL() {
-        GradientDrawable background = (GradientDrawable) getBackground();
-        background.setCornerRadius(mCornerRadius);
-        background.setColor(getBackgroundColorPreL());
-    }
-
-    private int getBackgroundColorPreL() {
-        for (int state : getDrawableState()) {
-            if (state == android.R.attr.state_pressed
-                    || state == android.R.attr.state_focused
-                    || state == android.R.attr.state_selected) {
-                return Color.rgb(
-                        Math.round(Color.red(mColor) * PRE_L_PRESSED_BRIGHTNESS),
-                        Math.round(Color.green(mColor) * PRE_L_PRESSED_BRIGHTNESS),
-                        Math.round(Color.blue(mColor) * PRE_L_PRESSED_BRIGHTNESS));
-            }
-        }
-        for (int state : getDrawableState()) {
-            if (state == android.R.attr.state_enabled) {
-                return mColor;
-            }
-        }
-        return DISABLED_COLOR;
-    }
-
-    private static int getColorFromAttributeSet(Context context, AttributeSet attrs) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ButtonCompat, 0, 0);
-        int color = a.getColor(R.styleable.ButtonCompat_buttonColor, Color.WHITE);
-        a.recycle();
-        return color;
-    }
-
-    private static boolean getRaisedStatusFromAttributeSet(Context context, AttributeSet attrs) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ButtonCompat, 0, 0);
-        boolean raised = a.getBoolean(R.styleable.ButtonCompat_buttonRaised, true);
-        a.recycle();
-        return raised;
     }
 }

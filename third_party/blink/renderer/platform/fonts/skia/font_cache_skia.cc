@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/fonts/skia/sktypeface_factory.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -59,7 +60,7 @@ namespace blink {
 #if defined(OS_ANDROID) || defined(OS_LINUX)
 namespace {
 
-static PaintTypeface CreateTypefaceFromUniqueName(
+static sk_sp<SkTypeface> CreateTypefaceFromUniqueName(
     const FontFaceCreationParams& creation_params,
     CString& name) {
   FontUniqueNameLookup* unique_name_lookup =
@@ -68,9 +69,9 @@ static PaintTypeface CreateTypefaceFromUniqueName(
   sk_sp<SkTypeface> uniquely_identified_font =
       unique_name_lookup->MatchUniqueName(creation_params.Family());
   if (uniquely_identified_font) {
-    return PaintTypeface::FromSkTypeface(uniquely_identified_font);
+    return uniquely_identified_font;
   }
-  return PaintTypeface();
+  return nullptr;
 }
 }  // namespace
 #endif
@@ -97,9 +98,9 @@ AtomicString FontCache::GetFamilyNameForCharacter(
     FontFallbackPriority fallback_priority) {
   DCHECK(fm);
 
-  const size_t kMaxLocales = 4;
+  const int kMaxLocales = 4;
   const char* bcp47_locales[kMaxLocales];
-  size_t locale_count = 0;
+  int locale_count = 0;
 
   // Fill in the list of locales in the reverse priority order.
   // Skia expects the highest array index to be the first priority.
@@ -230,7 +231,7 @@ scoped_refptr<SimpleFontData> FontCache::GetLastResortFallbackFont(
   return FontDataFromFontPlatformData(font_platform_data, should_retain);
 }
 
-PaintTypeface FontCache::CreateTypeface(
+sk_sp<SkTypeface> FontCache::CreateTypeface(
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
     CString& name) {
@@ -239,10 +240,10 @@ PaintTypeface FontCache::CreateTypeface(
 
   if (creation_params.CreationType() == kCreateFontByFciIdAndTtcIndex) {
     if (Platform::Current()->GetSandboxSupport()) {
-      return PaintTypeface::FromFontConfigInterfaceIdAndTtcIndex(
+      return SkTypeface_Factory::FromFontConfigInterfaceIdAndTtcIndex(
           creation_params.FontconfigInterfaceId(), creation_params.TtcIndex());
     }
-    return PaintTypeface::FromFilenameAndTtcIndex(
+    return SkTypeface_Factory::FromFilenameAndTtcIndex(
         creation_params.Filename().data(), creation_params.TtcIndex());
   }
 #endif
@@ -261,10 +262,10 @@ PaintTypeface FontCache::CreateTypeface(
 #if defined(OS_WIN)
   // TODO(vmpstr): Deal with paint typeface here.
   if (sideloaded_fonts_) {
-    HashMap<String, sk_sp<SkTypeface>>::iterator sideloaded_font =
-        sideloaded_fonts_->find(name.data());
+    HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>::iterator
+        sideloaded_font = sideloaded_fonts_->find(name.data());
     if (sideloaded_font != sideloaded_fonts_->end())
-      return PaintTypeface::FromSkTypeface(sideloaded_font->value);
+      return sideloaded_font->value;
   }
 #endif
 
@@ -274,18 +275,15 @@ PaintTypeface FontCache::CreateTypeface(
   // SkTypeface::CreateFromName which may redirect the call to the default font
   // Manager.  On Windows the font manager is always present.
   if (font_manager_) {
-    // TODO(vmpstr): Handle creating paint typefaces here directly. We need to
-    // figure out whether it's safe to give |font_manager_| to PaintTypeface and
-    // what that means on the GPU side.
     auto tf = sk_sp<SkTypeface>(font_manager_->matchFamilyStyle(
         name.data(), font_description.SkiaFontStyle()));
-    return PaintTypeface::FromSkTypeface(std::move(tf));
+    return tf;
   }
 #endif
 
   // FIXME: Use m_fontManager, matchFamilyStyle instead of
   // legacyCreateTypeface on all platforms.
-  return PaintTypeface::FromFamilyNameAndFontStyle(
+  return SkTypeface_Factory::FromFamilyNameAndFontStyle(
       name.data(), font_description.SkiaFontStyle());
 }
 
@@ -297,36 +295,35 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
     AlternateFontName alternate_name) {
   CString name;
 
-  PaintTypeface paint_tf;
+  sk_sp<SkTypeface> typeface;
 #if defined(OS_ANDROID) || defined(OS_LINUX)
   if (alternate_name == AlternateFontName::kLocalUniqueFace &&
       RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
-    paint_tf = CreateTypefaceFromUniqueName(creation_params, name);
+    typeface = CreateTypefaceFromUniqueName(creation_params, name);
   } else {
-    paint_tf = CreateTypeface(font_description, creation_params, name);
+    typeface = CreateTypeface(font_description, creation_params, name);
   }
 #else
-  paint_tf = CreateTypeface(font_description, creation_params, name);
+  typeface = CreateTypeface(font_description, creation_params, name);
 #endif
 
-  if (!paint_tf)
+  if (!typeface)
     return nullptr;
 
-  const auto& tf = paint_tf.ToSkTypeface();
   std::unique_ptr<FontPlatformData> font_platform_data =
       std::make_unique<FontPlatformData>(
-          paint_tf, name, font_size,
+          typeface, name, font_size,
           (font_description.Weight() >
                FontSelectionValue(200) +
-                   FontSelectionValue(tf->fontStyle().weight()) ||
+                   FontSelectionValue(typeface->fontStyle().weight()) ||
            font_description.IsSyntheticBold()),
           ((font_description.Style() == ItalicSlopeValue()) &&
-           !tf->isItalic()) ||
+           !typeface->isItalic()) ||
               font_description.IsSyntheticItalic(),
           font_description.Orientation());
 
   font_platform_data->SetAvoidEmbeddedBitmaps(
-      BitmapGlyphsBlacklist::AvoidEmbeddedBitmapsForTypeface(tf.get()));
+      BitmapGlyphsBlacklist::AvoidEmbeddedBitmapsForTypeface(typeface.get()));
 
   return font_platform_data;
 }

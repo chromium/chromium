@@ -7,6 +7,7 @@
 #device-disabled-bottom-container {
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 #device-disabled {

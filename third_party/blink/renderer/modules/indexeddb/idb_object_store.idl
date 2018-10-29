@@ -41,9 +41,9 @@
     [NewObject, CallWith=ScriptState, RaisesException] IDBRequest get(any key);
     [NewObject, CallWith=ScriptState, RaisesException] IDBRequest getKey(any key);
     [NewObject, CallWith=ScriptState, RaisesException] IDBRequest getAll([Default=Undefined] optional any query,
-                                                                                    [EnforceRange] optional unsigned long count);
+                                                                         optional [EnforceRange] unsigned long count);
     [NewObject, CallWith=ScriptState, RaisesException] IDBRequest getAllKeys([Default=Undefined] optional any query,
-                                                                             [EnforceRange] optional unsigned long count);
+                                                                             optional [EnforceRange] unsigned long count);
     [NewObject, CallWith=ScriptState, RaisesException] IDBRequest count([Default=Undefined] optional any key);
 
     [NewObject, CallWith=ScriptState, RaisesException] IDBRequest openCursor([Default=Undefined] optional any range,

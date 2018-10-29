@@ -73,8 +73,6 @@ class ProfileImplIOData : public ProfileIOData {
     scoped_refptr<ChromeURLRequestContextGetter>
         GetMediaRequestContextGetter() const;
     scoped_refptr<ChromeURLRequestContextGetter>
-        GetExtensionsRequestContextGetter() const;
-    scoped_refptr<ChromeURLRequestContextGetter>
         GetIsolatedMediaRequestContextGetter(
             const base::FilePath& partition_path,
             bool in_memory) const;
@@ -103,8 +101,6 @@ class ProfileImplIOData : public ProfileIOData {
         main_request_context_getter_;
     mutable scoped_refptr<ChromeURLRequestContextGetter>
         media_request_context_getter_;
-    mutable scoped_refptr<ChromeURLRequestContextGetter>
-        extensions_request_context_getter_;
     mutable ChromeURLRequestContextGetterMap app_request_context_getter_map_;
     mutable ChromeURLRequestContextGetterMap
         isolated_media_request_context_getter_map_;
@@ -149,7 +145,7 @@ class ProfileImplIOData : public ProfileIOData {
                               request_interceptors) const override;
   void OnMainRequestContextCreated(
       ProfileParams* profile_params) const override;
-  void InitializeExtensionsRequestContext(
+  void InitializeExtensionsCookieStore(
       ProfileParams* profile_params) const override;
   net::URLRequestContext* InitializeMediaRequestContext(
       net::URLRequestContext* original_context,
@@ -159,6 +155,7 @@ class ProfileImplIOData : public ProfileIOData {
   net::URLRequestContext* AcquireIsolatedMediaRequestContext(
       net::URLRequestContext* app_context,
       const StoragePartitionDescriptor& partition_descriptor) const override;
+  net::CookieStore* GetExtensionsCookieStore() const override;
 
   // Returns a net::ReportingService, if reporting should be enabled. Otherwise,
   // returns nullptr.

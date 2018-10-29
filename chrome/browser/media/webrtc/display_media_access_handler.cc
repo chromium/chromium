@@ -138,8 +138,9 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;
   picker_params.parent = parent_window;
-  picker_params.app_name = web_contents->GetTitle();
-  picker_params.target_name = web_contents->GetTitle();
+  picker_params.app_name = base::ASCIIToUTF16(
+      web_contents->GetVisibleURL().GetWithEmptyPath().spec());
+  picker_params.target_name = picker_params.app_name;
   picker_params.request_audio = false;
   pending_request.picker->Show(picker_params, std::move(source_lists),
                                done_callback);

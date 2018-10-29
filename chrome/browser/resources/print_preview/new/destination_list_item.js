@@ -74,12 +74,6 @@ Polymer({
     }
   },
 
-  /** @private */
-  onLearnMoreLinkClick_: function() {
-    print_preview.NativeLayer.getInstance().forceOpenNewTab(
-        loadTimeData.getString('gcpCertificateErrorLearnMoreURL'));
-  },
-
   // <if expr="chromeos">
   /**
    * Called if the printer configuration request is accepted. Show the waiting

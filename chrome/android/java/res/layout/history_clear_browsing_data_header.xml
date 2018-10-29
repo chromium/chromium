@@ -9,21 +9,15 @@
     android:orientation="vertical"
     android:paddingBottom="8dp" >
 
-        <Button
+        <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/clear_browsing_data_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            style="@style/ButtonCompatBorderless"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:paddingStart="@dimen/list_item_default_margin"
-            android:paddingEnd="@dimen/list_item_default_margin"
+            android:padding="@dimen/list_item_default_margin"
             android:gravity="center_vertical|start"
             android:text="@string/open_clear_browsing_data_dialog_button"
-            android:textAllCaps="true"
-            android:textColor="@color/blue_when_enabled"
-            android:textSize="@dimen/text_size_medium" />
+            style="@style/TextButton" />
 
         <View style="@style/HorizontalDivider" />
 

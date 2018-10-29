@@ -43,6 +43,32 @@ static void ReportToUMA(VAJDADecoderFailure failure) {
                             VAJDA_DECODER_FAILURES_MAX + 1);
 }
 
+// Check the value of VA_FOURCC_YUYV, as we don't have access to the VA_FOURCC
+// macro in the header file without pulling in the entire <va/va.h>.
+static_assert(VA_FOURCC_YUYV == VA_FOURCC('Y', 'U', 'Y', 'V'),
+              "VA_FOURCC_YUYV must be equal to VA_FOURCC('Y', 'U', 'Y', 'V')");
+constexpr VAImageFormat kImageFormatI420 = {.fourcc = VA_FOURCC_I420,
+                                            .byte_order = VA_LSB_FIRST,
+                                            .bits_per_pixel = 12};
+constexpr VAImageFormat kImageFormatYUYV = {.fourcc = VA_FOURCC_YUYV,
+                                            .byte_order = VA_LSB_FIRST,
+                                            .bits_per_pixel = 16};
+
+// Convert the specified surface format to the associated output image format.
+bool VaSurfaceFormatToImageFormat(uint32_t va_rt_format,
+                                  VAImageFormat* va_image_format) {
+  switch (va_rt_format) {
+    case VA_RT_FORMAT_YUV420:
+      *va_image_format = kImageFormatI420;
+      return true;
+    case VA_RT_FORMAT_YUV422:
+      *va_image_format = kImageFormatYUYV;
+      return true;
+    default:
+      return false;
+  }
+}
+
 static unsigned int VaSurfaceFormatForJpeg(
     const JpegFrameHeader& frame_header) {
   // The range of sampling factor is [1, 4]. Pack them into integer to make the
@@ -291,21 +317,6 @@ bool VaapiJpegDecodeAccelerator::Initialize(Client* client) {
 
   client_ = client;
 
-  // Set the image format that will be requested from the VA API. Currently we
-  // always use I420, as this is the expected output format.
-  // TODO(crbug.com/828119): Try a list of possible supported formats rather
-  // than hardcoding the format to I420 here.
-  va_image_format_ = base::WrapUnique(new VAImageFormat{});
-  va_image_format_->fourcc = VA_FOURCC_I420;
-  va_image_format_->byte_order = VA_LSB_FIRST;
-  va_image_format_->bits_per_pixel = 12;
-
-  if (!VaapiWrapper::IsImageFormatSupported(*va_image_format_)) {
-    VLOGF(1) << "I420 image format not supported";
-    va_image_format_.reset();
-    return false;
-  }
-
   vaapi_wrapper_ =
       VaapiWrapper::Create(VaapiWrapper::kDecode, VAProfileJPEGBaseline,
                            base::Bind(&ReportToUMA, VAAPI_ERROR));
@@ -326,6 +337,7 @@ bool VaapiJpegDecodeAccelerator::Initialize(Client* client) {
 
 bool VaapiJpegDecodeAccelerator::OutputPicture(
     VASurfaceID va_surface_id,
+    uint32_t va_surface_format,
     int32_t input_buffer_id,
     const scoped_refptr<VideoFrame>& video_frame) {
   DCHECK(decoder_task_runner_->BelongsToCurrentThread());
@@ -337,10 +349,21 @@ bool VaapiJpegDecodeAccelerator::OutputPicture(
             << " into video_frame associated with input buffer id "
             << input_buffer_id;
 
+  // Specify which image format we will request from the VAAPI. As the expected
+  // output format is I420, we will first try this format. If converting to I420
+  // is not supported by the decoder, we will request the image in its original
+  // chroma sampling format.
+  VAImageFormat va_image_format = kImageFormatI420;
+  if (!VaapiWrapper::IsImageFormatSupported(va_image_format)) {
+    if (!VaSurfaceFormatToImageFormat(va_surface_format, &va_image_format)) {
+      VLOGF(1) << "Unsupported surface format";
+      return false;
+    }
+  }
+
   const gfx::Size coded_size = video_frame->coded_size();
-  DCHECK(va_image_format_);
   auto scoped_image = vaapi_wrapper_->CreateVaImage(
-      va_surface_id, va_image_format_.get(), coded_size);
+      va_surface_id, &va_image_format, coded_size);
   if (!scoped_image) {
     VLOGF(1) << "Cannot get VAImage";
     return false;
@@ -348,17 +371,10 @@ bool VaapiJpegDecodeAccelerator::OutputPicture(
   const VAImage* image = scoped_image->image();
   auto* mem = static_cast<uint8_t*>(scoped_image->va_buffer()->data());
 
-  // Copy image content from VAImage to VideoFrame.
-  // The component order of VAImage I420 are Y, U, and V.
-  DCHECK_EQ(image->num_planes, 3u);
+  // Copy image content from VAImage to VideoFrame. If the image is not in the
+  // I420 format we'll have to convert it.
   DCHECK_GE(image->width, coded_size.width());
   DCHECK_GE(image->height, coded_size.height());
-  const uint8_t* src_y = mem + image->offsets[0];
-  const uint8_t* src_u = mem + image->offsets[1];
-  const uint8_t* src_v = mem + image->offsets[2];
-  size_t src_y_stride = image->pitches[0];
-  size_t src_u_stride = image->pitches[1];
-  size_t src_v_stride = image->pitches[2];
   uint8_t* dst_y = video_frame->data(VideoFrame::kYPlane);
   uint8_t* dst_u = video_frame->data(VideoFrame::kUPlane);
   uint8_t* dst_v = video_frame->data(VideoFrame::kVPlane);
@@ -366,15 +382,40 @@ bool VaapiJpegDecodeAccelerator::OutputPicture(
   size_t dst_u_stride = video_frame->stride(VideoFrame::kUPlane);
   size_t dst_v_stride = video_frame->stride(VideoFrame::kVPlane);
 
-  if (libyuv::I420Copy(src_y, src_y_stride,  // Y
-                       src_u, src_u_stride,  // U
-                       src_v, src_v_stride,  // V
-                       dst_y, dst_y_stride,  // Y
-                       dst_u, dst_u_stride,  // U
-                       dst_v, dst_v_stride,  // V
-                       coded_size.width(), coded_size.height())) {
-    VLOGF(1) << "I420Copy failed";
-    return false;
+  switch (va_image_format.fourcc) {
+    case VA_FOURCC_I420: {
+      DCHECK_EQ(image->num_planes, 3u);
+      const uint8_t* src_y = mem + image->offsets[0];
+      const uint8_t* src_u = mem + image->offsets[1];
+      const uint8_t* src_v = mem + image->offsets[2];
+      const size_t src_y_stride = image->pitches[0];
+      const size_t src_u_stride = image->pitches[1];
+      const size_t src_v_stride = image->pitches[2];
+      if (libyuv::I420Copy(src_y, src_y_stride, src_u, src_u_stride, src_v,
+                           src_v_stride, dst_y, dst_y_stride, dst_u,
+                           dst_u_stride, dst_v, dst_v_stride,
+                           coded_size.width(), coded_size.height())) {
+        VLOGF(1) << "I420Copy failed";
+        return false;
+      }
+      break;
+    }
+    case VA_FOURCC_YUY2:
+    case VA_FOURCC_YUYV: {
+      DCHECK_EQ(image->num_planes, 1u);
+      const uint8_t* src_yuy2 = mem + image->offsets[0];
+      const size_t src_yuy2_stride = image->pitches[0];
+      if (libyuv::YUY2ToI420(src_yuy2, src_yuy2_stride, dst_y, dst_y_stride,
+                             dst_u, dst_u_stride, dst_v, dst_v_stride,
+                             coded_size.width(), coded_size.height())) {
+        VLOGF(1) << "YUY2ToI420 failed";
+        return false;
+      }
+      break;
+    }
+    default:
+      VLOGF(1) << "Can't convert image to I420: unsupported format 0x"
+               << std::hex << va_image_format.fourcc;
   }
 
   task_runner_->PostTask(
@@ -401,9 +442,9 @@ void VaapiJpegDecodeAccelerator::DecodeTask(
     return;
   }
 
-  unsigned int new_va_rt_format =
+  const uint32_t picture_va_rt_format =
       VaSurfaceFormatForJpeg(parse_result.frame_header);
-  if (!new_va_rt_format) {
+  if (!picture_va_rt_format) {
     VLOGF(1) << "Unsupported subsampling";
     NotifyError(bitstream_buffer_id, UNSUPPORTED_JPEG);
     return;
@@ -413,10 +454,10 @@ void VaapiJpegDecodeAccelerator::DecodeTask(
   gfx::Size new_coded_size(parse_result.frame_header.coded_width,
                            parse_result.frame_header.coded_height);
   if (new_coded_size != coded_size_ || va_surface_id_ == VA_INVALID_SURFACE ||
-      new_va_rt_format != va_rt_format_) {
+      picture_va_rt_format != va_rt_format_) {
     vaapi_wrapper_->DestroySurfaces();
     va_surface_id_ = VA_INVALID_SURFACE;
-    va_rt_format_ = new_va_rt_format;
+    va_rt_format_ = picture_va_rt_format;
 
     std::vector<VASurfaceID> va_surfaces;
     if (!vaapi_wrapper_->CreateSurfaces(va_rt_format_, new_coded_size, 1,
@@ -435,7 +476,8 @@ void VaapiJpegDecodeAccelerator::DecodeTask(
     return;
   }
 
-  if (!OutputPicture(va_surface_id_, bitstream_buffer_id, video_frame)) {
+  if (!OutputPicture(va_surface_id_, picture_va_rt_format, bitstream_buffer_id,
+                     video_frame)) {
     VLOGF(1) << "Output picture failed";
     NotifyError(bitstream_buffer_id, PLATFORM_FAILURE);
     return;

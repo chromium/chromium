@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -15,6 +14,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/layout_test_support.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "v8/include/v8.h"
 
@@ -112,13 +112,15 @@ WaitUntilObserver* WaitUntilObserver::Create(ExecutionContext* context,
 
 void WaitUntilObserver::WillDispatchEvent() {
   event_dispatch_time_ = WTF::CurrentTimeTicks();
-  // When handling a notificationclick or paymentrequest event, we want to
-  // allow one window to be focused or opened. These calls are allowed between
-  // the call to willDispatchEvent() and the last call to
+  // When handling a notificationclick, paymentrequest, or backgroundfetchclick
+  // event, we want to allow one window to be focused or opened. These calls are
+  // allowed between the call to willDispatchEvent() and the last call to
   // DecrementPendingPromiseCount(). If waitUntil() isn't called, that means
   // between willDispatchEvent() and didDispatchEvent().
-  if (type_ == kNotificationClick || type_ == kPaymentRequest)
+  if (type_ == kNotificationClick || type_ == kPaymentRequest ||
+      type_ == kBackgroundFetchClick) {
     execution_context_->AllowWindowInteraction();
+  }
 
   DCHECK_EQ(EventDispatchState::kInitial, event_dispatch_state_);
   event_dispatch_state_ = EventDispatchState::kDispatching;
@@ -267,7 +269,7 @@ void WaitUntilObserver::MaybeCompleteEvent() {
       client->DidHandleFetchEvent(event_id_, status, event_dispatch_time_);
       break;
     case kInstall:
-      ToServiceWorkerGlobalScope(execution_context_)->SetIsInstalling(false);
+      To<ServiceWorkerGlobalScope>(*execution_context_).SetIsInstalling(false);
       client->DidHandleInstallEvent(event_id_, status, event_dispatch_time_);
       break;
     case kMessage:

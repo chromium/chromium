@@ -18,6 +18,7 @@ class FilePath;
 }
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }
 
@@ -34,6 +35,7 @@ std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
         void(network::mojom::ProxyResolvingSocketFactoryRequest)>
         get_socket_factory_callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
     version_info::Channel channel,
     const std::string& product_category_for_subtypes,
     const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,

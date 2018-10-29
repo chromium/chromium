@@ -2,7 +2,6 @@ Make sure that .files arrays are always empty for non-file drags.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS Drag of A resulted in empty files array.
 PASS Drag of IMG resulted in empty files array.
 PASS successfullyParsed is true

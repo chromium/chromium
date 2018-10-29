@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_TRACKER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/paint/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -14,6 +13,8 @@ namespace blink {
 class LayoutObject;
 class LocalFrameView;
 class PaintLayer;
+class TextPaintTimingDetector;
+class ImagePaintTimingDetector;
 
 // PaintTracker contains some of paint metric detectors, providing common
 // infrastructure for these detectors.
@@ -29,16 +30,21 @@ class CORE_EXPORT PaintTracker : public GarbageCollected<PaintTracker> {
                             const PaintLayer& painting_layer);
   void NotifyNodeRemoved(const LayoutObject& object);
   void NotifyPrePaintFinished();
+  void DidChangePerformanceTiming();
   void Dispose();
 
   TextPaintTimingDetector& GetTextPaintTimingDetector() {
     return *text_paint_timing_detector_;
+  }
+  ImagePaintTimingDetector& GetImagePaintTimingDetector() {
+    return *image_paint_timing_detector_;
   }
   void Trace(Visitor* visitor);
 
  private:
   Member<LocalFrameView> frame_view_;
   Member<TextPaintTimingDetector> text_paint_timing_detector_;
+  Member<ImagePaintTimingDetector> image_paint_timing_detector_;
 };
 
 }  // namespace blink

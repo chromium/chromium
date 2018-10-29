@@ -10,9 +10,11 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/login/signin/oauth2_login_manager.h"
 #include "chrome/browser/chromeos/login/signin/oauth2_login_manager_factory.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -45,8 +47,8 @@ void MergeSessionXHRRequestWaiter::StartWaiting() {
   if (manager && manager->ShouldBlockTabLoading()) {
     DVLOG(1) << "Waiting for XHR request throttle";
     manager->AddObserver(this);
-    BrowserThread::PostDelayedTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostDelayedTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&MergeSessionXHRRequestWaiter::OnTimeout,
                        weak_ptr_factory_.GetWeakPtr()),
         base::TimeDelta::FromMilliseconds(kMaxRequestWaitTimeMS));
@@ -80,7 +82,7 @@ void MergeSessionXHRRequestWaiter::OnTimeout() {
 void MergeSessionXHRRequestWaiter::NotifyBlockingDone() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!callback_.is_null()) {
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE, callback_);
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO}, callback_);
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);

@@ -94,11 +94,12 @@ def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose):
   RunSystemCommand(cmd, verbose)
 
 
-def CopyAllFilesToStagingDir(config, distribution, staging_dir, build_dir,
-                             enable_hidpi):
+def CopyAllNonComponentFilesToStagingDir(config, distribution, staging_dir,
+                                         build_dir, enable_hidpi):
   """Copies the files required for installer archive.
   Copies all common files required for various distributions of Chromium and
   also files for the specific Chromium build specified by distribution.
+  Files that might be needed in a component build are copied later.
   """
   CopySectionFilesToStagingDir(config, 'GENERAL', staging_dir, build_dir)
   if distribution:
@@ -541,14 +542,26 @@ def main(options):
                                 options.output_name)
 
   # Copy the files from the build dir.
-  CopyAllFilesToStagingDir(config, options.distribution,
-                           staging_dir, options.build_dir,
-                           options.enable_hidpi)
+  CopyAllNonComponentFilesToStagingDir(config, options.distribution,
+                                       staging_dir, options.build_dir,
+                                       options.enable_hidpi)
 
   if options.component_build == '1':
     DoComponentBuildTasks(staging_dir, options.build_dir,
                           options.target_arch, options.setup_runtime_deps,
                           options.chrome_runtime_deps, current_version)
+
+  # 7za/7zr don't have a flag to set the timestamp of files in the archive
+  # (important for build reproducibility). Since everything gets copied into
+  # a staging dir, just set the on-disk mtime of everything in the staging
+  # dir instead.
+  if options.timestamp is not None:
+    timestamp_mtime_atime = (options.timestamp, options.timestamp)
+    for path, dirs, files in os.walk(staging_dir):
+      for f in files:
+        os.utime(os.path.join(path, f), timestamp_mtime_atime)
+      for d in dirs:
+        os.utime(os.path.join(path, d), timestamp_mtime_atime)
 
   version_numbers = current_version.split('.')
   current_build_number = version_numbers[2] + '.' + version_numbers[3]
@@ -623,6 +636,8 @@ def _ParseOptions():
       help='Specify the target architecture for installer - this is used '
            'to determine which CRT runtime files to pull and package '
            'with the installer archive {x86|x64}.')
+  parser.add_option('--timestamp', type=int,
+      help='If set, used as timestamp for all files in the archive.')
   parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
                     default=False)
 

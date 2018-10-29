@@ -47,9 +47,10 @@ ObjectUI.JavaScriptREPL = class {
    * @param {boolean} throwOnSideEffect
    * @param {number=} timeout
    * @param {boolean=} allowErrors
+   * @param {string=} objectGroup
    * @return {!Promise<!{preview: !DocumentFragment, result: ?SDK.RuntimeModel.EvaluationResult}>}
    */
-  static async evaluateAndBuildPreview(text, throwOnSideEffect, timeout, allowErrors) {
+  static async evaluateAndBuildPreview(text, throwOnSideEffect, timeout, allowErrors, objectGroup) {
     const executionContext = UI.context.flavor(SDK.ExecutionContext);
     const isTextLong = text.length > ObjectUI.JavaScriptREPL._MaxLengthForEvaluation;
     if (!text || !executionContext || (throwOnSideEffect && isTextLong))
@@ -61,7 +62,8 @@ ObjectUI.JavaScriptREPL = class {
       generatePreview: true,
       includeCommandLineAPI: true,
       throwOnSideEffect: throwOnSideEffect,
-      timeout: timeout
+      timeout: timeout,
+      objectGroup: objectGroup
     };
     const result = await executionContext.evaluate(
         options, false /* userGesture */, wrappedResult.preprocessed /* awaitPromise */);

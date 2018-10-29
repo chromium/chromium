@@ -218,14 +218,18 @@ void AdaptiveScreenBrightnessManager::OnUserActivity(
 
   // Using time_since_boot instead of the event's time stamp so we can use the
   // boot clock.
-  if (event->IsMouseEvent())
+  if (event->IsMouseEvent()) {
     mouse_counter_->Log(time_since_boot);
-  else if (event->IsKeyEvent())
+  } else if (event->IsKeyEvent()) {
     key_counter_->Log(time_since_boot);
-  else if (event->IsPenPointerEvent())
-    stylus_counter_->Log(time_since_boot);
-  else if (event->IsTouchEvent())
-    touch_counter_->Log(time_since_boot);
+  } else if (event->IsTouchEvent()) {
+    if (event->AsTouchEvent()->pointer_details().pointer_type ==
+        ui::EventPointerType::POINTER_TYPE_PEN) {
+      stylus_counter_->Log(time_since_boot);
+    } else {
+      touch_counter_->Log(time_since_boot);
+    }
+  }
 }
 
 void AdaptiveScreenBrightnessManager::ScreenBrightnessChanged(

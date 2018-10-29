@@ -38,16 +38,16 @@ struct Replacement {
     {"liquor", "shakes"},    //
 };
 
-// Here, we set up a std::string for use in global-replace benchmarks.
+// Here, we set up a string for use in global-replace benchmarks.
 // We started with a million blanks, and then deterministically insert
-// 10,000 copies each of two pangrams.  The result is a std::string that is
+// 10,000 copies each of two pangrams.  The result is a string that is
 // 40% blank space and 60% these words.  'the' occurs 18,247 times and
 // all the substitutions together occur 49,004 times.
 //
-// We then create "after_replacing_the" to be a std::string that is a result of
+// We then create "after_replacing_the" to be a string that is a result of
 // replacing "the" with "box" in big_string.
 //
-// And then we create "after_replacing_many" to be a std::string that is result
+// And then we create "after_replacing_many" to be a string that is result
 // of preferring several substitutions.
 void SetUpStrings() {
   if (big_string == nullptr) {

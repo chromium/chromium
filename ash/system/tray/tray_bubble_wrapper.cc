@@ -7,11 +7,11 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/widget_finder.h"
 #include "ui/aura/window.h"
-#include "ui/views/bubble/tray_bubble_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
@@ -20,7 +20,7 @@
 namespace ash {
 
 TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
-                                     views::TrayBubbleView* bubble_view,
+                                     TrayBubbleView* bubble_view,
                                      bool is_persistent)
     : tray_(tray), bubble_view_(bubble_view), is_persistent_(is_persistent) {
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
@@ -60,7 +60,7 @@ TrayBackgroundView* TrayBubbleWrapper::GetTray() const {
   return tray_;
 }
 
-views::TrayBubbleView* TrayBubbleWrapper::GetBubbleView() const {
+TrayBubbleView* TrayBubbleWrapper::GetBubbleView() const {
   return bubble_view_;
 }
 

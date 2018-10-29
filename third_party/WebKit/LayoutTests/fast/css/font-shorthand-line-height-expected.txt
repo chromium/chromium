@@ -2,7 +2,6 @@ Test that line-height in font shorthands cascades correctly.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS lineHeight(system_font_1) is '100px'
 PASS lineHeight(system_font_2) is 'normal'
 PASS lineHeight(shorthand_normal_1) is '100px'

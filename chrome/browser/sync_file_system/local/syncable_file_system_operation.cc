@@ -75,18 +75,17 @@ class SyncableFileSystemOperation::QueueableTask
 
 SyncableFileSystemOperation::~SyncableFileSystemOperation() {}
 
-void SyncableFileSystemOperation::CreateFile(
-    const FileSystemURL& url,
-    bool exclusive,
-    const StatusCallback& callback) {
+void SyncableFileSystemOperation::CreateFile(const FileSystemURL& url,
+                                             bool exclusive,
+                                             StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
-    callback.Run(base::File::FILE_ERROR_NOT_FOUND);
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
   DCHECK(operation_runner_.get());
   target_paths_.push_back(url);
-  completion_callback_ = callback;
+  completion_callback_ = std::move(callback);
   std::unique_ptr<SyncableFileOperationRunner::Task> task(new QueueableTask(
       weak_factory_.GetWeakPtr(),
       base::Bind(&FileSystemOperation::CreateFile,
@@ -95,19 +94,18 @@ void SyncableFileSystemOperation::CreateFile(
   operation_runner_->PostOperationTask(std::move(task));
 }
 
-void SyncableFileSystemOperation::CreateDirectory(
-    const FileSystemURL& url,
-    bool exclusive,
-    bool recursive,
-    const StatusCallback& callback) {
+void SyncableFileSystemOperation::CreateDirectory(const FileSystemURL& url,
+                                                  bool exclusive,
+                                                  bool recursive,
+                                                  StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
-    callback.Run(base::File::FILE_ERROR_NOT_FOUND);
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
   DCHECK(operation_runner_.get());
   target_paths_.push_back(url);
-  completion_callback_ = callback;
+  completion_callback_ = std::move(callback);
   std::unique_ptr<SyncableFileOperationRunner::Task> task(new QueueableTask(
       weak_factory_.GetWeakPtr(),
       base::Bind(&FileSystemOperation::CreateDirectory,
@@ -122,15 +120,15 @@ void SyncableFileSystemOperation::Copy(
     CopyOrMoveOption option,
     ErrorBehavior error_behavior,
     const CopyProgressCallback& progress_callback,
-    const StatusCallback& callback) {
+    StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
-    callback.Run(base::File::FILE_ERROR_NOT_FOUND);
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
   DCHECK(operation_runner_.get());
   target_paths_.push_back(dest_url);
-  completion_callback_ = callback;
+  completion_callback_ = std::move(callback);
   std::unique_ptr<SyncableFileOperationRunner::Task> task(new QueueableTask(
       weak_factory_.GetWeakPtr(),
       base::Bind(&FileSystemOperation::Copy, base::Unretained(impl_.get()),
@@ -139,20 +137,19 @@ void SyncableFileSystemOperation::Copy(
   operation_runner_->PostOperationTask(std::move(task));
 }
 
-void SyncableFileSystemOperation::Move(
-    const FileSystemURL& src_url,
-    const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
-    const StatusCallback& callback) {
+void SyncableFileSystemOperation::Move(const FileSystemURL& src_url,
+                                       const FileSystemURL& dest_url,
+                                       CopyOrMoveOption option,
+                                       StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
-    callback.Run(base::File::FILE_ERROR_NOT_FOUND);
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
   DCHECK(operation_runner_.get());
   target_paths_.push_back(src_url);
   target_paths_.push_back(dest_url);
-  completion_callback_ = callback;
+  completion_callback_ = std::move(callback);
   std::unique_ptr<SyncableFileOperationRunner::Task> task(new QueueableTask(
       weak_factory_.GetWeakPtr(),
       base::Bind(&FileSystemOperation::Move, base::Unretained(impl_.get()),
@@ -161,26 +158,23 @@ void SyncableFileSystemOperation::Move(
   operation_runner_->PostOperationTask(std::move(task));
 }
 
-void SyncableFileSystemOperation::DirectoryExists(
-    const FileSystemURL& url,
-    const StatusCallback& callback) {
+void SyncableFileSystemOperation::DirectoryExists(const FileSystemURL& url,
+                                                  StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->DirectoryExists(url, callback);
+  impl_->DirectoryExists(url, std::move(callback));
 }
 
-void SyncableFileSystemOperation::FileExists(
-    const FileSystemURL& url,
-    const StatusCallback& callback) {
+void SyncableFileSystemOperation::FileExists(const FileSystemURL& url,
+                                             StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->FileExists(url, callback);
+  impl_->FileExists(url, std::move(callback));
 }
 
-void SyncableFileSystemOperation::GetMetadata(
-    const FileSystemURL& url,
-    int fields,
-    const GetMetadataCallback& callback) {
+void SyncableFileSystemOperation::GetMetadata(const FileSystemURL& url,
+                                              int fields,
+                                              GetMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->GetMetadata(url, fields, callback);
+  impl_->GetMetadata(url, fields, std::move(callback));
 }
 
 void SyncableFileSystemOperation::ReadDirectory(
@@ -193,17 +187,17 @@ void SyncableFileSystemOperation::ReadDirectory(
   impl_->ReadDirectory(url, callback);
 }
 
-void SyncableFileSystemOperation::Remove(
-    const FileSystemURL& url, bool recursive,
-    const StatusCallback& callback) {
+void SyncableFileSystemOperation::Remove(const FileSystemURL& url,
+                                         bool recursive,
+                                         StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
-    callback.Run(base::File::FILE_ERROR_NOT_FOUND);
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
   DCHECK(operation_runner_.get());
   target_paths_.push_back(url);
-  completion_callback_ = callback;
+  completion_callback_ = std::move(callback);
   std::unique_ptr<SyncableFileOperationRunner::Task> task(new QueueableTask(
       weak_factory_.GetWeakPtr(),
       base::Bind(&FileSystemOperation::Remove, base::Unretained(impl_.get()),
@@ -212,7 +206,7 @@ void SyncableFileSystemOperation::Remove(
   operation_runner_->PostOperationTask(std::move(task));
 }
 
-void SyncableFileSystemOperation::Write(
+void SyncableFileSystemOperation::WriteBlob(
     const FileSystemURL& url,
     std::unique_ptr<storage::FileWriterDelegate> writer_delegate,
     std::unique_ptr<storage::BlobReader> blob_reader,
@@ -224,27 +218,49 @@ void SyncableFileSystemOperation::Write(
   }
   DCHECK(operation_runner_.get());
   target_paths_.push_back(url);
-  completion_callback_ = base::Bind(&WriteCallbackAdapter, callback);
+  completion_callback_ = base::BindOnce(&WriteCallbackAdapter, callback);
+  std::unique_ptr<SyncableFileOperationRunner::Task> task(new QueueableTask(
+      weak_factory_.GetWeakPtr(),
+      base::Bind(
+          &FileSystemOperation::WriteBlob, base::Unretained(impl_.get()), url,
+          base::Passed(&writer_delegate), base::Passed(&blob_reader),
+          base::Bind(&self::DidWrite, weak_factory_.GetWeakPtr(), callback))));
+  operation_runner_->PostOperationTask(std::move(task));
+}
+
+void SyncableFileSystemOperation::Write(
+    const FileSystemURL& url,
+    std::unique_ptr<storage::FileWriterDelegate> writer_delegate,
+    mojo::ScopedDataPipeConsumerHandle data_pipe,
+    const WriteCallback& callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  if (!operation_runner_.get()) {
+    callback.Run(base::File::FILE_ERROR_NOT_FOUND, 0, true);
+    return;
+  }
+  DCHECK(operation_runner_.get());
+  target_paths_.push_back(url);
+  completion_callback_ = base::BindOnce(&WriteCallbackAdapter, callback);
   std::unique_ptr<SyncableFileOperationRunner::Task> task(new QueueableTask(
       weak_factory_.GetWeakPtr(),
       base::Bind(
           &FileSystemOperation::Write, base::Unretained(impl_.get()), url,
-          base::Passed(&writer_delegate), base::Passed(&blob_reader),
+          base::Passed(&writer_delegate), base::Passed(&data_pipe),
           base::Bind(&self::DidWrite, weak_factory_.GetWeakPtr(), callback))));
   operation_runner_->PostOperationTask(std::move(task));
 }
 
 void SyncableFileSystemOperation::Truncate(const FileSystemURL& url,
                                            int64_t length,
-                                           const StatusCallback& callback) {
+                                           StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
-    callback.Run(base::File::FILE_ERROR_NOT_FOUND);
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
   DCHECK(operation_runner_.get());
   target_paths_.push_back(url);
-  completion_callback_ = callback;
+  completion_callback_ = std::move(callback);
   std::unique_ptr<SyncableFileOperationRunner::Task> task(new QueueableTask(
       weak_factory_.GetWeakPtr(),
       base::Bind(&FileSystemOperation::Truncate, base::Unretained(impl_.get()),
@@ -257,22 +273,21 @@ void SyncableFileSystemOperation::TouchFile(
     const FileSystemURL& url,
     const base::Time& last_access_time,
     const base::Time& last_modified_time,
-    const StatusCallback& callback) {
+    StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->TouchFile(url, last_access_time, last_modified_time, callback);
+  impl_->TouchFile(url, last_access_time, last_modified_time,
+                   std::move(callback));
 }
 
-void SyncableFileSystemOperation::OpenFile(
-    const FileSystemURL& url,
-    int file_flags,
-    const OpenFileCallback& callback) {
+void SyncableFileSystemOperation::OpenFile(const FileSystemURL& url,
+                                           int file_flags,
+                                           OpenFileCallback callback) {
   NOTREACHED();
 }
 
-void SyncableFileSystemOperation::Cancel(
-    const StatusCallback& cancel_callback) {
+void SyncableFileSystemOperation::Cancel(StatusCallback cancel_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->Cancel(cancel_callback);
+  impl_->Cancel(std::move(cancel_callback));
 }
 
 void SyncableFileSystemOperation::CreateSnapshotFile(
@@ -285,15 +300,15 @@ void SyncableFileSystemOperation::CreateSnapshotFile(
 void SyncableFileSystemOperation::CopyInForeignFile(
     const base::FilePath& src_local_disk_path,
     const FileSystemURL& dest_url,
-    const StatusCallback& callback) {
+    StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!operation_runner_.get()) {
-    callback.Run(base::File::FILE_ERROR_NOT_FOUND);
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
   DCHECK(operation_runner_.get());
   target_paths_.push_back(dest_url);
-  completion_callback_ = callback;
+  completion_callback_ = std::move(callback);
   std::unique_ptr<SyncableFileOperationRunner::Task> task(new QueueableTask(
       weak_factory_.GetWeakPtr(),
       base::Bind(&FileSystemOperation::CopyInForeignFile,
@@ -302,18 +317,16 @@ void SyncableFileSystemOperation::CopyInForeignFile(
   operation_runner_->PostOperationTask(std::move(task));
 }
 
-void SyncableFileSystemOperation::RemoveFile(
-    const FileSystemURL& url,
-    const StatusCallback& callback) {
+void SyncableFileSystemOperation::RemoveFile(const FileSystemURL& url,
+                                             StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->RemoveFile(url, callback);
+  impl_->RemoveFile(url, std::move(callback));
 }
 
-void SyncableFileSystemOperation::RemoveDirectory(
-    const FileSystemURL& url,
-    const StatusCallback& callback) {
+void SyncableFileSystemOperation::RemoveDirectory(const FileSystemURL& url,
+                                                  StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->RemoveDirectory(url, callback);
+  impl_->RemoveDirectory(url, std::move(callback));
 }
 
 void SyncableFileSystemOperation::CopyFileLocal(
@@ -321,18 +334,18 @@ void SyncableFileSystemOperation::CopyFileLocal(
     const FileSystemURL& dest_url,
     CopyOrMoveOption option,
     const CopyFileProgressCallback& progress_callback,
-    const StatusCallback& callback) {
+    StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->CopyFileLocal(src_url, dest_url, option, progress_callback, callback);
+  impl_->CopyFileLocal(src_url, dest_url, option, progress_callback,
+                       std::move(callback));
 }
 
-void SyncableFileSystemOperation::MoveFileLocal(
-    const FileSystemURL& src_url,
-    const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
-    const StatusCallback& callback) {
+void SyncableFileSystemOperation::MoveFileLocal(const FileSystemURL& src_url,
+                                                const FileSystemURL& dest_url,
+                                                CopyOrMoveOption option,
+                                                StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->MoveFileLocal(src_url, dest_url, option, callback);
+  impl_->MoveFileLocal(src_url, dest_url, option, std::move(callback));
 }
 
 base::File::Error SyncableFileSystemOperation::SyncGetPlatformPath(
@@ -366,7 +379,7 @@ void SyncableFileSystemOperation::DidFinish(base::File::Error status) {
   DCHECK(!completion_callback_.is_null());
   if (operation_runner_.get())
     operation_runner_->OnOperationCompleted(target_paths_);
-  completion_callback_.Run(status);
+  std::move(completion_callback_).Run(status);
 }
 
 void SyncableFileSystemOperation::DidWrite(const WriteCallback& callback,
@@ -385,7 +398,7 @@ void SyncableFileSystemOperation::DidWrite(const WriteCallback& callback,
 
 void SyncableFileSystemOperation::OnCancelled() {
   DCHECK(!completion_callback_.is_null());
-  completion_callback_.Run(base::File::FILE_ERROR_ABORT);
+  std::move(completion_callback_).Run(base::File::FILE_ERROR_ABORT);
 }
 
 }  // namespace sync_file_system

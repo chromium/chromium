@@ -1,4 +1,5 @@
 line 4
+
 line 5
 
 PASS testQuerySelectorAll(document, ".target + div") is "[object HTMLDivElement], [object HTMLDivElement], length: 2"

@@ -12,8 +12,10 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "base/task/post_task.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
@@ -178,8 +180,8 @@ void SpeechRecognizer::EventListener::StopOnIOThread() {
 
 void SpeechRecognizer::EventListener::NotifyRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&SpeechRecognizerDelegate::OnSpeechRecognitionStateChanged,
                  delegate_, new_state));
 }
@@ -223,8 +225,8 @@ void SpeechRecognizer::EventListener::OnRecognitionResults(
       final_count++;
     result_str += result->hypotheses[0]->utterance;
   }
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&SpeechRecognizerDelegate::OnSpeechResult, delegate_,
                  result_str, final_count == results.size()));
 
@@ -270,8 +272,8 @@ void SpeechRecognizer::EventListener::OnAudioLevelsChange(int session_id,
   // Both |volume| and |noise_volume| are defined to be in the range [0.0, 1.0].
   // See: content/public/browser/speech_recognition_event_listener.h
   int16_t sound_level = static_cast<int16_t>(INT16_MAX * volume);
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&SpeechRecognizerDelegate::OnSpeechSoundLevelChanged,
                  delegate_, sound_level));
 }
@@ -310,16 +312,16 @@ void SpeechRecognizer::Start(
   std::string auth_token;
   delegate_->GetSpeechAuthParameters(&auth_scope, &auth_token);
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&SpeechRecognizer::EventListener::StartOnIOThread,
                  speech_event_listener_, auth_scope, auth_token, preamble));
 }
 
 void SpeechRecognizer::Stop() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&SpeechRecognizer::EventListener::StopOnIOThread,
                  speech_event_listener_));
 }

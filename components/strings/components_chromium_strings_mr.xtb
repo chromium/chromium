@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
-<translation id="130631256467250065">आपण आपल्या डिव्हाइसचा पुढील वेळी पुनरारंभ कराल तेव्हा आपले बदल प्रभावी होतील.</translation>
+<translation id="130631256467250065">तुम्ही आपल्या डिव्हाइसचा पुढील वेळी पुनरारंभ कराल तेव्हा आपले बदल प्रभावी होतील.</translation>
 <translation id="1838412507805038478"><ph name="ISSUER" /> ने या वेबसाइटचे सर्टिफिकेट जारी केले हे Chromium ने पडताळले.</translation>
 <translation id="275588974610408078">Chromium मध्ये क्रॅश अहवाल उपलब्ध नाही.</translation>
-<translation id="3064346599913645280">आपण एक सुरक्षित Chromium पृष्ठ पाहत आहात</translation>
+<translation id="3064346599913645280">तुम्ही एक सुरक्षित Chromium पृष्ठ पाहत आहात</translation>
 <translation id="3550966579244642892">Chromium OS नी त्याचे प्रारंभिक सेटअप पूर्ण केले नाही.</translation>
 <translation id="4365115785552740256">Chromium हे <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोत प्रकल्प आणि इतर <ph name="BEGIN_LINK_OSS" />खुले स्रोत सॉफ्टवेअर<ph name="END_LINK_OSS" /> द्वारे बनवणे शक्य झाले.</translation>
 <translation id="4559775032954821361">Chromium मेनू &gt;
@@ -25,7 +25,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           वर जा आणि आपले कॉन्फिगरेशन "प्रॉक्सी नाही" किंवा "प्रत्यक्ष" वर सेट केल्याचे सुनिश्चित करा.</translation>
-<translation id="6613594504749178791">आपण पुढल्या वेळी Chromium रीलाँच कराल तोपर्यंत आपले बदल प्रभावी होतील.</translation>
+<translation id="6613594504749178791">तुम्ही पुढल्या वेळी Chromium रीलाँच कराल तोपर्यंत आपले बदल प्रभावी होतील.</translation>
 <translation id="7861509383340276692">Chromium मेनू &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;

@@ -19,9 +19,6 @@ const base::Feature kDragAppsInTabletMode{"DragAppsInTabletMode",
 const base::Feature kDragTabsInTabletMode{"DragTabsInTabletMode",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kKeyboardShortcutViewer{"KeyboardShortcutViewer",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kKeyboardShortcutViewerApp{
     "KeyboardShortcutViewerApp", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -35,10 +32,16 @@ const base::Feature kLockScreenHideSensitiveNotificationsSupport{
     "LockScreenHideSensitiveNotificationsSupport",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kNewWallpaperPicker{"NewWallpaperPicker",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kMediaSessionAccelerators{
+    "MediaSessionAccelerators", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kMediaSessionNotification{
+    "MediaSessionNotification", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kNightLight{"NightLight", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kNotificationExpansionAnimation{
+    "NotificationExpansionAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kNotificationScrollBar{"NotificationScrollBar",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
@@ -46,20 +49,19 @@ const base::Feature kNotificationScrollBar{"NotificationScrollBar",
 const base::Feature kOverviewSwipeToClose{"OverviewSwipeToClose",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSystemTrayUnified{"SystemTrayUnified",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kTrilinearFiltering{"TrilinearFiltering",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kUnlockWithExternalBinary{
+    "UnlockWithExternalBinary", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kViewsLogin{"ViewsLogin", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kUseBluetoothSystemInAsh{"UseBluetoothSystemInAsh",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsDockedMagnifierEnabled() {
   return base::FeatureList::IsEnabled(kDockedMagnifier);
-}
-
-bool IsKeyboardShortcutViewerEnabled() {
-  return base::FeatureList::IsEnabled(kKeyboardShortcutViewer);
 }
 
 bool IsKeyboardShortcutViewerAppEnabled() {
@@ -79,14 +81,12 @@ bool IsLockScreenHideSensitiveNotificationsSupported() {
       kLockScreenHideSensitiveNotificationsSupport);
 }
 
-bool IsNewWallpaperPickerEnabled() {
-  static bool use_new_wallpaper_picker =
-      base::FeatureList::IsEnabled(kNewWallpaperPicker);
-  return use_new_wallpaper_picker;
-}
-
 bool IsNightLightEnabled() {
   return base::FeatureList::IsEnabled(kNightLight);
+}
+
+bool IsNotificationExpansionAnimationEnabled() {
+  return base::FeatureList::IsEnabled(kNotificationExpansionAnimation);
 }
 
 bool IsNotificationScrollBarEnabled() {
@@ -94,7 +94,7 @@ bool IsNotificationScrollBarEnabled() {
 }
 
 bool IsSystemTrayUnifiedEnabled() {
-  return base::FeatureList::IsEnabled(kSystemTrayUnified);
+  return true;
 }
 
 bool IsTrilinearFilteringEnabled() {

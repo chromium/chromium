@@ -98,7 +98,7 @@ void BlinkLeakDetector::TimerFiredGC(TimerBase*) {
   V8GCController::CollectAllGarbageForTesting(
       V8PerIsolateData::MainThreadIsolate(),
       v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
-  CoreInitializer::GetInstance().CollectAllGarbageForAnimationWorklet();
+  CoreInitializer::GetInstance().CollectAllGarbageForAnimationAndPaintWorklet();
   // Note: Oilpan precise GC is scheduled at the end of the event loop.
 
   // Inspect counters on the next event loop.

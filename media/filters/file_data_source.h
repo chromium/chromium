@@ -22,10 +22,10 @@ namespace media {
 class MEDIA_EXPORT FileDataSource : public DataSource {
  public:
   FileDataSource();
-  explicit FileDataSource(base::File file);
   ~FileDataSource() override;
 
-  bool Initialize(const base::FilePath& file_path);
+  WARN_UNUSED_RESULT bool Initialize(const base::FilePath& file_path);
+  WARN_UNUSED_RESULT bool Initialize(base::File file);
 
   // Implementation of DataSource.
   void Stop() override;

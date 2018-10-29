@@ -24,7 +24,7 @@ std::pair<int, int> AvailablePointerAndHoverTypes() {
   JNIEnv* env = AttachCurrentThread();
   std::vector<int> pointer_and_hover_types;
   base::android::JavaIntArrayToIntVector(
-      env, Java_TouchDevice_availablePointerAndHoverTypes(env).obj(),
+      env, Java_TouchDevice_availablePointerAndHoverTypes(env),
       &pointer_and_hover_types);
   DCHECK_EQ(pointer_and_hover_types.size(), 2u);
   return std::make_pair(pointer_and_hover_types[0], pointer_and_hover_types[1]);

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://wicg.github.io/web-locks/#callbackdef-lockgrantedcallback
-callback LockGrantedCallback = any (Lock lock);
+callback LockGrantedCallback = any (Lock? lock);
 
 // https://wicg.github.io/web-locks/#lockmanager
 [

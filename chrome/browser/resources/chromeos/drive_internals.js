@@ -8,7 +8,7 @@
  * @param {number} bytes The number in bytes.
  * @return {string} Formatted string in megabytes.
  */
-function ToMegaByteString(bytes) {
+function toMegaByteString(bytes) {
   var mb = Math.floor(bytes / (1 << 20));
   return mb.toString().replace(
       /\d+?(?=(\d{3})+$)/g,  // Digit sequence (\d+) followed (?=) by 3n digits.
@@ -72,7 +72,7 @@ function updateGCacheContents(gcacheContents, gcacheSummary) {
   }
 
   $('gcache-summary-total-size').textContent =
-      ToMegaByteString(gcacheSummary['total_size']);
+      toMegaByteString(gcacheSummary['total_size']);
 }
 
 /**
@@ -108,7 +108,7 @@ function updateCacheContents(cacheEntry) {
  * stogage.
  */
 function updateLocalStorageUsage(localStorageSummary) {
-  var freeSpaceInMB = ToMegaByteString(localStorageSummary.free_space);
+  var freeSpaceInMB = toMegaByteString(localStorageSummary.free_space);
   $('local-storage-freespace').innerText = freeSpaceInMB;
 }
 
@@ -154,8 +154,8 @@ function updateInFlightOperations(inFlightOperations) {
  * @param {Object} aboutResource Dictionary describing about resource.
  */
 function updateAboutResource(aboutResource) {
-  var quotaTotalInMb = ToMegaByteString(aboutResource['account-quota-total']);
-  var quotaUsedInMb = ToMegaByteString(aboutResource['account-quota-used']);
+  var quotaTotalInMb = toMegaByteString(aboutResource['account-quota-total']);
+  var quotaUsedInMb = toMegaByteString(aboutResource['account-quota-used']);
 
   $('account-quota-info').textContent =
       quotaUsedInMb + ' / ' + quotaTotalInMb + ' (MB)';
@@ -250,20 +250,45 @@ function updateResetStatus(success) {
   $('reset-status-text').textContent = (success ? 'success' : 'failed');
 }
 
+/**
+ * Makes up-to-date table of contents.
+ */
+function updateToc() {
+  var toc = $('toc');
+  while (toc.firstChild) {
+    toc.removeChild(toc.firstChild);
+  }
+  var sections = document.getElementsByTagName('section');
+  for (var i = 0; i < sections.length; i++) {
+    var section = sections[i];
+    if (!section.hidden) {
+      var header = section.getElementsByTagName('h2')[0];
+      var a = createElementFromText('a', header.textContent);
+      a.href = '#' + section.id;
+      var li = document.createElement('li');
+      li.appendChild(a);
+      toc.appendChild(li);
+    }
+  }
+}
+
+/**
+ * Shows or hides a section.
+ * @param {string} section Which section to change.
+ * @param {boolean} enabled Whether to enable.
+ */
+function setSectionEnabled(section, enable) {
+  var element = $(section);
+  if (element.hidden !== !enable) {
+    element.hidden = !enable;
+    updateToc();
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   chrome.send('pageLoaded');
 
-  // Update the table of contents.
-  var toc = $('toc');
-  var sections = document.getElementsByTagName('h2');
-  for (var i = 0; i < sections.length; i++) {
-    var section = sections[i];
-    var a = createElementFromText('a', section.textContent);
-    a.href = '#' + section.id;
-    var li = document.createElement('li');
-    li.appendChild(a);
-    toc.appendChild(li);
-  }
+  updateToc();
 
   $('button-clear-access-token').addEventListener('click', function() {
     chrome.send('clearAccessToken');

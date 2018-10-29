@@ -27,7 +27,7 @@
  */
 
 // https://html.spec.whatwg.org/#dom-imagedata
-// https://github.com/junov/CanvasColorSpace/blob/master/CanvasColorSpaceProposal.md#imagedata
+// https://github.com/WICG/canvas-color-space/blob/master/CanvasColorSpaceProposal.md#imagedata
 
 typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
 
@@ -35,7 +35,8 @@ typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
     Constructor(unsigned long sw, unsigned long sh),
     Constructor(Uint8ClampedArray data, unsigned long sw, optional unsigned long sh),
     Exposed=(Window,Worker),
-    RaisesException=Constructor
+    RaisesException=Constructor,
+    Serializable
 ] interface ImageData {
     [RuntimeEnabled=CanvasColorManagement] ImageDataColorSettings getColorSettings();
 

@@ -33,21 +33,21 @@ SVGTextPositioningElement::SVGTextPositioningElement(
     : SVGTextContentElement(tag_name, document),
       x_(SVGAnimatedLengthList::Create(
           this,
-          SVGNames::xAttr,
+          svg_names::kXAttr,
           SVGLengthList::Create(SVGLengthMode::kWidth))),
       y_(SVGAnimatedLengthList::Create(
           this,
-          SVGNames::yAttr,
+          svg_names::kYAttr,
           SVGLengthList::Create(SVGLengthMode::kHeight))),
       dx_(SVGAnimatedLengthList::Create(
           this,
-          SVGNames::dxAttr,
+          svg_names::kDxAttr,
           SVGLengthList::Create(SVGLengthMode::kWidth))),
       dy_(SVGAnimatedLengthList::Create(
           this,
-          SVGNames::dyAttr,
+          svg_names::kDyAttr,
           SVGLengthList::Create(SVGLengthMode::kHeight))),
-      rotate_(SVGAnimatedNumberList::Create(this, SVGNames::rotateAttr)) {
+      rotate_(SVGAnimatedNumberList::Create(this, svg_names::kRotateAttr)) {
   AddToPropertyMap(x_);
   AddToPropertyMap(y_);
   AddToPropertyMap(dx_);
@@ -67,13 +67,13 @@ void SVGTextPositioningElement::Trace(blink::Visitor* visitor) {
 void SVGTextPositioningElement::SvgAttributeChanged(
     const QualifiedName& attr_name) {
   bool update_relative_lengths =
-      attr_name == SVGNames::xAttr || attr_name == SVGNames::yAttr ||
-      attr_name == SVGNames::dxAttr || attr_name == SVGNames::dyAttr;
+      attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
+      attr_name == svg_names::kDxAttr || attr_name == svg_names::kDyAttr;
 
   if (update_relative_lengths)
     UpdateRelativeLengthsInformation();
 
-  if (update_relative_lengths || attr_name == SVGNames::rotateAttr) {
+  if (update_relative_lengths || attr_name == svg_names::kRotateAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
 
     LayoutObject* layout_object = GetLayoutObject();

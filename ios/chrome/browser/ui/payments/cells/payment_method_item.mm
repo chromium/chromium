@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/accessibility_util.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -90,25 +91,25 @@ const CGFloat kHorizontalPadding = 16;
 
     // Method ID.
     _methodIDLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    _methodIDLabel.font = [MDCTypography body2Font];
+    SetUILabelScaledFont(_methodIDLabel, [MDCTypography body2Font]);
     _methodIDLabel.textColor = [[MDCPalette greyPalette] tint900];
     [_stackView addArrangedSubview:_methodIDLabel];
 
     // Method detail.
     _methodDetailLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    _methodDetailLabel.font = [MDCTypography body1Font];
+    SetUILabelScaledFont(_methodDetailLabel, [MDCTypography body1Font]);
     _methodDetailLabel.textColor = [[MDCPalette greyPalette] tint900];
     [_stackView addArrangedSubview:_methodDetailLabel];
 
     // Method address.
     _methodAddressLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    _methodAddressLabel.font = [MDCTypography body1Font];
+    SetUILabelScaledFont(_methodAddressLabel, [MDCTypography body1Font]);
     _methodAddressLabel.textColor = [[MDCPalette greyPalette] tint900];
     [_stackView addArrangedSubview:_methodAddressLabel];
 
     // Notification label.
     _notificationLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    _notificationLabel.font = [MDCTypography body1Font];
+    SetUILabelScaledFont(_notificationLabel, [MDCTypography body1Font]);
     _notificationLabel.textColor = [[MDCPalette cr_bluePalette] tint500];
     [_stackView addArrangedSubview:_notificationLabel];
 

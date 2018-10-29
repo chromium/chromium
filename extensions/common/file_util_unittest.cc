@@ -513,6 +513,45 @@ TEST_F(FileUtilTest, CheckZeroLengthAndMissingIconFileUnpacked) {
   EXPECT_EQ("Could not load extension icon 'missing-icon.png'.", error);
 }
 
+// Try to install an unpacked extension with an invisible icon. This
+// should fail.
+TEST_F(FileUtilTest, CheckInvisibleIconFileUnpacked) {
+  base::FilePath install_dir;
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &install_dir));
+
+  base::FilePath ext_dir =
+      install_dir.AppendASCII("file_util").AppendASCII("invisible_icon");
+
+  // Set the flag that enables the error.
+  file_util::SetReportErrorForInvisibleIconForTesting(true);
+  std::string error;
+  scoped_refptr<Extension> extension(file_util::LoadExtension(
+      ext_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
+  file_util::SetReportErrorForInvisibleIconForTesting(false);
+  EXPECT_FALSE(extension);
+  EXPECT_EQ("The icon is not sufficiently visible 'invisible_icon.png'.",
+            error);
+}
+
+// Try to install a packed extension with an invisible icon. This should
+// succeed.
+TEST_F(FileUtilTest, CheckInvisibleIconFilePacked) {
+  base::FilePath install_dir;
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &install_dir));
+
+  base::FilePath ext_dir =
+      install_dir.AppendASCII("file_util").AppendASCII("invisible_icon");
+
+  // Set the flag that enables the error.
+  file_util::SetReportErrorForInvisibleIconForTesting(true);
+  std::string error;
+  scoped_refptr<Extension> extension(file_util::LoadExtension(
+      ext_dir, Manifest::INTERNAL, Extension::NO_FLAGS, &error));
+  file_util::SetReportErrorForInvisibleIconForTesting(false);
+  EXPECT_TRUE(extension);
+  EXPECT_TRUE(error.empty());
+}
+
 TEST_F(FileUtilTest, ExtensionURLToRelativeFilePath) {
 #define URL_PREFIX "chrome-extension://extension-id/"
   struct TestCase {

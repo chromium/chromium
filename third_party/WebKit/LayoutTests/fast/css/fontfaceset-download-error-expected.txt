@@ -6,7 +6,6 @@ Test download error cases.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS event.fontfaces.length is 1
 PASS event.fontfaces[0].family is "myfont4"
 PASS event.fontfaces.length is 4

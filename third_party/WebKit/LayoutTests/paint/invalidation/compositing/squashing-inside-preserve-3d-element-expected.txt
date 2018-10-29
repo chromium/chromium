@@ -35,7 +35,7 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV id='target'",
           "rect": [0, 0, 100, 100],
-          "reason": "style change"
+          "reason": "background"
         }
       ],
       "transform": 4

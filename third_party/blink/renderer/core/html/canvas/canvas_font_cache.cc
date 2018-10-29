@@ -119,7 +119,7 @@ MutableCSSPropertyValueSet* CanvasFontCache::ParseFont(
   return parsed_style;
 }
 
-void CanvasFontCache::DidProcessTask() {
+void CanvasFontCache::DidProcessTask(const base::PendingTask& pending_task) {
   DCHECK(pruning_scheduled_);
   DCHECK(main_cache_purge_preventer_);
   while (fetched_fonts_.size() > MaxFonts()) {

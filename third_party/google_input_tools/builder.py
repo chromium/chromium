@@ -6,9 +6,9 @@
 """Closure builder for Javascript."""
 
 import argparse
-import json
 import os
 import re
+import shlex
 
 _BASE_REGEX_STRING = r'^\s*goog\.%s\(\s*[\'"](.+)[\'"]\s*\)'
 require_regex = re.compile(_BASE_REGEX_STRING % 'require')
@@ -155,35 +155,21 @@ def extract_sources(options):
     absolute.  Otherwise, relative paths may be used.
   """
 
-  sources = None
-  if options.json_file:
-    # Optionally load list of source files from a json file. Useful when the
-    # list of files to process is too long for the command line.
-    with open(options.json_file, 'r') as json_file:
-      data = []
-      # Strip leading comments.
-      for line in json_file:
-        if not line.startswith('#'):
-          data.append(line)
-      json_object = json.loads(os.linesep.join(data).replace('\'', '\"'))
-      path = options.json_sources.split('.')
-      sources = json_object
-      for key in path:
-        sources = sources[key]
-      if options.path:
-        sources = [os.path.join(options.path, source) for source in sources]
-  else:
-    sources = options.sources
+  sources = []
+  # Optionally load list of source files from a json file. Useful when the
+  # list of files to process is too long for the command line.
+  with open(options.sources_list[0], 'r') as f:
+    sources = shlex.split(f.read())
+  if options.path:
+    sources = [os.path.join(options.path, source) for source in sources]
   return sources
 
 
 def main():
   """The entrypoint for this script."""
   parser = argparse.ArgumentParser()
-  parser.add_argument('--sources', nargs='*')
+  parser.add_argument('--sources-list', nargs=1)
   parser.add_argument('--target', nargs=1)
-  parser.add_argument('--json_file', nargs='?')
-  parser.add_argument('--json_sources', nargs='?')
   parser.add_argument('--path', nargs='?')
   options = parser.parse_args()
 

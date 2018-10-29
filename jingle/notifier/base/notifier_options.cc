@@ -13,7 +13,8 @@ NotifierOptions::NotifierOptions()
       allow_insecure_connection(false),
       invalidate_xmpp_login(false),
       notification_method(kDefaultNotificationMethod),
-      auth_mechanism(kDefaultGaiaAuthMechanism) {}
+      auth_mechanism(kDefaultGaiaAuthMechanism),
+      network_connection_tracker(nullptr) {}
 
 NotifierOptions::NotifierOptions(const NotifierOptions& other) = default;
 

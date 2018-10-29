@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/test/test_file_util.h"
@@ -122,10 +123,9 @@ class LevelDBSiteCharacteristicsDatabaseTest : public ::testing::Test {
   }
 
   // Add some entries to the database and returns a vector with their origins.
-  std::vector<url::Origin> AddDummyEntriesToDB() {
-    const size_t kEntryCount = 10;
+  std::vector<url::Origin> AddDummyEntriesToDB(size_t num_entries) {
     std::vector<url::Origin> site_origins;
-    for (size_t i = 0; i < kEntryCount; ++i) {
+    for (size_t i = 0; i < num_entries; ++i) {
       SiteCharacteristicsProto proto_temp;
       std::string origin_str = base::StringPrintf("http://%zu.com", i);
       InitSiteCharacteristicProto(&proto_temp,
@@ -166,7 +166,7 @@ TEST_F(LevelDBSiteCharacteristicsDatabaseTest, InitAndStoreSiteCharacteristic) {
 }
 
 TEST_F(LevelDBSiteCharacteristicsDatabaseTest, RemoveEntries) {
-  std::vector<url::Origin> site_origins = AddDummyEntriesToDB();
+  std::vector<url::Origin> site_origins = AddDummyEntriesToDB(10);
 
   // Remove half the origins from the database.
   std::vector<url::Origin> site_origins_to_remove(
@@ -195,8 +195,33 @@ TEST_F(LevelDBSiteCharacteristicsDatabaseTest, RemoveEntries) {
     EXPECT_FALSE(ReadFromDB(iter, &proto_temp));
 }
 
+TEST_F(LevelDBSiteCharacteristicsDatabaseTest, GetDatabaseSize) {
+  std::vector<url::Origin> site_origins = AddDummyEntriesToDB(200);
+
+  auto size_callback =
+      base::BindLambdaForTesting([&](base::Optional<int64_t> num_rows,
+                                     base::Optional<int64_t> on_disk_size_kb) {
+        EXPECT_TRUE(num_rows);
+        // The DB contains an extra row for metadata.
+        int64_t expected_rows = site_origins.size() + 1;
+        EXPECT_EQ(expected_rows, num_rows.value());
+
+        EXPECT_TRUE(on_disk_size_kb);
+        EXPECT_LT(0, on_disk_size_kb.value());
+      });
+
+  db_->GetDatabaseSize(std::move(size_callback));
+
+  WaitForAsyncOperationsToComplete();
+
+  // Verify that the DB is still operational (see implementation detail
+  // for Windows).
+  SiteCharacteristicsProto read_proto;
+  EXPECT_TRUE(ReadFromDB(site_origins[0], &read_proto));
+}
+
 TEST_F(LevelDBSiteCharacteristicsDatabaseTest, DatabaseRecoveryTest) {
-  std::vector<url::Origin> site_origins = AddDummyEntriesToDB();
+  std::vector<url::Origin> site_origins = AddDummyEntriesToDB(10);
 
   db_.reset();
 

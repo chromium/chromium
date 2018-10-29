@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_IME_DRIVER_REMOTE_TEXT_INPUT_CLIENT_H_
 #define CHROME_BROWSER_UI_VIEWS_IME_DRIVER_REMOTE_TEXT_INPUT_CLIENT_H_
 
+#include "base/containers/queue.h"
+#include "base/memory/weak_ptr.h"
 #include "services/ws/public/mojom/ime/ime.mojom.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_client.h"
@@ -27,6 +29,9 @@ class RemoteTextInputClient : public ui::TextInputClient,
   void SetCaretBounds(const gfx::Rect& caret_bounds);
 
  private:
+  // See |pending_callbacks_| for details.
+  void OnDispatchKeyEventPostIMECompleted(bool completed);
+
   // ui::TextInputClient:
   void SetCompositionText(const ui::CompositionText& composition) override;
   void ConfirmCompositionText() override;
@@ -62,7 +67,8 @@ class RemoteTextInputClient : public ui::TextInputClient,
 
   // ui::internal::InputMethodDelegate:
   ui::EventDispatchDetails DispatchKeyEventPostIME(
-      ui::KeyEvent* event) override;
+      ui::KeyEvent* event,
+      base::OnceCallback<void(bool)> ack_callback) override;
 
   ws::mojom::TextInputClientPtr remote_client_;
   ui::TextInputType text_input_type_;
@@ -70,8 +76,16 @@ class RemoteTextInputClient : public ui::TextInputClient,
   base::i18n::TextDirection text_direction_;
   int text_input_flags_;
   gfx::Rect caret_bounds_;
-  std::deque<std::unique_ptr<base::OnceCallback<void(bool)>>>
-      pending_callbacks_;
+
+  // Callbacks supplied to DispatchKeyEventPostIME() are added here. When the
+  // response from the remote side is received
+  // (OnDispatchKeyEventPostIMECompleted()), the callback is removed and run.
+  // This is done to ensure if we are destroyed all the callbacks are run.
+  // This is necessary as the callbacks may have originated from a remote
+  // client.
+  base::queue<base::OnceCallback<void(bool)>> pending_callbacks_;
+
+  base::WeakPtrFactory<RemoteTextInputClient> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RemoteTextInputClient);
 };

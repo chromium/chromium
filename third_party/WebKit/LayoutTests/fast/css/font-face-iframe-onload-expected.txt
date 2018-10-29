@@ -2,7 +2,6 @@ Test for crbug.com/401846 - <iframe> using web font fails to trigger onload() in
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

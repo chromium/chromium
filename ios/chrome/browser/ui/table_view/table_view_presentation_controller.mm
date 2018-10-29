@@ -7,8 +7,8 @@
 #include <algorithm>
 
 #import "ios/chrome/browser/ui/image_util/image_util.h"
-#include "ios/chrome/browser/ui/rtl_geometry.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller_delegate.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -31,7 +31,8 @@ const CGFloat kTableViewTopMargin = 35.0;
 
 // The maximum allowed width for |tableViewContainer|.
 const CGFloat kTableViewMaxWidth = 414.0;
-}
+
+}  // namespace
 
 @interface TableViewPresentationController ()
 
@@ -77,21 +78,30 @@ const CGFloat kTableViewMaxWidth = 414.0;
   CGFloat maxAvailableWidth = safeAreaWidth - 2 * kTableViewEdgeMargin;
   CGFloat tableWidth = std::min(maxAvailableWidth, kTableViewMaxWidth);
 
-  // The leading edge of the bubble, in direction-independent coordinates, is
-  // equal to the width of the containerView's bounds minus:
-  // 1) The width of the safe area on the trailing edge.
-  // 2) The table view edge margin.
-  // 3) The width of the table view itself.
-  CGFloat tableLeadingX = CGRectGetWidth(self.containerView.bounds) -
-                          UIEdgeInsetsGetTrailing(safeAreaInsets) -
-                          kTableViewEdgeMargin - tableWidth;
+  // The space between the bubble and the edge of the screen is equal to the
+  // width of the safe area, on the position edge, plus the table view edge
+  // margin. When |self.position| is TablePresentationPositionLeading, the
+  // leading edge of the bubble is equal to that spacing. And if |self.position|
+  // is TablePresentationPositionTrailing, the leading edge of the margin is
+  // equal to the containerView's bounds minus that spacing minus the width of
+  // the table view itself.
+  CGFloat tableLeadingX;
+  if (self.position == TablePresentationPositionTrailing) {
+    tableLeadingX = CGRectGetWidth(self.containerView.bounds) -
+                    UIEdgeInsetsGetTrailing(safeAreaInsets) -
+                    kTableViewEdgeMargin - tableWidth;
+  } else {
+    tableLeadingX =
+        UIEdgeInsetsGetLeading(safeAreaInsets) + kTableViewEdgeMargin;
+  }
   CGFloat containerWidth = CGRectGetWidth(self.containerView.bounds);
   CGFloat tableOriginY = CGRectGetMinY(safeAreaBounds) + kTableViewTopMargin;
   CGFloat tableHeight =
       safeAreaHeight - kTableViewTopMargin - kTableViewEdgeMargin;
 
-  // The tableview container should be pinned to the top, bottom, and trailing
-  // edges of the safe area, with a fixed margin on those sides.
+  // The tableview container should be pinned to the top, bottom, and either
+  // trailing or leading edges of the safe area, depending on |self.position|.
+  // It will also have a fixed margin on those sides.
   LayoutRect tableLayoutRect = LayoutRectMake(
       tableLeadingX, containerWidth, tableOriginY, tableWidth, tableHeight);
   return LayoutRectGetRect(tableLayoutRect);

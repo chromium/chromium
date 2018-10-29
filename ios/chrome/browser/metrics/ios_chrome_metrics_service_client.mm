@@ -321,7 +321,7 @@ void IOSChromeMetricsServiceClient::OnSyncPrefsChanged(bool must_purge) {
     return;
   if (must_purge) {
     ukm_service_->Purge();
-    ukm_service_->ResetClientId();
+    ukm_service_->ResetClientState(ukm::ResetReason::kOnSyncPrefsChanged);
   }
   // Signal service manager to enable/disable UKM based on new state.
   UpdateRunningServices();

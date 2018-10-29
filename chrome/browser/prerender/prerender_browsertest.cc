@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -88,6 +89,7 @@
 #include "components/variations/entropy_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_message_filter.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -320,8 +322,8 @@ class ChannelDestructionWatcher {
 
    private:
     ~DestructionMessageFilter() override {
-      content::BrowserThread::PostTask(
-          content::BrowserThread::UI, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::UI},
           base::BindOnce(&ChannelDestructionWatcher::OnChannelDestroyed,
                          base::Unretained(watcher_)));
     }
@@ -2699,36 +2701,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestWithExtensions, TabsApi) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Test that prerenders abort when navigating to a stream.
-// See chrome/browser/extensions/api/streams_private/streams_private_apitest.cc
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestWithExtensions, StreamsTest) {
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService))
-    return;  // Streams not used with network service.
-
-  ASSERT_TRUE(StartEmbeddedTestServer());
-
-  const extensions::Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("streams_private/handle_mime_type"));
-  ASSERT_TRUE(extension);
-  EXPECT_EQ(std::string(extension_misc::kMimeHandlerPrivateTestExtensionId),
-            extension->id());
-  MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
-  ASSERT_TRUE(handler);
-  EXPECT_TRUE(handler->CanHandleMIMEType("application/msword"));
-
-  PrerenderTestURL("/prerender/document.doc", FINAL_STATUS_DOWNLOAD, 0);
-
-  // Sanity-check that the extension would have picked up the stream in a normal
-  // navigation had prerender not intercepted it.
-  // The extension streams_private/handle_mime_type reports success if it has
-  // handled the application/msword type.
-  // Note: NavigateToDestURL() cannot be used because of the assertion shecking
-  //     for non-null PrerenderContents.
-  extensions::ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(current_browser(), dest_url());
-  EXPECT_TRUE(catcher.GetNextResult());
-}
-
 // Checks that non-http/https/chrome-extension subresource cancels the
 // prerender.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
@@ -2859,8 +2831,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Mock out requests to the Web Store.
   base::FilePath file(GetTestPath("prerender_page.html"));
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CreateMockInterceptorOnIO, webstore_url, file));
 
   PrerenderTestURL(CreateClientRedirect(webstore_url.spec()),
@@ -3091,8 +3063,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AutosigninInPrerenderer) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     PasswordStoreFactory::GetInstance()->SetTestingFactory(
         current_browser()->profile(),
-        password_manager::BuildPasswordStore<
-            content::BrowserContext, password_manager::TestPasswordStore>);
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<
+                content::BrowserContext, password_manager::TestPasswordStore>));
   }
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
@@ -3116,8 +3089,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AutosigninInPrerenderer) {
   base::FilePath empty_file = ui_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("empty.html")));
   RequestCounter done_counter;
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CreateCountingInterceptorOnIO, done_url, empty_file,
                      done_counter.AsWeakPtr()));
   // Loading may finish or be interrupted. The final result is important only.

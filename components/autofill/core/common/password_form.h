@@ -18,6 +18,8 @@
 
 namespace autofill {
 
+enum class SubmissionSource;
+
 // Pair of a value and the name of the element that contained this value.
 using ValueElementPair = std::pair<base::string16, base::string16>;
 
@@ -85,6 +87,7 @@ struct PasswordForm {
     PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD,
     DEPRECATED_FILLED_FORM_ON_START_PROVISIONAL_LOAD,            // unused
     DEPRECATED_FILLED_INPUT_ELEMENTS_ON_START_PROVISIONAL_LOAD,  // unused
+    PROBABLE_FORM_SUBMISSION,
     SUBMISSION_INDICATOR_EVENT_COUNT
   };
 
@@ -360,6 +363,9 @@ struct LessThanUniqueKey {
 // Converts a vector of ValueElementPair to string.
 base::string16 ValueElementVectorToString(
     const ValueElementVector& value_element_pairs);
+
+PasswordForm::SubmissionIndicatorEvent ToSubmissionIndicatorEvent(
+    SubmissionSource source);
 
 // For testing.
 std::ostream& operator<<(std::ostream& os, const PasswordForm& form);

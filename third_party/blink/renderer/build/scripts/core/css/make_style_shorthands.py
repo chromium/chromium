@@ -40,15 +40,17 @@ import template_expander
 
 class StylePropertyShorthandWriter(json5_generator.Writer):
     class_name = 'StylePropertyShorthand'
+    _FILE_BASENAME = 'style_property_shorthand'
 
     def __init__(self, json5_file_paths, output_dir):
         super(StylePropertyShorthandWriter, self).__init__([], output_dir)
         self._input_files = json5_file_paths
         self._outputs = {
-            'style_property_shorthand.cc':
+            (self._FILE_BASENAME + '.cc'):
                 self.generate_style_property_shorthand_cpp,
-            'style_property_shorthand.h':
-                self.generate_style_property_shorthand_h}
+            (self._FILE_BASENAME + '.h'):
+                self.generate_style_property_shorthand_h
+        }
 
         json5_properties = css_properties.CSSProperties(json5_file_paths)
         self._shorthands = json5_properties.shorthands
@@ -83,6 +85,7 @@ class StylePropertyShorthandWriter(json5_generator.Writer):
         return {
             'input_files': self._input_files,
             'properties': self._shorthands,
+            'header_guard': self.make_header_guard(self._relative_output_dir + self._FILE_BASENAME + '.h')
         }
 
 if __name__ == '__main__':

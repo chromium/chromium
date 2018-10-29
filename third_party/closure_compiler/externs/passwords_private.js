@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,14 +49,14 @@ chrome.passwordsPrivate.LoginPair;
  *   loginPair: !chrome.passwordsPrivate.LoginPair,
  *   numCharactersInPassword: number,
  *   federationText: (string|undefined),
- *   index: number
+ *   id: number
  * }}
  */
 chrome.passwordsPrivate.PasswordUiEntry;
 
 /**
  * @typedef {{
- *   index: number,
+ *   id: number,
  *   plaintextPassword: string
  * }}
  */
@@ -65,7 +65,7 @@ chrome.passwordsPrivate.PlaintextPasswordEventParameters;
 /**
  * @typedef {{
  *   urls: !chrome.passwordsPrivate.UrlCollection,
- *   index: number
+ *   id: number
  * }}
  */
 chrome.passwordsPrivate.ExceptionEntry;
@@ -73,7 +73,7 @@ chrome.passwordsPrivate.ExceptionEntry;
 /**
  * @typedef {{
  *   status: !chrome.passwordsPrivate.ExportProgressStatus,
- *   message: (string|undefined),
+ *   folderName: (string|undefined)
  * }}
  */
 chrome.passwordsPrivate.PasswordExportProgress;
@@ -81,16 +81,16 @@ chrome.passwordsPrivate.PasswordExportProgress;
 /**
  * Removes the saved password corresponding to |loginPair|. If no saved password
  * for this pair exists, this function is a no-op.
- * @param {number} index The index for the password entry being removed.
+ * @param {number} id The id for the password entry being removed.
  */
-chrome.passwordsPrivate.removeSavedPassword = function(index) {};
+chrome.passwordsPrivate.removeSavedPassword = function(id) {};
 
 /**
  * Removes the saved password exception corresponding to |exceptionUrl|. If no
  * exception with this URL exists, this function is a no-op.
- * @param {number} index The index for the exception url entry being removed.
+ * @param {number} id The id for the exception url entry being removed.
  */
-chrome.passwordsPrivate.removePasswordException = function(index) {};
+chrome.passwordsPrivate.removePasswordException = function(id) {};
 
 /**
  * Undoes the last removal of a saved password or exception.
@@ -98,14 +98,14 @@ chrome.passwordsPrivate.removePasswordException = function(index) {};
 chrome.passwordsPrivate.undoRemoveSavedPasswordOrException = function() {};
 
 /**
- * Returns the plaintext password corresponding to |index|. Note that on some
+ * Returns the plaintext password corresponding to |id|. Note that on some
  * operating systems, this call may result in an OS-level reauthentication. Once
  * the password has been fetched, it will be returned via the
  * onPlaintextPasswordRetrieved event. TODO(hcarmona): Investigate using a
  * callback for consistency.
- * @param {number} index The index for the password entry being being retrieved.
+ * @param {number} id The id for the password entry being being retrieved.
  */
-chrome.passwordsPrivate.requestPlaintextPassword = function(index) {};
+chrome.passwordsPrivate.requestPlaintextPassword = function(id) {};
 
 /**
  * Returns the list of saved passwords.
@@ -127,25 +127,30 @@ chrome.passwordsPrivate.getPasswordExceptionList = function(callback) {};
 chrome.passwordsPrivate.importPasswords = function() {};
 
 /**
- * Triggers the Password Manager password export functionality.
- * @param {function():void}
- *     callback Called with no error, if the new export request was accepted and
- *         started. If rejected, <code>chrome.runtime.lastError</code> will be
- *         set to 'in-progress'.
+ * <p>Triggers the Password Manager password export functionality. Completion
+ * Will be signaled by the onPasswordsFileExportProgress event.</p><p>|callback|
+ * will be called when the request is started or rejected. If rejected
+ * <code>chrome.runtime.lastError</code> will be set to 'in-progress' or
+ * 'reauth-failed'.</p>
+ * @param {function():void} callback
  */
 chrome.passwordsPrivate.exportPasswords = function(callback) {};
 
 /**
- * Triggers the cancelling of a password export flow.
- */
-chrome.passwordsPrivate.cancelExportPasswords = function() {};
-
-/**
- * Triggers the Password Manager password export status query functionality.
+ * Requests the export progress status. This is the same as the last value seen
+ * on the onPasswordsFileExportProgress event. This function is useful for
+ * checking if an export has already been initiated from an older tab, where we
+ * might have missed the original event.
  * @param {function(!chrome.passwordsPrivate.ExportProgressStatus):void}
- *     callback Called with the status of the current export.
+ *     callback
  */
 chrome.passwordsPrivate.requestExportProgressStatus = function(callback) {};
+
+/**
+ * Stops exporting passwords and cleans up any passwords, which were already
+ * written to the filesystem.
+ */
+chrome.passwordsPrivate.cancelExportPasswords = function() {};
 
 /**
  * Fired when the saved passwords list has changed, meaning that an entry has
@@ -168,9 +173,8 @@ chrome.passwordsPrivate.onPasswordExceptionsListChanged;
  */
 chrome.passwordsPrivate.onPlaintextPasswordRetrieved;
 
-
 /**
- * Fired when status of the export has progressed.
+ * Fired when the status of the export has changed.
  * @type {!ChromeEvent}
  */
 chrome.passwordsPrivate.onPasswordsFileExportProgress;

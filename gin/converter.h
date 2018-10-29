@@ -135,6 +135,15 @@ struct GIN_EXPORT Converter<v8::Local<v8::Object> > {
                      v8::Local<v8::Object>* out);
 };
 
+template <>
+struct GIN_EXPORT Converter<v8::Local<v8::Promise>> {
+  static v8::Local<v8::Value> ToV8(v8::Isolate* isolate,
+                                   v8::Local<v8::Promise> val);
+  static bool FromV8(v8::Isolate* isolate,
+                     v8::Local<v8::Value> val,
+                     v8::Local<v8::Promise>* out);
+};
+
 template<>
 struct GIN_EXPORT Converter<v8::Local<v8::ArrayBuffer> > {
   static v8::Local<v8::Value> ToV8(v8::Isolate* isolate,

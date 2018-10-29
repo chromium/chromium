@@ -144,8 +144,7 @@ class LoggingChangeDelegate : public SyncManager::ChangeDelegate {
     LOG(INFO) << "Changes applied for " << ModelTypeToString(model_type);
     size_t i = 1;
     size_t change_count = changes.Get().size();
-    for (ChangeRecordList::const_iterator it = changes.Get().begin();
-         it != changes.Get().end(); ++it) {
+    for (auto it = changes.Get().begin(); it != changes.Get().end(); ++it) {
       std::unique_ptr<base::DictionaryValue> change_value(it->ToValue());
       LOG(INFO) << "Change (" << i << "/" << change_count
                 << "): " << ValueToString(*change_value);
@@ -227,8 +226,7 @@ class InvalidatorShim : public InvalidationHandler {
   void OnIncomingInvalidation(
       const ObjectIdInvalidationMap& invalidation_map) override {
     ObjectIdSet ids = invalidation_map.GetObjectIds();
-    for (ObjectIdSet::const_iterator ids_it = ids.begin(); ids_it != ids.end();
-         ++ids_it) {
+    for (auto ids_it = ids.begin(); ids_it != ids.end(); ++ids_it) {
       ModelType type;
       if (!NotificationTypeToRealModelType(ids_it->name(), &type)) {
         DLOG(WARNING) << "Notification has invalid id: "
@@ -236,8 +234,7 @@ class InvalidatorShim : public InvalidationHandler {
       } else {
         SingleObjectInvalidationSet invalidation_set =
             invalidation_map.ForObject(*ids_it);
-        for (SingleObjectInvalidationSet::const_iterator inv_it =
-                 invalidation_set.begin();
+        for (auto inv_it = invalidation_set.begin();
              inv_it != invalidation_set.end(); ++inv_it) {
           std::unique_ptr<InvalidationInterface> inv_adapter(
               new InvalidationAdapter(*inv_it));

@@ -66,7 +66,7 @@ void StatusCallbackSuccess(
 class AttestationPolicyObserverTest : public ::testing::Test {
  public:
   AttestationPolicyObserverTest() {
-    settings_helper_.ReplaceProvider(kDeviceAttestationEnabled);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     settings_helper_.SetBoolean(kDeviceAttestationEnabled, true);
     policy_client_.SetDMToken("fake_dm_token");
   }

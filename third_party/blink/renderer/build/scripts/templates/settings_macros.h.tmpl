@@ -3,8 +3,8 @@
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
-#ifndef SettingsMacros_h
-#define SettingsMacros_h
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 #define SETTINGS_GETTERS_AND_SETTERS \
     {% for setting in settings %}
@@ -67,4 +67,4 @@ void Settings::SetFromStrings(const String& name, const String& value) { \
 }
 // End of SETTINGS_SETTER_BODIES.
 
-#endif // SettingsMacros_h
+#endif  // {{header_guard}}

@@ -7,7 +7,7 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/containers/queue.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "chrome/browser/android/vr/mailbox_to_surface_bridge.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gfx/gpu_fence.h"
@@ -60,15 +60,15 @@ struct SharedFrameBufferSwapChain {
   int next_memory_buffer_id = 0;
 };
 
-ARImageTransport::ARImageTransport(
+ArImageTransport::ArImageTransport(
     std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge)
     : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       mailbox_bridge_(std::move(mailbox_bridge)),
       swap_chain_(std::make_unique<SharedFrameBufferSwapChain>()) {}
 
-ARImageTransport::~ARImageTransport() {}
+ArImageTransport::~ArImageTransport() {}
 
-bool ARImageTransport::Initialize() {
+bool ArImageTransport::Initialize() {
   DCHECK(IsOnGlThread());
 
   mailbox_bridge_->BindContextProviderToCurrentThread();
@@ -83,7 +83,11 @@ bool ARImageTransport::Initialize() {
   return true;
 }
 
-void ARImageTransport::ResizeSharedBuffer(const gfx::Size& size,
+GLuint ArImageTransport::GetCameraTextureId() {
+  return camera_texture_id_arcore_;
+}
+
+void ArImageTransport::ResizeSharedBuffer(const gfx::Size& size,
                                           SharedFrameBuffer* buffer) {
   DCHECK(IsOnGlThread());
 
@@ -139,7 +143,7 @@ void ARImageTransport::ResizeSharedBuffer(const gfx::Size& size,
   buffer->size = size;
 }
 
-void ARImageTransport::SetupHardwareBuffers() {
+void ArImageTransport::SetupHardwareBuffers() {
   DCHECK(IsOnGlThread());
 
   glGenFramebuffersEXT(1, &camera_fbo_);
@@ -163,7 +167,7 @@ void ARImageTransport::SetupHardwareBuffers() {
   glGenFramebuffersEXT(1, &transfer_fbo_);
 }
 
-gpu::MailboxHolder ARImageTransport::TransferFrame(
+gpu::MailboxHolder ArImageTransport::TransferFrame(
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
   DCHECK(IsOnGlThread());
@@ -220,8 +224,13 @@ gpu::MailboxHolder ARImageTransport::TransferFrame(
   return rendered_frame_holder;
 }
 
-bool ARImageTransport::IsOnGlThread() const {
+bool ArImageTransport::IsOnGlThread() const {
   return gl_thread_task_runner_->BelongsToCurrentThread();
+}
+
+std::unique_ptr<ArImageTransport> ArImageTransportFactory::Create(
+    std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge) {
+  return std::make_unique<ArImageTransport>(std::move(mailbox_bridge));
 }
 
 }  // namespace device

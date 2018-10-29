@@ -9,7 +9,6 @@ indexedDB.open(dbname)
 db.close()
 indexedDB.open(dbname)
 Dropping references to new connection.
-gc()
 Open request should not receive a blocked event:
 indexedDB.open(dbname, 2)
 PASS successfullyParsed is true

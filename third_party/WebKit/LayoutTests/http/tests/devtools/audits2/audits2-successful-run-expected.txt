@@ -67,13 +67,14 @@ Evaluating: First Meaningful Paint
 Evaluating: Page load is fast enough on 3G
 Evaluating: Speed Index
 Evaluating: Screenshot Thumbnails
+Evaluating: Final Screenshot
 Evaluating: Estimated Input Latency
 Evaluating: No browser errors logged to the console
-Evaluating: Keep server response times low (TTFB)
+Evaluating: Server response times are low (TTFB)
 Evaluating: First CPU Idle
 Evaluating: Time to Interactive
 Evaluating: User Timing marks and measures
-Evaluating: Critical Request Chains
+Evaluating: Minimize Critical Requests Depth
 Evaluating: Avoid multiple page redirects
 Evaluating: User can be prompted to Install the Web App
 Evaluating: Configured for a custom splash screen
@@ -82,10 +83,10 @@ Evaluating: The `short_name` won't be truncated on the homescreen
 Evaluating: Content is sized correctly for the viewport
 Evaluating: Displays images with correct aspect ratio
 Evaluating: Avoids deprecated APIs
-Evaluating: Minimizes main thread work
-Evaluating: JavaScript boot-up time
+Evaluating: Minimizes main-thread work
+Evaluating: JavaScript execution time
 Evaluating: Preload key requests
-Evaluating: Avoid multiple, costly round trips to any origin
+Evaluating: Preconnect to required origins
 Evaluating: All text remains visible during webfont loads
 Evaluating: Network Requests
 Evaluating: Metrics
@@ -132,6 +133,7 @@ Evaluating: Custom controls have ARIA roles
 Evaluating: User focus is not accidentally trapped in a region
 Evaluating: Interactive controls are keyboard focusable
 Evaluating: Headings don't skip levels
+Evaluating: Interactive elements indicate their purpose and state
 Evaluating: The page has a logical tab order
 Evaluating: The user's focus is directed to new content added to the page
 Evaluating: Offscreen content is hidden from assistive technology
@@ -156,6 +158,7 @@ Evaluating: Links to cross-origin destinations are safe
 Evaluating: Avoids requesting the geolocation permission on page load
 Evaluating: Avoids `document.write()`
 Evaluating: Avoids front-end JavaScript libraries with known security vulnerabilities
+Evaluating: Detected JavaScript libraries
 Evaluating: Avoids WebSQL DB
 Evaluating: Avoids requesting the notification permission on page load
 Evaluating: Allows users to paste into password fields
@@ -176,7 +179,7 @@ Generating results...
 
 =============== Lighthouse Results ===============
 URL: http://127.0.0.1:8000/devtools/resources/inspected-page.html
-Version: 3.0.3
+Version: 3.2.0
 
 
 accesskeys: not-applicable
@@ -209,6 +212,7 @@ efficient-animated-content: flaky
 errors-in-console: pass
 estimated-input-latency: flaky
 external-anchors-use-rel-noopener: pass
+final-screenshot: ERROR Chrome didn't collect any screenshots during the page load. Please make sure there is content visible on the page, and then try re-running Lighthouse. (NO_SCREENSHOTS)
 first-contentful-paint: flaky
 first-cpu-idle: flaky
 first-meaningful-paint: flaky
@@ -227,8 +231,10 @@ image-alt: not-applicable
 image-aspect-ratio: pass
 input-image-alt: not-applicable
 interactive: flaky
+interactive-element-affordance: manual
 is-crawlable: pass
 is-on-https: pass
+js-libraries: pass
 label: not-applicable
 layout-table: not-applicable
 link-name: not-applicable
@@ -237,7 +243,7 @@ list: not-applicable
 listitem: not-applicable
 load-fast-enough-for-pwa: flaky
 logical-tab-order: manual
-mainthread-work-breakdown: numeric
+mainthread-work-breakdown: ERROR Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_FCP)
 managed-focus: manual
 manifest-short-name-length: not-applicable
 meta-description: fail
@@ -296,5 +302,5 @@ webapp-install-banner: fail
 without-javascript: fail
 works-offline: fail
 
-# of .lh-audit divs: 110
+# of .lh-audit divs: 112
 

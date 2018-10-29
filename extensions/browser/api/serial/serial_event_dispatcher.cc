@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "extensions/browser/api/serial/serial_connection.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -135,8 +137,8 @@ void SerialEventDispatcher::ReceiveCallback(const ReceiveParams& params,
   }
 
   // Queue up the next read operation.
-  BrowserThread::PostTask(params.thread_id, FROM_HERE,
-                          base::BindOnce(&StartReceive, params));
+  base::PostTaskWithTraits(FROM_HERE, {params.thread_id},
+                           base::BindOnce(&StartReceive, params));
 }
 
 // static
@@ -145,8 +147,8 @@ void SerialEventDispatcher::PostEvent(
     std::unique_ptr<extensions::Event> event) {
   DCHECK_CURRENTLY_ON(params.thread_id);
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&DispatchEvent, params.browser_context_id,
                      params.extension_id, std::move(event)));
 }

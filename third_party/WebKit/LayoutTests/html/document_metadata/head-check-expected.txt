@@ -20,4 +20,3 @@ PASS iframe.contentWindow.document.getElementsByTagName('head').length is 1
 PASS iframe.contentWindow.document.firstChild.firstChild.nodeName.toLowerCase() is 'head'
 
 TEST COMPLETE
-

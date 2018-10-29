@@ -16,9 +16,11 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/web_contents_sizer.h"
 #include "chrome/common/url_constants.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/feature_engagement/buildflags.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_process_host.h"
@@ -121,17 +124,15 @@ class TabStripModel::WebContentsData : public content::WebContentsObserver {
       std::unique_ptr<WebContents> contents);
   WebContents* web_contents() { return contents_.get(); }
 
-  // Create a relationship between this WebContentsData and other
-  // WebContentses. Used to identify which WebContents to select next after
-  // one is closed.
-  WebContents* group() const { return group_; }
-  void set_group(WebContents* value) { group_ = value; }
+  // See comments on fields.
   WebContents* opener() const { return opener_; }
   void set_opener(WebContents* value) { opener_ = value; }
-
-  // Alters the properties of the WebContents.
-  bool reset_group_on_select() const { return reset_group_on_select_; }
-  void set_reset_group_on_select(bool value) { reset_group_on_select_ = value; }
+  void set_reset_opener_on_active_tab_change(bool value) {
+    reset_opener_on_active_tab_change_ = value;
+  }
+  bool reset_opener_on_active_tab_change() const {
+    return reset_opener_on_active_tab_change_;
+  }
   bool pinned() const { return pinned_; }
   void set_pinned(bool value) { pinned_ = value; }
   bool blocked() const { return blocked_; }
@@ -145,33 +146,20 @@ class TabStripModel::WebContentsData : public content::WebContentsObserver {
   // The WebContents owned by this WebContentsData.
   std::unique_ptr<WebContents> contents_;
 
-  // The group is used to model a set of tabs spawned from a single parent
-  // tab. This value is preserved for a given tab as long as the tab remains
-  // navigated to the link it was initially opened at or some navigation from
-  // that page (i.e. if the user types or visits a bookmark or some other
-  // navigation within that tab, the group relationship is lost). This
-  // property can safely be used to implement features that depend on a
-  // logical group of related tabs.
-  WebContents* group_ = nullptr;
-
-  // The owner models the same relationship as group, except it is more
-  // easily discarded, e.g. when the user switches to a tab not part of the
-  // same group. This property is used to determine what tab to select next
-  // when one is closed.
+  // The opener is used to model a set of tabs spawned from a single parent tab.
+  // The relationship is discarded easily, e.g. when the user switches to a tab
+  // not part of the set. This property is used to determine what tab to
+  // activate next when one is closed.
   WebContents* opener_ = nullptr;
 
-  // True if our group should be reset the moment selection moves away from
-  // this tab. This is the case for tabs opened in the foreground at the end
-  // of the TabStrip while viewing another Tab. If these tabs are closed
-  // before selection moves elsewhere, their opener is selected. But if
-  // selection shifts to _any_ tab (including their opener), the group
-  // relationship is reset to avoid confusing close sequencing.
-  bool reset_group_on_select_ = false;
+  // True if |opener_| should be reset when any active tab change occurs (rather
+  // than just one outside the current tree of openers).
+  bool reset_opener_on_active_tab_change_ = false;
 
-  // Is the tab pinned?
+  // Whether the tab is pinned.
   bool pinned_ = false;
 
-  // Is the tab interaction blocked by a modal dialog?
+  // Whether the tab interaction is blocked by a modal dialog.
   bool blocked_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsData);
@@ -286,8 +274,9 @@ bool TabStripModel::ContainsIndex(int index) const {
 
 void TabStripModel::AppendWebContents(std::unique_ptr<WebContents> contents,
                                       bool foreground) {
-  InsertWebContentsAt(count(), std::move(contents),
-                      foreground ? (ADD_INHERIT_GROUP | ADD_ACTIVE) : ADD_NONE);
+  InsertWebContentsAt(
+      count(), std::move(contents),
+      foreground ? (ADD_INHERIT_OPENER | ADD_ACTIVE) : ADD_NONE);
 }
 
 void TabStripModel::InsertWebContentsAt(int index,
@@ -311,19 +300,10 @@ void TabStripModel::InsertWebContentsAt(int index,
   std::unique_ptr<WebContentsData> data =
       std::make_unique<WebContentsData>(std::move(contents));
   data->set_pinned(pin);
-  if ((add_types & ADD_INHERIT_GROUP) && active_contents) {
+  if ((add_types & ADD_INHERIT_OPENER) && active_contents) {
     if (active) {
       // Forget any existing relationships, we don't want to make things too
-      // confusing by having multiple groups active at the same time.
-      ForgetAllOpeners();
-    }
-    // Anything opened by a link we deem to have an opener.
-    data->set_group(active_contents);
-    data->set_opener(active_contents);
-  } else if ((add_types & ADD_INHERIT_OPENER) && active_contents) {
-    if (active) {
-      // Forget any existing relationships, we don't want to make things too
-      // confusing by having multiple groups active at the same time.
+      // confusing by having multiple openers active at the same time.
       ForgetAllOpeners();
     }
     data->set_opener(active_contents);
@@ -368,7 +348,7 @@ std::unique_ptr<content::WebContents> TabStripModel::ReplaceWebContentsAt(
 
   DCHECK(ContainsIndex(index));
 
-  FixOpenersAndGroupsReferencing(index);
+  FixOpeners(index);
 
   TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
   WebContents* raw_new_contents = new_contents.get();
@@ -432,7 +412,7 @@ std::unique_ptr<content::WebContents> TabStripModel::DetachWebContentsImpl(
     return nullptr;
   DCHECK(ContainsIndex(index));
 
-  FixOpenersAndGroupsReferencing(index);
+  FixOpeners(index);
 
   // Ask the delegate to save an entry for this tab in the historical tab
   // database.
@@ -728,9 +708,6 @@ void TabStripModel::TabNavigating(WebContents* contents,
       // TabStrip opener relationships since we assume they're beginning a
       // different task by reusing the current tab.
       ForgetAllOpeners();
-      // In this specific case we also want to reset the group relationship,
-      // since it is now technically invalid.
-      ForgetGroup(contents);
     }
   }
 }
@@ -842,9 +819,9 @@ void TabStripModel::AddWebContents(std::unique_ptr<WebContents> contents,
                                    ui::PageTransition transition,
                                    int add_types) {
   // If the newly-opened tab is part of the same task as the parent tab, we want
-  // to inherit the parent's "group" attribute, so that if this tab is then
+  // to inherit the parent's opener attribute, so that if this tab is then
   // closed we'll jump back to the parent tab.
-  bool inherit_group = (add_types & ADD_INHERIT_GROUP) == ADD_INHERIT_GROUP;
+  bool inherit_opener = (add_types & ADD_INHERIT_OPENER) == ADD_INHERIT_OPENER;
 
   if (ui::PageTransitionTypeIncludingQualifiersIs(transition,
                                                   ui::PAGE_TRANSITION_LINK) &&
@@ -853,10 +830,10 @@ void TabStripModel::AddWebContents(std::unique_ptr<WebContents> contents,
     // parent.  Note that when |force_index| is true (e.g. when the user
     // drag-and-drops a link to the tab strip), callers aren't really handling
     // link clicks, they just want to score the navigation like a link click in
-    // the history backend, so we don't inherit the group in this case.
+    // the history backend, so we don't inherit the opener in this case.
     index = order_controller_->DetermineInsertionIndex(transition,
                                                        add_types & ADD_ACTIVE);
-    inherit_group = true;
+    inherit_opener = true;
   } else {
     // For all other types, respect what was passed to us, normalizing -1s and
     // values that are too large.
@@ -868,22 +845,25 @@ void TabStripModel::AddWebContents(std::unique_ptr<WebContents> contents,
                                                   ui::PAGE_TRANSITION_TYPED) &&
       index == count()) {
     // Also, any tab opened at the end of the TabStrip with a "TYPED"
-    // transition inherit group as well. This covers the cases where the user
+    // transition inherit opener as well. This covers the cases where the user
     // creates a New Tab (e.g. Ctrl+T, or clicks the New Tab button), or types
     // in the address bar and presses Alt+Enter. This allows for opening a new
     // Tab to quickly look up something. When this Tab is closed, the old one
-    // is re-selected, not the next-adjacent.
-    inherit_group = true;
+    // is re-activated, not the next-adjacent.
+    inherit_opener = true;
   }
   WebContents* raw_contents = contents.get();
   InsertWebContentsAt(index, std::move(contents),
-                      add_types | (inherit_group ? ADD_INHERIT_GROUP : 0));
+                      add_types | (inherit_opener ? ADD_INHERIT_OPENER : 0));
   // Reset the index, just in case insert ended up moving it on us.
   index = GetIndexOfWebContents(raw_contents);
 
-  if (inherit_group && ui::PageTransitionTypeIncludingQualifiersIs(
-                           transition, ui::PAGE_TRANSITION_TYPED))
-    contents_data_[index]->set_reset_group_on_select(true);
+  // In the "quick look-up" case detailed above, we want to reset the opener
+  // relationship on any active tab change, even to another tab in the same tree
+  // of openers. A jump would be too confusing at that point.
+  if (inherit_opener && ui::PageTransitionTypeIncludingQualifiersIs(
+                            transition, ui::PAGE_TRANSITION_TYPED))
+    contents_data_[index]->set_reset_opener_on_active_tab_change(true);
 
   // TODO(sky): figure out why this is here and not in InsertWebContentsAt. When
   // here we seem to get failures in startup perf tests.
@@ -989,8 +969,6 @@ bool TabStripModel::IsContextMenuCommandEnabled(
              delegate()->CanBookmarkAllTabs();
 
     case CommandTogglePinned:
-    case CommandSelectByDomain:
-    case CommandSelectByOpener:
       return true;
 
     default:
@@ -1103,8 +1081,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
         base::RecordAction(UserMetricsAction("TabContextMenu_MuteTabs"));
       else
         base::RecordAction(UserMetricsAction("TabContextMenu_UnmuteTabs"));
-      for (std::vector<int>::const_iterator i = indices.begin();
-           i != indices.end(); ++i) {
+      for (auto i = indices.begin(); i != indices.end(); ++i) {
         chrome::SetTabAudioMuted(GetWebContentsAt(*i), mute,
                                  TabMutedReason::CONTEXT_MENU, std::string());
       }
@@ -1121,7 +1098,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
         base::RecordAction(
             UserMetricsAction("SoundContentSetting.UnmuteBy.TabStrip"));
       }
-      chrome::SetSitesMuted(*this, indices, mute);
+      SetSitesMuted(indices, mute);
       break;
     }
 
@@ -1129,21 +1106,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::RecordAction(UserMetricsAction("TabContextMenu_BookmarkAllTabs"));
 
       delegate()->BookmarkAllTabs();
-      break;
-    }
-
-    case CommandSelectByDomain:
-    case CommandSelectByOpener: {
-      std::vector<int> indices;
-      if (command_id == CommandSelectByDomain)
-        GetIndicesWithSameDomain(context_index, &indices);
-      else
-        GetIndicesWithSameOpener(context_index, &indices);
-      ui::ListSelectionModel selection_model;
-      selection_model.SetSelectedIndex(context_index);
-      for (size_t i = 0; i < indices.size(); ++i)
-        selection_model.AddIndexToSelection(indices[i]);
-      SetSelectionFromModel(std::move(selection_model));
       break;
     }
 
@@ -1222,50 +1184,43 @@ bool TabStripModel::ContextMenuCommandToBrowserCommand(int cmd_id,
 }
 
 int TabStripModel::GetIndexOfNextWebContentsOpenedBy(const WebContents* opener,
-                                                     int start_index,
-                                                     bool use_group) const {
+                                                     int start_index) const {
   DCHECK(opener);
   DCHECK(ContainsIndex(start_index));
 
   // Check tabs after start_index first.
   for (int i = start_index + 1; i < count(); ++i) {
-    if (OpenerMatches(contents_data_[i], opener, use_group))
+    if (contents_data_[i]->opener() == opener)
       return i;
   }
   // Then check tabs before start_index, iterating backwards.
   for (int i = start_index - 1; i >= 0; --i) {
-    if (OpenerMatches(contents_data_[i], opener, use_group))
+    if (contents_data_[i]->opener() == opener)
       return i;
   }
   return kNoTab;
 }
 
 void TabStripModel::ForgetAllOpeners() {
-  // Forget all opener memories so we don't do anything weird with tab
-  // re-selection ordering.
   for (const auto& data : contents_data_)
     data->set_opener(nullptr);
 }
 
-void TabStripModel::ForgetGroup(WebContents* contents) {
-  int index = GetIndexOfWebContents(contents);
+void TabStripModel::ForgetOpener(WebContents* contents) {
+  const int index = GetIndexOfWebContents(contents);
   DCHECK(ContainsIndex(index));
-  contents_data_[index]->set_group(nullptr);
   contents_data_[index]->set_opener(nullptr);
 }
 
-bool TabStripModel::ShouldResetGroupOnSelect(WebContents* contents) const {
-  int index = GetIndexOfWebContents(contents);
+bool TabStripModel::ShouldResetOpenerOnActiveTabChange(
+    WebContents* contents) const {
+  const int index = GetIndexOfWebContents(contents);
   DCHECK(ContainsIndex(index));
-  return contents_data_[index]->reset_group_on_select();
+  return contents_data_[index]->reset_opener_on_active_tab_change();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // TabStripModel, private:
-
-bool TabStripModel::ContainsWebContents(content::WebContents* contents) {
-  return GetIndexOfWebContents(contents) != kNoTab;
-}
 
 bool TabStripModel::RunUnloadListenerBeforeClosing(
     content::WebContents* contents) {
@@ -1284,46 +1239,6 @@ int TabStripModel::ConstrainInsertionIndex(int index, bool pinned_tab) {
              : std::min(count(), std::max(index, IndexOfFirstNonPinnedTab()));
 }
 
-std::vector<WebContents*> TabStripModel::GetWebContentsFromIndices(
-    const std::vector<int>& indices) const {
-  std::vector<WebContents*> contents;
-  for (size_t i = 0; i < indices.size(); ++i)
-    contents.push_back(GetWebContentsAtImpl(indices[i]));
-  return contents;
-}
-
-void TabStripModel::GetIndicesWithSameDomain(int index,
-                                             std::vector<int>* indices) {
-  std::string domain = GetWebContentsAt(index)->GetURL().host();
-  if (domain.empty())
-    return;
-  for (int i = 0; i < count(); ++i) {
-    if (i == index)
-      continue;
-    if (GetWebContentsAt(i)->GetURL().host_piece() == domain)
-      indices->push_back(i);
-  }
-}
-
-void TabStripModel::GetIndicesWithSameOpener(int index,
-                                             std::vector<int>* indices) {
-  WebContents* opener = contents_data_[index]->group();
-  if (!opener) {
-    // If there is no group, find all tabs with the selected tab as the opener.
-    opener = GetWebContentsAt(index);
-    if (!opener)
-      return;
-  }
-  for (int i = 0; i < count(); ++i) {
-    if (i == index)
-      continue;
-    if (contents_data_[i]->group() == opener ||
-        GetWebContentsAtImpl(i) == opener) {
-      indices->push_back(i);
-    }
-  }
-}
-
 std::vector<int> TabStripModel::GetIndicesForCommand(int index) const {
   if (!IsTabSelected(index)) {
     std::vector<int> indices;
@@ -1334,7 +1249,7 @@ std::vector<int> TabStripModel::GetIndicesForCommand(int index) const {
 }
 
 bool TabStripModel::IsNewTabAtEndOfTabStrip(WebContents* contents) const {
-  const GURL& url = contents->GetURL();
+  const GURL& url = contents->GetLastCommittedURL();
   return url.SchemeIs(content::kChromeUIScheme) &&
          url.host_piece() == chrome::kChromeUINewTabHost &&
          contents == GetWebContentsAtImpl(count() - 1) &&
@@ -1453,7 +1368,10 @@ bool TabStripModel::CloseWebContentses(
     notifications.detached_web_contents.push_back(std::move(dwc));
   }
 
-  SendDetachWebContentsNotifications(&notifications);
+  // When unload handler is triggered for all items, we should wait for the
+  // result.
+  if (!notifications.detached_web_contents.empty())
+    SendDetachWebContentsNotifications(&notifications);
 
   return closed_all;
 }
@@ -1542,7 +1460,7 @@ void TabStripModel::SelectRelativeTab(bool next) {
 void TabStripModel::MoveWebContentsAtImpl(int index,
                                           int to_position,
                                           bool select_after_move) {
-  FixOpenersAndGroupsReferencing(index);
+  FixOpeners(index);
 
   TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
 
@@ -1606,18 +1524,38 @@ void TabStripModel::MoveSelectedTabsToImpl(int index,
   }
 }
 
-// static
-bool TabStripModel::OpenerMatches(const std::unique_ptr<WebContentsData>& data,
-                                  const WebContents* opener,
-                                  bool use_group) {
-  return data->opener() == opener || (use_group && data->group() == opener);
+// Sets the sound content setting for each site at the |indices|.
+void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
+                                  bool mute) const {
+  for (int tab_index : indices) {
+    content::WebContents* web_contents = GetWebContentsAt(tab_index);
+    GURL url = web_contents->GetLastCommittedURL();
+    if (url.SchemeIs(content::kChromeUIScheme)) {
+      // chrome:// URLs don't have content settings but can be muted, so just
+      // mute the WebContents.
+      chrome::SetTabAudioMuted(web_contents, mute,
+                               TabMutedReason::CONTENT_SETTING_CHROME,
+                               std::string());
+    } else {
+      Profile* profile =
+          Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      HostContentSettingsMap* settings =
+          HostContentSettingsMapFactory::GetForProfile(profile);
+      ContentSetting setting =
+          mute ? CONTENT_SETTING_BLOCK : CONTENT_SETTING_ALLOW;
+      if (setting == settings->GetDefaultContentSetting(
+                         CONTENT_SETTINGS_TYPE_SOUND, nullptr)) {
+        setting = CONTENT_SETTING_DEFAULT;
+      }
+      settings->SetContentSettingDefaultScope(
+          url, url, CONTENT_SETTINGS_TYPE_SOUND, std::string(), setting);
+    }
+  }
 }
 
-void TabStripModel::FixOpenersAndGroupsReferencing(int index) {
+void TabStripModel::FixOpeners(int index) {
   WebContents* old_contents = GetWebContentsAtImpl(index);
   for (auto& data : contents_data_) {
-    if (data->group() == old_contents)
-      data->set_group(contents_data_[index]->group());
     if (data->opener() == old_contents)
       data->set_opener(contents_data_[index]->opener());
   }

@@ -12,6 +12,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/scoped_account_consistency.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/testing_pref_store.h"
@@ -80,6 +81,43 @@ TEST(AccountConsistencyModeManagerTest, Basic) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Checks that changing the signin-allowed pref changes the Dice state on next
+// startup.
+TEST(AccountConsistencyModeManagerTest, SigninAllowedChangesDiceState) {
+  ScopedAccountConsistencyDice scoped_dice;
+  content::TestBrowserThreadBundle test_thread_bundle;
+  TestingProfile profile;
+  ASSERT_FALSE(profile.IsNewProfile());
+
+  {
+    // First startup.
+    AccountConsistencyModeManager manager(&profile);
+    EXPECT_TRUE(profile.GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+    EXPECT_TRUE(
+        profile.GetPrefs()->GetBoolean(prefs::kSigninAllowedOnNextStartup));
+    EXPECT_EQ(signin::AccountConsistencyMethod::kDice,
+              manager.GetAccountConsistencyMethod());
+
+    // User changes their settings.
+    profile.GetPrefs()->SetBoolean(prefs::kSigninAllowedOnNextStartup, false);
+    // Dice should remain in the same state until restart.
+    EXPECT_EQ(signin::AccountConsistencyMethod::kDice,
+              manager.GetAccountConsistencyMethod());
+  }
+
+  {
+    // Second startup.
+    AccountConsistencyModeManager manager(&profile);
+    // The signin-allowed pref should be disabled.
+    EXPECT_FALSE(profile.GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+    EXPECT_FALSE(
+        profile.GetPrefs()->GetBoolean(prefs::kSigninAllowedOnNextStartup));
+    // Dice should be disabled.
+    EXPECT_EQ(signin::AccountConsistencyMethod::kDiceFixAuthErrors,
+              manager.GetAccountConsistencyMethod());
+  }
+}
+
 // Checks that Dice migration happens when the reconcilor is created.
 TEST(AccountConsistencyModeManagerTest, MigrateAtCreation) {
   content::TestBrowserThreadBundle test_thread_bundle;

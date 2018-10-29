@@ -21,10 +21,7 @@ FakeModelTypeChangeProcessor::FakeModelTypeChangeProcessor(
     base::WeakPtr<ModelTypeControllerDelegate> delegate)
     : delegate_(delegate) {}
 
-FakeModelTypeChangeProcessor::~FakeModelTypeChangeProcessor() {
-  // If this fails we were expecting an error but never got one.
-  EXPECT_FALSE(expect_error_);
-}
+FakeModelTypeChangeProcessor::~FakeModelTypeChangeProcessor() {}
 
 void FakeModelTypeChangeProcessor::Put(
     const std::string& client_tag,
@@ -56,18 +53,21 @@ bool FakeModelTypeChangeProcessor::IsTrackingMetadata() {
   return true;
 }
 
+std::string FakeModelTypeChangeProcessor::TrackedAccountId() {
+  return "";
+}
+
 void FakeModelTypeChangeProcessor::ReportError(const ModelError& error) {
-  EXPECT_TRUE(expect_error_) << error.ToString();
-  expect_error_ = false;
+  error_ = error;
+}
+
+base::Optional<ModelError> FakeModelTypeChangeProcessor::GetError() const {
+  return error_;
 }
 
 base::WeakPtr<ModelTypeControllerDelegate>
 FakeModelTypeChangeProcessor::GetControllerDelegate() {
   return delegate_;
-}
-
-void FakeModelTypeChangeProcessor::ExpectError() {
-  expect_error_ = true;
 }
 
 }  // namespace syncer

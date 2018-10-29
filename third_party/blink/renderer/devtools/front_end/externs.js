@@ -714,13 +714,6 @@ const acorn = {
   /**
    * @param {string} text
    * @param {Object.<string, boolean>} options
-   * @return {!ESTree.Node}
-   */
-  parse_dammit: function(text, options) {},
-
-  /**
-   * @param {string} text
-   * @param {Object.<string, boolean>} options
    * @return {!Acorn.Tokenizer}
    */
   tokenizer: function(text, options) {},
@@ -736,6 +729,15 @@ const acorn = {
     eof: new Acorn.TokenType()
   }
 };
+
+acorn.loose = {};
+
+/**
+ * @param {string} text
+ * @param {Object.<string, boolean>} options
+ * @return {!ESTree.Node}
+ */
+acorn.loose.parse = function(text, options) {};
 
 const Acorn = {};
 /**

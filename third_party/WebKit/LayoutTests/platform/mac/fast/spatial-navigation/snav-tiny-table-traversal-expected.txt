@@ -20,4 +20,3 @@ FAIL gFocusedDocument.activeElement.getAttribute("id") should be 6. Was 3.
 FAIL gFocusedDocument.activeElement.getAttribute("id") should be 3. Was start.
 FAIL gFocusedDocument.activeElement.getAttribute("id") should be 2. Was start.
 FAIL gFocusedDocument.activeElement.getAttribute("id") should be 1. Was start.
-

@@ -321,7 +321,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // Sync error.
     syncItem.shouldDisplayError = YES;
     NSString* errorMessage =
-        GetSyncErrorDescriptionForBrowserState(_browserState);
+        GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
     DCHECK(errorMessage);
     syncItem.image = [UIImage imageNamed:@"settings_error"];
     syncItem.detailText = errorMessage;

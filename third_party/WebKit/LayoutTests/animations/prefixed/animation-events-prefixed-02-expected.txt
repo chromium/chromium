@@ -1,3 +1,2 @@
 Tests that unprefixed animation events are correctly fired when listeners are on both versions.
 PASS: All events have been received as expected.
-

@@ -14,7 +14,7 @@ namespace blink {
 // when requested when the synchronization between AudioWorkletMessagingProxy
 // and AudioWorkletGlobalScope.
 class CrossThreadAudioParamInfo {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   explicit CrossThreadAudioParamInfo(const AudioParamDescriptor* descriptor)
@@ -39,7 +39,7 @@ class CrossThreadAudioParamInfo {
 // created only when requested when the synchronization between
 // AudioWorkletMessagingProxy and AudioWorkletGlobalScope.
 class CrossThreadAudioWorkletProcessorInfo {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   explicit CrossThreadAudioWorkletProcessorInfo(

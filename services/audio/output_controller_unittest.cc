@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -27,7 +26,6 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/fake_audio_manager.h"
@@ -39,13 +37,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::StrictMock;
-using ::testing::_;
 
 using media::AudioBus;
 using media::AudioManager;
@@ -332,15 +330,6 @@ class OutputControllerTest : public ::testing::Test {
                         std::string(), &mock_sync_reader_,
                         &stream_monitor_coordinator_, processing_id_);
     controller_->SetVolume(kTestVolume);
-#if defined(OS_WIN)
-    // TODO(https://crbug.com/867827) remove histogram allocator creation when
-    // removing output controller checks.
-    if (!base::GlobalHistogramAllocator::Get()) {
-      const int32_t kAllocatorMemorySize = 8 << 20;
-      base::GlobalHistogramAllocator::CreateWithLocalMemory(
-          kAllocatorMemorySize, 0, "HistogramAllocatorTest");
-    }
-#endif
   }
 
   void TearDown() override { controller_ = base::nullopt; }
@@ -355,7 +344,7 @@ class OutputControllerTest : public ::testing::Test {
   }
 
   void Create() {
-    controller_->Create(false);
+    controller_->CreateStream();
     controller_->SetVolume(kTestVolume);
   }
 

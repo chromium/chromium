@@ -365,8 +365,7 @@ bool SharedMemory::FilePathForMemoryName(const std::string& mem_name,
 #else
   static const char kShmem[] = "org.chromium.Chromium.shmem.";
 #endif
-  CR_DEFINE_STATIC_LOCAL(const std::string, name_base, (kShmem));
-  *path = temp_dir.AppendASCII(name_base + mem_name);
+  *path = temp_dir.AppendASCII(kShmem + mem_name);
   return true;
 }
 

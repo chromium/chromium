@@ -42,7 +42,7 @@ test(() => {
 }, 'Modify move is not affected by user-select:all.');
 
 function mouseDownAt(x, y) {
-  assert_exists(window, 'eventSender');
+  assert_own_property(window, 'eventSender');
   eventSender.dragMode = false;
   eventSender.mouseMoveTo(x, y);
   eventSender.mouseDown();

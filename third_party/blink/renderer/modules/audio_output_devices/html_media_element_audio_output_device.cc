@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/audio_output_devices/audio_output_device_client.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/modules/audio_output_devices/set_sink_id_callbacks.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -67,30 +69,32 @@ void SetSinkIdResolver::StartAsync() {
 
 void SetSinkIdResolver::TimerFired(TimerBase* timer) {
   ExecutionContext* context = GetExecutionContext();
-  DCHECK(context);
-  DCHECK(context->IsDocument());
   std::unique_ptr<SetSinkIdCallbacks> callbacks =
       std::make_unique<SetSinkIdCallbacks>(this, *element_, sink_id_);
   WebMediaPlayer* web_media_player = element_->GetWebMediaPlayer();
   if (web_media_player) {
     // Using release() to transfer ownership because |webMediaPlayer| is a
     // platform object that takes raw pointers.
-    web_media_player->SetSinkId(sink_id_,
-                                callbacks.release());
-  } else {
-    if (AudioOutputDeviceClient* client =
-            AudioOutputDeviceClient::From(context)) {
-      client->CheckIfAudioSinkExistsAndIsAuthorized(context, sink_id_,
-                                                    std::move(callbacks));
-    } else {
-      // The context has been detached. Impossible to get a security origin to
-      // check.
-      DCHECK(context->IsContextDestroyed());
-      Reject(DOMException::Create(
-          DOMExceptionCode::kSecurityError,
-          "Impossible to authorize device for detached context"));
-    }
+    web_media_player->SetSinkId(sink_id_, std::move(callbacks));
+    return;
   }
+
+  if (!context) {
+    // Detached contexts shouldn't be playing audio. Note that despite this
+    // explicit Reject(), any associated JS callbacks will never be called
+    // because the context is already detached...
+    Reject(DOMException::Create(
+        DOMExceptionCode::kSecurityError,
+        "Impossible to authorize device for detached context"));
+    return;
+  }
+
+  // This is associated with an HTML element, so the context must be a Document.
+  auto& document = To<Document>(*context);
+  WebLocalFrameImpl* web_frame =
+      WebLocalFrameImpl::FromFrame(document.GetFrame());
+  web_frame->Client()->CheckIfAudioSinkExistsAndIsAuthorized(
+      sink_id_, std::move(callbacks));
 }
 
 void SetSinkIdResolver::Trace(blink::Visitor* visitor) {
@@ -100,8 +104,7 @@ void SetSinkIdResolver::Trace(blink::Visitor* visitor) {
 
 }  // namespace
 
-HTMLMediaElementAudioOutputDevice::HTMLMediaElementAudioOutputDevice()
-    : sink_id_("") {}
+HTMLMediaElementAudioOutputDevice::HTMLMediaElementAudioOutputDevice() {}
 
 String HTMLMediaElementAudioOutputDevice::sinkId(HTMLMediaElement& element) {
   HTMLMediaElementAudioOutputDevice& aod_element =

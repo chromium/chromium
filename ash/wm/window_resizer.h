@@ -21,6 +21,10 @@ namespace gfx {
 class Rect;
 }
 
+namespace ui {
+class GestureEvent;
+}
+
 namespace ash {
 
 // WindowResizer is used by ToplevelWindowEventFilter to handle dragging, moving
@@ -57,6 +61,9 @@ class ASH_EXPORT WindowResizer {
 
   // Reverts the drag.
   virtual void RevertDrag() = 0;
+
+  // Flings or Swipes to end the drag.
+  virtual void FlingOrSwipe(ui::GestureEvent* event) = 0;
 
   // Returns the target window the resizer was created for.
   aura::Window* GetTarget() const;

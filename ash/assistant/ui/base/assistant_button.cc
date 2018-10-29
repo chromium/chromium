@@ -31,7 +31,7 @@ AssistantButton::AssistantButton(views::ButtonListener* listener)
                     views::ImageButton::ALIGN_MIDDLE);
 
   // Ink drop.
-  SetInkDropMode(views::ImageButton::InkDropMode::ON);
+  SetInkDropMode(InkDropMode::ON);
   set_has_ink_drop_action_on_click(true);
   set_ink_drop_base_color(kInkDropBaseColor);
   set_ink_drop_visible_opacity(kInkDropVisibleOpacity);

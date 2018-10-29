@@ -19,7 +19,8 @@ public class GoogleServiceAuthError {
     @IntDef({State.NONE, State.INVALID_GAIA_CREDENTIALS, State.USER_NOT_SIGNED_UP,
             State.CONNECTION_FAILED, State.CAPTCHA_REQUIRED, State.ACCOUNT_DELETED,
             State.ACCOUNT_DISABLED, State.SERVICE_UNAVAILABLE, State.TWO_FACTOR,
-            State.REQUEST_CANCELED})
+            State.REQUEST_CANCELED, State.UNEXPECTED_SERVICE_RESPONSE, State.SERVICE_ERROR,
+            State.WEB_LOGIN_REQUIRED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface State {
         // The user is authenticated.
@@ -61,9 +62,20 @@ public class GoogleServiceAuthError {
 
         // HOSTED accounts are deprecated; left in enumeration to match
         // GoogleServiceAuthError enum in histograms.xml.
-        // int HOSTED_NOT_ALLOWED = 10;
+        // int HOSTED_NOT_ALLOWED_DEPRECATED = 10;
 
-        int NUM_ENTRIES = 11;
+        // Indicates the service responded to a request, but we cannot
+        // interpret the response.
+        int UNEXPECTED_SERVICE_RESPONSE = 11;
+
+        // Indicates the service responded and response carried details of the
+        // application error.
+        int SERVICE_ERROR = 12;
+
+        // The password is valid but web login is required to get a token.
+        int WEB_LOGIN_REQUIRED = 13;
+
+        int NUM_ENTRIES = 14;
     }
 
     public static int getMessageID(@State int state) {
@@ -81,7 +93,9 @@ public class GoogleServiceAuthError {
             // case State.ACCOUNT_DISABLED:
             // case State.TWO_FACTOR:
             // case State.REQUEST_CANCELED:
-            // case State.HOSTED_NOT_ALLOWED:
+            // case State.UNEXPECTED_SERVICE_RESPONSE:
+            // case State.SERVICE_ERROR:
+            // case State.WEB_LOGIN_REQUIRED:
             default:
                 return R.string.sync_error_generic;
         }

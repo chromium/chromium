@@ -97,7 +97,7 @@ SelectFileDialogImpl::SelectFileDialogImpl(
           [[SelectFileDialogBridge alloc] initWithSelectFileDialogImpl:this]) {}
 
 bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow parent_window) const {
-  return parents_.find(parent_window) != parents_.end();
+  return parents_.find(parent_window.GetNativeNSWindow()) != parents_.end();
 }
 
 void SelectFileDialogImpl::ListenerDestroyed() {
@@ -141,11 +141,12 @@ void SelectFileDialogImpl::SelectFileImpl(
     const FileTypeInfo* file_types,
     int file_type_index,
     const base::FilePath::StringType& default_extension,
-    gfx::NativeWindow owning_window,
+    gfx::NativeWindow owning_native_window,
     void* params) {
   DCHECK(type == SELECT_FOLDER || type == SELECT_UPLOAD_FOLDER ||
          type == SELECT_EXISTING_FOLDER || type == SELECT_OPEN_FILE ||
          type == SELECT_OPEN_MULTI_FILE || type == SELECT_SAVEAS_FILE);
+  NSWindow* owning_window = owning_native_window.GetNativeNSWindow();
   parents_.insert(owning_window);
 
   // Note: we need to retain the dialog as owning_window can be null.

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -60,7 +60,7 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestSpecialOperationsNotEnumerableV8Internal {
+namespace test_special_operations_not_enumerable_v8_internal {
 
 static void namedPropertyGetter(const AtomicString& name, const v8::PropertyCallbackInfo<v8::Value>& info) {
   TestSpecialOperationsNotEnumerable* impl = V8TestSpecialOperationsNotEnumerable::ToImpl(info.Holder());
@@ -137,7 +137,7 @@ static void indexedPropertyDescriptor(uint32_t index, const v8::PropertyCallback
   }
 }
 
-} // namespace TestSpecialOperationsNotEnumerableV8Internal
+}  // namespace test_special_operations_not_enumerable_v8_internal
 
 void V8TestSpecialOperationsNotEnumerable::namedPropertyGetterCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestSpecialOperationsNotEnumerable_NamedPropertyGetter");
@@ -146,7 +146,7 @@ void V8TestSpecialOperationsNotEnumerable::namedPropertyGetterCallback(v8::Local
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestSpecialOperationsNotEnumerableV8Internal::namedPropertyGetter(propertyName, info);
+  test_special_operations_not_enumerable_v8_internal::namedPropertyGetter(propertyName, info);
 }
 
 void V8TestSpecialOperationsNotEnumerable::namedPropertyQueryCallback(v8::Local<v8::Name> name, const v8::PropertyCallbackInfo<v8::Integer>& info) {
@@ -156,21 +156,21 @@ void V8TestSpecialOperationsNotEnumerable::namedPropertyQueryCallback(v8::Local<
     return;
   const AtomicString& propertyName = ToCoreAtomicString(name.As<v8::String>());
 
-  TestSpecialOperationsNotEnumerableV8Internal::namedPropertyQuery(propertyName, info);
+  test_special_operations_not_enumerable_v8_internal::namedPropertyQuery(propertyName, info);
 }
 
 void V8TestSpecialOperationsNotEnumerable::namedPropertyEnumeratorCallback(const v8::PropertyCallbackInfo<v8::Array>& info) {
-  TestSpecialOperationsNotEnumerableV8Internal::namedPropertyEnumerator(info);
+  test_special_operations_not_enumerable_v8_internal::namedPropertyEnumerator(info);
 }
 
 void V8TestSpecialOperationsNotEnumerable::indexedPropertyGetterCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestSpecialOperationsNotEnumerable_IndexedPropertyGetter");
 
-  TestSpecialOperationsNotEnumerableV8Internal::indexedPropertyGetter(index, info);
+  test_special_operations_not_enumerable_v8_internal::indexedPropertyGetter(index, info);
 }
 
 void V8TestSpecialOperationsNotEnumerable::indexedPropertyDescriptorCallback(uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& info) {
-  TestSpecialOperationsNotEnumerableV8Internal::indexedPropertyDescriptor(index, info);
+  test_special_operations_not_enumerable_v8_internal::indexedPropertyDescriptor(index, info);
 }
 
 void V8TestSpecialOperationsNotEnumerable::indexedPropertySetterCallback(uint32_t index, v8::Local<v8::Value> v8Value, const v8::PropertyCallbackInfo<v8::Value>& info) {

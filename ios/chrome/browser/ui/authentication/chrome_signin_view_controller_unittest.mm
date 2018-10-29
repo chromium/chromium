@@ -120,12 +120,13 @@ class ChromeSigninViewControllerTest
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFake::CreateAuthenticationService);
-
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
     builder.AddTestingFactory(ConsentAuditorFactory::GetInstance(),
-                              &CreateFakeConsentAuditor);
-    builder.AddTestingFactory(UnifiedConsentServiceFactory::GetInstance(),
-                              &CreateFakeUnifiedConsentService);
+                              base::BindRepeating(&CreateFakeConsentAuditor));
+    builder.AddTestingFactory(
+        UnifiedConsentServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateFakeUnifiedConsentService));
     context_ = builder.Build();
     ios::FakeChromeIdentityService* identity_service =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();

@@ -23,7 +23,7 @@ class Queue : public Actor, public UnconstrainedPortInterface {
     virtual void OnPacketDequeued() = 0;
   };
 
-  Queue(Simulator* simulator, std::string name, QuicByteCount capacity);
+  Queue(Simulator* simulator, QuicString name, QuicByteCount capacity);
   Queue(const Queue&) = delete;
   Queue& operator=(const Queue&) = delete;
   ~Queue() override;

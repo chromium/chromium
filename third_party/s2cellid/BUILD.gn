@@ -25,7 +25,6 @@ static_library("s2cellid") {
     "src/s2/r2rect.h",
     "src/s2/s1angle.cc",
     "src/s2/s1angle.h",
-    "src/s2/s2.h",
     "src/s2/s2cellid.cc",
     "src/s2/s2cellid.h",
     "src/s2/s2coords-internal.h",

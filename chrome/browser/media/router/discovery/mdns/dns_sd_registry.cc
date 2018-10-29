@@ -51,8 +51,8 @@ int DnsSdRegistry::ServiceTypeData::GetListenerCount() {
 bool DnsSdRegistry::ServiceTypeData::UpdateService(
     bool added,
     const DnsSdService& service) {
-  DnsSdRegistry::DnsSdServiceList::iterator it = std::find_if(
-      service_list_.begin(), service_list_.end(), IsSameServiceName(service));
+  auto it = std::find_if(service_list_.begin(), service_list_.end(),
+                         IsSameServiceName(service));
   // Set to true when a service is updated in or added to the registry.
   bool updated_or_added = added;
   bool known = (it != service_list_.end());
@@ -75,8 +75,7 @@ bool DnsSdRegistry::ServiceTypeData::UpdateService(
 
 bool DnsSdRegistry::ServiceTypeData::RemoveService(
     const std::string& service_name) {
-  for (DnsSdRegistry::DnsSdServiceList::iterator it = service_list_.begin();
-       it != service_list_.end(); ++it) {
+  for (auto it = service_list_.begin(); it != service_list_.end(); ++it) {
     if ((*it).service_name == service_name) {
       service_list_.erase(it);
       return true;

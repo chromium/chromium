@@ -5,9 +5,9 @@
 #ifndef UI_GFX_GEOMETRY_AXIS_TRANSFORM2D_H_
 #define UI_GFX_GEOMETRY_AXIS_TRANSFORM2D_H_
 
+#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -16,7 +16,7 @@ namespace gfx {
 // Internally this is stored as a scalar pre-scale factor, and a vector
 // for post-translation. The class constructor and member accessor follows
 // the same convention.
-class GFX_EXPORT AxisTransform2d {
+class GEOMETRY_EXPORT AxisTransform2d {
  public:
   constexpr AxisTransform2d() = default;
   constexpr AxisTransform2d(float scale, const Vector2dF& translation)

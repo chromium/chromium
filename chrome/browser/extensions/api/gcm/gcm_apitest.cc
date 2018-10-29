@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
@@ -86,7 +87,8 @@ void GcmApiTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void GcmApiTest::SetUpOnMainThread() {
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(), &gcm::FakeGCMProfileService::Build);
+      browser()->profile(),
+      base::BindRepeating(&gcm::FakeGCMProfileService::Build));
   fake_gcm_profile_service_ = static_cast<gcm::FakeGCMProfileService*>(
       gcm::GCMProfileServiceFactory::GetInstance()->GetForProfile(
           browser()->profile()));

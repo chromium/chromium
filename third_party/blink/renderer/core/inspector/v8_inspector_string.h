@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -76,6 +78,36 @@ class CORE_EXPORT StringUtil {
   static std::unique_ptr<protocol::Value> parseJSON(const String&);
 };
 
+// A read-only sequence of uninterpreted bytes with reference-counted storage.
+class CORE_EXPORT Binary {
+ public:
+  class Impl : public RefCounted<Impl> {
+   public:
+    Impl() = default;
+    virtual ~Impl() = default;
+    virtual const uint8_t* data() const = 0;
+    virtual size_t size() const = 0;
+  };
+
+  Binary() = default;
+
+  const uint8_t* data() const { return impl_->data(); }
+  size_t size() const { return impl_->size(); }
+
+  String toBase64() const;
+  static Binary fromBase64(const String& base64, bool* success);
+  static Binary fromSharedBuffer(scoped_refptr<SharedBuffer> buffer);
+  static Binary fromVector(Vector<uint8_t> in);
+
+  // Note: |data.buffer_policy| must be
+  // ScriptCompiler::ScriptCompiler::CachedData::BufferOwned.
+  static Binary fromCachedData(
+      std::unique_ptr<v8::ScriptCompiler::CachedData> data);
+
+ private:
+  explicit Binary(scoped_refptr<Impl> impl) : impl_(impl) {}
+  scoped_refptr<Impl> impl_;
+};
 }  // namespace protocol
 
 }  // namespace blink

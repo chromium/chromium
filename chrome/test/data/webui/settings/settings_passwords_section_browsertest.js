@@ -279,10 +279,7 @@ TEST_F('SettingsPasswordSectionBrowserTest', 'uiTests', function() {
 
       validatePasswordList(passwordsSection.$.passwordList, passwordList);
       // Simulate 'longwebsite.com' being removed from the list.
-      passwordList = [
-        FakeDataMaker.passwordEntry('anotherwebsite.com', 'luigi', 1, 0),
-        FakeDataMaker.passwordEntry('website.com', 'mario', 70, 1)
-      ];
+      passwordList.splice(1, 1);
       passwordManager.lastCallback.addSavedPasswordListChangedListener(
           passwordList);
       Polymer.dom.flush();
@@ -307,11 +304,8 @@ TEST_F('SettingsPasswordSectionBrowserTest', 'uiTests', function() {
 
       validatePasswordList(passwordsSection.$.passwordList, passwordList);
       // Simulate 'website.com' being added to the list.
-      passwordList = [
-        FakeDataMaker.passwordEntry('website.com', 'mario', 70, 0),
-        FakeDataMaker.passwordEntry('anotherwebsite.com', 'luigi', 1, 1),
-        FakeDataMaker.passwordEntry('longwebsite.com', 'peach', 7, 2),
-      ];
+      passwordList.unshift(
+          FakeDataMaker.passwordEntry('website.com', 'mario', 70, 2));
       passwordManager.lastCallback.addSavedPasswordListChangedListener(
           passwordList);
       Polymer.dom.flush();
@@ -336,9 +330,7 @@ TEST_F('SettingsPasswordSectionBrowserTest', 'uiTests', function() {
       validatePasswordList(passwordsSection.$.passwordList, passwordList);
 
       // Simulate '(website.com, mario)' being removed from the list.
-      passwordList =
-          [FakeDataMaker.passwordEntry('website.com', 'luigi', 7, 0)];
-
+      passwordList.shift();
       passwordManager.lastCallback.addSavedPasswordListChangedListener(
           passwordList);
       Polymer.dom.flush();
@@ -373,9 +365,9 @@ TEST_F('SettingsPasswordSectionBrowserTest', 'uiTests', function() {
       assert(firstNode);
       const firstPassword = passwordList[0];
 
-      passwordManager.onRemoveSavedPassword = function(index) {
+      passwordManager.onRemoveSavedPassword = function(id) {
         // Verify that the event matches the expected value.
-        assertEquals(firstPassword.index, index);
+        assertEquals(firstPassword.id, id);
 
         // Clean up after self.
         passwordManager.onRemoveSavedPassword = null;
@@ -438,18 +430,12 @@ TEST_F('SettingsPasswordSectionBrowserTest', 'uiTests', function() {
       validatePasswordList(passwordsSection.$.passwordList, expectedList);
 
       // Simulate removal of three.com/show
-      passwordList = [
-        FakeDataMaker.passwordEntry('one.com', 'SHOW', 5, 0),
-        FakeDataMaker.passwordEntry('two.com', 'shower', 3, 1),
-        FakeDataMaker.passwordEntry('four.com', 'three', 2, 2),
-        FakeDataMaker.passwordEntry('five.com', 'two', 4, 3),
-        FakeDataMaker.passwordEntry('six-show.com', 'one', 6, 4),
-      ];
+      passwordList.splice(2, 1);
 
       expectedList = [
         FakeDataMaker.passwordEntry('one.com', 'SHOW', 5, 0),
         FakeDataMaker.passwordEntry('two.com', 'shower', 3, 1),
-        FakeDataMaker.passwordEntry('six-show.com', 'one', 6, 4),
+        FakeDataMaker.passwordEntry('six-show.com', 'one', 6, 5),
       ];
 
       passwordManager.lastCallback.addSavedPasswordListChangedListener(
@@ -569,10 +555,10 @@ TEST_F('SettingsPasswordSectionBrowserTest', 'uiTests', function() {
         exceptions[item].querySelector('#removeExceptionButton').click();
       };
 
-      passwordManager.onRemoveException = function(index) {
+      passwordManager.onRemoveException = function(id) {
         // Verify that the event matches the expected value.
         assertTrue(item < exceptionList.length);
-        assertEquals(index, exceptionList[item].index);
+        assertEquals(id, exceptionList[item].id);
 
         if (++item < exceptionList.length) {
           clickRemoveButton();  // Click 'remove' on all passwords, one by one.

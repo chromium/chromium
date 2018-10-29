@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
@@ -44,8 +45,6 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_inspector_controller.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
@@ -58,6 +57,7 @@
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/service_worker/respond_with_observer.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_clients.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope_client.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
@@ -128,6 +128,10 @@ void ServiceWorkerGlobalScope::ReadyToEvaluateScript() {
     std::move(evaluate_script_).Run();
 }
 
+bool ServiceWorkerGlobalScope::ShouldInstallV8Extensions() const {
+  return Platform::Current()->AllowScriptExtensionForServiceWorker(Url());
+}
+
 void ServiceWorkerGlobalScope::EvaluateClassicScript(
     const KURL& script_url,
     AccessControlStatus access_control_status,
@@ -189,11 +193,18 @@ void ServiceWorkerGlobalScope::ImportModuleScript(
     network::mojom::FetchCredentialsMode credentials_mode) {
   Modulator* modulator = Modulator::From(ScriptController()->GetScriptState());
 
+  ModuleScriptCustomFetchType fetch_type =
+      ModuleScriptCustomFetchType::kWorkerConstructor;
+  InstalledScriptsManager* installed_scripts_manager =
+      GetThread()->GetInstalledScriptsManager();
+  if (installed_scripts_manager &&
+      installed_scripts_manager->IsScriptInstalled(module_url_record)) {
+    fetch_type = ModuleScriptCustomFetchType::kInstalledServiceWorker;
+  }
+
   FetchModuleScript(module_url_record, outside_settings_object,
-                    WebURLRequest::kRequestContextServiceWorker,
-                    credentials_mode,
-                    ModuleScriptCustomFetchType::kWorkerConstructor,
-                    new WorkerModuleTreeClient(modulator));
+                    mojom::RequestContextType::SERVICE_WORKER, credentials_mode,
+                    fetch_type, new WorkerModuleTreeClient(modulator));
 }
 
 void ServiceWorkerGlobalScope::Dispose() {
@@ -205,56 +216,69 @@ void ServiceWorkerGlobalScope::Dispose() {
 
 void ServiceWorkerGlobalScope::CountWorkerScript(size_t script_size,
                                                  size_t cached_metadata_size) {
+  DCHECK_EQ(GetScriptType(), ScriptType::kClassic);
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, script_size_histogram,
       ("ServiceWorker.ScriptSize", 1000, 5000000, 50));
-  script_size_histogram.Count(script_size);
+  script_size_histogram.Count(
+      base::saturated_cast<base::Histogram::Sample>(script_size));
 
   if (cached_metadata_size) {
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
         CustomCountHistogram, script_cached_metadata_size_histogram,
         ("ServiceWorker.ScriptCachedMetadataSize", 1000, 50000000, 50));
-    script_cached_metadata_size_histogram.Count(cached_metadata_size);
+    script_cached_metadata_size_histogram.Count(
+        base::saturated_cast<base::Histogram::Sample>(cached_metadata_size));
   }
 
-  RecordScriptSize(script_size, cached_metadata_size);
+  CountScriptInternal(script_size, cached_metadata_size);
 }
 
 void ServiceWorkerGlobalScope::CountImportedScript(
     size_t script_size,
     size_t cached_metadata_size) {
-  RecordScriptSize(script_size, cached_metadata_size);
+  DCHECK_EQ(GetScriptType(), ScriptType::kClassic);
+  CountScriptInternal(script_size, cached_metadata_size);
 }
 
-void ServiceWorkerGlobalScope::RecordScriptSize(size_t script_size,
-                                                size_t cached_metadata_size) {
-  ++script_count_;
-  script_total_size_ += script_size;
-  script_cached_metadata_total_size_ += cached_metadata_size;
-}
+void ServiceWorkerGlobalScope::DidEvaluateScript() {
+  DCHECK(!did_evaluate_script_);
+  did_evaluate_script_ = true;
 
-void ServiceWorkerGlobalScope::DidEvaluateClassicScript() {
+  // Skip recording UMAs for module scripts because there're no ways to get the
+  // number of static-imported scripts and the total size of the imported
+  // scripts.
+  if (GetScriptType() == ScriptType::kModule) {
+    return;
+  }
+
+  // TODO(asamidoi,nhiroki): Record the UMAs for module scripts, or remove them
+  // if they're no longer used.
   DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram, script_count_histogram,
                                   ("ServiceWorker.ScriptCount", 1, 1000, 50));
-  script_count_histogram.Count(script_count_);
+  script_count_histogram.Count(
+      base::saturated_cast<base::Histogram::Sample>(script_count_));
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, script_total_size_histogram,
       ("ServiceWorker.ScriptTotalSize", 1000, 5000000, 50));
-  script_total_size_histogram.Count(script_total_size_);
+  script_total_size_histogram.Count(
+      base::saturated_cast<base::Histogram::Sample>(script_total_size_));
   if (script_cached_metadata_total_size_) {
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
         CustomCountHistogram, cached_metadata_histogram,
         ("ServiceWorker.ScriptCachedMetadataTotalSize", 1000, 50000000, 50));
-    cached_metadata_histogram.Count(script_cached_metadata_total_size_);
+    cached_metadata_histogram.Count(
+        base::saturated_cast<base::Histogram::Sample>(
+            script_cached_metadata_total_size_));
   }
-  did_evaluate_script_ = true;
 }
 
-ScriptPromise ServiceWorkerGlobalScope::fetch(ScriptState* script_state,
-                                              const RequestInfo& input,
-                                              const RequestInit& init,
-                                              ExceptionState& exception_state) {
-  return GlobalFetch::fetch(script_state, *this, input, init, exception_state);
+void ServiceWorkerGlobalScope::CountScriptInternal(
+    size_t script_size,
+    size_t cached_metadata_size) {
+  ++script_count_;
+  script_total_size_ += script_size;
+  script_cached_metadata_total_size_ += cached_metadata_size;
 }
 
 ServiceWorkerClients* ServiceWorkerGlobalScope::clients() {
@@ -287,11 +311,23 @@ void ServiceWorkerGlobalScope::BindServiceWorkerHost(
 }
 
 void ServiceWorkerGlobalScope::SetRegistration(
-    std::unique_ptr<WebServiceWorkerRegistration::Handle> handle) {
+    WebServiceWorkerRegistrationObjectInfo info) {
   if (!GetExecutionContext())
     return;
-  registration_ = ServiceWorkerRegistration::GetOrCreate(
-      GetExecutionContext(), base::WrapUnique(handle.release()));
+  registration_ =
+      new ServiceWorkerRegistration(GetExecutionContext(), std::move(info));
+}
+
+ServiceWorker* ServiceWorkerGlobalScope::GetOrCreateServiceWorker(
+    WebServiceWorkerObjectInfo info) {
+  if (info.version_id == mojom::blink::kInvalidServiceWorkerVersionId)
+    return nullptr;
+  ServiceWorker* worker = service_worker_objects_.at(info.version_id);
+  if (!worker) {
+    worker = new ServiceWorker(this, std::move(info));
+    service_worker_objects_.Set(info.version_id, worker);
+  }
+  return worker;
 }
 
 bool ServiceWorkerGlobalScope::AddEventListenerInternal(
@@ -341,6 +377,7 @@ void ServiceWorkerGlobalScope::DispatchExtendableEventWithRespondWith(
 void ServiceWorkerGlobalScope::Trace(blink::Visitor* visitor) {
   visitor->Trace(clients_);
   visitor->Trace(registration_);
+  visitor->Trace(service_worker_objects_);
   WorkerGlobalScope::Trace(visitor);
 }
 
@@ -350,22 +387,21 @@ void ServiceWorkerGlobalScope::importScripts(const Vector<String>& urls,
       GetThread()->GetInstalledScriptsManager();
   for (auto& url : urls) {
     KURL completed_url = CompleteURL(url);
-    // Counts the usage of importScripts() of new scripts after installation
-    // because we want to deprecate such usage (https://crbug.com/719052).
-    // This will undercount because installed scripts manager is only provided
-    // to installed service workers on startup, but this gives us an idea of
-    // the usage.
-    if (installed_scripts_manager &&
-        !installed_scripts_manager->IsScriptInstalled(completed_url)) {
-      DCHECK(installed_scripts_manager->IsScriptInstalled(Url()));
-      CountFeature(WebFeature::kServiceWorkerImportScriptNotInstalled);
-      Deprecation::CountDeprecation(
-          this, WebFeature::kServiceWorkerImportScriptNotInstalled);
-    }
     // Bust the MemoryCache to ensure script requests reach the browser-side
     // and get added to and retrieved from the ServiceWorker's script cache.
     // FIXME: Revisit in light of the solution to crbug/388375.
     RemoveURLFromMemoryCache(completed_url);
+
+    if (installed_scripts_manager &&
+        !installed_scripts_manager->IsScriptInstalled(completed_url)) {
+      DCHECK(installed_scripts_manager->IsScriptInstalled(Url()));
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNetworkError,
+          "Failed to import '" + completed_url.ElidedString() +
+              "'. importScripts() of new scripts after service worker "
+              "installation is not allowed.");
+      return;
+    }
   }
   WorkerGlobalScope::importScripts(urls, exception_state);
 }
@@ -376,6 +412,13 @@ ServiceWorkerGlobalScope::CreateWorkerScriptCachedMetadataHandler(
     const Vector<char>* meta_data) {
   return ServiceWorkerScriptCachedMetadataHandler::Create(this, script_url,
                                                           meta_data);
+}
+
+ScriptPromise ServiceWorkerGlobalScope::fetch(ScriptState* script_state,
+                                              const RequestInfo& input,
+                                              const RequestInit& init,
+                                              ExceptionState& exception_state) {
+  return GlobalFetch::fetch(script_state, *this, input, init, exception_state);
 }
 
 void ServiceWorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
@@ -396,14 +439,16 @@ void ServiceWorkerGlobalScope::CountCacheStorageInstalledScript(
       CustomCountHistogram, script_size_histogram,
       ("ServiceWorker.CacheStorageInstalledScript.ScriptSize", 1000, 5000000,
        50));
-  script_size_histogram.Count(script_size);
+  script_size_histogram.Count(
+      base::saturated_cast<base::Histogram::Sample>(script_size));
 
   if (script_metadata_size) {
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
         CustomCountHistogram, script_metadata_size_histogram,
         ("ServiceWorker.CacheStorageInstalledScript.CachedMetadataSize", 1000,
          50000000, 50));
-    script_metadata_size_histogram.Count(script_metadata_size);
+    script_metadata_size_histogram.Count(
+        base::saturated_cast<base::Histogram::Sample>(script_metadata_size));
   }
 }
 
@@ -418,13 +463,15 @@ void ServiceWorkerGlobalScope::SetIsInstalling(bool is_installing) {
       CustomCountHistogram, cache_storage_installed_script_count_histogram,
       ("ServiceWorker.CacheStorageInstalledScript.Count", 1, 1000, 50));
   cache_storage_installed_script_count_histogram.Count(
-      cache_storage_installed_script_count_);
+      base::saturated_cast<base::Histogram::Sample>(
+          cache_storage_installed_script_count_));
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, cache_storage_installed_script_total_size_histogram,
       ("ServiceWorker.CacheStorageInstalledScript.ScriptTotalSize", 1000,
        50000000, 50));
   cache_storage_installed_script_total_size_histogram.Count(
-      cache_storage_installed_script_total_size_);
+      base::saturated_cast<base::Histogram::Sample>(
+          cache_storage_installed_script_total_size_));
 
   if (cache_storage_installed_script_metadata_total_size_) {
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
@@ -433,7 +480,8 @@ void ServiceWorkerGlobalScope::SetIsInstalling(bool is_installing) {
         ("ServiceWorker.CacheStorageInstalledScript.CachedMetadataTotalSize",
          1000, 50000000, 50));
     cache_storage_installed_script_metadata_total_size_histogram.Count(
-        cache_storage_installed_script_metadata_total_size_);
+        base::saturated_cast<base::Histogram::Sample>(
+            cache_storage_installed_script_metadata_total_size_));
   }
 }
 

@@ -49,6 +49,10 @@ void InitializeVideoStreamParam(media_perception::VideoStreamParam& param,
   param.frame_rate = std::make_unique<int>(frame_rate);
 }
 
+void InitializeFakeMetadata(mri::Metadata* metadata) {
+  metadata->set_visual_experience_controller_version("30.0");
+}
+
 void InitializeFakeAudioPerception(mri::AudioPerception* audio_perception) {
   audio_perception->set_timestamp_us(10086);
 
@@ -178,6 +182,11 @@ std::unique_ptr<media_perception::Point> MakePointIdl(float x, float y) {
   point->y = std::make_unique<double>(y);
 
   return point;
+}
+
+void ValidateMetadataResult(const media_perception::Metadata& metadata_result) {
+  ASSERT_TRUE(metadata_result.visual_experience_controller_version);
+  EXPECT_EQ(*metadata_result.visual_experience_controller_version, "30.0");
 }
 
 void ValidateFramePerceptionResult(
@@ -428,6 +437,8 @@ TEST(MediaPerceptionConversionUtilsTest, MediaPerceptionProtoToIdl) {
   mri::AudioVisualPerception* audio_visual_perception =
       media_perception.add_audio_visual_perception();
   InitializeFakeAudioVisualPerception(audio_visual_perception);
+  mri::Metadata* metadata = media_perception.mutable_metadata();
+  InitializeFakeMetadata(metadata);
   media_perception::MediaPerception media_perception_result =
       media_perception::MediaPerceptionProtoToIdl(media_perception);
   EXPECT_EQ(*media_perception_result.timestamp, 1);
@@ -435,12 +446,14 @@ TEST(MediaPerceptionConversionUtilsTest, MediaPerceptionProtoToIdl) {
   ASSERT_EQ(1u, media_perception_result.frame_perceptions->size());
   ASSERT_TRUE(media_perception_result.audio_perceptions);
   ASSERT_EQ(1u, media_perception_result.audio_perceptions->size());
+  ASSERT_TRUE(media_perception_result.metadata);
   ValidateFramePerceptionResult(
       kFrameId, media_perception_result.frame_perceptions->at(0));
   ValidateAudioPerceptionResult(
       media_perception_result.audio_perceptions->at(0));
   ValidateAudioVisualPerceptionResult(
       media_perception_result.audio_visual_perceptions->at(0));
+  ValidateMetadataResult(*media_perception_result.metadata.get());
 }
 
 TEST(MediaPerceptionConversionUtilsTest, DiagnosticsProtoToIdl) {
@@ -454,6 +467,8 @@ TEST(MediaPerceptionConversionUtilsTest, DiagnosticsProtoToIdl) {
     InitializeFakeFramePerception(i, frame_perception);
     mri::ImageFrame* image_frame = perception_sample->mutable_image_frame();
     InitializeFakeImageFrameData(image_frame);
+    mri::Metadata* metadata = perception_sample->mutable_metadata();
+    InitializeFakeMetadata(metadata);
   }
   media_perception::Diagnostics diagnostics_result =
       media_perception::DiagnosticsProtoToIdl(diagnostics);
@@ -471,8 +486,13 @@ TEST(MediaPerceptionConversionUtilsTest, DiagnosticsProtoToIdl) {
         perception_sample_result.image_frame.get();
     ASSERT_TRUE(image_frame_result);
 
+    const media_perception::Metadata* metadata_result =
+        perception_sample_result.metadata.get();
+    ASSERT_TRUE(metadata_result);
+
     ValidateFramePerceptionResult(i, *frame_perception_result);
     ValidateFakeImageFrameData(*image_frame_result);
+    ValidateMetadataResult(*metadata_result);
   }
 }
 

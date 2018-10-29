@@ -2,7 +2,6 @@ Tests the timestamps provided to requestAnimationFrame callbacks advance
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS firstTimestamp is defined.
 PASS secondTimestamp is defined.
 PASS secondTimestamp > firstTimestamp is true

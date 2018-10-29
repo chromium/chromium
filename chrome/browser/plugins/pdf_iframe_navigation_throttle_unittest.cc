@@ -88,7 +88,8 @@ TEST_F(PDFIFrameNavigationThrottleTest, OnlyCreateThrottleForSubframes) {
           GURL(kExampleURL), main_rfh());
 
   handle->CallWillProcessResponseForTesting(
-      main_rfh(), net::HttpUtil::AssembleRawHeaders(kHeader, strlen(kHeader)));
+      main_rfh(), net::HttpUtil::AssembleRawHeaders(kHeader, strlen(kHeader)),
+      false, net::ProxyServer::Direct());
 
   std::unique_ptr<content::NavigationThrottle> throttle =
       PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(handle.get());
@@ -99,7 +100,8 @@ TEST_F(PDFIFrameNavigationThrottleTest, OnlyCreateThrottleForSubframes) {
       GURL(kExampleURL), subframe());
 
   handle->CallWillProcessResponseForTesting(
-      subframe(), net::HttpUtil::AssembleRawHeaders(kHeader, strlen(kHeader)));
+      subframe(), net::HttpUtil::AssembleRawHeaders(kHeader, strlen(kHeader)),
+      false, net::ProxyServer::Direct());
 
   throttle = PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(handle.get());
   ASSERT_NE(nullptr, throttle);
@@ -117,7 +119,8 @@ TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
   std::string header = GetHeaderWithMimeType("application/pdf");
   handle->CallWillProcessResponseForTesting(
       subframe(),
-      net::HttpUtil::AssembleRawHeaders(header.c_str(), header.size()));
+      net::HttpUtil::AssembleRawHeaders(header.c_str(), header.size()), false,
+      net::ProxyServer::Direct());
 
   std::unique_ptr<content::NavigationThrottle> throttle =
       PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(handle.get());
@@ -129,7 +132,8 @@ TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
   // Verify that we PROCEED for other mime types.
   // Blank mime type
   handle->CallWillProcessResponseForTesting(
-      subframe(), net::HttpUtil::AssembleRawHeaders(kHeader, strlen(kHeader)));
+      subframe(), net::HttpUtil::AssembleRawHeaders(kHeader, strlen(kHeader)),
+      false, net::ProxyServer::Direct());
 
   throttle = PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(handle.get());
 
@@ -141,7 +145,8 @@ TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
   header = GetHeaderWithMimeType("text/html");
   handle->CallWillProcessResponseForTesting(
       subframe(),
-      net::HttpUtil::AssembleRawHeaders(header.c_str(), header.size()));
+      net::HttpUtil::AssembleRawHeaders(header.c_str(), header.size()), false,
+      net::ProxyServer::Direct());
 
   throttle = PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(handle.get());
 
@@ -153,7 +158,8 @@ TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
   header = GetHeaderWithMimeType("image/png");
   handle->CallWillProcessResponseForTesting(
       subframe(),
-      net::HttpUtil::AssembleRawHeaders(header.c_str(), header.size()));
+      net::HttpUtil::AssembleRawHeaders(header.c_str(), header.size()), false,
+      net::ProxyServer::Direct());
 
   throttle = PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(handle.get());
 
@@ -178,7 +184,8 @@ TEST_F(PDFIFrameNavigationThrottleTest, AllowPDFAttachments) {
       "content-disposition: attachment\r\n";
   handle->CallWillProcessResponseForTesting(
       subframe(),
-      net::HttpUtil::AssembleRawHeaders(header.c_str(), header.size()));
+      net::HttpUtil::AssembleRawHeaders(header.c_str(), header.size()), false,
+      net::ProxyServer::Direct());
 
   std::unique_ptr<content::NavigationThrottle> throttle =
       PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(handle.get());
@@ -198,7 +205,8 @@ TEST_F(PDFIFrameNavigationThrottleTest, CancelOnlyIfPDFViewerIsDisabled) {
   std::string header = GetHeaderWithMimeType("application/pdf");
   handle->CallWillProcessResponseForTesting(
       subframe(),
-      net::HttpUtil::AssembleRawHeaders(header.c_str(), header.size()));
+      net::HttpUtil::AssembleRawHeaders(header.c_str(), header.size()), false,
+      net::ProxyServer::Direct());
 
   // Test PDF Viewer enabled.
   SetAlwaysOpenPdfExternallyForTests(false);

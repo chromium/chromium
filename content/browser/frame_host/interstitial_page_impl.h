@@ -174,7 +174,7 @@ class CONTENT_EXPORT InterstitialPageImpl : public InterstitialPage,
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const NativeWebKeyboardEvent& event) override;
   bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
-  void HandleKeyboardEvent(const NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(const NativeWebKeyboardEvent& event) override;
   TextInputManager* GetTextInputManager() override;
   RenderWidgetHostInputEventRouter* GetInputEventRouter() override;
   BrowserAccessibilityManager* GetRootBrowserAccessibilityManager() override;

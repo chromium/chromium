@@ -27,7 +27,7 @@
             "toggledIconClass": "largeicon-resume",
             "className": "Sources.SourcesPanel.RevealingActionDelegate",
             "contextTypes": [
-                "Sources.SourcesPanel",
+                "Sources.SourcesView",
                 "UI.ShortcutRegistry.ForwardedShortcut"
             ],
             "options": [
@@ -137,7 +137,7 @@
             "title": "Run snippet",
             "iconClass": "largeicon-play",
             "contextTypes": [
-                "Sources.SourcesPanel"
+                "Sources.SourcesView"
             ],
             "bindings": [
                 {
@@ -158,7 +158,7 @@
             "toggledIconClass": "largeicon-activate-breakpoints",
             "className": "Sources.SourcesPanel.DebuggingActionDelegate",
             "contextTypes": [
-                "Sources.SourcesPanel"
+                "Sources.SourcesView"
             ],
             "options": [
                 {
@@ -560,7 +560,7 @@
             "actionId": "sources.jump-to-previous-location",
             "className": "Sources.SourcesView.ActionDelegate",
             "contextTypes": [
-                "Sources.SourcesPanel"
+                "Sources.SourcesView"
             ],
             "bindings": [
                 {
@@ -573,7 +573,7 @@
             "actionId": "sources.jump-to-next-location",
             "className": "Sources.SourcesView.ActionDelegate",
             "contextTypes": [
-                "Sources.SourcesPanel"
+                "Sources.SourcesView"
             ],
             "bindings": [
                 {
@@ -586,7 +586,7 @@
             "actionId": "sources.close-editor-tab",
             "className": "Sources.SourcesView.ActionDelegate",
             "contextTypes": [
-                "Sources.SourcesPanel"
+                "Sources.SourcesView"
             ],
             "bindings": [
                 {
@@ -599,7 +599,7 @@
             "actionId": "sources.go-to-line",
             "className": "Sources.SourcesView.ActionDelegate",
             "contextTypes": [
-                "Sources.SourcesPanel"
+                "Sources.SourcesView"
             ],
             "bindings": [
                 {
@@ -612,7 +612,7 @@
             "actionId": "sources.go-to-member",
             "className": "Sources.SourcesView.ActionDelegate",
             "contextTypes": [
-                "Sources.SourcesPanel"
+                "Sources.SourcesView"
             ],
             "bindings": [
                 {
@@ -658,7 +658,7 @@
             "actionId": "sources.save",
             "className": "Sources.SourcesView.ActionDelegate",
             "contextTypes": [
-                "Sources.SourcesPanel"
+                "Sources.SourcesView"
             ],
             "bindings": [
                 {
@@ -676,7 +676,7 @@
             "actionId": "sources.save-all",
             "className": "Sources.SourcesView.ActionDelegate",
             "contextTypes": [
-                "Sources.SourcesPanel"
+                "Sources.SourcesView"
             ],
             "bindings": [
                 {

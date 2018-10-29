@@ -98,13 +98,14 @@ ExpandArrowView::ExpandArrowView(ContentsView* contents_view,
     : views::Button(this),
       contents_view_(contents_view),
       app_list_view_(app_list_view),
-      is_new_style_launcher_enabled_(features::IsNewStyleLauncherEnabled()),
+      is_new_style_launcher_enabled_(
+          app_list_features::IsNewStyleLauncherEnabled()),
       weak_ptr_factory_(this) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetInkDropMode(InkDropHostView::InkDropMode::ON);
+  SetInkDropMode(InkDropMode::ON);
 
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_LIST_EXPAND_BUTTON));
 
@@ -112,7 +113,10 @@ ExpandArrowView::ExpandArrowView(ContentsView* contents_view,
   animation_->SetTweenType(gfx::Tween::LINEAR);
   animation_->SetSlideDuration(kCycleDurationInMs * 2 + kCycleIntervalInMs);
   ResetHintingAnimation();
-  ScheduleHintingAnimation(true);
+  // When side shelf or tablet mode is enabled, the peeking launcher won't be
+  // shown, so the hint animation is unnecessary.
+  if (!app_list_view_->is_side_shelf() && !app_list_view_->is_tablet_mode())
+    ScheduleHintingAnimation(true);
 }
 
 ExpandArrowView::~ExpandArrowView() = default;
@@ -324,7 +328,9 @@ void ExpandArrowView::AnimationProgressed(const gfx::Animation* animation) {
 
 void ExpandArrowView::AnimationEnded(const gfx::Animation* /*animation*/) {
   ResetHintingAnimation();
-  if (!button_pressed_)
+  // Only reschedule hinting animation if app list is not fullscreen. Once the
+  // user has made the app_list fullscreen, a hint to do so is no longer needed
+  if (!app_list_view_->is_fullscreen())
     ScheduleHintingAnimation(false);
 }
 

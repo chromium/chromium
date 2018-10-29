@@ -186,11 +186,12 @@ TEST_F(ShellSurfaceTest, Minimize) {
 
   EXPECT_TRUE(shell_surface->CanMinimize());
 
-  // Minimizing can be performed before the surface is committed.
+  // Minimizing can be performed before the surface is committed, but
+  // widget creation will be deferred.
   shell_surface->Minimize();
-  EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
+  EXPECT_FALSE(shell_surface->GetWidget());
 
-  // Confirm that attaching and commiting doesn't reset the state.
+  // Attaching the buffer will create a widget with minimized state.
   surface->Attach(buffer.get());
   surface->Commit();
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
@@ -508,17 +509,34 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   // Commit without contents should result in a configure callback with empty
   // suggested size as a mechanims to ask the client size itself.
   surface->Commit();
-  EXPECT_EQ(gfx::Size(), suggested_size);
+  EXPECT_TRUE(suggested_size.IsEmpty());
 
   // Geometry should not be committed until surface has contents.
-  EXPECT_EQ(gfx::Size(), shell_surface->CalculatePreferredSize());
+  EXPECT_TRUE(shell_surface->CalculatePreferredSize().IsEmpty());
 
+  // Widget creation is deferred until the surface has contents.
   shell_surface->Maximize();
   shell_surface->AcknowledgeConfigure(0);
-  EXPECT_EQ(CurrentContext()->bounds().width(), suggested_size.width());
+
+  EXPECT_FALSE(shell_surface->GetWidget());
+  EXPECT_TRUE(suggested_size.IsEmpty());
+  EXPECT_EQ(ash::mojom::WindowStateType::NORMAL, has_state_type);
+
+  gfx::Size buffer_size(64, 64);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  gfx::Rect maximized_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  EXPECT_TRUE(shell_surface->GetWidget());
+  EXPECT_EQ(maximized_bounds.size(), suggested_size);
   EXPECT_EQ(ash::mojom::WindowStateType::MAXIMIZED, has_state_type);
   shell_surface->Restore();
   shell_surface->AcknowledgeConfigure(0);
+  // It should be restored to the original geometry size.
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
 
   shell_surface->SetFullscreen(true);
   shell_surface->AcknowledgeConfigure(0);
@@ -527,13 +545,6 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   EXPECT_EQ(ash::mojom::WindowStateType::FULLSCREEN, has_state_type);
   shell_surface->SetFullscreen(false);
   shell_surface->AcknowledgeConfigure(0);
-
-  gfx::Size buffer_size(64, 64);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
-
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
 
   shell_surface->GetWidget()->Activate();

@@ -208,6 +208,19 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewPage) {
     EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
         kv.second.get(),
         PageLoad::kPaintTiming_NavigationToFirstContentfulPaintName));
+    EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
+        kv.second.get(), PageLoad::kMainFrameResource_DNSDelayName));
+    EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
+        kv.second.get(), PageLoad::kMainFrameResource_ConnectDelayName));
+    EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
+        kv.second.get(),
+        PageLoad::kMainFrameResource_RequestStartToSendStartName));
+    EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
+        kv.second.get(),
+        PageLoad::kMainFrameResource_SendStartToReceiveHeadersEndName));
+    EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
+        kv.second.get(),
+        PageLoad::kMainFrameResource_RequestStartToReceiveHeadersEndName));
   }
 
   // Verify that NoPageLoadMetricsRecorded returns false when PageLoad metrics
@@ -1137,7 +1150,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   const auto& entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::Blink_UseCounter::kEntryName);
-  EXPECT_EQ(4u, entries.size());
+  EXPECT_EQ(5u, entries.size());
   std::vector<int64_t> ukm_features;
   for (const auto* entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
@@ -1149,6 +1162,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   EXPECT_THAT(
       ukm_features,
       UnorderedElementsAre(
+          static_cast<int64_t>(WebFeature::kPageVisits),
           static_cast<int64_t>(WebFeature::kFullscreenSecureOrigin),
           static_cast<int64_t>(WebFeature::kNavigatorVibrate),
           static_cast<int64_t>(WebFeature::kDataUriHasOctothorpe),
@@ -1177,7 +1191,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   const auto& entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::Blink_UseCounter::kEntryName);
-  EXPECT_EQ(7u, entries.size());
+  EXPECT_EQ(8u, entries.size());
   std::vector<int64_t> ukm_features;
   for (const auto* entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
@@ -1188,6 +1202,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   }
   EXPECT_THAT(ukm_features,
               UnorderedElementsAre(
+                  static_cast<int64_t>(WebFeature::kPageVisits),
                   static_cast<int64_t>(WebFeature::kFullscreenSecureOrigin),
                   static_cast<int64_t>(WebFeature::kNavigatorVibrate),
                   static_cast<int64_t>(WebFeature::kDataUriHasOctothorpe),
@@ -1825,7 +1840,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ReceivedCompleteResources) {
       "<html><body></body><script src=\"script.js\"></script></html>");
   main_html_response->Send(std::string(1000, ' '));
   main_html_response->Done();
-  waiter->AddCompleteResourcesExpectation(1);
+  waiter->AddMinimumCompleteResourcesExpectation(1);
   waiter->AddMinimumResourceBytesExpectation(1000);
   waiter->Wait();
 
@@ -1837,11 +1852,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ReceivedCompleteResources) {
       "document.body.appendChild(iframe);");
   script_response->Send(std::string(1000, ' '));
   // Data received but resource not complete
-  waiter->AddCompleteResourcesExpectation(1);
+  waiter->AddMinimumCompleteResourcesExpectation(1);
   waiter->AddMinimumResourceBytesExpectation(2000);
   waiter->Wait();
   script_response->Done();
-  waiter->AddCompleteResourcesExpectation(2);
+  waiter->AddMinimumCompleteResourcesExpectation(2);
   waiter->Wait();
 
   // Make sure main resources are loaded correctly
@@ -1849,7 +1864,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ReceivedCompleteResources) {
   iframe_response->Send(kHttpResponseHeader);
   iframe_response->Send(std::string(2000, ' '));
   iframe_response->Done();
-  waiter->AddCompleteResourcesExpectation(3);
+  waiter->AddMinimumCompleteResourcesExpectation(3);
   waiter->AddMinimumResourceBytesExpectation(4000);
   waiter->Wait();
 }

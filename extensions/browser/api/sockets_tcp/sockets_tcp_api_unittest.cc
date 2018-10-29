@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/values.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -29,8 +30,9 @@ class SocketsTcpUnitTest : public ApiUnitTest {
     ApiUnitTest::SetUp();
 
     ApiResourceManager<ResumableTCPSocket>::GetFactoryInstance()
-        ->SetTestingFactoryAndUse(browser_context(),
-                                  ApiResourceManagerTestFactory);
+        ->SetTestingFactoryAndUse(
+            browser_context(),
+            base::BindRepeating(&ApiResourceManagerTestFactory));
   }
 };
 

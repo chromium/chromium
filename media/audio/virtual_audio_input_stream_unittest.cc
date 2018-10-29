@@ -253,10 +253,10 @@ class VirtualAudioInputStreamTest : public testing::TestWithParam<bool> {
   DISALLOW_COPY_AND_ASSIGN(VirtualAudioInputStreamTest);
 };
 
-#define RUN_ON_AUDIO_THREAD(method)  \
-  audio_task_runner()->PostTask(  \
-      FROM_HERE, base::Bind(&VirtualAudioInputStreamTest::method,  \
-                            base::Unretained(this)))
+#define RUN_ON_AUDIO_THREAD(method)                                   \
+  audio_task_runner()->PostTask(                                      \
+      FROM_HERE, base::BindOnce(&VirtualAudioInputStreamTest::method, \
+                                base::Unretained(this)))
 
 TEST_P(VirtualAudioInputStreamTest, CreateAndClose) {
   RUN_ON_AUDIO_THREAD(Create);

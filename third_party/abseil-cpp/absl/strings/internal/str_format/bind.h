@@ -33,13 +33,21 @@ class UntypedFormatSpecImpl {
  public:
   UntypedFormatSpecImpl() = delete;
 
-  explicit UntypedFormatSpecImpl(string_view s) : str_(s), pc_() {}
+  explicit UntypedFormatSpecImpl(string_view s)
+      : data_(s.data()), size_(s.size()) {}
   explicit UntypedFormatSpecImpl(
       const str_format_internal::ParsedFormatBase* pc)
-      : pc_(pc) {}
-  string_view str() const { return str_; }
+      : data_(pc), size_(~size_t{}) {}
+
+  bool has_parsed_conversion() const { return size_ == ~size_t{}; }
+
+  string_view str() const {
+    assert(!has_parsed_conversion());
+    return string_view(static_cast<const char*>(data_), size_);
+  }
   const str_format_internal::ParsedFormatBase* parsed_conversion() const {
-    return pc_;
+    assert(has_parsed_conversion());
+    return static_cast<const str_format_internal::ParsedFormatBase*>(data_);
   }
 
   template <typename T>
@@ -48,8 +56,8 @@ class UntypedFormatSpecImpl {
   }
 
  private:
-  string_view str_;
-  const str_format_internal::ParsedFormatBase* pc_;
+  const void* data_;
+  size_t size_;
 };
 
 template <typename T, typename...>
@@ -144,31 +152,31 @@ class Streamable {
 };
 
 // for testing
-std::string Summarize(const UntypedFormatSpecImpl& format,
+std::string Summarize(UntypedFormatSpecImpl format,
                  absl::Span<const FormatArgImpl> args);
 bool BindWithPack(const UnboundConversion* props,
                   absl::Span<const FormatArgImpl> pack, BoundConversion* bound);
 
 bool FormatUntyped(FormatRawSinkImpl raw_sink,
-                   const UntypedFormatSpecImpl& format,
+                   UntypedFormatSpecImpl format,
                    absl::Span<const FormatArgImpl> args);
 
-std::string& AppendPack(std::string* out, const UntypedFormatSpecImpl& format,
+std::string& AppendPack(std::string* out, UntypedFormatSpecImpl format,
                    absl::Span<const FormatArgImpl> args);
 
-inline std::string FormatPack(const UntypedFormatSpecImpl& format,
+inline std::string FormatPack(const UntypedFormatSpecImpl format,
                          absl::Span<const FormatArgImpl> args) {
   std::string out;
   AppendPack(&out, format, args);
   return out;
 }
 
-int FprintF(std::FILE* output, const UntypedFormatSpecImpl& format,
+int FprintF(std::FILE* output, UntypedFormatSpecImpl format,
             absl::Span<const FormatArgImpl> args);
-int SnprintF(char* output, size_t size, const UntypedFormatSpecImpl& format,
+int SnprintF(char* output, size_t size, UntypedFormatSpecImpl format,
              absl::Span<const FormatArgImpl> args);
 
-// Returned by Streamed(v). Converts via '%s' to the std::string created
+// Returned by Streamed(v). Converts via '%s' to the string created
 // by std::ostream << v.
 template <typename T>
 class StreamedWrapper {
@@ -178,7 +186,7 @@ class StreamedWrapper {
  private:
   template <typename S>
   friend ConvertResult<Conv::s> FormatConvertImpl(const StreamedWrapper<S>& v,
-                                                  const ConversionSpec& conv,
+                                                  ConversionSpec conv,
                                                   FormatSinkImpl* out);
   const T& v_;
 };

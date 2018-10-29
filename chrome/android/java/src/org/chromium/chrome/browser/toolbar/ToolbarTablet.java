@@ -10,13 +10,17 @@ import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -32,7 +36,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.AccessibilityUtil;
 import org.chromium.chrome.browser.util.ColorUtils;
 import org.chromium.chrome.browser.util.FeatureUtilities;
-import org.chromium.chrome.browser.widget.TintedImageButton;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
@@ -47,13 +50,13 @@ public class ToolbarTablet
     // The number of toolbar buttons that can be hidden at small widths (reload, back, forward).
     public static final int HIDEABLE_BUTTON_COUNT = 3;
 
-    private TintedImageButton mHomeButton;
-    private TintedImageButton mBackButton;
-    private TintedImageButton mForwardButton;
-    private TintedImageButton mReloadButton;
-    private TintedImageButton mBookmarkButton;
-    private TintedImageButton mSaveOfflineButton;
-    private TintedImageButton mSecurityButton;
+    private AppCompatImageButton mHomeButton;
+    private AppCompatImageButton mBackButton;
+    private AppCompatImageButton mForwardButton;
+    private AppCompatImageButton mReloadButton;
+    private AppCompatImageButton mBookmarkButton;
+    private AppCompatImageButton mSaveOfflineButton;
+    private AppCompatImageButton mSecurityButton;
     private ImageButton mAccessibilitySwitcherButton;
 
     private OnClickListener mBookmarkListener;
@@ -63,7 +66,7 @@ public class ToolbarTablet
 
     private boolean mShowTabStack;
     private boolean mToolbarButtonsVisible;
-    private TintedImageButton[] mToolbarButtons;
+    private AppCompatImageButton[] mToolbarButtons;
 
     private NavigationPopup mNavigationPopup;
 
@@ -98,12 +101,19 @@ public class ToolbarTablet
         super.onFinishInflate();
         mLocationBar = (LocationBarTablet) findViewById(R.id.location_bar);
 
-        mHomeButton = (TintedImageButton) findViewById(R.id.home_button);
+        mHomeButton = (AppCompatImageButton) findViewById(R.id.home_button);
         changeIconToNTPIcon(mHomeButton);
-        mBackButton = (TintedImageButton) findViewById(R.id.back_button);
-        mForwardButton = (TintedImageButton) findViewById(R.id.forward_button);
-        mReloadButton = (TintedImageButton) findViewById(R.id.refresh_button);
-        mSecurityButton = (TintedImageButton) findViewById(R.id.security_button);
+        mBackButton = (AppCompatImageButton) findViewById(R.id.back_button);
+        mForwardButton = (AppCompatImageButton) findViewById(R.id.forward_button);
+        mReloadButton = (AppCompatImageButton) findViewById(R.id.refresh_button);
+        // ImageView tinting doesn't work with LevelListDrawable, use Drawable tinting instead.
+        // See https://crbug.com/891593 for details.
+        Drawable reloadIcon =
+                AppCompatResources.getDrawable(getContext(), R.drawable.btn_reload_stop);
+        DrawableCompat.setTintList(reloadIcon,
+                AppCompatResources.getColorStateList(getContext(), R.color.dark_mode_tint));
+        mReloadButton.setImageDrawable(reloadIcon);
+        mSecurityButton = (AppCompatImageButton) findViewById(R.id.security_button);
         mShowTabStack = AccessibilityUtil.isAccessibilityEnabled()
                 && isAccessibilityTabSwitcherPreferenceEnabled();
 
@@ -116,7 +126,7 @@ public class ToolbarTablet
         mAccessibilitySwitcherButton.setImageDrawable(mTabSwitcherButtonDrawable);
         updateSwitcherButtonVisibility(mShowTabStack);
 
-        mBookmarkButton = (TintedImageButton) findViewById(R.id.bookmark_button);
+        mBookmarkButton = (AppCompatImageButton) findViewById(R.id.bookmark_button);
 
         final View menuButtonWrapper = getMenuButtonWrapper();
         menuButtonWrapper.setVisibility(View.VISIBLE);
@@ -127,13 +137,13 @@ public class ToolbarTablet
                     getResources().getDimensionPixelSize(R.dimen.tablet_toolbar_end_padding), 0);
         }
 
-        mSaveOfflineButton = (TintedImageButton) findViewById(R.id.save_offline_button);
+        mSaveOfflineButton = (AppCompatImageButton) findViewById(R.id.save_offline_button);
 
         // Initialize values needed for showing/hiding toolbar buttons when the activity size
         // changes.
         mShouldAnimateButtonVisibilityChange = false;
         mToolbarButtonsVisible = true;
-        mToolbarButtons = new TintedImageButton[] {mBackButton, mForwardButton, mReloadButton};
+        mToolbarButtons = new AppCompatImageButton[] {mBackButton, mForwardButton, mReloadButton};
     }
 
     @Override
@@ -300,13 +310,7 @@ public class ToolbarTablet
         mNavigationPopup = new NavigationPopup(tab.getProfile(), getContext(),
                 tab.getWebContents().getNavigationController(),
                 isForward ? NavigationPopup.Type.TABLET_FORWARD : NavigationPopup.Type.TABLET_BACK);
-
-        mNavigationPopup.setAnchorView(anchorView);
-
-        int menuWidth = getResources().getDimensionPixelSize(R.dimen.menu_width);
-        mNavigationPopup.setWidth(menuWidth);
-
-        mNavigationPopup.show();
+        mNavigationPopup.show(anchorView);
     }
 
     @Override
@@ -382,11 +386,16 @@ public class ToolbarTablet
             setBackgroundColor(color);
             getProgressBar().setThemeColor(color, isIncognito());
 
-            getMenuButton().setTint(incognito ? mLightModeTint : mDarkModeTint);
-            mHomeButton.setTint(incognito ? mLightModeTint : mDarkModeTint);
-            mBackButton.setTint(incognito ? mLightModeTint : mDarkModeTint);
-            mForwardButton.setTint(incognito ? mLightModeTint : mDarkModeTint);
-            mSaveOfflineButton.setTint(incognito ? mLightModeTint : mDarkModeTint);
+            ApiCompatibilityUtils.setImageTintList(
+                    getMenuButton(), incognito ? mLightModeTint : mDarkModeTint);
+            ApiCompatibilityUtils.setImageTintList(
+                    mHomeButton, incognito ? mLightModeTint : mDarkModeTint);
+            ApiCompatibilityUtils.setImageTintList(
+                    mBackButton, incognito ? mLightModeTint : mDarkModeTint);
+            ApiCompatibilityUtils.setImageTintList(
+                    mForwardButton, incognito ? mLightModeTint : mDarkModeTint);
+            ApiCompatibilityUtils.setImageTintList(
+                    mSaveOfflineButton, incognito ? mLightModeTint : mDarkModeTint);
             if (incognito) {
                 mLocationBar.getContainerView().getBackground().setAlpha(
                         ToolbarPhone.LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA);
@@ -471,7 +480,8 @@ public class ToolbarTablet
             mReloadButton.setContentDescription(getContext().getString(
                     R.string.accessibility_btn_refresh));
         }
-        mReloadButton.setTint(isIncognito() ? mLightModeTint : mDarkModeTint);
+        ApiCompatibilityUtils.setImageTintList(
+                mReloadButton, isIncognito() ? mLightModeTint : mDarkModeTint);
         mReloadButton.setEnabled(!mIsInTabSwitcherMode);
     }
 
@@ -480,14 +490,16 @@ public class ToolbarTablet
         if (isBookmarked) {
             mBookmarkButton.setImageResource(R.drawable.btn_star_filled);
             // Non-incognito mode shows a blue filled star.
-            mBookmarkButton.setTint(isIncognito() ? mLightModeTint
-                                                  : AppCompatResources.getColorStateList(
-                                                            getContext(), R.color.blue_mode_tint));
+            ApiCompatibilityUtils.setImageTintList(mBookmarkButton,
+                    isIncognito() ? mLightModeTint
+                                  : AppCompatResources.getColorStateList(
+                                            getContext(), R.color.blue_mode_tint));
             mBookmarkButton.setContentDescription(getContext().getString(
                     R.string.edit_bookmark));
         } else {
             mBookmarkButton.setImageResource(R.drawable.btn_star);
-            mBookmarkButton.setTint(isIncognito() ? mLightModeTint : mDarkModeTint);
+            ApiCompatibilityUtils.setImageTintList(
+                    mBookmarkButton, isIncognito() ? mLightModeTint : mDarkModeTint);
             mBookmarkButton.setContentDescription(getContext().getString(
                     R.string.accessibility_menu_bookmark));
         }
@@ -505,7 +517,7 @@ public class ToolbarTablet
             mLocationBar.getContainerView().setVisibility(View.INVISIBLE);
             if (mShowMenuBadge) {
                 getMenuBadge().setVisibility(View.GONE);
-                setMenuButtonContentDescription(false);
+                setMenuButtonContentDescription();
             }
         } else {
             mIsInTabSwitcherMode = false;
@@ -604,7 +616,7 @@ public class ToolbarTablet
         if (mShouldAnimateButtonVisibilityChange) {
             runToolbarButtonsVisibilityAnimation(visible);
         } else {
-            for (TintedImageButton button : mToolbarButtons) {
+            for (AppCompatImageButton button : mToolbarButtons) {
                 button.setVisibility(visible ? View.VISIBLE : View.GONE);
             }
             mLocationBar.setShouldShowButtonsWhenUnfocused(visible);
@@ -646,7 +658,7 @@ public class ToolbarTablet
         Collection<Animator> animators = new ArrayList<>();
 
         // Create animators for all of the toolbar buttons.
-        for (TintedImageButton button : mToolbarButtons) {
+        for (AppCompatImageButton button : mToolbarButtons) {
             animators.add(mLocationBar.createShowButtonAnimator(button));
         }
 
@@ -660,7 +672,7 @@ public class ToolbarTablet
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                for (TintedImageButton button : mToolbarButtons) {
+                for (AppCompatImageButton button : mToolbarButtons) {
                     button.setVisibility(View.VISIBLE);
                 }
                 // Set the padding at the start of the animation so the toolbar buttons don't jump
@@ -681,7 +693,7 @@ public class ToolbarTablet
         Collection<Animator> animators = new ArrayList<>();
 
         // Create animators for all of the toolbar buttons.
-        for (TintedImageButton button : mToolbarButtons) {
+        for (AppCompatImageButton button : mToolbarButtons) {
             animators.add(mLocationBar.createHideButtonAnimator(button));
         }
 
@@ -698,7 +710,7 @@ public class ToolbarTablet
                 // Only set end visibility and alpha if the animation is ending because it's
                 // completely finished and not because it was canceled.
                 if (mToolbarButtons[0].getAlpha() == 0.f) {
-                    for (TintedImageButton button : mToolbarButtons) {
+                    for (AppCompatImageButton button : mToolbarButtons) {
                         button.setVisibility(View.GONE);
                         button.setAlpha(1.f);
                     }

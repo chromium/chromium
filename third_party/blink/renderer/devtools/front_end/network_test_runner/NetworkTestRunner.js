@@ -170,7 +170,9 @@ NetworkTestRunner.HARPropertyFormatters = {
   version: 'formatAsTypeName',
   wait: 'formatAsTypeName',
   _transferSize: 'formatAsTypeName',
-  _error: 'skip'
+  _error: 'skip',
+  _initiator: 'formatAsTypeName',
+  _priority: 'formatAsTypeName'
 };
 
 NetworkTestRunner.HARPropertyFormattersWithSize = JSON.parse(JSON.stringify(NetworkTestRunner.HARPropertyFormatters));

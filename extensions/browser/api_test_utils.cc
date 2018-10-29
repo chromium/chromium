@@ -15,7 +15,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_dispatcher.h"
-#include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::ExtensionFunctionDispatcher;
@@ -87,40 +86,6 @@ std::string GetString(const base::DictionaryValue* val,
   if (!val->GetString(key, &result))
     ADD_FAILURE() << key << " does not exist or is not a string.";
   return result;
-}
-
-scoped_refptr<Extension> CreateExtension(
-    Manifest::Location location,
-    base::DictionaryValue* test_extension_value,
-    const std::string& id_input) {
-  std::string error;
-  const base::FilePath test_extension_path;
-  std::string id;
-  if (!id_input.empty())
-    id = crx_file::id_util::GenerateId(id_input);
-  scoped_refptr<Extension> extension(
-      Extension::Create(test_extension_path, location, *test_extension_value,
-                        Extension::NO_FLAGS, id, &error));
-  EXPECT_TRUE(error.empty()) << "Could not parse test extension " << error;
-  return extension;
-}
-
-scoped_refptr<Extension> CreateExtension(
-    base::DictionaryValue* test_extension_value) {
-  return CreateExtension(Manifest::INTERNAL, test_extension_value,
-                         std::string());
-}
-
-scoped_refptr<Extension> CreateEmptyExtensionWithLocation(
-    Manifest::Location location) {
-  std::unique_ptr<base::DictionaryValue> test_extension_value =
-      ParseDictionary(R"(
-          {
-            "name": "Test",
-            "version": "1.0",
-            "manifest_version": 2
-          })");
-  return CreateExtension(location, test_extension_value.get(), std::string());
 }
 
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(

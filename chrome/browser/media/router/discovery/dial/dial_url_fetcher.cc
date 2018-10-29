@@ -4,8 +4,10 @@
 
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
@@ -164,8 +166,8 @@ void DialURLFetcher::StartDownload() {
   // this conditional.
   auto mojo_request = mojo::MakeRequest(&loader_factory);
   if (content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI)) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&BindURLLoaderFactoryRequestOnUIThread,
                        std::move(mojo_request)));
   }

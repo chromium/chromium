@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -19,8 +18,6 @@
 #include "content/public/common/service_manager_connection.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/base/mock_network_change_notifier.h"
-#include "net/base/network_change_notifier_factory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -62,67 +59,28 @@ void SimulateNetworkChange(network::mojom::ConnectionType type) {
       net::NetworkChangeNotifier::ConnectionType(type));
 }
 
-// ChromeBrowserMainExtraParts used to install a MockNetworkChangeNotifier.
+// ChromeBrowserMainExtraParts is used to initialize the network state.
 class ChromeBrowserMainExtraPartsNetFactoryInstaller
     : public ChromeBrowserMainExtraParts {
  public:
-  ChromeBrowserMainExtraPartsNetFactoryInstaller(bool migration_enabled)
-      : migration_enabled_(migration_enabled) {}
-  ~ChromeBrowserMainExtraPartsNetFactoryInstaller() override {
-    // |network_change_notifier_| needs to be destroyed before |net_installer_|.
-    network_change_notifier_.reset();
-  }
-
-  net::test::MockNetworkChangeNotifier* network_change_notifier() {
-    return network_change_notifier_.get();
-  }
+  ChromeBrowserMainExtraPartsNetFactoryInstaller() = default;
 
   // ChromeBrowserMainExtraParts:
   void PreEarlyInitialization() override {}
   void ServiceManagerConnectionStarted(
       content::ServiceManagerConnection* connection) override {
-    if (!migration_enabled_)
-      return;
     SimulateNetworkChange(network::mojom::ConnectionType::CONNECTION_NONE);
-  }
-  void PostMainMessageLoopStart() override {
-    if (migration_enabled_)
-      return;
-    ASSERT_TRUE(net::NetworkChangeNotifier::HasNetworkChangeNotifier());
-    net_installer_ =
-        std::make_unique<net::NetworkChangeNotifier::DisableForTest>();
-    network_change_notifier_ =
-        std::make_unique<net::test::MockNetworkChangeNotifier>();
-    network_change_notifier_->SetConnectionType(
-        net::NetworkChangeNotifier::CONNECTION_NONE);
   }
 
  private:
-  std::unique_ptr<net::test::MockNetworkChangeNotifier>
-      network_change_notifier_;
-  std::unique_ptr<net::NetworkChangeNotifier::DisableForTest> net_installer_;
-  bool migration_enabled_;
-
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsNetFactoryInstaller);
-};
-
-enum class MigrationState {
-  kEnabled,
-  kDisabled,
 };
 
 class ChromeBrowserMainBrowserTest
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<MigrationState>,
-      public network::NetworkConnectionTracker::NetworkConnectionObserver {
+      network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  ChromeBrowserMainBrowserTest() {
-    if (GetParam() == MigrationState::kEnabled) {
-      feature_list_.InitAndEnableFeature(
-          web_resource::kResourceRequestAllowedMigration);
-    }
-  }
-
+  ChromeBrowserMainBrowserTest() = default;
   ~ChromeBrowserMainBrowserTest() override {
     content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
         this);
@@ -144,8 +102,7 @@ class ChromeBrowserMainBrowserTest
         static_cast<ChromeBrowserMainParts*>(browser_main_parts);
     ChromeBrowserMainPartsTestApi(chrome_browser_main_parts)
         .EnableVariationsServiceInit();
-    extra_parts_ = new ChromeBrowserMainExtraPartsNetFactoryInstaller(
-        GetParam() == MigrationState::kEnabled);
+    extra_parts_ = new ChromeBrowserMainExtraPartsNetFactoryInstaller();
     chrome_browser_main_parts->AddParts(extra_parts_);
   }
 
@@ -172,7 +129,6 @@ class ChromeBrowserMainBrowserTest
       run_loop_->Quit();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   network::mojom::ConnectionType expected_connection_type_ =
       network::mojom::ConnectionType::CONNECTION_UNKNOWN;
   network::mojom::ConnectionType connection_type_ =
@@ -184,20 +140,13 @@ class ChromeBrowserMainBrowserTest
 
 // Verifies VariationsService does a request when network status changes from
 // none to connected. This is a regression test for https://crbug.com/826930.
-IN_PROC_BROWSER_TEST_P(ChromeBrowserMainBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeBrowserMainBrowserTest,
                        VariationsServiceStartsRequestOnNetworkChange) {
   const int initial_request_count =
       g_browser_process->variations_service()->request_count();
   ASSERT_TRUE(extra_parts_);
-  if (GetParam() == MigrationState::kEnabled) {
-    SimulateNetworkChange(network::mojom::ConnectionType::CONNECTION_WIFI);
-    WaitForConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
-  } else {
-    extra_parts_->network_change_notifier()->SetConnectionType(
-        net::NetworkChangeNotifier::CONNECTION_WIFI);
-    net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
-        net::NetworkChangeNotifier::CONNECTION_WIFI);
-  }
+  SimulateNetworkChange(network::mojom::ConnectionType::CONNECTION_WIFI);
+  WaitForConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
   // NotifyObserversOfNetworkChangeForTests uses PostTask, so run the loop until
   // idle to ensure VariationsService processes the network change.
   base::RunLoop().RunUntilIdle();
@@ -205,10 +154,5 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowserMainBrowserTest,
       g_browser_process->variations_service()->request_count();
   EXPECT_EQ(initial_request_count + 1, final_request_count);
 }
-
-INSTANTIATE_TEST_CASE_P(,
-                        ChromeBrowserMainBrowserTest,
-                        testing::Values(MigrationState::kEnabled,
-                                        MigrationState::kDisabled));
 
 }  // namespace

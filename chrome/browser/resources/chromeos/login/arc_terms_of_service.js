@@ -19,6 +19,7 @@ Polymer({
     arcTosButtonsDisabled: {
       type: Boolean,
       value: true,
+      observer: 'buttonsDisabledStateChanged_',
     },
 
     /**
@@ -28,6 +29,28 @@ Polymer({
     screen: {
       type: Object,
     },
+  },
+
+  /**
+   * Flag that ensures that OOBE configuration is applied only once.
+   * @private {boolean}
+   */
+  configuration_applied_: false,
+
+  /**
+   * Flag indicating if screen was shown.
+   * @private {boolean}
+   */
+  is_shown_: false,
+
+  /** Called when dialog is shown */
+  onBeforeShow: function() {
+    this.behaviors.forEach((behavior) => {
+      if (behavior.onBeforeShow)
+        behavior.onBeforeShow.call(this);
+    });
+    this.is_shown_ = true;
+    window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
   },
 
   /**
@@ -42,6 +65,42 @@ Polymer({
    */
   getActiveElement: function(id) {
     return this.shadowRoot.activeElement;
+  },
+
+  /**
+   * Called when dialog is shown for the first time.
+   *
+   * @private
+   */
+  applyOobeConfiguration_: function() {
+    if (this.configuration_applied_)
+      return;
+    var configuration = Oobe.getInstance().getOobeConfiguration();
+    if (!configuration)
+      return;
+    if (this.arcTosButtonsDisabled)
+      return;
+    if (configuration.arcTosAutoAccept) {
+      this.onAccept_();
+    }
+    this.configuration_applied_ = true;
+  },
+
+  /**
+   * Called whenever buttons state is updated.
+   *
+   * @private
+   */
+  buttonsDisabledStateChanged_: function(newValue, oldValue) {
+    // Trigger applyOobeConfiguration_ if buttons are enabled and dialog is
+    // visible.
+    if (this.arcTosButtonsDisabled)
+      return;
+    if (!this.is_shown_)
+      return;
+    if (this.is_configuration_applied_)
+      return;
+    window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
   },
 
   /**

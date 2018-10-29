@@ -1,0 +1,16 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(estevenson): Add link to spec once complete.
+// https://github.com/WICG/badging/blob/master/explainer.md
+
+[
+    RuntimeEnabled=Badging,
+    // TODO(estevenson): Expose the Badge interface to Worker.
+    Exposed=Window
+] interface Badge {
+  [CallWith=ScriptState, RaisesException]
+  static void set(optional (USVString or long) contents);
+  [CallWith=ScriptState] static void clear();
+};

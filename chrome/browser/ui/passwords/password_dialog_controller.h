@@ -26,10 +26,8 @@ class PasswordDialogController {
   // Returns forms from the password database for the current site.
   virtual const FormsVector& GetLocalForms() const = 0;
 
-  // Returns a title of the account chooser and a range of the Smart Lock
-  // hyperlink if it exists. If the range is empty then no hyperlink is shown.
-  virtual std::pair<base::string16, gfx::Range> GetAccoutChooserTitle() const
-      = 0;
+  // Returns a title of the account chooser.
+  virtual base::string16 GetAccoutChooserTitle() const = 0;
 
   // Whether the account chooser should display the "Sign in" button.
   virtual bool ShouldShowSignInButton() const = 0;
@@ -37,12 +35,11 @@ class PasswordDialogController {
   // Returns the title for the autosignin first run dialog.
   virtual base::string16 GetAutoSigninPromoTitle() const = 0;
 
-  // Returns a text of the auto signin first run promo and a range of the Smart
-  // Lock hyperlink if it exists. The empty range means no hyperlink is shown.
-  virtual std::pair<base::string16, gfx::Range> GetAutoSigninText() const = 0;
+  // Returns a text of the auto signin first run promo.
+  virtual base::string16 GetAutoSigninText() const = 0;
 
-  // Called when the Smart Lock hyperlink is clicked.
-  virtual void OnSmartLockLinkClicked() = 0;
+  // Returns true if the footer about Google Account should be shown.
+  virtual bool ShouldShowFooter() const = 0;
 
   // Called when the user chooses a credential.
   virtual void OnChooseCredentials(

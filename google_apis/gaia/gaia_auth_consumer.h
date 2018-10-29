@@ -116,8 +116,7 @@ class GaiaAuthConsumer {
   virtual void OnListAccountsSuccess(const std::string& data) {}
   virtual void OnListAccountsFailure(const GoogleServiceAuthError& error) {}
 
-  virtual void OnOAuthMultiloginSuccess(const OAuthMultiloginResult& result) {}
-  virtual void OnOAuthMultiloginFailure(const GoogleServiceAuthError& error) {}
+  virtual void OnOAuthMultiloginFinished(const OAuthMultiloginResult& result) {}
 
   virtual void OnLogOutSuccess() {}
   virtual void OnLogOutFailure(const GoogleServiceAuthError& error) {}

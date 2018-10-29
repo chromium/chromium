@@ -52,7 +52,7 @@ TEST(RegistryDictTest, CaseInsensitiveButPreservingValueNames) {
   EXPECT_EQ(1u, test_dict.values().size());
   EXPECT_EQ(int_value, *test_dict.GetValue("oNe"));
 
-  RegistryDict::ValueMap::const_iterator entry = test_dict.values().begin();
+  auto entry = test_dict.values().begin();
   ASSERT_NE(entry, test_dict.values().end());
   EXPECT_EQ("One", entry->first);
 
@@ -107,7 +107,7 @@ TEST(RegistryDictTest, CaseInsensitiveButPreservingKeyNames) {
   ASSERT_TRUE(actual_subdict);
   EXPECT_TRUE(actual_subdict->values().empty());
 
-  RegistryDict::KeyMap::const_iterator entry = test_dict.keys().begin();
+  auto entry = test_dict.keys().begin();
   ASSERT_NE(entry, test_dict.keys().end());
   EXPECT_EQ("One", entry->first);
 

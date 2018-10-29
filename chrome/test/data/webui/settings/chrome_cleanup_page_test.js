@@ -71,9 +71,15 @@ let chromeCleanupPage = null;
 /** @type {?TestDownloadsBrowserProxy} */
 let chromeCleanupProxy = null;
 
-const shortFileList = ['file 1', 'file 2', 'file 3'];
-const exactSizeFileList = ['file 1', 'file 2', 'file 3', 'file 4'];
-const longFileList = ['file 1', 'file 2', 'file 3', 'file 4', 'file 5'];
+const shortFileList = [
+  {'dirname': 'C:\\', 'basename': 'file 1'},
+  {'dirname': 'C:\\', 'basename': 'file 2'},
+  {'dirname': 'C:\\', 'basename': 'file 3'},
+];
+const exactSizeFileList =
+    shortFileList.concat([{'dirname': 'C:\\', 'basename': 'file 4'}]);
+const longFileList =
+    exactSizeFileList.concat([{'dirname': 'C:\\', 'basename': 'file 5'}]);
 const shortRegistryKeysList = ['key 1', 'key 2'];
 const exactSizeRegistryKeysList = ['key 1', 'key 2', 'key 3', 'key 4'];
 const longRegistryKeysList =
@@ -127,6 +133,22 @@ function validateVisibleItemsList(originalItems, visibleItems) {
 }
 
 /**
+ * @param {!Array} originalItems
+ * @param {!Element} container
+ * @param {boolean} expectSuffix Whether a highlight suffix should exist.
+ */
+function validateHighlightSuffix(originalItems, container, expectSuffix) {
+  let itemList =
+      container.shadowRoot.querySelectorAll('li:not(#more-items-link)');
+  assertEquals(originalItems.length, itemList.length);
+  for (let item of itemList) {
+    let suffixes = item.querySelectorAll('.highlight-suffix');
+    assertEquals(suffixes.length, 1);
+    assertEquals(expectSuffix, !suffixes[0].hidden);
+  }
+}
+
+/**
  * @param {!Array} files The list of files to be cleaned.
  * @param {!Array} registryKeys The list of registry entries to be cleaned.
  * @param {!Array} extensions The list of extensions to be cleaned.
@@ -151,6 +173,7 @@ function startCleanupFromInfected(files, registryKeys, extensions) {
   const filesToRemoveList = chromeCleanupPage.$$('#files-to-remove-list');
   assertTrue(!!filesToRemoveList);
   validateVisibleItemsList(files, filesToRemoveList);
+  validateHighlightSuffix(files, filesToRemoveList, true /* expectSuffix */);
 
   const registryKeysListContainer = chromeCleanupPage.$$('#registry-keys-list');
   assertTrue(!!registryKeysListContainer);
@@ -158,6 +181,8 @@ function startCleanupFromInfected(files, registryKeys, extensions) {
     assertFalse(registryKeysListContainer.hidden);
     assertTrue(!!registryKeysListContainer);
     validateVisibleItemsList(registryKeys, registryKeysListContainer);
+    validateHighlightSuffix(
+        registryKeys, registryKeysListContainer, false /* expectSuffix */);
   } else {
     assertTrue(registryKeysListContainer.hidden);
   }
@@ -168,6 +193,8 @@ function startCleanupFromInfected(files, registryKeys, extensions) {
     assertFalse(extensionsListContainer.hidden);
     assertTrue(!!extensionsListContainer);
     validateVisibleItemsList(extensions, extensionsListContainer);
+    validateHighlightSuffix(
+        extensions, extensionsListContainer, false /* expectSuffix */);
   } else {
     assertTrue(extensionsListContainer.hidden);
   }

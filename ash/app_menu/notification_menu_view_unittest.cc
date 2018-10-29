@@ -46,7 +46,7 @@ class MockNotificationMenuController
     return notification_menu_view_->GetSlideOutLayer();
   }
 
-  void OnSlideChanged() override {}
+  void OnSlideChanged(bool in_progress) override {}
 
   void OnSlideOut() override { slide_out_count_++; }
 

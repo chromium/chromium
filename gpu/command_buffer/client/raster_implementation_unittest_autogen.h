@@ -88,17 +88,6 @@ TEST_F(RasterImplementationTest, DeleteQueriesEXT) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
-TEST_F(RasterImplementationTest, CompressedCopyTextureCHROMIUM) {
-  struct Cmds {
-    cmds::CompressedCopyTextureCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(1, 2);
-
-  gl_->CompressedCopyTextureCHROMIUM(1, 2);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
 TEST_F(RasterImplementationTest, LoseContextCHROMIUM) {
   struct Cmds {
     cmds::LoseContextCHROMIUM cmd;

@@ -9,7 +9,8 @@
 #include <string>
 #include <utility>
 
-#include "base/message_loop/message_loop.h"
+#include "base/stl_util.h"
+#include "base/test/scoped_task_environment.h"
 #include "content/renderer/media/stream/local_media_stream_audio_source.h"
 #include "content/renderer/media/stream/media_stream_audio_source.h"
 #include "content/renderer/media/stream/media_stream_source.h"
@@ -54,8 +55,7 @@ using AudioPropertiesBoolMembers =
 
 template <typename T>
 static bool Contains(const std::vector<T>& vector, T value) {
-  auto it = std::find(vector.begin(), vector.end(), value);
-  return it != vector.end();
+  return base::ContainsValue(vector, value);
 }
 
 }  // namespace
@@ -343,12 +343,6 @@ class MediaStreamConstraintsUtilAudioTest
   void CheckDevice(const AudioDeviceCaptureCapability& expected_device,
                    const AudioCaptureSettings& result) {
     EXPECT_EQ(expected_device.DeviceID(), result.device_id());
-    EXPECT_EQ(expected_device.Parameters().sample_rate(),
-              result.device_parameters().sample_rate());
-    EXPECT_EQ(expected_device.Parameters().channels(),
-              result.device_parameters().channels());
-    EXPECT_EQ(expected_device.Parameters().effects(),
-              result.device_parameters().effects());
   }
 
   void CheckDeviceDefaults(const AudioCaptureSettings& result) {
@@ -473,7 +467,7 @@ class MediaStreamConstraintsUtilAudioTest
 
  private:
   // Required for tests involving a MediaStreamAudioSource.
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
   MockPeerConnectionDependencyFactory pc_factory_;
 };
 

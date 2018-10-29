@@ -154,6 +154,8 @@ function initTests(callback) {
                     }
 
                     callback(collectTests(entries[0], entry), 'Success.');
+                  }, () => {
+                    callback(null, 'Failed to resolve ' + url);
                   });
                 });
               });

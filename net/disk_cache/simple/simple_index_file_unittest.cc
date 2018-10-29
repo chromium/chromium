@@ -215,7 +215,7 @@ TEST_F(SimpleIndexFileTest, Serialize) {
   EXPECT_EQ(entries.size(), new_entries.size());
 
   for (size_t i = 0; i < kNumHashes; ++i) {
-    SimpleIndex::EntrySet::const_iterator it = new_entries.find(kHashes[i]);
+    auto it = new_entries.find(kHashes[i]);
     EXPECT_TRUE(new_entries.end() != it);
     EXPECT_TRUE(CompareTwoEntryMetadata(it->second, metadata_entries[i]));
   }
@@ -257,7 +257,7 @@ TEST_F(SimpleIndexFileTest, ReadV7Format) {
   const SimpleIndex::EntrySet& new_entries = deserialize_result.entries;
   ASSERT_EQ(entries.size(), new_entries.size());
   for (size_t i = 0; i < kNumHashes; ++i) {
-    SimpleIndex::EntrySet::const_iterator it = new_entries.find(kHashes[i]);
+    auto it = new_entries.find(kHashes[i]);
     ASSERT_TRUE(new_entries.end() != it);
     EXPECT_EQ(RoundSize(kSizes[i]), it->second.GetEntrySize());
     EXPECT_EQ(0u, it->second.GetInMemoryData());
@@ -425,7 +425,8 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
                             index_file_contents.size()));
 
   // Upgrade the cache.
-  ASSERT_TRUE(disk_cache::UpgradeSimpleCacheOnDisk(cache_path));
+  ASSERT_EQ(disk_cache::UpgradeSimpleCacheOnDisk(cache_path),
+            SimpleCacheConsistencyResult::kOK);
 
   // Create the backend and initiate index flush by destroying the backend.
   scoped_refptr<disk_cache::BackendCleanupTracker> cleanup_tracker =

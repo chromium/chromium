@@ -34,7 +34,7 @@ void CdmPromiseAdapter::ResolvePromise(uint32_t promise_id,
                                        const T&... result) {
   std::unique_ptr<CdmPromise> promise = TakePromise(promise_id);
   if (!promise) {
-    NOTREACHED() << "Promise not found for " << promise_id;
+    LOG(ERROR) << "Promise not found for " << promise_id;
     return;
   }
 
@@ -42,7 +42,7 @@ void CdmPromiseAdapter::ResolvePromise(uint32_t promise_id,
   CdmPromise::ResolveParameterType type = promise->GetResolveParameterType();
   CdmPromise::ResolveParameterType expected = CdmPromiseTraits<T...>::kType;
   if (type != expected) {
-    NOTREACHED() << "Promise type mismatch: " << type << " vs " << expected;
+    LOG(ERROR) << "Promise type mismatch: " << type << " vs " << expected;
     return;
   }
 
@@ -55,7 +55,7 @@ void CdmPromiseAdapter::RejectPromise(uint32_t promise_id,
                                       const std::string& error_message) {
   std::unique_ptr<CdmPromise> promise = TakePromise(promise_id);
   if (!promise) {
-    NOTREACHED() << "No promise found for promise_id " << promise_id;
+    LOG(ERROR) << "Promise not found for " << promise_id;
     return;
   }
 
@@ -74,9 +74,10 @@ void CdmPromiseAdapter::Clear() {
 std::unique_ptr<CdmPromise> CdmPromiseAdapter::TakePromise(
     uint32_t promise_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  PromiseMap::iterator it = promises_.find(promise_id);
+  auto it = promises_.find(promise_id);
   if (it == promises_.end())
     return nullptr;
+
   std::unique_ptr<CdmPromise> result = std::move(it->second);
   promises_.erase(it);
   return result;

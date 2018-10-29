@@ -94,16 +94,16 @@ void RasterSource::ClearForOpaqueRaster(
   if (device_column.intersect(playback_device_rect)) {
     clear_type = RasterSourceClearType::kBorder;
     raster_canvas->save();
-    raster_canvas->clipRect(SkRect::MakeFromIRect(device_column),
-                            SkClipOp::kIntersect, false);
+    raster_canvas->clipRect(SkRect::Make(device_column), SkClipOp::kIntersect,
+                            false);
     raster_canvas->drawColor(background_color_, SkBlendMode::kSrc);
     raster_canvas->restore();
   }
   if (device_row.intersect(playback_device_rect)) {
     clear_type = RasterSourceClearType::kBorder;
     raster_canvas->save();
-    raster_canvas->clipRect(SkRect::MakeFromIRect(device_row),
-                            SkClipOp::kIntersect, false);
+    raster_canvas->clipRect(SkRect::Make(device_row), SkClipOp::kIntersect,
+                            false);
     raster_canvas->drawColor(background_color_, SkBlendMode::kSrc);
     raster_canvas->restore();
   }
@@ -154,7 +154,7 @@ void RasterSource::PlaybackToCanvas(
 
   raster_canvas->save();
   raster_canvas->translate(-canvas_bitmap_rect.x(), -canvas_bitmap_rect.y());
-  raster_canvas->clipRect(SkRect::MakeFromIRect(raster_bounds));
+  raster_canvas->clipRect(SkRect::Make(raster_bounds));
   raster_canvas->translate(raster_transform.translation().x(),
                            raster_transform.translation().y());
   raster_canvas->scale(raster_transform.scale() / recording_scale_factor_,

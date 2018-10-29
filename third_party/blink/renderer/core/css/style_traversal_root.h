@@ -66,6 +66,8 @@ class CORE_EXPORT StyleTraversalRoot {
   // Clear the child-dirty flag on the ancestors of the given node.
   virtual void ClearChildDirtyForAncestors(ContainerNode& parent) const = 0;
 
+  bool IsSingleRoot() const { return root_type_ == RootType::kSingleRoot; }
+
  private:
   friend class StyleTraversalRootTestImpl;
 

@@ -10,7 +10,7 @@ function repaintTest()
 {
     if (window.testRunner) {
         // This ensures finish of image decoding before running the test.
-        testRunner.capturePixelsAsyncThen(doTest);
+        testRunner.updateAllLifecyclePhasesAndCompositeThen(doTest);
     } else {
         doTest();
     }

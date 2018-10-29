@@ -5,15 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_OBJECT_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_OBJECT_FACTORY_H_
 
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 
 namespace blink {
 
+class ComputedStyle;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutTableCaption;
 class LayoutTableCell;
+class Node;
 
 // Helper class for creation of certain LayoutObject-derived objects that may
 // need to be of different types, depending on whether or not LayoutNG is to be
@@ -32,6 +33,7 @@ class LayoutObjectFactory {
   static LayoutBlockFlow* CreateListItem(Node&, const ComputedStyle&);
   static LayoutTableCaption* CreateTableCaption(Node&, const ComputedStyle&);
   static LayoutTableCell* CreateTableCell(Node&, const ComputedStyle&);
+  static LayoutBlock* CreateFieldset(Node&, const ComputedStyle&);
 };
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_instant_controller.h"
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -44,10 +46,9 @@ class TabReloader : public content::WebContentsUserData<TabReloader> {
 
   explicit TabReloader(content::WebContents* web_contents)
       : web_contents_(web_contents), weak_ptr_factory_(this) {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
-        base::BindOnce(&TabReloader::ReloadImpl,
-                       weak_ptr_factory_.GetWeakPtr()));
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             base::BindOnce(&TabReloader::ReloadImpl,
+                                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   void ReloadImpl() {

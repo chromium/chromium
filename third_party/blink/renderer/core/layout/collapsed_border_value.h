@@ -47,7 +47,7 @@ enum EBorderPrecedence {
 };
 
 class CORE_EXPORT CollapsedBorderValue {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // Constructs a CollapsedBorderValue for non-existence border.

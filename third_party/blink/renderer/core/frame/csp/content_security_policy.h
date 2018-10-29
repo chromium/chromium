@@ -317,14 +317,14 @@ class CORE_EXPORT ContentSecurityPolicy
   bool IsFrameAncestorsEnforced() const;
 
   bool AllowRequestWithoutIntegrity(
-      WebURLRequest::RequestContext,
+      mojom::RequestContextType,
       const KURL&,
       RedirectStatus = RedirectStatus::kNoRedirect,
       SecurityViolationReportingPolicy =
           SecurityViolationReportingPolicy::kReport,
       CheckHeaderType = CheckHeaderType::kCheckAll) const;
 
-  bool AllowRequest(WebURLRequest::RequestContext,
+  bool AllowRequest(mojom::RequestContextType,
                     const KURL&,
                     const String& nonce,
                     const IntegrityMetadataSet&,

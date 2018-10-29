@@ -12,7 +12,6 @@
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_child_process_observer.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
@@ -23,11 +22,8 @@ class TickClock;
 
 namespace content {
 
-struct ChildProcessData;
-
 class CONTENT_EXPORT AudioServiceListener
-    : public service_manager::mojom::ServiceManagerListener,
-      public BrowserChildProcessObserver {
+    : public service_manager::mojom::ServiceManagerListener {
  public:
   class CONTENT_EXPORT Metrics {
    public:
@@ -40,15 +36,6 @@ class CONTENT_EXPORT AudioServiceListener
       kMaxValue = kFailure,
     };
 
-    // Matches histogram enum AudioServiceProcessTerminationStatus, entries
-    // (except kMaxEnum) must not be renumbered.
-    enum class ServiceProcessTerminationStatus {
-      kDisconnect = 0,
-      kCrash = 1,
-      kKill = 2,
-      kMaxValue = kKill,
-    };
-
     explicit Metrics(const base::TickClock* clock);
     ~Metrics();
 
@@ -57,7 +44,6 @@ class CONTENT_EXPORT AudioServiceListener
     void ServiceFailedToStart();
     void ServiceStarted();
     void ServiceStopped();
-    void ServiceProcessTerminated(ServiceProcessTerminationStatus status);
 
    private:
     void LogServiceStartStatus(ServiceStartStatus status);
@@ -83,15 +69,6 @@ class CONTENT_EXPORT AudioServiceListener
                            OnInitWithAudioService_ProcessIdNotNull);
   FRIEND_TEST_ALL_PREFIXES(AudioServiceListenerTest,
                            OnAudioServiceCreated_ProcessIdNotNull);
-  FRIEND_TEST_ALL_PREFIXES(
-      AudioServiceListenerTest,
-      AudioProcessDisconnected_LogProcessTerminationStatus_ProcessIdNull);
-  FRIEND_TEST_ALL_PREFIXES(
-      AudioServiceListenerTest,
-      AudioProcessCrashed_LogProcessTerminationStatus_ProcessIdNull);
-  FRIEND_TEST_ALL_PREFIXES(
-      AudioServiceListenerTest,
-      AudioProcessKilled_LogProcessTerminationStatus_ProcessIdNull);
   FRIEND_TEST_ALL_PREFIXES(AudioServiceListenerTest,
                            StartService_LogStartStatus);
 
@@ -107,14 +84,6 @@ class CONTENT_EXPORT AudioServiceListener
   void OnServiceFailedToStart(
       const ::service_manager::Identity& identity) override;
   void OnServiceStopped(const ::service_manager::Identity& identity) override;
-
-  // BrowserChildProcessObserver implementation.
-  void BrowserChildProcessHostDisconnected(const ChildProcessData& data) final;
-  void BrowserChildProcessCrashed(
-      const ChildProcessData& data,
-      const ChildProcessTerminationInfo& info) final;
-  void BrowserChildProcessKilled(const ChildProcessData& data,
-                                 const ChildProcessTerminationInfo& info) final;
 
   void MaybeSetLogFactory();
 

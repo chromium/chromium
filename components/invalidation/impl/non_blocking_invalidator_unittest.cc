@@ -18,6 +18,7 @@
 #include "google/cacheinvalidation/types.pb.h"
 #include "jingle/notifier/base/fake_base_task.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -43,6 +44,8 @@ class NonBlockingInvalidatorTestDelegate {
         new net::TestURLRequestContextGetter(io_thread_.task_runner());
     notifier::NotifierOptions notifier_options;
     notifier_options.request_context_getter = request_context_getter_;
+    notifier_options.network_connection_tracker =
+        network::TestNetworkConnectionTracker::GetInstance();
     NetworkChannelCreator network_channel_creator =
         NonBlockingInvalidator::MakePushClientChannelCreator(notifier_options);
     invalidator_.reset(

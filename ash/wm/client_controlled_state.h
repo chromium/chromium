@@ -65,7 +65,15 @@ class ASH_EXPORT ClientControlledState : public BaseState {
   enum BoundsChangeAnimationType {
     kAnimationNone,
     kAnimationCrossFade,
+    kAnimationAnimated,
   };
+
+  // Sets the type of animation for the next bounds change
+  // applied locally.
+  void set_next_bounds_change_animation_type(
+      BoundsChangeAnimationType animation_type) {
+    next_bounds_change_animation_type_ = animation_type;
+  }
 
   // WindowState::State:
   void AttachState(WindowState* window_state,
@@ -86,18 +94,17 @@ class ASH_EXPORT ClientControlledState : public BaseState {
   // Enters next state. This is used when the state moves from one to another
   // within the same desktop mode. Returns true if the state has changed, or
   // false otherwise.
-  // |animation_type| specifies the type of animation to be applied when
-  // bounds changes.
   bool EnterNextState(wm::WindowState* window_state,
-                      mojom::WindowStateType next_state_type,
-                      BoundsChangeAnimationType animation_type);
+                      mojom::WindowStateType next_state_type);
 
  private:
   std::unique_ptr<Delegate> delegate_;
 
   bool set_bounds_locally_ = false;
+  base::TimeDelta bounds_change_animation_duration_ =
+      WindowState::kBoundsChangeSlideDuration;
 
-  BoundsChangeAnimationType bounds_change_animation_type_ = kAnimationNone;
+  BoundsChangeAnimationType next_bounds_change_animation_type_ = kAnimationNone;
 
   DISALLOW_COPY_AND_ASSIGN(ClientControlledState);
 };

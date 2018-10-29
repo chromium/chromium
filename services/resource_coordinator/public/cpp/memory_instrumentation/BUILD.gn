@@ -1,0 +1,47 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("memory_instrumentation") {
+  sources = [
+    "client_process_impl.cc",
+    "client_process_impl.h",
+    "coordinator.h",
+    "global_memory_dump.cc",
+    "global_memory_dump.h",
+    "memory_instrumentation.cc",
+    "memory_instrumentation.h",
+    "os_metrics.cc",
+    "os_metrics.h",
+    "os_metrics_linux.cc",
+    "os_metrics_mac.cc",
+    "os_metrics_win.cc",
+    "tracing_observer.cc",
+    "tracing_observer.h",
+  ]
+
+  if (is_android) {
+    # Disable the rule that excludes _linux.cc files from Android builds.
+    set_sources_assignment_filter([])
+    sources += [ "os_metrics_linux.cc" ]
+    set_sources_assignment_filter(sources_assignment_filter)
+  }
+
+  if (is_fuchsia) {
+    sources += [ "os_metrics_fuchsia.cc" ]
+  }
+
+  defines = [ "IS_RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION_IMPL" ]
+
+  deps = []
+  if (is_win) {
+    deps += [ "//base/win:pe_image" ]
+  }
+
+  public_deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/resource_coordinator/public/mojom",
+    "//services/service_manager/public/cpp",
+  ]
+}

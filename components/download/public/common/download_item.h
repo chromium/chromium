@@ -80,7 +80,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   };
 
   // How download item is created. Used for trace event.
-  enum DownloadType {
+  enum DownloadCreationType {
     TYPE_ACTIVE_DOWNLOAD,
     TYPE_HISTORY_IMPORT,
     TYPE_SAVE_PAGE_AS
@@ -441,6 +441,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // usually means parallel download has been enabled and the download job is
   // parallelizable.
   virtual bool IsParallelDownload() const = 0;
+
+  // Gets the DownloadCreationType of this item.
+  virtual DownloadCreationType GetDownloadCreationType() const = 0;
 
   // External state transitions/setters ----------------------------------------
 

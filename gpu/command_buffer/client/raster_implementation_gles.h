@@ -19,8 +19,6 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace gpu {
-class CommandBuffer;
-
 namespace raster {
 
 struct Capabilities;
@@ -29,7 +27,6 @@ struct Capabilities;
 class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
  public:
   RasterImplementationGLES(gles2::GLES2Interface* gl,
-                           CommandBuffer* command_buffer,
                            const gpu::Capabilities& caps);
   ~RasterImplementationGLES() override;
 
@@ -96,7 +93,6 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
                       GLint y,
                       GLsizei width,
                       GLsizei height) override;
-  void CompressedCopyTextureCHROMIUM(GLuint source_id, GLuint dest_id) override;
   void UnpremultiplyAndDitherCopyCHROMIUM(GLuint source_id,
                                           GLuint dest_id,
                                           GLint x,
@@ -129,8 +125,7 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
                           const char* trace_name) override;
   void TraceEndCHROMIUM() override;
 
-  void SetActiveURLCHROMIUM(const char* url) override {}
-  void ResetActiveURLCHROMIUM() override {}
+  void SetActiveURLCHROMIUM(const char* url) override;
 
  private:
   struct Texture {
@@ -155,7 +150,6 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
   bool use_texture_storage_image_;
 
   std::unordered_map<GLuint, Texture> texture_info_;
-  Texture* bound_texture_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RasterImplementationGLES);
 };

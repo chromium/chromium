@@ -15,11 +15,11 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/task_runner.h"
+#include "base/test/scoped_task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/renderer/fixed_received_data.h"
@@ -129,11 +129,12 @@ class ThreadedSharedMemoryDataConsumerHandleTest : public ::testing::Test {
   class ReadDataOperation final {
    public:
     typedef WebDataConsumerHandle::Result Result;
-    ReadDataOperation(std::unique_ptr<SharedMemoryDataConsumerHandle> handle,
-                      base::MessageLoop* main_message_loop,
-                      const base::Closure& on_done)
+    ReadDataOperation(
+        std::unique_ptr<SharedMemoryDataConsumerHandle> handle,
+        scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+        const base::Closure& on_done)
         : handle_(std::move(handle)),
-          main_message_loop_(main_message_loop),
+          main_thread_task_runner_(std::move(main_thread_task_runner)),
           on_done_(on_done) {}
 
     const std::string& result() const { return result_; }
@@ -169,14 +170,14 @@ class ThreadedSharedMemoryDataConsumerHandleTest : public ::testing::Test {
 
       // The operation is done.
       reader_.reset();
-      main_message_loop_->task_runner()->PostTask(FROM_HERE, on_done_);
+      main_thread_task_runner_->PostTask(FROM_HERE, on_done_);
     }
 
    private:
     std::unique_ptr<SharedMemoryDataConsumerHandle> handle_;
     std::unique_ptr<WebDataConsumerHandle::Reader> reader_;
     std::unique_ptr<WebDataConsumerHandle::Client> client_;
-    base::MessageLoop* main_message_loop_;
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
     base::Closure on_done_;
     std::string result_;
   };
@@ -189,7 +190,7 @@ class ThreadedSharedMemoryDataConsumerHandleTest : public ::testing::Test {
   StrictMock<MockClient> client_;
   std::unique_ptr<SharedMemoryDataConsumerHandle> handle_;
   std::unique_ptr<Writer> writer_;
-  base::MessageLoop loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
 };
 
 class SharedMemoryDataConsumerHandleTest
@@ -205,7 +206,7 @@ class SharedMemoryDataConsumerHandleTest
   StrictMock<MockClient> client_;
   std::unique_ptr<SharedMemoryDataConsumerHandle> handle_;
   std::unique_ptr<Writer> writer_;
-  base::MessageLoop loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
 };
 
 void RunPostedTasks() {
@@ -923,7 +924,7 @@ TEST_P(SharedMemoryDataConsumerHandleTest, RecursiveErrorNotification) {
 }
 
 TEST(SharedMemoryDataConsumerHandleBackpressureTest, Read) {
-  base::MessageLoop loop;
+  base::test::ScopedTaskEnvironment task_environment;
   char buffer[20];
   Result result;
   size_t size;
@@ -969,7 +970,7 @@ TEST(SharedMemoryDataConsumerHandleBackpressureTest, Read) {
 }
 
 TEST(SharedMemoryDataConsumerHandleBackpressureTest, CloseAndReset) {
-  base::MessageLoop loop;
+  base::test::ScopedTaskEnvironment task_environment;
   char buffer[20];
   Result result;
   size_t size;
@@ -1017,7 +1018,7 @@ TEST(SharedMemoryDataConsumerHandleBackpressureTest, CloseAndReset) {
 }
 
 TEST(SharedMemoryDataConsumerHandleWithoutBackpressureTest, AddData) {
-  base::MessageLoop loop;
+  base::test::ScopedTaskEnvironment task_environment;
   std::unique_ptr<Writer> writer;
   auto handle = std::make_unique<SharedMemoryDataConsumerHandle>(
       kDoNotApplyBackpressure, &writer);
@@ -1043,7 +1044,9 @@ TEST(SharedMemoryDataConsumerHandleWithoutBackpressureTest, AddData) {
 TEST_F(ThreadedSharedMemoryDataConsumerHandleTest, Read) {
   base::RunLoop run_loop;
   auto operation = std::make_unique<ReadDataOperation>(
-      std::move(handle_), &loop_, run_loop.QuitClosure());
+      std::move(handle_),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+      run_loop.QuitClosure());
   scoped_refptr<Logger> logger(new Logger);
 
   base::Thread t("DataConsumerHandle test thread");

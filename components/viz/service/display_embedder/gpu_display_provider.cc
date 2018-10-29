@@ -36,6 +36,7 @@
 
 #if defined(OS_ANDROID)
 #include "components/viz/service/display_embedder/gl_output_surface_android.h"
+#include "components/viz/service/display_embedder/gl_output_surface_buffer_queue_android.h"
 #endif
 
 #if defined(OS_MACOSX)
@@ -138,13 +139,24 @@ std::unique_ptr<Display> GpuDisplayProvider::CreateDisplay(
     // Retry creating and binding |context_provider| on transient failures.
     gpu::ContextResult context_result = gpu::ContextResult::kTransientFailure;
     while (context_result != gpu::ContextResult::kSuccess) {
+#if defined(OS_ANDROID)
+      gpu::SharedMemoryLimits memory_limits =
+          gpu::SharedMemoryLimits::ForDisplayCompositor(
+              renderer_settings.initial_screen_size);
+#else
+      gpu::SharedMemoryLimits memory_limits =
+          gpu::SharedMemoryLimits::ForDisplayCompositor();
+#endif
       context_provider = base::MakeRefCounted<VizProcessContextProvider>(
           task_executor_, surface_handle, gpu_memory_buffer_manager_.get(),
-          image_factory_, gpu_channel_manager_delegate_,
-          gpu::SharedMemoryLimits(), renderer_settings.requires_alpha_channel);
+          image_factory_, gpu_channel_manager_delegate_, memory_limits,
+          renderer_settings.requires_alpha_channel);
       context_result = context_provider->BindToCurrentThread();
 
-      if (context_result == gpu::ContextResult::kFatalFailure) {
+      if (IsFatalOrSurfaceFailure(context_result)) {
+#if defined(OS_ANDROID)
+        display_client->OnFatalOrSurfaceContextCreationFailure(context_result);
+#endif
         gpu_service_impl_->DisableGpuCompositing();
         return nullptr;
       }
@@ -161,6 +173,13 @@ std::unique_ptr<Display> GpuDisplayProvider::CreateDisplay(
           std::move(context_provider), surface_handle,
           synthetic_begin_frame_source, gpu_memory_buffer_manager_.get(),
           renderer_settings.allow_overlays);
+#elif defined(OS_ANDROID)
+      // TODO(khushalsagar): Use RGB_565 if specified by context provider.
+      auto buffer_format = gfx::BufferFormat::RGBA_8888;
+      output_surface = std::make_unique<GLOutputSurfaceBufferQueueAndroid>(
+          std::move(context_provider), surface_handle,
+          synthetic_begin_frame_source, gpu_memory_buffer_manager_.get(),
+          buffer_format);
 #else
       NOTREACHED();
 #endif

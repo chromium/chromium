@@ -15,6 +15,7 @@ android_library("service_manager_java") {
     "//base:base_java",
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
+    "//services/service_manager/public/mojom:constants_java",
     "//services/service_manager/public/mojom:mojom_java",
   ]
 }

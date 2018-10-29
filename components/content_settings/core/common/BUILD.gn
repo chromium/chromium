@@ -18,8 +18,6 @@ jumbo_static_library("common") {
     "content_settings_utils.h",
     "cookie_settings_base.cc",
     "cookie_settings_base.h",
-    "features.cc",
-    "features.h",
     "pref_names.cc",
     "pref_names.h",
   ]

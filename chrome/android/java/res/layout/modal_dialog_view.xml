@@ -15,7 +15,7 @@
 
     <android.support.v7.widget.DialogTitle
         android:id="@+id/title"
-        android:textAppearance="@style/BlackHeadline2"
+        android:textAppearance="@style/BlackHeadline"
         android:visibility="gone"
         style="@style/AlertDialogContent" />
 
@@ -33,7 +33,7 @@
 
             <android.support.v7.widget.DialogTitle
                 android:id="@+id/scrollable_title"
-                android:textAppearance="@style/BlackHeadline2"
+                android:textAppearance="@style/BlackHeadline"
                 android:visibility="gone"
                 style="@style/AlertDialogContent" />
 

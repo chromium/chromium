@@ -223,7 +223,7 @@ bool VerifyRdnMatch(der::Parser* a_parser, der::Parser* b_parser) {
   // small, a naive linear search for each element should be fine. (Hostile
   // certificates already have ways to provoke pathological behavior.)
   for (const auto& a : a_type_and_values) {
-    RelativeDistinguishedName::iterator b_iter = b_type_and_values.begin();
+    auto b_iter = b_type_and_values.begin();
     for (; b_iter != b_type_and_values.end(); ++b_iter) {
       const auto& b = *b_iter;
       if (a.type == b.type && VerifyValueMatch(a, b)) {

@@ -386,6 +386,10 @@
             icon-class="icon-external" label="$i18n{itemOptions}"
             on-click="onExtensionOptionsTap_">
         </cr-link-row>
+        <cr-link-row class="hr" is="" id="extensions-activity-log-link"
+            hidden$="[[!showActivityLog]]" label="$i18n{viewActivityLog}"
+            on-click="onActivityLogTap_">
+        </cr-link-row>
         <cr-link-row class="hr" hidden="[[!data.manifestHomePageUrl.length]]"
             icon-class="icon-external" id="extensionWebsite"
             label="$i18n{extensionWebsite}" on-click="onExtensionWebSiteTap_">

@@ -216,13 +216,6 @@ void WebSocketHttp2HandshakeStream::PopulateNetErrorDetails(
   return;
 }
 
-Error WebSocketHttp2HandshakeStream::GetTokenBindingSignature(
-    crypto::ECPrivateKey* key,
-    TokenBindingType tb_type,
-    std::vector<uint8_t>* out) {
-  return stream_->GetTokenBindingSignature(key, tb_type, out);
-}
-
 void WebSocketHttp2HandshakeStream::Drain(HttpNetworkSession* session) {
   Close(true /* not_reusable */);
 }

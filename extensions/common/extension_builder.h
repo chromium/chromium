@@ -72,7 +72,7 @@ class ExtensionBuilder {
 
   // Can only be called once, after which it's invalid to use the builder.
   // CHECKs that the extension was created successfully.
-  scoped_refptr<Extension> Build();
+  scoped_refptr<const Extension> Build();
 
   //////////////////////////////////////////////////////////////////////////////
   // Utility methods for use with aided manifest construction.
@@ -94,6 +94,11 @@ class ExtensionBuilder {
   ExtensionBuilder& AddContentScript(
       const std::string& script_name,
       const std::vector<std::string>& match_patterns);
+
+  // Shortcut for setting a specific manifest version. Typically we'd use
+  // SetManifestKey() or SetManifestPath() for these, but provide a faster
+  // route for version, since it's so central.
+  ExtensionBuilder& SetVersion(const std::string& version);
 
   // Shortcuts to setting values on the manifest dictionary without needing to
   // go all the way through MergeManifest(). Sample usage:

@@ -22,8 +22,7 @@
 #include "components/sync/driver/sync_api_component_factory_mock.h"
 #include "components/sync/model/test_model_type_store_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/sync_sessions/mock_sync_sessions_client.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "services/identity/public/cpp/identity_test_environment.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 namespace history {
@@ -32,10 +31,6 @@ class HistoryService;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
-
-namespace sync_sessions {
-class LocalSessionEventRouter;
 }
 
 namespace browser_sync {
@@ -136,16 +131,18 @@ class ProfileSyncServiceBundle {
 
   FakeSigninManagerType* signin_manager() { return &signin_manager_; }
 
-  identity::IdentityManager* identity_manager() { return &identity_manager_; }
+  identity::IdentityTestEnvironment* identity_test_env() {
+    return &identity_test_env_;
+  }
+
+  identity::IdentityManager* identity_manager() {
+    return identity_test_env_.identity_manager();
+  }
 
   AccountTrackerService* account_tracker() { return &account_tracker_; }
 
   syncer::SyncApiComponentFactoryMock* component_factory() {
     return &component_factory_;
-  }
-
-  sync_sessions::MockSyncSessionsClient* sync_sessions_client() {
-    return &sync_sessions_client_;
   }
 
   invalidation::ProfileIdentityProvider* identity_provider() {
@@ -172,12 +169,8 @@ class ProfileSyncServiceBundle {
   FakeSigninManagerType signin_manager_;
   FakeProfileOAuth2TokenService auth_service_;
   FakeGaiaCookieManagerService gaia_cookie_manager_service_;
-  identity::IdentityManager identity_manager_;
+  identity::IdentityTestEnvironment identity_test_env_;
   testing::NiceMock<syncer::SyncApiComponentFactoryMock> component_factory_;
-  std::unique_ptr<sync_sessions::LocalSessionEventRouter>
-      local_session_event_router_;
-  testing::NiceMock<sync_sessions::MockSyncSessionsClient>
-      sync_sessions_client_;
   std::unique_ptr<invalidation::ProfileIdentityProvider> identity_provider_;
   invalidation::FakeInvalidationService fake_invalidation_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;

@@ -226,7 +226,7 @@ WebContents* OpenApplicationTab(const AppLaunchParams& launch_params,
         url,
         content::Referrer::SanitizeForRequest(
             url, content::Referrer(existing_tab->GetURL(),
-                                   blink::kWebReferrerPolicyDefault)),
+                                   network::mojom::ReferrerPolicy::kDefault)),
         disposition, transition, false));
     // Reset existing_tab as OpenURL() may have clobbered it.
     existing_tab = browser->tab_strip_model()->GetActiveWebContents();

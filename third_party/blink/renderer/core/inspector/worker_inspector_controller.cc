@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/core/inspector/worker_inspector_controller.h"
 
-#include "third_party/blink/renderer/core/CoreProbeSink.h"
+#include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/inspector/inspector_emulation_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_log_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
@@ -62,10 +62,19 @@ WorkerInspectorController::WorkerInspectorController(
     WorkerThreadDebugger* debugger)
     : debugger_(debugger), thread_(thread), probe_sink_(new CoreProbeSink()) {
   probe_sink_->addInspectorTraceEvents(new InspectorTraceEvents());
+  if (auto* scope = DynamicTo<WorkerGlobalScope>(thread->GlobalScope())) {
+    worker_devtools_token_ = thread->GetDevToolsWorkerToken();
+    parent_devtools_token_ = scope->GetParentDevToolsToken();
+    url_ = scope->Url();
+    worker_thread_id_ = thread->GetPlatformThreadId();
+  }
+  TraceEvent::AddEnabledStateObserver(this);
+  EmitTraceEvent();
 }
 
 WorkerInspectorController::~WorkerInspectorController() {
   DCHECK(!thread_);
+  TraceEvent::RemoveEnabledStateObserver(this);
 }
 
 void WorkerInspectorController::ConnectFrontend(int session_id) {
@@ -73,21 +82,18 @@ void WorkerInspectorController::ConnectFrontend(int session_id) {
   if (sessions_.find(session_id) != sessions_.end())
     return;
 
+  InspectedFrames* inspected_frames = new InspectedFrames(nullptr);
   InspectorSession* session = new InspectorSession(
-      this, probe_sink_.Get(), session_id, debugger_->GetV8Inspector(),
-      debugger_->ContextGroupId(thread_), nullptr);
+      this, probe_sink_.Get(), inspected_frames, session_id,
+      debugger_->GetV8Inspector(), debugger_->ContextGroupId(thread_), nullptr);
   session->Append(new InspectorLogAgent(thread_->GetConsoleMessageStorage(),
                                         nullptr, session->V8Session()));
-  if (thread_->GlobalScope()->IsWorkerGlobalScope()) {
-    InspectedFrames* inspected_frames = new InspectedFrames(nullptr);
-    WorkerGlobalScope* worker_global_scope =
-        ToWorkerGlobalScope(thread_->GlobalScope());
-    DCHECK(worker_global_scope->EnsureFetcher());
-    session->Append(new InspectorNetworkAgent(
-        inspected_frames, worker_global_scope, session->V8Session()));
+  if (auto* scope = DynamicTo<WorkerGlobalScope>(thread_->GlobalScope())) {
+    DCHECK(scope->EnsureFetcher());
+    session->Append(new InspectorNetworkAgent(inspected_frames, scope,
+                                              session->V8Session()));
     session->Append(new InspectorEmulationAgent(nullptr));
-    session->Append(
-        new InspectorWorkerAgent(inspected_frames, worker_global_scope));
+    session->Append(new InspectorWorkerAgent(inspected_frames, scope));
   }
   if (sessions_.IsEmpty())
     thread_->GetWorkerBackingThread().BackingThread().AddTaskObserver(this);
@@ -150,11 +156,30 @@ void WorkerInspectorController::SendProtocolNotification(
                                                                 message);
 }
 
-void WorkerInspectorController::WillProcessTask() {}
+void WorkerInspectorController::WillProcessTask(
+    const base::PendingTask& pending_task) {}
 
-void WorkerInspectorController::DidProcessTask() {
+void WorkerInspectorController::DidProcessTask(
+    const base::PendingTask& pending_task) {
   for (auto& it : sessions_)
     it.value->flushProtocolNotifications();
+}
+
+void WorkerInspectorController::OnTraceLogEnabled() {
+  EmitTraceEvent();
+}
+
+void WorkerInspectorController::OnTraceLogDisabled() {}
+
+void WorkerInspectorController::EmitTraceEvent() {
+  if (worker_devtools_token_.is_empty())
+    return;
+  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                       "TracingSessionIdForWorker", TRACE_EVENT_SCOPE_THREAD,
+                       "data",
+                       InspectorTracingSessionIdForWorkerEvent::Data(
+                           worker_devtools_token_, parent_devtools_token_, url_,
+                           worker_thread_id_));
 }
 
 void WorkerInspectorController::Trace(blink::Visitor* visitor) {

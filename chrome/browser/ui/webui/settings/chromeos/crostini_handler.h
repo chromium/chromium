@@ -8,8 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
+class Profile;
+
 namespace crostini {
-enum class ConciergeClientResult;
+enum class CrostiniResult;
 }
 
 namespace chromeos {
@@ -17,7 +19,7 @@ namespace settings {
 
 class CrostiniHandler : public ::settings::SettingsPageUIHandler {
  public:
-  CrostiniHandler();
+  explicit CrostiniHandler(Profile* profile);
   ~CrostiniHandler() override;
 
   // SettingsPageUIHandler
@@ -28,7 +30,14 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler {
  private:
   void HandleRequestCrostiniInstallerView(const base::ListValue* args);
   void HandleRequestRemoveCrostini(const base::ListValue* args);
+  // Callback for the "getSharedPathsDisplayText" message.  Converts actual
+  // paths in chromeos to values suitable to display to users.
+  // E.g. /home/chronos/u-<hash>/Downloads/foo => "Downloads > foo".
+  void HandleGetCrostiniSharedPathsDisplayText(const base::ListValue* args);
+  // Remove a specified path from being shared.
+  void HandleRemoveCrostiniSharedPath(const base::ListValue* args);
 
+  Profile* profile_;
   // weak_ptr_factory_ should always be last member.
   base::WeakPtrFactory<CrostiniHandler> weak_ptr_factory_;
 

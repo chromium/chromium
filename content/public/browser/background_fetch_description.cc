@@ -15,7 +15,8 @@ BackgroundFetchDescription::BackgroundFetchDescription(
     int total_parts,
     int completed_parts_size,
     int total_parts_size,
-    std::vector<std::string> current_guids)
+    std::vector<std::string> outstanding_guids,
+    bool start_paused)
     : job_unique_id(job_unique_id),
       title(title),
       origin(origin),
@@ -24,7 +25,8 @@ BackgroundFetchDescription::BackgroundFetchDescription(
       total_parts(total_parts),
       completed_parts_size(completed_parts_size),
       total_parts_size(total_parts_size),
-      current_guids(std::move(current_guids)) {}
+      outstanding_guids(std::move(outstanding_guids)),
+      start_paused(start_paused) {}
 
 BackgroundFetchDescription::~BackgroundFetchDescription() = default;
 

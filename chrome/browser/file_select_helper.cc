@@ -25,7 +25,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -33,11 +35,14 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/file_chooser_file_info.h"
 #include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/file_select_helper_contacts_android.h"
+#endif
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
@@ -50,6 +55,8 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
+using blink::mojom::FileChooserFileInfo;
+using blink::mojom::FileChooserFileInfoPtr;
 using blink::mojom::FileChooserParams;
 using blink::mojom::FileChooserParamsPtr;
 using content::BrowserThread;
@@ -59,10 +66,10 @@ using content::WebContents;
 
 namespace {
 
-// There is only one file-selection happening at any given time,
-// so we allocate an enumeration ID for that purpose.  All IDs from
-// the renderer must start at 0 and increase.
-const int kFileSelectEnumerationId = -1;
+#if defined(OS_ANDROID)
+// The MIME type for selecting contacts.
+constexpr char kContactsMimeType[] = "text/json+contacts";
+#endif
 
 // Converts a list of FilePaths to a list of ui::SelectedFileInfo.
 std::vector<ui::SelectedFileInfo> FilePathListToSelectedFileInfoList(
@@ -123,10 +130,9 @@ void InterpretSafeBrowsingVerdict(const base::Callback<void(bool)>& recipient,
 
 struct FileSelectHelper::ActiveDirectoryEnumeration {
   explicit ActiveDirectoryEnumeration(const base::FilePath& path)
-      : rvh_(NULL), path_(path) {}
+      : path_(path) {}
 
   std::unique_ptr<net::DirectoryLister> lister_;
-  RenderViewHost* rvh_;
   const base::FilePath path_;
   std::vector<base::FilePath> results_;
 };
@@ -171,8 +177,7 @@ void FileSelectHelper::FileSelectedWithExtraInfo(
 
   const base::FilePath& path = file.local_path;
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
-    StartNewEnumeration(path, kFileSelectEnumerationId,
-                        render_frame_host_->GetRenderViewHost());
+    StartNewEnumeration(path);
     return;
   }
 
@@ -218,15 +223,11 @@ void FileSelectHelper::MultiFilesSelectedWithExtraInfo(
 }
 
 void FileSelectHelper::FileSelectionCanceled(void* params) {
-  NotifyRenderFrameHostAndEnd(std::vector<ui::SelectedFileInfo>());
+  RunFileChooserEnd();
 }
 
-void FileSelectHelper::StartNewEnumeration(const base::FilePath& path,
-                                           int request_id,
-                                           RenderViewHost* render_view_host) {
-  request_id_ = request_id;
+void FileSelectHelper::StartNewEnumeration(const base::FilePath& path) {
   auto entry = std::make_unique<ActiveDirectoryEnumeration>(path);
-  entry->rvh_ = render_view_host;
   entry->lister_.reset(new net::DirectoryLister(
       path, net::DirectoryLister::NO_SORT_RECURSIVE, this));
   entry->lister_->Start();
@@ -255,8 +256,6 @@ void FileSelectHelper::OnListDone(int error) {
   // This entry needs to be cleaned up when this function is done.
   std::unique_ptr<ActiveDirectoryEnumeration> entry =
       std::move(directory_enumeration_);
-  if (!entry->rvh_)
-    return;
   if (error) {
     FileSelectionCanceled(NULL);
     return;
@@ -265,10 +264,18 @@ void FileSelectHelper::OnListDone(int error) {
   std::vector<ui::SelectedFileInfo> selected_files =
       FilePathListToSelectedFileInfoList(entry->results_);
 
-  if (request_id_ == kFileSelectEnumerationId) {
+  if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
     LaunchConfirmationDialog(entry->path_, std::move(selected_files));
   } else {
-    entry->rvh_->DirectoryEnumerationFinished(request_id_, entry->results_);
+    std::vector<FileChooserFileInfoPtr> chooser_files;
+    for (const auto& file_path : entry->results_) {
+      chooser_files.push_back(FileChooserFileInfo::NewNativeFile(
+          blink::mojom::NativeFileInfo::New(file_path, base::string16())));
+    }
+
+    listener_->FileSelected(std::move(chooser_files),
+                            FileChooserParams::Mode::kUploadFolder);
+    listener_.reset();
     EnumerateDirectoryEnd();
   }
 }
@@ -302,21 +309,21 @@ void FileSelectHelper::NotifyRenderFrameHostAndEnd(
   }
 #endif  // defined(OS_CHROMEOS)
 
-  std::vector<content::FileChooserFileInfo> chooser_files;
+  std::vector<FileChooserFileInfoPtr> chooser_files;
   for (const auto& file : files) {
-    content::FileChooserFileInfo chooser_file;
-    chooser_file.file_path = file.local_path;
-    chooser_file.display_name = file.display_name;
-    chooser_files.push_back(chooser_file);
+    chooser_files.push_back(
+        FileChooserFileInfo::NewNativeFile(blink::mojom::NativeFileInfo::New(
+            file.local_path,
+            base::FilePath(file.display_name).AsUTF16Unsafe())));
   }
 
-  NotifyRenderFrameHostAndEndAfterConversion(chooser_files);
+  NotifyRenderFrameHostAndEndAfterConversion(std::move(chooser_files));
 }
 
 void FileSelectHelper::NotifyRenderFrameHostAndEndAfterConversion(
-    const std::vector<content::FileChooserFileInfo>& list) {
-  if (render_frame_host_)
-    render_frame_host_->FilesSelectedInChooser(list, dialog_mode_);
+    std::vector<FileChooserFileInfoPtr> list) {
+  listener_->FileSelected(std::move(list), dialog_mode_);
+  listener_.reset();
 
   // No members should be accessed from here on.
   RunFileChooserEnd();
@@ -419,32 +426,52 @@ FileSelectHelper::GetFileTypesFromAcceptType(
 // static
 void FileSelectHelper::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<content::FileSelectListener> listener,
     const FileChooserParams& params) {
   Profile* profile = Profile::FromBrowserContext(
       render_frame_host->GetProcess()->GetBrowserContext());
-  // FileSelectHelper will keep itself alive until it sends the result message.
+
+#if defined(OS_ANDROID)
+  if (params.accept_types.size() == 1 &&
+      params.accept_types[0].compare(base::ASCIIToUTF16(kContactsMimeType)) ==
+          0) {
+    scoped_refptr<FileSelectHelperContactsAndroid> file_select_helper_android(
+        new FileSelectHelperContactsAndroid(profile));
+    file_select_helper_android->RunFileChooser(
+        render_frame_host, std::move(listener), params.Clone());
+    return;
+  }
+#endif
+
+  // FileSelectHelper will keep itself alive until it sends the result
+  // message.
   scoped_refptr<FileSelectHelper> file_select_helper(
       new FileSelectHelper(profile));
-  file_select_helper->RunFileChooser(render_frame_host, params.Clone());
+  file_select_helper->RunFileChooser(render_frame_host, std::move(listener),
+                                     params.Clone());
 }
 
 // static
-void FileSelectHelper::EnumerateDirectory(content::WebContents* tab,
-                                          int request_id,
-                                          const base::FilePath& path) {
+void FileSelectHelper::EnumerateDirectory(
+    content::WebContents* tab,
+    std::unique_ptr<content::FileSelectListener> listener,
+    const base::FilePath& path) {
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
-  // FileSelectHelper will keep itself alive until it sends the result message.
+  // FileSelectHelper will keep itself alive until it sends the result
+  // message.
   scoped_refptr<FileSelectHelper> file_select_helper(
       new FileSelectHelper(profile));
-  file_select_helper->EnumerateDirectory(
-      request_id, tab->GetRenderViewHost(), path);
+  file_select_helper->EnumerateDirectory(std::move(listener), path);
 }
 
 void FileSelectHelper::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<content::FileSelectListener> listener,
     FileChooserParamsPtr params) {
   DCHECK(!render_frame_host_);
   DCHECK(!web_contents_);
+  DCHECK(listener);
+  DCHECK(!listener_);
   DCHECK(params->default_file_name.empty() ||
          params->mode == FileChooserParams::Mode::kSave)
       << "The default_file_name parameter should only be specified for Save "
@@ -454,6 +481,7 @@ void FileSelectHelper::RunFileChooser(
 
   render_frame_host_ = render_frame_host;
   web_contents_ = WebContents::FromRenderFrameHost(render_frame_host);
+  listener_ = std::move(listener);
   observer_.RemoveAll();
   content::WebContentsObserver::Observe(web_contents_);
   observer_.Add(render_frame_host_->GetRenderViewHost()->GetWidget());
@@ -477,8 +505,8 @@ void FileSelectHelper::GetFileTypesInThreadPool(FileChooserParamsPtr params) {
       params->need_local_path ? ui::SelectFileDialog::FileTypeInfo::NATIVE_PATH
                               : ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&FileSelectHelper::GetSanitizedFilenameOnUIThread, this,
                      std::move(params)));
 }
@@ -540,7 +568,7 @@ void FileSelectHelper::ProceedWithSafeBrowsingVerdict(
     FileChooserParamsPtr params,
     bool allowed_by_safe_browsing) {
   if (!allowed_by_safe_browsing) {
-    NotifyRenderFrameHostAndEnd(std::vector<ui::SelectedFileInfo>());
+    RunFileChooserEnd();
     return;
   }
   RunFileChooserOnUIThread(default_file_path, std::move(params));
@@ -614,21 +642,27 @@ void FileSelectHelper::RunFileChooserEnd() {
   if (!temporary_files_.empty())
     return;
 
+  if (listener_)
+    listener_->FileSelectionCanceled();
   render_frame_host_ = nullptr;
   web_contents_ = nullptr;
   Release();
 }
 
-void FileSelectHelper::EnumerateDirectory(int request_id,
-                                          RenderViewHost* render_view_host,
-                                          const base::FilePath& path) {
+void FileSelectHelper::EnumerateDirectory(
+    std::unique_ptr<content::FileSelectListener> listener,
+    const base::FilePath& path) {
+  DCHECK(listener);
+  DCHECK(!listener_);
+  dialog_type_ = ui::SelectFileDialog::SELECT_NONE;
+  listener_ = std::move(listener);
   // Because this class returns notifications to the RenderViewHost, it is
   // difficult for callers to know how long to keep a reference to this
   // instance. We AddRef() here to keep the instance alive after we return
   // to the caller, until the last callback is received from the enumeration
   // code. At that point, we must call EnumerateDirectoryEnd().
   AddRef();
-  StartNewEnumeration(path, request_id, render_view_host);
+  StartNewEnumeration(path);
 }
 
 // This method is called when we receive the last callback from the enumeration
@@ -647,8 +681,14 @@ void FileSelectHelper::RenderWidgetHostDestroyed(
 void FileSelectHelper::RenderFrameHostChanged(
     content::RenderFrameHost* old_host,
     content::RenderFrameHost* new_host) {
-  if (old_host == render_frame_host_)
+  if (!render_frame_host_)
+    return;
+  // The |old_host| and its children are now pending deletion. Do not give them
+  // file access past this point.
+  if (render_frame_host_ == old_host ||
+      render_frame_host_->IsDescendantOf(old_host)) {
     render_frame_host_ = nullptr;
+  }
 }
 
 void FileSelectHelper::RenderFrameDeleted(

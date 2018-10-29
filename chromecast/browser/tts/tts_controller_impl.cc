@@ -67,9 +67,9 @@ bool IsFinalTtsEventType(TtsEventType event_type) {
 //
 
 UtteranceContinuousParameters::UtteranceContinuousParameters()
-    : rate(blink::SpeechSynthesisConstants::kDoublePrefNotSet),
-      pitch(blink::SpeechSynthesisConstants::kDoublePrefNotSet),
-      volume(blink::SpeechSynthesisConstants::kDoublePrefNotSet) {}
+    : rate(blink::kWebSpeechSynthesisDoublePrefNotSet),
+      pitch(blink::kWebSpeechSynthesisDoublePrefNotSet),
+      volume(blink::kWebSpeechSynthesisDoublePrefNotSet) {}
 
 //
 // VoiceData
@@ -498,11 +498,11 @@ void TtsControllerImpl::UpdateUtteranceDefaults(Utterance* utterance) {
   double volume = utterance->continuous_parameters().volume;
   // Update pitch, rate and volume to defaults if not explicity set on
   // this utterance.
-  if (rate == blink::SpeechSynthesisConstants::kDoublePrefNotSet)
-    rate = blink::SpeechSynthesisConstants::kDefaultTextToSpeechRate;
-  if (pitch == blink::SpeechSynthesisConstants::kDoublePrefNotSet)
-    pitch = blink::SpeechSynthesisConstants::kDefaultTextToSpeechPitch;
-  if (volume == blink::SpeechSynthesisConstants::kDoublePrefNotSet)
-    volume = blink::SpeechSynthesisConstants::kDefaultTextToSpeechVolume;
+  if (rate == blink::kWebSpeechSynthesisDoublePrefNotSet)
+    rate = blink::kWebSpeechSynthesisDefaultTextToSpeechRate;
+  if (pitch == blink::kWebSpeechSynthesisDoublePrefNotSet)
+    pitch = blink::kWebSpeechSynthesisDefaultTextToSpeechPitch;
+  if (volume == blink::kWebSpeechSynthesisDoublePrefNotSet)
+    volume = blink::kWebSpeechSynthesisDefaultTextToSpeechVolume;
   utterance->set_continuous_parameters(rate, pitch, volume);
 }

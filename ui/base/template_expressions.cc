@@ -93,7 +93,7 @@ std::string ReplaceTemplateExpressions(
         source.substr(current_pos, key_end - current_pos).as_string();
     CHECK(!key.empty());
 
-    TemplateReplacements::const_iterator value = replacements.find(key);
+    auto value = replacements.find(key);
     CHECK(value != replacements.end()) << "$i18n replacement key \"" << key
                                        << "\" not found";
 

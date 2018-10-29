@@ -13,9 +13,9 @@
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_shader.h"
-#include "cc/paint/paint_typeface_transfer_cache_entry.h"
 #include "cc/paint/path_transfer_cache_entry.h"
 #include "cc/paint/shader_transfer_cache_entry.h"
+#include "cc/paint/textblob_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -207,6 +207,18 @@ void PaintOpReader::Read(SkPath* path) {
   } else {
     valid_ = false;
   }
+
+  size_t bytes_to_skip = 0u;
+  ReadSize(&bytes_to_skip);
+  if (!valid_)
+    return;
+
+  if (bytes_to_skip > remaining_bytes_) {
+    valid_ = false;
+    return;
+  }
+  memory_ += bytes_to_skip;
+  remaining_bytes_ -= bytes_to_skip;
 }
 
 void PaintOpReader::Read(PaintFlags* flags) {
@@ -375,7 +387,13 @@ void PaintOpReader::Read(sk_sp<SkColorSpace>* color_space) {
   remaining_bytes_ -= size;
 }
 
-void PaintOpReader::Read(scoped_refptr<PaintTextBlob>* paint_blob) {
+void PaintOpReader::Read(sk_sp<SkTextBlob>* blob) {
+  AlignMemory(4);
+  uint32_t blob_id = 0u;
+  Read(&blob_id);
+  if (!valid_)
+    return;
+
   size_t data_bytes = 0u;
   ReadSize(&data_bytes);
   if (remaining_bytes_ < data_bytes || data_bytes == 0u)
@@ -383,20 +401,32 @@ void PaintOpReader::Read(scoped_refptr<PaintTextBlob>* paint_blob) {
   if (!valid_)
     return;
 
+  auto* entry =
+      options_.transfer_cache->GetEntryAs<ServiceTextBlobTransferCacheEntry>(
+          blob_id);
+  if (entry) {
+    *blob = entry->blob();
+    memory_ += data_bytes;
+    remaining_bytes_ -= data_bytes;
+    return;
+  }
+
   DCHECK(options_.strike_client);
   SkDeserialProcs procs;
   TypefaceCtx typeface_ctx(options_.strike_client);
   procs.fTypefaceProc = &DeserializeTypeface;
   procs.fTypefaceCtx = &typeface_ctx;
-  sk_sp<SkTextBlob> blob = SkTextBlob::Deserialize(
+  sk_sp<SkTextBlob> deserialized_blob = SkTextBlob::Deserialize(
       const_cast<const char*>(memory_), data_bytes, procs);
-  if (!blob || typeface_ctx.invalid_typeface) {
+  if (!deserialized_blob || typeface_ctx.invalid_typeface) {
     SetInvalid();
     return;
   }
+  options_.transfer_cache->CreateLocalEntry(
+      blob_id, std::make_unique<ServiceTextBlobTransferCacheEntry>(
+                   deserialized_blob, data_bytes));
 
-  *paint_blob = base::MakeRefCounted<PaintTextBlob>(
-      std::move(blob), std::vector<PaintTypeface>());
+  *blob = std::move(deserialized_blob);
   memory_ += data_bytes;
   remaining_bytes_ -= data_bytes;
 }
@@ -463,6 +493,8 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
     size_t record_size = Read(&ref.record_);
     size_t post_size = options_.transfer_cache->GetTotalEntrySizes();
     shader_size = post_size - pre_size + record_size;
+
+    ref.id_ = shader_id;
   }
   decltype(ref.colors_)::size_type colors_size = 0;
   ReadSize(&colors_size);

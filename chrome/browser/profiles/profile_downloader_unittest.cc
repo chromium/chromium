@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/profile_downloader.h"
 
+#include "base/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
@@ -45,10 +46,12 @@ class ProfileDownloaderTest : public testing::Test,
 
   void SetUp() override {
     TestingProfile::Builder builder;
-    builder.AddTestingFactory(ProfileOAuth2TokenServiceFactory::GetInstance(),
-                              &BuildFakeProfileOAuth2TokenService);
-    builder.AddTestingFactory(AccountFetcherServiceFactory::GetInstance(),
-                              FakeAccountFetcherServiceBuilder::BuildForTests);
+    builder.AddTestingFactory(
+        ProfileOAuth2TokenServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeProfileOAuth2TokenService));
+    builder.AddTestingFactory(
+        AccountFetcherServiceFactory::GetInstance(),
+        base::BindRepeating(&FakeAccountFetcherServiceBuilder::BuildForTests));
     profile_ = builder.Build();
     account_tracker_service_ =
         AccountTrackerServiceFactory::GetForProfile(profile_.get());

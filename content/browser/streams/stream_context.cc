@@ -5,8 +5,10 @@
 #include "content/browser/streams/stream_context.h"
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "content/browser/streams/stream_registry.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using base::UserDataAdapter;
@@ -29,8 +31,8 @@ StreamContext* StreamContext::GetFor(BrowserContext* context) {
         std::make_unique<UserDataAdapter<StreamContext>>(stream.get()));
     // Check first to avoid memory leak in unittests.
     if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {BrowserThread::IO},
           base::BindOnce(&StreamContext::InitializeOnIOThread, stream));
     }
   }

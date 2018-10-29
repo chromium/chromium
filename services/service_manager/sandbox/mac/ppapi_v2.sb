@@ -14,6 +14,10 @@
 ; Needed for Fonts.
 (allow-font-access)
 
+; Mach lookups.
+(allow mach-lookup
+  (global-name "com.apple.windowserver.active"))
+
 ; IOKit
 (allow iokit-open
   (iokit-registry-entry-class "IOSurfaceRootUserClient"))

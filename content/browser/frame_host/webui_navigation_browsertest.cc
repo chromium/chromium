@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
+#include "base/macros.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/browser_side_navigation_policy.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -16,6 +19,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -219,6 +223,11 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
   EXPECT_EQ(chrome_url, webui_rfh->GetLastCommittedURL());
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
       webui_rfh->GetProcess()->GetID()));
+  EXPECT_EQ(
+      ChildProcessSecurityPolicyImpl::CheckOriginLockResult::HAS_EQUAL_LOCK,
+      ChildProcessSecurityPolicyImpl::GetInstance()->CheckOriginLock(
+          root->current_frame_host()->GetProcess()->GetID(),
+          webui_site_instance->GetSiteURL()));
 
   GURL web_url(embedded_test_server()->GetURL("/title2.html"));
   std::string script =
@@ -233,6 +242,13 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
   EXPECT_NE(webui_site_instance, root->current_frame_host()->GetSiteInstance());
   EXPECT_FALSE(webui_site_instance->IsRelatedSiteInstance(
       root->current_frame_host()->GetSiteInstance()));
+  EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
+      root->current_frame_host()->GetProcess()->GetID()));
+  EXPECT_NE(
+      ChildProcessSecurityPolicyImpl::CheckOriginLockResult::HAS_EQUAL_LOCK,
+      ChildProcessSecurityPolicyImpl::GetInstance()->CheckOriginLock(
+          root->current_frame_host()->GetProcess()->GetID(),
+          webui_site_instance->GetSiteURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
@@ -265,6 +281,39 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                        HybridWebUISubframeNewWindowToWebAllowed) {
   TestWebUISubframeNewWindowToWebAllowed(BINDINGS_POLICY_MOJO_WEB_UI |
                                          BINDINGS_POLICY_WEB_UI);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
+                       WebUIOriginsRequireDedicatedProcess) {
+  // chrome:// URLs should require a dedicated process.
+  WebContents* web_contents = shell()->web_contents();
+  BrowserContext* browser_context = web_contents->GetBrowserContext();
+  GURL chrome_url = GURL(std::string(kChromeUIScheme) + "://" +
+                         std::string(kChromeUIGpuHost));
+  EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(browser_context,
+                                                                chrome_url));
+
+  // Navigate to a WebUI page.
+  EXPECT_TRUE(NavigateToURL(shell(), chrome_url));
+
+  // Verify that the "hostname" is also part of the site URL.
+  GURL site_url = web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL();
+  EXPECT_EQ(chrome_url, site_url);
+
+  // Ask the page to create a blob URL and return back the blob URL.
+  const char* kScript = R"(
+          var blob = new Blob(['foo'], {type : 'text/html'});
+          var url = URL.createObjectURL(blob);
+          url;
+      )";
+  GURL blob_url(EvalJs(shell(), kScript).ExtractString());
+  EXPECT_EQ(url::kBlobScheme, blob_url.scheme());
+
+  // Verify that the blob also requires a dedicated process and that it would
+  // use the same site url as the original page.
+  EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(browser_context,
+                                                                blob_url));
+  EXPECT_EQ(chrome_url, SiteInstance::GetSiteForURL(browser_context, blob_url));
 }
 
 }  // namespace content

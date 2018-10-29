@@ -49,9 +49,14 @@ class PLATFORM_EXPORT OriginAccessEntry {
   // will match all domains in the specified protocol.
   // IPv6 addresses must include brackets (e.g.
   // '[2001:db8:85a3::8a2e:370:7334]', not '2001:db8:85a3::8a2e:370:7334').
-  OriginAccessEntry(const String& protocol,
-                    const String& host,
-                    network::cors::OriginAccessEntry::MatchMode);
+  // An entry with a higher priority will win in case there are two conflicting
+  // entries.
+  OriginAccessEntry(
+      const String& protocol,
+      const String& host,
+      network::cors::OriginAccessEntry::MatchMode,
+      network::mojom::CORSOriginAccessMatchPriority priority =
+          network::mojom::CORSOriginAccessMatchPriority::kDefaultPriority);
   OriginAccessEntry(OriginAccessEntry&& from);
 
   // 'matchesOrigin' requires a protocol match (e.g. 'http' != 'https').

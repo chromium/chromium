@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_animated_color.h"
 
+#include "third_party/blink/renderer/core/css/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/svg/color_distance.h"
@@ -36,7 +37,8 @@ SVGColorProperty::SVGColorProperty(const String& color_string)
 String SVGColorProperty::ValueAsString() const {
   return style_color_.IsCurrentColor()
              ? "currentColor"
-             : style_color_.GetColor().SerializedAsCSSComponentValue();
+             : cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
+                   style_color_.GetColor());
 }
 
 SVGPropertyBase* SVGColorProperty::CloneForAnimation(const String&) const {

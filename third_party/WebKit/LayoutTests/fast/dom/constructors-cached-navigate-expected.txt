@@ -1,6 +1,7 @@
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS testFrame.contentWindow.Image is testFrame.contentWindow.Image
 PASS testFrame.contentWindow.Image !== window.Image is true
 PASS testFrame.contentWindow.Image.testProperty is "property set successfully"

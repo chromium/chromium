@@ -30,10 +30,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FILE_CHOOSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FILE_CHOOSER_H_
 
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom-blink.h"
 #include "third_party/blink/public/web/web_file_chooser_completion.h"
 #include "third_party/blink/public/web/web_file_chooser_params.h"
 #include "third_party/blink/renderer/core/page/popup_opening_observer.h"
-#include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -48,24 +48,7 @@ class ChromeClientImpl;
 class FileChooser;
 class LocalFrame;
 
-struct FileChooserFileInfo {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
-  FileChooserFileInfo(const String& path, const String& display_name = String())
-      : path(path), display_name(display_name) {}
-
-  FileChooserFileInfo(const KURL& file_system_url, const FileMetadata metadata)
-      : file_system_url(file_system_url), metadata(metadata) {}
-
-  // Members for native files.
-  const String path;
-  const String display_name;
-
-  // Members for file system API files.
-  const KURL file_system_url;
-  const FileMetadata metadata;
-};
-
-using FileChooserFileInfoList = Vector<FileChooserFileInfo>;
+using FileChooserFileInfoList = Vector<mojom::blink::FileChooserFileInfoPtr>;
 
 class CORE_EXPORT FileChooserClient : public PopupOpeningObserver {
  public:
@@ -118,6 +101,14 @@ class FileChooser : public RefCounted<FileChooser>,
   WebFileChooserParams params_;
   Persistent<ChromeClientImpl> chrome_client_impl_;
 };
+
+CORE_EXPORT mojom::blink::FileChooserFileInfoPtr
+CreateFileChooserFileInfoNative(const String& path,
+                                const String& display_name = String());
+CORE_EXPORT mojom::blink::FileChooserFileInfoPtr
+CreateFileChooserFileInfoFileSystem(const KURL& url,
+                                    base::Time modification_time,
+                                    int64_t length);
 
 }  // namespace blink
 

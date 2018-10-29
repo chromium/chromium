@@ -2,48 +2,48 @@ AXWebArea
 ++AXGroup
 ++++AXGroup
 ++++++AXStaticText AXValue='Default: '
-++++++AXTextField AXTitle='Default: '
+++++++AXTextField AXTitle='Default:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Button: '
-++++++AXButton AXTitle='Button: '
-++++AXCheckBox AXTitle='Checkbox: ' AXValue='0'
+++++++AXButton AXTitle='Button:'
+++++AXCheckBox AXTitle='Checkbox:' AXValue='0'
 ++++AXGroup
 ++++++AXStaticText AXValue='Color: '
-++++++AXColorWell AXTitle='Color: ' AXValue='rgb 0.00000 0.00000 0.00000 1'
+++++++AXColorWell AXTitle='Color:' AXValue='rgb 0.00000 0.00000 0.00000 1'
 ++++AXGroup
 ++++++AXStaticText AXValue='Email: '
-++++++AXTextField AXTitle='Email: '
+++++++AXTextField AXTitle='Email:'
 ++++AXGroup
 ++++++AXStaticText AXValue='File: '
-++++++AXButton AXTitle='File: '
+++++++AXButton AXTitle='File:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Image: '
-++++++AXButton AXTitle='Image: '
+++++++AXButton AXTitle='Image:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Number: '
-++++++AXIncrementor AXTitle='Number: '
+++++++AXIncrementor AXTitle='Number:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Password: '
-++++++AXTextField AXTitle='Password: '
-++++AXRadioButton AXTitle='Radio: ' AXValue='0'
+++++++AXTextField AXTitle='Password:'
+++++AXRadioButton AXTitle='Radio:' AXValue='0'
 ++++AXGroup
 ++++++AXStaticText AXValue='Range: '
-++++++AXSlider AXTitle='Range: ' AXValue='50'
+++++++AXSlider AXTitle='Range:' AXValue='50'
 ++++AXGroup
 ++++++AXStaticText AXValue='Reset: '
-++++++AXButton AXTitle='Reset: '
+++++++AXButton AXTitle='Reset:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Search: '
-++++++AXTextField AXTitle='Search: '
+++++++AXTextField AXTitle='Search:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Submit: '
-++++++AXButton AXTitle='Submit: '
+++++++AXButton AXTitle='Submit:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Tel: '
-++++++AXTextField AXTitle='Tel: '
+++++++AXTextField AXTitle='Tel:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Text: '
-++++++AXTextField AXTitle='Text: '
+++++++AXTextField AXTitle='Text:'
 ++++AXGroup
 ++++++AXStaticText AXValue='Url: '
-++++++AXTextField AXTitle='Url: '
+++++++AXTextField AXTitle='Url:'

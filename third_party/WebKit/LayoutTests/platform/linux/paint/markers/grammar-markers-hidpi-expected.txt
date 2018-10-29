@@ -1,8 +1,0 @@
-layer at (0,0) size 1600x1200
-  LayoutView at (0,0) size 1600x1200
-layer at (0,0) size 1600x69
-  LayoutBlockFlow {HTML} at (0,0) size 1600x69
-    LayoutBlockFlow {BODY} at (16,16) size 1568x37
-      LayoutBlockFlow {DIV} at (0,0) size 1568x37
-        LayoutText {#text} at (0,0) size 226x36
-          text run at (0,0) width 226: "You has the right."

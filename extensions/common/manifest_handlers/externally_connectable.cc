@@ -79,7 +79,7 @@ bool ExternallyConnectableHandler::Parse(Extension* extension,
     PermissionsParser::AddAPIPermission(extension,
                                         APIPermission::kWebConnectable);
   }
-  extension->AddInstallWarnings(install_warnings);
+  extension->AddInstallWarnings(std::move(install_warnings));
   extension->SetManifestData(keys::kExternallyConnectable, std::move(info));
   return true;
 }
@@ -110,10 +110,8 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
   URLPatternSet matches;
 
   if (externally_connectable->matches) {
-    for (std::vector<std::string>::iterator it =
-             externally_connectable->matches->begin();
-         it != externally_connectable->matches->end();
-         ++it) {
+    for (auto it = externally_connectable->matches->begin();
+         it != externally_connectable->matches->end(); ++it) {
       // Safe to use SCHEME_ALL here; externally_connectable gives a page ->
       // extension communication path, not the other way.
       URLPattern pattern(URLPattern::SCHEME_ALL);
@@ -165,10 +163,8 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
   bool all_ids = false;
 
   if (externally_connectable->ids) {
-    for (std::vector<std::string>::iterator it =
-             externally_connectable->ids->begin();
-         it != externally_connectable->ids->end();
-         ++it) {
+    for (auto it = externally_connectable->ids->begin();
+         it != externally_connectable->ids->end(); ++it) {
       if (*it == kAllIds) {
         all_ids = true;
       } else if (crx_file::id_util::IdIsValid(*it)) {

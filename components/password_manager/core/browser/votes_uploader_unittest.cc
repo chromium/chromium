@@ -51,12 +51,13 @@ class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
       autofill::AutofillDownloadManager::Observer* observer)
       : AutofillDownloadManager(driver, observer) {}
 
-  MOCK_METHOD5(StartUploadRequest,
+  MOCK_METHOD6(StartUploadRequest,
                bool(const FormStructure&,
                     bool,
                     const ServerFieldTypeSet&,
                     const std::string&,
-                    bool));
+                    bool,
+                    PrefService*));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockAutofillDownloadManager);
@@ -105,7 +106,8 @@ class VotesUploaderTest : public testing::Test {
     EXPECT_CALL(client_, GetAutofillManagerForMainFrame())
         .WillRepeatedly(Return(&mock_autofill_manager_));
 
-    ON_CALL(*mock_autofill_download_manager_, StartUploadRequest(_, _, _, _, _))
+    ON_CALL(*mock_autofill_download_manager_,
+            StartUploadRequest(_, _, _, _, _, _))
         .WillByDefault(Return(true));
 
     // Create |fields| in |form_to_upload_| and |submitted_form_|. Only |name|
@@ -156,12 +158,13 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
   PasswordForm::SubmissionIndicatorEvent expected_submission_event =
       PasswordForm::SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
 
-  EXPECT_CALL(*mock_autofill_download_manager_,
-              StartUploadRequest(
-                  AllOf(SignatureIsSameAs(form_to_upload_),
-                        UploadedAutofillTypesAre(expected_types),
-                        SubmissionEventIsSameAs(expected_submission_event)),
-                  false, expected_field_types, login_form_signature_, true));
+  EXPECT_CALL(
+      *mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(SignatureIsSameAs(form_to_upload_),
+                UploadedAutofillTypesAre(expected_types),
+                SubmissionEventIsSameAs(expected_submission_event)),
+          false, expected_field_types, login_form_signature_, true, nullptr));
 
   EXPECT_TRUE(votes_uploader.UploadPasswordVote(
       form_to_upload_, submitted_form_, NEW_PASSWORD, login_form_signature_));
@@ -184,7 +187,8 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteSave) {
   EXPECT_CALL(*mock_autofill_download_manager_,
               StartUploadRequest(
                   SubmissionEventIsSameAs(expected_submission_event), false,
-                  expected_field_types, login_form_signature_, true));
+                  expected_field_types, login_form_signature_, true,
+                  /* pref_service= */ nullptr));
 
   EXPECT_TRUE(votes_uploader.UploadPasswordVote(
       form_to_upload_, submitted_form_, PASSWORD, login_form_signature_));

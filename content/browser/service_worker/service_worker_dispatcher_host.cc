@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/service_worker/service_worker_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/child_process_host.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider_type.mojom.h"
 
@@ -41,8 +43,8 @@ void ServiceWorkerDispatcherHost::RenderProcessExited(
   // renderer is destroyed. But if we don't remove the hosts immediately here,
   // collisions of <process_id, provider_id> can occur if |this| is reused for
   // another new renderer process due to reuse of the RenderProcessHost.
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &ServiceWorkerDispatcherHost::RemoveAllProviderHostsForProcess,
           base::Unretained(this)));

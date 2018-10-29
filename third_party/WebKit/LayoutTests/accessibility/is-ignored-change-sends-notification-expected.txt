@@ -2,28 +2,22 @@ This test ensures that a change to accessibilityIsIgnored fires a children chang
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS accessibleElementById('hiddenDivContainer') != null is true
 PASS accessibleElementById('hiddenDiv') != null is false
 PASS accessibleElementById('invisibleDivContainer') != null is true
 PASS accessibleElementById('invisibleDiv') != null is false
-PASS accessibleElementById('emptyDivContainer') != null is true
-PASS accessibleElementById('emptyDiv') != null is false
+PASS accessibleElementById('emptyDiv') != null is true
 PASS accessibleElementById('divWithoutRoleContainer') != null is true
-PASS accessibleElementById('divWithoutRole') != null is false
-PASS accessibleElementById('divWithoutLabelContainer') != null is true
-PASS accessibleElementById('divWithoutLabel') != null is false
+
 
 Got ChildrenChanged notification on hiddenDivContainer
 PASS accessibleElementById('hiddenDivContainer').childrenCount is 1
 Got ChildrenChanged notification on invisibleDivContainer
 PASS accessibleElementById('invisibleDivContainer').childrenCount is 1
-Got ChildrenChanged notification on emptyDivContainer
-PASS accessibleElementById('emptyDivContainer').childrenCount is 1
+Got ChildrenChanged notification on emptyDiv
+PASS accessibleElementById('emptyDiv').childrenCount is 1
 Got ChildrenChanged notification on divWithoutRoleContainer
 PASS accessibleElementById('divWithoutRoleContainer').childrenCount is 1
-Got ChildrenChanged notification on divWithoutLabelContainer
-PASS accessibleElementById('divWithoutLabelContainer').childrenCount is 1
 All notifications received successfully.
 PASS successfullyParsed is true
 

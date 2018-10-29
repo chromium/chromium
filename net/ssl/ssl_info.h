@@ -80,6 +80,13 @@ class NET_EXPORT SSLInfo {
   // (older cache entries may not store the value) or not applicable.
   uint16_t key_exchange_group = 0;
 
+  // The signature algorithm used by the peer in the TLS handshake, as defined
+  // by the TLS SignatureScheme registry
+  // (https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-signaturescheme).
+  // These correspond to |SSL_SIGN_*| constants in BoringSSL. The value is zero
+  // if unknown (older cache entries may not store the value) or not applicable.
+  uint16_t peer_signature_algorithm = 0;
+
   // Information about the SSL connection itself. See
   // ssl_connection_status_flags.h for values. The protocol version,
   // ciphersuite, and compression in use are encoded within.
@@ -98,15 +105,6 @@ class NET_EXPORT SSLInfo {
 
   // True if a channel ID was sent to the server.
   bool channel_id_sent = false;
-
-  // True if Token Binding was negotiated with the server and we agreed on a
-  // version and key params.
-  bool token_binding_negotiated = false;
-
-  // Only valid if |token_binding_negotiated| is true. Contains the key param
-  // negotiated by the client and server in the Token Binding Negotiation TLS
-  // extension.
-  TokenBindingParam token_binding_key_param = TB_PARAM_ECDSAP256;
 
   // True if data was received over early data on the server. This field is only
   // set for server sockets.

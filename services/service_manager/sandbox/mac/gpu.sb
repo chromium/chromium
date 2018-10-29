@@ -29,3 +29,6 @@
 
 ; Needed for VideoToolbox usage - https://crbug.com/767037
 (allow mach-lookup (global-name "com.apple.coremedia.videodecoder"))
+
+; Needed for GPU process to fallback to SwiftShader - https://crbug.com/897914
+(allow file-read-data file-read-metadata (subpath (param bundle-version-path)))

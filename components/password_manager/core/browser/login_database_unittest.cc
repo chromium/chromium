@@ -2111,6 +2111,12 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
+  // Disable feature for deleting corrupted passwords, so GetAutofillableLogins
+  // doesn't remove any passwords.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kDeleteCorruptedPasswords);
+
   auto form1 = AddDummyLogin("foo1", GURL("https://foo1.com/"), false);
   auto form2 = AddDummyLogin("foo2", GURL("https://foo2.com/"), true);
   auto form3 = AddDummyLogin("foo3", GURL("https://foo3.com/"), false);
@@ -2120,8 +2126,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   ASSERT_TRUE(db.Init());
 
 #if defined(OS_MACOSX) && !defined(OS_IOS)
-  testing_local_state().registry()->RegisterTimePref(
-      prefs::kSyncUsersPasswordRecovery, base::Time());
+  testing_local_state().registry()->RegisterTimePref(prefs::kPasswordRecovery,
+                                                     base::Time());
   db.InitPasswordRecoveryUtil(std::make_unique<PasswordRecoveryUtilMac>(
       &testing_local_state(), base::ThreadTaskRunnerHandle::Get()));
 
@@ -2138,8 +2144,7 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   RunUntilIdle();
 
   // Make sure that password recovery pref is set.
-  ASSERT_TRUE(
-      testing_local_state().HasPrefPath(prefs::kSyncUsersPasswordRecovery));
+  ASSERT_TRUE(testing_local_state().HasPrefPath(prefs::kPasswordRecovery));
 #else
   EXPECT_EQ(DatabaseCleanupResult::kSuccess, db.DeleteUndecryptableLogins());
 #endif
@@ -2150,7 +2155,7 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue",
-      metrics_util::DeleteUndecryptableLoginsReturnValue::kSuccessLoginsDeleted,
+      metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted,
       1);
 #else
   EXPECT_TRUE(
@@ -2161,6 +2166,7 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
 
 #if defined(OS_MACOSX) && !defined(OS_IOS)
 TEST_F(LoginDatabaseUndecryptableLoginsTest, PasswordRecoveryEnabledGetLogins) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kDeleteCorruptedPasswords);
 
@@ -2171,13 +2177,29 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, PasswordRecoveryEnabledGetLogins) {
   LoginDatabase db(database_path());
   ASSERT_TRUE(db.Init());
 
+  testing_local_state().registry()->RegisterTimePref(prefs::kPasswordRecovery,
+                                                     base::Time());
+  db.InitPasswordRecoveryUtil(std::make_unique<PasswordRecoveryUtilMac>(
+      &testing_local_state(), base::ThreadTaskRunnerHandle::Get()));
+
   std::vector<std::unique_ptr<PasswordForm>> result;
   EXPECT_TRUE(db.GetAutofillableLogins(&result));
   EXPECT_THAT(result, UnorderedElementsAre(Pointee(form1), Pointee(form3)));
+
+  RunUntilIdle();
+  EXPECT_TRUE(testing_local_state().HasPrefPath(prefs::kPasswordRecovery));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.RemovedCorruptedPasswords", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.DeleteCorruptedPasswordsResult",
+      metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted,
+      1);
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
        PasswordRecoveryDisabledGetLogins) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kDeleteCorruptedPasswords);
@@ -2188,13 +2210,30 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   LoginDatabase db(database_path());
   ASSERT_TRUE(db.Init());
 
+  testing_local_state().registry()->RegisterTimePref(prefs::kPasswordRecovery,
+                                                     base::Time());
+  db.InitPasswordRecoveryUtil(std::make_unique<PasswordRecoveryUtilMac>(
+      &testing_local_state(), base::ThreadTaskRunnerHandle::Get()));
+
   std::vector<std::unique_ptr<PasswordForm>> result;
   EXPECT_FALSE(db.GetAutofillableLogins(&result));
   EXPECT_TRUE(result.empty());
+
+  RunUntilIdle();
+  EXPECT_FALSE(testing_local_state().HasPrefPath(prefs::kPasswordRecovery));
+
+  EXPECT_TRUE(histogram_tester
+                  .GetAllSamples("PasswordManager.RemovedCorruptedPasswords")
+                  .empty());
+  EXPECT_TRUE(
+      histogram_tester
+          .GetAllSamples("PasswordManager.DeleteCorruptedPasswordsResult")
+          .empty());
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
        PasswordRecoveryEnabledKeychainLocked) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kDeleteCorruptedPasswords);
 
@@ -2206,9 +2245,25 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   LoginDatabase db(database_path());
   ASSERT_TRUE(db.Init());
 
+  testing_local_state().registry()->RegisterTimePref(prefs::kPasswordRecovery,
+                                                     base::Time());
+  db.InitPasswordRecoveryUtil(std::make_unique<PasswordRecoveryUtilMac>(
+      &testing_local_state(), base::ThreadTaskRunnerHandle::Get()));
+
   std::vector<std::unique_ptr<PasswordForm>> result;
   EXPECT_FALSE(db.GetAutofillableLogins(&result));
   EXPECT_TRUE(result.empty());
+
+  RunUntilIdle();
+  EXPECT_FALSE(testing_local_state().HasPrefPath(prefs::kPasswordRecovery));
+
+  EXPECT_TRUE(histogram_tester
+                  .GetAllSamples("PasswordManager.RemovedCorruptedPasswords")
+                  .empty());
+  EXPECT_TRUE(
+      histogram_tester
+          .GetAllSamples("PasswordManager.DeleteCorruptedPasswordsResult")
+          .empty());
 
   // Note: it's not possible that encryption suddenly becomes available. This is
   // only used to check that the form is not removed from the database.
@@ -2234,9 +2289,7 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, KeychainLockedTest) {
           .empty());
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue",
-      metrics_util::DeleteUndecryptableLoginsReturnValue::
-          kEncryptionUnavailable,
-      1);
+      metrics_util::DeleteCorruptedPasswordsResult::kEncryptionUnavailable, 1);
 }
 #endif  // defined(OS_MACOSX) && !defined(OS_IOS)
 

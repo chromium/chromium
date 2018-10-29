@@ -133,9 +133,7 @@ void ProfileWriter::AddBookmarks(
   // Reorder bookmarks so that the toolbar entries come first.
   std::vector<ImportedBookmarkEntry> toolbar_bookmarks;
   std::vector<ImportedBookmarkEntry> reordered_bookmarks;
-  for (std::vector<ImportedBookmarkEntry>::const_iterator it =
-           bookmarks.begin();
-       it != bookmarks.end(); ++it) {
+  for (auto it = bookmarks.begin(); it != bookmarks.end(); ++it) {
     if (it->in_toolbar)
       toolbar_bookmarks.push_back(*it);
     else
@@ -182,8 +180,7 @@ void ProfileWriter::AddBookmarks(
     // Ensure any enclosing folders are present in the model.  The bookmark's
     // enclosing folder structure should be
     //   path[0] > path[1] > ... > path[size() - 1]
-    for (std::vector<base::string16>::const_iterator folder_name =
-             bookmark->path.begin();
+    for (auto folder_name = bookmark->path.begin();
          folder_name != bookmark->path.end(); ++folder_name) {
       if (bookmark->in_toolbar && parent == bookmark_bar &&
           folder_name == bookmark->path.begin()) {
@@ -220,9 +217,7 @@ void ProfileWriter::AddBookmarks(
 
   // In order to keep the imported-to folders from appearing in the 'recently
   // added to' combobox, reset their modified times.
-  for (std::set<const BookmarkNode*>::const_iterator i =
-           folders_added_to.begin();
-       i != folders_added_to.end(); ++i) {
+  for (auto i = folders_added_to.begin(); i != folders_added_to.end(); ++i) {
     model->ResetDateFolderModified(*i);
   }
 

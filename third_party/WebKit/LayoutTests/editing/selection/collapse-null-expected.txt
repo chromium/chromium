@@ -2,7 +2,6 @@ Ensure that collapse with null clears selection
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS selection.rangeCount is 1
 PASS selection.rangeCount is 0
 PASS selection.rangeCount is 1
@@ -10,4 +9,5 @@ PASS selection.rangeCount is 0
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 hello

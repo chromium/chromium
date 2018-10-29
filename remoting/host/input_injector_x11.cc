@@ -302,21 +302,9 @@ void InputInjectorX11::Core::InjectKeyEvent(const KeyEvent& event) {
       SetLockStates(caps_lock, num_lock);
     }
 
-    if (pressed_keys_.empty()) {
-      // Disable auto-repeat, if necessary, to avoid triggering auto-repeat
-      // if network congestion delays the key-up event from the client.
-      saved_auto_repeat_enabled_ = IsAutoRepeatEnabled();
-      if (saved_auto_repeat_enabled_)
-        SetAutoRepeatEnabled(false);
-    }
     pressed_keys_.insert(keycode);
   } else {
     pressed_keys_.erase(keycode);
-    if (pressed_keys_.empty()) {
-      // Re-enable auto-repeat, if necessary, when all keys are released.
-      if (saved_auto_repeat_enabled_)
-        SetAutoRepeatEnabled(true);
-    }
   }
 
   XTestFakeKeyEvent(display_, keycode, event.pressed(), x11::CurrentTime);
@@ -371,6 +359,7 @@ void InputInjectorX11::Core::SetAutoRepeatEnabled(bool mode) {
   XKeyboardControl control;
   control.auto_repeat_mode = mode ? AutoRepeatModeOn : AutoRepeatModeOff;
   XChangeKeyboardControl(display_, KBAutoRepeatMode, &control);
+  XFlush(display_);
 }
 
 bool InputInjectorX11::Core::IsLockKey(KeyCode keycode) {
@@ -644,6 +633,14 @@ void InputInjectorX11::Core::Start(
 
   character_injector_.reset(
       new X11CharacterInjector(std::make_unique<X11KeyboardImpl>(display_)));
+
+  // Disable auto-repeat, if necessary, to avoid triggering auto-repeat
+  // if network congestion delays the key-up event from the client. This is
+  // done for the duration of the session because some window managers do
+  // not handle changes to this setting efficiently.
+  saved_auto_repeat_enabled_ = IsAutoRepeatEnabled();
+  if (saved_auto_repeat_enabled_)
+    SetAutoRepeatEnabled(false);
 }
 
 void InputInjectorX11::Core::Stop() {
@@ -654,6 +651,9 @@ void InputInjectorX11::Core::Stop() {
 
   clipboard_.reset();
   character_injector_.reset();
+  // Re-enable auto-repeat, if necessary, on disconnect.
+  if (saved_auto_repeat_enabled_)
+    SetAutoRepeatEnabled(true);
 }
 
 }  // namespace

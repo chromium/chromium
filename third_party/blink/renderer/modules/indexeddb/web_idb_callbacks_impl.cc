@@ -31,10 +31,9 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/public/platform/modules/indexeddb/web_idb_cursor.h"
-#include "third_party/blink/public/platform/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/public/platform/modules/indexeddb/web_idb_database_error.h"
 #include "third_party/blink/public/platform/modules/indexeddb/web_idb_key.h"
+#include "third_party/blink/public/platform/modules/indexeddb/web_idb_name_and_version.h"
 #include "third_party/blink/public/platform/modules/indexeddb/web_idb_value.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -42,7 +41,10 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 using blink::WebIDBCursor;
 using blink::WebIDBDatabase;
@@ -50,6 +52,7 @@ using blink::WebIDBDatabaseError;
 using blink::WebIDBKey;
 using blink::WebIDBKeyPath;
 using blink::WebIDBMetadata;
+using blink::WebIDBNameAndVersion;
 using blink::WebIDBValue;
 using blink::WebVector;
 
@@ -84,6 +87,12 @@ void WebIDBCallbacksImpl::OnError(const WebIDBDatabaseError& error) {
   probe::AsyncTask async_task(request_->GetExecutionContext(), this, "error");
   request_->HandleResponse(DOMException::Create(
       static_cast<DOMExceptionCode>(error.Code()), error.Message()));
+}
+
+void WebIDBCallbacksImpl::OnSuccess(
+    const WebVector<WebIDBNameAndVersion>& web_name_and_version_list) {
+  // Only implemented in idb_factory.cc for the promise-based databases() call.
+  NOTREACHED();
 }
 
 void WebIDBCallbacksImpl::OnSuccess(
@@ -154,7 +163,7 @@ void WebIDBCallbacksImpl::OnSuccess(WebVector<WebIDBValue> values) {
 
   probe::AsyncTask async_task(request_->GetExecutionContext(), this, "success");
   Vector<std::unique_ptr<IDBValue>> idb_values;
-  idb_values.ReserveInitialCapacity(values.size());
+  idb_values.ReserveInitialCapacity(SafeCast<wtf_size_t>(values.size()));
   for (WebIDBValue& value : values) {
     std::unique_ptr<IDBValue> idb_value = value.ReleaseIdbValue();
     idb_value->SetIsolate(request_->GetIsolate());

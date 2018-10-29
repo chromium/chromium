@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "services/resource_coordinator/coordination_unit/coordination_unit_graph.h"
+
+#include "services/resource_coordinator/coordination_unit/frame_coordination_unit_impl.h"
+#include "services/resource_coordinator/coordination_unit/mock_coordination_unit_graphs.h"
 #include "services/resource_coordinator/coordination_unit/process_coordination_unit_impl.h"
 #include "services/resource_coordinator/coordination_unit/system_coordination_unit_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -90,6 +93,28 @@ TEST(CoordinationUnitGraphTest, PIDReuse) {
   // registration.
   process1->Destruct();
   EXPECT_EQ(process2, graph.GetProcessCoordinationUnitByPid(kPid));
+}
+
+TEST(CoordinationUnitGraphTest, GetAllCUsByType) {
+  CoordinationUnitGraph graph;
+  MockMultiplePagesInSingleProcessCoordinationUnitGraph cu_graph(&graph);
+
+  std::vector<ProcessCoordinationUnitImpl*> processes =
+      graph.GetAllProcessCoordinationUnits();
+  ASSERT_EQ(1u, processes.size());
+  EXPECT_NE(nullptr, processes[0]);
+
+  std::vector<FrameCoordinationUnitImpl*> frames =
+      graph.GetAllFrameCoordinationUnits();
+  ASSERT_EQ(2u, frames.size());
+  EXPECT_NE(nullptr, frames[0]);
+  EXPECT_NE(nullptr, frames[1]);
+
+  std::vector<PageCoordinationUnitImpl*> pages =
+      graph.GetAllPageCoordinationUnits();
+  ASSERT_EQ(2u, pages.size());
+  EXPECT_NE(nullptr, pages[0]);
+  EXPECT_NE(nullptr, pages[1]);
 }
 
 }  // namespace resource_coordinator

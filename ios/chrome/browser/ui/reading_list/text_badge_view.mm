@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/ui/reading_list/text_badge_view.h"
 
 #include "base/logging.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -15,7 +13,6 @@
 
 namespace {
 const CGFloat kFontSize = 11.0f;
-const CGFloat kLegacyFontSize = 10.0f;
 // The margin between the top and bottom of the label and the badge.
 const CGFloat kLabelVerticalMargin = 2.5f;
 // The default value for the margin between the sides of the label and the
@@ -63,14 +60,10 @@ const CGFloat kDefaultLabelHorizontalMargin = 8.5f;
     [self addSubview:self.label];
     self.didAddSubviews = YES;
     [self activateConstraints];
-    if (IsUIRefreshPhase1Enabled()) {
-      [self setBackgroundColor:[UIColor colorWithRed:0.101
-                                               green:0.45
-                                                blue:0.909
-                                               alpha:0.1]];
-    } else {
-      [self setBackgroundColor:[[MDCPalette cr_bluePalette] tint500]];
-    }
+    [self setBackgroundColor:[UIColor colorWithRed:0.101
+                                             green:0.45
+                                              blue:0.909
+                                             alpha:0.1]];
     [self setAccessibilityLabel:self.label.text];
   }
   [super willMoveToSuperview:newSuperview];
@@ -99,17 +92,10 @@ const CGFloat kDefaultLabelHorizontalMargin = 8.5f;
 // Return a label that displays text in white with center alignment.
 + (UILabel*)labelWithText:(NSString*)text {
   UILabel* label = [[UILabel alloc] initWithFrame:CGRectZero];
-  if (IsUIRefreshPhase1Enabled()) {
-    [label setFont:[UIFont systemFontOfSize:kFontSize
-                                     weight:UIFontWeightSemibold]];
-    [label setTextColor:[UIColor colorWithRed:0.101
-                                        green:0.45
-                                         blue:0.909
-                                        alpha:1]];
-  } else {
-    [label setFont:[[MDCTypography fontLoader] boldFontOfSize:kLegacyFontSize]];
-    [label setTextColor:[UIColor whiteColor]];
-  }
+  [label
+      setFont:[UIFont systemFontOfSize:kFontSize weight:UIFontWeightSemibold]];
+  [label
+      setTextColor:[UIColor colorWithRed:0.101 green:0.45 blue:0.909 alpha:1]];
   [label setTranslatesAutoresizingMaskIntoConstraints:NO];
   [label setText:text];
   [label setTextAlignment:NSTextAlignmentCenter];

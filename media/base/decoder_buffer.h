@@ -211,6 +211,10 @@ class MEDIA_EXPORT DecoderBuffer
   size_t side_data_size_;
   std::unique_ptr<uint8_t, base::AlignedFreeDeleter> side_data_;
 
+  // Copy of |data_| for debugging purposes. This field is not to be used.
+  // crbug.com/794740.
+  void* data_at_initialize_;
+
   // Encoded data, if it is stored in SHM.
   std::unique_ptr<UnalignedSharedMemory> shm_;
 

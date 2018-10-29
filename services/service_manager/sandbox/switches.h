@@ -25,6 +25,7 @@ SERVICE_MANAGER_SANDBOX_EXPORT extern const char kNetworkSandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kPpapiSandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kUtilitySandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kCdmSandbox[];
+SERVICE_MANAGER_SANDBOX_EXPORT extern const char kXrCompositingSandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kPdfCompositorSandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kProfilingSandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kAudioSandbox[];
@@ -50,6 +51,7 @@ SERVICE_MANAGER_SANDBOX_EXPORT extern const char kDisableGpuLpac[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kEnableGpuAppContainer[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char
     kNoSandboxAndElevatedPrivileges[];
+SERVICE_MANAGER_SANDBOX_EXPORT extern const char kAddXrAppContainerCaps[];
 #endif
 #if defined(OS_MACOSX)
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kEnableSandboxLogging[];

@@ -430,7 +430,6 @@ void URLRequestJob::NotifyHeadersComplete() {
         request_->first_party_url_policy(), request_->referrer_policy(),
         request_->referrer(), request_->response_headers(), http_status_code,
         new_location, insecure_scheme_was_upgraded,
-        request_->ssl_info().token_binding_negotiated,
         CopyFragmentOnRedirect(new_location));
     bool defer_redirect = false;
     request_->NotifyReceivedRedirect(redirect_info, &defer_redirect);

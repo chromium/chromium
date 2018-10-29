@@ -141,6 +141,10 @@ class ASH_EXPORT ShelfWidget : public views::Widget,
   // Shows shelf widget if IsVisible() returns false.
   void ShowIfHidden();
 
+  // views::Widget:
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+
   Shelf* shelf_;
 
   ShelfBackgroundAnimator background_animator_;

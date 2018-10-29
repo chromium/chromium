@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/modules/filesystem/entry.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_base_handle.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_directory_iterator_entry.h"
@@ -39,7 +40,7 @@ class FileSystemDirectoryIterator::ErrorCallbackHelper final
   explicit ErrorCallbackHelper(FileSystemDirectoryIterator* reader)
       : reader_(reader) {}
 
-  void Invoke(FileError::ErrorCode error) override { reader_->OnError(error); }
+  void Invoke(base::File::Error error) override { reader_->OnError(error); }
 
   void Trace(Visitor* visitor) override {
     ErrorCallbackBase::Trace(visitor);
@@ -59,7 +60,7 @@ FileSystemDirectoryIterator::FileSystemDirectoryIterator(
 }
 
 ScriptPromise FileSystemDirectoryIterator::next(ScriptState* script_state) {
-  if (error_ != FileError::kOK) {
+  if (error_ != base::File::FILE_OK) {
     return ScriptPromise::RejectWithDOMException(
         script_state, FileError::CreateDOMException(error_));
   }
@@ -98,7 +99,7 @@ void FileSystemDirectoryIterator::AddEntries(const EntryHeapVector& entries) {
   }
 }
 
-void FileSystemDirectoryIterator::OnError(FileError::ErrorCode error) {
+void FileSystemDirectoryIterator::OnError(base::File::Error error) {
   error_ = error;
   if (pending_next_) {
     pending_next_->Reject(FileError::CreateDOMException(error));

@@ -1,8 +1,7 @@
-CONSOLE WARNING: line 1: Percentages row tracks and gutters for indefinite height grid containers will be resolved against the intrinsic height instead of being treated as auto and zero respectively. This change will happen in M70, around October 2018. See https://www.chromestatus.com/feature/6708326821789696 for more details.
+CONSOLE WARNING: Percentages row tracks and gutters for indefinite height grid containers will be resolved against the intrinsic height instead of being treated as auto and zero respectively. This change will happen in M70, around October 2018. See https://www.chromestatus.com/feature/6708326821789696 for more details.
 Test that setting and getting grid-template-columns and grid-template-rows works as expected
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 Test getting |grid-template-columns| and |grid-template-rows| set through CSS
 PASS window.getComputedStyle(gridWithFixedElement, '').getPropertyValue('grid-template-columns') is "7px 11px"
@@ -44,9 +43,11 @@ PASS window.getComputedStyle(gridWithCalcInsideMinMax, '').getPropertyValue('gri
 PASS window.getComputedStyle(gridWithAutoInsideMinMax, '').getPropertyValue('grid-template-columns') is "0px 30px"
 PASS window.getComputedStyle(gridWithAutoInsideMinMax, '').getPropertyValue('grid-template-rows') is "132px 60px"
 
+
 Test the initial value
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is 'none'
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is 'none'
+
 
 Test getting and setting grid-template-rows and grid-template-columns through JS
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "18px 22px"
@@ -90,11 +91,13 @@ PASS element.style.gridTemplateColumns is "auto minmax(16px, auto)"
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "90px 80px"
 PASS element.style.gridTemplateRows is "minmax(auto, 15%) 10vw"
 
+
 Test getting wrong values set from CSS
 PASS getComputedStyle(gridWithNoneAndAuto, '').getPropertyValue('grid-template-columns') is 'none'
 PASS getComputedStyle(gridWithNoneAndAuto, '').getPropertyValue('grid-template-rows') is 'none'
 PASS getComputedStyle(gridWithNoneAndFixed, '').getPropertyValue('grid-template-columns') is 'none'
 PASS getComputedStyle(gridWithNoneAndFixed, '').getPropertyValue('grid-template-rows') is 'none'
+
 
 Test setting and getting wrong values from JS
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
@@ -118,11 +121,13 @@ PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-rows')
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "none"
 
+
 Test setting grid-template-columns and grid-template-rows to 'inherit' through JS
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "50px 750px [last]"
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "20px [middle] 45px"
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "50px 0px [last]"
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "20px [middle] 45px"
+
 
 Test setting grid-template-columns and grid-template-rows to 'initial' through JS
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "1200px [middle] 55px"

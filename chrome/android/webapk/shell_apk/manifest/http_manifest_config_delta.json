@@ -1,0 +1,10 @@
+{
+  "scope_url": "http://pwa.rocks/",
+  "intent_filters": {
+    "scope_url_scheme": "http",
+    "scope_url_host": "pwa.rocks",
+    "scope_url_path_type": "android:pathPrefix",
+    "scope_url_path": "/"
+  },
+  "start_url": "http://pwa.rocks/"
+}

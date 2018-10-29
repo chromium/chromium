@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 
-#include <math.h>
+#include <algorithm>
+#include <limits>
 #include <set>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/callback.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/ui/views/tabs/stacked_tab_strip_layout.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
@@ -91,7 +94,7 @@ const int kMaximizedWindowInset = 10;  // DIPs.
 // Given the bounds of a dragged tab, return the X coordinate to use for
 // computing where in the strip to insert/move the tab.
 int GetDraggedX(const gfx::Rect& dragged_bounds) {
-  return dragged_bounds.x() + Tab::GetDragInset();
+  return dragged_bounds.x() + TabStyle::GetTabInternalPadding().left();
 }
 
 #if defined(OS_CHROMEOS)
@@ -219,22 +222,24 @@ void OffsetX(int x_offset, std::vector<gfx::Rect>* rects) {
     (*rects)[i].set_x((*rects)[i].x() + x_offset);
 }
 
+}  // namespace
+
 // EscapeTracker installs an event monitor and runs a callback when it receives
 // the escape key.
-class EscapeTracker : public ui::EventHandler {
+class EscapeTracker : public ui::EventObserver {
  public:
   EscapeTracker(base::OnceClosure callback, gfx::NativeWindow context)
-      : escape_callback_(std::move(callback)),
-        event_monitor_(
-            views::EventMonitor::CreateApplicationMonitor(this, context)) {}
+      : escape_callback_(std::move(callback)) {
+    event_monitor_ = views::EventMonitor::CreateApplicationMonitor(
+        this, context, {ui::ET_KEY_PRESSED});
+  }
+  ~EscapeTracker() override = default;
 
  private:
-  // ui::EventHandler:
-  void OnKeyEvent(ui::KeyEvent* key) override {
-    if (key->type() == ui::ET_KEY_PRESSED &&
-        key->key_code() == ui::VKEY_ESCAPE && escape_callback_) {
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override {
+    if (event.AsKeyEvent()->key_code() == ui::VKEY_ESCAPE && escape_callback_)
       std::move(escape_callback_).Run();
-    }
   }
 
   base::OnceClosure escape_callback_;
@@ -242,8 +247,6 @@ class EscapeTracker : public ui::EventHandler {
 
   DISALLOW_COPY_AND_ASSIGN(EscapeTracker);
 };
-
-}  // namespace
 
 TabDragController::TabDragData::TabDragData()
     : contents(NULL),
@@ -568,6 +571,17 @@ void TabDragController::EndDrag(EndDragReason reason) {
   // dragged tabs to it first.
   if (reason == END_DRAG_COMPLETE && deferred_target_tabstrip_observer_)
     PerformDeferredAttach();
+
+  // It's also possible that we need to merge the dragged tabs back into the
+  // source window even if the dragged tabs is dragged away from the source
+  // window.
+  if (source_tabstrip_ &&
+      GetWindowForTabDraggingProperties(source_tabstrip_)
+          ->GetProperty(ash::kIsDeferredTabDraggingTargetWindowKey)) {
+    GetWindowForTabDraggingProperties(source_tabstrip_)
+        ->ClearProperty(ash::kIsDeferredTabDraggingTargetWindowKey);
+    reason = END_DRAG_CANCEL;
+  }
 #endif
 
   EndDragImpl(reason != END_DRAG_COMPLETE && source_tabstrip_ ?
@@ -756,10 +770,18 @@ TabDragController::DragBrowserToNewTabStrip(TabStrip* target_tabstrip,
 
 #if defined(USE_AURA)
   // Only Aura windows are gesture consumers.
+  gfx::NativeView attached_native_view =
+      GetAttachedBrowserWidget()->GetNativeView();
+#if defined(OS_CHROMEOS)
+  // When using WindowService, the touch events for the window move have
+  // happened on the root window, so the transfer should happen from the root of
+  // the currently attached window to the target.
+  if (features::IsUsingWindowService())
+    attached_native_view = attached_native_view->GetRootWindow();
+#endif
   GetAttachedBrowserWidget()->GetGestureRecognizer()->TransferEventsTo(
-      GetAttachedBrowserWidget()->GetNativeView(),
-      target_tabstrip->GetWidget()->GetNativeView(),
-      ui::GestureRecognizer::ShouldCancelTouches::DontCancel);
+      attached_native_view, target_tabstrip->GetWidget()->GetNativeView(),
+      ui::TransferTouchesBehavior::kDontCancel);
 #endif
 
   if (is_dragging_window_) {
@@ -861,7 +883,7 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen) {
   if (!attached_tabstrip_->touch_layout_.get()) {
     double ratio =
         static_cast<double>(attached_tabstrip_->current_inactive_width()) /
-        Tab::GetStandardWidth();
+        TabStyle::GetStandardWidth();
     threshold = gfx::ToRoundedInt(ratio * kHorizontalMoveThreshold);
   }
   // else case: touch tabs never shrink.
@@ -1233,10 +1255,11 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
 #if defined(USE_AURA)
   // Only Aura windows are gesture consumers.
   views::Widget* attached_widget = attached_tabstrip_->GetWidget();
-  gfx::NativeView attached_native_view = attached_widget->GetNativeView();
+  // Unlike DragBrowserToNewTabStrip, this does not have to special-handle
+  // IsUsingWindowServices(), since DesktopWIndowTreeHostMus takes care of it.
   attached_widget->GetGestureRecognizer()->TransferEventsTo(
-      attached_native_view, dragged_widget->GetNativeView(),
-      ui::GestureRecognizer::ShouldCancelTouches::DontCancel);
+      attached_widget->GetNativeView(), dragged_widget->GetNativeView(),
+      ui::TransferTouchesBehavior::kDontCancel);
 #endif
 
   Detach(can_release_capture_ ? RELEASE_CAPTURE : DONT_RELEASE_CAPTURE);
@@ -1537,8 +1560,6 @@ void TabDragController::EndDragImpl(EndDragType type) {
     GetAttachedBrowserWidget()->EndMoveLoop();
   }
 
-  ClearTabDraggingInfo();
-
   if (type != TAB_DESTROYED) {
     // We only finish up the drag if we were actually dragging. If start_drag_
     // is false, the user just clicked and released and didn't move the mouse
@@ -1560,6 +1581,10 @@ void TabDragController::EndDragImpl(EndDragType type) {
     if (started_drag_)
       RevertDrag();
   }  // else case the only tab we were dragging was deleted. Nothing to do.
+
+  // Clear tab dragging info after the complete/revert as CompleteDrag() may
+  // need to use some of the properties.
+  ClearTabDraggingInfo();
 
   // Clear out drag data so we don't attempt to do anything with it.
   drag_data_.clear();
@@ -2022,11 +2047,7 @@ Browser* TabDragController::CreateBrowserForDrag(
 
 gfx::Point TabDragController::GetCursorScreenPoint() {
 #if defined(OS_CHROMEOS)
-  // TODO(erg): Temporarily disable getting location from the gesture
-  // recognizer in mash until the mus side/window manager side RunMoveLoop() is
-  // fixed to understand routing touch events. https://crbug.com/867074
-  if (!features::IsUsingWindowService() &&
-      event_source_ == EVENT_SOURCE_TOUCH && env_->is_touch_down()) {
+  if (event_source_ == EVENT_SOURCE_TOUCH && env_->is_touch_down()) {
     views::Widget* widget = GetAttachedBrowserWidget();
     DCHECK(widget);
     aura::Window* widget_window = widget->GetNativeWindow();
@@ -2107,7 +2128,7 @@ void TabDragController::ClearTabDraggingInfo() {
       attached_tabstrip_ ? attached_tabstrip_ : source_tabstrip_;
   DCHECK(!dragged_tabstrip->IsDragSessionActive() || !active_);
   // Do not clear the dragging info properties for a to-be-destroyed window.
-  // They will be cleared later in Window's destrutor. It's intentional as
+  // They will be cleared later in Window's destructor. It's intentional as
   // ash::SplitViewController::TabDraggedWindowObserver listens to both
   // OnWindowDestroying() event and the window properties change event, and uses
   // the two events to decide what to do next.

@@ -118,8 +118,7 @@ class NotificationListTest : public testing::Test {
 
 bool IsInNotifications(const NotificationList::Notifications& notifications,
                        const std::string& id) {
-  for (NotificationList::Notifications::const_iterator iter =
-           notifications.begin(); iter != notifications.end(); ++iter) {
+  for (auto iter = notifications.begin(); iter != notifications.end(); ++iter) {
     if ((*iter)->id() == id)
       return true;
   }
@@ -305,14 +304,12 @@ TEST_F(NotificationListTest, OldPopupShouldNotBeHidden) {
   // one should come earlier in the popup list. It means, the last element
   // of |popups| should be the firstly added one, and so on.
   EXPECT_EQ(kMaxVisiblePopupNotifications, popups.size());
-  NotificationList::PopupNotifications::const_reverse_iterator iter =
-      popups.rbegin();
+  auto iter = popups.rbegin();
   for (size_t i = 0; i < kMaxVisiblePopupNotifications; ++i, ++iter) {
     EXPECT_EQ(ids[i], (*iter)->id()) << i;
   }
 
-  for (NotificationList::PopupNotifications::const_iterator iter =
-           popups.begin(); iter != popups.end(); ++iter) {
+  for (auto iter = popups.begin(); iter != popups.end(); ++iter) {
     notification_list_->MarkSinglePopupAsShown((*iter)->id(), false);
   }
   popups.clear();
@@ -346,8 +343,7 @@ TEST_F(NotificationListTest, Priority) {
 
   NotificationList::Notifications notifications =
       notification_list_->GetVisibleNotifications(blockers_);
-  for (NotificationList::Notifications::const_iterator iter =
-           notifications.begin(); iter != notifications.end(); ++iter) {
+  for (auto iter = notifications.begin(); iter != notifications.end(); ++iter) {
     notification_list_->RemoveNotification((*iter)->id());
   }
 
@@ -582,7 +578,7 @@ TEST_F(NotificationListTest, NotificationOrderAndPriority) {
     // Popups: latest comes first.
     NotificationList::PopupNotifications popups = GetPopups();
     EXPECT_EQ(3u, popups.size());
-    NotificationList::PopupNotifications::const_iterator iter = popups.begin();
+    auto iter = popups.begin();
     EXPECT_EQ(default_id, (*iter)->id());
     iter++;
     EXPECT_EQ(high_id, (*iter)->id());
@@ -594,8 +590,7 @@ TEST_F(NotificationListTest, NotificationOrderAndPriority) {
     const NotificationList::Notifications notifications =
         notification_list_->GetVisibleNotifications(blockers_);
     EXPECT_EQ(3u, notifications.size());
-    NotificationList::Notifications::const_iterator iter =
-        notifications.begin();
+    auto iter = notifications.begin();
     EXPECT_EQ(max_id, (*iter)->id());
     iter++;
     EXPECT_EQ(high_id, (*iter)->id());
@@ -625,7 +620,7 @@ TEST_F(NotificationListTest, MarkSinglePopupAsShown) {
   // The notifications in the NotificationCenter are unaffected by popups shown.
   NotificationList::Notifications notifications =
       notification_list_->GetVisibleNotifications(blockers_);
-  NotificationList::Notifications::const_iterator iter = notifications.begin();
+  auto iter = notifications.begin();
   EXPECT_EQ(id3, (*iter)->id());
   iter++;
   EXPECT_EQ(id2, (*iter)->id());

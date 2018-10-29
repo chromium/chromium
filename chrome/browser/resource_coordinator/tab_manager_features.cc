@@ -83,6 +83,8 @@ const char kProactiveTabFreezeAndDiscardFeatureName[] =
     "ProactiveTabFreezeAndDiscard";
 const char kProactiveTabFreezeAndDiscard_ShouldProactivelyDiscardParam[] =
     "ShouldProactivelyDiscard";
+const char kProactiveTabFreezeAndDiscard_DisableHeuristicsParam[] =
+    "DisableHeuristicsProtections";
 
 // Instantiate the feature parameters for proactive tab discarding.
 constexpr base::FeatureParam<bool>
@@ -109,6 +111,8 @@ constexpr base::FeatureParam<int>
     ProactiveTabFreezeAndDiscardParams::kUnfreezeTimeout;
 constexpr base::FeatureParam<int>
     ProactiveTabFreezeAndDiscardParams::kRefreezeTimeout;
+constexpr base::FeatureParam<bool>
+    ProactiveTabFreezeAndDiscardParams::kDisableHeuristicsProtections;
 
 // Instantiate the feature parameters for the site characteristics database.
 constexpr base::FeatureParam<int>
@@ -199,6 +203,9 @@ ProactiveTabFreezeAndDiscardParams GetProactiveTabFreezeAndDiscardParams(
   params.refreeze_timeout = base::TimeDelta::FromSeconds(
       ProactiveTabFreezeAndDiscardParams::kRefreezeTimeout.Get());
 
+  params.disable_heuristics_protections =
+      ProactiveTabFreezeAndDiscardParams::kDisableHeuristicsProtections.Get();
+
   return params;
 }
 
@@ -280,6 +287,12 @@ InfiniteSessionRestoreParams GetInfiniteSessionRestoreParams() {
       InfiniteSessionRestoreParams::kMinSiteEngagementToRestore.Get();
 
   return params;
+}
+
+int GetNumOldestTabsToScoreWithTabRanker() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kTabRanker, "number_of_oldest_tabs_to_score_with_TabRanker",
+      std::numeric_limits<int>::max());
 }
 
 }  // namespace resource_coordinator

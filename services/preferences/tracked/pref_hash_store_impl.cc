@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "services/preferences/tracked/device_id.h"
 #include "services/preferences/tracked/hash_store_contents.h"
 
@@ -20,9 +21,9 @@ using ValueState =
 
 // Returns a deterministic ID for this machine.
 std::string GenerateDeviceId() {
-  static std::string cached_device_id;
-  if (!cached_device_id.empty())
-    return cached_device_id;
+  static base::NoDestructor<std::string> cached_device_id;
+  if (!cached_device_id->empty())
+    return *cached_device_id;
 
   std::string device_id;
   MachineIdStatus status = GetDeterministicMachineSpecificId(&device_id);
@@ -30,7 +31,7 @@ std::string GenerateDeviceId() {
          status == MachineIdStatus::SUCCESS);
 
   if (status == MachineIdStatus::SUCCESS) {
-    cached_device_id = device_id;
+    *cached_device_id = device_id;
     return device_id;
   }
 

@@ -114,15 +114,6 @@ bool GetLocalCertificatesDir(const base::FilePath& certificates_dir,
   return true;
 }
 
-std::unique_ptr<base::ListValue> GetTokenBindingParams(
-    std::vector<int> params) {
-  std::unique_ptr<base::ListValue> values(new base::ListValue());
-  for (int param : params) {
-    values->AppendInteger(param);
-  }
-  return values;
-}
-
 std::string OCSPStatusToString(
     const BaseTestServer::SSLOptions::OCSPStatus& ocsp_status) {
   switch (ocsp_status) {
@@ -417,9 +408,7 @@ bool BaseTestServer::GetFilePathWithReplacements(
   std::string new_file_path = original_file_path;
   bool first_query_parameter = true;
   const std::vector<StringPair>::const_iterator end = text_to_replace.end();
-  for (std::vector<StringPair>::const_iterator it = text_to_replace.begin();
-       it != end;
-       ++it) {
+  for (auto it = text_to_replace.begin(); it != end; ++it) {
     const std::string& old_text = it->first;
     const std::string& new_text = it->second;
     std::string base64_old;
@@ -449,15 +438,23 @@ void BaseTestServer::RegisterTestCerts() {
 
 bool BaseTestServer::LoadTestRootCert() const {
   TestRootCerts* root_certs = TestRootCerts::GetInstance();
-  if (!root_certs)
-    return false;
+  DCHECK(root_certs);
 
   // Should always use absolute path to load the root certificate.
   base::FilePath root_certificate_path;
-  if (!GetLocalCertificatesDir(certificates_dir_, &root_certificate_path))
+  if (!GetLocalCertificatesDir(certificates_dir_, &root_certificate_path)) {
+    LOG(ERROR) << "Could not get local certificates directory from "
+               << certificates_dir_ << ".";
     return false;
+  }
 
-  return RegisterRootCertsInternal(root_certificate_path);
+  if (!RegisterRootCertsInternal(root_certificate_path)) {
+    LOG(ERROR) << "Could not register root certificates from "
+               << root_certificate_path << ".";
+    return false;
+  }
+
+  return true;
 }
 
 scoped_refptr<X509Certificate> BaseTestServer::GetCertificate() const {
@@ -529,8 +526,10 @@ bool BaseTestServer::SetupWhenServerStarted() {
   DCHECK(host_port_pair_.port());
   DCHECK(!started_);
 
-  if (UsingSSL(type_) && !LoadTestRootCert())
-      return false;
+  if (UsingSSL(type_) && !LoadTestRootCert()) {
+    LOG(ERROR) << "Could not load test root certificate.";
+    return false;
+  }
 
   started_ = true;
   allowed_port_.reset(new ScopedPortException(host_port_pair_.port()));
@@ -682,6 +681,9 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
       arguments->Set("tls-intolerance-type", GetTLSIntoleranceType(
           ssl_options_.tls_intolerance_type));
     }
+    if (ssl_options_.tls_max_version != SSLOptions::TLS_MAX_VERSION_DEFAULT) {
+      arguments->SetInteger("tls-max-version", ssl_options_.tls_max_version);
+    }
     if (ssl_options_.fallback_scsv_enabled)
       arguments->Set("fallback-scsv", std::make_unique<base::Value>());
     if (!ssl_options_.signed_cert_timestamps_tls_ext.empty()) {
@@ -719,12 +721,13 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
       arguments->Set("disable-extended-master-secret",
                      std::make_unique<base::Value>());
     }
-    if (!ssl_options_.supported_token_binding_params.empty()) {
-      std::unique_ptr<base::ListValue> token_binding_params(
-          new base::ListValue());
-      arguments->Set(
-          "token-binding-params",
-          GetTokenBindingParams(ssl_options_.supported_token_binding_params));
+    if (ssl_options_.simulate_tls13_downgrade) {
+      arguments->Set("simulate-tls13-downgrade",
+                     std::make_unique<base::Value>());
+    }
+    if (ssl_options_.simulate_tls12_downgrade) {
+      arguments->Set("simulate-tls12-downgrade",
+                     std::make_unique<base::Value>());
     }
   }
 

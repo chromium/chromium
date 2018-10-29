@@ -3,7 +3,6 @@ Test dynamically changing sibling rule matches in ShadowRoots
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Dynamically change the :first-child
 PASS getComputedStyle(first).color is "rgb(255, 0, 0)"
 PASS getComputedStyle(second).color is "rgb(0, 0, 0)"

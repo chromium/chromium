@@ -102,7 +102,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   int GetDockedMagnifierHeight() const;
 
   // Returns the ideal bounds of the shelf assuming it is visible.
-  gfx::Rect GetIdealBounds();
+  gfx::Rect GetIdealBounds() const;
 
   gfx::Rect GetUserWorkAreaBounds() const;
 
@@ -138,7 +138,13 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
 
   // Get the tray button that the system tray bubble and the notification center
   // bubble will be anchored. See also: StatusAreaWidget::GetSystemTrayAnchor()
-  TrayBackgroundView* GetSystemTrayAnchor() const;
+  TrayBackgroundView* GetSystemTrayAnchorView() const;
+
+  // Get the anchor rect that the system tray bubble and the notification center
+  // bubble will be anchored.
+  // x() and y() designates anchor point, but width() and height() are dummy.
+  // See also: BubbleDialogDelegateView::GetBubbleBounds()
+  gfx::Rect GetSystemTrayAnchorRect() const;
 
   void set_is_tablet_mode_animation_running(bool value) {
     is_tablet_mode_animation_running_ = value;

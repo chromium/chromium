@@ -10,8 +10,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
+#include "base/task/post_task.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_message_filter.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/associated_binding_set.h"
@@ -73,8 +75,8 @@ class BrowserAssociatedInterface {
 
     void ClearBindings() {
       if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-        BrowserThread::PostTask(
-            BrowserThread::IO, FROM_HERE,
+        base::PostTaskWithTraits(
+            FROM_HERE, {BrowserThread::IO},
             base::BindOnce(&InternalState::ClearBindings, this));
         return;
       }

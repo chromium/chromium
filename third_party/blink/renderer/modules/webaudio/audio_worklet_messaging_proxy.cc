@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
 
+#include <utility>
+
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
@@ -47,9 +49,9 @@ void AudioWorkletMessagingProxy::CreateProcessorOnRenderingThread(
     scoped_refptr<SerializedScriptValue> node_options) {
   DCHECK(worker_thread->IsCurrentThread());
   AudioWorkletGlobalScope* global_scope =
-      ToAudioWorkletGlobalScope(worker_thread->GlobalScope());
-  AudioWorkletProcessor* processor =
-      global_scope->CreateProcessor(name, message_port_channel, node_options);
+      To<AudioWorkletGlobalScope>(worker_thread->GlobalScope());
+  AudioWorkletProcessor* processor = global_scope->CreateProcessor(
+      name, message_port_channel, std::move(node_options));
   handler->SetProcessorOnRenderThread(processor);
 }
 

@@ -68,7 +68,7 @@ Run the following scripts:
 
 If the library will never be shipped as a part of Chrome (e.g. build-time tools,
 testing tools), make sure to set "License File" as "NOT_SHIPPED" so that the
-license is not included in about:credits page.
+license is not included in about:credits page ([more on this below](#credits)).
 
 ### Modify DEPS
 
@@ -152,3 +152,19 @@ ticket](https://bugs.chromium.org/p/chromium/issues/entry?template=Infra-Git)
 for infra and ask the infra team what needs to be done. Note that you'll need
 unlimited quota for at least two role accounts. See the quota status of
 `boringssl` as an example.
+
+## How we ensure that the right credits are displayed {#credits}
+
+As we said at the beginning, it is important that Chrome displays the
+right credit and attributions for all of the third_party code we use.
+
+To view this in chrome, you can open chrome://credits.
+
+That page displays a resource embedded in the browser as part of the
+[//components/resources/components_resources.grd](../components/resources/components_resource.grd)
+GRIT file; the actual HTML text is generated in the
+[//components/resources:about_credits](../components/resources/BUILD.gn)
+build target using a template from the output of the
+[//tools/licenses.py](../tools/licenses.py) script. Assuming you've followed
+the rules above to ensure that you have the proper LICENSE file and it passes
+the checks, it'll be included automatically.

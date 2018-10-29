@@ -148,6 +148,8 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
 
   void AllowBroadcast() override { NOTIMPLEMENTED(); }
 
+  void AllowAddressSharingForMulticast() override { NOTIMPLEMENTED(); }
+
   int JoinGroup(const net::IPAddress& group_address) const override {
     NOTIMPLEMENTED();
     return net::ERR_NOT_IMPLEMENTED;

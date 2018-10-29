@@ -39,11 +39,10 @@ function getProviderNameForTest(manifest) {
 function getSetupSteps(manifest) {
   return [
     function() {
-      chrome.test.sendMessage(
-          JSON.stringify({
-            name: 'launchProviderExtension',
-            manifest: manifest
-          }), this.next);
+      sendTestMessage({
+          name: 'launchProviderExtension',
+          manifest: manifest,
+      }).then(this.next);
     },
     function() {
       setupAndWaitUntilReady(null, RootPath.DOWNLOADS, this.next);

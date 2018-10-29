@@ -18,7 +18,7 @@ namespace storage {
 // thread.
 class STORAGE_EXPORT ShareableFileReference : public BlobDataItem::DataHandle {
  public:
-  typedef ScopedFile::ScopeOutCallback FinalReleaseCallback;
+  using FinalReleaseCallback = ScopedFile::ScopeOutCallback;
 
   enum FinalReleasePolicy {
     DELETE_ON_FINAL_RELEASE = ScopedFile::DELETE_ON_SCOPE_OUT,

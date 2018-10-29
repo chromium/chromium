@@ -839,16 +839,16 @@ FAIL AbstractRange interface: attribute startOffset assert_own_property: self do
 FAIL AbstractRange interface: attribute endContainer assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
 FAIL AbstractRange interface: attribute endOffset assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
 FAIL AbstractRange interface: attribute collapsed assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL StaticRange interface: existence and properties of interface object assert_own_property: should inherit from AbstractRange, but self has no such property expected property "AbstractRange" missing
+FAIL StaticRange interface: existence and properties of interface object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
 PASS StaticRange interface object length
 PASS StaticRange interface object name
-FAIL StaticRange interface: existence and properties of interface prototype object assert_own_property: should inherit from AbstractRange, but self has no such property expected property "AbstractRange" missing
+FAIL StaticRange interface: existence and properties of interface prototype object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
 PASS StaticRange interface: existence and properties of interface prototype object's "constructor" property
 PASS StaticRange interface: existence and properties of interface prototype object's @@unscopables property
-FAIL Range interface: existence and properties of interface object assert_own_property: should inherit from AbstractRange, but self has no such property expected property "AbstractRange" missing
+FAIL Range interface: existence and properties of interface object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
 PASS Range interface object length
 PASS Range interface object name
-FAIL Range interface: existence and properties of interface prototype object assert_own_property: should inherit from AbstractRange, but self has no such property expected property "AbstractRange" missing
+FAIL Range interface: existence and properties of interface prototype object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
 PASS Range interface: existence and properties of interface prototype object's "constructor" property
 PASS Range interface: existence and properties of interface prototype object's @@unscopables property
 PASS Range interface: attribute commonAncestorContainer

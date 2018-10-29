@@ -73,14 +73,6 @@ class DataReductionProxyData : public base::SupportsUserData::Data {
     used_data_reduction_proxy_ = used_data_reduction_proxy;
   }
 
-  // Whether Lo-Fi was requested for this request or navigation. True if the
-  // session is in Lo-Fi control or enabled group, and the network quality is
-  // slow.
-  bool lofi_requested() const { return lofi_requested_; }
-  void set_lofi_requested(bool lofi_requested) {
-    lofi_requested_ = lofi_requested;
-  }
-
   // Whether a lite page response was seen for the request or navigation.
   bool lite_page_received() const { return lite_page_received_; }
   void set_lite_page_received(bool lite_page_received) {
@@ -200,11 +192,6 @@ class DataReductionProxyData : public base::SupportsUserData::Data {
   // otherwise be eligible to use the proxy.
   // Cached responses are not considered to have used DRP.
   bool used_data_reduction_proxy_;
-
-  // Whether server Lo-Fi was requested for this request or navigation. True if
-  // the session is in Lo-Fi control or enabled group, and the network quality
-  // is slow.
-  bool lofi_requested_;
 
   // Whether client Lo-Fi was requested for this request. This is only set on
   // image requests that have added a range header to attempt to get a smaller

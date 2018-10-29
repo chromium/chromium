@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
 
@@ -16,6 +17,7 @@ class DownloadUrlParameters;
 
 namespace net {
 class URLRequest;
+class URLRequestContextGetter;
 }  // namespace net
 
 namespace storage {
@@ -26,9 +28,11 @@ namespace content {
 
 class ResourceContext;
 
-// Create a URLRequest from |params|.
-std::unique_ptr<net::URLRequest> CONTENT_EXPORT
-CreateURLRequestOnIOThread(download::DownloadUrlParameters* params);
+// Create a URLRequest from |params| using the specified
+// URLRequestContextGetter.
+std::unique_ptr<net::URLRequest> CONTENT_EXPORT CreateURLRequestOnIOThread(
+    download::DownloadUrlParameters* params,
+    scoped_refptr<net::URLRequestContextGetter> url_request_context_getter);
 
 storage::BlobStorageContext* BlobStorageContextGetter(
     ResourceContext* resource_context);

@@ -13,55 +13,96 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "content/browser/appcache/appcache_response.h"
 #include "content/common/content_export.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/disk_cache.h"
 
 namespace content {
 
-// An implementation of AppCacheDiskCacheInterface that
+class AppCacheDiskCache;
+
+// Thin wrapper around disk_cache::Entry.
+class CONTENT_EXPORT AppCacheDiskCacheEntry {
+ public:
+  // The newly created entry takes ownership of |disk_cache_entry| and closes it
+  // on destruction. |cache| must outlive the newly created entry.
+  AppCacheDiskCacheEntry(disk_cache::Entry* disk_cache_entry,
+                         AppCacheDiskCache* cache);
+
+  int Read(int index,
+           int64_t offset,
+           net::IOBuffer* buf,
+           int buf_len,
+           net::CompletionOnceCallback callback);
+
+  int Write(int index,
+            int64_t offset,
+            net::IOBuffer* buf,
+            int buf_len,
+            net::CompletionOnceCallback callback);
+  int64_t GetSize(int index);
+  void Close();
+
+  // Should only be called by AppCacheDiskCache.
+  void Abandon();
+
+ private:
+  // Call Close() instead of calling this directly.
+  ~AppCacheDiskCacheEntry();
+
+  // The disk_cache::Entry is owned by this entry and closed on destruction.
+  disk_cache::Entry* disk_cache_entry_;
+
+  // The cache that this entry belongs to.
+  AppCacheDiskCache* cache_;
+};
+
+// An implementation of AppCacheDiskCache that
 // uses net::DiskCache as the backing store.
-class CONTENT_EXPORT AppCacheDiskCache
-    : public AppCacheDiskCacheInterface {
+class CONTENT_EXPORT AppCacheDiskCache {
  public:
   AppCacheDiskCache();
-  ~AppCacheDiskCache() override;
+  virtual ~AppCacheDiskCache();
 
   // Initializes the object to use disk backed storage.
-  int InitWithDiskBackend(const base::FilePath& disk_cache_directory,
-                          int disk_cache_size,
-                          bool force,
-                          base::OnceClosure post_cleanup_callback,
-                          net::CompletionOnceCallback callback);
+  net::Error InitWithDiskBackend(const base::FilePath& disk_cache_directory,
+                                 int disk_cache_size,
+                                 bool force,
+                                 base::OnceClosure post_cleanup_callback,
+                                 net::CompletionOnceCallback callback);
 
   // Initializes the object to use memory only storage.
   // This is used for Chrome's incognito browsing.
-  int InitWithMemBackend(int disk_cache_size,
-                         net::CompletionOnceCallback callback);
+  net::Error InitWithMemBackend(int disk_cache_size,
+                                net::CompletionOnceCallback callback);
 
   void Disable();
   bool is_disabled() const { return is_disabled_; }
 
-  int CreateEntry(int64_t key,
-                  Entry** entry,
-                  net::CompletionOnceCallback callback) override;
-  int OpenEntry(int64_t key,
-                Entry** entry,
-                net::CompletionOnceCallback callback) override;
-  int DoomEntry(int64_t key, net::CompletionOnceCallback callback) override;
+  net::Error CreateEntry(int64_t key,
+                         AppCacheDiskCacheEntry** entry,
+                         net::CompletionOnceCallback callback);
+  net::Error OpenEntry(int64_t key,
+                       AppCacheDiskCacheEntry** entry,
+                       net::CompletionOnceCallback callback);
+  net::Error DoomEntry(int64_t key, net::CompletionOnceCallback callback);
+
+  base::WeakPtr<AppCacheDiskCache> GetWeakPtr();
 
   void set_is_waiting_to_initialize(bool is_waiting_to_initialize) {
     is_waiting_to_initialize_ = is_waiting_to_initialize;
   }
 
+  const char* uma_name() { return uma_name_; }
+
  protected:
-  explicit AppCacheDiskCache(bool use_simple_cache);
+  // |uma_name| must remain valid for the life of the object.
+  explicit AppCacheDiskCache(const char* uma_name, bool use_simple_cache);
   disk_cache::Backend* disk_cache() { return disk_cache_.get(); }
 
  private:
   class CreateBackendCallbackShim;
-  class EntryImpl;
+  friend class AppCacheDiskCacheEntry;
 
   // PendingCalls allow CreateEntry, OpenEntry, and DoomEntry to be called
   // immediately after construction, without waiting for the
@@ -77,7 +118,7 @@ class CONTENT_EXPORT AppCacheDiskCache
     PendingCall();
     PendingCall(PendingCallType call_type,
                 int64_t key,
-                Entry** entry,
+                AppCacheDiskCacheEntry** entry,
                 net::CompletionOnceCallback callback);
     PendingCall(PendingCall&& other);
 
@@ -85,28 +126,35 @@ class CONTENT_EXPORT AppCacheDiskCache
 
     PendingCallType call_type;
     int64_t key;
-    Entry** entry;
+    AppCacheDiskCacheEntry** entry;
     net::CompletionOnceCallback callback;
   };
   using PendingCalls = std::vector<PendingCall>;
 
   class ActiveCall;
   using ActiveCalls = std::set<ActiveCall*>;
-  using OpenEntries = std::set<EntryImpl*>;
+  using OpenEntries = std::set<AppCacheDiskCacheEntry*>;
 
   bool is_initializing_or_waiting_to_initialize() const {
     return create_backend_callback_.get() != NULL || is_waiting_to_initialize_;
   }
 
-  int Init(net::CacheType cache_type,
-           const base::FilePath& directory,
-           int cache_size,
-           bool force,
-           base::OnceClosure post_cleanup_callback,
-           net::CompletionOnceCallback callback);
-  void OnCreateBackendComplete(int rv);
-  void AddOpenEntry(EntryImpl* entry) { open_entries_.insert(entry); }
-  void RemoveOpenEntry(EntryImpl* entry) { open_entries_.erase(entry); }
+  net::Error Init(net::CacheType cache_type,
+                  const base::FilePath& directory,
+                  int cache_size,
+                  bool force,
+                  base::OnceClosure post_cleanup_callback,
+                  net::CompletionOnceCallback callback);
+  void OnCreateBackendComplete(int return_value);
+
+  // Called by AppCacheDiskCacheEntry constructor.
+  void AddOpenEntry(AppCacheDiskCacheEntry* entry) {
+    open_entries_.insert(entry);
+  }
+  // Called by AppCacheDiskCacheEntry destructor.
+  void RemoveOpenEntry(AppCacheDiskCacheEntry* entry) {
+    open_entries_.erase(entry);
+  }
 
   bool use_simple_cache_;
   bool is_disabled_;
@@ -116,6 +164,7 @@ class CONTENT_EXPORT AppCacheDiskCache
   PendingCalls pending_calls_;
   OpenEntries open_entries_;
   std::unique_ptr<disk_cache::Backend> disk_cache_;
+  const char* const uma_name_;
 
   base::WeakPtrFactory<AppCacheDiskCache> weak_factory_;
 };

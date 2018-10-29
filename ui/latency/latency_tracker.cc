@@ -106,10 +106,6 @@ void LatencyTracker::OnGpuSwapBuffersCompleted(const LatencyInfo& latency) {
   }
 }
 
-void LatencyTracker::DisableMetricSamplingForTesting() {
-  metric_sampling_ = false;
-}
-
 void LatencyTracker::ReportUkmScrollLatency(
     const InputMetricEvent& metric_event,
     base::TimeTicks start_timestamp,
@@ -120,11 +116,6 @@ void LatencyTracker::ReportUkmScrollLatency(
   CONFIRM_EVENT_TIMES_EXIST(start_timestamp,
                             time_to_scroll_update_swap_begin_timestamp)
   CONFIRM_EVENT_TIMES_EXIST(start_timestamp, time_to_handled_timestamp)
-
-  // Only report a subset of this metric as the volume is too high.
-  if (metric_sampling_ &&
-      !sampling_scheme_[static_cast<int>(metric_event)].ShouldReport())
-    return;
 
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   if (ukm_source_id == ukm::kInvalidSourceId || !ukm_recorder)
@@ -322,26 +313,31 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
   }
 
   base::TimeTicks renderer_swap_timestamp;
-  bool found_component =
+  bool found_renderer_swap_component =
       latency.FindLatency(ui::INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT,
                           &renderer_swap_timestamp);
-  DCHECK_AND_RETURN_ON_FAIL(found_component);
-
-  UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2(
-      "Event.Latency." + scroll_name + "." + input_modality +
-          ".HandledToRendererSwap2_" + thread_name,
-      rendering_scheduled_timestamp, renderer_swap_timestamp);
 
   base::TimeTicks browser_received_swap_timestamp;
-  found_component =
+  bool found_received_frame_component =
       latency.FindLatency(ui::DISPLAY_COMPOSITOR_RECEIVED_FRAME_COMPONENT,
                           &browser_received_swap_timestamp);
-  DCHECK_AND_RETURN_ON_FAIL(found_component);
+  DCHECK_AND_RETURN_ON_FAIL(found_received_frame_component);
 
-  UMA_HISTOGRAM_SCROLL_LATENCY_SHORT_2(
-      "Event.Latency." + scroll_name + "." + input_modality +
-          ".RendererSwapToBrowserNotified2",
-      renderer_swap_timestamp, browser_received_swap_timestamp);
+  // If we're committing to the active tree, there will never be a renderer
+  // swap. In this case, don't record the two histogram values for the periods
+  // surrounding the renderer swap. We could assign the total time to one or the
+  // other of them, but that would likely skew statistics.
+  if (found_renderer_swap_component) {
+    UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2(
+        "Event.Latency." + scroll_name + "." + input_modality +
+            ".HandledToRendererSwap2_" + thread_name,
+        rendering_scheduled_timestamp, renderer_swap_timestamp);
+
+    UMA_HISTOGRAM_SCROLL_LATENCY_SHORT_2(
+        "Event.Latency." + scroll_name + "." + input_modality +
+            ".RendererSwapToBrowserNotified2",
+        renderer_swap_timestamp, browser_received_swap_timestamp);
+  }
 
   UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2(
       "Event.Latency." + scroll_name + "." + input_modality +

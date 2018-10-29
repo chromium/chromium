@@ -50,10 +50,15 @@ void Separator::OnPaint(gfx::Canvas* canvas) {
                       : GetNativeTheme()->GetSystemColor(
                             ui::NativeTheme::kColorId_SeparatorColor);
 
-  // The separator fills its bounds, but avoid filling partial pixels.
   float dsf = canvas->UndoDeviceScaleFactor();
-  gfx::RectF contents = gfx::ScaleRect(gfx::RectF(GetContentsBounds()), dsf);
-  canvas->FillRect(gfx::ToEnclosedRect(contents), color);
+
+  // The separator fills its bounds, but avoid filling partial pixels.
+  gfx::Rect aligned = gfx::ScaleToEnclosedRect(GetContentsBounds(), dsf, dsf);
+
+  // At least 1 pixel should be drawn to make the separator visible.
+  aligned.set_width(std::max(1, aligned.width()));
+  aligned.set_height(std::max(1, aligned.height()));
+  canvas->FillRect(aligned, color);
 
   View::OnPaint(canvas);
 }

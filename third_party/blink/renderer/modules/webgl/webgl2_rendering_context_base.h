@@ -936,7 +936,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum format,
                   GLenum type,
                   MaybeShared<DOMArrayBufferView> pixels,
-                  GLuint offset);
+                  long long offset);
   void readPixels(GLint x,
                   GLint y,
                   GLsizei width,
@@ -1136,7 +1136,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
       bound_indexed_shader_storage_buffers_;
   HeapVector<TraceWrapperMember<WebGLBuffer>> bound_indexed_uniform_buffers_;
   GLint max_transform_feedback_separate_attribs_;
-  size_t max_bound_uniform_buffer_index_;
+  wtf_size_t max_bound_uniform_buffer_index_;
 
   TraceWrapperMember<WebGLQuery> current_boolean_occlusion_query_;
   TraceWrapperMember<WebGLQuery>

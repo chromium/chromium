@@ -86,3 +86,60 @@ class MultiTabTypical24Story(MultiTabStory):
   ]
   URL = URL_LIST[0]
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+
+
+class MultiTabTypical24Story2018(MultiTabStory):
+  """Load 24 different web sites in 24 tabs, then cycle through each tab."""
+  NAME = 'multitab:misc:typical24:2018'
+  TAGS = [story_tags.TABS_SWITCHING, story_tags.YEAR_2018,
+          story_tags.INTERNATIONAL]
+  URL_LIST = [
+      # Why: Top Site Africa
+      'https://www.nairaland.com/?',
+      'https://www.jumia.com.ng',
+
+      # Why: Top Site Asia
+      ('https://activity.alibaba.com/sale/Super-September/'
+       'machinery.html?spm=a2700.8293689.procates.4.46ce65aa0eZF5r'),
+      'https://www.flipkart.com/',
+      ('https://www.indiatimes.com/technology/science-and-future/'
+       'how-spacex-s-trip-around-the-moon-can-make-the-tourists-sick-or-even'
+       '-give-them-a-heart-attack-353365.html'),
+
+      # Why: Top Site Caribbean
+      'https://www.clasificadosonline.com/Miscellaneous.asp',
+      'http://guardian.co.tt/',
+
+      # Why: Top Site Central America
+      'https://www.copaair.com/en/web/us',
+      'http://www.ticotimes.net',
+
+      # Why: Top Site Europe
+      'https://poker.bet365.com/home/ro/',
+      'https://www.asos.com/se/kvinna/?r=1',
+      'https://www.thesun.co.uk/',
+
+      # Why: Top Site Middle East
+      'https://www.irib.ir/',
+      'https://www.qatarliving.com',
+      'https://www.aljazeera.com/',
+
+      # Why: Top Site North America
+      'https://www.nih.gov/',
+      ('https://www.walmart.com/browse/2637_615760?cat_id=2637_615760_1088766_'
+       '1054039&povid=615760+%7C+2018-08-31+%7C+Kids%20Costumes%20POV'),
+      'https://weather.com/',
+
+      # Why: Top Site Oceania
+      'http://www.abc.net.au/',
+      ('https://www.seek.com.au/jobs-in-consulting-strategy?highpay=True&'
+       'salaryrange=150000-999999&salarytype=annual'),
+      'https://www.westpac.com.au/',
+
+      # Why: Top Site South America
+      'http://brasil.gov.br',
+      'http://www.b3.com.br/pt_br/',
+      'https://www.visitchile.com/es/circuitos/'
+  ]
+  URL = URL_LIST[0]
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY

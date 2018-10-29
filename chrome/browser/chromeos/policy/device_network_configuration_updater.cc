@@ -66,6 +66,7 @@ DeviceNetworkConfigurationUpdater::DeviceNetworkConfigurationUpdater(
         device_asset_id_fetcher)
     : NetworkConfigurationUpdater(onc::ONC_SOURCE_DEVICE_POLICY,
                                   key::kDeviceOpenNetworkConfiguration,
+                                  false /* allow_trusted_certs_from_policy */,
                                   policy_service,
                                   network_config_handler),
       network_device_handler_(network_device_handler),
@@ -80,31 +81,6 @@ DeviceNetworkConfigurationUpdater::DeviceNetworkConfigurationUpdater(
           base::Unretained(this)));
   if (device_asset_id_fetcher_.is_null())
     device_asset_id_fetcher_ = base::BindRepeating(&GetDeviceAssetID);
-}
-
-net::CertificateList
-DeviceNetworkConfigurationUpdater::GetAuthorityCertificates() {
-  net::CertificateList authority_certs;
-
-  base::ListValue onc_certificates_value;
-  ParseCurrentPolicy(nullptr /* network_configs */,
-                     nullptr /* global_network_config */,
-                     &onc_certificates_value);
-
-  chromeos::onc::OncParsedCertificates onc_parsed_certificates(
-      onc_certificates_value);
-
-  for (const chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate&
-           onc_certificate :
-       onc_parsed_certificates.server_or_authority_certificates()) {
-    if (onc_certificate.type() ==
-        chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate::
-            Type::kAuthority) {
-      authority_certs.push_back(onc_certificate.certificate());
-    }
-  }
-
-  return authority_certs;
 }
 
 void DeviceNetworkConfigurationUpdater::Init() {
@@ -130,14 +106,8 @@ void DeviceNetworkConfigurationUpdater::Init() {
       !connector->IsEnterpriseManaged());
 }
 
-void DeviceNetworkConfigurationUpdater::ImportCertificates(
-    const base::ListValue& certificates_onc) {
+void DeviceNetworkConfigurationUpdater::ImportClientCertificates() {
   // Importing client certificates from device policy is not implemented.
-  // Permanently importing CA and server certs from device policy or giving such
-  // certificates trust is not allowed. However, we make authority certificates
-  // from device policy available (e.g. for use as intermediates in client
-  // certificate discovery on the sign-in screen), see
-  // GetAuthorityCertificates().
 }
 
 void DeviceNetworkConfigurationUpdater::ApplyNetworkPolicy(

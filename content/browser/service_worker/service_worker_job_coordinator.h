@@ -31,7 +31,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
                 const blink::mojom::ServiceWorkerRegistrationOptions& options,
                 ServiceWorkerRegisterJob::RegistrationCallback callback);
 
-  void Unregister(const GURL& pattern,
+  void Unregister(const GURL& scope,
                   ServiceWorkerUnregisterJob::UnregistrationCallback callback);
 
   void Update(ServiceWorkerRegistration* registration, bool force_bypass_cache);
@@ -46,7 +46,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
 
   // Removes the job. A job that was not aborted must call FinishJob when it is
   // done.
-  void FinishJob(const GURL& pattern, ServiceWorkerRegisterJobBase* job);
+  void FinishJob(const GURL& scope, ServiceWorkerRegisterJobBase* job);
 
  private:
   class JobQueue {

@@ -21,15 +21,14 @@ namespace content {
 // watch for NSAccessibility events.
 class AccessibilityEventRecorderMac : public AccessibilityEventRecorder {
  public:
+  AccessibilityEventRecorderMac(BrowserAccessibilityManager* manager,
+                                base::ProcessId pid);
   ~AccessibilityEventRecorderMac() override;
 
   // Callback executed every time we receive an event notification.
   void EventReceived(AXUIElementRef element, CFStringRef notification);
 
  private:
-  AccessibilityEventRecorderMac(BrowserAccessibilityManager* manager,
-                                base::ProcessId pid);
-
   // Add one notification to the list of notifications monitored by our
   // observer.
   void AddNotification(NSString* notification);
@@ -46,7 +45,6 @@ class AccessibilityEventRecorderMac : public AccessibilityEventRecorder {
   base::ScopedCFTypeRef<AXObserverRef> observer_ref_;
   CFRunLoopSourceRef observer_run_loop_source_;
 
-  friend class base::NoDestructor<AccessibilityEventRecorderMac>;
   DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderMac);
 };
 
@@ -62,7 +60,7 @@ static void EventReceivedThunk(
 }
 
 // static
-AccessibilityEventRecorder& AccessibilityEventRecorder::GetInstance(
+std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const base::StringPiece& application_name_match_pattern) {
@@ -72,9 +70,7 @@ AccessibilityEventRecorder& AccessibilityEventRecorder::GetInstance(
     NOTREACHED();
   }
 
-  static base::NoDestructor<AccessibilityEventRecorderMac> instance(manager,
-                                                                    pid);
-  return *instance;
+  return std::make_unique<AccessibilityEventRecorderMac>(manager, pid);
 }
 
 AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(

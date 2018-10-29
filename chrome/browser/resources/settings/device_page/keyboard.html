@@ -13,13 +13,15 @@
 <dom-module id="settings-keyboard">
   <template>
     <style include="settings-shared"></style>
-    <div class="settings-box first">
-      <div class="start">$i18n{keyboardKeySearch}</div>
-      <settings-dropdown-menu label="$i18n{keyboardKeySearch}"
-          pref="{{prefs.settings.language.xkb_remap_search_key_to}}"
-          menu-options="[[keyMapTargets_]]">
-      </settings-dropdown-menu>
-    </div>
+    <template is="dom-if" if="[[hasInternalKeyboard_]]">
+      <div class="settings-box first" id="internalSearchKey">
+        <div class="start">$i18n{keyboardKeySearch}</div>
+        <settings-dropdown-menu label="$i18n{keyboardKeySearch}"
+            pref="{{prefs.settings.language.xkb_remap_search_key_to}}"
+            menu-options="[[keyMapTargets_]]">
+        </settings-dropdown-menu>
+      </div>
+    </template>
     <div class="settings-box">
       <div class="start">$i18n{keyboardKeyCtrl}</div>
       <settings-dropdown-menu label="$i18n{keyboardKeyCtrl}"
@@ -68,8 +70,11 @@
     </template>
     <template is="dom-if" if="[[showExternalMetaKey_]]">
       <div class="settings-box" id="externalMetaKey">
-        <div class="start">$i18n{keyboardKeyExternalMeta}</div>
-        <settings-dropdown-menu label="$i18n{keyboardKeyExternalMeta}"
+        <div class="start">
+          [[getExternalMetaKeyLabel_(hasInternalKeyboard_)]]
+        </div>
+        <settings-dropdown-menu
+            label="[[getExternalMetaKeyLabel_(hasInternalKeyboard_)]]"
             pref="{{prefs.settings.language.remap_external_meta_key_to}}"
             menu-options="[[keyMapTargets_]]">
         </settings-dropdown-menu>
@@ -77,9 +82,11 @@
     </template>
     <template is="dom-if" if="[[showAppleCommandKey_]]">
       <div class="settings-box" id="externalCommandKey">
-        <div class="start">$i18n{keyboardKeyExternalCommand}</div>
+        <div class="start">
+          [[getExternalCommandKeyLabel_(hasInternalKeyboard_)]]
+        </div>
         <settings-dropdown-menu
-            label="$i18n{keyboardKeyExternalCommand}"
+            label="[[getExternalCommandKeyLabel_(hasInternalKeyboard_)]]"
             pref="{{prefs.settings.language.remap_external_command_key_to}}"
             menu-options="[[keyMapTargets_]]">
         </settings-dropdown-menu>
@@ -100,7 +107,7 @@
         <div class="start" id="repeatDelayLabel">$i18n{keyRepeatDelay}</div>
         <settings-slider id="delaySlider"
             pref="{{prefs.settings.language.xkb_auto_repeat_delay_r2}}"
-            tick-values="[[autoRepeatDelays_]]"
+            ticks="[[autoRepeatDelays_]]"
             disabled="[[
                 !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
             aria-labelledby="repeatDelayLabel"
@@ -113,7 +120,7 @@
         <settings-slider id="repeatRateSlider"
             pref="{{
                 prefs.settings.language.xkb_auto_repeat_interval_r2}}"
-            tick-values="[[autoRepeatIntervals_]]"
+            ticks="[[autoRepeatIntervals_]]"
             disabled="[[
                 !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
             aria-labelledby="repeatRateLabel"
@@ -122,11 +129,11 @@
         </settings-slider>
       </div>
     </iron-collapse>
-    <div id="keyboardOverlay" class="settings-box"
-        on-click="onShowKeyboardShortcutsOverlayTap_" actionable>
-      <div class="start">$i18n{showKeyboardShortcutsOverlay}</div>
+    <div id="keyboardShortcutViewer" class="settings-box"
+        on-click="onShowKeyboardShortcutViewerTap_" actionable>
+      <div class="start">$i18n{showKeyboardShortcutViewer}</div>
       <paper-icon-button-light class="icon-external">
-        <button aria-label="$i18n{showKeyboardShortcutsOverlay}"></button>
+        <button aria-label="$i18n{showKeyboardShortcutViewer}"></button>
       </paper-icon-button-light>
     </div>
     <div class="settings-box" on-click="onShowLanguageInputTap_" actionable>

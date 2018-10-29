@@ -62,8 +62,7 @@ void MediaControlPlayButtonElement::DefaultEventHandler(Event& event) {
     // state. This allows potential recovery for transient network and decoder
     // resource issues.
     const String& url = MediaElement().currentSrc().GetString();
-    if (MediaElement().error() && !HTMLMediaElement::IsMediaStreamURL(url) &&
-        !HTMLMediaSource::Lookup(url))
+    if (MediaElement().error() && !HTMLMediaSource::Lookup(url))
       MediaElement().load();
 
     MediaElement().TogglePlayState();

@@ -226,12 +226,6 @@ Tree: v2.0.1
 Revision: abe7b27bb1651e1adac99d9878a4c87cd9b40d7d
 Tree link: https://github.com/PolymerElements/paper-progress/tree/v2.0.1
 
-Name: paper-radio-group
-Repository: https://github.com/PolymerElements/paper-radio-group.git
-Tree: v2.1.0
-Revision: 0d87ce662f6d86b0343cd929ab9f503dc126c764
-Tree link: https://github.com/PolymerElements/paper-radio-group/tree/v2.1.0
-
 Name: paper-ripple
 Repository: https://github.com/PolymerElements/paper-ripple.git
 Tree: v2.0.1

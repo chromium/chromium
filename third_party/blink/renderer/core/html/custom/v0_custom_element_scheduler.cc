@@ -51,9 +51,9 @@ typedef HeapHashMap<Member<Element>, Member<V0CustomElementCallbackQueue>>
     ElementCallbackQueueMap;
 
 static ElementCallbackQueueMap& CallbackQueues() {
-  DEFINE_STATIC_LOCAL(ElementCallbackQueueMap, map,
+  DEFINE_STATIC_LOCAL(Persistent<ElementCallbackQueueMap>, map,
                       (new ElementCallbackQueueMap));
-  return map;
+  return *map;
 }
 
 static V0CustomElementCallbackQueue& EnsureCallbackQueue(Element* element) {

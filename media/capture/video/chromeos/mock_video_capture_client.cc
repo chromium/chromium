@@ -68,13 +68,15 @@ void MockVideoCaptureClient::OnIncomingCapturedGfxBuffer(
 }
 
 // Trampoline methods to workaround GMOCK problems with std::unique_ptr<>.
-VideoCaptureDevice::Client::Buffer MockVideoCaptureClient::ReserveOutputBuffer(
+VideoCaptureDevice::Client::ReserveResult
+MockVideoCaptureClient::ReserveOutputBuffer(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
-    int frame_feedback_id) {
+    int frame_feedback_id,
+    VideoCaptureDevice::Client::Buffer* buffer) {
   DoReserveOutputBuffer();
   NOTREACHED() << "This should never be called";
-  return Buffer();
+  return ReserveResult::kSucceeded;
 }
 
 void MockVideoCaptureClient::OnIncomingCapturedBuffer(

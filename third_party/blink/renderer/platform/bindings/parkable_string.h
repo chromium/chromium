@@ -64,28 +64,42 @@ class PLATFORM_EXPORT ParkableStringImpl final
   const String& ToString();
 
   // See the matching String methods.
-  bool Is8Bit() const;
-  bool IsNull() const;
-  unsigned length() const { return string_.length(); }
+  bool is_8bit() const { return is_8bit_; }
+  unsigned length() const { return length_; }
   unsigned CharactersSizeInBytes() const;
 
   // A parked string cannot be accessed until it has been |Unpark()|-ed.
   // Returns true iff the string has been parked.
   bool Park();
-  // Returns true iff the string can be parked.
-  bool is_parkable() const { return is_parkable_; }
+  // Returns true iff the string can be parked. This does not mean that the
+  // string can be parked now, merely that it is eligible to be parked at some
+  // point.
+  bool may_be_parked() const { return may_be_parked_; }
+  // Returns true if the string is parked.
+  bool is_parked() const;
 
  private:
+  enum class State;
+
+  // Whether the string can be parked now. Must be called with |mutex_| held,
+  // and the return value is valid as long as the mutex is held.
+  bool CanParkNow() const;
   void Unpark();
-  // Returns true if the string is parked.
-  bool is_parked() const { return is_parked_; }
+  void OnParkingCompleteOnMainThread();
 
-  Mutex mutex_;  // protects the variables below.
+  Mutex mutex_;  // protects lock_depth_.
   int lock_depth_;
-  String string_;
-  bool is_parked_;
 
-  const bool is_parkable_;
+  // Main thread only.
+  State state_;
+  String string_;
+#if DCHECK_IS_ON()
+  String parked_string_;
+#endif
+
+  const bool may_be_parked_;
+  const bool is_8bit_;
+  const unsigned length_;
 
 #if DCHECK_IS_ON()
   const ThreadIdentifier owning_thread_;
@@ -98,11 +112,13 @@ class PLATFORM_EXPORT ParkableStringImpl final
   }
 
   FRIEND_TEST_ALL_PREFIXES(ParkableStringTest, Park);
+  FRIEND_TEST_ALL_PREFIXES(ParkableStringTest, AbortParking);
   FRIEND_TEST_ALL_PREFIXES(ParkableStringTest, Unpark);
   FRIEND_TEST_ALL_PREFIXES(ParkableStringTest, LockUnlock);
   FRIEND_TEST_ALL_PREFIXES(ParkableStringTest, LockParkedString);
   FRIEND_TEST_ALL_PREFIXES(ParkableStringTest, TableSimple);
   FRIEND_TEST_ALL_PREFIXES(ParkableStringTest, TableMultiple);
+  FRIEND_TEST_ALL_PREFIXES(ParkableStringTest, AsanPoisoning);
   DISALLOW_COPY_AND_ASSIGN(ParkableStringImpl);
 };
 
@@ -126,14 +142,14 @@ class PLATFORM_EXPORT ParkableString final {
   bool Is8Bit() const;
   bool IsNull() const { return !impl_; }
   unsigned length() const { return impl_ ? impl_->length() : 0; }
-  bool is_parkable() const { return impl_ && impl_->is_parkable(); }
+  bool may_be_parked() const { return impl_ && impl_->may_be_parked(); }
 
   ParkableStringImpl* Impl() const { return impl_ ? impl_.get() : nullptr; }
   // Returns an unparked version of the string.
   // The string is guaranteed to be valid for
   // max(lifetime of a copy of the returned reference, current thread task).
   String ToString() const;
-  unsigned CharactersSizeInBytes() const;
+  wtf_size_t CharactersSizeInBytes() const;
 
   // Causes the string to be unparked. Note that the pointer must not be
   // cached.

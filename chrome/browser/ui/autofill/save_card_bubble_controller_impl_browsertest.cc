@@ -83,13 +83,14 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
 
     switch (bubble_type) {
       case BubbleType::LOCAL_SAVE:
-        controller_->ShowBubbleForLocalSave(test::GetCreditCard(),
-                                            base::DoNothing());
+        controller_->OfferLocalSave(test::GetCreditCard(), /*show_bubble=*/true,
+                                    base::DoNothing());
         break;
       case BubbleType::UPLOAD_SAVE:
-        controller_->ShowBubbleForUpload(
-            test::GetMaskedServerCard(), GetTestLegalMessage(),
-            should_request_name_from_user, base::DoNothing());
+        controller_->OfferUploadSave(test::GetMaskedServerCard(),
+                                     GetTestLegalMessage(),
+                                     should_request_name_from_user,
+                                     /*show_bubble=*/true, base::DoNothing());
         break;
       case BubbleType::SIGN_IN_PROMO:
         controller_->ShowBubbleForSignInPromo();

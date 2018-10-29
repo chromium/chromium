@@ -148,8 +148,7 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
            "kBadSwitchFormatHistogramId="
         << testing::kBadSwitchFormatHistogramId
         << ". Please modify switch name.";
-    SwitchToIdMap::iterator enum_entry =
-        histograms_xml_switches_ids.lower_bound(flag);
+    auto enum_entry = histograms_xml_switches_ids.lower_bound(flag);
 
     // Ignore case here when switch ID is incorrect - it has already been
     // reported in the previous loop.

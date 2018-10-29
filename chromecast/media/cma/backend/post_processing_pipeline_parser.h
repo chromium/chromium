@@ -7,9 +7,10 @@
 
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 
 namespace base {
@@ -29,11 +30,10 @@ struct StreamPipelineDescriptor {
   //    "config": "CONFIGURATION_STRING"},
   //    ... ]
   const base::ListValue* pipeline;
-  std::unordered_set<std::string> stream_types;
+  base::flat_set<std::string> stream_types;
 
-  StreamPipelineDescriptor(
-      const base::ListValue* pipeline_in,
-      const std::unordered_set<std::string>& stream_types_in);
+  StreamPipelineDescriptor(const base::ListValue* pipeline_in,
+                           const base::flat_set<std::string>& stream_types_in);
   ~StreamPipelineDescriptor();
   StreamPipelineDescriptor(const StreamPipelineDescriptor& other);
   StreamPipelineDescriptor operator=(const StreamPipelineDescriptor& other) =
@@ -43,9 +43,12 @@ struct StreamPipelineDescriptor {
 // Helper class to parse post-processing pipeline descriptor file.
 class PostProcessingPipelineParser {
  public:
-  // |json|, if provided, is used instead of reading from file.
-  // |json| should be provided in tests only.
-  explicit PostProcessingPipelineParser(const std::string& json = "");
+  PostProcessingPipelineParser(const base::FilePath& path);
+
+  // For testing only:
+  PostProcessingPipelineParser(
+      std::unique_ptr<base::DictionaryValue> config_dict);
+
   ~PostProcessingPipelineParser();
 
   std::vector<StreamPipelineDescriptor> GetStreamPipelines();
@@ -55,11 +58,15 @@ class PostProcessingPipelineParser {
   const base::ListValue* GetMixPipeline();
   const base::ListValue* GetLinearizePipeline();
 
+  // Returns the file path used to load this object.
+  base::FilePath GetFilePath() const;
+
  private:
   const base::ListValue* GetPipelineByKey(const std::string& key);
 
+  const base::FilePath file_path_;
   std::unique_ptr<base::DictionaryValue> config_dict_;
-  const base::DictionaryValue* postprocessor_config_;
+  const base::DictionaryValue* postprocessor_config_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PostProcessingPipelineParser);
 };

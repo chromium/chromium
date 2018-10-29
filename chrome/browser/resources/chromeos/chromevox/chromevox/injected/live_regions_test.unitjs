@@ -10,11 +10,11 @@ GEN_INCLUDE(['../../testing/chromevox_unittest_base.js']);
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxLiveRegionsUnitTest() {
+function ChromeVoxLiveRegionsUnitTest() {
   ChromeVoxUnitTestBase.call(this);
 }
 
-CvoxLiveRegionsUnitTest.prototype = {
+ChromeVoxLiveRegionsUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -37,7 +37,7 @@ CvoxLiveRegionsUnitTest.prototype = {
   }
 };
 
-TEST_F('CvoxLiveRegionsUnitTest', 'InsertNonLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'InsertNonLiveRegion', function() {
   var region = document.createElement('div');
   region.innerHTML = '<div role="button">Alpha</div>';
   document.body.appendChild(region);
@@ -52,7 +52,8 @@ TEST_F('CvoxLiveRegionsUnitTest', 'InsertNonLiveRegion', function() {
  * Test inserting an 'alert' live region.
  */
 // Flaky on Chromium OS: crbug.com/498881.
-TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_InsertAlertLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_InsertAlertLiveRegion',
+       function() {
   var region = document.createElement('div');
   region.innerHTML = '<div role="alert">Alpha</div>';
   document.body.appendChild(region);
@@ -69,7 +70,7 @@ TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_InsertAlertLiveRegion', function() {
  * Test making text appear inside an 'alert' live region by setting its
  * display to something other than 'none'.
  */
-TEST_F('CvoxLiveRegionsUnitTest', 'RevealAlertLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'RevealAlertLiveRegion', function() {
   this.loadDoc(function() {/*!
     <div role="alert">
       <style>
@@ -95,7 +96,7 @@ TEST_F('CvoxLiveRegionsUnitTest', 'RevealAlertLiveRegion', function() {
  * Test inserting a 'polite' live region.
  */
 // Flaky on Chromium OS: crbug.com/498881.
-TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_InsertPoliteLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_InsertPoliteLiveRegion', function() {
   var region = document.createElement('div');
   region.innerHTML = '<div aria-live="polite">Beta</div>';
   document.body.appendChild(region);
@@ -110,7 +111,7 @@ TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_InsertPoliteLiveRegion', function() 
 /**
  * Test modifying an existing status live region.
  */
-TEST_F('CvoxLiveRegionsUnitTest', 'ModifyStatusLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'ModifyStatusLiveRegion', function() {
   var region = document.createElement('div');
   region.innerHTML = '<div id="status" role="status">Gamma</div>';
   document.body.appendChild(region);
@@ -130,7 +131,7 @@ TEST_F('CvoxLiveRegionsUnitTest', 'ModifyStatusLiveRegion', function() {
 /**
  * Test adding element to a atomic and non-atomic live regions.
  */
-TEST_F('CvoxLiveRegionsUnitTest', 'AddToLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'AddToLiveRegion', function() {
   this.loadDoc(function() {/*!
     <div>
       <div id="non_atomic_buddylist" aria-live="polite">
@@ -163,7 +164,7 @@ TEST_F('CvoxLiveRegionsUnitTest', 'AddToLiveRegion', function() {
  * Test removing elements from live regions.
  */
 // Flaky on Chromium OS: crbug.com/498881.
-TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_RemoveFromLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_RemoveFromLiveRegion', function() {
   this.loadDoc(function() {/*!
     <div>
       <div id="buddylist2" aria-relevant="removals">
@@ -187,7 +188,7 @@ TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_RemoveFromLiveRegion', function() {
 /**
  * Test live region that's a progress bar through the event watcher.
  */
-TEST_F('CvoxLiveRegionsUnitTest', 'ProgressBarLiveRegionEvents', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'ProgressBarLiveRegionEvents', function() {
   this.loadDoc(function() {/*!
     <div id="progress" role="progressbar" aria-live="polite" aria-valuenow="1">
       <div id="ptext">
@@ -209,7 +210,7 @@ TEST_F('CvoxLiveRegionsUnitTest', 'ProgressBarLiveRegionEvents', function() {
  * Test 'alert' live region inserted as a result of focus change, like
  *   when there's an error message when filling out a form.
  */
-TEST_F('CvoxLiveRegionsUnitTest', 'FocusTriggeredAlertLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'FocusTriggeredAlertLiveRegion', function() {
   this.loadDoc(function() {/*!
     <form id="form">
       <label>
@@ -256,7 +257,7 @@ TEST_F('CvoxLiveRegionsUnitTest', 'FocusTriggeredAlertLiveRegion', function() {
  * Test focus followed by live region change, make sure both are spoken.
  */
 // Flaky on Chromium OS: crbug.com/498881.
-TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_FocusThenLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_FocusThenLiveRegion', function() {
   this.loadDoc(function() {/*!
     <button id="button_to_focus">Button To Focus</button>
     <div id="live" aria-live="polite"></div>
@@ -277,7 +278,7 @@ TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_FocusThenLiveRegion', function() {
  * Test live region change followed by focus, make sure both are spoken.
  */
 // Flaky on Chromium OS: crbug.com/498881.
-TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_LiveRegionThenFocus', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_LiveRegionThenFocus', function() {
   this.loadDoc(function() {/*!
     <button id="button_to_focus">Button To Focus</button>
     <div id="live" aria-live="polite"></div>
@@ -301,7 +302,7 @@ TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_LiveRegionThenFocus', function() {
  * one utterance until this bug is fixed: http://crbug.com/415679
  */
 // Flaky on Chromium OS: crbug.com/498881.
-TEST_F('CvoxLiveRegionsUnitTest', 'DISABLED_TwoElementsInLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_TwoElementsInLiveRegion', function() {
   this.loadDoc(function() {/*!
     <div id="live" aria-live="polite">
       <div id="hidden" style="display:none">

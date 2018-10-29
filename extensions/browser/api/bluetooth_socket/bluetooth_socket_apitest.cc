@@ -72,7 +72,7 @@ class BluetoothSocketApiTest : public extensions::ShellApiTest {
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> mock_device2_;
 
  private:
-  scoped_refptr<Extension> empty_extension_;
+  scoped_refptr<const Extension> empty_extension_;
 };
 
 // testing::InvokeArgument<N> does not work with base::Callback, fortunately

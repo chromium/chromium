@@ -8,10 +8,10 @@
 #include "base/test/scoped_task_environment.h"
 #include "media/base/media_switches.h"
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
+#include "services/video_capture/public/cpp/mock_receiver.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
 #include "services/video_capture/public/mojom/device_factory_provider.mojom.h"
 #include "services/video_capture/service_impl.h"
-#include "services/video_capture/test/mock_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace video_capture {
@@ -24,6 +24,7 @@ using testing::InvokeWithoutArgs;
 // Test fixture that creates a video_capture::ServiceImpl and sets up a
 // local service_manager::Connector through which client code can connect to
 // it.
+template <class DeviceFactoryProviderConnectorTestTraits>
 class DeviceFactoryProviderConnectorTest : public ::testing::Test {
  public:
   DeviceFactoryProviderConnectorTest() {}
@@ -32,13 +33,8 @@ class DeviceFactoryProviderConnectorTest : public ::testing::Test {
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFakeDeviceForMediaStream);
-    // We need to set the shutdown delay to at least some epsilon > 0 in order
-    // to avoid the service shutting down synchronously which would prevent
-    // test case ServiceIncreasesRefCountOnNewConnectionAfterDisconnect from
-    // being able to reconnect before the timer expires.
-    static const float kShutdownDelayInSeconds = 0.0001f;
-    std::unique_ptr<ServiceImpl> service_impl =
-        std::make_unique<ServiceImpl>(kShutdownDelayInSeconds);
+    std::unique_ptr<ServiceImpl> service_impl = std::make_unique<ServiceImpl>(
+        DeviceFactoryProviderConnectorTestTraits::shutdown_delay());
     service_impl->SetDestructionObserver(base::BindOnce(
         [](base::RunLoop* service_destroyed_wait_loop) {
           service_destroyed_wait_loop->Quit();
@@ -59,7 +55,9 @@ class DeviceFactoryProviderConnectorTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    if (factory_provider_.is_bound()) {
+    if (factory_provider_.is_bound() &&
+        DeviceFactoryProviderConnectorTestTraits::shutdown_delay()
+            .has_value()) {
       factory_provider_.reset();
       service_destroyed_wait_loop_.Run();
     }
@@ -78,9 +76,22 @@ class DeviceFactoryProviderConnectorTest : public ::testing::Test {
   std::unique_ptr<service_manager::TestConnectorFactory> connector_factory_;
 };
 
+// We need to set the shutdown delay to at least some epsilon > 0 in order
+// to avoid the service shutting down synchronously which would prevent
+// test case ServiceIncreasesRefCountOnNewConnectionAfterDisconnect from
+// being able to reconnect before the timer expires.
+struct ShortShutdownDelayDeviceFactoryProviderConnectorTestTraits {
+  static base::Optional<base::TimeDelta> shutdown_delay() {
+    return base::TimeDelta::FromMicroseconds(100);
+  }
+};
+using ShortShutdownDelayDeviceFactoryProviderConnectorTest =
+    DeviceFactoryProviderConnectorTest<
+        ShortShutdownDelayDeviceFactoryProviderConnectorTestTraits>;
+
 // Tests that the service does not quit when a client connects
 // while a second client stays connected.
-TEST_F(DeviceFactoryProviderConnectorTest,
+TEST_F(ShortShutdownDelayDeviceFactoryProviderConnectorTest,
        ServiceDoesNotQuitWhenOneOfTwoClientsDisconnects) {
   // Establish second connection
   mojom::DeviceFactoryProviderPtr second_connection;
@@ -109,7 +120,7 @@ TEST_F(DeviceFactoryProviderConnectorTest,
 // Tests that the service quits when the only client disconnects after not
 // having done anything other than obtaining a connection to the fake device
 // factory.
-TEST_F(DeviceFactoryProviderConnectorTest,
+TEST_F(ShortShutdownDelayDeviceFactoryProviderConnectorTest,
        ServiceQuitsWhenSingleClientDisconnected) {
   mojom::DeviceFactoryPtr factory;
   factory_provider_->ConnectToDeviceFactory(mojo::MakeRequest(&factory));
@@ -120,7 +131,7 @@ TEST_F(DeviceFactoryProviderConnectorTest,
 }
 
 // Tests that the service quits when both of two clients disconnect.
-TEST_F(DeviceFactoryProviderConnectorTest,
+TEST_F(ShortShutdownDelayDeviceFactoryProviderConnectorTest,
        ServiceQuitsWhenAllClientsDisconnected) {
   // Bind another client to the DeviceFactoryProvider interface.
   mojom::DeviceFactoryProviderPtr second_connection;
@@ -137,7 +148,7 @@ TEST_F(DeviceFactoryProviderConnectorTest,
 
 // Tests that the service increase the context ref count when a new connection
 // comes in after all previous connections have been released.
-TEST_F(DeviceFactoryProviderConnectorTest,
+TEST_F(ShortShutdownDelayDeviceFactoryProviderConnectorTest,
        ServiceIncreasesRefCountOnNewConnectionAfterDisconnect) {
   base::RunLoop wait_loop;
   service_impl_->SetShutdownTimeoutCancelledObserver(base::BindRepeating(
@@ -152,7 +163,7 @@ TEST_F(DeviceFactoryProviderConnectorTest,
 
 // Tests that the service quits when the last client disconnects while using a
 // device.
-TEST_F(DeviceFactoryProviderConnectorTest,
+TEST_F(ShortShutdownDelayDeviceFactoryProviderConnectorTest,
        ServiceQuitsWhenClientDisconnectsWhileUsingDevice) {
   mojom::DeviceFactoryPtr factory;
   factory_provider_->ConnectToDeviceFactory(mojo::MakeRequest(&factory));
@@ -199,6 +210,43 @@ TEST_F(DeviceFactoryProviderConnectorTest,
   factory_provider_.reset();
 
   service_destroyed_wait_loop_.Run();
+}
+
+struct NoAutomaticShutdownDeviceFactoryProviderConnectorTestTraits {
+  static base::Optional<base::TimeDelta> shutdown_delay() {
+    return base::Optional<base::TimeDelta>();
+  }
+};
+using NoAutomaticShutdownDeviceFactoryProviderConnectorTest =
+    DeviceFactoryProviderConnectorTest<
+        NoAutomaticShutdownDeviceFactoryProviderConnectorTestTraits>;
+
+// Tests that the service does not shut down after disconnecting.
+TEST_F(NoAutomaticShutdownDeviceFactoryProviderConnectorTest,
+       ServiceDoesNotShutDownOnDisconnect) {
+  {
+    base::RunLoop wait_loop;
+    service_impl_->SetFactoryProviderClientDisconnectedObserver(
+        wait_loop.QuitClosure());
+    factory_provider_.reset();
+    wait_loop.Run();
+  }
+
+  base::MockCallback<base::OnceClosure> service_impl_destructor_cb;
+  service_impl_->SetDestructionObserver(service_impl_destructor_cb.Get());
+  EXPECT_CALL(service_impl_destructor_cb, Run()).Times(0);
+
+  // Wait for an arbitrary short extra time after which we are convinced that
+  // there is enough evidence that service is not going to shut down.
+  {
+    base::RunLoop wait_loop;
+    base::OneShotTimer wait_timer;
+    wait_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10),
+                     wait_loop.QuitClosure());
+    wait_loop.Run();
+  }
+
+  service_impl_->SetDestructionObserver(base::DoNothing());
 }
 
 }  // namespace video_capture

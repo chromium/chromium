@@ -7,7 +7,7 @@
 <body>
 <script>
 async_test(t => {
-  assert_exists(window, "GCController", "gc controller needed");
+  assert_own_property(window, "GCController", "gc controller needed");
   setInterval(gc, 0);
 
   var anim = document.body.animate(null, 1);

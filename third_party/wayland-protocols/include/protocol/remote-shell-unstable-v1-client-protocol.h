@@ -302,8 +302,8 @@ struct zcr_remote_shell_v1_listener {
 	 */
 	void (*workspace)(void *data,
 			  struct zcr_remote_shell_v1 *zcr_remote_shell_v1,
-			  uint32_t id_hi,
-			  uint32_t id_lo,
+			  uint32_t display_id_hi,
+			  uint32_t display_id_lo,
 			  int32_t x,
 			  int32_t y,
 			  int32_t width,
@@ -335,6 +335,21 @@ struct zcr_remote_shell_v1_listener {
 	void (*default_device_scale_factor)(void *data,
 					    struct zcr_remote_shell_v1 *zcr_remote_shell_v1,
 					    int32_t scale);
+	/**
+	 * extra display information
+	 *
+	 * Sends display size in pixels and display identification data,
+	 * typically in EDID format. Preceded by a "workspace" event for
+	 * the same display.
+	 * @since 19
+	 */
+	void (*display_info)(void *data,
+			     struct zcr_remote_shell_v1 *zcr_remote_shell_v1,
+			     uint32_t display_id_hi,
+			     uint32_t display_id_lo,
+			     int32_t width,
+			     int32_t height,
+			     struct wl_array *identification_data);
 };
 
 /**
@@ -373,6 +388,10 @@ zcr_remote_shell_v1_add_listener(struct zcr_remote_shell_v1 *zcr_remote_shell_v1
  * @ingroup iface_zcr_remote_shell_v1
  */
 #define ZCR_REMOTE_SHELL_V1_DEFAULT_DEVICE_SCALE_FACTOR_SINCE_VERSION 8
+/**
+ * @ingroup iface_zcr_remote_shell_v1
+ */
+#define ZCR_REMOTE_SHELL_V1_DISPLAY_INFO_SINCE_VERSION 19
 
 /**
  * @ingroup iface_zcr_remote_shell_v1

@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<title>Test page for &lt;object&gt; element rendering fallback</title>
+</head>
+<body>
+<object data="about:blank" type="text/html">
+  <p id="fallback-content">Fallback Content</p>
+</object>
+<script>
+  var send_object_load = false;
+  var fallback = document.getElementById("fallback-content");
+  var object = document.querySelector("object");
+
+  object.addEventListener("load", () => {
+    if (send_object_load)
+      window.domAutomationController.send("OBJECT_LOAD");
+  });
+
+  function setUrl(url, send_load) {
+    send_object_load = send_load;
+    object.data = url;
+  }
+
+  function fallbackVisible(alsoNotifyBrowser) {
+    let rect = fallback.getBoundingClientRect();
+    let hasLayout = (rect.width * rect.height) > 0;
+    if (alsoNotifyBrowser) {
+      window.domAutomationController.send(hasLayout);
+    }
+    return hasLayout;
+  }
+
+  function notifyWhenFallbackShown() {
+    if (!fallbackVisible(false)) {
+      return window.setTimeout(notifyWhenFallbackShown, 10);
+    }
+    fallbackVisible(true);
+  }
+</script>
+</body>
+</html>

@@ -167,7 +167,6 @@ aom_av1_decoder_sources = [
   "//third_party/libaom/source/libaom/av1/decoder/decodetxb.h",
   "//third_party/libaom/source/libaom/av1/decoder/detokenize.c",
   "//third_party/libaom/source/libaom/av1/decoder/detokenize.h",
-  "//third_party/libaom/source/libaom/av1/decoder/dthread.c",
   "//third_party/libaom/source/libaom/av1/decoder/dthread.h",
   "//third_party/libaom/source/libaom/av1/decoder/obu.h",
   "//third_party/libaom/source/libaom/av1/decoder/obu.c",
@@ -236,6 +235,8 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/encoder/av1_fwd_txfm1d.h",
   "//third_party/libaom/source/libaom/av1/encoder/av1_fwd_txfm1d_cfg.h",
   "//third_party/libaom/source/libaom/av1/encoder/av1_fwd_txfm2d.c",
+  "//third_party/libaom/source/libaom/av1/encoder/av1_multi_thread.c",
+  "//third_party/libaom/source/libaom/av1/encoder/av1_multi_thread.h",
   "//third_party/libaom/source/libaom/av1/encoder/av1_quantize.c",
   "//third_party/libaom/source/libaom/av1/encoder/av1_quantize.h",
   "//third_party/libaom/source/libaom/av1/encoder/bitstream.c",
@@ -344,6 +345,8 @@ aom_dsp_common_intrin_avx2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_loopfilter_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/blend_a64_mask_avx2.c",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/avg_intrin_avx2.c",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/bitdepth_conversion_avx2.h",
 ]
 
 aom_dsp_common_intrin_dspr2 = [
@@ -380,10 +383,12 @@ aom_dsp_common_intrin_neon = [
 ]
 
 aom_dsp_common_intrin_sse2 = [
+  "//third_party/libaom/source/libaom/aom_dsp/x86/aom_subpixel_8t_intrin_sse2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/aom_asm_stubs.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/convolve.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/convolve_sse2.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/fft_sse2.c",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_convolve_sse2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_intrapred_sse2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_loopfilter_sse2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_sse2.c",
@@ -393,6 +398,8 @@ aom_dsp_common_intrin_sse2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/transpose_sse2.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/txfm_common_sse2.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/sum_squares_sse2.h",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/avg_intrin_sse2.c",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/bitdepth_conversion_sse2.h",
 ]
 
 aom_dsp_common_intrin_sse4_1 = [
@@ -430,6 +437,7 @@ aom_dsp_common_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/intrapred_common.h",
   "//third_party/libaom/source/libaom/aom_dsp/loopfilter.c",
   "//third_party/libaom/source/libaom/aom_dsp/prob.h",
+  "//third_party/libaom/source/libaom/aom_dsp/recenter.h",
   "//third_party/libaom/source/libaom/aom_dsp/simd/v128_intrinsics.h",
   "//third_party/libaom/source/libaom/aom_dsp/simd/v128_intrinsics_c.h",
   "//third_party/libaom/source/libaom/aom_dsp/simd/v256_intrinsics.h",
@@ -439,6 +447,7 @@ aom_dsp_common_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/subtract.c",
   "//third_party/libaom/source/libaom/aom_dsp/txfm_common.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/convolve_common_intrin.h",
+  "//third_party/libaom/source/libaom/aom_dsp/avg.c",
 ]
 
 aom_dsp_decoder_sources = [

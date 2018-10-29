@@ -20,7 +20,9 @@ Persistence.PersistenceActions.ContextMenuProvider = class {
     async function saveAs() {
       if (contentProvider instanceof Workspace.UISourceCode)
         /** @type {!Workspace.UISourceCode} */ (contentProvider).commitWorkingCopy();
-      const content = await contentProvider.requestContent();
+      let content = await contentProvider.requestContent();
+      if (await contentProvider.contentEncoded())
+        content = window.atob(content);
       const url = contentProvider.contentURL();
       Workspace.fileManager.save(url, /** @type {string} */ (content), true);
       Workspace.fileManager.close(url);

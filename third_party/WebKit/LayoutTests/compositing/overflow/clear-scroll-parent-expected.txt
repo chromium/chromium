@@ -60,17 +60,11 @@
       "backgroundColor": "#008000"
     },
     {
-      "name": "Ancestor Clipping Layer",
-      "position": [12, 12],
-      "bounds": [80, 80],
-      "drawsContent": false,
-      "hasScrollParent": true
-    },
-    {
       "name": "LayoutBlockFlow (relative positioned) DIV class='box red'",
       "position": [22, 22],
       "bounds": [100, 100],
-      "backgroundColor": "#FF000080"
+      "backgroundColor": "#FF000080",
+      "hasScrollParent": true
     },
     {
       "name": "Squashing Containment Layer",

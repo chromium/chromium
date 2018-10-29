@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/allocator/partition_allocator/spin_lock.h"
+
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -10,8 +12,6 @@
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <sched.h>
 #endif
-
-#include "base/threading/platform_thread.h"
 
 // The YIELD_PROCESSOR macro wraps an architecture specific-instruction that
 // informs the processor we're in a busy wait, so it can handle the branch more
@@ -94,7 +94,7 @@ void SpinLock::LockSlow() {
         // thread that is unavailable to finish its work because of higher
         // priority threads spinning here. Sleeping should ensure that they make
         // progress.
-        PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+        PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
       }
     } while (lock_.load(std::memory_order_relaxed));
   } while (UNLIKELY(lock_.exchange(true, std::memory_order_acquire)));

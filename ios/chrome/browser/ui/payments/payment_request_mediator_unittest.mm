@@ -45,8 +45,9 @@ using ::payment_request_util::GetShippingAddressLabelFromAutofillProfile;
 class PaymentRequestMediatorTest : public PaymentRequestUnitTestBase,
                                    public PlatformTest {
  protected:
+  // PlatformTest:
   void SetUp() override {
-    PaymentRequestUnitTestBase::SetUp();
+    DoSetUp();
 
     autofill::AutofillProfile profile = autofill::test::GetFullProfile();
     autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
@@ -60,7 +61,8 @@ class PaymentRequestMediatorTest : public PaymentRequestUnitTestBase,
         initWithPaymentRequest:payment_request()];
   }
 
-  void TearDown() override { PaymentRequestUnitTestBase::TearDown(); }
+  // PlatformTest:
+  void TearDown() override { DoTearDown(); }
 
   PaymentRequestMediator* mediator() { return mediator_; }
 

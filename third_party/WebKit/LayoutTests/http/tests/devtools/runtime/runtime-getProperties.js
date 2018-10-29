@@ -11,10 +11,10 @@
 
   var obj1, obj2;
 
-  function dumpProperties(next, properties) {
+  function dumpProperties(allProperties) {
+    const properties = allProperties.properties;
     for (var i = 0; i < properties.length; ++i)
       dumpProperty(properties[i]);
-    next();
   }
 
   TestRunner.runTestSuite([
@@ -31,11 +31,11 @@
     },
 
     function testGetterAndSetter(next) {
-      obj1.getOwnProperties(false, dumpProperties.bind(this, next));
+      obj1.getOwnProperties(false).then(dumpProperties).then(next);
     },
 
     function testGetterOnly(next) {
-      obj2.getOwnProperties(false, dumpProperties.bind(this, next));
+      obj2.getOwnProperties(false).then(dumpProperties).then(next);
     }
   ]);
 

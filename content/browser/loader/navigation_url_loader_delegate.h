@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
-#include "content/public/common/previews_state.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 namespace net {
@@ -46,7 +45,6 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   // necessary info to create a custom subresource loader in the renderer
   // process if the navigated context is controlled by a request interceptor
   // like AppCache or ServiceWorker.
-  // |previews_state| is updated in common params.
   virtual void OnResponseStarted(
       const scoped_refptr<network::ResourceResponse>& response,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
@@ -54,7 +52,6 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
       const GlobalRequestID& request_id,
       bool is_download,
       bool is_stream,
-      PreviewsState previews_state,
       base::Optional<SubresourceLoaderParams> subresource_loader_params) = 0;
 
   // Called if the request fails before receving a response. Specific

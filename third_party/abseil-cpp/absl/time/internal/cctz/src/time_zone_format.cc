@@ -533,7 +533,7 @@ const char* ParseSubSeconds(const char* dp, detail::femtoseconds* subseconds) {
   return dp;
 }
 
-// Parses a std::string into a std::tm using strptime(3).
+// Parses a string into a std::tm using strptime(3).
 const char* ParseTM(const char* dp, const char* fmt, std::tm* tm) {
   if (dp != nullptr) {
     dp = strptime(dp, fmt, tm);
@@ -743,7 +743,7 @@ bool parse(const std::string& format, const std::string& input,
     data = ParseTM(data, spec.c_str(), &tm);
 
     // If we successfully parsed %p we need to remember whether the result
-    // was AM or PM so that we can adjust tm_hour before ConvertDateTime().
+    // was AM or PM so that we can adjust tm_hour before time_zone::lookup().
     // So reparse the input with a known AM hour, and check if it is shifted
     // to a PM hour.
     if (spec == "%p" && data != nullptr) {

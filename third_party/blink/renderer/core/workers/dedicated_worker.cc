@@ -11,14 +11,14 @@
 #include "third_party/blink/public/platform/dedicated_worker_factory.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_layer_tree_view.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/use_counter.h"
-#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/messaging/post_message_options.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -67,7 +67,7 @@ DedicatedWorker* DedicatedWorker::Create(ExecutionContext* context,
   }
 
   KURL script_request_url = ResolveURL(context, url, exception_state,
-                                       WebURLRequest::kRequestContextScript);
+                                       mojom::RequestContextType::SCRIPT);
   if (!script_request_url.IsValid()) {
     // Don't throw an exception here because it's already thrown in
     // ResolveURL().
@@ -175,7 +175,7 @@ void DedicatedWorker::Start() {
     classic_script_loader_ = WorkerClassicScriptLoader::Create();
     classic_script_loader_->LoadTopLevelScriptAsynchronously(
         *GetExecutionContext(), script_request_url_,
-        WebURLRequest::kRequestContextWorker, fetch_request_mode,
+        mojom::RequestContextType::WORKER, fetch_request_mode,
         fetch_credentials_mode,
         GetExecutionContext()->GetSecurityContext().AddressSpace(),
         WTF::Bind(&DedicatedWorker::OnResponse, WrapPersistent(this)),
@@ -203,7 +203,7 @@ void DedicatedWorker::Start() {
 }
 
 void DedicatedWorker::terminate() {
-  DCHECK(GetExecutionContext()->IsContextThread());
+  DCHECK(!GetExecutionContext() || GetExecutionContext()->IsContextThread());
   context_proxy_->TerminateGlobalScope();
 }
 
@@ -213,8 +213,8 @@ BeginFrameProviderParams DedicatedWorker::CreateBeginFrameProviderParams() {
   // won't be initialized. If that's the case, the Worker will initialize it by
   // itself later.
   BeginFrameProviderParams begin_frame_provider_params;
-  if (GetExecutionContext() && GetExecutionContext()->IsDocument()) {
-    LocalFrame* frame = ToDocument(GetExecutionContext())->GetFrame();
+  if (auto* document = DynamicTo<Document>(GetExecutionContext())) {
+    LocalFrame* frame = document->GetFrame();
     WebLayerTreeView* layer_tree_view = nullptr;
     if (frame && frame->GetPage()) {
       layer_tree_view =
@@ -256,10 +256,9 @@ WorkerClients* DedicatedWorker::CreateWorkerClients() {
       *worker_clients);
 
   std::unique_ptr<WebContentSettingsClient> client;
-  if (GetExecutionContext()->IsDocument()) {
-    WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(
-        ToDocument(GetExecutionContext())->GetFrame());
-    client = web_frame->Client()->CreateWorkerContentSettingsClient();
+  if (auto* document = DynamicTo<Document>(GetExecutionContext())) {
+    LocalFrame* frame = document->GetFrame();
+    client = frame->Client()->CreateWorkerContentSettingsClient();
   } else if (GetExecutionContext()->IsWorkerGlobalScope()) {
     WebContentSettingsClient* web_worker_content_settings_client =
         WorkerContentSettingsClient::From(*GetExecutionContext())
@@ -315,15 +314,14 @@ std::unique_ptr<GlobalScopeCreationParams>
 DedicatedWorker::CreateGlobalScopeCreationParams(const KURL& script_url) {
   base::UnguessableToken devtools_worker_token;
   std::unique_ptr<WorkerSettings> settings;
-  if (GetExecutionContext()->IsDocument()) {
-    Document* document = ToDocument(GetExecutionContext());
+  if (auto* document = DynamicTo<Document>(GetExecutionContext())) {
     devtools_worker_token = document->GetFrame()
                                 ? document->GetFrame()->GetDevToolsFrameToken()
                                 : base::UnguessableToken::Create();
     settings = std::make_unique<WorkerSettings>(document->GetSettings());
   } else {
     WorkerGlobalScope* worker_global_scope =
-        ToWorkerGlobalScope(GetExecutionContext());
+        To<WorkerGlobalScope>(GetExecutionContext());
     devtools_worker_token = worker_global_scope->GetParentDevToolsToken();
     settings = WorkerSettings::Copy(worker_global_scope->GetWorkerSettings());
   }

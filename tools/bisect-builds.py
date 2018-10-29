@@ -136,6 +136,8 @@ class PathContext(object):
       self.archive_name = 'chrome-mac.zip'
       self._archive_extract_dir = 'chrome-mac'
     elif self.platform in ('win', 'win64'):
+      # Note: changed at revision 591483; see GetDownloadURL and GetLaunchPath
+      # below where these are patched.
       self.archive_name = 'chrome-win32.zip'
       self._archive_extract_dir = 'chrome-win32'
       self._binary_name = 'chrome.exe'
@@ -143,6 +145,8 @@ class PathContext(object):
       raise Exception('Invalid platform: %s' % self.platform)
 
     if self.platform in ('linux', 'linux64', 'linux-arm', 'chromeos'):
+      # Note: changed at revision 591483; see GetDownloadURL and GetLaunchPath
+      # below where these are patched.
       self.archive_name = 'chrome-linux.zip'
       self._archive_extract_dir = 'chrome-linux'
       if self.platform == 'linux':
@@ -190,8 +194,19 @@ class PathContext(object):
           self.GetASANBaseName(), revision)
     if str(revision) in self.githash_svn_dict:
       revision = self.githash_svn_dict[str(revision)]
+    archive_name = self.archive_name
+
+    # At revision 591483, the names of two of the archives changed
+    # due to: https://chromium-review.googlesource.com/#/q/1226086
+    # See: http://crbug.com/789612
+    if revision >= 591483:
+      if self.platform == 'chromeos':
+        archive_name = 'chrome-chromeos.zip'
+      elif self.platform in ('win', 'win64'):
+        archive_name = 'chrome-win.zip'
+
     return '%s/%s%s/%s' % (self.base_url, self._listing_platform_dir,
-                           revision, self.archive_name)
+                           revision, archive_name)
 
   def GetLastChangeURL(self):
     """Returns a URL to the LAST_CHANGE file."""
@@ -212,6 +227,16 @@ class PathContext(object):
       extract_dir = '%s-%d' % (self.GetASANBaseName(), revision)
     else:
       extract_dir = self._archive_extract_dir
+
+    # At revision 591483, the names of two of the archives changed
+    # due to: https://chromium-review.googlesource.com/#/q/1226086
+    # See: http://crbug.com/789612
+    if revision >= 591483:
+      if self.platform == 'chromeos':
+        extract_dir = 'chrome-chromeos'
+      elif self.platform in ('win', 'win64'):
+        extract_dir = 'chrome-winp'
+
     return os.path.join(extract_dir, self._binary_name)
 
   def ParseDirectoryIndex(self, last_known_rev):
@@ -561,7 +586,7 @@ def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
 
   # Hack: Some Chrome OS archives are missing some files; try to copy them
   # from the local directory.
-  if context.platform == 'chromeos':
+  if context.platform == 'chromeos' and revision < 591483:
     CopyMissingFileFromCurrentSource('third_party/icu/common/icudtl.dat',
                                      '%s/chrome-linux/icudtl.dat' % tempdir)
     CopyMissingFileFromCurrentSource('*out*/*/libminigbm.so',

@@ -299,8 +299,10 @@ base::Process InvitationTest::LaunchChildTestClient(
   launch_options.start_hidden = true;
 #endif
 
-  base::Optional<PlatformChannel> channel;
+#if !defined(OS_FUCHSIA)
   base::Optional<NamedPlatformChannel> named_channel;
+#endif
+  base::Optional<PlatformChannel> channel;
   PlatformHandle local_endpoint_handle;
   if (transport_type == TransportType::kChannel) {
     channel.emplace();
@@ -308,9 +310,7 @@ base::Process InvitationTest::LaunchChildTestClient(
                                 &command_line);
     local_endpoint_handle = channel->TakeLocalEndpoint().TakePlatformHandle();
   } else {
-#if defined(OS_FUCHSIA)
-    NOTREACHED() << "Named pipe support does not exist for Mojo on Fuchsia.";
-#else
+#if !defined(OS_FUCHSIA)
     NamedPlatformChannel::Options named_channel_options;
 #if !defined(OS_WIN)
     CHECK(base::PathService::Get(base::DIR_TEMP,
@@ -320,7 +320,9 @@ base::Process InvitationTest::LaunchChildTestClient(
     named_channel->PassServerNameOnCommandLine(&command_line);
     local_endpoint_handle =
         named_channel->TakeServerEndpoint().TakePlatformHandle();
-#endif
+#else   //  !defined(OS_FUCHSIA)
+    NOTREACHED() << "Named pipe support does not exist for Mojo on Fuchsia.";
+#endif  //  !defined(OS_FUCHSIA)
   }
 
   base::Process child_process = base::SpawnMultiProcessTestChild(
@@ -395,8 +397,10 @@ class TestClientBase : public InvitationTest {
   static MojoHandle AcceptInvitation(MojoAcceptInvitationFlags flags,
                                      base::StringPiece switch_name = {}) {
     const auto& command_line = *base::CommandLine::ForCurrentProcess();
-    PlatformChannelEndpoint channel_endpoint =
-        NamedPlatformChannel::ConnectToServer(command_line);
+    PlatformChannelEndpoint channel_endpoint;
+#if !defined(OS_FUCHSIA)
+    channel_endpoint = NamedPlatformChannel::ConnectToServer(command_line);
+#endif
     if (!channel_endpoint.is_valid()) {
       if (switch_name.empty()) {
         channel_endpoint =

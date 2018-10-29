@@ -2,7 +2,6 @@ Tests crypto.randomValues.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS 'crypto' in self is true
 PASS 'getRandomValues' in self.crypto is true
 PASS self.crypto.__proto__.hasOwnProperty('getRandomValues') is true

@@ -6,8 +6,8 @@
 #define CC_TEST_MOCK_LAYER_CLIENT_H_
 
 #include "base/macros.h"
-#include "base/trace_event/trace_event_argument.h"
 #include "base/trace_event/trace_event_impl.h"
+#include "base/trace_event/traced_value.h"
 #include "cc/layers/layer_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

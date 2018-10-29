@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <tuple>
 
 #include "base/guid.h"
 #include "base/hash.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/model_safe_worker.h"
 
@@ -35,18 +37,43 @@ using autofill::PasswordForm;
 
 static const char* kValidPassphrase = "passphrase!";
 
-class TwoClientPasswordsSyncTest : public SyncTest {
+class TwoClientPasswordsSyncTest
+    : public testing::WithParamInterface<std::tuple<bool, bool>>,
+      public SyncTest {
  public:
   TwoClientPasswordsSyncTest() : SyncTest(TWO_CLIENT) {}
+
   ~TwoClientPasswordsSyncTest() override {}
 
   bool TestUsesSelfNotifications() override { return false; }
 
+ protected:
+  void BeforeSetupClient(int index) override {
+    const bool should_enable_pseudo_uss =
+        index == 0 ? std::get<0>(GetParam()) : std::get<1>(GetParam());
+
+    // The value of the feature kSyncPseudoUSSPasswords only matters during the
+    // setup of each client, when the profile is created, ProfileSyncService
+    // instantiated as well as the datatype controllers. By overriding the
+    // feature, we can influence whether client |index| is running with the new
+    // codepath or the legacy one.
+    override_features_ = std::make_unique<base::test::ScopedFeatureList>();
+    if (should_enable_pseudo_uss) {
+      override_features_->InitAndEnableFeature(
+          switches::kSyncPseudoUSSPasswords);
+    } else {
+      override_features_->InitAndDisableFeature(
+          switches::kSyncPseudoUSSPasswords);
+    }
+  }
+
  private:
+  std::unique_ptr<base::test::ScopedFeatureList> override_features_;
+
   DISALLOW_COPY_AND_ASSIGN(TwoClientPasswordsSyncTest);
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Add)) {
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, E2E_ENABLED(Add)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 
@@ -58,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Add)) {
   ASSERT_EQ(1, GetPasswordCount(1));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Race)) {
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, E2E_ENABLED(Race)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
@@ -78,12 +105,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Race)) {
 #else
 #define MAYBE_SetPassphraseAndAddPassword SetPassphraseAndAddPassword
 #endif
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
                        E2E_ENABLED(MAYBE_SetPassphraseAndAddPassword)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  GetSyncService(0)->SetEncryptionPassphrase(
-      kValidPassphrase, browser_sync::ProfileSyncService::EXPLICIT);
+  GetSyncService(0)->SetEncryptionPassphrase(kValidPassphrase);
   ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
 
   ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(1)).Wait());
@@ -97,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, Update) {
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, Update) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
@@ -118,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, Update) {
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, Delete) {
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, Delete) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
@@ -142,13 +168,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, Delete) {
 }
 
 // https://crbug.com/874929, flaky on all platform.
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
                        DISABLED_SetPassphraseAndThenSetupSync) {
   ASSERT_TRUE(SetupClients());
 
   ASSERT_TRUE(GetClient(0)->SetupSync());
-  GetSyncService(0)->SetEncryptionPassphrase(
-      kValidPassphrase, browser_sync::ProfileSyncService::EXPLICIT);
+  GetSyncService(0)->SetEncryptionPassphrase(kValidPassphrase);
   ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
 
   // When client 1 hits a passphrase required state, we can infer that
@@ -171,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(Delete)) {
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, E2E_ONLY(Delete)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
@@ -199,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(Delete)) {
   ASSERT_EQ(init_password_count - 2, GetPasswordCount(0));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, DeleteAll) {
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, DeleteAll) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
@@ -219,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, DeleteAll) {
   ASSERT_EQ(0, GetVerifierPasswordCount());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Merge)) {
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, E2E_ENABLED(Merge)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
@@ -234,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Merge)) {
   ASSERT_EQ(3, GetPasswordCount(0));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(TwoClientAddPass)) {
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, E2E_ONLY(TwoClientAddPass)) {
   ASSERT_TRUE(SetupSync()) <<  "SetupSync() failed.";
   // All profiles should sync same passwords.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait())
@@ -257,3 +282,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(TwoClientAddPass)) {
         "Total password count is wrong.";
   }
 }
+
+// We instantiate every test 4 times, for every combination of pseudo-USS being
+// enabled in individual clients. This verifies backward-compatibility between
+// the two implementations.
+INSTANTIATE_TEST_CASE_P(USS,
+                        TwoClientPasswordsSyncTest,
+                        ::testing::Combine(::testing::Values(false, true),
+                                           ::testing::Values(false, true)));

@@ -304,10 +304,10 @@ public class CronetHttpURLConnection extends HttpURLConnection {
             requestBuilder.setTrafficStatsUid(mTrafficStatsUid);
         }
 
-        connected = true;
         mRequest = requestBuilder.build();
         // Start the request.
         mRequest.start();
+        connected = true;
     }
 
     /**

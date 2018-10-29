@@ -4,14 +4,14 @@
     "the final GM, but disabled for the other betas to reduce swirl for the",
     "goma team. Build is performed with gn+ninja."
   ],
-  "xcode build version": "10l213o",
+  "xcode build version": "10a254a",
   "use xcode build version": true,
   "gn_args": [
     "additional_target_cpus=[\"x86\"]",
     "ios_enable_code_signing=false",
     "is_component_build=false",
     "is_debug=true",
-    "symbol_level=1",
+    "symbol_level=0",
     "target_cpu=\"x64\"",
     "target_os=\"ios\"",
     "use_goma=true",

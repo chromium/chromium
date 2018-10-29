@@ -2,7 +2,6 @@ Test case for bug 39168. This tests the CSS color parsing code using <canvas>.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS Setting color to ActiveBorder was successfully set.
 PASS Setting color to activeborder was successfully set.
 PASS Setting color to ActiveCaption was successfully set.

@@ -36,17 +36,15 @@ namespace arc {
 // check, so it is ok to access them directly.
 bool IsArcAvailable();
 
-// Returns true if ARC is not installed and the current device is not supported
-// to run ARC.
-bool IsWebstoreSearchEnabled();
-
-// Returns true if ARC image has Play Store package.
-bool IsPlayStoreAvailable();
-
 // Returns true if ARC should always start within the primary user session
 // (opted in user or not), and other supported mode such as guest and Kiosk
 // mode.
 bool ShouldArcAlwaysStart();
+
+// Returns true if ARC should always start with no Play Store availability
+// within the primary user session (opted in user or not), and other supported
+// mode such as guest and Kiosk mode.
+bool ShouldArcAlwaysStartWithNoPlayStore();
 
 // Returns true if ARC OptIn ui needs to be shown for testing.
 bool ShouldShowOptInForTesting();

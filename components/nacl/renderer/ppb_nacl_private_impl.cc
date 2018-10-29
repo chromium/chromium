@@ -1740,7 +1740,7 @@ void PPBNaClPrivate::StreamPexe(PP_Instance instance,
   url_request.AddHTTPHeaderField(
       blink::WebString::FromUTF8("Accept"),
       blink::WebString::FromUTF8("application/x-pnacl, */*"));
-  url_request.SetRequestContext(blink::WebURLRequest::kRequestContextObject);
+  url_request.SetRequestContext(blink::mojom::RequestContextType::OBJECT);
   downloader->Load(url_request);
 }
 

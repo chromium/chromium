@@ -31,10 +31,10 @@ static {{namespace}}Element* {{namespace}}{{tag|symbol}}Constructor(
     const CreateElementFlags flags) {
   {% if tag.runtimeEnabled %}
   if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled())
-    return {{fallback_interface}}::Create({{namespace}}Names::{{tag|symbol}}Tag, document);
+    return {{fallback_interface}}::Create({{cpp_namespace}}::{{tag|symbol}}Tag, document);
   {% endif %}
   return {{tag.interface}}::Create(
-      {%- if tag.multipleTagNames %}{{namespace}}Names::{{tag|symbol}}Tag, {% endif -%}
+      {%- if tag.multipleTagNames %}{{cpp_namespace}}::{{tag|symbol}}Tag, {% endif -%}
       document
       {%- if tag.constructorNeedsCreateElementFlags %}, flags{% endif -%}
   );
@@ -53,7 +53,7 @@ static void create{{namespace}}FunctionMap() {
   // compile in MSVC. If tags list is empty, add check to skip this.
   static const Create{{namespace}}FunctionMapData data[] = {
   {% for tag in tags|sort if not tag.noConstructor %}
-    { {{namespace}}Names::{{tag|symbol}}Tag, {{namespace}}{{tag|symbol}}Constructor },
+    { {{cpp_namespace}}::{{tag|symbol}}Tag, {{namespace}}{{tag|symbol}}Constructor },
   {% endfor %}
   };
   for (size_t i = 0; i < arraysize(data); i++)

@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_UI_AUTOFILL_SAVE_CARD_BUBBLE_CONTROLLER_IMPL_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/autofill/save_card_ui.h"
 #include "components/autofill/core/browser/credit_card.h"
 #include "components/autofill/core/browser/ui/save_card_bubble_controller.h"
@@ -23,6 +21,7 @@ class PrefService;
 namespace autofill {
 
 enum class BubbleType;
+class StrikeDatabase;
 
 // Implementation of per-tab class to control the save credit card bubble and
 // Omnibox icon.
@@ -31,24 +30,36 @@ class SaveCardBubbleControllerImpl
       public content::WebContentsObserver,
       public content::WebContentsUserData<SaveCardBubbleControllerImpl> {
  public:
+  // An observer class used by browsertests that gets notified whenever
+  // particular actions occur.
+  class ObserverForTest {
+   public:
+    virtual void OnBubbleShown() = 0;
+    virtual void OnBubbleClosed() = 0;
+    virtual void OnSCBCStrikeChangeComplete() = 0;
+  };
+
   ~SaveCardBubbleControllerImpl() override;
 
-  // Sets up the controller for local save and shows the bubble.
+  // Sets up the controller and offers to save the |card| locally.
   // |save_card_callback| will be invoked if and when the Save button is
-  // pressed.
-  // TODO(crbug.com/852562): Migrate this to BindOnce/OnceClosure.
-  void ShowBubbleForLocalSave(const CreditCard& card,
-                              const base::Closure& save_card_callback);
+  // pressed. If |show_bubble| is true, pops up the offer-to-save bubble;
+  // otherwise, only the omnibox icon is displayed.
+  void OfferLocalSave(const CreditCard& card,
+                      bool show_bubble,
+                      base::OnceClosure save_card_callback);
 
-  // Sets up the controller for upload and shows the bubble.
+  // Sets up the controller and offers to upload the |card| to Google Payments.
   // |save_card_callback| will be invoked if and when the Save button is
   // pressed. The contents of |legal_message| will be displayed in the bubble.
   // A textfield confirming the cardholder name will appear in the bubble if
-  // |should_request_name_from_user| is true.
-  void ShowBubbleForUpload(
+  // |should_request_name_from_user| is true. If |show_bubble| is true, pops up
+  // the offer-to-save bubble; otherwise, only the omnibox icon is displayed.
+  void OfferUploadSave(
       const CreditCard& card,
       std::unique_ptr<base::DictionaryValue> legal_message,
       bool should_request_name_from_user,
+      bool show_bubble,
       base::OnceCallback<void(const base::string16&)> save_card_callback);
 
   // Sets up the controller for the sign in promo and shows the bubble.
@@ -108,10 +119,6 @@ class SaveCardBubbleControllerImpl
   // Opens the Payments settings page.
   virtual void ShowPaymentsSettingsPage();
 
-  // Returns the time elapsed since |timer_| was initialized.
-  // Exists for testing.
-  virtual base::TimeDelta Elapsed() const;
-
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -123,15 +130,32 @@ class SaveCardBubbleControllerImpl
 
  private:
   friend class content::WebContentsUserData<SaveCardBubbleControllerImpl>;
+  friend class SaveCardBubbleViewsBrowserTestBase;
 
   void FetchAccountInfo();
 
+  // Fetches the Autofill StrikeDatabase for the current profile.
+  StrikeDatabase* GetStrikeDatabase();
+
+  // Displays both the offer-to-save bubble and is associated omnibox icon.
   void ShowBubble();
+
+  // Displays the omnibox icon without popping up the offer-to-save bubble.
+  void ShowIconOnly();
 
   // Update the visibility and toggled state of the Omnibox save card icon.
   void UpdateIcon();
 
+  // Used for browsertests. Gives the |observer_for_testing_| a notification
+  // a strike change has been made.
+  void OnStrikeChangeComplete(const int num_strikes);
+
   void OpenUrl(const GURL& url);
+
+  // For testing.
+  void SetEventObserverForTesting(ObserverForTest* observer) {
+    observer_for_testing_ = observer;
+  }
 
   // The web_contents associated with this controller.
   content::WebContents* web_contents_;
@@ -158,7 +182,7 @@ class SaveCardBubbleControllerImpl
   // Callback to run if user presses Save button in the local save bubble. If
   // both callbacks return true for .is_null() then no bubble is available to
   // show and the icon is not visible.
-  base::Closure local_save_card_callback_;
+  base::OnceClosure local_save_card_callback_;
 
   // Governs whether the upload or local save version of the UI should be shown.
   bool is_upload_save_ = false;
@@ -170,12 +194,13 @@ class SaveCardBubbleControllerImpl
   // requesting the cardholder name.
   bool should_request_name_from_user_ = false;
 
+  // Whether the offer-to-save bubble should be shown or not. If true, behaves
+  // normally. If false, the omnibox icon will be displayed when offering credit
+  // card save, but the bubble itself will not pop up.
+  bool show_bubble_ = true;
+
   // The account info of the signed-in user.
   AccountInfo account_info_;
-
-  // The list of accounts that are signed-in but not syncing. Used for checking
-  // which promo message to show.
-  std::vector<AccountInfo> dice_accounts_;
 
   // Contains the details of the card that will be saved if the user accepts.
   CreditCard card_;
@@ -183,12 +208,17 @@ class SaveCardBubbleControllerImpl
   // If no legal message should be shown then this variable is an empty vector.
   LegalMessageLines legal_message_lines_;
 
-  // Used to measure the amount of time on a page; if it's less than some
-  // reasonable limit, then don't close the bubble upon navigation.
-  std::unique_ptr<base::ElapsedTimer> timer_;
+  // The time at which the bubble was shown. If it has been visible for less
+  // time than some reasonable limit, don't close the bubble upon navigation.
+  base::Time bubble_shown_timestamp_;
 
   // The security level for the current context.
   security_state::SecurityLevel security_level_;
+
+  // Observer for when a bubble is created. Initialized only during tests.
+  ObserverForTest* observer_for_testing_ = nullptr;
+
+  base::WeakPtrFactory<SaveCardBubbleControllerImpl> weak_ptr_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleControllerImpl);
 };

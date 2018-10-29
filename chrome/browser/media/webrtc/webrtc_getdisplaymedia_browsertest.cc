@@ -56,12 +56,12 @@ class WebRtcGetDisplayMediaBrowserTestWithPicker
 
 // Real desktop capture is flaky on below platforms.
 #if defined(OS_CHROMEOS) || defined(OS_WIN)
-#define MAYBE_MANUAL_GetDisplayMediaVideo DISABLED_MANUAL_GetDisplayMediaVideo
+#define MAYBE_GetDisplayMediaVideo DISABLED_GetDisplayMediaVideo
 #else
-#define MAYBE_MANUAL_GetDisplayMediaVideo MANUAL_GetDisplayMediaVideo
+#define MAYBE_GetDisplayMediaVideo GetDisplayMediaVideo
 #endif
 IN_PROC_BROWSER_TEST_F(WebRtcGetDisplayMediaBrowserTestWithPicker,
-                       MAYBE_MANUAL_GetDisplayMediaVideo) {
+                       MAYBE_GetDisplayMediaVideo) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
@@ -94,7 +94,7 @@ class WebRtcGetDisplayMediaBrowserTestWithFakeUI
 };
 
 IN_PROC_BROWSER_TEST_P(WebRtcGetDisplayMediaBrowserTestWithFakeUI,
-                       MANUAL_GetDisplayMedia) {
+                       GetDisplayMedia) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
@@ -113,6 +113,28 @@ IN_PROC_BROWSER_TEST_P(WebRtcGetDisplayMediaBrowserTestWithFakeUI,
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       tab->GetMainFrame(), "getCursorSetting();", &result));
   EXPECT_EQ(result, test_config_.cursor);
+}
+
+IN_PROC_BROWSER_TEST_P(WebRtcGetDisplayMediaBrowserTestWithFakeUI,
+                       GetDisplayMediaWithConstraints) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
+  const int kMaxWidth = 200;
+  const int kMaxFrameRate = 6;
+  const std::string& constraints =
+      base::StringPrintf("{video: {width: {max: %d}, frameRate: {max: %d}}}",
+                         kMaxWidth, kMaxFrameRate);
+  RunGetDisplayMedia(tab, constraints);
+
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetMainFrame(), "getWidthSetting();", &result));
+  EXPECT_EQ(result, base::StringPrintf("%d", kMaxWidth));
+
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetMainFrame(), "getFrameRateSetting();", &result));
+  EXPECT_EQ(result, base::StringPrintf("%d", kMaxFrameRate));
 }
 
 INSTANTIATE_TEST_CASE_P(,

@@ -58,7 +58,6 @@
         <include name="IDR_TTS_ENGINE_CUSTOM_BINDINGS_JS" file="extensions\tts_engine_custom_bindings.js" type="BINDATA" />
         <include name="IDR_WEBRTC_DESKTOP_CAPTURE_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\webrtc_desktop_capture_private_custom_bindings.js" type="BINDATA" />
         <include name="IDR_WEBRTC_LOGGING_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\webrtc_logging_private_custom_bindings.js" type="BINDATA" />
-        <include name="IDR_WEBSTORE_CUSTOM_BINDINGS_JS" file="extensions\webstore_custom_bindings.js" type="BINDATA" />
         <if expr="chromeos">
           <include name="IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\certificate_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS" file="extensions\enterprise_platform_keys_custom_bindings.js" type="BINDATA" />
@@ -91,6 +90,7 @@
         <include name="IDR_MIRRORING_SESSION_OBSERVER_MOJOM_JS" file="${mojom_root}\components\mirroring\mojom\session_observer.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MIRRORING_SESSION_PARAMETERS_JS" file="${mojom_root}\components\mirroring\mojom\session_parameters.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MOJO_TIME_MOJOM_JS" file="${mojom_root}\mojo\public\mojom\base\time.mojom.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_MOJO_UNGUESSABLE_TOKEN_MOJOM_JS" file="${mojom_root}\mojo\public\mojom\base\unguessable_token.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MOJO_IP_ADDRESS_MOJOM_JS" file="${mojom_root}\net\interfaces\ip_address.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MOJO_IP_ENDPOINT_MOJOM_JS" file="${mojom_root}\net\interfaces\ip_endpoint.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_ORIGIN_MOJOM_JS" file="${mojom_root}\url\mojom\origin.mojom.js" use_base_dir="false" type="BINDATA" />

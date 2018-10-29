@@ -39,35 +39,35 @@
 
 namespace blink {
 
-using namespace MediaFeatureNames;
+using namespace media_feature_names;
 
 static inline bool FeatureWithValidIdent(const String& media_feature,
                                          CSSValueID ident) {
-  if (media_feature == displayModeMediaFeature)
+  if (media_feature == kDisplayModeMediaFeature)
     return ident == CSSValueFullscreen || ident == CSSValueStandalone ||
            ident == CSSValueMinimalUi || ident == CSSValueBrowser;
 
-  if (media_feature == orientationMediaFeature)
+  if (media_feature == kOrientationMediaFeature)
     return ident == CSSValuePortrait || ident == CSSValueLandscape;
 
-  if (media_feature == pointerMediaFeature ||
-      media_feature == anyPointerMediaFeature)
+  if (media_feature == kPointerMediaFeature ||
+      media_feature == kAnyPointerMediaFeature)
     return ident == CSSValueNone || ident == CSSValueCoarse ||
            ident == CSSValueFine;
 
-  if (media_feature == hoverMediaFeature ||
-      media_feature == anyHoverMediaFeature)
+  if (media_feature == kHoverMediaFeature ||
+      media_feature == kAnyHoverMediaFeature)
     return ident == CSSValueNone || ident == CSSValueHover;
 
-  if (media_feature == scanMediaFeature)
+  if (media_feature == kScanMediaFeature)
     return ident == CSSValueInterlace || ident == CSSValueProgressive;
 
   if (RuntimeEnabledFeatures::MediaQueryShapeEnabled()) {
-    if (media_feature == shapeMediaFeature)
+    if (media_feature == kShapeMediaFeature)
       return ident == CSSValueRect || ident == CSSValueRound;
   }
 
-  if (media_feature == colorGamutMediaFeature) {
+  if (media_feature == kColorGamutMediaFeature) {
     return ident == CSSValueSRGB || ident == CSSValueP3 ||
            ident == CSSValueRec2020;
   }
@@ -82,18 +82,18 @@ static inline bool FeatureWithValidPositiveLength(
         (value->IsNumber() && value->GetDoubleValue() == 0)))
     return false;
 
-  return media_feature == heightMediaFeature ||
-         media_feature == maxHeightMediaFeature ||
-         media_feature == minHeightMediaFeature ||
-         media_feature == widthMediaFeature ||
-         media_feature == maxWidthMediaFeature ||
-         media_feature == minWidthMediaFeature ||
-         media_feature == deviceHeightMediaFeature ||
-         media_feature == maxDeviceHeightMediaFeature ||
-         media_feature == minDeviceHeightMediaFeature ||
-         media_feature == deviceWidthMediaFeature ||
-         media_feature == minDeviceWidthMediaFeature ||
-         media_feature == maxDeviceWidthMediaFeature;
+  return media_feature == kHeightMediaFeature ||
+         media_feature == kMaxHeightMediaFeature ||
+         media_feature == kMinHeightMediaFeature ||
+         media_feature == kWidthMediaFeature ||
+         media_feature == kMaxWidthMediaFeature ||
+         media_feature == kMinWidthMediaFeature ||
+         media_feature == kDeviceHeightMediaFeature ||
+         media_feature == kMaxDeviceHeightMediaFeature ||
+         media_feature == kMinDeviceHeightMediaFeature ||
+         media_feature == kDeviceWidthMediaFeature ||
+         media_feature == kMinDeviceWidthMediaFeature ||
+         media_feature == kMaxDeviceWidthMediaFeature;
 }
 
 static inline bool FeatureWithValidDensity(const String& media_feature,
@@ -107,23 +107,23 @@ static inline bool FeatureWithValidDensity(const String& media_feature,
       value->GetDoubleValue() <= 0)
     return false;
 
-  return media_feature == resolutionMediaFeature ||
-         media_feature == minResolutionMediaFeature ||
-         media_feature == maxResolutionMediaFeature;
+  return media_feature == kResolutionMediaFeature ||
+         media_feature == kMinResolutionMediaFeature ||
+         media_feature == kMaxResolutionMediaFeature;
 }
 
 static inline bool FeatureExpectingPositiveInteger(
     const String& media_feature) {
-  return media_feature == colorMediaFeature ||
-         media_feature == maxColorMediaFeature ||
-         media_feature == minColorMediaFeature ||
-         media_feature == colorIndexMediaFeature ||
-         media_feature == maxColorIndexMediaFeature ||
-         media_feature == minColorIndexMediaFeature ||
-         media_feature == monochromeMediaFeature ||
-         media_feature == maxMonochromeMediaFeature ||
-         media_feature == minMonochromeMediaFeature ||
-         media_feature == immersiveMediaFeature;
+  return media_feature == kColorMediaFeature ||
+         media_feature == kMaxColorMediaFeature ||
+         media_feature == kMinColorMediaFeature ||
+         media_feature == kColorIndexMediaFeature ||
+         media_feature == kMaxColorIndexMediaFeature ||
+         media_feature == kMinColorIndexMediaFeature ||
+         media_feature == kMonochromeMediaFeature ||
+         media_feature == kMaxMonochromeMediaFeature ||
+         media_feature == kMinMonochromeMediaFeature ||
+         media_feature == kImmersiveMediaFeature;
 }
 
 static inline bool FeatureWithPositiveInteger(const String& media_feature,
@@ -138,10 +138,10 @@ static inline bool FeatureWithPositiveNumber(const String& media_feature,
   if (!value->IsNumber())
     return false;
 
-  return media_feature == transform3dMediaFeature ||
-         media_feature == devicePixelRatioMediaFeature ||
-         media_feature == maxDevicePixelRatioMediaFeature ||
-         media_feature == minDevicePixelRatioMediaFeature;
+  return media_feature == kTransform3dMediaFeature ||
+         media_feature == kDevicePixelRatioMediaFeature ||
+         media_feature == kMaxDevicePixelRatioMediaFeature ||
+         media_feature == kMinDevicePixelRatioMediaFeature;
 }
 
 static inline bool FeatureWithZeroOrOne(const String& media_feature,
@@ -150,73 +150,73 @@ static inline bool FeatureWithZeroOrOne(const String& media_feature,
       !(value->GetDoubleValue() == 1 || !value->GetDoubleValue()))
     return false;
 
-  return media_feature == gridMediaFeature;
+  return media_feature == kGridMediaFeature;
 }
 
 static inline bool FeatureWithAspectRatio(const String& media_feature) {
-  return media_feature == aspectRatioMediaFeature ||
-         media_feature == deviceAspectRatioMediaFeature ||
-         media_feature == minAspectRatioMediaFeature ||
-         media_feature == maxAspectRatioMediaFeature ||
-         media_feature == minDeviceAspectRatioMediaFeature ||
-         media_feature == maxDeviceAspectRatioMediaFeature;
+  return media_feature == kAspectRatioMediaFeature ||
+         media_feature == kDeviceAspectRatioMediaFeature ||
+         media_feature == kMinAspectRatioMediaFeature ||
+         media_feature == kMaxAspectRatioMediaFeature ||
+         media_feature == kMinDeviceAspectRatioMediaFeature ||
+         media_feature == kMaxDeviceAspectRatioMediaFeature;
 }
 
 static inline bool FeatureWithoutValue(const String& media_feature) {
   // Media features that are prefixed by min/max cannot be used without a value.
-  return media_feature == monochromeMediaFeature ||
-         media_feature == colorMediaFeature ||
-         media_feature == colorIndexMediaFeature ||
-         media_feature == gridMediaFeature ||
-         media_feature == heightMediaFeature ||
-         media_feature == widthMediaFeature ||
-         media_feature == deviceHeightMediaFeature ||
-         media_feature == deviceWidthMediaFeature ||
-         media_feature == orientationMediaFeature ||
-         media_feature == aspectRatioMediaFeature ||
-         media_feature == deviceAspectRatioMediaFeature ||
-         media_feature == hoverMediaFeature ||
-         media_feature == anyHoverMediaFeature ||
-         media_feature == transform3dMediaFeature ||
-         media_feature == pointerMediaFeature ||
-         media_feature == anyPointerMediaFeature ||
-         media_feature == devicePixelRatioMediaFeature ||
-         media_feature == resolutionMediaFeature ||
-         media_feature == displayModeMediaFeature ||
-         media_feature == scanMediaFeature ||
-         media_feature == shapeMediaFeature ||
-         media_feature == colorGamutMediaFeature ||
-         media_feature == immersiveMediaFeature;
+  return media_feature == kMonochromeMediaFeature ||
+         media_feature == kColorMediaFeature ||
+         media_feature == kColorIndexMediaFeature ||
+         media_feature == kGridMediaFeature ||
+         media_feature == kHeightMediaFeature ||
+         media_feature == kWidthMediaFeature ||
+         media_feature == kDeviceHeightMediaFeature ||
+         media_feature == kDeviceWidthMediaFeature ||
+         media_feature == kOrientationMediaFeature ||
+         media_feature == kAspectRatioMediaFeature ||
+         media_feature == kDeviceAspectRatioMediaFeature ||
+         media_feature == kHoverMediaFeature ||
+         media_feature == kAnyHoverMediaFeature ||
+         media_feature == kTransform3dMediaFeature ||
+         media_feature == kPointerMediaFeature ||
+         media_feature == kAnyPointerMediaFeature ||
+         media_feature == kDevicePixelRatioMediaFeature ||
+         media_feature == kResolutionMediaFeature ||
+         media_feature == kDisplayModeMediaFeature ||
+         media_feature == kScanMediaFeature ||
+         media_feature == kShapeMediaFeature ||
+         media_feature == kColorGamutMediaFeature ||
+         media_feature == kImmersiveMediaFeature;
 }
 
 bool MediaQueryExp::IsViewportDependent() const {
-  return media_feature_ == widthMediaFeature ||
-         media_feature_ == heightMediaFeature ||
-         media_feature_ == minWidthMediaFeature ||
-         media_feature_ == minHeightMediaFeature ||
-         media_feature_ == maxWidthMediaFeature ||
-         media_feature_ == maxHeightMediaFeature ||
-         media_feature_ == orientationMediaFeature ||
-         media_feature_ == aspectRatioMediaFeature ||
-         media_feature_ == minAspectRatioMediaFeature ||
-         media_feature_ == devicePixelRatioMediaFeature ||
-         media_feature_ == resolutionMediaFeature ||
-         media_feature_ == maxAspectRatioMediaFeature ||
-         media_feature_ == maxDevicePixelRatioMediaFeature ||
-         media_feature_ == minDevicePixelRatioMediaFeature;
+  return media_feature_ == kWidthMediaFeature ||
+         media_feature_ == kHeightMediaFeature ||
+         media_feature_ == kMinWidthMediaFeature ||
+         media_feature_ == kMinHeightMediaFeature ||
+         media_feature_ == kMaxWidthMediaFeature ||
+         media_feature_ == kMaxHeightMediaFeature ||
+         media_feature_ == kOrientationMediaFeature ||
+         media_feature_ == kAspectRatioMediaFeature ||
+         media_feature_ == kMinAspectRatioMediaFeature ||
+         media_feature_ == kDevicePixelRatioMediaFeature ||
+         media_feature_ == kResolutionMediaFeature ||
+         media_feature_ == kMaxAspectRatioMediaFeature ||
+         media_feature_ == kMaxDevicePixelRatioMediaFeature ||
+         media_feature_ == kMinDevicePixelRatioMediaFeature;
 }
 
 bool MediaQueryExp::IsDeviceDependent() const {
-  return media_feature_ == deviceAspectRatioMediaFeature ||
-         media_feature_ == deviceWidthMediaFeature ||
-         media_feature_ == deviceHeightMediaFeature ||
-         media_feature_ == minDeviceAspectRatioMediaFeature ||
-         media_feature_ == minDeviceWidthMediaFeature ||
-         media_feature_ == minDeviceHeightMediaFeature ||
-         media_feature_ == maxDeviceAspectRatioMediaFeature ||
-         media_feature_ == maxDeviceWidthMediaFeature ||
-         media_feature_ == maxDeviceHeightMediaFeature ||
-         media_feature_ == shapeMediaFeature;
+  return media_feature_ == kDeviceAspectRatioMediaFeature ||
+         media_feature_ == kDeviceWidthMediaFeature ||
+         media_feature_ == kDeviceHeightMediaFeature ||
+         media_feature_ == kMinDeviceAspectRatioMediaFeature ||
+         media_feature_ == kMinDeviceWidthMediaFeature ||
+         media_feature_ == kMinDeviceHeightMediaFeature ||
+         media_feature_ == kMaxDeviceAspectRatioMediaFeature ||
+         media_feature_ == kMaxDeviceWidthMediaFeature ||
+         media_feature_ == kMaxDeviceHeightMediaFeature ||
+         media_feature_ == kShapeMediaFeature;
 }
 
 MediaQueryExp::MediaQueryExp(const MediaQueryExp& other)

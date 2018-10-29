@@ -5,6 +5,7 @@
 #include "chrome/browser/net/trial_comparison_cert_verifier.h"
 
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/sha2.h"
@@ -120,7 +122,7 @@ int FakeCertVerifyProc::VerifyInternal(
     const net::CertificateList& additional_trust_anchors,
     net::CertVerifyResult* verify_result) {
   *verify_result = result_;
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
       ->PostTask(FROM_HERE, verify_called_.closure());
   return result_error_;
 }
@@ -220,8 +222,8 @@ class TrialComparisonCertVerifierTest : public testing::Test {
 
     system_request_context_getter_ =
         base::MakeRefCounted<net::TestURLRequestContextGetter>(
-            content::BrowserThread::GetTaskRunnerForThread(
-                content::BrowserThread::IO));
+            base::CreateSingleThreadTaskRunnerWithTraits(
+                {content::BrowserThread::IO}));
     TestingBrowserProcess::GetGlobal()->SetSystemRequestContext(
         system_request_context_getter_.get());
     sb_service_ =
@@ -1251,14 +1253,14 @@ TEST_F(TrialComparisonCertVerifierTest, DeletedAfterTrialVerificationStarted) {
   // Allow the lookup on the UI thread for the profile to determine trial
   // status.
   std::unique_ptr<base::RunLoop> run_loop(std::make_unique<base::RunLoop>());
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
       ->PostTask(FROM_HERE, run_loop->QuitClosure());
   run_loop->Run();
 
   // Allow recording the metrics back on the IO thread, and starting the
   // second verification, to run.
   run_loop = std::make_unique<base::RunLoop>();
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::IO)
+  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::IO})
       ->PostTask(FROM_HERE, run_loop->QuitClosure());
   run_loop->Run();
 

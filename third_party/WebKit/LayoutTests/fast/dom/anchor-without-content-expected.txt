@@ -4,6 +4,8 @@ PASS Clicking link 3 scrolled to block 3.
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 This test verifies that links to anchors without content work as expected.
 
 Block 1
@@ -11,6 +13,8 @@ Block 2
 Block 3
 Block 1
 Block 2
+
+
 This block has whitespace inside and after the anchor element.
 
 Block 3

@@ -12,6 +12,7 @@ PASS range.toString() is "C1DEC2"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 F
 B
 A

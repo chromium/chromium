@@ -8,7 +8,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/unzip/public/interfaces/constants.mojom.h"
 #include "components/services/unzip/unzip_service.h"
-#include "services/service_manager/embedder/embedded_service_info.h"
+#include "services/service_manager/public/cpp/embedded_service_info.h"
 
 void RegisterUnzipService(web::BrowserState::StaticServiceMap* services) {
   service_manager::EmbeddedServiceInfo unzip_info;

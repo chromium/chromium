@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "content/browser/android/text_suggestion_host_android.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -144,6 +145,10 @@ ImeAdapterAndroid::ImeAdapterAndroid(JNIEnv* env,
                                      WebContents* web_contents)
     : RenderWidgetHostConnector(web_contents), rwhva_(nullptr) {
   java_ime_adapter_ = JavaObjectWeakGlobalRef(env, obj);
+
+  // Set up mojo client for TextSuggestionHost in advance. Java side is
+  // initialized lazily right before showing the menu first time.
+  TextSuggestionHostAndroid::Create(env, web_contents);
 }
 
 ImeAdapterAndroid::~ImeAdapterAndroid() {

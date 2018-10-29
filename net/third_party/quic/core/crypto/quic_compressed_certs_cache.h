@@ -46,7 +46,7 @@ class QUIC_EXPORT_PRIVATE QuicCompressedCertsCache {
   size_t Size();
 
   // Default size of the QuicCompressedCertsCache per server side investigation.
-  static const size_t kQuicCompressedCertsCacheSize = 225;
+  static const size_t kQuicCompressedCertsCacheSize;
 
  private:
   // A wrapper of the tuple:

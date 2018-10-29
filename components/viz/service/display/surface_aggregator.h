@@ -84,26 +84,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
     bool in_use = true;
   };
 
-  struct SurfaceDrawQuadUmaStats {
-    void Reset() {
-      valid_surface = 0;
-      using_fallback_surface = 0;
-    }
-
-    // The surface exists and has an active frame.
-    int valid_surface;
-
-    // The surface doesn't exist.
-    int missing_surface;
-
-    // The surface exists but doesn't have an active frame.
-    int no_active_frame;
-
-    // The primary surface is not available but the fallback
-    // is used.
-    int using_fallback_surface;
-  };
-
   ClipData CalculateClipRect(const ClipData& surface_clip,
                              const ClipData& quad_clip,
                              const gfx::Transform& target_transform);
@@ -273,9 +253,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // True if the frame that's currently being aggregated has cached render
   // passes. This is valid during Aggregate after PrewalkTree is called.
   bool has_cached_render_passes_;
-
-  // Tracks UMA stats for SurfaceDrawQuads during a call to Aggregate().
-  SurfaceDrawQuadUmaStats uma_stats_;
 
   // For each FrameSinkId, contains a vector of SurfaceRanges that will damage
   // the display if they're damaged.

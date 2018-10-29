@@ -14,12 +14,14 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api.h"
 #include "chrome/browser/speech/tts_controller.h"
 #include "chrome/browser/speech/tts_platform.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
 #include "net/base/network_change_notifier.h"
@@ -178,6 +180,32 @@ class FakeNetworkOnlineStateForTest : public net::NetworkChangeNotifier {
   DISALLOW_COPY_AND_ASSIGN(FakeNetworkOnlineStateForTest);
 };
 
+class EventRouterAddListenerWaiter : public EventRouter::Observer {
+ public:
+  EventRouterAddListenerWaiter(Profile* profile, const std::string& event_name)
+      : event_router_(EventRouter::EventRouter::Get(profile)) {
+    DCHECK(profile);
+    event_router_->RegisterObserver(this, event_name);
+  }
+
+  ~EventRouterAddListenerWaiter() override {
+    event_router_->UnregisterObserver(this);
+  }
+
+  void Wait() { loop_runner_.Run(); }
+
+  // EventRouter::Observer overrides.
+  void OnListenerAdded(const EventListenerInfo& details) override {
+    loop_runner_.Quit();
+  }
+
+ private:
+  EventRouter* const event_router_;
+  base::RunLoop loop_runner_;
+
+  DISALLOW_COPY_AND_ASSIGN(EventRouterAddListenerWaiter);
+};
+
 class TtsApiTest : public ExtensionApiTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
@@ -198,6 +226,17 @@ class TtsApiTest : public ExtensionApiTest {
   }
 
  protected:
+  bool HasVoiceWithName(const std::string& name) {
+    std::vector<VoiceData> voices;
+    TtsController::GetInstance()->GetVoices(profile(), &voices);
+    for (auto& voice : voices) {
+      if (voice.name == name)
+        return true;
+    }
+
+    return false;
+  }
+
   StrictMock<MockTtsPlatformImpl> mock_platform_impl_;
 };
 
@@ -469,6 +508,28 @@ IN_PROC_BROWSER_TEST_F(TtsApiTest, EngineApi) {
 
 IN_PROC_BROWSER_TEST_F(TtsApiTest, UpdateVoicesApi) {
   ASSERT_TRUE(RunExtensionTest("tts_engine/update_voices_api")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(TtsApiTest, PRE_VoicesAreCached) {
+  EXPECT_FALSE(HasVoiceWithName("Dynamic Voice 1"));
+  EXPECT_FALSE(HasVoiceWithName("Dynamic Voice 2"));
+  ASSERT_TRUE(RunExtensionTest("tts_engine/call_update_voices")) << message_;
+  EXPECT_TRUE(HasVoiceWithName("Dynamic Voice 1"));
+  EXPECT_TRUE(HasVoiceWithName("Dynamic Voice 2"));
+}
+
+IN_PROC_BROWSER_TEST_F(TtsApiTest, VoicesAreCached) {
+  // Make sure the dynamically loaded voices are available even though
+  // the extension didn't "run". Note that the voices might not be available
+  // immediately when the test runs, but the test should pass shortly after
+  // the extension's event listeners are registered.
+  while (!HasVoiceWithName("Dynamic Voice 1") ||
+         !HasVoiceWithName("Dynamic Voice 2")) {
+    // Wait for the extension's event listener to be registered before
+    // checking what voices are registered.
+    EventRouterAddListenerWaiter waiter(profile(), tts_engine_events::kOnStop);
+    waiter.Wait();
+  }
 }
 
 }  // namespace extensions

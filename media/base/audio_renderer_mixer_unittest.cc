@@ -478,7 +478,7 @@ TEST_P(AudioRendererMixerBehavioralTest, MixerPausesStream) {
   const base::TimeDelta kPauseTime = base::TimeDelta::FromMilliseconds(500);
   // This value can't be too low or valgrind, tsan will timeout on the bots.
   const base::TimeDelta kTestTimeout = 10 * kPauseTime;
-  mixer_->set_pause_delay_for_testing(kPauseTime);
+  mixer_->SetPauseDelayForTesting(kPauseTime);
 
   base::WaitableEvent pause_event(
       base::WaitableEvent::ResetPolicy::MANUAL,

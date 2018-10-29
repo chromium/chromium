@@ -40,8 +40,6 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
   static DOMMatrixReadOnly* fromMatrix2D(DOMMatrix2DInit&, ExceptionState&);
   static DOMMatrixReadOnly* CreateForSerialization(double[], int size);
   ~DOMMatrixReadOnly() override;
-  // Used by Canvas2D, not defined on the IDL.
-  static DOMMatrixReadOnly* fromMatrix2D(DOMMatrix2DInit&);
 
   double a() const { return matrix_->M11(); }
   double b() const { return matrix_->M12(); }

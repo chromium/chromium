@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/program_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
+#include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -3183,6 +3184,145 @@ TEST_P(GLES2DecoderTest, CreateAndConsumeTextureCHROMIUMInvalidTexture) {
 
   // CreateAndConsumeTexture should fail.
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+}
+
+class TestSharedImageBacking : public SharedImageBacking {
+ public:
+  class TestSharedImageRepresentation
+      : public SharedImageRepresentationGLTexture {
+   public:
+    TestSharedImageRepresentation(SharedImageManager* manager,
+                                  SharedImageBacking* backing,
+                                  gles2::Texture* texture)
+        : SharedImageRepresentationGLTexture(manager, backing),
+          texture_(texture) {}
+
+    gles2::Texture* GetTexture() override { return texture_; }
+
+   private:
+    gles2::Texture* texture_;
+  };
+
+  TestSharedImageBacking(const Mailbox& mailbox,
+                         viz::ResourceFormat format,
+                         const gfx::Size& size,
+                         const gfx::ColorSpace& color_space,
+                         uint32_t usage,
+                         MemoryTypeTracker* memory_tracker,
+                         GLuint texture_id)
+      : SharedImageBacking(mailbox, format, size, color_space, usage) {
+    texture_ = new gles2::Texture(texture_id);
+    texture_->SetLightweightRef(memory_tracker);
+  }
+
+  bool IsCleared() const override { return false; }
+
+  void SetCleared() override {}
+
+  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override {
+    return false;
+  }
+
+  void Destroy() override {
+    texture_->RemoveLightweightRef(have_context());
+    texture_ = nullptr;
+  }
+
+  size_t EstimatedSize() const override { return 0; }
+
+  void OnMemoryDump(const std::string& dump_name,
+                    base::trace_event::MemoryAllocatorDump* dump,
+                    base::trace_event::ProcessMemoryDump* pmd,
+                    uint64_t client_tracing_id) override {}
+
+ protected:
+  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+      SharedImageManager* manager) override {
+    return std::make_unique<TestSharedImageRepresentation>(manager, this,
+                                                           texture_);
+  }
+
+ private:
+  gles2::Texture* texture_;
+};
+
+TEST_P(GLES2DecoderTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
+  MemoryTypeTracker memory_tracker(memory_tracker_.get());
+  Mailbox mailbox = Mailbox::Generate();
+  group().shared_image_manager()->Register(
+      std::make_unique<TestSharedImageBacking>(
+          mailbox, viz::ResourceFormat::RGBA_8888, gfx::Size(10, 10),
+          gfx::ColorSpace(), 0, &memory_tracker, kNewServiceId));
+
+  CreateAndTexStorage2DSharedImageINTERNALImmediate& cmd =
+      *GetImmediateAs<CreateAndTexStorage2DSharedImageINTERNALImmediate>();
+  cmd.Init(kNewClientId, GL_RGBA, mailbox.name);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  // Make sure the new client ID is associated with the produced service ID.
+  auto* texture_ref = group().texture_manager()->GetTexture(kNewClientId);
+  ASSERT_NE(texture_ref, nullptr);
+  EXPECT_EQ(kNewServiceId, texture_ref->texture()->service_id());
+
+  // Delete the texture and make sure it is no longer accessible.
+  DoDeleteTexture(kNewClientId, kNewServiceId);
+  texture_ref = group().texture_manager()->GetTexture(kNewClientId);
+  EXPECT_EQ(texture_ref, nullptr);
+
+  group().shared_image_manager()->Unregister(mailbox);
+}
+
+TEST_P(GLES2DecoderTest,
+       CreateAndTexStorage2DSharedImageCHROMIUMInvalidMailbox) {
+  MemoryTypeTracker memory_tracker(memory_tracker_.get());
+
+  // Attempt to use an invalid mailbox.
+  Mailbox mailbox;
+  // We will generate a new texture.
+  EXPECT_CALL(*gl_, GenTextures(1, _))
+      .WillOnce(SetArgPointee<1>(kNewServiceId))
+      .RetiresOnSaturation();
+
+  CreateAndTexStorage2DSharedImageINTERNALImmediate& cmd =
+      *GetImmediateAs<CreateAndTexStorage2DSharedImageINTERNALImmediate>();
+  cmd.Init(kNewClientId, GL_RGBA, mailbox.name);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
+
+  // CreateAndTexStorage2DSharedImage should fail if the mailbox is invalid.
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
+  // Make sure the new client_id is associated with a texture ref even though
+  // CreateAndTexStorage2DSharedImage failed.
+  TextureRef* texture_ref = group().texture_manager()->GetTexture(kNewClientId);
+  ASSERT_TRUE(texture_ref != nullptr);
+  Texture* texture = texture_ref->texture();
+  // New texture should be unbound to a target.
+  EXPECT_TRUE(texture->target() == GL_NONE);
+  // New texture should have a valid service_id.
+  EXPECT_EQ(kNewServiceId, texture->service_id());
+}
+
+TEST_P(GLES2DecoderTest,
+       CreateAndTexStorage2DSharedImageCHROMIUMPreexistingTexture) {
+  // Try to create a mailbox with kNewClientId.
+  MemoryTypeTracker memory_tracker(memory_tracker_.get());
+  Mailbox mailbox = Mailbox::Generate();
+  group().shared_image_manager()->Register(
+      std::make_unique<TestSharedImageBacking>(
+          mailbox, viz::ResourceFormat::RGBA_8888, gfx::Size(10, 10),
+          gfx::ColorSpace(), 0, &memory_tracker, kNewServiceId));
+
+  CreateAndTexStorage2DSharedImageINTERNALImmediate& cmd =
+      *GetImmediateAs<CreateAndTexStorage2DSharedImageINTERNALImmediate>();
+  cmd.Init(client_texture_id_, GL_RGBA, mailbox.name);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
+
+  // CreateAndTexStorage2DSharedImage should fail.
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
+  DoDeleteTexture(kNewClientId, kNewServiceId);
+  group().shared_image_manager()->Unregister(mailbox);
 }
 
 TEST_P(GLES2DecoderManualInitTest, DepthTextureBadArgs) {

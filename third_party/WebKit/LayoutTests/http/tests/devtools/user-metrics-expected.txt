@@ -20,6 +20,7 @@ recordActionTaken:
     DeviceModeEnabled : 10
     FileSavedInWorkspace : 9
     FileSystemDirectoryContentReceived : 13
+    FilmStripStartedRecording : 33
     ProfilesCPUProfileTaken : 5
     ProfilesHeapProfileTaken : 6
     ResizedViewInResponsiveMode : 17

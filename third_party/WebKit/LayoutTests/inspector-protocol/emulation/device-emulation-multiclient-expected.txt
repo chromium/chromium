@@ -1,0 +1,6 @@
+Tests that device emulation is not reset upon second client attach.
+Emulating device: 1200x1000x1
+1200 x 1000
+Creating a new session
+1200 x 1000
+

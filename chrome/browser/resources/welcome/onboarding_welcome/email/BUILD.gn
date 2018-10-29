@@ -1,0 +1,44 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":email_chooser",
+    ":nux_email",
+  ]
+}
+
+js_library("nux_email") {
+  deps = [
+    "../shared:nux_types",
+  ]
+}
+
+js_library("email_chooser") {
+  deps = [
+    ":nux_email_proxy",
+    "../:navigation_behavior",
+    "../shared:bookmark_proxy",
+    "../shared:nux_types",
+    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:load_time_data",
+  ]
+}
+
+js_library("nux_email_proxy") {
+  deps = [
+    "../shared:nux_types",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:load_time_data",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/chrome_send.js",
+    "$externs_path/metrics_private.js",
+  ]
+}

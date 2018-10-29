@@ -17,22 +17,20 @@ public class DownloadManagerCoordinatorFactory {
     /**
      * Returns an instance of a {@link DownloadManagerCoordinator} to be used in the UI.
      * @param activity           The parent {@link Activity}.
-     * @param isOffTheRecord     Whether or not this UI should include off the record items.
+     * @param config             A {@link DownloadManagerUiConfig} to provide configuration params.
      * @param parentComponent    The parent component.
-     * @param isSeparateActivity Whether or not the UI is being shown as part of a separate
-     *                           activity.
      * @param snackbarManager    The {@link SnackbarManager} that should be used to show snackbars.
      * @return                   A new {@link DownloadManagerCoordinator} instance.
      */
-    public static DownloadManagerCoordinator create(Activity activity, boolean isOffTheRecord,
-            SnackbarManager snackbarManager, ComponentName parentComponent,
-            boolean isSeparateActivity) {
+    public static DownloadManagerCoordinator create(Activity activity,
+            DownloadManagerUiConfig config, SnackbarManager snackbarManager,
+            ComponentName parentComponent) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_HOME_V2)) {
-            return new DownloadManagerCoordinatorImpl(Profile.getLastUsedProfile(), activity,
-                    isOffTheRecord, isSeparateActivity, snackbarManager);
+            return new DownloadManagerCoordinatorImpl(
+                    Profile.getLastUsedProfile(), activity, config, snackbarManager);
         } else {
-            return new DownloadManagerUi(
-                    activity, isOffTheRecord, parentComponent, isSeparateActivity, snackbarManager);
+            return new DownloadManagerUi(activity, config.isOffTheRecord, parentComponent,
+                    config.isSeparateActivity, snackbarManager);
         }
     }
 }

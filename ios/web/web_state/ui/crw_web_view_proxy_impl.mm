@@ -90,6 +90,16 @@ UIView* GetFirstResponderSubview(UIView* view) {
   return _contentViewScrollViewProxy;
 }
 
+- (BOOL)allowsBackForwardNavigationGestures {
+  return _webController.allowsBackForwardNavigationGestures;
+}
+
+- (void)setAllowsBackForwardNavigationGestures:
+    (BOOL)allowsBackForwardNavigationGestures {
+  _webController.allowsBackForwardNavigationGestures =
+      allowsBackForwardNavigationGestures;
+}
+
 - (CGRect)bounds {
   return [_contentView bounds];
 }

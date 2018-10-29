@@ -126,6 +126,7 @@ def run_benchmark(args, rest_args, histogram_results):
     cmd_args = cmd_args + [
       '--story-filter=' + filter_regex
     ]
+  rc = 1  # Set default returncode in case there is an exception.
   try:
     cmd = [sys.executable] + cmd_args + [
       '--output-dir', tempfile_dir,

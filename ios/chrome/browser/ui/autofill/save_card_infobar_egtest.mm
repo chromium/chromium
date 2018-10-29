@@ -18,6 +18,7 @@
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_controller.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/app/web_view_interaction_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -38,6 +39,7 @@ namespace {
 using base::test::ios::kWaitForDownloadTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using chrome_test_util::TapWebViewElementWithId;
 
 // URLs of the test pages.
 const char kCreditCardUploadForm[] =
@@ -63,6 +65,8 @@ enum InfobarEvent : int {
   REQUESTED_UPLOAD_SAVE,
   RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
   SENT_UPLOAD_CARD_REQUEST,
+  RECEIVED_UPLOAD_CARD_RESPONSE,
+  STRIKE_CHANGE_COMPLETE
 };
 
 id<GREYMatcher> closeButtonMatcher() {
@@ -155,6 +159,11 @@ class SaveCardInfobarEGTestHelper {
     personal_data_manager_->RemoveByGUID(creditCard->guid());
   }
 
+  // Clear existing profiles.
+  for (const auto* profile : personal_data_manager_->GetProfiles()) {
+    personal_data_manager_->RemoveByGUID(profile->guid());
+  }
+
   [super tearDown];
 }
 
@@ -194,34 +203,30 @@ class SaveCardInfobarEGTestHelper {
   [self onEvent:InfobarEvent::SENT_UPLOAD_CARD_REQUEST];
 }
 
+- (void)receivedUploadCardResponse {
+  [self onEvent:InfobarEvent::RECEIVED_UPLOAD_CARD_RESPONSE];
+}
+
+- (void)ccsmStrikeChangeComplete {
+  [self onEvent:InfobarEvent::STRIKE_CHANGE_COMPLETE];
+}
+
 #pragma mark - Page interaction helper methods
 
 - (void)fillAndSubmitFormWithCardDetailsOnly {
-  NSError* error = nil;
-  chrome_test_util::ExecuteJavaScript(
-      @"(function() { document.getElementById('fill_card_only').click(); })();",
-      &error);
-  GREYAssert(!error, @"Error during script execution: %@", error);
-
+  GREYAssert(TapWebViewElementWithId("fill_card_only"),
+             @"Failed to tap \"fill_card_only\"");
   [self submitForm];
 }
 
 - (void)fillAndSubmitForm {
-  NSError* error = nil;
-  chrome_test_util::ExecuteJavaScript(
-      @"(function() { document.getElementById('fill_form').click(); })();",
-      &error);
-  GREYAssert(!error, @"Error during script execution: %@", error);
-
+  GREYAssert(TapWebViewElementWithId("fill_form"),
+             @"Failed to tap \"fill_form\"");
   [self submitForm];
 }
 
 - (void)submitForm {
-  NSError* error = nil;
-  chrome_test_util::ExecuteJavaScript(
-      @"(function() { document.getElementById('submit').click(); })();",
-      &error);
-  GREYAssert(!error, @"Error during script execution: %@", error);
+  GREYAssert(TapWebViewElementWithId("submit"), @"Failed to tap \"submit\"");
 }
 
 #pragma mark - Helper methods
@@ -419,6 +424,10 @@ class SaveCardInfobarEGTestHelper {
 // Google Payments, and UMA metrics are correctly logged if the user accepts
 // upload.
 - (void)testUMA_Upstream_UserAccepts {
+  // TODO(crbug.com/895687): Re-enable this test after eliminating the need for
+  // disabling EarlGrey synchronization.
+  EARL_GREY_TEST_DISABLED(@"Test disabled.");
+
   base::HistogramTester histogram_tester;
 
   [ChromeEarlGrey
@@ -513,6 +522,10 @@ class SaveCardInfobarEGTestHelper {
 - (void)testUserData_LocalSave_UserAccepts {
   [ChromeEarlGrey
       loadURL:web::test::HttpServer::MakeUrl(kCreditCardUploadForm)];
+
+  // Ensure there are no saved credit cards.
+  GREYAssertEqual(0U, personal_data_manager_->GetCreditCards().size(),
+                  @"There should be no saved credit card.");
 
   // Set up the Google Payments server response.
   test_url_loader_factory_.AddResponse(kURLGetUploadDetailsRequest,

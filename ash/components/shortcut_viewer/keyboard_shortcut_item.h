@@ -84,7 +84,7 @@ struct KSV_EXPORT KeyboardShortcutItem {
   //     E.g. shortcuts for "CTRL + 1 through 8.", we will provide
   //     shortcut_string " + 1 through 8", and auto-generate {ui::VKEY_CONTROL}.
   //  3. For grouped |accelerator_ids| with different modifiers, e.g.
-  //     SHOW_KEYBOARD_OVERLAY, we can not auto-generate it and we will provide
+  //     TOGGLE_FULLSCREEN, we can not auto-generate it and we will provide
   //     the |shortcut_key_codes|.
   //  4. For ksv items not in the two accelerator_tables, we will provide the
   //     |shortcut_key_codes| and |accelerator_ids| will be empty.

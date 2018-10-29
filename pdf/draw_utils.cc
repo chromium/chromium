@@ -55,7 +55,7 @@ ShadowMatrix::ShadowMatrix(uint32_t depth, double factor, uint32_t background)
 
   // pv - is a rounding power factor for smoothing corners.
   // pv = 2.0 will make corners completely round.
-  const double pv = 4.0;
+  constexpr double pv = 4.0;
   // pow_pv - cache to avoid recalculating pow(x, pv) every time.
   std::vector<double> pow_pv(depth_, 0.0);
 

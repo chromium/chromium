@@ -5,15 +5,14 @@
 
 """Pushes changes to web-platform-tests inside Chromium to the upstream repo."""
 
-import os
-import sys
-
 from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
+from blinkpy.common.path_finder import add_depot_tools_dir_to_os_path
 from blinkpy.w3c.test_exporter import TestExporter
 
 
 def main():
+    add_depot_tools_dir_to_os_path()
     host = Host()
     exporter = TestExporter(host)
     try:

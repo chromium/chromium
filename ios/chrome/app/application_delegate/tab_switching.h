@@ -7,9 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol TabSwitcher;
-
-// Handles TabSwitcher interactions.
+// Handles opening tabs from the tab switcher.
 @protocol TabSwitching<NSObject>
 
 // Opens a new tab with animation if presenting the tab switcher.

@@ -352,7 +352,7 @@ cr.define('cr.ui', function() {
       });
 
       waitForOobeScreen('oauth-enrollment', function() {
-        chrome.send('oauthEnrollCompleteLogin', [username, 'authcode']);
+        chrome.send('oauthEnrollCompleteLogin', [username]);
       });
     }
   };

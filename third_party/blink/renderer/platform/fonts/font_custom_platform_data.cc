@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
-#include "third_party/blink/renderer/platform/fonts/paint_typeface.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_decoder.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
 #include "third_party/blink/renderer/platform/shared_buffer.h"
@@ -108,10 +107,9 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
 
     if (variation_settings && variation_settings->size() < UINT16_MAX) {
       axes.ReserveCapacity(variation_settings->size() + axes.size());
-      for (size_t i = 0; i < variation_settings->size(); ++i) {
-        SkFontArguments::Axis axis = {
-            AtomicStringToFourByteTag(variation_settings->at(i).Tag()),
-            SkFloatToScalar(variation_settings->at(i).Value())};
+      for (const auto& setting : *variation_settings) {
+        SkFontArguments::Axis axis = {AtomicStringToFourByteTag(setting.Tag()),
+                                      SkFloatToScalar(setting.Value())};
         axes.push_back(axis);
       }
     }
@@ -133,9 +131,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     }
   }
 
-  // TODO(vmpstr): Handle web fonts PaintTypefaces.
-  PaintTypeface paint_tf = PaintTypeface::FromSkTypeface(return_typeface);
-  return FontPlatformData(std::move(paint_tf), CString(), size,
+  return FontPlatformData(std::move(return_typeface), CString(), size,
                           bold && !base_typeface_->isBold(),
                           italic && !base_typeface_->isItalic(), orientation);
 }

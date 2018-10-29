@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/web_applications/components/test_pending_app_manager.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
@@ -20,11 +21,11 @@ class PendingAppManagerTest : public testing::Test {
 
     std::vector<PendingAppManager::AppInfo> app_infos;
     for (const auto& url : urls) {
-      app_infos.emplace_back(url, PendingAppManager::LaunchContainer::kWindow,
-                             PendingAppManager::InstallSource::kInternal);
+      app_infos.emplace_back(url, LaunchContainer::kWindow,
+                             InstallSource::kInternal);
     }
-    pending_app_manager_.SynchronizeInstalledApps(
-        std::move(app_infos), PendingAppManager::InstallSource::kInternal);
+    pending_app_manager_.SynchronizeInstalledApps(std::move(app_infos),
+                                                  InstallSource::kInternal);
   }
 
   void Expect(int deduped_install_count,
@@ -35,8 +36,8 @@ class PendingAppManagerTest : public testing::Test {
     EXPECT_EQ(deduped_uninstall_count,
               pending_app_manager_.deduped_uninstall_count());
 
-    std::vector<GURL> urls = pending_app_manager_.GetInstalledAppUrls(
-        PendingAppManager::InstallSource::kInternal);
+    std::vector<GURL> urls =
+        pending_app_manager_.GetInstalledAppUrls(InstallSource::kInternal);
     std::sort(urls.begin(), urls.end());
     EXPECT_EQ(installed_app_urls, urls);
   }

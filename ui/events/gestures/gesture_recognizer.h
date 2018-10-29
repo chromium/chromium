@@ -10,19 +10,23 @@
 #include <memory>
 #include <vector>
 
+#include "base/observer_list.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
+class GestureRecognizerObserver;
+
 // A GestureRecognizer is an abstract base class for conversion of touch events
 // into gestures.
 class EVENTS_EXPORT GestureRecognizer {
  public:
   using Gestures = std::vector<std::unique_ptr<GestureEvent>>;
 
-  virtual ~GestureRecognizer() {}
+  GestureRecognizer();
+  virtual ~GestureRecognizer();
 
   // Invoked before event dispatch. If the event is invalid given the current
   // touch sequence, returns false.
@@ -57,15 +61,14 @@ class EVENTS_EXPORT GestureRecognizer {
   // |not_cancelled| == nullptr, cancels all touches.
   virtual void CancelActiveTouchesExcept(GestureConsumer* not_cancelled) = 0;
 
-  enum class ShouldCancelTouches { Cancel, DontCancel };
-
   // Transfer the gesture stream from the drag source (current_consumer) to the
-  // consumer used for dragging (new_consumer). If |should_cancel_touches| is
-  // Cancel, dispatches cancel events to |current_consumer| to ensure that its
-  // touch stream remains valid.
-  virtual void TransferEventsTo(GestureConsumer* current_consumer,
-                                GestureConsumer* new_consumer,
-                                ShouldCancelTouches should_cancel_touches) = 0;
+  // consumer used for dragging (new_consumer). If |transfer_touches_behavior|
+  // is kCancel, dispatches cancel events to |current_consumer| to ensure that
+  // its touch stream remains valid.
+  virtual void TransferEventsTo(
+      GestureConsumer* current_consumer,
+      GestureConsumer* new_consumer,
+      TransferTouchesBehavior transfer_touches_behavior) = 0;
 
   // If a gesture is underway for |consumer| |point| is set to the last touch
   // point and true is returned. If no touch events have been processed for
@@ -87,6 +90,19 @@ class EVENTS_EXPORT GestureRecognizer {
   // Since the GestureRecognizer does not own the |helper|, it is not deleted
   // and must be cleaned up appropriately by the caller.
   virtual void RemoveGestureEventHelper(GestureEventHelper* helper) = 0;
+
+  void AddObserver(GestureRecognizerObserver* observer);
+  void RemoveObserver(GestureRecognizerObserver* observer);
+
+ protected:
+  const base::ObserverList<GestureRecognizerObserver>& observers() {
+    return observers_;
+  }
+
+ private:
+  base::ObserverList<GestureRecognizerObserver> observers_;
+
+  DISALLOW_COPY_AND_ASSIGN(GestureRecognizer);
 };
 
 }  // namespace ui

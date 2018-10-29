@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutBlockFlow (floating) {P} at (0,16) size 722.16x22 [border: (2px solid #0000FF)]
-        LayoutText {#text} at (2,2) size 719x18
-          text run at (2,2) width 719: "There should be 12px of letter spacing."

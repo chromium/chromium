@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -395,12 +396,12 @@ bool ChromeSSLHostStateDelegate::DidHostRunInsecureContent(
     const std::string& host,
     int child_id,
     InsecureContentType content_type) const {
+  auto entry = BrokenHostEntry(host, child_id);
   switch (content_type) {
     case MIXED_CONTENT:
-      return !!ran_mixed_content_hosts_.count(BrokenHostEntry(host, child_id));
+      return base::ContainsKey(ran_mixed_content_hosts_, entry);
     case CERT_ERRORS_CONTENT:
-      return !!ran_content_with_cert_errors_hosts_.count(
-          BrokenHostEntry(host, child_id));
+      return base::ContainsKey(ran_content_with_cert_errors_hosts_, entry);
   }
   NOTREACHED();
   return false;

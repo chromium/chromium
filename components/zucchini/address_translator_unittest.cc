@@ -553,4 +553,34 @@ TEST(AddressTranslatorTest, Merge) {
   } while (std::next_permutation(test_case2.begin(), test_case2.end()));
 }
 
+TEST(AddressTranslatorTest, RvaToOffsetCache_IsValid) {
+  AddressTranslator translator;
+  // Notice that the second section has dangling RVA.
+  ASSERT_EQ(AddressTranslator::kSuccess,
+            translator.Initialize(
+                {{0x04, +0x28, 0x1A00, +0x28}, {0x30, +0x10, 0x3A00, +0x30}}));
+  AddressTranslator::RvaToOffsetCache rva_checker(translator);
+
+  EXPECT_FALSE(rva_checker.IsValid(kInvalidRva));
+
+  for (int i = 0; i < 0x28; ++i)
+    EXPECT_TRUE(rva_checker.IsValid(0x1A00 + i));
+  EXPECT_FALSE(rva_checker.IsValid(0x1A00 + 0x28));
+  EXPECT_FALSE(rva_checker.IsValid(0x1A00 + 0x29));
+  EXPECT_FALSE(rva_checker.IsValid(0x1A00 - 1));
+  EXPECT_FALSE(rva_checker.IsValid(0x1A00 - 2));
+
+  for (int i = 0; i < 0x30; ++i)
+    EXPECT_TRUE(rva_checker.IsValid(0x3A00 + i));
+  EXPECT_FALSE(rva_checker.IsValid(0x3A00 + 0x30));
+  EXPECT_FALSE(rva_checker.IsValid(0x3A00 + 0x31));
+  EXPECT_FALSE(rva_checker.IsValid(0x3A00 - 1));
+  EXPECT_FALSE(rva_checker.IsValid(0x3A00 - 2));
+
+  EXPECT_FALSE(rva_checker.IsValid(0));
+  EXPECT_FALSE(rva_checker.IsValid(0x10));
+  EXPECT_FALSE(rva_checker.IsValid(0x7FFFFFFFU));
+  EXPECT_FALSE(rva_checker.IsValid(0xFFFFFFFFU));
+}
+
 }  // namespace zucchini

@@ -13,12 +13,12 @@
 #include "ash/public/cpp/immersive/immersive_handler_factory.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/metrics/histogram_macros.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -87,19 +87,10 @@ bool ImmersiveFullscreenController::value_for_animations_disabled_for_test_ =
 
 ////////////////////////////////////////////////////////////////////////////////
 
-ImmersiveFullscreenController::ImmersiveFullscreenController()
-    : delegate_(NULL),
-      top_container_(NULL),
-      widget_(NULL),
-      event_observers_enabled_(false),
-      enabled_(false),
-      reveal_state_(CLOSED),
-      revealed_lock_count_(0),
-      mouse_x_when_hit_top_in_screen_(-1),
-      gesture_begun_(false),
-      animation_(new gfx::SlideAnimation(this)),
-      animations_disabled_for_test_(value_for_animations_disabled_for_test_),
-      weak_ptr_factory_(this) {}
+ImmersiveFullscreenController::ImmersiveFullscreenController(
+    ImmersiveContext* context)
+    : immersive_context_(context),
+      animations_disabled_for_test_(value_for_animations_disabled_for_test_) {}
 
 ImmersiveFullscreenController::~ImmersiveFullscreenController() {
   EnableEventObservers(false);
@@ -153,13 +144,11 @@ void ImmersiveFullscreenController::OnMouseEvent(
 
   // Mouse hover can initiate revealing the top-of-window views while |widget_|
   // is inactive.
-
   if (reveal_state_ == SLIDING_OPEN || reveal_state_ == REVEALED) {
     top_edge_hover_timer_.Stop();
     UpdateLocatedEventRevealedLock(&event, location_in_screen);
   } else if (event.type() != ui::ET_MOUSE_CAPTURE_CHANGED) {
-    // Trigger a reveal if the cursor pauses at the top of the screen for a
-    // while.
+    // Trigger reveal if the cursor pauses at the top of the screen for a while.
     UpdateTopEdgeHoverTimer(event, location_in_screen, target);
   }
 }
@@ -178,9 +167,7 @@ void ImmersiveFullscreenController::OnTouchEvent(
   UpdateLocatedEventRevealedLock(&event, location_in_screen);
 }
 
-void ImmersiveFullscreenController::OnGestureEvent(
-    ui::GestureEvent* event,
-    const gfx::Point& location_in_screen) {
+void ImmersiveFullscreenController::OnGestureEvent(ui::GestureEvent* event) {
   if (!enabled_)
     return;
 
@@ -191,7 +178,8 @@ void ImmersiveFullscreenController::OnGestureEvent(
 
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:
-      if (ShouldHandleGestureEvent(location_in_screen)) {
+      if (ShouldHandleGestureEvent(
+              event->target()->GetScreenLocation(*event))) {
         gesture_begun_ = true;
         // Do not consume the event. Otherwise, we end up consuming all
         // ui::ET_GESTURE_SCROLL_BEGIN events in the top-of-window views
@@ -214,24 +202,17 @@ void ImmersiveFullscreenController::OnGestureEvent(
   }
 }
 
-void ImmersiveFullscreenController::OnPointerEventObserved(
-    const ui::PointerEvent& event,
-    const gfx::Point& location_in_screen,
-    gfx::NativeView target) {
-  if (event.IsMousePointerEvent()) {
-    if (event.type() == ui::ET_POINTER_WHEEL_CHANGED) {
-      const ui::MouseWheelEvent mouse_wheel_event(event);
-      OnMouseEvent(mouse_wheel_event, location_in_screen,
-                   views::Widget::GetTopLevelWidgetForNativeView(target));
-    } else {
-      const ui::MouseEvent mouse_event(event);
-      OnMouseEvent(mouse_event, location_in_screen,
-                   views::Widget::GetTopLevelWidgetForNativeView(target));
-    }
-  } else {
-    DCHECK(event.IsTouchPointerEvent());
-    const ui::TouchEvent touch_event(event);
-    OnTouchEvent(touch_event, location_in_screen);
+void ImmersiveFullscreenController::OnEvent(const ui::Event& event) {
+  if (!event.IsLocatedEvent())
+    return;
+
+  const ui::LocatedEvent* located_event = event.AsLocatedEvent();
+  aura::Window* target = static_cast<aura::Window*>(event.target());
+  if (event.IsMouseEvent()) {
+    OnMouseEvent(*event.AsMouseEvent(), located_event->root_location(),
+                 views::Widget::GetTopLevelWidgetForNativeView(target));
+  } else if (event.IsTouchEvent()) {
+    OnTouchEvent(*event.AsTouchEvent(), located_event->root_location());
   }
 }
 
@@ -343,19 +324,21 @@ void ImmersiveFullscreenController::EnableEventObservers(bool enable) {
     return;
   event_observers_enabled_ = enable;
 
+  aura::Env* env = widget_->GetNativeWindow()->env();
   if (enable) {
-    immersive_focus_watcher_ =
-        ImmersiveHandlerFactory::Get()->CreateFocusWatcher(this);
+    immersive_focus_watcher_ = std::make_unique<ImmersiveFocusWatcher>(this);
     immersive_gesture_handler_ =
         ImmersiveHandlerFactory::Get()->CreateGestureHandler(this);
-    ImmersiveContext::Get()->AddPointerWatcher(
-        this, views::PointerWatcherEventTypes::MOVES);
+    std::set<ui::EventType> types = {
+        ui::ET_MOUSE_MOVED, ui::ET_MOUSE_PRESSED,         ui::ET_MOUSE_RELEASED,
+        ui::ET_MOUSEWHEEL,  ui::ET_MOUSE_CAPTURE_CHANGED, ui::ET_TOUCH_PRESSED};
+    env->AddEventObserver(this, env, types);
   } else {
-    ImmersiveContext::Get()->RemovePointerWatcher(this);
+    env->RemoveEventObserver(this);
     immersive_gesture_handler_.reset();
     immersive_focus_watcher_.reset();
 
-    animation_->Stop();
+    animation_.Stop();
   }
 }
 
@@ -375,7 +358,7 @@ void ImmersiveFullscreenController::UpdateTopEdgeHoverTimer(
 
   // Mouse hover should not initiate revealing the top-of-window views while a
   // window has mouse capture.
-  if (ImmersiveContext::Get()->DoesAnyWindowHaveCapture())
+  if (immersive_context_->DoesAnyWindowHaveCapture())
     return;
 
   if (ShouldIgnoreMouseEventAtLocation(location_in_screen))
@@ -432,7 +415,7 @@ void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock(
 
   // Ignore all events while a window has capture. This keeps the top-of-window
   // views revealed during a drag.
-  if (ImmersiveContext::Get()->DoesAnyWindowHaveCapture())
+  if (immersive_context_->DoesAnyWindowHaveCapture())
     return;
 
   if ((!event || event->IsMouseEvent()) &&
@@ -468,7 +451,7 @@ void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock(
 }
 
 void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock() {
-  if (!ImmersiveContext::Get()->IsMouseEventsEnabled()) {
+  if (!immersive_context_->IsMouseEventsEnabled()) {
     // If mouse events are disabled, the user's last interaction was probably
     // via touch. Do no do further processing in this case as there is no easy
     // way of retrieving the position of the user's last touch.
@@ -563,11 +546,11 @@ void ImmersiveFullscreenController::MaybeStartReveal(Animate animate) {
   }
   // Slide in the reveal view.
   if (animate == ANIMATE_NO) {
-    animation_->Reset(1);
+    animation_.Reset(1);
     OnSlideOpenAnimationCompleted();
   } else {
-    animation_->SetSlideDuration(GetAnimationDuration(animate));
-    animation_->Show();
+    animation_.SetSlideDuration(GetAnimationDuration(animate));
+    animation_.Show();
   }
 }
 
@@ -598,10 +581,10 @@ void ImmersiveFullscreenController::MaybeEndReveal(Animate animate) {
   reveal_state_ = SLIDING_CLOSED;
   int duration_ms = GetAnimationDuration(animate);
   if (duration_ms > 0) {
-    animation_->SetSlideDuration(duration_ms);
-    animation_->Hide();
+    animation_.SetSlideDuration(duration_ms);
+    animation_.Hide();
   } else {
-    animation_->Reset(0);
+    animation_.Reset(0);
     OnSlideClosedAnimationCompleted();
   }
 }
@@ -684,7 +667,7 @@ bool ImmersiveFullscreenController::ShouldHandleGestureEvent(
 }
 
 gfx::Rect ImmersiveFullscreenController::GetDisplayBoundsInScreen() const {
-  return ImmersiveContext::Get()->GetDisplayBoundsInScreen(widget_);
+  return immersive_context_->GetDisplayBoundsInScreen(widget_);
 }
 
 bool ImmersiveFullscreenController::IsTargetForWidget(
@@ -705,7 +688,7 @@ void ImmersiveFullscreenController::UpdateEnabled() {
 
   EnableEventObservers(enabled_);
 
-  ImmersiveContext::Get()->OnEnteringOrExitingImmersive(this, enabled);
+  immersive_context_->OnEnteringOrExitingImmersive(this, enabled);
 
   if (enabled_) {
     // Animate enabling immersive mode by sliding out the top-of-window views.

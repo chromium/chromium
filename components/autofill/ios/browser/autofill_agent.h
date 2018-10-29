@@ -44,16 +44,19 @@ class WebState;
                  (const base::WeakPtr<autofill::AutofillPopupDelegate>&)
                      delegate;
 
-// The supplied data should be filled into the form.
-- (void)onFormDataFilled:(const autofill::FormData&)result;
+// The supplied data should be filled into the form in |frame|.
+- (void)onFormDataFilled:(const autofill::FormData&)result
+                 inFrame:(web::WebFrame*)frame;
 
 // Detatches from the web state.
 - (void)detachFromWebState;
 
-// Renders the field type predictions specified in |forms|. This method is a
-// no-op if the relevant experiment is not enabled.
+// Renders the field type predictions specified in |forms| in |frame|. This
+// method is a no-op if the kAutofillShowTypePredictions experiment is not
+// enabled.
 - (void)renderAutofillTypePredictions:
-    (const std::vector<autofill::FormDataPredictions>&)forms;
+            (const std::vector<autofill::FormDataPredictions>&)forms
+                              inFrame:(web::WebFrame*)frame;
 
 @end
 

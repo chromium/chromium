@@ -17,6 +17,10 @@ var media = (function() {
     manager = theManager;
   };
 
+  media.updateGeneralAudioInformation = function(audioInfo) {
+    manager.updateGeneralAudioInformation(audioInfo);
+  };
+
   media.onReceiveAudioStreamData = function(audioStreamData) {
     for (var component in audioStreamData) {
       media.updateAudioComponent(audioStreamData[component]);
@@ -71,8 +75,7 @@ var media = (function() {
     });
 
     if (propertyCount === 0) {
-      manager.updatePlayerInfo(
-          source, event.ticksMillis, 'event', event.type);
+      manager.updatePlayerInfo(source, event.ticksMillis, 'event', event.type);
     }
   };
 

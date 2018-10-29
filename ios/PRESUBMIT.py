@@ -84,21 +84,3 @@ def CheckChangeOnUpload(input_api, output_api):
   results.extend(_CheckBugInToDo(input_api, output_api))
   results.extend(_CheckARCCompilationGuard(input_api, output_api))
   return results
-
-def PostUploadHook(cl, change, output_api):
-  """git cl upload will call this hook after the issue is created/modified.
-
-  This hook adds an extra try bot to the CL description in order to run Cronet
-  and EarlGrey tests in addition to CQ try bots.
-  """
-
-  # TODO(crbug.com/712733): Remove ios-simulator-cronet once Cronet bots are
-  # deployed on CQ.
-  # TODO(crbug.com/782735): Remove ios-simulator-full-configs once EarlGrey
-  # bots are deployed on CQ.
-  try_bots = ['luci.chromium.try:ios-simulator-cronet',
-              'luci.chromium.try:ios-simulator-full-configs']
-
-  return output_api.EnsureCQIncludeTrybotsAreAdded(
-    cl, try_bots, 'Automatically added Cronet and EarlGrey trybots to '
-      'run tests on CQ.')

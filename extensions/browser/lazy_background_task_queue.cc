@@ -114,7 +114,7 @@ void LazyBackgroundTaskQueue::AddPendingTask(
   }
   PendingTasksList* tasks_list = nullptr;
   PendingTasksKey key(browser_context, extension_id);
-  PendingTasksMap::iterator it = pending_tasks_.find(key);
+  auto it = pending_tasks_.find(key);
   if (it == pending_tasks_.end()) {
     const Extension* extension = ExtensionRegistry::Get(browser_context)
                                      ->enabled_extensions()
@@ -149,7 +149,7 @@ void LazyBackgroundTaskQueue::ProcessPendingTasks(
     return;
 
   PendingTasksKey key(browser_context, extension->id());
-  PendingTasksMap::iterator map_it = pending_tasks_.find(key);
+  auto map_it = pending_tasks_.find(key);
   if (map_it == pending_tasks_.end()) {
     if (BackgroundInfo::HasLazyBackgroundPage(extension))
       CHECK(!host);  // lazy page should not load without any pending tasks

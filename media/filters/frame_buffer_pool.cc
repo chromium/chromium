@@ -184,8 +184,8 @@ void FrameBufferPool::OnVideoFrameDestroyed(
     FrameBuffer* frame_buffer) {
   if (!task_runner->RunsTasksInCurrentSequence()) {
     task_runner->PostTask(
-        FROM_HERE, base::Bind(&FrameBufferPool::OnVideoFrameDestroyed, this,
-                              task_runner, frame_buffer));
+        FROM_HERE, base::BindOnce(&FrameBufferPool::OnVideoFrameDestroyed, this,
+                                  task_runner, frame_buffer));
     return;
   }
 

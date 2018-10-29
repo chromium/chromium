@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/test/ash_test_base.h"
+#include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -63,8 +64,9 @@ class MultiUserUtilTest : public AshTestBase {
         base::WrapUnique(fake_user_manager_));
 
     TestingProfile::Builder builder;
-    builder.AddTestingFactory(SigninManagerFactory::GetInstance(),
-                              BuildFakeSigninManagerBase);
+    builder.AddTestingFactory(
+        SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeSigninManagerForTesting));
     TestingProfile* profile = builder.Build().release();
     profile_.reset(new MultiUserTestingProfile(profile));
   }

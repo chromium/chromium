@@ -143,7 +143,7 @@ void WebAudioSourceProviderImpl::SetClient(
     // called when Initialize() is called. Note: Always using |set_format_cb_|
     // ensures we have the same locking order when calling into |client_|.
     if (tee_filter_->initialized())
-      base::ResetAndReturn(&set_format_cb_).Run();
+      std::move(set_format_cb_).Run();
     return;
   }
 
@@ -215,8 +215,8 @@ void WebAudioSourceProviderImpl::Initialize(const AudioParameters& params,
 
   sink_->Initialize(params, tee_filter_.get());
 
-  if (!set_format_cb_.is_null())
-    base::ResetAndReturn(&set_format_cb_).Run();
+  if (set_format_cb_)
+    std::move(set_format_cb_).Run();
 }
 
 void WebAudioSourceProviderImpl::Start() {
@@ -277,12 +277,12 @@ bool WebAudioSourceProviderImpl::CurrentThreadIsRenderingThread() {
 
 void WebAudioSourceProviderImpl::SwitchOutputDevice(
     const std::string& device_id,
-    const OutputDeviceStatusCB& callback) {
+    OutputDeviceStatusCB callback) {
   base::AutoLock auto_lock(sink_lock_);
   if (client_ || !sink_)
-    callback.Run(OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+    std::move(callback).Run(OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
   else
-    sink_->SwitchOutputDevice(device_id, callback);
+    sink_->SwitchOutputDevice(device_id, std::move(callback));
 }
 
 void WebAudioSourceProviderImpl::SetCopyAudioCallback(CopyAudioCB callback) {

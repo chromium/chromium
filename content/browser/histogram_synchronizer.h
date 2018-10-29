@@ -127,8 +127,8 @@ class HistogramSynchronizer : public HistogramSubscriber {
   // When a request is made to asynchronously update the histograms, we store
   // the task and TaskRunner we use to post a completion notification in
   // |callback_| and |callback_task_runner_|.
-  base::Closure callback_;
-  scoped_refptr<base::TaskRunner> callback_task_runner_;
+  base::Closure callback_ GUARDED_BY(lock_);
+  scoped_refptr<base::TaskRunner> callback_task_runner_ GUARDED_BY(lock_);
 
   // We don't track the actual processes that are contacted for an update, only
   // the count of the number of processes, and we can sometimes time-out and
@@ -138,11 +138,11 @@ class HistogramSynchronizer : public HistogramSubscriber {
   // All sequence numbers used are non-negative.
   // last_used_sequence_number_ is the most recently used number (used to avoid
   // reuse for a long time).
-  int last_used_sequence_number_;
+  int last_used_sequence_number_ GUARDED_BY(lock_);
 
   // The sequence number used by the most recent asynchronous update request to
   // contact all processes.
-  int async_sequence_number_;
+  int async_sequence_number_ GUARDED_BY(lock_);
 
   DISALLOW_COPY_AND_ASSIGN(HistogramSynchronizer);
 };

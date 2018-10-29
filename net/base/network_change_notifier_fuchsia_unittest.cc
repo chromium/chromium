@@ -146,8 +146,6 @@ class FakeNetstack : public fuchsia::netstack::Netstack {
   void GetStats(uint32_t nicid, GetStatsCallback callback) override {}
   void GetAggregateStats(GetAggregateStatsCallback callback) override {}
   void SetInterfaceStatus(uint32_t nicid, bool enabled) override {}
-  void SetRouteTable(
-      ::fidl::VectorPtr<fuchsia::netstack::RouteTableEntry> rt) override {}
   void SetInterfaceAddress(uint32_t nicid,
                            fuchsia::netstack::NetAddress addr,
                            uint8_t prefixLen,
@@ -162,11 +160,16 @@ class FakeNetstack : public fuchsia::netstack::Netstack {
                            SetDhcpClientStatusCallback callback) override {}
   void BridgeInterfaces(::fidl::VectorPtr<uint32_t> nicids,
                         BridgeInterfacesCallback callback) override {}
-  void SetFilterStatus(bool enabled,
-                       SetFilterStatusCallback callback) override {}
-  void GetFilterStatus(GetFilterStatusCallback callback) override {}
   void SetNameServers(
       ::fidl::VectorPtr<::fuchsia::netstack::NetAddress> servers) override {}
+  void AddEthernetDevice(
+      ::fidl::StringPtr topological_path,
+      fuchsia::netstack::InterfaceConfig interfaceConfig,
+      ::fidl::InterfaceHandle<::zircon::ethernet::Device> device) override {}
+  void StartRouteTableTransaction(
+      ::fidl::InterfaceRequest<::fuchsia::netstack::RouteTableTransaction>
+          routeTableTransaction,
+      StartRouteTableTransactionCallback callback) override {}
 
   ::fidl::VectorPtr<fuchsia::netstack::NetInterface> interfaces_ =
       fidl::VectorPtr<fuchsia::netstack::NetInterface>::New(0);
@@ -442,11 +445,10 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, InterfaceAdded) {
               OnNetworkChanged(NetworkChangeNotifier::CONNECTION_NONE));
   EXPECT_CALL(observer_,
               OnNetworkChanged(NetworkChangeNotifier::CONNECTION_WIFI));
-  netstack_.PushInterface(
-      CreateNetInterface(kDefaultNic, fuchsia::netstack::NetInterfaceFlagUp,
-                         fuchsia::netstack::interfaceFeatureWlan,
-                         CreateIPv4Address(169, 254, 0, 1),
-                         CreateIPv4Address(255, 255, 255, 0), {}));
+  netstack_.PushInterface(CreateNetInterface(
+      kDefaultNic, fuchsia::netstack::NetInterfaceFlagUp,
+      zircon::ethernet::INFO_FEATURE_WLAN, CreateIPv4Address(169, 254, 0, 1),
+      CreateIPv4Address(255, 255, 255, 0), {}));
   netstack_.NotifyInterfaces();
   base::RunLoop().RunUntilIdle();
 }
@@ -492,11 +494,10 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, SecondaryInterfaceDeletedNoop) {
 }
 
 TEST_F(NetworkChangeNotifierFuchsiaTest, FoundWiFi) {
-  netstack_.PushInterface(
-      CreateNetInterface(kDefaultNic, fuchsia::netstack::NetInterfaceFlagUp,
-                         fuchsia::netstack::interfaceFeatureWlan,
-                         CreateIPv4Address(169, 254, 0, 1),
-                         CreateIPv4Address(255, 255, 255, 0), {}));
+  netstack_.PushInterface(CreateNetInterface(
+      kDefaultNic, fuchsia::netstack::NetInterfaceFlagUp,
+      zircon::ethernet::INFO_FEATURE_WLAN, CreateIPv4Address(169, 254, 0, 1),
+      CreateIPv4Address(255, 255, 255, 0), {}));
   CreateNotifier();
   EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI,
             notifier_->GetCurrentConnectionType());

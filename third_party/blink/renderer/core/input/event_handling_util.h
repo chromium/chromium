@@ -20,7 +20,7 @@ class ScrollableArea;
 class PaintLayer;
 enum class DispatchEventResult;
 
-namespace EventHandlingUtil {
+namespace event_handling_util {
 
 HitTestResult HitTestResultInFrame(
     LocalFrame*,
@@ -51,7 +51,7 @@ LocalFrame* SubframeForHitTestResult(const MouseEventWithHitTestResults&);
 LocalFrame* SubframeForTargetNode(Node*);
 
 class PointerEventTarget {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   void Trace(blink::Visitor* visitor) {
@@ -64,10 +64,11 @@ class PointerEventTarget {
   String region;
 };
 
-}  // namespace EventHandlingUtil
+}  // namespace event_handling_util
 
 }  // namespace blink
 
-WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(blink::EventHandlingUtil::PointerEventTarget);
+WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(
+    blink::event_handling_util::PointerEventTarget);
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_EVENT_HANDLING_UTIL_H_

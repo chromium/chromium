@@ -78,7 +78,7 @@ void FetchParameters::SetCrossOriginAccessControl(
       network::mojom::FetchRequestMode::kCORS);
   resource_request_.SetFetchCredentialsMode(credentials_mode);
 
-  options_.security_origin = origin;
+  resource_request_.SetRequestorOrigin(origin);
 
   // TODO: Credentials should be removed only when the request is cross origin.
   resource_request_.RemoveUserAndPassFromURL();
@@ -114,6 +114,12 @@ void FetchParameters::MakeSynchronous() {
 void FetchParameters::SetClientLoFiPlaceholder() {
   resource_request_.SetPreviewsState(resource_request_.GetPreviewsState() |
                                      WebURLRequest::kClientLoFiOn);
+  SetAllowImagePlaceholder();
+}
+
+void FetchParameters::SetLazyImagePlaceholder() {
+  resource_request_.SetPreviewsState(resource_request_.GetPreviewsState() |
+                                     WebURLRequest::kLazyImageLoadDeferred);
   SetAllowImagePlaceholder();
 }
 

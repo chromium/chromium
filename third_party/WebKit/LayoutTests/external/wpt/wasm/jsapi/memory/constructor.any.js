@@ -80,6 +80,10 @@ for (const value of outOfRangeValues) {
 }
 
 test(() => {
+  assert_throws(new RangeError(), () => new WebAssembly.Memory({ "element": "anyfunc", "initial": 10, "maximum": 9 }));
+}, "Initial value exceeds maximum");
+
+test(() => {
   const proxy = new Proxy({}, {
     has(o, x) {
       assert_unreached(`Should not call [[HasProperty]] with ${x}`);
@@ -135,3 +139,9 @@ test(() => {
   const memory = new WebAssembly.Memory(argument);
   assert_Memory(memory, { "size": 4 });
 }, "Non-zero initial");
+
+test(() => {
+  const argument = { "initial": 0 };
+  const memory = new WebAssembly.Memory(argument, {});
+  assert_Memory(memory, { "size": 0 });
+}, "Stray argument");

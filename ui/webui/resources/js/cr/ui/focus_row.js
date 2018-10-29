@@ -14,84 +14,76 @@ cr.define('cr.ui', function() {
    * If no items in this row are focused, the row can stay active until focus
    * changes to a node inside |this.boundary_|. If |boundary| isn't specified,
    * any focus change deactivates the row.
-   *
-   * @param {!Element} root The root of this focus row. Focus classes are
-   *     applied to |root| and all added elements must live within |root|.
-   * @param {?Element} boundary Focus events are ignored outside of this
-   *     element.
-   * @param {cr.ui.FocusRow.Delegate=} opt_delegate An optional event delegate.
-   * @constructor
    */
-  function FocusRow(root, boundary, opt_delegate) {
-    /** @type {!Element} */
-    this.root = root;
-
-    /** @private {!Element} */
-    this.boundary_ = boundary || document.documentElement;
-
-    /** @type {cr.ui.FocusRow.Delegate|undefined} */
-    this.delegate = opt_delegate;
-
-    /** @protected {!EventTracker} */
-    this.eventTracker = new EventTracker;
-  }
-
-  /** @interface */
-  FocusRow.Delegate = function() {};
-
-  FocusRow.Delegate.prototype = {
+  class FocusRow {
     /**
-     * Called when a key is pressed while on a FocusRow's item. If true is
-     * returned, further processing is skipped.
-     * @param {!cr.ui.FocusRow} row The row that detected a keydown.
-     * @param {!Event} e
-     * @return {boolean} Whether the event was handled.
+     * @param {!Element} root The root of this focus row. Focus classes are
+     *     applied to |root| and all added elements must live within |root|.
+     * @param {?Element} boundary Focus events are ignored outside of this
+     *     element.
+     * @param {cr.ui.FocusRowDelegate=} delegate An optional event
+     *     delegate.
      */
-    onKeydown: assertNotReached,
+    constructor(root, boundary, delegate) {
+      /** @type {!Element} */
+      this.root = root;
 
-    /**
-     * @param {!cr.ui.FocusRow} row
-     * @param {!Event} e
-     */
-    onFocus: assertNotReached,
-  };
+      /** @private {!Element} */
+      this.boundary_ = boundary || document.documentElement;
 
-  /** @const {string} */
-  FocusRow.ACTIVE_CLASS = 'focus-row-active';
+      /** @type {cr.ui.FocusRowDelegate|undefined} */
+      this.delegate = delegate;
 
-  /**
-   * Whether it's possible that |element| can be focused.
-   * @param {Element} element
-   * @return {boolean} Whether the item is focusable.
-   */
-  FocusRow.isFocusable = function(element) {
-    if (!element || element.disabled)
-      return false;
-
-    // We don't check that element.tabIndex >= 0 here because inactive rows set
-    // a tabIndex of -1.
-
-    function isVisible(element) {
-      assertInstanceof(element, Element);
-
-      var style = window.getComputedStyle(element);
-      if (style.visibility == 'hidden' || style.display == 'none')
-        return false;
-
-      var parent = element.parentNode;
-      if (!parent)
-        return false;
-
-      if (parent == element.ownerDocument || parent instanceof DocumentFragment)
-        return true;
-
-      return isVisible(parent);
+      /** @protected {!EventTracker} */
+      this.eventTracker = new EventTracker;
     }
 
-    return isVisible(element);
-  };
+    /**
+     * Whether it's possible that |element| can be focused.
+     * @param {Element} element
+     * @return {boolean} Whether the item is focusable.
+     */
+    static isFocusable(element) {
+      if (!element || element.disabled)
+        return false;
 
-  FocusRow.prototype = {
+      // We don't check that element.tabIndex >= 0 here because inactive rows
+      // set a tabIndex of -1.
+      let current = element;
+      while (true) {
+        assertInstanceof(current, Element);
+
+        var style = window.getComputedStyle(current);
+        if (style.visibility == 'hidden' || style.display == 'none')
+          return false;
+
+        var parent = current.parentNode;
+        if (!parent)
+          return false;
+
+        if (parent == current.ownerDocument ||
+            parent instanceof DocumentFragment)
+          return true;
+
+        current = /** @type {Element} */ (parent);
+      }
+    }
+
+    /**
+     * A focus override is a function that returns an element that should gain
+     * focus. The element may not be directly selectable for example the element
+     * that can gain focus is in a shadow DOM. Allowing an override via a
+     * function leaves the details of how the element is retrieved to the
+     * component.
+     * @param {!Element} element
+     * @return {!Element}
+     */
+    static getFocusableElement(element) {
+      if (element.getFocusableElement)
+        return element.getFocusableElement();
+      return element;
+    }
+
     /**
      * Register a new type of focusable element (or add to an existing one).
      *
@@ -100,7 +92,7 @@ cr.define('cr.ui', function() {
      * When FocusRow is used within a FocusGrid, these types are used to
      * determine equivalent controls when Up/Down are pressed to change rows.
      *
-     * Another example: mutually exclusive controls that hide eachother on
+     * Another example: mutually exclusive controls that hide each other on
      * activation (i.e. Play/Pause) could use the same type (i.e. 'play-pause')
      * to indicate they're equivalent.
      *
@@ -109,7 +101,7 @@ cr.define('cr.ui', function() {
      *    from this row's root, or the element itself.
      * @return {boolean} Whether a new item was added.
      */
-    addItem: function(type, selectorOrElement) {
+    addItem(type, selectorOrElement) {
       assert(type);
 
       var element;
@@ -128,30 +120,30 @@ cr.define('cr.ui', function() {
       this.eventTracker.add(element, 'keydown', this.onKeydown_.bind(this));
       this.eventTracker.add(element, 'mousedown', this.onMousedown_.bind(this));
       return true;
-    },
+    }
 
     /** Dereferences nodes and removes event handlers. */
-    destroy: function() {
+    destroy() {
       this.eventTracker.removeAll();
-    },
+    }
 
     /**
      * @param {!Element} sampleElement An element for to find an equivalent for.
      * @return {!Element} An equivalent element to focus for |sampleElement|.
      * @protected
      */
-    getCustomEquivalent: function(sampleElement) {
+    getCustomEquivalent(sampleElement) {
       return assert(this.getFirstFocusable());
-    },
+    }
 
     /**
      * @return {!Array<!Element>} All registered elements (regardless of
      *     focusability).
      */
-    getElements: function() {
-      var elements = this.root.querySelectorAll('[focus-type]');
-      return Array.prototype.slice.call(elements);
-    },
+    getElements() {
+      return Array.from(this.root.querySelectorAll('[focus-type]'))
+          .map(cr.ui.FocusRow.getFocusableElement);
+    }
 
     /**
      * Find the element that best matches |sampleElement|.
@@ -159,7 +151,7 @@ cr.define('cr.ui', function() {
      *     which previously held focus.
      * @return {!Element} The element that best matches sampleElement.
      */
-    getEquivalentElement: function(sampleElement) {
+    getEquivalentElement(sampleElement) {
       if (this.getFocusableElements().indexOf(sampleElement) >= 0)
         return sampleElement;
 
@@ -171,46 +163,42 @@ cr.define('cr.ui', function() {
       }
 
       return this.getCustomEquivalent(sampleElement);
-    },
+    }
 
     /**
      * @param {string=} opt_type An optional type to search for.
      * @return {?Element} The first focusable element with |type|.
      */
-    getFirstFocusable: function(opt_type) {
-      var filter = opt_type ? '="' + opt_type + '"' : '';
-      var elements = this.root.querySelectorAll('[focus-type' + filter + ']');
-      for (var i = 0; i < elements.length; ++i) {
-        if (cr.ui.FocusRow.isFocusable(elements[i]))
-          return elements[i];
-      }
-      return null;
-    },
+    getFirstFocusable(opt_type) {
+      const element = this.getFocusableElements().find(
+          el => !opt_type || el.getAttribute('focus-type') == opt_type);
+      return element || null;
+    }
 
     /** @return {!Array<!Element>} Registered, focusable elements. */
-    getFocusableElements: function() {
+    getFocusableElements() {
       return this.getElements().filter(cr.ui.FocusRow.isFocusable);
-    },
+    }
 
     /**
      * @param {!Element} element An element to determine a focus type for.
      * @return {string} The focus type for |element| or '' if none.
      */
-    getTypeForElement: function(element) {
+    getTypeForElement(element) {
       return element.getAttribute('focus-type') || '';
-    },
+    }
 
     /** @return {boolean} Whether this row is currently active. */
-    isActive: function() {
+    isActive() {
       return this.root.classList.contains(FocusRow.ACTIVE_CLASS);
-    },
+    }
 
     /**
      * Enables/disables the tabIndex of the focusable elements in the FocusRow.
      * tabIndex can be set properly.
      * @param {boolean} active True if tab is allowed for this row.
      */
-    makeActive: function(active) {
+    makeActive(active) {
       if (active == this.isActive())
         return;
 
@@ -219,35 +207,35 @@ cr.define('cr.ui', function() {
       });
 
       this.root.classList.toggle(FocusRow.ACTIVE_CLASS, active);
-    },
+    }
 
     /**
      * @param {!Event} e
      * @private
      */
-    onBlur_: function(e) {
+    onBlur_(e) {
       if (!this.boundary_.contains(/** @type {Element} */ (e.relatedTarget)))
         return;
 
       var currentTarget = /** @type {!Element} */ (e.currentTarget);
       if (this.getFocusableElements().indexOf(currentTarget) >= 0)
         this.makeActive(false);
-    },
+    }
 
     /**
      * @param {!Event} e
      * @private
      */
-    onFocus_: function(e) {
+    onFocus_(e) {
       if (this.delegate)
         this.delegate.onFocus(this, e);
-    },
+    }
 
     /**
      * @param {!Event} e A mousedown event.
      * @private
      */
-    onMousedown_: function(e) {
+    onMousedown_(e) {
       // Only accept left mouse clicks.
       if (e.button)
         return;
@@ -255,13 +243,13 @@ cr.define('cr.ui', function() {
       // Allow the element under the mouse cursor to be focusable.
       if (!e.currentTarget.disabled)
         e.currentTarget.tabIndex = 0;
-    },
+    }
 
     /**
      * @param {!Event} e The keydown event.
      * @private
      */
-    onKeydown_: function(e) {
+    onKeydown_(e) {
       var elements = this.getFocusableElements();
       var currentElement = /** @type {!Element} */ (e.currentTarget);
       var elementIndex = elements.indexOf(currentElement);
@@ -289,10 +277,33 @@ cr.define('cr.ui', function() {
         this.getEquivalentElement(elementToFocus).focus();
         e.preventDefault();
       }
-    },
-  };
+    }
+  }
+
+  /** @const {string} */
+  FocusRow.ACTIVE_CLASS = 'focus-row-active';
+
+
+  /** @interface */
+  class FocusRowDelegate {
+    /**
+     * Called when a key is pressed while on a FocusRow's item. If true is
+     * returned, further processing is skipped.
+     * @param {!cr.ui.FocusRow} row The row that detected a keydown.
+     * @param {!Event} e
+     * @return {boolean} Whether the event was handled.
+     */
+    onKeydown(row, e) {}
+
+    /**
+     * @param {!cr.ui.FocusRow} row
+     * @param {!Event} e
+     */
+    onFocus(row, e) {}
+  }
 
   return {
-    FocusRow: FocusRow,
+    FocusRow,
+    FocusRowDelegate,
   };
 });

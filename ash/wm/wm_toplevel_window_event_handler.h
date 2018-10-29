@@ -111,10 +111,8 @@ class ASH_EXPORT WmToplevelWindowEventHandler
   // Called when mouse capture is lost.
   void HandleCaptureLost(ui::LocatedEvent* event);
 
-  // Sets |window|'s state type to |new_state_type|. Called after the drag has
-  // been completed for fling gestures.
-  void SetWindowStateTypeFromGesture(aura::Window* window,
-                                     mojom::WindowStateType new_state_type);
+  // Handles the gesture fling or swipe event.
+  void HandleFlingOrSwipe(ui::GestureEvent* event);
 
   // Invoked from ScopedWindowResizer if the window is destroyed.
   void ResizerWindowDestroyed();
@@ -136,11 +134,6 @@ class ASH_EXPORT WmToplevelWindowEventHandler
   // The point for the first finger at the time that it initially touched the
   // screen.
   gfx::Point first_finger_touch_point_;
-
-  // The window bounds when the drag was started. When a window is minimized,
-  // maximized or snapped via a swipe/fling gesture, the restore bounds should
-  // be set to the bounds of the window when the drag was started.
-  gfx::Rect pre_drag_window_bounds_;
 
   // Is a window move/resize in progress because of gesture events?
   bool in_gesture_drag_ = false;

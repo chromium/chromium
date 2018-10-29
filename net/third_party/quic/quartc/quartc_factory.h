@@ -47,6 +47,10 @@ struct QuartcSessionConfig {
       QuicTime::Delta::Zero();
   QuicTime::Delta max_time_before_crypto_handshake = QuicTime::Delta::Zero();
   QuicTime::Delta idle_network_timeout = QuicTime::Delta::Zero();
+
+  // Congestion control type used for this session.  Only BBR and GoogCC are
+  // supported.
+  CongestionControlType congestion_control_type = kBBR;
 };
 
 // Factory that creates instances of QuartcSession.  Implements the

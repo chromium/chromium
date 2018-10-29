@@ -107,7 +107,7 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->url_string = base::UTF8ToUTF16("http://dev.chromium.org/");
     frame_state->referrer =
         base::UTF8ToUTF16("https://www.google.com/search?q=dev.chromium.org");
-    frame_state->referrer_policy = blink::kWebReferrerPolicyAlways;
+    frame_state->referrer_policy = network::mojom::ReferrerPolicy::kAlways;
     frame_state->target = base::UTF8ToUTF16("foo");
     frame_state->state_object = base::nullopt;
     frame_state->document_state.push_back(base::UTF8ToUTF16("1"));
@@ -150,7 +150,7 @@ class PageStateSerializationTest : public testing::Test {
       bool is_child) {
     frame_state->url_string = base::UTF8ToUTF16("http://chromium.org/");
     frame_state->referrer = base::UTF8ToUTF16("http://google.com/");
-    frame_state->referrer_policy = blink::kWebReferrerPolicyDefault;
+    frame_state->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
     if (!is_child)
       frame_state->target = base::UTF8ToUTF16("target");
     frame_state->scroll_restoration_type =
@@ -636,7 +636,7 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_ScrollOffset) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_ReferrerPolicy) {
   ExplodedPageState state;
-  state.top.referrer_policy = blink::kWebReferrerPolicyAlways;
+  state.top.referrer_policy = network::mojom::ReferrerPolicy::kAlways;
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("referrer_policy", 26, &saved_state);

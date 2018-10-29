@@ -10,51 +10,66 @@ module chrome.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
+enum SelectFileDialogType {
+  kNone,
+
+  // For opening a folder.
+  kFolder,
+
+  // Like kFolder, but the dialog UI should explicitly show it's
+  // specifically for "upload".
+  kUploadFolder,
+
+  // Like kFolder, but folder creation is disabled, if possible.
+  kExistingFolder,
+
+  // For saving into a file, allowing a nonexistent file to be selected.
+  kSaveAsFile,
+
+  // For opening a file.
+  kOpenFile,
+
+  // Like kOpenFile, but allowing multiple files to open.
+  kOpenMultiFile,
+};
+
+struct FileFilterSpec {
+  mojo_base.mojom.String16 description;
+  mojo_base.mojom.String16 extension_spec;
+};
+
 interface ShellUtilWin {
   // Returns the pinned state of the current executable.
   IsPinnedToTaskbar() => (bool succeeded, bool is_pinned_to_taskbar);
 
-  // Calls OS_WIN ::GetOpenFileName() with parameters:
-  // |owner| HWND to use as the parent of the modal dialog.
-  // |flags| OFN_* flags to use with OPENFILENAME.
-  // |filters| constrains the user's file type selections.
-  // |initial_directory| initial directory to be displayed.
-  // |initial_filename| file name initially selected.
+  // Executes a select file operation that can be executed on a utility process.
+  // |owner|:
+  //   The HWND that owns the file dialog.
+  // |title|:
+  //   The title of the file dialog.
+  // |default_path|:
+  //   The path that is selected by default when the dialog is opened.
+  // |filter|:
+  //   Filters which files are shown based on the file extension. Ignored for
+  //   folder selection dialogs (kFolder, kUploadFolder, kExistingFolder).
+  // |file_type_index|:
+  //   The index of the file extension filter that should be selected when the
+  //   dialog is first opened. Ignored for folder selection dialogs (kFolder,
+  //   kUploadFolder, kExistingFolder).
+  // |default_extension|:
+  //   The extension that should automatically be appended to a filename if it
+  //   doesn't have one. This is only used for kSaveAsFile dialogs.
   //
-  // Returns the list of selected |files| from |directory|. On cancelation
-  // or failure, |files| will be empty.
-  [Sync]
-  CallGetOpenFileName(uint32 owner,
-                      uint32 flags,
-                      FileExtensionFilters filters,
-                      mojo_base.mojom.FilePath initial_directory,
-                      mojo_base.mojom.FilePath initial_filename) =>
-      (mojo_base.mojom.FilePath directory,
-       array<mojo_base.mojom.FilePath> files);
-
-  // Calls OS_WIN ::GetSaveFileName() with parameters:
-  // |owner| HWND to use as the parent of the modal dialog.
-  // |flags| OFN_* flags to use with OPENFILENAME.
-  // |filters| constrains the user's file type selections.
-  // |one_based_filter_index| index of the selected filter in |filters|.
-  // |initial_directory| initial directory to be displayed.
-  // |suggested_filename| save file name to suggest.
-  // |default_extension| file extension to use if the user doesn't type one.
-  //
-  // Returns the save file |path| selected, and the |filter_index| of the
-  // filter selected, by the user. On cancelation or failure, |path| will
-  // be empty.
-  [Sync]
-  CallGetSaveFileName(uint32 owner,
-                      uint32 flags,
-                      FileExtensionFilters filters,
-                      uint32 one_based_filter_index,
-                      mojo_base.mojom.FilePath initial_directory,
-                      mojo_base.mojom.FilePath suggested_filename,
-                      mojo_base.mojom.String16 default_extension) =>
-      (mojo_base.mojom.FilePath path,
-       uint32 filter_index);
+  // Returns the selected file |paths| and the |file_type_index| of the filter
+  // selected by the user. The |file_type_index| return value is meaningless on
+  // folder selection dialogs. On cancelation or failure, |paths| will be empty.
+  CallExecuteSelectFile(SelectFileDialogType type,
+                        uint32 owner,
+                        mojo_base.mojom.String16 title,
+                        mojo_base.mojom.FilePath default_path,
+                        array<FileFilterSpec> filter,
+                        int32 file_type_index,
+                        mojo_base.mojom.String16 default_extension) =>
+      (array<mojo_base.mojom.FilePath> paths,
+       int32 file_type_index);
 };
-
-[Native]
-struct FileExtensionFilters;

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/media/webrtc/window_icon_util.h"
 
-#include <ApplicationServices/ApplicationServices.h>
-#include <Cocoa/Cocoa.h>
-#include <CoreFoundation/CoreFoundation.h>
+#import <Cocoa/Cocoa.h>
 
+#include "base/mac/foundation_util.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/stl_util.h"
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
@@ -15,18 +16,18 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
 
   CGWindowID ids[1];
   ids[0] = id.id;
-  CFArrayRef window_id_array =
-      CFArrayCreate(nullptr, reinterpret_cast<const void**>(&ids), 1, nullptr);
-  CFArrayRef window_array =
-      CGWindowListCreateDescriptionFromArray(window_id_array);
+  base::ScopedCFTypeRef<CFArrayRef> window_id_array(CFArrayCreate(
+      nullptr, reinterpret_cast<const void**>(&ids), base::size(ids), nullptr));
+  base::ScopedCFTypeRef<CFArrayRef> window_array(
+      CGWindowListCreateDescriptionFromArray(window_id_array));
   if (!window_array || 0 == CFArrayGetCount(window_array)) {
     return gfx::ImageSkia();
   }
 
-  CFDictionaryRef window = reinterpret_cast<CFDictionaryRef>(
+  CFDictionaryRef window = base::mac::CFCastStrict<CFDictionaryRef>(
       CFArrayGetValueAtIndex(window_array, 0));
-  CFNumberRef pid_ref = reinterpret_cast<CFNumberRef>(
-      CFDictionaryGetValue(window, kCGWindowOwnerPID));
+  CFNumberRef pid_ref =
+      base::mac::GetValueFromDictionary<CFNumberRef>(window, kCGWindowOwnerPID);
 
   int pid;
   CFNumberGetValue(pid_ref, kCFNumberIntType, &pid);
@@ -34,32 +35,44 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   NSImage* icon_image =
       [[NSRunningApplication runningApplicationWithProcessIdentifier:pid] icon];
 
-  int width = [icon_image size].width;
-  int height = [icon_image size].height;
-
+  // Icon's NSImage defaults to the smallest which can be only 32x32.
+  NSRect proposed_rect = NSMakeRect(0, 0, 128, 128);
   CGImageRef cg_icon_image =
-      [icon_image CGImageForProposedRect:nil context:nil hints:nil];
+      [icon_image CGImageForProposedRect:&proposed_rect context:nil hints:nil];
 
-  int bits_per_pixel = CGImageGetBitsPerPixel(cg_icon_image);
-  if (bits_per_pixel != 32) {
+  // 4 components of 8 bits each.
+  if (CGImageGetBitsPerPixel(cg_icon_image) != 32 ||
+      CGImageGetBitsPerComponent(cg_icon_image) != 8) {
+    return gfx::ImageSkia();
+  }
+
+  // Premultiplied alpha and last (alpha channel is next to the blue channel)
+  if (CGImageGetAlphaInfo(cg_icon_image) != kCGImageAlphaPremultipliedLast) {
+    return gfx::ImageSkia();
+  }
+
+  // Ensure BGR like.
+  int byte_order = CGImageGetBitmapInfo(cg_icon_image) & kCGBitmapByteOrderMask;
+  if (byte_order != kCGBitmapByteOrderDefault &&
+      byte_order != kCGBitmapByteOrder32Big) {
     return gfx::ImageSkia();
   }
 
   CGDataProviderRef provider = CGImageGetDataProvider(cg_icon_image);
-  CFDataRef cf_data = CGDataProviderCopyData(provider);
+  base::ScopedCFTypeRef<CFDataRef> cf_data(CGDataProviderCopyData(provider));
 
+  int width = CGImageGetWidth(cg_icon_image);
+  int height = CGImageGetHeight(cg_icon_image);
   int src_stride = CGImageGetBytesPerRow(cg_icon_image);
   const uint8_t* src_data = CFDataGetBytePtr(cf_data);
 
   SkBitmap result;
-  result.allocN32Pixels(width, height, false);
+  result.allocN32Pixels(width, height, false /* no-premultiplied */);
 
   uint8_t* pixels_data = reinterpret_cast<uint8_t*>(result.getPixels());
 
   libyuv::ABGRToARGB(src_data, src_stride, pixels_data, result.rowBytes(),
                      width, height);
-
-  CFRelease(cf_data);
 
   return gfx::ImageSkia::CreateFrom1xBitmap(result);
 }

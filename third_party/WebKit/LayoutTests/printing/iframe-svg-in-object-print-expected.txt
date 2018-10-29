@@ -19,4 +19,3 @@ layer at (8,8) size 204x204
         layer at (0,0) size 100x100
           LayoutSVGRoot {svg} at (0,0) size 100x100
             LayoutSVGEllipse {circle} at (25,25) size 50x50 [fill={[type=SOLID] [color=#0000FF]}] [cx=50.00] [cy=50.00] [r=25.00]
-

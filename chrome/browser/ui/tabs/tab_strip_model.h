@@ -72,30 +72,23 @@ class TabStripModel {
 
   // Constants used when adding tabs.
   enum AddTabTypes {
-    // Used to indicate nothing special should happen to the newly inserted
-    // tab.
-    ADD_NONE          = 0,
+    // Used to indicate nothing special should happen to the newly inserted tab.
+    ADD_NONE = 0,
 
     // The tab should be active.
-    ADD_ACTIVE        = 1 << 0,
+    ADD_ACTIVE = 1 << 0,
 
     // The tab should be pinned.
-    ADD_PINNED        = 1 << 1,
+    ADD_PINNED = 1 << 1,
 
-    // If not set the insertion index of the WebContents is left up to
-    // the Order Controller associated, so the final insertion index may differ
-    // from the specified index. Otherwise the index supplied is used.
-    ADD_FORCE_INDEX   = 1 << 2,
-
-    // If set the newly inserted tab inherits the group of the currently
-    // selected tab. If not set the tab may still inherit the group under
-    // certain situations.
-    ADD_INHERIT_GROUP = 1 << 3,
+    // If not set the insertion index of the WebContents is left up to the Order
+    // Controller associated, so the final insertion index may differ from the
+    // specified index. Otherwise the index supplied is used.
+    ADD_FORCE_INDEX = 1 << 2,
 
     // If set the newly inserted tab's opener is set to the active tab. If not
-    // set the tab may still inherit the group/opener under certain situations.
-    // NOTE: this is ignored if ADD_INHERIT_GROUP is set.
-    ADD_INHERIT_OPENER = 1 << 4,
+    // set the tab may still inherit the opener under certain situations.
+    ADD_INHERIT_OPENER = 1 << 3,
   };
 
   // Enumerates different ways to open a new tab. Does not apply to opening
@@ -154,7 +147,7 @@ class TabStripModel {
   bool ContainsIndex(int index) const;
 
   // Adds the specified WebContents in the default location. Tabs opened
-  // in the foreground inherit the group of the previously active tab.
+  // in the foreground inherit the opener of the previously active tab.
   void AppendWebContents(std::unique_ptr<content::WebContents> contents,
                          bool foreground);
 
@@ -267,8 +260,8 @@ class TabStripModel {
 
   // To be called when a navigation is about to occur in the specified
   // WebContents. Depending on the tab, and the transition type of the
-  // navigation, the TabStripModel may adjust its selection and grouping
-  // behavior.
+  // navigation, the TabStripModel may adjust its selection behavior and opener
+  // inheritance.
   void TabNavigating(content::WebContents* contents,
                      ui::PageTransition transition);
 
@@ -352,8 +345,6 @@ class TabStripModel {
     CommandToggleTabAudioMuted,
     CommandToggleSiteMuted,
     CommandBookmarkAllTabs,
-    CommandSelectByDomain,
-    CommandSelectByOpener,
     CommandLast
   };
 
@@ -396,31 +387,22 @@ class TabStripModel {
   }
 
   // Returns the index of the next WebContents in the sequence of WebContentses
-  // spawned by the specified WebContents after |start_index|. If |use_group| is
-  // true, the group property of the tab is used instead of the opener to find
-  // the next tab. Under some circumstances the group relationship may exist but
-  // the opener may not.
+  // spawned by the specified WebContents after |start_index|.
   int GetIndexOfNextWebContentsOpenedBy(const content::WebContents* opener,
-                                        int start_index,
-                                        bool use_group) const;
+                                        int start_index) const;
 
-  // Forget all Opener relationships that are stored (but _not_ group
-  // relationships!) This is to reduce unpredictable tab switching behavior
-  // in complex session states. The exact circumstances under which this method
-  // is called are left up to the implementation of the selected
-  // TabStripModelOrderController.
+  // Forget all opener relationships, to reduce unpredictable tab switching
+  // behavior in complex session states. The exact circumstances under which
+  // this method is called are left up to TabStripModelOrderController.
   void ForgetAllOpeners();
 
-  // Forgets the group affiliation of the specified WebContents. This
-  // should be called when a WebContents that is part of a logical group
-  // of tabs is moved to a new logical context by the user (e.g. by typing a new
-  // URL or selecting a bookmark). This also forgets the opener, which is
-  // considered a weaker relationship than group.
-  void ForgetGroup(content::WebContents* contents);
+  // Forgets the opener relationship of the specified WebContents.
+  void ForgetOpener(content::WebContents* contents);
 
-  // Returns true if the group/opener relationships present for |contents|
-  // should be reset when _any_ selection change occurs in the model.
-  bool ShouldResetGroupOnSelect(content::WebContents* contents) const;
+  // Returns true if the opener relationships present for |contents| should be
+  // reset when _any_ active tab change occurs (rather than just one outside the
+  // current tree of openers).
+  bool ShouldResetOpenerOnActiveTabChange(content::WebContents* contents) const;
 
  private:
   class WebContentsData;
@@ -448,23 +430,10 @@ class TabStripModel {
   //   violated in tests [and possibly in the wild as well].
   void SendDetachWebContentsNotifications(DetachNotifications* notifications);
 
-  bool ContainsWebContents(content::WebContents* contents);
   bool RunUnloadListenerBeforeClosing(content::WebContents* contents);
   bool ShouldRunUnloadListenerBeforeClosing(content::WebContents* contents);
 
   int ConstrainInsertionIndex(int index, bool pinned_tab);
-
-  // Convenience for converting a vector of indices into a vector of
-  // WebContents.
-  std::vector<content::WebContents*> GetWebContentsFromIndices(
-      const std::vector<int>& indices) const;
-
-  // Gets the set of tab indices whose domain matches the tab at |index|.
-  void GetIndicesWithSameDomain(int index, std::vector<int>* indices);
-
-  // Gets the set of tab indices that have the same opener as the tab at
-  // |index|.
-  void GetIndicesWithSameOpener(int index, std::vector<int>* indices);
 
   // If |index| is selected all the selected indices are returned, otherwise a
   // vector with |index| is returned. This is used when executing commands to
@@ -544,16 +513,12 @@ class TabStripModel {
   // starting at |start| to |index|. See MoveSelectedTabsTo for more details.
   void MoveSelectedTabsToImpl(int index, size_t start, size_t length);
 
-  // Returns true if the tab represented by the specified data has an opener
-  // that matches the specified one. If |use_group| is true, then this will
-  // fall back to check the group relationship as well.
-  static bool OpenerMatches(const std::unique_ptr<WebContentsData>& data,
-                            const content::WebContents* opener,
-                            bool use_group);
+  // Sets the sound content setting for each site at the |indices|.
+  void SetSitesMuted(const std::vector<int>& indices, bool mute) const;
 
-  // Sets the group/opener of any tabs that reference the tab at |index| to that
-  // tab's group/opener respectively.
-  void FixOpenersAndGroupsReferencing(int index);
+  // Sets the opener of any tabs that reference the tab at |index| to that tab's
+  // opener.
+  void FixOpeners(int index);
 
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.

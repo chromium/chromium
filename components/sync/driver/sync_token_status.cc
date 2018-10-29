@@ -6,8 +6,6 @@
 
 namespace syncer {
 
-SyncTokenStatus::SyncTokenStatus()
-    : connection_status(CONNECTION_NOT_ATTEMPTED),
-      last_get_token_error(GoogleServiceAuthError::AuthErrorNone()) {}
+SyncTokenStatus::SyncTokenStatus() = default;
 
 }  // namespace syncer

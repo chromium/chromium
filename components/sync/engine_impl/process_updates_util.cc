@@ -297,17 +297,19 @@ void ProcessDownloadedUpdates(syncable::Directory* dir,
                               syncable::ModelNeutralWriteTransaction* trans,
                               ModelType type,
                               const SyncEntityList& applicable_updates,
+                              bool is_initial_sync,
                               StatusController* status,
                               UpdateCounters* counters) {
   for (const auto* update : applicable_updates) {
     DCHECK_EQ(type, GetModelType(*update));
     if (!UpdateContainsNewVersion(trans, *update)) {
       status->increment_num_reflected_updates_downloaded_by(1);
-      counters->num_reflected_updates_received++;
+      counters->num_non_initial_reflected_updates_received++;
     }
     if (update->deleted()) {
       status->increment_num_tombstone_updates_downloaded_by(1);
-      counters->num_tombstone_updates_received++;
+      if (!is_initial_sync)
+        counters->num_non_initial_tombstone_updates_received++;
     }
     VerifyResult verify_result = VerifyUpdate(trans, *update, type);
     if (verify_result != VERIFY_SUCCESS && verify_result != VERIFY_UNDELETE)

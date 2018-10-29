@@ -131,6 +131,11 @@ struct IDBDatabaseMetadata {
   array<IDBObjectStoreMetadata> object_stores;
 };
 
+struct IDBNameAndVersion {
+  mojo_base.mojom.String16 name;
+  int64 version;
+};
+
 struct IDBIndexKeys {
   int64 index_id;
   array<IDBKey> index_keys;
@@ -187,6 +192,9 @@ struct IDBObserverChanges {
 // replies associated with particular messages.
 interface IDBCallbacks {
   Error(int32 code, mojo_base.mojom.String16 message);
+
+  // Factory::GetDatabaseInfo
+  SuccessNamesAndVersionsList(array<IDBNameAndVersion> value);
 
   // Factory::GetDatabaseNames
   SuccessStringList(array<mojo_base.mojom.String16> value);
@@ -345,6 +353,7 @@ interface IDBDatabase {
 };
 
 interface IDBFactory {
+  GetDatabaseInfo(associated IDBCallbacks callbacks, url.mojom.Origin origin);
   GetDatabaseNames(associated IDBCallbacks callbacks, url.mojom.Origin origin);
   Open(associated IDBCallbacks callbacks,
        associated IDBDatabaseCallbacks database_callbacks,

@@ -27,10 +27,19 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
   source->AddLocalizedString("status", IDS_POLICY_STATUS);
   source->AddLocalizedString("statusDevice", IDS_POLICY_STATUS_DEVICE);
   source->AddLocalizedString("statusUser", IDS_POLICY_STATUS_USER);
+  source->AddLocalizedString("statusMachine", IDS_POLICY_STATUS_MACHINE);
   source->AddLocalizedString("labelEnterpriseEnrollmentDomain",
                              IDS_POLICY_LABEL_ENTERPRISE_ENROLLMENT_DOMAIN);
   source->AddLocalizedString("labelEnterpriseDisplayDomain",
                              IDS_POLICY_LABEL_ENTERPRISE_DISPLAY_DOMAIN);
+  source->AddLocalizedString("labelMachineEnrollmentDomain",
+                             IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DOMAIN);
+  source->AddLocalizedString("labelMachineEnrollmentToken",
+                             IDS_POLICY_LABEL_MACHINE_ENROLLMENT_TOKEN);
+  source->AddLocalizedString("labelMachineEntrollmentDeviceId",
+                             IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DEVICE_ID);
+  source->AddLocalizedString("labelMachineEnrollmentMachineName",
+                             IDS_POLICY_LABEL_MACHINE_ENROLLMENT_MACHINE_NAME);
   source->AddLocalizedString("labelUsername", IDS_POLICY_LABEL_USERNAME);
   source->AddLocalizedString("labelGaiaId", IDS_POLICY_LABEL_GAIA_ID);
   source->AddLocalizedString("labelClientId", IDS_POLICY_LABEL_CLIENT_ID);

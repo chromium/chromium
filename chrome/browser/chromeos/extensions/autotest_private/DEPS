@@ -1,0 +1,10 @@
+include_rules = [
+  "+chrome/browser/ui/views/crostini",
+]
+
+specific_include_rules = {
+  "autotest_private_api\.cc": [
+    # TODO(mash): Remove the line below, http://crbug.com/557397
+    "+ash/shell.h",
+  ]
+}

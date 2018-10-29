@@ -9,14 +9,16 @@
     <link rel="import" href="signin_shared_css.html">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
     <link rel="stylesheet" href="sync_confirmation.css"></link>
-    <style is="custom-style" include="signin-dialog-shared paper-button-style">
+    <custom-style>
+      <style is="custom-style" include="signin-dialog-shared paper-button-style">
 <if expr="is_macosx or is_linux">
-      #undoButton {
-        margin-inline-end: 8px;
-        margin-inline-start: 0;
-      }
+        #undoButton {
+          margin-inline-end: 8px;
+          margin-inline-start: 0;
+        }
 </if>
-    </style>
+      </style>
+    </custom-style>
   </head>
   <body>
     <!--

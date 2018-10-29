@@ -8,7 +8,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
@@ -20,14 +19,11 @@ DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
-  StoragePartition* storage_partition = BrowserContext::GetStoragePartition(
-      web_contents->GetBrowserContext(), render_frame_host->GetSiteInstance());
   return std::unique_ptr<download::DownloadUrlParameters>(
       new download::DownloadUrlParameters(
           url, render_frame_host->GetProcess()->GetID(),
           render_frame_host->GetRenderViewHost()->GetRoutingID(),
-          render_frame_host->GetRoutingID(),
-          storage_partition->GetURLRequestContext(), traffic_annotation));
+          render_frame_host->GetRoutingID(), traffic_annotation));
 }
 
 }  // namespace content

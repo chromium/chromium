@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "base/files/file_path.h"
+#include "base/task/post_task.h"
 #include "content/browser/code_cache/generated_code_cache.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -16,20 +18,31 @@ void GeneratedCodeCacheContext::Initialize(const base::FilePath& path,
                                            int max_bytes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&GeneratedCodeCacheContext::InitializeOnIO, this, path,
                      max_bytes));
 }
 
 void GeneratedCodeCacheContext::InitializeOnIO(const base::FilePath& path,
                                                int max_bytes) {
-  generated_code_cache_.reset(new GeneratedCodeCache(path, max_bytes));
+  generated_js_code_cache_.reset(
+      new GeneratedCodeCache(path.AppendASCII("js"), max_bytes,
+                             GeneratedCodeCache::CodeCacheType::kJavaScript));
+  generated_wasm_code_cache_.reset(
+      new GeneratedCodeCache(path.AppendASCII("wasm"), max_bytes,
+                             GeneratedCodeCache::CodeCacheType::kWebAssembly));
 }
 
-GeneratedCodeCache* GeneratedCodeCacheContext::generated_code_cache() const {
+GeneratedCodeCache* GeneratedCodeCacheContext::generated_js_code_cache() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return generated_code_cache_.get();
+  return generated_js_code_cache_.get();
+}
+
+GeneratedCodeCache* GeneratedCodeCacheContext::generated_wasm_code_cache()
+    const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  return generated_wasm_code_cache_.get();
 }
 
 GeneratedCodeCacheContext::~GeneratedCodeCacheContext() = default;

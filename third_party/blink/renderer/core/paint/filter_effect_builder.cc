@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/svg/svg_filter_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_box_reflect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_color_matrix.h"
@@ -44,7 +45,6 @@
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
 #include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -305,14 +305,14 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         Filter* reference_filter =
             BuildReferenceFilter(reference_operation, nullptr);
         if (reference_filter && reference_filter->LastEffect()) {
-          PaintFilterBuilder::PopulateSourceGraphicImageFilters(
+          paint_filter_builder::PopulateSourceGraphicImageFilters(
               reference_filter->GetSourceGraphic(), nullptr,
               current_interpolation_space);
 
           FilterEffect* filter_effect = reference_filter->LastEffect();
           current_interpolation_space =
               filter_effect->OperatingInterpolationSpace();
-          auto paint_filter = PaintFilterBuilder::Build(
+          auto paint_filter = paint_filter_builder::Build(
               filter_effect, current_interpolation_space);
           if (!paint_filter)
             continue;
@@ -385,7 +385,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         // instead of calling this a "reference filter".
         const auto& reflection = ToBoxReflectFilterOperation(*op).Reflection();
         filters.AppendReferenceFilter(
-            PaintFilterBuilder::BuildBoxReflectFilter(reflection, nullptr));
+            paint_filter_builder::BuildBoxReflectFilter(reflection, nullptr));
         break;
       }
       case FilterOperation::NONE:
@@ -394,8 +394,9 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
   }
   if (current_interpolation_space != kInterpolationSpaceSRGB) {
     // Transform to device color space at the end of processing, if required.
-    sk_sp<PaintFilter> filter = PaintFilterBuilder::TransformInterpolationSpace(
-        nullptr, current_interpolation_space, kInterpolationSpaceSRGB);
+    sk_sp<PaintFilter> filter =
+        paint_filter_builder::TransformInterpolationSpace(
+            nullptr, current_interpolation_space, kInterpolationSpaceSRGB);
     filters.AppendReferenceFilter(std::move(filter));
   }
 

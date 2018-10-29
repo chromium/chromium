@@ -41,6 +41,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   // mojom::MediaMetricsProvider implementation:
   void Initialize(bool is_mse, mojom::MediaURLScheme url_scheme) override;
   void OnError(PipelineStatus status) override;
+  void SetIsAdMedia() override;
   void SetIsEME() override;
   void SetTimeToMetadata(base::TimeDelta elapsed) override;
   void SetTimeToFirstFrame(base::TimeDelta elapsed) override;
@@ -52,6 +53,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
       mojom::WatchTimeRecorderRequest request) override;
   void AcquireVideoDecodeStatsRecorder(
       mojom::VideoDecodeStatsRecorderRequest request) override;
+  void AddBytesReceived(uint64_t bytes_received) override;
 
   // Session unique ID which maps to a given WebMediaPlayerImpl instances. Used
   // to coordinate multiply logged events with a singly logged metric.
@@ -67,11 +69,15 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   // These values are not always sent but have known defaults.
   PipelineStatus pipeline_status_ = PIPELINE_OK;
   bool is_eme_ = false;
+  bool is_ad_media_ = false;
 
   // The values below are only set if |initialized_| is true.
   bool initialized_ = false;
   bool is_mse_;
   mojom::MediaURLScheme url_scheme_;
+
+  // Total number of bytes received by the media player so far.
+  uint64_t total_bytes_received_ = 0;
 
   base::TimeDelta time_to_metadata_ = kNoTimestamp;
   base::TimeDelta time_to_first_frame_ = kNoTimestamp;

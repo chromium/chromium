@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_constants.h"
-#import "ios/chrome/browser/ui/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -37,7 +37,6 @@ const CGFloat kSpotlightCornerRadius = 7;
   [button setImage:highlightedImage forState:UIControlStateHighlighted];
   [button setImage:disabledImage forState:UIControlStateDisabled];
   [button setImage:highlightedImage forState:UIControlStateSelected];
-  button.titleLabel.textAlignment = NSTextAlignmentCenter;
   button.translatesAutoresizingMaskIntoConstraints = NO;
   return button;
 }
@@ -45,26 +44,9 @@ const CGFloat kSpotlightCornerRadius = 7;
 + (instancetype)toolbarButtonWithImage:(UIImage*)image {
   ToolbarButton* button = [[self class] buttonWithType:UIButtonTypeSystem];
   [button setImage:image forState:UIControlStateNormal];
-  button.titleLabel.textAlignment = NSTextAlignmentCenter;
   button.translatesAutoresizingMaskIntoConstraints = NO;
   [button configureSpotlightView];
   return button;
-}
-
-// TODO(crbug.com/800266): Remove this method as it is handled in the
-// TabGridButton.
-- (void)layoutSubviews {
-  [super layoutSubviews];
-  // If the UIButton title has text it will center it on top of the image,
-  // this is currently used for the TabStripButton which displays the
-  // total number of tabs.
-  if (!IsUIRefreshPhase1Enabled() && self.titleLabel.text) {
-    CGSize size = self.bounds.size;
-    CGPoint center = CGPointMake(size.width / 2, size.height / 2);
-    self.imageView.center = center;
-    self.imageView.frame = AlignRectToPixel(self.imageView.frame);
-    self.titleLabel.frame = self.bounds;
-  }
 }
 
 #pragma mark - Public Methods
@@ -93,15 +75,6 @@ const CGFloat kSpotlightCornerRadius = 7;
   } else if (isRegularWidth && isRegularHeight) {
     newHiddenValue = !(self.visibilityMask &
                        ToolbarComponentVisibilityRegularWidthRegularHeight);
-  }
-
-  if (!IsIPadIdiom() &&
-      self.visibilityMask & ToolbarComponentVisibilityIPhoneOnly) {
-    newHiddenValue = NO;
-  }
-  if (newHiddenValue &&
-      self.visibilityMask & ToolbarComponentVisibilityOnlyWhenEnabled) {
-    newHiddenValue = !self.enabled;
   }
 
   if (self.hiddenInCurrentSizeClass != newHiddenValue) {

@@ -43,6 +43,12 @@ GAIAInfoUpdateService::GAIAInfoUpdateService(Profile* profile)
       IdentityManagerFactory::GetForProfile(profile_);
   identity_manager->AddObserver(this);
 
+  if (!identity_manager->HasPrimaryAccount()) {
+    // Handle the case when the primary account was cleared while loading the
+    // profile, before the |GAIAInfoUpdateService| is created.
+    OnUsernameChanged(std::string());
+  }
+
   PrefService* prefs = profile_->GetPrefs();
   last_updated_ = base::Time::FromInternalValue(
       prefs->GetInt64(prefs::kProfileGAIAInfoUpdateTime));

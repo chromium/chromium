@@ -1,90 +1,71 @@
-var autoscrollInterval = 50;
-var middleButton = 1;
 var middleClickAutoscrollRadius = 15; // from FrameView::noPanScrollRadius
+var waitTimeBeforeMoveInSeconds = 0.1;
+var scrollable;
+var scrolledObject;
+var startX;
+var startY;
+var endX;
+var endY;
+var autoscrollParam;
 
-window.jsTestIsAsync = true;
-
-function $(id)
-{
-    return document.getElementById(id);
+function $(id) {
+  return document.getElementById(id);
 }
 
-function testPanScroll(param)
-{
-    function finishTest()
-    {
-        if ($('container'))
-            $('container').innerHTML = '';
-        if (param.finishTest)
-            param.finishTest();
-        if (window.finishJSTest) {
-            finishJSTest();
-            return;
-        }
-        if (window.testRunner)
-            testRunner.notifyDone();
+function testSetUp(param) {
+  // Make sure animations run. This requires compositor-controls.js.
+  setAnimationRequiresRaster();
+
+  scrollable = param.scrollable;
+  scrolledObject = param.scrolledObject || scrollable;
+  startX = param.startX || scrollable.offsetLeft + 5;
+  startY = param.startY || scrollable.offsetTop + 5;
+  endX = param.endX || scrollable.offsetLeft + 5;
+  endY = param.endY || scrollable.offsetTop + middleClickAutoscrollRadius + 6;
+  autoscrollParam = param;
+  if (!scrollable.innerHTML) {
+    for (var i = 0; i < 100; ++i) {
+      var line = document.createElement('div');
+      line.innerHTML = "line " + i;
+      scrollable.appendChild(line);
+    }
+  }
+  promise_test (async () => {
+    // Wait until layer information has gone from Blink to CC's active tree.
+    await waitForCompositorCommit();
+
+    // Start atuoscrolling.
+    if (autoscrollParam.clickOrDrag == 'click') {
+      await mouseMoveTo(startX, startY);
+      await mouseClickOn(startX, startY, 'middle');
+      await mouseMoveTo(endX, endY);
+    } else {
+      assert_equals('drag', autoscrollParam.clickOrDrag);
+      mouseDragAndDrop(startX, startY, endX, endY, 'middle',
+          waitTimeBeforeMoveInSeconds);
     }
 
-    var scrollable = param.scrollable;
-    var scrolledObject = param.scrolledObject || scrollable;
+    // Wait for some scrolling, then end the autoscroll.
+    await waitFor(() => {
+      return scrolledObject.scrollTop > 0 || scrolledObject.scrollLeft > 0;
+    });
+    if (autoscrollParam.clickOrDrag == 'click')
+      await mouseClickOn(endX, endY, 'middle');
 
-    if (!scrollable.innerHTML) {
-        for (var i = 0; i < 100; ++i) {
-            var line = document.createElement('div');
-            line.innerHTML = "line " + i;
-            scrollable.appendChild(line);
-        }
-    }
+    // Wait for the cursor shape to go back to normal.
+    await waitFor(() => {
+      var cursorInfo = internals.getCurrentCursorInfo();
+      return cursorInfo == "type=Pointer hotSpot=0,0" ||
+          cursorInfo == "type=IBeam hotSpot=0,0";
+    });
 
-    var noModeScroll = false;
-    var scrolled = false;
+    finishTest();
+  });
+}
 
-    scrolledObject.onscroll = function() {
-        if (noModeScroll) {
-            testFailed('still autoscroll');
-            finishTest();
-            return;
-        }
-
-        if (scrolled)
-            return;
-        scrolled = true;
-        testPassed('autoscroll started');
-        var cursorInfo = internals.getCurrentCursorInfo();
-        debug("Mouse cursor shape: " + cursorInfo);
-
-        if (window.eventSender) {
-            if (param.clickOrDrag == 'click')
-                eventSender.mouseDown(middleButton);
-            eventSender.mouseUp(middleButton);
-        }
-    };
-
-    scrollable.ownerDocument.onmouseup = function(e) {
-        if (!scrolled || e.button != middleButton)
-            return;
-        noMoreScroll = true;
-        window.setTimeout(function() {
-            testPassed('autoscroll stopped');
-            var cursorInfo = internals.getCurrentCursorInfo();
-            if (cursorInfo == "type=Pointer hotSpot=0,0" || cursorInfo == "type=IBeam hotSpot=0,0")
-                 testPassed('Mouse cursor cleared');
-            else
-                 testFailed('Mouse cursor shape: ' + cursorInfo);
-
-            finishTest();
-        }, autoscrollInterval * 2);
-    };
-
-    if (!window.eventSender)
-        return;
-    var startX = param.startX || scrollable.offsetLeft + 5;
-    var startY = param.startY || scrollable.offsetTop + 5;
-    var endX = param.endX || scrollable.offsetLeft + 5;
-    var endY = param.endY || scrollable.offsetTop + middleClickAutoscrollRadius + 6;
-    eventSender.mouseMoveTo(startX, startY);
-    eventSender.mouseDown(middleButton);
-    if (param.clickOrDrag == 'click')
-        eventSender.mouseUp(middleButton);
-    eventSender.mouseMoveTo(endX, endY);
+function finishTest() {
+  if ($('container'))
+    $('container').innerHTML = '';
+  if (autoscrollParam.finishTest)
+    autoscrollParam.finishTest();
 }

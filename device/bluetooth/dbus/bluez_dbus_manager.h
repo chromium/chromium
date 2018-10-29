@@ -53,6 +53,20 @@ class BluezDBusManagerSetter;
 // WeakPtrFactory when creating callbacks that run on UI thread. See
 // session_manager_client.cc for examples.
 //
+// Alternate D-Bus Client:
+//
+// BluezDBusManager is used by two separate clients. If both clients used the
+// same DBus connection to talk to BlueZ, then they could override each others'
+// state. For example, clients can start a scan with a set of filters; if
+// client #1 sets filter A, and then client #2 sets filter B, BlueZ would only
+// scan with filter B. BlueZ distinguishes between clients based on their D-Bus
+// connection, so if two clients with different connections try to start a scan
+// with two filters, BlueZ will merge these filters.
+//
+// For this reason, BluezDBusManager keeps two sets of the same client and uses
+// two separate D-Bus connections: "Bluetooth*Client" and
+// "AlternateBluetooth*Client".
+
 class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
  public:
   // Sets the global instance. Must be called before any calls to Get().
@@ -61,7 +75,7 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
   // This will initialize real, stub, or fake DBusClients depending on
   // command-line arguments, whether Object Manager is supported and
   // whether this process runs in a real or test environment.
-  static void Initialize(dbus::Bus* bus, bool use_dbus_fakes);
+  static void Initialize();
 
   // Returns a BluezDBusManagerSetter instance that allows tests to
   // replace individual D-Bus clients with their own implementations.
@@ -83,7 +97,7 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
 
   // Returns true once we know whether Object Manager is supported or not.
   // Until this method returns true, no classes should try to use the
-  // DBus Clients.
+  // D-Bus Clients.
   bool IsObjectManagerSupportKnown() { return object_manager_support_known_; }
 
   // Calls |callback| once we know whether Object Manager is supported or not.
@@ -110,17 +124,25 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
   BluetoothMediaTransportClient* GetBluetoothMediaTransportClient();
   BluetoothProfileManagerClient* GetBluetoothProfileManagerClient();
 
+  // See "Alternate D-Bus Client" note above.
+  BluetoothAdapterClient* GetAlternateBluetoothAdapterClient();
+
  private:
   friend class BluezDBusManagerSetter;
 
   // Creates a new BluezDBusManager using the DBusClients set in
-  // |client_bundle|.
-  explicit BluezDBusManager(dbus::Bus* bus, bool use_stubs);
+  // |client_bundle|. |alternate_bus| is used by a separate set of D-Bus
+  // clients; see "Alternate D-Bus Client" note above.
+  explicit BluezDBusManager(dbus::Bus* bus,
+                            dbus::Bus* alternate_bus,
+                            bool use_stubs);
   ~BluezDBusManager();
 
   // Creates a global instance of BluezDBusManager. Cannot be called more than
   // once.
-  static void CreateGlobalInstance(dbus::Bus* bus, bool use_stubs);
+  static void CreateGlobalInstance(dbus::Bus* bus,
+                                   dbus::Bus* alternate_bus,
+                                   bool use_stubs);
 
   void OnObjectManagerSupported(dbus::Response* response);
   void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
@@ -133,6 +155,10 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
   std::string GetBluetoothServiceName();
 
   dbus::Bus* bus_;
+  // Separate D-Bus connection used by the "Alternate" set of D-Bus clients. See
+  // "Alternate D-Bus Client" note above.
+  dbus::Bus* alternate_bus_;
+
   std::unique_ptr<BluetoothDBusClientBundle> client_bundle_;
 
   base::Closure object_manager_support_known_callback_;
@@ -172,6 +198,9 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManagerSetter {
       std::unique_ptr<BluetoothMediaTransportClient> client);
   void SetBluetoothProfileManagerClient(
       std::unique_ptr<BluetoothProfileManagerClient> client);
+
+  void SetAlternateBluetoothAdapterClient(
+      std::unique_ptr<BluetoothAdapterClient> client);
 
  private:
   friend class BluezDBusManager;

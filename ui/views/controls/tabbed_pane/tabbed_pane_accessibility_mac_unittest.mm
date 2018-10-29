@@ -56,7 +56,8 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
   id A11yElementAtPoint(const gfx::Point& point) {
     // Accessibility hit tests come in Cocoa screen coordinates.
     NSPoint ns_point = gfx::ScreenPointToNSPoint(point);
-    return [widget_->GetNativeWindow() accessibilityHitTest:ns_point];
+    return [widget_->GetNativeWindow().GetNativeNSWindow()
+        accessibilityHitTest:ns_point];
   }
 
   gfx::Point TabCenterPoint(int index) {

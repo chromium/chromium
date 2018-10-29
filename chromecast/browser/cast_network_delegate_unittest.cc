@@ -28,17 +28,19 @@ class MockCastNetworkRequestInterceptor : public CastNetworkRequestInterceptor {
   MockCastNetworkRequestInterceptor() {}
   ~MockCastNetworkRequestInterceptor() override {}
 
-  MOCK_CONST_METHOD4(IsWhiteListed,
+  MOCK_CONST_METHOD5(IsWhiteListed,
                      bool(const GURL& gurl,
                           const std::string& session_id,
                           int render_process_id,
+                          int render_frame_id,
                           bool for_device_auth));
   MOCK_METHOD0(Initialize, void());
   MOCK_METHOD0(IsInitialized, bool());
-  MOCK_METHOD5(OnBeforeURLRequest,
+  MOCK_METHOD6(OnBeforeURLRequest,
                int(net::URLRequest* request,
                    const std::string& session_id,
                    int render_process_id,
+                   int render_frame_id,
                    net::CompletionOnceCallback callback,
                    GURL* new_url));
   MOCK_METHOD3(OnBeforeStartTransaction,
@@ -88,7 +90,7 @@ TEST_F(CastNetworkDelegateTest, NotifyBeforeURLRequest) {
   EXPECT_CALL(*cast_network_request_interceptor_ptr_, IsInitialized())
       .WillOnce(Return(true));
   EXPECT_CALL(*cast_network_request_interceptor_ptr_,
-              OnBeforeURLRequest(_, _, _, _, _));
+              OnBeforeURLRequest(_, _, _, _, _, _));
 
   cast_network_delegate_->NotifyBeforeURLRequest(
       request.get(), completion_callback.callback(), NULL);

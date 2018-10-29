@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -31,6 +32,21 @@ RecentFile MakeRecentFile(const std::string& name,
   return RecentFile(url, last_modified);
 }
 
+std::vector<std::unique_ptr<RecentSource>> BuildDefaultSources() {
+  auto source1 = std::make_unique<FakeRecentSource>();
+  source1->AddFile(MakeRecentFile("aaa.jpg", base::Time::FromJavaTime(1000)));
+  source1->AddFile(MakeRecentFile("ccc.jpg", base::Time::FromJavaTime(3000)));
+
+  auto source2 = std::make_unique<FakeRecentSource>();
+  source2->AddFile(MakeRecentFile("bbb.jpg", base::Time::FromJavaTime(2000)));
+  source2->AddFile(MakeRecentFile("ddd.jpg", base::Time::FromJavaTime(4000)));
+
+  std::vector<std::unique_ptr<RecentSource>> sources;
+  sources.emplace_back(std::move(source1));
+  sources.emplace_back(std::move(source2));
+  return sources;
+}
+
 }  // namespace
 
 class RecentModelTest : public testing::Test {
@@ -38,27 +54,23 @@ class RecentModelTest : public testing::Test {
   RecentModelTest() = default;
 
  protected:
-  std::vector<std::unique_ptr<RecentSource>> BuildDefaultSources() {
-    auto source1 = std::make_unique<FakeRecentSource>();
-    source1->AddFile(MakeRecentFile("aaa.jpg", base::Time::FromJavaTime(1000)));
-    source1->AddFile(MakeRecentFile("ccc.jpg", base::Time::FromJavaTime(3000)));
-
-    auto source2 = std::make_unique<FakeRecentSource>();
-    source2->AddFile(MakeRecentFile("bbb.jpg", base::Time::FromJavaTime(2000)));
-    source2->AddFile(MakeRecentFile("ddd.jpg", base::Time::FromJavaTime(4000)));
-
-    std::vector<std::unique_ptr<RecentSource>> sources;
-    sources.emplace_back(std::move(source1));
-    sources.emplace_back(std::move(source2));
-    return sources;
-  }
+  using RecentSourceList = std::vector<std::unique_ptr<RecentSource>>;
+  using RecentSourceListFactory = base::RepeatingCallback<RecentSourceList()>;
 
   std::vector<RecentFile> BuildModelAndGetRecentFiles(
-      std::vector<std::unique_ptr<RecentSource>> sources,
+      RecentSourceListFactory source_list_factory,
       size_t max_files,
       const base::Time& cutoff_time) {
-    RecentModel* model = RecentModelFactory::SetForProfileAndUseForTest(
-        &profile_, RecentModel::CreateForTest(std::move(sources)));
+    RecentModel* model = static_cast<RecentModel*>(
+        RecentModelFactory::GetInstance()->SetTestingFactoryAndUse(
+            &profile_,
+            base::BindRepeating(
+                [](const RecentSourceListFactory& source_list_factory,
+                   content::BrowserContext* context)
+                    -> std::unique_ptr<KeyedService> {
+                  return RecentModel::CreateForTest(source_list_factory.Run());
+                },
+                std::move(source_list_factory))));
 
     model->SetMaxFilesForTest(max_files);
     model->SetForcedCutoffTimeForTest(cutoff_time);
@@ -87,8 +99,8 @@ class RecentModelTest : public testing::Test {
 };
 
 TEST_F(RecentModelTest, GetRecentFiles) {
-  std::vector<RecentFile> files =
-      BuildModelAndGetRecentFiles(BuildDefaultSources(), 10, base::Time());
+  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
+      base::BindRepeating(&BuildDefaultSources), 10, base::Time());
 
   ASSERT_EQ(4u, files.size());
   EXPECT_EQ("ddd.jpg", files[0].url().path().value());
@@ -102,8 +114,8 @@ TEST_F(RecentModelTest, GetRecentFiles) {
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_MaxFiles) {
-  std::vector<RecentFile> files =
-      BuildModelAndGetRecentFiles(BuildDefaultSources(), 3, base::Time());
+  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
+      base::BindRepeating(&BuildDefaultSources), 3, base::Time());
 
   ASSERT_EQ(3u, files.size());
   EXPECT_EQ("ddd.jpg", files[0].url().path().value());
@@ -115,8 +127,9 @@ TEST_F(RecentModelTest, GetRecentFiles_MaxFiles) {
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_CutoffTime) {
-  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
-      BuildDefaultSources(), 10, base::Time::FromJavaTime(2500));
+  std::vector<RecentFile> files =
+      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 10,
+                                  base::Time::FromJavaTime(2500));
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("ddd.jpg", files[0].url().path().value());
@@ -128,7 +141,9 @@ TEST_F(RecentModelTest, GetRecentFiles_CutoffTime) {
 TEST_F(RecentModelTest, GetRecentFiles_UmaStats) {
   base::HistogramTester histogram_tester;
 
-  BuildModelAndGetRecentFiles({}, 10, base::Time());
+  BuildModelAndGetRecentFiles(
+      base::BindRepeating([]() { return RecentSourceList(); }), 10,
+      base::Time());
 
   histogram_tester.ExpectTotalCount(RecentModel::kLoadHistogramName, 1);
 }

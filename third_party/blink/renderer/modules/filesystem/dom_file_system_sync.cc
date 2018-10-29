@@ -33,14 +33,13 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/public/platform/web_file_system.h"
-#include "third_party/blink/public/platform/web_file_system_callbacks.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_entry_sync.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_path.h"
 #include "third_party/blink/renderer/modules/filesystem/file_entry_sync.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_callbacks.h"
+#include "third_party/blink/renderer/modules/filesystem/file_system_dispatcher.h"
 #include "third_party/blink/renderer/modules/filesystem/file_writer_sync.h"
 #include "third_party/blink/renderer/modules/filesystem/sync_callback_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -65,8 +64,8 @@ DOMFileSystemSync::DOMFileSystemSync(ExecutionContext* context,
 DOMFileSystemSync::~DOMFileSystemSync() = default;
 
 void DOMFileSystemSync::ReportError(ErrorCallbackBase* error_callback,
-                                    FileError::ErrorCode file_error) {
-  error_callback->Invoke(file_error);
+                                    base::File::Error error) {
+  error_callback->Invoke(error);
 }
 
 DirectoryEntrySync* DOMFileSystemSync::root() {
@@ -82,13 +81,13 @@ class CreateFileHelper final : public AsyncFileSystemCallbacks {
     static CreateFileResult* Create() { return new CreateFileResult(); }
 
     bool failed_;
-    int code_;
+    base::File::Error error_;
     Member<File> file_;
 
     void Trace(blink::Visitor* visitor) { visitor->Trace(file_); }
 
    private:
-    CreateFileResult() : failed_(false), code_(0) {}
+    CreateFileResult() : failed_(false), error_(base::File::FILE_OK) {}
   };
 
   static std::unique_ptr<AsyncFileSystemCallbacks> Create(
@@ -100,9 +99,9 @@ class CreateFileHelper final : public AsyncFileSystemCallbacks {
         new CreateFileHelper(result, name, url, type)));
   }
 
-  void DidFail(int code) override {
+  void DidFail(base::File::Error error) override {
     result_->failed_ = true;
-    result_->code_ = code;
+    result_->error_ = error;
   }
 
   ~CreateFileHelper() override = default;
@@ -119,8 +118,6 @@ class CreateFileHelper final : public AsyncFileSystemCallbacks {
     result_->file_ =
         DOMFileSystemBase::CreateFile(metadata, url_, type_, name_);
   }
-
-  bool ShouldBlockUntilCompletion() const override { return true; }
 
  private:
   CreateFileHelper(CreateFileResult* result,
@@ -142,12 +139,12 @@ File* DOMFileSystemSync::CreateFile(const FileEntrySync* file_entry,
   KURL file_system_url = CreateFileSystemURL(file_entry);
   CreateFileHelper::CreateFileResult* result(
       CreateFileHelper::CreateFileResult::Create());
-  FileSystem()->CreateSnapshotFileAndReadMetadata(
+  FileSystemDispatcher::From(context_).CreateSnapshotFileSync(
       file_system_url, CreateFileHelper::Create(result, file_entry->name(),
                                                 file_system_url, GetType()));
   if (result->failed_) {
     FileError::ThrowDOMException(
-        exception_state, static_cast<FileError::ErrorCode>(result->code_),
+        exception_state, result->error_,
         "Could not create '" + file_entry->name() + "'.");
     return nullptr;
   }
@@ -159,7 +156,7 @@ FileWriterSync* DOMFileSystemSync::CreateWriter(
     ExceptionState& exception_state) {
   DCHECK(file_entry);
 
-  FileWriterSync* file_writer = FileWriterSync::Create();
+  FileWriterSync* file_writer = FileWriterSync::Create(context_);
 
   FileWriterCallbacksSyncHelper* sync_helper =
       FileWriterCallbacksSyncHelper::Create();
@@ -167,10 +164,9 @@ FileWriterSync* DOMFileSystemSync::CreateWriter(
       FileWriterCallbacks::Create(file_writer,
                                   sync_helper->GetSuccessCallback(),
                                   sync_helper->GetErrorCallback(), context_);
-  callbacks->SetShouldBlockUntilCompletion(true);
 
-  FileSystem()->CreateFileWriter(CreateFileSystemURL(file_entry), file_writer,
-                                 std::move(callbacks));
+  FileSystemDispatcher::From(context_).InitializeFileWriterSync(
+      CreateFileSystemURL(file_entry), std::move(callbacks));
 
   FileWriterBase* success = sync_helper->GetResultOrThrow(exception_state);
   return success ? file_writer : nullptr;

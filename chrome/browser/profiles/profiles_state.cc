@@ -15,14 +15,17 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_info.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/resource_dispatcher_host.h"
+#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_CHROMEOS)
@@ -35,7 +38,6 @@
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "components/signin/core/browser/profile_oauth2_token_service.h"
 #include "components/signin/core/browser/signin_pref_names.h"
-#include "ui/gfx/text_elider.h"
 #endif
 
 namespace profiles {
@@ -112,19 +114,6 @@ base::string16 GetAvatarNameForProfile(const base::FilePath& profile_path) {
 }
 
 #if !defined(OS_CHROMEOS)
-base::string16 GetAvatarButtonTextForProfile(Profile* profile) {
-  const int kMaxCharactersToDisplay = 15;
-  base::string16 name = GetAvatarNameForProfile(profile->GetPath());
-  name = gfx::TruncateString(name,
-                             kMaxCharactersToDisplay,
-                             gfx::CHARACTER_BREAK);
-  if (profile->IsLegacySupervised()) {
-    name = l10n_util::GetStringFUTF16(
-        IDS_LEGACY_SUPERVISED_USER_NEW_AVATAR_LABEL, name);
-  }
-  return name;
-}
-
 base::string16 GetProfileSwitcherTextForItem(const AvatarMenu::Item& item) {
   if (item.legacy_supervised) {
     return l10n_util::GetStringFUTF16(
@@ -157,16 +146,22 @@ void UpdateProfileName(Profile* profile,
                           base::UTF16ToUTF8(new_profile_name));
 }
 
-std::vector<std::string> GetSecondaryAccountsForProfile(
-    Profile* profile,
-    const std::string& primary_account) {
-  std::vector<std::string> accounts =
-      ProfileOAuth2TokenServiceFactory::GetForProfile(profile)->GetAccounts();
+std::vector<AccountInfo> GetSecondaryAccountsForSignedInProfile(
+    Profile* profile) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  std::vector<AccountInfo> accounts =
+      identity_manager->GetAccountsWithRefreshTokens();
 
-  // The vector returned by ProfileOAuth2TokenService::GetAccounts() contains
+  // The vector returned by GetAccountsWithRefreshTokens() contains
   // the primary account too, so we need to remove it from the list.
-  std::vector<std::string>::iterator primary_index =
-      std::find(accounts.begin(), accounts.end(), primary_account);
+  DCHECK(identity_manager->HasPrimaryAccount());
+  AccountInfo primary_account = identity_manager->GetPrimaryAccountInfo();
+
+  auto primary_index = std::find_if(
+      accounts.begin(), accounts.end(),
+      [&primary_account](const AccountInfo& account_info) {
+        return account_info.account_id == primary_account.account_id;
+      });
   DCHECK(primary_index != accounts.end());
   accounts.erase(primary_index);
 

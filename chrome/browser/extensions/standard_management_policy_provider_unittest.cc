@@ -7,13 +7,11 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/blacklist.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/test_extension_prefs.h"
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/test_browser_thread_bundle.h"
-#include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,22 +21,17 @@ namespace extensions {
 class StandardManagementPolicyProviderTest : public testing::Test {
  public:
   StandardManagementPolicyProviderTest()
-      : prefs_(base::ThreadTaskRunnerHandle::Get()),
-        settings_(new ExtensionManagement(prefs()->pref_service(), false)),
+      : settings_(std::make_unique<ExtensionManagement>(&profile_)),
         provider_(settings_.get()) {}
 
  protected:
-  ExtensionPrefs* prefs() {
-    return prefs_.prefs();
-  }
-
   scoped_refptr<const Extension> CreateExtension(Manifest::Location location) {
     return ExtensionBuilder("test").SetLocation(location).Build();
   }
 
   content::TestBrowserThreadBundle test_browser_thread_bundle_;
 
-  TestExtensionPrefs prefs_;
+  TestingProfile profile_;
   std::unique_ptr<ExtensionManagement> settings_;
 
   StandardManagementPolicyProvider provider_;

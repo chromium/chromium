@@ -74,4 +74,16 @@ PowerLineFrequency VideoCaptureDevice::GetPowerLineFrequency(
   }
 }
 
+VideoCaptureFrameDropReason ConvertReservationFailureToFrameDropReason(
+    VideoCaptureDevice::Client::ReserveResult reserve_result) {
+  switch (reserve_result) {
+    case VideoCaptureDevice::Client::ReserveResult::kSucceeded:
+      return VideoCaptureFrameDropReason::kNone;
+    case VideoCaptureDevice::Client::ReserveResult::kMaxBufferCountExceeded:
+      return VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded;
+    case VideoCaptureDevice::Client::ReserveResult::kAllocationFailed:
+      return VideoCaptureFrameDropReason::kBufferPoolBufferAllocationFailed;
+  }
+}
+
 }  // namespace media

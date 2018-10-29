@@ -111,7 +111,8 @@ class CONTENT_EXPORT LayerTreeView
   void SetContentSourceId(uint32_t source_id);
   void SetViewportSizeAndScale(const gfx::Size& device_viewport_size,
                                float device_scale_factor,
-                               const viz::LocalSurfaceId& local_surface_id);
+                               const viz::LocalSurfaceId& local_surface_id,
+                               base::TimeTicks allocation_time);
   void RequestNewLocalSurfaceId();
   void SetViewportVisibleRect(const gfx::Rect& visible_rect);
   void SetURLForUkm(const GURL& url);
@@ -137,8 +138,10 @@ class CONTENT_EXPORT LayerTreeView
   void LayoutAndPaintAsync(base::OnceClosure callback) override;
   void CompositeAndReadbackAsync(
       base::OnceCallback<void(const SkBitmap&)> callback) override;
-  void SynchronouslyCompositeNoRasterForTesting() override;
-  void CompositeWithRasterForTesting() override;
+  // Synchronously performs the complete set of document lifecycle phases,
+  // including updates to the compositor state, optionally including
+  // rasterization.
+  void UpdateAllLifecyclePhasesAndCompositeForTesting(bool do_raster) override;
   std::unique_ptr<cc::ScopedDeferCommits> DeferCommits() override;
   void RegisterViewportLayers(const ViewportLayers& viewport_layers) override;
   void ClearViewportLayers() override;
@@ -179,11 +182,7 @@ class CONTENT_EXPORT LayerTreeView
   void BeginMainFrameNotExpectedSoon() override;
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override;
   void UpdateLayerTreeHost() override;
-  void ApplyViewportDeltas(const gfx::Vector2dF& inner_delta,
-                           const gfx::Vector2dF& outer_delta,
-                           const gfx::Vector2dF& elastic_overscroll_delta,
-                           float page_scale,
-                           float top_controls_delta) override;
+  void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
   void RecordWheelAndTouchScrollingCount(bool has_scrolled_by_wheel,
                                          bool has_scrolled_by_touch) override;
   void RequestNewLayerTreeFrameSink() override;
@@ -192,11 +191,12 @@ class CONTENT_EXPORT LayerTreeView
   void WillCommit() override;
   void DidCommit() override;
   void DidCommitAndDrawFrame() override;
-  void DidReceiveCompositorFrameAck() override;
+  void DidReceiveCompositorFrameAck() override {}
   void DidCompletePageScaleAnimation() override;
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override;
+  void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) override;
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void RequestScheduleAnimation() override;

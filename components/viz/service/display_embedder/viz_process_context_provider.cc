@@ -191,6 +191,15 @@ void VizProcessContextProvider::SetUpdateVSyncParametersCallback(
   command_buffer_->SetUpdateVSyncParametersCallback(callback);
 }
 
+bool VizProcessContextProvider::UseRGB565PixelFormat() const {
+  return attributes_.alpha_size == 0 && attributes_.red_size == 5 &&
+         attributes_.green_size == 6 && attributes_.blue_size == 5;
+}
+
+uint32_t VizProcessContextProvider::GetCopyTextureInternalFormat() {
+  return attributes_.alpha_size > 0 ? GL_RGBA : GL_RGB;
+}
+
 void VizProcessContextProvider::InitializeContext(
     scoped_refptr<gpu::CommandBufferTaskExecutor> task_executor,
     gpu::SurfaceHandle surface_handle,

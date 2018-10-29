@@ -153,12 +153,15 @@ TEST_F(PerThreadSemTest, WithTimeout) {
 
 TEST_F(PerThreadSemTest, Timeouts) {
   absl::Time timeout = absl::Now() + absl::Milliseconds(50);
+  // Allow for a slight early return, to account for quality of implementation
+  // issues on various platforms.
+  const absl::Duration slop = absl::Microseconds(200);
   EXPECT_FALSE(Wait(timeout));
-  EXPECT_LE(timeout, absl::Now());
+  EXPECT_LE(timeout, absl::Now() + slop);
 
   absl::Time negative_timeout = absl::UnixEpoch() - absl::Milliseconds(100);
   EXPECT_FALSE(Wait(negative_timeout));
-  EXPECT_LE(negative_timeout, absl::Now());  // trivially true :)
+  EXPECT_LE(negative_timeout, absl::Now() + slop);  // trivially true :)
 
   Post(GetOrCreateCurrentThreadIdentity());
   // The wait here has an expired timeout, but we have a wake to consume,

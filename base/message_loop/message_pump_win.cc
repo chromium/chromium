@@ -237,9 +237,9 @@ void MessagePumpForUI::WaitForWork() {
       // current thread.
       MSG msg = {0};
       bool has_pending_sent_message =
-          (HIWORD(GetQueueStatus(QS_SENDMESSAGE)) & QS_SENDMESSAGE) != 0;
+          (HIWORD(::GetQueueStatus(QS_SENDMESSAGE)) & QS_SENDMESSAGE) != 0;
       if (has_pending_sent_message ||
-          PeekMessage(&msg, nullptr, 0, 0, PM_NOREMOVE)) {
+          ::PeekMessage(&msg, nullptr, 0, 0, PM_NOREMOVE)) {
         return;
       }
 
@@ -341,12 +341,12 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
   // case to ensure that the message loop peeks again instead of calling
   // MsgWaitForMultipleObjectsEx again.
   bool sent_messages_in_queue = false;
-  DWORD queue_status = GetQueueStatus(QS_SENDMESSAGE);
+  DWORD queue_status = ::GetQueueStatus(QS_SENDMESSAGE);
   if (HIWORD(queue_status) & QS_SENDMESSAGE)
     sent_messages_in_queue = true;
 
   MSG msg;
-  if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != FALSE)
+  if (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != FALSE)
     return ProcessMessageHelper(msg);
 
   return sent_messages_in_queue;
@@ -356,17 +356,14 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
   TRACE_EVENT1("base,toplevel", "MessagePumpForUI::ProcessMessageHelper",
                "message", msg.message);
   if (WM_QUIT == msg.message) {
+    // WM_QUIT is the standard way to exit a ::GetMessage() loop. Our
+    // MessageLoop has its own quit mechanism, so WM_QUIT should only terminate
+    // it if |enable_wm_quit_| is explicitly set (and is generally unexpected
+    // otherwise).
     if (enable_wm_quit_) {
-      // Repost the QUIT message so that it will be retrieved by the primary
-      // GetMessage() loop.
       state_->should_quit = true;
-      PostQuitMessage(static_cast<int>(msg.wParam));
       return false;
     }
-
-    // WM_QUIT is the standard way to exit a GetMessage() loop. Our MessageLoop
-    // has its own quit mechanism, so WM_QUIT is unexpected and should be
-    // ignored when |enable_wm_quit_| is set to false.
     UMA_HISTOGRAM_ENUMERATION("Chrome.MessageLoopProblem",
                               RECEIVED_WM_QUIT_ERROR, MESSAGE_LOOP_PROBLEM_MAX);
     return true;
@@ -378,8 +375,8 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
 
   for (Observer& observer : observers_)
     observer.WillDispatchMSG(msg);
-  TranslateMessage(&msg);
-  DispatchMessage(&msg);
+  ::TranslateMessage(&msg);
+  ::DispatchMessage(&msg);
   for (Observer& observer : observers_)
     observer.DidDispatchMSG(msg);
 
@@ -398,7 +395,7 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
 
   MSG msg;
   const bool have_message =
-      PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != FALSE;
+      ::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != FALSE;
 
   // Expect no message or a message different than kMsgHaveWork.
   DCHECK(!have_message || kMsgHaveWork != msg.message ||
@@ -412,8 +409,29 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
   if (!have_message)
     return false;
 
+  if (WM_QUIT == msg.message) {
+    // If we're in a nested ::GetMessage() loop then we must let that loop see
+    // the WM_QUIT in order for it to exit. If we're in DoRunLoop then the re-
+    // posted WM_QUIT will be either ignored, or handled, by
+    // ProcessMessageHelper() called directly from ProcessNextWindowsMessage().
+    ::PostQuitMessage(static_cast<int>(msg.wParam));
+    // Note: we *must not* ScheduleWork() here as WM_QUIT is a low-priority
+    // message on Windows (it is only returned by ::PeekMessage() when idle) :
+    // https://blogs.msdn.microsoft.com/oldnewthing/20051104-33/?p=33453. As
+    // such posting a kMsgHaveWork message via ScheduleWork() would cause an
+    // infinite loop (kMsgHaveWork message handled first means we end up here
+    // again and repost WM_QUIT+ScheduleWork() again, etc.). Not leaving a
+    // kMsgHaveWork message behind however is also problematic as unwinding
+    // multiple layers of nested ::GetMessage() loops can result in starving
+    // application tasks. TODO(https://crbug.com/890016) : Fix this.
+
+    // The return value is mostly irrelevant but return true like we would after
+    // processing a QuitClosure() task.
+    return true;
+  }
+
   // Guarantee we'll get another time slice in the case where we go into native
-  // windows code.   This ScheduleWork() may hurt performance a tiny bit when
+  // windows code. This ScheduleWork() may hurt performance a tiny bit when
   // tasks appear very infrequently, but when the event queue is busy, the
   // kMsgHaveWork events get (percentage wise) rarer and rarer.
   ScheduleWork();

@@ -30,22 +30,8 @@ void ProcessCoordinationUnitImpl::AddFrame(const CoordinationUnitID& cu_id) {
   DCHECK(cu_id.type == CoordinationUnitType::kFrame);
   auto* frame_cu =
       FrameCoordinationUnitImpl::GetCoordinationUnitByID(graph_, cu_id);
-  if (!frame_cu)
-    return;
-  if (AddFrame(frame_cu)) {
-    frame_cu->AddProcessCoordinationUnit(this);
-  }
-}
-
-void ProcessCoordinationUnitImpl::RemoveFrame(const CoordinationUnitID& cu_id) {
-  DCHECK(cu_id != id());
-  FrameCoordinationUnitImpl* frame_cu =
-      FrameCoordinationUnitImpl::GetCoordinationUnitByID(graph_, cu_id);
-  if (!frame_cu)
-    return;
-  if (RemoveFrame(frame_cu)) {
-    frame_cu->RemoveProcessCoordinationUnit(this);
-  }
+  if (frame_cu)
+    AddFrameImpl(frame_cu);
 }
 
 void ProcessCoordinationUnitImpl::SetCPUUsage(double cpu_usage) {
@@ -59,7 +45,8 @@ void ProcessCoordinationUnitImpl::SetExpectedTaskQueueingDuration(
 }
 
 void ProcessCoordinationUnitImpl::SetLaunchTime(base::Time launch_time) {
-  SetProperty(mojom::PropertyType::kLaunchTime, launch_time.ToTimeT());
+  DCHECK(launch_time_.is_null());
+  launch_time_ = launch_time;
 }
 
 void ProcessCoordinationUnitImpl::SetMainThreadTaskLoadIsLow(
@@ -100,6 +87,18 @@ ProcessCoordinationUnitImpl::GetAssociatedPageCoordinationUnits() const {
   return page_cus;
 }
 
+void ProcessCoordinationUnitImpl::OnFrameLifecycleStateChanged(
+    FrameCoordinationUnitImpl* frame_cu,
+    mojom::LifecycleState old_state) {
+  DCHECK(base::ContainsKey(frame_coordination_units_, frame_cu));
+  DCHECK_NE(old_state, frame_cu->lifecycle_state());
+
+  if (old_state == mojom::LifecycleState::kFrozen)
+    DecrementNumFrozenFrames();
+  else if (frame_cu->lifecycle_state() == mojom::LifecycleState::kFrozen)
+    IncrementNumFrozenFrames();
+}
+
 void ProcessCoordinationUnitImpl::OnEventReceived(mojom::Event event) {
   for (auto& observer : observers())
     observer.OnProcessEventReceived(this, event);
@@ -112,17 +111,40 @@ void ProcessCoordinationUnitImpl::OnPropertyChanged(
     observer.OnProcessPropertyChanged(this, property_type, value);
 }
 
-bool ProcessCoordinationUnitImpl::AddFrame(
+void ProcessCoordinationUnitImpl::AddFrameImpl(
     FrameCoordinationUnitImpl* frame_cu) {
-  bool success = frame_coordination_units_.count(frame_cu)
-                     ? false
-                     : frame_coordination_units_.insert(frame_cu).second;
-  return success;
+  const bool inserted = frame_coordination_units_.insert(frame_cu).second;
+  if (inserted) {
+    frame_cu->AddProcessCoordinationUnit(this);
+    if (frame_cu->lifecycle_state() == mojom::LifecycleState::kFrozen)
+      IncrementNumFrozenFrames();
+  }
 }
 
-bool ProcessCoordinationUnitImpl::RemoveFrame(
+void ProcessCoordinationUnitImpl::RemoveFrame(
     FrameCoordinationUnitImpl* frame_cu) {
-  return frame_coordination_units_.erase(frame_cu) > 0;
+  DCHECK(base::ContainsKey(frame_coordination_units_, frame_cu));
+  frame_coordination_units_.erase(frame_cu);
+
+  if (frame_cu->lifecycle_state() == mojom::LifecycleState::kFrozen)
+    DecrementNumFrozenFrames();
+}
+
+void ProcessCoordinationUnitImpl::DecrementNumFrozenFrames() {
+  --num_frozen_frames_;
+  DCHECK_GE(num_frozen_frames_, 0);
+}
+
+void ProcessCoordinationUnitImpl::IncrementNumFrozenFrames() {
+  ++num_frozen_frames_;
+  DCHECK_LE(num_frozen_frames_,
+            static_cast<int>(frame_coordination_units_.size()));
+
+  if (num_frozen_frames_ ==
+      static_cast<int>(frame_coordination_units_.size())) {
+    for (auto& observer : observers())
+      observer.OnAllFramesInProcessFrozen(this);
+  }
 }
 
 }  // namespace resource_coordinator

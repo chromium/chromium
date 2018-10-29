@@ -26,7 +26,6 @@ PASS request.result.x is 123
 request.result.leak = request
 observer = internals.observeGC(request)
 request = null
-gc()
 PASS observer.wasCollected is true
 PASS successfullyParsed is true
 

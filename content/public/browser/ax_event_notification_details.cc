@@ -8,7 +8,8 @@
 
 namespace content {
 
-AXEventNotificationDetails::AXEventNotificationDetails() : ax_tree_id(-1) {}
+AXEventNotificationDetails::AXEventNotificationDetails()
+    : ax_tree_id(ui::AXTreeIDUnknown()) {}
 
 AXEventNotificationDetails::AXEventNotificationDetails(
     const AXEventNotificationDetails& other) = default;
@@ -16,9 +17,7 @@ AXEventNotificationDetails::AXEventNotificationDetails(
 AXEventNotificationDetails::~AXEventNotificationDetails() {}
 
 AXLocationChangeNotificationDetails::AXLocationChangeNotificationDetails()
-    : id(-1),
-      ax_tree_id(-1) {
-}
+    : id(-1), ax_tree_id(ui::AXTreeIDUnknown()) {}
 
 AXLocationChangeNotificationDetails::AXLocationChangeNotificationDetails(
     const AXLocationChangeNotificationDetails& other) = default;

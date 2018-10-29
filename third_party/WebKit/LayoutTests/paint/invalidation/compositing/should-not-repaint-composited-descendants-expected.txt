@@ -38,12 +38,6 @@
       ]
     },
     {
-      "name": "Child Containment Layer",
-      "position": [38, 38],
-      "bounds": [90, 90],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutBlockFlow DIV class='composited child'",
       "position": [8, 58],
       "bounds": [50, 50],

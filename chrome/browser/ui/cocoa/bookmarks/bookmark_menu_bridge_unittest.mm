@@ -208,9 +208,9 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
   NSString* s = [short_item title];
   EXPECT_NSEQ([NSString stringWithUTF8String:short_url], s);
 
-  // Make sure a super-long title gets trimmed
+  // Long titles are shortened, but only once drawn by AppKit.
   s = [long_item title];
-  EXPECT_TRUE([s length] < strlen(long_url));
+  EXPECT_NSEQ([NSString stringWithUTF8String:long_url], s);
 
   // Confirm tooltips and confirm they are not trimmed (like the item
   // name might be).  Add tolerance for URL fixer-upping;

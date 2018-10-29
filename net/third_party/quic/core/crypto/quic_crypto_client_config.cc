@@ -489,8 +489,7 @@ void QuicCryptoClientConfig::FillInchoateClientHello(
   if (!certs.empty()) {
     std::vector<uint64_t> hashes;
     hashes.reserve(certs.size());
-    for (std::vector<QuicString>::const_iterator i = certs.begin();
-         i != certs.end(); ++i) {
+    for (auto i = certs.begin(); i != certs.end(); ++i) {
       hashes.push_back(QuicUtils::FNV1a_64_Hash(*i));
     }
     out->SetVector(kCCRT, hashes);
@@ -954,7 +953,7 @@ void QuicCryptoClientConfig::PreferAesGcm() {
   if (aead.size() <= 1) {
     return;
   }
-  QuicTagVector::iterator pos = std::find(aead.begin(), aead.end(), kAESG);
+  auto pos = std::find(aead.begin(), aead.end(), kAESG);
   if (pos != aead.end()) {
     aead.erase(pos);
     aead.insert(aead.begin(), kAESG);

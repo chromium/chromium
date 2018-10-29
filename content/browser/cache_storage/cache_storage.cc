@@ -30,6 +30,7 @@
 #include "content/browser/cache_storage/cache_storage.pb.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
+#include "content/browser/cache_storage/cache_storage_histogram_utils.h"
 #include "content/browser/cache_storage/cache_storage_index.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
@@ -132,7 +133,7 @@ class CacheStorage::CacheLoader {
         cache_storage_(cache_storage),
         origin_(origin),
         owner_(owner) {
-    DCHECK(!origin_.unique());
+    DCHECK(!origin_.opaque());
   }
 
   virtual ~CacheLoader() {}
@@ -895,8 +896,9 @@ void CacheStorage::CreateCacheDidCreateCache(
                         static_cast<bool>(cache));
 
   if (!cache) {
-    std::move(callback).Run(CacheStorageCacheHandle(),
-                            CacheStorageError::kErrorStorage);
+    std::move(callback).Run(
+        CacheStorageCacheHandle(),
+        MakeErrorStorage(ErrorStorageType::kDidCreateNullCache));
     return;
   }
 
@@ -966,14 +968,14 @@ void CacheStorage::DeleteCacheDidWriteIndex(
     // Undo any changes if the index couldn't be written to disk.
     cache_index_->RestoreDoomedCache();
     cache_handle.value()->SetObserver(this);
-    std::move(callback).Run(CacheStorageError::kErrorStorage);
+    std::move(callback).Run(
+        MakeErrorStorage(ErrorStorageType::kDeleteCacheFailed));
     return;
   }
 
   cache_index_->FinalizeDoomedCache();
 
-  CacheMap::iterator map_iter =
-      cache_map_.find(cache_handle.value()->cache_name());
+  auto map_iter = cache_map_.find(cache_handle.value()->cache_name());
   DCHECK(map_iter != cache_map_.end());
 
   doomed_caches_.insert(
@@ -1159,7 +1161,7 @@ CacheStorageCacheHandle CacheStorage::GetLoadedCache(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(initialized_);
 
-  CacheMap::iterator map_iter = cache_map_.find(cache_name);
+  auto map_iter = cache_map_.find(cache_name);
   if (map_iter == cache_map_.end())
     return CacheStorageCacheHandle();
 

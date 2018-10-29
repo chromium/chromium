@@ -381,6 +381,7 @@ Hvis du er færdig med selvstudiet, kan du gå til knappen Luk via ChromeVox og 
 <translation id="3914173277599553213">Påkrævet</translation>
 <translation id="3914732343065571127">Kommandoreference i ChromeVox</translation>
 <translation id="3930498801443296724">Opmærksomhedsskabende citat</translation>
+<translation id="3941269780691800708">Oplæs teksten under markøren.</translation>
 <translation id="3962990492275676168">Start læsning fra nuværende position</translation>
 <translation id="4004802134384979325">markeret</translation>
 <translation id="4006140876663370126">bidl</translation>
@@ -925,7 +926,7 @@ Tryk på Alt+F for at åbne browsermenuen i Chrome.</translation>
 <translation id="867187640362843212">Overskrift 5</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{streg}one{# lodrette streger}other{# lodrette streger}}</translation>
 <translation id="8735450637152821465">Det valgte startes</translation>
-<translation id="8743786158317878347">indtast struktureret indhold, f.eks. tabeller</translation>
+<translation id="8743786158317878347">angiv struktureret indhold, f.eks. tabeller</translation>
 <translation id="8747966237988593539">Sorteret liste</translation>
 <translation id="8759334257841767240">Ikke flere links.</translation>
 <translation id="8767968232364267681">Næste niveau 4-overskrift</translation>
@@ -973,7 +974,7 @@ Tryk på Alt+F for at åbne browsermenuen i Chrome.</translation>
 <translation id="9153606228985488238">Toneleje <ph name="PERCENT" /> procent</translation>
 <translation id="9160096769946561184">Gå til slutningen af ​​den aktuelle kolonne</translation>
 <translation id="9173115498289768110">Lydstyrke <ph name="PERCENT" /> procent</translation>
-<translation id="9178973770513562274">Brug pil op og ned til at gennemse, eller indtast for at søge.</translation>
+<translation id="9178973770513562274">Brug pil op og ned til at gennemse, eller angiv for at søge.</translation>
 <translation id="9192904702577636854">Marquee</translation>
 <translation id="9212322457209634662">Der er ikke flere afsnit.</translation>
 <translation id="923331726185079994">ChromeVox blev opdateret</translation>

@@ -8,7 +8,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/experimental_flags.h"
@@ -19,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#include "ios/web/public/features.h"
 #import "ios/web/public/web_client.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -197,11 +197,8 @@ id<GREYMatcher> WaitForOmniboxText(std::string text) {
   // Verify that the resulting page is an error page.
   [[EarlGrey selectElementWithMatcher:WaitForOmniboxText(kChromeInvalidURL)]
       assertWithMatcher:grey_notNil()];
-  NSString* kError =
-      l10n_util::GetNSString(IDS_ERRORPAGES_HEADING_NOT_AVAILABLE);
-  id<GREYMatcher> messageMatcher = [GREYMatchers matcherForText:kError];
-  [[EarlGrey selectElementWithMatcher:messageMatcher]
-      assertWithMatcher:grey_notNil()];
+  std::string error = net::ErrorToShortString(net::ERR_INVALID_URL);
+  [ChromeEarlGrey waitForWebViewContainingText:error];
 }
 
 // Tests that repeated back/forward navigation from web URL is allowed.

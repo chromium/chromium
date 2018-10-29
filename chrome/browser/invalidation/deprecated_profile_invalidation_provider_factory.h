@@ -40,7 +40,7 @@ class DeprecatedProfileInvalidationProviderFactory
 
   // Switches service creation to go through |testing_factory| for all browser
   // contexts.
-  void RegisterTestingFactory(TestingFactoryFunction testing_factory);
+  void RegisterTestingFactory(TestingFactory testing_factory);
 
  private:
   friend class DeprecatedProfileInvalidationProviderFactoryTestBase;
@@ -57,7 +57,7 @@ class DeprecatedProfileInvalidationProviderFactory
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 
-  TestingFactoryFunction testing_factory_;
+  TestingFactory testing_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(DeprecatedProfileInvalidationProviderFactory);
 };

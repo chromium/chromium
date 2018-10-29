@@ -185,7 +185,8 @@ RequestCoordinator* GetRequestCoordinator(Profile* profile,
   }
   return static_cast<RequestCoordinator*>(
       RequestCoordinatorFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile, &GetTestBackgroundLoaderRequestCoordinator));
+          profile,
+          base::BindRepeating(&GetTestBackgroundLoaderRequestCoordinator)));
 }
 
 }  // namespace

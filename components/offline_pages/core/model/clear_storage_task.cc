@@ -215,8 +215,8 @@ std::map<std::string, LifetimePolicy> GetTempNamespacePolicyMap(
   std::map<std::string, LifetimePolicy> result;
   for (const auto& name_space :
        policy_controller->GetNamespacesRemovedOnCacheReset()) {
-    result.insert(std::make_pair(
-        name_space, policy_controller->GetPolicy(name_space).lifetime_policy));
+    result.emplace(name_space,
+                   policy_controller->GetPolicy(name_space).lifetime_policy);
   }
   return result;
 }

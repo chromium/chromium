@@ -185,6 +185,8 @@ class GPU_EXPORT ScopedTransferBufferPtr {
     Release();
   }
 
+  ScopedTransferBufferPtr(ScopedTransferBufferPtr&& other);
+
   bool valid() const { return buffer_ != nullptr; }
 
   unsigned int size() const {
@@ -202,6 +204,9 @@ class GPU_EXPORT ScopedTransferBufferPtr {
   void* address() const {
     return buffer_;
   }
+
+  // Returns true if |memory| lies inside this buffer.
+  bool BelongsToBuffer(char* memory) const;
 
   void Release();
 

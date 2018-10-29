@@ -261,7 +261,7 @@ TEST_F(SyncedPrintersManagerTest, PrinterInstalledConfiguresPrinter) {
   configured.set_display_name("display name");
   manager_->PrinterInstalled(configured);
   auto found_printer = manager_->GetPrinter(kTestPrinterId);
-  ASSERT_FALSE(found_printer == nullptr);
+  ASSERT_TRUE(found_printer);
   EXPECT_TRUE(found_printer->display_name().empty());
 
   // Installing the enterprise printer should *not* generate a configuration

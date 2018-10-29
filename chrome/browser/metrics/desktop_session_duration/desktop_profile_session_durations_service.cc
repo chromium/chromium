@@ -5,7 +5,7 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "components/signin/core/browser/profile_oauth2_token_service.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -13,13 +13,13 @@ namespace metrics {
 
 DesktopProfileSessionDurationsService::DesktopProfileSessionDurationsService(
     browser_sync::ProfileSyncService* sync_service,
-    OAuth2TokenService* oauth2_token_service,
+    identity::IdentityManager* identity_manager,
     GaiaCookieManagerService* cookie_manager,
     DesktopSessionDurationTracker* tracker)
     : sync_service_(sync_service),
-      oauth2_token_service_(oauth2_token_service),
+      identity_manager_(identity_manager),
       sync_observer_(this),
-      oauth2_token_observer_(this),
+      identity_manager_observer_(this),
       gaia_cookie_observer_(this),
       session_duration_observer_(this) {
   gaia_cookie_observer_.Add(cookie_manager);
@@ -35,7 +35,7 @@ DesktopProfileSessionDurationsService::DesktopProfileSessionDurationsService(
   if (sync_service) {
     sync_observer_.Add(sync_service_);
   }
-  oauth2_token_observer_.Add(oauth2_token_service_);
+  identity_manager_observer_.Add(identity_manager_);
 
   // Since this is created after the profile itself is created, we need to
   // handle the initial state.
@@ -137,20 +137,21 @@ void DesktopProfileSessionDurationsService::OnStateChanged(
   HandleSyncAndAccountChange();
 }
 
+void DesktopProfileSessionDurationsService::OnRefreshTokenUpdatedForAccount(
+    const AccountInfo& account_info,
+    bool is_valid) {
+  DVLOG(1) << __func__;
+  HandleSyncAndAccountChange();
+}
+
+void DesktopProfileSessionDurationsService::OnRefreshTokenRemovedForAccount(
+    const std::string& account_id) {
+  DVLOG(1) << __func__;
+  HandleSyncAndAccountChange();
+}
+
 void DesktopProfileSessionDurationsService::OnRefreshTokensLoaded() {
-  DVLOG(1) << "OnRefreshTokensLoaded";
-  HandleSyncAndAccountChange();
-}
-
-void DesktopProfileSessionDurationsService::OnRefreshTokenAvailable(
-    const std::string& account_id) {
-  DVLOG(1) << "OnRefreshTokenAvailable";
-  HandleSyncAndAccountChange();
-}
-
-void DesktopProfileSessionDurationsService::OnRefreshTokenRevoked(
-    const std::string& account_id) {
-  DVLOG(1) << "OnRefreshTokenRevoked";
+  DVLOG(1) << __func__;
   HandleSyncAndAccountChange();
 }
 
@@ -180,8 +181,9 @@ void DesktopProfileSessionDurationsService::HandleSyncAndAccountChange() {
   // if the token service has accounts, because the reconcilor will take care of
   // removing accounts in error state from that list.
   FeatureState non_sync_account_status =
-      oauth2_token_service_->GetAccounts().empty() ? FeatureState::OFF
-                                                   : FeatureState::ON;
+      identity_manager_->GetAccountsWithRefreshTokens().empty()
+          ? FeatureState::OFF
+          : FeatureState::ON;
   if (sync_service_ && sync_service_->CanSyncFeatureStart()) {
     // Sync has potential to turn on, or get into account error state.
     if (sync_service_->GetAuthError().state() ==
@@ -264,7 +266,7 @@ void DesktopProfileSessionDurationsService::Shutdown() {
   session_duration_observer_.RemoveAll();
   gaia_cookie_observer_.RemoveAll();
   sync_observer_.RemoveAll();
-  oauth2_token_observer_.RemoveAll();
+  identity_manager_observer_.RemoveAll();
 }
 
 }  // namespace metrics

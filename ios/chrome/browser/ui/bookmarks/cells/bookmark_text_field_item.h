@@ -47,11 +47,4 @@
 
 @end
 
-@interface LegacyBookmarkTextFieldCell : UITableViewCell
-
-// Text field to display the title or the URL of the bookmark node.
-@property(nonatomic, readonly, strong) UITextField<TextFieldStyling>* textField;
-
-@end
-
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_CELLS_BOOKMARK_TEXT_FIELD_ITEM_H_

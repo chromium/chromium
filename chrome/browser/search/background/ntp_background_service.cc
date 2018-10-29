@@ -286,7 +286,7 @@ void NtpBackgroundService::FetchAlbumInfo() {
   // This is particularly important if the current token fetch results in an
   // auth error because the user has since signed out.
   album_info_.clear();
-  OAuth2TokenService::ScopeSet scopes{kScopePhotos};
+  identity::ScopeSet scopes{kScopePhotos};
   token_fetcher_ = std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
       "ntp_backgrounds_service", identity_manager_, scopes,
       base::BindOnce(&NtpBackgroundService::GetAccessTokenForAlbumCallback,
@@ -407,7 +407,7 @@ void NtpBackgroundService::FetchAlbumPhotos(
   album_photos_.clear();
   requested_album_id_ = album_id;
   requested_photo_container_id_ = photo_container_id;
-  OAuth2TokenService::ScopeSet scopes{kScopePhotos};
+  identity::ScopeSet scopes{kScopePhotos};
   token_fetcher_ = std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
       "ntp_backgrounds_service", identity_manager_, scopes,
       base::BindOnce(&NtpBackgroundService::GetAccessTokenForPhotosCallback,
@@ -517,6 +517,20 @@ void NtpBackgroundService::AddObserver(NtpBackgroundServiceObserver* observer) {
 void NtpBackgroundService::RemoveObserver(
     NtpBackgroundServiceObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+bool NtpBackgroundService::IsValidBackdropUrl(const GURL& url) const {
+  for (auto& image : collection_images_) {
+    if (image.image_url == url)
+      return true;
+  }
+  return false;
+}
+
+void NtpBackgroundService::AddValidBackdropUrlForTesting(const GURL& url) {
+  CollectionImage image;
+  image.image_url = url;
+  collection_images_.push_back(image);
 }
 
 void NtpBackgroundService::NotifyObservers(FetchComplete fetch_complete) {

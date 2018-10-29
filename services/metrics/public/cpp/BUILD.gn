@@ -25,6 +25,8 @@ component("metrics_cpp") {
     "ukm_source_id.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "METRICS_IMPLEMENTATION" ]
 
   public_deps = [

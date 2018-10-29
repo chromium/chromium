@@ -1,9 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x36
-  LayoutBlockFlow {HTML} at (0,0) size 800x36
-    LayoutBlockFlow {BODY} at (8,8) size 784x20
-      LayoutBlockFlow {DIV} at (0,0) size 784x20 [bgcolor=#FF0000] [border: (1px solid #00FF00)]
-        LayoutBlockFlow {FORM} at (1,1) size 782x18 [bgcolor=#00FF00]
-          LayoutText {#text} at (0,0) size 694x18
-            text run at (0,0) width 694: "There should be no red on this page. Form element should not have border-bottom set to 1em in strict mode."

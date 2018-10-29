@@ -23,11 +23,9 @@ class HashPasswordManager {
   explicit HashPasswordManager(PrefService* prefs);
   ~HashPasswordManager() = default;
 
-  bool SavePasswordHash(const base::string16& password);
   bool SavePasswordHash(const std::string username,
                         const base::string16& password,
                         bool is_gaia_password = true);
-  bool SavePasswordHash(const SyncPasswordData& sync_password_data);
   bool SavePasswordHash(const PasswordHashData& password_hash_data);
   void ClearSavedPasswordHash();
   void ClearSavedPasswordHash(const std::string& username,
@@ -35,9 +33,6 @@ class HashPasswordManager {
   // If |is_gaia_password| is true, clears all Gaia password hashes, otherwise
   // clears all enterprise password hashes.
   void ClearAllPasswordHash(bool is_gaia_password);
-
-  // Returns empty if no hash is available.
-  base::Optional<SyncPasswordData> RetrievePasswordHash();
 
   // Returns empty array if no hash is available.
   std::vector<PasswordHashData> RetrieveAllPasswordHashes();
@@ -48,17 +43,10 @@ class HashPasswordManager {
       const std::string& username,
       bool is_gaia_password);
 
-  // Whether |prefs_| has |kSyncPasswordHash| pref path.
-  bool HasPasswordHash();
-
   // Whether password hash of |username| and |is_gaia_password| is stored.
   bool HasPasswordHash(const std::string& username, bool is_gaia_password);
 
   void set_prefs(PrefService* prefs) { prefs_ = prefs; }
-
-  // During the deprecation of SyncPasswordData, migrates the sync password hash
-  // that has already been captured.
-  void MaybeMigrateExistingSyncPasswordHash(const std::string& sync_username);
 
  private:
   // Saves encrypted string |s| in a preference |pref_name|. Returns true on

@@ -77,6 +77,7 @@ class AssistantOptInFlowScreenHandler
   void HandleThirdPartyScreenShown();
   void HandleGetMoreScreenShown();
   void HandleReadyScreenShown();
+  void HandleLoadingTimeout();
   void HandleHotwordResult(bool enable_hotword);
   void HandleFlowFinished();
   void HandleFlowInitialized();
@@ -100,6 +101,12 @@ class AssistantOptInFlowScreenHandler
 
   // Whether user chose to enable hotword.
   bool enable_hotword_ = true;
+
+  // Time that get settings request is sent.
+  base::TimeTicks send_request_time_;
+
+  // Counter for the number of loading timeout happens.
+  int loading_timeout_counter_ = 0;
 
   assistant::mojom::AssistantSettingsManagerPtr settings_manager_;
   base::WeakPtrFactory<AssistantOptInFlowScreenHandler> weak_factory_;

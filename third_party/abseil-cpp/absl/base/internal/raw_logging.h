@@ -114,7 +114,7 @@ void SafeWriteToStderr(const char *s, size_t len);
 
 // compile-time function to get the "base" filename, that is, the part of
 // a filename after the last "/" or "\" path separator.  The search starts at
-// the end of the std::string; the second parameter is the length of the std::string.
+// the end of the string; the second parameter is the length of the string.
 constexpr const char* Basename(const char* fname, int offset) {
   return offset == 0 || fname[offset - 1] == '/' || fname[offset - 1] == '\\'
              ? fname + offset

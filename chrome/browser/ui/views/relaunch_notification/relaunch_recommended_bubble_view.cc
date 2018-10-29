@@ -36,34 +36,7 @@
 
 #if defined(OS_MACOSX)
 #include "chrome/browser/platform_util.h"
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-#include "chrome/browser/ui/views_mode_controller.h"
-#endif  // BUILDFLAG(MAC_VIEWS_BROWSER)
-#include "chrome/browser/ui/views/relaunch_notification/get_app_menu_anchor_point.h"
 #endif  // defined(OS_MACOSX)
-
-namespace {
-
-// Returns the anchor for |browser|'s app menu, accounting for macOS running
-// with views or Cocoa.
-std::pair<views::Button*, gfx::Point> GetAnchor(Browser* browser) {
-#if defined(OS_MACOSX)
-#if BUILDFLAG(MAC_VIEWS_BROWSER)
-  if (views_mode_controller::IsViewsBrowserCocoa())
-    return std::make_pair(nullptr, GetAppMenuAnchorPoint(browser));
-#else   // BUILDFLAG(MAC_VIEWS_BROWSER)
-  return std::make_pair(nullptr, GetAppMenuAnchorPoint(browser));
-#endif  // BUILDFLAG(MAC_VIEWS_BROWSER)
-#endif  // defined(OS_MACOSX)
-#if !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
-  return std::make_pair(BrowserView::GetBrowserViewForBrowser(browser)
-                            ->toolbar()
-                            ->app_menu_button(),
-                        gfx::Point());
-#endif  // !defined(OS_MACOSX) || BUILDFLAG(MAC_VIEWS_BROWSER)
-}
-
-}  // namespace
 
 // static
 views::Widget* RelaunchRecommendedBubbleView::ShowBubble(
@@ -72,13 +45,12 @@ views::Widget* RelaunchRecommendedBubbleView::ShowBubble(
     base::RepeatingClosure on_accept) {
   DCHECK(browser);
 
-  views::Button* anchor_button;
-  gfx::Point anchor_point;
-
   // Anchor the popup to the browser's app menu.
-  std::tie(anchor_button, anchor_point) = GetAnchor(browser);
+  auto* anchor_button = BrowserView::GetBrowserViewForBrowser(browser)
+                            ->toolbar()
+                            ->app_menu_button();
   auto* bubble_view = new RelaunchRecommendedBubbleView(
-      anchor_button, anchor_point, detection_time, std::move(on_accept));
+      anchor_button, gfx::Point(), detection_time, std::move(on_accept));
   bubble_view->SetArrow(views::BubbleBorder::TOP_RIGHT);
 
 #if defined(OS_MACOSX)

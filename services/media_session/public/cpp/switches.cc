@@ -12,12 +12,18 @@ namespace switches {
 
 // Enable a internal audio focus management between tabs in such a way that two
 // tabs can't  play on top of each other.
-// The allowed values are: "" (empty) or |switches::kEnableAudioFocusDuckFlash|.
+// The allowed values are: "" (empty) or |kEnableAudioFocusDuckFlash|
+// or |kEnableAudioFocusNoEnforce|.
 const char kEnableAudioFocus[] = "enable-audio-focus";
 
 // This value is used as an option for |kEnableAudioFocus|. Flash will
 // be ducked when losing audio focus.
 const char kEnableAudioFocusDuckFlash[] = "duck-flash";
+
+// This value is used as an option for |kEnableAudioFocus|. If enabled then
+// single media session audio focus will not be enforced. This should be used by
+// embedders that wish to track audio focus but without the enforcement.
+const char kEnableAudioFocusNoEnforce[] = "no-enforce";
 
 #if !defined(OS_ANDROID)
 // Turns on the internal media session backend. This should be used by embedders
@@ -36,6 +42,12 @@ bool IsAudioFocusDuckFlashEnabled() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
              switches::kEnableAudioFocus) ==
          switches::kEnableAudioFocusDuckFlash;
+}
+
+bool IsAudioFocusEnforcementEnabled() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+             switches::kEnableAudioFocus) !=
+         switches::kEnableAudioFocusNoEnforce;
 }
 
 bool IsMediaSessionEnabled() {

@@ -23,9 +23,6 @@ class TestWindowTreeClientDelegate : public WindowTreeClientDelegate {
   void OnUnembed(Window* root) override;
   void OnEmbedRootDestroyed(WindowTreeHostMus* window_tree_host) override;
   void OnLostConnection(WindowTreeClient* client) override;
-  void OnPointerEventObserved(const ui::PointerEvent& event,
-                              const gfx::Point& location_in_screen,
-                              Window* target) override;
   PropertyConverter* GetPropertyConverter() override;
 
  private:

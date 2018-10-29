@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -85,6 +86,9 @@ String StringForBoxType(const NGPhysicalFragment& fragment) {
     case NGPhysicalFragment::NGBoxType::kOutOfFlowPositioned:
       result.Append("out-of-flow-positioned");
       break;
+    case NGPhysicalFragment::NGBoxType::kBlockFlowRoot:
+      result.Append("block-flow-root");
+      break;
   }
   if (fragment.IsOldLayoutRoot()) {
     if (result.length())
@@ -95,6 +99,16 @@ String StringForBoxType(const NGPhysicalFragment& fragment) {
     if (result.length())
       result.Append(" ");
     result.Append("block-flow");
+  }
+  if (fragment.IsRenderedLegend()) {
+    if (result.length())
+      result.Append(" ");
+    result.Append("rendered-legend");
+  }
+  if (fragment.IsFieldsetContainer()) {
+    if (result.length())
+      result.Append(" ");
+    result.Append("fieldset-container");
   }
   if (fragment.IsBox() &&
       static_cast<const NGPhysicalBoxFragment&>(fragment).ChildrenInline()) {
@@ -117,10 +131,13 @@ void AppendFragmentToString(const NGPhysicalFragment* fragment,
   }
 
   bool has_content = false;
-  if (fragment->IsBox()) {
+  if (fragment->IsBox() || fragment->IsRenderedLegend()) {
     const auto* box = ToNGPhysicalBoxFragment(fragment);
     if (flags & NGPhysicalFragment::DumpType) {
-      builder->Append("Box");
+      if (fragment->IsRenderedLegend())
+        builder->Append("RenderedLegend");
+      else
+        builder->Append("Box");
       String box_type = StringForBoxType(*fragment);
       has_content = true;
       if (!box_type.IsEmpty()) {
@@ -147,10 +164,9 @@ void AppendFragmentToString(const NGPhysicalFragment* fragment,
     builder->Append("\n");
 
     if (flags & NGPhysicalFragment::DumpSubtree) {
-      const auto& children = box->Children();
-      for (unsigned i = 0; i < children.size(); i++) {
-        AppendFragmentToString(children[i].get(), children[i].Offset(), builder,
-                               flags, indent + 2);
+      for (auto& child : box->Children()) {
+        AppendFragmentToString(child.get(), child.Offset(), builder, flags,
+                               indent + 2);
       }
     }
     return;
@@ -167,10 +183,9 @@ void AppendFragmentToString(const NGPhysicalFragment* fragment,
 
     if (flags & NGPhysicalFragment::DumpSubtree) {
       const auto* line_box = ToNGPhysicalLineBoxFragment(fragment);
-      const auto& children = line_box->Children();
-      for (unsigned i = 0; i < children.size(); i++) {
-        AppendFragmentToString(children[i].get(), children[i].Offset(), builder,
-                               flags, indent + 2);
+      for (auto& child : line_box->Children()) {
+        AppendFragmentToString(child.get(), child.Offset(), builder, flags,
+                               indent + 2);
       }
       return;
     }
@@ -218,6 +233,19 @@ void NGPhysicalFragmentTraits::Destruct(const NGPhysicalFragment* fragment) {
   fragment->Destroy();
 }
 
+NGPhysicalFragment::NGPhysicalFragment(NGFragmentBuilder* builder,
+                                       NGFragmentType type,
+                                       unsigned sub_type)
+    : layout_object_(builder->layout_object_),
+      style_(builder->style_),
+      size_(builder->size_.ConvertToPhysical(builder->GetWritingMode())),
+      break_token_(std::move(builder->break_token_)),
+      type_(type),
+      sub_type_(sub_type),
+      is_fieldset_container_(false),
+      is_old_layout_root_(false),
+      style_variant_((unsigned)builder->style_variant_) {}
+
 NGPhysicalFragment::NGPhysicalFragment(LayoutObject* layout_object,
                                        const ComputedStyle& style,
                                        NGStyleVariant style_variant,
@@ -231,6 +259,7 @@ NGPhysicalFragment::NGPhysicalFragment(LayoutObject* layout_object,
       break_token_(std::move(break_token)),
       type_(type),
       sub_type_(sub_type),
+      is_fieldset_container_(false),
       is_old_layout_root_(false),
       style_variant_((unsigned)style_variant) {}
 
@@ -241,6 +270,7 @@ NGPhysicalFragment::~NGPhysicalFragment() = default;
 void NGPhysicalFragment::Destroy() const {
   switch (Type()) {
     case kFragmentBox:
+    case kFragmentRenderedLegend:
       delete static_cast<const NGPhysicalBoxFragment*>(this);
       break;
     case kFragmentText:
@@ -278,7 +308,7 @@ Node* NGPhysicalFragment::GetNode() const {
 }
 
 bool NGPhysicalFragment::HasLayer() const {
-  return layout_object_->HasLayer();
+  return layout_object_ && layout_object_->HasLayer();
 }
 
 PaintLayer* NGPhysicalFragment::Layer() const {
@@ -321,11 +351,12 @@ NGPixelSnappedPhysicalBoxStrut NGPhysicalFragment::BorderWidths() const {
 
 NGPhysicalOffsetRect NGPhysicalFragment::SelfInkOverflow() const {
   switch (Type()) {
-    case NGPhysicalFragment::kFragmentBox:
+    case kFragmentBox:
+    case kFragmentRenderedLegend:
       return ToNGPhysicalBoxFragment(*this).SelfInkOverflow();
-    case NGPhysicalFragment::kFragmentText:
+    case kFragmentText:
       return ToNGPhysicalTextFragment(*this).SelfInkOverflow();
-    case NGPhysicalFragment::kFragmentLineBox:
+    case kFragmentLineBox:
       return {{}, Size()};
   }
   NOTREACHED();
@@ -334,11 +365,12 @@ NGPhysicalOffsetRect NGPhysicalFragment::SelfInkOverflow() const {
 
 NGPhysicalOffsetRect NGPhysicalFragment::InkOverflow(bool apply_clip) const {
   switch (Type()) {
-    case NGPhysicalFragment::kFragmentBox:
+    case kFragmentBox:
+    case kFragmentRenderedLegend:
       return ToNGPhysicalBoxFragment(*this).InkOverflow(apply_clip);
-    case NGPhysicalFragment::kFragmentText:
+    case kFragmentText:
       return ToNGPhysicalTextFragment(*this).SelfInkOverflow();
-    case NGPhysicalFragment::kFragmentLineBox:
+    case kFragmentLineBox:
       return ToNGPhysicalLineBoxFragment(*this).InkOverflow();
   }
   NOTREACHED();
@@ -347,11 +379,12 @@ NGPhysicalOffsetRect NGPhysicalFragment::InkOverflow(bool apply_clip) const {
 
 NGPhysicalOffsetRect NGPhysicalFragment::ScrollableOverflow() const {
   switch (Type()) {
-    case NGPhysicalFragment::kFragmentBox:
+    case kFragmentBox:
+    case kFragmentRenderedLegend:
       return ToNGPhysicalBoxFragment(*this).ScrollableOverflow();
-    case NGPhysicalFragment::kFragmentText:
+    case kFragmentText:
       return {{}, Size()};
-    case NGPhysicalFragment::kFragmentLineBox:
+    case kFragmentLineBox:
       NOTREACHED()
           << "You must call NGLineBoxFragment::ScrollableOverflow explicitly.";
       break;
@@ -379,8 +412,7 @@ const Vector<NGInlineItem>& NGPhysicalFragment::InlineItemsOfContainingBlock()
     const {
   DCHECK(IsInline());
   DCHECK(GetLayoutObject());
-  LayoutBlockFlow* block_flow =
-      GetLayoutObject()->Parent()->EnclosingNGBlockFlow();
+  LayoutBlockFlow* block_flow = GetLayoutObject()->ContainingNGBlockFlow();
   // TODO(xiaochengh): Code below is copied from ng_offset_mapping.cc with
   // modification. Unify them.
   DCHECK(block_flow);
@@ -393,6 +425,11 @@ const Vector<NGInlineItem>& NGPhysicalFragment::InlineItemsOfContainingBlock()
 
   // TODO(xiaochengh): Handle ::first-line.
   return ToNGInlineNode(node).ItemsData(false).items;
+}
+
+TouchAction NGPhysicalFragment::EffectiveWhitelistedTouchAction() const {
+  DCHECK(GetLayoutObject());
+  return GetLayoutObject()->EffectiveWhitelistedTouchAction();
 }
 
 UBiDiLevel NGPhysicalFragment::BidiLevel() const {
@@ -413,6 +450,7 @@ String NGPhysicalFragment::ToString() const {
                                Size().ToString().Ascii().data()));
   switch (Type()) {
     case kFragmentBox:
+    case kFragmentRenderedLegend:
       output.Append(String::Format(", BoxType: '%s'",
                                    StringForBoxType(*this).Ascii().data()));
       break;

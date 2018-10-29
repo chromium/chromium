@@ -14,6 +14,7 @@ NavigationParams::NavigationParams(const GURL& url,
                                    bool is_redirect,
                                    bool is_external_protocol,
                                    bool is_main_frame,
+                                   bool is_renderer_initiated,
                                    const GURL& base_url_for_data_url)
     : url_(url),
       referrer_(referrer),
@@ -23,6 +24,7 @@ NavigationParams::NavigationParams(const GURL& url,
       is_redirect_(is_redirect),
       is_external_protocol_(is_external_protocol),
       is_main_frame_(is_main_frame),
+      is_renderer_initiated_(is_renderer_initiated),
       base_url_for_data_url_(base_url_for_data_url) {}
 
 NavigationParams::~NavigationParams() = default;

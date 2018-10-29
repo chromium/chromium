@@ -18,22 +18,46 @@ class BookmarkNode;
 struct BookmarkNodeData;
 }
 
+namespace ui {
+class OSExchangeData;
+}
+
 namespace chrome {
 
+// Callback for implementing a system drag based on gathered bookmark drag data.
+// Used in testing.
+using DoBookmarkDragCallback =
+    base::OnceCallback<void(const ui::OSExchangeData& drag_data,
+                            gfx::NativeView native_view,
+                            ui::DragDropTypes::DragEventSource source,
+                            int operation)>;
+
+struct BookmarkDragParams {
+  BookmarkDragParams(std::vector<const bookmarks::BookmarkNode*> nodes,
+                     int drag_node_index,
+                     gfx::NativeView view,
+                     ui::DragDropTypes::DragEventSource source);
+  ~BookmarkDragParams();
+
+  // The bookmark nodes to be dragged.
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+
+  // The index of the main dragged node.
+  int drag_node_index;
+
+  // The native view that initiated the drag.
+  gfx::NativeView view;
+
+  // The source of the drag.
+  ui::DragDropTypes::DragEventSource source;
+};
+
 // Starts the process of dragging a folder of bookmarks.
-void DragBookmarks(Profile* profile,
-                   const std::vector<const bookmarks::BookmarkNode*>& nodes,
-                   gfx::NativeView view,
-                   ui::DragDropTypes::DragEventSource source);
-#if defined(OS_MACOSX)
-// Temporary shim for Polychrome. See bottom of first comment in
-// https://crbug.com/804950 for details
-void DragBookmarksCocoa(
-    Profile* profile,
-    const std::vector<const bookmarks::BookmarkNode*>& nodes,
-    gfx::NativeView view,
-    ui::DragDropTypes::DragEventSource source);
-#endif
+void DragBookmarks(Profile* profile, const BookmarkDragParams& params);
+
+void DragBookmarksForTest(Profile* profile,
+                          const BookmarkDragParams& params,
+                          DoBookmarkDragCallback do_drag_callback);
 
 // Drops the bookmark nodes that are in |data| onto |parent_node| at |index|.
 // |copy| indicates the source operation: if true then the bookmarks in |data|

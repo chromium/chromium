@@ -10,7 +10,11 @@
 
 <dom-module id="settings-setup-pin-dialog">
   <template>
-    <style include="settings-shared"></style>
+    <style include="settings-shared">
+      #pinKeyboardDiv {
+        justify-content: center;
+      }
+    </style>
     <cr-dialog id="dialog" on-close="close"
         close-text="$i18n{close}">
       <div slot="title">[[getTitleMessage_(isConfirmStep_)]]</div>

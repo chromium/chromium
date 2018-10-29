@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
 
 namespace chrome_cleaner {

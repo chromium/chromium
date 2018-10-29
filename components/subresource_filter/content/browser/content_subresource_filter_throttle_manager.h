@@ -28,10 +28,6 @@ class NavigationThrottle;
 class RenderFrameHost;
 }  // namespace content
 
-namespace IPC {
-class Message;
-}  // namespace IPC
-
 namespace subresource_filter {
 
 class AsyncDocumentSubresourceFilter;
@@ -39,7 +35,6 @@ class ActivationStateComputingNavigationThrottle;
 class PageLoadStatistics;
 class SubresourceFilterObserverManager;
 class SubresourceFilterClient;
-struct DocumentLoadStatistics;
 
 // The ContentSubresourceFilterThrottleManager manages NavigationThrottles in
 // order to calculate frame activation states and subframe navigation filtering,
@@ -96,8 +91,6 @@ class ContentSubresourceFilterThrottleManager
       content::NavigationHandle* navigation_handle) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
 
   // SubresourceFilterObserver:
   void OnSubresourceFilterGoingAway() override;
@@ -137,8 +130,6 @@ class ContentSubresourceFilterThrottleManager
   VerifiedRuleset::Handle* EnsureRulesetHandle();
   void DestroyRulesetHandleIfNoLongerUsed();
 
-  void OnDocumentLoadStatistics(const DocumentLoadStatistics& statistics);
-
   // Registers |render_frame_host| as an ad frame. If the frame later moves to
   // a new process its RenderHost will be told that it's an ad.
   void OnFrameIsAdSubframe(content::RenderFrameHost* render_frame_host);
@@ -146,6 +137,8 @@ class ContentSubresourceFilterThrottleManager
   // mojom::SubresourceFilterHost:
   void DidDisallowFirstSubresource() override;
   void FrameIsAdSubframe() override;
+  void SetDocumentLoadStatistics(
+      mojom::DocumentLoadStatisticsPtr statistics) override;
 
   // Adds the navigation's RenderFrameHost to activated_frame_hosts_ if it is a
   // special navigation which did not go through navigation throttles and its

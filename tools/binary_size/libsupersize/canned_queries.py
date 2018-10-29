@@ -5,6 +5,7 @@
 """Contains a set of Chrome-specific size queries."""
 
 import logging
+
 import models
 
 

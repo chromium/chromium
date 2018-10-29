@@ -4,6 +4,8 @@
 
 #include "media/base/decoder_buffer.h"
 
+#include "base/debug/alias.h"
+
 namespace media {
 
 // Allocates a block of memory which is padded for use with the SIMD
@@ -55,12 +57,27 @@ DecoderBuffer::~DecoderBuffer() {
   // TODO(crbug.com/794740). As a lot of the crashes have |side_data_size_|
   // == 0 yet |side_data| is not null, check that here hoping to get better
   // minidumps. This check verifies that size == 0 and |side_data_| is null,
-  // or size != 0 and |side_data_| not null.
+  // or size != 0 and |side_data_| not null. Also alias several of the
+  // objects values to ensure they get saved in the minidump.
+  size_t size = size_;
+  base::debug::Alias(&size);
+  uint8_t* data = data_.get();
+  base::debug::Alias(&data);
+  size_t side_data_size = side_data_size_;
+  base::debug::Alias(&side_data_size);
+  uint8_t* side_data = side_data_.get();
+  base::debug::Alias(&side_data);
+  void* data_at_initialize = data_at_initialize_;
+  base::debug::Alias(&data_at_initialize);
+
   CHECK_EQ(!!side_data_size_, !!side_data_);
+  data_.reset();
+  side_data_.reset();
 }
 
 void DecoderBuffer::Initialize() {
   data_.reset(AllocateFFmpegSafeBlock(size_));
+  data_at_initialize_ = data_.get();
   if (side_data_size_ > 0)
     side_data_.reset(AllocateFFmpegSafeBlock(side_data_size_));
 }

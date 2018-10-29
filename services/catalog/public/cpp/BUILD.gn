@@ -10,6 +10,8 @@ source_set("cpp") {
     "resource_loader.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/services/filesystem/public/interfaces",

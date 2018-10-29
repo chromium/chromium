@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
+#include "chrome/chrome_cleaner/settings/settings_types.h"
 
 namespace chrome_cleaner {
 
@@ -48,10 +49,13 @@ UniqueJsonParserPtr JsonParserSandboxSetupHooks::TakeJsonParserPtr() {
 
 ResultCode SpawnJsonParserSandbox(
     scoped_refptr<MojoTaskRunner> mojo_task_runner,
-    base::OnceClosure connection_error_handler,
+    const SandboxConnectionErrorCallback& connection_error_callback,
     UniqueJsonParserPtr* json_parser_ptr) {
+  // Call |connection_error_callback| with json parser sandbox type.
+  auto error_handler =
+      base::BindOnce(connection_error_callback, SandboxType::kJsonParser);
   JsonParserSandboxSetupHooks setup_hooks(mojo_task_runner,
-                                          std::move(connection_error_handler));
+                                          std::move(error_handler));
   ResultCode result_code = SpawnSandbox(&setup_hooks, SandboxType::kJsonParser);
   *json_parser_ptr = setup_hooks.TakeJsonParserPtr();
 

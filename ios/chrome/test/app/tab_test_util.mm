@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/main/tab_switcher.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_state_list_web_usage_enabler.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_state_list_web_usage_enabler_factory.h"
@@ -55,12 +55,11 @@ BOOL IsIncognitoMode() {
 void OpenNewTab() {
   @autoreleasepool {  // Make sure that all internals are deallocated.
     OpenNewTabCommand* command = [OpenNewTabCommand command];
-    if (IsUIRefreshPhase1Enabled()) {
-      id<ApplicationCommands, BrowserCommands> BVCDispatcher =
-          chrome_test_util::DispatcherForActiveBrowserViewController();
-      if (BVCDispatcher) {
-        [BVCDispatcher openNewTab:command];
-        return;
+    id<ApplicationCommands, BrowserCommands> BVCDispatcher =
+        chrome_test_util::DispatcherForActiveBrowserViewController();
+    if (BVCDispatcher) {
+      [BVCDispatcher openURLInNewTab:command];
+      return;
       }
       // The TabGrid is currently presented.
       [GetMainController().tabSwitcher
@@ -70,22 +69,17 @@ void OpenNewTab() {
                                     withURL:GURL(kChromeUINewTabURL)
                                     atIndex:NSNotFound
                                  transition:ui::PAGE_TRANSITION_TYPED];
-    } else {
-      [chrome_test_util::DispatcherForActiveViewController()
-          openNewTab:command];
-    }
   }
 }
 
 void OpenNewIncognitoTab() {
   @autoreleasepool {  // Make sure that all internals are deallocated.
     OpenNewTabCommand* command = [OpenNewTabCommand incognitoTabCommand];
-    if (IsUIRefreshPhase1Enabled()) {
-      id<ApplicationCommands, BrowserCommands> BVCDispatcher =
-          chrome_test_util::DispatcherForActiveBrowserViewController();
-      if (BVCDispatcher) {
-        [BVCDispatcher openNewTab:command];
-        return;
+    id<ApplicationCommands, BrowserCommands> BVCDispatcher =
+        chrome_test_util::DispatcherForActiveBrowserViewController();
+    if (BVCDispatcher) {
+      [BVCDispatcher openURLInNewTab:command];
+      return;
       }
       // The TabGrid is currently presented.
       [GetMainController().tabSwitcher
@@ -95,10 +89,6 @@ void OpenNewIncognitoTab() {
                                     withURL:GURL(kChromeUINewTabURL)
                                     atIndex:NSNotFound
                                  transition:ui::PAGE_TRANSITION_TYPED];
-    } else {
-      [chrome_test_util::DispatcherForActiveViewController()
-          openNewTab:command];
-    }
   }
 }
 

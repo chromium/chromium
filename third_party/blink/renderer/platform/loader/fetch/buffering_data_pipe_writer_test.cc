@@ -40,7 +40,7 @@ TEST(BufferingDataPipeWriterTest, WriteMany) {
     input.push_back(static_cast<char>(engine() % 26 + 'A'));
 
   auto writer = std::make_unique<BufferingDataPipeWriter>(
-      std::move(producer), platform->CurrentThread()->GetTaskRunner().get());
+      std::move(producer), platform->test_task_runner().get());
 
   for (size_t i = 0; i < total;) {
     // We use a temporary buffer to check that the buffer is copied immediately.

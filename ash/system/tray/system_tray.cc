@@ -20,6 +20,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/accessibility/tray_accessibility.h"
 #include "ash/system/audio/tray_audio.h"
 #include "ash/system/bluetooth/tray_bluetooth.h"
 #include "ash/system/brightness/tray_brightness.h"
@@ -50,7 +51,6 @@
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
-#include "ash/system/tray_accessibility.h"
 #include "ash/system/tray_caps_lock.h"
 #include "ash/system/tray_tracing.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -81,8 +81,6 @@
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
-
-using views::TrayBubbleView;
 
 namespace ash {
 
@@ -461,8 +459,8 @@ void SystemTray::ShowItems(const std::vector<SystemTrayItem*>& items,
 
     system_bubble_ = std::make_unique<SystemBubbleWrapper>();
     system_bubble_->InitView(
-        this, shelf()->GetSystemTrayAnchor()->GetBubbleAnchor(),
-        shelf()->GetSystemTrayAnchor()->GetBubbleAnchorInsets(), items,
+        this, shelf()->GetSystemTrayAnchorView()->GetBubbleAnchor(),
+        shelf()->GetSystemTrayAnchorView()->GetBubbleAnchorInsets(), items,
         system_tray_type, &init_params, persistent);
 
     // Record metrics for the system menu when the default view is invoked.
@@ -592,7 +590,7 @@ void SystemTray::ShowBubble(bool show_by_click) {
   ShowDefaultView(BUBBLE_CREATE_NEW, show_by_click);
 }
 
-views::TrayBubbleView* SystemTray::GetBubbleView() {
+TrayBubbleView* SystemTray::GetBubbleView() {
   // Only return the bubble view when it's showing the main system tray bubble,
   // not the volume or brightness bubbles etc., to avoid client confusion.
   return system_bubble_ && full_system_tray_menu_

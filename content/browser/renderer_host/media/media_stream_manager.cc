@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_local.h"
@@ -40,6 +41,8 @@
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/screenlock_monitor/screenlock_monitor.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -55,12 +58,12 @@
 #include "media/audio/audio_system.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
-#include "media/base/display_media_information.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/create_video_capture_device_factory.h"
 #include "media/capture/video/fake_video_capture_device.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_system_impl.h"
+#include "media/mojo/interfaces/display_media_information.mojom.h"
 #include "services/video_capture/public/uma/video_capture_service_event.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -201,10 +204,10 @@ MediaStreamDevice MediaStreamDeviceFromFakeDeviceConfig() {
 
   MediaStreamDevice device(MEDIA_DISPLAY_VIDEO_CAPTURE, media_id.ToString(),
                            media_id.ToString());
-  media::DisplayCaptureSurfaceType display_surface =
-      media::DisplayCaptureSurfaceType::MONITOR;
-  device.display_media_info = media::DisplayMediaInformation(
-      display_surface, true, media::CursorCaptureType::NEVER);
+  media::mojom::DisplayCaptureSurfaceType display_surface =
+      media::mojom::DisplayCaptureSurfaceType::MONITOR;
+  device.display_media_info = media::mojom::DisplayMediaInformation::New(
+      display_surface, true, media::mojom::CursorCaptureType::NEVER);
 
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -224,23 +227,23 @@ MediaStreamDevice MediaStreamDeviceFromFakeDeviceConfig() {
       case media::FakeVideoCaptureDevice::DisplayMediaType::ANY:
       case media::FakeVideoCaptureDevice::DisplayMediaType::MONITOR:
         desktop_media_type = DesktopMediaID::TYPE_SCREEN;
-        display_surface = media::DisplayCaptureSurfaceType::MONITOR;
+        display_surface = media::mojom::DisplayCaptureSurfaceType::MONITOR;
         break;
       case media::FakeVideoCaptureDevice::DisplayMediaType::WINDOW:
         desktop_media_type = DesktopMediaID::TYPE_WINDOW;
-        display_surface = media::DisplayCaptureSurfaceType::WINDOW;
+        display_surface = media::mojom::DisplayCaptureSurfaceType::WINDOW;
         break;
       case media::FakeVideoCaptureDevice::DisplayMediaType::BROWSER:
         desktop_media_type = DesktopMediaID::TYPE_WEB_CONTENTS;
-        display_surface = media::DisplayCaptureSurfaceType::BROWSER;
+        display_surface = media::mojom::DisplayCaptureSurfaceType::BROWSER;
         break;
     }
     media_id = DesktopMediaID(desktop_media_type, DesktopMediaID::kFakeId);
   }
   device = MediaStreamDevice(MEDIA_DISPLAY_VIDEO_CAPTURE, media_id.ToString(),
                              media_id.ToString());
-  device.display_media_info = media::DisplayMediaInformation(
-      display_surface, true, media::CursorCaptureType::NEVER);
+  device.display_media_info = media::mojom::DisplayMediaInformation::New(
+      display_surface, true, media::mojom::CursorCaptureType::NEVER);
   return device;
 }
 
@@ -434,8 +437,8 @@ class MediaStreamManager::DeviceRequest {
 // static
 void MediaStreamManager::SendMessageToNativeLog(const std::string& message) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&MediaStreamManager::SendMessageToNativeLog, message));
     return;
   }
@@ -516,7 +519,8 @@ MediaStreamManager::MediaStreamManager(
       video_capture_provider = InProcessVideoCaptureProvider::CreateInstance(
           std::make_unique<media::VideoCaptureSystemImpl>(
               media::CreateVideoCaptureDeviceFactory(
-                  BrowserThread::GetTaskRunnerForThread(BrowserThread::UI))),
+                  base::CreateSingleThreadTaskRunnerWithTraits(
+                      {BrowserThread::UI}))),
           std::move(device_task_runner),
           base::BindRepeating(&SendVideoCaptureLogMessage));
     }
@@ -615,9 +619,9 @@ std::string MediaStreamManager::MakeMediaAccessRequest(
   // and thus can not handle a response. Using base::Unretained is safe since
   // MediaStreamManager is deleted on the UI thread, after the IO thread has
   // been stopped.
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&MediaStreamManager::SetUpRequest,
-                                         base::Unretained(this), label));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&MediaStreamManager::SetUpRequest,
+                                          base::Unretained(this), label));
   return label;
 }
 
@@ -659,9 +663,9 @@ void MediaStreamManager::GenerateStream(
   // and thus can not handle a response. Using base::Unretained is safe since
   // MediaStreamManager is deleted on the UI thread, after the IO thread has
   // been stopped.
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&MediaStreamManager::SetUpRequest,
-                                         base::Unretained(this), label));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&MediaStreamManager::SetUpRequest,
+                                          base::Unretained(this), label));
 }
 
 void MediaStreamManager::CancelRequest(int render_process_id,
@@ -709,7 +713,7 @@ void MediaStreamManager::CancelRequest(const std::string& label) {
 void MediaStreamManager::CancelAllRequests(int render_process_id,
                                            int render_frame_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DeviceRequests::iterator request_it = requests_.begin();
+  auto request_it = requests_.begin();
   while (request_it != requests_.end()) {
     if (request_it->second->requesting_process_id != render_process_id ||
         request_it->second->requesting_frame_id != render_frame_id) {
@@ -769,7 +773,7 @@ void MediaStreamManager::StopDevice(MediaStreamType type, int session_id) {
   DVLOG(1) << "StopDevice"
            << "{type = " << type << "}"
            << "{session_id = " << session_id << "}";
-  DeviceRequests::iterator request_it = requests_.begin();
+  auto request_it = requests_.begin();
   while (request_it != requests_.end()) {
     DeviceRequest* request = request_it->second;
     MediaStreamDevices* devices = &request->devices;
@@ -778,7 +782,7 @@ void MediaStreamManager::StopDevice(MediaStreamType type, int session_id) {
       ++request_it;
       continue;
     }
-    MediaStreamDevices::iterator device_it = devices->begin();
+    auto device_it = devices->begin();
     while (device_it != devices->end()) {
       if (device_it->type != type || device_it->session_id != session_id) {
         ++device_it;
@@ -859,9 +863,9 @@ void MediaStreamManager::OpenDevice(int render_process_id,
   // and thus can not handle a response. Using base::Unretained is safe since
   // MediaStreamManager is deleted on the UI thread, after the IO thread has
   // been stopped.
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&MediaStreamManager::SetUpRequest,
-                                         base::Unretained(this), label));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&MediaStreamManager::SetUpRequest,
+                                          base::Unretained(this), label));
 }
 
 bool MediaStreamManager::TranslateSourceIdToDeviceId(
@@ -1030,8 +1034,8 @@ MediaStreamManager::DeviceRequest* MediaStreamManager::FindRequest(
 void MediaStreamManager::DeleteRequest(const std::string& label) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DVLOG(1) << "DeleteRequest({label= " << label << "})";
-  for (DeviceRequests::iterator request_it = requests_.begin();
-       request_it != requests_.end(); ++request_it) {
+  for (auto request_it = requests_.begin(); request_it != requests_.end();
+       ++request_it) {
     if (request_it->first == label) {
       std::unique_ptr<DeviceRequest> request(request_it->second);
       requests_.erase(request_it);
@@ -1242,8 +1246,8 @@ bool MediaStreamManager::SetUpTabCaptureRequest(DeviceRequest* request,
     return false;
   }
 
-  BrowserThread::PostTaskAndReplyWithResult(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&MediaStreamManager::ResolveTabCaptureDeviceIdOnUIThread,
                      base::Unretained(this), capture_device_id,
                      request->requesting_process_id,
@@ -1459,8 +1463,8 @@ void MediaStreamManager::InitializeMaybeAsync(
   // initialization is done synchronously. Other clients call this from a
   // different thread and expect initialization to run asynchronously.
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&MediaStreamManager::InitializeMaybeAsync,
                        base::Unretained(this),
                        std::move(video_capture_provider)));
@@ -1483,7 +1487,8 @@ void MediaStreamManager::InitializeMaybeAsync(
 
   video_capture_manager_ =
       new VideoCaptureManager(std::move(video_capture_provider),
-                              base::BindRepeating(&SendVideoCaptureLogMessage));
+                              base::BindRepeating(&SendVideoCaptureLogMessage),
+                              ScreenlockMonitor::Get());
   video_capture_manager_->RegisterListener(this);
 
   // Using base::Unretained(this) is safe because |this| owns and therefore

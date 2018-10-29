@@ -5,7 +5,6 @@
 #include "ash/wm/top_level_window_factory.h"
 
 #include "ash/disconnected_app_handler.h"
-#include "ash/frame/detached_title_area_renderer.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
@@ -42,21 +41,6 @@ bool IsFullscreen(aura::PropertyConverter* property_converter,
              WindowManager::kShowState_Property, transport_data, &show_state) &&
          (static_cast<ui::WindowShowState>(show_state) ==
           ui::SHOW_STATE_FULLSCREEN);
-}
-
-bool ShouldRenderTitleArea(
-    aura::PropertyConverter* property_converter,
-    const std::map<std::string, std::vector<uint8_t>>& properties) {
-  auto iter = properties.find(
-      ws::mojom::WindowManager::kRenderParentTitleArea_Property);
-  if (iter == properties.end())
-    return false;
-
-  aura::PropertyConverter::PrimitiveType value = 0;
-  return property_converter->GetPropertyValueFromTransportValue(
-             ws::mojom::WindowManager::kRenderParentTitleArea_Property,
-             iter->second, &value) &&
-         value == 1;
 }
 
 // Returns the RootWindowController where new top levels are created.
@@ -163,20 +147,6 @@ aura::Window* CreateAndParentTopLevelWindowInRoot(
                                      window_type, property_converter,
                                      properties);
     return non_client_frame_controller->window();
-  }
-
-  if (window_type == ws::mojom::WindowType::POPUP &&
-      ShouldRenderTitleArea(property_converter, *properties)) {
-    // Pick a parent so display information is obtained. Will pick the real one
-    // once transient parent found.
-    aura::Window* unparented_control_container =
-        root_window_controller->GetRootWindow()->GetChildById(
-            kShellWindowId_UnparentedControlContainer);
-    // DetachedTitleAreaRendererForClient is owned by the client.
-    DetachedTitleAreaRendererForClient* renderer =
-        new DetachedTitleAreaRendererForClient(unparented_control_container,
-                                               property_converter, properties);
-    return renderer->widget()->GetNativeView();
   }
 
   // WindowDelegateImpl() deletes itself when the associated window is

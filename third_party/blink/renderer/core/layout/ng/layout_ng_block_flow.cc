@@ -8,9 +8,9 @@
 #include "third_party/blink/renderer/core/layout/min_max_size.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_fragment_traversal.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -98,12 +98,14 @@ void LayoutNGBlockFlow::UpdateBlockLayout(bool relayout_children) {
 }
 
 void LayoutNGBlockFlow::UpdateOutOfFlowBlockLayout() {
-  LayoutBlock* container = ContainingBlock();
+  LayoutBoxModelObject* css_container = ToLayoutBoxModelObject(Container());
+  LayoutBox* container =
+      css_container->IsBox() ? ToLayoutBox(css_container) : ContainingBlock();
   const ComputedStyle* container_style = container->Style();
   const ComputedStyle* parent_style = Parent()->Style();
   NGConstraintSpace constraint_space =
       NGConstraintSpace::CreateFromLayoutObject(*this);
-  NGFragmentBuilder container_builder(
+  NGBoxFragmentBuilder container_builder(
       container, scoped_refptr<const ComputedStyle>(container_style),
       container_style->GetWritingMode(), container_style->Direction());
 
@@ -148,7 +150,6 @@ void LayoutNGBlockFlow::UpdateOutOfFlowBlockLayout() {
 
   // Calculate the actual size of the containing block for this out-of-flow
   // descendant. This is what's used to size and position us.
-  LayoutBoxModelObject* css_container = ToLayoutBoxModelObject(Container());
   LayoutUnit containing_block_logical_width =
       ContainingBlockLogicalWidthForPositioned(css_container);
   LayoutUnit containing_block_logical_height =

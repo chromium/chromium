@@ -1,3 +1,9 @@
+{# Note that goog.provide is understood by the Closure Compiler even if the
+   Closure base library is unavailable. See https://crbug.com/898692 #}
+goog.provide('{{module.namespace}}.{{interface.name}}');
+goog.provide('{{module.namespace}}.{{interface.name}}Impl');
+goog.provide('{{module.namespace}}.{{interface.name}}Ptr');
+
 {% macro generateInterfaceClass() -%}
 class {
 {%-  for method in interface.methods %}

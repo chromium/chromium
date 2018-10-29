@@ -8,7 +8,9 @@
 
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/post_task.h"
 #include "components/component_updater/component_updater_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_throttle.h"
 
@@ -82,7 +84,7 @@ void CUResourceThrottle::Unblock() {
 }
 
 void UnblockThrottleOnUIThread(base::WeakPtr<CUResourceThrottle> rt) {
-  BrowserThread::GetTaskRunnerForThread(BrowserThread::IO)
+  base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})
       ->PostTask(FROM_HERE, base::BindOnce(&CUResourceThrottle::Unblock, rt));
 }
 
@@ -97,7 +99,7 @@ content::ResourceThrottle* GetOnDemandResourceThrottle(
   // and we keep for ourselves a weak pointer to it so we can post tasks
   // from the UI thread without having to track lifetime directly.
   CUResourceThrottle* rt = new CUResourceThrottle;
-  BrowserThread::GetTaskRunnerForThread(BrowserThread::UI)
+  base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&ComponentUpdateService::MaybeThrottle,
                                 base::Unretained(cus), crx_id,

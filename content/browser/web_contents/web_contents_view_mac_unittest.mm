@@ -69,7 +69,8 @@ class WebContentsViewMacTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     window_.reset([[CocoaTestHelperWindow alloc] init]);
-    [[window_ contentView] addSubview:web_contents()->GetNativeView()];
+    [[window_ contentView]
+        addSubview:web_contents()->GetNativeView().GetNativeNSView()];
   }
 
   base::scoped_nsobject<CocoaTestHelperWindow> window_;

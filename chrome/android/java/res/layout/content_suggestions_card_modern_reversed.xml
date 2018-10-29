@@ -100,7 +100,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <org.chromium.chrome.browser.widget.TintedImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/article_thumbnail"
             android:layout_width="@dimen/snippets_thumbnail_size"
             android:layout_height="@dimen/snippets_thumbnail_size"

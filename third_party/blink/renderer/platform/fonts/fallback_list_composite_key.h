@@ -21,7 +21,7 @@ class FontDescription;
 // TODO(eae,drott): Ideally this should be replaced by a combination of
 // FontDescription and CSSFontSelector.
 struct FallbackListCompositeKey {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   FallbackListCompositeKey(const FontDescription& font_description)

@@ -5,8 +5,10 @@
 #include "chrome/browser/offline_pages/downloads/resource_throttle.h"
 
 #include "base/logging.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/resource_request_info.h"
@@ -54,8 +56,8 @@ void ResourceThrottle::WillProcessResponse(bool* defer) {
     std::string request_origin =
         content::DownloadRequestUtils::GetRequestOriginFromRequest(request_);
 
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::UI},
         base::Bind(&WillStartOfflineRequestOnUIThread, request_->url(),
                    request_origin, info->GetWebContentsGetterForRequest()));
     Cancel();

@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "components/data_use_measurement/core/data_use_measurement.h"
-#include "components/metrics/data_use_tracker.h"
 #include "net/base/completion_callback.h"
 #include "net/base/layered_network_delegate.h"
 
@@ -32,8 +31,7 @@ class DataUseNetworkDelegate : public net::LayeredNetworkDelegate {
   DataUseNetworkDelegate(
       std::unique_ptr<net::NetworkDelegate> nested_network_delegate,
       DataUseAscriber* ascriber,
-      std::unique_ptr<URLRequestClassifier> url_request_classifier,
-      const metrics::UpdateUsagePrefCallbackType& metrics_data_use_forwarder);
+      std::unique_ptr<DataUseMeasurement> data_use_measurement);
 
   ~DataUseNetworkDelegate() override;
 
@@ -66,7 +64,8 @@ class DataUseNetworkDelegate : public net::LayeredNetworkDelegate {
   DataUseAscriber* ascriber_;
 
   // Component to report data use UMA.
-  data_use_measurement::DataUseMeasurement data_use_measurement_;
+  std::unique_ptr<data_use_measurement::DataUseMeasurement>
+      data_use_measurement_;
 };
 
 }  // namespace data_use_measurement

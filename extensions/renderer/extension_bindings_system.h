@@ -93,7 +93,7 @@ class ExtensionBindingsSystem {
   // Note: `runtime` is not included here, since it's handled specially above.
   // Note: We specify the size of the array to allow for its use in for loops
   // without needing to expose a separate "kNumWebAvailableFeatures".
-  static const char* const kWebAvailableFeatures[3];
+  static const char* const kWebAvailableFeatures[2];
 };
 
 }  // namespace extensions

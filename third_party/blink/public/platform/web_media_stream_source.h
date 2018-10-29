@@ -37,7 +37,7 @@
 
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"  // nogncheck
 #endif
 
 namespace blink {

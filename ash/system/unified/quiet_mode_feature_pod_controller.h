@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_QUIET_MODE_FEATURE_POD_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/message_center/message_center_controller.h"
+#include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

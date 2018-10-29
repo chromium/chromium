@@ -244,19 +244,6 @@ Polymer({
   },
 
   /**
-   * @return {boolean} Whether the system dialog button should be shown.
-   * @private
-   */
-  displaySystemDialogButton_: function() {
-    return this.previewState ==
-        print_preview_new.PreviewAreaState.INVALID_SETTINGS ||
-        this.previewState ==
-        print_preview_new.PreviewAreaState.OPEN_IN_PREVIEW_LOADING ||
-        this.previewState ==
-        print_preview_new.PreviewAreaState.OPEN_IN_PREVIEW_LOADED;
-  },
-
-  /**
    * @return {boolean} Whether the "learn more" link to the cloud print help
    *     page should be shown.
    * @private
@@ -550,17 +537,6 @@ Polymer({
     // we don't want this to happen as it can cause the margin to stop
     // being draggable.
     this.pluginProxy_.setPointerEvents(!e.detail);
-  },
-
-  /**
-   * Called when the learn more link for a cloud destination with an invalid
-   * certificate is clicked. Calls nativeLayer to open a new tab with the help
-   * page.
-   * @private
-   */
-  onGcpErrorLearnMoreClick_: function() {
-    this.nativeLayer_.forceOpenNewTab(
-        this.i18n('gcpCertificateErrorLearnMoreURL'));
   },
 
   /** @private */

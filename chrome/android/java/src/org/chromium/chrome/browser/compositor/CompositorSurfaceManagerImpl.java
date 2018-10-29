@@ -202,7 +202,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
     }
 
     @Override
-    public void recreateSurfaceForJellyBean() {
+    public void recreateSurface() {
         // If they don't have a surface, then they'll get a new one anyway.
         if (mOwnedByClient == null) return;
 

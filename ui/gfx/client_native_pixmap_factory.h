@@ -23,25 +23,18 @@ class Size;
 // provide a client pixmap for non-GPU processes.
 class GFX_EXPORT ClientNativePixmapFactory {
  public:
-  virtual ~ClientNativePixmapFactory();
+  virtual ~ClientNativePixmapFactory() {}
 
   // Returns true if format/usage configuration is supported.
   virtual bool IsConfigurationSupported(gfx::BufferFormat format,
                                         gfx::BufferUsage usage) const = 0;
 
-  // TODO(dshwang): implement it. crbug.com/475633
   // Import the native pixmap from |handle| to be used in non-GPU processes.
   // This function takes ownership of any file descriptors in |handle|.
   virtual std::unique_ptr<ClientNativePixmap> ImportFromHandle(
       const gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
       gfx::BufferUsage usage) = 0;
-
- protected:
-  ClientNativePixmapFactory();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientNativePixmapFactory);
 };
 
 }  // namespace gfx

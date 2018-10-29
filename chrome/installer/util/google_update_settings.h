@@ -254,9 +254,6 @@ class GoogleUpdateSettings {
   // protocol.
   static base::string16 GetDownloadPreference();
 
-  // Records UMA stats about Chrome's update policy.
-  static void RecordChromeUpdatePolicyHistograms();
-
   // Returns Google Update's uninstall command line, or an empty string if none
   // is found.
   static base::string16 GetUninstallCommandLine(bool system_install);

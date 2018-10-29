@@ -61,6 +61,10 @@ def AddFilterOptions(parser):
       help='Path to file that contains googletest-style filter strings. '
            'See also //testing/buildbot/filters/README.md.')
 
+  filter_group.add_argument(
+      '--isolated-script-test-filter',
+      help='isolated script filter string. '
+           'Like gtest filter strings, but with :: separators instead of :')
 
 def InitializeFilterFromArgs(args):
   """Returns a filter string from the command-line option values.
@@ -70,6 +74,8 @@ def InitializeFilterFromArgs(args):
       to which the filter options above were added.
   """
   parsed_filter = None
+  if args.isolated_script_test_filter:
+    args.test_filter = args.isolated_script_test_filter.replace('::', ':')
   if args.test_filter:
     parsed_filter = _CMDLINE_NAME_SEGMENT_RE.sub(
         '', args.test_filter.replace('#', '.'))

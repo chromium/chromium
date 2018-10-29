@@ -57,7 +57,7 @@ class DOMFileSystemSync final : public DOMFileSystemBase {
 
   ~DOMFileSystemSync() override;
 
-  void ReportError(ErrorCallbackBase*, FileError::ErrorCode) override;
+  void ReportError(ErrorCallbackBase*, base::File::Error error) override;
 
   DirectoryEntrySync* root();
 

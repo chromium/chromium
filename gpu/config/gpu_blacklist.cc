@@ -45,6 +45,9 @@ std::unique_ptr<GpuBlacklist> GpuBlacklist::Create(
                             GPU_FEATURE_TYPE_PROTECTED_VIDEO_DECODE);
   list->AddSupportedFeature("oop_rasterization",
                             GPU_FEATURE_TYPE_OOP_RASTERIZATION);
+  list->AddSupportedFeature("android_surface_control",
+                            GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL);
+
   return list;
 }
 

@@ -225,7 +225,7 @@ void GCMSocketStreamTest::OpenConnection() {
   mojo_socket_factory_ptr_->CreateProxyResolvingSocket(
       kDestination, true /* use_tls */,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      mojo::MakeRequest(&mojo_socket_ptr_),
+      mojo::MakeRequest(&mojo_socket_ptr_), nullptr /* observer */,
       base::BindLambdaForTesting(
           [&](int result, const base::Optional<net::IPEndPoint>& local_addr,
               const base::Optional<net::IPEndPoint>& peer_addr,

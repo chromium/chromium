@@ -12,18 +12,25 @@ js_type_check("closure_compile") {
   ]
 }
 
+js_library("sorted_table_behavior") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
 js_library("discards") {
   deps = [
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr",
   ]
 }
 
 js_library("database_tab") {
   deps = [
     ":discards",
+    ":sorted_table_behavior",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr",
   ]
   extra_deps = [ "//chrome/browser/ui/webui/discards:mojo_bindings_js" ]
   externs_list = [
@@ -36,6 +43,7 @@ js_library("database_tab") {
 js_library("discards_tab") {
   deps = [
     ":discards",
+    ":sorted_table_behavior",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:icon",
     "//ui/webui/resources/js:util",

@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/use_counter.h"
@@ -47,7 +48,6 @@
 #include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/platform/histogram.h"
 #include "third_party/blink/renderer/platform/loader/fetch/access_control_status.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
@@ -69,10 +69,9 @@ ScriptLoader::ScriptLoader(ScriptElementBase* element,
     : element_(element),
       will_be_parser_executed_(false),
       will_execute_when_document_finished_parsing_(false) {
-  // <spec
-  // href="https://html.spec.whatwg.org/multipage/scripting.html#already-started">
-  // ... The cloning steps for script elements must set the "already started"
-  // flag on the copy if it is set on the element being cloned.</spec>
+  // <spec href="https://html.spec.whatwg.org/#already-started">... The cloning
+  // steps for script elements must set the "already started" flag on the copy
+  // if it is set on the element being cloned.</spec>
   //
   // TODO(hiroshige): Cloning is implemented together with
   // {HTML,SVG}ScriptElement::cloneElementWithoutAttributesAndChildren().
@@ -81,16 +80,14 @@ ScriptLoader::ScriptLoader(ScriptElementBase* element,
     already_started_ = true;
 
   if (parser_inserted) {
-    // <spec
-    // href="https://html.spec.whatwg.org/multipage/scripting.html#parser-inserted">
-    // ... It is set by the HTML parser and the XML parser on script elements
-    // they insert ...</spec>
+    // <spec href="https://html.spec.whatwg.org/#parser-inserted">... It is set
+    // by the HTML parser and the XML parser on script elements they insert
+    // ...</spec>
     parser_inserted_ = true;
 
-    // <spec
-    // href="https://html.spec.whatwg.org/multipage/scripting.html#non-blocking">
-    // ... It is unset by the HTML parser and the XML parser on script elements
-    // they insert. ...</spec>
+    // <spec href="https://html.spec.whatwg.org/#non-blocking">... It is unset
+    // by the HTML parser and the XML parser on script elements they insert.
+    // ...</spec>
     non_blocking_ = false;
   }
 }
@@ -122,12 +119,11 @@ void ScriptLoader::HandleSourceAttribute(const String& source_url) {
   PrepareScript();  // FIXME: Provide a real starting line number here.
 }
 
+// <specdef href="https://html.spec.whatwg.org/#non-blocking">
 void ScriptLoader::HandleAsyncAttribute() {
-  // <spec
-  // href="https://html.spec.whatwg.org/multipage/scripting.html#non-blocking">
-  // ... In addition, whenever a script element whose "non-blocking" flag is set
-  // has an async content attribute added, the element's "non-blocking" flag
-  // must be unset.</spec>
+  // <spec>... In addition, whenever a script element whose "non-blocking" flag
+  // is set has an async content attribute added, the element's "non-blocking"
+  // flag must be unset.</spec>
   non_blocking_ = false;
 }
 
@@ -169,7 +165,7 @@ bool IsValidClassicScriptTypeAndLanguage(
 
 }  // namespace
 
-// https://html.spec.whatwg.org/multipage/scripting.html#prepare-a-script
+// <specdef href="https://html.spec.whatwg.org/#prepare-a-script">
 bool ScriptLoader::IsValidScriptTypeAndLanguage(
     const String& type,
     const String& language,
@@ -202,13 +198,18 @@ bool ScriptLoader::BlockForNoModule(ScriptType script_type, bool nomodule) {
   return nomodule && script_type == ScriptType::kClassic;
 }
 
-// Step 16 of
-// https://html.spec.whatwg.org/multipage/scripting.html#prepare-a-script
+// Corresponds to
+// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#module-script-credentials-mode
+// which is a translation of the CORS settings attribute in the context of
+// module scripts. This is used in:
+//   - Step 17 of
+//     https://html.spec.whatwg.org/multipage/scripting.html#prepare-a-script
+//   - Step 6 of obtaining a preloaded module script
+//     https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload.
 network::mojom::FetchCredentialsMode ScriptLoader::ModuleScriptCredentialsMode(
     CrossOriginAttributeValue cross_origin) {
   switch (cross_origin) {
     case kCrossOriginAttributeNotSet:
-      return network::mojom::FetchCredentialsMode::kOmit;
     case kCrossOriginAttributeAnonymous:
       return network::mojom::FetchCredentialsMode::kSameOrigin;
     case kCrossOriginAttributeUseCredentials:
@@ -236,7 +237,7 @@ bool ShouldBlockSyncScriptForFeaturePolicy(const ScriptElementBase* element,
   return !element->DeferAttributeValue() && !element->AsyncAttributeValue();
 }
 
-// https://html.spec.whatwg.org/multipage/scripting.html#prepare-a-script
+// <specdef href="https://html.spec.whatwg.org/#prepare-a-script">
 bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
                                  LegacyTypeSupport support_legacy_types) {
   // <spec step="1">If the script element is marked as having "already started",
@@ -305,11 +306,9 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   // <spec step="11">If scripting is disabled for the script element, then
   // return. The script is not executed.</spec>
   //
-  // <spec
-  // href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-n-noscript">
-  // Scripting is disabled for a node if [the node's node document has no
-  // browsing context], or if scripting is disabled in that browsing context.
-  // </spec>
+  // <spec href="https://html.spec.whatwg.org/#concept-n-noscript">Scripting is
+  // disabled for a node if there is no such browsing context, or if scripting
+  // is disabled in that browsing context.</spec>
   Document& element_document = element_->GetDocument();
   // TODO(timothygu): Investigate if we could switch from ExecutingFrame() to
   // ExecutingWindow().
@@ -412,8 +411,8 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   ScriptFetchOptions options(nonce, integrity_metadata, integrity_attr,
                              parser_state, credentials_mode, referrer_policy);
 
-  // <spec step="23">Let settings object be the element's node document's Window
-  // object's environment settings object.</spec>
+  // <spec step="23">Let settings object be the element's node document's
+  // relevant settings object.</spec>
   //
   // Note: We use |element_document| as "settings object" in the steps below.
   auto* settings_object =
@@ -475,7 +474,8 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
       //
       // Fetch a classic script given url, settings object, options, classic
       // script CORS setting, and encoding.</spec>
-      FetchClassicScript(url, element_document, options, encoding);
+      FetchClassicScript(url, element_document, options, cross_origin,
+                         encoding);
     } else {
       // - "module":
 
@@ -505,7 +505,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   // <spec step="25">If the element does not have a src content attribute, run
   // these substeps:</spec>
   if (!element_->HasSourceAttribute()) {
-    // <spec step="25.1">Let src be the value of the element's src
+    // <spec step="24.1">Let src be the value of the element's src
     // attribute.</spec>
     //
     // This step is done later as ScriptElementBase::TextFromChildren():
@@ -523,7 +523,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
     // <spec step="25.2">Switch on the script's type:</spec>
     switch (GetScriptType()) {
-      // Step 25.2.A. "classic" [spec text]
+      // <spec step="25.2.A">"classic"</spec>
       case ScriptType::kClassic: {
         // <spec step="25.2.A.1">Let script be the result of creating a classic
         // script using source text, settings object, base URL, and
@@ -550,7 +550,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         break;
       }
 
-      // Step 25.2.B. "module" [spec text]
+      // <spec step="25.2.B">"module"</spec>
       case ScriptType::kModule: {
         // <spec step="25.2.B.1">Let script be the result of creating a module
         // script using source text, settings object, base URL, and
@@ -568,13 +568,13 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
           return false;
 
         // <spec step="25.2.B.3">Fetch the descendants of and instantiate
-        // script, given the destination "script". When this asynchronously
-        // completes, set the script's script to the result. At that time, the
-        // script is ready.</spec>
+        // script, given settings object and the destination "script". When this
+        // asynchronously completes, set the script's script to the result. At
+        // that time, the script is ready.</spec>
         auto* module_tree_client = ModulePendingScriptTreeClient::Create();
         modulator->FetchDescendantsForInlineScript(
-            module_script, settings_object,
-            WebURLRequest::kRequestContextScript, module_tree_client);
+            module_script, settings_object, mojom::RequestContextType::SCRIPT,
+            module_tree_client);
         prepared_pending_script_ = ModulePendingScript::Create(
             element_, module_tree_client, is_external_script_);
         break;
@@ -698,7 +698,8 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   // or XML parser that created the script element has a style sheet that is
   // blocking scripts ...</spec>
   //
-  // The last part "... has a style sheet that is blocking scripts"
+  // <spec step="26.E">... has a style sheet that is blocking scripts ...</spec>
+  //
   // is implemented in Document::isScriptExecutionReady().
   // Part of the condition check is done in
   // HTMLParserScriptRunner::processScriptElementInternal().
@@ -737,6 +738,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 void ScriptLoader::FetchClassicScript(const KURL& url,
                                       Document& element_document,
                                       const ScriptFetchOptions& options,
+                                      CrossOriginAttributeValue cross_origin,
                                       const WTF::TextEncoding& encoding) {
   FetchParameters::DeferOption defer = FetchParameters::kNoDefer;
   if (!parser_inserted_ || element_->AsyncAttributeValue() ||
@@ -744,26 +746,25 @@ void ScriptLoader::FetchClassicScript(const KURL& url,
     defer = FetchParameters::kLazyLoad;
 
   ClassicPendingScript* pending_script = ClassicPendingScript::Fetch(
-      url, element_document, options, encoding, element_, defer);
+      url, element_document, options, cross_origin, encoding, element_, defer);
   prepared_pending_script_ = pending_script;
   resource_keep_alive_ = pending_script->GetResource();
 }
 
+// <specdef href="https://html.spec.whatwg.org/#prepare-a-script">
 void ScriptLoader::FetchModuleScriptTree(
     const KURL& url,
     FetchClientSettingsObjectSnapshot* settings_object,
     Modulator* modulator,
     const ScriptFetchOptions& options) {
-  // <spec
-  // href="https://html.spec.whatwg.org/multipage/scripting.html#prepare-a-script"
-  // step="23.6.B">"module"
+  // <spec step="24.6.B">"module"
   //
   // Fetch a module script graph given url, settings object, "script", and
   // options.</spec>
   auto* module_tree_client = ModulePendingScriptTreeClient::Create();
-  modulator->FetchTree(url, settings_object,
-                       WebURLRequest::kRequestContextScript, options,
-                       ModuleScriptCustomFetchType::kNone, module_tree_client);
+  modulator->FetchTree(url, settings_object, mojom::RequestContextType::SCRIPT,
+                       options, ModuleScriptCustomFetchType::kNone,
+                       module_tree_client);
   prepared_pending_script_ = ModulePendingScript::Create(
       element_, module_tree_client, is_external_script_);
 }
@@ -821,7 +822,7 @@ bool ScriptLoader::IgnoresLoadRequest() const {
          !element_->IsConnected();
 }
 
-// https://html.spec.whatwg.org/multipage/scripting.html#prepare-a-script
+// <specdef href="https://html.spec.whatwg.org/#prepare-a-script">
 bool ScriptLoader::IsScriptForEventSupported() const {
   // <spec step="14.1">Let for be the value of the for attribute.</spec>
   String event_attribute = element_->EventAttributeValue();

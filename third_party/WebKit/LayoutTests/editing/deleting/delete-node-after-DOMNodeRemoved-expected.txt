@@ -1,6 +1,7 @@
 This tests for a bug where delete would crash if a node just after the selection to delete is removed in a DOMNodeRemoved event handler for the last node in the selection to delete. <rdar://problem/5156801>
 
 foo
+
 foo
 
 PASS

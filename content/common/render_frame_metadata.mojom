@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/interfaces/compositing/local_surface_id.mojom";
 import "services/viz/public/interfaces/compositing/selection.mojom";
 import "ui/gfx/geometry/mojo/geometry.mojom";
@@ -42,6 +43,9 @@ struct RenderFrameMetadata {
 
   // The last viz::LocalSurfaceId used to submit a CompositorFrame.
   viz.mojom.LocalSurfaceId? local_surface_id;
+
+  // The time at which |local_surface_id| was allocated.
+  mojo_base.mojom.TimeTicks? local_surface_id_allocation_time_from_child;
 
   // The page scale factor used on the content.
   float page_scale_factor;

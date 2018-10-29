@@ -20,9 +20,9 @@ FileTableColumnModel.prototype.__proto__ =
     cr.ui.table.TableColumnModel.prototype;
 
 /**
- * Minimum width of column.
+ * Minimum width of column. Note that is not marked private as it is used in the
+ * unit tests.
  * @const {number}
- * @private
  */
 FileTableColumnModel.MIN_WIDTH_ = 10;
 

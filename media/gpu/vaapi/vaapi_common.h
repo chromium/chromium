@@ -64,6 +64,8 @@ class VaapiVP9Picture : public VP9Picture {
   ~VaapiVP9Picture() override;
 
  private:
+  scoped_refptr<VP9Picture> CreateDuplicate() override;
+
   scoped_refptr<VASurface> va_surface_;
 
   DISALLOW_COPY_AND_ASSIGN(VaapiVP9Picture);

@@ -14,7 +14,7 @@
 
 namespace {
 #if defined(OS_CHROMEOS)
-const char* kDriveNamePolicyVariableName = "${google_drive}";
+const char kDriveNamePolicyVariableName[] = "${google_drive}";
 
 // Drive root folder relative to its mount point.
 const base::FilePath::CharType* kRootRelativeToDriveMount =

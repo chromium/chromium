@@ -6,6 +6,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
+#include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -113,6 +114,31 @@ class AddInObserve : public Foo {
   Foo* to_add_;
 };
 
+template <class ObserverListType>
+class ObserverListCreator : public DelegateSimpleThread::Delegate {
+ public:
+  std::unique_ptr<ObserverListType> Create(
+      base::Optional<base::ObserverListPolicy> policy = nullopt) {
+    policy_ = policy;
+    DelegateSimpleThread thread(this, "ListCreator");
+    thread.Start();
+    thread.Join();
+    return std::move(observer_list_);
+  }
+
+ private:
+  void Run() override {
+    if (policy_) {
+      observer_list_ = std::make_unique<ObserverListType>(*policy_);
+    } else {
+      observer_list_ = std::make_unique<ObserverListType>();
+    }
+  }
+
+  std::unique_ptr<ObserverListType> observer_list_;
+  base::Optional<base::ObserverListPolicy> policy_;
+};
+
 }  // namespace
 
 class ObserverListTestBase {
@@ -120,8 +146,8 @@ class ObserverListTestBase {
   ObserverListTestBase() {}
 
   template <class T>
-  const decltype(T::list_) list(const T& iter) {
-    return iter.list_;
+  const decltype(T::list_.get()) list(const T& iter) {
+    return iter.list_.get();
   }
 
   template <class T>
@@ -291,6 +317,33 @@ TYPED_TEST(ObserverListTest, BasicTest) {
   EXPECT_EQ(0, c.total);
   EXPECT_EQ(-10, d.total);
   EXPECT_EQ(0, e.total);
+}
+
+TYPED_TEST(ObserverListTest, CreatedAndUsedOnDifferentThreads) {
+  DECLARE_TYPES;
+
+  ObserverListCreator<ObserverListFoo> list_creator;
+  Adder a(1);
+  // Check with default constructor
+  {
+    std::unique_ptr<ObserverListFoo> observer_list = list_creator.Create();
+    observer_list->AddObserver(&a);
+    for (auto& observer : *observer_list) {
+      observer.Observe(1);
+    }
+    EXPECT_EQ(1, a.GetValue());
+  }
+
+  // Check with constructor taking explicit policy
+  {
+    std::unique_ptr<ObserverListFoo> observer_list =
+        list_creator.Create(base::ObserverListPolicy::EXISTING_ONLY);
+    observer_list->AddObserver(&a);
+    for (auto& observer : *observer_list) {
+      observer.Observe(1);
+    }
+    EXPECT_EQ(2, a.GetValue());
+  }
 }
 
 TYPED_TEST(ObserverListTest, CompactsWhenNoActiveIterator) {

@@ -13,7 +13,6 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/base/layout.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -88,15 +87,15 @@ NativeThemeAura::~NativeThemeAura() {}
 
 // static
 NativeThemeAura* NativeThemeAura::instance() {
-  CR_DEFINE_STATIC_LOCAL(NativeThemeAura, s_native_theme, (false));
-  return &s_native_theme;
+  static base::NoDestructor<NativeThemeAura> s_native_theme(false);
+  return s_native_theme.get();
 }
 
 // static
 NativeThemeAura* NativeThemeAura::web_instance() {
-  CR_DEFINE_STATIC_LOCAL(NativeThemeAura, s_native_theme_for_web,
-                         (IsOverlayScrollbarEnabled()));
-  return &s_native_theme_for_web;
+  static base::NoDestructor<NativeThemeAura> s_native_theme_for_web(
+      IsOverlayScrollbarEnabled());
+  return s_native_theme_for_web.get();
 }
 
 // This implementation returns hardcoded colors.

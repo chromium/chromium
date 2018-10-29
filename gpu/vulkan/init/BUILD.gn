@@ -32,4 +32,7 @@ component("init") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+  if (is_win) {
+    deps += [ "//gpu/vulkan/win32" ]
+  }
 }

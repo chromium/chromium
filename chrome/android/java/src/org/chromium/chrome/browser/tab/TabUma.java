@@ -414,7 +414,7 @@ public class TabUma extends EmptyTabObserver implements UserData {
 
     /** Called when the renderer of the correspoding tab crashes. */
     @Override
-    public void onCrash(Tab tab, boolean sadTabShown) {
+    public void onCrash(Tab tab) {
         if (mRestoreStartedAtMillis != -1) {
             // TODO(ppi): Add a bucket in Tab.RestoreResult for restores failed due to
             //            renderer crashes and start to track that.

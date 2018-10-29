@@ -29,6 +29,9 @@ class MockMojoIndexedDBCallbacks : public blink::mojom::IDBCallbacks {
 
   MOCK_METHOD2(Error, void(int32_t code, const base::string16& message));
 
+  MOCK_METHOD1(SuccessNamesAndVersionsList,
+               void(std::vector<blink::mojom::IDBNameAndVersionPtr> list));
+
   MOCK_METHOD1(SuccessStringList,
                void(const std::vector<base::string16>& value));
 

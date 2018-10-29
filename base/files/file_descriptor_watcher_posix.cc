@@ -22,21 +22,21 @@ namespace {
 
 // MessageLoopForIO used to watch file descriptors for which callbacks are
 // registered from a given thread.
-LazyInstance<ThreadLocalPointer<MessageLoopForIO>>::Leaky
-    tls_message_loop_for_io = LAZY_INSTANCE_INITIALIZER;
+LazyInstance<ThreadLocalPointer<FileDescriptorWatcher>>::Leaky tls_fd_watcher =
+    LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
 FileDescriptorWatcher::Controller::~Controller() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
-  // Delete |watcher_| on the MessageLoopForIO.
+  // Delete |watcher_| on the IO thread task runner.
   //
   // If the MessageLoopForIO is deleted before Watcher::StartWatching() runs,
   // |watcher_| is leaked. If the MessageLoopForIO is deleted after
   // Watcher::StartWatching() runs but before the DeleteSoon task runs,
   // |watcher_| is deleted from Watcher::WillDestroyCurrentMessageLoop().
-  message_loop_for_io_task_runner_->DeleteSoon(FROM_HERE, watcher_.release());
+  io_thread_task_runner_->DeleteSoon(FROM_HERE, watcher_.release());
 
   // Since WeakPtrs are invalidated by the destructor, RunCallback() won't be
   // invoked after this returns.
@@ -109,6 +109,7 @@ FileDescriptorWatcher::Controller::Watcher::~Watcher() {
 
 void FileDescriptorWatcher::Controller::Watcher::StartWatching() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(MessageLoopCurrentForIO::IsSet());
 
   if (!MessageLoopCurrentForIO::Get()->WatchFileDescriptor(
           fd_, false, mode_, &fd_watch_controller_, this)) {
@@ -161,11 +162,11 @@ FileDescriptorWatcher::Controller::Controller(MessagePumpForIO::Mode mode,
                                               int fd,
                                               const Closure& callback)
     : callback_(callback),
-      message_loop_for_io_task_runner_(
-          tls_message_loop_for_io.Get().Get()->task_runner()),
+      io_thread_task_runner_(
+          tls_fd_watcher.Get().Get()->io_thread_task_runner()),
       weak_factory_(this) {
   DCHECK(!callback_.is_null());
-  DCHECK(message_loop_for_io_task_runner_);
+  DCHECK(io_thread_task_runner_);
   watcher_ = std::make_unique<Watcher>(weak_factory_.GetWeakPtr(), mode, fd);
   StartWatching();
 }
@@ -173,10 +174,10 @@ FileDescriptorWatcher::Controller::Controller(MessagePumpForIO::Mode mode,
 void FileDescriptorWatcher::Controller::StartWatching() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // It is safe to use Unretained() below because |watcher_| can only be deleted
-  // by a delete task posted to |message_loop_for_io_task_runner_| by this
+  // by a delete task posted to |io_thread_task_runner_| by this
   // Controller's destructor. Since this delete task hasn't been posted yet, it
   // can't run before the task posted below.
-  message_loop_for_io_task_runner_->PostTask(
+  io_thread_task_runner_->PostTask(
       FROM_HERE, BindOnce(&Watcher::StartWatching, Unretained(watcher_.get())));
 }
 
@@ -193,14 +194,14 @@ void FileDescriptorWatcher::Controller::RunCallback() {
 }
 
 FileDescriptorWatcher::FileDescriptorWatcher(
-    MessageLoopForIO* message_loop_for_io) {
-  DCHECK(message_loop_for_io);
-  DCHECK(!tls_message_loop_for_io.Get().Get());
-  tls_message_loop_for_io.Get().Set(message_loop_for_io);
+    scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner)
+    : io_thread_task_runner_(std::move(io_thread_task_runner)) {
+  DCHECK(!tls_fd_watcher.Get().Get());
+  tls_fd_watcher.Get().Set(this);
 }
 
 FileDescriptorWatcher::~FileDescriptorWatcher() {
-  tls_message_loop_for_io.Get().Set(nullptr);
+  tls_fd_watcher.Get().Set(nullptr);
 }
 
 std::unique_ptr<FileDescriptorWatcher::Controller>

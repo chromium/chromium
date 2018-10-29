@@ -49,7 +49,7 @@
       <paper-button id="addAddress"
           class="secondary-button header-aligned-button"
           on-click="onAddAddressTap_"
-          disabled$="[[!prefs.autofill.profile_enabled.value]]">
+          hidden$="[[!prefs.autofill.profile_enabled.value]]">
         $i18n{add}
       </paper-button>
     </div>

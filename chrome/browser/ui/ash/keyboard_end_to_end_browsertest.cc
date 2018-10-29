@@ -7,10 +7,13 @@
 #include "base/files/file.h"
 #include "chrome/browser/chromeos/input_method/textinput_test_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/aura/test/mus/change_completion_waiter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/keyboard/keyboard_controller.h"
 #include "ui/keyboard/keyboard_resource_util.h"
@@ -19,7 +22,7 @@
 
 namespace keyboard {
 
-class KeyboardEndToEndTest : public chromeos::TextInputTestBase {
+class KeyboardEndToEndTest : public InProcessBrowserTest {
  public:
   // Ensure that the virtual keyboard is enabled.
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -34,15 +37,14 @@ class KeyboardEndToEndTest : public chromeos::TextInputTestBase {
     ASSERT_TRUE(web_contents);
 
     ASSERT_TRUE(KeyboardController::Get());
-    ASSERT_TRUE(KeyboardController::Get()->enabled());
+    ASSERT_TRUE(KeyboardController::Get()->IsEnabled());
     EXPECT_FALSE(IsKeyboardVisible());
   }
 
  protected:
   bool IsKeyboardVisible() {
     auto* keyboard_controller = keyboard::KeyboardController::Get();
-    return keyboard_controller->enabled() &&
-           keyboard_controller->IsKeyboardVisible();
+    return keyboard_controller->IsKeyboardVisible();
   }
 
   // Initialized in |SetUpOnMainThread|.
@@ -262,6 +264,127 @@ IN_PROC_BROWSER_TEST_F(
 
   ClickElementWithId(web_contents, "async");
   EXPECT_FALSE(IsKeyboardShowing());
+}
+
+class KeyboardEndToEndOverscrollTest : public KeyboardEndToEndTest {
+ public:
+  KeyboardEndToEndOverscrollTest()
+      : KeyboardEndToEndTest(base::FilePath("form.html")) {}
+  ~KeyboardEndToEndOverscrollTest() override {}
+
+  void FocusAndShowKeyboard() { ClickElementWithId(web_contents, "username"); }
+
+  void HideKeyboard() { KeyboardController::Get()->HideKeyboardByUser(); }
+
+ protected:
+  int GetViewportHeight(content::WebContents* web_contents) {
+    return web_contents->GetRenderWidgetHostView()
+        ->GetVisibleViewportSize()
+        .height();
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(KeyboardEndToEndOverscrollTest);
+};
+
+IN_PROC_BROWSER_TEST_F(KeyboardEndToEndOverscrollTest,
+                       ToggleKeyboardOnMaximizedWindowAffectsViewport) {
+  browser()->window()->Maximize();
+  aura::test::WaitForAllChangesToComplete();
+
+  const int old_height = GetViewportHeight(web_contents);
+
+  FocusAndShowKeyboard();
+  ASSERT_TRUE(WaitUntilShown());
+
+  EXPECT_LT(GetViewportHeight(web_contents), old_height);
+
+  HideKeyboard();
+  ASSERT_TRUE(WaitUntilHidden());
+
+  EXPECT_EQ(GetViewportHeight(web_contents), old_height);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    KeyboardEndToEndOverscrollTest,
+    ToggleKeyboardOnNonOverlappingWindowDoesNotAffectViewport) {
+  // Set the window bounds so that it does not overlap with the keyboard.
+  // The virtual keyboard takes up no more than half the screen height.
+  const auto screen_bounds = ash::Shell::GetPrimaryRootWindow()->bounds();
+  browser()->window()->SetBounds(
+      gfx::Rect(0, 0, screen_bounds.width(), screen_bounds.height() / 2));
+  aura::test::WaitForAllChangesToComplete();
+
+  const int old_height = GetViewportHeight(web_contents);
+
+  FocusAndShowKeyboard();
+  ASSERT_TRUE(WaitUntilShown());
+
+  EXPECT_EQ(GetViewportHeight(web_contents), old_height);
+
+  HideKeyboard();
+  ASSERT_TRUE(WaitUntilHidden());
+
+  EXPECT_EQ(GetViewportHeight(web_contents), old_height);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    KeyboardEndToEndOverscrollTest,
+    ToggleKeyboardOnShortOverlappingWindowMovesWindowUpwards) {
+  // Shift the window down so that it overlaps with the keyboard, but shrink the
+  // window size so that when it moves upwards, it will no longer overlap with
+  // the keyboard.
+  const auto screen_bounds = ash::Shell::GetPrimaryRootWindow()->bounds();
+  browser()->window()->SetBounds(gfx::Rect(0, screen_bounds.height() / 2,
+                                           screen_bounds.width(),
+                                           screen_bounds.height() / 2));
+  aura::test::WaitForAllChangesToComplete();
+
+  const auto old_browser_bounds = browser()->window()->GetBounds();
+  const int old_height = GetViewportHeight(web_contents);
+
+  FocusAndShowKeyboard();
+  ASSERT_TRUE(WaitUntilShown());
+
+  EXPECT_LT(browser()->window()->GetBounds().y(), old_browser_bounds.y());
+  EXPECT_EQ(browser()->window()->GetBounds().height(),
+            old_browser_bounds.height());
+  EXPECT_EQ(GetViewportHeight(web_contents), old_height);
+
+  HideKeyboard();
+  ASSERT_TRUE(WaitUntilHidden());
+
+  EXPECT_EQ(browser()->window()->GetBounds(), old_browser_bounds);
+  EXPECT_EQ(GetViewportHeight(web_contents), old_height);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    KeyboardEndToEndOverscrollTest,
+    ToggleKeyboardOnTallOverlappingWindowMovesWindowUpwardsAndAffectsViewport) {
+  // Shift the window down so that it overlaps with the keyboard, and expand the
+  // window size so that when it moves upwards, it will still overlap with
+  // the keyboard.
+  const auto screen_bounds = ash::Shell::GetPrimaryRootWindow()->bounds();
+  browser()->window()->SetBounds(gfx::Rect(0, screen_bounds.height() / 3,
+                                           screen_bounds.width(),
+                                           screen_bounds.height() / 3 * 2));
+  aura::test::WaitForAllChangesToComplete();
+
+  const auto old_browser_bounds = browser()->window()->GetBounds();
+  const int old_height = GetViewportHeight(web_contents);
+
+  FocusAndShowKeyboard();
+  ASSERT_TRUE(WaitUntilShown());
+
+  EXPECT_LT(browser()->window()->GetBounds().y(), old_browser_bounds.y());
+  EXPECT_EQ(browser()->window()->GetBounds().height(),
+            old_browser_bounds.height());
+  EXPECT_LT(GetViewportHeight(web_contents), old_height);
+
+  HideKeyboard();
+  ASSERT_TRUE(WaitUntilHidden());
+
+  EXPECT_EQ(browser()->window()->GetBounds(), old_browser_bounds);
+  EXPECT_EQ(GetViewportHeight(web_contents), old_height);
 }
 
 }  // namespace keyboard

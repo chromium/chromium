@@ -6,6 +6,7 @@
 
 [
     Constructor,
+    Serializable,
     OriginTrialEnabled=ShapeDetection
 ] interface DetectedText {
     [SameObject] readonly attribute DOMString rawValue;
@@ -13,4 +14,6 @@
     // 4 corner points in clockwise direction starting with top-left. Due to
     // possible perspective distortions, this is not necessarily a rectangle.
     [SameObject] readonly attribute FrozenArray<Point2D> cornerPoints;
+
+    serializer = { attribute };
 };

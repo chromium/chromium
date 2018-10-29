@@ -24,7 +24,7 @@ class TimeTicks;
 
 namespace vr {
 
-enum class VrUiTestActivityResult;
+enum class UiTestOperationResult;
 class BrowserUiInterface;
 class InputDelegate;
 class PlatformInputHandler;
@@ -35,7 +35,9 @@ class UiInterface;
 struct ControllerTestInput;
 struct RenderInfo;
 struct UiTestActivityExpectation;
+struct VisibilityChangeExpectation;
 struct UiTestState;
+struct UiVisibilityState;
 
 // The BrowserRenderer handles all input/output activities during a frame.
 // This includes head movement, controller movement and input, audio output and
@@ -56,18 +58,12 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
   void OnExitPresent();
   void OnTriggerEvent(bool pressed);
   void SetWebXrMode(bool enabled);
-  void OnSwapContents(int new_content_id);
   void EnableAlertDialog(PlatformInputHandler* input_handler,
                          float width,
                          float height);
   void DisableAlertDialog();
   void SetAlertDialogSize(float width, float height);
-  void SetDialogLocation(float x, float y);
-  void SetDialogFloating(bool floating);
-  void ShowToast(const base::string16& text);
-  void CancelToast();
   void ResumeContentRendering();
-  void ContentBoundsChanged(int width, int height);
   void BufferBoundsChanged(const gfx::Size& content_buffer_size,
                            const gfx::Size& overlay_buffer_size);
 
@@ -78,6 +74,8 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
   void SetUiExpectingActivityForTesting(
       UiTestActivityExpectation ui_expectation);
   void SaveNextFrameBufferToDiskForTesting(std::string filepath_base);
+  void WatchElementForVisibilityChangeForTesting(
+      VisibilityChangeExpectation visibility_expectation);
   void AcceptDoffPromptForTesting();
   void ConnectPresentingService(
       device::mojom::VRDisplayInfoPtr display_info,
@@ -108,8 +106,11 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
 
   void ReportUiStatusForTesting(const base::TimeTicks& current_time,
                                 bool ui_updated);
-  void ReportUiActivityResultForTesting(VrUiTestActivityResult result);
+  void ReportUiActivityResultForTesting(UiTestOperationResult result);
   void ReportFrameBufferDumpForTesting();
+  void ReportElementVisibilityStatusForTesting(
+      const base::TimeTicks& current_time);
+  void ReportElementVisibilityResultForTesting(UiTestOperationResult result);
 
   std::unique_ptr<UiInterface> ui_;
   std::unique_ptr<SchedulerDelegate> scheduler_delegate_;
@@ -124,6 +125,7 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
   BrowserRendererBrowserInterface* browser_;
 
   std::unique_ptr<UiTestState> ui_test_state_;
+  std::unique_ptr<UiVisibilityState> ui_visibility_state_;
   SlidingTimeDeltaAverage ui_processing_time_;
   SlidingTimeDeltaAverage ui_controller_update_time_;
 

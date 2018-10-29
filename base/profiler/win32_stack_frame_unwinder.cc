@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 
 namespace base {
 
@@ -112,7 +111,7 @@ Win32StackFrameUnwinder::UnwindFunctions::~UnwindFunctions() {}
 Win32StackFrameUnwinder::UnwindFunctions::UnwindFunctions() {}
 
 Win32StackFrameUnwinder::Win32StackFrameUnwinder()
-    : Win32StackFrameUnwinder(WrapUnique(new Win32UnwindFunctions)) {}
+    : Win32StackFrameUnwinder(std::make_unique<Win32UnwindFunctions>()) {}
 
 Win32StackFrameUnwinder::~Win32StackFrameUnwinder() {}
 

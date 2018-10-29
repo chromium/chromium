@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
@@ -40,7 +39,6 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 #include "third_party/blink/renderer/core/inspector/worker_inspector_controller.h"
-#include "third_party/blink/renderer/core/workers/threaded_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
@@ -79,7 +77,7 @@ void WorkerThreadDebugger::ReportConsoleMessage(ExecutionContext* context,
                                                 SourceLocation* location) {
   if (!context)
     return;
-  ToWorkerOrWorkletGlobalScope(context)
+  To<WorkerOrWorkletGlobalScope>(context)
       ->GetThread()
       ->GetWorkerReportingProxy()
       .ReportConsoleMessage(source, level, message, location);
@@ -136,8 +134,11 @@ void WorkerThreadDebugger::ExceptionThrown(WorkerThread* worker_thread,
       worker_thread->GlobalScope()->ScriptController()->GetScriptState();
   if (script_state && script_state->ContextIsValid()) {
     ScriptState::Scope scope(script_state);
-    v8::Local<v8::Value> exception = LoadExceptionForInspector(
-        script_state, event, script_state->GetContext()->Global());
+    ScriptValue error = event->error(script_state);
+    v8::Local<v8::Value> exception =
+        error.IsEmpty()
+            ? v8::Local<v8::Value>(v8::Null(script_state->GetIsolate()))
+            : error.V8Value();
     SourceLocation* location = event->Location();
     String message = event->MessageForConsole();
     String url = location->Url();
@@ -151,7 +152,7 @@ void WorkerThreadDebugger::ExceptionThrown(WorkerThread* worker_thread,
 }
 
 int WorkerThreadDebugger::ContextGroupId(ExecutionContext* context) {
-  return ContextGroupId(ToWorkerOrWorkletGlobalScope(context)->GetThread());
+  return ContextGroupId(To<WorkerOrWorkletGlobalScope>(context)->GetThread());
 }
 
 void WorkerThreadDebugger::PauseWorkerOnStart(WorkerThread* worker_thread) {

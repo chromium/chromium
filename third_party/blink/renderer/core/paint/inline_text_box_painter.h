@@ -65,8 +65,6 @@ class InlineTextBoxPainter {
                                       const ComputedStyle&,
                                       const Font&);
 
-  static bool PaintsMarkerHighlights(const LayoutObject&);
-
  private:
   enum class PaintOptions { kNormal, kCombinedText };
 

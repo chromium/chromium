@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_COMMON_INSTALL_WARNING_H_
 #define EXTENSIONS_COMMON_INSTALL_WARNING_H_
 
+#include "base/macros.h"
+
 #include <ostream>
 #include <string>
 
@@ -19,6 +21,8 @@ struct InstallWarning {
   InstallWarning(const std::string& message,
                  const std::string& key,
                  const std::string& specific);
+  InstallWarning(InstallWarning&& other);
+  InstallWarning& operator=(InstallWarning&& other);
   ~InstallWarning();
 
   bool operator==(const InstallWarning& other) const {
@@ -38,6 +42,8 @@ struct InstallWarning {
   // Optional - for specifying the incorrect portion of a key in the manifest
   // (e.g., an unrecognized permission "foo" in "permissions").
   std::string specific;
+
+  DISALLOW_COPY(InstallWarning);
 };
 
 // Let gtest print InstallWarnings.

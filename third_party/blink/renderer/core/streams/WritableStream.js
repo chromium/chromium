@@ -1073,5 +1073,8 @@
     WritableStreamDefaultControllerErrorIfNeeded,
     isWritableStreamErroring,
     getWritableStreamController,
+
+    // Exports for CreateCrossRealmTransformWritable in CommonOperations.js
+    WritableStreamDefaultControllerClose,
   });
 });

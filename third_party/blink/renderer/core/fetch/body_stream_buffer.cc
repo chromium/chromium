@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_wrapper.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_operations.h"
+#include "third_party/blink/renderer/core/streams/retain_wrapper_during_construction.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -59,6 +60,11 @@ class BodyStreamBuffer::LoaderClient final
     client_->DidFetchDataLoadedString(string);
   }
 
+  void DidFetchDataStartedDataPipe(
+      mojo::ScopedDataPipeConsumerHandle data_pipe) override {
+    client_->DidFetchDataStartedDataPipe(std::move(data_pipe));
+  }
+
   void DidFetchDataLoadedDataPipe() override {
     buffer_->EndLoading();
     client_->DidFetchDataLoadedDataPipe();
@@ -99,7 +105,8 @@ BodyStreamBuffer::BodyStreamBuffer(ScriptState* script_state,
       consumer_(consumer),
       signal_(signal),
       made_from_readable_stream_(false) {
-  RetainWrapperUntilV8WrapperGetReturnedToV8(script_state);
+  if (!RetainWrapperDuringConstruction(this, script_state))
+    stream_broken_ = true;
 
   {
     // Leaving an exception pending will cause Blink to crash in the bindings
@@ -141,7 +148,10 @@ BodyStreamBuffer::BodyStreamBuffer(ScriptState* script_state,
       script_state_(script_state),
       signal_(nullptr),
       made_from_readable_stream_(true) {
-  RetainWrapperUntilV8WrapperGetReturnedToV8(script_state);
+  // This is needed because sometimes a BodyStreamBuffer can be detached from
+  // the owner object such as Request. We rely on the wrapper and
+  // HasPendingActivity in such a case.
+  RetainWrapperDuringConstruction(this, script_state);
   DCHECK(ReadableStreamOperations::IsReadableStreamForDCheck(script_state,
                                                              stream));
 
@@ -373,17 +383,25 @@ bool BodyStreamBuffer::IsStreamDisturbedForDCheck() {
 }
 
 void BodyStreamBuffer::CloseAndLockAndDisturb(ExceptionState& exception_state) {
-  // Speculative fix for https://crbug.com/882599. Stop the stream from being
-  // garbage collected while this function is executing.
-  // TODO(ricea): Remove this when a better solution is found or if it doesn't
-  // work.
-  v8::Local<v8::Value> stream_handle =
-      stream_.NewLocal(script_state_->GetIsolate());
-  CHECK(!stream_handle.IsEmpty());
+  if (stream_broken_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Body stream has suffered a fatal error and cannot be disturbed");
+    return;
+  }
+
+  if (stream_.IsEmpty()) {
+    stream_broken_ = true;
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Body stream has been lost and cannot be disturbed");
+    return;
+  }
 
   base::Optional<bool> is_readable = IsStreamReadable(exception_state);
   if (exception_state.HadException())
     return;
+
   DCHECK(is_readable.has_value());
   if (is_readable.value()) {
     // Note that the stream cannot be "draining", because it doesn't have
@@ -393,15 +411,18 @@ void BodyStreamBuffer::CloseAndLockAndDisturb(ExceptionState& exception_state) {
   DCHECK(!stream_broken_);
 
   ScriptState::Scope scope(script_state_);
+
   const base::Optional<bool> is_locked = IsStreamLocked(exception_state);
   if (exception_state.HadException() || is_locked.value())
     return;
+
   ScriptValue reader = ReadableStreamOperations::GetReader(
       script_state_, Stream(), exception_state);
   if (exception_state.HadException()) {
     stream_broken_ = true;
     return;
   }
+
   ReadableStreamOperations::DefaultReaderRead(script_state_, reader);
 }
 
@@ -431,7 +452,10 @@ void BodyStreamBuffer::Abort() {
 }
 
 void BodyStreamBuffer::Close() {
-  Controller()->Close();
+  // Close() can be called during construction, in which case Controller()
+  // will not be set yet.
+  if (Controller())
+    Controller()->Close();
   CancelConsumer();
 }
 
@@ -527,20 +551,6 @@ base::Optional<bool> BodyStreamBuffer::BooleanStreamOperation(
     return base::nullopt;
   }
   return result;
-}
-
-void BodyStreamBuffer::RetainWrapperUntilV8WrapperGetReturnedToV8(
-    ScriptState* script_state) {
-  bool post_task_succeeded =
-      ExecutionContext::From(script_state)
-          ->GetTaskRunner(TaskType::kInternalDefault)
-          ->PostTask(FROM_HERE,
-                     WTF::Bind(Noop, ScriptValue(script_state,
-                                                 ToV8(this, script_state))));
-  // Temporary CHECK to find out if and how often this PostTask fails.
-  // TODO(ricea): Set stream_broken_ to false if PostTask fails instead of
-  // crashing.
-  CHECK(post_task_succeeded);
 }
 
 BytesConsumer* BodyStreamBuffer::ReleaseHandle(

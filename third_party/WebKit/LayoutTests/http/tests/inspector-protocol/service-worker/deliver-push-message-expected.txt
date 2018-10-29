@@ -1,0 +1,3 @@
+Tests delivery of a push message to the service worker.
+Got message: push message
+

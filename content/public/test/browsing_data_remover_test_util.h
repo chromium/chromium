@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
+#include "base/sequenced_task_runner.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 namespace content {
@@ -29,6 +30,7 @@ class BrowsingDataRemoverCompletionObserver
   void OnBrowsingDataRemoverDone() override;
 
  private:
+  void FlushForTestingComplete();
   void QuitRunLoopWhenTasksComplete();
 
   // Tracks when the Task Scheduler task flushing is done.
@@ -40,6 +42,7 @@ class BrowsingDataRemoverCompletionObserver
 
   base::RunLoop run_loop_;
   ScopedObserver<BrowsingDataRemover, BrowsingDataRemover::Observer> observer_;
+  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverCompletionObserver);
 };
@@ -66,6 +69,7 @@ class BrowsingDataRemoverCompletionInhibitor {
       const base::Closure& continue_to_completion);
 
  private:
+  void FlushForTestingComplete();
   void QuitRunLoopWhenTasksComplete();
 
   // Tracks when the Task Scheduler task flushing is done.
@@ -80,6 +84,7 @@ class BrowsingDataRemoverCompletionInhibitor {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   base::Closure continue_to_completion_callback_;
+  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverCompletionInhibitor);
 };

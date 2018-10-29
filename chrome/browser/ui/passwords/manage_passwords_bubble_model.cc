@@ -396,12 +396,6 @@ void ManagePasswordsBubbleModel::
     delegate_->NavigateToPasswordManagerAccountDashboard();
 }
 
-void ManagePasswordsBubbleModel::OnBrandLinkClicked() {
-  interaction_keeper_->set_dismissal_reason(metrics_util::CLICKED_BRAND_NAME);
-  if (delegate_)
-    delegate_->NavigateToSmartLockHelpPage();
-}
-
 void ManagePasswordsBubbleModel::OnAutoSignInToastTimeout() {
   interaction_keeper_->set_dismissal_reason(
       metrics_util::AUTO_SIGNIN_TOAST_TIMEOUT);
@@ -467,9 +461,7 @@ bool ManagePasswordsBubbleModel::IsCurrentStateUpdate() const {
 bool ManagePasswordsBubbleModel::ShouldShowFooter() const {
   return (state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
           state_ == password_manager::ui::PENDING_PASSWORD_STATE) &&
-         IsSyncUser(GetProfile()) &&
-         // TODO(crbug.com/862269): Remove when "Smart Lock" is gone.
-         pending_password_.federation_origin.unique();
+         IsSyncUser(GetProfile());
 }
 
 const base::string16& ManagePasswordsBubbleModel::GetCurrentUsername() const {
@@ -487,7 +479,6 @@ bool ManagePasswordsBubbleModel::ReplaceToShowPromotionIfNeeded() {
   if (password_bubble_experiment::ShouldShowChromeSignInPasswordPromo(
           prefs, sync_service)) {
     interaction_keeper_->ReportInteractions(this);
-    title_brand_link_range_ = gfx::Range();
     title_ =
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CONFIRM_SAVED_TITLE);
     state_ = password_manager::ui::CHROME_SIGN_IN_PROMO_STATE;
@@ -505,7 +496,6 @@ bool ManagePasswordsBubbleModel::ReplaceToShowPromotionIfNeeded() {
           profile,
           desktop_ios_promotion::PromotionEntryPoint::SAVE_PASSWORD_BUBBLE)) {
     interaction_keeper_->ReportInteractions(this);
-    title_brand_link_range_ = gfx::Range();
     title_ = desktop_ios_promotion::GetPromoTitle(
         desktop_ios_promotion::PromotionEntryPoint::SAVE_PASSWORD_BUBBLE);
     state_ = password_manager::ui::CHROME_DESKTOP_IOS_PROMO_STATE;
@@ -528,16 +518,14 @@ bool ManagePasswordsBubbleModel::RevealPasswords() {
 }
 
 void ManagePasswordsBubbleModel::UpdatePendingStateTitle() {
-  title_brand_link_range_ = gfx::Range();
   PasswordTitleType type =
       state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE
           ? PasswordTitleType::UPDATE_PASSWORD
-          : (pending_password_.federation_origin.unique()
+          : (pending_password_.federation_origin.opaque()
                  ? PasswordTitleType::SAVE_PASSWORD
                  : PasswordTitleType::SAVE_ACCOUNT);
-  GetSavePasswordDialogTitleTextAndLinkRange(
-      GetWebContents()->GetVisibleURL(), origin_, IsSyncUser(GetProfile()),
-      type, &title_, &title_brand_link_range_);
+  GetSavePasswordDialogTitleTextAndLinkRange(GetWebContents()->GetVisibleURL(),
+                                             origin_, type, &title_);
 }
 
 void ManagePasswordsBubbleModel::UpdateManageStateTitle() {

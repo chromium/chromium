@@ -30,8 +30,7 @@ AllDownloadItemNotifier::AllDownloadItemNotifier(
 AllDownloadItemNotifier::~AllDownloadItemNotifier() {
   if (manager_)
     manager_->RemoveObserver(this);
-  for (std::set<DownloadItem*>::const_iterator it = observing_.begin();
-       it != observing_.end(); ++it) {
+  for (auto it = observing_.begin(); it != observing_.end(); ++it) {
     (*it)->RemoveObserver(this);
   }
   observing_.clear();

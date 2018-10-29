@@ -21,7 +21,7 @@ MockWebDocumentSubresourceFilter::~MockWebDocumentSubresourceFilter() {}
 blink::WebDocumentSubresourceFilter::LoadPolicy
 MockWebDocumentSubresourceFilter::GetLoadPolicy(
     const blink::WebURL& resource_url,
-    blink::WebURLRequest::RequestContext) {
+    blink::mojom::RequestContextType) {
   return getLoadPolicyImpl(resource_url);
 }
 

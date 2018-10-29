@@ -2,7 +2,6 @@ Test importing an EC public and private key for ECDSA.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Importing a public key...
 PASS publicKey.toString() is '[object CryptoKey]'
 PASS publicKey.type is 'public'

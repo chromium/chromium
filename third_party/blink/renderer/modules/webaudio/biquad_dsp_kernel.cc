@@ -48,13 +48,13 @@ static bool hasConstantValues(float* values, int frames_to_process) {
 
 void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
   if (GetBiquadProcessor()->FilterCoefficientsDirty()) {
-    float cutoff_frequency[AudioUtilities::kRenderQuantumFrames];
-    float q[AudioUtilities::kRenderQuantumFrames];
-    float gain[AudioUtilities::kRenderQuantumFrames];
-    float detune[AudioUtilities::kRenderQuantumFrames];  // in Cents
+    float cutoff_frequency[audio_utilities::kRenderQuantumFrames];
+    float q[audio_utilities::kRenderQuantumFrames];
+    float gain[audio_utilities::kRenderQuantumFrames];
+    float detune[audio_utilities::kRenderQuantumFrames];  // in Cents
 
     SECURITY_CHECK(static_cast<unsigned>(frames_to_process) <=
-                   AudioUtilities::kRenderQuantumFrames);
+                   audio_utilities::kRenderQuantumFrames);
 
     if (GetBiquadProcessor()->HasSampleAccurateValues()) {
       GetBiquadProcessor()->Parameter1().CalculateSampleAccurateValues(

@@ -239,9 +239,12 @@ v8::Local<v8::Value> PluginObject::GetPropertyOrMethod(v8::Isolate* isolate,
     return v8::Local<v8::Value>();
 
   if (has_method) {
+    v8::Local<v8::Context> context = isolate->GetCurrentContext();
     const std::string& identifier =
         StringVar::FromPPVar(identifier_var)->value();
-    return GetFunctionTemplate(isolate, identifier)->GetFunction();
+    return GetFunctionTemplate(isolate, identifier)
+        ->GetFunction(context)
+        .ToLocalChecked();
   }
 
   return v8::Local<v8::Value>();

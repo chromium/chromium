@@ -32,34 +32,24 @@ import traceback
 
 import common
 
-def main():
-  parser = argparse.ArgumentParser()
 
-  # --isolated-script-test-output is passed through to the script.
+class ChromeDriverAdapter(common.BaseIsolatedScriptArgsAdapter):
 
-  # This argument is ignored for now.
-  parser.add_argument('--isolated-script-test-chartjson-output', type=str)
-  # This argument is ignored for now.
-  parser.add_argument('--isolated-script-test-perf-output', type=str)
-  # This argument is translated below.
-  parser.add_argument('--isolated-script-test-filter', type=str)
+  def generate_test_output_args(self, output):
+    return ['--isolated-script-test-output', output]
 
-  args, rest_args = parser.parse_known_args()
-
-  filtered_tests = args.isolated_script_test_filter
-  if filtered_tests:
-    if any('--filter' in arg for arg in rest_args):
-      parser.error(
+  def generate_test_filter_args(self, test_filter_str):
+    if any('--filter' in arg for arg in self.rest_args):
+      self.parser.error(
           'can\'t have the test call filter with the'
           '--isolated-script-test-filter argument to the wrapper script')
 
-    # https://github.com/google/googletest/blob/master/googletest/docs/advanced.md#running-a-subset-of-the-tests
-    # says that the gtest filter should accept single colons separating
-    # individual tests. The input is double colon separated, so translate it.
-    rest_args = rest_args + ['--filter', filtered_tests.replace('::', ':')]
+    return ['--filter', test_filter_str.replace('::', ':')]
 
-  cmd = [sys.executable] + rest_args
-  return common.run_command(cmd)
+
+def main():
+  adapter = ChromeDriverAdapter()
+  return adapter.run_test()
 
 
 # This is not really a "script test" so does not need to manually add

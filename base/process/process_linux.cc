@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/posix/can_lower_nice_to.h"
+#include "base/process/internal_linux.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -71,6 +72,21 @@ const int kBackgroundPriority = 5;
 #endif  // defined(OS_CHROMEOS)
 
 }  // namespace
+
+Time Process::CreationTime() const {
+  int64_t start_ticks = is_current()
+                            ? internal::ReadProcSelfStatsAndGetFieldAsInt64(
+                                  internal::VM_STARTTIME)
+                            : internal::ReadProcStatsAndGetFieldAsInt64(
+                                  Pid(), internal::VM_STARTTIME);
+  if (!start_ticks)
+    return Time();
+  TimeDelta start_offset = internal::ClockTicksToTimeDelta(start_ticks);
+  Time boot_time = internal::GetBootTime();
+  if (boot_time.is_null())
+    return Time();
+  return Time(boot_time + start_offset);
+}
 
 // static
 bool Process::CanBackgroundProcesses() {

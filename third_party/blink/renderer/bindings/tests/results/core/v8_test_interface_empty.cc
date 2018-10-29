@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This file has been auto-generated from the Jinja2 template
-// third_party/blink/renderer/bindings/templates/interface.cpp.tmpl
+// third_party/blink/renderer/bindings/templates/interface.cc.tmpl
 // by the script code_generator_v8.py.
 // DO NOT MODIFY!
 
@@ -58,9 +58,9 @@ static_assert(
     "[ActiveScriptWrappable] extended attribute in the IDL file.  "
     "Be consistent.");
 
-namespace TestInterfaceEmptyV8Internal {
+namespace test_interface_empty_v8_internal {
 
-} // namespace TestInterfaceEmptyV8Internal
+}  // namespace test_interface_empty_v8_internal
 
 static void installV8TestInterfaceEmptyTemplate(
     v8::Isolate* isolate,

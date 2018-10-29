@@ -9,6 +9,10 @@
 
 #include "base/time/time.h"
 
+namespace content {
+class WebContents;
+}
+
 // This interface specifies the interaction that a
 // |PreviewsLitePageNavigationThrottle| has with it's state manager. This class
 // tracks the state of the Navigation Throttle since a single instance of the
@@ -33,6 +37,28 @@ class PreviewsLitePageNavigationThrottleManager {
 
   // Generates a new page id for a request to the previews server.
   virtual uint64_t GeneratePageID() = 0;
+
+  // Reports data savings to Data Saver.
+  virtual void ReportDataSavings(int64_t network_bytes,
+                                 int64_t original_bytes,
+                                 const std::string& host) = 0;
+
+  // Note: |NeedsToToNotify| is intentionally separate from |NotifyUser| for
+  // ease of testing and metrics collection without changing the notification
+  // state.
+  // Returns true if the UI notification needs to be shown to the user before
+  // this preview can be shown.
+  virtual bool NeedsToNotifyUser() = 0;
+
+  // Prompts |this| to display the required UI notifications to the user.
+  virtual void NotifyUser(content::WebContents* web_contents) = 0;
+
+  // Blacklists the given |host| for the given |duration|.
+  virtual void BlacklistHost(const std::string& host,
+                             base::TimeDelta duration) = 0;
+
+  // Returns true if the given |host| is blacklisted.
+  virtual bool HostBlacklisted(const std::string& host) = 0;
 };
 
 #endif  // CHROME_BROWSER_PREVIEWS_PREVIEWS_LITE_PAGE_NAVIGATION_THROTTLE_MANAGER_H_

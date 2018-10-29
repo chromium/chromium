@@ -107,7 +107,7 @@
       ReadingListModelFactory::GetInstance()->GetForBrowserState(
           self.browserState);
   ReadingListListItemFactory* itemFactory =
-      [ReadingListListItemFactory tableViewItemFactory];
+      [[ReadingListListItemFactory alloc] init];
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(self.browserState);
   self.mediator = [[ReadingListMediator alloc] initWithModel:model

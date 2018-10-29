@@ -4,11 +4,13 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_task_environment.h"
 #include "build/build_config.h"
@@ -16,9 +18,13 @@
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "mojo/public/cpp/system/wait.h"
+#include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/mojo_socket_test_util.h"
@@ -102,6 +108,7 @@ class TCPBoundSocketTest : public testing::Test {
   int Connect(mojom::TCPBoundSocketPtr bound_socket,
               const net::IPEndPoint& expected_local_addr,
               const net::IPEndPoint& connect_to_addr,
+              mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
               mojom::TCPConnectedSocketPtr* connected_socket,
               mojom::SocketObserverPtr socket_observer,
               mojo::ScopedDataPipeConsumerHandle* client_socket_receive_handle,
@@ -113,8 +120,9 @@ class TCPBoundSocketTest : public testing::Test {
     int connect_result = net::ERR_IO_PENDING;
     base::RunLoop run_loop;
     bound_socket->Connect(
-        connect_to_addr, mojo::MakeRequest(connected_socket),
-        std::move(socket_observer),
+        net::AddressList(connect_to_addr),
+        std::move(tcp_connected_socket_options),
+        mojo::MakeRequest(connected_socket), std::move(socket_observer),
         base::BindLambdaForTesting(
             [&](int net_error,
                 const base::Optional<net::IPEndPoint>& local_addr,
@@ -151,11 +159,12 @@ class TCPBoundSocketTest : public testing::Test {
     return connect_result;
   }
 
-  // Attempts to read exactly |expected_bytes| from |receive_handle|.
+  // Attempts to read exactly |expected_bytes| from |receive_handle|, or reads
+  // until the pipe is closed if |expected_bytes| is 0.
   std::string ReadData(mojo::DataPipeConsumerHandle receive_handle,
-                       uint32_t expected_bytes) {
+                       uint32_t expected_bytes = 0) {
     std::string read_data;
-    while (read_data.size() < expected_bytes) {
+    while (expected_bytes == 0 || read_data.size() < expected_bytes) {
       const void* buffer;
       uint32_t num_bytes = expected_bytes - read_data.size();
       MojoResult result = receive_handle.BeginReadData(
@@ -165,7 +174,8 @@ class TCPBoundSocketTest : public testing::Test {
         continue;
       }
       if (result != MOJO_RESULT_OK) {
-        ADD_FAILURE() << "Read failed";
+        if (expected_bytes != 0)
+          ADD_FAILURE() << "Read failed";
         return read_data;
       }
       read_data.append(static_cast<const char*>(buffer), num_bytes);
@@ -236,6 +246,7 @@ TEST_F(TCPBoundSocketTest, ConnectError) {
   mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
   EXPECT_EQ(net::ERR_CONNECTION_REFUSED,
             Connect(std::move(bound_socket2), bound_address2, bound_address1,
+                    nullptr /* tcp_connected_socket_options */,
                     &connected_socket, mojom::SocketObserverPtr(),
                     &client_socket_receive_handle, &client_socket_send_handle));
 }
@@ -299,7 +310,8 @@ TEST_F(TCPBoundSocketTest, ReadWrite) {
   mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
   EXPECT_EQ(net::OK,
             Connect(std::move(bound_socket2), client_address, server_address,
-                    &client_socket, socket_observer.GetObserverPtr(),
+                    nullptr /* tcp_connected_socket_options */, &client_socket,
+                    socket_observer.GetObserverPtr(),
                     &client_socket_receive_handle, &client_socket_send_handle));
 
   base::RunLoop run_loop;
@@ -353,6 +365,134 @@ TEST_F(TCPBoundSocketTest, ReadWrite) {
   // Wait for write error on the client socket. Don't check exact error, out of
   // paranoia.
   EXPECT_LT(socket_observer.WaitForWriteError(), 0);
+}
+
+// Establish a connection while passing in some options. This test doesn't check
+// that the options are actually set, since there's no API for that.
+TEST_F(TCPBoundSocketTest, ConnectWithOptions) {
+  // Set up a listening socket.
+  network::mojom::TCPBoundSocketPtr bound_socket1;
+  net::IPEndPoint server_address;
+  ASSERT_EQ(net::OK, BindSocket(LocalHostWithAnyPort(), &bound_socket1,
+                                &server_address));
+  network::mojom::TCPServerSocketPtr server_socket;
+  ASSERT_EQ(net::OK, Listen(std::move(bound_socket1), &server_socket));
+
+  // Connect to the socket with another socket.
+  network::mojom::TCPBoundSocketPtr bound_socket2;
+  net::IPEndPoint client_address;
+  ASSERT_EQ(net::OK, BindSocket(LocalHostWithAnyPort(), &bound_socket2,
+                                &client_address));
+  network::mojom::TCPConnectedSocketPtr client_socket;
+  TestSocketObserver socket_observer;
+  mojo::ScopedDataPipeConsumerHandle client_socket_receive_handle;
+  mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
+  mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options =
+      mojom::TCPConnectedSocketOptions::New();
+  tcp_connected_socket_options->send_buffer_size = 32 * 1024;
+  tcp_connected_socket_options->receive_buffer_size = 64 * 1024;
+  tcp_connected_socket_options->no_delay = false;
+
+  EXPECT_EQ(net::OK,
+            Connect(std::move(bound_socket2), client_address, server_address,
+                    std::move(tcp_connected_socket_options), &client_socket,
+                    socket_observer.GetObserverPtr(),
+                    &client_socket_receive_handle, &client_socket_send_handle));
+
+  base::RunLoop run_loop;
+  network::mojom::TCPConnectedSocketPtr accept_socket;
+  mojo::ScopedDataPipeConsumerHandle accept_socket_receive_handle;
+  mojo::ScopedDataPipeProducerHandle accept_socket_send_handle;
+  server_socket->Accept(
+      nullptr /* ovserver */,
+      base::BindLambdaForTesting(
+          [&](int net_error, const base::Optional<net::IPEndPoint>& remote_addr,
+              network::mojom::TCPConnectedSocketPtr connected_socket,
+              mojo::ScopedDataPipeConsumerHandle receive_stream,
+              mojo::ScopedDataPipeProducerHandle send_stream) {
+            EXPECT_EQ(net_error, net::OK);
+            EXPECT_EQ(*remote_addr, client_address);
+            accept_socket = std::move(connected_socket);
+            accept_socket_receive_handle = std::move(receive_stream);
+            accept_socket_send_handle = std::move(send_stream);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  const std::string kData = "Jumbo Shrimp";
+  ASSERT_TRUE(mojo::BlockingCopyFromString(kData, client_socket_send_handle));
+  EXPECT_EQ(kData, ReadData(accept_socket_receive_handle.get(), kData.size()));
+
+  ASSERT_TRUE(mojo::BlockingCopyFromString(kData, accept_socket_send_handle));
+  EXPECT_EQ(kData, ReadData(client_socket_receive_handle.get(), kData.size()));
+}
+
+// Test that a TCPBoundSocket can be upgraded to TLS once connected.
+TEST_F(TCPBoundSocketTest, UpgradeToTLS) {
+  // Simplest way to set up an TLS server is to use the embedded test server.
+  net::test_server::EmbeddedTestServer test_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  test_server.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        std::unique_ptr<net::test_server::BasicHttpResponse> basic_response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+        basic_response->set_content(request.relative_url);
+        return basic_response;
+      }));
+  ASSERT_TRUE(test_server.Start());
+
+  network::mojom::TCPBoundSocketPtr bound_socket;
+  net::IPEndPoint client_address;
+  ASSERT_EQ(net::OK,
+            BindSocket(LocalHostWithAnyPort(), &bound_socket, &client_address));
+  network::mojom::TCPConnectedSocketPtr client_socket;
+  TestSocketObserver socket_observer;
+  mojo::ScopedDataPipeConsumerHandle client_socket_receive_handle;
+  mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
+
+  EXPECT_EQ(net::OK,
+            Connect(std::move(bound_socket), client_address,
+                    net::IPEndPoint(net::IPAddress::IPv4Localhost(),
+                                    test_server.host_port_pair().port()),
+                    nullptr /* tcp_connected_socket_options */, &client_socket,
+                    socket_observer.GetObserverPtr(),
+                    &client_socket_receive_handle, &client_socket_send_handle));
+
+  // Need to closed these pipes for UpgradeToTLS to complete.
+  client_socket_receive_handle.reset();
+  client_socket_send_handle.reset();
+
+  base::RunLoop run_loop;
+  mojom::TLSClientSocketPtr tls_client_socket;
+  client_socket->UpgradeToTLS(
+      test_server.host_port_pair(), nullptr /* options */,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      mojo::MakeRequest(&tls_client_socket), nullptr /* observer */,
+      base::BindLambdaForTesting(
+          [&](int net_error,
+              mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
+              mojo::ScopedDataPipeProducerHandle send_pipe_handle,
+              const base::Optional<net::SSLInfo>& ssl_info) {
+            EXPECT_EQ(net::OK, net_error);
+            client_socket_receive_handle = std::move(receive_pipe_handle);
+            client_socket_send_handle = std::move(send_pipe_handle);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  const char kPath[] = "/foo";
+
+  // Send an HTTP request.
+  std::string request = base::StringPrintf("GET %s HTTP/1.0\r\n\r\n", kPath);
+  EXPECT_TRUE(mojo::BlockingCopyFromString(request, client_socket_send_handle));
+
+  // Read the response, and make sure it looks reasonable.
+  std::string response = ReadData(client_socket_receive_handle.get());
+  EXPECT_EQ("HTTP/", response.substr(0, 5));
+  // The response body should be the path, so make sure the response ends with
+  // the path.
+  EXPECT_EQ(kPath, response.substr(response.length() - strlen(kPath)));
 }
 
 }  // namespace

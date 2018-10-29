@@ -55,7 +55,7 @@
 
 namespace blink {
 
-using namespace MediaFeatureNames;
+using namespace media_feature_names;
 
 enum MediaFeaturePrefix { kMinPrefix, kMaxPrefix, kNoPrefix };
 
@@ -100,7 +100,7 @@ bool MediaQueryEvaluator::MediaTypeMatch(
     const String& media_type_to_match) const {
   return media_type_to_match.IsEmpty() ||
          DeprecatedEqualIgnoringCase(media_type_to_match,
-                                     MediaTypeNames::all) ||
+                                     media_type_names::kAll) ||
          DeprecatedEqualIgnoringCase(media_type_to_match, MediaType());
 }
 
@@ -118,7 +118,7 @@ bool MediaQueryEvaluator::Eval(
   const ExpressionHeapVector& expressions = query.Expressions();
   // Iterate through expressions, stop if any of them eval to false (AND
   // semantics).
-  size_t i = 0;
+  wtf_size_t i = 0;
   for (; i < expressions.size(); ++i) {
     bool expr_result = Eval(expressions.at(i));
     if (viewport_dependent_media_query_results &&
@@ -149,7 +149,7 @@ bool MediaQueryEvaluator::Eval(
 
   // Iterate over queries, stop if any of them eval to true (OR semantics).
   bool result = false;
-  for (size_t i = 0; i < queries.size() && !result; ++i)
+  for (wtf_size_t i = 0; i < queries.size() && !result; ++i)
     result = Eval(*queries[i], viewport_dependent_media_query_results,
                   device_dependent_media_query_results);
 
@@ -322,10 +322,10 @@ static bool EvalResolution(const MediaQueryExpValue& value,
   // in the query. Thus, if if the document's media type is "print", the
   // media type of the query will either be "print" or "all".
   if (DeprecatedEqualIgnoringCase(media_values.MediaType(),
-                                  MediaTypeNames::screen)) {
+                                  media_type_names::kScreen)) {
     actual_resolution = clampTo<float>(media_values.DevicePixelRatio());
   } else if (DeprecatedEqualIgnoringCase(media_values.MediaType(),
-                                         MediaTypeNames::print)) {
+                                         media_type_names::kPrint)) {
     // The resolution of images while printing should not depend on the DPI
     // of the screen. Until we support proper ways of querying this info
     // we use 300px which is considered minimum for current printers.
@@ -752,7 +752,7 @@ static bool ScanMediaFeatureEval(const MediaQueryExpValue& value,
                                  const MediaValues& media_values) {
   // Scan only applies to 'tv' media.
   if (!DeprecatedEqualIgnoringCase(media_values.MediaType(),
-                                   MediaTypeNames::tv))
+                                   media_type_names::kTv))
     return false;
 
   if (!value.IsValid())

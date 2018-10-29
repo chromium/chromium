@@ -28,12 +28,16 @@
 
 #include "v8/include/v8.h"
 
-namespace WebCoreTestSupport {
+namespace blink {
+
+namespace web_core_test_support {
 
 void InjectInternalsObject(v8::Local<v8::Context>);
 void ResetInternalsObject(v8::Local<v8::Context>);
 void RegisterInstallOriginTrialFeaturesForTesting();
 
-}  // namespace WebCoreTestSupport
+}  // namespace web_core_test_support
+
+}  // namespace blink
 
 #endif

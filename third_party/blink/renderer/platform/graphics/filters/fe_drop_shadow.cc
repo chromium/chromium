@@ -75,8 +75,8 @@ FloatRect FEDropShadow::MapEffect(const FloatRect& rect) const {
 }
 
 sk_sp<PaintFilter> FEDropShadow::CreateImageFilter() {
-  sk_sp<PaintFilter> input(
-      PaintFilterBuilder::Build(InputEffect(0), OperatingInterpolationSpace()));
+  sk_sp<PaintFilter> input(paint_filter_builder::Build(
+      InputEffect(0), OperatingInterpolationSpace()));
   float dx = GetFilter()->ApplyHorizontalScale(dx_);
   float dy = GetFilter()->ApplyVerticalScale(dy_);
   float std_x = GetFilter()->ApplyHorizontalScale(std_x_);

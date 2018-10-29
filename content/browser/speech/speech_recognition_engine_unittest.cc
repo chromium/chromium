@@ -11,10 +11,11 @@
 
 #include "base/big_endian.h"
 #include "base/containers/queue.h"
-#include "base/message_loop/message_loop.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
+#include "base/test/scoped_task_environment.h"
 #include "content/browser/speech/audio_buffer.h"
 #include "content/browser/speech/proto/google_streaming_api.pb.h"
 #include "net/base/net_errors.h"
@@ -99,7 +100,7 @@ class SpeechRecognitionEngineTest
   std::string ConsumeChunkedUploadData();
   void CloseMockDownstream(DownstreamError error);
 
-  base::MessageLoop message_loop_;
+  base::test::ScopedTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   mojo::ScopedDataPipeProducerHandle downstream_data_pipe_;
@@ -666,10 +667,8 @@ bool SpeechRecognitionEngineTest::ResultsAreEqual(
   if (a.size() != b.size())
     return false;
 
-  std::vector<blink::mojom::SpeechRecognitionResultPtr>::const_iterator it_a =
-      a.begin();
-  std::vector<blink::mojom::SpeechRecognitionResultPtr>::const_iterator it_b =
-      b.begin();
+  auto it_a = a.begin();
+  auto it_b = b.begin();
   for (; it_a != a.end() && it_b != b.end(); ++it_a, ++it_b) {
     if ((*it_a)->is_provisional != (*it_b)->is_provisional ||
         (*it_a)->hypotheses.size() != (*it_b)->hypotheses.size()) {

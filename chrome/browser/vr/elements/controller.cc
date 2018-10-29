@@ -326,19 +326,19 @@ Controller::Renderer::Renderer()
   AddSquare(kTopNumRings, kSquareNumSectors, transform, *top_alpha_curve,
             &vertices_, &colors_, &indices_);
 
-  glGenBuffersARB(1, &vertex_buffer_);
+  glGenBuffers(1, &vertex_buffer_);
   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
   glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(float),
                vertices_.data(), GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  glGenBuffersARB(1, &color_buffer_);
+  glGenBuffers(1, &color_buffer_);
   glBindBuffer(GL_ARRAY_BUFFER, color_buffer_);
   glBufferData(GL_ARRAY_BUFFER, colors_.size() * sizeof(float), colors_.data(),
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  glGenBuffersARB(1, &index_buffer_);
+  glGenBuffers(1, &index_buffer_);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_.size() * sizeof(GLushort),
                indices_.data(), GL_STATIC_DRAW);

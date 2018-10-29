@@ -86,7 +86,7 @@ void InspectorResourceContentLoader::Start() {
       resource_request = ResourceRequest(document->Url());
       resource_request.SetCacheMode(mojom::FetchCacheMode::kOnlyIfCached);
     }
-    resource_request.SetRequestContext(WebURLRequest::kRequestContextInternal);
+    resource_request.SetRequestContext(mojom::RequestContextType::INTERNAL);
 
     if (!resource_request.Url().GetString().IsEmpty()) {
       urls_to_fetch.insert(resource_request.Url().GetString());
@@ -110,8 +110,7 @@ void InspectorResourceContentLoader::Start() {
         continue;
       urls_to_fetch.insert(url);
       ResourceRequest resource_request(url);
-      resource_request.SetRequestContext(
-          WebURLRequest::kRequestContextInternal);
+      resource_request.SetRequestContext(mojom::RequestContextType::INTERNAL);
       ResourceLoaderOptions options;
       options.initiator_info.name = FetchInitiatorTypeNames::internal;
       FetchParameters params(resource_request, options);

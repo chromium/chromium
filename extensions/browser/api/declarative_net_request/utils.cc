@@ -16,8 +16,8 @@
 #include "base/hash.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "components/url_pattern_index/url_pattern_index.h"
@@ -29,6 +29,7 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/api/declarative_net_request/utils.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
@@ -135,8 +136,12 @@ const ExtensionResource* GetRulesetResource(const Extension& extension) {
 
 // Helper to retrieve the filename of the JSON ruleset provided by |extension|.
 std::string GetJSONRulesetFilename(const Extension& extension) {
-  base::AssertBlockingAllowed();
   return GetRulesetResource(extension)->GetFilePath().BaseName().AsUTF8Unsafe();
+}
+
+InstallWarning CreateInstallWarning(const std::string& message) {
+  return InstallWarning(message, manifest_keys::kDeclarativeNetRequestKey,
+                        manifest_keys::kDeclarativeRuleResourcesKey);
 }
 
 // Helper function to index |rules| and persist them to the
@@ -145,7 +150,6 @@ ParseInfo IndexAndPersistRulesImpl(const base::Value& rules,
                                    const Extension& extension,
                                    std::vector<InstallWarning>* warnings,
                                    int* ruleset_checksum) {
-  base::AssertBlockingAllowed();
   DCHECK(warnings);
   DCHECK(ruleset_checksum);
 
@@ -153,8 +157,16 @@ ParseInfo IndexAndPersistRulesImpl(const base::Value& rules,
     return ParseInfo(ParseResult::ERROR_LIST_NOT_PASSED);
 
   FlatRulesetIndexer indexer;
-  base::Optional<InstallWarning> install_warning;
-  const size_t rule_count_limit = dnr_api::MAX_NUMBER_OF_RULES;
+
+  const size_t kRuleCountLimit = dnr_api::MAX_NUMBER_OF_RULES;
+  bool rule_count_exceeded = false;
+
+  // Limit the maximum number of rule unparsed warnings to 5.
+  const size_t kMaxUnparsedRulesWarnings = 5;
+  std::vector<int> unparsed_indices;
+  unparsed_indices.reserve(kMaxUnparsedRulesWarnings);
+  bool unparsed_warnings_limit_exeeded = false;
+
   base::ElapsedTimer timer;
   {
     std::set<int> id_set;  // Ensure all ids are distinct.
@@ -165,9 +177,13 @@ ParseInfo IndexAndPersistRulesImpl(const base::Value& rules,
       parsed_rule = dnr_api::Rule::FromValue(rules_list[i]);
 
       // Ignore rules which can't be successfully parsed and show an install
-      // warning for them.
-      if (!parsed_rule && !install_warning) {
-        install_warning = InstallWarning(kRulesNotParsedWarning);
+      // warning for them. A hard error is not thrown to maintain backwards
+      // compatibility.
+      if (!parsed_rule) {
+        if (unparsed_indices.size() < kMaxUnparsedRulesWarnings)
+          unparsed_indices.push_back(i);
+        else
+          unparsed_warnings_limit_exeeded = true;
         continue;
       }
 
@@ -181,8 +197,8 @@ ParseInfo IndexAndPersistRulesImpl(const base::Value& rules,
       if (parse_result != ParseResult::SUCCESS)
         return ParseInfo(parse_result, i);
 
-      if (indexer.indexed_rules_count() >= rule_count_limit) {
-        install_warning = InstallWarning(kRuleCountExceeded);
+      if (indexer.indexed_rules_count() >= kRuleCountLimit) {
+        rule_count_exceeded = true;
         break;
       }
 
@@ -195,10 +211,19 @@ ParseInfo IndexAndPersistRulesImpl(const base::Value& rules,
   if (!PersistRuleset(extension, indexer.GetData(), ruleset_checksum))
     return ParseInfo(ParseResult::ERROR_PERSISTING_RULESET);
 
-  if (install_warning) {
-    install_warning->key = manifest_keys::kDeclarativeNetRequestKey;
-    install_warning->specific = manifest_keys::kDeclarativeRuleResourcesKey;
-    warnings->push_back(*install_warning);
+  if (rule_count_exceeded)
+    warnings->push_back(CreateInstallWarning(kRuleCountExceeded));
+
+  if (unparsed_warnings_limit_exeeded) {
+    DCHECK_EQ(kMaxUnparsedRulesWarnings, unparsed_indices.size());
+    warnings->push_back(CreateInstallWarning(ErrorUtils::FormatErrorMessage(
+        kTooManyParseFailuresWarning,
+        std::to_string(kMaxUnparsedRulesWarnings))));
+  }
+
+  for (int rule_index : unparsed_indices) {
+    warnings->push_back(CreateInstallWarning(ErrorUtils::FormatErrorMessage(
+        kRuleNotParsedWarning, std::to_string(rule_index))));
   }
 
   UMA_HISTOGRAM_TIMES(kIndexAndPersistRulesTimeHistogram, timer.Elapsed());
@@ -229,9 +254,16 @@ void OnSafeJSONParserSuccess(const Extension* extension,
       IndexAndPersistRulesResult::CreateErrorResult(std::move(error)));
 }
 
+std::string GetJSONParseError(const std::string& json_ruleset_filename,
+                              const std::string& json_parse_error) {
+  return base::StrCat({json_ruleset_filename, ": ", json_parse_error});
+}
+
 void OnSafeJSONParserError(IndexAndPersistRulesCallback callback,
-                           const std::string& error) {
-  std::move(callback).Run(IndexAndPersistRulesResult::CreateErrorResult(error));
+                           const std::string& json_ruleset_filename,
+                           const std::string& json_parse_error) {
+  std::move(callback).Run(IndexAndPersistRulesResult::CreateErrorResult(
+      GetJSONParseError(json_ruleset_filename, json_parse_error)));
 }
 
 }  // namespace
@@ -266,7 +298,6 @@ IndexAndPersistRulesResult::IndexAndPersistRulesResult() = default;
 IndexAndPersistRulesResult IndexAndPersistRulesUnsafe(
     const Extension& extension) {
   DCHECK(IsAPIAvailable());
-  base::AssertBlockingAllowed();
 
   const ExtensionResource* resource = GetRulesetResource(extension);
   DCHECK(resource);
@@ -275,8 +306,10 @@ IndexAndPersistRulesResult IndexAndPersistRulesUnsafe(
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(
       nullptr /*error_code*/, &error /*error_message*/);
-  if (!root)
-    return IndexAndPersistRulesResult::CreateErrorResult(std::move(error));
+  if (!root) {
+    return IndexAndPersistRulesResult::CreateErrorResult(
+        GetJSONParseError(GetJSONRulesetFilename(extension), error));
+  }
 
   std::vector<InstallWarning> warnings;
   int ruleset_checksum;
@@ -296,7 +329,6 @@ void IndexAndPersistRules(service_manager::Connector* connector,
                           const Extension& extension,
                           IndexAndPersistRulesCallback callback) {
   DCHECK(IsAPIAvailable());
-  base::AssertBlockingAllowed();
 
   const ExtensionResource* resource = GetRulesetResource(extension);
   DCHECK(resource);
@@ -316,7 +348,8 @@ void IndexAndPersistRules(service_manager::Connector* connector,
       base::BindRepeating(&OnSafeJSONParserSuccess,
                           base::RetainedRef(&extension), repeating_callback);
   auto error_callback =
-      base::BindRepeating(&OnSafeJSONParserError, repeating_callback);
+      base::BindRepeating(&OnSafeJSONParserError, repeating_callback,
+                          GetJSONRulesetFilename(extension));
 
   if (identity) {
     data_decoder::SafeJsonParser::ParseBatch(connector, json_contents,

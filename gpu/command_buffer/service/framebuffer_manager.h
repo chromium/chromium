@@ -162,6 +162,7 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
   // If the color attachment is a texture, returns its type; otherwise,
   // returns 0.
   GLenum GetReadBufferTextureType() const;
+  bool GetReadBufferIsMultisampledTexture() const;
 
   // Verify all the rules in OpenGL ES 2.0.25 4.4.5 are followed.
   // Returns GL_FRAMEBUFFER_COMPLETE if there are no reasons we know we can't

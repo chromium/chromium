@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<style>
+body {
+  margin: 0px;
+}
+x-table {
+  display: table;
+  width: 300px;
+  outline: 2px dotted blue;
+}
+x-caption {
+  display: table-caption;
+  margin-left: 20px;
+  outline: 1px solid black;
+}
+</style>
+
+<p>When implementing table captions in NG, there was no goal to change behavior.
+This is a smoke test to ensure NG matches legacy when table captions's direction
+differ from their containing tables. This exact behavior can change when we
+implement table layout in NG, and probably should because Edge/FF treat captions
+differently in general.</p>
+
+<x-table>
+  <x-caption dir=rtl>Lorem ipsum dolor</x-caption>
+</x-table>
+
+<x-table dir=rtl>
+  <x-caption dir=ltr>Lorem ipsum dolor</x-caption>
+</x-table>
+
+<script>
+let captions = document.querySelectorAll("x-caption")
+let caption_num = 0;
+let expected_x = [0, 20];
+for (let i of captions) {
+  let rect = i.getBoundingClientRect();
+  test(() => assert_equals(rect.x, expected_x[caption_num++]), "Test caption location " + caption_num);
+}
+
+</script>

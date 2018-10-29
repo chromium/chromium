@@ -16,7 +16,7 @@ quickview.openCloseQuickView = (file, opt_validate) => {
   // changed to text file 'hello.txt'.
   assertTrue(test.selectFile(file));
   // Press Space key.
-  assertTrue(test.fakeKeyDown('#file-list', ' ', ' ', false, false, false));
+  assertTrue(test.fakeKeyDown('#file-list', ' ', false, false, false));
   // Wait until Quick View is displayed and files-safe-media.src is set.
   return test
       .repeatUntil(() => {

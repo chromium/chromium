@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback.h"
 #include "storage/browser/fileapi/quota/quota_reservation.h"
 #include "storage/browser/fileapi/quota/quota_reservation_buffer.h"
 
@@ -24,38 +25,37 @@ QuotaReservationManager::~QuotaReservationManager() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 }
 
-void QuotaReservationManager::ReserveQuota(
-    const url::Origin& origin,
-    FileSystemType type,
-    int64_t size,
-    const ReserveQuotaCallback& callback) {
-  DCHECK(!origin.unique());
-  backend_->ReserveQuota(origin, type, size, callback);
+void QuotaReservationManager::ReserveQuota(const url::Origin& origin,
+                                           FileSystemType type,
+                                           int64_t size,
+                                           ReserveQuotaCallback callback) {
+  DCHECK(!origin.opaque());
+  backend_->ReserveQuota(origin, type, size, std::move(callback));
 }
 
 void QuotaReservationManager::ReleaseReservedQuota(const url::Origin& origin,
                                                    FileSystemType type,
                                                    int64_t size) {
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   backend_->ReleaseReservedQuota(origin, type, size);
 }
 
 void QuotaReservationManager::CommitQuotaUsage(const url::Origin& origin,
                                                FileSystemType type,
                                                int64_t delta) {
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   backend_->CommitQuotaUsage(origin, type, delta);
 }
 
 void QuotaReservationManager::IncrementDirtyCount(const url::Origin& origin,
                                                   FileSystemType type) {
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   backend_->IncrementDirtyCount(origin, type);
 }
 
 void QuotaReservationManager::DecrementDirtyCount(const url::Origin& origin,
                                                   FileSystemType type) {
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   backend_->DecrementDirtyCount(origin, type);
 }
 
@@ -63,7 +63,7 @@ scoped_refptr<QuotaReservationBuffer>
 QuotaReservationManager::GetReservationBuffer(const url::Origin& origin,
                                               FileSystemType type) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   QuotaReservationBuffer** buffer =
       &reservation_buffers_[std::make_pair(origin, type)];
   if (!*buffer) {
@@ -85,7 +85,7 @@ void QuotaReservationManager::ReleaseReservationBuffer(
 scoped_refptr<QuotaReservation> QuotaReservationManager::CreateReservation(
     const url::Origin& origin,
     FileSystemType type) {
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   return GetReservationBuffer(origin, type)->CreateReservation();
 }
 

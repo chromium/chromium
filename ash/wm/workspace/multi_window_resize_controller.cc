@@ -201,8 +201,7 @@ bool MultiWindowResizeController::ResizeWindows::Equals(
 MultiWindowResizeController::MultiWindowResizeController() = default;
 
 MultiWindowResizeController::~MultiWindowResizeController() {
-  window_resizer_.reset();
-  Hide();
+  ResetResizer();
 }
 
 void MultiWindowResizeController::Show(aura::Window* window,
@@ -235,39 +234,19 @@ void MultiWindowResizeController::Show(aura::Window* window,
                     &MultiWindowResizeController::ShowIfValidMouseLocation);
 }
 
-void MultiWindowResizeController::Hide() {
-  if (window_resizer_)
-    return;  // Ignore hides while actively resizing.
-
-  if (windows_.window1) {
-    StopObserving(windows_.window1);
-    windows_.window1 = nullptr;
-  }
-  if (windows_.window2) {
-    StopObserving(windows_.window2);
-    windows_.window2 = nullptr;
-  }
-
-  show_timer_.Stop();
-
-  if (!resize_widget_)
-    return;
-
-  for (size_t i = 0; i < windows_.other_windows.size(); ++i)
-    StopObserving(windows_.other_windows[i]);
-  mouse_watcher_.reset();
-  resize_widget_.reset();
-  windows_ = ResizeWindows();
-}
-
 void MultiWindowResizeController::MouseMovedOutOfHost() {
   Hide();
 }
 
+void MultiWindowResizeController::OnWindowVisibilityChanged(
+    aura::Window* window,
+    bool visible) {
+  if (!visible)
+    ResetResizer();
+}
+
 void MultiWindowResizeController::OnWindowDestroying(aura::Window* window) {
-  // Have to explicitly reset the WindowResizer, otherwise Hide() does nothing.
-  window_resizer_.reset();
-  Hide();
+  ResetResizer();
 }
 
 void MultiWindowResizeController::OnPostWindowStateTypeChange(
@@ -275,8 +254,7 @@ void MultiWindowResizeController::OnPostWindowStateTypeChange(
     mojom::WindowStateType old_type) {
   if (window_state->IsMaximized() || window_state->IsFullscreen() ||
       window_state->IsMinimized()) {
-    window_resizer_.reset();
-    Hide();
+    ResetResizer();
   }
 }
 
@@ -476,6 +454,37 @@ bool MultiWindowResizeController::IsShowing() const {
   return resize_widget_.get() || show_timer_.IsRunning();
 }
 
+void MultiWindowResizeController::Hide() {
+  if (window_resizer_)
+    return;  // Ignore hides while actively resizing.
+
+  if (windows_.window1) {
+    StopObserving(windows_.window1);
+    windows_.window1 = nullptr;
+  }
+  if (windows_.window2) {
+    StopObserving(windows_.window2);
+    windows_.window2 = nullptr;
+  }
+
+  show_timer_.Stop();
+
+  if (!resize_widget_)
+    return;
+
+  for (auto* window : windows_.other_windows)
+    StopObserving(window);
+  mouse_watcher_.reset();
+  resize_widget_.reset();
+  windows_ = ResizeWindows();
+}
+
+void MultiWindowResizeController::ResetResizer() {
+  // Have to explicitly reset the WindowResizer, otherwise Hide() does nothing.
+  window_resizer_.reset();
+  Hide();
+}
+
 void MultiWindowResizeController::StartResize(
     const gfx::Point& location_in_screen) {
   DCHECK(!window_resizer_.get());
@@ -543,8 +552,7 @@ void MultiWindowResizeController::CancelResize() {
     return;  // Happens if window was destroyed and we nuked the WindowResizer.
   window_resizer_->RevertDrag();
   wm::GetWindowState(window_resizer_->GetTarget())->DeleteDragDetails();
-  window_resizer_.reset();
-  Hide();
+  ResetResizer();
 }
 
 gfx::Rect MultiWindowResizeController::CalculateResizeWidgetBounds(

@@ -265,8 +265,8 @@ TEST_F(PlatformKeyMapTest, NonPrintableKey) {
 
     int scan_code =
         ui::KeycodeConverter::DomCodeToNativeKeycode(test_case.dom_code);
-    // TODO(chongz): Some |scan_code| should map to different |key_code| based
-    // on modifiers.
+    // TODO(input-dev): Some |scan_code| should map to different |key_code|
+    // based on modifiers.
     KeyboardCode key_code = static_cast<KeyboardCode>(
         ::MapVirtualKeyEx(scan_code, MAPVK_VSC_TO_VK, layout));
 

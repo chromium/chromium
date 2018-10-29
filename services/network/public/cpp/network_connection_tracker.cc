@@ -84,6 +84,16 @@ bool NetworkConnectionTracker::GetConnectionType(
   return false;
 }
 
+bool NetworkConnectionTracker::IsOffline() {
+  base::subtle::Atomic32 type_value =
+      base::subtle::NoBarrier_Load(&connection_type_);
+  if (type_value != kConnectionTypeInvalid) {
+    auto type = static_cast<network::mojom::ConnectionType>(type_value);
+    return type == network::mojom::ConnectionType::CONNECTION_NONE;
+  }
+  return true;
+}
+
 // static
 bool NetworkConnectionTracker::IsConnectionCellular(
     network::mojom::ConnectionType type) {

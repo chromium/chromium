@@ -69,15 +69,12 @@ base::FilePath ReverseConcatPathComponents(
     return base::FilePath(FILE_PATH_LITERAL("/")).NormalizePathSeparators();
 
   size_t total_size = 0;
-  typedef std::vector<base::FilePath> PathComponents;
-  for (PathComponents::const_iterator itr = components.begin();
-       itr != components.end(); ++itr)
+  for (auto itr = components.begin(); itr != components.end(); ++itr)
     total_size += itr->value().size() + 1;
 
   base::FilePath::StringType result;
   result.reserve(total_size);
-  for (PathComponents::const_reverse_iterator itr = components.rbegin();
-       itr != components.rend(); ++itr) {
+  for (auto itr = components.rbegin(); itr != components.rend(); ++itr) {
     result.append(1, base::FilePath::kSeparators[0]);
     result.append(itr->value());
   }
@@ -89,10 +86,8 @@ void PopulateFileDetailsByFileResource(
     const google_apis::FileResource& file_resource,
     FileDetails* details) {
   details->clear_parent_folder_ids();
-  for (std::vector<google_apis::ParentReference>::const_iterator itr =
-           file_resource.parents().begin();
-       itr != file_resource.parents().end();
-       ++itr) {
+  for (auto itr = file_resource.parents().begin();
+       itr != file_resource.parents().end(); ++itr) {
     details->add_parent_folder_ids(itr->file_id());
   }
   details->set_title(file_resource.title());
@@ -282,8 +277,7 @@ bool HasInvalidTitle(const std::string& title) {
 
 void MarkTrackerSetDirty(const TrackerIDSet& trackers,
                          MetadataDatabaseIndexInterface* index) {
-  for (TrackerIDSet::const_iterator itr = trackers.begin();
-       itr != trackers.end(); ++itr) {
+  for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
     std::unique_ptr<FileTracker> tracker(new FileTracker);
     index->GetFileTracker(*itr, tracker.get());
     if (tracker->dirty())
@@ -344,16 +338,15 @@ void RemoveAllDescendantTrackers(int64_t root_tracker_id,
 
   // Remove trackers in the reversed order.
   base::hash_set<std::string> affected_file_ids;
-  for (std::vector<int64_t>::reverse_iterator itr = to_be_removed.rbegin();
-       itr != to_be_removed.rend(); ++itr) {
+  for (auto itr = to_be_removed.rbegin(); itr != to_be_removed.rend(); ++itr) {
     FileTracker tracker;
     index->GetFileTracker(*itr, &tracker);
     affected_file_ids.insert(tracker.file_id());
     index->RemoveFileTracker(*itr);
   }
 
-  for (base::hash_set<std::string>::iterator itr = affected_file_ids.begin();
-       itr != affected_file_ids.end(); ++itr) {
+  for (auto itr = affected_file_ids.begin(); itr != affected_file_ids.end();
+       ++itr) {
     TrackerIDSet trackers = index->GetFileTrackerIDsByFileID(*itr);
     if (trackers.empty()) {
       // Remove metadata that no longer has any tracker.
@@ -369,8 +362,7 @@ bool FilterFileTrackersByParent(const MetadataDatabaseIndexInterface* index,
                                 int64_t parent_tracker_id,
                                 FileTracker* tracker_out) {
   FileTracker tracker;
-  for (TrackerIDSet::const_iterator itr = trackers.begin();
-       itr != trackers.end(); ++itr) {
+  for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
     if (!index->GetFileTracker(*itr, &tracker)) {
       NOTREACHED();
       continue;
@@ -392,8 +384,7 @@ bool FilterFileTrackersByParentAndTitle(
     const std::string& title,
     FileTracker* result) {
   bool found = false;
-  for (TrackerIDSet::const_iterator itr = trackers.begin();
-       itr != trackers.end(); ++itr) {
+  for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
     FileTracker tracker;
     if (!index->GetFileTracker(*itr, &tracker)) {
       NOTREACHED();
@@ -427,8 +418,7 @@ bool FilterFileTrackersByFileID(
     const std::string& file_id,
     FileTracker* tracker_out) {
   FileTracker tracker;
-  for (TrackerIDSet::const_iterator itr = trackers.begin();
-       itr != trackers.end(); ++itr) {
+  for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
     if (!index->GetFileTracker(*itr, &tracker)) {
       NOTREACHED();
       continue;
@@ -938,8 +928,7 @@ SyncStatusCode MetadataDatabase::UpdateByDeletedRemoteFile(
 
 SyncStatusCode MetadataDatabase::UpdateByDeletedRemoteFileList(
     const FileIDList& file_ids) {
-  for (FileIDList::const_iterator itr = file_ids.begin();
-       itr != file_ids.end(); ++itr) {
+  for (auto itr = file_ids.begin(); itr != file_ids.end(); ++itr) {
     std::unique_ptr<FileMetadata> metadata(
         CreateDeletedFileMetadata(GetLargestKnownChangeID(), *itr));
     UpdateByFileMetadata(FROM_HERE, std::move(metadata),
@@ -1015,8 +1004,7 @@ SyncStatusCode MetadataDatabase::PopulateFolderByChildList(
     children.erase(tracker.file_id());
   }
 
-  for (base::hash_set<std::string>::const_iterator itr = children.begin();
-       itr != children.end(); ++itr)
+  for (auto itr = children.begin(); itr != children.end(); ++itr)
     CreateTrackerForParentAndFileID(*folder_tracker, *itr);
   folder_tracker->set_needs_folder_listing(false);
   if (folder_tracker->dirty() && !ShouldKeepDirty(*folder_tracker))
@@ -1286,13 +1274,12 @@ SyncStatusCode MetadataDatabase::SweepDirtyTrackers(
   for (size_t i = 0; i < file_ids.size(); ++i) {
     TrackerIDSet trackers_for_file_id =
         index_->GetFileTrackerIDsByFileID(file_ids[i]);
-    for (TrackerIDSet::iterator itr = trackers_for_file_id.begin();
+    for (auto itr = trackers_for_file_id.begin();
          itr != trackers_for_file_id.end(); ++itr)
       tracker_ids.insert(*itr);
   }
 
-  for (std::set<int64_t>::iterator itr = tracker_ids.begin();
-       itr != tracker_ids.end(); ++itr) {
+  for (auto itr = tracker_ids.begin(); itr != tracker_ids.end(); ++itr) {
     std::unique_ptr<FileTracker> tracker(new FileTracker);
     if (!index_->GetFileTracker(*itr, tracker.get()) ||
         !CanClearDirty(*tracker))
@@ -1404,8 +1391,8 @@ void MetadataDatabase::MaybeAddTrackersForNewFile(
   std::set<int64_t> parents_to_exclude;
   TrackerIDSet existing_trackers =
       index_->GetFileTrackerIDsByFileID(metadata.file_id());
-  for (TrackerIDSet::const_iterator itr = existing_trackers.begin();
-       itr != existing_trackers.end(); ++itr) {
+  for (auto itr = existing_trackers.begin(); itr != existing_trackers.end();
+       ++itr) {
     FileTracker tracker;
     if (!index_->GetFileTracker(*itr, &tracker)) {
       NOTREACHED();
@@ -1428,8 +1415,8 @@ void MetadataDatabase::MaybeAddTrackersForNewFile(
     std::string parent_folder_id = metadata.details().parent_folder_ids(i);
     TrackerIDSet parent_trackers =
         index_->GetFileTrackerIDsByFileID(parent_folder_id);
-    for (TrackerIDSet::const_iterator itr = parent_trackers.begin();
-         itr != parent_trackers.end(); ++itr) {
+    for (auto itr = parent_trackers.begin(); itr != parent_trackers.end();
+         ++itr) {
       FileTracker parent_tracker;
       index_->GetFileTracker(*itr, &parent_tracker);
       if (!parent_tracker.active())
@@ -1533,8 +1520,7 @@ bool MetadataDatabase::HasActiveTrackerForPath(int64_t parent_tracker_id,
 void MetadataDatabase::RemoveUnneededTrackersForMissingFile(
     const std::string& file_id) {
   TrackerIDSet trackers = index_->GetFileTrackerIDsByFileID(file_id);
-  for (TrackerIDSet::const_iterator itr = trackers.begin();
-       itr != trackers.end(); ++itr) {
+  for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
     FileTracker tracker;
     if (!index_->GetFileTracker(*itr, &tracker)) {
       NOTREACHED();

@@ -25,7 +25,7 @@ void InsertOpportunity(const NGLayoutOpportunity& opportunity,
 
   // We go backwards through the list as there is a higher probability that a
   // new opportunity will be at the end of the list.
-  for (size_t j = opportunities->size() - 1; j >= 0; --j) {
+  for (wtf_size_t j = opportunities->size() - 1; j >= 0; --j) {
     const NGLayoutOpportunity& other = opportunities->at(j);
     if (other.rect.BlockStartOffset() <= opportunity.rect.BlockStartOffset()) {
 #if DCHECK_IS_ON()
@@ -67,12 +67,17 @@ bool HasSolidEdges(const Vector<scoped_refptr<const NGExclusion>, 1>& edges,
 // Adds any edges (other exclusions) which are within the range:
 // (block_offset, LayoutUnit::Max())
 // to the given out_edges vector.
-void CollectSolidEdges(const Vector<scoped_refptr<const NGExclusion>, 1>& edges,
+// edges will be invalid after this call.
+void CollectSolidEdges(Vector<scoped_refptr<const NGExclusion>, 1>* edges,
                        LayoutUnit block_offset,
                        Vector<scoped_refptr<const NGExclusion>, 1>* out_edges) {
-  for (const auto& edge : edges) {
-    if (edge->rect.BlockEndOffset() > block_offset)
-      out_edges->emplace_back(edge);
+  *out_edges = std::move(*edges);
+  for (auto* it = out_edges->begin(); it != out_edges->end();) {
+    if ((*it)->rect.BlockEndOffset() <= block_offset) {
+      out_edges->erase(it);
+    } else {
+      ++it;
+    }
   }
 }
 
@@ -179,8 +184,8 @@ NGExclusionSpaceInternal::NGExclusionSpaceInternal(
   other.derived_geometry_ = nullptr;
 }
 
-NGExclusionSpaceInternal::NGExclusionSpaceInternal(NGExclusionSpaceInternal&&) =
-    default;
+NGExclusionSpaceInternal::NGExclusionSpaceInternal(
+    NGExclusionSpaceInternal&&) noexcept = default;
 
 NGExclusionSpaceInternal& NGExclusionSpaceInternal::operator=(
     const NGExclusionSpaceInternal& other) {
@@ -193,7 +198,7 @@ NGExclusionSpaceInternal& NGExclusionSpaceInternal::operator=(
 }
 
 NGExclusionSpaceInternal& NGExclusionSpaceInternal::operator=(
-    NGExclusionSpaceInternal&&) = default;
+    NGExclusionSpaceInternal&&) noexcept = default;
 
 NGExclusionSpaceInternal::DerivedGeometry::DerivedGeometry()
     : last_float_block_start_(LayoutUnit::Min()),
@@ -258,40 +263,43 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
   //
   // NOTE: This could potentially be done lazily when we query the exclusion
   // space for a layout opportunity.
-  for (size_t i = 0; i < shelves_.size(); ++i) {
-    // Check if we need to insert a new shelf between two other shelves. E.g.
-    //
-    //    0 1 2 3 4 5 6 7 8
-    // 0  +-----+X----X+---+
-    //    |xxxxx|      |xxx|
-    // 10 +-----+      |xxx|
-    //      +---+      |xxx|
-    // 20   |NEW|      |xxx|
-    //    X-----------X|xxx|
-    // 30              |xxx|
-    //    X----------------X
-    //
-    // In the above example the "NEW" left exclusion creates a shelf between
-    // the two other shelves drawn.
-    //
-    // NOTE: We calculate this upfront as we may remove the shelf we need to
-    // check against.
-    //
-    // NOTE: If there is no "next" shelf, we consider this between shelves.
-    bool is_between_shelves =
-        exclusion_end_offset >= shelves_[i].block_offset &&
-        (i + 1 >= shelves_.size() ||
-         exclusion_end_offset < shelves_[i + 1].block_offset);
-
+  for (wtf_size_t i = 0; i < shelves_.size(); ++i) {
     // We modify the current shelf in-place. However we need to keep a copy of
     // the shelf if we need to insert a new shelf later in the loop.
     base::Optional<NGShelf> shelf_copy;
-    if (is_between_shelves)
-      shelf_copy.emplace(shelves_[i]);
+
+    bool is_between_shelves;
 
     // A new scope is created as shelf may be removed.
     {
       NGShelf& shelf = shelves_[i];
+
+      // Check if we need to insert a new shelf between two other shelves. E.g.
+      //
+      //    0 1 2 3 4 5 6 7 8
+      // 0  +-----+X----X+---+
+      //    |xxxxx|      |xxx|
+      // 10 +-----+      |xxx|
+      //      +---+      |xxx|
+      // 20   |NEW|      |xxx|
+      //    X-----------X|xxx|
+      // 30              |xxx|
+      //    X----------------X
+      //
+      // In the above example the "NEW" left exclusion creates a shelf between
+      // the two other shelves drawn.
+      //
+      // NOTE: We calculate this upfront as we may remove the shelf we need to
+      // check against.
+      //
+      // NOTE: If there is no "next" shelf, we consider this between shelves.
+      is_between_shelves =
+          exclusion_end_offset >= shelf.block_offset &&
+          (i + 1 >= shelves_.size() ||
+           exclusion_end_offset < shelves_[i + 1].block_offset);
+
+      if (is_between_shelves)
+        shelf_copy.emplace(shelf);
 
       // Check if the new exclusion will be below this shelf. E.g.
       //
@@ -457,11 +465,18 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
       if (exclusion_end_offset != shelf_copy->block_offset) {
         NGShelf new_shelf(/* block_offset */ exclusion_end_offset);
 
-        CollectSolidEdges(shelf_copy->line_left_edges, new_shelf.block_offset,
+        // shelf_copy->line_{left,right}_edges will not valid after these calls.
+        CollectSolidEdges(&shelf_copy->line_left_edges, new_shelf.block_offset,
                           &new_shelf.line_left_edges);
 
-        CollectSolidEdges(shelf_copy->line_right_edges, new_shelf.block_offset,
+        CollectSolidEdges(&shelf_copy->line_right_edges, new_shelf.block_offset,
                           &new_shelf.line_right_edges);
+
+        // The new shelf adopts the copy exclusions. This may contain
+        // exclusions which are above this shelf, however we'll filter these
+        // out when/if we need to calculate the line opportunity.
+        new_shelf.shape_exclusions = std::move(shelf_copy->shape_exclusions);
+        new_shelf.has_shape_exclusions = shelf_copy->has_shape_exclusions;
 
         // If we didn't find any edges, the line_left/line_right of the shelf
         // are pushed out to be the minimum/maximum.
@@ -595,7 +610,7 @@ NGExclusionSpaceInternal::GetDerivedGeometry() const {
   if (!derived_geometry_) {
     derived_geometry_ = std::make_unique<DerivedGeometry>();
     DCHECK_LE(num_exclusions_, exclusions_->size());
-    for (size_t i = 0; i < num_exclusions_; ++i)
+    for (wtf_size_t i = 0; i < num_exclusions_; ++i)
       derived_geometry_->Add(*exclusions_->GetVector()[i]);
   }
 

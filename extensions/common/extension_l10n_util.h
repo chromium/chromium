@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_piece.h"
+
 namespace base {
 class DictionaryValue;
 class FilePath;
@@ -26,6 +28,11 @@ namespace extension_l10n_util {
 // normal file-based lookup mechanisms. This is used to set the locale inside
 // the sandboxed utility process, where file reading is not allowed.
 void SetProcessLocale(const std::string& locale);
+
+// Sets the preferred locale. This is the user-preferred locale, which may
+// differ from the actual process locale in use, like when a preferred locale of
+// "en-CA" is mapped to a process locale of "en-GB".
+void SetPreferredLocale(const std::string& locale);
 
 // Returns default locale in form "en-US" or "sr" or empty string if
 // "default_locale" section was not defined in the manifest.json file.
@@ -107,21 +114,26 @@ bool ShouldSkipValidation(const base::FilePath& locales_path,
                           const base::FilePath& locale_path,
                           const std::set<std::string>& all_locales);
 
-// Sets the process locale for the duration of the current scope, then reverts
-// back to whatever the current locale was before constructing this.
-// For testing purposed only!
+// Sets the process and preferred locale for the duration of the current scope,
+// then reverts back to whatever the current values were before constructing
+// this. For testing purposed only!
 class ScopedLocaleForTest {
  public:
   // Only revert back to current locale at end of scope, don't set locale.
   ScopedLocaleForTest();
 
-  // Set temporary locale for the current scope
-  explicit ScopedLocaleForTest(const std::string& locale);
+  // Sets temporary locale for the current scope.
+  explicit ScopedLocaleForTest(base::StringPiece locale);
+
+  // Sets process and preferred locales for the current scope.
+  ScopedLocaleForTest(base::StringPiece process_locale,
+                      base::StringPiece preferred_locale);
 
   ~ScopedLocaleForTest();
 
  private:
-  std::string locale_;  // The current locale at ctor time.
+  base::StringPiece process_locale_;    // The process locale at ctor time.
+  base::StringPiece preferred_locale_;  // The preferred locale at ctor time.
 };
 
 }  // namespace extension_l10n_util

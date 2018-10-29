@@ -81,9 +81,20 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // Returns all entities stored by the server of the given |model_type|.
   // This method returns SyncEntity protocol buffer objects (instead of
   // LoopbackServerEntity) so that callers can inspect datatype-specific data
-  // (e.g., the URL of a session tab).
+  // (e.g., the URL of a session tab). Permanent entities are excluded.
   std::vector<sync_pb::SyncEntity> GetSyncEntitiesByModelType(
       syncer::ModelType model_type);
+
+  // Returns all permanent entities stored by the server of the given
+  // |model_type|. This method returns SyncEntity protocol buffer objects
+  // (instead of LoopbackServerEntity) so that callers can inspect
+  // datatype-specific data (e.g., the URL of a session tab).
+  std::vector<sync_pb::SyncEntity> GetPermanentSyncEntitiesByModelType(
+      syncer::ModelType model_type);
+
+  // Returns an empty string if no top-level permanent item of the given type
+  // was created.
+  std::string GetTopLevelPermanentItemId(syncer::ModelType model_type);
 
   // Adds |entity| to the server's collection of entities. This method makes no
   // guarantees that the added entity will result in successful server
@@ -163,6 +174,9 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // Forces every request to fail in a way that simulates a network failure.
   // This can be used to trigger exponential backoff in the client.
   void DisableNetwork();
+
+  // Enables strong consistency model (i.e. server detects conflicts).
+  void EnableStrongConsistencyWithConflictDetectionModel();
 
   // Implement LoopbackServer::ObserverForTests:
   void OnCommit(const std::string& committer_id,

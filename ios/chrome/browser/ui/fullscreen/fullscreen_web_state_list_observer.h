@@ -27,8 +27,10 @@ class FullscreenWebStateListObserver : public WebStateListObserver {
                                  FullscreenMediator* mediator);
   ~FullscreenWebStateListObserver() override;
 
-  // Starts observing |web_state_list|.
+  // The WebStateList being observed.
   void SetWebStateList(WebStateList* web_state_list);
+  const WebStateList* GetWebStateList() const;
+  WebStateList* GetWebStateList();
 
   // Stops observing the the WebStateList.
   void Disconnect();

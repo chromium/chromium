@@ -38,7 +38,7 @@ void NOINLINE ForceSystemLeaks() {
     pretendFullKeyboardAccessIsEnabled_;
 @synthesize useDefaultConstraints = useDefaultConstraints_;
 
-- (id)initWithContentRect:(NSRect)contentRect {
+- (instancetype)initWithContentRect:(NSRect)contentRect {
   self = [super initWithContentRect:contentRect
                           styleMask:NSBorderlessWindowMask
                             backing:NSBackingStoreBuffered
@@ -50,7 +50,7 @@ void NOINLINE ForceSystemLeaks() {
   return self;
 }
 
-- (id)init {
+- (instancetype)init {
   return [self initWithContentRect:NSMakeRect(0, 0, 800, 600)];
 }
 
@@ -152,8 +152,7 @@ void CocoaTest::Init() {
   // attached sheet dropping in.  Set that duration for the current
   // process (this is not persisted).  Empirically, the value of 0.0
   // is ignored.
-  NSDictionary* dict =
-      [NSDictionary dictionaryWithObject:@"0.01" forKey:@"NSWindowResizeTime"];
+  NSDictionary* dict = @{@"NSWindowResizeTime" : @"0.01"};
   [[NSUserDefaults standardUserDefaults] registerDefaults:dict];
 
   // Collect the list of windows that were open when the test started so

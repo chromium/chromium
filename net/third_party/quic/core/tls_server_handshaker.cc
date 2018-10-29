@@ -215,8 +215,7 @@ bool TlsServerHandshaker::ProcessTransportParameters(
   }
   if (CryptoUtils::ValidateClientHelloVersion(
           client_params.version, session()->connection()->version(),
-          session()->connection()->supported_versions(),
-          error_details) != QUIC_NO_ERROR ||
+          session()->supported_versions(), error_details) != QUIC_NO_ERROR ||
       session()->config()->ProcessTransportParameters(
           client_params, CLIENT, error_details) != QUIC_NO_ERROR) {
     return false;
@@ -229,8 +228,8 @@ bool TlsServerHandshaker::ProcessTransportParameters(
 bool TlsServerHandshaker::SetTransportParameters() {
   TransportParameters server_params;
   server_params.perspective = Perspective::IS_SERVER;
-  server_params.supported_versions = CreateQuicVersionLabelVector(
-      session()->connection()->supported_versions());
+  server_params.supported_versions =
+      CreateQuicVersionLabelVector(session()->supported_versions());
   server_params.version =
       CreateQuicVersionLabel(session()->connection()->version());
 

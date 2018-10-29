@@ -21,6 +21,8 @@ class FakeInputMethodContext : public LinuxInputMethodContext {
   void Focus() override;
   void Blur() override;
   void SetCursorLocation(const gfx::Rect& rect) override;
+  void SetSurroundingText(const base::string16& text,
+                          const gfx::Range& selection_range) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FakeInputMethodContext);

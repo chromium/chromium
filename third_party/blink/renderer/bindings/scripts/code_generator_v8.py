@@ -59,7 +59,7 @@ import v8_interface
 import v8_types
 import v8_union
 from v8_utilities import build_basename, cpp_name
-from utilities import idl_filename_to_component, is_testing_target, shorten_union_name, to_snake_case
+from utilities import idl_filename_to_component, is_testing_target, shorten_union_name, to_header_guard, to_snake_case
 
 
 # Make sure extension is .py, not .pyc or .pyo, so doesn't depend on caching
@@ -187,19 +187,19 @@ class CodeGeneratorV8(CodeGeneratorV8Base):
         # Select appropriate Jinja template and contents function
         if interface.is_callback:
             header_template_filename = 'callback_interface.h.tmpl'
-            cpp_template_filename = 'callback_interface.cpp.tmpl'
+            cpp_template_filename = 'callback_interface.cc.tmpl'
             interface_context = v8_callback_interface.callback_interface_context
         elif interface.is_partial:
             interface_context = v8_interface.interface_context
             header_template_filename = 'partial_interface.h.tmpl'
-            cpp_template_filename = 'partial_interface.cpp.tmpl'
+            cpp_template_filename = 'partial_interface.cc.tmpl'
             interface_name += 'Partial'
             assert component == 'core'
             component = 'modules'
             include_paths = interface_info.get('dependencies_other_component_include_paths')
         else:
             header_template_filename = 'interface.h.tmpl'
-            cpp_template_filename = 'interface.cpp.tmpl'
+            cpp_template_filename = 'interface.cc.tmpl'
             interface_context = v8_interface.interface_context
 
         template_context = interface_context(interface, definitions.interfaces)
@@ -217,7 +217,9 @@ class CodeGeneratorV8(CodeGeneratorV8Base):
         template_context['header_includes'].update(
             interface_info.get('additional_header_includes', []))
         header_path, cpp_path = self.output_paths(interface_name)
-        template_context['this_include_header_path'] = self.normalize_this_header_path(header_path)
+        this_include_header_path = self.normalize_this_header_path(header_path)
+        template_context['this_include_header_path'] = this_include_header_path
+        template_context['header_guard'] = to_header_guard(this_include_header_path)
         header_template = self.jinja_env.get_template(header_template_filename)
         cpp_template = self.jinja_env.get_template(cpp_template_filename)
         header_text, cpp_text = self.render_templates(
@@ -233,7 +235,7 @@ class CodeGeneratorV8(CodeGeneratorV8Base):
         # pylint: disable=unused-argument
         interfaces_info = self.info_provider.interfaces_info
         header_template = self.jinja_env.get_template('dictionary_v8.h.tmpl')
-        cpp_template = self.jinja_env.get_template('dictionary_v8.cpp.tmpl')
+        cpp_template = self.jinja_env.get_template('dictionary_v8.cc.tmpl')
         interface_info = interfaces_info[dictionary_name]
         template_context = v8_dictionary.dictionary_context(
             dictionary, interfaces_info)
@@ -244,7 +246,9 @@ class CodeGeneratorV8(CodeGeneratorV8Base):
             template_context['header_includes'].add(self.info_provider.include_path_for_export)
             template_context['exported'] = self.info_provider.specifier_for_export
         header_path, cpp_path = self.output_paths(dictionary_name)
-        template_context['this_include_header_path'] = self.normalize_this_header_path(header_path)
+        this_include_header_path = self.normalize_this_header_path(header_path)
+        template_context['this_include_header_path'] = this_include_header_path
+        template_context['header_guard'] = to_header_guard(this_include_header_path)
         header_text, cpp_text = self.render_templates(
             include_paths, header_template, cpp_template, template_context)
         return (
@@ -273,7 +277,7 @@ class CodeGeneratorDictionaryImpl(CodeGeneratorV8Base):
         dictionary = definitions.dictionaries[definition_name]
         interface_info = interfaces_info[definition_name]
         header_template = self.jinja_env.get_template('dictionary_impl.h.tmpl')
-        cpp_template = self.jinja_env.get_template('dictionary_impl.cpp.tmpl')
+        cpp_template = self.jinja_env.get_template('dictionary_impl.cc.tmpl')
         template_context = v8_dictionary.dictionary_impl_context(
             dictionary, interfaces_info)
         include_paths = interface_info.get('dependencies_include_paths')
@@ -283,7 +287,9 @@ class CodeGeneratorDictionaryImpl(CodeGeneratorV8Base):
         template_context['header_includes'].update(
             interface_info.get('additional_header_includes', []))
         header_path, cpp_path = self.output_paths(definition_name, interface_info)
-        template_context['this_include_header_path'] = self.normalize_this_header_path(header_path)
+        this_include_header_path = self.normalize_this_header_path(header_path)
+        template_context['this_include_header_path'] = this_include_header_path
+        template_context['header_guard'] = to_header_guard(this_include_header_path)
         header_text, cpp_text = self.render_templates(
             include_paths, header_template, cpp_template, template_context)
         return (
@@ -313,7 +319,7 @@ class CodeGeneratorUnionType(CodeGeneratorBase):
         includes.clear()
         union_type = union_type.resolve_typedefs(self.typedefs)
         header_template = self.jinja_env.get_template('union_container.h.tmpl')
-        cpp_template = self.jinja_env.get_template('union_container.cpp.tmpl')
+        cpp_template = self.jinja_env.get_template('union_container.cc.tmpl')
         template_context = v8_union.container_context(union_type, self.info_provider)
         template_context['header_includes'].append(
             self.info_provider.include_path_for_export)
@@ -321,7 +327,9 @@ class CodeGeneratorUnionType(CodeGeneratorBase):
         snake_base_name = to_snake_case(shorten_union_name(union_type))
         header_path = posixpath.join(self.output_dir, '%s.h' % snake_base_name)
         cpp_path = posixpath.join(self.output_dir, '%s.cc' % snake_base_name)
-        template_context['this_include_header_path'] = self.normalize_this_header_path(header_path)
+        this_include_header_path = self.normalize_this_header_path(header_path)
+        template_context['this_include_header_path'] = this_include_header_path
+        template_context['header_guard'] = to_header_guard(this_include_header_path)
         header_text, cpp_text = self.render_templates(
             [], header_template, cpp_template, template_context)
         return (
@@ -365,7 +373,7 @@ class CodeGeneratorCallbackFunction(CodeGeneratorBase):
     def generate_code_internal(self, callback_function, path):
         self.typedef_resolver.resolve(callback_function, callback_function.name)
         header_template = self.jinja_env.get_template('callback_function.h.tmpl')
-        cpp_template = self.jinja_env.get_template('callback_function.cpp.tmpl')
+        cpp_template = self.jinja_env.get_template('callback_function.cc.tmpl')
         template_context = v8_callback_function.callback_function_context(
             callback_function)
         if not is_testing_target(path):
@@ -383,7 +391,9 @@ class CodeGeneratorCallbackFunction(CodeGeneratorBase):
         snake_base_name = to_snake_case('V8%s' % callback_function.name)
         header_path = posixpath.join(self.output_dir, '%s.h' % snake_base_name)
         cpp_path = posixpath.join(self.output_dir, '%s.cc' % snake_base_name)
-        template_context['this_include_header_path'] = self.normalize_this_header_path(header_path)
+        this_include_header_path = self.normalize_this_header_path(header_path)
+        template_context['this_include_header_path'] = this_include_header_path
+        template_context['header_guard'] = to_header_guard(this_include_header_path)
         header_text, cpp_text = self.render_templates(
             [], header_template, cpp_template, template_context)
         return (

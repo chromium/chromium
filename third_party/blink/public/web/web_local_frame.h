@@ -10,9 +10,9 @@
 
 #include "base/callback.h"
 #include "base/unguessable_token.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/frame/sandbox_flags.h"
-#include "third_party/blink/public/mojom/frame/find_in_page.mojom-shared.h"
 #include "third_party/blink/public/platform/modules/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_focus_type.h"
@@ -59,7 +59,6 @@ struct WebAssociatedURLLoaderOptions;
 struct WebConsoleMessage;
 struct WebContentSecurityPolicyViolation;
 struct WebNavigationParams;
-struct WebFindOptions;
 struct WebMediaPlayerAction;
 struct WebPrintParams;
 struct WebPrintPresetOptions;
@@ -236,30 +235,7 @@ class WebLocalFrame : public WebFrame {
   // TODO(dgozman): rename to CommitHTMLStringNavigation.
   virtual void LoadHTMLString(const WebData& html,
                               const WebURL& base_url,
-                              const WebURL& unreachable_url = WebURL(),
-                              bool replace = false) = 0;
-
-  // Calls CommitDataNavigationWithRequest with a WebURLRequest that is built
-  // either 1) based on the previous, provisional request (if |replace| is true
-  // and |unreachable_url| is present) or 2) constructed from scratch otherwise.
-  //
-  // |base_url| indicates the security origin and is used to resolve links in
-  // the committed document.
-  //
-  // Please see documentation of CommitDataNavigationWithRequest for description
-  // of other parameters.
-  virtual void CommitDataNavigation(
-      const WebData& data,
-      const WebString& mime_type,
-      const WebString& text_encoding,
-      const WebURL& base_url,
-      const WebURL& unreachable_url,
-      bool replace,
-      WebFrameLoadType,
-      const WebHistoryItem&,
-      bool is_client_redirect,
-      std::unique_ptr<WebNavigationParams> navigation_params,
-      std::unique_ptr<WebDocumentLoader::ExtraData> navigation_data) = 0;
+                              const WebURL& unreachable_url = WebURL()) = 0;
 
   // Navigates to the given |data| with specified |mime_type| and optional
   // |text_encoding|.
@@ -270,16 +246,14 @@ class WebLocalFrame : public WebFrame {
   // If |replace| is false, then this data will be loaded as a normal
   // navigation.  Otherwise, the current history item will be replaced.
   //
-  // This method can be called instead of CommitDataNavigation when a
-  // ResourceRequest has already been precomputed (e.g. when trying to commit an
-  // error page, while mimicking the original failed request).
-  virtual void CommitDataNavigationWithRequest(
+  // Request's url indicates the security origin and is used as a base
+  // url to resolve links in the committed document.
+  virtual void CommitDataNavigation(
       const WebURLRequest&,
       const WebData&,
       const WebString& mime_type,
       const WebString& text_encoding,
       const WebURL& unreachable_url,
-      bool replace,
       WebFrameLoadType,
       const WebHistoryItem&,
       bool is_client_redirect,
@@ -308,6 +282,11 @@ class WebLocalFrame : public WebFrame {
   // On load failure, attempts to make frame's parent render fallback content.
   virtual FallbackContentResult MaybeRenderFallbackContent(
       const WebURLError&) const = 0;
+
+  // When load failure is in a cross-process frame this notifies the frame here
+  // that its owner should render fallback content if any. Only called on owners
+  // that render their own content (i.e., <object>).
+  virtual void RenderFallbackContent() const = 0;
 
   // Called when a navigation is blocked because a Content Security Policy (CSP)
   // is infringed.
@@ -354,15 +333,19 @@ class WebLocalFrame : public WebFrame {
   // console.
   virtual void MixedContentFound(const WebURL& main_resource_url,
                                  const WebURL& mixed_content_url,
-                                 WebURLRequest::RequestContext,
+                                 mojom::RequestContextType,
                                  bool was_allowed,
                                  bool had_redirect,
                                  const WebSourceLocation&) = 0;
 
-  // PlzNavigate
   // Informs the frame that the navigation it asked the client to do was
   // dropped.
   virtual void ClientDroppedNavigation() = 0;
+
+  // Marks the frame as loading, without performing any loading. Used for
+  // initial history navigations in child frames, which may actually happen
+  // in the other process.
+  virtual void MarkAsLoading() = 0;
 
   // Orientation Changes ----------------------------------------------------
 
@@ -441,9 +424,6 @@ class WebLocalFrame : public WebFrame {
   //     doesn't yet restrict the isolated world to the provided policy.
   virtual void SetIsolatedWorldContentSecurityPolicy(int world_id,
                                                      const WebString&) = 0;
-
-  // Calls window.gc() if it is defined.
-  virtual void CollectGarbage() = 0;
 
   // Executes script in the context of the current page and returns the value
   // that the script evaluated to.
@@ -532,6 +512,12 @@ class WebLocalFrame : public WebFrame {
   virtual bool Confirm(const WebString& message) = 0;
   virtual WebString Prompt(const WebString& message,
                            const WebString& default_value) = 0;
+
+  // Debugging -----------------------------------------------------------
+
+  virtual void BindDevToolsAgent(
+      mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
+      mojo::ScopedInterfaceEndpointHandle devtools_agent_request) = 0;
 
   // Editing -------------------------------------------------------------
 
@@ -679,7 +665,7 @@ class WebLocalFrame : public WebFrame {
 
   // Find-in-page -----------------------------------------------------------
 
-  // Searches a frame for a given string.
+  // Searches a frame for a given string. Only used for testing.
   //
   // If a match is found, this function will select it (scrolling down to
   // make it visible if needed) and fill in selectionRect with the
@@ -689,19 +675,13 @@ class WebLocalFrame : public WebFrame {
   // highlighting.
   //
   // Returns true if the search string was found, false otherwise.
-  virtual bool Find(int identifier,
-                    const WebString& search_text,
-                    const WebFindOptions&,
-                    bool wrap_within_frame,
-                    bool* active_now = nullptr) = 0;
-
-  // Notifies the frame that we are no longer interested in searching.  This
-  // will abort any asynchronous scoping effort already under way (see the
-  // function TextFinder::scopeStringMatches for details) and erase all
-  // tick-marks and highlighting from the previous search.  It will also
-  // follow the specified StopFindAction.
-  // TODO(rakina): Stop exposing this when possible.
-  virtual void StopFindingForTesting(mojom::StopFindAction) = 0;
+  virtual bool FindForTesting(int identifier,
+                              const WebString& search_text,
+                              bool match_case,
+                              bool forward,
+                              bool find_next,
+                              bool force,
+                              bool wrap_within_frame) = 0;
 
   // Set the tickmarks for the frame. This will override the default tickmarks
   // generated by find results. If this is called with an empty array, the
@@ -768,9 +748,6 @@ class WebLocalFrame : public WebFrame {
   // The scroll offset from the top-left corner of the frame in pixels.
   virtual WebSize GetScrollOffset() const = 0;
   virtual void SetScrollOffset(const WebSize&) = 0;
-
-  // If set to false, do not draw scrollbars on this frame's view.
-  virtual void SetCanHaveScrollbars(bool) = 0;
 
   // The size of the document in this frame.
   virtual WebSize DocumentSize() const = 0;

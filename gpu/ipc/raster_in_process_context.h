@@ -67,6 +67,10 @@ class RasterInProcessContext {
   InProcessCommandBuffer* GetCommandBufferForTest() const;
   int GetRasterDecoderIdForTest() const;
 
+  // Test only function. Returns false if using passthrough decoding, which is
+  // currently unsupported.
+  static bool SupportedInTest();
+
  private:
   std::unique_ptr<CommandBufferHelper> helper_;
   std::unique_ptr<TransferBuffer> transfer_buffer_;

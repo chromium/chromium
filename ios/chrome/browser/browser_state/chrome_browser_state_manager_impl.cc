@@ -32,7 +32,7 @@
 #include "ios/chrome/browser/chrome_constants.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/desktop_promotion/desktop_promotion_sync_service_factory.h"
-#include "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
+#include "ios/chrome/browser/invalidation/ios_chrome_deprecated_profile_invalidation_provider_factory.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #include "ios/chrome/browser/signin/account_fetcher_service_factory.h"
@@ -216,7 +216,7 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
       ->InitCookieListener();
   ios::AccountConsistencyServiceFactory::GetForBrowserState(browser_state);
   invalidation::ProfileInvalidationProvider* invalidation_provider =
-      IOSChromeProfileInvalidationProviderFactory::GetForBrowserState(
+      IOSChromeDeprecatedProfileInvalidationProviderFactory::GetForBrowserState(
           browser_state);
   invalidation::InvalidationService* invalidation_service =
       invalidation_provider ? invalidation_provider->GetInvalidationService()

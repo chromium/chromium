@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 using testing::_;
 using testing::InSequence;
@@ -96,8 +97,9 @@ class MockWebSocketHandle : public WebSocketHandle {
                     const KURL&,
                     const String&,
                     WebSocketHandleClient*));
-  MOCK_METHOD4(Send,
-               void(bool, WebSocketHandle::MessageType, const char*, size_t));
+  MOCK_METHOD4(
+      Send,
+      void(bool, WebSocketHandle::MessageType, const char*, wtf_size_t));
   MOCK_METHOD1(FlowControl, void(int64_t));
   MOCK_METHOD2(Close, void(unsigned short, const String&));
 };

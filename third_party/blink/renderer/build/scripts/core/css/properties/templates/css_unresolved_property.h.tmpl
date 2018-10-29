@@ -31,9 +31,9 @@ class CSSUnresolvedProperty {
     NOTREACHED();
     return g_empty_atom;
   }
-  virtual const WTF::String GetJSPropertyName() const {
+  virtual const char* GetJSPropertyName() const {
     NOTREACHED();
-    return g_empty_string;
+    return "";
   }
   WTF::String GetPropertyNameString() const {
     // We share the StringImpl with the AtomicStrings.

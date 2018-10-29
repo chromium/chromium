@@ -2,7 +2,6 @@ Test reflecting boolean attributes.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS e = make('area'); e.removeAttribute('nohref'); e.noHref is false
 PASS e = make('area'); e.setAttribute('nohref', ''); e.noHref is true
 PASS e = make('area'); e.setAttribute('nohref', 'x'); e.noHref = false; e.getAttribute('nohref') is null

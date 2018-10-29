@@ -135,5 +135,10 @@ bool QuicSessionPeer::IsStreamWriteBlocked(QuicSession* session,
   return session->write_blocked_streams_.IsStreamBlocked(id);
 }
 
+// static
+QuicAlarm* QuicSessionPeer::GetCleanUpClosedStreamsAlarm(QuicSession* session) {
+  return session->closed_streams_clean_up_alarm_.get();
+}
+
 }  // namespace test
 }  // namespace quic

@@ -97,7 +97,7 @@
 .elements-disclosure ol {
     list-style-type: none;
     /** Keep it in sync with ElementsTreeElements.updateDecorators **/
-    -webkit-padding-start: 12px;
+    padding-inline-start: 12px;
     margin: 0;
 }
 
@@ -339,7 +339,7 @@ li.selected {
 
 li.hovered:not(.always-parent) + ol.children, .elements-tree-outline ol.shadow-root, li.selected:not(.always-parent) + ol.children {
     margin-left: 5px;
-    -webkit-padding-start: 6px;
+    padding-inline-start: 6px;
     border-width: 1px;
     border-left-style: solid;
 }

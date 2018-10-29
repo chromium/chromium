@@ -35,6 +35,7 @@ service_test("service_manager_unittests") {
     "//services/service_manager/background/tests:unittests",
     "//services/service_manager/embedder:unittests",
     "//services/service_manager/public/cpp",
+    "//services/service_manager/public/cpp:tests",
     "//services/service_manager/public/cpp/test:test_support",
     "//services/service_manager/public/mojom",
     "//services/service_manager/runner/host:unittests",

@@ -19,12 +19,14 @@ void InvalidParameter(const wchar_t* expression, const wchar_t* function,
                       const wchar_t* file, unsigned int line,
                       uintptr_t reserved) {
   __debugbreak();
+  // Use a different exit code from PureCall to avoid COMDAT folding.
   _exit(1);
 }
 
 void PureCall() {
   __debugbreak();
-  _exit(1);
+  // Use a different exit code from InvalidParameter to avoid COMDAT folding.
+  _exit(2);
 }
 #pragma optimize("", on)
 

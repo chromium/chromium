@@ -211,7 +211,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     if (outcome != HeaderOutcome::SET && outcome != HeaderOutcome::REMOVED)
       return;
 
-    PolicyMap::iterator it = policies_.find(origin);
+    auto it = policies_.find(origin);
     if (it != policies_.end()) {
       MaybeRemoveWildcardPolicy(origin, &it->second);
       policies_.erase(it);
@@ -472,7 +472,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
   const OriginPolicy* FindPolicyForOrigin(const url::Origin& origin) const {
     // TODO(juliatuttle): Clean out expired policies sometime/somewhere.
-    PolicyMap::const_iterator it = policies_.find(origin);
+    auto it = policies_.find(origin);
     if (it != policies_.end() && tick_clock_->NowTicks() < it->second.expires)
       return &it->second;
 
@@ -490,7 +490,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       const std::string& domain) const {
     DCHECK(!domain.empty());
 
-    WildcardPolicyMap::const_iterator it = wildcard_policies_.find(domain);
+    auto it = wildcard_policies_.find(domain);
     if (it == wildcard_policies_.end())
       return nullptr;
 
@@ -503,8 +503,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
                    << "choosing one arbitrarily.";
     }
 
-    for (std::set<const OriginPolicy*>::const_iterator jt = it->second.begin();
-         jt != it->second.end(); ++jt) {
+    for (auto jt = it->second.begin(); jt != it->second.end(); ++jt) {
       if (tick_clock_->NowTicks() < (*jt)->expires)
         return *jt;
     }
@@ -532,8 +531,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     if (!policy->include_subdomains)
       return;
 
-    WildcardPolicyMap::iterator wildcard_it =
-        wildcard_policies_.find(origin.host());
+    auto wildcard_it = wildcard_policies_.find(origin.host());
     DCHECK(wildcard_it != wildcard_policies_.end());
 
     size_t erased = wildcard_it->second.erase(policy);

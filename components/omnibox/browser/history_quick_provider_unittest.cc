@@ -286,8 +286,7 @@ void HistoryQuickProviderTest::FillData() {
 
 HistoryQuickProviderTest::SetShouldContain::SetShouldContain(
     const ACMatches& matched_urls) {
-  for (ACMatches::const_iterator iter = matched_urls.begin();
-       iter != matched_urls.end(); ++iter)
+  for (auto iter = matched_urls.begin(); iter != matched_urls.end(); ++iter)
     matches_.insert(iter->destination_url.spec());
 }
 

@@ -34,6 +34,9 @@
 -MediaStreamManagerTest.MakeMediaAccessRequest
 -MediaStreamManagerTest.MakeMultipleRequests
 
+# Flaky: https://crbug.com/879213
+-IndexedDBDispatcherHostTest.NotifyIndexedDBContentChanged
+
 # Failing: https://crbug.com/771701.
 -IndexedDBFactoryTest.DataFormatVersion
 

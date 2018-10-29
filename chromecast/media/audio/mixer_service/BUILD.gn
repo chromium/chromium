@@ -1,0 +1,56 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//chromecast/chromecast.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_out_dir = "chromecast/media/audio/mixer_service"
+  sources = [
+    "mixer_service.proto",
+  ]
+}
+
+use_unix_sockets = is_linux
+buildflag_header("buildflags") {
+  header = "mixer_service_buildflags.h"
+
+  flags = [ "USE_UNIX_SOCKETS=$use_unix_sockets" ]
+}
+
+cast_source_set("common") {
+  sources = [
+    "constants.h",
+    "proto_helpers.cc",
+    "proto_helpers.h",
+  ]
+
+  deps = [
+    ":buildflags",
+    ":proto",
+    "//base",
+    "//chromecast/net:small_message_socket",
+    "//net",
+  ]
+}
+
+cast_source_set("connection") {
+  sources = [
+    "mixer_service_connection.cc",
+    "mixer_service_connection.h",
+    "mixer_service_connection_factory.cc",
+    "mixer_service_connection_factory.h",
+  ]
+
+  deps = [
+    ":buildflags",
+    ":common",
+    ":proto",
+    "//base",
+    "//chromecast/base",
+    "//chromecast/net:small_message_socket",
+    "//net",
+  ]
+}

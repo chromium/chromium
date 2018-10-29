@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_file_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_path_reservation_tracker.h"
 #include "chrome/browser/download/download_target_determiner.h"
@@ -101,6 +102,8 @@ MockDownloadItem* DownloadPathReservationTrackerTest::CreateDownloadItem(
   EXPECT_CALL(*item, GetState())
       .WillRepeatedly(Return(DownloadItem::IN_PROGRESS));
   EXPECT_CALL(*item, GetURL()).WillRepeatedly(ReturnRefOfCopy(GURL()));
+  EXPECT_CALL(*item, GetStartTime())
+      .WillRepeatedly(Return(base::Time::UnixEpoch()));
   return item;
 }
 
@@ -434,23 +437,32 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingCaseReservations) {
 TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
   base::FilePath path(
       GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo.txt")));
+  // Make room for the path with no uniquifier, the |kMaxUniqueFiles|
+  // numerically uniquified paths, and then one more for the timestamp
+  // uniquified path.
   std::unique_ptr<MockDownloadItem>
-      items[DownloadPathReservationTracker::kMaxUniqueFiles + 1];
+      items[DownloadPathReservationTracker::kMaxUniqueFiles + 2];
   DownloadPathReservationTracker::FilenameConflictAction conflict_action =
     DownloadPathReservationTracker::UNIQUIFY;
   bool create_directory = false;
 
-  // Create |kMaxUniqueFiles + 1| reservations for |path|. The first reservation
-  // will have no uniquifier. The |kMaxUniqueFiles| remaining reservations do.
-  for (int i = 0; i <= DownloadPathReservationTracker::kMaxUniqueFiles; i++) {
+  // Create |kMaxUniqueFiles + 2| reservations for |path|. The first reservation
+  // will have no uniquifier. Then |kMaxUniqueFiles| paths have numeric
+  // uniquifiers. Then one more will have a timestamp uniquifier.
+  for (int i = 0; i <= DownloadPathReservationTracker::kMaxUniqueFiles + 1;
+       i++) {
+    SCOPED_TRACE(testing::Message() << "i = " << i);
     base::FilePath reserved_path;
     base::FilePath expected_path;
     PathValidationResult result = PathValidationResult::NAME_TOO_LONG;
-    if (i > 0) {
+    if (i == 0) {
+      expected_path = path;
+    } else if (i > 0 && i <= DownloadPathReservationTracker::kMaxUniqueFiles) {
       expected_path =
           path.InsertBeforeExtensionASCII(base::StringPrintf(" (%d)", i));
     } else {
-      expected_path = path;
+      expected_path =
+          path.InsertBeforeExtensionASCII(" - 1970-01-01T00:00:00.000Z");
     }
     items[i].reset(CreateDownloadItem(i));
     EXPECT_FALSE(IsPathInUse(expected_path));
@@ -462,7 +474,7 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
   }
   // The next reservation for |path| will fail to be unique.
   std::unique_ptr<MockDownloadItem> item(
-      CreateDownloadItem(DownloadPathReservationTracker::kMaxUniqueFiles + 1));
+      CreateDownloadItem(DownloadPathReservationTracker::kMaxUniqueFiles + 2));
   base::FilePath reserved_path;
   PathValidationResult result = PathValidationResult::NAME_TOO_LONG;
   CallGetReservedPath(item.get(), path, create_directory, conflict_action,
@@ -471,8 +483,8 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
   EXPECT_EQ(path.value(), reserved_path.value());
 
   SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
-  for (int i = 0; i <= DownloadPathReservationTracker::kMaxUniqueFiles; i++)
-    SetDownloadItemState(items[i].get(), DownloadItem::COMPLETE);
+  for (auto& item : items)
+    SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
 }
 
 // If the target directory is unwriteable, then callback should be notified that

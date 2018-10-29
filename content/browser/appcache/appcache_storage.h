@@ -176,17 +176,18 @@ class CONTENT_EXPORT AppCacheStorage {
   }
 
   // Creates a reader to read a response from storage.
-  virtual AppCacheResponseReader* CreateResponseReader(const GURL& manifest_url,
-                                                       int64_t response_id) = 0;
+  virtual std::unique_ptr<AppCacheResponseReader> CreateResponseReader(
+      const GURL& manifest_url,
+      int64_t response_id) = 0;
 
   // Creates a writer to write a new response to storage. This call
   // establishes a new response id.
-  virtual AppCacheResponseWriter* CreateResponseWriter(
+  virtual std::unique_ptr<AppCacheResponseWriter> CreateResponseWriter(
       const GURL& manifest_url) = 0;
 
   // Creates a metadata writer to write metadata of response to storage.
-  virtual AppCacheResponseMetadataWriter* CreateResponseMetadataWriter(
-      int64_t response_id) = 0;
+  virtual std::unique_ptr<AppCacheResponseMetadataWriter>
+  CreateResponseMetadataWriter(int64_t response_id) = 0;
 
   // Schedules the lazy deletion of responses and saves the ids
   // persistently such that the responses will be deleted upon restart

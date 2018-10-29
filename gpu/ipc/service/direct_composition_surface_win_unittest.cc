@@ -233,13 +233,13 @@ TEST(DirectCompositionSurfaceTest, DXGIDCLayerSwitch) {
 
   EXPECT_TRUE(surface->Resize(gfx::Size(100, 100), 1.0,
                               gl::GLSurface::ColorSpace::UNSPECIFIED, true));
-  EXPECT_FALSE(surface->swap_chain());
+  EXPECT_FALSE(surface->GetBackbufferSwapChainForTesting());
 
   // First SetDrawRectangle must be full size of surface for DXGI
   // swapchain.
   EXPECT_FALSE(surface->SetDrawRectangle(gfx::Rect(0, 0, 50, 50)));
   EXPECT_TRUE(surface->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
-  EXPECT_TRUE(surface->swap_chain());
+  EXPECT_TRUE(surface->GetBackbufferSwapChainForTesting());
 
   // SetDrawRectangle can't be called again until swap.
   EXPECT_FALSE(surface->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
@@ -256,7 +256,7 @@ TEST(DirectCompositionSurfaceTest, DXGIDCLayerSwitch) {
   EXPECT_FALSE(surface->SetDrawRectangle(gfx::Rect(0, 0, 50, 50)));
   EXPECT_TRUE(surface->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
   EXPECT_TRUE(context->IsCurrent(surface.get()));
-  EXPECT_FALSE(surface->swap_chain());
+  EXPECT_FALSE(surface->GetBackbufferSwapChainForTesting());
 
   surface->SetEnableDCLayers(false);
 
@@ -266,7 +266,7 @@ TEST(DirectCompositionSurfaceTest, DXGIDCLayerSwitch) {
   // surface.
   EXPECT_FALSE(surface->SetDrawRectangle(gfx::Rect(0, 0, 50, 50)));
   EXPECT_TRUE(surface->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
-  EXPECT_TRUE(surface->swap_chain());
+  EXPECT_TRUE(surface->GetBackbufferSwapChainForTesting());
 
   context = nullptr;
   DestroySurface(std::move(surface));
@@ -290,10 +290,11 @@ TEST(DirectCompositionSurfaceTest, SwitchAlpha) {
 
   EXPECT_TRUE(surface->Resize(gfx::Size(100, 100), 1.0,
                               gl::GLSurface::ColorSpace::UNSPECIFIED, true));
-  EXPECT_FALSE(surface->swap_chain());
+  EXPECT_FALSE(surface->GetBackbufferSwapChainForTesting());
 
   EXPECT_TRUE(surface->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = surface->swap_chain();
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      surface->GetBackbufferSwapChainForTesting();
   ASSERT_TRUE(swap_chain);
   DXGI_SWAP_CHAIN_DESC1 desc;
   swap_chain->GetDesc1(&desc);
@@ -302,15 +303,15 @@ TEST(DirectCompositionSurfaceTest, SwitchAlpha) {
   // Resize to the same parameters should have no effect.
   EXPECT_TRUE(surface->Resize(gfx::Size(100, 100), 1.0,
                               gl::GLSurface::ColorSpace::UNSPECIFIED, true));
-  EXPECT_TRUE(surface->swap_chain());
+  EXPECT_TRUE(surface->GetBackbufferSwapChainForTesting());
 
   EXPECT_TRUE(surface->Resize(gfx::Size(100, 100), 1.0,
                               gl::GLSurface::ColorSpace::UNSPECIFIED, false));
-  EXPECT_FALSE(surface->swap_chain());
+  EXPECT_FALSE(surface->GetBackbufferSwapChainForTesting());
 
   EXPECT_TRUE(surface->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
 
-  swap_chain = surface->swap_chain();
+  swap_chain = surface->GetBackbufferSwapChainForTesting();
   ASSERT_TRUE(swap_chain);
   swap_chain->GetDesc1(&desc);
   EXPECT_EQ(DXGI_ALPHA_MODE_IGNORE, desc.AlphaMode);
@@ -357,12 +358,12 @@ TEST(DirectCompositionSurfaceTest, NoPresentTwice) {
   surface->ScheduleDCLayer(params);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      surface->GetLayerSwapChainForTesting(1);
+      surface->GetLayerSwapChainForTesting(0);
   ASSERT_FALSE(swap_chain);
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
 
-  swap_chain = surface->GetLayerSwapChainForTesting(1);
+  swap_chain = surface->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
 
   UINT last_present_count = 0;
@@ -376,26 +377,275 @@ TEST(DirectCompositionSurfaceTest, NoPresentTwice) {
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
-      surface->GetLayerSwapChainForTesting(1);
+      surface->GetLayerSwapChainForTesting(0);
   EXPECT_EQ(swap_chain2.Get(), swap_chain.Get());
 
   // It's the same image, so it should have the same swapchain.
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetLastPresentCount(&last_present_count)));
   EXPECT_EQ(2u, last_present_count);
 
-  // The size of the swapchain changed, so it should be recreated.
+  // The image changed, we should get a new present
+  scoped_refptr<gl::GLImageDXGI> image_dxgi2(
+      new gl::GLImageDXGI(texture_size, nullptr));
+  image_dxgi2->SetTexture(texture, 0);
+  image_dxgi2->SetColorSpace(gfx::ColorSpace::CreateREC709());
+
   ui::DCRendererLayerParams params2(
       false, gfx::Rect(), 1, gfx::Transform(),
-      std::vector<scoped_refptr<gl::GLImage>>{image_dxgi},
-      gfx::RectF(gfx::Rect(texture_size)), gfx::Rect(0, 0, 25, 25), 0, 0, 1.0,
-      0, false);
+      std::vector<scoped_refptr<gl::GLImage>>{image_dxgi2},
+      gfx::RectF(gfx::Rect(texture_size)), gfx::Rect(window_size), 0, 0, 1.0, 0,
+      false);
   surface->ScheduleDCLayer(params2);
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
-      surface->GetLayerSwapChainForTesting(1);
-  EXPECT_NE(swap_chain2.Get(), swap_chain3.Get());
+      surface->GetLayerSwapChainForTesting(0);
+  EXPECT_TRUE(SUCCEEDED(swap_chain3->GetLastPresentCount(&last_present_count)));
+  // the present count should increase with the new present
+  EXPECT_EQ(3u, last_present_count);
+
+  context = nullptr;
+  DestroySurface(std::move(surface));
+}
+
+// Ensure no frequent swap chain recreation due to size changes
+TEST(DirectCompositionSurfaceTest, NoFrequentSwapchainRecreation) {
+  if (!CheckIfDCSupported())
+    return;
+
+  TestImageTransportSurfaceDelegate delegate;
+  scoped_refptr<DirectCompositionSurfaceWin> surface(
+      new DirectCompositionSurfaceWin(nullptr, delegate.AsWeakPtr(),
+                                      ui::GetHiddenWindow()));
+  EXPECT_TRUE(surface->Initialize());
+
+  scoped_refptr<gl::GLContext> context =
+      gl::init::CreateGLContext(nullptr, surface.get(), gl::GLContextAttribs());
+  EXPECT_TRUE(context->MakeCurrent(surface.get()));
+
+  surface->SetEnableDCLayers(true);
+  surface->SetScaledOverlaysSupportedForTesting(true);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+
+  // Initial frame
+  gfx::Size texture_size(50, 50);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+      CreateNV12Texture(d3d11_device, texture_size, false);
+
+  scoped_refptr<gl::GLImageDXGI> image_dxgi(
+      new gl::GLImageDXGI(texture_size, nullptr));
+  image_dxgi->SetTexture(texture, 0);
+  image_dxgi->SetColorSpace(gfx::ColorSpace::CreateREC709());
+
+  gfx::Size window_size(100, 100);
+  ui::DCRendererLayerParams params(
+      false, gfx::Rect(), 1, gfx::Transform(),
+      std::vector<scoped_refptr<gl::GLImage>>{image_dxgi},
+      gfx::RectF(gfx::Rect(texture_size)), gfx::Rect(window_size), 0, 0, 1.0, 0,
+      false);
+
+  surface->ScheduleDCLayer(params);
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      surface->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain);
+
+  // A new frame with the same swapchian size
+  surface->ScheduleDCLayer(params);
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
+      surface->GetLayerSwapChainForTesting(0);
+  EXPECT_EQ(swap_chain2.Get(), swap_chain.Get());
+
+  // Start to change the swapchain size. It should not be recreated for the
+  // first few frames after the size change.
+  ui::DCRendererLayerParams params3(
+      false, gfx::Rect(), 1, gfx::Transform(),
+      std::vector<scoped_refptr<gl::GLImage>>{image_dxgi},
+      gfx::RectF(gfx::Rect(texture_size)), gfx::Rect(0, 0, 25, 25), 0, 0, 1.0,
+      0, false);
+
+  for (int i = 1; i <= 5; ++i) {
+    surface->ScheduleDCLayer(params3);
+    EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+              surface->SwapBuffers(base::DoNothing()));
+  }
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
+      surface->GetLayerSwapChainForTesting(0);
+  EXPECT_EQ(swap_chain3.Get(), swap_chain.Get());
+
+  // 31 frames with the same swapchain size
+  int frames = surface->GetNumFramesBeforeSwapChainResizeForTesting() + 1;
+  for (int i = 6; i <= frames; ++i) {
+    surface->ScheduleDCLayer(params3);
+    EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+              surface->SwapBuffers(base::DoNothing()));
+  }
+
+  // The swapchain should be recreated now
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain4 =
+      surface->GetLayerSwapChainForTesting(0);
+  EXPECT_NE(swap_chain4.Get(), swap_chain.Get());
+
+  context = nullptr;
+  DestroySurface(std::move(surface));
+}
+
+// Ensure the swapchain size is set to the correct size if HW overlay scaling
+// is support - swapchain should be the minimum of the decoded
+// video buffer size and the onscreen video size
+TEST(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
+  if (!CheckIfDCSupported())
+    return;
+
+  TestImageTransportSurfaceDelegate delegate;
+  scoped_refptr<DirectCompositionSurfaceWin> surface(
+      new DirectCompositionSurfaceWin(nullptr, delegate.AsWeakPtr(),
+                                      ui::GetHiddenWindow()));
+  EXPECT_TRUE(surface->Initialize());
+
+  scoped_refptr<gl::GLContext> context =
+      gl::init::CreateGLContext(nullptr, surface.get(), gl::GLContextAttribs());
+  EXPECT_TRUE(context->MakeCurrent(surface.get()));
+
+  surface->SetEnableDCLayers(true);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+
+  gfx::Size texture_size(64, 64);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+      CreateNV12Texture(d3d11_device, texture_size, false);
+
+  scoped_refptr<gl::GLImageDXGI> image_dxgi(
+      new gl::GLImageDXGI(texture_size, nullptr));
+  image_dxgi->SetTexture(texture, 0);
+  image_dxgi->SetColorSpace(gfx::ColorSpace::CreateREC709());
+
+  // HW supports scaled overlays
+  // The input texture size is maller than the window size.
+  surface->SetScaledOverlaysSupportedForTesting(true);
+  gfx::Size window_size(100, 100);
+  ui::DCRendererLayerParams params(
+      false, gfx::Rect(), 1, gfx::Transform(),
+      std::vector<scoped_refptr<gl::GLImage>>{image_dxgi},
+      gfx::RectF(gfx::Rect(texture_size)), gfx::Rect(window_size), 0, 0, 1.0, 0,
+      false);
+
+  surface->ScheduleDCLayer(params);
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      surface->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain);
+
+  DXGI_SWAP_CHAIN_DESC Desc;
+  EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc(&Desc)));
+  EXPECT_EQ((int)Desc.BufferDesc.Width, texture_size.width());
+  EXPECT_EQ((int)Desc.BufferDesc.Height, texture_size.height());
+
+  // Clear SwapChainPresenters
+  // Must do Clear first because the swap chain won't resize immediately if
+  // a new size is given unless this is the very first time after Clear.
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
+
+  // The input texture size is bigger than the window size.
+  window_size = gfx::Size(32, 48);
+  ui::DCRendererLayerParams params2(
+      false, gfx::Rect(), 1, gfx::Transform(),
+      std::vector<scoped_refptr<gl::GLImage>>{image_dxgi},
+      gfx::RectF(gfx::Rect(texture_size)), gfx::Rect(window_size), 0, 0, 1.0, 0,
+      false);
+
+  surface->ScheduleDCLayer(params2);
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
+      surface->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain2);
+
+  EXPECT_TRUE(SUCCEEDED(swap_chain2->GetDesc(&Desc)));
+  EXPECT_EQ((int)Desc.BufferDesc.Width, window_size.width());
+  EXPECT_EQ((int)Desc.BufferDesc.Height, window_size.height());
+
+  context = nullptr;
+  DestroySurface(std::move(surface));
+}
+
+// Ensure the swapchain size is set to the correct size if HW overlay scaling
+// is not support - swapchain should be the onscreen video size
+TEST(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
+  if (!CheckIfDCSupported())
+    return;
+
+  TestImageTransportSurfaceDelegate delegate;
+  scoped_refptr<DirectCompositionSurfaceWin> surface(
+      new DirectCompositionSurfaceWin(nullptr, delegate.AsWeakPtr(),
+                                      ui::GetHiddenWindow()));
+  EXPECT_TRUE(surface->Initialize());
+
+  scoped_refptr<gl::GLContext> context =
+      gl::init::CreateGLContext(nullptr, surface.get(), gl::GLContextAttribs());
+  EXPECT_TRUE(context->MakeCurrent(surface.get()));
+
+  surface->SetEnableDCLayers(true);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+
+  gfx::Size texture_size(80, 80);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+      CreateNV12Texture(d3d11_device, texture_size, false);
+
+  scoped_refptr<gl::GLImageDXGI> image_dxgi(
+      new gl::GLImageDXGI(texture_size, nullptr));
+  image_dxgi->SetTexture(texture, 0);
+  image_dxgi->SetColorSpace(gfx::ColorSpace::CreateREC709());
+
+  // HW doesn't support scaled overlays
+  // The input texture size is bigger than the window size.
+  surface->SetScaledOverlaysSupportedForTesting(false);
+  gfx::Size window_size(42, 42);
+  ui::DCRendererLayerParams params(
+      false, gfx::Rect(), 1, gfx::Transform(),
+      std::vector<scoped_refptr<gl::GLImage>>{image_dxgi},
+      gfx::RectF(gfx::Rect(texture_size)), gfx::Rect(window_size), 0, 0, 1.0, 0,
+      false);
+
+  surface->ScheduleDCLayer(params);
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      surface->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain);
+
+  DXGI_SWAP_CHAIN_DESC desc;
+  EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc(&desc)));
+  EXPECT_EQ((int)desc.BufferDesc.Width, window_size.width());
+  EXPECT_EQ((int)desc.BufferDesc.Height, window_size.height());
+
+  // The input texture size is smaller than the window size.
+  window_size = gfx::Size(124, 136);
+  ui::DCRendererLayerParams params2(
+      false, gfx::Rect(), 1, gfx::Transform(),
+      std::vector<scoped_refptr<gl::GLImage>>{image_dxgi},
+      gfx::RectF(gfx::Rect(texture_size)), gfx::Rect(window_size), 0, 0, 1.0, 0,
+      false);
+
+  surface->ScheduleDCLayer(params2);
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
+      surface->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain2);
+
+  EXPECT_TRUE(SUCCEEDED(swap_chain2->GetDesc(&desc)));
+  EXPECT_EQ((int)desc.BufferDesc.Width, window_size.width());
+  EXPECT_EQ((int)desc.BufferDesc.Height, window_size.height());
 
   context = nullptr;
   DestroySurface(std::move(surface));
@@ -751,7 +1001,7 @@ TEST_F(DirectCompositionPixelTest, SkipVideoLayerEmptyContentsRect) {
   InitializeSurface();
   // Swap chain size is overridden to content rect size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::EnableScaledOverlaysForTesting();
+  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
   surface_->SetEnableDCLayers(true);
 
   gfx::Size window_size(100, 100);

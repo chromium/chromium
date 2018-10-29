@@ -47,6 +47,9 @@ class MultiDeviceSetupClient {
   using GetEligibleHostDevicesCallback =
       base::OnceCallback<void(const cryptauth::RemoteDeviceRefList&)>;
 
+  static HostStatusWithDevice GenerateDefaultHostStatusWithDevice();
+  static FeatureStatesMap GenerateDefaultFeatureStatesMap();
+
   MultiDeviceSetupClient();
   virtual ~MultiDeviceSetupClient();
 
@@ -75,9 +78,6 @@ class MultiDeviceSetupClient {
       mojom::MultiDeviceSetup::TriggerEventForDebuggingCallback callback) = 0;
 
  protected:
-  static HostStatusWithDevice GenerateDefaultHostStatusWithDevice();
-  static FeatureStatesMap GenerateDefaultFeatureStatesMap();
-
   void NotifyHostStatusChanged(
       const HostStatusWithDevice& host_status_with_device);
   void NotifyFeatureStateChanged(const FeatureStatesMap& feature_states_map);

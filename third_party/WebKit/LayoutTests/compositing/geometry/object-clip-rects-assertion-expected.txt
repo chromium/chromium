@@ -1,4 +1,3 @@
 This testcase should not fire an assertion related to clip rects.
 
 
-

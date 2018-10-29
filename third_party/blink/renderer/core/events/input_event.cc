@@ -73,7 +73,7 @@ String ConvertInputTypeToString(InputEvent::InputType input_type) {
 }
 
 InputEvent::InputType ConvertStringToInputType(const String& string_name) {
-  // TODO(chongz): Use binary search if the map goes larger.
+  // TODO(input-dev): Use binary search if the map goes larger.
   for (const auto& entry : kInputTypeStringNameMap) {
     if (string_name == entry.string_name)
       return entry.input_type;

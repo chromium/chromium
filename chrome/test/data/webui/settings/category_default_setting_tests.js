@@ -26,11 +26,30 @@ suite('CategoryDefaultSetting', function() {
     document.body.appendChild(testElement);
   });
 
-  test('getDefaultValueForContentType API used', function() {
-    testElement.category = settings.ContentSettingsTypes.GEOLOCATION;
-    return browserProxy.whenCalled('getDefaultValueForContentType')
-        .then(function(contentType) {
-          assertEquals(settings.ContentSettingsTypes.GEOLOCATION, contentType);
+  test('browserProxy APIs used on startup', function() {
+    const category = settings.ContentSettingsTypes.COOKIES;
+    testElement.category = category;
+    return Promise
+        .all([
+          browserProxy.whenCalled('getDefaultValueForContentType'),
+          browserProxy.whenCalled('setDefaultValueForContentType'),
+        ])
+        .then(args => {
+          // Test |getDefaultValueForContentType| args.
+          assertEquals(category, args[0]);
+
+          // Test |setDefaultValueForContentType| args. Ensure that on
+          // initialization the same value returned from
+          // |getDefaultValueForContentType| is passed to
+          // |setDefaultValueForContentType|.
+          // TODO(dpapad): Ideally 'category-default-setting' should not call
+          // |setDefaultValueForContentType| on startup. Until that is fixed, at
+          // least ensure that it does not accidentally change the default
+          // value, crbug.com/897236.
+          assertEquals(category, args[1][0]);
+          assertEquals(settings.ContentSetting.ALLOW, args[1][1]);
+          assertEquals(
+              1, browserProxy.getCallCount('setDefaultValueForContentType'));
         });
   });
 

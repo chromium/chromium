@@ -148,6 +148,11 @@ class ASH_EXPORT WallpaperController : public mojom::WallpaperController,
   // Returns true if the active user is allowed to open the wallpaper picker.
   bool CanOpenWallpaperPicker();
 
+  // Returns whether any wallpaper has been shown. It returns false before the
+  // first wallpaper is set (which happens momentarily after startup), and will
+  // always return true thereafter.
+  bool HasShownAnyWallpaper() const;
+
   // Shows the wallpaper and alerts observers of changes. Does not show the
   // image if |preview_mode| is false and the current wallpaper is still being
   // previewed. See comments for |confirm_preview_wallpaper_callback_|.
@@ -172,7 +177,9 @@ class ASH_EXPORT WallpaperController : public mojom::WallpaperController,
   bool IsBlurAllowed() const;
 
   // Returns whether the current wallpaper is blurred.
-  bool IsWallpaperBlurred() const { return is_wallpaper_blurred_; }
+  // Note: this returns false when there's no wallpaper yet. Check
+  // |HasShownAnyWallpaper| if there's need to distinguish.
+  bool IsWallpaperBlurred() const;
 
   // Sets wallpaper info for |account_id| and saves it to local state if
   // |is_ephemeral| is false. Returns false if it fails (which happens if local

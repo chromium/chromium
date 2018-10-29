@@ -20,9 +20,6 @@ class ASH_EXPORT ImmersiveContextAsh : public ImmersiveContext {
   void OnEnteringOrExitingImmersive(ImmersiveFullscreenController* controller,
                                     bool entering) override;
   gfx::Rect GetDisplayBoundsInScreen(views::Widget* widget) override;
-  void AddPointerWatcher(views::PointerWatcher* watcher,
-                         views::PointerWatcherEventTypes events) override;
-  void RemovePointerWatcher(views::PointerWatcher* watcher) override;
   bool DoesAnyWindowHaveCapture() override;
   bool IsMouseEventsEnabled() override;
 

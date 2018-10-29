@@ -259,6 +259,10 @@ EnumTraits<autofill::mojom::PasswordFormSubmissionIndicatorEvent,
         SUBMISSION_INDICATOR_EVENT_COUNT:
       return autofill::mojom::PasswordFormSubmissionIndicatorEvent::
           SUBMISSION_INDICATOR_EVENT_COUNT;
+    case autofill::PasswordForm::SubmissionIndicatorEvent::
+        PROBABLE_FORM_SUBMISSION:
+      return autofill::mojom::PasswordFormSubmissionIndicatorEvent::
+          PROBABLE_FORM_SUBMISSION;
   }
 
   NOTREACHED();
@@ -300,6 +304,11 @@ bool EnumTraits<autofill::mojom::PasswordFormSubmissionIndicatorEvent,
         PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD:
       *output = autofill::PasswordForm::SubmissionIndicatorEvent::
           PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD;
+      return true;
+    case autofill::mojom::PasswordFormSubmissionIndicatorEvent::
+        PROBABLE_FORM_SUBMISSION:
+      *output = autofill::PasswordForm::SubmissionIndicatorEvent::
+          PROBABLE_FORM_SUBMISSION;
       return true;
     case autofill::mojom::PasswordFormSubmissionIndicatorEvent::
         SUBMISSION_INDICATOR_EVENT_COUNT:
@@ -372,6 +381,8 @@ autofill::mojom::SubmissionSource EnumTraits<
     autofill::mojom::SubmissionSource,
     autofill::SubmissionSource>::ToMojom(autofill::SubmissionSource input) {
   switch (input) {
+    case autofill::SubmissionSource::NONE:
+      return autofill::mojom::SubmissionSource::NONE;
     case autofill::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
       return autofill::mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION;
     case autofill::SubmissionSource::XHR_SUCCEEDED:
@@ -386,7 +397,7 @@ autofill::mojom::SubmissionSource EnumTraits<
       return autofill::mojom::SubmissionSource::FORM_SUBMISSION;
   }
   NOTREACHED();
-  return autofill::mojom::SubmissionSource::FORM_SUBMISSION;
+  return autofill::mojom::SubmissionSource::NONE;
 }
 
 // static
@@ -394,6 +405,9 @@ bool EnumTraits<autofill::mojom::SubmissionSource, autofill::SubmissionSource>::
     FromMojom(autofill::mojom::SubmissionSource input,
               autofill::SubmissionSource* output) {
   switch (input) {
+    case autofill::mojom::SubmissionSource::NONE:
+      *output = autofill::SubmissionSource::NONE;
+      return true;
     case autofill::mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
       *output = autofill::SubmissionSource::SAME_DOCUMENT_NAVIGATION;
       return true;
@@ -596,6 +610,8 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
     autofill::mojom::FormDataDataView data,
     autofill::FormData* out) {
   if (!data.ReadName(&out->name))
+    return false;
+  if (!data.ReadButtonTitle(&out->button_title))
     return false;
   if (!data.ReadOrigin(&out->origin))
     return false;

@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "ios/web/public/browser_state.h"
+#include "ios/web/public/features.h"
 #import "ios/web/web_state/js/page_script_util.h"
 #import "ios/web/web_state/ui/crw_wk_script_message_router.h"
 
@@ -85,8 +86,12 @@ WKWebViewConfigurationProvider::GetWebViewConfiguration() {
       [configuration_
           setWebsiteDataStore:[WKWebsiteDataStore nonPersistentDataStore]];
     }
-    // API available on iOS 9, although doesn't appear to enable inline playback
-    // Works as intended on iOS 10+
+
+    if (base::FeatureList::IsEnabled(
+            web::features::kIgnoresViewportScaleLimits)) {
+      [configuration_ setIgnoresViewportScaleLimits:YES];
+    }
+
     [configuration_ setAllowsInlineMediaPlayback:YES];
     // setJavaScriptCanOpenWindowsAutomatically is required to support popups.
     [[configuration_ preferences] setJavaScriptCanOpenWindowsAutomatically:YES];

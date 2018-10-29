@@ -48,14 +48,7 @@ class CORE_EXPORT V0CustomElement {
   STATIC_ONLY(V0CustomElement);
 
  public:
-  enum NameSet {
-    kEmbedderNames = 1 << 0,
-    kStandardNames = 1 << 1,
-    kAllNames = kEmbedderNames | kStandardNames
-  };
-  static bool IsValidName(const AtomicString& name,
-                          NameSet valid_names = kAllNames);
-  static void AddEmbedderCustomElementName(const AtomicString& name);
+  static bool IsValidName(const AtomicString& name);
 
   // API to notify of document-level changes
   static V0CustomElementMicrotaskImportStep* DidCreateImport(HTMLImportChild*);
@@ -73,9 +66,6 @@ class CORE_EXPORT V0CustomElement {
   static void DidAttach(Element*, const Document&);
   static void DidDetach(Element*, const Document&);
   static void WasDestroyed(Element*);
-
- private:
-  static Vector<AtomicString>& EmbedderCustomElementNames();
 };
 
 }  // namespace blink

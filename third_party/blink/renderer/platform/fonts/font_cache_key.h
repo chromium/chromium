@@ -46,7 +46,7 @@ namespace blink {
 static const unsigned kFontSizePrecisionMultiplier = 100;
 
 struct FontCacheKey {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   FontCacheKey()

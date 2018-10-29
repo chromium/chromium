@@ -20,7 +20,7 @@ NSString* kFindPasteboardChangedNotification =
   return instance;
 }
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     findText_.reset([[NSString alloc] init]);
 
@@ -66,8 +66,7 @@ NSString* kFindPasteboardChangedNotification =
   if (needToSendNotification) {
     findText_.reset([newText copy]);
     NSPasteboard* findPboard = [self findPboard];
-    [findPboard declareTypes:[NSArray arrayWithObject:NSStringPboardType]
-                       owner:nil];
+    [findPboard declareTypes:@[ NSStringPboardType ] owner:nil];
     [findPboard setString:findText_.get() forType:NSStringPboardType];
     [[NSNotificationCenter defaultCenter]
         postNotificationName:kFindPasteboardChangedNotification

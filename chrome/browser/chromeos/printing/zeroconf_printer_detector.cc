@@ -20,13 +20,13 @@
 
 namespace chromeos {
 // Supported service names for printers.
-const char* ZeroconfPrinterDetector::kIppServiceName = "_ipp._tcp.local";
-const char* ZeroconfPrinterDetector::kIppsServiceName = "_ipps._tcp.local";
+const char ZeroconfPrinterDetector::kIppServiceName[] = "_ipp._tcp.local";
+const char ZeroconfPrinterDetector::kIppsServiceName[] = "_ipps._tcp.local";
 
 // IppEverywhere printers are also required to advertise these services.
-const char* ZeroconfPrinterDetector::kIppEverywhereServiceName =
+const char ZeroconfPrinterDetector::kIppEverywhereServiceName[] =
     "_ipp._tcp.local,_print";
-const char* ZeroconfPrinterDetector::kIppsEverywhereServiceName =
+const char ZeroconfPrinterDetector::kIppsEverywhereServiceName[] =
     "_ipps._tcp.local,_print";
 
 namespace {
@@ -143,17 +143,14 @@ bool ConvertToPrinter(const ServiceDescription& service_description,
   printer.set_display_name(metadata.ty);
   printer.set_description(metadata.note);
   printer.set_make_and_model(metadata.product);
+  const std::string service_type = service_description.service_type();
   const char* uri_protocol;
-  if ((service_description.service_type() ==
-       base::StringPiece(ZeroconfPrinterDetector::kIppServiceName)) ||
-      (service_description.service_type() ==
-       base::StringPiece(ZeroconfPrinterDetector::kIppEverywhereServiceName))) {
+  if (service_type == ZeroconfPrinterDetector::kIppServiceName ||
+      service_type == ZeroconfPrinterDetector::kIppEverywhereServiceName) {
     uri_protocol = "ipp";
-  } else if ((service_description.service_type() ==
-              base::StringPiece(ZeroconfPrinterDetector::kIppsServiceName)) ||
-             (service_description.service_type() ==
-              base::StringPiece(
-                  ZeroconfPrinterDetector::kIppsEverywhereServiceName))) {
+  } else if (service_type == ZeroconfPrinterDetector::kIppsServiceName ||
+             service_type ==
+                 ZeroconfPrinterDetector::kIppsEverywhereServiceName) {
     uri_protocol = "ipps";
   } else {
     // Since we only register for these services, we should never get back
@@ -178,8 +175,7 @@ bool ConvertToPrinter(const ServiceDescription& service_description,
   // (possibly in addition to suffix-free versions).  If we get a printer from a
   // ,_print service type, it should be auto-configurable with IPP Everywhere.
   printer.mutable_ppd_reference()->autoconf =
-      base::StringPiece(service_description.service_type())
-          .ends_with(",_print");
+      base::StringPiece(service_type).ends_with(",_print");
 
   // gather ppd identification candidates.
   if (!metadata.ty.empty()) {

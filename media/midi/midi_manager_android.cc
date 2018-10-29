@@ -50,20 +50,16 @@ MidiManagerAndroid::MidiManagerAndroid(MidiService* service)
     : MidiManager(service) {}
 
 MidiManagerAndroid::~MidiManagerAndroid() {
-  // TODO(toyoshim): Remove following code once the dynamic instantiation mode
-  // is enabled by default.
-  base::AutoLock lock(lock_);
-  DCHECK(devices_.empty());
-  DCHECK(all_input_ports_.empty());
-  DCHECK(input_port_to_index_.empty());
-  DCHECK(all_output_ports_.empty());
-  DCHECK(output_port_to_index_.empty());
-  DCHECK(raw_manager_.is_null());
+  bool result = service()->task_service()->UnbindInstance();
+  CHECK(result);
 }
 
 void MidiManagerAndroid::StartInitialization() {
-  bool result = service()->task_service()->BindInstance();
-  DCHECK(result);
+  if (!service()->task_service()->BindInstance()) {
+    NOTREACHED();
+    CompleteInitialization(Result::INITIALIZATION_ERROR);
+    return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -71,21 +67,6 @@ void MidiManagerAndroid::StartInitialization() {
   raw_manager_.Reset(Java_MidiManagerAndroid_create(env, pointer));
 
   Java_MidiManagerAndroid_initialize(env, raw_manager_);
-}
-
-void MidiManagerAndroid::Finalize() {
-  bool result = service()->task_service()->UnbindInstance();
-  DCHECK(result);
-
-  // TODO(toyoshim): Remove following code once the dynamic instantiation mode
-  // is enabled by default.
-  base::AutoLock lock(lock_);
-  devices_.clear();
-  all_input_ports_.clear();
-  input_port_to_index_.clear();
-  all_output_ports_.clear();
-  output_port_to_index_.clear();
-  raw_manager_.Reset();
 }
 
 void MidiManagerAndroid::DispatchSendMidiData(MidiManagerClient* client,
@@ -97,8 +78,7 @@ void MidiManagerAndroid::DispatchSendMidiData(MidiManagerClient* client,
     // in the valid range.
     return;
   }
-  DCHECK_EQ(output_ports().size(), all_output_ports_.size());
-  if (output_ports()[port_index].state == PortState::CONNECTED) {
+  if (GetOutputPortState(port_index) == PortState::CONNECTED) {
     // We treat send call as implicit open.
     // TODO(yhirano): Implement explicit open operation from the renderer.
     if (all_output_ports_[port_index]->Open()) {
@@ -120,7 +100,7 @@ void MidiManagerAndroid::DispatchSendMidiData(MidiManagerClient* client,
       delay);
   service()->task_service()->PostBoundDelayedTask(
       TaskService::kDefaultRunnerId,
-      base::BindOnce(&MidiManager::AccumulateMidiBytesSent,
+      base::BindOnce(&MidiManagerAndroid::AccumulateMidiBytesSent,
                      base::Unretained(this), client, data.size()),
       delay);
 }
@@ -145,13 +125,19 @@ void MidiManagerAndroid::OnInitialized(
         env, env->GetObjectArrayElement(devices, i));
     AddDevice(std::make_unique<MidiDeviceAndroid>(env, raw_device, this));
   }
-  CompleteInitialization(Result::OK);
+  service()->task_service()->PostBoundTask(
+      TaskService::kDefaultRunnerId,
+      base::BindOnce(&MidiManagerAndroid::CompleteInitialization,
+                     base::Unretained(this), Result::OK));
 }
 
 void MidiManagerAndroid::OnInitializationFailed(
     JNIEnv* env,
     const JavaParamRef<jobject>& caller) {
-  CompleteInitialization(Result::INITIALIZATION_ERROR);
+  service()->task_service()->PostBoundTask(
+      TaskService::kDefaultRunnerId,
+      base::BindOnce(&MidiManagerAndroid::CompleteInitialization,
+                     base::Unretained(this), Result::INITIALIZATION_ERROR));
 }
 
 void MidiManagerAndroid::OnAttached(JNIEnv* env,
@@ -197,9 +183,9 @@ void MidiManagerAndroid::AddDevice(std::unique_ptr<MidiDeviceAndroid> device) {
         base::StringPrintf("native:port-in-%ld", static_cast<long>(index)));
 
     input_port_to_index_.insert(std::make_pair(port.get(), index));
-    AddInputPort(MidiPortInfo(id, device->GetManufacturer(),
-                              device->GetProductName(),
-                              device->GetDeviceVersion(), state));
+    AddInputPort(mojom::PortInfo(id, device->GetManufacturer(),
+                                 device->GetProductName(),
+                                 device->GetDeviceVersion(), state));
   }
   for (auto& port : device->output_ports()) {
     const size_t index = all_output_ports_.size();
@@ -213,8 +199,8 @@ void MidiManagerAndroid::AddDevice(std::unique_ptr<MidiDeviceAndroid> device) {
 
     output_port_to_index_.insert(std::make_pair(port.get(), index));
     AddOutputPort(
-        MidiPortInfo(id, device->GetManufacturer(), device->GetProductName(),
-                     device->GetDeviceVersion(), PortState::CONNECTED));
+        mojom::PortInfo(id, device->GetManufacturer(), device->GetProductName(),
+                        device->GetDeviceVersion(), PortState::CONNECTED));
   }
   devices_.push_back(std::move(device));
 }

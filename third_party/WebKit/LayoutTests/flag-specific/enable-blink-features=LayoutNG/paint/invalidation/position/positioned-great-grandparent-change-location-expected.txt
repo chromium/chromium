@@ -20,22 +20,22 @@
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (positioned) DIV",
           "rect": [100, 200, 100, 100],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (positioned) DIV",
           "rect": [100, 100, 100, 100],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'Target'",
           "rect": [100, 200, 41, 19],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'Target'",
           "rect": [100, 100, 41, 19],
-          "reason": "subtree"
+          "reason": "geometry"
         }
       ]
     }

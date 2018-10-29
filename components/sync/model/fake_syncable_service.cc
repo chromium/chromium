@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/location.h"
+#include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error_factory.h"
 
 namespace syncer {

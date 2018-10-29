@@ -12,20 +12,20 @@ namespace blink {
 TEST(FloatSizeTest, DiagonalLengthTest) {
   // Sanity check the Pythagorean triples 3-4-5 and 5-12-13
   FloatSize s1 = FloatSize(3.f, 4.f);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, s1.DiagonalLength(),
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual, s1.DiagonalLength(),
                       5.f);
   FloatSize s2 = FloatSize(5.f, 12.f);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, s2.DiagonalLength(),
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual, s2.DiagonalLength(),
                       13.f);
 
   // Test very small numbers.
   FloatSize s3 = FloatSize(.5e-20f, .5e-20f);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, s3.DiagonalLength(),
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual, s3.DiagonalLength(),
                       .707106781186548e-20f);
 
   // Test very large numbers.
   FloatSize s4 = FloatSize(.5e20f, .5e20f);
-  EXPECT_PRED_FORMAT2(GeometryTest::AssertAlmostEqual, s4.DiagonalLength(),
+  EXPECT_PRED_FORMAT2(geometry_test::AssertAlmostEqual, s4.DiagonalLength(),
                       .707106781186548e20f);
 }
 

@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.TitleUtil;
 import org.chromium.chrome.browser.widget.tile.TileWithTextView;
-import org.chromium.chrome.browser.widget.tile.TileWithTextView.Style;
 
 /**
  * The view for a site suggestion tile. Displays the title of the site beneath a large icon. If a
@@ -33,11 +32,10 @@ public class SuggestionsTileView extends TileWithTextView {
      * after inflation.
      * @param tile The tile that holds the data to populate this view.
      * @param titleLines The number of text lines to use for the tile title.
-     * @param tileStyle The visual style of the tile.
      */
-    public void initialize(Tile tile, int titleLines, @Style int tileStyle) {
+    public void initialize(Tile tile, int titleLines) {
         super.initialize(TitleUtil.getTitleForDisplay(tile.getTitle(), tile.getUrl()),
-                tile.getUrl(), tile.isOfflineAvailable(), tile.getIcon(), titleLines, tileStyle);
+                tile.isOfflineAvailable(), tile.getIcon(), titleLines);
         mData = tile.getData();
         setIconViewLayoutParams(tile);
     }

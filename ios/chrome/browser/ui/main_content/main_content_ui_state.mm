@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
 
 #include "base/logging.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -36,6 +36,7 @@
 #include "services/network/public/mojom/websocket.mojom-blink.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -67,7 +68,7 @@ class WebSocketHandle {
                        const String& user_agent_override,
                        WebSocketHandleClient*,
                        base::SingleThreadTaskRunner*) = 0;
-  virtual void Send(bool fin, MessageType, const char* data, size_t) = 0;
+  virtual void Send(bool fin, MessageType, const char* data, wtf_size_t) = 0;
   virtual void FlowControl(int64_t quota) = 0;
   virtual void Close(unsigned short code, const String& reason) = 0;
 };

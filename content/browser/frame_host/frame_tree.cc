@@ -108,7 +108,8 @@ FrameTree::FrameTree(Navigator* navigator,
                               std::string(),
                               false,
                               base::UnguessableToken::Create(),
-                              FrameOwnerProperties())),
+                              FrameOwnerProperties(),
+                              blink::FrameOwnerElementType::kNone)),
       focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       load_progress_(0.0) {}
 
@@ -181,7 +182,8 @@ bool FrameTree::AddFrame(
     const base::UnguessableToken& devtools_frame_token,
     const blink::FramePolicy& frame_policy,
     const FrameOwnerProperties& frame_owner_properties,
-    bool was_discarded) {
+    bool was_discarded,
+    blink::FrameOwnerElementType owner_type) {
   CHECK_NE(new_routing_id, MSG_ROUTING_NONE);
 
   // A child frame always starts with an initial empty document, which means
@@ -193,7 +195,8 @@ bool FrameTree::AddFrame(
 
   std::unique_ptr<FrameTreeNode> new_node = base::WrapUnique(new FrameTreeNode(
       this, parent->navigator(), parent, scope, frame_name, frame_unique_name,
-      is_created_by_script, devtools_frame_token, frame_owner_properties));
+      is_created_by_script, devtools_frame_token, frame_owner_properties,
+      owner_type));
 
   // Set sandbox flags and container policy and make them effective immediately,
   // since initial sandbox flags and feature policy should apply to the initial
@@ -207,8 +210,8 @@ bool FrameTree::AddFrame(
     new_node->set_was_discarded();
 
   // Add the new node to the FrameTree, creating the RenderFrameHost.
-  FrameTreeNode* added_node =
-      parent->AddChild(std::move(new_node), process_id, new_routing_id);
+  FrameTreeNode* added_node = parent->current_frame_host()->AddChild(
+      std::move(new_node), process_id, new_routing_id);
 
   DCHECK(interface_provider_request.is_pending());
   added_node->current_frame_host()->BindInterfaceProviderRequest(
@@ -239,7 +242,7 @@ void FrameTree::RemoveFrame(FrameTreeNode* child) {
     return;
   }
 
-  parent->RemoveChild(child);
+  parent->current_frame_host()->RemoveChild(child);
 }
 
 void FrameTree::CreateProxiesForSiteInstance(
@@ -351,8 +354,7 @@ RenderViewHostImpl* FrameTree::CreateRenderViewHost(
     int32_t widget_routing_id,
     bool swapped_out,
     bool hidden) {
-  RenderViewHostMap::iterator iter =
-      render_view_host_map_.find(site_instance->GetId());
+  auto iter = render_view_host_map_.find(site_instance->GetId());
   if (iter != render_view_host_map_.end())
     return iter->second;
 
@@ -367,8 +369,7 @@ RenderViewHostImpl* FrameTree::CreateRenderViewHost(
 }
 
 RenderViewHostImpl* FrameTree::GetRenderViewHost(SiteInstance* site_instance) {
-  RenderViewHostMap::iterator iter =
-      render_view_host_map_.find(site_instance->GetId());
+  auto iter = render_view_host_map_.find(site_instance->GetId());
   if (iter != render_view_host_map_.end())
     return iter->second;
 
@@ -377,8 +378,7 @@ RenderViewHostImpl* FrameTree::GetRenderViewHost(SiteInstance* site_instance) {
 
 void FrameTree::AddRenderViewHostRef(RenderViewHostImpl* render_view_host) {
   SiteInstance* site_instance = render_view_host->GetSiteInstance();
-  RenderViewHostMap::iterator iter =
-      render_view_host_map_.find(site_instance->GetId());
+  auto iter = render_view_host_map_.find(site_instance->GetId());
   CHECK(iter != render_view_host_map_.end());
   CHECK(iter->second == render_view_host);
 
@@ -388,8 +388,7 @@ void FrameTree::AddRenderViewHostRef(RenderViewHostImpl* render_view_host) {
 void FrameTree::ReleaseRenderViewHostRef(RenderViewHostImpl* render_view_host) {
   SiteInstance* site_instance = render_view_host->GetSiteInstance();
   int32_t site_instance_id = site_instance->GetId();
-  RenderViewHostMap::iterator iter =
-      render_view_host_map_.find(site_instance_id);
+  auto iter = render_view_host_map_.find(site_instance_id);
 
   CHECK(iter != render_view_host_map_.end());
   CHECK_EQ(iter->second, render_view_host);

@@ -1,0 +1,25 @@
+: no rects
+
+: no rects
+
+: #document scrolling (13, 220, 42, 42)
+
+: #document scrolling (13, 325, 102, 102)
+
+: no rects
+
+: #document scrolling (8, 532, 100, 100)
+
+: no rects
+
+: #document scrolling (8, 738, 100, 100)
+
+: no rects
+
+: #document scrolling (120, 840, 102, 102)
+
+: no rects
+
+: #document scrolling (118, 944, 100, 100)
+
+

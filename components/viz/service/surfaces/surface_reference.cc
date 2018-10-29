@@ -24,4 +24,9 @@ std::string SurfaceReference::ToString() const {
                             child_id_.ToString().c_str());
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         const SurfaceReference& surface_reference) {
+  return out << surface_reference.ToString();
+}
+
 }  // namespace viz

@@ -28,6 +28,8 @@ TEST_F(EntityDataTest, Swap) {
   EntityData data;
   AddDefaultFieldValue(BOOKMARKS, &data.specifics);
   data.id = "id";
+  data.originator_cache_guid = "originator_cache_guid";
+  data.originator_client_item_id = "originator_client_item_id";
   data.server_defined_unique_tag = "server_defined_unique_tag";
   data.client_tag_hash = "client_tag_hash";
   data.non_unique_name = "non_unique_name";
@@ -56,6 +58,8 @@ TEST_F(EntityDataTest, Swap) {
 
   // Compare other fields.
   EXPECT_EQ("id", ptr->id);
+  EXPECT_EQ("originator_cache_guid", ptr->originator_cache_guid);
+  EXPECT_EQ("originator_client_item_id", ptr->originator_client_item_id);
   EXPECT_EQ("server_defined_unique_tag", ptr->server_defined_unique_tag);
   EXPECT_EQ("client_tag_hash", ptr->client_tag_hash);
   EXPECT_EQ("non_unique_name", ptr->non_unique_name);

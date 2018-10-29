@@ -22,6 +22,8 @@ const char kIncognitoWindowOpened[] = "incognito_window_opened";
 const char kIncognitoWindowSessionTimeMet[] =
     "incognito_window_session_time_met";
 
+const char kReopenTabConditionsMet[] = "reopen_tab_conditions_met";
+const char kTabReopened[] = "tab_reopened";
 #endif  // BUILDFLAG(ENABLE_DESKTOP_IN_PRODUCT_HELP)
 
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_IOS)

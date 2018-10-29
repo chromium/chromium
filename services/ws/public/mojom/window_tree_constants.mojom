@@ -105,6 +105,14 @@ enum WindowType {
   UNKNOWN,
 };
 
+enum OcclusionState {
+  // These come from aura::Window::OcclusionState. See it for details.
+  kUnknown,
+  kVisible,
+  kOccluded,
+  kHidden,
+};
+
 // A bitfield of what drag operations are possible.
 const uint32 kDropEffectNone = 0;
 const uint32 kDropEffectMove = 1;

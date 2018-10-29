@@ -124,7 +124,7 @@ class QuicClientBase {
   // This should only be set before the initial Connect()
   void set_server_id(const QuicServerId& server_id) { server_id_ = server_id; }
 
-  void SetUserAgentID(const std::string& user_agent_id) {
+  void SetUserAgentID(const QuicString& user_agent_id) {
     crypto_config_.set_user_agent_id(user_agent_id);
   }
 

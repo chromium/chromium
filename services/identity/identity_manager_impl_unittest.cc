@@ -101,6 +101,7 @@ class IdentityManagerImplTest : public service_manager::test::ServiceTest {
                         nullptr) {
 #endif
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
+    ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
     SigninManagerBase::RegisterProfilePrefs(pref_service_.registry());
     SigninManagerBase::RegisterPrefs(pref_service_.registry());
 

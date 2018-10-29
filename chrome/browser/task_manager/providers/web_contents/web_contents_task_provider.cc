@@ -71,6 +71,10 @@ class WebContentsEntry : public content::WebContentsObserver {
   // notifies the provider's observer of the tasks removal.
   void ClearTaskForFrame(RenderFrameHost* render_frame_host);
 
+  // Same as |ClearTaskForFrame|, but for every descendant of
+  // |ancestor|.
+  void ClearTasksForDescendantsOf(RenderFrameHost* ancestor);
+
   // Calls |on_task| for each task managed by this WebContentsEntry.
   void ForEachTask(const base::Callback<void(RendererTask*)>& on_task);
 
@@ -164,7 +168,13 @@ void WebContentsEntry::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
 void WebContentsEntry::RenderFrameHostChanged(RenderFrameHost* old_host,
                                               RenderFrameHost* new_host) {
   DCHECK(new_host->IsCurrent());
+
+  // The navigating frame and its subframes are now pending deletion. Stop
+  // tracking them immediately rather than when they are destroyed. The order of
+  // deletion is important. The children must be removed first.
+  ClearTasksForDescendantsOf(old_host);
   ClearTaskForFrame(old_host);
+
   CreateTaskForFrame(new_host);
 }
 
@@ -356,6 +366,20 @@ void WebContentsEntry::ClearTaskForFrame(RenderFrameHost* render_frame_host) {
 
   // Whenever we have a task, we should have a main frame site instance.
   DCHECK(tasks_by_frames_.empty() == (main_frame_site_instance_ == nullptr));
+}
+
+void WebContentsEntry::ClearTasksForDescendantsOf(RenderFrameHost* ancestor) {
+  // 1) Collect descendants.
+  std::vector<RenderFrameHost*> descendants;
+  for (auto it : tasks_by_frames_) {
+    RenderFrameHost* frame = it.first;
+    if (frame->IsDescendantOf(ancestor))
+      descendants.push_back(frame);
+  }
+
+  // 2) Delete them.
+  for (RenderFrameHost* rfh : descendants)
+    ClearTaskForFrame(rfh);
 }
 
 void WebContentsEntry::ForEachTask(

@@ -17,6 +17,13 @@ FAIL Stringification of pipw assert_equals: Unexpected exception when evaluating
 FAIL PictureInPictureWindow interface: pipw must inherit property "width" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: pipw is not defined"
 FAIL PictureInPictureWindow interface: pipw must inherit property "height" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: pipw is not defined"
 FAIL PictureInPictureWindow interface: pipw must inherit property "onresize" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: pipw is not defined"
+PASS EnterPictureInPictureEvent interface: existence and properties of interface object
+PASS EnterPictureInPictureEvent interface object length
+PASS EnterPictureInPictureEvent interface object name
+PASS EnterPictureInPictureEvent interface: existence and properties of interface prototype object
+PASS EnterPictureInPictureEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS EnterPictureInPictureEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS EnterPictureInPictureEvent interface: attribute pictureInPictureWindow
 PASS HTMLVideoElement interface: operation requestPictureInPicture()
 PASS HTMLVideoElement interface: attribute onenterpictureinpicture
 PASS HTMLVideoElement interface: attribute onleavepictureinpicture

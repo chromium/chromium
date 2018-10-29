@@ -165,7 +165,7 @@ inline char ascii_tolower(unsigned char c) {
 // Converts the characters in `s` to lowercase, changing the contents of `s`.
 void AsciiStrToLower(std::string* s);
 
-// Creates a lowercase std::string from a given absl::string_view.
+// Creates a lowercase string from a given absl::string_view.
 ABSL_MUST_USE_RESULT inline std::string AsciiStrToLower(absl::string_view s) {
   std::string result(s);
   absl::AsciiStrToLower(&result);
@@ -183,7 +183,7 @@ inline char ascii_toupper(unsigned char c) {
 // Converts the characters in `s` to uppercase, changing the contents of `s`.
 void AsciiStrToUpper(std::string* s);
 
-// Creates an uppercase std::string from a given absl::string_view.
+// Creates an uppercase string from a given absl::string_view.
 ABSL_MUST_USE_RESULT inline std::string AsciiStrToUpper(absl::string_view s) {
   std::string result(s);
   absl::AsciiStrToUpper(&result);
@@ -195,10 +195,10 @@ ABSL_MUST_USE_RESULT inline std::string AsciiStrToUpper(absl::string_view s) {
 ABSL_MUST_USE_RESULT inline absl::string_view StripLeadingAsciiWhitespace(
     absl::string_view str) {
   auto it = std::find_if_not(str.begin(), str.end(), absl::ascii_isspace);
-  return absl::string_view(it, str.end() - it);
+  return str.substr(it - str.begin());
 }
 
-// Strips in place whitespace from the beginning of the given std::string.
+// Strips in place whitespace from the beginning of the given string.
 inline void StripLeadingAsciiWhitespace(std::string* str) {
   auto it = std::find_if_not(str->begin(), str->end(), absl::ascii_isspace);
   str->erase(str->begin(), it);
@@ -209,10 +209,10 @@ inline void StripLeadingAsciiWhitespace(std::string* str) {
 ABSL_MUST_USE_RESULT inline absl::string_view StripTrailingAsciiWhitespace(
     absl::string_view str) {
   auto it = std::find_if_not(str.rbegin(), str.rend(), absl::ascii_isspace);
-  return absl::string_view(str.begin(), str.rend() - it);
+  return str.substr(0, str.rend() - it);
 }
 
-// Strips in place whitespace from the end of the given std::string
+// Strips in place whitespace from the end of the given string
 inline void StripTrailingAsciiWhitespace(std::string* str) {
   auto it = std::find_if_not(str->rbegin(), str->rend(), absl::ascii_isspace);
   str->erase(str->rend() - it);
@@ -225,7 +225,7 @@ ABSL_MUST_USE_RESULT inline absl::string_view StripAsciiWhitespace(
   return StripTrailingAsciiWhitespace(StripLeadingAsciiWhitespace(str));
 }
 
-// Strips in place whitespace from both ends of the given std::string
+// Strips in place whitespace from both ends of the given string
 inline void StripAsciiWhitespace(std::string* str) {
   StripTrailingAsciiWhitespace(str);
   StripLeadingAsciiWhitespace(str);

@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (696,0) size 104x104
-  LayoutBlockFlow {HTML} at (696,0) size 104x104 [border: (2px solid #000000)]
-    LayoutBlockFlow {BODY} at (10,10) size 84x18
-      LayoutText {#text} at (18,0) size 66x18
-        text run at (18,0) width 5 RTL: "."
-        text run at (22,0) width 62: "This is rtl"

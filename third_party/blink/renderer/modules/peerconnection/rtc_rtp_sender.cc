@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/web_rtc_stats_report_callback_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -107,7 +108,7 @@ bool HasInvalidModification(const RTCRtpSendParameters& parameters,
         new_parameters.headerExtensions().size())
       return true;
 
-    for (size_t i = 0; i < parameters.headerExtensions().size(); ++i) {
+    for (wtf_size_t i = 0; i < parameters.headerExtensions().size(); ++i) {
       const auto& header_extension = parameters.headerExtensions()[i];
       const auto& new_header_extension = new_parameters.headerExtensions()[i];
       if (header_extension.hasUri() != new_header_extension.hasUri() ||
@@ -145,7 +146,7 @@ bool HasInvalidModification(const RTCRtpSendParameters& parameters,
     if (parameters.codecs().size() != new_parameters.codecs().size())
       return true;
 
-    for (std::size_t i = 0; i < parameters.codecs().size(); ++i) {
+    for (wtf_size_t i = 0; i < parameters.codecs().size(); ++i) {
       const auto& codec = parameters.codecs()[i];
       const auto& new_codec = new_parameters.codecs()[i];
       if (codec.hasPayloadType() != new_codec.hasPayloadType() ||
@@ -300,7 +301,8 @@ void RTCRtpSender::getParameters(RTCRtpSendParameters& parameters) {
   parameters.setRtcp(rtcp);
 
   HeapVector<RTCRtpEncodingParameters> encodings;
-  encodings.ReserveCapacity(webrtc_parameters->encodings.size());
+  encodings.ReserveCapacity(
+      SafeCast<wtf_size_t>(webrtc_parameters->encodings.size()));
   for (const auto& web_encoding : webrtc_parameters->encodings) {
     // TODO(orphis): Forward missing fields from the WebRTC library:
     // codecPayloadType, dtx, ptime, maxFramerate, scaleResolutionDownBy, rid
@@ -315,7 +317,8 @@ void RTCRtpSender::getParameters(RTCRtpSendParameters& parameters) {
   parameters.setEncodings(encodings);
 
   HeapVector<RTCRtpHeaderExtensionParameters> headers;
-  headers.ReserveCapacity(webrtc_parameters->header_extensions.size());
+  headers.ReserveCapacity(
+      SafeCast<wtf_size_t>(webrtc_parameters->header_extensions.size()));
   for (const auto& web_header : webrtc_parameters->header_extensions) {
     headers.emplace_back();
     RTCRtpHeaderExtensionParameters& header = headers.back();
@@ -326,7 +329,8 @@ void RTCRtpSender::getParameters(RTCRtpSendParameters& parameters) {
   parameters.setHeaderExtensions(headers);
 
   HeapVector<RTCRtpCodecParameters> codecs;
-  codecs.ReserveCapacity(webrtc_parameters->codecs.size());
+  codecs.ReserveCapacity(
+      SafeCast<wtf_size_t>(webrtc_parameters->codecs.size()));
   for (const auto& web_codec : webrtc_parameters->codecs) {
     codecs.emplace_back();
     RTCRtpCodecParameters& codec = codecs.back();
@@ -459,7 +463,8 @@ void RTCRtpSender::getCapabilities(
       blink::Platform::Current()->GetRtpSenderCapabilities(kind);
 
   HeapVector<RTCRtpCodecCapability> codecs;
-  codecs.ReserveInitialCapacity(rtc_capabilities->codecs.size());
+  codecs.ReserveInitialCapacity(
+      SafeCast<wtf_size_t>(rtc_capabilities->codecs.size()));
   for (const auto& rtc_codec : rtc_capabilities->codecs) {
     codecs.emplace_back();
     auto& codec = codecs.back();
@@ -482,7 +487,7 @@ void RTCRtpSender::getCapabilities(
 
   HeapVector<RTCRtpHeaderExtensionCapability> header_extensions;
   header_extensions.ReserveInitialCapacity(
-      rtc_capabilities->header_extensions.size());
+      SafeCast<wtf_size_t>(rtc_capabilities->header_extensions.size()));
   for (const auto& rtc_header_extension : rtc_capabilities->header_extensions) {
     header_extensions.emplace_back();
     auto& header_extension = header_extensions.back();

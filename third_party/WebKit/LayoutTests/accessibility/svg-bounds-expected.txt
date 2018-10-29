@@ -1,8 +1,9 @@
 Test
+
+
 This test ensures the accessibility bounds of embedded SVG objects are correct.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 container location: (607, 107)
 Face role: AXRole: AXButton

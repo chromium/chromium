@@ -59,12 +59,6 @@ class AlternateNavInfoBarDelegate : public infobars::InfoBarDelegate {
   // Returns an alternate nav infobar that owns |delegate|.
   static std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<AlternateNavInfoBarDelegate> delegate);
-#if defined(OS_MACOSX)
-  // Temporary shim for Polychrome. See bottom of first comment in
-  // https://crbug.com/804950 for details
-  static std::unique_ptr<infobars::InfoBar> CreateInfoBarCocoa(
-      std::unique_ptr<AlternateNavInfoBarDelegate> delegate);
-#endif
 
   // InfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;

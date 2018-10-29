@@ -79,7 +79,6 @@ TEST(StackContainer, Vector) {
 TEST(StackContainer, VectorDoubleDelete) {
   // Regression testing for double-delete.
   typedef StackVector<scoped_refptr<Dummy>, 2> Vector;
-  typedef Vector::ContainerType Container;
   Vector vect;
 
   int alive = 0;
@@ -93,7 +92,7 @@ TEST(StackContainer, VectorDoubleDelete) {
   dummy = nullptr;
   EXPECT_EQ(alive, 1);
 
-  Container::iterator itr = std::find(vect->begin(), vect->end(), dummy_unref);
+  auto itr = std::find(vect->begin(), vect->end(), dummy_unref);
   EXPECT_EQ(itr->get(), dummy_unref);
   vect->erase(itr);
   EXPECT_EQ(alive, 0);

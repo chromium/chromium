@@ -58,7 +58,9 @@ class RTreePerfTest : public testing::Test {
 
     timer_.Reset();
     do {
-      Accumulate(rtree.Search(queries[query_index]));
+      std::vector<size_t> results;
+      rtree.Search(queries[query_index], &results);
+      Accumulate(results);
       query_index = (query_index + 1) % queries.size();
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());

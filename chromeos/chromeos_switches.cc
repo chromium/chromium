@@ -43,10 +43,6 @@ const base::Feature kInstantTetheringBackgroundAdvertisementSupport{
 
 }  // namespace
 
-// Enables the redesigned shelf UI.
-const base::Feature kEnableShelfNewUi{"ShelfNewUi",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable Chrome OS Account Manager.
 const base::Feature kAccountManager{"ChromeOSAccountManager",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -293,9 +289,6 @@ const char kDisableVolumeAdjustSound[] = "disable-volume-adjust-sound";
 // Disables wake on wifi features.
 const char kDisableWakeOnWifi[] = "disable-wake-on-wifi";
 
-// Disables zip archiver - unpacker.
-const char kDisableZipArchiverUnpacker[] = "disable-zip-archiver-unpacker";
-
 // DEPRECATED. Please use --arc-availability=officially-supported.
 // Enables starting the ARC instance upon session start.
 const char kEnableArc[] = "enable-arc";
@@ -333,8 +326,14 @@ const char kEnableExtensionAssetsSharing[] = "enable-extension-assets-sharing";
 // Touchscreen-specific interactions of the Files app.
 const char kEnableFileManagerTouchMode[] = "enable-file-manager-touch-mode";
 
+// Enabled Discover app.
+const char kEnableDiscoverApp[] = "enable-discover-app";
+
 // Enables animated transitions during first-run tutorial.
 const char kEnableFirstRunUITransitions[] = "enable-first-run-ui-transitions";
+
+// Enables the marketing opt-in screen in OOBE.
+const char kEnableMarketingOptInScreen[] = "enable-market-opt-in";
 
 // Enables notifications about captive portals in session.
 const char kEnableNetworkPortalNotification[] =
@@ -369,15 +368,6 @@ const char kEnableVideoPlayerChromecastSupport[] =
 
 // Enables the VoiceInteraction support.
 const char kEnableVoiceInteraction[] = "enable-voice-interaction";
-
-// Enables zip archiver - packer.
-const char kEnableZipArchiverPacker[] = "enable-zip-archiver-packer";
-
-// Disables zip archiver - packer.
-const char kDisableZipArchiverPacker[] = "disable-zip-archiver-packer";
-
-// Enables zip archiver - unpacker.
-const char kEnableZipArchiverUnpacker[] = "enable-zip-archiver-unpacker";
 
 // Disables ARC for managed accounts.
 const char kEnterpriseDisableArc[] = "enterprise-disable-arc";
@@ -554,13 +544,12 @@ const char kShowAndroidFilesInFilesApp[] = "show-android-files-in-files-app";
 // If true, files in Android internal storage will be hidden in Files app.
 const char kHideAndroidFilesInFilesApp[] = "hide-android-files-in-files-app";
 
-// If true, Files app navigation is NOT displayed with "My Files". Items are NOT
-// re-ordered and "Downloads" is NOT displayed inside section "My Files".
-const char kFilesAppDisableMyFilesNavigation[] = "disable-my-files-navigation";
-
 // If true, the developer tool overlay will be shown for the login/lock screen.
 // This makes it easier to test layout logic.
 const char kShowLoginDevOverlay[] = "show-login-dev-overlay";
+
+// Show Play Store in Demo Mode.
+const char kShowPlayInDemoMode[] = "show-play-in-demo-mode";
 
 // Indicates that a stub implementation of CrosSettings that stores settings in
 // memory without signing should be used, treating current user as the owner.
@@ -697,18 +686,6 @@ bool IsAssistantEnabled() {
   return IsAssistantFlagsEnabled();
 }
 
-bool IsZipArchiverUnpackerEnabled() {
-  // Enabled by default.
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kDisableZipArchiverUnpacker);
-}
-
-bool IsZipArchiverPackerEnabled() {
-  // Enabled by default.
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kDisableZipArchiverPacker);
-}
-
 bool IsSigninFrameClientCertsEnabled() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableSigninFrameClientCerts);
@@ -733,13 +710,13 @@ bool ShouldShowShelfHoverPreviews() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kShelfHoverPreviews);
 }
 
-bool ShouldUseShelfNewUi() {
-  return base::FeatureList::IsEnabled(kEnableShelfNewUi);
-}
-
 bool IsInstantTetheringBackgroundAdvertisingSupported() {
   return base::FeatureList::IsEnabled(
       kInstantTetheringBackgroundAdvertisementSupport);
+}
+
+bool ShouldShowPlayStoreInDemoMode() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kShowPlayInDemoMode);
 }
 
 }  // namespace switches

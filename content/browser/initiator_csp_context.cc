@@ -8,14 +8,18 @@ namespace content {
 
 InitiatorCSPContext::InitiatorCSPContext(
     const std::vector<ContentSecurityPolicy>& policies,
-    base::Optional<CSPSource>& self_source)
-    : reporting_render_frame_host_impl_(nullptr) {
+    base::Optional<CSPSource>& self_source,
+    blink::mojom::NavigationInitiatorPtr navigation_initiator)
+    : reporting_render_frame_host_impl_(nullptr),
+      initiator_ptr(std::move(navigation_initiator)) {
   for (const auto& policy : policies)
     AddContentSecurityPolicy(policy);
 
   if (self_source.has_value())
     SetSelf(self_source.value());
 }
+
+InitiatorCSPContext::~InitiatorCSPContext() {}
 
 void InitiatorCSPContext::SetReportingRenderFrameHost(
     RenderFrameHostImpl* rfh) {
@@ -24,9 +28,19 @@ void InitiatorCSPContext::SetReportingRenderFrameHost(
 
 void InitiatorCSPContext::ReportContentSecurityPolicyViolation(
     const CSPViolationParams& violation_params) {
-  if (reporting_render_frame_host_impl_) {
-    reporting_render_frame_host_impl_->ReportContentSecurityPolicyViolation(
-        violation_params);
+  if (initiator_ptr.is_bound()) {
+    initiator_ptr->SendViolationReport(blink::mojom::CSPViolationParams::New(
+        violation_params.directive, violation_params.effective_directive,
+        violation_params.console_message, violation_params.blocked_url.spec(),
+        violation_params.report_endpoints, violation_params.use_reporting_api,
+        violation_params.header,
+        (blink::mojom::WebContentSecurityPolicyType)
+            violation_params.disposition,
+        violation_params.after_redirect,
+        blink::mojom::SourceLocation::New(
+            violation_params.source_location.url,
+            violation_params.source_location.column_number,
+            violation_params.source_location.line_number)));
   }
 }
 

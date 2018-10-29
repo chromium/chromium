@@ -1,0 +1,18 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGRect rect",
+          "rect": [8, 8, 110, 110],
+          "reason": "style change"
+        }
+      ]
+    }
+  ]
+}
+

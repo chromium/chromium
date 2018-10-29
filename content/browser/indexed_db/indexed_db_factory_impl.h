@@ -52,21 +52,19 @@ class CONTENT_EXPORT IndexedDBFactoryImpl : public IndexedDBFactory {
   // content::IndexedDBFactory overrides:
   void ReleaseDatabase(const IndexedDBDatabase::Identifier& identifier,
                        bool forced_close) override;
-
+  void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
+                       const url::Origin& origin,
+                       const base::FilePath& data_directory) override;
   void GetDatabaseNames(scoped_refptr<IndexedDBCallbacks> callbacks,
                         const url::Origin& origin,
-                        const base::FilePath& data_directory,
-                        scoped_refptr<net::URLRequestContextGetter>
-                            request_context_getter) override;
+                        const base::FilePath& data_directory) override;
   void Open(const base::string16& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
-            scoped_refptr<net::URLRequestContextGetter> request_context_getter,
             const url::Origin& origin,
             const base::FilePath& data_directory) override;
 
   void DeleteDatabase(
       const base::string16& name,
-      scoped_refptr<net::URLRequestContextGetter> request_context_getter,
       scoped_refptr<IndexedDBCallbacks> callbacks,
       const url::Origin& origin,
       const base::FilePath& data_directory,
@@ -86,7 +84,8 @@ class CONTENT_EXPORT IndexedDBFactoryImpl : public IndexedDBFactory {
 
   OriginDBs GetOpenDatabasesForOrigin(const url::Origin& origin) const override;
 
-  void ForceClose(const url::Origin& origin) override;
+  void ForceClose(const url::Origin& origin,
+                  bool delete_in_memory_store) override;
   void ForceSchemaDowngrade(const url::Origin& origin) override;
   V2SchemaCorruptionStatus HasV2SchemaCorruption(
       const url::Origin& origin) override;
@@ -122,7 +121,6 @@ class CONTENT_EXPORT IndexedDBFactoryImpl : public IndexedDBFactory {
   scoped_refptr<IndexedDBBackingStore> OpenBackingStore(
       const url::Origin& origin,
       const base::FilePath& data_directory,
-      scoped_refptr<net::URLRequestContextGetter> request_context_getter,
       IndexedDBDataLossInfo* data_loss_info,
       bool* disk_full,
       leveldb::Status* s) override;
@@ -130,7 +128,6 @@ class CONTENT_EXPORT IndexedDBFactoryImpl : public IndexedDBFactory {
   scoped_refptr<IndexedDBBackingStore> OpenBackingStoreHelper(
       const url::Origin& origin,
       const base::FilePath& data_directory,
-      scoped_refptr<net::URLRequestContextGetter> request_context_getter,
       IndexedDBDataLossInfo* data_loss_info,
       bool* disk_full,
       bool first_time,
@@ -183,7 +180,10 @@ class CONTENT_EXPORT IndexedDBFactoryImpl : public IndexedDBFactory {
   std::map<url::Origin, scoped_refptr<IndexedDBBackingStore>>
       backing_store_map_;
 
-  std::set<scoped_refptr<IndexedDBBackingStore> > session_only_backing_stores_;
+  // In-memory (incognito) backing stores should live as long as the
+  // StoragePartition which owns the IndexedDBContext which owns this
+  // IndexedDBFactory.
+  std::set<scoped_refptr<IndexedDBBackingStore>> in_memory_backing_stores_;
   std::map<url::Origin, scoped_refptr<IndexedDBBackingStore>>
       backing_stores_with_active_blobs_;
   std::set<url::Origin> backends_opened_since_boot_;

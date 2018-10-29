@@ -11,11 +11,10 @@ namespace blink {
 namespace CSSLonghand {
 
 const CSSValue* Cy::ParseSingleValue(CSSParserTokenRange& range,
-                                     const CSSParserContext&,
+                                     const CSSParserContext& context,
                                      const CSSParserLocalContext&) const {
-  return CSSPropertyParserHelpers::ConsumeLengthOrPercent(
-      range, kSVGAttributeMode, kValueRangeAll,
-      CSSPropertyParserHelpers::UnitlessQuirk::kForbid);
+  return CSSPropertyParserHelpers::ConsumeSVGGeometryPropertyLength(range,
+                                                                    context);
 }
 
 const CSSValue* Cy::CSSValueFromComputedStyleInternal(

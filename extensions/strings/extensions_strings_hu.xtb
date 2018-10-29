@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">A privát kulcs olvasása sikertelen.</translation>
 <translation id="6391538222494443604">Kell lennie beviteli könyvtárnak.</translation>
 <translation id="641087317769093025">Nem sikerült a bővítmény kicsomagolása</translation>
+<translation id="6413453408918378296">Az ikon nem látható elég jól: „<ph name="ICON" />”.</translation>
 <translation id="6542618148162044354">A(z) „<ph name="APP_NAME" />” alkalmazás hozzáférést kér egy vagy több eszközéhez.</translation>
 <translation id="657064425229075395">Nem sikerült betölteni a következő háttérszkriptet: "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> a következőtől: <ph name="VENDOR_NAME" /> (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>

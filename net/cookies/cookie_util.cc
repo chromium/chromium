@@ -103,6 +103,12 @@ bool GetCookieDomainWithString(const GURL& url,
     return true;
   }
 
+  // Disallow domain names with %-escaped characters.
+  for (char c : domain_string) {
+    if (c == '%')
+      return false;
+  }
+
   // Get the normalized domain specified in cookie line.
   url::CanonHostInfo ignored;
   std::string cookie_domain(CanonicalizeHost(domain_string, &ignored));
@@ -349,8 +355,7 @@ void ParseRequestCookieLine(const std::string& header_value,
 std::string SerializeRequestCookieLine(
     const ParsedRequestCookies& parsed_cookies) {
   std::string buffer;
-  for (ParsedRequestCookies::const_iterator i = parsed_cookies.begin();
-       i != parsed_cookies.end(); ++i) {
+  for (auto i = parsed_cookies.begin(); i != parsed_cookies.end(); ++i) {
     if (!buffer.empty())
       buffer.append("; ");
     buffer.append(i->first.begin(), i->first.end());

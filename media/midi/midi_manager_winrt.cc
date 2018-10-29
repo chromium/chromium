@@ -50,7 +50,7 @@ using mojom::PortState;
 using mojom::Result;
 
 enum {
-  kDefaultRunnerNotUsedOnWinrt = TaskService::kDefaultRunnerId,
+  kDefaultTaskRunner = TaskService::kDefaultRunnerId,
   kComTaskRunner
 };
 
@@ -560,8 +560,8 @@ class MidiManagerWinrt::MidiPortManager {
       std::string manufacturer = "Unknown", driver_version = "Unknown";
       GetDriverInfoFromDeviceId(dev_id, &manufacturer, &driver_version);
 
-      AddPort(MidiPortInfo(dev_id, manufacturer, port_names_[dev_id],
-                           driver_version, PortState::OPENED));
+      AddPort(mojom::PortInfo(dev_id, manufacturer, port_names_[dev_id],
+                              driver_version, PortState::OPENED));
 
       port = new MidiPort<InterfaceType>;
       port->index = static_cast<uint32_t>(port_ids_.size());
@@ -591,7 +591,7 @@ class MidiManagerWinrt::MidiPortManager {
   virtual void RemovePortEventHandlers(MidiPort<InterfaceType>* port) {}
 
   // Calls midi_manager_->Add{Input,Output}Port.
-  virtual void AddPort(MidiPortInfo info) = 0;
+  virtual void AddPort(mojom::PortInfo info) = 0;
 
   // Calls midi_manager_->Set{Input,Output}PortState.
   virtual void SetPortState(uint32_t port_index, PortState state) = 0;
@@ -710,7 +710,9 @@ class MidiManagerWinrt::MidiInPortManager final
     port->token_MessageReceived.value = kInvalidTokenValue;
   }
 
-  void AddPort(MidiPortInfo info) final { midi_manager_->AddInputPort(info); }
+  void AddPort(mojom::PortInfo info) final {
+    midi_manager_->AddInputPort(info);
+  }
 
   void SetPortState(uint32_t port_index, PortState state) final {
     midi_manager_->SetInputPortState(port_index, state);
@@ -742,7 +744,9 @@ class MidiManagerWinrt::MidiOutPortManager final
 
  private:
   // MidiPortManager overrides:
-  void AddPort(MidiPortInfo info) final { midi_manager_->AddOutputPort(info); }
+  void AddPort(mojom::PortInfo info) final {
+    midi_manager_->AddOutputPort(info);
+  }
 
   void SetPortState(uint32_t port_index, PortState state) final {
     midi_manager_->SetOutputPortState(port_index, state);
@@ -771,33 +775,28 @@ MidiManagerWinrt::MidiManagerWinrt(MidiService* service)
     : MidiManager(service) {}
 
 MidiManagerWinrt::~MidiManagerWinrt() {
-  base::AutoLock auto_lock(lazy_init_member_lock_);
-
-  CHECK(!port_manager_in_);
-  CHECK(!port_manager_out_);
-}
-
-void MidiManagerWinrt::StartInitialization() {
-  bool result = service()->task_service()->BindInstance();
-  DCHECK(result);
-
-  service()->task_service()->PostBoundTask(
-      kComTaskRunner, base::BindOnce(&MidiManagerWinrt::InitializeOnComRunner,
-                                     base::Unretained(this)));
-}
-
-void MidiManagerWinrt::Finalize() {
   // Unbind and take a lock to ensure that InitializeOnComRunner should not run
   // after here.
   bool result = service()->task_service()->UnbindInstance();
-  DCHECK(result);
+  CHECK(result);
 
   base::AutoLock auto_lock(lazy_init_member_lock_);
-
   service()->task_service()->PostStaticTask(
       kComTaskRunner,
       base::BindOnce(&FinalizeOnComRunner, std::move(port_manager_in_),
                      std::move(port_manager_out_)));
+}
+
+void MidiManagerWinrt::StartInitialization() {
+  if (!service()->task_service()->BindInstance()) {
+    NOTREACHED();
+    CompleteInitialization(Result::INITIALIZATION_ERROR);
+    return;
+  }
+
+  service()->task_service()->PostBoundTask(
+      kComTaskRunner, base::BindOnce(&MidiManagerWinrt::InitializeOnComRunner,
+                                     base::Unretained(this)));
 }
 
 void MidiManagerWinrt::DispatchSendMidiData(MidiManagerClient* client,
@@ -825,7 +824,10 @@ void MidiManagerWinrt::InitializeOnComRunner() {
   bool preload_success = base::win::ResolveCoreWinRTDelayload() &&
                          ScopedHString::ResolveCoreWinRTStringDelayload();
   if (!preload_success) {
-    CompleteInitialization(Result::INITIALIZATION_ERROR);
+    service()->task_service()->PostBoundTask(
+        kDefaultTaskRunner,
+        base::BindOnce(&MidiManagerWinrt::CompleteInitialization,
+                       base::Unretained(this), Result::INITIALIZATION_ERROR));
     return;
   }
 
@@ -836,7 +838,10 @@ void MidiManagerWinrt::InitializeOnComRunner() {
         port_manager_out_->StartWatcher())) {
     port_manager_in_->StopWatcher();
     port_manager_out_->StopWatcher();
-    CompleteInitialization(Result::INITIALIZATION_ERROR);
+    service()->task_service()->PostBoundTask(
+        kDefaultTaskRunner,
+        base::BindOnce(&MidiManagerWinrt::CompleteInitialization,
+                       base::Unretained(this), Result::INITIALIZATION_ERROR));
   }
 }
 
@@ -844,6 +849,7 @@ void MidiManagerWinrt::SendOnComRunner(uint32_t port_index,
                                        const std::vector<uint8_t>& data) {
   DCHECK(service()->task_service()->IsOnTaskRunner(kComTaskRunner));
 
+  base::AutoLock auto_lock(lazy_init_member_lock_);
   MidiPort<IMidiOutPort>* port = port_manager_out_->GetPortByIndex(port_index);
   if (!(port && port->handle)) {
     VLOG(1) << "Port not available: " << port_index;
@@ -869,8 +875,12 @@ void MidiManagerWinrt::OnPortManagerReady() {
   DCHECK(service()->task_service()->IsOnTaskRunner(kComTaskRunner));
   DCHECK(port_manager_ready_count_ < 2);
 
-  if (++port_manager_ready_count_ == 2)
-    CompleteInitialization(Result::OK);
+  if (++port_manager_ready_count_ == 2) {
+    service()->task_service()->PostBoundTask(
+        kDefaultTaskRunner,
+        base::BindOnce(&MidiManagerWinrt::CompleteInitialization,
+                       base::Unretained(this), Result::OK));
+  }
 }
 
 }  // namespace midi

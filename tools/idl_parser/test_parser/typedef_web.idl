@@ -165,3 +165,18 @@ typedef record<ByteString, int> MyRecord;
  *    Error(Unexpected keyword "double" after "<".)
  */
 typedef record<double, ByteString> MyInvalidRecord;
+
+/** TREE
+ *Typedef(MyAnnotationInUnion)
+ *  Type()
+ *    UnionType()
+ *      Type()
+ *        StringType(DOMString)
+ *        ExtAttributes()
+ *          ExtAttribute(TreatNullAs) = "EmptyString"
+ *      Type()
+ *        PrimitiveType(long)
+ *        ExtAttributes()
+ *          ExtAttribute(Clamp)
+ */
+typedef ([TreatNullAs=EmptyString] DOMString or [Clamp] long) MyAnnotationInUnion;

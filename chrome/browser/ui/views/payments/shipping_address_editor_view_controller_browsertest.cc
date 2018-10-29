@@ -1286,7 +1286,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
       "    city: 'CITY ERROR'"
       "  }"
       "}",
-      DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
+      DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED, dialog_view());
 
   EXPECT_EQ(base::ASCIIToUTF16("ADDRESS LINE ERROR"),
             GetErrorLabelForType(autofill::ADDRESS_HOME_STREET_ADDRESS));
@@ -1322,7 +1322,7 @@ IN_PROC_BROWSER_TEST_F(
       "    city: 'CITY ERROR'"
       "  }"
       "}",
-      DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
+      DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED, dialog_view());
 
   EXPECT_EQ(base::ASCIIToUTF16("ADDRESS LINE ERROR"),
             GetErrorLabelForType(autofill::ADDRESS_HOME_STREET_ADDRESS));
@@ -1349,7 +1349,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressEditorTest,
       "    addressLine: 'ADDRESS LINE ERROR',"
       "    city: 'CITY ERROR'"
       "  }"
-      "}");
+      "}",
+      dialog_view());
 
   const int kErrorLabelOffset =
       static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET);

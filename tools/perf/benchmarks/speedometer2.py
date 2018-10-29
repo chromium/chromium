@@ -120,7 +120,8 @@ class Speedometer2Measurement(legacy_page_test.LegacyPageTest):
               key=suite_name), important=False))
 
 
-@benchmark.Info(emails=['hablich@chromium.org'])
+@benchmark.Info(emails=['hablich@chromium.org'],
+                component='Blink')
 class Speedometer2(perf_benchmark.PerfBenchmark):
   """Speedometer2 Benchmark.
 
@@ -175,7 +176,8 @@ class Speedometer2(perf_benchmark.PerfBenchmark):
         raise parser.error('--suite: Invalid regex.')
 
 
-@benchmark.Info(emails=['hablich@chromium.org'])
+@benchmark.Info(emails=['hablich@chromium.org'],
+                component='Blink')
 class V8Speedometer2Future(Speedometer2):
   """Speedometer2 benchmark with the V8 flag --future.
 

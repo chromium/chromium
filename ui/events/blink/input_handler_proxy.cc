@@ -169,10 +169,8 @@ InputHandlerProxy::InputHandlerProxy(cc::InputHandler* input_handler,
       base::FeatureList::IsEnabled(features::kVsyncAlignedInputEvents)
           ? std::make_unique<CompositorThreadEventQueue>()
           : nullptr;
-  scroll_predictor_ =
-      base::FeatureList::IsEnabled(features::kResamplingScrollEvents)
-          ? std::make_unique<ScrollPredictor>()
-          : nullptr;
+  scroll_predictor_ = std::make_unique<ScrollPredictor>(
+      base::FeatureList::IsEnabled(features::kResamplingScrollEvents));
 }
 
 InputHandlerProxy::~InputHandlerProxy() {}
@@ -466,6 +464,17 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
   DCHECK(
       !cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(reasons));
 
+  int32_t event_disposition_result =
+      (device == blink::kWebGestureDeviceTouchpad ? mouse_wheel_result_
+                                                  : touch_result_);
+  if (event_disposition_result == DID_NOT_HANDLE) {
+    // We should also collect main thread scrolling reasons if a scroll event
+    // scrolls on impl thread but is blocked by main thread event handlers.
+    reasons |= (device == blink::kWebGestureDeviceTouchpad
+                    ? cc::MainThreadScrollingReason::kWheelEventHandlerRegion
+                    : cc::MainThreadScrollingReason::kTouchEventHandlerRegion);
+  }
+
   // UMA_HISTOGRAM_ENUMERATION requires that the enum_max must be strictly
   // greater than the sample value. kMainThreadScrollingReasonCount doesn't
   // include the NotScrollingOnMain enum but the histograms do so adding
@@ -508,51 +517,6 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
                                   kMainThreadScrollingReasonEnumMax);
       }
     }
-  }
-}
-
-void InputHandlerProxy::RecordScrollingThreadStatus(
-    blink::WebGestureDevice device,
-    uint32_t reasons) {
-  if (device != blink::kWebGestureDeviceTouchpad &&
-      device != blink::kWebGestureDeviceTouchscreen) {
-    return;
-  }
-
-  ScrollingThreadStatus scrolling_thread_status = SCROLLING_ON_MAIN;
-  if (reasons == cc::MainThreadScrollingReason::kNotScrollingOnMain) {
-    int32_t event_disposition_result =
-        (device == blink::kWebGestureDeviceTouchpad ? mouse_wheel_result_
-                                                    : touch_result_);
-    switch (event_disposition_result) {
-      case kEventDispositionUndefined:
-      case DID_NOT_HANDLE_NON_BLOCKING_DUE_TO_FLING:
-      case DID_HANDLE_NON_BLOCKING:
-      case DROP_EVENT:
-        scrolling_thread_status = SCROLLING_ON_COMPOSITOR;
-        break;
-      case DID_NOT_HANDLE:
-        scrolling_thread_status = SCROLLING_ON_COMPOSITOR_BLOCKED_ON_MAIN;
-        break;
-      default:
-        NOTREACHED();
-        scrolling_thread_status = SCROLLING_ON_COMPOSITOR;
-    }
-  }
-
-  // UMA_HISTOGRAM_ENUMERATION requires that the enum_max must be strictly
-  // greater than the sample value.
-  const uint32_t kScrolingThreadStatusEnumMax =
-      ScrollingThreadStatus::LAST_SCROLLING_THREAD_STATUS_VALUE + 1;
-
-  if (device == blink::kWebGestureDeviceTouchscreen) {
-    UMA_HISTOGRAM_ENUMERATION("Renderer4.GestureScrollingThreadStatus",
-                              scrolling_thread_status,
-                              kScrolingThreadStatusEnumMax);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Renderer4.WheelScrollingThreadStatus",
-                              scrolling_thread_status,
-                              kScrolingThreadStatusEnumMax);
   }
 }
 
@@ -645,9 +609,6 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
   }
   RecordMainThreadScrollingReasons(gesture_event.SourceDevice(),
                                    scroll_status.main_thread_scrolling_reasons);
-
-  RecordScrollingThreadStatus(gesture_event.SourceDevice(),
-                              scroll_status.main_thread_scrolling_reasons);
 
   InputHandlerProxy::EventDisposition result = DID_NOT_HANDLE;
   scroll_sequence_ignored_ = false;

@@ -40,8 +40,8 @@ bool TransformOperations::operator==(const TransformOperations& o) const {
   if (operations_.size() != o.operations_.size())
     return false;
 
-  unsigned s = operations_.size();
-  for (unsigned i = 0; i < s; i++) {
+  wtf_size_t s = operations_.size();
+  for (wtf_size_t i = 0; i < s; i++) {
     if (*operations_[i] != *o.operations_[i])
       return false;
   }
@@ -51,11 +51,11 @@ bool TransformOperations::operator==(const TransformOperations& o) const {
 
 bool TransformOperations::OperationsMatch(
     const TransformOperations& other) const {
-  size_t num_operations = Operations().size();
+  wtf_size_t num_operations = Operations().size();
   if (num_operations != other.Operations().size())
     return false;
 
-  for (size_t i = 0; i < num_operations; ++i) {
+  for (wtf_size_t i = 0; i < num_operations; ++i) {
     if (Operations()[i]->PrimitiveType() !=
         other.Operations()[i]->PrimitiveType()) {
       return false;
@@ -69,10 +69,10 @@ TransformOperations TransformOperations::BlendByMatchingOperations(
     const double& progress) const {
   TransformOperations result;
 
-  unsigned from_size = from.Operations().size();
-  unsigned to_size = Operations().size();
-  unsigned size = std::max(from_size, to_size);
-  for (unsigned i = 0; i < size; i++) {
+  wtf_size_t from_size = from.Operations().size();
+  wtf_size_t to_size = Operations().size();
+  wtf_size_t size = std::max(from_size, to_size);
+  for (wtf_size_t i = 0; i < size; i++) {
     scoped_refptr<TransformOperation> from_operation =
         (i < from_size) ? from.Operations()[i].get() : nullptr;
     scoped_refptr<TransformOperation> to_operation =

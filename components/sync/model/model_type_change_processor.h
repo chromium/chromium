@@ -10,6 +10,7 @@
 
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/entity_data.h"
 #include "components/sync/model/model_error.h"
@@ -30,7 +31,8 @@ class ModelTypeChangeProcessor {
   // Inform the processor of a new or updated entity. The |entity_data| param
   // does not need to be fully set, but it should at least have specifics and
   // non-unique name. The processor will fill in the rest if the bridge does
-  // not have a reason to care.
+  // not have a reason to care. For example, if |client_tag_hash| is not set,
+  // the bridge's GetClientTag() will be exercised (and must be supported).
   virtual void Put(const std::string& storage_key,
                    std::unique_ptr<EntityData> entity_data,
                    MetadataChangeList* metadata_change_list) = 0;
@@ -83,12 +85,20 @@ class ModelTypeChangeProcessor {
   // will no-op and can be omitted by bridge.
   virtual bool IsTrackingMetadata() = 0;
 
+  // Returns the account ID for which metadata is being tracked, or empty if not
+  // tracking metadata.
+  virtual std::string TrackedAccountId() = 0;
+
   // Report an error in the model to sync. Should be called for any persistence
   // or consistency error the bridge encounters outside of a method that allows
   // returning a ModelError directly. Outstanding callbacks are not expected to
   // be called after an error. This will result in sync being temporarily
   // disabled for the model type (generally until the next restart).
   virtual void ReportError(const ModelError& error) = 0;
+
+  // Returns whether the processor has encountered any error, either reported
+  // by the bridge via ReportError() or by other means.
+  virtual base::Optional<ModelError> GetError() const = 0;
 
   // Returns the delegate for the controller.
   virtual base::WeakPtr<ModelTypeControllerDelegate>

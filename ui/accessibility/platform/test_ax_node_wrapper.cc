@@ -195,108 +195,57 @@ void TestAXNodeWrapper::ReplaceIntAttribute(int32_t node_id,
 }
 
 int TestAXNodeWrapper::GetTableRowCount() const {
-  AXTableInfo* table_info = tree_->GetTableInfo(node_);
-  if (!table_info)
-    return 0;
-
-  return table_info->row_count;
+  return node_->GetTableRowCount();
 }
 
 int TestAXNodeWrapper::GetTableColCount() const {
-  AXTableInfo* table_info = tree_->GetTableInfo(node_);
-  if (!table_info)
-    return 0;
-
-  return table_info->col_count;
+  return node_->GetTableColCount();
 }
 
-std::vector<int32_t> TestAXNodeWrapper::GetColHeaderNodeIds() const {
-  ui::AXTableInfo* table_info = tree_->GetTableInfo(node_);
-  if (!table_info)
-    return std::vector<int32_t>();
-
-  std::vector<std::vector<int32_t>> headers = table_info->col_headers;
-  std::vector<int32_t> all_ids;
-  for (const auto col_ids : headers) {
-    all_ids.insert(all_ids.end(), col_ids.begin(), col_ids.end());
-  }
-
-  return all_ids;
+const std::vector<int32_t> TestAXNodeWrapper::GetColHeaderNodeIds() const {
+  std::vector<int32_t> header_ids;
+  node_->GetTableCellColHeaderNodeIds(&header_ids);
+  return header_ids;
 }
 
-std::vector<int32_t> TestAXNodeWrapper::GetColHeaderNodeIds(
+const std::vector<int32_t> TestAXNodeWrapper::GetColHeaderNodeIds(
     int32_t col_index) const {
-  AXTableInfo* table_info = tree_->GetTableInfo(node_);
-  if (!table_info)
-    return std::vector<int32_t>();
-
-  if (col_index < 0 || col_index >= table_info->col_count)
-    return std::vector<int32_t>();
-
-  return table_info->col_headers[col_index];
+  std::vector<int32_t> header_ids;
+  node_->GetTableColHeaderNodeIds(col_index, &header_ids);
+  return header_ids;
 }
 
-std::vector<int32_t> TestAXNodeWrapper::GetRowHeaderNodeIds() const {
-  ui::AXTableInfo* table_info = tree_->GetTableInfo(node_);
-  if (!table_info)
-    return std::vector<int32_t>();
-
-  std::vector<std::vector<int32_t>> headers = table_info->row_headers;
-  std::vector<int32_t> all_ids;
-  for (const auto col_ids : headers) {
-    all_ids.insert(all_ids.end(), col_ids.begin(), col_ids.end());
-  }
-
-  return all_ids;
+const std::vector<int32_t> TestAXNodeWrapper::GetRowHeaderNodeIds() const {
+  std::vector<int32_t> header_ids;
+  node_->GetTableCellRowHeaderNodeIds(&header_ids);
+  return header_ids;
 }
 
-std::vector<int32_t> TestAXNodeWrapper::GetRowHeaderNodeIds(
+const std::vector<int32_t> TestAXNodeWrapper::GetRowHeaderNodeIds(
     int32_t row_index) const {
-  AXTableInfo* table_info = tree_->GetTableInfo(node_);
-  if (!table_info)
-    return std::vector<int32_t>();
-
-  if (row_index < 0 || row_index >= table_info->row_count)
-    return std::vector<int32_t>();
-
-  return table_info->row_headers[row_index];
+  std::vector<int32_t> header_ids;
+  node_->GetTableRowHeaderNodeIds(row_index, &header_ids);
+  return header_ids;
 }
 
 int32_t TestAXNodeWrapper::GetCellId(int32_t row_index,
                                      int32_t col_index) const {
-  AXTableInfo* table_info = tree_->GetTableInfo(node_);
-  if (!table_info)
-    return -1;
-
-  if (row_index < 0 || row_index >= table_info->row_count || col_index < 0 ||
-      col_index >= table_info->col_count)
-    return -1;
-
-  return table_info->cell_ids[row_index][col_index];
-}
-
-int32_t TestAXNodeWrapper::CellIdToIndex(int32_t cell_id) const {
-  AXTableInfo* table_info = tree_->GetTableInfo(node_);
-  if (!table_info)
-    return 0;
-
-  const auto& iter = table_info->cell_id_to_index.find(cell_id);
-  if (iter != table_info->cell_id_to_index.end())
-    return iter->second;
+  ui::AXNode* cell = node_->GetTableCellFromCoords(row_index, col_index);
+  if (cell)
+    return cell->id();
 
   return -1;
 }
 
+int32_t TestAXNodeWrapper::GetTableCellIndex() const {
+  return node_->GetTableCellIndex();
+}
+
 int32_t TestAXNodeWrapper::CellIndexToId(int32_t cell_index) const {
-  AXTableInfo* table_info = tree_->GetTableInfo(node_);
-  if (!table_info)
-    return -1;
-
-  if (cell_index < 0 ||
-      cell_index >= static_cast<int32_t>(table_info->unique_cell_ids.size()))
-    return -1;
-
-  return table_info->unique_cell_ids[cell_index];
+  ui::AXNode* cell = node_->GetTableCellFromIndex(cell_index);
+  if (cell)
+    return cell->id();
+  return -1;
 }
 
 bool TestAXNodeWrapper::AccessibilityPerformAction(

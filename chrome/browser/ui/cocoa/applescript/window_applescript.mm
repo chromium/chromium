@@ -108,7 +108,7 @@
 - (NSWindow*)nativeHandle {
   // window() can be NULL during startup.
   if (browser_->window())
-    return browser_->window()->GetNativeWindow();
+    return browser_->window()->GetNativeWindow().GetNativeNSWindow();
   return nil;
 }
 

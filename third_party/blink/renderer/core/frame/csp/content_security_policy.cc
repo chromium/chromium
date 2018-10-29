@@ -252,9 +252,7 @@ void ContentSecurityPolicy::Trace(blink::Visitor* visitor) {
 }
 
 Document* ContentSecurityPolicy::GetDocument() const {
-  return (execution_context_ && execution_context_->IsDocument())
-             ? ToDocument(execution_context_)
-             : nullptr;
+  return DynamicTo<Document>(execution_context_.Get());
 }
 
 void ContentSecurityPolicy::CopyStateFrom(const ContentSecurityPolicy* other) {
@@ -460,7 +458,8 @@ void ContentSecurityPolicy::FillInCSPHashValues(
   if (hash_algorithms_used == kContentSecurityPolicyHashAlgorithmNone)
     return;
 
-  StringUTF8Adaptor utf8_source(source);
+  StringUTF8Adaptor utf8_source(
+      source, kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD);
 
   for (const auto& algorithm_map : kAlgorithmMap) {
     DigestValue digest;
@@ -658,7 +657,7 @@ bool ContentSecurityPolicy::AllowPluginTypeForDocument(
     SecurityViolationReportingPolicy reporting_policy) const {
   if (document.GetContentSecurityPolicy() &&
       !document.GetContentSecurityPolicy()->AllowPluginType(
-          type, type_attribute, url))
+          type, type_attribute, url, reporting_policy))
     return false;
 
   // CSP says that a plugin document in a nested browsing context should
@@ -672,7 +671,8 @@ bool ContentSecurityPolicy::AllowPluginTypeForDocument(
                                             .Parent()
                                             ->GetSecurityContext()
                                             ->GetContentSecurityPolicy();
-    if (parent_csp && !parent_csp->AllowPluginType(type, type_attribute, url))
+    if (parent_csp && !parent_csp->AllowPluginType(type, type_attribute, url,
+                                                   reporting_policy))
       return false;
   }
 
@@ -722,7 +722,7 @@ bool ContentSecurityPolicy::AllowScriptFromSource(
 }
 
 bool ContentSecurityPolicy::AllowRequestWithoutIntegrity(
-    WebURLRequest::RequestContext context,
+    mojom::RequestContextType context,
     const KURL& url,
     RedirectStatus redirect_status,
     SecurityViolationReportingPolicy reporting_policy,
@@ -737,7 +737,7 @@ bool ContentSecurityPolicy::AllowRequestWithoutIntegrity(
 }
 
 bool ContentSecurityPolicy::AllowRequest(
-    WebURLRequest::RequestContext context,
+    mojom::RequestContextType context,
     const KURL& url,
     const String& nonce,
     const IntegrityMetadataSet& integrity_metadata,
@@ -752,65 +752,65 @@ bool ContentSecurityPolicy::AllowRequest(
   }
 
   switch (context) {
-    case WebURLRequest::kRequestContextAudio:
-    case WebURLRequest::kRequestContextTrack:
-    case WebURLRequest::kRequestContextVideo:
+    case mojom::RequestContextType::AUDIO:
+    case mojom::RequestContextType::TRACK:
+    case mojom::RequestContextType::VIDEO:
       return AllowMediaFromSource(url, redirect_status, reporting_policy,
                                   check_header_type);
-    case WebURLRequest::kRequestContextBeacon:
-    case WebURLRequest::kRequestContextEventSource:
-    case WebURLRequest::kRequestContextFetch:
-    case WebURLRequest::kRequestContextPing:
-    case WebURLRequest::kRequestContextXMLHttpRequest:
-    case WebURLRequest::kRequestContextSubresource:
+    case mojom::RequestContextType::BEACON:
+    case mojom::RequestContextType::EVENT_SOURCE:
+    case mojom::RequestContextType::FETCH:
+    case mojom::RequestContextType::PING:
+    case mojom::RequestContextType::XML_HTTP_REQUEST:
+    case mojom::RequestContextType::SUBRESOURCE:
       return AllowConnectToSource(url, redirect_status, reporting_policy,
                                   check_header_type);
-    case WebURLRequest::kRequestContextEmbed:
-    case WebURLRequest::kRequestContextObject:
+    case mojom::RequestContextType::EMBED:
+    case mojom::RequestContextType::OBJECT:
       return AllowObjectFromSource(url, redirect_status, reporting_policy,
                                    check_header_type);
-    case WebURLRequest::kRequestContextPrefetch:
+    case mojom::RequestContextType::PREFETCH:
       return AllowPrefetchFromSource(url, redirect_status, reporting_policy,
                                      check_header_type);
-    case WebURLRequest::kRequestContextFavicon:
-    case WebURLRequest::kRequestContextImage:
-    case WebURLRequest::kRequestContextImageSet:
+    case mojom::RequestContextType::FAVICON:
+    case mojom::RequestContextType::IMAGE:
+    case mojom::RequestContextType::IMAGE_SET:
       return AllowImageFromSource(url, redirect_status, reporting_policy,
                                   check_header_type);
-    case WebURLRequest::kRequestContextFont:
+    case mojom::RequestContextType::FONT:
       return AllowFontFromSource(url, redirect_status, reporting_policy,
                                  check_header_type);
-    case WebURLRequest::kRequestContextForm:
+    case mojom::RequestContextType::FORM:
       return AllowFormAction(url, redirect_status, reporting_policy,
                              check_header_type);
-    case WebURLRequest::kRequestContextFrame:
-    case WebURLRequest::kRequestContextIframe:
+    case mojom::RequestContextType::FRAME:
+    case mojom::RequestContextType::IFRAME:
       return AllowFrameFromSource(url, redirect_status, reporting_policy,
                                   check_header_type);
-    case WebURLRequest::kRequestContextImport:
-    case WebURLRequest::kRequestContextScript:
-    case WebURLRequest::kRequestContextXSLT:
+    case mojom::RequestContextType::IMPORT:
+    case mojom::RequestContextType::SCRIPT:
+    case mojom::RequestContextType::XSLT:
       return AllowScriptFromSource(url, nonce, integrity_metadata,
                                    parser_disposition, redirect_status,
                                    reporting_policy, check_header_type);
-    case WebURLRequest::kRequestContextManifest:
+    case mojom::RequestContextType::MANIFEST:
       return AllowManifestFromSource(url, redirect_status, reporting_policy,
                                      check_header_type);
-    case WebURLRequest::kRequestContextServiceWorker:
-    case WebURLRequest::kRequestContextSharedWorker:
-    case WebURLRequest::kRequestContextWorker:
+    case mojom::RequestContextType::SERVICE_WORKER:
+    case mojom::RequestContextType::SHARED_WORKER:
+    case mojom::RequestContextType::WORKER:
       return AllowWorkerContextFromSource(url, redirect_status,
                                           reporting_policy, check_header_type);
-    case WebURLRequest::kRequestContextStyle:
+    case mojom::RequestContextType::STYLE:
       return AllowStyleFromSource(url, nonce, redirect_status, reporting_policy,
                                   check_header_type);
-    case WebURLRequest::kRequestContextCSPReport:
-    case WebURLRequest::kRequestContextDownload:
-    case WebURLRequest::kRequestContextHyperlink:
-    case WebURLRequest::kRequestContextInternal:
-    case WebURLRequest::kRequestContextLocation:
-    case WebURLRequest::kRequestContextPlugin:
-    case WebURLRequest::kRequestContextUnspecified:
+    case mojom::RequestContextType::CSP_REPORT:
+    case mojom::RequestContextType::DOWNLOAD:
+    case mojom::RequestContextType::HYPERLINK:
+    case mojom::RequestContextType::INTERNAL:
+    case mojom::RequestContextType::LOCATION:
+    case mojom::RequestContextType::PLUGIN:
+    case mojom::RequestContextType::UNSPECIFIED:
       return true;
   }
   NOTREACHED();
@@ -1244,9 +1244,7 @@ static void GatherSecurityPolicyViolationEventData(
 
   // TODO(mkwst): We only have referrer and status code information for
   // Documents. It would be nice to get them for Workers as well.
-  if (context->IsDocument()) {
-    Document* document = ToDocument(context);
-    DCHECK(document);
+  if (auto* document = DynamicTo<Document>(*context)) {
     init->setReferrer(document->referrer());
     if (!SecurityOrigin::IsSecure(context->Url()) && document->Loader())
       init->setStatusCode(document->Loader()->GetResponse().HttpStatusCode());
@@ -1445,15 +1443,13 @@ void ContentSecurityPolicy::DispatchViolationEvents(
       EventTypeNames::securitypolicyviolation, violation_data);
   DCHECK(event.bubbles());
 
-  if (execution_context_->IsDocument()) {
-    Document* document = ToDocument(execution_context_);
+  if (auto* document = DynamicTo<Document>(*execution_context_)) {
     if (element && element->isConnected() && element->GetDocument() == document)
       element->EnqueueEvent(event, TaskType::kInternalDefault);
     else
       document->EnqueueEvent(event, TaskType::kInternalDefault);
-  } else if (execution_context_->IsWorkerGlobalScope()) {
-    ToWorkerGlobalScope(execution_context_)
-        ->EnqueueEvent(event, TaskType::kInternalDefault);
+  } else if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_)) {
+    scope->EnqueueEvent(event, TaskType::kInternalDefault);
   }
 }
 
@@ -1681,8 +1677,7 @@ const String& ContentSecurityPolicy::GetSelfProtocol() const {
 
 bool ContentSecurityPolicy::ShouldBypassMainWorld(
     const ExecutionContext* context) {
-  if (context && context->IsDocument()) {
-    const Document* document = ToDocument(context);
+  if (const auto* document = DynamicTo<Document>(context)) {
     if (document->GetFrame()) {
       return document->GetFrame()
           ->GetScriptController()

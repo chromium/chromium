@@ -32,7 +32,7 @@ enum SelectionMode { "select", "start", "end", "preserve" };
 ] interface HTMLInputElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString accept;
     [CEReactions, Reflect] attribute DOMString alt;
-    [CEReactions, Reflect] attribute DOMString autocomplete;
+    [CEReactions, ImplementedAs=IDLExposedAutofillValue] attribute DOMString autocomplete;
     [CEReactions, Reflect] attribute boolean autofocus;
     [CEReactions, Reflect=checked] attribute boolean defaultChecked;
     attribute boolean checked;

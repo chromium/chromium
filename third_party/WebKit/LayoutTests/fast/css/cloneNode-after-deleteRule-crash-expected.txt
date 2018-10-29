@@ -2,7 +2,6 @@ This test checks that mutating a stylesheet and then using cloneNode() in a subd
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

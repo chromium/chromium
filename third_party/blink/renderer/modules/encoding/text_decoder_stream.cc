@@ -7,10 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/streams/retain_wrapper_during_construction.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -19,7 +18,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/string_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -62,7 +60,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
         return;
       }
       const char* start = static_cast<const char*>(view->BaseAddress());
-      size_t length = view->byteLength();
+      uint32_t length = view->byteLength();
       DecodeAndEnqueue(start, length, WTF::FlushBehavior::kDoNotFlush,
                        controller, exception_state);
       return;
@@ -76,7 +74,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
       return;
     }
     const char* start = static_cast<const char*>(array_buffer->Data());
-    size_t length = array_buffer->ByteLength();
+    uint32_t length = array_buffer->ByteLength();
     DecodeAndEnqueue(start, length, WTF::FlushBehavior::kDoNotFlush, controller,
                      exception_state);
   }
@@ -97,7 +95,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
   // Implements the second part of "decode and enqueue a chunk" as well as the
   // "flush and enqueue" algorithm.
   void DecodeAndEnqueue(const char* start,
-                        size_t length,
+                        uint32_t length,
                         WTF::FlushBehavior flush,
                         TransformStreamDefaultController* controller,
                         ExceptionState& exception_state) {
@@ -149,7 +147,7 @@ TextDecoderStream* TextDecoderStream::Create(ScriptState* script_state,
                                              const TextDecoderOptions& options,
                                              ExceptionState& exception_state) {
   WTF::TextEncoding encoding(
-      label.StripWhiteSpace(&Encoding::IsASCIIWhiteSpace));
+      label.StripWhiteSpace(&encoding::IsASCIIWhiteSpace));
   // The replacement encoding is not valid, but the Encoding API also
   // rejects aliases of the replacement encoding.
   if (!encoding.IsValid() ||
@@ -184,18 +182,6 @@ void TextDecoderStream::Trace(Visitor* visitor) {
   ScriptWrappable::Trace(visitor);
 }
 
-// static
-void TextDecoderStream::Noop(ScriptValue) {}
-
-void TextDecoderStream::RetainWrapperUntilV8WrapperGetReturnedToV8(
-    ScriptState* script_state) {
-  ExecutionContext::From(script_state)
-      ->GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(Noop, ScriptValue(script_state, ToV8(this, script_state))));
-}
-
 TextDecoderStream::TextDecoderStream(ScriptState* script_state,
                                      const WTF::TextEncoding& encoding,
                                      const TextDecoderOptions& options,
@@ -204,7 +190,11 @@ TextDecoderStream::TextDecoderStream(ScriptState* script_state,
       encoding_(encoding),
       fatal_(options.fatal()),
       ignore_bom_(options.ignoreBOM()) {
-  RetainWrapperUntilV8WrapperGetReturnedToV8(script_state);
+  if (!RetainWrapperDuringConstruction(this, script_state)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot queue task to retain wrapper");
+    return;
+  }
   transform_->Init(new Transformer(script_state, encoding, fatal_, ignore_bom_),
                    script_state, exception_state);
 }

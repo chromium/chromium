@@ -183,8 +183,7 @@ TEST_F(ShortcutsDatabaseTest, DeleteShortcutsWithIds) {
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
 
-  ShortcutsDatabase::GuidToShortcutMap::iterator it =
-      shortcuts.find(shortcut_test_db[0].guid);
+  auto it = shortcuts.find(shortcut_test_db[0].guid);
   EXPECT_TRUE(it == shortcuts.end());
 
   it = shortcuts.find(shortcut_test_db[1].guid);
@@ -203,8 +202,7 @@ TEST_F(ShortcutsDatabaseTest, DeleteShortcutsWithURL) {
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
 
-  ShortcutsDatabase::GuidToShortcutMap::iterator it =
-      shortcuts.find(shortcut_test_db[0].guid);
+  auto it = shortcuts.find(shortcut_test_db[0].guid);
   EXPECT_TRUE(it != shortcuts.end());
 
   it = shortcuts.find(shortcut_test_db[1].guid);

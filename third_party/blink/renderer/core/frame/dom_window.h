@@ -68,6 +68,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData,
   // EventTarget overrides:
   const AtomicString& InterfaceName() const override;
   const DOMWindow* ToDOMWindow() const override;
+  bool IsWindowOrWorkerGlobalScope() const final;
 
   // Cross-origin DOM Level 0
   Location* location() const;

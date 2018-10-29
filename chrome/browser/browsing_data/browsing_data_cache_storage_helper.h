@@ -27,8 +27,8 @@
 class BrowsingDataCacheStorageHelper
     : public base::RefCountedThreadSafe<BrowsingDataCacheStorageHelper> {
  public:
-  using FetchCallback =
-      base::Callback<void(const std::list<content::CacheStorageUsageInfo>&)>;
+  using FetchCallback = base::OnceCallback<void(
+      const std::list<content::CacheStorageUsageInfo>&)>;
 
   // Create a BrowsingDataCacheStorageHelper instance for the Cache Storage
   // stored in |context|'s associated profile's user data directory.
@@ -37,7 +37,7 @@ class BrowsingDataCacheStorageHelper
 
   // Starts the fetching process, which will notify its completion via
   // |callback|. This must be called only in the UI thread.
-  virtual void StartFetching(const FetchCallback& callback);
+  virtual void StartFetching(FetchCallback callback);
   // Requests the Cache Storage data for an origin be deleted.
   virtual void DeleteCacheStorage(const GURL& origin);
 
@@ -54,7 +54,7 @@ class BrowsingDataCacheStorageHelper
   void DeleteCacheStorageOnIOThread(const GURL& origin);
 
   // Enumerates all Cache Storage instances on the IO thread.
-  void FetchCacheStorageUsageInfoOnIOThread(const FetchCallback& callback);
+  void FetchCacheStorageUsageInfoOnIOThread(FetchCallback callback);
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingDataCacheStorageHelper);
 };
@@ -101,9 +101,7 @@ class CannedBrowsingDataCacheStorageHelper
   GetCacheStorageUsageInfo() const;
 
   // BrowsingDataCacheStorageHelper methods.
-  void StartFetching(const base::Callback<
-                     void(const std::list<content::CacheStorageUsageInfo>&)>&
-                         callback) override;
+  void StartFetching(FetchCallback callback) override;
   void DeleteCacheStorage(const GURL& origin) override;
 
  private:

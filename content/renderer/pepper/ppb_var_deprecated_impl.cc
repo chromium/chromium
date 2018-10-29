@@ -98,9 +98,16 @@ bool HasPropertyDeprecated(PP_Var var, PP_Var name, PP_Var* exception) {
   if (try_catch.HasException())
     return false;
 
-  bool result = accessor.GetObject()->Has(v8_name);
+  v8::Local<v8::Context> context = try_catch.GetContext();
   if (try_catch.HasException())
     return false;
+
+  bool result = false;
+  if (!accessor.GetObject()->Has(context, v8_name).To(&result)) {
+    try_catch.HasException();
+    return false;
+  }
+
   return result;
 }
 
@@ -115,8 +122,17 @@ bool HasMethodDeprecated(PP_Var var, PP_Var name, PP_Var* exception) {
   if (try_catch.HasException())
     return false;
 
-  bool result = accessor.GetObject()->Has(v8_name) &&
-      accessor.GetObject()->Get(v8_name)->IsFunction();
+  v8::Local<v8::Context> context = try_catch.GetContext();
+  if (try_catch.HasException())
+    return false;
+
+  bool has_name = false;
+  if (!accessor.GetObject()->Has(context, v8_name).To(&has_name)) {
+    try_catch.HasException();
+    return false;
+  }
+
+  bool result = has_name && accessor.GetObject()->Get(v8_name)->IsFunction();
   if (try_catch.HasException())
     return false;
   return result;
@@ -203,8 +219,16 @@ void DeletePropertyDeprecated(PP_Var var, PP_Var name, PP_Var* exception) {
   if (try_catch.HasException())
     return;
 
-  accessor.GetObject()->Delete(v8_name);
-  try_catch.HasException();  // Ensure an exception gets set if one occured.
+  v8::Local<v8::Context> context = try_catch.GetContext();
+  if (try_catch.HasException())
+    return;
+
+  if (accessor.GetObject()->Delete(context, v8_name).IsNothing()) {
+    // Ensure exception object is created if V8 has thrown.
+    try_catch.HasException();
+    return;
+  }
+  return;
 }
 
 PP_Var CallDeprecatedInternal(PP_Var var,

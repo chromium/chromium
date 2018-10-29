@@ -88,7 +88,7 @@ TEST(CFIBacktraceAndroidTest, DISABLED_TestFindCFIRow) {
       WriteFile(temp_path, reinterpret_cast<char*>(input), sizeof(input)));
 
   unwinder->cfi_mmap_.reset(new MemoryMappedFile());
-  unwinder->cfi_mmap_->Initialize(temp_path);
+  ASSERT_TRUE(unwinder->cfi_mmap_->Initialize(temp_path));
   unwinder->ParseCFITables();
 
   CFIBacktraceAndroid::CFIRow cfi_row = {0};

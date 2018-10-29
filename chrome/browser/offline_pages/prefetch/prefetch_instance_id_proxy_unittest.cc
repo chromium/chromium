@@ -4,6 +4,7 @@
 
 #include "chrome/browser/offline_pages/prefetch/prefetch_instance_id_proxy.h"
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_task_environment.h"
@@ -73,7 +74,7 @@ void PrefetchInstanceIDProxyTest::SetUp() {
   proxy_ = std::make_unique<PrefetchInstanceIDProxy>(kAppIdForTest, &profile_);
   gcm_profile_service_ = static_cast<gcm::FakeGCMProfileService*>(
       gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          &profile_, &gcm::FakeGCMProfileService::Build));
+          &profile_, base::BindRepeating(&gcm::FakeGCMProfileService::Build)));
 }
 
 void PrefetchInstanceIDProxyTest::TearDown() {

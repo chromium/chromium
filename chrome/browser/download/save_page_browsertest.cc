@@ -1072,6 +1072,15 @@ class SavePageOriginalVsSavedComparisonTest
         expected_number_of_frames_in_original_page;
     AssertExpectationsAboutCurrentTab(expected_number_of_frames_in_saved_page,
                                       expected_substrings);
+
+    if (GetParam() == content::SAVE_PAGE_TYPE_AS_MHTML) {
+      std::set<url::Origin> origins;
+      GetCurrentTab(browser())->ForEachFrame(
+          base::BindRepeating(&CheckFrameForMHTML, base::Unretained(&origins)));
+      int unique_origins = origins.size();
+      EXPECT_EQ(expected_number_of_frames_in_saved_page, unique_origins)
+          << "All origins should be unique";
+    }
   }
 
   // Helper method to deduplicate some code across 2 tests.
@@ -1147,6 +1156,18 @@ class SavePageOriginalVsSavedComparisonTest
 
   static void IncrementInteger(int* i, content::RenderFrameHost* /* unused */) {
     (*i)++;
+  }
+
+  static void CheckFrameForMHTML(std::set<url::Origin>* origins,
+                                 content::RenderFrameHost* host) {
+    // See RFC n°2557, section-8.3: "Use of the Content-ID header and CID URLs".
+    const char kContentIdScheme[] = "cid";
+    origins->insert(host->GetLastCommittedOrigin());
+    EXPECT_TRUE(host->GetLastCommittedOrigin().opaque());
+    if (!host->GetParent())
+      EXPECT_TRUE(host->GetLastCommittedURL().SchemeIsFile());
+    else
+      EXPECT_TRUE(host->GetLastCommittedURL().SchemeIs(kContentIdScheme));
   }
 };
 

@@ -20,11 +20,13 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -334,6 +336,10 @@ void InstalledLoader::LoadAllExtensions() {
   RecordExtensionsMetrics();
 }
 
+void InstalledLoader::RecordExtensionsMetricsForTesting() {
+  RecordExtensionsMetrics();
+}
+
 void InstalledLoader::RecordExtensionsMetrics() {
   Profile* profile = extension_service_->profile();
 
@@ -538,6 +544,38 @@ void InstalledLoader::RecordExtensionsMetrics() {
 
     if (!ManifestURL::UpdatesFromGallery(extension))
       ++off_store_item_count;
+
+    ScriptingPermissionsModifier scripting_modifier(profile, extension);
+    // NOTE: CanAffectExtension() returns false in all cases when the
+    // RuntimeHostPermissions feature is disabled.
+    if (scripting_modifier.CanAffectExtension()) {
+      bool extension_has_withheld_hosts =
+          scripting_modifier.HasWithheldHostPermissions();
+      UMA_HISTOGRAM_BOOLEAN(
+          "Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts",
+          extension_has_withheld_hosts);
+      if (extension_has_withheld_hosts) {
+        // Record the number of granted hosts if and only if the extension
+        // has withheld host permissions. This lets us equate "0" granted
+        // hosts to "on click only".
+        size_t num_granted_hosts = 0;
+        for (const auto& pattern : extension->permissions_data()
+                                       ->active_permissions()
+                                       .effective_hosts()) {
+          // Ignore chrome:-scheme patterns (like chrome://favicon); these
+          // aren't withheld, and thus shouldn't be considered "granted".
+          if (pattern.scheme() != content::kChromeUIScheme)
+            ++num_granted_hosts;
+        }
+        // TODO(devlin): This only takes into account the granted hosts that
+        // were also requested by the extension (because it looks at the active
+        // permissions). We could potentially also record the granted hosts that
+        // were explicitly not requested.
+        UMA_HISTOGRAM_COUNTS_100(
+            "Extensions.RuntimeHostPermissions.GrantedHostCount",
+            num_granted_hosts);
+      }
+    }
   }
 
   const ExtensionSet& disabled_extensions =

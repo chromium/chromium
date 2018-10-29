@@ -6,15 +6,11 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/command_line.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 
@@ -29,24 +25,11 @@ namespace media {
 
 // Returns the number of threads.
 static int GetAomVideoDecoderThreadCount(const VideoDecoderConfig& config) {
-  // Always try to use at least two threads for video decoding. There is little
-  // reason not to since current day CPUs tend to be multi-core and we measured
-  // performance benefits on older machines such as P4s with hyperthreading.
-  constexpr int kDecodeThreads = 2;
-  int decode_threads = kDecodeThreads;
-
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  std::string threads(cmd_line->GetSwitchValueASCII(switches::kVideoThreads));
-  if (threads.empty() || !base::StringToInt(threads, &decode_threads)) {
-    // For AOM decode when using the default thread count, increase the number
-    // of decode threads to equal the maximum number of tiles possible for
-    // higher resolution streams.
-    decode_threads = std::min(config.coded_size().width() / 256,
-                              base::SysInfo::NumberOfProcessors());
-  }
-
-  constexpr int kMaxDecodeThreads = 32;
-  return std::min(std::max(decode_threads, 0), kMaxDecodeThreads);
+  // For AOM decode when using the default thread count, increase the number
+  // of decode threads to equal the maximum number of tiles possible for
+  // higher resolution streams.
+  return VideoDecoder::GetRecommendedThreadCount(config.coded_size().width() /
+                                                 256);
 }
 
 static VideoPixelFormat AomImgFmtToVideoPixelFormat(const aom_image_t* img) {
@@ -185,7 +168,7 @@ void AomVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                              const DecodeCB& decode_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(buffer);
-  DCHECK(!decode_cb.is_null());
+  DCHECK(decode_cb);
   DCHECK_NE(state_, DecoderState::kUninitialized)
       << "Called Decode() before successful Initialize()";
 

@@ -116,6 +116,12 @@ base::android::ScopedJavaLocalRef<jobject> CompositorView::GetResourceManager(
   return compositor_->GetResourceManager().GetJavaObject();
 }
 
+void CompositorView::RecreateSurface() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  compositor_->SetSurface(nullptr);
+  Java_CompositorView_recreateSurface(env, obj_);
+}
+
 void CompositorView::UpdateLayerTreeHost() {
   JNIEnv* env = base::android::AttachCurrentThread();
   // TODO(wkorman): Rename JNI interface to onCompositorUpdateLayerTreeHost.
@@ -261,8 +267,7 @@ void CompositorView::BrowserChildProcessKilled(
       data.process_type == content::PROCESS_TYPE_GPU) {
     JNIEnv* env = base::android::AttachCurrentThread();
     compositor_->SetSurface(nullptr);
-    Java_CompositorView_onJellyBeanSurfaceDisconnectWorkaround(
-        env, obj_, overlay_video_mode_);
+    Java_CompositorView_recreateSurface(env, obj_);
   }
 }
 

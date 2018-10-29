@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 
+#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/window_properties.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/settings_window_manager_observer_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/aura/client/aura_constants.h"
 #include "url/gurl.h"
 
 namespace chrome {
@@ -74,6 +76,8 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
 
   auto* window = params.browser->window()->GetNativeWindow();
   window->SetProperty(kOverrideWindowIconResourceIdKey, IDR_SETTINGS_LOGO_192);
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(ash::AppType::CHROME_APP));
 
   for (SettingsWindowManagerObserver& observer : observers_)
     observer.OnNewSettingsWindow(params.browser);

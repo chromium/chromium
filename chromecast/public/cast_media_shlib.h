@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -38,6 +39,8 @@ class VideoPlane;
 // from other tests.
 class CHROMECAST_EXPORT CastMediaShlib {
  public:
+  using ResultCallback =
+      std::function<void(bool success, const std::string& message)>;
   // Observer for audio loopback data.
   class LoopbackAudioObserver {
    public:
@@ -126,8 +129,10 @@ class CHROMECAST_EXPORT CastMediaShlib {
   static void RemoveLoopbackAudioObserver(LoopbackAudioObserver* observer)
       __attribute__((__weak__));
 
-  // Reset the post processing pipeline.
-  static void ResetPostProcessors() __attribute__((__weak__));
+  // Reset the post processing pipeline. |callback| will be called with
+  // |success| = |true| if the new config loads without error.
+  static void ResetPostProcessors(ResultCallback callback)
+      __attribute__((__weak__));
 
   // Updates all postprocessors with the given |name| to have new configuration
   // |config|.

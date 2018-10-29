@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -29,7 +28,6 @@
 #include "components/prefs/pref_member.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/resource_request_info.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/common/previews_state.h"
 #include "content/public/common/resource_type.h"
 #include "content/public/test/mock_permission_manager.h"
@@ -102,18 +100,6 @@ class ChromeNetworkDelegateTest : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<ChromeNetworkDelegate> network_delegate_;
 };
-
-TEST_F(ChromeNetworkDelegateTest, DisableSameSiteCookiesIffFlagDisabled) {
-  Initialize();
-  EXPECT_FALSE(network_delegate()->AreExperimentalCookieFeaturesEnabled());
-}
-
-TEST_F(ChromeNetworkDelegateTest, EnableSameSiteCookiesIffFlagEnabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableExperimentalWebPlatformFeatures);
-  Initialize();
-  EXPECT_TRUE(network_delegate()->AreExperimentalCookieFeaturesEnabled());
-}
 
 class ChromeNetworkDelegatePolicyTest : public testing::Test {
  public:
@@ -238,6 +224,18 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   // If profile path is given, the following additional paths are allowed.
   EXPECT_TRUE(IsAccessAllowed("/profile/Downloads", "/profile"));
   EXPECT_TRUE(IsAccessAllowed("/profile/WebRTC Logs", "/profile"));
+
+  // GCache/v2/<opaque ID>/Logs is allowed.
+  EXPECT_TRUE(IsAccessAllowed("/profile/GCache/v2/id/Logs", "/profile"));
+  EXPECT_TRUE(
+      IsAccessAllowed("/profile/GCache/v2/id/Logs/drivefs.txt", "/profile"));
+  EXPECT_FALSE(
+      IsAccessAllowed("/profile/GCache/v2/id/logs/drivefs.txt", "/profile"));
+  EXPECT_FALSE(
+      IsAccessAllowed("/profile/GCache/v2/id/something_else", "/profile"));
+  EXPECT_FALSE(IsAccessAllowed("/profile/GCache/v2/id", "/profile"));
+  EXPECT_FALSE(IsAccessAllowed("/profile/GCache/v2", "/profile"));
+  EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/GCache/v2/id/Logs", ""));
 
 #elif defined(OS_ANDROID)
   // Android allows the following directories.

@@ -67,7 +67,7 @@ source_set("layout_test_utils") {
   ]
 }
 
-static_library("content_shell_lib") {
+jumbo_static_library("content_shell_lib") {
   testonly = true
   sources = [
     "android/shell_manager.cc",
@@ -224,6 +224,15 @@ static_library("content_shell_lib") {
     "utility/shell_content_utility_client.h",
   ]
 
+  jumbo_excluded_sources = [
+    # IPC uses multiple inclusions in different macro contexts to
+    # generate the code. This is not compatible with jumbo
+    # compilations since all other files need the "clean" version of
+    # the message headers.
+    "common/layout_test/layout_test_messages.cc",
+    "common/shell_messages.cc",
+  ]
+
   configs += [
     ":content_shell_lib_warnings",
     "//build/config:precompiled_headers",
@@ -334,7 +343,7 @@ static_library("content_shell_lib") {
       "//components/crash/content/app:test_support",
       "//components/crash/content/browser",
     ]
-    deps += [ "//third_party/fuchsia-sdk:policy" ]
+    deps += [ "//third_party/fuchsia-sdk/sdk:policy" ]
   }
 
   # Annoyingly, this target and layouttest_support have circular includes.
@@ -358,8 +367,8 @@ static_library("content_shell_lib") {
 
   if (is_win) {
     sources += [
-      "common/v8_breakpad_support_win.cc",
-      "common/v8_breakpad_support_win.h",
+      "common/v8_crashpad_support_win.cc",
+      "common/v8_crashpad_support_win.h",
     ]
   }
 

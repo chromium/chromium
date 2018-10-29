@@ -144,8 +144,9 @@ void AppCacheUpdateJob::UpdateURLLoaderRequest::OnStartLoadingResponseBody(
 
   handle_watcher_.Watch(
       handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-      base::Bind(&AppCacheUpdateJob::UpdateURLLoaderRequest::StartReading,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &AppCacheUpdateJob::UpdateURLLoaderRequest::StartReading,
+          base::Unretained(this)));
 
   // Initiate a read from the pipe if we have a pending Read() request.
   MaybeStartReading();

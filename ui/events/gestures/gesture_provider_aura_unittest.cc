@@ -125,55 +125,55 @@ TEST_F(GestureProviderAuraTest, IgnoresIdenticalMoveEvents) {
   const int kTouchId0 = 5;
   const int kTouchId1 = 3;
 
-  PointerDetails pointerDetails1(EventPointerType::POINTER_TYPE_TOUCH,
-                                 kTouchId0);
+  PointerDetails pointer_details1(EventPointerType::POINTER_TYPE_TOUCH,
+                                  kTouchId0);
   base::TimeTicks time = ui::EventTimeForNow();
   TouchEvent press0_1(ET_TOUCH_PRESSED, gfx::Point(9, 10), time,
-                      pointerDetails1);
+                      pointer_details1);
   EXPECT_TRUE(provider()->OnTouchEvent(&press0_1));
 
-  PointerDetails pointerDetails2(EventPointerType::POINTER_TYPE_TOUCH,
-                                 kTouchId1);
+  PointerDetails pointer_details2(EventPointerType::POINTER_TYPE_TOUCH,
+                                  kTouchId1);
   TouchEvent press1_1(ET_TOUCH_PRESSED, gfx::Point(40, 40), time,
-                      pointerDetails2);
+                      pointer_details2);
   EXPECT_TRUE(provider()->OnTouchEvent(&press1_1));
 
   time += base::TimeDelta::FromMilliseconds(10);
-  pointerDetails1 = PointerDetails(EventPointerType::POINTER_TYPE_TOUCH,
-                                   kTouchId0, kRadiusX, kRadiusY, kForce);
-  TouchEvent move0_1(ET_TOUCH_MOVED, gfx::Point(10, 10), time, pointerDetails1,
-                     0, kAngle);
+  pointer_details1 =
+      PointerDetails(EventPointerType::POINTER_TYPE_TOUCH, kTouchId0, kRadiusX,
+                     kRadiusY, kForce, kAngle);
+  TouchEvent move0_1(ET_TOUCH_MOVED, gfx::Point(10, 10), time, pointer_details1,
+                     0);
   EXPECT_TRUE(provider()->OnTouchEvent(&move0_1));
 
-  pointerDetails2 = PointerDetails(EventPointerType::POINTER_TYPE_TOUCH,
-                                   kTouchId1, kRadiusX, kRadiusY, kForce);
+  pointer_details2 =
+      PointerDetails(EventPointerType::POINTER_TYPE_TOUCH, kTouchId1, kRadiusX,
+                     kRadiusY, kForce, kAngle);
   TouchEvent move1_1(ET_TOUCH_MOVED, gfx::Point(100, 200), time,
-                     pointerDetails2, 0, kAngle);
+                     pointer_details2, 0);
   EXPECT_TRUE(provider()->OnTouchEvent(&move1_1));
 
   time += base::TimeDelta::FromMilliseconds(10);
-  TouchEvent move0_2(ET_TOUCH_MOVED, gfx::Point(10, 10), time, pointerDetails1,
-                     0, kAngle);
+  TouchEvent move0_2(ET_TOUCH_MOVED, gfx::Point(10, 10), time, pointer_details1,
+                     0);
   // Nothing has changed, so ignore the move.
   EXPECT_FALSE(provider()->OnTouchEvent(&move0_2));
 
   TouchEvent move1_2(ET_TOUCH_MOVED, gfx::Point(100, 200), time,
-                     pointerDetails2, 0, kAngle);
+                     pointer_details2, 0);
   // Nothing has changed, so ignore the move.
   EXPECT_FALSE(provider()->OnTouchEvent(&move1_2));
 
   time += base::TimeDelta::FromMilliseconds(10);
-  TouchEvent move0_3(ET_TOUCH_MOVED, gfx::Point(), time, pointerDetails1, 0,
-                     kAngle);
+  TouchEvent move0_3(ET_TOUCH_MOVED, gfx::Point(), time, pointer_details1, 0);
   move0_3.set_location_f(gfx::PointF(70, 75.1f));
   move0_3.set_root_location_f(gfx::PointF(70, 75.1f));
   // Position has changed, so don't ignore the move.
   EXPECT_TRUE(provider()->OnTouchEvent(&move0_3));
 
   time += base::TimeDelta::FromMilliseconds(10);
-  pointerDetails2.radius_y += 1;
-  TouchEvent move0_4(ET_TOUCH_MOVED, gfx::Point(), time, pointerDetails2, 0,
-                     kAngle);
+  pointer_details2.radius_y += 1;
+  TouchEvent move0_4(ET_TOUCH_MOVED, gfx::Point(), time, pointer_details2, 0);
   move0_4.set_location_f(gfx::PointF(70, 75.1f));
   move0_4.set_root_location_f(gfx::PointF(70, 75.1f));
 }

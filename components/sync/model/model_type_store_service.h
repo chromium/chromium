@@ -26,7 +26,8 @@ class ModelTypeStoreService : public KeyedService {
   // centralize all storage-related paths in one class.
   virtual const base::FilePath& GetSyncDataPath() const = 0;
 
-  // Returns a factory to create instances of ModelTypeStore.
+  // Returns a factory to create instances of ModelTypeStore. May be used from
+  // any thread and independently of the lifetime of this object.
   virtual RepeatingModelTypeStoreFactory GetStoreFactory() = 0;
 
   virtual scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner() = 0;

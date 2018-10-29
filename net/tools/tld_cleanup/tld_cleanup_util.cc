@@ -43,7 +43,7 @@ bool WriteRules(const RuleMap& rules, const base::FilePath& outfile) {
               "};\n"
               "%%\n");
 
-  for (RuleMap::const_iterator i = rules.begin(); i != rules.end(); ++i) {
+  for (auto i = rules.begin(); i != rules.end(); ++i) {
     data.append(i->first);
     data.append(", ");
     int type = 0;

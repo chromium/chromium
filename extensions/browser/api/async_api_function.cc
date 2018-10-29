@@ -5,6 +5,8 @@
 #include "extensions/browser/api/async_api_function.h"
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_system.h"
 
@@ -15,7 +17,7 @@ namespace extensions {
 // AsyncApiFunction
 AsyncApiFunction::AsyncApiFunction()
     : work_task_runner_(
-          BrowserThread::GetTaskRunnerForThread(BrowserThread::IO)) {}
+          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})) {}
 
 AsyncApiFunction::~AsyncApiFunction() {}
 
@@ -56,8 +58,8 @@ ExtensionFunction::ResponseAction AsyncApiFunction::Run() {
 
 void AsyncApiFunction::AsyncWorkCompleted() {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    bool rv = BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    bool rv = base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::Bind(&AsyncApiFunction::RespondOnUIThread, this));
     DCHECK(rv);
   } else {

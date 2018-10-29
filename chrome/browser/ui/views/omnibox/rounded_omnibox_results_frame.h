@@ -11,12 +11,13 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-enum class OmniboxTint;
+class LocationBarView;
 
 // A class that wraps a Widget's content view to provide a custom results frame.
 class RoundedOmniboxResultsFrame : public views::View {
  public:
-  RoundedOmniboxResultsFrame(views::View* contents, OmniboxTint tint);
+  RoundedOmniboxResultsFrame(views::View* contents,
+                             const LocationBarView* location_bar);
   ~RoundedOmniboxResultsFrame() override;
 
   // Hook to customize Widget initialization.
@@ -45,8 +46,8 @@ class RoundedOmniboxResultsFrame : public views::View {
   std::unique_ptr<ui::LayerOwner> contents_mask_;
 
   views::View* top_background_ = nullptr;
-  views::View* contents_ = nullptr;
   views::View* contents_host_ = nullptr;
+  views::View* contents_;
 
   DISALLOW_COPY_AND_ASSIGN(RoundedOmniboxResultsFrame);
 };

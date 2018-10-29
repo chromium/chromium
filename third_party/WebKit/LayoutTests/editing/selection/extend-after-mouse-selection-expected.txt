@@ -1,5 +1,5 @@
-a bc 
-d ef 
+a bc
+d ef
 ghi
 PASS Selection is [anchorNode: [object Text](bc) anchorOffset: 0 focusNode: [object Text](ef) focusOffset: 2 isCollapsed: false]
 PASS Selection is [anchorNode: [object Text](ef) anchorOffset: 2 focusNode: [object Text](a ) focusOffset: 1 isCollapsed: false]

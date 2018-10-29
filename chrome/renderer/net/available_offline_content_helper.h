@@ -65,6 +65,10 @@ class AvailableOfflineContentHelper {
   // only so that metrics can be recorded properly on call to LaunchItem().
   std::vector<chrome::mojom::AvailableOfflineContentPtr> fetched_content_;
 
+  // Records if the last received content message indicated that prefetched
+  // articles are available or not.
+  bool has_prefetched_content_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(AvailableOfflineContentHelper);
 };
 

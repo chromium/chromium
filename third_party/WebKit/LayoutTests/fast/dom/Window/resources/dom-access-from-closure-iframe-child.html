@@ -1,3 +1,4 @@
+<script src="../../../../resources/common.js"></script>
 <script>
     // Capture window.window and window.parent: once this context is navigated, these properties
     // always return null.
@@ -5,14 +6,9 @@
     var p = parent;
     parent.accessFrame = function()
     {
-        function normalizeURL(url)
-        {
-            return url.substring(url.lastIndexOf("LayoutTests"));
-        }
-
         try {
-            p.log("document.URL: " + normalizeURL(document.URL));
-            p.log("window.document.URL: " + normalizeURL(w.document.URL));
+            p.log("document.URL: " + relativeTestPath(document.URL));
+            p.log("window.document.URL: " + relativeTestPath(w.document.URL));
             p.log("name: " + name);
             p.log("window.name: " + w.name);
         } catch (e) {

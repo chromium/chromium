@@ -283,7 +283,8 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
   } timestamp_based_event_comparison;
   std::sort(all_coalesced_events.begin(), all_coalesced_events.end(),
             timestamp_based_event_comparison);
-  WebCoalescedInputEvent result(event, std::vector<const WebInputEvent*>());
+  WebCoalescedInputEvent result(event, std::vector<const WebInputEvent*>(),
+                                std::vector<const WebInputEvent*>());
   for (const auto& web_pointer_event : all_coalesced_events) {
     if (web_pointer_event.GetType() == WebInputEvent::kPointerDown) {
       // TODO(crbug.com/732842): Technically we should never receive the
@@ -481,9 +482,9 @@ TouchEventManager::DispatchTouchEventFromAccumulatdTouchPoints() {
       DispatchEventResult dom_dispatch_result =
           touch_event_target->DispatchEvent(*touch_event);
 
-      event_result = EventHandlingUtil::MergeEventResult(
+      event_result = event_handling_util::MergeEventResult(
           event_result,
-          EventHandlingUtil::ToWebInputEventResult(dom_dispatch_result));
+          event_handling_util::ToWebInputEventResult(dom_dispatch_result));
     }
   }
 
@@ -502,7 +503,7 @@ TouchEventManager::DispatchTouchEventFromAccumulatdTouchPoints() {
 
 void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
     const WebPointerEvent& event,
-    const EventHandlingUtil::PointerEventTarget& pointer_event_target) {
+    const event_handling_util::PointerEventTarget& pointer_event_target) {
   // Touch events implicitly capture to the touched node, and don't change
   // active/hover states themselves (Gesture events do). So we only need
   // to hit-test on touchstart and when the target could be different than
@@ -536,7 +537,7 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
       HitTestLocation location(LayoutPoint(
           touch_sequence_document_->GetFrame()->View()->ConvertFromRootFrame(
               event.PositionInWidget())));
-      result = EventHandlingUtil::HitTestResultInFrame(
+      result = event_handling_util::HitTestResultInFrame(
           touch_sequence_document_->GetFrame(), location, hit_type);
       Node* node = result.InnerNode();
       if (!node)
@@ -572,7 +573,7 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
   attributes->region_ = region;
 
   TouchAction effective_touch_action =
-      TouchActionUtil::ComputeEffectiveTouchAction(*touch_node);
+      touch_action_util::ComputeEffectiveTouchAction(*touch_node);
 
   should_enforce_vertical_scroll_ =
       touch_sequence_document_->IsVerticalScrollEnforced();
@@ -595,7 +596,7 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
 void TouchEventManager::HandleTouchPoint(
     const WebPointerEvent& event,
     const Vector<WebPointerEvent>& coalesced_events,
-    const EventHandlingUtil::PointerEventTarget& pointer_event_target) {
+    const event_handling_util::PointerEventTarget& pointer_event_target) {
   DCHECK_GE(event.GetType(), WebInputEvent::kPointerTypeFirst);
   DCHECK_LE(event.GetType(), WebInputEvent::kPointerTypeLast);
   DCHECK_NE(event.GetType(), WebInputEvent::kPointerCausedUaAction);

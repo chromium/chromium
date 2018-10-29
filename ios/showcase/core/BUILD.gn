@@ -14,7 +14,7 @@ source_set("core") {
   deps = [
     "//base",
     "//base:i18n",
-    "//ios/chrome/browser/ui:ui_util",
+    "//ios/chrome/browser/ui/util",
     "//ios/showcase/common",
     "//ios/third_party/material_components_ios",
     "//ios/third_party/material_roboto_font_loader_ios",

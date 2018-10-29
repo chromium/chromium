@@ -232,8 +232,7 @@ std::string QuoteCommandLineForDesktopFileExec(
 
   std::string quoted_path = "";
   const base::CommandLine::StringVector& argv = command_line.argv();
-  for (base::CommandLine::StringVector::const_iterator i = argv.begin();
-       i != argv.end(); ++i) {
+  for (auto i = argv.begin(); i != argv.end(); ++i) {
     if (i != argv.begin())
       quoted_path += " ";
     quoted_path += QuoteArgForDesktopFileExec(*i);

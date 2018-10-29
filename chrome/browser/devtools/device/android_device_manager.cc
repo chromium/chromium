@@ -339,8 +339,7 @@ class DevicesRequest : public base::RefCountedThreadSafe<DevicesRequest> {
     DevicesRequest* request = new DevicesRequest(callback);
     // Avoid destruction while sending requests
     request->AddRef();
-    for (DeviceProviders::const_iterator it = providers.begin();
-         it != providers.end(); ++it) {
+    for (auto it = providers.begin(); it != providers.end(); ++it) {
       device_task_runner->PostTask(
           FROM_HERE, base::BindOnce(&DeviceProvider::QueryDevices, *it,
                                     base::Bind(&DevicesRequest::ProcessSerials,
@@ -365,8 +364,7 @@ class DevicesRequest : public base::RefCountedThreadSafe<DevicesRequest> {
 
   void ProcessSerials(scoped_refptr<DeviceProvider> provider,
                       const Serials& serials) {
-    for (Serials::const_iterator it = serials.begin(); it != serials.end();
-         ++it) {
+    for (auto it = serials.begin(); it != serials.end(); ++it) {
       descriptors_->resize(descriptors_->size() + 1);
       descriptors_->back().provider = provider;
       descriptors_->back().serial = *it;
@@ -546,8 +544,7 @@ std::unique_ptr<AndroidDeviceManager> AndroidDeviceManager::Create() {
 
 void AndroidDeviceManager::SetDeviceProviders(
     const DeviceProviders& providers) {
-  for (DeviceProviders::iterator it = providers_.begin();
-      it != providers_.end(); ++it) {
+  for (auto it = providers_.begin(); it != providers_.end(); ++it) {
     (*it)->AddRef();
     DeviceProvider* raw_ptr = it->get();
     *it = nullptr;
@@ -580,7 +577,7 @@ void AndroidDeviceManager::UpdateDevices(
   for (DeviceDescriptors::const_iterator it = descriptors->begin();
        it != descriptors->end();
        ++it) {
-    DeviceWeakMap::iterator found = devices_.find(it->serial);
+    auto found = devices_.find(it->serial);
     scoped_refptr<Device> device;
     if (found == devices_.end() || !found->second ||
         found->second->provider_.get() != it->provider.get()) {

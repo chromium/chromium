@@ -22,25 +22,35 @@ std::unique_ptr<base::Value> SummarizeV8Value(v8::Isolate* isolate,
   v8::TryCatch try_catch(isolate);
   v8::Isolate::DisallowJavascriptExecutionScope scope(
       isolate, v8::Isolate::DisallowJavascriptExecutionScope::THROW_ON_FAILURE);
-  v8::Local<v8::String> name = v8::String::NewFromUtf8(isolate, "[");
+  v8::Local<v8::String> name =
+      v8::String::NewFromUtf8(isolate, "[", v8::NewStringType::kNormal)
+          .ToLocalChecked();
   if (object->IsFunction()) {
-    name = v8::String::Concat(isolate, name,
-                              v8::String::NewFromUtf8(isolate, "Function"));
+    name = v8::String::Concat(
+        isolate, name,
+        v8::String::NewFromUtf8(isolate, "Function", v8::NewStringType::kNormal)
+            .ToLocalChecked());
     v8::Local<v8::Value> fname =
         v8::Local<v8::Function>::Cast(object)->GetName();
     if (fname->IsString() && v8::Local<v8::String>::Cast(fname)->Length()) {
-      name = v8::String::Concat(isolate, name,
-                                v8::String::NewFromUtf8(isolate, " "));
+      name = v8::String::Concat(
+          isolate, name,
+          v8::String::NewFromUtf8(isolate, " ", v8::NewStringType::kNormal)
+              .ToLocalChecked());
       name =
           v8::String::Concat(isolate, name, v8::Local<v8::String>::Cast(fname));
-      name = v8::String::Concat(isolate, name,
-                                v8::String::NewFromUtf8(isolate, "()"));
+      name = v8::String::Concat(
+          isolate, name,
+          v8::String::NewFromUtf8(isolate, "()", v8::NewStringType::kNormal)
+              .ToLocalChecked());
     }
   } else {
     name = v8::String::Concat(isolate, name, object->GetConstructorName());
   }
-  name =
-      v8::String::Concat(isolate, name, v8::String::NewFromUtf8(isolate, "]"));
+  name = v8::String::Concat(
+      isolate, name,
+      v8::String::NewFromUtf8(isolate, "]", v8::NewStringType::kNormal)
+          .ToLocalChecked());
 
   if (try_catch.HasCaught()) {
     return std::unique_ptr<base::Value>(

@@ -128,7 +128,7 @@ TEST(DOMStorageDatabaseTest, CloseEmptyDatabaseDeletesFile) {
   {
     DOMStorageDatabase db(file_name);
     ASSERT_TRUE(db.CommitChanges(false, storage));
-    DOMStorageValuesMap::iterator it = storage.begin();
+    auto it = storage.begin();
     for (; it != storage.end(); ++it)
       it->second = base::NullableString16();
     ASSERT_TRUE(db.CommitChanges(false, storage));

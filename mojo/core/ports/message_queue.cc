@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "mojo/core/ports/message_filter.h"
 
@@ -52,6 +53,16 @@ void MessageQueue::GetNextMessage(std::unique_ptr<UserMessageEvent>* message,
   *message = std::move(heap_.back());
   total_queued_bytes_ -= (*message)->GetSizeIfSerialized();
   heap_.pop_back();
+
+  // We keep the capacity of |heap_| in check so that a large batch of incoming
+  // messages doesn't permanently wreck available memory. The choice of interval
+  // here is somewhat arbitrary.
+  constexpr size_t kHeapMinimumShrinkSize = 16;
+  constexpr size_t kHeapShrinkInterval = 512;
+  if (UNLIKELY(heap_.size() > kHeapMinimumShrinkSize &&
+               heap_.size() % kHeapShrinkInterval == 0)) {
+    heap_.shrink_to_fit();
+  }
 
   next_sequence_num_++;
 }

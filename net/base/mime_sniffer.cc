@@ -152,7 +152,7 @@ static const MagicNumber kMagicNumbers[] = {
   MAGIC_NUMBER("image/tiff", "II*"),
   MAGIC_NUMBER("image/tiff", "MM\x00*"),
   MAGIC_NUMBER("audio/mpeg", "ID3"),
-  MAGIC_NUMBER("image/webp", "RIFF....WEBPVP8 "),
+  MAGIC_NUMBER("image/webp", "RIFF....WEBPVP"),
   MAGIC_NUMBER("video/webm", "\x1A\x45\xDF\xA3"),
   MAGIC_NUMBER("application/zip", "PK\x03\x04"),
   MAGIC_NUMBER("application/x-rar-compressed", "Rar!\x1A\x07\x00"),

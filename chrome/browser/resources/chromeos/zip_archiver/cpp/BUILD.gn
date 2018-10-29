@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_nacl, "This file should only be built in NaCl")
+import("//testing/test.gni")
 
-executable("zip_archiver_pnacl") {
+static_library("zip_archiver_library") {
   sources = [
     "compressor.cc",
     "compressor.h",
@@ -17,11 +17,11 @@ executable("zip_archiver_pnacl") {
     "javascript_compressor_requestor_interface.h",
     "javascript_message_sender_interface.h",
     "javascript_requestor_interface.h",
-    "module.cc",
     "request.cc",
     "request.h",
     "volume.cc",
     "volume.h",
+    "volume_archive.cc",
     "volume_archive.h",
     "volume_archive_minizip.cc",
     "volume_archive_minizip.h",
@@ -34,7 +34,43 @@ executable("zip_archiver_pnacl") {
     "//base:base",
     "//chrome/browser/resources/chromeos/zip_archiver:char_coding",
     "//ppapi/cpp",
-    "//ppapi/native_client:ppapi_lib",
     "//third_party/minizip:minizip",
   ]
+
+  visibility = [
+    ":ziparchiver_unittests",
+    ":zip_archiver_pnacl",
+  ]
+}
+
+test("ziparchiver_unittests") {
+  sources = [
+    "compressor_archive_minizip_unittest.cc",
+    "test_module.cc",
+    "volume_archive_minizip_unittest.cc",
+  ]
+
+  deps = [
+    ":zip_archiver_library",
+    "//base/test:run_all_unittests",
+    "//testing/gtest",
+  ]
+
+  data = [
+    "//chrome/browser/resources/chromeos/zip_archiver/test/data/",
+  ]
+}
+
+if (is_nacl) {
+  executable("zip_archiver_pnacl") {
+    sources = [
+      "module.cc",
+    ]
+
+    deps = [
+      ":zip_archiver_library",
+      "//ppapi/cpp",
+      "//ppapi/native_client:ppapi_lib",
+    ]
+  }
 }

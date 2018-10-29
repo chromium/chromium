@@ -27,27 +27,6 @@ namespace net {
 
 namespace {
 
-std::unique_ptr<base::ListValue> SPKIHashesToListValue(
-    const HashValueVector& hashes) {
-  auto pins = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i != hashes.size(); i++)
-    pins->AppendString(hashes[i].ToString());
-  return pins;
-}
-
-void SPKIHashesFromListValue(const base::ListValue& pins,
-                             HashValueVector* hashes) {
-  size_t num_pins = pins.GetSize();
-  for (size_t i = 0; i < num_pins; ++i) {
-    std::string type_and_base64;
-    HashValue fingerprint;
-    if (pins.GetString(i, &type_and_base64) &&
-        fingerprint.FromString(type_and_base64)) {
-      hashes->push_back(fingerprint);
-    }
-  }
-}
-
 // This function converts the binary hashes to a base64 string which we can
 // include in a JSON file.
 std::string HashedDomainToExternalString(const std::string& hashed) {
@@ -70,19 +49,14 @@ std::string ExternalStringToHashedDomain(const std::string& external) {
 
 const char kIncludeSubdomains[] = "include_subdomains";
 const char kStsIncludeSubdomains[] = "sts_include_subdomains";
-const char kPkpIncludeSubdomains[] = "pkp_include_subdomains";
 const char kMode[] = "mode";
 const char kExpiry[] = "expiry";
-const char kDynamicSPKIHashesExpiry[] = "dynamic_spki_hashes_expiry";
-const char kDynamicSPKIHashes[] = "dynamic_spki_hashes";
 const char kForceHTTPS[] = "force-https";
 const char kStrict[] = "strict";
 const char kDefault[] = "default";
 const char kPinningOnly[] = "pinning-only";
 const char kCreated[] = "created";
 const char kStsObserved[] = "sts_observed";
-const char kPkpObserved[] = "pkp_observed";
-const char kReportUri[] = "report-uri";
 // The keys below are contained in a subdictionary keyed as
 // |kExpectCTSubdictionary|.
 const char kExpectCTSubdictionary[] = "expect_ct";
@@ -104,12 +78,12 @@ bool IsDynamicExpectCTEnabled() {
       TransportSecurityState::kDynamicExpectCTFeature);
 }
 
-// Populates |host| with default values for the STS and PKP states.
+// Populates |host| with default values for the STS states.
 // These default values represent "null" states and are only useful to keep
 // the entries in the resulting JSON consistent. The deserializer will ignore
 // "null" states.
-// TODO(davidben): This can be removed when the STS and PKP states are stored
-// independently on disk. https://crbug.com/470295
+// TODO(davidben): This can be removed when the STS and Expect-CT states are
+// stored independently on disk. https://crbug.com/470295
 void PopulateEntryWithDefaults(base::DictionaryValue* host) {
   host->Clear();
 
@@ -118,11 +92,6 @@ void PopulateEntryWithDefaults(base::DictionaryValue* host) {
   host->SetDouble(kStsObserved, 0.0);
   host->SetDouble(kExpiry, 0.0);
   host->SetString(kMode, kDefault);
-
-  // PKP default values.
-  host->SetBoolean(kPkpIncludeSubdomains, false);
-  host->SetDouble(kPkpObserved, 0.0);
-  host->SetDouble(kDynamicSPKIHashesExpiry, 0.0);
 }
 
 // Serializes STS data from |state| into |toplevel|. Any existing state in
@@ -160,49 +129,6 @@ void SerializeSTSData(TransportSecurityState* state,
   }
 }
 
-// Serializes PKP data from |state| into |toplevel|. For each PKP item in
-// |state|, if |toplevel| already contains an item for that hostname, the item
-// is updated with the PKP data.
-void SerializePKPData(TransportSecurityState* state,
-                      base::DictionaryValue* toplevel) {
-  base::Time now = base::Time::Now();
-  TransportSecurityState::PKPStateIterator pkp_iterator(*state);
-  for (; pkp_iterator.HasNext(); pkp_iterator.Advance()) {
-    const std::string& hostname = pkp_iterator.hostname();
-    const TransportSecurityState::PKPState& pkp_state =
-        pkp_iterator.domain_state();
-
-    // See if the current |hostname| already has STS state and, if so, update
-    // that entry.
-    const std::string key = HashedDomainToExternalString(hostname);
-    base::DictionaryValue* serialized = nullptr;
-    if (!toplevel->GetDictionary(key, &serialized)) {
-      std::unique_ptr<base::DictionaryValue> serialized_scoped(
-          new base::DictionaryValue);
-      serialized = serialized_scoped.get();
-      PopulateEntryWithDefaults(serialized);
-      toplevel->Set(key, std::move(serialized_scoped));
-    }
-
-    serialized->SetBoolean(kPkpIncludeSubdomains, pkp_state.include_subdomains);
-    serialized->SetDouble(kPkpObserved, pkp_state.last_observed.ToDoubleT());
-    serialized->SetDouble(kDynamicSPKIHashesExpiry,
-                          pkp_state.expiry.ToDoubleT());
-
-    // TODO(svaldez): Historically, both SHA-1 and SHA-256 hashes were
-    // accepted in pins. Per spec, only SHA-256 is accepted now, however
-    // existing serialized pins are still processed. Migrate historical pins
-    // with SHA-1 hashes properly, either by dropping just the bad hashes or
-    // the entire pin. See https://crbug.com/448501.
-    if (now < pkp_state.expiry) {
-      serialized->Set(kDynamicSPKIHashes,
-                      SPKIHashesToListValue(pkp_state.spki_hashes));
-    }
-
-    serialized->SetString(kReportUri, pkp_state.report_uri.spec());
-  }
-}
-
 // Serializes Expect-CT data from |state| into |toplevel|. For each Expect-CT
 // item in |state|, if |toplevel| already contains an item for that hostname,
 // the item is updated to include a subdictionary with key
@@ -218,7 +144,7 @@ void SerializeExpectCTData(TransportSecurityState* state,
     const TransportSecurityState::ExpectCTState& expect_ct_state =
         expect_ct_iterator.domain_state();
 
-    // See if the current |hostname| already has STS/PKP state and, if so,
+    // See if the current |hostname| already has STS state and, if so,
     // update that entry.
     const std::string key = HashedDomainToExternalString(hostname);
     base::DictionaryValue* serialized = nullptr;
@@ -326,9 +252,8 @@ bool TransportSecurityPersister::SerializeData(std::string* output) {
   base::DictionaryValue toplevel;
 
   // TODO(davidben): Fix the serialization format by splitting the on-disk
-  // representation of the STS and PKP states. https://crbug.com/470295.
+  // representation of the STS and Expect-CT states. https://crbug.com/470295.
   SerializeSTSData(transport_security_state_, &toplevel);
-  SerializePKPData(transport_security_state_, &toplevel);
   SerializeExpectCTData(transport_security_state_, &toplevel);
 
   base::JSONWriter::WriteWithOptions(
@@ -365,23 +290,16 @@ bool TransportSecurityPersister::Deserialize(const std::string& serialized,
     }
 
     TransportSecurityState::STSState sts_state;
-    TransportSecurityState::PKPState pkp_state;
     TransportSecurityState::ExpectCTState expect_ct_state;
 
-    // kIncludeSubdomains is a legacy synonym for kStsIncludeSubdomains and
-    // kPkpIncludeSubdomains. Parse at least one of these properties,
-    // preferably the new ones.
+    // kIncludeSubdomains is a legacy synonym for kStsIncludeSubdomains. Parse
+    // at least one of these properties, preferably the new one.
     bool include_subdomains = false;
     bool parsed_include_subdomains = parsed->GetBoolean(kIncludeSubdomains,
                                                         &include_subdomains);
     sts_state.include_subdomains = include_subdomains;
-    pkp_state.include_subdomains = include_subdomains;
     if (parsed->GetBoolean(kStsIncludeSubdomains, &include_subdomains)) {
       sts_state.include_subdomains = include_subdomains;
-      parsed_include_subdomains = true;
-    }
-    if (parsed->GetBoolean(kPkpIncludeSubdomains, &include_subdomains)) {
-      pkp_state.include_subdomains = include_subdomains;
       parsed_include_subdomains = true;
     }
 
@@ -393,16 +311,6 @@ bool TransportSecurityPersister::Deserialize(const std::string& serialized,
       LOG(WARNING) << "Could not parse some elements of entry " << i.key()
                    << "; skipping entry";
       continue;
-    }
-
-    // Don't fail if this key is not present.
-    double dynamic_spki_hashes_expiry = 0;
-    parsed->GetDouble(kDynamicSPKIHashesExpiry,
-                      &dynamic_spki_hashes_expiry);
-
-    const base::ListValue* pins_list = NULL;
-    if (parsed->GetList(kDynamicSPKIHashes, &pins_list)) {
-      SPKIHashesFromListValue(*pins_list, &pkp_state.spki_hashes);
     }
 
     if (mode_string == kForceHTTPS || mode_string == kStrict) {
@@ -418,35 +326,18 @@ bool TransportSecurityPersister::Deserialize(const std::string& serialized,
     }
 
     sts_state.expiry = base::Time::FromDoubleT(expiry);
-    pkp_state.expiry = base::Time::FromDoubleT(dynamic_spki_hashes_expiry);
-
-    // Don't fail if this key is not present.
-    std::string report_uri_str;
-    parsed->GetString(kReportUri, &report_uri_str);
-    GURL report_uri(report_uri_str);
-    if (report_uri.is_valid())
-      pkp_state.report_uri = report_uri;
 
     double sts_observed;
-    double pkp_observed;
     if (parsed->GetDouble(kStsObserved, &sts_observed)) {
       sts_state.last_observed = base::Time::FromDoubleT(sts_observed);
     } else if (parsed->GetDouble(kCreated, &sts_observed)) {
-      // kCreated is a legacy synonym for both kStsObserved and kPkpObserved.
+      // kCreated is a legacy synonym for both kStsObserved.
       sts_state.last_observed = base::Time::FromDoubleT(sts_observed);
     } else {
       // We're migrating an old entry with no observation date. Make sure we
       // write the new date back in a reasonable time frame.
       dirtied = true;
       sts_state.last_observed = base::Time::Now();
-    }
-    if (parsed->GetDouble(kPkpObserved, &pkp_observed)) {
-      pkp_state.last_observed = base::Time::FromDoubleT(pkp_observed);
-    } else if (parsed->GetDouble(kCreated, &pkp_observed)) {
-      pkp_state.last_observed = base::Time::FromDoubleT(pkp_observed);
-    } else {
-      dirtied = true;
-      pkp_state.last_observed = base::Time::Now();
     }
 
     if (!DeserializeExpectCTState(parsed, &expect_ct_state)) {
@@ -455,14 +346,12 @@ bool TransportSecurityPersister::Deserialize(const std::string& serialized,
 
     bool has_sts =
         sts_state.expiry > current_time && sts_state.ShouldUpgradeToSSL();
-    bool has_pkp =
-        pkp_state.expiry > current_time && pkp_state.HasPublicKeyPins();
     bool has_expect_ct =
         expect_ct_state.expiry > current_time &&
         (expect_ct_state.enforce || !expect_ct_state.report_uri.is_empty());
-    if (!has_sts && !has_pkp && !has_expect_ct) {
+    if (!has_sts && !has_expect_ct) {
       // Make sure we dirty the state if we drop an entry. The entries can only
-      // be dropped when all the STS, PKP, and Expect-CT states are expired or
+      // be dropped when all the STS and Expect-CT states are expired or
       // invalid.
       dirtied = true;
       continue;
@@ -478,8 +367,6 @@ bool TransportSecurityPersister::Deserialize(const std::string& serialized,
     // We only register entries that have actual state.
     if (has_sts)
       state->AddOrUpdateEnabledSTSHosts(hashed, sts_state);
-    if (has_pkp)
-      state->AddOrUpdateEnabledPKPHosts(hashed, pkp_state);
     if (has_expect_ct)
       state->AddOrUpdateEnabledExpectCTHosts(hashed, expect_ct_state);
   }

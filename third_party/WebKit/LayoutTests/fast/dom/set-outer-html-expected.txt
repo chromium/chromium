@@ -1,7 +1,7 @@
 Replaced node using outerHTML.
 removing node using outerHTML.
 Testing merging text nodes.
-Testing adding 
+Testing adding
 using outerHTML.
 PASS: replace
 PASS: remove

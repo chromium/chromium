@@ -29,16 +29,16 @@ using absl::strings_internal::ParseFloat;
 
 namespace {
 
-// Check that a given std::string input is parsed to the expected mantissa and
+// Check that a given string input is parsed to the expected mantissa and
 // exponent.
 //
-// Input std::string `s` must contain a '$' character.  It marks the end of the
+// Input string `s` must contain a '$' character.  It marks the end of the
 // characters that should be consumed by the match.  It is stripped from the
 // input to ParseFloat.
 //
-// If input std::string `s` contains '[' and ']' characters, these mark the region
+// If input string `s` contains '[' and ']' characters, these mark the region
 // of characters that should be marked as the "subrange".  For NaNs, this is
-// the location of the extended NaN std::string.  For numbers, this is the location
+// the location of the extended NaN string.  For numbers, this is the location
 // of the full, over-large mantissa.
 template <int base>
 void ExpectParsedFloat(std::string s, absl::chars_format format_flags,
@@ -92,10 +92,10 @@ void ExpectParsedFloat(std::string s, absl::chars_format format_flags,
   EXPECT_EQ(characters_matched, expected_characters_matched);
 }
 
-// Check that a given std::string input is parsed to the expected mantissa and
+// Check that a given string input is parsed to the expected mantissa and
 // exponent.
 //
-// Input std::string `s` must contain a '$' character.  It marks the end of the
+// Input string `s` must contain a '$' character.  It marks the end of the
 // characters that were consumed by the match.
 template <int base>
 void ExpectNumber(std::string s, absl::chars_format format_flags,
@@ -106,7 +106,7 @@ void ExpectNumber(std::string s, absl::chars_format format_flags,
                           expected_literal_exponent);
 }
 
-// Check that a given std::string input is parsed to the given special value.
+// Check that a given string input is parsed to the given special value.
 //
 // This tests against both number bases, since infinities and NaNs have
 // identical representations in both modes.
@@ -116,7 +116,7 @@ void ExpectSpecial(const std::string& s, absl::chars_format format_flags,
   ExpectParsedFloat<16>(s, format_flags, type, 0, 0);
 }
 
-// Check that a given input std::string is not matched by Float.
+// Check that a given input string is not matched by Float.
 template <int base>
 void ExpectFailedParse(absl::string_view s, absl::chars_format format_flags) {
   ParsedFloat parsed =

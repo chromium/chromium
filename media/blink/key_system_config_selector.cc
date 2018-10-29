@@ -156,7 +156,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
            << ", use_aes_decryptor=" << use_aes_decryptor;
 
   std::vector<std::string> codec_vector;
-  SplitCodecsToVector(codecs, &codec_vector, false);
+  SplitCodecs(codecs, &codec_vector);
 
   // AesDecryptor decrypts the stream in the demuxer before it reaches the
   // decoder so check whether the media format is supported when clear.
@@ -321,7 +321,9 @@ bool KeySystemConfigSelector::IsSupportedContentType(
     const std::string& container_mime_type,
     const std::string& codecs,
     KeySystemConfigSelector::ConfigState* config_state) {
-  DVLOG(3) << __func__;
+  DVLOG(3) << __func__ << ": key_system = " << key_system
+           << ", container_mime_type = " << container_mime_type
+           << ", codecs = " << codecs;
 
   // From RFC6838: "Both top-level type and subtype names are case-insensitive."
   std::string container_lower = base::ToLowerASCII(container_mime_type);
@@ -346,13 +348,13 @@ bool KeySystemConfigSelector::IsSupportedContentType(
     return false;
   }
 
-  // Check that |container_mime_type| and |codecs| are supported by the CDM.
-  // This check does not handle extended codecs, so extended codec information
-  // is stripped (extended codec information was checked above).
-  std::vector<std::string> stripped_codec_vector;
-  SplitCodecsToVector(codecs, &stripped_codec_vector, true);
+  // Before checking CDM support, split |codecs| into a vector of codecs.
+  std::vector<std::string> codec_vector;
+  SplitCodecs(codecs, &codec_vector);
+
+  // Check that |container_lower| and |codec_vector| are supported by the CDM.
   EmeConfigRule codecs_rule = key_systems_->GetContentTypeConfigRule(
-      key_system, media_type, container_lower, stripped_codec_vector);
+      key_system, media_type, container_lower, codec_vector);
   if (!config_state->IsRuleSupported(codecs_rule)) {
     DVLOG(3) << "Container mime type and codecs are not supported by CDM";
     return false;

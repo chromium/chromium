@@ -58,7 +58,7 @@ class ClipboardHost : public mojom::ClipboardHost {
   void WriteBitmap(const SkBitmap& bitmap) override;
   void WriteData(const std::string& type, const std::string& data) override;
   void CommitWrite(ClipboardType type) override;
-#if defined(OS_MACOSX)
+#if defined(OS_MACOSX) && !defined(OS_IOS)
   void WriteStringToFindPboard(const base::string16& text) override;
 #endif
 

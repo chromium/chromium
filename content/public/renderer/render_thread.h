@@ -97,6 +97,10 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // Retrieve the process ID of the browser process.
   virtual int32_t GetClientId() = 0;
 
+  // Get the online status of the browser - false when there is no network
+  // access.
+  virtual bool IsOnline() = 0;
+
   // Set the renderer process type.
   virtual void SetRendererProcessType(
       blink::scheduler::RendererProcessType type) = 0;

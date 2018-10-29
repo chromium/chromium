@@ -35,7 +35,7 @@ std::vector<std::unique_ptr<PasswordForm>> SplitFederatedMatches(
   const auto first_federated = std::partition(
       store_results->begin(), store_results->end(),
       [](const std::unique_ptr<PasswordForm>& form) {
-        return form->federation_origin.unique();  // False means federated.
+        return form->federation_origin.opaque();  // False means federated.
       });
 
   // Move out federated matches.

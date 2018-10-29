@@ -1,0 +1,38 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ntp_tile_views") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ntp_most_visited_tile_view.h",
+    "ntp_most_visited_tile_view.mm",
+    "ntp_shortcut_tile_view.h",
+    "ntp_shortcut_tile_view.mm",
+    "ntp_tile_view.h",
+    "ntp_tile_view.mm",
+  ]
+
+  deps = [
+    "resources:ntp_bookmarks_icon",
+    "resources:ntp_history_icon",
+    "resources:ntp_most_visited_tile",
+    "resources:ntp_readinglist_icon",
+    "resources:ntp_recent_icon",
+    "//ios/chrome/common/favicon",
+    "//ios/chrome/common/ui_util",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ntp_tile_constants.h",
+    "ntp_tile_constants.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ui/base:base",
+  ]
+}

@@ -29,7 +29,7 @@
 interface HTMLCanvasElement : HTMLElement
 {
     // Note: Due to dependecies on modules, getContext is defined in a partial
-    // interface in HTMLCanvasElementModule.idl
+    // interface in html_canvas_element_module.idl
 
     [RaisesException=Setter, CEReactions] attribute unsigned long width;
     [RaisesException=Setter, CEReactions] attribute unsigned long height;

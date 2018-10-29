@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSpecialSubframeNavigationsBrowserTest,
         return rfh->GetLastCommittedURL().scheme_piece() == url::kDataScheme;
       }));
   ASSERT_NE(target, nullptr);
-  EXPECT_TRUE(target->GetLastCommittedOrigin().unique());
+  EXPECT_TRUE(target->GetLastCommittedOrigin().opaque());
   EXPECT_FALSE(WasParsedScriptElementLoaded(target));
 }
 

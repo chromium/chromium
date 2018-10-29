@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "media/base/byte_queue.h"
 #include "media/base/demuxer.h"
 #include "media/base/demuxer_stream.h"
@@ -161,27 +162,29 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
   };
 
   // Assigns |state_| to |state|
-  void ChangeState_Locked(State state);
+  void ChangeState_Locked(State state) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void CompletePendingReadIfPossible_Locked();
+  void CompletePendingReadIfPossible_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Specifies the type of the stream.
-  Type type_;
+  const Type type_;
   const RangeApi range_api_;
 
-  Liveness liveness_;
+  Liveness liveness_ GUARDED_BY(lock_);
 
   // Precisely one of these will be used by an instance, determined by
   // |range_api_| set in ctor. See https://crbug.com/718641.
-  std::unique_ptr<SourceBufferStream<SourceBufferRangeByDts>> stream_dts_;
-  std::unique_ptr<SourceBufferStream<SourceBufferRangeByPts>> stream_pts_;
+  std::unique_ptr<SourceBufferStream<SourceBufferRangeByDts>> stream_dts_
+      GUARDED_BY(lock_);
+  std::unique_ptr<SourceBufferStream<SourceBufferRangeByPts>> stream_pts_
+      GUARDED_BY(lock_);
 
   const MediaTrack::Id media_track_id_;
 
   mutable base::Lock lock_;
-  State state_;
-  ReadCB read_cb_;
-  bool is_enabled_;
+  State state_ GUARDED_BY(lock_);
+  ReadCB read_cb_ GUARDED_BY(lock_);
+  bool is_enabled_ GUARDED_BY(lock_);
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(ChunkDemuxerStream);
 };
@@ -269,6 +272,12 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   void OnSelectedVideoTrackChanged(const std::vector<MediaTrack::Id>& track_ids,
                                    base::TimeDelta curr_time,
                                    TrackChangeCB change_completed_cb) override;
+
+  // Callback for reporting bytes appended to a SourceBuffer.
+  using BytesReceivedCB = base::RepeatingCallback<void(uint64_t)>;
+
+  // Register a BytesReceivedCB.
+  void AddBytesReceivedCallback(BytesReceivedCB bytes_received_cb);
 
   // Appends media data to the source buffer associated with |id|, applying
   // and possibly updating |*timestamp_offset| during coded frame processing.
@@ -458,6 +467,12 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // all objects in |source_state_map_|.
   void ShutdownAllStreams();
 
+  // Executes |init_cb_| with |status| and closes out the async trace.
+  void RunInitCB_Locked(PipelineStatus status);
+
+  // Executes |seek_cb_| with |status| and closes out the async trace.
+  void RunSeekCB_Locked(PipelineStatus status);
+
   mutable base::Lock lock_;
   State state_;
   bool cancel_next_seek_;
@@ -517,6 +532,9 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // construction time. This makes sure that all buffering for this ChunkDemuxer
   // uses the same behavior. See https://crbug.com/718641.
   const bool buffering_by_pts_;
+
+  // Callback for reporting the number of bytes appended to this ChunkDemuxer.
+  BytesReceivedCB bytes_received_cb_;
 
   std::map<MediaTrack::Id, ChunkDemuxerStream*> track_id_to_demux_stream_map_;
 

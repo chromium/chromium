@@ -11,7 +11,9 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/stl_util.h"
 #include "base/strings/string16.h"
+#include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
 
@@ -43,11 +45,7 @@ class FontCache {
 
     base::string16 font_name = font.lfFaceName;
     int ref_count_inc = 1;
-    FontNameVector::iterator it =
-        std::find(dispatcher_font_map_[dispatcher].begin(),
-                  dispatcher_font_map_[dispatcher].end(),
-                  font_name);
-    if (it == dispatcher_font_map_[dispatcher].end()) {
+    if (!base::ContainsValue(dispatcher_font_map_[dispatcher], font_name)) {
       // Requested font is new to cache.
       dispatcher_font_map_[dispatcher].push_back(font_name);
     } else {
@@ -125,8 +123,8 @@ class FontCache {
   FontCache() {
   }
 
-  std::map<base::string16, CacheElement> cache_;
-  DispatcherToFontNames dispatcher_font_map_;
+  std::map<base::string16, CacheElement> cache_ GUARDED_BY(mutex_);
+  DispatcherToFontNames dispatcher_font_map_ GUARDED_BY(mutex_);
   base::Lock mutex_;
 
   DISALLOW_COPY_AND_ASSIGN(FontCache);

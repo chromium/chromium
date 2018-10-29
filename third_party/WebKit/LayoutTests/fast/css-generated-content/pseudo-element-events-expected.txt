@@ -1,10 +1,11 @@
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS event.target.tagName is "DIV"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 Pseudo elements should not dispatch events.
-
-

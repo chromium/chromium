@@ -1,8 +1,1 @@
 CONSOLE ERROR: line 3: Error: <circle> attribute r: Expected length, "r".
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGRect {rect} at (100,100) size 200x200 [fill={[type=SOLID] [color=#FF0000]}] [x=100.00] [y=100.00] [width=200.00] [height=200.00]
-    LayoutSVGEllipse {circle} at (1,1) size 0x0 [fill={[type=SOLID] [color=#FF0000]}] [cx=1.00] [cy=1.00] [r=0.00]
-    LayoutSVGRect {rect} at (100,100) size 200x200 [fill={[type=SOLID] [color=#008000]}] [x=100.00] [y=100.00] [width=200.00] [height=200.00]

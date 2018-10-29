@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 
@@ -31,7 +32,7 @@ class TestModelTypeStoreService : public ModelTypeStoreService {
   CreateBlockingStoreFromBackendSequence(ModelType type) override;
 
  private:
-  std::unique_ptr<ModelTypeStoreBackend> store_backend_;
+  const scoped_refptr<ModelTypeStoreBackend> store_backend_;
   base::ScopedTempDir sync_data_path_;
 
   DISALLOW_COPY_AND_ASSIGN(TestModelTypeStoreService);

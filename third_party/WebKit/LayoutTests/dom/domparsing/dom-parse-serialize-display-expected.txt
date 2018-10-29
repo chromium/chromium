@@ -11,8 +11,11 @@ text to parse
   <d id="id3">Three</d>
 </doc>
 
+
+
 document object
 [object XMLDocument]
+
 
 document object serialized
 <?xml version="1.0"?><?xml-stylesheet href="display.css" type="text/css"?><!DOCTYPE doc><doc>

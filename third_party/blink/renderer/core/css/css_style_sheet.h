@@ -140,6 +140,10 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
     associated_document_ = document;
   }
 
+  void AddToCustomElementTagNames(const AtomicString& local_tag_name) {
+    custom_element_tag_names_.insert(local_tag_name);
+  }
+
   class RuleMutationScope {
     STACK_ALLOCATED();
 
@@ -180,7 +184,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
   bool SheetLoaded();
   bool LoadCompleted() const { return load_completed_; }
   void StartLoadingDynamicSheet();
-  void SetText(const String&);
+  void SetText(const String&, bool allow_import_rules, ExceptionState&);
   void SetMedia(MediaList*);
   void SetAlternateFromConstructor(bool);
   bool IsAlternate() const;
@@ -231,6 +235,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
   // For other CSSStyleSheet, consult the alternate attribute.
   bool alternate_from_constructor_ = false;
   bool enable_rule_access_for_inspector_ = false;
+
   String title_;
   scoped_refptr<MediaQuerySet> media_queries_;
   MediaQueryResultList viewport_dependent_media_query_results_;
@@ -241,8 +246,8 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
   Member<Node> owner_node_;
   Member<CSSRule> owner_rule_;
   HeapHashSet<Member<TreeScope>> adopted_tree_scopes_;
-
   Member<Document> associated_document_;
+  HashSet<AtomicString> custom_element_tag_names_;
 
   TextPosition start_position_;
   Member<MediaList> media_cssom_wrapper_;

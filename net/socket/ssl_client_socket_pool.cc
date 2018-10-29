@@ -43,14 +43,14 @@ SSLSocketParams::SSLSocketParams(
     const HostPortPair& host_and_port,
     const SSLConfig& ssl_config,
     PrivacyMode privacy_mode,
-    int load_flags)
+    bool ignore_certificate_errors)
     : direct_params_(direct_params),
       socks_proxy_params_(socks_proxy_params),
       http_proxy_params_(http_proxy_params),
       host_and_port_(host_and_port),
       ssl_config_(ssl_config),
       privacy_mode_(privacy_mode),
-      load_flags_(load_flags) {
+      ignore_certificate_errors_(ignore_certificate_errors) {
   // Only one set of lower level pool params should be non-NULL.
   DCHECK((direct_params_ && !socks_proxy_params_ && !http_proxy_params_) ||
          (!direct_params_ && socks_proxy_params_ && !http_proxy_params_) ||
@@ -340,7 +340,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   bool tls13_supported = IsTLS13ExperimentHost(host);
 
   if (result == OK ||
-      ssl_socket_->IgnoreCertError(result, params_->load_flags())) {
+      (params_->ignore_certificate_errors() && IsCertificateError(result))) {
     DCHECK(!connect_timing_.ssl_start.is_null());
     base::TimeDelta connect_duration =
         connect_timing_.ssl_end - connect_timing_.ssl_start;

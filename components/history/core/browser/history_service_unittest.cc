@@ -21,6 +21,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <array>
+#include <string>
+#include <vector>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
@@ -28,6 +33,8 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/history/core/browser/history_database_params.h"
@@ -55,11 +62,6 @@ class HistoryServiceTest : public testing::Test {
         query_url_success_(false) {}
 
   ~HistoryServiceTest() override {}
-
-  void OnMostVisitedURLsAvailable(const MostVisitedURLList* url_list) {
-    most_visited_urls_ = *url_list;
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  }
 
  protected:
   friend class BackendDelegate;
@@ -138,8 +140,8 @@ class HistoryServiceTest : public testing::Test {
     base::RunLoop run_loop;
     history_service_->QueryRedirectsFrom(
         url,
-        base::Bind(&HistoryServiceTest::OnRedirectQueryComplete,
-                   base::Unretained(this), run_loop.QuitClosure()),
+        base::BindRepeating(&HistoryServiceTest::OnRedirectQueryComplete,
+                            base::Unretained(this), run_loop.QuitClosure()),
         &tracker_);
     run_loop.Run();  // Will be exited in *QueryComplete.
   }
@@ -155,11 +157,48 @@ class HistoryServiceTest : public testing::Test {
     std::move(done).Run();
   }
 
+  void QueryMostVisitedURLs() {
+    const int kResultCount = 20;
+    const int kDaysBack = 90;
+
+    base::RunLoop run_loop;
+    history_service_->QueryMostVisitedURLs(
+        kResultCount, kDaysBack,
+        base::BindRepeating(&HistoryServiceTest::OnQueryMostVisitedURLsComplete,
+                            base::Unretained(this), run_loop.QuitClosure()),
+        &tracker_);
+    run_loop.Run();  // Will be exited in *QueryComplete.
+  }
+
+  void OnQueryMostVisitedURLsComplete(base::OnceClosure done,
+                                      const MostVisitedURLList* url_list) {
+    most_visited_urls_ = *url_list;
+    std::move(done).Run();
+  }
+
+  void GetTopHosts() {
+    const int kNumHosts = 20;
+
+    base::RunLoop run_loop;
+    history_service_->TopHosts(
+        kNumHosts,
+        base::BindRepeating(&HistoryServiceTest::OnTopHostsComplete,
+                            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();  // Will be exited in *QueryComplete.
+  }
+
+  void OnTopHostsComplete(base::OnceClosure done,
+                          const TopHostsList& top_hosts_list) {
+    top_hosts_list_ = top_hosts_list;
+    std::move(done).Run();
+  }
+
   base::ScopedTempDir temp_dir_;
 
   base::test::ScopedTaskEnvironment scoped_task_environment_;
 
   MostVisitedURLList most_visited_urls_;
+  TopHostsList top_hosts_list_;
 
   // When non-NULL, this will be deleted on tear down and we will block until
   // the backend thread has completed. This allows tests for the history
@@ -497,13 +536,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
       url1, base::Time::Now(), context_id, 0, GURL(),
       history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
       history::SOURCE_BROWSED, false);
-  history_service_->QueryMostVisitedURLs(
-      20,
-      90,
-      base::Bind(&HistoryServiceTest::OnMostVisitedURLsAvailable,
-                 base::Unretained(this)),
-      &tracker_);
-  base::RunLoop().Run();
+
+  QueryMostVisitedURLs();
 
   EXPECT_EQ(2U, most_visited_urls_.size());
   EXPECT_EQ(url0, most_visited_urls_[0].url);
@@ -514,13 +548,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
       url2, base::Time::Now(), context_id, 0, GURL(),
       history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
       history::SOURCE_BROWSED, false);
-  history_service_->QueryMostVisitedURLs(
-      20,
-      90,
-      base::Bind(&HistoryServiceTest::OnMostVisitedURLsAvailable,
-                 base::Unretained(this)),
-      &tracker_);
-  base::RunLoop().Run();
+
+  QueryMostVisitedURLs();
 
   EXPECT_EQ(3U, most_visited_urls_.size());
   EXPECT_EQ(url0, most_visited_urls_[0].url);
@@ -532,13 +561,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
       url2, base::Time::Now(), context_id, 0, GURL(),
       history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
       history::SOURCE_BROWSED, false);
-  history_service_->QueryMostVisitedURLs(
-      20,
-      90,
-      base::Bind(&HistoryServiceTest::OnMostVisitedURLsAvailable,
-                 base::Unretained(this)),
-      &tracker_);
-  base::RunLoop().Run();
+
+  QueryMostVisitedURLs();
 
   EXPECT_EQ(3U, most_visited_urls_.size());
   EXPECT_EQ(url2, most_visited_urls_[0].url);
@@ -550,13 +574,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
       url1, base::Time::Now(), context_id, 0, GURL(),
       history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
       history::SOURCE_BROWSED, false);
-  history_service_->QueryMostVisitedURLs(
-      20,
-      90,
-      base::Bind(&HistoryServiceTest::OnMostVisitedURLsAvailable,
-                 base::Unretained(this)),
-      &tracker_);
-  base::RunLoop().Run();
+
+  QueryMostVisitedURLs();
 
   EXPECT_EQ(3U, most_visited_urls_.size());
   EXPECT_EQ(url1, most_visited_urls_[0].url);
@@ -569,13 +588,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
       url4, base::Time::Now(), context_id, 0, GURL(),
       redirects, ui::PAGE_TRANSITION_TYPED,
       history::SOURCE_BROWSED, false);
-  history_service_->QueryMostVisitedURLs(
-      20,
-      90,
-      base::Bind(&HistoryServiceTest::OnMostVisitedURLsAvailable,
-                 base::Unretained(this)),
-      &tracker_);
-  base::RunLoop().Run();
+
+  QueryMostVisitedURLs();
 
   EXPECT_EQ(4U, most_visited_urls_.size());
   EXPECT_EQ(url1, most_visited_urls_[0].url);
@@ -583,6 +597,176 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   EXPECT_EQ(url0, most_visited_urls_[2].url);
   EXPECT_EQ(url3, most_visited_urls_[3].url);
   EXPECT_EQ(2U, most_visited_urls_[3].redirects.size());
+}
+
+TEST_F(HistoryServiceTest, TopHostsMultipleHosts) {
+  ASSERT_TRUE(history_service_.get());
+
+  const std::string top_host0_espn_host_name = "espn.com";
+  const std::string top_host1_google_host_name = "google.com";
+  const std::string top_host2_cnn_host_name = "cnn.com";
+
+  const int top_host0_espn_host_count = 4;
+  const int top_host1_google_host_count = 3;
+  const int top_host2_cnn_host_count = 2;
+
+  std::array<GURL, 9> unfiltered_pages{GURL("http://www.espn.com/"),
+                                       GURL("http://www.google.com/google0/"),
+                                       GURL("http://www.google.com/google1/"),
+                                       GURL("http://www.google.com/google2/"),
+                                       GURL("http://www.espn.com/"),
+                                       GURL("http://www.cnn.com/cnn0/"),
+                                       GURL("http://www.espn.com/"),
+                                       GURL("http://www.cnn.com/cnn1/"),
+                                       GURL("http://www.espn.com/")};
+
+  std::array<GURL, 3> filtered_pages{GURL("http://www.espn.com/"),
+                                     GURL("http://www.google.com/google3/"),
+                                     GURL("http://www.cnn.com/cnn2/")};
+
+  // Expired time
+  const base::Time expired_time =
+      std::max(base::Time::Now() - base::TimeDelta::FromDays(31), base::Time());
+
+  const ContextID context_id = reinterpret_cast<ContextID>(1);
+
+  base::HistogramTester histogram_tester;
+
+  // Add unfiltered pages.
+  for (const auto& unfiltered_page : unfiltered_pages) {
+    history_service_->AddPage(unfiltered_page, base::Time::Now(), context_id, 0,
+                              GURL(), history::RedirectList(),
+                              ui::PAGE_TRANSITION_TYPED,
+                              history::SOURCE_BROWSED, false);
+  }
+
+  // Add expired pages.
+  for (const auto& filtered_page : filtered_pages) {
+    history_service_->AddPage(filtered_page, expired_time, context_id, 0,
+                              GURL(), history::RedirectList(),
+                              ui::PAGE_TRANSITION_TYPED,
+                              history::SOURCE_BROWSED, false);
+  }
+
+  // Add reload pages.
+  for (const auto& filtered_page : filtered_pages) {
+    history_service_->AddPage(filtered_page, base::Time::Now(), context_id, 0,
+                              GURL(), history::RedirectList(),
+                              ui::PAGE_TRANSITION_RELOAD,
+                              history::SOURCE_BROWSED, false);
+  }
+
+  GetTopHosts();
+
+  ASSERT_EQ(3U, top_hosts_list_.size());
+
+  EXPECT_EQ(top_host0_espn_host_name, top_hosts_list_[0].first);
+  EXPECT_EQ(top_host1_google_host_name, top_hosts_list_[1].first);
+  EXPECT_EQ(top_host2_cnn_host_name, top_hosts_list_[2].first);
+
+  EXPECT_EQ(top_host0_espn_host_count, top_hosts_list_[0].second);
+  EXPECT_EQ(top_host1_google_host_count, top_hosts_list_[1].second);
+  EXPECT_EQ(top_host2_cnn_host_count, top_hosts_list_[2].second);
+
+  // Add unfiltered pages.
+  for (const auto& unfiltered_page : unfiltered_pages) {
+    history_service_->AddPage(unfiltered_page, base::Time::Now(), context_id, 0,
+                              GURL(), history::RedirectList(),
+                              ui::PAGE_TRANSITION_TYPED,
+                              history::SOURCE_BROWSED, false);
+  }
+
+  // Add reload pages.
+  for (const auto& filtered_page : filtered_pages) {
+    history_service_->AddPage(filtered_page, base::Time::Now(), context_id, 0,
+                              GURL(), history::RedirectList(),
+                              ui::PAGE_TRANSITION_RELOAD,
+                              history::SOURCE_BROWSED, false);
+  }
+
+  // Add random url page that does not appear in the top hosts.
+  const std::string random_host_name = "random.com";
+  const int random_host_count = 1;
+  const GURL random_url("http://www.random.com/");
+  history_service_->AddPage(random_url, base::Time::Now(), context_id, 0,
+                            GURL(), history::RedirectList(),
+                            ui::PAGE_TRANSITION_TYPED, history::SOURCE_BROWSED,
+                            false);
+
+  // Call GetTopHosts again. This guarantees that the histograms are updated.
+  GetTopHosts();
+
+  histogram_tester.ExpectBucketCount("History.TopHostsVisitsByRank",
+                                     1 /* espn.com */,
+                                     top_host0_espn_host_count);
+  histogram_tester.ExpectBucketCount("History.TopHostsVisitsByRank",
+                                     2 /* google.com */,
+                                     top_host1_google_host_count);
+  histogram_tester.ExpectBucketCount("History.TopHostsVisitsByRank",
+                                     3 /* cnn.com */, top_host2_cnn_host_count);
+  histogram_tester.ExpectBucketCount("History.TopHostsVisitsByRank",
+                                     51 /* random.com */, random_host_count);
+
+  ASSERT_EQ(4U, top_hosts_list_.size());
+
+  EXPECT_EQ(top_host0_espn_host_name, top_hosts_list_[0].first);
+  EXPECT_EQ(top_host1_google_host_name, top_hosts_list_[1].first);
+  EXPECT_EQ(top_host2_cnn_host_name, top_hosts_list_[2].first);
+  EXPECT_EQ(random_host_name, top_hosts_list_[3].first);
+
+  EXPECT_EQ(top_host0_espn_host_count * 2, top_hosts_list_[0].second);
+  EXPECT_EQ(top_host1_google_host_count * 2, top_hosts_list_[1].second);
+  EXPECT_EQ(top_host2_cnn_host_count * 2, top_hosts_list_[2].second);
+  EXPECT_EQ(random_host_count, top_hosts_list_[3].second);
+}
+
+TEST_F(HistoryServiceTest, TopHostsVisitCountingByPageTransitionIsConsistent) {
+  ASSERT_TRUE(history_service_.get());
+
+  const GURL test_url("http://www.google.com/");
+
+  const ContextID context_id = reinterpret_cast<ContextID>(1);
+
+  base::HistogramTester histogram_tester;
+
+  // Walk all core page transition types, adding valid types to the testing
+  // vector.
+  std::vector<ui::PageTransition> page_transitions;
+  for (int page_transition_value = static_cast<int>(ui::PAGE_TRANSITION_FIRST);
+       page_transition_value <= static_cast<int>(ui::PAGE_TRANSITION_LAST_CORE);
+       ++page_transition_value) {
+    if (!ui::PageTransitionIsValidType(page_transition_value)) {
+      continue;
+    }
+
+    page_transitions.push_back(
+        ui::PageTransitionFromInt(page_transition_value));
+  }
+
+  for (auto page_transition : page_transitions) {
+    history_service_->AddPage(test_url, base::Time::Now(), context_id, 0,
+                              GURL(), history::RedirectList(), page_transition,
+                              history::SOURCE_BROWSED, false);
+  }
+
+  GetTopHosts();
+
+  ASSERT_EQ(1U, top_hosts_list_.size());
+  int visit_count = top_hosts_list_[0].second;
+
+  for (auto page_transition : page_transitions) {
+    history_service_->AddPage(test_url, base::Time::Now(), context_id, 0,
+                              GURL(), history::RedirectList(), page_transition,
+                              history::SOURCE_BROWSED, false);
+  }
+
+  // Call GetTopHosts again. This guarantees that the histograms are updated.
+  GetTopHosts();
+
+  // Verify that the page transitions counted as top hosts via GetTopHosts()
+  // match those counted as top hosts in "History.TopHostVisitsByRank".
+  histogram_tester.ExpectBucketCount("History.TopHostsVisitsByRank", 1,
+                                     visit_count);
 }
 
 namespace {
@@ -878,4 +1062,56 @@ TEST_F(HistoryServiceTest, ProcessTimeRangeDeleteDirective) {
   EXPECT_EQ(2, syncer::SyncDataRemote(sync_changes[1].sync_data()).GetId());
 }
 
+// Helper to add a page with specified days back in the past.
+void AddPageInThePast(HistoryService* history,
+                      const std::string& url_spec,
+                      int days_back) {
+  const GURL url(url_spec);
+  base::Time time_in_the_past =
+      base::Time::Now() - base::TimeDelta::FromDays(days_back);
+  history->AddPage(url, time_in_the_past, nullptr, 0, GURL(),
+                   history::RedirectList(), ui::PAGE_TRANSITION_LINK,
+                   history::SOURCE_BROWSED, false);
+}
+
+// Helper to contain a callback and run loop logic.
+int GetMonthlyHostCountHelper(HistoryService* history,
+                              base::CancelableTaskTracker* tracker) {
+  base::RunLoop run_loop;
+  int count = 0;
+  history->CountUniqueHostsVisitedLastMonth(
+      base::BindLambdaForTesting([&](HistoryCountResult result) {
+        count = result.count;
+        run_loop.Quit();
+      }),
+      tracker);
+  run_loop.Run();
+  return count;
+}
+
+// Counts hosts visited in the last month.
+TEST_F(HistoryServiceTest, CountMonthlyVisitedHosts) {
+  base::HistogramTester histogram_tester;
+  HistoryService* history = history_service_.get();
+  ASSERT_TRUE(history);
+
+  AddPageInThePast(history, "http://www.google.com/", 0);
+  EXPECT_EQ(1, GetMonthlyHostCountHelper(history, &tracker_));
+
+  AddPageInThePast(history, "http://www.google.com/foo", 1);
+  AddPageInThePast(history, "https://www.google.com/foo", 5);
+  AddPageInThePast(history, "https://www.gmail.com/foo", 10);
+  // Expect 2 because only host part of URL counts.
+  EXPECT_EQ(2, GetMonthlyHostCountHelper(history, &tracker_));
+
+  AddPageInThePast(history, "https://www.gmail.com/foo", 31);
+  // Count should not change since URL added is older than a month.
+  EXPECT_EQ(2, GetMonthlyHostCountHelper(history, &tracker_));
+
+  AddPageInThePast(history, "https://www.yahoo.com/foo", 29);
+  EXPECT_EQ(3, GetMonthlyHostCountHelper(history, &tracker_));
+
+  // The time required to compute host count is reported on each computation.
+  histogram_tester.ExpectTotalCount("History.DatabaseMonthlyHostCountTime", 4);
+}
 }  // namespace history

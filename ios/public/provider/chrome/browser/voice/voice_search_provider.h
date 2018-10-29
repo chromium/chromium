@@ -13,7 +13,6 @@
 
 @protocol ApplicationCommands;
 class AudioSessionController;
-@protocol VoiceSearchBar;
 class VoiceSearchController;
 
 namespace ios {
@@ -40,15 +39,6 @@ class VoiceSearchProvider {
   // Creates a new VoiceSearchController object.
   virtual scoped_refptr<VoiceSearchController> CreateVoiceSearchController(
       ios::ChromeBrowserState* browser_state) const;
-
-  // Creates a new VoiceSearchBar.  Returns an autoreleased view.
-  virtual UIView<VoiceSearchBar>* BuildVoiceSearchBar(CGRect frame) const;
-
-  // Creates a new VoiceSearchBar which uses |dispatcher| to send commands.
-  // Returns an autoreleased view.
-  virtual UIView<VoiceSearchBar>* BuildVoiceSearchBar(
-      CGRect frame,
-      id<ApplicationCommands> dispatcher) const;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(VoiceSearchProvider);

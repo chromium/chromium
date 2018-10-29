@@ -126,7 +126,7 @@ std::vector<std::string> ParseWhitelist(const std::string& origins_str) {
 
     // Drop .unique() origins, as they are unequal to any other origins.
     url::Origin origin(url::Origin::Create(GURL(origin_str)));
-    if (!origin.unique())
+    if (!origin.opaque())
       origin_patterns.push_back(origin.Serialize());
   }
 

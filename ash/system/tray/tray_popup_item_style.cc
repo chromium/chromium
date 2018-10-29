@@ -4,7 +4,6 @@
 
 #include "ash/system/tray/tray_popup_item_style.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/system/tray/tray_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
@@ -41,7 +40,7 @@ SkColor TrayPopupItemStyle::GetIconColor(ColorStyle color_style,
 }
 
 TrayPopupItemStyle::TrayPopupItemStyle(FontStyle font_style)
-    : TrayPopupItemStyle(font_style, features::IsSystemTrayUnifiedEnabled()) {}
+    : TrayPopupItemStyle(font_style, true) {}
 
 TrayPopupItemStyle::TrayPopupItemStyle(FontStyle font_style,
                                        bool use_unified_theme)
@@ -80,8 +79,7 @@ SkColor TrayPopupItemStyle::GetIconColor() const {
 
 void TrayPopupItemStyle::SetupLabel(views::Label* label) const {
   label->SetEnabledColor(GetTextColor());
-  if (features::IsSystemTrayUnifiedEnabled())
-    label->SetAutoColorReadabilityEnabled(false);
+  label->SetAutoColorReadabilityEnabled(false);
 
   const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
   switch (font_style_) {

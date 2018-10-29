@@ -235,7 +235,7 @@ class OobeLocalizationTest
   DISALLOW_COPY_AND_ASSIGN(OobeLocalizationTest);
 };
 
-OobeLocalizationTest::OobeLocalizationTest() : LoginManagerTest(false) {
+OobeLocalizationTest::OobeLocalizationTest() : LoginManagerTest(false, true) {
   fake_statistics_provider_.SetMachineStatistic("initial_locale",
                                                 GetParam()->initial_locale);
   fake_statistics_provider_.SetMachineStatistic("keyboard_layout",

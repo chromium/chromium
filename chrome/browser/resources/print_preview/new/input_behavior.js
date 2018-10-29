@@ -55,7 +55,7 @@ cr.define('print_preview_new', function() {
       if (event.code != 'Enter')
         return;
 
-      this.resetAndUpdate_();
+      this.resetAndUpdate();
     },
 
     /**

@@ -413,4 +413,45 @@ TEST_F(MediaSessionImplServiceRoutingTest,
       ->DidReceiveAction(blink::mojom::MediaSessionAction::PAUSE);
 }
 
+TEST_F(MediaSessionImplServiceRoutingTest,
+       TestPreviousTrackBehaviorWhenMainFrameIsRouted) {
+  base::RunLoop run_loop;
+
+  StartPlayerForFrame(main_frame_);
+  StartPlayerForFrame(sub_frame_);
+
+  CreateServiceForFrame(main_frame_);
+
+  EXPECT_CALL(
+      *GetClientForFrame(main_frame_),
+      DidReceiveAction(blink::mojom::MediaSessionAction::PREVIOUS_TRACK))
+      .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  services_[main_frame_]->EnableAction(
+      blink::mojom::MediaSessionAction::PREVIOUS_TRACK);
+
+  MediaSessionImpl::Get(contents())->PreviousTrack();
+  run_loop.Run();
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest,
+       TestNextTrackBehaviorWhenMainFrameIsRouted) {
+  base::RunLoop run_loop;
+
+  StartPlayerForFrame(main_frame_);
+  StartPlayerForFrame(sub_frame_);
+
+  CreateServiceForFrame(main_frame_);
+
+  EXPECT_CALL(*GetClientForFrame(main_frame_),
+              DidReceiveAction(blink::mojom::MediaSessionAction::NEXT_TRACK))
+      .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  services_[main_frame_]->EnableAction(
+      blink::mojom::MediaSessionAction::NEXT_TRACK);
+
+  MediaSessionImpl::Get(contents())->NextTrack();
+  run_loop.Run();
+}
+
 }  // namespace content

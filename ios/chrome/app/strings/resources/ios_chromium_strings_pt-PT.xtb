@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">A inteligência da Google no Chromium</translation>
 <translation id="2730884209570016437">O Chromium não pode utilizar a câmara porque está a ser utilizada por outra aplicação</translation>
 <translation id="2797210818057553964">Pode personalizar esta opção em qualquer altura nas Definições do Chromium.</translation>
+<translation id="2915596697727466327">O Chromium utiliza o Face ID para assegurar o acesso autorizado às suas palavras-passe.</translation>
 <translation id="3256316712990552818">Copiado para o Chromium</translation>
 <translation id="3413120535237193088">Para obter os seus marcadores em todos os dispositivos, inicie sessão no Chromium.</translation>
 <translation id="3473048256428424907">Ativar o leitor de QR do Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Os separadores que abriu no Chromium nos seus outros dispositivos são apresentados aqui.</translation>
 <translation id="495292094137889840">Começar a utilizar o leitor de QR do Chromium</translation>
 <translation id="5231355151045086930">Terminar sessão no Chromium</translation>
-<translation id="5416919929805616771">Está a gostar do Chromium? <ph name="BEGIN_LINK" />Classifique esta aplicação<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5945387852661427312">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chromium. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chromium elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
 <translation id="6068866989048414399">Termos de Utilização do Chromium</translation>
@@ -52,8 +52,7 @@
 <translation id="786327964234957808">Está a mudar a sincronização de contas de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Os seus dados do Chromium existentes são geridos por <ph name="DOMAIN" />. Esta ação eliminará os dados deste dispositivo, mas os dados permanecerão em <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Sugestão: <ph name="BEGIN_LINK" />mova o Chromium para a Dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Obter uma melhor experiência no Chromium com base na sua localização.</translation>
-<translation id="8353224596138547809">Pretende que o Chromium guarde a sua palavra-passe para este Website?</translation>
-<translation id="8508544542427105412">Pode personalizar as <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" /> a qualquer momento. A Google pode utilizar conteúdos nos sites que visita, assim como as interações e a atividade com o navegador, para personalizar o Chromium e outros serviços Google, como o Tradutor, a Pesquisa e os anúncios.</translation>
+<translation id="8508544542427105412">Pode personalizar as <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" /> em qualquer altura. A Google pode utilizar conteúdos nos sites que visita, assim como as interações e a atividade com o navegador, para personalizar o Chromium e outros serviços Google, como o Tradutor, a Pesquisa e os anúncios.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8809780021347235332">Para guardar imagens, toque em Definições para permitir que o Chromium utilize as suas fotos</translation>
 <translation id="9022552996538154597">Iniciar sessão no Chromium</translation>

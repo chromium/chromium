@@ -27,8 +27,6 @@ import org.chromium.chrome.browser.vr.util.NativeUiUtils;
 import org.chromium.chrome.browser.vr.util.VrBrowserTransitionUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.RenderTestRule;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
 import java.io.IOException;
@@ -105,7 +103,7 @@ public class VrBrowserJavaScriptModalDialogTest {
      */
     private void executeJavaScriptAndWaitForDialog(String script) {
         JavaScriptUtils.executeJavaScript(mActivity.getCurrentWebContents(), script);
-        checkDialogShowing("Could not spawn or locate a modal dialog.", true);
+        NativeUiUtils.waitForModalDialogStatus(true /* shouldBeShown */, mActivity);
     }
 
     /**
@@ -115,18 +113,5 @@ public class VrBrowserJavaScriptModalDialogTest {
     private JavascriptTabModalDialog getCurrentDialog() throws ExecutionException {
         return (JavascriptTabModalDialog) ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.getModalDialogManager().getCurrentDialogForTest().getController());
-    }
-
-    /**
-     * Check whether dialog is showing as expected.
-     */
-    private void checkDialogShowing(final String errorMessage, final boolean shouldBeShown) {
-        CriteriaHelper.pollUiThread(new Criteria(errorMessage) {
-            @Override
-            public boolean isSatisfied() {
-                final boolean isShown = mActivity.getModalDialogManager().isShowing();
-                return shouldBeShown == isShown;
-            }
-        });
     }
 }

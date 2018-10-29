@@ -13,7 +13,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
@@ -78,7 +78,7 @@ class TestButton : public Button, public ButtonListener {
 
   void OnClickCanceled(const ui::Event& event) override { canceled_ = true; }
 
-  // InkDropHostView:
+  // Button:
   void AddInkDropLayer(ui::Layer* ink_drop_layer) override {
     ++ink_drop_layer_add_count_;
     Button::AddInkDropLayer(ink_drop_layer);

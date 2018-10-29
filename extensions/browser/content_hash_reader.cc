@@ -8,7 +8,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
@@ -27,7 +26,6 @@ ContentHashReader::~ContentHashReader() {}
 std::unique_ptr<const ContentHashReader> ContentHashReader::Create(
     const base::FilePath& relative_path,
     const scoped_refptr<const ContentHash>& content_hash) {
-  base::AssertBlockingAllowed();
   base::ElapsedTimer timer;
 
   const ContentHash::ExtensionKey& extension_key =

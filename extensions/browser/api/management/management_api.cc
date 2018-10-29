@@ -190,8 +190,7 @@ management::ExtensionInfo CreateExtensionInfo(
     const URLPatternSet& host_perms =
         extension.permissions_data()->active_permissions().explicit_hosts();
     if (!host_perms.is_empty()) {
-      for (URLPatternSet::const_iterator iter = host_perms.begin();
-           iter != host_perms.end(); ++iter) {
+      for (auto iter = host_perms.begin(); iter != host_perms.end(); ++iter) {
         info.host_permissions.push_back(iter->GetAsString());
       }
     }

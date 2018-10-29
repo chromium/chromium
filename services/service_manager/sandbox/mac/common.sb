@@ -14,11 +14,13 @@
 (define (param-defined? str) (string? (param str)))
 
 ; Define constants for all of the parameter strings passed in.
+(define bundle-version-path "BUNDLE_VERSION_PATH")
 (define disable-sandbox-denial-logging "DISABLE_SANDBOX_DENIAL_LOGGING")
 (define enable-logging "ENABLE_LOGGING")
 (define homedir-as-literal "USER_HOMEDIR_AS_LITERAL")
 (define elcap-or-later "ELCAP_OR_LATER")
 (define macos-1013 "MACOS_1013")
+(define field-trial-server-name "FIELD_TRIAL_SERVER_NAME")
 
 ; Consumes a subpath and appends it to the user's homedir path.
 (define (user-homedir-path subpath)
@@ -35,6 +37,8 @@
 
 ; Support for programmatically enabling verbose debugging.
 (if (param-true? enable-logging) (debug deny))
+
+(allow mach-lookup (global-name (param field-trial-server-name)))
 
 ; Allow sending signals to self - https://crbug.com/20370
 (allow signal (target self))

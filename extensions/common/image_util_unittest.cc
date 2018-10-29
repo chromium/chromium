@@ -5,29 +5,13 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/image_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_utils.h"
-
-namespace {
-
-bool LoadPngFromFile(const base::FilePath& path, SkBitmap* dst) {
-  std::string png_bytes;
-  if (!base::ReadFileToString(path, &png_bytes)) {
-    return false;
-  }
-  return gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(png_bytes.data()),
-      png_bytes.length(), dst);
-}
-
-}  // namespace
 
 namespace extensions {
 
@@ -204,36 +188,68 @@ TEST(ImageUtilTest, IsIconSufficientlyVisible) {
     // This icon has all transparent pixels, so it will fail.
     icon_path = test_dir.AppendASCII("transparent_icon.png");
     SkBitmap transparent_icon;
-    ASSERT_TRUE(LoadPngFromFile(icon_path, &transparent_icon));
+    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &transparent_icon));
     EXPECT_FALSE(image_util::IsIconSufficientlyVisible(transparent_icon));
+    EXPECT_FALSE(image_util::IsRenderedIconSufficientlyVisible(transparent_icon,
+                                                               SK_ColorWHITE));
   }
   {
     // Test with an icon that has one opaque pixel.
     icon_path = test_dir.AppendASCII("one_pixel_opaque_icon.png");
     SkBitmap visible_icon;
-    ASSERT_TRUE(LoadPngFromFile(icon_path, &visible_icon));
+    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &visible_icon));
     EXPECT_FALSE(image_util::IsIconSufficientlyVisible(visible_icon));
+    EXPECT_FALSE(image_util::IsRenderedIconSufficientlyVisible(visible_icon,
+                                                               SK_ColorWHITE));
   }
   {
     // Test with an icon that has one transparent pixel.
     icon_path = test_dir.AppendASCII("one_pixel_transparent_icon.png");
     SkBitmap visible_icon;
-    ASSERT_TRUE(LoadPngFromFile(icon_path, &visible_icon));
+    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &visible_icon));
     EXPECT_TRUE(image_util::IsIconSufficientlyVisible(visible_icon));
+    EXPECT_TRUE(image_util::IsRenderedIconSufficientlyVisible(visible_icon,
+                                                              SK_ColorWHITE));
   }
   {
     // Test with an icon that is completely opaque.
     icon_path = test_dir.AppendASCII("opaque_icon.png");
     SkBitmap visible_icon;
-    ASSERT_TRUE(LoadPngFromFile(icon_path, &visible_icon));
+    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &visible_icon));
     EXPECT_TRUE(image_util::IsIconSufficientlyVisible(visible_icon));
+    EXPECT_TRUE(image_util::IsRenderedIconSufficientlyVisible(visible_icon,
+                                                              SK_ColorWHITE));
   }
   {
     // Test with an icon that is rectangular.
     icon_path = test_dir.AppendASCII("rectangle.png");
     SkBitmap visible_icon;
-    ASSERT_TRUE(LoadPngFromFile(icon_path, &visible_icon));
+    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &visible_icon));
     EXPECT_TRUE(image_util::IsIconSufficientlyVisible(visible_icon));
+    EXPECT_TRUE(image_util::IsRenderedIconSufficientlyVisible(visible_icon,
+                                                              SK_ColorWHITE));
+  }
+  {
+    // Test with a solid color icon that is completely opaque. Use the icon's
+    // color as the background color in the call to analyze its visibility.
+    // It should be invisible in this case.
+    icon_path = test_dir.AppendASCII("grey_21x21.png");
+    SkBitmap solid_icon;
+    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &solid_icon));
+    const SkColor pixel_color = solid_icon.getColor(0, 0);
+    EXPECT_FALSE(
+        image_util::IsRenderedIconSufficientlyVisible(solid_icon, pixel_color));
+  }
+  {
+    // Test with a two-color icon that is completely opaque. Use one of the
+    // icon's colors as the background color in the call to analyze its
+    // visibility. It should be visible in this case.
+    icon_path = test_dir.AppendASCII("two_color_21x21.png");
+    SkBitmap two_color_icon;
+    ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &two_color_icon));
+    const SkColor pixel_color = two_color_icon.getColor(0, 0);
+    EXPECT_TRUE(image_util::IsRenderedIconSufficientlyVisible(two_color_icon,
+                                                              pixel_color));
   }
 }
 

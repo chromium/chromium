@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_REMOTE_FRAME_H_
 
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/sandbox_flags.h"
 #include "third_party/blink/public/common/frame/user_activation_update_type.h"
 #include "third_party/blink/public/platform/web_content_security_policy.h"
@@ -56,12 +57,14 @@ class WebRemoteFrame : public WebFrame {
                                           WebFrame* previous_sibling,
                                           const ParsedFeaturePolicy&,
                                           const WebFrameOwnerProperties&,
+                                          FrameOwnerElementType,
                                           WebFrame* opener) = 0;
 
   virtual WebRemoteFrame* CreateRemoteChild(WebTreeScopeType,
                                             const WebString& name,
                                             WebSandboxFlags,
                                             const ParsedFeaturePolicy&,
+                                            FrameOwnerElementType,
                                             WebRemoteFrameClient*,
                                             WebFrame* opener) = 0;
 
@@ -139,6 +142,12 @@ class WebRemoteFrame : public WebFrame {
   virtual void IntrinsicSizingInfoChanged(const WebIntrinsicSizingInfo&) = 0;
 
   virtual WebRect GetCompositingRect() = 0;
+
+  // When a cross-process navigation or loading fails, the browser notifies the
+  // parent process to render its own fallback content if any. This only occurs
+  // if the owner element is capable of rendering its own fallback (e.g.,
+  // <object>).
+  virtual void RenderFallbackContent() const = 0;
 
  protected:
   explicit WebRemoteFrame(WebTreeScopeType scope) : WebFrame(scope) {}

@@ -32,6 +32,7 @@ class _BaseCastBenchmark(perf_benchmark.PerfBenchmark):
             'Release', 'mr_extension', 'release'),
              os.path.join(path_util.GetChromiumSrcDir(), 'out',
              'Release', 'media_router', 'telemetry_extension')]),
+        '--disable-features=ViewsCastDialog',
         '--whitelisted-extension-id=enhhojjnijigcajfphajepfemndkmdlo',
         '--media-router=1',
         '--enable-stats-collection-bindings'
@@ -108,6 +109,7 @@ class CPUMemoryBenckmark(perf_benchmark.PerfBenchmark):
         '--load-extension=' +
              os.path.join(path_util.GetChromiumSrcDir(), 'out',
              'Release', 'media_router', 'telemetry_extension'),
+        '--disable-features=ViewsCastDialog',
         '--media-router=0',
         '--enable-stats-collection-bindings'
     ])

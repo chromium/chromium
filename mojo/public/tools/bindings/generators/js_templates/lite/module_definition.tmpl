@@ -1,0 +1,48 @@
+{#--- Constants #}
+{%- for constant in module.constants %}
+let {{constant.name}} = {{constant.value|expression_to_text}};
+{%- endfor %}
+
+{#--- Enums #}
+{% from "lite/enum_definition.tmpl" import enum_def %}
+{%- for enum in enums %}
+let {{ enum_def(enum.name, enum) }}
+{%-  endfor %}
+
+{#--- Interface definitions #}
+{%- for interface in interfaces %}
+{%   include "lite/interface_definition.tmpl" %}
+{%- endfor %}
+
+{#--- Struct definitions #}
+{%  for struct in structs %}
+let {{struct.name}} = {};
+{%- endfor -%}
+{%  for struct in structs %}
+{%-   include "lite/struct_definition.tmpl" %}
+{%- endfor -%}
+
+{#--- Union definitions #}
+{% from "lite/union_definition.tmpl" import union_def %}
+{%- for union in unions %}
+{{union_def(union, generate_fuzzing)|indent(2)}}
+{%- endfor %}
+
+{%- for constant in module.constants %}
+exports.{{constant.name}} = {{constant.name}};
+{%- endfor %}
+{%- for enum in enums %}
+exports.{{enum.name}} = {{enum.name}};
+{%- endfor %}
+{%- for struct in structs if struct.exported %}
+exports.{{struct.name}} = {{struct.name}};
+{%- endfor %}
+{%- for union in unions %}
+exports.{{union.name}} = {{union.name}};
+{%- endfor %}
+{%- for interface in interfaces %}
+exports.{{interface.name}} = {{interface.name}};
+exports.{{interface.name}}Request = {{interface.name}}Request;
+exports.{{interface.name}}Proxy = {{interface.name}}Proxy;
+exports.{{interface.name}}CallbackRouter = {{interface.name}}CallbackRouter;
+{%- endfor %}

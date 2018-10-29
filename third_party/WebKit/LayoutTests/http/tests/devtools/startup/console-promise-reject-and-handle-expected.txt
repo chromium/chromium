@@ -4,8 +4,14 @@ Tests that evt.preventDefault() in window.onunhandledrejection suppresses consol
 console-promise-reject-and-handle.html:8 onunhandledrejection1
 console-promise-reje…-and-handle.html:15 onrejectionhandled1
 console-promise-reje…-and-handle.html:24 onunhandledrejection2
+console-promise-reje…-and-handle.html:30 onrejectionhandled2
+----console messages end----
+
+Enable verbose filter
+console-promise-reject-and-handle.html:8 onunhandledrejection1
+console-promise-reje…-and-handle.html:15 onrejectionhandled1
+console-promise-reje…-and-handle.html:24 onunhandledrejection2
 console-promise-reje…-and-handle.html:22 Uncaught (in promise) Error: e
     at setupPromise2 (console-promise-reje…-and-handle.html:22)
 console-promise-reje…-and-handle.html:30 onrejectionhandled2
-----console messages end----
 

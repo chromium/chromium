@@ -29,7 +29,7 @@ js_library("background") {
 js_library("cache") {
 }
 
-js_library("cache_unittest") {
+js_unittest("cache_unittest") {
   deps = [
     ":cache",
     ":load_image_request",
@@ -48,7 +48,7 @@ js_library("image_loader") {
   ]
 }
 
-js_library("image_loader_unittest") {
+js_unittest("image_loader_unittest") {
   deps = [
     ":image_loader",
     "//ui/webui/resources/js:webui_resource_test",
@@ -82,11 +82,10 @@ js_library("image_loader_client") {
   ]
 }
 
-js_library("image_loader_client_unittest") {
+js_unittest("image_loader_client_unittest") {
   deps = [
     ":image_loader_client",
-    "../file_manager/common/js:unittest_util",
-    "//ui/webui/resources/js:webui_resource_test",
+    "//ui/file_manager/base/js:test_error_reporting",
   ]
 }
 
@@ -97,12 +96,10 @@ js_library("piex_loader") {
   ]
 }
 
-js_library("piex_loader_unittest") {
+js_unittest("piex_loader_unittest") {
   deps = [
     ":piex_loader",
-    "../file_manager/common/js:unittest_util",
-    "//ui/webui/resources/js:webui_resource_test",
-    "//ui/webui/resources/js/cr:ui",
+    "//ui/file_manager/base/js:test_error_reporting",
   ]
 }
 
@@ -113,8 +110,6 @@ js_library("request") {
     ":load_image_request",
     ":piex_loader",
     "../file_manager/common/js:file_type",
-    "../file_manager/common/js:metrics",
-    "../file_manager/common/js:metrics_events",
   ]
   externs_list = [ "../externs/platform.js" ]
 }
@@ -126,8 +121,7 @@ js_library("scheduler") {
 }
 
 js_unit_tests("unit_tests") {
-  # TODO(tapted): Uncomment the next line.
-  # closure_flags = default_closure_args + [ "jscomp_error=strictCheckTypes" ]
+  closure_flags = default_closure_args + [ "jscomp_error=strictCheckTypes" ]
   deps = [
     ":cache_unittest",
     ":image_loader_client_unittest",
@@ -137,6 +131,7 @@ js_unit_tests("unit_tests") {
 }
 
 group("closure_compile") {
+  testonly = true
   deps = [
     ":closure_compile_module",
     ":unit_tests_type_check",

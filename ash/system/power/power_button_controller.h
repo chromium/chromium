@@ -114,6 +114,9 @@ class ASH_EXPORT PowerButtonController
   // Dismisses the menu.
   void DismissMenu();
 
+  // Do not force backlights to be turned off.
+  void StopForcingBacklightsOff();
+
   // display::DisplayConfigurator::Observer:
   void OnDisplayModeChanged(
       const display::DisplayConfigurator::DisplayStateList& outputs) override;
@@ -152,6 +155,10 @@ class ASH_EXPORT PowerButtonController
  private:
   class ActiveWindowWidgetController;
   friend class PowerButtonControllerTestApi;
+
+  // Returns true if tablet power button behavior (i.e. tapping the button turns
+  // the screen off) should currently be used.
+  bool UseTabletBehavior() const;
 
   // Stops |power_button_menu_timer_|, |shutdown_timer_| and dismisses the power
   // button menu.
@@ -214,6 +221,10 @@ class ASH_EXPORT PowerButtonController
   // mode.
   bool observe_accelerometer_events_ = false;
 
+  // True if the kForceTabletPowerButton flag is set. This forces tablet power
+  // button behavior even while in laptop mode.
+  bool force_tablet_power_button_ = false;
+
   // True if the device has tablet mode switch.
   bool has_tablet_mode_switch_ = false;
 
@@ -225,9 +236,6 @@ class ASH_EXPORT PowerButtonController
 
   // True if the next button release event should force the display off.
   bool force_off_on_button_up_ = false;
-
-  // Whether FocusManager can handle arrow key before showing the power menu.
-  const bool arrow_key_traversal_initially_enabled_;
 
   // Used to force backlights off, when needed.
   BacklightsForcedOffSetter* backlights_forced_off_setter_;  // Not owned.

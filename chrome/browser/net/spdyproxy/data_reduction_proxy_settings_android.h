@@ -99,18 +99,6 @@ class DataReductionProxySettingsAndroid {
       jstring host,
       jstring realm);
 
-  // Returns a Java string of the Data Reduction Proxy proxy list for HTTP
-  // origins as a semi-colon delimited list.
-  base::android::ScopedJavaLocalRef<jstring> GetHttpProxyList(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-
-  // Returns a Java string of the last Data Reduction Proxy bypass event as
-  // a JSON object.
-  base::android::ScopedJavaLocalRef<jstring> GetLastBypassEvent(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-
   // Gets the historical data usage for |numDays| and adds them to a list that
   // groups data use by hostname.
   void QueryDataUsage(JNIEnv* env,

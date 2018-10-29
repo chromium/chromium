@@ -21,6 +21,8 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget_observer.h"
 #endif
@@ -81,7 +83,24 @@ bool TestBrowserDialog::VerifyUi() {
   }
   widgets_ = added;
 
-  return added.size() == 1;
+  if (added.size() != 1)
+    return false;
+
+  if (!should_verify_dialog_bounds_)
+    return true;
+
+  // Verify that the dialog's dimensions do not exceed the display's work area
+  // bounds, which may be smaller than its bounds(), e.g. in the case of the
+  // docked magnifier or Chromevox being enabled.
+  views::Widget* dialog_widget = *(added.begin());
+  const gfx::Rect dialog_bounds = dialog_widget->GetWindowBoundsInScreen();
+  gfx::NativeWindow native_window = dialog_widget->GetNativeWindow();
+  DCHECK(native_window);
+  display::Screen* screen = display::Screen::GetScreen();
+  const gfx::Rect display_work_area =
+      screen->GetDisplayNearestWindow(native_window).work_area();
+
+  return display_work_area.Contains(dialog_bounds);
 #else
   NOTIMPLEMENTED();
   return false;

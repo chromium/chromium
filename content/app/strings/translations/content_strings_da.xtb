@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1018939186200882850">menupunkt</translation>
-<translation id="1020833440720551630">slå lydspor fra</translation>
 <translation id="10623998915015855">til/fra-knap</translation>
 <translation id="1088086359088493902">Sekunder</translation>
 <translation id="1171774979989969504">Angiv en mailadresse.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">anerkendelser</translation>
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1359897965706325498">banner</translation>
-<translation id="1548116112524424341">afspil video i tilstanden integreret billede</translation>
 <translation id="1589122976691792535">område</translation>
 <translation id="1591562245178063882">Denne måned</translation>
 <translation id="1637811476055996098">Vælg filer</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">trægitter</translation>
 <translation id="1822429046913737220">f.m./e.m.</translation>
 <translation id="1832974991323546415">afspil på en enhed via fjernadgang</translation>
-<translation id="1838818994221231429">skift fra fuld skærm til skærmhak</translation>
 <translation id="190587075670221089">sletning</translation>
 <translation id="1907737156431278478">eksempel</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">tidspunkt</translation>
 <translation id="5630795885300617244">Tryk to gange til venstre eller højre for at springe ti sekunder over</translation>
 <translation id="5631759159893697722">abstrakt</translation>
-<translation id="5641012560118721995">pause</translation>
 <translation id="5643186887447432888">knap</translation>
 <translation id="5677946354068040947">flere valgmuligheder</translation>
 <translation id="576709008726043716">indledning</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Nulstil</translation>
 <translation id="5966707198760109579">Uge</translation>
 <translation id="5987525920412732405">skalafelt</translation>
+<translation id="6011459053400940133">lydstyrkeskyder</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6023896073578205740">listefelt</translation>
-<translation id="6101327004457443354">slå lydspor til</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">måler</translation>
 <translation id="6166809985690652833">efterskrift</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Timer</translation>
 <translation id="7681220483256441252">indeks</translation>
 <translation id="7720026100085573005">resterende tid</translation>
-<translation id="7740016676195725605">stop visning af undertekster</translation>
 <translation id="7740050170769002709">HTML-indhold</translation>
 <translation id="7750228210027921155">Integreret billede</translation>
 <translation id="7789962463072032349">pause</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">tekstfelt til søgning</translation>
 <translation id="8057695513531652401">meddelelse</translation>
 <translation id="8105797009065549151">reference i noter</translation>
-<translation id="8115662671911883373">start visning af undertekster</translation>
 <translation id="8117451130807776954">Denne uge</translation>
-<translation id="819205353528511139">afspil film i fuld skærm</translation>
 <translation id="8199524924445686405">åååå</translation>
 <translation id="8284326494547611709">Undertekster</translation>
 <translation id="835897206747267392">Ugyldig værdi.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">kontrollér afspilning via fjernadgang</translation>
 <translation id="862370744433916922">undertitel</translation>
 <translation id="8750798805984357768">Vælg en af disse muligheder.</translation>
-<translation id="8785498733064193001">start afspilning</translation>
 <translation id="8808573423886751634">kapitel</translation>
 <translation id="8845239796550121995">Caster nu til dit fjernsyn</translation>
 <translation id="8851136666856101339">hovd</translation>

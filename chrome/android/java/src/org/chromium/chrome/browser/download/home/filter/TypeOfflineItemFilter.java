@@ -28,12 +28,15 @@ public class TypeOfflineItemFilter extends OfflineItemFilter {
     // OfflineItemFilter implementation.
     @Override
     protected boolean isFilteredOut(OfflineItem item) {
-        @FilterType
-        int requiredFilter = Filters.fromOfflineItem(item.filter);
+        @Filters.FilterType
+        int type = Filters.fromOfflineItem(item);
 
-        // Filter out based on prefetch suggestions before resorting to other types.
-        if (mFilter == Filters.FilterType.PREFETCHED) return !item.isSuggested;
-        if (item.isSuggested) return mFilter != Filters.FilterType.PREFETCHED;
-        return !(mFilter == Filters.FilterType.NONE || mFilter == requiredFilter);
+        // Prefetched articles are not subject to the FilterType.NONE section.  We have to prune
+        // those out unless the filter matches exactly.
+        if (type == Filters.FilterType.PREFETCHED || mFilter == Filters.FilterType.PREFETCHED) {
+            return type != mFilter;
+        }
+
+        return mFilter != Filters.FilterType.NONE && mFilter != type;
     }
 }

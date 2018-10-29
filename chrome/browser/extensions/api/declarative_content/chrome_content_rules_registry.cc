@@ -311,7 +311,7 @@ std::string ChromeContentRulesRegistry::RemoveRulesImpl(
   std::vector<const void*> predicate_groups_to_stop_tracking;
   for (const std::string& id : rule_identifiers) {
     // Skip unknown rules.
-    RulesMap::iterator content_rules_entry =
+    auto content_rules_entry =
         content_rules_.find(std::make_pair(extension_id, id));
     if (content_rules_entry == content_rules_.end())
       continue;
@@ -340,7 +340,7 @@ std::string ChromeContentRulesRegistry::RemoveRulesImpl(
     evaluator->StopTrackingPredicates(predicate_groups_to_stop_tracking);
 
   // Remove the rules.
-  for (RulesMap::iterator it : rules_to_erase)
+  for (auto it : rules_to_erase)
     content_rules_.erase(it);
 
   return std::string();

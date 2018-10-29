@@ -74,6 +74,10 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   const base::Optional<MediaPlayerId>& GetPictureInPictureVideoMediaPlayerId()
       const;
 
+  // Reset the MediaPlayerId of the picture in picture video when user closes
+  // Picture-in-Picture window manually.
+  void ResetPictureInPictureVideoMediaPlayerId();
+
   // WebContentsObserver implementation.
   void WebContentsDestroyed() override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
@@ -132,7 +136,8 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
                                      int delegate_id,
                                      const viz::SurfaceId&,
                                      const gfx::Size& natural_size,
-                                     int request_id);
+                                     int request_id,
+                                     bool show_play_pause_button);
   void OnPictureInPictureModeEnded(RenderFrameHost* render_frame_host,
                                    int delegate_id,
                                    int request_id);
@@ -143,7 +148,8 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   void OnPictureInPictureSurfaceChanged(RenderFrameHost*,
                                         int delegate_id,
                                         const viz::SurfaceId&,
-                                        const gfx::Size&);
+                                        const gfx::Size&,
+                                        bool show_play_pause_button);
 
   // Clear |render_frame_host|'s tracking entry for its WakeLocks.
   void ClearWakeLocks(RenderFrameHost* render_frame_host);

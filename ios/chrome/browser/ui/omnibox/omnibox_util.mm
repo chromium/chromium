@@ -54,6 +54,7 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
+    case AutocompleteMatchType::PEDAL:
       return DEFAULT_FAVICON;
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::HISTORY_KEYWORD:
@@ -184,7 +185,8 @@ int GetIconForAutocompleteMatchType(AutocompleteMatchType::Type type,
       DCHECK(!is_incognito);
       return IDR_IOS_OMNIBOX_CALCULATOR;
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
-      // Document suggeestions aren't yet supported on mobile.
+    case AutocompleteMatchType::PEDAL:
+      // Document and Pedal suggestions aren't yet supported on mobile.
       NOTREACHED();
       return IDR_IOS_OMNIBOX_HTTP;
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:

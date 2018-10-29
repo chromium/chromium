@@ -21,7 +21,7 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<String, T*> {
       : entries_(entries) {}
 
   // IDL attributes / methods
-  size_t size() const { return entries_.size(); }
+  uint32_t size() const { return entries_.size(); }
 
   void Trace(blink::Visitor* visitor) override {
     visitor->Trace(entries_);

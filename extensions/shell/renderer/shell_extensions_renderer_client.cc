@@ -4,6 +4,7 @@
 
 #include "extensions/shell/renderer/shell_extensions_renderer_client.h"
 
+#include "content/public/renderer/render_thread.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/dispatcher_delegate.h"
 
@@ -11,7 +12,9 @@ namespace extensions {
 
 ShellExtensionsRendererClient::ShellExtensionsRendererClient()
     : dispatcher_(std::make_unique<Dispatcher>(
-          std::make_unique<DispatcherDelegate>())) {}
+          std::make_unique<DispatcherDelegate>())) {
+  dispatcher_->OnRenderThreadStarted(content::RenderThread::Get());
+}
 
 ShellExtensionsRendererClient::~ShellExtensionsRendererClient() {
 }

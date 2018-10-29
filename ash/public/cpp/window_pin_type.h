@@ -9,6 +9,10 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
+namespace aura {
+class Window;
+}
+
 namespace ui {
 class BaseWindow;
 }
@@ -17,7 +21,9 @@ namespace ash {
 
 ASH_PUBLIC_EXPORT bool IsValidWindowPinType(int64_t value);
 
-ASH_PUBLIC_EXPORT bool IsWindowTrustedPinned(ui::BaseWindow* window);
+ASH_PUBLIC_EXPORT bool IsWindowTrustedPinned(const aura::Window* window);
+
+ASH_PUBLIC_EXPORT bool IsWindowTrustedPinned(const ui::BaseWindow* window);
 
 }  // namespace ash
 

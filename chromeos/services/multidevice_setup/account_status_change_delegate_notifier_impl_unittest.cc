@@ -12,9 +12,11 @@
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/fake_account_status_change_delegate.h"
+#include "chromeos/services/multidevice_setup/fake_host_device_timestamp_manager.h"
 #include "chromeos/services/multidevice_setup/fake_host_status_provider.h"
-#include "chromeos/services/multidevice_setup/fake_setup_flow_completion_recorder.h"
+#include "chromeos/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "components/cryptauth/remote_device_ref.h"
 #include "components/cryptauth/remote_device_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,12 +28,29 @@ namespace multidevice_setup {
 namespace {
 
 const int64_t kTestTimeMillis = 1500000000000;
-const std::string kFakePhoneKey = "fake-phone-key";
-const std::string kFakePhoneName = "Phony Phone";
+const char kFakePhoneKey[] = "fake-phone-key";
+const char kFakePhoneName[] = "Phony Phone";
+const char kFakePhoneKeyA[] = "fake-phone-key-A";
+const char kFakePhoneNameA[] = "Phony Phone A";
+const char kFakePhoneKeyB[] = "fake-phone-key-B";
+const char kFakePhoneNameB[] = "Phony Phone B";
+
 const cryptauth::RemoteDeviceRef kFakePhone =
     cryptauth::RemoteDeviceRefBuilder()
         .SetPublicKey(kFakePhoneKey)
         .SetName(kFakePhoneName)
+        .Build();
+
+// Alternate hosts for multi host tests
+const cryptauth::RemoteDeviceRef kFakePhoneA =
+    cryptauth::RemoteDeviceRefBuilder()
+        .SetPublicKey("fake-phone-key-A")
+        .SetName("Phony Phone A")
+        .Build();
+const cryptauth::RemoteDeviceRef kFakePhoneB =
+    cryptauth::RemoteDeviceRefBuilder()
+        .SetPublicKey("fake-phone-key-B")
+        .SetName("Phony Phone B")
         .Build();
 
 }  // namespace
@@ -52,8 +71,9 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
     fake_delegate_ = std::make_unique<FakeAccountStatusChangeDelegate>();
     fake_host_status_provider_ = std::make_unique<FakeHostStatusProvider>();
     test_clock_ = std::make_unique<base::SimpleTestClock>();
-    fake_setup_flow_completion_recorder_ =
-        std::make_unique<FakeSetupFlowCompletionRecorder>();
+    fake_host_device_timestamp_manager_ =
+        std::make_unique<FakeHostDeviceTimestampManager>();
+    fake_oobe_completion_tracker_ = std::make_unique<OobeCompletionTracker>();
     test_clock_->SetNow(base::Time::FromJavaTime(kTestTimeMillis));
   }
 
@@ -61,16 +81,44 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
     delegate_notifier_ =
         AccountStatusChangeDelegateNotifierImpl::Factory::Get()->BuildInstance(
             fake_host_status_provider_.get(), test_pref_service_.get(),
-            fake_setup_flow_completion_recorder_.get(), test_clock_.get());
+            fake_host_device_timestamp_manager_.get(),
+            fake_oobe_completion_tracker_.get(), test_clock_.get());
   }
 
-  // Following HostStatusWithDevice contract, this sets the device to null when
-  // there is no set host (or the default kFakePhone otherwise).
+  cryptauth::RemoteDeviceRef BuildFakePhone(std::string public_key,
+                                            std::string name) {
+    return cryptauth::RemoteDeviceRefBuilder()
+        .SetPublicKey(public_key)
+        .SetName(name)
+        .Build();
+  }
+
   void SetHostWithStatus(
       mojom::HostStatus host_status,
       const base::Optional<cryptauth::RemoteDeviceRef>& host_device) {
     fake_host_status_provider_->SetHostWithStatus(host_status, host_device);
     delegate_notifier_->FlushForTesting();
+  }
+
+  // Simulates finding a potential host, going through setup flow with it, and
+  // verifying it.
+  void SetUpHost(const cryptauth::RemoteDeviceRef& host_device) {
+    SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                      base::nullopt /* host_device */);
+    fake_host_device_timestamp_manager_->set_was_host_set_from_this_chromebook(
+        true);
+    SetHostWithStatus(
+        mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
+        host_device);
+    SetHostWithStatus(mojom::HostStatus::kHostVerified, host_device);
+  }
+
+  // Simulates forgetting a set host.
+  void ForgetHost() {
+    fake_host_device_timestamp_manager_->set_was_host_set_from_this_chromebook(
+        false);
+    SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                      base::nullopt /* host_device */);
   }
 
   void SetNewUserPotentialHostExistsTimestamp(int64_t timestamp) {
@@ -90,7 +138,7 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
         cryptauth::RemoteDevice::GenerateDeviceId(old_host_key);
     test_pref_service_->SetString(
         AccountStatusChangeDelegateNotifierImpl::
-            kHostDeviceIdFromMostRecentHostStatusUpdatePrefName,
+            kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName,
         old_host_device_id);
   }
 
@@ -98,6 +146,16 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
     delegate_notifier_->SetAccountStatusChangeDelegatePtr(
         fake_delegate_->GenerateInterfacePtr());
     delegate_notifier_->FlushForTesting();
+  }
+
+  // Simulates completing setup flow in OOBE.
+  void CompleteOobeSetupFlow() {
+    fake_host_status_provider_->SetHostWithStatus(
+        mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+        base::nullopt /* host_device */);
+    fake_oobe_completion_tracker_->MarkOobeShown();
+    if (fake_delegate_)
+      delegate_notifier_->FlushForTesting();
   }
 
   int64_t GetNewUserPotentialHostExistsTimestamp() {
@@ -112,6 +170,18 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
             kExistingUserChromebookAddedPrefName);
   }
 
+  int64_t GetOobeSetupFlowTimestamp() {
+    return test_pref_service_->GetInt64(
+        AccountStatusChangeDelegateNotifierImpl::
+            kOobeSetupFlowTimestampPrefName);
+  }
+
+  std::string GetMostRecentVerifiedHostDeviceIdPref() {
+    return test_pref_service_->GetString(
+        AccountStatusChangeDelegateNotifierImpl::
+            kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName);
+  }
+
   FakeAccountStatusChangeDelegate* fake_delegate() {
     return fake_delegate_.get();
   }
@@ -123,8 +193,9 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
   std::unique_ptr<FakeHostStatusProvider> fake_host_status_provider_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
-  std::unique_ptr<FakeSetupFlowCompletionRecorder>
-      fake_setup_flow_completion_recorder_;
+  std::unique_ptr<FakeHostDeviceTimestampManager>
+      fake_host_device_timestamp_manager_;
+  std::unique_ptr<OobeCompletionTracker> fake_oobe_completion_tracker_;
   std::unique_ptr<base::SimpleTestClock> test_clock_;
 
   std::unique_ptr<AccountStatusChangeDelegateNotifier> delegate_notifier_;
@@ -137,12 +208,12 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
        SetObserverWithPotentialHost) {
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegatePtr();
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
 
   SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
                     base::nullopt /* host_device */);
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_events_handled());
+  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(kTestTimeMillis, GetNewUserPotentialHostExistsTimestamp());
 }
 
@@ -153,12 +224,12 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
   SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
                     base::nullopt /* host_device */);
 
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
 
   SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
                     base::nullopt /* host_device */);
-  EXPECT_EQ(1u, fake_delegate()->num_new_user_events_handled());
+  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(kTestTimeMillis, GetNewUserPotentialHostExistsTimestamp());
 }
 
@@ -169,21 +240,23 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
 
   SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
                     base::nullopt /* host_device */);
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
 
   SetHostWithStatus(
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
-      kFakePhone);
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_events_handled());
+      BuildFakePhone(kFakePhoneKey, kFakePhoneName));
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
 
-  SetHostWithStatus(mojom::HostStatus::kHostSetButNotYetVerified, kFakePhone);
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_events_handled());
+  SetHostWithStatus(mojom::HostStatus::kHostSetButNotYetVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
 
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_events_handled());
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
 }
 
@@ -195,11 +268,11 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
   SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
                     base::nullopt /* host_device */);
 
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
 }
 
 TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
-       OldTimestampInPreferencesPreventsNewUserFlow) {
+       NewUserFlowBlockedByOldNewUserTimestamp) {
   BuildAccountStatusChangeDelegateNotifier();
   int64_t earlier_test_time_millis = kTestTimeMillis / 2;
   SetNewUserPotentialHostExistsTimestamp(earlier_test_time_millis);
@@ -207,45 +280,142 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
 
   SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
                     base::nullopt /* host_device */);
-  EXPECT_EQ(0u, fake_delegate()->num_new_user_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
   // Timestamp was not overwritten by clock.
   EXPECT_EQ(earlier_test_time_millis, GetNewUserPotentialHostExistsTimestamp());
 }
 
 TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
-       NotifiesObserverForHostSwitchEvents) {
+       NewUserFlowBlockedByOldChromebookAddedTimestamp) {
+  BuildAccountStatusChangeDelegateNotifier();
+  int64_t earlier_test_time_millis = kTestTimeMillis / 2;
+  SetExistingUserChromebookAddedTimestamp(earlier_test_time_millis);
+  SetAccountStatusChangeDelegatePtr();
+
+  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                    base::nullopt /* host_device */);
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
+  // Timestamp was not overwritten by clock.
+  EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       LosingPotentialHostTriggersNoLongerNewUserEvent) {
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegatePtr();
-  // Verify the delegate initializes to 0.
+  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                    base::nullopt /* host_device */);
+  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_no_longer_new_user_events_handled());
+
+  // All potential hosts are lost from the account.
+  SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
+                    base::nullopt /* host_device */);
+  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(1u, fake_delegate()->num_no_longer_new_user_events_handled());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       SettingHostTriggersNoLongerNewUserEvent) {
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegatePtr();
+  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                    base::nullopt /* host_device */);
+  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, fake_delegate()->num_no_longer_new_user_events_handled());
+
+  // A potential host was set.
+  SetHostWithStatus(
+      mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
+      BuildFakePhone(kFakePhoneKey, kFakePhoneName));
+  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(1u, fake_delegate()->num_no_longer_new_user_events_handled());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       CompletingOobeSetupFlowBlocksNewUserEventIfNoDelegateIsSet) {
+  BuildAccountStatusChangeDelegateNotifier();
+
+  // Complete OOBE MultiDevice setup flow before delegate is set.
+  EXPECT_EQ(0u, GetOobeSetupFlowTimestamp());
+  CompleteOobeSetupFlow();
+  EXPECT_EQ(kTestTimeMillis, GetOobeSetupFlowTimestamp());
+
+  // Set delegate, which triggers event check.
+  SetAccountStatusChangeDelegatePtr();
+
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       CompletingOobeSetupFlowWithDelegateSetTriggersNoLongerNewUserEvent) {
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegatePtr();
+  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                    base::nullopt /* host_device */);
+
+  // Complete OOBE MultiDevice setup flow before delegate is set.
+  EXPECT_EQ(0u, GetOobeSetupFlowTimestamp());
+  CompleteOobeSetupFlow();
+  EXPECT_EQ(kTestTimeMillis, GetOobeSetupFlowTimestamp());
+
+  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(1u, fake_delegate()->num_no_longer_new_user_events_handled());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       NoLongerNewUserEventBlockedByOldChromebookAddedTimestamp) {
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegatePtr();
+
+  // Record earlier Chromebook added event.
+  int64_t earlier_test_time_millis = kTestTimeMillis / 2;
+  SetExistingUserChromebookAddedTimestamp(earlier_test_time_millis);
+
+  // A potential host was found.
+  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                    base::nullopt /* host_device */);
+
+  // A potential host was set. Note that this would trigger a NoLongerNewUser
+  // event in the absence of the Chromebook added timestamp.
+  SetHostWithStatus(
+      mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
+      BuildFakePhone(kFakePhoneKey, kFakePhoneName));
+  EXPECT_EQ(0u, fake_delegate()->num_no_longer_new_user_events_handled());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       NotifiesObserverForHostSwitchEvents) {
+  const cryptauth::RemoteDeviceRef fakePhone =
+      BuildFakePhone(kFakePhoneKey, kFakePhoneName);
+
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegatePtr();
+  // Check the delegate initializes to 0.
   EXPECT_EQ(0u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
 
-  // Set initial host.
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  // Set initially verified host.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified, fakePhone);
   // Host was set but has never been switched.
   EXPECT_EQ(0u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
 
-  // Switch hosts.
+  // Switch to new verified host.
   SetHostWithStatus(mojom::HostStatus::kHostVerified,
-                    cryptauth::RemoteDeviceRefBuilder()
-                        .SetPublicKey(kFakePhoneKey + "#1")
-                        .SetName(kFakePhoneName + "#1")
-                        .Build());
+                    BuildFakePhone(kFakePhoneKeyA, kFakePhoneNameA));
   EXPECT_EQ(1u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
 
-  // Switch to another new host.
+  // Switch to a different new verified host.
   SetHostWithStatus(mojom::HostStatus::kHostVerified,
-                    cryptauth::RemoteDeviceRefBuilder()
-                        .SetPublicKey(kFakePhoneKey + "#2")
-                        .SetName(kFakePhoneName + "#2")
-                        .Build());
+                    BuildFakePhone(kFakePhoneKeyB, kFakePhoneNameB));
   EXPECT_EQ(2u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
 
-  // Switch back to initial host.
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  // Switch back to initial host (verified).
+  SetHostWithStatus(mojom::HostStatus::kHostVerified, fakePhone);
   EXPECT_EQ(3u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
 }
@@ -254,14 +424,12 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
        SettingSameHostTriggersNoHostSwitchedEvent) {
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegatePtr();
-  // Set initial host.
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  // Set initially verified host.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
   // Set to host with identical information.
   SetHostWithStatus(mojom::HostStatus::kHostVerified,
-                    cryptauth::RemoteDeviceRefBuilder()
-                        .SetPublicKey(kFakePhoneKey)
-                        .SetName(kFakePhoneName)
-                        .Build());
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
   EXPECT_EQ(0u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
 }
@@ -270,36 +438,88 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
        ChangingHostDevicesTriggersHostSwitchEventWhenHostNameIsUnchanged) {
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegatePtr();
-  // Set initial host.
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
-  // Set to host with same name but different key.
+  // Set initially verified host.
   SetHostWithStatus(mojom::HostStatus::kHostVerified,
-                    cryptauth::RemoteDeviceRefBuilder()
-                        .SetPublicKey(kFakePhoneKey + "alternate")
-                        .SetName(kFakePhoneName)
-                        .Build());
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
+  // Set to verified host with same name but different key.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKeyA, kFakePhoneName));
   EXPECT_EQ(1u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
 }
 
 TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
-       VerifyingHostTriggersNoHostSwtichEvent) {
+       VerifyingSetHostTriggersNoHostSwtichEvent) {
+  const cryptauth::RemoteDeviceRef fakePhone =
+      BuildFakePhone(kFakePhoneKey, kFakePhoneName);
+
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegatePtr();
-  // Set initial host but do not verify
-  SetHostWithStatus(mojom::HostStatus::kHostSetButNotYetVerified, kFakePhone);
-  // Verify host
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  // Set initial host but do not verify.
+  SetHostWithStatus(mojom::HostStatus::kHostSetButNotYetVerified, fakePhone);
+  // Verify host.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified, fakePhone);
+  EXPECT_EQ(0u,
+            fake_delegate()->num_existing_user_host_switched_events_handled());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       OnlyVerifiedHostCausesHostSwitchedEvent) {
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegatePtr();
+  // Set initially verified host.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
+
+  EXPECT_EQ(0u,
+            fake_delegate()->num_existing_user_host_switched_events_handled());
+
+  // Set a new host without verifying.
+  SetHostWithStatus(mojom::HostStatus::kHostSetButNotYetVerified,
+                    BuildFakePhone(kFakePhoneKeyA, kFakePhoneNameA));
+  EXPECT_EQ(0u,
+            fake_delegate()->num_existing_user_host_switched_events_handled());
+
+  // Set a different new host without confirming with backend so host is
+  // unverified.
+  SetHostWithStatus(
+      mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
+      BuildFakePhone(kFakePhoneKeyB, kFakePhoneNameB));
+  EXPECT_EQ(0u,
+            fake_delegate()->num_existing_user_host_switched_events_handled());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       ForgettingAndThenSwitchingHostsDoesNotTriggerHostSwitchedEvent) {
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegatePtr();
+  // Set initially verified host.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
+
+  EXPECT_EQ(0u,
+            fake_delegate()->num_existing_user_host_switched_events_handled());
+
+  ForgetHost();
+  EXPECT_EQ(0u,
+            fake_delegate()->num_existing_user_host_switched_events_handled());
+
+  // Set a new verified host.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKeyA, kFakePhoneNameA));
   EXPECT_EQ(0u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
 }
 
 TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
        HostSwitchedBetweenSessions) {
-  SetHostFromPreviousSession(kFakePhoneKey + "-old");
+  // Host set in some previous session.
+  SetHostFromPreviousSession(
+      BuildFakePhone(kFakePhoneKeyA, kFakePhoneNameA).GetDeviceId());
   BuildAccountStatusChangeDelegateNotifier();
-  // Host switched between sessions.
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  // Host switched and verified between sessions.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
   SetAccountStatusChangeDelegatePtr();
   EXPECT_EQ(1u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
@@ -309,11 +529,7 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
        NoHostSwitchedEventWithoutExistingHost) {
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegatePtr();
-  // No enabled host initially.
-  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                    base::nullopt /* host_device */);
-  // Set host.
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  SetUpHost(BuildFakePhone(kFakePhoneKey, kFakePhoneName));
   EXPECT_EQ(0u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
 }
@@ -321,15 +537,13 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
 TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
        NoHostSwitchedEventWithoutObserverSet) {
   BuildAccountStatusChangeDelegateNotifier();
-  // Set initial host.
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  // Set initially verified host.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
   // All conditions for host switched event are satisfied except for setting a
   // delegate.
   SetHostWithStatus(mojom::HostStatus::kHostVerified,
-                    cryptauth::RemoteDeviceRefBuilder()
-                        .SetPublicKey(kFakePhoneKey + "alternate")
-                        .SetName(kFakePhoneName + "alternate")
-                        .Build());
+                    BuildFakePhone(kFakePhoneKeyA, kFakePhoneNameA));
   EXPECT_EQ(0u,
             fake_delegate()->num_existing_user_host_switched_events_handled());
 }
@@ -338,23 +552,89 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
        NotifiesObserverForChromebookAddedEvents) {
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegatePtr();
-  // Verify the delegate initializes to 0.
+  // Check the delegate initializes to 0.
   EXPECT_EQ(
       0u, fake_delegate()->num_existing_user_chromebook_added_events_handled());
 
-  // Host is set from another Chromebook while this one is logged in.
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  // Host is set and verified from another Chromebook while this one is logged
+  // in.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
   EXPECT_EQ(
       1u, fake_delegate()->num_existing_user_chromebook_added_events_handled());
 }
 
 TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       OnlyVerifiedHostCausesChromebookAddedEvent) {
+  const cryptauth::RemoteDeviceRef fakePhone =
+      BuildFakePhone(kFakePhoneKey, kFakePhoneName);
+
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegatePtr();
+  // Start with potential hosts but none set.
+  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                    base::nullopt /* host_device */);
+
+  // Set a host without verifying.
+  SetHostWithStatus(mojom::HostStatus::kHostSetButNotYetVerified, fakePhone);
+  EXPECT_EQ(
+      0u, fake_delegate()->num_existing_user_chromebook_added_events_handled());
+
+  // Verify the new host.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified, fakePhone);
+  EXPECT_EQ(
+      1u, fake_delegate()->num_existing_user_chromebook_added_events_handled());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       ReplacingUnverifiedHostAWithVerifiedHostBCausesChromebookAddedEvent) {
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegatePtr();
+  // Start with potential hosts but none set.
+  // Set initial host but do not verify.
+  SetHostWithStatus(mojom::HostStatus::kHostSetButNotYetVerified,
+                    BuildFakePhone(kFakePhoneKeyA, kFakePhoneNameA));
+
+  // Replace unverified Phone A with verified Phone B.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKeyB, kFakePhoneNameB));
+  // This causes a 'Chromebook added' event.
+  EXPECT_EQ(
+      1u, fake_delegate()->num_existing_user_chromebook_added_events_handled());
+  // It does not cause a 'host switched' event.
+  EXPECT_EQ(0u,
+            fake_delegate()->num_existing_user_host_switched_events_handled());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
        ChromebookAddedBetweenSessionsTriggersEvents) {
   BuildAccountStatusChangeDelegateNotifier();
-  // Host is set before this Chromebook is logged in.
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  // Host is set and verified before this Chromebook is logged in.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
 
   SetAccountStatusChangeDelegatePtr();
+  EXPECT_EQ(
+      1u, fake_delegate()->num_existing_user_chromebook_added_events_handled());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       ChromebookAddedEventBlockedIfHostWasSetFromThisChromebook) {
+  const cryptauth::RemoteDeviceRef fakePhone =
+      BuildFakePhone(kFakePhoneKey, kFakePhoneName);
+
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegatePtr();
+
+  SetUpHost(fakePhone);
+  // The host was set on this Chromebook so it should not trigger the Chromebook
+  // added event
+  EXPECT_EQ(
+      0u, fake_delegate()->num_existing_user_chromebook_added_events_handled());
+
+  ForgetHost();
+  // Set verified host on another Chromebook.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified, fakePhone);
   EXPECT_EQ(
       1u, fake_delegate()->num_existing_user_chromebook_added_events_handled());
 }
@@ -370,7 +650,8 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
   BuildAccountStatusChangeDelegateNotifier();
   SetAccountStatusChangeDelegatePtr();
 
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
   EXPECT_EQ(
       1u, fake_delegate()->num_existing_user_chromebook_added_events_handled());
   // Timestamp was overwritten by clock.
@@ -382,9 +663,39 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
   BuildAccountStatusChangeDelegateNotifier();
   // Triggers event check. Note that all conditions for Chromebook added event
   // are satisfied except for setting a delegate.
-  SetHostWithStatus(mojom::HostStatus::kHostVerified, kFakePhone);
+  SetHostWithStatus(mojom::HostStatus::kHostVerified,
+                    BuildFakePhone(kFakePhoneKey, kFakePhoneName));
   EXPECT_EQ(
       0u, fake_delegate()->num_existing_user_chromebook_added_events_handled());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       VerifiedHostIdStaysUpToDateInPrefs) {
+  const cryptauth::RemoteDeviceRef fakePhone =
+      BuildFakePhone(kFakePhoneKey, kFakePhoneName);
+  const cryptauth::RemoteDeviceRef fakePhoneA =
+      BuildFakePhone(kFakePhoneKeyA, kFakePhoneNameA);
+
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegatePtr();
+  // Check the delegate initializes to empty.
+  EXPECT_EQ(GetMostRecentVerifiedHostDeviceIdPref(), "");
+
+  // Set initially verified host.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified, fakePhone);
+  EXPECT_EQ(GetMostRecentVerifiedHostDeviceIdPref(), fakePhone.GetDeviceId());
+
+  // Switch to an unverified host.
+  SetHostWithStatus(mojom::HostStatus::kHostSetButNotYetVerified, fakePhoneA);
+  // The host is set but not verified so the pref should be set to empty.
+  EXPECT_EQ(GetMostRecentVerifiedHostDeviceIdPref(), "");
+
+  // Verify the new host.
+  SetHostWithStatus(mojom::HostStatus::kHostVerified, fakePhoneA);
+  EXPECT_EQ(GetMostRecentVerifiedHostDeviceIdPref(), fakePhoneA.GetDeviceId());
+
+  ForgetHost();
+  EXPECT_EQ(GetMostRecentVerifiedHostDeviceIdPref(), "");
 }
 
 }  // namespace multidevice_setup

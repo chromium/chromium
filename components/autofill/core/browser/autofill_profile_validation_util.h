@@ -16,8 +16,14 @@ void ValidateProfile(AutofillProfile* profile,
                      AddressValidator* address_validator);
 
 // Sets the validity state of the address fields of the |profile|.
-void ValidateAddress(AutofillProfile* profile,
-                     AddressValidator* address_validator);
+AddressValidator::Status ValidateAddress(AutofillProfile* profile,
+                                         AddressValidator* address_validator);
+
+// Sets the validity state of the address fields of the |profile| in two passes.
+// First runs the ValidateAddress, then adds a second layer of validation based
+// on the results.
+void ValidateAddressStrictly(AutofillProfile* profile,
+                             AddressValidator* address_validator);
 
 // Sets the validity state of the phone number field of the |profile|.
 void ValidatePhoneNumber(AutofillProfile* profile);

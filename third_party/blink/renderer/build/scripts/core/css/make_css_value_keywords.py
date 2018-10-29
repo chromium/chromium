@@ -14,11 +14,13 @@ import gperf
 
 
 class CSSValueKeywordsWriter(json5_generator.Writer):
+    _FILE_BASENAME = 'css_value_keywords'
+
     def __init__(self, file_paths, output_dir):
         json5_generator.Writer.__init__(self, file_paths, output_dir)
         self._outputs = {
-            "css_value_keywords.h": self.generate_header,
-            "css_value_keywords.cc": self.generate_implementation
+            (self._FILE_BASENAME + '.h'): self.generate_header,
+            (self._FILE_BASENAME + '.cc'): self.generate_implementation,
         }
 
         self._value_keywords = self.json5_file.name_dictionaries
@@ -43,6 +45,7 @@ class CSSValueKeywordsWriter(json5_generator.Writer):
             'value_keywords_count': self._keyword_count,
             'max_value_keyword_length':
                 max(len(keyword['name'].original) for keyword in self._value_keywords),
+            'header_guard': self.make_header_guard(self._relative_output_dir + self._FILE_BASENAME + '.h')
         }
 
     def _value_keywords_with_mode(self, mode):

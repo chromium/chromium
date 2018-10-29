@@ -68,8 +68,8 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
   mojom::blink::EmbeddedFrameSinkProviderPtr provider;
   Platform::Current()->GetInterfaceProvider()->GetInterface(
       mojo::MakeRequest(&provider));
-  DCHECK(provider);
 
+  DCHECK(provider);
   binding_.Bind(mojo::MakeRequest(&client_ptr_));
   provider->CreateCompositorFrameSink(frame_sink_id_, std::move(client_ptr_),
                                       mojo::MakeRequest(&sink_));
@@ -144,11 +144,12 @@ void CanvasResourceDispatcher::DispatchFrameSync(
     scoped_refptr<CanvasResource> canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
-    bool needs_vertical_flip) {
+    bool needs_vertical_flip,
+    bool is_opaque) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::DispatchFrameSync");
   viz::CompositorFrame frame;
   if (!PrepareFrame(std::move(canvas_resource), commit_start_time, damage_rect,
-                    needs_vertical_flip, &frame)) {
+                    needs_vertical_flip, is_opaque, &frame)) {
     return;
   }
 
@@ -164,11 +165,12 @@ void CanvasResourceDispatcher::DispatchFrame(
     scoped_refptr<CanvasResource> canvas_resource,
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
-    bool needs_vertical_flip) {
+    bool needs_vertical_flip,
+    bool is_opaque) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::DispatchFrame");
   viz::CompositorFrame frame;
   if (!PrepareFrame(std::move(canvas_resource), commit_start_time, damage_rect,
-                    needs_vertical_flip, &frame)) {
+                    needs_vertical_flip, is_opaque, &frame)) {
     return;
   }
 
@@ -183,10 +185,12 @@ bool CanvasResourceDispatcher::PrepareFrame(
     base::TimeTicks commit_start_time,
     const SkIRect& damage_rect,
     bool needs_vertical_flip,
+    bool is_opaque,
     viz::CompositorFrame* frame) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::PrepareFrame");
-  if (!canvas_resource || !VerifyImageSize(canvas_resource->Size()))
+  if (!canvas_resource || !VerifyImageSize(canvas_resource->Size())) {
     return false;
+  }
 
   next_resource_id_++;
 
@@ -210,10 +214,8 @@ bool CanvasResourceDispatcher::PrepareFrame(
   frame->metadata.begin_frame_ack = current_begin_frame_ack_;
 
   const gfx::Rect bounds(size_.Width(), size_.Height());
-  const int kRenderPassId = 1;
-  bool is_clipped = false;
-  // TODO(crbug.com/705019): optimize for contexts that have {alpha: false}
-  bool are_contents_opaque = false;
+  constexpr int kRenderPassId = 1;
+  constexpr bool is_clipped = false;
   std::unique_ptr<viz::RenderPass> pass = viz::RenderPass::Create();
   pass->SetNew(kRenderPassId, bounds,
                gfx::Rect(damage_rect.x(), damage_rect.y(), damage_rect.width(),
@@ -221,13 +223,10 @@ bool CanvasResourceDispatcher::PrepareFrame(
                gfx::Transform());
 
   viz::SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
-  sqs->SetAll(gfx::Transform(), bounds, bounds, bounds, is_clipped,
-              are_contents_opaque, 1.f, SkBlendMode::kSrcOver, 0);
+  sqs->SetAll(gfx::Transform(), bounds, bounds, bounds, is_clipped, is_opaque,
+              1.f, SkBlendMode::kSrcOver, 0);
 
   OffscreenCanvasCommitType commit_type;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      EnumerationHistogram, commit_type_histogram,
-      ("OffscreenCanvas.CommitType", kOffscreenCanvasCommitTypeCount));
   if (canvas_resource->IsAccelerated()) {
     // While |image| is texture backed, it could be generated with "software
     // rendering" aka swiftshader. If the compositor is not also using
@@ -263,8 +262,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // TODO(crbug.com/869913): add unit testing for this.
   const gfx::Size canvas_resource_size(canvas_resource->Size());
 
-  commit_type_histogram.Count(commit_type);
-
   PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource),
                                      next_resource_id_);
 
@@ -273,26 +270,24 @@ bool CanvasResourceDispatcher::PrepareFrame(
   viz::TextureDrawQuad* quad =
       pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
 
-  // TODO(crbug.com/705019): optimize for contexts that have {alpha: false}
-  const bool kNeedsBlending = true;
-
+  const bool needs_blending = !is_opaque;
   // TODO(crbug.com/645993): this should be inherited from WebGL context's
   // creation settings.
-  const bool kPremultipliedAlpha = true;
-  const gfx::PointF uv_top_left(0.f, 0.f);
-  const gfx::PointF uv_bottom_right(1.f, 1.f);
-  const float vertex_opacity[4] = {1.f, 1.f, 1.f, 1.f};
+  constexpr bool kPremultipliedAlpha = true;
+  constexpr gfx::PointF uv_top_left(0.f, 0.f);
+  constexpr gfx::PointF uv_bottom_right(1.f, 1.f);
+  constexpr float vertex_opacity[4] = {1.f, 1.f, 1.f, 1.f};
   // TODO(crbug.com/645994): this should be true when using style
   // "image-rendering: pixelated".
   // TODO(crbug.com/645590): filter should respect the image-rendering CSS
   // property of associated canvas element.
-  const bool kNearestNeighbor = false;
+  constexpr bool kNearestNeighbor = false;
   // Accelerated resources have the origin of coordinates in the upper left
   // corner while canvases have it in the lower left corner. The DrawQuad is
   // marked as vertically flipped unless someone else has done the flip for us.
   const bool yflipped =
       SharedGpuContext::IsGpuCompositingEnabled() && needs_vertical_flip;
-  quad->SetAll(sqs, bounds, bounds, kNeedsBlending, resource.id,
+  quad->SetAll(sqs, bounds, bounds, needs_blending, resource.id,
                canvas_resource_size, kPremultipliedAlpha, uv_top_left,
                uv_bottom_right, SK_ColorTRANSPARENT, vertex_opacity, yflipped,
                kNearestNeighbor, false);

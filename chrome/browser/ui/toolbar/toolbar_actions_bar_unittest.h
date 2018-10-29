@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/extensions/browser_action_test_util.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "extensions/common/extension_builder.h"
-#include "ui/base/material_design/material_design_controller.h"
 
 class ExtensionAction;
 class ScopedTestingLocalState;
@@ -28,14 +27,19 @@ namespace extensions {
 class Extension;
 }
 
+namespace ui {
+namespace test {
+class MaterialDesignControllerTestAPI;
+}
+}  // namespace ui
+
 // A cross-platform unit test for the ToolbarActionsBar that uses the
 // TestToolbarActionsBarHelper to create the platform-specific containers.
 // TODO(devlin): Since this *does* use the real platform containers, in theory,
 // we can move all the BrowserActionsBarBrowserTests to be unittests. See about
 // doing this.
-class ToolbarActionsBarUnitTest :
-    public BrowserWithTestWindowTest,
-    public testing::WithParamInterface<ui::MaterialDesignController::Mode> {
+class ToolbarActionsBarUnitTest : public BrowserWithTestWindowTest,
+                                  public testing::WithParamInterface<bool> {
  public:
   ToolbarActionsBarUnitTest();
   ~ToolbarActionsBarUnitTest() override;

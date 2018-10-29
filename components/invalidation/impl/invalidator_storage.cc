@@ -42,8 +42,7 @@ bool ValueToUnackedInvalidationStorageMap(
 std::unique_ptr<base::ListValue> UnackedInvalidationStorageMapToValue(
     const syncer::UnackedInvalidationsMap& map) {
   std::unique_ptr<base::ListValue> value(new base::ListValue);
-  for (syncer::UnackedInvalidationsMap::const_iterator it = map.begin();
-       it != map.end(); ++it) {
+  for (auto it = map.begin(); it != map.end(); ++it) {
     value->Append(it->second.ToValue());
   }
   return value;

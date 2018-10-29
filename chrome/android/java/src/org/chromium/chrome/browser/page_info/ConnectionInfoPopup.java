@@ -24,6 +24,7 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ResourceId;
+import org.chromium.chrome.browser.modaldialog.DialogDismissalCause;
 import org.chromium.chrome.browser.modaldialog.ModalDialogManager;
 import org.chromium.chrome.browser.modaldialog.ModalDialogView;
 import org.chromium.chrome.browser.modaldialog.ModalDialogView.ButtonType;
@@ -231,10 +232,7 @@ public class ConnectionInfoPopup implements OnClickListener, ModalDialogView.Con
     public void onClick(@ButtonType int buttonType) {}
 
     @Override
-    public void onCancel() {}
-
-    @Override
-    public void onDismiss() {
+    public void onDismiss(@DialogDismissalCause int dismissalCause) {
         assert mNativeConnectionInfoPopup != 0;
         mWebContentsObserver.destroy();
         nativeDestroy(mNativeConnectionInfoPopup);

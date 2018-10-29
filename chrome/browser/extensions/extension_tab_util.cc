@@ -476,12 +476,11 @@ ExtensionTabUtil::CreateWindowValueForExtension(
 std::unique_ptr<api::tabs::MutedInfo> ExtensionTabUtil::CreateMutedInfo(
     content::WebContents* contents) {
   DCHECK(contents);
-  std::unique_ptr<api::tabs::MutedInfo> info(new api::tabs::MutedInfo);
+  auto info = std::make_unique<api::tabs::MutedInfo>();
   info->muted = contents->IsAudioMuted();
   switch (chrome::GetTabAudioMutedReason(contents)) {
     case TabMutedReason::NONE:
       break;
-    case TabMutedReason::AUDIO_INDICATOR:
     case TabMutedReason::CONTENT_SETTING:
     case TabMutedReason::CONTENT_SETTING_CHROME:
     case TabMutedReason::CONTEXT_MENU:
@@ -492,8 +491,9 @@ std::unique_ptr<api::tabs::MutedInfo> ExtensionTabUtil::CreateMutedInfo(
       break;
     case TabMutedReason::EXTENSION:
       info->reason = api::tabs::MUTED_INFO_REASON_EXTENSION;
-      info->extension_id.reset(
-          new std::string(chrome::GetExtensionIdForMutedTab(contents)));
+      info->extension_id = std::make_unique<std::string>(
+          LastMuteMetadata::FromWebContents(contents)->extension_id);
+      DCHECK(!info->extension_id->empty());
       break;
   }
   return info;

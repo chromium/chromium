@@ -90,7 +90,7 @@ void ClientVideoDispatcher::OnIncomingMessage(
     client_stub_->SetVideoLayout(layout);
   }
 
-  PendingFramesList::iterator pending_frame =
+  auto pending_frame =
       pending_frames_.insert(pending_frames_.end(), PendingFrame(frame_id));
 
   video_stub_->ProcessVideoPacket(

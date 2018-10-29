@@ -25,7 +25,8 @@ EmbeddedFrameSinkImpl::EmbeddedFrameSinkImpl(
       parent_frame_sink_id_(parent_frame_sink_id),
       frame_sink_id_(frame_sink_id) {
   client_.set_connection_error_handler(std::move(destroy_callback));
-  host_frame_sink_manager_->RegisterFrameSinkId(frame_sink_id_, this);
+  host_frame_sink_manager_->RegisterFrameSinkId(
+      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kYes);
   host_frame_sink_manager_->SetFrameSinkDebugLabel(frame_sink_id_,
                                                    "EmbeddedFrameSinkImpl");
 }

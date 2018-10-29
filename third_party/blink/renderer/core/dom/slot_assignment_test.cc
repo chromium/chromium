@@ -69,7 +69,7 @@ void RemoveWhiteSpaceOnlyTextNode(ContainerNode& container) {
   for (Node* descendant :
        CollectFromIterable(NodeTraversal::InclusiveDescendantsOf(container))) {
     if (Text* text = ToTextOrNull(descendant)) {
-      if (text->ContainsOnlyWhitespace())
+      if (text->ContainsOnlyWhitespaceOrEmpty())
         text->remove();
     } else if (Element* element = ToElementOrNull(descendant)) {
       if (ShadowRoot* shadow_root = element->OpenShadowRoot())
@@ -80,10 +80,9 @@ void RemoveWhiteSpaceOnlyTextNode(ContainerNode& container) {
 
 }  // namespace
 
-class SlotAssignmentTest : public testing::Test,
-                           private ScopedIncrementalShadowDOMForTest {
+class SlotAssignmentTest : public testing::Test {
  public:
-  SlotAssignmentTest() : ScopedIncrementalShadowDOMForTest(true) {}
+  SlotAssignmentTest() {}
 
  protected:
   Document& GetDocument() const { return *document_; }

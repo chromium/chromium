@@ -35,7 +35,7 @@ struct {
 
 class LoginUITest : public chromeos::LoginManagerTest {
  public:
-  LoginUITest() : LoginManagerTest(false) {
+  LoginUITest() : LoginManagerTest(false, true /* should_initialize_webui */) {
     for (size_t i = 0; i < arraysize(kTestUsers); ++i) {
       test_users_.emplace_back(AccountId::FromUserEmailGaiaId(
           kTestUsers[i].email, kTestUsers[i].gaia_id));

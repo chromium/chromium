@@ -8,10 +8,10 @@ import android.net.Uri;
 import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
-import org.chromium.base.AsyncTask;
 import org.chromium.base.Log;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 
 import java.io.IOException;
 import java.lang.annotation.Retention;

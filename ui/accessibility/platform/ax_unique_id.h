@@ -17,17 +17,18 @@ namespace ui {
 // is required to generate the ID, and the ID is freed when the AXUniqueID is
 // destroyed.
 //
-// The  unique id that's guaranteed to be a positive number. Becase some
+// The  unique id that's guaranteed to be a positive number. Because some
 // platforms want to negate it, we ensure the range is below the signed int max.
 //
 // These ids must not be conflated with the int id, that comes with web node
 // data, which are only unique within their source frame.
 class AX_EXPORT AXUniqueId {
  public:
-  AXUniqueId() : AXUniqueId(INT32_MAX) {}
-  ~AXUniqueId();
+  AXUniqueId();
+  virtual ~AXUniqueId();
 
   int32_t Get() const { return id_; }
+  operator int32_t() const { return id_; }
 
   bool operator==(const AXUniqueId& other) const;
   bool operator!=(const AXUniqueId& other) const;

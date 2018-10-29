@@ -130,4 +130,11 @@ TEST_F(WidgetElementTest, GetAttributes) {
   EXPECT_EQ(attrs->get(3), "true");
 }
 
+TEST_F(WidgetElementTest, GetNodeWindowAndBounds) {
+  std::pair<gfx::NativeWindow, gfx::Rect> window_and_bounds =
+      element()->GetNodeWindowAndBounds();
+  EXPECT_EQ(widget()->GetNativeWindow(), window_and_bounds.first);
+  EXPECT_EQ(widget()->GetWindowBoundsInScreen(), window_and_bounds.second);
+}
+
 }  // namespace ui_devtools

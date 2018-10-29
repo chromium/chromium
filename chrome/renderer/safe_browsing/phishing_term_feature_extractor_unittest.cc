@@ -54,8 +54,7 @@ class PhishingTermFeatureExtractorTest : public ::testing::Test {
     // Chinese (translation of "goodbye")
     terms.insert("\xe5\x86\x8d\xe8\xa7\x81");
 
-    for (base::hash_set<std::string>::iterator it = terms.begin();
-         it != terms.end(); ++it) {
+    for (auto it = terms.begin(); it != terms.end(); ++it) {
       term_hashes_.insert(crypto::SHA256HashString(*it));
     }
 
@@ -72,8 +71,7 @@ class PhishingTermFeatureExtractorTest : public ::testing::Test {
     words.insert("\xe4\xbd\xa0\xe5\xa5\xbd");
     words.insert("\xe5\x86\x8d\xe8\xa7\x81");
 
-    for (base::hash_set<std::string>::iterator it = words.begin();
-         it != words.end(); ++it) {
+    for (auto it = words.begin(); it != words.end(); ++it) {
       word_hashes_.insert(MurmurHash3String(*it, kMurmurHash3Seed));
     }
 
@@ -247,7 +245,7 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
                                                    kMurmurHash3Seed));
   expected_shingle_hashes.insert(MurmurHash3String("way too many words ",
                                                    kMurmurHash3Seed));
-  std::set<uint32_t>::iterator it = expected_shingle_hashes.end();
+  auto it = expected_shingle_hashes.end();
   expected_shingle_hashes.erase(--it);
 
   features.Clear();

@@ -56,6 +56,8 @@ BluetoothLowEnergyDeviceMac::~BluetoothLowEnergyDeviceMac() {
   if (IsGattConnected()) {
     GetMacAdapter()->DisconnectGatt(this);
   }
+
+  [peripheral_ setDelegate:nil];
 }
 
 std::string BluetoothLowEnergyDeviceMac::GetIdentifier() const {

@@ -183,6 +183,8 @@ target(link_target_type, "gles2_sources") {
     "memory_program_cache.h",
     "passthrough_abstract_texture_impl.cc",
     "passthrough_abstract_texture_impl.h",
+    "passthrough_discardable_manager.cc",
+    "passthrough_discardable_manager.h",
     "passthrough_program_cache.cc",
     "passthrough_program_cache.h",
     "path_manager.cc",
@@ -219,8 +221,19 @@ target(link_target_type, "gles2_sources") {
     "shader_translator.h",
     "shader_translator_cache.cc",
     "shader_translator_cache.h",
+    "shared_image_backing.cc",
+    "shared_image_backing.h",
+    "shared_image_backing_factory.h",
+    "shared_image_backing_factory_gl_texture.cc",
+    "shared_image_backing_factory_gl_texture.h",
     "shared_image_factory.cc",
     "shared_image_factory.h",
+    "shared_image_manager.cc",
+    "shared_image_manager.h",
+    "shared_image_representation.cc",
+    "shared_image_representation.h",
+    "skia_utils.cc",
+    "skia_utils.h",
     "texture_definition.cc",
     "texture_definition.h",
     "texture_manager.cc",
@@ -239,7 +252,18 @@ target(link_target_type, "gles2_sources") {
     "webgpu_cmd_validation_implementation_autogen.h",
     "webgpu_decoder.cc",
     "webgpu_decoder.h",
+    "wrapped_sk_image.cc",
+    "wrapped_sk_image.h",
   ]
+
+  if (is_android) {
+    sources += [
+      "ahardwarebuffer_utils.cc",
+      "ahardwarebuffer_utils.h",
+      "shared_image_backing_factory_ahardwarebuffer.cc",
+      "shared_image_backing_factory_ahardwarebuffer.h",
+    ]
+  }
 
   configs += [
     "//build/config:precompiled_headers",

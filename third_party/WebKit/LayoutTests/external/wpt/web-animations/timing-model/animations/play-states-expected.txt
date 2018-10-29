@@ -11,5 +11,9 @@ PASS reports 'running' when playback rate = 0 and current time = 0
 FAIL reports 'finished' when playback rate < 0 and current time = 0 assert_equals: expected "finished" but got "pending"
 FAIL reports 'finished' when playback rate > 0 and current time = target effect end and there is a pending play task assert_equals: expected "finished" but got "pending"
 FAIL reports 'running' when playback rate > 0 and current time < target effect end and there is a pending play task assert_equals: expected "running" but got "pending"
+FAIL reports 'running' for a play-pending animation assert_equals: expected "running" but got "pending"
+FAIL reports 'paused' for a pause-pending animation assert_equals: expected "paused" but got "pending"
+FAIL reports 'finished' for a finished-pending animation assert_equals: expected "finished" but got "pending"
+FAIL reports the play state based on the pending playback rate animation.updatePlaybackRate is not a function
 Harness: the test ran to completion.
 

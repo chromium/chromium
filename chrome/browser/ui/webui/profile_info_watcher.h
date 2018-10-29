@@ -13,7 +13,10 @@
 #include "components/prefs/pref_member.h"
 
 class Profile;
-class SigninManagerBase;
+
+namespace identity {
+class IdentityManager;
+}
 
 // Watches profiles for changes in their cached info (e.g. the authenticated
 // username changes).
@@ -29,10 +32,10 @@ class ProfileInfoWatcher : public ProfileAttributesStorage::Observer {
   // ProfileAttributesStorage::Observer:
   void OnProfileAuthInfoChanged(const base::FilePath& profile_path) override;
 
-  // Gets the SigninManagerBase for |profile_|.
-  SigninManagerBase* GetSigninManager() const;
+  // Gets the IdentityManager for |profile_|.
+  identity::IdentityManager* GetIdentityManager() const;
 
-  // Runs |callback_| when a profile changes. No-ops if |GetSigninManager()|
+  // Runs |callback_| when a profile changes. No-ops if |GetIdentityManager()|
   // returns nullptr.
   void RunCallback();
 

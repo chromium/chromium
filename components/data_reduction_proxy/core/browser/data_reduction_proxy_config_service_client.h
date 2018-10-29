@@ -17,8 +17,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
-#include "net/log/net_log_with_source.h"
-#include "net/url_request/url_fetcher_delegate.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "url/gurl.h"
 
@@ -29,22 +27,21 @@
 namespace net {
 class HttpRequestHeaders;
 class HttpResponseHeaders;
-class NetLog;
 struct LoadTimingInfo;
 class ProxyServer;
-class URLFetcher;
-class URLRequestContextGetter;
-class URLRequestStatus;
 }
+
+namespace network {
+class SharedURLLoaderFactory;
+class SimpleURLLoader;
+}  // namespace network
 
 namespace data_reduction_proxy {
 
 class ClientConfig;
 class DataReductionProxyConfig;
-class DataReductionProxyEventCreator;
 class DataReductionProxyIOData;
 class DataReductionProxyMutableConfigValues;
-class DataReductionProxyParams;
 class DataReductionProxyRequestOptions;
 
 typedef base::Callback<void(const std::string&)> ConfigStorer;
@@ -83,21 +80,16 @@ const net::BackoffEntry::Policy& GetBackoffPolicy();
 // fetch policy is different if Chrome is in the background. Every time a config
 // is fetched, it is written to the disk.
 class DataReductionProxyConfigServiceClient
-    : public network::NetworkConnectionTracker::NetworkConnectionObserver,
-      public net::URLFetcherDelegate {
+    : public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // The caller must ensure that all parameters remain alive for the lifetime of
-  // the |DataReductionProxyConfigClient|, with the exception of |params|
-  // which this instance will own.
+  // the |DataReductionProxyConfigClient|.
   DataReductionProxyConfigServiceClient(
-      std::unique_ptr<DataReductionProxyParams> params,
       const net::BackoffEntry::Policy& backoff_policy,
       DataReductionProxyRequestOptions* request_options,
       DataReductionProxyMutableConfigValues* config_values,
       DataReductionProxyConfig* config,
-      DataReductionProxyEventCreator* event_creator,
       DataReductionProxyIOData* io_data,
-      net::NetLog* net_log,
       network::NetworkConnectionTracker* network_connection_tracker,
       ConfigStorer config_storer);
 
@@ -105,7 +97,7 @@ class DataReductionProxyConfigServiceClient
 
   // Performs initialization on the IO thread.
   void InitializeOnIOThread(
-      net::URLRequestContextGetter* url_request_context_getter);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Sets whether the configuration should be retrieved or not.
   void SetEnabled(bool enabled);
@@ -129,6 +121,10 @@ class DataReductionProxyConfigServiceClient
       const net::HttpResponseHeaders* response_headers,
       const net::ProxyServer& proxy_server,
       const net::LoadTimingInfo& load_timing_info);
+
+  void SetRemoteConfigAppliedForTesting(bool remote_config_applied) {
+    remote_config_applied_ = remote_config_applied;
+  }
 
  protected:
   // Retrieves the backoff entry object being used to throttle request failures.
@@ -166,8 +162,8 @@ class DataReductionProxyConfigServiceClient
   // Override of network::NetworkConnectionTracker::NetworkConnectionObserver.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  // Override of net::URLFetcherDelegate.
-  void OnURLFetchComplete(const net::URLFetcher* source) override;
+  // URL loader completion callback.
+  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
 
   // Retrieves the Data Reduction Proxy configuration from a remote service.
   void RetrieveRemoteConfig();
@@ -175,19 +171,12 @@ class DataReductionProxyConfigServiceClient
   // Invalidates the current Data Reduction Proxy configuration.
   void InvalidateConfig();
 
-  // Returns a fetcher to retrieve the Data Reduction Proxy configuration.
-  // |secure_proxy_check_url| is the url from which to retrieve the config.
-  // |request_body| is the request body sent to the configuration service.
-  std::unique_ptr<net::URLFetcher> GetURLFetcherForConfig(
-      const GURL& secure_proxy_check_url,
-      const std::string& request_body);
-
   // Handles the response from the remote Data Reduction Proxy configuration
   // service. |response| is the response body, |status| is the
-  // |net::URLRequestStatus| of the response, and response_code is the HTTP
+  // |net::Error| of the response, and response_code is the HTTP
   // response code (if available).
   void HandleResponse(const std::string& response,
-                      const net::URLRequestStatus& status,
+                      int status,
                       int response_code);
 
   // Parses out the proxy configuration portion of |config| and applies it to
@@ -202,8 +191,6 @@ class DataReductionProxyConfigServiceClient
   void OnApplicationStateChange(base::android::ApplicationState new_state);
 #endif
 
-  std::unique_ptr<DataReductionProxyParams> params_;
-
   // The caller must ensure that the |request_options_| outlives this instance.
   DataReductionProxyRequestOptions* request_options_;
 
@@ -213,14 +200,8 @@ class DataReductionProxyConfigServiceClient
   // The caller must ensure that the |config_| outlives this instance.
   DataReductionProxyConfig* config_;
 
-  // The caller must ensure that the |event_creator_| outlives this instance.
-  DataReductionProxyEventCreator* event_creator_;
-
   // The caller must ensure that the |io_data_| outlives this instance.
   DataReductionProxyIOData* io_data_;
-
-  // The caller must ensure that the |net_log_| outlives this instance.
-  net::NetLog* net_log_;
 
   // Watches for network changes.
   network::NetworkConnectionTracker* network_connection_tracker_;
@@ -241,18 +222,15 @@ class DataReductionProxyConfigServiceClient
   // successfully applied.
   bool remote_config_applied_;
 
-  // Used for setting up |fetcher_|.
-  net::URLRequestContextGetter* url_request_context_getter_;
+  // Used for setting up the |url_loader_|.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // An event that fires when it is time to refresh the Data Reduction Proxy
   // configuration.
   base::OneShotTimer config_refresh_timer_;
 
-  // A |net::URLFetcher| to retrieve the Data Reduction Proxy configuration.
-  std::unique_ptr<net::URLFetcher> fetcher_;
-
-  // Used to correlate the start and end of requests.
-  net::NetLogWithSource net_log_with_source_;
+  // A |network::URLLoader| to retrieve the Date Reduction Proxy configuration.
+  std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   // Used to determine the latency in retrieving the Data Reduction Proxy
   // configuration.

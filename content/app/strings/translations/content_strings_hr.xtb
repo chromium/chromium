@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1018939186200882850">stavka izbornika</translation>
-<translation id="1020833440720551630">isključivanje zvučnog zapisa</translation>
 <translation id="10623998915015855">preklopni gumb</translation>
 <translation id="1088086359088493902">Sekunde</translation>
 <translation id="1171774979989969504">Unesite e-adresu.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">zasluge</translation>
 <translation id="1342835525016946179">članak</translation>
 <translation id="1359897965706325498">natpis</translation>
-<translation id="1548116112524424341">reprodukcija videozapisa u načnu slike u slici</translation>
 <translation id="1589122976691792535">regija</translation>
 <translation id="1591562245178063882">Ovaj mjesec</translation>
 <translation id="1637811476055996098">Odabir datoteka</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">rešetka u obliku stabla</translation>
 <translation id="1822429046913737220">prijepodne/poslijepodne</translation>
 <translation id="1832974991323546415">reproduciraj na udaljenom uređaju</translation>
-<translation id="1838818994221231429">prebacite cijeli zaslon u područje za urez na zaslonu</translation>
 <translation id="190587075670221089">brisanje</translation>
 <translation id="1907737156431278478">primjer</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">vrijeme</translation>
 <translation id="5630795885300617244">Dvaput dodirnite lijevo ili desno za preskakanje od 10 s</translation>
 <translation id="5631759159893697722">sažetak</translation>
-<translation id="5641012560118721995">pauziranje reprodukcije</translation>
 <translation id="5643186887447432888">gumb</translation>
 <translation id="5677946354068040947">više opcija</translation>
 <translation id="576709008726043716">uvod</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Ponovno postavi</translation>
 <translation id="5966707198760109579">Tjedan</translation>
 <translation id="5987525920412732405">okretni gumb</translation>
+<translation id="6011459053400940133">Klizač za glasnoću</translation>
 <translation id="6015796118275082299">Godina</translation>
 <translation id="6023896073578205740">okvir s popisom</translation>
-<translation id="6101327004457443354">uključivanje zvučnog zapisa</translation>
 <translation id="6150588977291308318">bibliografija</translation>
 <translation id="6164829606128959761">mjerač</translation>
 <translation id="6166809985690652833">pogovor</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Sati</translation>
 <translation id="7681220483256441252">indeks</translation>
 <translation id="7720026100085573005">preostalo vrijeme</translation>
-<translation id="7740016676195725605">zaustavljanje prikazivanja titlova</translation>
 <translation id="7740050170769002709">HTML sadržaj</translation>
 <translation id="7750228210027921155">Slika u slici</translation>
 <translation id="7789962463072032349">pauziraj</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">pretraži tekstno polje</translation>
 <translation id="8057695513531652401">obavijest</translation>
 <translation id="8105797009065549151">referenca bilješke</translation>
-<translation id="8115662671911883373">početak prikazivanja titlova</translation>
 <translation id="8117451130807776954">Ovaj tjedan</translation>
-<translation id="819205353528511139">reprodukcija filma na cijelom zaslonu</translation>
 <translation id="8199524924445686405">gggg</translation>
 <translation id="8284326494547611709">Titlovi</translation>
 <translation id="835897206747267392">Nevažeća vrijednost.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">upravljaj daljinskom reprodukcijom</translation>
 <translation id="862370744433916922">titl</translation>
 <translation id="8750798805984357768">Izaberite jednu od tih opcija.</translation>
-<translation id="8785498733064193001">početak reprodukcije</translation>
 <translation id="8808573423886751634">poglavlje</translation>
 <translation id="8845239796550121995">Emitira se na televizoru</translation>
 <translation id="8851136666856101339">glav</translation>

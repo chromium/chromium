@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "ui/base/test/ui_controls.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/base/ui_base_features.h"
@@ -67,18 +66,19 @@ class PermissionBubbleViewsInteractiveUITest : public InProcessBrowserTest {
 
     test_api_->AddSimpleRequest(CONTENT_SETTINGS_TYPE_GEOLOCATION);
 
-    EXPECT_TRUE([browser()->window()->GetNativeWindow() isKeyWindow]);
+    EXPECT_TRUE([browser()->window()->GetNativeWindow().GetNativeNSWindow()
+                     isKeyWindow]);
 
     // The PermissionRequestManager displays prompts asynchronously.
     base::RunLoop().RunUntilIdle();
 
     // The bubble should steal key focus when shown.
-    EnsureWindowActive(test_api_->GetPromptWindow(), "show permission bubble");
+    EnsureWindowActive(test_api_->GetPromptWindow().GetNativeNSWindow(),
+                       "show permission bubble");
   }
 
  private:
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
-  test::ScopedMacViewsBrowserMode views_mode_{true};
 
   DISALLOW_COPY_AND_ASSIGN(PermissionBubbleViewsInteractiveUITest);
 };
@@ -87,7 +87,8 @@ class PermissionBubbleViewsInteractiveUITest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PermissionBubbleViewsInteractiveUITest,
                        CmdWClosesWindow) {
   base::scoped_nsobject<NSWindow> browser_window(
-      browser()->window()->GetNativeWindow(), base::scoped_policy::RETAIN);
+      browser()->window()->GetNativeWindow().GetNativeNSWindow(),
+      base::scoped_policy::RETAIN);
   EXPECT_TRUE([browser_window isVisible]);
 
   content::WindowedNotificationObserver observer(

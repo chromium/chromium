@@ -414,7 +414,7 @@ void LayerAnimator::OnThreadedAnimationStarted(
   // The call to GetRunningAnimation made above already purged deleted
   // animations, so we are guaranteed that all the animations we iterate
   // over now are alive.
-  for (RunningAnimations::iterator iter = running_animations_.begin();
+  for (auto iter = running_animations_.begin();
        iter != running_animations_.end(); ++iter) {
     // Ensure that each sequence is only Started once, regardless of the
     // number of sequences in the group that have threaded first elements.
@@ -541,7 +541,7 @@ LayerAnimationSequence* LayerAnimator::RemoveAnimation(
   bool is_running = false;
 
   // First remove from running animations
-  for (RunningAnimations::iterator iter = running_animations_.begin();
+  for (auto iter = running_animations_.begin();
        iter != running_animations_.end(); ++iter) {
     if ((*iter).sequence() == sequence) {
       running_animations_.erase(iter);
@@ -638,7 +638,7 @@ void LayerAnimator::ClearAnimations() {
 LayerAnimator::RunningAnimation* LayerAnimator::GetRunningAnimation(
     LayerAnimationElement::AnimatableProperty property) {
   PurgeDeletedAnimations();
-  for (RunningAnimations::iterator iter = running_animations_.begin();
+  for (auto iter = running_animations_.begin();
        iter != running_animations_.end(); ++iter) {
     if ((*iter).sequence()->properties() & property)
       return &(*iter);

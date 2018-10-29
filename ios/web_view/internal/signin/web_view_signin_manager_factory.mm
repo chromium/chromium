@@ -11,6 +11,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/profile_management_switches.h"
 #include "components/signin/core/browser/signin_manager.h"
 #include "components/signin/core/browser/signin_pref_names.h"
@@ -69,6 +70,14 @@ WebViewSigninManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
+
+  // Clearing the sign in state on start up greatly simplifies the management of
+  // ChromeWebView's signin state.
+  PrefService* pref_service = browser_state->GetPrefs();
+  pref_service->ClearPref(prefs::kGoogleServicesAccountId);
+  pref_service->ClearPref(prefs::kGoogleServicesUsername);
+  pref_service->ClearPref(prefs::kGoogleServicesUserAccountId);
+
   std::unique_ptr<SigninManager> service = std::make_unique<SigninManager>(
       WebViewSigninClientFactory::GetForBrowserState(browser_state),
       WebViewOAuth2TokenServiceFactory::GetForBrowserState(browser_state),

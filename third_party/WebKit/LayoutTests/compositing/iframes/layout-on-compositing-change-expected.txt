@@ -1,2 +1,2 @@
-Text  
+Text 
 PASS: hit target node in iframe

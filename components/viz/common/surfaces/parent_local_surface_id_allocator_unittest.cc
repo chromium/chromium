@@ -4,6 +4,7 @@
 
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // ParentLocalSurfaceIdAllocator has 2 accessors which do not alter state:
@@ -98,7 +99,7 @@ TEST(ParentLocalSurfaceIdAllocatorTest,
             child_allocated_local_surface_id.embed_token());
 
   bool changed = child_updated_parent_allocator.UpdateFromChild(
-      child_allocated_local_surface_id);
+      child_allocated_local_surface_id, base::TimeTicks());
   EXPECT_TRUE(changed);
 
   const LocalSurfaceId& postupdate_local_surface_id =
@@ -207,7 +208,7 @@ ParentLocalSurfaceIdAllocator GetChildUpdatedAllocator() {
   LocalSurfaceId child_allocated_local_surface_id =
       GetFakeChildAllocatedLocalSurfaceId(child_updated_parent_allocator);
   child_updated_parent_allocator.UpdateFromChild(
-      child_allocated_local_surface_id);
+      child_allocated_local_surface_id, base::TimeTicks());
   return child_updated_parent_allocator;
 }
 

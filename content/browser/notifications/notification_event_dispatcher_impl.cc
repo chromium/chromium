@@ -8,12 +8,14 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/optional.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_storage.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -40,8 +42,8 @@ void NotificationEventFinished(
     PersistentNotificationStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(dispatch_complete_callback, status));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(dispatch_complete_callback, status));
 }
 
 // To be called when a notification event has finished with a
@@ -146,8 +148,8 @@ void DispatchNotificationEventOnRegistration(
       break;
   }
 
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(dispatch_error_callback, status));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(dispatch_error_callback, status));
 }
 
 // Finds the ServiceWorkerRegistration associated with the |origin| and
@@ -169,8 +171,8 @@ void FindServiceWorkerRegistration(
   LOG(INFO) << "Lookup for ServiceWoker Registration: success: " << success;
 #endif
   if (!success) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(dispatch_error_callback,
                        PersistentNotificationStatus::kDatabaseError));
     return;
@@ -353,8 +355,8 @@ void DispatchNotificationEvent(
   scoped_refptr<PlatformNotificationContext> notification_context =
       partition->GetPlatformNotificationContext();
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &ReadNotificationDatabaseData, notification_id, origin, interaction,
           service_worker_context, notification_context,

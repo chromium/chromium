@@ -31,9 +31,24 @@ const uint32_t kSearchUsageNumber = 0x0221;
 const uint32_t kHomeUsageNumber = 0x0223;
 const uint32_t kBackUsageNumber = 0x0224;
 
-// Blacklisted vendor IDs.
+// Vendor IDs.
 const uint32_t kVendorOculus = 0x2833;
 const uint32_t kVendorBlue = 0xb58e;
+const uint32_t kVendorMicrosoft = 0x045e;
+
+// Product IDs.
+const uint32_t kProductSurfacePro2017Keyboard = 0x0922;
+
+struct VendorProductPair {
+  const uint16_t vendor;
+  const uint16_t product;
+} kFilteredDevices[] = {
+    // The Surface Pro 2017's detachable keyboard is a composite device with
+    // several HID sub-devices. Filter out the keyboard's device ID to avoid
+    // treating these sub-devices as gamepads.
+    {kVendorMicrosoft, kProductSurfacePro2017Keyboard},
+};
+const size_t kFilteredDevicesLen = base::size(kFilteredDevices);
 
 // The fetcher will collect all HID usages from the Button usage page and any
 // additional usages listed below.
@@ -93,8 +108,6 @@ void RawInputGamepadDeviceWin::DoShutdown() {
 void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
   DCHECK(hid_functions_->IsValid());
   NTSTATUS status;
-
-  report_id_++;
 
   // Query button state.
   if (buttons_length_ > 0) {
@@ -216,8 +229,24 @@ bool RawInputGamepadDeviceWin::QueryDeviceInfo() {
   if (vendor_id_ == kVendorOculus || vendor_id_ == kVendorBlue)
     return false;
 
+  for (size_t i = 0; i < kFilteredDevicesLen; ++i) {
+    const auto& filter = kFilteredDevices[i];
+    if (vendor_id_ == filter.vendor && product_id_ == filter.product)
+      return false;
+  }
+
   // Fetch the device's |name_| (RIDI_DEVICENAME).
   if (!QueryDeviceName())
+    return false;
+
+  // From the name we can guess at the bus type. PCI HID devices have "VEN" and
+  // "DEV" instead of "VID" and "PID". PCI HID devices are typically not
+  // gamepads and are ignored.
+  // Example PCI device name: \\?\HID#VEN_1234&DEV_ABCD
+  // TODO(crbug/881539): Potentially allow PCI HID devices to be enumerated, but
+  // prefer known gamepads when there is contention.
+  std::wstring pci_prefix = L"\\\\?\\HID#VEN_";
+  if (!name_.compare(0, pci_prefix.size(), pci_prefix))
     return false;
 
   // Fetch the human-friendly |product_string_|, if available.
@@ -260,9 +289,9 @@ bool RawInputGamepadDeviceWin::QueryHidInfo() {
       reinterpret_cast<RID_DEVICE_INFO*>(buffer.get());
 
   DCHECK_EQ(device_info->dwType, static_cast<DWORD>(RIM_TYPEHID));
-  vendor_id_ = device_info->hid.dwVendorId;
-  product_id_ = device_info->hid.dwProductId;
-  version_number_ = device_info->hid.dwVersionNumber;
+  vendor_id_ = static_cast<uint16_t>(device_info->hid.dwVendorId);
+  product_id_ = static_cast<uint16_t>(device_info->hid.dwProductId);
+  version_number_ = static_cast<uint16_t>(device_info->hid.dwVersionNumber);
   usage_ = device_info->hid.usUsage;
 
   return true;

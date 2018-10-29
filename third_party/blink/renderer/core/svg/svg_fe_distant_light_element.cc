@@ -25,7 +25,7 @@
 namespace blink {
 
 inline SVGFEDistantLightElement::SVGFEDistantLightElement(Document& document)
-    : SVGFELightElement(SVGNames::feDistantLightTag, document) {}
+    : SVGFELightElement(svg_names::kFEDistantLightTag, document) {}
 
 DEFINE_NODE_FACTORY(SVGFEDistantLightElement)
 

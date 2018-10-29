@@ -9,7 +9,7 @@
 #include "cc/paint/filter_operation.h"
 
 #include "base/numerics/ranges.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
 #include "ui/gfx/animation/tween.h"

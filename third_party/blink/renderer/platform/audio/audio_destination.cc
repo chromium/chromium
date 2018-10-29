@@ -68,10 +68,10 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
       fifo_(
           std::make_unique<PushPullFIFO>(number_of_output_channels, kFIFOSize)),
       output_bus_(AudioBus::Create(number_of_output_channels,
-                                   AudioUtilities::kRenderQuantumFrames,
+                                   audio_utilities::kRenderQuantumFrames,
                                    false)),
       render_bus_(AudioBus::Create(number_of_output_channels,
-                                   AudioUtilities::kRenderQuantumFrames)),
+                                   audio_utilities::kRenderQuantumFrames)),
       callback_(callback),
       frames_elapsed_(0) {
   // Create WebAudioDevice. blink::WebAudioDevice is designed to support the
@@ -88,7 +88,7 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
   // first FIFO pulls from causing "underflow" errors.
   const unsigned priming_render_quanta =
       ceil(callback_buffer_size_ /
-           static_cast<float>(AudioUtilities::kRenderQuantumFrames));
+           static_cast<float>(audio_utilities::kRenderQuantumFrames));
   for (unsigned i = 0; i < priming_render_quanta; ++i) {
     fifo_->Push(render_bus_.get());
   }
@@ -169,11 +169,11 @@ void AudioDestination::RequestRender(size_t frames_requested,
   base::TimeTicks received_timestamp = base::TimeTicks::Now();
 
   for (size_t pushed_frames = 0; pushed_frames < frames_to_render;
-       pushed_frames += AudioUtilities::kRenderQuantumFrames) {
+       pushed_frames += audio_utilities::kRenderQuantumFrames) {
     // If platform buffer is more than two times longer than |framesToProcess|
     // we do not want output position to get stuck so we promote it
     // using the elapsed time from the moment it was initially obtained.
-    if (callback_buffer_size_ > AudioUtilities::kRenderQuantumFrames * 2) {
+    if (callback_buffer_size_ > audio_utilities::kRenderQuantumFrames * 2) {
       double delta = (base::TimeTicks::Now() - received_timestamp).InSecondsF();
       output_position.position += delta;
       output_position.timestamp += delta;
@@ -185,8 +185,8 @@ void AudioDestination::RequestRender(size_t frames_requested,
       output_position.position = 0.0;
 
     // Process WebAudio graph and push the rendered output to FIFO.
-    callback_.Render(render_bus_.get(),
-                     AudioUtilities::kRenderQuantumFrames, output_position);
+    callback_.Render(render_bus_.get(), audio_utilities::kRenderQuantumFrames,
+                     output_position);
 
     fifo_->Push(render_bus_.get());
   }
@@ -275,8 +275,9 @@ bool AudioDestination::CheckBufferSize() {
 
   // Check if the requested buffer size is too large.
   bool is_buffer_size_valid =
-      callback_buffer_size_ + AudioUtilities::kRenderQuantumFrames <= kFIFOSize;
-  DCHECK_LE(callback_buffer_size_ + AudioUtilities::kRenderQuantumFrames,
+      callback_buffer_size_ + audio_utilities::kRenderQuantumFrames <=
+      kFIFOSize;
+  DCHECK_LE(callback_buffer_size_ + audio_utilities::kRenderQuantumFrames,
             kFIFOSize);
   return is_buffer_size_valid;
 }

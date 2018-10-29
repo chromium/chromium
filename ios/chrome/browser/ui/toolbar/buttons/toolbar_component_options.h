@@ -33,13 +33,6 @@ typedef NS_OPTIONS(NSUInteger, ToolbarComponentVisibility) {
   // split.
   ToolbarComponentVisibilitySplit =
       ToolbarComponentVisibilityCompactWidthRegularHeight,
-  // TODO(crbug.com/800266): Remove this, only used for non-adaptive toolbar.
-  // Use this option when the component should be visible only if it's enabled.
-  // This setting applies only if the other settings don't show the button.
-  ToolbarComponentVisibilityOnlyWhenEnabled = 1 << 4,
-  // TODO(crbug.com/800266): Remove this, only used for non-adaptive toolbar.
-  // Use this option when the component should be always visible on iPhone only.
-  ToolbarComponentVisibilityIPhoneOnly = 1 << 5,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_BUTTONS_TOOLBAR_COMPONENT_OPTIONS_H_

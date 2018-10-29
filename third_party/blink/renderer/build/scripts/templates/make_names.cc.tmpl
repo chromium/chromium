@@ -8,9 +8,9 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
-namespace {{namespace}}Names {
+namespace {{namespace}} {
 
-void* {{suffix}}NamesStorage[{{namespace}}{{suffix}}NamesCount * ((sizeof(AtomicString) + sizeof(void *) - 1) / sizeof(void *))];
+void* {{suffix}}NamesStorage[k{{suffix}}NamesCount * ((sizeof(AtomicString) + sizeof(void *) - 1) / sizeof(void *))];
 
 {% for entry in entries|sort(attribute='name', case_sensitive=True) %}
 const AtomicString& {{entry|symbol}} = reinterpret_cast<AtomicString*>(&{{suffix}}NamesStorage)[{{loop.index0}}];
@@ -40,5 +40,5 @@ void init{{suffix}}() {
   }
 }
 
-} // {{namespace}}Names
-} // namespace blink
+}  // namespace {{namespace}}
+}  // namespace blink

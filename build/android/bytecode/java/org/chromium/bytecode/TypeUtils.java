@@ -27,8 +27,6 @@ class TypeUtils {
     static final String CONFIGURATION = "android/content/res/Configuration";
     static final String CONTEXT = "android/content/Context";
     static final String CONTEXT_WRAPPER = "android/content/ContextWrapper";
-    static final String DISPLAY_LEAK_ACTIVITY =
-            "com/squareup/leakcanary/internal/DisplayLeakActivity";
     static final String RESOURCES = "android/content/res/Resources";
     static final String STRING = "java/lang/String";
     static final String THEME = "android/content/res/Resources$Theme";

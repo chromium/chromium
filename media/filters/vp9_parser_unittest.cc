@@ -184,7 +184,7 @@ TEST_F(Vp9ParserTest, StreamFileParsingWithCompressedHeader) {
 
     // test-25fps.vp9 doesn't need frame update from driver.
     auto context_refresh_cb = GetContextRefreshCb(fhdr);
-    EXPECT_TRUE(context_refresh_cb.is_null());
+    EXPECT_TRUE(!context_refresh_cb);
     ASSERT_FALSE(ReadShouldContextUpdate());
 
     ++num_parsed_frames;
@@ -220,7 +220,7 @@ TEST_F(Vp9ParserTest, StreamFileParsingWithContextUpdate) {
 
     bool should_update = ReadShouldContextUpdate();
     auto context_refresh_cb = GetContextRefreshCb(fhdr);
-    if (context_refresh_cb.is_null()) {
+    if (!context_refresh_cb) {
       EXPECT_FALSE(should_update);
     } else {
       EXPECT_TRUE(should_update);
@@ -256,7 +256,7 @@ TEST_F(Vp9ParserTest, AwaitingContextUpdate) {
 
   // After update, parse should be ok.
   auto context_refresh_cb = GetContextRefreshCb(fhdr);
-  EXPECT_FALSE(context_refresh_cb.is_null());
+  EXPECT_FALSE(!context_refresh_cb);
   context_refresh_cb.Run(frame_context);
   EXPECT_EQ(Vp9Parser::kOk, ParseNextFrame(&fhdr));
 
@@ -342,5 +342,14 @@ TEST_P(Vp9ParserTest, VerifyFirstFrame) {
 }
 
 INSTANTIATE_TEST_CASE_P(, Vp9ParserTest, ::testing::ValuesIn(kTestParams));
+
+TEST_F(Vp9ParserTest, CheckColorSpace) {
+  Vp9FrameHeader fhdr{};
+  EXPECT_FALSE(fhdr.GetColorSpace().IsSpecified());
+  fhdr.color_space = Vp9ColorSpace::BT_709;
+  EXPECT_EQ(VideoColorSpace::REC709(), fhdr.GetColorSpace());
+  fhdr.color_space = Vp9ColorSpace::BT_601;
+  EXPECT_EQ(VideoColorSpace::REC601(), fhdr.GetColorSpace());
+}
 
 }  // namespace media

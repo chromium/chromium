@@ -42,8 +42,6 @@ struct NET_EXPORT RedirectInfo {
       const GURL& new_location,
       // Whether the URL was upgraded to HTTPS due to upgrade-insecure-requests.
       bool insecure_scheme_was_upgraded,
-      // Whether Token Binding of TLS was negotiated.
-      bool token_binding_negotiated,
       // This method copies the URL fragment of the original URL to the new URL
       // by default. Set false only when the network delegate has set the
       // desired redirect URL (with or without fragment), so it must not be
@@ -75,11 +73,6 @@ struct NET_EXPORT RedirectInfo {
   // The new referrer policy that should be obeyed if there are
   // subsequent redirects.
   URLRequest::ReferrerPolicy new_referrer_policy;
-
-  // The hostname of the referrer if it asked the client to include a referred
-  // Token Binding when following the redirect; otherwise this is the empty
-  // string.
-  std::string referred_token_binding_host;
 };
 
 }  // namespace net

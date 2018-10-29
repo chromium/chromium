@@ -733,7 +733,7 @@ const ContentTypeTestData mimetype_tests[] = {
     "text/html", true,
     "'utf-8'", true,
     "text/html;charset='utf-8', text/html" },
-  // Last charset wins if matching content-type.
+  // First charset wins if matching content-type.
   { "HTTP/1.1 200 OK\n"
     "Content-type: text/html;charset=utf-8\n"
     "Content-type: text/html;charset=iso-8859-1\n",
@@ -759,11 +759,11 @@ const ContentTypeTestData mimetype_tests[] = {
     "text/html", true,
     "", false,
     "text/html;charset=" },
-  // Multiple charsets, last one wins.
+  // Multiple charsets, first one wins.
   { "HTTP/1.1 200 OK\n"
     "Content-type: text/html;charset=utf-8; charset=iso-8859-1\n",
     "text/html", true,
-    "iso-8859-1", true,
+    "utf-8", true,
     "text/html;charset=utf-8; charset=iso-8859-1" },
   // Multiple params.
   { "HTTP/1.1 200 OK\n"
@@ -1047,84 +1047,107 @@ TEST_P(UpdateTest, Update) {
 }
 
 const UpdateTestData update_tests[] = {
-  { "HTTP/1.1 200 OK\n",
+    {"HTTP/1.1 200 OK\n",
 
-    "HTTP/1/1 304 Not Modified\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n",
+     "HTTP/1/1 304 Not Modified\n"
+     "connection: keep-alive\n"
+     "Cache-control: max-age=10000\n",
 
-    "HTTP/1.1 200 OK\n"
-    "Cache-control: max-age=10000\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Foo: 1\n"
-    "Cache-control: private\n",
+     "HTTP/1.1 200 OK\n"
+     "Cache-control: max-age=10000\n"},
+    {"HTTP/1.1 200 OK\n"
+     "Foo: 1\n"
+     "Cache-control: private\n",
 
-    "HTTP/1/1 304 Not Modified\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n",
+     "HTTP/1/1 304 Not Modified\n"
+     "connection: keep-alive\n"
+     "Cache-control: max-age=10000\n",
 
-    "HTTP/1.1 200 OK\n"
-    "Cache-control: max-age=10000\n"
-    "Foo: 1\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Foo: 1\n"
-    "Cache-control: private\n",
+     "HTTP/1.1 200 OK\n"
+     "Cache-control: max-age=10000\n"
+     "Foo: 1\n"},
+    {"HTTP/1.1 200 OK\n"
+     "Foo: 1\n"
+     "Cache-control: private\n",
 
-    "HTTP/1/1 304 Not Modified\n"
-    "connection: keep-alive\n"
-    "Cache-CONTROL: max-age=10000\n",
+     "HTTP/1/1 304 Not Modified\n"
+     "connection: keep-alive\n"
+     "Cache-CONTROL: max-age=10000\n",
 
-    "HTTP/1.1 200 OK\n"
-    "Cache-CONTROL: max-age=10000\n"
-    "Foo: 1\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Content-Length: 450\n",
+     "HTTP/1.1 200 OK\n"
+     "Cache-CONTROL: max-age=10000\n"
+     "Foo: 1\n"},
+    {"HTTP/1.1 200 OK\n"
+     "Content-Length: 450\n",
 
-    "HTTP/1/1 304 Not Modified\n"
-    "connection: keep-alive\n"
-    "Cache-control:      max-age=10001   \n",
+     "HTTP/1/1 304 Not Modified\n"
+     "connection: keep-alive\n"
+     "Cache-control:      max-age=10001   \n",
 
-    "HTTP/1.1 200 OK\n"
-    "Cache-control: max-age=10001\n"
-    "Content-Length: 450\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "X-Frame-Options: DENY\n",
+     "HTTP/1.1 200 OK\n"
+     "Cache-control: max-age=10001\n"
+     "Content-Length: 450\n"},
+    {
+        "HTTP/1.1 200 OK\n"
+        "X-Frame-Options: DENY\n",
 
-    "HTTP/1/1 304 Not Modified\n"
-    "X-Frame-Options: ALLOW\n",
+        "HTTP/1/1 304 Not Modified\n"
+        "X-Frame-Options: ALLOW\n",
 
-    "HTTP/1.1 200 OK\n"
-    "X-Frame-Options: DENY\n",
-  },
-  { "HTTP/1.1 200 OK\n"
-    "X-WebKit-CSP: default-src 'none'\n",
+        "HTTP/1.1 200 OK\n"
+        "X-Frame-Options: DENY\n",
+    },
+    {
+        "HTTP/1.1 200 OK\n"
+        "X-WebKit-CSP: default-src 'none'\n",
 
-    "HTTP/1/1 304 Not Modified\n"
-    "X-WebKit-CSP: default-src *\n",
+        "HTTP/1/1 304 Not Modified\n"
+        "X-WebKit-CSP: default-src *\n",
 
-    "HTTP/1.1 200 OK\n"
-    "X-WebKit-CSP: default-src 'none'\n",
-  },
-  { "HTTP/1.1 200 OK\n"
-    "X-XSS-Protection: 1\n",
+        "HTTP/1.1 200 OK\n"
+        "X-WebKit-CSP: default-src 'none'\n",
+    },
+    {
+        "HTTP/1.1 200 OK\n"
+        "X-XSS-Protection: 1\n",
 
-    "HTTP/1/1 304 Not Modified\n"
-    "X-XSS-Protection: 0\n",
+        "HTTP/1/1 304 Not Modified\n"
+        "X-XSS-Protection: 0\n",
 
-    "HTTP/1.1 200 OK\n"
-    "X-XSS-Protection: 1\n",
-  },
-  { "HTTP/1.1 200 OK\n",
+        "HTTP/1.1 200 OK\n"
+        "X-XSS-Protection: 1\n",
+    },
+    {"HTTP/1.1 200 OK\n",
 
-    "HTTP/1/1 304 Not Modified\n"
-    "X-Content-Type-Options: nosniff\n",
+     "HTTP/1/1 304 Not Modified\n"
+     "X-Content-Type-Options: nosniff\n",
 
-    "HTTP/1.1 200 OK\n"
-  },
+     "HTTP/1.1 200 OK\n"},
+    {"HTTP/1.1 200 OK\n"
+     "Content-Encoding: identity\n"
+     "Content-Length: 100\n"
+     "Content-Type: text/html\n"
+     "Content-Security-Policy: default-src 'none'\n",
+
+     "HTTP/1/1 304 Not Modified\n"
+     "Content-Encoding: gzip\n"
+     "Content-Length: 200\n"
+     "Content-Type: text/xml\n"
+     "Content-Security-Policy: default-src 'self'\n",
+
+     "HTTP/1.1 200 OK\n"
+     "Content-Security-Policy: default-src 'self'\n"
+     "Content-Encoding: identity\n"
+     "Content-Length: 100\n"
+     "Content-Type: text/html\n"},
+    {"HTTP/1.1 200 OK\n"
+     "Content-Location: /example_page.html\n",
+
+     "HTTP/1/1 304 Not Modified\n"
+     "Content-Location: /not_example_page.html\n",
+
+     "HTTP/1.1 200 OK\n"
+     "Content-Location: /example_page.html\n"},
 };
 
 INSTANTIATE_TEST_CASE_P(HttpResponseHeaders,

@@ -13,6 +13,34 @@ const commandMenuShortcut = Host.isMac() ? 'Command + Shift + P' : 'Control + Sh
 /** @type {!Array<!Help.ReleaseNote>} */
 Help.releaseNoteText = [
   {
+    version: 13,
+    header: 'Highlights from the Chrome 71 update',
+    highlights: [
+      {
+        title: 'Hover over a Live Expression to highlight a DOM node',
+        subtitle: 'Hover over a result that evaluates to a node to highlight that node in the viewport.',
+        link: 'https://developers.google.com/web/updates/2018/10/devtools#hover',
+      },
+      {
+        title: 'Store DOM nodes as global variables',
+        subtitle: 'Right-click a node in the Elements panel or Console and select "Store as global variable".',
+        link: 'https://developers.google.com/web/updates/2018/10/devtools#store',
+      },
+      {
+        title: 'Initiator and priority information now in HAR imports and exports',
+        subtitle:
+            'Get more context around what caused a resource to be requested and what priority the browser assigned to each resource when sharing network logs.',
+        link: 'https://developers.google.com/web/updates/2018/10/devtools#HAR',
+      },
+      {
+        title: 'Access the Command Menu from the Main Menu',
+        subtitle: 'Open the Main Menu and select "Run command".',
+        link: 'https://developers.google.com/web/updates/2018/10/devtools#command-menu',
+      },
+    ],
+    link: 'https://developers.google.com/web/updates/2018/10/devtools',
+  },
+  {
     version: 12,
     header: 'Highlights from the Chrome 70 update',
     highlights: [

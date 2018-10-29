@@ -239,6 +239,10 @@ bool Event::IsBeforeUnloadEvent() const {
   return false;
 }
 
+bool Event::IsErrorEvent() const {
+  return false;
+}
+
 void Event::preventDefault() {
   if (handling_passive_ != PassiveMode::kNotPassive &&
       handling_passive_ != PassiveMode::kNotPassiveDefault) {

@@ -8,10 +8,8 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -64,14 +62,6 @@ void ClientHintsObserver::PersistClientHints(
       binding_.GetCurrentTargetFrame()->GetProcess();
   content::BrowserContext* browser_context = rph->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
-
-  scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      CookieSettingsFactory::GetForProfile(profile);
-  if (!cookie_settings->IsCookieAccessAllowed(primary_url, primary_url)) {
-    // If |primary_url| is disallowed from storing cookies, then |primary_url|
-    // is also prevented from storing client hints.
-    return;
-  }
 
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);

@@ -63,13 +63,7 @@ bool PendingAnimations::Update(
   HeapVector<Member<Animation>> animations;
   HeapVector<Member<Animation>> deferred;
   animations.swap(pending_);
-  int compositor_group = ++compositor_group_;
-  while (compositor_group == 0 || compositor_group == 1) {
-    // Wrap around, skipping 0, 1.
-    // * 0 is reserved for automatic assignment
-    // * 1 is used for animations with a specified start time
-    compositor_group = ++compositor_group_;
-  }
+  int compositor_group = NextCompositorGroup();
 
   for (auto& animation : animations) {
     bool had_compositor_animation =
@@ -97,17 +91,13 @@ bool PendingAnimations::Update(
   // remaining synchronized animations need to wait for the synchronized
   // start time. Otherwise they may start immediately.
   if (started_synchronized_on_compositor) {
-    for (auto& animation : waiting_for_start_time) {
-      if (!animation->startTime()) {
-        waiting_for_compositor_animation_start_.push_back(animation);
-      }
-    }
+    waiting_for_compositor_animation_start_.AppendVector(
+        waiting_for_start_time);
   } else {
     for (auto& animation : waiting_for_start_time) {
-      if (!animation->startTime()) {
-        animation->NotifyCompositorStartTime(
-            animation->TimelineInternal()->CurrentTimeInternal());
-      }
+      DCHECK(!animation->startTime());
+      animation->NotifyCompositorStartTime(
+          animation->TimelineInternal()->CurrentTimeInternal());
     }
   }
 
@@ -164,6 +154,17 @@ void PendingAnimations::NotifyCompositorAnimationStarted(
         monotonic_animation_start_time -
         TimeTicksInSeconds(animation->TimelineInternal()->ZeroTime()));
   }
+}
+
+int PendingAnimations::NextCompositorGroup() {
+  do {
+    // Wrap around, skipping 0, 1.
+    // * 0 is reserved for automatic assignment
+    // * 1 is used for animations with a specified start time
+    ++compositor_group_;
+  } while (compositor_group_ == 0 || compositor_group_ == 1);
+
+  return compositor_group_;
 }
 
 void PendingAnimations::Trace(blink::Visitor* visitor) {

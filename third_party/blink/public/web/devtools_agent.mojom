@@ -76,6 +76,11 @@ interface DevToolsAgent {
   InspectElement(gfx.mojom.Point point);
 };
 
+// This interface is implemented in browser.
+// TODO(dgozman): add methods.
+interface DevToolsAgentHost {
+};
+
 // Represents an attached session which exposes remote debugging protocol.
 // This interface is implemented in renderer hosting entity under debug.
 //

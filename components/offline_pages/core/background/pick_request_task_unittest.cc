@@ -6,11 +6,10 @@
 
 #include <memory>
 #include <set>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
-#include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/background/device_conditions.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
@@ -120,7 +119,6 @@ class PickRequestTaskTest : public RequestQueueTaskTestBase {
   void TaskCompletionCallback(Task* completed_task);
 
  protected:
-
   std::unique_ptr<RequestNotifierStub> notifier_;
   std::unique_ptr<SavePageRequest> last_picked_;
   std::unique_ptr<OfflinerPolicy> policy_;
@@ -204,9 +202,8 @@ void PickRequestTaskTest::MakePickRequestTask() {
                      base::Unretained(this)),
       base::BindOnce(&PickRequestTaskTest::RequestCountCallback,
                      base::Unretained(this)),
-      conditions, disabled_requests_, prioritized_requests_));
+      conditions, disabled_requests_, &prioritized_requests_));
   task_->SetTaskCompletionCallbackForTesting(
-      task_runner_.get(),
       base::BindRepeating(&PickRequestTaskTest::TaskCompletionCallback,
                           base::Unretained(this)));
 }

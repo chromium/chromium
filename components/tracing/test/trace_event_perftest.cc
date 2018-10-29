@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "perf_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

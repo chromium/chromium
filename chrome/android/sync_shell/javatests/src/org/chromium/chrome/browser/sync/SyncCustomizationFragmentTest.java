@@ -31,7 +31,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.autofill.CardType;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.preferences.Preferences;
@@ -45,6 +44,10 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.AndroidSyncSettings;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.PassphraseType;
+import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
+import org.chromium.components.sync.protocol.EntitySpecifics;
+import org.chromium.components.sync.protocol.SyncEntity;
+import org.chromium.components.sync.protocol.WalletMaskedCreditCard;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -116,6 +119,29 @@ public class SyncCustomizationFragmentTest {
     @After
     public void tearDown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(() -> ProfileSyncService.resetForTests());
+    }
+
+    /**
+     * Minimal test fixture to debug flakiness in the actual tests.
+     * TODO(crbug.com/879246): Remove after investigation.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    public void testSetupOnly() {
+        mSyncTestRule.setUpTestAccountAndSignIn();
+    }
+
+    /**
+     * Minimal test fixture to debug flakiness in the actual tests.
+     * TODO(crbug.com/879246): Remove after investigation.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    public void testSetupAndWaitForSyncActive() {
+        mSyncTestRule.setUpTestAccountAndSignIn();
+        SyncTestUtil.waitForSyncActive();
     }
 
     @Test
@@ -743,13 +769,31 @@ public class SyncCustomizationFragmentTest {
     }
 
     private void addServerAutofillCreditCard() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            boolean isLocal = false;
-            PersonalDataManager.getInstance().addServerCreditCardForTest(new CreditCard("",
-                    "https://example.com", isLocal, false, "Jon Doe", "4111111111111111",
-                    "1111", "11", "20", "visa", 0, CardType.UNKNOWN, "" /* billingAddressId */,
-                    "025eb937c022489eb8dc78cbaa969218" /* serverId */));
-        });
+        final String serverId = "025eb937c022489eb8dc78cbaa969218";
+        WalletMaskedCreditCard card =
+                WalletMaskedCreditCard.newBuilder()
+                        .setId(serverId)
+                        .setStatus(WalletMaskedCreditCard.WalletCardStatus.VALID)
+                        .setNameOnCard("Jon Doe")
+                        .setType(WalletMaskedCreditCard.WalletCardType.UNKNOWN)
+                        .setLastFour("1111")
+                        .setExpMonth(11)
+                        .setExpYear(2020)
+                        .build();
+        AutofillWalletSpecifics wallet_specifics =
+                AutofillWalletSpecifics.newBuilder()
+                        .setType(AutofillWalletSpecifics.WalletInfoType.MASKED_CREDIT_CARD)
+                        .setMaskedCard(card)
+                        .build();
+        EntitySpecifics specifics =
+                EntitySpecifics.newBuilder().setAutofillWallet(wallet_specifics).build();
+        SyncEntity entity = SyncEntity.newBuilder()
+                                    .setName(serverId)
+                                    .setIdString(serverId)
+                                    .setSpecifics(specifics)
+                                    .build();
+        mSyncTestRule.getFakeServerHelper().setWalletData(entity);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
     }
 
     private boolean hasServerAutofillCreditCards() {

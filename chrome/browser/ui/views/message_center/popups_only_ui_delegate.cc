@@ -29,10 +29,8 @@ PopupsOnlyUiDelegate::~PopupsOnlyUiDelegate() {
 
 void PopupsOnlyUiDelegate::ShowPopups() {
   alignment_delegate_->StartObserving(display::Screen::GetScreen());
-  popup_collection_->Update();
 }
 
 void PopupsOnlyUiDelegate::HidePopups() {
   DCHECK(popup_collection_.get());
-  popup_collection_->MarkAllPopupsShown(true /* animate */);
 }

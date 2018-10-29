@@ -47,7 +47,7 @@ struct CC_EXPORT LayerImplTestProperties {
   int sorting_context_id;
   float opacity;
   FilterOperations filters;
-  FilterOperations background_filters;
+  FilterOperations backdrop_filters;
   gfx::PointF filters_origin;
   SkBlendMode blend_mode;
   LayerPositionConstraint position_constraint;

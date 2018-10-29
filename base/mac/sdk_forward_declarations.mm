@@ -18,3 +18,8 @@ NSString* const NSAppearanceNameVibrantDark = @"NSAppearanceNameVibrantDark";
     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_11
 NSString* const CIDetectorTypeText = @"CIDetectorTypeText";
 #endif  // MAC_OS_X_VERSION_10_11
+
+#if !defined(MAC_OS_X_VERSION_10_14) || \
+    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_14
+NSString* const NSAppearanceNameDarkAqua = @"NSAppearanceNameDarkAqua";
+#endif

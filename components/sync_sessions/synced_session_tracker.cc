@@ -279,15 +279,13 @@ void SyncedSessionTracker::DeleteForeignTab(const std::string& session_tag,
 const SyncedSessionTracker::TrackedSession*
 SyncedSessionTracker::LookupTrackedSession(
     const std::string& session_tag) const {
-  std::map<std::string, TrackedSession>::const_iterator it =
-      session_map_.find(session_tag);
+  auto it = session_map_.find(session_tag);
   return it == session_map_.end() ? nullptr : &it->second;
 }
 
 SyncedSessionTracker::TrackedSession*
 SyncedSessionTracker::LookupTrackedSession(const std::string& session_tag) {
-  std::map<std::string, TrackedSession>::iterator it =
-      session_map_.find(session_tag);
+  auto it = session_map_.find(session_tag);
   return it == session_map_.end() ? nullptr : &it->second;
 }
 

@@ -67,7 +67,8 @@ sk_sp<PaintFilter> FEOffset::CreateImageFilter() {
   return sk_make_sp<OffsetPaintFilter>(
       SkFloatToScalar(filter->ApplyHorizontalScale(dx_)),
       SkFloatToScalar(filter->ApplyVerticalScale(dy_)),
-      PaintFilterBuilder::Build(InputEffect(0), OperatingInterpolationSpace()),
+      paint_filter_builder::Build(InputEffect(0),
+                                  OperatingInterpolationSpace()),
       &crop_rect);
 }
 

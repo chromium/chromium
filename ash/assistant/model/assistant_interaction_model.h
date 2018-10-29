@@ -137,7 +137,7 @@ class AssistantInteractionModel {
   std::unique_ptr<AssistantQuery> committed_query_;
   std::unique_ptr<AssistantQuery> pending_query_;
   std::unique_ptr<AssistantResponse> pending_response_;
-  std::unique_ptr<AssistantResponse> response_;
+  std::shared_ptr<AssistantResponse> response_;
 
   base::ObserverList<AssistantInteractionModelObserver>::Unchecked observers_;
 

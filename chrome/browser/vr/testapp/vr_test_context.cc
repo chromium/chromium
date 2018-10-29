@@ -36,7 +36,6 @@
 #include "chrome/grit/vr_testapp_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/security_state/core/security_state.h"
-#include "components/toolbar/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -228,9 +227,9 @@ void VrTestContext::HandleInput(ui::Event* event) {
         break;
       case ui::DomCode::US_A:
         if (model_->platform_toast) {
-          ui_->CancelPlatformToast();
+          browser_ui->CancelPlatformToast();
         } else {
-          ui_->ShowPlatformToast(base::UTF8ToUTF16("Downloading"));
+          browser_ui->ShowPlatformToast(base::UTF8ToUTF16("Downloading"));
         }
         break;
       case ui::DomCode::US_H:
@@ -581,7 +580,7 @@ void VrTestContext::ExitFullscreen() {
 
 void VrTestContext::Navigate(GURL gurl, NavigationMethod method) {
   ToolbarState state(gurl, security_state::SecurityLevel::HTTP_SHOW_WARNING,
-                     &toolbar::kHttpIcon, true, false);
+                     &omnibox::kHttpIcon, true, false);
   ui_->GetBrowserUiWeakPtr()->SetToolbarState(state);
   page_load_start_ = base::TimeTicks::Now();
 }
@@ -742,52 +741,52 @@ void VrTestContext::CycleIndicators() {
 void VrTestContext::CycleOrigin() {
   const std::vector<ToolbarState> states = {
       {GURL("http://domain.com"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       {GURL("https://www.domain.com/path/segment/directory/file.html"),
-       security_state::SecurityLevel::SECURE, &toolbar::kHttpsValidIcon, true,
+       security_state::SecurityLevel::SECURE, &omnibox::kHttpsValidIcon, true,
        false},
       {GURL("https://www.domain.com/path/segment/directory/file.html"),
-       security_state::SecurityLevel::DANGEROUS, &toolbar::kHttpsInvalidIcon,
+       security_state::SecurityLevel::DANGEROUS, &omnibox::kHttpsInvalidIcon,
        true, false},
       // Do not show URL
       {GURL(), security_state::SecurityLevel::HTTP_SHOW_WARNING,
-       &toolbar::kHttpIcon, false, false},
-      {GURL(), security_state::SecurityLevel::SECURE, &toolbar::kHttpsValidIcon,
+       &omnibox::kHttpIcon, false, false},
+      {GURL(), security_state::SecurityLevel::SECURE, &omnibox::kHttpsValidIcon,
        true, false},
       {GURL("file://very-very-very-long-file-hostname/path/path/path/path"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       {GURL("file:///path/path/path/path/path/path/path/path/path"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       // Elision-related cases.
       {GURL("http://domaaaaaaaaaaain.com"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       {GURL("http://domaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaain.com"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       {GURL("http://domain.com/a/"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       {GURL("http://domain.com/aaaaaaa/"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       {GURL("http://domain.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       {GURL("http://domaaaaaaaaaaaaaaaaain.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaa/"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       {GURL("http://domaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaain.com/aaaaaaaaaa/"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       {GURL("http://www.domain.com/path/segment/directory/file.html"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
       {GURL("http://subdomain.domain.com/"),
-       security_state::SecurityLevel::HTTP_SHOW_WARNING, &toolbar::kHttpIcon,
+       security_state::SecurityLevel::HTTP_SHOW_WARNING, &omnibox::kHttpIcon,
        true, false},
   };
 

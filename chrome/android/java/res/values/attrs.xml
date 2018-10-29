@@ -4,10 +4,6 @@
      found in the LICENSE file. -->
 
 <resources>
-    <declare-styleable name="TintedImage">
-        <attr name="chrometint" format="color" />
-    </declare-styleable>
-
     <declare-styleable name="HyperlinkPreference">
         <!-- The URL to load when the preference is clicked -->
         <attr name="url" format="string" />

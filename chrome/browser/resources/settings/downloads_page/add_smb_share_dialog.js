@@ -6,6 +6,7 @@
  * @fileoverview 'settings-add-smb-share-dialog' is a component for adding
  * an SMB Share.
  */
+
 Polymer({
   is: 'settings-add-smb-share-dialog',
 
@@ -42,6 +43,24 @@ Polymer({
         return [];
       },
     },
+
+    /** @private */
+    isActiveDirectory_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('isActiveDirectoryUser');
+      },
+    },
+
+    /** @private */
+    authenticationMethod_: {
+      type: String,
+      value: function() {
+        return loadTimeData.getBoolean('isActiveDirectoryUser') ?
+            SmbAuthMethod.KERBEROS :
+            SmbAuthMethod.CREDENTIALS;
+      },
+    },
   },
 
   /** @private {?settings.SmbBrowserProxy} */
@@ -68,8 +87,15 @@ Polymer({
   /** @private */
   onAddButtonTap_: function() {
     this.browserProxy_.smbMount(
-        this.mountUrl_, this.mountName_.trim(), this.username_, this.password_);
+        this.mountUrl_, this.mountName_.trim(), this.username_, this.password_,
+        this.authenticationMethod_);
     this.$.dialog.close();
+  },
+
+  /** @private */
+  onURLChanged_: function() {
+    const parts = this.mountUrl_.split('\\');
+    this.mountName_ = parts[parts.length - 1];
   },
 
   /**
@@ -88,4 +114,11 @@ Polymer({
     this.discoveredShares_ = this.discoveredShares_.concat(shares);
   },
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowCredentialUI_: function() {
+    return this.authenticationMethod_ == SmbAuthMethod.CREDENTIALS;
+  },
 });

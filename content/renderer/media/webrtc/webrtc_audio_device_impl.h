@@ -214,11 +214,11 @@ class CONTENT_EXPORT WebRtcAudioDeviceImpl : public WebRtcAudioDeviceNotImpl,
   class RenderBuffer;
 
   // Used to check methods that run on the main render thread.
-  base::ThreadChecker main_thread_checker_;
+  THREAD_CHECKER(main_thread_checker_);
   // Used to check methods that are called on libjingle's signaling thread.
-  base::ThreadChecker signaling_thread_checker_;
-  base::ThreadChecker worker_thread_checker_;
-  base::ThreadChecker audio_renderer_thread_checker_;
+  THREAD_CHECKER(signaling_thread_checker_);
+  THREAD_CHECKER(worker_thread_checker_);
+  THREAD_CHECKER(audio_renderer_thread_checker_);
 
   const base::UnguessableToken audio_processing_id_;
 

@@ -4,6 +4,7 @@
 
 #include "extensions/shell/browser/shell_app_delegate.h"
 
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/media_capture_util.h"
 #include "extensions/common/constants.h"
@@ -59,8 +60,10 @@ content::ColorChooser* ShellAppDelegate::ShowColorChooser(
 
 void ShellAppDelegate::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
   NOTIMPLEMENTED();
+  listener->FileSelectionCanceled();
 }
 
 void ShellAppDelegate::RequestMediaAccessPermission(

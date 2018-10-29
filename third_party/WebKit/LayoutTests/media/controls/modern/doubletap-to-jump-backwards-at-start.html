@@ -11,10 +11,9 @@ async_test(t => {
   let count = 0;
 
   video.addEventListener('playing', t.step_func(() => {
-    // Double tap in the top left hand corner
-    const coordinates =
-      coordinatesOutsideElement(mediaControlsOverlayPlayButton(video));
-    doubleTouchAtCoordinates(coordinates[0] + 1, coordinates[1] + 1);
+    // Double tap on the left side.
+    const coordinates = videoLeftEdgeCoordinates(video);
+    doubleTouchAtCoordinates(coordinates[0], coordinates[1]);
   }), { once: true });
 
   video.ontimeupdate = t.step_func(() => {

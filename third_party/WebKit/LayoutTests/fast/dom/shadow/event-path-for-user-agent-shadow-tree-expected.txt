@@ -1,4 +1,4 @@
- 
+
 Dispaching a click event on #details-child
 
 event.path on node #details-child
@@ -26,4 +26,5 @@ event.path on node #sandbox
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 

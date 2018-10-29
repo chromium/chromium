@@ -7,6 +7,10 @@
 <script>
 'use strict';
 
+setup({
+  allow_uncaught_exception: true,
+});
+
 // Custom Element State
 // https://dom.spec.whatwg.org/#concept-element-custom-element-state
 
@@ -31,7 +35,7 @@ test_with_window(w => {
   // Set element's custom element state to "failed".
   // https://html.spec.whatwg.org/multipage/scripting.html#upgrades
   let container = document.body;
-  assert_reports(w, error, () => container.appendChild(element));
+  assert_reports(window, error, () => container.appendChild(element));
   assert_equals(constructorCount, 1, 'constructor should be invoked once');
 
   // "failed" is not "defined"

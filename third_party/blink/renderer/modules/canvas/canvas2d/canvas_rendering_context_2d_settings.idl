@@ -8,6 +8,6 @@
 dictionary CanvasRenderingContext2DSettings {
     boolean alpha = true;
     [RuntimeEnabled=CanvasColorManagement] CanvasColorSpace colorSpace = "srgb";
-    [RuntimeEnabled=CanvasColorManagement] CanvasPixelFormat pixelFormat = "8-8-8-8";
+    [RuntimeEnabled=CanvasColorManagement] CanvasPixelFormat pixelFormat = "uint8";
 };
 

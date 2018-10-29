@@ -33,15 +33,15 @@
 
 #include "base/location.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/web_task_runner.h"
 
 namespace blink {
 
-using namespace VectorMath;
+using namespace vector_math;
 
 const int kInputBufferSize = 8 * 16384;
 
@@ -139,9 +139,8 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
   // FIXME: would be better to up the thread priority here.  It doesn't need to
   // be real-time, but higher than the default...
   if (use_background_threads && background_stages_.size() > 0) {
-    background_thread_ =
-        Platform::Current()->CreateThread(WebThreadCreationParams(
-            WebThreadType::kReverbConvolutionBackgroundThread));
+    background_thread_ = Platform::Current()->CreateThread(ThreadCreationParams(
+        WebThreadType::kReverbConvolutionBackgroundThread));
   }
 }
 

@@ -12,18 +12,22 @@
 
 namespace blink {
 
+class NGLineBoxFragmentBuilder;
+
 class CORE_EXPORT NGPhysicalLineBoxFragment final
     : public NGPhysicalContainerFragment {
  public:
-  // This modifies the passed-in children vector.
-  NGPhysicalLineBoxFragment(const ComputedStyle&,
-                            NGStyleVariant style_variant,
-                            NGPhysicalSize size,
-                            Vector<NGLink>& children,
-                            const NGPhysicalOffsetRect& contents_ink_overflow,
-                            const NGLineHeightMetrics&,
-                            TextDirection base_direction,
-                            scoped_refptr<NGBreakToken> break_token = nullptr);
+  static scoped_refptr<const NGPhysicalLineBoxFragment> Create(
+      NGLineBoxFragmentBuilder* builder);
+
+  ~NGPhysicalLineBoxFragment() {
+    for (const NGLinkStorage& child : Children())
+      child.fragment->Release();
+  }
+
+  ChildLinkList Children() const final {
+    return ChildLinkList(num_children_, &children_[0]);
+  }
 
   const NGLineHeightMetrics& Metrics() const { return metrics_; }
 
@@ -39,6 +43,9 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final
 
   // Ink overflow of itself including contents, in the local coordinate.
   NGPhysicalOffsetRect InkOverflow() const;
+
+  // Ink overflow of children in local coordinates.
+  NGPhysicalOffsetRect ContentsInkOverflow() const;
 
   // Scrollable overflow. including contents, in the local coordinate.
   // ScrollableOverflow is not precomputed/cached because it cannot be computed
@@ -57,7 +64,10 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final
   bool HasSoftWrapToNextLine() const;
 
  private:
+  NGPhysicalLineBoxFragment(NGLineBoxFragmentBuilder* builder);
+
   NGLineHeightMetrics metrics_;
+  NGLinkStorage children_[];
 };
 
 DEFINE_TYPE_CASTS(NGPhysicalLineBoxFragment,

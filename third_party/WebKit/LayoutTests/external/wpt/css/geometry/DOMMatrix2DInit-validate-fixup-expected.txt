@@ -1,17 +1,17 @@
 This is a testharness.js-based test.
-Found 184 tests; 172 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 184 tests; 178 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS setTransform({a: 1, m11: 2}) (invalid)
-FAIL addPath({a: 1, m11: 2}) (invalid) assert_throws: function "() => drawRectWithAddPathTransform(ctx, dict)" did not throw
+PASS addPath({a: 1, m11: 2}) (invalid)
 PASS setTransform({b: 0, m12: -1}) (invalid)
-FAIL addPath({b: 0, m12: -1}) (invalid) assert_throws: function "() => drawRectWithAddPathTransform(ctx, dict)" did not throw
+PASS addPath({b: 0, m12: -1}) (invalid)
 PASS setTransform({c: Infinity, m21: -Infinity}) (invalid)
-FAIL addPath({c: Infinity, m21: -Infinity}) (invalid) assert_throws: function "() => drawRectWithAddPathTransform(ctx, dict)" did not throw
+PASS addPath({c: Infinity, m21: -Infinity}) (invalid)
 PASS setTransform({d: 0, m22: NaN}) (invalid)
-FAIL addPath({d: 0, m22: NaN}) (invalid) assert_throws: function "() => drawRectWithAddPathTransform(ctx, dict)" did not throw
+PASS addPath({d: 0, m22: NaN}) (invalid)
 PASS setTransform({e: 1, m41: 1.00000001}) (invalid)
-FAIL addPath({e: 1, m41: 1.00000001}) (invalid) assert_throws: function "() => drawRectWithAddPathTransform(ctx, dict)" did not throw
+PASS addPath({e: 1, m41: 1.00000001}) (invalid)
 PASS setTransform({f: 0, m42: 5e-324}) (invalid)
-FAIL addPath({f: 0, m42: 5e-324}) (invalid) assert_throws: function "() => drawRectWithAddPathTransform(ctx, dict)" did not throw
+PASS addPath({f: 0, m42: 5e-324}) (invalid)
 PASS setTransform (Sanity check without dictionary)
 PASS addPath (Sanity check without second parameter)
 PASS setTransform({m13: 1, is2D: true})

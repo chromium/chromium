@@ -13,9 +13,20 @@
 #import "ios/chrome/browser/ui/open_in_toolbar.h"
 #include "url/gurl.h"
 
-namespace net {
-class URLRequestContextGetter;
+namespace network {
+class SharedURLLoaderFactory;
 }
+
+// Enum for the IOS.OpenIn.DownloadResult UMA histogram to log the result of
+// the file download initiated when the user tap on "open in" button.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OpenInDownloadResult {
+  kSucceeded = 0,
+  kCanceled = 1,
+  kFailed = 2,
+  kMaxValue = kFailed,
+};
 
 @class CRWWebController;
 
@@ -23,8 +34,9 @@ class URLRequestContextGetter;
 @interface OpenInController : NSObject<UIGestureRecognizerDelegate,
                                        UIDocumentInteractionControllerDelegate>
 // Designated initializer.
-- (id)initWithRequestContext:(net::URLRequestContextGetter*)requestContext
-               webController:(CRWWebController*)webController;
+- (id)initWithURLLoaderFactory:
+          (scoped_refptr<network::SharedURLLoaderFactory>)urlLoaderFactory
+                 webController:(CRWWebController*)webController;
 
 // Base view on which the Open In toolbar will be presented.
 @property(nonatomic, weak) UIView* baseView;

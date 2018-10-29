@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_stats.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 #if defined(OS_ANDROID)
@@ -22,8 +24,8 @@ namespace {
 
 void OnCanDownloadDecided(base::WeakPtr<DownloadResourceThrottle> throttle,
                           bool storage_permission_granted, bool allow) {
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::Bind(&DownloadResourceThrottle::ContinueDownload, throttle,
                  storage_permission_granted, allow));
 }
@@ -88,8 +90,8 @@ DownloadResourceThrottle::DownloadResourceThrottle(
       request_allowed_(false),
       request_deferred_(false) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &CanDownloadOnUIThread,
           std::unique_ptr<DownloadRequestInfo>(new DownloadRequestInfo(

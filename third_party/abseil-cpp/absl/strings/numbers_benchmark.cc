@@ -158,7 +158,7 @@ BENCHMARK(BM_safe_strtou64_string)
     ->ArgPair(16, 10)
     ->ArgPair(16, 16);
 
-// Returns a vector of `num_strings` strings. Each std::string represents a
+// Returns a vector of `num_strings` strings. Each string represents a
 // floating point number with `num_digits` digits before the decimal point and
 // another `num_digits` digits after.
 std::vector<std::string> MakeFloatStrings(int num_strings, int num_digits) {

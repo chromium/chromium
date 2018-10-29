@@ -38,7 +38,7 @@ CrostiniAppItem::CrostiniAppItem(
 
     // Crostini app is created from scratch. Move it to default folder.
     DCHECK(folder_id().empty());
-    SetChromeFolderId(kCrostiniFolderId);
+    SetChromeFolderId(crostini::kCrostiniFolderId);
   }
 
   // Set model updater last to avoid being called during construction.

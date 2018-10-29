@@ -14,9 +14,16 @@
 #include "chrome/browser/apps/app_shim/app_shim_handler_mac.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
-#include "mojo/public/cpp/system/isolated_connection.h"
-#include "ui/views/cocoa/bridge_factory_host.h"
+
+namespace content {
+class NSViewBridgeFactoryHost;
+}  // namespace content
+
+namespace views {
+class BridgeFactoryHost;
+}  // namespace views
+
+class AppShimHostBootstrap;
 
 // This is the counterpart to AppShimController in
 // chrome/app/chrome_main_app_mode_mac.mm. The AppShimHost owns itself, and is
@@ -25,24 +32,18 @@
 class AppShimHost : public chrome::mojom::AppShimHost,
                     public apps::AppShimHandler::Host {
  public:
-  AppShimHost();
+  AppShimHost(const std::string& app_id, const base::FilePath& profile_path);
   ~AppShimHost() override;
 
-  // Creates a new server-side mojo channel at |endpoint|, which should contain
-  // a file descriptor of a channel created by an UnixDomainSocketAcceptor, and
-  // begins listening for messages on it.
-  void ServeChannel(mojo::PlatformChannelEndpoint endpoint);
+  void OnBootstrapConnected(std::unique_ptr<AppShimHostBootstrap> bootstrap);
 
  protected:
-  void BindToRequest(chrome::mojom::AppShimHostRequest host_request);
   void ChannelError(uint32_t custom_reason, const std::string& description);
 
-  // chrome::mojom::AppShimHost implementation.
-  void LaunchApp(chrome::mojom::AppShimPtr app_shim_ptr,
-                 const base::FilePath& profile_dir,
-                 const std::string& app_id,
-                 apps::AppShimLaunchType launch_type,
-                 const std::vector<base::FilePath>& files) override;
+  // Closes the channel and destroys the AppShimHost.
+  void Close();
+
+  // chrome::mojom::AppShimHost.
   void FocusApp(apps::AppShimFocusType focus_type,
                 const std::vector<base::FilePath>& files) override;
   void SetAppHidden(bool hidden) override;
@@ -56,17 +57,20 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   void OnAppRequestUserAttention(apps::AppShimAttentionType type) override;
   base::FilePath GetProfilePath() const override;
   std::string GetAppId() const override;
+  views::BridgeFactoryHost* GetViewsBridgeFactoryHost() const override;
 
-  // Closes the channel and destroys the AppShimHost.
-  void Close();
-
-  mojo::IsolatedConnection mojo_connection_;
-  chrome::mojom::AppShimPtr app_shim_;
-  std::unique_ptr<views::BridgeFactoryHost> views_bridge_factory_host_;
   mojo::Binding<chrome::mojom::AppShimHost> host_binding_;
+  chrome::mojom::AppShimPtr app_shim_;
+  chrome::mojom::AppShimRequest app_shim_request_;
+
+  std::unique_ptr<AppShimHostBootstrap> bootstrap_;
+
+  std::unique_ptr<views::BridgeFactoryHost> views_bridge_factory_host_;
+  std::unique_ptr<content::NSViewBridgeFactoryHost> content_bridge_factory_;
+
   std::string app_id_;
   base::FilePath profile_path_;
-  bool initial_launch_finished_;
+  bool has_sent_on_launch_complete_ = false;
 
   THREAD_CHECKER(thread_checker_);
   DISALLOW_COPY_AND_ASSIGN(AppShimHost);

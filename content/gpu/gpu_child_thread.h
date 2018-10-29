@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/memory_coordinator_client.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -47,8 +46,7 @@ class GpuServiceFactory;
 // IPC messages to gpu::GpuChannelManager, which is responsible for issuing
 // rendering commands to the GPU.
 class GpuChildThread : public ChildThreadImpl,
-                       public viz::VizMainImpl::Delegate,
-                       public base::MemoryCoordinatorClient {
+                       public viz::VizMainImpl::Delegate {
  public:
   GpuChildThread(base::RepeatingClosure quit_closure,
                  std::unique_ptr<gpu::GpuInit> gpu_init,
@@ -85,10 +83,6 @@ class GpuChildThread : public ChildThreadImpl,
       base::SingleThreadTaskRunner* task_runner) override;
   void QuitMainMessageLoop() override;
 
-  // ChildMemoryCoordinatorDelegate implementation.
-  void OnTrimMemoryImmediately() override;
-  // base::MemoryCoordinatorClient implementation:
-  void OnPurgeMemory() override;
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 

@@ -1,7 +1,7 @@
 if (window.testRunner) {
     testRunner.waitUntilDone();
     testRunner.dumpAsText();
-    testRunner.dumpChildFramesAsText();
+    testRunner.dumpChildFrames();
 }
 
 function testPreescapedPolicy() {

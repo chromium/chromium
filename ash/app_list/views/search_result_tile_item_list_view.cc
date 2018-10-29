@@ -15,6 +15,7 @@
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/public/cpp/app_list/app_list_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/i18n/rtl.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
@@ -48,7 +49,7 @@ SearchResultTileItemListView::SearchResultTileItemListView(
     : search_result_page_view_(search_result_page_view),
       search_box_(search_box),
       is_play_store_app_search_enabled_(
-          features::IsPlayStoreAppSearchEnabled()) {
+          app_list_features::IsPlayStoreAppSearchEnabled()) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::kHorizontal,
       gfx::Insets(kItemListVerticalSpacing, kItemListHorizontalSpacing),
@@ -97,16 +98,18 @@ int SearchResultTileItemListView::DoUpdate() {
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
 
   SearchResult::DisplayType display_type =
-      features::IsZeroStateSuggestionsEnabled()
+      app_list_features::IsZeroStateSuggestionsEnabled()
           ? (query.empty() ? ash::SearchResultDisplayType::kRecommendation
                            : ash::SearchResultDisplayType::kTile)
           : ash::SearchResultDisplayType::kTile;
+  // Do not display the continue reading app in the search result list.
   std::vector<SearchResult*> display_results =
-      SearchModel::FilterSearchResultsByDisplayType(results(), display_type,
-                                                    kMaxNumSearchResultTiles);
+      SearchModel::FilterSearchResultsByDisplayType(
+          results(), display_type,
+          /*excludes=*/{app_list::kInternalAppIdContinueReading},
+          kMaxNumSearchResultTiles);
 
   SearchResult::ResultType previous_type = ash::SearchResultType::kUnknown;
-
   for (size_t i = 0; i < kMaxNumSearchResultTiles; ++i) {
     if (i >= display_results.size()) {
       if (is_play_store_app_search_enabled_)

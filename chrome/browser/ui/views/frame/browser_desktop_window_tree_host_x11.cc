@@ -66,14 +66,6 @@ void BrowserDesktopWindowTreeHostX11::CloseNow() {
   DesktopWindowTreeHostX11::CloseNow();
 }
 
-void BrowserDesktopWindowTreeHostX11::OnMaximizedStateChanged() {
-  browser_view_->frame()->GetFrameView()->OnMaximizedStateChanged();
-}
-
-void BrowserDesktopWindowTreeHostX11::OnFullscreenStateChanged() {
-  browser_view_->frame()->GetFrameView()->OnFullscreenStateChanged();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHost, public:
 

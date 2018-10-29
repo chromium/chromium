@@ -58,10 +58,25 @@ bool QuicFramerPeer::AppendIetfStreamFrame(QuicFramer* framer,
 }
 
 // static
+bool QuicFramerPeer::ProcessCryptoFrame(QuicFramer* framer,
+                                        QuicDataReader* reader,
+                                        QuicCryptoFrame* frame) {
+  return framer->ProcessCryptoFrame(reader, frame);
+}
+
+// static
+bool QuicFramerPeer::AppendCryptoFrame(QuicFramer* framer,
+                                       const QuicCryptoFrame& frame,
+                                       QuicDataWriter* writer) {
+  return framer->AppendCryptoFrame(frame, writer);
+}
+
+// static
 bool QuicFramerPeer::ProcessIetfAckFrame(QuicFramer* framer,
                                          QuicDataReader* reader,
+                                         uint64_t frame_type,
                                          QuicAckFrame* ack_frame) {
-  return framer->ProcessIetfAckFrame(reader, ack_frame);
+  return framer->ProcessIetfAckFrame(reader, frame_type, ack_frame);
 }
 
 // static
@@ -268,6 +283,22 @@ bool QuicFramerPeer::ProcessNewConnectionIdFrame(
     QuicDataReader* reader,
     QuicNewConnectionIdFrame* frame) {
   return framer->ProcessNewConnectionIdFrame(reader, frame);
+}
+
+// static
+bool QuicFramerPeer::AppendRetireConnectionIdFrame(
+    QuicFramer* framer,
+    const QuicRetireConnectionIdFrame& frame,
+    QuicDataWriter* writer) {
+  return framer->AppendRetireConnectionIdFrame(frame, writer);
+}
+
+// static
+bool QuicFramerPeer::ProcessRetireConnectionIdFrame(
+    QuicFramer* framer,
+    QuicDataReader* reader,
+    QuicRetireConnectionIdFrame* frame) {
+  return framer->ProcessRetireConnectionIdFrame(reader, frame);
 }
 
 // static

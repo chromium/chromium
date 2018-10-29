@@ -16,24 +16,39 @@
 #include "third_party/blink/renderer/core/workers/worker_location.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_error.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope_client.h"
-#include "third_party/blink/renderer/modules/service_worker/service_worker_window_client_callback.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 
 namespace blink {
 
-ServiceWorkerWindowClient* ServiceWorkerWindowClient::Take(
-    ScriptPromiseResolver*,
-    std::unique_ptr<WebServiceWorkerClientInfo> web_client) {
-  return web_client ? ServiceWorkerWindowClient::Create(*web_client) : nullptr;
+namespace {
+
+void DidFocus(ScriptPromiseResolver* resolver,
+              mojom::blink::ServiceWorkerClientInfoPtr client) {
+  if (!resolver->GetExecutionContext() ||
+      resolver->GetExecutionContext()->IsContextDestroyed()) {
+    return;
+  }
+
+  if (!client) {
+    resolver->Reject(ServiceWorkerError::GetException(
+        resolver, mojom::blink::ServiceWorkerErrorType::kNotFound,
+        "The client was not found."));
+    return;
+  }
+  resolver->Resolve(ServiceWorkerWindowClient::Create(*client));
 }
+
+}  // namespace
 
 ServiceWorkerWindowClient* ServiceWorkerWindowClient::Create(
     const WebServiceWorkerClientInfo& info) {
+  DCHECK_EQ(mojom::blink::ServiceWorkerClientType::kWindow, info.client_type);
   return new ServiceWorkerWindowClient(info);
 }
 
 ServiceWorkerWindowClient* ServiceWorkerWindowClient::Create(
     const mojom::blink::ServiceWorkerClientInfo& info) {
+  DCHECK_EQ(mojom::blink::ServiceWorkerClientType::kWindow, info.client_type);
   return new ServiceWorkerWindowClient(info);
 }
 
@@ -67,10 +82,7 @@ ScriptPromise ServiceWorkerWindowClient::focus(ScriptState* script_state) {
   ExecutionContext::From(script_state)->ConsumeWindowInteraction();
 
   ServiceWorkerGlobalScopeClient::From(ExecutionContext::From(script_state))
-      ->Focus(Uuid(),
-              std::make_unique<CallbackPromiseAdapter<ServiceWorkerWindowClient,
-                                                      ServiceWorkerError>>(
-                  resolver));
+      ->Focus(Uuid(), WTF::Bind(&DidFocus, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -80,7 +92,8 @@ ScriptPromise ServiceWorkerWindowClient::navigate(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
   ExecutionContext* context = ExecutionContext::From(script_state);
 
-  KURL parsed_url = KURL(ToWorkerGlobalScope(context)->location()->Url(), url);
+  KURL parsed_url =
+      KURL(To<WorkerGlobalScope>(context)->location()->Url(), url);
   if (!parsed_url.IsValid() || parsed_url.ProtocolIsAbout()) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(), "'" + url + "' is not a valid URL."));
@@ -93,8 +106,8 @@ ScriptPromise ServiceWorkerWindowClient::navigate(ScriptState* script_state,
     return promise;
   }
 
-  ServiceWorkerGlobalScopeClient::From(context)->Navigate(
-      Uuid(), parsed_url, std::make_unique<NavigateClientCallback>(resolver));
+  ServiceWorkerGlobalScopeClient::From(context)->Navigate(Uuid(), parsed_url,
+                                                          resolver);
   return promise;
 }
 

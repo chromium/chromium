@@ -7,7 +7,9 @@ PASS FaceDetector interface: existence and properties of interface prototype obj
 PASS FaceDetector interface: existence and properties of interface prototype object's "constructor" property
 PASS FaceDetector interface: existence and properties of interface prototype object's @@unscopables property
 PASS FaceDetector interface: operation detect(ImageBitmapSource)
-FAIL DetectedFace interface: existence and properties of interface object assert_throws: interface object didn't throw TypeError when called as a constructor function "function () { [native code] }" did not throw
+FAIL DetectedFace interface: existence and properties of interface object assert_throws: interface object didn't throw TypeError when called as a constructor function "function() {
+                new interface_object();
+            }" did not throw
 PASS DetectedFace interface object length
 PASS DetectedFace interface object name
 PASS DetectedFace interface: existence and properties of interface prototype object
@@ -23,7 +25,9 @@ PASS BarcodeDetector interface: existence and properties of interface prototype 
 PASS BarcodeDetector interface: existence and properties of interface prototype object's @@unscopables property
 FAIL BarcodeDetector interface: attribute supportedFormats assert_true: The prototype object must have a property "supportedFormats" expected true got false
 PASS BarcodeDetector interface: operation detect(ImageBitmapSource)
-FAIL DetectedBarcode interface: existence and properties of interface object assert_throws: interface object didn't throw TypeError when called as a constructor function "function () { [native code] }" did not throw
+FAIL DetectedBarcode interface: existence and properties of interface object assert_throws: interface object didn't throw TypeError when called as a constructor function "function() {
+                new interface_object();
+            }" did not throw
 PASS DetectedBarcode interface object length
 PASS DetectedBarcode interface object name
 PASS DetectedBarcode interface: existence and properties of interface prototype object

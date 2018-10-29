@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
+import android.os.Build;
 import android.support.test.filters.LargeTest;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.ChromeActivity;
@@ -36,8 +36,7 @@ public class DisplayCutoutTest {
     @LargeTest
     public void testViewportFitAuto() throws InterruptedException, TimeoutException {
         // Display Cutout API requires Android P+.
-        if (!BuildInfo.isAtLeastP())
-            return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
         mTestRule.enterFullscreen();
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_AUTO);
@@ -54,8 +53,7 @@ public class DisplayCutoutTest {
     @LargeTest
     public void testViewportFitContain() throws InterruptedException, TimeoutException {
         // Display Cutout API requires Android P+.
-        if (!BuildInfo.isAtLeastP())
-            return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
         mTestRule.enterFullscreen();
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_CONTAIN);
@@ -72,8 +70,7 @@ public class DisplayCutoutTest {
     @LargeTest
     public void testViewportFitCover() throws InterruptedException, TimeoutException {
         // Display Cutout API requires Android P+.
-        if (!BuildInfo.isAtLeastP())
-            return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
         mTestRule.enterFullscreen();
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
@@ -96,8 +93,7 @@ public class DisplayCutoutTest {
     @LargeTest
     public void testViewportFitCoverForced() throws InterruptedException, TimeoutException {
         // Display Cutout API requires Android P+.
-        if (!BuildInfo.isAtLeastP())
-            return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
         mTestRule.enterFullscreen();
 
@@ -122,8 +118,7 @@ public class DisplayCutoutTest {
     @LargeTest
     public void testViewportFitDefault() throws InterruptedException, TimeoutException {
         // Display Cutout API requires Android P+.
-        if (!BuildInfo.isAtLeastP())
-            return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
         mTestRule.enterFullscreen();
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
@@ -145,8 +140,7 @@ public class DisplayCutoutTest {
     @LargeTest
     public void testViewportFitDipScale() throws InterruptedException, TimeoutException {
         // Display Cutout API requires Android P+.
-        if (!BuildInfo.isAtLeastP())
-            return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
         mTestRule.enterFullscreen();
         mTestRule.setDipScale(DisplayCutoutTestRule.TEST_HIGH_DIP_SCALE);
@@ -164,8 +158,7 @@ public class DisplayCutoutTest {
     @LargeTest
     public void testViewportFitSubframe() throws InterruptedException, TimeoutException {
         // Display Cutout API requires Android P+.
-        if (!BuildInfo.isAtLeastP())
-            return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
         mTestRule.enterFullscreen();
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_CONTAIN);
@@ -184,8 +177,7 @@ public class DisplayCutoutTest {
     @LargeTest
     public void testViewportFitCoverNoCutout() throws InterruptedException, TimeoutException {
         // Display Cutout API requires Android P+.
-        if (!BuildInfo.isAtLeastP())
-            return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
         mTestRule.setDeviceHasCutout(false);
         mTestRule.enterFullscreen();

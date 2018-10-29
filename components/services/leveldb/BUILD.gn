@@ -65,6 +65,7 @@ service_test("leveldb_service_unittests") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/services/filesystem/public/interfaces",
     "//components/services/leveldb/public/cpp",
     "//components/services/leveldb/public/interfaces",

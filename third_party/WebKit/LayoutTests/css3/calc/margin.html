@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <style>
     div { display: inline-block; }
     p { width: 200px; height: 120px; margin: 0px; }
@@ -81,10 +82,12 @@
             break;
         }
 
-        shouldBeEqualToString('computedMarginLeft("' + innerElement.id + '")', expectedLeft);
-        shouldBeEqualToString('computedMarginTop("' + innerElement.id + '")', expectedTop);
-        shouldBeEqualToString('computedMarginRight("' + innerElement.id + '")', expectedRight);
-        shouldBeEqualToString('computedMarginBottom("' + innerElement.id + '")', expectedBottom);
+        test(() => {
+            assert_equals(computedMarginLeft(innerElement.id), expectedLeft, 'margin-left');
+            assert_equals(computedMarginTop(innerElement.id), expectedTop, 'margin-top');
+            assert_equals(computedMarginRight(innerElement.id), expectedRight, 'margin-right');
+            assert_equals(computedMarginBottom(innerElement.id), expectedBottom, 'margin-bottom');
+        }, innerElement.id);
     }
     
     if (window.testRunner) {

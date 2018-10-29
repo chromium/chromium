@@ -9,6 +9,11 @@ var initializationSteps = {load: false};
 var wouldPrompt = null;
 
 function finishJavaScriptStep() {
+  if (javascriptDone) {
+    testPassed = false;
+    resultString = "Attempted to end a JavaScript step before Java/C++ acked a "
+                    + "previous one.";
+  }
   javascriptDone = true;
 }
 

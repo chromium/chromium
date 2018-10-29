@@ -71,7 +71,7 @@ public class AutoSigninSnackbarController
             }
 
             @Override
-            public void onCrash(Tab tab, boolean sadTabShown) {
+            public void onCrash(Tab tab) {
                 AutoSigninSnackbarController.this.dismissAutoSigninSnackbar();
             }
         };

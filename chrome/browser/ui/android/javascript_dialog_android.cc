@@ -39,10 +39,14 @@ base::WeakPtr<JavaScriptDialogAndroid> JavaScriptDialogAndroid::Create(
     content::JavaScriptDialogType dialog_type,
     const base::string16& message_text,
     const base::string16& default_prompt_text,
-    content::JavaScriptDialogManager::DialogClosedCallback dialog_callback) {
-  return (new JavaScriptDialogAndroid(
-              parent_web_contents, alerting_web_contents, title, dialog_type,
-              message_text, default_prompt_text, std::move(dialog_callback)))
+    content::JavaScriptDialogManager::DialogClosedCallback
+        callback_on_button_clicked,
+    base::OnceClosure callback_on_cancelled) {
+  return (new JavaScriptDialogAndroid(parent_web_contents,
+                                      alerting_web_contents, title, dialog_type,
+                                      message_text, default_prompt_text,
+                                      std::move(callback_on_button_clicked),
+                                      std::move(callback_on_cancelled)))
       ->weak_factory_.GetWeakPtr();
 }
 
@@ -60,20 +64,23 @@ base::string16 JavaScriptDialogAndroid::GetUserInput() {
 void JavaScriptDialogAndroid::Accept(JNIEnv* env,
                                      const JavaParamRef<jobject>&,
                                      const JavaParamRef<jstring>& prompt) {
-  if (dialog_callback_) {
+  if (callback_on_button_clicked_) {
     base::string16 prompt_text =
         base::android::ConvertJavaStringToUTF16(env, prompt);
-    std::move(dialog_callback_).Run(true, prompt_text);
-    std::move(dialog_callback_).Reset();
+    std::move(callback_on_button_clicked_).Run(true, prompt_text);
   }
   delete this;
 }
 
 void JavaScriptDialogAndroid::Cancel(JNIEnv* env,
-                                     const JavaParamRef<jobject>&) {
-  if (dialog_callback_) {
-    std::move(dialog_callback_).Run(false, base::string16());
-    std::move(dialog_callback_).Reset();
+                                     const JavaParamRef<jobject>&,
+                                     jboolean button_clicked) {
+  if (button_clicked) {
+    if (callback_on_button_clicked_) {
+      std::move(callback_on_button_clicked_).Run(false, base::string16());
+    }
+  } else if (callback_on_cancelled_) {
+    std::move(callback_on_cancelled_).Run();
   }
   delete this;
 }
@@ -85,8 +92,12 @@ JavaScriptDialogAndroid::JavaScriptDialogAndroid(
     content::JavaScriptDialogType dialog_type,
     const base::string16& message_text,
     const base::string16& default_prompt_text,
-    content::JavaScriptDialogManager::DialogClosedCallback dialog_callback)
-    : dialog_callback_(std::move(dialog_callback)), weak_factory_(this) {
+    content::JavaScriptDialogManager::DialogClosedCallback
+        callback_on_button_clicked,
+    base::OnceClosure callback_on_cancelled)
+    : callback_on_button_clicked_(std::move(callback_on_button_clicked)),
+      callback_on_cancelled_(std::move(callback_on_cancelled)),
+      weak_factory_(this) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   JNIEnv* env = AttachCurrentThread();

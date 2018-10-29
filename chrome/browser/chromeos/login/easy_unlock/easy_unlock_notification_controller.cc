@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/chromeos_features.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -29,10 +30,8 @@ const char kEasyUnlockPairingChangeNotifierId[] =
 const char kEasyUnlockPairingChangeAppliedNotifierId[] =
     "easyunlock_notification_ids.pairing_change_applied";
 
-const char kEasyUnlockPromotionNotifierId[] =
-    "easyunlock_notification_ids.promotion";
-
 const char kLockScreenSettingsSubpage[] = "lockScreen";
+const char kSmartLockSettingsSubpage[] = "multidevice/features/smartLock";
 
 // Convenience function for creating a Notification.
 std::unique_ptr<message_center::Notification> CreateNotification(
@@ -127,25 +126,6 @@ void EasyUnlockNotificationController::ShowPairingChangeAppliedNotification(
                                weak_ptr_factory_.GetWeakPtr())));
 }
 
-void EasyUnlockNotificationController::ShowPromotionNotification() {
-  message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.buttons.push_back(
-      message_center::ButtonInfo(l10n_util::GetStringUTF16(
-          IDS_EASY_UNLOCK_SETUP_NOTIFICATION_BUTTON_TITLE)));
-
-  ShowNotification(CreateNotification(
-      kEasyUnlockPromotionNotifierId,
-      l10n_util::GetStringFUTF16(IDS_EASY_UNLOCK_SETUP_NOTIFICATION_TITLE,
-                                 ui::GetChromeOSDeviceName()),
-      l10n_util::GetStringFUTF16(IDS_EASY_UNLOCK_SETUP_NOTIFICATION_MESSAGE,
-                                 ui::GetChromeOSDeviceName()),
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_NOTIFICATION_EASYUNLOCK_PROMO),
-      rich_notification_data,
-      new NotificationDelegate(kEasyUnlockPromotionNotifierId,
-                               weak_ptr_factory_.GetWeakPtr())));
-}
-
 void EasyUnlockNotificationController::ShowNotification(
     std::unique_ptr<message_center::Notification> notification) {
   notification->SetSystemPriority();
@@ -154,7 +134,11 @@ void EasyUnlockNotificationController::ShowNotification(
 }
 
 void EasyUnlockNotificationController::LaunchEasyUnlockSettings() {
-  chrome::ShowSettingsSubPageForProfile(profile_, kLockScreenSettingsSubpage);
+  chrome::ShowSettingsSubPageForProfile(
+      profile_, base::FeatureList::IsEnabled(
+                    chromeos::features::kEnableUnifiedMultiDeviceSettings)
+                    ? kSmartLockSettingsSubpage
+                    : kLockScreenSettingsSubpage);
 }
 
 void EasyUnlockNotificationController::LockScreen() {

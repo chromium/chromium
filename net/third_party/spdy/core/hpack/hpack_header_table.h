@@ -142,8 +142,10 @@ class SPDY_EXPORT_PRIVATE HpackHeaderTable {
   // Evicts |count| oldest entries from the table.
   void Evict(size_t count);
 
-  // |static_entries_| and |static_index_| are owned by HpackStaticTable
-  // singleton.
+  // |static_entries_|, |static_index_|, and |static_name_index_| are owned by
+  // HpackStaticTable singleton.
+
+  // Tracks HpackEntries by index.
   const EntryTable& static_entries_;
   EntryTable dynamic_entries_;
 

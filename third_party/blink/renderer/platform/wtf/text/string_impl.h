@@ -224,7 +224,7 @@ class WTF_EXPORT StringImpl {
 
   bool IsStatic() const { return is_static_; }
 
-  bool ContainsOnlyASCII() const;
+  bool ContainsOnlyASCIIOrEmpty() const;
 
   bool IsSafeToSendToAnotherThread() const;
 
@@ -313,7 +313,7 @@ class WTF_EXPORT StringImpl {
   }
   UChar32 CharacterStartingAt(wtf_size_t);
 
-  bool ContainsOnlyWhitespace();
+  bool ContainsOnlyWhitespaceOrEmpty();
 
   int ToInt(NumberParsingOptions, bool* ok) const;
   wtf_size_t ToUInt(NumberParsingOptions, bool* ok) const;
@@ -461,7 +461,7 @@ class WTF_EXPORT StringImpl {
   NOINLINE wtf_size_t HashSlowCase() const;
 
   void DestroyIfNotStatic() const;
-  void UpdateContainsOnlyASCII() const;
+  void UpdateContainsOnlyASCIIOrEmpty() const;
 
 #if DCHECK_IS_ON()
   std::string AsciiForDebugging() const;
@@ -521,9 +521,9 @@ inline bool Equal(const char* a, StringImpl* b) {
 }
 WTF_EXPORT bool EqualNonNull(const StringImpl* a, const StringImpl* b);
 
-ALWAYS_INLINE bool StringImpl::ContainsOnlyASCII() const {
+ALWAYS_INLINE bool StringImpl::ContainsOnlyASCIIOrEmpty() const {
   if (needs_ascii_check_)
-    UpdateContainsOnlyASCII();
+    UpdateContainsOnlyASCIIOrEmpty();
   return contains_only_ascii_;
 }
 

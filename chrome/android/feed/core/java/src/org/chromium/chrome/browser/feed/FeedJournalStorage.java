@@ -13,7 +13,7 @@ import com.google.android.libraries.feed.host.storage.JournalStorage;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,11 +51,8 @@ public class FeedJournalStorage implements JournalStorage {
     @Override
     public void read(String journalName, Consumer < Result < List<byte[]>>> consumer) {
         assert mFeedJournalBridge != null;
-        mFeedJournalBridge.loadJournal(journalName, (String[] entries) -> {
-            List<byte[]> journal = new ArrayList<byte[]>();
-            for (String entry : entries) {
-                journal.add(entry.getBytes());
-            }
+        mFeedJournalBridge.loadJournal(journalName, (byte[][] entries) -> {
+            List<byte[]> journal = Arrays.asList(entries);
             consumer.accept(Result.success(journal));
         }, (Void ignored) -> consumer.accept(Result.failure()));
     }
@@ -80,8 +77,9 @@ public class FeedJournalStorage implements JournalStorage {
     @Override
     public void getAllJournals(Consumer < Result < List<String>>> consumer) {
         assert mFeedJournalBridge != null;
-        mFeedJournalBridge.loadAllJournalKeys((List<String> data)
-                                                      -> consumer.accept(Result.success(data)),
+        mFeedJournalBridge.loadAllJournalKeys(
+                (String[] data)
+                        -> consumer.accept(Result.success(Arrays.asList(data))),
                 (Void ignored) -> consumer.accept(Result.failure()));
     }
 

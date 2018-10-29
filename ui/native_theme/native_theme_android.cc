@@ -29,8 +29,8 @@ NativeTheme* NativeTheme::GetInstanceForNativeUi() {
 
 // static
 NativeThemeAndroid* NativeThemeAndroid::instance() {
-  CR_DEFINE_STATIC_LOCAL(NativeThemeAndroid, s_native_theme, ());
-  return &s_native_theme;
+  static base::NoDestructor<NativeThemeAndroid> s_native_theme;
+  return s_native_theme.get();
 }
 
 gfx::Size NativeThemeAndroid::GetPartSize(Part part,

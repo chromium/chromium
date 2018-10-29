@@ -8,7 +8,8 @@ if (window.testRunner) {
 }
 
 i.contentWindow.onload = function() {
-  var detached_event = i.contentWindow.event;
+  // |window.event| should be set to invoked load event.
+  var detached_event = window.event;
   i.remove();
   detached_event.timeStamp;
   if (window.testRunner)

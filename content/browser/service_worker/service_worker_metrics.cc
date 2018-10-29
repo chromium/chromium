@@ -11,8 +11,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -382,8 +384,8 @@ void ServiceWorkerMetrics::CountControlledPageLoad(Site site,
   if (ShouldExcludeSiteFromHistogram(site))
     return;
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&RecordURLMetricOnUI, "ServiceWorker.ControlledPageUrl",
                      url));
 }
@@ -890,15 +892,6 @@ void ServiceWorkerMetrics::RecordRuntime(base::TimeDelta time) {
 
   UMA_HISTOGRAM_CUSTOM_TIMES("ServiceWorker.Runtime", time, kMin, kMax,
                              kBucketCount);
-}
-
-void ServiceWorkerMetrics::RecordUninstalledScriptImport(const GURL& url) {
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
-      base::BindOnce(&RecordURLMetricOnUI,
-                     "ServiceWorker.ContextRequestHandlerStatus."
-                     "UninstalledScriptImport",
-                     url));
 }
 
 void ServiceWorkerMetrics::RecordStartServiceWorkerForNavigationHintResult(

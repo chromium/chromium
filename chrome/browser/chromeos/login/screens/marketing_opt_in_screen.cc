@@ -6,6 +6,11 @@
 
 #include "base/logging.h"
 #include "chrome/browser/chromeos/login/screens/marketing_opt_in_screen_view.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/pref_names.h"
+#include "chromeos/chromeos_switches.h"
+#include "components/prefs/pref_service.h"
 
 namespace chromeos {
 
@@ -23,7 +28,20 @@ MarketingOptInScreen::~MarketingOptInScreen() {
 }
 
 void MarketingOptInScreen::Show() {
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  // Skip the screen if:
+  //   1) the feature is disabled, or
+  //   2) the screen has been shown for this user, or
+  //   3) it is public session or non-regular ephemeral user login.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kEnableMarketingOptInScreen) ||
+      prefs->GetBoolean(prefs::kOobeMarketingOptInScreenFinished) ||
+      IsPublicSessionOrEphemeralLogin()) {
+    Finish(ScreenExitCode::MARKETING_OPT_IN_FINISHED);
+    return;
+  }
   view_->Show();
+  prefs->SetBoolean(prefs::kOobeMarketingOptInScreenFinished, true);
 }
 
 void MarketingOptInScreen::Hide() {

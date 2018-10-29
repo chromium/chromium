@@ -57,7 +57,7 @@ bool CSSValueList::RemoveAll(const CSSValue& val) {
 }
 
 bool CSSValueList::HasValue(const CSSValue& val) const {
-  for (size_t index = 0; index < values_.size(); index++) {
+  for (wtf_size_t index = 0; index < values_.size(); index++) {
     const Member<const CSSValue>& value = values_.at(index);
     if (value && *value == val) {
       return true;

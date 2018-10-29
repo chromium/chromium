@@ -46,8 +46,6 @@ FrameTraceName = "Graphics.Pipeline"
 FrameTraceStepName = "GenerateCompositorFrame"
 FrameTraceThreadName = "renderer_compositor"
 
-IntervalNames = ["frame", "second"]
-
 
 def Rate(numerator, denominator):
   return DivideIfPossibleOrZero(numerator, denominator)
@@ -79,42 +77,22 @@ def ThreadCategoryName(thread_name):
   return thread_category
 
 
-def ThreadCpuTimeResultName(thread_category, interval_name):
+def ThreadCpuTimeResultName(thread_category):
   # This isn't a good name, but I don't want to change it and lose continuity.
-  return "thread_" + thread_category + "_cpu_time_per_" + interval_name
+  return "thread_" + thread_category + "_cpu_time_per_frame"
 
 
-def ThreadTasksResultName(thread_category, interval_name):
-  return "tasks_per_" + interval_name + "_" + thread_category
+def ThreadTasksResultName(thread_category):
+  return "tasks_per_frame_" + thread_category
 
 
 def ThreadMeanFrameTimeResultName(thread_category):
   return "mean_frame_time_" + thread_category
 
 
-def ThreadDetailResultName(thread_category, interval_name, detail):
+def ThreadDetailResultName(thread_category, detail):
   detail_sanitized = detail.replace(".", "_")
-  interval_sanitized = ""
-  # Special-case per-frame detail names to preserve continuity.
-  if interval_name == "frame":
-    interval_sanitized = ""
-  else:
-    interval_sanitized = "_per_" + interval_name
-  return (
-      "thread_" + thread_category + interval_sanitized + "|" + detail_sanitized)
-
-
-def ThreadCpuTimeUnits(interval_name):
-  if interval_name == "second":
-    return "%"
-  return "ms"
-
-
-def ThreadCpuTimeValue(ms_cpu_time_per_interval, interval_name):
-  # When measuring seconds of CPU time per second of system time, report a %.
-  if interval_name == "second":
-    return (ms_cpu_time_per_interval / 1000.0) * 100.0
-  return ms_cpu_time_per_interval
+  return "thread_" + thread_category + "|" + detail_sanitized
 
 
 class ResultsForThread(object):
@@ -165,20 +143,20 @@ class ResultsForThread(object):
     self.toplevel_slices.extend(self.SlicesInActions(thread.toplevel_slices))
 
   # Reports cpu-time per interval and tasks per interval.
-  def AddResults(self, num_intervals, interval_name, results):
+  def AddResults(self, num_intervals, results):
     cpu_per_interval = Rate(self.cpu_time, num_intervals)
     tasks_per_interval = Rate(len(self.toplevel_slices), num_intervals)
     results.AddValue(scalar.ScalarValue(
         results.current_page,
-        ThreadCpuTimeResultName(self.name, interval_name),
-        ThreadCpuTimeUnits(interval_name),
-        ThreadCpuTimeValue(cpu_per_interval, interval_name)))
+        ThreadCpuTimeResultName(self.name),
+        "ms",
+        cpu_per_interval))
     results.AddValue(scalar.ScalarValue(
         results.current_page,
-        ThreadTasksResultName(self.name, interval_name),
+        ThreadTasksResultName(self.name),
         "tasks", tasks_per_interval))
 
-  def AddDetailedResults(self, num_intervals, interval_name, results):
+  def AddDetailedResults(self, num_intervals, results):
     slices_by_category = collections.defaultdict(list)
     for s in self.all_slices:
       slices_by_category[s.category].append(s)
@@ -189,17 +167,17 @@ class ResultsForThread(object):
       self_time_per_interval = Rate(self_time, num_intervals)
       results.AddValue(scalar.ScalarValue(
           results.current_page,
-          ThreadDetailResultName(self.name, interval_name, category),
-          ThreadCpuTimeUnits(interval_name),
-          ThreadCpuTimeValue(self_time_per_interval, interval_name)))
+          ThreadDetailResultName(self.name, category),
+          "ms",
+          self_time_per_interval))
     all_measured_time = sum(all_self_times)
     idle_time = max(0, self.all_action_time - all_measured_time)
     idle_time_per_interval = Rate(idle_time, num_intervals)
     results.AddValue(scalar.ScalarValue(
         results.current_page,
-        ThreadDetailResultName(self.name, interval_name, "idle"),
-        ThreadCpuTimeUnits(interval_name),
-        ThreadCpuTimeValue(idle_time_per_interval, interval_name)))
+        ThreadDetailResultName(self.name, "idle"),
+        "ms",
+        idle_time_per_interval))
 
   def CountTracesWithNameAndArg(self, trace_name, step):
     count = 0
@@ -243,21 +221,14 @@ class ThreadTimesTimelineMetric(timeline_based_metric.TimelineBasedMetric):
     num_frames = frame_rate_thread.CountTracesWithNameAndArg(FrameTraceName,
         FrameTraceStepName)
 
-    # Calculate the interaction's duration.
-    all_threads = thread_category_results["total_all"]
-    num_seconds = all_threads.all_action_time / 1000.0
-
     # Report the desired results and details for each interval type.
-    intervals = [("frame", num_frames), ("second", num_seconds)]
-    for (interval_name, num_intervals) in intervals:
-      for thread_results in thread_category_results.values():
-        if thread_results.name in self.results_to_report:
-          thread_results.AddResults(num_intervals, interval_name, results)
-        # TODO(nduca): When generic results objects are done, this special case
-        # can be replaced with a generic UI feature.
-        if thread_results.name in self.details_to_report:
-          thread_results.AddDetailedResults(
-              num_intervals, interval_name, results)
+    for thread_results in thread_category_results.values():
+      if thread_results.name in self.results_to_report:
+        thread_results.AddResults(num_frames, results)
+      # TODO(nduca): When generic results objects are done, this special case
+      # can be replaced with a generic UI feature.
+      if thread_results.name in self.details_to_report:
+        thread_results.AddDetailedResults(num_frames, results)
 
     # Report mean frame time for the frame rate thread. We could report other
     # frame rates (e.g. renderer_main) but this might get confusing.

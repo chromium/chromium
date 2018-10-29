@@ -41,7 +41,7 @@
 
 namespace blink {
 
-using namespace VectorMath;
+using namespace vector_math;
 
 // Empirical gain calibration tested across many impulse responses to ensure
 // perceived volume is same as dry (unprocessed) signal

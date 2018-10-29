@@ -246,8 +246,7 @@ std::string GetUserName(const std::string& unix_user,
   if (!unix_user.empty() && unix_user[0] == 'u') {
     size_t pos = unix_user.find('_');
     if (pos != std::string::npos) {
-      StringMap::const_iterator it =
-          id_to_username.find(unix_user.substr(1, pos - 1));
+      auto it = id_to_username.find(unix_user.substr(1, pos - 1));
       if (it != id_to_username.end())
         return it->second;
     }
@@ -310,7 +309,7 @@ void ReceivedResponse(const AndroidDeviceManager::DeviceInfoCallback& callback,
     std::string socket = pair.first;
     std::string pid = pair.second;
     std::string package;
-    StringMap::iterator pit = pid_to_package.find(pid);
+    auto pit = pid_to_package.find(pid);
     if (pit != pid_to_package.end())
       package = pit->second;
 
@@ -320,7 +319,7 @@ void ReceivedResponse(const AndroidDeviceManager::DeviceInfoCallback& callback,
     browser_info.display_name =
         AndroidDeviceManager::GetBrowserName(socket, package);
 
-    StringMap::iterator uit = pid_to_user.find(pid);
+    auto uit = pid_to_user.find(pid);
     if (uit != pid_to_user.end())
       browser_info.user = GetUserName(uit->second, id_to_username);
 

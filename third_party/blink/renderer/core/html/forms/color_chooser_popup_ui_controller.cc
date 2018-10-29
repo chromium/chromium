@@ -54,9 +54,9 @@ ColorChooserPopupUIController::ColorChooserPopupUIController(
 ColorChooserPopupUIController::~ColorChooserPopupUIController() = default;
 
 void ColorChooserPopupUIController::Dispose() {
-  // Finalized earlier so as to access m_chromeClient while alive.
+  // Finalized earlier so as to access chrome_client_ while alive.
   ClosePopup();
-  // ~ColorChooserUIController calls endChooser().
+  // ~ColorChooserUIController calls EndChooser().
 }
 
 void ColorChooserPopupUIController::Trace(blink::Visitor* visitor) {

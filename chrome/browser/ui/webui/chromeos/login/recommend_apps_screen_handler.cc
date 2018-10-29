@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/arc_prefs.h"
@@ -125,8 +124,6 @@ void RecommendAppsScreenHandler::Show() {
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   pref_service_ = profile->GetPrefs();
-
-  profile->GetPrefs()->SetBoolean(prefs::kOobeRecommendAppScreenFinished, true);
 }
 
 void RecommendAppsScreenHandler::Hide() {}

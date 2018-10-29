@@ -49,9 +49,6 @@ class AnimatedRoundedImageView : public views::View {
   // Set playback type of the animation.
   void SetAnimationPlayback(Playback playback);
 
-  // Get the current type of animation playback.
-  Playback playback() const { return playback_; }
-
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;

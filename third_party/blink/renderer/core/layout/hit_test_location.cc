@@ -121,11 +121,21 @@ bool HitTestLocation::Intersects(const LayoutRect& rect) const {
 }
 
 bool HitTestLocation::Intersects(const FloatRect& rect) const {
-  return IntersectsRect(rect, FloatRect(bounding_box_));
+  if (is_rect_based_)
+    return transformed_rect_.IntersectsRect(rect);
+  return rect.Contains(transformed_point_);
 }
 
 bool HitTestLocation::Intersects(const FloatRoundedRect& rect) const {
   return rect.IntersectsQuad(transformed_rect_);
+}
+
+bool HitTestLocation::Intersects(const FloatQuad& quad) const {
+  // TODO(chrishtr): if the quads are not rectilinear, calling Intersects
+  // has false positives.
+  if (is_rect_based_)
+    return Intersects(quad.BoundingBox());
+  return quad.ContainsPoint(FloatPoint(point_));
 }
 
 bool HitTestLocation::ContainsPoint(const FloatPoint& point) const {

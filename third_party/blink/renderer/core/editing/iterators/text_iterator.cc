@@ -132,7 +132,7 @@ const Node* PastLastNode(const Node& range_end_container,
   return nullptr;
 }
 
-// Figure out the initial value of m_shadowDepth: the depth of startContainer's
+// Figure out the initial value of shadow_depth_: the depth of start_container's
 // tree scope from the common ancestor tree scope.
 template <typename Strategy>
 unsigned ShadowDepthOf(const Node& start_container, const Node& end_container);
@@ -241,12 +241,12 @@ template <typename Strategy>
 bool TextIteratorAlgorithm<Strategy>::HandleRememberedProgress() {
   // Handle remembered node that needed a newline after the text node's newline
   if (needs_another_newline_) {
-    // Emit the extra newline, and position it *inside* m_node, after m_node's
+    // Emit the extra newline, and position it *inside* node_, after node_'s
     // contents, in case it's a block, in the same way that we position the
     // first newline. The range for the emitted newline should start where the
     // line break begins.
     // FIXME: It would be cleaner if we emitted two newlines during the last
-    // iteration, instead of using m_needsAnotherNewline.
+    // iteration, instead of using needs_another_newline_.
     Node* last_child = Strategy::LastChild(*node_);
     const Node* base_node = last_child ? last_child : node_.Get();
     EmitChar16AfterNode('\n', *base_node);
@@ -645,7 +645,7 @@ static bool ShouldEmitExtraNewlineForNode(const Node* node) {
   return node->HasTagName(pTag);
 }
 
-// Whether or not we should emit a character as we enter m_node (if it's a
+// Whether or not we should emit a character as we enter node_ (if it's a
 // container) or as we hit it (if it's atomic).
 template <typename Strategy>
 bool TextIteratorAlgorithm<Strategy>::ShouldRepresentNodeOffsetZero() {
@@ -676,15 +676,15 @@ bool TextIteratorAlgorithm<Strategy>::ShouldRepresentNodeOffsetZero() {
     return false;
 
   // If we are outside the start container's subtree, assume we need to emit.
-  // FIXME: m_startContainer could be an inline block
+  // FIXME: start_container_ could be an inline block
   if (!Strategy::IsDescendantOf(*node_, *start_container_))
     return true;
 
-  // If we started as m_startContainer offset 0 and the current node is a
+  // If we started as start_container_ offset 0 and the current node is a
   // descendant of the start container, we already had enough context to
   // correctly decide whether to emit after a preceding block. We chose not to
-  // emit (m_hasEmitted is false), so don't second guess that now.
-  // NOTE: Is this really correct when m_node is not a leftmost descendant?
+  // emit (has_emitted_ is false), so don't second guess that now.
+  // NOTE: Is this really correct when node_ is not a leftmost descendant?
   // Probably immaterial since we likely would have already emitted something by
   // now.
   if (!start_offset_)
@@ -727,15 +727,15 @@ bool TextIteratorAlgorithm<Strategy>::ShouldEmitSpaceBeforeAndAfterNode(
 
 template <typename Strategy>
 void TextIteratorAlgorithm<Strategy>::RepresentNodeOffsetZero() {
-  // Emit a character to show the positioning of m_node.
+  // Emit a character to show the positioning of node_.
 
   // TODO(editing-dev): We should rewrite this below code fragment to utilize
   // early-return style.
   // When we haven't been emitting any characters,
-  // shouldRepresentNodeOffsetZero() can create VisiblePositions, which is
+  // ShouldRepresentNodeOffsetZero() can create VisiblePositions, which is
   // expensive. So, we perform the inexpensive checks on m_node to see if it
   // necessitates emitting a character first and will early return before
-  // encountering shouldRepresentNodeOffsetZero()s worse case behavior.
+  // encountering ShouldRepresentNodeOffsetZero()s worse case behavior.
   if (ShouldEmitTabBeforeNode(*node_)) {
     if (ShouldRepresentNodeOffsetZero())
       EmitChar16BeforeNode('\t', *node_);
@@ -763,18 +763,18 @@ template <typename Strategy>
 void TextIteratorAlgorithm<Strategy>::ExitNode() {
   // prevent emitting a newline when exiting a collapsed block at beginning of
   // the range
-  // FIXME: !m_hasEmitted does not necessarily mean there was a collapsed
+  // FIXME: !has_emitted_ does not necessarily mean there was a collapsed
   // block... it could have been an hr (e.g.). Also, a collapsed block could
   // have height (e.g. a table) and therefore look like a blank line.
   if (!text_state_.HasEmitted())
     return;
 
-  // Emit with a position *inside* m_node, after m_node's contents, in
+  // Emit with a position *inside* node_, after node_'s contents, in
   // case it is a block, because the run should start where the
   // emitted character is positioned visually.
   Node* last_child = Strategy::LastChild(*node_);
   const Node* base_node = last_child ? last_child : node_.Get();
-  // FIXME: This shouldn't require the m_lastTextNode to be true, but we can't
+  // FIXME: This shouldn't require the last_text_node to be true, but we can't
   // change that without making the logic in _web_attributedStringFromRange
   // match. We'll get that for free when we switch to use TextIterator in
   // _web_attributedStringFromRange. See <rdar://problem/5428427> for an example

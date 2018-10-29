@@ -42,6 +42,8 @@ import os.path
 import subprocess
 import sys
 
+from blinkbuild.name_style_converter import NameStyleConverter
+
 assert len(sys.argv) == 4 or len(sys.argv) == 5
 
 inputFile = sys.argv[1]
@@ -105,9 +107,12 @@ os.unlink(outputHTmp)
 # Rewrite the generated header with #include guards.
 outputH = os.path.join(outputDir, inputRoot + '.h')
 
+outputHInGen = outputH.replace('gen/', '')
+headerGuard = NameStyleConverter(outputHInGen).to_header_guard()
+
 outputHFile = open(outputH, 'w')
-print >>outputHFile, '#ifndef %sH' % inputRoot
-print >>outputHFile, '#define %sH' % inputRoot
+print >>outputHFile, '#ifndef %s' % headerGuard
+print >>outputHFile, '#define %s' % headerGuard
 print >>outputHFile, outputHContents
-print >>outputHFile, '#endif'
+print >>outputHFile, '#endif  // %s' % headerGuard
 outputHFile.close()

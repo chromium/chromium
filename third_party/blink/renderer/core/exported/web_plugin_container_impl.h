@@ -192,7 +192,7 @@ class CORE_EXPORT WebPluginContainerImpl final
 
   // Resource load events for the plugin's source data:
   void DidReceiveResponse(const ResourceResponse&);
-  void DidReceiveData(const char* data, int data_length);
+  void DidReceiveData(const char* data, size_t data_length);
   void DidFinishLoading();
   void DidFailLoading(const ResourceError&);
 

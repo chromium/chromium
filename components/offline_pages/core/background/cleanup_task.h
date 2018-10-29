@@ -42,7 +42,7 @@ class CleanupTask : public Task {
              std::vector<std::unique_ptr<SavePageRequest>> requests);
 
   // Step 3. Send delete notifications for the expired requests.
-  void OnRequestsExpired(std::unique_ptr<UpdateRequestsResult> result);
+  void OnRequestsExpired(UpdateRequestsResult result);
 
   // Build a list of IDs whose request has expired.
   void PopulateExpiredRequestIdsAndReasons(

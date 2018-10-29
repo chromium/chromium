@@ -32,5 +32,5 @@ PASS getComputedStyle(testshadow).borderRightWidth is '80px'
 PASS successfullyParsed is true
 
 TEST COMPLETE
-This test of viewport units and resizing depends on window.resizeTo.
 
+This test of viewport units and resizing depends on window.resizeTo.

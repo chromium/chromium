@@ -65,71 +65,68 @@ class ScopedResourceOverride {
 const struct {
   const char* const user_visible_url;
   const char* const form_origin_url;
-  bool is_smartlock_branding_enabled;
   PasswordTitleType bubble_type;
   const char* const expected_domain_placeholder;  // domain name
-  size_t expected_link_range_start;
-  size_t expected_link_range_end;
 } kDomainsTestCases[] = {
     // Same domains.
     {"http://example.com/landing", "http://example.com/login#form?value=3",
-     false, PasswordTitleType::SAVE_PASSWORD, "", 0, 0},
+     PasswordTitleType::SAVE_PASSWORD, ""},
     {"http://example.com/landing", "http://example.com/login#form?value=3",
-     true, PasswordTitleType::SAVE_PASSWORD, "", 0, 0},
+     PasswordTitleType::SAVE_PASSWORD, ""},
 
     // Different subdomains.
     {"https://a.example.com/landing",
-     "https://b.example.com/login#form?value=3", false,
-     PasswordTitleType::SAVE_PASSWORD, "", 0, 0},
+     "https://b.example.com/login#form?value=3",
+     PasswordTitleType::SAVE_PASSWORD, ""},
     {"https://a.example.com/landing",
-     "https://b.example.com/login#form?value=3", true,
-     PasswordTitleType::SAVE_PASSWORD, "", 0, 0},
+     "https://b.example.com/login#form?value=3",
+     PasswordTitleType::SAVE_PASSWORD, ""},
 
     // Different domains.
-    {"https://another.org", "https://example.com:/login#form?value=3", false,
-     PasswordTitleType::SAVE_PASSWORD, "example.com", 0, 0},
-    {"https://another.org", "https://example.com/login#form?value=3", true,
-     PasswordTitleType::SAVE_PASSWORD, "example.com", 0, 0},
+    {"https://another.org", "https://example.com:/login#form?value=3",
+     PasswordTitleType::SAVE_PASSWORD, "example.com"},
+    {"https://another.org", "https://example.com/login#form?value=3",
+     PasswordTitleType::SAVE_PASSWORD, "example.com"},
 
     // Different domains and password form origin url with
     // default port for the scheme.
-    {"https://another.org", "https://example.com:443/login#form?value=3", false,
-     PasswordTitleType::SAVE_PASSWORD, "example.com", 0, 0},
-    {"https://another.org", "http://example.com:80/login#form?value=3", true,
-     PasswordTitleType::SAVE_PASSWORD, "example.com", 0, 0},
+    {"https://another.org", "https://example.com:443/login#form?value=3",
+     PasswordTitleType::SAVE_PASSWORD, "example.com"},
+    {"https://another.org", "http://example.com:80/login#form?value=3",
+     PasswordTitleType::SAVE_PASSWORD, "example.com"},
 
     // Different domains and password form origin url with
     // non-default port for the scheme.
     {"https://another.org", "https://example.com:8001/login#form?value=3",
-     false, PasswordTitleType::SAVE_PASSWORD, "example.com:8001", 0, 0},
-    {"https://another.org", "https://example.com:8001/login#form?value=3", true,
-     PasswordTitleType::SAVE_PASSWORD, "example.com:8001", 0, 0},
+     PasswordTitleType::SAVE_PASSWORD, "example.com:8001"},
+    {"https://another.org", "https://example.com:8001/login#form?value=3",
+     PasswordTitleType::SAVE_PASSWORD, "example.com:8001"},
 
     // Update bubble, same domains.
     {"http://example.com/landing", "http://example.com/login#form?value=3",
-     false, PasswordTitleType::UPDATE_PASSWORD, "", 0, 0},
+     PasswordTitleType::UPDATE_PASSWORD, ""},
     {"http://example.com/landing", "http://example.com/login#form?value=3",
-     true, PasswordTitleType::UPDATE_PASSWORD, "", 0, 0},
+     PasswordTitleType::UPDATE_PASSWORD, ""},
 
     // Update bubble, different domains.
-    {"https://another.org", "http://example.com/login#form?value=3", false,
-     PasswordTitleType::UPDATE_PASSWORD, "example.com", 0, 0},
-    {"https://another.org", "http://example.com/login#form?value=3", true,
-     PasswordTitleType::UPDATE_PASSWORD, "example.com", 0, 0},
+    {"https://another.org", "http://example.com/login#form?value=3",
+     PasswordTitleType::UPDATE_PASSWORD, "example.com"},
+    {"https://another.org", "http://example.com/login#form?value=3",
+     PasswordTitleType::UPDATE_PASSWORD, "example.com"},
 
     // Same domains, federated credential.
     {"http://example.com/landing", "http://example.com/login#form?value=3",
-     false, PasswordTitleType::SAVE_ACCOUNT, "", 0, 0},
+     PasswordTitleType::SAVE_ACCOUNT, ""},
     {"http://example.com/landing", "http://example.com/login#form?value=3",
-     true, PasswordTitleType::SAVE_ACCOUNT, "", 12, 29},
+     PasswordTitleType::SAVE_ACCOUNT, ""},
 
     // Different subdomains, federated credential.
     {"https://a.example.com/landing",
-     "https://b.example.com/login#form?value=3", false,
-     PasswordTitleType::SAVE_ACCOUNT, "", 0, 0},
+     "https://b.example.com/login#form?value=3",
+     PasswordTitleType::SAVE_ACCOUNT, ""},
     {"https://a.example.com/landing",
-     "https://b.example.com/login#form?value=3", true,
-     PasswordTitleType::SAVE_ACCOUNT, "", 12, 29}};
+     "https://b.example.com/login#form?value=3",
+     PasswordTitleType::SAVE_ACCOUNT, ""}};
 
 }  // namespace
 
@@ -142,31 +139,21 @@ TEST(ManagePasswordsViewUtilTest, GetSavePasswordDialogTitleTextAndLinkRange) {
                                     << kDomainsTestCases[i].form_origin_url);
 
     base::string16 title;
-    gfx::Range title_link_range;
     GetSavePasswordDialogTitleTextAndLinkRange(
         GURL(kDomainsTestCases[i].user_visible_url),
         GURL(kDomainsTestCases[i].form_origin_url),
-        kDomainsTestCases[i].is_smartlock_branding_enabled,
-        kDomainsTestCases[i].bubble_type, &title, &title_link_range);
+        kDomainsTestCases[i].bubble_type, &title);
 
     // Verify against expectations.
     base::string16 domain =
         base::ASCIIToUTF16(kDomainsTestCases[i].expected_domain_placeholder);
     EXPECT_TRUE(title.find(domain) != base::string16::npos);
-    EXPECT_EQ(kDomainsTestCases[i].expected_link_range_start,
-              title_link_range.start());
-    EXPECT_EQ(kDomainsTestCases[i].expected_link_range_end,
-              title_link_range.end());
     if (kDomainsTestCases[i].bubble_type ==
         PasswordTitleType::UPDATE_PASSWORD) {
       EXPECT_TRUE(title.find(base::ASCIIToUTF16("Update")) !=
                   base::string16::npos);
-    } else if (kDomainsTestCases[i].bubble_type ==
-               PasswordTitleType::SAVE_PASSWORD) {
-      EXPECT_TRUE(title.find(base::ASCIIToUTF16("Save")) !=
-                  base::string16::npos);
     } else {
-      EXPECT_TRUE(title.find(base::ASCIIToUTF16("save")) !=
+      EXPECT_TRUE(title.find(base::ASCIIToUTF16("Save")) !=
                   base::string16::npos);
     }
   }
@@ -182,9 +169,7 @@ TEST(ManagePasswordsViewUtilTest,
                                                  base::string16());
 
   base::string16 title;
-  gfx::Range title_link_range;
   const GURL kExample("http://example.org");
-  const bool kBrandingEnabled = true;
   // The arguments passed below have this importance for the codepath:
   // * The first two URLs need to be the same, otherwise
   //   IDS_SAVE_PASSWORD_DIFFERENT_DOMAINS_TITLE will be used instead of
@@ -195,13 +180,11 @@ TEST(ManagePasswordsViewUtilTest,
   // * SAVE_PASSWORD dialog type needs to be passed to match the
   //   IDS_SAVE_PASSWORD overridden above.
   GetSavePasswordDialogTitleTextAndLinkRange(
-      kExample, kExample, kBrandingEnabled, PasswordTitleType::SAVE_PASSWORD,
-      &title, &title_link_range);
+      kExample, kExample, PasswordTitleType::SAVE_PASSWORD, &title);
   // Verify that the test did not pass just because
   // GetSavePasswordDialogTitleTextAndLinkRange changed the resource IDs it uses
   // (and hence did not get the overridden empty string). If the empty localised
   // string was used, the title and the range will be empty as well.
-  EXPECT_TRUE(title_link_range.is_empty());
   EXPECT_THAT(title, testing::IsEmpty());
 }
 
@@ -223,45 +206,3 @@ TEST(ManagePasswordsViewUtilTest, GetManagePasswordsDialogTitleText) {
     EXPECT_TRUE(title.find(domain) != base::string16::npos);
   }
 }
-
-// The parameter is |many_accounts| passed to
-// GetAccountChooserDialogTitleTextAndLinkRange
-class AccountChooserDialogTitleTest : public ::testing::TestWithParam<bool> {
-};
-
-TEST_P(AccountChooserDialogTitleTest,
-       GetAccountChooserDialogTitleTextAndLinkRangeSmartLockUsers) {
-  base::string16 branding =
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SMART_LOCK);
-  base::string16 title;
-  gfx::Range title_link_range;
-  GetAccountChooserDialogTitleTextAndLinkRange(
-      true /* is_smartlock_branding_enabled */,
-      GetParam(),
-      &title, &title_link_range);
-
-  // Check that branding string is a part of a title.
-  EXPECT_LT(title.find(branding, 0), title.size());
-  EXPECT_GT(title.find(branding, 0), 0U);
-  // Check that link range is not empty.
-  EXPECT_NE(0U, title_link_range.start());
-  EXPECT_NE(0U, title_link_range.end());
-}
-
-TEST_P(AccountChooserDialogTitleTest,
-       GetAccountChooserDialogTitleTextAndLinkRangeNonSmartLockUsers) {
-  base::string16 branding =
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SMART_LOCK);
-  base::string16 title;
-  gfx::Range title_link_range;
-  GetAccountChooserDialogTitleTextAndLinkRange(
-      false /* is_smartlock_branding_enabled */,
-      GetParam(),
-      &title, &title_link_range);
-  EXPECT_GE(title.find(branding, 0), title.size());
-  EXPECT_EQ(0U, title_link_range.start());
-  EXPECT_EQ(0U, title_link_range.end());
-}
-
-INSTANTIATE_TEST_CASE_P(, AccountChooserDialogTitleTest,
-                        ::testing::Bool());

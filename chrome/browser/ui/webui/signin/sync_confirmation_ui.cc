@@ -134,8 +134,8 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     title_ids = AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)
                     ? IDS_SYNC_CONFIRMATION_DICE_TITLE
                     : IDS_SYNC_CONFIRMATION_TITLE;
-    confirm_button_ids = IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL;
-    undo_button_ids = IDS_SYNC_CONFIRMATION_UNDO_BUTTON_LABEL;
+    confirm_button_ids = IDS_SETTINGS_TURN_ON;
+    undo_button_ids = IDS_CANCEL;
     consent_feature_ = consent_auditor::Feature::CHROME_SYNC;
     if (!is_sync_allowed) {
       title_ids = IDS_SYNC_DISABLED_CONFIRMATION_CHROME_SYNC_TITLE;

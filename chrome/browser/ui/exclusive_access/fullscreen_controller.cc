@@ -56,6 +56,7 @@ FullscreenController::FullscreenController(ExclusiveAccessManager* manager)
       state_prior_to_tab_fullscreen_(STATE_INVALID),
       tab_fullscreen_(false),
       toggled_into_fullscreen_(false),
+      deactivated_contents_(nullptr),
       is_privileged_fullscreen_for_testing_(false),
       is_tab_fullscreen_for_testing_(false),
       ptr_factory_(this) {}
@@ -102,8 +103,14 @@ bool FullscreenController::IsFullscreenForTabOrPending(
   if (IsFullscreenWithinTab(web_contents))
     return true;
   if (web_contents == exclusive_access_tab()) {
+    // If we're handling OnTabDeactivated(), |web_contents| is the
+    // deactivated contents. On the other hand,
+    // exclusive_access_manager()->context()->GetActiveWebContents() returns
+    // newly activated contents. That's because deactivation of tab is notified
+    // after TabStripModel's internal state is consistent.
     DCHECK(web_contents ==
-           exclusive_access_manager()->context()->GetActiveWebContents());
+               exclusive_access_manager()->context()->GetActiveWebContents() ||
+           web_contents == deactivated_contents_);
     return true;
   }
   return false;
@@ -205,6 +212,13 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
   // This is only a change between Browser and Tab fullscreen. We generate
   // a fullscreen notification now because there is no window change.
   PostFullscreenChangeNotification(true);
+}
+
+void FullscreenController::OnTabDeactivated(
+    content::WebContents* web_contents) {
+  base::AutoReset<content::WebContents*> auto_resetter(&deactivated_contents_,
+                                                       web_contents);
+  ExclusiveAccessControllerBase::OnTabDeactivated(web_contents);
 }
 
 void FullscreenController::OnTabDetachedFromView(WebContents* old_contents) {

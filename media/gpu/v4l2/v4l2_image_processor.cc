@@ -108,8 +108,8 @@ void V4L2ImageProcessor::NotifyError() {
   VLOGF(1);
   DCHECK(!child_task_runner_->BelongsToCurrentThread());
   child_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&V4L2ImageProcessor::NotifyErrorOnChildThread,
-                            weak_this_, error_cb_));
+      FROM_HERE, base::BindOnce(&V4L2ImageProcessor::NotifyErrorOnChildThread,
+                                weak_this_, error_cb_));
 }
 
 void V4L2ImageProcessor::NotifyErrorOnChildThread(
@@ -127,7 +127,7 @@ bool V4L2ImageProcessor::Initialize(VideoPixelFormat input_format,
                                     int num_buffers,
                                     const base::Closure& error_cb) {
   VLOGF(2);
-  DCHECK(!error_cb.is_null());
+  DCHECK(error_cb);
   DCHECK_GT(num_buffers, 0);
   error_cb_ = error_cb;
 
@@ -291,10 +291,14 @@ bool V4L2ImageProcessor::Process(const scoped_refptr<VideoFrame>& frame,
   job_record->output_buffer_index = output_buffer_index;
   job_record->ready_cb = std::move(cb);
 
+  auto layout =
+      VideoFrameLayout::Create(output_format_, output_allocated_size_);
+  if (!layout) {
+    return false;
+  }
   // Create the output frame
   job_record->output_frame = VideoFrame::WrapExternalDmabufs(
-      VideoFrameLayout(output_format_, output_allocated_size_),
-      gfx::Rect(output_visible_size_), output_visible_size_,
+      *layout, gfx::Rect(output_visible_size_), output_visible_size_,
       std::move(output_dmabuf_fds), job_record->input_frame->timestamp());
 
   if (!job_record->output_frame)
@@ -347,8 +351,8 @@ void V4L2ImageProcessor::Destroy() {
   // If the device thread is running, destroy using posted task.
   if (device_thread_.IsRunning()) {
     device_thread_.task_runner()->PostTask(
-        FROM_HERE, base::Bind(&V4L2ImageProcessor::StopDevicePoll,
-                              base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&V4L2ImageProcessor::StopDevicePoll,
+                                  base::Unretained(this)));
     // Wait for tasks to finish/early-exit.
     device_thread_.Stop();
   } else {
@@ -555,8 +559,8 @@ void V4L2ImageProcessor::DevicePollTask(bool poll_device) {
   // All processing should happen on ServiceDeviceTask(), since we shouldn't
   // touch processor state from this thread.
   device_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&V4L2ImageProcessor::ServiceDeviceTask,
-                            base::Unretained(this)));
+      FROM_HERE, base::BindOnce(&V4L2ImageProcessor::ServiceDeviceTask,
+                                base::Unretained(this)));
 }
 
 void V4L2ImageProcessor::ServiceDeviceTask() {
@@ -582,8 +586,8 @@ void V4L2ImageProcessor::ServiceDeviceTask() {
       (input_buffer_queued_count_ > 0 || output_buffer_queued_count_ > 0);
 
   device_poll_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&V4L2ImageProcessor::DevicePollTask,
-                            base::Unretained(this), poll_device));
+      FROM_HERE, base::BindOnce(&V4L2ImageProcessor::DevicePollTask,
+                                base::Unretained(this), poll_device));
 
   DVLOGF(3) << __func__ << ": buffer counts: INPUT[" << input_queue_.size()
             << "] => DEVICE[" << free_input_buffers_.size() << "+"
@@ -824,8 +828,8 @@ void V4L2ImageProcessor::StartDevicePoll() {
   // Enqueue a poll task with no devices to poll on - will wait only for the
   // poll interrupt
   device_poll_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&V4L2ImageProcessor::DevicePollTask,
-                            base::Unretained(this), false));
+      FROM_HERE, base::BindOnce(&V4L2ImageProcessor::DevicePollTask,
+                                base::Unretained(this), false));
 }
 
 void V4L2ImageProcessor::StopDevicePoll() {

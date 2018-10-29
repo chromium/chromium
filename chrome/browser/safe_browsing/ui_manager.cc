@@ -108,7 +108,8 @@ void SafeBrowsingUIManager::ShowBlockingPageForResource(
 bool SafeBrowsingUIManager::ShouldSendHitReport(
     const HitReport& hit_report,
     const WebContents* web_contents) {
-  return hit_report.extended_reporting_level != SBER_LEVEL_OFF &&
+  return web_contents &&
+         hit_report.extended_reporting_level != SBER_LEVEL_OFF &&
          !web_contents->GetBrowserContext()->IsOffTheRecord();
 }
 

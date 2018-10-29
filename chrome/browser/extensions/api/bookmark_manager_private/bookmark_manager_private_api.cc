@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmark_api_constants.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmark_api_helpers.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
@@ -221,8 +222,7 @@ void BookmarkManagerPrivateEventRouter::BookmarkMetaInfoChanged(
     if (!new_meta_info) {
       changes.additional_properties[it->first] = "";
     } else {
-      BookmarkNode::MetaInfoMap::const_iterator new_meta_field =
-          new_meta_info->find(it->first);
+      auto new_meta_field = new_meta_info->find(it->first);
       if (new_meta_field == new_meta_info->end()) {
         changes.additional_properties[it->first] = "";
       } else if (it->second != new_meta_field->second) {
@@ -233,11 +233,8 @@ void BookmarkManagerPrivateEventRouter::BookmarkMetaInfoChanged(
 
   // Identify added fields:
   if (new_meta_info) {
-    for (BookmarkNode::MetaInfoMap::const_iterator it = new_meta_info->begin();
-         it != new_meta_info->end();
-         ++it) {
-      BookmarkNode::MetaInfoMap::const_iterator prev_meta_field =
-          prev_meta_info_.find(it->first);
+    for (auto it = new_meta_info->cbegin(); it != new_meta_info->cend(); ++it) {
+      auto prev_meta_field = prev_meta_info_.find(it->first);
       if (prev_meta_field == prev_meta_info_.end())
         changes.additional_properties[it->first] = it->second;
     }
@@ -569,8 +566,13 @@ bool BookmarkManagerPrivateStartDragFunction::RunOnReady() {
   if (params->is_from_touch)
     source = ui::DragDropTypes::DRAG_EVENT_SOURCE_TOUCH;
 
-  chrome::DragBookmarks(
-      GetProfile(), nodes, web_contents->GetNativeView(), source);
+  chrome::DragBookmarks(GetProfile(),
+                        {
+                            std::move(nodes), params->drag_node_index,
+                            platform_util::GetViewForWindow(
+                                web_contents->GetTopLevelNativeWindow()),
+                            source,
+                        });
 
   return true;
 }

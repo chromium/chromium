@@ -18,6 +18,8 @@ class ASH_EXPORT LoginBaseBubbleView : public views::BubbleDialogDelegateView {
   ~LoginBaseBubbleView() override;
 
   // views::BubbleDialogDelegateView:
+  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
+                                views::Widget* widget) const override;
   int GetDialogButtons() const override;
 
   // views::View:

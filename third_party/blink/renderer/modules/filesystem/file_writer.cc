@@ -30,11 +30,11 @@
 
 #include "third_party/blink/renderer/modules/filesystem/file_writer.h"
 
-#include "third_party/blink/public/platform/web_file_writer.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/modules/filesystem/file_system_dispatcher.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/time.h"
 
@@ -57,11 +57,11 @@ FileWriter::FileWriter(ExecutionContext* context)
       truncate_length_(-1),
       num_aborts_(0),
       recursion_depth_(0),
-      last_progress_notification_time_ms_(0) {}
+      last_progress_notification_time_ms_(0),
+      request_id_(0) {}
 
 FileWriter::~FileWriter() {
   DCHECK(!recursion_depth_);
-  DCHECK(!Writer());
 }
 
 const AtomicString& FileWriter::InterfaceName() const {
@@ -81,7 +81,6 @@ void FileWriter::write(Blob* data, ExceptionState& exception_state) {
   if (!GetExecutionContext())
     return;
   DCHECK(data);
-  DCHECK(Writer());
   DCHECK_EQ(truncate_length_, -1);
   if (ready_state_ == kWriting) {
     SetError(FileError::kInvalidStateErr, exception_state);
@@ -111,7 +110,6 @@ void FileWriter::write(Blob* data, ExceptionState& exception_state) {
 void FileWriter::seek(long long position, ExceptionState& exception_state) {
   if (!GetExecutionContext())
     return;
-  DCHECK(Writer());
   if (ready_state_ == kWriting) {
     SetError(FileError::kInvalidStateErr, exception_state);
     return;
@@ -125,7 +123,6 @@ void FileWriter::seek(long long position, ExceptionState& exception_state) {
 void FileWriter::truncate(long long position, ExceptionState& exception_state) {
   if (!GetExecutionContext())
     return;
-  DCHECK(Writer());
   DCHECK_EQ(truncate_length_, -1);
   if (ready_state_ == kWriting || position < 0) {
     SetError(FileError::kInvalidStateErr, exception_state);
@@ -154,16 +151,15 @@ void FileWriter::truncate(long long position, ExceptionState& exception_state) {
 void FileWriter::abort(ExceptionState& exception_state) {
   if (!GetExecutionContext())
     return;
-  DCHECK(Writer());
   if (ready_state_ != kWriting)
     return;
   ++num_aborts_;
 
   DoOperation(kOperationAbort);
-  SignalCompletion(FileError::kAbortErr);
+  SignalCompletion(base::File::FILE_ERROR_ABORT);
 }
 
-void FileWriter::DidWrite(long long bytes, bool complete) {
+void FileWriter::DidWriteImpl(int64_t bytes, bool complete) {
   if (operation_in_progress_ == kOperationAbort) {
     CompleteAbort();
     return;
@@ -183,7 +179,7 @@ void FileWriter::DidWrite(long long bytes, bool complete) {
     operation_in_progress_ = kOperationNone;
   }
 
-  int num_aborts = num_aborts_;
+  long long num_aborts = num_aborts_;
   // We could get an abort in the handler for this event. If we do, it's
   // already handled the cleanup and signalCompletion call.
   double now = CurrentTimeMS();
@@ -196,11 +192,11 @@ void FileWriter::DidWrite(long long bytes, bool complete) {
 
   if (complete) {
     if (num_aborts == num_aborts_)
-      SignalCompletion(FileError::kOK);
+      SignalCompletion(base::File::FILE_OK);
   }
 }
 
-void FileWriter::DidTruncate() {
+void FileWriter::DidTruncateImpl() {
   if (operation_in_progress_ == kOperationAbort) {
     CompleteAbort();
     return;
@@ -211,12 +207,12 @@ void FileWriter::DidTruncate() {
   if (position() > length())
     SetPosition(length());
   operation_in_progress_ = kOperationNone;
-  SignalCompletion(FileError::kOK);
+  SignalCompletion(base::File::FILE_OK);
 }
 
-void FileWriter::DidFail(WebFileError code) {
+void FileWriter::DidFailImpl(base::File::Error error) {
   DCHECK_NE(kOperationNone, operation_in_progress_);
-  DCHECK_NE(FileError::kOK, static_cast<FileError::ErrorCode>(code));
+  DCHECK_NE(base::File::FILE_OK, error);
   if (operation_in_progress_ == kOperationAbort) {
     CompleteAbort();
     return;
@@ -225,7 +221,29 @@ void FileWriter::DidFail(WebFileError code) {
   DCHECK_EQ(kWriting, ready_state_);
   blob_being_written_.Clear();
   operation_in_progress_ = kOperationNone;
-  SignalCompletion(static_cast<FileError::ErrorCode>(code));
+  SignalCompletion(error);
+}
+
+void FileWriter::DoTruncate(const KURL& path, int64_t offset) {
+  FileSystemDispatcher::From(GetExecutionContext())
+      .Truncate(path, offset, &request_id_,
+                WTF::Bind(&FileWriter::DidFinish, WrapWeakPersistent(this)));
+}
+
+void FileWriter::DoWrite(const KURL& path,
+                         const String& blob_id,
+                         int64_t offset) {
+  FileSystemDispatcher::From(GetExecutionContext())
+      .Write(
+          path, blob_id, offset, &request_id_,
+          WTF::BindRepeating(&FileWriter::DidWrite, WrapWeakPersistent(this)),
+          WTF::Bind(&FileWriter::DidFinish, WrapWeakPersistent(this)));
+}
+
+void FileWriter::DoCancel() {
+  FileSystemDispatcher::From(GetExecutionContext())
+      .Cancel(request_id_,
+              WTF::Bind(&FileWriter::DidFinish, WrapWeakPersistent(this)));
 }
 
 void FileWriter::CompleteAbort() {
@@ -244,13 +262,13 @@ void FileWriter::DoOperation(Operation operation) {
       DCHECK_EQ(-1, truncate_length_);
       DCHECK(blob_being_written_.Get());
       DCHECK_EQ(kWriting, ready_state_);
-      Writer()->Write(position(), blob_being_written_->Uuid());
+      Write(position(), blob_being_written_->Uuid());
       break;
     case kOperationTruncate:
       DCHECK_EQ(kOperationNone, operation_in_progress_);
       DCHECK_GE(truncate_length_, 0);
       DCHECK_EQ(kWriting, ready_state_);
-      Writer()->Truncate(truncate_length_);
+      Truncate(truncate_length_);
       break;
     case kOperationNone:
       DCHECK_EQ(kOperationNone, operation_in_progress_);
@@ -261,7 +279,7 @@ void FileWriter::DoOperation(Operation operation) {
     case kOperationAbort:
       if (operation_in_progress_ == kOperationWrite ||
           operation_in_progress_ == kOperationTruncate)
-        Writer()->Cancel();
+        Cancel();
       else if (operation_in_progress_ != kOperationAbort)
         operation = kOperationNone;
       queued_operation_ = kOperationNone;
@@ -273,12 +291,12 @@ void FileWriter::DoOperation(Operation operation) {
   operation_in_progress_ = operation;
 }
 
-void FileWriter::SignalCompletion(FileError::ErrorCode code) {
+void FileWriter::SignalCompletion(base::File::Error error) {
   ready_state_ = kDone;
   truncate_length_ = -1;
-  if (FileError::kOK != code) {
-    error_ = FileError::CreateDOMException(code);
-    if (FileError::kAbortErr == code)
+  if (error != base::File::FILE_OK) {
+    error_ = FileError::CreateDOMException(error);
+    if (base::File::FILE_ERROR_ABORT == error)
       FireEvent(EventTypeNames::abort);
     else
       FireEvent(EventTypeNames::error);
@@ -308,11 +326,12 @@ void FileWriter::SetError(FileError::ErrorCode error_code,
 void FileWriter::Dispose() {
   // Make sure we've actually got something to stop, and haven't already called
   // abort().
-  if (Writer() && ready_state_ == kWriting) {
+  if (ready_state_ == kWriting) {
     DoOperation(kOperationAbort);
     ready_state_ = kDone;
   }
-  ResetWriter();
+  // Prevents any queued operations from running after abort completes.
+  queued_operation_ = kOperationNone;
 }
 
 void FileWriter::Trace(blink::Visitor* visitor) {

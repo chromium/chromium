@@ -1,8 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x50
-  LayoutBlockFlow {HTML} at (0,0) size 800x50
-    LayoutBlockFlow {BODY} at (8,16) size 784x18
-      LayoutBlockFlow {P} at (0,0) size 784x18 [bgcolor=#00FF00]
-        LayoutText {#text} at (48,0) size 208x18
-          text run at (48,0) width 208: "This line should be bright green."

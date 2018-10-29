@@ -53,6 +53,10 @@ class CONTENT_EXPORT IndexedDBCallbacks
 
   virtual void OnError(const IndexedDBDatabaseError& error);
 
+  // IndexedDBFactory::databases
+  virtual void OnSuccess(
+      std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions);
+
   // IndexedDBFactory::GetDatabaseNames
   virtual void OnSuccess(const std::vector<base::string16>& string);
 

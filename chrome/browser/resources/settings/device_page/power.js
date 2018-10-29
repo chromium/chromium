@@ -113,7 +113,8 @@ Polymer({
     return this.i18n(
         calculating ?
             'calculatingPower' :
-            powerSources.length ? 'powerSourceLabel' : 'powerSourceBattery');
+            powerSources && powerSources.length ? 'powerSourceLabel' :
+                                                  'powerSourceBattery');
   },
 
   /**

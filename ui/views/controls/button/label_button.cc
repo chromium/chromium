@@ -28,12 +28,16 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/view_properties.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
+namespace {
+// The length of the hover fade animation.
+constexpr int kHoverAnimationDurationMs = 170;
+}  // namespace
 
 // static
-const int LabelButton::kHoverAnimationDurationMs = 170;
 const char LabelButton::kViewClassName[] = "LabelButton";
 
 LabelButton::LabelButton(ButtonListener* listener,
@@ -386,6 +390,10 @@ std::unique_ptr<InkDrop> LabelButton::CreateInkDrop() {
 }
 
 std::unique_ptr<views::InkDropRipple> LabelButton::CreateInkDropRipple() const {
+  // Views that use a highlight path use the base style and do not need the
+  // overrides in this file.
+  if (GetProperty(views::kHighlightPathKey))
+    return InkDropHostView::CreateInkDropRipple();
   return ShouldUseFloodFillInkDrop()
              ? std::make_unique<views::FloodFillInkDropRipple>(
                    size(), GetInkDropCenterBasedOnLastEvent(),
@@ -396,6 +404,10 @@ std::unique_ptr<views::InkDropRipple> LabelButton::CreateInkDropRipple() const {
 
 std::unique_ptr<views::InkDropHighlight> LabelButton::CreateInkDropHighlight()
     const {
+  // Views that use a highlight path use the base style and do not need the
+  // overrides in this file.
+  if (GetProperty(views::kHighlightPathKey))
+    return InkDropHostView::CreateInkDropHighlight();
   return ShouldUseFloodFillInkDrop()
              ? std::make_unique<views::InkDropHighlight>(
                    size(), ink_drop_small_corner_radius(),
@@ -484,7 +496,7 @@ void LabelButton::UpdateStyleToIndicateDefaultStatus() {
 }
 
 void LabelButton::UpdateImage() {
-  image_->SetImage(GetImage(state()));
+  image_->SetImage(GetImage(GetVisualState()));
   ResetCachedPreferredSize();
 }
 

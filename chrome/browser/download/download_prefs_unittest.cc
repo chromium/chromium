@@ -12,6 +12,16 @@
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_CHROMEOS)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chromeos/chromeos_features.h"
+#include "components/drive/drive_pref_names.h"
+#include "content/public/test/test_service_manager_context.h"
+#endif
+
 using safe_browsing::FileTypePolicies;
 
 TEST(DownloadPrefsTest, Prerequisites) {
@@ -119,45 +129,114 @@ TEST(DownloadPrefsTest, AutoOpenCheckIsCaseInsensitive) {
 }
 
 #if defined(OS_CHROMEOS)
+void ExpectValidDownloadDir(Profile* profile,
+                            DownloadPrefs* prefs,
+                            base::FilePath path) {
+  profile->GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
+                                 path.value());
+  EXPECT_TRUE(prefs->DownloadPath().IsAbsolute());
+  EXPECT_EQ(prefs->DownloadPath(), path);
+}
+
 TEST(DownloadPrefsTest, DownloadDirSanitization) {
   content::TestBrowserThreadBundle threads_are_required_for_testing_profile;
-  TestingProfile profile;
+  content::TestServiceManagerContext service_manager_context;
+  TestingProfile profile(base::FilePath("/home/chronos/u-0123456789abcdef"));
   DownloadPrefs prefs(&profile);
   const base::FilePath default_dir =
       prefs.GetDefaultDownloadDirectoryForProfile();
 
   // Test a valid path.
-  base::FilePath testdir = default_dir.AppendASCII("testdir");
-  profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
-                                testdir.value());
-  EXPECT_TRUE(prefs.DownloadPath().IsAbsolute());
-  EXPECT_EQ(prefs.DownloadPath(), testdir);
+  ExpectValidDownloadDir(&profile, &prefs, default_dir.AppendASCII("testdir"));
 
   // Test a valid path for Android files.
-  testdir = base::FilePath("/run/arc/sdcard/write/emulated/0/Documents");
-  profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
-                                testdir.value());
-  EXPECT_TRUE(prefs.DownloadPath().IsAbsolute());
-  EXPECT_EQ(prefs.DownloadPath(), testdir);
+  ExpectValidDownloadDir(
+      &profile, &prefs,
+      base::FilePath("/run/arc/sdcard/write/emulated/0/Documents"));
 
-  // Test a valid path for Linux files.
-  testdir = base::FilePath("/media/fuse/crostini_test_termina_penguin/testdir");
-  profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
-                                testdir.value());
-  EXPECT_TRUE(prefs.DownloadPath().IsAbsolute());
-  EXPECT_EQ(prefs.DownloadPath(), testdir);
+  // Linux files root.
+  ExpectValidDownloadDir(
+      &profile, &prefs,
+      base::FilePath("/media/fuse/crostini_0123456789abcdef_termina_penguin"));
+  // Linux files/testdir.
+  ExpectValidDownloadDir(
+      &profile, &prefs,
+      base::FilePath(
+          "/media/fuse/crostini_0123456789abcdef_termina_penguin/testdir"));
 
   // Test with an invalid path outside the download directory.
   profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
                                 "/home/chronos");
-  EXPECT_TRUE(prefs.DownloadPath().IsAbsolute());
   EXPECT_EQ(prefs.DownloadPath(), default_dir);
 
   // Test with an invalid path containing parent references.
   base::FilePath parent_reference = default_dir.AppendASCII("..");
   profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
                                 parent_reference.value());
-  EXPECT_TRUE(prefs.DownloadPath().IsAbsolute());
   EXPECT_EQ(prefs.DownloadPath(), default_dir);
+
+  // Drive
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(chromeos::features::kDriveFs);
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::GetForProfile(&profile);
+    integration_service->SetEnabled(true);
+
+    // My Drive root.
+    ExpectValidDownloadDir(
+        &profile, &prefs,
+        base::FilePath("/special/drive-0123456789abcdef/root"));
+    // My Drive/foo.
+    ExpectValidDownloadDir(
+        &profile, &prefs,
+        base::FilePath("/special/drive-0123456789abcdef/root/foo"));
+    // Invalid path without one of the drive roots.
+    profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
+                                  "/special/drive-0123456789abcdef");
+    EXPECT_EQ(prefs.DownloadPath(), default_dir);
+  }
+
+  // DriveFS
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(chromeos::features::kDriveFs);
+    // Create new profile for enabled feature to work.
+    TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
+    chromeos::FakeChromeUserManager user_manager;
+    DownloadPrefs prefs2(&profile2);
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(profile2.GetProfileUserName(), "12345");
+    const auto* user = user_manager.AddUser(account_id);
+    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user, &profile2);
+    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
+        const_cast<user_manager::User*>(user));
+    profile2.GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::GetForProfile(&profile2);
+    integration_service->SetEnabled(true);
+
+    // My Drive root.
+    ExpectValidDownloadDir(
+        &profile2, &prefs2,
+        base::FilePath(
+            "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/root"));
+    // My Drive/foo.
+    ExpectValidDownloadDir(
+        &profile2, &prefs2,
+        base::FilePath(
+            "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/root/foo"));
+    // Invalid path without one of the drive roots.
+    const base::FilePath default_dir2 =
+        prefs2.GetDefaultDownloadDirectoryForProfile();
+    profile2.GetPrefs()->SetString(
+        prefs::kDownloadDefaultDirectory,
+        "/media/fuse/drivefs-84675c855b63e12f384d45f033826980");
+    EXPECT_EQ(prefs2.DownloadPath(), default_dir2);
+    profile2.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
+                                   "/media/fuse/drivefs-something-else/root");
+    EXPECT_EQ(prefs2.DownloadPath(), default_dir2);
+  }
 }
 #endif

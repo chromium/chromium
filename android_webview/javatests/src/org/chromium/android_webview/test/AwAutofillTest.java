@@ -42,7 +42,6 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -1025,7 +1024,7 @@ public class AwAutofillTest {
             assertEquals(1, values.size());
             assertEquals("a", values.get(0).second.getTextValue());
             executeJavaScriptAndWaitForResult("document.getElementById('text1').value='c';");
-            if (BuildInfo.isAtLeastP()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 // There is no AUTOFILL_CANCEL from Android P.
                 assertEquals(4, getCallbackCount());
             } else {
@@ -1934,7 +1933,7 @@ public class AwAutofillTest {
             throws InterruptedException, TimeoutException {
         Integer[] adjustedEventArray;
         // Didn't call cancel after Android P.
-        if (BuildInfo.isAtLeastP()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             ArrayList<Integer> adjusted = new ArrayList<Integer>();
             for (Integer event : expectedEventArray) {
                 if (event != AUTOFILL_CANCEL) adjusted.add(event);

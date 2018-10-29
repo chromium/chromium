@@ -17,6 +17,10 @@ class D3D11VP9Picture : public VP9Picture {
  public:
   explicit D3D11VP9Picture(D3D11PictureBuffer* picture_buffer);
 
+  D3D11PictureBuffer* picture_buffer() const { return picture_buffer_; };
+
+  size_t level() const { return level_; };
+
  protected:
   ~D3D11VP9Picture() override;
 

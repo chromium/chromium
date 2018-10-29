@@ -10,8 +10,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -20,7 +20,7 @@ FORWARD_DECLARE_TEST(SizeTest, ClampsToZero);
 FORWARD_DECLARE_TEST(SizeTest, ConsistentClamping);
 
 // A floating version of gfx::Size.
-class GFX_EXPORT SizeF {
+class GEOMETRY_EXPORT SizeF {
  public:
   constexpr SizeF() : width_(0.f), height_(0.f) {}
   constexpr SizeF(float width, float height)
@@ -81,7 +81,7 @@ inline bool operator!=(const SizeF& lhs, const SizeF& rhs) {
   return !(lhs == rhs);
 }
 
-GFX_EXPORT SizeF ScaleSize(const SizeF& p, float x_scale, float y_scale);
+GEOMETRY_EXPORT SizeF ScaleSize(const SizeF& p, float x_scale, float y_scale);
 
 inline SizeF ScaleSize(const SizeF& p, float scale) {
   return ScaleSize(p, scale, scale);

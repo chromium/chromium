@@ -2,8 +2,10 @@
 <head>
 <script>
 function editingTest() {
-    if (window.testRunner)
+    if (window.testRunner) {
         testRunner.dumpEditingCallbacks();
+        testRunner.dumpAsLayoutWithPixelResults();
+    }
 
     var elem = document.getElementById("test").firstChild;
     var selection = window.getSelection();

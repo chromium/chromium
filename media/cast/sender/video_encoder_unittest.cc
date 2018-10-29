@@ -11,8 +11,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/video_frame.h"
@@ -36,13 +39,14 @@ class VideoEncoderTest
  protected:
   VideoEncoderTest()
       : task_runner_(new FakeSingleThreadTaskRunner(&testing_clock_)),
+        thread_task_runner_override_reverter_(
+            base::ThreadTaskRunnerHandle::OverrideForTesting(task_runner_)),
         cast_environment_(new CastEnvironment(&testing_clock_,
                                               task_runner_,
                                               task_runner_,
                                               task_runner_)),
         video_config_(GetDefaultVideoSenderConfig()),
-        operational_status_(STATUS_UNINITIALIZED),
-        count_frames_delivered_(0) {
+        operational_status_(STATUS_UNINITIALIZED) {
     testing_clock_.Advance(base::TimeTicks::Now() - base::TimeTicks());
     first_frame_time_ = testing_clock_.NowTicks();
   }
@@ -134,16 +138,6 @@ class VideoEncoderTest
     testing_clock_.Advance(frame_duration);
   }
 
-  int count_frames_delivered() const {
-    return count_frames_delivered_;
-  }
-
-  void WaitForAllFramesToBeDelivered(int total_expected) {
-    video_encoder_->EmitFrames();
-    while (count_frames_delivered_ < total_expected)
-      RunTasksAndAdvanceClock();
-  }
-
   // Creates a new VideoFrame of the given |size|, filled with a test pattern.
   // When available, it attempts to use the VideoFrameFactory provided by the
   // encoder.
@@ -162,22 +156,6 @@ class VideoEncoderTest
     }
     PopulateVideoFrame(frame.get(), 123);
     return frame;
-  }
-
-  // Requests encoding the |video_frame| and has the resulting frame delivered
-  // via a callback that checks for expected results.  Returns false if the
-  // encoder rejected the request.
-  bool EncodeAndCheckDelivery(
-      const scoped_refptr<media::VideoFrame>& video_frame,
-      FrameId frame_id,
-      FrameId reference_frame_id) {
-    return video_encoder_->EncodeVideoFrame(
-        video_frame, Now(),
-        base::Bind(&VideoEncoderTest::DeliverEncodedVideoFrame,
-                   base::Unretained(this), frame_id, reference_frame_id,
-                   RtpTimeTicks::FromTimeDelta(video_frame->timestamp(),
-                                               kVideoFrequency),
-                   Now()));
   }
 
   // If the implementation of |video_encoder_| is ExternalVideoEncoder, check
@@ -212,59 +190,9 @@ class VideoEncoderTest
       video_frame_factory_ = video_encoder_->CreateVideoFrameFactory();
   }
 
-  // Checks that |encoded_frame| matches expected values.  This is the method
-  // bound in the callback returned from EncodeAndCheckDelivery().
-  void DeliverEncodedVideoFrame(
-      FrameId expected_frame_id,
-      FrameId expected_last_referenced_frame_id,
-      RtpTimeTicks expected_rtp_timestamp,
-      const base::TimeTicks& expected_reference_time,
-      std::unique_ptr<SenderEncodedFrame> encoded_frame) {
-    EXPECT_TRUE(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-
-    EXPECT_EQ(expected_frame_id, encoded_frame->frame_id);
-    EXPECT_EQ(expected_rtp_timestamp, encoded_frame->rtp_timestamp);
-    EXPECT_EQ(expected_reference_time, encoded_frame->reference_time);
-
-    // The platform encoders are "black boxes" and may choose to vend key frames
-    // and/or empty data at any time.  The software encoders, however, should
-    // strictly adhere to expected behavior.
-    if (is_testing_platform_encoder()) {
-      const bool expected_key_frame =
-          expected_frame_id == expected_last_referenced_frame_id;
-      const bool have_key_frame =
-          encoded_frame->dependency == EncodedFrame::KEY;
-      EXPECT_EQ(have_key_frame,
-                encoded_frame->frame_id == encoded_frame->referenced_frame_id);
-      LOG_IF(WARNING, expected_key_frame != have_key_frame)
-          << "Platform encoder chose to emit a "
-          << (have_key_frame ? "key" : "delta")
-          << " frame instead of the expected kind @ frame_id="
-          << encoded_frame->frame_id;
-      LOG_IF(WARNING, encoded_frame->data.empty())
-          << "Platform encoder returned an empty frame @ frame_id="
-          << encoded_frame->frame_id;
-    } else {
-      if (expected_frame_id != expected_last_referenced_frame_id) {
-        EXPECT_EQ(EncodedFrame::DEPENDENT, encoded_frame->dependency);
-      } else if (video_config_.video_codec_params
-                     .max_number_of_video_buffers_used == 1) {
-        EXPECT_EQ(EncodedFrame::KEY, encoded_frame->dependency);
-      }
-      EXPECT_EQ(expected_last_referenced_frame_id,
-                encoded_frame->referenced_frame_id);
-      EXPECT_FALSE(encoded_frame->data.empty());
-      ASSERT_TRUE(std::isfinite(encoded_frame->encoder_utilization));
-      EXPECT_LE(0.0, encoded_frame->encoder_utilization);
-      ASSERT_TRUE(std::isfinite(encoded_frame->lossy_utilization));
-      EXPECT_LE(0.0, encoded_frame->lossy_utilization);
-    }
-
-    ++count_frames_delivered_;
-  }
-
   base::SimpleTestTickClock testing_clock_;
   const scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
+  base::ScopedClosureRunner thread_task_runner_override_reverter_;
   const scoped_refptr<CastEnvironment> cast_environment_;
   FrameSenderConfig video_config_;
   std::unique_ptr<FakeVideoEncodeAcceleratorFactory> vea_factory_;
@@ -273,62 +201,13 @@ class VideoEncoderTest
   std::unique_ptr<VideoEncoder> video_encoder_;
   std::unique_ptr<VideoFrameFactory> video_frame_factory_;
 
-  int count_frames_delivered_;
-
   DISALLOW_COPY_AND_ASSIGN(VideoEncoderTest);
 };
 
-// A simple test to encode three frames of video, expecting to see one key frame
-// followed by two delta frames.
-// Fails consistently on official builds: crbug.com/612496
-#ifdef OFFICIAL_BUILD
-#define MAYBE_GeneratesKeyFrameThenOnlyDeltaFrames \
-  DISABLED_GeneratesKeyFrameThenOnlyDeltaFrames
-#else
-#define MAYBE_GeneratesKeyFrameThenOnlyDeltaFrames \
-  GeneratesKeyFrameThenOnlyDeltaFrames
-#endif
-TEST_P(VideoEncoderTest, MAYBE_GeneratesKeyFrameThenOnlyDeltaFrames) {
-  CreateEncoder();
-  SetVEAFactoryAutoRespond(true);
-
-  EXPECT_EQ(0, count_frames_delivered());
-  ExpectVEAResponsesForExternalVideoEncoder(0, 0);
-
-  FrameId frame_id = FrameId::first();
-  FrameId reference_frame_id = FrameId::first();
-  const gfx::Size frame_size(1280, 720);
-
-  // Some encoders drop one or more frames initially while the encoder
-  // initializes. Then, for all encoders, expect one key frame is delivered.
-  bool accepted_first_frame = false;
-  do {
-    accepted_first_frame = EncodeAndCheckDelivery(
-        CreateTestVideoFrame(frame_size), frame_id, reference_frame_id);
-    if (!encoder_has_resize_delay())
-      EXPECT_TRUE(accepted_first_frame);
-    RunTasksAndAdvanceClock();
-  } while (!accepted_first_frame);
-  ExpectVEAResponsesForExternalVideoEncoder(1, 3);
-
-  // Expect the remaining frames are encoded as delta frames.
-  for (++frame_id; frame_id < FrameId::first() + 3;
-       ++frame_id, ++reference_frame_id) {
-    EXPECT_TRUE(EncodeAndCheckDelivery(CreateTestVideoFrame(frame_size),
-                                       frame_id,
-                                       reference_frame_id));
-    RunTasksAndAdvanceClock();
-  }
-
-  WaitForAllFramesToBeDelivered(3);
-  ExpectVEAResponsesForExternalVideoEncoder(1, 3);
-}
-
-// Tests that the encoder continues to output EncodedFrames as the frame size
-// changes.  See media/cast/receiver/video_decoder_unittest.cc for a complete
-// encode/decode cycle of varied frame sizes that actually checks the frame
-// content.
-// Fails consistently on official builds: crbug.com/612496
+// Tests that the encoder outputs encoded frames, and also responds to frame
+// size changes. See media/cast/receiver/video_decoder_unittest.cc for a
+// complete encode/decode cycle of varied frame sizes that actually checks the
+// frame content. Fails consistently on official builds: crbug.com/612496
 #ifdef OFFICIAL_BUILD
 #define MAYBE_EncodesVariedFrameSizes DISABLED_EncodesVariedFrameSizes
 #else
@@ -338,7 +217,6 @@ TEST_P(VideoEncoderTest, MAYBE_EncodesVariedFrameSizes) {
   CreateEncoder();
   SetVEAFactoryAutoRespond(true);
 
-  EXPECT_EQ(0, count_frames_delivered());
   ExpectVEAResponsesForExternalVideoEncoder(0, 0);
 
   std::vector<gfx::Size> frame_sizes;
@@ -354,45 +232,98 @@ TEST_P(VideoEncoderTest, MAYBE_EncodesVariedFrameSizes) {
   frame_sizes.push_back(gfx::Size(34, 20));    // Grow the other dimension.
   frame_sizes.push_back(gfx::Size(192, 108));  // Grow both dimensions again.
 
-  FrameId frame_id = FrameId::first();
+  int count_frames_accepted = 0;
+  using EncodedFrames = std::vector<std::unique_ptr<SenderEncodedFrame>>;
+  EncodedFrames encoded_frames;
+  base::WeakPtrFactory<EncodedFrames> encoded_frames_weak_factory(
+      &encoded_frames);
 
-  // Encode one frame at each size. For encoders with a resize delay, except no
-  // frames to be delivered since each frame size change will sprun
-  // re-initialization of the underlying encoder. Otherwise expect all key
-  // frames to come out.
+  // Encode several frames at each size. For encoders with a resize delay,
+  // expect the first one or more frames are dropped while the encoder
+  // re-inits. For all encoders, expect one key frame followed by all delta
+  // frames.
   for (const auto& frame_size : frame_sizes) {
-    EXPECT_EQ(!encoder_has_resize_delay(),
-              EncodeAndCheckDelivery(CreateTestVideoFrame(frame_size), frame_id,
-                                     frame_id));
-    RunTasksAndAdvanceClock();
-    if (!encoder_has_resize_delay())
-      ++frame_id;
-  }
-
-  // Encode three frames at each size. For encoders with a resize delay, expect
-  // the first one or more frames are dropped while the encoder re-inits. Then,
-  // for all encoders, expect one key frame followed by all delta frames.
-  for (const auto& frame_size : frame_sizes) {
-    bool accepted_first_frame = false;
-    do {
-      accepted_first_frame = EncodeAndCheckDelivery(
-          CreateTestVideoFrame(frame_size), frame_id, frame_id);
-      if (!encoder_has_resize_delay())
-        EXPECT_TRUE(accepted_first_frame);
-      RunTasksAndAdvanceClock();
-    } while (!accepted_first_frame);
-    ++frame_id;
-    for (int i = 1; i < 3; ++i, ++frame_id) {
-      EXPECT_TRUE(EncodeAndCheckDelivery(CreateTestVideoFrame(frame_size),
-                                         frame_id,
-                                         frame_id - 1));
+    // Encode frames until there are four consecutive frames successfully
+    // encoded.
+    while (encoded_frames.size() <= 4 ||
+           !(encoded_frames[encoded_frames.size() - 1] &&
+             encoded_frames[encoded_frames.size() - 2] &&
+             encoded_frames[encoded_frames.size() - 3] &&
+             encoded_frames[encoded_frames.size() - 4])) {
+      auto video_frame = CreateTestVideoFrame(frame_size);
+      const base::TimeTicks reference_time = Now();
+      const bool accepted_request = video_encoder()->EncodeVideoFrame(
+          std::move(video_frame), reference_time,
+          base::BindRepeating(
+              [](base::WeakPtr<EncodedFrames> encoded_frames,
+                 RtpTimeTicks expected_rtp_timestamp,
+                 base::TimeTicks expected_reference_time,
+                 std::unique_ptr<SenderEncodedFrame> encoded_frame) {
+                if (!encoded_frames) {
+                  return;
+                }
+                if (encoded_frame) {
+                  EXPECT_EQ(expected_rtp_timestamp,
+                            encoded_frame->rtp_timestamp);
+                  EXPECT_EQ(expected_reference_time,
+                            encoded_frame->reference_time);
+                }
+                encoded_frames->emplace_back(std::move(encoded_frame));
+              },
+              encoded_frames_weak_factory.GetWeakPtr(),
+              RtpTimeTicks::FromTimeDelta(video_frame->timestamp(),
+                                          kVideoFrequency),
+              reference_time));
+      if (accepted_request) {
+        ++count_frames_accepted;
+      }
+      if (!encoder_has_resize_delay()) {
+        EXPECT_TRUE(accepted_request);
+      }
       RunTasksAndAdvanceClock();
     }
   }
 
-  WaitForAllFramesToBeDelivered(3 * frame_sizes.size());
-  ExpectVEAResponsesForExternalVideoEncoder(
-      2 * frame_sizes.size(), 6 * frame_sizes.size());
+  // Flush the encoder and wait until all queued frames have been delivered.
+  // Then, shut it all down.
+  video_encoder()->EmitFrames();
+  while (encoded_frames.size() < static_cast<size_t>(count_frames_accepted))
+    RunTasksAndAdvanceClock();
+  DestroyEncoder();
+  RunTasksAndAdvanceClock();
+  encoded_frames_weak_factory.InvalidateWeakPtrs();
+
+  // Walk through the encoded frames and check that they have reasonable frame
+  // IDs, dependency relationships, etc. provided.
+  FrameId last_key_frame_id;
+  for (const std::unique_ptr<SenderEncodedFrame>& encoded_frame :
+       encoded_frames) {
+    if (!encoded_frame) {
+      continue;
+    }
+
+    if (encoded_frame->dependency == EncodedFrame::KEY) {
+      EXPECT_EQ(encoded_frame->frame_id, encoded_frame->referenced_frame_id);
+      last_key_frame_id = encoded_frame->frame_id;
+    } else {
+      EXPECT_EQ(EncodedFrame::DEPENDENT, encoded_frame->dependency);
+      EXPECT_GT(encoded_frame->frame_id, encoded_frame->referenced_frame_id);
+      // There must always be a KEY frame before any DEPENDENT ones.
+      ASSERT_FALSE(last_key_frame_id.is_null());
+      EXPECT_GE(encoded_frame->referenced_frame_id, last_key_frame_id);
+    }
+
+    EXPECT_FALSE(encoded_frame->data.empty());
+
+    // The utilization metrics are computed for all but the Mac Video Toolbox
+    // encoder.
+    if (is_testing_software_vp8_encoder()) {
+      ASSERT_TRUE(std::isfinite(encoded_frame->encoder_utilization));
+      EXPECT_LE(0.0, encoded_frame->encoder_utilization);
+      ASSERT_TRUE(std::isfinite(encoded_frame->lossy_utilization));
+      EXPECT_LE(0.0, encoded_frame->lossy_utilization);
+    }
+  }
 }
 
 // Verify that everything goes well even if ExternalVideoEncoder is destroyed
@@ -410,8 +341,10 @@ TEST_P(VideoEncoderTest, MAYBE_CanBeDestroyedBeforeVEAIsCreated) {
   CreateEncoder();
 
   // Send a frame to spawn creation of the ExternalVideoEncoder instance.
-  EncodeAndCheckDelivery(CreateTestVideoFrame(gfx::Size(128, 72)),
-                         FrameId::first(), FrameId::first());
+  video_encoder()->EncodeVideoFrame(
+      CreateTestVideoFrame(gfx::Size(128, 72)), Now(),
+      base::BindRepeating(
+          [](std::unique_ptr<SenderEncodedFrame> encoded_frame) {}));
 
   // Destroy the encoder, and confirm the VEA Factory did not respond yet.
   DestroyEncoder();

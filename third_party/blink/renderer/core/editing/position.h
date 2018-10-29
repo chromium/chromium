@@ -133,12 +133,12 @@ class PositionTemplate {
   }
 
   // Returns an offset for editing based on anchor type for using with
-  // |anchorNode()| function:
-  //   - OffsetInAnchor  m_offset
-  //   - BeforeChildren  0
-  //   - BeforeAnchor    0
-  //   - AfterChildren   last editing offset in anchor node
-  //   - AfterAnchor     last editing offset in anchor node
+  // |AnchorNode()| function:
+  //   - kOffsetInAnchor  offset_
+  //   - kBeforeChildren  0
+  //   - kBeforeAnchor    0
+  //   - kAfterChildren   last editing offset in anchor node
+  //   - kAfterAnchor     last editing offset in anchor node
   // Editing operations will change in anchor node rather than nodes around
   // anchor node.
   int ComputeEditingOffset() const;
@@ -231,10 +231,10 @@ class PositionTemplate {
   // TODO(editing-dev): Since we should consider |Position| is constant in
   // tree, we should use |Member<const Node>|. see http://crbug.com/735327
   Member<Node> anchor_node_;
-  // m_offset can be the offset inside m_anchorNode, or if
-  // editingIgnoresContent(m_anchorNode) returns true, then other places in
-  // editing will treat m_offset == 0 as "before the anchor" and m_offset > 0 as
-  // "after the anchor node".  See parentAnchoredEquivalent for more info.
+  // offset_ can be the offset inside anchor_node_, or if
+  // EditingIgnoresContent(anchor_node_) returns true, then other places in
+  // editing will treat offset_ == 0 as "before the anchor" and offset_ > 0 as
+  // "after the anchor node".  See ParentAnchoredEquivalent for more info.
   int offset_;
   PositionAnchorType anchor_type_;
 };

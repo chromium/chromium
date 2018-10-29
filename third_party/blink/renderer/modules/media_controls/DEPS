@@ -1,5 +1,4 @@
 include_rules = [
-  "+blink/public/resources/grit/media_controls_resources.h",
   "+mojo/public/cpp/bindings",
   "+services/device/public/mojom/constants.mojom-blink.h",
   "+services/device/public/mojom/screen_orientation.mojom-blink.h",

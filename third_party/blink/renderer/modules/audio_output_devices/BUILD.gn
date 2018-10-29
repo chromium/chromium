@@ -6,10 +6,6 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("audio_output_devices") {
   sources = [
-    "audio_output_device_client.cc",
-    "audio_output_device_client.h",
-    "audio_output_device_client_impl.cc",
-    "audio_output_device_client_impl.h",
     "html_media_element_audio_output_device.cc",
     "html_media_element_audio_output_device.h",
     "set_sink_id_callbacks.cc",

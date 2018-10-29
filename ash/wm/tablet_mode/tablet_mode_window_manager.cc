@@ -85,12 +85,36 @@ void TabletModeWindowManager::WindowStateDestroyed(aura::Window* window) {
 
 void TabletModeWindowManager::OnOverviewModeStarting() {
   for (auto& pair : window_state_map_)
-    SetDeferBoundsUpdates(pair.first, true);
+    SetDeferBoundsUpdates(pair.first, /*defer_bounds_updates=*/true);
+}
+
+void TabletModeWindowManager::OnOverviewModeEnding() {
+  WindowSelector* window_selector =
+      Shell::Get()->window_selector_controller()->window_selector();
+  exit_overview_by_window_drag_ =
+      window_selector->enter_exit_overview_type() ==
+      WindowSelector::EnterExitOverviewType::kWindowDragged;
 }
 
 void TabletModeWindowManager::OnOverviewModeEnded() {
-  for (auto& pair : window_state_map_)
-    SetDeferBoundsUpdates(pair.first, false);
+  for (auto& pair : window_state_map_) {
+    // We don't want any animation if overview exits because of dragging a
+    // window from top, including the window update bounds animation. Set the
+    // animation tween type to ZERO for all the other windows except the dragged
+    // window(active window). Then the dragged window can still be animated to
+    // its target bounds but all the other windows' bounds will be updated at
+    // the end of the animation.
+    pair.second->set_use_zero_animation_type(
+        exit_overview_by_window_drag_ &&
+        !wm::GetWindowState(pair.first)->IsActive());
+
+    SetDeferBoundsUpdates(pair.first, /*defer_bounds_updates=*/false);
+    // SetDeferBoundsUpdates is called with /*defer_bounds_updates=*/false
+    // hence the window bounds is updated with proper zero animation type
+    // flag. Reset the flag here so that it does not affect window bounds
+    // update later.
+    pair.second->set_use_zero_animation_type(false);
+  }
 }
 
 void TabletModeWindowManager::OnSplitViewModeEnded() {
@@ -173,8 +197,10 @@ void TabletModeWindowManager::OnWindowBoundsChanged(
   if (!IsContainerWindow(window))
     return;
   // Reposition all non maximizeable windows.
-  for (auto& pair : window_state_map_)
-    pair.second->UpdateWindowPosition(wm::GetWindowState(pair.first));
+  for (auto& pair : window_state_map_) {
+    pair.second->UpdateWindowPosition(wm::GetWindowState(pair.first),
+                                      /*animate=*/false);
+  }
 }
 
 void TabletModeWindowManager::OnWindowVisibilityChanged(aura::Window* window,

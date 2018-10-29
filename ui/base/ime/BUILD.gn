@@ -46,6 +46,8 @@ jumbo_component("ime_types") {
 jumbo_component("ime") {
   output_name = "ui_base_ime"
   sources = [
+    "constants.cc",
+    "constants.h",
     "ime_bridge.cc",
     "ime_bridge.h",
     "ime_engine_handler_interface.h",
@@ -55,6 +57,7 @@ jumbo_component("ime") {
     "input_method_base.h",
     "input_method_chromeos.cc",
     "input_method_chromeos.h",
+    "input_method_delegate.cc",
     "input_method_delegate.h",
     "input_method_factory.cc",
     "input_method_factory.h",
@@ -242,7 +245,7 @@ jumbo_component("ime") {
     ]
 
     deps += [
-      "//third_party/fuchsia-sdk:input",
+      "//third_party/fuchsia-sdk/sdk:input",
       "//ui/events",
       "//ui/events:dom_keycode_converter",
     ]

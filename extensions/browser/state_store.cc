@@ -186,8 +186,7 @@ void StateStore::InitAfterDelay() {
 }
 
 void StateStore::RemoveKeysForExtension(const std::string& extension_id) {
-  for (std::set<std::string>::iterator key = registered_keys_.begin();
-       key != registered_keys_.end();
+  for (auto key = registered_keys_.begin(); key != registered_keys_.end();
        ++key) {
     task_queue_->InvokeWhenReady(base::Bind(&ValueStoreFrontend::Remove,
                                             base::Unretained(store_.get()),

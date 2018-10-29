@@ -27,6 +27,9 @@ extern const base::FilePath::CharType kAndroidFilesPath[];
 // Gets the absolute path for the 'Downloads' folder for the |profile|.
 base::FilePath GetDownloadsFolderForProfile(Profile* profile);
 
+// Gets the absolute path for the 'MyFiles' folder for the |profile|.
+base::FilePath GetMyFilesFolderForProfile(Profile* profile);
+
 // Converts |old_path| to |new_path| and returns true, if the old path points
 // to an old location of user folders (in "Downloads" or "Google Drive").
 // The |profile| argument is used for determining the location of the
@@ -63,9 +66,10 @@ std::vector<std::string> GetCrostiniMountOptions(
     const std::string& container_public_key);
 
 // Convert a cracked url to a path inside the Crostini VM.
-std::string ConvertFileSystemURLToPathInsideCrostini(
+bool ConvertFileSystemURLToPathInsideCrostini(
     Profile* profile,
-    const storage::FileSystemURL& file_system_url);
+    const storage::FileSystemURL& file_system_url,
+    base::FilePath* inside);
 
 // DEPRECATED. Use |ConvertToContentUrls| instead.
 // While this function can convert paths under Downloads, /media/removable
@@ -84,16 +88,18 @@ void ConvertToContentUrls(
     const std::vector<storage::FileSystemURL>& file_system_urls,
     ConvertToContentUrlsCallback callback);
 
-// Convert download location path into a string suitable for display.
+// Convert path into a string suitable for display in settings.
 // Replacements:
 // * /home/chronos/user/Downloads                => Downloads
 // * /home/chronos/u-<hash>/Downloads            => Downloads
 // * /special/drive-<hash>/root                  => Google Drive
 // * /special/drive-<hash>/team_drives           => Team Drives
+// * /special/drive-<hash>/Computers             => Computers
 // * /run/arc/sdcard/write/emulated/0            => Play files
 // * /media/fuse/crostini_<hash>_termina_penguin => Linux files
 // * '/' with ' \u203a ' (angled quote sign) for display purposes.
-std::string GetDownloadLocationText(Profile* profile, const std::string& path);
+std::string GetPathDisplayTextForSettings(Profile* profile,
+                                          const std::string& path);
 
 }  // namespace util
 }  // namespace file_manager

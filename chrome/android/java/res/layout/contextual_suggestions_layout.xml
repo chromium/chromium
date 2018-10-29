@@ -8,5 +8,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="vertical"
-    android:paddingTop="@dimen/bottom_control_container_peek_height"
+    android:layout_marginTop="@dimen/bottom_sheet_peek_height"
     android:background="@android:color/white" />

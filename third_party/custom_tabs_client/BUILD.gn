@@ -73,6 +73,7 @@ android_library("custom_tabs_support_java") {
     "src/customtabs/src/android/support/customtabs/CustomTabsServiceConnection.java",
     "src/customtabs/src/android/support/customtabs/CustomTabsSession.java",
     "src/customtabs/src/android/support/customtabs/CustomTabsSessionToken.java",
+    "src/customtabs/src/android/support/customtabs/PostMessageBackend.java",
     "src/customtabs/src/android/support/customtabs/PostMessageService.java",
     "src/customtabs/src/android/support/customtabs/PostMessageServiceConnection.java",
     "src/customtabs/src/android/support/customtabs/TrustedWebUtils.java",

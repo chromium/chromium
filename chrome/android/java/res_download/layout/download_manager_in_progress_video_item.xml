@@ -15,19 +15,24 @@
     app:columnCount="2"
     app:rowCount="3">
 
-    <org.chromium.ui.widget.RoundedCornerImageView
+    <!-- Set the src attribute in Java to wrap the drawable properly. -->
+    <org.chromium.chrome.browser.download.home.list.view.ForegroundRoundedCornerImageView
         android:id="@+id/thumbnail"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
         android:scaleType="centerInside"
         android:adjustViewBounds="true"
-        android:src="@color/modern_grey_300"
         app:layout_column="0"
         app:layout_row="0"
         app:layout_columnSpan="2"
         app:layout_gravity="center"
-        app:cornerRadiusTopStart="@dimen/download_manager_prefetch_thumbnail_corner_radius"
-        app:cornerRadiusTopEnd="@dimen/download_manager_prefetch_thumbnail_corner_radius"/>
+        app:cornerRadiusTopStart="@dimen/download_manager_thumbnail_corner_radius"
+        app:cornerRadiusTopEnd="@dimen/download_manager_thumbnail_corner_radius"
+        app:roundedfillColor="@color/modern_grey_300"
+        app:foregroundCompat="@drawable/async_image_view_waiting" />
 
     <org.chromium.chrome.browser.download.home.list.view.CircularProgressView
         android:id="@+id/action_button"
@@ -59,7 +64,7 @@
         android:layout_marginStart="16dp"
         app:layout_gravity="fill_horizontal" />
 
-    <org.chromium.chrome.browser.widget.TintedImageButton
+    <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/cancel_button"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -70,6 +75,6 @@
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/download_notification_cancel_button"
         android:src="@drawable/btn_close"
-        app:chrometint="@color/default_icon_color" />
+        app:tint="@color/default_icon_color" />
 
 </android.support.v7.widget.GridLayout>

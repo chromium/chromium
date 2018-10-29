@@ -149,6 +149,26 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
+    public void testStartActivityToTrustedPackageWithoutUserGesture() {
+        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
+
+        TabRedirectHandler handler = TabRedirectHandler.create(mContext);
+        handler.updateNewUrlLoading(PageTransition.CLIENT_REDIRECT, false, false, 0, 0);
+
+        checkUrl(YOUTUBE_URL)
+                .withRedirectHandler(handler)
+                .expecting(OverrideUrlLoadingResult.NO_OVERRIDE, IGNORE);
+
+        mDelegate.setIsCallingAppTrusted(true);
+
+        checkUrl(YOUTUBE_URL)
+                .withRedirectHandler(handler)
+                .expecting(OverrideUrlLoadingResult.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+    }
+
+    @Test
+    @SmallTest
     public void testOrdinaryIncognitoUri() {
         mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
 
@@ -161,8 +181,7 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void
-    testChromeReferrer() {
+    public void testChromeReferrer() {
         mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
 
         // http://crbug.com/159153: Don't override http or https URLs from the NTP or bookmarks.
@@ -1677,6 +1696,11 @@ public class ExternalNavigationHandlerTest {
             return mPreviousUrl;
         }
 
+        @Override
+        public boolean isIntentForTrustedCallingApp(Intent intent) {
+            return mIsCallingAppTrusted;
+        }
+
         public void reset() {
             startActivityIntent = null;
             startIncognitoIntentCalled = false;
@@ -1729,6 +1753,10 @@ public class ExternalNavigationHandlerTest {
             mPreviousUrl = value;
         }
 
+        public void setIsCallingAppTrusted(boolean trusted) {
+            mIsCallingAppTrusted = trusted;
+        }
+
         public Intent startActivityIntent;
         public boolean startIncognitoIntentCalled;
         public boolean startFileIntentCalled;
@@ -1747,6 +1775,7 @@ public class ExternalNavigationHandlerTest {
         private String mPreviousUrl;
         public boolean mCalledWithProxy;
         public boolean mIsChromeAppInForeground = true;
+        private boolean mIsCallingAppTrusted;
 
         public boolean shouldRequestFileAccess;
     }

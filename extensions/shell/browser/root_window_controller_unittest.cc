@@ -128,7 +128,7 @@ class RootWindowControllerTest : public ShellTestBaseAura {
  private:
   TestAppWindowClient app_window_client_;
 
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
   std::unique_ptr<FakeDesktopDelegate> desktop_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(RootWindowControllerTest);

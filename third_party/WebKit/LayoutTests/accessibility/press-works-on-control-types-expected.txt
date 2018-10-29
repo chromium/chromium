@@ -6,10 +6,10 @@ checkbox
 menu item
 menu item checkbox
 menu item radio
+
 This tests that when certain control type elements are pressed, a valid event is sent that references the right element.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS eventSrcElement == document.getElementById('group') is true
 PASS eventSrcElement == document.getElementById('button') is true

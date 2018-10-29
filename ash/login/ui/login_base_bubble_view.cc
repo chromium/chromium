@@ -4,6 +4,8 @@
 
 #include "ash/login/ui/login_base_bubble_view.h"
 
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -37,6 +39,21 @@ LoginBaseBubbleView::LoginBaseBubbleView(views::View* anchor_view)
 }
 
 LoginBaseBubbleView::~LoginBaseBubbleView() = default;
+
+void LoginBaseBubbleView::OnBeforeBubbleWidgetInit(
+    views::Widget::InitParams* params,
+    views::Widget* widget) const {
+  // Login bubbles must always be associated with the lock screen container,
+  // otherwise they may not show up as other containers are hidden.
+  //
+  // params->parent may be already set if the bubble has an anchor view.
+
+  // Shell may be null in tests.
+  if (!params->parent && Shell::HasInstance()) {
+    params->parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                                         kShellWindowId_LockScreenContainer);
+  }
+}
 
 int LoginBaseBubbleView::GetDialogButtons() const {
   return ui::DIALOG_BUTTON_NONE;

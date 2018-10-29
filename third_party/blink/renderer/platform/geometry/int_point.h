@@ -79,8 +79,8 @@ class PLATFORM_EXPORT IntPoint {
   }
 
   void Scale(float sx, float sy) {
-    x_ = lroundf(static_cast<float>(x_ * sx));
-    y_ = lroundf(static_cast<float>(y_ * sy));
+    x_ = static_cast<int>(lroundf(static_cast<float>(x_ * sx)));
+    y_ = static_cast<int>(lroundf(static_cast<float>(y_ * sy)));
   }
 
   IntPoint ExpandedTo(const IntPoint& other) const {

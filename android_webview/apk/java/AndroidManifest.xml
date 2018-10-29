@@ -7,10 +7,10 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="{{package|default('com.android.webview')}}"
+    package="{{manifest_package|default('com.android.webview')}}"
     tools:ignore="MissingLeanbackLauncher">
-    <uses-sdk android:minSdkVersion="{{minsdk|default(21)}}"
-              android:targetSdkVersion="{{targetsdk|default(28)}}">
+    <uses-sdk android:minSdkVersion="{{min_sdk_version|default(21)}}"
+              android:targetSdkVersion="{{target_sdk_version|default(28)}}">
     </uses-sdk>
 
     <uses-feature android:name="android.hardware.touchscreen"
@@ -22,7 +22,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application android:label="Android System WebView"
-                 android:icon="@{{package|default('com.android.webview')}}:drawable/icon_webview"
+                 android:icon="@{{manifest_package|default('com.android.webview')}}:drawable/icon_webview"
                  android:name="{{ application_name|default('com.android.webview.chromium.WebViewApplication') }}"
                  android:multiArch="true"
                  android:use32bitAbi="true">
@@ -61,7 +61,7 @@
                          android:process=":webview_service" />
             {% endif %}
         {% endmacro %}
-        {{ common(package|default('com.android.webview'), library|default('libwebviewchromium.so')) }}
+        {{ common(manifest_package|default('com.android.webview'), library|default('libwebviewchromium.so')) }}
         {% if donor_package is defined %}
             <meta-data android:name="com.android.webview.WebViewDonorPackage"
                        android:value="{{ donor_package }}" />
@@ -80,5 +80,11 @@
         {% endfor %}
         <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
                    android:value="0" />
+        {% if trichrome_library is defined %}
+        <uses-static-library
+            android:name="{{ trichrome_library }}"
+            android:version="{{ trichrome_version }}"
+            android:certDigest="{{ trichrome_certdigest }}" />
+        {% endif %}
     </application>
 </manifest>

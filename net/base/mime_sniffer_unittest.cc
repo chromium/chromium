@@ -458,6 +458,27 @@ TEST(MimeSnifferTest, AudioVideoTest) {
   mime_type.clear();
 }
 
+TEST(MimeSnifferTest, ImageTest) {
+  std::string mime_type;
+  const char kWebPSimpleFormat[] = "RIFF\xee\x81\x00\x00WEBPVP8 ";
+  EXPECT_TRUE(SniffMimeTypeFromLocalData(
+      kWebPSimpleFormat, sizeof(kWebPSimpleFormat) - 1, &mime_type));
+  EXPECT_EQ("image/webp", mime_type);
+  mime_type.clear();
+
+  const char kWebPLosslessFormat[] = "RIFF\xee\x81\x00\x00WEBPVP8L";
+  EXPECT_TRUE(SniffMimeTypeFromLocalData(
+      kWebPLosslessFormat, sizeof(kWebPLosslessFormat) - 1, &mime_type));
+  EXPECT_EQ("image/webp", mime_type);
+  mime_type.clear();
+
+  const char kWebPExtendedFormat[] = "RIFF\xee\x81\x00\x00WEBPVP8X";
+  EXPECT_TRUE(SniffMimeTypeFromLocalData(
+      kWebPExtendedFormat, sizeof(kWebPExtendedFormat) - 1, &mime_type));
+  EXPECT_EQ("image/webp", mime_type);
+  mime_type.clear();
+}
+
 // The tests need char parameters, but the ranges to test include 0xFF, and some
 // platforms have signed chars and are noisy about it. Using an int parameter
 // and casting it to char inside the test case solves both these problems.

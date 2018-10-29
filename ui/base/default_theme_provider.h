@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "build/build_config.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_export.h"
 
@@ -30,17 +29,6 @@ class UI_BASE_EXPORT DefaultThemeProvider : public ThemeProvider {
   bool HasCustomColor(int id) const override;
   base::RefCountedMemory* GetRawData(int id, ui::ScaleFactor scale_factor)
       const override;
-
-#if defined(OS_MACOSX)
-  bool UsingSystemTheme() const override;
-  bool InIncognitoMode() const override;
-  NSImage* GetNSImageNamed(int id) const override;
-  NSColor* GetNSImageColorNamed(int id) const override;
-  NSColor* GetNSColor(int id) const override;
-  NSColor* GetNSColorTint(int id) const override;
-  NSGradient* GetNSGradient(int id) const override;
-  bool ShouldIncreaseContrast() const override;
-#endif
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DefaultThemeProvider);

@@ -2,7 +2,6 @@ Tests bad algorithm inputs for RSA-OAEP encrypt
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS publicKey.algorithm.name is "RSA-OAEP"
 PASS publicKey.algorithm.hash.name is "SHA-256"
 PASS publicKey.type is "public"

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/memory_coordinator_client_registry.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -136,7 +135,6 @@ StagingBufferPool::StagingBufferPool(
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "cc::StagingBufferPool", base::ThreadTaskRunnerHandle::Get());
 
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Register(this);
   memory_pressure_listener_.reset(new base::MemoryPressureListener(
       base::BindRepeating(&StagingBufferPool::OnMemoryPressure,
                           weak_ptr_factory_.GetWeakPtr())));
@@ -146,7 +144,6 @@ StagingBufferPool::StagingBufferPool(
 }
 
 StagingBufferPool::~StagingBufferPool() {
-  base::MemoryCoordinatorClientRegistry::GetInstance()->Unregister(this);
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
@@ -422,12 +419,6 @@ void StagingBufferPool::ReleaseBuffersNotUsedSince(base::TimeTicks time) {
   }
 }
 
-void StagingBufferPool::OnPurgeMemory() {
-  base::AutoLock lock(lock_);
-  // Release all buffers, regardless of how recently they were used.
-  ReleaseBuffersNotUsedSince(base::TimeTicks() + base::TimeDelta::Max());
-}
-
 void StagingBufferPool::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   base::AutoLock lock(lock_);
@@ -436,6 +427,7 @@ void StagingBufferPool::OnMemoryPressure(
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
       break;
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      // Release all buffers, regardless of how recently they were used.
       ReleaseBuffersNotUsedSince(base::TimeTicks() + base::TimeDelta::Max());
       break;
   }

@@ -99,9 +99,9 @@ TermMatches ReplaceOffsetsInTermMatches(const TermMatches& matches,
                                         const std::vector<size_t>& offsets) {
   DCHECK_EQ(2 * matches.size(), offsets.size());
   TermMatches new_matches;
-  std::vector<size_t>::const_iterator offset_iter = offsets.begin();
-  for (TermMatches::const_iterator term_iter = matches.begin();
-       term_iter != matches.end(); ++term_iter, ++offset_iter) {
+  auto offset_iter = offsets.begin();
+  for (auto term_iter = matches.begin(); term_iter != matches.end();
+       ++term_iter, ++offset_iter) {
     const size_t starting_offset = *offset_iter;
     ++offset_iter;
     const size_t ending_offset = *offset_iter;

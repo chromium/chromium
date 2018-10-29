@@ -10,8 +10,11 @@ text to parse
   <d id="id3">Three</d>
 <f id="&amp;&lt;&gt;>">Four&amp;&lt;&gt;</f><empty/><empty></empty></doc>
 
+
+
 document object
 [object XMLDocument]
+
 
 document object serialized
 <?xml version="1.0"?><!DOCTYPE doc><doc>

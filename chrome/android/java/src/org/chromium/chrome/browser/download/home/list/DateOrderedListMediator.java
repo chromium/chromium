@@ -6,15 +6,18 @@ package org.chromium.chrome.browser.download.home.list;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
+import org.chromium.chrome.browser.download.home.JustNowProvider;
 import org.chromium.chrome.browser.download.home.OfflineItemSource;
 import org.chromium.chrome.browser.download.home.filter.DeleteUndoOfflineItemFilter;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
+import org.chromium.chrome.browser.download.home.filter.InvalidStateOfflineItemFilter;
 import org.chromium.chrome.browser.download.home.filter.OffTheRecordOfflineItemFilter;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilter;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
@@ -25,6 +28,10 @@ import org.chromium.chrome.browser.download.home.glue.OfflineContentProviderGlue
 import org.chromium.chrome.browser.download.home.glue.ThumbnailRequestGlue;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DateOrderedListObserver;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DeleteController;
+import org.chromium.chrome.browser.download.home.metrics.OfflineItemStartupLogger;
+import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
+import org.chromium.chrome.browser.download.home.metrics.UmaUtils.ImagesMenuAction;
+import org.chromium.chrome.browser.download.home.metrics.UmaUtils.ViewAction;
 import org.chromium.chrome.browser.widget.ThumbnailProvider;
 import org.chromium.chrome.browser.widget.ThumbnailProvider.ThumbnailRequest;
 import org.chromium.chrome.browser.widget.ThumbnailProviderImpl;
@@ -32,6 +39,7 @@ import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemShareInfo;
+import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.VisualsCallback;
 
 import java.io.Closeable;
@@ -66,8 +74,10 @@ class DateOrderedListMediator {
     private final ThumbnailProvider mThumbnailProvider;
     private final MediatorSelectionObserver mSelectionObserver;
     private final SelectionDelegate<ListItem> mSelectionDelegate;
+    private final DownloadManagerUiConfig mUiConfig;
 
     private final OffTheRecordOfflineItemFilter mOffTheRecordFilter;
+    private final InvalidStateOfflineItemFilter mInvalidStateFilter;
     private final DeleteUndoOfflineItemFilter mDeleteUndoFilter;
     private final TypeOfflineItemFilter mTypeFilter;
     private final SearchOfflineItemFilter mSearchFilter;
@@ -102,58 +112,67 @@ class DateOrderedListMediator {
     /**
      * Creates an instance of a DateOrderedListMediator that will push {@code provider} into
      * {@code model}.
-     * @param offTheRecord            Whether or not to include off the record items.
      * @param provider                The {@link OfflineContentProvider} to visually represent.
      * @param deleteController        A class to manage whether or not items can be deleted.
      * @param shareController         A class responsible for sharing downloaded item {@link
      *                                Intent}s.
      * @param selectionDelegate       A class responsible for handling list item selection.
+     * @param config                  A {@link DownloadManagerUiConfig} to provide UI config params.
      * @param dateOrderedListObserver An observer of the list and recycler view.
      * @param model                   The {@link ListItemModel} to push {@code provider} into.
      */
-    public DateOrderedListMediator(boolean offTheRecord, OfflineContentProvider provider,
-            ShareController shareController, DeleteController deleteController,
-            SelectionDelegate<ListItem> selectionDelegate,
-            DateOrderedListObserver dateOrderedListObserver, ListItemModel model) {
+    public DateOrderedListMediator(OfflineContentProvider provider, ShareController shareController,
+            DeleteController deleteController, SelectionDelegate<ListItem> selectionDelegate,
+            DownloadManagerUiConfig config, DateOrderedListObserver dateOrderedListObserver,
+            ListItemModel model) {
         // Build a chain from the data source to the model.  The chain will look like:
         // [OfflineContentProvider] ->
         //     [OfflineItemSource] ->
         //         [OffTheRecordOfflineItemFilter] ->
-        //             [DeleteUndoOfflineItemFilter] ->
-        //                 [TypeOfflineItemFilter] ->
+        //             [InvalidStateOfflineItemFilter] ->
+        //                 [DeleteUndoOfflineItemFilter] ->
         //                     [SearchOfflineItemFitler] ->
-        //                         [DateOrderedListMutator] ->
-        //                             [ListItemModel]
+        //                         [TypeOfflineItemFilter] ->
+        //                             [DateOrderedListMutator] ->
+        //                                 [ListItemModel]
 
-        mProvider = new OfflineContentProviderGlue(provider, offTheRecord);
+        mProvider = new OfflineContentProviderGlue(provider, config);
         mShareController = shareController;
         mModel = model;
         mDeleteController = deleteController;
         mSelectionDelegate = selectionDelegate;
+        mUiConfig = config;
 
         mSource = new OfflineItemSource(mProvider);
-        mOffTheRecordFilter = new OffTheRecordOfflineItemFilter(offTheRecord, mSource);
-        mDeleteUndoFilter = new DeleteUndoOfflineItemFilter(mOffTheRecordFilter);
-        mTypeFilter = new TypeOfflineItemFilter(mDeleteUndoFilter);
-        mSearchFilter = new SearchOfflineItemFilter(mTypeFilter);
-        mListMutator = new DateOrderedListMutator(mSearchFilter, mModel);
+        mOffTheRecordFilter = new OffTheRecordOfflineItemFilter(config.isOffTheRecord, mSource);
+        mInvalidStateFilter = new InvalidStateOfflineItemFilter(mOffTheRecordFilter);
+        mDeleteUndoFilter = new DeleteUndoOfflineItemFilter(mInvalidStateFilter);
+        mSearchFilter = new SearchOfflineItemFilter(mDeleteUndoFilter);
+        mTypeFilter = new TypeOfflineItemFilter(mSearchFilter);
+        mListMutator = new DateOrderedListMutator(
+                mTypeFilter, mModel, config, new JustNowProvider(config));
+
+        new OfflineItemStartupLogger(config, mInvalidStateFilter);
 
         mSearchFilter.addObserver(new EmptyStateObserver(mSearchFilter, dateOrderedListObserver));
         mThumbnailProvider = new ThumbnailProviderImpl(
-                ((ChromeApplication) ContextUtils.getApplicationContext()).getReferencePool());
+                ((ChromeApplication) ContextUtils.getApplicationContext()).getReferencePool(),
+                config.inMemoryThumbnailCacheSizeBytes);
         mSelectionObserver = new MediatorSelectionObserver(selectionDelegate);
 
         mModel.getProperties().set(ListProperties.ENABLE_ITEM_ANIMATIONS, true);
-        mModel.getProperties().set(ListProperties.CALLBACK_OPEN, mProvider::openItem);
-        mModel.getProperties().set(ListProperties.CALLBACK_PAUSE, mProvider::pauseDownload);
-        mModel.getProperties().set(
-                ListProperties.CALLBACK_RESUME, item -> mProvider.resumeDownload(item, true));
-        mModel.getProperties().set(ListProperties.CALLBACK_CANCEL, mProvider::cancelDownload);
+        mModel.getProperties().set(ListProperties.CALLBACK_OPEN, this ::onOpenItem);
+        mModel.getProperties().set(ListProperties.CALLBACK_PAUSE, this ::onPauseItem);
+        mModel.getProperties().set(ListProperties.CALLBACK_RESUME, this ::onResumeItem);
+        mModel.getProperties().set(ListProperties.CALLBACK_CANCEL, this ::onCancelItem);
         mModel.getProperties().set(ListProperties.CALLBACK_SHARE, this ::onShareItem);
+        mModel.getProperties().set(ListProperties.CALLBACK_SHARE_ALL, this ::onShareItems);
         mModel.getProperties().set(ListProperties.CALLBACK_REMOVE, this ::onDeleteItem);
+        mModel.getProperties().set(ListProperties.CALLBACK_REMOVE_ALL, this ::onDeleteItems);
         mModel.getProperties().set(ListProperties.PROVIDER_VISUALS, this ::getVisuals);
+        mModel.getProperties().set(ListProperties.CALLBACK_SELECTION, this ::onSelection);
         mModel.getProperties().set(
-                ListProperties.CALLBACK_SELECTION, selectionDelegate::toggleSelectionForItem);
+                ListProperties.CALLBACK_START_SELECTION, this ::onStartSelection);
     }
 
     /** Tears down this mediator. */
@@ -184,22 +203,26 @@ class DateOrderedListMediator {
         }
     }
 
-    /** Called to delete the list of currently selected items. */
-    public void deleteSelectedItems() {
-        RecordHistogram.recordCount100Histogram("Android.DownloadManager.Menu.Delete.SelectedCount",
-                mSelectionDelegate.getSelectedItems().size());
-
-        onDeleteItems(ListUtils.toOfflineItems(mSelectionDelegate.getSelectedItems()));
+    /**
+     * Called to delete the list of currently selected items.
+     * @return The number of items that were deleted.
+     */
+    public int deleteSelectedItems() {
+        deleteItemsInternal(ListUtils.toOfflineItems(mSelectionDelegate.getSelectedItems()));
+        int itemCount = mSelectionDelegate.getSelectedItems().size();
         mSelectionDelegate.clearSelection();
+        return itemCount;
     }
 
-    /** Called to share the list of currently selected items. */
-    public void shareSelectedItems() {
-        RecordHistogram.recordCount100Histogram("Android.DownloadManager.Menu.Share.SelectedCount",
-                mSelectionDelegate.getSelectedItems().size());
-
-        onShareItems(ListUtils.toOfflineItems(mSelectionDelegate.getSelectedItems()));
+    /**
+     * Called to share the list of currently selected items.
+     * @return The number of items that were shared.
+     */
+    public int shareSelectedItems() {
+        shareItemsInternal(ListUtils.toOfflineItems(mSelectionDelegate.getSelectedItems()));
+        int itemCount = mSelectionDelegate.getSelectedItems().size();
         mSelectionDelegate.clearSelection();
+        return itemCount;
     }
 
     /** Called to handle a back press event. */
@@ -216,7 +239,7 @@ class DateOrderedListMediator {
      *         options are available.
      */
     public OfflineItemFilterSource getFilterSource() {
-        return mDeleteUndoFilter;
+        return mSearchFilter;
     }
 
     /**
@@ -227,11 +250,69 @@ class DateOrderedListMediator {
         return mTypeFilter;
     }
 
+    private void onSelection(@Nullable ListItem item) {
+        mSelectionDelegate.toggleSelectionForItem(item);
+    }
+
+    private void onStartSelection() {
+        // We are hard coding that this is coming from the Photos section, as that is the only
+        // one that supports a section menu.  If that changes we need to support a wider array
+        // of metrics.
+        UmaUtils.recordImagesMenuAction(ImagesMenuAction.MENU_START_SELECTING);
+        mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
+    }
+
+    private void onOpenItem(OfflineItem item) {
+        UmaUtils.recordItemAction(ViewAction.OPEN);
+        mProvider.openItem(item);
+    }
+
+    private void onPauseItem(OfflineItem item) {
+        UmaUtils.recordItemAction(ViewAction.PAUSE);
+        mProvider.pauseDownload(item);
+    }
+
+    private void onResumeItem(OfflineItem item) {
+        UmaUtils.recordItemAction(ViewAction.RESUME);
+        mProvider.resumeDownload(item, true /* hasUserGesture */);
+    }
+
+    private void onCancelItem(OfflineItem item) {
+        UmaUtils.recordItemAction(ViewAction.CANCEL);
+        mProvider.cancelDownload(item);
+    }
+
     private void onDeleteItem(OfflineItem item) {
-        onDeleteItems(CollectionUtil.newArrayList(item));
+        UmaUtils.recordItemAction(ViewAction.MENU_DELETE);
+        deleteItemsInternal(CollectionUtil.newArrayList(item));
+    }
+
+    private void onShareItem(OfflineItem item) {
+        UmaUtils.recordItemAction(ViewAction.MENU_SHARE);
+        shareItemsInternal(CollectionUtil.newHashSet(item));
+    }
+
+    private void onShareItems(List<OfflineItem> items) {
+        // We are hard coding that this is coming from the Photos section, as that is the only
+        // one that supports a section menu.  If that changes we need to support a wider array
+        // of metrics.
+        UmaUtils.recordImagesMenuAction(ImagesMenuAction.MENU_SHARE_ALL);
+        shareItemsInternal(items);
     }
 
     private void onDeleteItems(List<OfflineItem> items) {
+        // We are hard coding that this is coming from the Photos section, as that is the only
+        // one that supports a section menu.  If that changes we need to support a wider array
+        // of metrics.
+        UmaUtils.recordImagesMenuAction(ImagesMenuAction.MENU_DELETE_ALL);
+        deleteItemsInternal(items);
+    }
+
+    /**
+     * Deletes a given list of items. If the items are not completed yet, they would be cancelled.
+     * @param items The list of items to delete.
+     */
+    private void deleteItemsInternal(List<OfflineItem> items) {
         // Calculate the real offline items we are going to remove here.
         final Collection<OfflineItem> itemsToDelete =
                 ItemUtils.findItemsWithSameFilePath(items, mSource.getItems());
@@ -240,7 +321,11 @@ class DateOrderedListMediator {
         mDeleteController.canDelete(items, delete -> {
             if (delete) {
                 for (OfflineItem item : itemsToDelete) {
-                    mProvider.removeItem(item);
+                    if (item.state != OfflineItemState.COMPLETE) {
+                        mProvider.cancelDownload(item);
+                    } else {
+                        mProvider.removeItem(item);
+                    }
 
                     // Remove and have a single decision path for cleaning up thumbnails when the
                     // glue layer is no longer needed.
@@ -252,13 +337,10 @@ class DateOrderedListMediator {
         });
     }
 
-    private void onShareItem(OfflineItem item) {
-        onShareItems(CollectionUtil.newHashSet(item));
-    }
+    private void shareItemsInternal(Collection<OfflineItem> items) {
+        UmaUtils.recordItemsShared(items);
 
-    private void onShareItems(Collection<OfflineItem> items) {
         final Collection<Pair<OfflineItem, OfflineItemShareInfo>> shareInfo = new ArrayList<>();
-
         for (OfflineItem item : items) {
             mProvider.getShareInfoForItem(item, (id, info) -> {
                 shareInfo.add(Pair.create(item, info));
@@ -274,13 +356,13 @@ class DateOrderedListMediator {
 
     private Runnable getVisuals(
             OfflineItem item, int iconWidthPx, int iconHeightPx, VisualsCallback callback) {
-        if (!UiUtils.canHaveThumbnails(item)) {
+        if (!UiUtils.canHaveThumbnails(item) || iconWidthPx == 0 || iconHeightPx == 0) {
             mHandler.post(() -> callback.onVisualsAvailable(item.id, null));
             return () -> {};
         }
 
-        ThumbnailRequest request =
-                new ThumbnailRequestGlue(mProvider, item, iconWidthPx, iconHeightPx, callback);
+        ThumbnailRequest request = new ThumbnailRequestGlue(mProvider, item, iconWidthPx,
+                iconHeightPx, mUiConfig.maxThumbnailScaleFactor, callback);
         mThumbnailProvider.getThumbnail(request);
         return () -> mThumbnailProvider.cancelRetrieval(request);
     }

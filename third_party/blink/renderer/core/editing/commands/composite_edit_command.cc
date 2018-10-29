@@ -2016,7 +2016,7 @@ void CompositeEditCommand::AppliedEditing() {
                                        undo_step.EndingRootEditableElement());
   LocalFrame* const frame = GetDocument().GetFrame();
   Editor& editor = frame->GetEditor();
-  // TODO(chongz): Filter empty InputType after spec is finalized.
+  // TODO(editing-dev): Filter empty InputType after spec is finalized.
   DispatchInputEventEditableContentChanged(
       undo_step.StartingRootEditableElement(),
       undo_step.EndingRootEditableElement(), GetInputType(),

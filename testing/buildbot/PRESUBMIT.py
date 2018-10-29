@@ -13,7 +13,8 @@ def CommonChecks(input_api, output_api):
   commands = [
     input_api.Command(
       name='generate_buildbot_json', cmd=[
-        input_api.python_executable, 'generate_buildbot_json.py', '--check'],
+        input_api.python_executable, 'generate_buildbot_json.py', '--check',
+        '--verbose'],
       kwargs={}, message=output_api.PresubmitError),
 
     input_api.Command(

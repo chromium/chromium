@@ -1,3 +1,0 @@
-include_rules = [
-  "+chromeos/third_party/android_bionic_libc",
-]

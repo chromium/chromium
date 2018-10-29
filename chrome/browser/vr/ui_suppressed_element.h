@@ -7,28 +7,31 @@
 
 namespace vr {
 
-// Ensure that this stays in sync with VRSuppressedElement in enums.xml
-// These values are written to logs.  New enum values can be added, but existing
-// enums must never be renumbered or deleted and reused.
+// When adding values, insert them before kCount and add them to
+// VRSuppressedElement in enums.xml. Do not reuse values.
+// Also, remove kPlaceholderForPreviousHighValue.
+// When values become obsolete, comment them out here and mark them deprecated
+// in enums.xml.
 enum class UiSuppressedElement : int {
   kFileChooser = 0,
-  kBluetoothChooser,
-  kJavascriptDialog,
-  kMediaPermission,
-  kPermissionRequest,
-  kQuotaPermission,
-  kHttpAuth,
-  kDownloadPermission,
-  kFileAccessPermission,
-  kPasswordManager,
-  kAutofill,
-  kUsbChooser,
-  kSslClientCertificate,
-  kMediaRouterPresentationRequest,
-  kContextMenu,
-  kPermissionBubbleRequest,
-
-  // This must be last.
+  kBluetoothChooser = 1,
+  // kJavascriptDialog = 2,
+  // kMediaPermission = 3,
+  // kPermissionRequest = 4,
+  // kQuotaPermission = 5,
+  kHttpAuth = 6,
+  // kDownloadPermission = 7,
+  kFileAccessPermission = 8,
+  kPasswordManager = 9,
+  // kAutofill = 10,
+  kUsbChooser = 11,
+  kSslClientCertificate = 12,
+  kMediaRouterPresentationRequest = 13,
+  kContextMenu = 14,
+  // kPermissionBubbleRequest = 15,
+  // TODO(sumankancherla): Remove this placeholder when adding a new value.
+  kPlaceholderForPreviousHighValue = 15,
+  // This must be the last.
   kCount,
 };
 

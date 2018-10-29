@@ -29,11 +29,10 @@ namespace content {
 class StoragePartition;
 }
 
-namespace net {
-class URLRequestContextGetter;
-}
-
 namespace network {
+namespace mojom {
+class NetworkContext;
+}
 class SharedURLLoaderFactory;
 }
 
@@ -109,10 +108,10 @@ class NetworkStateHelper {
 // webui is torn down.
 content::StoragePartition* GetSigninPartition();
 
-// Returns the request context that contains sign-in cookies. For old iframe
-// based flow, the context of the sign-in profile is returned. For webview based
-// flow, the context of the sign-in webview storage partition is returned.
-net::URLRequestContextGetter* GetSigninContext();
+// Returns the network context for the sign-in webview. Note the function
+// returns nullptr if the sign-in partition is not available yet, or if sign-in
+// webui is torn down.
+network::mojom::NetworkContext* GetSigninNetworkContext();
 
 // Returns the URLLoaderFactory that contains sign-in cookies. For old iframe
 // based flow, the URLLoaderFactory of the sign-in profile is returned. For

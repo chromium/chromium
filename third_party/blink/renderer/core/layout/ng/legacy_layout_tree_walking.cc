@@ -20,6 +20,11 @@ LayoutObject* GetLayoutObjectForFirstChildNode(LayoutBlock* parent) {
     return nullptr;
   if (child->IsLayoutFlowThread())
     return ToLayoutBlockFlow(child)->FirstChild();
+  // The rendered legend is a child of the anonymous wrapper inside the fieldset
+  // container. If we find it, skip it. As far as NG is concerned, the rendered
+  // legend is a child of the fieldset container.
+  if (UNLIKELY(child->IsRenderedLegend()))
+    return child->NextSibling();
   return child;
 }
 
@@ -32,9 +37,28 @@ LayoutObject* GetLayoutObjectForParentNode(LayoutObject* object) {
   LayoutObject* parent = object->Parent();
   if (!parent)
     return nullptr;
+
+  // The parent of the rendered legend is the fieldset container, as far as NG
+  // is concerned. Skip the anonymous wrapper in-between.
+  if (UNLIKELY(object->IsRenderedLegend()))
+    return parent->Parent();
+
   if (parent->IsLayoutFlowThread())
     return parent->Parent();
   return parent;
+}
+
+LayoutObject* GetLayoutObjectForNextSiblingNode(LayoutObject* object) {
+  // We don't expect to walk the layout tree starting at the rendered legend,
+  // and we'll skip over it if we find it. The renderered legend will be handled
+  // by a special algorithm, and should be invisible among siblings.
+  DCHECK(!object->IsRenderedLegend());
+  LayoutObject* next = object->NextSibling();
+  if (!next)
+    return nullptr;
+  if (UNLIKELY(next->IsRenderedLegend()))
+    return next->NextSibling();
+  return next;
 }
 
 bool AreNGBlockFlowChildrenInline(const LayoutBlock* block) {

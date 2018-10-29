@@ -26,7 +26,7 @@ namespace chromeos {
 
 // ARC Kiosk splash screen minimum show time.
 constexpr base::TimeDelta kArcKioskSplashScreenMinTime =
-    base::TimeDelta::FromSeconds(3);
+    base::TimeDelta::FromSeconds(10);
 
 ArcKioskController::ArcKioskController(LoginDisplayHost* host, OobeUI* oobe_ui)
     : host_(host),

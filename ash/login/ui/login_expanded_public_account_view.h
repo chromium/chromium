@@ -6,6 +6,7 @@
 #define ASH_LOGIN_UI_LOGIN_EXPANDED_PUBLIC_ACCOUNT_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/login/ui/login_menu_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/interfaces/login_user_info.mojom.h"
 #include "ui/events/event_handler.h"
@@ -15,6 +16,7 @@
 namespace ash {
 
 class ArrowButtonView;
+class LoginBubble;
 class LoginUserView;
 class RightPaneView;
 class PublicAccountWarningDialog;
@@ -34,6 +36,12 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
     views::View* advanced_view();
     PublicAccountWarningDialog* warning_dialog();
     views::StyledLabel* learn_more_label();
+    views::View* language_selection_button();
+    views::View* keyboard_selection_button();
+    LoginBubble* language_menu();
+    LoginBubble* keyboard_menu();
+    LoginMenuView::Item selected_language_item();
+    LoginMenuView::Item selected_keyboard_item();
 
    private:
     LoginExpandedPublicAccountView* const view_;

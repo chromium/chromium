@@ -142,8 +142,7 @@ std::vector<ArticleEntry> DomDistillerStore::GetEntries() const {
 void DomDistillerStore::NotifyObservers(const syncer::SyncChangeList& changes) {
   if (observers_.might_have_observers() && changes.size() > 0) {
     std::vector<DomDistillerObserver::ArticleUpdate> article_changes;
-    for (SyncChangeList::const_iterator it = changes.begin();
-         it != changes.end(); ++it) {
+    for (auto it = changes.begin(); it != changes.end(); ++it) {
       DomDistillerObserver::ArticleUpdate article_update;
       switch (it->change_type()) {
         case SyncChange::ACTION_ADD:
@@ -197,8 +196,7 @@ void DomDistillerStore::OnDatabaseLoad(bool success,
   database_loaded_ = true;
 
   SyncDataList data;
-  for (EntryVector::iterator it = entries->begin(); it != entries->end();
-       ++it) {
+  for (auto it = entries->begin(); it != entries->end(); ++it) {
     data.push_back(CreateLocalData(*it));
   }
   SyncChangeList changes_applied;
@@ -229,8 +227,7 @@ bool DomDistillerStore::ApplyChangesToDatabase(
   std::unique_ptr<std::vector<std::string>> keys_to_remove(
       new std::vector<std::string>());
 
-  for (SyncChangeList::const_iterator it = change_list.begin();
-       it != change_list.end(); ++it) {
+  for (auto it = change_list.begin(); it != change_list.end(); ++it) {
     if (it->change_type() == SyncChange::ACTION_DELETE) {
       ArticleEntry entry = GetEntryFromChange(*it);
       keys_to_remove->push_back(entry.entry_id());

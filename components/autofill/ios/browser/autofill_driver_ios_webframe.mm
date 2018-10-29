@@ -64,7 +64,7 @@ void AutofillDriverIOSWebFrame::CreateForWebFrameAndDelegate(
                              enable_download_manager)));
 }
 
-AutofillDriverIOSWebFrame::AutofillDriverIOSWebFrame(
+AutofillDriverIOSRefCountable::AutofillDriverIOSRefCountable(
     web::WebState* web_state,
     web::WebFrame* web_frame,
     AutofillClient* client,
@@ -79,6 +79,26 @@ AutofillDriverIOSWebFrame::AutofillDriverIOSWebFrame(
                         app_locale,
                         enable_download_manager) {}
 
+AutofillDriverIOSWebFrame::AutofillDriverIOSWebFrame(
+    web::WebState* web_state,
+    web::WebFrame* web_frame,
+    AutofillClient* client,
+    id<AutofillDriverIOSBridge> bridge,
+    const std::string& app_locale,
+    AutofillManager::AutofillDownloadManagerState enable_download_manager)
+    : driver_(base::MakeRefCounted<AutofillDriverIOSRefCountable>(
+          web_state,
+          web_frame,
+          client,
+          bridge,
+          app_locale,
+          enable_download_manager)) {}
+
 AutofillDriverIOSWebFrame::~AutofillDriverIOSWebFrame() {}
+
+scoped_refptr<AutofillDriverIOSRefCountable>
+AutofillDriverIOSWebFrame::GetRetainableDriver() {
+  return driver_;
+}
 
 }  //  namespace autofill

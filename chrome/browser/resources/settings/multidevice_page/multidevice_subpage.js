@@ -18,7 +18,10 @@ Polymer({
   ],
 
   properties: {
-    /** @type {?SettingsRoutes} */
+    /**
+     * Alias for allowing Polymer bindings to settings.routes.
+     * @type {?SettingsRoutes}
+     */
     routes: {
       type: Object,
       value: settings.routes,
@@ -59,16 +62,6 @@ Polymer({
   /** @private */
   handleAndroidMessagesButtonClick_: function() {
     this.browserProxy_.setUpAndroidSms();
-  },
-
-  listeners: {
-    'show-networks': 'onShowNetworks_',
-  },
-
-  onShowNetworks_: function() {
-    settings.navigateTo(
-        settings.routes.INTERNET_NETWORKS,
-        new URLSearchParams('type=' + CrOnc.Type.TETHER));
   },
 
   /**

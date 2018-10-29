@@ -239,18 +239,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_supervised_users_settings()) {
-    const em::SupervisedUsersSettingsProto& container =
-        policy.supervised_users_settings();
-    if (container.has_supervised_users_enabled()) {
-      policies->Set(
-          key::kSupervisedUsersEnabled, POLICY_LEVEL_MANDATORY,
-          POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-          std::make_unique<base::Value>(container.supervised_users_enabled()),
-          nullptr);
-    }
-  }
-
   if (policy.has_saml_settings()) {
     const em::SAMLSettingsProto& container(policy.saml_settings());
     if (container.has_transfer_saml_cookies()) {

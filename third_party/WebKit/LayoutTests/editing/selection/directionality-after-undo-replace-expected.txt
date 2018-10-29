@@ -4,6 +4,7 @@ Select "world" by double-clicking the word
 Replace "world" by a character by pressing a key
 Undo
 Extend selection to the left
+
 " world" should be selected.
 
 hello world WebKit

@@ -17,14 +17,17 @@ namespace content {
 class ProcessInternalsHandlerImpl : public ::mojom::ProcessInternalsHandler {
  public:
   ProcessInternalsHandlerImpl(
+      BrowserContext* browser_context,
       mojo::InterfaceRequest<::mojom::ProcessInternalsHandler> request);
   ~ProcessInternalsHandlerImpl() override;
 
   // mojom::ProcessInternalsHandler overrides:
   void GetIsolationMode(GetIsolationModeCallback callback) override;
   void GetIsolatedOriginsSize(GetIsolatedOriginsSizeCallback callback) override;
+  void GetAllWebContentsInfo(GetAllWebContentsInfoCallback callback) override;
 
  private:
+  BrowserContext* browser_context_;
   mojo::Binding<::mojom::ProcessInternalsHandler> binding_;
 
   DISALLOW_COPY_AND_ASSIGN(ProcessInternalsHandlerImpl);

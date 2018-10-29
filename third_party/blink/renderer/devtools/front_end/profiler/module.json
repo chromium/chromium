@@ -92,11 +92,12 @@
         "CPUProfileFlameChart.js",
         "CPUProfileView.js",
         "HeapProfileView.js",
+        "HeapProfilerPanel.js",
         "HeapSnapshotProxy.js",
         "HeapSnapshotDataGrids.js",
         "HeapSnapshotGridNodes.js",
         "HeapSnapshotView.js",
-        "HeapProfilerPanel.js",
+        "HeapTimelineOverview.js",
         "IsolateSelector.js",
         "ProfileLauncherView.js",
         "ProfileTypeRegistry.js"

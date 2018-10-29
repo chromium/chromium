@@ -21,8 +21,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/optional.h"
 #include "base/sys_info.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 
 namespace {
@@ -1068,7 +1069,7 @@ bool FilePersistentMemoryAllocator::IsFileAcceptable(
 void FilePersistentMemoryAllocator::Cache() {
   // Since this method is expected to load data from permanent storage
   // into memory, blocking I/O may occur.
-  AssertBlockingAllowed();
+  base::ScopedBlockingCall scoped_blocking_call(base::BlockingType::MAY_BLOCK);
 
   // Calculate begin/end addresses so that the first byte of every page
   // in that range can be read. Keep within the used space. The |volatile|
@@ -1092,14 +1093,16 @@ void FilePersistentMemoryAllocator::Cache() {
 }
 
 void FilePersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
-  if (sync)
-    AssertBlockingAllowed();
   if (IsReadonly())
     return;
 
+  base::Optional<base::ScopedBlockingCall> scoped_blocking_call;
+  if (sync)
+    scoped_blocking_call.emplace(base::BlockingType::MAY_BLOCK);
+
 #if defined(OS_WIN)
   // Windows doesn't support asynchronous flush.
-  AssertBlockingAllowed();
+  scoped_blocking_call.emplace(base::BlockingType::MAY_BLOCK);
   BOOL success = ::FlushViewOfFile(data(), length);
   DPCHECK(success);
 #elif defined(OS_MACOSX)

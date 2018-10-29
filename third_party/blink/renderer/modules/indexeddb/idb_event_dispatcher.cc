@@ -30,17 +30,18 @@
 
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
 DispatchEventResult IDBEventDispatcher::Dispatch(
     Event& event,
     HeapVector<Member<EventTarget>>& event_targets) {
-  size_t size = event_targets.size();
+  wtf_size_t size = event_targets.size();
   DCHECK(size);
 
   event.SetEventPhase(Event::kCapturingPhase);
-  for (size_t i = size - 1; i; --i) {  // Don't do the first element.
+  for (wtf_size_t i = size - 1; i; --i) {  // Don't do the first element.
     event.SetCurrentTarget(event_targets[i].Get());
     event_targets[i]->FireEventListeners(event);
     if (event.PropagationStopped())
@@ -54,7 +55,7 @@ DispatchEventResult IDBEventDispatcher::Dispatch(
     goto doneDispatching;
 
   event.SetEventPhase(Event::kBubblingPhase);
-  for (size_t i = 1; i < size; ++i) {  // Don't do the first element.
+  for (wtf_size_t i = 1; i < size; ++i) {  // Don't do the first element.
     event.SetCurrentTarget(event_targets[i].Get());
     event_targets[i]->FireEventListeners(event);
     if (event.PropagationStopped() || event.cancelBubble())

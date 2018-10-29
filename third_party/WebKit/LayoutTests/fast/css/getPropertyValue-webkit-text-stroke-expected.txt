@@ -2,7 +2,6 @@ Bug 111018: getPropertyValue for -webkit-text-stroke returns null, should comput
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS webkitTextStrokeValue("text-stroke1") is "thin red"
 PASS webkitTextStrokeValue("text-stroke2") is "green"
 PASS webkitTextStrokeValue("text-stroke3") is "thin"

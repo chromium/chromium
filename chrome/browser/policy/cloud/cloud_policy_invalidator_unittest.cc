@@ -34,6 +34,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -215,7 +216,8 @@ CloudPolicyInvalidatorTest::CloudPolicyInvalidatorTest()
     : core_(dm_protocol::kChromeUserPolicyType,
             std::string(),
             &store_,
-            loop_.task_runner()),
+            loop_.task_runner(),
+            network::TestNetworkConnectionTracker::CreateGetter()),
       client_(nullptr),
       task_runner_(new base::TestSimpleTaskRunner()),
       object_id_a_(135, "asdf"),

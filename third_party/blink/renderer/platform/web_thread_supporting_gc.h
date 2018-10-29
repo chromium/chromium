@@ -8,8 +8,8 @@
 #include <memory>
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/renderer/platform/heap/gc_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/web_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/noncopyable.h"
@@ -33,8 +33,8 @@ class PLATFORM_EXPORT WebThreadSupportingGC final {
 
  public:
   static std::unique_ptr<WebThreadSupportingGC> Create(
-      const WebThreadCreationParams&);
-  static std::unique_ptr<WebThreadSupportingGC> CreateForThread(WebThread*);
+      const ThreadCreationParams&);
+  static std::unique_ptr<WebThreadSupportingGC> CreateForThread(Thread*);
   ~WebThreadSupportingGC();
 
   void PostTask(const base::Location& location, base::OnceClosure task) {
@@ -60,33 +60,33 @@ class PLATFORM_EXPORT WebThreadSupportingGC final {
 
   bool IsCurrentThread() const { return thread_->IsCurrentThread(); }
 
-  void AddTaskObserver(WebThread::TaskObserver* observer) {
+  void AddTaskObserver(Thread::TaskObserver* observer) {
     thread_->AddTaskObserver(observer);
   }
 
-  void RemoveTaskObserver(WebThread::TaskObserver* observer) {
+  void RemoveTaskObserver(Thread::TaskObserver* observer) {
     thread_->RemoveTaskObserver(observer);
   }
 
-  // Must be called on the WebThread.
+  // Must be called on the matching blink::Thread.
   void InitializeOnThread();
   void ShutdownOnThread();
 
-  WebThread& PlatformThread() const {
+  Thread& PlatformThread() const {
     DCHECK(thread_);
     return *thread_;
   }
 
  private:
-  WebThreadSupportingGC(const WebThreadCreationParams*, WebThread*);
+  WebThreadSupportingGC(const ThreadCreationParams*, Thread*);
 
   std::unique_ptr<GCTaskRunner> gc_task_runner_;
 
   // m_thread is guaranteed to be non-null after this instance is constructed.
   // m_owningThread is non-null unless this instance is constructed for an
   // existing thread via createForThread().
-  WebThread* thread_ = nullptr;
-  std::unique_ptr<WebThread> owning_thread_;
+  Thread* thread_ = nullptr;
+  std::unique_ptr<Thread> owning_thread_;
 
   THREAD_CHECKER(thread_checker_);
 };

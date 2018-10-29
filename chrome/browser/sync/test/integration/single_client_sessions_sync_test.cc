@@ -5,10 +5,10 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
+#include "chrome/browser/sync/test/integration/feature_toggler.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
@@ -70,25 +70,10 @@ void ExpectUniqueSampleGE(const HistogramTester& histogram_tester,
   EXPECT_EQ(sample_count, samples->TotalCount());
 }
 
-// Class that enables or disables USS based on test parameter. Must be the first
-// base class of the test fixture.
-class UssSwitchToggler : public testing::WithParamInterface<bool> {
+class SingleClientSessionsSyncTest : public FeatureToggler, public SyncTest {
  public:
-  UssSwitchToggler() {
-    if (GetParam()) {
-      override_features_.InitAndEnableFeature(switches::kSyncUSSSessions);
-    } else {
-      override_features_.InitAndDisableFeature(switches::kSyncUSSSessions);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList override_features_;
-};
-
-class SingleClientSessionsSyncTest : public UssSwitchToggler, public SyncTest {
- public:
-  SingleClientSessionsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientSessionsSyncTest()
+      : FeatureToggler(switches::kSyncUSSSessions), SyncTest(SINGLE_CLIENT) {}
   ~SingleClientSessionsSyncTest() override {}
 
   void ExpectNavigationChain(const std::vector<GURL>& urls) {

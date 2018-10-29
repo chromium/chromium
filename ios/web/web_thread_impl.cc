@@ -233,8 +233,7 @@ void WebThreadImpl::Init() {
     // Though this thread is called the "IO" thread, it actually just routes
     // messages around; it shouldn't be allowed to perform any blocking disk
     // I/O.
-    base::ThreadRestrictions::SetIOAllowed(false);
-    base::ThreadRestrictions::DisallowWaiting();
+    base::DisallowUnresponsiveTasks();
   }
 }
 

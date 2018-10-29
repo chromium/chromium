@@ -52,7 +52,6 @@ finalRequestSuccess():
 PASS cursor.key is "key2"
 PASS cursor.value is "value2"
 cursor = null
-gc()
 PASS cursorRequestObservation.wasCollected is true
 PASS cursorObservation.wasCollected is true
 PASS successfullyParsed is true

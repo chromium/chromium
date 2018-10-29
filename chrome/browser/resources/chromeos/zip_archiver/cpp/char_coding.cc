@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "char_coding.h"
+#include "chrome/browser/resources/chromeos/zip_archiver/cpp/char_coding.h"
 
 #include <string.h>
 #include <string>

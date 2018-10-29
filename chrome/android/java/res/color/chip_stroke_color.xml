@@ -5,9 +5,8 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/modern_grey_300"
+    <item android:color="@color/hairline_stroke_color"
         android:state_enabled="true"
-        android:state_pressed="false"
         android:state_selected="false" />
     <item android:color="@android:color/transparent" />
 </selector>

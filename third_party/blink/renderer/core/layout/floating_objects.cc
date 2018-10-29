@@ -323,7 +323,7 @@ void FloatingObjects::ClearLineBoxTreePointers() {
 
 FloatingObjects::FloatingObjects(const LayoutBlockFlow* layout_object,
                                  bool horizontal_writing_mode)
-    : placed_floats_tree_(kUninitializedTree),
+    : placed_floats_tree_(WTF::kUninitializedTree),
       left_objects_count_(0),
       right_objects_count_(0),
       horizontal_writing_mode_(horizontal_writing_mode),
@@ -760,14 +760,18 @@ inline bool ComputeFloatOffsetForLineLayoutAdapter<
   return false;
 }
 
+}  // namespace blink
+
+namespace WTF {
 #ifndef NDEBUG
 // These helpers are only used by the PODIntervalTree for debugging purposes.
-String ValueToString<LayoutUnit>::ToString(const LayoutUnit value) {
+String ValueToString<blink::LayoutUnit>::ToString(
+    const blink::LayoutUnit value) {
   return String::Number(value.ToFloat());
 }
 
-String ValueToString<FloatingObject*>::ToString(
-    const FloatingObject* floating_object) {
+String ValueToString<blink::FloatingObject*>::ToString(
+    const blink::FloatingObject* floating_object) {
   return String::Format("%p (%gx%g %gx%g)", floating_object,
                         floating_object->FrameRect().X().ToFloat(),
                         floating_object->FrameRect().Y().ToFloat(),
@@ -775,5 +779,4 @@ String ValueToString<FloatingObject*>::ToString(
                         floating_object->FrameRect().MaxY().ToFloat());
 }
 #endif
-
-}  // namespace blink
+}  // namespace WTF

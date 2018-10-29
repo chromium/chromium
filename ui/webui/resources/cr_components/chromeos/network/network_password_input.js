@@ -8,16 +8,15 @@
 Polymer({
   is: 'network-password-input',
 
-  behaviors: [I18nBehavior],
+  behaviors: [
+    I18nBehavior,
+    CrPolicyNetworkBehavior,
+    NetworkConfigElementBehavior,
+  ],
 
   properties: {
     label: {
       type: String,
-      reflectToAttribute: true,
-    },
-
-    disabled: {
-      type: Boolean,
       reflectToAttribute: true,
     },
 

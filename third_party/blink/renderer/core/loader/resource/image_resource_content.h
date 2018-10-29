@@ -188,8 +188,7 @@ class CORE_EXPORT ImageResourceContent final
   // ImageObserver
   void DecodedSizeChangedTo(const blink::Image*, size_t new_size) override;
   bool ShouldPauseAnimation(const blink::Image*) override;
-  void AnimationAdvanced(const blink::Image*) override;
-  void ChangedInRect(const blink::Image*, const IntRect&) override;
+  void Changed(const blink::Image*) override;
   void AsyncLoadCompleted(const blink::Image*) override;
 
   scoped_refptr<Image> CreateImage(bool is_multipart);
@@ -198,9 +197,7 @@ class CORE_EXPORT ImageResourceContent final
   enum NotifyFinishOption { kShouldNotifyFinish, kDoNotNotifyFinish };
 
   // If not null, changeRect is the changed part of the image.
-  void NotifyObservers(NotifyFinishOption,
-                       CanDeferInvalidation,
-                       const IntRect* change_rect = nullptr);
+  void NotifyObservers(NotifyFinishOption, CanDeferInvalidation);
   void MarkObserverFinished(ImageResourceObserver*);
   void UpdateToLoadedContentStatus(ResourceStatus);
 

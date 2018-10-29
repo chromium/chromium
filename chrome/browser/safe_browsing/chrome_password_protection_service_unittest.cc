@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -78,9 +79,12 @@ const char kTestGmail[] = "foo@gmail.com";
 const char kBasicResponseHeaders[] = "HTTP/1.1 200 OK";
 const char kRedirectURL[] = "http://redirect.com";
 
-std::unique_ptr<KeyedService> BuildFakeUserEventService(
-    content::BrowserContext* context) {
-  return std::make_unique<syncer::FakeUserEventService>();
+BrowserContextKeyedServiceFactory::TestingFactory
+GetFakeUserEventServiceFactory() {
+  return base::BindRepeating(
+      [](content::BrowserContext* context) -> std::unique_ptr<KeyedService> {
+        return std::make_unique<syncer::FakeUserEventService>();
+      });
 }
 
 constexpr struct {
@@ -163,12 +167,13 @@ class ChromePasswordProtectionServiceTest
     fake_user_event_service_ = static_cast<syncer::FakeUserEventService*>(
         browser_sync::UserEventServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(browser_context(),
-                                      &BuildFakeUserEventService));
+                                      GetFakeUserEventServiceFactory()));
     test_event_router_ =
         extensions::CreateAndUseTestEventRouter(browser_context());
     extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
-        ->SetTestingFactory(browser_context(),
-                            BuildSafeBrowsingPrivateEventRouter);
+        ->SetTestingFactory(
+            browser_context(),
+            base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
   }
 
   void TearDown() override {
@@ -196,14 +201,18 @@ class ChromePasswordProtectionServiceTest
 
   content::BrowserContext* CreateBrowserContext() override {
     TestingProfile::Builder builder;
-    builder.AddTestingFactory(ProfileOAuth2TokenServiceFactory::GetInstance(),
-                              BuildFakeProfileOAuth2TokenService);
-    builder.AddTestingFactory(ChromeSigninClientFactory::GetInstance(),
-                              signin::BuildTestSigninClient);
-    builder.AddTestingFactory(SigninManagerFactory::GetInstance(),
-                              BuildFakeSigninManagerBase);
-    builder.AddTestingFactory(AccountFetcherServiceFactory::GetInstance(),
-                              FakeAccountFetcherServiceBuilder::BuildForTests);
+    builder.AddTestingFactory(
+        ProfileOAuth2TokenServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeProfileOAuth2TokenService));
+    builder.AddTestingFactory(
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&signin::BuildTestSigninClient));
+    builder.AddTestingFactory(
+        SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeSigninManagerForTesting));
+    builder.AddTestingFactory(
+        AccountFetcherServiceFactory::GetInstance(),
+        base::BindRepeating(&FakeAccountFetcherServiceBuilder::BuildForTests));
     return builder.Build().release();
   }
 
@@ -487,6 +496,11 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetSyncAccountTypeGmail) {
       "", service_->GetOrganizationName(PasswordReuseEvent::SIGN_IN_PASSWORD));
   EXPECT_EQ("", service_->GetOrganizationName(
                     PasswordReuseEvent::ENTERPRISE_PASSWORD));
+
+  // Verify GetSyncAccountType() for incognito profile.
+  service_->ConfigService(true /*is_incognito*/,
+                          false /*is_extended_reporting*/);
+  EXPECT_EQ(PasswordReuseEvent::GMAIL, service_->GetSyncAccountType());
 }
 
 TEST_F(ChromePasswordProtectionServiceTest, VerifyGetSyncAccountTypeGSuite) {
@@ -505,6 +519,11 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetSyncAccountTypeGSuite) {
                                PasswordReuseEvent::SIGN_IN_PASSWORD));
   EXPECT_EQ("", service_->GetOrganizationName(
                     PasswordReuseEvent::ENTERPRISE_PASSWORD));
+
+  // Verify GetSyncAccountType() for incognito profile.
+  service_->ConfigService(true /*is_incognito*/,
+                          false /*is_extended_reporting*/);
+  EXPECT_EQ(PasswordReuseEvent::GSUITE, service_->GetSyncAccountType());
 }
 
 TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
@@ -549,8 +568,47 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
 }
 
 TEST_F(ChromePasswordProtectionServiceTest,
-       VerifyPasswordReuseUserEventNotRecorded) {
+       VerifyPasswordReuseUserEventNotRecordedDueToNotSignedIn) {
   // Feature not enabled so nothing should be logged.
+  NavigateAndCommit(GURL("https:www.example.com/"));
+
+  // PasswordReuseDetected
+  service_->MaybeLogPasswordReuseDetectedEvent(web_contents());
+  EXPECT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty());
+  service_->MaybeLogPasswordReuseLookupEvent(
+      web_contents(), RequestOutcome::MATCHED_WHITELIST, nullptr);
+  EXPECT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty());
+
+  // PasswordReuseLookup
+  unsigned long t = 0;
+  for (const auto& it : kTestCasesWithoutVerdict) {
+    service_->MaybeLogPasswordReuseLookupEvent(web_contents(),
+                                               it.request_outcome, nullptr);
+    ASSERT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty()) << t;
+    t++;
+  }
+
+  // PasswordReuseDialogInteraction
+  service_->MaybeLogPasswordReuseDialogInteraction(
+      1000 /* navigation_id */,
+      PasswordReuseDialogInteraction::WARNING_ACTION_TAKEN);
+  ASSERT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty());
+}
+
+TEST_F(ChromePasswordProtectionServiceTest,
+       VerifyPasswordReuseUserEventNotRecordedDueToIncognito) {
+  // Configure sync account type to GMAIL.
+  SigninManagerBase* signin_manager =
+      SigninManagerFactory::GetForProfile(profile());
+  signin_manager->SetAuthenticatedAccountInfo(kTestGaiaID, kTestEmail);
+  SetUpSyncAccount(std::string(AccountTrackerService::kNoHostedDomainFound),
+                   std::string(kTestGaiaID), std::string(kTestEmail));
+  EXPECT_EQ(PasswordReuseEvent::GMAIL, service_->GetSyncAccountType());
+  service_->ConfigService(true /*is_incognito*/,
+                          false /*is_extended_reporting*/);
+  ASSERT_TRUE(service_->IsIncognito());
+
+  // Nothing should be logged because of incognito.
   NavigateAndCommit(GURL("https:www.example.com/"));
 
   // PasswordReuseDetected
@@ -872,7 +930,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
             test_handle->CallWillProcessResponseForTesting(
                 main_rfh(),
                 net::HttpUtil::AssembleRawHeaders(
-                    kBasicResponseHeaders, strlen(kBasicResponseHeaders))));
+                    kBasicResponseHeaders, strlen(kBasicResponseHeaders)),
+                false, net::ProxyServer::Direct()));
   test_handle->CallDidCommitNavigationForTesting(redirect_url);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(test_handle->HasCommitted());

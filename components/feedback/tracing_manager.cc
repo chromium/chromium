@@ -62,8 +62,7 @@ bool TracingManager::GetTraceData(int id, const TraceDataCallback& callback) {
       return false;
     }
   } else {
-    std::map<int, scoped_refptr<base::RefCountedString> >::iterator data =
-        trace_data_.find(id);
+    auto data = trace_data_.find(id);
     if (data == trace_data_.end())
       return false;
 

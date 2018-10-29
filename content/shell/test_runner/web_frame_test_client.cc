@@ -45,30 +45,6 @@ namespace test_runner {
 
 namespace {
 
-void PrintFrameDescription(WebTestDelegate* delegate,
-                           blink::WebLocalFrame* frame) {
-  std::string name = content::GetFrameNameForLayoutTests(frame);
-  if (frame == frame->View()->MainFrame()) {
-    DCHECK(name.empty());
-    delegate->PrintMessage("main frame");
-    return;
-  }
-  if (name.empty()) {
-    delegate->PrintMessage("frame (anonymous)");
-    return;
-  }
-  delegate->PrintMessage(std::string("frame \"") + name + "\"");
-}
-
-void PrintFrameuserGestureStatus(WebTestDelegate* delegate,
-                                 blink::WebLocalFrame* frame,
-                                 const char* msg) {
-  bool is_user_gesture =
-      blink::WebUserGestureIndicator::IsProcessingUserGesture(frame);
-  delegate->PrintMessage(std::string("Frame with user gesture \"") +
-                         (is_user_gesture ? "true" : "false") + "\"" + msg);
-}
-
 // Used to write a platform neutral file:/// URL by taking the
 // filename and its directory. (e.g., converts
 // "file:///tmp/foo/bar.txt" to just "bar.txt").
@@ -144,7 +120,6 @@ const char* kBackForwardString = "back/forward";
 const char* kReloadString = "reload";
 const char* kFormResubmittedString = "form resubmitted";
 const char* kOtherString = "other";
-const char* kIllegalString = "illegal value";
 
 // Get a debugging string from a WebNavigationType.
 const char* WebNavigationTypeToString(blink::WebNavigationType type) {
@@ -181,6 +156,22 @@ WebFrameTestClient::WebFrameTestClient(
 }
 
 WebFrameTestClient::~WebFrameTestClient() {}
+
+// static
+void WebFrameTestClient::PrintFrameDescription(WebTestDelegate* delegate,
+                                               blink::WebLocalFrame* frame) {
+  std::string name = content::GetFrameNameForLayoutTests(frame);
+  if (frame == frame->View()->MainFrame()) {
+    DCHECK(name.empty());
+    delegate->PrintMessage("main frame");
+    return;
+  }
+  if (name.empty()) {
+    delegate->PrintMessage("frame (anonymous)");
+    return;
+  }
+  delegate->PrintMessage(std::string("frame \"") + name + "\"");
+}
 
 void WebFrameTestClient::RunModalAlertDialog(const blink::WebString& message) {
   if (!test_runner()->ShouldDumpJavaScriptDialogs())
@@ -385,66 +376,6 @@ void WebFrameTestClient::DownloadURL(
   }
 }
 
-void WebFrameTestClient::LoadErrorPage(int reason) {
-  if (test_runner()->shouldDumpFrameLoadCallbacks()) {
-    delegate_->PrintMessage(base::StringPrintf(
-        "- loadErrorPage: %s\n", net::ErrorToString(reason).c_str()));
-  }
-}
-
-void WebFrameTestClient::DidStartProvisionalLoad(
-    blink::WebDocumentLoader* document_loader,
-    blink::WebURLRequest& request) {
-  // PlzNavigate
-  // A provisional load notification is received when a frame navigation is
-  // sent to the browser. We don't want to log it again during commit.
-  if (delegate_->IsNavigationInitiatedByRenderer(request))
-    return;
-
-  test_runner()->tryToSetTopLoadingFrame(
-      web_frame_test_proxy_base_->web_frame());
-
-  if (test_runner()->shouldDumpFrameLoadCallbacks()) {
-    PrintFrameDescription(delegate_, web_frame_test_proxy_base_->web_frame());
-    delegate_->PrintMessage(" - didStartProvisionalLoadForFrame\n");
-  }
-
-  if (test_runner()->shouldDumpUserGestureInFrameLoadCallbacks()) {
-    PrintFrameuserGestureStatus(delegate_,
-                                web_frame_test_proxy_base_->web_frame(),
-                                " - in didStartProvisionalLoadForFrame\n");
-  }
-}
-
-void WebFrameTestClient::DidFailProvisionalLoad(
-    const blink::WebURLError& error,
-    blink::WebHistoryCommitType commit_type) {
-  if (test_runner()->shouldDumpFrameLoadCallbacks()) {
-    PrintFrameDescription(delegate_, web_frame_test_proxy_base_->web_frame());
-    delegate_->PrintMessage(" - didFailProvisionalLoadWithError\n");
-  }
-}
-
-void WebFrameTestClient::DidCommitProvisionalLoad(
-    const blink::WebHistoryItem& history_item,
-    blink::WebHistoryCommitType history_type,
-    blink::WebGlobalObjectReusePolicy) {
-  if (test_runner()->shouldDumpFrameLoadCallbacks()) {
-    PrintFrameDescription(delegate_, web_frame_test_proxy_base_->web_frame());
-    delegate_->PrintMessage(" - didCommitLoadForFrame\n");
-  }
-}
-
-void WebFrameTestClient::DidFinishSameDocumentNavigation(
-    const blink::WebHistoryItem& history_item,
-    blink::WebHistoryCommitType history_type,
-    bool content_initiated) {
-  if (test_runner()->shouldDumpFrameLoadCallbacks()) {
-    PrintFrameDescription(delegate_, web_frame_test_proxy_base_->web_frame());
-    delegate_->PrintMessage(" - didCommitLoadForFrame\n");
-  }
-}
-
 void WebFrameTestClient::DidReceiveTitle(const blink::WebString& title,
                                          blink::WebTextDirection direction) {
   if (test_runner()->shouldDumpFrameLoadCallbacks() &&
@@ -466,20 +397,6 @@ void WebFrameTestClient::DidChangeIcon(blink::WebIconURL::Type icon_type) {
   }
 }
 
-void WebFrameTestClient::DidFinishDocumentLoad() {
-  if (test_runner()->shouldDumpFrameLoadCallbacks()) {
-    PrintFrameDescription(delegate_, web_frame_test_proxy_base_->web_frame());
-    delegate_->PrintMessage(" - didFinishDocumentLoadForFrame\n");
-  }
-}
-
-void WebFrameTestClient::DidHandleOnloadEvents() {
-  if (test_runner()->shouldDumpFrameLoadCallbacks()) {
-    PrintFrameDescription(delegate_, web_frame_test_proxy_base_->web_frame());
-    delegate_->PrintMessage(" - didHandleOnloadEventsForFrame\n");
-  }
-}
-
 void WebFrameTestClient::DidFailLoad(const blink::WebURLError& error,
                                      blink::WebHistoryCommitType commit_type) {
   if (test_runner()->shouldDumpFrameLoadCallbacks()) {
@@ -488,22 +405,14 @@ void WebFrameTestClient::DidFailLoad(const blink::WebURLError& error,
   }
 }
 
-void WebFrameTestClient::DidFinishLoad() {
-  if (test_runner()->shouldDumpFrameLoadCallbacks()) {
-    PrintFrameDescription(delegate_, web_frame_test_proxy_base_->web_frame());
-    delegate_->PrintMessage(" - didFinishLoadForFrame\n");
-  }
+void WebFrameTestClient::DidStartLoading() {
+  test_runner()->tryToSetTopLoadingFrame(
+      web_frame_test_proxy_base_->web_frame());
 }
 
 void WebFrameTestClient::DidStopLoading() {
   test_runner()->tryToClearTopLoadingFrame(
       web_frame_test_proxy_base_->web_frame());
-}
-
-void WebFrameTestClient::DidDetectXSS(const blink::WebURL& insecure_url,
-                                      bool did_block_entire_page) {
-  if (test_runner()->shouldDumpFrameLoadCallbacks())
-    delegate_->PrintMessage("didDetectXSS\n");
 }
 
 void WebFrameTestClient::DidDispatchPingLoader(const blink::WebURL& url) {
@@ -611,7 +520,10 @@ void WebFrameTestClient::DidAddMessageToConsole(
       level = "MESSAGE";
   }
   std::string console_message(std::string("CONSOLE ") + level + ": ");
-  if (source_line) {
+  // Do not print line numbers if there is no associated source file name.
+  // TODO(crbug.com/896194): Figure out why the source line is flaky for empty
+  // source names.
+  if (!source_name.IsEmpty() && source_line) {
     console_message += base::StringPrintf("line %d: ", source_line);
   }
   // Console messages shouldn't be included in the expected output for
@@ -677,15 +589,14 @@ blink::WebNavigationPolicy WebFrameTestClient::DecidePolicyForNavigation(
 
 void WebFrameTestClient::CheckIfAudioSinkExistsAndIsAuthorized(
     const blink::WebString& sink_id,
-    blink::WebSetSinkIdCallbacks* web_callbacks) {
-  std::unique_ptr<blink::WebSetSinkIdCallbacks> callback(web_callbacks);
+    std::unique_ptr<blink::WebSetSinkIdCallbacks> web_callbacks) {
   std::string device_id = sink_id.Utf8();
   if (device_id == "valid" || device_id.empty())
-    callback->OnSuccess();
+    web_callbacks->OnSuccess();
   else if (device_id == "unauthorized")
-    callback->OnError(blink::WebSetSinkIdError::kNotAuthorized);
+    web_callbacks->OnError(blink::WebSetSinkIdError::kNotAuthorized);
   else
-    callback->OnError(blink::WebSetSinkIdError::kNotFound);
+    web_callbacks->OnError(blink::WebSetSinkIdError::kNotFound);
 }
 
 void WebFrameTestClient::DidClearWindowObject() {

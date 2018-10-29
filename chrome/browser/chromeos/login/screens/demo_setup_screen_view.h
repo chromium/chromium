@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 
 namespace chromeos {
@@ -29,8 +30,12 @@ class DemoSetupScreenView {
   // Sets view and screen.
   virtual void Bind(DemoSetupScreen* screen) = 0;
 
-  // Handles setup result.
-  virtual void OnSetupFinished(bool is_success, const std::string& message) = 0;
+  // Handles successful setup.
+  virtual void OnSetupSucceeded() = 0;
+
+  // Handles setup failure.
+  virtual void OnSetupFailed(
+      const DemoSetupController::DemoSetupError& error) = 0;
 };
 
 }  // namespace chromeos

@@ -61,6 +61,9 @@ class TestNetworkServiceClient : public network::mojom::NetworkServiceClient {
                       const GURL& first_party_url,
                       const net::CanonicalCookie& cookie,
                       bool blocked_by_policy) override;
+#if defined(OS_CHROMEOS)
+  void OnUsedTrustAnchor(const std::string& username_hash) override;
+#endif
   void OnFileUploadRequested(uint32_t process_id,
                              bool async,
                              const std::vector<base::FilePath>& file_paths,
@@ -73,6 +76,9 @@ class TestNetworkServiceClient : public network::mojom::NetworkServiceClient {
                        const std::string& header_value,
                        int load_flags,
                        OnClearSiteDataCallback callback) override;
+  void OnDataUseUpdate(int32_t network_traffic_annotation_id_hash,
+                       int64_t recv_bytes,
+                       int64_t sent_bytes) override;
 
  private:
   bool enable_uploads_;

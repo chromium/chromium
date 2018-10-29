@@ -7,10 +7,10 @@
 #include "base/location.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/browsing_data/conditional_cache_deletion_helper.h"
-#include "content/browser/code_cache/generated_code_cache.h"
-#include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -27,14 +27,12 @@ StoragePartitionHttpCacheDataRemover::StoragePartitionHttpCacheDataRemover(
     base::Time delete_begin,
     base::Time delete_end,
     net::URLRequestContextGetter* main_context_getter,
-    net::URLRequestContextGetter* media_context_getter,
-    GeneratedCodeCacheContext* generated_code_cache_context)
+    net::URLRequestContextGetter* media_context_getter)
     : url_predicate_(url_predicate),
       delete_begin_(delete_begin),
       delete_end_(delete_end),
       main_context_getter_(main_context_getter),
       media_context_getter_(media_context_getter),
-      generated_code_cache_context_(generated_code_cache_context),
       next_cache_state_(CacheState::NONE),
       cache_(nullptr) {}
 
@@ -47,8 +45,7 @@ StoragePartitionHttpCacheDataRemover::CreateForRange(
   return new StoragePartitionHttpCacheDataRemover(
       base::Callback<bool(const GURL&)>(),  // Null callback.
       delete_begin, delete_end, storage_partition->GetURLRequestContext(),
-      storage_partition->GetMediaURLRequestContext(),
-      storage_partition->GetGeneratedCodeCacheContext());
+      storage_partition->GetMediaURLRequestContext());
 }
 
 // static.
@@ -61,8 +58,7 @@ StoragePartitionHttpCacheDataRemover::CreateForURLsAndRange(
   return new StoragePartitionHttpCacheDataRemover(
       url_predicate, delete_begin, delete_end,
       storage_partition->GetURLRequestContext(),
-      storage_partition->GetMediaURLRequestContext(),
-      storage_partition->GetGeneratedCodeCacheContext());
+      storage_partition->GetMediaURLRequestContext());
 }
 
 StoragePartitionHttpCacheDataRemover::~StoragePartitionHttpCacheDataRemover() {}
@@ -73,8 +69,8 @@ void StoragePartitionHttpCacheDataRemover::Remove(
   DCHECK(!done_callback.is_null());
   done_callback_ = std::move(done_callback);
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &StoragePartitionHttpCacheDataRemover::ClearHttpCacheOnIOThread,
           base::Unretained(this)));
@@ -97,8 +93,7 @@ void StoragePartitionHttpCacheDataRemover::ClearedHttpCache() {
 
 // The expected state sequence is CacheState::NONE --> CacheState::CREATE_MAIN
 // --> CacheState::DELETE_MAIN --> CacheState::CREATE_MEDIA -->
-// CacheState::DELETE_MEDIA --> CacheState::DELETE_CODE --> CacheState::DONE,
-// and any errors are ignored.
+// CacheState::DELETE_MEDIA --> CacheState::DONE, and any errors are ignored.
 void StoragePartitionHttpCacheDataRemover::DoClearCache(int rv) {
   DCHECK_NE(CacheState::NONE, next_cache_state_);
 
@@ -116,7 +111,7 @@ void StoragePartitionHttpCacheDataRemover::DoClearCache(int rv) {
         if (!getter) {
           next_cache_state_ = (next_cache_state_ == CacheState::CREATE_MAIN)
                                   ? CacheState::CREATE_MEDIA
-                                  : CacheState::DELETE_CODE;
+                                  : CacheState::DONE;
           break;
         }
 
@@ -143,7 +138,7 @@ void StoragePartitionHttpCacheDataRemover::DoClearCache(int rv) {
       case CacheState::DELETE_MEDIA: {
         next_cache_state_ = (next_cache_state_ == CacheState::DELETE_MAIN)
                                 ? CacheState::CREATE_MEDIA
-                                : CacheState::DELETE_CODE;
+                                : CacheState::DONE;
 
         // |cache_| can be null if it cannot be initialized.
         if (cache_) {
@@ -170,31 +165,13 @@ void StoragePartitionHttpCacheDataRemover::DoClearCache(int rv) {
         }
         break;
       }
-      case CacheState::DELETE_CODE: {
-        next_cache_state_ = CacheState::DONE;
-        // Embedders can disable code caches.
-        if (generated_code_cache_context_) {
-          GeneratedCodeCache* code_cache =
-              generated_code_cache_context_->generated_code_cache();
-          if (code_cache) {
-            auto callback = base::BindRepeating(
-                &StoragePartitionHttpCacheDataRemover::DoClearCache,
-                base::Unretained(this));
-            // TODO(crbug.com/866419): Currently we just clear the entire cache.
-            // Change it to conditionally clear the entries based on the
-            // filters.
-            rv = code_cache->ClearCache(callback);
-          }
-        }
-        break;
-      }
       case CacheState::DONE: {
         cache_ = nullptr;
         next_cache_state_ = CacheState::NONE;
 
         // Notify the UI thread that we are done.
-        BrowserThread::PostTask(
-            BrowserThread::UI, FROM_HERE,
+        base::PostTaskWithTraits(
+            FROM_HERE, {BrowserThread::UI},
             base::BindOnce(
                 &StoragePartitionHttpCacheDataRemover::ClearedHttpCache,
                 base::Unretained(this)));

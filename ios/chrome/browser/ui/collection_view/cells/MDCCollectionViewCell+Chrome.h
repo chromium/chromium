@@ -15,6 +15,10 @@
 // CollectionViewItem.
 @interface MDCCollectionViewCell (Chrome)
 
+// Clears global cache that holds template cells for sizing. It is needed
+// to handle a11y dynamic type fonts.
++ (void)cr_clearPreferredHeightForWidthCellCache;
+
 // Returns the height this class of cell would need to be to fit within
 // |targetWidth|, configured by |item|. The returned height is calculated by
 // Auto Layout so that the contents of the cell could fit within the

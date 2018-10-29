@@ -51,6 +51,7 @@ std::string ErrorName(int err, const ConstantLabel* err_table);
 //   in debug builds.
 //  LS_WARNING: Something that may warrant investigation.
 //  LS_ERROR: Something that should not have occurred.
+//  LS_NONE: Set this as minimum severity to disable logging.
 // Note that LoggingSeverity is mapped over to chromiums verbosity levels where
 // anything lower than or equal to the current verbosity level is written to
 // file which is the opposite of logging severity in libjingle where higher
@@ -60,6 +61,7 @@ std::string ErrorName(int err, const ConstantLabel* err_table);
 // TODO(tommi): To keep things simple, we should just use the same values for
 // these constants as Chrome does.
 enum LoggingSeverity {
+  LS_NONE = 0,
   LS_ERROR = 1,
   LS_WARNING = 2,
   LS_INFO = 3,

@@ -22,13 +22,9 @@
 <dom-module id="print-preview-destination-settings">
   <template>
     <style include="print-preview-shared paper-button-style throbber cr-hidden-style">
-      print-preview-settings-section {
-        margin-top: 16px;
-      }
-
       paper-button {
         margin: 2px;
-        margin-top: 12px;
+        margin-top: 8px;
         width: 89px;
       }
 
@@ -40,13 +36,14 @@
       .throbber-container {
         align-items: center;
         display: flex;
-        min-height: 28px;
         overflow: hidden;
       }
 
       .destination-settings-box iron-icon {
         fill: var(--google-grey-600);
+        flex: 0;
         margin-inline-end: 8px;
+        min-width: 20px;
         vertical-align: middle;
       }
 
@@ -54,14 +51,14 @@
         overflow: hidden;
       }
 
+      .destination-name {
+        line-height: calc(20/13 * 1em);
+      }
+
       .destination-location,
       .destination-connection-status {
         color: var(--google-grey-700);
         font-size: calc(12/13 * 1em);
-      }
-
-      .destination-name {
-        margin-bottom: 4px;
       }
 
       .destination-info-wrapper > div,
@@ -76,7 +73,7 @@
         opacity: 0.4;
       }
     </style>
-    <print-preview-settings-section class="multirow-controls">
+    <print-preview-settings-section>
       <span slot="title">$i18n{destinationLabel}</span>
       <div slot="controls">
         <div class="throbber-container" hidden="[[!loadingDestination_]]">
@@ -84,7 +81,8 @@
           <div class="destination-throbber-name"></div>
         </div>
         <div class="destination-settings-box" hidden="[[loadingDestination_]]">
-          <iron-icon icon$="[[destination.icon]]"></iron-icon>
+          <iron-icon icon$="[[destination.icon]]" hidden="[[!destination]]">
+          </iron-icon>
           <div class="destination-info-wrapper">
             <div class="destination-name">[[destination.displayName]]</div>
             <div class="destination-location">[[destination.hint]]</div>
@@ -94,6 +92,11 @@
             </div>
           </div>
         </div>
+      </div>
+    </print-preview-settings-section>
+    <print-preview-settings-section>
+      <div slot="title"></div>
+      <div slot="controls">
         <paper-button
           disabled$="[[shouldDisableButton_(destinationStore, disabled,
                                             state)]]"

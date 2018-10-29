@@ -1,4 +1,5 @@
 This tests pasting (InsertHTML) into an input element with a CSS rule div { display: none}. You should see PASS below.
 
 
+
 PASS

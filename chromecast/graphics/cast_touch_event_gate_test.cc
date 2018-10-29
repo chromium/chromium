@@ -51,6 +51,7 @@ class CastTouchEventGateTest : public aura::test::AuraTestBase {
   }
 
   void TearDown() override {
+    root_window()->RemovePreTargetHandler(event_handler_.get());
     event_gate_.reset();
     aura::test::AuraTestBase::TearDown();
   }

@@ -10,15 +10,17 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/net/url_request_mock_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/chromeos_switches.h"
@@ -26,6 +28,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_test.h"
@@ -37,7 +40,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_channel.h"
-#include "net/test/url_request/url_request_mock_http_job.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -52,17 +56,17 @@ namespace {
 //   profile:
 const char kManualTestAppId[] = "bjaiihebfngildkcjkjckolinodhliff";
 const char kManualTestAppUpdateManifestPath[] =
-    "extensions/signin_screen_manual_test_app/update_manifest.xml";
+    "/extensions/signin_screen_manual_test_app/update_manifest.xml";
 // * A trivial test app which is NOT whitelisted for running in the sign-in
 //   profile:
 const char kTrivialAppId[] = "mockapnacjbcdncmpkjngjalkhphojek";
 const char kTrivialAppUpdateManifestPath[] =
-    "extensions/trivial_platform_app/update_manifest.xml";
+    "/extensions/trivial_platform_app/update_manifest.xml";
 // * A trivial test extension (note that extensions cannot be whitelisted for
 //   running in the sign-in profile):
 const char kTrivialExtensionId[] = "mockepjebcnmhmhcahfddgfcdgkdifnc";
 const char kTrivialExtensionUpdateManifestPath[] =
-    "extensions/trivial_extension/update_manifest.xml";
+    "/extensions/trivial_extension/update_manifest.xml";
 
 // Observer that allows waiting for an installation failure of a specific
 // extension/app.
@@ -170,15 +174,19 @@ class SigninProfileAppsPolicyTestBase : public DevicePolicyCrosBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    EnableUrlRequestMocks();
     DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&SigninProfileAppsPolicyTestBase::InterceptMockHttp,
+                            base::Unretained(this)));
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   void AddExtensionForForceInstallation(
       const std::string& extension_id,
-      const base::FilePath& update_manifest_relative_path) {
-    const GURL update_manifest_url = net::URLRequestMockHTTPJob::GetMockUrl(
-        update_manifest_relative_path.MaybeAsASCII());
+      const std::string& update_manifest_relative_path) {
+    const GURL update_manifest_url =
+        embedded_test_server()->GetURL(update_manifest_relative_path);
     const std::string policy_item_value = base::ReplaceStringPlaceholders(
         "$1;$2", {extension_id, update_manifest_url.spec()}, nullptr);
     device_policy()
@@ -191,12 +199,32 @@ class SigninProfileAppsPolicyTestBase : public DevicePolicyCrosBrowserTest {
   const version_info::Channel channel_;
 
  private:
-  // Enables URL request mocks for making the test data files (extensions'
-  // update manifests and packages) available under corresponding URLs.
-  static void EnableUrlRequestMocks() {
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO, FROM_HERE,
-        base::BindOnce(&chrome_browser_net::SetUrlRequestMocksEnabled, true));
+  // Replace "mock.http" with "127.0.0.1:<port>" on "update_manifest.xml" files.
+  // Host resolver doesn't work here because the test file doesn't know the
+  // correct port number.
+  std::unique_ptr<net::test_server::HttpResponse> InterceptMockHttp(
+      const net::test_server::HttpRequest& request) {
+    const std::string kFileNameToIntercept = "update_manifest.xml";
+    if (request.GetURL().ExtractFileName() != kFileNameToIntercept)
+      return nullptr;
+
+    base::FilePath test_data_dir;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+    // Remove the leading '/'.
+    std::string relative_manifest_path = request.GetURL().path().substr(1);
+    std::string manifest_response;
+    CHECK(base::ReadFileToString(test_data_dir.Append(relative_manifest_path),
+                                 &manifest_response));
+
+    base::ReplaceSubstringsAfterOffset(
+        &manifest_response, 0, "mock.http",
+        embedded_test_server()->host_port_pair().ToString());
+
+    std::unique_ptr<net::test_server::BasicHttpResponse> response(
+        new net::test_server::BasicHttpResponse());
+    response->set_content_type("text/xml");
+    response->set_content(manifest_response);
+    return response;
   }
 
   const extensions::ScopedCurrentChannel scoped_current_channel_;
@@ -224,8 +252,8 @@ IN_PROC_BROWSER_TEST_P(SigninProfileAppsPolicyPerChannelTest,
   extensions::TestExtensionRegistryObserver registry_observer(
       extensions::ExtensionRegistry::Get(GetProfile()), kManualTestAppId);
 
-  AddExtensionForForceInstallation(
-      kManualTestAppId, base::FilePath(kManualTestAppUpdateManifestPath));
+  AddExtensionForForceInstallation(kManualTestAppId,
+                                   kManualTestAppUpdateManifestPath);
 
   registry_observer.WaitForExtensionLoaded();
   EXPECT_TRUE(extensions::ExtensionRegistry::Get(GetProfile())
@@ -242,8 +270,8 @@ IN_PROC_BROWSER_TEST_P(SigninProfileAppsPolicyPerChannelTest,
   ExtensionInstallErrorObserver install_error_observer(GetProfile(),
                                                        kTrivialAppId);
 
-  AddExtensionForForceInstallation(
-      kTrivialAppId, base::FilePath(kTrivialAppUpdateManifestPath));
+  AddExtensionForForceInstallation(kTrivialAppId,
+                                   kTrivialAppUpdateManifestPath);
 
   switch (channel_) {
     case version_info::Channel::UNKNOWN:
@@ -269,10 +297,8 @@ IN_PROC_BROWSER_TEST_P(SigninProfileAppsPolicyPerChannelTest,
                        ExtensionInstallation) {
   ExtensionInstallErrorObserver install_error_observer(GetProfile(),
                                                        kTrivialExtensionId);
-
-  AddExtensionForForceInstallation(
-      kTrivialExtensionId, base::FilePath(kTrivialExtensionUpdateManifestPath));
-
+  AddExtensionForForceInstallation(kTrivialExtensionId,
+                                   kTrivialExtensionUpdateManifestPath);
   install_error_observer.Wait();
   EXPECT_FALSE(extensions::ExtensionRegistry::Get(GetProfile())
                    ->GetInstalledExtension(kTrivialExtensionId));
@@ -313,8 +339,8 @@ IN_PROC_BROWSER_TEST_F(SigninProfileAppsPolicyTest, ExtensionsEnabled) {
 // app.
 IN_PROC_BROWSER_TEST_F(SigninProfileAppsPolicyTest, BackgroundPage) {
   ExtensionBackgroundPageReadyObserver page_observer(kTrivialAppId);
-  AddExtensionForForceInstallation(
-      kTrivialAppId, base::FilePath(kTrivialAppUpdateManifestPath));
+  AddExtensionForForceInstallation(kTrivialAppId,
+                                   kTrivialAppUpdateManifestPath);
   page_observer.Wait();
 }
 
@@ -325,10 +351,10 @@ IN_PROC_BROWSER_TEST_F(SigninProfileAppsPolicyTest, MultipleApps) {
   extensions::TestExtensionRegistryObserver registry_observer2(
       extensions::ExtensionRegistry::Get(GetProfile()), kTrivialAppId);
 
-  AddExtensionForForceInstallation(
-      kManualTestAppId, base::FilePath(kManualTestAppUpdateManifestPath));
-  AddExtensionForForceInstallation(
-      kTrivialAppId, base::FilePath(kTrivialAppUpdateManifestPath));
+  AddExtensionForForceInstallation(kManualTestAppId,
+                                   kManualTestAppUpdateManifestPath);
+  AddExtensionForForceInstallation(kTrivialAppId,
+                                   kTrivialAppUpdateManifestPath);
 
   registry_observer1.WaitForExtensionLoaded();
   registry_observer2.WaitForExtensionLoaded();

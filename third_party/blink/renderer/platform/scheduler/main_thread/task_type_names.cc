@@ -61,6 +61,10 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "IdleTask";
     case TaskType::kMiscPlatformAPI:
       return "MiscPlatformAPI";
+    case TaskType::kExperimentalWebSchedulingUserInteraction:
+      return "ExperimentalWebSchedulingUserInteraction";
+    case TaskType::kExperimentalWebSchedulingBestEffort:
+      return "ExperimentalWebSchedulingBackground";
     case TaskType::kInternalDefault:
       return "InternalDefault";
     case TaskType::kInternalLoading:
@@ -113,6 +117,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "WorkerThreadTaskQueueCompositor";
     case TaskType::kWorkerAnimation:
       return "WorkerAnimation";
+    case TaskType::kInternalTranslation:
+      return "InternalTranslation";
     case TaskType::kCount:
       return "Count";
   }

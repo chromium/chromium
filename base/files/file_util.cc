@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -156,6 +157,7 @@ bool ReadFileToStringWithMaxSize(const FilePath& path,
   std::string local_contents;
   local_contents.resize(chunk_size);
 
+  ScopedBlockingCall scoped_blocking_call(BlockingType::MAY_BLOCK);
   while ((bytes_read_this_pass = fread(&local_contents[bytes_read_so_far], 1,
                                        chunk_size, file)) > 0) {
     if ((max_size - bytes_read_so_far) < bytes_read_this_pass) {

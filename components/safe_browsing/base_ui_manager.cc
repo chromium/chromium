@@ -305,7 +305,6 @@ const std::string BaseUIManager::app_locale() const {
 
 history::HistoryService* BaseUIManager::history_service(
     content::WebContents* web_contents) {
-  // TODO(jialiul): figure out how to get HistoryService from webview.
   return nullptr;
 }
 

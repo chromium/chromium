@@ -33,14 +33,13 @@
 #include <memory>
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_file_system.h"
-#include "third_party/blink/public/platform/web_file_system_callbacks.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_entry.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_path.h"
 #include "third_party/blink/renderer/modules/filesystem/file_entry.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_callbacks.h"
+#include "third_party/blink/renderer/modules/filesystem/file_system_dispatcher.h"
 #include "third_party/blink/renderer/modules/filesystem/file_writer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -126,18 +125,18 @@ bool DOMFileSystem::HasPendingActivity() const {
 }
 
 void DOMFileSystem::ReportError(ErrorCallbackBase* error_callback,
-                                FileError::ErrorCode file_error) {
-  ReportError(GetExecutionContext(), error_callback, file_error);
+                                base::File::Error error) {
+  ReportError(GetExecutionContext(), error_callback, error);
 }
 
 void DOMFileSystem::ReportError(ExecutionContext* execution_context,
                                 ErrorCallbackBase* error_callback,
-                                FileError::ErrorCode file_error) {
+                                base::File::Error error) {
   if (!error_callback)
     return;
   ScheduleCallback(execution_context,
                    WTF::Bind(&ErrorCallbackBase::Invoke,
-                             WrapPersistent(error_callback), file_error));
+                             WrapPersistent(error_callback), error));
 }
 
 void DOMFileSystem::CreateWriter(
@@ -146,17 +145,12 @@ void DOMFileSystem::CreateWriter(
     ErrorCallbackBase* error_callback) {
   DCHECK(file_entry);
 
-  if (!FileSystem()) {
-    ReportError(error_callback, FileError::kAbortErr);
-    return;
-  }
-
   FileWriter* file_writer = FileWriter::Create(GetExecutionContext());
   std::unique_ptr<AsyncFileSystemCallbacks> callbacks =
       FileWriterCallbacks::Create(file_writer, success_callback, error_callback,
                                   context_);
-  FileSystem()->CreateFileWriter(CreateFileSystemURL(file_entry), file_writer,
-                                 std::move(callbacks));
+  FileSystemDispatcher::From(context_).InitializeFileWriter(
+      CreateFileSystemURL(file_entry), std::move(callbacks));
 }
 
 void DOMFileSystem::CreateFile(
@@ -164,12 +158,8 @@ void DOMFileSystem::CreateFile(
     SnapshotFileCallback::OnDidCreateSnapshotFileCallback* success_callback,
     ErrorCallbackBase* error_callback) {
   KURL file_system_url = CreateFileSystemURL(file_entry);
-  if (!FileSystem()) {
-    ReportError(error_callback, FileError::kAbortErr);
-    return;
-  }
 
-  FileSystem()->CreateSnapshotFileAndReadMetadata(
+  FileSystemDispatcher::From(context_).CreateSnapshotFile(
       file_system_url,
       SnapshotFileCallback::Create(this, file_entry->name(), file_system_url,
                                    success_callback, error_callback, context_));

@@ -13,11 +13,11 @@ GEN_INCLUDE(['../../testing/mock_feedback.js']);
  * @constructor
  * @extends {ChromeVoxNextE2ETest}
  */
-function LiveRegionsTest() {
+function ChromeVoxLiveRegionsTest() {
   ChromeVoxNextE2ETest.call(this);
 }
 
-LiveRegionsTest.prototype = {
+ChromeVoxLiveRegionsTest.prototype = {
   __proto__: ChromeVoxNextE2ETest.prototype,
 
   /** @override */
@@ -46,9 +46,17 @@ LiveRegionsTest.prototype = {
       CommandHandler.onCommand(cmd);
     };
   },
+
+  /**
+   * Simulates work done when users interact using keyboard, braille, or
+   * touch.
+ */
+  simulateUserInteraction: function() {
+    Output.forceModeForNextSpeechUtterance(cvox.QueueMode.FLUSH);
+  },
 };
 
-TEST_F('LiveRegionsTest', 'LiveRegionAddElement', function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionAddElement', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
     function() {/*!
@@ -69,7 +77,7 @@ TEST_F('LiveRegionsTest', 'LiveRegionAddElement', function() {
     });
 });
 
-TEST_F('LiveRegionsTest', 'LiveRegionRemoveElement', function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionRemoveElement', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
     function() {/*!
@@ -91,7 +99,7 @@ TEST_F('LiveRegionsTest', 'LiveRegionRemoveElement', function() {
     });
 });
 
-TEST_F('LiveRegionsTest', 'LiveRegionChangeAtomic', function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionChangeAtomic', function() {
   LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 0;
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
@@ -115,7 +123,7 @@ TEST_F('LiveRegionsTest', 'LiveRegionChangeAtomic', function() {
     });
 });
 
-TEST_F('LiveRegionsTest', 'LiveRegionChangeAtomicText', function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionChangeAtomicText', function() {
   LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 0;
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
@@ -136,7 +144,7 @@ TEST_F('LiveRegionsTest', 'LiveRegionChangeAtomicText', function() {
     });
 });
 
-TEST_F('LiveRegionsTest', 'LiveRegionChangeImageAlt', function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionChangeImageAlt', function() {
   // Note that there is a live region outputted as a result of page load; the
   // test expects a live region announcement after a click on the button, but
   // the LiveRegions module has a half second filter for live region
@@ -165,7 +173,7 @@ TEST_F('LiveRegionsTest', 'LiveRegionChangeImageAlt', function() {
     });
 });
 
-TEST_F('LiveRegionsTest', 'LiveRegionThenFocus', function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionThenFocus', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
     function() {/*!
@@ -183,14 +191,15 @@ TEST_F('LiveRegionsTest', 'LiveRegionThenFocus', function() {
     */},
     function(rootNode) {
       var go = rootNode.find({ role: RoleType.BUTTON });
-      mockFeedback.call(go.doDefault.bind(go))
-          .expectCategoryFlushSpeech('Live')
-          .expectCategoryFlushSpeech('Focus');
+      mockFeedback.call(this.simulateUserInteraction.bind(this))
+          .call(go.doDefault.bind(go))
+          .expectFlushingSpeech('Live')
+          .expectQueuedSpeech('Focus');
       mockFeedback.replay();
     });
 });
 
-TEST_F('LiveRegionsTest', 'FocusThenLiveRegion', function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
     function() {/*!
@@ -208,14 +217,15 @@ TEST_F('LiveRegionsTest', 'FocusThenLiveRegion', function() {
     */},
     function(rootNode) {
       var go = rootNode.find({ role: RoleType.BUTTON });
-      mockFeedback.call(go.doDefault.bind(go))
-          .expectCategoryFlushSpeech('Focus')
+      mockFeedback.call(this.simulateUserInteraction.bind(this))
+          .call(go.doDefault.bind(go))
+          .expectFlushingSpeech('Focus')
           .expectCategoryFlushSpeech('Live');
       mockFeedback.replay();
     });
 });
 
-TEST_F('LiveRegionsTest', 'LiveRegionCategoryFlush', function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionCategoryFlush', function() {
   // Adjust the live region queue time to be shorter (i.e. flushes happen for
   // live regions coming 1 ms in time). Also, can help with flakeyness.
   LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 1;
@@ -244,7 +254,7 @@ TEST_F('LiveRegionsTest', 'LiveRegionCategoryFlush', function() {
     });
 });
 
-TEST_F('LiveRegionsTest', 'SilentOnNodeChange', function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'SilentOnNodeChange', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <p>start</p>
@@ -273,7 +283,7 @@ TEST_F('LiveRegionsTest', 'SilentOnNodeChange', function() {
   });
 });
 
-TEST_F('LiveRegionsTest', 'SimulateTreeChanges', function() {
+TEST_F('ChromeVoxLiveRegionsTest', 'SimulateTreeChanges', function() {
   var mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(function() {/*!
     <button></button>

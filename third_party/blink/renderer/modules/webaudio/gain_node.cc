@@ -38,9 +38,9 @@ GainHandler::GainHandler(AudioNode& node,
     : AudioHandler(kNodeTypeGain, node, sample_rate),
       gain_(&gain),
       sample_accurate_gain_values_(
-          AudioUtilities::kRenderQuantumFrames)  // FIXME: can probably
-                                                 // share temp buffer
-                                                 // in context
+          audio_utilities::kRenderQuantumFrames)  // FIXME: can probably
+                                                  // share temp buffer
+                                                  // in context
 {
   AddInput();
   AddOutput(1);
@@ -91,9 +91,9 @@ void GainHandler::Process(size_t frames_to_process) {
 
 void GainHandler::ProcessOnlyAudioParams(size_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
-  DCHECK_LE(frames_to_process, AudioUtilities::kRenderQuantumFrames);
+  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
 
-  float values[AudioUtilities::kRenderQuantumFrames];
+  float values[audio_utilities::kRenderQuantumFrames];
 
   gain_->CalculateSampleAccurateValues(values, frames_to_process);
 }

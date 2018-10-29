@@ -11,7 +11,7 @@
 
 namespace feed {
 
-ContentMutation::ContentMutation() = default;
+ContentMutation::ContentMutation() : start_time_(base::TimeTicks::Now()) {}
 
 ContentMutation::~ContentMutation() = default;
 
@@ -37,6 +37,14 @@ void ContentMutation::AppendUpsertOperation(std::string key,
 
 bool ContentMutation::Empty() {
   return operations_list_.empty();
+}
+
+size_t ContentMutation::Size() const {
+  return operations_list_.size();
+}
+
+base::TimeTicks ContentMutation::GetStartTime() const {
+  return start_time_;
 }
 
 ContentOperation ContentMutation::TakeFristOperation() {

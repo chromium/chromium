@@ -13,6 +13,7 @@
 namespace {
 // The command line values for the content inset and safe area experiment
 // choices.
+const char kFrameChoiceValue[] = "frame";
 const char kContentInsetChoiceValue[] = "content-inset";
 const char kSafeAreaChoiceValue[] = "safe-area";
 const char kHybridChoiceValue[] = "hybrid";
@@ -34,7 +35,8 @@ const flags_ui::FeatureEntry::Choice kViewportAdjustmentExperimentChoices[] = {
     {"Use Hybrid Implementation",
      kViewportAdjustmentExperimentCommandLineSwitch, "hybrid"},
     {"Use Smooth Scrolling", kViewportAdjustmentExperimentCommandLineSwitch,
-     "smooth"}};
+     "smooth"},
+    {"Update Frame", kViewportAdjustmentExperimentCommandLineSwitch, "frame"}};
 
 ViewportAdjustmentExperiment GetActiveViewportExperiment() {
   const base::CommandLine* command_line =
@@ -50,8 +52,10 @@ ViewportAdjustmentExperiment GetActiveViewportExperiment() {
       return ViewportAdjustmentExperiment::HYBRID;
     if (viewport_experiment == std::string(kSmoothScrollingChoiceValue))
       return ViewportAdjustmentExperiment::SMOOTH_SCROLLING;
+    if (viewport_experiment == std::string(kFrameChoiceValue))
+      return ViewportAdjustmentExperiment::FRAME;
   }
-  return ViewportAdjustmentExperiment::FRAME;
+  return ViewportAdjustmentExperiment::SMOOTH_SCROLLING;
 }
 
 }  // namespace features

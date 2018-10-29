@@ -275,7 +275,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   bool has_non_root_composited_scrolling_ancestor =
       layer->AncestorScrollingLayer() &&
       layer->AncestorScrollingLayer()->GetScrollableArea() &&
-      layer->AncestorScrollingLayer()->DirectCompositingReasons() &&
+      layer->AncestorScrollingLayer()->NeedsCompositedScrolling() &&
       !layer->AncestorScrollingLayer()->IsRootLayer();
 
   bool use_clipped_bounding_rect = !has_non_root_composited_scrolling_ancestor;
@@ -360,13 +360,13 @@ void CompositingRequirementsUpdater::UpdateRecursive(
       unclipped_descendants.EraseAt(unclipped_descendants_to_remove.at(
           unclipped_descendants_to_remove.size() - i - 1));
     }
+  }
 
-    if (reasons_to_composite & CompositingReason::kOutOfFlowClipping) {
-      // TODO(schenney): We only need to promote when the clipParent is not a
-      // descendant of the ancestor scroller, which we do not check for here.
-      // Hence we might be promoting needlessly.
-      unclipped_descendants.push_back(layer);
-    }
+  if (reasons_to_composite & CompositingReason::kOutOfFlowClipping) {
+    // TODO(schenney): We only need to promote when the clipParent is not a
+    // descendant of the ancestor scroller, which we do not check for here.
+    // Hence we might be promoting needlessly.
+    unclipped_descendants.push_back(layer);
   }
 
   IntRect abs_bounds = use_clipped_bounding_rect
@@ -427,7 +427,8 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   bool will_have_foreground_layer = false;
 
   bool needs_recursion_for_composited_scrolling_plus_fixed_or_sticky =
-      layer->HasDescendantWithStickyOrFixed() &&
+      (layer->HasFixedPositionDescendant() ||
+       layer->HasStickyPositionDescendant()) &&
       (has_non_root_composited_scrolling_ancestor ||
        (layer->GetScrollableArea() &&
         layer->GetScrollableArea()->NeedsCompositedScrolling()));

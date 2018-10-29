@@ -89,13 +89,13 @@ void AppListTestViewDelegate::ShowWallpaperContextMenu(
 }
 
 bool AppListTestViewDelegate::ProcessHomeLauncherGesture(
-    ui::EventType type,
+    ui::GestureEvent* event,
     const gfx::Point& screen_location) {
   return false;
 }
 
-bool AppListTestViewDelegate::IsSwipingUpOnShelf() {
-  return false;
+bool AppListTestViewDelegate::CanProcessEventsOnApplistViews() {
+  return true;
 }
 
 ws::WindowService* AppListTestViewDelegate::GetWindowService() {

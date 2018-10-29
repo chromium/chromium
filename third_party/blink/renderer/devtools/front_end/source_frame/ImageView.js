@@ -98,12 +98,13 @@ SourceFrame.ImageView = class extends UI.SimpleView {
 
     const contentEncoded = await this._contentProvider.contentEncoded();
     this._cachedContent = content;
-    let imageSrc = 'data:' + this._mimeType + (contentEncoded ? ';base64,' : ',') + content;
+    let imageSrc = Common.ContentProvider.contentAsDataURL(content, this._mimeType, contentEncoded);
     if (content === null)
       imageSrc = this._url;
     const loadPromise = new Promise(x => this._imagePreviewElement.onload = x);
     this._imagePreviewElement.src = imageSrc;
-    this._sizeLabel.setText(Number.bytesToString(this._base64ToSize(content)));
+    const size = content && !contentEncoded ? content.length : this._base64ToSize(content);
+    this._sizeLabel.setText(Number.bytesToString(size));
     await loadPromise;
     this._dimensionsLabel.setText(
         Common.UIString('%d × %d', this._imagePreviewElement.naturalWidth, this._imagePreviewElement.naturalHeight));
@@ -114,10 +115,10 @@ SourceFrame.ImageView = class extends UI.SimpleView {
    * @return {number}
    */
   _base64ToSize(content) {
-    if (!content || !content.length)
+    if (!content)
       return 0;
-    let size = (content.length || 0) * 3 / 4;
-    if (content.length > 0 && content[content.length - 1] === '=')
+    let size = content.length * 3 / 4;
+    if (content[content.length - 1] === '=')
       size--;
     if (content.length > 1 && content[content.length - 2] === '=')
       size--;

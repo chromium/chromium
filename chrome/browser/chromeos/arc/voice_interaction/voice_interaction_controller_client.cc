@@ -145,6 +145,14 @@ void VoiceInteractionControllerClient::NotifyLocaleChanged() {
   voice_interaction_controller_->NotifyLocaleChanged(out_locale);
 }
 
+void VoiceInteractionControllerClient::NotifyLaunchWithMicOpen() {
+  DCHECK(profile_);
+  PrefService* prefs = profile_->GetPrefs();
+  bool voice_preferred =
+      prefs->GetBoolean(prefs::kVoiceInteractionLaunchWithMicOpen);
+  voice_interaction_controller_->NotifyLaunchWithMicOpen(voice_preferred);
+}
+
 void VoiceInteractionControllerClient::ActiveUserChanged(
     const user_manager::User* active_user) {
   if (active_user && active_user->is_profile_created())
@@ -212,12 +220,18 @@ void VoiceInteractionControllerClient::SetProfile(Profile* profile) {
       base::BindRepeating(
           &VoiceInteractionControllerClient::NotifyNotificationEnabled,
           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kVoiceInteractionLaunchWithMicOpen,
+      base::BindRepeating(
+          &VoiceInteractionControllerClient::NotifyLaunchWithMicOpen,
+          base::Unretained(this)));
 
   NotifySetupCompleted();
   NotifySettingsEnabled();
   NotifyContextEnabled();
   NotifyLocaleChanged();
   NotifyNotificationEnabled();
+  NotifyLaunchWithMicOpen();
   if (prefs->GetBoolean(prefs::kVoiceInteractionEnabled))
     NotifyHotwordEnabled();
 }

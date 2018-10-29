@@ -30,6 +30,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/appcache_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -73,7 +74,10 @@ const char kPrefetchLoopPage[] = "/prerender/prefetch_loop.html";
 const char kPrefetchMetaCSP[] = "/prerender/prefetch_meta_csp.html";
 const char kPrefetchPage[] = "/prerender/prefetch_page.html";
 const char kPrefetchPage2[] = "/prerender/prefetch_page2.html";
+const char kPrefetchPageBigger[] = "/prerender/prefetch_page_bigger.html";
 const char kPrefetchPng[] = "/prerender/image.png";
+const char kPrefetchPng2[] = "/prerender/image2.png";
+const char kPrefetchPngRedirect[] = "/prerender/image-redirect.png";
 const char kPrefetchResponseHeaderCSP[] =
     "/prerender/prefetch_response_csp.html";
 const char kPrefetchScript[] = "/prerender/prefetch.js";
@@ -109,15 +113,15 @@ class NoStatePrefetchBrowserTest
             ->GetAppCacheService();
     do {
       base::RunLoop wait_loop;
-      content::BrowserThread::PostTask(
-          content::BrowserThread::IO, FROM_HERE,
+      base::PostTaskWithTraits(
+          FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(WaitForAppcacheOnIO, manifest_url, appcache_service,
                          wait_loop.QuitClosure(), &found_manifest));
       // There seems to be some flakiness in the appcache getting back to us, so
       // use a timeout task to try the appcache query again.
-      content::BrowserThread::PostDelayedTask(
-          content::BrowserThread::UI, FROM_HERE, wait_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(2000));
+      base::PostDelayedTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                                      wait_loop.QuitClosure(),
+                                      base::TimeDelta::FromMilliseconds(2000));
       wait_loop.Run();
     } while (!found_manifest);
   }
@@ -181,8 +185,7 @@ class NoStatePrefetchBrowserTest
         }
       }
     }
-    content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                     callback);
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI}, callback);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -201,6 +204,37 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchSimple) {
   WaitForRequestCount(src_server()->GetURL(kPrefetchPage), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchScript), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchScript2), 0);
+}
+
+// Checks that prefetching is not stopped forever by aggressive background load
+// limits.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchBigger) {
+  std::unique_ptr<TestPrerender> test_prerender = PrefetchFromFile(
+      kPrefetchPageBigger, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
+
+  WaitForRequestCount(src_server()->GetURL(kPrefetchPageBigger), 1);
+  WaitForRequestCount(src_server()->GetURL(kPrefetchJpeg), 1);
+  // The |kPrefetchPng| is requested twice because the |kPrefetchPngRedirect|
+  // redirects to it.
+  WaitForRequestCount(src_server()->GetURL(kPrefetchPng), 2);
+  WaitForRequestCount(src_server()->GetURL(kPrefetchPng2), 1);
+  WaitForRequestCount(src_server()->GetURL(kPrefetchPngRedirect), 1);
+}
+
+// Checks that a page load following a prefetch reuses preload-scanned
+// resources from cache without failing over to network.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, LoadAfterPrefetch) {
+  {
+    std::unique_ptr<TestPrerender> test_prerender = PrefetchFromFile(
+        kPrefetchPageBigger, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
+    WaitForRequestCount(src_server()->GetURL(kPrefetchJpeg), 1);
+    WaitForRequestCount(src_server()->GetURL(kPrefetchPng2), 1);
+  }
+  ui_test_utils::NavigateToURL(current_browser(),
+                               src_server()->GetURL(kPrefetchPageBigger));
+  // Check that the request counts did not increase.
+  WaitForRequestCount(src_server()->GetURL(kPrefetchJpeg), 1);
+  WaitForRequestCount(src_server()->GetURL(kPrefetchPng2), 1);
 }
 
 void GetCookieCallback(base::RepeatingClosure callback,

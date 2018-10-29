@@ -29,6 +29,12 @@ enum class PermissionStatusSource {
 
   // The feature has been blocked in the requesting frame by feature policy.
   FEATURE_POLICY,
+
+  // The virtual URL and the loaded URL are for different origins. The loaded
+  // URL is the one actually in the renderer, but the virtual URL is the one
+  // seen by the user. This may be very confusing for a user to see in a
+  // permissions request.
+  VIRTUAL_URL_DIFFERENT_ORIGIN,
 };
 
 struct PermissionResult {

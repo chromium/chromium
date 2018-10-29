@@ -44,18 +44,14 @@ Profiler.HeapSnapshotView = class extends UI.SimpleView {
     this.element.classList.add('heap-snapshot-view');
     this._profile = profile;
     this._linkifier = new Components.Linkifier();
+    const profileType = profile.profileType();
 
-    profile.profileType().addEventListener(
-        Profiler.HeapSnapshotProfileType.SnapshotReceived, this._onReceiveSnapshot, this);
-    profile.profileType().addEventListener(
-        Profiler.ProfileType.Events.RemoveProfileHeader, this._onProfileHeaderRemoved, this);
+    profileType.addEventListener(Profiler.HeapSnapshotProfileType.SnapshotReceived, this._onReceiveSnapshot, this);
+    profileType.addEventListener(Profiler.ProfileType.Events.RemoveProfileHeader, this._onProfileHeaderRemoved, this);
 
-    const isHeapTimeline = profile.profileType().id === Profiler.TrackingHeapSnapshotProfileType.TypeId;
-    if (isHeapTimeline) {
-      this._trackingOverviewGrid = new Profiler.HeapTrackingOverviewGrid(profile);
-      this._trackingOverviewGrid.addEventListener(
-          Profiler.HeapTrackingOverviewGrid.IdsRangeChanged, this._onIdsRangeChanged.bind(this));
-    }
+    const isHeapTimeline = profileType.id === Profiler.TrackingHeapSnapshotProfileType.TypeId;
+    if (isHeapTimeline)
+      this._createOverview();
 
     this._parentDataDisplayDelegate = dataDisplayDelegate;
 
@@ -174,6 +170,35 @@ Profiler.HeapSnapshotView = class extends UI.SimpleView {
       existingProfile.addEventListener(Profiler.ProfileHeader.Events.ProfileTitleChanged, this._updateControls, this);
   }
 
+  _createOverview() {
+    const profileType = this._profile.profileType();
+    this._trackingOverviewGrid = new Profiler.HeapTimelineOverview();
+    this._trackingOverviewGrid.addEventListener(
+        Profiler.HeapTimelineOverview.IdsRangeChanged, this._onIdsRangeChanged.bind(this));
+    if (!this._profile.fromFile() && profileType.profileBeingRecorded() === this._profile) {
+      profileType.addEventListener(
+          Profiler.TrackingHeapSnapshotProfileType.HeapStatsUpdate, this._onHeapStatsUpdate, this);
+      profileType.addEventListener(
+          Profiler.TrackingHeapSnapshotProfileType.TrackingStopped, this._onStopTracking, this);
+    }
+  }
+
+  _onStopTracking() {
+    this._profile.profileType().removeEventListener(
+        Profiler.TrackingHeapSnapshotProfileType.HeapStatsUpdate, this._onHeapStatsUpdate, this);
+    this._profile.profileType().removeEventListener(
+        Profiler.TrackingHeapSnapshotProfileType.TrackingStopped, this._onStopTracking, this);
+  }
+
+  /**
+   * @param {!Common.Event} event
+   */
+  _onHeapStatsUpdate(event) {
+    const samples = event.data;
+    if (samples)
+      this._trackingOverviewGrid.setSamples(event.data);
+  }
+
   /**
    * @return {!UI.SearchableView}
    */
@@ -233,14 +258,23 @@ Profiler.HeapSnapshotView = class extends UI.SimpleView {
     if (this._profile.profileType().id === Profiler.TrackingHeapSnapshotProfileType.TypeId &&
         this._profile.fromFile()) {
       const samples = await heapSnapshotProxy.getSamples();
-      this._trackingOverviewGrid._setSamples(samples);
+      if (samples) {
+        console.assert(samples.timestamps.length);
+        const profileSamples = new Profiler.HeapTimelineOverview.Samples();
+        profileSamples.sizes = samples.sizes;
+        profileSamples.ids = samples.lastAssignedIds;
+        profileSamples.timestamps = samples.timestamps;
+        profileSamples.max = samples.sizes;
+        profileSamples.totalTime = Math.max(samples.timestamps.peekLast(), 10000);
+        this._trackingOverviewGrid.setSamples(profileSamples);
+      }
     }
 
     const list = this._profiles();
     const profileIndex = list.indexOf(this._profile);
     this._baseSelect.setSelectedIndex(Math.max(0, profileIndex - 1));
     if (this._trackingOverviewGrid)
-      this._trackingOverviewGrid._updateGrid();
+      this._trackingOverviewGrid.updateGrid();
   }
 
   /**
@@ -709,8 +743,11 @@ Profiler.HeapSnapshotView = class extends UI.SimpleView {
       this._allocationStackView.clear();
       this._allocationDataGrid.dispose();
     }
-    if (this._trackingOverviewGrid)
-      this._trackingOverviewGrid.dispose();
+    this._onStopTracking();
+    if (this._trackingOverviewGrid) {
+      this._trackingOverviewGrid.removeEventListener(
+          Profiler.HeapTimelineOverview.IdsRangeChanged, this._onIdsRangeChanged.bind(this));
+    }
   }
 };
 
@@ -795,7 +832,7 @@ Profiler.HeapSnapshotView.SummaryPerspective = class extends Profiler.HeapSnapsh
     heapSnapshotView._trackingOverviewGrid.show(
         heapSnapshotView._searchableView.element, heapSnapshotView._splitWidget.element);
     heapSnapshotView._trackingOverviewGrid.update();
-    heapSnapshotView._trackingOverviewGrid._updateGrid();
+    heapSnapshotView._trackingOverviewGrid.updateGrid();
   }
 
   /**
@@ -1242,7 +1279,7 @@ Profiler.TrackingHeapSnapshotProfileType = class extends Profiler.HeapSnapshotPr
     if (!heapProfilerModel)
       return null;
     this.setProfileBeingRecorded(new Profiler.HeapProfileHeader(heapProfilerModel, this, undefined));
-    this._profileSamples = new Profiler.TrackingHeapSnapshotProfileType.Samples();
+    this._profileSamples = new Profiler.HeapTimelineOverview.Samples();
     this.profileBeingRecorded()._profileSamples = this._profileSamples;
     this._recording = true;
     this.addProfile(/** @type {!Profiler.ProfileHeader} */ (this.profileBeingRecorded()));
@@ -1323,24 +1360,6 @@ Profiler.TrackingHeapSnapshotProfileType.TypeId = 'HEAP-RECORD';
 Profiler.TrackingHeapSnapshotProfileType.HeapStatsUpdate = 'HeapStatsUpdate';
 Profiler.TrackingHeapSnapshotProfileType.TrackingStarted = 'TrackingStarted';
 Profiler.TrackingHeapSnapshotProfileType.TrackingStopped = 'TrackingStopped';
-
-/**
- * @unrestricted
- */
-Profiler.TrackingHeapSnapshotProfileType.Samples = class {
-  constructor() {
-    /** @type {!Array.<number>} */
-    this.sizes = [];
-    /** @type {!Array.<number>} */
-    this.ids = [];
-    /** @type {!Array.<number>} */
-    this.timestamps = [];
-    /** @type {!Array.<number>} */
-    this.max = [];
-    /** @type {number} */
-    this.totalTime = 30000;
-  }
-};
 
 /**
  * @unrestricted
@@ -1579,368 +1598,6 @@ Profiler.HeapProfileHeader = class extends Profiler.ProfileHeader {
     if (!success)
       this.updateStatus(reader.error().message);
     return success ? null : reader.error();
-  }
-};
-
-/**
- * @unrestricted
- */
-Profiler.HeapTrackingOverviewGrid = class extends UI.VBox {
-  /**
-   * @param {!Profiler.HeapProfileHeader} heapProfileHeader
-   */
-  constructor(heapProfileHeader) {
-    super();
-    this.element.id = 'heap-recording-view';
-    this.element.classList.add('heap-tracking-overview');
-
-    this._overviewContainer = this.element.createChild('div', 'heap-overview-container');
-    this._overviewGrid = new PerfUI.OverviewGrid('heap-recording');
-    this._overviewGrid.element.classList.add('fill');
-
-    this._overviewCanvas = this._overviewContainer.createChild('canvas', 'heap-recording-overview-canvas');
-    this._overviewContainer.appendChild(this._overviewGrid.element);
-    this._overviewCalculator = new Profiler.HeapTrackingOverviewGrid.OverviewCalculator();
-    this._overviewGrid.addEventListener(PerfUI.OverviewGrid.Events.WindowChanged, this._onWindowChanged, this);
-
-    this._profileSamples = heapProfileHeader.fromFile() ? new Profiler.TrackingHeapSnapshotProfileType.Samples() :
-                                                          heapProfileHeader._profileSamples;
-    this._profileType = heapProfileHeader.profileType();
-    if (!heapProfileHeader.fromFile() && heapProfileHeader.profileType().profileBeingRecorded() === heapProfileHeader) {
-      this._profileType.addEventListener(
-          Profiler.TrackingHeapSnapshotProfileType.HeapStatsUpdate, this._onHeapStatsUpdate, this);
-      this._profileType.addEventListener(
-          Profiler.TrackingHeapSnapshotProfileType.TrackingStopped, this._onStopTracking, this);
-    }
-    this._windowLeft = 0.0;
-    this._windowRight = 1.0;
-    this._overviewGrid.setWindow(this._windowLeft, this._windowRight);
-    this._yScale = new Profiler.HeapTrackingOverviewGrid.SmoothScale();
-    this._xScale = new Profiler.HeapTrackingOverviewGrid.SmoothScale();
-  }
-
-  dispose() {
-    this._onStopTracking();
-  }
-
-  _onStopTracking() {
-    this._profileType.removeEventListener(
-        Profiler.TrackingHeapSnapshotProfileType.HeapStatsUpdate, this._onHeapStatsUpdate, this);
-    this._profileType.removeEventListener(
-        Profiler.TrackingHeapSnapshotProfileType.TrackingStopped, this._onStopTracking, this);
-  }
-
-  /**
-   * @param {!Common.Event} event
-   */
-  _onHeapStatsUpdate(event) {
-    this._profileSamples = event.data;
-    this._scheduleUpdate();
-  }
-
-  /**
-   * @param {?HeapSnapshotModel.Samples} samples
-   */
-  _setSamples(samples) {
-    if (!samples)
-      return;
-    console.assert(!this._profileSamples.timestamps.length, 'Should only call this method when loading from file.');
-    console.assert(samples.timestamps.length);
-    this._profileSamples = new Profiler.TrackingHeapSnapshotProfileType.Samples();
-    this._profileSamples.sizes = samples.sizes;
-    this._profileSamples.ids = samples.lastAssignedIds;
-    this._profileSamples.timestamps = samples.timestamps;
-    this._profileSamples.max = samples.sizes;
-    this._profileSamples.totalTime = /** @type{number} */ (samples.timestamps.peekLast());
-    this.update();
-  }
-
-  /**
-   * @param {number} width
-   * @param {number} height
-   */
-  _drawOverviewCanvas(width, height) {
-    if (!this._profileSamples)
-      return;
-    const profileSamples = this._profileSamples;
-    const sizes = profileSamples.sizes;
-    const topSizes = profileSamples.max;
-    const timestamps = profileSamples.timestamps;
-    const startTime = timestamps[0];
-    const endTime = timestamps[timestamps.length - 1];
-
-    const scaleFactor = this._xScale.nextScale(width / profileSamples.totalTime);
-    let maxSize = 0;
-    /**
-     * @param {!Array.<number>} sizes
-     * @param {function(number, number):void} callback
-     */
-    function aggregateAndCall(sizes, callback) {
-      let size = 0;
-      let currentX = 0;
-      for (let i = 1; i < timestamps.length; ++i) {
-        const x = Math.floor((timestamps[i] - startTime) * scaleFactor);
-        if (x !== currentX) {
-          if (size)
-            callback(currentX, size);
-          size = 0;
-          currentX = x;
-        }
-        size += sizes[i];
-      }
-      callback(currentX, size);
-    }
-
-    /**
-     * @param {number} x
-     * @param {number} size
-     */
-    function maxSizeCallback(x, size) {
-      maxSize = Math.max(maxSize, size);
-    }
-
-    aggregateAndCall(sizes, maxSizeCallback);
-
-    const yScaleFactor = this._yScale.nextScale(maxSize ? height / (maxSize * 1.1) : 0.0);
-
-    this._overviewCanvas.width = width * window.devicePixelRatio;
-    this._overviewCanvas.height = height * window.devicePixelRatio;
-    this._overviewCanvas.style.width = width + 'px';
-    this._overviewCanvas.style.height = height + 'px';
-
-    const context = this._overviewCanvas.getContext('2d');
-    context.scale(window.devicePixelRatio, window.devicePixelRatio);
-
-    context.beginPath();
-    context.lineWidth = 2;
-    context.strokeStyle = 'rgba(192, 192, 192, 0.6)';
-    const currentX = (endTime - startTime) * scaleFactor;
-    context.moveTo(currentX, height - 1);
-    context.lineTo(currentX, 0);
-    context.stroke();
-    context.closePath();
-
-    let gridY;
-    let gridValue;
-    const gridLabelHeight = 14;
-    if (yScaleFactor) {
-      const maxGridValue = (height - gridLabelHeight) / yScaleFactor;
-      // The round value calculation is a bit tricky, because
-      // it has a form k*10^n*1024^m, where k=[1,5], n=[0..3], m is an integer,
-      // e.g. a round value 10KB is 10240 bytes.
-      gridValue = Math.pow(1024, Math.floor(Math.log(maxGridValue) / Math.log(1024)));
-      gridValue *= Math.pow(10, Math.floor(Math.log(maxGridValue / gridValue) / Math.LN10));
-      if (gridValue * 5 <= maxGridValue)
-        gridValue *= 5;
-      gridY = Math.round(height - gridValue * yScaleFactor - 0.5) + 0.5;
-      context.beginPath();
-      context.lineWidth = 1;
-      context.strokeStyle = 'rgba(0, 0, 0, 0.2)';
-      context.moveTo(0, gridY);
-      context.lineTo(width, gridY);
-      context.stroke();
-      context.closePath();
-    }
-
-    /**
-     * @param {number} x
-     * @param {number} size
-     */
-    function drawBarCallback(x, size) {
-      context.moveTo(x, height - 1);
-      context.lineTo(x, Math.round(height - size * yScaleFactor - 1));
-    }
-
-    context.beginPath();
-    context.lineWidth = 2;
-    context.strokeStyle = 'rgba(192, 192, 192, 0.6)';
-    aggregateAndCall(topSizes, drawBarCallback);
-    context.stroke();
-    context.closePath();
-
-    context.beginPath();
-    context.lineWidth = 2;
-    context.strokeStyle = 'rgba(0, 0, 192, 0.8)';
-    aggregateAndCall(sizes, drawBarCallback);
-    context.stroke();
-    context.closePath();
-
-    if (gridValue) {
-      const label = Number.bytesToString(gridValue);
-      const labelPadding = 4;
-      const labelX = 0;
-      const labelY = gridY - 0.5;
-      const labelWidth = 2 * labelPadding + context.measureText(label).width;
-      context.beginPath();
-      context.textBaseline = 'bottom';
-      context.font = '10px ' + window.getComputedStyle(this.element, null).getPropertyValue('font-family');
-      context.fillStyle = 'rgba(255, 255, 255, 0.75)';
-      context.fillRect(labelX, labelY - gridLabelHeight, labelWidth, gridLabelHeight);
-      context.fillStyle = 'rgb(64, 64, 64)';
-      context.fillText(label, labelX + labelPadding, labelY);
-      context.fill();
-      context.closePath();
-    }
-  }
-
-  /**
-   * @override
-   */
-  onResize() {
-    this._updateOverviewCanvas = true;
-    this._scheduleUpdate();
-  }
-
-  _onWindowChanged() {
-    if (!this._updateGridTimerId)
-      this._updateGridTimerId = setTimeout(this._updateGrid.bind(this), 10);
-  }
-
-  _scheduleUpdate() {
-    if (this._updateTimerId)
-      return;
-    this._updateTimerId = setTimeout(this.update.bind(this), 10);
-  }
-
-  _updateBoundaries() {
-    this._windowLeft = this._overviewGrid.windowLeft();
-    this._windowRight = this._overviewGrid.windowRight();
-    this._windowWidth = this._windowRight - this._windowLeft;
-  }
-
-  update() {
-    this._updateTimerId = null;
-    if (!this.isShowing())
-      return;
-    this._updateBoundaries();
-    this._overviewCalculator._updateBoundaries(this);
-    this._overviewGrid.updateDividers(this._overviewCalculator);
-    this._drawOverviewCanvas(this._overviewContainer.clientWidth, this._overviewContainer.clientHeight - 20);
-  }
-
-  _updateGrid() {
-    this._updateGridTimerId = 0;
-    this._updateBoundaries();
-    const ids = this._profileSamples.ids;
-    const timestamps = this._profileSamples.timestamps;
-    const sizes = this._profileSamples.sizes;
-    const startTime = timestamps[0];
-    const totalTime = this._profileSamples.totalTime;
-    const timeLeft = startTime + totalTime * this._windowLeft;
-    const timeRight = startTime + totalTime * this._windowRight;
-    let minId = 0;
-    let maxId = ids[ids.length - 1] + 1;
-    let size = 0;
-    for (let i = 0; i < timestamps.length; ++i) {
-      if (!timestamps[i])
-        continue;
-      if (timestamps[i] > timeRight)
-        break;
-      maxId = ids[i];
-      if (timestamps[i] < timeLeft) {
-        minId = ids[i];
-        continue;
-      }
-      size += sizes[i];
-    }
-
-    this.dispatchEventToListeners(
-        Profiler.HeapTrackingOverviewGrid.IdsRangeChanged, {minId: minId, maxId: maxId, size: size});
-  }
-};
-
-Profiler.HeapTrackingOverviewGrid.IdsRangeChanged = Symbol('IdsRangeChanged');
-
-Profiler.HeapTrackingOverviewGrid.SmoothScale = class {
-  constructor() {
-    this._lastUpdate = 0;
-    this._currentScale = 0.0;
-  }
-
-  /**
-   * @param {number} target
-   * @return {number}
-   */
-  nextScale(target) {
-    target = target || this._currentScale;
-    if (this._currentScale) {
-      const now = Date.now();
-      const timeDeltaMs = now - this._lastUpdate;
-      this._lastUpdate = now;
-      const maxChangePerSec = 20;
-      const maxChangePerDelta = Math.pow(maxChangePerSec, timeDeltaMs / 1000);
-      const scaleChange = target / this._currentScale;
-      this._currentScale *= Number.constrain(scaleChange, 1 / maxChangePerDelta, maxChangePerDelta);
-    } else {
-      this._currentScale = target;
-    }
-    return this._currentScale;
-  }
-};
-
-/**
- * @implements {PerfUI.TimelineGrid.Calculator}
- * @unrestricted
- */
-Profiler.HeapTrackingOverviewGrid.OverviewCalculator = class {
-  /**
-   * @param {!Profiler.HeapTrackingOverviewGrid} chart
-   */
-  _updateBoundaries(chart) {
-    this._minimumBoundaries = 0;
-    this._maximumBoundaries = chart._profileSamples.totalTime;
-    this._xScaleFactor = chart._overviewContainer.clientWidth / this._maximumBoundaries;
-  }
-
-  /**
-   * @override
-   * @param {number} time
-   * @return {number}
-   */
-  computePosition(time) {
-    return (time - this._minimumBoundaries) * this._xScaleFactor;
-  }
-
-  /**
-   * @override
-   * @param {number} value
-   * @param {number=} precision
-   * @return {string}
-   */
-  formatValue(value, precision) {
-    return Number.secondsToString(value / 1000, !!precision);
-  }
-
-  /**
-   * @override
-   * @return {number}
-   */
-  maximumBoundary() {
-    return this._maximumBoundaries;
-  }
-
-  /**
-   * @override
-   * @return {number}
-   */
-  minimumBoundary() {
-    return this._minimumBoundaries;
-  }
-
-  /**
-   * @override
-   * @return {number}
-   */
-  zeroTime() {
-    return this._minimumBoundaries;
-  }
-
-  /**
-   * @override
-   * @return {number}
-   */
-  boundarySpan() {
-    return this._maximumBoundaries - this._minimumBoundaries;
   }
 };
 

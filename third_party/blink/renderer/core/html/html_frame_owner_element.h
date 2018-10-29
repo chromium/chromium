@@ -21,13 +21,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FRAME_OWNER_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FRAME_OWNER_ELEMENT_H_
 
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/embedded_content_view.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -61,6 +62,8 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // Whether to collapse the frame owner element in the embedder document. That
   // is, to remove it from the layout as if it did not exist.
   virtual void SetCollapsed(bool) {}
+
+  virtual FrameOwnerElementType OwnerType() const = 0;
 
   Document* getSVGDocument(ExceptionState&) const;
 
@@ -98,7 +101,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void DispatchLoad() final;
   SandboxFlags GetSandboxFlags() const final { return sandbox_flags_; }
   bool CanRenderFallbackContent() const override { return false; }
-  void RenderFallbackContent() override {}
+  void RenderFallbackContent(Frame*) override {}
   void IntrinsicSizingInfoChanged() override {}
   AtomicString BrowsingContextContainerName() const override {
     return getAttribute(HTMLNames::nameAttr);

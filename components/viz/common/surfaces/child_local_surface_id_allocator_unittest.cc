@@ -4,6 +4,7 @@
 
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -93,7 +94,7 @@ TEST(ChildLocalSurfaceIdAllocatorTest,
             parent_allocated_local_surface_id.embed_token());
 
   bool changed = parent_updated_child_allocator.UpdateFromParent(
-      parent_allocated_local_surface_id);
+      parent_allocated_local_surface_id, base::TimeTicks());
   EXPECT_TRUE(changed);
 
   const LocalSurfaceId& postupdate_local_surface_id =
@@ -115,7 +116,8 @@ TEST(ChildLocalSurfaceIdAllocatorTest, UpdateFromParentEmbedTokenChanged) {
 
   EXPECT_TRUE(parent_allocator.GenerateId().is_valid());
   EXPECT_TRUE(child_allocator.UpdateFromParent(
-      parent_allocator.GetCurrentLocalSurfaceId()));
+      parent_allocator.GetCurrentLocalSurfaceId(),
+      parent_allocator.allocation_time()));
   EXPECT_LE(
       parent_allocator2.GetCurrentLocalSurfaceId().parent_sequence_number(),
       parent_allocator.GetCurrentLocalSurfaceId().parent_sequence_number());
@@ -123,7 +125,8 @@ TEST(ChildLocalSurfaceIdAllocatorTest, UpdateFromParentEmbedTokenChanged) {
             parent_allocator.GetCurrentLocalSurfaceId().embed_token());
 
   EXPECT_TRUE(child_allocator.UpdateFromParent(
-      parent_allocator2.GetCurrentLocalSurfaceId()));
+      parent_allocator2.GetCurrentLocalSurfaceId(),
+      parent_allocator2.allocation_time()));
 }
 
 // GenerateId() on a child allocator should monotonically increment the child
@@ -190,7 +193,7 @@ ChildLocalSurfaceIdAllocator GetParentUpdatedAllocator() {
   LocalSurfaceId parent_allocated_local_surface_id =
       GetFakeParentAllocatedLocalSurfaceId();
   parent_updated_child_allocator.UpdateFromParent(
-      parent_allocated_local_surface_id);
+      parent_allocated_local_surface_id, base::TimeTicks());
   return parent_updated_child_allocator;
 }
 

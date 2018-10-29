@@ -4,8 +4,8 @@
 //
 // Sync protocol datatype extension for autofill.
 
-// Update proto_value_conversions{.h,.cc,_unittest.cc} if you change
-// any fields in this file.
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
 
 syntax = "proto2";
 
@@ -55,6 +55,10 @@ message AutofillProfileSpecifics {
   // Each set of two bits represents the validity state of a specific part of
   // the Autofill address. For more info please refer to autofill_profile.h.
   optional int64 validity_state_bitfield = 24;
+
+  // Denotes whether the validity_state_bitfield is updated according to the
+  // changes in the autofill profile values.
+  optional bool is_client_validity_states_updated = 25;
 
   // Deprecated.
   optional string label = 1 [deprecated = true];

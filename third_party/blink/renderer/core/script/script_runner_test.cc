@@ -176,7 +176,7 @@ TEST_F(ScriptRunnerTest, QueueMultipleScripts_InOrder) {
     QueueScriptForExecution(pending_script);
   }
 
-  for (size_t i = 0; i < pending_scripts.size(); ++i) {
+  for (wtf_size_t i = 0; i < pending_scripts.size(); ++i) {
     EXPECT_CALL(*pending_scripts[i], ExecuteScriptBlock(_))
         .WillOnce(InvokeWithoutArgs([this, i] { order_.push_back(i + 1); }));
   }

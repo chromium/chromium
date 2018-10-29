@@ -50,7 +50,7 @@ per-file chrome_test_browser_overlay.json=file://ipc/SECURITY_OWNERS
 per-file chrome_browser_field_trials*=file://components/variations/OWNERS
 
 per-file chrome_device_client*=reillyg@chromium.org
-per-file chrome_device_client*=rockot@chromium.org
+per-file chrome_device_client*=rockot@google.com
 
 per-file chrome_navigation_browsertest.cc=alexmos@chromium.org
 per-file chrome_navigation_browsertest.cc=file://content/OWNERS
@@ -65,7 +65,7 @@ per-file chrome_site_per_process_browsertest.cc=kenrb@chromium.org
 
 per-file chrome_webusb_browser_client*=juncai@chromium.org
 per-file chrome_webusb_browser_client*=reillyg@chromium.org
-per-file chrome_webusb_browser_client*=rockot@chromium.org
+per-file chrome_webusb_browser_client*=rockot@google.com
 
 per-file exo_parts.*=reveman@chromium.org
 
@@ -83,8 +83,7 @@ per-file *_mac.h=mark@chromium.org
 per-file *_mac.h=rsesek@chromium.org
 per-file *_mac.h=thakis@chromium.org
 
-per-file media_router_resources.grdp*=imcheng@chromium.org
-per-file media_router_resources.grdp*=mfoltz@chromium.org
+per-file media_router_resources.grdp=file://chrome/browser/media/router/OWNERS
 
 per-file shell_integration_win*=gab@chromium.org
 per-file shell_integration_win*=grt@chromium.org
@@ -92,7 +91,6 @@ per-file shell_integration_linux*=thomasanderson@chromium.org
 
 per-file site_details*=creis@chromium.org
 per-file site_details*=nasko@chromium.org
-per-file site_details*=nick@chromium.org
 
 per-file site_per_process_interactive_browsertest.cc=file://content/OWNERS
 per-file site_per_process_interactive_browsertest.cc=kenrb@chromium.org

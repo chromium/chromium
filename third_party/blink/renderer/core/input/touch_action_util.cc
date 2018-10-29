@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 
 namespace blink {
-namespace TouchActionUtil {
+namespace touch_action_util {
 
 TouchAction ComputeEffectiveTouchAction(const Node& node) {
   if (node.GetComputedStyle())
@@ -20,5 +20,5 @@ TouchAction ComputeEffectiveTouchAction(const Node& node) {
   return TouchAction::kTouchActionAuto;
 }
 
-}  // namespace TouchActionUtil
+}  // namespace touch_action_util
 }  // namespace blink

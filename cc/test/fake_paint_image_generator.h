@@ -26,12 +26,14 @@ class FakePaintImageGenerator : public PaintImageGenerator {
                  size_t frame_index,
                  PaintImage::GeneratorClientId client_id,
                  uint32_t lazy_pixel_ref) override;
-  bool QueryYUV8(SkYUVSizeInfo* info,
-                 SkYUVColorSpace* color_space) const override;
-  bool GetYUV8Planes(const SkYUVSizeInfo& info,
-                     void* planes[3],
-                     size_t frame_index,
-                     uint32_t lazy_pixel_ref) override;
+  bool QueryYUVA8(SkYUVASizeInfo* info,
+                  SkYUVAIndex indices[],
+                  SkYUVColorSpace* color_space) const override;
+  bool GetYUVA8Planes(const SkYUVASizeInfo& info,
+                      const SkYUVAIndex indices[],
+                      void* planes[4],
+                      size_t frame_index,
+                      uint32_t lazy_pixel_ref) override;
   SkISize GetSupportedDecodeSize(const SkISize& requested_size) const override;
 
   const base::flat_map<size_t, int>& frames_decoded() const {

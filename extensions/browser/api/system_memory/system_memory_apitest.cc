@@ -28,14 +28,6 @@ class SystemMemoryApiTest : public ShellApiTest {
  public:
   SystemMemoryApiTest() {}
   ~SystemMemoryApiTest() override {}
-
-  void SetUpInProcessBrowserTestFixture() override {
-    ShellApiTest::SetUpInProcessBrowserTestFixture();
-    message_loop_.reset(new base::MessageLoopForUI);
-  }
-
- private:
-  std::unique_ptr<base::MessageLoop> message_loop_;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemMemoryApiTest, Memory) {

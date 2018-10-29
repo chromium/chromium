@@ -5,9 +5,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/portal/portal.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -16,9 +18,12 @@
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom.h"
 #include "url/url_constants.h"
+using testing::_;
 
 namespace content {
 
@@ -38,8 +43,23 @@ class PortalInterceptorForTesting final
     ASSERT_FALSE(portal_initialized_);
     portal_initialized_ = true;
 
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+      run_loop_ = nullptr;
+    }
+  }
+
+  void Activate(base::OnceCallback<void(blink::mojom::PortalActivationStatus)>
+                    callback) override {
+    portal_activated_ = true;
+
+    if (run_loop_) {
+      run_loop_->Quit();
+      run_loop_ = nullptr;
+    }
+
+    // |this| can be destroyed after Activate() is called.
+    portal_->Activate(std::move(callback));
   }
 
   void WaitForInit() {
@@ -49,7 +69,15 @@ class PortalInterceptorForTesting final
     base::RunLoop run_loop;
     run_loop_ = &run_loop;
     run_loop.Run();
-    run_loop_ = nullptr;
+  }
+
+  void WaitForActivate() {
+    if (portal_activated_)
+      return;
+
+    base::RunLoop run_loop;
+    run_loop_ = &run_loop;
+    run_loop.Run();
   }
 
   // Test getters.
@@ -66,6 +94,7 @@ class PortalInterceptorForTesting final
 
   std::unique_ptr<content::Portal> portal_;
   bool portal_initialized_ = false;
+  bool portal_activated_ = false;
   base::RunLoop* run_loop_ = nullptr;
 };
 
@@ -90,6 +119,25 @@ PortalInterceptorForTesting* PortalInterceptorForTesting::From(
   CHECK_EQ(interceptor->GetPortal(), portal);
   return interceptor;
 }
+
+class MockPortalWebContentsDelegate : public WebContentsDelegate {
+ public:
+  MockPortalWebContentsDelegate() {}
+  ~MockPortalWebContentsDelegate() override {}
+
+  MOCK_METHOD4(
+      DoSwapWebContents,
+      std::unique_ptr<WebContents>(WebContents*, WebContents*, bool, bool));
+  std::unique_ptr<WebContents> SwapWebContents(
+      WebContents* old_contents,
+      std::unique_ptr<WebContents> new_contents,
+      bool did_start_load,
+      bool did_finish_load) override {
+    DoSwapWebContents(old_contents, new_contents.get(), did_start_load,
+                      did_finish_load);
+    return new_contents;
+  }
+};
 
 // The PortalCreatedObserver observes portal creations on
 // |render_frame_host_impl|. This observer can be used to monitor for multiple
@@ -250,6 +298,93 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigatePortal) {
     EXPECT_EQ(navigation_observer.last_navigation_url(), c_url);
     EXPECT_EQ(portal_contents->GetLastCommittedURL(), c_url);
   }
+}
+
+// Tests that the WebContentsDelegate will receive a request to swap the
+// WebContents when a portal is activated.
+// Disabled due to flakiness on Android.  See https://crbug.com/892669.
+#if defined(OS_ANDROID)
+#define MAYBE_ActivatePortal DISABLED_ActivatePortal
+#else
+#define MAYBE_ActivatePortal ActivatePortal
+#endif
+
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_ActivatePortal) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+
+  PortalCreatedObserver portal_created_observer(main_frame);
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(ExecJs(main_frame,
+                     JsReplace("var portal = document.createElement('portal');"
+                               "portal.src = $1;"
+                               "document.body.appendChild(portal);",
+                               a_url)));
+  Portal* portal = portal_created_observer.WaitUntilPortalCreated();
+  PortalInterceptorForTesting* portal_interceptor =
+      PortalInterceptorForTesting::From(portal);
+  portal_interceptor->WaitForInit();
+
+  MockPortalWebContentsDelegate mock_delegate;
+  shell()->web_contents()->SetDelegate(&mock_delegate);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_delegate,
+              DoSwapWebContents(shell()->web_contents(),
+                                portal->GetPortalContents(), _, _))
+      .WillOnce(testing::DoAll(
+          testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit),
+          testing::ReturnNull()));
+  EXPECT_TRUE(
+      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  run_loop.Run();
+}
+
+// Tests that a portal can be activated in content_shell.
+// Disabled due to flakiness on Android.  See https://crbug.com/892669.
+#if defined(OS_ANDROID)
+#define MAYBE_ActivatePortalInShell DISABLED_ActivatePortalInShell
+#else
+#define MAYBE_ActivatePortalInShell ActivatePortalInShell
+#endif
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_ActivatePortalInShell) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+
+  Portal* portal = nullptr;
+  {
+    PortalCreatedObserver portal_created_observer(main_frame);
+    GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+    EXPECT_TRUE(ExecJs(
+        main_frame, JsReplace("var portal = document.createElement('portal');"
+                              "portal.src = $1;"
+                              "document.body.appendChild(portal);",
+                              a_url)));
+    portal = portal_created_observer.WaitUntilPortalCreated();
+  }
+  PortalInterceptorForTesting* portal_interceptor =
+      PortalInterceptorForTesting::From(portal);
+  portal_interceptor->WaitForInit();
+
+  // Ensure that the portal WebContents exists and is different from the tab's
+  // WebContents.
+  WebContents* portal_contents = portal->GetPortalContents();
+  EXPECT_NE(nullptr, portal_contents);
+  EXPECT_NE(portal_contents, shell()->web_contents());
+
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
+  portal_interceptor->WaitForActivate();
+
+  // After activation, the shell's WebContents should be the previous portal's
+  // WebContents.
+  EXPECT_EQ(portal_contents, shell()->web_contents());
 }
 
 }  // namespace content

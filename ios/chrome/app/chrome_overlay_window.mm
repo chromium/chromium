@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/metrics/drag_and_drop_recorder.h"
 #import "ios/chrome/browser/metrics/size_class_recorder.h"
 #import "ios/chrome/browser/tabs/tab_model.h"
-#import "ios/chrome/browser/ui/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -28,6 +29,28 @@ namespace {
 
 std::string DirectionToString(mojom::OrderDirection direction) {
   return direction == mojom::OrderDirection::ABOVE ? "above" : "below";
+}
+
+std::string OcclusionStateToString(
+    const base::Optional<mojom::OcclusionState>& occlusion_state) {
+  if (!occlusion_state.has_value()) {
+    NOTREACHED();
+    return "(null)";
+  }
+
+  switch (occlusion_state.value()) {
+    case mojom::OcclusionState::kUnknown:
+      return "UNKNOWN";
+    case mojom::OcclusionState::kVisible:
+      return "VISIBLE";
+    case mojom::OcclusionState::kOccluded:
+      return "OCCLUDED";
+    case mojom::OcclusionState::kHidden:
+      return "HIDDEN";
+  }
+
+  NOTREACHED();
+  return "UNKNOWN";
 }
 
 enum class ChangeDescriptionType { ONE, TWO };
@@ -113,15 +136,14 @@ std::string ChangeToDescription(const Change& change,
       std::string result = base::StringPrintf(
           "InputEvent window=%s event_action=%d",
           WindowIdToString(change.window_id).c_str(), change.event_action);
-      if (change.matches_pointer_watcher)
-        result += " matches_pointer_watcher";
+      if (change.matches_event_observer)
+        result += " matches_event_observer";
       return result;
     }
 
-    case CHANGE_TYPE_POINTER_WATCHER_EVENT:
-      return base::StringPrintf("PointerWatcherEvent event_action=%d window=%s",
-                                change.event_action,
-                                WindowIdToString(change.window_id).c_str());
+    case CHANGE_TYPE_OBSERVED_EVENT:
+      return base::StringPrintf("ObservedEvent event_action=%d",
+                                change.event_action);
 
     case CHANGE_TYPE_PROPERTY_CHANGED:
       return base::StringPrintf("PropertyChanged window=%s key=%s value=%s",
@@ -153,13 +175,14 @@ std::string ChangeToDescription(const Change& change,
                                 change.float_value);
     case CHANGE_TYPE_REQUEST_CLOSE:
       return "RequestClose";
-    case CHANGE_TYPE_SURFACE_CHANGED:
-      return base::StringPrintf("SurfaceCreated window_id=%s surface_id=%s",
-                                WindowIdToString(change.window_id).c_str(),
-                                change.surface_id.ToString().c_str());
     case CHANGE_TYPE_TRANSFORM_CHANGED:
       return base::StringPrintf("TransformChanged window_id=%s",
                                 WindowIdToString(change.window_id).c_str());
+    case CHANGE_TYPE_DISPLAY_CHANGED:
+      return base::StringPrintf(
+          "DisplayChanged window_id=%s display_id=%s",
+          WindowIdToString(change.window_id).c_str(),
+          base::NumberToString(change.display_id).c_str());
     case CHANGE_TYPE_DRAG_DROP_START:
       return "DragDropStart";
     case CHANGE_TYPE_DRAG_ENTER:
@@ -186,6 +209,11 @@ std::string ChangeToDescription(const Change& change,
           "OnPerformDragDropCompleted id=%d success=%s action=%d",
           change.change_id, change.bool_value ? "true" : "false",
           change.drag_drop_action);
+    case CHANGE_TYPE_ON_OCCLUSION_STATE_CHANGED:
+      return base::StringPrintf(
+          "OnOcclusionStateChanged window_id=%s, state=%s",
+          WindowIdToString(change.window_id).c_str(),
+          OcclusionStateToString(change.occlusion_state).c_str());
   }
   return std::string();
 }
@@ -260,33 +288,21 @@ void WindowDatasToTestWindows(const std::vector<mojom::WindowDataPtr>& data,
 bool ContainsChange(const std::vector<Change>& changes,
                     const std::string& change_description) {
   for (auto& change : changes) {
-    if (change_description == ChangeToDescription(change))
+    if (base::MatchPattern(ChangeToDescription(change), change_description))
       return true;
   }
   return false;
 }
 
-Change::Change()
-    : type(CHANGE_TYPE_EMBED),
-      window_id(0),
-      window_id2(0),
-      window_id3(0),
-      event_action(0),
-      matches_pointer_watcher(false),
-      direction(mojom::OrderDirection::ABOVE),
-      bool_value(false),
-      float_value(0.f),
-      cursor_type(ui::CursorType::kNull),
-      change_id(0u),
-      display_id(0) {}
+Change::Change() = default;
 
 Change::Change(const Change& other) = default;
 
-Change::~Change() {}
+Change::~Change() = default;
 
-TestChangeTracker::TestChangeTracker() : delegate_(NULL) {}
+TestChangeTracker::TestChangeTracker() : delegate_(nullptr) {}
 
-TestChangeTracker::~TestChangeTracker() {}
+TestChangeTracker::~TestChangeTracker() = default;
 
 void TestChangeTracker::OnEmbed(mojom::WindowDataPtr root, bool drawn) {
   Change change;
@@ -427,6 +443,15 @@ void TestChangeTracker::OnWindowOpacityChanged(Id window_id, float opacity) {
   AddChange(change);
 }
 
+void TestChangeTracker::OnWindowDisplayChanged(Id window_id,
+                                               int64_t display_id) {
+  Change change;
+  change.type = CHANGE_TYPE_DISPLAY_CHANGED;
+  change.window_id = window_id;
+  change.display_id = display_id;
+  AddChange(change);
+}
+
 void TestChangeTracker::OnWindowParentDrawnStateChanged(Id window_id,
                                                         bool drawn) {
   Change change;
@@ -439,12 +464,12 @@ void TestChangeTracker::OnWindowParentDrawnStateChanged(Id window_id,
 void TestChangeTracker::OnWindowInputEvent(Id window_id,
                                            const ui::Event& event,
                                            int64_t display_id,
-                                           bool matches_pointer_watcher) {
+                                           bool matches_event_observer) {
   Change change;
   change.type = CHANGE_TYPE_INPUT_EVENT;
   change.window_id = window_id;
   change.event_action = static_cast<int32_t>(event.type());
-  change.matches_pointer_watcher = matches_pointer_watcher;
+  change.matches_event_observer = matches_event_observer;
   change.display_id = display_id;
   if (event.IsLocatedEvent())
     change.location1 = event.AsLocatedEvent()->root_location();
@@ -453,12 +478,10 @@ void TestChangeTracker::OnWindowInputEvent(Id window_id,
   AddChange(change);
 }
 
-void TestChangeTracker::OnPointerEventObserved(const ui::Event& event,
-                                               Id window_id) {
+void TestChangeTracker::OnObservedInputEvent(const ui::Event& event) {
   Change change;
-  change.type = CHANGE_TYPE_POINTER_WATCHER_EVENT;
+  change.type = CHANGE_TYPE_OBSERVED_EVENT;
   change.event_action = static_cast<int32_t>(event.type());
-  change.window_id = window_id;
   AddChange(change);
 }
 
@@ -509,18 +532,6 @@ void TestChangeTracker::OnTopLevelCreated(uint32_t change_id,
   change.change_id = change_id;
   change.window_id = window_data->window_id;
   change.bool_value = drawn;
-  AddChange(change);
-}
-
-void TestChangeTracker::OnWindowSurfaceChanged(
-    Id window_id,
-    const viz::SurfaceInfo& surface_info) {
-  Change change;
-  change.type = CHANGE_TYPE_SURFACE_CHANGED;
-  change.window_id = window_id;
-  change.surface_id = surface_info.id();
-  change.frame_size = surface_info.size_in_pixels();
-  change.device_scale_factor = surface_info.device_scale_factor();
   AddChange(change);
 }
 
@@ -596,17 +607,27 @@ void TestChangeTracker::RequestClose(Id window_id) {
   AddChange(change);
 }
 
+void TestChangeTracker::OnOcclusionStateChanged(
+    Id window_id,
+    mojom::OcclusionState occlusion_state) {
+  Change change;
+  change.type = CHANGE_TYPE_ON_OCCLUSION_STATE_CHANGED;
+  change.window_id = window_id;
+  change.occlusion_state = occlusion_state;
+  AddChange(change);
+}
+
 void TestChangeTracker::AddChange(const Change& change) {
   changes_.push_back(change);
   if (delegate_)
     delegate_->OnChangeAdded();
 }
 
-TestWindow::TestWindow() {}
+TestWindow::TestWindow() = default;
 
 TestWindow::TestWindow(const TestWindow& other) = default;
 
-TestWindow::~TestWindow() {}
+TestWindow::~TestWindow() = default;
 
 std::string TestWindow::ToString() const {
   return base::StringPrintf("window=%s parent=%s",

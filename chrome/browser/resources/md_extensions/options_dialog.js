@@ -84,7 +84,13 @@ cr.define('extensions', function() {
           preferredSize = e;
           if (!this.$.dialog.open)
             this.$.dialog.showModal();
-          this.updateDialogSize_(preferredSize.width, preferredSize.height);
+          // Updating the dialog size can result in a preferred size change, so
+          // wait until request animation frame fires before updating the dialog
+          // size. This hysteresis prevents the preferred size from oscillating
+          // (see: https://crbug.com/882835).
+          requestAnimationFrame(() => {
+            this.updateDialogSize_(preferredSize.width, preferredSize.height);
+          });
         };
 
         this.boundResizeListener_ = () => {

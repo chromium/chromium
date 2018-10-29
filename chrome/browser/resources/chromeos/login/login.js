@@ -62,6 +62,7 @@ cr.define('cr.ui.Oobe', function() {
       login.DiscoverScreen.register();
       login.MarketingOptInScreen.register();
       login.AssistantOptInFlowScreen.register();
+      login.MultiDeviceSetupScreen.register();
 
       cr.ui.Bubble.decorate($('bubble'));
       login.HeaderBar.decorate($('login-header-bar'));

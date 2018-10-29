@@ -56,7 +56,7 @@ message RequestInfo {
 
 // Metrics for a single pageload.
 message PageloadMetrics {
-  // Next ID: 22
+  // Next ID: 31
   reserved 3;
 
   // The possible effective connection type values.
@@ -123,6 +123,35 @@ message PageloadMetrics {
     OTHER_CRASH = 3;
     // A crash where the renderer ran out of memory on the page.
     ANDROID_FOREGROUND_OOM = 4;
+  }
+
+  enum PageEndReason {
+    // Page lifetime has not yet ended (page is still active).
+    END_NONE = 0;
+    // The page was reloaded, possibly by the user.
+    END_RELOAD = 1;
+    // The page was navigated away from, via a back or forward navigation.
+    END_FORWARD_BACK = 2;
+    // The navigation is replaced with a navigation with the qualifier
+    // ui::PAGE_TRANSITION_CLIENT_REDIRECT, which is caused by Javascript, or
+    // the meta refresh tag.
+    END_CLIENT_REDIRECT = 3;
+    // If the page load is replaced by a new navigation. This includes link
+    // clicks, typing in the omnibox (not a reload), and form submissions.
+    END_NEW_NAVIGATION = 4;
+    // The page load was stopped (e.g. the user presses the stop X button).
+    END_STOP = 5;
+    // Page load ended due to closing the tab or browser.
+    END_CLOSE = 6;
+    // The provisional load for this page load failed before committing.
+    END_PROVISIONAL_LOAD_FAILED = 7;
+    // The render process hosting the page terminated unexpectedly.
+    END_RENDER_PROCESS_GONE = 8;
+    // We don't know why the page load ended. This is the value we assign to a
+    // terminated provisional load if the only signal we get is the load
+    // finished without committing, either without error or with
+    // net::ERR_ABORTED.
+    END_OTHER = 9;
   }
 
   // The session key used to load the page.
@@ -210,4 +239,16 @@ message PageloadMetrics {
   // first value is the original request and each following value is the next
   // redirect in order.
   repeated RequestInfo main_frame_network_request = 26;
+
+  // The time when the page load was ended.
+  optional Duration page_end_time = 27;
+
+  // The reason that the page load ended.
+  optional PageEndReason page_end_reason = 28;
+
+  // The number of touch events that happened on the page.
+  optional uint32 touch_count = 29;
+
+  // The number of scroll events that happened on the page.
+  optional uint32 scroll_count = 30;
 }

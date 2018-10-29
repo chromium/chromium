@@ -27,7 +27,6 @@ typedef void (^SuggestionHandledCompletion)(void);
 // |form| and |field|, returning the result using the provided |completion|.
 // |typedValue| contains the text that the user has typed into the field so far.
 - (void)checkIfSuggestionsAvailableForForm:(NSString*)formName
-                                 fieldName:(NSString*)fieldName
                            fieldIdentifier:(NSString*)fieldIdentifier
                                  fieldType:(NSString*)fieldType
                                       type:(NSString*)type
@@ -43,7 +42,6 @@ typedef void (^SuggestionHandledCompletion)(void);
 // using the provided |completion|. |typedValue| contains the text that the
 // user has typed into the field so far.
 - (void)retrieveSuggestionsForForm:(NSString*)formName
-                         fieldName:(NSString*)fieldName
                    fieldIdentifier:(NSString*)fieldIdentifier
                          fieldType:(NSString*)fieldType
                               type:(NSString*)type
@@ -55,9 +53,8 @@ typedef void (^SuggestionHandledCompletion)(void);
 // Handles user selection of a suggestion for the specified form and
 // field, invoking |completion| when finished.
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
-                  fieldName:(NSString*)fieldName
-            fieldIdentifier:(NSString*)fieldIdentifier
                        form:(NSString*)formName
+            fieldIdentifier:(NSString*)fieldIdentifier
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion;
 

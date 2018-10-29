@@ -2,7 +2,6 @@ setAttributeNS tests adapted from createAttributeNS which in turn were adapted f
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS element.setAttributeNS(undefined, undefined, 'value')
 PASS element.setAttributeNS(null, undefined, 'value')
 FAIL element.setAttributeNS(undefined, null, 'value')

@@ -33,7 +33,6 @@
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
-#include "services/service_manager/runner/common/client_util.h"
 #include "services/service_manager/service_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -150,7 +149,6 @@ class ServiceManagerContext::InProcessServiceManagerContext
 
 ServiceManagerContext::ServiceManagerContext() {
   service_manager::mojom::ServiceRequest packaged_services_request;
-  DCHECK(!service_manager::ServiceManagerIsRemote());
   std::unique_ptr<BuiltinManifestProvider> manifest_provider =
       std::make_unique<BuiltinManifestProvider>();
 

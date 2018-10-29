@@ -25,9 +25,6 @@ class ResourceContext;
 #if defined(OS_CHROMEOS)
 namespace chromeos {
 class CertificateProvider;
-}
-
-namespace policy {
 class PolicyCertificateProvider;
 }
 #endif
@@ -108,7 +105,7 @@ class CertificateManagerModel {
   struct Params {
 #if defined(OS_CHROMEOS)
     // May be nullptr.
-    policy::PolicyCertificateProvider* policy_certs_provider = nullptr;
+    chromeos::PolicyCertificateProvider* policy_certs_provider = nullptr;
     // May be nullptr.
     std::unique_ptr<chromeos::CertificateProvider>
         extension_certificate_provider;

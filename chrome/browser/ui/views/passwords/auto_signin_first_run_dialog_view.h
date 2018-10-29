@@ -7,15 +7,9 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace views {
-class StyledLabel;
-}
-
 class AutoSigninFirstRunDialogView : public views::DialogDelegateView,
-                                     public views::StyledLabelListener,
                                      public AutoSigninFirstRunPrompt {
  public:
   AutoSigninFirstRunDialogView(PasswordDialogController* controller,
@@ -37,11 +31,6 @@ class AutoSigninFirstRunDialogView : public views::DialogDelegateView,
   bool Accept() override;
   bool Close() override;
   base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
 
   // Sets up the child views.
   void InitWindow();

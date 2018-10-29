@@ -2,22 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/passwords/cwv_password_controller_internal.h"
+#import "ios/web_view/internal/passwords/cwv_password_controller.h"
 
 #include <memory>
 
+#include "base/logging.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/autofill/ios/browser/autofill_util.h"
 #import "components/password_manager/core/browser/form_parsing/ios_form_parser.h"
 #include "components/password_manager/core/browser/password_manager.h"
-#import "components/password_manager/ios/password_controller_helper.h"
+#include "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/password_form_helper.h"
+#import "components/password_manager/ios/password_suggestion_helper.h"
 #import "ios/web/public/origin_util.h"
 #include "ios/web/public/url_scheme_util.h"
+#include "ios/web/public/web_state/web_frame.h"
+#include "ios/web/public/web_state/web_frame_util.h"
 #import "ios/web/public/web_state/web_state_observer_bridge.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_driver.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
+#import "ios/web_view/public/cwv_autofill_controller_delegate.h"
+
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,21 +35,35 @@
 
 using autofill::FormData;
 using autofill::PasswordForm;
+using password_manager::AccountSelectFillData;
+using password_manager::FillData;
 using ios_web_view::WebViewPasswordManagerClient;
 using ios_web_view::WebViewPasswordManagerDriver;
+using password_manager::AccountSelectFillData;
 using password_manager::GetPageURLAndCheckTrustLevel;
+using password_manager::PasswordFormManagerForUI;
+
+typedef void (^PasswordSuggestionsAvailableCompletion)(
+    const AccountSelectFillData*);
 
 @interface CWVPasswordController ()<CRWWebStateObserver,
                                     CWVPasswordManagerClientDelegate,
                                     CWVPasswordManagerDriverDelegate,
-                                    PasswordControllerHelperDelegate>
+                                    PasswordFormHelperDelegate,
+                                    PasswordSuggestionHelperDelegate>
 
 // The PasswordManagerDriver owned by this PasswordController.
 @property(nonatomic, readonly)
     password_manager::PasswordManagerDriver* passwordManagerDriver;
 
-// Helper contains common password controller logic.
-@property(nonatomic, readonly) PasswordControllerHelper* helper;
+// Helper contains common password form processing logic.
+@property(nonatomic, readonly) PasswordFormHelper* formHelper;
+
+// Helper contains common password suggestion logic.
+@property(nonatomic, readonly) PasswordSuggestionHelper* suggestionHelper;
+
+// Delegate to receive password autofill suggestion callbacks.
+@property(nonatomic, weak, nullable) id<CWVPasswordControllerDelegate> delegate;
 
 // Informs the |_passwordManager| of the password forms (if any were present)
 // that have been found on the page.
@@ -65,19 +88,16 @@ using password_manager::GetPageURLAndCheckTrustLevel;
   // Bridge to observe WebState from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
-  // True indicates that credentials has been sent to the password manager.
-  BOOL _credentialsSentToPasswordManager;
-
   // Bridge to observe form activity in |webState_|.
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
-
-  // TODO(crbug.com/865114): Add suggestion logic.
 }
 
 #pragma mark - Properties
 
-@synthesize helper = _helper;
+@synthesize formHelper = _formHelper;
+@synthesize suggestionHelper = _suggestionHelper;
+@synthesize delegate = _delegate;
 
 - (password_manager::PasswordManagerDriver*)passwordManagerDriver {
   return _passwordManagerDriver.get();
@@ -85,7 +105,9 @@ using password_manager::GetPageURLAndCheckTrustLevel;
 
 #pragma mark - Initialization
 
-- (instancetype)initWithWebState:(web::WebState*)webState {
+- (instancetype)initWithWebState:(web::WebState*)webState
+                     andDelegate:
+                         (nullable id<CWVPasswordControllerDelegate>)delegate {
   self = [super init];
   if (self) {
     DCHECK(webState);
@@ -93,9 +115,10 @@ using password_manager::GetPageURLAndCheckTrustLevel;
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserverBridge.get());
-    _helper = [[PasswordControllerHelper alloc] initWithWebState:webState
-                                                        delegate:self];
-
+    _formHelper =
+        [[PasswordFormHelper alloc] initWithWebState:webState delegate:self];
+    _suggestionHelper =
+        [[PasswordSuggestionHelper alloc] initWithDelegate:self];
     _passwordManagerClient =
         std::make_unique<WebViewPasswordManagerClient>(self);
     _passwordManager = std::make_unique<password_manager::PasswordManager>(
@@ -103,7 +126,7 @@ using password_manager::GetPageURLAndCheckTrustLevel;
     _passwordManagerDriver =
         std::make_unique<WebViewPasswordManagerDriver>(self);
 
-    _credentialsSentToPasswordManager = NO;
+    _delegate = delegate;
 
     // TODO(crbug.com/865114): Credential manager related logic
   }
@@ -122,9 +145,7 @@ using password_manager::GetPageURLAndCheckTrustLevel;
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   DCHECK_EQ(_webState, webState);
-  // Clear per-page state
-  // TODO(crbug.com/865114): Clear fillData and suggestion.
-  _credentialsSentToPasswordManager = NO;
+  [self.suggestionHelper resetForNewPage];
 
   // Retrieve the identity of the page. In case the page might be malicous,
   // returns early.
@@ -175,19 +196,68 @@ using password_manager::GetPageURLAndCheckTrustLevel;
 }
 
 - (const GURL&)lastCommittedURL {
-  return self.helper.lastCommittedURL;
+  return self.formHelper.lastCommittedURL;
 }
 
 - (void)showSavePasswordInfoBar:
-    (std::unique_ptr<password_manager::PasswordFormManagerForUI>)formToSave {
-  // Always save password for Demo.
-  // TODO(crbug.com/865114): Implement remaining logic.
-  formToSave.get()->Save();
+    (std::unique_ptr<PasswordFormManagerForUI>)formToSave {
+  if (!self.delegate) {
+    return;
+  }
+  // Use the same logic as iOS Chrome for saving password, see:
+  // ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.mm
+  __block std::unique_ptr<PasswordFormManagerForUI> formPtr(
+      std::move(formToSave));
+
+  NSString* userName =
+      base::SysUTF16ToNSString(formPtr->GetPendingCredentials().username_value);
+
+  [self.delegate passwordController:self
+      decidePasswordSavingPolicyForUsername:userName
+                            decisionHandler:^(
+                                CWVPasswordUserDecision decision) {
+                              switch (decision) {
+                                case CWVPasswordUserDecisionYes:
+                                  formPtr->Save();
+                                  break;
+                                case CWVPasswordUserDecisionNever:
+                                  formPtr->PermanentlyBlacklist();
+                                  break;
+                                default:
+                                  // Do nothing.
+                                  break;
+                              }
+                            }];
 }
 
 - (void)showUpdatePasswordInfoBar:
-    (std::unique_ptr<password_manager::PasswordFormManagerForUI>)formToUpdate {
-  // TODO(crbug.com/865114): Implement remaining logic.
+    (std::unique_ptr<PasswordFormManagerForUI>)formToUpdate {
+  if (!self.delegate) {
+    return;
+  }
+  // Use the same logic as iOS Chrome for updating password, see:
+  // ios/chrome/browser/passwords/
+  // ios_chrome_update_password_infobar_delegate.mm
+  __block std::unique_ptr<PasswordFormManagerForUI> formPtr(
+      std::move(formToUpdate));
+  BOOL hasMultipleCredentials =
+      formPtr->GetBestMatches().size() > 1 && !formPtr->IsPasswordOverridden();
+
+  const autofill::PasswordForm& credentials =
+      hasMultipleCredentials ? *(formPtr->GetPreferredMatch())
+                             : formPtr->GetPendingCredentials();
+  NSString* userName = base::SysUTF16ToNSString(credentials.username_value);
+
+  [self.delegate passwordController:self
+      decidePasswordUpdatingPolicyForUsername:userName
+                              decisionHandler:^(
+                                  CWVPasswordUserDecision decision) {
+                                DCHECK_NE(decision,
+                                          CWVPasswordUserDecisionNever);
+                                if (decision == CWVPasswordUserDecisionYes) {
+                                  formPtr->Update(credentials);
+                                }
+                              }];
 }
 
 - (void)showAutosigninNotification:
@@ -198,20 +268,20 @@ using password_manager::GetPageURLAndCheckTrustLevel;
 #pragma mark - CWVPasswordManagerDriverDelegate
 
 - (void)fillPasswordForm:(const autofill::PasswordFormFillData&)formData {
-  // TODO(crbug.com/865114): Add suggestion related logic.
-  [self.helper fillPasswordForm:formData completionHandler:nil];
+  [self.suggestionHelper processWithPasswordFormFillData:formData];
+  [self.formHelper fillPasswordForm:formData completionHandler:nil];
 }
 
 // Informs delegate that there are no saved credentials for the current page.
 - (void)informNoSavedCredentials {
-  // TODO(crbug.com/865114): Implement remaining logic.
+  [self.suggestionHelper processWithNoSavedCredentials];
 }
 
-#pragma mark - PasswordControllerHelperDelegate
+#pragma mark - PasswordFormHelperDelegate
 
-- (void)helper:(PasswordControllerHelper*)helper
-    didSubmitForm:(const PasswordForm&)form
-      inMainFrame:(BOOL)inMainFrame {
+- (void)formHelper:(PasswordFormHelper*)formHelper
+     didSubmitForm:(const PasswordForm&)form
+       inMainFrame:(BOOL)inMainFrame {
   if (inMainFrame) {
     self.passwordManager->OnPasswordFormSubmitted(self.passwordManagerDriver,
                                                   form);
@@ -221,6 +291,13 @@ using password_manager::GetPageURLAndCheckTrustLevel;
     self.passwordManager->OnPasswordFormSubmittedNoChecks(
         self.passwordManagerDriver, form);
   }
+}
+
+#pragma mark - PasswordSuggestionHelperDelegate
+
+- (void)suggestionHelperShouldTriggerFormExtraction:
+    (PasswordSuggestionHelper*)suggestionHelper {
+  [self findPasswordFormsAndSendThemToPasswordManager];
 }
 
 #pragma mark - Private methods
@@ -237,7 +314,7 @@ using password_manager::GetPageURLAndCheckTrustLevel;
     // Notify web_state about password forms, so that this can be taken into
     // account for the security state.
 
-    _credentialsSentToPasswordManager = YES;
+    [self.suggestionHelper updateStateOnPasswordFormExtracted];
     // Invoke the password manager callback to autofill password forms
     // on the loaded page.
     _passwordManager->OnPasswordFormsParsed(self.passwordManagerDriver, forms);
@@ -254,10 +331,83 @@ using password_manager::GetPageURLAndCheckTrustLevel;
   // Read all password forms from the page and send them to the password
   // manager.
   __weak CWVPasswordController* weakSelf = self;
-  [self.helper findPasswordFormsWithCompletionHandler:^(
-                   const std::vector<autofill::PasswordForm>& forms) {
+  [self.formHelper findPasswordFormsWithCompletionHandler:^(
+                       const std::vector<autofill::PasswordForm>& forms) {
     [weakSelf didFinishPasswordFormExtraction:forms];
   }];
+}
+
+#pragma mark - Public
+
+- (void)fetchSuggestionsForFormWithName:(NSString*)formName
+                        fieldIdentifier:(NSString*)fieldIdentifier
+                              fieldType:(NSString*)fieldType
+                                frameID:(NSString*)frameID
+                      completionHandler:
+                          (void (^)(NSArray<CWVAutofillSuggestion*>*))
+                              completionHandler {
+  if (!GetPageURLAndCheckTrustLevel(_webState, /*page_url=*/nullptr)) {
+    completionHandler(@[]);
+    return;
+  }
+  __weak CWVPasswordController* weakSelf = self;
+  // It is necessary to call |checkIfSuggestionsAvailableForForm| before
+  // |retrieveSuggestionsForForm| because the former actually queries the db,
+  // while the latter merely returns them.
+  // Set |type| to "focus" to trigger form extraction in
+  // |PasswordSuggestionHelper|.
+  [self.suggestionHelper
+      checkIfSuggestionsAvailableForForm:formName
+                         fieldIdentifier:fieldIdentifier
+                               fieldType:fieldType
+                                    type:@"focus"
+                                 frameID:frameID
+                             isMainFrame:YES
+                                webState:_webState
+                       completionHandler:^(BOOL suggestionsAvailable) {
+                         CWVPasswordController* strongSelf = weakSelf;
+                         if (!strongSelf || !suggestionsAvailable) {
+                           completionHandler(@[]);
+                           return;
+                         }
+                         NSArray<FormSuggestion*>* suggestions =
+                             [strongSelf.suggestionHelper
+                                 retrieveSuggestionsWithFormName:formName
+                                                 fieldIdentifier:fieldIdentifier
+                                                       fieldType:fieldType];
+                         NSMutableArray<CWVAutofillSuggestion*>*
+                             autofillSuggestions = [NSMutableArray array];
+                         for (FormSuggestion* formSuggestion in suggestions) {
+                           CWVAutofillSuggestion* autofillSuggestion =
+                               [[CWVAutofillSuggestion alloc]
+                                   initWithFormSuggestion:formSuggestion
+                                                 formName:formName
+                                          fieldIdentifier:fieldIdentifier
+                                                  frameID:frameID
+                                     isPasswordSuggestion:YES];
+                           [autofillSuggestions addObject:autofillSuggestion];
+                         }
+                         completionHandler([autofillSuggestions copy]);
+                       }];
+}
+
+- (void)fillSuggestion:(CWVAutofillSuggestion*)suggestion
+     completionHandler:(void (^)(void))completionHandler {
+  std::unique_ptr<password_manager::FillData> fillData = [self.suggestionHelper
+      getFillDataForUsername:suggestion.formSuggestion.value];
+  if (!fillData) {
+    DLOG(WARNING) << "Failed to fill password suggestion: Fill data not found.";
+    return;
+  }
+  [self.formHelper fillPasswordFormWithFillData:*fillData
+                              completionHandler:^(BOOL success) {
+                                if (!success) {
+                                  DLOG(WARNING) << "Failed to fill password "
+                                                   "suggestion with fill data.";
+                                } else {
+                                  completionHandler();
+                                }
+                              }];
 }
 
 @end

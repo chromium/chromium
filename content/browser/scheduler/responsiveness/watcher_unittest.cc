@@ -8,9 +8,11 @@
 #include "base/pending_task.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
+#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/scheduler/responsiveness/calculator.h"
 #include "content/browser/scheduler/responsiveness/native_event_observer.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -165,6 +167,22 @@ TEST_F(ResponsivenessWatcherTest, TaskNesting) {
   EXPECT_EQ(0, watcher_->NumTasksOnIOThread());
 }
 
+// Test that native events use execution time instead of queue + execution time.
+TEST_F(ResponsivenessWatcherTest, NativeEvents) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
+  void* opaque_identifier = reinterpret_cast<void*>(0x1234);
+  watcher_->WillRunEventOnUIThread(opaque_identifier);
+  watcher_->DidRunEventOnUIThread(opaque_identifier);
+
+  ASSERT_EQ(1, watcher_->NumTasksOnUIThread());
+
+  // The queue time should be after |start_time|, since we actually measure
+  // execution time rather than queue time + execution time for native events.
+  EXPECT_GE(watcher_->QueueTimesUIThread()[0], start_time);
+  EXPECT_EQ(0, watcher_->NumTasksOnIOThread());
+}
+
 class ResponsivenessWatcherRealIOThreadTest : public testing::Test {
  public:
   ResponsivenessWatcherRealIOThreadTest()
@@ -198,32 +216,26 @@ class ResponsivenessWatcherRealIOThreadTest : public testing::Test {
   scoped_refptr<FakeWatcher> watcher_;
 };
 
-// Flaky on Linux TSAN. https://crbug.com/876561
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_MessageLoopObserver DISABLED_MessageLoopObserver
-#else
-#define MAYBE_MessageLoopObserver MessageLoopObserver
-#endif
-TEST_F(ResponsivenessWatcherRealIOThreadTest, MAYBE_MessageLoopObserver) {
+TEST_F(ResponsivenessWatcherRealIOThreadTest, MessageLoopObserver) {
   // Post a do-nothing task onto the UI thread.
-  content::BrowserThread::PostTask(content::BrowserThread::UI, FROM_HERE,
-                                   base::BindOnce([]() {}));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce([]() {}));
 
   // Post a do-nothing task onto the IO thread.
-  content::BrowserThread::PostTask(content::BrowserThread::IO, FROM_HERE,
-                                   base::BindOnce([]() {}));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                           base::BindOnce([]() {}));
 
   // Post a task onto the IO thread that hops back to the UI thread. This
   // guarantees that both of the do-nothing tasks have already been processed.
   base::RunLoop run_loop;
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
-      base::BindOnce(
-          [](base::OnceClosure quit_closure) {
-            content::BrowserThread::PostTask(
-                content::BrowserThread::UI, FROM_HERE, std::move(quit_closure));
-          },
-          run_loop.QuitClosure()));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
+                           base::BindOnce(
+                               [](base::OnceClosure quit_closure) {
+                                 base::PostTaskWithTraits(
+                                     FROM_HERE, {content::BrowserThread::UI},
+                                     std::move(quit_closure));
+                               },
+                               run_loop.QuitClosure()));
   run_loop.Run();
 
   ASSERT_GE(watcher_->NumTasksOnUIThread(), 1);

@@ -354,8 +354,7 @@ void TestDragDropClient::SetTopmostXWindowAndMoveMouse(::Window xid) {
 }
 
 void TestDragDropClient::SendXClientEvent(::Window xid, XEvent* event) {
-  std::map< ::Window, ClientMessageEventCollector*>::iterator it =
-      collectors_.find(xid);
+  auto it = collectors_.find(xid);
   if (it != collectors_.end())
     it->second->RecordEvent(event->xclient);
 }

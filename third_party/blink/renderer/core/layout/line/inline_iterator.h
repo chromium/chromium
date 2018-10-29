@@ -58,7 +58,7 @@ struct BidiIsolatedRun {
 // optionally notifying a BidiResolver every time it steps into/out of a
 // LayoutInline.
 class InlineIterator {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum IncrementRule {

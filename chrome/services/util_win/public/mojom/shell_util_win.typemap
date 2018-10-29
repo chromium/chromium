@@ -4,12 +4,25 @@
 
 mojom = "//chrome/services/util_win/public/mojom/shell_util_win.mojom"
 
-public_headers = [ "//base/strings/string16.h" ]
-traits_headers = [ "//ipc/ipc_message_utils.h" ]
+public_headers = [
+  "//base/strings/string16.h",
+  "//ui/shell_dialogs/execute_select_file_win.h",
+  "//ui/shell_dialogs/select_file_dialog.h",
+]
+traits_headers = [
+  "//ipc/ipc_message_utils.h",
+  "//chrome/services/util_win/public/mojom/shell_util_mojom_traits.h",
+]
+sources = [
+  "//chrome/services/util_win/public/mojom/shell_util_mojom_traits.cc",
+]
 
 deps = [
   "//base",
+  "//ui/shell_dialogs",
 ]
 
-type_mappings = [ "chrome.mojom.FileExtensionFilters=" +
-                  "std::vector<std::tuple<base::string16, base::string16>>" ]
+type_mappings = [
+  "chrome.mojom.FileFilterSpec=ui::FileFilterSpec",
+  "chrome.mojom.SelectFileDialogType=ui::SelectFileDialog::Type",
+]

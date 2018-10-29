@@ -543,18 +543,19 @@ static struct {
     {"abcdefghijklmnopqrstuvwxyz", "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo="},
 };
 
-TEST(Base64, EscapeAndUnescape) {
+template <typename StringType>
+void TestEscapeAndUnescape() {
   // Check the short strings; this tests the math (and boundaries)
   for (const auto& tc : base64_tests) {
-    std::string encoded("this junk should be ignored");
+    StringType encoded("this junk should be ignored");
     absl::Base64Escape(tc.plaintext, &encoded);
     EXPECT_EQ(encoded, tc.cyphertext);
 
-    std::string decoded("this junk should be ignored");
+    StringType decoded("this junk should be ignored");
     EXPECT_TRUE(absl::Base64Unescape(encoded, &decoded));
     EXPECT_EQ(decoded, tc.plaintext);
 
-    std::string websafe(tc.cyphertext);
+    StringType websafe(tc.cyphertext);
     for (int c = 0; c < websafe.size(); ++c) {
       if ('+' == websafe[c]) websafe[c] = '-';
       if ('/' == websafe[c]) websafe[c] = '_';
@@ -576,7 +577,7 @@ TEST(Base64, EscapeAndUnescape) {
 
   // Now try the long strings, this tests the streaming
   for (const auto& tc : absl::strings_internal::base64_strings()) {
-    std::string buffer;
+    StringType buffer;
     absl::WebSafeBase64Escape(tc.plaintext, &buffer);
     EXPECT_EQ(tc.cyphertext, buffer);
   }
@@ -586,12 +587,16 @@ TEST(Base64, EscapeAndUnescape) {
     absl::string_view data_set[] = {"ab-/", absl::string_view("\0bcd", 4),
                                     absl::string_view("abc.\0", 5)};
     for (absl::string_view bad_data : data_set) {
-      std::string buf;
+      StringType buf;
       EXPECT_FALSE(absl::Base64Unescape(bad_data, &buf));
       EXPECT_FALSE(absl::WebSafeBase64Unescape(bad_data, &buf));
       EXPECT_TRUE(buf.empty());
     }
   }
+}
+
+TEST(Base64, EscapeAndUnescape) {
+  TestEscapeAndUnescape<std::string>();
 }
 
 TEST(Base64, DISABLED_HugeData) {

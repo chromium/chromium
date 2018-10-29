@@ -99,8 +99,7 @@ syncer::SyncError TestChangeProcessor::ProcessSyncChanges(
                       change_list.begin(),
                       change_list.end());
   change_map_.erase(change_map_.begin(), change_map_.end());
-  for (syncer::SyncChangeList::const_iterator iter = change_list.begin();
-      iter != change_list.end(); ++iter) {
+  for (auto iter = change_list.begin(); iter != change_list.end(); ++iter) {
     change_map_[iter->sync_data().GetTitle()] = *iter;
   }
   return syncer::SyncError();

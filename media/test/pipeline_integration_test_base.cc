@@ -59,7 +59,7 @@ static std::vector<std::unique_ptr<VideoDecoder>> CreateVideoDecodersForTest(
     CreateVideoDecodersCB prepend_video_decoders_cb) {
   std::vector<std::unique_ptr<VideoDecoder>> video_decoders;
 
-  if (!prepend_video_decoders_cb.is_null()) {
+  if (prepend_video_decoders_cb) {
     video_decoders = prepend_video_decoders_cb.Run();
     DCHECK(!video_decoders.empty());
   }
@@ -85,7 +85,7 @@ static std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
     CreateAudioDecodersCB prepend_audio_decoders_cb) {
   std::vector<std::unique_ptr<AudioDecoder>> audio_decoders;
 
-  if (!prepend_audio_decoders_cb.is_null()) {
+  if (prepend_audio_decoders_cb) {
     audio_decoders = prepend_audio_decoders_cb.Run();
     DCHECK(!audio_decoders.empty());
   }
@@ -176,7 +176,7 @@ void PipelineIntegrationTestBase::DemuxerEncryptedMediaInitDataCB(
     EmeInitDataType type,
     const std::vector<uint8_t>& init_data) {
   DCHECK(!init_data.empty());
-  CHECK(!encrypted_media_init_data_cb_.is_null());
+  CHECK(encrypted_media_init_data_cb_);
   encrypted_media_init_data_cb_.Run(type, init_data);
 }
 
@@ -198,7 +198,7 @@ void PipelineIntegrationTestBase::OnEnded() {
   ended_ = true;
   pipeline_status_ = PIPELINE_OK;
   if (on_ended_closure_)
-    base::ResetAndReturn(&on_ended_closure_).Run();
+    std::move(on_ended_closure_).Run();
 }
 
 bool PipelineIntegrationTestBase::WaitUntilOnEnded() {
@@ -224,7 +224,7 @@ void PipelineIntegrationTestBase::OnError(PipelineStatus status) {
   pipeline_status_ = status;
   pipeline_->Stop();
   if (on_error_closure_)
-    base::ResetAndReturn(&on_error_closure_).Run();
+    std::move(on_error_closure_).Run();
 }
 
 PipelineStatus PipelineIntegrationTestBase::StartInternal(

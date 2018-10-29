@@ -95,7 +95,7 @@ class EVENTS_EXPORT EventDispatcher {
 
   EventDispatcherDelegate* delegate_;
 
-  Event* current_event_;
+  Event* current_event_ = nullptr;
 
   EventHandlerList handler_list_;
 

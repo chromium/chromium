@@ -1,3 +1,0 @@
-Test if out of flow boxes are ignored when calculating the offset for 'text-underline-position: under'. The horizontal line below should not go outside the box. Bugzilla link: http://webkit.org/b/102795.
-
- 1 lorem ipsum   OutOfFlowPositioned  2 lorem ipsum  

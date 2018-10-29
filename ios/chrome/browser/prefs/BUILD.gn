@@ -53,6 +53,7 @@ source_set("browser_prefs") {
     "//components/signin/core/browser",
     "//components/strings",
     "//components/sync",
+    "//components/sync_sessions",
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/unified_consent",

@@ -492,9 +492,7 @@ void ZeroSuggestProvider::ConvertResultsToAutocompleteMatches() {
 
   const SearchSuggestionParser::NavigationResults& nav_results(
       results_.navigation_results);
-  for (SearchSuggestionParser::NavigationResults::const_iterator it(
-           nav_results.begin());
-       it != nav_results.end(); ++it) {
+  for (auto it = nav_results.begin(); it != nav_results.end(); ++it) {
     matches_.push_back(NavigationToMatch(*it));
   }
 }
@@ -525,6 +523,11 @@ bool ZeroSuggestProvider::AllowZeroSuggestSuggestions(
   // Don't run if in incognito mode.
   if (client()->IsOffTheRecord())
     return false;
+
+  if (base::FeatureList::IsEnabled(
+          omnibox::kOmniboxPopupShortcutIconsInZeroState)) {
+    return false;
+  }
 
   // Only show zero suggest for pages with URLs the user will recognize
   // if it is not running in ChromeOS app_list context.

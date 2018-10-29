@@ -21,9 +21,7 @@ MediaStreamTrackMetricsHost::MediaStreamTrackMetricsHost() {}
 MediaStreamTrackMetricsHost::~MediaStreamTrackMetricsHost() {
   // Our render process has exited. We won't receive any more IPC
   // messages from it. Assume all tracks ended now.
-  for (TrackMap::iterator it = tracks_.begin();
-       it != tracks_.end();
-       ++it) {
+  for (auto it = tracks_.begin(); it != tracks_.end(); ++it) {
     TrackInfo& info = it->second;
     ReportDuration(info);
   }

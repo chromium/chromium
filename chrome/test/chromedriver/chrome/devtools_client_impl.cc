@@ -385,7 +385,7 @@ Status DevToolsClientImpl::ProcessNextMessage(
   // have been deleted from |response_info_map_|) or blocked while notifying
   // listeners.
   if (expected_id != -1) {
-    ResponseInfoMap::iterator iter = response_info_map_.find(expected_id);
+    auto iter = response_info_map_.find(expected_id);
     if (iter == response_info_map_.end() || iter->second->state != kWaiting)
       return Status(kOk);
   }
@@ -508,7 +508,7 @@ Status DevToolsClientImpl::ProcessEvent(const internal::InspectorEvent& event) {
 
 Status DevToolsClientImpl::ProcessCommandResponse(
     const internal::InspectorCommandResponse& response) {
-  ResponseInfoMap::iterator iter = response_info_map_.find(response.id);
+  auto iter = response_info_map_.find(response.id);
   if (IsVLogOn(1)) {
     std::string method, result;
     if (iter != response_info_map_.end())

@@ -21,7 +21,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_MASKER_H_
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
-#include "third_party/blink/renderer/core/svg/svg_mask_element.h"
 #include "third_party/blink/renderer/core/svg/svg_unit_types.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -30,6 +29,7 @@ namespace blink {
 
 class AffineTransform;
 class GraphicsContext;
+class SVGMaskElement;
 
 class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
  public:
@@ -40,20 +40,10 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
 
   void RemoveAllClientsFromCache(bool mark_for_invalidation = true) override;
 
-  FloatRect ResourceBoundingBox(const LayoutObject*);
+  FloatRect ResourceBoundingBox(const FloatRect& reference_box);
 
-  SVGUnitTypes::SVGUnitType MaskUnits() const {
-    return ToSVGMaskElement(GetElement())
-        ->maskUnits()
-        ->CurrentValue()
-        ->EnumValue();
-  }
-  SVGUnitTypes::SVGUnitType MaskContentUnits() const {
-    return ToSVGMaskElement(GetElement())
-        ->maskContentUnits()
-        ->CurrentValue()
-        ->EnumValue();
-  }
+  SVGUnitTypes::SVGUnitType MaskUnits() const;
+  SVGUnitTypes::SVGUnitType MaskContentUnits() const;
 
   static const LayoutSVGResourceType kResourceType = kMaskerResourceType;
   LayoutSVGResourceType ResourceType() const override { return kResourceType; }

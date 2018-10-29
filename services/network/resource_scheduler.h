@@ -29,6 +29,7 @@
 
 namespace base {
 class SequencedTaskRunner;
+class TickClock;
 }
 
 namespace net {
@@ -81,7 +82,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
     base::OnceClosure resume_callback_;
   };
 
-  explicit ResourceScheduler(bool enabled);
+  explicit ResourceScheduler(bool enabled,
+                             const base::TickClock* tick_clock = nullptr);
   ~ResourceScheduler();
 
   // Requests that this ResourceScheduler schedule, and eventually loads, the
@@ -194,6 +196,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
 
   ClientMap client_map_;
   RequestSet unowned_requests_;
+
+  // Guaranteed to be non-null.
+  const base::TickClock* tick_clock_;
 
   // Whether or not to enable ResourceScheduling. This will almost always be
   // enabled, except for some C++ headless embedders who may implement their own

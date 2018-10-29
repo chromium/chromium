@@ -2,7 +2,6 @@ This tests checks that all of the input values for object-fit parse correctly.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS testComputedStyle(";") is "fill"
 PASS test("object-fit: inherit;") is "inherit"
 PASS test("object-fit: initial;") is "initial"

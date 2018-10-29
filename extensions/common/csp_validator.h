@@ -6,7 +6,10 @@
 #define EXTENSIONS_COMMON_CSP_VALIDATOR_H_
 
 #include <string>
+#include <vector>
 
+#include "base/macros.h"
+#include "base/strings/string_piece_forward.h"
 #include "extensions/common/manifest.h"
 
 namespace extensions {
@@ -29,6 +32,60 @@ enum Options {
   // a plugin-types directive which restricts the plugins that can be loaded
   // to those which are fully sandboxed.
   OPTIONS_ALLOW_INSECURE_OBJECT_SRC = 1 << 1,
+};
+
+// Helper to parse a serialized content security policy string.
+// Exposed for testing.
+class CSPParser {
+ public:
+  // Represents a CSP directive.
+  // E.g. for the directive "script-src 'self' www.google.com"
+  // |directive_string| is "script-src 'self' www.google.com".
+  // |directive_name| is "script_src".
+  // |directive_values| is ["'self'", "www.google.com"].
+  struct Directive {
+    Directive(base::StringPiece directive_string,
+              std::string directive_name,
+              std::vector<base::StringPiece> directive_values);
+    ~Directive();
+    Directive(Directive&&);
+    Directive& operator=(Directive&&);
+
+    base::StringPiece directive_string;
+
+    // Must be lower case.
+    std::string directive_name;
+
+    std::vector<base::StringPiece> directive_values;
+
+    DISALLOW_COPY_AND_ASSIGN(Directive);
+  };
+
+  using DirectiveList = std::vector<Directive>;
+
+  CSPParser(std::string policy);
+  ~CSPParser();
+
+  // It's not safe to move CSPParser since |directives_| refers to memory owned
+  // by |policy_|. Once move constructed, |directives_| will end up being in an
+  // invalid state, as it will point to memory owned by a "moved" string
+  // instance.
+  CSPParser(CSPParser&&) = delete;
+  CSPParser& operator=(CSPParser&&) = delete;
+
+  // This can contain duplicate directives (directives having the same directive
+  // name).
+  const DirectiveList& directives() const { return directives_; }
+
+ private:
+  void Parse();
+
+  const std::string policy_;
+
+  // This refers to memory owned by |policy_|.
+  DirectiveList directives_;
+
+  DISALLOW_COPY_AND_ASSIGN(CSPParser);
 };
 
 // Checks whether the given |policy| meets the minimum security requirements

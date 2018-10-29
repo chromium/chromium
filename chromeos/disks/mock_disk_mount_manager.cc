@@ -56,22 +56,16 @@ std::unique_ptr<Disk::Builder> MakeDiskBuilder() {
 
 }  // namespace
 
-void MockDiskMountManager::AddObserverInternal(
-    DiskMountManager::Observer* observer) {
+void MockDiskMountManager::AddObserver(DiskMountManager::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void MockDiskMountManager::RemoveObserverInternal(
+void MockDiskMountManager::RemoveObserver(
     DiskMountManager::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
 MockDiskMountManager::MockDiskMountManager() {
-  ON_CALL(*this, AddObserver(_))
-      .WillByDefault(Invoke(this, &MockDiskMountManager::AddObserverInternal));
-  ON_CALL(*this, RemoveObserver(_))
-      .WillByDefault(Invoke(this,
-                            &MockDiskMountManager::RemoveObserverInternal));
   ON_CALL(*this, disks())
       .WillByDefault(Invoke(this, &MockDiskMountManager::disksInternal));
   ON_CALL(*this, mount_points())
@@ -137,10 +131,6 @@ void MockDiskMountManager::NotifyMountEvent(MountEvent event,
 }
 
 void MockDiskMountManager::SetupDefaultReplies() {
-  EXPECT_CALL(*this, AddObserver(_))
-      .Times(AnyNumber());
-  EXPECT_CALL(*this, RemoveObserver(_))
-      .Times(AnyNumber());
   EXPECT_CALL(*this, disks())
       .WillRepeatedly(ReturnRef(disks_));
   EXPECT_CALL(*this, mount_points())

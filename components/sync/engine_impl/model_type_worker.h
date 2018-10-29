@@ -19,6 +19,7 @@
 #include "components/sync/base/cancelation_observer.h"
 #include "components/sync/base/cryptographer.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/non_blocking_sync_common.h"
 #include "components/sync/engine/sync_encryption_handler.h"
@@ -66,6 +67,7 @@ class ModelTypeWorker : public UpdateHandler,
                   const sync_pb::ModelTypeState& initial_state,
                   bool trigger_initial_sync,
                   std::unique_ptr<Cryptographer> cryptographer,
+                  PassphraseType passphrase_type,
                   NudgeHandler* nudge_handler,
                   std::unique_ptr<ModelTypeProcessor> model_type_processor,
                   DataTypeDebugInfoEmitter* debug_info_emitter,
@@ -83,6 +85,7 @@ class ModelTypeWorker : public UpdateHandler,
   ModelType GetModelType() const;
 
   void UpdateCryptographer(std::unique_ptr<Cryptographer> cryptographer);
+  void UpdatePassphraseType(PassphraseType type);
 
   // UpdateHandler implementation.
   bool IsInitialSyncEnded() const override;
@@ -103,6 +106,16 @@ class ModelTypeWorker : public UpdateHandler,
   // CommitContributor implementation.
   std::unique_ptr<CommitContribution> GetContribution(
       size_t max_entries) override;
+
+  // Extended overload of ProcessGetUpdatesResponse() that allows specifying
+  // whether the updates are coming from the USS migrator, which influences how
+  // UMA metrics are logged.
+  SyncerError ProcessGetUpdatesResponse(
+      const sync_pb::DataTypeProgressMarker& progress_marker,
+      const sync_pb::DataTypeContext& mutated_context,
+      const SyncEntityList& applicable_updates,
+      bool from_uss_migrator,
+      StatusController* status);
 
   bool HasLocalChangesForTest() const;
 
@@ -178,6 +191,14 @@ class ModelTypeWorker : public UpdateHandler,
   // ready (doesn't have pending keys).
   void NudgeIfReadyToCommit();
 
+  // Filters our duplicate updates from |pending_updates_| based on the server
+  // id. It discards all of them except the last one.
+  void DeduplicatePendingUpdatesBasedOnServerId();
+
+  // Filters our duplicate updates from |pending_updates_| based on the client
+  // tag hash. It discards all of them except the last one.
+  void DeduplicatePendingUpdatesBasedOnClientTagHash();
+
   ModelType type_;
   DataTypeDebugInfoEmitter* debug_info_emitter_;
 
@@ -191,6 +212,10 @@ class ModelTypeWorker : public UpdateHandler,
   // Initialized at construction time and updated with UpdateCryptographer().
   // null if encryption is not enabled for this type.
   std::unique_ptr<Cryptographer> cryptographer_;
+
+  // A private copy of the most recent passphrase type. Initialized at
+  // construction time and updated with UpdatePassphraseType().
+  PassphraseType passphrase_type_;
 
   // Interface used to access and send nudges to the sync scheduler. Not owned.
   NudgeHandler* nudge_handler_;

@@ -7,9 +7,9 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 
@@ -25,8 +25,7 @@ ExtensionApiUnittest::~ExtensionApiUnittest() {
 
 void ExtensionApiUnittest::SetUp() {
   BrowserWithTestWindowTest::SetUp();
-  extension_ = api_test_utils::CreateEmptyExtensionWithLocation(
-      Manifest::UNPACKED);
+  extension_ = ExtensionBuilder("Test").Build();
 }
 
 std::unique_ptr<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(

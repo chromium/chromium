@@ -1,31 +1,29 @@
-<html> 
+<html>
     <head>
-        <script src="../../resources/js-test.js"></script>
+        <script src="../../resources/testharness.js"></script>
+        <script src="../../resources/testharnessreport.js"></script>
     </head>
     <body>
         <a id=test href="javascript:popup()">test</a>
         <div id="console"></div>
-        <script> 
+        <script>
             var win;
             function popup() {
                 win = window.open('about:blank','blank','height=200,width=200');
-                shouldBeNull("win");
+                assert_equals(win, null);
             }
 
             if (window.testRunner) {
-                testRunner.dumpAsText();
                 testRunner.setCanOpenWindows();
                 testRunner.setPopupBlockingEnabled(true);
                 testRunner.setCloseRemainingWindowsWhenComplete(true);
-                testRunner.waitUntilDone();
             }
 
             clickEvent = document.createEvent("MouseEvents");
             clickEvent.initEvent("click", true, true, document.defaultView, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-            document.getElementById("test").dispatchEvent(clickEvent);
-
-            if (window.testRunner)
-                testRunner.notifyDone();
-        </script> 
-    </body> 
+            test(() => {
+                document.getElementById("test").dispatchEvent(clickEvent);
+            }, 'Untrusted click');
+        </script>
+    </body>
 </html>

@@ -57,7 +57,7 @@ void ReportViolation(CSPContext* context,
                      const CSPDirective& directive,
                      const CSPDirective::Name directive_name,
                      const GURL& url,
-                     bool is_redirect,
+                     bool has_followed_redirect,
                      const SourceLocation& source_location) {
   // We should never have a violation against `child-src` or `default-src`
   // directly; the effective directive should always be one of the explicit
@@ -71,8 +71,8 @@ void ReportViolation(CSPContext* context,
   // renderers.
   GURL safe_url = url;
   SourceLocation safe_source_location = source_location;
-  context->SanitizeDataForUseInCspViolation(is_redirect, directive_name,
-                                            &safe_url, &safe_source_location);
+  context->SanitizeDataForUseInCspViolation(
+      has_followed_redirect, directive_name, &safe_url, &safe_source_location);
 
   std::stringstream message;
 
@@ -103,7 +103,7 @@ void ReportViolation(CSPContext* context,
       CSPDirective::NameToString(directive.name),
       CSPDirective::NameToString(directive_name), message.str(), safe_url,
       policy.report_endpoints, policy.use_reporting_api,
-      policy.header.header_value, policy.header.type, is_redirect,
+      policy.header.header_value, policy.header.type, has_followed_redirect,
       safe_source_location));
 }
 
@@ -112,16 +112,16 @@ bool AllowDirective(CSPContext* context,
                     const CSPDirective& directive,
                     CSPDirective::Name directive_name,
                     const GURL& url,
-                    bool is_redirect,
+                    bool has_followed_redirect,
                     bool is_response_check,
                     const SourceLocation& source_location) {
-  if (CSPSourceList::Allow(directive.source_list, url, context, is_redirect,
-                           is_response_check)) {
+  if (CSPSourceList::Allow(directive.source_list, url, context,
+                           has_followed_redirect, is_response_check)) {
     return true;
   }
 
-  ReportViolation(context, policy, directive, directive_name, url, is_redirect,
-                  source_location);
+  ReportViolation(context, policy, directive, directive_name, url,
+                  has_followed_redirect, source_location);
   return false;
 }
 
@@ -164,7 +164,7 @@ ContentSecurityPolicy::~ContentSecurityPolicy() = default;
 bool ContentSecurityPolicy::Allow(const ContentSecurityPolicy& policy,
                                   CSPDirective::Name directive_name,
                                   const GURL& url,
-                                  bool is_redirect,
+                                  bool has_followed_redirect,
                                   bool is_response_check,
                                   CSPContext* context,
                                   const SourceLocation& source_location,
@@ -184,9 +184,9 @@ bool ContentSecurityPolicy::Allow(const ContentSecurityPolicy& policy,
     const CSPDirective* current_directive =
         FindDirective(current_directive_name, policy.directives);
     if (current_directive) {
-      bool allowed =
-          AllowDirective(context, policy, *current_directive, directive_name,
-                         url, is_redirect, is_response_check, source_location);
+      bool allowed = AllowDirective(context, policy, *current_directive,
+                                    directive_name, url, has_followed_redirect,
+                                    is_response_check, source_location);
       return allowed ||
              policy.header.type == blink::kWebContentSecurityPolicyTypeReport;
     }

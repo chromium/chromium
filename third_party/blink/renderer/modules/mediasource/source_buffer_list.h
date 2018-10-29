@@ -62,9 +62,9 @@ class SourceBufferList final : public EventTargetWithInlineData,
   }
 
   void Add(SourceBuffer*);
-  void insert(size_t position, SourceBuffer*);
+  void insert(wtf_size_t position, SourceBuffer*);
   void Remove(SourceBuffer*);
-  size_t Find(SourceBuffer* buffer) { return list_.Find(buffer); }
+  wtf_size_t Find(SourceBuffer* buffer) { return list_.Find(buffer); }
   bool Contains(SourceBuffer* buffer) {
     return list_.Find(buffer) != kNotFound;
   }

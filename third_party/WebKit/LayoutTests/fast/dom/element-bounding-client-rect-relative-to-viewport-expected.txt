@@ -2,10 +2,10 @@ This test ensures that getBoundingClientRect remains relative to the layout view
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS rect.left is xPos
 PASS rect.top is yPos
  
@@ -22,4 +22,3 @@ PASS rectAfterScaleAndScroll.left is expectedX
 PASS rectAfterScaleAndScroll.top is expectedY
 PASS rectAfterScaleAndScroll.width is rect.width
 PASS rectAfterScaleAndScroll.height is rect.height
-

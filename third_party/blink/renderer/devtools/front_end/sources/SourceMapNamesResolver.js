@@ -435,50 +435,34 @@ Sources.SourceMapNamesResolver.RemoteObject = class extends SDK.RemoteObject {
   /**
    * @override
    * @param {boolean} generatePreview
-   * @param {function(?Array.<!SDK.RemoteObjectProperty>, ?Array.<!SDK.RemoteObjectProperty>)} callback
    */
-  getOwnProperties(generatePreview, callback) {
-    this._object.getOwnProperties(generatePreview, callback);
+  getOwnProperties(generatePreview) {
+    return this._object.getOwnProperties(generatePreview);
   }
 
   /**
    * @override
    * @param {boolean} accessorPropertiesOnly
    * @param {boolean} generatePreview
-   * @param {function(?Array<!SDK.RemoteObjectProperty>, ?Array<!SDK.RemoteObjectProperty>)} callback
+   * @return {!Promise<!SDK.GetPropertiesResult>}
    */
-  getAllProperties(accessorPropertiesOnly, generatePreview, callback) {
-    /**
-     * @param {?Array.<!SDK.RemoteObjectProperty>} properties
-     * @param {?Array.<!SDK.RemoteObjectProperty>} internalProperties
-     * @this {Sources.SourceMapNamesResolver.RemoteObject}
-     */
-    function wrappedCallback(properties, internalProperties) {
-      Sources.SourceMapNamesResolver._resolveScope(this._scope)
-          .then(resolveNames.bind(null, properties, internalProperties));
-    }
+  async getAllProperties(accessorPropertiesOnly, generatePreview) {
+    const allProperties = await this._object.getAllProperties(accessorPropertiesOnly, generatePreview);
+    const namesMapping = await Sources.SourceMapNamesResolver._resolveScope(this._scope);
 
-    /**
-     * @param {?Array.<!SDK.RemoteObjectProperty>} properties
-     * @param {?Array.<!SDK.RemoteObjectProperty>} internalProperties
-     * @param {!Map<string, string>} namesMapping
-     */
-    function resolveNames(properties, internalProperties, namesMapping) {
-      const newProperties = [];
-      if (properties) {
-        for (let i = 0; i < properties.length; ++i) {
-          const property = properties[i];
-          const name = namesMapping.get(property.name) || properties[i].name;
-          newProperties.push(new SDK.RemoteObjectProperty(
-              name, property.value, property.enumerable, property.writable, property.isOwn, property.wasThrown,
-              property.symbol, property.synthetic));
-        }
+    const properties = allProperties.properties;
+    const internalProperties = allProperties.internalProperties;
+    const newProperties = [];
+    if (properties) {
+      for (let i = 0; i < properties.length; ++i) {
+        const property = properties[i];
+        const name = namesMapping.get(property.name) || properties[i].name;
+        newProperties.push(new SDK.RemoteObjectProperty(
+            name, property.value, property.enumerable, property.writable, property.isOwn, property.wasThrown,
+            property.symbol, property.synthetic));
       }
-
-      callback(newProperties, internalProperties);
     }
-
-    this._object.getAllProperties(accessorPropertiesOnly, generatePreview, wrappedCallback.bind(this));
+    return {properties: newProperties, internalProperties: internalProperties};
   }
 
   /**
@@ -508,15 +492,6 @@ Sources.SourceMapNamesResolver.RemoteObject = class extends SDK.RemoteObject {
 
   /**
    * @override
-   * @param {!Array.<string>} propertyPath
-   * @param {function(?SDK.RemoteObject, boolean=)} callback
-   */
-  getProperty(propertyPath, callback) {
-    this._object.getProperty(propertyPath, callback);
-  }
-
-  /**
-   * @override
    * @param {!Protocol.Runtime.CallArgument} name
    * @return {!Promise<string|undefined>}
    */
@@ -528,20 +503,22 @@ Sources.SourceMapNamesResolver.RemoteObject = class extends SDK.RemoteObject {
    * @override
    * @param {function(this:Object, ...)} functionDeclaration
    * @param {!Array<!Protocol.Runtime.CallArgument>=} args
-   * @param {function(?SDK.RemoteObject, boolean=)=} callback
+   * @return {!Promise<!SDK.CallFunctionResult>}
    */
-  callFunction(functionDeclaration, args, callback) {
-    this._object.callFunction(functionDeclaration, args, callback);
+  callFunction(functionDeclaration, args) {
+    return this._object.callFunction(functionDeclaration, args);
   }
+
 
   /**
    * @override
-   * @param {function(this:Object, ...)} functionDeclaration
+   * @param {function(this:Object, ...):T} functionDeclaration
    * @param {!Array<!Protocol.Runtime.CallArgument>|undefined} args
-   * @param {function(*)} callback
+   * @return {!Promise<T>}
+   * @template T
    */
-  callFunctionJSON(functionDeclaration, args, callback) {
-    this._object.callFunctionJSON(functionDeclaration, args, callback);
+  callFunctionJSON(functionDeclaration, args) {
+    return this._object.callFunctionJSON(functionDeclaration, args);
   }
 
   /**

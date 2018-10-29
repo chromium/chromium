@@ -12,6 +12,7 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.test.filters.SmallTest;
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,9 +25,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.omnibox.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.LocationBarVoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.omnibox.VoiceSuggestionProvider.VoiceResult;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -42,6 +46,7 @@ import org.chromium.ui.base.WindowAndroid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Tests for {@link LocationBarVoiceRecognitionHandler}.
@@ -254,6 +259,19 @@ public class LocationBarVoiceRecognitionHandlerTest {
      */
     private class TestDelegate implements LocationBarVoiceRecognitionHandler.Delegate {
         private boolean mUpdatedMicButtonState;
+        private AutocompleteCoordinator mCoordinator;
+
+        TestDelegate() {
+            ViewGroup parent =
+                    (ViewGroup) mActivityTestRule.getActivity().findViewById(android.R.id.content);
+            Assert.assertNotNull(parent);
+            mCoordinator = new AutocompleteCoordinator(parent, null, null, null) {
+                @Override
+                public VoiceResult onVoiceResults(Bundle data) {
+                    return mAutocomplete.onVoiceResults(data);
+                }
+            };
+        }
 
         @Override
         public void loadUrlFromVoice(String url) {}
@@ -272,8 +290,8 @@ public class LocationBarVoiceRecognitionHandlerTest {
         }
 
         @Override
-        public AutocompleteController getAutocompleteController() {
-            return mAutocomplete;
+        public AutocompleteCoordinator getAutocompleteCoordinator() {
+            return mCoordinator;
         }
 
         @Override
@@ -401,11 +419,11 @@ public class LocationBarVoiceRecognitionHandlerTest {
     }
 
     @Before
-    public void setUp() throws InterruptedException {
+    public void setUp() throws InterruptedException, ExecutionException {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         mDataProvider = new TestDataProvider();
-        mDelegate = new TestDelegate();
+        mDelegate = ThreadUtils.runOnUiThreadBlocking(() -> new TestDelegate());
         mHandler = new TestLocationBarVoiceRecognitionHandler(mDelegate);
         mPermissionDelegate = new TestAndroidPermissionDelegate();
         mAutocomplete = new LocalTestAutocompleteController(null /* view */,

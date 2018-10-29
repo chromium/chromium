@@ -197,6 +197,9 @@ def bindings_tests(output_directory, verbose, suppress_diff):
     executive = Executive()
 
     def list_files(directory):
+        if not os.path.isdir(directory):
+            return []
+
         files = []
         for component in os.listdir(directory):
             if component not in COMPONENT_DIRECTORY:

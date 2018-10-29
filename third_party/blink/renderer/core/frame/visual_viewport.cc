@@ -138,9 +138,8 @@ void VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   }
 
   {
-    TransformationMatrix scale_transform;
-    scale_transform.Scale(Scale());
-    TransformPaintPropertyNode::State state{scale_transform, FloatPoint3D()};
+    TransformPaintPropertyNode::State state;
+    state.matrix.Scale(Scale());
     state.compositor_element_id = GetCompositorElementId();
 
     if (!scale_transform_node_) {
@@ -180,13 +179,11 @@ void VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   }
 
   {
-    TransformationMatrix translate_transform;
+    TransformPaintPropertyNode::State state;
     ScrollOffset scroll_position = GetScrollOffset();
-    translate_transform.Translate(-scroll_position.Width(),
-                                  -scroll_position.Height());
-    TransformPaintPropertyNode::State state{translate_transform,
-                                            FloatPoint3D()};
+    state.matrix.Translate(-scroll_position.Width(), -scroll_position.Height());
     state.scroll = scroll_node_;
+    state.is_identity_or_2d_translation = true;
     if (!translation_transform_node_) {
       translation_transform_node_ = TransformPaintPropertyNode::Create(
           *scale_transform_node_, std::move(state));
@@ -254,10 +251,6 @@ VisualViewport::~VisualViewport() {
 void VisualViewport::Trace(blink::Visitor* visitor) {
   visitor->Trace(page_);
   ScrollableArea::Trace(visitor);
-}
-
-void VisualViewport::SetNeedsPaintPropertiesUpdate() {
-  needs_paint_property_update_ = true;
 }
 
 void VisualViewport::UpdateStyleAndLayoutIgnorePendingStylesheets() const {
@@ -726,15 +719,6 @@ bool VisualViewport::ScrollAnimatorEnabled() const {
 
 ChromeClient* VisualViewport::GetChromeClient() const {
   return &GetPage().GetChromeClient();
-}
-
-bool VisualViewport::ShouldUseIntegerScrollOffset() const {
-  LocalFrame* frame = MainFrame();
-  if (frame && frame->GetSettings() &&
-      !frame->GetSettings()->GetPreferCompositingToLCDTextEnabled())
-    return true;
-
-  return ScrollableArea::ShouldUseIntegerScrollOffset();
 }
 
 void VisualViewport::SetScrollOffset(const ScrollOffset& offset,

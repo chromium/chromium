@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
+#include "components/browsing_data/core/counters/sync_tracker.h"
 
 class Profile;
 
@@ -18,10 +19,12 @@ class SiteDataCounter : public browsing_data::BrowsingDataCounter {
   const char* GetPrefName() const override;
 
  private:
+  void OnInitialized() override;
   void Count() override;
   void Done(int origin_count);
 
   Profile* profile_;
+  browsing_data::SyncTracker sync_tracker_;
   base::WeakPtrFactory<SiteDataCounter> weak_ptr_factory_;
 };
 

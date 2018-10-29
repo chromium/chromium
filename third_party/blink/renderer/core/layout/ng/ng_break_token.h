@@ -67,6 +67,8 @@ class CORE_EXPORT NGBreakToken : public RefCounted<NGBreakToken> {
   NGLayoutInputNode node_;
 };
 
+typedef Vector<scoped_refptr<NGBreakToken>, 16> NGBreakTokenVector;
+
 }  // namespace blink
 
 #endif  // NGBreakToken_h

@@ -100,7 +100,7 @@ LayoutTestBluetoothChooserFactory::RunBluetoothChooser(
     RenderFrameHost* frame,
     const BluetoothChooser::EventHandler& event_handler) {
   const url::Origin origin = frame->GetLastCommittedOrigin();
-  DCHECK(!origin.unique());
+  DCHECK(!origin.opaque());
   std::string event = "chooser-opened(";
   event += origin.Serialize();
   event += ")";

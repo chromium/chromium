@@ -1,0 +1,74 @@
+<html>
+<meta charset="UTF-8">
+ <style type="text/css">
+    @font-face {
+        font-family: 'adobevfproto';
+        src: url("../../third_party/AdobeVF/AdobeVFPrototype.otf");
+    }
+    @font-face {
+        font-family: 'chromacheck-sbix';
+        src: url("../../third_party/ChromaCheck/chromacheck-sbix.woff");
+    }
+    @font-face {
+        font-family: 'chromacheck-cbdt';
+        src: url("../../third_party/ChromaCheck/chromacheck-cbdt.woff");
+    }
+
+    @font-face {
+        font-family: "chromacheck-colr";
+        src: url("../../third_party/ChromaCheck/chromacheck-colr.woff");
+    }
+
+    .colr_test {
+        font-family: chromacheck-colr, sans-serif;
+    }
+
+    .cff2_test {
+        font-family: adobevfproto, sans-serif;
+    }
+    .sbix_test {
+        font-family: chromacheck-sbix, sans-serif;
+    }
+    .cbdt_test {
+        font-family: chromacheck-cbdt, sans-serif;
+    }
+
+    .horizontalgrid {
+        display: flex;
+        height: 50%;
+    }
+
+    .gridcell {
+        flex: 1;
+        padding: 10px;
+        overflow: visible;
+        writing-mode: vertical-rl;
+    }
+
+    .upright {
+        text-orientation: upright;
+    }
+
+    p {
+        margin-bottom: 1em;
+    }
+ </style>
+<body>
+    <div class="horizontalgrid">
+        <div class="gridcell"><p>Should show as a serif font, not as a sans-serif fallback (CFF2):</p><span class="cff2_test">AbcDef</span></div>
+        <div class="gridcell"><p>Should show red squares (SBIX):</p><span class="sbix_test">&#xE901; &#xE901; &#xE901; &#xE901;
+        &#xE901;</span></div>
+        <div class="gridcell"><p>Should show dark red squares (CBDT):</p><span class="cbdt_test">&#xE903; &#xE903; &#xE903;
+        &#xE903; &#xE903;</span></div>
+        <div class="gridcell"><p>Should show red squares (COLR):</p><span class="colr_test">&#xE900; &#xE900; &#xE900;
+        &#xE900; &#xE900;</span></div>
+    </div>
+    <div class="horizontalgrid">
+        <div class="gridcell"><p>Should show as a serif font, not as a sans-serif fallback (CFF2):</p><span class="cff2_test upright">AbcDef</span></div>
+        <div class="gridcell"><p>Should show red squares (SBIX):</p><span class="sbix_test upright">&#xE901; &#xE901; &#xE901;
+        &#xE901; &#xE901;</span></div>
+        <div class="gridcell"><p>Should show dark red squares (CBDT):</p><span class="cbdt_test upright">&#xE903; &#xE903; &#xE903; &#xE903; &#xE903;</span></div>
+        <div class="gridcell"><p>Should show dark red squares (COLR):</p><span class="colr_test upright">&#xE900; &#xE900; &#xE900; &#xE900; &#xE900;</span></div>
+    </div>
+</body>
+</html>

@@ -1852,18 +1852,14 @@ class LayerTreeHostScrollTestElasticOverscroll
     DCHECK(scroll_elasticity_helper_);
   }
 
-  void ApplyViewportDeltas(const gfx::Vector2dF& inner_delta,
-                           const gfx::Vector2dF& outer_delta,
-                           const gfx::Vector2dF& elastic_overscroll_delta,
-                           float scale,
-                           float top_controls_delta) override {
+  void ApplyViewportChanges(const ApplyViewportChangesArgs& args) override {
     DCHECK_NE(0, num_begin_main_frames_main_thread_)
         << "The first BeginMainFrame has no deltas to report";
     DCHECK_LT(num_begin_main_frames_main_thread_, 5);
 
     gfx::Vector2dF expected_elastic_overscroll =
         elastic_overscroll_test_cases_[num_begin_main_frames_main_thread_];
-    current_elastic_overscroll_ += elastic_overscroll_delta;
+    current_elastic_overscroll_ += args.elastic_overscroll_delta;
     EXPECT_EQ(expected_elastic_overscroll, current_elastic_overscroll_);
     EXPECT_EQ(expected_elastic_overscroll,
               layer_tree_host()->elastic_overscroll());

@@ -25,35 +25,35 @@ class XPathContext {
  public:
   XPathContext() : document_(Document::CreateForTest()), context_(*document_) {}
 
-  XPath::EvaluationContext& Context() { return context_; }
+  xpath::EvaluationContext& Context() { return context_; }
   Document& GetDocument() { return *document_; }
 
  private:
   const Member<Document> document_;
-  XPath::EvaluationContext context_;
+  xpath::EvaluationContext context_;
 };
 
-using XPathArguments = HeapVector<Member<XPath::Expression>>;
+using XPathArguments = HeapVector<Member<xpath::Expression>>;
 
 static String Substring(XPathArguments& args) {
   XPathContext xpath;
-  XPath::Expression* call = XPath::CreateFunction("substring", args);
-  XPath::Value result = call->Evaluate(xpath.Context());
+  xpath::Expression* call = xpath::CreateFunction("substring", args);
+  xpath::Value result = call->Evaluate(xpath.Context());
   return result.ToString();
 }
 
 static String Substring(const char* string, double pos) {
   XPathArguments args;
-  args.push_back(new XPath::StringExpression(string));
-  args.push_back(new XPath::Number(pos));
+  args.push_back(new xpath::StringExpression(string));
+  args.push_back(new xpath::Number(pos));
   return Substring(args);
 }
 
 static String Substring(const char* string, double pos, double len) {
   XPathArguments args;
-  args.push_back(new XPath::StringExpression(string));
-  args.push_back(new XPath::Number(pos));
-  args.push_back(new XPath::Number(len));
+  args.push_back(new xpath::StringExpression(string));
+  args.push_back(new xpath::Number(pos));
+  args.push_back(new xpath::Number(len));
   return Substring(args);
 }
 

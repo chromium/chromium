@@ -73,7 +73,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
  public:
   virtual ~Image();
 
-  static cc::ImageDecodeCache& SharedCCDecodeCache();
+  static cc::ImageDecodeCache& SharedCCDecodeCache(SkColorType);
 
   static scoped_refptr<Image> LoadPlatformResource(const char* name);
 

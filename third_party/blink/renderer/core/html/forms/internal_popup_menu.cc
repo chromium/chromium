@@ -448,9 +448,11 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
     Element* owner = &OwnerElement();
     if (LocalFrame* frame = owner->GetDocument().GetFrame()) {
       frame->GetEventHandler().HandleTargetedMouseEvent(
-          owner, event, EventTypeNames::mouseup, Vector<WebMouseEvent>());
+          owner, event, EventTypeNames::mouseup, Vector<WebMouseEvent>(),
+          Vector<WebMouseEvent>());
       frame->GetEventHandler().HandleTargetedMouseEvent(
-          owner, event, EventTypeNames::click, Vector<WebMouseEvent>());
+          owner, event, EventTypeNames::click, Vector<WebMouseEvent>(),
+          Vector<WebMouseEvent>());
     }
   }
 }
@@ -464,7 +466,7 @@ void InternalPopupMenu::SetValue(const String& value) {
 }
 
 void InternalPopupMenu::DidClosePopup() {
-  // Clearing m_popup first to prevent from trying to close the popup again.
+  // Clearing popup_ first to prevent from trying to close the popup again.
   popup_ = nullptr;
   if (owner_element_)
     owner_element_->PopupDidHide();

@@ -3,12 +3,13 @@ cell	cell	cell
 cell
 test
 test
-
+option
+option
 heading
+
 This tests that aria-hidden works as expected on elements that are subclasses of AccessibilityRenderObject
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
 
 PASS child.childrenCount is 0
 PASS child.role is 'AXRole: AXHeading'

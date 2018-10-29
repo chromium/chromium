@@ -50,14 +50,14 @@ TEST_P(NGTextFragmentPainterTest, TestTextStyle) {
 
   const NGPaintFragment& root_fragment = *block_flow.PaintFragment();
   EXPECT_EQ(1u, root_fragment.Children().size());
-  const NGPaintFragment& line_box_fragment = *root_fragment.Children()[0];
+  const NGPaintFragment& line_box_fragment = *root_fragment.FirstChild();
   EXPECT_EQ(1u, line_box_fragment.Children().size());
-  const NGPaintFragment& text_fragment = *line_box_fragment.Children()[0];
+  const NGPaintFragment& text_fragment = *line_box_fragment.FirstChild();
 
-  EXPECT_DISPLAY_LIST(
-      RootPaintController().GetDisplayItemList(), 2,
-      TestDisplayItem(ViewBackgroundClient(), DisplayItem::kDocumentBackground),
-      TestDisplayItem(text_fragment, kForegroundType));
+  EXPECT_DISPLAY_LIST(RootPaintController().GetDisplayItemList(), 2,
+                      TestDisplayItem(ViewScrollingBackgroundClient(),
+                                      DisplayItem::kDocumentBackground),
+                      TestDisplayItem(text_fragment, kForegroundType));
 }
 
 }  // namespace blink

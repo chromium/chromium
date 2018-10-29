@@ -57,6 +57,11 @@ bool FocusWebViewElementWithId(web::WebState* web_state,
 // submitted using a JavaScript submit() event.
 bool SubmitWebViewFormWithId(web::WebState* web_state,
                              const std::string& form_id);
+
+// Returns whether the <option id="|element_id|"> in the passed |web_state| has
+// been selected using a JavaScript "selected=true" operation.
+bool SelectWebViewElementWithId(web::WebState* web_state,
+                                const std::string& element_id);
 }  // namespace test
 }  // namespace web
 

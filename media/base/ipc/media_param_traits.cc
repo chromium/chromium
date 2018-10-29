@@ -31,6 +31,7 @@ void ParamTraits<AudioParameters>::Write(base::Pickle* m,
   WriteParam(m, p.effects());
   WriteParam(m, p.mic_positions());
   WriteParam(m, p.latency_tag());
+  WriteParam(m, p.hardware_capabilities());
 }
 
 bool ParamTraits<AudioParameters>::Read(const base::Pickle* m,
@@ -41,30 +42,65 @@ bool ParamTraits<AudioParameters>::Read(const base::Pickle* m,
   int sample_rate, frames_per_buffer, channels, effects;
   std::vector<media::Point> mic_positions;
   AudioLatency::LatencyType latency_tag;
+  base::Optional<media::AudioParameters::HardwareCapabilities>
+      hardware_capabilities;
 
   if (!ReadParam(m, iter, &format) || !ReadParam(m, iter, &channel_layout) ||
       !ReadParam(m, iter, &sample_rate) ||
       !ReadParam(m, iter, &frames_per_buffer) ||
       !ReadParam(m, iter, &channels) || !ReadParam(m, iter, &effects) ||
       !ReadParam(m, iter, &mic_positions) ||
-      !ReadParam(m, iter, &latency_tag)) {
+      !ReadParam(m, iter, &latency_tag) ||
+      !ReadParam(m, iter, &hardware_capabilities)) {
     return false;
   }
 
-  AudioParameters params(format, channel_layout, sample_rate,
-                         frames_per_buffer);
-  params.set_channels_for_discrete(channels);
-  params.set_effects(effects);
-  params.set_mic_positions(mic_positions);
-  params.set_latency_tag(latency_tag);
+  if (hardware_capabilities) {
+    *r = AudioParameters(format, channel_layout, sample_rate, frames_per_buffer,
+                         *hardware_capabilities);
+  } else {
+    *r =
+        AudioParameters(format, channel_layout, sample_rate, frames_per_buffer);
+  }
 
-  *r = params;
+  r->set_channels_for_discrete(channels);
+  r->set_effects(effects);
+  r->set_mic_positions(mic_positions);
+  r->set_latency_tag(latency_tag);
+
   return r->IsValid();
 }
 
 void ParamTraits<AudioParameters>::Log(const AudioParameters& p,
                                        std::string* l) {
   l->append(base::StringPrintf("<AudioParameters>"));
+}
+
+void ParamTraits<AudioParameters::HardwareCapabilities>::Write(
+    base::Pickle* m,
+    const param_type& p) {
+  WriteParam(m, p.min_frames_per_buffer);
+  WriteParam(m, p.max_frames_per_buffer);
+}
+
+bool ParamTraits<AudioParameters::HardwareCapabilities>::Read(
+    const base::Pickle* m,
+    base::PickleIterator* iter,
+    param_type* r) {
+  int max_frames_per_buffer, min_frames_per_buffer;
+  if (!ReadParam(m, iter, &min_frames_per_buffer) ||
+      !ReadParam(m, iter, &max_frames_per_buffer)) {
+    return false;
+  }
+  r->min_frames_per_buffer = min_frames_per_buffer;
+  r->max_frames_per_buffer = max_frames_per_buffer;
+  return true;
+}
+
+void ParamTraits<AudioParameters::HardwareCapabilities>::Log(
+    const param_type& p,
+    std::string* l) {
+  l->append(base::StringPrintf("<AudioParameters::HardwareCapabilities>"));
 }
 
 template <>

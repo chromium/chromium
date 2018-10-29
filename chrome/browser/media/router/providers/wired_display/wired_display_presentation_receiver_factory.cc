@@ -30,7 +30,6 @@ WiredDisplayPresentationReceiverFactory::Create(
         profile, bounds, std::move(termination_callback),
         std::move(title_change_callback));
   }
-  CHECK(PresentationReceiverWindowEnabled());
   return PresentationReceiverWindowController::CreateFromOriginalProfile(
       profile, bounds, std::move(termination_callback),
       std::move(title_change_callback));

@@ -7,8 +7,8 @@
 #include "base/logging.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
-#include "ios/chrome/browser/ui/ui_util.h"
-#include "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -29,8 +29,6 @@ const CGFloat kBubbleCornerRadius = 13.0f;
 // The maximum label width preserves readability, ensuring that long labels do
 // not span across wide screens.
 const CGFloat kMaxLabelWidth = 359.0f;
-// Font size for the bubble's display text.
-const CGFloat kFontSize = 15.0f;
 
 // Margin between the bubble view's bounds and its content. This margin is on
 // all sides of the bubble.
@@ -165,7 +163,7 @@ const CGFloat kControlPointEnd = 0.514375;
   DCHECK(text.length);
   UILabel* label = [[UILabel alloc] initWithFrame:CGRectZero];
   [label setText:text];
-  [label setFont:[UIFont systemFontOfSize:kFontSize]];
+  [label setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
   [label setTextColor:[UIColor whiteColor]];
   [label setTextAlignment:NSTextAlignmentCenter];
   [label setNumberOfLines:0];

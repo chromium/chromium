@@ -45,7 +45,10 @@ size_t GetReceivedFlowControlWindow(QuicSession* session) {
 // static
 const SpdyPriority QuicStream::kDefaultPriority;
 
-QuicStream::QuicStream(QuicStreamId id, QuicSession* session, bool is_static)
+QuicStream::QuicStream(QuicStreamId id,
+                       QuicSession* session,
+                       bool is_static,
+                       StreamType type)
     : sequencer_(this),
       id_(id),
       session_(session),
@@ -80,7 +83,15 @@ QuicStream::QuicStream(QuicStreamId id, QuicSession* session, bool is_static)
           session->connection()->helper()->GetStreamSendBufferAllocator()),
       buffered_data_threshold_(GetQuicFlag(FLAGS_quic_buffered_data_threshold)),
       is_static_(is_static),
-      deadline_(QuicTime::Zero()) {
+      deadline_(QuicTime::Zero()),
+      type_(type) {
+  if (type_ == WRITE_UNIDIRECTIONAL) {
+    set_fin_received(true);
+    CloseReadSide();
+  } else if (type_ == READ_UNIDIRECTIONAL) {
+    set_fin_sent(true);
+    CloseWriteSide();
+  }
   SetFromConfig();
   session_->RegisterStreamPriority(id, is_static_, priority_);
 }
@@ -104,6 +115,13 @@ void QuicStream::OnStreamFrame(const QuicStreamFrame& frame) {
   DCHECK_EQ(frame.stream_id, id_);
 
   DCHECK(!(read_side_closed_ && write_side_closed_));
+
+  if (type_ == WRITE_UNIDIRECTIONAL) {
+    CloseConnectionWithDetails(
+        QUIC_DATA_RECEIVED_ON_WRITE_UNIDIRECTIONAL_STREAM,
+        "Data received on write unidirectional stream");
+    return;
+  }
 
   bool is_stream_too_long =
       (frame.offset > kMaxStreamLength) ||
@@ -251,6 +269,11 @@ void QuicStream::WriteOrBufferData(
   if (write_side_closed_) {
     QUIC_DLOG(ERROR) << ENDPOINT
                      << "Attempt to write when the write side is closed";
+    if (type_ == READ_UNIDIRECTIONAL) {
+      CloseConnectionWithDetails(
+          QUIC_TRY_TO_WRITE_DATA_ON_READ_UNIDIRECTIONAL_STREAM,
+          "Try to send data on read unidirectional stream");
+    }
     return;
   }
 
@@ -331,6 +354,11 @@ QuicConsumedData QuicStream::WritevData(const struct iovec* iov,
   if (write_side_closed_) {
     QUIC_DLOG(ERROR) << ENDPOINT << "Stream " << id()
                      << "attempting to write when the write side is closed";
+    if (type_ == READ_UNIDIRECTIONAL) {
+      CloseConnectionWithDetails(
+          QUIC_TRY_TO_WRITE_DATA_ON_READ_UNIDIRECTIONAL_STREAM,
+          "Try to send data on read unidirectional stream");
+    }
     return QuicConsumedData(0, false);
   }
 
@@ -395,6 +423,11 @@ QuicConsumedData QuicStream::WriteMemSlices(QuicMemSliceSpan span, bool fin) {
   if (write_side_closed_) {
     QUIC_DLOG(ERROR) << ENDPOINT << "Stream " << id()
                      << "attempting to write when the write side is closed";
+    if (type_ == READ_UNIDIRECTIONAL) {
+      CloseConnectionWithDetails(
+          QUIC_TRY_TO_WRITE_DATA_ON_READ_UNIDIRECTIONAL_STREAM,
+          "Try to send data on read unidirectional stream");
+    }
     return consumed_data;
   }
 
@@ -594,13 +627,11 @@ bool QuicStream::OnStreamFrameAcked(QuicStreamOffset offset,
   QuicByteCount newly_acked_length = 0;
   if (!send_buffer_.OnStreamDataAcked(offset, data_length,
                                       &newly_acked_length)) {
-    RecordInternalErrorLocation(QUIC_STREAM_ACKED_UNSENT_DATA);
     CloseConnectionWithDetails(QUIC_INTERNAL_ERROR,
                                "Trying to ack unsent data.");
     return false;
   }
   if (!fin_sent_ && fin_acked) {
-    RecordInternalErrorLocation(QUIC_STREAM_ACKED_UNSENT_FIN);
     CloseConnectionWithDetails(QUIC_INTERNAL_ERROR,
                                "Trying to ack unsent fin.");
     return false;

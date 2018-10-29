@@ -43,22 +43,6 @@ using CookieDeletionInfo = CookieDeletionInfo;
 
 namespace {
 
-class CookieStoreIOSCookieChangeSubscription : public CookieChangeSubscription {
- public:
-  using CookieChangeCallbackList =
-      base::CallbackList<void(const CanonicalCookie& cookie,
-                              CookieChangeCause cause)>;
-  CookieStoreIOSCookieChangeSubscription(
-      std::unique_ptr<CookieChangeCallbackList::Subscription> subscription)
-      : subscription_(std::move(subscription)) {}
-  ~CookieStoreIOSCookieChangeSubscription() override {}
-
- private:
-  std::unique_ptr<CookieChangeCallbackList::Subscription> subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieStoreIOSCookieChangeSubscription);
-};
-
 #pragma mark NotificationTrampoline
 
 // NotificationTrampoline dispatches cookie notifications to all the existing
@@ -184,6 +168,30 @@ bool HasExplicitDomain(const std::string& cookie_line) {
 
 #pragma mark -
 
+#pragma mark CookieStoreIOS::Subscription
+
+CookieStoreIOS::Subscription::Subscription(
+    std::unique_ptr<CookieChangeCallbackList::Subscription> subscription)
+    : subscription_(std::move(subscription)) {
+  DCHECK(subscription_);
+}
+
+CookieStoreIOS::Subscription::~Subscription() {
+  if (!subscription_) {
+    // |CookieStoreIOS| already destroyed - bail out.
+    return;
+  }
+
+  // |CookieStoreIOS| is alive - unsubscribe.
+  RemoveFromList();
+}
+
+void CookieStoreIOS::Subscription::ResetSubscription() {
+  subscription_.reset();
+}
+
+#pragma mark -
+
 #pragma mark CookieStoreIOS::CookieChangeDispatcherIOS
 
 CookieStoreIOS::CookieChangeDispatcherIOS::CookieChangeDispatcherIOS(
@@ -236,6 +244,12 @@ CookieStoreIOS::CookieStoreIOS(NSHTTPCookieStorage* ns_cookie_store,
 
 CookieStoreIOS::~CookieStoreIOS() {
   NotificationTrampoline::GetInstance()->RemoveObserver(this);
+
+  // Reset subscriptions.
+  for (auto* node = all_subscriptions_.head(); node != all_subscriptions_.end();
+       node = node->next()) {
+    node->value()->ResetSubscription();
+  }
 }
 
 // static
@@ -626,8 +640,11 @@ std::unique_ptr<CookieChangeSubscription> CookieStoreIOS::AddCallbackForCookie(
   }
 
   DCHECK(hook_map_.find(key) != hook_map_.end());
-  return std::make_unique<CookieStoreIOSCookieChangeSubscription>(
-      hook_map_[key]->Add(std::move(callback)));
+  auto subscription =
+      std::make_unique<Subscription>(hook_map_[key]->Add(std::move(callback)));
+  all_subscriptions_.Append(subscription.get());
+
+  return subscription;
 }
 
 void CookieStoreIOS::UpdateCacheForCookieFromSystem(

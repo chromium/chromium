@@ -123,13 +123,6 @@ class WebContentsView {
   virtual void SetOverscrollControllerEnabled(bool enabled) = 0;
 
 #if defined(OS_MACOSX)
-  // Allowing other views disables optimizations which assume that only a single
-  // WebContents is present.
-  virtual void SetAllowOtherViews(bool allow) = 0;
-
-  // Returns true if other views are allowed, false otherwise.
-  virtual bool GetAllowOtherViews() const = 0;
-
   // If we close the tab while a UI control is in an event-tracking
   // loop, the control may message freed objects and crash.
   // WebContents::Close() calls IsEventTracking(), and if it returns

@@ -26,14 +26,14 @@
             android:paddingTop="13dp"
             android:paddingBottom="13dp"
             android:paddingEnd="16dp" />
-        <org.chromium.chrome.browser.widget.TintedImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/menu_item_icon"
             android:src="@drawable/ic_check_googblue_24dp"
             android:layout_width="24dp"
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:gravity="center_vertical"
-            app:chrometint="@color/dark_mode_tint" />
+            app:tint="@color/dark_mode_tint" />
 
     </LinearLayout>
 

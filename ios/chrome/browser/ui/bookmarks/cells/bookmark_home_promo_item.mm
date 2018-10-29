@@ -5,12 +5,13 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_promo_item.h"
 
 #include "base/mac/foundation_util.h"
+#include "components/unified_consent/feature.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_signin_promo_cell.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "ios/chrome/browser/ui/ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
+#include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -34,18 +35,15 @@
       base::mac::ObjCCastStrict<BookmarkTableSigninPromoCell>(cell);
 
   // Basic UI configuration
-  signinPromoCell.signinPromoView.textLabel.text =
-      l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS);
-  if (IsUIRefreshPhase1Enabled()) {
-    signinPromoCell.signinPromoView.backgroundColor =
-        styler.tableViewBackgroundColor;
+  if (unified_consent::IsUnifiedConsentFeatureEnabled()) {
+    signinPromoCell.signinPromoView.textLabel.text =
+        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
   } else {
-    signinPromoCell.signinPromoView.backgroundColor = [UIColor whiteColor];
-    signinPromoCell.signinPromoView.layer.borderColor =
-        [UIColor colorWithWhite:0.0 alpha:0.08].CGColor;
-    signinPromoCell.signinPromoView.layer.borderWidth = 1.0f;
+    signinPromoCell.signinPromoView.textLabel.text =
+        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS);
   }
-
+  signinPromoCell.signinPromoView.backgroundColor =
+      styler.tableViewBackgroundColor;
   // Use the mediator to configure the rest of the Cell based on the current
   // signin state.
   SigninPromoViewMediator* mediator = self.delegate.signinPromoViewMediator;

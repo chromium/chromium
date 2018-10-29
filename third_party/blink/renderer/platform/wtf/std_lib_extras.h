@@ -49,9 +49,7 @@
 
 // Use |DEFINE_STATIC_LOCAL()| to declare and define a static local variable
 // (|static T;|) so that it is leaked and its destructors are not called at
-// exit. T may also be a Blink garbage collected object, in which case it is
-// wrapped up by an off-heap |Persistent<T>| reference to the object, keeping
-// it alive across GCs.
+// exit.
 //
 // A |DEFINE_STATIC_LOCAL()| static should only be used on the thread it was
 // created on.
@@ -68,8 +66,6 @@
   DEFINE_STATIC_LOCAL_IMPL(Type, Name, Arguments, true)
 
 namespace blink {
-template <typename T>
-class Persistent;
 
 }  // namespace blink
 
@@ -78,28 +74,11 @@ namespace WTF {
 template <typename Type>
 class StaticSingleton final {
  public:
-  template <typename T,
-            bool = WTF::IsGarbageCollectedType<T>::value &&
-                   !WTF::IsPersistentReferenceType<T>::value>
+  template <typename T>
   struct Wrapper {
     using type = T;
 
     static T& Unwrap(T* singleton) { return *singleton; }
-  };
-
-  template <typename T>
-  struct Wrapper<T, true> {
-    using type = blink::Persistent<T>;
-
-    static T& Unwrap(blink::Persistent<T>* singleton) {
-      DCHECK(singleton);
-      // If this assert triggers, you're supplying an empty ("()") 'Arguments'
-      // argument to DEFINE_STATIC_LOCAL() - it must be the heap object you wish
-      // to create as a static singleton and wrapped up with a Persistent
-      // reference.
-      DCHECK(*singleton);
-      return **singleton;
-    }
   };
 
   using WrapperType = typename Wrapper<Type>::type;
@@ -120,6 +99,8 @@ class StaticSingleton final {
         thread_(WTF::internal::CurrentThreadSyscall())
 #endif
   {
+    static_assert(!WTF::IsGarbageCollectedType<Type>::value,
+                  "Garbage collected objects must be wrapped in a Persistent");
     LEAK_SANITIZER_REGISTER_STATIC_LOCAL(WrapperType, instance_.Get());
   }
 

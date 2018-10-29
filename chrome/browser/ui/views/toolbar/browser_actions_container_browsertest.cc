@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -28,8 +27,6 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/view.h"
 
-namespace {
-
 // TODO(devlin): Continue moving any tests that should be platform independent
 // from this file to the crossplatform tests in
 // chrome/browser/ui/toolbar/browser_actions_bar_browsertest.cc.
@@ -38,15 +35,7 @@ namespace {
 // from the overflow menu results in it "popping" out (growing the container
 // size by 1), rather than just reordering the extensions.
 
-// The two drag & drop tests are currently restricted to Views browsers in the
-// absence of a good way to abstract drag & drop actions.
-class BrowserActionsBarViewsBrowserTest : public BrowserActionsBarBrowserTest {
- private:
-  test::ScopedMacViewsBrowserMode views_mode_{true};
-};
-}  // namespace
-
-IN_PROC_BROWSER_TEST_F(BrowserActionsBarViewsBrowserTest, DragBrowserActions) {
+IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, DragBrowserActions) {
   LoadExtensions();
 
   // Sanity check: All extensions showing; order is A B C.
@@ -159,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarViewsBrowserTest, DragBrowserActions) {
 
 // Test that changes performed in one container affect containers in other
 // windows so that it is consistent.
-IN_PROC_BROWSER_TEST_F(BrowserActionsBarViewsBrowserTest, MultipleWindows) {
+IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, MultipleWindows) {
   LoadExtensions();
   BrowserActionsContainer* first =
       BrowserView::GetBrowserViewForBrowser(browser())->toolbar()->
@@ -276,8 +265,6 @@ class BrowserActionsContainerOverflowTest
  private:
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
-
-  test::ScopedMacViewsBrowserMode views_mode_{true};
 
   // The main BrowserActionsContainer (owned by the browser view).
   BrowserActionsContainer* main_bar_;

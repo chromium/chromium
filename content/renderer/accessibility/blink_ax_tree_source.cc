@@ -321,7 +321,7 @@ bool BlinkAXTreeSource::GetTreeData(AXContentTreeData* tree_data) const {
 
   WebAXObject anchor_object, focus_object;
   int anchor_offset, focus_offset;
-  blink::WebAXTextAffinity anchor_affinity, focus_affinity;
+  ax::mojom::TextAffinity anchor_affinity, focus_affinity;
   root().Selection(anchor_object, anchor_offset, anchor_affinity, focus_object,
                    focus_offset, focus_affinity);
   if (!anchor_object.IsNull() && !focus_object.IsNull() && anchor_offset >= 0 &&
@@ -332,8 +332,8 @@ bool BlinkAXTreeSource::GetTreeData(AXContentTreeData* tree_data) const {
     tree_data->sel_anchor_offset = anchor_offset;
     tree_data->sel_focus_object_id = focus_id;
     tree_data->sel_focus_offset = focus_offset;
-    tree_data->sel_anchor_affinity = AXTextAffinityFromBlink(anchor_affinity);
-    tree_data->sel_focus_affinity = AXTextAffinityFromBlink(focus_affinity);
+    tree_data->sel_anchor_affinity = anchor_affinity;
+    tree_data->sel_focus_affinity = focus_affinity;
   }
 
   // Get the tree ID for this frame and the parent frame.
@@ -476,28 +476,27 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   AXContentNodeDataSparseAttributeAdapter sparse_attribute_adapter(dst);
   src.GetSparseAXAttributes(sparse_attribute_adapter);
 
-  blink::WebAXNameFrom nameFrom;
+  ax::mojom::NameFrom nameFrom;
   blink::WebVector<WebAXObject> nameObjects;
   blink::WebString web_name = src.GetName(nameFrom, nameObjects);
   if ((!web_name.IsEmpty() && !web_name.IsNull()) ||
-      nameFrom == blink::kWebAXNameFromAttributeExplicitlyEmpty) {
+      nameFrom == ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
     TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kName,
                                   web_name.Utf8());
-    dst->SetNameFrom(AXNameFromFromBlink(nameFrom));
+    dst->SetNameFrom(nameFrom);
     AddIntListAttributeFromWebObjects(
         ax::mojom::IntListAttribute::kLabelledbyIds, nameObjects, dst);
   }
 
-  blink::WebAXDescriptionFrom descriptionFrom;
+  ax::mojom::DescriptionFrom descriptionFrom;
   blink::WebVector<WebAXObject> descriptionObjects;
   blink::WebString web_description =
       src.Description(nameFrom, descriptionFrom, descriptionObjects);
   if (!web_description.IsEmpty()) {
     TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kDescription,
                                   web_description.Utf8());
-    dst->AddIntAttribute(
-        ax::mojom::IntAttribute::kDescriptionFrom,
-        static_cast<int32_t>(AXDescriptionFromFromBlink(descriptionFrom)));
+    dst->AddIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom,
+                         static_cast<int32_t>(descriptionFrom));
     AddIntListAttributeFromWebObjects(
         ax::mojom::IntListAttribute::kDescribedbyIds, descriptionObjects, dst);
   }
@@ -577,39 +576,36 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
       dst->AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize,
                              src.FontSize());
 
-    if (src.HasPopup())
-      dst->SetHasPopup(AXHasPopupFromBlink(src.HasPopup()));
+    if (src.HasPopup() != ax::mojom::HasPopup::kFalse)
+      dst->SetHasPopup(src.HasPopup());
     else if (src.Role() == ax::mojom::Role::kPopUpButton)
       dst->SetHasPopup(ax::mojom::HasPopup::kMenu);
 
-    if (src.AriaCurrentState()) {
+    if (src.AriaCurrentState() != ax::mojom::AriaCurrentState::kNone) {
       dst->AddIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState,
-                           static_cast<int32_t>(AXAriaCurrentStateFromBlink(
-                               src.AriaCurrentState())));
+                           static_cast<int32_t>(src.AriaCurrentState()));
     }
 
-    if (src.InvalidState()) {
-      dst->SetInvalidState(AXInvalidStateFromBlink(src.InvalidState()));
-    }
-    if (src.InvalidState() == blink::kWebAXInvalidStateOther &&
+    if (src.InvalidState() != ax::mojom::InvalidState::kNone)
+      dst->SetInvalidState(src.InvalidState());
+    if (src.InvalidState() == ax::mojom::InvalidState::kOther &&
         src.AriaInvalidValue().length()) {
       TruncateAndAddStringAttribute(
           dst, ax::mojom::StringAttribute::kAriaInvalidValue,
           src.AriaInvalidValue().Utf8());
     }
 
-    if (src.CheckedState()) {
-      dst->SetCheckedState(AXCheckedStateFromBlink(src.CheckedState()));
+    if (src.CheckedState() != ax::mojom::CheckedState::kNone) {
+      dst->SetCheckedState(src.CheckedState());
     }
 
-    if (src.GetTextDirection()) {
-      dst->SetTextDirection(AXTextDirectionFromBlink(src.GetTextDirection()));
+    if (src.GetTextDirection() != ax::mojom::TextDirection::kNone) {
+      dst->SetTextDirection(src.GetTextDirection());
     }
 
-    if (src.GetTextPosition()) {
-      dst->AddIntAttribute(
-          ax::mojom::IntAttribute::kTextPosition,
-          static_cast<int32_t>(AXTextPositionFromBlink(src.GetTextPosition())));
+    if (src.GetTextPosition() != ax::mojom::TextPosition::kNone) {
+      dst->AddIntAttribute(ax::mojom::IntAttribute::kTextPosition,
+                           static_cast<int32_t>(src.GetTextPosition()));
     }
 
     if (src.TextStyle()) {
@@ -656,8 +652,8 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
                                     src.AriaAutoComplete().Utf8());
     }
 
-    if (src.Action() != blink::WebAXDefaultActionVerb::kNone) {
-      dst->SetDefaultActionVerb(AXDefaultActionVerbFromBlink(src.Action()));
+    if (src.Action() != ax::mojom::DefaultActionVerb::kNone) {
+      dst->SetDefaultActionVerb(src.Action());
     }
 
     if (src.HasComputedStyle()) {
@@ -713,7 +709,7 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
       dst->AddBoolAttribute(ax::mojom::BoolAttribute::kCanvasHasFallback, true);
 
     // Spelling, grammar and other document markers.
-    WebVector<blink::WebAXMarkerType> src_marker_types;
+    WebVector<ax::mojom::MarkerType> src_marker_types;
     WebVector<int> src_marker_starts;
     WebVector<int> src_marker_ends;
     src.Markers(src_marker_types, src_marker_starts, src_marker_ends);
@@ -728,8 +724,7 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
       marker_starts.reserve(src_marker_starts.size());
       marker_ends.reserve(src_marker_ends.size());
       for (size_t i = 0; i < src_marker_types.size(); ++i) {
-        marker_types.push_back(
-            static_cast<int32_t>(AXMarkerTypeFromBlink(src_marker_types[i])));
+        marker_types.push_back(static_cast<int32_t>(src_marker_types[i]));
         marker_starts.push_back(src_marker_starts[i]);
         marker_ends.push_back(src_marker_ends[i]);
       }
@@ -810,7 +805,7 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
       TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kHtmlTag,
                                     "#document");
 
-    const bool is_table_like_role = ui::IsTableLikeRole(dst->role);
+    const bool is_table_like_role = ui::IsTableLike(dst->role);
     if (is_table_like_role) {
       int column_count = src.ColumnCount();
       int row_count = src.RowCount();
@@ -832,7 +827,7 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
                              aria_rowcount);
     }
 
-    if (dst->role == ax::mojom::Role::kRow) {
+    if (ui::IsTableRow(dst->role)) {
       dst->AddIntAttribute(ax::mojom::IntAttribute::kTableRowIndex,
                            src.RowIndex());
       WebAXObject header = src.RowHeader();
@@ -841,39 +836,35 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
                              header.AxID());
     }
 
-    if (dst->role == ax::mojom::Role::kCell ||
-        dst->role == ax::mojom::Role::kRowHeader ||
-        dst->role == ax::mojom::Role::kColumnHeader ||
-        dst->role == ax::mojom::Role::kRow) {
-      if (dst->role != ax::mojom::Role::kRow) {
-        dst->AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex,
-                             src.CellColumnIndex());
-        dst->AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan,
-                             src.CellColumnSpan());
-        dst->AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
-                             src.CellRowIndex());
-        dst->AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan,
-                             src.CellRowSpan());
+    if (ui::IsCellOrTableHeader(dst->role)) {
+      dst->AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex,
+                           src.CellColumnIndex());
+      dst->AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan,
+                           src.CellColumnSpan());
+      dst->AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
+                           src.CellRowIndex());
+      dst->AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan,
+                           src.CellRowSpan());
 
-        int aria_colindex = src.AriaColumnIndex();
-        if (aria_colindex) {
-          dst->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex,
-                               aria_colindex);
-        }
+      int aria_colindex = src.AriaColumnIndex();
+      if (aria_colindex) {
+        dst->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex,
+                             aria_colindex);
       }
+    }
 
+    if (ui::IsCellOrTableHeader(dst->role) || ui::IsTableRow(dst->role)) {
+      // aria-rowindex is supported on cells, headers and rows.
       int aria_rowindex = src.AriaRowIndex();
       if (aria_rowindex)
         dst->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellRowIndex,
                              aria_rowindex);
     }
 
-    if ((dst->role == ax::mojom::Role::kRowHeader ||
-         dst->role == ax::mojom::Role::kColumnHeader) &&
-        src.SortDirection()) {
-      dst->AddIntAttribute(
-          ax::mojom::IntAttribute::kSortDirection,
-          static_cast<int32_t>(AXSortDirectionFromBlink(src.SortDirection())));
+    if (ui::IsTableHeader(dst->role) &&
+        src.SortDirection() != ax::mojom::SortDirection::kNone) {
+      dst->AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                           static_cast<int32_t>(src.SortDirection()));
     }
   }
 

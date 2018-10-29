@@ -8,6 +8,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -66,33 +67,32 @@ const char SiteEngagementScore::kLastShortcutLaunchTimeKey[] =
 
 // static
 SiteEngagementScore::ParamValues& SiteEngagementScore::GetParamValues() {
-  CR_DEFINE_STATIC_LOCAL(ParamValues, param_values, (BuildParamValues()));
-  return param_values;
-}
-
-// static
-SiteEngagementScore::ParamValues SiteEngagementScore::BuildParamValues() {
-  SiteEngagementScore::ParamValues param_values;
-  param_values[MAX_POINTS_PER_DAY] = {"max_points_per_day", 15};
-  param_values[DECAY_PERIOD_IN_HOURS] = {"decay_period_in_hours", 2};
-  param_values[DECAY_POINTS] = {"decay_points", 0};
-  param_values[DECAY_PROPORTION] = {"decay_proportion", 0.984};
-  param_values[SCORE_CLEANUP_THRESHOLD] = {"score_cleanup_threshold", 0.5};
-  param_values[NAVIGATION_POINTS] = {"navigation_points", 1.5};
-  param_values[USER_INPUT_POINTS] = {"user_input_points", 0.6};
-  param_values[VISIBLE_MEDIA_POINTS] = {"visible_media_playing_points", 0.06};
-  param_values[HIDDEN_MEDIA_POINTS] = {"hidden_media_playing_points", 0.01};
-  param_values[WEB_APP_INSTALLED_POINTS] = {"web_app_installed_points", 5};
-  param_values[FIRST_DAILY_ENGAGEMENT] = {"first_daily_engagement_points", 1.5};
-  param_values[BOOTSTRAP_POINTS] = {"bootstrap_points", 24};
-  param_values[MEDIUM_ENGAGEMENT_BOUNDARY] = {"medium_engagement_boundary", 15};
-  param_values[HIGH_ENGAGEMENT_BOUNDARY] = {"high_engagement_boundary", 50};
-  param_values[MAX_DECAYS_PER_SCORE] = {"max_decays_per_score", 4};
-  param_values[LAST_ENGAGEMENT_GRACE_PERIOD_IN_HOURS] = {
-      "last_engagement_grace_period_in_hours", 1};
-  param_values[NOTIFICATION_INTERACTION_POINTS] = {
-      "notification_interaction_points", 1};
-  return param_values;
+  static base::NoDestructor<ParamValues> param_values([]() {
+    SiteEngagementScore::ParamValues param_values;
+    param_values[MAX_POINTS_PER_DAY] = {"max_points_per_day", 15};
+    param_values[DECAY_PERIOD_IN_HOURS] = {"decay_period_in_hours", 2};
+    param_values[DECAY_POINTS] = {"decay_points", 0};
+    param_values[DECAY_PROPORTION] = {"decay_proportion", 0.984};
+    param_values[SCORE_CLEANUP_THRESHOLD] = {"score_cleanup_threshold", 0.5};
+    param_values[NAVIGATION_POINTS] = {"navigation_points", 1.5};
+    param_values[USER_INPUT_POINTS] = {"user_input_points", 0.6};
+    param_values[VISIBLE_MEDIA_POINTS] = {"visible_media_playing_points", 0.06};
+    param_values[HIDDEN_MEDIA_POINTS] = {"hidden_media_playing_points", 0.01};
+    param_values[WEB_APP_INSTALLED_POINTS] = {"web_app_installed_points", 5};
+    param_values[FIRST_DAILY_ENGAGEMENT] = {"first_daily_engagement_points",
+                                            1.5};
+    param_values[BOOTSTRAP_POINTS] = {"bootstrap_points", 24};
+    param_values[MEDIUM_ENGAGEMENT_BOUNDARY] = {"medium_engagement_boundary",
+                                                15};
+    param_values[HIGH_ENGAGEMENT_BOUNDARY] = {"high_engagement_boundary", 50};
+    param_values[MAX_DECAYS_PER_SCORE] = {"max_decays_per_score", 4};
+    param_values[LAST_ENGAGEMENT_GRACE_PERIOD_IN_HOURS] = {
+        "last_engagement_grace_period_in_hours", 1};
+    param_values[NOTIFICATION_INTERACTION_POINTS] = {
+        "notification_interaction_points", 1};
+    return param_values;
+  }());
+  return *param_values;
 }
 
 double SiteEngagementScore::GetMaxPointsPerDay() {

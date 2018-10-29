@@ -39,7 +39,7 @@
 namespace blink {
 
 struct HTMLConstructionSiteTask {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   enum Operation {

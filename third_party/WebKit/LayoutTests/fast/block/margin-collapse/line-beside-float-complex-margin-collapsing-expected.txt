@@ -3,5 +3,6 @@ Given a float followed by a regular block with the same height as the float, the
 The word "BINGO" should be seen below, to the right of a blue block.
 
 BINGO
+
 PASS
 PASS

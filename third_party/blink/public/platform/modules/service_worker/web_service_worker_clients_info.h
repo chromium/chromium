@@ -8,16 +8,16 @@
 #include "services/network/public/mojom/request_context_frame_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom-shared.h"
-#include "third_party/blink/public/platform/web_callbacks.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_url_request.h"
-
-#include <memory>
 
 namespace blink {
 
-struct WebServiceWorkerError;
-
+// The only usage of this class is to carry the source of an extendable message
+// dispatched via content.mojom.ServiceWorker across the boundary of Content and
+// Blink.
+// TODO(crbug.com/879019): Remove this class once we move
+// content.mojom.ServiceWorker impl into Blink.
 struct WebServiceWorkerClientInfo {
   WebServiceWorkerClientInfo()
       : page_visibility_state(mojom::PageVisibilityState::kMaxValue),
@@ -33,10 +33,6 @@ struct WebServiceWorkerClientInfo {
   network::mojom::RequestContextFrameType frame_type;
   mojom::ServiceWorkerClientType client_type;
 };
-
-using WebServiceWorkerClientCallbacks =
-    WebCallbacks<std::unique_ptr<WebServiceWorkerClientInfo>,
-                 const WebServiceWorkerError&>;
 
 }  // namespace blink
 

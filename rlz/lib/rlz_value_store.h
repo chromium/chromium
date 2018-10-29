@@ -50,6 +50,7 @@ class RlzValueStore {
                                   char* rlz,  // At most kMaxRlzLength + 1 bytes
                                   size_t rlz_size) = 0;
   virtual bool ClearAccessPointRlz(AccessPoint access_point) = 0;
+  virtual bool UpdateExistingAccessPointRlz(const std::string& brand) = 0;
 
   // Product events.
   // Stores |event_rlz| for product |product| as product event.

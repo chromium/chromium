@@ -1,4 +1,3 @@
 Test for bug 11998: Incorrect serialization of quotation marks in XML attributes.
 
 SUCCESS
-

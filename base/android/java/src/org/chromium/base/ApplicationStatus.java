@@ -67,15 +67,6 @@ public class ApplicationStatus {
         }
     }
 
-    static {
-        // Chrome initializes this only for the main process. This assert aims to try and catch
-        // usages from GPU / renderers, while still allowing tests.
-        assert ContextUtils.isMainProcess()
-                || ContextUtils.getProcessName().contains(":test")
-            : "Cannot use ApplicationState from process: "
-                        + ContextUtils.getProcessName();
-    }
-
     private static final Object sCurrentApplicationStateLock = new Object();
 
     @SuppressLint("SupportAnnotationUsage")

@@ -147,7 +147,7 @@ bool MultipartImageResourceParser::ParseHeaders() {
   for (const auto& header : original_response_.HttpHeaderFields())
     response.AddHTTPHeaderField(header.key, header.value);
 
-  size_t end = 0;
+  wtf_size_t end = 0;
   if (!ParseMultipartHeadersFromBody(data_.data() + pos, data_.size() - pos,
                                      &response, &end))
     return false;

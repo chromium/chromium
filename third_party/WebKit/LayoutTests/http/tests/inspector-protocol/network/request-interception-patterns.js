@@ -20,16 +20,17 @@
     var interceptionWaitingResolver = requestInterceptionWaitingMap.get(fileName);
     if (interceptionWaitingResolver)
       interceptionWaitingResolver();
+    else
+      requestInterceptionWaitingMap.set(fileName, null);
   });
 
   session.protocol.Network.onRequestIntercepted(async event => {
     var fileName = nameForUrl(event.params.request.url);
     // Because requestWillBeSent and interception requests come from different processes, they may come in random order,
     // This will syncronize them to ensure requestWillBeSent is processed first and will stall here till it does.
-    if (!inflightRequests.get(fileName)) {
+    if (!requestInterceptionWaitingMap.has(fileName))
       await new Promise(resolve => requestInterceptionWaitingMap.set(fileName, resolve));
-      requestInterceptionWaitingMap.delete(fileName);
-    }
+    requestInterceptionWaitingMap.delete(fileName);
     testRunner.log('Request Intercepted: ' + fileName);
 
     var rawContent = dataForNames[fileName];
@@ -71,6 +72,7 @@
    * @return {!Promise}
    */
   async function testUrls() {
+    requestInterceptionWaitingMap.clear();
     session.evaluate(`fetch('../network/resources/small-test-1.txt')`);
     await new Promise(resolve => responseWasReceivedCallback = resolve);
     session.evaluate(`fetch('../network/resources/small-test-2.txt')`);

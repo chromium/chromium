@@ -27,6 +27,7 @@ using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
+using base::android::ToJavaBooleanArray;
 using base::android::JavaParamRef;
 
 class ChromeBackupAgentTest : public ::testing::Test {
@@ -59,7 +60,7 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupNames) {
   ScopedJavaLocalRef<jobjectArray> result =
       GetBoolBackupNamesForTesting(env_, JavaParamRef<jobject>(nullptr));
   std::vector<std::string> pref_names;
-  AppendJavaStringArrayToStringVector(AttachCurrentThread(), result.obj(),
+  AppendJavaStringArrayToStringVector(AttachCurrentThread(), result,
                                       &pref_names);
   EXPECT_EQ(expected_pref_names_, pref_names);
 }
@@ -67,11 +68,10 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupNames) {
 TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_AllDefault) {
   ScopedJavaLocalRef<jbooleanArray> result =
       GetBoolBackupValuesForTesting(env_, JavaParamRef<jobject>(nullptr));
-  jsize size = env_->GetArrayLength(result.obj());
-  ASSERT_EQ(expected_pref_names_.size(), static_cast<size_t>(size));
-
-  jboolean* values = env_->GetBooleanArrayElements(result.obj(), nullptr);
-  for (int i = 0; i < size; i++) {
+  std::vector<bool> values;
+  JavaBooleanArrayToBoolVector(env_, result, &values);
+  ASSERT_EQ(expected_pref_names_.size(), values.size());
+  for (size_t i = 0; i < values.size(); i++) {
     bool expected_value;
     ASSERT_TRUE(pref_service_->GetDefaultPrefValue(expected_pref_names_[i])
                     ->GetAsBoolean(&expected_value));
@@ -86,10 +86,10 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_IrrelevantChange) {
 
   ScopedJavaLocalRef<jbooleanArray> result =
       GetBoolBackupValuesForTesting(env_, JavaParamRef<jobject>(nullptr));
-  jsize size = env_->GetArrayLength(result.obj());
-  ASSERT_EQ(expected_pref_names_.size(), static_cast<size_t>(size));
-  jboolean* values = env_->GetBooleanArrayElements(result.obj(), nullptr);
-  for (int i = 0; i < size; i++) {
+  std::vector<bool> values;
+  JavaBooleanArrayToBoolVector(env_, result, &values);
+  ASSERT_EQ(expected_pref_names_.size(), values.size());
+  for (size_t i = 0; i < values.size(); i++) {
     bool expected_value;
     ASSERT_TRUE(pref_service_->GetDefaultPrefValue(expected_pref_names_[i])
                     ->GetAsBoolean(&expected_value));
@@ -103,11 +103,10 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_RelevantChange) {
   pref_service_->SetBoolean(expected_pref_names_[3], false);
   ScopedJavaLocalRef<jbooleanArray> result =
       GetBoolBackupValuesForTesting(env_, JavaParamRef<jobject>(nullptr));
-  jsize size = env_->GetArrayLength(result.obj());
-  ASSERT_EQ(expected_pref_names_.size(), static_cast<size_t>(size));
-
-  jboolean* values = env_->GetBooleanArrayElements(result.obj(), nullptr);
-  for (int i = 0; i < size; i++) {
+  std::vector<bool> values;
+  JavaBooleanArrayToBoolVector(env_, result, &values);
+  ASSERT_EQ(expected_pref_names_.size(), values.size());
+  for (size_t i = 0; i < values.size(); i++) {
     EXPECT_EQ(pref_service_->GetBoolean(expected_pref_names_[i]), values[i])
         << "i = " << i << ", " << expected_pref_names_[i];
   }
@@ -116,17 +115,15 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_RelevantChange) {
 TEST_F(ChromeBackupAgentTest, SetBoolBackupValues) {
   ScopedJavaLocalRef<jobjectArray> narray =
       ToJavaArrayOfStrings(env_, expected_pref_names_);
-  jboolean* values = new jboolean[expected_pref_names_.size()];
+  bool* values = new bool[expected_pref_names_.size()];
   for (size_t i = 0; i < expected_pref_names_.size(); i++) {
     values[i] = false;
   }
   // Set a couple of the values to true.
   values[5] = true;
   values[8] = true;
-  ScopedJavaLocalRef<jbooleanArray> varray(
-      env_, env_->NewBooleanArray(expected_pref_names_.size()));
-  env_->SetBooleanArrayRegion(varray.obj(), 0, expected_pref_names_.size(),
-                              values);
+  ScopedJavaLocalRef<jbooleanArray> varray =
+      ToJavaBooleanArray(env_, values, expected_pref_names_.size());
   SetBoolBackupPrefsForTesting(env_, JavaParamRef<jobject>(nullptr),
                                JavaParamRef<jobjectArray>(env_, narray.obj()),
                                JavaParamRef<jbooleanArray>(env_, varray.obj()));

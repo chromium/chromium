@@ -1,3 +1,4 @@
+<script src="../../../../resources/common.js"></script>
 <script>
     // Capture window.window and window.opener: once this context is navigated, these properties
     // always return null.
@@ -5,14 +6,9 @@
     var o = opener;
     opener.accessFrame = function()
     {
-        function normalizeURL(url)
-        {
-            return url.substring(url.lastIndexOf("LayoutTests"));
-        }
-
         try {
-            o.log("document.URL: " + normalizeURL(document.URL));
-            o.log("window.document.URL: " + normalizeURL(w.document.URL));
+            o.log("document.URL: " + relativeTestPath(document.URL));
+            o.log("window.document.URL: " + relativeTestPath(w.document.URL));
             o.log("name: " + name);
             o.log("window.name: " + w.name);
         } catch (e) {

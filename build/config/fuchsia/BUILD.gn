@@ -10,7 +10,7 @@ assert(is_fuchsia)
 assert(!is_posix)
 
 config("compiler") {
-  sdk_version_file = rebase_path("$fuchsia_sdk/.hash")
+  sdk_version_file = rebase_path("${fuchsia_sdk}/.hash")
   sdk_version = read_file(sdk_version_file, "trim string")
   defines = [
     # To force full builds after SDK updates in case of ABI changes.
@@ -64,14 +64,13 @@ action("blobstore_extended_fvm") {
   # limitation in the future.
   _extend_size = "1073741824"  # 1GB
 
-  _target_dir = "//third_party/fuchsia-sdk/sdk/target/${current_cpu}"
+  _target_dir = "${fuchsia_sdk}/target/${current_cpu}"
 
   script = "//build/config/fuchsia/extend_fvm.py"
 
   inputs = [
+    "${fuchsia_sdk}/tools/fvm",
     "${_target_dir}/fvm.blk",
-    "${_target_dir}/bootdata-blob.bin",
-    "${_target_dir}/zircon.bin",
   ]
   outputs = [
     blobstore_extended_path,

@@ -14,6 +14,7 @@
 #include "base/memory/singleton.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -42,6 +43,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/rappor/rappor_service_impl.h"
 #include "components/ukm/content/source_url_recorder.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/plugin_service_filter.h"
 #include "content/public/browser/render_frame_host.h"
@@ -138,13 +140,13 @@ PluginInfoHostImpl::Context::Context(int render_process_id, Profile* profile)
   allow_outdated_plugins_.Init(prefs::kPluginsAllowOutdated,
                                profile->GetPrefs());
   allow_outdated_plugins_.MoveToThread(
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::IO));
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::IO}));
   run_all_flash_in_allow_mode_.Init(prefs::kRunAllFlashInAllowMode,
                                     profile->GetPrefs());
   run_all_flash_in_allow_mode_.MoveToThread(
-      content::BrowserThread::GetTaskRunnerForThread(
-          content::BrowserThread::IO));
+      base::CreateSingleThreadTaskRunnerWithTraits(
+          {content::BrowserThread::IO}));
 }
 
 PluginInfoHostImpl::Context::~Context() {}
@@ -173,8 +175,8 @@ void PluginInfoHostImpl::ShutdownOnUIThread() {
 }
 
 void PluginInfoHostImplTraits::Destruct(const PluginInfoHostImpl* impl) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&PluginInfoHostImpl::DestructOnBrowserThread,
                      base::Unretained(impl)));
 }
@@ -477,7 +479,7 @@ void PluginInfoHostImpl::ReportMetrics(int render_frame_id,
       g_browser_process->rappor_service();
   if (!rappor_service)
     return;
-  if (main_frame_origin.unique())
+  if (main_frame_origin.opaque())
     return;
 
   if (mime_type != content::kFlashPluginSwfMimeType &&

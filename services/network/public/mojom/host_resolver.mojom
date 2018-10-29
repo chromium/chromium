@@ -4,9 +4,82 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "net/interfaces/address_list.mojom";
+import "net/interfaces/ip_address.mojom";
+import "net/interfaces/ip_endpoint.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/url_loader.mojom";
+
+// A single entry from a HOSTS file.
+struct DnsHost {
+  string hostname;
+  net.interfaces.IPAddress address;
+};
+
+// An HTTPS server to send DNS queries to, per the DNS Queries over HTTPS spec.
+// spec:  https://tools.ietf.org/html/draft-ietf-doh-dns-over-https-12
+struct DnsOverHttpsServer {
+  // DNS over HTTPS server URI template. Must be HTTPS.
+  string server_template;
+
+  // Whether to use POST to do DNS lookups. Otherwise, GET is used. See spec
+  // for more details.
+  bool use_post = false;
+};
+
+// Overridable DNS configuration values for host resolution. All fields default
+// to a non-overriding state where the relevant value will be used from system
+// DNS configuration.
+struct DnsConfigOverrides {
+  // Representation of an optional boolean. Needed because Mojo does not support
+  // optional primitive types.
+  enum Tristate {
+    NO_OVERRIDE,
+    TRISTATE_TRUE,
+    TRISTATE_FALSE,
+  };
+
+  // List of nameserver addresses.
+  array<net.interfaces.IPEndPoint>? nameservers;
+
+  // Suffix search list, used on first lookup when number of dots in given name
+  // is less than |ndots|.
+  array<string>? search;
+
+  // Entries from a HOSTS file. This array is intended for serialization to/from
+  // a lookup map, so unlike the source data from actual HOSTS files, each entry
+  // should represent a unique host query key (|hostname| and AddressFamily).
+  array<DnsHost>? hosts;
+
+  // Whether suffix search should be performed for multi-label names.
+  Tristate append_to_multi_label_name = Tristate.NO_OVERRIDE;
+
+  // Whether source port randomization is required. This uses additional
+  // resources on some platforms.
+  Tristate randomize_ports = Tristate.NO_OVERRIDE;
+
+  // Minimum number of dots before global resolution precedes |search|.
+  int8 ndots = -1;  // -1 for no override.
+
+  // Time between retransmissions, see res_state.retrans.
+  mojo_base.mojom.TimeDelta? timeout;
+
+  // Maximum number of attempts, see res_state.retry.
+  int32 attempts = -1;  // -1 for no override.
+
+  // Whether to roundrobin entries in |nameservers| for subsequent requests.
+  Tristate rotate = Tristate.NO_OVERRIDE;
+
+  // Whether system configuration uses local IPv6 connectivity, e.g.,
+  // DirectAccess. This is exposed for HostResolver to skip IPv6 probes,
+  // as it may cause them to return incorrect results.
+  Tristate use_local_ipv6 = Tristate.NO_OVERRIDE;
+
+  // List of servers to query over HTTPS, queried in order
+  // (https://tools.ietf.org/id/draft-ietf-doh-dns-over-https-12.txt).
+  array<DnsOverHttpsServer>? dns_over_https_servers;
+};
 
 // Control handle used to control outstanding NetworkContext::ResolveHost
 // requests. Handle is optional for all requests, and may be closed at any time
@@ -65,7 +138,8 @@ struct ResolveHostParameters {
     // Results will only come from DNS queries.
     DNS,
 
-    // TODO(crbug.com/846423): Add MDNS support.
+    // Results will only come from Multicast DNS queries.
+    MULTICAST_DNS,
   };
 
   // The source to use for resolved addresses. Default allows the resolver to

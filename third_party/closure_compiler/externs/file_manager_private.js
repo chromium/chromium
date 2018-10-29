@@ -453,6 +453,16 @@ chrome.fileManagerPrivate.DeviceEvent;
 chrome.fileManagerPrivate.Provider;
 
 /**
+ * @typedef {{
+ * name: string,
+ * version: string,
+ * summary: (string|undefined),
+ * description: (string|undefined),
+ * }}
+ */
+chrome.fileManagerPrivate.LinuxPackageInfo;
+
+/**
  * Logout the current user for navigating to the re-authentication screen for
  * the Google account.
  */
@@ -468,8 +478,8 @@ chrome.fileManagerPrivate.cancelDialog = function() {};
  * identifier of task to execute. |entries| Array of file entries |callback|
  * @param {string} taskId
  * @param {!Array<!Entry>} entries
- * @param {function((boolean|undefined))} callback |result| Result of the task
- *     execution.
+ * @param {function(!chrome.fileManagerPrivate.TaskResult)} callback |result|
+ *     Result of the task execution.
  */
 chrome.fileManagerPrivate.executeTask = function(taskId, entries, callback) {};
 
@@ -937,12 +947,13 @@ chrome.fileManagerPrivate.mountCrostini = function(callback) {};
 
 /**
  * Shares directory with crostini container.
- * @param {!DirectoryEntry} entry Entry of the directory to share.
+ * @param {!Array<!Entry>} entries Entries of the files and directories to share.
+ * @param {boolean} persist If true, share will persist across restarts.
  * @param {function()} callback Callback called after the folder is shared.
  *     chrome.runtime.lastError will be set if there was an error.
  */
-chrome.fileManagerPrivate.sharePathWithCrostini = function(
-    entry, callback) {};
+chrome.fileManagerPrivate.sharePathsWithCrostini = function(
+    entries, persist, callback) {};
 
 /**
  * Returns list of paths shared with the crostini container.
@@ -951,13 +962,35 @@ chrome.fileManagerPrivate.sharePathWithCrostini = function(
 chrome.fileManagerPrivate.getCrostiniSharedPaths = function(callback) {};
 
 /**
- * Begin installation of a Linux package.
+ * Requests information about a Linux package.
+ * @param {!Entry} entry
+ * @param {function((!chrome.fileManagerPrivate.LinuxPackageInfo|undefined))}
+ *     callback
+ *    Called when package information is retrieved.
+ *    chrome.runtime.lastError will be set if there was an error.
+ */
+chrome.fileManagerPrivate.getLinuxPackageInfo = function(entry, callback) {};
+
+/**
+ * Starts installation of a Linux package.
  * @param {!Entry} entry
  * @param {function(!chrome.fileManagerPrivate.InstallLinuxPackageResponse,
  *    string)} callback
  *    Called when the installation is either started or fails to start.
  */
 chrome.fileManagerPrivate.installLinuxPackage = function(entry, callback) {};
+
+/**
+ * Detect character encoding.
+ *
+ * @param {!string} bytes a hex-encoded string. Every 2 characters represent
+ *     one byte by 2-digit hexadecimal number.
+ * @param {function((string|undefined))} callback |mime_name| Preferred MIME
+ *     name of the detected character encoding system. Slightly different from
+ *     IANA name. See third_party/ced/src/util/encodings/encodings.cc
+ */
+chrome.fileManagerPrivate.detectCharacterEncoding = function(bytes, callback) {
+};
 
 /**
  * For a file in DriveFS, retrieves its thumbnail. If |cropToSquare| is true,

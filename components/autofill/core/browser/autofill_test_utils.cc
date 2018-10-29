@@ -113,6 +113,7 @@ void CreateTestAddressFormData(FormData* form,
                                const char* unique_id) {
   form->name =
       ASCIIToUTF16("MyForm") + ASCIIToUTF16(unique_id ? unique_id : "");
+  form->button_title = ASCIIToUTF16("Submit");
   form->origin = GURL("http://myform.com/form.html");
   form->action = GURL("http://myform.com/submit.html");
   form->main_frame_origin =
@@ -354,6 +355,7 @@ AutofillProfile GetServerProfile() {
 
   profile.set_language_code("en");
   profile.SetClientValidityFromBitfieldValue(kValidityStateBitfield);
+  profile.set_is_client_validity_states_updated(true);
   profile.set_use_count(7);
   profile.set_use_date(base::Time::FromTimeT(54321));
 
@@ -376,6 +378,7 @@ AutofillProfile GetServerProfile2() {
 
   profile.set_language_code("en");
   profile.SetClientValidityFromBitfieldValue(kValidityStateBitfield);
+  profile.set_is_client_validity_states_updated(true);
   profile.set_use_count(14);
   profile.set_use_date(base::Time::FromTimeT(98765));
 
@@ -425,6 +428,14 @@ CreditCard GetMaskedServerCardAmex() {
                           "2020", "1");
   credit_card.SetNetworkForMaskedCard(kAmericanExpressCard);
   credit_card.set_card_type(CreditCard::CARD_TYPE_PREPAID);
+  return credit_card;
+}
+
+CreditCard GetFullServerCard() {
+  CreditCard credit_card(CreditCard::FULL_SERVER_CARD, "c123");
+  test::SetCreditCardInfo(&credit_card, "Full Carter",
+                          "4111111111111111" /* Visa */, "12", "2020", "1");
+  credit_card.set_card_type(CreditCard::CARD_TYPE_CREDIT);
   return credit_card;
 }
 

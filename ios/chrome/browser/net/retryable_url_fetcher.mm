@@ -8,10 +8,9 @@
 
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
-#include "net/http/http_status_code.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_fetcher_delegate.h"
-#include "net/url_request/url_request_context_getter.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,38 +18,27 @@
 #endif
 
 @interface RetryableURLFetcher ()
-- (void)urlFetchDidComplete:(const net::URLFetcher*)fetcher;
+- (void)urlFetchDidComplete:(std::unique_ptr<std::string>)response_body;
 @end
 
-class URLRequestDelegate : public net::URLFetcherDelegate {
- public:
-  explicit URLRequestDelegate(RetryableURLFetcher* owner) : owner_(owner) {}
-  void OnURLFetchComplete(const net::URLFetcher* source) override {
-    [owner_ urlFetchDidComplete:source];
-  }
-
- private:
-  __weak RetryableURLFetcher* owner_ = nil;
-};
-
 @implementation RetryableURLFetcher {
-  scoped_refptr<net::URLRequestContextGetter> requestContextGetter_;
-  std::unique_ptr<URLRequestDelegate> fetcherDelegate_;
-  std::unique_ptr<net::URLFetcher> fetcher_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<net::BackoffEntry> backoffEntry_;
+  std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   int retryCount_;
   __weak id<RetryableURLFetcherDelegate> delegate_;
 }
 
 - (instancetype)
-    initWithRequestContextGetter:(net::URLRequestContextGetter*)context
-                        delegate:(id<RetryableURLFetcherDelegate>)delegate
-                   backoffPolicy:(const net::BackoffEntry::Policy*)policy {
+initWithURLLoaderFactory:
+    (scoped_refptr<network::SharedURLLoaderFactory>)shared_url_loader_factory
+                delegate:(id<RetryableURLFetcherDelegate>)delegate
+           backoffPolicy:(const net::BackoffEntry::Policy*)policy {
   self = [super init];
   if (self) {
-    DCHECK(context);
+    DCHECK(shared_url_loader_factory);
     DCHECK(delegate);
-    requestContextGetter_ = context;
+    shared_url_loader_factory_ = shared_url_loader_factory;
     delegate_ = delegate;
     if (policy)
       backoffEntry_.reset(new net::BackoffEntry(policy));
@@ -59,14 +47,20 @@ class URLRequestDelegate : public net::URLFetcherDelegate {
 }
 
 - (void)startFetch {
-  DCHECK(requestContextGetter_.get());
+  DCHECK(shared_url_loader_factory_.get());
   GURL url(base::SysNSStringToUTF8([delegate_ urlToFetch]));
   if (url.is_valid()) {
-    fetcherDelegate_.reset(new URLRequestDelegate(self));
-    fetcher_ = net::URLFetcher::Create(url, net::URLFetcher::GET,
-                                       fetcherDelegate_.get());
-    fetcher_->SetRequestContext(requestContextGetter_.get());
-    fetcher_->Start();
+    auto resource_request = std::make_unique<network::ResourceRequest>();
+    resource_request->url = url;
+    simple_loader_ = network::SimpleURLLoader::Create(
+        std::move(resource_request), NO_TRAFFIC_ANNOTATION_YET);
+
+    simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+        shared_url_loader_factory_.get(),
+        base::BindOnce(^(std::unique_ptr<std::string> response) {
+          [self urlFetchDidComplete:std::forward<std::unique_ptr<std::string>>(
+                                        response)];
+        }));
   } else {
     // Invalid URLs returned from delegate method are considered a permanent
     // failure. Delegate method is called with nil to indicate failure.
@@ -78,9 +72,8 @@ class URLRequestDelegate : public net::URLFetcherDelegate {
   return backoffEntry_ ? backoffEntry_->failure_count() : 0;
 }
 
-- (void)urlFetchDidComplete:(const net::URLFetcher*)fetcher {
-  BOOL success = fetcher->GetResponseCode() == net::HTTP_OK;
-  if (!success && backoffEntry_) {
+- (void)urlFetchDidComplete:(std::unique_ptr<std::string>)response_body {
+  if (!response_body && backoffEntry_) {
     backoffEntry_->InformOfRequest(false);
     double nextRetry = backoffEntry_->GetTimeUntilRelease().InSecondsF();
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, nextRetry * NSEC_PER_SEC),
@@ -90,11 +83,8 @@ class URLRequestDelegate : public net::URLFetcherDelegate {
     return;
   }
   NSString* response = nil;
-  if (success) {
-    std::string responseString;
-    if (fetcher->GetResponseAsString(&responseString))
-      response = base::SysUTF8ToNSString(responseString);
-  }
+  if (response_body)
+    response = base::SysUTF8ToNSString(*response_body);
   [delegate_ processSuccessResponse:response];
 }
 

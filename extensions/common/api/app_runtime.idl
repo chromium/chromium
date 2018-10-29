@@ -42,7 +42,8 @@ namespace app.runtime {
     chrome_internal,
     test,
     installed_notification,
-    context_menu
+    context_menu,
+    arc
   };
 
   // An app can be launched with a specific action in mind, for example, to

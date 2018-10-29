@@ -274,7 +274,7 @@ void SerializeValue(const std::vector<std::unique_ptr<PasswordForm>>& forms,
     pickle->WriteString(form->icon_url.spec());
     // We serialize unique origins as "", in order to make other systems that
     // read from the login database happy. https://crbug.com/591310
-    pickle->WriteString(form->federation_origin.unique()
+    pickle->WriteString(form->federation_origin.opaque()
                             ? std::string()
                             : form->federation_origin.Serialize());
     pickle->WriteBool(form->skip_zero_click);

@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Интеллектуальные функции Google в Chromium</translation>
 <translation id="2730884209570016437">Chromium не может получить доступ к камере, поскольку она используется другим приложением.</translation>
 <translation id="2797210818057553964">Вы можете выбрать нужные параметры в настройках Chromium в любое время</translation>
+<translation id="2915596697727466327">Чтобы исключить несанкционированный доступ к паролям, Chromium использует функцию Face ID.</translation>
 <translation id="3256316712990552818">Скопировано в Chromium</translation>
 <translation id="3413120535237193088">Чтобы получить доступ к закладкам на всех ваших устройствах, войдите в Chromium.</translation>
 <translation id="3473048256428424907">Включите QR-сканер в Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Здесь появятся вкладки, открытые в Chromium на других устройствах.</translation>
 <translation id="495292094137889840">Используйте QR-сканер в Chromium</translation>
 <translation id="5231355151045086930">Выйти из Chromium</translation>
-<translation id="5416919929805616771">Нравится приложение Chromium? <ph name="BEGIN_LINK" />Оцените его<ph name="END_LINK" />.</translation>
 <translation id="5862307444128926510">Добро пожаловать в Chromium</translation>
 <translation id="5945387852661427312">Вы входите в аккаунт, которым управляет администратор домена <ph name="DOMAIN" />. Он может контролировать ваши данные Chromium, которые теперь будут связаны с управляемым аккаунтом. При выходе из системы все данные Chromium, хранящиеся на этом устройстве, будут удалены, но останутся в вашем аккаунте Google.</translation>
 <translation id="6068866989048414399">Условия использования Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Вы переходите из аккаунта <ph name="USER_EMAIL1" /> в <ph name="USER_EMAIL2" />. Данными Chromium управляет администратор домена <ph name="DOMAIN" />. Обратите внимание, что данные будут удалены с устройства, но сохранятся в аккаунте <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Совет. <ph name="BEGIN_LINK" />Добавьте Chromium в Dock<ph name="END_LINK" />.</translation>
 <translation id="8252885722420466166">Используйте дополнительные возможности Google в Chrome, сообщив свое местоположение.</translation>
-<translation id="8353224596138547809">Сохранить пароль для этого сайта в Chromium?</translation>
 <translation id="8508544542427105412">Для персонализации рекламы, Chromium и таких сервисов Google, как Переводчик и Поиск, могут использоваться данные с сайтов, которые вы посещаете, а также история просмотров и действий в браузере. Вы можете изменить <ph name="BEGIN_LINK" />настройки<ph name="END_LINK" /> в любой момент.</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" /> . Все права защищены.</translation>
 <translation id="8809780021347235332">Чтобы открыть Chromium доступ к фотографиям, нажмите "Настройки".</translation>

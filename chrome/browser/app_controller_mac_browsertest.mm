@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/search/local_ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_manager.h"
-#include "chrome/browser/ui/views_mode_controller.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -224,8 +223,10 @@ IN_PROC_BROWSER_TEST_F(AppControllerPlatformAppBrowserTest,
   NSWindow* app_window = extensions::AppWindowRegistry::Get(profile())
                              ->GetAppWindowsForApp(app->id())
                              .front()
-                             ->GetNativeWindow();
-  NSWindow* browser_window = browser()->window()->GetNativeWindow();
+                             ->GetNativeWindow()
+                             .GetNativeNSWindow();
+  NSWindow* browser_window =
+      browser()->window()->GetNativeWindow().GetNativeNSWindow();
 
   chrome::testing::NSRunLoopRunAllPending();
   EXPECT_LE([[NSApp orderedWindows] indexOfObject:app_window],

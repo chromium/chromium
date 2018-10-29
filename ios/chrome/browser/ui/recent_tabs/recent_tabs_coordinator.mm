@@ -7,8 +7,8 @@
 #include "base/ios/block_types.h"
 #include "base/mac/foundation_util.h"
 #include "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/ntp/recent_tabs/recent_tabs_handset_view_controller.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
@@ -18,10 +18,7 @@
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/805135): Remove RecentTabsHandsetViewControllerCommand and
-// recent_tabs_handset_view_controller.h import. We need this to dismiss for
-// now, but it can be improved.
-@interface RecentTabsCoordinator ()<RecentTabsHandsetViewControllerCommand>
+@interface RecentTabsCoordinator ()<RecentTabsPresentationDelegate>
 // Completion block called once the recentTabsViewController is dismissed.
 @property(nonatomic, copy) ProceduralBlock completion;
 // Mediator being managed by this Coordinator.
@@ -106,7 +103,7 @@
   [self.mediator disconnect];
 }
 
-#pragma mark - RecentTabsHandsetViewControllerCommand
+#pragma mark - RecentTabsPresentationDelegate
 
 - (void)dismissRecentTabs {
   self.completion = nil;

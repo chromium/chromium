@@ -20,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "components/download/public/common/download_item_impl_delegate.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/in_progress_download_manager.h"
@@ -291,6 +292,14 @@ class CONTENT_EXPORT DownloadManagerImpl
   // Whether |next_download_id_| is initialized.
   bool IsNextIdInitialized() const;
 
+#if defined(OS_ANDROID)
+  // Check whether a download should be cleared from history. On Android,
+  // cancelled and non-resumable interrupted download will be cleaned up to
+  // save memory.
+  bool ShouldClearDownloadFromDB(download::DownloadItem::DownloadState state,
+                                 download::DownloadInterruptReason reason);
+#endif  // defined(OS_ANDROID)
+
   // Factory for creation of downloads items.
   std::unique_ptr<download::DownloadItemFactory> item_factory_;
 
@@ -348,6 +357,11 @@ class CONTENT_EXPORT DownloadManagerImpl
 
   // Whether next download ID from history DB is being retrieved.
   bool is_history_download_id_retrieved_;
+
+  // The download GUIDs that are cleared up on startup.
+  std::set<std::string> cleared_download_guids_on_startup_;
+  int cancelled_download_cleared_from_history_;
+  int interrupted_download_cleared_from_history_;
 
   // Callbacks to run once download ID is determined.
   using IdCallbackVector = std::vector<std::unique_ptr<GetNextIdCallback>>;

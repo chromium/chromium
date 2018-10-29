@@ -51,18 +51,6 @@ void V0CustomElement::DidFinishLoadingImport(Document& master) {
   master.CustomElementMicrotaskRunQueue()->RequestDispatchIfNeeded();
 }
 
-Vector<AtomicString>& V0CustomElement::EmbedderCustomElementNames() {
-  DEFINE_STATIC_LOCAL(Vector<AtomicString>, names, ());
-  return names;
-}
-
-void V0CustomElement::AddEmbedderCustomElementName(const AtomicString& name) {
-  AtomicString lower = name.DeprecatedLower();
-  if (IsValidName(lower, kEmbedderNames))
-    return;
-  EmbedderCustomElementNames().push_back(lower);
-}
-
 static inline bool IsValidNCName(const AtomicString& name) {
   if (kNotFound != name.find(':'))
     return false;
@@ -80,17 +68,12 @@ static inline bool IsValidNCName(const AtomicString& name) {
   return Document::IsValidName(name.GetString());
 }
 
-bool V0CustomElement::IsValidName(const AtomicString& name,
-                                  NameSet valid_names) {
-  if ((valid_names & kEmbedderNames) &&
-      kNotFound != EmbedderCustomElementNames().Find(name))
-    return Document::IsValidName(name);
-
-  if ((valid_names & kStandardNames) && kNotFound != name.find('-')) {
+bool V0CustomElement::IsValidName(const AtomicString& name) {
+  if (kNotFound != name.find('-')) {
     DEFINE_STATIC_LOCAL(Vector<AtomicString>, reserved_names, ());
     if (reserved_names.IsEmpty()) {
       // FIXME(crbug.com/426605): We should be able to remove this.
-      reserved_names.push_back(MathMLNames::annotation_xmlTag.LocalName());
+      reserved_names.push_back(mathml_names::kAnnotationXmlTag.LocalName());
     }
 
     if (kNotFound == reserved_names.Find(name))

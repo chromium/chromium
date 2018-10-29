@@ -2,7 +2,6 @@ This test checks for proper parsing of the async attribute on HTML script tags.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS isAsync('s0') is false
 PASS isAsync('s1') is true
 PASS isAsync('s2') is true

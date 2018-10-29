@@ -86,7 +86,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromExtensionContext) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  scoped_refptr<Extension> extension = ExtensionBuilder("foo").Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo").Build();
   RegisterExtension(extension);
 
   ScriptContext* script_context = CreateScriptContext(

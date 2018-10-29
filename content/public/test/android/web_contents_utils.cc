@@ -3,14 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "jni/WebContentsUtils_jni.h"
 
+using base::android::ConvertJavaStringToUTF16;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -37,6 +40,28 @@ ScopedJavaLocalRef<jobject> JNI_WebContentsUtils_GetFocusedFrame(
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   return static_cast<RenderFrameHostImpl*>(web_contents->GetFocusedFrame())
       ->GetJavaRenderFrameHost();
+}
+
+void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
+    JNIEnv* env,
+    const JavaParamRef<jclass>& clazz,
+    const JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jstring>& script) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  RenderViewHost* rvh = web_contents->GetRenderViewHost();
+  DCHECK(rvh);
+
+  if (!rvh->IsRenderViewLive()) {
+    if (!static_cast<WebContentsImpl*>(web_contents)
+             ->CreateRenderViewForInitialEmptyDocument()) {
+      LOG(ERROR)
+          << "Failed to create RenderView in EvaluateJavaScriptWithUserGesture";
+      return;
+    }
+  }
+
+  web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+      ConvertJavaStringToUTF16(env, script));
 }
 
 }  // namespace content

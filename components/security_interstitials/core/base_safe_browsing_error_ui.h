@@ -32,7 +32,6 @@ class BaseSafeBrowsingErrorUI {
                           bool is_off_the_record,
                           bool is_unified_consent_enabled,
                           bool is_extended_reporting_enabled,
-                          bool is_scout_reporting_enabled,
                           bool is_extended_reporting_policy_managed,
                           bool is_proceed_anyway_disabled,
                           bool should_open_links_in_new_tab,
@@ -54,17 +53,8 @@ class BaseSafeBrowsingErrorUI {
     // shown in SB interstitials.
     bool is_unified_consent_enabled;
 
-    // Indicates if user opted in for SB extended reporting. This contains only
-    // the value of the pref that is currently active for the user (either the
-    // legacy SBER pref, or the Scout pref). Use |is_scout_reporting_enabled| to
-    // determine which of the prefs is being used.
+    // Indicates if user opted in for SB extended reporting.
     bool is_extended_reporting_enabled;
-
-    // Indicates if extended reporting is controlled by Scout or the legacy SBER
-    // setting. This does NOT indicate whether the user is opted-in to extended
-    // reporting, just the level of reporting that's available to the user. Use
-    // |is_extended_reporting_enabled| to see if the user is opted-in.
-    bool is_scout_reporting_enabled;
 
     // Whether the SBER pref is being managed by enterprise policy, meaning the
     // user is unable to change the pref.
@@ -117,10 +107,6 @@ class BaseSafeBrowsingErrorUI {
 
   void set_extended_reporting(bool pref) {
     display_options_.is_extended_reporting_enabled = pref;
-  }
-
-  bool is_scout_reporting_enabled() const {
-    return display_options_.is_scout_reporting_enabled;
   }
 
   bool is_extended_reporting_policy_managed() const {

@@ -61,8 +61,7 @@ void UnackedInvalidationSet::ExportInvalidations(
     base::WeakPtr<AckHandler> ack_handler,
     scoped_refptr<base::SingleThreadTaskRunner> ack_handler_task_runner,
     ObjectIdInvalidationMap* out) const {
-  for (SingleObjectInvalidationSet::const_iterator it = invalidations_.begin();
-       it != invalidations_.end(); ++it) {
+  for (auto it = invalidations_.begin(); it != invalidations_.end(); ++it) {
     // Copy the invalidation and set the copy's ack_handler.
     Invalidation inv(*it);
     inv.SetAckHandler(ack_handler, ack_handler_task_runner);
@@ -86,8 +85,7 @@ void UnackedInvalidationSet::SetHandlerIsUnregistered() {
 // Removes the matching ack handle from the list.
 void UnackedInvalidationSet::Acknowledge(const AckHandle& handle) {
   bool handle_found = false;
-  for (SingleObjectInvalidationSet::const_iterator it = invalidations_.begin();
-       it != invalidations_.end(); ++it) {
+  for (auto it = invalidations_.begin(); it != invalidations_.end(); ++it) {
     if (it->ack_handle().Equals(handle)) {
       invalidations_.erase(*it);
       handle_found = true;
@@ -165,8 +163,7 @@ std::unique_ptr<base::DictionaryValue> UnackedInvalidationSet::ToValue() const {
   value->SetString(kNameKey, object_id_.name());
 
   std::unique_ptr<base::ListValue> list_value(new base::ListValue);
-  for (InvalidationsSet::const_iterator it = invalidations_.begin();
-       it != invalidations_.end(); ++it) {
+  for (auto it = invalidations_.begin(); it != invalidations_.end(); ++it) {
     list_value->Append(it->ToValue());
   }
   value->Set(kInvalidationListKey, std::move(list_value));

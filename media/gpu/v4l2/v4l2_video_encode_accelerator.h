@@ -96,7 +96,6 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
     kInputBufferCount = 2,
     kOutputBufferCount = 2,
     kImageProcBufferCount = 2,
-    kOutputBufferSize = (2 * 1024 * 1024),
   };
 
   // Internal state of the encoder.

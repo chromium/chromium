@@ -136,9 +136,10 @@ void ShellNativeAppWindow::UpdateShape(std::unique_ptr<ShapeRects> rects) {
   NOTIMPLEMENTED();
 }
 
-void ShellNativeAppWindow::HandleKeyboardEvent(
-      const content::NativeWebKeyboardEvent& event) {
+bool ShellNativeAppWindow::HandleKeyboardEvent(
+    const content::NativeWebKeyboardEvent& event) {
   // No special handling. The WebContents will handle it.
+  return false;
 }
 
 bool ShellNativeAppWindow::IsFrameless() const {

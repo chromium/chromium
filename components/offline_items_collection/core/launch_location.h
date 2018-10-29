@@ -23,6 +23,8 @@ enum class LaunchLocation {
   SUGGESTION,
   // Due to clicking a suggestion on the net error page.
   NET_ERROR_SUGGESTION,
+  // From Download shelf.
+  DOWNLOAD_SHELF,
 };
 
 }  // namespace offline_items_collection

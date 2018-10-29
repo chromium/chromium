@@ -79,7 +79,7 @@ void RegexSetMatcher::RebuildMatcher() {
   if (regexes_.empty())
     return;
 
-  for (RegexMap::iterator it = regexes_.begin(); it != regexes_.end(); ++it) {
+  for (auto it = regexes_.begin(); it != regexes_.end(); ++it) {
     RE2ID re2_id;
     RE2::ErrorCode error = filtered_re2_->Add(
         it->second->pattern(), RE2::DefaultOptions, &re2_id);

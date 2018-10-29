@@ -36,4 +36,3 @@ PASS gFocusedDocument.activeElement.getAttribute("id") is "start"
 PASS gFocusedDocument.activeElement.getAttribute("id") is "4"
 PASS gFocusedDocument.activeElement.getAttribute("id") is "start"
 PASS document.getElementById('start').value is "A text containing a space\nand a new line"
-

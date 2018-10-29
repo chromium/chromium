@@ -1947,8 +1947,9 @@ class MockPermissionRequestCreator : public PermissionRequestCreator {
 };
 
 TEST_F(ExtensionServiceTestSupervised, InstallOnlyAllowedByCustodian) {
-  InitServices(true /* profile_is_supervised */);
   InitSupervisedUserInitiatedExtensionInstallFeature(false);
+
+  InitServices(true /* profile_is_supervised */);
 
   extensions::util::SetWasInstalledByCustodian(good2048, profile(), true);
 
@@ -1969,8 +1970,9 @@ TEST_F(ExtensionServiceTestSupervised, InstallOnlyAllowedByCustodian) {
 
 TEST_F(ExtensionServiceTestSupervised,
        DelegatedAndPreinstalledExtensionIsSUFirst) {
-  InitServices(false /* profile_is_supervised */);
   InitSupervisedUserInitiatedExtensionInstallFeature(false);
+
+  InitServices(false /* profile_is_supervised */);
 
   // Install an extension.
   base::FilePath path = data_dir().AppendASCII("good.crx");
@@ -2008,8 +2010,9 @@ TEST_F(ExtensionServiceTestSupervised,
 
 TEST_F(ExtensionServiceTestSupervised,
        DelegatedAndPreinstalledExtensionSyncFirst) {
-  InitServices(false /* profile_is_supervised */);
   InitSupervisedUserInitiatedExtensionInstallFeature(false);
+
+  InitServices(false /* profile_is_supervised */);
 
   // Install an extension.
   base::FilePath path = data_dir().AppendASCII("good.crx");
@@ -2040,8 +2043,9 @@ TEST_F(ExtensionServiceTestSupervised,
 
 TEST_F(ExtensionServiceTestSupervised,
        InstallAllowedByCustodianAndSupervisedUser) {
-  InitServices(true /* profile_is_supervised */);
   InitSupervisedUserInitiatedExtensionInstallFeature(true);
+
+  InitServices(true /* profile_is_supervised */);
 
   extensions::util::SetWasInstalledByCustodian(good2048, profile(), true);
 
@@ -2066,8 +2070,9 @@ TEST_F(ExtensionServiceTestSupervised,
 
 TEST_F(ExtensionServiceTestSupervised,
        PreinstalledExtensionWithSUInitiatedInstalls) {
-  InitServices(false /* profile_is_supervised */);
   InitSupervisedUserInitiatedExtensionInstallFeature(true);
+
+  InitServices(false /* profile_is_supervised */);
 
   // Install an extension.
   base::FilePath path = data_dir().AppendASCII("good.crx");
@@ -2097,8 +2102,9 @@ TEST_F(ExtensionServiceTestSupervised,
 
 TEST_F(ExtensionServiceTestSupervised,
        PreinstalledExtensionWithoutSUInitiatedInstalls) {
-  InitServices(false /* profile_is_supervised */);
   InitSupervisedUserInitiatedExtensionInstallFeature(false);
+
+  InitServices(false /* profile_is_supervised */);
 
   // Install an extension.
   base::FilePath path = data_dir().AppendASCII("good.crx");
@@ -2131,8 +2137,9 @@ TEST_F(ExtensionServiceTestSupervised,
 TEST_F(ExtensionServiceTestSupervised, ExtensionApprovalBeforeInstallation) {
   // This tests the case when the sync entity flagging the extension as approved
   // arrives before the extension itself is installed.
-  InitServices(true /* profile_is_supervised */);
   InitSupervisedUserInitiatedExtensionInstallFeature(true);
+
+  InitServices(true /* profile_is_supervised */);
 
   MockPermissionRequestCreator* creator = new MockPermissionRequestCreator;
   supervised_user_service()->AddPermissionRequestCreator(

@@ -290,8 +290,7 @@ TEST_P(SharedMemoryTest, MultipleThreads) {
   // kNumThreads.
 
   int threadcounts[] = { 1, kNumThreads };
-  for (size_t i = 0; i < arraysize(threadcounts); i++) {
-    int numthreads = threadcounts[i];
+  for (auto numthreads : threadcounts) {
     std::unique_ptr<PlatformThreadHandle[]> thread_handles;
     std::unique_ptr<MultipleThreadMain* []> thread_delegates;
 
@@ -830,15 +829,15 @@ TEST_F(SharedMemoryProcessTest, SharedMemoryAcrossProcesses) {
   // Start |kNumTasks| processes, each of which atomically increments the first
   // word by 1.
   Process processes[kNumTasks];
-  for (int index = 0; index < kNumTasks; ++index) {
-    processes[index] = SpawnChild("SharedMemoryTestMain");
-    ASSERT_TRUE(processes[index].IsValid());
+  for (auto& index : processes) {
+    index = SpawnChild("SharedMemoryTestMain");
+    ASSERT_TRUE(index.IsValid());
   }
 
   // Check that each process exited correctly.
   int exit_code = 0;
-  for (int index = 0; index < kNumTasks; ++index) {
-    EXPECT_TRUE(processes[index].WaitForExit(&exit_code));
+  for (const auto& index : processes) {
+    EXPECT_TRUE(index.WaitForExit(&exit_code));
     EXPECT_EQ(0, exit_code);
   }
 

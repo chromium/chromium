@@ -4,6 +4,7 @@
 
 #include "ash/login/ui/login_keyboard_test_base.h"
 
+#include "ash/keyboard/ash_keyboard_controller.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/lock_screen.h"
@@ -33,46 +34,48 @@ void LoginKeyboardTestBase::SetUp() {
   login_controller_ = Shell::Get()->login_screen_controller();
   ASSERT_NE(nullptr, login_controller_);
 
-  keyboard_controller_ = keyboard::KeyboardController::Get();
-  ASSERT_NE(nullptr, keyboard_controller_);
-  Shell::GetPrimaryRootWindowController()->ActivateKeyboard(
-      keyboard_controller_);
+  Shell::Get()->ash_keyboard_controller()->ActivateKeyboard();
 }
 
 void LoginKeyboardTestBase::TearDown() {
-  Shell::GetPrimaryRootWindowController()->DeactivateKeyboard(
-      keyboard_controller_);
+  Shell::Get()->ash_keyboard_controller()->DeactivateKeyboard();
   if (ash::LockScreen::HasInstance())
     ash::LockScreen::Get()->Destroy();
   AshTestBase::TearDown();
 }
 
 void LoginKeyboardTestBase::ShowKeyboard() {
-  keyboard_controller_->ShowKeyboard(false);
+  auto* keyboard_controller = keyboard::KeyboardController::Get();
+  keyboard_controller->ShowKeyboard(false);
   // Set keyboard height to half of the root window - this should overlap with
   // lock/login layout.
-  if (keyboard_controller_->GetKeyboardWindow()->bounds().height() == 0) {
+  if (keyboard_controller->GetKeyboardWindow()->bounds().height() == 0) {
     int height = Shell::GetPrimaryRootWindow()->bounds().height() / 2;
-    keyboard_controller_->GetKeyboardWindow()->SetBounds(
+    keyboard_controller->GetKeyboardWindow()->SetBounds(
         keyboard::KeyboardBoundsFromRootBounds(
             Shell::GetPrimaryRootWindow()->bounds(), height));
-    keyboard_controller_->NotifyKeyboardWindowLoaded();
+    keyboard_controller->NotifyKeyboardWindowLoaded();
   }
-  ASSERT_TRUE(keyboard_controller_->IsKeyboardVisible());
+  ASSERT_TRUE(keyboard_controller->IsKeyboardVisible());
 }
 
 void LoginKeyboardTestBase::HideKeyboard() {
-  keyboard_controller_->HideKeyboardByUser();
-  ASSERT_FALSE(keyboard_controller_->IsKeyboardVisible());
+  auto* keyboard_controller = keyboard::KeyboardController::Get();
+  keyboard_controller->HideKeyboardByUser();
+  ASSERT_FALSE(keyboard_controller->IsKeyboardVisible());
 }
 
 gfx::Rect LoginKeyboardTestBase::GetKeyboardBoundsInScreen() const {
-  return keyboard_controller_->GetKeyboardWindow()->GetBoundsInScreen();
+  return keyboard::KeyboardController::Get()
+      ->GetKeyboardWindow()
+      ->GetBoundsInScreen();
 }
 
 void LoginKeyboardTestBase::ShowLockScreen() {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
+  // The lock screen can't be shown without a wallpaper.
+  Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
 
   base::Optional<bool> result;
   login_controller_->ShowLockScreen(base::BindOnce(

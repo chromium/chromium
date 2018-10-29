@@ -446,7 +446,7 @@ void ServiceWorkerControlleeRequestHandler::
   }
 
   if (!GetContentClient()->browser()->AllowServiceWorker(
-          registration->pattern(), provider_host_->topmost_frame_url(),
+          registration->scope(), provider_host_->topmost_frame_url(),
           resource_context_, provider_host_->web_contents_getter())) {
     tracker_->RecordDestination(
         ServiceWorkerMetrics::MainResourceRequestDestination::
@@ -763,6 +763,12 @@ void ServiceWorkerControlleeRequestHandler::
 }
 
 void ServiceWorkerControlleeRequestHandler::ClearJob() {
+  // Invalidate weak pointers to cancel RegisterStatusChangeCallback().
+  // Otherwise we may end up calling ForwardToServiceWorer()
+  // or FallbackToNetwork() twice on the same |url_job_|.
+  // TODO(bashi): Consider not to reuse this handler when restarting the
+  // request after S13nServiceWorker is shipped.
+  weak_factory_.InvalidateWeakPtrs();
   url_job_.reset();
 }
 

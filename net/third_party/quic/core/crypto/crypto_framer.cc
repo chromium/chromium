@@ -170,7 +170,7 @@ QuicData* CryptoFramer::ConstructHandshakeMessage(
 
   uint32_t end_offset = 0;
   // Tags and offsets
-  for (QuicTagValueMap::const_iterator it = message.tag_value_map().begin();
+  for (auto it = message.tag_value_map().begin();
        it != message.tag_value_map().end(); ++it) {
     if (it->first == kPAD && need_pad_tag) {
       // Existing PAD tags are only checked when padding needs to be added
@@ -205,7 +205,7 @@ QuicData* CryptoFramer::ConstructHandshakeMessage(
   }
 
   // Values
-  for (QuicTagValueMap::const_iterator it = message.tag_value_map().begin();
+  for (auto it = message.tag_value_map().begin();
        it != message.tag_value_map().end(); ++it) {
     if (it->first > kPAD && need_pad_value) {
       need_pad_value = false;

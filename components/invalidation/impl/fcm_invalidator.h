@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "components/invalidation/impl/fcm_sync_invalidation_listener.h"
+#include "components/invalidation/impl/fcm_invalidation_listener.h"
 #include "components/invalidation/impl/invalidator.h"
 #include "components/invalidation/impl/invalidator_registrar.h"
 #include "components/invalidation/public/invalidator_state.h"
@@ -26,7 +26,7 @@ class FCMSyncNetworkChannel;
 // This class inplements the Invalidator interface and serves as a
 // bridge betwen invalidation Listener and invalidationr Service.
 class FCMInvalidator : public Invalidator,
-                       public FCMSyncInvalidationListener::Delegate {
+                       public FCMInvalidationListener::Delegate {
  public:
   FCMInvalidator(std::unique_ptr<FCMSyncNetworkChannel> network_channel,
                  invalidation::IdentityProvider* identity_provider,
@@ -62,7 +62,7 @@ class FCMInvalidator : public Invalidator,
   InvalidatorRegistrar registrar_;
 
   // The invalidation listener.
-  FCMSyncInvalidationListener invalidation_listener_;
+  FCMInvalidationListener invalidation_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(FCMInvalidator);
 };

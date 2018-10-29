@@ -103,7 +103,6 @@ void AwSafeBrowsingBlockingPage::ShowBlockingPage(
             false,  // is_off_the_record
             false,  // is_unified_consent_enabled
             safe_browsing::IsExtendedReportingEnabled(*pref_service),
-            safe_browsing::IsScout(*pref_service),
             safe_browsing::IsExtendedReportingPolicyManaged(*pref_service),
             pref_service->GetBoolean(
                 ::prefs::kSafeBrowsingProceedAnywayDisabled),

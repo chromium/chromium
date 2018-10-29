@@ -20,8 +20,6 @@ static_library("core") {
     "previews_logger_observer.h",
     "previews_switches.cc",
     "previews_switches.h",
-    "previews_user_data.cc",
-    "previews_user_data.h",
   ]
 
   deps = [
@@ -61,7 +59,6 @@ source_set("unit_tests") {
     "previews_black_list_unittest.cc",
     "previews_experiments_unittest.cc",
     "previews_logger_unittest.cc",
-    "previews_user_data_unittest.cc",
   ]
 
   deps = [

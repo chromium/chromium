@@ -135,7 +135,7 @@ void DragImageView::OnPaint(gfx::Canvas* canvas) {
     if (image_rep.is_null())
       return;
     SkBitmap scaled = skia::ImageOperations::Resize(
-        image_rep.sk_bitmap(), skia::ImageOperations::RESIZE_LANCZOS3,
+        image_rep.GetBitmap(), skia::ImageOperations::RESIZE_LANCZOS3,
         drag_image_size_pixels.width(), drag_image_size_pixels.height());
     gfx::ImageSkia image_skia(gfx::ImageSkiaRep(scaled, device_scale));
     canvas->DrawImageInt(image_skia, 0, 0);

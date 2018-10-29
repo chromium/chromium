@@ -142,7 +142,7 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
   // Create the manifest
   std::unique_ptr<base::DictionaryValue> root(new base::DictionaryValue);
   root->SetString(keys::kPublicKey,
-                  web_app::GenerateExtensionKeyFromURL(web_app.app_url));
+                  web_app::GenerateAppKeyFromURL(web_app.app_url));
   root->SetString(keys::kName, base::UTF16ToUTF8(web_app.title));
   root->SetString(keys::kVersion, ConvertTimeToExtensionVersion(create_time));
   root->SetString(keys::kDescription, base::UTF16ToUTF8(web_app.description));

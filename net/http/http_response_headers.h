@@ -80,6 +80,13 @@ class NET_EXPORT HttpResponseHeaders
   // be passed to the pickle's various Read* methods.
   explicit HttpResponseHeaders(base::PickleIterator* pickle_iter);
 
+  // Takes headers as an ASCII string and tries to parse them as HTTP response
+  // headers. returns nullptr on failure. Unlike the HttpResponseHeaders
+  // constructor that takes a std::string, HttpUtil::AssembleRawHeaders should
+  // not be called on |headers| before calling this method.
+  static scoped_refptr<HttpResponseHeaders> TryToCreate(
+      base::StringPiece headers);
+
   // Appends a representation of this object to the given pickle.
   // The options argument can be a combination of PersistOptions.
   void Persist(base::Pickle* pickle, PersistOptions options);

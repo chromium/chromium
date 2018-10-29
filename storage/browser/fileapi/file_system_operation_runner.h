@@ -59,12 +59,12 @@ class STORAGE_EXPORT FileSystemOperationRunner {
   // in case a file is already present at the URL.
   OperationID CreateFile(const FileSystemURL& url,
                          bool exclusive,
-                         const StatusCallback& callback);
+                         StatusCallback callback);
 
   OperationID CreateDirectory(const FileSystemURL& url,
                               bool exclusive,
                               bool recursive,
-                              const StatusCallback& callback);
+                              StatusCallback callback);
 
   // Copies a file or directory from |src_url| to |dest_url|. If
   // |src_url| is a directory, the contents of |src_url| are copied to
@@ -77,7 +77,7 @@ class STORAGE_EXPORT FileSystemOperationRunner {
                    CopyOrMoveOption option,
                    ErrorBehavior error_behavior,
                    const CopyProgressCallback& progress_callback,
-                   const StatusCallback& callback);
+                   StatusCallback callback);
 
   // Moves a file or directory from |src_url| to |dest_url|. A new file
   // or directory is created at |dest_url| as needed.
@@ -85,20 +85,19 @@ class STORAGE_EXPORT FileSystemOperationRunner {
   OperationID Move(const FileSystemURL& src_url,
                    const FileSystemURL& dest_url,
                    CopyOrMoveOption option,
-                   const StatusCallback& callback);
+                   StatusCallback callback);
 
   // Checks if a directory is present at |url|.
   OperationID DirectoryExists(const FileSystemURL& url,
-                              const StatusCallback& callback);
+                              StatusCallback callback);
 
   // Checks if a file is present at |url|.
-  OperationID FileExists(const FileSystemURL& url,
-                         const StatusCallback& callback);
+  OperationID FileExists(const FileSystemURL& url, StatusCallback callback);
 
   // Gets the metadata of a file or directory at |url|.
   OperationID GetMetadata(const FileSystemURL& url,
                           int fields,
-                          const GetMetadataCallback& callback);
+                          GetMetadataCallback callback);
 
   // Reads contents of a directory at |url|.
   OperationID ReadDirectory(const FileSystemURL& url,
@@ -106,12 +105,19 @@ class STORAGE_EXPORT FileSystemOperationRunner {
 
   // Removes a file or directory at |url|. If |recursive| is true, remove
   // all files and directories under the directory at |url| recursively.
-  OperationID Remove(const FileSystemURL& url, bool recursive,
-                     const StatusCallback& callback);
+  OperationID Remove(const FileSystemURL& url,
+                     bool recursive,
+                     StatusCallback callback);
 
-  // Writes contents of |blob_url| to |url| at |offset|.
+  // Writes contents of |blob| to |url| at |offset|.
   OperationID Write(const FileSystemURL& url,
                     std::unique_ptr<storage::BlobDataHandle> blob,
+                    int64_t offset,
+                    const WriteCallback& callback);
+
+  // Writes contents of |data_pipe| to |url| at |offset|.
+  OperationID Write(const FileSystemURL& url,
+                    mojo::ScopedDataPipeConsumerHandle data_pipe,
                     int64_t offset,
                     const WriteCallback& callback);
 
@@ -120,12 +126,12 @@ class STORAGE_EXPORT FileSystemOperationRunner {
   // part is filled with null bytes.
   OperationID Truncate(const FileSystemURL& url,
                        int64_t length,
-                       const StatusCallback& callback);
+                       StatusCallback callback);
 
   // Tries to cancel the operation |id| [we support cancelling write or
   // truncate only]. Reports failure for the current operation, then reports
   // success for the cancel operation itself via the |callback|.
-  void Cancel(OperationID id, const StatusCallback& callback);
+  void Cancel(OperationID id, StatusCallback callback);
 
   // Modifies timestamps of a file or directory at |url| with
   // |last_access_time| and |last_modified_time|. The function DOES NOT
@@ -135,7 +141,7 @@ class STORAGE_EXPORT FileSystemOperationRunner {
   OperationID TouchFile(const FileSystemURL& url,
                         const base::Time& last_access_time,
                         const base::Time& last_modified_time,
-                        const StatusCallback& callback);
+                        StatusCallback callback);
 
   // Opens a file at |url| with |file_flags|, where flags are OR'ed
   // values of base::PlatformFileFlags.
@@ -146,7 +152,7 @@ class STORAGE_EXPORT FileSystemOperationRunner {
   // This function is used only by Pepper as of writing.
   OperationID OpenFile(const FileSystemURL& url,
                        int file_flags,
-                       const OpenFileCallback& callback);
+                       OpenFileCallback callback);
 
   // Creates a local snapshot file for a given |url| and returns the
   // metadata and platform url of the snapshot file via |callback|.
@@ -171,7 +177,7 @@ class STORAGE_EXPORT FileSystemOperationRunner {
   //
   OperationID CopyInForeignFile(const base::FilePath& src_local_disk_path,
                                 const FileSystemURL& dest_url,
-                                const StatusCallback& callback);
+                                StatusCallback callback);
 
   // Removes a single file.
   //
@@ -179,8 +185,7 @@ class STORAGE_EXPORT FileSystemOperationRunner {
   // - File::FILE_ERROR_NOT_FOUND if |url| does not exist.
   // - File::FILE_ERROR_NOT_A_FILE if |url| is not a file.
   //
-  OperationID RemoveFile(const FileSystemURL& url,
-                         const StatusCallback& callback);
+  OperationID RemoveFile(const FileSystemURL& url, StatusCallback callback);
 
   // Removes a single empty directory.
   //
@@ -190,7 +195,7 @@ class STORAGE_EXPORT FileSystemOperationRunner {
   // - File::FILE_ERROR_NOT_EMPTY if |url| is not empty.
   //
   OperationID RemoveDirectory(const FileSystemURL& url,
-                              const StatusCallback& callback);
+                              StatusCallback callback);
 
   // Copies a file from |src_url| to |dest_url|.
   // This must be called for files that belong to the same filesystem
@@ -211,7 +216,7 @@ class STORAGE_EXPORT FileSystemOperationRunner {
                             const FileSystemURL& dest_url,
                             CopyOrMoveOption option,
                             const CopyFileProgressCallback& progress_callback,
-                            const StatusCallback& callback);
+                            StatusCallback callback);
 
   // Moves a local file from |src_url| to |dest_url|.
   // This must be called for files that belong to the same filesystem
@@ -230,7 +235,7 @@ class STORAGE_EXPORT FileSystemOperationRunner {
   OperationID MoveFileLocal(const FileSystemURL& src_url,
                             const FileSystemURL& dest_url,
                             CopyOrMoveOption option,
-                            const StatusCallback& callback);
+                            StatusCallback callback);
 
   // This is called only by pepper plugin as of writing to synchronously get
   // the underlying platform path to upload a file in the sandboxed filesystem
@@ -243,10 +248,10 @@ class STORAGE_EXPORT FileSystemOperationRunner {
   explicit FileSystemOperationRunner(FileSystemContext* file_system_context);
 
   void DidFinish(const OperationID id,
-                 const StatusCallback& callback,
+                 StatusCallback callback,
                  base::File::Error rv);
   void DidGetMetadata(const OperationID id,
-                      const GetMetadataCallback& callback,
+                      GetMetadataCallback callback,
                       base::File::Error rv,
                       const base::File::Info& file_info);
   void DidReadDirectory(const OperationID id,
@@ -260,7 +265,7 @@ class STORAGE_EXPORT FileSystemOperationRunner {
                 int64_t bytes,
                 bool complete);
   void DidOpenFile(const OperationID id,
-                   const OpenFileCallback& callback,
+                   OpenFileCallback callback,
                    base::File file,
                    base::OnceClosure on_close_callback);
   void DidCreateSnapshot(
@@ -303,8 +308,7 @@ class STORAGE_EXPORT FileSystemOperationRunner {
 
   // We keep track of the file to be modified by each operation so that
   // we can notify observers when we're done.
-  using OperationToURLSet = std::map<OperationID, FileSystemURLSet>;
-  OperationToURLSet write_target_urls_;
+  std::map<OperationID, FileSystemURLSet> write_target_urls_;
 
   // Operations that are finished but not yet fire their callbacks.
   std::set<OperationID> finished_operations_;

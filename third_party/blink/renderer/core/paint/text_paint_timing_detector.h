@@ -62,38 +62,47 @@ class CORE_EXPORT TextPaintTimingDetector final
   void OnPrePaintFinished();
   void NotifyNodeRemoved(DOMNodeId);
   void Dispose() { timer_.Stop(); }
+  base::TimeTicks LargestTextPaint() const { return largest_text_paint_; }
+  base::TimeTicks LastTextPaint() const { return last_text_paint_; }
   void Trace(blink::Visitor*);
 
  private:
-  void PopulateTraceValue(std::unique_ptr<TracedValue>& value,
-                          TextRecord* first_text_paint,
-                          int report_count);
+  void PopulateTraceValue(TracedValue& value,
+                          const TextRecord& first_text_paint,
+                          unsigned candidate_index) const;
   IntRect CalculateTransformedRect(LayoutRect& visual_rect,
-                                   const PaintLayer& painting_layer);
+                                   const PaintLayer& painting_layer) const;
   void TimerFired(TimerBase*);
+  void Analyze();
 
   void ReportSwapTime(WebLayerTreeView::SwapResult result,
                       base::TimeTicks timestamp);
   void RegisterNotifySwapTime(ReportTimeCallback callback);
+  void OnLargestTextDetected(const TextRecord&);
+  void OnLastTextDetected(const TextRecord&);
 
   HashSet<DOMNodeId> recorded_text_node_ids_;
   HashSet<DOMNodeId> size_zero_node_ids_;
   std::priority_queue<std::unique_ptr<TextRecord>,
                       std::vector<std::unique_ptr<TextRecord>>,
-                      std::function<bool(std::unique_ptr<TextRecord>&,
-                                         std::unique_ptr<TextRecord>&)>>
+                      bool (*)(const std::unique_ptr<TextRecord>&,
+                               const std::unique_ptr<TextRecord>&)>
       largest_text_heap_;
   std::priority_queue<std::unique_ptr<TextRecord>,
                       std::vector<std::unique_ptr<TextRecord>>,
-                      std::function<bool(std::unique_ptr<TextRecord>&,
-                                         std::unique_ptr<TextRecord>&)>>
+                      bool (*)(const std::unique_ptr<TextRecord>&,
+                               const std::unique_ptr<TextRecord>&)>
       latest_text_heap_;
   std::vector<TextRecord> texts_to_record_swap_time_;
 
   // Make sure that at most one swap promise is ongoing.
   bool awaiting_swap_promise_ = false;
-  unsigned largest_text_report_count_ = 0;
-  unsigned last_text_report_count_ = 0;
+  unsigned recorded_node_count_ = 0;
+  unsigned largest_text_candidate_index_max_ = 0;
+  unsigned last_text_candidate_index_max_ = 0;
+
+  base::TimeTicks largest_text_paint_;
+  base::TimeTicks last_text_paint_;
   TaskRunnerTimer<TextPaintTimingDetector> timer_;
   Member<LocalFrameView> frame_view_;
 };

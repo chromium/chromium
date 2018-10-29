@@ -28,7 +28,6 @@ enum class OrderDirection;
 namespace viz {
 class FrameSinkId;
 class LocalSurfaceId;
-class SurfaceInfo;
 }
 
 namespace aura {
@@ -95,7 +94,6 @@ class AURA_EXPORT WindowMus {
       const viz::FrameSinkId& frame_sink_id) = 0;
   virtual const viz::LocalSurfaceId& GetOrAllocateLocalSurfaceId(
       const gfx::Size& new_size) = 0;
-  virtual void SetFallbackSurfaceInfo(const viz::SurfaceInfo& surface_info) = 0;
   // The window was deleted on the server side. DestroyFromServer() should
   // result in deleting |this|.
   virtual void DestroyFromServer() = 0;

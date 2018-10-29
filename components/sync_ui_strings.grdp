@@ -38,7 +38,7 @@
       You already have data that is encrypted using a different version of your Google Account password. Please enter it below.
     </message>
     <message name="IDS_SYNC_FULL_ENCRYPTION_DATA" desc="Text of the radio that when selected enables full encryption.">
-      Encrypt all synced data with your own sync passphrase
+      Encrypt synced data with your own sync passphrase
     </message>
     <message name="IDS_SYNC_LOGIN_SETTING_UP" desc="A progress message">
       Setting up...

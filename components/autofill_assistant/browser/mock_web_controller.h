@@ -21,6 +21,8 @@ class MockWebController : public WebController {
 
   MOCK_METHOD0(GetUrl, const GURL&());
 
+  MOCK_METHOD1(LoadURL, void(const GURL&));
+
   void ClickElement(const std::vector<std::string>& selectors,
                     base::OnceCallback<void(bool)> callback) override {
     // Transforming callback into a references allows using RunOnceCallback on
@@ -31,13 +33,33 @@ class MockWebController : public WebController {
                void(const std::vector<std::string>& selectors,
                     base::OnceCallback<void(bool)>& callback));
 
-  void ElementExists(const std::vector<std::string>& selectors,
-                     base::OnceCallback<void(bool)> callback) override {
-    OnElementExists(selectors, callback);
+  void FocusElement(const std::vector<std::string>& selectors,
+                    base::OnceCallback<void(bool)> callback) override {
+    OnFocusElement(selectors, callback);
   }
-  MOCK_METHOD2(OnElementExists,
+  MOCK_METHOD2(OnFocusElement,
                void(const std::vector<std::string>& selectors,
                     base::OnceCallback<void(bool)>& callback));
+
+  void ElementCheck(ElementCheckType check_type,
+                    const std::vector<std::string>& selectors,
+                    base::OnceCallback<void(bool)> callback) override {
+    OnElementCheck(check_type, selectors, callback);
+  }
+  MOCK_METHOD3(OnElementCheck,
+               void(ElementCheckType check_type,
+                    const std::vector<std::string>& selectors,
+                    base::OnceCallback<void(bool)>& callback));
+
+  void GetFieldValue(
+      const std::vector<std::string>& selectors,
+      base::OnceCallback<void(bool, const std::string&)> callback) override {
+    OnGetFieldValue(selectors, callback);
+  }
+  MOCK_METHOD2(
+      OnGetFieldValue,
+      void(const std::vector<std::string>& selectors,
+           base::OnceCallback<void(bool, const std::string&)>& callback));
 };
 
 }  // namespace autofill_assistant

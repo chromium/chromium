@@ -2,8 +2,8 @@ crbug.com/590412: this test checks that style is correctly serialized without an
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS

@@ -2,7 +2,6 @@ This tests what event handler attributes are available on what objects.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test Element
 PASS 'onabort' in element is true
 PASS 'onblur' in element is true
@@ -121,7 +120,7 @@ FAIL 'onbeforepaste' in window should be true. Was false.
 FAIL 'onpaste' in window should be true. Was false.
 PASS 'onreset' in window is true
 PASS 'onsearch' in window is true
-FAIL 'onselectstart' in window should be true. Was false.
+PASS 'onselectstart' in window is true
 
 Test Text Node
 PASS 'onabort' in textNode is false

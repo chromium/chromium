@@ -82,8 +82,9 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
              "created_by": "user:foo",
              "created_ts": "1535490272757820",
              "id": "8936915467712010816",
+             "project": "chrome",
              "lease_key": "461228535",
-             "tags": ["builder:obbs_fyi", "buildset:patch/1194825/3",
+             "tags": ["builder:android-go-perf", "buildset:patch/1194825/3",
                       "cq_experimental:False",
                       "master:master.tryserver.chromium.perf",
                       "user_agent:cq"]}}"""

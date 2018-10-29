@@ -5,6 +5,8 @@
 #include "components/ui_devtools/dom_agent.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "components/ui_devtools/devtools_server.h"
 #include "components/ui_devtools/root_element.h"
@@ -12,7 +14,9 @@
 
 namespace ui_devtools {
 
-using namespace ui_devtools::protocol;
+using ui_devtools::protocol::Array;
+using ui_devtools::protocol::DOM::Node;
+using ui_devtools::protocol::Response;
 
 DOMAgent::DOMAgent() {}
 
@@ -25,12 +29,8 @@ Response DOMAgent::disable() {
   return Response::OK();
 }
 
-Response DOMAgent::getDocument(std::unique_ptr<DOM::Node>* out_root) {
+Response DOMAgent::getDocument(std::unique_ptr<Node>* out_root) {
   *out_root = BuildInitialTree();
-  return Response::OK();
-}
-
-Response DOMAgent::hideHighlight() {
   return Response::OK();
 }
 
@@ -49,10 +49,19 @@ void DOMAgent::OnUIElementAdded(UIElement* parent, UIElement* child) {
     node_id_to_ui_element_[child->node_id()] = child;
     return;
   }
-  // If tree is being built, don't add child to dom tree again.
-  if (is_building_tree_)
-    return;
+
   DCHECK(node_id_to_ui_element_.count(parent->node_id()));
+
+  auto* current_parent = parent;
+  while (current_parent) {
+    if (current_parent->is_updating()) {
+      // One of the parents is updating, so no need to update here.
+      return;
+    }
+    current_parent = current_parent->parent();
+  }
+
+  child->set_is_updating(true);
 
   const auto& children = parent->children();
   auto iter = std::find(children.begin(), children.end(), child);
@@ -60,6 +69,8 @@ void DOMAgent::OnUIElementAdded(UIElement* parent, UIElement* child) {
       (iter == children.end() - 1) ? 0 : (*std::next(iter))->node_id();
   frontend()->childNodeInserted(parent->node_id(), prev_node_id,
                                 BuildTreeForUIElement(child));
+
+  child->set_is_updating(false);
 }
 
 void DOMAgent::OnUIElementReordered(UIElement* parent, UIElement* child) {
@@ -111,27 +122,26 @@ int DOMAgent::GetParentIdOfNodeId(int node_id) const {
 
 // TODO(mhashmi): Make ids reusable
 
-std::unique_ptr<DOM::Node> DOMAgent::BuildNode(
+std::unique_ptr<Node> DOMAgent::BuildNode(
     const std::string& name,
     std::unique_ptr<Array<std::string>> attributes,
-    std::unique_ptr<Array<DOM::Node>> children,
+    std::unique_ptr<Array<Node>> children,
     int node_ids) {
   constexpr int kDomElementNodeType = 1;
-  std::unique_ptr<DOM::Node> node = DOM::Node::create()
-                                        .setNodeId(node_ids)
-                                        .setBackendNodeId(node_ids)
-                                        .setNodeName(name)
-                                        .setNodeType(kDomElementNodeType)
-                                        .setAttributes(std::move(attributes))
-                                        .build();
+  std::unique_ptr<Node> node = Node::create()
+                                   .setNodeId(node_ids)
+                                   .setBackendNodeId(node_ids)
+                                   .setNodeName(name)
+                                   .setNodeType(kDomElementNodeType)
+                                   .setAttributes(std::move(attributes))
+                                   .build();
   node->setChildNodeCount(static_cast<int>(children->length()));
   node->setChildren(std::move(children));
   return node;
 }
 
-std::unique_ptr<DOM::Node> DOMAgent::BuildDomNodeFromUIElement(
-    UIElement* root) {
-  std::unique_ptr<Array<DOM::Node>> children = Array<DOM::Node>::create();
+std::unique_ptr<Node> DOMAgent::BuildDomNodeFromUIElement(UIElement* root) {
+  std::unique_ptr<Array<Node>> children = Array<Node>::create();
   for (auto* it : root->children())
     children->addItem(BuildDomNodeFromUIElement(it));
 
@@ -139,19 +149,19 @@ std::unique_ptr<DOM::Node> DOMAgent::BuildDomNodeFromUIElement(
                    std::move(children), root->node_id());
 }
 
-std::unique_ptr<DOM::Node> DOMAgent::BuildInitialTree() {
-  is_building_tree_ = true;
-  std::unique_ptr<Array<DOM::Node>> children = Array<DOM::Node>::create();
+std::unique_ptr<Node> DOMAgent::BuildInitialTree() {
+  std::unique_ptr<Array<Node>> children = Array<Node>::create();
 
   element_root_ = std::make_unique<RootElement>(this);
+  element_root_->set_is_updating(true);
 
   for (auto* child : CreateChildrenForRoot()) {
     children->addItem(BuildTreeForUIElement(child));
     element_root_->AddChild(child);
   }
-  std::unique_ptr<DOM::Node> root_node =
+  std::unique_ptr<Node> root_node =
       BuildNode("root", nullptr, std::move(children), element_root_->node_id());
-  is_building_tree_ = false;
+  element_root_->set_is_updating(false);
   return root_node;
 }
 
@@ -168,7 +178,6 @@ void DOMAgent::RemoveDomNode(UIElement* ui_element) {
 }
 
 void DOMAgent::Reset() {
-  is_building_tree_ = false;
   element_root_.reset();
   node_id_to_ui_element_.clear();
   observers_.Clear();

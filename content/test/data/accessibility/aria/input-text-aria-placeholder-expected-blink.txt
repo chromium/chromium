@@ -1,13 +1,16 @@
 rootWebArea
 ++textField name='aria-placeholder1'
+++++genericContainer
 ++textField name='placeholder2'
 ++++genericContainer
 ++textField name='aria-label3' placeholder='placeholder3'
 ++++genericContainer
 ++textField name='aria-label4' placeholder='aria-placeholder4'
+++++genericContainer
 ++textField description='aria-description5' name='aria-label5' placeholder='placeholder5' descriptionFrom=relatedElement
 ++++genericContainer
 ++genericContainer
 ++++staticText name='aria-description5'
 ++++++inlineTextBox name='aria-description5'
 ++textField description='title6' name='aria-placeholder6' descriptionFrom=attribute
+++++genericContainer

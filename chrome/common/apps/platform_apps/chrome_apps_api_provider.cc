@@ -13,7 +13,7 @@
 #include "extensions/common/features/json_feature_provider_source.h"
 #include "extensions/common/permissions/permissions_info.h"
 
-namespace apps {
+namespace chrome_apps {
 
 ChromeAppsAPIProvider::ChromeAppsAPIProvider() {}
 ChromeAppsAPIProvider::~ChromeAppsAPIProvider() = default;
@@ -54,11 +54,12 @@ base::StringPiece ChromeAppsAPIProvider::GetAPISchema(const std::string& name) {
 void ChromeAppsAPIProvider::RegisterPermissions(
     extensions::PermissionsInfo* permissions_info) {
   permissions_info->RegisterPermissions(
-      chrome_apps_api_permissions::GetPermissionInfos(), {});
+      chrome_apps_api_permissions::GetPermissionInfos(),
+      base::span<const extensions::Alias>());
 }
 
 void ChromeAppsAPIProvider::RegisterManifestHandlers() {
   // No apps-specific manifest handlers (yet).
 }
 
-}  // namespace apps
+}  // namespace chrome_apps

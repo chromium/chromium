@@ -21,6 +21,7 @@ source_set("smart_dim") {
     "//chrome/browser/chromeos:user_activity_event_proto",
     "//chrome/browser/chromeos/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/common:constants",
+    "//chromeos:chromeos",
     "//components/assist_ranker",
     "//components/assist_ranker/proto",
     "//components/sessions",

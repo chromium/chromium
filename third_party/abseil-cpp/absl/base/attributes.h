@@ -100,7 +100,7 @@
 // ABSL_PRINTF_ATTRIBUTE
 // ABSL_SCANF_ATTRIBUTE
 //
-// Tells the compiler to perform `printf` format std::string checking if the
+// Tells the compiler to perform `printf` format string checking if the
 // compiler supports it; see the 'format' attribute in
 // <http://gcc.gnu.org/onlinedocs/gcc-4.7.0/gcc/Function-Attributes.html>.
 //
@@ -494,14 +494,27 @@
 #define ABSL_XRAY_LOG_ARGS(N)
 #endif
 
+// ABSL_ATTRIBUTE_REINITIALIZES
+//
+// Indicates that a member function reinitializes the entire object to a known
+// state, independent of the previous state of the object.
+//
+// The clang-tidy check bugprone-use-after-move allows member functions marked
+// with this attribute to be called on objects that have been moved from;
+// without the attribute, this would result in a use-after-move warning.
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::reinitializes)
+#define ABSL_ATTRIBUTE_REINITIALIZES [[clang::reinitializes]]
+#else
+#define ABSL_ATTRIBUTE_REINITIALIZES
+#endif
+
 // -----------------------------------------------------------------------------
 // Variable Attributes
 // -----------------------------------------------------------------------------
 
 // ABSL_ATTRIBUTE_UNUSED
 //
-// Prevents the compiler from complaining about or optimizing away variables
-// that appear unused.
+// Prevents the compiler from complaining about variables that appear unused.
 #if ABSL_HAVE_ATTRIBUTE(unused) || (defined(__GNUC__) && !defined(__clang__))
 #undef ABSL_ATTRIBUTE_UNUSED
 #define ABSL_ATTRIBUTE_UNUSED __attribute__((__unused__))

@@ -1,0 +1,28 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/cr.html">
+
+<dom-module id="extensions-activity-log">
+  <template>
+    <style include="iron-flex cr-shared-style">
+      #container {
+        height: 100%;
+        overflow: overlay;
+      }
+
+      #main {
+        background-color: white;
+        margin: auto;
+        min-height: 100%;
+        padding-bottom: 64px;
+        width: var(--cr-toolbar-field-width);
+      }
+    </style>
+    <div id="container">
+      <div id="main">
+        Welcome to the new activity log
+      </div>
+    </div>
+  </template>
+  <script src="activity_log.js"></script>
+</dom-module>

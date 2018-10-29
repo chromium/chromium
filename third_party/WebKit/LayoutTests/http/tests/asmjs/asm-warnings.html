@@ -1,0 +1,27 @@
+<html>
+<body>
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.dumpChildFrames();
+    testRunner.setDumpConsoleMessages(true);
+    testRunner.waitUntilDone();
+}
+
+function ModuleBadAsm() {
+  "use asm";
+  var x = "hi";
+  function foo() {}
+  return {bar: foo};
+}
+ModuleBadAsm();
+
+var w = new Worker('worker.js');
+w.onmessage = function(e) {
+  testRunner.notifyDone();
+};
+w.postMessage({name: 'yo'});
+
+</script>
+</body>
+</html>

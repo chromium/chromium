@@ -6,7 +6,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 Resource Requeset Log:
 
-
 bg_pattern.jpg
 PASS successfullyParsed is true
 

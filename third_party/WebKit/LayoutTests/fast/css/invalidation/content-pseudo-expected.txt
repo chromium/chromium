@@ -3,12 +3,11 @@ No need to invalidate for selectors right of ::content as ::content causes subtr
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS getComputedStyle(green).color is "rgb(0, 0, 0)"
 PASS internals.updateStyleAndReturnAffectedElementCount() is 2
 PASS getComputedStyle(green).color is "rgb(0, 128, 0)"
 PASS successfullyParsed is true
 
 TEST COMPLETE
-This text should be green
 
+This text should be green

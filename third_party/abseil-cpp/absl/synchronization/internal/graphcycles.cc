@@ -204,8 +204,7 @@ class NodeSet {
   }
 
  private:
-  static const int32_t kEmpty;
-  static const int32_t kDel;
+  enum : int32_t { kEmpty = -1, kDel = -2 };
   Vec<int32_t> table_;
   uint32_t occupied_;     // Count of non-empty slots (includes deleted slots)
 
@@ -254,9 +253,6 @@ class NodeSet {
   NodeSet(const NodeSet&) = delete;
   NodeSet& operator=(const NodeSet&) = delete;
 };
-
-const int32_t NodeSet::kEmpty = -1;
-const int32_t NodeSet::kDel = -2;
 
 // We encode a node index and a node version in GraphId.  The version
 // number is incremented when the GraphId is freed which automatically

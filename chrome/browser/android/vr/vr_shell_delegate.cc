@@ -53,20 +53,20 @@ VrShellDelegateProviderFactory::CreateGvrDelegateProvider() {
 }
 
 #if BUILDFLAG(ENABLE_ARCORE)
-class ARCoreDeviceProviderFactoryImpl
-    : public device::ARCoreDeviceProviderFactory {
+class ArCoreDeviceProviderFactoryImpl
+    : public device::ArCoreDeviceProviderFactory {
  public:
-  ARCoreDeviceProviderFactoryImpl() = default;
-  ~ARCoreDeviceProviderFactoryImpl() override = default;
+  ArCoreDeviceProviderFactoryImpl() = default;
+  ~ArCoreDeviceProviderFactoryImpl() override = default;
   std::unique_ptr<device::VRDeviceProvider> CreateDeviceProvider() override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ARCoreDeviceProviderFactoryImpl);
+  DISALLOW_COPY_AND_ASSIGN(ArCoreDeviceProviderFactoryImpl);
 };
 
 std::unique_ptr<device::VRDeviceProvider>
-ARCoreDeviceProviderFactoryImpl::CreateDeviceProvider() {
-  return std::make_unique<device::ARCoreDeviceProvider>();
+ArCoreDeviceProviderFactoryImpl::CreateDeviceProvider() {
+  return std::make_unique<device::ArCoreDeviceProvider>();
 }
 #endif
 
@@ -354,8 +354,8 @@ static void JNI_VrShellDelegate_OnLibraryAvailable(
 #if BUILDFLAG(ENABLE_ARCORE)
   // TODO(https://crbug.com/837965): Move this to an ARCore-specific location
   // with similar timing (occurs before XRRuntimeManager is initialized).
-  device::ARCoreDeviceProviderFactory::Install(
-      std::make_unique<ARCoreDeviceProviderFactoryImpl>());
+  device::ArCoreDeviceProviderFactory::Install(
+      std::make_unique<ArCoreDeviceProviderFactoryImpl>());
 #endif
 }
 

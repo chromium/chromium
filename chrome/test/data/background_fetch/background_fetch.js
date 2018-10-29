@@ -91,6 +91,7 @@ navigator.serviceWorker.addEventListener('message', event => {
     'backgroundfetchsuccess',
     'backgroundfetchfail',
     'permissionerror',
+    'ok',
   ];
   if (expectedResponses.includes(event.data))
     sendResultToTest(event.data);
@@ -138,8 +139,19 @@ function StartFetchFromServiceWorker() {
   navigator.serviceWorker.ready.then(reg => reg.active.postMessage('fetch'));
 }
 
+function StartFetchFromServiceWorkerNoWait() {
+  navigator.serviceWorker.ready.then(
+    reg => reg.active.postMessage('fetchnowait'));
+}
+
 function StartFetchFromIframe() {
   const iframe = document.createElement('iframe');
   iframe.src = '/background_fetch/background_fetch_iframe.html';
+  document.body.appendChild(iframe);
+}
+
+function StartFetchFromIframeNoWait() {
+  const iframe = document.createElement('iframe');
+  iframe.src = '/background_fetch/background_fetch_iframe_nowait.html';
   document.body.appendChild(iframe);
 }

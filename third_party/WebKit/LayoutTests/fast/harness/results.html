@@ -340,6 +340,7 @@ TestResult(CRASH) + TextExpectation(Failure) => [ Failure <b>Crash</b> ]</pre>
     <label id="HARNESS"><input type="checkbox">Harness failure <span></span></label>
     <label id="IMAGE"><input type="checkbox">Image failure <span></span></label>
     <label id="IMAGE_TEXT"><input type="checkbox">Image+text failure <span></span></label>
+    <label id="AUDIO"><input type="checkbox">Audio failure <span></span></label>
     <label id="SKIP"><input type="checkbox">Skipped <span></span></label>
     <label id="PASS"><input type="checkbox">Pass <span></span></label>
     <label id="WONTFIX"><input type="checkbox">WontFix <span></span></label>
@@ -385,12 +386,13 @@ const TestResultInformation = {
   "TEXT":       { index: 3, text: "Failure", isFailure: true, isSuccess: false },
   "IMAGE":      { index: 4, text: "Failure", isFailure: true, isSuccess: false },
   "IMAGE+TEXT": { index: 5, text: "Failure", isFailure: true, isSuccess: false },
-  "TIMEOUT":    { index: 6, text: "Timeout", isFailure: true, isSuccess: false },
-  "LEAK":       { index: 7, text: "LEAK", isFailure: true, isSuccess: false },
-  "SLOW":       { index: 8, text: "Slow", isFailure: false, isSuccess: true },
-  "SKIP":       { index: 9, text: "Skip", isFailure: false, isSuccess: false },
-  "MISSING":    { index: 10, text: "Missing", isFailure: false, isSuccess: false },
-  "WONTFIX":    { index: 11, text: "WontFix", isFailure: false, isSuccess: false },
+  "AUDIO":      { index: 6, text: "Failure", isFailure: true, isSuccess: false },
+  "TIMEOUT":    { index: 7, text: "Timeout", isFailure: true, isSuccess: false },
+  "LEAK":       { index: 8, text: "LEAK", isFailure: true, isSuccess: false },
+  "SLOW":       { index: 9, text: "Slow", isFailure: false, isSuccess: true },
+  "SKIP":       { index: 10, text: "Skip", isFailure: false, isSuccess: false },
+  "MISSING":    { index: 11, text: "Missing", isFailure: false, isSuccess: false },
+  "WONTFIX":    { index: 12, text: "WontFix", isFailure: false, isSuccess: false },
   "PASS":       { index: 13, text: "Pass", isFailure: false, isSuccess: true },
   "NOTRUN":     { index: 14, text: "NOTRUN", isFailure: false, isSuccess: true }
 };
@@ -776,6 +778,9 @@ const Report = {
           toolbars.push(new ImageResultsToolbar().createDom(test));
           toolbars.push(new TextResultsToolbar().createDom(test));
           break;
+        case "AUDIO":
+          toolbars.push(new AudioResultsToolbar().createDom(test));
+          break;
         case "MISSING":
           toolbars.push(new PlainHtmlToolbar().createDom("Expectations are missing."));
           toolbars.push(new TextResultsToolbar().createDom(test));
@@ -988,6 +993,7 @@ const Filters = {
       case "TEXT":
       case "IMAGE":
       case "IMAGE+TEXT":
+      case "AUDIO":
         if (expectedMap.has("FAIL"))
           return false;
         break;
@@ -1033,6 +1039,7 @@ const Filters = {
       case "TEXT":
       case "IMAGE":
       case "IMAGE+TEXT":
+      case "AUDIO":
         if (baseMap && baseMap.has("FAIL"))
           return false;
         break;
@@ -2341,6 +2348,56 @@ class SimpleLinkToolbar extends TXToolbar {
     viewer.showFile(selectedAnchors.map( anchor => anchor.href));
   }
 } // class SimpleLinkToolbar
+
+// Audio results.
+class AudioResultsToolbar extends TXToolbar {
+
+  createDom(test) {
+    this.importStyle();
+    this.test = test;
+    let pathParser = new PathParser(test.expectPath);
+    this.toolbar = document.createElement("li");
+    this.toolbar.showDefault = (_ => {
+      this.selectAnchor(this.toolbar.querySelector("a"));
+    }).bind(this);
+    this.toolbar.classList.add("tx-toolbar");
+    this.toolbar.innerHTML = `<a href="#audioresults">audio results</a>\n`;
+    this.toolbar.addEventListener("click", ev => {
+      if (ev.target.tagName == "A") {
+        this.selectAnchor(ev.target);
+        ev.preventDefault();
+      }
+    });
+    return this.toolbar;
+  }
+
+  updateViewer() {
+    let viewer = this.getViewer();
+    if (!viewer) {
+      viewer = (new AudioResultsViewer()).createDom(this.test);
+      GUI.setResultViewer(this.toolbar, viewer);
+    }
+  }
+}
+
+class AudioResultsViewer {
+  createDom(test) {
+    this.viewer = document.createElement("div");
+    this.viewer.classList.add("audio-results-viewer");
+    let pathParser = new PathParser(test.expectPath);
+    this.viewer.innerHTML = `
+      <p>Actual:
+        <audio controls src="${pathParser.resultLink('-actual.wav')}"></audio>
+        <a download="actual.wav" href="${pathParser.resultLink('-actual.wav')}">download</a>
+      </p>
+      <p>Expected:
+        <audio controls src="${pathParser.resultLink('-expected.wav')}"></audio>
+        <a download="expected.wav" href="${pathParser.resultLink('-expected.wav')}">download</a>
+      </p>
+    `;
+    return this.viewer;
+  }
+} // class AudioResultsViewer
 
 </script>
 <script>

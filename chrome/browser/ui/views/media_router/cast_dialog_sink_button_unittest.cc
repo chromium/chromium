@@ -57,4 +57,36 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabel) {
             button4.subtitle()->text());
 }
 
+TEST_F(CastDialogSinkButtonTest, OverrideStatusText) {
+  UIMediaSink sink;
+  CastDialogSinkButton button(nullptr, sink, 0);
+  base::string16 status0 = base::ASCIIToUTF16("status0");
+  base::string16 status1 = base::ASCIIToUTF16("status1");
+  base::string16 status2 = base::ASCIIToUTF16("status2");
+
+  // Calling RestoreStatusText does nothing when status has not been overridden.
+  button.subtitle()->SetText(status0);
+  ASSERT_EQ(button.subtitle()->text(), status0);
+  button.RestoreStatusText();
+  EXPECT_EQ(button.subtitle()->text(), status0);
+
+  // OverrideStatusText replaces status text.
+  button.OverrideStatusText(status1);
+  EXPECT_EQ(button.subtitle()->text(), status1);
+
+  // Additional calls to OverrideStatusText change the text.
+  button.OverrideStatusText(status2);
+  EXPECT_EQ(button.subtitle()->text(), status2);
+
+  // RestoreStatusText restores the saved status text.
+  button.RestoreStatusText();
+  EXPECT_EQ(button.subtitle()->text(), status0);
+
+  // Additional calls to RestoreStatusText don't change the text.
+  button.subtitle()->SetText(status1);
+  ASSERT_EQ(button.subtitle()->text(), status1);
+  button.RestoreStatusText();
+  EXPECT_EQ(button.subtitle()->text(), status1);
+}
+
 }  // namespace media_router

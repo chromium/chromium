@@ -50,9 +50,11 @@ bool VTTScanner::Scan(char c) {
   return true;
 }
 
-bool VTTScanner::Scan(const LChar* characters, size_t characters_count) {
-  unsigned match_length = is8_bit_ ? end_.characters8 - data_.characters8
-                                   : end_.characters16 - data_.characters16;
+bool VTTScanner::Scan(const LChar* characters, wtf_size_t characters_count) {
+  wtf_size_t match_length =
+      is8_bit_
+          ? static_cast<wtf_size_t>(end_.characters8 - data_.characters8)
+          : static_cast<wtf_size_t>(end_.characters16 - data_.characters16);
   if (match_length < characters_count)
     return false;
   bool matched;
@@ -70,7 +72,7 @@ bool VTTScanner::ScanRun(const Run& run, const String& to_match) {
   DCHECK_LE(run.Start(), end());
   DCHECK_GE(run.end(), run.Start());
   DCHECK_LE(run.end(), end());
-  size_t match_length = run.length();
+  wtf_size_t match_length = run.length();
   if (to_match.length() > match_length)
     return false;
   bool matched;
@@ -116,7 +118,7 @@ unsigned VTTScanner::ScanDigits(unsigned& number) {
     return 0;
   }
   bool valid_number;
-  size_t num_digits = run_of_digits.length();
+  wtf_size_t num_digits = run_of_digits.length();
   if (is8_bit_) {
     number = CharactersToUInt(data_.characters8, num_digits,
                               WTF::NumberParsingOptions::kNone, &valid_number);

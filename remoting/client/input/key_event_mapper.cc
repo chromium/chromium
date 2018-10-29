@@ -45,8 +45,7 @@ void KeyEventMapper::InjectKeyEvent(const protocol::KeyEvent& event) {
     }
 
     // Re-map mapped keys to the new value before passing them on.
-    std::map<uint32_t, uint32_t>::iterator mapped =
-        mapped_keys.find(event.usb_keycode());
+    auto mapped = mapped_keys.find(event.usb_keycode());
     if (mapped != mapped_keys.end()) {
       protocol::KeyEvent new_event(event);
       new_event.set_usb_keycode(mapped->second);

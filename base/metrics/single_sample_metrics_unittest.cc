@@ -4,7 +4,6 @@
 
 #include "base/metrics/single_sample_metrics.h"
 
-#include "base/memory/ptr_util.h"
 #include "base/metrics/dummy_histogram.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -42,14 +41,14 @@ TEST_F(SingleSampleMetricsTest, DefaultFactoryGetSet) {
   EXPECT_EQ(factory, SingleSampleMetricsFactory::Get());
 
   // Setting a factory after the default has been instantiated should fail.
-  EXPECT_DCHECK_DEATH(SingleSampleMetricsFactory::SetFactory(
-      WrapUnique<SingleSampleMetricsFactory>(nullptr)));
+  EXPECT_DCHECK_DEATH(SingleSampleMetricsFactory::SetFactory(nullptr));
 }
 
 TEST_F(SingleSampleMetricsTest, CustomFactoryGetSet) {
-  SingleSampleMetricsFactory* factory = new DefaultSingleSampleMetricsFactory();
-  SingleSampleMetricsFactory::SetFactory(WrapUnique(factory));
-  EXPECT_EQ(factory, SingleSampleMetricsFactory::Get());
+  auto factory = std::make_unique<DefaultSingleSampleMetricsFactory>();
+  SingleSampleMetricsFactory* factory_raw = factory.get();
+  SingleSampleMetricsFactory::SetFactory(std::move(factory));
+  EXPECT_EQ(factory_raw, SingleSampleMetricsFactory::Get());
 }
 
 TEST_F(SingleSampleMetricsTest, DefaultSingleSampleMetricNoValue) {
@@ -81,7 +80,6 @@ TEST_F(SingleSampleMetricsTest, DefaultSingleSampleMetricWithValue) {
   // Verify only the last sample sent to SetSample() is recorded.
   tester.ExpectUniqueSample(kMetricName, kLastSample, 1);
 
-#if 0  // TODO(crbug.com/836238): Temporarily disabled for field crash test.
   // Verify construction implicitly by requesting a histogram with the same
   // parameters; this test relies on the fact that histogram objects are unique
   // per name. Different parameters will result in a Dummy histogram returned.
@@ -91,7 +89,6 @@ TEST_F(SingleSampleMetricsTest, DefaultSingleSampleMetricWithValue) {
   EXPECT_NE(DummyHistogram::GetInstance(),
             Histogram::FactoryGet(kMetricName, kMin, kMax, kBucketCount,
                                   HistogramBase::kUmaTargetedHistogramFlag));
-#endif
 }
 
 TEST_F(SingleSampleMetricsTest, MultipleMetricsAreDistinct) {

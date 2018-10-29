@@ -39,10 +39,6 @@ class Layer;
 class RenderFrameMetadata;
 }
 
-namespace viz {
-class SurfaceInfo;
-}
-
 namespace content {
 
 class BrowserPluginDelegate;
@@ -60,7 +56,7 @@ class CONTENT_EXPORT BrowserPlugin : public blink::WebPlugin,
                                      public ChildFrameCompositor,
                                      public MouseLockDispatcher::LockTarget {
  public:
-  static BrowserPlugin* GetFromNode(blink::WebNode& node);
+  static BrowserPlugin* GetFromNode(const blink::WebNode& node);
 
   int render_frame_routing_id() const { return render_frame_routing_id_; }
   int browser_plugin_instance_id() const { return browser_plugin_instance_id_; }
@@ -99,6 +95,8 @@ class CONTENT_EXPORT BrowserPlugin : public blink::WebPlugin,
   // Returns the last allocated LocalSurfaceId.
   const viz::LocalSurfaceId& GetLocalSurfaceId() const;
 
+  const viz::FrameSinkId& frame_sink_id() const { return frame_sink_id_; }
+
   void SynchronizeVisualProperties();
 
   // Returns whether a message should be forwarded to BrowserPlugin.
@@ -130,7 +128,7 @@ class CONTENT_EXPORT BrowserPlugin : public blink::WebPlugin,
                               const blink::WebFloatPoint& position,
                               const blink::WebFloatPoint& screen) override;
   void DidReceiveResponse(const blink::WebURLResponse& response) override;
-  void DidReceiveData(const char* data, int data_length) override;
+  void DidReceiveData(const char* data, size_t data_length) override;
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError& error) override;
   bool ExecuteEditCommand(const blink::WebString& name) override;
@@ -215,8 +213,6 @@ class CONTENT_EXPORT BrowserPlugin : public blink::WebPlugin,
 
 #if defined(USE_AURA)
   // MusEmbeddedFrameDelegate
-  void OnMusEmbeddedFrameSurfaceChanged(
-      const viz::SurfaceInfo& surface_info) override {}
   void OnMusEmbeddedFrameSinkIdAllocated(
       const viz::FrameSinkId& frame_sink_id) override;
 #endif

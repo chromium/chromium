@@ -13,11 +13,11 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js',
  * @constructor
  * @extends {ChromeVoxE2ETest}
  */
-function CvoxBrailleTranslatorManagerTest() {
+function ChromeVoxBrailleTranslatorManagerTest() {
   ChromeVoxE2ETest.call(this);
 }
 
-CvoxBrailleTranslatorManagerTest.prototype = {
+ChromeVoxBrailleTranslatorManagerTest.prototype = {
   __proto__: ChromeVoxE2ETest.prototype,
 
   /** @override */
@@ -78,7 +78,7 @@ function callOnce(callback) {
   };
 }
 
-TEST_F('CvoxBrailleTranslatorManagerTest', 'testInitial', function() {
+TEST_F('ChromeVoxBrailleTranslatorManagerTest', 'testInitial', function() {
   assertEquals(null, this.manager.getExpandingTranslator());
   assertEquals(null, this.manager.getDefaultTranslator());
   assertEquals(null, this.manager.getUncontractedTranslator());
@@ -89,7 +89,7 @@ TEST_F('CvoxBrailleTranslatorManagerTest', 'testInitial', function() {
   });
 });
 
-TEST_F('CvoxBrailleTranslatorManagerTest', 'testRefreshWithoutChange',
+TEST_F('ChromeVoxBrailleTranslatorManagerTest', 'testRefreshWithoutChange',
        function() {
   this.addChangeListener(function() {
     assertNotEquals(null, this.manager.getExpandingTranslator());
@@ -101,7 +101,7 @@ TEST_F('CvoxBrailleTranslatorManagerTest', 'testRefreshWithoutChange',
   });
 });
 
-TEST_F('CvoxBrailleTranslatorManagerTest', 'testRefreshWithChange',
+TEST_F('ChromeVoxBrailleTranslatorManagerTest', 'testRefreshWithChange',
        function() {
   this.addChangeListener(function() {
     assertNotEquals(null, this.manager.getExpandingTranslator());

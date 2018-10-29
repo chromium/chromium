@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1018939186200882850">élément de menu</translation>
-<translation id="1020833440720551630">désactiver le son de la piste audio</translation>
 <translation id="10623998915015855">bouton d'activation/de désactivation</translation>
 <translation id="1088086359088493902">Secondes</translation>
 <translation id="1171774979989969504">Veuillez saisir une adresse e-mail.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">crédits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">bannière</translation>
-<translation id="1548116112524424341">diffuser la vidéo en mode PIP</translation>
 <translation id="1589122976691792535">région</translation>
 <translation id="1591562245178063882">Ce mois</translation>
 <translation id="1637811476055996098">Sélect. fichiers</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">arborescence</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">lire sur un appareil à distance</translation>
-<translation id="1838818994221231429">activer/désactiver le passage du mode plein écran en encoche</translation>
 <translation id="190587075670221089">suppression</translation>
 <translation id="1907737156431278478">exemple</translation>
 <translation id="1921819250265091946">jj</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">horodatage</translation>
 <translation id="5630795885300617244">Appuyez deux fois à gauche/droite pour reculer/avancer de 10 s</translation>
 <translation id="5631759159893697722">résumé</translation>
-<translation id="5641012560118721995">interrompre la lecture</translation>
 <translation id="5643186887447432888">bouton</translation>
 <translation id="5677946354068040947">plus d'options</translation>
 <translation id="576709008726043716">introduction</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">Réinitialiser</translation>
 <translation id="5966707198760109579">Semaine</translation>
 <translation id="5987525920412732405">bouton toupie</translation>
+<translation id="6011459053400940133">curseur de volume</translation>
 <translation id="6015796118275082299">Année</translation>
 <translation id="6023896073578205740">zone de liste</translation>
-<translation id="6101327004457443354">réactiver le son de la piste audio</translation>
 <translation id="6150588977291308318">bibliographie</translation>
 <translation id="6164829606128959761">outil de mesure</translation>
 <translation id="6166809985690652833">postface</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">Heures</translation>
 <translation id="7681220483256441252">index</translation>
 <translation id="7720026100085573005">temps restant</translation>
-<translation id="7740016676195725605">ne plus afficher les sous-titres</translation>
 <translation id="7740050170769002709">Contenu HTML</translation>
 <translation id="7750228210027921155">Mode PIP (Picture-in-Picture)</translation>
 <translation id="7789962463072032349">pause</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">champ de recherche de texte</translation>
 <translation id="8057695513531652401">notification</translation>
 <translation id="8105797009065549151">référence de note</translation>
-<translation id="8115662671911883373">commencer à afficher les sous-titres</translation>
 <translation id="8117451130807776954">Cette semaine</translation>
-<translation id="819205353528511139">lire le film en mode plein écran</translation>
 <translation id="8199524924445686405">aaaa</translation>
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="835897206747267392">Valeur incorrecte</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">contrôler la lecture à distance</translation>
 <translation id="862370744433916922">sous-titre</translation>
 <translation id="8750798805984357768">Veuillez sélectionner l'une de ces options.</translation>
-<translation id="8785498733064193001">commencer la lecture</translation>
 <translation id="8808573423886751634">chapitre</translation>
 <translation id="8845239796550121995">En cours de diffusion sur votre téléviseur</translation>
 <translation id="8851136666856101339">principal</translation>

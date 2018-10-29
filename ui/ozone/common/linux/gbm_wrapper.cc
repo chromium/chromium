@@ -7,12 +7,21 @@
 #include <gbm.h>
 
 #include "base/posix/eintr_wrapper.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/ozone/common/linux/drm_util_linux.h"
 #include "ui/ozone/common/linux/gbm_buffer.h"
 #include "ui/ozone/common/linux/gbm_device.h"
 
 namespace gbm_wrapper {
+
+namespace {
+
+// Temporary defines while we migrate to GBM_BO_IMPORT_FD_MODIFIER.
+#define GBM_BO_IMPORT_FD_PLANAR_5504 0x5504
+#define GBM_BO_IMPORT_FD_PLANAR_5505 0x5505
+
+}  // namespace
 
 class Buffer final : public ui::GbmBuffer {
  public:
@@ -31,7 +40,10 @@ class Buffer final : public ui::GbmBuffer {
         size_(size),
         planes_(std::move(planes)) {}
 
-  ~Buffer() override { gbm_bo_destroy(bo_); }
+  ~Buffer() override {
+    DCHECK(!mmap_data_);
+    gbm_bo_destroy(bo_);
+  }
 
   uint32_t GetFormat() const override { return format_; }
   uint64_t GetFormatModifier() const override { return format_modifier_; }
@@ -97,8 +109,24 @@ class Buffer final : public ui::GbmBuffer {
     return handle;
   }
 
+  sk_sp<SkSurface> GetSurface() override {
+    DCHECK(!mmap_data_);
+    uint32_t stride;
+    void* addr;
+    addr = gbm_bo_map(bo_, 0, 0, gbm_bo_get_width(bo_), gbm_bo_get_height(bo_),
+                      GBM_BO_TRANSFER_READ_WRITE, &stride, &mmap_data_, 0);
+
+    if (!addr)
+      return nullptr;
+    SkImageInfo info =
+        SkImageInfo::MakeN32Premul(size_.width(), size_.height());
+    return SkSurface::MakeRasterDirectReleaseProc(info, addr, stride,
+                                                  &Buffer::UnmapGbmBo, this);
+  }
+
  private:
   gbm_bo* bo_ = nullptr;
+  void* mmap_data_ = nullptr;
 
   uint32_t format_ = 0;
   uint64_t format_modifier_ = 0;
@@ -109,6 +137,12 @@ class Buffer final : public ui::GbmBuffer {
   gfx::Size size_;
 
   std::vector<gfx::NativePixmapPlane> planes_;
+
+  static void UnmapGbmBo(void* pixels, void* context) {
+    Buffer* buffer = static_cast<Buffer*>(context);
+    gbm_bo_unmap(buffer->bo_, buffer->mmap_data_);
+    buffer->mmap_data_ = nullptr;
+  }
 
   DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
@@ -192,23 +226,33 @@ class Device final : public ui::GbmDevice {
       gbm_flags &= ~GBM_BO_USE_SCANOUT;
 
     struct gbm_bo* bo = nullptr;
-    if (gbm_device_is_format_supported(device_, format, gbm_flags)) {
-      struct gbm_import_fd_planar_data fd_data;
-      fd_data.width = size.width();
-      fd_data.height = size.height();
-      fd_data.format = format;
+    if (!gbm_device_is_format_supported(device_, format, gbm_flags)) {
+      LOG(ERROR) << "gbm format not supported: " << format;
+      return nullptr;
+    }
 
-      DCHECK_LE(planes.size(), 3u);
-      for (size_t i = 0; i < planes.size(); ++i) {
-        fd_data.fds[i] = fds[i < fds.size() ? i : 0].get();
-        fd_data.strides[i] = planes[i].stride;
-        fd_data.offsets[i] = planes[i].offset;
-        fd_data.format_modifiers[i] = planes[i].modifier;
-      }
+    struct gbm_import_fd_planar_data fd_data;
+    fd_data.width = size.width();
+    fd_data.height = size.height();
+    fd_data.format = format;
 
-      // The fd passed to gbm_bo_import is not ref-counted and need to be
-      // kept open for the lifetime of the buffer.
-      bo = gbm_bo_import(device_, GBM_BO_IMPORT_FD_PLANAR, &fd_data, gbm_flags);
+    DCHECK_LE(planes.size(), 3u);
+    for (size_t i = 0; i < planes.size(); ++i) {
+      fd_data.fds[i] = fds[i < fds.size() ? i : 0].get();
+      fd_data.strides[i] = planes[i].stride;
+      fd_data.offsets[i] = planes[i].offset;
+      fd_data.format_modifiers[i] = planes[i].modifier;
+    }
+
+    // The fd passed to gbm_bo_import is not ref-counted and need to be
+    // kept open for the lifetime of the buffer.
+    //
+    // See the comment regarding the GBM_BO_IMPORT_FD_PLANAR_550X above.
+    bo = gbm_bo_import(device_, GBM_BO_IMPORT_FD_PLANAR_5505, &fd_data,
+                       gbm_flags);
+    if (!bo) {
+      bo = gbm_bo_import(device_, GBM_BO_IMPORT_FD_PLANAR_5504, &fd_data,
+                         gbm_flags);
       if (!bo) {
         LOG(ERROR) << "nullptr returned from gbm_bo_import";
         return nullptr;

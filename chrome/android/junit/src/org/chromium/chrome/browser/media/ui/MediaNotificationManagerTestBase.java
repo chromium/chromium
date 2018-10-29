@@ -35,10 +35,13 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.AppHooksImpl;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.media.ui.MediaNotificationManager.ListenerService;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.content_public.common.MediaMetadata;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -137,6 +140,11 @@ public class MediaNotificationManagerTestBase {
 
         // Init the command line to avoid assertion failure in |SysUtils#isLowEndDevice()|.
         CommandLine.init(null);
+        // Init ChromeFeaturesList to avoid assertion failure in
+        // MediaNotificationManagerNotificationTest.
+        Map<String, Boolean> testFeatures = new HashMap<>();
+        testFeatures.put(ChromeFeatureList.HIDE_USER_DATA_FROM_INCOGNITO_NOTIFICATIONS, true);
+        ChromeFeatureList.setTestFeatures(testFeatures);
     }
 
     @After

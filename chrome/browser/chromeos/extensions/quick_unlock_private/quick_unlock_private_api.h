@@ -29,12 +29,21 @@ class QuickUnlockPrivateGetAuthTokenFunction
       base::Callback<chromeos::ExtendedAuthenticator*(
           chromeos::AuthStatusConsumer* auth_status_consumer)>;
 
+  class TestObserver {
+   public:
+    virtual void OnGetAuthTokenCalled(const std::string&) = 0;
+  };
+
   QuickUnlockPrivateGetAuthTokenFunction();
 
   // Use the given |allocator| to create an ExtendedAuthenticator instance. This
   // lets tests intercept authentication calls.
   void SetAuthenticatorAllocatorForTesting(
       const AuthenticatorAllocator& allocator);
+
+  // Test API.
+  static void SetTestObserver(
+      QuickUnlockPrivateGetAuthTokenFunction::TestObserver* observer);
 
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getAuthToken",
                              QUICKUNLOCKPRIVATE_GETAUTHTOKEN);

@@ -13,9 +13,6 @@ namespace web {
 // Indicates WebKit errors.
 extern const char kWebKitErrorDomain[];
 
-// MIME type is not supported.
-const long kWebKitErrorCannotShowMimeType = 100;
-
 // Can not change location URL.
 const long kWebKitErrorCannotShowUrl = 101;
 

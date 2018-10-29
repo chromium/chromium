@@ -248,6 +248,9 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // The destination node used to get necessary information like the smaple rate
   // and context time.
   scoped_refptr<AudioDestinationHandler> destination_handler_;
+
+  // Audio bus to sum in any connections to the AudioParam.
+  scoped_refptr<AudioBus> summing_bus_;
 };
 
 // AudioParam class represents web-exposed AudioParam interface.

@@ -4,4 +4,5 @@ PASS inside.offsetHeight > 0 is true
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 Should be visible

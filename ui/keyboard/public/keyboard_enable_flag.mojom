@@ -1,0 +1,35 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module keyboard.mojom;
+
+// Flags that affect whether or not the virtual keyboard should be enabled.
+// Enabled/Disabled flag pairs are mutually exclusive, but flags from multiple
+// sources may be set. Precedence is determined by the implementation in
+// KeyboardController::IsKeyboardEnableRequested.
+enum KeyboardEnableFlag {
+  // Enabled by policy.
+  kPolicyEnabled,
+
+  // Disabled by policy.
+  kPolicyDisabled,
+
+  // Disabled by the Android keyboard.
+  kAndroidDisabled,
+
+  // Enabled by a first-party extension.
+  kExtensionEnabled,
+
+  // Disabled by a first-party extension.
+  kExtensionDisabled,
+
+  // Enabled by an a11y controller.
+  kAccessibilityEnabled,
+
+  // Enabled by the shelf/launcher controller.
+  kShelfEnabled,
+
+  // Enabled by the touch controller.
+  kTouchEnabled,
+};

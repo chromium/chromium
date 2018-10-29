@@ -46,6 +46,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui:notifications",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/collection_view/cells",
@@ -63,11 +64,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/reading_list",
     "//ios/chrome/browser/ui/settings/utils:utils",
-    "//ios/chrome/browser/ui/toolbar",
     "//ios/chrome/browser/ui/toolbar:toolbar_ui",
-    "//ios/chrome/browser/ui/toolbar/adaptive:adaptive_ui",
-    "//ios/chrome/browser/ui/toolbar/buttons",
-    "//ios/chrome/browser/ui/toolbar/clean:toolbar",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web_state_list",
@@ -118,6 +115,7 @@ source_set("content_suggestions_ui") {
     "//base",
     "//components/strings",
     "//ios/chrome/browser/ui",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions/cells:cells_ui",
@@ -125,8 +123,7 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/overscroll_actions",
-    "//ios/chrome/browser/ui/toolbar:toolbar_ui",
-    "//ios/chrome/browser/ui/toolbar/buttons:buttons",
+    "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/util:util",
     "//ios/chrome/common/favicon",
     "//ios/web/public",
@@ -145,7 +142,7 @@ source_set("content_suggestions_constant") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
-    "//ios/chrome/browser/ui:ui_util",
+    "//ios/chrome/browser/ui/util",
   ]
 }
 

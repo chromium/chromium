@@ -67,7 +67,7 @@ source_set("crc32c") {
     "config/crc32c/crc32c_config.h",
     "src/include/crc32c/crc32c.h",
     "src/src/crc32c.cc",
-    "src/src/crc32c_arm_linux_check.h",
+    "src/src/crc32c_arm64_linux_check.h",
     "src/src/crc32c_internal.h",
     "src/src/crc32c_portable.cc",
     "src/src/crc32c_prefetch.h",

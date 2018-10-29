@@ -4,6 +4,7 @@
 
 #include "chrome/browser/resource_coordinator/local_site_characteristics_webcontents_observer.h"
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/resource_coordinator/local_site_characteristics_data_store_factory.h"
@@ -91,7 +92,7 @@ class LocalSiteCharacteristicsWebContentsObserverTest
     test_clock().Advance(base::TimeDelta::FromSeconds(1));
     // Set the testing factory for the test browser context.
     LocalSiteCharacteristicsDataStoreFactory::GetInstance()->SetTestingFactory(
-        browser_context(), &BuildMockDataStoreForContext);
+        browser_context(), base::BindRepeating(&BuildMockDataStoreForContext));
 
     TabLoadTracker::Get()->StartTracking(web_contents());
     LocalSiteCharacteristicsWebContentsObserver::

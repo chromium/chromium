@@ -23,6 +23,7 @@ NET_EXPORT scoped_refptr<SSLPrivateKey> WrapOpenSSLPrivateKey(
     bssl::UniquePtr<EVP_PKEY> key);
 NET_EXPORT scoped_refptr<SSLPrivateKey> WrapRSAPrivateKey(
     crypto::RSAPrivateKey* rsa_private_key);
+NET_EXPORT scoped_refptr<SSLPrivateKey> CreateFailSigningSSLPrivateKey();
 
 }  // namespace net
 

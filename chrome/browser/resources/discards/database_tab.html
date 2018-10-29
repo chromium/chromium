@@ -8,9 +8,21 @@ general use and is not localized.
 -->
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="sorted_table_behavior.html">
+
 <dom-module id="database-tab">
   <template>
     <style>
+      .add-origin-container {
+        display: flex;
+        padding-top: 10px;
+      }
+
       table {
         border-collapse: collapse;
       }
@@ -35,21 +47,44 @@ general use and is not localized.
         display: flex;
         justify-content: flex-start;
       }
+
+      table th[data-sort-key] {
+        cursor: pointer;
+      }
+
+      th div.header-cell-container::after {
+        content: '▲';
+        opacity: 0;
+      }
+
+      th.sort-column div.header-cell-container::after {
+        content: '▲';
+        opacity: 1;
+      }
+
+      th.sort-column-reverse div.header-cell-container::after {
+        content: '▼';
+        opacity: 1;
+      }
     </style>
+    <div>
+      <div>Database Rows: [[optionalIntegerToString_(size_.numRows)]]</div>
+      <div>Database Size: [[kilobytesToString_(size_.onDiskSizeKb)]]</div>
+    </div>
     <table>
       <thead>
         <tr>
-          <th>
+          <th data-sort-key="origin" class="sort-column" on-click="onSortClick">
             <div class="header-cell-container">
               Origin
             </div>
           </th>
-          <th>
+          <th data-sort-key="dirty" on-click="onSortClick">
             <div class="header-cell-container">
               Dirty
             </div>
           </th>
-          <th>
+          <th data-sort-key="lastLoaded" on-click="onSortClick">
             <div class="header-cell-container">
               Last Loaded
             </div>
@@ -86,37 +121,38 @@ general use and is not localized.
               </div>
             </div>
           </th>
-          <th>
+          <th data-sort-key="cpuUsage" on-click="onSortClick">
             <div class="header-cell-container">
               <div>
-                <div>Average CPU usage</div>
-                <div>(microseconds)</div>
+                <div>Average</div>
+                <div>CPU Usage</div>
               </div>
             </div>
           </th>
-          <th>
+          <th data-sort-key="memoryUsage" on-click="onSortClick">
             <div class="header-cell-container">
               <div>
                 <div>Average Memory</div>
-                <div>Footprint (kb)</div>
+                <div>Footprint</div>
               </div>
             </div>
           </th>
-          <th>
+          <th data-sort-key="loadDuration" on-click="onSortClick">
             <div class="header-cell-container">
               <div>
                 <div>Average Load</div>
-                <div>Time (us)</div>
-              </div>
+                <div>Time</div>
+            </div>
             </div>
           </th>
         </tr>
       </thead>
       <tbody>
-        <template is="dom-repeat" sort="compareRows_" items="[[rows_]]">
+        <template is="dom-repeat" items="[[rows_]]"
+            sort="[[computeSortFunction_(sortKey, sortReverse)]]">
           <tr>
             <td class="origin-cell">[[item.origin]]</td>
-            <td class="dirty-cell">[[boolToString_(item.dirty)]]</td>
+            <td class="dirty-cell">[[boolToString_(item.isDirty)]]</td>
             <td>[[lastUseToString_(item.value.lastLoaded)]]</td>
             <td>[[featureToString_(item.value.updatesFaviconInBackground)]]</td>
             <td>[[featureToString_(item.value.updatesTitleInBackground)]]</td>
@@ -131,6 +167,19 @@ general use and is not localized.
         </template>
       </tbody>
     </table>
+    <div class="add-origin-container">
+      <cr-input id="addOriginInput" label="Add Origin" value="{{newOrigin_}}"
+           on-keydown="onOriginKeydown_" placeholder="https://example.org"
+           invalid="[[!isEmptyOrValidOrigin_(newOrigin_)]]"
+           error-message="The origin must be a valid URL without a path."
+           autofocus>
+        <button slot="suffix" label="Add Origin"
+            on-click="onAddOriginClick_"
+            disabled="[[!isValidOrigin_(newOrigin_)]]">
+          <iron-icon icon="cr:check"></iron-icon>
+        </button>
+      </cr-input>
+    </div>
   </template>
   <script src="database_tab.js"></script>
 </dom-module>

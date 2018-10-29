@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 
-#include "base/command_line.h"
+#include <string>
+
 #include "base/macros.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
@@ -14,17 +15,19 @@
 #include "chrome/browser/ui/views/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
+#include "chrome/browser/ui/views/tabs/tab_style.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/material_design/material_design_controller.h"
-#include "ui/base/ui_base_switches.h"
+#include "ui/base/test/material_design_controller_test_api.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/path.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget.h"
@@ -39,12 +42,6 @@ views::View* FindTabView(views::View* view) {
     current = current->parent();
   }
   return current;
-}
-
-// Generates the test names suffixes based on the value of the test param.
-std::string TouchOptimizedUiStatusToString(
-    const ::testing::TestParamInfo<bool>& info) {
-  return info.param ? "TouchOptimizedUiEnabled" : "TouchOptimizedUiDisabled";
 }
 
 class TabStripTestViewsDelegate : public ChromeTestViewsDelegate {
@@ -143,17 +140,11 @@ class TestTabStripObserver : public TabStripObserver {
 class TabStripTest : public ChromeViewsTestBase,
                      public testing::WithParamInterface<bool> {
  public:
-  TabStripTest() {}
+  TabStripTest() : test_api_(GetParam()) {}
 
   ~TabStripTest() override {}
 
   void SetUp() override {
-    if (GetParam()) {
-      base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-          switches::kTopChromeMD,
-          switches::kTopChromeMDMaterialRefreshTouchOptimized);
-    }
-
     ChromeViewsTestBase::SetUp();
 
     controller_ = new FakeBaseTabStripController;
@@ -174,7 +165,6 @@ class TabStripTest : public ChromeViewsTestBase,
   }
 
   void TearDown() override {
-    TabStrip::ResetTabSizeInfoForTesting();
     widget_.reset();
     ChromeViewsTestBase::TearDown();
   }
@@ -236,6 +226,8 @@ class TabStripTest : public ChromeViewsTestBase,
   std::unique_ptr<views::Widget> widget_;
 
  private:
+  ui::test::MaterialDesignControllerTestAPI test_api_;
+
   DISALLOW_COPY_AND_ASSIGN(TabStripTest);
 };
 
@@ -412,7 +404,8 @@ TEST_P(TabStripTest, TabForEventWhenStacked) {
 // the tabstrip is in stacked tab mode.
 TEST_P(TabStripTest, TabCloseButtonVisibilityWhenStacked) {
   // Touch-optimized UI requires a larger width for tabs to show close buttons.
-  tab_strip_->SetBounds(0, 0, GetParam() ? 442 : 346, 20);
+  const bool touch_ui = ui::MaterialDesignController::touch_ui();
+  tab_strip_->SetBounds(0, 0, touch_ui ? 442 : 346, 20);
   controller_->AddTab(0, false);
   controller_->AddTab(1, true);
   controller_->AddTab(2, false);
@@ -483,7 +476,8 @@ TEST_P(TabStripTest, TabCloseButtonVisibilityWhenNotStacked) {
   // Set the tab strip width to be wide enough for three tabs to show all
   // three icons, but not enough for five tabs to show all three icons.
   // Touch-optimized UI requires a larger width for tabs to show close buttons.
-  tab_strip_->SetBounds(0, 0, GetParam() ? 442 : 346, 20);
+  const bool touch_ui = ui::MaterialDesignController::touch_ui();
+  tab_strip_->SetBounds(0, 0, touch_ui ? 442 : 346, 20);
   controller_->AddTab(0, false);
   controller_->AddTab(1, true);
   controller_->AddTab(2, false);
@@ -708,7 +702,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
   tab_strip_->SetBounds(0, 0, 200, 20);
 
   // Create a lot of tabs in order to make inactive tabs tiny.
-  const int min_inactive_width = Tab::GetMinimumInactiveWidth();
+  const int min_inactive_width = TabStyle::GetMinimumInactiveWidth();
   while (current_inactive_width() != min_inactive_width)
     controller_->CreateNewTab();
 
@@ -721,7 +715,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
   // During mouse-based tab closure, the active tab should remain at least as
   // wide as it's minium width.
   controller_->SelectTab(0);
-  for (const int min_active_width = Tab::GetMinimumActiveWidth();
+  for (const int min_active_width = TabStyle::GetMinimumActiveWidth();
        tab_strip_->tab_count();) {
     const int active_index = controller_->GetActiveIndex();
     EXPECT_GE(tab_strip_->ideal_bounds(active_index).width(), min_active_width);
@@ -737,8 +731,8 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
 
   // Create a lot of tabs in order to make inactive tabs smaller than active
   // tab but not the minimum.
-  const int min_inactive_width = Tab::GetMinimumInactiveWidth();
-  const int min_active_width = Tab::GetMinimumActiveWidth();
+  const int min_inactive_width = TabStyle::GetMinimumInactiveWidth();
+  const int min_active_width = TabStyle::GetMinimumActiveWidth();
   while (current_inactive_width() >=
          (min_inactive_width + min_active_width) / 2)
     controller_->CreateNewTab();
@@ -760,11 +754,11 @@ TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
   tab_strip_->SetBounds(0, 0, 200, 20);
 
   // Create a lot of tabs in order to make inactive tabs tiny.
-  const int min_inactive_width = Tab::GetMinimumInactiveWidth();
+  const int min_inactive_width = TabStyle::GetMinimumInactiveWidth();
   while (current_inactive_width() != min_inactive_width)
     controller_->CreateNewTab();
 
-  const int min_active_width = Tab::GetMinimumActiveWidth();
+  const int min_active_width = TabStyle::GetMinimumActiveWidth();
 
   int dragged_tab_index = controller_->GetActiveIndex();
   EXPECT_GE(tab_strip_->ideal_bounds(dragged_tab_index).width(),
@@ -830,11 +824,7 @@ TEST_P(TabStripTest, TabNeedsAttentionGeneric) {
   EXPECT_TRUE(IsShowingAttentionIndicator(tab1));
 }
 
-// Defines an alias to be used for tests that are only relevant to the touch-
-// optimized UI mode.
-using TabStripTouchOptimizedUiOnlyTest = TabStripTest;
-
-TEST_P(TabStripTouchOptimizedUiOnlyTest, NewTabButtonInkDrop) {
+TEST_P(TabStripTest, NewTabButtonInkDrop) {
   constexpr int kTabStripWidth = 500;
   tab_strip_->SetBounds(0, 0, kTabStripWidth, GetLayoutConstant(TAB_HEIGHT));
 
@@ -852,12 +842,4 @@ TEST_P(TabStripTouchOptimizedUiOnlyTest, NewTabButtonInkDrop) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(,
-                        TabStripTest,
-                        ::testing::Values(true, false),
-                        &TouchOptimizedUiStatusToString);
-
-INSTANTIATE_TEST_CASE_P(,
-                        TabStripTouchOptimizedUiOnlyTest,
-                        ::testing::Values(true),
-                        &TouchOptimizedUiStatusToString);
+INSTANTIATE_TEST_CASE_P(, TabStripTest, ::testing::Values(false, true));

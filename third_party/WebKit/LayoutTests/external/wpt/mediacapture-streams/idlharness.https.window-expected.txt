@@ -20,6 +20,22 @@ PASS MediaStream interface: operation clone()
 PASS MediaStream interface: attribute active
 PASS MediaStream interface: attribute onaddtrack
 PASS MediaStream interface: attribute onremovetrack
+PASS MediaStream must be primary interface of [object MediaStream]
+PASS Stringification of [object MediaStream]
+PASS MediaStream interface: [object MediaStream] must inherit property "id" with the proper type
+PASS MediaStream interface: [object MediaStream] must inherit property "getAudioTracks()" with the proper type
+PASS MediaStream interface: [object MediaStream] must inherit property "getVideoTracks()" with the proper type
+PASS MediaStream interface: [object MediaStream] must inherit property "getTracks()" with the proper type
+PASS MediaStream interface: [object MediaStream] must inherit property "getTrackById(DOMString)" with the proper type
+PASS MediaStream interface: calling getTrackById(DOMString) on [object MediaStream] with too few arguments must throw TypeError
+PASS MediaStream interface: [object MediaStream] must inherit property "addTrack(MediaStreamTrack)" with the proper type
+PASS MediaStream interface: calling addTrack(MediaStreamTrack) on [object MediaStream] with too few arguments must throw TypeError
+PASS MediaStream interface: [object MediaStream] must inherit property "removeTrack(MediaStreamTrack)" with the proper type
+PASS MediaStream interface: calling removeTrack(MediaStreamTrack) on [object MediaStream] with too few arguments must throw TypeError
+PASS MediaStream interface: [object MediaStream] must inherit property "clone()" with the proper type
+PASS MediaStream interface: [object MediaStream] must inherit property "active" with the proper type
+PASS MediaStream interface: [object MediaStream] must inherit property "onaddtrack" with the proper type
+PASS MediaStream interface: [object MediaStream] must inherit property "onremovetrack" with the proper type
 PASS MediaStream must be primary interface of new MediaStream()
 PASS Stringification of new MediaStream()
 PASS MediaStream interface: new MediaStream() must inherit property "id" with the proper type

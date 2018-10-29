@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_sender.h"
+#include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/client_session_control.h"
@@ -41,6 +42,10 @@ IpcDesktopEnvironment::IpcDesktopEnvironment(
 }
 
 IpcDesktopEnvironment::~IpcDesktopEnvironment() = default;
+
+std::unique_ptr<ActionExecutor> IpcDesktopEnvironment::CreateActionExecutor() {
+  return desktop_session_proxy_->CreateActionExecutor();
+}
 
 std::unique_ptr<AudioCapturer> IpcDesktopEnvironment::CreateAudioCapturer() {
   return desktop_session_proxy_->CreateAudioCapturer();
@@ -176,7 +181,7 @@ void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached(
     return;
   }
 
-  ActiveConnectionsList::iterator i = active_connections_.find(terminal_id);
+  auto i = active_connections_.find(terminal_id);
   if (i != active_connections_.end()) {
     i->second->DetachFromDesktop();
     i->second->AttachToDesktop(desktop_pipe, session_id);
@@ -193,7 +198,7 @@ void IpcDesktopEnvironmentFactory::OnTerminalDisconnected(int terminal_id) {
     return;
   }
 
-  ActiveConnectionsList::iterator i = active_connections_.find(terminal_id);
+  auto i = active_connections_.find(terminal_id);
   if (i != active_connections_.end()) {
     DesktopSessionProxy* desktop_session_proxy = i->second;
     active_connections_.erase(i);

@@ -191,7 +191,7 @@ showAutofillPopup:(const std::vector<autofill::Suggestion>&)popup_suggestions
 - (void)onFormDataFilled:(uint16_t)query_id
                  inFrame:(web::WebFrame*)frame
                   result:(const autofill::FormData&)result {
-  [_autofillAgent onFormDataFilled:result];
+  [_autofillAgent onFormDataFilled:result inFrame:frame];
   autofill::AutofillManager* manager = [self autofillManagerForFrame:frame];
   if (manager)
     manager->OnDidFillAutofillFormData(result, base::TimeTicks::Now());
@@ -200,7 +200,7 @@ showAutofillPopup:(const std::vector<autofill::Suggestion>&)popup_suggestions
 - (void)sendAutofillTypePredictionsToRenderer:
             (const std::vector<autofill::FormDataPredictions>&)forms
                                       toFrame:(web::WebFrame*)frame {
-  [_autofillAgent renderAutofillTypePredictions:forms];
+  [_autofillAgent renderAutofillTypePredictions:forms inFrame:frame];
 }
 
 @end

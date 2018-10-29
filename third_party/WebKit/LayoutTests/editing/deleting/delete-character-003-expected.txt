@@ -4,11 +4,13 @@ PASS selection.type is "Caret"
 PASS selection.focusNode is sample
 PASS selection.focusOffset is 0
 
+
 a<br>|<br>
 PASS sample.innerHTML is "a<br>"
 PASS selection.type is "Caret"
 PASS selection.focusNode is sample.firstChild
 PASS selection.focusOffset is 1
+
 
 a<br><br>|<br>
 PASS sample.innerHTML is "a<br><br>"
@@ -16,11 +18,13 @@ PASS selection.type is "Caret"
 PASS selection.focusNode is sample
 PASS selection.focusOffset is 2
 
+
 a|<br><br>
 PASS sample.innerHTML is "<br><br>"
 PASS selection.type is "Caret"
 PASS selection.focusNode is sample
 PASS selection.focusOffset is 0
+
 
 a<br>|<br><br>
 PASS sample.innerHTML is "a<br><br>"
@@ -28,11 +32,13 @@ PASS selection.type is "Caret"
 PASS selection.focusNode is sample.firstChild
 PASS selection.focusOffset is 1
 
+
 a<br><br>|<br><br>
 PASS sample.innerHTML is "a<br><br><br>"
 PASS selection.type is "Caret"
 PASS selection.focusNode is sample
 PASS selection.focusOffset is 2
+
 
 a<br>|b
 PASS sample.innerHTML is "ab"
@@ -40,11 +46,13 @@ PASS selection.type is "Caret"
 PASS selection.focusNode is sample.firstChild
 PASS selection.focusOffset is 1
 
+
 a<br><br>|b
 PASS sample.innerHTML is "a<br>b"
 PASS selection.type is "Caret"
 PASS selection.focusNode is sample.lastChild
 PASS selection.focusOffset is 0
+
 
 a<br><br><br>|b
 PASS sample.innerHTML is "a<br><br>b"
@@ -52,11 +60,13 @@ PASS selection.type is "Caret"
 PASS selection.focusNode is sample.lastChild
 PASS selection.focusOffset is 0
 
+
 a<br>b|
 PASS sample.innerHTML is "a<br><br>"
 PASS selection.type is "Caret"
 PASS selection.focusNode is sample
 PASS selection.focusOffset is 2
+
 
 a<br><br>b|
 PASS sample.innerHTML is "a<br><br><br>"
@@ -64,11 +74,13 @@ PASS selection.type is "Caret"
 PASS selection.focusNode is sample
 PASS selection.focusOffset is 3
 
+
 a<br><br><br>b|
 PASS sample.innerHTML is "a<br><br><br><br>"
 PASS selection.type is "Caret"
 PASS selection.focusNode is sample
 PASS selection.focusOffset is 4
+
 
 PASS successfullyParsed is true
 

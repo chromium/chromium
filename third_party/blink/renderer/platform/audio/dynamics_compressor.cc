@@ -33,7 +33,7 @@
 
 namespace blink {
 
-using namespace AudioUtilities;
+using namespace audio_utilities;
 
 DynamicsCompressor::DynamicsCompressor(float sample_rate,
                                        unsigned number_of_channels)

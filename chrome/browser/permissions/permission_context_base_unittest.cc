@@ -36,6 +36,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -594,6 +595,23 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(response, permission_context.GetContentSettingFromMap(url, url));
   }
 
+  void TestVirtualURL(const GURL& loaded_url,
+                      const GURL& virtual_url,
+                      const ContentSetting want_response,
+                      const PermissionStatusSource& want_source) {
+    TestPermissionContext permission_context(
+        profile(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS);
+
+    NavigateAndCommit(loaded_url);
+    web_contents()->GetController().GetVisibleEntry()->SetVirtualURL(
+        virtual_url);
+
+    PermissionResult result = permission_context.GetPermissionStatus(
+        web_contents()->GetMainFrame(), virtual_url, virtual_url);
+    EXPECT_EQ(result.content_setting, want_response);
+    EXPECT_EQ(result.source, want_source);
+  }
+
   void SetUpUrl(const GURL& url) {
     NavigateAndCommit(url);
     prompt_factory_->DocumentOnLoadCompletedInMainFrame();
@@ -706,4 +724,21 @@ TEST_F(PermissionContextBaseTests, TestParallelRequestsBlocked) {
 
 TEST_F(PermissionContextBaseTests, TestParallelRequestsDismissed) {
   TestParallelRequests(CONTENT_SETTING_ASK);
+}
+
+TEST_F(PermissionContextBaseTests, TestVirtualURLDifferentOrigin) {
+  TestVirtualURL(GURL("http://www.google.com"), GURL("http://foo.com"),
+                 CONTENT_SETTING_BLOCK,
+                 PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN);
+}
+
+TEST_F(PermissionContextBaseTests, TestVirtualURLNotHTTP) {
+  TestVirtualURL(GURL("chrome://foo"), GURL("chrome://newtab"),
+                 CONTENT_SETTING_ASK, PermissionStatusSource::UNSPECIFIED);
+}
+
+TEST_F(PermissionContextBaseTests, TestVirtualURLSameOrigin) {
+  TestVirtualURL(GURL("http://www.google.com"),
+                 GURL("http://www.google.com/foo"), CONTENT_SETTING_ASK,
+                 PermissionStatusSource::UNSPECIFIED);
 }

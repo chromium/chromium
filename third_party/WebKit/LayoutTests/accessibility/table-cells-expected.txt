@@ -1,6 +1,6 @@
 Example #1: Nested Stubs
 Ruritanian
-Population 
+Population
 Survey	All
 Genders	By Gender
 Males	Females

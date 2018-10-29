@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
-namespace XPath {
+namespace xpath {
 
 EvaluationContext::EvaluationContext(Node& context_node)
     : node(context_node),
@@ -49,5 +49,5 @@ void Expression::Trace(blink::Visitor* visitor) {
   ParseNode::Trace(visitor);
 }
 
-}  // namespace XPath
+}  // namespace xpath
 }  // namespace blink

@@ -77,7 +77,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                      const FrameLoadRequest&,
                      const WebWindowFeatures&,
                      NavigationPolicy,
-                     SandboxFlags) override;
+                     SandboxFlags,
+                     const SessionStorageNamespaceId&) override;
   void Show(NavigationPolicy) override;
   void DidOverscroll(const FloatSize& overscroll_delta,
                      const FloatSize& accumulated_overscroll,

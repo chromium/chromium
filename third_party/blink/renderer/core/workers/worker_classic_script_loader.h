@@ -64,14 +64,14 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   // For importScript().
   void LoadSynchronously(ExecutionContext&,
                          const KURL&,
-                         WebURLRequest::RequestContext,
+                         mojom::RequestContextType,
                          mojom::IPAddressSpace);
 
   // Note that callbacks could be invoked before
   // LoadTopLevelScriptAsynchronously() returns.
   void LoadTopLevelScriptAsynchronously(ExecutionContext&,
                                         const KURL&,
-                                        WebURLRequest::RequestContext,
+                                        mojom::RequestContextType,
                                         network::mojom::FetchRequestMode,
                                         network::mojom::FetchCredentialsMode,
                                         mojom::IPAddressSpace,
@@ -93,7 +93,6 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   std::unique_ptr<Vector<char>> ReleaseCachedMetadata() {
     return std::move(cached_metadata_);
   }
-  const Vector<char>* CachedMetadata() const { return cached_metadata_.get(); }
 
   ContentSecurityPolicy* GetContentSecurityPolicy() {
     return content_security_policy_.Get();

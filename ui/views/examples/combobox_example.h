@@ -13,20 +13,6 @@
 namespace views {
 namespace examples {
 
-// A combobox model implementation that generates a list of "Item <index>".
-class VIEWS_EXAMPLES_EXPORT ComboboxModelExample : public ui::ComboboxModel {
- public:
-  ComboboxModelExample();
-  ~ComboboxModelExample() override;
-
-  // ui::ComboboxModel:
-  int GetItemCount() const override;
-  base::string16 GetItemAt(int index) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ComboboxModelExample);
-};
-
 class VIEWS_EXAMPLES_EXPORT ComboboxExample : public ExampleBase,
                                               public ComboboxListener {
  public:
@@ -40,10 +26,8 @@ class VIEWS_EXAMPLES_EXPORT ComboboxExample : public ExampleBase,
   // ComboboxListener:
   void OnPerformAction(Combobox* combobox) override;
 
-  ComboboxModelExample combobox_model_;
   Combobox* combobox_ = nullptr;
   Combobox* disabled_combobox_ = nullptr;
-  Combobox* action_combobox_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ComboboxExample);
 };

@@ -1,6 +1,7 @@
 <html>
 <head>
 <script src="../../resources/js-test.js"></script>
+<script src="../../resources/compositor-controls.js"></script>
 <script>
 window.jsTestIsAsync = true;
 if (window.testRunner)
@@ -33,6 +34,7 @@ function runTest()
 {
     if (!window.eventSender)
         return;
+    setAnimationRequiresRaster();
 
     eventSender.mouseMoveTo(testContainer.offsetLeft + 10, testContainer.offsetTop + 10);
     eventSender.mouseDown(MiddleMouseButton);

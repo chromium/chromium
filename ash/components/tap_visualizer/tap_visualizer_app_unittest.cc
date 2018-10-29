@@ -7,11 +7,11 @@
 #include "ash/components/tap_visualizer/tap_renderer.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
 #include "ui/views/mus/mus_client.h"
-#include "ui/views/mus/pointer_watcher_event_router.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/view.h"
 
@@ -96,12 +96,10 @@ TEST_F(TapVisualizerAppTest, Basics) {
   EXPECT_EQ(0, contents->child_count());
 
   // Simulate a touch tap.
-  ui::PointerEvent tap(
-      ui::ET_POINTER_DOWN, gfx::Point(1, 1), gfx::Point(1, 1), 0, 0,
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH),
-      base::TimeTicks());
-  mus_client_->pointer_watcher_event_router()->OnPointerEventObserved(
-      tap, gfx::Point(1, 1), nullptr);
+  ui::TouchEvent tap(
+      ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), base::TimeTicks(),
+      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH));
+  widget->GetNativeWindow()->env()->NotifyEventObservers(tap);
 
   // A touch point view was created.
   EXPECT_EQ(1, contents->child_count());
@@ -123,16 +121,16 @@ TEST_F(TapVisualizerAppTest, MultiDisplay) {
   EXPECT_TRUE(test_api.HasRendererForDisplay(kSecondDisplayId));
 
   // Simulate a touch tap on the second display.
-  ui::PointerEvent tap(
-      ui::ET_POINTER_DOWN, gfx::Point(1, 1), gfx::Point(1, 1), 0, 0,
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH),
-      base::TimeTicks());
-  mus_client_->pointer_watcher_event_router()->OnPointerEventObserved(
-      tap, gfx::Point(802, 1), nullptr);
-
-  // A touch point view was created on the second display.
+  ui::TouchEvent tap(
+      ui::ET_TOUCH_PRESSED, gfx::Point(802, 1), base::TimeTicks(),
+      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH));
   views::Widget* widget1 = test_api.GetWidgetForDisplay(kFirstDisplayId);
   views::Widget* widget2 = test_api.GetWidgetForDisplay(kSecondDisplayId);
+  EXPECT_EQ(widget1->GetNativeWindow()->env(),
+            widget2->GetNativeWindow()->env());
+  widget1->GetNativeWindow()->env()->NotifyEventObservers(tap);
+
+  // A touch point view was created on the second display.
   EXPECT_EQ(0, widget1->GetContentsView()->child_count());
   EXPECT_EQ(1, widget2->GetContentsView()->child_count());
 

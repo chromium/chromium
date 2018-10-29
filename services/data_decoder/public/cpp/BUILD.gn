@@ -14,10 +14,11 @@ source_set("cpp") {
     "safe_json_parser.h",
     "safe_json_parser_impl.cc",
     "safe_json_parser_impl.h",
-    "safe_json_parser_impl.h",
     "safe_xml_parser.cc",
     "safe_xml_parser.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//services/data_decoder/public/mojom",

@@ -6,6 +6,7 @@ PASS Click after hello
 PASS Click after hello (top)
 PASS Click after hello (bottom)
 
+
 Click above black box
 PASS before h
 PASS before e
@@ -13,6 +14,7 @@ PASS before l
 PASS before l
 PASS before o
 PASS after "hello"
+
 
 Click below black box
 PASS before h

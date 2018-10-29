@@ -30,20 +30,19 @@
 
 #include "third_party/blink/renderer/modules/filesystem/file_writer_sync.h"
 
-#include "third_party/blink/public/platform/web_file_writer.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/modules/filesystem/file_system_dispatcher.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
 void FileWriterSync::write(Blob* data, ExceptionState& exception_state) {
   DCHECK(data);
-  DCHECK(Writer());
   DCHECK(complete_);
 
   PrepareForWrite();
-  Writer()->Write(position(), data->Uuid());
+  Write(position(), data->Uuid());
   DCHECK(complete_);
   if (error_) {
     FileError::ThrowDOMException(exception_state, error_);
@@ -55,14 +54,12 @@ void FileWriterSync::write(Blob* data, ExceptionState& exception_state) {
 }
 
 void FileWriterSync::seek(long long position, ExceptionState& exception_state) {
-  DCHECK(Writer());
   DCHECK(complete_);
   SeekInternal(position);
 }
 
 void FileWriterSync::truncate(long long offset,
                               ExceptionState& exception_state) {
-  DCHECK(Writer());
   DCHECK(complete_);
   if (offset < 0) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -70,7 +67,7 @@ void FileWriterSync::truncate(long long offset,
     return;
   }
   PrepareForWrite();
-  Writer()->Truncate(offset);
+  Truncate(offset);
   DCHECK(complete_);
   if (error_) {
     FileError::ThrowDOMException(exception_state, error_);
@@ -81,30 +78,57 @@ void FileWriterSync::truncate(long long offset,
   SetLength(offset);
 }
 
-void FileWriterSync::DidWrite(long long bytes, bool complete) {
-  DCHECK_EQ(FileError::kOK, error_);
+void FileWriterSync::DidWriteImpl(int64_t bytes, bool complete) {
+  DCHECK_EQ(base::File::FILE_OK, error_);
   DCHECK(!complete_);
   complete_ = complete;
 }
 
-void FileWriterSync::DidTruncate() {
-  DCHECK_EQ(FileError::kOK, error_);
+void FileWriterSync::DidTruncateImpl() {
+  DCHECK_EQ(base::File::FILE_OK, error_);
   DCHECK(!complete_);
   complete_ = true;
 }
 
-void FileWriterSync::DidFail(WebFileError error) {
-  DCHECK_EQ(FileError::kOK, error_);
-  error_ = static_cast<FileError::ErrorCode>(error);
+void FileWriterSync::DidFailImpl(base::File::Error error) {
+  DCHECK_EQ(base::File::FILE_OK, error_);
+  error_ = error;
   DCHECK(!complete_);
   complete_ = true;
 }
 
-FileWriterSync::FileWriterSync() : error_(FileError::kOK), complete_(true) {}
+void FileWriterSync::DoTruncate(const KURL& path, int64_t offset) {
+  if (!GetExecutionContext())
+    return;
+  FileSystemDispatcher::From(GetExecutionContext())
+      .TruncateSync(
+          path, offset,
+          WTF::Bind(&FileWriterSync::DidFinish, WrapWeakPersistent(this)));
+}
+
+void FileWriterSync::DoWrite(const KURL& path,
+                             const String& blob_id,
+                             int64_t offset) {
+  if (!GetExecutionContext())
+    return;
+  FileSystemDispatcher::From(GetExecutionContext())
+      .WriteSync(
+          path, blob_id, offset,
+          WTF::BindRepeating(&FileWriterSync::DidWrite,
+                             WrapWeakPersistent(this)),
+          WTF::Bind(&FileWriterSync::DidFinish, WrapWeakPersistent(this)));
+}
+
+void FileWriterSync::DoCancel() {
+  NOTREACHED();
+}
+
+FileWriterSync::FileWriterSync(ExecutionContext* context)
+    : ContextClient(context), error_(base::File::FILE_OK), complete_(true) {}
 
 void FileWriterSync::PrepareForWrite() {
   DCHECK(complete_);
-  error_ = FileError::kOK;
+  error_ = base::File::FILE_OK;
   complete_ = false;
 }
 
@@ -113,6 +137,7 @@ FileWriterSync::~FileWriterSync() = default;
 void FileWriterSync::Trace(blink::Visitor* visitor) {
   ScriptWrappable::Trace(visitor);
   FileWriterBase::Trace(visitor);
+  ContextClient::Trace(visitor);
 }
 
 }  // namespace blink

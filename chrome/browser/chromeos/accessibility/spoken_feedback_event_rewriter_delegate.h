@@ -25,6 +25,7 @@ class SpokenFeedbackEventRewriterDelegate
   // ui::mojom::SpokenFeedbackEventRewriterDelegate:
   void DispatchKeyEventToChromeVox(std::unique_ptr<ui::Event> event,
                                    bool capture) override;
+  void DispatchMouseEventToChromeVox(std::unique_ptr<ui::Event> event) override;
 
  private:
   // Returns whether the event should be dispatched to the ChromeVox extension.
@@ -34,7 +35,7 @@ class SpokenFeedbackEventRewriterDelegate
   void OnUnhandledSpokenFeedbackEvent(std::unique_ptr<ui::Event> event) const;
 
   // WebContentsDelegate:
-  void HandleKeyboardEvent(
+  bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
 

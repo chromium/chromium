@@ -39,6 +39,22 @@ constexpr uint32_t kFirstValidProcessType = content::PROCESS_TYPE_BROWSER;
 
 ModuleDatabase* g_module_database_win_instance = nullptr;
 
+#if defined(GOOGLE_CHROME_BUILD)
+// Returns true if either the IncompatibleApplicationsWarning or
+// ThirdPartyModulesBlocking features are enabled via the "enable-features"
+// command-line switch.
+bool AreThirdPartyFeaturesEnabledViaCommandLine() {
+  base::FeatureList* feature_list_instance = base::FeatureList::GetInstance();
+
+  return feature_list_instance->IsFeatureOverriddenFromCommandLine(
+             features::kIncompatibleApplicationsWarning.name,
+             base::FeatureList::OVERRIDE_ENABLE_FEATURE) ||
+         feature_list_instance->IsFeatureOverriddenFromCommandLine(
+             features::kThirdPartyModulesBlocking.name,
+             base::FeatureList::OVERRIDE_ENABLE_FEATURE);
+}
+#endif  // defined(GOOGLE_CHROME_BUILD)
+
 }  // namespace
 
 // static
@@ -147,18 +163,16 @@ void ModuleDatabase::OnImeEnumerationFinished() {
 void ModuleDatabase::OnModuleLoad(content::ProcessType process_type,
                                   const base::FilePath& module_path,
                                   uint32_t module_size,
-                                  uint32_t module_time_date_stamp,
-                                  uintptr_t module_load_address) {
+                                  uint32_t module_time_date_stamp) {
   // Messages can arrive from any thread (UI thread for calls over IPC, and
   // anywhere at all for calls from ModuleWatcher), so bounce if necessary.
   // It is safe to use base::Unretained() because this class is a singleton that
   // is never freed.
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(
-        FROM_HERE,
-        base::Bind(&ModuleDatabase::OnModuleLoad, base::Unretained(this),
-                   process_type, module_path, module_size,
-                   module_time_date_stamp, module_load_address));
+        FROM_HERE, base::Bind(&ModuleDatabase::OnModuleLoad,
+                              base::Unretained(this), process_type, module_path,
+                              module_size, module_time_date_stamp));
     return;
   }
 
@@ -346,11 +360,14 @@ void ModuleDatabase::MaybeInitializeThirdPartyConflictsManager() {
   // Temporarily disable this class on domain-joined machines because enterprise
   // clients depend on IAttachmentExecute::Save() to be invoked for downloaded
   // files, but that API call has a known issue (https://crbug.com/870998) with
-  // third-party modules blocking.
+  // third-party modules blocking. Can be Overridden by enabling the feature via
+  // the command-line.
   // TODO(pmonette): Move IAttachmentExecute::Save() to a utility process and
   //                 remove this.
-  if (base::win::IsEnterpriseManaged())
+  if (base::win::IsEnterpriseManaged() &&
+      !AreThirdPartyFeaturesEnabledViaCommandLine()) {
     return;
+  }
 
   if (!IsThirdPartyBlockingPolicyEnabled())
     return;

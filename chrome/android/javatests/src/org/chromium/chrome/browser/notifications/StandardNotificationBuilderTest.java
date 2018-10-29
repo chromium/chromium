@@ -90,7 +90,7 @@ public class StandardNotificationBuilderTest {
                 .setTicker(new SpannableStringBuilder("ticker"))
                 .setImage(image)
                 .setLargeIcon(largeIcon)
-                .setSmallIcon(R.drawable.ic_chrome)
+                .setSmallIconId(R.drawable.ic_chrome)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setVibrate(new long[] {100L})
                 .setContentIntent(outContentAndDeleteIntents[0])
@@ -185,8 +185,8 @@ public class StandardNotificationBuilderTest {
         Bitmap bitmap =
                 BitmapFactory.decodeResource(context.getResources(), R.drawable.chrome_sync_logo);
 
-        notificationBuilder.setSmallIcon(R.drawable.ic_chrome);
-        notificationBuilder.setSmallIcon(bitmap);
+        notificationBuilder.setSmallIconId(R.drawable.ic_chrome);
+        notificationBuilder.setStatusBarIcon(bitmap);
         notificationBuilder.setChannelId(ChannelDefinitions.ChannelId.SITES);
 
         Notification notification = notificationBuilder.build();
@@ -203,7 +203,7 @@ public class StandardNotificationBuilderTest {
 
             // Check using the same bitmap on another builder gives the same result.
             NotificationBuilderBase otherBuilder = new StandardNotificationBuilder(context);
-            otherBuilder.setSmallIcon(bitmap).setChannelId(ChannelDefinitions.ChannelId.SITES);
+            otherBuilder.setStatusBarIcon(bitmap).setChannelId(ChannelDefinitions.ChannelId.SITES);
             Notification otherNotification = otherBuilder.build();
             Assert.assertTrue(expected.sameAs(
                     NotificationTestUtil.getSmallIconFromNotification(context, otherNotification)));
@@ -226,7 +226,7 @@ public class StandardNotificationBuilderTest {
 
         Notification notification = new StandardNotificationBuilder(context)
                                             .setChannelId(ChannelDefinitions.ChannelId.SITES)
-                                            .setSmallIcon(R.drawable.ic_chrome)
+                                            .setSmallIconId(R.drawable.ic_chrome)
                                             .build();
 
         Bitmap bitmap = Bitmap.createBitmap(new int[] {Color.BLUE}, 1, 1, Bitmap.Config.ARGB_8888);
@@ -234,8 +234,8 @@ public class StandardNotificationBuilderTest {
         Notification notificationWithBitmap =
                 new StandardNotificationBuilder(context)
                         .setChannelId(ChannelDefinitions.ChannelId.SITES)
-                        .setSmallIcon(R.drawable.ic_chrome)
-                        .setSmallIcon(bitmap)
+                        .setSmallIconId(R.drawable.ic_chrome)
+                        .setStatusBarIcon(bitmap)
                         .build();
 
         NotificationManager notificationManager =

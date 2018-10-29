@@ -123,12 +123,20 @@ void ShowBookmarkAppDialog(content::WebContents* web_contents,
                            const WebApplicationInfo& web_app_info,
                            AppInstallationAcceptanceCallback callback);
 
+// Sets whether |ShowBookmarkAppDialog| should accept immediately without any
+// user interaction.
+void SetAutoAcceptBookmarkAppDialogForTesting(bool auto_accept);
+
 // Shows the PWA installation confirmation bubble.
 //
 // |web_app_info| is the WebApplicationInfo to be installed.
 void ShowPWAInstallDialog(content::WebContents* web_contents,
                           const WebApplicationInfo& web_app_info,
                           AppInstallationAcceptanceCallback callback);
+
+// Sets whether |ShowPWAInstallDialog| should accept immediately without any
+// user interaction.
+void SetAutoAcceptPWAInstallDialogForTesting(bool auto_accept);
 
 // Shows a color chooser that reports to the given WebContents.
 content::ColorChooser* ShowColorChooser(content::WebContents* web_contents,
@@ -272,6 +280,8 @@ enum class DialogIdentifier {
   DOWNLOAD_OPEN_CONFIRMATION = 87,
   ARC_DATA_REMOVAL_CONFIRMATION = 88,
   CROSTINI_UPGRADE = 89,
+  HATS_BUBBLE = 90,
+  CROSTINI_APP_RESTART = 91,
   MAX_VALUE
 };
 

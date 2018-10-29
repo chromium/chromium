@@ -221,9 +221,8 @@ TEST_F(TemplateURLTest, URLRefTestImageURLWithPOST) {
   const TemplateURLRef::PostParams& post_params =
       url.image_url_ref().post_params_;
   EXPECT_EQ(7U, post_params.size());
-  for (TemplateURLRef::PostParams::const_iterator i = post_params.begin();
-       i != post_params.end(); ++i) {
-    TemplateURLRef::Replacements::const_iterator j = replacements.begin();
+  for (auto i = post_params.begin(); i != post_params.end(); ++i) {
+    auto j = replacements.begin();
     for (; j != replacements.end(); ++j) {
       if (j->is_post_param && j->index ==
           static_cast<size_t>(i - post_params.begin())) {

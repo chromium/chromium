@@ -188,8 +188,7 @@ download::MockDownloadItemImpl* MockDownloadItemFactory::PopItem() {
   if (items_.empty())
     return nullptr;
 
-  std::map<uint32_t, download::MockDownloadItemImpl*>::iterator first_item =
-      items_.begin();
+  auto first_item = items_.begin();
   download::MockDownloadItemImpl* result = first_item->second;
   items_.erase(first_item);
   return result;
@@ -249,6 +248,44 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreateActiveItem(
       .WillRepeatedly(Return(download_id));
   EXPECT_CALL(*result, GetGuid())
       .WillRepeatedly(ReturnRefOfCopy(base::GenerateGUID()));
+  EXPECT_CALL(*result, GetUrlChain())
+      .WillRepeatedly(ReturnRefOfCopy(std::vector<GURL>()));
+  EXPECT_CALL(*result, GetReferrerUrl())
+      .WillRepeatedly(ReturnRefOfCopy(GURL()));
+  EXPECT_CALL(*result, GetTabUrl()).WillRepeatedly(ReturnRefOfCopy(GURL()));
+  EXPECT_CALL(*result, GetTabReferrerUrl())
+      .WillRepeatedly(ReturnRefOfCopy(GURL()));
+  EXPECT_CALL(*result, GetETag())
+      .WillRepeatedly(ReturnRefOfCopy(std::string()));
+  EXPECT_CALL(*result, GetLastModifiedTime())
+      .WillRepeatedly(ReturnRefOfCopy(std::string()));
+  EXPECT_CALL(*result, GetMimeType()).WillRepeatedly(Return(std::string()));
+  EXPECT_CALL(*result, GetOriginalMimeType())
+      .WillRepeatedly(Return(std::string()));
+  EXPECT_CALL(*result, GetTotalBytes()).WillRepeatedly(Return(0));
+  EXPECT_CALL(*result, GetFullPath())
+      .WillRepeatedly(
+          ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo"))));
+  EXPECT_CALL(*result, GetTargetFilePath())
+      .WillRepeatedly(
+          ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo"))));
+  EXPECT_CALL(*result, GetReceivedBytes()).WillRepeatedly(Return(0));
+  EXPECT_CALL(*result, GetStartTime()).WillRepeatedly(Return(base::Time()));
+  EXPECT_CALL(*result, GetEndTime()).WillRepeatedly(Return(base::Time()));
+  EXPECT_CALL(*result, GetReceivedSlices())
+      .WillRepeatedly(ReturnRefOfCopy(
+          std::vector<download::DownloadItem::ReceivedSlice>()));
+  EXPECT_CALL(*result, GetHash())
+      .WillRepeatedly(ReturnRefOfCopy(std::string()));
+  EXPECT_CALL(*result, GetState())
+      .WillRepeatedly(Return(download::DownloadItem::IN_PROGRESS));
+  EXPECT_CALL(*result, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
+  EXPECT_CALL(*result, GetLastReason())
+      .WillRepeatedly(Return(download::DOWNLOAD_INTERRUPT_REASON_NONE));
+  EXPECT_CALL(*result, IsPaused()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*result, IsTemporary()).WillRepeatedly(Return(false));
+
   if (is_download_started_) {
     EXPECT_CALL(*result, RemoveObserver(_));
     EXPECT_CALL(*result, AddObserver(_));

@@ -2,7 +2,6 @@ HTMLFontElement size attribute test
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS fontSizeAttributeEffect("") is null
 PASS fontSizeAttributeEffect("1") is "10px"
 PASS fontSizeAttributeEffect("2") is "13px"

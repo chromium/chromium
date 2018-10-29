@@ -5,7 +5,6 @@
 #include "chrome/browser/notifications/win/mock_itoastnotification.h"
 
 #include <wrl/client.h>
-#include <wrl/wrappers/corewrappers.h>
 
 #include "base/strings/string_piece.h"
 #include "base/win/scoped_hstring.h"
@@ -19,7 +18,7 @@ MockIToastNotification::MockIToastNotification(const base::string16& xml,
     : xml_(xml), group_(L"Notifications"), tag_(tag) {}
 
 HRESULT MockIToastNotification::get_Content(winxml::Dom::IXmlDocument** value) {
-  mswr::ComPtr<ABI::Windows::Data::Xml::Dom::IXmlDocumentIO> xml_document_io;
+  mswr::ComPtr<winxml::Dom::IXmlDocumentIO> xml_document_io;
   base::win::ScopedHString id = base::win::ScopedHString::Create(
       RuntimeClass_Windows_Data_Xml_Dom_XmlDocument);
   HRESULT hr = Windows::Foundation::ActivateInstance(
@@ -36,8 +35,7 @@ HRESULT MockIToastNotification::get_Content(winxml::Dom::IXmlDocument** value) {
     return hr;
   }
 
-  Microsoft::WRL::ComPtr<ABI::Windows::Data::Xml::Dom::IXmlDocument>
-      xml_document;
+  mswr::ComPtr<winxml::Dom::IXmlDocument> xml_document;
   hr = xml_document_io.CopyTo(xml_document.GetAddressOf());
   if (FAILED(hr)) {
     LOG(ERROR) << "Unable to copy to XMLDoc " << hr;

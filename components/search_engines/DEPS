@@ -3,8 +3,6 @@ include_rules = [
   "+components/history/core",
   "+components/infobars/core",
   "+components/keyed_service/core",
-  # TODO(mpearson): for experiment; remove after crbug.com/488901 is launched.
-  "+components/omnibox/browser/omnibox_field_trial.h",
   "+components/policy",
   "+components/pref_registry",
   "+components/prefs",
@@ -13,6 +11,7 @@ include_rules = [
   "+components/sync",
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/url_formatter",
+  "+components/variations",
   "+components/webdata",
   "+google_apis",
   "+libxml",

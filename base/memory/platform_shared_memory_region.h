@@ -241,6 +241,11 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
                              size_t size,
                              const UnguessableToken& guid);
 
+  bool MapAtInternal(off_t offset,
+                     size_t size,
+                     void** memory,
+                     size_t* mapped_size) const;
+
   ScopedPlatformHandle handle_;
   Mode mode_ = Mode::kReadOnly;
   size_t size_ = 0;

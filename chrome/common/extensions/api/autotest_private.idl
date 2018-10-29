@@ -4,6 +4,8 @@
 
 // API for integration testing. To be used on test images with a test component
 // extension.
+[platforms=("chromeos"),
+ implemented_in="chrome/browser/chromeos/extensions/autotest_private/autotest_private_api.h"]
 namespace autotestPrivate {
 
   dictionary LoginStatusDict {
@@ -102,6 +104,8 @@ namespace autotestPrivate {
 
   callback IsAppShownCallback = void (boolean appShown);
 
+  callback TakeScreenshotCallback = void (DOMString base64Png);
+
   callback VoidCallback = void ();
 
   interface Functions {
@@ -171,6 +175,9 @@ namespace autotestPrivate {
     // Returns true if requested app is shown in Chrome.
     static void isAppShown(DOMString appId, IsAppShownCallback callback);
 
+    // Launches an application from the launcher with the given appId.
+    static void launchApp(DOMString appId, VoidCallback callback);
+
     // Update printer. Printer with empty ID is considered new.
     static void updatePrinter(Printer printer);
 
@@ -194,9 +201,21 @@ namespace autotestPrivate {
     // |callback|: Called when the operation has completed.
     static void runCrostiniInstaller(VoidCallback callback);
 
+    // Run the crostini uninstaller GUI to remove the default crostini
+    // vm / container. The callback is invoked upon completion.
+    static void runCrostiniUninstaller(VoidCallback callback);
+
     // Enable/disable Crostini in preferences.
     // |enabled|: Enable Crostini.
     // |callback|: Called when the operation has completed.
     static void setCrostiniEnabled(boolean enabled, VoidCallback callback);
+
+    // Takes a screenshot and returns the data in base64 encoded PNG format.
+    static void takeScreenshot(TakeScreenshotCallback callback);
+
+    // Makes a basic request to ML Service, triggering 1. ML Service
+    // daemon startup, and 2. the initial D-Bus -> Mojo IPC bootstrap.
+    // |callback|: Called when the operation has completed.
+    static void bootstrapMachineLearningService(VoidCallback callback);
   };
 };

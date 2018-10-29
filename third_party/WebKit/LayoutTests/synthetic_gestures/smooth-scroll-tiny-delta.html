@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+<script src='../resources/gesture-util.js'></script>
+
+<style>
+  body, html {
+    margin: 0;
+    height: 10000px;
+  }
+</style>
+
+<script>
+  // This test ensures that synthetic scrolls with tiny amounts are accurately
+  // propagated to the renderer.
+
+  async function tryScroll(distance, source) {
+      const x = 400;
+      const y = 300;
+      const precise_deltas = true;
+
+      const scrollYBefore = window.scrollY;
+
+      await waitForCompositorCommit();
+
+      await smoothScroll(distance,
+                         x, y,
+                         source,
+                         'down',
+                         SPEED_INSTANT,
+                         precise_deltas);
+
+      await waitFor(() => { return window.scrollY - scrollYBefore >= distance; },
+                    "Didn't scroll by expected amount: " + distance);
+      await waitForCompositorCommit();
+  }
+
+  window.onload = async () => {
+    const is_mac = navigator.platform.indexOf('Mac') == 0;
+
+    const sources_to_test = [];
+    sources_to_test.push(GestureSourceType.DEFAULT_INPUT);
+
+    // TODO(bokan): Mac doesn't support even synthetic touches.
+    // https://crbug.com/613672.
+    if (!is_mac)
+      sources_to_test.push(GestureSourceType.TOUCH_INPUT);
+
+    // Touchpad and Mouse are currently treated the same, if that changes, be
+    // sure to test both.
+    if (GestureSourceType.MOUSE_INPUT != GestureSourceType.TOUCHPAD_INPUT)
+      sources_to_test.push(GestureSourceType.MOUSE_INPUT);
+
+    sources_to_test.push(GestureSourceType.TOUCHPAD_INPUT);
+
+    // TODO(bokan): Pen input doesn't yet pass this test. crbug.com/897520.
+    //sources_to_test.push(GestureSourceType.PEN_INPUT);
+
+    for (let source_type of sources_to_test) {
+      promise_test(async () => {
+        assert_equals(window.scrollY, 0);
+        await tryScroll(1, source_type);
+        assert_equals(window.scrollY, 1);
+      }, 'Synthetic ' + GestureSourceType.ToString(source_type) +
+         ' gestures accurately scroll delta (0, 1).');
+
+      promise_test(async () => {
+        assert_equals(window.scrollY, 1);
+        await tryScroll(2, source_type);
+        assert_equals(window.scrollY, 3);
+        window.scrollTo(0, 0);
+      }, 'Synthetic ' + GestureSourceType.ToString(source_type) +
+         ' gestures accurately scroll delta (0, 2).');
+    }
+
+  }
+</script>

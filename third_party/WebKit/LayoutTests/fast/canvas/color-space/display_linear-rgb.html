@@ -4,7 +4,7 @@
 <script>
 function main()
 {
-  var ctx = document.getElementById("c").getContext('2d', {colorSpace: 'srgb', pixelFormat: 'float16'})
+  var ctx = document.getElementById("c").getContext('2d', {colorSpace: 'linear-rgb', pixelFormat: 'float16'})
   ctx.fillStyle = 'red';
   ctx.fillRect(20,20,50,50);
   ctx.fillStyle = 'green';

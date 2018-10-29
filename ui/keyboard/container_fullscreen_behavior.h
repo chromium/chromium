@@ -5,9 +5,7 @@
 #ifndef UI_KEYBOARD_CONTAINER_FULLSCREEN_BEHAVIOR_H_
 #define UI_KEYBOARD_CONTAINER_FULLSCREEN_BEHAVIOR_H_
 
-#include "ui/aura/window.h"
 #include "ui/keyboard/container_full_width_behavior.h"
-#include "ui/keyboard/keyboard_controller.h"
 #include "ui/keyboard/keyboard_export.h"
 
 namespace keyboard {
@@ -15,7 +13,7 @@ namespace keyboard {
 class KEYBOARD_EXPORT ContainerFullscreenBehavior
     : public ContainerFullWidthBehavior {
  public:
-  ContainerFullscreenBehavior(KeyboardController* controller);
+  explicit ContainerFullscreenBehavior(Delegate* controller);
   ~ContainerFullscreenBehavior() override;
 
   // ContainerFullWidthBehavior overrides

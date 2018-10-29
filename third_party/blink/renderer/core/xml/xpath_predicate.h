@@ -34,7 +34,7 @@
 
 namespace blink {
 
-namespace XPath {
+namespace xpath {
 
 class CORE_EXPORT Number final : public Expression {
  public:
@@ -136,7 +136,7 @@ class Predicate final : public GarbageCollected<Predicate> {
   DISALLOW_COPY_AND_ASSIGN(Predicate);
 };
 
-}  // namespace XPath
+}  // namespace xpath
 
 }  // namespace blink
 

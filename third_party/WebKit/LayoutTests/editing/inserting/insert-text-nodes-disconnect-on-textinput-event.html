@@ -6,7 +6,7 @@
 selection_test(
     '<div contenteditable>foo<br>^bar<div>|baz</div></div>',
     selection => {
-        assert_exists(window, 'textInputController',
+        assert_own_property(window, 'textInputController',
             'this test requires window.textInputController.');
         selection.document.addEventListener('textInput', () => {
             // disconnect the node here

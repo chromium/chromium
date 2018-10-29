@@ -95,16 +95,14 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
 
       // If |target| has capture all events go to it, even if the mouse is
       // really over another window. Find the real window the mouse is over.
-      gfx::Point screen_loc(event.location());
-      aura::client::GetScreenPositionClient(event_target->GetRootWindow())->
-          ConvertPointToScreen(event_target, &screen_loc);
+      const gfx::Point screen_loc = event.target()->GetScreenLocation(event);
       display::Screen* screen = display::Screen::GetScreen();
       aura::Window* target = screen->GetWindowAtScreenPoint(screen_loc);
       if (!target)
         return NULL;
       gfx::Point target_loc(screen_loc);
-      aura::client::GetScreenPositionClient(target->GetRootWindow())->
-          ConvertPointFromScreen(target, &target_loc);
+      aura::client::GetScreenPositionClient(target->GetRootWindow())
+          ->ConvertPointFromScreen(target, &target_loc);
       aura::Window* screen_target = target->GetEventHandlerForPoint(target_loc);
       if (!IsValidTarget(event_target, screen_target))
         return NULL;

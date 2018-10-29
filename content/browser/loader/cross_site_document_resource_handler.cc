@@ -15,18 +15,20 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/loader/detachable_resource_handler.h"
 #include "content/browser/loader/resource_request_info_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/resource_context.h"
-#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "net/base/io_buffer.h"
 #include "net/base/mime_sniffer.h"
 #include "net/url_request/url_request.h"
@@ -131,8 +133,8 @@ void CrossSiteDocumentResourceHandler::LogBlockedResponse(
   // time the posted task runs, the WebContents could have been closed and/or
   // navigated to another URL.  This is understood and acceptable - this should
   // be rare enough to not matter for the collected UKM data.
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &CrossSiteDocumentResourceHandler::LogBlockedResponseOnUIThread,
           resource_request_info->GetWebContentsGetterForRequest(),
@@ -562,8 +564,8 @@ void CrossSiteDocumentResourceHandler::OnResponseCompleted(
       analyzer_->LogAllowedResponse();
       if (initiator_scheme_prevented_blocking_ &&
           analyzer_->ShouldReportBlockedResponse() && GetRequestInfo()) {
-        BrowserThread::PostTask(
-            BrowserThread::UI, FROM_HERE,
+        base::PostTaskWithTraits(
+            FROM_HERE, {BrowserThread::UI},
             base::BindOnce(&ContentBrowserClient::
                                LogInitiatorSchemeBypassingDocumentBlocking,
                            base::Unretained(GetContentClient()->browser()),
@@ -588,26 +590,10 @@ bool CrossSiteDocumentResourceHandler::ShouldBlockBasedOnHeaders(
   if (analyzer_->ShouldAllow())
     return false;
 
-  // Check if the response's site needs to have its documents protected.  By
-  // default, this will usually return false.
-  // TODO(creis): This check can go away once the logic here is made fully
-  // backward compatible and we can enforce it always, regardless of Site
-  // Isolation policy.
-  switch (SiteIsolationPolicy::IsCrossSiteDocumentBlockingEnabled()) {
-    case SiteIsolationPolicy::XSDB_ENABLED_UNCONDITIONALLY:
-      break;
-    case SiteIsolationPolicy::XSDB_ENABLED_IF_ISOLATED: {
-      url::Origin target_origin = url::Origin::Create(request()->url());
-      if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
-          !ChildProcessSecurityPolicyImpl::GetInstance()->IsIsolatedOrigin(
-              target_origin)) {
-        return false;
-      }
-      break;
-    }
-    case SiteIsolationPolicy::XSDB_DISABLED:
-      return false;
-  }
+  // --disable-web-security also disables Cross-Origin Read Blocking (CORB).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableWebSecurity))
+    return false;
 
   // Only block if this is a request made from a renderer process.
   const ResourceRequestInfoImpl* info = GetRequestInfo();

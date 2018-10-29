@@ -5,14 +5,10 @@
 package org.chromium.chrome.browser.fullscreen;
 
 import android.os.Handler;
-import android.os.Message;
 import android.os.SystemClock;
 
+import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.tab.BrowserControlsVisibilityDelegate;
-
-import java.lang.ref.WeakReference;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Determines the desired visibility of the browser controls based on the current state of the
@@ -21,40 +17,17 @@ import java.util.Set;
 public class BrowserStateBrowserControlsVisibilityDelegate
         implements BrowserControlsVisibilityDelegate {
 
-    private static final int TRANSIENT_SHOW_MSG_ID = 1;
     /** Minimum duration (in milliseconds) that the controls are shown when requested. */
-    protected static final long MINIMUM_SHOW_DURATION_MS = 3000;
+    @VisibleForTesting
+    static final long MINIMUM_SHOW_DURATION_MS = 3000;
 
     private static boolean sDisableOverridesForTesting;
 
-    private final Set<Integer> mPersistentControlTokens = new HashSet<Integer>();
-    private final Handler mHandler;
-    private final Runnable mStateChangedCallback;
+    private final TokenHolder mTokenHolder;
 
-    private long mCurrentShowTime;
-    private int mPersistentControlsCurrentToken;
+    private final Handler mHandler = new Handler();
 
-    // This static inner class holds a WeakReference to the outer object, to avoid triggering the
-    // lint HandlerLeak warning.
-    private static class VisibilityDelegateHandler extends Handler {
-        private final WeakReference<BrowserStateBrowserControlsVisibilityDelegate> mDelegateRef;
-
-        public VisibilityDelegateHandler(BrowserStateBrowserControlsVisibilityDelegate delegate) {
-            mDelegateRef = new WeakReference<>(delegate);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg == null) return;
-            BrowserStateBrowserControlsVisibilityDelegate delegate = mDelegateRef.get();
-            if (delegate == null) return;
-            if (msg.what != TRANSIENT_SHOW_MSG_ID) {
-                assert false;
-                return;
-            }
-            delegate.releaseToken(msg.arg1);
-        }
-    }
+    private long mCurrentShowingStartTime;
 
     /**
      * Constructs a BrowserControlsVisibilityDelegate designed to deal with overrides driven by
@@ -64,41 +37,25 @@ public class BrowserStateBrowserControlsVisibilityDelegate
      *                             updated based on the state of the browser visibility override.
      */
     public BrowserStateBrowserControlsVisibilityDelegate(Runnable stateChangedCallback) {
-        mHandler = new VisibilityDelegateHandler(this);
-        mStateChangedCallback = stateChangedCallback;
+        mTokenHolder = new TokenHolder(stateChangedCallback);
     }
 
     private void ensureControlsVisibleForMinDuration() {
-        if (mHandler.hasMessages(TRANSIENT_SHOW_MSG_ID)) return;
+        if (mHandler.hasMessages(0)) return; // Messages sent via post/postDelayed have what=0
 
-        long timeDelta = SystemClock.uptimeMillis() - mCurrentShowTime;
-        if (timeDelta >= MINIMUM_SHOW_DURATION_MS) return;
+        long currentShowingTime = SystemClock.uptimeMillis() - mCurrentShowingStartTime;
+        if (currentShowingTime >= MINIMUM_SHOW_DURATION_MS) return;
 
-        Message msg = mHandler.obtainMessage(TRANSIENT_SHOW_MSG_ID);
-        msg.arg1 = generateToken();
-        mHandler.sendMessageDelayed(msg, Math.max(MINIMUM_SHOW_DURATION_MS - timeDelta, 0));
-    }
-
-    private int generateToken() {
-        int token = mPersistentControlsCurrentToken++;
-        mPersistentControlTokens.add(token);
-        if (mPersistentControlTokens.size() == 1) mStateChangedCallback.run();
-        return token;
-    }
-
-    private void releaseToken(int token) {
-        if (mPersistentControlTokens.remove(token)
-                && mPersistentControlTokens.isEmpty()) {
-            mStateChangedCallback.run();
-        }
+        final int temporaryToken = mTokenHolder.acquireToken();
+        mHandler.postDelayed(() -> mTokenHolder.releaseToken(temporaryToken),
+                MINIMUM_SHOW_DURATION_MS - currentShowingTime);
     }
 
     /**
      * Trigger a temporary showing of the browser controls.
      */
     public void showControlsTransient() {
-        if (mPersistentControlTokens.isEmpty()) mCurrentShowTime = SystemClock.uptimeMillis();
-
+        if (!mTokenHolder.hasTokens()) mCurrentShowingStartTime = SystemClock.uptimeMillis();
         ensureControlsVisibleForMinDuration();
     }
 
@@ -107,11 +64,11 @@ public class BrowserStateBrowserControlsVisibilityDelegate
      *
      * @return The token that determines whether the requester still needs persistent controls to
      *         be present on the screen.
-     * @see #hideControlsPersistent(int)
+     * @see #releasePersistentShowingToken(int)
      */
     public int showControlsPersistent() {
-        if (mPersistentControlTokens.isEmpty()) mCurrentShowTime = SystemClock.uptimeMillis();
-        return generateToken();
+        if (!mTokenHolder.hasTokens()) mCurrentShowingStartTime = SystemClock.uptimeMillis();
+        return mTokenHolder.acquireToken();
     }
 
     /**
@@ -123,7 +80,7 @@ public class BrowserStateBrowserControlsVisibilityDelegate
      */
     public int showControlsPersistentAndClearOldToken(int oldToken) {
         int newToken = showControlsPersistent();
-        if (oldToken != FullscreenManager.INVALID_TOKEN) releaseToken(oldToken);
+        mTokenHolder.releaseToken(oldToken);
         return newToken;
     }
 
@@ -132,12 +89,11 @@ public class BrowserStateBrowserControlsVisibilityDelegate
      *
      * @param token The fullscreen token returned from {@link #showControlsPersistent()}.
      */
-    public void hideControlsPersistent(int token) {
-        if (mPersistentControlTokens.isEmpty()) return;
-        if (mPersistentControlTokens.size() == 1 && mPersistentControlTokens.contains(token)) {
+    public void releasePersistentShowingToken(int token) {
+        if (mTokenHolder.containsOnly(token)) {
             ensureControlsVisibleForMinDuration();
         }
-        releaseToken(token);
+        mTokenHolder.releaseToken(token);
     }
 
     @Override
@@ -147,7 +103,7 @@ public class BrowserStateBrowserControlsVisibilityDelegate
 
     @Override
     public boolean canAutoHideBrowserControls() {
-        return sDisableOverridesForTesting || mPersistentControlTokens.isEmpty();
+        return sDisableOverridesForTesting || !mTokenHolder.hasTokens();
     }
 
     /**
@@ -155,5 +111,12 @@ public class BrowserStateBrowserControlsVisibilityDelegate
      */
     public static void disableForTesting() {
         sDisableOverridesForTesting = true;
+    }
+
+    /**
+     * Performs clean-up.
+     */
+    public void destroy() {
+        mHandler.removeCallbacksAndMessages(null);
     }
 }

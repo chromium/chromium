@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_NUX_SET_AS_DEFAULT_HTML" file="../nux/set_as_default/resources/nux_set_as_default.html" type="BINDATA" />
-  <include name="IDR_NUX_SET_AS_DEFAULT_JS" file="../nux/set_as_default/resources/nux_set_as_default.js" type="BINDATA" />
-  <include name="IDR_NUX_SET_AS_DEFAULT_PROXY_HTML" file="../nux/set_as_default/resources/nux_set_as_default_proxy.html" type="BINDATA" />
-  <include name="IDR_NUX_SET_AS_DEFAULT_PROXY_JS" file="../nux/set_as_default/resources/nux_set_as_default_proxy.js" type="BINDATA" />
-</grit-part>

@@ -47,9 +47,17 @@ class MEDIA_EXPORT BitstreamConverter
   // of input frame are encrypted and should update |subsamples| if necessary,
   // to make sure it correctly describes the converted output frame. See
   // SubsampleEntry definition in media/base/decrypt_config.h for more info.
-  virtual bool ConvertFrame(std::vector<uint8_t>* frame_buf,
-                            bool is_keyframe,
-                            std::vector<SubsampleEntry>* subsamples) const = 0;
+  // |analysis_result| is an output parameter that contains the AnalysisResult
+  // found during conversion.
+  virtual bool ConvertAndAnalyzeFrame(
+      std::vector<uint8_t>* frame_buf,
+      bool is_keyframe,
+      std::vector<SubsampleEntry>* subsamples,
+      AnalysisResult* analysis_result) const = 0;
+
+ protected:
+  friend class base::RefCountedThreadSafe<BitstreamConverter>;
+  virtual ~BitstreamConverter();
 
   // Inspects an already converted frame for conformance. If conformant,
   // inspects further to see if the converted frame appears to be a keyframe.
@@ -57,10 +65,6 @@ class MEDIA_EXPORT BitstreamConverter
   virtual AnalysisResult Analyze(
       std::vector<uint8_t>* frame_buf,
       std::vector<SubsampleEntry>* subsamples) const = 0;
-
- protected:
-  friend class base::RefCountedThreadSafe<BitstreamConverter>;
-  virtual ~BitstreamConverter();
 };
 
 }  // namespace mp4

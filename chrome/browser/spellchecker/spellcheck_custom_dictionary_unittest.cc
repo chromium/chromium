@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -73,7 +74,7 @@ class SpellcheckCustomDictionaryTest : public testing::Test {
   void SetUp() override {
     // Use SetTestingFactoryAndUse to force creation and initialization.
     SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        &profile_, &BuildSpellcheckService);
+        &profile_, base::BindRepeating(&BuildSpellcheckService));
   }
 
   // A wrapper around SpellcheckCustomDictionary::LoadDictionaryFile private
@@ -199,10 +200,9 @@ TEST_F(SpellcheckCustomDictionaryTest, MultiProfile) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -436,10 +436,9 @@ TEST_F(SpellcheckCustomDictionaryTest, MergeDataAndStartSyncing) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -502,7 +501,7 @@ TEST_F(SpellcheckCustomDictionaryTest, SyncBeforeLoadDoesNotDuplicateWords) {
   SpellcheckCustomDictionary* custom_dictionary2 =
       static_cast<SpellcheckService*>(
           SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService))
+              &profile2, base::BindRepeating(&BuildSpellcheckService)))
           ->GetCustomDictionary();
 
   std::unique_ptr<SpellcheckCustomDictionary::Change> change(
@@ -551,10 +550,9 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionaryTooBigBeforeSyncing) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -596,10 +594,9 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionaryTooBigAndServerFull) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -650,10 +647,9 @@ TEST_F(SpellcheckCustomDictionaryTest, ServerTooBig) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -703,10 +699,9 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionaryTooBigToStartSyncing) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -751,10 +746,9 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionaryTooBigToContiueSyncing) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -804,10 +798,9 @@ TEST_F(SpellcheckCustomDictionaryTest, LoadAfterSyncStart) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -847,10 +840,9 @@ TEST_F(SpellcheckCustomDictionaryTest, LoadAfterSyncStartTooBigToSync) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -897,10 +889,9 @@ TEST_F(SpellcheckCustomDictionaryTest, LoadDuplicatesAfterSync) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -1012,10 +1003,9 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionarySyncNotification) {
   SpellcheckCustomDictionary* custom_dictionary =
       spellcheck_service->GetCustomDictionary();
   TestingProfile profile2;
-  SpellcheckService* spellcheck_service2 =
-      static_cast<SpellcheckService*>(
-          SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &profile2, &BuildSpellcheckService));
+  SpellcheckService* spellcheck_service2 = static_cast<SpellcheckService*>(
+      SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile2, base::BindRepeating(&BuildSpellcheckService)));
   SpellcheckCustomDictionary* custom_dictionary2 =
       spellcheck_service2->GetCustomDictionary();
 
@@ -1064,7 +1054,7 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionarySyncLimit) {
   SpellcheckService* server_spellcheck_service =
       static_cast<SpellcheckService*>(
           SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              &server_profile, &BuildSpellcheckService));
+              &server_profile, base::BindRepeating(&BuildSpellcheckService)));
 
   // Here, |server_custom_dictionary| plays the role of the sync server.
   SpellcheckCustomDictionary* server_custom_dictionary =
@@ -1114,7 +1104,7 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionarySyncLimit) {
     SpellcheckService* client_spellcheck_service =
         static_cast<SpellcheckService*>(
             SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-                &client_profile, &BuildSpellcheckService));
+                &client_profile, base::BindRepeating(&BuildSpellcheckService)));
 
     // Here, |client_custom_dictionary| plays the role of the client.
     SpellcheckCustomDictionary* client_custom_dictionary =

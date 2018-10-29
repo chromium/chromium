@@ -242,8 +242,8 @@ Build Chromium (the "chrome" target) with Ninja using the command:
 $ autoninja -C out/Default chrome
 ```
 
-`autoninja` is a wrapper that automatically provides optimal values for the
-arguments passed to `ninja`.
+(`autoninja` is a wrapper that automatically provides optimal values for the
+arguments passed to `ninja`.)
 
 You can get a list of all of the other build targets from GN by running `gn ls
 out/Default` from the command line. To compile one, pass the GN label to Ninja
@@ -349,6 +349,21 @@ For the optional packages on Arch Linux:
 *   `wdiff` is not in the main repository but `dwdiff` is. You can get `wdiff`
     in AUR/`yaourt`
 *   `sun-java6-fonts` do not seem to be in main repository or AUR.
+
+### Crostini (Debian based)
+
+First install the `file` command for the script to run properly:
+
+```shell
+$ sudo apt-get install file
+```
+
+Then invoke install-build-deps.sh with the `--no-arm` argument,
+because the ARM toolchain doesn't exist for this configuration:
+
+```shell
+$ sudo install-build-deps.sh --no-arm
+```
 
 ### Debian
 

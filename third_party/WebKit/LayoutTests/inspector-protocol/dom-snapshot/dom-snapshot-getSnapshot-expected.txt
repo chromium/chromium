@@ -135,7 +135,7 @@ Tests DOMSnapshot.getSnapshot method.
         }
       ],
       "layoutNodeIndex": 3,
-      "currentSourceURL": "<string>WebKit/LayoutTests/inspector-protocol/resources/1x.png"
+      "currentSourceURL": "<string>inspector-protocol/resources/1x.png"
     },
     {
       "nodeType": 3,

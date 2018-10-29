@@ -48,7 +48,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessor {
     // |render_passes|.
     virtual bool Attempt(
         const SkMatrix44& output_color_matrix,
-        const FilterOperationsMap& render_pass_background_filters,
+        const FilterOperationsMap& render_pass_backdrop_filters,
         DisplayResourceProvider* resource_provider,
         RenderPass* render_pass,
         OverlayCandidateList* candidates,
@@ -72,12 +72,21 @@ class VIZ_SERVICE_EXPORT OverlayProcessor {
       RenderPassList* render_passes,
       const SkMatrix44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
-      const FilterOperationsMap& render_pass_background_filters,
+      const FilterOperationsMap& render_pass_backdrop_filters,
       OverlayCandidateList* overlay_candidates,
       CALayerOverlayList* ca_layer_overlays,
       DCLayerOverlayList* dc_layer_overlays,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds);
+
+  // Determine if we can eliminate (all remaining quads are black or
+  // transparent) or crop (non-black content is a small sub-rectangle) the
+  // primary framebuffer.
+  static void EliminateOrCropPrimary(
+      const QuadList& quad_list,
+      const QuadList::Iterator& candidate_iterator,
+      OverlayCandidate* primary,
+      OverlayCandidateList* candidate_list);
 
  protected:
   StrategyList strategies_;
@@ -91,7 +100,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessor {
       DisplayResourceProvider* resource_provider,
       RenderPass* render_pass,
       const FilterOperationsMap& render_pass_filters,
-      const FilterOperationsMap& render_pass_background_filters,
+      const FilterOperationsMap& render_pass_backdrop_filters,
       OverlayCandidateList* overlay_candidates,
       CALayerOverlayList* ca_layer_overlays,
       gfx::Rect* damage_rect);
@@ -99,7 +108,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessor {
       DisplayResourceProvider* resource_provider,
       RenderPassList* render_passes,
       const FilterOperationsMap& render_pass_filters,
-      const FilterOperationsMap& render_pass_background_filters,
+      const FilterOperationsMap& render_pass_backdrop_filters,
       OverlayCandidateList* overlay_candidates,
       DCLayerOverlayList* dc_layer_overlays,
       gfx::Rect* damage_rect);

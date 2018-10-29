@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/blacklist/opt_out_blacklist/opt_out_blacklist_data.h"
@@ -35,10 +36,6 @@ namespace blacklist {
 class OptOutStore;
 }
 
-namespace net {
-class URLRequest;
-}
-
 namespace previews {
 class PreviewsUIService;
 
@@ -50,10 +47,7 @@ typedef base::RepeatingCallback<bool(PreviewsType)> PreviewsIsEnabledCallback;
 class PreviewsDeciderImpl : public PreviewsDecider,
                             public blacklist::OptOutBlacklistDelegate {
  public:
-  PreviewsDeciderImpl(
-      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
-      const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
-      base::Clock* clock);
+  explicit PreviewsDeciderImpl(base::Clock* clock);
   ~PreviewsDeciderImpl() override;
 
   // blacklist::OptOutBlacklistDelegate:
@@ -61,10 +55,10 @@ class PreviewsDeciderImpl : public PreviewsDecider,
   void OnUserBlacklistedStatusChange(bool blacklisted) override;
   void OnBlacklistCleared(base::Time time) override;
 
-  // Stores |previews_ui_service| as |previews_ui_service_| and posts a task to
-  // InitializeOnIOThread on the IO thread.
+  // Initializes the blacklist and and stores the passed in members.
+  // |previews_ui_service| owns |this|, and shares the same lifetime.
   virtual void Initialize(
-      base::WeakPtr<PreviewsUIService> previews_ui_service,
+      PreviewsUIService* previews_ui_service,
       std::unique_ptr<blacklist::OptOutStore> previews_opt_out_store,
       std::unique_ptr<PreviewsOptimizationGuide> previews_opt_guide,
       const PreviewsIsEnabledCallback& is_enabled_callback,
@@ -110,30 +104,40 @@ class PreviewsDeciderImpl : public PreviewsDecider,
   PreviewsBlackList* black_list() const { return previews_black_list_.get(); }
 
   // PreviewsDecider implementation:
-  bool ShouldAllowPreview(const net::URLRequest& request,
+  bool ShouldAllowPreview(PreviewsUserData* previews_data,
+                          const GURL& url,
+                          bool is_reload,
                           PreviewsType type) const override;
   bool ShouldAllowPreviewAtECT(
-      const net::URLRequest& request,
+      PreviewsUserData* previews_data,
+      const GURL& url,
+      bool is_reload,
       PreviewsType type,
       net::EffectiveConnectionType effective_connection_type_threshold,
       const std::vector<std::string>& host_blacklist_from_finch,
-      bool ignore_long_term_black_list_rules) const override;
-  bool IsURLAllowedForPreview(const net::URLRequest& request,
+      bool is_server_preview) const override;
+  bool IsURLAllowedForPreview(PreviewsUserData* previews_data,
+                              const GURL& url,
                               PreviewsType type) const override;
 
-  void LoadResourceHints(const net::URLRequest& request) override;
+  // Set whether ignoring the long term blacklist rules is allowed for calls to
+  // ShouldAllowPreviewAtECT that have |can_ignore_long_term_black_list_rules|
+  // set to true.
+  void SetIgnoreLongTermBlackListForServerPreviews(
+      bool ignore_long_term_blacklist_for_server_previews);
+
+  void LoadResourceHints(const GURL& url) override;
+
+  void LogHintCacheMatch(const GURL& url, bool is_committed) const override;
 
   // Generates a page ID that is guaranteed to be unique from any other page ID
   // generated in this browser session. Also, guaranteed to be non-zero.
   uint64_t GeneratePageId();
 
- protected:
-  // Posts a task to SetIOData for |previews_ui_service_| on the UI thread with
-  // a weak pointer to |this|. Virtualized for testing.
-  virtual void InitializeOnIOThread(
-      std::unique_ptr<blacklist::OptOutStore> previews_opt_out_store,
-      blacklist::BlacklistData::AllowedTypesAndVersions allowed_previews);
+  void SetEffectiveConnectionType(
+      net::EffectiveConnectionType effective_connection_type);
 
+ protected:
   // Posts a task to deliver the resource patterns to the PreviewsUIService.
   void OnResourceLoadingHints(
       const GURL& document_gurl,
@@ -144,25 +148,27 @@ class PreviewsDeciderImpl : public PreviewsDecider,
       std::unique_ptr<PreviewsBlackList> previews_back_list);
 
  private:
-  // Whether the preview |type| should be allowed to be considered for |request|
+  // Whether the preview |type| should be allowed to be considered for |url|
   // subject to any server provided optimization hints. This is meant for
   // checking the initial navigation URL. Returns ALLOWED if no reason found
   // to deny the preview for consideration.
   PreviewsEligibilityReason ShouldAllowPreviewPerOptimizationHints(
-      const net::URLRequest& request,
+      PreviewsUserData* previews_data,
+      const GURL& url,
       PreviewsType type,
       std::vector<PreviewsEligibilityReason>* passed_reasons) const;
 
-  // Whether |request| is allowed for |type| according to server provided
+  // Whether |url| is allowed for |type| according to server provided
   // optimization hints, if available. This is meant for checking the committed
   // navigation URL against any specific hint details.
-  PreviewsEligibilityReason IsURLAllowedForPreviewByOptmizationHints(
-      const net::URLRequest& request,
+  PreviewsEligibilityReason IsURLAllowedForPreviewByOptimizationHints(
+      PreviewsUserData* previews_data,
+      const GURL& url,
       PreviewsType type,
       std::vector<PreviewsEligibilityReason>* passed_reasons) const;
 
-  // The UI thread portion of the inter-thread communication for previews.
-  base::WeakPtr<PreviewsUIService> previews_ui_service_;
+  // The UI service object owns |this| and exists as long as |this| does.
+  PreviewsUIService* previews_ui_service_;
 
   std::unique_ptr<PreviewsBlackList> previews_black_list_;
 
@@ -176,21 +182,28 @@ class PreviewsDeciderImpl : public PreviewsDecider,
   // Whether the decisions made by PreviewsBlackList should be ignored or not.
   // This can be changed by chrome://interventions-internals to test/debug the
   // behavior of Previews decisions.
+  // This is related to a test flag and should only be true when the user has
+  // set it in flags. See previews::IsPreviewsBlacklistIgnoredViaFlag.
   bool blacklist_ignored_;
 
-  base::Clock* clock_;
+  // Whether ignoring the blacklist is allowed for calls to
+  // ShouldAllowPreviewAtECT that have
+  // |is_server_preview| true.
+  bool ignore_long_term_blacklist_for_server_previews_ = false;
 
-  // The UI and IO thread task runners. |ui_task_runner_| is used to post
-  // tasks to |previews_ui_service_|, and |io_task_runner_| is used to post from
-  // Initialize to InitializeOnIOThread as well as verify that execution is
-  // happening on the IO thread.
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  // The estimate of how slow a user's connection is. Used for triggering
+  // Previews.
+  net::EffectiveConnectionType effective_connection_type_ =
+      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
+
+  base::Clock* clock_;
 
   // Whether the preview is enabled. Valid after Initialize() is called.
   PreviewsIsEnabledCallback is_enabled_callback_;
 
   uint64_t page_id_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PreviewsDeciderImpl> weak_factory_;
 

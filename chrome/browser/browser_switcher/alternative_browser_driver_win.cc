@@ -4,7 +4,6 @@
 
 #include "chrome/browser/browser_switcher/alternative_browser_driver.h"
 
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
@@ -113,6 +112,23 @@ void ExpandEnvironmentVariables(std::wstring* arg) {
     *arg = out.get();
 }
 
+void AppendCommandLineArguments(base::CommandLine* cmd_line,
+                                const std::vector<std::wstring>& raw_args,
+                                const GURL& url) {
+  std::wstring url_spec = base::UTF8ToWide(url.spec());
+  std::vector<std::wstring> command_line;
+  bool contains_url = false;
+  for (const auto& arg : raw_args) {
+    std::wstring expanded_arg = arg;
+    ExpandEnvironmentVariables(&expanded_arg);
+    if (ExpandUrlVarName(&expanded_arg, url_spec))
+      contains_url = true;
+    cmd_line->AppendArgNative(expanded_arg);
+  }
+  if (!contains_url)
+    cmd_line->AppendArgNative(url_spec);
+}
+
 }  // namespace
 
 AlternativeBrowserDriver::~AlternativeBrowserDriver() {}
@@ -217,17 +233,8 @@ bool AlternativeBrowserDriverImpl::TryLaunchWithExec(const GURL& url) {
 
   CHECK(url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile());
 
-  // We know that there will be at most browser_params_.size() arguments, plus
-  // one for the executable, and possibly one for the URL.
-  const int max_num_args = browser_params_.size() + 2;
-  std::vector<std::wstring> argv;
-  argv.reserve(max_num_args);
-  std::wstring path = browser_path_;
-  ExpandEnvironmentVariables(&path);
-  argv.push_back(path);
-  AppendCommandLineArguments(&argv, browser_params_, url);
+  auto cmd_line = CreateCommandLine(url);
 
-  base::CommandLine cmd_line = base::CommandLine(argv);
   base::LaunchOptions options;
   if (!base::LaunchProcess(cmd_line, options).IsValid()) {
     LOG(ERROR) << "Could not start the alternative browser! Error: "
@@ -237,23 +244,13 @@ bool AlternativeBrowserDriverImpl::TryLaunchWithExec(const GURL& url) {
   return true;
 }
 
-void AlternativeBrowserDriverImpl::AppendCommandLineArguments(
-    std::vector<std::wstring>* argv,
-    const std::vector<std::wstring>& raw_args,
+base::CommandLine AlternativeBrowserDriverImpl::CreateCommandLine(
     const GURL& url) {
-  // TODO(crbug/882520): Do environment variable expansion.
-  std::wstring url_spec = base::UTF8ToWide(url.spec());
-  std::vector<std::wstring> command_line;
-  bool contains_url = false;
-  for (const auto& arg : raw_args) {
-    std::wstring expanded_arg = arg;
-    ExpandEnvironmentVariables(&expanded_arg);
-    if (ExpandUrlVarName(&expanded_arg, url_spec))
-      contains_url = true;
-    argv->push_back(expanded_arg);
-  }
-  if (!contains_url)
-    argv->push_back(url_spec);
+  std::wstring path = browser_path_;
+  ExpandEnvironmentVariables(&path);
+  base::CommandLine cmd_line(std::vector<std::wstring>{path});
+  AppendCommandLineArguments(&cmd_line, browser_params_, url);
+  return cmd_line;
 }
 
 }  // namespace browser_switcher

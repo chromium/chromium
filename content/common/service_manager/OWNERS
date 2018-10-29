@@ -1,5 +1,5 @@
 ben@chromium.org
-rockot@chromium.org
+rockot@google.com
 
 per-file *_messages*.h=set noparent
 per-file *_messages*.h=file://ipc/SECURITY_OWNERS

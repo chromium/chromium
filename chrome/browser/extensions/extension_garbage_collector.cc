@@ -95,7 +95,7 @@ void CheckExtensionDirectory(const base::FilePath& path,
        !version_dir.empty();
        version_dir = versions_enumerator.Next()) {
     bool known_version = false;
-    for (Iter iter = iter_pair.first; iter != iter_pair.second; ++iter) {
+    for (auto iter = iter_pair.first; iter != iter_pair.second; ++iter) {
       if (version_dir.BaseName() == iter->second.BaseName()) {
         known_version = true;
         break;

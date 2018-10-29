@@ -75,7 +75,7 @@ template("internal_jumbo_target") {
 
   excluded_sources = []
   if (defined(invoker.jumbo_excluded_sources)) {
-    excluded_sources += invoker.jumbo_excluded_sources
+    excluded_sources = invoker.jumbo_excluded_sources
   }
 
   if (defined(invoker.sources)) {
@@ -106,9 +106,11 @@ template("internal_jumbo_target") {
     has_c_file = false
     has_objective_c_file = false
     has_S_file = false
+    sources_in_jumbo_files = []
     assert(merge_limit > 0)
     foreach(source_file, invoker_sources) {
       source_ext = get_path_info(source_file, "extension")
+      is_source_file = true
       if (source_ext == "c") {
         has_c_file = true
       } else if (source_ext == "mm") {
@@ -123,6 +125,11 @@ template("internal_jumbo_target") {
           next_chunk_start += merge_limit
         }
         current_file_index += 1
+      } else {
+        is_source_file = false
+      }
+      if (is_source_file) {
+        sources_in_jumbo_files += [ source_file ]
       }
     }
 
@@ -130,9 +137,12 @@ template("internal_jumbo_target") {
       # Empty sources list or a sources list with only header files or
       # at most one non-header file.
       use_jumbo_build_for_target = false
-      assert(current_file_index <= 1)  # Prevent "unused variable"
-      assert(next_chunk_start >= 0)  # Prevent "unused variable"
-      assert(next_chunk_number <= 2)  # Prevent "unused variable"
+      not_needed([
+                   "sources_in_jumbo_files",
+                   "current_file_index",
+                   "next_chunk_start",
+                   "next_chunk_number",
+                 ])
     }
 
     if (has_c_file) {
@@ -148,12 +158,13 @@ template("internal_jumbo_target") {
 
   if (use_jumbo_build_for_target) {
     merge_action_name = target_name + "__jumbo_merge"
+    sources_in_jumbo_files -= excluded_sources
 
     # Create an action that calls a script that merges all the source files.
     action(merge_action_name) {
       script = "//build/config/merge_for_jumbo.py"
       response_file_contents =
-          rebase_path(invoker_sources - excluded_sources, root_build_dir)
+          rebase_path(sources_in_jumbo_files, root_build_dir)
       outputs = jumbo_files
       args = [ "--outputs" ] + rebase_path(outputs, root_build_dir) +
              [ "--file-list={{response_file_name}}" ]
@@ -189,15 +200,7 @@ template("internal_jumbo_target") {
       variables_to_not_forward += [ "sources" ]
       assert(jumbo_files != [])
       set_sources_assignment_filter([])  # Prefiltered.
-      sources = jumbo_files + excluded_sources
-
-      # Need to keep the headers in sources so that dependency checks
-      # work.
-      foreach(source_file, invoker_sources) {
-        if (get_path_info(source_file, "extension") == "h") {
-          sources += [ source_file ]
-        }
-      }
+      sources = invoker_sources - sources_in_jumbo_files + jumbo_files
 
       # Change include_dirs to make sure that the jumbo file can find its
       # #included files.

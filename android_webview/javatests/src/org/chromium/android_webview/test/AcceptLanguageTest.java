@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.LocaleList;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
-import android.text.TextUtils;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -20,12 +19,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.JSUtils;
-import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.net.test.EmbeddedTestServer;
 
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -80,6 +77,10 @@ public class AcceptLanguageTest {
         return COMMA_AND_OPTIONAL_Q_VALUE.split(mActivityTestRule.maybeStripDoubleQuotes(raw));
     }
 
+    private boolean isEnUsLocale() {
+        return "en-US".equals(Locale.getDefault().toLanguageTag());
+    }
+
     /**
      * Verify that the Accept Language string is correct.
      */
@@ -87,6 +88,14 @@ public class AcceptLanguageTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testAcceptLanguage() throws Throwable {
+        // Make sure that the current locale is en-US.
+        if (!isEnUsLocale()) {
+            Locale.setDefault(new Locale("en", "US"));
+            AwContents.updateDefaultLocale();
+            mAwContents.getSettings().updateAcceptLanguages();
+        }
+        Assert.assertTrue(isEnUsLocale());
+
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
 
         // This should yield a lightly formatted page with the contents of the Accept-Language
@@ -94,18 +103,18 @@ public class AcceptLanguageTest {
         String url = mTestServer.getURL("/echoheader?Accept-Language");
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
+        // Note that we extend the base language from language-region pair.
         String[] acceptLanguages = getAcceptLanguages(
                 mActivityTestRule.getJavaScriptResultBodyTextContent(mAwContents, mContentsClient));
-        Assert.assertEquals(LocaleUtils.getDefaultLocaleString(), acceptLanguages[0]);
+        Assert.assertArrayEquals(new String[] {"en-US", "en"}, acceptLanguages);
 
+        // Our accept language list in user agent is different from navigator.languages, which is
+        // fine.
         String[] acceptLanguagesJs = getAcceptLanguages(JSUtils.executeJavaScriptAndWaitForResult(
                 InstrumentationRegistry.getInstrumentation(), mAwContents,
                 mContentsClient.getOnEvaluateJavaScriptResultHelper(),
                 "navigator.languages.join(',')"));
-        Assert.assertEquals(acceptLanguagesJs.length, acceptLanguages.length);
-        for (int i = 0; i < acceptLanguagesJs.length; ++i) {
-            Assert.assertEquals(acceptLanguagesJs[i], acceptLanguages[i]);
-        }
+        Assert.assertArrayEquals(new String[] {"en-US"}, acceptLanguagesJs);
 
         // Test locale change at run time
         Locale.setDefault(new Locale("de", "DE"));
@@ -116,7 +125,8 @@ public class AcceptLanguageTest {
 
         acceptLanguages = getAcceptLanguages(
                 mActivityTestRule.getJavaScriptResultBodyTextContent(mAwContents, mContentsClient));
-        Assert.assertEquals(LocaleUtils.getDefaultLocaleString(), acceptLanguages[0]);
+        // Note that we extend the base language from language-region pair.
+        Assert.assertArrayEquals(new String[] {"de-DE", "de", "en-US", "en"}, acceptLanguages);
     }
 
     /**
@@ -130,26 +140,29 @@ public class AcceptLanguageTest {
     @SuppressLint("NewApi")
     @Feature({"AndroidWebView"})
     public void testAcceptLanguagesWithenUS() throws Throwable {
+        LocaleList.setDefault(new LocaleList(new Locale("ko", "KR")));
+        AwContents.updateDefaultLocale();
+        mAwContents.getSettings().updateAcceptLanguages();
+
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
 
         // This should yield a lightly formatted page with the contents of the Accept-Language
-        // header, e.g. "en-US" or "de-DE,en-US;q=0.8", as the only text content.
+        // header, e.g. "en-US,en" or "de-DE,de,en-US,en;q=0.8", as the only text content.
         String url = mTestServer.getURL("/echoheader?Accept-Language");
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
-        String[] acceptLanguages = getAcceptLanguages(
-                mActivityTestRule.getJavaScriptResultBodyTextContent(mAwContents, mContentsClient));
-        Assert.assertEquals(
-                LocaleUtils.getDefaultLocaleListString(), TextUtils.join(",", acceptLanguages));
+        // Note that we extend accept languages.
+        Assert.assertArrayEquals(new String[] {"ko-KR", "ko", "en-US", "en"},
+                getAcceptLanguages(mActivityTestRule.getJavaScriptResultBodyTextContent(
+                        mAwContents, mContentsClient)));
 
+        // Our accept language list in user agent is different from navigator.languages, which is
+        // fine.
         String[] acceptLanguagesJs = getAcceptLanguages(JSUtils.executeJavaScriptAndWaitForResult(
                 InstrumentationRegistry.getInstrumentation(), mAwContents,
                 mContentsClient.getOnEvaluateJavaScriptResultHelper(),
                 "navigator.languages.join(',')"));
-        Assert.assertEquals(acceptLanguagesJs.length, acceptLanguages.length);
-        for (int i = 0; i < acceptLanguagesJs.length; ++i) {
-            Assert.assertEquals(acceptLanguagesJs[i], acceptLanguages[i]);
-        }
+        Assert.assertArrayEquals(new String[] {"ko-KR", "en-US"}, acceptLanguagesJs);
 
         // Test locales that contain "en-US" change at run time
         LocaleList.setDefault(new LocaleList(new Locale("de", "DE"), new Locale("en", "US")));
@@ -158,10 +171,11 @@ public class AcceptLanguageTest {
 
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
-        acceptLanguages = getAcceptLanguages(
-                mActivityTestRule.getJavaScriptResultBodyTextContent(mAwContents, mContentsClient));
-        Assert.assertEquals(
-                LocaleUtils.getDefaultLocaleListString(), TextUtils.join(",", acceptLanguages));
+        // Note that we extend the base language from language-region pair.
+        // Also, we put en-US at the lowest priority.
+        Assert.assertArrayEquals(new String[] {"de-DE", "de", "en-US", "en"},
+                getAcceptLanguages(mActivityTestRule.getJavaScriptResultBodyTextContent(
+                        mAwContents, mContentsClient)));
 
         // Test locales that contain "en-us" change at run time
         LocaleList.setDefault(new LocaleList(new Locale("de", "DE"), new Locale("en", "us")));
@@ -170,10 +184,9 @@ public class AcceptLanguageTest {
 
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
-        acceptLanguages = getAcceptLanguages(
-                mActivityTestRule.getJavaScriptResultBodyTextContent(mAwContents, mContentsClient));
-        Assert.assertEquals(
-                LocaleUtils.getDefaultLocaleListString(), TextUtils.join(",", acceptLanguages));
+        Assert.assertArrayEquals(new String[] {"de-DE", "de", "en-US", "en"},
+                getAcceptLanguages(mActivityTestRule.getJavaScriptResultBodyTextContent(
+                        mAwContents, mContentsClient)));
 
         // Test locales that do not contain "en-us" or "en-US" change at run time
         LocaleList.setDefault(new LocaleList(new Locale("de", "DE"), new Locale("ja", "JP")));
@@ -182,10 +195,8 @@ public class AcceptLanguageTest {
 
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
-        acceptLanguages = getAcceptLanguages(
-                mActivityTestRule.getJavaScriptResultBodyTextContent(mAwContents, mContentsClient));
-        String[] acceptLangs = Arrays.copyOfRange(acceptLanguages, 0, acceptLanguages.length - 1);
-        Assert.assertEquals(
-                LocaleUtils.getDefaultLocaleListString(), TextUtils.join(",", acceptLangs));
+        Assert.assertArrayEquals(new String[] {"de-DE", "de", "ja-JP", "ja", "en-US", "en"},
+                getAcceptLanguages(mActivityTestRule.getJavaScriptResultBodyTextContent(
+                        mAwContents, mContentsClient)));
     }
 }

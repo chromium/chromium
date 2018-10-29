@@ -9,7 +9,9 @@
 #include "base/android/jni_android.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/post_task.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_browser_thread_bundle.h"
@@ -67,8 +69,8 @@ class AwURLRequestContextGetterTest : public ::testing::Test {
     std::unique_ptr<net::ProxyConfigServiceAndroid> config_service_android;
     config_service_android.reset(static_cast<net::ProxyConfigServiceAndroid*>(
         net::ProxyResolutionService::CreateSystemProxyConfigService(
-            content::BrowserThread::GetTaskRunnerForThread(
-                content::BrowserThread::IO))
+            base::CreateSingleThreadTaskRunnerWithTraits(
+                {content::BrowserThread::IO}))
             .release()));
 
     getter_ = base::MakeRefCounted<android_webview::AwURLRequestContextGetter>(

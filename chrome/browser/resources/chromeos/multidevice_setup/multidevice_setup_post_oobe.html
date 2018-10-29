@@ -1,0 +1,46 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_shared_css.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="post_oobe_delegate.html">
+
+<dom-module id="multidevice-setup-post-oobe">
+  <template>
+    <style include="multidevice-setup-shared">
+      #backward-button,
+      #cancel-button,
+      #forward-button {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        text-transform: none;
+      }
+    </style>
+    <multidevice-setup delegate="[[delegate_]]"
+        on-setup-exited="onExitRequested_"
+        on-forward-button-focus-requested="onForwardButtonFocusRequested_"
+        on-visible-page-name-changed="onVisiblePageNameChanged_"
+        forward-button-text="{{forwardButtonText_}}"
+        forward-button-disabled="{{forwardButtonDisabled_}}"
+        cancel-button-text="{{cancelButtonText_}}"
+        backward-button-text="{{backwardButtonText_}}">
+      <paper-button id="backward-button"
+          slot="backward-button" class="cancel-button">
+        [[backwardButtonText_]]
+      </paper-button>
+      <paper-button id="cancel-button"
+          slot="cancel-button" class="cancel-button">
+        [[cancelButtonText_]]
+      </paper-button>
+      <paper-button id="forward-button"
+          slot="forward-button" class="action-button"
+          disabled$="[[forwardButtonDisabled_]]">
+        [[forwardButtonText_]]
+      </paper-button>
+    </multidevice-setup>
+  </template>
+  <script src="multidevice_setup_post_oobe.js">
+  </script>
+</dom-module>

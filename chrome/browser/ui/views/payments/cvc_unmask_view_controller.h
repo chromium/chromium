@@ -55,7 +55,7 @@ class CvcUnmaskViewController
 
   // autofill::RiskDataLoader:
   void LoadRiskData(
-      const base::Callback<void(const std::string&)>& callback) override;
+      base::OnceCallback<void(const std::string&)> callback) override;
 
   // autofill::payments::FullCardRequest::UIDelegate:
   void ShowUnmaskPrompt(

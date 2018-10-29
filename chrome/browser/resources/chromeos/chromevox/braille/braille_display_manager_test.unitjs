@@ -11,9 +11,9 @@ GEN_INCLUDE(['../testing/chromevox_unittest_base.js',
  * @constructor
  * @extends {ChromeVoxUnitTestBase}
  */
-function CvoxBrailleDisplayManagerUnitTest() {}
+function ChromeVoxBrailleDisplayManagerUnitTest() {}
 
-CvoxBrailleDisplayManagerUnitTest.prototype = {
+ChromeVoxBrailleDisplayManagerUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   /** @override */
@@ -179,7 +179,7 @@ chrome.storage = {
 };
 
 
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'NoApi', function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest', 'NoApi', function() {
   var manager = new cvox.BrailleDisplayManager(this.translatorManager);
   manager.setContent(this.NAV_BRAILLE);
   this.translatorManager.setTranslator(this.translator);
@@ -190,7 +190,7 @@ TEST_F('CvoxBrailleDisplayManagerUnitTest', 'NoApi', function() {
  * Test that we don't write to the display when the API is available, but
  * the display is not.
  */
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'NoDisplay', function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest', 'NoDisplay', function() {
   this.addFakeApi();
   this.displayState = {available: false};
 
@@ -204,7 +204,8 @@ TEST_F('CvoxBrailleDisplayManagerUnitTest', 'NoDisplay', function() {
 /**
  * Tests the typical sequence: setContent, setTranslator, setContent.
  */
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'BasicSetContent', function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest', 'BasicSetContent',
+       function() {
   this.addFakeApi();
   this.displayAvailable();
   var manager = new cvox.BrailleDisplayManager(this.translatorManager);
@@ -220,8 +221,8 @@ TEST_F('CvoxBrailleDisplayManagerUnitTest', 'BasicSetContent', function() {
 /**
  * Tests that setting empty content clears the display.
  */
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'SetEmptyContentWithTranslator',
-       function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest',
+       'SetEmptyContentWithTranslator', function() {
   this.addFakeApi();
   this.displayAvailable();
 
@@ -236,7 +237,8 @@ TEST_F('CvoxBrailleDisplayManagerUnitTest', 'SetEmptyContentWithTranslator',
 });
 
 
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'CursorAndPanning', function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest', 'CursorAndPanning',
+       function() {
   var text = 'This is a test string';
   function createNavBrailleWithCursor(start, end) {
     return new cvox.NavBraille({ text: text, startIndex: start,
@@ -276,7 +278,7 @@ TEST_F('CvoxBrailleDisplayManagerUnitTest', 'CursorAndPanning', function() {
  * Tests that the grouping algorithm works with one text character that maps
  * to one braille cell.
  */
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'BasicGroup', function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest', 'BasicGroup', function() {
   var text = 'a';
   var translated = '1';
   var mapping = [0];
@@ -292,7 +294,7 @@ TEST_F('CvoxBrailleDisplayManagerUnitTest', 'BasicGroup', function() {
  * Tests that the grouping algorithm works with one text character that maps
  * to multiple braille cells.
  */
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'OneRtoManyB', function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest', 'OneRtoManyB', function() {
   var text = 'A';
   var translated = '11';
   var mapping = [0,0];
@@ -308,7 +310,7 @@ TEST_F('CvoxBrailleDisplayManagerUnitTest', 'OneRtoManyB', function() {
  * Tests that the grouping algorithm works with one braille cell that maps
  * to multiple text characters.
  */
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'OneBtoManyR', function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest', 'OneBtoManyR', function() {
   var text = 'knowledge';
   var translated = '1';
   var mapping = [0];
@@ -324,7 +326,8 @@ TEST_F('CvoxBrailleDisplayManagerUnitTest', 'OneBtoManyR', function() {
  * Tests that the grouping algorithm works with one string that on both ends,
  * have text characters that map to multiple braille cells.
  */
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'OneRtoManyB_BothEnds', function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest', 'OneRtoManyB_BothEnds',
+       function() {
   var text = 'AbbC';
   var translated = 'X122X3';
   var mapping = [0,0,1,2,3,3];
@@ -340,7 +343,8 @@ TEST_F('CvoxBrailleDisplayManagerUnitTest', 'OneRtoManyB_BothEnds', function() {
  * Tests that the grouping algorithm works with one string that on both ends,
  * have braille cells that map to multiple text characters.
  */
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'OneBtoManyR_BothEnds', function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest', 'OneBtoManyR_BothEnds',
+       function() {
   var text = 'knowledgehappych';
   var translated = '1234456';
   var mapping = [0, 9, 10, 11, 12, 13, 14];
@@ -357,7 +361,7 @@ TEST_F('CvoxBrailleDisplayManagerUnitTest', 'OneBtoManyR_BothEnds', function() {
  * Tests that the grouping algorithm works with one  string that has both types
  * of mapping.
  */
-TEST_F('CvoxBrailleDisplayManagerUnitTest', 'RandB_Random', function() {
+TEST_F('ChromeVoxBrailleDisplayManagerUnitTest', 'RandB_Random', function() {
   var text = 'knowledgeIsPower';
   var translated = '1X23X45678';
   var mapping = [0, 9, 9, 10, 11, 11, 12, 13, 14, 15];

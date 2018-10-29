@@ -10,6 +10,10 @@ general use and is not localized.
 
 <link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/html/action_link_css.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/icon.html">
+<link rel="import" href="sorted_table_behavior.html">
 
 <dom-module id="discards-tab">
   <template>
@@ -147,9 +151,10 @@ general use and is not localized.
         [Urgent discard a tab now]
       </div>
       <table id="tab-discard-info-table">
-        <thead on-click="onHeaderClick_">
+        <thead >
           <tr id="tab-discards-info-table-header">
-            <th data-sort-key="utilityRank" class="sort-column">
+            <th data-sort-key="utilityRank" class="sort-column"
+                on-click="onSortClick">
               <div class="header-cell-container">
                 <div>
                   <div>Utility</div>
@@ -157,7 +162,7 @@ general use and is not localized.
                 </div>
               </div>
             </th>
-            <th data-sort-key="reactivationScore">
+            <th data-sort-key="reactivationScore" on-click="onSortClick">
               <div class="header-cell-container">
                 <div>
                   <div>Reactivation</div>
@@ -165,7 +170,7 @@ general use and is not localized.
                 </div>
               </div>
             </th>
-            <th data-sort-key="siteEngagementScore">
+            <th data-sort-key="siteEngagementScore" on-click="onSortClick">
               <div class="header-cell-container">
                 <div>
                   <div>Site</div>
@@ -174,27 +179,27 @@ general use and is not localized.
                 </div>
               </div>
             </th>
-            <th data-sort-key="title">
+            <th data-sort-key="title" on-click="onSortClick">
               <div class="header-cell-container">
                 Tab Title
               </div>
             </th>
-            <th data-sort-key="tabUrl">
+            <th data-sort-key="tabUrl" on-click="onSortClick">
               <div class="header-cell-container">
                 Tab URL
               </div>
             </th>
-            <th data-sort-key="visibility">
+            <th data-sort-key="visibility" on-click="onSortClick">
               <div class="header-cell-container">
                 Visibility
               </div>
             </th>
-            <th data-sort-key="loadingState"">
+            <th data-sort-key="loadingState" on-click="onSortClick">
               <div class="header-cell-container">
                 Loading State
               </div>
             </th>
-            <th data-sort-key="state">
+            <th data-sort-key="state" on-click="onSortClick">
               <div class="header-cell-container">
                 <div>
                   <div>Lifecycle</div>
@@ -202,17 +207,17 @@ general use and is not localized.
                 </div>
               </div>
             </th>
-            <th data-sort-key="canFreeze">
+            <th data-sort-key="canFreeze" on-click="onSortClick">
               <div class="header-cell-container">
                 Can freeze?
               </div>
             </th>
-            <th data-sort-key="canDiscard">
+            <th data-sort-key="canDiscard" on-click="onSortClick">
               <div class="header-cell-container">
                 Can discard?
               </div>
             </th>
-            <th data-sort-key="discardCount">
+            <th data-sort-key="discardCount" on-click="onSortClick">
               <div class="header-cell-container">
                 <div>
                   <div>Discard</div>
@@ -220,7 +225,7 @@ general use and is not localized.
                 </div>
               </div>
             </div></th>
-            <th data-sort-key="isAutoDiscardable">
+            <th data-sort-key="isAutoDiscardable" on-click="onSortClick">
               <div class="header-cell-container">
                 <div>
                   <div>Auto</div>
@@ -228,7 +233,7 @@ general use and is not localized.
                 </div>
               </div>
             </th>
-            <th data-sort-key="lastActiveSeconds">
+            <th data-sort-key="lastActiveSeconds" on-click="onSortClick">
               <div class="header-cell-container">
                 Last Active
               </div>
@@ -242,7 +247,7 @@ general use and is not localized.
         </thead>
         <tbody id="tab-discards-info-table-body">
           <template is="dom-repeat"
-              sort="[[computeSortFunction_(sortKey_, sortReverse_)]]"
+              sort="[[computeSortFunction_(sortKey, sortReverse)]]"
               items="[[tabInfos_]]">
             <tr>
               <td>[[item.utilityRank]]</td>

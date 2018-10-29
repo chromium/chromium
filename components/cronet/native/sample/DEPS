@@ -1,0 +1,8 @@
+# Files in this directory are copied externally and can't have any dependencies
+include_rules = [
+  # TODO(mef): There doesn't appear to be a way to specify that no includes
+  # are allowed, so currently we just don't allow a dependency on //base, which
+  # should disqualify most code. It would be nice to be able to actual prevent
+  # all dependencies in the future.
+  "-base",
+]

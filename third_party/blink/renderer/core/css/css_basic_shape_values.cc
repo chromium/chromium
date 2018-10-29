@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
-#include "third_party/blink/renderer/platform/length.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -236,8 +236,8 @@ static String BuildPolygonString(const WindRule& wind_rule,
                 "polygon string openings should be the same length");
 
   // Compute the required capacity in advance to reduce allocations.
-  size_t length = sizeof(kEvenOddOpening) - 1;
-  for (size_t i = 0; i < points.size(); i += 2) {
+  wtf_size_t length = sizeof(kEvenOddOpening) - 1;
+  for (wtf_size_t i = 0; i < points.size(); i += 2) {
     if (i)
       length += (sizeof(kCommaSeparator) - 1);
     // add length of two strings, plus one for the space separator.
@@ -250,7 +250,7 @@ static String BuildPolygonString(const WindRule& wind_rule,
   else
     result.Append(kNonZeroOpening);
 
-  for (size_t i = 0; i < points.size(); i += 2) {
+  for (wtf_size_t i = 0; i < points.size(); i += 2) {
     if (i)
       result.Append(kCommaSeparator);
     result.Append(points[i]);
@@ -266,7 +266,7 @@ String CSSBasicShapePolygonValue::CustomCSSText() const {
   Vector<String> points;
   points.ReserveInitialCapacity(values_.size());
 
-  for (size_t i = 0; i < values_.size(); ++i)
+  for (wtf_size_t i = 0; i < values_.size(); ++i)
     points.push_back(values_.at(i)->CssText());
 
   return BuildPolygonString(wind_rule_, points);
@@ -353,7 +353,7 @@ static String BuildInsetString(const String& top,
       result.Append(separator);
       result.Append(corners_separator);
 
-      for (size_t i = 0; i < horizontal_radii.size(); ++i) {
+      for (wtf_size_t i = 0; i < horizontal_radii.size(); ++i) {
         result.Append(separator);
         result.Append(horizontal_radii[i]);
       }
@@ -361,7 +361,7 @@ static String BuildInsetString(const String& top,
         result.Append(separator);
         result.Append('/');
 
-        for (size_t i = 0; i < vertical_radii.size(); ++i) {
+        for (wtf_size_t i = 0; i < vertical_radii.size(); ++i) {
           result.Append(separator);
           result.Append(vertical_radii[i]);
         }

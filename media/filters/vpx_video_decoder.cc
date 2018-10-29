@@ -13,17 +13,15 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
-#include "base/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/filters/frame_buffer_pool.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
@@ -37,41 +35,24 @@ namespace media {
 
 // Returns the number of threads.
 static int GetVpxVideoDecoderThreadCount(const VideoDecoderConfig& config) {
-  // Always try to use at least two threads for video decoding.  There is little
-  // reason not to since current day CPUs tend to be multi-core and we measured
-  // performance benefits on older machines such as P4s with hyperthreading.
-  constexpr int kDecodeThreads = 2;
-  constexpr int kMaxDecodeThreads = 32;
+  // vp8a doesn't really need more threads.
+  int desired_threads = limits::kMinVideoDecodeThreads;
 
-  // Refer to http://crbug.com/93932 for tsan suppressions on decoding.
-  int decode_threads = kDecodeThreads;
-
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  std::string threads(cmd_line->GetSwitchValueASCII(switches::kVideoThreads));
-  if (threads.empty() || !base::StringToInt(threads, &decode_threads)) {
-    if (config.codec() == kCodecVP9) {
-      // For VP9 decode when using the default thread count, increase the number
-      // of decode threads to equal the maximum number of tiles possible for
-      // higher resolution streams.
-      const int width = config.coded_size().width();
-      if (width >= 8192)
-        decode_threads = 32;
-      else if (width >= 4096)
-        decode_threads = 16;
-      else if (width >= 2048)
-        decode_threads = 8;
-      else if (width >= 1024)
-        decode_threads = 4;
-    }
-
-    decode_threads =
-        std::min(decode_threads, base::SysInfo::NumberOfProcessors());
-    return decode_threads;
+  // For VP9 decoding increase the number of decode threads to equal the
+  // maximum number of tiles possible for higher resolution streams.
+  if (config.codec() == kCodecVP9) {
+    const int width = config.coded_size().width();
+    if (width >= 8192)
+      desired_threads = 32;
+    else if (width >= 4096)
+      desired_threads = 16;
+    else if (width >= 2048)
+      desired_threads = 8;
+    else if (width >= 1024)
+      desired_threads = 4;
   }
 
-  decode_threads = std::max(decode_threads, 0);
-  decode_threads = std::min(decode_threads, kMaxDecodeThreads);
-  return decode_threads;
+  return VideoDecoder::GetRecommendedThreadCount(desired_threads);
 }
 
 static std::unique_ptr<vpx_codec_ctx> InitializeVpxContext(
@@ -138,6 +119,7 @@ void VpxVideoDecoder::Initialize(
     const InitCB& init_cb,
     const OutputCB& output_cb,
     const WaitingForDecryptionKeyCB& /* waiting_for_decryption_key_cb */) {
+  DVLOG(1) << __func__ << ": " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValidConfig());
 
@@ -161,7 +143,7 @@ void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DVLOG(3) << __func__ << ": " << buffer->AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer);
-  DCHECK(!decode_cb.is_null());
+  DCHECK(decode_cb);
   DCHECK_NE(state_, kUninitialized)
       << "Called Decode() before successful Initialize()";
 
@@ -366,14 +348,10 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
 
   // Default to the color space from the config, but if the bistream specifies
   // one, prefer that instead.
-  ColorSpace color_space = config_.color_space();
-  if (vpx_image->cs == VPX_CS_BT_709)
-    color_space = COLOR_SPACE_HD_REC709;
-  else if (vpx_image->cs == VPX_CS_BT_601 || vpx_image->cs == VPX_CS_SMPTE_170)
-    color_space = COLOR_SPACE_SD_REC601;
-  (*video_frame)
-      ->metadata()
-      ->SetInteger(VideoFrameMetadata::COLOR_SPACE, color_space);
+  if (config_.color_space_info().IsSpecified()) {
+    (*video_frame)
+        ->set_color_space(config_.color_space_info().ToGfxColorSpace());
+  }
 
   if (config_.color_space_info().IsSpecified()) {
     // config_.color_space_info() comes from the color tag which is

@@ -11,14 +11,14 @@ import android.view.inputmethod.InputMethodManager;
 import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.omnibox.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
-import org.chromium.chrome.browser.omnibox.OmniboxSuggestion;
-import org.chromium.chrome.browser.omnibox.OmniboxSuggestion.MatchClassification;
-import org.chromium.chrome.browser.omnibox.OmniboxSuggestionsList;
 import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.MatchClassification;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -333,7 +333,8 @@ public class OmniboxTestUtils {
         CriteriaHelper.pollUiThread(new Criteria() {
             @Override
             public boolean isSatisfied() {
-                OmniboxSuggestionsList suggestionsList = locationBar.getSuggestionList();
+                OmniboxSuggestionsList suggestionsList =
+                        locationBar.getAutocompleteCoordinator().getSuggestionList();
                 if (suggestionsList == null) {
                     updateFailureReason("suggestionList is null");
                     return false;
@@ -361,7 +362,8 @@ public class OmniboxTestUtils {
         CriteriaHelper.pollUiThread(new Criteria() {
             @Override
             public boolean isSatisfied() {
-                OmniboxSuggestionsList suggestionsList = locationBar.getSuggestionList();
+                OmniboxSuggestionsList suggestionsList =
+                        locationBar.getAutocompleteCoordinator().getSuggestionList();
                 return suggestionsList != null
                         && suggestionsList.isShown()
                         && suggestionsList.getCount() == expectedCount;

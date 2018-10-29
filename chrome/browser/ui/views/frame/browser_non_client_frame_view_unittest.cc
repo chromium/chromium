@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -103,8 +104,8 @@ class BrowserNonClientFrameViewThemeTest
   TestingProfile::TestingFactories GetTestingFactories() override {
     auto testing_factories =
         BrowserNonClientFrameViewTest::GetTestingFactories();
-    testing_factories.push_back(
-        {ThemeServiceFactory::GetInstance(), &BuildStubThemeService});
+    testing_factories.emplace_back(ThemeServiceFactory::GetInstance(),
+                                   base::BindRepeating(&BuildStubThemeService));
     return testing_factories;
   }
 
@@ -137,7 +138,7 @@ class BrowserNonClientFrameViewThemeTest
 #if defined(OS_MACOSX)
 #define MAYBE_ActiveTabTextColor DISABLED_ActiveTabTextColor
 #else
-#define MAYBE_ActiveTabTextColor ActiveTabTextColor
+#define MAYBE_ActiveTabTextColor DISABLED_ActiveTabTextColor
 #endif
 
 TEST_F(BrowserNonClientFrameViewThemeTest, MAYBE_ActiveTabTextColor) {

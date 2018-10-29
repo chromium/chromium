@@ -41,6 +41,10 @@ EasyUnlockSettingsHandler* EasyUnlockSettingsHandler::Create(
   html_source->AddBoolean("easyUnlockAllowed", allowed);
   html_source->AddBoolean("easyUnlockEnabled",
                           allowed ? easy_unlock_service->IsEnabled() : false);
+  // TODO(crbug.com/894585): Remove this legacy special case after M71.
+  html_source->AddBoolean("easyUnlockInLegacyHostMode",
+                          allowed && easy_unlock_service->IsInLegacyHostMode());
+
   if (!allowed)
     return nullptr;
 

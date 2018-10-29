@@ -67,12 +67,15 @@ class ClearBrowsingDataCollectionViewControllerTest
     // Setup identity services.
     TestChromeBrowserState::Builder builder;
     builder.SetPrefService(CreatePrefService());
-    builder.AddTestingFactory(ProfileOAuth2TokenServiceFactory::GetInstance(),
-                              &BuildFakeOAuth2TokenService);
-    builder.AddTestingFactory(ios::SigninManagerFactory::GetInstance(),
-                              &ios::BuildFakeSigninManager);
-    builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
-                              &BuildMockProfileSyncService);
+    builder.AddTestingFactory(
+        ProfileOAuth2TokenServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeOAuth2TokenService));
+    builder.AddTestingFactory(
+        ios::SigninManagerFactory::GetInstance(),
+        base::BindRepeating(&ios::BuildFakeSigninManager));
+    builder.AddTestingFactory(
+        ProfileSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildMockProfileSyncService));
     browser_state_ = builder.Build();
 
     signin_manager_ =

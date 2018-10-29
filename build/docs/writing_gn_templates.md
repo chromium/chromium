@@ -61,7 +61,7 @@ gn analyze //out/Debug <(echo '{
 Do not list files as `outputs` unless they are important. Outputs are important
 if they are:
   * used as an input by another target, or
-  * are leaves in the dependency graph (e.g. binaries, apks, etc).
+  * are roots in the dependency graph (e.g. binaries, apks, etc).
 
 Example:
 * An action runs a binary that creates an output as well as a log file. Do not

@@ -2,7 +2,6 @@ This test verifies behavior of the ReportScreenSizeInPhysicalPixelsQuirk setting
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS screen.width
 PASS screen.height
 PASS screen.availWidth

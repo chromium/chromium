@@ -1,0 +1,1 @@
+CONSOLE ERROR: line 10: Error: <svg> attribute width: A negative value is not valid. ("-100")

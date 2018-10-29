@@ -16,12 +16,32 @@ const MIN_KNOBS_DISTANCE_MINUTES = 60;
 const OFFSET_MINUTES_6PM = 18 * 60;
 const TOTAL_MINUTES_PER_DAY = 24 * 60;
 
+/**
+ * % is the javascript remainder operator that satisfies the following for the
+ * resultant z given the operands x and y as in (z = x % y):
+ *   1. x = k * y + z
+ *   2. k is an integer.
+ *   3. |z| < |y|
+ *   4. z has the same sign as x.
+ *
+ * It is more convenient to have z be the same sign as y. In most cases y
+ * is a positive integer, and it is more intuitive to have z also be a positive
+ * integer (0 <= z < y).
+ *
+ * For example (-1 % 24) equals -1 whereas modulo(-1, 24) equals 23.
+ * @param {number} x
+ * @param {number} y
+ * @return {number}
+ */
+function modulo(x, y) {
+  return ((x % y) + y) % y;
+}
+
 Polymer({
   is: 'night-light-slider',
 
   behaviors: [
     PrefsBehavior,
-    Polymer.IronA11yKeysBehavior,
     Polymer.IronResizableBehavior,
     Polymer.PaperInkyFocusBehavior,
   ],
@@ -49,38 +69,28 @@ Polymer({
 
   listeners: {
     'iron-resize': 'onResize_',
+    focus: 'onFocus_',
+    blur: 'onBlur_',
+    keydown: 'onKeyDown_',
   },
 
   observers: [
     'updateKnobs_(prefs.ash.night_light.custom_start_time.*, ' +
         'prefs.ash.night_light.custom_end_time.*, isRTL_, isReady_)',
     'hourFormatChanged_(prefs.settings.clock.use_24hour_clock.*)',
+    'updateMarkers_(prefs.ash.night_light.custom_start_time.*, ' +
+        'prefs.ash.night_light.custom_end_time.*, isRTL_, isReady_)',
   ],
-
-  keyBindings: {
-    'left': 'onLeftKey_',
-    'right': 'onRightKey_',
-  },
 
   /**
    * The object currently being dragged. Either the start or end knobs.
-   * @type {?Object}
+   * @type {Element}
    * @private
    */
   dragObject_: null,
 
   /** @override */
   attached: function() {
-    // Build the legend markers.
-    const markersContainer = this.$.markersContainer;
-    const width = markersContainer.offsetWidth;
-    for (let i = 0; i <= HOURS_PER_DAY; ++i) {
-      const marker = document.createElement('div');
-      marker.className = 'markers';
-      markersContainer.appendChild(marker);
-      marker.style.left = (i * 100 / HOURS_PER_DAY) + '%';
-    }
-
     this.isRTL_ = window.getComputedStyle(this).direction == 'rtl';
 
     this.$.sliderContainer.addEventListener('contextmenu', function(e) {
@@ -97,6 +107,51 @@ Polymer({
       // rendered.
       this.isReady_ = true;
     });
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  prefsAvailable: function() {
+    return ['custom_start_time', 'custom_end_time']
+        .map(key => `prefs.ash.night_light.${key}.value`)
+        .every(path => this.get(path) != undefined);
+  },
+
+  /** @private */
+  updateMarkers_: function() {
+    if (!this.isReady_ || !this.prefsAvailable())
+      return;
+
+    const startHour =
+        /** @type {number} */ (
+            this.getPref('ash.night_light.custom_start_time').value) /
+        60.0;
+    const endHour = /** @type {number} */ (
+                        this.getPref('ash.night_light.custom_end_time').value) /
+        60.0;
+
+    const markersContainer = this.$.markersContainer;
+    markersContainer.innerHTML = '';
+    for (let i = 0; i <= HOURS_PER_DAY; ++i) {
+      const marker = document.createElement('div');
+
+      const hourIndex = this.isRTL_ ? 24 - i : i;
+      // Rotate around clock by 18 hours for the 6pm start.
+      const hour = (hourIndex + 18) % 24;
+      if (startHour < endHour) {
+        marker.className = hour > startHour && hour < endHour ?
+            'active-marker' :
+            'inactive-marker';
+      } else {
+        marker.className = hour > endHour && hour < startHour ?
+            'inactive-marker' :
+            'active-marker';
+      }
+      markersContainer.appendChild(marker);
+      marker.style.left = (i * 100 / HOURS_PER_DAY) + '%';
+    }
   },
 
   /**
@@ -131,24 +186,6 @@ Polymer({
   },
 
   /**
-   * Expands or un-expands the knob being dragged along with its corresponding
-   * label bubble.
-   * @param {boolean} expand True to expand, and false to un-expand.
-   * @private
-   */
-  setExpanded_: function(expand) {
-    let knob = this.$.startKnob;
-    let label = this.$.startLabel;
-    if (this.dragObject_ == this.$.endKnob) {
-      knob = this.$.endKnob;
-      label = this.$.endLabel;
-    }
-
-    knob.classList.toggle('expanded-knob', expand);
-    label.classList.toggle('expanded-knob', expand);
-  },
-
-  /**
    * If one of the two knobs is focused, this function blurs it.
    * @private
    */
@@ -160,6 +197,7 @@ Polymer({
 
   /**
    * Start dragging the target knob.
+   * @param {!Event} event
    * @private
    */
   startDrag_: function(event) {
@@ -177,19 +215,14 @@ Polymer({
       return;
     }
 
-    this.setExpanded_(true);
+    this.handleKnobEvent_(event, this.dragObject_);
 
-    // Focus is only given to the knobs by means of keyboard tab navigations.
-    // When we start dragging, we don't want to see any focus halos around any
-    // knob.
-    this.blurAnyFocusedKnob_();
-
-    // However, our night-light-slider element must get the focus.
-    this.focus();
+    this.valueAtDragStart_ = this.getPrefValue_(this.dragObject_);
   },
 
   /**
    * Continues dragging the selected knob if any.
+   * @param {!Event} event
    * @private
    */
   continueDrag_: function(event) {
@@ -211,40 +244,47 @@ Polymer({
   },
 
   /**
+   * Converts horizontal pixels into number of minutes.
+   * @param {number} deltaX
+   * @return {number}
+   * @private
+   */
+  getDeltaMinutes_: function(deltaX) {
+    return (this.isRTL_ ? -1 : 1) *
+        Math.floor(
+            TOTAL_MINUTES_PER_DAY * deltaX / this.$.sliderBar.offsetWidth);
+  },
+
+  /**
    * Updates the knob's corresponding pref value in response to dragging, which
    * will in turn update the location of the knob and its corresponding label
    * bubble and its text contents.
+   * @param {!Event} event
    * @private
    */
   doKnobTracking_: function(event) {
-    const deltaRatio =
-        Math.abs(event.detail.ddx) / this.$.sliderBar.offsetWidth;
-    const deltaMinutes = Math.floor(deltaRatio * TOTAL_MINUTES_PER_DAY);
-    if (deltaMinutes <= 0)
+    const lastDeltaMinutes = this.getDeltaMinutes_(event.detail.ddx);
+    if (Math.abs(lastDeltaMinutes) < 1)
       return;
 
-    const knobPref = this.dragObject_ == this.$.startKnob ?
-        'ash.night_light.custom_start_time' :
-        'ash.night_light.custom_end_time';
-
-    const ddx = this.isRTL_ ? event.detail.ddx * -1 : event.detail.ddx;
-    if (ddx > 0) {
-      // Increment the knob's pref by the amount of deltaMinutes.
-      this.incrementPref_(knobPref, deltaMinutes);
-    } else {
-      // Decrement the knob's pref by the amount of deltaMinutes.
-      this.decrementPref_(knobPref, deltaMinutes);
-    }
+    // Using |ddx| to compute the delta minutes and adding that to the current
+    // value will result in a rounding error for every update. The cursor will
+    // drift away from the knob. Storing the original value and calculating the
+    // delta minutes from |dx| will provide a stable update that will not lose
+    // pixel movement due to rounding.
+    this.updatePref_(
+        this.valueAtDragStart_ + this.getDeltaMinutes_(event.detail.dx), true);
   },
 
   /**
    * Ends the dragging.
+   * @param {!Event} event
    * @private
    */
   endDrag_: function(event) {
     event.preventDefault();
-    this.setExpanded_(false);
     this.dragObject_ = null;
+    this.removeRipple_();
   },
 
   /**
@@ -300,6 +340,8 @@ Polymer({
    * @private
    */
   updateKnobs_: function() {
+    if (!this.isReady_ || !this.prefsAvailable())
+      return;
     const startOffsetMinutes = /** @type {number} */ (
         this.getPref('ash.night_light.custom_start_time').value);
     this.updateKnobLeft_(this.$.startKnob, startOffsetMinutes);
@@ -414,69 +456,71 @@ Polymer({
   },
 
   /**
-   * Increments the value of the pref whose path is given by |prefPath| by the
-   * amount given in |increment|.
-   * @param {string} prefPath
-   * @param {number} increment
+   * Updates the value of the pref and wraps around if necessary.
+   *
+   * When the |updatedValue| would put the start and end times closer than the
+   * minimum distance, the |updatedValue| is changed to maintain the minimum
+   * distance.
+   *
+   * When |fromUserGesture| is true the update source is from a pointer such as
+   * a mouse, touch or pen. When the knobs are close, the dragging knob will
+   * stay on the same side with respect to the other knob. For example, when the
+   * minimum distance is 1 hour, the start knob is at 8:30 am, and the end knob
+   * is at 7:00, let's examine what happens if the start knob is dragged past
+   * the end knob. At first the start knob values will change past 8:20 and
+   * 8:10, all the way up to 8:00. Further movements in the same direction will
+   * not change the start knob value until the pointer crosses past the end knob
+   * (modulo the bar width). At that point, the start knob value will be updated
+   * to 6:00 and remain at 6:00 until the pointer passes the 6:00 location.
+   *
+   * When |fromUserGesture| is false, the input is coming from a key event. As
+   * soon as the |updatedValue| is closer than the minimum distance, the knob
+   * is moved to the other side of the other knob. For example, with a minimum
+   * distance of 1 hour, the start knob is at 8:00 am, and the end knob is at
+   * 7:00, if the start knob value is decreased, then the start knob will be
+   * updated to 6:00.
+   * @param {number} updatedValue
+   * @param {boolean} fromUserGesture
    * @private
    */
-  incrementPref_: function(prefPath, increment) {
-    let value = this.getPref(prefPath).value + increment;
-
+  updatePref_: function(updatedValue, fromUserGesture) {
+    const prefPath = assert(this.getFocusedKnobPrefPathIfAny_());
     const otherValue = this.getOtherKnobPrefValue_(prefPath);
-    if (otherValue > value &&
-        ((otherValue - value) < MIN_KNOBS_DISTANCE_MINUTES)) {
-      // We are incrementing the minutes offset moving towards the other knob.
-      // We have a minimum 60 minutes overlap threshold. Move this knob to the
-      // other side of the other knob.
-      //
-      // Was:
-      // ------ (+) --- 59 MIN --- + ------->>
-      //
-      // Now:
-      // ------ + --- 60 MIN --- (+) ------->>
-      //
-      // (+) ==> Knob being moved.
-      value = otherValue + MIN_KNOBS_DISTANCE_MINUTES;
-    }
+
+    const totalMinutes = TOTAL_MINUTES_PER_DAY;
+    const minDistance = MIN_KNOBS_DISTANCE_MINUTES;
+    if (modulo(otherValue - updatedValue, totalMinutes) < minDistance)
+      updatedValue = otherValue + (fromUserGesture ? -1 : 1) * minDistance;
+    else if (modulo(updatedValue - otherValue, totalMinutes) < minDistance)
+      updatedValue = otherValue + (fromUserGesture ? 1 : -1) * minDistance;
 
     // The knobs are allowed to wrap around.
-    this.setPrefValue(prefPath, (value % TOTAL_MINUTES_PER_DAY));
+    this.setPrefValue(prefPath, modulo(updatedValue, TOTAL_MINUTES_PER_DAY));
   },
 
   /**
-   * Decrements the value of the pref whose path is given by |prefPath| by the
-   * amount given in |decrement|.
-   * @param {string} prefPath
-   * @param {number} decrement
+   * @param {Element} knob
+   * @returns {?string}
    * @private
    */
-  decrementPref_: function(prefPath, decrement) {
-    let value =
-        /** @type {number} */ (this.getPref(prefPath).value) - decrement;
+  getPrefPath_: function(knob) {
+    if (knob == this.$.startKnob)
+      return 'ash.night_light.custom_start_time';
 
-    const otherValue = this.getOtherKnobPrefValue_(prefPath);
-    if (value > otherValue &&
-        ((value - otherValue) < MIN_KNOBS_DISTANCE_MINUTES)) {
-      // We are decrementing the minutes offset moving towards the other knob.
-      // We have a minimum 60 minutes overlap threshold. Move this knob to the
-      // other side of the other knob.
-      //
-      // Was:
-      // <<------ + --- 59 MIN --- (+) -------
-      //
-      // Now:
-      // <<------ (+) --- 60 MIN --- + ------
-      //
-      // (+) ==> Knob being moved.
-      value = otherValue - MIN_KNOBS_DISTANCE_MINUTES;
-    }
+    if (knob == this.$.endKnob)
+      return 'ash.night_light.custom_end_time';
 
-    // The knobs are allowed to wrap around.
-    if (value < 0)
-      value += TOTAL_MINUTES_PER_DAY;
+    return null;
+  },
 
-    this.setPrefValue(prefPath, Math.abs(value) % TOTAL_MINUTES_PER_DAY);
+  /**
+   * @param {Element} knob
+   * @returns {?number}
+   * @private
+   */
+  getPrefValue_: function(knob) {
+    const path = this.getPrefPath_(knob);
+    return path ? /** @type {number} */ (this.getPref(path).value) : null;
   },
 
   /**
@@ -486,46 +530,7 @@ Polymer({
    * @private
    */
   getFocusedKnobPrefPathIfAny_: function() {
-    const focusedElement = this.shadowRoot.activeElement;
-    if (focusedElement == this.$.startKnob)
-      return 'ash.night_light.custom_start_time';
-
-    if (focusedElement == this.$.endKnob)
-      return 'ash.night_light.custom_end_time';
-
-    return null;
-  },
-
-  /**
-   * Handles the 'left' key event.
-   * @private
-   */
-  onLeftKey_: function(e) {
-    e.preventDefault();
-    const knobPref = this.getFocusedKnobPrefPathIfAny_();
-    if (!knobPref)
-      return;
-
-    if (this.isRTL_)
-      this.incrementPref_(knobPref, 1);
-    else
-      this.decrementPref_(knobPref, 1);
-  },
-
-  /**
-   * Handles the 'right' key event.
-   * @private
-   */
-  onRightKey_: function(e) {
-    e.preventDefault();
-    const knobPref = this.getFocusedKnobPrefPathIfAny_();
-    if (!knobPref)
-      return;
-
-    if (this.isRTL_)
-      this.decrementPref_(knobPref, 1);
-    else
-      this.incrementPref_(knobPref, 1);
+    return this.getPrefPath_(this.shadowRoot.activeElement);
   },
 
   /**
@@ -558,10 +563,34 @@ Polymer({
   },
 
   /**
-   * Handles focus events on the start and end knobs.
+   * @param {!Event} event
    * @private
    */
-  onFocus_: function() {
+  onFocus_: function(event) {
+    this.handleKnobEvent_(event);
+  },
+
+  /**
+   * Handles focus, drag and key events on the start and end knobs.
+   * If |overrideElement| is provided, it will be the knob that gains focus and
+   * and the ripple. Otherwise, the knob is determined from the |event|.
+   * @param {!Event} event
+   * @param {Element=} overrideElement
+   * @private
+   */
+  handleKnobEvent_: function(event, overrideElement) {
+    const knob = overrideElement ||
+        event.path.find(el => el.classList && el.classList.contains('knob'));
+    if (!knob) {
+      event.preventDefault();
+      return;
+    }
+
+    if (this._rippleContainer != knob) {
+      this.removeRipple_();
+      knob.focus();
+    }
+
     this.ensureRipple();
 
     if (this.hasRipple()) {
@@ -575,9 +604,62 @@ Polymer({
    * @private
    */
   onBlur_: function() {
+    this.removeRipple_();
+  },
+
+  /**
+   * Removes ripple if one exists.
+   * @private
+   */
+  removeRipple_: function() {
     if (this.hasRipple()) {
       this._ripple.remove();
       this._ripple = null;
+    }
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onKeyDown_: function(event) {
+    const activeElement = this.shadowRoot.activeElement;
+    if (event.key == 'Tab') {
+      if (event.shiftKey && this.$.endKnob == activeElement) {
+        event.preventDefault();
+        this.handleKnobEvent_(event, this.$.startKnob);
+        return;
+      }
+
+      if (!event.shiftKey && this.$.startKnob == activeElement) {
+        event.preventDefault();
+        this.handleKnobEvent_(event, this.$.endKnob);
+      }
+      return;
+    }
+
+    if (event.metaKey || event.shiftKey || event.altKey || event.ctrlKey)
+      return;
+
+    const deltaKeyMap = {
+      ArrowDown: -1,
+      ArrowLeft: this.isRTL_ ? 1 : -1,
+      ArrowRight: this.isRTL_ ? -1 : 1,
+      ArrowUp: 1,
+      PageDown: -15,
+      PageUp: 15,
+    };
+
+    if (event.key in deltaKeyMap) {
+      this.handleKnobEvent_(event);
+
+      event.preventDefault();
+      const value = this.getPrefValue_(activeElement);
+      if (value == null)
+        return;
+
+      const delta = deltaKeyMap[event.key];
+      this.updatePref_(value + delta, false);
     }
   },
 

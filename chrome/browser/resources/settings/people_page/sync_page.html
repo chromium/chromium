@@ -7,12 +7,12 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="sync_browser_proxy.html">
 <link rel="import" href="../icons.html">
 <link rel="import" href="../privacy_page/personalization_options.html">
@@ -75,6 +75,11 @@
         margin-right: 8px;
       }
 
+      #disabled-by-admin-icon {
+        text-align: center;
+        width: 40px;
+      }
+
 <if expr="not chromeos">
       #toast {
         color: white;
@@ -103,6 +108,11 @@
       </settings-sync-account-control>
     </template>
 </if>
+
+    <div class="settings-box first" hidden="[[!syncStatus.managed]]">
+      <iron-icon id="disabled-by-admin-icon" icon="cr20:domain"></iron-icon>
+      <div class="middle">$i18n{syncDisabledByAdministrator}</div>
+    </div>
 
     <template is="dom-if" if="[[shouldShowExistingPassphraseBelowAccount_(
       unifiedConsentEnabled, syncPrefs.passphraseRequired)]]">
@@ -444,37 +454,24 @@
 
           <div id="encryptionRadioGroupContainer" class="list-frame"
               hidden="[[syncPrefs.passphraseRequired]]">
-            <paper-radio-group disabled$="[[syncPrefs.encryptAllData]]"
+            <cr-radio-group disabled$="[[syncPrefs.encryptAllData]]"
                 selected="[[selectedEncryptionRadio_(
                     syncPrefs.passphraseTypeIsCustom)]]"
-                selectable="cr-radio-button"
-                on-paper-radio-group-changed=
-                    "onEncryptionRadioSelectionChanged_">
-              <cr-radio-button name="encrypt-with-google"
-                  class="list-item" disabled="[[syncPrefs.encryptAllData]]"
+                on-selected-changed="onEncryptionRadioSelectionChanged_">
+              <cr-radio-button name="encrypt-with-google" class="list-item"
                   aria-label="$i18n{encryptWithGoogleCredentialsLabel}">
                 $i18n{encryptWithGoogleCredentialsLabel}
               </cr-radio-button>
-              <template is="dom-if" if="[[syncPrefs.fullEncryptionBody]]">
-                <cr-radio-button name="encrypt-with-passphrase"
-                    class="list-item" disabled="[[syncPrefs.encryptAllData]]"
-                    aria-labelledby="fullEncryptionBody">
-                  <span id="fullEncryptionBody">
-                    [[syncPrefs.fullEncryptionBody]]
-                  </span>
-                </cr-radio-button>
-              </template>
-              <template is="dom-if" if="[[!syncPrefs.fullEncryptionBody]]">
-                <cr-radio-button name="encrypt-with-passphrase"
-                    class="list-item" disabled="[[syncPrefs.encryptAllData]]"
-                    aria-labelledby="encryptWithSyncPassphraseLabel">
-                  <span id="encryptWithSyncPassphraseLabel"
-                      on-click="onLearnMoreTap_">
-                    $i18nRaw{encryptWithSyncPassphraseLabel}
-                  </span>
-                </cr-radio-button>
-              </template>
-            </paper-radio-group>
+              <cr-radio-button name="encrypt-with-passphrase" class="list-item">
+                <span hidden="[[!syncPrefs.fullEncryptionBody]]">
+                  [[syncPrefs.fullEncryptionBody]]
+                </span>
+                <span on-click="onLearnMoreTap_"
+                    hidden="[[syncPrefs.fullEncryptionBody]]">
+                  $i18nRaw{encryptWithSyncPassphraseLabel}
+                </span>
+              </cr-radio-button>
+            </cr-radio-group>
           </div>
 
           <template is="dom-if" if="[[creatingNewPassphrase_]]">

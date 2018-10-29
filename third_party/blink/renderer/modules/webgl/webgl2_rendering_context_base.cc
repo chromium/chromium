@@ -589,7 +589,7 @@ bool WebGL2RenderingContextBase::CheckAndTranslateAttachments(
   if (!framebuffer_binding) {
     // For the default framebuffer, translate GL_COLOR/GL_DEPTH/GL_STENCIL.
     // The default framebuffer of WebGL is not fb 0, it is an internal fbo.
-    for (size_t i = 0; i < attachments.size(); ++i) {
+    for (wtf_size_t i = 0; i < attachments.size(); ++i) {
       switch (attachments[i]) {
         case GL_COLOR:
           attachments[i] = GL_COLOR_ATTACHMENT0;
@@ -758,7 +758,7 @@ void WebGL2RenderingContextBase::readPixels(
     GLenum format,
     GLenum type,
     MaybeShared<DOMArrayBufferView> pixels,
-    GLuint offset) {
+    long long offset) {
   if (isContextLost())
     return;
   if (bound_pixel_pack_buffer_.Get()) {
@@ -4035,7 +4035,7 @@ void WebGL2RenderingContextBase::deleteSampler(WebGLSampler* sampler) {
   if (isContextLost())
     return;
 
-  for (size_t i = 0; i < sampler_units_.size(); ++i) {
+  for (wtf_size_t i = 0; i < sampler_units_.size(); ++i) {
     if (sampler == sampler_units_[i]) {
       sampler_units_[i] = nullptr;
       ContextGL()->BindSampler(i, 0);
@@ -4465,8 +4465,8 @@ void WebGL2RenderingContextBase::transformFeedbackVaryings(
   Vector<CString> keep_alive;  // Must keep these instances alive while looking
                                // at their data
   Vector<const char*> varying_strings;
-  for (size_t i = 0; i < varyings.size(); ++i) {
-    keep_alive.push_back(varyings[i].Ascii());
+  for (const String& varying : varyings) {
+    keep_alive.push_back(varying.Ascii());
     varying_strings.push_back(keep_alive.back().data());
   }
 
@@ -4746,8 +4746,8 @@ Vector<GLuint> WebGL2RenderingContextBase::getUniformIndices(
   Vector<CString> keep_alive;  // Must keep these instances alive while looking
                                // at their data
   Vector<const char*> uniform_strings;
-  for (size_t i = 0; i < uniform_names.size(); ++i) {
-    keep_alive.push_back(uniform_names[i].Ascii());
+  for (const String& uniform_name : uniform_names) {
+    keep_alive.push_back(uniform_name.Ascii());
     uniform_strings.push_back(keep_alive.back().data());
   }
 
@@ -4795,9 +4795,9 @@ ScriptValue WebGL2RenderingContextBase::getActiveUniforms(
                             &active_uniforms);
 
   GLuint active_uniforms_unsigned = active_uniforms;
-  size_t size = uniform_indices.size();
-  for (size_t i = 0; i < size; ++i) {
-    if (uniform_indices[i] >= active_uniforms_unsigned) {
+  wtf_size_t size = uniform_indices.size();
+  for (GLuint index : uniform_indices) {
+    if (index >= active_uniforms_unsigned) {
       SynthesizeGLError(GL_INVALID_VALUE, "getActiveUniforms",
                         "uniform index greater than ACTIVE_UNIFORMS");
       return ScriptValue::CreateNull(script_state);
@@ -4811,13 +4811,13 @@ ScriptValue WebGL2RenderingContextBase::getActiveUniforms(
   switch (return_type) {
     case kEnumType: {
       Vector<GLenum> enum_result(size);
-      for (size_t i = 0; i < size; ++i)
+      for (wtf_size_t i = 0; i < size; ++i)
         enum_result[i] = static_cast<GLenum>(result[i]);
       return WebGLAny(script_state, enum_result);
     }
     case kUnsignedIntType: {
       Vector<GLuint> uint_result(size);
-      for (size_t i = 0; i < size; ++i)
+      for (wtf_size_t i = 0; i < size; ++i)
         uint_result[i] = static_cast<GLuint>(result[i]);
       return WebGLAny(script_state, uint_result);
     }
@@ -4826,7 +4826,7 @@ ScriptValue WebGL2RenderingContextBase::getActiveUniforms(
     }
     case kBoolType: {
       Vector<bool> bool_result(size);
-      for (size_t i = 0; i < size; ++i)
+      for (wtf_size_t i = 0; i < size; ++i)
         bool_result[i] = static_cast<bool>(result[i]);
       return WebGLAny(script_state, bool_result);
     }
@@ -5445,7 +5445,7 @@ bool WebGL2RenderingContextBase::ValidateAndUpdateBufferBindBaseTarget(
           max_bound_uniform_buffer_index_ = index;
       } else if (max_bound_uniform_buffer_index_ > 0 &&
                  index == max_bound_uniform_buffer_index_) {
-        size_t i = max_bound_uniform_buffer_index_ - 1;
+        wtf_size_t i = max_bound_uniform_buffer_index_ - 1;
         for (; i > 0; --i) {
           if (bound_indexed_uniform_buffers_[i].Get())
             break;

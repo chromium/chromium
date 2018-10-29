@@ -109,8 +109,8 @@ typedef struct internal_state {
     ulg   gzindex;       /* where in extra, name, or comment */
     Byte  method;        /* can only be DEFLATED */
     int   last_flush;    /* value of flush param for previous deflate call */
-    unsigned zalign(16) crc0[4 * 5];
-                /* used by deflate.c: */
+    unsigned crc0[4 * 5];
+    /* used by deflate.c: */
 
     uInt  w_size;        /* LZ77 window size (32K by default) */
     uInt  w_bits;        /* log2(w_size)  (8..16) */

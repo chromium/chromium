@@ -50,7 +50,8 @@ void MojoRenderer::Initialize(MediaResource* media_resource,
 
   if (encountered_error_) {
     task_runner_->PostTask(
-        FROM_HERE, base::Bind(init_cb, PIPELINE_ERROR_INITIALIZATION_FAILED));
+        FROM_HERE,
+        base::BindOnce(init_cb, PIPELINE_ERROR_INITIALIZATION_FAILED));
     return;
   }
 
@@ -132,11 +133,11 @@ void MojoRenderer::SetCdm(CdmContext* cdm_context,
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(cdm_context);
-  DCHECK(!cdm_attached_cb.is_null());
-  DCHECK(cdm_attached_cb_.is_null());
+  DCHECK(cdm_attached_cb);
+  DCHECK(!cdm_attached_cb_);
 
   if (encountered_error_) {
-    task_runner_->PostTask(FROM_HERE, base::Bind(cdm_attached_cb, false));
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(cdm_attached_cb, false));
     return;
   }
 
@@ -144,7 +145,7 @@ void MojoRenderer::SetCdm(CdmContext* cdm_context,
   if (cdm_id == CdmContext::kInvalidCdmId) {
     DVLOG(2) << "MojoRenderer only works with remote CDMs but the CDM ID "
                 "is invalid.";
-    task_runner_->PostTask(FROM_HERE, base::Bind(cdm_attached_cb, false));
+    task_runner_->PostTask(FROM_HERE, base::BindOnce(cdm_attached_cb, false));
     return;
   }
 
@@ -159,8 +160,8 @@ void MojoRenderer::Flush(const base::Closure& flush_cb) {
   DVLOG(2) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(remote_renderer_.is_bound());
-  DCHECK(!flush_cb.is_null());
-  DCHECK(flush_cb_.is_null());
+  DCHECK(flush_cb);
+  DCHECK(!flush_cb_);
 
   if (encountered_error_) {
     task_runner_->PostTask(FROM_HERE, flush_cb);
@@ -251,7 +252,7 @@ void MojoRenderer::InitiateScopedSurfaceRequest(
 void MojoRenderer::OnError() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(init_cb_.is_null());
+  DCHECK(!init_cb_);
 
   encountered_error_ = true;
 
@@ -359,15 +360,15 @@ void MojoRenderer::BindRemoteRendererIfNeeded() {
 void MojoRenderer::OnInitialized(media::RendererClient* client, bool success) {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!init_cb_.is_null());
+  DCHECK(init_cb_);
 
   // Only set |client_| after initialization succeeded. No client methods should
   // be called before this.
   if (success)
     client_ = client;
 
-  base::ResetAndReturn(&init_cb_).Run(
-      success ? PIPELINE_OK : PIPELINE_ERROR_INITIALIZATION_FAILED);
+  std::move(init_cb_).Run(success ? PIPELINE_OK
+                                  : PIPELINE_ERROR_INITIALIZATION_FAILED);
 
   if (client_ && pending_stats_.has_value())
     client_->OnStatisticsUpdate(pending_stats_.value());
@@ -377,31 +378,31 @@ void MojoRenderer::OnInitialized(media::RendererClient* client, bool success) {
 void MojoRenderer::OnFlushed() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!flush_cb_.is_null());
+  DCHECK(flush_cb_);
 
-  base::ResetAndReturn(&flush_cb_).Run();
+  std::move(flush_cb_).Run();
 }
 
 void MojoRenderer::OnCdmAttached(bool success) {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!cdm_attached_cb_.is_null());
+  DCHECK(cdm_attached_cb_);
 
-  base::ResetAndReturn(&cdm_attached_cb_).Run(success);
+  std::move(cdm_attached_cb_).Run(success);
 }
 
 void MojoRenderer::CancelPendingCallbacks() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (!init_cb_.is_null())
-    base::ResetAndReturn(&init_cb_).Run(PIPELINE_ERROR_INITIALIZATION_FAILED);
+  if (init_cb_)
+    std::move(init_cb_).Run(PIPELINE_ERROR_INITIALIZATION_FAILED);
 
-  if (!flush_cb_.is_null())
-    base::ResetAndReturn(&flush_cb_).Run();
+  if (flush_cb_)
+    std::move(flush_cb_).Run();
 
-  if (!cdm_attached_cb_.is_null())
-    base::ResetAndReturn(&cdm_attached_cb_).Run(false);
+  if (cdm_attached_cb_)
+    std::move(cdm_attached_cb_).Run(false);
 }
 
 }  // namespace media

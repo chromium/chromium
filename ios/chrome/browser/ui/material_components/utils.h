@@ -5,13 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_MATERIAL_COMPONENTS_UTILS_H_
 #define IOS_CHROME_BROWSER_UI_MATERIAL_COMPONENTS_UTILS_H_
 
-@class MDCAppBar;
 @class MDCAppBarViewController;
 @class UIScrollView;
 
-// Styles the passed app bar for displaying in Settings, history, bookmarks,
-// etc. It follows the card style for collection views.
-void ConfigureAppBarWithCardStyle(MDCAppBar* appBar);
 // Styles the passed app bar view controller for displaying in Settings,
 // history, bookmarks, etc. It follows the card style for collection views.
 void ConfigureAppBarViewControllerWithCardStyle(

@@ -77,11 +77,11 @@ VideoFrameTexture::VideoFrameTexture(uint32_t texture_target,
     : texture_target_(texture_target),
       texture_id_(texture_id),
       no_longer_needed_cb_(no_longer_needed_cb) {
-  DCHECK(!no_longer_needed_cb_.is_null());
+  DCHECK(no_longer_needed_cb_);
 }
 
 VideoFrameTexture::~VideoFrameTexture() {
-  base::ResetAndReturn(&no_longer_needed_cb_).Run();
+  std::move(no_longer_needed_cb_).Run();
 }
 
 RenderingHelper::RenderedVideo::RenderedVideo() {}

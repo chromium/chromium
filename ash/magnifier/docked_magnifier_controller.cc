@@ -16,6 +16,8 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
+#include "ash/wm/overview/window_selector_controller.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "base/numerics/ranges.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -27,6 +29,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/reflector.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -84,7 +87,7 @@ gfx::Rect GetViewportWidgetBoundsInRoot(aura::Window* root) {
 
   auto root_bounds = root->GetBoundsInRootWindow();
   root_bounds.set_height(root_bounds.height() /
-                         DockedMagnifierController::kScreenHeightDevisor);
+                         DockedMagnifierController::kScreenHeightDivisor);
   return root_bounds;
 }
 
@@ -330,7 +333,15 @@ void DockedMagnifierController::OnTouchEvent(ui::TouchEvent* event) {
 
 void DockedMagnifierController::OnCaretBoundsChanged(
     const ui::TextInputClient* client) {
-  DCHECK(GetEnabled());
+  if (!GetEnabled()) {
+    // There is a small window between the time the "enabled" pref is updated to
+    // false, and the time we're notified with this change, upon which we remove
+    // the magnifier's viewport widget and stop observing the input method.
+    // During this short interval, if focus is in an editable element, the input
+    // method can notify us here. In this case, we should just return.
+    return;
+  }
+
   aura::client::DragDropClient* drag_drop_client =
       aura::client::GetDragDropClient(current_source_root_window_);
   if (drag_drop_client && drag_drop_client->IsDragDropInProgress()) {
@@ -517,17 +528,38 @@ void DockedMagnifierController::InitFromUserPrefs() {
 }
 
 void DockedMagnifierController::OnEnabledPrefChanged() {
-  Shell* shell = Shell::Get();
   // When switching from the signin screen to a newly created profile while the
-  // Docked Magnifier is enabled, the prefs will copied from the signin profile
-  // to the user profile, and the Docked Magnifier will remain enabled. We don't
-  // want to redo the below operations if the status doesn't change, for example
-  // readding the same observer to the WindowTreeHostManager will cause a crash
-  // on DCHECK on debug builds.
+  // Docked Magnifier is enabled, the prefs will be copied from the signin
+  // profile to the user profile, and the Docked Magnifier will remain enabled.
+  // We don't want to redo the below operations if the status doesn't change,
+  // for example readding the same observer to the WindowTreeHostManager will
+  // cause a crash on DCHECK on debug builds.
   const bool current_enabled = !!current_source_root_window_;
   const bool new_enabled = GetEnabled();
   if (current_enabled == new_enabled)
     return;
+
+  // Toggling the status of the docked magnifier, changes the display's work
+  // area. However, display's work area changes are not allowed while overview
+  // mode is active (See https://crbug.com/834400). For this reason, we exit
+  // overview mode, before we actually update the state of docked magnifier
+  // below. https://crbug.com/894256.
+  Shell* shell = Shell::Get();
+  auto* window_selector_controller = shell->window_selector_controller();
+  if (window_selector_controller->IsSelecting()) {
+    auto* split_view_controller = shell->split_view_controller();
+    if (split_view_controller->IsSplitViewModeActive()) {
+      // In this case, we're in a single-split-view mode, i.e. a window is
+      // snapped to one side of the split view, while the other side has the
+      // window selector active.
+      // We need to exit split view as well as exiting overview mode, otherwise
+      // we'll be in an invalid state.
+      split_view_controller->EndSplitView(
+          SplitViewController::EndReason::kNormal);
+    }
+
+    window_selector_controller->ToggleOverview();
+  }
 
   if (new_enabled) {
     // Enabling the Docked Magnifier disables the Fullscreen Magnifier.

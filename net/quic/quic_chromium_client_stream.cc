@@ -18,6 +18,7 @@
 #include "net/spdy/spdy_log_util.h"
 #include "net/third_party/quic/core/http/quic_spdy_session.h"
 #include "net/third_party/quic/core/http/spdy_utils.h"
+#include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/core/quic_write_blocked_list.h"
 
 namespace net {
@@ -400,14 +401,16 @@ int QuicChromiumClientStream::Handle::HandleIOComplete(int rv) {
 QuicChromiumClientStream::QuicChromiumClientStream(
     quic::QuicStreamId id,
     quic::QuicSpdyClientSessionBase* session,
+    quic::StreamType type,
     const NetLogWithSource& net_log,
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : quic::QuicSpdyStream(id, session),
+    : quic::QuicSpdyStream(id, session, type),
       net_log_(net_log),
       handle_(nullptr),
       headers_delivered_(false),
       initial_headers_sent_(false),
       session_(session),
+      quic_version_(session->connection()->transport_version()),
       can_migrate_to_cellular_network_(true),
       initial_headers_frame_len_(0),
       trailing_headers_frame_len_(0),
@@ -681,7 +684,7 @@ void QuicChromiumClientStream::DisableConnectionMigrationToCellularNetwork() {
 }
 
 bool QuicChromiumClientStream::IsFirstStream() {
-  return id() == quic::kHeadersStreamId + 2;
+  return id() == quic::QuicUtils::GetHeadersStreamId(quic_version_) + 2;
 }
 
 }  // namespace net

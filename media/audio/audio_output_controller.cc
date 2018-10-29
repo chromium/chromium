@@ -96,6 +96,7 @@ AudioOutputController::AudioOutputController(
       params_(params),
       handler_(handler),
       task_runner_(audio_manager->GetTaskRunner()),
+      construction_time_(base::TimeTicks::Now()),
       output_device_id_(output_device_id),
       stream_(NULL),
       diverting_to_stream_(NULL),
@@ -118,6 +119,8 @@ AudioOutputController::~AudioOutputController() {
   CHECK_EQ(kClosed, state_);
   CHECK_EQ(nullptr, stream_);
   CHECK(duplication_targets_.empty());
+  UMA_HISTOGRAM_LONG_TIMES("Media.AudioOutputController.LifeTime",
+                           base::TimeTicks::Now() - construction_time_);
 }
 
 // static
@@ -579,10 +582,7 @@ void AudioOutputController::DoStartDiverting(AudioOutputStream* to_stream) {
 
   DCHECK(!diverting_to_stream_);
   diverting_to_stream_ = to_stream;
-  // Note: OnDeviceChange() will engage the "re-create" process, which will
-  // detect and use the alternate AudioOutputStream rather than create a new one
-  // via AudioManager.
-  OnDeviceChange();
+  DoStartOrStopDivertingInternal();
 }
 
 void AudioOutputController::DoStopDiverting() {
@@ -591,11 +591,41 @@ void AudioOutputController::DoStopDiverting() {
   if (state_ == kClosed)
     return;
 
-  // Note: OnDeviceChange() will cause the existing stream (the consumer of the
-  // diverted audio data) to be closed, and diverting_to_stream_ will be set
-  // back to NULL.
-  OnDeviceChange();
+  DoStartOrStopDivertingInternal();
   DCHECK(!diverting_to_stream_);
+}
+
+void AudioOutputController::DoStartOrStopDivertingInternal() {
+  TRACE_EVENT0("audio",
+               "AudioOutputController::DoStartOrStopDivertingInternal");
+
+  handler_->OnLog(base::StringPrintf(
+      "AOC::DoStartOrStopDivertingInternal() will %s diverting",
+      (stream_ == diverting_to_stream_) ? "stop" : "start"));
+
+  // Re-create the stream: First, shut down an existing stream (if any), then
+  // attempt to open either: a) the |diverting_to_stream_|, or b) a normal
+  // stream from the AudioManager. If that fails, error-out the controller.
+  // Otherwise, set the volume and restore playback if the prior stream was
+  // playing.
+  const bool restore_playback = (state_ == kPlaying);
+  DoStopCloseAndClearStream();  // Calls RemoveOutputDeviceChangeListener().
+  DCHECK_EQ(kEmpty, state_);
+  stream_ = diverting_to_stream_ ? diverting_to_stream_
+                                 : audio_manager_->MakeAudioOutputStreamProxy(
+                                       params_, output_device_id_);
+  if (!stream_ || !stream_->Open()) {
+    DoStopCloseAndClearStream();
+    state_ = kError;
+    handler_->OnControllerError();
+    return;
+  }
+  if (stream_ != diverting_to_stream_)
+    audio_manager_->AddOutputDeviceChangeListener(this);
+  stream_->SetVolume(volume_);
+  state_ = kCreated;
+  if (restore_playback)
+    DoPlay();
 }
 
 void AudioOutputController::DoStartDuplicating(AudioPushSink* to_stream) {

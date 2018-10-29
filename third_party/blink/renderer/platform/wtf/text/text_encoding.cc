@@ -45,7 +45,7 @@ TextEncoding::TextEncoding(const String& name)
 }
 
 String TextEncoding::Decode(const char* data,
-                            size_t length,
+                            wtf_size_t length,
                             bool stop_on_error,
                             bool& saw_error) const {
   if (!name_)

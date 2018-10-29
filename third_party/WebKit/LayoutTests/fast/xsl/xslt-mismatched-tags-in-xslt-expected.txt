@@ -8,5 +8,3 @@ CONSOLE ERROR: line 12: Opening and ending tag mismatch: template line 4 and sty
 
 CONSOLE ERROR: line 12: Premature end of data in tag stylesheet line 2
 
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600

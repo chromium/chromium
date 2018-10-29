@@ -13,15 +13,15 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js',
  * @constructor
  * @extends {ChromeVoxE2ETest}
  */
-function CvoxTtsBackgroundTest() {
+function ChromeVoxTtsBackgroundTest() {
   ChromeVoxE2ETest.call(this);
 }
 
-CvoxTtsBackgroundTest.prototype = {
+ChromeVoxTtsBackgroundTest.prototype = {
   __proto__: ChromeVoxE2ETest.prototype
 };
 
-SYNC_TEST_F('CvoxTtsBackgroundTest', 'Preprocess', function() {
+SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Preprocess', function() {
   var tts = new cvox.TtsBackground(false);
   var preprocess = tts.preprocess.bind(tts);
 
@@ -44,7 +44,7 @@ SYNC_TEST_F('CvoxTtsBackgroundTest', 'Preprocess', function() {
   assertEquals('bullet 2 bullets', preprocess('\u2022 \u2022\u2022'));
 });
 
-TEST_F('CvoxTtsBackgroundTest', 'UpdateVoice', function() {
+TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {
   var tts = new cvox.TtsBackground(false);
   var voices = [
     {lang: 'zh-CN', voiceName: 'Chinese'},
@@ -95,8 +95,8 @@ TEST_F('CvoxTtsBackgroundTest', 'UpdateVoice', function() {
 });
 
 // This test only works if Google tts is installed. Run it locally.
-TEST_F(
-    'CvoxTtsBackgroundTest', 'DISABLED_EmptyStringCallsCallbacks', function() {
+TEST_F('ChromeVoxTtsBackgroundTest',
+       'DISABLED_EmptyStringCallsCallbacks', function() {
   var tts = new cvox.TtsBackground(false);
   var startCalls = 0, endCalls = 0;
   assertCallsCallbacks = function(text, speakCalls) {

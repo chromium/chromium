@@ -8,6 +8,7 @@ include_rules = [
   "+components/contextual_search/content/renderer",
   "+components/crash/core/common/crash_key.h",
   "+components/crx_file",
+  "+components/data_reduction_proxy/content/common",
   "+components/data_reduction_proxy/content/renderer",
   "+components/data_reduction_proxy/core/common",
   "+components/dom_distiller/content/common",
@@ -60,6 +61,7 @@ include_rules = [
   "+storage/common",
   "+third_party/blink/public/mojom",
   "+third_party/metrics_proto",
+  "+third_party/widevine/cdm/buildflags.h",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
 ]
 
@@ -68,5 +70,6 @@ specific_include_rules = {
     "+chrome/browser/profiles/profile_io_data.h",
     "+chrome/browser/ui",
     "+chrome/browser/ui/tabs",
+    "+content/public/browser/browser_task_traits.h",
   ],
 }

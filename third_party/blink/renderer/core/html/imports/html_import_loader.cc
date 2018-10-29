@@ -173,7 +173,7 @@ void HTMLImportLoader::DidFinishLoading() {
 }
 
 void HTMLImportLoader::MoveToFirst(HTMLImportChild* import) {
-  size_t position = imports_.Find(import);
+  wtf_size_t position = imports_.Find(import);
   DCHECK_NE(kNotFound, position);
   imports_.EraseAt(position);
   imports_.insert(0, import);

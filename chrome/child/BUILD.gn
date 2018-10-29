@@ -6,8 +6,8 @@ static_library("child") {
   sources = [
     "pdf_child_init.cc",
     "pdf_child_init.h",
-    "v8_breakpad_support_win.cc",
-    "v8_breakpad_support_win.h",
+    "v8_crashpad_support_win.cc",
+    "v8_crashpad_support_win.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

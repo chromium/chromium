@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutSVGRoot {svg} at (0,0) size 800x600
-    LayoutSVGText {text} at (10,10) size 103.58x13 contains 1 chunk(s)
-      LayoutSVGInlineText {#text} at (10,10) size 103.58x13
-        chunk 1 text run 1 at (10.00,20.00) startOffset 0 endOffset 26 width 103.59: "This line should be green."

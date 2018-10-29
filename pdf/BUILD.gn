@@ -19,7 +19,19 @@ buildflag_header("buildflags") {
 if (enable_pdf) {
   pdf_engine = 0  # 0 PDFium
 
+  config("pdf_common_config") {
+    if (pdf_engine == 0) {
+      defines = [ "PDFIUM_PRINT_TEXT_WITH_GDI" ]
+      if (pdf_enable_xfa) {
+        defines += [ "PDF_ENABLE_XFA" ]
+      }
+
+      include_dirs = [ "//third_party/pdfium" ]
+    }
+  }
+
   jumbo_static_library("pdf") {
+    configs += [ ":pdf_common_config" ]
     deps = [
       "//base",
       "//gin",
@@ -65,9 +77,6 @@ if (enable_pdf) {
       "url_loader_wrapper_impl.h",
     ]
 
-    include_dirs = []
-    defines = []
-
     if (pdf_engine == 0) {
       deps += [
         "//pdf/pdfium/fuzzers",
@@ -100,17 +109,27 @@ if (enable_pdf) {
         "pdfium/pdfium_unsupported_features.cc",
         "pdfium/pdfium_unsupported_features.h",
       ]
-
-      include_dirs += [ "//third_party/pdfium" ]
-
-      defines += [ "PDFIUM_PRINT_TEXT_WITH_GDI" ]
-      if (pdf_enable_xfa) {
-        defines += [ "PDF_ENABLE_XFA" ]
-      }
     }
   }
 
+  source_set("pdf_test_utils") {
+    testonly = true
+    sources = [
+      "test/test_client.cc",
+      "test/test_client.h",
+      "test/test_document_loader.cc",
+      "test/test_document_loader.h",
+    ]
+
+    deps = [
+      ":pdf",
+      "//base",
+    ]
+  }
+
   test("pdf_unittests") {
+    testonly = true
+    configs += [ ":pdf_common_config" ]
     sources = [
       "chunk_stream_unittest.cc",
       "document_loader_impl_unittest.cc",
@@ -121,6 +140,7 @@ if (enable_pdf) {
 
     deps = [
       ":pdf",
+      ":pdf_test_utils",
       "//base",
       "//base/test:test_support",
       "//ppapi/c",
@@ -139,8 +159,10 @@ if (enable_pdf) {
       sources += [
         "pdfium/findtext_unittest.cc",
         "pdfium/pdfium_engine_exports_unittest.cc",
+        "pdfium/pdfium_print_unittest.cc",
+        "pdfium/pdfium_test_base.cc",
+        "pdfium/pdfium_test_base.h",
       ]
-      include_dirs = [ "//third_party/pdfium" ]
 
       if (v8_use_external_startup_data) {
         data += [

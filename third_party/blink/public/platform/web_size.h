@@ -36,7 +36,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/geometry/int_size.h"  // nogncheck
 #else
 #include <algorithm>
 #include <cmath>

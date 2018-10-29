@@ -14,6 +14,7 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/mojom/constants.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/service_manager/public/cpp/connector.h"
 
@@ -76,21 +77,20 @@ void SandboxedRarAnalyzer::PrepareFileToAnalyze() {
     return;
   }
 
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
-      base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFile, this,
-                     std::move(file)));
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFile,
+                                          this, std::move(file)));
 }
 
 void SandboxedRarAnalyzer::ReportFileFailure() {
   DCHECK(!analyzer_ptr_);
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(callback_, safe_browsing::ArchiveAnalyzerResults()));
 }
 
 std::string SandboxedRarAnalyzer::DebugString() const {
-  return base::StringPrintf("path: %" PRIsFP "; analyzer_ptr_: %p",
+  return base::StringPrintf("path: %" PRFilePath "; analyzer_ptr_: %p",
                             file_path_.value().c_str(), analyzer_ptr_.get());
 }
 

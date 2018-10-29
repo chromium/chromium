@@ -46,7 +46,7 @@ class CommandLine;
 //   }
 //
 //   // Note: |MULTIPROCESS_TEST_MAIN()| is defined in
-//   // testing/multi_process_function_list.h.
+//   // testing/multiprocess_func_list.h.
 //   MULTIPROCESS_TEST_MAIN(a_test_func) {
 //     // Code here runs in a child process....
 //     return 0;

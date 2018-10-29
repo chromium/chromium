@@ -25,6 +25,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,7 +55,8 @@ class ProfilePolicyConnectorTest : public testing::Test {
     cloud_policy_store_.NotifyStoreLoaded();
     const auto task_runner = scoped_task_environment_.GetMainThreadTaskRunner();
     cloud_policy_manager_.reset(new CloudPolicyManager(
-        std::string(), std::string(), &cloud_policy_store_, task_runner));
+        std::string(), std::string(), &cloud_policy_store_, task_runner,
+        network::TestNetworkConnectionTracker::CreateGetter()));
     cloud_policy_manager_->Init(&schema_registry_);
   }
 

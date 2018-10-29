@@ -5,6 +5,7 @@
     "service_manager:connector": {
       "provides": {
         "browser": [
+          "blink.mojom.CodeCacheHost",
           "blink.mojom.CrashMemoryMetricsReporter",
           "blink.mojom.LeakDetector",
           "blink.mojom.OomIntervention",
@@ -39,7 +40,8 @@
         "device": [
           "device:power_monitor",
           "device:screen_orientation",
-          "device:time_zone_monitor"
+          "device:time_zone_monitor",
+          "device:wake_lock"
         ],
         "ui": [
           "discardable_memory",

@@ -60,6 +60,11 @@ MockVolumeManager.prototype.createVolumeInfo =
 MockVolumeManager.prototype.getVolumeInfo =
     VolumeManagerImpl.prototype.getVolumeInfo;
 
+/** @override */
+MockVolumeManager.prototype.getDefaultDisplayRoot =
+    VolumeManagerImpl.prototype.getDefaultDisplayRoot;
+
+
 /**
  * Obtains location information from an entry.
  * Current implementation can handle only fake entries.

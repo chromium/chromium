@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">Se ha producido un error al leer la clave privada.</translation>
 <translation id="6391538222494443604">Debe existir el directorio de entrada.</translation>
 <translation id="641087317769093025">No se ha podido descomprimir la extensión.</translation>
+<translation id="6413453408918378296">El icono "<ph name="ICON" />" no se ve lo suficiente.</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> está solicitando acceso a uno o varios de tus dispositivos:</translation>
 <translation id="657064425229075395">No se ha podido cargar la secuencia de comandos en segundo plano "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>

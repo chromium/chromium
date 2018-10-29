@@ -129,7 +129,7 @@ DocumentInit::InsecureNavigationsToUpgrade() const {
 bool DocumentInit::IsHostedInReservedIPRange() const {
   if (DocumentLoader* loader = MasterDocumentLoader()) {
     if (!loader->GetResponse().RemoteIPAddress().IsEmpty()) {
-      return NetworkUtils::IsReservedIPAddress(
+      return network_utils::IsReservedIPAddress(
           loader->GetResponse().RemoteIPAddress());
     }
   }
@@ -200,6 +200,13 @@ V0CustomElementRegistrationContext* DocumentInit::RegistrationContext(
 
 Document* DocumentInit::ContextDocument() const {
   return context_document_;
+}
+
+DocumentInit& DocumentInit::WithPreviousDocumentCSP(
+    const ContentSecurityPolicy* previous_csp) {
+  DCHECK(!previous_csp_);
+  previous_csp_ = previous_csp;
+  return *this;
 }
 
 }  // namespace blink

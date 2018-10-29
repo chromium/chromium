@@ -8,12 +8,14 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/nss_cert_database.h"
 
@@ -40,13 +42,10 @@ class DBTester {
   // Returns true if the database was retrieved successfully.
   bool DoGetDBTests() {
     base::RunLoop run_loop;
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO,
-        FROM_HERE,
-        base::Bind(&DBTester::GetDBAndDoTestsOnIOThread,
-                   base::Unretained(this),
-                   profile_->GetResourceContext(),
-                   run_loop.QuitClosure()));
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
+        base::Bind(&DBTester::GetDBAndDoTestsOnIOThread, base::Unretained(this),
+                   profile_->GetResourceContext(), run_loop.QuitClosure()));
     run_loop.Run();
     return !!db_;
   }
@@ -54,12 +53,10 @@ class DBTester {
   // Test retrieving the database again, should be called after DoGetDBTests.
   void DoGetDBAgainTests() {
     base::RunLoop run_loop;
-    content::BrowserThread::PostTask(
-        content::BrowserThread::IO,
-        FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {content::BrowserThread::IO},
         base::Bind(&DBTester::DoGetDBAgainTestsOnIOThread,
-                   base::Unretained(this),
-                   profile_->GetResourceContext(),
+                   base::Unretained(this), profile_->GetResourceContext(),
                    run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -97,8 +94,8 @@ class DBTester {
       EXPECT_EQ(db->GetPublicSlot().get(), db->GetPrivateSlot().get());
     }
 
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE, done_callback);
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             done_callback);
   }
 
   void DoGetDBAgainTestsOnIOThread(content::ResourceContext* context,
@@ -110,8 +107,8 @@ class DBTester {
     // Should return the same db as before.
     EXPECT_EQ(db_, db);
 
-    content::BrowserThread::PostTask(
-        content::BrowserThread::UI, FROM_HERE, done_callback);
+    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                             done_callback);
   }
 
   Profile* profile_;
@@ -160,7 +157,8 @@ class UserAddingFinishObserver : public chromeos::UserAddingScreen::Observer {
 class NSSContextChromeOSBrowserTest : public chromeos::LoginManagerTest {
  public:
   NSSContextChromeOSBrowserTest()
-      : LoginManagerTest(true /* should_launch_browser */) {}
+      : LoginManagerTest(true /* should_launch_browser */,
+                         true /* should_initialize_webui */) {}
   ~NSSContextChromeOSBrowserTest() override {}
 };
 

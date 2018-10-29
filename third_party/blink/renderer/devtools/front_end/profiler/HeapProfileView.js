@@ -1,6 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 /**
  * @implements {UI.Searchable}
  * @unrestricted
@@ -11,18 +12,109 @@ Profiler.HeapProfileView = class extends Profiler.ProfileView {
    */
   constructor(profileHeader) {
     super();
+
     this._profileHeader = profileHeader;
-    this.profile = new Profiler.SamplingHeapProfileModel(profileHeader._profile || profileHeader.protocolProfile());
-    this.adjustedTotal = this.profile.total;
+    this._profileType = profileHeader.profileType();
     const views = [
       Profiler.ProfileView.ViewTypes.Flame, Profiler.ProfileView.ViewTypes.Heavy, Profiler.ProfileView.ViewTypes.Tree
     ];
-    const isNativeProfile = [
-      Profiler.SamplingNativeHeapProfileType.TypeId, Profiler.SamplingNativeHeapSnapshotType.TypeId
-    ].includes(profileHeader.profileType().id);
+
+    const isNativeProfile = this._profileType.id === Profiler.SamplingNativeHeapProfileType.TypeId ||
+        this._profileType.id === Profiler.SamplingNativeHeapSnapshotType.TypeId;
     if (isNativeProfile)
       views.push(Profiler.ProfileView.ViewTypes.Text);
+
     this.initialize(new Profiler.HeapProfileView.NodeFormatter(this), views);
+    const profile = new Profiler.SamplingHeapProfileModel(profileHeader._profile || profileHeader.protocolProfile());
+    this.adjustedTotal = profile.total;
+    this.setProfile(profile);
+
+    this._selectedSizeText = new UI.ToolbarText();
+
+    if (Runtime.experiments.isEnabled('samplingHeapProfilerTimeline')) {
+      this._timelineOverview = new Profiler.HeapTimelineOverview();
+      this._timelineOverview.addEventListener(
+          Profiler.HeapTimelineOverview.IdsRangeChanged, this._onIdsRangeChanged.bind(this));
+      this._timelineOverview.show(this.element, this.element.firstChild);
+
+      this._profileType.addEventListener(
+          Profiler.SamplingHeapProfileType.Events.StatsUpdate, this._onStatsUpdate, this);
+      this._profileType.once(Profiler.ProfileType.Events.ProfileComplete).then(() => {
+        this._profileType.removeEventListener(
+            Profiler.SamplingHeapProfileType.Events.StatsUpdate, this._onStatsUpdate, this);
+        this._timelineOverview.updateGrid();
+      });
+    }
+  }
+
+  /**
+   * @override
+   * @return {!Array<!UI.ToolbarItem>}
+   */
+  syncToolbarItems() {
+    return [...super.syncToolbarItems(), this._selectedSizeText];
+  }
+
+  /**
+   * @param {!Common.Event} event
+   */
+  _onIdsRangeChanged(event) {
+    const minId = /** @type {number} */ (event.data.minId);
+    const maxId = /** @type {number} */ (event.data.maxId);
+    this._selectedSizeText.setText(ls`Selected size: ${Number.bytesToString(event.data.size)}`);
+    this._setSelectionRange(minId, maxId);
+  }
+
+  /**
+   * @param {number} minId
+   * @param {number} maxId
+   */
+  _setSelectionRange(minId, maxId) {
+    const profile = new Profiler.SamplingHeapProfileModel(
+        this._profileHeader._profile || this._profileHeader.protocolProfile(), minId, maxId);
+    this.adjustedTotal = profile.total;
+    this.setProfile(profile);
+  }
+
+  /**
+   * @param {!Common.Event} event
+   */
+  _onStatsUpdate(event) {
+    const profile = event.data;
+
+    if (!this._startTime) {
+      this._startTime = Date.now();
+      this._timestamps = [];
+      this._sizes = [];
+      this._max = [];
+      this._ordinals = [];
+      this._totalTime = 30000;
+      this._lastOrdinal = 0;
+    }
+
+    this._sizes.fill(0);
+    this._sizes.push(0);
+    this._timestamps.push(Date.now() - this._startTime);
+    this._ordinals.push(this._lastOrdinal + 1);
+    this._lastOrdinal = profile.samples.reduce((res, sample) => Math.max(res, sample.ordinal), this._lastOrdinal);
+    for (const sample of profile.samples) {
+      const bucket = this._ordinals.upperBound(sample.ordinal) - 1;
+      this._sizes[bucket] += sample.size;
+    }
+    this._max.push(this._sizes.peekLast());
+
+    if (this._timestamps.peekLast() > this._totalTime)
+      this._totalTime *= 2;
+
+    const samples = /** @type {!Profiler.HeapTimelineOverview.Samples} */ ({
+      sizes: this._sizes,
+      max: this._max,
+      ids: this._ordinals,
+      timestamps: this._timestamps,
+      totalTime: this._totalTime
+    });
+
+    this._timelineOverview.setSamples(samples);
   }
 
   /**
@@ -45,7 +137,8 @@ Profiler.HeapProfileView = class extends Profiler.ProfileView {
    * @return {!PerfUI.FlameChartDataProvider}
    */
   createFlameChartDataProvider() {
-    return new Profiler.HeapFlameChartDataProvider(this.profile, this._profileHeader.heapProfilerModel());
+    return new Profiler.HeapFlameChartDataProvider(
+        /** @type {!Profiler.SamplingHeapProfileModel} */ (this.profile()), this._profileHeader.heapProfilerModel());
   }
 
   /**
@@ -58,10 +151,10 @@ Profiler.HeapProfileView = class extends Profiler.ProfileView {
         `Report Version:  7\n` +
         `App Version:     ${/Chrom\S*/.exec(navigator.appVersion)[0] || 'Unknown'}\n` +
         `Node Weight:     1 KiB\n` +
-        `Total Size:      ${Math.round(this.profile.root.total / 1024)} KiB\n` +
+        `Total Size:      ${Math.round(this.profile().root.total / 1024)} KiB\n` +
         `----\n\nCall graph:\n`;
-    const sortedChildren = this.profile.root.children.sort((a, b) => b.total - a.total);
-    const modules = this.profile.modules.map(
+    const sortedChildren = this.profile().root.children.sort((a, b) => b.total - a.total);
+    const modules = this.profile().modules.map(
         m => Object.assign({address: BigInt(m.baseAddress), endAddress: BigInt(m.baseAddress) + BigInt(m.size)}, m));
     modules.sort((m1, m2) => m1.address > m2.address ? 1 : m1.address < m2.address ? -1 : 0);
     for (const child of sortedChildren)
@@ -121,6 +214,10 @@ Profiler.HeapProfileView = class extends Profiler.ProfileView {
  * @unrestricted
  */
 Profiler.SamplingHeapProfileTypeBase = class extends Profiler.ProfileType {
+  /**
+   * @param {string} typeId
+   * @param {string} description
+   */
   constructor(typeId, description) {
     super(typeId, description);
     this._recording = false;
@@ -151,7 +248,7 @@ Profiler.SamplingHeapProfileTypeBase = class extends Profiler.ProfileType {
   }
 
   get buttonTooltip() {
-    return this._recording ? Common.UIString('Stop heap profiling') : Common.UIString('Start heap profiling');
+    return this._recording ? ls`Stop heap profiling` : ls`Start heap profiling`;
   }
 
   /**
@@ -159,33 +256,36 @@ Profiler.SamplingHeapProfileTypeBase = class extends Profiler.ProfileType {
    * @return {boolean}
    */
   buttonClicked() {
-    const wasRecording = this._recording;
-    if (wasRecording)
-      this.stopRecordingProfile();
+    if (this._recording)
+      this._stopRecordingProfile();
     else
-      this.startRecordingProfile();
-    return !wasRecording;
+      this._startRecordingProfile();
+    return this._recording;
   }
 
-  startRecordingProfile() {
+  _startRecordingProfile() {
     const heapProfilerModel = UI.context.flavor(SDK.HeapProfilerModel);
     if (this.profileBeingRecorded() || !heapProfilerModel)
       return;
-    const profile = new Profiler.SamplingHeapProfileHeader(heapProfilerModel, this);
-    this.setProfileBeingRecorded(profile);
-    SDK.targetManager.suspendAllTargets();
-    this.addProfile(profile);
-    profile.updateStatus(Common.UIString('Recording\u2026'));
+    const profileHeader = new Profiler.SamplingHeapProfileHeader(heapProfilerModel, this);
+    this.setProfileBeingRecorded(profileHeader);
+    this.addProfile(profileHeader);
+    profileHeader.updateStatus(ls`Recording\u2026`);
+
+    const icon = UI.Icon.create('smallicon-warning');
+    icon.title = ls`Heap profiler is recording`;
+    UI.inspectorView.setPanelIcon('heap_profiler', icon);
+
     this._recording = true;
     this._startSampling();
   }
 
-  async stopRecordingProfile() {
+  async _stopRecordingProfile() {
     this._recording = false;
     if (!this.profileBeingRecorded() || !this.profileBeingRecorded().heapProfilerModel())
       return;
 
-    this.profileBeingRecorded().updateStatus(Common.UIString('Stopping\u2026'));
+    this.profileBeingRecorded().updateStatus(ls`Stopping\u2026`);
     const profile = await this._stopSampling();
     const recordedProfile = this.profileBeingRecorded();
     if (recordedProfile) {
@@ -194,8 +294,7 @@ Profiler.SamplingHeapProfileTypeBase = class extends Profiler.ProfileType {
       recordedProfile.updateStatus('');
       this.setProfileBeingRecorded(null);
     }
-
-    await SDK.targetManager.resumeAllTargets();
+    UI.inspectorView.setPanelIcon('heap_profiler', null);
     this.dispatchEventToListeners(Profiler.ProfileType.Events.ProfileComplete, recordedProfile);
   }
 
@@ -212,7 +311,7 @@ Profiler.SamplingHeapProfileTypeBase = class extends Profiler.ProfileType {
    * @override
    */
   profileBeingRecordedRemoved() {
-    this.stopRecordingProfile();
+    this._stopRecordingProfile();
   }
 
   _startSampling() {
@@ -227,7 +326,6 @@ Profiler.SamplingHeapProfileTypeBase = class extends Profiler.ProfileType {
   }
 };
 
-
 /**
  * @unrestricted
  */
@@ -235,6 +333,8 @@ Profiler.SamplingHeapProfileType = class extends Profiler.SamplingHeapProfileTyp
   constructor() {
     super(Profiler.SamplingHeapProfileType.TypeId, ls`Allocation sampling`);
     Profiler.SamplingHeapProfileType.instance = this;
+    this._updateTimer = null;
+    this._updateIntervalMs = 200;
   }
 
   get treeItemTitle() {
@@ -249,9 +349,19 @@ Profiler.SamplingHeapProfileType = class extends Profiler.SamplingHeapProfileTyp
 
   /**
    * @override
+   * @return {boolean}
+   */
+  hasTemporaryView() {
+    return Runtime.experiments.isEnabled('samplingHeapProfilerTimeline');
+  }
+
+  /**
+   * @override
    */
   _startSampling() {
     this.profileBeingRecorded().heapProfilerModel().startSampling();
+    if (Runtime.experiments.isEnabled('samplingHeapProfilerTimeline'))
+      this._updateTimer = setTimeout(this._updateStats.bind(this), this._updateIntervalMs);
   }
 
   /**
@@ -259,11 +369,28 @@ Profiler.SamplingHeapProfileType = class extends Profiler.SamplingHeapProfileTyp
    * return {!Promise<!Protocol.HeapProfiler.SamplingHeapProfile>}
    */
   _stopSampling() {
+    clearTimeout(this._updateTimer);
+    this._updateTimer = null;
+    this.dispatchEventToListeners(Profiler.SamplingHeapProfileType.Events.RecordingStopped);
     return this.profileBeingRecorded().heapProfilerModel().stopSampling();
+  }
+
+  async _updateStats() {
+    const profile = await this.profileBeingRecorded().heapProfilerModel().getSamplingProfile();
+    if (!this._updateTimer)
+      return;
+    this.dispatchEventToListeners(Profiler.SamplingHeapProfileType.Events.StatsUpdate, profile);
+    this._updateTimer = setTimeout(this._updateStats.bind(this), this._updateIntervalMs);
   }
 };
 
 Profiler.SamplingHeapProfileType.TypeId = 'SamplingHeap';
+
+/** @enum {symbol} */
+Profiler.SamplingHeapProfileType.Events = {
+  RecordingStopped: Symbol('RecordingStopped'),
+  StatsUpdate: Symbol('StatsUpdate')
+};
 
 /**
  * @unrestricted
@@ -423,6 +550,8 @@ Profiler.SamplingHeapProfileHeader = class extends Profiler.WritableProfileHeade
         heapProfilerModel && heapProfilerModel.debuggerModel(), type,
         title || Common.UIString('Profile %d', type.nextProfileUid()));
     this._heapProfilerModel = heapProfilerModel;
+    this._protocolProfile =
+        /** @type {!Protocol.HeapProfiler.SamplingHeapProfile} */ ({head: {callFrame: {}, children: []}});
   }
 
   /**
@@ -475,11 +604,28 @@ Profiler.SamplingHeapProfileNode = class extends SDK.ProfileNode {
 Profiler.SamplingHeapProfileModel = class extends SDK.ProfileTreeModel {
   /**
    * @param {!Protocol.HeapProfiler.SamplingHeapProfile} profile
+   * @param {number=} minOrdinal
+   * @param {number=} maxOrdinal
    */
-  constructor(profile) {
+  constructor(profile, minOrdinal, maxOrdinal) {
     super();
-    this.initialize(translateProfileTree(profile.head));
     this.modules = profile.modules || [];
+
+    /** @type {?Map<number, number>} */
+    let nodeIdToSizeMap = null;
+    if (minOrdinal || maxOrdinal) {
+      nodeIdToSizeMap = new Map();
+      minOrdinal = minOrdinal || 0;
+      maxOrdinal = maxOrdinal || Infinity;
+      for (const sample of profile.samples) {
+        if (sample.ordinal < minOrdinal || sample.ordinal > maxOrdinal)
+          continue;
+        const size = nodeIdToSizeMap.get(sample.nodeId) || 0;
+        nodeIdToSizeMap.set(sample.nodeId, size + sample.size);
+      }
+    }
+
+    this.initialize(translateProfileTree(profile.head));
 
     /**
      * @param {!Protocol.HeapProfiler.SamplingHeapProfileNode} root
@@ -487,16 +633,31 @@ Profiler.SamplingHeapProfileModel = class extends SDK.ProfileTreeModel {
      */
     function translateProfileTree(root) {
       const resultRoot = new Profiler.SamplingHeapProfileNode(root);
-      const targetNodeStack = [resultRoot];
       const sourceNodeStack = [root];
+      const targetNodeStack = [resultRoot];
       while (sourceNodeStack.length) {
         const sourceNode = sourceNodeStack.pop();
-        const parentNode = targetNodeStack.pop();
-        parentNode.children = sourceNode.children.map(child => new Profiler.SamplingHeapProfileNode(child));
-        sourceNodeStack.push.apply(sourceNodeStack, sourceNode.children);
-        targetNodeStack.push.apply(targetNodeStack, parentNode.children);
+        const targetNode = targetNodeStack.pop();
+        targetNode.children = sourceNode.children.map(child => {
+          const targetChild = new Profiler.SamplingHeapProfileNode(child);
+          if (nodeIdToSizeMap)
+            targetChild.self = nodeIdToSizeMap.get(child.id) || 0;
+          return targetChild;
+        });
+        sourceNodeStack.pushAll(sourceNode.children);
+        targetNodeStack.pushAll(targetNode.children);
       }
+      pruneEmptyBranches(resultRoot);
       return resultRoot;
+    }
+
+    /**
+     * @param {!SDK.ProfileNode} node
+     * @return {boolean}
+     */
+    function pruneEmptyBranches(node) {
+      node.children = node.children.filter(pruneEmptyBranches);
+      return !!(node.children.length || node.self);
     }
   }
 };

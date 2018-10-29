@@ -52,10 +52,6 @@ class DOMAgentViz : public viz::FrameSinkObserver, public DOMAgent {
   std::unique_ptr<protocol::DOM::Node> BuildTreeForUIElement(
       UIElement* ui_element) override;
 
-  // Removes the |child| subtree from the |parent| subtree and destroys every
-  // element in the |child| subtree.
-  void DestroyChildSubtree(UIElement* parent, UIElement* child);
-
   // Every time the frontend disconnects we don't destroy DOMAgent so once we
   // establish the connection again we need to clear the FrameSinkId sets
   // because they may carry obsolete data. Then we initialize these with alive
@@ -70,13 +66,9 @@ class DOMAgentViz : public viz::FrameSinkObserver, public DOMAgent {
   // Mark a FrameSink that has |frame_sink_id| and all its subtree as attached.
   void SetAttachedFrameSink(const viz::FrameSinkId& frame_sink_id);
 
-  // We delete the FrameSinkElements in the subtree rooted at |root| from
-  // |frame_sink_elements_| and attach all its children to the root_element().
+  // We remove |root| from its parents and attach all its children to the
+  // root_element().
   void RemoveFrameSinkSubtree(UIElement* root);
-
-  // Remove FrameSinkElements for subtree rooted at |element| from the tree
-  // |frame_sink_elements_|.
-  void RemoveFrameSinkElement(UIElement* element);
 
   // This is used to track created FrameSinkElements in a FrameSink tree. Every
   // time we register/invalidate a FrameSinkId, create/destroy a FrameSink,

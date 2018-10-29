@@ -218,8 +218,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   // Demuxer implementation.
   std::string GetDisplayName() const override;
-  void Initialize(DemuxerHost* host,
-                  const PipelineStatusCB& status_cb) override;
+  void Initialize(DemuxerHost* host, const PipelineStatusCB& init_cb) override;
   void AbortPendingReads() override;
   void Stop() override;
   void StartWaitingForSeek(base::TimeDelta seek_time) override;
@@ -276,10 +275,21 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
                                  TrackChangeCB change_completed_cb);
 
   // FFmpeg callbacks during initialization.
-  void OnOpenContextDone(const PipelineStatusCB& status_cb, bool result);
-  void OnFindStreamInfoDone(const PipelineStatusCB& status_cb, int result);
+  void OnOpenContextDone(bool result);
+  void OnFindStreamInfoDone(int result);
 
   void LogMetadata(AVFormatContext* avctx, base::TimeDelta max_duration);
+
+  // Finds the stream with the lowest known start time (i.e. not kNoTimestamp
+  // start time) with enabled status matching |enabled|.
+  FFmpegDemuxerStream* FindStreamWithLowestStartTimestamp(bool enabled);
+
+  // Finds a preferred stream for seeking to |seek_time|. Preference is
+  // typically given to video streams, unless the |seek_time| is earlier than
+  // the start time of the video stream. In that case a stream with the earliest
+  // start time is preferred. Disabled streams are considered only as the last
+  // fallback option.
+  FFmpegDemuxerStream* FindPreferredStreamForSeeking(base::TimeDelta seek_time);
 
   // FFmpeg callbacks during seeking.
   void OnSeekFrameSuccess();
@@ -320,6 +330,12 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
                               DemuxerStream::Type stream_type,
                               const std::vector<DemuxerStream*>& streams);
 
+  // Executes |init_cb_| with |status| and closes out the async trace.
+  void RunInitCB(PipelineStatus status);
+
+  // Executes |pending_seek_cb_| with |status| and closes out the async trace.
+  void RunPendingSeekCB(PipelineStatus status);
+
   DemuxerHost* host_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -327,6 +343,8 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // Task runner on which all blocking FFmpeg operations are executed; retrieved
   // from base::TaskScheduler.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+
+  PipelineStatusCB init_cb_;
 
   // Indicates if Stop() has been called.
   bool stopped_;
@@ -366,17 +384,6 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // is used to adjust timestamps so that external consumers always see a zero
   // based timeline.
   base::TimeDelta start_time_;
-
-  // Finds the stream with the lowest known start time (i.e. not kNoTimestamp
-  // start time) with enabled status matching |enabled|.
-  FFmpegDemuxerStream* FindStreamWithLowestStartTimestamp(bool enabled);
-
-  // Finds a preferred stream for seeking to |seek_time|. Preference is
-  // typically given to video streams, unless the |seek_time| is earlier than
-  // the start time of the video stream. In that case a stream with the earliest
-  // start time is preferred. Disabled streams are considered only as the last
-  // fallback option.
-  FFmpegDemuxerStream* FindPreferredStreamForSeeking(base::TimeDelta seek_time);
 
   // The Time associated with timestamp 0. Set to a null
   // time if the file doesn't have an association to Time.

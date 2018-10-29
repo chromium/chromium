@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/chromeos/login/users/multi_profile_user_controller_delegate.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
-#include "chrome/browser/chromeos/policy/policy_cert_verifier.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -33,6 +33,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/cert_verifier_with_trust_anchors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -107,9 +108,10 @@ const BehaviorTestCase kBehaviorTestCases[] = {
     },
 };
 
-// Weak ptr to PolicyCertVerifier - object is freed in test destructor once
-// we've ensured the profile has been shut down.
-policy::PolicyCertVerifier* g_policy_cert_verifier_for_factory = NULL;
+// Weak ptr to network::CertVerifierWithTrustAnchors - object is freed in test
+// destructor once we've ensured the profile has been shut down.
+network::CertVerifierWithTrustAnchors* g_policy_cert_verifier_for_factory =
+    NULL;
 
 std::unique_ptr<KeyedService> TestPolicyCertServiceFactory(
     content::BrowserContext* context) {
@@ -181,13 +183,13 @@ class MultiProfileUserControllerTest
   }
 
   void TearDown() override {
-    // Clear our cached pointer to the PolicyCertVerifier.
+    // Clear our cached pointer to the network::CertVerifierWithTrustAnchors.
     g_policy_cert_verifier_for_factory = NULL;
 
-    // We must ensure that the PolicyCertVerifier outlives the
-    // PolicyCertService so shutdown the profile here. Additionally, we need
+    // We must ensure that the network::CertVerifierWithTrustAnchors outlives
+    // the PolicyCertService so shutdown the profile here. Additionally, we need
     // to run the message loop between freeing the PolicyCertService and
-    // freeing the PolicyCertVerifier (see
+    // freeing the network::CertVerifierWithTrustAnchors (see
     // PolicyCertService::OnTrustAnchorsChanged() which is called from
     // PolicyCertService::Shutdown()).
     controller_.reset();
@@ -236,7 +238,7 @@ class MultiProfileUserControllerTest
   TestingProfile* profile(int index) { return user_profiles_[index]; }
 
   content::TestBrowserThreadBundle threads_;
-  std::unique_ptr<policy::PolicyCertVerifier> cert_verifier_;
+  std::unique_ptr<network::CertVerifierWithTrustAnchors> cert_verifier_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   FakeChromeUserManager* fake_user_manager_;  // Not owned
   user_manager::ScopedUserManager user_manager_enabler_;
@@ -409,13 +411,14 @@ TEST_F(MultiProfileUserControllerTest,
       test_users_[0].GetUserEmail());
   LoginUser(0);
 
-  cert_verifier_.reset(new policy::PolicyCertVerifier(base::Closure()));
+  cert_verifier_.reset(
+      new network::CertVerifierWithTrustAnchors(base::Closure()));
   cert_verifier_->InitializeOnIOThread(
       base::MakeRefCounted<MockCertVerifyProc>());
   g_policy_cert_verifier_for_factory = cert_verifier_.get();
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(0), TestPolicyCertServiceFactory));
+          profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
 
   MultiProfileUserController::UserAllowedInSessionReason reason;
   EXPECT_FALSE(controller()->IsUserAllowedInSession(
@@ -447,13 +450,14 @@ TEST_F(MultiProfileUserControllerTest,
   // changed back to enabled.
   SetPrefBehavior(0, MultiProfileUserController::kBehaviorUnrestricted);
 
-  cert_verifier_.reset(new policy::PolicyCertVerifier(base::Closure()));
+  cert_verifier_.reset(
+      new network::CertVerifierWithTrustAnchors(base::Closure()));
   cert_verifier_->InitializeOnIOThread(
       base::MakeRefCounted<MockCertVerifyProc>());
   g_policy_cert_verifier_for_factory = cert_verifier_.get();
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(0), TestPolicyCertServiceFactory));
+          profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
   policy::PolicyCertService* service =
       policy::PolicyCertServiceFactory::GetForProfile(profile(0));
   ASSERT_TRUE(service);

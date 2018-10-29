@@ -25,6 +25,10 @@ MockDesktopEnvironment::MockDesktopEnvironment() = default;
 
 MockDesktopEnvironment::~MockDesktopEnvironment() = default;
 
+std::unique_ptr<ActionExecutor> MockDesktopEnvironment::CreateActionExecutor() {
+  return base::WrapUnique(CreateActionExecutorPtr());
+}
+
 std::unique_ptr<AudioCapturer> MockDesktopEnvironment::CreateAudioCapturer() {
   return base::WrapUnique(CreateAudioCapturerPtr());
 }

@@ -4,7 +4,7 @@
 
 #include "content/renderer/render_widget_mouse_lock_dispatcher.h"
 
-#include "content/common/view_messages.h"
+#include "content/common/widget_messages.h"
 #include "content/renderer/render_view_impl.h"
 #include "ipc/ipc_message.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -29,21 +29,21 @@ void RenderWidgetMouseLockDispatcher::SendLockMouseRequest() {
 
   bool user_gesture =
       blink::WebUserGestureIndicator::IsProcessingUserGesture(web_local_frame);
-  render_widget_->Send(new ViewHostMsg_LockMouse(render_widget_->routing_id(),
-                                                 user_gesture, false));
+  render_widget_->Send(new WidgetHostMsg_LockMouse(render_widget_->routing_id(),
+                                                   user_gesture, false));
 }
 
 void RenderWidgetMouseLockDispatcher::SendUnlockMouseRequest() {
   render_widget_->Send(
-      new ViewHostMsg_UnlockMouse(render_widget_->routing_id()));
+      new WidgetHostMsg_UnlockMouse(render_widget_->routing_id()));
 }
 
 bool RenderWidgetMouseLockDispatcher::OnMessageReceived(
     const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderWidgetMouseLockDispatcher, message)
-    IPC_MESSAGE_HANDLER(ViewMsg_LockMouse_ACK, OnLockMouseACK)
-    IPC_MESSAGE_FORWARD(ViewMsg_MouseLockLost,
+    IPC_MESSAGE_HANDLER(WidgetMsg_LockMouse_ACK, OnLockMouseACK)
+    IPC_MESSAGE_FORWARD(WidgetMsg_MouseLockLost,
                         static_cast<MouseLockDispatcher*>(this),
                         MouseLockDispatcher::OnMouseLockLost)
     IPC_MESSAGE_UNHANDLED(handled = false)

@@ -1,9 +1,0 @@
-layer at (0,0) size 1066x799
-  LayoutView at (0,0) size 1066x799
-layer at (0,0) size 1066x40
-  LayoutBlockFlow {HTML} at (0,0) size 1066x40
-    LayoutBlockFlow {BODY} at (8,8) size 1050x24
-layer at (8,8) size 168x24 scrollWidth 1216
-  LayoutBlockFlow {DIV} at (0,0) size 168x24 [color=#FFFFFF] [bgcolor=#000000]
-    LayoutText {#text} at (0,0) size 1216x16
-      text run at (0,0) width 1216: "This text should be ellipsized and the ellipsis should visible when printed."

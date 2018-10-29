@@ -4,12 +4,12 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/neon-animatable-behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="icons.html">
 <link rel="import" href="shared_styles.html">
 
@@ -43,16 +43,15 @@
           </div>
           <div class="form-field-section">
             <div class="form-label">Audio Type</div>
-            <paper-radio-group class="device-class-group"
-                selected="{{currentEditableObject.type}}"
-                selectable="cr-radio-button">
+            <cr-radio-group class="device-class-group"
+                selected="{{currentEditableObject.type}}">
               <template is="dom-repeat"
                   items="[[nodeTypeOptions]]" as="option">
                 <cr-radio-button name="[[option.type]]">
                   [[option.name]]
                 </cr-radio-button>
               </template>
-            </paper-radio-group>
+            </cr-radio-group>
           </div>
         </form>
       </div>

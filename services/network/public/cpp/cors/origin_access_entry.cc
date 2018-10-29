@@ -30,12 +30,15 @@ bool IsSubdomainOfHost(const std::string& subdomain, const std::string& host) {
 
 }  // namespace
 
-OriginAccessEntry::OriginAccessEntry(const std::string& protocol,
-                                     const std::string& host,
-                                     MatchMode match_mode)
+OriginAccessEntry::OriginAccessEntry(
+    const std::string& protocol,
+    const std::string& host,
+    MatchMode match_mode,
+    const network::mojom::CORSOriginAccessMatchPriority priority)
     : protocol_(protocol),
       host_(host),
       match_mode_(match_mode),
+      priority_(priority),
       host_is_ip_address_(url::HostIsIPAddress(host)),
       host_is_public_suffix_(false) {
   if (host_is_ip_address_)

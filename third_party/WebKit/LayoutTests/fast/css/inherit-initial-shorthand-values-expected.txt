@@ -38,6 +38,6 @@ PASS test('webkit-transform-origin') is "inherit, initial"
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
+
 Test that e matched declaration cache handles explicitly inherited properties correctly.
-
-

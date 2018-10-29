@@ -260,7 +260,6 @@ void ScenicWindow::OnEvent(fuchsia::ui::input::InputEvent event,
   bool result = false;
 
   if (event.is_focus()) {
-    LOG(ERROR) << "RECEIVED FOCUS EVENT!";
     delegate_->OnActivationChanged(event.focus().focused);
     result = true;
   } else {

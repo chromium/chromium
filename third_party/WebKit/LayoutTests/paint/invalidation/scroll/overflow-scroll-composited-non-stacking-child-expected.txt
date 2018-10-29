@@ -42,9 +42,7 @@
       "transform": 1
     },
     {
-      "name": "Ancestor Clipping Layer",
-      "position": [23, 65],
-      "bounds": [285, 175],
+      "name": "Squashing Containment Layer",
       "drawsContent": false
     },
     {

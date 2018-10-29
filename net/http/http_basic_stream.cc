@@ -131,12 +131,6 @@ bool HttpBasicStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   return state_.connection()->socket()->GetPeerAddress(endpoint) == OK;
 }
 
-Error HttpBasicStream::GetTokenBindingSignature(crypto::ECPrivateKey* key,
-                                                TokenBindingType tb_type,
-                                                std::vector<uint8_t>* out) {
-  return parser()->GetTokenBindingSignature(key, tb_type, out);
-}
-
 void HttpBasicStream::Drain(HttpNetworkSession* session) {
   HttpResponseBodyDrainer* drainer = new HttpResponseBodyDrainer(this);
   drainer->Start(session);

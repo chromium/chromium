@@ -1,7 +1,24 @@
+<!--
+@license
+Copyright 2018 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS-IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 <!-- Lighthouse run warnings -->
 <template id="tmpl-lh-warnings--toplevel">
   <div class="lh-warnings lh-warnings--toplevel">
-    <strong>There were issues affecting this run of Lighthouse:</strong>
+    <strong class="lh-warnings__msg"></strong>
     <ul></ul>
   </div>
 </template>
@@ -9,10 +26,10 @@
 <!-- Lighthouse score scale -->
 <template id="tmpl-lh-scorescale">
   <div class="lh-scorescale">
-    <span class="lh-scorescale-label">Score scale:</span>
-    <span class="lh-scorescale-range lh-scorescale-range--fail">0-44</span>
-    <span class="lh-scorescale-range lh-scorescale-range--average">45-74</span>
-    <span class="lh-scorescale-range lh-scorescale-range--pass">75-100</span>
+    <span class="lh-scorescale-label"></span>
+    <span class="lh-scorescale-range lh-scorescale-range--fail">0-49</span>
+    <span class="lh-scorescale-range lh-scorescale-range--average">50-89</span>
+    <span class="lh-scorescale-range lh-scorescale-range--pass">90-100</span>
   </div>
 </template>
 
@@ -90,12 +107,8 @@
 <!-- Lighthouse perf opportunity header -->
 <template id="tmpl-lh-opportunity-header">
   <div class="lh-load-opportunity__header lh-load-opportunity__cols">
-    <div class="lh-load-opportunity__col lh-load-opportunity__col--one">
-      Resource to optimize
-    </div>
-    <div class="lh-load-opportunity__col lh-load-opportunity__col--two">
-      Estimated Savings
-    </div>
+    <div class="lh-load-opportunity__col lh-load-opportunity__col--one"></div>
+    <div class="lh-load-opportunity__col lh-load-opportunity__col--two"></div>
   </div>
 </template>
 
@@ -151,7 +164,7 @@
       position: absolute;
       top: var(--report-header-height);
       right: 50%;
-      transform: translate3d(calc(var(--report-content-width) / 2), -100%, 0);
+      transform: translate3d(calc(var(--report-width) / 2), -100%, 0);
       opacity: 1;
       transform-origin: bottom right;
       will-change: transform, opacity;
@@ -394,6 +407,7 @@
     <div class="lh-export">
       <button class="report-icon report-icon--share lh-export__button" title="Export report"></button>
       <div class="lh-export__dropdown">
+        <!-- TODO(i18n): localize export dropdown -->
         <a href="#" class="report-icon report-icon--print" data-action="print-summary">Print Summary</a>
         <a href="#" class="report-icon report-icon--print" data-action="print-expanded">Print Expanded</a>
         <a href="#" class="report-icon report-icon--copy" data-action="copy">Copy JSON</a>
@@ -436,6 +450,7 @@
     }
   </style>
   <footer class="lh-footer">
+    <!-- TODO(i18n): localize runtime settings -->
     <div class="lh-env">
       <div class="lh-env__title">Runtime settings</div>
       <ul class="lh-env__items">
@@ -512,11 +527,12 @@
 
     .lh-gauge__percentage {
       --spacer: calc((var(--circle-size) - var(--inset-size)) / 2);
-      width: var(--inset-size);
+      width: 100%;
       height: var(--inset-size);
       position: absolute;
       border-radius: inherit;
       font-size: var(--header-font-size);
+      line-height: var(--header-font-size);
       text-align: center;
       top: calc(var(--circle-size) / 3);
     }
@@ -603,14 +619,17 @@
         color: #595959;
         font-style: italic;
       }
+      .lh-crc__summary-value {
+        margin-bottom: 10px;
+      }
     </style>
     <div>
-      Longest chain: <b class="lh-crc__longest_duration"><!-- fill me: longestChain.duration --></b>
-      over <b class="lh-crc__longest_length"><!-- fill me: longestChain.length --></b> requests, totalling
-      <b class="lh-crc__longest_transfersize"><!-- fill me: longestChain.length --></b>
+      <div class="lh-crc__summary-value">
+        <span class="lh-crc__longest_duration_label"></span> <b class="lh-crc__longest_duration"></b>
+      </div>
     </div>
     <div class="lh-crc">
-      <div class="crc-initial-nav">Initial Navigation</div>
+      <div class="crc-initial-nav"></div>
       <!-- stamp for each chain -->
       <template id="tmpl-lh-crc__chains">
         <div class="crc-node">

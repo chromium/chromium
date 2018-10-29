@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 1: Blocked pointer lock on an element because the element's frame is sandboxed and the 'allow-pointer-lock' permission is not set.
+CONSOLE ERROR: Blocked pointer lock on an element because the element's frame is sandboxed and the 'allow-pointer-lock' permission is not set.
 Test nested sandboxed iframes without and then with allow-pointer-lock disallow pointer lock.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

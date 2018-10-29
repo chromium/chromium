@@ -32,6 +32,7 @@ class SequencedTaskRunner;
 }
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }
 
@@ -58,6 +59,7 @@ class GCMDriverDesktop : public GCMDriver,
           void(network::mojom::ProxyResolvingSocketFactoryRequest)>
           get_socket_factory_callback,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_for_ui,
+      network::NetworkConnectionTracker* network_connection_tracker,
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
       const scoped_refptr<base::SequencedTaskRunner>& io_thread,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);

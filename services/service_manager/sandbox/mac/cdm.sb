@@ -7,9 +7,5 @@
 ; Allow preloading of the CDM using seatbelt extension.
 (allow file-read* (extension "com.apple.app-sandbox.read"))
 
-; Allow to read framework and CDM resources files for CDM host verification
-(define bundle-version-path "BUNDLE_VERSION_PATH")
-(allow file-read* (subpath (param bundle-version-path)))
-
 ; mach IPC
 (allow mach-lookup (global-name "com.apple.windowserver.active"))

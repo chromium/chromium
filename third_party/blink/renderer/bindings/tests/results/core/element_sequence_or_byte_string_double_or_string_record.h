@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef ElementSequenceOrByteStringDoubleOrStringRecord_h
-#define ElementSequenceOrByteStringDoubleOrStringRecord_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_ELEMENT_SEQUENCE_OR_BYTE_STRING_DOUBLE_OR_STRING_RECORD_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_ELEMENT_SEQUENCE_OR_BYTE_STRING_DOUBLE_OR_STRING_RECORD_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -25,7 +25,7 @@ class DoubleOrString;
 class Element;
 
 class CORE_EXPORT ElementSequenceOrByteStringDoubleOrStringRecord final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   ElementSequenceOrByteStringDoubleOrStringRecord();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -95,4 +95,4 @@ struct V8TypeOf<ElementSequenceOrByteStringDoubleOrStringRecord> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::ElementSequenceOrByteStringDoubleOrStringRecord);
 
-#endif  // ElementSequenceOrByteStringDoubleOrStringRecord_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_ELEMENT_SEQUENCE_OR_BYTE_STRING_DOUBLE_OR_STRING_RECORD_H_

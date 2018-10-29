@@ -122,16 +122,19 @@
     "includes": [13280],
   },
   "chrome/browser/resources/task_scheduler_internals/resources.grd": {
-    "includes": [13310],
+    "includes": [13300],
   },
   "chrome/browser/resources/translate_internals_resources.grd": {
-    "includes": [13320],
+    "includes": [13310],
   },
   "chrome/browser/resources/webapks_ui_resources.grd": {
-    "includes": [13340],
+    "includes": [13320],
+  },
+  "chrome/browser/resources/welcome/onboarding_welcome/onboarding_welcome_resources.grd": {
+    "structures": [13330],
   },
   "chrome/browser/vr/testapp/vr_testapp_resources.grd": {
-    "includes": [13350],
+    "includes": [13370],
   },
   # END chrome/browser section.
 
@@ -139,12 +142,16 @@
   "chrome/common/common_resources.grd": {
     "includes": [13380],
   },
+  "chrome/credential_provider/gaiacp/gaia_resources.grd": {
+    "includes": [13400],
+    "messages": [13410],
+  },
   "chrome/renderer/resources/renderer_resources.grd": {
-    "includes": [13390],
-    "structures": [13470],
+    "includes": [13500],
+    "structures": [13600],
   },
   "chrome/test/data/webui_test_resources.grd": {
-    "includes": [13480],
+    "includes": [13650],
   },
   # END chrome/ miscellaneous section.
 

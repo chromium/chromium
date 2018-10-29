@@ -95,6 +95,7 @@ Host.UserMetrics.Action = {
   Audits2Finished: 30,
   ShowedThirdPartyBadges: 31,
   Audits2ViewTrace: 32,
+  FilmStripStartedRecording: 33,
 };
 
 Host.UserMetrics._PanelCodes = {

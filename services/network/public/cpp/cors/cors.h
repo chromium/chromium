@@ -56,8 +56,7 @@ base::Optional<CORSErrorStatus> CheckAccess(
     const base::Optional<std::string>& allow_origin_header,
     const base::Optional<std::string>& allow_credentials_header,
     mojom::FetchCredentialsMode credentials_mode,
-    const url::Origin& origin,
-    bool allow_file_origin = false);
+    const url::Origin& origin);
 
 // Performs a CORS access check on the CORS-preflight response parameters.
 // According to the note at https://fetch.spec.whatwg.org/#cors-preflight-fetch
@@ -70,8 +69,7 @@ base::Optional<CORSErrorStatus> CheckPreflightAccess(
     const base::Optional<std::string>& allow_origin_header,
     const base::Optional<std::string>& allow_credentials_header,
     mojom::FetchCredentialsMode actual_credentials_mode,
-    const url::Origin& origin,
-    bool allow_file_origin = false);
+    const url::Origin& origin);
 
 // Given a redirected-to URL, checks if the location is allowed
 // according to CORS. That is:
@@ -134,11 +132,14 @@ std::vector<std::string> CORSUnsafeRequestHeaderNames(
 // https://fetch.spec.whatwg.org/#cors-unsafe-request-header-names
 // Returns header names which are not CORS-safelisted AND not forbidden.
 // |headers| must not contain multiple headers for the same name.
+// When |is_revalidating| is true, "if-modified-since", "if-none-match", and
+// "cache-control" are also exempted.
 // The returned list is NOT sorted.
 // The returned list consists of lower-cased names.
 COMPONENT_EXPORT(NETWORK_CPP)
 std::vector<std::string> CORSUnsafeNotForbiddenRequestHeaderNames(
-    const net::HttpRequestHeaders::HeaderVector& headers);
+    const net::HttpRequestHeaders::HeaderVector& headers,
+    bool is_revalidating);
 
 // Checks forbidden method in the fetch spec.
 // See https://fetch.spec.whatwg.org/#forbidden-method.

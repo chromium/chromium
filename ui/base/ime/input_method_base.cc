@@ -5,6 +5,7 @@
 #include "ui/base/ime/input_method_base.h"
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -129,7 +130,8 @@ bool InputMethodBase::GetClientShouldDoLearning() {
 void InputMethodBase::ShowVirtualKeyboardIfEnabled() {
   for (InputMethodObserver& observer : observer_list_)
     observer.OnShowVirtualKeyboardIfEnabled();
-  GetInputMethodKeyboardController()->DisplayVirtualKeyboard();
+  if (auto* keyboard = GetInputMethodKeyboardController())
+    keyboard->DisplayVirtualKeyboard();
 }
 
 void InputMethodBase::AddObserver(InputMethodObserver* observer) {
@@ -142,11 +144,6 @@ void InputMethodBase::RemoveObserver(InputMethodObserver* observer) {
 
 InputMethodKeyboardController*
 InputMethodBase::GetInputMethodKeyboardController() {
-  if (!keyboard_controller_) {
-    NOTIMPLEMENTED() << "Using InputMethodKeyboardControllerStub";
-    keyboard_controller_ =
-        std::make_unique<InputMethodKeyboardControllerStub>();
-  }
   return keyboard_controller_.get();
 }
 
@@ -165,23 +162,10 @@ void InputMethodBase::OnInputMethodChanged() const {
 }
 
 ui::EventDispatchDetails InputMethodBase::DispatchKeyEventPostIME(
-    ui::KeyEvent* event) const {
-  ui::EventDispatchDetails details;
-  if (delegate_)
-    details = delegate_->DispatchKeyEventPostIME(event);
-  return details;
-}
-
-ui::EventDispatchDetails InputMethodBase::DispatchKeyEventPostIME(
     ui::KeyEvent* event,
     base::OnceCallback<void(bool)> ack_callback) const {
-  if (delegate_) {
-    ui::EventDispatchDetails details =
-        delegate_->DispatchKeyEventPostIME(event);
-    if (ack_callback)
-      std::move(ack_callback).Run(event->stopped_propagation());
-    return details;
-  }
+  if (delegate_)
+    return delegate_->DispatchKeyEventPostIME(event, std::move(ack_callback));
 
   if (ack_callback)
     std::move(ack_callback).Run(false);
@@ -235,7 +219,7 @@ std::vector<gfx::Rect> InputMethodBase::GetCompositionBounds(
 bool InputMethodBase::SendFakeProcessKeyEvent(bool pressed) const {
   KeyEvent evt(pressed ? ET_KEY_PRESSED : ET_KEY_RELEASED,
                pressed ? VKEY_PROCESSKEY : VKEY_UNKNOWN, EF_IME_FABRICATED_KEY);
-  ignore_result(DispatchKeyEventPostIME(&evt));
+  ignore_result(DispatchKeyEventPostIME(&evt, base::NullCallback()));
   return evt.stopped_propagation();
 }
 

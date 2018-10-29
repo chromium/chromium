@@ -44,7 +44,7 @@ struct NumberHolder {
   return [[[CountVonCount alloc] init] autorelease];
 }
 
-- (id)init {
+- (instancetype)init {
   ++ah_ah_ah;
   return [super init];
 }

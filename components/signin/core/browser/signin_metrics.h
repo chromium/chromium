@@ -69,7 +69,7 @@ enum AccessPointAction {
   HISTOGRAM_REJECTED,
   // The user pressed the X button to dismiss the infobar this time.
   HISTOGRAM_DISMISSED,
-  // The user completely ignored the infoar.  Either they navigated away, or
+  // The user completely ignored the infobar.  Either they navigated away, or
   // they used the page as is.
   HISTOGRAM_IGNORED,
   // The user clicked on the learn more link in the infobar.
@@ -347,6 +347,10 @@ void LogSigninAccountReconciliation(int total_number_accounts,
                                     bool primary_accounts_same,
                                     bool is_first_reconcile,
                                     int pre_count_gaia_cookies);
+
+// Logs to UMA histograms how many accounts are in the browser for this
+// profile.
+void RecordAccountsPerProfile(int total_number_accounts);
 
 // Logs duration of a single execution of AccountReconciler to UMA histograms.
 // |duration| - How long execution of AccountReconciler took.

@@ -90,7 +90,7 @@ class WTF_EXPORT ArrayBufferView : public RefCounted<ArrayBufferView> {
     if (byte_offset > buffer->ByteLength())
       return false;
     unsigned remaining_elements =
-        (buffer->ByteLength() - byte_offset) / sizeof(T);
+        static_cast<unsigned>((buffer->ByteLength() - byte_offset) / sizeof(T));
     if (num_elements > remaining_elements)
       return false;
     return true;

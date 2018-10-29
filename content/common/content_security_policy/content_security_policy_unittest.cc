@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/stl_util.h"
 #include "content/common/content_security_policy/csp_context.h"
 #include "content/common/content_security_policy_header.h"
 #include "content/common/navigation_params.h"
@@ -21,8 +22,7 @@ class CSPContextTest : public CSPContext {
   }
 
   bool SchemeShouldBypassCSP(const base::StringPiece& scheme) override {
-    return std::find(scheme_to_bypass_.begin(), scheme_to_bypass_.end(),
-                     scheme) != scheme_to_bypass_.end();
+    return base::ContainsValue(scheme_to_bypass_, scheme);
   }
 
  private:
@@ -269,7 +269,6 @@ TEST(ContentSecurityPolicy, NavigateToChecks) {
   struct TestCase {
     const CSPSourceList& navigate_to_list;
     const GURL& url;
-    bool is_redirect;
     bool is_response_check;
     bool expected;
     bool is_form_submission;
@@ -277,48 +276,45 @@ TEST(ContentSecurityPolicy, NavigateToChecks) {
   } cases[] = {
       // Basic source matching.
       {none_source_list, GURL("https://example.test"), false, false, false,
-       false, nullptr},
-      {example_source_list, GURL("https://example.test"), false, false, true,
-       false, nullptr},
+       nullptr},
+      {example_source_list, GURL("https://example.test"), false, true, false,
+       nullptr},
       {example_source_list, GURL("https://not-example.test"), false, false,
-       false, false, nullptr},
-      {self_source_list, GURL("https://example.test"), false, false, true,
        false, nullptr},
+      {self_source_list, GURL("https://example.test"), false, true, false,
+       nullptr},
 
       // Checking allow_redirect flag interactions.
-      {redirects_source_list, GURL("https://example.test"), false, false, true,
-       false, nullptr},
-      {redirects_source_list, GURL("https://example.test"), true, false, true,
-       false, nullptr},
-      {redirects_source_list, GURL("https://example.test"), true, true, true,
-       false, nullptr},
       {redirects_source_list, GURL("https://example.test"), false, true, false,
-       false, nullptr},
+       nullptr},
+      {redirects_source_list, GURL("https://example.test"), true, false, false,
+       nullptr},
       {redirects_example_source_list, GURL("https://example.test"), false, true,
-       true, false, nullptr},
+       false, nullptr},
+      {redirects_example_source_list, GURL("https://example.test"), true, true,
+       false, nullptr},
 
       // Interaction with form-action
 
       // Form submission without form-action present
-      {none_source_list, GURL("https://example.test"), false, false, false,
-       true, nullptr},
-      {example_source_list, GURL("https://example.test"), false, false, true,
-       true, nullptr},
+      {none_source_list, GURL("https://example.test"), false, false, true,
+       nullptr},
+      {example_source_list, GURL("https://example.test"), false, true, true,
+       nullptr},
       {example_source_list, GURL("https://not-example.test"), false, false,
-       false, true, nullptr},
-      {self_source_list, GURL("https://example.test"), false, false, true, true,
+       true, nullptr},
+      {self_source_list, GURL("https://example.test"), false, true, true,
        nullptr},
 
       // Form submission with form-action present
-      {none_source_list, GURL("https://example.test"), false, false, true, true,
+      {none_source_list, GURL("https://example.test"), false, true, true,
        &example_source_list},
-      {example_source_list, GURL("https://example.test"), false, false, true,
-       true, &example_source_list},
-      {example_source_list, GURL("https://not-example.test"), false, false,
-       true, true, &example_source_list},
-      {self_source_list, GURL("https://example.test"), false, false, true, true,
+      {example_source_list, GURL("https://example.test"), false, true, true,
        &example_source_list},
-
+      {example_source_list, GURL("https://not-example.test"), false, true, true,
+       &example_source_list},
+      {self_source_list, GURL("https://example.test"), false, true, true,
+       &example_source_list},
   };
 
   for (const auto& test : cases) {
@@ -333,11 +329,14 @@ TEST(ContentSecurityPolicy, NavigateToChecks) {
     ContentSecurityPolicy policy(EmptyCspHeader(), directives,
                                  report_end_points, false);
 
-    EXPECT_EQ(test.expected,
-              ContentSecurityPolicy::Allow(
-                  policy, CSPDirective::NavigateTo, test.url, test.is_redirect,
-                  test.is_response_check, &context, SourceLocation(),
-                  test.is_form_submission));
+    EXPECT_EQ(test.expected, ContentSecurityPolicy::Allow(
+                                 policy, CSPDirective::NavigateTo, test.url,
+                                 true, test.is_response_check, &context,
+                                 SourceLocation(), test.is_form_submission));
+    EXPECT_EQ(test.expected, ContentSecurityPolicy::Allow(
+                                 policy, CSPDirective::NavigateTo, test.url,
+                                 false, test.is_response_check, &context,
+                                 SourceLocation(), test.is_form_submission));
   }
 }
 

@@ -63,9 +63,9 @@ int StyleRuleKeyframes::FindKeyframeIndex(const String& key) const {
   std::unique_ptr<Vector<double>> keys = CSSParser::ParseKeyframeKeyList(key);
   if (!keys)
     return -1;
-  for (size_t i = keyframes_.size(); i--;) {
+  for (wtf_size_t i = keyframes_.size(); i--;) {
     if (keyframes_[i]->Keys() == *keys)
-      return i;
+      return static_cast<int>(i);
   }
   return -1;
 }

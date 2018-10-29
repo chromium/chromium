@@ -11,6 +11,17 @@ namespace media_perception_private {
 
 namespace {
 
+std::unique_ptr<Metadata> MetadataProtoToIdl(const mri::Metadata& metadata) {
+  std::unique_ptr<Metadata> metadata_result = std::make_unique<Metadata>();
+  if (metadata.has_visual_experience_controller_version()) {
+    metadata_result->visual_experience_controller_version =
+        std::make_unique<std::string>(
+            metadata.visual_experience_controller_version());
+  }
+
+  return metadata_result;
+}
+
 HotwordType HotwordTypeProtoToIdl(const mri::HotwordDetection::Type& type) {
   switch (type) {
     case mri::HotwordDetection::UNKNOWN_TYPE:
@@ -466,6 +477,10 @@ PerceptionSample PerceptionSampleProtoToIdl(
         std::make_unique<AudioVisualPerception>(AudioVisualPerceptionProtoToIdl(
             perception_sample.audio_visual_perception()));
   }
+  if (perception_sample.has_metadata()) {
+    perception_sample_result.metadata =
+        MetadataProtoToIdl(perception_sample.metadata());
+  }
   return perception_sample_result;
 }
 
@@ -660,6 +675,11 @@ MediaPerception MediaPerceptionProtoToIdl(
       media_perception_result.audio_visual_perceptions->emplace_back(
           AudioVisualPerceptionProtoToIdl(perception));
     }
+  }
+
+  if (media_perception.has_metadata()) {
+    media_perception_result.metadata =
+        MetadataProtoToIdl(media_perception.metadata());
   }
 
   return media_perception_result;

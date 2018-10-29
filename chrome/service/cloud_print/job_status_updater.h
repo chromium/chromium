@@ -7,10 +7,8 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "chrome/service/cloud_print/print_system.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -66,17 +64,17 @@ class JobStatusUpdater : public base::RefCountedThreadSafe<JobStatusUpdater>,
   ~JobStatusUpdater() override;
 
   base::Time start_time_;
-  std::string printer_name_;
-  std::string job_id_;
-  PlatformJobId local_job_id_;
+  const std::string printer_name_;
+  const std::string job_id_;
+  const PlatformJobId local_job_id_;
   PrintJobDetails last_job_details_;
   scoped_refptr<CloudPrintURLFetcher> request_;
-  GURL cloud_print_server_url_;
+  const GURL cloud_print_server_url_;
   scoped_refptr<PrintSystem> print_system_;
-  Delegate* delegate_;
+  Delegate* const delegate_;
   // A flag that is set to true in Stop() and will ensure the next scheduled
   // task will do nothing.
-  bool stopped_;
+  bool stopped_ = false;
   // Partial network traffic annotation for network requests.
   const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
 

@@ -5,26 +5,29 @@
 #ifndef SERVICES_WS_GPU_HOST_GPU_HOST_H_
 #define SERVICES_WS_GPU_HOST_GPU_HOST_H_
 
-#include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "components/viz/host/gpu_host_impl.h"
 #include "components/viz/service/main/viz_main_impl.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
-#include "gpu/ipc/client/gpu_channel_host.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/strong_binding_set.h"
-#include "services/viz/privileged/interfaces/gl/gpu_host.mojom.h"
-#include "services/viz/privileged/interfaces/gl/gpu_service.mojom.h"
 #include "services/ws/public/mojom/gpu.mojom.h"
 
 #if defined(OS_CHROMEOS)
 #include "services/ws/public/mojom/arc.mojom.h"
 #endif  // defined(OS_CHROMEOS)
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace discardable_memory {
 class DiscardableSharedMemoryManager;
+}
+
+namespace gpu {
+class ShaderCacheFactory;
 }
 
 namespace service_manager {
@@ -32,117 +35,97 @@ class Connector;
 }
 
 namespace viz {
+class GpuClient;
+class GpuHostImpl;
 class HostGpuMemoryBufferManager;
 }
 
 namespace ws {
 namespace gpu_host {
-
-class GpuClient;
-
-namespace test {
-class GpuHostTest;
-}  // namespace test
-
 class GpuHostDelegate;
 
 // GpuHost sets up connection from clients to the real service implementation in
 // the GPU process.
-class GpuHost {
+class GpuHost : public viz::GpuHostImpl::Delegate {
  public:
-  GpuHost() = default;
-  virtual ~GpuHost() = default;
+  GpuHost(GpuHostDelegate* delegate,
+          service_manager::Connector* connector,
+          discardable_memory::DiscardableSharedMemoryManager*
+              discardable_shared_memory_manager);
+  ~GpuHost() override;
 
-  virtual void Add(mojom::GpuRequest request) = 0;
-  virtual void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) = 0;
-  virtual void OnAcceleratedWidgetDestroyed(gfx::AcceleratedWidget widget) = 0;
-
-  // Requests a viz::mojom::FrameSinkManager interface from viz.
-  virtual void CreateFrameSinkManager(
-      viz::mojom::FrameSinkManagerParamsPtr params) = 0;
-
-#if defined(OS_CHROMEOS)
-  virtual void AddArc(mojom::ArcRequest request) = 0;
-#endif  // defined(OS_CHROMEOS)
-};
-
-class DefaultGpuHost : public GpuHost, public viz::mojom::GpuHost {
- public:
-  DefaultGpuHost(GpuHostDelegate* delegate,
-                 service_manager::Connector* connector,
-                 discardable_memory::DiscardableSharedMemoryManager*
-                     discardable_shared_memory_manager);
-  ~DefaultGpuHost() override;
+  void CreateFrameSinkManager(viz::mojom::FrameSinkManagerRequest request,
+                              viz::mojom::FrameSinkManagerClientPtrInfo client);
 
   void Shutdown();
 
-  // GpuHost:
-  void Add(mojom::GpuRequest request) override;
-  void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override;
-  void OnAcceleratedWidgetDestroyed(gfx::AcceleratedWidget widget) override;
-  void CreateFrameSinkManager(
-      viz::mojom::FrameSinkManagerParamsPtr params) override;
+  void Add(mojom::GpuRequest request);
+
 #if defined(OS_CHROMEOS)
-  void AddArc(mojom::ArcRequest request) override;
+  void AddArc(mojom::ArcRequest request);
 #endif  // defined(OS_CHROMEOS)
 
  private:
-  friend class test::GpuHostTest;
+  friend class GpuHostTestApi;
 
-  GpuClient* AddInternal(mojom::GpuRequest request);
   void OnBadMessageFromGpu();
 
   // TODO(crbug.com/611505): this goes away after the gpu process split in mus.
   void InitializeVizMain(viz::mojom::VizMainRequest request);
   void DestroyVizMain();
 
-  // viz::mojom::GpuHost:
-  void DidInitialize(const gpu::GPUInfo& gpu_info,
-                     const gpu::GpuFeatureInfo& gpu_feature_info,
-                     const base::Optional<gpu::GPUInfo>&,
-                     const base::Optional<gpu::GpuFeatureInfo>&) override;
+  // viz::GpuHostImpl::Delegate:
+  gpu::GPUInfo GetGPUInfo() const override;
+  gpu::GpuFeatureInfo GetGpuFeatureInfo() const override;
+  void DidInitialize(
+      const gpu::GPUInfo& gpu_info,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
+      const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
+      const base::Optional<gpu::GpuFeatureInfo>&
+          gpu_feature_info_for_hardware_gpu) override;
   void DidFailInitialize() override;
   void DidCreateContextSuccessfully() override;
-  void DidCreateOffscreenContext(const GURL& url) override;
-  void DidDestroyOffscreenContext(const GURL& url) override;
-  void DidDestroyChannel(int32_t client_id) override;
-  void DidLoseContext(bool offscreen,
-                      gpu::error::ContextLostReason reason,
-                      const GURL& active_url) override;
+  void BlockDomainFrom3DAPIs(const GURL& url, gpu::DomainGuilt guilt) override;
   void DisableGpuCompositing() override;
-#if defined(OS_WIN)
-  void SetChildSurface(gpu::SurfaceHandle parent,
-                       gpu::SurfaceHandle child) override;
-#endif
-  void StoreShaderToDisk(int32_t client_id,
-                         const std::string& key,
-                         const std::string& shader) override;
+  bool GpuAccessAllowed() const override;
+  gpu::ShaderCacheFactory* GetShaderCacheFactory() override;
   void RecordLogMessage(int32_t severity,
                         const std::string& header,
                         const std::string& message) override;
+  void BindDiscardableMemoryRequest(
+      discardable_memory::mojom::DiscardableSharedMemoryManagerRequest request)
+      override;
+  void BindInterface(const std::string& interface_name,
+                     mojo::ScopedMessagePipeHandle interface_pipe) override;
+#if defined(USE_OZONE)
+  void TerminateGpuProcess(const std::string& message) override;
+  void SendGpuProcessMessage(IPC::Message* message) override;
+#endif
 
   GpuHostDelegate* const delegate_;
+  discardable_memory::DiscardableSharedMemoryManager*
+      discardable_shared_memory_manager_;
   int32_t next_client_id_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-  viz::mojom::GpuServicePtr gpu_service_;
-  mojo::Binding<viz::mojom::GpuHost> gpu_host_binding_;
+  std::unique_ptr<viz::GpuHostImpl> gpu_host_impl_;
   gpu::GPUInfo gpu_info_;
   gpu::GpuFeatureInfo gpu_feature_info_;
 
   std::unique_ptr<viz::HostGpuMemoryBufferManager> gpu_memory_buffer_manager_;
 
-  viz::mojom::VizMainPtr viz_main_;
+  std::unique_ptr<gpu::ShaderCacheFactory> shader_cache_factory_;
+
+  std::vector<std::unique_ptr<viz::GpuClient>> gpu_clients_;
 
   // TODO(crbug.com/620927): This should be removed once ozone-mojo is done.
   base::Thread gpu_thread_;
   std::unique_ptr<viz::VizMainImpl> viz_main_impl_;
 
-  mojo::StrongBindingSet<mojom::Gpu> gpu_bindings_;
 #if defined(OS_CHROMEOS)
   mojo::StrongBindingSet<mojom::Arc> arc_bindings_;
 #endif  // defined(OS_CHROMEOS)
 
-  DISALLOW_COPY_AND_ASSIGN(DefaultGpuHost);
+  DISALLOW_COPY_AND_ASSIGN(GpuHost);
 };
 
 }  // namespace gpu_host

@@ -14,7 +14,7 @@
 #include "chrome/browser/android/explore_sites/catalog.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/ntp_json_fetcher.h"
-#include "chrome/browser/android/explore_sites/url_util.h"
+#include "chrome/browser/android/explore_sites/url_util_experimental.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/search/suggestions/image_decoder_impl.h"
@@ -113,7 +113,8 @@ void JNI_ExploreSitesBridgeExperimental_GetNtpCategories(
 ScopedJavaLocalRef<jstring> JNI_ExploreSitesBridgeExperimental_GetCatalogUrl(
     JNIEnv* env,
     const JavaParamRef<jclass>& jcaller) {
-  return base::android::ConvertUTF8ToJavaString(env, GetCatalogURL().spec());
+  return base::android::ConvertUTF8ToJavaString(
+      env, GetCatalogPrototypeURL().spec());
 }
 
 // static

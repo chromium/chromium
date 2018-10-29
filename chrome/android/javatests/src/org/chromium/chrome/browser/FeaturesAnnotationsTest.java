@@ -51,7 +51,8 @@ public class FeaturesAnnotationsTest {
 
         List<String> finalDisabledList = getArgsList(false);
         assertThat(finalDisabledList, hasItems("Two"));
-        assertThat(finalDisabledList.size(), equalTo(1));
+        // ChromeActivityTestRule disables OFFLINE_INDICATOR feature.
+        assertThat(finalDisabledList.size(), equalTo(2));
     }
 
     /**

@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
-#include "components/cbor/cbor_reader.h"
-#include "components/cbor/cbor_writer.h"
+#include "components/cbor/reader.h"
+#include "components/cbor/writer.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 
@@ -19,7 +19,7 @@ namespace device {
 namespace {
 
 bool AreGetAssertionRequestMapKeysCorrect(
-    const cbor::CBORValue::MapValue& request_map) {
+    const cbor::Value::MapValue& request_map) {
   return std::all_of(request_map.begin(), request_map.end(),
                      [](const auto& param) {
                        if (!param.first.is_integer())
@@ -31,7 +31,7 @@ bool AreGetAssertionRequestMapKeysCorrect(
 }
 
 bool IsGetAssertionOptionMapFormatCorrect(
-    const cbor::CBORValue::MapValue& option_map) {
+    const cbor::Value::MapValue& option_map) {
   return std::all_of(
       option_map.begin(), option_map.end(), [](const auto& param) {
         if (!param.first.is_string())
@@ -66,46 +66,44 @@ CtapGetAssertionRequest& CtapGetAssertionRequest::operator=(
 CtapGetAssertionRequest::~CtapGetAssertionRequest() = default;
 
 std::vector<uint8_t> CtapGetAssertionRequest::EncodeAsCBOR() const {
-  cbor::CBORValue::MapValue cbor_map;
-  cbor_map[cbor::CBORValue(1)] = cbor::CBORValue(rp_id_);
-  cbor_map[cbor::CBORValue(2)] = cbor::CBORValue(client_data_hash_);
+  cbor::Value::MapValue cbor_map;
+  cbor_map[cbor::Value(1)] = cbor::Value(rp_id_);
+  cbor_map[cbor::Value(2)] = cbor::Value(client_data_hash_);
 
   if (allow_list_) {
-    cbor::CBORValue::ArrayValue allow_list_array;
+    cbor::Value::ArrayValue allow_list_array;
     for (const auto& descriptor : *allow_list_) {
       allow_list_array.push_back(descriptor.ConvertToCBOR());
     }
-    cbor_map[cbor::CBORValue(3)] = cbor::CBORValue(std::move(allow_list_array));
+    cbor_map[cbor::Value(3)] = cbor::Value(std::move(allow_list_array));
   }
 
   if (pin_auth_) {
-    cbor_map[cbor::CBORValue(6)] = cbor::CBORValue(*pin_auth_);
+    cbor_map[cbor::Value(6)] = cbor::Value(*pin_auth_);
   }
 
   if (pin_protocol_) {
-    cbor_map[cbor::CBORValue(7)] = cbor::CBORValue(*pin_protocol_);
+    cbor_map[cbor::Value(7)] = cbor::Value(*pin_protocol_);
   }
 
-  cbor::CBORValue::MapValue option_map;
+  cbor::Value::MapValue option_map;
 
   // User presence is required by default.
   if (!user_presence_required_) {
-    option_map[cbor::CBORValue(kUserPresenceMapKey)] =
-        cbor::CBORValue(user_presence_required_);
+    option_map[cbor::Value(kUserPresenceMapKey)] =
+        cbor::Value(user_presence_required_);
   }
 
   // User verification is not required by default.
   if (user_verification_ == UserVerificationRequirement::kRequired) {
-    option_map[cbor::CBORValue(kUserVerificationMapKey)] =
-        cbor::CBORValue(true);
+    option_map[cbor::Value(kUserVerificationMapKey)] = cbor::Value(true);
   }
 
   if (!option_map.empty()) {
-    cbor_map[cbor::CBORValue(5)] = cbor::CBORValue(std::move(option_map));
+    cbor_map[cbor::Value(5)] = cbor::Value(std::move(option_map));
   }
 
-  auto serialized_param =
-      cbor::CBORWriter::Write(cbor::CBORValue(std::move(cbor_map)));
+  auto serialized_param = cbor::Writer::Write(cbor::Value(std::move(cbor_map)));
   DCHECK(serialized_param);
 
   std::vector<uint8_t> cbor_request({base::strict_cast<uint8_t>(
@@ -169,7 +167,7 @@ bool CtapGetAssertionRequest::CheckResponseRpIdHash(
 
 base::Optional<CtapGetAssertionRequest> ParseCtapGetAssertionRequest(
     base::span<const uint8_t> request_bytes) {
-  const auto& cbor_request = cbor::CBORReader::Read(request_bytes);
+  const auto& cbor_request = cbor::Reader::Read(request_bytes);
   if (!cbor_request || !cbor_request->is_map())
     return base::nullopt;
 
@@ -177,11 +175,11 @@ base::Optional<CtapGetAssertionRequest> ParseCtapGetAssertionRequest(
   if (!AreGetAssertionRequestMapKeysCorrect(request_map))
     return base::nullopt;
 
-  const auto rp_id_it = request_map.find(cbor::CBORValue(1));
+  const auto rp_id_it = request_map.find(cbor::Value(1));
   if (rp_id_it == request_map.end() || !rp_id_it->second.is_string())
     return base::nullopt;
 
-  const auto client_data_hash_it = request_map.find(cbor::CBORValue(2));
+  const auto client_data_hash_it = request_map.find(cbor::Value(2));
   if (client_data_hash_it == request_map.end() ||
       !client_data_hash_it->second.is_bytestring())
     return base::nullopt;
@@ -192,7 +190,7 @@ base::Optional<CtapGetAssertionRequest> ParseCtapGetAssertionRequest(
   CtapGetAssertionRequest request(rp_id_it->second.GetString(),
                                   client_data_hash);
 
-  const auto allow_list_it = request_map.find(cbor::CBORValue(3));
+  const auto allow_list_it = request_map.find(cbor::Value(3));
   if (allow_list_it != request_map.end()) {
     if (!allow_list_it->second.is_array())
       return base::nullopt;
@@ -211,7 +209,7 @@ base::Optional<CtapGetAssertionRequest> ParseCtapGetAssertionRequest(
     request.SetAllowList(std::move(allow_list));
   }
 
-  const auto option_it = request_map.find(cbor::CBORValue(5));
+  const auto option_it = request_map.find(cbor::Value(5));
   if (option_it != request_map.end()) {
     if (!option_it->second.is_map())
       return base::nullopt;
@@ -221,12 +219,12 @@ base::Optional<CtapGetAssertionRequest> ParseCtapGetAssertionRequest(
       return base::nullopt;
 
     const auto user_presence_option =
-        option_map.find(cbor::CBORValue(kUserPresenceMapKey));
+        option_map.find(cbor::Value(kUserPresenceMapKey));
     if (user_presence_option != option_map.end())
       request.SetUserPresenceRequired(user_presence_option->second.GetBool());
 
     const auto uv_option =
-        option_map.find(cbor::CBORValue(kUserVerificationMapKey));
+        option_map.find(cbor::Value(kUserVerificationMapKey));
     if (uv_option != option_map.end())
       request.SetUserVerification(
           uv_option->second.GetBool()
@@ -234,14 +232,14 @@ base::Optional<CtapGetAssertionRequest> ParseCtapGetAssertionRequest(
               : UserVerificationRequirement::kPreferred);
   }
 
-  const auto pin_auth_it = request_map.find(cbor::CBORValue(6));
+  const auto pin_auth_it = request_map.find(cbor::Value(6));
   if (pin_auth_it != request_map.end()) {
     if (!pin_auth_it->second.is_bytestring())
       return base::nullopt;
     request.SetPinAuth(pin_auth_it->second.GetBytestring());
   }
 
-  const auto pin_protocol_it = request_map.find(cbor::CBORValue(7));
+  const auto pin_protocol_it = request_map.find(cbor::Value(7));
   if (pin_protocol_it != request_map.end()) {
     if (!pin_protocol_it->second.is_unsigned() ||
         pin_protocol_it->second.GetUnsigned() >

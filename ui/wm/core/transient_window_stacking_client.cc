@@ -45,8 +45,8 @@ void FindCommonTransientAncestor(Window** window1, Window** window2) {
     return;
   }
   // Walk the two chains backwards and look for the first difference.
-  Window::Windows::reverse_iterator it1 = ancestors1.rbegin();
-  Window::Windows::reverse_iterator it2 = ancestors2.rbegin();
+  auto it1 = ancestors1.rbegin();
+  auto it2 = ancestors2.rbegin();
   for (; it1  != ancestors1.rend() && it2  != ancestors2.rend(); ++it1, ++it2) {
     if (*it1 != *it2) {
       *window1 = *it1;

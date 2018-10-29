@@ -25,27 +25,22 @@
         {
           "object": "LayoutNGBlockFlow DIV",
           "rect": [290, 108, 100, 100],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow DIV",
           "rect": [112, 108, 100, 100],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "LayoutNGBlockFlow DIV",
           "rect": [8, 108, 100, 100],
-          "reason": "subtree"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment ' '",
           "rect": [108, 193, 4, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment ' '",
-          "rect": [108, 193, 4, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

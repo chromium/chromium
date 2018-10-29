@@ -43,15 +43,12 @@ blink::mojom::PermissionDescriptorPtr MediaPermissionTypeToPermissionDescriptor(
 namespace content {
 
 MediaPermissionDispatcher::MediaPermissionDispatcher(
-    const ConnectToServiceCB& connect_to_service_cb,
-    const IsEncryptedMediaEnabledCB& is_encrypted_media_enabled_cb)
-    : connect_to_service_cb_(connect_to_service_cb),
-      is_encrypted_media_enabled_cb_(is_encrypted_media_enabled_cb),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    RenderFrameImpl* render_frame)
+    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
       next_request_id_(0),
+      render_frame_(render_frame),
       weak_factory_(this) {
-  DCHECK(!connect_to_service_cb_.is_null());
-  DCHECK(!is_encrypted_media_enabled_cb_.is_null());
+  DCHECK(render_frame_);
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
@@ -108,13 +105,14 @@ void MediaPermissionDispatcher::RequestPermission(
 
   GetPermissionService()->RequestPermission(
       MediaPermissionTypeToPermissionDescriptor(type),
-      blink::WebUserGestureIndicator::IsProcessingUserGesture(),
+      blink::WebUserGestureIndicator::IsProcessingUserGesture(
+          render_frame_->GetWebFrame()),
       base::BindOnce(&MediaPermissionDispatcher::OnPermissionStatus, weak_ptr_,
                      request_id));
 }
 
 bool MediaPermissionDispatcher::IsEncryptedMediaEnabled() {
-  return is_encrypted_media_enabled_cb_.Run();
+  return render_frame_->GetRendererPreferences().enable_encrypted_media;
 }
 
 uint32_t MediaPermissionDispatcher::RegisterCallback(
@@ -131,7 +129,8 @@ uint32_t MediaPermissionDispatcher::RegisterCallback(
 blink::mojom::PermissionService*
 MediaPermissionDispatcher::GetPermissionService() {
   if (!permission_service_) {
-    connect_to_service_cb_.Run(mojo::MakeRequest(&permission_service_));
+    render_frame_->GetRemoteInterfaces()->GetInterface(
+        mojo::MakeRequest(&permission_service_));
     permission_service_.set_connection_error_handler(base::BindOnce(
         &MediaPermissionDispatcher::OnConnectionError, base::Unretained(this)));
   }
@@ -145,7 +144,7 @@ void MediaPermissionDispatcher::OnPermissionStatus(
   DVLOG(2) << __func__ << ": (" << request_id << ", " << status << ")";
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  RequestMap::iterator iter = requests_.find(request_id);
+  auto iter = requests_.find(request_id);
   DCHECK(iter != requests_.end()) << "Request not found.";
 
   PermissionStatusCB permission_status_cb = iter->second;

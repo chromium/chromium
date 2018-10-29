@@ -383,7 +383,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
             }
 
             @Override
-            public void onCrash(Tab tab, boolean sadTabShown) {
+            public void onCrash(Tab tab) {
                 getStripLayoutHelper(tab.isIncognito()).tabPageLoadFinished(tab.getId());
             }
         };

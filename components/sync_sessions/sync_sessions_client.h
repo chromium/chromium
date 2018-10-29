@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "components/sync/model/model_type_store.h"
 
 class GURL;
 
@@ -19,9 +20,14 @@ namespace history {
 class HistoryService;
 }
 
+namespace syncer {
+class DeviceInfo;
+}  // namespace syncer
+
 namespace sync_sessions {
 
 class LocalSessionEventRouter;
+class SessionSyncPrefs;
 class SyncedWindowDelegatesGetter;
 
 // Interface for clients of a sync sessions datatype. Should be used as a getter
@@ -34,6 +40,8 @@ class SyncSessionsClient {
   // Getters for services that sessions depends on.
   virtual favicon::FaviconService* GetFaviconService() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;
+  virtual SessionSyncPrefs* GetSessionSyncPrefs() = 0;
+  virtual syncer::RepeatingModelTypeStoreFactory GetStoreFactory() = 0;
 
   // Checks if the given url is considered interesting enough to sync. Most urls
   // are considered interesting. Examples of ones that are not are invalid urls,
@@ -42,6 +50,10 @@ class SyncSessionsClient {
   // componentized.
   virtual bool ShouldSyncURL(const GURL& url) const = 0;
 
+  // Returns the DeviceInfo representing the local device. May return null if
+  // sync is not running.
+  virtual const syncer::DeviceInfo* GetLocalDeviceInfo() = 0;
+
   // Returns the SyncedWindowDelegatesGetter for this client.
   virtual SyncedWindowDelegatesGetter* GetSyncedWindowDelegatesGetter() = 0;
 
@@ -49,8 +61,8 @@ class SyncSessionsClient {
   // embedder's context.
   virtual LocalSessionEventRouter* GetLocalSessionEventRouter() = 0;
 
-  // TODO(zea): add getters for the history and favicon services for the favicon
-  // cache to consume once it's componentized.
+  // Called when foreign sessions have been updated.
+  virtual void NotifyForeignSessionUpdated() = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SyncSessionsClient);

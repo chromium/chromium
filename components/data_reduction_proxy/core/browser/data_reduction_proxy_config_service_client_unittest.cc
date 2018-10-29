@@ -16,6 +16,7 @@
 #include "base/message_loop/message_loop.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/time/default_clock.h"
@@ -41,6 +42,9 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context_storage.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -80,23 +84,51 @@ namespace data_reduction_proxy {
 
 class DataReductionProxyConfigServiceClientTest : public testing::Test {
  protected:
-  DataReductionProxyConfigServiceClientTest() {
+  DataReductionProxyConfigServiceClientTest()
+      : test_shared_url_loader_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_)) {
+    // TODO(tonikitoo): Do a clean up pass to remove unneeded class members
+    // once the URLFetcher->SimpleURLLoader switch stabalizes.
+    // This includes |context_|, |context_storage_|, |mock_socket_factory_|,
+    // |success_reads_|, |previous_success_reads_| and |not_found_reads_|.
     context_.reset(new net::TestURLRequestContext(true));
     context_storage_.reset(new net::URLRequestContextStorage(context_.get()));
     mock_socket_factory_.reset(new net::MockClientSocketFactory());
   }
 
+  void SetUp() override {
+    testing::Test::SetUp();
+
+    // Install an interceptor here to process the queue of responses
+    // (fed by calls to AddMock{Success,PreviousSuccess,Failure}.
+    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {
+          // Some tests trigger loading, without having an respective
+          // mock response set. Ignore such cases.
+          if (mock_responses_.size() <= curr_mock_response_index_) {
+            test_url_loader_factory_.pending_requests()->clear();
+            return;
+          }
+          test_url_loader_factory_.ClearResponses();
+          test_url_loader_factory_.AddResponse(
+              request.url.spec(),
+              mock_responses_[curr_mock_response_index_].response,
+              mock_responses_[curr_mock_response_index_].http_code);
+          curr_mock_response_index_++;
+          RunUntilIdle();
+        }));
+  }
+
   void Init(bool use_mock_client_socket_factory) {
     if (!use_mock_client_socket_factory)
       mock_socket_factory_.reset(nullptr);
-    test_context_ =
-        DataReductionProxyTestContext::Builder()
-            .WithURLRequestContext(context_.get())
-            .WithMockClientSocketFactory(mock_socket_factory_.get())
-            .WithMockRequestOptions()
-            .WithTestConfigClient()
-            .SkipSettingsInitialization()
-            .Build();
+    test_context_ = DataReductionProxyTestContext::Builder()
+                        .WithURLLoaderFactory(test_shared_url_loader_factory_)
+                        .WithMockRequestOptions()
+                        .WithTestConfigClient()
+                        .SkipSettingsInitialization()
+                        .Build();
 
     context_->set_client_socket_factory(mock_socket_factory_.get());
     test_context_->AttachToURLRequestContext(context_storage_.get());
@@ -348,32 +380,24 @@ class DataReductionProxyConfigServiceClientTest : public testing::Test {
     return test_context_->io_data()->pingback_reporting_fraction();
   }
 
+  bool ignore_blacklist() const {
+    return test_context_->io_data()->ignore_blacklist();
+  }
+
   void RunUntilIdle() {
     test_context_->RunUntilIdle();
   }
 
   void AddMockSuccess() {
-    socket_data_providers_.push_back(
-        std::make_unique<net::StaticSocketDataProvider>(
-            success_reads_, base::span<net::MockWrite>()));
-    mock_socket_factory_->AddSocketDataProvider(
-        socket_data_providers_.back().get());
+    mock_responses_.push_back({success_response(), net::HTTP_OK});
   }
 
   void AddMockPreviousSuccess() {
-    socket_data_providers_.push_back(
-        std::make_unique<net::StaticSocketDataProvider>(
-            previous_success_reads_, base::span<net::MockWrite>()));
-    mock_socket_factory_->AddSocketDataProvider(
-        socket_data_providers_.back().get());
+    mock_responses_.push_back({previous_success_response(), net::HTTP_OK});
   }
 
   void AddMockFailure() {
-    socket_data_providers_.push_back(
-        std::make_unique<net::StaticSocketDataProvider>(
-            not_found_reads_, base::span<net::MockWrite>()));
-    mock_socket_factory_->AddSocketDataProvider(
-        socket_data_providers_.back().get());
+    mock_responses_.push_back({std::string(), net::HTTP_NOT_FOUND});
   }
 
   std::string persisted_config() const {
@@ -423,6 +447,10 @@ class DataReductionProxyConfigServiceClientTest : public testing::Test {
   std::unique_ptr<net::TestURLRequestContext> context_;
   std::unique_ptr<net::MockClientSocketFactory> mock_socket_factory_;
 
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory>
+      test_shared_url_loader_factory_;
+
  protected:
   std::unique_ptr<DataReductionProxyTestContext> test_context_;
 
@@ -467,6 +495,13 @@ class DataReductionProxyConfigServiceClientTest : public testing::Test {
   net::MockRead success_reads_[3];
   net::MockRead previous_success_reads_[3];
   net::MockRead not_found_reads_[2];
+
+  struct MockResponse {
+    std::string response;
+    net::HttpStatusCode http_code;
+  };
+  std::vector<MockResponse> mock_responses_;
+  size_t curr_mock_response_index_ = 0;
 
   std::unique_ptr<net::URLRequestContextStorage> context_storage_;
 
@@ -1358,7 +1393,7 @@ TEST_F(DataReductionProxyConfigServiceClientTest,
   config_client()->ApplySerializedConfig(
       half_reporting_fraction_encoded_config());
   EXPECT_EQ(0.5f, pingback_reporting_fraction());
-  EXPECT_FALSE(config()->IgnoreBlackListLongTermRulesForTesting());
+  EXPECT_FALSE(ignore_blacklist());
 }
 
 TEST_F(DataReductionProxyConfigServiceClientTest,
@@ -1366,7 +1401,7 @@ TEST_F(DataReductionProxyConfigServiceClientTest,
   Init(true);
 
   config_client()->ApplySerializedConfig(ignore_black_list_encoded_config());
-  EXPECT_TRUE(config()->IgnoreBlackListLongTermRulesForTesting());
+  EXPECT_TRUE(ignore_blacklist());
 }
 
 TEST_F(DataReductionProxyConfigServiceClientTest, EmptyConfigDisablesDRP) {

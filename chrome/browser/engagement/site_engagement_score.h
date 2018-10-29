@@ -187,7 +187,6 @@ class SiteEngagementScore {
 
   // Array holding the values corresponding to each item in Variation array.
   static ParamValues& GetParamValues();
-  static ParamValues BuildParamValues();
 
   // Keys used in the content settings dictionary.
   static const char kRawScoreKey[];

@@ -20,7 +20,7 @@
         {
           "object": "LayoutBlockFlow (relative positioned) DIV id='test' class='selected'",
           "rect": [8, 8, 100, 100],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

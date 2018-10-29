@@ -6,7 +6,6 @@
 
 #include <utility>
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_registration.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_request.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_options.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_registration.h"
@@ -54,9 +53,9 @@ void BackgroundFetchBridge::MatchRequests(
     bool match_all,
     mojom::blink::BackgroundFetchService::MatchRequestsCallback callback) {
   GetService()->MatchRequests(
-      GetSupplementable()->WebRegistration()->RegistrationId(), developer_id,
-      unique_id, std::move(request_to_match), std::move(cache_query_params),
-      match_all, std::move(callback));
+      GetSupplementable()->RegistrationId(), developer_id, unique_id,
+      std::move(request_to_match), std::move(cache_query_params), match_all,
+      std::move(callback));
 }
 
 void BackgroundFetchBridge::Fetch(
@@ -67,8 +66,8 @@ void BackgroundFetchBridge::Fetch(
     mojom::blink::BackgroundFetchUkmDataPtr ukm_data,
     RegistrationCallback callback) {
   GetService()->Fetch(
-      GetSupplementable()->WebRegistration()->RegistrationId(), developer_id,
-      std::move(requests), std::move(options), icon, std::move(ukm_data),
+      GetSupplementable()->RegistrationId(), developer_id, std::move(requests),
+      std::move(options), icon, std::move(ukm_data),
       WTF::Bind(&BackgroundFetchBridge::DidGetRegistration,
                 WrapPersistent(this), WTF::Passed(std::move(callback))));
 }
@@ -76,8 +75,8 @@ void BackgroundFetchBridge::Fetch(
 void BackgroundFetchBridge::Abort(const String& developer_id,
                                   const String& unique_id,
                                   AbortCallback callback) {
-  GetService()->Abort(GetSupplementable()->WebRegistration()->RegistrationId(),
-                      developer_id, unique_id, std::move(callback));
+  GetService()->Abort(GetSupplementable()->RegistrationId(), developer_id,
+                      unique_id, std::move(callback));
 }
 
 void BackgroundFetchBridge::UpdateUI(const String& developer_id,
@@ -91,15 +90,14 @@ void BackgroundFetchBridge::UpdateUI(const String& developer_id,
     return;
   }
 
-  GetService()->UpdateUI(
-      GetSupplementable()->WebRegistration()->RegistrationId(), developer_id,
-      unique_id, title, icon, std::move(callback));
+  GetService()->UpdateUI(GetSupplementable()->RegistrationId(), developer_id,
+                         unique_id, title, icon, std::move(callback));
 }
 
 void BackgroundFetchBridge::GetRegistration(const String& developer_id,
                                             RegistrationCallback callback) {
   GetService()->GetRegistration(
-      GetSupplementable()->WebRegistration()->RegistrationId(), developer_id,
+      GetSupplementable()->RegistrationId(), developer_id,
       WTF::Bind(&BackgroundFetchBridge::DidGetRegistration,
                 WrapPersistent(this), WTF::Passed(std::move(callback))));
 }
@@ -121,9 +119,8 @@ void BackgroundFetchBridge::DidGetRegistration(
 }
 
 void BackgroundFetchBridge::GetDeveloperIds(GetDeveloperIdsCallback callback) {
-  GetService()->GetDeveloperIds(
-      GetSupplementable()->WebRegistration()->RegistrationId(),
-      std::move(callback));
+  GetService()->GetDeveloperIds(GetSupplementable()->RegistrationId(),
+                                std::move(callback));
 }
 
 void BackgroundFetchBridge::AddRegistrationObserver(

@@ -4,7 +4,6 @@
 
 #include "ash/system/system_notification_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/cast/cast_notification_controller.h"
 #include "ash/system/network/auto_connect_notifier.h"
@@ -29,12 +28,8 @@ SystemNotificationController::SystemNotificationController()
           std::make_unique<ScreenSecurityNotificationController>()),
       session_limit_(std::make_unique<SessionLimitNotificationController>()),
       supervised_(std::make_unique<SupervisedNotificationController>()),
-      tracing_(features::IsSystemTrayUnifiedEnabled()
-                   ? std::make_unique<TracingNotificationController>()
-                   : nullptr),
-      update_(features::IsSystemTrayUnifiedEnabled()
-                  ? std::make_unique<UpdateNotificationController>()
-                  : nullptr),
+      tracing_(std::make_unique<TracingNotificationController>()),
+      update_(std::make_unique<UpdateNotificationController>()),
       wifi_toggle_(std::make_unique<WifiToggleNotificationController>()) {}
 
 SystemNotificationController::~SystemNotificationController() = default;

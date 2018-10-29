@@ -6,6 +6,7 @@
 #define CHROMEOS_NETWORK_MOCK_NETWORK_DEVICE_HANDLER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -97,6 +98,16 @@ class CHROMEOS_EXPORT MockNetworkDeviceHandler : public NetworkDeviceHandler {
 
   MOCK_METHOD3(AddWifiWakeOnPacketConnection,
                void(const net::IPEndPoint& ip_endpoint,
+                    const base::Closure& callback,
+                    const network_handler::ErrorCallback& error_callback));
+
+  MOCK_METHOD3(AddWifiWakeOnPacketOfTypes,
+               void(const std::vector<std::string>& types,
+                    const base::Closure& callback,
+                    const network_handler::ErrorCallback& error_callback));
+
+  MOCK_METHOD3(RemoveWifiWakeOnPacketOfTypes,
+               void(const std::vector<std::string>& types,
                     const base::Closure& callback,
                     const network_handler::ErrorCallback& error_callback));
 

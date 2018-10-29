@@ -47,6 +47,7 @@
 <translation id="6322279351188361895">Falha ao ler a chave privada.</translation>
 <translation id="6391538222494443604">O diretório de entrada deve existir.</translation>
 <translation id="641087317769093025">Não foi possível descompactar a extensão</translation>
+<translation id="6413453408918378296">O ícone "<ph name="ICON" />" não está suficientemente visível.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" está solicitando acesso a um ou mais dos seus dispositivos:</translation>
 <translation id="657064425229075395">Não foi possível carregar o script de plano de fundo "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>

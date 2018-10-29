@@ -37,7 +37,10 @@ MediaFileChecker::MediaFileChecker(base::File file) : file_(std::move(file)) {}
 MediaFileChecker::~MediaFileChecker() = default;
 
 bool MediaFileChecker::Start(base::TimeDelta check_time) {
-  media::FileDataSource source(std::move(file_));
+  media::FileDataSource source;
+  if (!source.Initialize(std::move(file_)))
+    return false;
+
   bool read_ok = true;
   media::BlockingUrlProtocol protocol(
       &source, base::Bind(&OnMediaFileCheckerError, &read_ok));

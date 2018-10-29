@@ -76,13 +76,13 @@ PASS AudioContext interface: operation suspend()
 PASS Unscopable handled correctly for suspend() on AudioContext
 PASS AudioContext interface: operation close()
 PASS Unscopable handled correctly for close() on AudioContext
-FAIL AudioContext interface: operation createMediaElementSource(HTMLMediaElement) assert_own_property: interface prototype object missing non-static operation expected property "createMediaElementSource" missing
+PASS AudioContext interface: operation createMediaElementSource(HTMLMediaElement)
 PASS Unscopable handled correctly for createMediaElementSource(HTMLMediaElement) on AudioContext
-FAIL AudioContext interface: operation createMediaStreamSource(MediaStream) assert_own_property: interface prototype object missing non-static operation expected property "createMediaStreamSource" missing
+PASS AudioContext interface: operation createMediaStreamSource(MediaStream)
 PASS Unscopable handled correctly for createMediaStreamSource(MediaStream) on AudioContext
 FAIL AudioContext interface: operation createMediaStreamTrackSource(MediaStreamTrack) assert_own_property: interface prototype object missing non-static operation expected property "createMediaStreamTrackSource" missing
 PASS Unscopable handled correctly for createMediaStreamTrackSource(MediaStreamTrack) on AudioContext
-FAIL AudioContext interface: operation createMediaStreamDestination() assert_own_property: interface prototype object missing non-static operation expected property "createMediaStreamDestination" missing
+PASS AudioContext interface: operation createMediaStreamDestination()
 PASS Unscopable handled correctly for createMediaStreamDestination() on AudioContext
 PASS AudioContext must be primary interface of context
 PASS Stringification of context

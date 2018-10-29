@@ -44,9 +44,7 @@ LayoutWorkletGlobalScope::LayoutWorkletGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerReportingProxy& reporting_proxy,
     PendingLayoutRegistry* pending_layout_registry)
-    : MainThreadWorkletGlobalScope(frame,
-                                   std::move(creation_params),
-                                   reporting_proxy),
+    : WorkletGlobalScope(std::move(creation_params), reporting_proxy, frame),
       pending_layout_registry_(pending_layout_registry) {}
 
 LayoutWorkletGlobalScope::~LayoutWorkletGlobalScope() = default;
@@ -55,7 +53,7 @@ void LayoutWorkletGlobalScope::Dispose() {
   MainThreadDebugger::Instance()->ContextWillBeDestroyed(
       ScriptController()->GetScriptState());
 
-  MainThreadWorkletGlobalScope::Dispose();
+  WorkletGlobalScope::Dispose();
 }
 
 // https://drafts.css-houdini.org/css-layout-api/#dom-layoutworkletglobalscope-registerlayout
@@ -161,7 +159,7 @@ CSSLayoutDefinition* LayoutWorkletGlobalScope::FindDefinition(
 void LayoutWorkletGlobalScope::Trace(blink::Visitor* visitor) {
   visitor->Trace(layout_definitions_);
   visitor->Trace(pending_layout_registry_);
-  MainThreadWorkletGlobalScope::Trace(visitor);
+  WorkletGlobalScope::Trace(visitor);
 }
 
 }  // namespace blink

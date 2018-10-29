@@ -704,22 +704,6 @@ below:
         video
       </message>
 
-      <message name="IDS_AX_MEDIA_MUTE_BUTTON_HELP" desc="Accessibility help description for mute button">
-        mute audio track
-      </message>
-
-      <message name="IDS_AX_MEDIA_UNMUTE_BUTTON_HELP" desc="Accessibility help description for turn mute off button">
-        unmute audio track
-      </message>
-
-      <message name="IDS_AX_MEDIA_PLAY_BUTTON_HELP" desc="Accessibility help description for play button">
-        begin playback
-      </message>
-
-      <message name="IDS_AX_MEDIA_PAUSE_BUTTON_HELP" desc="Accessibility help description for pause button">
-        pause playback
-      </message>
-
       <message name="IDS_AX_MEDIA_AUDIO_SLIDER_HELP" desc="Accessibility help description for audio timeline slider">
         audio time scrubber
       </message>
@@ -728,48 +712,16 @@ below:
         movie time scrubber
       </message>
 
+      <message name="IDS_AX_MEDIA_VOLUME_SLIDER_HELP" desc="Accessibility help description for volume slider">
+        volume slider
+      </message>
+
       <message name="IDS_AX_MEDIA_CURRENT_TIME_DISPLAY_HELP" desc="Accessibility help description for elapsed time display">
         current time in seconds
       </message>
 
       <message name="IDS_AX_MEDIA_TIME_REMAINING_DISPLAY_HELP" desc="Accessibility help description for time remaining display">
         number of seconds of movie remaining
-      </message>
-
-      <message name="IDS_AX_MEDIA_ENTER_FULL_SCREEN_BUTTON_HELP" desc="Accessibility help description for enter fullscreen button">
-        play movie in full screen mode
-      </message>
-
-      <message name="IDS_AX_MEDIA_EXIT_FULL_SCREEN_BUTTON_HELP" desc="Accessibility help description for exit fullscreen button">
-        exit full screen
-      </message>
-
-      <message name="IDS_AX_MEDIA_DISPLAY_CUT_OUT_FULL_SCREEN_BUTTON_HELP" desc="Accessibility help description for display cutout fullscreen button">
-        toggle fullscreen into display cutout area
-      </message>
-
-      <message name="IDS_AX_MEDIA_ENTER_PICTURE_IN_PICTURE_BUTTON_HELP" desc="Accessibility help description for enter Picture-in-Picture button">
-        play video in picture-in-picture mode
-      </message>
-
-      <message name="IDS_AX_MEDIA_EXIT_PICTURE_IN_PICTURE_BUTTON_HELP" desc="Accessibility help description for exit Picture-in-Picture button">
-        exit picture-in-picture
-      </message>
-
-      <message name="IDS_AX_MEDIA_SHOW_CLOSED_CAPTIONS_BUTTON_HELP" desc="Accessibility help description for show closed captions button">
-        start displaying closed captions
-      </message>
-
-      <message name="IDS_AX_MEDIA_HIDE_CLOSED_CAPTIONS_BUTTON_HELP" desc="Accessibility help description for hide closed captions button">
-        stop displaying closed captions
-      </message>
-
-      <message name="IDS_AX_MEDIA_CAST_OFF_BUTTON_HELP" desc="Accessibility help description for remote playback button">
-        play on remote device
-      </message>
-
-      <message name="IDS_AX_MEDIA_CAST_ON_BUTTON_HELP" desc="Accessibility help description for remote playback control button">
-        control remote playback
       </message>
 
       <message name="IDS_AX_MEDIA_OVERFLOW_BUTTON_HELP" desc="Accessibility help description for overflow button.">

@@ -57,7 +57,9 @@ class BackgroundFetchRegistration final
   void OnProgress(uint64_t upload_total,
                   uint64_t uploaded,
                   uint64_t download_total,
-                  uint64_t downloaded) override;
+                  uint64_t downloaded,
+                  mojom::BackgroundFetchResult result,
+                  mojom::BackgroundFetchFailureReason failure_reason) override;
   void OnRecordsUnavailable() override;
 
   // Web Exposed attribute defined in the IDL file. Corresponds to the

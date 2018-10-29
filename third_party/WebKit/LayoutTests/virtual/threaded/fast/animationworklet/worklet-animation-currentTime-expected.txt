@@ -1,3 +1,0 @@
-CONSOLE MESSAGE: line 6: first currentTime is 0
-CONSOLE MESSAGE: line 9: second currentTime > first currentTime is true
-

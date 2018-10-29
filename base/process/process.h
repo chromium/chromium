@@ -98,6 +98,16 @@ class BASE_EXPORT Process {
   // Get the PID for this process.
   ProcessId Pid() const;
 
+#if !defined(OS_ANDROID)
+  // Get the creation time for this process. Since the Pid can be reused after a
+  // process dies, it is useful to use both the Pid and the creation time to
+  // uniquely identify a process.
+  //
+  // Not available on Android because /proc/stat/ cannot be accessed on O+.
+  // https://issuetracker.google.com/issues/37140047
+  Time CreationTime() const;
+#endif  // !defined(OS_ANDROID)
+
   // Returns true if this process is the current process.
   bool is_current() const;
 

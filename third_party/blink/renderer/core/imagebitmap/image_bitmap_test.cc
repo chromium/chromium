@@ -35,6 +35,7 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -74,7 +75,8 @@ class ImageBitmapTest : public testing::Test {
     image2_ = surface2->makeImageSnapshot();
 
     // Save the global memory cache to restore it upon teardown.
-    global_memory_cache_ = ReplaceMemoryCacheForTesting(MemoryCache::Create());
+    global_memory_cache_ = ReplaceMemoryCacheForTesting(MemoryCache::Create(
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
 
     auto factory = [](FakeGLES2Interface* gl, bool* gpu_compositing_disabled)
         -> std::unique_ptr<WebGraphicsContext3DProvider> {
@@ -312,47 +314,6 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
   }
 }
 
-enum class ColorSpaceConversion : uint8_t {
-  NONE = 0,
-  DEFAULT_COLOR_CORRECTED = 1,
-  PRESERVE = 2,
-  SRGB = 3,
-  LINEAR_RGB = 4,
-  P3 = 5,
-  REC2020 = 6,
-
-  LAST = REC2020
-};
-
-static ImageBitmapOptions PrepareBitmapOptions(
-    const ColorSpaceConversion& color_space_conversion) {
-  // Set the color space conversion in ImageBitmapOptions
-  ImageBitmapOptions options;
-  static const Vector<String> kConversions = {
-      "none", "default", "preserve", "srgb", "linear-rgb", "p3", "rec2020"};
-  options.setColorSpaceConversion(
-      kConversions[static_cast<uint8_t>(color_space_conversion)]);
-  return options;
-}
-
-static sk_sp<SkColorSpace> GetColorSpaceForColorSpaceConversion(
-    ColorSpaceConversion conversion) {
-  sk_sp<SkColorSpace> color_space = nullptr;
-  if (conversion == ColorSpaceConversion::DEFAULT_COLOR_CORRECTED ||
-      conversion == ColorSpaceConversion::SRGB) {
-    color_space = SkColorSpace::MakeSRGB();
-  } else if (conversion == ColorSpaceConversion::LINEAR_RGB) {
-    color_space = SkColorSpace::MakeSRGBLinear();
-  } else if (conversion == ColorSpaceConversion::P3) {
-    color_space = SkColorSpace::MakeRGB(SkColorSpace::kLinear_RenderTargetGamma,
-                                        SkColorSpace::kDCIP3_D65_Gamut);
-  } else if (conversion == ColorSpaceConversion::REC2020) {
-    color_space = SkColorSpace::MakeRGB(SkColorSpace::kLinear_RenderTargetGamma,
-                                        SkColorSpace::kRec2020_Gamut);
-  }
-  return color_space;
-}
-
 TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionHTMLImageElement) {
   HTMLImageElement* image_element =
       HTMLImageElement::Create(*Document::CreateForTest());
@@ -377,13 +338,13 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionHTMLImageElement) {
   base::Optional<IntRect> crop_rect =
       IntRect(0, 0, source_image->width(), source_image->height());
 
-  for (uint8_t i =
-           static_cast<uint8_t>(ColorSpaceConversion::DEFAULT_COLOR_CORRECTED);
-       i <= static_cast<uint8_t>(ColorSpaceConversion::LAST); i++) {
-    ColorSpaceConversion color_space_conversion =
-        static_cast<ColorSpaceConversion>(i);
-    ImageBitmapOptions options =
-        PrepareBitmapOptions(color_space_conversion);
+  for (int conversion_iterator = kColorSpaceConversion_Default;
+       conversion_iterator <= kColorSpaceConversion_Last;
+       conversion_iterator++) {
+    ImageBitmapOptions options;
+    options.setColorSpaceConversion(
+        ColorCorrectionTestUtils::ColorSpaceConversionToString(
+            static_cast<ColorSpaceConversion>(conversion_iterator)));
     ImageBitmap* image_bitmap = ImageBitmap::Create(
         image_element, crop_rect, &(image_element->GetDocument()), options);
     ASSERT_TRUE(image_bitmap);
@@ -393,7 +354,7 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionHTMLImageElement) {
     converted_image->peekPixels(&converted_pixmap);
     unsigned num_pixels = source_image->width() * source_image->height();
 
-    if (color_space_conversion == ColorSpaceConversion::PRESERVE) {
+    if (conversion_iterator == kColorSpaceConversion_Preserve) {
       EXPECT_TRUE(
           SkColorSpace::Equals(colorspin.get(), converted_image->colorSpace()));
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
@@ -401,7 +362,8 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionHTMLImageElement) {
           kPixelFormat_8888, kAlphaMultiplied, kUnpremulRoundTripTolerance);
     } else {
       sk_sp<SkColorSpace> color_space =
-          GetColorSpaceForColorSpaceConversion(color_space_conversion);
+          ColorCorrectionTestUtils::ColorSpaceConversionToSkColorSpace(
+              static_cast<ColorSpaceConversion>(conversion_iterator));
       EXPECT_TRUE(SkColorSpace::Equals(color_space.get(),
                                        converted_image->colorSpace()));
 
@@ -412,8 +374,7 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionHTMLImageElement) {
             expected_image_info.makeColorType(kRGBA_F16_SkColorType);
       }
       SkBitmap expected_bitmap;
-      EXPECT_TRUE(expected_bitmap.tryAllocPixels(
-          expected_image_info, expected_image_info.minRowBytes()));
+      EXPECT_TRUE(expected_bitmap.tryAllocPixels(expected_image_info));
       source_image->readPixels(expected_bitmap.pixmap(), 0, 0);
 
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
@@ -439,18 +400,20 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionImageBitmap) {
 
   base::Optional<IntRect> crop_rect =
       IntRect(0, 0, source_image->width(), source_image->height());
-  ImageBitmapOptions options =
-      PrepareBitmapOptions(ColorSpaceConversion::PRESERVE);
+  ImageBitmapOptions options;
+  options.setColorSpaceConversion(
+      ColorCorrectionTestUtils::ColorSpaceConversionToString(
+          kColorSpaceConversion_Preserve));
   ImageBitmap* source_image_bitmap = ImageBitmap::Create(
       StaticBitmapImage::Create(source_image), crop_rect, options);
   ASSERT_TRUE(source_image_bitmap);
 
-  for (uint8_t i =
-           static_cast<uint8_t>(ColorSpaceConversion::DEFAULT_COLOR_CORRECTED);
-       i <= static_cast<uint8_t>(ColorSpaceConversion::LAST); i++) {
-    ColorSpaceConversion color_space_conversion =
-        static_cast<ColorSpaceConversion>(i);
-    options = PrepareBitmapOptions(color_space_conversion);
+  for (int conversion_iterator = kColorSpaceConversion_Default;
+       conversion_iterator <= kColorSpaceConversion_Last;
+       conversion_iterator++) {
+    options.setColorSpaceConversion(
+        ColorCorrectionTestUtils::ColorSpaceConversionToString(
+            static_cast<ColorSpaceConversion>(conversion_iterator)));
     ImageBitmap* image_bitmap =
         ImageBitmap::Create(source_image_bitmap, crop_rect, options);
     ASSERT_TRUE(image_bitmap);
@@ -460,7 +423,7 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionImageBitmap) {
     converted_image->peekPixels(&converted_pixmap);
     unsigned num_pixels = source_image->width() * source_image->height();
 
-    if (color_space_conversion == ColorSpaceConversion::PRESERVE) {
+    if (conversion_iterator == kColorSpaceConversion_Preserve) {
       EXPECT_TRUE(
           SkColorSpace::Equals(colorspin.get(), converted_image->colorSpace()));
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
@@ -468,7 +431,8 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionImageBitmap) {
           kPixelFormat_8888, kAlphaMultiplied, kUnpremulRoundTripTolerance);
     } else {
       sk_sp<SkColorSpace> color_space =
-          GetColorSpaceForColorSpaceConversion(color_space_conversion);
+          ColorCorrectionTestUtils::ColorSpaceConversionToSkColorSpace(
+              static_cast<ColorSpaceConversion>(conversion_iterator));
       EXPECT_TRUE(SkColorSpace::Equals(color_space.get(),
                                        converted_image->colorSpace()));
 
@@ -479,8 +443,7 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionImageBitmap) {
             expected_image_info.makeColorType(kRGBA_F16_SkColorType);
       }
       SkBitmap expected_bitmap;
-      EXPECT_TRUE(expected_bitmap.tryAllocPixels(
-          expected_image_info, expected_image_info.minRowBytes()));
+      EXPECT_TRUE(expected_bitmap.tryAllocPixels(expected_image_info));
       source_image->readPixels(expected_bitmap.pixmap(), 0, 0);
 
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
@@ -507,13 +470,13 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionStaticBitmapImage) {
   base::Optional<IntRect> crop_rect =
       IntRect(0, 0, source_image->width(), source_image->height());
 
-  for (uint8_t i =
-           static_cast<uint8_t>(ColorSpaceConversion::DEFAULT_COLOR_CORRECTED);
-       i <= static_cast<uint8_t>(ColorSpaceConversion::LAST); i++) {
-    ColorSpaceConversion color_space_conversion =
-        static_cast<ColorSpaceConversion>(i);
-    ImageBitmapOptions options =
-        PrepareBitmapOptions(color_space_conversion);
+  for (int conversion_iterator = kColorSpaceConversion_Default;
+       conversion_iterator <= kColorSpaceConversion_Last;
+       conversion_iterator++) {
+    ImageBitmapOptions options;
+    options.setColorSpaceConversion(
+        ColorCorrectionTestUtils::ColorSpaceConversionToString(
+            static_cast<ColorSpaceConversion>(conversion_iterator)));
     ImageBitmap* image_bitmap = ImageBitmap::Create(
         StaticBitmapImage::Create(source_image), crop_rect, options);
     ASSERT_TRUE(image_bitmap);
@@ -523,7 +486,7 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionStaticBitmapImage) {
     converted_image->peekPixels(&converted_pixmap);
     unsigned num_pixels = source_image->width() * source_image->height();
 
-    if (color_space_conversion == ColorSpaceConversion::PRESERVE) {
+    if (conversion_iterator == kColorSpaceConversion_Preserve) {
       EXPECT_TRUE(
           SkColorSpace::Equals(colorspin.get(), converted_image->colorSpace()));
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
@@ -531,7 +494,8 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionStaticBitmapImage) {
           kPixelFormat_8888, kAlphaMultiplied, kUnpremulRoundTripTolerance);
     } else {
       sk_sp<SkColorSpace> color_space =
-          GetColorSpaceForColorSpaceConversion(color_space_conversion);
+          ColorCorrectionTestUtils::ColorSpaceConversionToSkColorSpace(
+              static_cast<ColorSpaceConversion>(conversion_iterator));
       EXPECT_TRUE(SkColorSpace::Equals(color_space.get(),
                                        converted_image->colorSpace()));
 
@@ -542,8 +506,7 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionStaticBitmapImage) {
             expected_image_info.makeColorType(kRGBA_F16_SkColorType);
       }
       SkBitmap expected_bitmap;
-      EXPECT_TRUE(expected_bitmap.tryAllocPixels(
-          expected_image_info, expected_image_info.minRowBytes()));
+      EXPECT_TRUE(expected_bitmap.tryAllocPixels(expected_image_info));
       source_image->readPixels(expected_bitmap.pixmap(), 0, 0);
 
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
@@ -565,21 +528,20 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionImageData) {
       SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType, kUnpremul_SkAlphaType,
                         SkColorSpace::MakeSRGB());
   SkBitmap source_bitmap;
-  EXPECT_TRUE(
-      source_bitmap.tryAllocPixels(image_info, image_info.minRowBytes()));
+  EXPECT_TRUE(source_bitmap.tryAllocPixels(image_info));
   SkPixmap source_pixmap;
   source_pixmap = source_bitmap.pixmap();
   memcpy(source_pixmap.writable_addr(), image_data->BufferBase()->Data(), 4);
 
   base::Optional<IntRect> crop_rect = IntRect(0, 0, 1, 1);
 
-  for (uint8_t i =
-           static_cast<uint8_t>(ColorSpaceConversion::DEFAULT_COLOR_CORRECTED);
-       i <= static_cast<uint8_t>(ColorSpaceConversion::LAST); i++) {
-    ColorSpaceConversion color_space_conversion =
-        static_cast<ColorSpaceConversion>(i);
-    ImageBitmapOptions options =
-        PrepareBitmapOptions(color_space_conversion);
+  for (int conversion_iterator = kColorSpaceConversion_Default;
+       conversion_iterator <= kColorSpaceConversion_Last;
+       conversion_iterator++) {
+    ImageBitmapOptions options;
+    options.setColorSpaceConversion(
+        ColorCorrectionTestUtils::ColorSpaceConversionToString(
+            static_cast<ColorSpaceConversion>(conversion_iterator)));
     ImageBitmap* image_bitmap =
         ImageBitmap::Create(image_data, crop_rect, options);
     ASSERT_TRUE(image_bitmap);
@@ -589,13 +551,12 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionImageData) {
     converted_image->peekPixels(&converted_pixmap);
     unsigned num_pixels = converted_image->width() * converted_image->height();
 
-    if (color_space_conversion == ColorSpaceConversion::PRESERVE) {
+    if (conversion_iterator == kColorSpaceConversion_Preserve) {
       // crbug.com/886999
       // EXPECT_TRUE(SkColorSpace::Equals(SkColorSpace::MakeSRGB().get(),
       //                                  converted_image->colorSpace()));
       SkBitmap expected_bitmap;
-      EXPECT_TRUE(expected_bitmap.tryAllocPixels(
-          converted_pixmap.info(), converted_pixmap.info().minRowBytes()));
+      EXPECT_TRUE(expected_bitmap.tryAllocPixels(converted_pixmap.info()));
       source_pixmap.readPixels(expected_bitmap.pixmap(), 0, 0);
 
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
@@ -603,13 +564,13 @@ TEST_F(ImageBitmapTest, ImageBitmapColorSpaceConversionImageData) {
           kPixelFormat_8888, kAlphaMultiplied, kUnpremulRoundTripTolerance);
     } else {
       sk_sp<SkColorSpace> color_space =
-          GetColorSpaceForColorSpaceConversion(color_space_conversion);
+          ColorCorrectionTestUtils::ColorSpaceConversionToSkColorSpace(
+              static_cast<ColorSpaceConversion>(conversion_iterator));
       // crbug.com/886999
       // EXPECT_TRUE(SkColorSpace::Equals(color_space.get(),
       //                                  converted_image->colorSpace()));
       SkBitmap expected_bitmap;
-      EXPECT_TRUE(expected_bitmap.tryAllocPixels(
-          converted_pixmap.info(), converted_pixmap.info().minRowBytes()));
+      EXPECT_TRUE(expected_bitmap.tryAllocPixels(converted_pixmap.info()));
       source_pixmap.readPixels(expected_bitmap.pixmap(), 0, 0);
 
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
@@ -627,7 +588,7 @@ TEST_F(ImageBitmapTest, ImageBitmapPixelFormat) {
   scoped_refptr<StaticBitmapImage> bitmap_image =
       StaticBitmapImage::Create(sk_image);
 
-  // source: 8888, bitmap pixel format: default
+  // source: uint8, bitmap pixel format: default
   ImageBitmapOptions options;
   ImageBitmap* image_bitmap =
       ImageBitmap::Create(bitmap_image, bitmap_image->Rect(), options);
@@ -637,8 +598,8 @@ TEST_F(ImageBitmapTest, ImageBitmapPixelFormat) {
       image_bitmap->BitmapImage()->PaintImageForCurrentFrame().GetSkImage();
   ASSERT_EQ(kN32_SkColorType, sk_image_internal->colorType());
 
-  // source: 8888, bitmap pixel format: 8888
-  options.setImagePixelFormat("8-8-8-8");
+  // source: uint8, bitmap pixel format: uint8
+  options.setImagePixelFormat("uint8");
   ImageBitmap* image_bitmap_8888 =
       ImageBitmap::Create(bitmap_image, bitmap_image->Rect(), options);
   ASSERT_TRUE(image_bitmap_8888);
@@ -647,7 +608,7 @@ TEST_F(ImageBitmapTest, ImageBitmapPixelFormat) {
                                               .GetSkImage();
   ASSERT_EQ(kN32_SkColorType, sk_image_internal_8888->colorType());
 
-  // Since there is no conversion from 8888 to default for image bitmap pixel
+  // Since there is no conversion from uint8 to default for image bitmap pixel
   // format option, we expect the two image bitmaps to refer to the same
   // internal SkImage back storage.
   ASSERT_EQ(sk_image_internal, sk_image_internal_8888);
@@ -670,8 +631,8 @@ TEST_F(ImageBitmapTest, ImageBitmapPixelFormat) {
       image_bitmap_f16->BitmapImage()->PaintImageForCurrentFrame().GetSkImage();
   ASSERT_EQ(kRGBA_F16_SkColorType, sk_image_internal_f16->colorType());
 
-  // source: f16, bitmap pixel format: 8888
-  options_f16.setImagePixelFormat("8-8-8-8");
+  // source: f16, bitmap pixel format: uint8
+  options_f16.setImagePixelFormat("uint8");
   ImageBitmap* image_bitmap_f16_8888 = ImageBitmap::Create(
       bitmap_image_f16, bitmap_image_f16->Rect(), options_f16);
   ASSERT_TRUE(image_bitmap_f16_8888);
@@ -699,12 +660,13 @@ TEST_F(ImageBitmapTest,
   ImageData* image_data =
       ImageData::CreateForTest(IntSize(v8::TypedArray::kMaxLength / 16, 1));
   DCHECK(image_data);
-  ImageBitmapOptions options =
-      PrepareBitmapOptions(ColorSpaceConversion::DEFAULT_COLOR_CORRECTED);
+  ImageBitmapOptions options;
+  options.setColorSpaceConversion(
+      ColorCorrectionTestUtils::ColorSpaceConversionToString(
+          kColorSpaceConversion_Default));
   ImageBitmap* image_bitmap = ImageBitmap::Create(
       image_data, IntRect(IntPoint(0, 0), image_data->Size()), options);
   DCHECK(image_bitmap);
 }
 
-#undef MAYBE_ImageBitmapColorSpaceConversionHTMLImageElement
 }  // namespace blink

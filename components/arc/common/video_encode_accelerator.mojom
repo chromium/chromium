@@ -9,11 +9,19 @@ module arc.mojom;
 
 import "components/arc/common/video_common.mojom";
 
+// Next MinVersion: 3
+
 [Extensible]
 enum VideoPixelFormat {
   // The values must match to the values in media::VideoPixelFormat
   PIXEL_FORMAT_UNKNOWN = 0,
   PIXEL_FORMAT_I420 = 1,
+  [MinVersion=2] PIXEL_FORMAT_YV12 = 2,
+  [MinVersion=2] PIXEL_FORMAT_NV12 = 6,
+  [MinVersion=2] PIXEL_FORMAT_NV21 = 7,
+  [MinVersion=2] PIXEL_FORMAT_ARGB = 10,
+  [MinVersion=2] PIXEL_FORMAT_ABGR = 27,
+  [MinVersion=2] PIXEL_FORMAT_XBGR = 28,
 };
 
 // Specification of an encoding profile supported by an encoder.
@@ -22,6 +30,14 @@ struct VideoEncodeProfile {
   Size max_resolution;
   uint32 max_framerate_numerator;
   uint32 max_framerate_denominator;
+};
+
+
+// The input buffer storage type.
+[Extensible]
+enum VideoFrameStorageType {
+    SHMEM = 0,
+    DMABUF = 1,
 };
 
 // The encoder parameter set which matches to
@@ -35,7 +51,32 @@ struct VideoEncodeProfile {
 //  valid when |has_initial_framerate| is true.
 //  |h264_output_level| is H264 level of encoded output stream. It is optional,
 //  only valid when |has_h264_output_level| is true.
+//  |storage_type| is the storage type of video frame provided on Encode().
 struct VideoEncodeAcceleratorConfig {
+  VideoPixelFormat input_format;
+  Size input_visible_size;
+  VideoCodecProfile output_profile;
+  uint32 initial_bitrate;
+  uint32 initial_framerate;
+  bool has_initial_framerate;
+  uint8 h264_output_level;
+  bool has_h264_output_level;
+  [MinVersion=1] VideoFrameStorageType storage_type;
+};
+
+
+// The encoder parameter set which matches to
+// media::VideoEncodeAccelerator::Config.
+//  |input_format| is the pixel format of the input frames.
+//  |input_visible_size| is the resolution of the input frames.
+//  |output_profile| is the codec profile of the encoded output stream.
+//  |initial_bitrate| is the initial bitrate of the encoded output stream,
+//  in bits per second.
+//  |initial_framerate| is the initial requested framerate. It is optional, only
+//  valid when |has_initial_framerate| is true.
+//  |h264_output_level| is H264 level of encoded output stream. It is optional,
+//  only valid when |has_h264_output_level| is true.
+struct VideoEncodeAcceleratorConfigDeprecated {
   VideoPixelFormat input_format;
   Size input_visible_size;
   VideoCodecProfile output_profile;
@@ -47,13 +88,11 @@ struct VideoEncodeAcceleratorConfig {
 };
 
 // Video encoder IPC interface.
-// Next MinVersion: 1
-// Next Method ID: 7
+// Next Method ID: 8
 interface VideoEncodeAccelerator {
-
   // The input buffer storage type.
   [Extensible]
-  enum StorageType {
+  enum StorageTypeDeprecated {
     SHARED_MEMORY,
     DMABUF,
   };
@@ -80,23 +119,15 @@ interface VideoEncodeAccelerator {
   // Initializes the video encoder with specific configuration.  Called once per
   // encoder construction.
   // Parameters:
-  //  |input_format| is the pixel format of the input frames.
-  //  |visible_size| is the resolution of the input frames.
-  //  |input_storage| the type of the input buffer.
-  //  |output_profile| is the codec profile of the encoded output stream.
-  //  |initial_bitrate| is the initial bitrate of the encoded output stream,
-  //  in bits per second.
+  //  |config| is the parameter set for encoder initialization.
   //  |client| is the client of this video encoder. The client must be valid
   //  during the lifetime of this accelerator.
   // Callback:
   //  Called with true iff initialization is successful. The client should not
   //  invoke any other methods before the callback.
-  InitializeDeprecated@1(VideoPixelFormat input_format,
-                         Size visible_size,
-                         StorageType input_storage,
-                         VideoCodecProfile output_profile,
-                         uint32 initial_bitrate,
-                         VideoEncodeClient client) => (bool success);
+  [MinVersion=1]
+  Initialize@7(VideoEncodeAcceleratorConfig config,
+               VideoEncodeClient client) => (bool success);
 
   // Initializes the video encoder with specific configuration.  Called once per
   // encoder construction.
@@ -108,9 +139,9 @@ interface VideoEncodeAccelerator {
   // Callback:
   //  Called with true iff initialization is successful. The client should not
   //  invoke any other methods before the callback.
-  Initialize@6(VideoEncodeAcceleratorConfig config,
-               StorageType input_storage,
-               VideoEncodeClient client) => (bool success);
+  InitializeDeprecated@6(VideoEncodeAcceleratorConfigDeprecated config,
+                         StorageTypeDeprecated input_storage,
+                         VideoEncodeClient client) => (bool success);
 
   // Encodes the given frame.
   // Parameters:

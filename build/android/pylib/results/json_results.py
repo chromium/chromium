@@ -72,20 +72,6 @@ def GenerateResultsDict(test_run_results, global_tags=None):
   #   ],
   # }
 
-  def status_as_string(s):
-    if s == base_test_result.ResultType.PASS:
-      return 'SUCCESS'
-    elif s == base_test_result.ResultType.SKIP:
-      return 'SKIPPED'
-    elif s == base_test_result.ResultType.FAIL:
-      return 'FAILURE'
-    elif s == base_test_result.ResultType.CRASH:
-      return 'CRASH'
-    elif s == base_test_result.ResultType.TIMEOUT:
-      return 'TIMEOUT'
-    elif s == base_test_result.ResultType.UNKNOWN:
-      return 'UNKNOWN'
-
   all_tests = set()
   per_iteration_data = []
   test_run_links = {}
@@ -103,10 +89,10 @@ def GenerateResultsDict(test_run_results, global_tags=None):
 
     for r in results_iterable:
       result_dict = {
-          'status': status_as_string(r.GetType()),
+          'status': r.GetType(),
           'elapsed_time_ms': r.GetDuration(),
           'output_snippet': unicode(r.GetLog(), errors='replace'),
-          'losless_snippet': '',
+          'losless_snippet': True,
           'output_snippet_base64': '',
           'links': r.GetLinks(),
       }
@@ -152,18 +138,9 @@ def ParseResultsFromJson(json_results):
   """
 
   def string_as_status(s):
-    if s == 'SUCCESS':
-      return base_test_result.ResultType.PASS
-    elif s == 'SKIPPED':
-      return base_test_result.ResultType.SKIP
-    elif s == 'FAILURE':
-      return base_test_result.ResultType.FAIL
-    elif s == 'CRASH':
-      return base_test_result.ResultType.CRASH
-    elif s == 'TIMEOUT':
-      return base_test_result.ResultType.TIMEOUT
-    else:
-      return base_test_result.ResultType.UNKNOWN
+    if s in base_test_result.ResultType.GetTypes():
+      return s
+    return base_test_result.ResultType.UNKNOWN
 
   results_list = []
   testsuite_runs = json_results['per_iteration_data']

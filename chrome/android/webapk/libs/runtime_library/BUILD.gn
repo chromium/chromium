@@ -49,19 +49,16 @@ android_library("runtime_library_for_tests_java") {
   ]
 }
 
-dist_jar("webapk_runtime_library") {
-  requires_android = true
+proguarded_dist_dex("webapk_runtime_library") {
   deps = [
     ":runtime_library_for_assets_java",
   ]
-  proguard_enabled = true
   proguard_configs = [
     "runtime_library.proguard.flags",
     "//base/android/proguard/chromium_code.flags",
     "//base/android/proguard/chromium_apk.flags",
   ]
-  output = "$target_gen_dir/$target_name.jar"
-  dex_path = "$target_gen_dir/$runtime_library_dex_asset_name"
+  output = "$target_gen_dir/$runtime_library_dex_asset_name"
 }
 
 android_assets("runtime_library_assets") {

@@ -239,7 +239,7 @@ void PixelTest::SetUpSkiaRenderer() {
   SetUpGLWithoutRenderer(false);
   renderer_ = std::make_unique<viz::SkiaRenderer>(
       &renderer_settings_, output_surface_.get(), resource_provider_.get(),
-      nullptr /* skia_output_surface */);
+      nullptr /* skia_output_surface */, viz::SkiaRenderer::DrawMode::GL);
   renderer_->Initialize();
   renderer_->SetVisible(true);
 }
@@ -297,7 +297,8 @@ void PixelTest::SetUpSkiaRendererDDL() {
       nullptr /* shared_bitmap_manager */);
   renderer_ = std::make_unique<viz::SkiaRenderer>(
       &renderer_settings_, output_surface_.get(), resource_provider_.get(),
-      static_cast<viz::SkiaOutputSurfaceImpl*>(output_surface_.get()));
+      static_cast<viz::SkiaOutputSurfaceImpl*>(output_surface_.get()),
+      viz::SkiaRenderer::DrawMode::DDL);
   renderer_->Initialize();
   renderer_->SetVisible(true);
 

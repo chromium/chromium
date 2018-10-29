@@ -71,6 +71,21 @@ void BrowserAccessibilityManagerAuraLinux::FireSelectedEvent(
   FireEvent(node, ax::mojom::Event::kSelection);
 }
 
+void BrowserAccessibilityManagerAuraLinux::FireLoadingEvent(
+    BrowserAccessibility* node,
+    bool is_loading) {
+  if (!node->IsNative())
+    return;
+
+  gfx::NativeViewAccessible obj = node->GetNativeViewAccessible();
+  if (!ATK_IS_OBJECT(obj))
+    return;
+
+  atk_object_notify_state_change(obj, ATK_STATE_BUSY, is_loading);
+  if (!is_loading)
+    g_signal_emit_by_name(obj, "load_complete");
+}
+
 void BrowserAccessibilityManagerAuraLinux::FireExpandedEvent(
     BrowserAccessibility* node,
     bool is_expanded) {
@@ -111,6 +126,12 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       break;
     case Event::EXPANDED:
       FireExpandedEvent(node, true);
+      break;
+    case Event::LOAD_COMPLETE:
+      FireLoadingEvent(node, false);
+      break;
+    case Event::LOAD_START:
+      FireLoadingEvent(node, true);
       break;
     case Event::MENU_ITEM_SELECTED:
     case Event::SELECTED_CHANGED:

@@ -30,13 +30,9 @@ static_library("ascriber") {
     ":core",
     "//base",
     "//components/metrics",
-    "//google_apis",
     "//net",
+    "//services/network/public/cpp:cpp",
   ]
-
-  if (!is_ios) {
-    deps += [ "//components/domain_reliability" ]
-  }
 }
 
 source_set("unit_tests") {

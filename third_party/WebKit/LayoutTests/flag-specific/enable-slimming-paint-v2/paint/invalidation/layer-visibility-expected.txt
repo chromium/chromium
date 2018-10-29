@@ -9,12 +9,12 @@
         {
           "object": "LayoutBlockFlow (positioned) DIV id='target'",
           "rect": [100, 0, 100, 100],
-          "reason": "style change"
+          "reason": "background"
         },
         {
           "object": "LayoutBlockFlow (positioned) DIV id='target'",
           "rect": [0, 0, 100, 100],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

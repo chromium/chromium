@@ -17,6 +17,7 @@
 #include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/viz/common/switches.h"
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
 #include "content/browser/renderer_host/cursor_manager.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/browser/ns_view_bridge_factory_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/platform_canvas.h"
@@ -100,11 +102,13 @@ void RenderWidgetHostViewMac::DestroyCompositorForShutdown() {
 }
 
 bool RenderWidgetHostViewMac::SynchronizeVisualProperties(
-    const base::Optional<viz::LocalSurfaceId>&
-        child_allocated_local_surface_id) {
+    const base::Optional<viz::LocalSurfaceId>& child_allocated_local_surface_id,
+    const base::Optional<base::TimeTicks>&
+        child_local_surface_id_allocation_time) {
   if (child_allocated_local_surface_id) {
     browser_compositor_->UpdateRendererLocalSurfaceIdFromChild(
-        *child_allocated_local_surface_id);
+        *child_allocated_local_surface_id,
+        *child_local_surface_id_allocation_time);
   } else {
     browser_compositor_->AllocateNewRendererLocalSurfaceId();
   }
@@ -151,6 +155,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget,
     : RenderWidgetHostViewBase(widget),
       page_at_minimum_scale_(true),
       mouse_wheel_phase_handler_(this),
+      ns_view_client_binding_(this),
       is_loading_(false),
       is_guest_view_hack_(is_guest_view_hack),
       popup_parent_host_view_(nullptr),
@@ -213,13 +218,9 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget,
   // startup raciness and decrease latency.
   needs_begin_frames_ = needs_begin_frames;
   UpdateNeedsBeginFramesInternal();
-  if (features::IsViewsBrowserCocoa())
-    ui::CATransactionCoordinator::Get().AddPreCommitObserver(this);
 }
 
 RenderWidgetHostViewMac::~RenderWidgetHostViewMac() {
-  if (features::IsViewsBrowserCocoa())
-    ui::CATransactionCoordinator::Get().RemovePreCommitObserver(this);
   if (popup_parent_host_view_) {
     DCHECK(!popup_parent_host_view_->popup_child_host_view_ ||
            popup_parent_host_view_->popup_child_host_view_ == this);
@@ -230,6 +231,43 @@ RenderWidgetHostViewMac::~RenderWidgetHostViewMac() {
            popup_child_host_view_->popup_parent_host_view_ == this);
     popup_child_host_view_->popup_parent_host_view_ = nullptr;
   }
+}
+
+void RenderWidgetHostViewMac::MigrateNSViewBridge(
+    NSViewBridgeFactoryHost* bridge_factory_host,
+    uint64_t parent_ns_view_id) {
+  // Disconnect from the previous bridge (this will have the effect of
+  // destroying the associated bridge), and close the binding (to allow it
+  // to be re-bound). Note that |ns_view_bridge_local_| remains valid.
+  ns_view_client_binding_.Close();
+  ns_view_bridge_remote_.reset();
+
+  // If no host is specified, then use the locally hosted NSView.
+  if (!bridge_factory_host) {
+    ns_view_bridge_ = ns_view_bridge_local_.get();
+    return;
+  }
+
+  mojom::RenderWidgetHostNSViewClientAssociatedPtr client;
+  ns_view_client_binding_.Bind(mojo::MakeRequest(&client));
+  mojom::RenderWidgetHostNSViewBridgeAssociatedRequest bridge_request =
+      mojo::MakeRequest(&ns_view_bridge_remote_);
+
+  // Cast from mojom::RenderWidgetHostNSViewClientPtr and
+  // mojom::RenderWidgetHostNSViewBridgeRequest to the public interfaces
+  // accepted by the factory.
+  // TODO(ccameron): Remove the need for this cast.
+  // https://crbug.com/888290
+  mojo::AssociatedInterfacePtrInfo<mojom::StubInterface> stub_client(
+      client.PassInterface().PassHandle(), 0);
+  mojom::StubInterfaceAssociatedRequest stub_bridge_request(
+      bridge_request.PassHandle());
+
+  bridge_factory_host->GetFactory()->CreateRenderWidgetHostNSViewBridge(
+      std::move(stub_client), std::move(stub_bridge_request));
+
+  ns_view_bridge_ = ns_view_bridge_remote_.get();
+  ns_view_bridge_remote_->SetParentWebContentsNSView(parent_ns_view_id);
 }
 
 void RenderWidgetHostViewMac::SetParentUiLayer(ui::Layer* parent_ui_layer) {
@@ -256,11 +294,6 @@ RenderWidgetHostViewCocoa* RenderWidgetHostViewMac::cocoa_view() const {
 void RenderWidgetHostViewMac::SetDelegate(
     NSObject<RenderWidgetHostViewMacDelegate>* delegate) {
   [cocoa_view() setResponderDelegate:delegate];
-}
-
-void RenderWidgetHostViewMac::SetAllowPauseForResizeOrRepaint(bool allow) {
-  // TODO: Remove SetAllowPauseForResizeOrRepaint and SetAllowOtherViews, since
-  // they aren't used anymore.
 }
 
 ui::TextInputType RenderWidgetHostViewMac::GetTextInputType() {
@@ -359,9 +392,6 @@ void RenderWidgetHostViewMac::UpdateNSViewAndDisplayProperties() {
     LOG(ERROR) << "Failed to create display link.";
   }
 
-  if (features::IsViewsBrowserCocoa())
-    ui::CATransactionCoordinator::Get().Synchronize();
-
   // During auto-resize it is the responsibility of the caller to ensure that
   // the NSView and RenderWidgetHostImpl are kept in sync.
   if (host()->auto_resize_enabled())
@@ -411,10 +441,6 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
 
   bool has_saved_frame =
       delegated_frame_host ? delegated_frame_host->HasSavedFrame() : false;
-
-  // If the primary surface was evicted, we should create a new primary.
-  if (delegated_frame_host && delegated_frame_host->IsPrimarySurfaceEvicted())
-    SynchronizeVisualProperties(base::nullopt);
 
   const bool renderer_should_record_presentation_time = !has_saved_frame;
   host()->WasShown(renderer_should_record_presentation_time);
@@ -650,10 +676,12 @@ void RenderWidgetHostViewMac::Destroy() {
     ns_view_bridge_->SetCursorLocked(false);
   }
 
-  // Destroy the brige to the NSView. Note that the NSView on the other side
-  // of |ns_view_bridge_| may outlive us due to other retains.
+  // Destroy the local and remote briges to the NSView. Note that the NSView on
+  // the other side of |ns_view_bridge_| may outlive us due to other retains.
   ns_view_bridge_ = nullptr;
   ns_view_bridge_local_.reset();
+  ns_view_client_binding_.Close();
+  ns_view_bridge_remote_.reset();
 
   // Delete the delegated frame state, which will reach back into
   // host().
@@ -806,7 +834,7 @@ void RenderWidgetHostViewMac::CopyFromSurface(
 
 void RenderWidgetHostViewMac::EnsureSurfaceSynchronizedForLayoutTest() {
   ++latest_capture_sequence_number_;
-  SynchronizeVisualProperties(base::nullopt);
+  SynchronizeVisualProperties(base::nullopt, base::nullopt);
 }
 
 void RenderWidgetHostViewMac::SetNeedsBeginFrames(bool needs_begin_frames) {
@@ -822,7 +850,9 @@ void RenderWidgetHostViewMac::OnDidUpdateVisualPropertiesComplete(
     const cc::RenderFrameMetadata& metadata) {
   browser_compositor_->SynchronizeVisualProperties(
       metadata.device_scale_factor, metadata.viewport_size_in_pixels,
-      metadata.local_surface_id.value_or(viz::LocalSurfaceId()));
+      metadata.local_surface_id.value_or(viz::LocalSurfaceId()),
+      metadata.local_surface_id_allocation_time_from_child.value_or(
+          base::TimeTicks()));
 }
 
 void RenderWidgetHostViewMac::SetWantsAnimateOnlyBeginFrames() {
@@ -1132,7 +1162,7 @@ RenderWidgetHostViewMac::GetKeyboardLayoutMap() {
 
 void RenderWidgetHostViewMac::GestureEventAck(const WebGestureEvent& event,
                                               InputEventAckState ack_result) {
-  ForwardTouchpadPinchIfNecessary(event, ack_result);
+  ForwardTouchpadZoomEventIfNecessary(event, ack_result);
 
   bool consumed = ack_result == INPUT_EVENT_ACK_STATE_CONSUMED;
   switch (event.GetType()) {
@@ -1181,6 +1211,11 @@ const viz::LocalSurfaceId& RenderWidgetHostViewMac::GetLocalSurfaceId() const {
   return browser_compositor_->GetRendererLocalSurfaceId();
 }
 
+base::TimeTicks RenderWidgetHostViewMac::GetLocalSurfaceIdAllocationTime()
+    const {
+  return browser_compositor_->GetRendererLocalSurfaceIdAllocationTime();
+}
+
 const viz::FrameSinkId& RenderWidgetHostViewMac::GetFrameSinkId() const {
   return browser_compositor_->GetDelegatedFrameHost()->frame_sink_id();
 }
@@ -1200,11 +1235,10 @@ bool RenderWidgetHostViewMac::ShouldRouteEvent(
   return host()->delegate() && host()->delegate()->GetInputEventRouter();
 }
 
-void RenderWidgetHostViewMac::SendGesturePinchEvent(WebGestureEvent* event) {
-  DCHECK(WebInputEvent::IsPinchGestureEventType(event->GetType()));
+void RenderWidgetHostViewMac::SendTouchpadZoomEvent(
+    const WebGestureEvent* event) {
+  DCHECK(event->IsTouchpadZoomEvent());
   if (ShouldRouteEvent(*event)) {
-    DCHECK(event->SourceDevice() ==
-           blink::WebGestureDevice::kWebGestureDeviceTouchpad);
     host()->delegate()->GetInputEventRouter()->RouteGestureEvent(
         this, event, ui::LatencyInfo(ui::SourceEventType::TOUCHPAD));
     return;
@@ -1259,8 +1293,6 @@ bool RenderWidgetHostViewMac::TransformPointToCoordSpaceForView(
     return true;
   }
 
-  if (!HasFallbackSurface())
-    return false;
   return target_view->TransformPointToLocalCoordSpace(
       point, GetCurrentSurfaceId(), transformed_point, source);
 }
@@ -1381,7 +1413,7 @@ MouseWheelPhaseHandler* RenderWidgetHostViewMac::GetMouseWheelPhaseHandler() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// RenderWidgetHostNSViewLocalClient and mojom::RenderWidgetHostNSViewClient
+// RenderWidgetHostNSViewClientHelper and mojom::RenderWidgetHostNSViewClient
 // implementation:
 
 BrowserAccessibilityManager*
@@ -1499,7 +1531,7 @@ void RenderWidgetHostViewMac::ForwardKeyboardEventWithCommands(
     const std::vector<EditCommand>& commands) {
   if (auto* widget_host = GetWidgetForKeyboardEvent()) {
     widget_host->ForwardKeyboardEventWithCommands(key_event, latency_info,
-                                                  &commands);
+                                                  &commands, nullptr);
   }
 }
 
@@ -1608,27 +1640,27 @@ void RenderWidgetHostViewMac::GestureUpdate(
     begin_event.SetSourceDevice(
         blink::WebGestureDevice::kWebGestureDeviceTouchpad);
     begin_event.SetNeedsWheelEvent(true);
-    SendGesturePinchEvent(&begin_event);
+    SendTouchpadZoomEvent(&begin_event);
     gesture_begin_pinch_sent_ = YES;
   }
 
   // Send a GesturePinchUpdate event.
   update_event.data.pinch_update.zoom_disabled =
       !pinch_has_reached_zoom_threshold_;
-  SendGesturePinchEvent(&update_event);
+  SendTouchpadZoomEvent(&update_event);
 }
 
 void RenderWidgetHostViewMac::GestureEnd(blink::WebGestureEvent end_event) {
   gesture_begin_event_.reset();
   if (gesture_begin_pinch_sent_) {
-    SendGesturePinchEvent(&end_event);
+    SendTouchpadZoomEvent(&end_event);
     gesture_begin_pinch_sent_ = false;
   }
 }
 
 void RenderWidgetHostViewMac::SmartMagnify(
     const blink::WebGestureEvent& smart_magnify_event) {
-  host()->ForwardGestureEvent(smart_magnify_event);
+  SendTouchpadZoomEvent(&smart_magnify_event);
 }
 
 void RenderWidgetHostViewMac::ImeSetComposition(
@@ -1861,7 +1893,7 @@ void RenderWidgetHostViewMac::StopSpeaking() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // mojom::RenderWidgetHostNSViewClient functions that translate events and
-// forward them to the RenderWidgetHostNSViewLocalClient implementation:
+// forward them to the RenderWidgetHostNSViewClientHelper implementation:
 
 void RenderWidgetHostViewMac::ForwardKeyboardEvent(
     std::unique_ptr<InputEvent> input_event,

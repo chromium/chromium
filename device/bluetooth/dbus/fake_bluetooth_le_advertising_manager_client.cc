@@ -52,8 +52,7 @@ void FakeBluetoothLEAdvertisingManagerClient::RegisterAdvertisement(
     return;
   }
 
-  ServiceProviderMap::iterator iter =
-      service_provider_map_.find(advertisement_object_path);
+  auto iter = service_provider_map_.find(advertisement_object_path);
   if (iter == service_provider_map_.end()) {
     error_callback.Run(bluetooth_advertising_manager::kErrorInvalidArguments,
                        "Advertisement object not registered");
@@ -128,8 +127,7 @@ void FakeBluetoothLEAdvertisingManagerClient::
 void FakeBluetoothLEAdvertisingManagerClient::
     UnregisterAdvertisementServiceProvider(
         FakeBluetoothLEAdvertisementServiceProvider* service_provider) {
-  ServiceProviderMap::iterator iter =
-      service_provider_map_.find(service_provider->object_path_);
+  auto iter = service_provider_map_.find(service_provider->object_path_);
   if (iter != service_provider_map_.end() && iter->second == service_provider)
     service_provider_map_.erase(iter);
 }

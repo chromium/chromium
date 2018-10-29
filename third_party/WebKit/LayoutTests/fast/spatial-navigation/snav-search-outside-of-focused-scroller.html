@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<style>
+  div {
+    position: absolute;
+    overflow-y: scroll;
+    width: 50px;
+    height: 50px;
+    top: 35px;
+    left: 25px;
+  }
+</style>
+
+<a id="end" href="#">end</a>
+<br><br>
+<a id="1" href="#">1</a>
+<div id="start" tabindex="0">
+  <br>
+  <p>text</p>
+</div>
+
+<p>Use the scroller's full bounding box when searching for focusables outside of it.</p>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Up", "end"],
+  ];
+
+  // Start at a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap);
+</script>

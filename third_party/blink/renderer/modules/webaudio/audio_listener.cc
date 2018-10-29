@@ -91,15 +91,15 @@ AudioListener::AudioListener(BaseAudioContext& context)
                              AudioParamHandler::AutomationRateMode::kVariable)),
       last_update_time_(-1),
       is_listener_dirty_(false),
-      position_x_values_(AudioUtilities::kRenderQuantumFrames),
-      position_y_values_(AudioUtilities::kRenderQuantumFrames),
-      position_z_values_(AudioUtilities::kRenderQuantumFrames),
-      forward_x_values_(AudioUtilities::kRenderQuantumFrames),
-      forward_y_values_(AudioUtilities::kRenderQuantumFrames),
-      forward_z_values_(AudioUtilities::kRenderQuantumFrames),
-      up_x_values_(AudioUtilities::kRenderQuantumFrames),
-      up_y_values_(AudioUtilities::kRenderQuantumFrames),
-      up_z_values_(AudioUtilities::kRenderQuantumFrames) {
+      position_x_values_(audio_utilities::kRenderQuantumFrames),
+      position_y_values_(audio_utilities::kRenderQuantumFrames),
+      position_z_values_(audio_utilities::kRenderQuantumFrames),
+      forward_x_values_(audio_utilities::kRenderQuantumFrames),
+      forward_y_values_(audio_utilities::kRenderQuantumFrames),
+      forward_z_values_(audio_utilities::kRenderQuantumFrames),
+      up_x_values_(audio_utilities::kRenderQuantumFrames),
+      up_y_values_(audio_utilities::kRenderQuantumFrames),
+      up_z_values_(audio_utilities::kRenderQuantumFrames) {
   // Initialize the cached values with the current values.  Thus, we don't need
   // to notify any panners because we haved moved.
   last_position_ = GetPosition();

@@ -7,6 +7,7 @@
 #include "services/video_capture/service_impl.h"
 
 MojoResult ServiceMain(MojoHandle service_request_handle) {
-  return service_manager::ServiceRunner(new video_capture::ServiceImpl())
+  return service_manager::ServiceRunner(
+             video_capture::ServiceImpl::Create().release())
       .Run(service_request_handle);
 }

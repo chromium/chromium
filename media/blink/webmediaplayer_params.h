@@ -22,6 +22,7 @@
 #include "media/blink/media_blink_export.h"
 #include "media/filters/context_3d.h"
 #include "media/mojo/interfaces/media_metrics_provider.mojom.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 
 namespace base {
@@ -86,7 +87,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerParams {
       mojom::MediaMetricsProviderPtr metrics_provider,
       CreateSurfaceLayerBridgeCB bridge_callback,
       scoped_refptr<viz::ContextProvider> context_provider,
-      bool use_surface_layer_for_video);
+      blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video);
 
   ~WebMediaPlayerParams();
 
@@ -153,7 +154,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerParams {
     return context_provider_;
   }
 
-  bool use_surface_layer_for_video() const {
+  blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video() const {
     return use_surface_layer_for_video_;
   }
 
@@ -176,7 +177,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerParams {
   mojom::MediaMetricsProviderPtr metrics_provider_;
   CreateSurfaceLayerBridgeCB create_bridge_callback_;
   scoped_refptr<viz::ContextProvider> context_provider_;
-  bool use_surface_layer_for_video_;
+  blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(WebMediaPlayerParams);
 };

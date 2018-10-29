@@ -9,14 +9,10 @@
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
-#include "ui/views/pointer_watcher.h"
-
-namespace gfx {
-class Point;
-}
+#include "ui/events/event_handler.h"
 
 namespace ui {
-class PointerEvent;
+class LocatedEvent;
 }
 
 namespace ash {
@@ -24,7 +20,7 @@ class TrayBubbleBase;
 
 // Handles events for a tray bubble, e.g. to close the system tray bubble when
 // the user clicks outside it.
-class ASH_EXPORT TrayEventFilter : public views::PointerWatcher {
+class ASH_EXPORT TrayEventFilter : public ui::EventHandler {
  public:
   TrayEventFilter();
   ~TrayEventFilter() override;
@@ -32,14 +28,12 @@ class ASH_EXPORT TrayEventFilter : public views::PointerWatcher {
   void AddBubble(TrayBubbleBase* bubble);
   void RemoveBubble(TrayBubbleBase* bubble);
 
-  // views::PointerWatcher:
-  void OnPointerEventObserved(const ui::PointerEvent& event,
-                              const gfx::Point& location_in_screen,
-                              gfx::NativeView target) override;
+  // ui::EventHandler:
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnTouchEvent(ui::TouchEvent* event) override;
 
  private:
-  void ProcessPressedEvent(const gfx::Point& location_in_screen,
-                           gfx::NativeView target);
+  void ProcessPressedEvent(const ui::LocatedEvent& event);
 
   std::set<TrayBubbleBase*> bubbles_;
 

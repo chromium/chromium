@@ -9,16 +9,16 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view.h"
-#include "ui/views/views_export.h"
 
 namespace views {
 
+class FootnoteContainerView;
 class SubmenuView;
 
 // MenuScrollViewContainer contains the SubmenuView (through a MenuScrollView)
 // and two scroll buttons. The scroll buttons are only visible and enabled if
 // the preferred height of the SubmenuView is bigger than our bounds.
-class VIEWS_EXPORT MenuScrollViewContainer : public View {
+class MenuScrollViewContainer : public View {
  public:
   explicit MenuScrollViewContainer(SubmenuView* content_view);
 
@@ -26,11 +26,13 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
   View* scroll_down_button() const { return scroll_down_button_; }
   View* scroll_up_button() const { return scroll_up_button_; }
 
-  // External function to check if the bubble border is used.
+  // External function to check if the bubble border is usd.
   bool HasBubbleBorder();
 
   // Offsets the Arrow from the default location.
   void SetBubbleArrowOffset(int offset);
+
+  void SetFootnoteView(View* view);
 
   // View overrides.
   gfx::Size CalculatePreferredSize() const override;
@@ -44,6 +46,9 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
+  // Create a default border or bubble border, as appropriate.
+  void CreateBorder();
+
   // Create the default border.
   void CreateDefaultBorder();
 
@@ -51,6 +56,8 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
   void CreateBubbleBorder();
 
   BubbleBorder::Arrow BubbleBorderTypeFromAnchor(MenuAnchorPosition anchor);
+
+  bool HasVisibleFootnote();
 
   class MenuScrollView;
 
@@ -65,10 +72,13 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
   SubmenuView* content_view_;
 
   // If set the currently set border is a bubble border.
-  BubbleBorder::Arrow arrow_;
+  BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
 
   // Weak reference to the currently set border.
-  BubbleBorder* bubble_border_;
+  BubbleBorder* bubble_border_ = nullptr;
+
+  // A view to contain the footnote view, if it exists.
+  FootnoteContainerView* footnote_container_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MenuScrollViewContainer);
 };

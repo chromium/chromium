@@ -23,7 +23,7 @@ class KeyboardLayoutMap final : public ScriptWrappable,
   const HashMap<String, String>& Map() const { return layout_map_; }
 
   // IDL attributes / methods
-  size_t size() const { return layout_map_.size(); }
+  uint32_t size() const { return layout_map_.size(); }
 
   void Trace(blink::Visitor* visitor) override {
     ScriptWrappable::Trace(visitor);

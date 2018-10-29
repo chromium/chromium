@@ -1099,38 +1099,30 @@ static void AddMetadataEvent(const unsigned char* category_group_enabled,
 // Used by TRACE_EVENTx macros. Do not use directly.
 class TRACE_EVENT_API_CLASS_EXPORT ScopedTracer {
  public:
-  // Note: members of data_ intentionally left uninitialized. See Initialize.
-  ScopedTracer() : p_data_(NULL) {}
+  ScopedTracer() = default;
 
   ~ScopedTracer() {
-    if (p_data_ && *data_.category_group_enabled) {
-      TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION(
-          data_.category_group_enabled, data_.name, data_.event_handle);
+    if (category_group_enabled_ && *category_group_enabled_) {
+      TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION(category_group_enabled_,
+                                                  name_, event_handle_);
     }
   }
 
   void Initialize(const unsigned char* category_group_enabled,
                   const char* name,
                   base::trace_event::TraceEventHandle event_handle) {
-    data_.category_group_enabled = category_group_enabled;
-    data_.name = name;
-    data_.event_handle = event_handle;
-    p_data_ = &data_;
+    category_group_enabled_ = category_group_enabled;
+    name_ = name;
+    event_handle_ = event_handle;
   }
 
  private:
-  // This Data struct workaround is to avoid initializing all the members
-  // in Data during construction of this object, since this object is always
-  // constructed, even when tracing is disabled. If the members of Data were
-  // members of this class instead, compiler warnings occur about potential
-  // uninitialized accesses.
-  struct Data {
-    const unsigned char* category_group_enabled;
-    const char* name;
-    base::trace_event::TraceEventHandle event_handle;
-  };
-  Data* p_data_;
-  Data data_;
+  // NOTE: Only initialize the first member to reduce generated code size,
+  // since there is no point in initializing the other members if Initialize()
+  // is never called.
+  const unsigned char* category_group_enabled_ = nullptr;
+  const char* name_;
+  base::trace_event::TraceEventHandle event_handle_;
 };
 
 // Used by TRACE_EVENT_BINARY_EFFICIENTx macro. Do not use directly.

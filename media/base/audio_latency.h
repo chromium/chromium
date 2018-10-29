@@ -43,9 +43,20 @@ class MEDIA_SHMEM_EXPORT AudioLatency {
 
   static int GetInteractiveBufferSize(int hardware_buffer_size);
 
+  // Return the closest buffer size for this platform that will result in a
+  // latency not less than |duration| for the given |sample_rate|. The returned
+  // buffer size must be >= |min_hardware_buffer_size| and must be <=
+  // |kMaxWebAudioBufferSize|. |max_hardware_buffer_size| is used to help
+  // determine a buffer size that won't cause web audio and the hardware to run
+  // at unsynchronized buffer sizes (e.g. hardware running at 4096 and web audio
+  // running at 4224). |hardware_buffer_size| is the platform's preferred buffer
+  // size. It is valid for both the min and max to be zero in which case only
+  // |hardware_buffer_size| and multiples of it will be used.
   static int GetExactBufferSize(base::TimeDelta duration,
                                 int sample_rate,
-                                int hardware_buffer_size);
+                                int hardware_buffer_size,
+                                int min_hardware_buffer_size,
+                                int max_hardware_buffer_size);
 };
 
 }  // namespace media

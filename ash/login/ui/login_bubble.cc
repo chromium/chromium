@@ -53,8 +53,8 @@ constexpr int kAlertIconSizeDp = 20;
 constexpr SkAlpha kSubMessageColorAlpha = 0x89;
 
 // Color of the "Remove user" text.
-constexpr SkColor kRemoveUserInitialColor = SkColorSetRGB(0x7B, 0xAA, 0xF7);
-constexpr SkColor kRemoveUserConfirmColor = SkColorSetRGB(0xE6, 0x7C, 0x73);
+constexpr SkColor kRemoveUserInitialColor = gfx::kGoogleBlueDark400;
+constexpr SkColor kRemoveUserConfirmColor = gfx::kGoogleRedDark500;
 
 // Margin/inset of the entries for the user menu.
 constexpr int kUserMenuMarginWidth = 14;
@@ -155,6 +155,24 @@ class ButtonWithContent : public views::Button {
   DISALLOW_COPY_AND_ASSIGN(ButtonWithContent);
 };
 
+// A view that has a customizable accessible name.
+class ViewWithAccessibleName : public views::View {
+ public:
+  ViewWithAccessibleName(const base::string16& accessible_name)
+      : accessible_name_(accessible_name) {}
+  ~ViewWithAccessibleName() override = default;
+
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kStaticText;
+    node_data->SetName(accessible_name_);
+  }
+
+ private:
+  const base::string16 accessible_name_;
+  DISALLOW_COPY_AND_ASSIGN(ViewWithAccessibleName);
+};
+
 class LoginUserMenuView : public LoginBaseBubbleView,
                           public views::ButtonListener {
  public:
@@ -187,8 +205,7 @@ class LoginUserMenuView : public LoginBaseBubbleView,
         kUserMenuMarginHeight, kUserMenuMarginWidth,
         kUserMenuMarginHeight - kUserMenuMarginAroundRemoveUserButtonDp,
         kUserMenuMarginWidth);
-    auto create_and_add_horizontal_margin_container = [&]() {
-      auto* container = new NonAccessibleView("MarginContainer");
+    auto setup_horizontal_margin_container = [&](views::View* container) {
       container->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::kVertical,
           gfx::Insets(0, margins.left(), 0, margins.right())));
@@ -214,7 +231,8 @@ class LoginUserMenuView : public LoginBaseBubbleView,
                                                 username)
                    : username;
 
-      views::View* container = create_and_add_horizontal_margin_container();
+      views::View* container = setup_horizontal_margin_container(
+          new NonAccessibleView("UsernameLabel MarginContainer"));
       username_label_ = CreateLabel(display_username, SK_ColorWHITE);
       // Do not change these two lines. Without them, the remove user button
       // will be pushed out of the box when the user has a long name.
@@ -251,8 +269,6 @@ class LoginUserMenuView : public LoginBaseBubbleView,
         return label;
       };
 
-      remove_user_confirm_data_ = create_and_add_horizontal_margin_container();
-      remove_user_confirm_data_->SetVisible(false);
       base::string16 part1 = l10n_util::GetStringUTF16(
           IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_1);
       if (type == user_manager::UserType::USER_TYPE_SUPERVISED) {
@@ -260,6 +276,12 @@ class LoginUserMenuView : public LoginBaseBubbleView,
             IDS_ASH_LOGIN_POD_LEGACY_SUPERVISED_USER_REMOVE_WARNING,
             base::UTF8ToUTF16(ash::kLegacySupervisedUserManagementDisplayURL));
       }
+      base::string16 part2 = l10n_util::GetStringFUTF16(
+          IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2, email);
+
+      remove_user_confirm_data_ = setup_horizontal_margin_container(
+          new ViewWithAccessibleName(part1 + base::ASCIIToUTF16(" ") + part2));
+      remove_user_confirm_data_->SetVisible(false);
 
       // Account for margin that was removed below the separator for the add
       // user button.
@@ -268,15 +290,14 @@ class LoginUserMenuView : public LoginBaseBubbleView,
       remove_user_confirm_data_->AddChildView(make_label(part1));
       add_space(remove_user_confirm_data_,
                 kUserMenuVerticalDistanceBetweenLabelsDp);
-      remove_user_confirm_data_->AddChildView(
-          make_label(l10n_util::GetStringFUTF16(
-              IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2, email)));
+      remove_user_confirm_data_->AddChildView(make_label(part2));
       // Reduce margin since the remove user button comes next.
       add_space(remove_user_confirm_data_,
                 kUserMenuVerticalDistanceBetweenLabelsDp -
                     kUserMenuMarginAroundRemoveUserButtonDp);
 
-      auto* container = create_and_add_horizontal_margin_container();
+      auto* container = setup_horizontal_margin_container(
+          new NonAccessibleView("RemoveUserButton MarginContainer"));
       remove_user_label_ =
           CreateLabel(l10n_util::GetStringUTF16(
                           IDS_ASH_LOGIN_POD_MENU_REMOVE_ITEM_ACCESSIBLE_NAME),
@@ -285,6 +306,7 @@ class LoginUserMenuView : public LoginBaseBubbleView,
       remove_user_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
       remove_user_button_->set_id(
           LoginBubble::kUserMenuRemoveUserButtonIdForTest);
+      remove_user_button_->SetAccessibleName(remove_user_label_->text());
       container->AddChildView(remove_user_button_);
     }
 
@@ -326,6 +348,14 @@ class LoginUserMenuView : public LoginBaseBubbleView,
       SetSize(GetPreferredSize());
       SizeToContents();
       Layout();
+
+      // Fire an accessibility alert to make ChromeVox read the warning message
+      // and remove button.
+      remove_user_confirm_data_->NotifyAccessibilityEvent(
+          ax::mojom::Event::kAlert, true /*send_native_event*/);
+      remove_user_button_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                                                    true /*send_native_event*/);
+
       if (on_remove_user_warning_shown_)
         std::move(on_remove_user_warning_shown_).Run();
       return;
@@ -515,8 +545,15 @@ void LoginBubble::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void LoginBubble::OnKeyEvent(ui::KeyEvent* event) {
-  if (!bubble_view_ || event->type() != ui::ET_KEY_PRESSED)
+  // Ignore VKEY_PROCESSKEY; it is an IME event saying that the key has been
+  // processed. This event is also generated in tablet mode, ie, after
+  // submitting a password a VKEY_PROCESSKEY event is generated. If we treat
+  // that as a normal key event the password bubble will be dismissed
+  // immediately after submitting.
+  if (!bubble_view_ || event->type() != ui::ET_KEY_PRESSED ||
+      event->key_code() == ui::VKEY_PROCESSKEY) {
     return;
+  }
 
   // If current focus view is the button view, don't process the event here,
   // let the button logic handle the event and determine show/hide behavior.
@@ -568,7 +605,8 @@ void LoginBubble::Show() {
   ScheduleAnimation(true /*visible*/);
 
   // Fire an alert so ChromeVox will read the contents of the bubble.
-  bubble_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  bubble_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                                         true /*send_native_event*/);
 }
 
 void LoginBubble::ProcessPressedEvent(const ui::LocatedEvent* event) {

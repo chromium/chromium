@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_metrics_helper.h"
 
-#include "third_party/blink/renderer/platform/scheduler/child/process_state.h"
+#include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
 
 namespace blink {
 namespace scheduler {
@@ -30,7 +30,7 @@ void WorkerMetricsHelper::SetParentFrameType(FrameOriginType frame_type) {
 
 void WorkerMetricsHelper::RecordTaskMetrics(
     NonMainThreadTaskQueue* queue,
-    const base::sequence_manager::TaskQueue::Task& task,
+    const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   if (ShouldDiscardTask(queue, task, task_timing))
     return;
@@ -40,7 +40,7 @@ void WorkerMetricsHelper::RecordTaskMetrics(
   bool backgrounded = internal::ProcessState::Get()->is_process_backgrounded;
 
   if (thread_type_ == WebThreadType::kDedicatedWorkerThread) {
-    TaskType task_type = static_cast<TaskType>(task.task_type());
+    TaskType task_type = static_cast<TaskType>(task.task_type);
     dedicated_worker_per_task_type_duration_reporter_.RecordTask(
         task_type, task_timing.wall_duration());
     if (task_timing.has_thread_time()) {

@@ -8,7 +8,6 @@
 
 #include "base/trace_event/trace_event.h"
 #include "cc/raster/raster_source.h"
-#include "cc/raster/texture_compressor.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -29,11 +28,11 @@ bool IsSupportedPlaybackToMemoryFormat(viz::ResourceFormat format) {
     case viz::RGBA_4444:
     case viz::RGBA_8888:
     case viz::BGRA_8888:
-    case viz::ETC1:
       return true;
     case viz::ALPHA_8:
     case viz::LUMINANCE_8:
     case viz::RGB_565:
+    case viz::ETC1:
     case viz::RED_8:
     case viz::LUMINANCE_F16:
     case viz::RGBA_F16:
@@ -115,27 +114,12 @@ void RasterBufferProvider::PlaybackToMemory(
           surface->getCanvas(), target_color_space, content_size,
           canvas_bitmap_rect, canvas_bitmap_rect, transform, playback_settings);
 
-      if (format == viz::ETC1) {
-        TRACE_EVENT0("cc",
-                     "RasterBufferProvider::PlaybackToMemory::CompressETC1");
-        DCHECK_EQ(size.width() % 4, 0);
-        DCHECK_EQ(size.height() % 4, 0);
-        std::unique_ptr<TextureCompressor> texture_compressor =
-            TextureCompressor::Create(TextureCompressor::kFormatETC1);
-        SkPixmap pixmap;
-        surface->peekPixels(&pixmap);
-        texture_compressor->Compress(
-            reinterpret_cast<const uint8_t*>(pixmap.addr()),
-            reinterpret_cast<uint8_t*>(memory), size.width(), size.height(),
-            TextureCompressor::kQualityHigh);
-      } else {
-        TRACE_EVENT0("cc",
-                     "RasterBufferProvider::PlaybackToMemory::ConvertRGBA4444");
-        SkImageInfo dst_info = info.makeColorType(
-            ResourceFormatToClosestSkColorType(gpu_compositing, format));
-        bool rv = surface->readPixels(dst_info, memory, stride, 0, 0);
-        DCHECK(rv);
-      }
+      TRACE_EVENT0("cc",
+                   "RasterBufferProvider::PlaybackToMemory::ConvertRGBA4444");
+      SkImageInfo dst_info = info.makeColorType(
+          ResourceFormatToClosestSkColorType(gpu_compositing, format));
+      bool rv = surface->readPixels(dst_info, memory, stride, 0, 0);
+      DCHECK(rv);
       return;
     }
     case viz::ETC1:

@@ -34,5 +34,6 @@ PASS Explicit value 2 for type f64
 PASS Explicit value "3" for type f64
 PASS Explicit value object with toString for type f64
 PASS Explicit value object with valueOf for type f64
+PASS Stray argument
 Harness: the test ran to completion.
 

@@ -24,7 +24,7 @@
     <LinearLayout
         android:id="@+id/dropdown_label_wrapper"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="vertical" >
@@ -39,8 +39,7 @@
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textAlignment="viewStart"
-            android:textColor="@drawable/dropdown_label_color"
-            android:textSize="@dimen/text_size_large" />
+            android:textAppearance="@style/BlackTitle1" />
 
         <TextView
             android:id="@+id/dropdown_sublabel"

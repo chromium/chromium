@@ -930,14 +930,10 @@ finally:
   sys.path.pop(0)
 end
 file $TMPDIR/$GDBEXEC
-directory $CHROMIUM_SRC
+directory $CHROMIUM_OUTPUT_DIR
 set solib-absolute-prefix $PULL_LIBS_DIR
 set solib-search-path $SOLIB_DIRS:$PULL_LIBS_DIR:$SYMBOL_DIR
-EOF
 
-if [[ -z "$IDE" ]]; then
-  cat >> "$COMMANDS" <<EOF
-echo Attaching and reading symbols, this may take a couple minutes..."
 python
 # Copied from ndk-gdb.py:
 def target_remote_with_retry(target, timeout_seconds):
@@ -955,10 +951,11 @@ def target_remote_with_retry(target, timeout_seconds):
         return False
       time.sleep(min(0.25, time_left))
 
-target_remote_with_retry(':$HOST_PORT', 5)
+print("Connecting to :$HOST_PORT...")
+if target_remote_with_retry(':$HOST_PORT', 5):
+  print("Attached! Reading symbols (takes ~30 seconds).")
 end
 EOF
-fi
 
 if [ "$GDBINIT" ]; then
   cat "$GDBINIT" >> "$COMMANDS"
@@ -989,6 +986,7 @@ EOF
   echo "GDB wrapper script: $SYM_GDB"
   echo "App executable: $SYM_EXE"
   echo "gdbinit: $SYM_INIT"
+  echo "Connect with vscode: https://chromium.googlesource.com/chromium/src/+/master/docs/vscode.md#Launch-Commands"
   echo "Showing gdbserver logs. Press Ctrl-C to disconnect."
   tail -f "$GDBSERVER_LOG"
 else

@@ -42,7 +42,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
   size_t size() const { return valid_ ? size_ - remaining_bytes_ : 0u; }
 
-  void WriteSize(size_t size);
+  uint64_t* WriteSize(size_t size);
 
   void Write(SkScalar data);
   void Write(SkMatrix data);
@@ -60,7 +60,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const SkColorSpace* data);
   void Write(const PaintShader* shader, SkFilterQuality quality);
   void Write(const PaintFilter* filter);
-  void Write(const scoped_refptr<PaintTextBlob>& blob);
+  void Write(const sk_sp<SkTextBlob>& blob);
   void Write(SkColorType color_type);
 
   void Write(SkClipOp op) { Write(static_cast<uint8_t>(op)); }

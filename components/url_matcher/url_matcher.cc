@@ -697,8 +697,7 @@ URLMatcherPortFilter::~URLMatcherPortFilter() {}
 
 bool URLMatcherPortFilter::IsMatch(const GURL& url) const {
   int port = url.EffectiveIntPort();
-  for (std::vector<Range>::const_iterator i = ranges_.begin();
-       i != ranges_.end(); ++i) {
+  for (auto i = ranges_.begin(); i != ranges_.end(); ++i) {
     if (i->first <= port && port <= i->second)
       return true;
   }
@@ -760,8 +759,7 @@ bool URLMatcherConditionSet::IsMatch(
     const std::set<StringPattern::ID>& matching_patterns,
     const GURL& url,
     const std::string& url_for_component_searches) const {
-  for (Conditions::const_iterator i = conditions_.begin();
-       i != conditions_.end(); ++i) {
+  for (auto i = conditions_.begin(); i != conditions_.end(); ++i) {
     if (!i->IsMatch(matching_patterns, url))
       return false;
   }
@@ -774,15 +772,11 @@ bool URLMatcherConditionSet::IsMatch(
   // The loop is duplicated below for performance reasons. If not all query
   // elements are found, no need to verify match that is expected to take more
   // cycles.
-  for (QueryConditions::const_iterator i = query_conditions_.begin();
-       i != query_conditions_.end();
-       ++i) {
+  for (auto i = query_conditions_.begin(); i != query_conditions_.end(); ++i) {
     if (!base::ContainsKey(matching_patterns, i->string_pattern()->id()))
       return false;
   }
-  for (QueryConditions::const_iterator i = query_conditions_.begin();
-       i != query_conditions_.end();
-       ++i) {
+  for (auto i = query_conditions_.begin(); i != query_conditions_.end(); ++i) {
     if (!i->IsMatch(url_for_component_searches))
       return false;
   }
@@ -799,8 +793,7 @@ URLMatcher::~URLMatcher() {}
 
 void URLMatcher::AddConditionSets(
     const URLMatcherConditionSet::Vector& condition_sets) {
-  for (URLMatcherConditionSet::Vector::const_iterator i =
-       condition_sets.begin(); i != condition_sets.end(); ++i) {
+  for (auto i = condition_sets.begin(); i != condition_sets.end(); ++i) {
     DCHECK(url_matcher_condition_sets_.find((*i)->id()) ==
         url_matcher_condition_sets_.end());
     url_matcher_condition_sets_[(*i)->id()] = *i;
@@ -810,8 +803,7 @@ void URLMatcher::AddConditionSets(
 
 void URLMatcher::RemoveConditionSets(
     const std::vector<URLMatcherConditionSet::ID>& condition_set_ids) {
-  for (std::vector<URLMatcherConditionSet::ID>::const_iterator i =
-       condition_set_ids.begin(); i != condition_set_ids.end(); ++i) {
+  for (auto i = condition_set_ids.begin(); i != condition_set_ids.end(); ++i) {
     DCHECK(url_matcher_condition_sets_.find(*i) !=
         url_matcher_condition_sets_.end());
     url_matcher_condition_sets_.erase(*i);
@@ -853,22 +845,18 @@ std::set<URLMatcherConditionSet::ID> URLMatcher::MatchURL(
   // Calculate all URLMatcherConditionSets for which all URLMatcherConditions
   // were fulfilled.
   std::set<URLMatcherConditionSet::ID> result;
-  for (std::set<StringPattern::ID>::const_iterator i = matches.begin();
-       i != matches.end(); ++i) {
+  for (auto i = matches.begin(); i != matches.end(); ++i) {
     // For each URLMatcherConditionSet there is exactly one condition
     // registered in substring_match_triggers_. This means that the following
     // logic tests each URLMatcherConditionSet exactly once if it can be
     // completely fulfilled.
-    StringPatternTriggers::const_iterator triggered_condition_sets_iter =
-        substring_match_triggers_.find(*i);
+    auto triggered_condition_sets_iter = substring_match_triggers_.find(*i);
     if (triggered_condition_sets_iter == substring_match_triggers_.end())
       continue;  // Not all substring matches are triggers for a condition set.
     const std::set<URLMatcherConditionSet::ID>& condition_sets =
         triggered_condition_sets_iter->second;
-    for (std::set<URLMatcherConditionSet::ID>::const_iterator j =
-         condition_sets.begin(); j != condition_sets.end(); ++j) {
-      URLMatcherConditionSets::const_iterator condition_set_iter =
-          url_matcher_condition_sets_.find(*j);
+    for (auto j = condition_sets.begin(); j != condition_sets.end(); ++j) {
+      auto condition_set_iter = url_matcher_condition_sets_.find(*j);
       DCHECK(condition_set_iter != url_matcher_condition_sets_.end());
       if (condition_set_iter->second->IsMatch(
               matches, url, url_for_component_searches))
@@ -905,9 +893,8 @@ void URLMatcher::UpdateSubstringSetMatcher(bool full_url_conditions) {
       ++condition_set_iter) {
     const URLMatcherConditionSet::Conditions& conditions =
         condition_set_iter->second->conditions();
-    for (URLMatcherConditionSet::Conditions::const_iterator condition_iter =
-         conditions.begin(); condition_iter != conditions.end();
-         ++condition_iter) {
+    for (auto condition_iter = conditions.begin();
+         condition_iter != conditions.end(); ++condition_iter) {
       // If we are called to process Full URL searches, ignore others, and
       // vice versa. (Regex conditions are updated in UpdateRegexSetMatcher.)
       if (!condition_iter->IsRegexCondition() &&
@@ -921,8 +908,7 @@ void URLMatcher::UpdateSubstringSetMatcher(bool full_url_conditions) {
 
     const URLMatcherConditionSet::QueryConditions& query_conditions =
         condition_set_iter->second->query_conditions();
-    for (URLMatcherConditionSet::QueryConditions::const_iterator
-             query_condition_iter = query_conditions.begin();
+    for (auto query_condition_iter = query_conditions.begin();
          query_condition_iter != query_conditions.end();
          ++query_condition_iter) {
       new_patterns.insert(query_condition_iter->string_pattern());
@@ -967,9 +953,8 @@ void URLMatcher::UpdateRegexSetMatcher() {
       ++condition_set_iter) {
     const URLMatcherConditionSet::Conditions& conditions =
         condition_set_iter->second->conditions();
-    for (URLMatcherConditionSet::Conditions::const_iterator condition_iter =
-         conditions.begin(); condition_iter != conditions.end();
-         ++condition_iter) {
+    for (auto condition_iter = conditions.begin();
+         condition_iter != conditions.end(); ++condition_iter) {
       if (condition_iter->IsRegexCondition()) {
         new_patterns.push_back(condition_iter->string_pattern());
       } else if (condition_iter->IsOriginAndPathRegexCondition()) {
@@ -996,17 +981,15 @@ void URLMatcher::UpdateTriggers() {
       ++condition_set_iter) {
     const URLMatcherConditionSet::Conditions& conditions =
         condition_set_iter->second->conditions();
-    for (URLMatcherConditionSet::Conditions::const_iterator condition_iter =
-         conditions.begin(); condition_iter != conditions.end();
-         ++condition_iter) {
+    for (auto condition_iter = conditions.begin();
+         condition_iter != conditions.end(); ++condition_iter) {
       const StringPattern* pattern = condition_iter->string_pattern();
       substring_pattern_frequencies[pattern->id()]++;
     }
 
     const URLMatcherConditionSet::QueryConditions& query_conditions =
         condition_set_iter->second->query_conditions();
-    for (URLMatcherConditionSet::QueryConditions::const_iterator
-             query_condition_iter = query_conditions.begin();
+    for (auto query_condition_iter = query_conditions.begin();
          query_condition_iter != query_conditions.end();
          ++query_condition_iter) {
       const StringPattern* pattern = query_condition_iter->string_pattern();
@@ -1030,8 +1013,7 @@ void URLMatcher::UpdateTriggers() {
         condition_set_iter->second->conditions();
     if (conditions.empty())
       continue;
-    URLMatcherConditionSet::Conditions::const_iterator condition_iter =
-        conditions.begin();
+    auto condition_iter = conditions.begin();
     StringPattern::ID trigger = condition_iter->string_pattern()->id();
     // We skip the first element in the following loop.
     ++condition_iter;
@@ -1046,8 +1028,7 @@ void URLMatcher::UpdateTriggers() {
 
     const URLMatcherConditionSet::QueryConditions& query_conditions =
         condition_set_iter->second->query_conditions();
-    for (URLMatcherConditionSet::QueryConditions::const_iterator
-             query_condition_iter = query_conditions.begin();
+    for (auto query_condition_iter = query_conditions.begin();
          query_condition_iter != query_conditions.end();
          ++query_condition_iter) {
       StringPattern::ID current_id =
@@ -1070,15 +1051,13 @@ void URLMatcher::UpdateConditionFactory() {
       ++condition_set_iter) {
     const URLMatcherConditionSet::Conditions& conditions =
         condition_set_iter->second->conditions();
-    for (URLMatcherConditionSet::Conditions::const_iterator condition_iter =
-         conditions.begin(); condition_iter != conditions.end();
-         ++condition_iter) {
+    for (auto condition_iter = conditions.begin();
+         condition_iter != conditions.end(); ++condition_iter) {
       used_patterns.insert(condition_iter->string_pattern()->id());
     }
     const URLMatcherConditionSet::QueryConditions& query_conditions =
         condition_set_iter->second->query_conditions();
-    for (URLMatcherConditionSet::QueryConditions::const_iterator
-             query_condition_iter = query_conditions.begin();
+    for (auto query_condition_iter = query_conditions.begin();
          query_condition_iter != query_conditions.end();
          ++query_condition_iter) {
       used_patterns.insert(query_condition_iter->string_pattern()->id());

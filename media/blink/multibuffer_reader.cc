@@ -151,9 +151,8 @@ void MultiBufferReader::CheckWait() {
     // there are no callbacks from us after we've been destroyed.
     current_wait_size_ = 0;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::Bind(&MultiBufferReader::Call, weak_factory_.GetWeakPtr(),
-                   base::ResetAndReturn(&cb_)));
+        FROM_HERE, base::BindOnce(&MultiBufferReader::Call,
+                                  weak_factory_.GetWeakPtr(), std::move(cb_)));
   }
 }
 

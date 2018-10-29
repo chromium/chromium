@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -39,7 +40,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/download/public/common/download_item.h"
 #include "components/viz/common/features.h"
@@ -48,6 +48,7 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/notification_observer.h"
@@ -76,6 +77,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/test/test_clipboard.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 
@@ -339,8 +341,8 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   int CountPDFProcesses() {
     int result = -1;
     base::RunLoop run_loop;
-    content::BrowserThread::PostTaskAndReply(
-        content::BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraitsAndReply(
+        FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&PDFExtensionTest::CountPDFProcessesOnIOThread,
                        base::Unretained(this), base::Unretained(&result)),
         run_loop.QuitClosure());
@@ -378,10 +380,6 @@ class PDFExtensionHitTestTest : public PDFExtensionTest,
   }
 
   base::test::ScopedFeatureList feature_list_;
-
-#if defined(OS_MACOSX)
-  test::ScopedMacViewsBrowserMode cocoa_browser_mode_{false};
-#endif
 };
 
 // Disabled because it's flaky.
@@ -401,15 +399,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, MAYBE_Load) {
   LoadAllPdfsTest("pdf", GetParam());
 }
 
-class DisablePluginHelper : public content::DownloadManager::Observer {
+class DownloadAwaiter : public content::DownloadManager::Observer {
  public:
-  DisablePluginHelper() {}
-  ~DisablePluginHelper() override {}
-
-  void DisablePlugin(Profile* profile) {
-    profile->GetPrefs()->SetBoolean(
-        prefs::kPluginsAlwaysOpenPdfExternally, true);
-  }
+  DownloadAwaiter() {}
+  ~DownloadAwaiter() override {}
 
   const GURL& GetLastUrl() {
     // Wait until the download has been created.
@@ -430,33 +423,103 @@ class DisablePluginHelper : public content::DownloadManager::Observer {
   GURL last_url_;
 };
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DisablePlugin) {
-  // Disable the PDF plugin.
-  WebContents* web_contents = GetActiveWebContents();
-  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  DisablePluginHelper helper;
-  helper.DisablePlugin(profile);
+// Tests behavior when the PDF plugin is disabled in preferences.
+class PDFPluginDisabledTest : public PDFExtensionTest {
+ public:
+  PDFPluginDisabledTest() {}
 
-  // Register a download observer.
-  content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(browser_context);
-  download_manager->AddObserver(&helper);
+ protected:
+  void SetUpOnMainThread() override {
+    PDFExtensionTest::SetUpOnMainThread();
 
+    content::BrowserContext* browser_context =
+        GetActiveWebContents()->GetBrowserContext();
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    profile->GetPrefs()->SetBoolean(prefs::kPluginsAlwaysOpenPdfExternally,
+                                    true);
+
+    content::DownloadManager* download_manager =
+        content::BrowserContext::GetDownloadManager(browser_context);
+    download_awaiter_ = std::make_unique<DownloadAwaiter>();
+    download_manager->AddObserver(download_awaiter_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    content::BrowserContext* browser_context =
+        GetActiveWebContents()->GetBrowserContext();
+    content::DownloadManager* download_manager =
+        content::BrowserContext::GetDownloadManager(browser_context);
+    download_manager->RemoveObserver(download_awaiter_.get());
+
+    // Cancel all downloads to shut down cleanly.
+    std::vector<download::DownloadItem*> downloads;
+    download_manager->GetAllDownloads(&downloads);
+    for (auto* item : downloads) {
+      item->Cancel(false);
+    }
+
+    PDFExtensionTest::TearDownOnMainThread();
+  }
+
+  size_t GetNumberOfDownloads() {
+    content::BrowserContext* browser_context =
+        GetActiveWebContents()->GetBrowserContext();
+    content::DownloadManager* download_manager =
+        content::BrowserContext::GetDownloadManager(browser_context);
+
+    std::vector<download::DownloadItem*> downloads;
+    download_manager->GetAllDownloads(&downloads);
+    return downloads.size();
+  }
+
+  const GURL& AwaitAndGetLastDownloadedUrl() {
+    return download_awaiter_->GetLastUrl();
+  }
+
+ private:
+  std::unique_ptr<DownloadAwaiter> download_awaiter_;
+};
+
+IN_PROC_BROWSER_TEST_F(PDFPluginDisabledTest, DirectNavigationToPDF) {
   // Navigate to a PDF and test that it is downloaded.
-  GURL url(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ui_test_utils::NavigateToURL(browser(), url);
-  ASSERT_EQ(url, helper.GetLastUrl());
+  GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ui_test_utils::NavigateToURL(browser(), pdf_url);
 
-  // Didn't launch a PPAPI process.
+  // Validate that we downloaded a single PDF and didn't launch the PDF plugin.
+  EXPECT_EQ(pdf_url, AwaitAndGetLastDownloadedUrl());
+  EXPECT_EQ(1u, GetNumberOfDownloads());
   EXPECT_EQ(0, CountPDFProcesses());
+}
 
-  // Cancel the download to shutdown cleanly.
-  download_manager->RemoveObserver(&helper);
-  std::vector<download::DownloadItem*> downloads;
-  download_manager->GetAllDownloads(&downloads);
-  ASSERT_EQ(1u, downloads.size());
-  downloads[0]->Cancel(false);
+IN_PROC_BROWSER_TEST_F(PDFPluginDisabledTest, IframePdfPlaceholderWithCSP) {
+  // Navigate to a page that uses <iframe> to embed a PDF as a plugin.
+  GURL iframe_page_url =
+      embedded_test_server()->GetURL("/pdf/pdf_iframe_csp.html");
+  ui_test_utils::NavigateToURL(browser(), iframe_page_url);
+
+  // Pass an Enter keystroke to the child <iframe>.
+  int keys_passed = 0;
+  for (auto* host : GetActiveWebContents()->GetAllFrames()) {
+    if (host != GetActiveWebContents()->GetMainFrame()) {
+      content::NativeWebKeyboardEvent key_event(
+          blink::WebKeyboardEvent::kChar, blink::WebInputEvent::kNoModifiers,
+          blink::WebInputEvent::GetStaticTimeStampForTests());
+      key_event.windows_key_code = ui::VKEY_RETURN;
+      key_event.native_key_code =
+          ui::KeycodeConverter::DomCodeToNativeKeycode(ui::DomCode::ENTER);
+      key_event.dom_code = static_cast<int>(ui::DomCode::ENTER);
+      key_event.dom_key = ui::DomKey::ENTER;
+      host->GetView()->GetRenderWidgetHost()->ForwardKeyboardEvent(key_event);
+      keys_passed++;
+    }
+  }
+  ASSERT_EQ(1, keys_passed);
+
+  // Validate that we downloaded a single PDF and didn't launch the PDF plugin.
+  GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  EXPECT_EQ(pdf_url, AwaitAndGetLastDownloadedUrl());
+  EXPECT_EQ(1u, GetNumberOfDownloads());
+  EXPECT_EQ(0, CountPDFProcesses());
 }
 
 // We break PDFExtensionLoadTest up into kNumberLoadTestParts.
@@ -1557,8 +1620,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
+// TODO: test is flaky. https://crbug.com/897801
 IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
-                       IndividualShiftLeftArrowPresses) {
+                       DISABLED_IndividualShiftLeftArrowPresses) {
   LoadTestComboBoxPdfGetGuestContents();
 
   // Give the editable combo box focus.
@@ -1709,28 +1773,8 @@ void EnsureCustomPinchZoomInvoked(WebContents* guest_contents,
   zoom_watcher.Wait();
 }
 
-#if defined(OS_MACOSX)
-
-// Test that "smart zoom" (double-tap with two fingers on Mac trackpad)
-// is disabled for the PDF viewer. This prevents the viewer's controls from
-// being scaled off screen (see crbug.com/676668).
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, SmartZoomDisabled) {
-  GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(LoadPdf(test_pdf_url));
-
-  blink::WebGestureEvent smart_zoom_event(
-      blink::WebInputEvent::kGestureDoubleTap,
-      blink::WebInputEvent::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests(),
-      blink::kWebGestureDeviceTouchpad);
-  smart_zoom_event.data.tap.tap_count = 1;
-
-  EXPECT_TRUE(browser()->PreHandleGestureEvent(GetActiveWebContents(),
-                                               smart_zoom_event));
-}
-
-// Ensure that Mac trackpad pinch events are handled by the PDF viewer.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TrackpadPinchInvokesCustomZoom) {
+// Ensure that touchpad pinch events are handled by the PDF viewer.
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TouchpadPinchInvokesCustomZoom) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
@@ -1750,8 +1794,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TrackpadPinchInvokesCustomZoom) {
                                std::move(send_pinch));
 }
 
-#else  // !defined(OS_MACOSX)
-
+#if !defined(OS_MACOSX)
 // Ensure that ctrl-wheel events are handled by the PDF viewer.
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
@@ -1772,11 +1815,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
   EnsureCustomPinchZoomInvoked(guest_contents, GetActiveWebContents(),
                                std::move(send_ctrl_wheel));
 }
+#endif  // !defined(OS_MACOSX)
 
-#endif  // defined(OS_MACOSX)
-
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
-// https://crbug.com/856169
+#if (defined(OS_WIN) && defined(ADDRESS_SANITIZER)) || \
+    (defined(OS_CHROME) && defined(MEMORY_SANITIZER))
+// https://crbug.com/856169, https://crbug.com/892484
 #define MAYBE_MouseLeave DISABLED_MouseLeave
 #else
 #define MAYBE_MouseLeave MouseLeave

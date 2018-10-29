@@ -1,12 +1,17 @@
 This test ensures that ancestor element hover rules are not affected when we hover its contained elements
 
- 
- 
- 
-http://www.webkit.org 
-Button test 
-Radio test 
-Checkbox test 
+option1
+option2
+option3
+
+
+
+http://www.webkit.org
+Button test
+
+Radio test
+Checkbox test
+
 testselect: PASS
 testinput: PASS
 testtextarea: PASS

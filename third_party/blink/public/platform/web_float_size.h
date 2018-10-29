@@ -34,7 +34,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "third_party/blink/renderer/platform/geometry/float_size.h"  // nogncheck
 #else
 #include <ui/gfx/geometry/size_f.h>
 #include <ui/gfx/geometry/vector2d_f.h>

@@ -162,7 +162,7 @@ UI_BASE_EXPORT bool PageTransitionTypeIncludingQualifiersIs(PageTransition lhs,
 UI_BASE_EXPORT PageTransition PageTransitionStripQualifier(
     PageTransition type);
 
-bool PageTransitionIsValidType(int32_t type);
+UI_BASE_EXPORT bool PageTransitionIsValidType(int32_t type);
 
 UI_BASE_EXPORT PageTransition PageTransitionFromInt(int32_t type);
 

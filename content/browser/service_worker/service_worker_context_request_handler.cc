@@ -101,17 +101,6 @@ net::URLRequestJob* ServiceWorkerContextRequestHandler::MaybeCreateJob(
   // falling back to network. Otherwise the renderer may receive the response
   // from network and start a service worker whose browser-side
   // ServiceWorkerVersion is not properly initialized.
-  //
-  // As an exception, allow installed service workers to use importScripts()
-  // to import non-installed scripts.
-  // TODO(falken): This is a spec violation that should be deprecated and
-  // removed. See https://github.com/w3c/ServiceWorker/issues/1021
-  if (status == CreateJobStatus::ERROR_UNINSTALLED_SCRIPT_IMPORT) {
-    // Fall back to network.
-    ServiceWorkerMetrics::RecordUninstalledScriptImport(version_->script_url());
-    return nullptr;
-  }
-
   std::string error_str(CreateJobStatusToString(status));
   request->net_log().AddEvent(
       net::NetLogEventType::SERVICE_WORKER_SCRIPT_LOAD_UNHANDLED_REQUEST_ERROR,

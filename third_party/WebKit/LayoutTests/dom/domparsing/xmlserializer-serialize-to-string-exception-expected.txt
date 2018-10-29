@@ -1,51 +1,66 @@
 This tests XMLSerializer.serializeToString() throwing exception when node value is invalid and passing otherwise.
 
+
 1. Verifying XMLSerializer.serializeToString() should THROW exception with no argument
 Exception thrown = [TypeError: Failed to execute 'serializeToString' on 'XMLSerializer': 1 argument required, but only 0 present.]
 PASS
+
 
 2. Verifying XMLSerializer.serializeToString() should THROW exception with argument null
 Exception thrown = [TypeError: Failed to execute 'serializeToString' on 'XMLSerializer': parameter 1 is not of type 'Node'.]
 PASS
 
+
 3. Verifying XMLSerializer.serializeToString() should THROW exception with argument undefined
 Exception thrown = [TypeError: Failed to execute 'serializeToString' on 'XMLSerializer': parameter 1 is not of type 'Node'.]
 PASS
+
 
 4. Verifying XMLSerializer.serializeToString() should THROW exception with argument <html><title>Hello World</title></html>
 Exception thrown = [TypeError: Failed to execute 'serializeToString' on 'XMLSerializer': parameter 1 is not of type 'Node'.]
 PASS
 
+
 5. Verifying XMLSerializer.serializeToString() should THROW exception with argument [object HTMLCollection]
 Exception thrown = [TypeError: Failed to execute 'serializeToString' on 'XMLSerializer': parameter 1 is not of type 'Node'.]
 PASS
 
+
 6. Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument [object HTMLDocument]
 PASS
+
 
 7. Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument [object HTMLHtmlElement]
 PASS
 
+
 8. Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument [object HTMLHtmlElement]
 PASS
+
 
 9. Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument [object HTMLDivElement]
 PASS
 
+
 10. Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument [object HTMLHeadingElement]
 PASS
+
 
 11. Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument [object HTMLUnknownElement]
 PASS
 
+
 12. Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument [object HTMLDocument]
 PASS
+
 
 13. Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument [object HTMLHtmlElement]
 PASS
 
+
 14. Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument [object XMLDocument]
 PASS
+
 
 15. Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument [object Element]
 PASS

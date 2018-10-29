@@ -34,10 +34,11 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
+#include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/svg_image_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
 
 namespace blink {
 
@@ -142,7 +143,8 @@ void LayoutSVGImage::UpdateLayout() {
 
   if (needs_boundaries_update_) {
     local_visual_rect_ = object_bounding_box_;
-    SVGLayoutSupport::AdjustVisualRectWithResources(*this, local_visual_rect_);
+    SVGLayoutSupport::AdjustVisualRectWithResources(*this, object_bounding_box_,
+                                                    local_visual_rect_);
     needs_boundaries_update_ = false;
     update_parent_boundaries = true;
   }
@@ -156,7 +158,7 @@ void LayoutSVGImage::UpdateLayout() {
 
   if (auto* svg_image_element = ToSVGImageElementOrNull(GetElement())) {
     if (svg_image_element->IsDefaultIntrinsicSize())
-      MediaElementParserHelpers::ReportUnsizedMediaViolation(this);
+      media_element_parser_helpers::ReportUnsizedMediaViolation(this);
   }
   ClearNeedsLayout();
 }
@@ -165,9 +167,11 @@ void LayoutSVGImage::Paint(const PaintInfo& paint_info) const {
   SVGImagePainter(*this).Paint(paint_info);
 }
 
-bool LayoutSVGImage::NodeAtFloatPoint(HitTestResult& result,
-                                      const FloatPoint& point_in_parent,
-                                      HitTestAction hit_test_action) {
+bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
+                                 const HitTestLocation& location_in_container,
+                                 const LayoutPoint& accumulated_offset,
+                                 HitTestAction hit_test_action) {
+  DCHECK_EQ(accumulated_offset, LayoutPoint());
   // We only draw in the forground phase, so we only hit-test then.
   if (hit_test_action != kHitTestForeground)
     return false;
@@ -179,17 +183,19 @@ bool LayoutSVGImage::NodeAtFloatPoint(HitTestResult& result,
   if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)
     return false;
 
-  FloatPoint local_point;
-  if (!SVGLayoutSupport::TransformToUserSpaceAndCheckClipping(
-          *this, LocalToSVGParentTransform(), point_in_parent, local_point))
+  TransformedHitTestLocation local_location(location_in_container,
+                                            LocalToSVGParentTransform());
+  if (!local_location)
+    return false;
+  if (!SVGLayoutSupport::IntersectsClipPath(*this, *local_location))
     return false;
 
   if (hit_rules.can_hit_fill || hit_rules.can_hit_bounding_box) {
-    if (object_bounding_box_.Contains(local_point)) {
-      const LayoutPoint& local_layout_point = LayoutPoint(local_point);
-      HitTestLocation location(local_layout_point);
+    if (local_location->Intersects(object_bounding_box_)) {
+      const LayoutPoint& local_layout_point =
+          LayoutPoint(local_location->TransformedPoint());
       UpdateHitTestResult(result, local_layout_point);
-      if (result.AddNodeToListBasedTestResult(GetElement(), location) ==
+      if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
           kStopHitTesting)
         return true;
     }
@@ -197,9 +203,7 @@ bool LayoutSVGImage::NodeAtFloatPoint(HitTestResult& result,
   return false;
 }
 
-void LayoutSVGImage::ImageChanged(WrappedImagePtr,
-                                  CanDeferInvalidation defer,
-                                  const IntRect*) {
+void LayoutSVGImage::ImageChanged(WrappedImagePtr, CanDeferInvalidation defer) {
   // Notify parent resources that we've changed. This also invalidates
   // references from resources (filters) that may have a cached
   // representation of this image/layout object.

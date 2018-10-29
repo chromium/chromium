@@ -23,6 +23,10 @@ bool TestAutofillDriver::IsIncognito() const {
   return is_incognito_;
 }
 
+bool TestAutofillDriver::IsInMainFrame() const {
+  return is_in_main_frame_;
+}
+
 net::URLRequestContextGetter* TestAutofillDriver::GetURLRequestContext() {
   return url_request_context_;
 }
@@ -88,6 +92,10 @@ bool TestAutofillDriver::GetDidInteractWithCreditCardForm() const {
 
 void TestAutofillDriver::SetIsIncognito(bool is_incognito) {
   is_incognito_ = is_incognito;
+}
+
+void TestAutofillDriver::SetIsInMainFrame(bool is_in_main_frame) {
+  is_in_main_frame_ = is_in_main_frame;
 }
 
 void TestAutofillDriver::SetURLRequestContext(

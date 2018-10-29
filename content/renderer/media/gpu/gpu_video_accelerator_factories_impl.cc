@@ -32,7 +32,6 @@
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_video_decoder.h"
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
-#include "media/mojo/interfaces/video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -120,8 +119,27 @@ void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner(
   interface_factory_.Bind(std::move(interface_factory_info));
   vea_provider_.Bind(std::move(vea_provider_info));
 
-  if (context_provider_->BindToCurrentThread() != gpu::ContextResult::kSuccess)
+  if (context_provider_->BindToCurrentThread() !=
+      gpu::ContextResult::kSuccess) {
     SetContextProviderLost();
+    return;
+  }
+
+#if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
+  if (base::FeatureList::IsEnabled(media::kMojoVideoDecoder)) {
+    interface_factory_->CreateVideoDecoder(mojo::MakeRequest(&video_decoder_));
+    video_decoder_->GetSupportedConfigs(base::BindOnce(
+        &GpuVideoAcceleratorFactoriesImpl::OnSupportedDecoderConfigs,
+        base::Unretained(this)));
+  }
+#endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
+}
+
+void GpuVideoAcceleratorFactoriesImpl::OnSupportedDecoderConfigs(
+    std::vector<media::mojom::SupportedVideoDecoderConfigPtr>
+        supported_configs) {
+  supported_decoder_configs_ = std::move(supported_configs);
+  video_decoder_.reset();
 }
 
 bool GpuVideoAcceleratorFactoriesImpl::CheckContextLost() {
@@ -169,6 +187,30 @@ int32_t GpuVideoAcceleratorFactoriesImpl::GetCommandBufferRouteId() {
   if (CheckContextLost())
     return 0;
   return context_provider_->GetCommandBufferProxy()->route_id();
+}
+
+bool GpuVideoAcceleratorFactoriesImpl::IsDecoderConfigSupported(
+    const media::VideoDecoderConfig& config) {
+  // If GetSupportedConfigs() has not completed (or was never started), report
+  // that all configs are supported. Clients will find out that configs are not
+  // supported when VideoDecoder::Initialize() fails.
+  if (!supported_decoder_configs_)
+    return true;
+
+  for (const media::mojom::SupportedVideoDecoderConfigPtr& supported :
+       *supported_decoder_configs_) {
+    if (config.profile() >= supported->profile_min &&
+        config.profile() <= supported->profile_max &&
+        config.coded_size().width() >= supported->coded_size_min.width() &&
+        config.coded_size().width() <= supported->coded_size_max.width() &&
+        config.coded_size().height() >= supported->coded_size_min.height() &&
+        config.coded_size().height() <= supported->coded_size_max.height() &&
+        (config.is_encrypted() ? supported->allow_encrypted
+                               : !supported->require_encrypted)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::unique_ptr<media::VideoDecoder>

@@ -31,7 +31,6 @@ class EasyUnlockNotificationController
   void ShowPairingChangeNotification() override;
   void ShowPairingChangeAppliedNotification(
       const std::string& phone_name) override;
-  void ShowPromotionNotification() override;
 
  protected:
   // Exposed for testing.

@@ -5,27 +5,37 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 Test 1:
 Block to Inline
 Block to Inline
+
 Test 2:
+
 Inline to Block
 Inline to Block
 Test 3:
+
 pseudo
 pseudo
 Test 4:
+
 pseudo
 pseudo
 Test 5:
+
 To Float
 To Float
 
+
 Test 6:
+
 To Non Float
 To Non Float
 Test 7:
+
 To Float
 To Float
 
+
 Test 8:
+
 To Non Float
 To Non Float
 PASS document.getElementById('test1').offsetWidth == document.getElementById('ref1').offsetWidth is true

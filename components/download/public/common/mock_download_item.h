@@ -108,6 +108,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(GetLastAccessTime, base::Time());
   MOCK_CONST_METHOD0(IsTransient, bool());
   MOCK_CONST_METHOD0(IsParallelDownload, bool());
+  MOCK_CONST_METHOD0(GetDownloadCreationType, DownloadCreationType());
   MOCK_METHOD2(OnContentCheckCompleted,
                void(DownloadDangerType, DownloadInterruptReason));
   MOCK_METHOD1(SetOpenWhenComplete, void(bool));

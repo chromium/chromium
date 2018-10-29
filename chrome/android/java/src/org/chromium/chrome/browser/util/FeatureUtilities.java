@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.UserManager;
 import android.speech.RecognizerIntent;
-import android.text.TextUtils;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -30,7 +29,6 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
 import org.chromium.chrome.browser.tabmodel.DocumentModeAssassin;
-import org.chromium.chrome.browser.toolbar.ToolbarModel;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.variations.VariationsAssociatedData;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -40,6 +38,29 @@ import java.util.List;
 /**
  * A utility {@code class} meant to help determine whether or not certain features are supported by
  * this device.
+ *
+ * This utility class also contains support for cached feature flags that must take effect on
+ * startup before native is initialized but are set via native code. The caching is done in
+ * {@link android.content.SharedPreferences}, which is available in Java immediately.
+ *
+ * When adding a new cached flag, it is common practice to use a static Boolean in this file to
+ * track whether the feature is enabled. A static method that returns the static Boolean can
+ * then be added to this file allowing client code to query whether the feature is enabled. The
+ * first time the method is called, the static Boolean should be set to the corresponding shared
+ * preference. After native is initialized, the shared preference will be updated to reflect the
+ * native flag value (e.g. the actual experimental feature flag value).
+ *
+ * When using a cached flag, the static Boolean should be the source of truth for whether the
+ * feature is turned on for the current session. As such, always rely on the static Boolean
+ * when determining whether the corresponding experimental behavior should be enabled. When
+ * querying whether a cached feature is enabled from native, an @CalledByNative method can be
+ * exposed in this file to allow feature_utilities.cc to retrieve the cached value.
+ *
+ * For cached flags that are queried before native is initialized, when a new experiment
+ * configuration is received the metrics reporting system will record metrics as if the
+ * experiment is enabled despite the experimental behavior not yet taking effect. This will be
+ * remedied on the next process restart, when the static Boolean is reset to the newly cached
+ * value in shared preferences.
  */
 public class FeatureUtilities {
     private static final String TAG = "FeatureUtilities";
@@ -164,7 +185,7 @@ public class FeatureUtilities {
         FirstRunUtils.cacheFirstRunPrefs();
         cacheHomePageButtonForceEnabled();
         cacheHomepageTileEnabled();
-        cacheNewTabPageButtonEnabledAndMaybeVariant();
+        cacheNewTabPageButtonEnabled();
         cacheBottomToolbarEnabled();
         cacheInflateToolbarOnBackgroundThread();
 
@@ -270,18 +291,13 @@ public class FeatureUtilities {
     }
 
     /**
-     * Cache whether or not the new tab page button is enabled and, if it is, the button's variant
-     * as well so that on next startup, both values can be made available immediately.
+     * Cache whether or not the new tab page button is enabled so that on next startup, it can be
+     * made available immediately.
      */
-    public static void cacheNewTabPageButtonEnabledAndMaybeVariant() {
+    private static void cacheNewTabPageButtonEnabled() {
         boolean isNTPButtonEnabled = ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_BUTTON);
         ChromePreferenceManager.getInstance().writeBoolean(
                 ChromePreferenceManager.NTP_BUTTON_ENABLED_KEY, isNTPButtonEnabled);
-        if (isNTPButtonEnabled) {
-            String iconVariant = getNTPButtonVariant();
-            if (TextUtils.isEmpty(iconVariant)) iconVariant = ToolbarModel.NTP_BUTTON_HOME_VARIANT;
-            ChromePreferenceManager.getInstance().setNewTabPageButtonVariant(iconVariant);
-        }
     }
 
     /**
@@ -327,14 +343,13 @@ public class FeatureUtilities {
             ChromePreferenceManager prefManager = ChromePreferenceManager.getInstance();
 
             try (StrictModeContext unused = StrictModeContext.allowDiskReads()) {
-                sIsBottomToolbarEnabled =
-                        prefManager.readBoolean(
-                                ChromePreferenceManager.BOTTOM_TOOLBAR_ENABLED_KEY, false)
-                        && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                   ContextUtils.getApplicationContext());
+                sIsBottomToolbarEnabled = prefManager.readBoolean(
+                        ChromePreferenceManager.BOTTOM_TOOLBAR_ENABLED_KEY, false);
             }
         }
-        return sIsBottomToolbarEnabled;
+        return sIsBottomToolbarEnabled
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                           ContextUtils.getApplicationContext());
     }
 
     /**
@@ -408,11 +423,9 @@ public class FeatureUtilities {
                 activityContext.getResources().getConfiguration().smallestScreenWidthDp;
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activityContext)
                 && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
-                && (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BOTTOM_SHEET)
-                    || (smallestScreenWidth >= CONTEXTUAL_SUGGESTIONS_TOOLBAR_MIN_DP
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON)));
+                && (smallestScreenWidth >= CONTEXTUAL_SUGGESTIONS_TOOLBAR_MIN_DP
+                           && ChromeFeatureList.isEnabled(
+                                      ChromeFeatureList.CONTEXTUAL_SUGGESTIONS_BUTTON));
     }
 
     /**

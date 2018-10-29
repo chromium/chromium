@@ -24,11 +24,6 @@ void TestWindowTreeClientDelegate::OnEmbedRootDestroyed(
 
 void TestWindowTreeClientDelegate::OnLostConnection(WindowTreeClient* client) {}
 
-void TestWindowTreeClientDelegate::OnPointerEventObserved(
-    const ui::PointerEvent& event,
-    const gfx::Point& location_in_screen,
-    Window* target) {}
-
 PropertyConverter* TestWindowTreeClientDelegate::GetPropertyConverter() {
   return property_converter_.get();
 }

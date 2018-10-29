@@ -19,6 +19,8 @@ cast_source_set("audio") {
     "//base",
     "//chromecast/base",
     "//chromecast/common/mojom",
+    "//chromecast/media/audio/mixer_service:connection",
+    "//chromecast/media/audio/mixer_service:proto",
     "//chromecast/media/base",
     "//chromecast/media/cma/backend",
     "//chromecast/media/cma/base",
@@ -45,6 +47,19 @@ cast_shared_library("libcast_external_audio_pipeline_1.0") {
   ]
 
   public_deps = [
+    "//chromecast/public/media",
+  ]
+}
+
+source_set("fake_external_audio_pipeline") {
+  sources = [
+    "fake_external_audio_pipeline.cc",
+    "fake_external_audio_pipeline_support.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/public",
     "//chromecast/public/media",
   ]
 }

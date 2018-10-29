@@ -1,9 +1,0 @@
-This tests verifies that the selection is properly reset after executing the command.
-| <ol>
-|   <li>
-|     "AB<#selection-anchor>C"
-|   <li>
-|     id="second"
-|     "DEF<#selection-focus>"
-| "
-"

@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -93,7 +94,7 @@ class SettingsResetPromptModelTest
 
     profile_->CreateWebDataService();
     TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), CreateTemplateURLServiceForTesting);
+        profile(), base::BindRepeating(&CreateTemplateURLServiceForTesting));
 
     SessionStartupPref::SetStartupPref(profile(), startup_pref_);
 

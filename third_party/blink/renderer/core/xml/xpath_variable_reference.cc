@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/xml/xpath_value.h"
 
 namespace blink {
-namespace XPath {
+namespace xpath {
 
 VariableReference::VariableReference(const String& name) : name_(name) {}
 
@@ -43,5 +43,5 @@ Value VariableReference::Evaluate(EvaluationContext& context) const {
   return bindings.at(name_);
 }
 
-}  // namespace XPath
+}  // namespace xpath
 }  // namespace blink

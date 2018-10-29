@@ -30,9 +30,10 @@
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
-namespace OpenType {
+namespace open_type {
 
 // The input characters are big-endian (first is most significant).
 #define OT_MAKE_TAG(ch1, ch2, ch3, ch4)                    \
@@ -49,46 +50,46 @@ const SkFontTableTag kVORGTag = OT_MAKE_TAG('V', 'O', 'R', 'G');
 
 struct HheaTable {
   DISALLOW_NEW();
-  OpenType::Fixed version;
-  OpenType::Int16 ascender;
-  OpenType::Int16 descender;
-  OpenType::Int16 line_gap;
-  OpenType::Int16 advance_width_max;
-  OpenType::Int16 min_left_side_bearing;
-  OpenType::Int16 min_right_side_bearing;
-  OpenType::Int16 x_max_extent;
-  OpenType::Int16 caret_slope_rise;
-  OpenType::Int16 caret_slope_run;
-  OpenType::Int16 caret_offset;
-  OpenType::Int16 reserved[4];
-  OpenType::Int16 metric_data_format;
-  OpenType::UInt16 number_of_h_metrics;
+  open_type::Fixed version;
+  open_type::Int16 ascender;
+  open_type::Int16 descender;
+  open_type::Int16 line_gap;
+  open_type::Int16 advance_width_max;
+  open_type::Int16 min_left_side_bearing;
+  open_type::Int16 min_right_side_bearing;
+  open_type::Int16 x_max_extent;
+  open_type::Int16 caret_slope_rise;
+  open_type::Int16 caret_slope_run;
+  open_type::Int16 caret_offset;
+  open_type::Int16 reserved[4];
+  open_type::Int16 metric_data_format;
+  open_type::UInt16 number_of_h_metrics;
 };
 
 struct VheaTable {
   DISALLOW_NEW();
-  OpenType::Fixed version;
-  OpenType::Int16 ascent;
-  OpenType::Int16 descent;
-  OpenType::Int16 line_gap;
-  OpenType::Int16 advance_height_max;
-  OpenType::Int16 min_top_side_bearing;
-  OpenType::Int16 min_bottom_side_bearing;
-  OpenType::Int16 y_max_extent;
-  OpenType::Int16 caret_slope_rise;
-  OpenType::Int16 caret_slope_run;
-  OpenType::Int16 caret_offset;
-  OpenType::Int16 reserved[4];
-  OpenType::Int16 metric_data_format;
-  OpenType::UInt16 num_of_long_ver_metrics;
+  open_type::Fixed version;
+  open_type::Int16 ascent;
+  open_type::Int16 descent;
+  open_type::Int16 line_gap;
+  open_type::Int16 advance_height_max;
+  open_type::Int16 min_top_side_bearing;
+  open_type::Int16 min_bottom_side_bearing;
+  open_type::Int16 y_max_extent;
+  open_type::Int16 caret_slope_rise;
+  open_type::Int16 caret_slope_run;
+  open_type::Int16 caret_offset;
+  open_type::Int16 reserved[4];
+  open_type::Int16 metric_data_format;
+  open_type::UInt16 num_of_long_ver_metrics;
 };
 
 struct HmtxTable {
   DISALLOW_NEW();
   struct Entry {
     DISALLOW_NEW();
-    OpenType::UInt16 advance_width;
-    OpenType::Int16 lsb;
+    open_type::UInt16 advance_width;
+    open_type::Int16 lsb;
   } entries[1];
 };
 
@@ -96,21 +97,21 @@ struct VmtxTable {
   DISALLOW_NEW();
   struct Entry {
     DISALLOW_NEW();
-    OpenType::UInt16 advance_height;
-    OpenType::Int16 top_side_bearing;
+    open_type::UInt16 advance_height;
+    open_type::Int16 top_side_bearing;
   } entries[1];
 };
 
 struct VORGTable {
   DISALLOW_NEW();
-  OpenType::UInt16 major_version;
-  OpenType::UInt16 minor_version;
-  OpenType::Int16 default_vert_origin_y;
-  OpenType::UInt16 num_vert_origin_y_metrics;
+  open_type::UInt16 major_version;
+  open_type::UInt16 minor_version;
+  open_type::Int16 default_vert_origin_y;
+  open_type::UInt16 num_vert_origin_y_metrics;
   struct VertOriginYMetrics {
     DISALLOW_NEW();
-    OpenType::UInt16 glyph_index;
-    OpenType::Int16 vert_origin_y;
+    open_type::UInt16 glyph_index;
+    open_type::Int16 vert_origin_y;
   } vert_origin_y_metrics[1];
 
   size_t RequiredSize() const {
@@ -121,7 +122,7 @@ struct VORGTable {
 
 #pragma pack()
 
-}  // namespace OpenType
+}  // namespace open_type
 
 OpenTypeVerticalData::OpenTypeVerticalData(sk_sp<SkTypeface> typeface)
     : default_vert_origin_y_(0),
@@ -135,7 +136,7 @@ static void CopyOpenTypeTable(sk_sp<SkTypeface> typeface,
                               SkFontTableTag tag,
                               Vector<char>& destination) {
   const size_t table_size = typeface->getTableSize(tag);
-  destination.resize(table_size);
+  destination.resize(SafeCast<wtf_size_t>(table_size));
   if (table_size) {
     typeface->getTableData(tag, 0, table_size, destination.data());
   }
@@ -145,9 +146,9 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
   // Load hhea and hmtx to get x-component of vertical origins.
   // If these tables are missing, it's not an OpenType font.
   Vector<char> buffer;
-  CopyOpenTypeTable(typeface, OpenType::kHheaTag, buffer);
-  const OpenType::HheaTable* hhea =
-      OpenType::ValidateTable<OpenType::HheaTable>(buffer);
+  CopyOpenTypeTable(typeface, open_type::kHheaTag, buffer);
+  const open_type::HheaTable* hhea =
+      open_type::ValidateTable<open_type::HheaTable>(buffer);
   if (!hhea)
     return;
   uint16_t count_hmtx_entries = hhea->number_of_h_metrics;
@@ -156,9 +157,10 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
     return;
   }
 
-  CopyOpenTypeTable(typeface, OpenType::kHmtxTag, buffer);
-  const OpenType::HmtxTable* hmtx =
-      OpenType::ValidateTable<OpenType::HmtxTable>(buffer, count_hmtx_entries);
+  CopyOpenTypeTable(typeface, open_type::kHmtxTag, buffer);
+  const open_type::HmtxTable* hmtx =
+      open_type::ValidateTable<open_type::HmtxTable>(buffer,
+                                                     count_hmtx_entries);
   if (!hmtx) {
     DLOG(ERROR) << "hhea exists but hmtx does not (or broken)";
     return;
@@ -169,9 +171,9 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
 
   // Load vhea first. This table is required for fonts that support vertical
   // flow.
-  CopyOpenTypeTable(typeface, OpenType::kVheaTag, buffer);
-  const OpenType::VheaTable* vhea =
-      OpenType::ValidateTable<OpenType::VheaTable>(buffer);
+  CopyOpenTypeTable(typeface, open_type::kVheaTag, buffer);
+  const open_type::VheaTable* vhea =
+      open_type::ValidateTable<open_type::VheaTable>(buffer);
   if (!vhea)
     return;
   uint16_t count_vmtx_entries = vhea->num_of_long_ver_metrics;
@@ -181,9 +183,9 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
   }
 
   // Load VORG. This table is optional.
-  CopyOpenTypeTable(typeface, OpenType::kVORGTag, buffer);
-  const OpenType::VORGTable* vorg =
-      OpenType::ValidateTable<OpenType::VORGTable>(buffer);
+  CopyOpenTypeTable(typeface, open_type::kVORGTag, buffer);
+  const open_type::VORGTable* vorg =
+      open_type::ValidateTable<open_type::VORGTable>(buffer);
   if (vorg && buffer.size() >= vorg->RequiredSize()) {
     default_vert_origin_y_ = vorg->default_vert_origin_y;
     uint16_t count_vert_origin_y_metrics = vorg->num_vert_origin_y_metrics;
@@ -192,7 +194,7 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
       vert_origin_y_.Set(0, default_vert_origin_y_);
     } else {
       for (uint16_t i = 0; i < count_vert_origin_y_metrics; ++i) {
-        const OpenType::VORGTable::VertOriginYMetrics& metrics =
+        const open_type::VORGTable::VertOriginYMetrics& metrics =
             vorg->vert_origin_y_metrics[i];
         vert_origin_y_.Set(metrics.glyph_index, metrics.vert_origin_y);
       }
@@ -201,9 +203,10 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
 
   // Load vmtx then. This table is required for fonts that support vertical
   // flow.
-  CopyOpenTypeTable(typeface, OpenType::kVmtxTag, buffer);
-  const OpenType::VmtxTable* vmtx =
-      OpenType::ValidateTable<OpenType::VmtxTable>(buffer, count_vmtx_entries);
+  CopyOpenTypeTable(typeface, open_type::kVmtxTag, buffer);
+  const open_type::VmtxTable* vmtx =
+      open_type::ValidateTable<open_type::VmtxTable>(buffer,
+                                                     count_vmtx_entries);
   if (!vmtx) {
     DLOG(ERROR) << "vhea exists but vmtx does not (or broken)";
     return;
@@ -217,21 +220,21 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
   if (HasVORG())
     return;
 
-  size_t size_extra =
-      buffer.size() - sizeof(OpenType::VmtxTable::Entry) * count_vmtx_entries;
-  if (size_extra % sizeof(OpenType::Int16)) {
+  wtf_size_t size_extra =
+      buffer.size() - sizeof(open_type::VmtxTable::Entry) * count_vmtx_entries;
+  if (size_extra % sizeof(open_type::Int16)) {
     DLOG(ERROR) << "vmtx has incorrect tsb count";
     return;
   }
-  size_t count_top_side_bearings =
-      count_vmtx_entries + size_extra / sizeof(OpenType::Int16);
+  wtf_size_t count_top_side_bearings =
+      count_vmtx_entries + size_extra / sizeof(open_type::Int16);
   top_side_bearings_.resize(count_top_side_bearings);
-  size_t i;
+  wtf_size_t i;
   for (i = 0; i < count_vmtx_entries; ++i)
     top_side_bearings_[i] = vmtx->entries[i].top_side_bearing;
   if (i < count_top_side_bearings) {
-    const OpenType::Int16* p_top_side_bearings_extra =
-        reinterpret_cast<const OpenType::Int16*>(
+    const open_type::Int16* p_top_side_bearings_extra =
+        reinterpret_cast<const open_type::Int16*>(
             &vmtx->entries[count_vmtx_entries]);
     for (; i < count_top_side_bearings; ++i, ++p_top_side_bearings_extra)
       top_side_bearings_[i] = *p_top_side_bearings_extra;
@@ -247,7 +250,7 @@ void OpenTypeVerticalData::SetScaleAndFallbackMetrics(float size_per_unit,
 }
 
 float OpenTypeVerticalData::AdvanceHeight(Glyph glyph) const {
-  size_t count_heights = advance_heights_.size();
+  wtf_size_t count_heights = advance_heights_.size();
   if (count_heights) {
     uint16_t advance_f_unit =
         advance_heights_[glyph < count_heights ? glyph : count_heights - 1];
@@ -264,10 +267,10 @@ void OpenTypeVerticalData::GetVerticalTranslationsForGlyphs(
     const Glyph* glyphs,
     size_t count,
     float* out_xy_array) const {
-  size_t count_widths = advance_widths_.size();
+  wtf_size_t count_widths = advance_widths_.size();
   DCHECK_GT(count_widths, 0u);
   bool use_vorg = HasVORG();
-  size_t count_top_side_bearings = top_side_bearings_.size();
+  wtf_size_t count_top_side_bearings = top_side_bearings_.size();
   float default_vert_origin_y = std::numeric_limits<float>::quiet_NaN();
   for (float *end = &(out_xy_array[count * 2]); out_xy_array != end;
        ++glyphs, out_xy_array += 2) {

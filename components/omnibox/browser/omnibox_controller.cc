@@ -76,9 +76,11 @@ void OmniboxController::InvalidateCurrentMatch() {
 }
 
 void OmniboxController::ClearPopupKeywordMode() const {
-  if (popup_->IsOpen() &&
-      popup_->selected_line_state() == OmniboxPopupModel::KEYWORD)
+  // |popup_| can be nullptr in tests.
+  if (popup_ && popup_->IsOpen() &&
+      popup_->selected_line_state() == OmniboxPopupModel::KEYWORD) {
     popup_->SetSelectedLineState(OmniboxPopupModel::NORMAL);
+  }
 }
 
 void OmniboxController::SetRichSuggestionBitmap(int result_index,

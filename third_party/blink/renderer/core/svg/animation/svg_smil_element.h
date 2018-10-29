@@ -298,11 +298,11 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
 };
 
 inline bool IsSVGSMILElement(const SVGElement& element) {
-  return element.HasTagName(SVGNames::setTag) ||
-         element.HasTagName(SVGNames::animateTag) ||
-         element.HasTagName(SVGNames::animateMotionTag) ||
-         element.HasTagName(SVGNames::animateTransformTag) ||
-         element.HasTagName((SVGNames::discardTag));
+  return element.HasTagName(svg_names::kSetTag) ||
+         element.HasTagName(svg_names::kAnimateTag) ||
+         element.HasTagName(svg_names::kAnimateMotionTag) ||
+         element.HasTagName(svg_names::kAnimateTransformTag) ||
+         element.HasTagName((svg_names::kDiscardTag));
 }
 
 DEFINE_SVGELEMENT_TYPE_CASTS_WITH_FUNCTION(SVGSMILElement);

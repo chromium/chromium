@@ -86,12 +86,14 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    settings_helper_.ReplaceProvider(kAccountsPrefDeviceLocalAccounts);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     owner_settings_service_ =
         settings_helper_.CreateOwnerSettingsService(browser()->profile());
   }
 
-  void TearDownOnMainThread() override { settings_helper_.RestoreProvider(); }
+  void TearDownOnMainThread() override {
+    settings_helper_.RestoreRealDeviceSettingsProvider();
+  }
 
   void SetApps(const std::vector<policy::ArcKioskAppBasicInfo>& apps,
                const std::string& auto_login_account) {

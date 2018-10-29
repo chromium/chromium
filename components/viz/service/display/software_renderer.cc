@@ -639,10 +639,10 @@ void SoftwareRenderer::GenerateMipmap() {
 
 bool SoftwareRenderer::ShouldApplyBackgroundFilters(
     const RenderPassDrawQuad* quad,
-    const cc::FilterOperations* background_filters) const {
-  if (!background_filters)
+    const cc::FilterOperations* backdrop_filters) const {
+  if (!backdrop_filters)
     return false;
-  DCHECK(!background_filters->IsEmpty());
+  DCHECK(!backdrop_filters->IsEmpty());
 
   // TODO(hendrikw): Look into allowing background filters to see pixels from
   // other render targets.  See crbug.com/314867.
@@ -707,15 +707,15 @@ SkBitmap SoftwareRenderer::GetBackdropBitmap(
 gfx::Rect SoftwareRenderer::GetBackdropBoundingBoxForRenderPassQuad(
     const RenderPassDrawQuad* quad,
     const gfx::Transform& contents_device_transform,
-    const cc::FilterOperations* background_filters,
+    const cc::FilterOperations* backdrop_filters,
     gfx::Rect* unclipped_rect) const {
-  DCHECK(ShouldApplyBackgroundFilters(quad, background_filters));
+  DCHECK(ShouldApplyBackgroundFilters(quad, backdrop_filters));
   gfx::Rect backdrop_rect = gfx::ToEnclosingRect(cc::MathUtil::MapClippedRect(
       contents_device_transform, QuadVertexRect()));
 
   SkMatrix matrix;
   matrix.setScale(quad->filters_scale.x(), quad->filters_scale.y());
-  backdrop_rect = background_filters->MapRectReverse(backdrop_rect, matrix);
+  backdrop_rect = backdrop_filters->MapRectReverse(backdrop_rect, matrix);
 
   *unclipped_rect = backdrop_rect;
   backdrop_rect.Intersect(MoveFromDrawToWindowSpace(
@@ -727,9 +727,9 @@ gfx::Rect SoftwareRenderer::GetBackdropBoundingBoxForRenderPassQuad(
 sk_sp<SkShader> SoftwareRenderer::GetBackgroundFilterShader(
     const RenderPassDrawQuad* quad,
     SkShader::TileMode content_tile_mode) const {
-  const cc::FilterOperations* background_filters =
+  const cc::FilterOperations* backdrop_filters =
       BackgroundFiltersForPass(quad->render_pass_id);
-  if (!ShouldApplyBackgroundFilters(quad, background_filters))
+  if (!ShouldApplyBackgroundFilters(quad, backdrop_filters))
     return nullptr;
 
   gfx::Transform quad_rect_matrix;
@@ -743,7 +743,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackgroundFilterShader(
 
   gfx::Rect unclipped_rect;
   gfx::Rect backdrop_rect = GetBackdropBoundingBoxForRenderPassQuad(
-      quad, contents_device_transform, background_filters, &unclipped_rect);
+      quad, contents_device_transform, backdrop_filters, &unclipped_rect);
 
   // Figure out the transformations to move it back to pixel space.
   gfx::Transform contents_device_transform_inverse;
@@ -762,7 +762,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackgroundFilterShader(
       (backdrop_rect.bottom_left() - unclipped_rect.bottom_left());
   sk_sp<SkImageFilter> filter =
       cc::RenderSurfaceFilters::BuildImageFilter(
-          *background_filters,
+          *backdrop_filters,
           gfx::SizeF(backdrop_bitmap.width(), backdrop_bitmap.height()),
           clipping_offset)
           ->cached_sk_filter_;

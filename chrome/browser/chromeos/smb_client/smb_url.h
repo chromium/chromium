@@ -38,15 +38,25 @@ class SmbUrl {
   // should be called after the constructor.
   bool IsValid() const;
 
+  // Returns |url_| in the format \\server\share.
+  std::string GetWindowsUNCString() const;
+
  private:
   // Canonicalize |url| and saves the output as url_ and host_ if successful.
   void CanonicalizeSmbUrl(const std::string& url);
+
+  // Parse |url| into a Windows UNC |windows_unc_|.
+  void CreateWindowsUnc(const std::string& url);
 
   // Resets url_ and parsed_.
   void Reset();
 
   // String form of the canonical url.
   std::string url_;
+
+  // String form of the Windows Universal Naming Convention of the url.
+  // MS-DTYP section 2.2.57
+  std::string windows_unc_;
 
   // Holds the identified host of the URL. This does not store the host itself.
   url::Component host_;

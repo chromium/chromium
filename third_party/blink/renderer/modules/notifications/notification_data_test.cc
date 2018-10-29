@@ -134,7 +134,7 @@ TEST_F(NotificationDataTest, ReflectProperties) {
 
   ASSERT_EQ(vibration_pattern.size(),
             notification_data->vibration_pattern->size());
-  for (size_t i = 0; i < vibration_pattern.size(); ++i) {
+  for (wtf_size_t i = 0; i < vibration_pattern.size(); ++i) {
     EXPECT_EQ(
         vibration_pattern[i],
         static_cast<unsigned>(notification_data->vibration_pattern.value()[i]));
@@ -259,7 +259,7 @@ TEST_F(NotificationDataTest, VibrationNormalization) {
 
   ASSERT_EQ(normalized_pattern.size(),
             notification_data->vibration_pattern->size());
-  for (size_t i = 0; i < normalized_pattern.size(); ++i) {
+  for (wtf_size_t i = 0; i < normalized_pattern.size(); ++i) {
     EXPECT_EQ(normalized_pattern[i],
               notification_data->vibration_pattern.value()[i]);
   }
@@ -323,7 +323,7 @@ TEST_F(NotificationDataTest, MaximumActionCount) {
   // The stored actions will be capped to |maxActions| entries.
   ASSERT_EQ(Notification::maxActions(), notification_data->actions->size());
 
-  for (size_t i = 0; i < Notification::maxActions(); ++i) {
+  for (wtf_size_t i = 0; i < Notification::maxActions(); ++i) {
     String expected_action = String::Number(i);
     EXPECT_EQ(expected_action, notification_data->actions.value()[i]->action);
   }

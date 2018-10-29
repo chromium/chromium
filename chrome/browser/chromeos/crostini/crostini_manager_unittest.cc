@@ -29,85 +29,91 @@ const char kContainerName[] = "container_name";
 class CrostiniManagerTest : public testing::Test {
  public:
   void CreateDiskImageClientErrorCallback(base::OnceClosure closure,
-                                          ConciergeClientResult result,
+                                          CrostiniResult result,
                                           const base::FilePath& file_path) {
     EXPECT_FALSE(fake_concierge_client_->create_disk_image_called());
-    EXPECT_EQ(result, ConciergeClientResult::CLIENT_ERROR);
+    EXPECT_EQ(result, CrostiniResult::CLIENT_ERROR);
     std::move(closure).Run();
   }
 
   void DestroyDiskImageClientErrorCallback(base::OnceClosure closure,
-                                           ConciergeClientResult result) {
+                                           CrostiniResult result) {
     EXPECT_FALSE(fake_concierge_client_->destroy_disk_image_called());
-    EXPECT_EQ(result, ConciergeClientResult::CLIENT_ERROR);
+    EXPECT_EQ(result, CrostiniResult::CLIENT_ERROR);
     std::move(closure).Run();
   }
 
   void ListVmDisksClientErrorCallback(base::OnceClosure closure,
-                                      ConciergeClientResult result,
+                                      CrostiniResult result,
                                       int64_t total_size) {
     EXPECT_FALSE(fake_concierge_client_->list_vm_disks_called());
-    EXPECT_EQ(result, ConciergeClientResult::CLIENT_ERROR);
+    EXPECT_EQ(result, CrostiniResult::CLIENT_ERROR);
     std::move(closure).Run();
   }
 
   void StartTerminaVmClientErrorCallback(base::OnceClosure closure,
-                                         ConciergeClientResult result) {
+                                         CrostiniResult result) {
     EXPECT_FALSE(fake_concierge_client_->start_termina_vm_called());
-    EXPECT_EQ(result, ConciergeClientResult::CLIENT_ERROR);
+    EXPECT_EQ(result, CrostiniResult::CLIENT_ERROR);
     std::move(closure).Run();
   }
 
   void StopVmClientErrorCallback(base::OnceClosure closure,
-                                 ConciergeClientResult result) {
+                                 CrostiniResult result) {
     EXPECT_FALSE(fake_concierge_client_->stop_vm_called());
-    EXPECT_EQ(result, ConciergeClientResult::CLIENT_ERROR);
+    EXPECT_EQ(result, CrostiniResult::CLIENT_ERROR);
     std::move(closure).Run();
   }
 
   void CreateDiskImageSuccessCallback(base::OnceClosure closure,
-                                      ConciergeClientResult result,
+                                      CrostiniResult result,
                                       const base::FilePath& file_path) {
     EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
     std::move(closure).Run();
   }
 
   void DestroyDiskImageSuccessCallback(base::OnceClosure closure,
-                                       ConciergeClientResult result) {
+                                       CrostiniResult result) {
     EXPECT_TRUE(fake_concierge_client_->destroy_disk_image_called());
     std::move(closure).Run();
   }
 
   void ListVmDisksSuccessCallback(base::OnceClosure closure,
-                                  ConciergeClientResult result,
+                                  CrostiniResult result,
                                   int64_t total_size) {
     EXPECT_TRUE(fake_concierge_client_->list_vm_disks_called());
     std::move(closure).Run();
   }
 
   void StartTerminaVmSuccessCallback(base::OnceClosure closure,
-                                     ConciergeClientResult result) {
+                                     CrostiniResult result) {
     EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
     std::move(closure).Run();
   }
 
   void OnStartTremplinRecordsRunningVmCallback(base::OnceClosure closure,
-                                               ConciergeClientResult result) {
+                                               CrostiniResult result) {
     // Check that running_vms_ contains the running vm.
     EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
     std::move(closure).Run();
   }
 
-  void StopVmSuccessCallback(base::OnceClosure closure,
-                             ConciergeClientResult result) {
+  void StopVmSuccessCallback(base::OnceClosure closure, CrostiniResult result) {
     EXPECT_TRUE(fake_concierge_client_->stop_vm_called());
     std::move(closure).Run();
   }
 
+  void CreateContainerFailsCallback(base::OnceClosure closure,
+                                    CrostiniResult result) {
+    create_container_fails_callback_called_ = true;
+    EXPECT_EQ(result, CrostiniResult::UNKNOWN_ERROR);
+    std::move(closure).Run();
+  }
+
   void InstallLinuxPackageCallback(base::OnceClosure closure,
-                                   ConciergeClientResult expected_result,
+                                   CrostiniResult expected_result,
                                    const std::string& expected_failure_reason,
-                                   ConciergeClientResult result,
+                                   CrostiniResult result,
                                    const std::string& failure_reason) {
     EXPECT_EQ(expected_result, result);
     EXPECT_EQ(expected_failure_reason, failure_reason);
@@ -153,6 +159,7 @@ class CrostiniManagerTest : public testing::Test {
       run_loop_;  // run_loop_ must be created on the UI thread.
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniManager> crostini_manager_;
+  bool create_container_fails_callback_called_ = false;
 
  private:
   base::test::ScopedTaskEnvironment scoped_task_environment_;
@@ -298,7 +305,7 @@ TEST_F(CrostiniManagerTest, InstallLinuxPackageSignalNotConnectedError) {
       kVmName, kContainerName, "/tmp/package.deb",
       base::BindOnce(&CrostiniManagerTest::InstallLinuxPackageCallback,
                      base::Unretained(this), run_loop()->QuitClosure(),
-                     ConciergeClientResult::INSTALL_LINUX_PACKAGE_FAILED,
+                     CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED,
                      std::string()));
   run_loop()->Run();
 }
@@ -311,7 +318,7 @@ TEST_F(CrostiniManagerTest, InstallLinuxPackageSignalSuccess) {
       kVmName, kContainerName, "/tmp/package.deb",
       base::BindOnce(&CrostiniManagerTest::InstallLinuxPackageCallback,
                      base::Unretained(this), run_loop()->QuitClosure(),
-                     ConciergeClientResult::SUCCESS, std::string()));
+                     CrostiniResult::SUCCESS, std::string()));
   run_loop()->Run();
 }
 
@@ -325,7 +332,7 @@ TEST_F(CrostiniManagerTest, InstallLinuxPackageSignalFailure) {
       kVmName, kContainerName, "/tmp/package.deb",
       base::BindOnce(&CrostiniManagerTest::InstallLinuxPackageCallback,
                      base::Unretained(this), run_loop()->QuitClosure(),
-                     ConciergeClientResult::INSTALL_LINUX_PACKAGE_FAILED,
+                     CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED,
                      failure_reason));
   run_loop()->Run();
 }
@@ -333,36 +340,34 @@ TEST_F(CrostiniManagerTest, InstallLinuxPackageSignalFailure) {
 class CrostiniManagerRestartTest : public CrostiniManagerTest,
                                    public CrostiniManager::RestartObserver {
  public:
-  void SetUp() override {
-    CrostiniManagerTest::SetUp();
-  }
+  void SetUp() override { CrostiniManagerTest::SetUp(); }
 
   void RestartCrostiniCallback(base::OnceClosure closure,
-                               ConciergeClientResult result) {
+                               CrostiniResult result) {
     restart_crostini_callback_count_++;
     std::move(closure).Run();
   }
 
   // CrostiniManager::RestartObserver
-  void OnComponentLoaded(ConciergeClientResult result) override {
+  void OnComponentLoaded(CrostiniResult result) override {
     if (abort_on_component_loaded_) {
       Abort();
     }
   }
 
-  void OnConciergeStarted(ConciergeClientResult result) override {
+  void OnConciergeStarted(CrostiniResult result) override {
     if (abort_on_concierge_started_) {
       Abort();
     }
   }
 
-  void OnDiskImageCreated(ConciergeClientResult result) override {
+  void OnDiskImageCreated(CrostiniResult result) override {
     if (abort_on_disk_image_created_) {
       Abort();
     }
   }
 
-  void OnVmStarted(ConciergeClientResult result) override {
+  void OnVmStarted(CrostiniResult result) override {
     if (abort_on_vm_started_) {
       Abort();
     }
@@ -370,19 +375,25 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
 
   void OnContainerDownloading(int32_t download_percent) override {}
 
-  void OnContainerCreated(ConciergeClientResult result) override {
+  void OnContainerCreated(CrostiniResult result) override {
     if (abort_on_container_created_) {
       Abort();
     }
   }
 
-  void OnContainerStarted(ConciergeClientResult result) override {
+  void OnContainerStarted(CrostiniResult result) override {
     if (abort_on_container_started_) {
       Abort();
     }
   }
 
-  void OnSshKeysFetched(ConciergeClientResult result) override {
+  void OnContainerSetup(CrostiniResult result) override {
+    if (abort_on_container_setup_) {
+      Abort();
+    }
+  }
+
+  void OnSshKeysFetched(CrostiniResult result) override {
     if (abort_on_ssh_keys_fetched_) {
       Abort();
     }
@@ -417,6 +428,7 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   bool abort_on_vm_started_ = false;
   bool abort_on_container_created_ = false;
   bool abort_on_container_started_ = false;
+  bool abort_on_container_setup_ = false;
   bool abort_on_ssh_keys_fetched_ = false;
   int restart_crostini_callback_count_ = 0;
   chromeos::disks::MockDiskMountManager* disk_mount_manager_mock_;
@@ -507,8 +519,42 @@ TEST_F(CrostiniManagerRestartTest, AbortOnContainerCreated) {
   EXPECT_EQ(0, restart_crostini_callback_count_);
 }
 
+TEST_F(CrostiniManagerRestartTest, AbortOnContainerCreatedError) {
+  abort_on_container_started_ = true;
+  fake_cicerone_client_->set_lxd_container_created_signal_status(
+      vm_tools::cicerone::LxdContainerCreatedSignal::UNKNOWN);
+  // Use termina/penguin names to allow fetch ssh keys.
+  restart_id_ = crostini_manager()->RestartCrostini(
+      kCrostiniDefaultVmName, kCrostiniDefaultContainerName,
+      base::BindOnce(&CrostiniManagerTest::CreateContainerFailsCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  run_loop()->Run();
+
+  EXPECT_TRUE(create_container_fails_callback_called_);
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  EXPECT_EQ(0, restart_crostini_callback_count_);
+}
+
 TEST_F(CrostiniManagerRestartTest, AbortOnContainerStarted) {
   abort_on_container_started_ = true;
+  // Use termina/penguin names to allow fetch ssh keys.
+  restart_id_ = crostini_manager()->RestartCrostini(
+      kCrostiniDefaultVmName, kCrostiniDefaultContainerName,
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  EXPECT_EQ(0, restart_crostini_callback_count_);
+}
+
+TEST_F(CrostiniManagerRestartTest, AbortOnContainerSetup) {
+  abort_on_container_setup_ = true;
   // Use termina/penguin names to allow fetch ssh keys.
   restart_id_ = crostini_manager()->RestartCrostini(
       kCrostiniDefaultVmName, kCrostiniDefaultContainerName,
@@ -605,6 +651,38 @@ TEST_F(CrostiniManagerRestartTest, MountForTerminaPenguin) {
   EXPECT_EQ(base::FilePath("/media/fuse/crostini_test_termina_penguin"), path);
 
   chromeos::disks::DiskMountManager::Shutdown();
+}
+
+TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
+  restart_id_ = crostini_manager()->RestartCrostini(
+      kVmName, kContainerName,
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  EXPECT_TRUE(crostini_manager()->IsRestartPending(restart_id_));
+  run_loop()->Run();
+
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  // Mount only performed for termina/penguin.
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  EXPECT_EQ(1, restart_crostini_callback_count_);
+
+  EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
+  EXPECT_TRUE(crostini_manager()->IsContainerRunning(kVmName, kContainerName));
+
+  // Now call StartTerminaVm again. The default response state is "STARTING",
+  // so no container should be considered running.
+  const base::FilePath& disk_path = base::FilePath(kVmName);
+
+  base::RunLoop run_loop2;
+  crostini_manager()->StartTerminaVm(
+      kVmName, disk_path,
+      base::BindOnce(&CrostiniManagerTest::StartTerminaVmSuccessCallback,
+                     base::Unretained(this), run_loop2.QuitClosure()));
+  run_loop2.Run();
+  EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
+  EXPECT_FALSE(crostini_manager()->IsContainerRunning(kVmName, kContainerName));
 }
 
 }  // namespace crostini

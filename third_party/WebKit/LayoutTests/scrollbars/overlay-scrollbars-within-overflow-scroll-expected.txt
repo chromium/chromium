@@ -1,11 +1,22 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x302
-  LayoutBlockFlow {HTML} at (0,0) size 800x302
-    LayoutBlockFlow {BODY} at (0,0) size 800x302
-layer at (0,0) size 402x302 clip at (1,1) size 400x300 scrollY 302.00 scrollHeight 602
-  LayoutBlockFlow {DIV} at (0,0) size 402x302 [border: (1px solid #008000)]
-    LayoutBlockFlow {DIV} at (1,1) size 400x500
-layer at (1,199) size 102x102 clip at (2,200) size 100x100 scrollHeight 500
-  LayoutBlockFlow {DIV} at (1,501) size 102x102 [border: (1px solid #0000FF)]
-    LayoutBlockFlow {DIV} at (1,1) size 100x500
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "drawsContent": false,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [800, 600],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    }
+  ]
+}
+

@@ -2,7 +2,6 @@ Tests that scrolling to make an element visible works when the inner scroll cont
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 5000-pixel box
 Target Target Target
 5000-pixel box

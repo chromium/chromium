@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/guid.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -157,7 +158,7 @@ class ExtensionSignedInDevicesTest : public ExtensionApiUnittest {
  private:
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {{ProfileSyncServiceFactory::GetInstance(),
-             CreateProfileSyncServiceMock}};
+             base::BindRepeating(&CreateProfileSyncServiceMock)}};
   }
 };
 

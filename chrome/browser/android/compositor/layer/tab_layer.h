@@ -76,6 +76,7 @@ class TabLayer : public Layer {
                      float saturation,
                      float brightness,
                      float close_btn_width,
+                     float close_btn_asset_size,
                      float static_to_view_blend,
                      float content_width,
                      float content_height,

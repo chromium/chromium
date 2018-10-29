@@ -8,9 +8,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_loop.h"
+#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/web_client.h"
@@ -71,7 +71,7 @@ class WebHTTPProtocolHandlerDelegateTest : public PlatformTest {
 TEST_F(WebHTTPProtocolHandlerDelegateTest, IsRequestSupported) {
   NSMutableURLRequest* request;
 
-  for (unsigned int i = 0; i < arraysize(kSupportedURLs); ++i) {
+  for (unsigned int i = 0; i < base::size(kSupportedURLs); ++i) {
     NSString* url_string =
         [[NSString alloc] initWithUTF8String:kSupportedURLs[i]];
     request = [[NSMutableURLRequest alloc]
@@ -80,7 +80,7 @@ TEST_F(WebHTTPProtocolHandlerDelegateTest, IsRequestSupported) {
         << kSupportedURLs[i] << " should be supported.";
   }
 
-  for (unsigned int i = 0; i < arraysize(kUnsupportedURLs); ++i) {
+  for (unsigned int i = 0; i < base::size(kUnsupportedURLs); ++i) {
     NSString* url_string =
         [[NSString alloc] initWithUTF8String:kUnsupportedURLs[i]];
     request = [[NSMutableURLRequest alloc]

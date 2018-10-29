@@ -152,4 +152,8 @@ bool MenuDelegate::ShouldReserveSpaceForSubmenuIndicator() const {
   return true;
 }
 
+View* MenuDelegate::CreateFootnoteView() {
+  return nullptr;
+}
+
 }  // namespace views

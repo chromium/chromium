@@ -19,6 +19,8 @@ component("lib") {
     "//ash:ash_unittests",
   ]
   public = [
+    "host_event_dispatcher.h",
+    "host_event_queue.h",
     "ids.h",
     "window_delegate_impl.h",
     "window_manager_interface.h",
@@ -43,12 +45,15 @@ component("lib") {
     "embedding.h",
     "event_injector.cc",
     "event_injector.h",
+    "event_observer_helper.cc",
+    "event_observer_helper.h",
+    "event_queue.cc",
+    "event_queue.h",
     "focus_handler.cc",
     "focus_handler.h",
+    "host_event_queue.cc",
     "injected_event_handler.cc",
     "injected_event_handler.h",
-    "pointer_watcher.cc",
-    "pointer_watcher.h",
     "remoting_event_injector.cc",
     "remoting_event_injector.h",
     "screen_provider.cc",
@@ -69,6 +74,8 @@ component("lib") {
     "window_tree_binding.cc",
     "window_tree_factory.cc",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//components/discardable_memory/public/interfaces",
@@ -100,6 +107,8 @@ source_set("host") {
     "host_context_factory.cc",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":lib",
     "//cc/mojo_embedder",
@@ -119,12 +128,18 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "client_root_test_helper.cc",
+    "client_root_test_helper.h",
+    "event_queue_test_helper.cc",
+    "event_queue_test_helper.h",
     "event_test_utils.cc",
     "event_test_utils.h",
     "server_window_test_helper.cc",
     "server_window_test_helper.h",
     "test_change_tracker.cc",
     "test_change_tracker.h",
+    "test_host_event_dispatcher.cc",
+    "test_host_event_dispatcher.h",
     "test_screen_provider_observer.cc",
     "test_screen_provider_observer.h",
     "test_window_service_delegate.cc",
@@ -182,12 +197,15 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "client_root_unittest.cc",
     "drag_drop_delegate_unittest.cc",
     "embedding_unittest.cc",
+    "event_queue_unittest.cc",
     "focus_handler_unittest.cc",
     "injected_event_handler_unittest.cc",
     "screen_provider_unittest.cc",
     "server_window_unittest.cc",
+    "topmost_window_observer_unittest.cc",
     "user_activity_monitor_unittest.cc",
     "window_delegate_impl_unittest.cc",
     "window_service_observer_unittest.cc",
@@ -203,6 +221,7 @@ source_set("tests") {
     "//base",
     "//base/test:test_support",
     "//components/viz/common",
+    "//components/viz/test:test_support",
     "//mojo/public/cpp/bindings",
     "//services/service_manager/public/cpp:service_test_support",
     "//services/service_manager/public/cpp/test:test_support",

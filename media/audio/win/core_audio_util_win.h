@@ -40,6 +40,8 @@ class MEDIA_EXPORT CoreAudioUtil {
   // it is safe to call from other threads.
   static bool IsSupported();
 
+  static std::string WaveFormatExToString(const WAVEFORMATEXTENSIBLE* format);
+
   // Converts between reference time to base::TimeDelta.
   // One reference-time unit is 100 nanoseconds.
   // Example: double s = RefererenceTimeToTimeDelta(t).InMillisecondsF();
@@ -184,6 +186,7 @@ class MEDIA_EXPORT CoreAudioUtil {
   static HRESULT SharedModeInitialize(IAudioClient* client,
                                       const WAVEFORMATPCMEX* format,
                                       HANDLE event_handle,
+                                      uint32_t requested_buffer_size,
                                       uint32_t* endpoint_buffer_size,
                                       const GUID* session_guid);
 
@@ -206,23 +209,6 @@ class MEDIA_EXPORT CoreAudioUtil {
   // given by |render_client|.
   static bool FillRenderEndpointBufferWithSilence(
       IAudioClient* client, IAudioRenderClient* render_client);
-
-  // Gets the device collection index for the device specified by |device_id|.
-  // If the device is found in the device collection, the index is written to
-  // |*index| and S_OK is returned. If the device is not found, S_FALSE is
-  // returned and |*index| is left unchanged. In case of an error, the error
-  // result is returned and |*index| is left unchanged.
-  static HRESULT GetDeviceCollectionIndex(const std::string& device_id,
-                                          EDataFlow data_flow,
-                                          WORD* index);
-
-  // Sets the property identified by |key| to |value| in |*property_store|.
-  static HRESULT SetBoolProperty(IPropertyStore* property_store,
-                                 REFPROPERTYKEY key,
-                                 VARIANT_BOOL value);
-  static HRESULT SetVtI4Property(IPropertyStore* property_store,
-                                 REFPROPERTYKEY key,
-                                 LONG value);
 
  private:
   CoreAudioUtil() {}

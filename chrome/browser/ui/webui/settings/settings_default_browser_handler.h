@@ -27,13 +27,17 @@ namespace settings {
 // settings code to change the default browser settings.
 class DefaultBrowserHandler : public SettingsPageUIHandler {
  public:
-  explicit DefaultBrowserHandler(content::WebUI* webui);
+  DefaultBrowserHandler();
   ~DefaultBrowserHandler() override;
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
+
+ protected:
+  // Subclasses should override this method.
+  virtual void RecordSetAsDefaultUMA();
 
  private:
   // Called from WebUI to request the current state.

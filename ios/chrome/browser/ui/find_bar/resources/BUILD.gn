@@ -4,50 +4,6 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("find_prev_disabled_incognito") {
-  sources = [
-    "find_prev_disabled_incognito.imageset/Contents.json",
-    "find_prev_disabled_incognito.imageset/find_prev_disabled_incognito.png",
-    "find_prev_disabled_incognito.imageset/find_prev_disabled_incognito@2x.png",
-    "find_prev_disabled_incognito.imageset/find_prev_disabled_incognito@3x.png",
-  ]
-}
-
-imageset("find_bg") {
-  sources = [
-    "find_bg.imageset/Contents.json",
-    "find_bg.imageset/find_bg@2x~ipad.png",
-    "find_bg.imageset/find_bg~ipad.png",
-  ]
-}
-
-imageset("find_next_incognito") {
-  sources = [
-    "find_next_incognito.imageset/Contents.json",
-    "find_next_incognito.imageset/find_next_incognito.png",
-    "find_next_incognito.imageset/find_next_incognito@2x.png",
-    "find_next_incognito.imageset/find_next_incognito@3x.png",
-  ]
-}
-
-imageset("find_prev_pressed_incognito") {
-  sources = [
-    "find_prev_pressed_incognito.imageset/Contents.json",
-    "find_prev_pressed_incognito.imageset/find_prev_pressed_incognito.png",
-    "find_prev_pressed_incognito.imageset/find_prev_pressed_incognito@2x.png",
-    "find_prev_pressed_incognito.imageset/find_prev_pressed_incognito@3x.png",
-  ]
-}
-
-imageset("find_prev_disabled") {
-  sources = [
-    "find_prev_disabled.imageset/Contents.json",
-    "find_prev_disabled.imageset/find_prev_disabled.png",
-    "find_prev_disabled.imageset/find_prev_disabled@2x.png",
-    "find_prev_disabled.imageset/find_prev_disabled@3x.png",
-  ]
-}
-
 imageset("find_prev") {
   sources = [
     "find_prev.imageset/Contents.json",
@@ -57,92 +13,11 @@ imageset("find_prev") {
   ]
 }
 
-imageset("find_prev_incognito") {
-  sources = [
-    "find_prev_incognito.imageset/Contents.json",
-    "find_prev_incognito.imageset/find_prev_incognito.png",
-    "find_prev_incognito.imageset/find_prev_incognito@2x.png",
-    "find_prev_incognito.imageset/find_prev_incognito@3x.png",
-  ]
-}
-
-imageset("find_close") {
-  sources = [
-    "find_close.imageset/Contents.json",
-    "find_close.imageset/find_close.png",
-    "find_close.imageset/find_close@2x.png",
-    "find_close.imageset/find_close@3x.png",
-  ]
-}
-
-imageset("find_close_incognito") {
-  sources = [
-    "find_close_incognito.imageset/Contents.json",
-    "find_close_incognito.imageset/find_close_incognito.png",
-    "find_close_incognito.imageset/find_close_incognito@2x.png",
-    "find_close_incognito.imageset/find_close_incognito@3x.png",
-  ]
-}
-
-imageset("find_prev_pressed") {
-  sources = [
-    "find_prev_pressed.imageset/Contents.json",
-    "find_prev_pressed.imageset/find_prev_pressed.png",
-    "find_prev_pressed.imageset/find_prev_pressed@2x.png",
-    "find_prev_pressed.imageset/find_prev_pressed@3x.png",
-  ]
-}
-
-imageset("find_close_pressed") {
-  sources = [
-    "find_close_pressed.imageset/Contents.json",
-    "find_close_pressed.imageset/find_close_pressed.png",
-    "find_close_pressed.imageset/find_close_pressed@2x.png",
-    "find_close_pressed.imageset/find_close_pressed@3x.png",
-  ]
-}
-
-imageset("find_next_disabled") {
-  sources = [
-    "find_next_disabled.imageset/Contents.json",
-    "find_next_disabled.imageset/find_next_disabled.png",
-    "find_next_disabled.imageset/find_next_disabled@2x.png",
-    "find_next_disabled.imageset/find_next_disabled@3x.png",
-  ]
-}
-
-imageset("find_next_disabled_incognito") {
-  sources = [
-    "find_next_disabled_incognito.imageset/Contents.json",
-    "find_next_disabled_incognito.imageset/find_next_disabled_incognito.png",
-    "find_next_disabled_incognito.imageset/find_next_disabled_incognito@2x.png",
-    "find_next_disabled_incognito.imageset/find_next_disabled_incognito@3x.png",
-  ]
-}
-
-imageset("find_next_pressed_incognito") {
-  sources = [
-    "find_next_pressed_incognito.imageset/Contents.json",
-    "find_next_pressed_incognito.imageset/find_next_pressed_incognito.png",
-    "find_next_pressed_incognito.imageset/find_next_pressed_incognito@2x.png",
-    "find_next_pressed_incognito.imageset/find_next_pressed_incognito@3x.png",
-  ]
-}
-
 imageset("find_next") {
   sources = [
     "find_next.imageset/Contents.json",
     "find_next.imageset/find_next.png",
     "find_next.imageset/find_next@2x.png",
     "find_next.imageset/find_next@3x.png",
-  ]
-}
-
-imageset("find_next_pressed") {
-  sources = [
-    "find_next_pressed.imageset/Contents.json",
-    "find_next_pressed.imageset/find_next_pressed.png",
-    "find_next_pressed.imageset/find_next_pressed@2x.png",
-    "find_next_pressed.imageset/find_next_pressed@3x.png",
   ]
 }

@@ -12,7 +12,6 @@
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#import "chrome/browser/ui/cocoa/browser_window_controller.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_profile_test.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"

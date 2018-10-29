@@ -373,6 +373,19 @@ TEST_F(AndroidVideoSurfaceChooserImplTest,
   overlay_callbacks_.PowerEfficientState.Run(false);
 }
 
+TEST_F(AndroidVideoSurfaceChooserImplTest, AlwaysUseTextureOwner) {
+  // Start with an overlay.
+  chooser_state_.is_fullscreen = true;
+  StartChooserAndProvideOverlay();
+  testing::Mock::VerifyAndClearExpectations(&client_);
+
+  // Change the state to force texture owner. It should use the TextureOwner
+  // instead.
+  chooser_state_.always_use_texture_owner = true;
+  EXPECT_CALL(client_, UseTextureOwner());
+  chooser_->UpdateState(base::nullopt, chooser_state_);
+}
+
 TEST_P(AndroidVideoSurfaceChooserImplTest, OverlayIsUsedOrNotBasedOnState) {
   // Provide a factory, and verify that it is used when the state says that it
   // should be.  If the overlay is used, then we also verify that it does not

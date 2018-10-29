@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/bind_helpers.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
@@ -111,12 +112,14 @@ UpdateSeedDateResult GetSeedDateChangeState(
 }  // namespace
 
 VariationsSeedStore::VariationsSeedStore(PrefService* local_state)
-    : VariationsSeedStore(local_state, nullptr) {}
+    : VariationsSeedStore(local_state, nullptr, base::DoNothing()) {}
 
 VariationsSeedStore::VariationsSeedStore(
     PrefService* local_state,
-    std::unique_ptr<SeedResponse> initial_seed)
-    : local_state_(local_state) {
+    std::unique_ptr<SeedResponse> initial_seed,
+    base::OnceCallback<void()> on_initial_seed_stored)
+    : local_state_(local_state),
+      on_initial_seed_stored_(std::move(on_initial_seed_stored)) {
 #if defined(OS_ANDROID)
   if (initial_seed)
     ImportInitialSeed(std::move(initial_seed));
@@ -532,15 +535,14 @@ bool VariationsSeedStore::StoreSeedDataNoDelta(
     return false;
   }
 
-#if defined(OS_ANDROID)
-  // If currently we do not have any stored pref then we mark seed storing as
-  // successful on the Java side of Chrome for Android to avoid repeated seed
-  // fetches and clear preferences on the Java side.
-  if (local_state_->GetString(prefs::kVariationsCompressedSeed).empty()) {
-    android::MarkVariationsSeedAsStored();
-    android::ClearJavaFirstRunPrefs();
+  // This callback is only useful on Chrome for Android.
+  if (!on_initial_seed_stored_.is_null()) {
+    // If currently we do not have any stored pref then we mark seed storing as
+    // successful on the Java side to avoid repeated seed fetches and clear
+    // preferences on the Java side.
+    if (local_state_->GetString(prefs::kVariationsCompressedSeed).empty())
+      std::move(on_initial_seed_stored_).Run();
   }
-#endif
 
   // Update the saved country code only if one was returned from the server.
   if (!country_code.empty())

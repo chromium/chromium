@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.customtabs.trusted.TrustedWebActivityServiceConnectionManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -132,7 +133,8 @@ public class NotificationPlatformBridge {
             mNotificationManager = new NotificationManagerProxyImpl(
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
         }
-        mTwaClient = new TrustedWebActivityClient();
+        mTwaClient = new TrustedWebActivityClient(
+                new TrustedWebActivityServiceConnectionManager(context));
     }
 
     /**
@@ -546,8 +548,9 @@ public class NotificationPlatformBridge {
                         .setBody(body)
                         .setImage(image)
                         .setLargeIcon(icon)
-                        .setSmallIcon(R.drawable.ic_chrome)
-                        .setSmallIcon(badge)
+                        .setSmallIconId(R.drawable.ic_chrome)
+                        .setStatusBarIcon(badge)
+                        .setSmallIconForContent(badge)
                         .setContentIntent(clickIntent)
                         .setDeleteIntent(closeIntent)
                         .setTicker(createTickerText(title, body))

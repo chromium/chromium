@@ -1,66 +1,78 @@
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script>
-    if (window.testRunner)
-        testRunner.waitUntilDone();
+    const testCase = async_test(
+        'Navigating in a multiselect list updates selection and the active selected option and sends a notification');
+
+    const expectedNotifications = [
+        'ActiveDescendantChanged',
+        'SelectedChildrenChanged',
+        'SelectedChildrenChanged',
+        'ActiveDescendantChanged',
+        'SelectedChildrenChanged',
+        'ActiveDescendantChanged',
+    ];
+    let notificationReceivedIndex = 0;
 
     function runTest() {
-        description("This tests that navigating in a multiselect list updates selection and the active selected option and sends a notification.");
+        assert_own_property(window, 'accessibilityController');
 
-        if (window.accessibilityController) {
-            var menulist = document.getElementById("menulist");
-            menulist.focus();
-            window.accessibleMenulist = accessibilityController.focusedElement;
-            window.accessibleOne = accessibleMenulist.childAtIndex(0);
-            window.accessibleTwo = accessibleMenulist.childAtIndex(1);
-            window.accessibleThree = accessibleMenulist.childAtIndex(2);
+        var menulist = document.getElementById("menulist");
+        menulist.focus();
+        window.accessibleMenulist = accessibilityController.focusedElement;
+        window.accessibleOne = accessibleMenulist.childAtIndex(0);
+        window.accessibleTwo = accessibleMenulist.childAtIndex(1);
+        window.accessibleThree = accessibleMenulist.childAtIndex(2);
 
-            function listListener(notification) {
-                document.getElementById("console").innerText += "List notification: " + notification + "\n";
-            }
-            accessibleMenulist.addNotificationListener(listListener);
-
-            shouldBe("accessibleOne.isSelected", "true");
-            shouldBe("accessibleOne.isSelectedOptionActive", "true");
-            shouldBe("accessibleTwo.isSelected", "false");
-            shouldBe("accessibleTwo.isSelectedOptionActive", "false");
-            shouldBe("accessibleThree.isSelected", "false");
-            shouldBe("accessibleThree.isSelectedOptionActive", "false");
-
-            // Change the selected index by simulating a down arrow keydown event.
-            eventSender.keyDown('ArrowDown', []);
-
-            shouldBe("accessibleOne.isSelected", "false");
-            shouldBe("accessibleOne.isSelectedOptionActive", "false");
-            shouldBe("accessibleTwo.isSelected", "true");
-            shouldBe("accessibleTwo.isSelectedOptionActive", "true");
-            shouldBe("accessibleThree.isSelected", "false");
-            shouldBe("accessibleThree.isSelectedOptionActive", "false");
-
-            // Extend the selection by simulating a Shift + Down Arrow keydown event.
-            eventSender.keyDown('ArrowDown', ['shiftKey']);
-
-            shouldBe("accessibleOne.isSelected", "false");
-            shouldBe("accessibleOne.isSelectedOptionActive", "false");
-            shouldBe("accessibleTwo.isSelected", "true");
-            shouldBe("accessibleTwo.isSelectedOptionActive", "false");
-            shouldBe("accessibleThree.isSelected", "true");
-            shouldBe("accessibleThree.isSelectedOptionActive", "true");
+        function listListener(notification) {
+            assert_less_than(notificationReceivedIndex, expectedNotifications.length);
+            assert_equals(notification, expectedNotifications[notificationReceivedIndex],
+                          `Notification ${notificationReceivedIndex}`);
+            ++notificationReceivedIndex;
         }
+        accessibleMenulist.addNotificationListener(listListener);
+
+        assert_true(accessibleOne.isSelected);
+        assert_true(accessibleOne.isSelectedOptionActive);
+        assert_false(accessibleTwo.isSelected);
+        assert_false(accessibleTwo.isSelectedOptionActive);
+        assert_false(accessibleThree.isSelected);
+        assert_false(accessibleThree.isSelectedOptionActive);
+
+        // Change the selected index by simulating a down arrow keydown event.
+        eventSender.keyDown('ArrowDown', []);
+
+        assert_false(accessibleOne.isSelected);
+        assert_false(accessibleOne.isSelectedOptionActive);
+        assert_true(accessibleTwo.isSelected);
+        assert_true(accessibleTwo.isSelectedOptionActive);
+        assert_false(accessibleThree.isSelected);
+        assert_false(accessibleThree.isSelectedOptionActive);
+
+        // Extend the selection by simulating a Shift + Down Arrow keydown event.
+        eventSender.keyDown('ArrowDown', ['shiftKey']);
+
+        assert_false(accessibleOne.isSelected);
+        assert_false(accessibleOne.isSelectedOptionActive);
+        assert_true(accessibleTwo.isSelected);
+        assert_false(accessibleTwo.isSelectedOptionActive);
+        assert_true(accessibleThree.isSelected);
+        assert_true(accessibleThree.isSelectedOptionActive);
 
         // Make the test finish quickly whether we get the notification or not.
-        window.setTimeout(function() {
-            debug('<br /><span class="pass">TEST COMPLETE</span>');
+        testCase.step_timeout(function() {
             if (window.accessibilityController)
                 accessibleMenulist.removeNotificationListener();
-            if (window.testRunner)
-                testRunner.notifyDone();
+            assert_equals(notificationReceivedIndex, expectedNotifications.length,
+                          'All notifications received');
+            testCase.done();
         }, 10);
     }
 
     window.addEventListener('load', function() {
-        setTimeout(runTest, 10);
+        testCase.step_timeout(runTest, 10);
     }, false);
 </script>
 </head>
@@ -74,7 +86,6 @@
 </select>
 
 <p id="description"></p>
-<div id="console"></div>
 
 </body>
 </html>

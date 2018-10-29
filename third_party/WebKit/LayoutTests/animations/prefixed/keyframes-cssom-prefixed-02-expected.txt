@@ -2,7 +2,6 @@ Test the CSSOM of @-webkit-keyframes.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS keyframeRule.toString() is "[object CSSKeyframesRule]"
 PASS keyframeRule.type is 7
 PASS keyframeRule.name is "anim"

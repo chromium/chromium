@@ -9,10 +9,7 @@ public_headers = [
   "//content/public/common/media_stream_request.h",
 ]
 
-traits_headers = [
-  "//content/common/media/media_stream_param_traits.h",
-  "//content/common/media/media_stream_mojom_traits.h",
-]
+traits_headers = [ "//content/common/media/media_stream_mojom_traits.h" ]
 
 sources = [
   "//content/common/media/media_stream_mojom_traits.cc",

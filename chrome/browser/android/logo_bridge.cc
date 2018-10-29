@@ -154,7 +154,7 @@ class LogoBridge::AnimatedLogoLoader {
     JNIEnv* env = base::android::AttachCurrentThread();
 
     ScopedJavaLocalRef<jbyteArray> j_bytes = ToJavaByteArray(
-        env, reinterpret_cast<const uint8_t*>(response_body.get()),
+        env, reinterpret_cast<const uint8_t*>(response_body->data()),
         response_body->size());
     ScopedJavaLocalRef<jobject> j_gif_image =
         Java_LogoBridge_createGifImage(env, j_bytes);

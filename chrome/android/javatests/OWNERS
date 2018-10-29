@@ -1,8 +1,7 @@
-dtrainor@chromium.org
-nyquist@chromium.org
+file://chrome/android/OWNERS
+
+peconn@chromium.org
 skyostil@chromium.org
-tedchoc@chromium.org
-yfriedman@chromium.org
 
 # COMPONENT: Test>Android
 # OS: Android

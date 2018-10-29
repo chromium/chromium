@@ -45,7 +45,7 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   // the callback is not called.
   PrimaryAccountAccessTokenFetcher(const std::string& oauth_consumer_name,
                                    IdentityManager* identity_manager,
-                                   const OAuth2TokenService::ScopeSet& scopes,
+                                   const identity::ScopeSet& scopes,
                                    AccessTokenFetcher::TokenCallback callback,
                                    Mode mode);
 
@@ -76,7 +76,7 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
 
   std::string oauth_consumer_name_;
   IdentityManager* identity_manager_;
-  OAuth2TokenService::ScopeSet scopes_;
+  identity::ScopeSet scopes_;
 
   // Per the contract of this class, it is allowed for clients to delete this
   // object as part of the invocation of |callback_|. Hence, this object must

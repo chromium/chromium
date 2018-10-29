@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_simple_task_runner.h"
@@ -129,7 +131,7 @@ class HeartbeatSchedulerTest : public testing::Test {
                    task_runner_) {}
 
   void SetUp() override {
-    settings_helper_.ReplaceProvider(chromeos::kHeartbeatEnabled);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
   }
 
   void TearDown() override { content::RunAllTasksUntilIdle(); }
@@ -329,10 +331,8 @@ TEST_F(HeartbeatSchedulerTest, DisableHeartbeats) {
 
   // Should have a new heartbeat task posted.
   ASSERT_EQ(1U, task_runner_->NumPendingTasks());
-  CheckPendingTaskDelay(
-      scheduler_.last_heartbeat(),
-      base::TimeDelta::FromMilliseconds(
-          policy::HeartbeatScheduler::kDefaultHeartbeatIntervalMs));
+  CheckPendingTaskDelay(scheduler_.last_heartbeat(),
+                        policy::HeartbeatScheduler::kDefaultHeartbeatInterval);
   testing::Mock::VerifyAndClearExpectations(&gcm_driver_);
 
   IgnoreUpstreamNotificationMsg();
@@ -358,8 +358,8 @@ TEST_F(HeartbeatSchedulerTest, CheckMessageContents) {
 
   // Heartbeats should have a time-to-live equivalent to the heartbeat frequency
   // so we don't have more than one heartbeat queued at a time.
-  EXPECT_EQ(policy::HeartbeatScheduler::kDefaultHeartbeatIntervalMs/1000,
-            message.time_to_live);
+  EXPECT_EQ(policy::HeartbeatScheduler::kDefaultHeartbeatInterval,
+            base::TimeDelta::FromSeconds(message.time_to_live));
 
   // Check the values in the message payload.
   EXPECT_EQ("hb", message.data["type"]);

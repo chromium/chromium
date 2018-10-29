@@ -183,7 +183,8 @@ TEST_F(WatchTimeRecorderTest, TestBasicReporting) {
     // they don't prevent the muted or background keys from being recorded.
     Initialize(true, false, true, true);
     wtr_->UpdateSecondaryProperties(mojom::SecondaryPlaybackProperties::New(
-        kCodecAAC, kCodecH264, "", "", gfx::Size(800, 600)));
+        kCodecAAC, kCodecH264, "", "", EncryptionMode::kUnencrypted,
+        EncryptionMode::kUnencrypted, gfx::Size(800, 600)));
 
     wtr_->RecordWatchTime(WatchTimeKey::kWatchTimeKeyMax, kWatchTime1);
     wtr_->RecordWatchTime(key, kWatchTime1);
@@ -366,7 +367,8 @@ TEST_F(WatchTimeRecorderTest, TestRebufferingMetrics) {
 TEST_F(WatchTimeRecorderTest, TestDiscardMetrics) {
   Initialize(true, false, true, true);
   wtr_->UpdateSecondaryProperties(mojom::SecondaryPlaybackProperties::New(
-      kCodecAAC, kCodecH264, "", "", gfx::Size(800, 600)));
+      kCodecAAC, kCodecH264, "", "", EncryptionMode::kUnencrypted,
+      EncryptionMode::kUnencrypted, gfx::Size(800, 600)));
 
   constexpr base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(5);
   for (auto key : computation_keys_)
@@ -401,8 +403,9 @@ TEST_F(WatchTimeRecorderTest, TestFinalizeNoDuplication) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
       true, true, false, false, false, false, false);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
-      mojom::SecondaryPlaybackProperties::New(kCodecAAC, kCodecH264, "", "",
-                                              gfx::Size(800, 600));
+      mojom::SecondaryPlaybackProperties::New(
+          kCodecAAC, kCodecH264, "", "", EncryptionMode::kUnencrypted,
+          EncryptionMode::kUnencrypted, gfx::Size(800, 600));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties.Clone());
 
@@ -441,6 +444,12 @@ TEST_F(WatchTimeRecorderTest, TestFinalizeNoDuplication) {
     EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties->video_codec);
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
+    EXPECT_UKM(
+        UkmEntry::kAudioEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->audio_encryption_scheme));
+    EXPECT_UKM(
+        UkmEntry::kVideoEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
     EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -470,8 +479,9 @@ TEST_F(WatchTimeRecorderTest, FinalizeWithoutWatchTime) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
       true, true, false, false, false, false, false);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
-      mojom::SecondaryPlaybackProperties::New(kCodecAAC, kCodecH264, "", "",
-                                              gfx::Size(800, 600));
+      mojom::SecondaryPlaybackProperties::New(
+          kCodecAAC, kCodecH264, "", "", EncryptionMode::kUnencrypted,
+          EncryptionMode::kUnencrypted, gfx::Size(800, 600));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties.Clone());
 
@@ -507,6 +517,12 @@ TEST_F(WatchTimeRecorderTest, FinalizeWithoutWatchTime) {
     EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties->video_codec);
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
+    EXPECT_UKM(
+        UkmEntry::kAudioEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->audio_encryption_scheme));
+    EXPECT_UKM(
+        UkmEntry::kVideoEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
     EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -536,8 +552,9 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideo) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
       true, true, false, false, false, false, false);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
-      mojom::SecondaryPlaybackProperties::New(kCodecAAC, kCodecH264, "", "",
-                                              gfx::Size(800, 600));
+      mojom::SecondaryPlaybackProperties::New(
+          kCodecAAC, kCodecH264, "", "", EncryptionMode::kCenc,
+          EncryptionMode::kCbcs, gfx::Size(800, 600));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties.Clone());
 
@@ -558,6 +575,12 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideo) {
     EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties->video_codec);
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
+    EXPECT_UKM(
+        UkmEntry::kAudioEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->audio_encryption_scheme));
+    EXPECT_UKM(
+        UkmEntry::kVideoEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
     EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -586,8 +609,9 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoWithExtras) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
       true, true, false, false, true, true, false);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
-      mojom::SecondaryPlaybackProperties::New(kCodecOpus, kCodecVP9, "", "",
-                                              gfx::Size(800, 600));
+      mojom::SecondaryPlaybackProperties::New(
+          kCodecOpus, kCodecVP9, "", "", EncryptionMode::kUnencrypted,
+          EncryptionMode::kUnencrypted, gfx::Size(800, 600));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties.Clone());
 
@@ -658,6 +682,12 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoWithExtras) {
     EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties->video_codec);
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
+    EXPECT_UKM(
+        UkmEntry::kAudioEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->audio_encryption_scheme));
+    EXPECT_UKM(
+        UkmEntry::kVideoEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
     EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_ERROR_DECODE);
@@ -674,8 +704,9 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoBackgroundMuted) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
       true, true, true, true, false, false, false);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
-      mojom::SecondaryPlaybackProperties::New(kCodecAAC, kCodecH264, "", "",
-                                              gfx::Size(800, 600));
+      mojom::SecondaryPlaybackProperties::New(
+          kCodecAAC, kCodecH264, "", "", EncryptionMode::kUnencrypted,
+          EncryptionMode::kUnencrypted, gfx::Size(800, 600));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties.Clone());
 
@@ -696,6 +727,12 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoBackgroundMuted) {
     EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties->video_codec);
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
+    EXPECT_UKM(
+        UkmEntry::kAudioEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->audio_encryption_scheme));
+    EXPECT_UKM(
+        UkmEntry::kVideoEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
     EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -725,8 +762,9 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDuration) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
       true, true, false, false, false, false, false);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
-      mojom::SecondaryPlaybackProperties::New(kCodecAAC, kCodecH264, "", "",
-                                              gfx::Size(800, 600));
+      mojom::SecondaryPlaybackProperties::New(
+          kCodecAAC, kCodecH264, "", "", EncryptionMode::kUnencrypted,
+          EncryptionMode::kUnencrypted, gfx::Size(800, 600));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties.Clone());
 
@@ -745,6 +783,12 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDuration) {
     EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties->video_codec);
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
+    EXPECT_UKM(
+        UkmEntry::kAudioEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->audio_encryption_scheme));
+    EXPECT_UKM(
+        UkmEntry::kVideoEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
     EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -776,8 +820,9 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDurationInfinite) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
       true, true, false, false, false, false, false);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
-      mojom::SecondaryPlaybackProperties::New(kCodecAAC, kCodecH264, "", "",
-                                              gfx::Size(800, 600));
+      mojom::SecondaryPlaybackProperties::New(
+          kCodecAAC, kCodecH264, "", "", EncryptionMode::kUnencrypted,
+          EncryptionMode::kUnencrypted, gfx::Size(800, 600));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties.Clone());
 
@@ -796,6 +841,12 @@ TEST_F(WatchTimeRecorderTest, BasicUkmAudioVideoDurationInfinite) {
     EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties->video_codec);
     EXPECT_UKM(UkmEntry::kHasAudioName, properties->has_audio);
     EXPECT_UKM(UkmEntry::kHasVideoName, properties->has_video);
+    EXPECT_UKM(
+        UkmEntry::kAudioEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->audio_encryption_scheme));
+    EXPECT_UKM(
+        UkmEntry::kVideoEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kIsEMEName, properties->is_eme);
     EXPECT_UKM(UkmEntry::kIsMSEName, properties->is_mse);
     EXPECT_UKM(UkmEntry::kLastPipelineStatusName, PIPELINE_OK);
@@ -842,7 +893,9 @@ TEST_F(WatchTimeRecorderTest, SingleSecondaryPropertiesUnknownToKnown) {
       true, true, false, false, true, true, false);
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties1 =
       mojom::SecondaryPlaybackProperties::New(
-          kUnknownAudioCodec, kUnknownVideoCodec, "", "", gfx::Size(800, 600));
+          kUnknownAudioCodec, kUnknownVideoCodec, "", "",
+          EncryptionMode::kUnencrypted, EncryptionMode::kUnencrypted,
+          gfx::Size(800, 600));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties1.Clone());
 
@@ -852,6 +905,7 @@ TEST_F(WatchTimeRecorderTest, SingleSecondaryPropertiesUnknownToKnown) {
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties2 =
       mojom::SecondaryPlaybackProperties::New(
           kCodecAAC, kCodecH264, "FFmpegAudioDecoder", "FFmpegVideoDecoder",
+          EncryptionMode::kUnencrypted, EncryptionMode::kUnencrypted,
           gfx::Size(800, 600));
   wtr_->UpdateSecondaryProperties(secondary_properties2.Clone());
 
@@ -879,6 +933,12 @@ TEST_F(WatchTimeRecorderTest, SingleSecondaryPropertiesUnknownToKnown) {
     EXPECT_UKM(UkmEntry::kRebuffersCountName, 0);
     EXPECT_UKM(UkmEntry::kAudioCodecName, secondary_properties2->audio_codec);
     EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties2->video_codec);
+    EXPECT_UKM(
+        UkmEntry::kAudioEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties2->audio_encryption_scheme));
+    EXPECT_UKM(
+        UkmEntry::kVideoEncryptionSchemeName,
+        static_cast<int64_t>(secondary_properties2->video_encryption_scheme));
     EXPECT_UKM(UkmEntry::kVideoNaturalWidthName,
                secondary_properties2->natural_size.width());
     EXPECT_UKM(UkmEntry::kVideoNaturalHeightName,
@@ -893,6 +953,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalize) {
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties1 =
       mojom::SecondaryPlaybackProperties::New(
           kCodecOpus, kCodecVP9, "MojoAudioDecoder", "MojoVideoDecoder",
+          EncryptionMode::kUnencrypted, EncryptionMode::kUnencrypted,
           gfx::Size(400, 300));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties1.Clone());
@@ -905,7 +966,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalize) {
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties2 =
       mojom::SecondaryPlaybackProperties::New(
           kCodecAAC, kCodecH264, "FFmpegAudioDecoder", "FFmpegVideoDecoder",
-          gfx::Size(800, 600));
+          EncryptionMode::kCenc, EncryptionMode::kCenc, gfx::Size(800, 600));
   wtr_->UpdateSecondaryProperties(secondary_properties2.Clone());
 
   constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(25);
@@ -951,6 +1012,12 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalize) {
   EXPECT_UKM(UkmEntry::kRebuffersCountName, kUnderflowCount1);
   EXPECT_UKM(UkmEntry::kAudioCodecName, secondary_properties1->audio_codec);
   EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties1->video_codec);
+  EXPECT_UKM(
+      UkmEntry::kAudioEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties1->audio_encryption_scheme));
+  EXPECT_UKM(
+      UkmEntry::kVideoEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties1->video_encryption_scheme));
   EXPECT_UKM(UkmEntry::kVideoNaturalWidthName,
              secondary_properties1->natural_size.width());
   EXPECT_UKM(UkmEntry::kVideoNaturalHeightName,
@@ -966,6 +1033,12 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalize) {
   EXPECT_UKM(UkmEntry::kRebuffersCountName, kUnderflowCount2);
   EXPECT_UKM(UkmEntry::kAudioCodecName, secondary_properties2->audio_codec);
   EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties2->video_codec);
+  EXPECT_UKM(
+      UkmEntry::kAudioEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties2->audio_encryption_scheme));
+  EXPECT_UKM(
+      UkmEntry::kVideoEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties2->video_encryption_scheme));
   EXPECT_UKM(UkmEntry::kVideoNaturalWidthName,
              secondary_properties2->natural_size.width());
   EXPECT_UKM(UkmEntry::kVideoNaturalHeightName,
@@ -978,6 +1051,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalizeNo2ndWT) {
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties1 =
       mojom::SecondaryPlaybackProperties::New(
           kCodecOpus, kCodecVP9, "MojoAudioDecoder", "MojoVideoDecoder",
+          EncryptionMode::kUnencrypted, EncryptionMode::kUnencrypted,
           gfx::Size(400, 300));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties1.Clone());
@@ -990,6 +1064,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalizeNo2ndWT) {
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties2 =
       mojom::SecondaryPlaybackProperties::New(
           kCodecAAC, kCodecH264, "FFmpegAudioDecoder", "FFmpegVideoDecoder",
+          EncryptionMode::kUnencrypted, EncryptionMode::kUnencrypted,
           gfx::Size(800, 600));
   wtr_->UpdateSecondaryProperties(secondary_properties2.Clone());
 
@@ -1026,6 +1101,12 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalizeNo2ndWT) {
   EXPECT_UKM(UkmEntry::kRebuffersCountName, kUnderflowCount1);
   EXPECT_UKM(UkmEntry::kAudioCodecName, secondary_properties1->audio_codec);
   EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties1->video_codec);
+  EXPECT_UKM(
+      UkmEntry::kAudioEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties1->audio_encryption_scheme));
+  EXPECT_UKM(
+      UkmEntry::kVideoEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties1->video_encryption_scheme));
   EXPECT_UKM(UkmEntry::kVideoNaturalWidthName,
              secondary_properties1->natural_size.width());
   EXPECT_UKM(UkmEntry::kVideoNaturalHeightName,
@@ -1039,6 +1120,12 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesNoFinalizeNo2ndWT) {
   EXPECT_UKM(UkmEntry::kRebuffersCountName, 0);
   EXPECT_UKM(UkmEntry::kAudioCodecName, secondary_properties2->audio_codec);
   EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties2->video_codec);
+  EXPECT_UKM(
+      UkmEntry::kAudioEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties2->audio_encryption_scheme));
+  EXPECT_UKM(
+      UkmEntry::kVideoEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties2->video_encryption_scheme));
   EXPECT_UKM(UkmEntry::kVideoNaturalWidthName,
              secondary_properties2->natural_size.width());
   EXPECT_UKM(UkmEntry::kVideoNaturalHeightName,
@@ -1051,7 +1138,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesWithFinalize) {
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties1 =
       mojom::SecondaryPlaybackProperties::New(
           kCodecOpus, kCodecVP9, "MojoAudioDecoder", "MojoVideoDecoder",
-          gfx::Size(400, 300));
+          EncryptionMode::kCbcs, EncryptionMode::kCbcs, gfx::Size(400, 300));
   Initialize(properties.Clone());
   wtr_->UpdateSecondaryProperties(secondary_properties1.Clone());
 
@@ -1067,6 +1154,7 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesWithFinalize) {
   mojom::SecondaryPlaybackPropertiesPtr secondary_properties2 =
       mojom::SecondaryPlaybackProperties::New(
           kCodecAAC, kCodecH264, "FFmpegAudioDecoder", "FFmpegVideoDecoder",
+          EncryptionMode::kUnencrypted, EncryptionMode::kUnencrypted,
           gfx::Size(800, 600));
   wtr_->UpdateSecondaryProperties(secondary_properties2.Clone());
 
@@ -1109,6 +1197,12 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesWithFinalize) {
   EXPECT_UKM(UkmEntry::kRebuffersCountName, kUnderflowCount1);
   EXPECT_UKM(UkmEntry::kAudioCodecName, secondary_properties1->audio_codec);
   EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties1->video_codec);
+  EXPECT_UKM(
+      UkmEntry::kAudioEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties1->audio_encryption_scheme));
+  EXPECT_UKM(
+      UkmEntry::kVideoEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties1->video_encryption_scheme));
   EXPECT_UKM(UkmEntry::kVideoNaturalWidthName,
              secondary_properties1->natural_size.width());
   EXPECT_UKM(UkmEntry::kVideoNaturalHeightName,
@@ -1124,6 +1218,12 @@ TEST_F(WatchTimeRecorderTest, MultipleSecondaryPropertiesWithFinalize) {
   EXPECT_UKM(UkmEntry::kRebuffersCountName, kUnderflowCount2);
   EXPECT_UKM(UkmEntry::kAudioCodecName, secondary_properties2->audio_codec);
   EXPECT_UKM(UkmEntry::kVideoCodecName, secondary_properties2->video_codec);
+  EXPECT_UKM(
+      UkmEntry::kAudioEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties2->audio_encryption_scheme));
+  EXPECT_UKM(
+      UkmEntry::kVideoEncryptionSchemeName,
+      static_cast<int64_t>(secondary_properties2->video_encryption_scheme));
   EXPECT_UKM(UkmEntry::kVideoNaturalWidthName,
              secondary_properties2->natural_size.width());
   EXPECT_UKM(UkmEntry::kVideoNaturalHeightName,

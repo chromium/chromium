@@ -82,6 +82,16 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
 
 FeaturePromoBubbleView::~FeaturePromoBubbleView() = default;
 
+// static
+FeaturePromoBubbleView* FeaturePromoBubbleView::CreateOwned(
+    views::View* anchor_view,
+    views::BubbleBorder::Arrow arrow,
+    int string_specifier,
+    ActivationAction activation_action) {
+  return new FeaturePromoBubbleView(anchor_view, arrow, string_specifier,
+                                    activation_action);
+}
+
 void FeaturePromoBubbleView::CloseBubble() {
   GetWidget()->Close();
 }

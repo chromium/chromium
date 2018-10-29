@@ -10,7 +10,7 @@
 
 void ResizeWebContents(content::WebContents* web_contents,
                        const gfx::Rect& new_bounds) {
-  NSView* view = web_contents->GetNativeView();
+  NSView* view = web_contents->GetNativeView().GetNativeNSView();
   NSRect old_wcv_frame = [view frame];
   CGFloat new_x = old_wcv_frame.origin.x;
   CGFloat new_y =

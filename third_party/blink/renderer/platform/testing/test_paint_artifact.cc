@@ -146,7 +146,7 @@ FakeDisplayItemClient& TestPaintArtifact::NewClient() {
   return *dummy_clients_.back();
 }
 
-FakeDisplayItemClient& TestPaintArtifact::Client(size_t i) const {
+FakeDisplayItemClient& TestPaintArtifact::Client(wtf_size_t i) const {
   return *dummy_clients_[i];
 }
 

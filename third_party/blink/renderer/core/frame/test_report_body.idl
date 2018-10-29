@@ -5,8 +5,7 @@
 // https://w3c.github.io/reporting/#test-report
 
 [
-    NoInterfaceObject,
-    RuntimeEnabled=TestReporting
+    NoInterfaceObject
 ] interface TestReportBody : ReportBody {
   readonly attribute DOMString message;
 };

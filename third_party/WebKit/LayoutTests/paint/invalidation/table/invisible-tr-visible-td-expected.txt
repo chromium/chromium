@@ -20,7 +20,7 @@
         {
           "object": "LayoutTableRow TR id='row'",
           "rect": [8, 8, 200, 200],
-          "reason": "style change"
+          "reason": "background"
         }
       ]
     }

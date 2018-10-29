@@ -4,19 +4,31 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Common text sizes -->
-    <dimen name="headline_size_large" tools:ignore="UnusedResources">23sp</dimen>
-    <dimen name="headline_size_medium" tools:ignore="UnusedResources">20sp</dimen>
-    <dimen name="text_size_large" tools:ignore="UnusedResources">16sp</dimen>
-    <dimen name="text_size_medium" tools:ignore="UnusedResources">14sp</dimen>
-    <dimen name="text_size_small" tools:ignore="UnusedResources">12sp</dimen>
+    <dimen name="headline_size">22sp</dimen>
+    <dimen name="text_size_large">16sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+
+    <!-- Common alpha values -->
+    <item name="default_disabled_alpha" format="float" type="dimen">0.38</item>
+    <item name="default_pressed_alpha" format="float" type="dimen">0.10</item>
+    <item name="default_focused_hovered_alpha" format="float" type="dimen">0.10</item>
+    <item name="default_focused_alpha" format="float" type="dimen">0.06</item>
+    <item name="default_hovered_alpha" format="float" type="dimen">0.04</item>
 
     <dimen name="dropdown_item_height">50dp</dimen>
     <dimen name="dropdown_item_divider_height">1px</dimen>
     <dimen name="dropdown_item_label_margin">10dp</dimen>
     <dimen name="dropdown_icon_margin">8dp</dimen>
+    <dimen name="dropdown_vertical_margin">4dp</dimen>
+    <dimen name="dropdown_elevation">2dp</dimen>
+
     <dimen name="button_compat_corner_radius">4dp</dimen>
+
+    <dimen name="chrome_bullet_gap">12dp</dimen>
+    <dimen name="chrome_bullet_leading_offset">1dp</dimen>
 
     <!-- Divider Dimensions -->
     <dimen name="divider_height">1dp</dimen>

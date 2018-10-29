@@ -6,5 +6,6 @@ rootWebArea
 ++++++staticText name='Complex '
 ++++++++inlineTextBox name='Complex '
 ++++++textField
+++++++++genericContainer
 ++++++staticText name=' menuitem'
 ++++++++inlineTextBox name=' menuitem'

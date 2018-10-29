@@ -7,6 +7,13 @@ module blink.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 
+enum PortalActivationStatus {
+  // Portal has been successfully activated.
+  kSuccess,
+  // Operation is not supported by the embedder.
+  kNotSupported,
+};
+
 // The Portal interface is used by the renderer to interact with the Portal.
 interface Portal {
   // Initializes a portal. Must be called immediately after creating the
@@ -16,4 +23,7 @@ interface Portal {
 
   // Navigates the portal to |url|.
   Navigate(url.mojom.Url url);
+
+  // When a portal is activated, it'll replace the current tab with the portal.
+  Activate() => (PortalActivationStatus result);
 };

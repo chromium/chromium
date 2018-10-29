@@ -252,6 +252,7 @@ void PageSchedulerImpl::SetPageFrozenImpl(
           PageLifecycleState::kHiddenForegrounded);
     }
   }
+  Platform::Current()->SetMemoryPressureNotificationsSuppressed(frozen);
 }
 
 void PageSchedulerImpl::SetKeepActive(bool keep_active) {

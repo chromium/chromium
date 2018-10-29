@@ -324,8 +324,7 @@ std::map<int64_t, base::Time> GetExpectedMetaTimes() {
   std::map<int64_t, base::Time> expected_meta_times;
   const std::map<int64_t, int64_t>& expected_meta_proto_times =
       GetExpectedMetaProtoTimes(INCLUDE_DELETED_ITEMS);
-  for (std::map<int64_t, int64_t>::const_iterator it =
-           expected_meta_proto_times.begin();
+  for (auto it = expected_meta_proto_times.begin();
        it != expected_meta_proto_times.end(); ++it) {
     expected_meta_times[it->first] = ProtoTimeToTime(it->second);
   }
@@ -390,12 +389,10 @@ void ExpectTime(const EntryKernel& entry_kernel,
 // the given map (from metahandle to expect time).
 void ExpectTimes(const Directory::MetahandlesMap& handles_map,
                  const std::map<int64_t, base::Time>& expected_times) {
-  for (Directory::MetahandlesMap::const_iterator it = handles_map.begin();
-       it != handles_map.end(); ++it) {
+  for (auto it = handles_map.begin(); it != handles_map.end(); ++it) {
     int64_t meta_handle = it->first;
     SCOPED_TRACE(meta_handle);
-    std::map<int64_t, base::Time>::const_iterator it2 =
-        expected_times.find(meta_handle);
+    auto it2 = expected_times.find(meta_handle);
     if (it2 == expected_times.end()) {
       ADD_FAILURE() << "Could not find expected time for " << meta_handle;
       continue;
@@ -4071,7 +4068,7 @@ TEST_P(MigrationTest, ToCurrentVersion) {
             GetMetaProtoTimes(&connection));
   ExpectTimes(handles_map, GetExpectedMetaTimes());
 
-  Directory::MetahandlesMap::iterator it = handles_map.find(1);
+  auto it = handles_map.find(1);
   ASSERT_TRUE(it != handles_map.end());
   EXPECT_EQ(1, it->second->ref(META_HANDLE));
   EXPECT_TRUE(it->second->ref(ID).IsRoot());
@@ -4360,8 +4357,7 @@ TEST_F(DirectoryBackingStoreTest, DeleteEntries) {
 
   EXPECT_EQ(initial_size - 1, handles_map.size());
   bool delete_failed = false;
-  for (Directory::MetahandlesMap::iterator it = handles_map.begin();
-       it != handles_map.end(); ++it) {
+  for (auto it = handles_map.begin(); it != handles_map.end(); ++it) {
     if (it->first == first_to_die) {
       delete_failed = true;
       break;
@@ -4370,8 +4366,7 @@ TEST_F(DirectoryBackingStoreTest, DeleteEntries) {
   EXPECT_FALSE(delete_failed);
 
   to_delete.clear();
-  for (Directory::MetahandlesMap::iterator it = handles_map.begin();
-       it != handles_map.end(); ++it) {
+  for (auto it = handles_map.begin(); it != handles_map.end(); ++it) {
     to_delete.insert(it->first);
   }
 

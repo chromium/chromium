@@ -213,7 +213,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
       if (expected_batch_operations[i]->response) {
         ASSERT_EQ(expected_batch_operations[i]->response->url_list.size(),
                   batch_operations[i]->response->url_list.size());
-        for (size_t j = 0;
+        for (wtf_size_t j = 0;
              j < expected_batch_operations[i]->response->url_list.size(); ++j) {
           EXPECT_EQ(expected_batch_operations[i]->response->url_list[j],
                     batch_operations[i]->response->url_list[j]);

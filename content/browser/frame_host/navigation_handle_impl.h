@@ -149,7 +149,9 @@ class CONTENT_EXPORT NavigationHandleImpl : public NavigationHandle {
       base::Optional<net::SSLInfo> ssl_info) override;
   NavigationThrottle::ThrottleCheckResult CallWillProcessResponseForTesting(
       RenderFrameHost* render_frame_host,
-      const std::string& raw_response_header) override;
+      const std::string& raw_response_header,
+      bool was_cached,
+      const net::ProxyServer& proxy_server) override;
   void CallDidCommitNavigationForTesting(const GURL& url) override;
   void CallResumeForTesting() override;
   bool IsDeferredForTesting() override;
@@ -163,6 +165,8 @@ class CONTENT_EXPORT NavigationHandleImpl : public NavigationHandle {
   bool IsDownload() override;
   bool IsFormSubmission() override;
   bool IsSignedExchangeInnerResponse() override;
+  bool WasResponseCached() override;
+  const net::ProxyServer& GetProxyServer() override;
 
   const std::string& origin_policy() const { return origin_policy_; }
   void set_origin_policy(const std::string& origin_policy) {
@@ -297,6 +301,7 @@ class CONTENT_EXPORT NavigationHandleImpl : public NavigationHandle {
       bool is_download,
       bool is_stream,
       bool is_signed_exchange_inner_response,
+      bool was_cached,
       const ThrottleChecksFinishedCallback& callback);
 
   // Returns the FrameTreeNode this navigation is happening in.
@@ -362,6 +367,10 @@ class CONTENT_EXPORT NavigationHandleImpl : public NavigationHandle {
   const SourceLocation& source_location() const { return source_location_; }
   void set_source_location(const SourceLocation& source_location) {
     source_location_ = source_location;
+  }
+
+  void set_proxy_server(const net::ProxyServer& proxy_server) {
+    proxy_server_ = proxy_server;
   }
 
   // Sets ID of the RenderProcessHost we expect the navigation to commit in.
@@ -596,6 +605,12 @@ class CONTENT_EXPORT NavigationHandleImpl : public NavigationHandle {
 
   // True if the target is an inner response of a signed exchange.
   bool is_signed_exchange_inner_response_;
+
+  // Whether the response was cached.
+  bool was_cached_;
+
+  // Which proxy server was used for this navigation, if any.
+  net::ProxyServer proxy_server_;
 
   // False by default unless the navigation started within a context menu.
   bool started_from_context_menu_;

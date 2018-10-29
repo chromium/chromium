@@ -1,0 +1,16 @@
+rootWebArea
+++genericContainer
+++++textField name='foo'
+++++++genericContainer
+++++labelText
+++++++genericContainer name='foo'
+++++++++genericContainer name='bar'
+++++++++++staticText name='baz'
+++++++++++++inlineTextBox name='baz'
+++++lineBreak name='<newline>'
+++++textField name='bar'
+++++++genericContainer
+++++labelText
+++++++genericContainer name='bar'
+++++++++staticText name='baz'
+++++++++++inlineTextBox name='baz'

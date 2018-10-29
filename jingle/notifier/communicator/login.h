@@ -19,6 +19,7 @@
 #include "jingle/notifier/communicator/single_login_attempt.h"
 #include "net/base/network_change_notifier.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "third_party/libjingle_xmpp/xmpp/xmppengine.h"
 
 namespace buzz {
@@ -39,9 +40,10 @@ class LoginSettings;
 // to take on the various errors that may occur.
 //
 // TODO(akalin): Make this observe proxy config changes also.
-class Login : public net::NetworkChangeNotifier::NetworkChangeObserver,
-              public net::NetworkChangeNotifier::DNSObserver,
-              public SingleLoginAttempt::Delegate {
+class Login
+    : public network::NetworkConnectionTracker::NetworkConnectionObserver,
+      public net::NetworkChangeNotifier::DNSObserver,
+      public SingleLoginAttempt::Delegate {
  public:
   class Delegate {
    public:
@@ -72,7 +74,8 @@ class Login : public net::NetworkChangeNotifier::NetworkChangeObserver,
       const ServerList& servers,
       bool try_ssltcp_first,
       const std::string& auth_mechanism,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation);
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      network::NetworkConnectionTracker* network_connection_tracker);
   ~Login() override;
 
   // Starts connecting (or forces a reconnection if we're backed off).
@@ -83,9 +86,8 @@ class Login : public net::NetworkChangeNotifier::NetworkChangeObserver,
   // StartConnection()).
   void UpdateXmppSettings(const buzz::XmppClientSettings& user_settings);
 
-  // net::NetworkChangeNotifier::NetworkChangeObserver implementation.
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override;
+  // network::NetworkConnectionTracker::NetworkConnectionObserver implementation
+  void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // net::NetworkChangeNotifier::DNSObserver implementation.
   void OnDNSChanged() override;
@@ -115,6 +117,7 @@ class Login : public net::NetworkChangeNotifier::NetworkChangeObserver,
 
   Delegate* const delegate_;
   LoginSettings login_settings_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
   std::unique_ptr<SingleLoginAttempt> single_attempt_;
 
   // reconnection state.

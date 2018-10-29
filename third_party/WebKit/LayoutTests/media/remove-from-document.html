@@ -5,17 +5,20 @@
 <video autoplay></video>
 <script>
 async_test(function(t) {
-    var video = document.querySelector("video");
-    video.src = "content/test.ogv";
+  const video = document.querySelector("video");
+  video.src = "content/test.ogv";
 
-    video.oncanplaythrough = t.step_func_done(function() {
-        assert_not_equals(video.networkState, HTMLMediaElement.NETWORK_EMPTY);
-        assert_false(video.paused);
+  video.oncanplaythrough = t.step_func(() => {
+    assert_not_equals(video.networkState, HTMLMediaElement.NETWORK_EMPTY);
+    assert_false(video.paused);
 
-        document.body.removeChild(video);
+    document.body.removeChild(video);
 
-        assert_not_equals(video.networkState, HTMLMediaElement.NETWORK_EMPTY);
-        assert_true(video.paused);
-    });
+    assert_not_equals(video.networkState, HTMLMediaElement.NETWORK_EMPTY);
+
+    setTimeout(t.step_func_done(() => {
+      assert_true(video.paused);
+    }));
+  });
 });
 </script>

@@ -66,7 +66,6 @@ bool IsSharedByGroup(int column_id) {
     case IDS_TASK_MANAGER_HARD_FAULTS_COLUMN:
     case IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN:
     case IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN:
-    case IDS_TASK_MANAGER_MEMORY_STATE_COLUMN:
       return true;
     default:
       return false;
@@ -114,13 +113,7 @@ class TaskManagerValuesStringifier {
         unknown_string_(l10n_util::GetStringUTF16(
             IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT)),
         disabled_nacl_debugging_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT)),
-        memory_state_normal_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_MEMORY_STATE_NORMAL_TEXT)),
-        memory_state_throttled_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_MEMORY_STATE_THROTTLED_TEXT)),
-        memory_state_suspended_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_MEMORY_STATE_SUSPENDED_TEXT)) {
+            IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT)) {
   }
 
   ~TaskManagerValuesStringifier() {}
@@ -169,21 +162,6 @@ class TaskManagerValuesStringifier {
       memory_text += asterisk_string_;
 
     return memory_text;
-  }
-
-  base::string16 GetMemoryStateText(base::MemoryState state) {
-    switch (state) {
-      case base::MemoryState::NORMAL:
-        return memory_state_normal_string_;
-      case base::MemoryState::THROTTLED:
-        return memory_state_throttled_string_;
-      case base::MemoryState::SUSPENDED:
-        return memory_state_suspended_string_;
-      case base::MemoryState::UNKNOWN:
-        return n_a_string_;
-    }
-    NOTREACHED();
-    return n_a_string_;
   }
 
   base::string16 GetIdleWakeupsText(int idle_wakeups) {
@@ -289,11 +267,6 @@ class TaskManagerValuesStringifier {
   // The string to show on the NaCl debug port column cells when the flag
   // #enable-nacl-debug is disabled.
   const base::string16 disabled_nacl_debugging_string_;
-
-  // Localized strings for memory states.
-  const base::string16 memory_state_normal_string_;
-  const base::string16 memory_state_throttled_string_;
-  const base::string16 memory_state_suspended_string_;
 
   DISALLOW_COPY_AND_ASSIGN(TaskManagerValuesStringifier);
 };
@@ -465,11 +438,6 @@ base::string16 TaskManagerTableModel::GetText(int row, int column) {
     }
 #endif  // defined(OS_LINUX)
 
-    case IDS_TASK_MANAGER_MEMORY_STATE_COLUMN: {
-      return stringifier_->GetMemoryStateText(
-          observed_task_manager()->GetMemoryState(tasks_[row]));
-    }
-
     case IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN: {
       return stringifier_->GetKeepaliveCountText(
           observed_task_manager()->GetKeepaliveCount(tasks_[row]));
@@ -496,7 +464,6 @@ int TaskManagerTableModel::CompareValues(int row1,
   switch (column_id) {
     case IDS_TASK_MANAGER_TASK_COLUMN:
     case IDS_TASK_MANAGER_PROFILE_NAME_COLUMN:
-    case IDS_TASK_MANAGER_MEMORY_STATE_COLUMN:
       return ui::TableModel::CompareValues(row1, row2, column_id);
 
     case IDS_TASK_MANAGER_NET_COLUMN:
@@ -787,10 +754,6 @@ void TaskManagerTableModel::UpdateRefreshTypes(int column_id, bool visibility) {
 
     case IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN:
       type = REFRESH_TYPE_PRIORITY;
-      break;
-
-    case IDS_TASK_MANAGER_MEMORY_STATE_COLUMN:
-      type = REFRESH_TYPE_MEMORY_STATE;
       break;
 
     case IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN:

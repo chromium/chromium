@@ -21,7 +21,7 @@ const char* GetNameForThreadType(WebThreadType thread_type) {
       return "DedicatedWorker thread";
     case WebThreadType::kSharedWorkerThread:
       return "SharedWorker thread";
-    case WebThreadType::kAnimationWorkletThread:
+    case WebThreadType::kAnimationAndPaintWorkletThread:
       return "AnimationWorklet thread";
     case WebThreadType::kServiceWorkerThread:
       return "ServiceWorker thread";

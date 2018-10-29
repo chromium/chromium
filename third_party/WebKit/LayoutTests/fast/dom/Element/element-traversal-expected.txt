@@ -2,7 +2,6 @@ This test checks the implementation of the ElementTraversal API.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 Test with no children
 PASS noChildren.firstElementChild is null
 PASS noChildren.lastElementChild is null

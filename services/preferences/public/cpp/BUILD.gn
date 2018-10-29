@@ -20,6 +20,8 @@ source_set("cpp") {
     "scoped_pref_update.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//components/prefs",
@@ -47,4 +49,5 @@ source_set("service_main") {
     "pref_service_main.cc",
     "pref_service_main.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

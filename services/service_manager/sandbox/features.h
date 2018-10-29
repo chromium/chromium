@@ -23,6 +23,8 @@ SERVICE_MANAGER_SANDBOX_EXPORT extern const base::Feature
 
 SERVICE_MANAGER_SANDBOX_EXPORT extern const base::Feature
     kWinSboxDisableExtensionPoints;
+
+SERVICE_MANAGER_SANDBOX_EXPORT extern const base::Feature kXRSandbox;
 #endif  // defined(OS_WIN)
 
 }  // namespace features

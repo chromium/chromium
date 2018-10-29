@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Test that wakeLock.type is 'screen' when screen wake lock is invoked
-FAIL Test that wakeLock.type is 'system' when system wake lock is invoked promise_test: Unhandled rejection with value: object "NotSupportedError: WakeLockType Not Supported"
-PASS 'TypeError' is thrown when set an empty wake lock type
-PASS 'TypeError' is thrown when set an unsupported wake lock type
-Harness: the test ran to completion.
-

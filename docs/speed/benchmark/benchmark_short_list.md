@@ -14,7 +14,7 @@ Here is the list of benchmarks which we recommend:
 Android:
 *   system_health.common_mobile
 *   system_health.memory_mobile
-*   experimental.startup.android.coldish
+*   startup.mobile
 
 Desktop:
 *   system_health.common_desktop

@@ -67,10 +67,10 @@ void ExploreSitesGetImagesTaskTest::PopulateTestingCatalog() {
     meta_table.DeleteKey("downloading_catalog");
     sql::Statement insert(db->GetUniqueStatement(R"(
 INSERT INTO categories
-(category_id, version, type, label)
+(category_id, version_token, type, label)
 VALUES
-(3, 5678, 1, "label_1"),
-(4, 5678, 2, "label_2");)"));
+(3, "5678", 1, "label_1"),
+(4, "5678", 2, "label_2");)"));
     if (!insert.Run())
       return false;
 
@@ -173,6 +173,27 @@ VALUES
   RunTask(&task);
 
   EXPECT_EQ(4U, last_result.size());
+}
+
+TEST_F(ExploreSitesGetImagesTaskTest, SkipMissingFavicons) {
+  PopulateTestingCatalog();
+  ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
+    sql::Statement insert(db->GetUniqueStatement(R"(
+INSERT INTO sites
+(site_id, url, category_id, title, favicon)
+VALUES
+(5, "https://www.example.com/5", 3, "example_5", NULL),
+(6, "https://www.example.com/6", 3, "example_6", ""),
+(7, "https://www.example.com/7", 3, "example_7", "bytes7");
+)"));
+    return insert.Run();
+  }));
+  GetImagesTask task(store(), 3, 3, StoreResult());
+  RunTask(&task);
+
+  EXPECT_EQ(3U, last_result.size());
+  std::vector<uint8_t>& result3 = *last_result[2];
+  EXPECT_EQ("bytes7", std::string(result3.begin(), result3.end()));
 }
 
 }  // namespace explore_sites

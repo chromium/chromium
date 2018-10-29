@@ -4,9 +4,12 @@
 
 #include "components/viz/service/display/overlay_processor.h"
 
+#include <vector>
+
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
@@ -69,7 +72,7 @@ bool OverlayProcessor::ProcessForCALayers(
     DisplayResourceProvider* resource_provider,
     RenderPass* render_pass,
     const OverlayProcessor::FilterOperationsMap& render_pass_filters,
-    const OverlayProcessor::FilterOperationsMap& render_pass_background_filters,
+    const OverlayProcessor::FilterOperationsMap& render_pass_backdrop_filters,
     OverlayCandidateList* overlay_candidates,
     CALayerOverlayList* ca_layer_overlays,
     gfx::Rect* damage_rect) {
@@ -81,7 +84,7 @@ bool OverlayProcessor::ProcessForCALayers(
   if (!ProcessForCALayerOverlays(
           resource_provider, gfx::RectF(render_pass->output_rect),
           render_pass->quad_list, render_pass_filters,
-          render_pass_background_filters, ca_layer_overlays))
+          render_pass_backdrop_filters, ca_layer_overlays))
     return false;
 
   // CALayer overlays are all-or-nothing. If all quads were replaced with
@@ -97,7 +100,7 @@ bool OverlayProcessor::ProcessForDCLayers(
     DisplayResourceProvider* resource_provider,
     RenderPassList* render_passes,
     const OverlayProcessor::FilterOperationsMap& render_pass_filters,
-    const OverlayProcessor::FilterOperationsMap& render_pass_background_filters,
+    const OverlayProcessor::FilterOperationsMap& render_pass_backdrop_filters,
     OverlayCandidateList* overlay_candidates,
     DCLayerOverlayList* dc_layer_overlays,
     gfx::Rect* damage_rect) {
@@ -119,7 +122,7 @@ void OverlayProcessor::ProcessForOverlays(
     RenderPassList* render_passes,
     const SkMatrix44& output_color_matrix,
     const OverlayProcessor::FilterOperationsMap& render_pass_filters,
-    const OverlayProcessor::FilterOperationsMap& render_pass_background_filters,
+    const OverlayProcessor::FilterOperationsMap& render_pass_backdrop_filters,
     OverlayCandidateList* candidates,
     CALayerOverlayList* ca_layer_overlays,
     DCLayerOverlayList* dc_layer_overlays,
@@ -153,13 +156,13 @@ void OverlayProcessor::ProcessForOverlays(
 
   // First attempt to process for CALayers.
   if (ProcessForCALayers(resource_provider, render_passes->back().get(),
-                         render_pass_filters, render_pass_background_filters,
+                         render_pass_filters, render_pass_backdrop_filters,
                          candidates, ca_layer_overlays, damage_rect)) {
     return;
   }
 
   if (ProcessForDCLayers(resource_provider, render_passes, render_pass_filters,
-                         render_pass_background_filters, candidates,
+                         render_pass_backdrop_filters, candidates,
                          dc_layer_overlays, damage_rect)) {
     return;
   }
@@ -167,7 +170,7 @@ void OverlayProcessor::ProcessForOverlays(
   // Only if that fails, attempt hardware overlay strategies.
   Strategy* successful_strategy = nullptr;
   for (const auto& strategy : strategies_) {
-    if (!strategy->Attempt(output_color_matrix, render_pass_background_filters,
+    if (!strategy->Attempt(output_color_matrix, render_pass_backdrop_filters,
                            resource_provider, render_passes->back().get(),
                            candidates, content_bounds)) {
       continue;
@@ -177,6 +180,9 @@ void OverlayProcessor::ProcessForOverlays(
                      previous_frame_underlay_was_unoccluded, damage_rect);
     break;
   }
+
+  if (!successful_strategy && !previous_frame_underlay_rect.IsEmpty())
+    damage_rect->Union(previous_frame_underlay_rect);
 
   UMA_HISTOGRAM_ENUMERATION("Viz.DisplayCompositor.OverlayStrategy",
                             successful_strategy
@@ -244,5 +250,50 @@ void OverlayProcessor::UpdateDamageRect(
 
   damage_rect->Union(output_surface_overlay_damage_rect);
 }
+
+namespace {
+
+bool DiscardableQuad(const DrawQuad* q) {
+  return q->material == DrawQuad::SOLID_COLOR &&
+      (SolidColorDrawQuad::MaterialCast(q)->color == SK_ColorBLACK ||
+       SolidColorDrawQuad::MaterialCast(q)->color == SK_ColorTRANSPARENT);
+}
+
+}
+
+// static
+void OverlayProcessor::EliminateOrCropPrimary(
+    const QuadList& quad_list,
+    const QuadList::Iterator& candidate_iterator,
+    OverlayCandidate* primary,
+    OverlayCandidateList* candidate_list) {
+  gfx::RectF content_rect;
+
+  for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
+    if (it == candidate_iterator)
+      continue;
+    if (!DiscardableQuad(*it)) {
+      auto& transform = it->shared_quad_state->quad_to_target_transform;
+      gfx::RectF display_rect = gfx::RectF(it->rect);
+      transform.TransformRect(&display_rect);
+      content_rect.Union(display_rect);
+    }
+  }
+
+  if (!content_rect.IsEmpty()) {
+    // Sometimes the content quads extend past primary->display_rect, so first
+    // clip the content_rect to that.
+    content_rect.Intersect(primary->display_rect);
+    DCHECK_NE(0, primary->display_rect.width());
+    DCHECK_NE(0, primary->display_rect.height());
+    primary->uv_rect =
+        gfx::ScaleRect(content_rect, 1. / primary->display_rect.width(),
+                       1. / primary->display_rect.height());
+    primary->display_rect = content_rect;
+
+    candidate_list->push_back(*primary);
+  }
+}
+
 
 }  // namespace viz

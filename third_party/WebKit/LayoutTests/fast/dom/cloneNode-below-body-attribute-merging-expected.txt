@@ -2,7 +2,6 @@ Tests that cloning the body node in response to a DOMSubtreeModified event doesn
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

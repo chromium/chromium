@@ -75,11 +75,9 @@ static inline bool BytesEqual(const char* p,
 // the similar functions that operate on UChar, but arguably only the decoder
 // has a reason to process strings of char rather than UChar.
 
-static int Find(const char* subject,
-                size_t subject_length,
-                const char* target) {
+static int Find(const char* subject, int subject_length, const char* target) {
   size_t target_length = strlen(target);
-  if (target_length > subject_length)
+  if (target_length > static_cast<size_t>(subject_length))
     return -1;
   for (size_t i = 0; i <= subject_length - target_length; ++i) {
     bool match = true;
@@ -96,7 +94,7 @@ static int Find(const char* subject,
 }
 
 static WTF::TextEncoding FindTextEncoding(const char* encoding_name,
-                                          int length) {
+                                          wtf_size_t length) {
   Vector<char, 64> buffer(length + 1);
   memcpy(buffer.data(), encoding_name, length);
   buffer[length] = '\0';
@@ -205,18 +203,18 @@ static int FindXMLEncoding(const char* str, int len, int& encoding_length) {
   return pos;
 }
 
-size_t TextResourceDecoder::CheckForBOM(const char* data, size_t len) {
+wtf_size_t TextResourceDecoder::CheckForBOM(const char* data, wtf_size_t len) {
   // Check for UTF-16 or UTF-8 BOM mark at the beginning, which is a sure
   // sign of a Unicode encoding. We let it override even a user-chosen encoding.
   DCHECK(!checked_for_bom_);
 
-  size_t length_of_bom = 0;
-  const size_t max_bom_length = 3;
+  wtf_size_t length_of_bom = 0;
+  const wtf_size_t max_bom_length = 3;
 
-  size_t buffer_length = buffer_.size();
+  wtf_size_t buffer_length = buffer_.size();
 
-  size_t buf1_len = buffer_length;
-  size_t buf2_len = len;
+  wtf_size_t buf1_len = buffer_length;
+  wtf_size_t buf2_len = len;
   const unsigned char* buf1 =
       reinterpret_cast<const unsigned char*>(buffer_.data());
   const unsigned char* buf2 = reinterpret_cast<const unsigned char*>(data);
@@ -248,14 +246,14 @@ size_t TextResourceDecoder::CheckForBOM(const char* data, size_t len) {
 }
 
 bool TextResourceDecoder::CheckForCSSCharset(const char* data,
-                                             size_t len,
+                                             wtf_size_t len,
                                              bool& moved_data_to_buffer) {
   if (source_ != kDefaultEncoding && source_ != kEncodingFromParentFrame) {
     checked_for_css_charset_ = true;
     return true;
   }
 
-  size_t old_size = buffer_.size();
+  wtf_size_t old_size = buffer_.size();
   buffer_.Grow(old_size + len);
   memcpy(buffer_.data() + old_size, data, len);
 
@@ -277,7 +275,7 @@ bool TextResourceDecoder::CheckForCSSCharset(const char* data,
     if (pos == data_end)
       return false;
 
-    int encoding_name_length = pos - data_start;
+    wtf_size_t encoding_name_length = static_cast<wtf_size_t>(pos - data_start);
 
     ++pos;
     if (pos == data_end)
@@ -293,7 +291,7 @@ bool TextResourceDecoder::CheckForCSSCharset(const char* data,
 }
 
 bool TextResourceDecoder::CheckForXMLCharset(const char* data,
-                                             size_t len,
+                                             wtf_size_t len,
                                              bool& moved_data_to_buffer) {
   if (source_ != kDefaultEncoding && source_ != kEncodingFromParentFrame) {
     checked_for_xml_charset_ = true;
@@ -303,7 +301,7 @@ bool TextResourceDecoder::CheckForXMLCharset(const char* data,
   // This is not completely efficient, since the function might go
   // through the HTML head several times.
 
-  size_t old_size = buffer_.size();
+  wtf_size_t old_size = buffer_.size();
   buffer_.Grow(old_size + len);
   memcpy(buffer_.data() + old_size, data, len);
 
@@ -329,7 +327,8 @@ bool TextResourceDecoder::CheckForXMLCharset(const char* data,
     // No need for +1, because we have an extra "?" to lose at the end of XML
     // declaration.
     int len = 0;
-    int pos = FindXMLEncoding(ptr, xml_declaration_end - ptr, len);
+    int pos =
+        FindXMLEncoding(ptr, static_cast<int>(xml_declaration_end - ptr), len);
     if (pos != -1)
       SetEncoding(FindTextEncoding(ptr + pos, len), kEncodingFromXMLHeader);
     // continue looking for a charset - it may be specified in an HTTP-Equiv
@@ -344,7 +343,8 @@ bool TextResourceDecoder::CheckForXMLCharset(const char* data,
   return true;
 }
 
-void TextResourceDecoder::CheckForMetaCharset(const char* data, size_t length) {
+void TextResourceDecoder::CheckForMetaCharset(const char* data,
+                                              wtf_size_t length) {
   if (source_ == kEncodingFromHTTPHeader || source_ == kAutoDetectedEncoding) {
     checked_for_meta_charset_ = true;
     return;
@@ -369,10 +369,10 @@ void TextResourceDecoder::CheckForMetaCharset(const char* data, size_t length) {
 //      the encoding of the parent frame, which is also auto-detected.
 //   Note that condition #2 is NOT satisfied unless parent-child frame
 //   relationship is compliant to the same-origin policy. If they're from
-//   different domains, |m_source| would not be set to EncodingFromParentFrame
+//   different domains, |source_| would not be set to EncodingFromParentFrame
 //   in the first place.
 void TextResourceDecoder::AutoDetectEncodingIfAllowed(const char* data,
-                                                      size_t len) {
+                                                      wtf_size_t len) {
   if (options_.GetEncodingDetectionOption() !=
           TextResourceDecoderOptions::kUseAllAutoDetection ||
       detection_completed_)
@@ -392,8 +392,9 @@ void TextResourceDecoder::AutoDetectEncodingIfAllowed(const char* data,
     detection_completed_ = true;
 }
 
-String TextResourceDecoder::Decode(const char* data, size_t len) {
-  size_t length_of_bom = 0;
+String TextResourceDecoder::Decode(const char* data, size_t data_len) {
+  wtf_size_t len = SafeCast<wtf_size_t>(data_len);
+  wtf_size_t length_of_bom = 0;
   if (!checked_for_bom_) {
     length_of_bom = CheckForBOM(data, len);
 
@@ -425,11 +426,11 @@ String TextResourceDecoder::Decode(const char* data, size_t len) {
   }
 
   const char* data_for_decode = data + length_of_bom;
-  size_t length_for_decode = len - length_of_bom;
+  wtf_size_t length_for_decode = len - length_of_bom;
 
   if (!buffer_.IsEmpty()) {
     if (!moved_data_to_buffer) {
-      size_t old_size = buffer_.size();
+      wtf_size_t old_size = buffer_.size();
       buffer_.Grow(old_size + len);
       memcpy(buffer_.data() + old_size, data, len);
     }

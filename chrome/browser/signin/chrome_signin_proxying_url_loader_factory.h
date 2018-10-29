@@ -50,7 +50,7 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   static bool MaybeProxyRequest(
       content::RenderFrameHost* render_frame_host,
       bool is_navigation,
-      const GURL& url,
+      const url::Origin& request_initiator,
       network::mojom::URLLoaderFactoryRequest* factory_request);
 
   // network::mojom::URLLoaderFactory:

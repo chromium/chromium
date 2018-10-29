@@ -7,17 +7,17 @@
 </head>
 <body>
 <script>
-promise_test(function() {
-  var pc = new RTCPeerConnection();
+test(t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => { pc.close(); });
   assert_equals(typeof pc.id, 'string');
-  return function(){};
 }, 'RTCPeerConnection.id is a string.');
 
-promise_test(function() {
-  var pc1 = new RTCPeerConnection();
-  var pc2 = new RTCPeerConnection();
+test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => { pc1.close(); pc2.close() });
   assert_not_equals(pc1.id, pc2.id);
-  return function(){};
 }, 'RTCPeerConnection.id is unique between RTCPeerConnection objects.');
 </script>
 </body>

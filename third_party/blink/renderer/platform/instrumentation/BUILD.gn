@@ -7,9 +7,6 @@ import("//third_party/blink/renderer/platform/platform.gni")
 
 blink_platform_sources("instrumentation") {
   sources = [
-    "platform_instrumentation.cc",
-    "platform_instrumentation.h",
-    "resource_coordinator/blink_resource_coordinator_base.h",
     "resource_coordinator/frame_resource_coordinator.cc",
     "resource_coordinator/frame_resource_coordinator.h",
     "resource_coordinator/renderer_resource_coordinator.cc",

@@ -412,14 +412,6 @@ void FindFileHandlerTasks(Profile* profile,
     if (file_handlers.empty())
       continue;
 
-    // If the new ZIP unpacker is disabled, then hide its handlers, so we don't
-    // show both the legacy one and the new one in Files app for ZIP files.
-    if (extension->id() == extension_misc::kZIPUnpackerExtensionId &&
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            chromeos::switches::kDisableNewZIPUnpacker)) {
-      continue;
-    }
-
     // A map which has as key a handler verb, and as value a pair of the
     // handler with which to open the given entries and a boolean marking
     // if the handler is a good match.

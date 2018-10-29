@@ -13,7 +13,7 @@
 // corresponding changes must happen in the unit tests, and new migration test
 // added.  See |WebDatabaseMigrationTest::kCurrentTestedVersionNumber|.
 // static
-const int WebDatabase::kCurrentVersionNumber = 78;
+const int WebDatabase::kCurrentVersionNumber = 80;
 
 const int WebDatabase::kDeprecatedVersionNumber = 51;
 
@@ -22,7 +22,7 @@ const base::FilePath::CharType WebDatabase::kInMemoryPath[] =
 
 namespace {
 
-const int kCompatibleVersionNumber = 78;
+const int kCompatibleVersionNumber = 79;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.
@@ -117,7 +117,7 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
   }
 
   // Initialize the tables.
-  for (TableMap::iterator it = tables_.begin(); it != tables_.end(); ++it) {
+  for (auto it = tables_.begin(); it != tables_.end(); ++it) {
     it->second->Init(&db_, &meta_table_);
   }
 
@@ -132,7 +132,7 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
   // It's important that this happen *after* the migration code runs.
   // Otherwise, the migration code would have to explicitly check for empty
   // tables created in the new format, and skip the migration in that case.
-  for (TableMap::iterator it = tables_.begin(); it != tables_.end(); ++it) {
+  for (auto it = tables_.begin(); it != tables_.end(); ++it) {
     if (!it->second->CreateTablesIfNecessary()) {
       LOG(WARNING) << "Unable to initialize the web database.";
       return sql::INIT_FAILURE;
@@ -163,7 +163,7 @@ sql::InitStatus WebDatabase::MigrateOldVersionsAsNeeded() {
     ChangeVersion(&meta_table_, next_version, update_compatible_version);
 
     // Give each table a chance to migrate to this version.
-    for (TableMap::iterator it = tables_.begin(); it != tables_.end(); ++it) {
+    for (auto it = tables_.begin(); it != tables_.end(); ++it) {
       // Any of the tables may set this to true, but by default it is false.
       update_compatible_version = false;
       if (!it->second->MigrateToVersion(next_version,
@@ -184,6 +184,9 @@ bool WebDatabase::MigrateToVersion(int version,
     case 58:
       *update_compatible_version = true;
       return MigrateToVersion58DropWebAppsAndIntents();
+    case 79:
+      *update_compatible_version = true;
+      return MigrateToVersion79DropLoginsTable();
   }
 
   return true;
@@ -196,4 +199,11 @@ bool WebDatabase::MigrateToVersion58DropWebAppsAndIntents() {
          db_.Execute("DROP TABLE IF EXISTS web_intents") &&
          db_.Execute("DROP TABLE IF EXISTS web_intents_defaults") &&
          transaction.Commit();
+}
+
+bool WebDatabase::MigrateToVersion79DropLoginsTable() {
+  sql::Transaction transaction(&db_);
+  return transaction.Begin() &&
+         db_.Execute("DROP TABLE IF EXISTS ie7_logins") &&
+         db_.Execute("DROP TABLE IF EXISTS logins") && transaction.Commit();
 }

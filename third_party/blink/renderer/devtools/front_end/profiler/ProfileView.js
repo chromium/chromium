@@ -1,6 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 /**
  * @implements {UI.Searchable}
  * @unrestricted
@@ -8,6 +9,8 @@
 Profiler.ProfileView = class extends UI.SimpleView {
   constructor() {
     super(Common.UIString('Profile'));
+
+    this._profile = null;
 
     this._searchableView = new UI.SearchableView(this);
     this._searchableView.setPlaceholder(Common.UIString('Find by cost (>50ms), name or file'));
@@ -59,6 +62,24 @@ Profiler.ProfileView = class extends UI.SimpleView {
       row.createChild('td').textContent = entry.value;
     }
     return table;
+  }
+
+  /**
+   * @param {!SDK.ProfileTreeModel} profile
+   */
+  setProfile(profile) {
+    this._profile = profile;
+    this._bottomUpProfileDataGridTree = null;
+    this._topDownProfileDataGridTree = null;
+    this._changeView();
+    this.refresh();
+  }
+
+  /**
+   * @return {?SDK.ProfileTreeModel}
+   */
+  profile() {
+    return this._profile;
   }
 
   /**
@@ -122,7 +143,7 @@ Profiler.ProfileView = class extends UI.SimpleView {
 
   /**
    * @override
-   * @return {!Array.<!UI.ToolbarItem>}
+   * @return {!Array<!UI.ToolbarItem>}
    */
   syncToolbarItems() {
     return [this.viewSelectComboBox, this.focusButton, this.excludeButton, this.resetButton];
@@ -134,7 +155,7 @@ Profiler.ProfileView = class extends UI.SimpleView {
   _getBottomUpProfileDataGridTree() {
     if (!this._bottomUpProfileDataGridTree) {
       this._bottomUpProfileDataGridTree = new Profiler.BottomUpProfileDataGridTree(
-          this._nodeFormatter, this._searchableView, this.profile.root, this.adjustedTotal);
+          this._nodeFormatter, this._searchableView, this._profile.root, this.adjustedTotal);
     }
     return this._bottomUpProfileDataGridTree;
   }
@@ -145,7 +166,7 @@ Profiler.ProfileView = class extends UI.SimpleView {
   _getTopDownProfileDataGridTree() {
     if (!this._topDownProfileDataGridTree) {
       this._topDownProfileDataGridTree = new Profiler.TopDownProfileDataGridTree(
-          this._nodeFormatter, this._searchableView, this.profile.root, this.adjustedTotal);
+          this._nodeFormatter, this._searchableView, this._profile.root, this.adjustedTotal);
     }
     return this._topDownProfileDataGridTree;
   }
@@ -158,6 +179,8 @@ Profiler.ProfileView = class extends UI.SimpleView {
   }
 
   refresh() {
+    if (!this.profileDataGridTree)
+      return;
     const selectedProfileNode = this.dataGrid.selectedNode ? this.dataGrid.selectedNode.profileNode : null;
 
     this.dataGrid.rootNode().removeChildren();
@@ -288,7 +311,7 @@ Profiler.ProfileView = class extends UI.SimpleView {
   }
 
   _changeView() {
-    if (!this.profile)
+    if (!this._profile)
       return;
 
     this._searchableView.closeSearch();

@@ -6,20 +6,22 @@
 #define UI_VIEWS_COCOA_BRIDGED_NATIVE_WIDGET_HOST_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/associated_binding.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accelerated_widget_mac/display_link_mac.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/cocoa/bridge_factory_host.h"
-#include "ui/views/cocoa/bridged_native_widget_host.h"
+#include "ui/views/cocoa/drag_drop_client_mac.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_observer.h"
+#include "ui/views_bridge_mac/bridged_native_widget_host_helper.h"
 #include "ui/views_bridge_mac/mojo/bridged_native_widget.mojom.h"
 #include "ui/views_bridge_mac/mojo/bridged_native_widget_host.mojom.h"
 
@@ -39,7 +41,7 @@ class NativeWidgetMac;
 // communicates to the BridgedNativeWidgetImpl, which interacts with the Cocoa
 // APIs, and which may live in an app shim process.
 class VIEWS_EXPORT BridgedNativeWidgetHostImpl
-    : public BridgedNativeWidgetHostHelper,
+    : public views_bridge_mac::BridgedNativeWidgetHostHelper,
       public BridgeFactoryHost::Observer,
       public views_bridge_mac::mojom::BridgedNativeWidgetHost,
       public DialogObserver,
@@ -49,25 +51,30 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
       public ui::LayerOwner,
       public ui::AcceleratedWidgetMacNSView {
  public:
-  // Retrieves the bridge host associated with the given NSWindow. Returns null
-  // if the supplied handle has no associated Widget.
+  // Retrieves the bridge host associated with the given NativeWindow. Returns
+  // null if the supplied handle has no associated Widget.
   static BridgedNativeWidgetHostImpl* GetFromNativeWindow(
       gfx::NativeWindow window);
+  static BridgedNativeWidgetHostImpl* GetFromNativeView(gfx::NativeView view);
 
   // Unique integer id handles are used to bridge between the
   // BridgedNativeWidgetHostImpl in one process and the BridgedNativeWidgetHost
   // potentially in another.
   static BridgedNativeWidgetHostImpl* GetFromId(
       uint64_t bridged_native_widget_id);
-  uint64_t bridged_native_widget_id() const { return id_; }
+  uint64_t bridged_native_widget_id() const { return widget_id_; }
 
-  // Creates one side of the bridge. |parent| must not be NULL.
-  explicit BridgedNativeWidgetHostImpl(NativeWidgetMac* parent);
+  // Creates one side of the bridge. |owner| must not be NULL.
+  explicit BridgedNativeWidgetHostImpl(NativeWidgetMac* owner);
   ~BridgedNativeWidgetHostImpl() override;
 
   // The NativeWidgetMac that owns |this|.
   views::NativeWidgetMac* native_widget_mac() const {
     return native_widget_mac_;
+  }
+  BridgedNativeWidgetHostImpl* parent() const { return parent_; }
+  std::vector<BridgedNativeWidgetHostImpl*> children() const {
+    return children_;
   }
 
   // The bridge factory that was used to create the true NSWindow for this
@@ -92,15 +99,17 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
 
   TooltipManager* tooltip_manager() { return tooltip_manager_.get(); }
 
+  DragDropClientMac* drag_drop_client() const {
+    return drag_drop_client_.get();
+  }
+
   // Create and set the bridge object to be in this process.
-  void CreateLocalBridge(base::scoped_nsobject<NativeWidgetMacNSWindow> window,
-                         NSView* parent);
+  void CreateLocalBridge(base::scoped_nsobject<NativeWidgetMacNSWindow> window);
 
   // Create and set the bridge object to be potentially in another process.
   void CreateRemoteBridge(
       BridgeFactoryHost* bridge_factory_host,
-      views_bridge_mac::mojom::CreateWindowParamsPtr window_create_params,
-      uint64_t parent_bridge_id);
+      views_bridge_mac::mojom::CreateWindowParamsPtr window_create_params);
 
   void InitWindow(const Widget::InitParams& params);
 
@@ -122,6 +131,9 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
   // Set the root view (set during initialization and un-set during teardown).
   void SetRootView(views::View* root_view);
 
+  // Return the id through which the NSView for |root_view_| may be looked up.
+  uint64_t GetRootViewNSViewId() const { return root_view_id_; }
+
   // Initialize the ui::Compositor and ui::Layer.
   void CreateCompositor(const Widget::InitParams& params);
 
@@ -140,14 +152,12 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
 
   // Geometry of the window, in DIPs.
   const gfx::Rect& GetWindowBoundsInScreen() const {
-    DCHECK(has_received_window_geometry_);
     return window_bounds_in_screen_;
   }
 
   // Geometry of the content area of the window, in DIPs. Note that this is not
   // necessarily the same as the views::View's size.
   const gfx::Rect& GetContentBoundsInScreen() const {
-    DCHECK(has_received_window_geometry_);
     return content_bounds_in_screen_;
   }
 
@@ -157,6 +167,10 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
   // The restored bounds will be derived from the current NSWindow frame unless
   // fullscreen or transitioning between fullscreen states.
   gfx::Rect GetRestoredBounds() const;
+
+  // Set |parent_| and update the old and new parents' |children_|. It is valid
+  // to set |new_parent| to nullptr. Propagate this to the BridgedNativeWidget.
+  void SetParent(BridgedNativeWidgetHostImpl* new_parent);
 
   // Properties set and queried by views. Not actually native.
   void SetNativeWindowProperty(const char* name, void* value);
@@ -174,8 +188,10 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
   bool IsWindowKey() const { return is_window_key_; }
   bool IsMouseCaptureActive() const { return is_mouse_capture_active_; }
 
+  // Used by NativeWidgetPrivate::GetGlobalCapture.
+  static NSView* GetGlobalCaptureView();
+
  private:
-  gfx::Vector2d GetBoundsOffsetForParent() const;
   void UpdateCompositorProperties();
   void DestroyCompositor();
   void RankNSViewsRecursive(View* view, std::map<NSView*, int>* rank) const;
@@ -189,15 +205,17 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
                  gfx::DecoratedText* decorated_word,
                  gfx::Point* baseline_point) override;
   double SheetPositionY() override;
+  views_bridge_mac::DragDropClient* GetDragDropClient() override;
 
   // BridgeFactoryHost::Observer:
   void OnBridgeFactoryHostDestroying(BridgeFactoryHost* host) override;
 
   // views_bridge_mac::mojom::BridgedNativeWidgetHost:
   void OnVisibilityChanged(bool visible) override;
-  void SetViewSize(const gfx::Size& new_size) override;
+  void OnWindowNativeThemeChanged() override;
+  void OnViewSizeChanged(const gfx::Size& new_size) override;
   void SetKeyboardAccessible(bool enabled) override;
-  void SetIsFirstResponder(bool is_first_responder) override;
+  void OnIsFirstResponderChanged(bool is_first_responder) override;
   void OnMouseCaptureActiveChanged(bool capture_is_active) override;
   void OnScrollEvent(std::unique_ptr<ui::Event> event) override;
   void OnMouseEvent(std::unique_ptr<ui::Event> event) override;
@@ -238,6 +256,9 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
   bool GetCanWindowBecomeKey(bool* can_window_become_key) override;
   bool GetAlwaysRenderWindowAsKey(bool* always_render_as_key) override;
   bool GetCanWindowClose(bool* can_window_close) override;
+  bool GetWindowFrameTitlebarHeight(bool* override_titlebar_height,
+                                    float* titlebar_height) override;
+  void OnFocusWindowToolbar() override;
 
   // views_bridge_mac::mojom::BridgedNativeWidgetHost, synchronous callbacks:
   void DispatchKeyEventRemote(std::unique_ptr<ui::Event> event,
@@ -264,6 +285,8 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
   void GetAlwaysRenderWindowAsKey(
       GetAlwaysRenderWindowAsKeyCallback callback) override;
   void GetCanWindowClose(GetCanWindowCloseCallback callback) override;
+  void GetWindowFrameTitlebarHeight(
+      GetWindowFrameTitlebarHeightCallback callback) override;
 
   // DialogObserver:
   void OnDialogModelChanged() override;
@@ -273,7 +296,9 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
   // ui::internal::InputMethodDelegate:
-  ui::EventDispatchDetails DispatchKeyEventPostIME(ui::KeyEvent* key) override;
+  ui::EventDispatchDetails DispatchKeyEventPostIME(
+      ui::KeyEvent* key,
+      base::OnceCallback<void(bool)> ack_callback) override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -283,19 +308,28 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
   // ui::AcceleratedWidgetMacNSView:
   void AcceleratedWidgetCALayerParamsUpdated() override;
 
-  const uint64_t id_;
+  // The id that this bridge may be looked up from.
+  const uint64_t widget_id_;
   views::NativeWidgetMac* const native_widget_mac_;  // Weak. Owns |this_|.
 
-  // The factory that was used to create |bridge_ptr_|.
+  // Parent and child widgets.
+  BridgedNativeWidgetHostImpl* parent_ = nullptr;
+  std::vector<BridgedNativeWidgetHostImpl*> children_;
+
+  // The factory that was used to create |bridge_ptr_|. This must be the same
+  // as |parent_->bridge_factory_host_|.
   BridgeFactoryHost* bridge_factory_host_ = nullptr;
 
   Widget::InitParams::Type widget_type_ = Widget::InitParams::TYPE_WINDOW;
 
+  // The id that may be used to look up the NSView for |root_view_|.
+  const uint64_t root_view_id_;
   views::View* root_view_ = nullptr;  // Weak. Owned by |native_widget_mac_|.
+  std::unique_ptr<DragDropClientMac> drag_drop_client_;
 
   // The mojo pointer to a BridgedNativeWidget, which may exist in another
   // process.
-  views_bridge_mac::mojom::BridgedNativeWidgetPtr bridge_ptr_;
+  views_bridge_mac::mojom::BridgedNativeWidgetAssociatedPtr bridge_ptr_;
 
   // TODO(ccameron): Rather than instantiate a BridgedNativeWidgetImpl here,
   // we will instantiate a mojo BridgedNativeWidgetImpl interface to a Cocoa
@@ -318,7 +352,6 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
   scoped_refptr<ui::DisplayLinkMac> display_link_;
 
   // The geometry of the window and its contents view, in screen coordinates.
-  bool has_received_window_geometry_ = false;
   gfx::Rect window_bounds_in_screen_;
   gfx::Rect content_bounds_in_screen_;
   bool is_visible_ = false;
@@ -337,7 +370,7 @@ class VIEWS_EXPORT BridgedNativeWidgetHostImpl
   // Contains NativeViewHost->gfx::NativeView associations.
   std::map<const views::View*, NSView*> associated_views_;
 
-  mojo::Binding<views_bridge_mac::mojom::BridgedNativeWidgetHost>
+  mojo::AssociatedBinding<views_bridge_mac::mojom::BridgedNativeWidgetHost>
       host_mojo_binding_;
   DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetHostImpl);
 };

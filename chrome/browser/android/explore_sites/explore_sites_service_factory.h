@@ -29,7 +29,10 @@ class ExploreSitesServiceFactory : public BrowserContextKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<ExploreSitesServiceFactory>;
 
   ExploreSitesServiceFactory();
-  ~ExploreSitesServiceFactory() override {}
+  ~ExploreSitesServiceFactory() override;
+
+  // BrowserContextKeyedServiceFactory implementation:
+  bool ServiceIsCreatedWithBrowserContext() const override;
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;

@@ -29,6 +29,13 @@ class WebViewWebClient : public web::WebClient {
   NSString* GetDocumentStartScriptForMainFrame(
       web::BrowserState* browser_state) const override;
   base::string16 GetPluginNotSupportedText() const override;
+  void AllowCertificateError(
+      web::WebState* web_state,
+      int cert_error,
+      const net::SSLInfo& ssl_info,
+      const GURL& request_url,
+      bool overridable,
+      const base::RepeatingCallback<void(bool)>& callback) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebViewWebClient);

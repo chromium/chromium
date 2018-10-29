@@ -222,8 +222,7 @@ bool DownloadQuery::MatchesQuery(const std::vector<base::string16>& query_terms,
   base::string16 url_formatted(url_formatter::FormatUrl(item.GetURL()));
   base::string16 path(item.GetTargetFilePath().LossyDisplayName());
 
-  for (std::vector<base::string16>::const_iterator it = query_terms.begin();
-       it != query_terms.end(); ++it) {
+  for (auto it = query_terms.begin(); it != query_terms.end(); ++it) {
     base::string16 term = base::i18n::ToLower(*it);
     if (!base::i18n::StringSearchIgnoringCaseAndAccents(
             term, original_url_raw, NULL, NULL) &&
@@ -319,8 +318,7 @@ bool DownloadQuery::AddFilter(DownloadQuery::FilterType type,
 }
 
 bool DownloadQuery::Matches(const DownloadItem& item) const {
-  for (FilterCallbackVector::const_iterator filter = filters_.begin();
-        filter != filters_.end(); ++filter) {
+  for (auto filter = filters_.begin(); filter != filters_.end(); ++filter) {
     if (!filter->Run(item))
       return false;
   }
@@ -378,8 +376,7 @@ class DownloadQuery::DownloadComparator {
 
 bool DownloadQuery::DownloadComparator::operator() (
     const DownloadItem* left, const DownloadItem* right) {
-  for (DownloadQuery::SorterVector::const_iterator term = terms_.begin();
-       term != terms_.end(); ++term) {
+  for (auto term = terms_.begin(); term != terms_.end(); ++term) {
     switch (term->sorter.Run(*left, *right)) {
       case LT: return term->direction == DownloadQuery::ASCENDING;
       case GT: return term->direction == DownloadQuery::DESCENDING;

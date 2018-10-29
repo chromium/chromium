@@ -136,5 +136,5 @@ public abstract class SingleTabActivity extends ChromeActivity {
     }
 
     @Override
-    public void onCheckForUpdate(boolean updateAvailable) {}
+    public void onCheckForUpdate() {}
 }

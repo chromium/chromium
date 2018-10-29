@@ -6,7 +6,7 @@
 <input id="target2">
 <script>
 test(() => {
-  assert_exists(window, 'eventSender');
+  assert_own_property(window, 'eventSender');
   let form = document.querySelector('form');
   let text = document.querySelector('input');
   let submit = document.querySelectorAll('input')[1];
@@ -32,7 +32,7 @@ test(() => {
 }, 'Clearing INPUT value in submit event handler should not prevent next change event. crbug.com/695349');
 
 test(() => {
-  assert_exists(window, 'eventSender');
+  assert_own_property(window, 'eventSender');
   let text = document.querySelector('#target2');
   var lastChangeValue = '';
   text.addEventListener('change', () => { lastChangeValue = text.value; text.value = ''; });

@@ -6,8 +6,8 @@
 
 namespace blink {
 
-size_t MockHyphenation::LastHyphenLocation(const StringView& text,
-                                           size_t before_index) const {
+wtf_size_t MockHyphenation::LastHyphenLocation(const StringView& text,
+                                               wtf_size_t before_index) const {
   String str = text.ToString();
   if (str.EndsWithIgnoringASCIICase("phenation")) {
     if (before_index > 4 + (str.length() - 9))

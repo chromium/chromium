@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/binding.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 
@@ -33,7 +34,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
  private:
   friend class ClipboardHostImplTest;
 
-  ClipboardHostImpl();
+  explicit ClipboardHostImpl(blink::mojom::ClipboardHostRequest request);
 
   // content::mojom::ClipboardHost
   void GetSequenceNumber(ui::ClipboardType clipboard_type,
@@ -73,7 +74,8 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   void WriteStringToFindPboard(const base::string16& text) override;
 #endif
 
-  ui::Clipboard* clipboard_;  // Not owned
+  mojo::Binding<blink::mojom::ClipboardHost> binding_;
+  ui::Clipboard* const clipboard_;  // Not owned
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 };
 

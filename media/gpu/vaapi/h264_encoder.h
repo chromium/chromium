@@ -81,8 +81,8 @@ class H264Encoder : public AcceleratedVideoEncoder {
     virtual bool SubmitFrameParameters(
         EncodeJob* job,
         const H264Encoder::EncodeParams& encode_params,
-        const media::H264SPS& sps,
-        const media::H264PPS& pps,
+        const H264SPS& sps,
+        const H264PPS& pps,
         scoped_refptr<H264Picture> pic,
         const std::list<scoped_refptr<H264Picture>>& ref_pic_list0,
         const std::list<scoped_refptr<H264Picture>>& ref_pic_list1) = 0;
@@ -119,16 +119,16 @@ class H264Encoder : public AcceleratedVideoEncoder {
   // Current SPS, PPS and their packed versions. Packed versions are NALUs
   // in AnnexB format *without* emulation prevention three-byte sequences
   // (those are expected to be added by the client as needed).
-  media::H264SPS current_sps_;
-  scoped_refptr<media::H264BitstreamBuffer> packed_sps_;
-  media::H264PPS current_pps_;
-  scoped_refptr<media::H264BitstreamBuffer> packed_pps_;
+  H264SPS current_sps_;
+  scoped_refptr<H264BitstreamBuffer> packed_sps_;
+  H264PPS current_pps_;
+  scoped_refptr<H264BitstreamBuffer> packed_pps_;
 
   // Current encoding parameters being used.
   EncodeParams curr_params_;
 
   // H264 profile currently used.
-  media::VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
+  VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
 
   // H264 level currently used.
   uint8_t level_ = 0;

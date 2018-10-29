@@ -33,7 +33,7 @@ class WebGLVertexArrayObjectBase : public WebGLContextObject {
   }
   void SetElementArrayBuffer(WebGLBuffer*);
 
-  WebGLBuffer* GetArrayBufferForAttrib(size_t);
+  WebGLBuffer* GetArrayBufferForAttrib(GLuint);
   void SetArrayBufferForAttrib(GLuint, WebGLBuffer*);
   void SetAttribEnabled(GLuint, bool);
   bool GetAttribEnabled(GLuint) const;

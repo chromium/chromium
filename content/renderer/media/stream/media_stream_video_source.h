@@ -31,7 +31,7 @@ namespace content {
 
 class MediaStreamVideoTrack;
 class VideoTrackAdapter;
-struct VideoTrackAdapterSettings;
+class VideoTrackAdapterSettings;
 
 // MediaStreamVideoSource is an interface used for sending video frames to a
 // MediaStreamVideoTrack.
@@ -256,7 +256,7 @@ class CONTENT_EXPORT MediaStreamVideoSource : public MediaStreamSource {
   void StartFrameMonitoring();
   void UpdateTrackSettings(MediaStreamVideoTrack* track,
                            const VideoTrackAdapterSettings& adapter_settings);
-  void DidRemoveLastTrack(base::OnceClosure callback, RestartResult result);
+  void DidStopSource(base::OnceClosure callback, RestartResult result);
 
   State state_;
 

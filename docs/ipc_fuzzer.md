@@ -13,8 +13,7 @@ contribute.
 
 ### Build instructions
 
-*   Run `gn args` and add `enable_ipc_fuzzer = true` to your args.gn. If you use
-    GYP, add `enable_ipc_fuzzer=1` to `GYP_DEFINES`.
+*   Run `gn args` and add `enable_ipc_fuzzer = true` to your args.gn.
 *   build `ipc_fuzzer_all` target
 *   component builds are currently broken, sorry
 *   Debug builds are broken; only Release mode works.
@@ -43,7 +42,7 @@ contribute.
 
 ### ipcdump logger
 
-*   add `enable_ipc_fuzzer=1` to `GYP_DEFINES`
+*   add `enable_ipc_fuzzer = true` to `args.gn`
 *   build `chrome` and `ipc_message_dump` targets
 *   run chrome with
     `--no-sandbox --ipc-dump-directory=/path/to/ipcdump/directory`

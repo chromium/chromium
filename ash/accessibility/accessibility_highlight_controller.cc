@@ -135,13 +135,19 @@ bool AccessibilityHighlightController::IsCursorVisible() {
 
 bool AccessibilityHighlightController::IsCaretVisible(
     const gfx::Rect& caret_bounds_in_screen) {
+  // Empty bounds are not visible. Don't use IsEmpty() because web contents
+  // carets can have positive height but zero width.
+  if (caret_bounds_in_screen.width() == 0 &&
+      caret_bounds_in_screen.height() == 0) {
+    return false;
+  }
+
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   aura::Window* active_window =
       ::wm::GetActivationClient(root_window)->GetActiveWindow();
   if (!active_window)
     active_window = root_window;
-  return !caret_bounds_in_screen.IsEmpty() &&
-         active_window->GetBoundsInScreen().Contains(caret_point_);
+  return active_window->GetBoundsInScreen().Contains(caret_point_);
 }
 
 void AccessibilityHighlightController::UpdateFocusAndCaretHighlights() {

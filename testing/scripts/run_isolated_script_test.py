@@ -49,52 +49,47 @@ import xvfb
 # Known typ test runners this script wraps. They need a different argument name
 # when selecting which tests to run.
 # TODO(dpranke): Detect if the wrapped test suite uses typ better.
-KNOWN_TYP_TEST_RUNNERS = ['run_blinkpy_tests.py', 'metrics_python_tests.py']
+KNOWN_TYP_TEST_RUNNERS = {'run_blinkpy_tests.py', 'metrics_python_tests.py'}
 
+
+class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
+
+  def __init__(self):
+    super(TypUnittestAdapter, self).__init__()
+    self._temp_filter_file = None
+
+  def generate_sharding_args(self, total_shards, shard_index):
+    # This script only uses environment variable for sharding.
+    del total_shards, shard_index  # unused
+    return []
+
+  def generate_test_output_args(self, output):
+    return ['--write-full-results-to', output]
+
+  def generate_test_filter_args(self, test_filter_str):
+    filter_list = common.extract_filter_list(test_filter_str)
+    self._temp_filter_file = tempfile.NamedTemporaryFile(
+        mode='w', delete=False)
+    self._temp_filter_file.write('\n'.join(filter_list))
+    self._temp_filter_file.close()
+    arg_name = 'test-list'
+    if KNOWN_TYP_TEST_RUNNERS.intersection(self.rest_args):
+      arg_name = 'file-list'
+
+    return ['--%s=' % arg_name + self._temp_filter_file.name]
+
+  def run_test(self):
+    try:
+      return super(TypUnittestAdapter, self).run_test()
+    finally:
+      # Clean up the temp filter file at the end after the test has
+      # finished the run if needed.
+      if self._temp_filter_file:
+        os.unlink(self._temp_filter_file.name)
 
 def main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--isolated-script-test-output', type=str,
-                      required=True)
-  parser.add_argument('--xvfb', help='start xvfb', action='store_true')
-
-  # This argument is ignored for now.
-  parser.add_argument('--isolated-script-test-chartjson-output', type=str)
-  # This argument is ignored for now.
-  parser.add_argument('--isolated-script-test-perf-output', type=str)
-  # This argument is translated below.
-  parser.add_argument('--isolated-script-test-filter', type=str)
-
-  args, rest_args = parser.parse_known_args()
-
-  env = os.environ.copy()
-  env['CHROME_HEADLESS'] = '1'
-  cmd = [sys.executable] + rest_args
-  cmd += ['--write-full-results-to', args.isolated_script_test_output]
-  temp_filter_file = None
-  try:
-    if args.isolated_script_test_filter:
-      filter_list = common.extract_filter_list(args.isolated_script_test_filter)
-      # Need to dump this to a file in order to use --file-list.
-      temp_filter_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
-      temp_filter_file.write('\n'.join(filter_list))
-      temp_filter_file.close()
-
-      arg_name = 'test-list'
-      for arg in rest_args:
-        for runner in KNOWN_TYP_TEST_RUNNERS:
-          if runner in arg:
-            arg_name = 'file-list'
-
-      cmd += ['--%s=' % arg_name + temp_filter_file.name]
-    if args.xvfb:
-      return xvfb.run_executable(cmd, env)
-    else:
-      return common.run_command(cmd, env=env)
-  finally:
-    if temp_filter_file:
-      os.unlink(temp_filter_file.name)
-
+  adapter = TypUnittestAdapter()
+  return adapter.run_test()
 
 # This is not really a "script test" so does not need to manually add
 # any additional compile targets.

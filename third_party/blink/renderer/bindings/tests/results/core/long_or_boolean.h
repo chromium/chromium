@@ -8,8 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-#ifndef LongOrBoolean_h
-#define LongOrBoolean_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_LONG_OR_BOOLEAN_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_LONG_OR_BOOLEAN_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -22,7 +22,7 @@
 namespace blink {
 
 class CORE_EXPORT LongOrBoolean final {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
  public:
   LongOrBoolean();
   bool IsNull() const { return type_ == SpecificType::kNone; }
@@ -92,4 +92,4 @@ struct V8TypeOf<LongOrBoolean> {
 // See https://codereview.chromium.org/1118993002/#msg5 for more details.
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::LongOrBoolean);
 
-#endif  // LongOrBoolean_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_LONG_OR_BOOLEAN_H_

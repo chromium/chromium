@@ -267,9 +267,9 @@ jumbo_component("capture_lib") {
     ]
     public_deps += [ "//media/capture/video/chromeos/public" ]
     deps += [
+      "//build/config/linux/libdrm",
       "//chromeos:chromeos",
       "//media/capture/video/chromeos/mojo:cros_camera",
-      "//third_party/libdrm",
       "//third_party/libsync",
     ]
   }
@@ -281,9 +281,14 @@ jumbo_component("capture_lib") {
     ]
   }
 }
-
 source_set("test_support") {
+  testonly = true
+
   sources = [
+    "video/mock_device.cc",
+    "video/mock_device.h",
+    "video/mock_device_factory.cc",
+    "video/mock_device_factory.h",
     "video/mock_video_capture_device_client.cc",
     "video/mock_video_capture_device_client.h",
     "video/mock_video_frame_receiver.cc",
@@ -386,10 +391,10 @@ test("capture_unittests") {
       "video/chromeos/stream_buffer_manager_unittest.cc",
     ]
     deps += [
+      "//build/config/linux/libdrm",
       "//chromeos:chromeos",
       "//media/capture/video/chromeos/mojo:cros_camera",
       "//mojo/core/embedder",
-      "//third_party/libdrm",
       "//third_party/libsync",
       "//third_party/minigbm",
     ]

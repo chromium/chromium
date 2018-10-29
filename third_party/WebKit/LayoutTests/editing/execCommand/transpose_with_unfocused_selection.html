@@ -4,7 +4,7 @@
 <script src="../assert_selection.js"></script>
 <script>
 test(() => {
-  assert_exists(window, 'testRunner', 'This test requires testRunner');
+  assert_own_property(window, 'testRunner', 'This test requires testRunner');
 
   assert_selection(
   [
@@ -24,7 +24,7 @@ test(() => {
 }, 'Transpose with unfocused selection in text control');
 
 test(() => {
-  assert_exists(window, 'testRunner', 'This test requires testRunner');
+  assert_own_property(window, 'testRunner', 'This test requires testRunner');
 
   assert_selection(
   [

@@ -43,9 +43,9 @@ CrashReportExceptionHandler::CrashReportExceptionHandler(
 
 CrashReportExceptionHandler::~CrashReportExceptionHandler() = default;
 
-bool CrashReportExceptionHandler::HandleException(
-    pid_t client_process_id,
-    const ClientInformation& info) {
+bool CrashReportExceptionHandler::HandleException(pid_t client_process_id,
+                                                  const ClientInformation& info,
+                                                  UUID* local_report_id) {
   Metrics::ExceptionEncountered();
 
   DirectPtraceConnection connection;
@@ -55,13 +55,14 @@ bool CrashReportExceptionHandler::HandleException(
     return false;
   }
 
-  return HandleExceptionWithConnection(&connection, info);
+  return HandleExceptionWithConnection(&connection, info, local_report_id);
 }
 
 bool CrashReportExceptionHandler::HandleExceptionWithBroker(
     pid_t client_process_id,
     const ClientInformation& info,
-    int broker_sock) {
+    int broker_sock,
+    UUID* local_report_id) {
   Metrics::ExceptionEncountered();
 
   PtraceClient client;
@@ -71,12 +72,13 @@ bool CrashReportExceptionHandler::HandleExceptionWithBroker(
     return false;
   }
 
-  return HandleExceptionWithConnection(&client, info);
+  return HandleExceptionWithConnection(&client, info, local_report_id);
 }
 
 bool CrashReportExceptionHandler::HandleExceptionWithConnection(
     PtraceConnection* connection,
-    const ClientInformation& info) {
+    const ClientInformation& info,
+    UUID* local_report_id) {
   ProcessSnapshotLinux process_snapshot;
   if (!process_snapshot.Initialize(connection)) {
     Metrics::ExceptionCaptureResult(Metrics::CaptureResult::kSnapshotFailed);
@@ -179,6 +181,9 @@ bool CrashReportExceptionHandler::HandleExceptionWithConnection(
       Metrics::ExceptionCaptureResult(
           Metrics::CaptureResult::kFinishedWritingCrashReportFailed);
       return false;
+    }
+    if (local_report_id != nullptr) {
+      *local_report_id = uuid;
     }
 
     if (upload_thread_) {

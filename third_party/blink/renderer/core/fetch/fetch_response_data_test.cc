@@ -38,20 +38,18 @@ class FetchResponseDataTest : public testing::Test {
 TEST_F(FetchResponseDataTest, HeaderList) {
   FetchResponseData* response_data = CreateInternalResponse();
 
-  Vector<String> set_cookie_values;
-  response_data->HeaderList()->GetAll("set-cookie", set_cookie_values);
-  ASSERT_EQ(1U, set_cookie_values.size());
-  EXPECT_EQ("foo", set_cookie_values[0]);
+  String set_cookie_value;
+  ASSERT_TRUE(response_data->HeaderList()->Get("set-cookie", set_cookie_value));
+  EXPECT_EQ("foo", set_cookie_value);
 
-  Vector<String> bar_values;
-  response_data->HeaderList()->GetAll("bar", bar_values);
-  ASSERT_EQ(1U, bar_values.size());
-  EXPECT_EQ("bar", bar_values[0]);
+  String bar_value;
+  ASSERT_TRUE(response_data->HeaderList()->Get("bar", bar_value));
+  EXPECT_EQ("bar", bar_value);
 
-  Vector<String> cache_control_values;
-  response_data->HeaderList()->GetAll("cache-control", cache_control_values);
-  ASSERT_EQ(1U, cache_control_values.size());
-  EXPECT_EQ("no-cache", cache_control_values[0]);
+  String cache_control_value;
+  ASSERT_TRUE(
+      response_data->HeaderList()->Get("cache-control", cache_control_value));
+  EXPECT_EQ("no-cache", cache_control_value);
 }
 
 TEST_F(FetchResponseDataTest, ToWebServiceWorkerDefaultType) {
@@ -73,16 +71,14 @@ TEST_F(FetchResponseDataTest, BasicFilter) {
 
   EXPECT_FALSE(basic_response_data->HeaderList()->Has("set-cookie"));
 
-  Vector<String> bar_values;
-  basic_response_data->HeaderList()->GetAll("bar", bar_values);
-  ASSERT_EQ(1U, bar_values.size());
-  EXPECT_EQ("bar", bar_values[0]);
+  String bar_value;
+  ASSERT_TRUE(basic_response_data->HeaderList()->Get("bar", bar_value));
+  EXPECT_EQ("bar", bar_value);
 
-  Vector<String> cache_control_values;
-  basic_response_data->HeaderList()->GetAll("cache-control",
-                                            cache_control_values);
-  ASSERT_EQ(1U, cache_control_values.size());
-  EXPECT_EQ("no-cache", cache_control_values[0]);
+  String cache_control_value;
+  ASSERT_TRUE(basic_response_data->HeaderList()->Get("cache-control",
+                                                     cache_control_value));
+  EXPECT_EQ("no-cache", cache_control_value);
 }
 
 TEST_F(FetchResponseDataTest, ToWebServiceWorkerBasicType) {
@@ -108,11 +104,10 @@ TEST_F(FetchResponseDataTest, CORSFilter) {
 
   EXPECT_FALSE(cors_response_data->HeaderList()->Has("bar"));
 
-  Vector<String> cache_control_values;
-  cors_response_data->HeaderList()->GetAll("cache-control",
-                                           cache_control_values);
-  ASSERT_EQ(1U, cache_control_values.size());
-  EXPECT_EQ("no-cache", cache_control_values[0]);
+  String cache_control_value;
+  ASSERT_TRUE(cors_response_data->HeaderList()->Get("cache-control",
+                                                    cache_control_value));
+  EXPECT_EQ("no-cache", cache_control_value);
 }
 
 TEST_F(FetchResponseDataTest,
@@ -128,10 +123,9 @@ TEST_F(FetchResponseDataTest,
 
   EXPECT_FALSE(cors_response_data->HeaderList()->Has("set-cookie"));
 
-  Vector<String> bar_values;
-  cors_response_data->HeaderList()->GetAll("bar", bar_values);
-  ASSERT_EQ(1U, bar_values.size());
-  EXPECT_EQ("bar", bar_values[0]);
+  String bar_value;
+  ASSERT_TRUE(cors_response_data->HeaderList()->Get("bar", bar_value));
+  EXPECT_EQ("bar", bar_value);
 }
 
 TEST_F(FetchResponseDataTest, CORSFilterWithEmptyHeaderSet) {
@@ -145,11 +139,10 @@ TEST_F(FetchResponseDataTest, CORSFilterWithEmptyHeaderSet) {
 
   EXPECT_FALSE(cors_response_data->HeaderList()->Has("bar"));
 
-  Vector<String> cache_control_values;
-  cors_response_data->HeaderList()->GetAll("cache-control",
-                                           cache_control_values);
-  ASSERT_EQ(1U, cache_control_values.size());
-  EXPECT_EQ("no-cache", cache_control_values[0]);
+  String cache_control_value;
+  ASSERT_TRUE(cors_response_data->HeaderList()->Get("cache-control",
+                                                    cache_control_value));
+  EXPECT_EQ("no-cache", cache_control_value);
 }
 
 TEST_F(FetchResponseDataTest,
@@ -167,11 +160,10 @@ TEST_F(FetchResponseDataTest,
 
   EXPECT_FALSE(cors_response_data->HeaderList()->Has("bar"));
 
-  Vector<String> cache_control_values;
-  cors_response_data->HeaderList()->GetAll("cache-control",
-                                           cache_control_values);
-  ASSERT_EQ(1U, cache_control_values.size());
-  EXPECT_EQ("no-cache", cache_control_values[0]);
+  String cache_control_value;
+  ASSERT_TRUE(cors_response_data->HeaderList()->Get("cache-control",
+                                                    cache_control_value));
+  EXPECT_EQ("no-cache", cache_control_value);
 }
 
 TEST_F(FetchResponseDataTest, CORSFilterWithExplicitHeaderSet) {
@@ -187,10 +179,9 @@ TEST_F(FetchResponseDataTest, CORSFilterWithExplicitHeaderSet) {
 
   EXPECT_FALSE(cors_response_data->HeaderList()->Has("set-cookie"));
 
-  Vector<String> bar_values;
-  cors_response_data->HeaderList()->GetAll("bar", bar_values);
-  ASSERT_EQ(1U, bar_values.size());
-  EXPECT_EQ("bar", bar_values[0]);
+  String bar_value;
+  ASSERT_TRUE(cors_response_data->HeaderList()->Get("bar", bar_value));
+  EXPECT_EQ("bar", bar_value);
 }
 
 TEST_F(FetchResponseDataTest, ToWebServiceWorkerCORSType) {
@@ -266,6 +257,11 @@ TEST_F(FetchResponseDataTest, ToWebServiceWorkerOpaqueRedirectType) {
   EXPECT_EQ(network::mojom::FetchResponseType::kOpaqueRedirect,
             web_response.ResponseType());
   CheckHeaders(web_response);
+}
+
+TEST_F(FetchResponseDataTest, DefaultResponseTime) {
+  FetchResponseData* internal_response = CreateInternalResponse();
+  EXPECT_FALSE(internal_response->ResponseTime().is_null());
 }
 
 }  // namespace blink

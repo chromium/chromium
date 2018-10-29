@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/forced_extensions/installation_failures.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -29,6 +30,7 @@ constexpr char kLoadTimeStats[] = "Extensions.ForceInstalledLoadTime";
 constexpr char kTimedOutStats[] = "Extensions.ForceInstalledTimedOutCount";
 constexpr char kTimedOutNotInstalledStats[] =
     "Extensions.ForceInstalledTimedOutAndNotInstalledCount";
+constexpr char kFailureReasons[] = "Extensions.ForceInstalledFailureReason";
 }  // namespace
 
 namespace extensions {
@@ -40,7 +42,7 @@ class ForcedExtensionsInstallationTrackerTest : public testing::Test {
         registry_(ExtensionRegistry::Get(&profile_)) {
     auto fake_timer = std::make_unique<base::MockOneShotTimer>();
     fake_timer_ = fake_timer.get();
-    tracker_ = std::make_unique<InstallationTracker>(registry_, prefs_,
+    tracker_ = std::make_unique<InstallationTracker>(registry_, &profile_,
                                                      std::move(fake_timer));
   }
 
@@ -77,6 +79,7 @@ TEST_F(ForcedExtensionsInstallationTrackerTest, ExtensionsInstalled) {
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 1);
   histogram_tester_.ExpectTotalCount(kTimedOutStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutNotInstalledStats, 0);
+  histogram_tester_.ExpectTotalCount(kFailureReasons, 0);
 }
 
 TEST_F(ForcedExtensionsInstallationTrackerTest,
@@ -89,6 +92,30 @@ TEST_F(ForcedExtensionsInstallationTrackerTest,
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
   histogram_tester_.ExpectUniqueSample(kTimedOutStats, 2, 1);
   histogram_tester_.ExpectUniqueSample(kTimedOutNotInstalledStats, 1, 1);
+  histogram_tester_.ExpectTotalCount(kFailureReasons, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kFailureReasons, InstallationFailures::Reason::UNKNOWN, 1);
+}
+
+TEST_F(ForcedExtensionsInstallationTrackerTest,
+       ExtensionsInstallationTimedOutDifferentReasons) {
+  SetupForceList();
+  InstallationFailures::ReportFailure(&profile_, kExtensionId1,
+                                      InstallationFailures::Reason::INVALID_ID);
+  InstallationFailures::ReportFailure(
+      &profile_, kExtensionId2,
+      InstallationFailures::Reason::MALFORMED_EXTENSION_SETTINGS);
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+  histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
+  histogram_tester_.ExpectUniqueSample(kTimedOutStats, 2, 1);
+  histogram_tester_.ExpectUniqueSample(kTimedOutNotInstalledStats, 2, 1);
+  histogram_tester_.ExpectTotalCount(kFailureReasons, 2);
+  histogram_tester_.ExpectBucketCount(
+      kFailureReasons, InstallationFailures::Reason::INVALID_ID, 1);
+  histogram_tester_.ExpectBucketCount(
+      kFailureReasons,
+      InstallationFailures::Reason::MALFORMED_EXTENSION_SETTINGS, 1);
 }
 
 TEST_F(ForcedExtensionsInstallationTrackerTest, NoExtensionsConfigured) {
@@ -97,6 +124,7 @@ TEST_F(ForcedExtensionsInstallationTrackerTest, NoExtensionsConfigured) {
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutStats, 0);
   histogram_tester_.ExpectTotalCount(kTimedOutNotInstalledStats, 0);
+  histogram_tester_.ExpectTotalCount(kFailureReasons, 0);
 }
 
 }  // namespace extensions

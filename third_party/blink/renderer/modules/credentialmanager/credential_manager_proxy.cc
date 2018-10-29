@@ -12,8 +12,8 @@
 
 namespace blink {
 
-CredentialManagerProxy::CredentialManagerProxy(Document* document) {
-  LocalFrame* frame = document->GetFrame();
+CredentialManagerProxy::CredentialManagerProxy(Document& document) {
+  LocalFrame* frame = document.GetFrame();
   DCHECK(frame);
   frame->GetInterfaceProvider().GetInterface(&credential_manager_);
   frame->GetInterfaceProvider().GetInterface(
@@ -23,13 +23,12 @@ CredentialManagerProxy::CredentialManagerProxy(Document* document) {
 CredentialManagerProxy::~CredentialManagerProxy() {}
 
 // static
-CredentialManagerProxy* CredentialManagerProxy::From(Document* document) {
-  DCHECK(document);
+CredentialManagerProxy* CredentialManagerProxy::From(Document& document) {
   auto* supplement =
       Supplement<Document>::From<CredentialManagerProxy>(document);
   if (!supplement) {
     supplement = new CredentialManagerProxy(document);
-    ProvideTo(*document, supplement);
+    ProvideTo(document, supplement);
   }
   return supplement;
 }
@@ -38,7 +37,7 @@ CredentialManagerProxy* CredentialManagerProxy::From(Document* document) {
 CredentialManagerProxy* CredentialManagerProxy::From(
     ScriptState* script_state) {
   DCHECK(script_state->ContextIsValid());
-  return From(ToDocumentOrNull(ExecutionContext::From(script_state)));
+  return From(To<Document>(*ExecutionContext::From(script_state)));
 }
 
 // static

@@ -3,10 +3,20 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/closure_compiler/js_unit_tests.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
-js_type_check("closure_compile") {
+group("closure_compile") {
+  testonly = true
+  visibility += [ "//ui/file_manager:closure_compile" ]
+  deps = [
+    ":closure_compile_module",
+    ":unit_tests_type_check",
+  ]
+}
+
+js_type_check("closure_compile_module") {
   deps = [
     ":actions_submenu",
     ":banners",
@@ -45,7 +55,6 @@ js_type_check("closure_compile") {
 js_library("closure_compile_externs") {
   sources = []
   externs_list = [
-    "$externs_path/command_line_private.js",
     "$externs_path/metrics_private.js",
     "$externs_path/web_animations.js",
     "../../../../externs/app_window_common.js",
@@ -60,7 +69,6 @@ js_library("closure_compile_externs") {
     "../../../../externs/css_rule.js",
     "../../../../externs/drag_target.js",
     "../../../../externs/entries_changed_event.js",
-    "../../../../externs/entry_location.js",
     "../../../../externs/gallery_foreground.js",
     "../../../../externs/menu_item_update_event.js",
     "../../../../externs/paper_elements.js",
@@ -76,6 +84,14 @@ js_library("actions_submenu") {
     "//ui/webui/resources/js/cr/ui:command",
     "//ui/webui/resources/js/cr/ui:menu",
     "//ui/webui/resources/js/cr/ui:menu_item",
+  ]
+}
+
+js_unittest("actions_submenu_unittest") {
+  deps = [
+    ":actions_submenu",
+    "..:mock_actions_model",
+    "//ui/webui/resources/js:webui_resource_test",
   ]
 }
 
@@ -143,6 +159,7 @@ js_library("drag_selector") {
     "//ui/webui/resources/js/cr:ui",
     "//ui/webui/resources/js/cr/ui:list",
   ]
+  externs_list = [ "../../../../externs/drag_target.js" ]
 }
 
 js_library("empty_folder") {
@@ -169,12 +186,23 @@ js_library("file_grid") {
     "../metadata:metadata_model",
     "//ui/webui/resources/js/cr/ui:grid",
   ]
+  externs_list = [
+    "../../../../externs/background/import_history.js",
+    "../../../../externs/background/import_history_enum.js",
+  ]
 }
 
 js_library("file_list_selection_model") {
   deps = [
     "//ui/webui/resources/js/cr/ui:list_selection_model",
     "//ui/webui/resources/js/cr/ui:list_single_selection_model",
+  ]
+}
+
+js_unittest("file_list_selection_model_unittest") {
+  deps = [
+    ":file_list_selection_model",
+    "//ui/webui/resources/js:webui_resource_test",
   ]
 }
 
@@ -239,6 +267,17 @@ js_library("file_table") {
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js/cr/ui:table",
   ]
+  externs_list = [
+    "../../../../externs/background/import_history.js",
+    "../../../../externs/background/import_history_enum.js",
+  ]
+}
+
+js_unittest("file_table_unittest") {
+  deps = [
+    ":file_table",
+    "//ui/webui/resources/js:webui_resource_test",
+  ]
 }
 
 js_library("file_table_list") {
@@ -256,6 +295,14 @@ js_library("file_table_list") {
 js_library("file_tap_handler") {
   deps = [
     "../../../common/js:util",
+  ]
+}
+
+js_unittest("file_tap_handler_unittest") {
+  deps = [
+    ":file_tap_handler",
+    "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/webui/resources/js:webui_resource_test",
   ]
 }
 
@@ -309,8 +356,8 @@ js_library("location_line") {
     "../../../common/js:metrics",
     "../../../common/js:util",
     "../../../common/js:volume_manager_common",
+    "//ui/file_manager/externs:volume_manager",
   ]
-  externs_list = [ "../../../../externs/volume_manager.js" ]
 }
 
 js_library("multi_profile_share_dialog") {
@@ -364,6 +411,15 @@ js_library("suggest_apps_dialog") {
     "../../../common/js:metrics",
     "../../../common/js:util",
     "../../../common/js:volume_manager_common",
-    "//components/chrome_apps/webstore_widget/cws_widget:cws_widget_container",
+    "../../../cws_widget:cws_widget_container",
+  ]
+}
+
+js_unit_tests("unit_tests") {
+  deps = [
+    ":actions_submenu_unittest",
+    ":file_list_selection_model_unittest",
+    ":file_table_unittest",
+    ":file_tap_handler_unittest",
   ]
 }

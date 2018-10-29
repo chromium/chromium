@@ -154,4 +154,10 @@ interface ExternalNavigationDelegate {
      * @return The previously committed URL from the WebContents.
      */
     String getPreviousUrl();
+
+    /**
+     * @param intent The intent to launch.
+     * @return Whether the Intent points to an app that we trust and that launched Chrome.
+     */
+    boolean isIntentForTrustedCallingApp(Intent intent);
 }

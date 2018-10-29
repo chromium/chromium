@@ -1,0 +1,23 @@
+{
+  "scope_url": "https://www.google.com/maps",
+  "intent_filters": {
+    "scope_url_scheme": "https",
+    "scope_url_host": "www.google.com",
+    "scope_url_path_type": "android:pathPrefix",
+    "scope_url_path": "/maps"
+  },
+  "start_url": "https://www.google.com/maps/@37.7890183,-122.3915063,15z?force=pwa",
+  "display_mode": "standalone",
+  "orientation": "portrait",
+  "theme_color": "2147483648L",
+  "background_color": "2147483648L",
+  "icon_urls_and_icon_murmur2_hashes": "https://maps.gstatic.com/mapfiles/maps_lite/pwa/icons/maps_pwa_icon_v0920_48x48.png 0 https://maps.gstatic.com/mapfiles/maps_lite/pwa/icons/maps_pwa_icon_v0920_72x72 0",
+  "web_manifest_url": "https://maps.gstatic.com/tactile/worker/ml.json",
+  "distributor": "other",
+  "version_code": "1",
+  "version_name": "1.0",
+  "bound_webapk": {
+    "runtime_host": "com.google.android.apps.chrome",
+    "runtime_host_application_name": "Chromium"
+  }
+}

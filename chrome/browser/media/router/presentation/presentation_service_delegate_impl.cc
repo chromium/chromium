@@ -68,7 +68,7 @@ bool ArePresentationRequestsEqual(
     const content::PresentationRequest& request2) {
   return request1.render_frame_host_id == request2.render_frame_host_id &&
          request1.presentation_urls == request2.presentation_urls &&
-         ((request1.frame_origin.unique() && request2.frame_origin.unique()) ||
+         ((request1.frame_origin.opaque() && request2.frame_origin.opaque()) ||
           (request1.frame_origin == request2.frame_origin));
 }
 

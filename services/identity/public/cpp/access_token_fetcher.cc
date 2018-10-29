@@ -7,19 +7,36 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace identity {
+
+AccessTokenFetcher::AccessTokenFetcher(const std::string& account_id,
+                                       const std::string& oauth_consumer_name,
+                                       OAuth2TokenService* token_service,
+                                       const identity::ScopeSet& scopes,
+                                       TokenCallback callback,
+                                       Mode mode)
+    : AccessTokenFetcher(account_id,
+                         oauth_consumer_name,
+                         token_service,
+                         /*url_loader_factory=*/nullptr,
+                         scopes,
+                         std::move(callback),
+                         mode) {}
 
 AccessTokenFetcher::AccessTokenFetcher(
     const std::string& account_id,
     const std::string& oauth_consumer_name,
     OAuth2TokenService* token_service,
-    const OAuth2TokenService::ScopeSet& scopes,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const identity::ScopeSet& scopes,
     TokenCallback callback,
     Mode mode)
     : OAuth2TokenService::Consumer(oauth_consumer_name),
       account_id_(account_id),
       token_service_(token_service),
+      url_loader_factory_(url_loader_factory),
       scopes_(scopes),
       mode_(mode),
       callback_(std::move(callback)),
@@ -59,7 +76,10 @@ void AccessTokenFetcher::StartAccessTokenRequest() {
   // asynchronously once there are no direct clients of PO2TS (i.e., PO2TS is
   // used only by this class and IdentityManager).
   access_token_request_ =
-      token_service_->StartRequest(account_id_, scopes_, this);
+      url_loader_factory_
+          ? token_service_->StartRequestWithContext(
+                account_id_, url_loader_factory_, scopes_, this)
+          : token_service_->StartRequest(account_id_, scopes_, this);
 }
 
 void AccessTokenFetcher::OnRefreshTokenAvailable(
@@ -81,9 +101,10 @@ void AccessTokenFetcher::OnGetTokenSuccess(
   std::unique_ptr<OAuth2TokenService::Request> request_deleter(
       std::move(access_token_request_));
 
-  RunCallbackAndMaybeDie(GoogleServiceAuthError::AuthErrorNone(),
-                         AccessTokenInfo(token_response.access_token,
-                                         token_response.expiration_time));
+  RunCallbackAndMaybeDie(
+      GoogleServiceAuthError::AuthErrorNone(),
+      AccessTokenInfo(token_response.access_token,
+                      token_response.expiration_time, token_response.id_token));
 
   // Potentially dead after the above invocation; nothing to do except return.
 }

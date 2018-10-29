@@ -58,7 +58,7 @@ void PluginInfo::AddMimeType(MimeClassInfo* info) {
   mimes_.push_back(info);
 }
 
-const MimeClassInfo* PluginInfo::GetMimeClassInfo(size_t index) const {
+const MimeClassInfo* PluginInfo::GetMimeClassInfo(wtf_size_t index) const {
   if (index >= mimes_.size())
     return nullptr;
   return mimes_[index];
@@ -73,7 +73,7 @@ const MimeClassInfo* PluginInfo::GetMimeClassInfo(const String& type) const {
   return nullptr;
 }
 
-size_t PluginInfo::GetMimeClassInfoSize() const {
+wtf_size_t PluginInfo::GetMimeClassInfoSize() const {
   return mimes_.size();
 }
 

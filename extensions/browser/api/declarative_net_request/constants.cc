@@ -34,9 +34,11 @@ const char kErrorNonAscii[] =
 
 const char kRuleCountExceeded[] =
     "Declarative Net Request: Rule count exceeded. Some rules were ignored.";
-const char kRulesNotParsedWarning[] =
-    "Declarative Net Request: Not all rules were successfully parsed.";
-
+const char kRuleNotParsedWarning[] =
+    "Declarative Net Request: Rule at index * couldn't be parsed.";
+const char kTooManyParseFailuresWarning[] =
+    "Declarative Net Request: Too many rule parse failures; Reporting the "
+    "first *.";
 const char kIndexAndPersistRulesTimeHistogram[] =
     "Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime";
 const char kIndexRulesTimeHistogram[] =

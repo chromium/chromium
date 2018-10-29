@@ -23,7 +23,7 @@ class MarkAttemptAbortedTask : public UpdateRequestTask {
 
  protected:
   // UpdateRequestTask implementation:
-  void UpdateRequestImpl(std::unique_ptr<UpdateRequestsResult> result) override;
+  void UpdateRequestImpl(UpdateRequestsResult result) override;
 };
 
 }  // namespace offline_pages

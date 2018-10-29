@@ -40,10 +40,11 @@ class PageLoadMetricsTestWaiter
   // Add a subframe-level expectation.
   void AddSubFrameExpectation(TimingField field);
 
-  // Add completed resource expectation
-  void AddCompleteResourcesExpectation(int expected_minimum_complete_resources);
+  // Add a minimum completed resource expectation.
+  void AddMinimumCompleteResourcesExpectation(
+      int expected_minimum_complete_resources);
 
-  // Add aggregate received resource bytes expectation
+  // Add aggregate received resource bytes expectation.
   void AddMinimumResourceBytesExpectation(int expected_minimum_resource_bytes);
 
   // Whether the given TimingField was observed in the page.
@@ -163,7 +164,7 @@ class PageLoadMetricsTestWaiter
 
   int current_complete_resources_ = 0;
   int64_t current_resource_bytes_ = 0;
-  int expected_num_complete_resources_ = 0;
+  int expected_minimum_complete_resources_ = 0;
   int expected_minimum_resource_bytes_ = 0;
 
   bool attach_on_tracker_creation_ = false;

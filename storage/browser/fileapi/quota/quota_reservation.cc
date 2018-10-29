@@ -16,7 +16,7 @@
 namespace storage {
 
 void QuotaReservation::RefreshReservation(int64_t size,
-                                          const StatusCallback& callback) {
+                                          StatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(!running_refresh_request_);
   DCHECK(!client_crashed_);
@@ -27,9 +27,9 @@ void QuotaReservation::RefreshReservation(int64_t size,
 
   reservation_manager()->ReserveQuota(
       origin(), type(), size - remaining_quota_,
-      base::Bind(&QuotaReservation::AdaptDidUpdateReservedQuota,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 remaining_quota_, callback));
+      base::BindOnce(&QuotaReservation::AdaptDidUpdateReservedQuota,
+                     weak_ptr_factory_.GetWeakPtr(), remaining_quota_,
+                     std::move(callback)));
 
   if (running_refresh_request_)
     remaining_quota_ = 0;
@@ -98,18 +98,18 @@ QuotaReservation::~QuotaReservation() {
 bool QuotaReservation::AdaptDidUpdateReservedQuota(
     const base::WeakPtr<QuotaReservation>& reservation,
     int64_t previous_size,
-    const StatusCallback& callback,
+    StatusCallback callback,
     base::File::Error error,
     int64_t delta) {
   if (!reservation)
     return false;
 
-  return reservation->DidUpdateReservedQuota(
-      previous_size, callback, error, delta);
+  return reservation->DidUpdateReservedQuota(previous_size, std::move(callback),
+                                             error, delta);
 }
 
 bool QuotaReservation::DidUpdateReservedQuota(int64_t previous_size,
-                                              const StatusCallback& callback,
+                                              StatusCallback callback,
                                               base::File::Error error,
                                               int64_t delta) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
@@ -117,13 +117,13 @@ bool QuotaReservation::DidUpdateReservedQuota(int64_t previous_size,
   running_refresh_request_ = false;
 
   if (client_crashed_) {
-    callback.Run(base::File::FILE_ERROR_ABORT);
+    std::move(callback).Run(base::File::FILE_ERROR_ABORT);
     return false;
   }
 
   if (error == base::File::FILE_OK)
     remaining_quota_ = previous_size + delta;
-  callback.Run(error);
+  std::move(callback).Run(error);
   return true;
 }
 

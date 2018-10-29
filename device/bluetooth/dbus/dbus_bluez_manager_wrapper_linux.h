@@ -10,7 +10,7 @@
 
 namespace bluez {
 
-// This class abstracts the initialization of DBusThreadManagerLinux and
+// This class abstracts the initialization of BluezDBusThreadManager and
 // BluezDBusManager. Targets that don't use DBus can provide stub
 // implementations.
 class DEVICE_BLUETOOTH_EXPORT DBusBluezManagerWrapperLinux {

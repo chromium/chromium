@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.list;
 
-import org.chromium.base.AsyncTask;
+import org.chromium.base.task.AsyncTask;
 
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;

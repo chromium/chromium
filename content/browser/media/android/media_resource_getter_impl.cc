@@ -13,6 +13,7 @@
 #include "content/browser/fileapi/browser_file_system_helper.h"
 #include "content/browser/resource_context_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
@@ -44,8 +45,8 @@ network::mojom::CookieManager* GetCookieServiceForContext(
 void ReturnResultOnUIThread(
     base::OnceCallback<void(const std::string&)> callback,
     const std::string& result) {
-  BrowserThread::PostTask(BrowserThread::UI, FROM_HERE,
-                          base::BindOnce(std::move(callback), result));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                           base::BindOnce(std::move(callback), result));
 }
 
 // Checks the policy for get cookies and returns the cookie line if allowed.
@@ -76,8 +77,8 @@ void CheckPolicyForCookies(const GURL& url,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // AllowGetCookie has to be called on IO thread.
-  BrowserThread::PostTaskAndReplyWithResult(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&GetCookiesOnIO, url, site_for_cookies, resource_context,
                      render_process_id, render_frame_id, cookie_list),
       std::move(callback));

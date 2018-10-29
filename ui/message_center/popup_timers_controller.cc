@@ -98,8 +98,7 @@ void PopupTimersController::OnNotificationUpdated(const std::string& id) {
     return;
   }
 
-  NotificationList::PopupNotifications::const_iterator iter =
-      popup_notifications.begin();
+  auto iter = popup_notifications.begin();
   for (; iter != popup_notifications.end(); ++iter) {
     if ((*iter)->id() == id)
       break;

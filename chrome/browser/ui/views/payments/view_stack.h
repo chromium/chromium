@@ -33,11 +33,15 @@ class ViewStack : public views::BoundsAnimatorObserver,
 
   // Removes a view from the stack, animates it out of view, and makes sure
   // it's properly deleted after the animation.
-  void Pop();
+  // If |animate| is false, the view will simply be gone to the hierarchy
+  // without the sliding animation.
+  void Pop(bool animate = true);
 
   // Removes |n| views from the stack but only animates the topmost one. The end
   // result is an animation from the top-most view to the destination view.
-  void PopMany(int n);
+  // If |animate| is false, the view will simply be gone to the hierarchy
+  // without the sliding animation.
+  void PopMany(int n, bool animate = true);
 
   size_t size() const;
 

@@ -62,7 +62,7 @@ class ResourceRequestInfoImpl : public ResourceRequestInfo,
       bool enable_upload_progress,
       bool do_not_prompt_for_login,
       bool keepalive,
-      blink::WebReferrerPolicy referrer_policy,
+      network::mojom::ReferrerPolicy referrer_policy,
       bool is_prerendering,
       ResourceContext* context,
       bool report_raw_headers,
@@ -86,7 +86,7 @@ class ResourceRequestInfoImpl : public ResourceRequestInfo,
   bool IsMainFrame() const override;
   ResourceType GetResourceType() const override;
   int GetProcessType() const override;
-  blink::WebReferrerPolicy GetReferrerPolicy() const override;
+  network::mojom::ReferrerPolicy GetReferrerPolicy() const override;
   bool IsPrerendering() const override;
   ui::PageTransition GetPageTransition() const override;
   bool HasUserGesture() const override;
@@ -96,7 +96,6 @@ class ResourceRequestInfoImpl : public ResourceRequestInfo,
   bool IsDownload() const override;
   // Returns a bitmask of potentially several Previews optimizations.
   PreviewsState GetPreviewsState() const override;
-  void SetPreviewsState(PreviewsState previews_state) override;
   NavigationUIData* GetNavigationUIData() const override;
   void SetResourceRequestBlockedReason(
       blink::ResourceRequestBlockedReason reason) override;
@@ -238,7 +237,7 @@ class ResourceRequestInfoImpl : public ResourceRequestInfo,
   ResourceType resource_type_;
   ui::PageTransition transition_type_;
   int memory_cost_;
-  blink::WebReferrerPolicy referrer_policy_;
+  network::mojom::ReferrerPolicy referrer_policy_;
   bool is_prerendering_;
   ResourceContext* context_;
   bool report_raw_headers_;

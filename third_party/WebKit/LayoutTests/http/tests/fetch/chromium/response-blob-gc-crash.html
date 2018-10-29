@@ -1,0 +1,11 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/js-test-resources/gc.js"></script>
+<script src="resources/stack-overflow.js"></script>
+<script src="resources/response-method-gc-crash.js"></script>
+<script>
+// See https://bugs.chromium.org/p/chromium/issues/detail?id=829790#c5
+
+testResponseMethod('blob');
+</script>

@@ -9,7 +9,7 @@
 
 #import "ios/chrome/common/highlight_button.h"
 
-@class FaviconViewNew;
+@class FaviconView;
 
 // View to display a Most Visited tile based on the suggestion.
 // It displays the favicon for this Most Visited suggestion and its title.
@@ -24,7 +24,7 @@
 - (nonnull instancetype)initWithCoder:(nonnull NSCoder*)aDecoder NS_UNAVAILABLE;
 
 // FaviconView displaying the favicon.
-@property(nonatomic, strong, readonly, nonnull) FaviconViewNew* faviconView;
+@property(nonatomic, strong, readonly, nonnull) FaviconView* faviconView;
 
 // Title of the Most Visited.
 @property(nonatomic, strong, readonly, nonnull) UILabel* titleLabel;

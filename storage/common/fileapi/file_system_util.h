@@ -14,7 +14,6 @@
 #include "storage/common/fileapi/file_system_types.h"
 #include "storage/common/storage_common_export.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "third_party/blink/public/platform/web_file_error.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
 
 class GURL;
@@ -132,10 +131,6 @@ STORAGE_COMMON_EXPORT std::string FilePathToString(
 // Decode a file path from |file_path_string|.
 STORAGE_COMMON_EXPORT base::FilePath StringToFilePath(
     const std::string& file_path_string);
-
-// File error conversion
-STORAGE_COMMON_EXPORT blink::WebFileError
-FileErrorToWebFileError(base::File::Error error_code);
 
 // Generate a file system name for the given arguments. Should only be used by
 // platform apps.

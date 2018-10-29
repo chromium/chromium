@@ -71,14 +71,7 @@ FloatRect ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
     return FloatRect(ToLayoutBox(object).BorderBoxRect());
 
   SECURITY_DCHECK(object.IsLayoutInline());
-  const LayoutInline& layout_inline = ToLayoutInline(object);
-  // This somewhat convoluted computation matches what Gecko does.
-  // See crbug.com/641907.
-  LayoutRect inline_b_box = layout_inline.LinesBoundingBox();
-  const InlineFlowBox* flow_box = layout_inline.FirstLineBox();
-  inline_b_box.SetHeight(flow_box ? flow_box->FrameRect().Height()
-                                  : LayoutUnit(0));
-  return FloatRect(inline_b_box);
+  return FloatRect(ToLayoutInline(object).ReferenceBoxForClipPath());
 }
 
 base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(

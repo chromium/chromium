@@ -146,8 +146,7 @@ NotificationServiceImpl::~NotificationServiceImpl() {
 
   for (int i = 0; i < static_cast<int>(observers_.size()); i++) {
     NotificationSourceMap omap = observers_[i];
-    for (NotificationSourceMap::iterator it = omap.begin();
-         it != omap.end(); ++it)
+    for (auto it = omap.begin(); it != omap.end(); ++it)
       delete it->second;
   }
 }

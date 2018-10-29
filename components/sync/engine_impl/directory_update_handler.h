@@ -72,6 +72,7 @@ class DirectoryUpdateHandler : public UpdateHandler {
   // Their types must match this update handler's type.
   void UpdateSyncEntities(syncable::ModelNeutralWriteTransaction* trans,
                           const SyncEntityList& applicable_updates,
+                          bool is_initial_sync,
                           StatusController* status);
 
   // Expires entries according to GC directives.

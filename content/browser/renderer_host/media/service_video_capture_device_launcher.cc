@@ -4,7 +4,9 @@
 
 #include "content/browser/renderer_host/media/service_video_capture_device_launcher.h"
 
+#include "base/task/post_task.h"
 #include "content/browser/renderer_host/media/service_launched_video_capture_device.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -24,8 +26,8 @@ void ConcludeLaunchDeviceWithSuccess(
   auto receiver_adapter =
       std::make_unique<video_capture::ReceiverMediaToMojoAdapter>(
           std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
-              std::move(receiver),
-              BrowserThread::GetTaskRunnerForThread(BrowserThread::IO)));
+              std::move(receiver), base::CreateSingleThreadTaskRunnerWithTraits(
+                                       {BrowserThread::IO})));
   video_capture::mojom::ReceiverPtr receiver_proxy;
   mojo::MakeStrongBinding<video_capture::mojom::Receiver>(
       std::move(receiver_adapter), mojo::MakeRequest(&receiver_proxy));

@@ -9,18 +9,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <org.chromium.chrome.browser.widget.TintedImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/check"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="center"
         android:background="@drawable/list_item_icon_modern_bg"
         android:visibility="gone"
-        app:chrometint="@color/white_mode_tint"
+        app:tint="@color/white_mode_tint"
         app:layout_gravity="center"
         tools:ignore="ContentDescription" />
 
-    <org.chromium.chrome.browser.widget.TintedImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/circle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,7 +28,7 @@
         android:background="@null"
         android:src="@drawable/download_circular_selector_transparent"
         android:visibility="gone"
-        app:chrometint="@null"
+        app:tint="@null"
         tools:ignore="ContentDescription"/>
 
 </merge>

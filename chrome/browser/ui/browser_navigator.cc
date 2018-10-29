@@ -326,6 +326,7 @@ void LoadURLInContents(WebContents* target_contents,
   load_url_params.has_user_gesture = params->user_gesture;
   load_url_params.blob_url_loader_factory = params->blob_url_loader_factory;
   load_url_params.input_start = params->input_start;
+  load_url_params.was_activated = params->was_activated;
 
   // |frame_tree_node_id| is kNoFrameTreeNodeId for main frame navigations.
   if (params->frame_tree_node_id ==

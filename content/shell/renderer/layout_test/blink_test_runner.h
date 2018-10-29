@@ -175,13 +175,7 @@ class BlinkTestRunner : public RenderViewObserver,
   void OnDestruct() override;
 
   // Helper reused by OnSetTestConfiguration and OnReplicateTestConfiguration.
-  //
-  // If |initial_application| is true, then the test configuration is being
-  // applied for the first time during a test;  otherwise the test configuration
-  // is merely being replicated to another renderer (and in this case global
-  // actions like showing a DevTools window should not be redone).
-  void ApplyTestConfiguration(mojom::ShellTestConfigurationPtr params,
-                              bool initial_application);
+  void ApplyTestConfiguration(mojom::ShellTestConfigurationPtr params);
 
   // After finishing the test, retrieves the audio, text, and pixel dumps from
   // the TestRunner library and sends them to the browser process.

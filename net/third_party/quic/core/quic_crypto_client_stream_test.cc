@@ -418,15 +418,15 @@ class QuicCryptoClientStreamStatelessTest : public QuicTest {
   // Initializes the server_stream_ for stateless rejects.
   void InitializeFakeStatelessRejectServer() {
     TestQuicSpdyServerSession* server_session = nullptr;
-    CreateServerSessionForTest(server_id_, QuicTime::Delta::FromSeconds(100000),
-                               AllSupportedVersions(), &helper_,
-                               &alarm_factory_, &server_crypto_config_,
-                               &server_compressed_certs_cache_,
-                               &server_connection_, &server_session);
+    CreateServerSessionForTest(
+        server_id_, QuicTime::Delta::FromSeconds(100000),
+        ParsedVersionOfIndex(CurrentSupportedVersions(), 0), &helper_,
+        &alarm_factory_, &server_crypto_config_,
+        &server_compressed_certs_cache_, &server_connection_, &server_session);
     CHECK(server_session);
     server_session_.reset(server_session);
     server_session_->OnSuccessfulVersionNegotiation(
-        AllSupportedVersions().front());
+        CurrentSupportedVersions()[0]);
     crypto_test_utils::FakeServerOptions options;
     crypto_test_utils::SetupCryptoServerConfigForTest(
         server_connection_->clock(), server_connection_->random_generator(),

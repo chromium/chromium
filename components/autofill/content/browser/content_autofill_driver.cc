@@ -75,6 +75,10 @@ bool ContentAutofillDriver::IsIncognito() const {
       ->IsOffTheRecord();
 }
 
+bool ContentAutofillDriver::IsInMainFrame() const {
+  return render_frame_host_->GetParent() == nullptr;
+}
+
 net::URLRequestContextGetter* ContentAutofillDriver::GetURLRequestContext() {
   return content::BrowserContext::GetDefaultStoragePartition(
       render_frame_host_->GetSiteInstance()->GetBrowserContext())->

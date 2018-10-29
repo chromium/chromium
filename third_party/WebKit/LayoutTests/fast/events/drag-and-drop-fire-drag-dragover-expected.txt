@@ -9,4 +9,3 @@ TEST COMPLETE
 PASS drag fired before dragover.
 
 TEST COMPLETE
-

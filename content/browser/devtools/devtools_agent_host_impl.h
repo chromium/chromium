@@ -14,6 +14,8 @@
 #include "base/containers/flat_set.h"
 #include "base/process/kill.h"
 #include "content/browser/devtools/devtools_io_context.h"
+#include "content/browser/devtools/devtools_renderer_channel.h"
+#include "content/browser/devtools/devtools_session.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -22,7 +24,6 @@
 namespace content {
 
 class BrowserContext;
-class DevToolsSession;
 class TargetRegistry;
 
 // Describes interface for managing devtools agents from the browser process.
@@ -58,6 +59,19 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
 
   bool Inspect();
 
+  template <typename Handler>
+  std::vector<Handler*> HandlersByName(const std::string& name) {
+    std::vector<Handler*> result;
+    if (sessions_.empty())
+      return result;
+    for (DevToolsSession* session : sessions_) {
+      auto it = session->handlers().find(name);
+      if (it != session->handlers().end())
+        result.push_back(static_cast<Handler*>(it->second.get()));
+    }
+    return result;
+  }
+
  protected:
   DevToolsAgentHostImpl(const std::string& id);
   ~DevToolsAgentHostImpl() override;
@@ -68,11 +82,11 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   virtual bool AttachSession(DevToolsSession* session,
                              TargetRegistry* registry);
   virtual void DetachSession(DevToolsSession* session);
-
   virtual bool DispatchProtocolMessage(
       DevToolsAgentHostClient* client,
       const std::string& message,
       std::unique_ptr<base::DictionaryValue> parsed_message);
+  virtual void UpdateRendererChannel(bool force);
 
   void NotifyCreated();
   void NotifyNavigated();
@@ -81,13 +95,14 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   void ForceDetachRestrictedSessions(
       const std::vector<DevToolsSession*>& restricted_sessions);
   DevToolsIOContext* GetIOContext() { return &io_context_; }
+  DevToolsRendererChannel* GetRendererChannel() { return &renderer_channel_; }
 
-  base::flat_set<DevToolsSession*>& sessions() { return sessions_; }
+  const std::vector<DevToolsSession*>& sessions() const { return sessions_; }
 
  private:
   friend class DevToolsAgentHost;  // for static methods
-  friend class DevToolsSession;
   friend class TargetRegistry;  // for subtarget management
+  friend class DevToolsRendererChannel;
 
   bool InnerAttachClient(DevToolsAgentHostClient* client,
                          TargetRegistry* registry);
@@ -102,10 +117,11 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
                              TargetRegistry* registry);
 
   const std::string id_;
-  base::flat_set<DevToolsSession*> sessions_;
+  std::vector<DevToolsSession*> sessions_;
   base::flat_map<DevToolsAgentHostClient*, std::unique_ptr<DevToolsSession>>
       session_by_client_;
   DevToolsIOContext io_context_;
+  DevToolsRendererChannel renderer_channel_;
   static int s_force_creation_count_;
 };
 

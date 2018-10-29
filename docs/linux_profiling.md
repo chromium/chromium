@@ -55,16 +55,11 @@ This will use the previously captured data (`perf.data`).
 
 ### google-perftools
 
-google-perftools code is enabled when the `use_allocator` variable in gyp is set
+google-perftools code is enabled when the `use_allocator` gn variable is set
 to `tcmalloc` (currently the default). That will build the tcmalloc library,
 including the cpu profiling and heap profiling code into Chromium. In order to
 get stacktraces in release builds on 64 bit, you will need to build with some
-extra flags enabled by setting `profiling=1` in gyp.
-
-If the stack traces in your profiles are incomplete, this may be due to missing
-frame pointers in some of the libraries. A workaround is to use the
-`linux_keep_shadow_stacks=1` gyp option. This will keep a shadow stack using the
-`-finstrument-functions` option of gcc and consult the stack when unwinding.
+extra flags enabled by setting `enable_profiling = true` in args.gn
 
 In order to enable cpu profiling, run Chromium with the environment variable
 `CPUPROFILE` set to a filename.  For example:

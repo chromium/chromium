@@ -61,8 +61,7 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
   if (!ParseInputArguments(document))
     return nullptr;
 
-  return generator_->Paint(client, RoundedIntSize(target_size),
-                           parsed_input_arguments_);
+  return generator_->Paint(client, target_size, parsed_input_arguments_);
 }
 
 bool CSSPaintValue::ParseInputArguments(const Document& document) {
@@ -85,7 +84,7 @@ bool CSSPaintValue::ParseInputArguments(const Document& document) {
 
   parsed_input_arguments_ = new CSSStyleValueVector();
 
-  for (size_t i = 0; i < argument_variable_data_.size(); ++i) {
+  for (wtf_size_t i = 0; i < argument_variable_data_.size(); ++i) {
     // If we are parsing a paint() function, we must be a secure context.
     DCHECK_EQ(SecureContextMode::kSecureContext,
               document.GetSecureContextMode());

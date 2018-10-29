@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/viz_common_export.h"
@@ -33,7 +34,8 @@ class VIZ_COMMON_EXPORT ChildLocalSurfaceIdAllocator {
   // messages can continue to monotonically increase. Returns whether the
   // current LocalSurfaceId has been updated.
   bool UpdateFromParent(
-      const LocalSurfaceId& parent_allocated_local_surface_id);
+      const LocalSurfaceId& parent_allocated_local_surface_id,
+      base::TimeTicks parent_local_surface_id_allocation_time);
 
   const LocalSurfaceId& GenerateId();
 
@@ -41,8 +43,13 @@ class VIZ_COMMON_EXPORT ChildLocalSurfaceIdAllocator {
     return current_local_surface_id_;
   }
 
+  base::TimeTicks allocation_time() const { return allocation_time_; }
+
  private:
   LocalSurfaceId current_local_surface_id_;
+
+  // The time at which |current_local_surface_id_| was allocated.
+  base::TimeTicks allocation_time_;
 
   DISALLOW_COPY_AND_ASSIGN(ChildLocalSurfaceIdAllocator);
 };

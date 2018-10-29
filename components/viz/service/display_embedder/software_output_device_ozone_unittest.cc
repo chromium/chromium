@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/test/scoped_task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/compositor/compositor.h"
@@ -91,7 +92,7 @@ void SoftwareOutputDeviceOzoneTest::SetUp() {
       false /* enable_surface_synchronization */,
       false /* enable_pixel_canvas */);
   compositor_->SetAcceleratedWidget(window_delegate_.GetAcceleratedWidget());
-  compositor_->SetScaleAndSize(1.0f, size, LocalSurfaceId());
+  compositor_->SetScaleAndSize(1.0f, size, LocalSurfaceId(), base::TimeTicks());
 
   ui::SurfaceFactoryOzone* factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();

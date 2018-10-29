@@ -1,186 +1,298 @@
 {
-  "name": "Sign In",
+  "originalURL": "https://www.walmart.com/ip/Zyrtec-24-Hour-Allergy-Relief-Tablets-with-10-mg-Cetirizine-HCl-70-ct/14971994",
   "startingURL": "https://www.walmart.com/checkout/#/sign-in",
+  "autofillProfile": [
+    {
+      "type": "ADDRESS_HOME_CITY",
+      "value": "Austin"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE1",
+      "value": "4120 Freidrich Lane"
+    },
+    {
+      "type": "ADDRESS_HOME_LINE2",
+      "value": "Apt 8"
+    },
+    {
+      "type": "ADDRESS_HOME_STATE",
+      "value": "TX"
+    },
+    {
+      "type": "ADDRESS_HOME_ZIP",
+      "value": "78744"
+    },
+    {
+      "type": "EMAIL_ADDRESS",
+      "value": "red.swingline@initech.com"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_EXP_MONTH",
+      "value": "05"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_EXP_YEAR",
+      "value": "2027"
+    },
+    {
+      "type": "HTML_TYPE_CREDIT_CARD_NUMBER",
+      "value": "9621327911759602"
+    },
+    {
+      "type": "NAME_FIRST",
+      "value": "Milton"
+    },
+    {
+      "type": "NAME_LAST",
+      "value": "Waddams"
+    },
+    {
+      "type": "PHONE_HOME_CITY_AND_NUMBER",
+      "value": "5125551234"
+    }
+  ],
+  "passwordManagerProfiles": [],
+  "pruned_actions": [
+    {
+      "selector": "//span[text()=\"Add to Cart\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 1
+    },
+    {
+      "selector": "//button[@data-automation-id=\"pac-pos-proceed-to-checkout\" and text()=\"Check Out\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 2
+    }
+  ],
   "actions": [
     {
-      "selectorType": "xpath",
-      "selector": "//button[@data-automation-id='new-guest-continue-button']",
+      "url": "https://www.walmart.com/checkout/#/sign-in",
       "context": {
         "isIframe": false
       },
-      "type": "click"
+      "type": "loadPage",
+      "action_index": 3
+    },
+    {
+      "selector": "//button[@type=\"button\" and @aria-label=\"Continue to checkout without an account.\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 4
+    },
+    {
+      "selector": "//span[text()=\"Continue\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 5
+    },
+    {
+      "selector": "//input[@type=\"text\" and @data-tl-id=\"COAC2ShpAddrFirstName\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 6
     },
     {
       "context": {
         "isIframe": false
       },
-      "type": "waitFor",
-      "assertions": [
-        "return automation_helper.isElementWithXpathReady(`//div[@aria-label='Select your shipping option']`);",
-        "return automation_helper.isElementWithXpathReady(`//div[@aria-label='Select your pickup option']`);",
-        "return automation_helper.isElementWithXpathReady(`//label[@data-automation-id='shipMethod-EXPEDITED']`);",
-        "return automation_helper.isElementWithXpathReady(`//div[@class='persistent-order-summary']`);"
-      ]
-    },
-    {
-      "selectorType": "xpath",
-      "selector": "//button[@aria-label='Continue to Shipping Address']",
-      "context": {
-        "isIframe": false
-      },
-      "type": "click"
-    },
-    {
-      "selectorType": "xpath",
-      "selector": "//input[@type='text' and @name='firstName']",
-      "context": {
-        "isIframe": false
-      },
-      "type": "autofill"
-    },
-    {
-      "selectorType": "xpath",
-      "selector": "//input[@type='text' and @name='firstName']",
-      "context": {
-        "isIframe": false
-      },
-      "expectedAutofillType": "NAME_FIRST",
-      "expectedValue": "Milton",
-      "type": "validateField"
-    },
-    {
-      "selectorType": "xpath",
-      "selector": "//input[@type='text' and @name='lastName']",
-      "context": {
-        "isIframe": false
-      },
-      "expectedAutofillType": "NAME_LAST",
       "expectedValue": "Waddams",
-      "type": "validateField"
+      "selector": "//input[@type=\"text\" and @data-tl-id=\"COAC2ShpAddrLastName\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "NAME_LAST",
+      "action_index": 7
     },
     {
-      "selectorType": "xpath",
-      "selector": "//input[@type='text' and @name='phone']",
       "context": {
         "isIframe": false
       },
-      "expectedAutofillType": "PHONE_HOME_WHOLE_NUMBER",
       "expectedValue": "5125551234",
-      "type": "validateField"
+      "selector": "//input[@type=\"text\" and @data-tl-id=\"COAC2ShpAddrPhone\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 8
     },
     {
-      "selectorType": "xpath",
-      "selector": "//input[@type='text' and @name='email']",
       "context": {
         "isIframe": false
       },
-      "expectedAutofillType": "EMAIL_ADDRESS",
       "expectedValue": "red.swingline@initech.com",
-      "type": "validateField"
+      "selector": "//input[@type=\"text\" and @data-tl-id=\"COAC2ShpAddrEmail\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "EMAIL_ADDRESS",
+      "action_index": 9
     },
     {
-      "selectorType": "xpath",
-      "selector": "//input[@type='text' and @name='addressLineOne']",
       "context": {
         "isIframe": false
       },
-      "expectedAutofillType": "ADDRESS_HOME_LINE1",
       "expectedValue": "4120 Freidrich Lane",
-      "type": "validateField"
+      "selector": "//input[@type=\"text\" and @data-tl-id=\"COAC2ShpAddrAddress1\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_LINE1",
+      "action_index": 10
     },
     {
-      "selectorType": "xpath",
-      "selector": "//input[@type='text' and @name='addressLineTwo']",
       "context": {
         "isIframe": false
       },
-      "expectedAutofillType": "ADDRESS_HOME_LINE2",
       "expectedValue": "Apt 8",
-      "type": "validateField"
+      "selector": "//input[@type=\"text\" and @data-tl-id=\"COAC2ShpAddrAddress2\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_LINE2",
+      "action_index": 11
     },
     {
-      "selectorType": "xpath",
-      "selector": "//input[@type='text' and @name='city']",
       "context": {
         "isIframe": false
       },
-      "expectedAutofillType": "ADDRESS_HOME_CITY",
       "expectedValue": "Austin",
-      "type": "validateField"
+      "selector": "//input[@type=\"text\" and @data-tl-id=\"COAC2ShpAddrCity\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_CITY",
+      "action_index": 12
     },
     {
-      "selectorType": "xpath",
-      "selector": "//*[@name='state']",
       "context": {
         "isIframe": false
       },
-      "expectedAutofillType": "ADDRESS_HOME_STATE",
       "expectedValue": "TX",
-      "type": "validateField"
+      "selector": "//select",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_STATE",
+      "action_index": 13
     },
     {
-      "selectorType": "xpath",
-      "selector": "//input[@type='text' and @name='postalCode']",
       "context": {
         "isIframe": false
       },
-      "expectedAutofillType": "ADDRESS_HOME_ZIP",
       "expectedValue": "78744",
-      "type": "validateField"
+      "selector": "//input[@type=\"text\" and @data-tl-id=\"COAC2ShpAddrZip\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "ADDRESS_HOME_ZIP",
+      "action_index": 14
     },
     {
-      "selectorType": "xpath",
-      "selector": "//button[contains(., 'Continue')]",
       "context": {
         "isIframe": false
       },
-      "type": "click"
+      "expectedValue": "Milton",
+      "selector": "//input[@type=\"text\" and @data-tl-id=\"COAC2ShpAddrFirstName\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "NAME_FIRST",
+      "action_index": 15
     },
     {
-      "selectorType": "xpath",
-      "selector": "//button[contains(., 'Use Address Provided')]",
+      "selector": "//label[@for=\"4\"]",
+      "visibility": 3,
       "context": {
         "isIframe": false
       },
-      "type": "click"
+      "type": "click",
+      "action_index": 16
     },
     {
-      "selectorType": "xpath",
-      "selector": "//*[@id=\"creditCard\"]",
+      "selector": "//span[text()=\"Continue\"]",
+      "visibility": 3,
       "context": {
         "isIframe": false
       },
-      "type": "autofill"
+      "type": "click",
+      "action_index": 17
     },
     {
-      "selectorType": "xpath",
-      "selector": "//*[@id=\"creditCard\"]",
+      "selector": "//button[@type=\"button\" and @aria-disabled=\"false\"]",
+      "visibility": 7,
       "context": {
         "isIframe": false
       },
-      "expectedAutofillType": "HTML_TYPE_CREDIT_CARD_NUMBER",
-      "expectedValue": "9621327911759602",
-      "type": "validateField"
+      "type": "click",
+      "action_index": 18
     },
     {
-      "selectorType": "xpath",
-      "selector": "//*[@id=\"month-chooser\"]",
+      "selector": "//span[text()=\"Continue\"]",
+      "visibility": 3,
       "context": {
         "isIframe": false
       },
-      "expectedAutofillType": "HTML_TYPE_CREDIT_CARD_EXP_MONTH",
+      "type": "click",
+      "action_index": 17
+    },
+    {
+      "selector": "//button[@type=\"button\" and @aria-disabled=\"false\"]",
+      "visibility": 7,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 18
+    },
+    {
+      "selector": "//input[@value and @pattern=\"[0-9]*\" and @name=\"creditCard\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 20
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
       "expectedValue": "05",
-      "type": "validateField"
+      "selector": "//select[@id=\"month-chooser\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_CREDIT_CARD_EXP_MONTH",
+      "action_index": 21
     },
     {
-      "selectorType": "xpath",
-      "selector": "//*[@id=\"year-chooser\"]",
       "context": {
         "isIframe": false
       },
-      "expectedAutofillType": "HTML_TYPE_CREDIT_CARD_EXP_YEAR",
       "expectedValue": "2027",
-      "type": "validateField"
+      "selector": "//select[@id=\"year-chooser\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_CREDIT_CARD_EXP_YEAR",
+      "action_index": 22
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "9621327911759602",
+      "selector": "//input[@value=\"9621327911759602\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_CREDIT_CARD_NUMBER",
+      "action_index": 23
     }
   ]
 }

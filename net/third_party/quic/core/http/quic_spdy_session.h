@@ -49,7 +49,8 @@ class QUIC_EXPORT_PRIVATE QuicSpdySession : public QuicSession {
   // Does not take ownership of |connection| or |visitor|.
   QuicSpdySession(QuicConnection* connection,
                   QuicSession::Visitor* visitor,
-                  const QuicConfig& config);
+                  const QuicConfig& config,
+                  const ParsedQuicVersionVector& supported_versions);
   QuicSpdySession(const QuicSpdySession&) = delete;
   QuicSpdySession& operator=(const QuicSpdySession&) = delete;
 
@@ -135,19 +136,24 @@ class QUIC_EXPORT_PRIVATE QuicSpdySession : public QuicSession {
   }
 
  protected:
-  // Override CreateIncomingDynamicStream() and CreateOutgoingDynamicStream()
-  // with QuicSpdyStream return type to make sure that all data streams are
-  // QuicSpdyStreams.
-  QuicSpdyStream* CreateIncomingDynamicStream(QuicStreamId id) override = 0;
-  QuicSpdyStream* CreateOutgoingDynamicStream() override = 0;
+  // Override CreateIncomingStream(), CreateOutgoingBidirectionalStream() and
+  // CreateOutgoingUnidirectionalStream() with QuicSpdyStream return type to
+  // make sure that all data streams are QuicSpdyStreams.
+  QuicSpdyStream* CreateIncomingStream(QuicStreamId id) override = 0;
+  virtual QuicSpdyStream* CreateOutgoingBidirectionalStream() = 0;
+  virtual QuicSpdyStream* CreateOutgoingUnidirectionalStream() = 0;
 
   QuicSpdyStream* GetSpdyDataStream(const QuicStreamId stream_id);
 
   // If an incoming stream can be created, return true.
-  virtual bool ShouldCreateIncomingDynamicStream(QuicStreamId id) = 0;
+  virtual bool ShouldCreateIncomingStream(QuicStreamId id) = 0;
 
   // If an outgoing stream can be created, return true.
-  virtual bool ShouldCreateOutgoingDynamicStream() = 0;
+  // TODO(fayang): In IETF QUIC, there are different stream limits on
+  // unidirectional v.s. bidirectional outgoing streams. Need to split this
+  // method to ShouldCreateOutgoingUnidirectionalStream and
+  // ShouldCreateOutgoingBidirectionalStream.
+  virtual bool ShouldCreateOutgoingStream() = 0;
 
   // This was formerly QuicHeadersStream::WriteHeaders.  Needs to be
   // separate from QuicSpdySession::WriteHeaders because tests call

@@ -14,6 +14,10 @@
 #include "content/shell/browser/shell.h"
 #include "services/service_manager/embedder/switches.h"
 #include "services/service_manager/sandbox/switches.h"
+#include "services/service_manager/zygote/common/zygote_buildflags.h"
+#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#include "services/service_manager/zygote/host/zygote_host_impl_linux.h"
+#endif
 
 namespace content {
 
@@ -64,6 +68,15 @@ class LinuxZygoteDisabledBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(LinuxZygoteDisabledBrowserTest,
                        NoCrashWhenZygoteDisabled) {
   NavigateToURL(shell(), GURL("data:text/html,start page"));
+}
+#endif
+
+#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+IN_PROC_BROWSER_TEST_F(LinuxZygoteDisabledBrowserTest,
+                       NoZygoteWhenZygoteDisabled) {
+  NavigateToURL(shell(), GURL("data:text/html,start page"));
+
+  EXPECT_FALSE(service_manager::ZygoteHostImpl::GetInstance()->HasZygote());
 }
 #endif
 

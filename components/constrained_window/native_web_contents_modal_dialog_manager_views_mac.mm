@@ -20,7 +20,8 @@ using web_modal::SingleWebContentsDialogManager;
 namespace {
 
 // Sets visibility and mouse events for a Cocoa NSWindow* and an attached sheet.
-void SetSheetVisible(gfx::NativeWindow overlay, bool visible) {
+void SetSheetVisible(gfx::NativeWindow native_window, bool visible) {
+  NSWindow* overlay = native_window.GetNativeNSWindow();
   CGFloat alpha = visible ? 1.0 : 0.0;
   BOOL ignore_events = visible ? NO : YES;
 
@@ -53,8 +54,8 @@ void NativeWebContentsModalDialogManagerViewsMac::OnPositionRequiresUpdate() {
   content::WebContents* web_contents = native_delegate()->GetWebContents();
   // Note: Can't use WebContents container bounds here because it doesn't
   // include the DevTool panel width.
-  CGFloat window_width =
-      NSWidth([web_contents->GetTopLevelNativeWindow() frame]);
+  CGFloat window_width = NSWidth(
+      [web_contents->GetTopLevelNativeWindow().GetNativeNSWindow() frame]);
   gfx::Rect tab_view_size = web_contents->GetContainerBounds();
   widget->SetBounds(gfx::Rect(tab_view_size.x(),
                               widget->GetWindowBoundsInScreen().y(),
@@ -63,7 +64,7 @@ void NativeWebContentsModalDialogManagerViewsMac::OnPositionRequiresUpdate() {
 
 void NativeWebContentsModalDialogManagerViewsMac::ShowWidget(
     views::Widget* widget) {
-  NSWindow* dialog_window = widget->GetNativeWindow();
+  NSWindow* dialog_window = widget->GetNativeWindow().GetNativeNSWindow();
   [dialog_window setAlphaValue:0.0];
   // Because |dialog_window| is transparent, it won't accept mouse events until
   // ignoresMouseEvents is set. NSWindows start off accepting mouse events only
@@ -88,7 +89,7 @@ void NativeWebContentsModalDialogManagerViewsMac::ShowWidget(
 
 void NativeWebContentsModalDialogManagerViewsMac::HideWidget(
     views::Widget* widget) {
-  NSWindow* dialog_window = widget->GetNativeWindow();
+  NSWindow* dialog_window = widget->GetNativeWindow().GetNativeNSWindow();
   // Avoid views::Widget::Hide(), as a call to orderOut: on a NSWindow with an
   // attached sheet will close the sheet. Instead, just set the sheet to 0
   // opacity and don't accept click events.

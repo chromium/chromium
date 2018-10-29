@@ -5,17 +5,21 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_TRANSPORT_SELECTOR_SHEET_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_TRANSPORT_SELECTOR_SHEET_VIEW_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
-#include "chrome/browser/ui/views/webauthn/transport_list_view.h"
+#include "chrome/browser/ui/views/webauthn/hover_list_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
+#include "chrome/browser/webauthn/authenticator_transport.h"
 
 // Represents a sheet in the Web Authentication request dialog that allows the
 // user to pick the transport protocol over which they wish to use their
 // security key.
 class AuthenticatorTransportSelectorSheetView
     : public AuthenticatorRequestSheetView,
-      public TransportListView::Delegate {
+      public TransportHoverListModel::Delegate {
  public:
   explicit AuthenticatorTransportSelectorSheetView(
       std::unique_ptr<AuthenticatorTransportSelectorSheetModel> model);
@@ -30,8 +34,8 @@ class AuthenticatorTransportSelectorSheetView
   // AuthenticatorRequestSheetView:
   std::unique_ptr<views::View> BuildStepSpecificContent() override;
 
-  // TransportListView::Delegate:
-  void OnListItemSelected(AuthenticatorTransport transport) override;
+  // TransportHoverListModel::Delegate:
+  void OnItemSelected(AuthenticatorTransport transport) override;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorTransportSelectorSheetView);
 };

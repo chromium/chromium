@@ -49,8 +49,7 @@ syncer::SyncError SettingsSyncProcessor::SendChanges(
   std::set<std::string> added_keys;
   std::set<std::string> deleted_keys;
 
-  for (ValueStoreChangeList::const_iterator i = changes.begin();
-      i != changes.end(); ++i) {
+  for (auto i = changes.cbegin(); i != changes.cend(); ++i) {
     const std::string& key = i->key();
     const base::Value* value = i->new_value();
     if (value) {
@@ -85,8 +84,7 @@ syncer::SyncError SettingsSyncProcessor::SendChanges(
     return error;
 
   synced_keys_.insert(added_keys.begin(), added_keys.end());
-  for (std::set<std::string>::iterator i = deleted_keys.begin();
-      i != deleted_keys.end(); ++i) {
+  for (auto i = deleted_keys.begin(); i != deleted_keys.end(); ++i) {
     synced_keys_.erase(*i);
   }
 
@@ -97,8 +95,7 @@ void SettingsSyncProcessor::NotifyChanges(const ValueStoreChangeList& changes) {
   DCHECK(IsOnBackendSequence());
   CHECK(initialized_) << "Init not called";
 
-  for (ValueStoreChangeList::const_iterator i = changes.begin();
-      i != changes.end(); ++i) {
+  for (auto i = changes.cbegin(); i != changes.cend(); ++i) {
     if (i->new_value())
       synced_keys_.insert(i->key());
     else

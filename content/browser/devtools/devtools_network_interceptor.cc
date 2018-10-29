@@ -9,6 +9,17 @@
 
 namespace content {
 
+DevToolsNetworkInterceptor::AuthChallengeResponse::AuthChallengeResponse(
+    ResponseType response_type)
+    : response_type(response_type) {
+  DCHECK_NE(kProvideCredentials, response_type);
+}
+
+DevToolsNetworkInterceptor::AuthChallengeResponse::AuthChallengeResponse(
+    const base::string16& username,
+    const base::string16& password)
+    : response_type(kProvideCredentials), credentials(username, password) {}
+
 InterceptedRequestInfo::InterceptedRequestInfo()
     : is_navigation(false), response_error_code(net::OK) {}
 
@@ -29,15 +40,16 @@ DevToolsNetworkInterceptor::Modifications::Modifications() = default;
 
 DevToolsNetworkInterceptor::Modifications::Modifications(
     base::Optional<net::Error> error_reason,
-    base::Optional<std::string> raw_response,
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    std::unique_ptr<std::string> response_body,
     protocol::Maybe<std::string> modified_url,
     protocol::Maybe<std::string> modified_method,
     protocol::Maybe<std::string> modified_post_data,
-    protocol::Maybe<protocol::Network::Headers> modified_headers,
-    protocol::Maybe<protocol::Network::AuthChallengeResponse>
-        auth_challenge_response)
+    std::unique_ptr<HeadersVector> modified_headers,
+    std::unique_ptr<AuthChallengeResponse> auth_challenge_response)
     : error_reason(std::move(error_reason)),
-      raw_response(std::move(raw_response)),
+      response_headers(std::move(response_headers)),
+      response_body(std::move(response_body)),
       modified_url(std::move(modified_url)),
       modified_method(std::move(modified_method)),
       modified_post_data(std::move(modified_post_data)),

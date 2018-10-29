@@ -5,9 +5,9 @@
 // https://html.spec.whatwg.org/#imagebitmapoptions
 
 enum ImageOrientation { "none", "flipY" };
-enum ImageBitmapPixelFormat { "default", "8-8-8-8" };
+enum ImageBitmapPixelFormat { "default", "uint8" };
 enum PremultiplyAlpha { "none", "premultiply", "default" };
-enum ColorSpaceConversion { "none", "default", "preserve", "srgb", "linear-rgb", "rec2020", "p3" };
+enum ColorSpaceConversion { "none", "default", "srgb", "linear-rgb", "rec2020", "p3" };
 enum ResizeQuality { "pixelated", "low", "medium", "high" };
 dictionary ImageBitmapOptions {
     ImageOrientation imageOrientation = "none";

@@ -23,7 +23,7 @@ using offline_pages::TaskTestBase;
 
 namespace explore_sites {
 
-constexpr int64_t timestamp = 12345L;
+const char kVersionToken[] = "12345";
 const char kGoogleUrl[] = "https://www.google.com";
 const char kGoogleTitle[] = "Google Search";
 const char kGmailUrl[] = "https://mail.google.com/mail";
@@ -40,6 +40,8 @@ class ExploreSitesImportCatalogTaskTest : public TaskTestBase {
 
   void SetUp() override {
     store_ = std::make_unique<ExploreSitesStore>(task_runner());
+    success_ = false;
+    callback_called_ = false;
   }
 
   ExploreSitesStore* store() { return store_.get(); }
@@ -51,24 +53,41 @@ class ExploreSitesImportCatalogTaskTest : public TaskTestBase {
     RunUntilIdle();
   }
 
+  void OnImportTaskDone(bool success) {
+    success_ = success;
+    callback_called_ = true;
+  }
+
+  bool success() { return success_; }
+
+  bool callback_called() { return callback_called_; }
+
  private:
   std::unique_ptr<ExploreSitesStore> store_;
+  bool success_;
+  bool callback_called_;
 
   DISALLOW_COPY_AND_ASSIGN(ExploreSitesImportCatalogTaskTest);
 };
 
 TEST_F(ExploreSitesImportCatalogTaskTest, StoreFailure) {
   store()->SetInitializationStatusForTest(InitializationStatus::FAILURE);
-  ImportCatalogTask task(store(), timestamp, std::make_unique<Catalog>());
+  ImportCatalogTask task(
+      store(), kVersionToken, std::make_unique<Catalog>(),
+      base::BindOnce(&ExploreSitesImportCatalogTaskTest::OnImportTaskDone,
+                     base::Unretained(this)));
   RunTask(&task);
 
-  // A null catalog should be completed but return with an error.
+  // A database failure should be completed but return with an error.
   EXPECT_TRUE(task.complete());
   EXPECT_FALSE(task.result());
 }
 
 TEST_F(ExploreSitesImportCatalogTaskTest, EmptyTask) {
-  ImportCatalogTask task(store(), timestamp, std::unique_ptr<Catalog>());
+  ImportCatalogTask task(
+      store(), kVersionToken, std::unique_ptr<Catalog>(),
+      base::BindOnce(&ExploreSitesImportCatalogTaskTest::OnImportTaskDone,
+                     base::Unretained(this)));
   RunTask(&task);
 
   // A null catalog should be completed but return with an error.
@@ -76,18 +95,37 @@ TEST_F(ExploreSitesImportCatalogTaskTest, EmptyTask) {
   EXPECT_FALSE(task.result());
 }
 
+TEST_F(ExploreSitesImportCatalogTaskTest, EmptyVersion) {
+  std::string empty_version_token;
+  ImportCatalogTask task(
+      store(), empty_version_token, std::make_unique<Catalog>(),
+      base::BindOnce(&ExploreSitesImportCatalogTaskTest::OnImportTaskDone,
+                     base::Unretained(this)));
+  RunTask(&task);
+
+  // A catalog with no version should be completed but return with an error.
+  EXPECT_TRUE(task.complete());
+  EXPECT_FALSE(task.result());
+}
+
 // This tests the behavior of the catalog task when there is already a catalog
-// with the current timestamp in the database. This tests both the case where it
-// is the "current" catalog, and where it is the "downloading" catalog.
+// with the current version_token in the database. This tests both the case
+// where it is the "current" catalog, and where it is the "downloading" catalog.
 TEST_F(ExploreSitesImportCatalogTaskTest, CatalogAlreadyInUse) {
-  // Successfully import a catalog with "timestamp".
-  ImportCatalogTask task(store(), timestamp, std::make_unique<Catalog>());
+  // Successfully import a catalog with "version_token".
+  ImportCatalogTask task(
+      store(), kVersionToken, std::make_unique<Catalog>(),
+      base::BindOnce(&ExploreSitesImportCatalogTaskTest::OnImportTaskDone,
+                     base::Unretained(this)));
   RunTask(&task);
   ASSERT_TRUE(task.result());
 
   // Importing the same catalog again should cause a successful import,
   // since the catalog was not "current".
-  ImportCatalogTask task2(store(), timestamp, std::make_unique<Catalog>());
+  ImportCatalogTask task2(
+      store(), kVersionToken, std::make_unique<Catalog>(),
+      base::BindOnce(&ExploreSitesImportCatalogTaskTest::OnImportTaskDone,
+                     base::Unretained(this)));
   RunTask(&task2);
   EXPECT_TRUE(task2.result());
 
@@ -95,13 +133,16 @@ TEST_F(ExploreSitesImportCatalogTaskTest, CatalogAlreadyInUse) {
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::MetaTable meta_table;
     ExploreSitesSchema::InitMetaTable(db, &meta_table);
-    meta_table.SetValue("current_catalog", timestamp);
+    meta_table.SetValue("current_catalog", kVersionToken);
     meta_table.DeleteKey("downloading_catalog");
     return true;
   }));
 
   // Now it should fail to import another copy of the same catalog.
-  ImportCatalogTask task3(store(), timestamp, std::make_unique<Catalog>());
+  ImportCatalogTask task3(
+      store(), kVersionToken, std::make_unique<Catalog>(),
+      base::BindOnce(&ExploreSitesImportCatalogTaskTest::OnImportTaskDone,
+                     base::Unretained(this)));
   RunTask(&task3);
   EXPECT_TRUE(task3.complete());
   EXPECT_FALSE(task3.result());
@@ -125,11 +166,16 @@ TEST_F(ExploreSitesImportCatalogTaskTest, BasicCatalog) {
   gmail->set_site_url(kGmailUrl);
   gmail->set_icon(kIcon);
 
-  ImportCatalogTask task(store(), timestamp, std::move(catalog));
+  ImportCatalogTask task(
+      store(), kVersionToken, std::move(catalog),
+      base::BindOnce(&ExploreSitesImportCatalogTaskTest::OnImportTaskDone,
+                     base::Unretained(this)));
   RunTask(&task);
 
   EXPECT_TRUE(task.complete());
   EXPECT_TRUE(task.result());
+  EXPECT_TRUE(success());
+  EXPECT_TRUE(callback_called());
 
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::Statement cat_count_s(
@@ -137,10 +183,11 @@ TEST_F(ExploreSitesImportCatalogTaskTest, BasicCatalog) {
     cat_count_s.Step();
     EXPECT_EQ(1, cat_count_s.ColumnInt(0));
 
-    sql::Statement cat_data_s(db->GetUniqueStatement(
-        "SELECT version, type, label, image, category_id FROM categories"));
+    sql::Statement cat_data_s(
+        db->GetUniqueStatement("SELECT version_token, type, label, image, "
+                               "category_id FROM categories"));
     cat_data_s.Step();
-    EXPECT_EQ(timestamp, cat_data_s.ColumnInt64(0));
+    EXPECT_EQ(kVersionToken, cat_data_s.ColumnString(0));
     EXPECT_EQ(static_cast<int>(Category_CategoryType_GOOGLE),
               cat_data_s.ColumnInt(1));
     EXPECT_EQ(kGoogleCategoryTitle, cat_data_s.ColumnString(2));

@@ -70,8 +70,14 @@ OobeTypes.TimezoneDsc;
  * Keys are also listed in chrome/browser/chromeos/login/configuration_keys.h
  * @typedef {{
  *   welcomeNext: boolean|undefined,
+ *   enableDemoMode: boolean|undefined,
+ *   demoPreferencesNext: boolean|undefined,
  *   networkSelectGuid: string|undefined,
+ *   networkOfflineDemo: boolean|undefined,
+ *   eulaAutoAccept: boolean|undefined,
+ *   eulaSendStatistics: boolean|undefined,
  *   updateSkipNonCritical: boolean|undefined,
+ *   arcTosAutoAccept: boolean|undefined,
  * }}
  */
 OobeTypes.OobeConfiguration;

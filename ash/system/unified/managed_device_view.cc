@@ -17,28 +17,30 @@
 namespace ash {
 
 ManagedDeviceView::ManagedDeviceView() : TrayItemView(nullptr) {
-  Shell::Get()->system_tray_model()->enterprise_domain()->AddObserver(this);
+  Shell::Get()->session_controller()->AddObserver(this);
   CreateImageView();
-  image_view()->SetImage(gfx::CreateVectorIcon(
-      kSystemTrayManagedIcon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
-  Update();
+  OnLoginStatusChanged(Shell::Get()->session_controller()->login_status());
 }
 
 ManagedDeviceView::~ManagedDeviceView() {
-  Shell::Get()->system_tray_model()->enterprise_domain()->RemoveObserver(this);
+  Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
-void ManagedDeviceView::OnEnterpriseDomainChanged() {
-  Update();
-}
-
-void ManagedDeviceView::Update() {
-  // TODO(crbug.com/870409): Also support family link.
-  EnterpriseDomainModel* model =
-      Shell::Get()->system_tray_model()->enterprise_domain();
-  SetVisible(model->active_directory_managed() ||
-             !model->enterprise_display_domain().empty());
+void ManagedDeviceView::OnLoginStatusChanged(LoginStatus status) {
+  SessionController* session = Shell::Get()->session_controller();
+  if (session->IsUserPublicAccount()) {
+    image_view()->SetImage(gfx::CreateVectorIcon(
+        kSystemTrayManagedIcon,
+        TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
+    SetVisible(true);
+  } else if (session->IsUserChild()) {
+    image_view()->SetImage(gfx::CreateVectorIcon(
+        kSystemTrayFamilyLinkIcon,
+        TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
+    SetVisible(true);
+  } else {
+    SetVisible(false);
+  }
 }
 
 }  // namespace ash

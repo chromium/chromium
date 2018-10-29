@@ -34,7 +34,7 @@ class BluetoothPolicyHandlerTest : public testing::Test {
   // testing::Test
   void SetUp() override {
     testing::Test::SetUp();
-    settings_helper_.ReplaceProvider(chromeos::kAllowBluetooth);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
   }
 

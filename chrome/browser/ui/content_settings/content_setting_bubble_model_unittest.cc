@@ -17,6 +17,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/blocked_content/popup_blocker.h"
 #include "chrome/browser/ui/blocked_content/popup_blocker_tab_helper.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/fake_owner.h"
@@ -1031,9 +1032,9 @@ TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItems) {
   for (size_t i = 1; i <= kItemCount; i++) {
     NavigateParams navigate_params =
         params.CreateNavigateParams(web_contents());
-    EXPECT_TRUE(PopupBlockerTabHelper::MaybeBlockPopup(
-        web_contents(), url, &navigate_params, nullptr /*=open_url_params*/,
-        params.features()));
+    EXPECT_TRUE(MaybeBlockPopup(web_contents(), url, &navigate_params,
+                                nullptr /*=open_url_params*/,
+                                params.features()));
     EXPECT_EQ(i, list_items.size());
   }
 }

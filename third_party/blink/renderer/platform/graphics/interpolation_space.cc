@@ -36,7 +36,7 @@
 
 namespace blink {
 
-namespace InterpolationSpaceUtilities {
+namespace interpolation_space_utilities {
 
 namespace {
 
@@ -76,6 +76,6 @@ sk_sp<SkColorFilter> CreateInterpolationSpaceFilter(
   return GetConversionFilter(dst_interpolation_space, src_interpolation_space);
 }
 
-}  // namespace InterpolationSpaceUtilities
+}  // namespace interpolation_space_utilities
 
 }  // namespace blink

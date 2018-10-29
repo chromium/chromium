@@ -33,6 +33,15 @@ DownloadMimeTypeResult GetUmaResult(const std::string& mime_type) {
   if (mime_type == "application/vnd.android.package-archive")
     return DownloadMimeTypeResult::AndroidPackageArchive;
 
+  if (mime_type == "text/vcard")
+    return DownloadMimeTypeResult::VirtualContactFile;
+
+  if (mime_type == "text/calendar")
+    return DownloadMimeTypeResult::iCalendar;
+
+  if (mime_type == "model/usd")
+    return DownloadMimeTypeResult::UniversalSceneDescription;
+
   return DownloadMimeTypeResult::Other;
 }
 }  // namespace

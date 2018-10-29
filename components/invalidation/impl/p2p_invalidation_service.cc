@@ -21,10 +21,12 @@ namespace invalidation {
 
 P2PInvalidationService::P2PInvalidationService(
     const scoped_refptr<net::URLRequestContextGetter>& request_context,
+    network::NetworkConnectionTracker* network_connection_tracker,
     syncer::P2PNotificationTarget notification_target) {
   notifier::NotifierOptions notifier_options =
       ParseNotifierOptions(*base::CommandLine::ForCurrentProcess());
   notifier_options.request_context_getter = request_context;
+  notifier_options.network_connection_tracker = network_connection_tracker;
   invalidator_id_ = GenerateInvalidatorClientId();
   invalidator_.reset(new syncer::P2PInvalidator(
           notifier::PushClient::CreateDefault(notifier_options),

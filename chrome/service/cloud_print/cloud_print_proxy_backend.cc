@@ -81,7 +81,8 @@ class CloudPrintProxyBackend::Core
   Core(CloudPrintProxyBackend* backend,
        const ConnectorSettings& settings,
        const gaia::OAuthClientInfo& oauth_client_info,
-       bool enable_job_poll);
+       bool enable_job_poll,
+       network::NetworkConnectionTracker* network_connection_tracker);
 
   // Note:
   //
@@ -168,6 +169,9 @@ class CloudPrintProxyBackend::Core
   // Our parent CloudPrintProxyBackend
   CloudPrintProxyBackend* const backend_;
 
+  // Monitors for network connection changes.
+  network::NetworkConnectionTracker* const network_connection_tracker_;
+
   // Provides access to networking APIs for auth_.
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
@@ -207,12 +211,14 @@ CloudPrintProxyBackend::CloudPrintProxyBackend(
     CloudPrintProxyFrontend* frontend,
     const ConnectorSettings& settings,
     const gaia::OAuthClientInfo& oauth_client_info,
-    bool enable_job_poll)
+    bool enable_job_poll,
+    network::NetworkConnectionTracker* network_connection_tracker)
     : core_thread_("Chrome_CloudPrintProxyCoreThread"),
       frontend_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       frontend_(frontend) {
   DCHECK(frontend_);
-  core_ = new Core(this, settings, oauth_client_info, enable_job_poll);
+  core_ = new Core(this, settings, oauth_client_info, enable_job_poll,
+                   network_connection_tracker);
 }
 
 CloudPrintProxyBackend::~CloudPrintProxyBackend() { DCHECK(!core_.get()); }
@@ -273,8 +279,10 @@ CloudPrintProxyBackend::Core::Core(
     CloudPrintProxyBackend* backend,
     const ConnectorSettings& settings,
     const gaia::OAuthClientInfo& oauth_client_info,
-    bool enable_job_poll)
+    bool enable_job_poll,
+    network::NetworkConnectionTracker* network_connection_tracker)
     : backend_(backend),
+      network_connection_tracker_(network_connection_tracker),
       oauth_client_info_(oauth_client_info),
       notifications_enabled_(false),
       job_poll_scheduled_(false),
@@ -431,6 +439,7 @@ void CloudPrintProxyBackend::Core::InitNotifications(
   notifier_options.xmpp_host_port = net::HostPortPair::FromString(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kCloudPrintXmppEndpoint));
+  notifier_options.network_connection_tracker = network_connection_tracker_;
   push_client_ = notifier::PushClient::CreateDefault(notifier_options);
   push_client_->AddObserver(this);
   notifier::Subscription subscription;

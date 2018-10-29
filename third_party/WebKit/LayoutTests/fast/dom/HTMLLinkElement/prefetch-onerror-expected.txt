@@ -5,5 +5,5 @@ If it works you should see a message below saying the test has passed.
 PASS successfullyParsed is true
 
 TEST COMPLETE
-PASS onerror was called
 
+PASS onerror was called

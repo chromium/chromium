@@ -154,6 +154,19 @@ def diff_binary(first_filepath, second_filepath, file_len):
   return result
 
 
+def memoize(f):
+  memo = {}
+  def helper(*args):
+    if args not in memo:
+      memo[args] = f(*args)
+    return memo[args]
+  return helper
+
+
+# compare_deps() can be called with different targets that all depend on
+# "all" targets, so memoize the results of this function to make sure we
+# don't compare "all" files more than once.
+@memoize
 def compare_files(first_filepath, second_filepath):
   """Compares two binaries and return the number of differences between them.
 

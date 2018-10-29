@@ -64,7 +64,7 @@ void QuotaManagerProxy::NotifyStorageAccessed(QuotaClient::ID client_id,
   }
 
   if (manager_)
-    manager_->NotifyStorageAccessed(client_id, origin.GetURL(), type);
+    manager_->NotifyStorageAccessed(client_id, origin, type);
 }
 
 void QuotaManagerProxy::NotifyStorageModified(QuotaClient::ID client_id,
@@ -79,7 +79,7 @@ void QuotaManagerProxy::NotifyStorageModified(QuotaClient::ID client_id,
   }
 
   if (manager_)
-    manager_->NotifyStorageModified(client_id, origin.GetURL(), type, delta);
+    manager_->NotifyStorageModified(client_id, origin, type, delta);
 }
 
 void QuotaManagerProxy::NotifyOriginInUse(const url::Origin& origin) {
@@ -91,7 +91,7 @@ void QuotaManagerProxy::NotifyOriginInUse(const url::Origin& origin) {
   }
 
   if (manager_)
-    manager_->NotifyOriginInUse(origin.GetURL());
+    manager_->NotifyOriginInUse(origin);
 }
 
 void QuotaManagerProxy::NotifyOriginNoLongerInUse(const url::Origin& origin) {
@@ -102,7 +102,7 @@ void QuotaManagerProxy::NotifyOriginNoLongerInUse(const url::Origin& origin) {
     return;
   }
   if (manager_)
-    manager_->NotifyOriginNoLongerInUse(origin.GetURL());
+    manager_->NotifyOriginNoLongerInUse(origin);
 }
 
 void QuotaManagerProxy::SetUsageCacheEnabled(QuotaClient::ID client_id,
@@ -116,7 +116,7 @@ void QuotaManagerProxy::SetUsageCacheEnabled(QuotaClient::ID client_id,
     return;
   }
   if (manager_)
-    manager_->SetUsageCacheEnabled(client_id, origin.GetURL(), type, enabled);
+    manager_->SetUsageCacheEnabled(client_id, origin, type, enabled);
 }
 
 void QuotaManagerProxy::GetUsageAndQuota(
@@ -141,7 +141,7 @@ void QuotaManagerProxy::GetUsageAndQuota(
   TRACE_EVENT0("io", "QuotaManagerProxy::GetUsageAndQuota");
 
   manager_->GetUsageAndQuota(
-      origin.GetURL(), type,
+      origin, type,
       base::BindOnce(&DidGetUsageAndQuota,
                      base::RetainedRef(original_task_runner),
                      std::move(callback)));
@@ -154,9 +154,8 @@ QuotaManager* QuotaManagerProxy::quota_manager() const {
 
 QuotaManagerProxy::QuotaManagerProxy(
     QuotaManager* manager,
-    const scoped_refptr<base::SingleThreadTaskRunner>& io_thread)
-    : manager_(manager), io_thread_(io_thread) {
-}
+    scoped_refptr<base::SingleThreadTaskRunner> io_thread)
+    : manager_(manager), io_thread_(std::move(io_thread)) {}
 
 QuotaManagerProxy::~QuotaManagerProxy() = default;
 

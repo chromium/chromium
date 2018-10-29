@@ -15,8 +15,8 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sequenced_task_runner.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_codec.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -59,7 +59,6 @@ void AddBookmarksToIndex(BookmarkLoadDetails* details,
 }  // namespace
 
 void LoadBookmarks(const base::FilePath& path, BookmarkLoadDetails* details) {
-  base::AssertBlockingAllowed();
   bool load_index = false;
   bool bookmark_file_exists = base::PathExists(path);
   if (bookmark_file_exists) {
@@ -117,6 +116,10 @@ void LoadBookmarks(const base::FilePath& path, BookmarkLoadDetails* details) {
   }
 
   details->CreateUrlIndex();
+
+  UMA_HISTOGRAM_COUNTS_100000(
+      "Bookmarks.Count.OnProfileLoad",
+      base::saturated_cast<int>(details->url_index()->UrlCount()));
 }
 
 // BookmarkLoadDetails ---------------------------------------------------------

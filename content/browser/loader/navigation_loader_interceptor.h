@@ -82,6 +82,7 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   MaybeCreateSubresourceLoaderParams();
 
   // Returns true if the handler creates a loader for the |response| passed.
+  // |request_url| is the latest request URL including URL fragment.
   // An example of where this is used is AppCache, where the handler returns
   // fallback content for the response passed in.
   // The URLLoader interface pointer is returned in the |loader| parameter.
@@ -93,11 +94,18 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   // intercept the inflight loading if necessary.  Note that the |url_loader|
   // will be reset after this method is called, which will also drop the
   // URLLoader held by |url_loader_| if it is not unbound yet.
+  // |skip_other_interceptors| is set to true when this interceptor will
+  // exclusively handle the navigation even after redirections. TODO(horo): This
+  // flag was introduced to skip service worker after signed exchange redirect.
+  // Remove this flag when we support service worker and signed exchange
+  // integration. See crbug.com/894755#c1. Nullptr is not allowed.
   virtual bool MaybeCreateLoaderForResponse(
+      const GURL& request_url,
       const network::ResourceResponseHead& response,
       network::mojom::URLLoaderPtr* loader,
       network::mojom::URLLoaderClientRequest* client_request,
-      ThrottlingURLLoader* url_loader);
+      ThrottlingURLLoader* url_loader,
+      bool* skip_other_interceptors);
 };
 
 }  // namespace content

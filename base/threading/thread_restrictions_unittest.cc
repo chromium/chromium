@@ -30,33 +30,33 @@ class ThreadRestrictionsTest : public testing::Test {
 }  // namespace
 
 TEST_F(ThreadRestrictionsTest, BlockingAllowedByDefault) {
-  AssertBlockingAllowed();
+  internal::AssertBlockingAllowed();
 }
 
 TEST_F(ThreadRestrictionsTest, ScopedDisallowBlocking) {
   {
     ScopedDisallowBlocking scoped_disallow_blocking;
-    EXPECT_DCHECK_DEATH({ AssertBlockingAllowed(); });
+    EXPECT_DCHECK_DEATH({ internal::AssertBlockingAllowed(); });
   }
-  AssertBlockingAllowed();
+  internal::AssertBlockingAllowed();
 }
 
 TEST_F(ThreadRestrictionsTest, ScopedAllowBlocking) {
   ScopedDisallowBlocking scoped_disallow_blocking;
   {
     ScopedAllowBlocking scoped_allow_blocking;
-    AssertBlockingAllowed();
+    internal::AssertBlockingAllowed();
   }
-  EXPECT_DCHECK_DEATH({ AssertBlockingAllowed(); });
+  EXPECT_DCHECK_DEATH({ internal::AssertBlockingAllowed(); });
 }
 
 TEST_F(ThreadRestrictionsTest, ScopedAllowBlockingForTesting) {
   ScopedDisallowBlocking scoped_disallow_blocking;
   {
     ScopedAllowBlockingForTesting scoped_allow_blocking_for_testing;
-    AssertBlockingAllowed();
+    internal::AssertBlockingAllowed();
   }
-  EXPECT_DCHECK_DEATH({ AssertBlockingAllowed(); });
+  EXPECT_DCHECK_DEATH({ internal::AssertBlockingAllowed(); });
 }
 
 TEST_F(ThreadRestrictionsTest, BaseSyncPrimitivesAllowedByDefault) {}
@@ -132,6 +132,17 @@ TEST_F(ThreadRestrictionsTest,
   // This should not DCHECK.
   ScopedAllowBaseSyncPrimitivesForTesting
       scoped_allow_base_sync_primitives_for_testing;
+}
+
+TEST_F(ThreadRestrictionsTest, LongCPUWorkAllowedByDefault) {
+  AssertLongCPUWorkAllowed();
+}
+
+TEST_F(ThreadRestrictionsTest, DisallowUnresponsiveTasks) {
+  DisallowUnresponsiveTasks();
+  EXPECT_DCHECK_DEATH(internal::AssertBlockingAllowed());
+  EXPECT_DCHECK_DEATH(internal::AssertBaseSyncPrimitivesAllowed());
+  EXPECT_DCHECK_DEATH(AssertLongCPUWorkAllowed());
 }
 
 }  // namespace base

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "ui/base/ime/mock_input_method.h"
-#include "build/build_config.h"
 
+#include "base/bind_helpers.h"
+#include "base/callback.h"
+#include "build/build_config.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/events/event.h"
 
@@ -43,7 +45,7 @@ TextInputClient* MockInputMethod::GetTextInputClient() const {
 
 ui::EventDispatchDetails MockInputMethod::DispatchKeyEvent(
     ui::KeyEvent* event) {
-  return delegate_->DispatchKeyEventPostIME(event);
+  return delegate_->DispatchKeyEventPostIME(event, base::NullCallback());
 }
 
 void MockInputMethod::OnFocus() {

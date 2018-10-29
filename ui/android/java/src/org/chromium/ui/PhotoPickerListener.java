@@ -4,6 +4,11 @@
 
 package org.chromium.ui;
 
+import android.support.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * The callback used to indicate what action the user took in the picker.
  */
@@ -11,11 +16,15 @@ public interface PhotoPickerListener {
     /**
      * The action the user took in the picker.
      */
-    enum Action {
-        CANCEL,
-        PHOTOS_SELECTED,
-        LAUNCH_CAMERA,
-        LAUNCH_GALLERY,
+    @IntDef({PhotoPickerAction.CANCEL, PhotoPickerAction.PHOTOS_SELECTED,
+            PhotoPickerAction.LAUNCH_CAMERA, PhotoPickerAction.LAUNCH_GALLERY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PhotoPickerAction {
+        int CANCEL = 0;
+        int PHOTOS_SELECTED = 1;
+        int LAUNCH_CAMERA = 2;
+        int LAUNCH_GALLERY = 3;
+        int NUM_ENTRIES = 4;
     }
 
     /**
@@ -29,5 +38,5 @@ public interface PhotoPickerListener {
      *
      * @param photos The photos that were selected.
      */
-    void onPhotoPickerUserAction(Action action, String[] photos);
+    void onPhotoPickerUserAction(@PhotoPickerAction int action, String[] photos);
 }

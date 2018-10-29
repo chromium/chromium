@@ -102,7 +102,8 @@ class CORE_EXPORT DragController final
                        LocalFrame& local_root);
   bool TryDHTMLDrag(DragData*, DragOperation&, LocalFrame& local_root);
   DragOperation GetDragOperation(DragData*);
-  void CancelDrag();
+  // Clear the selection from the document this drag is exiting.
+  void ClearDragCaret();
   bool DragIsMove(FrameSelection&, DragData*);
   bool IsCopyKeyDown(DragData*);
 

@@ -9,7 +9,7 @@
 // with a copyright comment anyway.
 
 // <include src="../../file_manager/common/js/metrics_base.js">
-// <include src="../../file_manager/common/js/metrics.js">
+// <include src="gallery_metrics.js">
 // <include src="../../file_manager/foreground/js/metrics_start.js">
 
 // <include src="../../file_manager/common/js/lru_cache.js">

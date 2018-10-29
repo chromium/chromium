@@ -54,17 +54,19 @@ Vector<v8::Local<v8::Value>> WebScriptExecutor::Execute(LocalFrame* frame) {
   std::unique_ptr<UserGestureIndicator> indicator;
   if (user_gesture_) {
     indicator =
-        Frame::NotifyUserActivation(frame, UserGestureToken::kNewGesture);
+        LocalFrame::NotifyUserActivation(frame, UserGestureToken::kNewGesture);
   }
 
   Vector<v8::Local<v8::Value>> results;
   for (const auto& source : sources_) {
+    // Note: An error event in an isolated world will never be dispatched to
+    // a foreign world.
     v8::Local<v8::Value> script_value =
         world_id_ ? frame->GetScriptController().ExecuteScriptInIsolatedWorld(
-                        world_id_, source, KURL(), kNotSharableCrossOrigin)
+                        world_id_, source, KURL(), kSharableCrossOrigin)
                   : frame->GetScriptController()
                         .ExecuteScriptInMainWorldAndReturnValue(
-                            source, KURL(), kNotSharableCrossOrigin);
+                            source, KURL(), kSharableCrossOrigin);
     results.push_back(script_value);
   }
 
@@ -215,7 +217,7 @@ void PausableScriptExecutor::RunAsync(BlockingOption blocking) {
   DCHECK(context);
   blocking_option_ = blocking;
   if (blocking_option_ == kOnloadBlocking)
-    ToDocument(GetExecutionContext())->IncrementLoadEventDelayCount();
+    To<Document>(GetExecutionContext())->IncrementLoadEventDelayCount();
 
   StartOneShot(TimeDelta(), FROM_HERE);
   PauseIfNeeded();
@@ -229,7 +231,7 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
 
   ScriptState::Scope script_scope(script_state_);
   Vector<v8::Local<v8::Value>> results =
-      executor_->Execute(ToDocument(GetExecutionContext())->GetFrame());
+      executor_->Execute(To<Document>(GetExecutionContext())->GetFrame());
 
   // The script may have removed the frame, in which case contextDestroyed()
   // will have handled the disposal/callback.
@@ -237,7 +239,7 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
     return;
 
   if (blocking_option_ == kOnloadBlocking)
-    ToDocument(GetExecutionContext())->DecrementLoadEventDelayCount();
+    To<Document>(GetExecutionContext())->DecrementLoadEventDelayCount();
 
   if (callback_)
     callback_->Completed(results);

@@ -17,10 +17,12 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/browser/frame_host/render_widget_host_view_guest.h"
@@ -30,7 +32,8 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/input_messages.h"
 #include "content/common/text_input_state.h"
-#include "content/common/view_messages.h"
+#include "content/common/widget_messages.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_widget_host_view_mac_delegate.h"
@@ -218,6 +221,26 @@ id MockPinchEvent(NSEventPhase phase, double magnification) {
       andReturnValue:OCMOCK_VALUE(modifierFlags)] modifierFlags];
   [(NSEvent*)[[event stub]
       andReturnValue:OCMOCK_VALUE(magnification)] magnification];
+  return event;
+}
+
+id MockSmartMagnifyEvent() {
+  id event = [OCMockObject mockForClass:[NSEvent class]];
+  NSEventType type = NSEventTypeSmartMagnify;
+  NSPoint locationInWindow = NSMakePoint(0, 0);
+  CGFloat deltaX = 0;
+  CGFloat deltaY = 0;
+  NSTimeInterval timestamp = 1;
+  NSUInteger modifierFlags = 0;
+
+  [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(type)] type];
+  [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(locationInWindow)]
+      locationInWindow];
+  [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(deltaX)] deltaX];
+  [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(deltaY)] deltaY];
+  [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(timestamp)] timestamp];
+  [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(modifierFlags)]
+      modifierFlags];
   return event;
 }
 
@@ -531,7 +554,7 @@ TEST_F(RenderWidgetHostViewMacTest, GetFirstRectForCharacterRangeCaretCase) {
 
   gfx::Rect caret_rect(10, 11, 0, 10);
   gfx::Range caret_range(0, 0);
-  ViewHostMsg_SelectionBounds_Params params;
+  WidgetHostMsg_SelectionBounds_Params params;
 
   gfx::Rect rect;
   gfx::Range actual_range;
@@ -1132,8 +1155,8 @@ TEST_F(RenderWidgetHostViewMacTest, GuestViewDoesNotLeak) {
 
   // Let |guest_rwhv_weak| have a chance to delete itself.
   base::RunLoop run_loop;
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE, run_loop.QuitClosure());
+  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                           run_loop.QuitClosure());
   run_loop.Run();
 
   ASSERT_FALSE(guest_rwhv_weak.get());
@@ -1155,7 +1178,7 @@ TEST_F(RenderWidgetHostViewMacTest, Background) {
   EXPECT_EQ(static_cast<unsigned>(SK_ColorRED),
             *rwhv_mac_->GetBackgroundColor());
   set_background = process_host_->sink().GetUniqueMessageMatching(
-      ViewMsg_SetBackgroundOpaque::ID);
+      WidgetMsg_SetBackgroundOpaque::ID);
   ASSERT_FALSE(set_background);
 
   // Set the color to blue. This should not send an opacity message.
@@ -1163,7 +1186,7 @@ TEST_F(RenderWidgetHostViewMacTest, Background) {
   EXPECT_EQ(static_cast<unsigned>(SK_ColorBLUE),
             *rwhv_mac_->GetBackgroundColor());
   set_background = process_host_->sink().GetUniqueMessageMatching(
-      ViewMsg_SetBackgroundOpaque::ID);
+      WidgetMsg_SetBackgroundOpaque::ID);
   ASSERT_FALSE(set_background);
 
   // Set the color back to transparent. The background color should now be
@@ -1174,9 +1197,9 @@ TEST_F(RenderWidgetHostViewMacTest, Background) {
   EXPECT_EQ(static_cast<unsigned>(SK_ColorWHITE),
             *rwhv_mac_->GetBackgroundColor());
   set_background = process_host_->sink().GetUniqueMessageMatching(
-      ViewMsg_SetBackgroundOpaque::ID);
+      WidgetMsg_SetBackgroundOpaque::ID);
   ASSERT_TRUE(set_background);
-  ViewMsg_SetBackgroundOpaque::Read(set_background, &sent_background);
+  WidgetMsg_SetBackgroundOpaque::Read(set_background, &sent_background);
   EXPECT_FALSE(std::get<0>(sent_background));
 
   // Set the color to red. This should send an opacity message.
@@ -1185,9 +1208,9 @@ TEST_F(RenderWidgetHostViewMacTest, Background) {
   EXPECT_EQ(static_cast<unsigned>(SK_ColorBLUE),
             *rwhv_mac_->GetBackgroundColor());
   set_background = process_host_->sink().GetUniqueMessageMatching(
-      ViewMsg_SetBackgroundOpaque::ID);
+      WidgetMsg_SetBackgroundOpaque::ID);
   ASSERT_TRUE(set_background);
-  ViewMsg_SetBackgroundOpaque::Read(set_background, &sent_background);
+  WidgetMsg_SetBackgroundOpaque::Read(set_background, &sent_background);
   EXPECT_TRUE(std::get<0>(sent_background));
 }
 
@@ -1580,6 +1603,41 @@ TEST_P(RenderWidgetHostViewMacPinchTest, PinchThresholding) {
   }
 }
 
+// Tests that the NSEventTypeSmartMagnify event is first offered as a mouse
+// wheel event and is then sent as a GestureDoubleTap to invoke the double-tap
+// to zoom logic.
+TEST_F(RenderWidgetHostViewMacTest, DoubleTapZoom) {
+  NSEvent* smartMagnifyEvent = MockSmartMagnifyEvent();
+  [rwhv_cocoa_ smartMagnifyWithEvent:smartMagnifyEvent];
+  base::RunLoop().RunUntilIdle();
+
+  MockWidgetInputHandler::MessageVector events =
+      host_->GetAndResetDispatchedMessages();
+  EXPECT_EQ("MouseWheel", GetMessageNames(events));
+
+  events[0]->ToEvent()->CallCallback(INPUT_EVENT_ACK_STATE_NO_CONSUMER_EXISTS);
+
+  events = host_->GetAndResetDispatchedMessages();
+  EXPECT_EQ("GestureDoubleTap", GetMessageNames(events));
+}
+
+// Tests that the NSEventTypeSmartMagnify event may be consumed by a wheel
+// listener to prevent the scale change.
+TEST_F(RenderWidgetHostViewMacTest, DoubleTapZoomConsumed) {
+  NSEvent* smartMagnifyEvent = MockSmartMagnifyEvent();
+  [rwhv_cocoa_ smartMagnifyWithEvent:smartMagnifyEvent];
+  base::RunLoop().RunUntilIdle();
+
+  MockWidgetInputHandler::MessageVector events =
+      host_->GetAndResetDispatchedMessages();
+  EXPECT_EQ("MouseWheel", GetMessageNames(events));
+
+  events[0]->ToEvent()->CallCallback(INPUT_EVENT_ACK_STATE_CONSUMED);
+
+  events = host_->GetAndResetDispatchedMessages();
+  EXPECT_EQ(0U, events.size());
+}
+
 TEST_F(RenderWidgetHostViewMacTest, EventLatencyOSMouseWheelHistogram) {
   base::HistogramTester histogram_tester;
 
@@ -1957,7 +2015,7 @@ TEST_F(RenderWidgetHostViewMacTest, ClearCompositorFrame) {
   BrowserCompositorMac* browser_compositor = rwhv_mac_->BrowserCompositor();
   ui::Compositor* ui_compositor = browser_compositor->GetCompositor();
   EXPECT_NE(ui_compositor, nullptr);
-  EXPECT_TRUE(ui_compositor->IsLocked());
+  EXPECT_FALSE(ui_compositor->IsLocked());
   rwhv_mac_->ClearCompositorFrame();
   EXPECT_EQ(browser_compositor->GetCompositor(), ui_compositor);
   EXPECT_FALSE(ui_compositor->IsLocked());
@@ -1972,7 +2030,8 @@ TEST_F(RenderWidgetHostViewMacTest, ChildAllocationAcceptedInParent) {
   host_->SetAutoResize(true, gfx::Size(50, 50), gfx::Size(100, 100));
 
   viz::ChildLocalSurfaceIdAllocator child_allocator;
-  child_allocator.UpdateFromParent(local_surface_id1);
+  child_allocator.UpdateFromParent(
+      local_surface_id1, rwhv_mac_->GetLocalSurfaceIdAllocationTime());
   viz::LocalSurfaceId local_surface_id2 = child_allocator.GenerateId();
   cc::RenderFrameMetadata metadata;
   metadata.viewport_size_in_pixels = gfx::Size(75, 75);
@@ -1992,7 +2051,8 @@ TEST_F(RenderWidgetHostViewMacTest, ConflictingAllocationsResolve) {
 
   host_->SetAutoResize(true, gfx::Size(50, 50), gfx::Size(100, 100));
   viz::ChildLocalSurfaceIdAllocator child_allocator;
-  child_allocator.UpdateFromParent(local_surface_id1);
+  child_allocator.UpdateFromParent(
+      local_surface_id1, rwhv_mac_->GetLocalSurfaceIdAllocationTime());
   viz::LocalSurfaceId local_surface_id2 = child_allocator.GenerateId();
   cc::RenderFrameMetadata metadata;
   metadata.viewport_size_in_pixels = gfx::Size(75, 75);

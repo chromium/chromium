@@ -58,7 +58,7 @@ class CORE_EXPORT ForwardGraphemeBoundaryStateMachine {
   // Used for composing supplementary code point with surrogate pairs.
   UChar pending_code_unit_ = 0;
 
-  // The code point immediately before the m_BoundaryOffset.
+  // The code point immediately before the boundary_offset_.
   UChar32 prev_code_point_;
 
   // The relative offset from the begging of this state machine.

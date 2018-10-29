@@ -46,10 +46,12 @@ var tests = [
     viewer.isPrintPreview_ = true;
     scriptingAPI.setKeyEventCallback(chrome.test.callbackPass(function(e) {
       chrome.test.assertEq(27, e.keyCode);
+      chrome.test.assertEq('Escape', e.code);
     }));
     var e = document.createEvent('Event');
     e.initEvent('keydown');
     e.keyCode = 27;
+    e.code = 'Escape';
     document.dispatchEvent(e);
   }
 ];

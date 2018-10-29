@@ -16,8 +16,8 @@
 #include "base/test/bind_test_util.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/web_applications/components/install_result_code.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_installation_task.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -41,31 +41,35 @@ const char kXyzWebAppUrl[] = "https://xyz.example";
 
 const char kWrongUrl[] = "https://foobar.example";
 
-web_app::PendingAppManager::AppInfo GetFooAppInfo() {
+web_app::PendingAppManager::AppInfo GetFooAppInfo(
+    bool override_previous_user_uninstall = web_app::PendingAppManager::
+        AppInfo::kDefaultOverridePreviousUserUninstall) {
   return web_app::PendingAppManager::AppInfo(
-      GURL(kFooWebAppUrl), web_app::PendingAppManager::LaunchContainer::kTab,
-      web_app::PendingAppManager::InstallSource::kExternalPolicy);
+      GURL(kFooWebAppUrl), web_app::LaunchContainer::kTab,
+      web_app::InstallSource::kExternalPolicy,
+      web_app::PendingAppManager::AppInfo::kDefaultCreateShortcuts,
+      override_previous_user_uninstall);
 }
 
 web_app::PendingAppManager::AppInfo GetBarAppInfo() {
   return web_app::PendingAppManager::AppInfo(
-      GURL(kBarWebAppUrl), web_app::PendingAppManager::LaunchContainer::kWindow,
-      web_app::PendingAppManager::InstallSource::kExternalPolicy);
+      GURL(kBarWebAppUrl), web_app::LaunchContainer::kWindow,
+      web_app::InstallSource::kExternalPolicy);
 }
 
 web_app::PendingAppManager::AppInfo GetQuxAppInfo() {
   return web_app::PendingAppManager::AppInfo(
-      GURL(kQuxWebAppUrl), web_app::PendingAppManager::LaunchContainer::kWindow,
-      web_app::PendingAppManager::InstallSource::kExternalPolicy);
+      GURL(kQuxWebAppUrl), web_app::LaunchContainer::kWindow,
+      web_app::InstallSource::kExternalPolicy);
 }
 
 web_app::PendingAppManager::AppInfo GetXyzAppInfo() {
   return web_app::PendingAppManager::AppInfo(
-      GURL(kXyzWebAppUrl), web_app::PendingAppManager::LaunchContainer::kWindow,
-      web_app::PendingAppManager::InstallSource::kExternalPolicy);
+      GURL(kXyzWebAppUrl), web_app::LaunchContainer::kWindow,
+      web_app::InstallSource::kExternalPolicy);
 }
 
-scoped_refptr<Extension> CreateDummyExtension(const std::string& id) {
+scoped_refptr<const Extension> CreateDummyExtension(const std::string& id) {
   return ExtensionBuilder("Dummy name")
       .SetLocation(Manifest::EXTERNAL_POLICY)
       .SetID(id)
@@ -121,11 +125,10 @@ class TestBookmarkAppInstallationTask : public BookmarkAppInstallationTask {
   void InstallWebAppOrShortcutFromWebContents(
       content::WebContents* web_contents,
       BookmarkAppInstallationTask::ResultCallback callback) override {
-    BookmarkAppInstallationTask::ResultCode result_code =
-        BookmarkAppInstallationTask::ResultCode::kInstallationFailed;
+    auto result_code = web_app::InstallResultCode::kFailedUnknownReason;
     std::string app_id;
     if (succeeds_) {
-      result_code = BookmarkAppInstallationTask::ResultCode::kSuccess;
+      result_code = web_app::InstallResultCode::kSuccess;
       app_id = GenerateFakeAppId(app_info().url);
       ExtensionRegistry::Get(profile_)->AddEnabled(
           CreateDummyExtension(app_id));
@@ -882,7 +885,6 @@ TEST_F(PendingBookmarkAppManagerTest, ExtensionUninstalled) {
 
   EXPECT_EQ(1u, installation_task_run_count());
   EXPECT_TRUE(app_installed());
-
   ResetResults();
 
   // Simulate the extension for the app getting uninstalled.
@@ -926,7 +928,6 @@ TEST_F(PendingBookmarkAppManagerTest, ExternalExtensionUninstalled) {
 
   EXPECT_EQ(1u, installation_task_run_count());
   EXPECT_TRUE(app_installed());
-
   ResetResults();
 
   // Simulate external extension for the app getting uninstalled by the user.
@@ -934,7 +935,6 @@ TEST_F(PendingBookmarkAppManagerTest, ExternalExtensionUninstalled) {
   ExtensionRegistry::Get(profile())->RemoveEnabled(app_id);
   ExtensionPrefs::Get(profile())->OnExtensionUninstalled(
       app_id, Manifest::EXTERNAL_POLICY, false /* external_uninstall */);
-  ResetResults();
 
   // Trying to uninstall the app should fail and have no effect.
   pending_app_manager->UninstallApps(
@@ -946,17 +946,27 @@ TEST_F(PendingBookmarkAppManagerTest, ExternalExtensionUninstalled) {
   EXPECT_EQ(GURL(kFooWebAppUrl), uninstall_callback_url());
   EXPECT_FALSE(last_uninstall_successful());
   EXPECT_EQ(0u, uninstalls_count());
+  ResetResults();
 
-  pending_app_manager->Install(
-      GetFooAppInfo(),
-      base::BindOnce(&PendingBookmarkAppManagerTest::InstallCallback,
-                     base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  // The extension was uninstalled by the user. Installing again should succeed
+  // or fail depending on whether we set override_previous_user_uninstall. We
+  // try with override_previous_user_uninstall false first, true second.
+  for (unsigned int i = 0; i < 2; i++) {
+    bool override_previous_user_uninstall = i > 0;
 
-  // The extension was uninstalled by the user, we shouldn't try to install it
-  // again.
-  EXPECT_EQ(0u, installation_task_run_count());
-  EXPECT_FALSE(app_installed());
+    pending_app_manager->Install(
+        GetFooAppInfo(override_previous_user_uninstall),
+        base::BindOnce(&PendingBookmarkAppManagerTest::InstallCallback,
+                       base::Unretained(this)));
+    base::RunLoop().RunUntilIdle();
+    if (override_previous_user_uninstall) {
+      SuccessfullyLoad(GURL(kFooWebAppUrl));
+    }
+
+    EXPECT_EQ(i, installation_task_run_count());
+    EXPECT_EQ(override_previous_user_uninstall, app_installed());
+    ResetResults();
+  }
 }
 
 TEST_F(PendingBookmarkAppManagerTest, UninstallApps_Succeeds) {
@@ -970,7 +980,6 @@ TEST_F(PendingBookmarkAppManagerTest, UninstallApps_Succeeds) {
   SuccessfullyLoad(GURL(kFooWebAppUrl));
 
   EXPECT_TRUE(app_installed());
-
   ResetResults();
 
   pending_app_manager->UninstallApps(

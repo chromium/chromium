@@ -13,24 +13,24 @@
 
 namespace blink {
 
+class NGBoxFragmentBuilder;
 enum class NGOutlineType;
+
 class CORE_EXPORT NGPhysicalBoxFragment final
     : public NGPhysicalContainerFragment {
  public:
-  // This modifies the passed-in children vector.
-  NGPhysicalBoxFragment(LayoutObject* layout_object,
-                        const ComputedStyle& style,
-                        NGStyleVariant style_variant,
-                        NGPhysicalSize size,
-                        Vector<NGLink>& children,
-                        const NGPhysicalBoxStrut& border,
-                        const NGPhysicalBoxStrut& padding,
-                        const NGPhysicalOffsetRect& contents_ink_overflow,
-                        Vector<NGBaseline>& baselines,
-                        NGBoxType box_type,
-                        bool is_old_layout_root,
-                        unsigned,  // NGBorderEdges::Physical
-                        scoped_refptr<NGBreakToken> break_token = nullptr);
+  static scoped_refptr<const NGPhysicalBoxFragment> Create(
+      NGBoxFragmentBuilder* builder,
+      WritingMode block_or_line_writing_mode);
+
+  ~NGPhysicalBoxFragment() {
+    for (const NGLinkStorage& child : Children())
+      child.fragment->Release();
+  }
+
+  ChildLinkList Children() const final {
+    return ChildLinkList(num_children_, &children_[0]);
+  }
 
   const NGBaseline* Baseline(const NGBaselineRequest&) const;
 
@@ -49,6 +49,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   // overflow clip; i.e., AllowOverflowClip() returns false.
   bool HasOverflowClip() const;
   bool ShouldClipOverflow() const;
+  bool HasControlClip() const;
 
   NGPhysicalOffsetRect ScrollableOverflow() const;
 
@@ -68,6 +69,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   // Ink overflow including contents, in the local coordinates.
   NGPhysicalOffsetRect InkOverflow(bool apply_clip) const;
 
+  // Ink overflow of children in local coordinates.
+  NGPhysicalOffsetRect ContentsInkOverflow() const;
+
+  NGPhysicalOffsetRect ComputeContentsInkOverflow() const;
+
   // Fragment offset is this fragment's offset from parent.
   // Needed to compensate for LayoutInline Legacy code offsets.
   void AddSelfOutlineRects(Vector<LayoutRect>* outline_rects,
@@ -79,17 +85,24 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   scoped_refptr<const NGPhysicalFragment> CloneWithoutOffset() const;
 
  private:
+  NGPhysicalBoxFragment(NGBoxFragmentBuilder* builder,
+                        WritingMode block_or_line_writing_mode);
+
   Vector<NGBaseline> baselines_;
   NGPhysicalBoxStrut borders_;
   NGPhysicalBoxStrut padding_;
   NGPhysicalOffsetRect descendant_outlines_;
+  NGLinkStorage children_[];
 };
 
-DEFINE_TYPE_CASTS(NGPhysicalBoxFragment,
-                  NGPhysicalFragment,
-                  fragment,
-                  fragment->Type() == NGPhysicalFragment::kFragmentBox,
-                  fragment.Type() == NGPhysicalFragment::kFragmentBox);
+DEFINE_TYPE_CASTS(
+    NGPhysicalBoxFragment,
+    NGPhysicalFragment,
+    fragment,
+    (fragment->Type() == NGPhysicalFragment::kFragmentBox ||
+     fragment->Type() == NGPhysicalFragment::kFragmentRenderedLegend),
+    (fragment.Type() == NGPhysicalFragment::kFragmentBox ||
+     fragment.Type() == NGPhysicalFragment::kFragmentRenderedLegend));
 
 }  // namespace blink
 

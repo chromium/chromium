@@ -1,100 +1,75 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/linux/pkg_config.gni")
-
 assert(is_linux)
 
-declare_args() {
-  # Controls whether the build should use the version of libdrm
-  # library shipped with the system. In release builds of Chrome OS we
-  # use the system version, but when building on dev workstations we
-  # bundle it because Ubuntu doesn't ship a usable version.
-  use_system_libdrm = false
-}
+config("libdrm_config") {
+  # TODO(thomasanderson): Remove this hack once
+  # https://patchwork.kernel.org/patch/10545295/ lands.
+  defines = [ "typeof(x)=__typeof__(x)" ]
 
-if (!use_system_libdrm) {
-  config("libdrm_config") {
-    # TODO(thomasanderson): Remove this hack once
-    # https://patchwork.kernel.org/patch/10545295/ lands.
-    defines = [ "typeof(x)=__typeof__(x)" ]
+  include_dirs = [
+    "src",
+    "src/include",
+    "src/include/drm",
+  ]
 
-    include_dirs = [
-      "src",
-      "src/include",
-      "src/include/drm",
-    ]
-
-    # libdrm uses macros defined by <sys/types.h> which are being moved to
-    # <sys/sysmacros.h>.  GLIBC headers give a pragma warning in this case.
-    # Suppress this warning for now.  This may be removed once
-    # https://patchwork.kernel.org/patch/9628231/ lands.
-    cflags = [ "-Wno-#pragma-messages" ]
-    if (is_clang) {
-      cflags += [ "-Wno-enum-conversion" ]
-    }
-  }
-
-  config("libdrm_exynos_include_config") {
-    include_dirs = [ "//third_party/libdrm/src/exynos" ]
-  }
-
-  static_library("libdrm") {
-    sources = [
-      "src/xf86drm.c",
-      "src/xf86drmHash.c",
-      "src/xf86drmMode.c",
-      "src/xf86drmRandom.c",
-    ]
-
-    include_dirs = [
-      "src",
-      "src/include",
-    ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    cflags = [
-      # xf86drm.c uses readdir_r, which has been deprecated as of
-      # glibc-2.24.  This causes a build error when using the Debian
-      # Stretch sysroot.
-      "-Wno-deprecated-declarations",
-    ]
-
-    public_configs = [ ":libdrm_config" ]
-  }
-
-  executable("modetest") {
-    sources = [
-      "src/tests/modetest/buffers.c",
-      "src/tests/modetest/buffers.h",
-      "src/tests/modetest/cursor.c",
-      "src/tests/modetest/cursor.h",
-      "src/tests/modetest/modetest.c",
-      "src/tests/util/common.h",
-      "src/tests/util/format.c",
-      "src/tests/util/format.h",
-      "src/tests/util/kms.c",
-      "src/tests/util/kms.h",
-      "src/tests/util/pattern.c",
-      "src/tests/util/pattern.h",
-    ]
-
-    include_dirs = [
-      "src/tests",
-      "src/tests/modetest",
-    ]
-
-    deps = [
-      ":libdrm",
-    ]
+  # libdrm uses macros defined by <sys/types.h> which are being moved to
+  # <sys/sysmacros.h>.  GLIBC headers give a pragma warning in this case.
+  # Suppress this warning for now.  This may be removed once
+  # https://patchwork.kernel.org/patch/9628231/ lands.
+  cflags = [ "-Wno-#pragma-messages" ]
+  if (is_clang) {
+    cflags += [ "-Wno-enum-conversion" ]
   }
 }
 
-if (use_system_libdrm) {
-  pkg_config("libdrm_config") {
-    packages = [ "libdrm" ]
-  }
-  group("libdrm") {
-    public_configs = [ ":libdrm_config" ]
-  }
+static_library("libdrm") {
+  sources = [
+    "src/xf86drm.c",
+    "src/xf86drmHash.c",
+    "src/xf86drmMode.c",
+    "src/xf86drmRandom.c",
+  ]
+
+  include_dirs = [
+    "src",
+    "src/include",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  cflags = [
+    # xf86drm.c uses readdir_r, which has been deprecated as of
+    # glibc-2.24.  This causes a build error when using the Debian
+    # Stretch sysroot.
+    "-Wno-deprecated-declarations",
+  ]
+
+  public_configs = [ ":libdrm_config" ]
+}
+
+executable("modetest") {
+  sources = [
+    "src/tests/modetest/buffers.c",
+    "src/tests/modetest/buffers.h",
+    "src/tests/modetest/cursor.c",
+    "src/tests/modetest/cursor.h",
+    "src/tests/modetest/modetest.c",
+    "src/tests/util/common.h",
+    "src/tests/util/format.c",
+    "src/tests/util/format.h",
+    "src/tests/util/kms.c",
+    "src/tests/util/kms.h",
+    "src/tests/util/pattern.c",
+    "src/tests/util/pattern.h",
+  ]
+
+  include_dirs = [
+    "src/tests",
+    "src/tests/modetest",
+  ]
+
+  deps = [
+    ":libdrm",
+  ]
 }

@@ -22,6 +22,7 @@
 #include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
@@ -71,6 +72,7 @@
 #include "components/crash/content/app/dump_hung_process_with_ptype.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
@@ -81,6 +83,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/win/hidden_window.h"
 #include "ui/base/win/message_box_win.h"
+#include "ui/display/win/dpi.h"
 #include "ui/gfx/platform_font_win.h"
 #include "ui/gfx/switches.h"
 #include "ui/strings/grit/app_locale_settings.h"
@@ -108,8 +111,10 @@ void DumpHungRendererProcessImpl(const base::Process& renderer) {
 }
 
 // gfx::Font callbacks
-void AdjustUIFont(LOGFONT* logfont) {
-  l10n_util::AdjustUIFont(logfont);
+void AdjustUIFont(gfx::PlatformFontWin::FontAdjustment* font_adjustment) {
+  l10n_util::NeedOverrideDefaultUIFont(&font_adjustment->font_family_override,
+                                       &font_adjustment->font_scale);
+  font_adjustment->font_scale *= display::win::GetAccessibilityFontScale();
 }
 
 int GetMinimumFontSize() {
@@ -227,8 +232,7 @@ void DetectFaultTolerantHeap() {
 // load event to the ModuleDatabase.
 void HandleModuleLoadEventWithoutTimeDateStamp(
     const base::FilePath& module_path,
-    size_t module_size,
-    uintptr_t load_address) {
+    size_t module_size) {
   uint32_t size_of_image = 0;
   uint32_t time_date_stamp = 0;
   bool got_time_date_stamp = GetModuleImageSizeAndTimeDateStamp(
@@ -243,9 +247,8 @@ void HandleModuleLoadEventWithoutTimeDateStamp(
   if (!got_time_date_stamp)
     return;
 
-  ModuleDatabase::GetInstance()->OnModuleLoad(content::PROCESS_TYPE_BROWSER,
-                                              module_path, module_size,
-                                              time_date_stamp, load_address);
+  ModuleDatabase::GetInstance()->OnModuleLoad(
+      content::PROCESS_TYPE_BROWSER, module_path, module_size, time_date_stamp);
 }
 
 // Helper function for getting the module size associated with a module in this
@@ -326,8 +329,6 @@ bool TryGetModuleTimeDateStamp(void* module_load_address,
 // them to the ModuleDatabase.
 void OnModuleEvent(const ModuleWatcher::ModuleEvent& event) {
   auto* module_database = ModuleDatabase::GetInstance();
-  uintptr_t load_address =
-      reinterpret_cast<uintptr_t>(event.module_load_address);
 
   switch (event.event_type) {
     case mojom::ModuleEventType::MODULE_ALREADY_LOADED: {
@@ -339,7 +340,7 @@ void OnModuleEvent(const ModuleWatcher::ModuleEvent& event) {
                                     &time_date_stamp)) {
         module_database->OnModuleLoad(content::PROCESS_TYPE_BROWSER,
                                       event.module_path, event.module_size,
-                                      time_date_stamp, load_address);
+                                      time_date_stamp);
       } else {
         // Failed to get the TimeDateStamp directly from memory. The next step
         // to try is to read the file on disk. This must be done in a blocking
@@ -349,14 +350,14 @@ void OnModuleEvent(const ModuleWatcher::ModuleEvent& event) {
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
             base::Bind(&HandleModuleLoadEventWithoutTimeDateStamp,
-                       event.module_path, event.module_size, load_address));
+                       event.module_path, event.module_size));
       }
       return;
     }
     case mojom::ModuleEventType::MODULE_LOADED: {
       module_database->OnModuleLoad(
           content::PROCESS_TYPE_BROWSER, event.module_path, event.module_size,
-          GetModuleTimeDateStamp(event.module_load_address), load_address);
+          GetModuleTimeDateStamp(event.module_load_address));
       return;
     }
   }
@@ -399,8 +400,8 @@ void MaybePostSettingsResetPrompt() {
   if (base::FeatureList::IsEnabled(safe_browsing::kSettingsResetPrompt)) {
     content::BrowserThread::PostAfterStartupTask(
         FROM_HERE,
-        content::BrowserThread::GetTaskRunnerForThread(
-            content::BrowserThread::UI),
+        base::CreateSingleThreadTaskRunnerWithTraits(
+            {content::BrowserThread::UI}),
         base::Bind(safe_browsing::MaybeShowSettingsResetPromptWithDelay));
   }
 }
@@ -454,10 +455,8 @@ int DoUninstallTasks(bool chrome_still_running) {
 
 ChromeBrowserMainPartsWin::ChromeBrowserMainPartsWin(
     const content::MainFunctionParams& parameters,
-    std::unique_ptr<ui::DataPack> data_pack,
     ChromeFeatureListCreator* chrome_feature_list_creator)
     : ChromeBrowserMainParts(parameters,
-                             std::move(data_pack),
                              chrome_feature_list_creator) {}
 
 ChromeBrowserMainPartsWin::~ChromeBrowserMainPartsWin() {
@@ -465,8 +464,8 @@ ChromeBrowserMainPartsWin::~ChromeBrowserMainPartsWin() {
 
 void ChromeBrowserMainPartsWin::ToolkitInitialized() {
   ChromeBrowserMainParts::ToolkitInitialized();
-  gfx::PlatformFontWin::adjust_font_callback = &AdjustUIFont;
-  gfx::PlatformFontWin::get_minimum_font_size_callback = &GetMinimumFontSize;
+  gfx::PlatformFontWin::SetAdjustFontCallback(&AdjustUIFont);
+  gfx::PlatformFontWin::SetGetMinimumFontSizeCallback(&GetMinimumFontSize);
   ui::CursorLoaderWin::SetCursorResourceModule(chrome::kBrowserResourcesDll);
 }
 
@@ -571,11 +570,9 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
 
   // Record UMA data about whether the fault-tolerant heap is enabled.
   // Use a delayed task to minimize the impact on startup time.
-  content::BrowserThread::PostDelayedTask(
-      content::BrowserThread::UI,
-      FROM_HERE,
-      base::Bind(&DetectFaultTolerantHeap),
-      base::TimeDelta::FromMinutes(1));
+  base::PostDelayedTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
+                                  base::Bind(&DetectFaultTolerantHeap),
+                                  base::TimeDelta::FromMinutes(1));
 
   // Start the swap thrashing monitor if it's enabled.
   //
@@ -745,6 +742,6 @@ base::string16 TranslationDelegate::GetLocalizedString(
 
 // static
 void ChromeBrowserMainPartsWin::SetupInstallerUtilStrings() {
-  CR_DEFINE_STATIC_LOCAL(TranslationDelegate, delegate, ());
-  installer::SetTranslationDelegate(&delegate);
+  static base::NoDestructor<TranslationDelegate> delegate;
+  installer::SetTranslationDelegate(delegate.get());
 }

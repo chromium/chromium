@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/content_verifier_test_utils.h"
@@ -181,7 +182,13 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScripts) {
                              "jmllhlobpjcnnomjlipadejplhmheiif", "script.js");
 }
 
-IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScriptsInLocales) {
+// crbug.com/897059 tracks test flakiness.
+#if defined(OS_WIN)
+#define MAYBE_ContentScriptsInLocales DISABLED_ContentScriptsInLocales
+#else
+#define MAYBE_ContentScriptsInLocales ContentScriptsInLocales
+#endif
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest, MAYBE_ContentScriptsInLocales) {
   TestContentScriptExtension("content_verifier/content_script_locales.crx",
                              "jaghonccckpcikmliipifpoodmeofoon",
                              "_locales/en/content_script.js");

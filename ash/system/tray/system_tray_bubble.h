@@ -11,9 +11,9 @@
 #include "ash/login_status.h"
 #include "ash/system/tray/system_tray_item.h"
 #include "ash/system/tray/system_tray_view.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
-#include "ui/views/bubble/tray_bubble_view.h"
 
 namespace ash {
 class SystemTray;
@@ -35,9 +35,9 @@ class SystemTrayBubble {
                 const std::vector<ash::SystemTrayItem*>& items,
                 SystemTrayView::SystemTrayType system_tray_type,
                 LoginStatus login_status,
-                views::TrayBubbleView::InitParams* init_params);
+                TrayBubbleView::InitParams* init_params);
 
-  views::TrayBubbleView* bubble_view() const { return bubble_view_; }
+  TrayBubbleView* bubble_view() const { return bubble_view_; }
   SystemTrayView* system_tray_view() const { return system_tray_view_; }
 
   void BubbleViewDestroyed();
@@ -64,7 +64,7 @@ class SystemTrayBubble {
   // |bubble_view_|.
   SystemTrayView* system_tray_view_ = nullptr;
   // Content view of the bubble.
-  views::TrayBubbleView* bubble_view_ = nullptr;
+  TrayBubbleView* bubble_view_ = nullptr;
 
   // Tracks the views created in the last call to CreateItemViews().
   std::map<SystemTrayItemUmaType, views::View*> tray_item_view_map_;

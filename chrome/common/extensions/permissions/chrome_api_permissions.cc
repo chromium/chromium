@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
-#include "extensions/common/permissions/media_galleries_permission.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "extensions/common/permissions/settings_override_permission.h"
 
@@ -85,7 +84,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermission::kProcesses, "processes"},
     {APIPermission::kSessions, "sessions"},
     {APIPermission::kSignedInDevices, "signedInDevices"},
-    {APIPermission::kSyncFileSystem, "syncFileSystem"},
     {APIPermission::kTab, "tabs"},
     {APIPermission::kTopSites, "topSites"},
     {APIPermission::kTts, "tts", APIPermissionInfo::kFlagCannotBeOptional},
@@ -125,8 +123,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kMediaRouterPrivate, "mediaRouterPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kMusicManagerPrivate, "musicManagerPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kNetworkingCastPrivate, "networking.castPrivate"},
     {APIPermission::kPreferencesPrivate, "preferencesPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
@@ -150,8 +146,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kWebstorePrivate, "webstorePrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kStreamsPrivate, "streamsPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kEnterprisePlatformKeysPrivate,
      "enterprise.platformKeysPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
@@ -168,12 +162,9 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kFirstRunPrivate, "firstRunPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kInlineInstallPrivate, "inlineInstallPrivate"},
     {APIPermission::kSettingsPrivate, "settingsPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kAutofillPrivate, "autofillPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kWebstoreWidgetPrivate, "webstoreWidgetPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kPasswordsPrivate, "passwordsPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
@@ -207,9 +198,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     // Platform-app permissions.
 
     {APIPermission::kFileSystemProvider, "fileSystemProvider"},
-    {APIPermission::kMediaGalleries, "mediaGalleries",
-     APIPermissionInfo::kFlagNone,
-     &CreateAPIPermission<MediaGalleriesPermission>},
     {APIPermission::kPointerLock, "pointerLock"},
     {APIPermission::kCastStreaming, "cast.streaming"},
     {APIPermission::kLauncherSearchProvider, "launcherSearchProvider"},
@@ -235,10 +223,12 @@ base::span<const APIPermissionInfo::InitInfo> GetPermissionInfos() {
   return base::make_span(permissions_to_register);
 }
 
-std::vector<Alias> GetPermissionAliases() {
+base::span<const Alias> GetPermissionAliases() {
   // In alias constructor, first value is the alias name; second value is the
   // real name. See also alias.h.
-  return {Alias("windows", "tabs")};
+  static constexpr Alias aliases[] = {Alias("windows", "tabs")};
+
+  return base::make_span(aliases);
 }
 
 }  // namespace chrome_api_permissions

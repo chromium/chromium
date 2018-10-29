@@ -451,6 +451,10 @@ void HTMLFormElement::ScheduleFormSubmission(FormSubmission* submission) {
   }
 
   if (submission->Action().ProtocolIsJavaScript()) {
+    if (FastHasAttribute(disabledAttr)) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kFormDisabledAttributePresentAndSubmit);
+    }
     GetDocument()
         .GetFrame()
         ->GetScriptController()
@@ -475,6 +479,10 @@ void HTMLFormElement::ScheduleFormSubmission(FormSubmission* submission) {
     UseCounter::Count(GetDocument().GetFrame(),
                       WebFeature::kMixedContentFormsSubmitted);
   }
+  if (FastHasAttribute(disabledAttr)) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kFormDisabledAttributePresentAndSubmit);
+  }
 
   // TODO(lukasza): Investigate if the code below can uniformly handle remote
   // and local frames (i.e. by calling virtual Frame::navigate from a timer).
@@ -487,10 +495,11 @@ void HTMLFormElement::ScheduleFormSubmission(FormSubmission* submission) {
     FrameLoadRequest frame_load_request =
         submission->CreateFrameLoadRequest(&GetDocument());
     frame_load_request.GetResourceRequest().SetHasUserGesture(
-        Frame::HasTransientUserActivation(GetDocument().GetFrame()));
+        LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
     // TODO(dgozman): we lose information about triggering event and desired
     // navigation policy here.
-    ToRemoteFrame(target_frame)->Navigate(frame_load_request);
+    ToRemoteFrame(target_frame)
+        ->Navigate(frame_load_request, WebFrameLoadType::kStandard);
   }
 }
 
@@ -546,6 +555,8 @@ void HTMLFormElement::ParseAttribute(
     attributes_.UpdateEncodingType(params.new_value);
   } else if (name == accept_charsetAttr) {
     attributes_.SetAcceptCharset(params.new_value);
+  } else if (name == disabledAttr) {
+    UseCounter::Count(GetDocument(), WebFeature::kFormDisabledAttributePresent);
   } else {
     HTMLElement::ParseAttribute(params);
   }

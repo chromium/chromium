@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process_impl.h"
@@ -38,12 +39,14 @@ class SocketsTcpServerUnitTest : public ExtensionApiUnittest {
     ExtensionApiUnittest::SetUp();
 
     ApiResourceManager<ResumableTCPSocket>::GetFactoryInstance()
-        ->SetTestingFactoryAndUse(browser()->profile(),
-                                  ApiResourceManagerTestFactory);
+        ->SetTestingFactoryAndUse(
+            browser()->profile(),
+            base::BindRepeating(&ApiResourceManagerTestFactory));
 
     ApiResourceManager<ResumableTCPServerSocket>::GetFactoryInstance()
-        ->SetTestingFactoryAndUse(browser()->profile(),
-                                  ApiResourceManagerTestServerFactory);
+        ->SetTestingFactoryAndUse(
+            browser()->profile(),
+            base::BindRepeating(&ApiResourceManagerTestServerFactory));
   }
 };
 

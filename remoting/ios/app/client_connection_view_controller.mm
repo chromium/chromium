@@ -484,7 +484,6 @@ using EntryPoint = remoting::ChromotingEvent::SessionEntryPoint;
 
   HostViewController* hostViewController =
       [[HostViewController alloc] initWithClient:_client];
-  _client = nil;
 
   [self.navigationController pushViewController:hostViewController animated:NO];
 }

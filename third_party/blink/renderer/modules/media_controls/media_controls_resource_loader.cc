@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_resource_loader.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/public/resources/grit/media_controls_resources.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/media/resource_bundle_helper.h"
+#include "third_party/blink/renderer/modules/media_controls/resources/grit/media_controls_resources.h"
+#include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -31,7 +31,7 @@ MediaControlsResourceLoader::MediaControlsResourceLoader()
 MediaControlsResourceLoader::~MediaControlsResourceLoader() = default;
 
 String MediaControlsResourceLoader::GetMediaControlsCSS() const {
-  return ResourceBundleHelper::UncompressResourceAsString(
+  return UncompressResourceAsString(
       RuntimeEnabledFeatures::ModernMediaControlsEnabled()
           ? IDR_UASTYLE_MODERN_MEDIA_CONTROLS_CSS
           : IDR_UASTYLE_LEGACY_MEDIA_CONTROLS_CSS);
@@ -40,56 +40,52 @@ String MediaControlsResourceLoader::GetMediaControlsCSS() const {
 String MediaControlsResourceLoader::GetMediaControlsAndroidCSS() const {
   if (RuntimeEnabledFeatures::ModernMediaControlsEnabled())
     return String();
-  return ResourceBundleHelper::UncompressResourceAsString(
+  return UncompressResourceAsString(
       IDR_UASTYLE_LEGACY_MEDIA_CONTROLS_ANDROID_CSS);
 };
 
 // static
 String MediaControlsResourceLoader::GetShadowTimelineStyleSheet() {
-  return ResourceBundleHelper::UncompressResourceAsString(
+  return UncompressResourceAsString(
       IDR_SHADOWSTYLE_MODERN_MEDIA_CONTROLS_TIMELINE_CSS);
 };
 
 // static
 String MediaControlsResourceLoader::GetShadowLoadingStyleSheet() {
-  return ResourceBundleHelper::UncompressResourceAsString(
+  return UncompressResourceAsString(
       IDR_SHADOWSTYLE_MODERN_MEDIA_CONTROLS_LOADING_CSS);
 };
 
 // static
 String MediaControlsResourceLoader::GetJumpSVGImage() {
-  return ResourceBundleHelper::UncompressResourceAsString(
-      IDR_MODERN_MEDIA_CONTROLS_JUMP_SVG);
+  return UncompressResourceAsString(IDR_MODERN_MEDIA_CONTROLS_JUMP_SVG);
 };
 
 // static
 String MediaControlsResourceLoader::GetArrowRightSVGImage() {
-  return ResourceBundleHelper::UncompressResourceAsString(
-      IDR_MODERN_MEDIA_CONTROLS_ARROW_RIGHT_SVG);
+  return UncompressResourceAsString(IDR_MODERN_MEDIA_CONTROLS_ARROW_RIGHT_SVG);
 };
 
 // static
 String MediaControlsResourceLoader::GetArrowLeftSVGImage() {
-  return ResourceBundleHelper::UncompressResourceAsString(
-      IDR_MODERN_MEDIA_CONTROLS_ARROW_LEFT_SVG);
+  return UncompressResourceAsString(IDR_MODERN_MEDIA_CONTROLS_ARROW_LEFT_SVG);
 };
 
 // static
 String MediaControlsResourceLoader::GetScrubbingMessageStyleSheet() {
-  return ResourceBundleHelper::UncompressResourceAsString(
+  return UncompressResourceAsString(
       IDR_SHADOWSTYLE_MODERN_MEDIA_CONTROLS_SCRUBBING_MESSAGE_CSS);
 };
 
 // static
 String MediaControlsResourceLoader::GetAnimatedArrowStyleSheet() {
-  return ResourceBundleHelper::UncompressResourceAsString(
+  return UncompressResourceAsString(
       IDR_SHADOWSTYLE_MODERN_MEDIA_CONTROLS_ANIMATED_ARROW_CSS);
 };
 
 // static
 String MediaControlsResourceLoader::GetMediaInterstitialsStyleSheet() {
-  return ResourceBundleHelper::UncompressResourceAsString(
-      IDR_UASTYLE_MEDIA_INTERSTITIALS_CSS);
+  return UncompressResourceAsString(IDR_UASTYLE_MEDIA_INTERSTITIALS_CSS);
 };
 
 String MediaControlsResourceLoader::GetUAStyleSheet() {

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/bit_vector.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -82,7 +83,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
   void CountDeprecation(WebFeature);
 
   // May return nullptr if this global scope is not threaded (i.e.,
-  // MainThreadWorkletGlobalScope) or after dispose() is called.
+  // WorkletGlobalScope for the main thread) or after Dispose() is called.
   virtual WorkerThread* GetThread() const = 0;
 
   ResourceFetcher* Fetcher() const override;
@@ -109,7 +110,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
   void FetchModuleScript(
       const KURL& module_url_record,
       FetchClientSettingsObjectSnapshot* fetch_client_settings_object,
-      WebURLRequest::RequestContext destination,
+      mojom::RequestContextType destination,
       network::mojom::FetchCredentialsMode,
       ModuleScriptCustomFetchType,
       ModuleTreeClient*);
@@ -132,12 +133,12 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
   TraceWrapperMember<Modulator> modulator_;
 };
 
-DEFINE_TYPE_CASTS(
-    WorkerOrWorkletGlobalScope,
-    ExecutionContext,
-    context,
-    (context->IsWorkerGlobalScope() || context->IsWorkletGlobalScope()),
-    (context.IsWorkerGlobalScope() || context.IsWorkletGlobalScope()));
+template <>
+struct DowncastTraits<WorkerOrWorkletGlobalScope> {
+  static bool AllowFrom(const ExecutionContext& context) {
+    return context.IsWorkerGlobalScope() || context.IsWorkletGlobalScope();
+  }
+};
 
 }  // namespace blink
 

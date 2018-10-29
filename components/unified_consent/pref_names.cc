@@ -7,6 +7,12 @@
 namespace unified_consent {
 namespace prefs {
 
+// Boolean indicating whether all unified consent services were ever enabled
+// because the user opted into unified consent. This pref is used during
+// rollback to disable off-by-default services.
+const char kAllUnifiedConsentServicesWereEnabled[] =
+    "unified_consent.all_services_were_enabled";
+
 // Boolean indicating whether the user had everything synced before migrating to
 // unified consent.
 const char kHadEverythingSyncedBeforeMigration[] =

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/sys_info.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/chromeos/arc/fileapi/chrome_content_provider_url_util.h"
@@ -22,12 +23,14 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/chromeos_features.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/escape.h"
 #include "net/base/filename_util.h"
+#include "storage/browser/fileapi/external_mount_points.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -36,15 +39,17 @@ namespace util {
 
 namespace {
 
-const char kDownloadsFolderName[] = "Downloads";
-const char kGoogleDriveDisplayName[] = "Google Drive";
-const char kRootRelativeToDriveMount[] = "root";
-const char kTeamDrivesRelativeToDriveMount[] = "team_drives";
-const char kAndroidFilesMountPointName[] = "android_files";
+constexpr char kDownloadsFolderName[] = "Downloads";
+constexpr char kMyFilesFolderName[] = "MyFiles";
+constexpr char kGoogleDriveDisplayName[] = "Google Drive";
+constexpr char kMyDriveDisplayName[] = "My Drive";
+constexpr char kTeamDrivesDisplayName[] = "Team Drives";
+constexpr char kRootRelativeToDriveMount[] = "root";
+constexpr char kTeamDrivesRelativeToDriveMount[] = "team_drives";
+constexpr char kComputersRelativeToDriveMount[] = "Computers";
+constexpr char kRemovable[] = "removable";
+constexpr char kAndroidFilesMountPointName[] = "android_files";
 
-// Sync with the file provider in ARC++ side.
-constexpr char kArcFileProviderUrl[] =
-    "content://org.chromium.arc.intent_helper.fileprovider/";
 // Sync with the root name defined with the file provider in ARC++ side.
 constexpr base::FilePath::CharType kArcDownloadRoot[] =
     FILE_PATH_LITERAL("/download");
@@ -78,6 +83,22 @@ void OnAllContentUrlsResolved(ConvertToContentUrlsCallback callback,
   std::move(callback).Run(*urls);
 }
 
+// On non-ChromeOS system (test+development), the primary profile uses
+// $HOME/Downloads for ease access to local files for debugging.
+bool ShouldMountPrimaryUserDownloads(Profile* profile) {
+  if (!base::SysInfo::IsRunningOnChromeOS() &&
+      user_manager::UserManager::IsInitialized()) {
+    const user_manager::User* const user =
+        chromeos::ProfileHelper::Get()->GetUserByProfile(
+            profile->GetOriginalProfile());
+    const user_manager::User* const primary_user =
+        user_manager::UserManager::Get()->GetPrimaryUser();
+    return user == primary_user;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 const base::FilePath::CharType kRemovableMediaPath[] =
@@ -87,19 +108,51 @@ const base::FilePath::CharType kAndroidFilesPath[] =
     FILE_PATH_LITERAL("/run/arc/sdcard/write/emulated/0");
 
 base::FilePath GetDownloadsFolderForProfile(Profile* profile) {
-  // On non-ChromeOS system (test+development), the primary profile uses
-  // $HOME/Downloads for ease for accessing local files for debugging.
-  if (!base::SysInfo::IsRunningOnChromeOS() &&
-      user_manager::UserManager::IsInitialized()) {
-    const user_manager::User* const user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(
-            profile->GetOriginalProfile());
-    const user_manager::User* const primary_user =
-        user_manager::UserManager::Get()->GetPrimaryUser();
-    if (user == primary_user)
-      return DownloadPrefs::GetDefaultDownloadDirectory();
+  // Check if FilesApp has a registered path already.  This happens for tests.
+  const std::string mount_point_name =
+      util::GetDownloadsMountPointName(profile);
+  storage::ExternalMountPoints* const mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  base::FilePath path;
+  if (mount_points->GetRegisteredPath(mount_point_name, &path))
+    return path;
+
+  // Return $HOME/Downloads as Download folder.
+  if (ShouldMountPrimaryUserDownloads(profile))
+    return DownloadPrefs::GetDefaultDownloadDirectory();
+
+  // Return <cryptohome>/MyFiles/Downloads if it feature is enabled.
+  if (base::FeatureList::IsEnabled(chromeos::features::kMyFilesVolume)) {
+    return profile->GetPath()
+        .AppendASCII(kMyFilesFolderName)
+        .AppendASCII(kDownloadsFolderName);
   }
+
+  // Return <cryptohome>/Downloads.
   return profile->GetPath().AppendASCII(kDownloadsFolderName);
+}
+
+base::FilePath GetMyFilesFolderForProfile(Profile* profile) {
+  // When MyFilesVolume feature is disabled this should behave just like
+  // GetDownloadsFolderForProfile.
+  if (!base::FeatureList::IsEnabled(chromeos::features::kMyFilesVolume))
+    return GetDownloadsFolderForProfile(profile);
+
+  // Check if FilesApp has a registered path already. This happens for tests.
+  const std::string mount_point_name =
+      util::GetDownloadsMountPointName(profile);
+  storage::ExternalMountPoints* const mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  base::FilePath path;
+  if (mount_points->GetRegisteredPath(mount_point_name, &path))
+    return path;
+
+  // Return $HOME/Downloads as MyFiles folder.
+  if (ShouldMountPrimaryUserDownloads(profile))
+    return DownloadPrefs::GetDefaultDownloadDirectory();
+
+  // Return <cryptohome>/MyFiles.
+  return profile->GetPath().AppendASCII(kMyFilesFolderName);
 }
 
 bool MigratePathFromOldFormat(Profile* profile,
@@ -139,8 +192,9 @@ const std::string GetAndroidFilesMountPointName() {
 std::string GetCrostiniMountPointName(Profile* profile) {
   // crostini_<hash>_termina_penguin
   return base::JoinString(
-      {"crostini", CryptohomeIdForProfile(profile), kCrostiniDefaultVmName,
-       kCrostiniDefaultContainerName},
+      {"crostini", crostini::CryptohomeIdForProfile(profile),
+       crostini::kCrostiniDefaultVmName,
+       crostini::kCrostiniDefaultContainerName},
       "_");
 }
 
@@ -167,21 +221,60 @@ std::vector<std::string> GetCrostiniMountOptions(
   return options;
 }
 
-std::string ConvertFileSystemURLToPathInsideCrostini(
+bool ConvertFileSystemURLToPathInsideCrostini(
     Profile* profile,
-    const storage::FileSystemURL& file_system_url) {
-  DCHECK(file_system_url.mount_type() == storage::kFileSystemTypeExternal);
-  DCHECK(file_system_url.type() == storage::kFileSystemTypeNativeLocal);
+    const storage::FileSystemURL& file_system_url,
+    base::FilePath* inside) {
+  const std::string& id(file_system_url.mount_filesystem_id());
+  base::FilePath path(file_system_url.virtual_path());
+  std::string mount_point_name_crostini = GetCrostiniMountPointName(profile);
+  std::string mount_point_name_downloads = GetDownloadsMountPointName(profile);
+  // Include drive if using DriveFS.
+  std::string mount_point_name_drive;
+  auto* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  if (base::FeatureList::IsEnabled(chromeos::features::kDriveFs) &&
+      integration_service) {
+    mount_point_name_drive =
+        integration_service->GetMountPointPath().BaseName().value();
+  }
 
-  // Reformat virtual_path()
-  // from <mount_label>/path/to/file
-  // to   /<home-directory>/path/to/file
-  base::FilePath folder(util::GetCrostiniMountPointName(profile));
-  base::FilePath result = HomeDirectoryForProfile(profile);
-  bool success =
-      folder.AppendRelativePath(file_system_url.virtual_path(), &result);
-  DCHECK(success);
-  return result.AsUTF8Unsafe();
+  // Reformat virtual_path() from:
+  //   <mount_label>/path/to/file
+  // To either:
+  //   /<home-directory>/path/to/file   (path is already in crostini volume)
+  //   /ChromeOS/<mapping>/path/to/file (path is shared with crostini)
+  base::FilePath base_to_exclude(id);
+  if (id == mount_point_name_crostini) {
+    // Crostini.
+    *inside = crostini::ContainerHomeDirectoryForProfile(profile);
+  } else if (id == mount_point_name_downloads) {
+    // Downloads.
+    *inside =
+        crostini::ContainerChromeOSBaseDirectory().Append(kDownloadsFolderName);
+  } else if (id == mount_point_name_drive) {
+    // DriveFS has some more complicated mappings.
+    std::vector<base::FilePath::StringType> components;
+    path.GetComponents(&components);
+    *inside = crostini::ContainerChromeOSBaseDirectory().Append(
+        kGoogleDriveDisplayName);
+    if (components.size() >= 2 && components[1] == kRootRelativeToDriveMount) {
+      // root -> My Drive.
+      base_to_exclude = base_to_exclude.Append(kRootRelativeToDriveMount);
+      *inside = inside->Append(kMyDriveDisplayName);
+    } else if (components.size() >= 2 &&
+               components[1] == kTeamDrivesRelativeToDriveMount) {
+      // team_drives -> Team Drives.
+      base_to_exclude = base_to_exclude.Append(kTeamDrivesRelativeToDriveMount);
+      *inside = inside->Append(kTeamDrivesDisplayName);
+    }
+  } else if (id == kRemovable) {
+    // Removable.
+    *inside = crostini::ContainerChromeOSBaseDirectory().Append(kRemovable);
+  } else {
+    return false;
+  }
+  return base_to_exclude.AppendRelativePath(path, inside);
 }
 
 bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
@@ -198,7 +291,9 @@ bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
       GetDownloadsFolderForProfile(primary_profile);
   base::FilePath result_path(kArcDownloadRoot);
   if (primary_downloads.AppendRelativePath(path, &result_path)) {
-    *arc_url_out = GURL(kArcFileProviderUrl)
+    // TODO(niwa): Switch to using kFileSystemFileproviderUrl once we completely
+    // move FileProvider to arc.file_system (b/111816608).
+    *arc_url_out = GURL(arc::kIntentHelperFileproviderUrl)
                        .Resolve(net::EscapePath(result_path.AsUTF8Unsafe()));
     return true;
   }
@@ -207,7 +302,8 @@ bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
   result_path = base::FilePath(kArcExternalFilesRoot);
   if (base::FilePath(kAndroidFilesPath)
           .AppendRelativePath(path, &result_path)) {
-    *arc_url_out = GURL(kArcFileProviderUrl)
+    // TODO(niwa): Switch to using kFileSystemFileproviderUrl.
+    *arc_url_out = GURL(arc::kIntentHelperFileproviderUrl)
                        .Resolve(net::EscapePath(result_path.AsUTF8Unsafe()));
     return true;
   }
@@ -296,7 +392,8 @@ bool ReplacePrefix(std::string* s,
   return false;
 }
 
-std::string GetDownloadLocationText(Profile* profile, const std::string& path) {
+std::string GetPathDisplayTextForSettings(Profile* profile,
+                                          const std::string& path) {
   std::string result(path);
   auto* drive_integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
@@ -307,19 +404,42 @@ std::string GetDownloadLocationText(Profile* profile, const std::string& path) {
                                profile->GetPath().BaseName().value() +
                                "/Downloads",
                            kDownloadsFolderName)) {
+  } else if (ReplacePrefix(&result,
+                           std::string("/home/chronos/user/") +
+                               kMyFilesFolderName + "/" + kDownloadsFolderName,
+                           kDownloadsFolderName)) {
+  } else if (ReplacePrefix(&result,
+                           "/home/chronos/" +
+                               profile->GetPath().BaseName().value() + "/" +
+                               kMyFilesFolderName + "/" + kDownloadsFolderName,
+                           kDownloadsFolderName)) {
   } else if (drive_integration_service &&
              ReplacePrefix(&result,
                            drive_integration_service->GetMountPointPath()
                                .Append(kRootRelativeToDriveMount)
                                .value(),
-                           kGoogleDriveDisplayName)) {
+                           base::FilePath(kGoogleDriveDisplayName)
+                               .Append(l10n_util::GetStringUTF8(
+                                   IDS_FILE_BROWSER_DRIVE_MY_DRIVE_LABEL))
+                               .value())) {
   } else if (drive_integration_service &&
              ReplacePrefix(&result,
                            drive_integration_service->GetMountPointPath()
                                .Append(kTeamDrivesRelativeToDriveMount)
                                .value(),
-                           l10n_util::GetStringUTF8(
-                               IDS_FILE_BROWSER_DRIVE_TEAM_DRIVES_LABEL))) {
+                           base::FilePath(kGoogleDriveDisplayName)
+                               .Append(l10n_util::GetStringUTF8(
+                                   IDS_FILE_BROWSER_DRIVE_TEAM_DRIVES_LABEL))
+                               .value())) {
+  } else if (drive_integration_service &&
+             ReplacePrefix(&result,
+                           drive_integration_service->GetMountPointPath()
+                               .Append(kComputersRelativeToDriveMount)
+                               .value(),
+                           base::FilePath(kGoogleDriveDisplayName)
+                               .Append(l10n_util::GetStringUTF8(
+                                   IDS_FILE_BROWSER_DRIVE_COMPUTERS_LABEL))
+                               .value())) {
   } else if (ReplacePrefix(&result, kAndroidFilesPath,
                            l10n_util::GetStringUTF8(
                                IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL))) {

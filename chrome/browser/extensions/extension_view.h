@@ -42,7 +42,7 @@ class ExtensionView {
   virtual void RenderViewCreated(content::RenderViewHost* render_view_host) = 0;
 
   // Handles unhandled keyboard messages coming back from the renderer process.
-  virtual void HandleKeyboardEvent(
+  virtual bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) = 0;
 

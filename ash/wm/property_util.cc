@@ -4,8 +4,6 @@
 
 #include "ash/wm/property_util.h"
 
-#include "ash/public/cpp/window_style.h"
-#include "ash/public/interfaces/window_style.mojom.h"
 #include "services/ws/public/cpp/property_type_converters.h"
 #include "services/ws/public/mojom/window_manager.mojom.h"
 #include "ui/aura/mus/property_converter.h"
@@ -57,22 +55,6 @@ bool ShouldRemoveStandardFrame(const InitProperties& properties) {
   auto iter = properties.find(
       ws::mojom::WindowManager::kRemoveStandardFrame_InitProperty);
   return iter != properties.end() && mojo::ConvertTo<bool>(iter->second);
-}
-
-bool ShouldEnableImmersive(const InitProperties& properties) {
-  auto iter =
-      properties.find(ws::mojom::WindowManager::kDisableImmersive_InitProperty);
-  return iter == properties.end() || !mojo::ConvertTo<bool>(iter->second);
-}
-
-mojom::WindowStyle GetWindowStyle(const InitProperties& properties) {
-  auto iter = properties.find(mojom::kAshWindowStyle_InitProperty);
-  if (iter == properties.end())
-    return mojom::WindowStyle::DEFAULT;
-
-  const int32_t value = mojo::ConvertTo<int32_t>(iter->second);
-  return IsValidWindowStyle(value) ? static_cast<mojom::WindowStyle>(value)
-                                   : mojom::WindowStyle::DEFAULT;
 }
 
 void ApplyProperties(

@@ -5,4 +5,6 @@ include_rules = [
   "+ui/events",
   "+ui/gfx/geometry",
   "+ui/keyboard",
+# Revisit this dependency when crbug.com/890403 is resovled.
+  "+ui/views",
 ]

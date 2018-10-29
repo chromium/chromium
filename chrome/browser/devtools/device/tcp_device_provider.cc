@@ -10,10 +10,12 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/device/adb/adb_client_socket.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
@@ -152,8 +154,8 @@ TCPDeviceProvider::~TCPDeviceProvider() {
 }
 
 void TCPDeviceProvider::InitializeHostResolver() {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&TCPDeviceProvider::InitializeHostResolverOnUI, this,
                      mojo::MakeRequest(&host_resolver_)));
   host_resolver_.set_connection_error_handler(base::BindOnce(
@@ -164,5 +166,5 @@ void TCPDeviceProvider::InitializeHostResolverOnUI(
     network::mojom::HostResolverRequest request) {
   g_browser_process->system_network_context_manager()
       ->GetContext()
-      ->CreateHostResolver(std::move(request));
+      ->CreateHostResolver(base::nullopt, std::move(request));
 }

@@ -23,6 +23,7 @@
 #include "remoting/host/client_session.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_session_connector.h"
+#include "remoting/host/ipc_action_executor.h"
 #include "remoting/host/ipc_audio_capturer.h"
 #include "remoting/host/ipc_input_injector.h"
 #include "remoting/host/ipc_mouse_cursor_monitor.h"
@@ -103,6 +104,12 @@ DesktopSessionProxy::DesktopSessionProxy(
       is_desktop_session_connected_(false),
       options_(options) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+}
+
+std::unique_ptr<ActionExecutor> DesktopSessionProxy::CreateActionExecutor() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  return std::make_unique<IpcActionExecutor>(this);
 }
 
 std::unique_ptr<AudioCapturer> DesktopSessionProxy::CreateAudioCapturer() {
@@ -396,6 +403,13 @@ void DesktopSessionProxy::SetScreenResolution(
   // indicates that the original resolution, if one exists, should be restored.
   SendToDesktop(
       new ChromotingNetworkDesktopMsg_SetScreenResolution(screen_resolution_));
+}
+
+void DesktopSessionProxy::ExecuteAction(
+    const protocol::ActionRequest& request) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  SendToDesktop(new ChromotingNetworkDesktopMsg_ExecuteActionRequest(request));
 }
 
 DesktopSessionProxy::~DesktopSessionProxy() {

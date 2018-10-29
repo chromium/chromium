@@ -19,8 +19,8 @@
 #import "ios/chrome/browser/ui/payments/cells/payments_text_item.h"
 #import "ios/chrome/browser/ui/payments/cells/price_item.h"
 #import "ios/chrome/browser/ui/payments/payment_request_view_controller_actions.h"
-#include "ios/chrome/browser/ui/rtl_geometry.h"
-#include "ios/chrome/browser/ui/uikit_ui_util.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -37,7 +37,6 @@ namespace {
 const CGFloat kFooterCellHorizontalPadding = 16;
 const CGFloat kButtonEdgeInset = 9;
 const CGFloat kSeparatorEdgeInset = 14;
-const CGFloat kSummaryPageInfoRowHeight = 55;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSummary = kSectionIdentifierEnumZero,
@@ -226,6 +225,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierFooter];
 
   CollectionViewFooterItem* footerItem = [_dataSource footerItem];
+  footerItem.useScaledFont = YES;
   [footerItem setType:ItemTypeFooterText];
   footerItem.linkDelegate = self;
   [model addItem:footerItem toSectionWithIdentifier:SectionIdentifierFooter];
@@ -338,7 +338,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeFooterText: {
       CollectionViewFooterCell* footerCell =
           base::mac::ObjCCastStrict<CollectionViewFooterCell>(cell);
-      footerCell.textLabel.font = [MDCTypography body2Font];
+      SetUILabelScaledFont(footerCell.textLabel, [MDCTypography body2Font]);
       footerCell.textLabel.textColor = [[MDCPalette greyPalette] tint600];
       footerCell.textLabel.shadowColor = nil;  // No shadow.
       footerCell.horizontalPadding = kFooterCellHorizontalPadding;
@@ -398,13 +398,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   CollectionViewItem* item =
       [self.collectionViewModel itemAtIndexPath:indexPath];
 
-  // TODO(crbug.com/879588): Remove this when/if cr_preferredHeightForWidth
-  // works on the next iOS 12 releases.
-  if (@available(iOS 12, *)) {
-    if (item.type == ItemTypeSummaryPageInfo)
-      return kSummaryPageInfoRowHeight;
-  }
-
   UIEdgeInsets inset = [self collectionView:collectionView
                                      layout:collectionView.collectionViewLayout
                      insetForSectionAtIndex:indexPath.section];
@@ -436,6 +429,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSInteger sectionIdentifier =
       [self.collectionViewModel sectionIdentifierForSection:indexPath.section];
   return sectionIdentifier == SectionIdentifierFooter ? YES : NO;
+}
+
+#pragma mark - UICollectionViewDelegateFlowLayout
+
+- (CGSize)collectionView:(UICollectionView*)collectionView
+                             layout:
+                                 (UICollectionViewLayout*)collectionViewLayout
+    referenceSizeForHeaderInSection:(NSInteger)section {
+  CollectionViewItem* item =
+      [self.collectionViewModel headerForSection:section];
+
+  if (item) {
+    CGFloat width = CGRectGetWidth(collectionView.bounds);
+    CGFloat height =
+        [MDCCollectionViewCell cr_preferredHeightForWidth:width forItem:item];
+    return CGSizeMake(width, height);
+  }
+  return CGSizeZero;
 }
 
 #pragma mark - Helper methods

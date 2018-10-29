@@ -373,6 +373,17 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCableClientHelloMessage[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCtap2Version[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kU2fVersion[];
 
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionHmacSecret[];
+
+// Maximum number of seconds the browser waits for Bluetooth authenticator to
+// send packets that advertises that the device is in pairing mode before
+// setting pairing mode to false. The interval time is set to 2 seconds, which
+// is equivalent to the maximum Bluetooth error wait interval set by the CTAP
+// spec.
+// https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#BTCORE
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::TimeDelta kBleDevicePairingModeWaitingInterval;
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FIDO_CONSTANTS_H_

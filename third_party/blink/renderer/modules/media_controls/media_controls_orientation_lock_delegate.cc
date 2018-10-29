@@ -377,7 +377,7 @@ MediaControlsOrientationLockDelegate::ComputeDeviceOrientation(
 
   // device_orientation_angle snapped to nearest multiple of 90.
   int device_orientation_angle90 =
-      std::lround(device_orientation_angle / 90) * 90;
+      static_cast<int>(std::lround(device_orientation_angle / 90) * 90);
 
   // To be considered portrait or landscape, allow the device to be rotated 23
   // degrees (chosen to approximately match Android's behavior) to either side

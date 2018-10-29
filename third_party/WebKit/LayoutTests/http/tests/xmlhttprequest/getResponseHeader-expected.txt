@@ -1,9 +1,9 @@
-CONSOLE ERROR: line 1: Refused to get unsafe header "SeT-COoKie"
-CONSOLE ERROR: line 1: Refused to get unsafe header "sEt-coOkIE2"
-CONSOLE ERROR: line 1: Refused to get unsafe header "SeT-COoKie"
-CONSOLE ERROR: line 1: Refused to get unsafe header "sEt-coOkIE2"
-CONSOLE ERROR: line 1: Refused to get unsafe header "SeT-COoKie"
-CONSOLE ERROR: line 1: Refused to get unsafe header "sEt-coOkIE2"
+CONSOLE ERROR: Refused to get unsafe header "SeT-COoKie"
+CONSOLE ERROR: Refused to get unsafe header "sEt-coOkIE2"
+CONSOLE ERROR: Refused to get unsafe header "SeT-COoKie"
+CONSOLE ERROR: Refused to get unsafe header "sEt-coOkIE2"
+CONSOLE ERROR: Refused to get unsafe header "SeT-COoKie"
+CONSOLE ERROR: Refused to get unsafe header "sEt-coOkIE2"
 Test the required behavior of XMLHttpRequest.getResponseHeader()
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

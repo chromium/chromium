@@ -17,7 +17,7 @@
       <span id="green_part" part="partp">This text</span>
     </template>
     <script>installCustomElement("custom-element-outer", "custom-element-outer-template");</script>
-    <template id="custom-element-outer-template"><custom-element-inner id="c-e-inner" partmap="partp"></custom-element-inner></template>
+    <template id="custom-element-outer-template"><custom-element-inner id="c-e-inner" exportparts="partp"></custom-element-inner></template>
     The following text should be green:
     <custom-element-outer id="c-e-outer"></custom-element-outer>
     <script type="text/javascript">

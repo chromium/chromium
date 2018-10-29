@@ -179,7 +179,7 @@ function renameFile(appId, oldName, newName) {
   }).then(function(result) {
     chrome.test.assertTrue(result, 'selectFile failed');
     // Press Ctrl+Enter key to rename the file.
-    const key = ['#file-list', 'Enter', 'Enter', true, false, false];
+    const key = ['#file-list', 'Enter', true, false, false];
     return remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key);
   }).then(function(result) {
     chrome.test.assertTrue(result);
@@ -191,7 +191,7 @@ function renameFile(appId, oldName, newName) {
         'inputText', appId, [textInput, newName]);
   }).then(function() {
     // Send Enter key to the text input.
-    const key = [textInput, 'Enter', 'Enter', false, false, false];
+    const key = [textInput, 'Enter', false, false, false];
     return remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key);
   }).then(function(result) {
     chrome.test.assertTrue(result);
@@ -227,7 +227,7 @@ function testRenameFolder(path, treeItem) {
   }).then(function(result) {
     chrome.test.assertTrue(result);
     // Press ArrowDown to select the photos folder.
-    const select = ['#file-list', 'ArrowDown', 'Down', false, false, false];
+    const select = ['#file-list', 'ArrowDown', false, false, false];
     return remoteCall.callRemoteTestUtil('fakeKeyDown', appId, select);
   }).then(function(result) {
     chrome.test.assertTrue(result);
@@ -236,7 +236,7 @@ function testRenameFolder(path, treeItem) {
     return remoteCall.waitForElement(appId, selectedItem);
   }).then(function() {
     // Press Ctrl+Enter to rename the photos folder.
-    const key = ['#file-list', 'Enter', 'Enter', true, false, false];
+    const key = ['#file-list', 'Enter', true, false, false];
     return remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key);
   }).then(function(result) {
     chrome.test.assertTrue(result);
@@ -248,12 +248,12 @@ function testRenameFolder(path, treeItem) {
         'inputText', appId, [textInput, 'bbq photos']);
   }).then(function() {
     // Send Enter to the list to attempt to enter the directory.
-    const key = ['#list-container', 'Enter', 'Enter', false, false, false];
+    const key = ['#list-container', 'Enter', false, false, false];
     return remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key);
   }).then(function(result) {
     chrome.test.assertTrue(result);
     // Send Enter to the text input to complete renaming.
-    const key = [textInput, 'Enter', 'Enter', false, false, false];
+    const key = [textInput, 'Enter', false, false, false];
     return remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key);
   }).then(function(result) {
     chrome.test.assertTrue(result);

@@ -11,7 +11,6 @@ include_rules = [
   "+gpu/ipc/client",
   "+gpu/ipc/common",
   "+gpu/ipc/host",
-  "+ipc",
   "+mojo/public/cpp",
   "+services/viz/privileged/interfaces",
   "+services/viz/public/interfaces",

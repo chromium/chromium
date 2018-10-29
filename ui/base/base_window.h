@@ -10,15 +10,6 @@
 #include "ui/base/ui_base_types.h"  // WindowShowState
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_WIN)
-// Names used in this class are also windows.h macros. That the names
-// are the same as in the Windows API is no coincidence but for now we
-// don't want the Windows macros to interfere so we undef them.
-#undef IsMinimized
-#undef IsMaximized
-#undef IsRestored
-#endif  // OS_WIN
-
 namespace gfx {
 class Rect;
 }

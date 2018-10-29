@@ -7,8 +7,6 @@ package org.chromium.android_webview;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
-import java.util.HashMap;
-
 /**
  * Delegate for handling callbacks. All methods are called on the background thread.
  * "Background" means something that isn't UI or IO.
@@ -25,16 +23,7 @@ public abstract class AwContentsBackgroundThreadClient {
     private AwWebResourceResponse shouldInterceptRequestFromNative(String url, boolean isMainFrame,
             boolean hasUserGesture, String method, String[] requestHeaderNames,
             String[] requestHeaderValues) {
-        AwContentsClient.AwWebResourceRequest request =
-                new AwContentsClient.AwWebResourceRequest();
-        request.url = url;
-        request.isMainFrame = isMainFrame;
-        request.hasUserGesture = hasUserGesture;
-        request.method = method;
-        request.requestHeaders = new HashMap<String, String>(requestHeaderNames.length);
-        for (int i = 0; i < requestHeaderNames.length; ++i) {
-            request.requestHeaders.put(requestHeaderNames[i], requestHeaderValues[i]);
-        }
-        return shouldInterceptRequest(request);
+        return shouldInterceptRequest(new AwContentsClient.AwWebResourceRequest(
+                url, isMainFrame, hasUserGesture, method, requestHeaderNames, requestHeaderValues));
     }
 }

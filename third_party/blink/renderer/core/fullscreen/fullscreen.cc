@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 
 #include "base/macros.h"
+#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -54,7 +55,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
-#include "third_party/blink/renderer/platform/feature_policy/feature_policy.h"
 
 namespace blink {
 
@@ -116,7 +116,7 @@ void FullscreenElementChanged(Document& document,
     // Update paint properties on the visual viewport since
     // user-input-scrollable bits will change based on fullscreen state.
     if (Page* page = frame->GetPage())
-      page->GetVisualViewport().SetNeedsPaintPropertiesUpdate();
+      page->GetVisualViewport().SetNeedsPaintPropertyUpdate();
   }
 }
 
@@ -124,8 +124,9 @@ using ElementRequestTypeMap =
     HeapHashMap<WeakMember<Element>, Fullscreen::RequestType>;
 
 ElementRequestTypeMap& FullscreenFlagMap() {
-  DEFINE_STATIC_LOCAL(ElementRequestTypeMap, map, (new ElementRequestTypeMap));
-  return map;
+  DEFINE_STATIC_LOCAL(Persistent<ElementRequestTypeMap>, map,
+                      (new ElementRequestTypeMap));
+  return *map;
 }
 
 bool HasFullscreenFlag(Element& element) {
@@ -204,19 +205,19 @@ void Unfullscreen(Document& document) {
 }
 
 // https://html.spec.whatwg.org/multipage/embedded-content.html#allowed-to-use
-bool AllowedToUseFullscreen(const Frame* frame,
+bool AllowedToUseFullscreen(const Document& document,
                             ReportOptions report_on_failure) {
   // To determine whether a Document object |document| is allowed to use the
   // feature indicated by attribute name |allowattribute|, run these steps:
 
   // 1. If |document| has no browsing context, then return false.
-  if (!frame)
+  if (!document.GetFrame())
     return false;
 
   // 2. If Feature Policy is enabled, return the policy for "fullscreen"
   // feature.
-  return frame->IsFeatureEnabled(mojom::FeaturePolicyFeature::kFullscreen,
-                                 report_on_failure);
+  return document.IsFeatureEnabled(mojom::FeaturePolicyFeature::kFullscreen,
+                                   report_on_failure);
 }
 
 bool AllowedToRequestFullscreen(Document& document) {
@@ -224,7 +225,7 @@ bool AllowedToRequestFullscreen(Document& document) {
   // true:
 
   //  The algorithm is triggered by a user activation.
-  if (Frame::HasTransientUserActivation(document.GetFrame()))
+  if (LocalFrame::HasTransientUserActivation(document.GetFrame()))
     return true;
 
   //  The algorithm is triggered by a user generated orientation change.
@@ -268,8 +269,7 @@ bool FullscreenElementReady(const Element& element,
 
   // |element|'s node document is allowed to use the feature indicated by
   // attribute name allowfullscreen.
-  if (!AllowedToUseFullscreen(element.GetDocument().GetFrame(),
-                              report_on_failure))
+  if (!AllowedToUseFullscreen(element.GetDocument(), report_on_failure))
     return false;
 
   return true;
@@ -532,7 +532,7 @@ Fullscreen::Fullscreen(Document& document)
 Fullscreen::~Fullscreen() = default;
 
 Document* Fullscreen::GetDocument() {
-  return ToDocument(LifecycleContext());
+  return To<Document>(LifecycleContext());
 }
 
 void Fullscreen::ContextDestroyed(ExecutionContext*) {
@@ -957,8 +957,7 @@ bool Fullscreen::FullscreenEnabled(Document& document) {
   // The fullscreenEnabled attribute's getter must return true if the context
   // object is allowed to use the feature indicated by attribute name
   // allowfullscreen and fullscreen is supported, and false otherwise.
-  return AllowedToUseFullscreen(document.GetFrame(),
-                                ReportOptions::kDoNotReport) &&
+  return AllowedToUseFullscreen(document, ReportOptions::kDoNotReport) &&
          FullscreenIsSupported(document);
 }
 
@@ -968,7 +967,7 @@ void Fullscreen::DidUpdateSize(Element& element) {
   // bit surprising.
   element.SetNeedsStyleRecalc(
       kLocalStyleChange,
-      StyleChangeReasonForTracing::Create(StyleChangeReason::kFullscreen));
+      StyleChangeReasonForTracing::Create(style_change_reason::kFullscreen));
 }
 
 void Fullscreen::ElementRemoved(Element& node) {

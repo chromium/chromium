@@ -19,10 +19,11 @@ class AutomationInternalCustomBindings;
 // and helper methods needed to use it for the automation API.
 class AutomationAXTreeWrapper : public ui::AXEventGenerator {
  public:
-  AutomationAXTreeWrapper(int tree_id, AutomationInternalCustomBindings* owner);
+  AutomationAXTreeWrapper(ui::AXTreeID tree_id,
+                          AutomationInternalCustomBindings* owner);
   ~AutomationAXTreeWrapper() override;
 
-  int32_t tree_id() const { return tree_id_; }
+  ui::AXTreeID tree_id() const { return tree_id_; }
   ui::AXTree* tree() { return &tree_; }
   AutomationInternalCustomBindings* owner() { return owner_; }
 
@@ -55,7 +56,7 @@ class AutomationAXTreeWrapper : public ui::AXEventGenerator {
   // removed with the AXEventGenerator refactoring is complete.
   bool IsEventTypeHandledByAXEventGenerator(api::automation::EventType) const;
 
-  int32_t tree_id_;
+  ui::AXTreeID tree_id_;
   int32_t host_node_id_;
   ui::AXTree tree_;
   AutomationInternalCustomBindings* owner_;

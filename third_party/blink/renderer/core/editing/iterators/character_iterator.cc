@@ -138,7 +138,7 @@ void CharacterIteratorAlgorithm<Strategy>::Advance(int count) {
 
   at_break_ = false;
 
-  // easy if there is enough left in the current m_textIterator run
+  // easy if there is enough left in the current text_iterator_ run
   int remaining = text_iterator_.length() - run_offset_;
   if (count < remaining) {
     run_offset_ += count;
@@ -146,30 +146,30 @@ void CharacterIteratorAlgorithm<Strategy>::Advance(int count) {
     return;
   }
 
-  // exhaust the current m_textIterator run
+  // exhaust the current text_iterator_ run
   count -= remaining;
   offset_ += remaining;
 
-  // move to a subsequent m_textIterator run
+  // move to a subsequent text_iterator_ run
   for (text_iterator_.Advance(); !AtEnd(); text_iterator_.Advance()) {
     int run_length = text_iterator_.length();
     if (!run_length) {
       at_break_ = text_iterator_.BreaksAtReplacedElement();
     } else {
-      // see whether this is m_textIterator to use
+      // see whether this is text_iterator_ to use
       if (count < run_length) {
         run_offset_ = count;
         offset_ += count;
         return;
       }
 
-      // exhaust this m_textIterator run
+      // exhaust this text_iterator_ run
       count -= run_length;
       offset_ += run_length;
     }
   }
 
-  // ran to the end of the m_textIterator... no more runs left
+  // ran to the end of the text_iterator_... no more runs left
   at_break_ = true;
   run_offset_ = 0;
 }

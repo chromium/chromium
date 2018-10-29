@@ -20,6 +20,7 @@ source_set("lib") {
   deps = [
     "//base",
     "//chromeos/services/ime/public/cpp:buildflags",
+    "//chromeos/services/ime/public/cpp:rulebased",
     "//chromeos/services/ime/public/mojom",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
@@ -39,6 +40,13 @@ service_manifest("manifest") {
 }
 
 source_set("unit_tests") {
+  testonly = true
+  deps = [
+    "//chromeos/services/ime/public/cpp:rulebased_unit_tests",
+  ]
+}
+
+source_set("services_unittests") {
   testonly = true
   deps = [
     ":lib",

@@ -39,15 +39,24 @@ void FileBrowserHandlerCustomBindings::GetExternalFileEntry(
     v8::Isolate* isolate = args.GetIsolate();
     std::string file_system_name(*v8::String::Utf8Value(
         isolate,
-        file_def->Get(v8::String::NewFromUtf8(isolate, "fileSystemName"))));
+        file_def->Get(v8::String::NewFromUtf8(isolate, "fileSystemName",
+                                              v8::NewStringType::kInternalized)
+                          .ToLocalChecked())));
     GURL file_system_root(*v8::String::Utf8Value(
         isolate,
-        file_def->Get(v8::String::NewFromUtf8(isolate, "fileSystemRoot"))));
+        file_def->Get(v8::String::NewFromUtf8(isolate, "fileSystemRoot",
+                                              v8::NewStringType::kInternalized)
+                          .ToLocalChecked())));
     std::string file_full_path(*v8::String::Utf8Value(
         isolate,
-        file_def->Get(v8::String::NewFromUtf8(isolate, "fileFullPath"))));
+        file_def->Get(v8::String::NewFromUtf8(isolate, "fileFullPath",
+                                              v8::NewStringType::kInternalized)
+                          .ToLocalChecked())));
     bool is_directory =
-        file_def->Get(v8::String::NewFromUtf8(isolate, "fileIsDirectory"))
+        file_def
+            ->Get(v8::String::NewFromUtf8(isolate, "fileIsDirectory",
+                                          v8::NewStringType::kInternalized)
+                      .ToLocalChecked())
             ->BooleanValue(context->v8_context())
             .FromMaybe(false);
     blink::WebDOMFileSystem::EntryType entry_type =

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/feature_engagement/new_tab/new_tab_tracker.h"
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/feature_engagement/new_tab/new_tab_tracker_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -50,7 +51,7 @@ class NewTabTrackerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     TrackerFactory::GetInstance()->SetTestingFactoryAndUse(
-        browser()->profile(), &BuildTestTrackerFactory);
+        browser()->profile(), base::BindRepeating(&BuildTestTrackerFactory));
 
     // Ensure all initialization is finished.
     base::RunLoop().RunUntilIdle();

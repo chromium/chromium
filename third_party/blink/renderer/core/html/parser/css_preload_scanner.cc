@@ -182,8 +182,8 @@ inline void CSSPreloadScanner::Tokenize(UChar c,
 }
 
 static String ParseCSSStringOrURL(const String& string) {
-  size_t offset = 0;
-  size_t reduced_length = string.length();
+  wtf_size_t offset = 0;
+  wtf_size_t reduced_length = string.length();
 
   while (reduced_length && IsHTMLSpace<UChar>(string[offset])) {
     ++offset;

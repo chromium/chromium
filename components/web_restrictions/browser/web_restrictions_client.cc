@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "jni/WebRestrictionsClient_jni.h"
 
@@ -58,8 +59,8 @@ void WebRestrictionsClient::SetAuthority(
     const std::string& content_provider_authority) {
   // This is called from the UI thread, but class members should only be
   // accessed from the IO thread.
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&WebRestrictionsClient::SetAuthorityTask,
                  base::Unretained(this), content_provider_authority));
 }
@@ -135,8 +136,8 @@ void WebRestrictionsClient::RequestPermission(
 void WebRestrictionsClient::OnWebRestrictionsChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&WebRestrictionsClient::ClearCache, base::Unretained(this)));
 }
 

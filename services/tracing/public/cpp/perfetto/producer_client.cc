@@ -138,7 +138,7 @@ void ProducerClient::OnTracingStart(
   }
 }
 
-void ProducerClient::CreateDataSourceInstance(
+void ProducerClient::StartDataSource(
     uint64_t id,
     mojom::DataSourceConfigPtr data_source_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -153,9 +153,8 @@ void ProducerClient::CreateDataSourceInstance(
   }
 }
 
-void ProducerClient::TearDownDataSourceInstance(
-    uint64_t id,
-    TearDownDataSourceInstanceCallback callback) {
+void ProducerClient::StopDataSource(uint64_t id,
+                                    StopDataSourceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto* data_source : data_sources_) {

@@ -44,11 +44,11 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/typed_arrays/array_buffer_contents.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -162,10 +162,10 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
     case BasicShape::kBasicShapePolygonType: {
       const BasicShapePolygon* polygon = ToBasicShapePolygon(basic_shape);
       const Vector<Length>& values = polygon->Values();
-      size_t values_size = values.size();
+      wtf_size_t values_size = values.size();
       DCHECK(!(values_size % 2));
       Vector<FloatPoint> vertices(values_size / 2);
-      for (unsigned i = 0; i < values_size; i += 2) {
+      for (wtf_size_t i = 0; i < values_size; i += 2) {
         FloatPoint vertex(FloatValueForLength(values.at(i), box_width),
                           FloatValueForLength(values.at(i + 1), box_height));
         vertices[i / 2] = PhysicalPointToLogical(

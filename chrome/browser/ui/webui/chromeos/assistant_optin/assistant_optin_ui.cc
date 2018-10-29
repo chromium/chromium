@@ -11,12 +11,15 @@
 #include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -50,6 +53,12 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
   source->AddResourcePath("assistant_logo.png", IDR_ASSISTANT_LOGO_PNG);
   source->SetDefaultResource(IDR_ASSISTANT_OPTIN_HTML);
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
+
+  // Do not zoom for Assistant opt-in web contents.
+  content::HostZoomMap* zoom_map =
+      content::HostZoomMap::GetForWebContents(web_ui->GetWebContents());
+  DCHECK(zoom_map);
+  zoom_map->SetZoomLevelForHost(web_ui->GetWebContents()->GetURL().host(), 0);
 }
 
 AssistantOptInUI::~AssistantOptInUI() = default;
@@ -65,8 +74,12 @@ void AssistantOptInDialog::Show(
   int container_id = dialog->GetDialogModalType() == ui::MODAL_TYPE_NONE
                          ? ash::kShellWindowId_DefaultContainer
                          : ash::kShellWindowId_LockSystemModalContainer;
-  chrome::ShowWebDialogInContainer(
+  auto* window = chrome::ShowWebDialogInContainer(
       container_id, ProfileManager::GetActiveUserProfile(), dialog, true);
+
+  MultiUserWindowManager::GetInstance()->SetWindowOwner(
+      window,
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
 }
 
 // static

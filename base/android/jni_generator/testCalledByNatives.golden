@@ -55,20 +55,23 @@ static base::android::ScopedJavaLocalRef<jobject> Java_TestJni_showConfirmInfoBa
     const base::android::JavaRef<jstring>& buttonCancel,
     const base::android::JavaRef<jstring>& title,
     const base::android::JavaRef<jobject>& icon) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "showConfirmInfoBar",
 "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroid/graphics/Bitmap;)Lorg/chromium/Foo$InnerClass;",
           &g_org_chromium_TestJni_showConfirmInfoBar);
 
   jobject ret =
       env->CallObjectMethod(obj.obj(),
-          method_id, as_jint(nativeInfoBar), buttonOk.obj(), buttonCancel.obj(), title.obj(),
-              icon.obj());
-  jni_generator::CheckException(env);
+          call_context.base.method_id, as_jint(nativeInfoBar), buttonOk.obj(), buttonCancel.obj(),
+              title.obj(), icon.obj());
   return base::android::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
@@ -78,36 +81,43 @@ static base::android::ScopedJavaLocalRef<jobject> Java_TestJni_showAutoLoginInfo
     const base::android::JavaRef<jstring>& realm,
     const base::android::JavaRef<jstring>& account,
     const base::android::JavaRef<jstring>& args) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "showAutoLoginInfoBar",
           "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/chromium/Foo$InnerClass;",
           &g_org_chromium_TestJni_showAutoLoginInfoBar);
 
   jobject ret =
       env->CallObjectMethod(obj.obj(),
-          method_id, as_jint(nativeInfoBar), realm.obj(), account.obj(), args.obj());
-  jni_generator::CheckException(env);
+          call_context.base.method_id, as_jint(nativeInfoBar), realm.obj(), account.obj(),
+              args.obj());
   return base::android::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_00024InfoBar_dismiss(nullptr);
 static void Java_InfoBar_dismiss(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_00024InfoBar_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_00024InfoBar_clazz(env));
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_00024InfoBar_clazz(env),
+          env,
+          clazz,
           "dismiss",
           "()V",
           &g_org_chromium_TestJni_00024InfoBar_dismiss);
 
      env->CallVoidMethod(obj.obj(),
-          method_id);
-  jni_generator::CheckException(env);
+          call_context.base.method_id);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_shouldShowAutoLogin(nullptr);
@@ -116,38 +126,44 @@ static jboolean Java_TestJni_shouldShowAutoLogin(JNIEnv* env, const base::androi
     const base::android::JavaRef<jstring>& realm,
     const base::android::JavaRef<jstring>& account,
     const base::android::JavaRef<jstring>& args) {
-  CHECK_CLAZZ(env, org_chromium_TestJni_clazz(env),
+  jclass clazz = org_chromium_TestJni_clazz(env);
+  CHECK_CLAZZ(env, clazz,
       org_chromium_TestJni_clazz(env), false);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "shouldShowAutoLogin",
           "(Landroid/view/View;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z",
           &g_org_chromium_TestJni_shouldShowAutoLogin);
 
   jboolean ret =
-      env->CallStaticBooleanMethod(org_chromium_TestJni_clazz(env),
-          method_id, view.obj(), realm.obj(), account.obj(), args.obj());
-  jni_generator::CheckException(env);
+      env->CallStaticBooleanMethod(clazz,
+          call_context.base.method_id, view.obj(), realm.obj(), account.obj(), args.obj());
   return ret;
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_openUrl(nullptr);
 static base::android::ScopedJavaLocalRef<jobject> Java_TestJni_openUrl(JNIEnv* env, const
     base::android::JavaRef<jstring>& url) {
-  CHECK_CLAZZ(env, org_chromium_TestJni_clazz(env),
+  jclass clazz = org_chromium_TestJni_clazz(env);
+  CHECK_CLAZZ(env, clazz,
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "openUrl",
           "(Ljava/lang/String;)Ljava/io/InputStream;",
           &g_org_chromium_TestJni_openUrl);
 
   jobject ret =
-      env->CallStaticObjectMethod(org_chromium_TestJni_clazz(env),
-          method_id, url.obj());
-  jni_generator::CheckException(env);
+      env->CallStaticObjectMethod(clazz,
+          call_context.base.method_id, url.obj());
   return base::android::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
@@ -158,261 +174,304 @@ static void Java_TestJni_activateHardwareAcceleration(JNIEnv* env, const
     JniIntWrapper iType,
     JniIntWrapper iPrimaryID,
     JniIntWrapper iSecondaryID) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env));
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "activateHardwareAcceleration",
           "(ZIIII)V",
           &g_org_chromium_TestJni_activateHardwareAcceleration);
 
      env->CallVoidMethod(obj.obj(),
-          method_id, activated, as_jint(iPid), as_jint(iType), as_jint(iPrimaryID),
-              as_jint(iSecondaryID));
-  jni_generator::CheckException(env);
+          call_context.base.method_id, activated, as_jint(iPid), as_jint(iType),
+              as_jint(iPrimaryID), as_jint(iSecondaryID));
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_updateStatus(nullptr);
 static jint Java_TestJni_updateStatus(JNIEnv* env, JniIntWrapper status) {
-  CHECK_CLAZZ(env, org_chromium_TestJni_clazz(env),
+  jclass clazz = org_chromium_TestJni_clazz(env);
+  CHECK_CLAZZ(env, clazz,
       org_chromium_TestJni_clazz(env), 0);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "updateStatus",
           "(I)I",
           &g_org_chromium_TestJni_updateStatus);
 
   jint ret =
-      env->CallStaticIntMethod(org_chromium_TestJni_clazz(env),
-          method_id, as_jint(status));
-  jni_generator::CheckException(env);
+      env->CallStaticIntMethod(clazz,
+          call_context.base.method_id, as_jint(status));
   return ret;
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_uncheckedCall(nullptr);
 static void Java_TestJni_uncheckedCall(JNIEnv* env, const base::android::JavaRef<jobject>& obj,
     JniIntWrapper iParam) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env));
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextUnchecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "uncheckedCall",
           "(I)V",
           &g_org_chromium_TestJni_uncheckedCall);
 
      env->CallVoidMethod(obj.obj(),
-          method_id, as_jint(iParam));
+          call_context.method_id, as_jint(iParam));
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_returnByteArray(nullptr);
 static base::android::ScopedJavaLocalRef<jbyteArray> Java_TestJni_returnByteArray(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "returnByteArray",
           "()[B",
           &g_org_chromium_TestJni_returnByteArray);
 
   jbyteArray ret =
       static_cast<jbyteArray>(env->CallObjectMethod(obj.obj(),
-          method_id));
-  jni_generator::CheckException(env);
+          call_context.base.method_id));
   return base::android::ScopedJavaLocalRef<jbyteArray>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_returnBooleanArray(nullptr);
 static base::android::ScopedJavaLocalRef<jbooleanArray> Java_TestJni_returnBooleanArray(JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "returnBooleanArray",
           "()[Z",
           &g_org_chromium_TestJni_returnBooleanArray);
 
   jbooleanArray ret =
       static_cast<jbooleanArray>(env->CallObjectMethod(obj.obj(),
-          method_id));
-  jni_generator::CheckException(env);
+          call_context.base.method_id));
   return base::android::ScopedJavaLocalRef<jbooleanArray>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_returnCharArray(nullptr);
 static base::android::ScopedJavaLocalRef<jcharArray> Java_TestJni_returnCharArray(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "returnCharArray",
           "()[C",
           &g_org_chromium_TestJni_returnCharArray);
 
   jcharArray ret =
       static_cast<jcharArray>(env->CallObjectMethod(obj.obj(),
-          method_id));
-  jni_generator::CheckException(env);
+          call_context.base.method_id));
   return base::android::ScopedJavaLocalRef<jcharArray>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_returnShortArray(nullptr);
 static base::android::ScopedJavaLocalRef<jshortArray> Java_TestJni_returnShortArray(JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "returnShortArray",
           "()[S",
           &g_org_chromium_TestJni_returnShortArray);
 
   jshortArray ret =
       static_cast<jshortArray>(env->CallObjectMethod(obj.obj(),
-          method_id));
-  jni_generator::CheckException(env);
+          call_context.base.method_id));
   return base::android::ScopedJavaLocalRef<jshortArray>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_returnIntArray(nullptr);
 static base::android::ScopedJavaLocalRef<jintArray> Java_TestJni_returnIntArray(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "returnIntArray",
           "()[I",
           &g_org_chromium_TestJni_returnIntArray);
 
   jintArray ret =
       static_cast<jintArray>(env->CallObjectMethod(obj.obj(),
-          method_id));
-  jni_generator::CheckException(env);
+          call_context.base.method_id));
   return base::android::ScopedJavaLocalRef<jintArray>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_returnLongArray(nullptr);
 static base::android::ScopedJavaLocalRef<jlongArray> Java_TestJni_returnLongArray(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "returnLongArray",
           "()[J",
           &g_org_chromium_TestJni_returnLongArray);
 
   jlongArray ret =
       static_cast<jlongArray>(env->CallObjectMethod(obj.obj(),
-          method_id));
-  jni_generator::CheckException(env);
+          call_context.base.method_id));
   return base::android::ScopedJavaLocalRef<jlongArray>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_returnDoubleArray(nullptr);
 static base::android::ScopedJavaLocalRef<jdoubleArray> Java_TestJni_returnDoubleArray(JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "returnDoubleArray",
           "()[D",
           &g_org_chromium_TestJni_returnDoubleArray);
 
   jdoubleArray ret =
       static_cast<jdoubleArray>(env->CallObjectMethod(obj.obj(),
-          method_id));
-  jni_generator::CheckException(env);
+          call_context.base.method_id));
   return base::android::ScopedJavaLocalRef<jdoubleArray>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_returnObjectArray(nullptr);
 static base::android::ScopedJavaLocalRef<jobjectArray> Java_TestJni_returnObjectArray(JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "returnObjectArray",
           "()[Ljava/lang/Object;",
           &g_org_chromium_TestJni_returnObjectArray);
 
   jobjectArray ret =
       static_cast<jobjectArray>(env->CallObjectMethod(obj.obj(),
-          method_id));
-  jni_generator::CheckException(env);
+          call_context.base.method_id));
   return base::android::ScopedJavaLocalRef<jobjectArray>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_returnArrayOfByteArray(nullptr);
 static base::android::ScopedJavaLocalRef<jobjectArray> Java_TestJni_returnArrayOfByteArray(JNIEnv*
     env, const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "returnArrayOfByteArray",
           "()[[B",
           &g_org_chromium_TestJni_returnArrayOfByteArray);
 
   jobjectArray ret =
       static_cast<jobjectArray>(env->CallObjectMethod(obj.obj(),
-          method_id));
-  jni_generator::CheckException(env);
+          call_context.base.method_id));
   return base::android::ScopedJavaLocalRef<jobjectArray>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_getCompressFormat(nullptr);
 static base::android::ScopedJavaLocalRef<jobject> Java_TestJni_getCompressFormat(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "getCompressFormat",
           "()Landroid/graphics/Bitmap$CompressFormat;",
           &g_org_chromium_TestJni_getCompressFormat);
 
   jobject ret =
       env->CallObjectMethod(obj.obj(),
-          method_id);
-  jni_generator::CheckException(env);
+          call_context.base.method_id);
   return base::android::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
 static std::atomic<jmethodID> g_org_chromium_TestJni_getCompressFormatList(nullptr);
 static base::android::ScopedJavaLocalRef<jobject> Java_TestJni_getCompressFormatList(JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
       org_chromium_TestJni_clazz(env), NULL);
-  jmethodID method_id = base::android::MethodID::LazyGet<
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
       base::android::MethodID::TYPE_INSTANCE>(
-          env, org_chromium_TestJni_clazz(env),
+          env,
+          clazz,
           "getCompressFormatList",
           "()Ljava/util/List;",
           &g_org_chromium_TestJni_getCompressFormatList);
 
   jobject ret =
       env->CallObjectMethod(obj.obj(),
-          method_id);
-  jni_generator::CheckException(env);
+          call_context.base.method_id);
   return base::android::ScopedJavaLocalRef<jobject>(env, ret);
 }
 

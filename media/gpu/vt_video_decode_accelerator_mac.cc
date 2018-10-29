@@ -444,7 +444,7 @@ VTVideoDecodeAccelerator::VTVideoDecodeAccelerator(
       gpu_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       decoder_thread_("VTDecoderThread"),
       weak_this_factory_(this) {
-  DCHECK(!bind_image_cb_.is_null());
+  DCHECK(bind_image_cb_);
 
   callback_.decompressionOutputCallback = OutputThunk;
   callback_.decompressionOutputRefCon = this;
@@ -1094,8 +1094,9 @@ void VTVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
   Frame* frame = new Frame(bitstream_id);
   pending_frames_[bitstream_id] = make_linked_ptr(frame);
   decoder_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&VTVideoDecodeAccelerator::DecodeTask,
-                            base::Unretained(this), std::move(buffer), frame));
+      FROM_HERE,
+      base::BindOnce(&VTVideoDecodeAccelerator::DecodeTask,
+                     base::Unretained(this), std::move(buffer), frame));
 }
 
 void VTVideoDecodeAccelerator::AssignPictureBuffers(
@@ -1386,8 +1387,8 @@ void VTVideoDecodeAccelerator::QueueFlush(TaskType type) {
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   pending_flush_tasks_.push(type);
   decoder_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&VTVideoDecodeAccelerator::FlushTask,
-                            base::Unretained(this), type));
+      FROM_HERE, base::BindOnce(&VTVideoDecodeAccelerator::FlushTask,
+                                base::Unretained(this), type));
 
   // If this is a new flush request, see if we can make progress.
   if (pending_flush_tasks_.size() == 1)

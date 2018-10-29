@@ -117,7 +117,9 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
         init_params.attribs.bind_generates_resource, channel_->image_manager(),
         gmb_factory ? gmb_factory->AsImageFactory() : nullptr,
         manager->watchdog() /* progress_reporter */,
-        manager->gpu_feature_info(), manager->discardable_manager());
+        manager->gpu_feature_info(), manager->discardable_manager(),
+        manager->passthrough_discardable_manager(),
+        manager->shared_image_manager());
 
     transfer_buffer_manager = context_group_->transfer_buffer_manager();
   }

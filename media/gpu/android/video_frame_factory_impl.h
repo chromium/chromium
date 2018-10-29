@@ -38,7 +38,9 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
       GetStubCb get_stub_cb);
   ~VideoFrameFactoryImpl() override;
 
-  void Initialize(bool wants_promotion_hint, InitCb init_cb) override;
+  void Initialize(bool wants_promotion_hint,
+                  bool use_texture_owner_as_overlays,
+                  InitCb init_cb) override;
   void SetSurfaceBundle(
       scoped_refptr<AVDASurfaceBundle> surface_bundle) override;
   void CreateVideoFrame(
@@ -46,7 +48,7 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
       base::TimeDelta timestamp,
       gfx::Size natural_size,
       PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
-      VideoDecoder::OutputCB output_cb) override;
+      OnceOutputCb output_cb) override;
   void RunAfterPendingVideoFrames(base::OnceClosure closure) override;
 
  private:
@@ -72,6 +74,7 @@ class GpuVideoFrameFactory
 
   scoped_refptr<TextureOwner> Initialize(
       bool wants_promotion_hint,
+      bool use_texture_owner_as_overlays,
       VideoFrameFactory::GetStubCb get_stub_cb);
 
   // Creates and returns a VideoFrame with its ReleaseMailboxCB.
@@ -81,7 +84,7 @@ class GpuVideoFrameFactory
       base::TimeDelta timestamp,
       gfx::Size natural_size,
       PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
-      VideoDecoder::OutputCB output_cb,
+      VideoFrameFactory::OnceOutputCb output_cb,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Set our image group.  Must be called before the first call to
@@ -115,6 +118,9 @@ class GpuVideoFrameFactory
 
   // Do we want promotion hints from the compositor?
   bool wants_promotion_hint_ = false;
+
+  // Indicates whether texture owner can be promoted to an overlay.
+  bool use_texture_owner_as_overlays_ = false;
 
   // A helper for creating textures. Only valid while |stub_| is valid.
   std::unique_ptr<GLES2DecoderHelper> decoder_helper_;

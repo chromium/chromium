@@ -10,6 +10,7 @@
 
 #include "base/files/file.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -115,7 +116,20 @@ void StartEchoCancellationDump(AudioProcessing* audio_processing,
 // |audio_processing|.
 void StopEchoCancellationDump(AudioProcessing* audio_processing);
 
-void EnableAutomaticGainControl(AudioProcessing* audio_processing);
+// Loads fixed gains for pre-amplifier and gain control from config JSON string.
+CONTENT_EXPORT void GetExtraGainConfig(
+    const base::Optional<std::string>& audio_processing_platform_config_json,
+    base::Optional<double>* pre_amplifier_fixed_gain_factor,
+    base::Optional<double>* gain_control_compression_gain_db);
+
+// Enables automatic gain control. If optional |fixed_gain| is set, will set the
+// gain control mode to use the fixed gain.
+void EnableAutomaticGainControl(AudioProcessing* audio_processing,
+                                base::Optional<double> compression_gain_db);
+
+// Enables pre-amplifier with given gain factor if the optional |factor| is set.
+void ConfigPreAmplifier(webrtc::AudioProcessing::Config* apm_config,
+                        base::Optional<double> fixed_gain_factor);
 
 void GetAudioProcessingStats(
     AudioProcessing* audio_processing,

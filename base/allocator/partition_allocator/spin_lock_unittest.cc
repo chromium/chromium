@@ -5,6 +5,7 @@
 #include "base/allocator/partition_allocator/spin_lock.h"
 
 #include <memory>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/threading/thread.h"
@@ -12,7 +13,7 @@
 
 namespace base {
 
-static const size_t kBufferSize = 16;
+static constexpr size_t kBufferSize = 16;
 
 static subtle::SpinLock g_lock;
 

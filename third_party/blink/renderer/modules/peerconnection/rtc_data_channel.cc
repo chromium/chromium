@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -164,7 +165,7 @@ String RTCDataChannel::readyState() const {
 }
 
 unsigned RTCDataChannel::bufferedAmount() const {
-  return handler_->BufferedAmount();
+  return SafeCast<unsigned>(handler_->BufferedAmount());
 }
 
 unsigned RTCDataChannel::bufferedAmountLowThreshold() const {
@@ -285,7 +286,8 @@ void RTCDataChannel::DidReceiveRawData(const char* data, size_t data_length) {
     return;
   }
   if (binary_type_ == kBinaryTypeArrayBuffer) {
-    DOMArrayBuffer* buffer = DOMArrayBuffer::Create(data, data_length);
+    DOMArrayBuffer* buffer =
+        DOMArrayBuffer::Create(data, SafeCast<unsigned>(data_length));
     ScheduleDispatchEvent(MessageEvent::Create(buffer));
     return;
   }

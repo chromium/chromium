@@ -27,7 +27,6 @@ class Env;
 #endif
 
 namespace ui {
-class EventHandler;
 class ListSelectionModel;
 }
 namespace views {
@@ -35,6 +34,7 @@ class View;
 class ViewTracker;
 }
 class Browser;
+class EscapeTracker;
 class Tab;
 class TabDragControllerTest;
 class TabStrip;
@@ -650,7 +650,7 @@ class TabDragController : public views::WidgetObserver,
   int attach_x_;
   int attach_index_;
 
-  std::unique_ptr<ui::EventHandler> escape_tracker_;
+  std::unique_ptr<EscapeTracker> escape_tracker_;
 
   std::unique_ptr<WindowFinder> window_finder_;
 

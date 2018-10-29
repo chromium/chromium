@@ -15,8 +15,8 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/system_tray.h"
 #include "ash/system/tray/system_tray_bubble.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/test/ash_test_base.h"
-#include "ui/views/bubble/tray_bubble_view.h"
 
 namespace ash {
 

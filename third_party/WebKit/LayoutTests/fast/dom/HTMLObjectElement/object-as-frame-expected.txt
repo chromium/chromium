@@ -1,6 +1,7 @@
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS window.frames.length is 2
 PASS window.frames[0].frameElement.name is "frame"
 PASS window.frames[1].frameElement.name is "obj"

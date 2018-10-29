@@ -99,7 +99,7 @@ SecurityInterstitialControllerClient::GetPrefService() {
 
 const std::string
 SecurityInterstitialControllerClient::GetExtendedReportingPrefName() const {
-  return safe_browsing::GetExtendedReportingPrefName(*prefs_);
+  return prefs::kSafeBrowsingScoutReportingEnabled;
 }
 
 bool SecurityInterstitialControllerClient::CanLaunchDateAndTimeSettings() {

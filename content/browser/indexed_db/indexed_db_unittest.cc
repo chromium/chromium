@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
@@ -69,10 +70,9 @@ TEST_F(IndexedDBTest, ClearSessionOnlyDatabases) {
   // Create the scope which will ensure we run the destructor of the context
   // which should trigger the clean up.
   {
-    scoped_refptr<IndexedDBContextImpl> idb_context =
-        base::MakeRefCounted<IndexedDBContextImpl>(
-            temp_dir.GetPath(), special_storage_policy_.get(),
-            quota_manager_proxy_.get());
+    auto idb_context = base::MakeRefCounted<IndexedDBContextImpl>(
+        temp_dir.GetPath(), special_storage_policy_.get(),
+        quota_manager_proxy_.get());
 
     normal_path = idb_context->GetFilePathForTesting(kNormalOrigin);
     session_only_path = idb_context->GetFilePathForTesting(kSessionOnlyOrigin);
@@ -99,10 +99,9 @@ TEST_F(IndexedDBTest, SetForceKeepSessionState) {
   {
     // Create some indexedDB paths.
     // With the levelDB backend, these are directories.
-    scoped_refptr<IndexedDBContextImpl> idb_context =
-        base::MakeRefCounted<IndexedDBContextImpl>(
-            temp_dir.GetPath(), special_storage_policy_.get(),
-            quota_manager_proxy_.get());
+    auto idb_context = base::MakeRefCounted<IndexedDBContextImpl>(
+        temp_dir.GetPath(), special_storage_policy_.get(),
+        quota_manager_proxy_.get());
 
     // Save session state. This should bypass the destruction-time deletion.
     idb_context->SetForceKeepSessionState();
@@ -154,60 +153,56 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  scoped_refptr<IndexedDBContextImpl> idb_context =
-      base::MakeRefCounted<IndexedDBContextImpl>(temp_dir.GetPath(),
-                                                 special_storage_policy_.get(),
-                                                 quota_manager_proxy_.get());
+  auto idb_context = base::MakeRefCounted<IndexedDBContextImpl>(
+      temp_dir.GetPath(), special_storage_policy_.get(),
+      quota_manager_proxy_.get());
 
   const Origin kTestOrigin = Origin::Create(GURL("http://test/"));
+
+  auto open_db_callbacks =
+      base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
+  auto closed_db_callbacks =
+      base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
+  auto open_callbacks =
+      base::MakeRefCounted<ForceCloseDBCallbacks>(idb_context, kTestOrigin);
+  auto closed_callbacks =
+      base::MakeRefCounted<ForceCloseDBCallbacks>(idb_context, kTestOrigin);
+
+  base::RunLoop loop;
   idb_context->TaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](IndexedDBContextImpl* idb_context,
-             scoped_refptr<MockIndexedDBDatabaseCallbacks> open_db_callbacks,
-             scoped_refptr<MockIndexedDBDatabaseCallbacks> closed_db_callbacks,
-             scoped_refptr<ForceCloseDBCallbacks> open_callbacks,
-             scoped_refptr<ForceCloseDBCallbacks> closed_callbacks,
-             const Origin& origin) {
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        const int child_process_id = 0;
+        const int64_t host_transaction_id = 0;
+        const int64_t version = 0;
 
-            const int child_process_id = 0;
-            const int64_t host_transaction_id = 0;
-            const int64_t version = 0;
-            const scoped_refptr<net::URLRequestContextGetter> request_context;
+        IndexedDBFactory* factory = idb_context->GetIDBFactory();
 
-            IndexedDBFactory* factory = idb_context->GetIDBFactory();
+        base::FilePath test_path =
+            idb_context->GetFilePathForTesting(kTestOrigin);
 
-            base::FilePath test_path =
-                idb_context->GetFilePathForTesting(origin);
+        factory->Open(base::ASCIIToUTF16("opendb"),
+                      std::make_unique<IndexedDBPendingConnection>(
+                          open_callbacks, open_db_callbacks, child_process_id,
+                          host_transaction_id, version),
+                      kTestOrigin, idb_context->data_path());
+        EXPECT_TRUE(base::DirectoryExists(test_path));
 
-            factory->Open(base::ASCIIToUTF16("opendb"),
-                          std::make_unique<IndexedDBPendingConnection>(
-                              open_callbacks, open_db_callbacks,
-                              child_process_id, host_transaction_id, version),
-                          request_context, origin, idb_context->data_path());
-            EXPECT_TRUE(base::DirectoryExists(test_path));
+        factory->Open(base::ASCIIToUTF16("closeddb"),
+                      std::make_unique<IndexedDBPendingConnection>(
+                          closed_callbacks, closed_db_callbacks,
+                          child_process_id, host_transaction_id, version),
+                      kTestOrigin, idb_context->data_path());
 
-            factory->Open(base::ASCIIToUTF16("closeddb"),
-                          std::make_unique<IndexedDBPendingConnection>(
-                              closed_callbacks, closed_db_callbacks,
-                              child_process_id, host_transaction_id, version),
-                          request_context, origin, idb_context->data_path());
+        closed_callbacks->connection()->Close();
 
-            closed_callbacks->connection()->Close();
+        idb_context->DeleteForOrigin(kTestOrigin);
 
-            idb_context->DeleteForOrigin(origin);
-
-            EXPECT_TRUE(open_db_callbacks->forced_close_called());
-            EXPECT_FALSE(closed_db_callbacks->forced_close_called());
-            EXPECT_FALSE(base::DirectoryExists(test_path));
-          },
-          base::Unretained(idb_context.get()),
-          base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>(),
-          base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>(),
-          base::MakeRefCounted<ForceCloseDBCallbacks>(idb_context, kTestOrigin),
-          base::MakeRefCounted<ForceCloseDBCallbacks>(idb_context, kTestOrigin),
-          kTestOrigin));
-  RunAllTasksUntilIdle();
+        EXPECT_TRUE(open_db_callbacks->forced_close_called());
+        EXPECT_FALSE(closed_db_callbacks->forced_close_called());
+        EXPECT_FALSE(base::DirectoryExists(test_path));
+        loop.Quit();
+      }));
+  loop.Run();
 }
 
 TEST_F(IndexedDBTest, DeleteFailsIfDirectoryLocked) {
@@ -215,24 +210,23 @@ TEST_F(IndexedDBTest, DeleteFailsIfDirectoryLocked) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const Origin kTestOrigin = Origin::Create(GURL("http://test/"));
 
-  scoped_refptr<IndexedDBContextImpl> idb_context =
-      base::MakeRefCounted<IndexedDBContextImpl>(temp_dir.GetPath(),
-                                                 special_storage_policy_.get(),
-                                                 quota_manager_proxy_.get());
+  auto idb_context = base::MakeRefCounted<IndexedDBContextImpl>(
+      temp_dir.GetPath(), special_storage_policy_.get(),
+      quota_manager_proxy_.get());
 
   base::FilePath test_path = idb_context->GetFilePathForTesting(kTestOrigin);
   ASSERT_TRUE(base::CreateDirectory(test_path));
 
-  std::unique_ptr<LevelDBLock> lock =
-      LevelDBDatabase::LockForTesting(test_path);
+  auto lock = LevelDBDatabase::LockForTesting(test_path);
   ASSERT_TRUE(lock);
 
-  // TODO(jsbell): Remove static_cast<> when overloads are eliminated.
-  void (IndexedDBContextImpl::* delete_for_origin)(const Origin&) =
-      &IndexedDBContextImpl::DeleteForOrigin;
+  base::RunLoop loop;
   idb_context->TaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(delete_for_origin, idb_context, kTestOrigin));
-  RunAllTasksUntilIdle();
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        idb_context->DeleteForOrigin(kTestOrigin);
+        loop.Quit();
+      }));
+  loop.Run();
 
   EXPECT_TRUE(base::DirectoryExists(test_path));
 }
@@ -241,55 +235,48 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  scoped_refptr<IndexedDBContextImpl> idb_context =
-      base::MakeRefCounted<IndexedDBContextImpl>(temp_dir.GetPath(),
-                                                 special_storage_policy_.get(),
-                                                 quota_manager_proxy_.get());
+  auto idb_context = base::MakeRefCounted<IndexedDBContextImpl>(
+      temp_dir.GetPath(), special_storage_policy_.get(),
+      quota_manager_proxy_.get());
 
+  auto temp_path = temp_dir.GetPath();
+  auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
+
+  base::RunLoop loop;
   idb_context->TaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](IndexedDBContextImpl* idb_context, const base::FilePath temp_path,
-             scoped_refptr<MockIndexedDBCallbacks> callbacks,
-             scoped_refptr<MockIndexedDBDatabaseCallbacks> db_callbacks) {
-            const Origin kTestOrigin = Origin::Create(GURL("http://test/"));
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        const Origin kTestOrigin = Origin::Create(GURL("http://test/"));
 
-            scoped_refptr<IndexedDBFactoryImpl> factory =
-                static_cast<IndexedDBFactoryImpl*>(
-                    idb_context->GetIDBFactory());
+        auto* factory =
+            static_cast<IndexedDBFactoryImpl*>(idb_context->GetIDBFactory());
 
-            const int child_process_id = 0;
-            const int64_t transaction_id = 1;
-            const scoped_refptr<net::URLRequestContextGetter> request_context;
+        const int child_process_id = 0;
+        const int64_t transaction_id = 1;
 
-            std::unique_ptr<IndexedDBPendingConnection> connection(
-                std::make_unique<IndexedDBPendingConnection>(
-                    callbacks, db_callbacks, child_process_id, transaction_id,
-                    IndexedDBDatabaseMetadata::DEFAULT_VERSION));
-            factory->Open(base::ASCIIToUTF16("db"), std::move(connection),
-                          request_context, Origin(kTestOrigin), temp_path);
+        auto connection = std::make_unique<IndexedDBPendingConnection>(
+            callbacks, db_callbacks, child_process_id, transaction_id,
+            IndexedDBDatabaseMetadata::DEFAULT_VERSION);
+        factory->Open(base::ASCIIToUTF16("db"), std::move(connection),
+                      Origin(kTestOrigin), temp_path);
 
-            EXPECT_TRUE(callbacks->connection());
+        EXPECT_TRUE(callbacks->connection());
 
-            // ConnectionOpened() is usually called by the dispatcher.
-            idb_context->ConnectionOpened(kTestOrigin, callbacks->connection());
+        // ConnectionOpened() is usually called by the dispatcher.
+        idb_context->ConnectionOpened(kTestOrigin, callbacks->connection());
 
-            EXPECT_TRUE(factory->IsBackingStoreOpen(kTestOrigin));
+        EXPECT_TRUE(factory->IsBackingStoreOpen(kTestOrigin));
 
-            // Simulate the write failure.
-            leveldb::Status status =
-                leveldb::Status::IOError("Simulated failure");
-            idb_context->GetIDBFactory()->HandleBackingStoreFailure(
-                kTestOrigin);
+        // Simulate the write failure.
+        leveldb::Status status = leveldb::Status::IOError("Simulated failure");
+        factory->HandleBackingStoreFailure(kTestOrigin);
 
-            EXPECT_TRUE(db_callbacks->forced_close_called());
-            EXPECT_FALSE(factory->IsBackingStoreOpen(kTestOrigin));
-          },
-          base::Unretained(idb_context.get()), temp_dir.GetPath(),
+        EXPECT_TRUE(db_callbacks->forced_close_called());
+        EXPECT_FALSE(factory->IsBackingStoreOpen(kTestOrigin));
 
-          base::MakeRefCounted<MockIndexedDBCallbacks>(),
-          base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>()));
-  RunAllTasksUntilIdle();
+        loop.Quit();
+      }));
+  loop.Run();
 }
 
 }  // namespace content

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_logical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_physical_offset_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_fragment_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -24,6 +25,21 @@ inline bool IsPhysicalTextFragmentAnonymousText(
     return !ToLayoutTextFragment(layout_object)->AssociatedTextNode();
   const Node* node = layout_object->GetNode();
   return !node || node->IsPseudoElement();
+}
+
+NGLineOrientation ToLineOrientation(WritingMode writing_mode) {
+  switch (writing_mode) {
+    case WritingMode::kHorizontalTb:
+      return NGLineOrientation::kHorizontal;
+    case WritingMode::kVerticalRl:
+    case WritingMode::kVerticalLr:
+    case WritingMode::kSidewaysRl:
+      return NGLineOrientation::kClockWiseVertical;
+    case WritingMode::kSidewaysLr:
+      return NGLineOrientation::kCounterClockWiseVertical;
+  }
+  NOTREACHED();
+  return NGLineOrientation::kHorizontal;
 }
 
 }  // anonymous namespace
@@ -54,6 +70,22 @@ NGPhysicalTextFragment::NGPhysicalTextFragment(
       end_effect_(static_cast<unsigned>(end_effect)),
       is_anonymous_text_(IsPhysicalTextFragmentAnonymousText(layout_object)) {
   DCHECK(shape_result_ || IsFlowControl()) << ToString();
+  self_ink_overflow_ = ComputeSelfInkOverflow();
+}
+
+NGPhysicalTextFragment::NGPhysicalTextFragment(NGTextFragmentBuilder* builder)
+    : NGPhysicalFragment(builder, kFragmentText, builder->text_type_),
+      text_(builder->text_),
+      start_offset_(builder->start_offset_),
+      end_offset_(builder->end_offset_),
+      shape_result_(std::move(builder->shape_result_)),
+      line_orientation_(
+          static_cast<unsigned>(ToLineOrientation(builder->GetWritingMode()))),
+      end_effect_(static_cast<unsigned>(builder->end_effect_)),
+      is_anonymous_text_(
+          IsPhysicalTextFragmentAnonymousText(builder->layout_object_)) {
+  DCHECK(shape_result_ || IsFlowControl()) << ToString();
+  self_ink_overflow_ = ComputeSelfInkOverflow();
 }
 
 // Convert logical cooridnate to local physical coordinate.
@@ -140,7 +172,7 @@ NGPhysicalOffsetRect NGPhysicalTextFragment::LocalRect(
   return {};
 }
 
-NGPhysicalOffsetRect NGPhysicalTextFragment::SelfInkOverflow() const {
+NGPhysicalOffsetRect NGPhysicalTextFragment::ComputeSelfInkOverflow() const {
   if (UNLIKELY(!shape_result_))
     return LocalRect();
 

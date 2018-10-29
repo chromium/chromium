@@ -38,9 +38,9 @@ namespace blink {
 
 class ClassCollection final : public HTMLCollection {
  public:
-  // classNames argument is an AtomicString because it is common for Elements to
-  // share the same class names.  It is also used to construct a
-  // SpaceSplitString (m_classNames) and its constructor requires an
+  // class_names argument is an AtomicString because it is common for Elements
+  // to share the same class names.  It is also used to construct a
+  // SpaceSplitString (class_names_) and its constructor requires an
   // AtomicString.
   static ClassCollection* Create(ContainerNode& root_node,
                                  CollectionType type,

@@ -20,7 +20,7 @@ class TabletModeWindowManager;
 class TabletModeWindowState : public wm::WindowState::State {
  public:
   // Called when the window position might need to be updated.
-  static void UpdateWindowPosition(wm::WindowState* window_state);
+  static void UpdateWindowPosition(wm::WindowState* window_state, bool animate);
 
   // The |window|'s state object will be modified to use this new window mode
   // state handler. Upon destruction it will restore the previous state handler
@@ -46,6 +46,10 @@ class TabletModeWindowState : public wm::WindowState::State {
   void AttachState(wm::WindowState* window_state,
                    wm::WindowState::State* previous_state) override;
   void DetachState(wm::WindowState* window_state) override;
+
+  void set_use_zero_animation_type(bool use_zero_animation_type) {
+    use_zero_animation_type_ = use_zero_animation_type;
+  }
 
  private:
   // Updates the window to |new_state_type| and resulting bounds:
@@ -87,7 +91,11 @@ class TabletModeWindowState : public wm::WindowState::State {
   mojom::WindowStateType current_state_type_;
 
   // If true, do not update bounds.
-  bool defer_bounds_updates_;
+  bool defer_bounds_updates_ = false;
+
+  // If true, the animation type will be set to ZERO, which means the bounds
+  // will be updated at the end of the animation.
+  bool use_zero_animation_type_ = false;
 
   // If true, the state will not process events.
   bool ignore_wm_events_ = false;

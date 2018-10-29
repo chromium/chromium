@@ -99,7 +99,7 @@ void RadioButton::SetChecked(bool checked) {
     if (container) {
       Views other;
       container->GetViewsInGroup(GetGroup(), &other);
-      for (Views::iterator i(other.begin()); i != other.end(); ++i) {
+      for (auto i(other.begin()); i != other.end(); ++i) {
         if (*i != this) {
           if (strcmp((*i)->GetClassName(), kViewClassName)) {
             NOTREACHED() << "radio-button-nt has same group as other non "

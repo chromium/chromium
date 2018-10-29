@@ -741,7 +741,7 @@ void PlatformKeysService::SelectClientCertificates(
 }
 
 void PlatformKeysService::StartOrQueueTask(std::unique_ptr<Task> task) {
-  tasks_.push(make_linked_ptr(task.release()));
+  tasks_.push(std::move(task));
   if (tasks_.size() == 1)
     tasks_.front()->Start();
 }

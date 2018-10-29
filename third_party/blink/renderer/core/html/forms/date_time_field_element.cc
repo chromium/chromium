@@ -199,7 +199,7 @@ void DateTimeFieldElement::SetDisabled() {
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
       StyleChangeReasonForTracing::CreateWithExtraData(
-          StyleChangeReason::kPseudoClass, StyleChangeExtraData::g_disabled));
+          style_change_reason::kPseudoClass, StyleChangeExtraData::g_disabled));
 }
 
 bool DateTimeFieldElement::SupportsFocus() const {

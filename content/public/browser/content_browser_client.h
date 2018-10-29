@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/certificate_request_result_type.h"
+#include "content/public/browser/generated_code_cache_settings.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/resource_request_info.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/media_stream_request.h"
+#include "content/public/common/previews_state.h"
 #include "content/public/common/renderer_preference_watcher.mojom.h"
 #include "content/public/common/resource_type.h"
 #include "content/public/common/socket_permission_request.h"
@@ -41,8 +43,8 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
-#include "services/service_manager/embedder/embedded_service_info.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "services/service_manager/public/cpp/embedded_service_info.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/sandbox/sandbox_type.h"
 #include "storage/browser/fileapi/file_system_context.h"
@@ -110,12 +112,12 @@ class AuthCredentials;
 class ClientCertIdentity;
 using ClientCertIdentityList = std::vector<std::unique_ptr<ClientCertIdentity>>;
 class ClientCertStore;
+class CookieStore;
 class HttpRequestHeaders;
 class NetLog;
 class SSLCertRequestInfo;
 class SSLInfo;
 class URLRequest;
-class URLRequestContext;
 }  // namespace net
 
 namespace network {
@@ -159,7 +161,6 @@ class ControllerPresentationServiceDelegate;
 class DevToolsManagerDelegate;
 class LoginDelegate;
 class MediaObserver;
-class MemoryCoordinatorDelegate;
 class NavigationHandle;
 class NavigationUIData;
 class PlatformNotificationService;
@@ -179,6 +180,7 @@ class URLLoaderThrottle;
 class VpnServiceProxy;
 class WebContents;
 class WebContentsViewDelegate;
+enum class OriginPolicyErrorReason;
 struct MainFunctionParams;
 struct OpenURLParams;
 struct Referrer;
@@ -322,6 +324,28 @@ class CONTENT_EXPORT ContentBrowserClient {
       int render_process_id,
       ResourceType resource_type);
 
+  // Called to create a URLLoaderFactory for network requests in the following
+  // cases:
+  // - The default factory to be used by a frame.  In this case
+  //   |request_initiator| is the origin being committed in the frame (or the
+  //   last origin committed in the frame).
+  // - The initiator-specific factory to be used by a frame.  This happens for
+  //   origins covered via
+  //   RenderFrameHost::MarkInitiatorAsRequiringSeparateURLLoaderFactory.
+  //
+  // This method allows the //content embedder to provide a URLLoaderFactory
+  // with |request_initiator|-specific properties (e.g. with relaxed
+  // Cross-Origin Read Blocking enforcement as needed by some extensions).
+  //
+  // If the embedder doesn't want to override the URLLoaderFactory for the given
+  // |request_initiator|, then it should return an invalid
+  // mojo::InterfacePtrInfo.
+  virtual network::mojom::URLLoaderFactoryPtrInfo
+  CreateURLLoaderFactoryForNetworkRequests(
+      RenderProcessHost* process,
+      network::mojom::NetworkContext* network_context,
+      const url::Origin& request_initiator);
+
   // Returns a list additional WebUI schemes, if any.  These additional schemes
   // act as aliases to the chrome: scheme.  The additional schemes may or may
   // not serve specific WebUI pages depending on the particular URLDataSource
@@ -373,14 +397,6 @@ class CONTENT_EXPORT ContentBrowserClient {
                                         ui::PageTransition* transition,
                                         bool* is_renderer_initiated,
                                         content::Referrer* referrer) {}
-
-  // Allows the embedder to override top document isolation for specific frames.
-  // |url| is the URL being loaded in the subframe, and |parent_site_instance|
-  // is the SiteInstance of the parent frame. Called only for subframes and only
-  // when top document isolation mode is enabled.
-  virtual bool ShouldFrameShareParentSiteInstanceDespiteTopDocumentIsolation(
-      const GURL& url,
-      SiteInstance* parent_site_instance);
 
   // Temporary hack to determine whether to skip OOPIFs on the new tab page.
   // TODO(creis): Remove when https://crbug.com/566091 is fixed.
@@ -491,7 +507,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& scope,
       const GURL& first_party,
       ResourceContext* context,
-      const base::Callback<WebContents*(void)>& wc_getter);
+      base::RepeatingCallback<WebContents*()> wc_getter);
 
   // Allow the embedder to control if a Shared Worker can be connected from a
   // given tab.
@@ -610,12 +626,16 @@ class CONTENT_EXPORT ContentBrowserClient {
   // "1812:e, 00001800-0000-1000-8000-00805f9b34fb:w, ignored:1, alsoignored."
   virtual std::string GetWebBluetoothBlocklist();
 
-  // Allow the embedder to override the request context based on the URL for
-  // certain operations, like cookie access. Returns nullptr to indicate the
-  // regular request context should be used.
+  // Allow the embedder to override the cookie store for a particular URL.
+  // Returns nullptr to indicate the regular cookie store should be used.
   // This is called on the IO thread.
-  virtual net::URLRequestContext* OverrideRequestContextForURL(
-      const GURL& url, ResourceContext* context);
+  virtual net::CookieStore* OverrideCookieStoreForURL(const GURL& url,
+                                                      ResourceContext* context);
+
+#if defined(OS_CHROMEOS)
+  // Notification that a trust anchor was used by the given user.
+  virtual void OnUsedTrustAnchor(const std::string& username_hash) {}
+#endif
 
   // Allows the embedder to override the LocationProvider implementation.
   // Return nullptr to indicate the default one for the platform should be
@@ -685,6 +705,11 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::BrowserContext* context,
       content::StoragePartition* partition,
       storage::OptionalQuotaSettingsCallback callback);
+
+  // Allows the embedder to provide settings that determine if generated code
+  // can be cached and the amount of disk space used for caching generated code.
+  virtual GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
+      BrowserContext* context);
 
   // Informs the embedder that a certificate error has occured.  If
   // |overridable| is true and if |strict_enforcement| is false, the user
@@ -1067,10 +1092,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       int sandbox_type) const;
 #endif
 
-  // Returns an instance of MemoryCoordinatorDelegate.
-  virtual std::unique_ptr<MemoryCoordinatorDelegate>
-  GetMemoryCoordinatorDelegate();
-
   // Binds a new media remoter service to |request|, if supported by the
   // embedder, for the |source| that lives in the render frame represented
   // by |render_frame_host|. This may be called multiple times if there is more
@@ -1122,15 +1143,17 @@ class CONTENT_EXPORT ContentBrowserClient {
       NonNetworkURLLoaderFactoryMap* factories);
 
   // Allows the embedder to intercept URLLoaderFactory interfaces used for
-  // navigation or being brokered on behalf of a renderer fetching subresources,
-  // or for non-navigation requests initiated by the browser on behalf of a
-  // BrowserContext.
+  // navigation or being brokered on behalf of a renderer fetching subresources.
   //
   // |is_navigation| is true when it's a request used for navigation.
-  // |url| is set when it's a request for navigations or for a renderer fetching
-  // subresources. It's not set in the 3rd case (browser-initiated
-  // non-navigation requests) because in that case the factory is cached and it
-  // can be used for multiple URLs.
+  //
+  // |request_initiator| indicates which origin will be the initiator of
+  // requests that will use the URLLoaderFactory (see also
+  // |network::ResourceRequest::requests|).  |request_initiator| is set when
+  // it's a request for a renderer fetching subresources. It's not set when
+  // creating a factory for navigation requests, because navigation requests are
+  // made on behalf of the browser, rather than on behalf of any particular
+  // origin.
   //
   // |*factory_request| is always valid upon entry and MUST be valid upon
   // return. The embedder may swap out the value of |*factory_request| for its
@@ -1143,15 +1166,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // Always called on the UI thread and only when the Network Service is
   // enabled.
-  //
-  // Note that |frame| may be null if this is a browser-initiated,
-  // non-navigation request, e.g. a request made via
-  // |StoragePartition::GetURLLoaderFactoryForBrowserProcess()|.
   virtual bool WillCreateURLLoaderFactory(
       BrowserContext* browser_context,
       RenderFrameHost* frame,
       bool is_navigation,
-      const GURL& url,
+      const url::Origin& request_initiator,
       network::mojom::URLLoaderFactoryRequest* factory_request,
       bool* bypass_redirect_checks);
 
@@ -1330,6 +1349,45 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void RegisterRendererPreferenceWatcherForWorkers(
       BrowserContext* browser_context,
       mojom::RendererPreferenceWatcherPtr watcher);
+
+  // Returns the HTML content of the error page for Origin Policy related
+  // errors.
+  virtual base::Optional<std::string> GetOriginPolicyErrorPage(
+      OriginPolicyErrorReason error_reason,
+      const url::Origin& origin,
+      const GURL& url);
+
+  // Returns true if it is OK to ignore errors for certificates specified by the
+  // --ignore-certificate-errors-spki-list command line flag. The embedder may
+  // perform additional checks, such as requiring --user-data-dir flag too to
+  // make sure that insecure contents will not persist accidentally.
+  virtual bool CanIgnoreCertificateErrorIfNeeded();
+
+  // Called on every request completion to update the data use when network
+  // service is enabled.
+  virtual void OnNetworkServiceDataUseUpdate(
+      int32_t network_traffic_annotation_id_hash,
+      int64_t recv_bytes,
+      int64_t sent_bytes);
+
+  // Asks the embedder for the PreviewsState which says which previews should
+  // be enabled for the given navigation. The PreviewsState is a bitmask of
+  // potentially several Previews optimizations. It is only called for requests
+  // with an unspecified Previews state.  If previews_to_allow is set to
+  // anything other than PREVIEWS_UNSPECIFIED, it is taken as a limit on
+  // available preview states.
+  virtual content::PreviewsState DetermineAllowedPreviews(
+      content::PreviewsState initial_state,
+      content::NavigationHandle* navigation_handle);
+
+  // Asks the embedder for the preview state that should be committed to the
+  // renderer. |initial_state| was pre-determined by |DetermineAllowedPreviews|.
+  // |navigation_handle| is the corresponding navigation object.
+  // |response_headers| are the response headers related to this navigation.
+  virtual content::PreviewsState DetermineCommittedPreviews(
+      content::PreviewsState initial_state,
+      content::NavigationHandle* navigation_handle,
+      const net::HttpResponseHeaders* response_headers);
 };
 
 }  // namespace content

@@ -68,8 +68,7 @@ bool VerifyStanza(
     }
     const std::string& key = attr->Name().LocalPart();
     const std::string& value = attr->Value();
-    std::map<std::string, std::string>::const_iterator iter =
-        key_value_pairs.find(key);
+    auto iter = key_value_pairs.find(key);
     if (iter == key_value_pairs.end()) {
       if (keys.find(key) == keys.end()) {
         *error = "unexpected attribute " + key;

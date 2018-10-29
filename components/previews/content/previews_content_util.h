@@ -13,12 +13,17 @@ namespace previews {
 // Returns whether |previews_state| has any enabled previews.
 bool HasEnabledPreviews(content::PreviewsState previews_state);
 
-// Returns the bitmask of enabled client-side previews for |url_request| and
-// the current effective network connection given |previews_decider|.
+// Returns the bitmask of enabled client-side previews for |url| and the
+// current effective network connection given |previews_decider|.
 // This handles the mapping of previews::PreviewsType enum values to bitmask
 // definitions for content::PreviewsState.
-content::PreviewsState DetermineEnabledClientPreviewsState(
-    const net::URLRequest& url_request,
+// |is_reload| is used to eliminate certain preview types, and |previews_data|
+// is populated with relevant information.
+content::PreviewsState DetermineAllowedClientPreviewsState(
+    previews::PreviewsUserData* previews_data,
+    const GURL& url,
+    bool is_reload,
+    bool is_data_saver_user,
     previews::PreviewsDecider* previews_decider);
 
 // Returns an updated PreviewsState given |previews_state| that has already
@@ -26,7 +31,8 @@ content::PreviewsState DetermineEnabledClientPreviewsState(
 // time. It will defer to any server preview set, otherwise it chooses which
 // client preview bits to retain for processing the main frame response.
 content::PreviewsState DetermineCommittedClientPreviewsState(
-    const net::URLRequest& url_request,
+    previews::PreviewsUserData* previews_data,
+    const GURL& url,
     content::PreviewsState previews_state,
     const previews::PreviewsDecider* previews_decider);
 

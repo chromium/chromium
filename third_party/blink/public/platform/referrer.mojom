@@ -5,32 +5,12 @@
 module blink.mojom;
 
 import "url/mojom/url.mojom";
-
-// Maps to blink::WebReferrerPolicy in
-// src/third_party/blink/public/platform/WebReferrerPolicy.h.
-//
-// TODO(rockot): Update all WebReferrerPolicy consumers to use this type
-// instead, and remove the typemap.
-// Don't make backwards-incompatible changes to this definition!
-// It's used in PageState serialization, so backwards incompatible changes
-// would cause stored PageState objects to be un-parseable. Please contact the
-// page state serialization owners before making such a change.
-enum ReferrerPolicy {
-    ALWAYS,
-    DEFAULT,
-    NO_REFERRER_WHEN_DOWNGRADE,
-    NEVER,
-    ORIGIN,
-    ORIGIN_WHEN_CROSS_ORIGIN,
-    SAME_ORIGIN,
-    STRICT_ORIGIN,
-    NO_REFERRER_WHEN_DOWNGRADE_ORIGIN_WHEN_CROSS_ORIGIN,
-};
+import "services/network/public/mojom/referrer_policy.mojom";
 
 // This struct holds a referrer URL, as well as the referrer policy to be
 // applied to this URL. When passing around referrers that will eventually end
 // up being used for URL requests, always use this struct.
 struct Referrer {
   url.mojom.Url url;
-  ReferrerPolicy policy;
+  network.mojom.ReferrerPolicy policy;
 };

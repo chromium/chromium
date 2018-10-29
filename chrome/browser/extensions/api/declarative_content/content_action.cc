@@ -9,6 +9,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -25,6 +26,7 @@
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/image_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -43,6 +45,10 @@ const char kNoPageAction[] =
     "Can't use declarativeContent.ShowPageAction without a page action";
 const char kNoPageOrBrowserAction[] =
     "Can't use declarativeContent.SetIcon without a page or browser action";
+const char kIconNotSufficientlyVisible[] =
+    "The specified icon is not sufficiently visible";
+
+bool g_allow_invisible_icons_content_action = true;
 
 //
 // The following are concrete actions.
@@ -164,9 +170,7 @@ class SetIcon : public ContentAction {
 // Helper for getting JS collections into C++.
 static bool AppendJSStringsToCPPStrings(const base::ListValue& append_strings,
                                         std::vector<std::string>* append_to) {
-  for (base::ListValue::const_iterator it = append_strings.begin();
-       it != append_strings.end();
-       ++it) {
+  for (auto it = append_strings.begin(); it != append_strings.end(); ++it) {
     std::string value;
     if (it->GetAsString(&value)) {
       append_to->push_back(value);
@@ -343,17 +347,15 @@ void RequestContentScript::InitScript(const HostID& host_id,
   script_.set_run_location(UserScript::BROWSER_DRIVEN);
   script_.set_match_all_frames(script_data.all_frames);
   script_.set_match_about_blank(script_data.match_about_blank);
-  for (std::vector<std::string>::const_iterator it =
-           script_data.css_file_names.begin();
-       it != script_data.css_file_names.end(); ++it) {
+  for (auto it = script_data.css_file_names.cbegin();
+       it != script_data.css_file_names.cend(); ++it) {
     GURL url = extension->GetResourceURL(*it);
     ExtensionResource resource = extension->GetResource(*it);
     script_.css_scripts().push_back(std::make_unique<UserScript::File>(
         resource.extension_root(), resource.relative_path(), url));
   }
-  for (std::vector<std::string>::const_iterator it =
-           script_data.js_file_names.begin();
-       it != script_data.js_file_names.end(); ++it) {
+  for (auto it = script_data.js_file_names.cbegin();
+       it != script_data.js_file_names.cend(); ++it) {
     GURL url = extension->GetResourceURL(*it);
     ExtensionResource resource = extension->GetResource(*it);
     script_.js_scripts().push_back(std::make_unique<UserScript::File>(
@@ -400,7 +402,7 @@ std::unique_ptr<ContentAction> SetIcon::Create(
     type = ActionInfo::TYPE_BROWSER;
   } else {
     *error = kNoPageOrBrowserAction;
-    return std::unique_ptr<ContentAction>();
+    return nullptr;
   }
 
   gfx::ImageSkia icon;
@@ -408,9 +410,20 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   if (dict->GetDictionary("imageData", &canvas_set) &&
       !ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon)) {
     *error = kInvalidIconDictionary;
-    return std::unique_ptr<ContentAction>();
+    return nullptr;
   }
-  return base::WrapUnique(new SetIcon(gfx::Image(icon), type));
+
+  gfx::Image image(icon);
+  const SkBitmap bitmap = image.AsBitmap();
+  const bool is_sufficiently_visible =
+      extensions::image_util::IsIconSufficientlyVisible(bitmap);
+  UMA_HISTOGRAM_BOOLEAN("Extensions.DeclarativeSetIconWasVisible",
+                        is_sufficiently_visible);
+  if (!is_sufficiently_visible && !g_allow_invisible_icons_content_action) {
+    *error = kIconNotSufficientlyVisible;
+    return nullptr;
+  }
+  return base::WrapUnique(new SetIcon(image, type));
 }
 
 //
@@ -436,14 +449,18 @@ std::unique_ptr<ContentAction> ContentAction::Create(
   }
 
   ContentActionFactory& factory = g_content_action_factory.Get();
-  std::map<std::string, ContentActionFactory::FactoryMethod>::iterator
-      factory_method_iter = factory.factory_methods.find(instance_type);
+  auto factory_method_iter = factory.factory_methods.find(instance_type);
   if (factory_method_iter != factory.factory_methods.end())
     return (*factory_method_iter->second)(
         browser_context, extension, action_dict, error);
 
   *error = base::StringPrintf(kInvalidInstanceTypeError, instance_type.c_str());
   return std::unique_ptr<ContentAction>();
+}
+
+// static
+void ContentAction::SetAllowInvisibleIconsForTest(bool value) {
+  g_allow_invisible_icons_content_action = value;
 }
 
 ContentAction::ContentAction() {}

@@ -2,7 +2,6 @@ When contentEditable is set to "false" string from "true" or inherit, element.co
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS document.getElementById("div1").getAttribute("contentEditable") is "false"
 PASS document.getElementById("div1").contentEditable is "false"
 PASS document.getElementById("div1").isContentEditable is false

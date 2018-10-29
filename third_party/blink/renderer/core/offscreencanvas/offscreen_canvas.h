@@ -65,6 +65,7 @@ class CORE_EXPORT OffscreenCanvas final
 
   const IntSize& Size() const override { return size_; }
   void SetSize(const IntSize&);
+  void RecordTransfer();
 
   void SetPlaceholderCanvasId(DOMNodeId canvas_id);
   DOMNodeId PlaceholderCanvasId() const { return placeholder_canvas_id_; }
@@ -114,7 +115,8 @@ class CORE_EXPORT OffscreenCanvas final
   // Partial CanvasResourceHost implementation
   void NotifyGpuContextLost() override {}
   void SetNeedsCompositingUpdate() override {}
-  void UpdateMemoryUsage() override {}  // TODO(crbug.com/842693): implement
+  // TODO(fserb): Merge this with HTMLCanvasElement::UpdateMemoryUsage
+  void UpdateMemoryUsage() override;
   SkFilterQuality FilterQuality() const override {
     return kLow_SkFilterQuality;  // TODO(crbug.com/856654)
   }
@@ -168,6 +170,8 @@ class CORE_EXPORT OffscreenCanvas final
   void Trace(blink::Visitor*) override;
 
  private:
+  int32_t memory_usage_ = 0;
+
   friend class OffscreenCanvasTest;
   explicit OffscreenCanvas(const IntSize&);
   using ContextFactoryVector =

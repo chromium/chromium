@@ -16,7 +16,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/memory_coordinator_client_registry.h"
 #include "base/memory/shared_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -32,10 +31,9 @@
 #include "content/child/child_process.h"
 #include "content/child/thread_safe_sender.h"
 #include "content/common/frame_messages.h"
-#include "content/common/gpu_stream_constants.h"
-#include "content/common/render_message_filter.mojom.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/gpu_stream_constants.h"
 #include "content/public/common/service_manager_connection.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/common/webplugininfo.h"
@@ -47,10 +45,7 @@
 #include "content/renderer/dom_storage/local_storage_namespace.h"
 #include "content/renderer/dom_storage/session_web_storage_namespace_impl.h"
 #include "content/renderer/dom_storage/webstoragenamespace_impl.h"
-#include "content/renderer/file_info_util.h"
-#include "content/renderer/fileapi/webfilesystem_impl.h"
 #include "content/renderer/image_capture/image_capture_frame_grabber.h"
-#include "content/renderer/indexed_db/webidbfactory_impl.h"
 #include "content/renderer/loader/child_url_loader_factory_bundle.h"
 #include "content/renderer/loader/code_cache_loader_impl.h"
 #include "content/renderer/loader/resource_dispatcher.h"
@@ -83,6 +78,7 @@
 #include "mojo/public/cpp/bindings/strong_associated_binding.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "net/base/features.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -91,23 +87,21 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/ws/public/cpp/gpu/context_provider_command_buffer.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/modules/webmidi/web_midi_accessor.h"
-#include "third_party/blink/public/platform/scheduler/child/webthread_base.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_blob_registry.h"
-#include "third_party/blink/public/platform/web_file_info.h"
 #include "third_party/blink/public/platform/web_media_recorder_handler.h"
 #include "third_party/blink/public/platform/web_media_stream_center.h"
 #include "third_party/blink/public/platform/web_rtc_certificate_generator.h"
 #include "third_party/blink/public/platform/web_rtc_peer_connection_handler.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/platform/web_thread.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -146,9 +140,6 @@ using blink::WebAudioLatencyHint;
 using blink::WebBlobRegistry;
 using blink::WebCanvasCaptureHandler;
 using blink::WebDatabaseObserver;
-using blink::WebFileInfo;
-using blink::WebFileSystem;
-using blink::WebIDBFactory;
 using blink::WebImageCaptureFrameGrabber;
 using blink::WebMediaPlayer;
 using blink::WebMediaRecorderHandler;
@@ -252,8 +243,6 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
                         RenderThreadImpl::current()
                             ? RenderThreadImpl::current()->GetIOTaskRunner()
                             : nullptr),
-      compositor_thread_(nullptr),
-      main_thread_(main_thread_scheduler->CreateMainThread()),
       sudden_termination_disables_(0),
       is_locked_to_site_(false),
       default_task_runner_(main_thread_scheduler->DefaultTaskRunner()),
@@ -297,10 +286,11 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 
   GetInterfaceProvider()->GetInterface(
       mojo::MakeRequest(&web_database_host_info_));
+  GetInterfaceProvider()->GetInterface(
+      mojo::MakeRequest(&code_cache_host_info_));
 }
 
 RendererBlinkPlatformImpl::~RendererBlinkPlatformImpl() {
-  WebFileSystemImpl::DeleteThreadSpecificInstance();
   main_thread_scheduler_->SetTopLevelBlameContext(nullptr);
 }
 
@@ -384,17 +374,14 @@ RendererBlinkPlatformImpl::CreateNetworkURLLoaderFactory() {
   return url_loader_factory;
 }
 
-void RendererBlinkPlatformImpl::SetCompositorThread(
-    blink::scheduler::WebThreadBase* compositor_thread) {
-  compositor_thread_ = compositor_thread;
-  if (compositor_thread_)
-    WaitUntilWebThreadTLSUpdate(compositor_thread_);
-}
-
-blink::WebThread* RendererBlinkPlatformImpl::CurrentThread() {
-  if (main_thread_->IsCurrentThread())
-    return main_thread_.get();
-  return BlinkPlatformImpl::CurrentThread();
+void RendererBlinkPlatformImpl::SetDisplayThreadPriority(
+    base::PlatformThreadId thread_id) {
+#if defined(OS_LINUX)
+  if (RenderThreadImpl* render_thread = RenderThreadImpl::current()) {
+    render_thread->render_message_filter()->SetThreadPriority(
+        thread_id, base::ThreadPriority::DISPLAY);
+  }
+#endif
 }
 
 blink::BlameContext* RendererBlinkPlatformImpl::GetTopLevelBlameContext() {
@@ -458,30 +445,37 @@ blink::WebString RendererBlinkPlatformImpl::UserAgent() {
   return render_thread->GetUserAgent();
 }
 
-void RendererBlinkPlatformImpl::CacheMetadata(const blink::WebURL& url,
-                                              base::Time response_time,
-                                              const char* data,
-                                              size_t size) {
-  // Let the browser know we generated cacheable metadata for this resource. The
-  // browser may cache it and return it on subsequent responses to speed
-  // the processing of this resource.
-  std::vector<uint8_t> copy(data, data + size);
-  RenderThreadImpl::current()
-      ->render_message_filter()
-      ->DidGenerateCacheableMetadata(url, response_time, copy);
+void RendererBlinkPlatformImpl::CacheMetadata(
+    blink::mojom::CodeCacheType cache_type,
+    const blink::WebURL& url,
+    base::Time response_time,
+    const char* data,
+    size_t size) {
+  // Only cache WebAssembly if we have isolated code caches.
+  // TODO(bbudge) Remove this check when isolated code caches are on by default.
+  if (cache_type == blink::mojom::CodeCacheType::kJavascript ||
+      base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache)) {
+    // Let the browser know we generated cacheable metadata for this resource.
+    // The browser may cache it and return it on subsequent responses to speed
+    // the processing of this resource.
+    std::vector<uint8_t> copy(data, data + size);
+    GetCodeCacheHost().DidGenerateCacheableMetadata(cache_type, url,
+                                                    response_time, copy);
+  }
 }
 
 void RendererBlinkPlatformImpl::FetchCachedCode(
+    blink::mojom::CodeCacheType cache_type,
     const GURL& url,
     base::OnceCallback<void(base::Time, const std::vector<uint8_t>&)>
         callback) {
-  RenderThreadImpl::current()->render_message_filter()->FetchCachedCode(
-      url, std::move(callback));
+  GetCodeCacheHost().FetchCachedCode(cache_type, url, std::move(callback));
 }
 
-void RendererBlinkPlatformImpl::ClearCodeCacheEntry(const GURL& url) {
-  RenderThreadImpl::current()->render_message_filter()->ClearCodeCacheEntry(
-      url);
+void RendererBlinkPlatformImpl::ClearCodeCacheEntry(
+    blink::mojom::CodeCacheType cache_type,
+    const GURL& url) {
+  GetCodeCacheHost().ClearCodeCacheEntry(cache_type, url);
 }
 
 void RendererBlinkPlatformImpl::CacheMetadataInCacheStorage(
@@ -495,11 +489,9 @@ void RendererBlinkPlatformImpl::CacheMetadataInCacheStorage(
   // CacheStorage. The browser may cache it and return it on subsequent
   // responses to speed the processing of this resource.
   std::vector<uint8_t> copy(data, data + size);
-  RenderThreadImpl::current()
-      ->render_message_filter()
-      ->DidGenerateCacheableMetadataInCacheStorage(
-          url, response_time, copy, cacheStorageOrigin,
-          cacheStorageCacheName.Utf8());
+  GetCodeCacheHost().DidGenerateCacheableMetadataInCacheStorage(
+      url, response_time, copy, cacheStorageOrigin,
+      cacheStorageCacheName.Utf8());
 }
 
 WebString RendererBlinkPlatformImpl::DefaultLocale() {
@@ -526,10 +518,6 @@ void RendererBlinkPlatformImpl::SuddenTerminationChanged(bool enabled) {
     thread->GetRendererHost()->SuddenTerminationChanged(enabled);
 }
 
-blink::WebThread* RendererBlinkPlatformImpl::CompositorThread() const {
-  return compositor_thread_;
-}
-
 std::unique_ptr<WebStorageNamespace>
 RendererBlinkPlatformImpl::CreateLocalStorageNamespace() {
   if (!local_storage_cached_areas_) {
@@ -544,7 +532,7 @@ RendererBlinkPlatformImpl::CreateLocalStorageNamespace() {
 std::unique_ptr<blink::WebStorageNamespace>
 RendererBlinkPlatformImpl::CreateSessionStorageNamespace(
     base::StringPiece namespace_id) {
-  if (base::FeatureList::IsEnabled(features::kMojoSessionStorage)) {
+  if (base::FeatureList::IsEnabled(blink::features::kOnionSoupDOMStorage)) {
     if (!local_storage_cached_areas_) {
       local_storage_cached_areas_.reset(new LocalStorageCachedAreas(
           RenderThreadImpl::current()->GetStoragePartitionService(),
@@ -573,21 +561,6 @@ void RendererBlinkPlatformImpl::CloneSessionStorageNamespace(
 }
 
 //------------------------------------------------------------------------------
-
-std::unique_ptr<blink::WebIDBFactory>
-RendererBlinkPlatformImpl::CreateIdbFactory() {
-  blink::mojom::IDBFactoryPtrInfo web_idb_factory_host_info;
-  GetInterfaceProvider()->GetInterface(
-      mojo::MakeRequest(&web_idb_factory_host_info));
-  return std::make_unique<WebIDBFactoryImpl>(
-      std::move(web_idb_factory_host_info));
-}
-
-//------------------------------------------------------------------------------
-
-WebFileSystem* RendererBlinkPlatformImpl::FileSystem() {
-  return WebFileSystemImpl::ThreadSpecificInstance(default_task_runner_.get());
-}
 
 WebString RendererBlinkPlatformImpl::FileSystemCreateOriginIdentifier(
     const blink::WebSecurityOrigin& origin) {
@@ -1196,11 +1169,13 @@ void RendererBlinkPlatformImpl::WorkerContextCreated(
 
 //------------------------------------------------------------------------------
 void RendererBlinkPlatformImpl::RequestPurgeMemory() {
-  // TODO(tasak|bashi): We should use ChildMemoryCoordinator here, but
-  // ChildMemoryCoordinator isn't always available as it's only initialized
-  // when kMemoryCoordinatorV0 is enabled.
-  // Use ChildMemoryCoordinator when memory coordinator is always enabled.
-  base::MemoryCoordinatorClientRegistry::GetInstance()->PurgeMemory();
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+}
+
+void RendererBlinkPlatformImpl::SetMemoryPressureNotificationsSuppressed(
+    bool suppressed) {
+  base::MemoryPressureListener::SetNotificationsSuppressed(suppressed);
 }
 
 void RendererBlinkPlatformImpl::InitializeWebDatabaseHostIfNeeded() {
@@ -1215,6 +1190,16 @@ void RendererBlinkPlatformImpl::InitializeWebDatabaseHostIfNeeded() {
 blink::mojom::WebDatabaseHost& RendererBlinkPlatformImpl::GetWebDatabaseHost() {
   InitializeWebDatabaseHostIfNeeded();
   return **web_database_host_;
+}
+
+blink::mojom::CodeCacheHost& RendererBlinkPlatformImpl::GetCodeCacheHost() {
+  if (!code_cache_host_) {
+    code_cache_host_ = blink::mojom::ThreadSafeCodeCacheHostPtr::Create(
+        std::move(code_cache_host_info_),
+        base::CreateSequencedTaskRunnerWithTraits(
+            {base::WithBaseSyncPrimitives()}));
+  }
+  return **code_cache_host_;
 }
 
 }  // namespace content

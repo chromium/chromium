@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/base_export.h"
+#include "base/task/task_traits_details.h"
 
 namespace base {
 
@@ -41,10 +42,14 @@ namespace base {
 // as its extension traits:
 //  (3) -- template <...>
 //      -- constexpr base::TaskTraitsExtensionStorage MakeTaskTraitsExtension(
-//      --     ArgTypes&&... args).
+//      --     ArgTypes... args).
 //      Constructs and serializes an extension with the given arguments into
-//      a TaskTraitsExtensionStorage and returns it. Should only accept valid
-//      arguments for the extension.
+//      a TaskTraitsExtensionStorage and returns it. When the extension is used,
+//      all traits, including the base ones, are passed to this function in
+//      order make sure TaskTraits constructor only participates in overload
+//      resolution if all traits are valid. As such, this function should only
+//      accept valid task traits recognised by the extension and the base task
+//      traits.
 //
 // EXAMPLE (see also base/task/test_task_traits_extension.h):
 // --------
@@ -57,9 +62,15 @@ namespace base {
 //   static constexpr uint8_t kExtensionId =
 //       TaskTraitsExtensionStorage::kFirstEmbedderExtensionId;
 //
-//   struct ValidTrait {
-//     ValidTrait(MyExtensionTrait) {}
+//   struct ValidTrait : public TaskTraits::ValidTrait {
+//     // Accept base traits in MakeTaskTraitsExtension (see above).
+//     using TaskTraits::ValidTrait::ValidTrait;
+//
+//     ValidTrait(MyExtensionTrait);
 //   };
+//
+//   using MyExtensionTraitFilter =
+//     trait_helpers::EnumTraitFilter<MyExtensionTrait, MyExtensionTrait::kA>;
 //
 //   // Constructor that accepts only valid traits as specified by ValidTraits.
 //   template <class... ArgTypes,
@@ -67,10 +78,8 @@ namespace base {
 //                 base::trait_helpers::AreValidTraits<
 //                     ValidTrait, ArgTypes...>::value>>
 //   constexpr MyTaskTraitsExtension(ArgTypes... args)
-//       : my_trait_(base::trait_helpers::GetValueFromArgList(
-//             base::trait_helpers::EnumArgGetter<MyExtensionTrait,
-//                                                MyExtensionTrait::kValue1>(),
-//             args...)) {}
+//       : my_trait_(trait_helpers::GetTraitFromArgList<MyExtensionTraitFilter>(
+//                      args...)) {}
 //
 //   // Serializes MyTaskTraitsExtension into a storage object and returns it.
 //   constexpr base::TaskTraitsExtensionStorage Serialize() const {
@@ -100,8 +109,8 @@ namespace base {
 //               base::trait_helpers::AreValidTraits<
 //                   MyTaskTraitsExtension::ValidTrait, ArgTypes...>::value>>
 // constexpr base::TaskTraitsExtensionStorage MakeTaskTraitsExtension(
-//     ArgTypes&&... args) {
-//   return MyTaskTraitsExtension(std::forward<ArgTypes>(args)...).Serialize();
+//     ArgTypes... args) {
+//   return MyTaskTraitsExtension(args...).Serialize();
 // }
 // }  // namespace my_embedder
 //
@@ -119,7 +128,9 @@ namespace base {
 // this data directly (rather than in a separate object on the heap) to support
 // constexpr-compatible TaskTraits construction.
 struct BASE_EXPORT TaskTraitsExtensionStorage {
-  static constexpr size_t kStorageSize = 8;  // bytes
+  // Size in bytes.
+  // Keep in sync with org.chromium.base.task.TaskTraits.EXTENSION_STORAGE_SIZE
+  static constexpr size_t kStorageSize = 8;
 
   inline constexpr TaskTraitsExtensionStorage();
   inline constexpr TaskTraitsExtensionStorage(
@@ -137,11 +148,13 @@ struct BASE_EXPORT TaskTraitsExtensionStorage {
   inline bool operator==(const TaskTraitsExtensionStorage& other) const;
 
   enum ExtensionId : uint8_t {
+    // Keep in sync with org.chromium.base.task.TaskTraits.INVALID_EXTENSION_ID
     kInvalidExtensionId = 0,
     // The embedder is responsible for assigning the remaining values uniquely.
     kFirstEmbedderExtensionId = 1,
     // Maximum number of extension types is artificially limited to support
     // super efficient TaskExecutor lookup in post_task.cc.
+    // Keep in sync with org.chromium.base.TaskTraits.MAX_EXTENSION_ID
     kMaxExtensionId = 4
   };
 
@@ -171,6 +184,44 @@ inline constexpr TaskTraitsExtensionStorage::TaskTraitsExtensionStorage(
 inline constexpr TaskTraitsExtensionStorage::TaskTraitsExtensionStorage(
     const TaskTraitsExtensionStorage& other) = default;
 
+namespace trait_helpers {
+
+// Helper class whose constructor tests if an extension accepts a list of
+// argument types.
+struct TaskTraitsExtension {
+  template <class... ArgTypes,
+            class CheckCanMakeExtension =
+                decltype(MakeTaskTraitsExtension(std::declval<ArgTypes>()...))>
+  constexpr TaskTraitsExtension(ArgTypes... args) {}
+};
+
+// Tests that that a trait extension accepts all |ArgsTypes...|.
+template <class... ArgTypes>
+struct AreValidTraitsForExtension
+    : std::integral_constant<
+          bool,
+          std::is_constructible<TaskTraitsExtension, ArgTypes...>::value> {};
+
+// Helper function that returns the TaskTraitsExtensionStorage of a
+// serialized extension created with |args...| if there are arguments that are
+// not valid base traits, or a default constructed TaskTraitsExtensionStorage
+// otherwise.
+template <class... ArgTypes>
+constexpr TaskTraitsExtensionStorage GetTaskTraitsExtension(
+    std::true_type base_traits,
+    ArgTypes... args) {
+  return TaskTraitsExtensionStorage();
+}
+
+template <class... ArgTypes>
+constexpr TaskTraitsExtensionStorage GetTaskTraitsExtension(
+    std::false_type base_traits,
+    ArgTypes... args) {
+  return MakeTaskTraitsExtension(args...);
+}
+
+}  // namespace trait_helpers
+
 // TODO(eseckler): Default the comparison operator once C++20 arrives.
 inline bool TaskTraitsExtensionStorage::operator==(
     const TaskTraitsExtensionStorage& other) const {
@@ -180,25 +231,6 @@ inline bool TaskTraitsExtensionStorage::operator==(
   return extension_id == other.extension_id && data == other.data;
 }
 
-// Default implementation of MakeTaskTraitsExtension template function, which
-// doesn't accept any traits and does not create an extension.
-template <class Unused = void>
-constexpr TaskTraitsExtensionStorage MakeTaskTraitsExtension(
-    TaskTraitsExtensionStorage& storage) {
-  return TaskTraitsExtensionStorage();
-}
-
-// Forwards those arguments from |args| that are indicated by the index_sequence
-// to a MakeTaskTraitsExtension() template function, which is provided by the
-// embedder in an unknown namespace; its resolution relies on argument-dependent
-// lookup. Due to filtering, the provided indices may be non-contiguous.
-template <class... ArgTypes, std::size_t... Indices>
-constexpr TaskTraitsExtensionStorage MakeTaskTraitsExtensionHelper(
-    std::tuple<ArgTypes...> args,
-    std::index_sequence<Indices...>) {
-  return MakeTaskTraitsExtension(
-      std::get<Indices>(std::forward<std::tuple<ArgTypes...>>(args))...);
-}
 
 }  // namespace base
 

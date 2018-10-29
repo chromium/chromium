@@ -1,0 +1,12 @@
+{
+  "name": "All urls required in permissions",
+  "version": "0.0.1.33",
+  "manifest_version": 2,
+  "description": "Extension with <all_urls> defined as a required permission",
+  "permissions": [
+    "<all_urls>"
+  ],
+  "optional_permissions": [
+    "http://*/*"
+  ]
+}

@@ -34,7 +34,7 @@
 
 namespace blink {
 
-typedef size_t HTMLInputCheckpoint;
+typedef wtf_size_t HTMLInputCheckpoint;
 
 class BackgroundHTMLInputStream {
   DISALLOW_NEW();
@@ -50,24 +50,24 @@ class BackgroundHTMLInputStream {
   // An HTMLInputCheckpoint is valid until the next call to rewindTo, at which
   // point all outstanding checkpoints are invalidated.
   HTMLInputCheckpoint CreateCheckpoint(
-      size_t tokens_extracted_since_previous_checkpoint);
+      wtf_size_t tokens_extracted_since_previous_checkpoint);
   void RewindTo(HTMLInputCheckpoint, const String& unparsed_input);
   void InvalidateCheckpointsBefore(HTMLInputCheckpoint);
 
-  size_t TotalCheckpointTokenCount() const {
+  wtf_size_t TotalCheckpointTokenCount() const {
     return total_checkpoint_token_count_;
   }
 
  private:
   struct Checkpoint {
-    Checkpoint(const SegmentedString& i, size_t n, size_t t)
+    Checkpoint(const SegmentedString& i, wtf_size_t n, wtf_size_t t)
         : input(i),
           number_of_segments_already_appended(n),
           tokens_extracted_since_previous_checkpoint(t) {}
 
     SegmentedString input;
-    size_t number_of_segments_already_appended;
-    size_t tokens_extracted_since_previous_checkpoint;
+    wtf_size_t number_of_segments_already_appended;
+    wtf_size_t tokens_extracted_since_previous_checkpoint;
 
 #if DCHECK_IS_ON()
     bool IsNull() const {
@@ -87,9 +87,9 @@ class BackgroundHTMLInputStream {
 
   // Note: These indicies may === vector.size(), in which case there are no
   // valid checkpoints/segments at this time.
-  size_t first_valid_checkpoint_index_;
-  size_t first_valid_segment_index_;
-  size_t total_checkpoint_token_count_;
+  wtf_size_t first_valid_checkpoint_index_;
+  wtf_size_t first_valid_segment_index_;
+  wtf_size_t total_checkpoint_token_count_;
 
   void UpdateTotalCheckpointTokenCount();
 

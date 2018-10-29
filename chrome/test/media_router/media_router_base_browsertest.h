@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "extensions/browser/process_manager_observer.h"
@@ -75,6 +76,8 @@ class MediaRouterBaseBrowserTest : public extensions::ExtensionBrowserTest,
   base::WaitableEvent extension_load_event_;
   std::string extension_id_;
   bool extension_host_created_;
+
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MediaRouterBaseBrowserTest);

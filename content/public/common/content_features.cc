@@ -33,11 +33,6 @@ const base::Feature kAllowSignedHTTPExchangeCertsWithoutExtension{
     "AllowSignedHTTPExchangeCertsWithoutExtension",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables asm.js to WebAssembly V8 backend.
-// http://asmjs.org/spec/latest/
-const base::Feature kAsmJsToWebAssembly{"AsmJsToWebAssembly",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Creates audio output and input streams using the audio service.
 const base::Feature kAudioServiceAudioStreams{
     "AudioServiceAudioStreams", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -50,10 +45,26 @@ const base::Feature kAudioServiceLaunchOnStartup{
 const base::Feature kAudioServiceOutOfProcess{
     "AudioServiceOutOfProcess", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables await taking 1 tick on the microtask queue.
+const base::Feature kAwaitOptimization{"AwaitOptimization",
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Kill switch for Background Fetch.
+const base::Feature kBackgroundFetch{"BackgroundFetch",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables using uploads in a Background Fetch.
+const base::Feature kBackgroundFetchUploads{"BackgroundFetchUploads",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable incremental marking for Blink's heap managed by the Oilpan garbage
 // collector.
 const base::Feature kBlinkHeapIncrementalMarking{
-    "BlinkHeapIncrementalMarking", base::FEATURE_DISABLED_BY_DEFAULT};
+    "BlinkHeapIncrementalMarking", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enable unified garbage collection in Blink.
+const base::Feature kBlinkHeapUnifiedGarbageCollection{
+    "BlinkHeapUnifiedGarbageCollection", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable bloated renderer detection.
 const base::Feature kBloatedRendererDetection{
@@ -109,16 +120,6 @@ const base::Feature kCompositeOpaqueScrollers{"CompositeOpaqueScrollers",
 // knowledge.
 const base::Feature kCompositorTouchAction{"CompositorTouchAction",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables blocking cross-site document responses (not paying attention to
-// whether a site isolation mode is also enabled).
-const base::Feature kCrossSiteDocumentBlockingAlways{
-    "CrossSiteDocumentBlockingAlways", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables blocking cross-site document responses if one of site isolation modes
-// is (e.g. site-per-process or isolate-origins) is enabled.
-const base::Feature kCrossSiteDocumentBlockingIfIsolating{
-    "CrossSiteDocumentBlockingIfIsolating", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables specification of a target element in the fragment identifier
 // via a CSS selector.
@@ -190,10 +191,13 @@ const base::Feature kHeapCompaction{"HeapCompaction",
 const base::Feature kImageCaptureAPI{"ImageCaptureAPI",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Use the requester origin as a second key to enfore site isolation policy for
-// code caches.
-const base::Feature kIsolatedCodeCache{"IsolatedCodeCache",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+// This flag is used to set field parameters to choose predictor we use when
+// kResamplingInputEvents is disabled. It's used for gatherig accuracy metrics
+// on finch and also for choosing predictor type for predictedEvents API without
+// enabling resampling. It does not have any effect when the resampling flag is
+// enabled.
+const base::Feature kInputPredictorTypeChoice{
+    "InputPredictorTypeChoice", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Alternative to switches::kIsolateOrigins, for turning on origin isolation.
 // List of origins to isolate has to be specified via
@@ -251,22 +255,10 @@ const base::Feature kMemoryCoordinator{"MemoryCoordinator",
 const base::Feature kMimeHandlerViewInCrossProcessFrame{
     "MimeHandlerViewInCrossProcessFrame", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// ES6 Modules dynamic imports.
-const base::Feature kModuleScriptsDynamicImport{
-    "ModuleScriptsDynamicImport", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// ES6 Modules import.meta.url.
-const base::Feature kModuleScriptsImportMetaUrl{
-    "ModuleScriptsImportMetaUrl", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Mojo-based Session Storage.
-const base::Feature kMojoSessionStorage{"MojoSessionStorage",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables/disables the video capture service.
 const base::Feature kMojoVideoCapture {
   "MojoVideoCapture",
-#if defined(OS_MACOSX) || defined(OS_WIN)
+#if defined(OS_MACOSX) || defined(OS_WIN) || defined(OS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -295,6 +287,10 @@ const base::Feature kOriginPolicy{"OriginPolicy",
 // Origin Trials for controlling access to feature/API experiments.
 const base::Feature kOriginTrials{"OriginTrials",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
+
+// History navigation in response to horizontal overscroll (aka gesture-nav).
+const base::Feature kOverscrollHistoryNavigation{
+    "OverscrollHistoryNavigation", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Blink PageLifecycle feature. See https://crbug.com/775194
 const base::Feature kPageLifecycle{"PageLifecycle",
@@ -347,10 +343,6 @@ const base::Feature kPurgeAndSuspend {
 #endif
 };
 
-// Generate V8 full code cache for PWAs.
-const base::Feature kPWAFullCodeCache{"PWAFullCodeCache",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable raster-inducing scroll.
 const base::Feature kRasterInducingScroll{"RasterInducingScroll",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
@@ -400,10 +392,6 @@ const base::Feature kServiceWorkerLongRunningMessage{
 const base::Feature kServiceWorkerPaymentApps{"ServiceWorkerPaymentApps",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Generate V8 full code cache of service worker scripts.
-const base::Feature kServiceWorkerScriptFullCodeCache{
-    "ServiceWorkerScriptFullCodeCache", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // http://tc39.github.io/ecmascript_sharedmem/shmem.html
 const base::Feature kSharedArrayBuffer {
   "SharedArrayBuffer",
@@ -419,9 +407,16 @@ const base::Feature kSharedArrayBuffer {
 const base::Feature kSignedHTTPExchange{"SignedHTTPExchange",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Send "Accept: application/signed-exchange" header to origins who opt-in.
+const base::Feature kSignedHTTPExchangeAcceptHeader{
+    "SignedHTTPExchangeAcceptHeader", base::FEATURE_DISABLED_BY_DEFAULT};
+// Field trial parameter containing the list of origins that opted-in to receive
+// "Accept: application/signed-exchange" header.
+const char kSignedHTTPExchangeAcceptHeaderFieldTrialParamName[] = "OriginsList";
+
 // Origin Trial of Origin-Signed HTTP Exchanges (for WebPackage Loading)
 const base::Feature kSignedHTTPExchangeOriginTrial{
-    "SignedHTTPExchangeOriginTrial", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SignedHTTPExchangeOriginTrial", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether SpareRenderProcessHostManager tries to always have a warm
 // spare renderer process around for the most recently requested BrowserContext.
@@ -432,12 +427,6 @@ const base::Feature kSpareRendererForSitePerProcess{
 // Throttle Blink timers in out-of-view cross origin frames.
 const base::Feature kTimerThrottlingForHiddenFrames{
     "TimerThrottlingForHiddenFrames", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Groups all out-of-process iframes to a different process from the process of
-// the top document. This is a performance isolation mode.  Launch bug:
-// https://crbug.com/595987.
-const base::Feature kTopDocumentIsolation{"top-document-isolation",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables async touchpad pinch zoom events. We check the ACK of the first
 // synthetic wheel event in a pinch sequence, then send the rest of the
@@ -472,10 +461,6 @@ const base::Feature kV8VmFuture{"V8VmFuture",
 // http://webassembly.org/
 const base::Feature kWebAssembly{"WebAssembly",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enable WebAssembly streamed compilation.
-const base::Feature kWebAssemblyStreaming{"WebAssemblyStreaming",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable WebAssembly baseline compilation and tier up.
 const base::Feature kWebAssemblyBaseline{"WebAssemblyBaseline",
@@ -523,7 +508,7 @@ const base::Feature kWebAuthCable{"WebAuthenticationCable",
 // using pairingless BLE protocol on Windows.
 // https://w3c.github.io/webauthn
 const base::Feature kWebAuthCableWin{"WebAuthenticationCableWin",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether AuthenticatorAttestationResponse contains a getTransports
 // member to return the set of transports supported by an authenticator.
@@ -609,7 +594,13 @@ const base::Feature kWebXrHitTest{"WebXRHitTest",
 
 // Controls whether the orientation sensor based device is enabled.
 const base::Feature kWebXrOrientationSensorDevice{
-    "WebXROrientationSensorDevice", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebXROrientationSensorDevice",
+#if defined(OS_ANDROID)
+    base::FEATURE_ENABLED_BY_DEFAULT
+#else
+    base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Wipe corrupt v2 IndexedDB databases.
 const base::Feature kWipeCorruptV2IDBDatabases{
@@ -664,8 +655,14 @@ const char kWebXrRenderPathParamValueSharedBuffer[] = "SharedBuffer";
 // Makes all WebUI that uses Polymer use 2.x version.
 // TODO(dpapad): Remove this once Polymer 2 migration is done,
 // https://crbug.com/738611.
-const base::Feature kWebUIPolymer2{"WebUIPolymer2",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kWebUIPolymer2 {
+  "WebUIPolymer2",
+#if !defined(OS_CHROMEOS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // !defined(OS_CHROMEOS)
+};
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_MACOSX)

@@ -238,8 +238,7 @@ bool KeywordTable::PerformOperations(const Operations& operations) {
   if (!transaction.Begin())
     return false;
 
-  for (Operations::const_iterator i(operations.begin()); i != operations.end();
-       ++i) {
+  for (auto i(operations.begin()); i != operations.end(); ++i) {
     switch (i->first) {
       case ADD:
         if (!AddKeyword(i->second))
@@ -275,8 +274,7 @@ bool KeywordTable::GetKeywords(Keywords* keywords) {
     }
   }
   bool succeeded = s.Succeeded();
-  for (std::set<TemplateURLID>::const_iterator i(bad_entries.begin());
-       i != bad_entries.end(); ++i)
+  for (auto i(bad_entries.begin()); i != bad_entries.end(); ++i)
     succeeded &= RemoveKeyword(*i);
   return succeeded;
 }

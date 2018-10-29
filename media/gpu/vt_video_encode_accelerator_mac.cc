@@ -183,8 +183,8 @@ void VTVideoEncodeAccelerator::Encode(const scoped_refptr<VideoFrame>& frame,
   DCHECK(thread_checker_.CalledOnValidThread());
 
   encoder_thread_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&VTVideoEncodeAccelerator::EncodeTask,
-                            base::Unretained(this), frame, force_keyframe));
+      FROM_HERE, base::BindOnce(&VTVideoEncodeAccelerator::EncodeTask,
+                                base::Unretained(this), frame, force_keyframe));
 }
 
 void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
@@ -238,8 +238,8 @@ void VTVideoEncodeAccelerator::Destroy() {
 
   if (encoder_thread_.IsRunning()) {
     encoder_thread_task_runner_->PostTask(
-        FROM_HERE, base::Bind(&VTVideoEncodeAccelerator::DestroyTask,
-                              base::Unretained(this)));
+        FROM_HERE, base::BindOnce(&VTVideoEncodeAccelerator::DestroyTask,
+                                  base::Unretained(this)));
     encoder_thread_.Stop();
   } else {
     DestroyTask();
@@ -367,7 +367,7 @@ void VTVideoEncodeAccelerator::NotifyError(
     VideoEncodeAccelerator::Error error) {
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
   client_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&Client::NotifyError, client_, error));
+      FROM_HERE, base::BindOnce(&Client::NotifyError, client_, error));
 }
 
 // static
@@ -395,9 +395,10 @@ void VTVideoEncodeAccelerator::CompressionCallback(void* encoder_opaque,
   // This method is NOT called on |encoder_thread_|, so we still need to
   // post a task back to it to do work.
   encoder->encoder_thread_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&VTVideoEncodeAccelerator::CompressionCallbackTask,
-                            encoder->encoder_weak_ptr_, status,
-                            base::Passed(&encode_output)));
+      FROM_HERE,
+      base::BindOnce(&VTVideoEncodeAccelerator::CompressionCallbackTask,
+                     encoder->encoder_weak_ptr_, status,
+                     base::Passed(&encode_output)));
 }
 
 void VTVideoEncodeAccelerator::CompressionCallbackTask(

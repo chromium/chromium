@@ -25,10 +25,14 @@ class V8ForegroundTaskRunnerWithLocker : public V8ForegroundTaskRunnerBase {
   // v8::Platform implementation.
   void PostTask(std::unique_ptr<v8::Task> task) override;
 
+  void PostNonNestableTask(std::unique_ptr<v8::Task> task) override;
+
   void PostDelayedTask(std::unique_ptr<v8::Task> task,
                        double delay_in_seconds) override;
 
   void PostIdleTask(std::unique_ptr<v8::IdleTask> task) override;
+
+  bool NonNestableTasksEnabled() const override;
 
  private:
   v8::Isolate* isolate_;

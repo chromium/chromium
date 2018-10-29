@@ -8,10 +8,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(mash): Fix. https://crbug.com/648733
-  "app_launch_controller\.cc": [
-    "+ash/shell.h",
-  ],
   "login_browsertest\.cc": [
     "+ash/system/status_area_widget.h",
     "+ash/system/unified/unified_system_tray.h",

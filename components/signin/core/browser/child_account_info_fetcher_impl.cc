@@ -123,7 +123,7 @@ void ChildAccountInfoFetcherImpl::OnClientLoginFailure(
 
 void ChildAccountInfoFetcherImpl::OnGetUserInfoSuccess(
     const UserInfoMap& data) {
-  UserInfoMap::const_iterator services_iter = data.find("allServices");
+  auto services_iter = data.find("allServices");
   if (services_iter != data.end()) {
     std::vector<std::string> service_flags = base::SplitString(
         services_iter->second, ",", base::TRIM_WHITESPACE,

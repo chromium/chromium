@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/crypto_result.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -122,7 +123,8 @@ class DictionaryBuilder : public WebCryptoKeyAlgorithmDictionary {
   void SetUint8Array(const char* property_name,
                      const WebVector<unsigned char>& vector) override {
     builder_.Add(property_name,
-                 DOMUint8Array::Create(vector.Data(), vector.size()));
+                 DOMUint8Array::Create(vector.Data(),
+                                       SafeCast<wtf_size_t>(vector.size())));
   }
 
  private:
@@ -227,7 +229,7 @@ bool CryptoKey::ParseUsageMask(const Vector<String>& usages,
                                WebCryptoKeyUsageMask& mask,
                                CryptoResult* result) {
   mask = 0;
-  for (size_t i = 0; i < usages.size(); ++i) {
+  for (wtf_size_t i = 0; i < usages.size(); ++i) {
     WebCryptoKeyUsageMask usage = KeyUsageStringToMask(usages[i]);
     if (!usage) {
       result->CompleteWithError(kWebCryptoErrorTypeType,

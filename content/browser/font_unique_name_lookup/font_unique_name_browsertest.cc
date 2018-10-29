@@ -87,6 +87,17 @@ const char* kExpectedFontFamilyNames[] = {"Ahem",
                                           "Tinos",
                                           "Mukti Narrow",
                                           "Tinos"};
+#elif defined(OS_MACOSX)
+const char* kExpectedFontFamilyNames[] = {"American Typewriter",
+                                          "Arial Narrow",
+                                          "Baskerville",
+                                          "Devanagari MT",
+                                          "DIN Alternate",
+                                          "Gill Sans",
+                                          "Iowan Old Style",
+                                          "Malayalam Sangam MN",
+                                          "Hiragino Maru Gothic Pro",
+                                          "Hiragino Kaku Gothic StdN"};
 #endif
 
 }  // namespace
@@ -110,7 +121,7 @@ class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
 };
 
 // TODO(drott): Enable this on all platforms.
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_MACOSX)
 IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest, ContentLocalFontsMatching) {
   LoadAndWait("/font_src_local_matching.html");
   Attach();

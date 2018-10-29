@@ -2,7 +2,6 @@ Test to make sure we do not remove extra styling hidden on html styling elements
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS one bold command converted <b style="text-decoration: underline">test</b> to <span style="text-decoration: underline">test</span>
 PASS one italic command converted <i style="font-weight: bold">test</i> to <span style="font-weight: bold">test</span>
 PASS one bold command converted <b style="font-weight: bold">test</b> to test

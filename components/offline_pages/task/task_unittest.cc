@@ -41,14 +41,15 @@ void OfflineTaskTest::PumpLoop() {
 }
 
 void OfflineTaskTest::TaskCompleted(Task* task) {
-  completed_task_ = task;
+  auto set_task_callback = [](Task** t_ptr, Task* t) { *t_ptr = t; };
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(set_task_callback, &completed_task_, task));
 }
 
 TEST_F(OfflineTaskTest, RunTaskStepByStep) {
   ConsumedResource resource;
   TestTask task(&resource);
   task.SetTaskCompletionCallbackForTesting(
-      base::ThreadTaskRunnerHandle::Get(),
       base::BindOnce(&OfflineTaskTest::TaskCompleted, base::Unretained(this)));
 
   EXPECT_EQ(TaskState::NOT_STARTED, task.state());

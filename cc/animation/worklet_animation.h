@@ -60,10 +60,11 @@ class CC_ANIMATION_EXPORT WorkletAnimation final
 
   void PushPropertiesTo(Animation* animation_impl) override;
 
-  // Should be called when the scroll source of the ScrollTimeline attached to
-  // this animation has a change in ElementId. Such a change happens when the
-  // scroll source changes compositing state.
-  void SetScrollSourceId(base::Optional<ElementId> scroller_id);
+  // Should be called when the ScrollTimeline attached to this animation has a
+  // change, such as when the scroll source changes ElementId.
+  void UpdateScrollTimeline(base::Optional<ElementId> scroller_id,
+                            base::Optional<double> start_scroll_offset,
+                            base::Optional<double> end_scroll_offset);
 
   // Should be called when the pending tree is promoted to active, as this may
   // require updating the ElementId for the ScrollTimeline scroll source.

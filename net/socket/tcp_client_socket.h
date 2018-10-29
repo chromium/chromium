@@ -44,6 +44,12 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket {
   TCPClientSocket(std::unique_ptr<TCPSocket> connected_socket,
                   const IPEndPoint& peer_address);
 
+  // Creates a TCPClientSocket from a bound-but-not-connected socket.
+  static std::unique_ptr<TCPClientSocket> CreateFromBoundSocket(
+      std::unique_ptr<TCPSocket> bound_socket,
+      const AddressList& addresses,
+      const IPEndPoint& bound_address);
+
   ~TCPClientSocket() override;
 
   // TransportClientSocket implementation.
@@ -101,6 +107,15 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket {
     CONNECT_STATE_NONE,
   };
 
+  // Main constructor. |socket| must be non-null. |current_address_index| is the
+  // address index in |addresses| of the server |socket| is connected to, or -1
+  // if not connected. |bind_address|, if present, is the address |socket| is
+  // bound to.
+  TCPClientSocket(std::unique_ptr<TCPSocket> socket,
+                  const AddressList& addresses,
+                  int current_address_index,
+                  std::unique_ptr<IPEndPoint> bind_address);
+
   // A helper method shared by Read() and ReadIfReady(). If |read_if_ready| is
   // set to true, ReadIfReady() will be used instead of Read().
   int ReadCommon(IOBuffer* buf,
@@ -127,13 +142,6 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket {
   // Emits histograms for TCP metrics, at the time the socket is
   // disconnected.
   void EmitTCPMetricsHistogramsOnDisconnect();
-
-  // Socket performance statistics (such as RTT) are reported to the
-  // |socket_performance_watcher_|. May be nullptr.
-  // |socket_performance_watcher_| is owned by |socket_|. If non-null,
-  // |socket_performance_watcher_| is guaranteed to be destroyed when |socket_|
-  // is destroyed.
-  SocketPerformanceWatcher* socket_performance_watcher_;
 
   std::unique_ptr<TCPSocket> socket_;
 

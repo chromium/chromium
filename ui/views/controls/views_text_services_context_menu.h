@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/i18n/rtl.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/views/views_export.h"
 
 namespace ui {
@@ -20,10 +21,8 @@ class Textfield;
 
 // This class is used to add and handle text service items in the text context
 // menu.
-class ViewsTextServicesContextMenu {
+class ViewsTextServicesContextMenu : public ui::AcceleratorProvider {
  public:
-  virtual ~ViewsTextServicesContextMenu() {}
-
   // Creates a platform-specific ViewsTextServicesContextMenu object.
   static std::unique_ptr<ViewsTextServicesContextMenu> Create(
       ui::SimpleMenuModel* menu,

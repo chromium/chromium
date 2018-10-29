@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
@@ -57,7 +58,8 @@ class ExtensionMediaRouteProviderProxyTest : public testing::Test {
   void SetUp() override {
     request_manager_ = static_cast<MockEventPageRequestManager*>(
         EventPageRequestManagerFactory::GetInstance()->SetTestingFactoryAndUse(
-            &profile_, &MockEventPageRequestManager::Create));
+            &profile_,
+            base::BindRepeating(&MockEventPageRequestManager::Create)));
     ON_CALL(*request_manager_, RunOrDeferInternal(_, _))
         .WillByDefault(Invoke([](base::OnceClosure& request,
                                  MediaRouteProviderWakeReason wake_reason) {

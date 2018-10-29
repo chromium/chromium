@@ -131,7 +131,7 @@ void RecordCTHistograms(const net::SSLInfo& ssl_info) {
   UMA_HISTOGRAM_ENUMERATION(
       "Net.CertificateTransparency.RequestComplianceStatus",
       ssl_info.ct_policy_compliance,
-      net::ct::CTPolicyCompliance::CT_POLICY_MAX);
+      net::ct::CTPolicyCompliance::CT_POLICY_COUNT);
   // Record the CT compliance of each request which was required to be CT
   // compliant. This gives a picture of the sites that are supposed to be
   // compliant and how well they do at actually being compliant.
@@ -139,7 +139,7 @@ void RecordCTHistograms(const net::SSLInfo& ssl_info) {
     UMA_HISTOGRAM_ENUMERATION(
         "Net.CertificateTransparency.CTRequiredRequestComplianceStatus",
         ssl_info.ct_policy_compliance,
-        net::ct::CTPolicyCompliance::CT_POLICY_MAX);
+        net::ct::CTPolicyCompliance::CT_POLICY_COUNT);
   }
 }
 
@@ -441,8 +441,6 @@ void URLRequestHttpJob::Start() {
                                           referrer.spec());
   }
 
-  request_info_.token_binding_referrer = request_->token_binding_referrer();
-
   // This should be kept in sync with the corresponding code in
   // URLRequest::GetUserAgent.
   request_info_.extra_headers.SetHeaderIfMissing(
@@ -500,7 +498,6 @@ void URLRequestHttpJob::NotifyHeadersComplete() {
 
   // The ordering of these calls is not important.
   ProcessStrictTransportSecurityHeader();
-  ProcessPublicKeyPinsHeader();
   ProcessExpectCTHeader();
 #if BUILDFLAG(ENABLE_REPORTING)
   ProcessReportToHeader();
@@ -810,8 +807,6 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   NotifyHeadersComplete();
 }
 
-// NOTE: |ProcessStrictTransportSecurityHeader| and
-// |ProcessPublicKeyPinsHeader| have very similar structures, by design.
 void URLRequestHttpJob::ProcessStrictTransportSecurityHeader() {
   DCHECK(response_info_);
   TransportSecurityState* security_state =
@@ -838,39 +833,6 @@ void URLRequestHttpJob::ProcessStrictTransportSecurityHeader() {
   std::string value;
   if (headers->EnumerateHeader(nullptr, "Strict-Transport-Security", &value))
     security_state->AddHSTSHeader(request_info_.url.host(), value);
-}
-
-void URLRequestHttpJob::ProcessPublicKeyPinsHeader() {
-  DCHECK(response_info_);
-  TransportSecurityState* security_state =
-      request_->context()->transport_security_state();
-  const SSLInfo& ssl_info = response_info_->ssl_info;
-
-  // Only accept HPKP headers on HTTPS connections that have no
-  // certificate errors.
-  if (!ssl_info.is_valid() || IsCertStatusError(ssl_info.cert_status) ||
-      !security_state) {
-    return;
-  }
-
-  // Don't accept HSTS headers when the hostname is an IP address.
-  if (request_info_.url.HostIsIPAddress())
-    return;
-
-  // http://tools.ietf.org/html/rfc7469:
-  //
-  //   If a UA receives more than one PKP header field in an HTTP
-  //   response message over secure transport, then the UA MUST process
-  //   only the first such header field.
-  HttpResponseHeaders* headers = GetResponseHeaders();
-  std::string value;
-  if (headers->EnumerateHeader(nullptr, "Public-Key-Pins", &value))
-    security_state->AddHPKPHeader(request_info_.url.host(), value, ssl_info);
-  if (headers->EnumerateHeader(nullptr, "Public-Key-Pins-Report-Only",
-                               &value)) {
-    security_state->ProcessHPKPReportOnlyHeader(
-        value, HostPortPair::FromURL(request_info_.url), ssl_info);
-  }
 }
 
 void URLRequestHttpJob::ProcessExpectCTHeader() {
@@ -1215,9 +1177,7 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
     }
   }
 
-  for (std::vector<SourceStream::SourceType>::reverse_iterator r_iter =
-           types.rbegin();
-       r_iter != types.rend(); ++r_iter) {
+  for (auto r_iter = types.rbegin(); r_iter != types.rend(); ++r_iter) {
     std::unique_ptr<FilterSourceStream> downstream;
     SourceStream::SourceType type = *r_iter;
     switch (type) {

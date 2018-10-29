@@ -67,7 +67,6 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_private_key.h"
-#include "net/ssl/token_binding.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
@@ -636,42 +635,6 @@ bool HttpNetworkTransaction::IsSecureRequest() const {
   return request_->url.SchemeIsCryptographic();
 }
 
-bool HttpNetworkTransaction::IsTokenBindingEnabled() const {
-  if (!IsSecureRequest())
-    return false;
-  SSLInfo ssl_info;
-  stream_->GetSSLInfo(&ssl_info);
-  return ssl_info.token_binding_negotiated &&
-         ssl_info.token_binding_key_param == TB_PARAM_ECDSAP256 &&
-         session_->context().channel_id_service;
-}
-
-void HttpNetworkTransaction::RecordTokenBindingSupport() const {
-  // This enum is used for an UMA histogram - do not change or re-use values.
-  enum {
-    DISABLED = 0,
-    CLIENT_ONLY = 1,
-    CLIENT_AND_SERVER = 2,
-    CLIENT_NO_CHANNEL_ID_SERVICE = 3,
-    TOKEN_BINDING_SUPPORT_MAX
-  } supported;
-  if (!IsSecureRequest())
-    return;
-  SSLInfo ssl_info;
-  stream_->GetSSLInfo(&ssl_info);
-  if (!session_->params().enable_token_binding) {
-    supported = DISABLED;
-  } else if (!session_->context().channel_id_service) {
-    supported = CLIENT_NO_CHANNEL_ID_SERVICE;
-  } else if (ssl_info.token_binding_negotiated) {
-    supported = CLIENT_AND_SERVER;
-  } else {
-    supported = CLIENT_ONLY;
-  }
-  UMA_HISTOGRAM_ENUMERATION("Net.TokenBinding.Support", supported,
-                            TOKEN_BINDING_SUPPORT_MAX);
-}
-
 bool HttpNetworkTransaction::UsingHttpProxyWithoutTunnel() const {
   return (proxy_info_.is_http() || proxy_info_.is_https() ||
           proxy_info_.is_quic()) &&
@@ -735,20 +698,6 @@ int HttpNetworkTransaction::DoLoop(int result) {
         break;
       case STATE_GENERATE_SERVER_AUTH_TOKEN_COMPLETE:
         rv = DoGenerateServerAuthTokenComplete(rv);
-        break;
-      case STATE_GET_PROVIDED_TOKEN_BINDING_KEY:
-        DCHECK_EQ(OK, rv);
-        rv = DoGetProvidedTokenBindingKey();
-        break;
-      case STATE_GET_PROVIDED_TOKEN_BINDING_KEY_COMPLETE:
-        rv = DoGetProvidedTokenBindingKeyComplete(rv);
-        break;
-      case STATE_GET_REFERRED_TOKEN_BINDING_KEY:
-        DCHECK_EQ(OK, rv);
-        rv = DoGetReferredTokenBindingKey();
-        break;
-      case STATE_GET_REFERRED_TOKEN_BINDING_KEY_COMPLETE:
-        rv = DoGetReferredTokenBindingKeyComplete(rv);
         break;
       case STATE_INIT_REQUEST_BODY:
         DCHECK_EQ(OK, rv);
@@ -991,53 +940,6 @@ int HttpNetworkTransaction::DoGenerateServerAuthToken() {
 int HttpNetworkTransaction::DoGenerateServerAuthTokenComplete(int rv) {
   DCHECK_NE(ERR_IO_PENDING, rv);
   if (rv == OK)
-    next_state_ = STATE_GET_PROVIDED_TOKEN_BINDING_KEY;
-  return rv;
-}
-
-int HttpNetworkTransaction::DoGetProvidedTokenBindingKey() {
-  next_state_ = STATE_GET_PROVIDED_TOKEN_BINDING_KEY_COMPLETE;
-  if (!IsTokenBindingEnabled())
-    return OK;
-
-  net_log_.BeginEvent(NetLogEventType::HTTP_TRANSACTION_GET_TOKEN_BINDING_KEY);
-  ChannelIDService* channel_id_service = session_->context().channel_id_service;
-  return channel_id_service->GetOrCreateChannelID(
-      request_->url.host(), &provided_token_binding_key_, io_callback_,
-      &token_binding_request_);
-}
-
-int HttpNetworkTransaction::DoGetProvidedTokenBindingKeyComplete(int rv) {
-  DCHECK_NE(ERR_IO_PENDING, rv);
-  if (IsTokenBindingEnabled()) {
-    net_log_.EndEventWithNetErrorCode(
-        NetLogEventType::HTTP_TRANSACTION_GET_TOKEN_BINDING_KEY, rv);
-  }
-
-  if (rv == OK)
-    next_state_ = STATE_GET_REFERRED_TOKEN_BINDING_KEY;
-  return rv;
-}
-
-int HttpNetworkTransaction::DoGetReferredTokenBindingKey() {
-  next_state_ = STATE_GET_REFERRED_TOKEN_BINDING_KEY_COMPLETE;
-  if (!IsTokenBindingEnabled() || request_->token_binding_referrer.empty())
-    return OK;
-
-  net_log_.BeginEvent(NetLogEventType::HTTP_TRANSACTION_GET_TOKEN_BINDING_KEY);
-  ChannelIDService* channel_id_service = session_->context().channel_id_service;
-  return channel_id_service->GetOrCreateChannelID(
-      request_->token_binding_referrer, &referred_token_binding_key_,
-      io_callback_, &token_binding_request_);
-}
-
-int HttpNetworkTransaction::DoGetReferredTokenBindingKeyComplete(int rv) {
-  DCHECK_NE(ERR_IO_PENDING, rv);
-  if (IsTokenBindingEnabled() && !request_->token_binding_referrer.empty()) {
-    net_log_.EndEventWithNetErrorCode(
-        NetLogEventType::HTTP_TRANSACTION_GET_TOKEN_BINDING_KEY, rv);
-  }
-  if (rv == OK)
     next_state_ = STATE_INIT_REQUEST_BODY;
   return rv;
 }
@@ -1075,16 +977,6 @@ int HttpNetworkTransaction::BuildRequestHeaders(
     request_headers_.SetHeader(HttpRequestHeaders::kContentLength, "0");
   }
 
-  RecordTokenBindingSupport();
-  if (provided_token_binding_key_) {
-    std::string token_binding_header;
-    int rv = BuildTokenBindingHeader(&token_binding_header);
-    if (rv != OK)
-      return rv;
-    request_headers_.SetHeader(HttpRequestHeaders::kTokenBinding,
-                               token_binding_header);
-  }
-
   // Honor load flags that impact proxy caches.
   if (request_->load_flags & LOAD_BYPASS_CACHE) {
     request_headers_.SetHeader(HttpRequestHeaders::kPragma, "no-cache");
@@ -1108,52 +1000,6 @@ int HttpNetworkTransaction::BuildRequestHeaders(
   response_.did_use_http_auth =
       request_headers_.HasHeader(HttpRequestHeaders::kAuthorization) ||
       request_headers_.HasHeader(HttpRequestHeaders::kProxyAuthorization);
-  return OK;
-}
-
-int HttpNetworkTransaction::BuildTokenBindingHeader(std::string* out) {
-  base::TimeTicks start = base::TimeTicks::Now();
-  std::vector<uint8_t> signed_ekm;
-  int rv = stream_->GetTokenBindingSignature(provided_token_binding_key_.get(),
-                                             TokenBindingType::PROVIDED,
-                                             &signed_ekm);
-  if (rv != OK)
-    return rv;
-  std::string provided_token_binding;
-  rv = BuildTokenBinding(TokenBindingType::PROVIDED,
-                         provided_token_binding_key_.get(), signed_ekm,
-                         &provided_token_binding);
-  if (rv != OK)
-    return rv;
-
-  std::vector<base::StringPiece> token_bindings;
-  token_bindings.push_back(provided_token_binding);
-
-  std::string referred_token_binding;
-  if (referred_token_binding_key_) {
-    std::vector<uint8_t> referred_signed_ekm;
-    int rv = stream_->GetTokenBindingSignature(
-        referred_token_binding_key_.get(), TokenBindingType::REFERRED,
-        &referred_signed_ekm);
-    if (rv != OK)
-      return rv;
-    rv = BuildTokenBinding(TokenBindingType::REFERRED,
-                           referred_token_binding_key_.get(),
-                           referred_signed_ekm, &referred_token_binding);
-    if (rv != OK)
-      return rv;
-    token_bindings.push_back(referred_token_binding);
-  }
-  std::string header;
-  rv = BuildTokenBindingMessageFromTokenBindings(token_bindings, &header);
-  if (rv != OK)
-    return rv;
-  base::Base64UrlEncode(header, base::Base64UrlEncodePolicy::OMIT_PADDING, out);
-  base::TimeDelta header_creation_time = base::TimeTicks::Now() - start;
-  UMA_HISTOGRAM_CUSTOM_TIMES("Net.TokenBinding.HeaderCreationTime",
-                             header_creation_time,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(1), 50);
   return OK;
 }
 
@@ -1680,8 +1526,6 @@ void HttpNetworkTransaction::ResetStateForAuthRestart() {
   remote_endpoint_ = IPEndPoint();
   net_error_details_.quic_broken = false;
   net_error_details_.quic_connection_error = quic::QUIC_NO_ERROR;
-  provided_token_binding_key_.reset();
-  referred_token_binding_key_.reset();
 }
 
 void HttpNetworkTransaction::CacheNetErrorDetailsAndResetStream() {

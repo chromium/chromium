@@ -7,4 +7,3 @@ When this test succeeds, you'll see an image of Nick on a sailboat immediately b
 NICK_ONLOAD called
 NICK_ONLOAD called
 SUCCESS. Two loads.
-

@@ -20,6 +20,19 @@ buildflag_header("vr_build_features") {
   flags = [ "USE_VR_ASSETS_COMPONENT=$use_vr_assets_component" ]
 }
 
+use_command_buffer = is_win
+
+config("vr_gl_mode") {
+  if (use_command_buffer) {
+    defines = [
+      "VR_USE_COMMAND_BUFFER",
+      "GL_GLEXT_PROTOTYPES",
+    ]
+  } else {
+    defines = [ "VR_USE_NATIVE_GL" ]
+  }
+}
+
 component("vr_ui") {
   sources = [
     "animation.cc",
@@ -122,8 +135,6 @@ component("vr_ui") {
     "font_fallback.h",
     "frame_lifecycle.cc",
     "frame_lifecycle.h",
-    "ganesh_surface_provider.cc",
-    "ganesh_surface_provider.h",
     "model/color_scheme.cc",
     "model/color_scheme.h",
     "model/modal_prompt_type.cc",
@@ -150,6 +161,8 @@ component("vr_ui") {
     "renderers/transparent_quad_renderer.h",
     "sequence.cc",
     "sequence.h",
+    "skia_surface_provider.h",
+    "skia_surface_provider_factory.h",
     "target_property.cc",
     "target_property.h",
     "transition.cc",
@@ -169,10 +182,6 @@ component("vr_ui") {
     "vr_ui_export.h",
   ]
 
-  public_deps = [
-    "//ui/gl",
-  ]
-
   deps = [
     ":vr_base",
     "//base",
@@ -180,7 +189,7 @@ component("vr_ui") {
     "//chrome/app:generated_resources",
     "//chrome/browser/vr/vector_icons",
     "//chrome/common:constants",
-    "//components/toolbar:vector_icons",
+    "//components/omnibox/browser:vector_icons",
     "//components/url_formatter",
     "//components/vector_icons",
     "//media",
@@ -192,12 +201,29 @@ component("vr_ui") {
     "VR_IMPLEMENTATION",
     "VR_UI_IMPLEMENTATION",
   ]
+
+  if (use_command_buffer) {
+    sources += [
+      "cmd_buffer_surface_provider.cc",
+      "cmd_buffer_surface_provider.h",
+      "skia_surface_provider_factory_cmd_buffer.cc",
+    ]
+    deps += [
+      "//gpu/command_buffer/client:gles2_implementation",
+      "//gpu/skia_bindings",
+    ]
+  } else {
+    sources += [
+      "native_gl_surface_provider.cc",
+      "native_gl_surface_provider.h",
+      "skia_surface_provider_factory_native_gl.cc",
+    ]
+    deps += [ "//ui/gl/init" ]
+  }
 }
 
 component("vr_common") {
   sources = [
-    "base_graphics_delegate.cc",
-    "base_graphics_delegate.h",
     "base_scheduler_delegate.cc",
     "base_scheduler_delegate.h",
     "browser_renderer.cc",
@@ -219,8 +245,6 @@ component("vr_common") {
     "scheduler_delegate.h",
     "service/browser_xr_runtime.cc",
     "service/browser_xr_runtime.h",
-    "service/isolated_device_provider.cc",
-    "service/isolated_device_provider.h",
     "service/vr_service_impl.cc",
     "service/vr_service_impl.h",
     "service/xr_device_impl.cc",
@@ -235,6 +259,8 @@ component("vr_common") {
     "toolbar_helper.h",
     "ui_factory.cc",
     "ui_factory.h",
+    "vr_web_contents_observer.cc",
+    "vr_web_contents_observer.h",
   ]
 
   public_deps = [
@@ -249,9 +275,9 @@ component("vr_common") {
     "//chrome/browser/vr/vector_icons",
     "//chrome/common:constants",
     "//components/omnibox/browser",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:vector_icons",
     "//components/rappor/public:public",
-    "//components/toolbar",
-    "//components/toolbar:vector_icons",
     "//components/ukm/content",
     "//components/vector_icons",
     "//content/public/browser",
@@ -264,13 +290,35 @@ component("vr_common") {
     "//skia",
     "//ui/base",
     "//ui/display",
-    "//ui/gl/init",
   ]
+
+  if (is_win) {
+    sources += [
+      "service/isolated_device_provider.cc",
+      "service/isolated_device_provider.h",
+      "win/simple_overlay_renderer_win.cc",
+      "win/simple_overlay_renderer_win.h",
+      "win/vr_browser_renderer_thread_win.cc",
+      "win/vr_browser_renderer_thread_win.h",
+      "win/vr_renderloop_host_win.cc",
+      "win/vr_renderloop_host_win.h",
+    ]
+
+    deps += [ "//services/ws/public/cpp/gpu" ]
+  }
 
   defines = [
     "VR_IMPLEMENTATION",
     "VR_UI_IMPLEMENTATION",
   ]
+
+  if (!use_command_buffer) {
+    sources += [
+      "base_graphics_delegate.cc",
+      "base_graphics_delegate.h",
+    ]
+    deps += [ "//ui/gl/init" ]
+  }
 }
 
 # vr_base contains common dependencies of vr_common and vr_ui. It exists because
@@ -284,10 +332,13 @@ source_set("vr_base") {
     "browser_ui_interface.h",
     "exit_vr_prompt_choice.h",
     "fov_rectangle.h",
+    "gl_bindings.h",
     "gl_texture_location.h",
     "input_event.cc",
     "input_event.h",
     "keyboard_delegate.h",
+    "keyboard_delegate_for_testing.cc",
+    "keyboard_delegate_for_testing.h",
     "keyboard_ui_interface.h",
     "macros.h",
     "metrics/metrics_helper.cc",
@@ -347,11 +398,11 @@ source_set("vr_base") {
 
   public_deps = [
     ":vr_build_features",
+    ":vr_gl_bindings",
     "//components/omnibox/browser",
     "//components/strings:components_strings_grit",
     "//content/public/common",
     "//ui/base",
-    "//ui/gl/init",
   ]
 
   deps = [
@@ -367,6 +418,22 @@ source_set("vr_base") {
     "//services/metrics/public/cpp:ukm_builders",
     "//skia",
   ]
+}
+
+source_set("vr_gl_bindings") {
+  sources = [
+    "gl_bindings.h",
+  ]
+  public_configs = [ ":vr_gl_mode" ]
+  if (use_command_buffer) {
+    public_deps = [
+      "//gpu/command_buffer/client:gles2_c_lib",
+    ]
+  } else {
+    public_deps = [
+      "//ui/gl",
+    ]
+  }
 }
 
 test("vr_common_unittests") {
@@ -507,8 +574,8 @@ source_set("vr_test_support") {
     "//base/test:test_support",
     "//cc:test_support",
     "//components/omnibox/browser:browser",
+    "//components/omnibox/browser:vector_icons",
     "//components/security_state/core",
-    "//components/toolbar:vector_icons",
     "//content/test:test_support",
     "//mojo/core/embedder",
     "//skia",
@@ -532,22 +599,34 @@ source_set("vr_gl_test_support") {
   testonly = true
 
   sources = [
-    "test/gl_test_environment.cc",
     "test/gl_test_environment.h",
     "test/gl_test_environment_unittest.cc",
+    "test/vr_gl_test_suite.cc",
+    "test/vr_gl_test_suite.h",
   ]
 
   public_deps = [
+    ":vr_gl_bindings",
     "//base/test:test_support",
     "//skia",
     "//testing/gtest",
-    "//ui/gl",
-    "//ui/gl:test_support",
   ]
 
   deps = [
-    ":vr_common",  # For graphics delegate.
+    ":vr_test_support",
+    "//ui/gl:test_support",
   ]
+
+  if (use_command_buffer) {
+    sources += [ "test/gl_test_environment_cmd_buffer.cc" ]
+    deps += [
+      "//gpu:gpu",
+      "//gpu/command_buffer/client:gles2_implementation",
+      "//gpu/ipc:gl_in_process_context",
+    ]
+  } else {
+    sources += [ "test/gl_test_environment_native_gl.cc" ]
+  }
 }
 
 repack("vr_test_pak") {

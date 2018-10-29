@@ -51,8 +51,7 @@ std::vector<::Atom> GetURIListAtomsFrom() {
 void GetAtomIntersection(const std::vector< ::Atom>& desired,
                          const std::vector< ::Atom>& offered,
                          std::vector< ::Atom>* output) {
-  for (std::vector< ::Atom>::const_iterator it = desired.begin();
-       it != desired.end(); ++it) {
+  for (auto it = desired.begin(); it != desired.end(); ++it) {
     if (base::ContainsValue(offered, *it))
       output->push_back(*it);
   }
@@ -121,9 +120,8 @@ void SelectionFormatMap::Insert(
 
 ui::SelectionData SelectionFormatMap::GetFirstOf(
     const std::vector< ::Atom>& requested_types) const {
-  for (std::vector< ::Atom>::const_iterator it = requested_types.begin();
-       it != requested_types.end(); ++it) {
-    const_iterator data_it = data_.find(*it);
+  for (auto it = requested_types.begin(); it != requested_types.end(); ++it) {
+    auto data_it = data_.find(*it);
     if (data_it != data_.end()) {
       return SelectionData(data_it->first, data_it->second);
     }
@@ -134,7 +132,7 @@ ui::SelectionData SelectionFormatMap::GetFirstOf(
 
 std::vector< ::Atom> SelectionFormatMap::GetTypes() const {
   std::vector< ::Atom> atoms;
-  for (const_iterator it = data_.begin(); it != data_.end(); ++it)
+  for (auto it = data_.begin(); it != data_.end(); ++it)
     atoms.push_back(it->first);
 
   return atoms;

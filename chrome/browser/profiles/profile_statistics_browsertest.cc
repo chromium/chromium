@@ -167,8 +167,9 @@ class ProfileStatisticsBrowserTest : public InProcessBrowserTest {
     // PasswordStore has not completed.
     PasswordStoreFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
-        password_manager::BuildPasswordStore<
-            content::BrowserContext, password_manager::TestPasswordStore>);
+        base::BindRepeating(
+            &password_manager::BuildPasswordStore<
+                content::BrowserContext, password_manager::TestPasswordStore>));
   }
 };
 

@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 
 namespace blink {
-namespace EventHandlingUtil {
+namespace event_handling_util {
 
 HitTestResult HitTestResultInFrame(
     LocalFrame* frame,
@@ -25,8 +25,8 @@ HitTestResult HitTestResultInFrame(
 
   if (!frame || !frame->ContentLayoutObject())
     return result;
-  if (frame->View()) {
-    FloatRect rect(FloatPoint(), FloatSize(frame->View()->Size()));
+  if (LocalFrameView* frame_view = frame->View()) {
+    LayoutRect rect(LayoutPoint(), LayoutSize(frame_view->Size()));
     if (!location.Intersects(rect))
       return result;
   }
@@ -100,6 +100,11 @@ ScrollableArea* AssociatedScrollableArea(const PaintLayer* layer) {
 }
 
 ContainerNode* ParentForClickEvent(const Node& node) {
+  // IE doesn't dispatch click events for mousedown/mouseup events across form
+  // controls.
+  if (node.IsHTMLElement() && ToHTMLElement(node).IsInteractiveContent())
+    return nullptr;
+
   return FlatTreeTraversal::Parent(node);
 }
 
@@ -149,5 +154,5 @@ LocalFrame* SubframeForHitTestResult(
   return SubframeForTargetNode(hit_test_result.InnerNode());
 }
 
-}  // namespace EventHandlingUtil
+}  // namespace event_handling_util
 }  // namespace blink

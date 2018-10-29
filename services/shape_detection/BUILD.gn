@@ -56,6 +56,8 @@ source_set("lib") {
     ]
   }
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//mojo/public/cpp/bindings",
     "//ui/gfx",

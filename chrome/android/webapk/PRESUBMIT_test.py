@@ -15,9 +15,10 @@ from PRESUBMIT_test_mocks import MockAffectedFile
 from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
 
 class ShellApkVersion(unittest.TestCase):
-   UPDATE_TEMPLATE_SHELL_APK_VERSION_MESSAGE = (
-       'template_shell_apk_version in shell_apk/shell_apk_version.gni needs to '
-       'updated due to changes in:')
+   UPDATE_CURRENT_VERSION_MESSAGE = (
+       'current_shell_apk_version in '
+       'shell_apk/current_version/current_version.gni needs to updated due to '
+       'changes in:')
 
    def makeMockAffectedFiles(self, file_names):
      mock_files = []
@@ -41,7 +42,7 @@ class ShellApkVersion(unittest.TestCase):
      ]
 
      SHELL_APK_RES_FILE_PATH = 'shell_apk/res/mipmap-xxxxxxhdpi/app_icon.png'
-     SHELL_APK_VERSION_FILE_PATH = 'shell_apk/shell_apk_version.gni'
+     CURRENT_VERSION_FILE_PATH = 'shell_apk/current_version/current_version.gni'
 
      # template_shell_apk_version not updated. There should be a warning about
      # template_shell_apk_version needing to be updated.
@@ -49,13 +50,13 @@ class ShellApkVersion(unittest.TestCase):
      input_api.files = self.makeMockAffectedFiles(
          changed_java_file_paths + [SHELL_APK_RES_FILE_PATH])
      input_api.files += [
-         MockAffectedFile(SHELL_APK_VERSION_FILE_PATH, 'variable=O',
+         MockAffectedFile(CURRENT_VERSION_FILE_PATH, 'variable=O',
                           'variable=N', action='M')
      ]
-     warnings = PRESUBMIT._CheckWamMintTriggerRule(input_api, MockOutputApi())
+     warnings = PRESUBMIT._CheckCurrentVersionIncreaseRule(input_api,
+                                                           MockOutputApi())
      self.assertEqual(1, len(warnings))
-     self.assertEqual(self.UPDATE_TEMPLATE_SHELL_APK_VERSION_MESSAGE,
-                      warnings[0].message)
+     self.assertEqual(self.UPDATE_CURRENT_VERSION_MESSAGE, warnings[0].message)
      self.assertEqual([COMMON_SRC_FILE_PATH, SHELL_APK_SRC_FILE_PATH,
                        SHELL_APK_RES_FILE_PATH],
                       warnings[0].items)
@@ -64,11 +65,12 @@ class ShellApkVersion(unittest.TestCase):
      input_api.files = self.makeMockAffectedFiles(
          changed_java_file_paths + [SHELL_APK_RES_FILE_PATH])
      input_api.files += [
-         MockAffectedFile(SHELL_APK_VERSION_FILE_PATH,
-                          ['template_shell_apk_version=1'],
-                          ['template_shell_apk_version=2'], action='M')
+         MockAffectedFile(CURRENT_VERSION_FILE_PATH,
+                          ['current_shell_apk_version=1'],
+                          ['current_shell_apk_version=2'], action='M')
      ]
-     warnings = PRESUBMIT._CheckWamMintTriggerRule(input_api, MockOutputApi())
+     warnings = PRESUBMIT._CheckCurrentVersionIncreaseRule(input_api,
+                                                           MockOutputApi())
      self.assertEqual([], warnings)
 
 if __name__ == '__main__':

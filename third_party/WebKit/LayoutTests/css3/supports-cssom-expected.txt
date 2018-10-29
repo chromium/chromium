@@ -2,7 +2,6 @@ Test CSSSupportRule.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS CSSRule.SUPPORTS_RULE is defined.
 rules = document.styleSheets[1].cssRules
 PASS rules.length is 4

@@ -1,0 +1,45 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ntp") {
+  sources = [
+    "new_tab_page_tab_helper.h",
+    "new_tab_page_tab_helper.mm",
+    "new_tab_page_tab_helper_delegate.h",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "//base:base",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/web/public",
+    "//ui/base:base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "new_tab_page_tab_helper_unittest.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/favicon:favicon",
+    "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/ntp_snippets:ntp_snippets",
+    "//ios/chrome/browser/search_engines:search_engines",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test:test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest:gtest",
+    "//third_party/ocmock",
+  ]
+}

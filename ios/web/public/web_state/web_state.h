@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#import <CoreGraphics/CoreGraphics.h>
 #include <memory>
 #include <string>
 #include <utility>
@@ -311,10 +312,10 @@ class WebState : public base::SupportsUserData {
   // Callback used to handle snapshots. The parameter is the snapshot image.
   typedef base::OnceCallback<void(gfx::Image)> SnapshotCallback;
 
-  // Takes a snapshot of this WebState. |callback| is
-  // asynchronously invoked after performing the snapshot. Prior to iOS 11, the
-  // callback is invoked with a nil snapshot.
-  virtual void TakeSnapshot(SnapshotCallback callback) = 0;
+  // Takes a snapshot of this WebState with |rect|. |callback| is asynchronously
+  // invoked after performing the snapshot. Prior to iOS 11, the callback is
+  // invoked with a nil snapshot.
+  virtual void TakeSnapshot(CGRect rect, SnapshotCallback callback) = 0;
 
   // Adds and removes observers for page navigation notifications. The order in
   // which notifications are sent to observers is undefined. Clients must be

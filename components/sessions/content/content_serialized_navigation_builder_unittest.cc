@@ -56,7 +56,7 @@ std::unique_ptr<content::NavigationEntry> MakeNavigationEntryForTest() {
       content::NavigationEntry::Create());
   navigation_entry->SetReferrer(content::Referrer(
       test_data::kReferrerURL,
-      static_cast<blink::WebReferrerPolicy>(test_data::kReferrerPolicy)));
+      static_cast<network::mojom::ReferrerPolicy>(test_data::kReferrerPolicy)));
   navigation_entry->SetVirtualURL(test_data::kVirtualURL);
   navigation_entry->SetTitle(test_data::kTitle);
   navigation_entry->SetPageState(
@@ -198,7 +198,7 @@ TEST_F(ContentSerializedNavigationBuilderTest, ToNavigationEntry) {
 
   EXPECT_EQ(test_data::kReferrerURL, new_navigation_entry->GetReferrer().url);
   EXPECT_EQ(test_data::kReferrerPolicy,
-            new_navigation_entry->GetReferrer().policy);
+            static_cast<int>(new_navigation_entry->GetReferrer().policy));
   EXPECT_EQ(test_data::kVirtualURL, new_navigation_entry->GetVirtualURL());
   EXPECT_EQ(test_data::kTitle, new_navigation_entry->GetTitle());
   EXPECT_EQ(test_data::kEncodedPageState,

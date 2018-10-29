@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_LAYOUT_DELEGATE_H_
 
 namespace gfx {
-class ImageSkia;
 class Size;
 }
 
@@ -35,10 +34,6 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // Returns true if in guest mode or a non off the record session.
   virtual bool IsRegularOrGuestSession() const = 0;
 
-  // We don't have a ThemeProvider in the layout manager, so plumb in the icon
-  // source here.
-  virtual gfx::ImageSkia GetIncognitoAvatarIcon() const = 0;
-
   // Controls window state.
   virtual bool IsMaximized() const = 0;
   virtual bool IsMinimized() const = 0;
@@ -50,9 +45,6 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // Returns the tabstrips preferred size so the frame layout can work around
   // it.
   virtual gfx::Size GetTabstripPreferredSize() const = 0;
-
-  // Returns the New Tab Button's preferred size.
-  virtual gfx::Size GetNewTabButtonPreferredSize() const = 0;
 
   // Computes the height of the top area of the frame.
   virtual int GetTopAreaHeight() const = 0;

@@ -8,6 +8,7 @@
 #include "base/strings/stringize_macros.h"
 #include "base/sys_info.h"
 #include "remoting/base/name_value_map.h"
+#include "remoting/base/platform_details.h"
 
 namespace remoting {
 
@@ -185,7 +186,7 @@ bool ChromotingEvent::IsDataValid() {
 
 void ChromotingEvent::AddSystemInfo() {
   SetString(kCpuKey, base::SysInfo::OperatingSystemArchitecture());
-  SetString(kOsVersionKey, base::SysInfo::OperatingSystemVersion());
+  SetString(kOsVersionKey, GetOperatingSystemVersionString());
   SetString(kWebAppVersionKey, STRINGIZE(VERSION));
 #if defined(OS_LINUX)
   Os os = Os::CHROMOTING_LINUX;

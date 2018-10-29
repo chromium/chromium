@@ -51,6 +51,32 @@ String MakeAbsolutePathFrom(const char* path, size_t path_len) {
   }
 }
 
+bool IsSystemLibraryPath(const char* lib_path) {
+  static const char* kSystemPrefixes[] = {
+#ifdef __ANDROID__
+      // From recent Android linker sources ($AOSP/bionic/linker/linker.cpp).
+      "/system/lib64/", "/odm/lib64/", "/vendor/lib64/",
+      "/data/asan/system/lib64/", "/data/asan/odm/lib64/",
+      "/data/asan/vendor/lib64/",
+      // It's ok to mix 32-bit and 64-bit paths in the same list here.
+      "/system/lib/", "/odm/lib/", "/vendor/lib/", "/data/asan/system/lib/",
+      "/data/asan/odm/lib/", "/data/asan/vendor/lib/",
+#else
+      // Typical system library directories for Linux systems.
+      "/lib/",       "/lib32/",      "/lib64/",
+      "/libx32/",    "/usr/lib/",    "/usr/lib32/",
+      "/usr/lib64/", "/usr/libx32/", "/usr/local/lib/",
+#endif
+  };
+  size_t lib_path_len = ::strlen(lib_path);
+  for (const char* prefix : kSystemPrefixes) {
+    size_t prefix_len = ::strlen(prefix);
+    if (prefix_len < lib_path_len && !::memcmp(prefix, lib_path, prefix_len))
+      return true;
+  }
+  return false;
+}
+
 }  // namespace crazy
 
 #ifndef UNIT_TEST

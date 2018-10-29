@@ -39,8 +39,8 @@ class ApiUnitTest : public ExtensionsTest {
 
   content::WebContents* contents() { return contents_.get(); }
   const Extension* extension() const { return extension_.get(); }
-  scoped_refptr<Extension> extension_ref() { return extension_; }
-  void set_extension(scoped_refptr<Extension> extension) {
+  scoped_refptr<const Extension> extension_ref() { return extension_; }
+  void set_extension(scoped_refptr<const Extension> extension) {
     extension_ = extension;
   }
 
@@ -92,7 +92,7 @@ class ApiUnitTest : public ExtensionsTest {
   std::unique_ptr<content::WebContents> contents_;
 
   // The Extension used when running API function calls.
-  scoped_refptr<Extension> extension_;
+  scoped_refptr<const Extension> extension_;
 };
 
 }  // namespace extensions

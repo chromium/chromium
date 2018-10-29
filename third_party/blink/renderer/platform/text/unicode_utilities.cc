@@ -310,10 +310,10 @@ void NormalizeCharactersIntoNFCForm(const UChar* characters,
     normalized.truncate(normalized_prefix_length);
     normalizer->normalizeSecondAndAppend(normalized, un_normalized, status);
   }
-  size_t buffer_size = normalized.length();
+  int32_t buffer_size = normalized.length();
   DCHECK(buffer_size);
 
-  buffer.resize(buffer_size);
+  buffer.resize(static_cast<wtf_size_t>(buffer_size));
   normalized.extract(buffer.data(), buffer_size, status);
   DCHECK(U_SUCCESS(status));
 }

@@ -29,10 +29,13 @@ FrameInfo::FrameInfo(const std::string& parent_frame_id,
       frame_id(frame_id),
       chromedriver_frame_id(chromedriver_frame_id) {}
 
+// The default timeout values came from W3C spec.
+const base::TimeDelta Session::kDefaultImplicitWaitTimeout =
+    base::TimeDelta::FromSeconds(0);
 const base::TimeDelta Session::kDefaultPageLoadTimeout =
-    base::TimeDelta::FromMinutes(5);
+    base::TimeDelta::FromSeconds(300);
 const base::TimeDelta Session::kDefaultScriptTimeout =
-    base::TimeDelta::FromMilliseconds(30000);
+    base::TimeDelta::FromSeconds(30);
 
 Session::Session(const std::string& id)
     : id(id),
@@ -43,6 +46,7 @@ Session::Session(const std::string& id)
       sticky_modifiers(0),
       mouse_position(0, 0),
       pressed_mouse_button(kNoneMouseButton),
+      implicit_wait(kDefaultImplicitWaitTimeout),
       page_load_timeout(kDefaultPageLoadTimeout),
       script_timeout(kDefaultScriptTimeout),
       auto_reporting_enabled(false) {}
@@ -57,6 +61,7 @@ Session::Session(const std::string& id, std::unique_ptr<Chrome> chrome)
       sticky_modifiers(0),
       mouse_position(0, 0),
       pressed_mouse_button(kNoneMouseButton),
+      implicit_wait(kDefaultImplicitWaitTimeout),
       page_load_timeout(kDefaultPageLoadTimeout),
       script_timeout(kDefaultScriptTimeout),
       auto_reporting_enabled(false) {}

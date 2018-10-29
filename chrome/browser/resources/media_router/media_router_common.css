@@ -2,7 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-:root {
+:host > * {
   --dialog-padding-end: 26px;
   --dialog-padding-start: 16px;
   --dialog-width: 340px;

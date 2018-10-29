@@ -13,6 +13,7 @@
 #include "media/mojo/interfaces/media_types.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/mojo/geometry_struct_traits.h"
+#include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
 
@@ -50,6 +51,13 @@ struct StructTraits<media::mojom::VideoFrameDataView,
   static base::TimeDelta timestamp(
       const scoped_refptr<media::VideoFrame>& input) {
     return input->timestamp();
+  }
+
+  // TODO(hubbe): Return const ref when VideoFrame::ColorSpace()
+  // returns const ref.
+  static gfx::ColorSpace color_space(
+      const scoped_refptr<media::VideoFrame>& input) {
+    return input->ColorSpace();
   }
 
   static media::mojom::VideoFrameDataPtr data(

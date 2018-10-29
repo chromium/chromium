@@ -335,8 +335,8 @@ Polymer({
     },
 
     /**
-     * The cast mode shown to the user. Initially set to auto mode. (See
-     * media_router.CastMode documentation for details on auto mode.)
+     * The cast mode shown to the user. Initially populated within
+     * |rebuildSinksToShow_()|.
      * This value may be changed in one of the following ways:
      * 1) The user explicitly selected a cast mode.
      * 2) The user selected cast mode is no longer available for the associated
@@ -348,10 +348,7 @@ Polymer({
      *    mode.
      * @private {number}
      */
-    shownCastModeValue_: {
-      type: Number,
-      value: media_router.AUTO_CAST_MODE.type,
-    },
+    shownCastModeValue_: Number,
 
     /**
      * Max height for the sink list.

@@ -230,8 +230,7 @@ void RtcpBuilder::AddCast(const RtcpCastMessage& cast,
   size_t max_number_of_loss_fields = std::min<size_t>(
       kRtcpMaxCastLossFields, writer_.remaining() / 4);
 
-  MissingFramesAndPacketsMap::const_iterator frame_it =
-      cast.missing_frames_and_packets.begin();
+  auto frame_it = cast.missing_frames_and_packets.begin();
 
   NackStringBuilder nack_string_builder;
   for (; frame_it != cast.missing_frames_and_packets.end() &&
@@ -247,7 +246,7 @@ void RtcpBuilder::AddCast(const RtcpCastMessage& cast,
       nack_string_builder.PushPacket(kRtcpCastAllPacketsLost);
       ++number_of_loss_fields;
     } else {
-      PacketIdSet::const_iterator packet_it = frame_it->second.begin();
+      auto packet_it = frame_it->second.begin();
       while (packet_it != frame_it->second.end()) {
         uint16_t packet_id = *packet_it;
         // Write frame and packet id to buffer before calculating bitmask.
@@ -410,8 +409,7 @@ bool RtcpBuilder::GetRtcpReceiverLogMessage(
   // Account for the RTCP header for an application-defined packet.
   remaining_space -= kRtcpCastLogHeaderSize;
 
-  ReceiverRtcpEventSubscriber::RtcpEvents::const_reverse_iterator rit =
-      rtcp_events.rbegin();
+  auto rit = rtcp_events.rbegin();
 
   while (rit != rtcp_events.rend() &&
          remaining_space >=
@@ -440,8 +438,7 @@ bool RtcpBuilder::GetRtcpReceiverLogMessage(
     // From |sorted_log_messages|, only take events that are no greater than
     // |kMaxWireFormatTimeDeltaMs| seconds away from the latest event. Events
     // older than that cannot be encoded over the wire.
-    std::vector<RtcpReceiverEventLogMessage>::reverse_iterator sorted_rit =
-        sorted_log_messages.rbegin();
+    auto sorted_rit = sorted_log_messages.rbegin();
     base::TimeTicks first_event_timestamp = sorted_rit->event_timestamp;
     size_t events_in_frame = 0;
     while (sorted_rit != sorted_log_messages.rend() &&

@@ -49,16 +49,16 @@ SVGComponentTransferFunctionElement::SVGComponentTransferFunctionElement(
     Document& document)
     : SVGElement(tag_name, document),
       table_values_(
-          SVGAnimatedNumberList::Create(this, SVGNames::tableValuesAttr)),
-      slope_(SVGAnimatedNumber::Create(this, SVGNames::slopeAttr, 1)),
+          SVGAnimatedNumberList::Create(this, svg_names::kTableValuesAttr)),
+      slope_(SVGAnimatedNumber::Create(this, svg_names::kSlopeAttr, 1)),
       intercept_(
-          SVGAnimatedNumber::Create(this, SVGNames::interceptAttr, 0.0f)),
-      amplitude_(SVGAnimatedNumber::Create(this, SVGNames::amplitudeAttr, 1)),
-      exponent_(SVGAnimatedNumber::Create(this, SVGNames::exponentAttr, 1)),
-      offset_(SVGAnimatedNumber::Create(this, SVGNames::offsetAttr, 0.0f)),
+          SVGAnimatedNumber::Create(this, svg_names::kInterceptAttr, 0.0f)),
+      amplitude_(SVGAnimatedNumber::Create(this, svg_names::kAmplitudeAttr, 1)),
+      exponent_(SVGAnimatedNumber::Create(this, svg_names::kExponentAttr, 1)),
+      offset_(SVGAnimatedNumber::Create(this, svg_names::kOffsetAttr, 0.0f)),
       type_(SVGAnimatedEnumeration<ComponentTransferType>::Create(
           this,
-          SVGNames::typeAttr,
+          svg_names::kTypeAttr,
           FECOMPONENTTRANSFER_TYPE_IDENTITY)) {
   AddToPropertyMap(table_values_);
   AddToPropertyMap(slope_);
@@ -82,13 +82,13 @@ void SVGComponentTransferFunctionElement::Trace(blink::Visitor* visitor) {
 
 void SVGComponentTransferFunctionElement::SvgAttributeChanged(
     const QualifiedName& attr_name) {
-  if (attr_name == SVGNames::typeAttr ||
-      attr_name == SVGNames::tableValuesAttr ||
-      attr_name == SVGNames::slopeAttr ||
-      attr_name == SVGNames::interceptAttr ||
-      attr_name == SVGNames::amplitudeAttr ||
-      attr_name == SVGNames::exponentAttr ||
-      attr_name == SVGNames::offsetAttr) {
+  if (attr_name == svg_names::kTypeAttr ||
+      attr_name == svg_names::kTableValuesAttr ||
+      attr_name == svg_names::kSlopeAttr ||
+      attr_name == svg_names::kInterceptAttr ||
+      attr_name == svg_names::kAmplitudeAttr ||
+      attr_name == svg_names::kExponentAttr ||
+      attr_name == svg_names::kOffsetAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     InvalidateFilterPrimitiveParent(*this);
     return;

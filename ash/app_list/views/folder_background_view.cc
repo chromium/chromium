@@ -31,8 +31,7 @@ void FolderBackgroundView::OnGestureEvent(ui::GestureEvent* event) {
 void FolderBackgroundView::HandleClickOrTap() {
   // If the virtual keyboard is visible, dismiss the keyboard and return early
   auto* const keyboard_controller = keyboard::KeyboardController::Get();
-  if (keyboard_controller->enabled() &&
-      keyboard_controller->IsKeyboardVisible()) {
+  if (keyboard_controller->IsKeyboardVisible()) {
     keyboard_controller->HideKeyboardByUser();
     return;
   }

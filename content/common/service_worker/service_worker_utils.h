@@ -75,6 +75,17 @@ class ServiceWorkerUtils {
       bool is_main_script,
       blink::mojom::ServiceWorkerUpdateViaCache cache_mode);
 
+  // Converts an enum defined in net/base/load_flags.h to
+  // blink::mojom::FetchCacheMode.
+  CONTENT_EXPORT static blink::mojom::FetchCacheMode GetCacheModeFromLoadFlags(
+      int load_flags);
+
+  CONTENT_EXPORT static std::string SerializeFetchRequestToString(
+      const ServiceWorkerFetchRequest& request);
+
+  CONTENT_EXPORT static ServiceWorkerFetchRequest
+  DeserializeFetchRequestFromString(const std::string& serialized);
+
  private:
   static bool IsPathRestrictionSatisfiedInternal(
       const GURL& scope,

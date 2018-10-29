@@ -8,9 +8,10 @@ Must match:
 Text iii
 Must not match:
 Text iii
+
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS document.getElementById('testText').offsetWidth == document.getElementById('mustMatch').offsetWidth is true
 PASS document.getElementById('testText').offsetWidth != document.getElementById('mustNotMatch').offsetWidth is true
-

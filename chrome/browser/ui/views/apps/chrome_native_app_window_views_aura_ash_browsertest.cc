@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/run_loop.h"
+#include "base/scoped_observer.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "chrome/browser/ui/ash/tablet_mode_client_test_util.h"
@@ -12,8 +14,37 @@
 #include "chromeos/login/scoped_test_public_session_login_state.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/view_observer.h"
 #include "ui/wm/core/window_util.h"
+
+namespace {
+
+class ViewBoundsChangeWaiter : public views::ViewObserver {
+ public:
+  static void VerifyY(views::View* view, int y) {
+    if (features::IsMultiProcessMash() && y != view->bounds().y())
+      ViewBoundsChangeWaiter(view).run_loop_.Run();
+
+    EXPECT_EQ(y, view->bounds().y());
+  }
+
+ private:
+  explicit ViewBoundsChangeWaiter(views::View* view) { observed_.Add(view); }
+  ~ViewBoundsChangeWaiter() override = default;
+
+  // ViewObserver:
+  void OnViewBoundsChanged(views::View* view) override { run_loop_.Quit(); }
+
+  base::RunLoop run_loop_;
+
+  ScopedObserver<views::View, views::ViewObserver> observed_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(ViewBoundsChangeWaiter);
+};
+
+}  // namespace
 
 class ChromeNativeAppWindowViewsAuraAshBrowserTest
     : public extensions::PlatformAppBrowserTest {
@@ -56,22 +87,22 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
   // that when fullscreen is toggled off, immersive mode is disabled.
   app_window_->OSFullscreen();
   EXPECT_TRUE(IsImmersiveActive());
-  EXPECT_EQ(0, client_view->bounds().y());
+  ViewBoundsChangeWaiter::VerifyY(client_view, 0);
 
   app_window_->Restore();
   EXPECT_FALSE(IsImmersiveActive());
-  EXPECT_EQ(kFrameHeight, client_view->bounds().y());
+  ViewBoundsChangeWaiter::VerifyY(client_view, kFrameHeight);
 
   // Verify that since the auto hide title bars in tablet mode feature turned
   // on, immersive mode is enabled once tablet mode is entered, and disabled
   // once tablet mode is exited.
   ASSERT_NO_FATAL_FAILURE(test::SetAndWaitForTabletMode(true));
   EXPECT_TRUE(IsImmersiveActive());
-  EXPECT_EQ(0, client_view->bounds().y());
+  ViewBoundsChangeWaiter::VerifyY(client_view, 0);
 
   ASSERT_NO_FATAL_FAILURE(test::SetAndWaitForTabletMode(false));
   EXPECT_FALSE(IsImmersiveActive());
-  EXPECT_EQ(kFrameHeight, client_view->bounds().y());
+  ViewBoundsChangeWaiter::VerifyY(client_view, kFrameHeight);
 
   // Verify that the window was fullscreened before entering tablet mode, it
   // will remain fullscreened after exiting tablet mode.

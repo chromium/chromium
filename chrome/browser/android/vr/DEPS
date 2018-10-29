@@ -1,6 +1,7 @@
 include_rules = [
   "+cc/base",
   "+cc/layers",
+  "+cc/test",
   "+device/vr",
   "+services/metrics/public/cpp/ukm_builders.h",
   "+third_party/gvr-android-keyboard/src",

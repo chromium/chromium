@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -131,7 +132,7 @@ VisiblePositionInFlatTree VisiblePositionOfHitTestResult(
 
 DocumentMarker* SpellCheckMarkerAtPosition(
     DocumentMarkerController& document_marker_controller,
-    const Position& position) {
+    const PositionInFlatTree& position) {
   return document_marker_controller.FirstMarkerAroundPosition(
       position, DocumentMarker::MarkerTypes::Misspelling());
 }
@@ -551,7 +552,7 @@ bool SelectionController::UpdateSelectionForMouseDownDispatchingSelectStart(
       return false;
   }
 
-  // |dispatchSelectStart()| can change document hosted by |m_frame|.
+  // |DispatchSelectStart()| can change document hosted by |frame_|.
   if (!this->Selection().IsAvailable())
     return false;
 
@@ -580,7 +581,7 @@ static bool IsEmptyWordRange(const EphemeralRangeInFlatTree range) {
                  .SetEmitsObjectReplacementCharacter(
                      HasEditableStyle(*range.StartPosition().AnchorNode()))
                  .Build());
-  return str.IsEmpty() || str.SimplifyWhiteSpace().ContainsOnlyWhitespace();
+  return str.SimplifyWhiteSpace().ContainsOnlyWhitespaceOrEmpty();
 }
 
 bool SelectionController::SelectClosestWordFromHitTestResult(
@@ -668,9 +669,8 @@ void SelectionController::SelectClosestMisspellingFromHitTestResult(
 
   const PositionInFlatTree& marker_position =
       pos.DeepEquivalent().ParentAnchoredEquivalent();
-  const DocumentMarker* const marker =
-      SpellCheckMarkerAtPosition(inner_node->GetDocument().Markers(),
-                                 ToPositionInDOMTree(marker_position));
+  const DocumentMarker* const marker = SpellCheckMarkerAtPosition(
+      inner_node->GetDocument().Markers(), marker_position);
   if (!marker) {
     UpdateSelectionForMouseDownDispatchingSelectStart(
         inner_node, SelectionInFlatTree(),
@@ -882,8 +882,8 @@ bool SelectionController::HandleDoubleClick(
   if (Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsRange()) {
     // A double-click when range is already selected
     // should not change the selection.  So, do not call
-    // selectClosestWordFromMouseEvent, but do set
-    // m_beganSelectingText to prevent handleMouseReleaseEvent
+    // SelectClosestWordFromMouseEvent, but do set
+    // began_selecting_text_ to prevent HandleMouseReleaseEvent
     // from setting caret selection.
     selection_state_ = SelectionState::kExtendedSelection;
     return true;
@@ -1158,14 +1158,17 @@ static bool HitTestResultIsMisspelled(const HitTestResult& result) {
   Node* inner_node = result.InnerNode();
   if (!inner_node || !inner_node->GetLayoutObject())
     return false;
-  VisiblePosition pos = CreateVisiblePosition(
-      inner_node->GetLayoutObject()->PositionForPoint(result.LocalPoint()));
-  if (pos.IsNull())
+  PositionWithAffinity pos_with_affinity =
+      inner_node->GetLayoutObject()->PositionForPoint(result.LocalPoint());
+  if (pos_with_affinity.IsNull())
     return false;
-  const Position& marker_position =
-      pos.DeepEquivalent().ParentAnchoredEquivalent();
+  // TODO(xiaochengh): Don't use |ParentAnchoredEquivalent()|.
+  const Position marker_position =
+      pos_with_affinity.GetPosition().ParentAnchoredEquivalent();
+  if (!SpellChecker::IsSpellCheckingEnabledAt(marker_position))
+    return false;
   return SpellCheckMarkerAtPosition(inner_node->GetDocument().Markers(),
-                                    marker_position);
+                                    ToPositionInFlatTree(marker_position));
 }
 
 void SelectionController::SendContextMenuEvent(

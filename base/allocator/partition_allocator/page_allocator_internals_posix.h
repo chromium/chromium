@@ -8,14 +8,17 @@
 #include <errno.h>
 #include <sys/mman.h>
 
+#include "base/logging.h"
+#include "build/build_config.h"
+
 #if defined(OS_MACOSX)
 #include <mach/mach.h>
 #endif
 #if defined(OS_LINUX)
 #include <sys/resource.h>
-#endif
 
-#include "build/build_config.h"
+#include <algorithm>
+#endif
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
@@ -24,7 +27,7 @@
 namespace base {
 
 // |mmap| uses a nearby address if the hint address is blocked.
-const bool kHintIsAdvisory = true;
+constexpr bool kHintIsAdvisory = true;
 std::atomic<int32_t> s_allocPageErrorCode{0};
 
 int GetAccessFlags(PageAccessibilityConfiguration accessibility) {

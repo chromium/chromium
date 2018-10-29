@@ -60,8 +60,6 @@ blink_core_sources("events") {
     "progress_event.h",
     "promise_rejection_event.cc",
     "promise_rejection_event.h",
-    "registered_event_listener.cc",
-    "registered_event_listener.h",
     "resource_progress_event.cc",
     "resource_progress_event.h",
     "security_policy_violation_event.cc",

@@ -42,9 +42,6 @@ bool Read(const ProcessMemoryRange& memory,
     switch (entry.d_tag) {
       case DT_NULL:
         values->swap(local_values);
-        if (size != 0) {
-          LOG(WARNING) << size << " trailing bytes not read";
-        }
         return true;
       case DT_NEEDED:
         // Skip these entries for now.

@@ -1,7 +1,0 @@
-# Changing the PPAPI requires sending an explicit design doc discussing
-# the features missing from the open web platform, and the transition plan.
-set noparent
-
-file://ENG_REVIEW_OWNERS
-
-# COMPONENT: Internals>Plugins>Pepper

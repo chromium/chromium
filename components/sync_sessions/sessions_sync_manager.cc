@@ -17,17 +17,17 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/device_info/local_device_info_provider.h"
+#include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/sync_merge_result.h"
 #include "components/sync/model/time.h"
 #include "components/sync_sessions/local_session_event_router.h"
+#include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/tab_node_pool.h"
 
 using syncer::DeviceInfo;
-using syncer::LocalDeviceInfoProvider;
 using syncer::SyncChange;
 using syncer::SyncData;
 
@@ -73,8 +73,7 @@ sync_pb::SessionSpecifics SessionTabToSpecifics(
 void AppendDeletionsForTabNodes(const std::set<int>& tab_node_ids,
                                 const std::string& machine_tag,
                                 syncer::SyncChangeList* change_output) {
-  for (std::set<int>::const_iterator it = tab_node_ids.begin();
-       it != tab_node_ids.end(); ++it) {
+  for (auto it = tab_node_ids.begin(); it != tab_node_ids.end(); ++it) {
     change_output->push_back(syncer::SyncChange(
         FROM_HERE, SyncChange::ACTION_DELETE,
         SyncData::CreateLocalDelete(TabNodeIdToTag(machine_tag, *it),
@@ -139,10 +138,7 @@ class SyncChangeListWriteBatch
 // |local_device| is owned by ProfileSyncService, its lifetime exceeds
 // lifetime of SessionSyncManager.
 SessionsSyncManager::SessionsSyncManager(
-    sync_sessions::SyncSessionsClient* sessions_client,
-    syncer::SessionSyncPrefs* sync_prefs,
-    LocalDeviceInfoProvider* local_device,
-    const base::RepeatingClosure& sessions_updated_callback)
+    sync_sessions::SyncSessionsClient* sessions_client)
     : sessions_client_(sessions_client),
       session_tracker_(sessions_client),
       favicon_cache_(sessions_client->GetFaviconService(),
@@ -155,10 +151,7 @@ SessionsSyncManager::SessionsSyncManager(
           base::BindRepeating(&SessionsSyncManager::DeleteForeignSessionFromUI,
                               base::Unretained(this))),
       local_tab_pool_out_of_sync_(true),
-      sync_prefs_(sync_prefs),
-      local_device_(local_device),
-      stale_session_threshold_days_(kDefaultStaleSessionThresholdDays),
-      sessions_updated_callback_(sessions_updated_callback) {}
+      stale_session_threshold_days_(kDefaultStaleSessionThresholdDays) {}
 
 SessionsSyncManager::~SessionsSyncManager() {}
 
@@ -198,8 +191,7 @@ syncer::SyncMergeResult SessionsSyncManager::MergeDataAndStartSyncing(
 
   // SessionDataTypeController ensures that the local device info
   // is available before activating this datatype.
-  DCHECK(local_device_);
-  const DeviceInfo* local_device_info = local_device_->GetLocalDeviceInfo();
+  const DeviceInfo* local_device_info = sessions_client_->GetLocalDeviceInfo();
   if (!local_device_info) {
     merge_result.set_error(error_handler_->CreateAndUploadError(
         FROM_HERE, "Failed to get local device info."));
@@ -221,7 +213,7 @@ syncer::SyncMergeResult SessionsSyncManager::MergeDataAndStartSyncing(
   // a conveniently safe time to assert sync is ready and the cache_guid is
   // initialized.
   if (current_machine_tag_.empty()) {
-    InitializeCurrentMachineTag(local_device_->GetLocalSyncCacheGUID());
+    InitializeCurrentMachineTag(local_device_info->guid());
   }
 
   session_tracker_.InitLocalSession(current_machine_tag_, current_session_name_,
@@ -246,8 +238,7 @@ syncer::SyncMergeResult SessionsSyncManager::MergeDataAndStartSyncing(
   }
 
 #if defined(OS_ANDROID)
-  std::string sync_machine_tag(
-      BuildMachineTag(local_device_->GetLocalSyncCacheGUID()));
+  std::string sync_machine_tag(BuildMachineTag(local_device_info->guid()));
   if (current_machine_tag().compare(sync_machine_tag) != 0)
     DeleteForeignSessionInternal(sync_machine_tag, batch.sync_change_list());
 #endif
@@ -338,8 +329,7 @@ syncer::SyncError SessionsSyncManager::ProcessSyncChanges(
     return error;
   }
 
-  for (syncer::SyncChangeList::const_iterator it = change_list.begin();
-       it != change_list.end(); ++it) {
+  for (auto it = change_list.begin(); it != change_list.end(); ++it) {
     DCHECK(it->IsValid());
     DCHECK(it->sync_data().GetSpecifics().has_session());
     const sync_pb::SessionSpecifics& session =
@@ -397,8 +387,7 @@ syncer::SyncError SessionsSyncManager::ProcessSyncChanges(
     }
   }
 
-  if (!sessions_updated_callback_.is_null())
-    sessions_updated_callback_.Run();
+  sessions_client_->NotifyForeignSessionUpdated();
   return syncer::SyncError();
 }
 
@@ -421,8 +410,7 @@ bool SessionsSyncManager::InitFromSyncModel(
     syncer::SyncChangeList* new_changes) {
   bool found_current_header = false;
   int bad_foreign_hash_count = 0;
-  for (syncer::SyncDataList::const_iterator it = sync_data.begin();
-       it != sync_data.end(); ++it) {
+  for (auto it = sync_data.begin(); it != sync_data.end(); ++it) {
     const syncer::SyncData& data = *it;
     DCHECK(data.GetSpecifics().has_session());
     syncer::SyncDataRemote remote(data);
@@ -508,7 +496,8 @@ void SessionsSyncManager::InitializeCurrentMachineTag(
     const std::string& cache_guid) {
   DCHECK(current_machine_tag_.empty());
   std::string persisted_guid;
-  persisted_guid = sync_prefs_->GetSyncSessionsGUID();
+  persisted_guid =
+      sessions_client_->GetSessionSyncPrefs()->GetSyncSessionsGUID();
   if (!persisted_guid.empty()) {
     current_machine_tag_ = persisted_guid;
     DVLOG(1) << "Restoring persisted session sync guid: " << persisted_guid;
@@ -516,7 +505,8 @@ void SessionsSyncManager::InitializeCurrentMachineTag(
     DCHECK(!cache_guid.empty());
     current_machine_tag_ = BuildMachineTag(cache_guid);
     DVLOG(1) << "Creating session sync guid: " << current_machine_tag_;
-    sync_prefs_->SetSyncSessionsGUID(current_machine_tag_);
+    sessions_client_->GetSessionSyncPrefs()->SetSyncSessionsGUID(
+        current_machine_tag_);
   }
 }
 
@@ -538,8 +528,8 @@ void SessionsSyncManager::DeleteForeignSessionInternal(
                            SyncData::CreateLocalDelete(tag, syncer::SESSIONS)));
   }
   AppendDeletionsForTabNodes(tab_node_ids_to_delete, tag, change_output);
-  if (!sessions_updated_callback_.is_null())
-    sessions_updated_callback_.Run();
+
+  sessions_client_->NotifyForeignSessionUpdated();
 }
 
 void SessionsSyncManager::DeleteForeignSessionFromUI(const std::string& tag) {

@@ -50,6 +50,10 @@ class HttpPasswordStoreMigrator : public PasswordStoreConsumer {
                             Consumer* consumer);
   ~HttpPasswordStoreMigrator() override;
 
+  // Creates HTTPS version of |http_form|.
+  static autofill::PasswordForm MigrateHttpFormToHttps(
+      const autofill::PasswordForm& http_form);
+
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;

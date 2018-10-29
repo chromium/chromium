@@ -49,7 +49,18 @@ class TestMediaPerceptionAPIDelegate : public MediaPerceptionAPIDelegate {
 
   void BindDeviceFactoryProviderToVideoCaptureService(
       video_capture::mojom::DeviceFactoryProviderPtr* provider) override {
-    LOG(ERROR) << "Not implemented.";
+    NOTIMPLEMENTED();
+  }
+
+  void SetMediaPerceptionRequestHandler(
+      MediaPerceptionRequestHandler handler) override {
+    NOTIMPLEMENTED();
+  }
+
+  void ForwardMediaPerceptionRequest(
+      chromeos::media_perception::mojom::MediaPerceptionRequest request,
+      content::RenderFrameHost* render_frame_host) override {
+    NOTIMPLEMENTED();
   }
 };
 

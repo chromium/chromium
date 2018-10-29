@@ -41,7 +41,7 @@
         opacity: var(--cr-container-shadow-max-opacity);
       }
 
-      #downloads-list {
+      #downloadsList {
         min-width: calc(
           var(--downloads-card-width) + 2 * var(--downloads-card-margin));
         /* TODO(dbeam): we're not setting scrollTarget explicitly, yet
@@ -51,12 +51,12 @@
       }
 
       #no-downloads,
-      #downloads-list {
+      #downloadsList {
         flex: 1;
       }
 
       :host([loading]) #no-downloads,
-      :host([loading]) #downloads-list {
+      :host([loading]) #downloadsList {
         display: none;
       }
 
@@ -89,12 +89,12 @@
     </style>
 
     <downloads-toolbar id="toolbar" spinner-active="{{spinnerActive_}}"
-        role="none">
+        role="none" on-search-changed="onSearchChanged_">
     </downloads-toolbar>
     <div id="drop-shadow"></div>
     <div id="mainContainer">
-      <iron-list id="downloads-list" items="[[items_]]"
-          hidden="[[!hasDownloads_]]">
+      <iron-list id="downloadsList" items="[[items_]]"
+          hidden="[[!hasDownloads_]]" on-scroll="onListScroll_">
         <template>
           <downloads-item data="[[item]]"></downloads-item>
         </template>

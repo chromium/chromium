@@ -5,11 +5,13 @@
 """Implements commands for running and interacting with Fuchsia on devices."""
 
 import boot_data
+import filecmp
 import logging
 import os
 import subprocess
 import sys
 import target
+import tempfile
 import time
 import uuid
 
@@ -20,6 +22,8 @@ CONNECT_RETRY_WAIT_SECS = 1
 
 # Number of failed connection attempts before redirecting system logs to stdout.
 CONNECT_RETRY_COUNT_BEFORE_LOGGING = 10
+
+TARGET_HASH_FILE_PATH = '/data/.hash'
 
 class DeviceTarget(target.Target):
   def __init__(self, output_dir, target_cpu, host=None, port=None,
@@ -54,6 +58,20 @@ class DeviceTarget(target.Target):
     if self._loglistener:
       self._loglistener.kill()
 
+  def _SDKHashMatches(self):
+    """Checks if /data/.hash on the device matches SDK_ROOT/.hash.
+
+    Returns True if the files are identical, or False otherwise.
+    """
+    with tempfile.NamedTemporaryFile() as tmp:
+      try:
+        self.GetFile(TARGET_HASH_FILE_PATH, tmp.name)
+      except subprocess.CalledProcessError:
+        # If the file is unretrievable for whatever reason, assume mismatch.
+        return False
+
+      return filecmp.cmp(tmp.name, os.path.join(SDK_ROOT, '.hash'), False)
+
   def __Discover(self, node_name):
     """Returns the IP address and port of a Fuchsia instance discovered on
     the local area network."""
@@ -75,9 +93,14 @@ class DeviceTarget(target.Target):
       node_name = boot_data.GetNodeName(self._output_dir)
       self._host = self.__Discover(node_name)
       if self._host and self._WaitUntilReady(retries=0):
-        logging.info('Connected to an already booted device.')
-        self._new_instance = False
-        return
+        if not self._SDKHashMatches():
+          logging.info('SDK hash does not match, rebooting.')
+          self.RunCommand(['dm', 'reboot'])
+          self._started = False
+        else:
+          logging.info('Connected to an already booted device.')
+          self._new_instance = False
+          return
 
       logging.info('Netbooting Fuchsia. ' +
                    'Please ensure that your device is in bootloader mode.')
@@ -85,9 +108,6 @@ class DeviceTarget(target.Target):
       bootserver_command = [
           bootserver_path,
           '-1',
-          '--efi',
-          EnsurePathExists(boot_data.GetTargetFile(self._GetTargetSdkArch(),
-                                                   'local.esp.blk')),
           '--fvm',
           EnsurePathExists(boot_data.GetTargetFile(self._GetTargetSdkArch(),
                                                    'fvm.sparse.blk')),
@@ -96,10 +116,17 @@ class DeviceTarget(target.Target):
               boot_data.ConfigureDataFVM(self._output_dir,
                                          boot_data.FVM_TYPE_SPARSE)),
           EnsurePathExists(boot_data.GetTargetFile(self._GetTargetSdkArch(),
-                                                   'zircon.bin')),
-          EnsurePathExists(boot_data.GetTargetFile(self._GetTargetSdkArch(),
-                                                   'bootdata-blob.bin')),
-          '--'] + boot_data.GetKernelArgs(self._output_dir)
+                                                   'fuchsia.zbi'))]
+
+      if self._GetTargetSdkArch() == 'x64':
+        bootserver_command += [
+            '--efi',
+            EnsurePathExists(boot_data.GetTargetFile(self._GetTargetSdkArch(),
+                                                     'local.esp.blk'))]
+
+      bootserver_command += ['--']
+      bootserver_command += boot_data.GetKernelArgs(self._output_dir)
+
       logging.debug(' '.join(bootserver_command))
       subprocess.check_call(bootserver_command)
 
@@ -123,6 +150,9 @@ class DeviceTarget(target.Target):
       logging.debug('host=%s, port=%d' % (self._host, self._port))
 
     self._WaitUntilReady();
+
+    # Update the target's hash to match the current tree's.
+    self.PutFile(os.path.join(SDK_ROOT, '.hash'), TARGET_HASH_FILE_PATH)
 
   def IsNewInstance(self):
     return self._new_instance

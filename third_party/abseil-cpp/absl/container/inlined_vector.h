@@ -620,6 +620,12 @@ class InlinedVector {
   // Returns the allocator of this inlined vector.
   allocator_type get_allocator() const { return allocator(); }
 
+  template <typename H>
+  friend H AbslHashValue(H h, const InlinedVector& v) {
+    return H::combine(H::combine_contiguous(std::move(h), v.data(), v.size()),
+                      v.size());
+  }
+
  private:
   static_assert(N > 0, "inlined vector with nonpositive size");
 
@@ -648,8 +654,7 @@ class InlinedVector {
   // our instance of it for free.
   class AllocatorAndTag : private allocator_type {
    public:
-    explicit AllocatorAndTag(const allocator_type& a, Tag t = Tag())
-        : allocator_type(a), tag_(t) {}
+    explicit AllocatorAndTag(const allocator_type& a) : allocator_type(a) {}
     Tag& tag() { return tag_; }
     const Tag& tag() const { return tag_; }
     allocator_type& allocator() { return *this; }

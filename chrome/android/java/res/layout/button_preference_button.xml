@@ -8,11 +8,9 @@
      See crbug.com/674736 -->
 <org.chromium.ui.widget.ButtonCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/button_preference"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
     android:minHeight="40dp"
     android:focusable="false"
-    android:textAppearance="@style/WhiteButtonText"
-    app:buttonColor="@color/pref_accent_color" />
+    style="@style/FilledButton" />

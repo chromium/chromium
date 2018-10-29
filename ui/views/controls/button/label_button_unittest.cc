@@ -543,8 +543,6 @@ class InkDropLabelButtonTest : public ViewsTestBase {
 
   // ViewsTestBase:
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kTopChromeMD, switches::kTopChromeMDMaterial);
     ViewsTestBase::SetUp();
 
     // Create a widget so that the Button can query the hover state
@@ -568,7 +566,6 @@ class InkDropLabelButtonTest : public ViewsTestBase {
   void TearDown() override {
     widget_.reset();
     ViewsTestBase::TearDown();
-    ui::test::MaterialDesignControllerTestAPI::Uninitialize();
   }
 
  protected:

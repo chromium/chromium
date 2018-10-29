@@ -26,37 +26,39 @@ struct NET_EXPORT OCSPVerifyResult {
 
   bool operator==(const OCSPVerifyResult& other) const;
 
+  // This value is histogrammed, so do not re-order or change values, and add
+  // new values at the end.
   enum ResponseStatus {
     // OCSP verification was not checked on this connection.
-    NOT_CHECKED,
+    NOT_CHECKED = 0,
 
     // No OCSPResponse was stapled.
-    MISSING,
+    MISSING = 1,
 
     // An up-to-date OCSP response was stapled and matched the certificate.
-    PROVIDED,
+    PROVIDED = 2,
 
     // The stapled OCSP response did not have a SUCCESSFUL status.
-    ERROR_RESPONSE,
+    ERROR_RESPONSE = 3,
 
     // The OCSPResponseData field producedAt was outside the certificate
     // validity period.
-    BAD_PRODUCED_AT,
+    BAD_PRODUCED_AT = 4,
 
     // At least one OCSPSingleResponse was stapled, but none matched the
     // certificate.
-    NO_MATCHING_RESPONSE,
+    NO_MATCHING_RESPONSE = 5,
 
     // A matching OCSPSingleResponse was stapled, but was either expired or not
     // yet valid.
-    INVALID_DATE,
+    INVALID_DATE = 6,
 
     // The OCSPResponse structure could not be parsed.
-    PARSE_RESPONSE_ERROR,
+    PARSE_RESPONSE_ERROR = 7,
 
     // The OCSPResponseData structure could not be parsed.
-    PARSE_RESPONSE_DATA_ERROR,
-
+    PARSE_RESPONSE_DATA_ERROR = 8,
+    RESPONSE_STATUS_MAX = PARSE_RESPONSE_DATA_ERROR
   };
 
   ResponseStatus response_status = NOT_CHECKED;

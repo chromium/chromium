@@ -10,6 +10,10 @@
 #include "ui/events/event_handler.h"
 #include "ui/views/views_export.h"
 
+namespace ui {
+class WmMoveResizeHandler;
+}
+
 namespace views {
 class DesktopWindowTreeHost;
 
@@ -23,6 +27,11 @@ class VIEWS_EXPORT WindowEventFilter : public ui::EventHandler {
 
   // Overridden from ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
+
+  // Sets a move resize handler. Currently initialized only by ozone platforms.
+  // See WaylandWindow::WaylandWindow in the wayland_window.cc file for an
+  // example.
+  void SetWmMoveResizeHandler(ui::WmMoveResizeHandler* handler);
 
  private:
   // Called when the user clicked the caption area.
@@ -51,6 +60,11 @@ class VIEWS_EXPORT WindowEventFilter : public ui::EventHandler {
   // initial click. Acting on a double click should only occur for matching
   // components.
   int click_component_;
+
+  // A handler, which is used for interactive move/resize events if set and
+  // unless MaybeDispatchHostWindowDragMovement is overridden by a derived
+  // class.
+  ui::WmMoveResizeHandler* handler_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WindowEventFilter);
 };

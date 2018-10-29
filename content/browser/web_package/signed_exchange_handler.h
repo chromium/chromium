@@ -152,6 +152,8 @@ class CONTENT_EXPORT SignedExchangeHandler {
 
   base::RepeatingCallback<int(void)> frame_tree_node_id_getter_;
 
+  base::TimeTicks cert_fetch_start_time_;
+
   base::WeakPtrFactory<SignedExchangeHandler> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(SignedExchangeHandler);

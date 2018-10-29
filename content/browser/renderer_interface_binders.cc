@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/cookie_store/cookie_store_context.h"
@@ -149,6 +150,13 @@ void RendererInterfaceBinders::InitializeParameterizedBinderRegistry() {
         static_cast<RenderProcessHostImpl*>(host)->BindCacheStorage(
             std::move(request), origin);
       }));
+  // TODO(https://crbug.com/873661): Pass origin to FileSystemMananger.
+  parameterized_binder_registry_.AddInterface(base::BindRepeating(
+      [](blink::mojom::FileSystemManagerRequest request,
+         RenderProcessHost* host, const url::Origin& origin) {
+        static_cast<RenderProcessHostImpl*>(host)->BindFileSystemManager(
+            std::move(request));
+      }));
   parameterized_binder_registry_.AddInterface(
       base::Bind([](blink::mojom::PermissionServiceRequest request,
                     RenderProcessHost* host, const url::Origin& origin) {
@@ -186,8 +194,8 @@ void RendererInterfaceBinders::InitializeParameterizedBinderRegistry() {
 }
 
 RendererInterfaceBinders& GetRendererInterfaceBinders() {
-  CR_DEFINE_STATIC_LOCAL(RendererInterfaceBinders, binders, ());
-  return binders;
+  static base::NoDestructor<RendererInterfaceBinders> binders;
+  return *binders;
 }
 
 void RendererInterfaceBinders::CreateWebSocket(

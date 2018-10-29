@@ -8,9 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/interfaces/login_user_info.mojom.h"
+#include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -18,7 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
 #include "chrome/browser/chromeos/login/lock_screen_utils.h"
-#include "chrome/browser/chromeos/login/mojo_version_info_dispatcher.h"
+#include "chrome/browser/chromeos/login/mojo_system_info_dispatcher.h"
 #include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/chromeos/login/screens/chrome_user_selection_screen.h"
@@ -28,6 +30,8 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/media_perception/media_perception.pb.h"
 #include "chromeos/login/auth/authpolicy_login_helper.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -38,20 +42,34 @@ namespace chromeos {
 
 namespace {
 constexpr char kLockDisplay[] = "lock";
+constexpr char kExternalBinaryAuth[] = "external_binary_auth";
+constexpr char kExternalBinaryEnrollment[] = "external_binary_enrollment";
+constexpr char kWebCameraDeviceContext[] = "WebCamera: WebCamera";
+constexpr base::TimeDelta kExternalBinaryAuthTimeout =
+    base::TimeDelta::FromSeconds(2);
 
-ash::mojom::FingerprintUnlockState ConvertFromFingerprintState(
-    ScreenLocker::FingerprintState state) {
-  switch (state) {
-    case ScreenLocker::FingerprintState::kHidden:
-      return ash::mojom::FingerprintUnlockState::UNAVAILABLE;
-    case ScreenLocker::FingerprintState::kDefault:
-      return ash::mojom::FingerprintUnlockState::AVAILABLE;
-    case ScreenLocker::FingerprintState::kSignin:
-      return ash::mojom::FingerprintUnlockState::AUTH_SUCCESS;
-    case ScreenLocker::FingerprintState::kFailed:
-      return ash::mojom::FingerprintUnlockState::AUTH_FAILED;
-    case ScreenLocker::FingerprintState::kRemoved:
-      return ash::mojom::FingerprintUnlockState::AUTH_DISABLED;
+// Starts the graph specified by |configuration| if the current graph
+// is SUSPENDED or if the current configuration is different.
+void StartGraphIfNeeded(chromeos::MediaAnalyticsClient* client,
+                        const std::string& configuration,
+                        base::Optional<mri::State> maybe_state) {
+  if (!maybe_state)
+    return;
+
+  if (maybe_state->status() == mri::State::SUSPENDED) {
+    // Start the specified graph
+    mri::State new_state;
+    new_state.set_status(mri::State::RUNNING);
+    new_state.set_device_context(kWebCameraDeviceContext);
+    new_state.set_configuration(configuration);
+    client->SetState(new_state, base::DoNothing());
+  } else if (maybe_state->configuration() != configuration) {
+    // Suspend and restart with new graph
+    mri::State suspend_state;
+    suspend_state.set_status(mri::State::SUSPENDED);
+    suspend_state.set_configuration(configuration);
+    client->SetState(suspend_state, base::BindOnce(&StartGraphIfNeeded, client,
+                                                   configuration));
   }
 }
 
@@ -59,8 +77,9 @@ ash::mojom::FingerprintUnlockState ConvertFromFingerprintState(
 
 ViewsScreenLocker::ViewsScreenLocker(ScreenLocker* screen_locker)
     : screen_locker_(screen_locker),
-      version_info_updater_(std::make_unique<MojoVersionInfoDispatcher>()),
-      weak_factory_(this) {
+      system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()),
+      media_analytics_client_(
+          chromeos::DBusThreadManager::Get()->GetMediaAnalyticsClient()) {
   LoginScreenClient::Get()->SetDelegate(this);
   user_board_view_mojo_ = std::make_unique<UserBoardViewMojo>();
   user_selection_screen_ =
@@ -72,6 +91,9 @@ ViewsScreenLocker::ViewsScreenLocker(ScreenLocker* screen_locker)
           kDeviceLoginScreenInputMethods,
           base::Bind(&ViewsScreenLocker::OnAllowedInputMethodsChanged,
                      base::Unretained(this)));
+
+  if (base::FeatureList::IsEnabled(ash::features::kUnlockWithExternalBinary))
+    scoped_observer_.Add(media_analytics_client_);
 }
 
 ViewsScreenLocker::~ViewsScreenLocker() {
@@ -102,8 +124,7 @@ void ViewsScreenLocker::Init() {
     }
   }
 
-  // Start to request version info.
-  version_info_updater_->StartUpdate();
+  system_info_updater_->StartRequest();
 }
 
 void ViewsScreenLocker::OnLockScreenReady() {
@@ -156,20 +177,26 @@ void ViewsScreenLocker::OnAshLockAnimationFinished() {
 
 void ViewsScreenLocker::SetFingerprintState(
     const AccountId& account_id,
-    ScreenLocker::FingerprintState state) {
-  LoginScreenClient::Get()->login_screen()->SetFingerprintUnlockState(
-      account_id, ConvertFromFingerprintState(state));
+    ash::mojom::FingerprintState state) {
+  LoginScreenClient::Get()->login_screen()->SetFingerprintState(account_id,
+                                                                state);
+}
+
+void ViewsScreenLocker::NotifyFingerprintAuthResult(const AccountId& account_id,
+                                                    bool success) {
+  LoginScreenClient::Get()->login_screen()->NotifyFingerprintAuthResult(
+      account_id, success);
 }
 
 content::WebContents* ViewsScreenLocker::GetWebContents() {
   return nullptr;
 }
 
-void ViewsScreenLocker::HandleAuthenticateUser(
+void ViewsScreenLocker::HandleAuthenticateUserWithPasswordOrPin(
     const AccountId& account_id,
     const std::string& password,
     bool authenticated_by_pin,
-    AuthenticateUserCallback callback) {
+    AuthenticateUserWithPasswordOrPinCallback callback) {
   DCHECK_EQ(account_id.GetUserEmail(),
             gaia::SanitizeEmail(account_id.GetUserEmail()));
   const user_manager::User* const user =
@@ -193,17 +220,36 @@ void ViewsScreenLocker::HandleAuthenticateUser(
   UpdatePinKeyboardState(account_id);
 }
 
-void ViewsScreenLocker::HandleAttemptUnlock(const AccountId& account_id) {
+void ViewsScreenLocker::HandleAuthenticateUserWithExternalBinary(
+    const AccountId& account_id,
+    AuthenticateUserWithExternalBinaryCallback callback) {
+  authenticate_with_external_binary_callback_ = std::move(callback);
+  external_binary_timer_.Start(
+      FROM_HERE, kExternalBinaryAuthTimeout,
+      base::BindOnce(&ViewsScreenLocker::OnExternalBinaryAuthTimeout,
+                     weak_factory_.GetWeakPtr()));
+  media_analytics_client_->GetState(base::BindOnce(
+      &StartGraphIfNeeded, media_analytics_client_, kExternalBinaryAuth));
+}
+
+void ViewsScreenLocker::HandleEnrollUserWithExternalBinary(
+    EnrollUserWithExternalBinaryCallback callback) {
+  enroll_user_with_external_binary_callback_ = std::move(callback);
+  external_binary_timer_.Start(
+      FROM_HERE, kExternalBinaryAuthTimeout,
+      base::BindOnce(&ViewsScreenLocker::OnExternalBinaryEnrollmentTimeout,
+                     weak_factory_.GetWeakPtr()));
+  media_analytics_client_->GetState(base::BindOnce(
+      &StartGraphIfNeeded, media_analytics_client_, kExternalBinaryEnrollment));
+}
+
+void ViewsScreenLocker::HandleAuthenticateUserWithEasyUnlock(
+    const AccountId& account_id) {
   user_selection_screen_->AttemptEasyUnlock(account_id);
 }
 
 void ViewsScreenLocker::HandleHardlockPod(const AccountId& account_id) {
   user_selection_screen_->HardLockPod(account_id);
-}
-
-void ViewsScreenLocker::HandleRecordClickOnLockIcon(
-    const AccountId& account_id) {
-  user_selection_screen_->RecordClickOnLockIcon(account_id);
 }
 
 void ViewsScreenLocker::HandleOnFocusPod(const AccountId& account_id) {
@@ -284,6 +330,33 @@ void ViewsScreenLocker::HandleLockScreenAppFocusOut(bool reverse) {
       reverse);
 }
 
+void ViewsScreenLocker::OnDetectionSignal(
+    const mri::MediaPerception& media_perception) {
+  if (authenticate_with_external_binary_callback_) {
+    const mri::FramePerception& frame = media_perception.frame_perception(0);
+    if (frame.frame_id() != 1)
+      return;
+
+    mri::State new_state;
+    new_state.set_status(mri::State::SUSPENDED);
+    media_analytics_client_->SetState(new_state, base::DoNothing());
+
+    external_binary_timer_.Stop();
+    std::move(authenticate_with_external_binary_callback_)
+        .Run(true /*auth_success*/);
+    ScreenLocker::Hide();
+  } else if (enroll_user_with_external_binary_callback_) {
+    const mri::FramePerception& frame = media_perception.frame_perception(0);
+
+    external_binary_timer_.Stop();
+    mri::State new_state;
+    new_state.set_status(mri::State::SUSPENDED);
+    media_analytics_client_->SetState(new_state, base::DoNothing());
+    std::move(enroll_user_with_external_binary_callback_)
+        .Run(frame.frame_id() == 1 /*enrollment_success*/);
+  }
+}
+
 void ViewsScreenLocker::UpdatePinKeyboardState(const AccountId& account_id) {
   quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
       account_id, base::BindOnce(&ViewsScreenLocker::OnPinCanAuthenticate,
@@ -307,6 +380,22 @@ void ViewsScreenLocker::OnPinCanAuthenticate(const AccountId& account_id,
                                              bool can_authenticate) {
   LoginScreenClient::Get()->login_screen()->SetPinEnabledForUser(
       account_id, can_authenticate);
+}
+
+void ViewsScreenLocker::OnExternalBinaryAuthTimeout() {
+  std::move(authenticate_with_external_binary_callback_)
+      .Run(false /*auth_success*/);
+  mri::State new_state;
+  new_state.set_status(mri::State::SUSPENDED);
+  media_analytics_client_->SetState(new_state, base::DoNothing());
+}
+
+void ViewsScreenLocker::OnExternalBinaryEnrollmentTimeout() {
+  std::move(enroll_user_with_external_binary_callback_)
+      .Run(false /*auth_success*/);
+  mri::State new_state;
+  new_state.set_status(mri::State::SUSPENDED);
+  media_analytics_client_->SetState(new_state, base::DoNothing());
 }
 
 }  // namespace chromeos

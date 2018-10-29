@@ -58,7 +58,8 @@ class AppListPresenterDelegateTest : public AppListPresenterDelegate {
     view->Initialize(params);
   }
   void OnShown(int64_t display_id) override { on_shown_called_ = true; }
-  void OnDismissed() override { on_dismissed_called_ = true; }
+  void OnClosing() override { on_dismissed_called_ = true; }
+  void OnClosed() override {}
   gfx::Vector2d GetVisibilityAnimationOffset(aura::Window*) override {
     return gfx::Vector2d(0, 0);
   }

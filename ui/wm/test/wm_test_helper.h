@@ -79,9 +79,6 @@ class WMTestHelper : public aura::client::WindowParentingClient,
   void OnUnembed(aura::Window* root) override;
   void OnEmbedRootDestroyed(aura::WindowTreeHostMus* window_tree_host) override;
   void OnLostConnection(aura::WindowTreeClient* client) override;
-  void OnPointerEventObserved(const ui::PointerEvent& event,
-                              const gfx::Point& location_in_screen,
-                              aura::Window* target) override;
   aura::PropertyConverter* GetPropertyConverter() override;
   void OnDisplaysChanged(std::vector<ws::mojom::WsDisplayPtr> ws_displays,
                          int64_t primary_display_id,
@@ -98,7 +95,7 @@ class WMTestHelper : public aura::client::WindowParentingClient,
   std::unique_ptr<aura::client::FocusClient> focus_client_;
 
   // Loop to wait for |host_| gets embedded under mus.
-  base::RunLoop display_wait_loop_;
+  std::unique_ptr<base::RunLoop> display_wait_loop_;
 
   test_ws::mojom::TestWsPtr test_ws_;
 

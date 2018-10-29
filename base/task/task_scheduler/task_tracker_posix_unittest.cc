@@ -56,11 +56,12 @@ TEST_F(TaskSchedulerTaskTrackerPosixTest, RunTask) {
   bool did_run = false;
   Task task(FROM_HERE,
             Bind([](bool* did_run) { *did_run = true; }, Unretained(&did_run)),
-            TaskTraits(), TimeDelta());
+            TimeDelta());
+  TaskTraits default_traits = {};
 
-  EXPECT_TRUE(tracker_.WillPostTask(&task));
+  EXPECT_TRUE(tracker_.WillPostTask(&task, default_traits.shutdown_behavior()));
 
-  auto sequence = test::CreateSequenceWithTask(std::move(task));
+  auto sequence = test::CreateSequenceWithTask(std::move(task), default_traits);
   EXPECT_EQ(sequence, tracker_.WillScheduleSequence(sequence, nullptr));
   // Expect RunAndPopNextTask to return nullptr since |sequence| is empty after
   // popping a task from it.
@@ -77,13 +78,14 @@ TEST_F(TaskSchedulerTaskTrackerPosixTest, FileDescriptorWatcher) {
   Task task(FROM_HERE,
             Bind(IgnoreResult(&FileDescriptorWatcher::WatchReadable), fds[0],
                  DoNothing()),
-            TaskTraits(), TimeDelta());
+            TimeDelta());
+  TaskTraits default_traits = {};
   // FileDescriptorWatcher::WatchReadable needs a SequencedTaskRunnerHandle.
   task.sequenced_task_runner_ref = MakeRefCounted<NullTaskRunner>();
 
-  EXPECT_TRUE(tracker_.WillPostTask(&task));
+  EXPECT_TRUE(tracker_.WillPostTask(&task, default_traits.shutdown_behavior()));
 
-  auto sequence = test::CreateSequenceWithTask(std::move(task));
+  auto sequence = test::CreateSequenceWithTask(std::move(task), default_traits);
   EXPECT_EQ(sequence, tracker_.WillScheduleSequence(sequence, nullptr));
   // Expect RunAndPopNextTask to return nullptr since |sequence| is empty after
   // popping a task from it.

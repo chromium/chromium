@@ -110,7 +110,7 @@ void PnaclTranslationResourceHost::OnNexeTempFileReply(
     IPC::PlatformFileForTransit file) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   base::File base_file = IPC::PlatformFileForTransitToFile(file);
-  CacheRequestInfoMap::iterator it = pending_cache_requests_.find(instance);
+  auto it = pending_cache_requests_.find(instance);
   if (!base_file.IsValid()) {
     DLOG(ERROR) << "Got invalid platformfilefortransit";
   }
@@ -131,9 +131,8 @@ void PnaclTranslationResourceHost::OnNexeTempFileReply(
 
 void PnaclTranslationResourceHost::CleanupCacheRequests() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  for (CacheRequestInfoMap::iterator it = pending_cache_requests_.begin();
-       it != pending_cache_requests_.end();
-       ++it) {
+  for (auto it = pending_cache_requests_.begin();
+       it != pending_cache_requests_.end(); ++it) {
     PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostTask(
         FROM_HERE,
         base::BindOnce(it->second, static_cast<int32_t>(PP_ERROR_ABORTED),

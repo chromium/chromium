@@ -31,6 +31,9 @@ class BrowserFrameMac : public views::NativeWidgetMac,
 
   // Overridden from views::NativeWidgetMac:
   int SheetPositionY() override;
+  void GetWindowFrameTitlebarHeight(bool* override_titlebar_height,
+                                    float* titlebar_height) override;
+  void OnFocusWindowToolbar() override;
   void OnWindowFullscreenStateChange() override;
   void InitNativeWidget(const views::Widget::InitParams& params) override;
 
@@ -50,9 +53,13 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   ~BrowserFrameMac() override;
 
   // Overridden from views::NativeWidgetMac:
+  void PopulateCreateWindowParams(
+      const views::Widget::InitParams& widget_params,
+      views_bridge_mac::mojom::CreateWindowParams* params) override;
   NativeWidgetMacNSWindow* CreateNSWindow(
-      const views::Widget::InitParams& params) override;
-  void OnWindowDestroying(NSWindow* window) override;
+      const views_bridge_mac::mojom::CreateWindowParams* params) override;
+  views::BridgeFactoryHost* GetBridgeFactoryHost() override;
+  void OnWindowDestroying(gfx::NativeWindow window) override;
 
   // Overridden from NativeBrowserFrame:
   int GetMinimizeButtonOffset() const override;

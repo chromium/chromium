@@ -75,6 +75,9 @@ class PowerButtonControllerTestApi {
 
   void SetShowMenuAnimationDone(bool show_menu_animation_done);
 
+  // Gets |show_menu_animation_done_| of |controller_|.
+  bool ShowMenuAnimationDone() const;
+
  private:
   PowerButtonController* controller_;  // Not owned.
 

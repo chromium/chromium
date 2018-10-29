@@ -49,7 +49,7 @@ scoped_refptr<EncodedFormData> EncodedFormData::Create() {
 }
 
 scoped_refptr<EncodedFormData> EncodedFormData::Create(const void* data,
-                                                       size_t size) {
+                                                       wtf_size_t size) {
   scoped_refptr<EncodedFormData> result = Create();
   result->AppendData(data, size);
   return result;
@@ -79,10 +79,8 @@ scoped_refptr<EncodedFormData> EncodedFormData::DeepCopy() const {
   form_data->boundary_ = boundary_;
   form_data->contains_password_data_ = contains_password_data_;
 
-  size_t n = elements_.size();
-  form_data->elements_.ReserveInitialCapacity(n);
-  for (size_t i = 0; i < n; ++i) {
-    const FormDataElement& e = elements_[i];
+  form_data->elements_.ReserveInitialCapacity(elements_.size());
+  for (const FormDataElement& e : elements_) {
     switch (e.type_) {
       case FormDataElement::kData:
         form_data->elements_.UncheckedAppend(FormDataElement(e.data_));
@@ -110,11 +108,11 @@ scoped_refptr<EncodedFormData> EncodedFormData::DeepCopy() const {
   return form_data;
 }
 
-void EncodedFormData::AppendData(const void* data, size_t size) {
+void EncodedFormData::AppendData(const void* data, wtf_size_t size) {
   if (elements_.IsEmpty() || elements_.back().type_ != FormDataElement::kData)
     elements_.push_back(FormDataElement());
   FormDataElement& e = elements_.back();
-  size_t old_size = e.data_.size();
+  wtf_size_t old_size = e.data_.size();
   e.data_.Grow(old_size + size);
   memcpy(e.data_.data() + old_size, data, size);
 }
@@ -146,11 +144,9 @@ void EncodedFormData::AppendDataPipe(
 void EncodedFormData::Flatten(Vector<char>& data) const {
   // Concatenate all the byte arrays, but omit everything else.
   data.clear();
-  size_t n = elements_.size();
-  for (size_t i = 0; i < n; ++i) {
-    const FormDataElement& e = elements_[i];
+  for (const FormDataElement& e : elements_) {
     if (e.type_ == FormDataElement::kData)
-      data.Append(e.data_.data(), static_cast<size_t>(e.data_.size()));
+      data.Append(e.data_.data(), e.data_.size());
   }
 }
 
@@ -163,9 +159,7 @@ String EncodedFormData::FlattenToString() const {
 
 unsigned long long EncodedFormData::SizeInBytes() const {
   unsigned size = 0;
-  size_t n = elements_.size();
-  for (size_t i = 0; i < n; ++i) {
-    const FormDataElement& e = elements_[i];
+  for (const FormDataElement& e : elements_) {
     switch (e.type_) {
       case FormDataElement::kData:
         size += e.data_.size();

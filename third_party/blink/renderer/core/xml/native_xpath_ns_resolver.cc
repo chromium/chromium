@@ -37,7 +37,7 @@ AtomicString NativeXPathNSResolver::lookupNamespaceURI(const String& prefix) {
   // This is not done by Node::lookupNamespaceURI as per the DOM3 Core spec,
   // but the XPath spec says that we should do it for XPathNSResolver.
   if (prefix == "xml")
-    return XMLNames::xmlNamespaceURI;
+    return xml_names::kNamespaceURI;
 
   return node_ ? node_->lookupNamespaceURI(prefix) : g_null_atom;
 }

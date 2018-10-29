@@ -21,7 +21,7 @@
         android:id="@+id/bottom_sheet_control_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/bottom_control_container_peek_height" >
+        android:minHeight="@dimen/bottom_sheet_peek_height" >
 
         <ImageView
             android:id="@+id/bottom_sheet_toolbar_top_shadow"
@@ -42,7 +42,7 @@
             <View
                 android:id="@+id/bottom_sheet_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/bottom_control_container_peek_height"
+                android:layout_height="@dimen/bottom_sheet_peek_height"
                 android:background="@color/modern_primary_color" />
         </view>
 

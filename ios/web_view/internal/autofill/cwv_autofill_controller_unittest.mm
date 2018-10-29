@@ -23,6 +23,7 @@
 #import "ios/web/public/test/fakes/test_web_state.h"
 #include "ios/web/public/test/test_web_thread_bundle.h"
 #include "ios/web/public/web_client.h"
+#include "ios/web/public/web_state/web_frames_manager.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/public/cwv_autofill_controller_delegate.h"
@@ -44,7 +45,6 @@ namespace ios_web_view {
 namespace {
 
 NSString* const kTestFormName = @"FormName";
-NSString* const kTestFieldName = @"FieldName";
 NSString* const kTestFieldIdentifier = @"FieldIdentifier";
 NSString* const kTestFrameId = @"FrameID";
 NSString* const kTestFieldValue = @"FieldValue";
@@ -110,12 +110,11 @@ TEST_F(CWVAutofillControllerTest, FetchSuggestions) {
     CWVAutofillSuggestion* suggestion = suggestions.firstObject;
     EXPECT_NSEQ(kTestFieldValue, suggestion.value);
     EXPECT_NSEQ(kTestFormName, suggestion.formName);
-    EXPECT_NSEQ(kTestFieldName, suggestion.fieldName);
     fetch_completion_was_called = YES;
   };
   [autofill_controller_ fetchSuggestionsForFormWithName:kTestFormName
-                                              fieldName:kTestFieldName
                                         fieldIdentifier:kTestFieldIdentifier
+                                              fieldType:@""
                                                 frameID:kTestFrameId
                                       completionHandler:fetch_completion];
 
@@ -135,9 +134,9 @@ TEST_F(CWVAutofillControllerTest, FillSuggestion) {
   CWVAutofillSuggestion* suggestion =
       [[CWVAutofillSuggestion alloc] initWithFormSuggestion:form_suggestion
                                                    formName:kTestFormName
-                                                  fieldName:kTestFieldName
                                             fieldIdentifier:kTestFieldIdentifier
-                                                    frameID:kTestFrameId];
+                                                    frameID:kTestFrameId
+                                       isPasswordSuggestion:NO];
   __block BOOL fill_completion_was_called = NO;
   [autofill_controller_ fillSuggestion:suggestion
                      completionHandler:^{
@@ -157,9 +156,13 @@ TEST_F(CWVAutofillControllerTest, FillSuggestion) {
 
 // Tests CWVAutofillController clears form.
 TEST_F(CWVAutofillControllerTest, ClearForm) {
+  auto frame = std::make_unique<web::FakeWebFrame>(
+      base::SysNSStringToUTF8(kTestFrameId), true, GURL::EmptyGURL());
+  web_state_.AddWebFrame(std::move(frame));
   __block BOOL clear_form_completion_was_called = NO;
   [autofill_controller_ clearFormWithName:kTestFormName
                           fieldIdentifier:kTestFieldIdentifier
+                                  frameID:kTestFrameId
                         completionHandler:^{
                           clear_form_completion_was_called = YES;
                         }];
@@ -171,18 +174,19 @@ TEST_F(CWVAutofillControllerTest, ClearForm) {
   EXPECT_NSEQ(kTestFormName, js_autofill_manager_.lastClearedFormName);
   EXPECT_NSEQ(kTestFieldIdentifier,
               js_autofill_manager_.lastClearedFieldIdentifier);
+  EXPECT_NSEQ(kTestFrameId, js_autofill_manager_.lastClearedFrameIdentifier);
 }
 
 // Tests CWVAutofillController focus previous field.
 TEST_F(CWVAutofillControllerTest, FocusPrevious) {
-  [[js_suggestion_manager_ expect] selectPreviousElement];
+  [[js_suggestion_manager_ expect] selectPreviousElementInFrameWithID:nil];
   [autofill_controller_ focusPreviousField];
   [js_suggestion_manager_ verify];
 }
 
 // Tests CWVAutofillController focus next field.
 TEST_F(CWVAutofillControllerTest, FocusNext) {
-  [[js_suggestion_manager_ expect] selectNextElement];
+  [[js_suggestion_manager_ expect] selectNextElementInFrameWithID:nil];
   [autofill_controller_ focusNextField];
   [js_suggestion_manager_ verify];
 }
@@ -192,8 +196,8 @@ TEST_F(CWVAutofillControllerTest, CheckFocus) {
   id completionHandler = ^(BOOL previous, BOOL next) {
   };
   [[js_suggestion_manager_ expect]
-      fetchPreviousAndNextElementsPresenceWithCompletionHandler:
-          completionHandler];
+      fetchPreviousAndNextElementsPresenceInFrameWithID:nil
+                                      completionHandler:completionHandler];
   [autofill_controller_
       checkIfPreviousAndNextFieldsAreAvailableForFocusWithCompletionHandler:
           completionHandler];
@@ -210,15 +214,14 @@ TEST_F(CWVAutofillControllerTest, FocusCallback) {
     // |autofill_controller_|.
     @autoreleasepool {
       [[delegate expect] autofillController:autofill_controller_
-                    didFocusOnFieldWithName:kTestFieldName
-                            fieldIdentifier:kTestFieldIdentifier
+              didFocusOnFieldWithIdentifier:kTestFieldIdentifier
+                                  fieldType:@""
                                    formName:kTestFormName
                                     frameID:kTestFrameId
                                       value:kTestFieldValue];
 
       autofill::FormActivityParams params;
       params.form_name = base::SysNSStringToUTF8(kTestFormName);
-      params.field_name = base::SysNSStringToUTF8(kTestFieldName);
       params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
       params.value = base::SysNSStringToUTF8(kTestFieldValue);
       params.frame_id = base::SysNSStringToUTF8(kTestFrameId);
@@ -240,15 +243,14 @@ TEST_F(CWVAutofillControllerTest, InputCallback) {
     // |autofill_controller_|.
     @autoreleasepool {
       [[delegate expect] autofillController:autofill_controller_
-                    didInputInFieldWithName:kTestFieldName
-                            fieldIdentifier:kTestFieldIdentifier
+              didInputInFieldWithIdentifier:kTestFieldIdentifier
+                                  fieldType:@""
                                    formName:kTestFormName
                                     frameID:kTestFrameId
                                       value:kTestFieldValue];
 
       autofill::FormActivityParams params;
       params.form_name = base::SysNSStringToUTF8(kTestFormName);
-      params.field_name = base::SysNSStringToUTF8(kTestFieldName);
       params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
       params.value = base::SysNSStringToUTF8(kTestFieldValue);
       params.frame_id = base::SysNSStringToUTF8(kTestFrameId);
@@ -269,15 +271,14 @@ TEST_F(CWVAutofillControllerTest, BlurCallback) {
   // before this test exits to avoid holding on to |autofill_controller_|.
   @autoreleasepool {
     [[delegate expect] autofillController:autofill_controller_
-                   didBlurOnFieldWithName:kTestFieldName
-                          fieldIdentifier:kTestFieldIdentifier
+             didBlurOnFieldWithIdentifier:kTestFieldIdentifier
+                                fieldType:@""
                                  formName:kTestFormName
                                   frameID:kTestFrameId
                                     value:kTestFieldValue];
 
     autofill::FormActivityParams params;
     params.form_name = base::SysNSStringToUTF8(kTestFormName);
-    params.field_name = base::SysNSStringToUTF8(kTestFieldName);
     params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
     params.value = base::SysNSStringToUTF8(kTestFieldValue);
     params.frame_id = base::SysNSStringToUTF8(kTestFrameId);
@@ -302,9 +303,11 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
                     didSubmitFormWithName:kTestFormName
                             userInitiated:YES
                               isMainFrame:YES];
-
+    web::FakeWebFrame frame(base::SysNSStringToUTF8(kTestFrameId), true,
+                            GURL::EmptyGURL());
     test_form_activity_tab_helper_->DocumentSubmitted(
-        /*sender_frame*/ nullptr, base::SysNSStringToUTF8(kTestFormName),
+        /*sender_frame*/ &frame, base::SysNSStringToUTF8(kTestFormName),
+        /*form_data=*/"",
         /*user_initiated=*/true,
         /*is_main_frame=*/true);
 
@@ -314,7 +317,8 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
                               isMainFrame:YES];
 
     test_form_activity_tab_helper_->DocumentSubmitted(
-        /*sender_frame*/ nullptr, base::SysNSStringToUTF8(kTestFormName),
+        /*sender_frame*/ &frame, base::SysNSStringToUTF8(kTestFormName),
+        /*form_data=*/"",
         /*user_initiated=*/false,
         /*is_main_frame=*/true);
 

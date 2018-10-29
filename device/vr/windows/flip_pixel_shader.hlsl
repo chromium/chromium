@@ -18,5 +18,5 @@ struct PixelShaderInput
 float4 flip_pixel(PixelShaderInput input) : SV_TARGET
 {
   float2 texture_coords = float2(input.tex.x, input.tex.y);
-  return float4(my_texture.Sample(my_sampler, texture_coords).rgb, 1.0f);
+  return my_texture.Sample(my_sampler, texture_coords).rgba;
 }

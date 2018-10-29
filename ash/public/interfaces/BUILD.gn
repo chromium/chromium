@@ -24,7 +24,6 @@ mojom("interfaces_internal") {
     "assistant_setup.mojom",
     "assistant_volume_control.mojom",
     "cast_config.mojom",
-    "client_image_registry.mojom",
     "constants.mojom",
     "cros_display_config.mojom",
     "display_output_protection.mojom",
@@ -35,6 +34,7 @@ mojom("interfaces_internal") {
     "highlighter_controller.mojom",
     "ime_controller.mojom",
     "ime_info.mojom",
+    "keyboard_controller.mojom",
     "kiosk_app_info.mojom",
     "locale.mojom",
     "login_screen.mojom",
@@ -63,7 +63,6 @@ mojom("interfaces_internal") {
     "window_pin_type.mojom",
     "window_properties.mojom",
     "window_state_type.mojom",
-    "window_style.mojom",
   ]
 
   public_deps = [
@@ -83,6 +82,7 @@ mojom("interfaces_internal") {
     "//ui/gfx/geometry/mojo",
     "//ui/gfx/image/mojo:interfaces",
     "//ui/gfx/range/mojo",
+    "//ui/keyboard:mojom",
     "//ui/message_center/public/mojo:mojo",
     "//url/mojom:url_mojom_gurl",
   ]

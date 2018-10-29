@@ -4,7 +4,7 @@ Drag me
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS window.getComputedStyle(document.getElementById("drag")).color is "rgb(0, 0, 255)"
 PASS window.getComputedStyle(document.getElementById("drag")).color is "rgb(255, 0, 0)"
 PASS window.getComputedStyle(document.getElementById("drag")).color is "rgb(0, 128, 0)"
-

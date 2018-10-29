@@ -13,8 +13,9 @@
 #include <set>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event_argument.h"
+#include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
@@ -255,6 +256,12 @@ void PictureLayerImpl::AppendQuads(viz::RenderPass* render_pass,
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
 
+  if (mask_type_ != Layer::LayerMaskType::NOT_MASK) {
+    append_quads_data->num_mask_layers++;
+    if (is_rounded_corner_mask())
+      append_quads_data->num_rounded_corner_mask_layers++;
+  }
+
   if (raster_source_->IsSolidColor()) {
     // TODO(sunxd): Solid color non-mask layers are forced to have contents
     // scale = 1. This is a workaround to temperarily fix
@@ -386,9 +393,6 @@ void PictureLayerImpl::AppendQuads(viz::RenderPass* render_pass,
         } else if (mode == TileDrawInfo::OOM_MODE) {
           color = DebugColors::OOMTileBorderColor();
           width = DebugColors::OOMTileBorderWidth(device_scale_factor);
-        } else if (iter->draw_info().has_compressed_resource()) {
-          color = DebugColors::CompressedTileBorderColor();
-          width = DebugColors::CompressedTileBorderWidth(device_scale_factor);
         } else if (iter.resolution() == HIGH_RESOLUTION) {
           color = DebugColors::HighResTileBorderColor();
           width = DebugColors::HighResTileBorderWidth(device_scale_factor);
@@ -456,6 +460,13 @@ void PictureLayerImpl::AppendQuads(viz::RenderPass* render_pass,
         static_cast<int64_t>(visible_geometry_rect.width()) *
         visible_geometry_rect.height();
     append_quads_data->visible_layer_area += visible_geometry_area;
+
+    if (mask_type_ != Layer::LayerMaskType::NOT_MASK) {
+      append_quads_data->visible_mask_layer_area += visible_geometry_area;
+      if (is_rounded_corner_mask())
+        append_quads_data->visible_rounded_corner_mask_layer_area +=
+            visible_geometry_area;
+    }
 
     bool has_draw_quad = false;
     if (*iter && iter->draw_info().IsReadyToDraw()) {
@@ -648,11 +659,11 @@ bool PictureLayerImpl::UpdateTiles() {
         !layer_tree_impl()->SmoothnessTakesPriority();
   }
 
-  static const Occlusion kEmptyOcclusion;
+  static const base::NoDestructor<Occlusion> kEmptyOcclusion;
   const Occlusion& occlusion_in_content_space =
       layer_tree_impl()->settings().use_occlusion_for_tile_prioritization
           ? draw_properties().occlusion_in_content_space
-          : kEmptyOcclusion;
+          : *kEmptyOcclusion;
 
   // Pass |occlusion_in_content_space| for |occlusion_in_layer_space| since
   // they are the same space in picture layer, as contents scale is always 1.
@@ -699,26 +710,24 @@ void PictureLayerImpl::UpdateViewportRectForTilePriorityInContentSpace() {
   }
   viewport_rect_for_tile_priority_in_content_space_ =
       visible_rect_in_content_space;
-#if defined(OS_ANDROID)
-  // On android, if we're in a scrolling gesture, the pending tree does not
-  // reflect the fact that we may be hiding the top or bottom controls. Thus,
-  // it would believe that the viewport is smaller than it actually is which
-  // can cause activation flickering issues. So, if we're in this situation
-  // adjust the visible rect by the top/bottom controls height. This isn't
-  // ideal since we're not always in this case, but since we should be
-  // prioritizing the active tree anyway, it doesn't cause any serious issues.
-  // https://crbug.com/794456.
-  if (layer_tree_impl()->IsPendingTree() &&
-      layer_tree_impl()->IsActivelyScrolling()) {
-    float total_controls_height = layer_tree_impl()->top_controls_height() +
-                                  layer_tree_impl()->bottom_controls_height();
-    viewport_rect_for_tile_priority_in_content_space_.Inset(
-        0,                        // left
-        0,                        // top,
-        0,                        // right,
-        -total_controls_height);  // bottom
+
+  float total_controls_height = layer_tree_impl()->top_controls_height() +
+                                layer_tree_impl()->bottom_controls_height();
+  if (total_controls_height) {
+    // If sliding top controls are being used, the pending tree does not
+    // reflect the fact that we may be hiding the top or bottom controls. Thus,
+    // it would believe that the viewport is smaller than it actually is which
+    // can cause activation flickering issues. So, if we're in this situation
+    // adjust the visible rect by the the controls height.
+    if (layer_tree_impl()->IsPendingTree() &&
+        layer_tree_impl()->browser_controls_shrink_blink_size()) {
+      viewport_rect_for_tile_priority_in_content_space_.Inset(
+          0,                        // left
+          0,                        // top,
+          0,                        // right,
+          -total_controls_height);  // bottom
+    }
   }
-#endif
 }
 
 PictureLayerImpl* PictureLayerImpl::GetPendingOrActiveTwinLayer() const {

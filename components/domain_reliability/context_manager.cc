@@ -100,7 +100,7 @@ DomainReliabilityContext* DomainReliabilityContextManager::AddContextForConfig(
 
 void DomainReliabilityContextManager::RemoveContexts(
     const base::Callback<bool(const GURL&)>& origin_filter) {
-  for (ContextMap::iterator it = contexts_.begin(); it != contexts_.end(); ) {
+  for (auto it = contexts_.begin(); it != contexts_.end();) {
     if (!origin_filter.is_null() &&
         !origin_filter.Run(it->second->config().origin)) {
       ++it;

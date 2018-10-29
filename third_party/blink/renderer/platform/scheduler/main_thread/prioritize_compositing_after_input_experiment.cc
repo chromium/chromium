@@ -6,7 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
-#include "third_party/blink/renderer/platform/scheduler/child/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 
@@ -21,9 +21,9 @@ constexpr const char kPrioritizeCompositingAfterInputTrial[] =
 constexpr const char kNumberOfCompositingTasksToPrioritizeAfterInputParam[] =
     "number_of_tasks";
 
-constexpr size_t kDefaultNumberOfTasksToPrioritizeAfterInput = 1;
+constexpr int kDefaultNumberOfTasksToPrioritizeAfterInput = 1;
 
-size_t GetNumberOfCompositingTasksToPrioritizeAfterInput() {
+int GetNumberOfCompositingTasksToPrioritizeAfterInput() {
   if (!base::FeatureList::IsEnabled(kPrioritizeCompositingAfterInput))
     return 0;
   int number_of_tasks;

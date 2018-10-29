@@ -71,6 +71,8 @@ class MockFontProvider : public fuchsia::fonts::Provider {
     response->buffer.size = font_buffer->size;
     callback(std::move(response));
   }
+  void GetFamilyInfo(fidl::StringPtr family,
+                     GetFamilyInfoCallback callback) override {}
 
  private:
   fuchsia::mem::Buffer roboto_;

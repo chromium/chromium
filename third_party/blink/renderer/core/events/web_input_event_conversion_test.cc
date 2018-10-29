@@ -72,9 +72,9 @@ int GetModifiersForKeyLocationCode(KeyboardEvent::KeyLocationCode location) {
 
 void RegisterMockedURL(const std::string& base_url,
                        const std::string& file_name) {
-  URLTestHelpers::RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url),
-                                                test::CoreTestDataPath(),
-                                                WebString::FromUTF8(file_name));
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString::FromUTF8(base_url), test::CoreTestDataPath(),
+      WebString::FromUTF8(file_name));
 }
 
 }  // namespace
@@ -117,7 +117,7 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
   const std::string file_name("fixed_layout.html");
 
   RegisterMockedURL(base_url, file_name);
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
       web_view_helper.InitializeAndLoad(base_url + file_name);
   web_view->GetSettings()->SetViewportEnabled(true);
@@ -332,7 +332,7 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
   const std::string file_name("fixed_layout.html");
 
   RegisterMockedURL(base_url, file_name);
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
       web_view_helper.InitializeAndLoad(base_url + file_name);
   web_view->GetSettings()->SetViewportEnabled(true);
@@ -595,7 +595,7 @@ TEST(WebInputEventConversionTest, InputEventsConversions) {
   const std::string file_name("fixed_layout.html");
 
   RegisterMockedURL(base_url, file_name);
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
       web_view_helper.InitializeAndLoad(base_url + file_name);
   int page_width = 640;
@@ -632,7 +632,7 @@ TEST(WebInputEventConversionTest, VisualViewportOffset) {
   const std::string file_name("fixed_layout.html");
 
   RegisterMockedURL(base_url, file_name);
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
       web_view_helper.InitializeAndLoad(base_url + file_name);
   int page_width = 640;
@@ -730,7 +730,7 @@ TEST(WebInputEventConversionTest, ElasticOverscroll) {
   const std::string file_name("fixed_layout.html");
 
   RegisterMockedURL(base_url, file_name);
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
       web_view_helper.InitializeAndLoad(base_url + file_name);
   int page_width = 640;
@@ -740,9 +740,9 @@ TEST(WebInputEventConversionTest, ElasticOverscroll) {
 
   LocalFrameView* view = ToLocalFrame(web_view->GetPage()->MainFrame())->View();
 
-  FloatSize elastic_overscroll(10, -20);
-  web_view->ApplyViewportDeltas(WebFloatSize(), WebFloatSize(),
-                                elastic_overscroll, 1.0f, 0.0f);
+  gfx::Vector2dF elastic_overscroll(10, -20);
+  web_view->ApplyViewportChanges(
+      {gfx::ScrollOffset(), elastic_overscroll, 1.0f, 0.0f});
 
   // Just elastic overscroll.
   {
@@ -757,11 +757,10 @@ TEST(WebInputEventConversionTest, ElasticOverscroll) {
     IntPoint position =
         FlooredIntPoint(transformed_mouse_event.PositionInRootFrame());
 
-    EXPECT_EQ(web_mouse_event.PositionInWidget().x + elastic_overscroll.Width(),
+    EXPECT_EQ(web_mouse_event.PositionInWidget().x + elastic_overscroll.x(),
               position.X());
-    EXPECT_EQ(
-        web_mouse_event.PositionInWidget().y + elastic_overscroll.Height(),
-        position.Y());
+    EXPECT_EQ(web_mouse_event.PositionInWidget().y + elastic_overscroll.y(),
+              position.Y());
     EXPECT_EQ(web_mouse_event.PositionInScreen().x,
               transformed_mouse_event.PositionInScreen().x);
     EXPECT_EQ(web_mouse_event.PositionInScreen().y,
@@ -788,10 +787,10 @@ TEST(WebInputEventConversionTest, ElasticOverscroll) {
         FlooredIntPoint(transformed_mouse_event.PositionInRootFrame());
 
     EXPECT_EQ(web_mouse_event.PositionInWidget().x / page_scale +
-                  visual_offset.X() + elastic_overscroll.Width(),
+                  visual_offset.X() + elastic_overscroll.x(),
               position.X());
     EXPECT_EQ(web_mouse_event.PositionInWidget().y / page_scale +
-                  visual_offset.Y() + elastic_overscroll.Height(),
+                  visual_offset.Y() + elastic_overscroll.y(),
               position.Y());
     EXPECT_EQ(web_mouse_event.PositionInScreen().x,
               transformed_mouse_event.PositionInScreen().x);
@@ -806,7 +805,7 @@ TEST(WebInputEventConversionTest, ElasticOverscrollWithPageReload) {
   const std::string file_name("fixed_layout.html");
 
   RegisterMockedURL(base_url, file_name);
-  FrameTestHelpers::WebViewHelper web_view_helper;
+  frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
       web_view_helper.InitializeAndLoad(base_url + file_name);
   int page_width = 640;
@@ -814,10 +813,11 @@ TEST(WebInputEventConversionTest, ElasticOverscrollWithPageReload) {
   web_view->Resize(WebSize(page_width, page_height));
   web_view->UpdateAllLifecyclePhases();
 
-  FloatSize elastic_overscroll(10, -20);
-  web_view->ApplyViewportDeltas(WebFloatSize(), WebFloatSize(),
-                                elastic_overscroll, 1.0f, 0.0f);
-  FrameTestHelpers::ReloadFrame(web_view_helper.GetWebView()->MainFrameImpl());
+  gfx::Vector2dF elastic_overscroll(10, -20);
+  web_view->ApplyViewportChanges(
+      {gfx::ScrollOffset(), elastic_overscroll, 1.0f, 0.0f});
+  frame_test_helpers::ReloadFrame(
+      web_view_helper.GetWebView()->MainFrameImpl());
   LocalFrameView* view = ToLocalFrame(web_view->GetPage()->MainFrame())->View();
 
   // Just elastic overscroll.
@@ -833,11 +833,10 @@ TEST(WebInputEventConversionTest, ElasticOverscrollWithPageReload) {
     IntPoint position =
         FlooredIntPoint(transformed_mouse_event.PositionInRootFrame());
 
-    EXPECT_EQ(web_mouse_event.PositionInWidget().x + elastic_overscroll.Width(),
+    EXPECT_EQ(web_mouse_event.PositionInWidget().x + elastic_overscroll.x(),
               position.X());
-    EXPECT_EQ(
-        web_mouse_event.PositionInWidget().y + elastic_overscroll.Height(),
-        position.Y());
+    EXPECT_EQ(web_mouse_event.PositionInWidget().y + elastic_overscroll.y(),
+              position.Y());
     EXPECT_EQ(web_mouse_event.PositionInScreen().x,
               transformed_mouse_event.PositionInScreen().x);
     EXPECT_EQ(web_mouse_event.PositionInScreen().y,

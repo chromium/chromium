@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL It exists and is a function assert_equals: expected "function" but got "undefined"
-FAIL It throws when given non-functions assert_throws: no argument function "() => queueMicrotask()" threw object "ReferenceError: queueMicrotask is not defined" ("ReferenceError") expected object "TypeError" ("TypeError")
-FAIL It calls the callback asynchronously queueMicrotask is not defined
-FAIL It does not pass any arguments queueMicrotask is not defined
-FAIL It interleaves with promises as expected queueMicrotask is not defined
-Harness: the test ran to completion.
-

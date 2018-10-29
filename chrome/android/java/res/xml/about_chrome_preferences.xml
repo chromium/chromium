@@ -7,7 +7,7 @@
     <Preference
         android:key="application_version"
         android:title="@string/application_version_title" />
-    <Preference
+    <org.chromium.chrome.browser.preferences.AboutChromePreferenceOSVersion
         android:key="os_version"
         android:title="@string/os_version_title" />
     <Preference

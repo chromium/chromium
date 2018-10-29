@@ -18,12 +18,14 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/default_clock.h"
 #include "components/drive/chromeos/file_system_interface.h"
 #include "components/drive/file_errors.h"
 #include "google_apis/drive/drive_api_error_codes.h"
 #include "google_apis/drive/drive_common_callbacks.h"
 
 namespace base {
+class Clock;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -45,6 +47,7 @@ class StartPageTokenLoader;
 // DirectoryLoader is used to load directory contents.
 class DirectoryLoader {
  public:
+  // |clock| can be mocked for testing
   DirectoryLoader(EventLogger* logger,
                   base::SequencedTaskRunner* blocking_task_runner,
                   ResourceMetadata* resource_metadata,
@@ -53,7 +56,8 @@ class DirectoryLoader {
                   StartPageTokenLoader* start_page_token_loader,
                   LoaderController* apply_task_controller,
                   const base::FilePath& root_entry_path,
-                  const std::string& team_drive_id);
+                  const std::string& team_drive_id,
+                  const base::Clock* clock = base::DefaultClock::GetInstance());
   ~DirectoryLoader();
 
   // Adds and removes the observer.
@@ -85,16 +89,19 @@ class DirectoryLoader {
       const FileOperationCallback& completion_callback,
       FileError error);
   void ReadDirectoryAfterGetRootFolderId(
+      const base::FilePath& directory_path,
       const std::string& local_id,
       FileError error,
       base::Optional<std::string> root_folder_id);
   void ReadDirectoryAfterGetStartPageToken(
+      const base::FilePath& directory_path,
       const std::string& local_id,
       const std::string& root_folder_id,
       google_apis::DriveApiErrorCode status,
       std::unique_ptr<google_apis::StartPageToken> start_page_token);
 
   void ReadDirectoryAfterCheckLocalState(
+      const base::FilePath& directory_path,
       const std::string& remote_start_page_token,
       const std::string& local_id,
       const std::string& root_folder_id,
@@ -155,6 +162,8 @@ class DirectoryLoader {
   // The team drive id for this directory loader. Used to retrieve the start
   // page token when performing a fast fetch.
   const std::string team_drive_id_;
+
+  const base::Clock* clock_;  // Not Owned
 
   THREAD_CHECKER(thread_checker_);
 

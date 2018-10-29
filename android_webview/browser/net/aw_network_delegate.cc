@@ -10,6 +10,8 @@
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser/net/aw_web_resource_request.h"
 #include "base/android/build_info.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_request_info.h"
 #include "net/base/completion_once_callback.h"
@@ -79,8 +81,8 @@ int AwNetworkDelegate::OnHeadersReceived(
     std::unique_ptr<AwContentsClientBridge::HttpErrorInfo> error_info =
         AwContentsClientBridge::ExtractHttpErrorInfo(original_response_headers);
 
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&OnReceivedHttpErrorOnUiThread,
                        request_info->GetWebContentsGetterForRequest(),
                        AwWebResourceRequest(*request), std::move(error_info)));

@@ -93,9 +93,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
    private:
     friend class ServiceWorkerContextCore;
     using ProviderHostPredicate =
-        base::Callback<bool(ServiceWorkerProviderHost*)>;
+        base::RepeatingCallback<bool(ServiceWorkerProviderHost*)>;
     ProviderHostIterator(ProcessToProviderMap* map,
-                         const ProviderHostPredicate& predicate);
+                         ProviderHostPredicate predicate);
     void Initialize();
     bool ForwardUntilMatchingProviderHost();
 
@@ -203,7 +203,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       const GURL& script_url,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       RegistrationCallback callback);
-  void UnregisterServiceWorker(const GURL& pattern,
+  void UnregisterServiceWorker(const GURL& scope,
                                UnregistrationCallback callback);
 
   // Callback is called after all deletions occured. The status code is
@@ -279,7 +279,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   int GetVersionFailureCount(int64_t version_id);
 
   // Called by ServiceWorkerStorage when StoreRegistration() succeeds.
-  void NotifyRegistrationStored(int64_t registration_id, const GURL& pattern);
+  void NotifyRegistrationStored(int64_t registration_id, const GURL& scope);
 
   URLLoaderFactoryGetter* loader_factory_getter() {
     return loader_factory_getter_.get();
@@ -303,7 +303,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   ProviderMap* GetProviderMapForProcess(int process_id);
 
-  void RegistrationComplete(const GURL& pattern,
+  void RegistrationComplete(const GURL& scope,
                             RegistrationCallback callback,
                             blink::ServiceWorkerStatusCode status,
                             const std::string& status_message,
@@ -314,7 +314,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                       const std::string& status_message,
                       ServiceWorkerRegistration* registration);
 
-  void UnregistrationComplete(const GURL& pattern,
+  void UnregistrationComplete(const GURL& scope,
                               UnregistrationCallback callback,
                               int64_t registration_id,
                               blink::ServiceWorkerStatusCode status);

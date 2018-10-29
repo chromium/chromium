@@ -82,7 +82,7 @@ MediaDevices::~MediaDevices() = default;
 ScriptPromise MediaDevices::enumerateDevices(ScriptState* script_state) {
   Platform::Current()->UpdateWebRTCAPICount(WebRTCAPIName::kEnumerateDevices);
   LocalFrame* frame =
-      ToDocument(ExecutionContext::From(script_state))->GetFrame();
+      To<Document>(ExecutionContext::From(script_state))->GetFrame();
   if (!frame) {
     return ScriptPromise::RejectWithDOMException(
         script_state, DOMException::Create(DOMExceptionCode::kNotSupportedError,
@@ -118,7 +118,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   PromiseResolverCallbacks* callbacks =
       PromiseResolverCallbacks::Create(resolver);
 
-  Document* document = ToDocument(ExecutionContext::From(script_state));
+  Document* document = To<Document>(ExecutionContext::From(script_state));
   UserMediaController* user_media =
       UserMediaController::From(document->GetFrame());
   if (!user_media)
@@ -212,7 +212,7 @@ void MediaDevices::Unpause() {
 void MediaDevices::OnDevicesChanged(
     MediaDeviceType type,
     Vector<mojom::blink::MediaDeviceInfoPtr> device_infos) {
-  Document* document = ToDocument(GetExecutionContext());
+  Document* document = To<Document>(GetExecutionContext());
   DCHECK(document);
 
   if (RuntimeEnabledFeatures::OnDeviceChangeEnabled())
@@ -240,7 +240,7 @@ void MediaDevices::StartObserving() {
   if (binding_.is_bound() || stopped_)
     return;
 
-  Document* document = ToDocument(GetExecutionContext());
+  Document* document = To<Document>(GetExecutionContext());
   if (!document || !document->GetFrame())
     return;
 
@@ -277,20 +277,21 @@ void MediaDevices::DevicesEnumerated(
     return;
   }
 
-  DCHECK_EQ(static_cast<size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES),
+  DCHECK_EQ(static_cast<wtf_size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES),
             enumeration.size());
 
   if (!video_input_capabilities.IsEmpty()) {
     DCHECK_EQ(
-        enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]
+        enumeration[static_cast<wtf_size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]
             .size(),
         video_input_capabilities.size());
   }
 
   MediaDeviceInfoVector media_devices;
-  for (size_t i = 0;
-       i < static_cast<size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES); ++i) {
-    for (size_t j = 0; j < enumeration[i].size(); ++j) {
+  for (wtf_size_t i = 0;
+       i < static_cast<wtf_size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
+       ++i) {
+    for (wtf_size_t j = 0; j < enumeration[i].size(); ++j) {
       MediaDeviceType device_type = static_cast<MediaDeviceType>(i);
       mojom::blink::MediaDeviceInfoPtr device_info =
           std::move(enumeration[i][j]);

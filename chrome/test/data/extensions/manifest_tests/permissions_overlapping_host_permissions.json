@@ -1,0 +1,14 @@
+{
+  "name": "Redundant extension with optional google maps host permission",
+  "version": "0.0.1.33",
+  "manifest_version": 2,
+  "description": "Extension with overlapping required and optional host permissions",
+  "permissions": [
+    "https://example.com/*",
+    "https://*.google.com/*"
+  ],
+  "optional_permissions": [
+    "https://google.com/maps",
+    "*://chromium.org/*"
+  ]
+}

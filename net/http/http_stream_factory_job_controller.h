@@ -111,6 +111,9 @@ class HttpStreamFactory::JobController
                       int status,
                       const SSLConfig& used_ssl_config) override;
 
+  // Invoked when |job| fails on the default network.
+  void OnFailedOnDefaultNetwork(Job* job) override;
+
   // Invoked when |job| has a certificate error for the Request.
   void OnCertificateError(Job* job,
                           int status,
@@ -244,9 +247,14 @@ class HttpStreamFactory::JobController
   // net error of the failed alternative proxy job.
   void OnAlternativeProxyJobFailed(int net_error);
 
-  // Called to report to http_server_properties to mark alternative service
-  // broken.
-  void ReportBrokenAlternativeService();
+  // Called when all Jobs complete. Reports alternative service brokenness to
+  // HttpServerProperties if apply and resets net errors afterwards:
+  // - report broken if the main job has no error and the alternative job has an
+  //   error;
+  // - report broken until default network change if the main job has no error,
+  //   the alternative job has no error, but the alternative job failed on the
+  //   default network.
+  void MaybeReportBrokenAlternativeService();
 
   void MaybeNotifyFactoryOfCompletion();
 
@@ -261,6 +269,11 @@ class HttpStreamFactory::JobController
 
   // Resumes the main job immediately.
   void ResumeMainJob();
+
+  // Reset error status to default value for Jobs:
+  // - reset |main_job_net_error_| and |alternative_job_net_error_| to OK;
+  // - reset |alternative_job_failed_on_default_network_| to false.
+  void ResetErrorStatusForJobs();
 
   AlternativeServiceInfo GetAlternativeServiceInfoFor(
       const HttpRequestInfo& request_info,
@@ -344,8 +357,13 @@ class HttpStreamFactory::JobController
   // (or by |main_job_| if |is_preconnect_|.)
   AlternativeServiceInfo alternative_service_info_;
 
-  // Net error code of the failed alternative job. Set to OK by default.
+  // Error status used for alternative service brokenness reporting.
+  // Net error code of the main job. Set to OK by default.
+  int main_job_net_error_;
+  // Net error code of the alternative job. Set to OK by default.
   int alternative_job_net_error_;
+  // Set to true if the alternative job failed on the default network.
+  bool alternative_job_failed_on_default_network_;
 
   // True if a Job has ever been bound to the |request_|.
   bool job_bound_;

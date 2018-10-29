@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatImageButton;
 import android.text.InputType;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -35,7 +36,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.PreferenceUtils;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
-import org.chromium.chrome.browser.widget.TintedImageButton;
 import org.chromium.components.sync.AndroidSyncSettings;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
@@ -266,7 +266,7 @@ public class PasswordEntryEditor extends Fragment {
     }
 
     private void hookupCopyUsernameButton(View usernameView) {
-        final TintedImageButton copyUsernameButton =
+        final AppCompatImageButton copyUsernameButton =
                 usernameView.findViewById(R.id.password_entry_editor_copy);
         copyUsernameButton.setImageDrawable(
                 AppCompatResources.getDrawable(getActivity(), R.drawable.ic_content_copy_black));
@@ -288,7 +288,7 @@ public class PasswordEntryEditor extends Fragment {
     }
 
     private void hookupCopySiteButton(View siteView) {
-        final TintedImageButton copySiteButton =
+        final AppCompatImageButton copySiteButton =
                 siteView.findViewById(R.id.password_entry_editor_copy);
         copySiteButton.setContentDescription(
                 getActivity().getString(R.string.password_entry_editor_copy_stored_site));
@@ -362,7 +362,7 @@ public class PasswordEntryEditor extends Fragment {
     }
 
     private void hookupPasswordButtons() {
-        final TintedImageButton copyPasswordButton =
+        final AppCompatImageButton copyPasswordButton =
                 mView.findViewById(R.id.password_entry_editor_copy_password);
         final ImageButton viewPasswordButton =
                 mView.findViewById(R.id.password_entry_editor_view_password);

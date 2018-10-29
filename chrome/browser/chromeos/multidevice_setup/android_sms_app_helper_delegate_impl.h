@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -34,17 +35,23 @@ class AndroidSmsAppHelperDelegateImpl : public AndroidSmsAppHelperDelegate {
   // built using this constructor will segfault on profile_ if
   // LaunchAndroidSmsApp is called. We'll need to fix this once tests for that
   // function are added. See https://crbug.com/876972.
-  explicit AndroidSmsAppHelperDelegateImpl(
-      web_app::PendingAppManager* pending_app_manager);
-  void OnAppInstalled(const GURL& app_url, web_app::InstallResultCode code);
+  AndroidSmsAppHelperDelegateImpl(
+      web_app::PendingAppManager* pending_app_manager,
+      HostContentSettingsMap* host_content_settings_map);
+  void OnAppInstalled(bool launch_on_install,
+                      const GURL& app_url,
+                      web_app::InstallResultCode code);
+  void InstallAndroidSmsApp(bool launch_on_install);
+  void LaunchAndroidSmsApp();
 
   // AndroidSmsAppHelperDelegate:
   void InstallAndroidSmsApp() override;
-  bool LaunchAndroidSmsApp() override;
+  void InstallAndLaunchAndroidSmsApp() override;
 
   static const char kMessagesWebAppUrl[];
   web_app::PendingAppManager* pending_app_manager_;
   Profile* profile_;
+  HostContentSettingsMap* host_content_settings_map_;
   base::WeakPtrFactory<AndroidSmsAppHelperDelegateImpl> weak_ptr_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppHelperDelegateImpl);

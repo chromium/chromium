@@ -31,7 +31,7 @@ namespace ukm {
 namespace {
 
 // Generates a new client id and stores it in prefs.
-uint64_t GenerateClientId(PrefService* pref_service) {
+uint64_t GenerateAndStoreClientId(PrefService* pref_service) {
   uint64_t client_id = 0;
   while (!client_id)
     client_id = base::RandUint64();
@@ -42,16 +42,16 @@ uint64_t GenerateClientId(PrefService* pref_service) {
   return client_id;
 }
 
-uint64_t LoadOrGenerateClientId(PrefService* pref_service) {
+uint64_t LoadOrGenerateAndStoreClientId(PrefService* pref_service) {
   uint64_t client_id = pref_service->GetInt64(prefs::kUkmClientId);
   if (!client_id)
-    client_id = GenerateClientId(pref_service);
+    client_id = GenerateAndStoreClientId(pref_service);
   return client_id;
 }
 
-int32_t LoadSessionId(PrefService* pref_service) {
+int32_t LoadAndIncrementSessionId(PrefService* pref_service) {
   int32_t session_id = pref_service->GetInteger(prefs::kUkmSessionId);
-  ++session_id;  // increment session id, once per session
+  ++session_id;  // Increment session id, once per session.
   pref_service->SetInteger(prefs::kUkmSessionId, session_id);
   return session_id;
 }
@@ -104,8 +104,8 @@ void UkmService::Initialize() {
   initialize_started_ = true;
 
   DCHECK_EQ(0, report_count_);
-  client_id_ = LoadOrGenerateClientId(pref_service_);
-  session_id_ = LoadSessionId(pref_service_);
+  client_id_ = LoadOrGenerateAndStoreClientId(pref_service_);
+  session_id_ = LoadAndIncrementSessionId(pref_service_);
   metrics_providers_.Init();
 
   StartInitTask();
@@ -180,12 +180,14 @@ void UkmService::Purge() {
   UkmRecorderImpl::Purge();
 }
 
-// TODO(bmcquade): rename this to something more generic, like
-// ResetClientState. Consider resetting all prefs here.
-void UkmService::ResetClientId() {
+void UkmService::ResetClientState(ResetReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  client_id_ = GenerateClientId(pref_service_);
-  session_id_ = LoadSessionId(pref_service_);
+
+  UMA_HISTOGRAM_ENUMERATION("UKM.ResetReason", reason);
+
+  client_id_ = GenerateAndStoreClientId(pref_service_);
+  // Note: the session_id has already been cleared by GenerateAndStoreClientId.
+  session_id_ = LoadAndIncrementSessionId(pref_service_);
   report_count_ = 0;
 }
 
@@ -229,8 +231,9 @@ void UkmService::BuildAndStoreLog() {
   DVLOG(1) << "UkmService::BuildAndStoreLog";
 
   // Suppress generating a log if we have no new data to include.
-  // TODO(zhenw): add a histogram here to debug if this case is hitting a lot.
-  if (sources().empty() && entries().empty())
+  bool empty = sources().empty() && entries().empty();
+  UMA_HISTOGRAM_BOOLEAN("UKM.BuildAndStoreLogIsEmpty", empty);
+  if (empty)
     return;
 
   Report report;

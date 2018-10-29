@@ -27,8 +27,12 @@ enum class FirebaseConfiguredState {
   // Firebase Analytics is for installation reporting only. Once a user has
   // passed the conversion attribution window, there is nothing to report.
   kDisabledConversionWindow,
+  // Users who installed Chrome prior to incorporating Firebase into Chrome
+  // should not initialize Firebase because these users could not have been
+  // the result of any promption campaigns that use Firebase Analytics.
+  kDisabledLegacyInstallation,
   // Count of enum values. Must be equal to the last value above.
-  kMaxValue = kDisabledConversionWindow,
+  kMaxValue = kDisabledLegacyInstallation,
 };
 
 // Initializes Firebase SDK if configured and necessary.

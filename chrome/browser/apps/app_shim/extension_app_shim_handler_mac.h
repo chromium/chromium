@@ -75,6 +75,10 @@ class ExtensionAppShimHandler : public AppShimHandler,
     virtual void MaybeTerminate();
   };
 
+  // Helper function to get the instance on the browser process. This will be
+  // non-null except for tests.
+  static ExtensionAppShimHandler* Get();
+
   ExtensionAppShimHandler();
   ~ExtensionAppShimHandler() override;
 
@@ -82,6 +86,10 @@ class ExtensionAppShimHandler : public AppShimHandler,
   // none. Virtual for tests.
   virtual AppShimHandler::Host* FindHost(Profile* profile,
                                          const std::string& app_id);
+
+  // Get the host corresponding to a browser instance, or nullptr if none
+  // exists.
+  AppShimHandler::Host* FindHostForBrowser(Browser* browser);
 
   void SetHostedAppHidden(Profile* profile,
                           const std::string& app_id,
@@ -93,29 +101,22 @@ class ExtensionAppShimHandler : public AppShimHandler,
 
   static const extensions::Extension* MaybeGetAppForBrowser(Browser* browser);
 
-  static void QuitAppForWindow(extensions::AppWindow* app_window);
-
-  static void QuitHostedAppForWindow(Profile* profile,
-                                     const std::string& app_id);
-
-  static void HideAppForWindow(extensions::AppWindow* app_window);
-
-  static void HideHostedApp(Profile* profile, const std::string& app_id);
-
-  static void FocusAppForWindow(extensions::AppWindow* app_window);
+  void QuitAppForWindow(extensions::AppWindow* app_window);
+  void QuitHostedAppForWindow(Profile* profile, const std::string& app_id);
+  void HideAppForWindow(extensions::AppWindow* app_window);
+  void HideHostedApp(Profile* profile, const std::string& app_id);
+  void FocusAppForWindow(extensions::AppWindow* app_window);
 
   // Instructs the shim to set it's "Hide/Show" state to not-hidden.
-  static void UnhideWithoutActivationForWindow(
-      extensions::AppWindow* app_window);
+  void UnhideWithoutActivationForWindow(extensions::AppWindow* app_window);
 
   // Instructs the shim to request user attention. Returns false if there is no
   // shim for this window.
-  static void RequestUserAttentionForWindow(
-      extensions::AppWindow* app_window,
-      AppShimAttentionType attention_type);
+  void RequestUserAttentionForWindow(extensions::AppWindow* app_window,
+                                     AppShimAttentionType attention_type);
 
   // Called by AppControllerMac when Chrome hides.
-  static void OnChromeWillHide();
+  void OnChromeWillHide();
 
   // AppShimHandler overrides:
   void OnShimLaunch(Host* host,
@@ -159,9 +160,6 @@ class ExtensionAppShimHandler : public AppShimHandler,
   content::NotificationRegistrar& registrar() { return registrar_; }
 
  private:
-  // Helper function to get the instance on the browser process.
-  static ExtensionAppShimHandler* GetInstance();
-
   // Gets the extension for the corresponding |host|. Note that extensions can
   // be uninstalled at any time (even between sending OnAppClosed() to the host,
   // and receiving the quit confirmation). If the extension has been uninstalled

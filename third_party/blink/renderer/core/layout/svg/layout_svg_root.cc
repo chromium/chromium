@@ -35,12 +35,13 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
+#include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
-#include "third_party/blink/renderer/platform/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 namespace blink {
 
@@ -509,9 +510,10 @@ bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,
                                 const HitTestLocation& location_in_container,
                                 const LayoutPoint& accumulated_offset,
                                 HitTestAction hit_test_action) {
-  LayoutPoint point_in_parent =
-      location_in_container.Point() - ToLayoutSize(accumulated_offset);
-  LayoutPoint point_in_border_box = point_in_parent - ToLayoutSize(Location());
+  LayoutPoint adjusted_location = accumulated_offset + Location();
+
+  HitTestLocation local_border_box_location(location_in_container,
+                                            ToLayoutSize(-adjusted_location));
 
   // Only test SVG content if the point is in our content box, or in case we
   // don't clip to the viewport, the visual overflow rect.
@@ -519,25 +521,17 @@ bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,
   // supported by nodeAtFloatPoint.
   bool skip_children = (result.GetHitTestRequest().GetStopNode() == this);
   if (!skip_children &&
-      (PhysicalContentBoxRect().Contains(point_in_border_box) ||
+      (local_border_box_location.Intersects(PhysicalContentBoxRect()) ||
        (!ShouldApplyViewportClip() &&
-        VisualOverflowRect().Contains(point_in_border_box)))) {
-    const AffineTransform& local_to_parent_transform =
-        LocalToSVGParentTransform();
-    if (local_to_parent_transform.IsInvertible()) {
-      FloatPoint local_point = local_to_parent_transform.Inverse().MapPoint(
-          FloatPoint(point_in_parent));
-
-      for (LayoutObject* child = LastChild(); child;
-           child = child->PreviousSibling()) {
-        // FIXME: nodeAtFloatPoint() doesn't handle rect-based hit tests yet.
-        if (child->NodeAtFloatPoint(result, local_point, hit_test_action)) {
-          UpdateHitTestResult(result, point_in_border_box);
-          if (result.AddNodeToListBasedTestResult(
-                  child->GetNode(), location_in_container) == kStopHitTesting)
-            return true;
-        }
-      }
+        local_border_box_location.Intersects(VisualOverflowRect())))) {
+    TransformedHitTestLocation local_location(local_border_box_location,
+                                              LocalToBorderBoxTransform());
+    if (local_location) {
+      LayoutPoint accumulated_offset_for_children;
+      if (SVGLayoutSupport::HitTestChildren(
+              LastChild(), result, *local_location,
+              accumulated_offset_for_children, hit_test_action))
+        return true;
     }
   }
 
@@ -556,7 +550,7 @@ bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,
     // detect these hits anymore.
     LayoutRect bounds_rect(accumulated_offset + Location(), Size());
     if (location_in_container.Intersects(bounds_rect)) {
-      UpdateHitTestResult(result, point_in_border_box);
+      UpdateHitTestResult(result, local_border_box_location.Point());
       if (result.AddNodeToListBasedTestResult(GetNode(), location_in_container,
                                               bounds_rect) == kStopHitTesting)
         return true;

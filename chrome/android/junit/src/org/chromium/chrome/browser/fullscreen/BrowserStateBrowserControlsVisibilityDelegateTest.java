@@ -66,7 +66,7 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         // Advance the clock to exceed the minimum show time.
         advanceTime(2 * MINIMUM_SHOW_DURATION_MS);
         assertFalse(mDelegate.canAutoHideBrowserControls());
-        mDelegate.hideControlsPersistent(token);
+        mDelegate.releasePersistentShowingToken(token);
         assertTrue(mDelegate.canAutoHideBrowserControls());
 
         verify(mCallback, times(2)).run();
@@ -78,7 +78,7 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         assertTrue(mDelegate.canAutoHideBrowserControls());
         int token = mDelegate.showControlsPersistent();
         assertFalse(mDelegate.canAutoHideBrowserControls());
-        mDelegate.hideControlsPersistent(token);
+        mDelegate.releasePersistentShowingToken(token);
 
         // If the controls are not shown for the mimimum allowed time, then a task is posted to
         // keep them shown for longer.  Ensure the controls can not be hidden until this delayed
@@ -103,7 +103,7 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         // At this point, the controls have been shown long enough that the transient request will
         // be a no-op.
         mDelegate.showControlsTransient();
-        mDelegate.hideControlsPersistent(token);
+        mDelegate.releasePersistentShowingToken(token);
         assertTrue(mDelegate.canAutoHideBrowserControls());
 
         verify(mCallback, times(2)).run();
@@ -122,7 +122,7 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         // At this point, the controls have not been shown long enough, so the transient request
         // will delay the ability to hide.
         mDelegate.showControlsTransient();
-        mDelegate.hideControlsPersistent(token);
+        mDelegate.releasePersistentShowingToken(token);
         assertFalse(mDelegate.canAutoHideBrowserControls());
 
         // Run the pending tasks on the UI thread, which will include the transient delayed task.
@@ -149,11 +149,11 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         advanceTime(2 * MINIMUM_SHOW_DURATION_MS);
         assertFalse(mDelegate.canAutoHideBrowserControls());
 
-        mDelegate.hideControlsPersistent(secondToken);
+        mDelegate.releasePersistentShowingToken(secondToken);
         assertFalse(mDelegate.canAutoHideBrowserControls());
-        mDelegate.hideControlsPersistent(firstToken);
+        mDelegate.releasePersistentShowingToken(firstToken);
         assertFalse(mDelegate.canAutoHideBrowserControls());
-        mDelegate.hideControlsPersistent(thirdToken);
+        mDelegate.releasePersistentShowingToken(thirdToken);
         assertTrue(mDelegate.canAutoHideBrowserControls());
 
         verify(mCallback, times(2)).run();

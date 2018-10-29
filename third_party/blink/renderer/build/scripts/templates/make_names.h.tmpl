@@ -17,17 +17,17 @@
 {% endif %}
 
 namespace blink {
-namespace {{namespace}}Names {
+namespace {{namespace}} {
 
 {% for entry in entries|sort %}
 {{symbol_export}}extern const WTF::AtomicString& {{entry|symbol}};
 {% endfor %}
 
-const unsigned {{namespace}}{{suffix}}NamesCount = {{entries|length}};
+constexpr unsigned k{{suffix}}NamesCount = {{entries|length}};
 
 {{symbol_export}}void init{{suffix}}();
 
-}  // {{namespace}}Names
+}  // namespace {{namespace}}
 }  // namespace blink
 
 #endif  // {{header_guard}}

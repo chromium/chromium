@@ -424,6 +424,11 @@ void MemoryProgramCache::SaveLinkedProgram(
       return;
     }
   }
+
+  // If the binary is so big it will never fit in the cache, throw it away.
+  if (binary.size() > max_size_bytes())
+    return;
+
   UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.ProgramBinarySizeBytes",
                           binary.size());
 
@@ -454,10 +459,9 @@ void MemoryProgramCache::SaveLinkedProgram(
   if(existing != store_.end())
     store_.Erase(existing);
 
-  while (curr_size_bytes_ + binary.size() > max_size_bytes()) {
-    DCHECK(!store_.empty());
-    store_.Erase(store_.rbegin());
-  }
+  // If the cache is overflowing, remove some old entries.
+  DCHECK(max_size_bytes() >= binary.size());
+  Trim(max_size_bytes() - binary.size());
 
   if (!disable_gpu_shader_disk_cache_) {
     std::unique_ptr<GpuProgramProto> proto(
@@ -571,12 +575,12 @@ void MemoryProgramCache::LoadProgram(const std::string& key,
 }
 
 size_t MemoryProgramCache::Trim(size_t limit) {
-  if (curr_size_bytes_ <= limit)
-    return 0;
   size_t initial_size = curr_size_bytes_;
-  while (curr_size_bytes_ > limit && !store_.empty())
+  while (curr_size_bytes_ > limit) {
+    DCHECK(!store_.empty());
     store_.Erase(store_.rbegin());
-  return (initial_size - curr_size_bytes_);
+  }
+  return initial_size - curr_size_bytes_;
 }
 
 MemoryProgramCache::ProgramCacheValue::ProgramCacheValue(

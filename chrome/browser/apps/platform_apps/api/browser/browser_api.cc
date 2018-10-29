@@ -10,7 +10,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/common/apps/platform_apps/api/browser.h"
 
-namespace apps {
+namespace chrome_apps {
 namespace api {
 
 BrowserOpenTabFunction::~BrowserOpenTabFunction() {}
@@ -35,4 +35,4 @@ ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
 }
 
 }  // namespace api
-}  // namespace apps
+}  // namespace chrome_apps

@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
@@ -20,6 +21,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/service_worker/service_worker_types.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
@@ -93,9 +95,10 @@ class OpenURLObserver : public WebContentsObserver {
     DCHECK(web_contents());
     DCHECK(callback_);
 
-    BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                            base::BindOnce(std::move(callback_),
-                                           render_process_id, render_frame_id));
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
+        base::BindOnce(std::move(callback_), render_process_id,
+                       render_frame_id));
     Observe(nullptr);
     base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
   }
@@ -167,8 +170,8 @@ void DidOpenURLOnUI(WindowType type,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!web_contents) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(std::move(callback), ChildProcessHost::kInvalidUniqueID,
                        MSG_ROUTING_NONE));
     return;
@@ -214,8 +217,8 @@ void OpenWindowOnUI(
   RenderProcessHost* render_process_host =
       RenderProcessHost::FromID(worker_process_id);
   if (render_process_host->IsForGuestsOnly()) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(std::move(callback), ChildProcessHost::kInvalidUniqueID,
                        MSG_ROUTING_NONE));
     return;
@@ -224,7 +227,7 @@ void OpenWindowOnUI(
   OpenURLParams params(
       url,
       Referrer::SanitizeForRequest(
-          url, Referrer(script_url, blink::kWebReferrerPolicyDefault)),
+          url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
       type == WindowType::PAYMENT_HANDLER_WINDOW
           ? WindowOpenDisposition::NEW_POPUP
           : WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -248,8 +251,8 @@ void NavigateClientOnUI(const GURL& url,
   WebContents* web_contents = WebContents::FromRenderFrameHost(rfhi);
 
   if (!rfhi || !web_contents) {
-    BrowserThread::PostTask(
-        BrowserThread::IO, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::IO},
         base::BindOnce(std::move(callback), ChildProcessHost::kInvalidUniqueID,
                        MSG_ROUTING_NONE));
     return;
@@ -263,7 +266,7 @@ void NavigateClientOnUI(const GURL& url,
   OpenURLParams params(
       url,
       Referrer::SanitizeForRequest(
-          url, Referrer(script_url, blink::kWebReferrerPolicyDefault)),
+          url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
       frame_tree_node_id, WindowOpenDisposition::CURRENT_TAB, transition,
       true /* is_renderer_initiated */);
   web_contents->OpenURL(params);
@@ -333,8 +336,8 @@ void OnGetWindowClientsOnUI(
     out_clients->push_back(std::move(info));
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(callback), std::move(out_clients)));
 }
 
@@ -432,8 +435,8 @@ void GetWindowClients(const base::WeakPtr<ServiceWorkerVersion>& controller,
     return;
   }
 
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&OnGetWindowClientsOnUI, clients_info,
                      controller->script_url(),
                      base::BindOnce(&DidGetWindowClients, controller,
@@ -448,8 +451,8 @@ void FocusWindowClient(ServiceWorkerProviderHost* provider_host,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_EQ(blink::mojom::ServiceWorkerClientType::kWindow,
             provider_host->client_type());
-  BrowserThread::PostTaskAndReplyWithResult(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraitsAndReplyWithResult(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&FocusOnUI, provider_host->process_id(),
                      provider_host->frame_id(), provider_host->create_time(),
                      provider_host->client_uuid()),
@@ -463,8 +466,8 @@ void OpenWindow(const GURL& url,
                 WindowType type,
                 NavigationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &OpenWindowOnUI, url, script_url, worker_process_id,
           base::WrapRefCounted(context->wrapper()), type,
@@ -479,8 +482,8 @@ void NavigateClient(const GURL& url,
                     const base::WeakPtr<ServiceWorkerContextCore>& context,
                     NavigationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &NavigateClientOnUI, url, script_url, process_id, frame_id,
           base::BindOnce(&DidNavigate, context, script_url.GetOrigin(),
@@ -498,8 +501,8 @@ void GetClient(const ServiceWorkerProviderHost* provider_host,
       << client_type;
 
   if (client_type == blink::mojom::ServiceWorkerClientType::kWindow) {
-    BrowserThread::PostTaskAndReplyWithResult(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraitsAndReplyWithResult(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&GetWindowClientInfoOnUI, provider_host->process_id(),
                        provider_host->route_id(), provider_host->create_time(),
                        provider_host->client_uuid()),
@@ -513,8 +516,8 @@ void GetClient(const ServiceWorkerProviderHost* provider_host,
       false,  // is_focused
       network::mojom::RequestContextFrameType::kNone, base::TimeTicks(),
       provider_host->create_time());
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(callback), std::move(client_info)));
 }
 
@@ -570,8 +573,8 @@ void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
         provider_host->frame_id() != render_frame_id) {
       continue;
     }
-    BrowserThread::PostTaskAndReplyWithResult(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraitsAndReplyWithResult(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&GetWindowClientInfoOnUI, provider_host->process_id(),
                        provider_host->route_id(), provider_host->create_time(),
                        provider_host->client_uuid()),

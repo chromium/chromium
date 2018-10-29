@@ -19,6 +19,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_view_host.h"
@@ -192,17 +193,18 @@ ExtensionViewHost::PreHandleKeyboardEvent(WebContents* source,
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
-void ExtensionViewHost::HandleKeyboardEvent(
+bool ExtensionViewHost::HandleKeyboardEvent(
     WebContents* source,
     const NativeWebKeyboardEvent& event) {
   if (extension_host_type() == VIEW_TYPE_EXTENSION_POPUP) {
     if (event.GetType() == NativeWebKeyboardEvent::kRawKeyDown &&
         event.windows_key_code == ui::VKEY_ESCAPE) {
       Close();
-      return;
+      return true;
     }
   }
   UnhandledKeyboardEvent(source, event);
+  return true;
 }
 
 bool ExtensionViewHost::PreHandleGestureEvent(
@@ -224,10 +226,12 @@ content::ColorChooser* ExtensionViewHost::OpenColorChooser(
 
 void ExtensionViewHost::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
   // For security reasons opening a file picker requires a visible <input>
   // element to click on, so this code only exists for extensions with a view.
-  FileSelectHelper::RunFileChooser(render_frame_host, params);
+  FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
+                                   params);
 }
 
 

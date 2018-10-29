@@ -18,6 +18,7 @@
 <translation id="2687023731466035790">Magkaroon ng mga smart na feature ng Google sa Chromium</translation>
 <translation id="2730884209570016437">Hindi magamit ng Chromium ang iyong camera ngayon dahil ginagamit ito sa isa pang application</translation>
 <translation id="2797210818057553964">Mako-customize mo ito anumang oras sa Mga Setting ng Chromium</translation>
+<translation id="2915596697727466327">Gumagamit ang Chromium ng Face ID para tiyakin ang awtorisadong pag-access sa iyong mga password.</translation>
 <translation id="3256316712990552818">Kinopya sa Chromium</translation>
 <translation id="3413120535237193088">Upang mailagay ang iyong mga bookmark sa lahat ng iyong device, mag-sign in sa Chromium.</translation>
 <translation id="3473048256428424907">I-on ang QR scanner ng Chromium</translation>
@@ -31,7 +32,6 @@
 <translation id="4787850887676698916">Dito lalabas ang mga nabuksan mong tab sa Chromium sa iba mo pang mga device.</translation>
 <translation id="495292094137889840">Simulan ang paggamit ng Chromium QR scanner</translation>
 <translation id="5231355151045086930">Mag-sign out sa Chromium</translation>
-<translation id="5416919929805616771">Nag-e-enjoy ka ba sa Chromium? <ph name="BEGIN_LINK" />I-rate ang app na ito<ph name="END_LINK" /></translation>
 <translation id="5862307444128926510">Maligayang Pagdating sa Chromium</translation>
 <translation id="5945387852661427312">Nag-sign in ka gamit ang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chromium. Permanenteng mauugnay ang data mo sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chromium, ngunit mananatili itong nakaimbak sa Google Account mo.</translation>
 <translation id="6068866989048414399">Tuntunin ng Serbisyo ng Chromium</translation>
@@ -52,7 +52,6 @@
 <translation id="786327964234957808">Pinapalitan mo ang mga sync account mula sa <ph name="USER_EMAIL1" /> patungo sa <ph name="USER_EMAIL2" />. Ang iyong data ng Chromium ay pinamamahalaan ng <ph name="DOMAIN" />. Ide-delete nito ang iyong data mula sa device na ito, ngunit mananatili ang iyong data sa <ph name="USER_EMAIL1" />.</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Ilipat ang Chromium sa iyong dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Magkaroon ng mas mahusay na karanasan sa Google sa Chromium batay sa iyong lokasyon.</translation>
-<translation id="8353224596138547809">Nais mo bang i-save ng Chromium ang iyong password para sa site na ito?</translation>
 <translation id="8508544542427105412">Maaaring i-customize ang <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" /> anumang oras. Maaaring gamitin ng Google ang content sa mga site na binibisita mo, mga pakikipag-ugnayan, at aktibidad sa browser para ma-personalize ang Chromium at ang mga serbisyo ng Google tulad ng Translate, Search at mga ad.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8809780021347235332">Para mag-save ng larawan, mag-tap sa Mga Setting para pahintulutan ang Chromium na gamitin ang larawan</translation>

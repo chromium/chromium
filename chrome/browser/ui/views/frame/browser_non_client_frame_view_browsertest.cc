@@ -14,9 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/views/scoped_macviews_browser_mode.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/theme_provider.h"
 
 class BrowserNonClientFrameViewBrowserTest
@@ -63,53 +61,8 @@ class BrowserNonClientFrameViewBrowserTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  // Test doesn't work (or make sense) in non-Views Mac. Force it to run in the
-  // Views browser.
-  test::ScopedMacViewsBrowserMode views_mode_{true};
-
   DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameViewBrowserTest);
 };
-
-// Test is Flaky on Windows see crbug.com/600201.
-#if defined(OS_WIN)
-#define MAYBE_InactiveSeparatorColor DISABLED_InactiveSeparatorColor
-#elif defined(OS_MACOSX)
-// Widget activation doesn't work on Mac: https://crbug.com/823543
-#define MAYBE_InactiveSeparatorColor DISABLED_InactiveSeparatorColor
-#else
-#define MAYBE_InactiveSeparatorColor InactiveSeparatorColor
-#endif
-
-// Tests that the color returned by
-// BrowserNonClientFrameView::GetToolbarTopSeparatorColor() tracks the window
-// activation state.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
-                       MAYBE_InactiveSeparatorColor) {
-  // Refresh does not draw the toolbar top separator.
-  if (ui::MaterialDesignController::IsRefreshUi())
-    return;
-
-  // In the default theme, the active and inactive separator colors may be the
-  // same.  Install a custom theme where they are different.
-  InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  const BrowserNonClientFrameView* frame_view =
-      browser_view->frame()->GetFrameView();
-  const ui::ThemeProvider* theme_provider = frame_view->GetThemeProvider();
-  const SkColor expected_active_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR);
-  const SkColor expected_inactive_color = theme_provider->GetColor(
-      ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE);
-  EXPECT_NE(expected_active_color, expected_inactive_color);
-
-  browser_view->Activate();
-  EXPECT_TRUE(browser_view->IsActive());
-  EXPECT_EQ(expected_active_color, frame_view->GetToolbarTopSeparatorColor());
-
-  browser_view->Deactivate();
-  EXPECT_FALSE(browser_view->IsActive());
-  EXPECT_EQ(expected_inactive_color, frame_view->GetToolbarTopSeparatorColor());
-}
 
 // Tests the frame color for a normal browser window.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,

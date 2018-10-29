@@ -44,7 +44,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) PreflightCache final {
       const GURL& url,
       mojom::FetchCredentialsMode credentials_mode,
       const std::string& method,
-      const net::HttpRequestHeaders& headers);
+      const net::HttpRequestHeaders& headers,
+      bool is_revalidating);
 
   // Counts cached origins for testing.
   size_t CountOriginsForTesting() const;

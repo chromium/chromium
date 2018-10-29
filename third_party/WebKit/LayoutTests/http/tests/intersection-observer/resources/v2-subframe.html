@@ -4,7 +4,7 @@
 var results = [];
 
 if (window.internals) {
-  internals.DisableIntersectionObserverV2Throttle();
+  internals.DisableIntersectionObserverThrottleDelay();
 }
 
 function waitForNotification(f) {
@@ -26,7 +26,7 @@ onload = () => {
   var target = document.getElementById("target");
   var observer = new IntersectionObserver(entries => {
     results = entries;
-  }, { trackVisibility: true });
+  }, {trackVisibility: true, delay: 100});
   observer.observe(document.getElementById("target"));
   window.parent.postMessage("", "*");
 };

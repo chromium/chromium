@@ -26,8 +26,8 @@
 #include "device/usb/usb_ids.h"
 #include "media/midi/message_util.h"
 #include "media/midi/midi_manager_winrt.h"
-#include "media/midi/midi_port_info.h"
 #include "media/midi/midi_service.h"
+#include "media/midi/midi_service.mojom.h"
 #include "media/midi/midi_switches.h"
 
 namespace midi {
@@ -136,7 +136,7 @@ void RunTask(int instance_id, base::OnceClosure task) {
   // Finalize() while running the |task|.
   base::AutoLock task_lock(*GetTaskLock());
   {
-    // If Finalize() finished before the lock avobe, do nothing.
+    // If destructor finished before the lock avobe, do nothing.
     base::AutoLock lock(*GetInstanceIdLock());
     if (instance_id != g_active_instance_id)
       return;
@@ -144,8 +144,8 @@ void RunTask(int instance_id, base::OnceClosure task) {
   std::move(task).Run();
 }
 
-// TODO(toyoshim): Factor out TaskRunner related functionaliries above, and
-// deprecate MidiScheduler. It should be available via MidiManager::scheduler().
+// TODO(toyoshim): Use midi::TaskService and deprecate its prototype
+// implementation above that is still used in this MidiManagerWin class.
 
 // Obtains base::Lock instance pointer to protect
 // |g_midi_in_get_num_devs_thread_id|.
@@ -293,7 +293,7 @@ class Port {
   size_t index() { return index_; }
   void set_device_id(uint32_t device_id) { device_id_ = device_id; }
   uint32_t device_id() { return device_id_; }
-  const MidiPortInfo& info() { return info_; }
+  const mojom::PortInfo& info() { return info_; }
 
   virtual bool Connect() {
     if (info_.state != mojom::PortState::DISCONNECTED)
@@ -323,7 +323,7 @@ class Port {
   const uint16_t product_id_;
   const uint32_t driver_version_;
   const std::string product_name_;
-  MidiPortInfo info_;
+  mojom::PortInfo info_;
 };  // class Port
 
 }  // namespace
@@ -697,9 +697,35 @@ MidiManagerWin::MidiManagerWin(MidiService* service)
 }
 
 MidiManagerWin::~MidiManagerWin() {
-  base::AutoLock lock(*GetInstanceIdLock());
-  CHECK_EQ(kInvalidInstanceId, g_active_instance_id);
+  // Unregisters on the I/O thread. OnDevicesChanged() won't be called any more.
   CHECK(thread_runner_->BelongsToCurrentThread());
+  base::SystemMonitor::Get()->RemoveDevicesChangedObserver(this);
+
+  // Posts tasks that finalize each device port without MidiManager instance
+  // on TaskRunner. If another MidiManager instance is created, its
+  // initialization runs on the same task runner after all tasks posted here
+  // finish.
+  for (const auto& port : *port_manager_->inputs())
+    port->Finalize(service()->GetTaskRunner(kTaskRunner));
+  for (const auto& port : *port_manager_->outputs())
+    port->Finalize(service()->GetTaskRunner(kTaskRunner));
+
+  // Invalidate instance bound tasks.
+  {
+    base::AutoLock lock(*GetInstanceIdLock());
+    CHECK_EQ(instance_id_, g_active_instance_id);
+    g_active_instance_id = kInvalidInstanceId;
+    CHECK_EQ(this, g_manager_instance);
+    g_manager_instance = nullptr;
+  }
+
+  // Ensures that no bound task runs on TaskRunner so to destruct the instance
+  // safely.
+  // Tasks that did not started yet will do nothing after invalidate the
+  // instance ID above.
+  // Behind the lock below, we can safely access all members for finalization
+  // even on the I/O thread.
+  base::AutoLock lock(*GetTaskLock());
 }
 
 void MidiManagerWin::StartInitialization() {
@@ -717,35 +743,6 @@ void MidiManagerWin::StartInitialization() {
   // Starts asynchronous initialization on TaskRunner.
   PostTask(base::BindOnce(&MidiManagerWin::InitializeOnTaskRunner,
                           base::Unretained(this)));
-}
-
-void MidiManagerWin::Finalize() {
-  // Unregisters on the I/O thread. OnDevicesChanged() won't be called any more.
-  CHECK(thread_runner_->BelongsToCurrentThread());
-  base::SystemMonitor::Get()->RemoveDevicesChangedObserver(this);
-  {
-    base::AutoLock lock(*GetInstanceIdLock());
-    CHECK_EQ(instance_id_, g_active_instance_id);
-    g_active_instance_id = kInvalidInstanceId;
-    CHECK_EQ(this, g_manager_instance);
-    g_manager_instance = nullptr;
-  }
-
-  // Ensures that no task runs on TaskRunner so to destruct the instance safely.
-  // Tasks that did not started yet will do nothing after invalidate the
-  // instance ID above.
-  // Behind the lock below, we can safely access all members for finalization
-  // even on the I/O thread.
-  base::AutoLock lock(*GetTaskLock());
-
-  // Posts tasks that finalize each device port without MidiManager instance
-  // on TaskRunner. If another MidiManager instance is created, its
-  // initialization runs on the same task runner after all tasks posted here
-  // finish.
-  for (const auto& port : *port_manager_->inputs())
-    port->Finalize(service()->GetTaskRunner(kTaskRunner));
-  for (const auto& port : *port_manager_->outputs())
-    port->Finalize(service()->GetTaskRunner(kTaskRunner));
 }
 
 void MidiManagerWin::DispatchSendMidiData(MidiManagerClient* client,

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script>
 function runRaf(countdown) {
-  console.log(countdown);
   countdown--;
   if (countdown > 0)
     requestAnimationFrame(function() { runRaf(countdown); });

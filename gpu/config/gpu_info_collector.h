@@ -42,7 +42,8 @@ GPU_EXPORT bool CollectContextGraphicsInfo(
 #if defined(OS_WIN)
 // Collect the DirectX Disagnostics information about the attached displays.
 GPU_EXPORT bool GetDxDiagnostics(DxDiagNode* output);
-GPU_EXPORT void RecordGpuSupportedRuntimeVersionHistograms(GPUInfo* gpu_info);
+GPU_EXPORT void RecordGpuSupportedRuntimeVersionHistograms(
+    Dx12VulkanVersionInfo* dx12_vulkan_version_info);
 #endif  // OS_WIN
 
 // Create a GL context and collect GL strings and versions.

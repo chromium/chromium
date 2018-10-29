@@ -22,11 +22,11 @@ class CORE_EXPORT EventTiming final {
  public:
   explicit EventTiming(LocalDOMWindow*);
 
-  void WillDispatchEvent(const Event*);
-  void DidDispatchEvent(const Event*);
+  void WillDispatchEvent(const Event&);
+  void DidDispatchEvent(const Event&);
 
  private:
-  bool ShouldReportForEventTiming(const Event* event) const;
+  bool ShouldReportForEventTiming(const Event& event) const;
   // The time the first event handler or default action started to execute.
   TimeTicks processing_start_;
   bool finished_will_dispatch_event_ = false;

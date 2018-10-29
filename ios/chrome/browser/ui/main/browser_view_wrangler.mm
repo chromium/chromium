@@ -260,7 +260,7 @@
   [self.deviceSharingManager updateActiveURL:activeURL];
 }
 
-- (void)deleteIncognitoTabModelState {
+- (void)destroyAndRebuildIncognitoTabModel {
   // It is theoretically possible that a Tab has been added to |_otrTabModel|
   // since the deletion has been scheduled. It is unlikely to happen for real
   // because it would require superhuman speed.

@@ -11,7 +11,7 @@
 namespace service_manager {
 
 ServiceKeepalive::ServiceKeepalive(ServiceContext* context,
-                                   base::TimeDelta idle_timeout,
+                                   base::Optional<base::TimeDelta> idle_timeout,
                                    TimeoutObserver* timeout_observer)
     : context_(context),
       idle_timeout_(idle_timeout),
@@ -40,7 +40,9 @@ void ServiceKeepalive::OnRefAdded() {
 }
 
 void ServiceKeepalive::OnRefCountZero() {
-  idle_timer_.Start(FROM_HERE, idle_timeout_,
+  if (!idle_timeout_.has_value())
+    return;
+  idle_timer_.Start(FROM_HERE, idle_timeout_.value(),
                     base::BindRepeating(&ServiceKeepalive::OnTimerExpired,
                                         weak_ptr_factory_.GetWeakPtr()));
 }

@@ -18,14 +18,17 @@ namespace media {
 // supported/recognized MIME types.
 MEDIA_EXPORT bool IsSupportedMediaMimeType(const std::string& mime_type);
 
-// Splits various codecs into |codecs_out|, conditionally stripping the profile
-// and level info when |strip| == true. For example, passed "aaa.b.c,dd.eee", if
-// |strip| == true |codecs_out| will contain {"aaa", "dd"}, if |strip| == false
-// |codecs_out| will contain {"aaa.b.c", "dd.eee"}.
+// Splits |codecs| separated by comma into |codecs_out|. Codecs in |codecs| may
+// or may not be quoted. For example, "\"aaa.b.c,dd.eee\"" and "aaa.b.c,dd.eee"
+// will both be split into {"aaa.b.c", "dd.eee"}.
 // See http://www.ietf.org/rfc/rfc4281.txt.
-MEDIA_EXPORT void SplitCodecsToVector(const std::string& codecs,
-                                      std::vector<std::string>* codecs_out,
-                                      bool strip);
+MEDIA_EXPORT void SplitCodecs(const std::string& codecs,
+                              std::vector<std::string>* codecs_out);
+
+// Strips the profile and level info from |codecs| in place.  For example,
+// {"aaa.b.c", "dd.eee"} will be strip into {"aaa", "dd"}.
+// See http://www.ietf.org/rfc/rfc4281.txt.
+MEDIA_EXPORT void StripCodecs(std::vector<std::string>* codecs);
 
 // Returns true if successfully parsed the given |mime_type| and |codec_id|,
 // setting |out_*| arguments to the parsed video codec, profile, and level.

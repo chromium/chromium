@@ -1,3 +1,2 @@
 Tests that CSS parser correctly recovers after {}, () and [] invalid blocks.
 All tests passed
-

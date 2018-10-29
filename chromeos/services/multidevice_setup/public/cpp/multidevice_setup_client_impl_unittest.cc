@@ -45,8 +45,8 @@ class FakeMultiDeviceSetupInitializerFactory
   std::unique_ptr<MultiDeviceSetupBase> BuildInstance(
       PrefService* pref_service,
       device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
       AuthTokenValidator* auth_token_validator,
+      OobeCompletionTracker* oobe_completion_tracker,
       std::unique_ptr<AndroidSmsAppHelperDelegate>
           android_sms_app_helper_delegate,
       std::unique_ptr<AndroidSmsPairingStateTracker>
@@ -126,7 +126,8 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
 
     auto multidevice_setup_service = std::make_unique<MultiDeviceSetupService>(
         nullptr /* pref_service */, nullptr /* device_sync_client */,
-        nullptr /* secure_channel_client */, nullptr /* auth_token_validator */,
+        nullptr /* auth_token_validator */,
+        nullptr /* oobe_completion_tracker */,
         nullptr /* android_sms_app_helper_delegate */,
         nullptr /* android_sms_pairing_state_tracker */,
         nullptr /* gcm_device_info_provider */);

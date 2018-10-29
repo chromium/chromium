@@ -79,24 +79,10 @@ class Config {
   }
 
   static bool IsGCCollection(const std::string& name) {
-    return name == "HeapVector" ||
-           name == "HeapDeque" ||
-           name == "HeapHashSet" ||
-           name == "HeapListHashSet" ||
-           name == "HeapLinkedHashSet" ||
-           name == "HeapHashCountedSet" ||
-           name == "HeapHashMap" ||
-           IsPersistentGCCollection(name);
-  }
-
-  static bool IsPersistentGCCollection(const std::string& name) {
-    return name == "PersistentHeapVector" ||
-           name == "PersistentHeapDeque" ||
-           name == "PersistentHeapHashSet" ||
-           name == "PersistentHeapListHashSet" ||
-           name == "PersistentHeapLinkedHashSet" ||
-           name == "PersistentHeapHashCountedSet" ||
-           name == "PersistentHeapHashMap";
+    return name == "HeapVector" || name == "HeapDeque" ||
+           name == "HeapHashSet" || name == "HeapListHashSet" ||
+           name == "HeapLinkedHashSet" || name == "HeapHashCountedSet" ||
+           name == "HeapHashMap";
   }
 
   static bool IsGCCollectionWithUnsafeIterator(const std::string& name) {

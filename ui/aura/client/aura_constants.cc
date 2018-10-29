@@ -24,8 +24,6 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, void*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, SkColor)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, int32_t)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, int64_t)
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT,
-                                       aura::client::WindowEmbedType)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, aura::client::FocusClient*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, aura::Window*)
 
@@ -54,9 +52,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(Window*, kHostWindowKey, nullptr);
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kImmersiveFullscreenKey, false);
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size, kMinimumSize, nullptr);
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kMirroringEnabledKey, false);
-DEFINE_UI_CLASS_PROPERTY_KEY(WindowEmbedType,
-                             kEmbedType,
-                             WindowEmbedType::NONE);
 DEFINE_UI_CLASS_PROPERTY_KEY(Window*, kChildModalParentKey, nullptr);
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::ModalType, kModalKey, ui::MODAL_TYPE_NONE);
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kNameKey, nullptr);
@@ -68,6 +63,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t,
                              kResizeBehaviorKey,
                              ws::mojom::kResizeBehaviorCanResize);
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kResizeHandleInset, 0);
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kRestoreBoundsKey, nullptr);
 DEFINE_UI_CLASS_PROPERTY_KEY(
     ui::WindowShowState, kShowStateKey, ui::SHOW_STATE_DEFAULT);

@@ -5,8 +5,8 @@
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-# Works only on desktop platforms.
-assert(is_win || is_linux || is_mac)
+# Works only on Windows and Linux.
+assert(is_win || is_linux)
 
 proto_library("chrome_settings_full_runtime") {
   proto_out_dir = "/tools/traffic_annotation"

@@ -672,14 +672,6 @@
              file="../../../third_party/polymer/v1_0/components-chromium/paper-progress/paper-progress.html"
              type="chrome_html"
              compress="gzip" />
-  <structure name="IDR_POLYMER_1_0_PAPER_RADIO_GROUP_PAPER_RADIO_GROUP_EXTRACTED_JS"
-             file="../../../third_party/polymer/v1_0/components-chromium/paper-radio-group/paper-radio-group-extracted.js"
-             type="chrome_html"
-             compress="gzip" />
-  <structure name="IDR_POLYMER_1_0_PAPER_RADIO_GROUP_PAPER_RADIO_GROUP_HTML"
-             file="../../../third_party/polymer/v1_0/components-chromium/paper-radio-group/paper-radio-group.html"
-             type="chrome_html"
-             compress="gzip" />
   <structure name="IDR_POLYMER_1_0_PAPER_RIPPLE_PAPER_RIPPLE_EXTRACTED_JS"
              file="../../../third_party/polymer/v1_0/components-chromium/paper-ripple/paper-ripple-extracted.js"
              type="chrome_html"

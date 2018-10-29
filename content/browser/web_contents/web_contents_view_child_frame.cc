@@ -117,15 +117,6 @@ bool WebContentsViewChildFrame::IsEventTracking() const {
 void WebContentsViewChildFrame::CloseTabAfterEventTracking() {
   NOTREACHED();
 }
-
-void WebContentsViewChildFrame::SetAllowOtherViews(bool allow) {
-  NOTREACHED();
-}
-
-bool WebContentsViewChildFrame::GetAllowOtherViews() const {
-  NOTREACHED();
-  return false;
-}
 #endif
 
 void WebContentsViewChildFrame::RestoreFocus() {

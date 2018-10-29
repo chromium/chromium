@@ -46,7 +46,7 @@ class WakeEventPage::WakeEventPageNativeHandler
         weak_ptr_factory_(this) {
     // Delete self on invalidation. base::Unretained because by definition this
     // can't be deleted before it's deleted.
-    context->AddInvalidationObserver(base::Bind(
+    context->AddInvalidationObserver(base::BindOnce(
         &WakeEventPageNativeHandler::DeleteSelf, base::Unretained(this)));
   }
 

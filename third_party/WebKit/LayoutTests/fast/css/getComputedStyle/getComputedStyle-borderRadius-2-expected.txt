@@ -2,7 +2,6 @@ Test calling getPropertyValue on computed styles for border radius shorthand pro
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS window.getComputedStyle(document.getElementById('borderRadius1')).getPropertyValue('border-radius') is '0px 0px 10px 10px'
 PASS window.getComputedStyle(document.getElementById('borderRadius2')).getPropertyValue('border-radius') is '0px 0px 0px 10px'
 PASS window.getComputedStyle(document.getElementById('borderRadius3')).getPropertyValue('border-radius') is '0px 0px 10px'

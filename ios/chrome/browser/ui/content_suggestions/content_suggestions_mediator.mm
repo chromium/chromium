@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/mediator_util.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #include "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
-#include "ios/chrome/browser/ui/ui_util.h"
+#include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/images/branded_image_provider.h"
@@ -49,7 +49,6 @@ namespace {
 using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
 
 // Maximum number of most visited tiles fetched.
-const NSInteger kMaxNumMostVisitedTilesLegacy = 8;
 const NSInteger kMaxNumMostVisitedTiles = 4;
 
 }  // namespace
@@ -169,15 +168,10 @@ initWithContentService:(ntp_snippets::ContentSuggestionsService*)contentService
     _mostVisitedSites = std::move(mostVisitedSites);
     _mostVisitedBridge =
         std::make_unique<ntp_tiles::MostVisitedSitesObserverBridge>(self);
-    NSInteger maxNumMostVisitedTiles = IsUIRefreshPhase1Enabled()
-                                           ? kMaxNumMostVisitedTiles
-                                           : kMaxNumMostVisitedTilesLegacy;
     _mostVisitedSites->SetMostVisitedURLsObserver(_mostVisitedBridge.get(),
-                                                  maxNumMostVisitedTiles);
-    if (IsUIRefreshPhase1Enabled()) {
-      _readingListModelBridge =
-          std::make_unique<ReadingListModelBridge>(self, readingListModel);
-    }
+                                                  kMaxNumMostVisitedTiles);
+    _readingListModelBridge =
+        std::make_unique<ReadingListModelBridge>(self, readingListModel);
   }
   return self;
 }
@@ -202,8 +196,7 @@ initWithContentService:(ntp_snippets::ContentSuggestionsService*)contentService
 }
 
 + (NSUInteger)maxSitesShown {
-  return IsUIRefreshPhase1Enabled() ? kMaxNumMostVisitedTiles
-                                    : kMaxNumMostVisitedTilesLegacy;
+  return kMaxNumMostVisitedTiles;
 }
 
 #pragma mark - ContentSuggestionsDataSource
@@ -218,11 +211,7 @@ initWithContentService:(ntp_snippets::ContentSuggestionsService*)contentService
     [sectionsInfo addObject:self.promoSectionInfo];
   }
 
-  // Since action items are always visible in UI Refresh, always add
-  // |mostVisitedSectionInfo| in UI Refresh.
-  if (self.mostVisitedItems.count > 0 || IsUIRefreshPhase1Enabled()) {
-    [sectionsInfo addObject:self.mostVisitedSectionInfo];
-  }
+  [sectionsInfo addObject:self.mostVisitedSectionInfo];
 
   std::vector<ntp_snippets::Category> categories =
       self.contentService->GetCategories();
@@ -263,9 +252,7 @@ initWithContentService:(ntp_snippets::ContentSuggestionsService*)contentService
     }
   } else if (sectionInfo == self.mostVisitedSectionInfo) {
     [convertedSuggestions addObjectsFromArray:self.mostVisitedItems];
-    if (IsUIRefreshPhase1Enabled()) {
-      [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
-    }
+    [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
   } else if (sectionInfo == self.learnMoreSectionInfo) {
     [convertedSuggestions addObject:self.learnMoreItem];
   } else {
@@ -624,8 +611,7 @@ initWithContentService:(ntp_snippets::ContentSuggestionsService*)contentService
 - (BOOL)isCategoryInitOrAvailable:(ntp_snippets::Category)category {
   ntp_snippets::CategoryStatus status =
       self.contentService->GetCategoryStatus(category);
-  if (IsUIRefreshPhase1Enabled() &&
-      category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES) &&
+  if (category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES) &&
       status == ntp_snippets::CategoryStatus::CATEGORY_EXPLICITLY_DISABLED)
     return [self.contentArticlesEnabled value];
   else
@@ -639,8 +625,7 @@ initWithContentService:(ntp_snippets::ContentSuggestionsService*)contentService
 - (BOOL)isCategoryAvailable:(ntp_snippets::Category)category {
   ntp_snippets::CategoryStatus status =
       self.contentService->GetCategoryStatus(category);
-  if (IsUIRefreshPhase1Enabled() &&
-      category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES) &&
+  if (category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES) &&
       status == ntp_snippets::CategoryStatus::CATEGORY_EXPLICITLY_DISABLED) {
     return [self.contentArticlesEnabled value];
   } else {
@@ -652,8 +637,7 @@ initWithContentService:(ntp_snippets::ContentSuggestionsService*)contentService
 // Returns whether the Articles category pref indicates it should be expanded,
 // otherwise returns YES.
 - (BOOL)isCategoryExpanded:(ntp_snippets::Category)category {
-  if (IsUIRefreshPhase1Enabled() &&
-      category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES))
+  if (category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES))
     return [self.contentArticlesExpanded value];
   else
     return YES;

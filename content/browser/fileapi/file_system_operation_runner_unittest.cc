@@ -98,7 +98,7 @@ TEST_F(FileSystemOperationRunnerTest, NotFoundError) {
 
   // Regular NOT_FOUND error, which is called asynchronously.
   operation_runner()->Truncate(URL("foo"), 0,
-                               base::Bind(&GetStatus, &done, &status));
+                               base::BindOnce(&GetStatus, &done, &status));
   ASSERT_FALSE(done);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(done);
@@ -111,7 +111,7 @@ TEST_F(FileSystemOperationRunnerTest, InvalidURLError) {
 
   // Invalid URL error, which calls DidFinish synchronously.
   operation_runner()->Truncate(FileSystemURL(), 0,
-                               base::Bind(&GetStatus, &done, &status));
+                               base::BindOnce(&GetStatus, &done, &status));
   // The error call back shouldn't be fired synchronously.
   ASSERT_FALSE(done);
 
@@ -128,12 +128,10 @@ TEST_F(FileSystemOperationRunnerTest, NotFoundErrorAndCancel) {
 
   // Call Truncate with non-existent URL, and try to cancel it immediately
   // after that (before its callback is fired).
-  FileSystemOperationRunner::OperationID id =
-      operation_runner()->Truncate(URL("foo"), 0,
-                                   base::Bind(&GetStatus, &done, &status));
-  operation_runner()->Cancel(id, base::Bind(&GetCancelStatus,
-                                            &done, &cancel_done,
-                                            &cancel_status));
+  FileSystemOperationRunner::OperationID id = operation_runner()->Truncate(
+      URL("foo"), 0, base::BindOnce(&GetStatus, &done, &status));
+  operation_runner()->Cancel(id, base::BindOnce(&GetCancelStatus, &done,
+                                                &cancel_done, &cancel_status));
 
   ASSERT_FALSE(done);
   ASSERT_FALSE(cancel_done);
@@ -153,12 +151,10 @@ TEST_F(FileSystemOperationRunnerTest, InvalidURLErrorAndCancel) {
 
   // Call Truncate with invalid URL, and try to cancel it immediately
   // after that (before its callback is fired).
-  FileSystemOperationRunner::OperationID id =
-      operation_runner()->Truncate(FileSystemURL(), 0,
-                                  base::Bind(&GetStatus, &done, &status));
-  operation_runner()->Cancel(id, base::Bind(&GetCancelStatus,
-                                            &done, &cancel_done,
-                                            &cancel_status));
+  FileSystemOperationRunner::OperationID id = operation_runner()->Truncate(
+      FileSystemURL(), 0, base::BindOnce(&GetStatus, &done, &status));
+  operation_runner()->Cancel(id, base::BindOnce(&GetCancelStatus, &done,
+                                                &cancel_done, &cancel_status));
 
   ASSERT_FALSE(done);
   ASSERT_FALSE(cancel_done);
@@ -175,9 +171,9 @@ TEST_F(FileSystemOperationRunnerTest, CancelWithInvalidId) {
   bool done = true;  // The operation is not running.
   bool cancel_done = false;
   base::File::Error cancel_status = base::File::FILE_ERROR_FAILED;
-  operation_runner()->Cancel(kInvalidId, base::Bind(&GetCancelStatus,
-                                                    &done, &cancel_done,
-                                                    &cancel_status));
+  operation_runner()->Cancel(
+      kInvalidId,
+      base::BindOnce(&GetCancelStatus, &done, &cancel_done, &cancel_status));
 
   ASSERT_TRUE(cancel_done);
   ASSERT_EQ(base::File::FILE_ERROR_INVALID_OPERATION, cancel_status);
@@ -233,9 +229,8 @@ class MultiThreadFileSystemOperationRunnerTest : public testing::Test {
 TEST_F(MultiThreadFileSystemOperationRunnerTest, OpenAndShutdown) {
   // Call OpenFile and immediately shutdown the runner.
   operation_runner()->OpenFile(
-      URL("foo"),
-      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE,
-      base::Bind(&DidOpenFile));
+      URL("foo"), base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE,
+      base::BindOnce(&DidOpenFile));
   operation_runner()->Shutdown();
 
   // Wait until the task posted on the blocking thread is done.

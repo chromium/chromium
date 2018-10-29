@@ -25,6 +25,12 @@ class CC_EXPORT AppendQuadsData {
   int64_t visible_layer_area = 0;
   int64_t approximated_visible_content_area = 0;
 
+  // TODO(enne): These are temporary to evaluate mask layer optimizations.
+  int num_mask_layers = 0;
+  int num_rounded_corner_mask_layers = 0;
+  int64_t visible_mask_layer_area = 0;
+  int64_t visible_rounded_corner_mask_layer_area = 0;
+
   // This is total of the following two areas.
   int64_t checkerboarded_visible_content_area = 0;
   // This is the area outside interest rect.

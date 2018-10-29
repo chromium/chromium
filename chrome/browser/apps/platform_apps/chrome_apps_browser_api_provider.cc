@@ -6,14 +6,14 @@
 
 #include "chrome/browser/apps/platform_apps/api/generated_api_registration.h"
 
-namespace apps {
+namespace chrome_apps {
 
 ChromeAppsBrowserAPIProvider::ChromeAppsBrowserAPIProvider() = default;
 ChromeAppsBrowserAPIProvider::~ChromeAppsBrowserAPIProvider() = default;
 
 void ChromeAppsBrowserAPIProvider::RegisterExtensionFunctions(
     ExtensionFunctionRegistry* registry) {
-  apps::api::ChromeAppsGeneratedFunctionRegistry::RegisterAll(registry);
+  api::ChromeAppsGeneratedFunctionRegistry::RegisterAll(registry);
 }
 
-}  // namespace apps
+}  // namespace chrome_apps

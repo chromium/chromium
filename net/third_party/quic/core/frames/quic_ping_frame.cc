@@ -6,10 +6,11 @@
 
 namespace quic {
 
-QuicPingFrame::QuicPingFrame() {}
+QuicPingFrame::QuicPingFrame()
+    : QuicInlinedFrame(PING_FRAME), control_frame_id(kInvalidControlFrameId) {}
 
 QuicPingFrame::QuicPingFrame(QuicControlFrameId control_frame_id)
-    : QuicControlFrame(control_frame_id) {}
+    : QuicInlinedFrame(PING_FRAME), control_frame_id(control_frame_id) {}
 
 std::ostream& operator<<(std::ostream& os, const QuicPingFrame& ping_frame) {
   os << "{ control_frame_id: " << ping_frame.control_frame_id << " }\n";

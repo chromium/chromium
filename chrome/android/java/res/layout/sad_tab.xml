@@ -8,7 +8,6 @@
 
 <org.chromium.chrome.browser.tab.SadTabView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="Overdraw"
     android:background="#f7f7f7"
@@ -42,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="16dp"
-            android:textAppearance="@style/BlackHeadline1"
+            android:textAppearance="@style/BlackHeadline"
             android:lineSpacingMultiplier="1.4"
             android:layout_gravity="start" />
 
@@ -72,9 +71,8 @@
             android:id="@+id/sad_tab_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/WhiteButtonText"
             android:minWidth="222dp"
-            app:buttonColor="@color/light_active_color"
-            android:layout_gravity="end" />
+            android:layout_gravity="end"
+            style="@style/FilledButton" />
     </LinearLayout>
 </org.chromium.chrome.browser.tab.SadTabView>

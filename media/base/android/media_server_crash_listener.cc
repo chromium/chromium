@@ -42,7 +42,7 @@ void MediaServerCrashListener::OnMediaServerCrashDetected(
     const base::android::JavaParamRef<jobject>& obj,
     jboolean watchdog_needs_release) {
   callback_task_runner_->PostTask(
-      FROM_HERE, base::Bind(on_server_crash_cb_, watchdog_needs_release));
+      FROM_HERE, base::BindOnce(on_server_crash_cb_, watchdog_needs_release));
 }
 
 }  // namespace media

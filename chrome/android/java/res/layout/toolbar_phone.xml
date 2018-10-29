@@ -13,7 +13,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow" >
 
-    <org.chromium.chrome.browser.widget.newtab.NewTabButton
+    <org.chromium.chrome.browser.toolbar.NewTabButton
         android:id="@+id/new_tab_button"
         style="@style/ToolbarButton"
         android:layout_width="wrap_content"
@@ -21,7 +21,6 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:visibility="invisible"
-        android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/accessibility_toolbar_btn_new_tab" />
 
     <org.chromium.chrome.browser.toolbar.HomePageButton
@@ -30,7 +29,7 @@
         android:src="@drawable/btn_toolbar_home"
         android:contentDescription="@string/accessibility_toolbar_btn_home"
         android:visibility="gone"
-        app:chrometint="@color/dark_mode_tint" />
+        app:tint="@color/dark_mode_tint" />
 
     <org.chromium.chrome.browser.omnibox.LocationBarPhone
         android:id="@+id/location_bar"
@@ -38,32 +37,27 @@
         android:layout_height="match_parent"
         android:layout_gravity="top" />
 
+    <ViewStub
+        android:id="@+id/incognito_tabs_stub"
+        android:inflatedId="@+id/incognito_toggle_tabs"
+        android:layout="@layout/incognito_toggle_tabs"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
     <LinearLayout android:id="@+id/toolbar_buttons"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end" >
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top" >
 
-            <ViewStub
-                android:id="@+id/experimental_button_stub"
-                android:inflatedId="@+id/experimental_toolbar_button"
-                android:layout="@layout/experimental_toolbar_button"
-                style="@style/ToolbarButton"
-                android:paddingStart="8dp"
-                android:visibility="gone" />
-
-            <ViewStub
-                android:id="@+id/incognito_button_stub"
-                android:inflatedId="@+id/incognito_button"
-                android:layout="@layout/toolbar_phone_incognito_button"
-                style="@style/ToolbarButton"
-                android:contentDescription="@string/accessibility_tabstrip_btn_incognito_toggle_standard"
-                android:visibility="gone" />
-        </FrameLayout>
+        <ViewStub
+            android:id="@+id/experimental_button_stub"
+            android:inflatedId="@+id/experimental_toolbar_button"
+            android:layout="@layout/experimental_toolbar_button"
+            style="@style/ToolbarButton"
+            android:paddingStart="8dp"
+            android:visibility="gone" />
 
         <ImageButton android:id="@+id/tab_switcher_button"
             style="@style/ToolbarButton"

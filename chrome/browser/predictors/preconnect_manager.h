@@ -92,6 +92,7 @@ struct PreresolveJob {
   PreresolveInfo* info;
   std::unique_ptr<ResolveHostClientImpl> resolve_host_client;
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client;
+  bool success;
 
   DISALLOW_COPY_AND_ASSIGN(PreresolveJob);
 };
@@ -179,7 +180,7 @@ class PreconnectManager {
   void TryToLaunchPreresolveJobs();
   void OnPreresolveFinished(PreresolveJobId job_id, bool success);
   void OnProxyLookupFinished(PreresolveJobId job_id, bool success);
-  void FinishPreresolveJob(PreresolveJobId job_id, bool success);
+  void FinishPreresolveJob(PreresolveJobId job_id);
   void AllPreresolvesForUrlFinished(PreresolveInfo* info);
   network::mojom::NetworkContext* GetNetworkContext() const;
 

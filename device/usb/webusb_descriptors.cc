@@ -141,8 +141,8 @@ bool WebUsbPlatformCapabilityDescriptor::ParseFromBosDescriptor(
   }
 
   uint8_t num_device_caps = bytes[4];
-  std::vector<uint8_t>::const_iterator it = bytes.begin();
-  std::vector<uint8_t>::const_iterator end = it + total_length;
+  auto it = bytes.begin();
+  auto end = it + total_length;
   std::advance(it, 5);
 
   uint8_t length = 0;

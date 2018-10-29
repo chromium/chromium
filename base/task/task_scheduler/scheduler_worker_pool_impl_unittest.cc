@@ -26,6 +26,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_scheduler/delayed_task_manager.h"
+#include "base/task/task_scheduler/scheduler_task_runner_delegate.h"
 #include "base/task/task_scheduler/scheduler_worker_pool_params.h"
 #include "base/task/task_scheduler/sequence.h"
 #include "base/task/task_scheduler/sequence_sort_key.h"
@@ -75,10 +76,12 @@ void WaitWithoutBlockingObserver(WaitableEvent* event) {
   event->Wait();
 }
 
-class TaskSchedulerWorkerPoolImplTestBase {
+class TaskSchedulerWorkerPoolImplTestBase
+    : public SchedulerWorkerPool::Delegate {
  protected:
   TaskSchedulerWorkerPoolImplTestBase()
-      : service_thread_("TaskSchedulerServiceThread"){};
+      : service_thread_("TaskSchedulerServiceThread"),
+        tracked_ref_factory_(this){};
 
   void CommonSetUp(TimeDelta suggested_reclaim_time = TimeDelta::Max()) {
     CreateAndStartWorkerPool(suggested_reclaim_time, kMaxTasks);
@@ -89,6 +92,7 @@ class TaskSchedulerWorkerPoolImplTestBase {
     task_tracker_.FlushForTesting();
     if (worker_pool_)
       worker_pool_->JoinForTesting();
+    worker_pool_.reset();
   }
 
   void CreateWorkerPool() {
@@ -97,8 +101,10 @@ class TaskSchedulerWorkerPoolImplTestBase {
     delayed_task_manager_.Start(service_thread_.task_runner());
     worker_pool_ = std::make_unique<SchedulerWorkerPoolImpl>(
         "TestWorkerPool", "A", ThreadPriority::NORMAL,
-        task_tracker_.GetTrackedRef(), &delayed_task_manager_);
+        task_tracker_.GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
     ASSERT_TRUE(worker_pool_);
+
+    mock_scheduler_task_runner_delegate_.SetWorkerPool(worker_pool_.get());
   }
 
   virtual void StartWorkerPool(TimeDelta suggested_reclaim_time,
@@ -118,11 +124,17 @@ class TaskSchedulerWorkerPoolImplTestBase {
 
   Thread service_thread_;
   TaskTracker task_tracker_ = {"Test"};
-
   std::unique_ptr<SchedulerWorkerPoolImpl> worker_pool_;
+  DelayedTaskManager delayed_task_manager_;
+  TrackedRefFactory<SchedulerWorkerPool::Delegate> tracked_ref_factory_;
+  test::MockSchedulerTaskRunnerDelegate mock_scheduler_task_runner_delegate_ = {
+      task_tracker_.GetTrackedRef(), &delayed_task_manager_};
 
  private:
-  DelayedTaskManager delayed_task_manager_;
+  // SchedulerWorkerPool::Delegate:
+  void ReEnqueueSequence(scoped_refptr<Sequence> sequence) override {
+    worker_pool_->ReEnqueueSequence(std::move(sequence));
+  }
 
   DISALLOW_COPY_AND_ASSIGN(TaskSchedulerWorkerPoolImplTestBase);
 };
@@ -167,10 +179,14 @@ class ThreadPostingTasksWaitIdle : public SimpleThread {
   // |execution_mode| task runner. The thread waits until all workers in
   // |worker_pool| are idle before posting a new task.
   ThreadPostingTasksWaitIdle(SchedulerWorkerPoolImpl* worker_pool,
+                             test::MockSchedulerTaskRunnerDelegate*
+                                 mock_scheduler_task_runner_delegate_,
                              test::ExecutionMode execution_mode)
       : SimpleThread("ThreadPostingTasksWaitIdle"),
         worker_pool_(worker_pool),
-        factory_(CreateTaskRunnerWithExecutionMode(worker_pool, execution_mode),
+        factory_(CreateTaskRunnerWithExecutionMode(
+                     execution_mode,
+                     mock_scheduler_task_runner_delegate_),
                  execution_mode) {
     DCHECK(worker_pool_);
   }
@@ -204,8 +220,9 @@ TEST_P(TaskSchedulerWorkerPoolImplTestParam, PostTasksWaitAllWorkersIdle) {
       threads_posting_tasks;
   for (size_t i = 0; i < kNumThreadsPostingTasks; ++i) {
     threads_posting_tasks.push_back(
-        std::make_unique<ThreadPostingTasksWaitIdle>(worker_pool_.get(),
-                                                     GetParam()));
+        std::make_unique<ThreadPostingTasksWaitIdle>(
+            worker_pool_.get(), &mock_scheduler_task_runner_delegate_,
+            GetParam()));
     threads_posting_tasks.back()->Start();
   }
 
@@ -228,7 +245,8 @@ TEST_P(TaskSchedulerWorkerPoolImplTestParam, PostTasksWithOneAvailableWorker) {
   std::vector<std::unique_ptr<test::TestTaskFactory>> blocked_task_factories;
   for (size_t i = 0; i < (kMaxTasks - 1); ++i) {
     blocked_task_factories.push_back(std::make_unique<test::TestTaskFactory>(
-        CreateTaskRunnerWithExecutionMode(worker_pool_.get(), GetParam()),
+        CreateTaskRunnerWithExecutionMode(
+            GetParam(), &mock_scheduler_task_runner_delegate_),
         GetParam()));
     EXPECT_TRUE(blocked_task_factories.back()->PostTask(
         PostNestedTask::NO,
@@ -239,7 +257,8 @@ TEST_P(TaskSchedulerWorkerPoolImplTestParam, PostTasksWithOneAvailableWorker) {
   // Post |kNumTasksPostedPerThread| tasks that should all run despite the fact
   // that only one worker in |worker_pool_| isn't busy.
   test::TestTaskFactory short_task_factory(
-      CreateTaskRunnerWithExecutionMode(worker_pool_.get(), GetParam()),
+      CreateTaskRunnerWithExecutionMode(GetParam(),
+                                        &mock_scheduler_task_runner_delegate_),
       GetParam());
   for (size_t i = 0; i < kNumTasksPostedPerThread; ++i)
     EXPECT_TRUE(short_task_factory.PostTask(PostNestedTask::NO, Closure()));
@@ -262,7 +281,8 @@ TEST_P(TaskSchedulerWorkerPoolImplTestParam, Saturate) {
   std::vector<std::unique_ptr<test::TestTaskFactory>> factories;
   for (size_t i = 0; i < kMaxTasks; ++i) {
     factories.push_back(std::make_unique<test::TestTaskFactory>(
-        CreateTaskRunnerWithExecutionMode(worker_pool_.get(), GetParam()),
+        CreateTaskRunnerWithExecutionMode(
+            GetParam(), &mock_scheduler_task_runner_delegate_),
         GetParam()));
     EXPECT_TRUE(factories.back()->PostTask(
         PostNestedTask::NO,
@@ -282,8 +302,8 @@ TEST_P(TaskSchedulerWorkerPoolImplTestParam, Saturate) {
 TEST_P(TaskSchedulerWorkerPoolImplTestParam, NoEnvironment) {
   // Verify that COM is not initialized in a SchedulerWorkerPoolImpl initialized
   // with SchedulerWorkerPoolImpl::WorkerEnvironment::NONE.
-  scoped_refptr<TaskRunner> task_runner =
-      CreateTaskRunnerWithExecutionMode(worker_pool_.get(), GetParam());
+  scoped_refptr<TaskRunner> task_runner = CreateTaskRunnerWithExecutionMode(
+      GetParam(), &mock_scheduler_task_runner_delegate_);
 
   WaitableEvent task_running;
   task_runner->PostTask(
@@ -340,8 +360,8 @@ class TaskSchedulerWorkerPoolImplTestCOMMTAParam
 
 TEST_P(TaskSchedulerWorkerPoolImplTestCOMMTAParam, COMMTAInitialized) {
   // Verify that SchedulerWorkerPoolImpl workers have a COM MTA available.
-  scoped_refptr<TaskRunner> task_runner =
-      CreateTaskRunnerWithExecutionMode(worker_pool_.get(), GetParam());
+  scoped_refptr<TaskRunner> task_runner = CreateTaskRunnerWithExecutionMode(
+      GetParam(), &mock_scheduler_task_runner_delegate_);
 
   WaitableEvent task_running;
   task_runner->PostTask(
@@ -401,12 +421,14 @@ TEST_F(TaskSchedulerWorkerPoolImplStartInBodyTest, PostTasksBeforeStart) {
   // up.
   WaitableEvent barrier;
 
-  worker_pool_->CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()})
+  test::CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()},
+                                   &mock_scheduler_task_runner_delegate_)
       ->PostTask(
           FROM_HERE,
           BindOnce(&TaskPostedBeforeStart, Unretained(&task_1_thread_ref),
                    Unretained(&task_1_running), Unretained(&barrier)));
-  worker_pool_->CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()})
+  test::CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()},
+                                   &mock_scheduler_task_runner_delegate_)
       ->PostTask(
           FROM_HERE,
           BindOnce(&TaskPostedBeforeStart, Unretained(&task_2_thread_ref),
@@ -434,8 +456,8 @@ TEST_F(TaskSchedulerWorkerPoolImplStartInBodyTest, PostTasksBeforeStart) {
 // Verify that posting many tasks before Start will cause the number of workers
 // to grow to |max_tasks_| during Start.
 TEST_F(TaskSchedulerWorkerPoolImplStartInBodyTest, PostManyTasks) {
-  scoped_refptr<TaskRunner> task_runner =
-      worker_pool_->CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()});
+  scoped_refptr<TaskRunner> task_runner = test::CreateTaskRunnerWithTraits(
+      {WithBaseSyncPrimitives()}, &mock_scheduler_task_runner_delegate_);
   constexpr size_t kNumTasksPosted = 2 * kMaxTasks;
   for (size_t i = 0; i < kNumTasksPosted; ++i)
     task_runner->PostTask(FROM_HERE, DoNothing());
@@ -495,7 +517,8 @@ TEST_F(TaskSchedulerWorkerPoolCheckTlsReuse, CheckCleanupWorkers) {
   std::vector<std::unique_ptr<test::TestTaskFactory>> factories;
   for (size_t i = 0; i < kMaxTasks; ++i) {
     factories.push_back(std::make_unique<test::TestTaskFactory>(
-        worker_pool_->CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()}),
+        test::CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()},
+                                         &mock_scheduler_task_runner_delegate_),
         test::ExecutionMode::PARALLEL));
     ASSERT_TRUE(factories.back()->PostTask(
         PostNestedTask::NO,
@@ -556,8 +579,8 @@ class TaskSchedulerWorkerPoolHistogramTest
   void FloodPool(WaitableEvent* continue_event) {
     ASSERT_FALSE(continue_event->IsSignaled());
 
-    auto task_runner =
-        worker_pool_->CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()});
+    auto task_runner = test::CreateTaskRunnerWithTraits(
+        {WithBaseSyncPrimitives()}, &mock_scheduler_task_runner_delegate_);
 
     const auto max_tasks = worker_pool_->GetMaxTasksForTesting();
 
@@ -590,8 +613,8 @@ class TaskSchedulerWorkerPoolHistogramTest
 TEST_F(TaskSchedulerWorkerPoolHistogramTest, NumTasksBetweenWaits) {
   WaitableEvent event;
   CreateAndStartWorkerPool(TimeDelta::Max(), kMaxTasks);
-  auto task_runner = worker_pool_->CreateSequencedTaskRunnerWithTraits(
-      {WithBaseSyncPrimitives()});
+  auto task_runner = test::CreateSequencedTaskRunnerWithTraits(
+      {WithBaseSyncPrimitives()}, &mock_scheduler_task_runner_delegate_);
 
   // Post a task.
   task_runner->PostTask(
@@ -675,8 +698,8 @@ TEST_F(TaskSchedulerWorkerPoolHistogramTest,
 TEST_F(TaskSchedulerWorkerPoolHistogramTest, NumTasksBeforeCleanup) {
   CreateWorkerPool();
   auto histogrammed_thread_task_runner =
-      worker_pool_->CreateSequencedTaskRunnerWithTraits(
-          {WithBaseSyncPrimitives()});
+      test::CreateSequencedTaskRunnerWithTraits(
+          {WithBaseSyncPrimitives()}, &mock_scheduler_task_runner_delegate_);
 
   // Post 3 tasks and hold the thread for idle thread stack ordering.
   // This test assumes |histogrammed_thread_task_runner| gets assigned the same
@@ -741,9 +764,8 @@ TEST_F(TaskSchedulerWorkerPoolHistogramTest, NumTasksBeforeCleanup) {
   // |histogrammed_thread_task_runner| to cleanup.
   WaitableEvent top_idle_thread_running;
   WaitableEvent top_idle_thread_continue;
-  auto task_runner_for_top_idle =
-      worker_pool_->CreateSequencedTaskRunnerWithTraits(
-          {WithBaseSyncPrimitives()});
+  auto task_runner_for_top_idle = test::CreateSequencedTaskRunnerWithTraits(
+      {WithBaseSyncPrimitives()}, &mock_scheduler_task_runner_delegate_);
   task_runner_for_top_idle->PostTask(
       FROM_HERE, BindOnce(
                      [](PlatformThreadRef thread_ref,
@@ -810,8 +832,8 @@ TEST_F(TaskSchedulerWorkerPoolStandbyPolicyTest, InitOne) {
 // Verify that the SchedulerWorkerPoolImpl keeps at least one idle standby
 // thread, capacity permitting.
 TEST_F(TaskSchedulerWorkerPoolStandbyPolicyTest, VerifyStandbyThread) {
-  auto task_runner =
-      worker_pool_->CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()});
+  auto task_runner = test::CreateTaskRunnerWithTraits(
+      {WithBaseSyncPrimitives()}, &mock_scheduler_task_runner_delegate_);
 
   WaitableEvent thread_running(WaitableEvent::ResetPolicy::AUTOMATIC);
   WaitableEvent threads_continue;
@@ -846,8 +868,8 @@ TEST_F(TaskSchedulerWorkerPoolStandbyPolicyTest, VerifyStandbyThread) {
 // Regression test for https://crbug.com/847501.
 TEST_F(TaskSchedulerWorkerPoolStandbyPolicyTest,
        InAndOutStandbyThreadIsActive) {
-  auto sequenced_task_runner =
-      worker_pool_->CreateSequencedTaskRunnerWithTraits({});
+  auto sequenced_task_runner = test::CreateSequencedTaskRunnerWithTraits(
+      {}, &mock_scheduler_task_runner_delegate_);
 
   WaitableEvent timer_started;
 
@@ -882,8 +904,8 @@ TEST_F(TaskSchedulerWorkerPoolStandbyPolicyTest,
 // Verify that being "the" idle thread counts as being active but isn't sticky.
 // Regression test for https://crbug.com/847501.
 TEST_F(TaskSchedulerWorkerPoolStandbyPolicyTest, OnlyKeepActiveStandbyThreads) {
-  auto sequenced_task_runner =
-      worker_pool_->CreateSequencedTaskRunnerWithTraits({});
+  auto sequenced_task_runner = test::CreateSequencedTaskRunnerWithTraits(
+      {}, &mock_scheduler_task_runner_delegate_);
 
   // Start this test like
   // TaskSchedulerWorkerPoolStandbyPolicyTest.InAndOutStandbyThreadIsActive and
@@ -900,8 +922,8 @@ TEST_F(TaskSchedulerWorkerPoolStandbyPolicyTest, OnlyKeepActiveStandbyThreads) {
 
   // Then also flood the pool (cycling the top of the idle stack).
   {
-    auto task_runner =
-        worker_pool_->CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()});
+    auto task_runner = test::CreateTaskRunnerWithTraits(
+        {WithBaseSyncPrimitives()}, &mock_scheduler_task_runner_delegate_);
 
     WaitableEvent thread_running(WaitableEvent::ResetPolicy::AUTOMATIC);
     WaitableEvent threads_continue;
@@ -1000,8 +1022,9 @@ class TaskSchedulerWorkerPoolBlockingTest
 
   void SetUp() override {
     TaskSchedulerWorkerPoolImplTestBase::CommonSetUp();
-    task_runner_ = worker_pool_->CreateTaskRunnerWithTraits(
-        {MayBlock(), WithBaseSyncPrimitives()});
+    task_runner_ =
+        test::CreateTaskRunnerWithTraits({MayBlock(), WithBaseSyncPrimitives()},
+                                         &mock_scheduler_task_runner_delegate_);
   }
 
   void TearDown() override {
@@ -1268,8 +1291,9 @@ TEST_F(TaskSchedulerWorkerPoolBlockingTest, ThreadBlockUnblockPremature) {
 TEST_F(TaskSchedulerWorkerPoolBlockingTest,
        MayBlockIncreaseCapacityNestedWillBlock) {
   ASSERT_EQ(worker_pool_->GetMaxTasksForTesting(), kMaxTasks);
-  auto task_runner = worker_pool_->CreateTaskRunnerWithTraits(
-      {MayBlock(), WithBaseSyncPrimitives()});
+  auto task_runner =
+      test::CreateTaskRunnerWithTraits({MayBlock(), WithBaseSyncPrimitives()},
+                                       &mock_scheduler_task_runner_delegate_);
   WaitableEvent can_return;
 
   // Saturate the pool so that a MAY_BLOCK ScopedBlockingCall would increment
@@ -1314,28 +1338,43 @@ TEST_F(TaskSchedulerWorkerPoolBlockingTest,
   EXPECT_EQ(worker_pool_->GetMaxTasksForTesting(), kMaxTasks);
 }
 
+class TaskSchedulerWorkerPoolOverCapacityTest
+    : public TaskSchedulerWorkerPoolImplTestBase,
+      public testing::Test {
+ public:
+  TaskSchedulerWorkerPoolOverCapacityTest() = default;
+
+  void SetUp() override {
+    CreateAndStartWorkerPool(kReclaimTimeForCleanupTests, kLocalMaxTasks);
+    task_runner_ =
+        test::CreateTaskRunnerWithTraits({MayBlock(), WithBaseSyncPrimitives()},
+                                         &mock_scheduler_task_runner_delegate_);
+  }
+
+  void TearDown() override {
+    TaskSchedulerWorkerPoolImplTestBase::CommonTearDown();
+  }
+
+ protected:
+  scoped_refptr<TaskRunner> task_runner_;
+  static constexpr size_t kLocalMaxTasks = 3;
+
+  void CreateWorkerPool() {
+    ASSERT_FALSE(worker_pool_);
+    service_thread_.Start();
+    delayed_task_manager_.Start(service_thread_.task_runner());
+    worker_pool_ = std::make_unique<SchedulerWorkerPoolImpl>(
+        "OverCapacityTestWorkerPool", "A", ThreadPriority::NORMAL,
+        task_tracker_.GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+    ASSERT_TRUE(worker_pool_);
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(TaskSchedulerWorkerPoolOverCapacityTest);
+};
+
 // Verify that workers that become idle due to the pool being over capacity will
 // eventually cleanup.
-TEST(TaskSchedulerWorkerPoolOverCapacityTest, VerifyCleanup) {
-  constexpr size_t kLocalMaxTasks = 3;
-
-  TaskTracker task_tracker("Test");
-  DelayedTaskManager delayed_task_manager;
-  scoped_refptr<TaskRunner> service_thread_task_runner =
-      MakeRefCounted<TestSimpleTaskRunner>();
-  delayed_task_manager.Start(service_thread_task_runner);
-  SchedulerWorkerPoolImpl worker_pool(
-      "OverCapacityTestWorkerPool", "A", ThreadPriority::NORMAL,
-      task_tracker.GetTrackedRef(), &delayed_task_manager);
-  worker_pool.Start(
-      SchedulerWorkerPoolParams(kLocalMaxTasks, kReclaimTimeForCleanupTests),
-      kLocalMaxTasks, service_thread_task_runner, nullptr,
-      SchedulerWorkerPoolImpl::WorkerEnvironment::NONE);
-
-  scoped_refptr<TaskRunner> task_runner =
-      worker_pool.CreateTaskRunnerWithTraits(
-          {MayBlock(), WithBaseSyncPrimitives()});
-
+TEST_F(TaskSchedulerWorkerPoolOverCapacityTest, VerifyCleanup) {
   WaitableEvent threads_running;
   WaitableEvent threads_continue;
   RepeatingClosure threads_running_barrier = BarrierClosure(
@@ -1357,7 +1396,7 @@ TEST(TaskSchedulerWorkerPoolOverCapacityTest, VerifyCleanup) {
       Unretained(&blocked_call_continue));
 
   for (size_t i = 0; i < kLocalMaxTasks; ++i)
-    task_runner->PostTask(FROM_HERE, closure);
+    task_runner_->PostTask(FROM_HERE, closure);
 
   threads_running.Wait();
 
@@ -1369,7 +1408,7 @@ TEST(TaskSchedulerWorkerPoolOverCapacityTest, VerifyCleanup) {
       BindOnce(&WaitableEvent::Signal, Unretained(&extra_threads_running)));
   // These tasks should run on the new threads from increasing max tasks.
   for (size_t i = 0; i < kLocalMaxTasks; ++i) {
-    task_runner->PostTask(
+    task_runner_->PostTask(
         FROM_HERE, BindOnce(
                        [](Closure* extra_threads_running_barrier,
                           WaitableEvent* extra_threads_continue) {
@@ -1381,26 +1420,25 @@ TEST(TaskSchedulerWorkerPoolOverCapacityTest, VerifyCleanup) {
   }
   extra_threads_running.Wait();
 
-  ASSERT_EQ(kLocalMaxTasks * 2, worker_pool.NumberOfWorkersForTesting());
-  EXPECT_EQ(kLocalMaxTasks * 2, worker_pool.GetMaxTasksForTesting());
+  ASSERT_EQ(kLocalMaxTasks * 2, worker_pool_->NumberOfWorkersForTesting());
+  EXPECT_EQ(kLocalMaxTasks * 2, worker_pool_->GetMaxTasksForTesting());
   blocked_call_continue.Signal();
   extra_threads_continue.Signal();
 
   // Periodically post tasks to ensure that posting tasks does not prevent
   // workers that are idle due to the pool being over capacity from cleaning up.
   for (int i = 0; i < 16; ++i) {
-    task_runner->PostDelayedTask(FROM_HERE, DoNothing(),
-                                 kReclaimTimeForCleanupTests * i * 0.5);
+    task_runner_->PostDelayedTask(FROM_HERE, DoNothing(),
+                                  kReclaimTimeForCleanupTests * i * 0.5);
   }
 
   // Note: one worker above capacity will not get cleaned up since it's on the
   // top of the idle stack.
-  worker_pool.WaitForWorkersCleanedUpForTesting(kLocalMaxTasks - 1);
-  EXPECT_EQ(kLocalMaxTasks + 1, worker_pool.NumberOfWorkersForTesting());
+  worker_pool_->WaitForWorkersCleanedUpForTesting(kLocalMaxTasks - 1);
+  EXPECT_EQ(kLocalMaxTasks + 1, worker_pool_->NumberOfWorkersForTesting());
 
   threads_continue.Signal();
-
-  worker_pool.JoinForTesting();
+  task_tracker_.FlushForTesting();
 }
 
 // Verify that the maximum number of workers is 256 and that hitting the max
@@ -1513,10 +1551,11 @@ TEST_F(TaskSchedulerWorkerPoolImplStartInBodyTest, MaxBestEffortTasks) {
       kMaxBestEffortTasks, service_thread_.task_runner(), nullptr,
       SchedulerWorkerPoolImpl::WorkerEnvironment::NONE);
   const scoped_refptr<TaskRunner> foreground_runner =
-      worker_pool_->CreateTaskRunnerWithTraits({MayBlock()});
+      test::CreateTaskRunnerWithTraits({MayBlock()},
+                                       &mock_scheduler_task_runner_delegate_);
   const scoped_refptr<TaskRunner> background_runner =
-      worker_pool_->CreateTaskRunnerWithTraits(
-          {TaskPriority::BEST_EFFORT, MayBlock()});
+      test::CreateTaskRunnerWithTraits({TaskPriority::BEST_EFFORT, MayBlock()},
+                                       &mock_scheduler_task_runner_delegate_);
 
   // It should be possible to have |kMaxBestEffortTasks|
   // TaskPriority::BEST_EFFORT tasks running concurrently.
@@ -1593,8 +1632,8 @@ class TaskSchedulerWorkerPoolBlockingCallAndMaxBestEffortTasksTest
 TEST_P(TaskSchedulerWorkerPoolBlockingCallAndMaxBestEffortTasksTest,
        BlockingCallAndMaxBestEffortTasksTest) {
   const scoped_refptr<TaskRunner> background_runner =
-      worker_pool_->CreateTaskRunnerWithTraits(
-          {TaskPriority::BEST_EFFORT, MayBlock()});
+      test::CreateTaskRunnerWithTraits({TaskPriority::BEST_EFFORT, MayBlock()},
+                                       &mock_scheduler_task_runner_delegate_);
 
   // Post |kMaxBestEffortTasks| TaskPriority::BEST_EFFORT tasks that block in a
   // ScopedBlockingCall.
@@ -1667,8 +1706,8 @@ TEST_F(TaskSchedulerWorkerPoolImplStartInBodyTest, RacyCleanup) {
       kLocalMaxTasks, service_thread_.task_runner(), nullptr,
       SchedulerWorkerPoolImpl::WorkerEnvironment::NONE);
 
-  scoped_refptr<TaskRunner> task_runner =
-      worker_pool_->CreateTaskRunnerWithTraits({WithBaseSyncPrimitives()});
+  scoped_refptr<TaskRunner> task_runner = test::CreateTaskRunnerWithTraits(
+      {WithBaseSyncPrimitives()}, &mock_scheduler_task_runner_delegate_);
 
   WaitableEvent threads_running;
   WaitableEvent unblock_threads;

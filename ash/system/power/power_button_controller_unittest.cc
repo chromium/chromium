@@ -85,8 +85,6 @@ class PowerButtonControllerTest : public PowerButtonTestBase {
     // Run the event loop so that PowerButtonDisplayController can receive the
     // initial backlights-forced-off state.
     base::RunLoop().RunUntilIdle();
-    scoped_feature_list_.InitAndEnableFeature(
-        PowerButtonMenuView::kEnableFeedbackItem);
   }
 
  protected:
@@ -154,8 +152,6 @@ class PowerButtonControllerTest : public PowerButtonTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(PowerButtonControllerTest);
 };
 
@@ -188,7 +184,7 @@ TEST_F(PowerButtonControllerTest, LockScreenIfRequired) {
   EXPECT_FALSE(GetLockedState());
 }
 
-// Tests that tapping power button of a clamshell device.
+// Tests tapping the power button of a clamshell device.
 TEST_F(PowerButtonControllerTest, TappingPowerButtonOfClamshell) {
   // Should not turn the screen off when screen is on.
   InitPowerButtonControllerMembers(PowerManagerClient::TabletMode::UNSUPPORTED);
@@ -234,7 +230,7 @@ TEST_F(PowerButtonControllerTest, TappingPowerButtonOfClamshell) {
   EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
 }
 
-// Tests that tapping power button of a device that has tablet mode switch.
+// Tests tapping the power button of a device that has a tablet mode switch.
 TEST_F(PowerButtonControllerTest, TappingPowerButtonOfTablet) {
   EnableTabletMode(true);
   // Should turn screen off if screen is on and power button menu will not be
@@ -313,6 +309,31 @@ TEST_F(PowerButtonControllerTest, ModeSpecificPowerButton) {
   ReleasePowerButton();
   EXPECT_FALSE(power_manager_client_->backlights_forced_off());
   EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
+}
+
+// Tests that when the kForceTabletPowerButton flag is passed (indicating that
+// the device is tablet-like) tapping the power button turns the screen off
+// regardless of what the tablet mode switch reports.
+TEST_F(PowerButtonControllerTest, ForceTabletPowerButton) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kForceTabletPowerButton);
+  ResetPowerButtonController();
+
+  PressPowerButton();
+  ReleasePowerButton();
+  EXPECT_TRUE(power_manager_client_->backlights_forced_off());
+  PressPowerButton();
+  ReleasePowerButton();
+  EXPECT_FALSE(power_manager_client_->backlights_forced_off());
+
+  EnableTabletMode(false);
+  AdvanceClockToAvoidIgnoring();
+  PressPowerButton();
+  ReleasePowerButton();
+  EXPECT_TRUE(power_manager_client_->backlights_forced_off());
+  PressPowerButton();
+  ReleasePowerButton();
+  EXPECT_FALSE(power_manager_client_->backlights_forced_off());
 }
 
 // Tests that release power button after menu is opened but before trigger
@@ -787,6 +808,9 @@ TEST_F(PowerButtonControllerTest, MouseClickToDismissMenu) {
 
 // Tests the menu items according to the login and screen locked status.
 TEST_F(PowerButtonControllerTest, MenuItemsToLoginAndLockedStatus) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(PowerButtonMenuView::kEnableFeedbackItem);
+
   // No sign out, lock screen and feedback items if user is not logged in.
   ClearLogin();
   Shell::Get()->UpdateAfterLoginStatusChange(LoginStatus::NOT_LOGGED_IN);
@@ -982,6 +1006,9 @@ TEST_F(PowerButtonControllerTest, ESCDismissMenu) {
 
 // Tests the navigation of the menu.
 TEST_F(PowerButtonControllerTest, MenuNavigation) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(PowerButtonMenuView::kEnableFeedbackItem);
+
   OpenPowerButtonMenu();
   ASSERT_TRUE(power_button_test_api_->MenuHasSignOutItem());
   ASSERT_TRUE(power_button_test_api_->MenuHasLockScreenItem());
@@ -1030,6 +1057,29 @@ TEST_F(PowerButtonControllerTest, MenuNavigation) {
   EXPECT_TRUE(power_button_test_api_->GetPowerButtonMenuView()
                   ->power_off_item_for_test()
                   ->HasFocus());
+}
+
+// Tests that the partially shown menu will be dismissed by power button up in
+// tablet mode, and screen will be turned off at the same time.
+TEST_F(PowerButtonControllerTest, PartiallyShownMenuInTabletMode) {
+  EnableTabletMode(true);
+
+  // Enable animations so that we can make sure that they occur.
+  ui::ScopedAnimationDurationScaleMode regular_animations(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  PressPowerButton();
+  EXPECT_TRUE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
+  EXPECT_TRUE(power_button_test_api_->TriggerPowerButtonMenuTimeout());
+  EXPECT_FALSE(power_button_test_api_->PowerButtonMenuTimerIsRunning());
+  // Power menu is in the partially shown state.
+  EXPECT_TRUE(power_button_test_api_->IsMenuOpened());
+  EXPECT_FALSE(power_button_test_api_->ShowMenuAnimationDone());
+  ReleasePowerButton();
+  EXPECT_FALSE(power_button_test_api_->ShowMenuAnimationDone());
+  // The partially shown menu should be dismissed by power button up.
+  EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
+  EXPECT_TRUE(power_manager_client_->backlights_forced_off());
 }
 
 class PowerButtonControllerWithPositionTest

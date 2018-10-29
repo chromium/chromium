@@ -1,3 +1,2 @@
 Tests that prefixed animation events are correctly fired.
 PASS: All events have been received as expected.
-

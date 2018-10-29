@@ -6,10 +6,12 @@
 
 #include "base/macros.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/renderer_preferences.h"
 #include "services/content/navigable_contents_delegate.h"
 #include "services/content/service.h"
 
@@ -33,6 +35,13 @@ class NavigableContentsDelegateImpl : public content::NavigableContentsDelegate,
     web_contents_ = WebContents::Create(create_params);
     WebContentsObserver::Observe(web_contents_.get());
     web_contents_->SetDelegate(this);
+
+    content::RendererPreferences* renderer_prefs =
+        web_contents_->GetMutableRendererPrefs();
+    renderer_prefs->can_accept_load_drops = false;
+    renderer_prefs->browser_handles_all_top_level_requests =
+        params.suppress_navigations;
+    web_contents_->GetRenderViewHost()->SyncRendererPrefs();
   }
 
   ~NavigableContentsDelegateImpl() override {
@@ -55,6 +64,13 @@ class NavigableContentsDelegateImpl : public content::NavigableContentsDelegate,
   }
 
   // WebContentsDelegate:
+  WebContents* OpenURLFromTab(WebContents* source,
+                              const OpenURLParams& params) override {
+    client_->DidSuppressNavigation(params.url, params.disposition,
+                                   params.user_gesture);
+    return nullptr;
+  }
+
   void ResizeDueToAutoResize(WebContents* web_contents,
                              const gfx::Size& new_size) override {
     DCHECK_EQ(web_contents, web_contents_.get());

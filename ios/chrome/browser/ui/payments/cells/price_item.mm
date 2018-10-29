@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/accessibility_util.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -97,13 +98,13 @@ const CGFloat kMinWidthRatio = 0.5f;
 
 // Set default font and text colors for labels.
 - (void)setDefaultViewStyling {
-  _itemLabel.font = [MDCTypography body2Font];
+  SetUILabelScaledFont(_itemLabel, [MDCTypography body2Font]);
   _itemLabel.textColor = [[MDCPalette greyPalette] tint900];
 
-  _notificationLabel.font = [MDCTypography body2Font];
+  SetUILabelScaledFont(_notificationLabel, [MDCTypography body2Font]);
   _notificationLabel.textColor = [[MDCPalette greenPalette] tint800];
 
-  _priceLabel.font = [MDCTypography body1Font];
+  SetUILabelScaledFont(_priceLabel, [MDCTypography body1Font]);
   _priceLabel.textColor = [[MDCPalette greyPalette] tint900];
 }
 

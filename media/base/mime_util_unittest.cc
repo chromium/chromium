@@ -204,38 +204,44 @@ TEST(MimeUtilTest, CommonMediaMimeType) {
 
 // Note: codecs should only be a list of 2 or fewer; hence the restriction of
 // results' length to 2.
-TEST(MimeUtilTest, SplitCodecsToVector) {
+TEST(MimeUtilTest, SplitAndStripCodecs) {
   const struct {
     const char* const original;
     size_t expected_size;
-    const char* const results[2];
+    const char* const split_results[2];
+    const char* const strip_results[2];
   } tests[] = {
-    { "\"bogus\"",                  1, { "bogus" }            },
-    { "0",                          1, { "0" }                },
-    { "avc1.42E01E, mp4a.40.2",     2, { "avc1",   "mp4a" }   },
-    { "\"mp4v.20.240, mp4a.40.2\"", 2, { "mp4v",   "mp4a" }   },
-    { "mp4v.20.8, samr",            2, { "mp4v",   "samr" }   },
-    { "\"theora, vorbis\"",         2, { "theora", "vorbis" } },
-    { "",                           0, { }                    },
-    { "\"\"",                       0, { }                    },
-    { "\"   \"",                    0, { }                    },
-    { ",",                          2, { "", "" }             },
+      {"\"bogus\"", 1, {"bogus"}, {"bogus"}},
+      {"0", 1, {"0"}, {"0"}},
+      {"avc1.42E01E, mp4a.40.2",
+       2,
+       {"avc1.42E01E", "mp4a.40.2"},
+       {"avc1", "mp4a"}},
+      {"\"mp4v.20.240, mp4a.40.2\"",
+       2,
+       {"mp4v.20.240", "mp4a.40.2"},
+       {"mp4v", "mp4a"}},
+      {"mp4v.20.8, samr", 2, {"mp4v.20.8", "samr"}, {"mp4v", "samr"}},
+      {"\"theora, vorbis\"", 2, {"theora", "vorbis"}, {"theora", "vorbis"}},
+      {"", 0, {}, {}},
+      {"\"\"", 0, {}, {}},
+      {"\"   \"", 0, {}, {}},
+      {",", 2, {"", ""}, {"", ""}},
   };
 
   for (size_t i = 0; i < arraysize(tests); ++i) {
     std::vector<std::string> codecs_out;
-    SplitCodecsToVector(tests[i].original, &codecs_out, true);
+
+    SplitCodecs(tests[i].original, &codecs_out);
     ASSERT_EQ(tests[i].expected_size, codecs_out.size());
     for (size_t j = 0; j < tests[i].expected_size; ++j)
-      EXPECT_EQ(tests[i].results[j], codecs_out[j]);
-  }
+      EXPECT_EQ(tests[i].split_results[j], codecs_out[j]);
 
-  // Test without stripping the codec type.
-  std::vector<std::string> codecs_out;
-  SplitCodecsToVector("avc1.42E01E, mp4a.40.2", &codecs_out, false);
-  ASSERT_EQ(2u, codecs_out.size());
-  EXPECT_EQ("avc1.42E01E", codecs_out[0]);
-  EXPECT_EQ("mp4a.40.2", codecs_out[1]);
+    StripCodecs(&codecs_out);
+    ASSERT_EQ(tests[i].expected_size, codecs_out.size());
+    for (size_t j = 0; j < tests[i].expected_size; ++j)
+      EXPECT_EQ(tests[i].strip_results[j], codecs_out[j]);
+  }
 }
 
 // Basic smoke test for API. More exhaustive codec string testing found in

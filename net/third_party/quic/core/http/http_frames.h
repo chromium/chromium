@@ -1,3 +1,7 @@
+// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #ifndef NET_THIRD_PARTY_QUIC_CORE_HTTP_HTTP_FRAMES_H_
 #define NET_THIRD_PARTY_QUIC_CORE_HTTP_HTTP_FRAMES_H_
 
@@ -8,6 +12,17 @@
 #include "net/third_party/spdy/core/spdy_framer.h"
 
 namespace quic {
+
+enum class HttpFrameType : uint8_t {
+  DATA = 0x0,
+  HEADERS = 0x1,
+  PRIORITY = 0X2,
+  CANCEL_PUSH = 0X3,
+  SETTINGS = 0x4,
+  PUSH_PROMISE = 0x5,
+  GOAWAY = 0x7,
+  MAX_PUSH_ID = 0xD
+};
 
 // 4.2.2.  DATA
 //
@@ -22,7 +37,7 @@ struct DataFrame {
 //   The HEADERS frame (type=0x1) is used to carry a header block,
 //   compressed using QPACK.
 struct HeadersFrame {
-  spdy::SpdyHeaderBlock headers;
+  QuicStringPiece headers;
 };
 
 // 4.2.4.  PRIORITY
@@ -75,7 +90,7 @@ struct CancelPushFrame {
 //   on peer behavior
 
 using SettingsId = uint16_t;
-using SettingsMap = std::map<SettingsId, uint32_t>;
+using SettingsMap = std::map<SettingsId, uint64_t>;
 
 struct SettingsFrame {
   SettingsMap values;
@@ -91,7 +106,7 @@ struct SettingsFrame {
 //   set from server to client, as in HTTP/2.
 struct PushPromiseFrame {
   PushId push_id;
-  spdy::SpdyHeaderBlock headers;
+  QuicStringPiece headers;
 
   bool operator==(const PushPromiseFrame& rhs) const {
     return push_id == rhs.push_id && headers == rhs.headers;

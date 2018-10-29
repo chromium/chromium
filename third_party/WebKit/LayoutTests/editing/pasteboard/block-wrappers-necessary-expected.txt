@@ -138,3 +138,5 @@ After paste (this should be identical to before cut):
 "
 | "
 "
+execCutCommand: <div id="test" class="editing"> <center> <p><br></p></center> </div>
+execPasteCommand: <div id="test" class="editing"> <center> <p>This is an&nbsp;<b>interactive</b>&nbsp;documentation site, so please help out by posting any useful information that you've had to search out.<br>(Adding to this&nbsp;<a href="db.cgi?Wiki_Is_So_Easy">wiki is so easy</a>, you can't screw it up). See&nbsp;<a href="db.cgi?Wiki_Reference">Wiki Reference</a>&nbsp;for text formatting syntax.<br>Info for setting up your own wiki is at&nbsp;<a href="db.cgi?About_Howto.Apple.Com">about howto.apple.com</a>.<br>Check out a cool wiki editor application that helps in wiki generation:&nbsp;<a href="db.cgi?Wikinator">Wikinator</a></p><p>Start browsing the topics below, or use the search field at the bottom of every page.</p></center> </div>

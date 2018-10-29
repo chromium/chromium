@@ -6,7 +6,8 @@
 
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/payments/cells/accessibility_util.h"
-#import "ios/chrome/browser/ui/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
@@ -142,11 +143,11 @@ const CGFloat kVerticalSpacingBetweenLabels = 8;
 
 // Set default font and text colors for labels.
 - (void)setDefaultViewStyling {
-  _textLabel.font = [MDCTypography body2Font];
+  SetUILabelScaledFont(_textLabel, [MDCTypography body2Font]);
   _textLabel.numberOfLines = 0;
   _textLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
-  _detailTextLabel.font = [MDCTypography body1Font];
+  SetUILabelScaledFont(_detailTextLabel, [MDCTypography body1Font]);
   _detailTextLabel.numberOfLines = 0;
   _detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
 }

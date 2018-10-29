@@ -253,12 +253,14 @@ class KioskAppManagerTest : public InProcessBrowserTest {
     // spawned.
     embedded_test_server()->StartAcceptingConnections();
 
-    settings_helper_.ReplaceProvider(kAccountsPrefDeviceLocalAccounts);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     owner_settings_service_ =
         settings_helper_.CreateOwnerSettingsService(browser()->profile());
   }
 
-  void TearDownOnMainThread() override { settings_helper_.RestoreProvider(); }
+  void TearDownOnMainThread() override {
+    settings_helper_.RestoreRealDeviceSettingsProvider();
+  }
 
   std::string GetAppIds() const {
     KioskAppManager::Apps apps;

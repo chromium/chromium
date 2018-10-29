@@ -9,6 +9,7 @@
 
 #include "net/third_party/quic/core/http/quic_spdy_stream.h"
 #include "net/third_party/quic/core/http/spdy_utils.h"
+#include "net/third_party/quic/core/quic_utils.h"
 #include "net/third_party/quic/platform/api/quic_bug_tracker.h"
 #include "net/third_party/quic/platform/api/quic_flags.h"
 #include "net/third_party/quic/platform/api/quic_logging.h"
@@ -17,13 +18,16 @@
 #include "net/third_party/quic/tools/quic_simple_server_session.h"
 #include "net/third_party/spdy/core/spdy_protocol.h"
 
+using spdy::SpdyHeaderBlock;
+
 namespace quic {
 
 QuicSimpleServerStream::QuicSimpleServerStream(
     QuicStreamId id,
     QuicSpdySession* session,
+    StreamType type,
     QuicSimpleServerBackend* quic_simple_server_backend)
-    : QuicSpdyServerStreamBase(id, session),
+    : QuicSpdyServerStreamBase(id, session, type),
       content_length_(-1),
       quic_simple_server_backend_(quic_simple_server_backend) {}
 
@@ -89,8 +93,9 @@ void QuicSimpleServerStream::OnDataAvailable() {
 }
 
 void QuicSimpleServerStream::PushResponse(
-    spdy::SpdyHeaderBlock push_request_headers) {
-  if (id() % 2 != 0) {
+    SpdyHeaderBlock push_request_headers) {
+  if (QuicUtils::IsClientInitiatedStreamId(
+          session()->connection()->transport_version(), id())) {
     QUIC_BUG << "Client initiated stream shouldn't be used as promised stream.";
     return;
   }
@@ -99,9 +104,10 @@ void QuicSimpleServerStream::PushResponse(
   content_length_ = 0;
   QUIC_DVLOG(1) << "Stream " << id()
                 << " ready to receive server push response.";
+  DCHECK(reading_stopped());
 
-  // Set as if stream decompresed the headers and received fin.
-  QuicSpdyStream::OnInitialHeadersComplete(/*fin=*/true, 0, QuicHeaderList());
+  // Directly send response based on the emulated request_headers_.
+  SendResponse();
 }
 
 void QuicSimpleServerStream::SendResponse() {
@@ -180,7 +186,7 @@ void QuicSimpleServerStream::OnResponseBackendComplete(
   QuicString request_url = request_headers_[":authority"].as_string() +
                            request_headers_[":path"].as_string();
   int response_code;
-  const spdy::SpdyHeaderBlock& response_headers = response->headers();
+  const SpdyHeaderBlock& response_headers = response->headers();
   if (!ParseHeaderStatusCode(response_headers, &response_code)) {
     auto status = response_headers.find(":status");
     if (status == response_headers.end()) {
@@ -195,7 +201,8 @@ void QuicSimpleServerStream::OnResponseBackendComplete(
     return;
   }
 
-  if (id() % 2 == 0) {
+  if (QuicUtils::IsServerInitiatedStreamId(
+          session()->connection()->transport_version(), id())) {
     // A server initiated stream is only used for a server push response,
     // and only 200 and 30X response codes are supported for server push.
     // This behavior mirrors the HTTP/2 implementation.
@@ -232,7 +239,7 @@ void QuicSimpleServerStream::OnResponseBackendComplete(
 
 void QuicSimpleServerStream::SendNotFoundResponse() {
   QUIC_DVLOG(1) << "Stream " << id() << " sending not found response.";
-  spdy::SpdyHeaderBlock headers;
+  SpdyHeaderBlock headers;
   headers[":status"] = "404";
   headers["content-length"] =
       QuicTextUtils::Uint64ToString(strlen(kNotFoundResponseBody));
@@ -245,7 +252,7 @@ void QuicSimpleServerStream::SendErrorResponse() {
 
 void QuicSimpleServerStream::SendErrorResponse(int resp_code) {
   QUIC_DVLOG(1) << "Stream " << id() << " sending error response.";
-  spdy::SpdyHeaderBlock headers;
+  SpdyHeaderBlock headers;
   if (resp_code <= 0) {
     headers[":status"] = "500";
   } else {
@@ -257,7 +264,7 @@ void QuicSimpleServerStream::SendErrorResponse(int resp_code) {
 }
 
 void QuicSimpleServerStream::SendIncompleteResponse(
-    spdy::SpdyHeaderBlock response_headers,
+    SpdyHeaderBlock response_headers,
     QuicStringPiece body) {
   QUIC_DLOG(INFO) << "Stream " << id() << " writing headers (fin = false) : "
                   << response_headers.DebugString();
@@ -271,16 +278,16 @@ void QuicSimpleServerStream::SendIncompleteResponse(
 }
 
 void QuicSimpleServerStream::SendHeadersAndBody(
-    spdy::SpdyHeaderBlock response_headers,
+    SpdyHeaderBlock response_headers,
     QuicStringPiece body) {
   SendHeadersAndBodyAndTrailers(std::move(response_headers), body,
-                                spdy::SpdyHeaderBlock());
+                                SpdyHeaderBlock());
 }
 
 void QuicSimpleServerStream::SendHeadersAndBodyAndTrailers(
-    spdy::SpdyHeaderBlock response_headers,
+    SpdyHeaderBlock response_headers,
     QuicStringPiece body,
-    spdy::SpdyHeaderBlock response_trailers) {
+    SpdyHeaderBlock response_trailers) {
   // Send the headers, with a FIN if there's nothing else to send.
   bool send_fin = (body.empty() && response_trailers.empty());
   QUIC_DLOG(INFO) << "Stream " << id() << " writing headers (fin = " << send_fin

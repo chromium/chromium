@@ -35,7 +35,7 @@ void CreateMediaDrmStorage(content::RenderFrameHost* render_frame_host,
   PrefService* pref_service = profile->GetPrefs();
   DCHECK(pref_service) << "PrefService not available.";
 
-  if (render_frame_host->GetLastCommittedOrigin().unique()) {
+  if (render_frame_host->GetLastCommittedOrigin().opaque()) {
     DVLOG(1) << __func__ << ": Unique origin.";
     return;
   }

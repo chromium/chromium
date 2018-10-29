@@ -32,3 +32,4 @@ List of changes made to original code:
   - Added namespace divsuf.
   - Added divsufsort_with_empty().
   - Added unit tests.
+  - Patch to avoid int/uint comparison warnings.

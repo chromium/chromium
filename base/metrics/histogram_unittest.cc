@@ -653,7 +653,6 @@ TEST_P(HistogramTest, CustomHistogramSerializeInfo) {
   EXPECT_FALSE(iter.SkipBytes(1));
 }
 
-#if 0  // TODO(crbug.com/836238): Temporarily disabled for field crash test.
 TEST_P(HistogramTest, BadConstruction) {
   HistogramBase* histogram = Histogram::FactoryGet(
       "BadConstruction", 0, 100, 8, HistogramBase::kNoFlags);
@@ -679,7 +678,6 @@ TEST_P(HistogramTest, BadConstruction) {
       "BadConstructionLinear", 10, 100, 8, HistogramBase::kNoFlags);
   EXPECT_EQ(DummyHistogram::GetInstance(), bad_histogram);
 }
-#endif
 
 TEST_P(HistogramTest, FactoryTime) {
   const int kTestCreateCount = 1 << 14;  // Must be power-of-2.

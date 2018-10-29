@@ -62,16 +62,6 @@
     },
     {
       "include": "eg_tests.json",
-      "device type": "iPhone 6s Plus",
-      "os": "10.3",
-      "dimensions": [
-        { "os": "Mac-10.13.4", "pool": "Chrome" },
-        { "os": "Mac-10.13.5", "pool": "Chrome" },
-        { "os": "Mac-10.13.6", "pool": "Chrome" }
-      ]
-    },
-    {
-      "include": "eg_tests.json",
       "device type": "iPhone 7",
       "os": "11.4",
       "dimensions": [
@@ -92,28 +82,8 @@
     },
     {
       "include": "eg_tests.json",
-      "device type": "iPad Air 2",
-      "os": "10.3",
-      "dimensions": [
-        { "os": "Mac-10.13.4", "pool": "Chrome" },
-        { "os": "Mac-10.13.5", "pool": "Chrome" },
-        { "os": "Mac-10.13.6", "pool": "Chrome" }
-      ]
-    },
-    {
-      "include": "eg_tests.json",
       "device type": "iPhone X",
       "os": "11.4",
-      "dimensions": [
-        { "os": "Mac-10.13.4", "pool": "Chrome" },
-        { "os": "Mac-10.13.5", "pool": "Chrome" },
-        { "os": "Mac-10.13.6", "pool": "Chrome" }
-      ]
-    },
-    {
-      "include": "eg_cq_tests.json",
-      "device type": "iPad Air 2",
-      "os": "10.3",
       "dimensions": [
         { "os": "Mac-10.13.4", "pool": "Chrome" },
         { "os": "Mac-10.13.5", "pool": "Chrome" },
@@ -164,16 +134,6 @@
       "include": "screen_size_dependent_tests.json",
       "device type": "iPad Air 2",
       "os": "11.4",
-      "dimensions": [
-        { "os": "Mac-10.13.4", "pool": "Chrome" },
-        { "os": "Mac-10.13.5", "pool": "Chrome" },
-        { "os": "Mac-10.13.6", "pool": "Chrome" }
-      ]
-    },
-    {
-      "include": "screen_size_dependent_tests.json",
-      "device type": "iPad Air 2",
-      "os": "10.3",
       "dimensions": [
         { "os": "Mac-10.13.4", "pool": "Chrome" },
         { "os": "Mac-10.13.5", "pool": "Chrome" },

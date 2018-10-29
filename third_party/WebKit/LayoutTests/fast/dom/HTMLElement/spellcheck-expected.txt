@@ -2,7 +2,6 @@ Tests the spellcheck attribute.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS target.spellcheck is initialExpectation
 PASS target.spellcheck is lastExpectation
 PASS target.getAttribute('spellcheck') is lastAttributeExpectation

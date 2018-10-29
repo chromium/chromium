@@ -58,7 +58,7 @@ class ArcNotificationContentView
   message_center::NotificationControlButtonsView* GetControlButtonsView();
   void UpdateControlButtonsVisibility();
   void UpdateCornerRadius(int top_radius, int bottom_radius);
-  void OnSlideChanged();
+  void OnSlideChanged(bool in_progress);
   void OnContainerAnimationStarted();
   void OnContainerAnimationEnded();
   void ActivateWidget(bool activate);
@@ -174,6 +174,9 @@ class ArcNotificationContentView
   views::Widget* attached_widget_ = nullptr;
 
   base::string16 accessible_name_;
+
+  // If it's true, the surface gets active when attached to this view.
+  bool activate_on_attach_ = false;
 
   // Radiuses of rounded corners. These values are used in UpdateMask().
   int top_radius_ = 0;

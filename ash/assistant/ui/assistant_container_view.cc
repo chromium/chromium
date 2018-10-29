@@ -9,6 +9,7 @@
 #include "ash/assistant/assistant_controller.h"
 #include "ash/assistant/assistant_ui_controller.h"
 #include "ash/assistant/model/assistant_ui_model.h"
+#include "ash/assistant/ui/assistant_container_view_animator.h"
 #include "ash/assistant/ui/assistant_main_view.h"
 #include "ash/assistant/ui/assistant_mini_view.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
@@ -20,13 +21,11 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view.h"
-#include "ui/wm/core/shadow_types.h"
 
 namespace ash {
 
@@ -34,10 +33,6 @@ namespace {
 
 // Appearance.
 constexpr SkColor kBackgroundColor = SK_ColorWHITE;
-constexpr int kMiniUiCornerRadiusDip = 24;
-
-// Animation.
-constexpr int kResizeAnimationDurationMs = 250;
 
 // Window properties.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kOnlyAllowMouseClickEvents, false);
@@ -150,9 +145,13 @@ class AssistantContainerLayout : public views::LayoutManager {
 
 AssistantContainerView::AssistantContainerView(
     AssistantController* assistant_controller)
-    : assistant_controller_(assistant_controller) {
+    : assistant_controller_(assistant_controller),
+      animator_(
+          AssistantContainerViewAnimator::Create(assistant_controller_, this)),
+      focus_traversable_(this) {
+  UpdateAnchor();
+
   set_accept_events(true);
-  SetAnchor(nullptr);
   set_close_on_deactivate(false);
   set_color(kBackgroundColor);
   set_margins(gfx::Insets());
@@ -168,25 +167,20 @@ AssistantContainerView::AssistantContainerView(
           ? kMiniUiCornerRadiusDip
           : kCornerRadiusDip);
 
-  // Update the initial shadow layer with correct corner radius.
-  UpdateShadow();
-
-  // Add the shadow layer on top of the non-client view layer.
-  shadow_layer_.SetFillsBoundsOpaquely(false);
+  // Initialize non-client view layer.
   GetBubbleFrameView()->SetPaintToLayer();
   GetBubbleFrameView()->layer()->SetFillsBoundsOpaquely(false);
-  GetBubbleFrameView()->layer()->Add(&shadow_layer_);
 
   // The AssistantController owns the view hierarchy to which
   // AssistantContainerView belongs so is guaranteed to outlive it.
   assistant_controller_->ui_controller()->AddModelObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
-  keyboard::KeyboardController::Get()->AddObserver(this);
+
+  // Initialize |animator_| only after AssistantContainerView has been
+  // fully constructed to give it a chance to perform additional initialization.
+  animator_->Init();
 }
 
 AssistantContainerView::~AssistantContainerView() {
-  keyboard::KeyboardController::Get()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
   assistant_controller_->ui_controller()->RemoveModelObserver(this);
 }
 
@@ -204,52 +198,32 @@ void AssistantContainerView::AddedToWidget() {
       std::make_unique<AssistantContainerEventTargeter>());
 }
 
-void AssistantContainerView::ChildPreferredSizeChanged(views::View* child) {
-  PreferredSizeChanged();
-}
-
-void AssistantContainerView::PreferredSizeChanged() {
-  if (!GetWidget())
-    return;
-
-  const bool visible =
-      assistant_controller_->ui_controller()->model()->visibility() ==
-      AssistantVisibility::kVisible;
-
-  // Calculate the target radius value with or without animation.
-  radius_end_ = assistant_controller_->ui_controller()->model()->ui_mode() ==
-                        AssistantUiMode::kMiniUi
-                    ? kMiniUiCornerRadiusDip
-                    : kCornerRadiusDip;
-
-  // When visible, size changes are animated.
-  if (visible) {
-    resize_animation_ = std::make_unique<gfx::SlideAnimation>(this);
-    resize_animation_->SetSlideDuration(kResizeAnimationDurationMs);
-
-    // Cache start and end animation values.
-    resize_start_ = gfx::SizeF(size());
-    resize_end_ = gfx::SizeF(GetPreferredSize());
-
-    radius_start_ =
-        GetBubbleFrameView()->bubble_border()->GetBorderCornerRadius();
-
-    // Start animation.
-    resize_animation_->Show();
-    return;
-  }
-
-  // Clear any existing animation.
-  resize_animation_.reset();
-
-  // Update corner radius value without animation.
-  GetBubbleFrameView()->bubble_border()->SetCornerRadius(radius_end_);
-
-  SizeToContents();
+ax::mojom::Role AssistantContainerView::GetAccessibleWindowRole() const {
+  return ax::mojom::Role::kWindow;
 }
 
 int AssistantContainerView::GetDialogButtons() const {
   return ui::DIALOG_BUTTON_NONE;
+}
+
+views::FocusTraversable* AssistantContainerView::GetFocusTraversable() {
+  return &focus_traversable_;
+}
+
+void AssistantContainerView::ChildPreferredSizeChanged(views::View* child) {
+  PreferredSizeChanged();
+}
+
+void AssistantContainerView::ViewHierarchyChanged(
+    const ViewHierarchyChangedDetails& details) {
+  // Do nothing. We override this method to prevent a super class implementation
+  // from taking effect which would otherwise cause ChromeVox to read the entire
+  // Assistant view hierarchy.
+}
+
+void AssistantContainerView::SizeToContents() {
+  // We override this method to increase its visibility.
+  views::BubbleDialogDelegateView::SizeToContents();
 }
 
 void AssistantContainerView::OnBeforeBubbleWidgetInit(
@@ -260,20 +234,13 @@ void AssistantContainerView::OnBeforeBubbleWidgetInit(
   params->keep_on_top = true;
 }
 
-void AssistantContainerView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // Update the shadow layer when resizing the window.
-  UpdateShadow();
-
-  SchedulePaint();
-}
-
 void AssistantContainerView::Init() {
   SetLayoutManager(std::make_unique<AssistantContainerLayout>());
 
-  // We need to paint to our own layer so we can clip child layers.
+  // We paint to our own layer. Some implementations of |animator_| mask to
+  // bounds to clip child layers.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetMasksToBounds(true);
 
   // Main view.
   assistant_main_view_ = new AssistantMainView(assistant_controller_);
@@ -312,22 +279,13 @@ void AssistantContainerView::RequestFocus() {
   }
 }
 
-void AssistantContainerView::SetAnchor(aura::Window* root_window) {
-  // If |root_window| is not specified, we'll use the root window corresponding
-  // to where new windows will be opened.
-  if (!root_window)
-    root_window = Shell::Get()->GetRootWindowForNewWindows();
-
-  // Anchor to the display matching |root_window|.
-  display::Display display = display::Screen::GetScreen()->GetDisplayMatching(
-      root_window->GetBoundsInScreen());
-
-  // Align to the bottom, horizontal center of the work area.
-  gfx::Rect work_area = display.work_area();
-  gfx::Rect anchor =
-      gfx::Rect(work_area.x(), work_area.bottom() - kVerticalMarginDip,
-                work_area.width(), 0);
-
+void AssistantContainerView::UpdateAnchor() {
+  // Align to the bottom, horizontal center of the current usable work area.
+  const gfx::Rect& usable_work_area =
+      assistant_controller_->ui_controller()->model()->usable_work_area();
+  const gfx::Rect anchor =
+      gfx::Rect(usable_work_area.x(), usable_work_area.bottom(),
+                usable_work_area.width(), 0);
   SetAnchorRect(anchor);
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_CENTER);
 }
@@ -353,71 +311,47 @@ void AssistantContainerView::OnUiModeChanged(AssistantUiMode ui_mode) {
   RequestFocus();
 }
 
-// TODO(dmblack): Improve performance of this animation using transformations
-// for GPU acceleration. Lower spec hardware may struggle with numerous layouts.
-void AssistantContainerView::AnimationProgressed(
-    const gfx::Animation* animation) {
-  if (!GetWidget())
-    return;
+void AssistantContainerView::OnUsableWorkAreaChanged(
+    const gfx::Rect& usable_work_area) {
+  UpdateAnchor();
 
-  // Retrieve current bounds.
-  gfx::Rect bounds = GetWidget()->GetWindowBoundsInScreen();
+  // Call PreferredSizeChanged() to update animation params to avoid undesired
+  // effects (e.g. resize animation of Assistant UI when zooming in/out screen).
+  PreferredSizeChanged();
+}
 
-  // Our view is horizontally centered and bottom aligned. As such, we should
-  // retain the same |center_x| and |bottom| positions after resizing.
-  const int bottom = bounds.bottom();
-  const int center_x = bounds.CenterPoint().x();
+views::View* AssistantContainerView::FindFirstFocusableView() {
+  if (!GetWidget() || !GetWidget()->IsActive())
+    return nullptr;
 
-  // Interpolate size at our current animation value.
-  const gfx::SizeF size = gfx::Tween::SizeValueBetween(
-      animation->GetCurrentValue(), resize_start_, resize_end_);
+  switch (assistant_controller_->ui_controller()->model()->ui_mode()) {
+    case AssistantUiMode::kMainUi:
+      // AssistantMainView will sometimes explicitly specify a view to be
+      // focused first. Other times it may defer to views::FocusSearch.
+      return assistant_main_view_
+                 ? assistant_main_view_->FindFirstFocusableView()
+                 : nullptr;
+    case AssistantUiMode::kMiniUi:
+    case AssistantUiMode::kWebUi:
+      // Default views::FocusSearch behavior is acceptable.
+      return nullptr;
+  }
+}
 
-  // Use our interpolated size.
-  bounds.set_size(gfx::Size(size.width(), size.height()));
+SkColor AssistantContainerView::GetBackgroundColor() const {
+  return kBackgroundColor;
+}
 
-  // Maintain original |center_x| and |bottom| positions.
-  DCHECK_GT(center_x - (bounds.width() / 2), 0);
-  DCHECK_GT(bottom - bounds.height(), 0);
-  bounds.set_x(center_x - (bounds.width() / 2));
-  bounds.set_y(bottom - bounds.height());
+int AssistantContainerView::GetCornerRadius() const {
+  return GetBubbleFrameView()->bubble_border()->GetBorderCornerRadius();
+}
 
-  // Interpolate the correct radius.
-  const int corner_radius = gfx::Tween::LinearIntValueBetween(
-      animation->GetCurrentValue(), radius_start_, radius_end_);
-
-  // Clip round corners on child views by directly changing the non-client
-  // view corner radius of this bubble widget.
+void AssistantContainerView::SetCornerRadius(int corner_radius) {
   GetBubbleFrameView()->bubble_border()->SetCornerRadius(corner_radius);
-
-  GetWidget()->SetBounds(bounds);
 }
 
-void AssistantContainerView::OnDisplayMetricsChanged(
-    const display::Display& display,
-    uint32_t changed_metrics) {
-  aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
-  if (root_window == Shell::Get()->GetRootWindowForDisplayId(display.id()))
-    SetAnchor(root_window);
-}
-
-void AssistantContainerView::OnKeyboardWorkspaceDisplacingBoundsChanged(
-    const gfx::Rect& new_bounds) {
-  SetAnchor(GetWidget()->GetNativeWindow()->GetRootWindow());
-}
-
-void AssistantContainerView::UpdateShadow() {
-  // Initialize shadow parameters in painting.
-  gfx::ShadowValues shadow_values =
-      gfx::ShadowValue::MakeMdShadowValues(wm::kShadowElevationActiveWindow);
-
-  const int corner_radius =
-      GetBubbleFrameView()->bubble_border()->GetBorderCornerRadius();
-  border_shadow_delegate_ = std::make_unique<views::BorderShadowLayerDelegate>(
-      shadow_values, GetLocalBounds(), SK_ColorWHITE, corner_radius);
-
-  shadow_layer_.set_delegate(border_shadow_delegate_.get());
-  shadow_layer_.SetBounds(
-      gfx::ToEnclosingRect(border_shadow_delegate_->GetPaintedBounds()));
+ui::Layer* AssistantContainerView::GetNonClientViewLayer() {
+  return GetBubbleFrameView()->layer();
 }
 
 }  // namespace ash

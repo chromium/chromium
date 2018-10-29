@@ -13,10 +13,10 @@
     android:paddingEnd="@dimen/pref_languages_padding"
     style="@style/ListItemContainer">
 
-    <org.chromium.chrome.browser.widget.TintedImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/icon_view"
         style="@style/ListItemStartIcon"
-        app:chrometint="@color/dark_mode_tint" />
+        app:tint="@color/dark_mode_tint" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -48,6 +48,6 @@
         android:background="@null"
         android:src="@drawable/ic_more_vert_black_24dp"
         app:menuWidth="@dimen/pref_languages_item_popup_width"
-        app:chrometint="@color/dark_mode_tint"
+        app:tint="@color/dark_mode_tint"
         tools:ignore="ContentDescription" />
 </LinearLayout>

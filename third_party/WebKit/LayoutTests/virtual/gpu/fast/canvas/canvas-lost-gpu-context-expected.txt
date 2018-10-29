@@ -2,10 +2,10 @@ Test the behavior of canvas recovery after a gpu context loss
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE
+
 PASS contextLostTest is false
 PASS ctx.isContextLost() is false
 PASS ctx.isContextLost() is false

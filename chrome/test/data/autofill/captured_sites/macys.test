@@ -1,0 +1,342 @@
+{
+  "startingURL": "https://www.macys.com/chkout/rc?perfectProxy=true",
+  "autofillProfile": [
+    {
+      "type": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "value": "2027"
+    },
+    {
+      "type": "CREDIT_CARD_EXP_MONTH",
+      "value": "05"
+    },
+    {
+      "type": "CREDIT_CARD_NUMBER",
+      "value": "9621327911759602"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LEVEL1",
+      "value": "TX"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LEVEL2",
+      "value": "Austin"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LINE1",
+      "value": "4120 Freidrich Lane"
+    },
+    {
+      "type": "HTML_TYPE_ADDRESS_LINE2",
+      "value": "Apt 8"
+    },
+    {
+      "type": "HTML_TYPE_EMAIL",
+      "value": "red.swingline@initech.com"
+    },
+    {
+      "type": "HTML_TYPE_FAMILY_NAME",
+      "value": "Waddams"
+    },
+    {
+      "type": "HTML_TYPE_GIVEN_NAME",
+      "value": "Milton"
+    },
+    {
+      "type": "HTML_TYPE_POSTAL_CODE",
+      "value": "78744"
+    },
+    {
+      "type": "PHONE_HOME_CITY_AND_NUMBER",
+      "value": "(512) 555-1234"
+    }
+  ],
+  "passwordManagerProfiles": [],
+  "actions": [
+    {
+      "selector": "//input[@type=\"text\" and @name=\"contact.firstName\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 1
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Waddams",
+      "selector": "//input[@type=\"text\" and @name=\"contact.lastName\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_FAMILY_NAME",
+      "action_index": 2
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane",
+      "selector": "//input[@type=\"text\" and @name=\"address.addressLine1\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LINE1",
+      "action_index": 3
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@type=\"text\" and @name=\"address.addressLine2\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LINE2",
+      "action_index": 4
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@type=\"text\" and @name=\"address.addressLine1\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_POSTAL_CODE",
+      "action_index": 5
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "TX",
+      "selector": "//select",
+      "type": "validateField",
+      "visibility": 7,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LEVEL1",
+      "action_index": 6
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Austin",
+      "selector": "//input[@type=\"text\" and @name=\"address.addressLine2\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LEVEL2",
+      "action_index": 7
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5125551234",
+      "selector": "//input[@type=\"text\" and @name=\"address.phone\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 8
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton",
+      "selector": "//input[@type=\"text\" and @name=\"contact.firstName\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_GIVEN_NAME",
+      "action_index": 9
+    },
+    {
+      "selector": "//button[@type=\"submit\"]",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 10
+    },
+    {
+      "assertions": [
+        "return automation_helper.isElementWithXpathReady(`//button[@id=\"rc-gift-card\"]`);",
+        "return automation_helper.isElementWithXpathReady(`//select[@name=\"creditCard.expMonth\"]`, automation_helper.DomElementReadyState.present);"
+      ],
+      "context": {
+        "isIframe": false
+      },
+      "type": "waitFor",
+      "action_index": 11
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "index": 4,
+      "selector": "//select[@name=\"creditCard.cardType.code\"]",
+      "type": "select",
+      "visibility": 7,
+      "action_index": 11
+    },
+    {
+      "selector": "//input[@type=\"text\" and @name=\"creditCard.cardNumber\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 12
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "05",
+      "selector": "//select[@name=\"creditCard.expMonth\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_EXP_MONTH",
+      "action_index": 13
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "2027",
+      "selector": "//select[@name=\"creditCard.expYear\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_EXP_4_DIGIT_YEAR",
+      "action_index": 14
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "9621327911759602",
+      "selector": "//input[@type=\"text\" and @name=\"creditCard.cardNumber\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "CREDIT_CARD_NUMBER",
+      "action_index": 15
+    },
+    {
+      "selector": "//input[@type=\"checkbox\" and @id=\"rc-use-shipping\"]",
+      "visibility": 3,
+      "context": {
+        "isIframe": false
+      },
+      "type": "click",
+      "action_index": 16
+    },
+    {
+      "selector": "//input[@type=\"text\" and @name=\"billingContact.firstName\"]",
+      "context": {
+        "isIframe": false
+      },
+      "type": "autofill",
+      "visibility": 3,
+      "action_index": 17
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Waddams",
+      "selector": "//input[@type=\"text\" and @name=\"billingContact.lastName\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_FAMILY_NAME",
+      "action_index": 18
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "4120 Freidrich Lane",
+      "selector": "//input[@type=\"text\" and @name=\"billingAddress.addressLine1\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LINE1",
+      "action_index": 19
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Apt 8",
+      "selector": "//input[@type=\"text\" and @name=\"billingAddress.addressLine2\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LINE2",
+      "action_index": 20
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "78744",
+      "selector": "//input[@type=\"text\" and @name=\"billingAddress.zipCode\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_POSTAL_CODE",
+      "action_index": 21
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "TX",
+      "selector": "//select[@name=\"billingAddress.state\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LEVEL1",
+      "action_index": 22
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Austin",
+      "selector": "//input[@type=\"text\" and @name=\"billingAddress.city\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_ADDRESS_LEVEL2",
+      "action_index": 23
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "5125551234",
+      "selector": "//input[@type=\"text\" and @name=\"billingAddress.phone\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "PHONE_HOME_CITY_AND_NUMBER",
+      "action_index": 24
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "red.swingline@initech.com",
+      "selector": "//input[@type=\"email\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_EMAIL",
+      "action_index": 25
+    },
+    {
+      "context": {
+        "isIframe": false
+      },
+      "expectedValue": "Milton",
+      "selector": "//input[@type=\"text\" and @name=\"billingContact.firstName\"]",
+      "type": "validateField",
+      "visibility": 3,
+      "expectedAutofillType": "HTML_TYPE_GIVEN_NAME",
+      "action_index": 26
+    }
+  ]
+}

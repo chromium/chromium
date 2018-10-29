@@ -1,0 +1,28 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/speech-api/#enumdef-speechsynthesiserrorcode
+enum SpeechSynthesisErrorCode {
+    "canceled",
+    "interrupted",
+    "audio-busy",
+    "audio-hardware",
+    "network",
+    "synthesis-unavailable",
+    "synthesis-failed",
+    "language-unavailable",
+    "voice-unavailable",
+    "text-too-long",
+    "invalid-argument",
+    "not-allowed",
+};
+
+// https://w3c.github.io/speech-api/#speechsynthesiserrorevent
+[
+    Exposed=Window,
+    Constructor(DOMString type, SpeechSynthesisErrorEventInit eventInitDict),
+    RuntimeEnabled=ScriptedSpeech
+] interface SpeechSynthesisErrorEvent : SpeechSynthesisEvent {
+    readonly attribute SpeechSynthesisErrorCode error;
+};

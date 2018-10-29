@@ -14,6 +14,7 @@
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/core/browser/account_tracker_service.h"
+#include "components/signin/core/browser/fake_profile_oauth2_token_service.h"
 #include "components/signin/core/browser/fake_signin_manager.h"
 #include "components/signin/core/browser/gaia_cookie_manager_service.h"
 #include "components/signin/core/browser/signin_pref_names.h"
@@ -142,6 +143,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
     ActiveStateManager::FromBrowserState(&browser_state_)->SetActive(true);
     AccountConsistencyService::RegisterPrefs(prefs_.registry());
     AccountTrackerService::RegisterPrefs(prefs_.registry());
+    ProfileOAuth2TokenService::RegisterProfilePrefs(prefs_.registry());
     content_settings::CookieSettings::RegisterProfilePrefs(prefs_.registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
     SigninManagerBase::RegisterProfilePrefs(prefs_.registry());
@@ -150,8 +152,10 @@ class AccountConsistencyServiceTest : public PlatformTest {
     gaia_cookie_manager_service_.reset(new MockGaiaCookieManagerService());
     signin_client_.reset(new TestSigninClient(&prefs_));
     account_tracker_service_.Initialize(&prefs_, base::FilePath());
-    signin_manager_.reset(new FakeSigninManager(
-        signin_client_.get(), nullptr, &account_tracker_service_, nullptr));
+    token_service_.reset(new FakeProfileOAuth2TokenService(&prefs_));
+    signin_manager_.reset(
+        new FakeSigninManager(signin_client_.get(), token_service_.get(),
+                              &account_tracker_service_, nullptr));
     signin_manager_->Initialize(nullptr);
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* incognito_profile */, false /* guest_profile */,
@@ -258,6 +262,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
   // FakeAccountConsistencyService to be able to use a mock web view.
   std::unique_ptr<AccountConsistencyService> account_consistency_service_;
   std::unique_ptr<TestSigninClient> signin_client_;
+  std::unique_ptr<FakeProfileOAuth2TokenService> token_service_;
   std::unique_ptr<FakeSigninManager> signin_manager_;
   std::unique_ptr<MockGaiaCookieManagerService> gaia_cookie_manager_service_;
   std::unique_ptr<MockAccountReconcilor> account_reconcilor_;

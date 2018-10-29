@@ -30,7 +30,7 @@ namespace {
 const char kWhitelistedId[] = "cbkkbcmdlboombapidmoeolnmdacpkch";
 const char kBogusId[] = "bogus";
 
-scoped_refptr<Extension> CreateExtension(const std::string& id) {
+scoped_refptr<const Extension> CreateExtension(const std::string& id) {
   return ExtensionBuilder("test")
       .SetLocation(Manifest::INTERNAL)
       .SetID(id)

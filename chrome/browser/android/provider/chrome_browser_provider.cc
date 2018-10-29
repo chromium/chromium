@@ -104,21 +104,21 @@ const int64_t kInvalidBookmarkId = -1;
 
 jlong JNI_ChromeBrowserProvider_ConvertJLongObjectToPrimitive(
     JNIEnv* env,
-    jobject long_obj) {
+    const JavaRef<jobject>& long_obj) {
   ScopedJavaLocalRef<jclass> jlong_clazz = GetClass(env, "java/lang/Long");
   jmethodID long_value = MethodID::Get<MethodID::TYPE_INSTANCE>(
       env, jlong_clazz.obj(), "longValue", "()J");
-  return env->CallLongMethod(long_obj, long_value, NULL);
+  return env->CallLongMethod(long_obj.obj(), long_value, NULL);
 }
 
 jboolean JNI_ChromeBrowserProvider_ConvertJBooleanObjectToPrimitive(
     JNIEnv* env,
-    jobject boolean_object) {
+    const JavaRef<jobject>& boolean_object) {
   ScopedJavaLocalRef<jclass> jboolean_clazz =
       GetClass(env, "java/lang/Boolean");
   jmethodID boolean_value = MethodID::Get<MethodID::TYPE_INSTANCE>(
       env, jboolean_clazz.obj(), "booleanValue", "()Z");
-  return env->CallBooleanMethod(boolean_object, boolean_value, NULL);
+  return env->CallBooleanMethod(boolean_object.obj(), boolean_value, NULL);
 }
 
 base::Time ConvertJlongToTime(jlong value) {
@@ -126,24 +126,26 @@ base::Time ConvertJlongToTime(jlong value) {
          base::TimeDelta::FromMilliseconds((int64_t)value);
 }
 
-jint JNI_ChromeBrowserProvider_ConvertJIntegerToJint(JNIEnv* env,
-                                                     jobject integer_obj) {
+jint JNI_ChromeBrowserProvider_ConvertJIntegerToJint(
+    JNIEnv* env,
+    const JavaRef<jobject>& integer_obj) {
   ScopedJavaLocalRef<jclass> jinteger_clazz =
       GetClass(env, "java/lang/Integer");
   jmethodID int_value = MethodID::Get<MethodID::TYPE_INSTANCE>(
       env, jinteger_clazz.obj(), "intValue", "()I");
-  return env->CallIntMethod(integer_obj, int_value, NULL);
+  return env->CallIntMethod(integer_obj.obj(), int_value, NULL);
 }
 
 std::vector<base::string16> ConvertJStringArrayToString16Array(
     JNIEnv* env,
-    jobjectArray array) {
+    const JavaRef<jobjectArray>& array) {
   std::vector<base::string16> results;
-  if (array) {
-    jsize len = env->GetArrayLength(array);
+  if (!array.is_null()) {
+    jsize len = env->GetArrayLength(array.obj());
     for (int i = 0; i < len; i++) {
       ScopedJavaLocalRef<jstring> j_str(
-          env, static_cast<jstring>(env->GetObjectArrayElement(array, i)));
+          env,
+          static_cast<jstring>(env->GetObjectArrayElement(array.obj(), i)));
       results.push_back(ConvertJavaStringToUTF16(env, j_str));
     }
   }
@@ -725,21 +727,21 @@ class RemoveSearchTermsFromAPITask : public SearchTermTask {
 // Fills the bookmark |row| with the given java objects.
 void JNI_ChromeBrowserProvider_FillBookmarkRow(
     JNIEnv* env,
-    jobject obj,
-    jstring url,
-    jobject created,
-    jobject isBookmark,
-    jobject date,
-    jbyteArray favicon,
-    jstring title,
-    jobject visits,
+    const JavaRef<jobject>& obj,
+    const JavaRef<jstring>& url,
+    const JavaRef<jobject>& created,
+    const JavaRef<jobject>& isBookmark,
+    const JavaRef<jobject>& date,
+    const JavaRef<jbyteArray>& favicon,
+    const JavaRef<jstring>& title,
+    const JavaRef<jobject>& visits,
     jlong parent_id,
     history::HistoryAndBookmarkRow* row,
     BookmarkModel* model) {
   // Needed because of the internal bookmark model task invocation.
   DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  if (url) {
+  if (!url.is_null()) {
     base::string16 raw_url = ConvertJavaStringToUTF16(env, url);
     // GURL doesn't accept the URL without protocol, but the Android CTS
     // allows it. We are trying to prefix with 'http://' to see whether
@@ -750,29 +752,29 @@ void JNI_ChromeBrowserProvider_FillBookmarkRow(
     row->set_raw_url(base::UTF16ToUTF8(raw_url));
   }
 
-  if (created)
+  if (!created.is_null())
     row->set_created(ConvertJlongToTime(
         JNI_ChromeBrowserProvider_ConvertJLongObjectToPrimitive(env, created)));
 
-  if (isBookmark)
+  if (!isBookmark.is_null())
     row->set_is_bookmark(
         JNI_ChromeBrowserProvider_ConvertJBooleanObjectToPrimitive(env,
                                                                    isBookmark));
 
-  if (date)
+  if (!date.is_null())
     row->set_last_visit_time(ConvertJlongToTime(
         JNI_ChromeBrowserProvider_ConvertJLongObjectToPrimitive(env, date)));
 
-  if (favicon) {
+  if (!favicon.is_null()) {
     std::vector<uint8_t> bytes;
     base::android::JavaByteArrayToByteVector(env, favicon, &bytes);
     row->set_favicon(base::RefCountedBytes::TakeVector(&bytes));
   }
 
-  if (title)
+  if (!title.is_null())
     row->set_title(ConvertJavaStringToUTF16(env, title));
 
-  if (visits)
+  if (!visits.is_null())
     row->set_visit_count(
         JNI_ChromeBrowserProvider_ConvertJIntegerToJint(env, visits));
 
@@ -783,15 +785,16 @@ void JNI_ChromeBrowserProvider_FillBookmarkRow(
 }
 
 // Fills the bookmark |row| with the given java objects if it is not null.
-void JNI_ChromeBrowserProvider_FillSearchRow(JNIEnv* env,
-                                             jobject obj,
-                                             jstring search_term,
-                                             jobject date,
-                                             history::SearchRow* row) {
-  if (search_term)
+void JNI_ChromeBrowserProvider_FillSearchRow(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj,
+    const JavaRef<jstring>& search_term,
+    const JavaRef<jobject>& date,
+    history::SearchRow* row) {
+  if (!search_term.is_null())
     row->set_search_term(ConvertJavaStringToUTF16(env, search_term));
 
-  if (date)
+  if (!date.is_null())
     row->set_search_time(ConvertJlongToTime(
         JNI_ChromeBrowserProvider_ConvertJLongObjectToPrimitive(env, date)));
 }

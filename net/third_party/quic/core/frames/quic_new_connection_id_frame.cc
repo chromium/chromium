@@ -3,18 +3,21 @@
 // found in the LICENSE file.
 
 #include "net/third_party/quic/core/frames/quic_new_connection_id_frame.h"
+#include "net/third_party/quic/core/quic_constants.h"
 
 namespace quic {
 
 QuicNewConnectionIdFrame::QuicNewConnectionIdFrame()
-    : QuicControlFrame(0), connection_id(0), sequence_number(0) {}
+    : control_frame_id(kInvalidControlFrameId),
+      connection_id(0),
+      sequence_number(0) {}
 
 QuicNewConnectionIdFrame::QuicNewConnectionIdFrame(
     QuicControlFrameId control_frame_id,
     QuicConnectionId connection_id,
     QuicConnectionIdSequenceNumber sequence_number,
     const QuicUint128 stateless_reset_token)
-    : QuicControlFrame(control_frame_id),
+    : control_frame_id(control_frame_id),
       connection_id(connection_id),
       sequence_number(sequence_number),
       stateless_reset_token(stateless_reset_token) {}

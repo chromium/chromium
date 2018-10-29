@@ -209,9 +209,10 @@ PerformanceEntryVector Performance::getEntriesByType(
       break;
     case PerformanceEntry::kTaskAttribution:
       break;
-    // TODO(npm): decide which element timing entries are accessible via the
-    // performance buffer.
+    // TODO(npm): decide which element timing and layout jank entries are
+    // accessible via the performance buffer.
     case PerformanceEntry::kElement:
+    case PerformanceEntry::kLayoutJank:
       break;
     case PerformanceEntry::kInvalid:
       break;

@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/interface_provider_filtering.h"
@@ -29,6 +30,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/service_worker/service_worker_types.h"
 #include "content/common/service_worker/service_worker_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -193,7 +195,7 @@ base::WeakPtr<ServiceWorkerProviderHost>
 ServiceWorkerProviderHost::PreCreateNavigationHost(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool are_ancestors_secure,
-    const WebContentsGetter& web_contents_getter) {
+    WebContentsGetter web_contents_getter) {
   DCHECK(context);
   auto host = base::WrapUnique(new ServiceWorkerProviderHost(
       ChildProcessHost::kInvalidUniqueID,
@@ -203,7 +205,7 @@ ServiceWorkerProviderHost::PreCreateNavigationHost(
           are_ancestors_secure, nullptr /* host_request */,
           nullptr /* client_ptr_info */),
       context));
-  host->web_contents_getter_ = web_contents_getter;
+  host->web_contents_getter_ = std::move(web_contents_getter);
 
   auto weak_ptr = host->AsWeakPtr();
   context->AddProviderHost(std::move(host));
@@ -560,10 +562,10 @@ void ServiceWorkerProviderHost::SetControllerRegistration(
 void ServiceWorkerProviderHost::AddMatchingRegistration(
     ServiceWorkerRegistration* registration) {
   DCHECK(
-      ServiceWorkerUtils::ScopeMatches(registration->pattern(), document_url_));
+      ServiceWorkerUtils::ScopeMatches(registration->scope(), document_url_));
   if (!IsContextSecureForServiceWorker())
     return;
-  size_t key = registration->pattern().spec().size();
+  size_t key = registration->scope().spec().size();
   if (base::ContainsKey(matching_registrations_, key))
     return;
   registration->AddListener(this);
@@ -579,14 +581,13 @@ void ServiceWorkerProviderHost::RemoveMatchingRegistration(
 #endif  // DCHECK_IS_ON()
 
   registration->RemoveListener(this);
-  size_t key = registration->pattern().spec().size();
+  size_t key = registration->scope().spec().size();
   matching_registrations_.erase(key);
 }
 
 ServiceWorkerRegistration*
 ServiceWorkerProviderHost::MatchRegistration() const {
-  ServiceWorkerRegistrationMap::const_reverse_iterator it =
-      matching_registrations_.rbegin();
+  auto it = matching_registrations_.rbegin();
   for (; it != matching_registrations_.rend(); ++it) {
     if (it->second->is_uninstalled())
       continue;
@@ -615,8 +616,8 @@ bool ServiceWorkerProviderHost::AllowServiceWorker(const GURL& scope) {
   return GetContentClient()->browser()->AllowServiceWorker(
       scope, IsProviderForClient() ? topmost_frame_url() : document_url(),
       context_->wrapper()->resource_context(),
-      base::Bind(&WebContentsImpl::FromRenderFrameHostID, render_process_id_,
-                 frame_id()));
+      base::BindRepeating(&WebContentsImpl::FromRenderFrameHostID,
+                          render_process_id_, frame_id()));
 }
 
 void ServiceWorkerProviderHost::NotifyControllerLost() {
@@ -839,8 +840,7 @@ void ServiceWorkerProviderHost::SyncMatchingRegistrations() {
   for (const auto& key_registration : registrations) {
     ServiceWorkerRegistration* registration = key_registration.second;
     if (!registration->is_uninstalled() &&
-        ServiceWorkerUtils::ScopeMatches(registration->pattern(),
-                                         document_url_))
+        ServiceWorkerUtils::ScopeMatches(registration->scope(), document_url_))
       AddMatchingRegistration(registration);
   }
 }
@@ -848,7 +848,7 @@ void ServiceWorkerProviderHost::SyncMatchingRegistrations() {
 #if DCHECK_IS_ON()
 bool ServiceWorkerProviderHost::IsMatchingRegistration(
     ServiceWorkerRegistration* registration) const {
-  std::string spec = registration->pattern().spec();
+  std::string spec = registration->scope().spec();
   size_t key = spec.size();
 
   auto iter = matching_registrations_.find(key);
@@ -1216,11 +1216,10 @@ void ServiceWorkerProviderHost::EnsureControllerServiceWorker(
                      AsWeakPtr(), std::move(controller_request)));
 }
 
-void ServiceWorkerProviderHost::CloneForWorker(
+void ServiceWorkerProviderHost::CloneContainerHost(
     mojom::ServiceWorkerContainerHostRequest container_host_request) {
   DCHECK(blink::ServiceWorkerUtils::IsServicificationEnabled());
-  bindings_for_worker_threads_.AddBinding(this,
-                                          std::move(container_host_request));
+  additional_bindings_.AddBinding(this, std::move(container_host_request));
 }
 
 void ServiceWorkerProviderHost::Ping(PingCallback callback) {
@@ -1294,8 +1293,8 @@ void ServiceWorkerProviderHost::GetInterface(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_NE(kDocumentMainThreadId, render_thread_id_);
   DCHECK(IsProviderForServiceWorker());
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &GetInterfaceImpl, interface_name, std::move(interface_pipe),
           running_hosted_version_->script_origin(), render_process_id_));

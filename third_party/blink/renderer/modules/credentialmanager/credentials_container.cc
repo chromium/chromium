@@ -241,6 +241,11 @@ DOMException* CredentialManagerErrorToDOMException(
       return DOMException::Create(DOMExceptionCode::kNotAllowedError,
                                   "The operation is not allowed at this time "
                                   "because the page does not have focus.");
+    case CredentialManagerError::RESIDENT_CREDENTIALS_UNSUPPORTED:
+      return DOMException::Create(DOMExceptionCode::kNotSupportedError,
+                                  "Resident credentials or empty "
+                                  "'allowCredentials' lists are not supported "
+                                  "at this time.");
     case CredentialManagerError::ANDROID_ALGORITHM_UNSUPPORTED:
       return DOMException::Create(DOMExceptionCode::kNotSupportedError,
                                   "None of the algorithms specified in "
@@ -337,9 +342,14 @@ void OnMakePublicKeyCredentialComplete(
     AuthenticatorAttestationResponse* authenticator_response =
         AuthenticatorAttestationResponse::Create(
             client_data_buffer, attestation_buffer, credential->transports);
+
+    AuthenticationExtensionsClientOutputs extension_outputs;
+    if (credential->echo_hmac_create_secret) {
+      extension_outputs.setHmacCreateSecret(credential->hmac_create_secret);
+    }
     resolver->Resolve(PublicKeyCredential::Create(credential->info->id, raw_id,
                                                   authenticator_response,
-                                                  {} /* extensions_outputs */));
+                                                  extension_outputs));
   } else {
     DCHECK(!credential);
     resolver->Reject(CredentialManagerErrorToDOMException(

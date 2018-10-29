@@ -33,8 +33,9 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_proxy.h"
+#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-blink.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_object_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -49,14 +50,18 @@ class ScriptState;
 class MODULES_EXPORT ServiceWorker final
     : public AbstractWorker,
       public ActiveScriptWrappable<ServiceWorker>,
-      public WebServiceWorkerProxy {
+      public mojom::blink::ServiceWorkerObject {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(ServiceWorker);
 
  public:
   static ServiceWorker* From(ExecutionContext*,
-                             std::unique_ptr<WebServiceWorker::Handle>);
+                             mojom::blink::ServiceWorkerObjectInfoPtr);
+  // TODO(crbug.com/879019): Eventually we'll remove WebServiceWorkerObjectInfo
+  // and use the above From() everywhere instead of this one.
+  static ServiceWorker* From(ExecutionContext*, WebServiceWorkerObjectInfo);
 
+  ServiceWorker(ExecutionContext*, WebServiceWorkerObjectInfo);
   ~ServiceWorker() override;
   void Trace(blink::Visitor*) override;
 
@@ -81,25 +86,33 @@ class MODULES_EXPORT ServiceWorker final
   // ScriptWrappable overrides.
   bool HasPendingActivity() const final;
 
-  // WebServiceWorkerProxy overrides.
-  void DispatchStateChangeEvent() override;
-
   // AbstractWorker overrides.
   const AtomicString& InterfaceName() const override;
+
+  // Implements mojom::blink::ServiceWorkerObject.
+  void StateChanged(mojom::blink::ServiceWorkerState new_state) override;
 
   ScriptPromise InternalsTerminate(ScriptState*);
 
  private:
-  static ServiceWorker* GetOrCreate(ExecutionContext*,
-                                    std::unique_ptr<WebServiceWorker::Handle>);
-  ServiceWorker(ExecutionContext*, std::unique_ptr<WebServiceWorker::Handle>);
-
   // PausableObject overrides.
   void ContextDestroyed(ExecutionContext*) override;
 
-  // A handle to the service worker representation in the embedder.
-  std::unique_ptr<WebServiceWorker::Handle> handle_;
   bool was_stopped_;
+  const KURL url_;
+  mojom::blink::ServiceWorkerState state_;
+  // Both |host_| and |binding_| are associated with
+  // content.mojom.ServiceWorkerContainer interface for a Document, and
+  // content.mojom.ServiceWorker interface for a ServiceWorkerGlobalScope.
+  //
+  // |host_| keeps the Mojo connection to the
+  // browser-side ServiceWorkerObjectHost, whose lifetime is bound
+  // to |host_| via the Mojo connection.
+  mojom::blink::ServiceWorkerObjectHostAssociatedPtr host_;
+  // |binding_| keeps the Mojo binding to serve its other Mojo endpoint (i.e.
+  // the caller end) held by the content::ServiceWorkerObjectHost in the browser
+  // process.
+  mojo::AssociatedBinding<mojom::blink::ServiceWorkerObject> binding_;
 };
 
 }  // namespace blink

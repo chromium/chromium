@@ -77,7 +77,7 @@ struct MediaQueryExpValue {
 };
 
 class CORE_EXPORT MediaQueryExp {
-  DISALLOW_NEW_EXCEPT_PLACEMENT_NEW();
+  DISALLOW_NEW();
 
  public:
   // Returns an invalid MediaQueryExp if the arguments are invalid.

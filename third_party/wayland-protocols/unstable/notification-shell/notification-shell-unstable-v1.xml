@@ -51,10 +51,12 @@
       <description summary="create a desktop notification from plain text">
 	Creates a desktop notification from plain text information.
       </description>
+      <arg name="id" type="new_id" interface="zcr_notification_shell_notification_v1"/>
       <arg name="title" type="string" />
       <arg name="message" type="string" />
       <arg name="display_source" type="string" summary="textual representation of who's shown the notification"/>
       <arg name="notification_key" type="string" />
+      <arg name="buttons" type="array" summary="array of 0-terminated button title names"/>
     </request>
 
     <request name="get_notification_surface">
@@ -88,4 +90,35 @@
     </request>
   </interface>
 
+  <interface name="zcr_notification_shell_notification_v1" version="1">
+    <description summary="A notification">
+	An interface that controls the notification created by create_notification.
+    </description>
+
+    <request name="destroy" type="destructor">
+      <description summary="Destroy the notification">
+	Destroys the notification object.
+      </description>
+    </request>
+
+    <request name="close">
+      <description summary="Close the notification">
+	Closes the notification. The closed event is sent after this request.
+      </description>
+    </request>
+
+    <event name="closed">
+      <description summary="Notification is closed">
+	Notifies the notification object that the notification is closed.
+      </description>
+      <arg name="by_user" type="uint" summary="1 if notification is closed by a user"/>
+    </event>
+
+    <event name="clicked">
+      <description summary="Notification is clicked">
+	Notifies the notification object that the notification or its button is clicked.
+      </description>
+      <arg name="button_index" type="int" summary="-1 if the body of the notification is cliked as opposed to a button"/>
+    </event>
+  </interface>
 </protocol>

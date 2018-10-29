@@ -8,6 +8,8 @@
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -28,8 +30,8 @@ scoped_refptr<AwLoginDelegate> AwLoginDelegate::Create(
     LoginAuthRequiredCallback auth_required_callback) {
   scoped_refptr<AwLoginDelegate> instance(
       new AwLoginDelegate(auth_info, std::move(auth_required_callback)));
-  BrowserThread::PostTask(
-      BrowserThread::UI, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&AwLoginDelegate::HandleHttpAuthRequestOnUIThread,
                      instance, first_auth_attempt, web_contents_getter));
   return instance;
@@ -50,15 +52,15 @@ AwLoginDelegate::~AwLoginDelegate() {
 void AwLoginDelegate::Proceed(const base::string16& user,
                               const base::string16& password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(BrowserThread::IO, FROM_HERE,
-                          base::BindOnce(&AwLoginDelegate::ProceedOnIOThread,
-                                         this, user, password));
+  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
+                           base::BindOnce(&AwLoginDelegate::ProceedOnIOThread,
+                                          this, user, password));
 }
 
 void AwLoginDelegate::Cancel() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserThread::PostTask(
-      BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&AwLoginDelegate::CancelOnIOThread, this));
 }
 
@@ -102,8 +104,8 @@ void AwLoginDelegate::OnRequestCancelled() {
 
 void AwLoginDelegate::DeleteAuthHandlerSoon() {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&AwLoginDelegate::DeleteAuthHandlerSoon, this));
     return;
   }

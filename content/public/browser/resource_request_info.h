@@ -12,8 +12,8 @@
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/common/previews_state.h"
 #include "content/public/common/resource_type.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
-#include "third_party/blink/public/platform/web_referrer_policy.h"
 #include "ui/base/page_transition_types.h"
 
 namespace net {
@@ -140,7 +140,7 @@ class ResourceRequestInfo {
   virtual int GetProcessType() const = 0;
 
   // Returns the associated referrer policy.
-  virtual blink::WebReferrerPolicy GetReferrerPolicy() const = 0;
+  virtual network::mojom::ReferrerPolicy GetReferrerPolicy() const = 0;
 
   // Returns whether the frame that initiated this request is used for
   // prerendering.
@@ -172,9 +172,6 @@ class ResourceRequestInfo {
 
   // Returns the current state of Previews.
   virtual PreviewsState GetPreviewsState() const = 0;
-
-  // Sets the PreviewsState to |previews_state|.
-  virtual void SetPreviewsState(PreviewsState previews_state) = 0;
 
   // PlzNavigate
   // Only used for navigations. Returns opaque data set by the embedder on the

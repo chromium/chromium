@@ -30,8 +30,6 @@ jumbo_component("mus") {
     "mus_property_mirror.h",
     "mus_views_delegate.cc",
     "mus_views_delegate.h",
-    "pointer_watcher_event_router.cc",
-    "pointer_watcher_event_router.h",
     "screen_mus.cc",
     "screen_mus.h",
     "screen_mus_delegate.h",
@@ -156,7 +154,6 @@ test("views_mus_unittests") {
     "ax_remote_host_unittest.cc",
     "ax_tree_source_mus_unittest.cc",
     "desktop_window_tree_host_mus_unittest.cc",
-    "pointer_watcher_event_router_unittest.cc",
     "run_all_unittests_mus.cc",
     "screen_mus_unittest.cc",
   ]

@@ -5,6 +5,7 @@
 #include "services/resource_coordinator/memory_instrumentation/process_map.h"
 
 #include "base/process/process_handle.h"
+#include "base/stl_util.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -33,7 +34,15 @@ void ProcessMap::OnInit(std::vector<RunningServiceInfoPtr> instances) {
   for (const RunningServiceInfoPtr& instance : instances) {
     if (instance->pid == base::kNullProcessId)
       continue;
+
     const service_manager::Identity& identity = instance->identity;
+
+    // TODO(https://crbug.com/818593): The listener interface is racy, so the
+    // map may contain spurious entries. If so, remove the existing entry before
+    // adding a new one.
+    if (base::ContainsKey(instances_, identity))
+      OnServiceStopped(identity);
+
     auto it_and_inserted = instances_.emplace(identity, instance->pid);
     DCHECK(it_and_inserted.second);
   }

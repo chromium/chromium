@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/home_launcher_gesture_handler.h"
 #include "ash/public/cpp/app_list/app_list_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -18,6 +19,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
+#include "ui/display/manager/display_manager.h"
 
 namespace ash {
 
@@ -39,42 +41,54 @@ void AppListShelfItemDelegate::ItemSelected(std::unique_ptr<ui::Event> event,
     return;
   }
 
-  // Whether to perform the "back" action for the app list. It will only be
-  // performed if other actions are not performed.
-  bool back_action = true;
+  // Whether the this action is handled.
+  bool handled = false;
 
-  // End overview mode.
-  if (Shell::Get()->window_selector_controller()->IsSelecting()) {
-    Shell::Get()->window_selector_controller()->ToggleOverview(
-        WindowSelector::EnterExitOverviewType::kWindowsMinimized);
-    back_action = false;
+  HomeLauncherGestureHandler* home_launcher_gesture_handler =
+      Shell::Get()->app_list_controller()->home_launcher_gesture_handler();
+  if (home_launcher_gesture_handler) {
+    handled = home_launcher_gesture_handler->ShowHomeLauncher(
+        Shell::Get()->display_manager()->GetDisplayForId(display_id));
   }
 
-  // End split view mode.
-  if (Shell::Get()->split_view_controller()->IsSplitViewModeActive()) {
-    Shell::Get()->split_view_controller()->EndSplitView(
-        SplitViewController::EndReason::kHomeLauncherPressed);
-    back_action = false;
-  }
-
-  // Minimize all windows that aren't the app list in reverse order to preserve
-  // the mru ordering.
-  aura::Window* app_list_container =
-      Shell::Get()->GetPrimaryRootWindow()->GetChildById(
-          kShellWindowId_AppListTabletModeContainer);
-  aura::Window::Windows windows =
-      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList();
-  std::reverse(windows.begin(), windows.end());
-  for (auto* window : windows) {
-    if (!app_list_container->Contains(window) &&
-        !wm::GetWindowState(window)->IsMinimized()) {
-      wm::GetWindowState(window)->Minimize();
-      back_action = false;
+  if (!handled) {
+    if (Shell::Get()->window_selector_controller()->IsSelecting()) {
+      // End overview mode.
+      Shell::Get()->window_selector_controller()->ToggleOverview(
+          WindowSelector::EnterExitOverviewType::kWindowsMinimized);
+      handled = true;
+    }
+    if (Shell::Get()->split_view_controller()->IsSplitViewModeActive()) {
+      // End split view mode.
+      Shell::Get()->split_view_controller()->EndSplitView(
+          SplitViewController::EndReason::kHomeLauncherPressed);
+      handled = true;
     }
   }
 
-  if (back_action)
+  if (!handled) {
+    // Minimize all windows that aren't the app list in reverse order to
+    // preserve the mru ordering.
+    aura::Window* app_list_container =
+        Shell::Get()->GetPrimaryRootWindow()->GetChildById(
+            kShellWindowId_AppListTabletModeContainer);
+    aura::Window::Windows windows =
+        Shell::Get()->mru_window_tracker()->BuildWindowForCycleList();
+    std::reverse(windows.begin(), windows.end());
+    for (auto* window : windows) {
+      if (!app_list_container->Contains(window) &&
+          !wm::GetWindowState(window)->IsMinimized()) {
+        wm::GetWindowState(window)->Minimize();
+        handled = true;
+      }
+    }
+  }
+
+  // Perform the "back" action for the app list.
+  if (!handled)
     Shell::Get()->app_list_controller()->Back();
+
+  std::move(callback).Run(SHELF_ACTION_APP_LIST_SHOWN, base::nullopt);
 }
 
 void AppListShelfItemDelegate::ExecuteCommand(bool from_context_menu,

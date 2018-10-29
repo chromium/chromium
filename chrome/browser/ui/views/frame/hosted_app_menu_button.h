@@ -8,6 +8,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/controls/button/menu_button_listener.h"
 
 class BrowserView;
@@ -19,8 +20,8 @@ class HostedAppMenuButton : public AppMenuButton,
   explicit HostedAppMenuButton(BrowserView* browser_view);
   ~HostedAppMenuButton() override;
 
-  // Sets the color of the menu button icon.
-  void SetIconColor(SkColor color);
+  // Sets the color of the menu button icon and highlight.
+  void SetColor(SkColor color);
 
   // Fades the menu button highlight on and off.
   void StartHighlightAnimation();
@@ -30,6 +31,9 @@ class HostedAppMenuButton : public AppMenuButton,
                            const gfx::Point& point,
                            const ui::Event* event) override;
 
+  // AppMenuButton:
+  SkColor GetInkDropBaseColor() const override;
+
  private:
   void FadeHighlightOff();
 
@@ -38,6 +42,8 @@ class HostedAppMenuButton : public AppMenuButton,
 
   // The containing browser view.
   BrowserView* browser_view_;
+
+  SkColor ink_drop_color_ = gfx::kPlaceholderColor;
 
   base::OneShotTimer highlight_off_timer_;
 

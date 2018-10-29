@@ -6,9 +6,10 @@
 
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/experimental_flags.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/ui/text_field_styling.h"
@@ -28,11 +29,7 @@
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    self.cellClass = [BookmarkTextFieldCell class];
-  } else {
-    self.cellClass = [LegacyBookmarkTextFieldCell class];
-  }
+  self.cellClass = [BookmarkTextFieldCell class];
   return self;
 }
 
@@ -42,35 +39,20 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
 
-  if (experimental_flags::IsBookmarksUIRebootEnabled()) {
-    BookmarkTextFieldCell* cell =
-        base::mac::ObjCCastStrict<BookmarkTextFieldCell>(tableCell);
-    cell.textField.text = self.text;
-    cell.titleLabel.text = self.placeholder;
-    cell.textField.placeholder = self.placeholder;
-    cell.textField.tag = self.type;
-    [cell.textField addTarget:self
-                       action:@selector(textFieldDidChange:)
-             forControlEvents:UIControlEventEditingChanged];
-    cell.textField.delegate = self.delegate;
-    cell.textField.accessibilityLabel = self.text;
-    cell.textField.accessibilityIdentifier = [NSString
-        stringWithFormat:@"%@_textField", self.accessibilityIdentifier];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  } else {
-    LegacyBookmarkTextFieldCell* cell =
-        base::mac::ObjCCastStrict<LegacyBookmarkTextFieldCell>(tableCell);
-    cell.textField.text = self.text;
-    cell.textField.placeholder = self.placeholder;
-    cell.textField.tag = self.type;
-    [cell.textField addTarget:self
-                       action:@selector(textFieldDidChange:)
-             forControlEvents:UIControlEventEditingChanged];
-    cell.textField.delegate = self.delegate;
-    cell.textField.accessibilityLabel = self.text;
-    cell.textField.accessibilityIdentifier = [NSString
-        stringWithFormat:@"%@_textField", self.accessibilityIdentifier];
-  }
+  BookmarkTextFieldCell* cell =
+      base::mac::ObjCCastStrict<BookmarkTextFieldCell>(tableCell);
+  cell.textField.text = self.text;
+  cell.titleLabel.text = self.placeholder;
+  cell.textField.placeholder = self.placeholder;
+  cell.textField.tag = self.type;
+  [cell.textField addTarget:self
+                     action:@selector(textFieldDidChange:)
+           forControlEvents:UIControlEventEditingChanged];
+  cell.textField.delegate = self.delegate;
+  cell.textField.accessibilityLabel = self.text;
+  cell.textField.accessibilityIdentifier =
+      [NSString stringWithFormat:@"%@_textField", self.accessibilityIdentifier];
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 
 #pragma mark UIControlEventEditingChanged
@@ -85,9 +67,16 @@
 
 #pragma mark - BookmarkTextFieldCell
 
+@interface BookmarkTextFieldCell ()
+// Stack view to display label / value which we'll switch from horizontal to
+// vertical based on preferredContentSizeCategory.
+@property(nonatomic, strong) UIStackView* stackView;
+@end
+
 @implementation BookmarkTextFieldCell
 @synthesize textField = _textField;
 @synthesize titleLabel = _titleLabel;
+@synthesize stackView = _stackView;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -121,36 +110,52 @@
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];
 
-  // Horizontal StackView.
-  UIStackView* horizontalStack = [[UIStackView alloc]
+  // StackView.
+  self.stackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ self.titleLabel, self.textField ]];
-  horizontalStack.axis = UILayoutConstraintAxisHorizontal;
-  horizontalStack.spacing = kBookmarkCellViewSpacing;
-  horizontalStack.distribution = UIStackViewDistributionFill;
-  horizontalStack.alignment = UIStackViewAlignmentCenter;
-  [horizontalStack
+  self.stackView.axis = UILayoutConstraintAxisHorizontal;
+  self.stackView.spacing = kBookmarkCellViewSpacing;
+  self.stackView.distribution = UIStackViewDistributionFill;
+  self.stackView.alignment = UIStackViewAlignmentCenter;
+  [self.stackView
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];
-  horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.contentView addSubview:horizontalStack];
+  self.stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.contentView addSubview:self.stackView];
 
   // Set up constraints.
-  [NSLayoutConstraint activateConstraints:@[
-    [horizontalStack.topAnchor
-        constraintEqualToAnchor:self.contentView.topAnchor
-                       constant:kBookmarkCellVerticalInset],
-    [horizontalStack.bottomAnchor
-        constraintEqualToAnchor:self.contentView.bottomAnchor
-                       constant:-kBookmarkCellVerticalInset],
-    [horizontalStack.leadingAnchor
-        constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:kBookmarkCellHorizontalLeadingInset],
-    [horizontalStack.trailingAnchor
-        constraintEqualToAnchor:self.contentView.trailingAnchor
-                       constant:-kBookmarkCellHorizontalTrailingInset],
-  ]];
+  AddSameConstraintsToSidesWithInsets(
+      self.stackView, self.contentView,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom |
+          LayoutSides::kTop,
+      ChromeDirectionalEdgeInsetsMake(
+          kBookmarkCellVerticalInset, kBookmarkCellHorizontalLeadingInset,
+          kBookmarkCellVerticalInset, kBookmarkCellHorizontalTrailingInset));
+
+  [self applyContentSizeCategoryStyles];
 
   return self;
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (self.traitCollection.preferredContentSizeCategory !=
+      previousTraitCollection.preferredContentSizeCategory) {
+    [self applyContentSizeCategoryStyles];
+  }
+}
+
+- (void)applyContentSizeCategoryStyles {
+  if (ContentSizeCategoryIsAccessibilityCategory(
+          UIScreen.mainScreen.traitCollection.preferredContentSizeCategory)) {
+    self.stackView.axis = UILayoutConstraintAxisVertical;
+    self.stackView.alignment = UIStackViewAlignmentLeading;
+    self.textField.textAlignment = NSTextAlignmentLeft;
+  } else {
+    self.stackView.axis = UILayoutConstraintAxisHorizontal;
+    self.stackView.alignment = UIStackViewAlignmentCenter;
+    self.textField.textAlignment = NSTextAlignmentRight;
+  }
 }
 
 + (UIColor*)textColorForEditing:(BOOL)editing {
@@ -165,61 +170,6 @@
               forControlEvents:UIControlEventAllEvents];
   self.textField.delegate = nil;
   self.textField.text = nil;
-}
-
-@end
-
-#pragma mark - LegacyBookmarkTextFieldCell
-
-@interface LegacyBookmarkTextFieldCell ()
-@property(nonatomic, readwrite, strong)
-    UITextField<TextFieldStyling>* textField;
-@end
-
-@implementation LegacyBookmarkTextFieldCell
-
-@synthesize textField = _textField;
-
-- (instancetype)initWithStyle:(UITableViewCellStyle)style
-              reuseIdentifier:(NSString*)reuseIdentifier {
-  self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-  if (self) {
-    _textField =
-        ios::GetChromeBrowserProvider()->CreateStyledTextField(CGRectZero);
-    _textField.translatesAutoresizingMaskIntoConstraints = NO;
-    _textField.textColor = bookmark_utils_ios::darkTextColor();
-    _textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-    _textField.placeholderStyle =
-        TextFieldStylingPlaceholderFloatingPlaceholder;
-    [self.contentView addSubview:_textField];
-    const CGFloat kHorizontalPadding = 15;
-    const CGFloat kTopPadding = 8;
-    [NSLayoutConstraint activateConstraints:@[
-      [_textField.leadingAnchor
-          constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:kHorizontalPadding],
-      [_textField.topAnchor constraintEqualToAnchor:self.contentView.topAnchor
-                                           constant:kTopPadding],
-      [_textField.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kHorizontalPadding],
-      [_textField.bottomAnchor
-          constraintEqualToAnchor:self.contentView.bottomAnchor
-                         constant:-kTopPadding],
-    ]];
-  }
-  return self;
-}
-
-- (void)prepareForReuse {
-  [super prepareForReuse];
-  [self.textField resignFirstResponder];
-  [self.textField removeTarget:nil
-                        action:NULL
-              forControlEvents:UIControlEventAllEvents];
-  self.textField.delegate = nil;
-  self.textField.text = nil;
-  self.textField.textValidator = nil;
 }
 
 @end

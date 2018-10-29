@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
+#include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
@@ -44,6 +45,8 @@ class MockBrowserSwitcherSitelist : public BrowserSwitcherSitelist {
   ~MockBrowserSwitcherSitelist() override = default;
 
   MOCK_CONST_METHOD1(ShouldSwitch, bool(const GURL&));
+  MOCK_METHOD1(SetIeemSitelist, void(ParsedXml&&));
+  MOCK_METHOD1(SetExternalSitelist, void(ParsedXml&&));
 };
 
 class MockBrowserClient : public content::ContentBrowserClient {

@@ -7,8 +7,8 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "ui/ozone/platform/drm/gpu/drm_buffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
+#include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_request.h"
@@ -52,6 +52,12 @@ bool CrtcController::Modeset(const DrmOverlayPlane& plane,
 
   mode_ = mode;
   is_disabled_ = false;
+
+  // Hold modeset buffer until page flip. This fixes a crash on entering
+  // hardware mirror mode in some circumstances (bug 888553).
+  // TODO(spang): Fix this better by changing how mirrors are set up (bug
+  // 899352).
+  modeset_framebuffer_ = plane.buffer;
 
   return true;
 }
@@ -105,6 +111,10 @@ void CrtcController::MoveCursor(const gfx::Point& location) {
   if (is_disabled_)
     return;
   drm_->MoveCursor(crtc_, location);
+}
+
+void CrtcController::OnPageFlipComplete() {
+  modeset_framebuffer_ = nullptr;
 }
 
 void CrtcController::DisableCursor() {

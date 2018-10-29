@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include <vector>
-
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/frame_deadline.h"
@@ -132,15 +132,19 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // determine if scrolling/scaling in a particular direction is possible.
   float min_page_scale_factor = 0.f;
 
+  // Used to position the location top bar and page content, whose precise
+  // position is computed by the renderer compositor.
+  float top_controls_height = 0.f;
+  float top_controls_shown_ratio = 0.f;
+
+  // The time at which the LocalSurfaceId used to submit this CompositorFrame
+  // was allocated.
+  base::TimeTicks local_surface_id_allocation_time;
+
 #if defined(OS_ANDROID)
   float max_page_scale_factor = 0.f;
   gfx::SizeF root_layer_size;
   bool root_overflow_y_hidden = false;
-
-  // Used to position the Android location top bar and page content, whose
-  // precise position is computed by the renderer compositor.
-  float top_controls_height = 0.f;
-  float top_controls_shown_ratio = 0.f;
 
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.

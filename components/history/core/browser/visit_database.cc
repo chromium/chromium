@@ -301,8 +301,7 @@ bool VisitDatabase::GetVisitsForTimes(const std::vector<base::Time>& times,
                                       VisitVector* visits) {
   visits->clear();
 
-  for (std::vector<base::Time>::const_iterator it = times.begin();
-       it != times.end(); ++it) {
+  for (auto it = times.begin(); it != times.end(); ++it) {
     sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
         "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
         "WHERE visit_time == ?"));

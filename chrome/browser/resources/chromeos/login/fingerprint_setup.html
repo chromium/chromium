@@ -124,12 +124,6 @@
             [[i18nDynamic(locale, 'skipFingerprintSetup')]]
           </div>
         </oobe-text-button>
-        <oobe-text-button id="addFingerprint" class="focus-on-show"
-            hidden="[[!enrollInProgress_(percentComplete_)]]" disabled inverse>
-          <div>
-            [[i18nDynamic(locale, 'fingerprintSetupAddFingerprint')]]
-          </div>
-        </oobe-text-button>
         <oobe-text-button id="fingerprintAddAnother"
             hidden="[[!isAnotherButtonVisible_(percentComplete_,
                 canAddFinger)]]"

@@ -31,29 +31,19 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_error_event.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 
 namespace blink {
 
 void V8ErrorEvent::errorAttributeGetterCustom(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
-
-  auto private_error = V8PrivateProperty::GetErrorEventError(isolate);
-  v8::Local<v8::Value> cached_error;
-  if (private_error.GetOrUndefined(info.Holder()).ToLocal(&cached_error) &&
-      !cached_error->IsUndefined()) {
-    V8SetReturnValue(info, cached_error);
-    return;
-  }
-
   ErrorEvent* event = V8ErrorEvent::ToImpl(info.Holder());
   ScriptState* script_state = ScriptState::From(isolate->GetCurrentContext());
+
   ScriptValue error = event->error(script_state);
   v8::Local<v8::Value> error_value =
       error.IsEmpty() ? v8::Local<v8::Value>(v8::Null(isolate))
                       : error.V8Value();
-  private_error.Set(info.Holder(), error_value);
   V8SetReturnValue(info, error_value);
 }
 

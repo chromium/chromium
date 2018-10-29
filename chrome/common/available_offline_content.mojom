@@ -7,11 +7,14 @@ module chrome.mojom;
 import "url/mojom/url.mojom";
 
 // Categorizes suggested content for metrics reporting.
-// This enum is backed by a UMA histogram therefore its entries should not be
-// deleted or re-ordered and new ones should only be appended.
+// This enum duplicates the values from the NetErrorOfflineSuggestionType
+// metrics enum in enums.xml therefore its entries should not be deleted
+// or re-ordered and new ones should only be appended. Furthermore, changes
+// to this enum might effect the presentation logic in
+// components/neterror/resources/neterror.js.
 enum AvailableContentType {
   // The offline page is prefetched suggested content.
-  kPrefetchedUnopenedPage = 0,
+  kPrefetchedPage = 0,
   kVideo = 1,
   kAudio = 2,
   // The offline page was downloaded in some other way.
@@ -20,6 +23,12 @@ enum AvailableContentType {
 };
 
 // A single piece of content that is available offline.
+// Note: Some of the data stored in this struct is web content and must be
+// properly handled for securing their presentation on the net error page:
+// * Textual content must be set into the  page using the |textContent| property
+//   of the respective DOM elements.
+// * Images must be safely decoded and re-encoded to eliminate any potential
+//   malicious content.
 struct AvailableOfflineContent {
   // Together id and name_space define a unique ID for this item.
   string id;
@@ -40,7 +49,8 @@ struct AvailableOfflineContent {
 
 // A summary of available offline content.
 struct AvailableOfflineContentSummary {
-  // Total number of offline content items.
+  // Total number of offline content items (not limited to the categories listed
+  // below).
   uint32 total_items;
   // True if at least one prefetched article (Articles For You) is available.
   bool has_prefetched_page;
@@ -54,12 +64,15 @@ struct AvailableOfflineContentSummary {
 
 // Provides access to items available while offline.
 interface AvailableOfflineContentProvider {
-  // Returns some available pieces of content from downloads.
+  // Returns some available pieces of content from downloads. If not there's not
+  // enough available content deemed interesting, the returned array will be
+  // empty.
   List() => (array<AvailableOfflineContent> out);
-  // Returns summary of available offline content.
+  // Returns a summary of available offline content. If not there's not enough
+  // available content deemed interesting, the returned summary will be empty.
   Summarize() => (AvailableOfflineContentSummary out);
   // Opens one of the items returned by List().
   LaunchItem(string item_id, string name_space);
   // Opens the downloads page to view all offline content.
-  LaunchDownloadsPage();
+  LaunchDownloadsPage(bool open_prefetched_articles_tab);
 };

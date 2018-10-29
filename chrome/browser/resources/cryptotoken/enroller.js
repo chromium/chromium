@@ -388,6 +388,12 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     sendResponseOnce(sentResponse, closeable, response, sendResponse);
   }
 
+  var sender = createSenderFromMessageSender(messageSender);
+  if (!sender) {
+    sendErrorResponse({errorCode: ErrorCodes.BAD_REQUEST});
+    return null;
+  }
+
   async function getRegistrationData(
       appId, enrollChallenge, registrationData, opt_clientData) {
     var isDirect = true;
@@ -397,7 +403,10 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     } else if (chrome.cryptotokenPrivate != null) {
       isDirect = await(new Promise((resolve, reject) => {
         chrome.cryptotokenPrivate.canAppIdGetAttestation(
-            {'appId': appId, 'tabId': messageSender.tab.id}, resolve);
+            {'appId': appId,
+             'tabId': messageSender.tab.id,
+             'origin': sender.origin,
+            }, resolve);
       }));
     }
 
@@ -452,11 +461,6 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     sendErrorResponse({errorCode: ErrorCodes.TIMEOUT});
   }
 
-  var sender = createSenderFromMessageSender(messageSender);
-  if (!sender) {
-    sendErrorResponse({errorCode: ErrorCodes.BAD_REQUEST});
-    return null;
-  }
   if (sender.origin.indexOf('http://') == 0 && !HTTP_ORIGINS_ALLOWED) {
     sendErrorResponse({errorCode: ErrorCodes.BAD_REQUEST});
     return null;

@@ -2,7 +2,6 @@ This test ensures that moving the cursor in a contentEditable sends a selected t
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS Got notification: SelectedTextChanged
 PASS Got notification: SelectedTextChanged
 PASS Got notification: ValueChanged

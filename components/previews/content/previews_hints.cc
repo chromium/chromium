@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -110,8 +111,7 @@ enum class PreviewsOptimizationFilterStatus {
 };
 
 // Returns base::nullopt if |optimization_type| can't be converted.
-base::Optional<PreviewsType>
-ConvertProtoOptimizationTypeToPreviewsOptimizationType(
+base::Optional<PreviewsType> ConvertProtoOptimizationTypeToPreviewsType(
     optimization_guide::proto::OptimizationType optimization_type) {
   switch (optimization_type) {
     case optimization_guide::proto::TYPE_UNSPECIFIED:
@@ -122,6 +122,30 @@ ConvertProtoOptimizationTypeToPreviewsOptimizationType(
       return PreviewsType::RESOURCE_LOADING_HINTS;
     case optimization_guide::proto::LITE_PAGE_REDIRECT:
       return PreviewsType::LITE_PAGE_REDIRECT;
+  }
+}
+
+net::EffectiveConnectionType ConvertProtoEffectiveConnectionType(
+    optimization_guide::proto::EffectiveConnectionType proto_ect) {
+  switch (proto_ect) {
+    case optimization_guide::proto::EffectiveConnectionType::
+        EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
+      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
+    case optimization_guide::proto::EffectiveConnectionType::
+        EFFECTIVE_CONNECTION_TYPE_OFFLINE:
+      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_OFFLINE;
+    case optimization_guide::proto::EffectiveConnectionType::
+        EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
+      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
+    case optimization_guide::proto::EffectiveConnectionType::
+        EFFECTIVE_CONNECTION_TYPE_2G:
+      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_2G;
+    case optimization_guide::proto::EffectiveConnectionType::
+        EFFECTIVE_CONNECTION_TYPE_3G:
+      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_3G;
+    case optimization_guide::proto::EffectiveConnectionType::
+        EFFECTIVE_CONNECTION_TYPE_4G:
+      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G;
   }
 }
 
@@ -191,7 +215,7 @@ std::unique_ptr<PreviewsHints> PreviewsHints::CreateFromConfig(
 
   // The condition set ID is a simple increasing counter that matches the
   // order of hints in the config (where earlier hints in the config take
-  // precendence over later hints in the config if there are multiple matches).
+  // precedence over later hints in the config if there are multiple matches).
   url_matcher::URLMatcherConditionSet::ID id = 0;
   url_matcher::URLMatcherConditionFactory* condition_factory =
       hints->url_matcher_.condition_factory();
@@ -229,13 +253,19 @@ std::unique_ptr<PreviewsHints> PreviewsHints::CreateFromConfig(
         continue;
       }
       base::Optional<PreviewsType> previews_type =
-          ConvertProtoOptimizationTypeToPreviewsOptimizationType(
+          ConvertProtoOptimizationTypeToPreviewsType(
               optimization.optimization_type());
-      if (previews_type.has_value()) {
-        whitelisted_optimizations.insert(std::make_pair(
-            previews_type.value(), optimization.inflation_percent()));
+      if (!previews_type.has_value()) {
+        continue;
       }
+      // Resource loading hints should always be page hints; if they appear as
+      // top-level whitelisted optimizations, then it indicates a bug.
+      DCHECK(previews_type != PreviewsType::RESOURCE_LOADING_HINTS);
+
+      whitelisted_optimizations.insert(std::make_pair(
+          previews_type.value(), optimization.inflation_percent()));
     }
+
     url_matcher::URLMatcherCondition condition =
         condition_factory->CreateHostSuffixCondition(hint.key());
     all_conditions.push_back(new url_matcher::URLMatcherConditionSet(
@@ -250,8 +280,13 @@ std::unique_ptr<PreviewsHints> PreviewsHints::CreateFromConfig(
 
       for (const auto& page_hint : hint.page_hints()) {
         for (const auto& optimization : page_hint.whitelisted_optimizations()) {
+          if (IsDisabledExperimentalOptimization(optimization)) {
+            // This is an experimental optimization that is not enabled so
+            // continue in case there is a non-experimental one.
+            continue;
+          }
           base::Optional<PreviewsType> previews_type =
-              ConvertProtoOptimizationTypeToPreviewsOptimizationType(
+              ConvertProtoOptimizationTypeToPreviewsType(
                   optimization.optimization_type());
 
           if (!previews_type ||
@@ -278,7 +313,9 @@ std::unique_ptr<PreviewsHints> PreviewsHints::CreateFromConfig(
         "ResourceLoadingHints.PageHints.TotalReceived",
         total_page_patterns_with_resource_loading_hints_received);
   }
-  hints->url_matcher_.AddConditionSets(all_conditions);
+  if (!all_conditions.empty()) {
+    hints->url_matcher_.AddConditionSets(all_conditions);
+  }
 
   // Extract any supported large scale blacklists from the configuration.
   hints->ParseOptimizationFilters(config);
@@ -296,7 +333,7 @@ void PreviewsHints::ParseOptimizationFilters(
     const optimization_guide::proto::Configuration& config) {
   for (const auto blacklist : config.optimization_blacklists()) {
     base::Optional<PreviewsType> previews_type =
-        ConvertProtoOptimizationTypeToPreviewsOptimizationType(
+        ConvertProtoOptimizationTypeToPreviewsType(
             blacklist.optimization_type());
     if (previews_type == PreviewsType::LITE_PAGE_REDIRECT &&
         previews::params::IsLitePageServerPreviewsEnabled() &&
@@ -389,15 +426,31 @@ void PreviewsHints::Initialize() {
   }
 }
 
-bool PreviewsHints::IsWhitelisted(const GURL& url,
-                                  PreviewsType type,
-                                  int* out_inflation_percent) {
+bool PreviewsHints::IsWhitelisted(
+    const GURL& url,
+    PreviewsType type,
+    int* out_inflation_percent,
+    net::EffectiveConnectionType* out_ect_threshold) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!url.has_host())
     return false;
 
-  // First check for being whitelisted at top level for host suffix.
+  return IsWhitelistedAtTopLevel(url, type, out_inflation_percent) ||
+         IsWhitelistedInPageHints(url, type, out_inflation_percent,
+                                  out_ect_threshold);
+}
+
+bool PreviewsHints::IsWhitelistedAtTopLevel(const GURL& url,
+                                            PreviewsType type,
+                                            int* out_inflation_percent) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Resource loading hints are not processed in the top-level whitelist.
+  if (type == PreviewsType::RESOURCE_LOADING_HINTS) {
+    return false;
+  }
+
   std::set<url_matcher::URLMatcherConditionSet::ID> matches =
       url_matcher_.MatchURL(url);
 
@@ -420,6 +473,16 @@ bool PreviewsHints::IsWhitelisted(const GURL& url,
     }
   }
 
+  return false;
+}
+
+bool PreviewsHints::IsWhitelistedInPageHints(
+    const GURL& url,
+    PreviewsType type,
+    int* out_inflation_percent,
+    net::EffectiveConnectionType* out_ect_threshold) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!hint_cache_)
     return false;
 
@@ -440,9 +503,19 @@ bool PreviewsHints::IsWhitelisted(const GURL& url,
 
   for (const auto& optimization :
        matched_page_hint->whitelisted_optimizations()) {
-    if (ConvertProtoOptimizationTypeToPreviewsOptimizationType(
+    if (ConvertProtoOptimizationTypeToPreviewsType(
             optimization.optimization_type()) == type) {
+      if (IsDisabledExperimentalOptimization(optimization)) {
+        // This is an experimental optimization that is not enabled so continue
+        // in case there is a non-experimental one.
+        continue;
+      }
+      // Found whitelisted optimization.
       *out_inflation_percent = optimization.inflation_percent();
+      if (matched_page_hint->has_max_ect_trigger()) {
+        *out_ect_threshold = ConvertProtoEffectiveConnectionType(
+            matched_page_hint->max_ect_trigger());
+      }
       return true;
     }
   }
@@ -450,7 +523,7 @@ bool PreviewsHints::IsWhitelisted(const GURL& url,
   return false;
 }
 
-bool PreviewsHints::IsBlacklisted(const GURL& url, PreviewsType type) {
+bool PreviewsHints::IsBlacklisted(const GURL& url, PreviewsType type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!url.has_host())
@@ -476,6 +549,37 @@ bool PreviewsHints::MaybeLoadOptimizationHints(
 
   hint_cache_->LoadHint(url.host(), std::move(callback));
   return hint_cache_->HasHint(url.host());
+}
+
+void PreviewsHints::LogHintCacheMatch(const GURL& url,
+                                      bool is_committed,
+                                      net::EffectiveConnectionType ect) const {
+  if (!hint_cache_)
+    return;
+
+  if (hint_cache_->HasHint(url.host())) {
+    if (!is_committed) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Previews.OptimizationGuide.HintCache.HasHint.BeforeCommit", ect,
+          net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Previews.OptimizationGuide.HintCache.HasHint.AtCommit", ect,
+          net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST);
+      if (hint_cache_->IsHintLoaded(url.host())) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Previews.OptimizationGuide.HintCache.HostMatch.AtCommit", ect,
+            net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST);
+        const optimization_guide::proto::Hint* hint =
+            hint_cache_->GetHint(url.host());
+        if (FindPageHint(url, *hint) != nullptr) {
+          UMA_HISTOGRAM_ENUMERATION(
+              "Previews.OptimizationGuide.HintCache.PageMatch.AtCommit", ect,
+              net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST);
+        }
+      }
+    }
+  }
 }
 
 }  // namespace previews

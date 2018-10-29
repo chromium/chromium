@@ -14,17 +14,9 @@ async_test(t => {
   }), { once: true });
 
   video.addEventListener('loadedmetadata', t.step_func(() => {
-    const coords = getOverlayPlayButtonEdgeCoordinates();
+    const coords = videoLeftEdgeCoordinates(video);
     singleTapAtCoordinates(coords[0], coords[1]);
   }));
-
-  function getOverlayPlayButtonEdgeCoordinates() {
-    const overlayPlayBtn = mediaControlsOverlayPlayButton(video);
-    const rect = overlayPlayBtn.getBoundingClientRect();
-    const x = rect.left + 5;
-    const y = rect.top + 5;
-    return [x, y];
-  }
 
   video.load();
 });

@@ -20,4 +20,3 @@ PASS creating worker with a null name
 PASS the name attribute of worker can be set correctly
 
 TEST COMPLETE
-

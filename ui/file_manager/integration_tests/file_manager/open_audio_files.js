@@ -77,7 +77,7 @@ function audioPlayingQuery(fileName) {
 function audioTimeLeapForward(audioAppId) {
   for (let i = 1; i <= 9; ++i) {
     audioPlayerApp.fakeKeyDown(
-        audioAppId, 'body', 'ArrowRight', 'Right', false, false, false);
+        audioAppId, 'body', 'ArrowRight', false, false, false);
   }
 }
 

@@ -48,11 +48,12 @@ template("js_library") {
     script = "$script_path/js_library.py"
     forward_variables_from(invoker,
                            [
-                             "sources",
                              "deps",
                              "externs_list",
-                             "extra_sources",
                              "extra_deps",
+                             "extra_sources",
+                             "sources",
+                             "testonly",
                              "visibility",
                            ])
     output_file = "$target_gen_dir/$target_name.js_library"
@@ -146,15 +147,16 @@ template("js_binary") {
     script = "$script_path/js_binary.py"
     forward_variables_from(invoker,
                            [
-                             "sources",
-                             "deps",
-                             "outputs",
                              "bootstrap_file",
-                             "config_files",
+                             "checks_only",
                              "closure_flags",
+                             "config_files",
+                             "deps",
                              "externs_list",
                              "extra_deps",
-                             "checks_only",
+                             "outputs",
+                             "sources",
+                             "testonly",
                            ])
     args = [
       "--compiler",
@@ -237,6 +239,7 @@ template("js_type_check") {
                              [
                                "deps",
                                "closure_flags",
+                               "testonly",
                              ])
     }
   } else {

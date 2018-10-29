@@ -67,7 +67,6 @@ GestureConfiguration::GestureConfiguration()
       // 2 * max_touch_move_in_pixels_for_click_.
       span_slop_(30),
       swipe_enabled_(false),
-      tab_scrub_activation_delay_in_ms_(200),
       two_finger_tap_enabled_(false),
       velocity_tracker_strategy_(VelocityTracker::Strategy::STRATEGY_DEFAULT) {
 }

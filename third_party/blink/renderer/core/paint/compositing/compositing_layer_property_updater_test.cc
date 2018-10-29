@@ -6,6 +6,7 @@
 
 #include "cc/layers/picture_layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -107,6 +108,69 @@ TEST_F(CompositingLayerPropertyUpdaterTest,
                 .Effect()
                 ->GetCompositorElementId(),
             vertical_scrollbar_layer->ContentsLayer()->element_id());
+}
+
+TEST_F(CompositingLayerPropertyUpdaterTest,
+       RootScrollbarShouldUseParentOfOverscrollNodeAsTransformNode) {
+  auto& document = GetDocument();
+  document.GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
+      true);
+  document.SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    ::-webkit-scrollbar {
+      width: 12px;
+      background: darkblue;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: white;
+    }
+    #scroller {
+      height: 100px;
+      overflow-y: scroll;
+    }
+    .big {
+      height: 1000px;
+    }
+    </style>
+
+    <div class='big'></div>
+    <div id='scroller'>
+      <div class='big'></div>
+    </div>
+  )HTML");
+
+  {
+    const auto* root_scrollable = document.View()->LayoutViewport();
+    const auto& visual_viewport =
+        document.View()->GetPage()->GetVisualViewport();
+
+    auto* vertical_scrollbar_layer =
+        root_scrollable->LayerForVerticalScrollbar();
+    ASSERT_TRUE(vertical_scrollbar_layer);
+    EXPECT_EQ(vertical_scrollbar_layer->GetPropertyTreeState().Transform(),
+              visual_viewport.GetOverscrollElasticityTransformNode()->Parent());
+  }
+
+  // Non root scrollbar should use scroller's transform node.
+  {
+    PaintLayer* scroller_layer =
+        ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"))->Layer();
+    PaintLayerScrollableArea* scrollable_area =
+        scroller_layer->GetScrollableArea();
+    ASSERT_TRUE(scrollable_area);
+
+    auto* vertical_scrollbar_layer =
+        scrollable_area->LayerForVerticalScrollbar();
+    ASSERT_TRUE(vertical_scrollbar_layer);
+
+    auto paint_properties = scroller_layer->GetLayoutObject()
+                                .FirstFragment()
+                                .LocalBorderBoxProperties();
+
+    EXPECT_EQ(vertical_scrollbar_layer->GetPropertyTreeState().Transform(),
+              paint_properties.Transform());
+  }
 }
 
 }  // namespace blink

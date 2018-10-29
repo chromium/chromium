@@ -61,4 +61,3 @@ PASS ninth.selectionStart is 12
 PASS ninth.selectionEnd is 19
 PASS ninth.selectionStart is 0
 PASS ninth.selectionEnd is 19
-

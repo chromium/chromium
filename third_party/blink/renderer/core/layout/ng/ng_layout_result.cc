@@ -8,60 +8,89 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 
 namespace blink {
 
 NGLayoutResult::NGLayoutResult(
     scoped_refptr<const NGPhysicalFragment> physical_fragment,
-    Vector<NGOutOfFlowPositionedDescendant>&& oof_positioned_descendants,
-    Vector<NGPositionedFloat>&& positioned_floats,
-    const NGUnpositionedListMarker& unpositioned_list_marker,
-    NGExclusionSpace&& exclusion_space,
-    LayoutUnit bfc_line_offset,
-    const base::Optional<LayoutUnit> bfc_block_offset,
-    const NGMarginStrut end_margin_strut,
-    const LayoutUnit intrinsic_block_size,
-    LayoutUnit minimal_space_shortage,
-    EBreakBetween initial_break_before,
-    EBreakBetween final_break_after,
-    bool has_forced_break,
-    bool is_pushed_by_floats,
-    NGFloatTypes adjoining_floats,
-    NGLayoutResultStatus status)
-    : unpositioned_list_marker_(unpositioned_list_marker),
-      exclusion_space_(std::move(exclusion_space)),
-      bfc_line_offset_(bfc_line_offset),
-      bfc_block_offset_(bfc_block_offset),
-      end_margin_strut_(end_margin_strut),
-      intrinsic_block_size_(intrinsic_block_size),
-      minimal_space_shortage_(minimal_space_shortage),
-      initial_break_before_(initial_break_before),
-      final_break_after_(final_break_after),
-      has_forced_break_(has_forced_break),
-      is_pushed_by_floats_(is_pushed_by_floats),
-      adjoining_floats_(adjoining_floats),
-      status_(status) {
+    NGBoxFragmentBuilder* builder)
+    : unpositioned_list_marker_(builder->unpositioned_list_marker_),
+      exclusion_space_(std::move(builder->exclusion_space_)),
+      bfc_line_offset_(builder->bfc_line_offset_),
+      bfc_block_offset_(builder->bfc_block_offset_),
+      end_margin_strut_(builder->end_margin_strut_),
+      intrinsic_block_size_(builder->intrinsic_block_size_),
+      minimal_space_shortage_(builder->minimal_space_shortage_),
+      initial_break_before_(builder->initial_break_before_),
+      final_break_after_(builder->previous_break_after_),
+      has_forced_break_(builder->has_forced_break_),
+      is_pushed_by_floats_(builder->is_pushed_by_floats_),
+      adjoining_floats_(builder->adjoining_floats_),
+      status_(kSuccess) {
+  DCHECK(physical_fragment) << "Use the other constructor for aborting layout";
   root_fragment_.fragment_ = std::move(physical_fragment);
-  oof_positioned_descendants_.swap(oof_positioned_descendants);
-  positioned_floats_.swap(positioned_floats);
+  oof_positioned_descendants_ = std::move(builder->oof_positioned_descendants_);
 }
+
+NGLayoutResult::NGLayoutResult(NGLayoutResultStatus status,
+                               NGBoxFragmentBuilder* builder)
+    : bfc_line_offset_(builder->bfc_line_offset_),
+      bfc_block_offset_(builder->bfc_block_offset_),
+      end_margin_strut_(builder->end_margin_strut_),
+      initial_break_before_(EBreakBetween::kAuto),
+      final_break_after_(EBreakBetween::kAuto),
+      has_forced_break_(false),
+      is_pushed_by_floats_(false),
+      adjoining_floats_(kFloatTypeNone),
+      status_(status) {
+  DCHECK_NE(status, kSuccess)
+      << "Use the other constructor for successful layout";
+}
+
+NGLayoutResult::NGLayoutResult(
+    scoped_refptr<const NGPhysicalFragment> physical_fragment,
+    NGLineBoxFragmentBuilder* builder)
+    : unpositioned_list_marker_(builder->unpositioned_list_marker_),
+      exclusion_space_(std::move(builder->exclusion_space_)),
+      bfc_line_offset_(builder->bfc_line_offset_),
+      bfc_block_offset_(builder->bfc_block_offset_),
+      end_margin_strut_(builder->end_margin_strut_),
+      minimal_space_shortage_(LayoutUnit::Max()),
+      initial_break_before_(EBreakBetween::kAuto),
+      final_break_after_(EBreakBetween::kAuto),
+      has_forced_break_(false),
+      is_pushed_by_floats_(builder->is_pushed_by_floats_),
+      adjoining_floats_(builder->adjoining_floats_),
+      status_(kSuccess) {
+  root_fragment_.fragment_ = std::move(physical_fragment);
+  oof_positioned_descendants_ = std::move(builder->oof_positioned_descendants_);
+  positioned_floats_ = std::move(builder->positioned_floats_);
+}
+
+// We can't use =default here because RefCounted can't be copied.
+NGLayoutResult::NGLayoutResult(const NGLayoutResult& other)
+    : root_fragment_(other.root_fragment_),
+      oof_positioned_descendants_(other.oof_positioned_descendants_),
+      positioned_floats_(other.positioned_floats_),
+      unpositioned_list_marker_(other.unpositioned_list_marker_),
+      exclusion_space_(other.exclusion_space_),
+      bfc_line_offset_(other.bfc_line_offset_),
+      bfc_block_offset_(other.bfc_block_offset_),
+      end_margin_strut_(other.end_margin_strut_),
+      intrinsic_block_size_(other.intrinsic_block_size_),
+      minimal_space_shortage_(other.minimal_space_shortage_),
+      initial_break_before_(other.initial_break_before_),
+      final_break_after_(other.final_break_after_),
+      has_forced_break_(other.has_forced_break_),
+      is_pushed_by_floats_(other.is_pushed_by_floats_),
+      adjoining_floats_(other.adjoining_floats_),
+      status_(other.status_) {}
 
 // Define the destructor here, so that we can forward-declare more in the
 // header.
 NGLayoutResult::~NGLayoutResult() = default;
-
-scoped_refptr<NGLayoutResult> NGLayoutResult::CloneWithoutOffset() const {
-  Vector<NGOutOfFlowPositionedDescendant> oof_positioned_descendants(
-      oof_positioned_descendants_);
-  Vector<NGPositionedFloat> positioned_floats(positioned_floats_);
-  return base::AdoptRef(new NGLayoutResult(
-      root_fragment_.fragment_, std::move(oof_positioned_descendants),
-      std::move(positioned_floats), unpositioned_list_marker_,
-      NGExclusionSpace(exclusion_space_), bfc_line_offset_, bfc_block_offset_,
-      end_margin_strut_, intrinsic_block_size_, minimal_space_shortage_,
-      initial_break_before_, final_break_after_, has_forced_break_,
-      is_pushed_by_floats_, adjoining_floats_, Status()));
-}
 
 }  // namespace blink

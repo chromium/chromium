@@ -80,7 +80,7 @@ class HidServiceLinux::BlockingTaskHelper : public UdevWatcher::Observer {
   }
 
   void Start() {
-    base::AssertBlockingAllowed();
+    base::AssertBlockingAllowedDeprecated();
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     watcher_ = UdevWatcher::StartWatching(this);
@@ -266,7 +266,7 @@ void HidServiceLinux::OnPathOpenError(const std::string& device_path,
 // static
 void HidServiceLinux::OpenOnBlockingThread(
     std::unique_ptr<ConnectParams> params) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
   scoped_refptr<base::SequencedTaskRunner> task_runner = params->task_runner;
 
   base::FilePath device_path(params->device_info->device_node());
@@ -299,7 +299,7 @@ void HidServiceLinux::OpenOnBlockingThread(
 
 // static
 void HidServiceLinux::FinishOpen(std::unique_ptr<ConnectParams> params) {
-  base::AssertBlockingAllowed();
+  base::AssertBlockingAllowedDeprecated();
   scoped_refptr<base::SequencedTaskRunner> task_runner = params->task_runner;
 
   if (!base::SetNonBlocking(params->fd.get())) {

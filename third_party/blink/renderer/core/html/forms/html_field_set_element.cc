@@ -30,7 +30,9 @@
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/layout_fieldset.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -115,8 +117,13 @@ const AtomicString& HTMLFieldSetElement::FormControlType() const {
   return fieldset;
 }
 
-LayoutObject* HTMLFieldSetElement::CreateLayoutObject(const ComputedStyle&) {
-  return new LayoutFieldset(this);
+LayoutObject* HTMLFieldSetElement::CreateLayoutObject(
+    const ComputedStyle& style) {
+  return LayoutObjectFactory::CreateFieldset(*this, style);
+}
+
+bool HTMLFieldSetElement::ShouldForceLegacyLayout() const {
+  return !RuntimeEnabledFeatures::LayoutNGFieldsetEnabled();
 }
 
 HTMLLegendElement* HTMLFieldSetElement::Legend() const {

@@ -22,7 +22,7 @@ void InlinePainter::Paint(const PaintInfo& paint_info) {
 
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     // Inline box with self painting layer is painted in this code path.
-    if (auto* block_flow = layout_inline_.EnclosingNGBlockFlow()) {
+    if (auto* block_flow = layout_inline_.ContainingNGBlockFlow()) {
       if (auto* block_flow_fragment = block_flow->PaintFragment()) {
         block_flow_fragment->PaintInlineBoxForDescendants(
             local_paint_info, paint_offset, &layout_inline_);

@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -25,20 +27,22 @@ NetworkContextManager::NetworkContextManager(
       network_service_for_test_(std::move(network_service)),
       weak_factory_(this) {
   DCHECK(url_request_context_getter_);
+  weak_ptr_ = weak_factory_.GetWeakPtr();
+
   // The NetworkContext must be initialized on the browser's IO thread. Posting
   // this task from the constructor ensures that |network_context_| will
   // be initialized for subsequent calls to BindRequestOnIOThread().
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
-      base::BindOnce(&NetworkContextManager::InitializeOnIoThread,
-                     weak_factory_.GetWeakPtr()));
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
+      base::BindOnce(&NetworkContextManager::InitializeOnIOThread,
+                     GetWeakPtr()));
 }
 
 NetworkContextManager::~NetworkContextManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
-void NetworkContextManager::InitializeOnIoThread() {
+void NetworkContextManager::InitializeOnIOThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   network::NetworkService* network_service =
@@ -60,15 +64,29 @@ void NetworkContextManager::BindRequestOnIOThread(
       std::move(request), std::move(url_loader_factory_params));
 }
 
+void NetworkContextManager::GetProxyResolvingSocketFactoryOnIOThread(
+    network::mojom::ProxyResolvingSocketFactoryRequest request) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  network_context_->CreateProxyResolvingSocketFactory(std::move(request));
+}
+
 network::mojom::URLLoaderFactoryPtr
 NetworkContextManager::GetURLLoaderFactory() {
   network::mojom::URLLoaderFactoryPtr loader_factory;
-  content::BrowserThread::PostTask(
-      content::BrowserThread::IO, FROM_HERE,
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&NetworkContextManager::BindRequestOnIOThread,
-                     weak_factory_.GetWeakPtr(),
-                     mojo::MakeRequest(&loader_factory)));
+                     GetWeakPtr(), mojo::MakeRequest(&loader_factory)));
   return loader_factory;
+}
+
+void NetworkContextManager::GetProxyResolvingSocketFactory(
+    network::mojom::ProxyResolvingSocketFactoryRequest request) {
+  base::PostTaskWithTraits(
+      FROM_HERE, {content::BrowserThread::IO},
+      base::BindOnce(
+          &NetworkContextManager::GetProxyResolvingSocketFactoryOnIOThread,
+          GetWeakPtr(), std::move(request)));
 }
 
 //  static

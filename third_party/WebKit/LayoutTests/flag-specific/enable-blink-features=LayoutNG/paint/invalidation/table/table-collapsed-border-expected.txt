@@ -80,42 +80,22 @@
         {
           "object": "NGPhysicalTextFragment 'sit amet'",
           "rect": [23, 339, 49, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'sit amet'",
-          "rect": [23, 339, 49, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'sit amet'",
           "rect": [23, 155, 49, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'sit amet'",
-          "rect": [23, 155, 49, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'Lorem'",
           "rect": [23, 295, 43, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Lorem'",
-          "rect": [23, 295, 43, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'Lorem'",
           "rect": [23, 111, 43, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Lorem'",
-          "rect": [23, 111, 43, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment 'dolor'",
@@ -125,22 +105,12 @@
         {
           "object": "NGPhysicalTextFragment '\u00A0'",
           "rect": [17, 225, 4, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment '\u00A0'",
-          "rect": [17, 225, 4, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
           "object": "NGPhysicalTextFragment '\u00A0'",
           "rect": [17, 133, 4, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment '\u00A0'",
-          "rect": [17, 133, 4, 19],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

@@ -393,10 +393,11 @@ UserImageManager* ChromeUserManagerImpl::GetUserImageManager(
   UserImageManagerMap::iterator ui = user_image_managers_.find(account_id);
   if (ui != user_image_managers_.end())
     return ui->second.get();
-  linked_ptr<UserImageManagerImpl> mgr(
-      new UserImageManagerImpl(account_id.GetUserEmail(), this));
-  user_image_managers_[account_id] = mgr;
-  return mgr.get();
+  auto mgr =
+      std::make_unique<UserImageManagerImpl>(account_id.GetUserEmail(), this);
+  UserImageManagerImpl* mgr_raw = mgr.get();
+  user_image_managers_[account_id] = std::move(mgr);
+  return mgr_raw;
 }
 
 SupervisedUserManager* ChromeUserManagerImpl::GetSupervisedUserManager() {
@@ -1262,16 +1263,38 @@ void ChromeUserManagerImpl::ResetUserFlow(const AccountId& account_id) {
 }
 
 bool ChromeUserManagerImpl::AreSupervisedUsersAllowed() const {
-  return chrome_user_manager_util::AreSupervisedUsersAllowed(cros_settings_);
+  bool supervised_users_allowed = false;
+  cros_settings_->GetBoolean(kAccountsPrefSupervisedUsersEnabled,
+                             &supervised_users_allowed);
+  return supervised_users_allowed;
 }
 
 bool ChromeUserManagerImpl::IsGuestSessionAllowed() const {
-  return chrome_user_manager_util::IsGuestSessionAllowed(cros_settings_);
+  const AccountId& owner_account_id = GetOwnerAccountId();
+  if (owner_account_id.is_valid()) {
+    // Some Autotest policy tests appear to wipe the user list in Local State
+    // but preserve a policy file referencing an owner: https://crbug.com/850139
+    const user_manager::User* owner_user = FindUser(owner_account_id);
+    if (owner_user &&
+        owner_user->GetType() == user_manager::UserType::USER_TYPE_CHILD) {
+      return false;
+    }
+  }
+
+  // In tests CrosSettings might not be initialized.
+  if (!cros_settings_)
+    return false;
+
+  bool is_guest_allowed = false;
+  cros_settings_->GetBoolean(kAccountsPrefAllowGuest, &is_guest_allowed);
+  return is_guest_allowed;
 }
 
 bool ChromeUserManagerImpl::IsGaiaUserAllowed(
     const user_manager::User& user) const {
-  return chrome_user_manager_util::IsGaiaUserAllowed(user, cros_settings_);
+  DCHECK(user.HasGaiaAccount());
+  return cros_settings_->IsUserWhitelisted(user.GetAccountId().GetUserEmail(),
+                                           nullptr);
 }
 
 void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {
@@ -1280,7 +1303,15 @@ void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {
 
 bool ChromeUserManagerImpl::IsUserAllowed(
     const user_manager::User& user) const {
-  return chrome_user_manager_util::IsUserAllowed(user, cros_settings_);
+  DCHECK(user.GetType() == user_manager::USER_TYPE_REGULAR ||
+         user.GetType() == user_manager::USER_TYPE_GUEST ||
+         user.GetType() == user_manager::USER_TYPE_SUPERVISED ||
+         user.GetType() == user_manager::USER_TYPE_CHILD);
+
+  return chrome_user_manager_util::IsUserAllowed(
+      user, AreSupervisedUsersAllowed(), IsGuestSessionAllowed(),
+      user.HasGaiaAccount() && IsGaiaUserAllowed(user),
+      GetMinimumVersionPolicyHandler()->RequirementsAreSatisfied());
 }
 
 UserFlow* ChromeUserManagerImpl::GetDefaultUserFlow() const {
@@ -1404,22 +1435,6 @@ void ChromeUserManagerImpl::RemoveReportingUser(const AccountId& account_id) {
   ListPrefUpdate users_update(GetLocalState(), prefs::kReportingUsers);
   users_update->Remove(
       base::Value(FullyCanonicalize(account_id.GetUserEmail())), NULL);
-}
-
-void ChromeUserManagerImpl::UpdateLoginState(
-    const user_manager::User* active_user,
-    const user_manager::User* primary_user,
-    bool is_current_user_owner) const {
-  chrome_user_manager_util::UpdateLoginState(active_user, primary_user,
-                                             is_current_user_owner);
-}
-
-bool ChromeUserManagerImpl::GetPlatformKnownUserId(
-    const std::string& user_email,
-    const std::string& gaia_id,
-    AccountId* out_account_id) const {
-  return chrome_user_manager_util::GetPlatformKnownUserId(user_email, gaia_id,
-                                                          out_account_id);
 }
 
 const AccountId& ChromeUserManagerImpl::GetGuestAccountId() const {

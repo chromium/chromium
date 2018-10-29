@@ -54,7 +54,7 @@ sk_sp<SkDrawLooper> ShadowList::CreateDrawLooper(
     const Color& current_color,
     bool is_horizontal) const {
   DrawLooperBuilder draw_looper_builder;
-  for (size_t i = Shadows().size(); i--;) {
+  for (wtf_size_t i = Shadows().size(); i--;) {
     const ShadowData& shadow = Shadows()[i];
     float shadow_x = is_horizontal ? shadow.X() : shadow.Y();
     float shadow_y = is_horizontal ? shadow.Y() : -shadow.X();

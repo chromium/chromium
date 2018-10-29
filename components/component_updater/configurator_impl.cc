@@ -16,6 +16,7 @@
 #include "components/component_updater/component_updater_switches.h"
 #include "components/component_updater/component_updater_url_constants.h"
 #include "components/update_client/command_line_config_policy.h"
+#include "components/update_client/protocol_handler.h"
 #include "components/update_client/utils.h"
 #include "components/version_info/version_info.h"
 
@@ -128,6 +129,11 @@ std::vector<uint8_t> ConfiguratorImpl::GetRunActionKeyHash() const {
 // meaningful implementation for this function.
 std::string ConfiguratorImpl::GetAppGuid() const {
   return {};
+}
+
+std::unique_ptr<update_client::ProtocolHandlerFactory>
+ConfiguratorImpl::GetProtocolHandlerFactory() const {
+  return std::make_unique<update_client::ProtocolHandlerFactoryXml>();
 }
 
 }  // namespace component_updater

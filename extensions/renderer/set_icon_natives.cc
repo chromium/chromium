@@ -44,18 +44,30 @@ bool SetIconNatives::ConvertImageDataToBitmapValue(
   v8::Local<v8::Context> v8_context = context()->v8_context();
   v8::Isolate* isolate = v8_context->GetIsolate();
   v8::Local<v8::Object> data =
-      image_data->Get(v8::String::NewFromUtf8(isolate, "data"))
+      image_data
+          ->Get(v8::String::NewFromUtf8(isolate, "data",
+                                        v8::NewStringType::kInternalized)
+                    .ToLocalChecked())
           ->ToObject(isolate);
-  int width = image_data->Get(v8::String::NewFromUtf8(isolate, "width"))
+  int width = image_data
+                  ->Get(v8::String::NewFromUtf8(
+                            isolate, "width", v8::NewStringType::kInternalized)
+                            .ToLocalChecked())
                   ->Int32Value(v8_context)
                   .FromMaybe(0);
-  int height = image_data->Get(v8::String::NewFromUtf8(isolate, "height"))
-                   ->Int32Value(v8_context)
-                   .FromMaybe(0);
+  int height =
+      image_data
+          ->Get(v8::String::NewFromUtf8(isolate, "height",
+                                        v8::NewStringType::kInternalized)
+                    .ToLocalChecked())
+          ->Int32Value(v8_context)
+          .FromMaybe(0);
 
   if (width <= 0 || height <= 0) {
     isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidDimensions)));
+        v8::String::NewFromUtf8(isolate, kInvalidDimensions,
+                                v8::NewStringType::kInternalized)
+            .ToLocalChecked()));
     return false;
   }
 
@@ -64,23 +76,32 @@ bool SetIconNatives::ConvertImageDataToBitmapValue(
   int max_width = (std::numeric_limits<int>::max() / 4) / height;
   if (width > max_width) {
     isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidDimensions)));
+        v8::String::NewFromUtf8(isolate, kInvalidDimensions,
+                                v8::NewStringType::kInternalized)
+            .ToLocalChecked()));
     return false;
   }
 
-  int data_length = data->Get(v8::String::NewFromUtf8(isolate, "length"))
-                        ->Int32Value(v8_context)
-                        .FromMaybe(0);
+  int data_length =
+      data->Get(v8::String::NewFromUtf8(isolate, "length",
+                                        v8::NewStringType::kInternalized)
+                    .ToLocalChecked())
+          ->Int32Value(v8_context)
+          .FromMaybe(0);
   if (data_length != 4 * width * height) {
-    isolate->ThrowException(
-        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kInvalidData)));
+    isolate->ThrowException(v8::Exception::Error(
+        v8::String::NewFromUtf8(isolate, kInvalidData,
+                                v8::NewStringType::kInternalized)
+            .ToLocalChecked()));
     return false;
   }
 
   SkBitmap bitmap;
   if (!bitmap.tryAllocN32Pixels(width, height)) {
-    isolate->ThrowException(
-        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kNoMemory)));
+    isolate->ThrowException(v8::Exception::Error(
+        v8::String::NewFromUtf8(isolate, kNoMemory,
+                                v8::NewStringType::kInternalized)
+            .ToLocalChecked()));
     return false;
   }
   bitmap.eraseARGB(0, 0, 0, 0);
@@ -128,7 +149,10 @@ bool SetIconNatives::ConvertImageDataSetToBitmapValueSet(
     v8::Local<v8::Object>* bitmap_set_value) {
   v8::Isolate* isolate = context()->v8_context()->GetIsolate();
   v8::Local<v8::Object> image_data_set =
-      details->Get(v8::String::NewFromUtf8(isolate, "imageData"))
+      details
+          ->Get(v8::String::NewFromUtf8(isolate, "imageData",
+                                        v8::NewStringType::kInternalized)
+                    .ToLocalChecked())
           ->ToObject(isolate);
 
   DCHECK(bitmap_set_value);
@@ -160,12 +184,18 @@ void SetIconNatives::SetIconCommon(
     return;
 
   v8::Local<v8::Object> dict(v8::Object::New(args.GetIsolate()));
-  dict->Set(v8::String::NewFromUtf8(args.GetIsolate(), "imageData"),
+  dict->Set(v8::String::NewFromUtf8(args.GetIsolate(), "imageData",
+                                    v8::NewStringType::kInternalized)
+                .ToLocalChecked(),
             bitmap_set_value);
-  if (details->Has(v8::String::NewFromUtf8(args.GetIsolate(), "tabId"))) {
-    dict->Set(
-        v8::String::NewFromUtf8(args.GetIsolate(), "tabId"),
-        details->Get(v8::String::NewFromUtf8(args.GetIsolate(), "tabId")));
+  v8::Local<v8::String> tabId =
+      v8::String::NewFromUtf8(args.GetIsolate(), "tabId",
+                              v8::NewStringType::kInternalized)
+          .ToLocalChecked();
+  bool has_tabid = false;
+  if (details->Has(context()->v8_context(), tabId).To(&has_tabid) &&
+      has_tabid) {
+    dict->Set(tabId, details->Get(tabId));
   }
   args.GetReturnValue().Set(dict);
 }

@@ -2,7 +2,6 @@ This test makes sure we do not crash if javascript removes a cell.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
 PASS successfullyParsed is true
 
 TEST COMPLETE

@@ -33,6 +33,7 @@ ContentSettingImageView::ContentSettingImageView(
       bubble_view_(nullptr) {
   DCHECK(delegate_);
   SetUpForInOutAnimation();
+  image()->EnableCanvasFlippingForRTLUI(true);
 }
 
 ContentSettingImageView::~ContentSettingImageView() {
@@ -152,14 +153,13 @@ bool ContentSettingImageView::IsBubbleShowing() const {
   return bubble_view_ != nullptr;
 }
 
+SkColor ContentSettingImageView::GetInkDropBaseColor() const {
+  return delegate_->GetContentSettingInkDropColor();
+}
+
 ContentSettingImageModel::ImageType ContentSettingImageView::GetTypeForTesting()
     const {
   return content_setting_image_model_->image_type();
-}
-
-SkColor ContentSettingImageView::GetInkDropBaseColor() const {
-  return icon_color_ ? icon_color_.value()
-                     : IconLabelBubbleView::GetInkDropBaseColor();
 }
 
 void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {

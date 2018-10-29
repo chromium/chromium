@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical" >
-        <org.chromium.chrome.browser.widget.TintedImageButton
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/security_button"
             style="@style/LocationBarButton"
             android:layout_width="@dimen/location_bar_icon_width"
@@ -27,7 +27,7 @@
             android:layout_gravity="center_vertical"
             android:scaleType="center"
             android:visibility="invisible"
-            app:chrometint="@color/dark_mode_tint" />
+            app:tint="@color/dark_mode_tint" />
         <view
             class="org.chromium.chrome.browser.toolbar.CustomTabToolbar$InterceptTouchLayout"
             android:id="@+id/title_url_container"
@@ -46,18 +46,46 @@
                 android:inputType="none"
                 android:maxLines="1"
                 android:paddingEnd="@dimen/toolbar_edge_padding"
-                android:textSize="@dimen/custom_tabs_title_text_size"
+                style="@style/BlackTitle1"
                 android:visibility="gone" />
-            <org.chromium.chrome.browser.omnibox.UrlBar
-                android:id="@+id/url_bar"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@null"
-                android:inputType="none"
-                android:singleLine="true"
-                android:paddingEnd="@dimen/toolbar_edge_padding"
-                android:textSize="@dimen/location_bar_url_text_size" />
+                android:layout_gravity="bottom" >
+                <TextView
+                    android:id="@+id/url_bar_lite_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/location_bar_preview_lite_page_status"
+                    style="@style/BlackCaptionDefault"
+                    android:visibility="gone" />
+
+                <!-- This separator is in line with text and is used in lieu
+                     of a | character. Therefore, use the text size for its
+                     height and not a dp value. -->
+                <View
+                    android:id="@+id/url_bar_lite_status_separator"
+                    android:layout_height="@dimen/custom_tabs_url_text_size"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/custom_tabs_url_lite_separator_margin"
+                    android:layout_marginEnd="@dimen/custom_tabs_url_lite_separator_margin"
+                    style="@style/VerticalDivider"
+                    android:visibility="gone" />
+
+                <org.chromium.chrome.browser.omnibox.UrlBar
+                    android:id="@+id/url_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    android:paddingEnd="@dimen/toolbar_edge_padding"
+                    style="@style/BlackCaptionDefault" />
+            </LinearLayout>
         </view>
     </FrameLayout>
     <LinearLayout
@@ -68,7 +96,7 @@
         android:layout_gravity="center_vertical|end"
         android:gravity="center_vertical"
         android:orientation="horizontal" />
-    <org.chromium.chrome.browser.widget.TintedImageButton
+    <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/menu_button"
         style="@style/ToolbarButton"
         android:layout_gravity="center_vertical|end"
@@ -77,5 +105,5 @@
         android:src="@drawable/ic_more_vert_black_24dp"
         android:contentDescription="@string/accessibility_toolbar_btn_menu"
         android:background="@null"
-        app:chrometint="@color/dark_mode_tint" />
+        app:tint="@color/dark_mode_tint" />
 </org.chromium.chrome.browser.toolbar.CustomTabToolbar>

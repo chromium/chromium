@@ -533,6 +533,7 @@ if (is_linux && !is_chromeos) {
     deps = [
       ":test_support",
       "//base",
+      "//base/test:test_support",
       "//media",
       "//net",
     ]

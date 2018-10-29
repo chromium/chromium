@@ -21,6 +21,7 @@ class NotificationHiddenView : public views::View, views::ButtonListener {
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
+ private:
   DISALLOW_COPY_AND_ASSIGN(NotificationHiddenView);
 };
 

@@ -76,23 +76,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
  protected:
   void DidChangeVisibility() override;
 
-  const gfx::QuadF& SharedGeometryQuad() const { return shared_geometry_quad_; }
-  const StaticGeometryBinding* SharedGeometry() const {
-    return shared_geometry_.get();
-  }
-
-  // Returns the format to use for storage if copying from the current
-  // framebuffer. If the root renderpass is current, it uses the best matching
-  // format from the OutputSurface, otherwise it uses the best matching format
-  // from the texture being drawn to as the backbuffer.
-  GLenum GetFramebufferCopyTextureFormat();
-  void ReleaseRenderPassTextures();
-  enum BoundGeometry { NO_BINDING, SHARED_BINDING, CLIPPED_BINDING };
-  void PrepareGeometry(BoundGeometry geometry_to_bind);
-  void SetStencilEnabled(bool enabled);
   bool stencil_enabled() const { return stencil_shadow_; }
-  void SetBlendEnabled(bool enabled);
-  bool blend_enabled() const { return blend_shadow_; }
 
   bool CanPartialSwap() override;
   void UpdateRenderPassTextures(
@@ -169,6 +153,18 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
 
   struct DrawRenderPassDrawQuadParams;
 
+  // Returns the format to use for storage if copying from the current
+  // framebuffer. If the root renderpass is current, it uses the best matching
+  // format from the OutputSurface, otherwise it uses the best matching format
+  // from the texture being drawn to as the backbuffer.
+  GLenum GetFramebufferCopyTextureFormat();
+  void ReleaseRenderPassTextures();
+  enum BoundGeometry { NO_BINDING, SHARED_BINDING, CLIPPED_BINDING };
+  void PrepareGeometry(BoundGeometry geometry_to_bind);
+  void SetStencilEnabled(bool enabled);
+  void SetBlendEnabled(bool enabled);
+  bool blend_enabled() const { return blend_shadow_; }
+
   // If any of the following functions returns false, then it means that drawing
   // is not possible.
   bool InitializeRPDQParameters(DrawRenderPassDrawQuadParams* params);
@@ -199,7 +195,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
       const RenderPassDrawQuad* quad,
       const gfx::Transform& contents_device_transform,
       const cc::FilterOperations* filters,
-      const cc::FilterOperations* background_filters,
+      const cc::FilterOperations* backdrop_filters,
       const gfx::QuadF* clip_region,
       bool use_aa,
       gfx::Rect* unclipped_rect);
@@ -209,10 +205,10 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
 
   static bool ShouldApplyBackgroundFilters(
       const RenderPassDrawQuad* quad,
-      const cc::FilterOperations* background_filters);
+      const cc::FilterOperations* backdrop_filters);
   sk_sp<SkImage> ApplyBackgroundFilters(
       const RenderPassDrawQuad* quad,
-      const cc::FilterOperations& background_filters,
+      const cc::FilterOperations& backdrop_filters,
       uint32_t background_texture,
       const gfx::Rect& rect,
       const gfx::Rect& unclipped_rect);
@@ -258,6 +254,11 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   void DrawQuadGeometryWithAA(const DrawQuad* quad,
                               gfx::QuadF* local_quad,
                               const gfx::Rect& tile_rect);
+
+  const gfx::QuadF& SharedGeometryQuad() const { return shared_geometry_quad_; }
+  const StaticGeometryBinding* SharedGeometry() const {
+    return shared_geometry_.get();
+  }
 
   // If |dst_color_space| is invalid, then no color conversion (apart from
   // YUV to RGB conversion) is performed. This explicit argument is available

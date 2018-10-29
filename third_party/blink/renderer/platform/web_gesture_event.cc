@@ -68,7 +68,8 @@ WebFloatSize WebGestureEvent::TapAreaInRootFrame() const {
     return WebFloatSize(data.long_press.width / frame_scale_,
                         data.long_press.height / frame_scale_);
   } else if (type_ == WebInputEvent::kGestureTap ||
-             type_ == WebInputEvent::kGestureTapUnconfirmed) {
+             type_ == WebInputEvent::kGestureTapUnconfirmed ||
+             type_ == WebInputEvent::kGestureDoubleTap) {
     return WebFloatSize(data.tap.width / frame_scale_,
                         data.tap.height / frame_scale_);
   } else if (type_ == WebInputEvent::kGestureTapDown) {
@@ -128,6 +129,7 @@ void WebGestureEvent::FlattenTransform() {
         break;
       case WebInputEvent::kGestureTap:
       case WebInputEvent::kGestureTapUnconfirmed:
+      case WebInputEvent::kGestureDoubleTap:
         data.tap.width /= frame_scale_;
         data.tap.height /= frame_scale_;
         break;

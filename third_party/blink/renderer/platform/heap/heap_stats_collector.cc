@@ -79,11 +79,13 @@ void ThreadHeapStatsCollector::NotifySweepingCompleted() {
           ? static_cast<double>(current().marked_bytes) /
                 current_.object_size_in_bytes_before_sweeping
           : 0.0;
+  current_.gc_nested_in_v8_ = gc_nested_in_v8_;
   previous_ = std::move(current_);
   // Reset the current state.
   static_assert(!std::is_polymorphic<Event>::value,
                 "Event should not be polymorphic");
   memset(&current_, 0, sizeof(current_));
+  gc_nested_in_v8_ = TimeDelta();
 }
 
 void ThreadHeapStatsCollector::UpdateReason(BlinkGC::GCReason reason) {

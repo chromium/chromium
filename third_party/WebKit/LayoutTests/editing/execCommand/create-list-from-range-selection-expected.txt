@@ -13,4 +13,6 @@
 |   <li>
 |     "bar"
 |   <li>
-|     "ba<#selection-focus>z"
+|     <span>
+|       id="end"
+|       "ba<#selection-focus>z"

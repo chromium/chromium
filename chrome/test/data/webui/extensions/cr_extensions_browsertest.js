@@ -439,6 +439,29 @@ TEST_F(
           extension_manager_tests.TestNames.UrlNavigationToDetails);
     });
 
+TEST_F(
+    'CrExtensionsManagerTestWithIdQueryParam', 'UrlNavigationToActivityLogFail',
+    function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.UrlNavigationToActivityLogFail);
+    });
+
+CrExtensionsManagerTestWithActivityLogFlag =
+    class extends CrExtensionsManagerTestWithIdQueryParam {
+  /** @override */
+  get commandLineSwitches() {
+    return [{
+      switchName: 'enable-extension-activity-logging',
+    }];
+  }
+};
+
+TEST_F(
+    'CrExtensionsManagerTestWithActivityLogFlag',
+    'UrlNavigationToActivityLogSuccess', function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.UrlNavigationToActivityLogSuccess);
+    });
 
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Keyboard Shortcuts Tests
@@ -526,7 +549,9 @@ TEST_F('CrExtensionsPackDialogTest', 'Interaction', function() {
 // http://crbug.com/832885
 // Temporarily disabling on Mac due to flaky dialog visibility failure.
 // http://crbug.com/877109
-GEN('#if defined(OS_WIN) || defined(OS_MACOSX)');
+// And flay on ChromeOS as well. Added comments about ChromeOS to
+// http://crbug.com/877109
+GEN('#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_CHROMEOS)');
 GEN('#define MAYBE_PackSuccess DISABLED_PackSuccess');
 GEN('#else');
 GEN('#define MAYBE_PackSuccess PackSuccess');
@@ -539,7 +564,14 @@ TEST_F('CrExtensionsPackDialogTest', 'PackError', function() {
   this.runMochaTest(extension_pack_dialog_tests.TestNames.PackError);
 });
 
-TEST_F('CrExtensionsPackDialogTest', 'PackWarning', function() {
+// Temporarily disabling on Mac due to flakiness.
+// http://crbug.com/877109
+GEN('#if defined(OS_MACOSX)');
+GEN('#define MAYBE_PackWarning DISABLED_PackWarning');
+GEN('#else');
+GEN('#define MAYBE_PackWarning PackWarning');
+GEN('#endif');
+TEST_F('CrExtensionsPackDialogTest', 'MAYBE_PackWarning', function() {
   this.runMochaTest(extension_pack_dialog_tests.TestNames.PackWarning);
 });
 

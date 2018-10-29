@@ -1,0 +1,70 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+group("closure_compile") {
+  deps = [
+    ":welcome_files",
+    "./email:closure_compile",
+    "./google_apps:closure_compile",
+    "./set_as_default:closure_compile",
+  ]
+}
+
+js_type_check("welcome_files") {
+  deps = [
+    ":email_interstitial",
+    ":landing_view",
+    ":signin_view",
+    ":welcome_app",
+  ]
+}
+
+js_library("email_interstitial") {
+  deps = [
+    ":welcome_browser_proxy",
+    "./email/:nux_email_proxy",
+  ]
+}
+
+js_library("landing_view") {
+  deps = [
+    ":navigation_behavior",
+    ":welcome_browser_proxy",
+  ]
+}
+
+js_library("signin_view") {
+  deps = [
+    ":navigation_behavior",
+    ":welcome_browser_proxy",
+    "./email/:nux_email_proxy",
+  ]
+}
+
+js_library("navigation_behavior") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("welcome_app") {
+  deps = [
+    ":navigation_behavior",
+    ":welcome_browser_proxy",
+    "./set_as_default/:nux_set_as_default_proxy",
+    "./shared:nux_types",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:promise_resolver",
+  ]
+}
+
+js_library("welcome_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}

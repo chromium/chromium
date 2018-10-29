@@ -266,6 +266,8 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
   Member<EventQueue> event_queue_;
 
   bool buffered_amount_update_task_pending_;
+
+  bool was_autoupgraded_to_wss_;
 };
 
 }  // namespace blink

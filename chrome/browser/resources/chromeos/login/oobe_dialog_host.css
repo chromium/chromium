@@ -7,6 +7,7 @@
  */
 :host(:not([not-a-dialog]):not([hidden])) {
   display: flex;
+  min-height: 0;
 }
 
 :host(:not([not-a-dialog])) {
@@ -15,6 +16,7 @@
   box-shadow: unset;
   flex-direction: column;
   height: 640px;
+  min-height: 0;
   position: relative;
   width: 768px;
 }

@@ -40,11 +40,11 @@ struct WebIDBObservation;
 
 class WebIDBDatabaseCallbacks {
  public:
-  using ObservationIndexMap = std::unordered_map<int32_t, std::vector<int32_t>>;
+  using ObservationIndexMap = std::unordered_map<int32_t, WebVector<int32_t>>;
 
   // Maps observer to transaction, which needs an id and a scope.
   using TransactionMap =
-      std::unordered_map<int32_t, std::pair<int64_t, std::vector<int64_t>>>;
+      std::unordered_map<int32_t, std::pair<int64_t, WebVector<int64_t>>>;
 
   virtual ~WebIDBDatabaseCallbacks() = default;
 
@@ -56,8 +56,8 @@ class WebIDBDatabaseCallbacks {
                        const WebIDBDatabaseError&) = 0;
   virtual void OnComplete(long long transaction_id) = 0;
   virtual void OnChanges(const ObservationIndexMap&,
-                         WebVector<WebIDBObservation> observations,
-                         const TransactionMap& transactions) = 0;
+                         WebVector<WebIDBObservation>,
+                         const TransactionMap&) = 0;
   virtual void Detach() = 0;
 };
 

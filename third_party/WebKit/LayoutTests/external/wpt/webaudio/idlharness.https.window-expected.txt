@@ -32,7 +32,6 @@ PASS BaseAudioContext interface: operation createScriptProcessor(unsigned long, 
 PASS BaseAudioContext interface: operation createStereoPanner()
 PASS BaseAudioContext interface: operation createWaveShaper()
 PASS BaseAudioContext interface: operation decodeAudioData(ArrayBuffer, DecodeSuccessCallback, DecodeErrorCallback)
-PASS BaseAudioContext interface: operation resume()
 PASS AudioContext interface: existence and properties of interface object
 PASS AudioContext interface object length
 PASS AudioContext interface object name
@@ -42,17 +41,19 @@ PASS AudioContext interface: existence and properties of interface prototype obj
 PASS AudioContext interface: attribute baseLatency
 FAIL AudioContext interface: attribute outputLatency assert_true: The prototype object must have a property "outputLatency" expected true got false
 PASS AudioContext interface: operation getOutputTimestamp()
+PASS AudioContext interface: operation resume()
 PASS AudioContext interface: operation suspend()
 PASS AudioContext interface: operation close()
-FAIL AudioContext interface: operation createMediaElementSource(HTMLMediaElement) assert_own_property: interface prototype object missing non-static operation expected property "createMediaElementSource" missing
-FAIL AudioContext interface: operation createMediaStreamSource(MediaStream) assert_own_property: interface prototype object missing non-static operation expected property "createMediaStreamSource" missing
+PASS AudioContext interface: operation createMediaElementSource(HTMLMediaElement)
+PASS AudioContext interface: operation createMediaStreamSource(MediaStream)
 FAIL AudioContext interface: operation createMediaStreamTrackSource(MediaStreamTrack) assert_own_property: interface prototype object missing non-static operation expected property "createMediaStreamTrackSource" missing
-FAIL AudioContext interface: operation createMediaStreamDestination() assert_own_property: interface prototype object missing non-static operation expected property "createMediaStreamDestination" missing
+PASS AudioContext interface: operation createMediaStreamDestination()
 PASS AudioContext must be primary interface of context
 PASS Stringification of context
 PASS AudioContext interface: context must inherit property "baseLatency" with the proper type
 FAIL AudioContext interface: context must inherit property "outputLatency" with the proper type assert_inherits: property "outputLatency" not found in prototype chain
 PASS AudioContext interface: context must inherit property "getOutputTimestamp()" with the proper type
+PASS AudioContext interface: context must inherit property "resume()" with the proper type
 PASS AudioContext interface: context must inherit property "suspend()" with the proper type
 PASS AudioContext interface: context must inherit property "close()" with the proper type
 PASS AudioContext interface: context must inherit property "createMediaElementSource(HTMLMediaElement)" with the proper type
@@ -96,7 +97,6 @@ PASS BaseAudioContext interface: context must inherit property "createStereoPann
 PASS BaseAudioContext interface: context must inherit property "createWaveShaper()" with the proper type
 PASS BaseAudioContext interface: context must inherit property "decodeAudioData(ArrayBuffer, DecodeSuccessCallback, DecodeErrorCallback)" with the proper type
 PASS BaseAudioContext interface: calling decodeAudioData(ArrayBuffer, DecodeSuccessCallback, DecodeErrorCallback) on context with too few arguments must throw TypeError
-PASS BaseAudioContext interface: context must inherit property "resume()" with the proper type
 PASS OfflineAudioContext interface: existence and properties of interface object
 PASS OfflineAudioContext interface object length
 PASS OfflineAudioContext interface object name
@@ -104,12 +104,14 @@ PASS OfflineAudioContext interface: existence and properties of interface protot
 PASS OfflineAudioContext interface: existence and properties of interface prototype object's "constructor" property
 PASS OfflineAudioContext interface: existence and properties of interface prototype object's @@unscopables property
 PASS OfflineAudioContext interface: operation startRendering()
+PASS OfflineAudioContext interface: operation resume()
 PASS OfflineAudioContext interface: operation suspend(double)
 PASS OfflineAudioContext interface: attribute length
 PASS OfflineAudioContext interface: attribute oncomplete
 PASS OfflineAudioContext must be primary interface of new OfflineAudioContext(1, 1, sample_rate)
 PASS Stringification of new OfflineAudioContext(1, 1, sample_rate)
 PASS OfflineAudioContext interface: new OfflineAudioContext(1, 1, sample_rate) must inherit property "startRendering()" with the proper type
+PASS OfflineAudioContext interface: new OfflineAudioContext(1, 1, sample_rate) must inherit property "resume()" with the proper type
 PASS OfflineAudioContext interface: new OfflineAudioContext(1, 1, sample_rate) must inherit property "suspend(double)" with the proper type
 PASS OfflineAudioContext interface: calling suspend(double) on new OfflineAudioContext(1, 1, sample_rate) with too few arguments must throw TypeError
 PASS OfflineAudioContext interface: new OfflineAudioContext(1, 1, sample_rate) must inherit property "length" with the proper type
@@ -148,7 +150,6 @@ PASS BaseAudioContext interface: new OfflineAudioContext(1, 1, sample_rate) must
 PASS BaseAudioContext interface: new OfflineAudioContext(1, 1, sample_rate) must inherit property "createWaveShaper()" with the proper type
 PASS BaseAudioContext interface: new OfflineAudioContext(1, 1, sample_rate) must inherit property "decodeAudioData(ArrayBuffer, DecodeSuccessCallback, DecodeErrorCallback)" with the proper type
 PASS BaseAudioContext interface: calling decodeAudioData(ArrayBuffer, DecodeSuccessCallback, DecodeErrorCallback) on new OfflineAudioContext(1, 1, sample_rate) with too few arguments must throw TypeError
-PASS BaseAudioContext interface: new OfflineAudioContext(1, 1, sample_rate) must inherit property "resume()" with the proper type
 PASS OfflineAudioCompletionEvent interface: existence and properties of interface object
 PASS OfflineAudioCompletionEvent interface object length
 PASS OfflineAudioCompletionEvent interface object name

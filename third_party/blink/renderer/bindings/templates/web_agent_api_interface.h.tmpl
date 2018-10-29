@@ -1,9 +1,8 @@
 {% filter format_blink_cpp_source_code %}
 
 {% include 'copyright_block.txt' %}
-
-#ifndef WEB_API_{{class_name.macro_case}}_H
-#define WEB_API_{{class_name.macro_case}}_H
+#ifndef {{header_guard}}
+#define {{header_guard}}
 
 {% for include_file in header_includes %}
 #include "{{include_file}}"
@@ -41,6 +40,6 @@ class {{class_name.upper_camel_case}} : public {% if not base_class -%}
 
 }  // namespace web
 
-#endif  // WEB_API_{{class_name.macro_case}}_H
+#endif  // {{header_guard}}
 
 {% endfilter %}

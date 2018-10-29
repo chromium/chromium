@@ -1,3 +1,2 @@
-
 This test passes if the progress element doesn't have form attribute.
 PASS

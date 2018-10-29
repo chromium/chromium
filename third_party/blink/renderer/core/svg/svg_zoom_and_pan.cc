@@ -28,12 +28,12 @@ namespace blink {
 SVGZoomAndPan::SVGZoomAndPan() : zoom_and_pan_(kSVGZoomAndPanMagnify) {}
 
 bool SVGZoomAndPan::IsKnownAttribute(const QualifiedName& attr_name) {
-  return attr_name == SVGNames::zoomAndPanAttr;
+  return attr_name == svg_names::kZoomAndPanAttr;
 }
 
 bool SVGZoomAndPan::ParseAttribute(const QualifiedName& name,
                                    const AtomicString& value) {
-  if (name != SVGNames::zoomAndPanAttr)
+  if (name != svg_names::kZoomAndPanAttr)
     return false;
   zoom_and_pan_ = kSVGZoomAndPanUnknown;
   if (!value.IsEmpty()) {

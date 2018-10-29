@@ -1,5 +1,6 @@
 rootWebArea
 ++textField description='Your username should be your email id' descriptionFrom=relatedElement
+++++genericContainer
 ++tooltip name='Your username should be your email id'
 ++++staticText name='Your username should be your email id'
 ++++++inlineTextBox name='Your username should be your email id'

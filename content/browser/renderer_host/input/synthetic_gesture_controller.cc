@@ -40,11 +40,10 @@ void SyntheticGestureController::QueueSyntheticGesture(
     StartGesture(*pending_gesture_queue_.FrontGesture());
 }
 
-void SyntheticGestureController::StartTimer() {
-  // TODO(sad): Change the interval to allow sending multiple events per begin
-  // frame.
+void SyntheticGestureController::StartTimer(bool high_frequency) {
   dispatch_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMicroseconds(16666),
+      FROM_HERE,
+      base::TimeDelta::FromMicroseconds(high_frequency ? 8333 : 16666),
       base::BindRepeating(
           [](base::WeakPtr<SyntheticGestureController> weak_ptr) {
             if (weak_ptr)
@@ -90,7 +89,7 @@ void SyntheticGestureController::StartGesture(const SyntheticGesture& gesture) {
                            "SyntheticGestureController::running",
                            &gesture);
   if (!dispatch_timer_.IsRunning())
-    StartTimer();
+    StartTimer(gesture.AllowHighFrequencyDispatch());
 }
 
 void SyntheticGestureController::StopGesture(

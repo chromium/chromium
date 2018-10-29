@@ -1,5 +1,5 @@
 /**
- * @fileoverview Closure definitions of Mojo service objects.
+ * @fileoverview Closure definitions of Mojo core IDL and bindings objects.
  */
 
 const Mojo = {};
@@ -105,3 +105,63 @@ mojo.Interface = class {
  * @return {!mojo.InterfaceRequest}
  */
 mojo.makeRequest = function(interfacePtr) {};
+
+/** @const */
+mojo.internal = {};
+
+mojo.internal.InterfaceProxyBase = class {
+  /**
+   * @param {MojoHandle=} opt_handle
+   */
+  constructor(opt_handle) {}
+
+  /**
+   * @param {!MojoHandle} handle
+   */
+  bindHandle(handle) {}
+
+  unbind() {}
+
+  /**
+   * @param {number} ordinal
+   * @param {!Object} paramStruct
+   * @param {!Object} responseStruct
+   * @param {!Array} args
+   * @return {!Promise}
+   */
+  sendMessage(ordinal, paramStruct, responseStruct, args) {}
+};
+
+mojo.internal.InterfaceTarget = class {
+  constructor() {}
+
+  /**
+   * @param {number} ordinal
+   * @param {!Object} paramStruct
+   * @param {!Object} responseStruct
+   * @param {!Function} handler
+   */
+  registerHandler(ordinal, paramStruct, responseStruct, handler) {}
+};
+
+mojo.internal.InterfaceCallbackTarget = class {
+  constructor() {}
+
+  /**
+   * @param {!Function} listener
+   * @return {number}
+   */
+  addListener(listener) {}
+
+  /**
+   * @param {number} id
+   * @return {boolean}
+   */
+  removeListener(id) {}
+
+  /**
+   * @param {boolean} expectsResponse
+   * @return {!Function}
+   */
+  createTargetHandler(expectsResponse) {}
+};

@@ -255,11 +255,8 @@ TEST_F(ActivityLogTest, LogPrerender) {
   content::WebContents *contents = contentses[0];
   ASSERT_TRUE(prerender_manager->IsWebContentsPrerendering(contents, NULL));
 
-  ScriptExecutionObserver::ExecutingScriptsMap executing_scripts;
-  executing_scripts[extension->id()].insert("script");
-
-  static_cast<ScriptExecutionObserver*>(activity_log)
-      ->OnScriptsExecuted(contents, executing_scripts, url);
+  activity_log->OnScriptsExecuted(contents, {{extension->id(), {"script"}}},
+                                  url);
 
   activity_log->GetFilteredActions(
       extension->id(), Action::ACTION_ANY, "", "", "", 0,

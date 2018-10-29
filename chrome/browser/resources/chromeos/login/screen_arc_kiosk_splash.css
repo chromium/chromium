@@ -7,6 +7,7 @@
   -webkit-justify-content: center;
   background: white;
   display: flex;
+  min-height: 0;
 }
 
 #arc-splash-content {
@@ -14,6 +15,7 @@
   -webkit-justify-content: center;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   position: relative;
 }
 
@@ -25,6 +27,7 @@
   font-size: 48px;
   height: 96px;
   line-height: 96px;
+  min-height: 0;
   padding-inline-start: 108px;
 }
 

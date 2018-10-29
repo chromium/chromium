@@ -327,8 +327,7 @@ class AnimatedContentSamplerParameterizedTest
     bool has_detection_switched = false;
     bool has_detection_flip_flopped_once = false;
     ResetFrameCounters();
-    for (std::vector<Event>::const_iterator i = events.begin();
-         i != events.end(); ++i) {
+    for (auto i = events.begin(); i != events.end(); ++i) {
       sampler()->ConsiderPresentationEvent(i->first, i->second);
 
       // Detect when the sampler locks in/out, and that it stays that way for

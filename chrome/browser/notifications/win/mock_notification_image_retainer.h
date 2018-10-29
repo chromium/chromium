@@ -5,12 +5,8 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_WIN_MOCK_NOTIFICATION_IMAGE_RETAINER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_WIN_MOCK_NOTIFICATION_IMAGE_RETAINER_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "chrome/browser/notifications/win/notification_image_retainer.h"
-
-class GURL;
 
 namespace gfx {
 class Image;
@@ -20,13 +16,12 @@ class Image;
 // predictable paths to callers wanting to register temporary files.
 class MockNotificationImageRetainer : public NotificationImageRetainer {
  public:
-  MockNotificationImageRetainer() : NotificationImageRetainer(nullptr) {}
+  MockNotificationImageRetainer() : NotificationImageRetainer() {}
   ~MockNotificationImageRetainer() override = default;
 
   // NotificationImageRetainer implementation:
-  base::FilePath RegisterTemporaryImage(const gfx::Image& image,
-                                        const std::string& profile_id,
-                                        const GURL& origin) override;
+  void CleanupFilesFromPrevSessions() override;
+  base::FilePath RegisterTemporaryImage(const gfx::Image& image) override;
 
  private:
   int counter_ = 0;

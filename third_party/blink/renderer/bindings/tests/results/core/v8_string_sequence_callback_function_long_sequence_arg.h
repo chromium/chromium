@@ -8,9 +8,8 @@
 // DO NOT MODIFY!
 
 // clang-format off
-
-#ifndef V8StringSequenceCallbackFunctionLongSequenceArg_h
-#define V8StringSequenceCallbackFunctionLongSequenceArg_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_STRING_SEQUENCE_CALLBACK_FUNCTION_LONG_SEQUENCE_ARG_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_STRING_SEQUENCE_CALLBACK_FUNCTION_LONG_SEQUENCE_ARG_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
@@ -73,4 +72,4 @@ Persistent<V8StringSequenceCallbackFunctionLongSequenceArg> WrapPersistent(V8Str
 
 }  // namespace blink
 
-#endif  // V8StringSequenceCallbackFunctionLongSequenceArg_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_STRING_SEQUENCE_CALLBACK_FUNCTION_LONG_SEQUENCE_ARG_H_

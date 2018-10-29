@@ -52,6 +52,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     virtual void ReclaimResources(
         const std::vector<viz::ReturnedResource>& resources) = 0;
     virtual void OnFrameTokenChanged(uint32_t frame_token) = 0;
+    virtual void WasEvicted() = 0;
   };
 
   DelegatedFrameHostAndroid(ViewAndroid* view,
@@ -123,8 +124,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   void WasHidden();
   void WasShown(const viz::LocalSurfaceId& local_surface_id,
                 const gfx::Size& size_in_pixels);
-  void EmbedSurface(const viz::LocalSurfaceId& new_pending_local_surface_id,
-                    const gfx::Size& new_pending_size_in_pixels,
+  void EmbedSurface(const viz::LocalSurfaceId& new_local_surface_id,
+                    const gfx::Size& new_size_in_pixels,
                     cc::DeadlinePolicy deadline_policy);
 
   // Called when we begin a resize operation. Takes the compositor lock until we
@@ -134,6 +135,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // Returns the ID for the current Surface. Returns an invalid ID if no
   // surface exists (!HasDelegatedContent()).
   viz::SurfaceId SurfaceId() const;
+
+  bool HasPrimarySurface() const;
   bool HasFallbackSurface() const;
 
   void TakeFallbackContentFrom(DelegatedFrameHostAndroid* other);
@@ -202,22 +205,12 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // Only used when surface synchronization is on.
   viz::LocalSurfaceId first_local_surface_id_after_navigation_;
 
-  std::vector<std::unique_ptr<viz::CopyOutputRequest>>
-      pending_first_frame_requests_;
-
-  // The surface id that was most recently activated by
-  // OnFirstSurfaceActivation.
-  viz::LocalSurfaceId active_local_surface_id_;
-  // The scale factor of the above surface.
-  float active_device_scale_factor_ = 0.f;
-
-  // The local surface id as of the most recent call to
-  // EmbedSurface. This is the surface that we expect future frames to
-  // reference. This will eventually equal the active surface.
-  viz::LocalSurfaceId pending_local_surface_id_;
+  // The LocalSurfaceId of the currently embedded surface. If surface sync is
+  // on, this surface is not necessarily active.
+  viz::LocalSurfaceId local_surface_id_;
 
   // The size of the above surface (updated at the same time).
-  gfx::Size pending_surface_size_in_pixels_;
+  gfx::Size surface_size_in_pixels_;
 
   std::unique_ptr<viz::FrameEvictor> frame_evictor_;
 

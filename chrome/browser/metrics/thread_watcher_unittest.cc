@@ -436,8 +436,7 @@ TEST_F(ThreadWatcherTest, ThreadNamesOnlyArgs) {
         tokens.token_piece(), ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     std::string thread_name = values[0].as_string();
 
-    ThreadWatcherList::CrashOnHangThreadMap::iterator it =
-        crash_on_hang_threads.find(thread_name);
+    auto it = crash_on_hang_threads.find(thread_name);
     bool crash_on_hang = (it != crash_on_hang_threads.end());
     EXPECT_TRUE(crash_on_hang);
     EXPECT_LT(0u, it->second);
@@ -466,8 +465,7 @@ TEST_F(ThreadWatcherTest, CrashOnHangThreadsAllArgs) {
         tokens.token_piece(), ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     std::string thread_name = values[0].as_string();
 
-    ThreadWatcherList::CrashOnHangThreadMap::iterator it =
-        crash_on_hang_threads.find(thread_name);
+    auto it = crash_on_hang_threads.find(thread_name);
 
     bool crash_on_hang = (it != crash_on_hang_threads.end());
     EXPECT_TRUE(crash_on_hang);

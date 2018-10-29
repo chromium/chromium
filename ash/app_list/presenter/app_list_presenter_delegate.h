@@ -45,8 +45,11 @@ class APP_LIST_PRESENTER_EXPORT AppListPresenterDelegate {
   // Called when app list is shown.
   virtual void OnShown(int64_t display_id) = 0;
 
-  // Called when app list is dismissed
-  virtual void OnDismissed() = 0;
+  // Called when app list is closing.
+  virtual void OnClosing() = 0;
+
+  // Called when app list is closed.
+  virtual void OnClosed() = 0;
 
   // Returns the offset vector by which the app list window should animate
   // when it gets shown or hidden.

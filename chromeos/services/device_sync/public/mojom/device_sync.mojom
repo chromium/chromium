@@ -48,6 +48,11 @@ enum NetworkRequestResult {
   // Successful network request.
   kSuccess,
 
+  // The network request itself was successful, but it did not produce the
+  // expected result (e.g., called SetSoftwareFeatureState(), but the call did
+  // not result in the feature state changing).
+  kRequestSucceededButUnexpectedResult,
+
   // Service was not yet initialized; could not complete request.
   kServiceNotYetInitialized,
 

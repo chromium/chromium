@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_ABSTRACT_WORKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_ABSTRACT_WORKER_H_
 
-#include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/modules/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -70,7 +70,7 @@ class CORE_EXPORT AbstractWorker : public EventTargetWithInlineData,
   static KURL ResolveURL(ExecutionContext*,
                          const String& url,
                          ExceptionState&,
-                         WebURLRequest::RequestContext);
+                         mojom::RequestContextType);
 };
 
 }  // namespace blink

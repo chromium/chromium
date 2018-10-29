@@ -21,6 +21,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/test/menu_test_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -211,6 +212,7 @@ class MenuModelAdapterTest : public ViewEventTestBase,
 
   // Open the submenu.
   void Step1() {
+    views::test::DisableMenuClosureAnimations();
     views::SubmenuView* topmenu = menu_->GetSubmenu();
     ASSERT_TRUE(topmenu);
     ASSERT_TRUE(topmenu->IsShowing());
@@ -251,6 +253,7 @@ class MenuModelAdapterTest : public ViewEventTestBase,
   // All done.
   void Step4() {
     views::SubmenuView* topmenu = menu_->GetSubmenu();
+    views::test::WaitForMenuClosureAnimation();
     ASSERT_TRUE(topmenu);
     ASSERT_FALSE(topmenu->IsShowing());
     ASSERT_FALSE(top_menu_model_.IsSubmenuShowing());

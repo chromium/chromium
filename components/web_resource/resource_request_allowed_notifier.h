@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "components/web_resource/eula_accepted_notifier.h"
-#include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 class PrefService;
@@ -39,8 +38,7 @@ namespace web_resource {
 // global instance.
 class ResourceRequestAllowedNotifier
     : public EulaAcceptedNotifier::Observer,
-      public network::NetworkConnectionTracker::NetworkConnectionObserver,
-      public net::NetworkChangeNotifier::NetworkChangeObserver {
+      public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // Observes resource request allowed state changes.
   class Observer {
@@ -107,10 +105,6 @@ class ResourceRequestAllowedNotifier
 
   // EulaAcceptedNotifier::Observer overrides:
   void OnEulaAccepted() override;
-
-  // net::NetworkChangeNotifier::NetworkChangeObserver overrides:
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver overrides:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;

@@ -15,6 +15,8 @@ import android.net.http.SslError;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.Browser;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -97,6 +99,30 @@ public abstract class AwContentsClient {
      * Parameters for the {@link AwContentsClient#shouldInterceptRequest} method.
      */
     public static class AwWebResourceRequest {
+        // Prefer using other constructors over this one.
+        public AwWebResourceRequest() {}
+
+        public AwWebResourceRequest(String url, boolean isMainFrame, boolean hasUserGesture,
+                String method, @Nullable HashMap<String, String> requestHeaders) {
+            this.url = url;
+            this.isMainFrame = isMainFrame;
+            this.hasUserGesture = hasUserGesture;
+            // Note: we intentionally let isRedirect default initialize to false. This is because we
+            // don't always know if this request is associated with a redirect or not.
+            this.method = method;
+            this.requestHeaders = requestHeaders;
+        }
+
+        public AwWebResourceRequest(String url, boolean isMainFrame, boolean hasUserGesture,
+                String method, @NonNull String[] requestHeaderNames,
+                @NonNull String[] requestHeaderValues) {
+            this(url, isMainFrame, hasUserGesture, method,
+                    new HashMap<String, String>(requestHeaderValues.length));
+            for (int i = 0; i < requestHeaderNames.length; ++i) {
+                this.requestHeaders.put(requestHeaderNames[i], requestHeaderValues[i]);
+            }
+        }
+
         // Url of the request.
         public String url;
         // Is this for the main frame or a child iframe?
@@ -167,12 +193,10 @@ public abstract class AwContentsClient {
         if (poller != null && poller.shouldCancelAllCallbacks()) return false;
 
         if (hasWebViewClient()) {
-            AwWebResourceRequest request = new AwWebResourceRequest();
-            request.url = url;
-            request.isMainFrame = isMainFrame;
-            request.hasUserGesture = hasUserGesture;
+            // Note: only GET requests can be overridden, so we hardcode the method.
+            AwWebResourceRequest request =
+                    new AwWebResourceRequest(url, isMainFrame, hasUserGesture, "GET", null);
             request.isRedirect = isRedirect;
-            request.method = "GET";  // Only GET requests can be overridden.
             return shouldOverrideUrlLoading(request);
         } else {
             return sendBrowsingIntent(context, url, hasUserGesture, isRedirect);
@@ -221,12 +245,18 @@ public abstract class AwContentsClient {
 
         try {
             context.startActivity(intent);
+            return true;
         } catch (ActivityNotFoundException ex) {
             Log.w(TAG, "No application can handle %s", url);
-            return false;
+        } catch (SecurityException ex) {
+            // This can happen if the Activity is exported="true", guarded by a permission, and sets
+            // up an intent filter matching this intent. This is a valid configuration for an
+            // Activity, so instead of crashing, we catch the exception and do nothing. See
+            // https://crbug.com/808494 and https://crbug.com/889300.
+            Log.w(TAG, "SecurityException when starting intent for %s", url);
         }
 
-        return true;
+        return false;
     }
 
     public static Uri[] parseFileChooserResult(int resultCode, Intent intent) {

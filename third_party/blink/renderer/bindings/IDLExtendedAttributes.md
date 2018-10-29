@@ -135,7 +135,9 @@ Extended attributes are generally not inherited: only extended attributes on the
 These are defined in the [ECMAScript-specific extended attributes](http://heycam.github.io/webidl/#es-extended-attributes) section of the [Web IDL spec](http://heycam.github.io/webidl/), and alter the binding behavior.
 
 *** note
-Unsupported: `[ImplicitThis]`, `[LenientThis]`, `[NamedPropertiesObject]`, `[TreatNonCallableAsNull]`
+Unsupported: `[LenientThis]`
+
+Undocumented: `[TreatNonObjectAsNull]`
 ***
 
 ### [CEReactions] _(m, a)_
@@ -485,6 +487,34 @@ interface Window {
 }
 ```
 
+### [Serializable] _(i)_
+
+Standard: [Serializable](https://html.spec.whatwg.org/multipage/structured-data.html#serializable)
+
+Summary: Serializable objects support being serialized, and later deserialized, for persistence in storage APIs or for passing with `postMessage()`.
+
+```webidl
+[Serializable] interface Blob {
+    ...
+};
+```
+
+This attribute has no effect on code generation and should simply be used in Blink IDL files if the specification uses it. Code to perform the serialization/deserialization must be added to `V8ScriptValueSerializer` for types in `core/` or `V8ScriptValueDeserializerForModules` for types in `modules/`.
+
+### [Transferable] _(i)_
+
+Standard: [Transferable](https://html.spec.whatwg.org/multipage/structured-data.html#transferable)
+
+Summary: Transferable objects support being transferred across Realms with `postMessage()`.
+
+```webidl
+[Transferable] interface MessagePort {
+    ...
+};
+```
+
+This attribute has no effect on code generation and should simply be used in Blink IDL files if the specification uses it. Code to perform the transfer steps must be added to `V8ScriptValueSerializer` for types in `core/` or `V8ScriptValueDeserializerForModules` for types in `modules/`.
+
 ### [TreatNullAs] _(a,p)_
 
 Standard: [TreatNullAs](https://heycam.github.io/webidl/#TreatNullAs)
@@ -499,8 +529,6 @@ void func([TreatNullAs=Emptytring] DOMString str);
 ```
 
 Implementation: Given `[TreatNullAs=EmptyString]`, a JavaScript null is converted to a Blink empty string, for which `String::IsEmpty()` returns true, but `String::IsNull()` return false.
-
-**Non-standard:** Blink also supports the `NullString` identifier. Given `[TreatNullAs=NullString]`, a JavaScript null is converted to a Blink null string, for which both `String::IsEmpty()` and `String::IsNull()` return true. This is for performance reasons; see [Strings in Blink](https://docs.google.com/a/google.com/document/d/1kOCUlJdh2WJMJGDf-WoEQhmnjKLaOYRbiHz5TiGJl14/edit) for reference. Unless the spec specifies `[TreatNullAs=EmptyString]`, you should not specify `[TreatNullAs=NullString]` in Blink. Care must be taken to not treat null and empty strings differently, as they would be indistinguishable when using `[TreatNullAs=EmptyString]`.
 
 ### [Unforgeable] _(m,a)_
 
@@ -1633,8 +1661,12 @@ Added to members of a partial interface definition (and implemented interfaces w
 **FIXME:** The following need documentation:
 ***
 
-* `[PerWorldBindings]` :: interacts with `[LogActivity]`
+* `[ImmutablePrototype]`
+* `[LegacyInterfaceTypeChecking]`
+* `[LogAllWorlds]`
 * `[OverrideBuiltins]` :: used on named accessors
+* `[PerWorldBindings]` :: interacts with `[LogActivity]`
+* `[WebAgentAPI]`
 
 -------------
 

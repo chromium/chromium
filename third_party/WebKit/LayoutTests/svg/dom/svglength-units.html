@@ -1,5 +1,5 @@
 <!doctype html>
-<title>SVGlength tests</title>
+<title>SVGLength tests</title>
 <script src=../../resources/testharness.js></script>
 <script src=../../resources/testharnessreport.js></script>
 <div id="testcontainer">
@@ -122,7 +122,7 @@ test(function() {
   };
   for (var constant in unitConstants) {
     var str = "SVG_LENGTHTYPE_" + constant;
-    assert_exists(SVGLength, str, str + " should exist in SVGlength");
+    assert_own_property(SVGLength, str, str + " should exist in SVGLength");
   }
 }, "Test that unit constants that are supposed to be exposed are available");
 
@@ -133,7 +133,7 @@ test(function() {
   };
   for (var constant in nonexposedUnitConstants) {
     var str = "SVG_LENGTHTYPE_" + constant;
-    assert_not_exists(SVGLength, str, str + " should not be exposed in SVGlength");
+    assert_false(str in SVGLength, str + " should not be exposed in SVGLength");
   }
 }, "Test that unit constants that are not supposed to be exposed are not available");
 

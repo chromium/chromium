@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1018939186200882850">메뉴 항목</translation>
-<translation id="1020833440720551630">오디오 트랙 음소거</translation>
 <translation id="10623998915015855">전환 버튼</translation>
 <translation id="1088086359088493902">초</translation>
 <translation id="1171774979989969504">이메일 주소를 입력하세요.</translation>
@@ -16,7 +15,6 @@
 <translation id="1335095011850992622">저작권 표시</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">배너</translation>
-<translation id="1548116112524424341">PIP 모드로 동영상 재생</translation>
 <translation id="1589122976691792535">지역</translation>
 <translation id="1591562245178063882">이번 달</translation>
 <translation id="1637811476055996098">파일 선택</translation>
@@ -27,7 +25,6 @@
 <translation id="1821985195704844674">트리 격자</translation>
 <translation id="1822429046913737220">오전/오후</translation>
 <translation id="1832974991323546415">원격 기기에서 재생</translation>
-<translation id="1838818994221231429">전체화면을 디스플레이 컷아웃 영역으로 전환</translation>
 <translation id="190587075670221089">삭제</translation>
 <translation id="1907737156431278478">예시</translation>
 <translation id="1921819250265091946">일</translation>
@@ -131,7 +128,6 @@
 <translation id="561939826962581046">time</translation>
 <translation id="5630795885300617244">10초를 건너뛰려면 왼쪽이나 오른쪽을 두 번 탭하세요.</translation>
 <translation id="5631759159893697722">초록</translation>
-<translation id="5641012560118721995">재생 일시중지</translation>
 <translation id="5643186887447432888">버튼</translation>
 <translation id="5677946354068040947">옵션 더보기</translation>
 <translation id="576709008726043716">소개</translation>
@@ -142,9 +138,9 @@
 <translation id="5939518447894949180">초기화</translation>
 <translation id="5966707198760109579">주</translation>
 <translation id="5987525920412732405">스핀 버튼</translation>
+<translation id="6011459053400940133">볼륨 슬라이더</translation>
 <translation id="6015796118275082299">연도</translation>
 <translation id="6023896073578205740">목록 상자</translation>
-<translation id="6101327004457443354">오디오 트랙 음소거 해제</translation>
 <translation id="6150588977291308318">참고문헌</translation>
 <translation id="6164829606128959761">미터</translation>
 <translation id="6166809985690652833">후기</translation>
@@ -191,7 +187,6 @@
 <translation id="7673697353781729403">시간</translation>
 <translation id="7681220483256441252">색인</translation>
 <translation id="7720026100085573005">남은 시간</translation>
-<translation id="7740016676195725605">캡션 표시 중지</translation>
 <translation id="7740050170769002709">HTML 콘텐츠</translation>
 <translation id="7750228210027921155">PIP 모드</translation>
 <translation id="7789962463072032349">일시중지</translation>
@@ -202,9 +197,7 @@
 <translation id="8053789581856978548">검색어 입력란</translation>
 <translation id="8057695513531652401">안내문</translation>
 <translation id="8105797009065549151">참고 자료</translation>
-<translation id="8115662671911883373">캡션 표시 시작</translation>
 <translation id="8117451130807776954">이번 주</translation>
-<translation id="819205353528511139">전체화면 모드로 영화 재생</translation>
 <translation id="8199524924445686405">연도</translation>
 <translation id="8284326494547611709">자막</translation>
 <translation id="835897206747267392">값이 잘못되었습니다.</translation>
@@ -224,7 +217,6 @@
 <translation id="8613126697340063924">원격 재생 제어</translation>
 <translation id="862370744433916922">부제</translation>
 <translation id="8750798805984357768">다음 옵션 중 하나를 선택하세요.</translation>
-<translation id="8785498733064193001">재생 시작</translation>
 <translation id="8808573423886751634">장</translation>
 <translation id="8845239796550121995">TV로 전송 중</translation>
 <translation id="8851136666856101339">main</translation>

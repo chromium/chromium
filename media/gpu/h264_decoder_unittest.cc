@@ -5,11 +5,13 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <cstring>
 #include <memory>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "media/base/test_data_util.h"
@@ -28,6 +30,7 @@ using ::testing::MatcherInterface;
 using ::testing::MatchResultListener;
 using ::testing::Mock;
 using ::testing::Return;
+using ::testing::WithArg;
 
 namespace media {
 namespace {
@@ -59,6 +62,46 @@ MATCHER(SubsampleSizeMatches, "Verify subsample sizes match buffer size") {
   return subsample_total_size == buffer_size;
 }
 
+// Given a H264NALU (arg0), compute the slice header and store a copy in
+// both |arg1| and |slice_header|. This assumes that the NALU comes from
+// kBaselineFrame0.
+ACTION_P(ComputeSliceHeader, slice_header) {
+  const H264NALU& slice_nalu = arg0;
+  // |arg1| and |slice_header| are H264SliceHeader*.
+
+  // Ideally we could just parse |slice_nalu|, but the parser needs additional
+  // data (like SPS and PPS entries) which we don't have. So this simulates
+  // parsing of |slice_nalu| by simply setting the appropriate fields
+
+  // Zero out |slice_header| so there is no need to set a lot of default values.
+  std::memset(slice_header, 0, sizeof(H264SliceHeader));
+
+  // Extract the values directly from the H264NALU provided.
+  slice_header->idr_pic_flag = (slice_nalu.nal_unit_type == 5);
+  slice_header->nal_ref_idc = slice_nalu.nal_ref_idc;
+  slice_header->nalu_data = slice_nalu.data;
+  slice_header->nalu_size = slice_nalu.size;
+
+  // Don't want to duplicate all the work of H264Parser.ParseSliceHeader(),
+  // so the following were determined by looking at the slice header after
+  // H264_Parser.ParseSliceHeader() was called on kBaselineFrame0.
+  slice_header->header_bit_size = 0x24;
+  slice_header->slice_type = 7;
+  slice_header->slice_qp_delta = 8;
+  slice_header->dec_ref_pic_marking_bit_size = 2u;
+
+  // Now that we have created our local copy of the slice header, copy it into
+  // |arg1| and return success.
+  std::memcpy(arg1, slice_header, sizeof(H264SliceHeader));
+  return H264Decoder::H264Accelerator::Status::kOk;
+}
+
+// Compare 2 H264SliceHeader objects for equality.
+MATCHER_P(SliceHeaderMatches, slice_header, "Verify H264SliceHeader objects") {
+  // Rather than match pointers, the contents must be the same.
+  return std::memcmp(arg, slice_header, sizeof(H264SliceHeader)) == 0;
+}
+
 class MockH264Accelerator : public H264Decoder::H264Accelerator {
  public:
   MockH264Accelerator() = default;
@@ -83,6 +126,12 @@ class MockH264Accelerator : public H264Decoder::H264Accelerator {
                       size_t size,
                       const std::vector<SubsampleEntry>& subsamples));
   MOCK_METHOD1(OutputPicture, bool(const scoped_refptr<H264Picture>& pic));
+  MOCK_METHOD2(SetStream,
+               Status(base::span<const uint8_t> stream,
+                      const DecryptConfig* decrypt_config));
+  MOCK_METHOD2(ParseSliceHeader,
+               Status(const H264NALU& slice_nalu,
+                      H264SliceHeader* slice_header));
 
   void Reset() override {}
 };
@@ -130,6 +179,12 @@ void H264DecoderTest::SetUp() {
   ON_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _))
       .With(Args<6, 7>(SubsampleSizeMatches()))
       .WillByDefault(Return(H264Decoder::H264Accelerator::Status::kOk));
+  ON_CALL(*accelerator_, SetStream(_, _))
+      .WillByDefault(
+          Return(H264Decoder::H264Accelerator::Status::kNotSupported));
+  ON_CALL(*accelerator_, ParseSliceHeader(_, _))
+      .WillByDefault(
+          Return(H264Decoder::H264Accelerator::Status::kNotSupported));
 }
 
 void H264DecoderTest::SetInputFrameFiles(
@@ -518,6 +573,67 @@ TEST_F(H264DecoderTest, SubmitDecodeRetry) {
     InSequence sequence;
     EXPECT_CALL(*accelerator_, SubmitDecode(WithPoc(2)));
     EXPECT_CALL(*accelerator_, OutputPicture(WithPoc(2)));
+  }
+  ASSERT_TRUE(decoder_->Flush());
+}
+
+TEST_F(H264DecoderTest, SetStreamRetry) {
+  SetInputFrameFiles({kBaselineFrame0});
+
+  EXPECT_CALL(*accelerator_, SetStream(_, _))
+      .WillOnce(Return(H264Decoder::H264Accelerator::Status::kTryAgain))
+      .WillOnce(Return(H264Decoder::H264Accelerator::Status::kOk));
+  ASSERT_EQ(AcceleratedVideoDecoder::kTryAgain, Decode());
+
+  ASSERT_EQ(AcceleratedVideoDecoder::kAllocateNewSurfaces, Decode());
+  EXPECT_EQ(gfx::Size(320, 192), decoder_->GetPicSize());
+  EXPECT_LE(9u, decoder_->GetRequiredNumOfPictures());
+
+  {
+    InSequence sequence;
+
+    EXPECT_CALL(*accelerator_, ParseSliceHeader(_, _));
+    EXPECT_CALL(*accelerator_, CreateH264Picture());
+    EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _));
+    EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _));
+  }
+  ASSERT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+
+  {
+    InSequence sequence;
+    EXPECT_CALL(*accelerator_, SubmitDecode(WithPoc(0)));
+    EXPECT_CALL(*accelerator_, OutputPicture(WithPoc(0)));
+  }
+  ASSERT_TRUE(decoder_->Flush());
+}
+
+TEST_F(H264DecoderTest, ParseSliceHeaderRetry) {
+  SetInputFrameFiles({kBaselineFrame0});
+  ASSERT_EQ(AcceleratedVideoDecoder::kAllocateNewSurfaces, Decode());
+  EXPECT_EQ(gfx::Size(320, 192), decoder_->GetPicSize());
+  EXPECT_LE(9u, decoder_->GetRequiredNumOfPictures());
+
+  EXPECT_CALL(*accelerator_, ParseSliceHeader(_, _))
+      .WillOnce(Return(H264Decoder::H264Accelerator::Status::kTryAgain));
+  ASSERT_EQ(AcceleratedVideoDecoder::kTryAgain, Decode());
+
+  H264SliceHeader slice_header = {};
+  {
+    InSequence sequence;
+
+    EXPECT_CALL(*accelerator_, ParseSliceHeader(_, _))
+        .WillOnce(ComputeSliceHeader(&slice_header));
+    EXPECT_CALL(*accelerator_, CreateH264Picture());
+    EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _));
+    EXPECT_CALL(*accelerator_, SubmitSlice(_, SliceHeaderMatches(&slice_header),
+                                           _, _, _, _, _, _));
+  }
+  ASSERT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+
+  {
+    InSequence sequence;
+    EXPECT_CALL(*accelerator_, SubmitDecode(WithPoc(0)));
+    EXPECT_CALL(*accelerator_, OutputPicture(WithPoc(0)));
   }
   ASSERT_TRUE(decoder_->Flush());
 }

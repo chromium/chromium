@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/interfaces/ash_message_center_controller.mojom.h"
 #include "ash/public/interfaces/constants.mojom.h"
@@ -64,39 +63,19 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
   bool IsTrayVisible() { return IsViewDrawn(ash::VIEW_ID_CAST_MAIN_VIEW); }
 
   bool IsCastingNotificationVisible() {
-    ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-    if (ash::features::IsSystemTrayUnifiedEnabled())
-      return !GetNotificationString().empty();
-    else
-      return IsViewDrawn(ash::VIEW_ID_CAST_CAST_VIEW);
-  }
-
-  bool IsTraySelectViewVisible() {
-    // TODO(tetsui): Remove this method because in UnifiedSystemTray we don't
-    // have distinction between select view and cast view.
-    if (ash::features::IsSystemTrayUnifiedEnabled())
-      return IsTrayVisible();
-    ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-    return IsViewDrawn(ash::VIEW_ID_CAST_SELECT_VIEW);
+    return !GetNotificationString().empty();
   }
 
   base::string16 GetNotificationString() {
-    if (ash::features::IsSystemTrayUnifiedEnabled()) {
-      ash::mojom::AshMessageCenterControllerAsyncWaiter wait_for(
-          ash_message_center_controller_.get());
-      std::vector<message_center::Notification> notifications;
-      wait_for.GetActiveNotifications(&notifications);
-      for (const auto& notification : notifications) {
-        if (notification.id() == kNotificationId)
-          return notification.title();
-      }
-      return base::string16();
-    } else {
-      base::string16 result;
-      ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-      wait_for.GetBubbleLabelText(ash::VIEW_ID_CAST_CAST_VIEW_LABEL, &result);
-      return result;
+    ash::mojom::AshMessageCenterControllerAsyncWaiter wait_for(
+        ash_message_center_controller_.get());
+    std::vector<message_center::Notification> notifications;
+    wait_for.GetActiveNotifications(&notifications);
+    for (const auto& notification : notifications) {
+      if (notification.id() == kNotificationId)
+        return notification.title();
     }
+    return base::string16();
   }
 
   media_router::MediaSinksObserver* media_sinks_observer() const {
@@ -189,7 +168,6 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
   media_sinks_observer()->OnSinksUpdated(two_sinks, std::vector<url::Origin>());
   content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(IsTrayVisible());
-  EXPECT_TRUE(IsTraySelectViewVisible());
 
   // And if all of the sinks go away, it should be hidden again.
   media_sinks_observer()->OnSinksUpdated(zero_sinks,

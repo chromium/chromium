@@ -44,7 +44,8 @@ void CrostiniAppModelBuilder::BuildModel() {
 void CrostiniAppModelBuilder::InsertCrostiniAppItem(
     const crostini::CrostiniRegistryService* registry_service,
     const std::string& app_id) {
-  if (app_id == kCrostiniTerminalId && !IsCrostiniEnabled(profile())) {
+  if (app_id == crostini::kCrostiniTerminalId &&
+      !crostini::IsCrostiniEnabled(profile())) {
     // If Crostini isn't enabled, don't show the Terminal item until it
     // becomes enabled.
     return;
@@ -107,15 +108,15 @@ void CrostiniAppModelBuilder::OnAppIconUpdated(const std::string& app_id,
 
 void CrostiniAppModelBuilder::OnCrostiniEnabledChanged() {
   const bool unsynced_change = false;
-  if (IsCrostiniEnabled(profile())) {
+  if (crostini::IsCrostiniEnabled(profile())) {
     // If Terminal has been installed before and has not been cleaned up
     // correctly, it needs to be removed.
-    RemoveApp(kCrostiniTerminalId, unsynced_change);
+    RemoveApp(crostini::kCrostiniTerminalId, unsynced_change);
     crostini::CrostiniRegistryService* registry_service =
         crostini::CrostiniRegistryServiceFactory::GetForProfile(profile());
-    InsertCrostiniAppItem(registry_service, kCrostiniTerminalId);
+    InsertCrostiniAppItem(registry_service, crostini::kCrostiniTerminalId);
   } else {
-    RemoveApp(kCrostiniTerminalId, unsynced_change);
+    RemoveApp(crostini::kCrostiniTerminalId, unsynced_change);
   }
 }
 
@@ -125,13 +126,13 @@ void CrostiniAppModelBuilder::MaybeCreateRootFolder() {
 
   root_folder_created_ = true;
   const app_list::AppListSyncableService::SyncItem* sync_item =
-      GetSyncItem(kCrostiniFolderId);
+      GetSyncItem(crostini::kCrostiniFolderId);
   if (sync_item)
     return;
 
   std::unique_ptr<ChromeAppListItem> crositini_folder =
-      std::make_unique<ChromeAppListItem>(profile(), kCrostiniFolderId,
-                                          model_updater());
+      std::make_unique<ChromeAppListItem>(
+          profile(), crostini::kCrostiniFolderId, model_updater());
   crositini_folder->SetChromeIsFolder(true);
   crositini_folder->SetName(
       l10n_util::GetStringUTF8(IDS_APP_LIST_CROSTINI_DEFAULT_FOLDER_NAME));

@@ -27,6 +27,7 @@ public final class DownloadUpdate {
     private final boolean mIsTransient;
     private final int mNotificationId;
     private final String mOriginalUrl;
+    private final boolean mShouldPromoteOrigin;
     private final Progress mProgress;
     private final String mReferrer;
     private final long mStartTime;
@@ -48,6 +49,7 @@ public final class DownloadUpdate {
         this.mIsTransient = builder.mIsTransient;
         this.mNotificationId = builder.mNotificationId;
         this.mOriginalUrl = builder.mOriginalUrl;
+        this.mShouldPromoteOrigin = builder.mShouldPromoteOrigin;
         this.mProgress = builder.mProgress;
         this.mReferrer = builder.mReferrer;
         this.mStartTime = builder.mStartTime;
@@ -106,6 +108,10 @@ public final class DownloadUpdate {
         return mOriginalUrl;
     }
 
+    public boolean getShouldPromoteOrigin() {
+        return mShouldPromoteOrigin;
+    }
+
     public Progress getProgress() {
         return mProgress;
     }
@@ -153,6 +159,7 @@ public final class DownloadUpdate {
         private boolean mIsTransient;
         private int mNotificationId = -1;
         private String mOriginalUrl;
+        private boolean mShouldPromoteOrigin;
         private Progress mProgress;
         private String mReferrer;
         private long mStartTime;
@@ -214,6 +221,11 @@ public final class DownloadUpdate {
 
         public Builder setOriginalUrl(String originalUrl) {
             this.mOriginalUrl = originalUrl;
+            return this;
+        }
+
+        public Builder setShouldPromoteOrigin(boolean shouldPromoteOrigin) {
+            this.mShouldPromoteOrigin = shouldPromoteOrigin;
             return this;
         }
 

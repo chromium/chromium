@@ -4,7 +4,9 @@
 
 #include "content/browser/appcache/appcache_frontend_proxy.h"
 
+#include "base/task/post_task.h"
 #include "content/common/appcache.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/bind_interface_helpers.h"
@@ -26,8 +28,8 @@ void BindOnUIThread(int process_id, mojom::AppCacheFrontendRequest request) {
 
 mojom::AppCacheFrontend* AppCacheFrontendProxy::GetAppCacheFrontend() {
   if (!app_cache_renderer_ptr_) {
-    BrowserThread::PostTask(
-        BrowserThread::UI, FROM_HERE,
+    base::PostTaskWithTraits(
+        FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&BindOnUIThread, process_id_,
                        mojo::MakeRequest(&app_cache_renderer_ptr_)));
   }

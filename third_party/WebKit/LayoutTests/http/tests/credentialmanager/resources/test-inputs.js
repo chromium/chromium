@@ -106,7 +106,7 @@ function deepCopy(value) {
 
 // Verifies if |r| is the valid response to credentials.create(publicKey).
 function assertValidMakeCredentialResponse(r) {
-assert_equals(r.id, ID, 'id');
+    assert_equals(r.id, ID, 'id');
     assert_true(r.rawId instanceof ArrayBuffer);
     assert_array_equals(new Uint8Array(r.rawId),
         RAW_ID, "rawId returned is the same");
@@ -117,8 +117,8 @@ assert_equals(r.id, ID, 'id');
     assert_true(r.response.attestationObject instanceof ArrayBuffer);
     assert_array_equals(new Uint8Array(r.response.attestationObject),
         ATTESTATION_OBJECT, "attestationObject returned is the same");
-    assert_not_exists(r.response, 'authenticatorData');
-    assert_not_exists(r.response, 'signature');
+    assert_false('authenticatorData' in r.response);
+    assert_false('signature' in r.response);
 }
 
 // Verifies if |r| is the valid response to credentials.get(publicKey).
@@ -140,5 +140,5 @@ function assertValidGetCredentialResponse(r) {
         AUTHENTICATOR_DATA, "authenticator_data returned is the same");
     assert_array_equals(new Uint8Array(r.response.signature),
         SIGNATURE, "signature returned is the same");
-    assert_not_exists(r.response, 'attestationObject');
+    assert_false('attestationObject' in r.response);
 }

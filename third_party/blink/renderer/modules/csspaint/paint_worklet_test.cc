@@ -23,13 +23,13 @@ class TestPaintWorklet : public PaintWorklet {
  public:
   explicit TestPaintWorklet(LocalFrame* frame) : PaintWorklet(frame) {}
 
-  void SetPaintsToSwitch(size_t num) { paints_to_switch_ = num; }
+  void SetPaintsToSwitch(int num) { paints_to_switch_ = num; }
 
   int GetPaintsBeforeSwitching() override { return paints_to_switch_; }
 
   // We always switch to another global scope so that we can tell how often it
   // was switched in the test.
-  size_t SelectNewGlobalScope() override {
+  wtf_size_t SelectNewGlobalScope() override {
     return (GetActiveGlobalScopeForTesting() + 1) %
            PaintWorklet::kNumGlobalScopes;
   }
@@ -37,7 +37,7 @@ class TestPaintWorklet : public PaintWorklet {
   size_t GetActiveGlobalScope() { return GetActiveGlobalScopeForTesting(); }
 
  private:
-  size_t paints_to_switch_;
+  int paints_to_switch_;
 };
 
 class PaintWorkletTest : public PageTestBase {
@@ -66,7 +66,7 @@ class PaintWorkletTest : public PageTestBase {
   // Helper function used in GlobalScopeSelection test.
   void ExpectSwitchGlobalScope(bool expect_switch_within_frame,
                                size_t num_paint_calls,
-                               size_t paint_cnt_to_switch,
+                               int paint_cnt_to_switch,
                                size_t expected_num_paints_before_switch,
                                TestPaintWorklet* paint_worklet_to_test) {
     paint_worklet_to_test->GetFrame()->View()->UpdateAllLifecyclePhases();
@@ -103,43 +103,6 @@ class PaintWorkletTest : public PageTestBase {
   Persistent<TestPaintWorklet> test_paint_worklet_;
 };
 
-TEST_F(PaintWorkletTest, GarbageCollectionOfCSSPaintDefinition) {
-  PaintWorkletGlobalScope* global_scope = GetProxy()->global_scope();
-  global_scope->ScriptController()->Evaluate(
-      ScriptSourceCode("registerPaint('foo', class { paint() { } });"),
-      kSharableCrossOrigin);
-
-  CSSPaintDefinition* definition = global_scope->FindDefinition("foo");
-  DCHECK(definition);
-
-  v8::Isolate* isolate =
-      global_scope->ScriptController()->GetScriptState()->GetIsolate();
-  DCHECK(isolate);
-
-  // Set our ScopedPersistent to the paint function, and make weak.
-  ScopedPersistent<v8::Function> handle;
-  {
-    v8::HandleScope handle_scope(isolate);
-    handle.Set(isolate, definition->PaintFunctionForTesting(isolate));
-    handle.SetPhantom();
-  }
-  DCHECK(!handle.IsEmpty());
-  DCHECK(handle.IsWeak());
-
-  // Run a GC, persistent shouldn't have been collected yet.
-  ThreadState::Current()->CollectAllGarbage();
-  V8GCController::CollectAllGarbageForTesting(isolate);
-  DCHECK(!handle.IsEmpty());
-
-  // Delete the page & associated objects.
-  Terminate();
-
-  // Run a GC, the persistent should have been collected.
-  ThreadState::Current()->CollectAllGarbage();
-  V8GCController::CollectAllGarbageForTesting(isolate);
-  DCHECK(handle.IsEmpty());
-}
-
 // This is a crash test for crbug.com/803026. At some point, we shipped the
 // CSSPaintAPI without shipping the CSSPaintAPIArguments, the result of it is
 // that the |paint_arguments| in the CSSPaintDefinition::Paint() becomes
@@ -157,7 +120,7 @@ TEST_F(PaintWorkletTest, PaintWithNullPaintArguments) {
   ImageResourceObserver* observer = GetImageResourceObserver();
   ASSERT_TRUE(observer);
 
-  const IntSize container_size(100, 100);
+  const FloatSize container_size(100, 100);
   scoped_refptr<Image> image =
       definition->Paint(*observer, container_size, nullptr);
   EXPECT_NE(image, nullptr);
